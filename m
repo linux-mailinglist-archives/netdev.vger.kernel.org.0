@@ -2,215 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE9CA2B8218
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 17:44:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF8742B821D
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 17:45:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726885AbgKRQmw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 11:42:52 -0500
-Received: from mga06.intel.com ([134.134.136.31]:2401 "EHLO mga06.intel.com"
+        id S1727109AbgKRQo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 11:44:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34374 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726619AbgKRQmw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 11:42:52 -0500
-IronPort-SDR: q06xIyOus30q8nkAaXf8dfa+FjvS0Cd7K7LkMASNAoxrsuEy7ilyY79ZMZSLFP5kRcZsgtj4r9
- yIP++7VrrENw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9809"; a="232758048"
-X-IronPort-AV: E=Sophos;i="5.77,488,1596524400"; 
-   d="scan'208";a="232758048"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2020 08:42:50 -0800
-IronPort-SDR: le//3P3UwJScKmJrckCbQ5lBNBAiRDt9/uySHHbgDJPj8s6LxGqeEfpASwYvZfPO5Rz/cU2Ipa
- pm5WmY2pMooA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,488,1596524400"; 
-   d="scan'208";a="311294584"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga007.fm.intel.com with ESMTP; 18 Nov 2020 08:42:49 -0800
-Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 18 Nov 2020 08:42:48 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Wed, 18 Nov 2020 08:42:48 -0800
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.1713.5; Wed, 18 Nov 2020 08:42:48 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CQm3Wjv4gr5/FdCtzenLMmcd0kz6D1GTjD3KwWLdXT0K79rrYTHGnM3odQEbMbCvlmTYNFy14nIMVuSp+ncBGltjebVvAIWuHHRcxZIqQAr0GYrXmxYQqUAwT7O0URLfKt0sX5oiOSTROGzu9WCvYb1IXrSpmfD65hVOm7ZfrmkSpAMjrGDzg16pM2zl8Pm7FOn1XQDVkO6Ri0XcvRGKehueNDdxVhWIpsYJTqEfnWgpm4nm/wtvJwy6+hXPscql9STujsp80wx6F2LbTaq6igOPBzqg5EQhHiP2jtADC8hsM63uC1xI5a9w5qs3+M9IS9vb9EW2uWV0FSBftl3shw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YtTyEOMbwnQhJ16sGWtJbxkiLz3EER8MwV6kh/3jNyg=;
- b=d1a500vRUjYlt+5yl9di/hQOykrFEzLoQlxnaEjR+kJzCx/T0ZipEXmQD5U9jPD9SiKIpeU0CknNpYFJxb/aU5qTK8sXYgCmGQrLxiW1du7dMpCXKEAX9o3bNUvn8r3br8TXLyoqUhRPrhX5SnpEV2ja4fNYu4QgSgAeJX0Tfrb36fXFK8U37j+XSGP6rrFD4NAhAhWa9paI6M7alGRRfp6xDcA101hnxqHrVKmo+U2Ax62FgpZxDf5MTCQIN/1+lyzrxvOlf7rtw5NvZjWAbuAyY/tnTUCH3leyRhR6BEqTSX/4igE2jbz1XXpYtIYMBWZe00WlFeNyG/2fOXMHYA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YtTyEOMbwnQhJ16sGWtJbxkiLz3EER8MwV6kh/3jNyg=;
- b=O8/SmZCUvIkrXcPTDfBjrPSRGrq3+IvJVk6WQfo/H+jgpjef27omVdZ1t/+QdVb5QpY3+iRZ3sfxZ0fNrUXXZow5VGunHd9DRAaUFl//r2rb2FHa/3r3KUqyqoghFgiOP+SLlKm75bllWNZXY4A7ETtYsf8G351KLIABk8DKKcw=
-Received: from MN2PR11MB3565.namprd11.prod.outlook.com (2603:10b6:208:ea::31)
- by MN2PR11MB3902.namprd11.prod.outlook.com (2603:10b6:208:150::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3564.25; Wed, 18 Nov
- 2020 16:42:46 +0000
-Received: from MN2PR11MB3565.namprd11.prod.outlook.com
- ([fe80::1a1:48b0:c5b3:28bb]) by MN2PR11MB3565.namprd11.prod.outlook.com
- ([fe80::1a1:48b0:c5b3:28bb%6]) with mapi id 15.20.3589.020; Wed, 18 Nov 2020
- 16:42:46 +0000
-From:   "Kwapulinski, Piotr" <piotr.kwapulinski@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "Loktionov, Aleksandr" <aleksandr.loktionov@intel.com>,
-        "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: RE: [net-next 1/4] i40e: add support for PTP external synchronization
- clock
-Thread-Topic: [net-next 1/4] i40e: add support for PTP external
- synchronization clock
-Thread-Index: AQHWuhq1bQqAG8eeLUmr1UdRqZnptanLh96AgAKWk5A=
-Date:   Wed, 18 Nov 2020 16:42:46 +0000
-Message-ID: <MN2PR11MB3565041DE307A4FA48DCC5D0F3E10@MN2PR11MB3565.namprd11.prod.outlook.com>
-References: <20201114001057.2133426-1-anthony.l.nguyen@intel.com>
-        <20201114001057.2133426-2-anthony.l.nguyen@intel.com>
- <20201116170737.1688ebeb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201116170737.1688ebeb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.5.1.3
-dlp-reaction: no-action
-dlp-product: dlpe-windows
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [89.64.99.236]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: da4702c9-5426-48f8-389f-08d88be0faa3
-x-ms-traffictypediagnostic: MN2PR11MB3902:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR11MB39023684079CC822B59ACC33F3E10@MN2PR11MB3902.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: sCZMnS/1tYwfotGCAxTdyPDW9Z/afxLCEUF0S/YBmUqv2fG2pcdcjMt8CpT443gLgERY8koFUFGWTlZS5lD87vYDzQotOqudFJtU6bXkSjP2CEDCozT3AXbP2OrrKpBJE03Spiv77jTdA58p/b4RPmd5Ey4UII4BQH+ykNzD1I06dqHJAZbObXTrANK0Loosc9XMg0gIlWfPFNySxDOQbeR3TUxkpmmpdvAqZ0itXViyKb7jWhlSRdKfrK/HuLPCO0KpLhdZ2Ro5CWdXYY2mDyu9pn8qnCsrc/9bumu2uQCtT7K+hRq9CxjxvfDNO9B/gBzSTHFmwYXjWSpR5TArlA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR11MB3565.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(39860400002)(346002)(366004)(136003)(396003)(76116006)(9686003)(55016002)(71200400001)(52536014)(8676002)(6636002)(5660300002)(8936002)(186003)(4326008)(26005)(83380400001)(2906002)(54906003)(86362001)(33656002)(110136005)(6506007)(478600001)(66556008)(316002)(66946007)(66446008)(7696005)(64756008)(66476007);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: qT3EZNvOgf/GkHAoktn/rvxItgHy+vWSeBfKIBdTiiRNGYvPFVgordi7JrZ+0ChtcsXgMYX0RVocv+9Orzg43WR4+7G46aTdY6K+gq2nDMOYK2S6XfgazQrhKOdpfdsEgdgsx1PwfEJtNM+vX5URCqDyF3JYP0FoOkA2YRg91RwLUHwNCHxCHQJM2YZiczheErwvVKx9M2PLpmfvV/3vTWuhNg+SinpHIDBNmAQNXPl9ileXMuYghSz4SG/sE2bfR4Ucq3LHMoxDvcDRWTbOIdzC1dKlKI0sy2scDDdamC9u9NP0UGqx8ezRUaWuB43SwD7TwBRjdWLRilJqyHNK6pQULdWTDhBMPjybvGxsVOcxsdJ/86rnz3odixKl8jvWWwJKTKlzaRmVa4SF3oET7fQykd4tjlCGI8KtfI5i/WjtcivGHFSQ5JZI1LfNN2099jQjlUR9jG7XCFhVTU3Gu7FYt+TnzBZOMg7wef9gorabtMaoqr9LerzevmhtyKVH3gZcIHSikUYZQ9nRE4kZmQKXfOlMYZsDJB8P0g4CzNIYU7MsHAm9XL+p7xQEnVVTag5vJPHIysEc2Nt9Ck93sHSwiOZ1PsUt2J4Vb/aSXGHv1+y/dSIJRTNqw6NeW0dEbh3pdoSoDZdlLSgL/JRmOyi5hjH4Vz/cM1Ld2Yp9iNLmQXz92SkCEA5TvbhkJqZgApGQescf3oieKQj+i3F68FJE9e+eZBt9nVIWxnP5rge0gjxrbJTCDY2NCoJlZIqTChiMbjzrPv4q+douEPcC+RBmPoMFlQZP4VnkLDkRW+Du5kX7Af9vC64Qp080/tjB7bhIVnyt3qYVIlGhlx/7AOtl/ny1zoxVforPDoY4RL8OCZW4/Ev3Ch7Hqz61mv1Xq7lSNx/DzLaP4U1jo5fmUw==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726092AbgKRQo5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 11:44:57 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4DCB2208FE;
+        Wed, 18 Nov 2020 16:44:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605717896;
+        bh=y/mCOfrZHfKr2/U1eTKwpvHjjwDOsoXWVEPxClsf2Zg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ryYY1TErpcdbSqw0S7k5Ep88dSPaVVGG+dOMnPPZH22DMkvB+cG3L1HW7uvweS37/
+         qZjJL2mpWEZO9DkSWWpwjyTUjKIWlhLMCLdpibEHKC1FQcWVVbb8MeLzWH2dhDadhv
+         c6zkqzDHgFWKmnUh7Es+Is0UhXVM+JTT7oK6VsnY=
+Date:   Wed, 18 Nov 2020 08:44:55 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        davem <davem@davemloft.net>, Guillaume Nault <gnault@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>, lorenzo@kernel.org,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: Re: [PATCH net-next] ip_gre: remove CRC flag from dev features in
+ gre_gso_segment
+Message-ID: <20201118084455.10f903ec@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <CADvbK_eP4ap74vbZ64S8isYr5nz33ZdLB7qsyqd5zqqGV-rvWA@mail.gmail.com>
+References: <52ee1b515df977b68497b1b08290d00a22161279.1605518147.git.lucien.xin@gmail.com>
+        <20201117162952.29c1a699@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <CADvbK_eP4ap74vbZ64S8isYr5nz33ZdLB7qsyqd5zqqGV-rvWA@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR11MB3565.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: da4702c9-5426-48f8-389f-08d88be0faa3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Nov 2020 16:42:46.5332
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: n5b1mrJguX+w5VOh5w73KMTDfczCUmAquXFt/DlypgwCoyvhrxSiub7+CqEkdSdY+X2ZIhqbtgf4/JyhsMHUL0hpm2x4RYfHEEYOp48rA3E=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB3902
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->-----Original Message-----
->From: Jakub Kicinski <kuba@kernel.org>
->Sent: Tuesday, November 17, 2020 2:08 AM
->To: Nguyen, Anthony L <anthony.l.nguyen@intel.com>
->Cc: davem@davemloft.net; Kwapulinski, Piotr <piotr.kwapulinski@intel.com>;=
- netdev@vger.kernel.org; sassmann@redhat.com; Loktionov, Aleksandr <aleksan=
-dr.loktionov@intel.com>; Kubalewski, Arkadiusz <arkadiusz.kubalewski@intel.=
-com>; Andrew Bowers <andrewx.bowers@intel.com>; Richard Cochran <richardcoc=
-hran@gmail.com>; Vladimir Oltean <olteanv@gmail.com>
->Subject: Re: [net-next 1/4] i40e: add support for PTP external synchroniza=
-tion clock
->
->On Fri, 13 Nov 2020 16:10:54 -0800 Tony Nguyen wrote:
->> From: Piotr Kwapulinski <piotr.kwapulinski@intel.com>
->>
->> Add support for external synchronization clock via GPIOs.
->> 1PPS signals are handled via the dedicated 3 GPIOs: SDP3_2,
->> SDP3_3 and GPIO_4.
->> Previously it was not possible to use the external PTP synchronization
->> clock.
->
->Please _always_ CC Richard on PTP changes.
+On Wed, 18 Nov 2020 14:14:49 +0800 Xin Long wrote:
+> On Wed, Nov 18, 2020 at 8:29 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Mon, 16 Nov 2020 17:15:47 +0800 Xin Long wrote:  
+> > > This patch is to let it always do CRC checksum in sctp_gso_segment()
+> > > by removing CRC flag from the dev features in gre_gso_segment() for
+> > > SCTP over GRE, just as it does in Commit 527beb8ef9c0 ("udp: support
+> > > sctp over udp in skb_udp_tunnel_segment") for SCTP over UDP.
+> > >
+> > > It could set csum/csum_start in GSO CB properly in sctp_gso_segment()
+> > > after that commit, so it would do checksum with gso_make_checksum()
+> > > in gre_gso_segment(), and Commit 622e32b7d4a6 ("net: gre: recompute
+> > > gre csum for sctp over gre tunnels") can be reverted now.
+> > >
+> > > Signed-off-by: Xin Long <lucien.xin@gmail.com>  
+> >
+> > Makes sense, but does GRE tunnels don't always have a csum.  
+> Do you mean the GRE csum can be offloaded? If so, it seems for GRE tunnel
+> we need the similar one as:
+> 
+> commit 4bcb877d257c87298aedead1ffeaba0d5df1991d
+> Author: Tom Herbert <therbert@google.com>
+> Date:   Tue Nov 4 09:06:52 2014 -0800
+> 
+>     udp: Offload outer UDP tunnel csum if available
+> 
+> I will confirm and implement it in another patch.
+> 
+> >
+> > Is the current hardware not capable of generating CRC csums over
+> > encapsulated patches at all?  
+> There is, but very rare. The thing is after doing CRC csum, the outer
+> GRE/UDP checksum will have to be recomputed, as it's NOT zero after
+> all fields for CRC scum are summed, which is different from the
+> common checksum. So if it's a GRE/UDP tunnel, the inner CRC csum
+> has to be done there even if the HW supports its offload.
 
-Sure
+Ack, my point is that for UDP tunnels (at least with IPv4) the UDP
+checksum is optional (should be ignored if the header field is 0),
+and for GRE checksum is optional and it's presence is indicated by 
+a bit in the header IIRC.
 
->
->
->> diff --git a/drivers/net/ethernet/intel/i40e/i40e.h
->> b/drivers/net/ethernet/intel/i40e/i40e.h
->> index 537300e762f0..8f5eecbff3d6 100644
->> --- a/drivers/net/ethernet/intel/i40e/i40e.h
->> +++ b/drivers/net/ethernet/intel/i40e/i40e.h
->> @@ -196,6 +196,11 @@ enum i40e_fd_stat_idx {  #define
->> I40E_FD_ATR_TUNNEL_STAT_IDX(pf_id) \
->>                      (I40E_FD_STAT_PF_IDX(pf_id) + I40E_FD_STAT_ATR_TUNN=
-EL)
->>
->> +/* get PTP pins for ioctl */
->> +#define SIOCGPINS   (SIOCDEVPRIVATE + 0)
->> +/* set PTP pins for ioctl */
->> +#define SIOCSPINS   (SIOCDEVPRIVATE + 1)
->
->This is unexpected.. is it really normal to declare private device IOCTLs =
-to configure PPS pins? Or are you just exposing this so you're able to play=
- with GPIOs from user space?
+So if the HW can compute the CRC csum based on offsets, without parsing
+the packet, it should be able to do the CRC on tunneled packets w/o
+checksum in the outer header.
 
-Right, this should not go upstream.
-
->
->>  /* The following structure contains the data parsed from the user-defin=
-ed
->>   * field of the ethtool_rx_flow_spec structure.
->>   */
->> @@ -344,7 +349,6 @@ struct i40e_ddp_old_profile_list {
->>                                           I40E_FLEX_SET_FSIZE(fsize) | \
->>                                           I40E_FLEX_SET_SRC_WORD(src))
->>
->> -
->
->Please move all the empty line removal to a separate patch.
->
->>  #define I40E_MAX_FLEX_SRC_OFFSET 0x1F
->>
->>  /* macros related to GLQF_ORT */
->
->> @@ -2692,7 +2692,15 @@ int i40e_ioctl(struct net_device *netdev, struct =
-ifreq *ifr, int cmd)
->>      case SIOCGHWTSTAMP:
->>              return i40e_ptp_get_ts_config(pf, ifr);
->>      case SIOCSHWTSTAMP:
->> +            if (!capable(CAP_SYS_ADMIN))
->> +                    return -EACCES;
->
->If you needed this, this should be a fix for net. But you don't, core chec=
-ks it.
->
->>              return i40e_ptp_set_ts_config(pf, ifr);
->> +    case SIOCSPINS:
->> +            if (!capable(CAP_SYS_ADMIN))
->> +                    return -EACCES;
->> +            return i40e_ptp_set_pins_ioctl(pf, ifr);
->> +    case SIOCGPINS:
->> +            return i40e_ptp_get_pins(pf, ifr);
->>      default:
->>              return -EOPNOTSUPP;
->>      }
->
-
-I'll provide and updated patch.
-Thank you for review.
+IDK how realistic this is, whether it'd work today, and whether we care
+about it...
