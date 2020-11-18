@@ -2,117 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47F9F2B754E
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 05:11:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB4AE2B7562
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 05:29:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727852AbgKRELD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 23:11:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56716 "EHLO
+        id S1726545AbgKRE3L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 23:29:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726743AbgKRELC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 23:11:02 -0500
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E34C0613D4;
-        Tue, 17 Nov 2020 20:11:01 -0800 (PST)
-Received: by mail-lf1-x143.google.com with SMTP id f11so1009347lfs.3;
-        Tue, 17 Nov 2020 20:11:01 -0800 (PST)
+        with ESMTP id S1725446AbgKRE3L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 23:29:11 -0500
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ABEAC0613D4;
+        Tue, 17 Nov 2020 20:29:11 -0800 (PST)
+Received: by mail-yb1-xb41.google.com with SMTP id t33so454951ybd.0;
+        Tue, 17 Nov 2020 20:29:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
          :cc;
-        bh=QiZ+hPWcgRrSJYrRI/DcwNjpknvcfyeQfNBRbOUcAZo=;
-        b=kCdq/mUuaZJ6pc88zsrgz7uqcd0wPOwknm5DTCqlhoCmvs/754Xfkj1NmHP7Q79d/F
-         +IvidmjpocDik3B8lo3Kg16Y2caHKLwyiUr6G4dkS6GcTbRJ6/myby64lpQNSyxer+T/
-         MuyE2e+Pt1GeN7ZpPh4CCSPW8jO5DKGt66IqFP0XCfXP8/eORwv/ock173v6lxAB2H8b
-         UfwzrHn9LR0VevS5E4IzV/vf8KyMoL1otvHuTu7LG9PLYaKx0fvJ8ajw/tecwW7Z2dg4
-         v8sf96RAFzagHJZlzw+QZz2rRE95V0wyEfzICI6SpJ7FCtW/D0NVsW55RV2iKma7YMpv
-         JPdg==
+        bh=SwvNaokgke4kbvNhyfkXcbbtZGBu7XJmcZ67g6MirT8=;
+        b=fdhAdSYt+4EQsUVcK5B6NqmI6E/qCHzhtEF6JGYnDzjCIzu8ZHDWMhjJF21LmPetkQ
+         YumukWmaV7VdD5plZFLqQJ9EjRqsR9iFIeCL2o0HdqSPSjP23oxPC5EiTZnQoklJJSMw
+         k+gXTGhSjr2HPncinIhaKsJEfmTbLwPLHisX8ocpR+fBRLOipFID528g32jLvp8yh6pL
+         23Lr29nB9xmsE8oTx1WHIg56i1KF3Sako43pFQLqGHOc+afHxn+wHByXBtk7706sWZHb
+         /W47t8xfW+W/4HMBR599MeuMtNgHNsx9AwDx69k4xKGKP6znAcn7KVCoA+pxYNA/G/Er
+         aREA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
          :message-id:subject:to:cc;
-        bh=QiZ+hPWcgRrSJYrRI/DcwNjpknvcfyeQfNBRbOUcAZo=;
-        b=oXPDUzeI4TLgzvj5j7bjzuIMdrjAvtIwKgJeFH2PzXK8T2vGeevOllNitBS/w5XxLv
-         D7N/SWyTniXIZY6LnpqbY9yBkGHW3JLJycHwR65hS9ZFUOoEQq2MJNKMuZe5tf5Htdy4
-         VHMwk+acWU3eqWJoPQ82sU/JJLyi0syhQSuF47WlHZkWowGiXcHBQgI1Noy99Jhdm+XM
-         mWCIsfFRZkHt0FpXtS2//xDJUCG5BAyiqAMR72tnYCvTWw1vaLZULzKj5hrXzKYCojB4
-         w3WxeyVgZA0LEnqXvDV9xpSp10w+RLII6PuX1DxkKhAeNHZoG+5eQqi+Z6u8p4pfrCD/
-         eBnw==
-X-Gm-Message-State: AOAM530XJus0py8VMXUrpHBTslUg5ygh2jCQ2eiqcvZApdFdGCf9QhNp
-        qG8/0fcscSv70uC+tgHPPjpuBj/SvM32VXVbfBwmdT3H5Ew=
-X-Google-Smtp-Source: ABdhPJyW1BjaZImKMrTr6fljnV6J3SiCCfled+e4ZYa2bF2lU5eUh+EjQDFQFYiYjSQGKKB9MnnnpGkOCQnMcPkFe0o=
-X-Received: by 2002:ac2:544d:: with SMTP id d13mr2792930lfn.500.1605672659630;
- Tue, 17 Nov 2020 20:10:59 -0800 (PST)
+        bh=SwvNaokgke4kbvNhyfkXcbbtZGBu7XJmcZ67g6MirT8=;
+        b=b8lhTjPwZMrTJmUW5+mw49OTd+5lNW2igPCaysCF17moS6+GyeP5qJRTJDTQO7hVcJ
+         NSlAuzX3VjNo+mgwJTUofyrCyNas7a9a7X6URxHg8FJPFQwC1Knxg+EEPXSmZDTL618l
+         QlNGzPoGW4YPFzNGwun5i2id0CdbVtKnY+MzXu7mgPy0rH6h+jKwXDpWA6f+c1/xlBnY
+         RtZo0IXZ7u42SOg6X5PMlv3nDSRchywCEsdAXd4sL3eupKLCqjF4ubIkubLZhMBmdFvq
+         vAUZ0jW4/jYSWtRuvhwVpbOLVgNk3y1ZZ1fFy9HMlCcv2twMwfYT7XRkZ61nsLnySNcn
+         OJCg==
+X-Gm-Message-State: AOAM532hEtosV3BoFtwv7tUscLozQaQ5Tv7OgxL3ubsPOe9Cw1bxlD0h
+        76o3hBsd3WPSV1m5qzph02Ot0rk8hQBHucOjH9V3Lz77wos=
+X-Google-Smtp-Source: ABdhPJw3rS6F7ro88tO9pO1AtkwV/oKzq+tp6Vfeh/1DzhsCy+WgLCvx0Xl1lsyyjcqr4FYa7f1OxyzsJqERfdgRQJE=
+X-Received: by 2002:a25:2f84:: with SMTP id v126mr4645382ybv.509.1605673750464;
+ Tue, 17 Nov 2020 20:29:10 -0800 (PST)
 MIME-Version: 1.0
-References: <20201110084758.115617-1-yinxin_1989@aliyun.com>
-In-Reply-To: <20201110084758.115617-1-yinxin_1989@aliyun.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 17 Nov 2020 20:10:48 -0800
-Message-ID: <CAADnVQK-XuFi0yZuWa+upEeFypKYNr7XHc-8JhGtfYzFPLni9g@mail.gmail.com>
-Subject: Re: [PATCH] bpf:Fix update dirty data in lru percpu hash maps
-To:     Xin Yin <yinxin_1989@aliyun.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Received: by 2002:a25:9785:0:0:0:0:0 with HTTP; Tue, 17 Nov 2020 20:29:09
+ -0800 (PST)
+In-Reply-To: <20201117175758.3befce93@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+References: <CGME20201117053759epcms2p80e47c3e9be01d564c775c045a42678f7@epcms2p8>
+ <20201117053759epcms2p80e47c3e9be01d564c775c045a42678f7@epcms2p8> <20201117175758.3befce93@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Bongsu Jeon <bs.jeon87@gmail.com>
+Date:   Wed, 18 Nov 2020 13:29:09 +0900
+Message-ID: <CAEx-X7cjKNAYzpifOX=qaqpNVSuGEE6t69R=Zf=DZjFrp9PZ4w@mail.gmail.com>
+Subject: Re: [PATCH net-next] net/nfc/nci: Support NCI 2.x initial sequence
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Bongsu Jeon <bongsu.jeon@samsung.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 10, 2020 at 1:04 AM Xin Yin <yinxin_1989@aliyun.com> wrote:
+On 11/18/20, Jakub Kicinski <kuba@kernel.org> wrote:
+> On Tue, 17 Nov 2020 14:37:59 +0900 Bongsu Jeon wrote:
+>> implement the NCI 2.x initial sequence to support NCI 2.x NFCC.
+>> Since NCI 2.0, CORE_RESET and CORE_INIT sequence have been changed.
+>> If NFCEE supports NCI 2.x, then NCI 2.x initial sequence will work.
+>>
+>> In NCI 1.0, Initial sequence and payloads are as below:
+>> (DH)                     (NFCC)
+>>  |  -- CORE_RESET_CMD --> |
+>>  |  <-- CORE_RESET_RSP -- |
+>>  |  -- CORE_INIT_CMD -->  |
+>>  |  <-- CORE_INIT_RSP --  |
+>>  CORE_RESET_RSP payloads are Status, NCI version, Configuration Status.
+>>  CORE_INIT_CMD payloads are empty.
+>>  CORE_INIT_RSP payloads are Status, NFCC Features,
+>>     Number of Supported RF Interfaces, Supported RF Interface,
+>>     Max Logical Connections, Max Routing table Size,
+>>     Max Control Packet Payload Size, Max Size for Large Parameters,
+>>     Manufacturer ID, Manufacturer Specific Information.
+>>
+>> In NCI 2.0, Initial Sequence and Parameters are as below:
+>> (DH)                     (NFCC)
+>>  |  -- CORE_RESET_CMD --> |
+>>  |  <-- CORE_RESET_RSP -- |
+>>  |  <-- CORE_RESET_NTF -- |
+>>  |  -- CORE_INIT_CMD -->  |
+>>  |  <-- CORE_INIT_RSP --  |
+>>  CORE_RESET_RSP payloads are Status.
+>>  CORE_RESET_NTF payloads are Reset Trigger,
+>>     Configuration Status, NCI Version, Manufacturer ID,
+>>     Manufacturer Specific Information Length,
+>>     Manufacturer Specific Information.
+>>  CORE_INIT_CMD payloads are Feature1, Feature2.
+>>  CORE_INIT_RSP payloads are Status, NFCC Features,
+>>     Max Logical Connections, Max Routing Table Size,
+>>     Max Control Packet Payload Size,
+>>     Max Data Packet Payload Size of the Static HCI Connection,
+>>     Number of Credits of the Static HCI Connection,
+>>     Max NFC-V RF Frame Size, Number of Supported RF Interfaces,
+>>     Supported RF Interfaces.
+>>
+>> Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
 >
-> For lru_percpu_map update elem, prealloc_lru_pop() may return
-> an unclear elem, if the func called by bpf prog and "onallcpus"
-> set to false, it may update an elem whith dirty data.
+> Please fix the following sparse (build with C=1) warning:
 >
-> Clear percpu value of the elem, before use it.
+> net/nfc/nci/ntf.c:42:17: warning: cast to restricted __le32
 >
-> Signed-off-by: Xin Yin <yinxin_1989@aliyun.com>
+>> +	__u8 status = 0;
+>
+> Please don't use the __u types in the normal kernel code, those are
+> types for user space ABI.
+>
 
-The alternative fix commit d3bec0138bfb ("bpf: Zero-fill re-used
-per-cpu map element")
-was already merged.
-Please double check that it fixes your test.
-
-> ---
->  kernel/bpf/hashtab.c | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
->
-> diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-> index 728ffec52cf3..b1f781ec20b6 100644
-> --- a/kernel/bpf/hashtab.c
-> +++ b/kernel/bpf/hashtab.c
-> @@ -709,6 +709,16 @@ static void pcpu_copy_value(struct bpf_htab *htab, void __percpu *pptr,
->         }
->  }
->
-> +static void pcpu_init_value(struct bpf_htab *htab, void __percpu *pptr)
-> +{
-> +       u32 size = round_up(htab->map.value_size, 8);
-> +       int cpu;
-> +
-> +       for_each_possible_cpu(cpu) {
-> +               memset(per_cpu_ptr(pptr, cpu), 0, size);
-> +       }
-> +}
-> +
->  static bool fd_htab_map_needs_adjust(const struct bpf_htab *htab)
->  {
->         return htab->map.map_type == BPF_MAP_TYPE_HASH_OF_MAPS &&
-> @@ -1075,6 +1085,9 @@ static int __htab_lru_percpu_map_update_elem(struct bpf_map *map, void *key,
->                 pcpu_copy_value(htab, htab_elem_get_ptr(l_old, key_size),
->                                 value, onallcpus);
->         } else {
-> +               if (!onallcpus)
-> +                       pcpu_init_value(htab,
-> +                                       htab_elem_get_ptr(l_new, key_size));
->                 pcpu_copy_value(htab, htab_elem_get_ptr(l_new, key_size),
->                                 value, onallcpus);
->                 hlist_nulls_add_head_rcu(&l_new->hash_node, head);
-> --
-> 2.19.5
->
+Thanks for reviewing my patch.
+I will change the code to fix it
+and then resend my patch with version2.
