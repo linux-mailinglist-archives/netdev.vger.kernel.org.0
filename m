@@ -2,115 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 958422B7E32
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 14:19:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 082F52B7E39
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 14:22:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726315AbgKRNSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 08:18:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56372 "EHLO
+        id S1726231AbgKRNWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 08:22:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725772AbgKRNSv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 08:18:51 -0500
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE2A2C0613D4;
-        Wed, 18 Nov 2020 05:18:51 -0800 (PST)
-Received: by mail-pf1-x443.google.com with SMTP id g7so1421995pfc.2;
-        Wed, 18 Nov 2020 05:18:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=SwgmCoRQqgDi9SwspMTBUmX6vuFIHjell7qTbg11fzE=;
-        b=J8LYV8vaid4hvw7F9n9qrI/Ctn5Y9xYMaCpcVdxPTfdxbxhtE3qBy3JowQgQVGYuPB
-         GM7Sv5KpvlA9OBnlfOuJcEr/vGmXIlvMix9pYM1xhsQtEA/kS/8/caXJP6xnJPdyPFtH
-         xjjtuvbEefrv8MKVAuLy/PUlATfuWp9gqV6eB40LVEVQctNPoYB6VVSeCrLz8qXVRkni
-         PHsCz0Na8goCCXC1UCpInTgopvApd0Y47GYFe1EQxraytSZwOQFBt19sU5xoEK+q03z2
-         RIOaNlBJETigQXj9aLqZ3h741xJtNqjajlCx+3fDInCFRJPnfzw4LNg6dA3Izo70VjmZ
-         BJCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=SwgmCoRQqgDi9SwspMTBUmX6vuFIHjell7qTbg11fzE=;
-        b=KGmIdevIJQPKIGBBczK29YVejCR/KwCjLtIEIV1wA/zXj+IIukCll5uTro/subcvph
-         6p+rjoFVp6oveP8sX7/RJIoudzO1LSFue7WqY2y3856U21HfPt39MeG0Ka7pdrDRd1dP
-         GBGsRMypHU3H1bFcjvjGPS/+kDp4n+iRwNmx+sm4hGU9xO3TDFNSYGiLcCmRn22xXk3x
-         rnKu95FzKMVvxf4hRzAH9Ikr9LPhQKpvBC2l1IIiRO+TMQsjh5IQJdXG10AHnPHj0UuJ
-         XOMv6Vg+r+u8XA4DVi+dNct9Rf1hIuhVXRxXnwaT7bKtIPJ/mE2mMig7k9oE2jrGk9JR
-         OudA==
-X-Gm-Message-State: AOAM530CWBrS4NW6B65WDJOYuMUEVwM4jLZgn6nzzyecBKcConTPAudw
-        vIpvqAUbBjwfyzwSpMCwbaYZtUqjRoA=
-X-Google-Smtp-Source: ABdhPJyoqK2ra5D+t5eEXvemIoZnKKGCufzzjUJO7W3OTTnydsIB2jUSBHacZQAWOPrkCZTeODUESw==
-X-Received: by 2002:a62:75c6:0:b029:18a:d510:ff60 with SMTP id q189-20020a6275c60000b029018ad510ff60mr4533830pfc.35.1605705531280;
-        Wed, 18 Nov 2020 05:18:51 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id 131sm10228225pfw.117.2020.11.18.05.18.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Nov 2020 05:18:50 -0800 (PST)
-Date:   Wed, 18 Nov 2020 05:18:47 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Christian Eggers <ceggers@arri.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>
-Subject: Re: [PATCH net-next 1/4] net: ptp: introduce enum ptp_msg_type
-Message-ID: <20201118131847.GE23320@hoboy.vegasvil.org>
-References: <20201117193124.9789-1-ceggers@arri.de>
+        with ESMTP id S1725767AbgKRNWN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 08:22:13 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59CEBC0613D4;
+        Wed, 18 Nov 2020 05:22:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=304dWlgV4M2wRi89v82SUM37CJvIM8VxHmQweeYvBaI=; b=WJibo/P6oUNW82KjoGVgCSC64B
+        vgFXenT8KrfcbWPEy3tncLCkyu21yLHxG2PHoRAG+3g/hhE1hILFlYMS4ES9flVs4G6BCdU5Yqr7v
+        kw5wjRgJusQVf3KCWQg+67hz9+OVvkN2xQ4U2GKoSFqrhOJmYegImZeIVfWFDy+5V60Pe6pDgsEy3
+        Cqf+zV10UPR0lMssdIi8ic+kHfv5b/2YX8aWcuCctA1SgQQebqvYTqCGNCY7jw6nHNuyNhOAl8H9R
+        pjEQe3PFGzrYVzpggre8W0yZicwBGvO/P7DbbC2LOErQnywtsaNlvtkpr9dYuMLZ4SLj28w2jURt2
+        V5KFJk5g==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kfNP4-0008CO-0n; Wed, 18 Nov 2020 13:21:42 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 17D0D3012DC;
+        Wed, 18 Nov 2020 14:21:37 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 002E5200E0A39; Wed, 18 Nov 2020 14:21:36 +0100 (CET)
+Date:   Wed, 18 Nov 2020 14:21:36 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Matt Mullins <mmullins@mmlx.us>,
+        Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        linux-toolchains@vger.kernel.org
+Subject: violating function pointer signature
+Message-ID: <20201118132136.GJ3121378@hirez.programming.kicks-ass.net>
+References: <20201116175107.02db396d@gandalf.local.home>
+ <47463878.48157.1605640510560.JavaMail.zimbra@efficios.com>
+ <20201117142145.43194f1a@gandalf.local.home>
+ <375636043.48251.1605642440621.JavaMail.zimbra@efficios.com>
+ <20201117153451.3015c5c9@gandalf.local.home>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201117193124.9789-1-ceggers@arri.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20201117153451.3015c5c9@gandalf.local.home>
+X-Bad-Reply: References and In-Reply-To but no 'Re:' in Subject.
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 17, 2020 at 08:31:21PM +0100, Christian Eggers wrote:
-> Using a PTP wide enum will obsolete different driver internal defines
-> and uses of magic numbers.
+On Tue, Nov 17, 2020 at 03:34:51PM -0500, Steven Rostedt wrote:
 
-I like the general idea, but ...
+> > > Since all tracepoints callbacks have at least one parameter (__data), we
+> > > could declare tp_stub_func as:
+> > > 
+> > > static void tp_stub_func(void *data, ...)
+> > > {
+> > >	return;
+> > > }
+> > > 
+> > > And now C knows that tp_stub_func() can be called with one or more
+> > > parameters, and had better be able to deal with it!  
+> > 
+> > AFAIU this won't work.
+> > 
+> > C99 6.5.2.2 Function calls
+> > 
+> > "If the function is defined with a type that is not compatible with the type (of the
+> > expression) pointed to by the expression that denotes the called function, the behavior is
+> > undefined."
+> 
+> But is it really a problem in practice. I'm sure we could create an objtool
+> function to check to make sure we don't break anything at build time.
 
-> +enum ptp_msg_type {
-> +	PTP_MSGTYPE_SYNC        = 0x0,
-> +	PTP_MSGTYPE_DELAY_REQ   = 0x1,
-> +	PTP_MSGTYPE_PDELAY_REQ  = 0x2,
-> +	PTP_MSGTYPE_PDELAY_RESP = 0x3,
-> +};
+I think that as long as the function is completely empty (it never
+touches any of the arguments) this should work in practise.
 
-I would argue that these should be #defines.  After all, they are
-protocol data fields and not an abstract enumerated types.
+That is:
 
-For example ...
+  void tp_nop_func(void) { }
 
-> @@ -103,10 +110,10 @@ struct ptp_header *ptp_parse_header(struct sk_buff *skb, unsigned int type);
->   *
->   * Return: The message type
->   */
-> -static inline u8 ptp_get_msgtype(const struct ptp_header *hdr,
-> +static inline enum ptp_msg_type ptp_get_msgtype(const struct ptp_header *hdr,
->  				 unsigned int type)
->  {
-> -	u8 msgtype;
-> +	enum ptp_msg_type msgtype;
->  
->  	if (unlikely(type & PTP_CLASS_V1)) {
->  		/* msg type is located at the control field for ptp v1 */
+can be used as an argument to any function pointer that has a void
+return. In fact, I already do that, grep for __static_call_nop().
 
-		msgtype = hdr->control;
-	} else {
-		msgtype = hdr->tsmt & 0x0f;
-
-This assigns directly from protocol data into an enumerated type.
-
-	}
-
-	return msgtype;
-
-Thanks,
-Richard
-
+I'm not sure what the LLVM-CFI crud makes of it, but that's their
+problem.
