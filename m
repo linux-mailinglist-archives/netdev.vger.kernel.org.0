@@ -2,108 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66A102B7F4F
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 15:24:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89ECB2B7F58
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 15:28:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726628AbgKROWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 09:22:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53182 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726019AbgKROWe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 09:22:34 -0500
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726918AbgKROZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 09:25:09 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32564 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726590AbgKROZJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 09:25:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605709507;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=XlUtYN9I1jTM0ZwVMsk+cNHUe7M2ezNY7akFMHeqpTc=;
+        b=XDPBdIvfO/oLHxXPjIg1dAq479Fc5Xo3TlKSqP1qudl7D+pIuKmLwYf5vUJgQ0O9IMJAz5
+        mF2X4hftEE1CDdJV/NkzgfN3cbXvQQCVHoTxwvgnIDqhdzd3Agi9h98R8slh/n3Zdm/yAI
+        dmVSsdQc1k0/Mq2FPloxCGSseTogh0Y=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-207-Mhtd6tqoOYiLM2WoSOC8cw-1; Wed, 18 Nov 2020 09:25:05 -0500
+X-MC-Unique: Mhtd6tqoOYiLM2WoSOC8cw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8D40D246AA;
-        Wed, 18 Nov 2020 14:22:30 +0000 (UTC)
-Date:   Wed, 18 Nov 2020 09:22:28 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Florian Weimer <fw@deneb.enyo.de>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Matt Mullins <mmullins@mmlx.us>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        linux-toolchains@vger.kernel.org
-Subject: Re: violating function pointer signature
-Message-ID: <20201118092228.4f6e5930@gandalf.local.home>
-In-Reply-To: <87h7pmwyta.fsf@mid.deneb.enyo.de>
-References: <20201116175107.02db396d@gandalf.local.home>
-        <47463878.48157.1605640510560.JavaMail.zimbra@efficios.com>
-        <20201117142145.43194f1a@gandalf.local.home>
-        <375636043.48251.1605642440621.JavaMail.zimbra@efficios.com>
-        <20201117153451.3015c5c9@gandalf.local.home>
-        <20201118132136.GJ3121378@hirez.programming.kicks-ass.net>
-        <87h7pmwyta.fsf@mid.deneb.enyo.de>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5A50F64082;
+        Wed, 18 Nov 2020 14:25:03 +0000 (UTC)
+Received: from renaissance-vector.redhat.com (ovpn-113-239.ams2.redhat.com [10.36.113.239])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 74A195D6AC;
+        Wed, 18 Nov 2020 14:25:02 +0000 (UTC)
+From:   Andrea Claudi <aclaudi@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@gmail.com
+Subject: [PATCH iproute2] ss: mptcp: fix add_addr_accepted stat print
+Date:   Wed, 18 Nov 2020 15:24:18 +0100
+Message-Id: <a4925e2d0fa0e07a14bbef3744594d299e619249.1605708791.git.aclaudi@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Nov 2020 14:59:29 +0100
-Florian Weimer <fw@deneb.enyo.de> wrote:
+add_addr_accepted value is not printed if add_addr_signal value is 0.
+Fix this properly looking for add_addr_accepted value, instead.
 
-> * Peter Zijlstra:
-> 
-> > I think that as long as the function is completely empty (it never
-> > touches any of the arguments) this should work in practise.
-> >
-> > That is:
-> >
-> >   void tp_nop_func(void) { }
-> >
-> > can be used as an argument to any function pointer that has a void
-> > return. In fact, I already do that, grep for __static_call_nop().  
-> 
-> You can pass it as a function parameter, but in general, you cannot
-> call the function with a different prototype.  Even trivial
-> differences such as variadic vs non-variadic prototypes matter.
+Fixes: 9c3be2c0eee01 ("ss: mptcp: add msk diag interface support")
+Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+---
+ misc/ss.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-In this case, I don't believe we need to worry about that, for either
-tracepoints or static calls. As both don't have any variadic functions.
+diff --git a/misc/ss.c b/misc/ss.c
+index 77e1847ee2473..0593627b77e31 100644
+--- a/misc/ss.c
++++ b/misc/ss.c
+@@ -3136,7 +3136,7 @@ static void mptcp_stats_print(struct mptcp_info *s)
+ 		out(" subflows:%d", s->mptcpi_subflows);
+ 	if (s->mptcpi_add_addr_signal)
+ 		out(" add_addr_signal:%d", s->mptcpi_add_addr_signal);
+-	if (s->mptcpi_add_addr_signal)
++	if (s->mptcpi_add_addr_accepted)
+ 		out(" add_addr_accepted:%d", s->mptcpi_add_addr_accepted);
+ 	if (s->mptcpi_subflows_max)
+ 		out(" subflows_max:%d", s->mptcpi_subflows_max);
+-- 
+2.26.2
 
-The function prototypes are defined by macros. For tracepoints, it's
-TP_PROTO() and they require matching arguments. And to top it off, the
-functions defined, are added to an array of indirect functions and called
-separately. It would take a bit of work to even allow tracepoint callbacks
-to be variadic functions. The same is true for static calls I believe.
-
-Thus, all functions will be non-variadic in these cases.
-
-> 
-> The default Linux calling conventions are all of the cdecl family,
-> where the caller pops the argument off the stack.  You didn't quote
-> enough to context to tell whether other calling conventions matter in
-> your case.
-> 
-> > I'm not sure what the LLVM-CFI crud makes of it, but that's their
-> > problem.  
-> 
-> LTO can cause problems as well, particularly with whole-program
-> optimization.
-
-Again, for tracepoints and static calls that will likely not be an issue.
-Because tracepoint callbacks are function parameters. So are static calls.
-What happens is, when you update these locations, you pass in a function
-you want as a callback, and it's added to an array (and this code is used
-for all tracepoints with all different kinds of prototypes, as the function
-is simply a void pointer). Then at the call sites, the function pointers are
-typecast to the type of the callback function needed, and called.
-
-It basically can not be optimized even when looking at the entire kernel.
-
--- Steve
