@@ -2,113 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07B3E2B7BAE
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 11:48:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E49792B7BF4
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 11:59:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727758AbgKRKrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 05:47:13 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:54064 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727739AbgKRKrM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 05:47:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605696431;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YwZxwwPGug2FmlVJknT/fA/Ax4qLJ0AR2iLC3Jt+Az4=;
-        b=eZIABOmCC//MV4XV0ipLzI1/c4V1Y2HyGu3Refu3Wr/ayBKBHy2zci8H4eEFYulhq6Zt8D
-        fdjNIvEA3eA9uTZ+EU0RgDp7WxqifO/QCL0qhVNo0iT8lufK5YIlT7yDdfmij4R5vytB/p
-        RVopPjoJOCD25jIWXOLXeNQm4pUH1YA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-509-MLpPsVLWNSu5mc6CLNWcww-1; Wed, 18 Nov 2020 05:47:07 -0500
-X-MC-Unique: MLpPsVLWNSu5mc6CLNWcww-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 517CA1084C99;
-        Wed, 18 Nov 2020 10:47:05 +0000 (UTC)
-Received: from ovpn-115-70.ams2.redhat.com (ovpn-115-70.ams2.redhat.com [10.36.115.70])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D94675D707;
-        Wed, 18 Nov 2020 10:47:01 +0000 (UTC)
-Message-ID: <f29be74792c7711e0a157a6a024d3998d30be4dd.camel@redhat.com>
-Subject: Re: [PATCH] net/core: use xx_zalloc instead xx_alloc and memset
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Tian Tao <tiantao6@hisilicon.com>, davem@davemloft.net,
-        kuba@kernel.org, linmiaohe@huawei.com, martin.varghese@nokia.com,
-        pshelar@ovn.org, fw@strlen.de, viro@zeniv.linux.org.uk,
-        gnault@redhat.com, steffen.klassert@secunet.com,
-        kyk.segfault@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 18 Nov 2020 11:47:00 +0100
-In-Reply-To: <1605687308-57318-1-git-send-email-tiantao6@hisilicon.com>
-References: <1605687308-57318-1-git-send-email-tiantao6@hisilicon.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1726714AbgKRK7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 05:59:19 -0500
+Received: from mail-io1-f71.google.com ([209.85.166.71]:48498 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725446AbgKRK7S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 05:59:18 -0500
+Received: by mail-io1-f71.google.com with SMTP id y12so964516iop.15
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 02:59:18 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=sA9gdXw4t4IuhfSDdmYIEIjhjXhoEBhwIdCjL2ypdac=;
+        b=OAevgBvX8WetCOoAuiXMv8Q4u4tTppoUVtRvFNGcNeLofjkSjNCwuTlMj46P4499Ak
+         7aEQ7gomFc/HsOBeWldNGz+es+Cr0B9qYr+vArv1Yo3KOXmIL541XMAnLGBCAW4qkoV7
+         nijh7z4joxdEMgm3NMcew+VDj0XzG8MVwQB2/K0ADY7WXy8sHTS5xp1iriECh5QPFcTJ
+         lX5xXe71CQipOqRpIvjX6uRrmV6/g8zYf9s/0sLOJdiHPxgkAhb0sIYDbyKSFZdlkdUz
+         FleFN97Q3izQMLlls9hq/qr+9RlkPtFKb6lKrh76eBFaxztzGdLID4K1Dp/SYZXoYmBH
+         30Aw==
+X-Gm-Message-State: AOAM532NN819H0h9TuEkfRushMqaTvL+x7I0ufudsiamNfvUV7IH4cVe
+        EeU9VcWB6VNIFSCFhwSapaIa6XjabsRJ1WVn69Gr+2AG0Yi7
+X-Google-Smtp-Source: ABdhPJzY2UXmJGIuyGnQxeo99Kf52HVL2fBE7080lmPCgCuQSiT1cFgQ53tDaHwNkqlJQgox3vDR+MWI1u/m2xCmN5RkAYXX6mZo
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Received: by 2002:a92:ba14:: with SMTP id o20mr16180289ili.76.1605697157983;
+ Wed, 18 Nov 2020 02:59:17 -0800 (PST)
+Date:   Wed, 18 Nov 2020 02:59:17 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b7f48605b45f80c5@google.com>
+Subject: WARNING in mptcp_reset_timer
+From:   syzbot <syzbot+42aa53dafb66a07e5a24@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
+        mptcp@lists.01.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-11-18 at 16:15 +0800, Tian Tao wrote:
-> use kmem_cache_zalloc instead kmem_cache_alloc and memset.
-> 
-> Signed-off-by: Tian Tao <tiantao6@hisilicon.com>
-> ---
->  net/core/skbuff.c | 10 +++-------
->  1 file changed, 3 insertions(+), 7 deletions(-)
-> 
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index c9a5a3c..3449c1c 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -313,12 +313,10 @@ struct sk_buff *__build_skb(void *data, unsigned int frag_size)
->  {
->  	struct sk_buff *skb;
->  
-> -	skb = kmem_cache_alloc(skbuff_head_cache, GFP_ATOMIC);
-> +	skb = kmem_cache_zalloc(skbuff_head_cache, GFP_ATOMIC);
+Hello,
 
-This will zeroed a slighly larger amount of data compared to the
-existing code: offsetof(struct sk_buff, tail) == 182, sizeof(struct
-sk_buff) == 224.
+syzbot found the following issue on:
 
->  	if (unlikely(!skb))
->  		return NULL;
->  
-> -	memset(skb, 0, offsetof(struct sk_buff, tail));
+HEAD commit:    7c8ca812 Add linux-next specific files for 20201117
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=14ccfce2500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=ff4bc71371dc5b13
+dashboard link: https://syzkaller.appspot.com/bug?extid=42aa53dafb66a07e5a24
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1342e36e500000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17f29bba500000
 
-Additionally this leverages constant argument optimizations.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+42aa53dafb66a07e5a24@syzkaller.appspotmail.com
 
-Possibly overall not noticeable, but this code path is quite critical
-performance wise.
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 8718 at net/mptcp/protocol.c:719 mptcp_reset_timer+0x12a/0x160 net/mptcp/protocol.c:719
+Modules linked in:
+CPU: 1 PID: 8718 Comm: kworker/1:3 Not tainted 5.10.0-rc4-next-20201117-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events mptcp_worker
+RIP: 0010:mptcp_reset_timer+0x12a/0x160 net/mptcp/protocol.c:719
+Code: e8 0b 87 43 fe e8 46 71 c5 f8 48 b8 00 00 00 00 00 fc ff df 48 c7 04 03 00 00 00 00 48 83 c4 40 5b 5d 41 5c c3 e8 26 71 c5 f8 <0f> 0b 41 bc 14 00 00 00 eb 98 e8 c7 d3 07 f9 e9 30 ff ff ff 48 c7
+RSP: 0018:ffffc90001adfa38 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 1ffff9200035bf47 RCX: ffffffff88ab2357
+RDX: ffff88801ae14f80 RSI: ffffffff88ab23ba RDI: 0000000000000007
+RBP: ffff888024200000 R08: 0000000000000000 R09: ffff88802420084f
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000281400 R14: ffff888024200000 R15: dffffc0000000000
+FS:  0000000000000000(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f994238f010 CR3: 0000000028d92000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ mptcp_push_pending+0x1351/0x17c0 net/mptcp/protocol.c:1266
+ mptcp_worker+0x385/0x1a10 net/mptcp/protocol.c:1877
+ process_one_work+0x933/0x15a0 kernel/workqueue.c:2272
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2418
+ kthread+0x3af/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
 
-I would avoid the above.
-> -
->  	return __build_skb_around(skb, data, frag_size);
->  }
->  
-> @@ -6170,12 +6168,10 @@ static void *skb_ext_get_ptr(struct skb_ext *ext, enum skb_ext_id id)
->   */
->  struct skb_ext *__skb_ext_alloc(gfp_t flags)
->  {
-> -	struct skb_ext *new = kmem_cache_alloc(skbuff_ext_cache, flags);
-> +	struct skb_ext *new = kmem_cache_zalloc(skbuff_ext_cache, flags);
->  
-> -	if (new) {
-> -		memset(new->offset, 0, sizeof(new->offset));
 
-Similar to the above, but additionally here the number of zeroed bytes
-changes a lot and a few additional cachelines will be touched. The
-performance impact is likely relevant.
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Overall I think we should not do this.
-
-Thanks,
-
-Paolo
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
