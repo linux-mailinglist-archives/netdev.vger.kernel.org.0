@@ -2,115 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 238AD2B79D4
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 10:00:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE1462B79E9
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 10:05:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726020AbgKRJAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 04:00:05 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51495 "EHLO
+        id S1726603AbgKRJDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 04:03:33 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:40011 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727160AbgKRJAF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 04:00:05 -0500
+        by vger.kernel.org with ESMTP id S1725772AbgKRJDd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 04:03:33 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605690003;
+        s=mimecast20190719; t=1605690212;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=vDHRiKISJxGrQNI5r+p1qOzE9Z04EU79HQXJnXOQAyM=;
-        b=epeFmXuG0tCYLP/m5ZSJlTUwZY/OUmPuk0HnZf3cC/iniYClXPfzqfzmRGrunc4VbqpBTi
-        je6a7BZohCqrnSOK07kOHcaAdcq1OW3dFbOf43NZH6e7wNLbpqQwgamG/6Iubuuu3Xvl2/
-        TNhd6CKN89NKkMCTXxgtWnlnb1TD0xo=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-321-m3aTe_SzMk6OeYgoy1ReeA-1; Wed, 18 Nov 2020 04:00:02 -0500
-X-MC-Unique: m3aTe_SzMk6OeYgoy1ReeA-1
-Received: by mail-wr1-f72.google.com with SMTP id r15so640560wrn.15
-        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 01:00:02 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=vDHRiKISJxGrQNI5r+p1qOzE9Z04EU79HQXJnXOQAyM=;
-        b=icz7/kgh0/ugwg4yWj3VVwco4yI6N71dFi0JYrGHcHO+AfMChQGyj47yMDbcxa7N5M
-         iWtIc8BFAknNuj9/wE5BptGosADA0eDnWj5HrOLOrG7li40/4hJN+M+eqYqFax+x57GL
-         lTosIolq+A3phf5U9TVI5zA4BUu8W7AN+Q3vPYbJwnKwjlwr9HnpslT0Vg9lyQ6pdW1x
-         VinpoPw+wrrMfq2bEYqdj0bxI6ecIG3e4XItlYOhnYwdil7MY2xh6W/+5AmIm7yH+dor
-         1X5ZekG4H+IAwV4CPnMk6VpXs150wBbSX2IcGo34gsSoe2VWyyXkhNAKJtPXH/esWkmC
-         AviQ==
-X-Gm-Message-State: AOAM532RcZm6QyafLADa6DgOTOhwJ7yAKdA2IOj8/Ms2RReJDvjsG2Mx
-        5a6wXzwDXWD4/99HENehBIrIGIMn+PElZq+1OkjqvDtBfRALDv5TpBJHYiUk9/+XCuCCNxNdboQ
-        v30ZDlSzcfm3ucCS4
-X-Received: by 2002:adf:e484:: with SMTP id i4mr3807473wrm.398.1605690000243;
-        Wed, 18 Nov 2020 01:00:00 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwvrhlBebUzDcS1q8vIsRe9j3CAHx2KE5uTkubSY1aExSKkOG/BenM/FdfTnVGvEnynvcKDSg==
-X-Received: by 2002:adf:e484:: with SMTP id i4mr3807461wrm.398.1605690000074;
-        Wed, 18 Nov 2020 01:00:00 -0800 (PST)
-Received: from redhat.com (bzq-109-67-54-78.red.bezeqint.net. [109.67.54.78])
-        by smtp.gmail.com with ESMTPSA id i11sm33187631wro.85.2020.11.18.00.59.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Nov 2020 00:59:59 -0800 (PST)
-Date:   Wed, 18 Nov 2020 03:59:55 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, kuba@kernel.org
-Subject: Re: [PATCH net] vhost_vdpa: Return -EFUALT if copy_from_user() fails
-Message-ID: <20201118035912-mutt-send-email-mst@kernel.org>
-References: <20201023120853.GI282278@mwanda>
- <20201023113326-mutt-send-email-mst@kernel.org>
- <4485cc8d-ac69-c725-8493-eda120e29c41@redhat.com>
- <e7242333-b364-c2d8-53f5-1f688fc4d0b5@redhat.com>
+        bh=TX2J0ifsZPmx8I8UtITBRgivjbAtjJZ06Fr9MXuTZbk=;
+        b=VMF766E3/BDMp5UZ9PPQLpVPs6j9HWg13UloUBLEz88dON2kHNwYwhG4wPQPURFcAqQ710
+        qOYmGQ1jk/fnB2PXQ2plnDYG5OAffZNUh0AEimMqeTQhevyFKUfVQLWY2kKJXfLPTHrYnJ
+        3RfHKD5aLXPBlRqYHogNmoNtmATGeRo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-381-KoGZ1HYYPUONl7j5bTNrJA-1; Wed, 18 Nov 2020 04:03:25 -0500
+X-MC-Unique: KoGZ1HYYPUONl7j5bTNrJA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 59A671087D6B;
+        Wed, 18 Nov 2020 09:03:24 +0000 (UTC)
+Received: from yoda.fritz.box (unknown [10.40.195.78])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1B56F5D9CA;
+        Wed, 18 Nov 2020 09:03:22 +0000 (UTC)
+Date:   Wed, 18 Nov 2020 10:03:20 +0100
+From:   Antonio Cardace <acardace@redhat.com>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next v4 5/6] selftests: refactor get_netdev_name
+ function
+Message-ID: <20201118090320.wdth32bkz3ro6mbc@yoda.fritz.box>
+References: <20201117152015.142089-1-acardace@redhat.com>
+ <20201117152015.142089-6-acardace@redhat.com>
+ <20201117173520.bix4wdfy6u3mapjl@lion.mk-sys.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e7242333-b364-c2d8-53f5-1f688fc4d0b5@redhat.com>
+In-Reply-To: <20201117173520.bix4wdfy6u3mapjl@lion.mk-sys.cz>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 02:08:17PM +0800, Jason Wang wrote:
-> 
-> On 2020/10/26 上午10:59, Jason Wang wrote:
+On Tue, Nov 17, 2020 at 06:35:20PM +0100, Michal Kubecek wrote:
+> On Tue, Nov 17, 2020 at 04:20:14PM +0100, Antonio Cardace wrote:
+> > As pointed out by Michal Kubecek, getting the name
+> > with the previous approach was racy, it's better
+> > and easier to get the name of the device with this
+> > patch's approach.
 > > 
-> > On 2020/10/23 下午11:34, Michael S. Tsirkin wrote:
-> > > On Fri, Oct 23, 2020 at 03:08:53PM +0300, Dan Carpenter wrote:
-> > > > The copy_to/from_user() functions return the number of bytes which we
-> > > > weren't able to copy but the ioctl should return -EFAULT if they fail.
-> > > > 
-> > > > Fixes: a127c5bbb6a8 ("vhost-vdpa: fix backend feature ioctls")
-> > > > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> > > Acked-by: Michael S. Tsirkin <mst@redhat.com>
-> > > Needed for stable I guess.
+> > Essentialy the function doesn't need to exist
+> > anymore as it's a simple 'ls' command.
 > > 
+> > Signed-off-by: Antonio Cardace <acardace@redhat.com>
+> > ---
+> >  .../drivers/net/netdevsim/ethtool-common.sh   | 20 ++-----------------
+> >  1 file changed, 2 insertions(+), 18 deletions(-)
 > > 
-> > Agree.
+> > diff --git a/tools/testing/selftests/drivers/net/netdevsim/ethtool-common.sh b/tools/testing/selftests/drivers/net/netdevsim/ethtool-common.sh
+> > index fa44cf6e732c..3c287ac78117 100644
+> > --- a/tools/testing/selftests/drivers/net/netdevsim/ethtool-common.sh
+> > +++ b/tools/testing/selftests/drivers/net/netdevsim/ethtool-common.sh
+> > @@ -20,23 +20,6 @@ function cleanup {
 > > 
-> > Acked-by: Jason Wang <jasowang@redhat.com>
+> >  trap cleanup EXIT
+> > 
+> > -function get_netdev_name {
+> > -    local -n old=$1
+> > -
+> > -    new=$(ls /sys/class/net)
+> > -
+> > -    for netdev in $new; do
+> > -	for check in $old; do
+> > -            [ $netdev == $check ] && break
+> > -	done
+> > -
+> > -	if [ $netdev != $check ]; then
+> > -	    echo $netdev
+> > -	    break
+> > -	fi
+> > -    done
+> > -}
+> > -
+> >  function check {
+> >      local code=$1
+> >      local str=$2
+> > @@ -65,5 +48,6 @@ function make_netdev {
+> >      fi
+> > 
+> >      echo $NSIM_ID > /sys/bus/netdevsim/new_device
+> > -    echo `get_netdev_name old_netdevs`
+> > +    # get new device name
+> > +    echo $(ls /sys/bus/netdevsim/devices/netdevsim${NSIM_ID}/net/)
 > 
+> Is there a reason for combining command substitution with echo? Couldn't
+> we use one of
 > 
-> Hi Michael.
+>   ls /sys/bus/netdevsim/devices/netdevsim${NSIM_ID}/net/
+>   echo /sys/bus/netdevsim/devices/netdevsim${NSIM_ID}/net/*
 > 
-> I don't see this in your tree, please consider to merge.
+> instead?
 > 
-> Thanks
+> Michal
 > 
+Ouch, no that's just a mistake. I'll fix it.
 
-I do see it there:
+Do I have to resend the whole serie as a new version or is there a
+quicker way to just resend a single patch?
 
-commit 7922460e33c81f41e0d2421417228b32e6fdbe94
-Author: Dan Carpenter <dan.carpenter@oracle.com>
-Date:   Fri Oct 23 15:08:53 2020 +0300
-
-    vhost_vdpa: Return -EFAULT if copy_from_user() fails
-    
-the reason you can't find it is probably because I fixed up
-a typo in the subject.
-
-
--- 
-MST
+Thanks,
+Antonio
 
