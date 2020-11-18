@@ -2,106 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E5A72B748C
+	by mail.lfdr.de (Postfix) with ESMTP id 9C7112B748D
 	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 04:10:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726472AbgKRDJi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 22:09:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47154 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725790AbgKRDJi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 22:09:38 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C0DC0613D4
-        for <netdev@vger.kernel.org>; Tue, 17 Nov 2020 19:09:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=jCpBKmNvhkAdHALFrY2UpRl5LAxAwmhWF5B97vcw/qM=; b=aP5pEKOMOcaUSeGME2n0EpPbQx
-        z4id5n+DQzHkxsuAimpUD/7w4HBMp2S5e0A8ng9Zi5znuBI0pn34a3cqRBsPoYThixWV52m1+SBzi
-        vscZdu+WgWjSa9QI6EU4xQJGXeip1BTonQeacLj7MpBQKvjs7M1UykNhlsQUdRNLKZZ7rqwTOKrL6
-        9FcYqfc1EZPUDfNwoOEcIXfFyq79iRaoNs6000C+z2u81E3dbkczCXK2ftIAeHm4eYAypFZhhO3zr
-        rJFCQqGFyMpaYyV9e44IZOkf3LLrOciq2EgQzCeoO9OrTkmWL7u2LpuDD+Tn0rwqpTVcaYIGAmZYR
-        omeDBpdw==;
-Received: from [2601:1c0:6280:3f0::bcc4]
-        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kfDqT-0005Ji-3s; Wed, 18 Nov 2020 03:09:22 +0000
-Subject: Re: [PATCH] ipv4: use IS_ENABLED instead of ifdef
-To:     Jakub Kicinski <kuba@kernel.org>, David Ahern <dsahern@gmail.com>
-Cc:     Florian Klink <flokli@flokli.de>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Kim Phillips <kim.phillips@arm.com>
-References: <20201115224509.2020651-1-flokli@flokli.de>
- <20201117160110.42aa3b72@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <5cbc79c3-0a66-8cfb-64f4-399aab525d09@gmail.com>
- <20201117170712.0e5a8b23@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <0c2869ad-1176-9554-0c47-1f514981c6b4@infradead.org>
-Date:   Tue, 17 Nov 2020 19:09:16 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1726595AbgKRDJx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 22:09:53 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:34130 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725790AbgKRDJx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Nov 2020 22:09:53 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kfDqw-007eVt-Ac; Wed, 18 Nov 2020 04:09:50 +0100
+Date:   Wed, 18 Nov 2020 04:09:50 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     David Thompson <davthompson@nvidia.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        Asmaa Mnebhi <asmaa@nvidia.com>
+Subject: Re: [PATCH net-next v3] Add Mellanox BlueField Gigabit Ethernet
+ driver
+Message-ID: <20201118030950.GB1804098@lunn.ch>
+References: <1605654870-14859-1-git-send-email-davthompson@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20201117170712.0e5a8b23@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1605654870-14859-1-git-send-email-davthompson@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/17/20 5:07 PM, Jakub Kicinski wrote:
-> On Tue, 17 Nov 2020 17:55:54 -0700 David Ahern wrote:
->> On 11/17/20 5:01 PM, Jakub Kicinski wrote:
->>> On Sun, 15 Nov 2020 23:45:09 +0100 Florian Klink wrote:  
->>>> Checking for ifdef CONFIG_x fails if CONFIG_x=m.
->>>>
->>>> Use IS_ENABLED instead, which is true for both built-ins and modules.
->>>>
->>>> Otherwise, a  
->>>>> ip -4 route add 1.2.3.4/32 via inet6 fe80::2 dev eth1    
->>>> fails with the message "Error: IPv6 support not enabled in kernel." if
->>>> CONFIG_IPV6 is `m`.
->>>>
->>>> In the spirit of b8127113d01e53adba15b41aefd37b90ed83d631.
->>>>
->>>> Cc: Kim Phillips <kim.phillips@arm.com>
->>>> Signed-off-by: Florian Klink <flokli@flokli.de>  
->>>
->>> LGTM, this is the fixes tag right?
->>>
->>> Fixes: d15662682db2 ("ipv4: Allow ipv6 gateway with ipv4 routes")  
->>
->> yep.
->>
->>>
->>> CCing David to give him a chance to ack.  
->>
->> Reviewed-by: David Ahern <dsahern@kernel.org>
-> 
-> Great, applied, thanks!
-> 
->> I looked at this yesterday and got distracted diving into the generated
->> file to see the difference:
->>
->> #define CONFIG_IPV6 1
->>
->> vs
->>
->> #define CONFIG_IPV6_MODULE 1
+Hi David
 
-Digging up ancient history. ;)
+> +static int mlxbf_gige_phy_enable_interrupt(struct phy_device *phydev)
+> +{
+> +	int err = 0;
+> +
+> +	if (phydev->drv->ack_interrupt)
+> +		err = phydev->drv->ack_interrupt(phydev);
+> +	if (err < 0)
+> +		return err;
+> +
+> +	phydev->interrupts = PHY_INTERRUPT_ENABLED;
+> +	if (phydev->drv->config_intr)
+> +		err = phydev->drv->config_intr(phydev);
+> +
+> +	return err;
+> +}
+> +
+> +static int mlxbf_gige_phy_disable_interrupt(struct phy_device *phydev)
+> +{
+> +	int err = 0;
+> +
+> +	if (phydev->drv->ack_interrupt)
+> +		err = phydev->drv->ack_interrupt(phydev);
+> +	if (err < 0)
+> +		return err;
+> +
+> +	phydev->interrupts = PHY_INTERRUPT_DISABLED;
+> +	if (phydev->drv->config_intr)
+> +		err = phydev->drv->config_intr(phydev);
+> +
+> +	return err;
+> +}
 
-> Interesting.
-> 
-> drivers/net/ethernet/netronome/nfp/flower/action.c:#ifdef CONFIG_IPV6
-> 
-> Oops.
+This is, erm, interesting.
 
-Notify the maintainer!
+> +irqreturn_t mlxbf_gige_mdio_handle_phy_interrupt(int irq, void *dev_id)
+> +{
+> +	struct phy_device *phydev;
+> +	struct mlxbf_gige *priv;
+> +	u32 val;
+> +
+> +	priv = dev_id;
+> +	phydev = priv->netdev->phydev;
+> +
+> +	/* Check if this interrupt is from PHY device.
+> +	 * Return if it is not.
+> +	 */
+> +	val = readl(priv->gpio_io +
+> +			MLXBF_GIGE_GPIO_CAUSE_OR_CAUSE_EVTEN0);
+> +	if (!(val & MLXBF_GIGE_CAUSE_OR_CAUSE_EVTEN0_MASK))
+> +		return IRQ_NONE;
+> +
+> +	phy_mac_interrupt(phydev);
+> +
+> +	/* Clear interrupt when done, otherwise, no further interrupt
+> +	 * will be triggered.
+> +	 */
+> +	val = readl(priv->gpio_io +
+> +			MLXBF_GIGE_GPIO_CAUSE_OR_CLRCAUSE);
+> +	val |= MLXBF_GIGE_CAUSE_OR_CLRCAUSE_MASK;
+> +	writel(val, priv->gpio_io +
+> +			MLXBF_GIGE_GPIO_CAUSE_OR_CLRCAUSE);
+> +
+> +	/* Make sure to clear the PHY device interrupt */
+> +	if (phydev->drv->ack_interrupt)
+> +		phydev->drv->ack_interrupt(phydev);
+> +
+> +	phydev->interrupts = PHY_INTERRUPT_ENABLED;
+> +	if (phydev->drv->config_intr)
+> +		phydev->drv->config_intr(phydev);
 
--- 
-~Randy
+And more interesting code.
 
+We have to find a better way to do this, you should not by copying
+core PHY code into a MAC driver.
+
+So it seems to me, the PHY interrupt you request is not actually a PHY
+interrupt. It looks more like an interrupt controller. The EVTEN0
+suggests that there could be multiple interrupts here, of which one if
+the PHY? This is more a generic GPIO block which can do interrupts
+when the pins are configured as inputs? Or is it an interrupt
+controller with multiple interrupts?
+
+Once you model this correctly in Linux, you can probably remove all
+the interesting code.
+
+    Andrew
