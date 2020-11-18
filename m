@@ -2,120 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1B4A2B8641
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 22:06:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9A032B8663
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 22:14:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726920AbgKRVEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 16:04:00 -0500
-Received: from mga11.intel.com ([192.55.52.93]:6174 "EHLO mga11.intel.com"
+        id S1726683AbgKRVNi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 16:13:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58102 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726268AbgKRVEA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 16:04:00 -0500
-IronPort-SDR: fyi/16dQM6yUcL6g0IraIosGok/vAxYm0qtgAW0DzslYESv5Ncximqo95f477SpzlZKZj28jea
- 9MBrdVqLq2KA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9809"; a="167676673"
-X-IronPort-AV: E=Sophos;i="5.77,488,1596524400"; 
-   d="scan'208";a="167676673"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2020 13:03:59 -0800
-IronPort-SDR: YgJlDS1vGrzQgUrbmr30qNtGrh2aic+9Cz3O/q5JFbpDqs6OQb4tly74Q5eOND4dwPEKYpEC8x
- KbF/NmXfl22A==
-X-IronPort-AV: E=Sophos;i="5.77,488,1596524400"; 
-   d="scan'208";a="534483998"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.69.244]) ([10.212.69.244])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2020 13:03:59 -0800
-Subject: Re: [PATCH net-next v2 3/3] ptp: ptp_ines: use new PTP_MSGTYPE_*
- define(s)
-To:     Christian Eggers <ceggers@arri.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>
-References: <20201118162203.24293-1-ceggers@arri.de>
- <20201118162203.24293-4-ceggers@arri.de>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <5809d8e0-4848-004c-1551-691cd8bfbd67@intel.com>
-Date:   Wed, 18 Nov 2020 13:03:56 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.3
-MIME-Version: 1.0
-In-Reply-To: <20201118162203.24293-4-ceggers@arri.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+        id S1725948AbgKRVNh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 16:13:37 -0500
+Received: from localhost.localdomain (c-73-231-172-41.hsd1.ca.comcast.net [73.231.172.41])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E33EA207D3;
+        Wed, 18 Nov 2020 21:13:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1605734016;
+        bh=+8//0K5UnMNFTVC4OTQS6tajK8TIdT39V94cceNEt5o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DxQLDkJc7dR/Owjkxqg6kuft3IOF4f8GMCFk42XTrdXQn+utjhQHzyLVGCYFXgxKw
+         yM1anhZN0FFirIqmnTXx7WuJZhmVUlBq53WYkjinDycCJIbBRT9/6qbnZEXr8AoXrU
+         t4+32GFD2aalCBjNdWef+wGF/2qnkBG9m3Ewr96I=
+Date:   Wed, 18 Nov 2020 13:13:35 -0800
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Dongli Zhang <dongli.zhang@oracle.com>, linux-mm@kvack.org,
+        netdev@vger.kernel.org, willy@infradead.org,
+        aruna.ramakrishna@oracle.com, bert.barbe@oracle.com,
+        rama.nichanamatlu@oracle.com, venkat.x.venkatsubra@oracle.com,
+        manjunath.b.patil@oracle.com, joe.jin@oracle.com,
+        srinivas.eeda@oracle.com, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, vbabka@suse.cz
+Subject: Re: [PATCH v3 1/1] page_frag: Recover from memory pressure
+Message-Id: <20201118131335.738bdade4f3dfcee190ea8c1@linux-foundation.org>
+In-Reply-To: <20201118114654.3435f76c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+References: <20201115201029.11903-1-dongli.zhang@oracle.com>
+        <20201118114654.3435f76c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 18 Nov 2020 11:46:54 -0800 Jakub Kicinski <kuba@kernel.org> wrote:
 
-
-On 11/18/2020 8:22 AM, Christian Eggers wrote:
-> Remove driver internal defines for this.
+> > 1. The kernel is under memory pressure and allocation of
+> > PAGE_FRAG_CACHE_MAX_ORDER in __page_frag_cache_refill() will fail. Instead,
+> > the pfmemalloc page is allocated for page_frag_cache->va.
+> > 
+> > 2: All skb->data from page_frag_cache->va (pfmemalloc) will have
+> > skb->pfmemalloc=true. The skb will always be dropped by sock without
+> > SOCK_MEMALLOC. This is an expected behaviour.
+> > 
+> > 3. Suppose a large amount of pages are reclaimed and kernel is not under
+> > memory pressure any longer. We expect skb->pfmemalloc drop will not happen.
+> > 
+> > 4. Unfortunately, page_frag_alloc() does not proactively re-allocate
+> > page_frag_alloc->va and will always re-use the prior pfmemalloc page. The
+> > skb->pfmemalloc is always true even kernel is not under memory pressure any
+> > longer.
+> > 
+> > Fix this by freeing and re-allocating the page instead of recycling it.
 > 
-> Signed-off-by: Christian Eggers <ceggers@arri.de>
-> Cc: Richard Cochran <richardcochran@gmail.com>
-> Cc: Kurt Kanzenbach <kurt@linutronix.de>
-> ---
->  drivers/ptp/ptp_ines.c | 19 +++++++------------
->  1 file changed, 7 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/ptp/ptp_ines.c b/drivers/ptp/ptp_ines.c
-> index 4700ffbdfced..6c7c2843ba0b 100644
-> --- a/drivers/ptp/ptp_ines.c
-> +++ b/drivers/ptp/ptp_ines.c
-> @@ -108,11 +108,6 @@ MODULE_LICENSE("GPL");
->  #define MESSAGE_TYPE_P_DELAY_RESP	3
->  #define MESSAGE_TYPE_DELAY_REQ		4
->  
-> -#define SYNC				0x0
-> -#define DELAY_REQ			0x1
-> -#define PDELAY_REQ			0x2
-> -#define PDELAY_RESP			0x3
-> -
->  static LIST_HEAD(ines_clocks);
->  static DEFINE_MUTEX(ines_clocks_lock);
->  
-> @@ -683,9 +678,9 @@ static bool is_sync_pdelay_resp(struct sk_buff *skb, int type)
->  
->  	msgtype = ptp_get_msgtype(hdr, type);
->  
-> -	switch ((msgtype & 0xf)) {
-> -	case SYNC:
-> -	case PDELAY_RESP:
-> +	switch (msgtype) {
-> +	case PTP_MSGTYPE_SYNC:
-> +	case PTP_MSGTYPE_PDELAY_RESP:
+> Andrew, are you taking this via -mm or should I put it in net? 
+> I'm sending a PR to Linus tomorrow.
 
-This has a functional change of no longer discarding the higher bits of
-msgtype. While this may be correct, I think it should at least be called
-out as to why in the commit message.
-
->  		return true;
->  	default:
->  		return false;
-> @@ -696,13 +691,13 @@ static u8 tag_to_msgtype(u8 tag)
->  {
->  	switch (tag) {
->  	case MESSAGE_TYPE_SYNC:
-> -		return SYNC;
-> +		return PTP_MSGTYPE_SYNC;
->  	case MESSAGE_TYPE_P_DELAY_REQ:
-> -		return PDELAY_REQ;
-> +		return PTP_MSGTYPE_PDELAY_REQ;
->  	case MESSAGE_TYPE_P_DELAY_RESP:
-> -		return PDELAY_RESP;
-> +		return PTP_MSGTYPE_PDELAY_RESP;
->  	case MESSAGE_TYPE_DELAY_REQ:
-> -		return DELAY_REQ;
-> +		return PTP_MSGTYPE_DELAY_REQ;
->  	}
->  	return 0xf;
->  }
-> 
+Please go ahead - if/when it appears in mainline or linux-next, I'll
+drop the -mm copy.  
