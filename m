@@ -2,98 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E49792B7BF4
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 11:59:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B2CD2B7C2E
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 12:15:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726714AbgKRK7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 05:59:19 -0500
-Received: from mail-io1-f71.google.com ([209.85.166.71]:48498 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725446AbgKRK7S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 05:59:18 -0500
-Received: by mail-io1-f71.google.com with SMTP id y12so964516iop.15
-        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 02:59:18 -0800 (PST)
+        id S1726576AbgKRLO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 06:14:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37100 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725446AbgKRLOZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 06:14:25 -0500
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0979AC0613D4;
+        Wed, 18 Nov 2020 03:14:24 -0800 (PST)
+Received: by mail-wr1-x441.google.com with SMTP id j7so1822076wrp.3;
+        Wed, 18 Nov 2020 03:14:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=S3lVLTHtft+9EnTWp89LC5ry75XIftcYoLGTsHkuSEI=;
+        b=cuyfbM3Gnmv0q0lEnj/zahIJAsze5tSV+HYjtUhbtTpDTTTl5R8sdjgwiBnLkzWNs5
+         3iwKj63ZLxMsBvgbsznmQhqQc7iO02loZ9JwDwdQMnsPr1L76gy9zewresH3cxxRNco2
+         hQaf2flN0qbopYAh7Cfd9ZdxcrRfR++pSJ88GTkGK5v2ubFw3PNVuSbzlUpWB9v4w5/2
+         5VwMqs69gSZskgaDZ5v5j+hQTJ7ioEecmya9O3N2oInLMpZ1I23Gb8hu1nYHYnMKmW1f
+         8tm0rF0khWob2Unb9bLDbUM6hboZabmNBPQmIUHAmvXVXnLSYL+ZNvtdY1yKCKwTag/j
+         FF8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=sA9gdXw4t4IuhfSDdmYIEIjhjXhoEBhwIdCjL2ypdac=;
-        b=OAevgBvX8WetCOoAuiXMv8Q4u4tTppoUVtRvFNGcNeLofjkSjNCwuTlMj46P4499Ak
-         7aEQ7gomFc/HsOBeWldNGz+es+Cr0B9qYr+vArv1Yo3KOXmIL541XMAnLGBCAW4qkoV7
-         nijh7z4joxdEMgm3NMcew+VDj0XzG8MVwQB2/K0ADY7WXy8sHTS5xp1iriECh5QPFcTJ
-         lX5xXe71CQipOqRpIvjX6uRrmV6/g8zYf9s/0sLOJdiHPxgkAhb0sIYDbyKSFZdlkdUz
-         FleFN97Q3izQMLlls9hq/qr+9RlkPtFKb6lKrh76eBFaxztzGdLID4K1Dp/SYZXoYmBH
-         30Aw==
-X-Gm-Message-State: AOAM532NN819H0h9TuEkfRushMqaTvL+x7I0ufudsiamNfvUV7IH4cVe
-        EeU9VcWB6VNIFSCFhwSapaIa6XjabsRJ1WVn69Gr+2AG0Yi7
-X-Google-Smtp-Source: ABdhPJzY2UXmJGIuyGnQxeo99Kf52HVL2fBE7080lmPCgCuQSiT1cFgQ53tDaHwNkqlJQgox3vDR+MWI1u/m2xCmN5RkAYXX6mZo
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S3lVLTHtft+9EnTWp89LC5ry75XIftcYoLGTsHkuSEI=;
+        b=jJOafrb+WflsZWheIf2TKRURvJzcHRN0mSRCcBUTlfx+oLVo4Z8wkDT7Xa9JCZnXrK
+         LKsE+Nc2b62hU75uz996gbaYcN8PYdGhqiASdEHXaEkqhjf8nxeTjSLhdwV/JK1Y5zTH
+         BgIvUy3pTP9X3N995mSzglkTe647gY3A0A7GDLNec4Zq+BZMDgTIxCR4j95Qqtmk+Tpq
+         Hm6NIidB0eSNtBXJVe5N4NgsJNFLx+YM/WGcUdiPWYcgtvu9rhp9/3yxbXv+9cBqqPnI
+         HHuto0go7O8ePQ5HhbkDYc4Wen46i92oC6pB1v5xzjNHI8Z3lPeEjf14HvY4hmVJriFG
+         r25A==
+X-Gm-Message-State: AOAM5334MrslJYOwvh/M5lYcBykfV1nuBHllIi/UZktv3nPfk/X6iCg3
+        40DDUkOQT9ZDi9r4dPVhNcg6zn7YybdB9zAIJQ==
+X-Google-Smtp-Source: ABdhPJwhgsRuQfB6oXjbMQreT2rRoZVdWz+p+0mMdTZ2kHP2YSpfSpFEZdRb7Oa8nN1+Z3nZHWuVmw4g/OA4tUveftM=
+X-Received: by 2002:a5d:6288:: with SMTP id k8mr4290464wru.30.1605698062631;
+ Wed, 18 Nov 2020 03:14:22 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a92:ba14:: with SMTP id o20mr16180289ili.76.1605697157983;
- Wed, 18 Nov 2020 02:59:17 -0800 (PST)
-Date:   Wed, 18 Nov 2020 02:59:17 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b7f48605b45f80c5@google.com>
-Subject: WARNING in mptcp_reset_timer
-From:   syzbot <syzbot+42aa53dafb66a07e5a24@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
-        mptcp@lists.01.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
+References: <20201117095207.GA16407@Sleakybeast> <20201118102307.GA4903@katalix.com>
+In-Reply-To: <20201118102307.GA4903@katalix.com>
+From:   siddhant gupta <siddhantgupta416@gmail.com>
+Date:   Wed, 18 Nov 2020 16:44:11 +0530
+Message-ID: <CA+imup-3pT47CVL7GZn_vJtHGngNexBR060y2gRfw2v5Gr8P0Q@mail.gmail.com>
+Subject: Re: [PATCH] Documentation: networking: Fix Column span alignment
+ warnings in l2tp.rst
+To:     Tom Parkin <tparkin@katalix.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Mamta Shukla <mamtashukla555@gmail.com>,
+        Himadri Pandya <himadrispandya@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, 18 Nov 2020 at 15:53, Tom Parkin <tparkin@katalix.com> wrote:
+>
+> On  Tue, Nov 17, 2020 at 15:22:07 +0530, Siddhant Gupta wrote:
+> > Fix Column span alignment problem warnings in the file
+> >
+>
+> Thanks for the patch, Siddhant.
+>
+> Could you provide some information on how these warnings were
+> triggered?  Using Sphinx 2.4.4 I can't reproduce any warnings for
+> l2tp.rst using the "make htmldocs" target.
+>
 
-syzbot found the following issue on:
+I am currently using Sphinx v1.8.5 and I made use of command "make
+htmldocs >> doc_xxx.log 2>&1" for directing the errors into a file and
+the statements in the file showed me these warning, also to confirm
+those I tried using "rst2html" on l2tp.rst file and got same set of
+warnings.
 
-HEAD commit:    7c8ca812 Add linux-next specific files for 20201117
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=14ccfce2500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=ff4bc71371dc5b13
-dashboard link: https://syzkaller.appspot.com/bug?extid=42aa53dafb66a07e5a24
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1342e36e500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17f29bba500000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+42aa53dafb66a07e5a24@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 8718 at net/mptcp/protocol.c:719 mptcp_reset_timer+0x12a/0x160 net/mptcp/protocol.c:719
-Modules linked in:
-CPU: 1 PID: 8718 Comm: kworker/1:3 Not tainted 5.10.0-rc4-next-20201117-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events mptcp_worker
-RIP: 0010:mptcp_reset_timer+0x12a/0x160 net/mptcp/protocol.c:719
-Code: e8 0b 87 43 fe e8 46 71 c5 f8 48 b8 00 00 00 00 00 fc ff df 48 c7 04 03 00 00 00 00 48 83 c4 40 5b 5d 41 5c c3 e8 26 71 c5 f8 <0f> 0b 41 bc 14 00 00 00 eb 98 e8 c7 d3 07 f9 e9 30 ff ff ff 48 c7
-RSP: 0018:ffffc90001adfa38 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 1ffff9200035bf47 RCX: ffffffff88ab2357
-RDX: ffff88801ae14f80 RSI: ffffffff88ab23ba RDI: 0000000000000007
-RBP: ffff888024200000 R08: 0000000000000000 R09: ffff88802420084f
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: 0000000000281400 R14: ffff888024200000 R15: dffffc0000000000
-FS:  0000000000000000(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f994238f010 CR3: 0000000028d92000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- mptcp_push_pending+0x1351/0x17c0 net/mptcp/protocol.c:1266
- mptcp_worker+0x385/0x1a10 net/mptcp/protocol.c:1877
- process_one_work+0x933/0x15a0 kernel/workqueue.c:2272
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2418
- kthread+0x3af/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+> > Signed-off-by: Siddhant Gupta <siddhantgupta416@gmail.com>
+> > ---
+> >  Documentation/networking/l2tp.rst | 26 +++++++++++++-------------
+> >  1 file changed, 13 insertions(+), 13 deletions(-)
+> >
+> > diff --git a/Documentation/networking/l2tp.rst b/Documentation/networking/l2tp.rst
+> > index 498b382d25a0..0c0ac4e70586 100644
+> > --- a/Documentation/networking/l2tp.rst
+> > +++ b/Documentation/networking/l2tp.rst
+> > @@ -171,7 +171,8 @@ DEBUG              N        Debug flags.
+> >  ================== ======== ===
+> >  Attribute          Required Use
+> >  ================== ======== ===
+> > -CONN_ID            N        Identifies the tunnel id to be queried.
+> > +CONN_ID            N        Identifies the tunnel id
+> > +                            to be queried.
+> >                              Ignored in DUMP requests.
+> >  ================== ======== ===
+> >
+> > @@ -208,8 +209,8 @@ onto the new session. This is covered in "PPPoL2TP Sockets" later.
+> >  ================== ======== ===
+> >  Attribute          Required Use
+> >  ================== ======== ===
+> > -CONN_ID            Y        Identifies the parent tunnel id of the session
+> > -                            to be destroyed.
+> > +CONN_ID            Y        Identifies the parent tunnel id
+> > +                            of the session to be destroyed.
+> >  SESSION_ID         Y        Identifies the session id to be destroyed.
+> >  IFNAME             N        Identifies the session by interface name. If
+> >                              set, this overrides any CONN_ID and SESSION_ID
+> > @@ -222,13 +223,12 @@ IFNAME             N        Identifies the session by interface name. If
+> >  ================== ======== ===
+> >  Attribute          Required Use
+> >  ================== ======== ===
+> > -CONN_ID            Y        Identifies the parent tunnel id of the session
+> > -                            to be modified.
+> > +CONN_ID            Y        Identifies the parent tunnel
+> > +                            id of the session to be modified.
+> >  SESSION_ID         Y        Identifies the session id to be modified.
+> > -IFNAME             N        Identifies the session by interface name. If
+> > -                            set, this overrides any CONN_ID and SESSION_ID
+> > -                            attributes. Currently supported for L2TPv3
+> > -                            Ethernet sessions only.
+> > +IFNAME             N        Identifies the session by interface name. If set,
+> > +                            this overrides any CONN_ID and SESSION_ID
+> > +                            attributes. Currently supported for L2TPv3 Ethernet sessions only.
+> >  DEBUG              N        Debug flags.
+> >  RECV_SEQ           N        Enable rx data sequence numbers.
+> >  SEND_SEQ           N        Enable tx data sequence numbers.
+> > @@ -243,10 +243,10 @@ RECV_TIMEOUT       N        Timeout to wait when reordering received
+> >  ================== ======== ===
+> >  Attribute          Required Use
+> >  ================== ======== ===
+> > -CONN_ID            N        Identifies the tunnel id to be queried.
+> > -                            Ignored for DUMP requests.
+> > -SESSION_ID         N        Identifies the session id to be queried.
+> > -                            Ignored for DUMP requests.
+> > +CONN_ID            N        Identifies the tunnel id
+> > +                            to be queried. Ignored for DUMP requests.
+> > +SESSION_ID         N        Identifies the session id
+> > +                            to be queried. Ignored for DUMP requests.
+> >  IFNAME             N        Identifies the session by interface name.
+> >                              If set, this overrides any CONN_ID and
+> >                              SESSION_ID attributes. Ignored for DUMP
+> > --
+> > 2.25.1
+> >
