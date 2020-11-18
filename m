@@ -2,142 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 250E92B84F6
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 20:35:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D4D72B84FD
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 20:39:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726822AbgKRTek (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 14:34:40 -0500
-Received: from m42-4.mailgun.net ([69.72.42.4]:26336 "EHLO m42-4.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726199AbgKRTek (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 14:34:40 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1605728078; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=uGAvDjrAALRHrKRcKvLfwMGG8vXZ1b/VTGv+N6uE5Uo=; b=aviuk8Jjz1zdvq1cnTUM6loI6Epp+Oe9nlEL6lRiU1D6MMIpx9aBvdbjGS99VACczUF8woHd
- jSsLnAnU1KSNHVPhHv5pPHqNa+j+w4X6oARAD8S+vxTw25KS5HCHx67Ledgg2T4X2phaWzHg
- L6/CLoqJgYs+lKXKsP8Lxv6hPFk=
-X-Mailgun-Sending-Ip: 69.72.42.4
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n09.prod.us-west-2.postgun.com with SMTP id
- 5fb57746a5a29b56a173f4e4 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 18 Nov 2020 19:34:30
- GMT
-Sender: jhugo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id EC261C43460; Wed, 18 Nov 2020 19:34:29 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from [10.226.59.216] (i-global254.qualcomm.com [199.106.103.254])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: jhugo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 637DFC433C6;
-        Wed, 18 Nov 2020 19:34:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 637DFC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=jhugo@codeaurora.org
-Subject: Re: [PATCH] net: qrtr: Unprepare MHI channels during remove
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     Bhaumik Bhatt <bbhatt@codeaurora.org>, ath11k@lists.infradead.org,
-        cjhuang@codeaurora.org, clew@codeaurora.org,
-        hemantk@codeaurora.org, kvalo@codeaurora.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, manivannan.sadhasivam@linaro.org,
-        netdev@vger.kernel.org
-References: <1605723625-11206-1-git-send-email-bbhatt@codeaurora.org>
- <5e94c0be-9402-7309-5d65-857a27d1f491@codeaurora.org>
- <CAMZdPi_b0=qFNGi1yUke3Dip2bi-zW4ULTg8W4nbyPyEsE3D4w@mail.gmail.com>
-From:   Jeffrey Hugo <jhugo@codeaurora.org>
-Message-ID: <2019fe3c-55c5-61fe-758c-1e9952e1cb33@codeaurora.org>
-Date:   Wed, 18 Nov 2020 12:34:27 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        id S1726685AbgKRTg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 14:36:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58534 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726440AbgKRTg3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 14:36:29 -0500
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37D70C0613D4;
+        Wed, 18 Nov 2020 11:36:29 -0800 (PST)
+Received: by mail-io1-xd43.google.com with SMTP id m9so3280495iox.10;
+        Wed, 18 Nov 2020 11:36:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=NFxIz4DFF3gZxGeuDXZ4yoOt17ZqxeXR60fCHkT4skI=;
+        b=RMPan1xWTHuhyPAXBRZZwRayvHftLGVdRvFdzCIbKr/3wsIWxjSxx4js8nnkBLkMus
+         O7Lax3ZoVS/2h6XlYcOifD1TwJaeGK5FjeDc9gWi9Im1hShb/iVr0/wKCG1cZs9tu2k5
+         LC2XdoNjLJacvUGC2CWIsLkypi7LIjIAlc/j5HPcLeq5+v7E4nE1Ku0fiVqAV4hUSOQI
+         ouQfUU+HZRMVuMMw/F/UtzzSFrJ9Wz1L2iknEheRLwtierERAsgeIjKbHWuybx422YWy
+         Y+kmp19YYGaIASsgfYo8MN3cMHjUCj4dh/yqkzDNl4DAVpQILvJ3CyfYjsONPdzfWqto
+         dONA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=NFxIz4DFF3gZxGeuDXZ4yoOt17ZqxeXR60fCHkT4skI=;
+        b=mLQ89kzGcie/d3y6yXZOcbrbFxeUyWvyg+Nq4Lyg5XBsHrpld04YMhG7ikIcBugObq
+         EcQUIBRl+Ko14WR7bmZ9uIrYpL3/lJd59nXg9M3hQ74mMVl77hxwSUXgOdnrbCTXCmKC
+         I+G8Jen37v8Bd1tCGHTZnNlacS6oqj+0ge1tsez0te4DEh9qCqs9h8Tv/4wMb04/0cnX
+         vEWNl5+fy5DHl8zbcLymYCRHD/VBHQafcUMRHk3BdkENhzKnrnsMYChvqgVjFrYhu4zX
+         AHthOZvwQ3oJGidkMmdGyrQsM5/GWzunwIps10NLIOey6THZe34J83s+HnMo8RS40WhJ
+         3p3A==
+X-Gm-Message-State: AOAM533ilMjxyW9WvDsEjPCkRFf+sacej0VnD859shBRhydLQsQ8b/xI
+        6scQ/lrhbPFjtBxgTyUqdvY=
+X-Google-Smtp-Source: ABdhPJzOXL6/coAWf02etIo97MIRzLRQ6shkVnZ/UFzz/5u5dBKVAAXroIC+BP2noA7iy+7WqIlDDQ==
+X-Received: by 2002:a5d:964a:: with SMTP id d10mr12770766ios.5.1605728188448;
+        Wed, 18 Nov 2020 11:36:28 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([2601:284:8203:54f0:70e6:174c:7aed:1d19])
+        by smtp.googlemail.com with ESMTPSA id c8sm12910992ioq.40.2020.11.18.11.36.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 Nov 2020 11:36:27 -0800 (PST)
+Subject: Re: [PATCH net-next 03/13] devlink: Support add and delete devlink
+ port
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Parav Pandit <parav@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Vu Pham <vuhuong@nvidia.com>
+References: <20201112192424.2742-1-parav@nvidia.com>
+ <20201112192424.2742-4-parav@nvidia.com>
+ <e7b2b21f-b7d0-edd5-1af0-a52e2fc542ce@gmail.com>
+ <BY5PR12MB43222AB94ED279AF9B710FF1DCE10@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <b34d8427-51c0-0bbd-471e-1af30375c702@gmail.com>
+ <20201118183830.GA917484@nvidia.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <ac0c5a69-06e4-3809-c778-b27d6e437ed5@gmail.com>
+Date:   Wed, 18 Nov 2020 12:36:26 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.4.3
 MIME-Version: 1.0
-In-Reply-To: <CAMZdPi_b0=qFNGi1yUke3Dip2bi-zW4ULTg8W4nbyPyEsE3D4w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20201118183830.GA917484@nvidia.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/18/2020 12:14 PM, Loic Poulain wrote:
+On 11/18/20 11:38 AM, Jason Gunthorpe wrote:
+> On Wed, Nov 18, 2020 at 11:03:24AM -0700, David Ahern wrote:
 > 
+>> With Connectx-4 Lx for example the netdev can have at most 63 queues
 > 
-> Le mer. 18 nov. 2020 à 19:34, Jeffrey Hugo <jhugo@codeaurora.org 
-> <mailto:jhugo@codeaurora.org>> a écrit :
+> What netdev calls a queue is really a "can the device deliver
+> interrupts and packets to a given per-CPU queue" and covers a whole
+> spectrum of smaller limits like RSS scheme, # of available interrupts,
+> ability of the device to create queues, etc.
 > 
->     On 11/18/2020 11:20 AM, Bhaumik Bhatt wrote:
->      > Reset MHI device channels when driver remove is called due to
->      > module unload or any crash scenario. This will make sure that
->      > MHI channels no longer remain enabled for transfers since the
->      > MHI stack does not take care of this anymore after the auto-start
->      > channels feature was removed.
->      >
->      > Signed-off-by: Bhaumik Bhatt <bbhatt@codeaurora.org
->     <mailto:bbhatt@codeaurora.org>>
->      > ---
->      >   net/qrtr/mhi.c | 1 +
->      >   1 file changed, 1 insertion(+)
->      >
->      > diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
->      > index 7100f0b..2bf2b19 100644
->      > --- a/net/qrtr/mhi.c
->      > +++ b/net/qrtr/mhi.c
->      > @@ -104,6 +104,7 @@ static void qcom_mhi_qrtr_remove(struct
->     mhi_device *mhi_dev)
->      >       struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
->      >
->      >       qrtr_endpoint_unregister(&qdev->ep);
->      > +     mhi_unprepare_from_transfer(mhi_dev);
->      >       dev_set_drvdata(&mhi_dev->dev, NULL);
->      >   }
->      >
->      >
+> CX4Lx can create a huge number of queues, but hits one of these limits
+> that mean netdev's specific usage can't scale up. Other stuff like
+> RDMA doesn't have the same limits, and has tonnes of queues.
 > 
->     I admit, I didn't pay much attention to the auto-start being removed,
->     but this seems odd to me.
+> What seems to be needed is a resource controller concept like cgroup
+> has for processes. The system is really organized into a tree:
 > 
->     As a client, the MHI device is being removed, likely because of some
->     factor outside of my control, but I still need to clean it up?  This
->     really feels like something MHI should be handling.
+>            physical device
+>               mlx5_core
+>         /      |      \      \                        (aux bus)
+>      netdev   rdma    vdpa   SF  etc
+>                              |                        (aux bus)
+>                            mlx5_core
+>                           /      \                    (aux bus)
+>                        netdev   vdpa
 > 
+> And it does make a lot of sense to start to talk about limits at each
+> tree level.
 > 
-> I think this is just about balancing operations, what is done in probe 
-> should be undone in remove, so here channels are started in probe and 
-> stopped/reset in remove.
+> eg the top of the tree may have 128 physical interrupts. With 128 CPU
+> cores that isn't enough interrupts to support all of those things
+> concurrently.
+> 
+> So the user may want to configure:
+>  - The first level netdev only gets 64,
+>  - 3rd level mlx5_core gets 32 
+>  - Final level vdpa gets 8
+> 
+> Other stuff has to fight it out with the remaining shared interrupts.
+> 
+> In netdev land # of interrupts governs # of queues
+> 
+> For RDMA # of interrupts limits the CPU affinities for queues
+> 
+> VPDA limits the # of VMs that can use VT-d
+> 
+> The same story repeats for other less general resources, mlx5 also
+> has consumption of limited BAR space, and consumption of some limited
+> memory elements. These numbers are much bigger and may not need
+> explicit governing, but the general concept holds.
+> 
+> It would be very nice if the limit could be injected when the aux
+> device is created but before the driver is bound. I'm not sure how to
+> manage that though..
+> 
+> I assume other devices will be different, maybe some devices have a
+> limit on the number of total queues, or a limit on the number of
+> VDPA or RDMA devices.
+> 
+> Jason
+> 
 
-I understand that perspective, but that doesn't quite match what is 
-going on here.  Regardless of if the channel was started (prepared) in 
-probe, it now needs to be stopped in remove.  That not balanced in all cases
+A lot of low level resource details that need to be summarized into a
+nicer user / config perspective to specify limits / allocations.
 
-Lets assume, in response to probe(), my client driver goes and creates 
-some other object, maybe a socket.  In response to that socket being 
-opened/activated by the client of my driver, I go and start the mhi 
-channel.  Now, normally, when the socket is closed/deactivated, I stop 
-the MHI channel.  In this case, stopping the MHI channel in remove() is 
-unbalanced with respect to probe(), but is now a requirement.
-
-Now you may argue, I should close the object in response to remove, 
-which will then trigger the stop on the channel.  That doesn't apply to 
-everything.  For example, you cannot close an open file in the kernel. 
-You need to wait for userspace to close it.  By the time that happens, 
-the mhi_dev is long gone I expect.
-
-So if, somehow, the client driver is the one causing the remove to 
-occur, then yes it should probably be the one doing the stop, but that's 
-a narrow set of conditions, and I think having that requirement for all 
-scenarios is limiting.
-
-
--- 
-Jeffrey Hugo
-Qualcomm Technologies, Inc. is a member of the
-Code Aurora Forum, a Linux Foundation Collaborative Project.
+Thanks for the detailed response.
