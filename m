@@ -2,104 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77C932B809B
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 16:34:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21D1F2B80AB
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 16:39:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726527AbgKRPd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 10:33:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48920 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725804AbgKRPd3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 10:33:29 -0500
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEDE7C0613D4;
-        Wed, 18 Nov 2020 07:33:28 -0800 (PST)
-Received: by mail-wr1-x441.google.com with SMTP id u12so2684130wrt.0;
-        Wed, 18 Nov 2020 07:33:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8wny3kzVC1IR5EcyDuj2RgrjJgW1k6C8oLglaDehiy8=;
-        b=c4N9dhSeYwm6VvvieK5qW8KPOFOb1Wz2H51Q7yNynXg8juBv//gERwBeLKzbwe7SYD
-         gRYs8sJUqzU4fU1K9rptXIZ3eD4PSiDudVOWVfQazs2IK9r0SIO75oNldS19wvQNsen3
-         laZGh20fuAcG5rdpYNSDFevl0ku0DWv72c798Mp5s/GQKTUX2VvPqSLNdwsb2ata6Q4M
-         +XIJk9GCoG9MK5W5+eF3WKSy8DK5YZ5r0ARcUYJc1Gn3NZ43JFYwDNKwlIvyY7PlZrzE
-         RUYYUPg9YgAQvFDo2PA9GXRNBcD1x0Wv8N9h/5pvuf3DY1Eruu/VL24OEcbIIUCAtlGs
-         U1cQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8wny3kzVC1IR5EcyDuj2RgrjJgW1k6C8oLglaDehiy8=;
-        b=Oo0c10BkwxEHXeZRI4XVUxEv6G9PaehkXH/ENVdBmYGLRTa1k6NwWSC2M3r8SMIcSb
-         GOu1uqvAYNBFecPHVHYOYGDxS9d1CP894xPyE4DB+r8OFJSODjYPjBNBYgHidLRo01hb
-         WzrYmDEXPguopUnXwnSQtsJlO9N13vn0csag/VJPGmiVRRGQ1BW1UuT7847ACUROsuIr
-         S5YCGbqDXsYh+bNLTWdcPdoe4E7Qt3KoKVoc7AkETiHlWmg0iFm5XfJW7Gky1c4kjyAN
-         C4/iT0aM6xwEww2+AgBeXJwriI/nrsKOnxHp78ApZT2lJ563BGCv3lckhsmJflJ3iHHo
-         pBXw==
-X-Gm-Message-State: AOAM5309lG8JUDzkQzNHm3mC0hXGi7/TCHIeaS9vR4NQnxcuJvcug7JU
-        9pnW3JYMdVNwc2DwvsVO1EpeBXOULzYMIC69
-X-Google-Smtp-Source: ABdhPJz/vblUYoZh2K8DlxwaydB+cG/5byw4frw9B7T+IEsnhSzf5xXi92WJfR2i2m98L3GIwyJlQQ==
-X-Received: by 2002:a5d:6447:: with SMTP id d7mr5525080wrw.96.1605713607160;
-        Wed, 18 Nov 2020 07:33:27 -0800 (PST)
-Received: from localhost.localdomain (host-82-51-6-75.retail.telecomitalia.it. [82.51.6.75])
-        by smtp.gmail.com with ESMTPSA id v19sm4394146wmj.31.2020.11.18.07.33.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Nov 2020 07:33:26 -0800 (PST)
-From:   "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     "K . Y . Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, linux-hyperv@vger.kernel.org,
-        Michael Kelley <mikelley@microsoft.com>,
-        Juan Vazquez <juvazq@microsoft.com>,
-        Saruhan Karademir <skarade@microsoft.com>,
-        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH] hv_netvsc: Validate number of allocated sub-channels
-Date:   Wed, 18 Nov 2020 16:33:10 +0100
-Message-Id: <20201118153310.112404-1-parri.andrea@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1725823AbgKRPh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 10:37:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:54864 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725772AbgKRPh0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 10:37:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605713845;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=d8sRYGEzSwBuvAF+H53zPFqrxK3fJ+m2Pfzo+FY4+Kw=;
+        b=BFWjd9mnkqoLYhcOh1yzaKv5eEFXKnl4IU6QnmiNcKa931nI6vCnklL5uBNufWyoKp4KAS
+        hDibrKKLUY4GepPJLqgec34iB9CEXeHRkV4qWvuSFjzqh06Y9zuVgNr0ykbaMaVCCCPawb
+        OTDq68AOdxHbBDxlzfkJIVoQifQWNhI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-518-Yt0VGFVoMPSF14_iFirexw-1; Wed, 18 Nov 2020 10:37:21 -0500
+X-MC-Unique: Yt0VGFVoMPSF14_iFirexw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F31E219251BB;
+        Wed, 18 Nov 2020 15:37:18 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F336E60843;
+        Wed, 18 Nov 2020 15:37:11 +0000 (UTC)
+Date:   Wed, 18 Nov 2020 16:37:10 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        colrack@gmail.com, brouer@redhat.com
+Subject: Re: [PATCH bpf-next V6 0/7] Series short description
+Message-ID: <20201118163710.201853da@carbon>
+In-Reply-To: <160571329106.2801162.7380460134461487044.stgit@firesoul>
+References: <160571329106.2801162.7380460134461487044.stgit@firesoul>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lack of validation could lead to out-of-bound reads and information
-leaks (cf. usage of nvdev->chan_table[]).  Check that the number of
-allocated sub-channels fits into the expected range.
 
-Suggested-by: Saruhan Karademir <skarade@microsoft.com>
-Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org
----
-Based on hyperv-next.
+Sorry, please ignore this email.
 
- drivers/net/hyperv/rndis_filter.c | 5 +++++
- 1 file changed, 5 insertions(+)
+(Wrong invocation of stg mail from command line)
+--Jesper
 
-diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
-index 3835d9bea1005..c5a709f67870f 100644
---- a/drivers/net/hyperv/rndis_filter.c
-+++ b/drivers/net/hyperv/rndis_filter.c
-@@ -1226,6 +1226,11 @@ int rndis_set_subchannel(struct net_device *ndev,
- 		return -EIO;
- 	}
- 
-+	/* Check that number of allocated sub channel is within the expected range */
-+	if (init_packet->msg.v5_msg.subchn_comp.num_subchannels > nvdev->num_chn - 1) {
-+		netdev_err(ndev, "invalid number of allocated sub channel\n");
-+		return -EINVAL;
-+	}
- 	nvdev->num_chn = 1 +
- 		init_packet->msg.v5_msg.subchn_comp.num_subchannels;
- 
+
+On Wed, 18 Nov 2020 16:28:21 +0100
+Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+
+> The following series implements...
+> 
+> ---
+> 
+> Jesper Dangaard Brouer (7):
+>       bpf: Remove MTU check in __bpf_skb_max_len
+>       bpf: fix bpf_fib_lookup helper MTU check for SKB ctx
+>       bpf: bpf_fib_lookup return MTU value as output when looked up
+>       bpf: add BPF-helper for MTU checking
+>       bpf: drop MTU check when doing TC-BPF redirect to ingress
+>       bpf: make it possible to identify BPF redirected SKBs
+>       selftests/bpf: use bpf_check_mtu in selftest test_cls_redirect
+> 
+> 
+>  .../selftests/bpf/progs/test_cls_redirect.c        |    7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
+> --
+> Signature
+
 -- 
-2.25.1
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
