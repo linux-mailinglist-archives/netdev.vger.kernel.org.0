@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44ED62B846B
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 20:10:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 913292B8467
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 20:10:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726775AbgKRTKG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 14:10:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33482 "EHLO mail.kernel.org"
+        id S1727108AbgKRTKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 14:10:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33518 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726198AbgKRTKG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 14:10:06 -0500
+        id S1726891AbgKRTKH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 14:10:07 -0500
 Content-Type: text/plain; charset="utf-8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1605726605;
-        bh=L4Ne5R+xRIgaQGY5QlTUgiYPocDARZO/nWU3rfr8RTE=;
+        bh=6GgW/U3n+PWiHOHNSe9TcCso3MWiDZx4E3P0xNwqko8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Gpi/2WxylPCDSnPGgHnJT7nAaSuFUWfTQduyWTMybeAifrJL9kS9+JjY9pLsHowh/
-         Pnm9bvOFW+H3GlvhGfg4GkSCjkEG61OT73K3V/PXRIeb0UvIV8KY26Pha/UjfiVr2c
-         ynpzTyo2V3WBTmDsZi9w3BG3CQV4g8+BXYiEHsWw=
+        b=gpq90BQf6i8Uq9w2lLm8K/BHQj4LHGHDmGjCOZn3olNq/laqui1HoUoRvSACpIJNk
+         gMZBMWnZksNYWeqxwrqtN/eN5zb+jsyrgPM/qBYO8tTKDkhCgINyzE8zKibqEoflKZ
+         WzKCYkO2QEQqOXx1sCWJMYeAp1VgC+TZoBcmcpvI=
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] atl1e: fix error return code in atl1e_probe()
+Subject: Re: [PATCH net] atl1c: fix error return code in atl1c_probe()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160572660547.17971.16560992676272496883.git-patchwork-notify@kernel.org>
+Message-Id: <160572660572.17971.13195778405702294005.git-patchwork-notify@kernel.org>
 Date:   Wed, 18 Nov 2020 19:10:05 +0000
-References: <1605581875-36281-1-git-send-email-zhangchangzhong@huawei.com>
-In-Reply-To: <1605581875-36281-1-git-send-email-zhangchangzhong@huawei.com>
+References: <1605581721-36028-1-git-send-email-zhangchangzhong@huawei.com>
+In-Reply-To: <1605581721-36028-1-git-send-email-zhangchangzhong@huawei.com>
 To:     Zhang Changzhong <zhangchangzhong@huawei.com>
 Cc:     jcliburn@gmail.com, chris.snook@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, christophe.jaillet@wanadoo.fr, mst@redhat.com,
-        leon@kernel.org, hkallweit1@gmail.com, tglx@linutronix.de,
+        kuba@kernel.org, hkallweit1@gmail.com, yanaijie@huawei.com,
+        christophe.jaillet@wanadoo.fr, mst@redhat.com, leon@kernel.org,
         jesse.brandeburg@intel.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Precedence: bulk
@@ -41,7 +41,7 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Tue, 17 Nov 2020 10:57:55 +0800 you wrote:
+On Tue, 17 Nov 2020 10:55:21 +0800 you wrote:
 > Fix to return a negative error code from the error handling
 > case instead of 0, as done elsewhere in this function.
 > 
@@ -52,8 +52,8 @@ On Tue, 17 Nov 2020 10:57:55 +0800 you wrote:
 > [...]
 
 Here is the summary with links:
-  - [net] atl1e: fix error return code in atl1e_probe()
-    https://git.kernel.org/netdev/net/c/3a36060bf294
+  - [net] atl1c: fix error return code in atl1c_probe()
+    https://git.kernel.org/netdev/net/c/537a14726582
 
 You are awesome, thank you!
 --
