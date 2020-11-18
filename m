@@ -2,122 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC1292B8314
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 18:21:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 315102B833B
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 18:42:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728375AbgKRRU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 12:20:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37344 "EHLO
+        id S1727857AbgKRRj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 12:39:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728036AbgKRRU2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 12:20:28 -0500
-Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0947C0613D4;
-        Wed, 18 Nov 2020 09:20:27 -0800 (PST)
-Received: by mail-ot1-x344.google.com with SMTP id y22so2482477oti.10;
-        Wed, 18 Nov 2020 09:20:27 -0800 (PST)
+        with ESMTP id S1725943AbgKRRj7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 12:39:59 -0500
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B5CC0613D4
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 09:39:58 -0800 (PST)
+Received: by mail-yb1-xb44.google.com with SMTP id s8so2427843yba.13
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 09:39:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ATDEuVpLOju9Mm9/RI/1NtWHJeAR+WEeQ1UtKSWTQF4=;
-        b=Fxwa1ziDMqTSUu0AoBlTRf49VSnTzmV+FosWSfG6nxNfcAHwLHWzuf01zy6wSTurFY
-         P7LyUN5JHOzRXXA7QXL/K6DCVvqAGVNZ177gNgRm6wT0ly4Rwp0Mzx2Lh2V0Xv4Y9a+B
-         meNHBUyuFjsyCBpF6TbrFhL2SNGdmQfXeLSI59xyyrtuykj1wSUW5WNfWgtScxn4USwp
-         uRoL0YA0ETX3/ml3SIyTmm/HuGN9aKOO+oo8mUnJoUuNtOjozqpWcONfDDmmNPePKvEx
-         yQzRSSANj9DW5uIffsqrbD/ToCSyOt4zDjRTBbg2l+xhLClBdbhuWyRDyEtzfcih1JeK
-         rzOg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=8KABC7APAn8HWA8TUE8T9+tys79NOmtJFfJcRi/4C4I=;
+        b=eBC9l5RtAldDUzm/Swnmpe8GqncqaMDFpvz2ziv0bpSiC3Fb3e7bAuLhGf88gU27Ic
+         MTWO+KKN1t6975nkjXyDaFXvYNNy21AsmOnZsPw1QSZK/MJWJRScQa0O+Xb+ZPMu13Ne
+         CsYhb+T67dN/V8GWLd8ZBJ2RnBre1115cEVjM2Vh+K7fMDUPrI1rKwaH3iM9HQNidTUC
+         ly9dUrBGxzAtx6qKhFpytW5VITlBmv/AtQAVgwggZn5O2C0wSllBykp/FhDQ4Gz1ZQ48
+         s2xKhQJjMWfdZdUllPSv+T+SWiLKvsmQ/idhZkv5u8BT+quh4IA+TnZHzbo1goW7WGI3
+         q0rQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ATDEuVpLOju9Mm9/RI/1NtWHJeAR+WEeQ1UtKSWTQF4=;
-        b=n14maso+//3+sSPgFHuVfv0TaY4dioGMbCMWvafDfbj198kK3Kc7vSoq6VJ32SPOiY
-         UKnNyKm53SG12yyJafqnmxaJC83QnTQOcQp9i4jeoGR5zHAXljrzabs1pIf/c/SvQdgF
-         Wf+KmwjT9qevNgLD5gEIGDlcJBGVbcmx50UEGdR/7CGuxmP+34Tvtjn2/4SinzIfKGI/
-         GmcFtuP4jml1HjqWPvQGFCwTycJem0Rc/6bZ5oPZ345FdgX+0Lfq2RvC6/3FjhB86sQ8
-         aGJeF0aUKiFWZYR9NsAeFycui/A72SO4AYcGLAfOdGFPmkWkVE+yJkQ1PD/Czn5gtVNW
-         0Efw==
-X-Gm-Message-State: AOAM532oZMxOSbgzn6zTZf612feTZNlpFHXmYC0QLzdZaZoqS4zvyVPZ
-        IRUGCJWNMrVKEdSsX6+xBCtY2Q32bSU=
-X-Google-Smtp-Source: ABdhPJyPJRuj21Zpk+C1i8QDS7iilen7A+7XxWs19B7OrEjq8TDxaXYAzQkOaK47WFudtkdaNstAVw==
-X-Received: by 2002:a9d:171a:: with SMTP id i26mr6971266ota.313.1605720026808;
-        Wed, 18 Nov 2020 09:20:26 -0800 (PST)
-Received: from localhost.localdomain (cpe-24-31-245-230.kc.res.rr.com. [24.31.245.230])
-        by smtp.gmail.com with ESMTPSA id z25sm954928ooj.39.2020.11.18.09.20.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Nov 2020 09:20:25 -0800 (PST)
-Sender: Larry Finger <larry.finger@gmail.com>
-Subject: Re: [PATCH v2 1/4] rtlwifi: rtl8188ee: avoid accessing the data
- mapped to streaming DMA
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>, pkshih@realtek.com,
-        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20201118015314.4979-1-baijiaju1990@gmail.com>
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-Message-ID: <d3996305-136a-708b-0dba-e9428f9da5cb@lwfinger.net>
-Date:   Wed, 18 Nov 2020 11:20:24 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=8KABC7APAn8HWA8TUE8T9+tys79NOmtJFfJcRi/4C4I=;
+        b=XCW1F2VTi3ZdS8I02FhRJj0lGcypAnrMj9i0H25Y1YYSwNyl7lLvDV6Ak/tn86/tL/
+         +2L3iPk1455I4aeq7DoM7bF8T6dp/oIFM+E1D4GlU0zgX6LPi77t9g0FubshkRu2xLPl
+         vkvO0TaWAMcoo9ln9tt6fRoBQ4UzoKQXgkiVQCym4OdhUpWvHnlHC/3f6g2f7PYAG60Y
+         sMHW8na9M+VJIIDq7reaTXGb3FLFu0PqlE0Y+d1m3gyVVQZNjzq/rOfVjCh1EjrjDNoD
+         qcjfXZvK6lY9znL68iQcVDXuqO8pWqck/pb7UecFWfyVbAB8dJS3wJew0HmhOYy99B68
+         5TEQ==
+X-Gm-Message-State: AOAM532BHvqkIbtHojNBcYqnfHz2ZWWXKquWTQNyhqhCnCzEdUIAegS0
+        s/erMoyWzt1SzL3JyAIefI2nWkw74ZwtgwxUL8krPw==
+X-Google-Smtp-Source: ABdhPJyIE2ulk8C+0sDc6GnwZF0VpOpamECPcMk9eLOaLKYgEDsPN+7xMnBUuD0/w/7azmUdtnrY2RK2/tFdSPTyrWQ=
+X-Received: by 2002:a25:6ec3:: with SMTP id j186mr7542169ybc.335.1605721197822;
+ Wed, 18 Nov 2020 09:39:57 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20201118015314.4979-1-baijiaju1990@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20201111204308.3352959-1-jianyang.kernel@gmail.com>
+ <20201114101709.42ee19e0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAF2d9jgYgUa4DPVT8CSsbMs9HFjE5fn_U8-P=JuZeOecfiYt-g@mail.gmail.com>
+ <20201116123447.2be5a827@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAF2d9ji24VkLipTCFSAU+L8yqKt9nfPSNfks9_V1Tnb0ztPrfA@mail.gmail.com>
+ <20201117171830.GA286718@shredder.lan> <CAF2d9jhJq76KWaMGZLTTX4rLGvLDp+jLxCG9cTvv6jWZCtcFAA@mail.gmail.com>
+ <b3445db2-5c64-fd31-b555-6a49b0fa524e@gmail.com> <7e16f1f3-2551-dff5-8039-bcede955bbfc@6wind.com>
+In-Reply-To: <7e16f1f3-2551-dff5-8039-bcede955bbfc@6wind.com>
+From:   =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
+        <maheshb@google.com>
+Date:   Wed, 18 Nov 2020 09:39:41 -0800
+Message-ID: <CAF2d9jiD5OpqB83fyyutsJqtGRg0AsuDkTsS6j4Fc-H-FHWiUQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] net-loopback: allow lo dev initial state to be controlled
+To:     nicolas.dichtel@6wind.com
+Cc:     David Ahern <dsahern@gmail.com>, Ido Schimmel <idosch@idosch.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jian Yang <jianyang.kernel@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        linux-netdev <netdev@vger.kernel.org>,
+        Jian Yang <jianyang@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/17/20 7:53 PM, Jia-Ju Bai wrote:
-> In rtl88ee_tx_fill_cmddesc(), skb->data is mapped to streaming DMA on
-> line 677:
->    dma_addr_t mapping = dma_map_single(..., skb->data, ...);
-> 
-> On line 680, skb->data is assigned to hdr after cast:
->    struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(skb->data);
-> 
-> Then hdr->frame_control is accessed on line 681:
->    __le16 fc = hdr->frame_control;
-> 
-> This DMA access may cause data inconsistency between CPU and hardwre.
-> 
-> To fix this bug, hdr->frame_control is accessed before the DMA mapping.
-> 
-> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-> ---
->   drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
+On Wed, Nov 18, 2020 at 8:58 AM Nicolas Dichtel
+<nicolas.dichtel@6wind.com> wrote:
+>
+> Le 18/11/2020 =C3=A0 02:12, David Ahern a =C3=A9crit :
+> [snip]
+> > If there is no harm in just creating lo in the up state, why not just d=
+o
+> > it vs relying on a sysctl? It only affects 'local' networking so no rea=
+l
+> > impact to containers that do not do networking (ie., packets can't
+> > escape). Linux has a lot of sysctl options; is this one really needed?
+> >
+I started with that approach but then I was informed about these
+containers that disable networking all together including loopback.
+Also bringing up by default would break backward compatibility hence
+resorted to sysctl.
+> +1
+>
+> And thus, it will benefit to everybody.
 
-What changed between v1 and v2?
-
-As outlined in Documentation/process/submitting-patches.rst, you should add a 
-'---' marker and descrive what was changed. I usually summarize the changes, but 
-it is also possible to provide a diffstat of the changes as the above file shows.
-
-Larry
-
-> 
-> diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c
-> index b9775eec4c54..c948dafa0c80 100644
-> --- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c
-> +++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c
-> @@ -674,12 +674,12 @@ void rtl88ee_tx_fill_cmddesc(struct ieee80211_hw *hw,
->   	u8 fw_queue = QSLT_BEACON;
->   	__le32 *pdesc = (__le32 *)pdesc8;
->   
-> -	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
-> -					    skb->len, DMA_TO_DEVICE);
-> -
->   	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(skb->data);
->   	__le16 fc = hdr->frame_control;
->   
-> +	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
-> +					    skb->len, DMA_TO_DEVICE);
-> +
->   	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
->   		rtl_dbg(rtlpriv, COMP_SEND, DBG_TRACE,
->   			"DMA mapping error\n");
-> 
-
+Well, it benefits everyone who uses networking (most of us) inside
+netns but would create problems for workloads that create netns to
+disable networking. One can always disable it after creating the netns
+but that would mean change in the workflow and it could be viewed as
+regression.
