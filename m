@@ -2,101 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 796EB2B7404
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 02:58:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 916262B7402
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 02:58:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727438AbgKRB5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 20:57:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36054 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725730AbgKRB5s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 20:57:48 -0500
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99215C061A48;
-        Tue, 17 Nov 2020 17:57:48 -0800 (PST)
-Received: by mail-pl1-x644.google.com with SMTP id d3so138498plo.4;
-        Tue, 17 Nov 2020 17:57:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=4a7zDL5lInqafK1HE5+sC1LmnDT92uD20FAhjTWB/2c=;
-        b=s5xp+g5klPD2WapB/Q7IK1Z0TXAqCLWSgcMGccoj/cwiZX3HzKsIMb3rnXdjbL/8+r
-         bvJCXZ0aH/lQj6Fgj3HCqo67qe3b/ZUEMWVkh9sGwq6S06hVwIY3gS8jlrXfJWKyCcop
-         //lIEZNIXniuq4adWq2IPzDaLGQVnvb11jNu6D0Fr1AJRyWUnNn3Y/d92pycNfkP/XPl
-         xLJltjv78d2xuE5b7q9x5Fk8a4ZP6ZywChYNAKdWw7OgLWluj6SUUWmCituDbv5DZZcA
-         6gJ6ZjTytgQgWLAa0FglUj/nr6yrTkiwEoyY/UtCJF053gBAqFuk4auJUQnCX9Udmb0a
-         Kq8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=4a7zDL5lInqafK1HE5+sC1LmnDT92uD20FAhjTWB/2c=;
-        b=fJyJfwE6cB7A2l/orPBM5sm+aS3TW3A00lGzy2QaINT9PBGLKcZCbeM9cvxy2UiYJH
-         6091mox8grK8zoNZp6CUHNMJmD+ZYl7Oekq36YGot4TtKvZg47iV8rguM6qKtuOtgKIy
-         jzSu+9JOu1VsaBJXQDg4BXD3eTHNf2fMmXtd2xou5n0peHomuzscXgJepakuEwUKl7c8
-         AplsBeKWoaGPwolL2Ga7J1n1PsWyZ0AnKOKTFLoRWezE+frIc5xwAtcAiu22OB7XG8P0
-         gATZsaMMpF90Tg1Hgj1ipsJyRnuX7LPcnh/YTCbOJC65LNgE+8NkdodFcuSMT+8QvYHB
-         X4Qw==
-X-Gm-Message-State: AOAM5331ySRCv5xqJ/CGyWadwzXWH535IeTcu3xo3F+qSOjAWElcRrBU
-        PLkshSUjtkDXtCsz5RRVwBw=
-X-Google-Smtp-Source: ABdhPJw6aJl7AaGR6mNa5ccupT7DbLlBABl/RTfldgoA3kMAQHzcLZmNZqpt992LoKTSIEWbRGo/lA==
-X-Received: by 2002:a17:90a:e016:: with SMTP id u22mr1935038pjy.54.1605664668234;
-        Tue, 17 Nov 2020 17:57:48 -0800 (PST)
-Received: from oslab.tsinghua.edu.cn ([166.111.139.137])
-        by smtp.gmail.com with ESMTPSA id e201sm22988444pfh.73.2020.11.17.17.57.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Nov 2020 17:57:47 -0800 (PST)
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-To:     pkshih@realtek.com, kvalo@codeaurora.org, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH v2 4/4] rtlwifi: rtl8723ae: avoid accessing the data mapped to streaming DMA
-Date:   Wed, 18 Nov 2020 09:57:08 +0800
-Message-Id: <20201118015708.5445-1-baijiaju1990@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726612AbgKRB5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 20:57:41 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:7946 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725730AbgKRB5l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 20:57:41 -0500
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4CbQtH5PmbzhcF4;
+        Wed, 18 Nov 2020 09:57:27 +0800 (CST)
+Received: from [10.74.191.121] (10.74.191.121) by
+ DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
+ 14.3.487.0; Wed, 18 Nov 2020 09:57:30 +0800
+Subject: Re: [PATCH net-next] net: add in_softirq() debug checking in
+ napi_consume_skb()
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+CC:     <davem@davemloft.net>, <linmiaohe@huawei.com>,
+        <martin.varghese@nokia.com>, <pabeni@redhat.com>,
+        <pshelar@ovn.org>, <fw@strlen.de>, <gnault@redhat.com>,
+        <steffen.klassert@secunet.com>, <kyk.segfault@gmail.com>,
+        <viro@zeniv.linux.org.uk>, <vladimir.oltean@nxp.com>,
+        <edumazet@google.com>, <saeed@kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@huawei.com>
+References: <1603971288-4786-1-git-send-email-linyunsheng@huawei.com>
+ <20201031153824.7ae83b90@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <5b04ad33-1611-8d7b-8fec-4269c01ecab3@huawei.com>
+ <20201102114110.4a20d461@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <5bd6de52-b8e0-db6f-3362-862ae7b2c728@huawei.com>
+Date:   Wed, 18 Nov 2020 09:57:30 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
+MIME-Version: 1.0
+In-Reply-To: <20201102114110.4a20d461@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In rtl8723e_tx_fill_cmddesc(), skb->data is mapped to streaming DMA on
-line 531:
-  dma_addr_t mapping = dma_map_single(..., skb->data, ...);
+On 2020/11/3 3:41, Jakub Kicinski wrote:
+> On Mon, 2 Nov 2020 11:14:32 +0800 Yunsheng Lin wrote:
+>> On 2020/11/1 6:38, Jakub Kicinski wrote:
+>>> On Thu, 29 Oct 2020 19:34:48 +0800 Yunsheng Lin wrote:  
+>>>> The current semantic for napi_consume_skb() is that caller need
+>>>> to provide non-zero budget when calling from NAPI context, and
+>>>> breaking this semantic will cause hard to debug problem, because
+>>>> _kfree_skb_defer() need to run in atomic context in order to push
+>>>> the skb to the particular cpu' napi_alloc_cache atomically.
+>>>>
+>>>> So add a in_softirq() debug checking in napi_consume_skb() to catch
+>>>> this kind of error.
+>>>>
+>>>> Suggested-by: Eric Dumazet <edumazet@google.com>
+>>>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>  
+>>>   
+>>>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+>>>> index 1ba8f01..1834007 100644
+>>>> --- a/net/core/skbuff.c
+>>>> +++ b/net/core/skbuff.c
+>>>> @@ -897,6 +897,10 @@ void napi_consume_skb(struct sk_buff *skb, int budget)
+>>>>  		return;
+>>>>  	}
+>>>>  
+>>>> +	DEBUG_NET_WARN(!in_softirq(),
+>>>> +		       "%s is called with non-zero budget outside softirq context.\n",
+>>>> +		       __func__);  
+>>>
+>>> Can't we use lockdep instead of defining our own knobs?  
+>>
+>> From the first look, using the below seems better than defining our
+>> own knobs, because there is similar lockdep_assert_in_irq() checking
+>> already and lockdep_assert_in_*() is NULL-OP when CONFIG_PROVE_LOCKING
+>> is not defined.
+>>
+>>>
+>>> Like this maybe?
+>>>
+>>> diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
+>>> index f5594879175a..5253a167d00c 100644
+>>> --- a/include/linux/lockdep.h
+>>> +++ b/include/linux/lockdep.h
+>>> @@ -594,6 +594,14 @@ do {                                                                       \
+>>>                       this_cpu_read(hardirqs_enabled)));                \
+>>>  } while (0)
+>>>  
+>>> +#define lockdep_assert_in_softirq()                                    \
+>>> +do {                                                                   \
+>>> +       WARN_ON_ONCE(__lockdep_enabled                  &&              \
+>>> +                    (softirq_count() == 0              ||              \
+>>> +                     this_cpu_read(hardirq_context)));                 \  
+>>
+>> Using in_softirq() seems more obvious then using softirq_count()?
+>> And there is below comment above avoiding the using of in_softirq(), maybe
+>> that is why you use softirq_count() directly here?
+>> "softirq_count() == 0" still mean we are not in the SoftIRQ context and
+>> BH is not disabled. right? Perhap lockdep_assert_in_softirq_or_bh_disabled()
+>> is more obvious?
+> 
+> Let's add Peter to the recipients to get his opinion.
+> 
+> We have a per-cpu resource which is also accessed from BH (see
+> _kfree_skb_defer()).
+> 
+> We're trying to come up with the correct lockdep incantation for it.
 
-On line 534, skb->data is assigned to hdr after cast:
-  struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(skb->data);
+Hi, Peter
+	Any suggestion?
 
-Then hdr->frame_control is accessed on line 535:
-  __le16 fc = hdr->frame_control;
+> 
+>> /*
+>>  * Are we doing bottom half or hardware interrupt processing?
+>>  *
+>>  * in_irq()       - We're in (hard) IRQ context
+>>  * in_softirq()   - We have BH disabled, or are processing softirqs
+>>  * in_interrupt() - We're in NMI,IRQ,SoftIRQ context or have BH disabled
+>>  * in_serving_softirq() - We're in softirq context
+>>  * in_nmi()       - We're in NMI context
+>>  * in_task()	  - We're in task context
+>>  *
+>>  * Note: due to the BH disabled confusion: in_softirq(),in_interrupt() really
+>>  *       should not be used in new code.
+>>  */
+>>
+>>
+>> Also, is there any particular reason we do the "this_cpu_read(hardirq_context)"
+>> checking?
+> 
+> Accessing BH resources from a hard IRQ context would be a bug, we may
+> have interrupted a BH, so AFAIU softirq_count() != 0, but we can nest
+> calls to _kfree_skb_defer().
 
-This DMA access may cause data inconsistency between CPU and hardwre.
+In that case, maybe just call lockdep_assert_in_irq() is enough?
 
-To fix this bug, hdr->frame_control is accessed before the DMA mapping.
-
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
----
- drivers/net/wireless/realtek/rtlwifi/rtl8723ae/trx.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/trx.c b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/trx.c
-index e3ee91b7ea8d..340b3d68a54e 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/trx.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/trx.c
-@@ -528,12 +528,12 @@ void rtl8723e_tx_fill_cmddesc(struct ieee80211_hw *hw,
- 	u8 fw_queue = QSLT_BEACON;
- 	__le32 *pdesc = (__le32 *)pdesc8;
- 
--	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
--					    skb->len, DMA_TO_DEVICE);
--
- 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(skb->data);
- 	__le16 fc = hdr->frame_control;
- 
-+	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
-+					    skb->len, DMA_TO_DEVICE);
-+
- 	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
- 		rtl_dbg(rtlpriv, COMP_SEND, DBG_TRACE,
- 			"DMA mapping error\n");
--- 
-2.17.1
-
+> .
+> 
