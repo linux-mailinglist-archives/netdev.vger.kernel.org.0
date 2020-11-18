@@ -2,92 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BF672B8878
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 00:41:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E6212B887B
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 00:41:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726316AbgKRXjd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 18:39:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37266 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726092AbgKRXjd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 18:39:33 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F33AD246BB;
-        Wed, 18 Nov 2020 23:39:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605742772;
-        bh=a+kt9IopjboXHFsUhtGXzcDMMw8eVRylqBoztLZF+58=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Twnhn99mCWR/0i67/eFOt8s0B63RiadpcF1ACIt20l7LyuoknbSvFy3GLw+5F8Nbi
-         T+9M6ZRwVTWrS3liVoQC9SUX2CgZgt383KhHmYumAT4jCJ+kHy+cBcqaTz8z4CSsxk
-         v2N1Vdjmy5hk1sAGmd4JIwQwqUrzUW6yaGHiT0u4=
-Date:   Wed, 18 Nov 2020 15:39:31 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vadim Fedorenko <vfedorenko@novek.ru>
-Cc:     Boris Pismenny <borisp@nvidia.com>,
-        Aviad Yehezkel <aviadye@nvidia.com>, netdev@vger.kernel.org
-Subject: Re: [net] net/tls: missing received data after fast remote close
-Message-ID: <20201118153931.43898a9a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <3c3f9b9d-0fef-fb62-25f8-c9f17ec43a69@novek.ru>
-References: <1605440628-1283-1-git-send-email-vfedorenko@novek.ru>
-        <20201117143847.2040f609@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <71f25f4d-a92c-8c56-da34-9d6f7f808c18@novek.ru>
-        <20201117175344.2a29859a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <33ede124-583b-4bdd-621b-638bbca1a6c8@novek.ru>
-        <20201118082336.6513c6c0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <3c3f9b9d-0fef-fb62-25f8-c9f17ec43a69@novek.ru>
+        id S1726624AbgKRXkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 18:40:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39898 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726092AbgKRXkW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 18:40:22 -0500
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14A6DC0613D4;
+        Wed, 18 Nov 2020 15:40:22 -0800 (PST)
+Received: by mail-ej1-x643.google.com with SMTP id o9so5280591ejg.1;
+        Wed, 18 Nov 2020 15:40:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=dYEg6jWrPkkD53OAHB3soxjlN28LSPDv84400U2paVQ=;
+        b=iIQfwh1LxtqMIVtXSq+tbCkZtDnA1zaS9i6mmWLIe8z4ZpHRemHjRNwAFQiIxrUCra
+         NyHaor6DBzYbqNXVKmqNam4tFAjTJ/4m+YZeRAXosZZyLiXF0TlPMDdi+m+laqVk12CF
+         bP3ke4fdLMG+qA5eJ+wzkqkFm7WDTKVMA7ifPImzs9++tFDwkJwyVr5RqMhuFAnm6Nb5
+         msL9AUcZpilItQ/ZI3W4ccv3GAR9Um7KczBpgP4e9nFM0cJvlIfsy8vZ5ovHtdAtpK5o
+         uGgsWoQWnts/QfdnXI2nfqgM5q5xOqMU8KedqRhTsiKn0uZtFRcNRzG7zmHT2Mx/1OPw
+         9W1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=dYEg6jWrPkkD53OAHB3soxjlN28LSPDv84400U2paVQ=;
+        b=efEY5Ssc1PQL8IMxJkfBae2ICtva4KqN0YlWhttp3a8RHhZ7cRH4uBUTGiz0ynXJLi
+         AtvjFcWGrqgwk7uviU4iqOfigEwjVMi1bsn8/8JBQEUIHB9S/uJY0SSS5N1xgdO5k2vJ
+         IIeV3x4e6Zu3fPlv16C4K2jhmqoQyGOINivM8kk0jVkSi7ENyHta0idgsLROUmAeL7s+
+         DUMwBWdonDwIQaJhNxXjPIGtJqCHTdmo8wac7k/YD1yQ466eLZVw60TKsgMQh/gpygNy
+         IVLvNmABlVd/mguDsAipI8s9lZMOPn5IbEiNzWSTvd7tRctF/8xPyo4pKLEhKgNy+YDK
+         OEZw==
+X-Gm-Message-State: AOAM5306ggBLOwBguhDf/eBkvmQnNdWopP6iIfKIo6xV/2mVJkntI/hS
+        q0kRT+4MQx6LsE2Nuc3bhjg=
+X-Google-Smtp-Source: ABdhPJwzMT5hNpDkngkqFx6uhBOO1xguLw1XxFSQ0hkS91QQhtD72KtANsYgbnr+w+TsH08IytL7kw==
+X-Received: by 2002:a17:906:c20f:: with SMTP id d15mr25754407ejz.341.1605742820626;
+        Wed, 18 Nov 2020 15:40:20 -0800 (PST)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id m26sm13518241ejb.45.2020.11.18.15.40.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Nov 2020 15:40:20 -0800 (PST)
+Date:   Thu, 19 Nov 2020 01:40:18 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Eggers <ceggers@arri.de>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
+        George McCollister <george.mccollister@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3 00/12] net: dsa: microchip: PTP support for
+ KSZ956x
+Message-ID: <20201118234018.jltisnhjesddt6kf@skbuf>
+References: <20201118203013.5077-1-ceggers@arri.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201118203013.5077-1-ceggers@arri.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Nov 2020 20:51:30 +0000 Vadim Fedorenko wrote:
-> >> The async nature of parser is OK for classic HTTPS server/client case
-> >> because it's very good to have parsed record before actual call to recvmsg
-> >> or splice_read is done. The code inside the loop in tls_wait_data is slow
-> >> path - maybe just move the check and the __unpause in this slow path?  
-> > Yeah, looking closer this problem can arise after we start as well :/
-> >
-> > How about we move the __unparse code into the loop tho? Seems like this
-> > could help with latency. Right now AFAICT we get a TCP socket ready
-> > notification, which wakes the waiter for no good reason and makes
-> > strparser queue its work, the work then will call tls_queue() ->
-> > data_ready waking the waiting thread second time this time with the
-> > record actually parsed.
-> >
-> > Did I get that right? Should the waiter not cancel the work on the
-> > first wake up and just kick of the parsing itself?  
-> I was thinking of the same solution too, but simple check of emptyness of
-> socket's receive queue is not working in case when we have partial record
-> in queue - __unpause will return without changing ctx->skb and still having
-> positive value in socket queue and we will have blocked loop until new data
-> is received or strp_abort_strp is fired because of timeout. If you could
-> suggest proper condition to break the loop it would be great.
+On Wed, Nov 18, 2020 at 09:30:01PM +0100, Christian Eggers wrote:
+> This series adds support for PTP to the KSZ956x and KSZ9477 devices.
 > 
-> Or probably I misunderstood what loop did you mean exactly?
+> There is only little documentation for PTP available on the data sheet
+> [1] (more or less only the register reference). Questions to the
+> Microchip support were seldom answered comprehensively or in reasonable
+> time. So this is more or less the result of reverse engineering.
 
-Damn, you may be seeing some problem I'm missing again ;) Running
-__unparse can be opportunistic, if it doesn't parse anything that's
-fine. I was thinking:
+I will not have the time today, and probably not tomorrow, to review
+this. I want to take some time to get more hands-on with the UDP
+checksumming issues reported by Christian in the previous version (in
+order to understand what the problem really is),
+https://lore.kernel.org/netdev/1813904.kIZFssEuCH@n95hx1g2/
+and I will probably only find time for that in the weekend. If anybody
+feels like reviewing the series in the meantime, of course feel free to
+do so.
 
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 95ab5545a931..6478bd968506 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -1295,6 +1295,10 @@ static struct sk_buff *tls_wait_data(struct sock *sk, struct sk_psock *psock,
-                        return NULL;
-                }
- 
-+               __strp_unpause(&ctx->strp);
-+               if (ctx->recv_pkt)
-+                       return ctx->recv_pkt;
-+
-                if (sk->sk_shutdown & RCV_SHUTDOWN)
-                        return NULL;
- 
-Optionally it would be nice if unparse cancelled the work if it managed
-to parse the record out.
+One thing that should definitely not be part of this series though is
+patch 11/12. Christian, given the conversation we had on your previous
+patch:
+https://lore.kernel.org/netdev/20201113025311.jpkplhmacjz6lkc5@skbuf/
+as well as the documentation patch that was submitted in the meantime:
+https://lore.kernel.org/netdev/20201117213826.18235-1-a.fatoum@pengutronix.de/
+obviously you chose to completely disregard that. May we know why?
+How are you even making use of the PTP_CLK_REQ_PPS feature?
