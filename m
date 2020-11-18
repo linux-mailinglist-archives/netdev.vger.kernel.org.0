@@ -2,78 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C85832B8205
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 17:38:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 341FB2B820E
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 17:41:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726316AbgKRQhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 11:37:32 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32412 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726644AbgKRQhb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 11:37:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605717450;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ztnJJHYZImRgMl6CCHOU5sg0a/4NjPVLA/Is2Wx7Dq8=;
-        b=N/Qv7gllLp/yQTS2gsVoOvaMPC0RB2onsvm3EShWz1i2XrXqsgtSsho+vdxt081xoKjn7A
-        JHWi1/BNzNfXnak1m735vpshQ4fL3eumxupPZEtWD0xjuj/+dlj8PKJ3s+i1rSvU3bpH1B
-        hvrueIHDRbiS/kot4gSBFxEbC7C2Tew=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-285-puSDo0WXPwi2LnBDdvPxww-1; Wed, 18 Nov 2020 11:37:26 -0500
-X-MC-Unique: puSDo0WXPwi2LnBDdvPxww-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1727175AbgKRQix (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 11:38:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60548 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725874AbgKRQix (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 11:38:53 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C00AF10509F6;
-        Wed, 18 Nov 2020 16:37:19 +0000 (UTC)
-Received: from new-host-6.redhat.com (unknown [10.40.195.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 10E7D1F0;
-        Wed, 18 Nov 2020 16:37:17 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     gnault@redhat.com, marcelo.leitner@gmail.com
-Subject: [PATCH net] net/sched: act_mpls: ensure LSE is pullable before reading it
-Date:   Wed, 18 Nov 2020 17:36:52 +0100
-Message-Id: <e14a44135817430fc69b3c624895f8584a560975.1605716949.git.dcaratti@redhat.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id C378B2482C;
+        Wed, 18 Nov 2020 16:38:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605717532;
+        bh=QRPuukJJ9VK4qK50cpLa4TltAL6SWkINt7aoyLgZ/fU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=vcYgc9tgY6jdghw/E4yKaUvYdo2I+VIZqhH7Xdvx0BaA0tfFcPs0nKhD7Nve30Y0+
+         A9gzZ84S1IyTQ0fR/UbG+ttsNAets+WBmxZUdcuo9V4G9fBrKevdByJSjkVmDYe8gf
+         o6Cdrw03fvjvQ6msT5OHrubOXPq5fU+3lyDzJDyE=
+Date:   Wed, 18 Nov 2020 08:38:50 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     David Ahern <dsahern@gmail.com>, Florian Klink <flokli@flokli.de>,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Kim Phillips <kim.phillips@arm.com>
+Subject: Re: [PATCH] ipv4: use IS_ENABLED instead of ifdef
+Message-ID: <20201118083850.5cf28ab2@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <0c2869ad-1176-9554-0c47-1f514981c6b4@infradead.org>
+References: <20201115224509.2020651-1-flokli@flokli.de>
+        <20201117160110.42aa3b72@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <5cbc79c3-0a66-8cfb-64f4-399aab525d09@gmail.com>
+        <20201117170712.0e5a8b23@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <0c2869ad-1176-9554-0c47-1f514981c6b4@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-when 'act_mpls' is used to mangle the LSE, the current value is read from
-the packet with mpls_hdr(): ensure that the label is contained in the skb
-"linear" area.
+On Tue, 17 Nov 2020 19:09:16 -0800 Randy Dunlap wrote:
+> On 11/17/20 5:07 PM, Jakub Kicinski wrote:
+> > On Tue, 17 Nov 2020 17:55:54 -0700 David Ahern wrote:  
+> >> On 11/17/20 5:01 PM, Jakub Kicinski wrote:  
+> >>> On Sun, 15 Nov 2020 23:45:09 +0100 Florian Klink wrote:    
+> >>>> Checking for ifdef CONFIG_x fails if CONFIG_x=m.
+> >>>>
+> >>>> Use IS_ENABLED instead, which is true for both built-ins and modules.
+> >>>>
+> >>>> Otherwise, a    
+> >>>>> ip -4 route add 1.2.3.4/32 via inet6 fe80::2 dev eth1      
+> >>>> fails with the message "Error: IPv6 support not enabled in kernel." if
+> >>>> CONFIG_IPV6 is `m`.
+> >>>>
+> >>>> In the spirit of b8127113d01e53adba15b41aefd37b90ed83d631.
+> >>>>
+> >>>> Cc: Kim Phillips <kim.phillips@arm.com>
+> >>>> Signed-off-by: Florian Klink <flokli@flokli.de>    
+> >>>
+> >>> LGTM, this is the fixes tag right?
+> >>>
+> >>> Fixes: d15662682db2 ("ipv4: Allow ipv6 gateway with ipv4 routes")    
+> >>
+> >> yep.
+> >>  
+> >>>
+> >>> CCing David to give him a chance to ack.    
+> >>
+> >> Reviewed-by: David Ahern <dsahern@kernel.org>  
+> > 
+> > Great, applied, thanks!
+> >   
+> >> I looked at this yesterday and got distracted diving into the generated
+> >> file to see the difference:
+> >>
+> >> #define CONFIG_IPV6 1
+> >>
+> >> vs
+> >>
+> >> #define CONFIG_IPV6_MODULE 1  
+> 
+> Digging up ancient history. ;)
+> 
+> > Interesting.
+> > 
+> > drivers/net/ethernet/netronome/nfp/flower/action.c:#ifdef CONFIG_IPV6
+> > 
+> > Oops.  
+> 
+> Notify the maintainer!
 
-Found by code inspection.
+The joke was that I was the maintainer when it was added ;)
 
-Fixes: 2a2ea50870ba ("net: sched: add mpls manipulation actions to TC")
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
----
- net/sched/act_mpls.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/net/sched/act_mpls.c b/net/sched/act_mpls.c
-index 5c7456e5b5cf..03138ad59e9b 100644
---- a/net/sched/act_mpls.c
-+++ b/net/sched/act_mpls.c
-@@ -105,6 +105,9 @@ static int tcf_mpls_act(struct sk_buff *skb, const struct tc_action *a,
- 			goto drop;
- 		break;
- 	case TCA_MPLS_ACT_MODIFY:
-+		if (!pskb_may_pull(skb,
-+				   skb_network_offset(skb) + sizeof(new_lse)))
-+			goto drop;
- 		new_lse = tcf_mpls_get_lse(mpls_hdr(skb), p, false);
- 		if (skb_mpls_update_lse(skb, new_lse))
- 			goto drop;
--- 
-2.28.0
-
+CCing Simon
