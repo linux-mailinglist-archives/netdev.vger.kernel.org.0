@@ -2,88 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3A892B85B1
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 21:36:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E51AE2B85D4
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 21:43:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727206AbgKRUgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 15:36:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39564 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726924AbgKRUgS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 15:36:18 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87580C0613D4
-        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 12:36:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=hd3CjQieU/QNIsveqllFDBhFyucJHOi2e5hWzqr9ObE=; b=l8cCAtp7g1mJq2msRcW57W3R1M
-        QzSpJgh1cm5FNk6PdpDLr6BBigODy8DWre8wQZCBlCOWPkoNmcMfY6NiTIwPTi5PS4Y5aMoQYcQl5
-        8SqI39sfgEq+MPc6qFx+aSA9GjsgEyvXB/6cfTYdmvy+dg5jUNXucd3Ah1ZX9p17ZlBSbrJz88So0
-        MUpONDT82dIgQyj1HJWGaLyPIKiCA6XDIQMPjVe66a5SViwzKMuVcFXzsVBlNKW0g2g2afrA7/n/t
-        eMm8n3oXNc8X6FylLsmZk3TWINZJtrZ9jKWnV1+cJOPoXjYkCyr37pNa6bU6OfZF9A6OS8RdEZi6G
-        Tp2ZgPLg==;
-Received: from [2601:1c0:6280:3f0::bcc4]
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kfUBT-00063a-KE; Wed, 18 Nov 2020 20:36:07 +0000
-Subject: Re: [PATCH net-next v3 2/5] net: add sysfs attribute to control napi
- threaded mode
-To:     Wei Wang <weiwan@google.com>, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>, Felix Fietkau <nbd@nbd.name>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Hillf Danton <hdanton@sina.com>
-References: <20201118191009.3406652-1-weiwan@google.com>
- <20201118191009.3406652-3-weiwan@google.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <8578cfd8-dcaf-5a86-7803-922ee27d9e90@infradead.org>
-Date:   Wed, 18 Nov 2020 12:36:03 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1726268AbgKRUma (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 15:42:30 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:7442 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725794AbgKRUm3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 15:42:29 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fb5872b0003>; Wed, 18 Nov 2020 12:42:19 -0800
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 18 Nov
+ 2020 20:42:29 +0000
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.176)
+ by HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Wed, 18 Nov 2020 20:42:29 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QvHt7seuM5CQokARn0Xguq+WOWS50EigiMlWofvmjaumLdrvayqTpwbwQP0ib3ydLhwo4yDosRpG+noR/nRMH7X5+W6nBKWr3nT4PtYnVPsRD2nLJSF9+0qua+fU06Ar3UwSuFv8UKF8KF+8yGF/ezX2zZVClllqRF/X9mC5uY4Qoa/CGx4DcR6V/TnDQRplDUR9IIiMYJ0gP0XhoDmhfHBwZtGWHoNhfSXwwqqbAt75E/Rjm5KfJlcmfAmJFAuZgbpMQxwXKJDgKirKAiK9+a8e5jkgMZcxUpSHtO4hWpSV+as8HkTbfLMTlX+sIZE3k1oAy42vQmvEootxnhoZAA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=P3sKtobY9FDohelesmaY4d4N72d9+aYWxfSqsCUl9lk=;
+ b=C3GPwJrwY0sUGuosGf+uAz7VCcC+omIPlDvoXjg5dj4UUTizERMh/ps8/rVKF1RRmRXe/hUz9covh3TEm7sOKFMtgAir+gI+421wPa2ZUK4B0VJXw53/xmLCMJ06EYunwDVpdSC0wLHuxweRbvBlxQy6figlWaqY4POx1nSLyPFfC1l8cDsl/OFyHDxGYQhI0GmkVVy8mwExGJv4/PVbmj65XHCenAQ6FyOc29hFOoI3gMdJzfEV/+Xcf1Ko4u9DYDPiCtdAv9wMlx5knWck6Rx3NGW9Pa+hOzcceBeI5cbOvHEpcnzirXZSaMmxiddkYCdvHoWPq8nBjAVPT92mdw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB3737.namprd12.prod.outlook.com (2603:10b6:5:1c5::32) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3564.28; Wed, 18 Nov
+ 2020 20:42:27 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::e40c:730c:156c:2ef9]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::e40c:730c:156c:2ef9%7]) with mapi id 15.20.3564.028; Wed, 18 Nov 2020
+ 20:42:27 +0000
+Date:   Wed, 18 Nov 2020 16:42:26 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     David Ahern <dsahern@gmail.com>
+CC:     Parav Pandit <parav@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Vu Pham <vuhuong@nvidia.com>
+Subject: Re: [PATCH net-next 03/13] devlink: Support add and delete devlink
+ port
+Message-ID: <20201118204226.GB917484@nvidia.com>
+References: <20201112192424.2742-1-parav@nvidia.com>
+ <20201112192424.2742-4-parav@nvidia.com>
+ <e7b2b21f-b7d0-edd5-1af0-a52e2fc542ce@gmail.com>
+ <BY5PR12MB43222AB94ED279AF9B710FF1DCE10@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <b34d8427-51c0-0bbd-471e-1af30375c702@gmail.com>
+ <20201118183830.GA917484@nvidia.com>
+ <ac0c5a69-06e4-3809-c778-b27d6e437ed5@gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ac0c5a69-06e4-3809-c778-b27d6e437ed5@gmail.com>
+X-ClientProxiedBy: BL0PR0102CA0028.prod.exchangelabs.com
+ (2603:10b6:207:18::41) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-In-Reply-To: <20201118191009.3406652-3-weiwan@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (156.34.48.30) by BL0PR0102CA0028.prod.exchangelabs.com (2603:10b6:207:18::41) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.20 via Frontend Transport; Wed, 18 Nov 2020 20:42:27 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1kfUHa-007s1f-20; Wed, 18 Nov 2020 16:42:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1605732139; bh=P3sKtobY9FDohelesmaY4d4N72d9+aYWxfSqsCUl9lk=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType;
+        b=BiwJS/cHk2FsM3oONlnIPi6Q9obUeVvm+tmhL49QTod7NVs5SMfVX6rXO79NKnAFp
+         TuZGZRBbxA9xY3WGk8epVa1s58rxLwXS19cltxu/lFTgikf7lRhDW53pBoV+UlWAHF
+         Oc9LqPERrsNbqp+zw85lBfBKwqy/ohWPryEQjoSaaqrvxIGidIhwrSnjxilQYGKzSt
+         tKKmTtjULtRnfOBC66nphM4M/F02pNK4TveFtXcEt7MRd0/lFgKSlHa1YPAi1nsOmA
+         6Tlwe/goNfyHgyDI8oM4/FxOpIBsJebWyULu9jUaHKo6ye2ZJD7rqvXBeJIfmh0IDq
+         sKU989AI3fGpA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/18/20 11:10 AM, Wei Wang wrote:
-> From: Paolo Abeni <pabeni@redhat.com> 
+On Wed, Nov 18, 2020 at 12:36:26PM -0700, David Ahern wrote:
+> On 11/18/20 11:38 AM, Jason Gunthorpe wrote:
+> > On Wed, Nov 18, 2020 at 11:03:24AM -0700, David Ahern wrote:
+> > 
+> >> With Connectx-4 Lx for example the netdev can have at most 63 queues
+> > 
+> > What netdev calls a queue is really a "can the device deliver
+> > interrupts and packets to a given per-CPU queue" and covers a whole
+> > spectrum of smaller limits like RSS scheme, # of available interrupts,
+> > ability of the device to create queues, etc.
+> > 
+> > CX4Lx can create a huge number of queues, but hits one of these limits
+> > that mean netdev's specific usage can't scale up. Other stuff like
+> > RDMA doesn't have the same limits, and has tonnes of queues.
+> > 
+> > What seems to be needed is a resource controller concept like cgroup
+> > has for processes. The system is really organized into a tree:
+> > 
+> >            physical device
+> >               mlx5_core
+> >         /      |      \      \                        (aux bus)
+> >      netdev   rdma    vdpa   SF  etc
+> >                              |                        (aux bus)
+> >                            mlx5_core
+> >                           /      \                    (aux bus)
+> >                        netdev   vdpa
+> > 
+> > And it does make a lot of sense to start to talk about limits at each
+> > tree level.
+> > 
+> > eg the top of the tree may have 128 physical interrupts. With 128 CPU
+> > cores that isn't enough interrupts to support all of those things
+> > concurrently.
+> > 
+> > So the user may want to configure:
+> >  - The first level netdev only gets 64,
+> >  - 3rd level mlx5_core gets 32 
+> >  - Final level vdpa gets 8
+> > 
+> > Other stuff has to fight it out with the remaining shared interrupts.
+> > 
+> > In netdev land # of interrupts governs # of queues
+> > 
+> > For RDMA # of interrupts limits the CPU affinities for queues
+> > 
+> > VPDA limits the # of VMs that can use VT-d
+> > 
+> > The same story repeats for other less general resources, mlx5 also
+> > has consumption of limited BAR space, and consumption of some limited
+> > memory elements. These numbers are much bigger and may not need
+> > explicit governing, but the general concept holds.
+> > 
+> > It would be very nice if the limit could be injected when the aux
+> > device is created but before the driver is bound. I'm not sure how to
+> > manage that though..
+> > 
+> > I assume other devices will be different, maybe some devices have a
+> > limit on the number of total queues, or a limit on the number of
+> > VDPA or RDMA devices.
 > 
-> this patch adds a new sysfs attribute to the network
-> device class. Said attribute is a bitmask that allows controlling
-> the threaded mode for all the napi instances of the given
-> network device.
-> 
-> The threaded mode can be switched only if related network device
-> is down.
-> 
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> Signed-off-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
-> Signed-off-by: Wei Wang <weiwan@google.com>
-> Reviewed-by: Eric Dumazet <edumazet@google.com>
+> A lot of low level resource details that need to be summarized into a
+> nicer user / config perspective to specify limits / allocations.
 
-Hi,
+Well, now that we have the aux bus stuff there is a nice natural place
+to put things..
 
-Could someone describe the bitmask (is it a bit per instance of the
-network device?).
-And how to use the sysfs interface, please?
+The aux bus owner device (mlx5_core) could have a list of available
+resources
 
-> ---
->  net/core/net-sysfs.c | 103 +++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 103 insertions(+)
-> 
-> diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-> index 94fff0700bdd..df8dd25e5e4b 100644
-> --- a/net/core/net-sysfs.c
-> +++ b/net/core/net-sysfs.c
+Each aux bus device (netdev/rdma/vdpa) could have a list of consumed
+resources
 
+Some API to place a limit on the consumed resources at each aux bus
+device.
 
-thanks.
--- 
-~Randy
+The tricky bit is the auto-probing/configure. By the time the user has
+a chance to apply a limit the drivers are already bound and have
+already done their setup. So each subsystem has to support dynamically
+imposing a limit..
 
+And I simplified things a bit above too, we actually have two kinds of
+interrupt demand: sharable and dedicated. The actual need is to carve
+out a bunch of dedicated interrupts and only allow subsystems that are
+doing VT-d guest interrupt assignment to consume them (eg VDPA)
+
+Jason
