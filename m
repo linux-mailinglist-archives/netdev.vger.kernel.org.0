@@ -2,109 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88E9B2B73FE
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 02:56:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 796EB2B7404
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 02:58:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727359AbgKRB4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 20:56:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35822 "EHLO
+        id S1727438AbgKRB5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 20:57:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726363AbgKRB4T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 20:56:19 -0500
+        with ESMTP id S1725730AbgKRB5s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 20:57:48 -0500
 Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB16EC061A48;
-        Tue, 17 Nov 2020 17:56:19 -0800 (PST)
-Received: by mail-pl1-x644.google.com with SMTP id d17so134184plr.5;
-        Tue, 17 Nov 2020 17:56:19 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99215C061A48;
+        Tue, 17 Nov 2020 17:57:48 -0800 (PST)
+Received: by mail-pl1-x644.google.com with SMTP id d3so138498plo.4;
+        Tue, 17 Nov 2020 17:57:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=ewNH1d//8s37LLtDOmCoW18BcjM3+IXdKM9BEe6crjo=;
-        b=XiHEdcyaht/j7tV+haGdC9gNAC0EYFh1WxvJTl4/Le/0KWre2iqBhIC5V90nUAXYyV
-         Wh/h62eEjuL3GY+SuvKA/4xCUC9TrrGLrBdFUpLSDyjOVyiJnrVLBJpJiz5aEGq3jdEp
-         Di2oMp9b3Bm+64ckmbYYGL5dOZA4c9AMZBBjmJ5Zka6I00tPxKLHwv9mftEI/lURjscq
-         dEy71McNr/01CWyDp6Gp7qt5SISCQ5Kdh3r2+9ykERY8ei0GNo9tnbBL/dMipq+FXmYP
-         ODjbseXkTwNjBoWphd/oQkdb1TbnpqD8lUeTMW7jfE6c1+NRfOf/OnJzyAFNuddQ4nHT
-         AV+Q==
+        h=from:to:cc:subject:date:message-id;
+        bh=4a7zDL5lInqafK1HE5+sC1LmnDT92uD20FAhjTWB/2c=;
+        b=s5xp+g5klPD2WapB/Q7IK1Z0TXAqCLWSgcMGccoj/cwiZX3HzKsIMb3rnXdjbL/8+r
+         bvJCXZ0aH/lQj6Fgj3HCqo67qe3b/ZUEMWVkh9sGwq6S06hVwIY3gS8jlrXfJWKyCcop
+         //lIEZNIXniuq4adWq2IPzDaLGQVnvb11jNu6D0Fr1AJRyWUnNn3Y/d92pycNfkP/XPl
+         xLJltjv78d2xuE5b7q9x5Fk8a4ZP6ZywChYNAKdWw7OgLWluj6SUUWmCituDbv5DZZcA
+         6gJ6ZjTytgQgWLAa0FglUj/nr6yrTkiwEoyY/UtCJF053gBAqFuk4auJUQnCX9Udmb0a
+         Kq8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=ewNH1d//8s37LLtDOmCoW18BcjM3+IXdKM9BEe6crjo=;
-        b=Gyib/EmQV7nULyfsgE6p57/IuBR7D/HdJxznLp8nIIBpoMw7XtKdmnUB2eRZMQhA0s
-         YSRA8QcdfKKP+M8GU9X26WUlB8EEtfaqiO/mk8ln0q5FEieOtmqo1kABMb5leLJpOpu5
-         J41rUI5iK9yg4CzGmaZErBj9YTPArOEqhBDVk784pnIt1hD58/nCkRwFP0NoDao6kzqp
-         YRFvX29dk7EFwGFe1Dn3UoHdKyeaMZnRiGNg2XIUAYX8FsdKZ6+WRZ9Ap5+VJZsUCk1C
-         b4QnnWBQqC8Sm20rdW7ey3nWYWmCtCjT9Im6RP8E4zsLeHPSbVMKU1BNkfR14mNYFbLd
-         TxPA==
-X-Gm-Message-State: AOAM533NZZlHlmGNqzSiJkd9VNh2jIbMyDfjuzRcaF5J12i6dAEvCarU
-        TQ4dkzwj8X8yeRoewjFe2+Iu6PImz69NtA==
-X-Google-Smtp-Source: ABdhPJz6PJFCFVWh9n++tchfQwuF1EGvrHPc14gxh1n9kovjouFv7PwICIV1jyLROSexda3X9xuLaA==
-X-Received: by 2002:a17:902:402:b029:d9:1d4:1c88 with SMTP id 2-20020a1709020402b02900d901d41c88mr2317580ple.16.1605664578982;
-        Tue, 17 Nov 2020 17:56:18 -0800 (PST)
-Received: from [10.143.0.70] ([45.56.153.64])
-        by smtp.gmail.com with ESMTPSA id ha21sm400149pjb.2.2020.11.17.17.56.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Nov 2020 17:56:18 -0800 (PST)
-Subject: Re: [PATCH] rtl8192ce: avoid accessing the data mapped to streaming
- DMA
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     pkshih@realtek.com, davem@davemloft.net, kuba@kernel.org,
-        straube.linux@gmail.com, Larry.Finger@lwfinger.net,
-        christophe.jaillet@wanadoo.fr, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20201019030931.4796-1-baijiaju1990@gmail.com>
- <20201107114412.4BEEAC433C9@smtp.codeaurora.org>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=4a7zDL5lInqafK1HE5+sC1LmnDT92uD20FAhjTWB/2c=;
+        b=fJyJfwE6cB7A2l/orPBM5sm+aS3TW3A00lGzy2QaINT9PBGLKcZCbeM9cvxy2UiYJH
+         6091mox8grK8zoNZp6CUHNMJmD+ZYl7Oekq36YGot4TtKvZg47iV8rguM6qKtuOtgKIy
+         jzSu+9JOu1VsaBJXQDg4BXD3eTHNf2fMmXtd2xou5n0peHomuzscXgJepakuEwUKl7c8
+         AplsBeKWoaGPwolL2Ga7J1n1PsWyZ0AnKOKTFLoRWezE+frIc5xwAtcAiu22OB7XG8P0
+         gATZsaMMpF90Tg1Hgj1ipsJyRnuX7LPcnh/YTCbOJC65LNgE+8NkdodFcuSMT+8QvYHB
+         X4Qw==
+X-Gm-Message-State: AOAM5331ySRCv5xqJ/CGyWadwzXWH535IeTcu3xo3F+qSOjAWElcRrBU
+        PLkshSUjtkDXtCsz5RRVwBw=
+X-Google-Smtp-Source: ABdhPJw6aJl7AaGR6mNa5ccupT7DbLlBABl/RTfldgoA3kMAQHzcLZmNZqpt992LoKTSIEWbRGo/lA==
+X-Received: by 2002:a17:90a:e016:: with SMTP id u22mr1935038pjy.54.1605664668234;
+        Tue, 17 Nov 2020 17:57:48 -0800 (PST)
+Received: from oslab.tsinghua.edu.cn ([166.111.139.137])
+        by smtp.gmail.com with ESMTPSA id e201sm22988444pfh.73.2020.11.17.17.57.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Nov 2020 17:57:47 -0800 (PST)
 From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-Message-ID: <d6104236-f6e6-b42b-eb83-400bc34f17d6@gmail.com>
-Date:   Wed, 18 Nov 2020 09:56:22 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-In-Reply-To: <20201107114412.4BEEAC433C9@smtp.codeaurora.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+To:     pkshih@realtek.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH v2 4/4] rtlwifi: rtl8723ae: avoid accessing the data mapped to streaming DMA
+Date:   Wed, 18 Nov 2020 09:57:08 +0800
+Message-Id: <20201118015708.5445-1-baijiaju1990@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In rtl8723e_tx_fill_cmddesc(), skb->data is mapped to streaming DMA on
+line 531:
+  dma_addr_t mapping = dma_map_single(..., skb->data, ...);
 
+On line 534, skb->data is assigned to hdr after cast:
+  struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(skb->data);
 
-On 2020/11/7 19:44, Kalle Valo wrote:
-> Jia-Ju Bai <baijiaju1990@gmail.com> wrote:
->
->> In rtl92ce_tx_fill_cmddesc(), skb->data is mapped to streaming DMA on
->> line 530:
->>    dma_addr_t mapping = dma_map_single(..., skb->data, ...);
->>
->> On line 533, skb->data is assigned to hdr after cast:
->>    struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(skb->data);
->>
->> Then hdr->frame_control is accessed on line 534:
->>    __le16 fc = hdr->frame_control;
->>
->> This DMA access may cause data inconsistency between CPU and hardwre.
->>
->> To fix this bug, hdr->frame_control is accessed before the DMA mapping.
->>
->> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-> Like Ping said, use "rtlwifi:" prefix and have all rtlwifi patches in
-> the same patchset.
->
-> 4 patches set to Changes Requested.
->
-> 11843533 rtl8192ce: avoid accessing the data mapped to streaming DMA
-> 11843541 rtl8192de: avoid accessing the data mapped to streaming DMA
-> 11843553 rtl8723ae: avoid accessing the data mapped to streaming DMA
-> 11843557 rtl8188ee: avoid accessing the data mapped to streaming DMA
->
+Then hdr->frame_control is accessed on line 535:
+  __le16 fc = hdr->frame_control;
 
-Okay, I have sent v2 patches just now.
-Please have a look, thank :)
+This DMA access may cause data inconsistency between CPU and hardwre.
 
+To fix this bug, hdr->frame_control is accessed before the DMA mapping.
 
-Best wishes,
-Jia-Ju Bai
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+---
+ drivers/net/wireless/realtek/rtlwifi/rtl8723ae/trx.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/trx.c b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/trx.c
+index e3ee91b7ea8d..340b3d68a54e 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/trx.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/trx.c
+@@ -528,12 +528,12 @@ void rtl8723e_tx_fill_cmddesc(struct ieee80211_hw *hw,
+ 	u8 fw_queue = QSLT_BEACON;
+ 	__le32 *pdesc = (__le32 *)pdesc8;
+ 
+-	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
+-					    skb->len, DMA_TO_DEVICE);
+-
+ 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(skb->data);
+ 	__le16 fc = hdr->frame_control;
+ 
++	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
++					    skb->len, DMA_TO_DEVICE);
++
+ 	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
+ 		rtl_dbg(rtlpriv, COMP_SEND, DBG_TRACE,
+ 			"DMA mapping error\n");
+-- 
+2.17.1
+
