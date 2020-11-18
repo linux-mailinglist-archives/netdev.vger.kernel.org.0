@@ -2,85 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 683DE2B7DEF
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 13:57:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AAA82B7DFE
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 14:03:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726489AbgKRMyz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 07:54:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52690 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726249AbgKRMyy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 07:54:54 -0500
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A931EC0613D4;
-        Wed, 18 Nov 2020 04:54:54 -0800 (PST)
-Received: by mail-pj1-x1044.google.com with SMTP id ei22so1062248pjb.2;
-        Wed, 18 Nov 2020 04:54:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Wy/KEppnAdk/cNOgtsabIIPwjqGYS6CaxiiJ4TMK5i8=;
-        b=o3bTqWP+TZ6TijALWjM2TG4Nt4leqd6UyHEbZEHS3zmgNBhbotf9NwQf/wUDONyJ+z
-         uF3pGFjnrjPQmCCix8o7sCCPacZGz7QdRSCibdXY59vRNYdNT2cxlLBNlswwTHwh+i4m
-         057MmUeMzex70xACaYwprcXTs0w2cWmZVwqJrOjo0ehhXv2gfLCWMdBgu9Ab8NGYKdn+
-         mHmGc0dklaUGgegLLjmIzjwtTNLUO437szgfypD9E/MYGiFgKHOds3GiP1QHoE43OUSr
-         JQWxeCnNryeB7SO7hGJE20goJZewE9XfPPy1xxk7QJjYJlbR9WssytuKLX6gB3+eQ2HR
-         /oNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Wy/KEppnAdk/cNOgtsabIIPwjqGYS6CaxiiJ4TMK5i8=;
-        b=Fs1b75d6zTSDJcUlF/kMRONlRFPEl5Kkd7GRnTPE8NH0DLCCJyrYeLyggHjKPrQimD
-         2aqQomXtjcixPv9zHLKzvtXPT4rdM3ETyy+gNq97Bn3rQOZwTQsAPG79aSs4FIhEZnax
-         ty/KjsTw1t1xEarrqiYaT9RdvM/8ivaUvRmQxb6QHLwYCewuJDWaUnzBF4BJaIBOYX7S
-         WglJSRWbRqUATzOy5nXF/TtMiMMvRtAz4ZZc3K25l2i70jefd+wrbXvWAoXIZkrWIfoF
-         fDvWvmaqfaKja8cQDDp/JnnhzjPaMZ3GNhQBNygo9r5ydcuiKM/n5EFgWiD9VT3j1A95
-         oJGw==
-X-Gm-Message-State: AOAM5322qEFp5UHBWzpAe429B0V6dQjUK8WbZ3X1NKA5cTuNZbswy+o2
-        SeJ9nOwQXZvCnlVh2C8o9E4=
-X-Google-Smtp-Source: ABdhPJymCFNey6f4iesj7Ck4E+dXHQMDg5Y6qwOw35FTo8NqA7iy/BgTEAB3A040esLfdt2ku8wwKQ==
-X-Received: by 2002:a17:90a:fb54:: with SMTP id iq20mr1929878pjb.111.1605704094325;
-        Wed, 18 Nov 2020 04:54:54 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id t200sm3692106pfc.143.2020.11.18.04.54.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Nov 2020 04:54:53 -0800 (PST)
-Date:   Wed, 18 Nov 2020 04:54:51 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Cc:     Miroslav Lichvar <mlichvar@redhat.com>,
-        intel-wired-lan@lists.osuosl.org, andre.guedes@intel.com,
-        linux-pci@vger.kernel.org, netdev@vger.kernel.org,
-        bhelgaas@google.com
-Subject: Re: [Intel-wired-lan] [PATCH next-queue v2 3/3] igc: Add support for
- PTP getcrosststamp()
-Message-ID: <20201118125451.GC23320@hoboy.vegasvil.org>
-References: <20201114025704.GA15240@hoboy.vegasvil.org>
- <874klo7pwp.fsf@intel.com>
- <20201117014926.GA26272@hoboy.vegasvil.org>
- <87d00b5uj7.fsf@intel.com>
+        id S1726295AbgKRNBG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 08:01:06 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:56930 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725747AbgKRNBG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 08:01:06 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AID0bm8033164;
+        Wed, 18 Nov 2020 13:00:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=Sa6V/CmnxV/C6v22R7lRkJxn5tiv5ZTRNw/grKo0Fyw=;
+ b=TtNKBOJLBymes09UdnbcvDIMR0Xw9SQ373STdFN3/xI7RYSi+6KUsTmEtiVMREWpkuMT
+ Yuw2Gd/jWh2acVlFfLsbr7rBqeKJBpR82nPpARLNK7o+aE0NkW4uGivkVmHWANS/6uoa
+ ZhixRYyDKCx0GfGPiNwo1fjWI1so0mrPVrKoGxXq7PgxckTR6LuOindKsfoJli54LTiM
+ 1bTRDNcBs5vGfjesuOyI4Ld/584NW5c20PLrvFOQZGAjIkbs+QSZ17WBxGeGYncjlX1+
+ ezy+V1vte/54hRLzQO94CbTTFt6cU5oaVQoLbAmlnstxJSGX8CqDnMdhie+AmxOuRleJ LQ== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2120.oracle.com with ESMTP id 34t76kyvr4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 18 Nov 2020 13:00:59 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AICfKOw188510;
+        Wed, 18 Nov 2020 13:00:58 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3020.oracle.com with ESMTP id 34umd0j7df-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 18 Nov 2020 13:00:58 +0000
+Received: from abhmp0006.oracle.com (abhmp0006.oracle.com [141.146.116.12])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0AID0uE9018806;
+        Wed, 18 Nov 2020 13:00:56 GMT
+Received: from mwanda (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 18 Nov 2020 05:00:56 -0800
+Date:   Wed, 18 Nov 2020 16:00:48 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net-next] mlxsw: spectrum_router: Fix a double free on error
+Message-ID: <20201118130048.GA334813@mwanda>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87d00b5uj7.fsf@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9808 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2 mlxscore=0 phishscore=0
+ spamscore=0 bulkscore=0 mlxlogscore=999 malwarescore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011180089
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9808 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2 phishscore=0
+ adultscore=0 priorityscore=1501 bulkscore=0 clxscore=1011 mlxlogscore=999
+ malwarescore=0 mlxscore=0 spamscore=0 lowpriorityscore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011180090
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 17, 2020 at 05:21:48PM -0800, Vinicius Costa Gomes wrote:
-> Agreed that would be easiest/simplest. But what I have in hand seems to
-> not like it, i.e. I have an earlier series implementing this "one shot" way
-> and it's not reliable over long periods of time or against having the
-> system time adjusted.
+There is a double free here because mlxsw_sp_nexthop6_group_create() and
+mlxsw_sp_nexthop6_group_info_init() free "nh_grp".  It should only be
+freed in the create function.
 
-Before we go inventing a new API, I think we should first understand
-why the one shot thing fails.
+Fixes: 7f7a417e6a11 ("mlxsw: spectrum_router: Split nexthop group configuration to a different struct")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-If there is problem with the system time being adjusted during PTM,
-then that needs solving in any case!
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index a2e81ad5790f..fde8667a2f60 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -5423,7 +5423,6 @@ mlxsw_sp_nexthop6_group_info_init(struct mlxsw_sp *mlxsw_sp,
+ 		nh = &nhgi->nexthops[i];
+ 		mlxsw_sp_nexthop6_fini(mlxsw_sp, nh);
+ 	}
+-	kfree(nh_grp);
+ 	return err;
+ }
+ 
+-- 
+2.29.2
 
-Thanks,
-Richard
