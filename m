@@ -2,94 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 939B62B73E6
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 02:54:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D92212B73EC
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 02:56:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725814AbgKRBxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 20:53:47 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38816 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725730AbgKRBxq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Nov 2020 20:53:46 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D4396241A7;
-        Wed, 18 Nov 2020 01:53:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605664426;
-        bh=dKC5x2c3MTPF/ZR2X1EPQwR1UL6FxaZ7F4Ja2sRAlD8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kmuLMR8733N0BZLAJpCXERWNq7oamiUgGc1gVns2OSg9YWg7jd+NJR59shhFg4hj0
-         WEo9PWzIC3XrqizKVQtuO0uSlx3pmqL56PIBuVAMwUJsCLj4r9wSb+8n1TyYVSSR6v
-         3bhoDYFEqR94SWfVq15Lo84KYs1FsdPdqFxgAbWA=
-Date:   Tue, 17 Nov 2020 17:53:44 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vadim Fedorenko <vfedorenko@novek.ru>
-Cc:     Boris Pismenny <borisp@nvidia.com>,
-        Aviad Yehezkel <aviadye@nvidia.com>, netdev@vger.kernel.org
-Subject: Re: [net] net/tls: missing received data after fast remote close
-Message-ID: <20201117175344.2a29859a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <71f25f4d-a92c-8c56-da34-9d6f7f808c18@novek.ru>
-References: <1605440628-1283-1-git-send-email-vfedorenko@novek.ru>
-        <20201117143847.2040f609@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <71f25f4d-a92c-8c56-da34-9d6f7f808c18@novek.ru>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+        id S1726817AbgKRByR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 20:54:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35492 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725730AbgKRByQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 20:54:16 -0500
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4D84C061A48;
+        Tue, 17 Nov 2020 17:54:14 -0800 (PST)
+Received: by mail-pg1-x544.google.com with SMTP id j19so103240pgg.5;
+        Tue, 17 Nov 2020 17:54:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=kE2vWbri16fQXY9rpZDoR0E3WjS1MfyWuTMn6iwlvi0=;
+        b=iiFu2ayhZnskDuDsAvBIsBT9XoHdbAP5FCqNxNZEshQQTBwoK57TUH7I4nwEPs3yiA
+         YcZtjmYGNovytP0200S0c5iIfLjKAJzGDjJ3aFtU5WCrhxWDKfng1pO0Y0XnFLE2BWgZ
+         /X44f7HDqpaQNkJBIXW/abwxdvuLcK4OYn3UHX33TpSDzhXhCvgRB6Mejbxiz3qHrHS6
+         hwXWesxEaTxrHWMwtLOcOndeIjWPK09Qps74dBJxf7H9PyvpYA7wM7gCaluJJUDkBkmi
+         t7DkpSYOlICkVc8llYIkf5R2aMZ8NtQwmOMZ6Gu70o80Im+Jsobss6+Bq4rLyUdb/dRd
+         ifqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=kE2vWbri16fQXY9rpZDoR0E3WjS1MfyWuTMn6iwlvi0=;
+        b=HYKZgPxGYx3mDAQ1C76opSvZYVIihL2x4X8ZvTXyR7faOzDXMbZ8VXdCdkz7FTxlsf
+         OvU0Nw4jkB5DEpaZ53H49BAugjgvxCNE+TH6efFN1u4xi/Hj2q8SBYIJi1f406NYyFh+
+         K3e1qQ1Wax/aCE16hgcYkt2YwdhArIdBGNz7IauCqLfRh7dV/VCEKknEHK7Gf1IVeVVo
+         EciDija3gQb9Mdn05T2REWCUf8lbagzb/q5B/DjPDqFfGXu8026rRa4A80VXaXfYMZtu
+         eZM77bT25xBXU/JhNyHod3Mbt3+896bl2VV81ugx/HmzrwkUqoCE39+DLgN8N1gM+Gto
+         QiyA==
+X-Gm-Message-State: AOAM531pTPyE0VX7b1x0chr7LiaSriPdm/bahyssMvk+7vVhyLk/ee+G
+        7ciGHXVLc7mqBGL4l471HXLBzEJPFJH27g==
+X-Google-Smtp-Source: ABdhPJwS8sEN4T0K9UeLEWD5OYJsN/8uWi/+Ml/mDUWddf454R3fQuAuhsXE55kA3Homy5+gJvdjvg==
+X-Received: by 2002:a05:6a00:8c4:b029:196:6931:2927 with SMTP id s4-20020a056a0008c4b029019669312927mr2233801pfu.56.1605664454506;
+        Tue, 17 Nov 2020 17:54:14 -0800 (PST)
+Received: from oslab.tsinghua.edu.cn ([166.111.139.137])
+        by smtp.gmail.com with ESMTPSA id v23sm22617513pfn.141.2020.11.17.17.54.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Nov 2020 17:54:13 -0800 (PST)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+To:     pkshih@realtek.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH v2 2/4] rtlwifi: rtl8192ce: avoid accessing the data mapped to streaming DMA
+Date:   Wed, 18 Nov 2020 09:54:06 +0800
+Message-Id: <20201118015406.5063-1-baijiaju1990@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Nov 2020 00:50:48 +0000 Vadim Fedorenko wrote:
-> On 17.11.2020 22:38, Jakub Kicinski wrote:
-> > On Sun, 15 Nov 2020 14:43:48 +0300 Vadim Fedorenko wrote: =20
-> >> In case when tcp socket received FIN after some data and the
-> >> parser haven't started before reading data caller will receive
-> >> an empty buffer. =20
-> > This is pretty terse, too terse for me to understand.. =20
-> The flow is simple. Server sends small amount of data right after the
-> connection is configured and closes the connection. In this case
-> receiver sees TLS Handshake data, configures TLS socket right after
-> Change Cipher Spec record. While the configuration is in process, TCP
-> socket receives small Application Data record, Encrypted Alert record
-> and FIN packet. So the TCP socket changes sk_shutdown to RCV_SHUTDOWN
-> and sk_flag with SK_DONE bit set.
+In rtl92ce_tx_fill_cmddesc(), skb->data is mapped to streaming DMA on
+line 530:
+  dma_addr_t mapping = dma_map_single(..., skb->data, ...);
 
-Thanks! That's clear. This is a race, right, you can't trigger=20
-it reliably?
+On line 533, skb->data is assigned to hdr after cast:
+  struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(skb->data);
 
-BTW please feel free to add your cases to the tls selftest in
-tools/testing/selftests.
+Then hdr->frame_control is accessed on line 534:
+  __le16 fc = hdr->frame_control;
 
-> >> This behavior differs from plain TCP socket and
-> >> leads to special treating in user-space. Patch unpauses parser
-> >> directly if we have unparsed data in tcp receive queue. =20
-> > Sure, but why is the parser paused? Does it pause itself on FIN? =20
-> No, it doesn't start even once. The trace looks like:
->=20
-> tcp_recvmsg is called
-> tcp_recvmsg returns 1 (Change Cipher Spec record data)
-> tls_setsockopt is called
-> tls_setsockopt returns
-> tls_recvmsg is called
-> tls_recvmsg returns 0
-> __strp_recv is called
-> stack
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 __strp_recv+1
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 tcp_read_sock+169
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 strp_read_sock+104
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 strp_work+68
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 process_one_work+436
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 worker_thread+80
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kthread+276
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret_from_fork+34tls_read_size=
- called
->=20
-> So it looks like strp_work was scheduled after tls_recvmsg and
-> nothing triggered parser because all the data was received before
-> tls_setsockopt ended the configuration process.
+This DMA access may cause data inconsistency between CPU and hardwre.
 
-Um. That makes me think we need to flush_work() on the strparser after
-we configure rx tls, no? Or __unpause at the right time instead of
-dealing with the async nature of strp_check_rcv()?
+To fix this bug, hdr->frame_control is accessed before the DMA mapping.
+
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+---
+ drivers/net/wireless/realtek/rtlwifi/rtl8192ce/trx.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192ce/trx.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192ce/trx.c
+index c0635309a92d..4165175cf5c0 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192ce/trx.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192ce/trx.c
+@@ -527,12 +527,12 @@ void rtl92ce_tx_fill_cmddesc(struct ieee80211_hw *hw,
+ 	u8 fw_queue = QSLT_BEACON;
+ 	__le32 *pdesc = (__le32 *)pdesc8;
+ 
+-	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
+-					    skb->len, DMA_TO_DEVICE);
+-
+ 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(skb->data);
+ 	__le16 fc = hdr->frame_control;
+ 
++	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
++					    skb->len, DMA_TO_DEVICE);
++
+ 	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
+ 		rtl_dbg(rtlpriv, COMP_SEND, DBG_TRACE,
+ 			"DMA mapping error\n");
+-- 
+2.17.1
+
