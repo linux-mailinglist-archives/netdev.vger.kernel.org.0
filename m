@@ -2,76 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D06182B8856
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 00:24:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A3192B8864
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 00:28:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726723AbgKRXXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 18:23:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35472 "EHLO mail.kernel.org"
+        id S1726781AbgKRX1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 18:27:40 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:36756 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725947AbgKRXXt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 18:23:49 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9D99D221FE;
-        Wed, 18 Nov 2020 23:23:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605741828;
-        bh=xKZACUxyV23LrsDvEaCr6ps7gloZQxSkyTsA5BorCtw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CJB+DNkG/PSKh2h7xzlh2JPaZcjPQ3l5+B7dGhFsGA+6XgmKAdBFt9Kc2o3SBhhi2
-         215LJepGQZyeu1Bhb1n2PSRb5fyVAwzDUjQEzdlDR9pN/dUQblFNjk+cqP/uFRXaOP
-         FatgJ4J1zUi6bU5mlUmoxZd0BmmysU15OmzzncK0=
-Date:   Wed, 18 Nov 2020 15:23:46 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Dongli Zhang <dongli.zhang@oracle.com>, linux-mm@kvack.org,
-        netdev@vger.kernel.org, willy@infradead.org,
-        aruna.ramakrishna@oracle.com, bert.barbe@oracle.com,
-        rama.nichanamatlu@oracle.com, venkat.x.venkatsubra@oracle.com,
-        manjunath.b.patil@oracle.com, joe.jin@oracle.com,
-        srinivas.eeda@oracle.com, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, vbabka@suse.cz
-Subject: Re: [PATCH v3 1/1] page_frag: Recover from memory pressure
-Message-ID: <20201118152346.5a4fe12d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201118131335.738bdade4f3dfcee190ea8c1@linux-foundation.org>
-References: <20201115201029.11903-1-dongli.zhang@oracle.com>
-        <20201118114654.3435f76c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <20201118131335.738bdade4f3dfcee190ea8c1@linux-foundation.org>
+        id S1725823AbgKRX1k (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 18:27:40 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kfWr9-007oy0-2l; Thu, 19 Nov 2020 00:27:19 +0100
+Date:   Thu, 19 Nov 2020 00:27:19 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     rentao.bupt@gmail.com
+Cc:     Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, openbmc@lists.ozlabs.org, taoren@fb.com,
+        mikechoi@fb.com
+Subject: Re: [PATCH v2 0/2] hwmon: (max127) Add Maxim MAX127 hardware
+ monitoring
+Message-ID: <20201118232719.GI1853236@lunn.ch>
+References: <20201118230929.18147-1-rentao.bupt@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201118230929.18147-1-rentao.bupt@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Nov 2020 13:13:35 -0800 Andrew Morton wrote:
-> On Wed, 18 Nov 2020 11:46:54 -0800 Jakub Kicinski <kuba@kernel.org> wrote:
+On Wed, Nov 18, 2020 at 03:09:27PM -0800, rentao.bupt@gmail.com wrote:
+> From: Tao Ren <rentao.bupt@gmail.com>
 > 
-> > > 1. The kernel is under memory pressure and allocation of
-> > > PAGE_FRAG_CACHE_MAX_ORDER in __page_frag_cache_refill() will fail. Instead,
-> > > the pfmemalloc page is allocated for page_frag_cache->va.
-> > > 
-> > > 2: All skb->data from page_frag_cache->va (pfmemalloc) will have
-> > > skb->pfmemalloc=true. The skb will always be dropped by sock without
-> > > SOCK_MEMALLOC. This is an expected behaviour.
-> > > 
-> > > 3. Suppose a large amount of pages are reclaimed and kernel is not under
-> > > memory pressure any longer. We expect skb->pfmemalloc drop will not happen.
-> > > 
-> > > 4. Unfortunately, page_frag_alloc() does not proactively re-allocate
-> > > page_frag_alloc->va and will always re-use the prior pfmemalloc page. The
-> > > skb->pfmemalloc is always true even kernel is not under memory pressure any
-> > > longer.
-> > > 
-> > > Fix this by freeing and re-allocating the page instead of recycling it.  
-> > 
-> > Andrew, are you taking this via -mm or should I put it in net? 
-> > I'm sending a PR to Linus tomorrow.  
-> 
-> Please go ahead - if/when it appears in mainline or linux-next, I'll
-> drop the -mm copy.  
+> The patch series adds hardware monitoring driver for the Maxim MAX127
+> chip.
 
-Okay, applied, thank you!
+Hi Tao
+
+Why are using sending a hwmon driver to the networking mailing list?
+
+    Andrew
