@@ -2,85 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C5FC2B7A32
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 10:18:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D60952B7A4A
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 10:25:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726471AbgKRJS3 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 18 Nov 2020 04:18:29 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:52265 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725804AbgKRJS3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 04:18:29 -0500
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-94-FSSv3gobMvWUdqkIex0ELA-1; Wed, 18 Nov 2020 09:18:25 +0000
-X-MC-Unique: FSSv3gobMvWUdqkIex0ELA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Wed, 18 Nov 2020 09:18:24 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Wed, 18 Nov 2020 09:18:24 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Kuniyuki Iwashima' <kuniyu@amazon.co.jp>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-CC:     Benjamin Herrenschmidt <benh@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [RFC PATCH bpf-next 0/8] Socket migration for SO_REUSEPORT.
-Thread-Topic: [RFC PATCH bpf-next 0/8] Socket migration for SO_REUSEPORT.
-Thread-Index: AQHWvMXedAT5e1uWx0Go2ulX1CPcBqnNnI0w
-Date:   Wed, 18 Nov 2020 09:18:24 +0000
-Message-ID: <01a5c211a87a4dd69940e19c2ff00334@AcuMS.aculab.com>
-References: <20201117094023.3685-1-kuniyu@amazon.co.jp>
-In-Reply-To: <20201117094023.3685-1-kuniyu@amazon.co.jp>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1726411AbgKRJXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 04:23:42 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:35709 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725804AbgKRJXm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 04:23:42 -0500
+Received: by mail-wm1-f66.google.com with SMTP id w24so2019444wmi.0;
+        Wed, 18 Nov 2020 01:23:40 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=2nsnjnOqDV6WPzahzgOv8VDTMdt+UU18h3NLzAQiSpA=;
+        b=X5DWRRpLxLa2YwmpnxCDdJ9m2LJqPGahM/mvYxyBmEzouI6woOAdiclOXCRDK+/Ckv
+         g/fBPyVpajhQ/8IdIVgnrq2DkTHQLbIltySYpK6SNrsi4rL6urTRYnF58ovnu9W8kRhP
+         5akmkcElDDpyjwbI9iBQTZtvQmtpSY5GTLTYxd358utefNb+N4+JvC1ModI61825yr6r
+         yeEzcwaSbeiE47oHOoMU72yrUMm28l1Knyt62GCkhyQbqI+mObM+8Spu4fCi++gy3UU5
+         7dDmvcPMyd/pKdWXmMaB645OohHZcXNV9JMVkxYwVPaZPkgzxfkqRfNxTo3Oe6bhkZmw
+         69OA==
+X-Gm-Message-State: AOAM532xzEUwHnoW/fAmZyRrL/eotorSELX22CYYGbjdJeljfqmNYXxG
+        BEMtHHfP9zpYeP54o6hxKZVL3tBGSGk=
+X-Google-Smtp-Source: ABdhPJxckaDRo8U42uknkQAN3d1oqdfUPR8JMwF4vNreh318c5rq4YB0kqkTqeFa5f4PE6gRlLM59w==
+X-Received: by 2002:a7b:c2ef:: with SMTP id e15mr3585111wmk.180.1605691419662;
+        Wed, 18 Nov 2020 01:23:39 -0800 (PST)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id g4sm32723173wrp.0.2020.11.18.01.23.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Nov 2020 01:23:39 -0800 (PST)
+Date:   Wed, 18 Nov 2020 09:23:37 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     "Enrico Weigelt, metux IT consult" <info@metux.net>
+Cc:     linux-kernel@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+        dmitry.torokhov@gmail.com, derek.kiernan@xilinx.com,
+        dragan.cvetic@xilinx.com, richardcochran@gmail.com,
+        linux-hyperv@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, Wei Liu <wei.liu@kernel.org>
+Subject: Re: [PATCH 2/2] x86: make hyperv support optional
+Message-ID: <20201118092337.k4inzcaqxygrnqc3@liuwe-devbox-debian-v2>
+References: <20201117202308.7568-1-info@metux.net>
+ <20201117202308.7568-2-info@metux.net>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201117202308.7568-2-info@metux.net>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kuniyuki Iwashima
-> Sent: 17 November 2020 09:40
+On Tue, Nov 17, 2020 at 09:23:08PM +0100, Enrico Weigelt, metux IT consult wrote:
+> Make it possible to opt-out from hyperv support.
 > 
-> The SO_REUSEPORT option allows sockets to listen on the same port and to
-> accept connections evenly. However, there is a defect in the current
-> implementation. When a SYN packet is received, the connection is tied to a
-> listening socket. Accordingly, when the listener is closed, in-flight
-> requests during the three-way handshake and child sockets in the accept
-> queue are dropped even if other listeners could accept such connections.
+
+"Hyper-V support".
+
+Have you tested this patch? If so, how?
+
+> Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
+> ---
+>  arch/x86/Kconfig                 | 7 +++++++
+>  arch/x86/kernel/cpu/Makefile     | 4 ++--
+>  arch/x86/kernel/cpu/hypervisor.c | 2 ++
+>  drivers/hv/Kconfig               | 2 +-
+>  4 files changed, 12 insertions(+), 3 deletions(-)
 > 
-> This situation can happen when various server management tools restart
-> server (such as nginx) processes. For instance, when we change nginx
-> configurations and restart it, it spins up new workers that respect the new
-> configuration and closes all listeners on the old workers, resulting in
-> in-flight ACK of 3WHS is responded by RST.
+> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+> index c227c1fa0091..60aab344d6ab 100644
+> --- a/arch/x86/Kconfig
+> +++ b/arch/x86/Kconfig
+> @@ -808,6 +808,13 @@ config VMWARE_GUEST
+>  	  This option enables several optimizations for running under the
+>  	  VMware hypervisor.
+>  
+> +config HYPERV_GUEST
+> +	bool "HyperV Guest support"
 
-Can't you do something to stop new connections being queued (like
-setting the 'backlog' to zero), then carry on doing accept()s
-for a guard time (or until the queue length is zero) before finally
-closing the listening socket.
+Hyper-V here.
 
-	David
+> +	default y
+> +	help
+> +	  This option enables several optimizations for running under the
+> +	  HyperV hypervisor.
+> +
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+"for running under Hyper-V".
 
+>  config KVM_GUEST
+>  	bool "KVM Guest support (including kvmclock)"
+>  	depends on PARAVIRT
+> diff --git a/arch/x86/kernel/cpu/Makefile b/arch/x86/kernel/cpu/Makefile
+> index a615b0152bf0..5536b801cb44 100644
+> --- a/arch/x86/kernel/cpu/Makefile
+> +++ b/arch/x86/kernel/cpu/Makefile
+> @@ -51,9 +51,9 @@ obj-$(CONFIG_X86_CPU_RESCTRL)		+= resctrl/
+>  
+>  obj-$(CONFIG_X86_LOCAL_APIC)		+= perfctr-watchdog.o
+>  
+> -obj-$(CONFIG_HYPERVISOR_GUEST)		+= hypervisor.o mshyperv.o
+> +obj-$(CONFIG_HYPERVISOR_GUEST)		+= hypervisor.o
+>  obj-$(CONFIG_VMWARE_GUEST)		+= vmware.o
+> -
+> +obj-$(CONFIG_HYPERV_GUEST)		+= mshyperv.o
+>  obj-$(CONFIG_ACRN_GUEST)		+= acrn.o
+>  
+>  ifdef CONFIG_X86_FEATURE_NAMES
+> diff --git a/arch/x86/kernel/cpu/hypervisor.c b/arch/x86/kernel/cpu/hypervisor.c
+> index c0e770a224aa..32d6b2084d05 100644
+> --- a/arch/x86/kernel/cpu/hypervisor.c
+> +++ b/arch/x86/kernel/cpu/hypervisor.c
+> @@ -37,7 +37,9 @@ static const __initconst struct hypervisor_x86 * const hypervisors[] =
+>  #ifdef CONFIG_VMWARE_GUEST
+>  	&x86_hyper_vmware,
+>  #endif
+> +#ifdef CONFIG_HYPERV_GUEST
+>  	&x86_hyper_ms_hyperv,
+> +#endif
+>  #ifdef CONFIG_KVM_GUEST
+>  	&x86_hyper_kvm,
+>  #endif
+> diff --git a/drivers/hv/Kconfig b/drivers/hv/Kconfig
+> index 79e5356a737a..7b3094c59a81 100644
+> --- a/drivers/hv/Kconfig
+> +++ b/drivers/hv/Kconfig
+> @@ -4,7 +4,7 @@ menu "Microsoft Hyper-V guest support"
+>  
+>  config HYPERV
+>  	tristate "Microsoft Hyper-V client drivers"
+> -	depends on X86 && ACPI && X86_LOCAL_APIC && HYPERVISOR_GUEST
+> +	depends on X86 && ACPI && X86_LOCAL_APIC && HYPERV_GUEST
+>  	select PARAVIRT
+>  	select X86_HV_CALLBACK_VECTOR
+>  	help
+
+Maybe that one should be moved to x86/Kconfig and used instead?
+
+Wei.
+
+> -- 
+> 2.11.0
+> 
