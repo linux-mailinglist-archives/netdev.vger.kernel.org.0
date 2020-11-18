@@ -2,61 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D05942B8895
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 00:45:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D6B42B8898
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 00:45:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727315AbgKRXoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 18:44:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40508 "EHLO
+        id S1727358AbgKRXoI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 18:44:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727292AbgKRXoG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 18:44:06 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 232DDC0613D6
-        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 15:44:06 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id q10so2661816pfn.0
-        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 15:44:06 -0800 (PST)
+        with ESMTP id S1727337AbgKRXoH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 18:44:07 -0500
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C5EC0613D6
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 15:44:07 -0800 (PST)
+Received: by mail-pl1-x642.google.com with SMTP id 18so1888195pli.13
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 15:44:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=YNVmomPsfoKndzhCgIIwvVulBDHSaUyYS9Lmo0Fh/4g=;
-        b=nk0GhbdpNORnDl6nwa8uen7IN7R0ti5psYLfmNxsQms1GpbKULyrzSWIg0BePVl1Wo
-         mCRcnyHsVEGxEhYU/M1dPxjBr+SvW5i0aY9SYkTMMS+uLIAzlpC1QNHxWOwitZ8sdJst
-         URUi+ZmlnyPas/Jr3Sz6DnLgu4c+lfg8X2Bn8=
+        bh=cfKp0r4v8KnHJMFIsfD8HVI4xTIgCH6NiDoEg1v+fx4=;
+        b=Lhy85aur6ZtATaH4lMCvfHShYvSTGUd2rdwP41a6bLZ7s+KRY59Trub1cY+9uEsD2/
+         xecK2ZvoziQ/+MfCVOFcA4+9YUMUBWZLEN7jLNepCP6799YapzJIo5yI0j4igCuMeGZb
+         /v0KkHpxKepHoUoRVN+RYY2Srq4SA/vqsFguM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=YNVmomPsfoKndzhCgIIwvVulBDHSaUyYS9Lmo0Fh/4g=;
-        b=cIWGyTP9HQy7FsuIiGJ8BbGPNShsTDFglXBnbwh6xcuXRfPLDiOPPvGIxF6B+Q1+E2
-         10+ryuLeSE36DhITpAC1BZdbn67aemfxV9lDwQfTs9nVmLWHFiBUAFNyTSGB+/V79nI6
-         E2snA4f9fOhlwHn441IYne9uE1eZ1PWWHdOeBheIYpn+ho1SjB3jU2lI+i53WOQ/L8Rw
-         qDiZYimCfX8JskLwUnTUv54vhDldzbhFwMHuiU8jJ/cNoQq1L5+kQ3a2cXSSMfvt2GhK
-         qNoVE0Bsdf6itaOQSF3nPJdYQpWbtvRe6iYJThOQcNfgi5PZwkYxOhth7/ZLB/t390Nv
-         35Sw==
-X-Gm-Message-State: AOAM532V2VER0vDUB5BWEIVy2M2jZPQDn15q7r3jCBQtqH3rDfc9QhPt
-        YNNRWfne2BuHsDuRNFc4/e99Aw==
-X-Google-Smtp-Source: ABdhPJxfameOzBmMxAymwmfLvw5AeR08O20U7SIQojuZCeR4uL/urVzwO2QbUVUlo7uaDeS08eiGUQ==
-X-Received: by 2002:aa7:8c16:0:b029:196:33d2:721f with SMTP id c22-20020aa78c160000b029019633d2721fmr6414397pfd.70.1605743045713;
-        Wed, 18 Nov 2020 15:44:05 -0800 (PST)
+        bh=cfKp0r4v8KnHJMFIsfD8HVI4xTIgCH6NiDoEg1v+fx4=;
+        b=ALFR9jKtVy1S1eSCj04jrzEAnSMIcDNrDqAgyHTXPEjPvIEBzjqEudJR4E1W7PsABw
+         JsHKA/GkHgN2FPh3ueT2YPyii2+3Y5DUPdyJAUKn8FtUUhdrMRNzo9MfAEfY6G9/pjhJ
+         zN7FL4wkbWz3E3d7uF1FkKXGeZKJFKt0Mi9SSYIfMS+ZtsU+6whGE6nyaXHe6JAklN2L
+         iNgHcpw+1I8Hwg6QQyapXrWVoDIrrr5gG/+ePpw7140YcMM8uZDJwFpyrDyDdPOY1mwK
+         RgeiXA+qVmc65KRbDI9zcN2xeIgVYxxOH25zsxGRRFLokhWcseCXpSntlaoUonFY1ZKu
+         oE8w==
+X-Gm-Message-State: AOAM530aOx9JyGNFpvnOxz/msFzqZHUwpAeS7ox//ecQbj601GX1m5lc
+        lhmpUgIGn/ZSJKIX4mcZXLGtTw==
+X-Google-Smtp-Source: ABdhPJwwaHEZy70mLOkmnmMTTboXZBQPl6Emv6az9gRrpwahfvoJjzfc3++alZHHSbv+M50V5DcIpg==
+X-Received: by 2002:a17:902:a5c5:b029:d9:d27d:a1ce with SMTP id t5-20020a170902a5c5b02900d9d27da1cemr2701575plq.78.1605743047090;
+        Wed, 18 Nov 2020 15:44:07 -0800 (PST)
 Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:7220:84ff:fe09:2b94])
-        by smtp.gmail.com with ESMTPSA id f6sm21437435pgi.70.2020.11.18.15.44.04
+        by smtp.gmail.com with ESMTPSA id f6sm21437435pgi.70.2020.11.18.15.44.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Nov 2020 15:44:05 -0800 (PST)
+        Wed, 18 Nov 2020 15:44:06 -0800 (PST)
 From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
 To:     marcel@holtmann.org, linux-bluetooth@vger.kernel.org
 Cc:     chromeos-bluetooth-upstreaming@chromium.org, mcchou@chromium.org,
         danielwinkler@chromium.org,
         Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        Daniel Winkler <danielwinkler@google.com>,
         "David S. Miller" <davem@davemloft.net>,
         Johan Hedberg <johan.hedberg@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 1/3] Bluetooth: Rename and move clean_up_hci_state
-Date:   Wed, 18 Nov 2020 15:43:50 -0800
-Message-Id: <20201118154349.1.I088e8a8c015ee9cc5fb5fc52c02ff4caf9a79031@changeid>
+Subject: [PATCH 2/3] Bluetooth: Add quirk to power down on suspend
+Date:   Wed, 18 Nov 2020 15:43:51 -0800
+Message-Id: <20201118154349.2.Ia5f019f5309cc9f2be9070484a001dc7ddaca354@changeid>
 X-Mailer: git-send-email 2.29.2.299.gdc1121823c-goog
 In-Reply-To: <20201118234352.2138694-1-abhishekpandit@chromium.org>
 References: <20201118234352.2138694-1-abhishekpandit@chromium.org>
@@ -66,160 +65,177 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rename clean_up_hci_state and move to the core header so that we can
-power down the controller from within the kernel rather than just via
-mgmt commands.
+Some older controllers fail to enter a quiescent state reliably when
+supporting remote wake. For those cases, add a quirk that will power
+down the controller when suspending and power it back up when resuming.
 
 Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Reviewed-by: Daniel Winkler <danielwinkler@google.com>
 Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
 ---
 
- include/net/bluetooth/hci_core.h |  2 ++
- net/bluetooth/hci_core.c         | 45 +++++++++++++++++++++++++++++++
- net/bluetooth/mgmt.c             | 46 +-------------------------------
- 3 files changed, 48 insertions(+), 45 deletions(-)
+ include/net/bluetooth/hci.h      |  7 +++++
+ include/net/bluetooth/hci_core.h |  4 +++
+ net/bluetooth/hci_core.c         | 48 ++++++++++++++++++++++++++++++--
+ net/bluetooth/hci_request.c      | 26 ++++++++++++++++-
+ 4 files changed, 82 insertions(+), 3 deletions(-)
 
+diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
+index c8e67042a3b14c..88d5c9554e4840 100644
+--- a/include/net/bluetooth/hci.h
++++ b/include/net/bluetooth/hci.h
+@@ -238,6 +238,13 @@ enum {
+ 	 * during the hdev->setup vendor callback.
+ 	 */
+ 	HCI_QUIRK_BROKEN_ERR_DATA_REPORTING,
++
++	/* When this quirk is set, the adapter will be powered down during
++	 * system suspend and powerd up on resume. This should be used on
++	 * controllers that don't behave well during suspend, either causing
++	 * spurious wakeups or not entering a suspend state reliably.
++	 */
++	HCI_QUIRK_POWER_DOWN_SYSTEM_SUSPEND,
+ };
+ 
+ /* HCI device flags */
 diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 9873e1c8cd163b..ff32d5a856f17f 100644
+index ff32d5a856f17f..e7dc6e3efbf246 100644
 --- a/include/net/bluetooth/hci_core.h
 +++ b/include/net/bluetooth/hci_core.h
-@@ -1072,6 +1072,8 @@ void hci_conn_enter_active_mode(struct hci_conn *conn, __u8 force_active);
+@@ -90,6 +90,7 @@ struct discovery_state {
+ };
  
- void hci_le_conn_failed(struct hci_conn *conn, u8 status);
+ #define SUSPEND_NOTIFIER_TIMEOUT	msecs_to_jiffies(2000) /* 2 seconds */
++#define SUSPEND_POWER_DOWN_TIMEOUT	msecs_to_jiffies(1000)
  
-+int hci_clean_up_state(struct hci_dev *hdev);
-+
- /*
-  * hci_conn_get() and hci_conn_put() are used to control the life-time of an
-  * "hci_conn" object. They do not guarantee that the hci_conn object is running,
+ enum suspend_tasks {
+ 	SUSPEND_PAUSE_DISCOVERY,
+@@ -112,6 +113,9 @@ enum suspended_state {
+ 	BT_RUNNING = 0,
+ 	BT_SUSPEND_DISCONNECT,
+ 	BT_SUSPEND_CONFIGURE_WAKE,
++	BT_SUSPEND_DO_POWER_DOWN,
++	BT_SUSPEND_DO_POWER_UP,
++	BT_SUSPEND_POWERED_DOWN,	/* Powered down prior to suspend */
+ };
+ 
+ struct hci_conn_hash {
 diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 502552d6e9aff3..8e90850d6d769e 100644
+index 8e90850d6d769e..d73e097d3ce16b 100644
 --- a/net/bluetooth/hci_core.c
 +++ b/net/bluetooth/hci_core.c
-@@ -2290,6 +2290,51 @@ static void hci_power_on(struct work_struct *work)
- 	}
- }
+@@ -3562,6 +3562,7 @@ static int hci_suspend_notifier(struct notifier_block *nb, unsigned long action,
+ 		container_of(nb, struct hci_dev, suspend_notifier);
+ 	int ret = 0;
+ 	u8 state = BT_RUNNING;
++	bool powered;
  
-+static void clean_up_hci_complete(struct hci_dev *hdev, u8 status, u16 opcode)
-+{
-+	BT_DBG("%s status 0x%02x", hdev->name, status);
+ 	/* If powering down, wait for completion. */
+ 	if (mgmt_powering_down(hdev)) {
+@@ -3571,8 +3572,51 @@ static int hci_suspend_notifier(struct notifier_block *nb, unsigned long action,
+ 			goto done;
+ 	}
+ 
+-	/* Suspend notifier should only act on events when powered. */
+-	if (!hdev_is_powered(hdev))
++	powered = hdev_is_powered(hdev);
 +
-+	if (hci_conn_count(hdev) == 0) {
-+		cancel_delayed_work(&hdev->power_off);
-+		queue_work(hdev->req_workqueue, &hdev->power_off.work);
++	/* Update the suspend state when entering suspend if the system is
++	 * currently powered off or if it is powered on but was previously
++	 * powered off.
++	 */
++	if (action == PM_SUSPEND_PREPARE) {
++		/* Must hold dev lock when modifying suspend state. */
++		hci_dev_lock(hdev);
++		if (powered && hdev->suspend_state == BT_SUSPEND_POWERED_DOWN)
++			hdev->suspend_state = BT_RUNNING;
++		else if (!powered &&
++			 hdev->suspend_state != BT_SUSPEND_POWERED_DOWN)
++			hdev->suspend_state = BT_SUSPEND_POWERED_DOWN;
++
++		hci_dev_unlock(hdev);
 +	}
-+}
 +
-+/* This function requires the caller holds hdev->lock */
-+int hci_clean_up_state(struct hci_dev *hdev)
-+{
-+	struct hci_request req;
-+	struct hci_conn *conn;
-+	bool discov_stopped;
++	/* When the power down quirk is set, we power down the adapter when
++	 * suspending and power it up when resuming. If the adapter was already
++	 * powered down before suspend, we don't do anything here.
++	 */
++	if (test_bit(HCI_QUIRK_POWER_DOWN_SYSTEM_SUSPEND, &hdev->quirks) &&
++	    hdev->suspend_state != BT_SUSPEND_POWERED_DOWN) {
++		if (action == PM_SUSPEND_PREPARE && powered) {
++			state = BT_SUSPEND_DO_POWER_DOWN;
++			ret = hci_change_suspend_state(hdev, state);
++
++			/* Emit that we're powering down for suspend */
++			hci_clear_wake_reason(hdev);
++			mgmt_suspending(hdev, state);
++			goto done;
++		} else if (action == PM_POST_SUSPEND && !powered) {
++			/* Emit that we're resuming before powering up. */
++			mgmt_resuming(hdev, hdev->wake_reason, &hdev->wake_addr,
++				      hdev->wake_addr_type);
++
++			state = BT_SUSPEND_DO_POWER_UP;
++			ret = hci_change_suspend_state(hdev, state);
++			goto done;
++		}
++	}
++
++	/* Skip to end if we weren't powered. */
++	if (!powered)
+ 		goto done;
+ 
+ 	if (action == PM_SUSPEND_PREPARE) {
+diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+index 048d4db9d4ea53..804bd0652edd1c 100644
+--- a/net/bluetooth/hci_request.c
++++ b/net/bluetooth/hci_request.c
+@@ -1194,6 +1194,7 @@ void hci_req_prepare_suspend(struct hci_dev *hdev, enum suspended_state next)
+ 	struct hci_request req;
+ 	u8 page_scan;
+ 	int disconnect_counter;
 +	int err;
-+	u8 scan = 0x00;
-+
-+	hci_req_init(&req, hdev);
-+
-+	if (test_bit(HCI_ISCAN, &hdev->flags) ||
-+	    test_bit(HCI_PSCAN, &hdev->flags)) {
-+		hci_req_add(&req, HCI_OP_WRITE_SCAN_ENABLE, 1, &scan);
-+	}
-+
-+	hci_req_clear_adv_instance(hdev, NULL, NULL, 0x00, false);
-+
-+	if (hci_dev_test_flag(hdev, HCI_LE_ADV))
-+		__hci_req_disable_advertising(&req);
-+
-+	discov_stopped = hci_req_stop_discovery(&req);
-+
-+	list_for_each_entry(conn, &hdev->conn_hash.list, list) {
-+		/* 0x15 == Terminated due to Power Off */
-+		__hci_abort_conn(&req, conn, 0x15);
-+	}
-+
-+	err = hci_req_run(&req, clean_up_hci_complete);
-+	if (!err && discov_stopped)
-+		hci_discovery_set_state(hdev, DISCOVERY_STOPPING);
-+
-+	return err;
-+}
-+
- static void hci_power_off(struct work_struct *work)
- {
- 	struct hci_dev *hdev = container_of(work, struct hci_dev,
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index 12d7b368b428e8..ea136a6b730f9a 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -1122,16 +1122,6 @@ static int send_settings_rsp(struct sock *sk, u16 opcode, struct hci_dev *hdev)
- 				 sizeof(settings));
- }
  
--static void clean_up_hci_complete(struct hci_dev *hdev, u8 status, u16 opcode)
--{
--	bt_dev_dbg(hdev, "status 0x%02x", status);
--
--	if (hci_conn_count(hdev) == 0) {
--		cancel_delayed_work(&hdev->power_off);
--		queue_work(hdev->req_workqueue, &hdev->power_off.work);
--	}
--}
--
- void mgmt_advertising_added(struct sock *sk, struct hci_dev *hdev, u8 instance)
- {
- 	struct mgmt_ev_advertising_added ev;
-@@ -1159,40 +1149,6 @@ static void cancel_adv_timeout(struct hci_dev *hdev)
- 	}
- }
+ 	if (next == hdev->suspend_state) {
+ 		bt_dev_dbg(hdev, "Same state before and after: %d", next);
+@@ -1273,7 +1274,7 @@ void hci_req_prepare_suspend(struct hci_dev *hdev, enum suspended_state next)
+ 		/* Pause scan changes again. */
+ 		hdev->scanning_paused = true;
+ 		hci_req_run(&req, suspend_req_complete);
+-	} else {
++	} else if (next == BT_RUNNING) {
+ 		hdev->suspended = false;
+ 		hdev->scanning_paused = false;
  
--static int clean_up_hci_state(struct hci_dev *hdev)
--{
--	struct hci_request req;
--	struct hci_conn *conn;
--	bool discov_stopped;
--	int err;
--
--	hci_req_init(&req, hdev);
--
--	if (test_bit(HCI_ISCAN, &hdev->flags) ||
--	    test_bit(HCI_PSCAN, &hdev->flags)) {
--		u8 scan = 0x00;
--		hci_req_add(&req, HCI_OP_WRITE_SCAN_ENABLE, 1, &scan);
--	}
--
--	hci_req_clear_adv_instance(hdev, NULL, NULL, 0x00, false);
--
--	if (hci_dev_test_flag(hdev, HCI_LE_ADV))
--		__hci_req_disable_advertising(&req);
--
--	discov_stopped = hci_req_stop_discovery(&req);
--
--	list_for_each_entry(conn, &hdev->conn_hash.list, list) {
--		/* 0x15 == Terminated due to Power Off */
--		__hci_abort_conn(&req, conn, 0x15);
--	}
--
--	err = hci_req_run(&req, clean_up_hci_complete);
--	if (!err && discov_stopped)
--		hci_discovery_set_state(hdev, DISCOVERY_STOPPING);
--
--	return err;
--}
--
- static int set_powered(struct sock *sk, struct hci_dev *hdev, void *data,
- 		       u16 len)
- {
-@@ -1230,7 +1186,7 @@ static int set_powered(struct sock *sk, struct hci_dev *hdev, void *data,
- 		err = 0;
- 	} else {
- 		/* Disconnect connections, stop scans, etc */
--		err = clean_up_hci_state(hdev);
+@@ -1306,6 +1307,29 @@ void hci_req_prepare_suspend(struct hci_dev *hdev, enum suspended_state next)
+ 		}
+ 
+ 		hci_req_run(&req, suspend_req_complete);
++	} else if (next == BT_SUSPEND_DO_POWER_DOWN) {
++		hdev->suspended = true;
++		hdev->scanning_paused = true;
++
 +		err = hci_clean_up_state(hdev);
- 		if (!err)
- 			queue_delayed_work(hdev->req_workqueue, &hdev->power_off,
- 					   HCI_POWER_OFF_TIMEOUT);
++
++		if (!err)
++			queue_delayed_work(hdev->req_workqueue,
++					   &hdev->power_off,
++					   SUSPEND_POWER_DOWN_TIMEOUT);
++
++		if (err == -ENODATA) {
++			cancel_delayed_work(&hdev->power_off);
++			queue_work(hdev->req_workqueue, &hdev->power_off.work);
++			err = 0;
++		}
++
++		set_bit(SUSPEND_POWERING_DOWN, hdev->suspend_tasks);
++	} else if (next == BT_SUSPEND_DO_POWER_UP) {
++		hdev->suspended = false;
++		hdev->scanning_paused = false;
++
++		queue_work(hdev->req_workqueue, &hdev->power_on);
+ 	}
+ 
+ 	hdev->suspend_state = next;
 -- 
 2.29.2.299.gdc1121823c-goog
 
