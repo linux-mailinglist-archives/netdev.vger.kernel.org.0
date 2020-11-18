@@ -2,125 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 186552B7EF3
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 15:03:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D7AE2B7F09
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 15:07:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726898AbgKROAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 09:00:24 -0500
-Received: from mxout70.expurgate.net ([194.37.255.70]:54423 "EHLO
-        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726269AbgKROAX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 09:00:23 -0500
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1kfO0S-0008AR-4W; Wed, 18 Nov 2020 15:00:20 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1kfO0R-00031n-8Y; Wed, 18 Nov 2020 15:00:19 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 8EA02240041;
-        Wed, 18 Nov 2020 15:00:18 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id 11011240040;
-        Wed, 18 Nov 2020 15:00:18 +0100 (CET)
-Received: from mschiller01.dev.tdt.de (unknown [10.2.3.20])
-        by mail.dev.tdt.de (Postfix) with ESMTPSA id CE305200D1;
-        Wed, 18 Nov 2020 15:00:17 +0100 (CET)
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     andrew.hendry@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        xie.he.0141@gmail.com
-Cc:     linux-x25@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Martin Schiller <ms@dev.tdt.de>
-Subject: [PATCH net-next v3 6/6] net/x25: remove x25_kill_by_device()
-Date:   Wed, 18 Nov 2020 14:59:19 +0100
-Message-ID: <20201118135919.1447-7-ms@dev.tdt.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201118135919.1447-1-ms@dev.tdt.de>
-References: <20201118135919.1447-1-ms@dev.tdt.de>
+        id S1726489AbgKROFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 09:05:38 -0500
+Received: from albireo.enyo.de ([37.24.231.21]:37868 "EHLO albireo.enyo.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726325AbgKROFi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 09:05:38 -0500
+X-Greylist: delayed 355 seconds by postgrey-1.27 at vger.kernel.org; Wed, 18 Nov 2020 09:05:37 EST
+Received: from [172.17.203.2] (helo=deneb.enyo.de)
+        by albireo.enyo.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1kfNzd-00007x-Om; Wed, 18 Nov 2020 13:59:29 +0000
+Received: from fw by deneb.enyo.de with local (Exim 4.92)
+        (envelope-from <fw@deneb.enyo.de>)
+        id 1kfNzd-00024M-Lt; Wed, 18 Nov 2020 14:59:29 +0100
+From:   Florian Weimer <fw@deneb.enyo.de>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Matt Mullins <mmullins@mmlx.us>,
+        Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        linux-toolchains@vger.kernel.org
+Subject: Re: violating function pointer signature
+References: <20201116175107.02db396d@gandalf.local.home>
+        <47463878.48157.1605640510560.JavaMail.zimbra@efficios.com>
+        <20201117142145.43194f1a@gandalf.local.home>
+        <375636043.48251.1605642440621.JavaMail.zimbra@efficios.com>
+        <20201117153451.3015c5c9@gandalf.local.home>
+        <20201118132136.GJ3121378@hirez.programming.kicks-ass.net>
+Date:   Wed, 18 Nov 2020 14:59:29 +0100
+In-Reply-To: <20201118132136.GJ3121378@hirez.programming.kicks-ass.net> (Peter
+        Zijlstra's message of "Wed, 18 Nov 2020 14:21:36 +0100")
+Message-ID: <87h7pmwyta.fsf@mid.deneb.enyo.de>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
-Content-Transfer-Encoding: quoted-printable
-X-purgate-type: clean
-X-purgate: clean
-X-purgate-ID: 151534::1605708019-0000CF01-831BCBE7/0/0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove unnecessary function x25_kill_by_device().
+* Peter Zijlstra:
 
-Replace the call to x25_kill_by_device() by x25_kill_by_neigh().
+> I think that as long as the function is completely empty (it never
+> touches any of the arguments) this should work in practise.
+>
+> That is:
+>
+>   void tp_nop_func(void) { }
+>
+> can be used as an argument to any function pointer that has a void
+> return. In fact, I already do that, grep for __static_call_nop().
 
-Therefore, also remove the call to x25_clear_forward_by_dev() in
-x25_route_device_down(), as this is already called by
-x25_kill_by_neigh().
+You can pass it as a function parameter, but in general, you cannot
+call the function with a different prototype.  Even trivial
+differences such as variadic vs non-variadic prototypes matter.
 
-Signed-off-by: Martin Schiller <ms@dev.tdt.de>
----
- net/x25/af_x25.c    | 22 +++++-----------------
- net/x25/x25_route.c |  3 ---
- 2 files changed, 5 insertions(+), 20 deletions(-)
+The default Linux calling conventions are all of the cdecl family,
+where the caller pops the argument off the stack.  You didn't quote
+enough to context to tell whether other calling conventions matter in
+your case.
 
-diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
-index 02f56386e05b..ec90956f38d4 100644
---- a/net/x25/af_x25.c
-+++ b/net/x25/af_x25.c
-@@ -199,22 +199,6 @@ static void x25_remove_socket(struct sock *sk)
- 	write_unlock_bh(&x25_list_lock);
- }
-=20
--/*
-- *	Kill all bound sockets on a dropped device.
-- */
--static void x25_kill_by_device(struct net_device *dev)
--{
--	struct sock *s;
--
--	write_lock_bh(&x25_list_lock);
--
--	sk_for_each(s, &x25_list)
--		if (x25_sk(s)->neighbour && x25_sk(s)->neighbour->dev =3D=3D dev)
--			x25_disconnect(s, ENETUNREACH, 0, 0);
--
--	write_unlock_bh(&x25_list_lock);
--}
--
- /*
-  *	Handle device status changes.
-  */
-@@ -260,7 +244,11 @@ static int x25_device_event(struct notifier_block *t=
-his, unsigned long event,
- 		case NETDEV_DOWN:
- 			pr_debug("X.25: got event NETDEV_DOWN for device: %s\n",
- 				 dev->name);
--			x25_kill_by_device(dev);
-+			nb =3D x25_get_neigh(dev);
-+			if (nb) {
-+				x25_kill_by_neigh(nb);
-+				x25_neigh_put(nb);
-+			}
- 			x25_route_device_down(dev);
- 			x25_link_device_down(dev);
- 			break;
-diff --git a/net/x25/x25_route.c b/net/x25/x25_route.c
-index 00e46c9a5280..ec2a39e9b3e6 100644
---- a/net/x25/x25_route.c
-+++ b/net/x25/x25_route.c
-@@ -115,9 +115,6 @@ void x25_route_device_down(struct net_device *dev)
- 			__x25_remove_route(rt);
- 	}
- 	write_unlock_bh(&x25_route_list_lock);
--
--	/* Remove any related forwarding */
--	x25_clear_forward_by_dev(dev);
- }
-=20
- /*
---=20
-2.20.1
+> I'm not sure what the LLVM-CFI crud makes of it, but that's their
+> problem.
 
+LTO can cause problems as well, particularly with whole-program
+optimization.
