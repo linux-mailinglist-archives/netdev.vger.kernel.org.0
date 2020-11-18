@@ -2,103 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 429B42B7A67
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 10:31:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 735AD2B7A86
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 10:42:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726932AbgKRJbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 04:31:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49466 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726821AbgKRJbO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 04:31:14 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79ACAC061A4D
-        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 01:31:14 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id a18so1057437pfl.3
-        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 01:31:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=3sJzfKF/R19+n7PGEC3QRVimnx1Uc5u5uS3V7+K9BfQ=;
-        b=bZgdEXR/ZaFKvebScHH5Q+qFcMi57gsN5z7s7219zIyuxSGzasUsRk2r7B7hRaglln
-         YiohFI/K1wOpgG31niCZsznljJxwYO+DBV2Ayxq+w/C84M1hhGNRlzKOwsrPsfMiKUNC
-         1MCKmduruXMCVzfgREmGV3W4KYsbCddAYbJ4xC19oIC1kzgBtwSuqo9pcJPqicBTS0kV
-         cnBmJqU0BD1oNWGleKPkAVXYKldCyL6XaNMmrSfXZxYXp4O1RhIBigf0oBJAbQcQCGur
-         jggCRzuWcIWDI+GGKsZiST0t8WSQEd1eXIAodlAR5e1Flbpyy/rfrusG9VlZXe7OtMyB
-         oDzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=3sJzfKF/R19+n7PGEC3QRVimnx1Uc5u5uS3V7+K9BfQ=;
-        b=FisFs8bKcooTif7GrpLJpINj5Do9Yv7VSNnkD2yHNrjAxfbtdLmg6P3GrZncfBJrhA
-         7IiRpE/5afx1FR9pMfglD8dxiS7FNwr5F4uh6WcNXWx8fgVtomjCg0RaUxznpiqELW9m
-         6zC5abRjlTnaF8mujMcqtQCMRL+d48VTCeX2ikpHRfeLOTshbRJo85mjsQ4a7h7m7Qxa
-         2FwjMYAroALvXcnVNosKHSwK3r1a0vtBiBoOOImwVmr7g18DEqc620HM7idxcT41nlP2
-         IG2PuhZWmko+gW8ywv5mQ7lp0S+tTJyuVBnWlffKv9nQ2Lx5H9ov0V2Xel3m61fE7HB2
-         hZDw==
-X-Gm-Message-State: AOAM531+Qt8OrLOKUKnE2AuR1xhxKtIcf7t1qftryvYqESEEug+i0C34
-        iikIZfKjU4LvybKDSgZXQUgj
-X-Google-Smtp-Source: ABdhPJxAF8PiFAPcEZMU3zhIYbaiwpiUccynZBojEL8AfE7wj3u2OpnHQb8iaXndOTzPDiqyA//knQ==
-X-Received: by 2002:aa7:8154:0:b029:156:4b89:8072 with SMTP id d20-20020aa781540000b02901564b898072mr3879432pfn.51.1605691873922;
-        Wed, 18 Nov 2020 01:31:13 -0800 (PST)
-Received: from work ([103.59.133.81])
-        by smtp.gmail.com with ESMTPSA id h8sm2219525pjc.54.2020.11.18.01.31.10
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 18 Nov 2020 01:31:13 -0800 (PST)
-Date:   Wed, 18 Nov 2020 15:01:07 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     linux-arm-msm@vger.kernel.org,
-        Loic Poulain <loic.poulain@linaro.org>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, bbhatt@codeaurora.org,
-        hemantk@codeaurora.org, ath11k@lists.infradead.org
-Subject: Re: [PATCH] bus: mhi: Remove auto-start option
-Message-ID: <20201118093107.GC3286@work>
-References: <20201118053102.13119-1-manivannan.sadhasivam@linaro.org>
- <877dqjz0bv.fsf@codeaurora.org>
+        id S1726929AbgKRJkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 04:40:03 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:32751 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725964AbgKRJkD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 04:40:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605692402;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8YUHjCb6T+duwkVVqtutOFcmHYQOlclmLV2nizfmVHg=;
+        b=HiRVW2xjpKa/i9erD3sDc184C+ca06hvsYxY3j6UIPh/URFmbJa/VRs0pnT5bAQON3B87g
+        hisHCgUD/tkZzFSQmoSIVP1hBg4TeAwgodWhsImfdjGD+FHKzrPiUWmDTJoXbo+MGnfiYN
+        yRZF5Mvtz75c5XIlIneqmQSm4BBg/EE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-462-eJe0u6hPPU2DjFdLdYSYRg-1; Wed, 18 Nov 2020 04:40:00 -0500
+X-MC-Unique: eJe0u6hPPU2DjFdLdYSYRg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C2459100855E;
+        Wed, 18 Nov 2020 09:39:58 +0000 (UTC)
+Received: from [10.72.12.138] (ovpn-12-138.pek2.redhat.com [10.72.12.138])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D14E655762;
+        Wed, 18 Nov 2020 09:39:52 +0000 (UTC)
+Subject: Re: [PATCH net] vhost_vdpa: Return -EFUALT if copy_from_user() fails
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, kuba@kernel.org
+References: <20201023120853.GI282278@mwanda>
+ <20201023113326-mutt-send-email-mst@kernel.org>
+ <4485cc8d-ac69-c725-8493-eda120e29c41@redhat.com>
+ <e7242333-b364-c2d8-53f5-1f688fc4d0b5@redhat.com>
+ <20201118035912-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <4ac146a2-a3db-abc7-73a0-98f71119de3d@redhat.com>
+Date:   Wed, 18 Nov 2020 17:39:51 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <877dqjz0bv.fsf@codeaurora.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20201118035912-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 07:43:48AM +0200, Kalle Valo wrote:
-> Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org> writes:
-> 
-> > From: Loic Poulain <loic.poulain@linaro.org>
-> >
-> > There is really no point having an auto-start for channels.
-> > This is confusing for the device drivers, some have to enable the
-> > channels, others don't have... and waste resources (e.g. pre allocated
-> > buffers) that may never be used.
-> >
-> > This is really up to the MHI device(channel) driver to manage the state
-> > of its channels.
-> >
-> > While at it, let's also remove the auto-start option from ath11k mhi
-> > controller.
-> >
-> > Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-> > Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> > [mani: clubbed ath11k change]
-> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> 
-> Thanks and feel free to take this to the immutable branch:
-> 
-> Acked-by: Kalle Valo <kvalo@codeaurora.org>
 
-Patch applied to mhi-ath11k-immutable branch and merged into mhi-next.
+On 2020/11/18 下午4:59, Michael S. Tsirkin wrote:
+> On Wed, Nov 18, 2020 at 02:08:17PM +0800, Jason Wang wrote:
+>> On 2020/10/26 上午10:59, Jason Wang wrote:
+>>> On 2020/10/23 下午11:34, Michael S. Tsirkin wrote:
+>>>> On Fri, Oct 23, 2020 at 03:08:53PM +0300, Dan Carpenter wrote:
+>>>>> The copy_to/from_user() functions return the number of bytes which we
+>>>>> weren't able to copy but the ioctl should return -EFAULT if they fail.
+>>>>>
+>>>>> Fixes: a127c5bbb6a8 ("vhost-vdpa: fix backend feature ioctls")
+>>>>> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+>>>> Acked-by: Michael S. Tsirkin <mst@redhat.com>
+>>>> Needed for stable I guess.
+>>>
+>>> Agree.
+>>>
+>>> Acked-by: Jason Wang <jasowang@redhat.com>
+>>
+>> Hi Michael.
+>>
+>> I don't see this in your tree, please consider to merge.
+>>
+>> Thanks
+>>
+> I do see it there:
+>
+> commit 7922460e33c81f41e0d2421417228b32e6fdbe94
+> Author: Dan Carpenter <dan.carpenter@oracle.com>
+> Date:   Fri Oct 23 15:08:53 2020 +0300
+>
+>      vhost_vdpa: Return -EFAULT if copy_from_user() fails
+>      
+> the reason you can't find it is probably because I fixed up
+> a typo in the subject.
 
-Thanks,
-Mani
 
-> 
-> -- 
-> https://patchwork.kernel.org/project/linux-wireless/list/
-> 
-> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+I see that.
+
+Thanks
+
+
+>
+>
+
