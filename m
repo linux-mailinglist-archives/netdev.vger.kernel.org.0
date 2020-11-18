@@ -2,176 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26C3C2B7633
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 07:17:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E63A22B7637
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 07:20:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726239AbgKRGQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 01:16:33 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:5960 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725355AbgKRGQd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 01:16:33 -0500
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AI69is7028257;
-        Tue, 17 Nov 2020 22:16:13 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=lL5lFs1lZG3zBxaNvZDK7MzTP/K7KYbDPsQ7wFD0bVQ=;
- b=ND75TdCIaYVGSsk/n6FVyJApB1qz10P859Z8eOVI5cib+JI7CGAu6h2bg25Kid8jqXZX
- MNW4AAoSbARNom8nVPwggopmkxprxKoupk1auLB8ARTCVVn+EwXje7i6NlG3t9ZgSYPN
- Rb6a8AgoypfD/C7UvG0HKjWF2IdRI0JWgbQ= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 34vhjpvsm6-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 17 Nov 2020 22:16:13 -0800
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 17 Nov 2020 22:16:12 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=C9Gb/WsgmurggL9DQxy6Jyc8UHyjSIcWMpc1mfQq3W2sVZ6GJ6u5E3TrO8DMRj9YL50navqYwpsVwMHSPht6YlB7CWitwdUBbNhTB/Y4Y5r9hvvdTnX10vWzzYGiPl0Qow3SsiqHI9EgCw64Nz1wp5akEdi5PPa3175DiZG93tOLAYihwk1eay87+BDH2+3vxehiEZ+KNsrqCNfzL++DpCS+o74ASauhJvbJxpMvDooCcvnFMF9eb6OF1JjV7IoVVgGhgwKBvrAuFW9EFDOwcO3+m91JH8KjyYKj1nMzwy+aURvLio2JjIzD0ZknLCZZsCe48T0A25Mvp1ZhZ9V+kA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lL5lFs1lZG3zBxaNvZDK7MzTP/K7KYbDPsQ7wFD0bVQ=;
- b=CXIZ7b5Xbjy8NIe7F27ocxls902GR2rEbbicJXDkxzgiyeDJ0o0Te/jqRWFARsGP9P3qdwPZxBINGlQfIRA2fFlcBLtx1ZkrpNbwGI5hjTrIRw+7AsnD3qgdLJNet9C8wx0COQ7D59XRIB40tAaugAOSccbQUyUBp9SRVftQULol9WvAk4y01o/8qscJ91GyqQMO4hF15jDqIVMEiYfVf6/71TMNOMflgrz7m5AHbHvnDnMljGjIWWH68qYOW5LIcTAc1c5TgTqACYWsWGbQ2+eHhEdoeBxHN4/g4rajdJwxwkCFgTcZD/VBetoLnr0ihwLO62SPwIlB3tbJqNYGDw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lL5lFs1lZG3zBxaNvZDK7MzTP/K7KYbDPsQ7wFD0bVQ=;
- b=WCBhDyiDlAIgZTsQlsB/MsBL4bDpiuPrvPAMiD3b8YtxM/TUFxDDOWd04n+04NCrSTqXHW4SsZAYY455+t9CdTE921Zu+gXwi/sxJp1EPsmZBWTxN223LsKa8efZ5IuYZOqGBtZkvQ8edRqsCcBFp+c6VqxWpvWfO+zLnW3snEo=
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
- by SJ0PR15MB4233.namprd15.prod.outlook.com (2603:10b6:a03:2ec::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.20; Wed, 18 Nov
- 2020 06:15:57 +0000
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::bc1d:484f:cb1f:78ee]) by BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::bc1d:484f:cb1f:78ee%4]) with mapi id 15.20.3564.028; Wed, 18 Nov 2020
- 06:15:57 +0000
-Date:   Tue, 17 Nov 2020 22:15:50 -0800
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-CC:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, brakmo <brakmo@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        David Ahern <dsa@cumulusnetworks.com>,
-        Yonghong Song <yhs@fb.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Ira Weiny <ira.weiny@intel.com>, Thomas Graf <tgraf@suug.ch>,
+        id S1726200AbgKRGTs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 01:19:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43934 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725772AbgKRGTr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 01:19:47 -0500
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BA81224655;
+        Wed, 18 Nov 2020 06:19:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1605680386;
+        bh=JyKrBTD9KmRY4xEmDo2NZTmBTy+QJ2mMIRc2QKOzzDc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=d7XNZzIyCJHcdRwphjUy/Ndt5XCEjL6KToKLBaElJF3RoB6avy6xGyclvEDNnyyxo
+         10NQwAmikNMCQx6p+YuEMhQvZnWjHkeXTSXeXsB+uDhiDvDp2y9RT4nbVk0gTbTLZa
+         Px+oY3SifEt+uys+r2S6/xakQCY6rFsc+dzOMLyM=
+Date:   Wed, 18 Nov 2020 07:19:43 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Dan Williams <dan.j.williams@intel.com>
+Cc:     Leon Romanovsky <leonro@nvidia.com>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        alsa-devel@alsa-project.org, Takashi Iwai <tiwai@suse.de>,
+        Mark Brown <broonie@kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Doug Ledford <dledford@redhat.com>,
+        Netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        Xdp <xdp-newbies@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 4/9] samples: bpf: refactor task_fd_query
- program with libbpf
-Message-ID: <20201118061550.5wiwkdxyo4bf7bfy@kafai-mbp.dhcp.thefacebook.com>
-References: <20201117145644.1166255-1-danieltimlee@gmail.com>
- <20201117145644.1166255-5-danieltimlee@gmail.com>
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Fred Oh <fred.oh@linux.intel.com>,
+        Parav Pandit <parav@mellanox.com>,
+        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
+        "Patil, Kiran" <kiran.patil@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 01/10] Add auxiliary bus support
+Message-ID: <X7S8/1WOQbPTxfiF@kroah.com>
+References: <20201113161859.1775473-1-david.m.ertman@intel.com>
+ <20201113161859.1775473-2-david.m.ertman@intel.com>
+ <20201117053000.GM47002@unreal>
+ <X7N1naYOXodPsP/I@kroah.com>
+ <CAPcyv4jXinvaLgtdpXTLLQ3sDOhvoBjF=7v7pba5rAd0g_rdow@mail.gmail.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201117145644.1166255-5-danieltimlee@gmail.com>
-X-Originating-IP: [2620:10d:c090:400::5:603e]
-X-ClientProxiedBy: MW4PR03CA0160.namprd03.prod.outlook.com
- (2603:10b6:303:8d::15) To BY5PR15MB3571.namprd15.prod.outlook.com
- (2603:10b6:a03:1f6::32)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:603e) by MW4PR03CA0160.namprd03.prod.outlook.com (2603:10b6:303:8d::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.20 via Frontend Transport; Wed, 18 Nov 2020 06:15:56 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 88c16acc-4487-4db1-f6a8-08d88b8969dc
-X-MS-TrafficTypeDiagnostic: SJ0PR15MB4233:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SJ0PR15MB42339164D7AEAB920E636A96D5E10@SJ0PR15MB4233.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:168;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: di8rg47bOKcp4yP5vNL1QnV5AhFhWidf9uPhXnWyKnnXWtX0RBWPJAgP1Nd7o1l7FS91N9BQu+Sf/Mncv/iHJ16mCzpvTCmBXWHAHjp/f1kZzpS8gk31AajAJoD/8173J7si26IoCCHrP0Kfo6UF6pd4npNukcDybSQKzSA+8l4GO20swjC76Yu1MFJgpeabQab42/g71SmvNK5aL2Riux79JeEDbk1uhqK1WMUxvbmLGgEEKv27N8JFcHQBXiboTvB0ZQkD4MptYAgjrk4hv6sX5DHCYuw9VzaMM8ADWnSWWkbf2KMafVr21tM8uDQJF/+Nj2lRCcrRXQYgwhNTgQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(39840400004)(396003)(366004)(346002)(376002)(9686003)(6666004)(55016002)(508600001)(83380400001)(54906003)(316002)(86362001)(186003)(1076003)(8936002)(16526019)(5660300002)(7696005)(2906002)(6916009)(52116002)(8676002)(6506007)(4326008)(66556008)(66476007)(7416002)(66946007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: mOxwqTSzrWlUCXKFIioMHube7IsLof80qwdq8aMhbP+J+1NdPr3/HPYKvH9pMRDxTtzm44d3iN6gvutFb5T+3hlZGhn8p8UQqlTye7Mkfw8PunxTZBANjCxqh3iJhqAs2xsuxyO1Y8QkqGti/XrGzauCZGxacNVvbAu4yzgusRQPB0vUCFr0QJ7ONA7+jsewd5GZ6H7noOOxBMGl50AqMgDoewagoz6ACGmR6lI0EKBHW1s5HE04z4+nReMIqICwcZR1psmVZ+yNPITirFCsyRh3/De4qCkTlQXCTR9iqDIzpmJBfMkczrh6yV5OE427fuzoyQXXsHi71eotY6gBdx/19+GbOTn4mE3ormi8zr/ZKUEEE4PXiZD0Z0F0hUOFRELmUUxhvYRvK0Ip0p/5vvDzZoM9zv1khpXnnB3/MMmdNzh0pMwC5yAqH3Cq1nFvAJz9pbOnf/4l8xYD2AT2ngcfpwRZVoCHA+Q1/HOqkAU6FVjacam04+5/L0jRoZKiefTZY3f41qTZSZyRq2ZXeHPZmqOC3QjTk3t+uWomi3vBN/JGMvRoVLz1WVpu6KKmB228jAPxnCO2mtYg/tqbYjX0bmfYfE9R4tLvWM88VTyg7dXboTiPfKsZlGh+NnCmJw0nZrrLPUWKz7KqwVngyMH3R0HoEHxkFHKzWFVy/NyUO7XprxvgXiy0dSiVPpCnvFgI7xmXk1m2M/KO2AlD1Wcmy0xpAbqYzG4vpRyqE2T02aEer3RhzTofk94YOrnzMq0JJL7UjPUkknLl7pUOalmnCybaYBRJilIoTjIccl4YHdYzv3nwX4FtNjOpz5glNQ98cfiLlhfL0AS7HKRaYhCH10Qc3GXailaQlYe+d5WNPF0Kumv/rwuSU2DjzYM2cviqiu7xYHrUOSMDWh3l/It1lzqW28QS1S/t91hxRew=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 88c16acc-4487-4db1-f6a8-08d88b8969dc
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2020 06:15:57.6883
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hsctq9Vqoszn2nGN4pmOkgl/6w5F4ckuSkz3bm+WRcdb+pwxyaDH9c4hE8k1zKvA
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR15MB4233
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-18_01:2020-11-17,2020-11-18 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
- bulkscore=0 mlxscore=0 adultscore=0 clxscore=1015 phishscore=0
- lowpriorityscore=0 spamscore=0 impostorscore=0 suspectscore=1
- malwarescore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2009150000 definitions=main-2011180043
-X-FB-Internal: deliver
+In-Reply-To: <CAPcyv4jXinvaLgtdpXTLLQ3sDOhvoBjF=7v7pba5rAd0g_rdow@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 17, 2020 at 02:56:39PM +0000, Daniel T. Lee wrote:
-> This commit refactors the existing kprobe program with libbpf bpf
-> loader. To attach bpf program, this uses generic bpf_program__attach()
-> approach rather than using bpf_load's load_bpf_file().
+On Tue, Nov 17, 2020 at 01:04:56PM -0800, Dan Williams wrote:
+> On Mon, Nov 16, 2020 at 11:02 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+> >
+> > On Tue, Nov 17, 2020 at 07:30:00AM +0200, Leon Romanovsky wrote:
+> > > On Fri, Nov 13, 2020 at 08:18:50AM -0800, Dave Ertman wrote:
+> > > > Add support for the Auxiliary Bus, auxiliary_device and auxiliary_driver.
+> > > > It enables drivers to create an auxiliary_device and bind an
+> > > > auxiliary_driver to it.
+> > > >
+> > > > The bus supports probe/remove shutdown and suspend/resume callbacks.
+> > > > Each auxiliary_device has a unique string based id; driver binds to
+> > > > an auxiliary_device based on this id through the bus.
+> > > >
+> > > > Co-developed-by: Kiran Patil <kiran.patil@intel.com>
+> > > > Signed-off-by: Kiran Patil <kiran.patil@intel.com>
+> > > > Co-developed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+> > > > Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+> > > > Co-developed-by: Fred Oh <fred.oh@linux.intel.com>
+> > > > Signed-off-by: Fred Oh <fred.oh@linux.intel.com>
+> > > > Co-developed-by: Leon Romanovsky <leonro@nvidia.com>
+> > > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > > > Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+> > > > Reviewed-by: Shiraz Saleem <shiraz.saleem@intel.com>
+> > > > Reviewed-by: Parav Pandit <parav@mellanox.com>
+> > > > Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+> > > > Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
+> > > > ---
+> > >
+> > > Greg,
+> > >
+> > > This horse was beaten to death, can we please progress with this patch?
+> > > Create special topic branch or ack so I'll prepare this branch.
+> > >
+> > > We are in -rc4 now and we (Mellanox) can't hold our submissions anymore.
+> > > My mlx5_core probe patches [1] were too intrusive and they are ready to
+> > > be merged, Parav's patches got positive review as well [2] and will be
+> > > taken next.
+> > >
+> > > We delayed and have in our internal queues the patches for VDPA, eswitch
+> > > and followup for mlx5_core probe rework, but trapped due to this AUX bus
+> > > patch.
+> >
+> > There are no deadlines for kernel patches here, sorry.  Give me some
+> > time to properly review this, core kernel changes should not be rushed.
+> >
+> > Also, if you really want to blame someone for the delay, look at the
+> > patch submitters not the reviewers, as they are the ones that took a
+> > very long time with this over the lifecycle of this patchset, not me.  I
+> > have provided many "instant" reviews of this patchset, and then months
+> > went by between updates from them.
 > 
-> To attach bpf to perf_event, instead of using previous ioctl method,
-> this commit uses bpf_program__attach_perf_event since it manages the
-> enable of perf_event and attach of BPF programs to it, which is much
-> more intuitive way to achieve.
-> 
-> Also, explicit close(fd) has been removed since event will be closed
-> inside bpf_link__destroy() automatically.
-> 
-> DEBUGFS macro from trace_helpers has been used to control uprobe events.
-> Furthermore, to prevent conflict of same named uprobe events, O_TRUNC
-> flag has been used to clear 'uprobe_events' interface.
-> 
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> ---
->  samples/bpf/Makefile             |   2 +-
->  samples/bpf/task_fd_query_user.c | 101 ++++++++++++++++++++++---------
->  2 files changed, 74 insertions(+), 29 deletions(-)
-> 
-> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-> index 7a643595ac6c..36b261c7afc7 100644
-> --- a/samples/bpf/Makefile
-> +++ b/samples/bpf/Makefile
-> @@ -107,7 +107,7 @@ xdp_adjust_tail-objs := xdp_adjust_tail_user.o
->  xdpsock-objs := xdpsock_user.o
->  xsk_fwd-objs := xsk_fwd.o
->  xdp_fwd-objs := xdp_fwd_user.o
-> -task_fd_query-objs := bpf_load.o task_fd_query_user.o $(TRACE_HELPERS)
-> +task_fd_query-objs := task_fd_query_user.o $(TRACE_HELPERS)
->  xdp_sample_pkts-objs := xdp_sample_pkts_user.o $(TRACE_HELPERS)
->  ibumad-objs := bpf_load.o ibumad_user.o $(TRACE_HELPERS)
->  hbm-objs := hbm.o $(CGROUP_HELPERS) $(TRACE_HELPERS)
-> diff --git a/samples/bpf/task_fd_query_user.c b/samples/bpf/task_fd_query_user.c
-> index b68bd2f8fdc9..0891ef3a4779 100644
-> --- a/samples/bpf/task_fd_query_user.c
-> +++ b/samples/bpf/task_fd_query_user.c
-> @@ -15,12 +15,15 @@
->  #include <sys/stat.h>
->  #include <linux/perf_event.h>
->  
-> +#include <bpf/bpf.h>
->  #include <bpf/libbpf.h>
-> -#include "bpf_load.h"
->  #include "bpf_util.h"
->  #include "perf-sys.h"
->  #include "trace_helpers.h"
->  
-> +struct bpf_program *progs[2];
-> +struct bpf_link *links[2];
-static
+> Please stop this finger pointing. It was already noted that the team,
+> out of abundance of caution / deference to the process, decided not to
+> push the patches while I was out on family leave. It's cruel to hold
+> that against them, and if anyone is to blame it's me for not
+> clarifying it was ok to proceed while I was out.
+
+I'm not blaming anyone, I'm just getting pissed when people are
+insisting that I do "quick reviews" for this patchset, which has been
+happening by different people since the very beginning of this whole
+feature, so I am trying to explain where others should be pointing their
+frustration at instead of me if they really want to do such a thing
+(hint, they shouldn't, but I wasn't explicit about that, sorry).
+
+Combine this with the long delays between my reviews and a new patchset
+submission, and on my end it's an extremely frustrating situation, which
+frankly, makes me want to review this thing even less and less as I know
+it's not going to be a fun or easy time when I do so.
+
+Everyone needs to remember that there are no deadlines here, and the
+people involved all have other things to work on at the same time, and
+that there are a lot of different subsystems and moving parts all
+involved.  So someone is going to get grumpy about it, and right now, it
+seems to be me.  I know I need to review this, and complaining that I
+haven't done so within 3 days of sending an updated patch set is not
+helping anyone.
+
+I'm going to try to carve out some time this week to review this
+properly.  Hopefully there's no other major security "scares" popping up
+like there was the past few weeks to divert me from this...
+
+thanks,
+
+greg k-h
