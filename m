@@ -2,82 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0914A2B8738
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 23:08:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F32F2B87DD
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 23:41:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727166AbgKRWGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 17:06:17 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:43549 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725822AbgKRWGR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 17:06:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605737176;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=NdjeARxGuLTeRkhnnivxFdfoRVbvyIFUDejtLn+aBXk=;
-        b=Kj+rspu1cbJC6uj2LEePAyRdp7FoJ0WvLfduRNh7u7KH7jR7glVwf9I6glz0TVraE6E9IK
-        RCUsDhcXWDrvF8vp8+X7u6EYARVbBfRi8S/p3T3sGJxOMwe0Ev9Co4FJQelZ4p3h85Kqz7
-        ePUkW/jREPjbCg3pr73MGrMyzUjDLEI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-98-6P_4UpxaP4SfaOehq43F4w-1; Wed, 18 Nov 2020 17:06:14 -0500
-X-MC-Unique: 6P_4UpxaP4SfaOehq43F4w-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2F20C89CCC0;
-        Wed, 18 Nov 2020 22:06:13 +0000 (UTC)
-Received: from gerbillo.redhat.com (ovpn-112-97.ams2.redhat.com [10.36.112.97])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AACA160C05;
-        Wed, 18 Nov 2020 22:06:11 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>, mptcp@lists.01.org
-Subject: [PATCH net-next] mptcp: update rtx timeout only if required.
-Date:   Wed, 18 Nov 2020 23:05:34 +0100
-Message-Id: <1a72039f112cae048c44d398ffa14e0a1432db3d.1605737083.git.pabeni@redhat.com>
+        id S1727166AbgKRWkv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 17:40:51 -0500
+Received: from gargamel.turcom.com.tr ([193.254.252.9]:51312 "EHLO
+        etrn.turcom.com.tr" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726295AbgKRWku (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 17:40:50 -0500
+Received: from mail.stargazete.com (mail.stargazete.com [88.255.77.166])
+        by etrn.turcom.com.tr (Postfix) with ESMTPS id 0C17011F375;
+        Thu, 19 Nov 2020 00:07:47 +0300 (+03)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.stargazete.com (Postfix) with ESMTP id E82139261E35;
+        Wed, 18 Nov 2020 21:07:46 +0000 (UTC)
+Received: from mail.stargazete.com ([127.0.0.1])
+        by localhost (mail.stargazete.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id LieFjvOmLCeg; Wed, 18 Nov 2020 21:07:46 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.stargazete.com (Postfix) with ESMTP id 81A0B9260E91;
+        Wed, 18 Nov 2020 21:00:05 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.stargazete.com 81A0B9260E91
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stargazete.com;
+        s=BE41E402-1210-11EB-A9CA-1AF0DF4E1435; t=1605733205;
+        bh=eS6YGRou0utqjQd2YaXZkaFeXSioe/GKdvIucbq5rMI=;
+        h=MIME-Version:To:From:Date:Message-Id;
+        b=g/r9tZM+EhUE/le5GW5oKyUBBeGmMvYDWUnq8BVDcFLk8U9CYG5WEgfaeO/6kb3pH
+         ZUHUlcdBcNeY0xcfQcqq4HzaIIADgYipS8g7gUjTlQAQhE+2J0hVeu1eLLBFRZwV0Q
+         5wDAY/XufYkDkBTzcU41CcjSbq1oEGKSF4HjOoEnfqZzbLiiUuucKXm7DaPrVpj3dc
+         DVtaFBZ3i9FTB9p4PFlQOHTf8TcQKdynMOmqiYeglXYKyveYKyQ3fSGspKwKZ9qQ2v
+         97LZQ1LhwHk/8HZVAavBQMPD+rhzSg+NjgGhuUikYHAOlGZSQ2tJ9GdHfz3zQbds//
+         Sy+DSrtw/FvCg==
+X-Virus-Scanned: amavisd-new at stargazete.com
+Received: from mail.stargazete.com ([127.0.0.1])
+        by localhost (mail.stargazete.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id E0sptE90D5ri; Wed, 18 Nov 2020 21:00:05 +0000 (UTC)
+Received: from [172.20.10.4] (unknown [154.230.136.106])
+        by mail.stargazete.com (Postfix) with ESMTPSA id 3003D9249939;
+        Wed, 18 Nov 2020 20:53:05 +0000 (UTC)
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Transfer-Encoding: quoted-printable
+Content-Description: Mail message body
+Subject: Loan
+To:     Recipients <rtosun@stargazete.com>
+From:   rtosun@stargazete.com
+Date:   Wed, 18 Nov 2020 12:53:00 -0800
+Reply-To: samuelbrandon110@gmail.com
+Message-Id: <20201118205306.3003D9249939@mail.stargazete.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We must start the retransmission timer only there are
-pending data in the rtx queue.
-Otherwise we can hit a WARN_ON in mptcp_reset_timer(),
-as syzbot demonstrated.
 
-Reported-and-tested-by: syzbot+42aa53dafb66a07e5a24@syzkaller.appspotmail.com
-Fixes: d9ca1de8c0cd ("mptcp: move page frag allocation in mptcp_sendmsg()")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/mptcp/protocol.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
-
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 8df013daea88..aeda4357de9a 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -1261,11 +1261,12 @@ static void mptcp_push_pending(struct sock *sk, unsigned int flags)
- 		mptcp_push_release(sk, ssk, &info);
- 
- out:
--	/* start the timer, if it's not pending */
--	if (!mptcp_timer_pending(sk))
--		mptcp_reset_timer(sk);
--	if (copied)
-+	if (copied) {
-+		/* start the timer, if it's not pending */
-+		if (!mptcp_timer_pending(sk))
-+			mptcp_reset_timer(sk);
- 		__mptcp_check_send_data_fin(sk);
-+	}
- }
- 
- static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
--- 
-2.26.2
-
+ARE YOU IN NEED OF LOAN @3% INTEREST RATE FOR BUSINESS AND PRIVATE
+PURPOSES? IF YES:
+FILL AND RETURN
+Name: =3D=3D=3D
+Amount needed: =3D=3D=3D
+Duration: =3D=3D
+country =3D=3D=3D
+Purpose: =3D=3D=3D
+Mobile number
+ Dear Sir/Madam
