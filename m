@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93DC02B747F
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 04:03:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDFB02B7482
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 04:05:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726826AbgKRDCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 22:02:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46116 "EHLO
+        id S1726685AbgKRDEo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 22:04:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725613AbgKRDCx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 22:02:53 -0500
+        with ESMTP id S1725613AbgKRDEo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 22:04:44 -0500
 Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 429FAC0613D4;
-        Tue, 17 Nov 2020 19:02:52 -0800 (PST)
-Received: by mail-yb1-xb41.google.com with SMTP id x17so282374ybr.8;
-        Tue, 17 Nov 2020 19:02:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE0BC0613D4;
+        Tue, 17 Nov 2020 19:04:44 -0800 (PST)
+Received: by mail-yb1-xb41.google.com with SMTP id s8so266347yba.13;
+        Tue, 17 Nov 2020 19:04:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=uwJLq/RnNkpRMWjppuRw7i/Xapt5zew99odvdbwkOeQ=;
-        b=YOFaCaIAFo+VcZKIb/IelePNRIKiBwQ4NQY3y2b3w6AjUFxttX8YmoYZeEHUdAoayx
-         KCxvCUSyy6cUOV7xjQi6nK87m4/DihhZtGQ0vbARcP3YJIFdiFaeuBER3M+b6c54Yvdf
-         Rrx3oLz1zr3hiII4NtcLDUKHKz3babQSxy4HZIZvhdg27gtbtpcFyYVZXaMBuaYdjyTb
-         nNZ+CAohzMhjpifLqqK4hDnzRUx/ognpOwCzgLS8jsyBMI3kn6XGoiv29LzOWxwz05f5
-         9mnSFLhxz9+x+EcL5W3wt8DXUbQifrz3mTC82p5VWtQu7rZIaPiPjJozHSh3s90OyMen
-         WF2w==
+        bh=iRbmAywHDNueRKdeuUhZNpbWAVgCvINl7dg2GFG1n3k=;
+        b=E3trQV8wy/eNGvtmZimNtsCb8Dv4a5BKI6pPUAzg6OWXT9zgNA/K6HQ5qgQg868ggG
+         oSDKj/ogNmCFr3Ffkx+IMKxCSdyr2Zh4YONqw4wDXKh7OC35zd8Drk5AlrprUVQuk9JB
+         +0KerD6VpL80sGUEallKiSd+WrDGi+zDID52GLMaoyOw6a6/JdVbnYkbDz+gpXdb64xo
+         7XEHzTtr1FXv04Y64clgJX2IbHMC88/ZVZ95TE56Jq8/YKFNETddkFKhbzmraM3KwAbx
+         vIyFTI6LBzWAY6ewf16ufZGIOrIZwmi/u5Bto66L6O4bMHmf9IfMzSB/IZ5BC6W2b1/4
+         2Usw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=uwJLq/RnNkpRMWjppuRw7i/Xapt5zew99odvdbwkOeQ=;
-        b=bosnMu7aR7X6sQ+6ktFjNca7ndb35mEoV+BBykvkCa9+LT+P5wBjYMlTDWXueTEqte
-         429mov8LWfZCfCJ4vJ5Zm3DMlr6jZhEKYEPHuTGNCrwv5g3zqxcSpAIpv1MUIyAcdBuv
-         qqpdY1oeYYoi6P50p5MKFF+IsPp78lL5E7A26oj4rbZpqlV8de9bHyiH5fCRFKX9NI5z
-         pecuwogrZw2VSbIW6WcPTu5VwWv3helzLPKxUU3Vo8sTCAlMPbnO1PwUK9z9c3voQjzc
-         DUBpzScQzBZ7uEphdLbjRaboTJ9niEzaWBCO7aEJqqh8xmMO+1wQK6YsMkedgHfKWv7l
-         sMwA==
-X-Gm-Message-State: AOAM531Ruq3JPpKWlHBPHENnDC5rFnC9d8ZpO9nYMtvER3sF5yDI0eRU
-        H1ZWn4CkUeQvWiM7rD1bpUw2XN4xwGPKzu+nvVY=
-X-Google-Smtp-Source: ABdhPJwOxTqD6/PPVNKKwXxqcQuryaC1n1V2lLwBpr8cKx89XoIofkgOo+NhfXCb4aFnf1OpxhbtNE0XddvwgjOEkXU=
-X-Received: by 2002:a25:7717:: with SMTP id s23mr4663296ybc.459.1605668571590;
- Tue, 17 Nov 2020 19:02:51 -0800 (PST)
+        bh=iRbmAywHDNueRKdeuUhZNpbWAVgCvINl7dg2GFG1n3k=;
+        b=NbeQkq+yFkF1OwdkcQBcu5vHMTdIUHy2lr4MkhAt1ICw8v5BLgY2KU3X/aDY2c0v++
+         vG0D3cqSASCXv04c7DNbvhm8Vc0q9ykk6GdxyQB6ECJ5FUM2TWBx75k/Q9cFH974dZ8M
+         fJbYJwTsCfeJAhu3KQmrttsyrqytg1RH+tx/9bSBXqhsrdfQVtCQ+7V8+vhuitdGa9FG
+         fQel9hzpZt1IbujwMIQlp7ZtzZR9CMPBCkieFXrXY9tWCLXXab8SgCtEfTRcsAwMVulg
+         m4u6SapSXohdvAMH26/lQGwtyAxHVmTWhbeHDRZ0f+eurnIeAWEasNUW1Ke56wobQ+x4
+         YOQQ==
+X-Gm-Message-State: AOAM533FXYO4xlFkPgW3hoMPPwELymaiWdDdBn1SGOaTrV5wZwtZfIwS
+        G+ERqxikg/2+NxSVD7644BkPi75hHKRQM5gpGOE=
+X-Google-Smtp-Source: ABdhPJx4RNXYPYXjte+dwwOp5bqg7fUFgAyEAYuEnN8JdnVE5B5pZ1cLsEyAmUYtrKLZPlogeJUNIr5QRSc1j17kVME=
+X-Received: by 2002:a25:df8e:: with SMTP id w136mr3553019ybg.230.1605668683391;
+ Tue, 17 Nov 2020 19:04:43 -0800 (PST)
 MIME-Version: 1.0
-References: <20201117145644.1166255-1-danieltimlee@gmail.com> <20201117145644.1166255-4-danieltimlee@gmail.com>
-In-Reply-To: <20201117145644.1166255-4-danieltimlee@gmail.com>
+References: <20201117145644.1166255-1-danieltimlee@gmail.com>
+ <20201117145644.1166255-2-danieltimlee@gmail.com> <CAEf4BzZ9Sr0PXvZAa74phnwm7um9AoN4ELGkNBMvyzvh7vYzRQ@mail.gmail.com>
+ <CAEKGpzhCeRZct-zW_DG0Aj_PD1FvtUOzbF5c134wwoGgqgf6rA@mail.gmail.com>
+In-Reply-To: <CAEKGpzhCeRZct-zW_DG0Aj_PD1FvtUOzbF5c134wwoGgqgf6rA@mail.gmail.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 17 Nov 2020 19:02:40 -0800
-Message-ID: <CAEf4BzbBT38n8YQNco7yfijahaKXWQWLqxiNGEq1q7Lj7N+_vA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/9] samples: bpf: refactor test_cgrp2_sock2
- program with libbpf
+Date:   Tue, 17 Nov 2020 19:04:32 -0800
+Message-ID: <CAEf4BzZTiMpjzhm1=t1OQB+b=JRakTKLxJd2Z3skwtqkY5y8sw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/9] selftests: bpf: move tracing helpers to trace_helper
 To:     "Daniel T. Lee" <danieltimlee@gmail.com>
 Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -71,91 +72,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 17, 2020 at 6:57 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
+On Tue, Nov 17, 2020 at 6:55 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:
 >
-> This commit refactors the existing cgroup program with libbpf bpf
-> loader. The original test_cgrp2_sock2 has keeped the bpf program
-> attached to the cgroup hierarchy even after the exit of user program.
-> To implement the same functionality with libbpf, this commit uses the
-> BPF_LINK_PINNING to pin the link attachment even after it is closed.
+> On Wed, Nov 18, 2020 at 10:58 AM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Tue, Nov 17, 2020 at 6:57 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
+> > >
+> > > Under the samples/bpf directory, similar tracing helpers are
+> > > fragmented around. To keep consistent of tracing programs, this commit
+> > > moves the helper and define locations to increase the reuse of each
+> > > helper function.
+> > >
+> > > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+> > >
+> > > ---
+> > > [...]
+> > > -static void read_trace_pipe2(void)
+> >
+> > This is used only in hbm.c, why move it into trace_helpers.c?
+> >
 >
-> Since this uses LINK instead of ATTACH, detach of bpf program from
-> cgroup with 'test_cgrp2_sock' is not used anymore.
->
-> The code to mount the bpf was added to the .sh file in case the bpff
-> was not mounted on /sys/fs/bpf. Additionally, to fix the problem that
-> shell script cannot find the binary object from the current path,
-> relative path './' has been added in front of binary.
->
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> ---
->  samples/bpf/Makefile            |  2 +-
->  samples/bpf/test_cgrp2_sock2.c  | 63 ++++++++++++++++++++++++---------
->  samples/bpf/test_cgrp2_sock2.sh | 21 ++++++++---
->  3 files changed, 64 insertions(+), 22 deletions(-)
->
+> I think this function can be made into a helper that can be used in
+> other programs. Which is basically same as 'read_trace_pipe' and
+> also writes the content of that pipe to file either. Well, it's not used
+> anywhere else, but I moved this function for the potential of reuse.
 
-[...]
-
->
-> -       return EXIT_SUCCESS;
-> +       err = bpf_link__pin(link, link_pin_path);
-> +       if (err < 0) {
-> +               printf("err : %d\n", err);
-
-more meaningful error message would be helpful
-
-> +               goto cleanup;
-> +       }
-> +
-> +       ret = EXIT_SUCCESS;
-> +
-> +cleanup:
-> +       if (ret != EXIT_SUCCESS)
-> +               bpf_link__destroy(link);
-> +
-> +       bpf_object__close(obj);
-> +       return ret;
->  }
-
-[...]
+Let's not make premature extraction of helpers. We generally add
+helpers when we have a repeated need for them. It's not currently the
+case for read_trace_pipe2().
 
 >
->  function attach_bpf {
-> -       test_cgrp2_sock2 /tmp/cgroupv2/foo sock_flags_kern.o $1
-> +       ./test_cgrp2_sock2 /tmp/cgroupv2/foo sock_flags_kern.o $1
+> Since these 'read_trace_pipe's are helpers that are only used
+> under samples directory, what do you think about moving these
+> helpers to something like samples/bpf/trace_pipe.h?
 
-Can you please add Fixes: tag for this?
+Nope, not yet. I'd just drop this patch for now (see my comments on
+another patch regarding DEBUGFS).
 
->         [ $? -ne 0 ] && exit 1
->  }
 >
->  function cleanup {
-> -       if [ -d /tmp/cgroupv2/foo ]; then
-> -               test_cgrp2_sock -d /tmp/cgroupv2/foo
-> -       fi
-> +       rm -rf $LINK_PIN
->         ip link del veth0b
->         ip netns delete at_ns0
->         umount /tmp/cgroupv2
-> @@ -42,6 +51,7 @@ cleanup 2>/dev/null
->  set -e
->  config_device
->  config_cgroup
-> +config_bpffs
->  set +e
+> Thanks for your time and effort for the review.
 >
->  #
-> @@ -62,6 +72,9 @@ if [ $? -eq 0 ]; then
->         exit 1
->  fi
->
-> +rm -rf $LINK_PIN
-> +sleep 1                 # Wait for link detach
-> +
->  #
->  # Test 2 - fail ping
->  #
 > --
-> 2.25.1
->
+> Best,
+> Daniel T. Lee
