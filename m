@@ -2,63 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B8DB2B74B1
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 04:26:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 667F32B7505
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 04:51:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727079AbgKRDZc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 22:25:32 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7696 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725613AbgKRDZc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 22:25:32 -0500
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CbSqV6FDfzkWh3;
-        Wed, 18 Nov 2020 11:25:10 +0800 (CST)
-Received: from [10.174.177.230] (10.174.177.230) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.487.0; Wed, 18 Nov 2020 11:25:25 +0800
-Subject: Re: [PATCH net] atl1e: fix error return code in atl1e_probe()
-To:     Marion & Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        <jcliburn@gmail.com>, <chris.snook@gmail.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <mst@redhat.com>,
-        <leon@kernel.org>, <hkallweit1@gmail.com>, <tglx@linutronix.de>,
-        <jesse.brandeburg@intel.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <1605581875-36281-1-git-send-email-zhangchangzhong@huawei.com>
- <b7b4dcd3-a536-b72f-6a8b-12354c995ee7@wanadoo.fr>
-From:   Zhang Changzhong <zhangchangzhong@huawei.com>
-Message-ID: <e7a0300f-056d-f952-c4d6-609b488b3e9c@huawei.com>
-Date:   Wed, 18 Nov 2020 11:25:25 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S1725613AbgKRDuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 22:50:22 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:33757 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727008AbgKRDuV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 22:50:21 -0500
+Received: by mail-il1-f197.google.com with SMTP id t11so579564ilo.0
+        for <netdev@vger.kernel.org>; Tue, 17 Nov 2020 19:50:19 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=/DoS+YQS9VBlKN6+t7kOlnb/cNhUvvMuTsydpQN3w74=;
+        b=IM8KE9ejlaznf0pUq8SatF0qUkF1FvEeJScFzut4XGWAimKs5hdIoISltOgXJ/qW4X
+         QRP0ktOGGR5ztX4jFT7Js7MDWOIR8mxaH51JOQdhia6Fm6AGg2Gl9rWwjdZF410kz7jG
+         XSxlR+CCoUL9grA/9FdwyWmRemRRzT1aWALgNFY1A+1CK9qCohTf6LBWTb5c7vg/D7oZ
+         7z5NAZP7kqLSKqhz29BUPRQzk+l5MP7x1ct1xrkjUBIHeNCfg6Owgx81EPh0NIOgOv1e
+         MQneE6oJmtfNfSLuof/Ae3t5MvLY+uMYrrgGBIjrNIzhh/JI34j076/4EBWchZExt/ym
+         g95A==
+X-Gm-Message-State: AOAM532ClcFQS594zdiu7wSSmuktqgbWYM9bb46fPu+Sb6HHavQXztEy
+        9QiqFLe3AvyKzb5z8InwibOTvsrixeChKuMwdq/y6qr6PTkS
+X-Google-Smtp-Source: ABdhPJwi4a4IGODP4KC7xAUdxzicB5OMZ/EE96H2i+xQvPC8q+DXDy0d9Ou9uQDg6ciFNbahKMxSCVG5OnPh+ycAovjeZUGX6O5A
 MIME-Version: 1.0
-In-Reply-To: <b7b4dcd3-a536-b72f-6a8b-12354c995ee7@wanadoo.fr>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.230]
-X-CFilter-Loop: Reflected
+X-Received: by 2002:a02:70ce:: with SMTP id f197mr6796213jac.120.1605671419188;
+ Tue, 17 Nov 2020 19:50:19 -0800 (PST)
+Date:   Tue, 17 Nov 2020 19:50:19 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000911d3905b459824c@google.com>
+Subject: memory leak in bpf
+From:   syzbot <syzbot+f3694595248708227d35@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@chromium.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
+
+syzbot found the following issue on:
+
+HEAD commit:    f01c30de Merge tag 'vfs-5.10-fixes-2' of git://git.kernel...
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=15b9b181500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a3f13716fa0212fd
+dashboard link: https://syzkaller.appspot.com/bug?extid=f3694595248708227d35
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14b78b81500000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+f3694595248708227d35@syzkaller.appspotmail.com
+
+2020/11/14 15:01:05 executed programs: 33
+2020/11/14 15:01:11 executed programs: 35
+2020/11/14 15:01:17 executed programs: 37
+2020/11/14 15:01:22 executed programs: 39
+BUG: memory leak
+unreferenced object 0xffff8881161c6440 (size 64):
+  comm "syz-executor.0", pid 8961, jiffies 4295107077 (age 12.370s)
+  hex dump (first 32 bytes):
+    80 62 58 04 00 ea ff ff c0 17 37 04 00 ea ff ff  .bX.......7.....
+    80 6f 47 04 00 ea ff ff 40 64 58 04 00 ea ff ff  .oG.....@dX.....
+  backtrace:
+    [<00000000189a27fd>] kmalloc_node include/linux/slab.h:575 [inline]
+    [<00000000189a27fd>] bpf_ringbuf_area_alloc kernel/bpf/ringbuf.c:94 [inline]
+    [<00000000189a27fd>] bpf_ringbuf_alloc kernel/bpf/ringbuf.c:135 [inline]
+    [<00000000189a27fd>] ringbuf_map_alloc kernel/bpf/ringbuf.c:183 [inline]
+    [<00000000189a27fd>] ringbuf_map_alloc+0x1be/0x410 kernel/bpf/ringbuf.c:150
+    [<000000009e5cec3e>] find_and_alloc_map kernel/bpf/syscall.c:122 [inline]
+    [<000000009e5cec3e>] map_create kernel/bpf/syscall.c:825 [inline]
+    [<000000009e5cec3e>] __do_sys_bpf+0x7d0/0x30a0 kernel/bpf/syscall.c:4381
+    [<00000000c513b5d1>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+    [<0000000033006ec5>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
 
-On 2020/11/18 4:38, Marion & Christophe JAILLET wrote:
-> 
-> Le 17/11/2020 à 03:57, Zhang Changzhong a écrit :
->> Fix to return a negative error code from the error handling
->> case instead of 0, as done elsewhere in this function.
->>
->> Fixes: 85eb5bc33717 ("net: atheros: switch from 'pci_' to 'dma_' API")
-> Hi, should it have any importance, the Fixes tag is wrong.
-> 
-> The issue was already there before 85eb5bc33717 which was just a mechanical update.
-> 
-> just my 2c
-> 
-> CJ
-> 
-Thanks for reminding, the correct Fixes tag should be:
 
-Fixes: a6a5325239c2 ("atl1e: Atheros L1E Gigabit Ethernet driver"
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
