@@ -2,71 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89ECB2B7F58
+	by mail.lfdr.de (Postfix) with ESMTP id 133D52B7F57
 	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 15:28:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726918AbgKROZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 09:25:09 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32564 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726590AbgKROZJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 09:25:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605709507;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=XlUtYN9I1jTM0ZwVMsk+cNHUe7M2ezNY7akFMHeqpTc=;
-        b=XDPBdIvfO/oLHxXPjIg1dAq479Fc5Xo3TlKSqP1qudl7D+pIuKmLwYf5vUJgQ0O9IMJAz5
-        mF2X4hftEE1CDdJV/NkzgfN3cbXvQQCVHoTxwvgnIDqhdzd3Agi9h98R8slh/n3Zdm/yAI
-        dmVSsdQc1k0/Mq2FPloxCGSseTogh0Y=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-207-Mhtd6tqoOYiLM2WoSOC8cw-1; Wed, 18 Nov 2020 09:25:05 -0500
-X-MC-Unique: Mhtd6tqoOYiLM2WoSOC8cw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5A50F64082;
-        Wed, 18 Nov 2020 14:25:03 +0000 (UTC)
-Received: from renaissance-vector.redhat.com (ovpn-113-239.ams2.redhat.com [10.36.113.239])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 74A195D6AC;
-        Wed, 18 Nov 2020 14:25:02 +0000 (UTC)
-From:   Andrea Claudi <aclaudi@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@gmail.com
-Subject: [PATCH iproute2] ss: mptcp: fix add_addr_accepted stat print
-Date:   Wed, 18 Nov 2020 15:24:18 +0100
-Message-Id: <a4925e2d0fa0e07a14bbef3744594d299e619249.1605708791.git.aclaudi@redhat.com>
+        id S1726889AbgKROYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 09:24:42 -0500
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:33238 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726314AbgKROYm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 09:24:42 -0500
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0AIEOY39102501;
+        Wed, 18 Nov 2020 08:24:34 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1605709474;
+        bh=5E8YooyCihFwVv7oYAz75wqjXHOAj38SOo/gntocg68=;
+        h=From:To:CC:Subject:Date;
+        b=lMvKjfN49o3TtzvgwmGjNNUFmVQAugLuksAFhXuy1lR/+SZpEUmUXjObZnxFDXZOE
+         hBOttzFsSpY9hmbWW4KKjHYZF2RN+usr/+yiSIqq335ZEQT6zO4GSdhGILOujZiASL
+         uODe44hJvb+ky2zsXcyKd8YxbzTNohXxLZpdHAWc=
+Received: from DLEE111.ent.ti.com (dlee111.ent.ti.com [157.170.170.22])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0AIEOYuf013451
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 18 Nov 2020 08:24:34 -0600
+Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE111.ent.ti.com
+ (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 18
+ Nov 2020 08:24:34 -0600
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE101.ent.ti.com
+ (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Wed, 18 Nov 2020 08:24:34 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0AIEOXRv064321;
+        Wed, 18 Nov 2020 08:24:33 -0600
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+CC:     <linux-kernel@vger.kernel.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH] mdio_bus: suppress err message for reset gpio EPROBE_DEFER
+Date:   Wed, 18 Nov 2020 16:24:26 +0200
+Message-ID: <20201118142426.25369-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-add_addr_accepted value is not printed if add_addr_signal value is 0.
-Fix this properly looking for add_addr_accepted value, instead.
+The mdio_bus may have dependencies from GPIO controller and so got
+deferred. Now it will print error message every time -EPROBE_DEFER is
+returned from:
+__mdiobus_register()
+ |-devm_gpiod_get_optional()
+without actually identifying error code.
 
-Fixes: 9c3be2c0eee01 ("ss: mptcp: add msk diag interface support")
-Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+"mdio_bus 4a101000.mdio: mii_bus 4a101000.mdio couldn't get reset GPIO"
+
+Hence, suppress error message when devm_gpiod_get_optional() returning
+-EPROBE_DEFER case.
+
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
 ---
- misc/ss.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/phy/mdio_bus.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/misc/ss.c b/misc/ss.c
-index 77e1847ee2473..0593627b77e31 100644
---- a/misc/ss.c
-+++ b/misc/ss.c
-@@ -3136,7 +3136,7 @@ static void mptcp_stats_print(struct mptcp_info *s)
- 		out(" subflows:%d", s->mptcpi_subflows);
- 	if (s->mptcpi_add_addr_signal)
- 		out(" add_addr_signal:%d", s->mptcpi_add_addr_signal);
--	if (s->mptcpi_add_addr_signal)
-+	if (s->mptcpi_add_addr_accepted)
- 		out(" add_addr_accepted:%d", s->mptcpi_add_addr_accepted);
- 	if (s->mptcpi_subflows_max)
- 		out(" subflows_max:%d", s->mptcpi_subflows_max);
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 757e950fb745..54fc13043656 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -546,10 +546,11 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
+ 	/* de-assert bus level PHY GPIO reset */
+ 	gpiod = devm_gpiod_get_optional(&bus->dev, "reset", GPIOD_OUT_LOW);
+ 	if (IS_ERR(gpiod)) {
+-		dev_err(&bus->dev, "mii_bus %s couldn't get reset GPIO\n",
+-			bus->id);
++		err = PTR_ERR(gpiod);
++		if (err != -EPROBE_DEFER)
++			dev_err(&bus->dev, "mii_bus %s couldn't get reset GPIO %d\n", bus->id, err);
+ 		device_del(&bus->dev);
+-		return PTR_ERR(gpiod);
++		return err;
+ 	} else	if (gpiod) {
+ 		bus->reset_gpiod = gpiod;
+ 
 -- 
-2.26.2
+2.17.1
 
