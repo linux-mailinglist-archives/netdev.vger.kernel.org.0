@@ -2,70 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 016B52B8440
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 20:00:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67F4F2B8443
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 20:00:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726985AbgKRS7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 13:59:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58826 "EHLO mail.kernel.org"
+        id S1726397AbgKRTAG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 14:00:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59146 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726098AbgKRS7G (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 13:59:06 -0500
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3BE3320639;
-        Wed, 18 Nov 2020 18:59:03 +0000 (UTC)
-Date:   Wed, 18 Nov 2020 13:59:01 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Florian Weimer <fw@deneb.enyo.de>
-Cc:     Segher Boessenkool <segher@kernel.crashing.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Matt Mullins <mmullins@mmlx.us>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        linux-toolchains@vger.kernel.org
-Subject: Re: violating function pointer signature
-Message-ID: <20201118135901.7f1cc84a@gandalf.local.home>
-In-Reply-To: <20201118135823.3f0d24b7@gandalf.local.home>
-References: <20201116175107.02db396d@gandalf.local.home>
-        <47463878.48157.1605640510560.JavaMail.zimbra@efficios.com>
-        <20201117142145.43194f1a@gandalf.local.home>
-        <375636043.48251.1605642440621.JavaMail.zimbra@efficios.com>
-        <20201117153451.3015c5c9@gandalf.local.home>
-        <20201118132136.GJ3121378@hirez.programming.kicks-ass.net>
-        <CAKwvOdkptuS=75WjzwOho9ZjGVHGMirEW3k3u4Ep8ya5wCNajg@mail.gmail.com>
-        <20201118121730.12ee645b@gandalf.local.home>
-        <20201118181226.GK2672@gate.crashing.org>
-        <87o8jutt2h.fsf@mid.deneb.enyo.de>
-        <20201118135823.3f0d24b7@gandalf.local.home>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726098AbgKRTAG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 14:00:06 -0500
+Content-Type: text/plain; charset="utf-8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605726005;
+        bh=r2gyf7xxFD0horszLR1CBycCapevG4ZjY6FEsxqO2Ds=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=xnAqeuOiJ1Jh0jf+4Ew5aieKfTY4AS3+bB0ULUzcsSEi/ggpECJashxFw06sUEDZN
+         5ZWDfifkE8SsWxL0yRJ4V3BMpdcr4xT5XG9tr5pBbTSO7aNdR7upEiWGgMx2WpHeEl
+         lYWmO7NgXJNU6+2Cb9M6lvnI1wRSC1fKvezV73yc=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] ah6: fix error return code in ah6_input()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160572600552.13455.2538453699619946801.git-patchwork-notify@kernel.org>
+Date:   Wed, 18 Nov 2020 19:00:05 +0000
+References: <1605581105-35295-1-git-send-email-zhangchangzhong@huawei.com>
+In-Reply-To: <1605581105-35295-1-git-send-email-zhangchangzhong@huawei.com>
+To:     Zhang Changzhong <zhangchangzhong@huawei.com>
+Cc:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Nov 2020 13:58:23 -0500
-Steven Rostedt <rostedt@goodmis.org> wrote:
+Hello:
 
->  an not worry about gcc 
+This patch was applied to netdev/net.git (refs/heads/master):
 
-or LLVM, or whatever is used to build the kernel.
+On Tue, 17 Nov 2020 10:45:05 +0800 you wrote:
+> Fix to return a negative error code from the error handling
+> case instead of 0, as done elsewhere in this function.
+> 
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+> 
+> [...]
 
--- Steve
+Here is the summary with links:
+  - [net] ah6: fix error return code in ah6_input()
+    https://git.kernel.org/netdev/net/c/a5ebcbdf34b6
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
