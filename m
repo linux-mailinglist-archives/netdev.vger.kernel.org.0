@@ -2,101 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 341FB2B820E
+	by mail.lfdr.de (Postfix) with ESMTP id AC9ED2B820F
 	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 17:41:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727175AbgKRQix (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 11:38:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60548 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725874AbgKRQix (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 11:38:53 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C378B2482C;
-        Wed, 18 Nov 2020 16:38:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605717532;
-        bh=QRPuukJJ9VK4qK50cpLa4TltAL6SWkINt7aoyLgZ/fU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=vcYgc9tgY6jdghw/E4yKaUvYdo2I+VIZqhH7Xdvx0BaA0tfFcPs0nKhD7Nve30Y0+
-         A9gzZ84S1IyTQ0fR/UbG+ttsNAets+WBmxZUdcuo9V4G9fBrKevdByJSjkVmDYe8gf
-         o6Cdrw03fvjvQ6msT5OHrubOXPq5fU+3lyDzJDyE=
-Date:   Wed, 18 Nov 2020 08:38:50 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     David Ahern <dsahern@gmail.com>, Florian Klink <flokli@flokli.de>,
-        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Kim Phillips <kim.phillips@arm.com>
-Subject: Re: [PATCH] ipv4: use IS_ENABLED instead of ifdef
-Message-ID: <20201118083850.5cf28ab2@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <0c2869ad-1176-9554-0c47-1f514981c6b4@infradead.org>
-References: <20201115224509.2020651-1-flokli@flokli.de>
-        <20201117160110.42aa3b72@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <5cbc79c3-0a66-8cfb-64f4-399aab525d09@gmail.com>
-        <20201117170712.0e5a8b23@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <0c2869ad-1176-9554-0c47-1f514981c6b4@infradead.org>
+        id S1727194AbgKRQjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 11:39:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59170 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725874AbgKRQjB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 11:39:01 -0500
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D24BC0613D4
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 08:39:01 -0800 (PST)
+Received: by mail-wm1-x331.google.com with SMTP id 10so3650277wml.2
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 08:39:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qLCTzVhQJLTsRIBZ7JeZwl8s+Rb2VI2/f9BYU4yDXGQ=;
+        b=2I1A+KVt99FqDJGHeaTQkV3BqcTnhrsXFbEbNXXj7hruZe20iE2ektH3brew34XAQK
+         1RQuIsbAuNr/9c7D8RgvgJ9ILarMAz7BWiU62GuVZYLQ+o3CWpr3kCncT1AupiPme+A9
+         LQTtW3x8/uy5nQd3xG50xWILpvPI/56AsYYea5CzUUIZBXRR9BLYXnKLrlOXi+7ft9EX
+         XFgO4mJjR52Wo+thw7dAge+WZmUVcVfM8upjdE4WcihIgEJXpC4G4YjsCztLfIhoO/pS
+         niao1Mmd/OH1EVX7HhcmxQhk6JvWoRPDtefKDGOCzjDo4MfoiuIvd6zBX6k2VbB1BvZ+
+         /geg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qLCTzVhQJLTsRIBZ7JeZwl8s+Rb2VI2/f9BYU4yDXGQ=;
+        b=oxIj/LJFeOZ4ubjhaQJjqySBhKTjUUVRsxVfKzYs024bCnRbP9qYt3eymRTQDU3EJM
+         w2vzQ1+bnb/w4lWXgA11Go04tDGLqQUZzsYa9O7afjfsxzy8GbJ0SQMsudNEb/1RbT49
+         t4NXK6AGHvV4ptHzK9oMKVR0iQmgf+8hjF3QyO+42nt27EkjNfjTrMyngUQ0iSmZUY/5
+         FxehUm4zKP0DmZwf1BgIhtUGj8s+rdTWSb0Xo76AwA1FKu43jtJqDUCnwWp5CnrYBIQk
+         QUehguEIy0lGR8rnisasc9QH/vANS8Nc/9Dll9z7UTYeDA/3MA0eu1/QZKeusjdrBLVL
+         0C5w==
+X-Gm-Message-State: AOAM530pQsSM/vLJu4KLSHp6NbZDNLE0Obg5jceCKRh6Aqsutvsx2HX1
+        l8wRUWDSZnNTKdd+v+ONFUp5sQ==
+X-Google-Smtp-Source: ABdhPJzXZnCuRB6U7IdUNWYY6GJ4wEv+ZFa5pj1ebVTKxkVDsmk5ztyn3jPfKzB+yXbvG6T5IZviyA==
+X-Received: by 2002:a7b:c8c5:: with SMTP id f5mr904116wml.174.1605717540324;
+        Wed, 18 Nov 2020 08:39:00 -0800 (PST)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id d3sm36955855wrg.16.2020.11.18.08.38.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Nov 2020 08:38:59 -0800 (PST)
+Date:   Wed, 18 Nov 2020 17:38:58 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@nvidia.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Bin Luo <luobin9@huawei.com>, Jakub Kicinksi <kuba@kernel.org>
+Subject: Re: [net-next v3 1/2] devlink: move request_firmware out of driver
+Message-ID: <20201118163858.GC3055@nanopsycho.orion>
+References: <20201117200820.854115-1-jacob.e.keller@intel.com>
+ <20201117200820.854115-2-jacob.e.keller@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201117200820.854115-2-jacob.e.keller@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 17 Nov 2020 19:09:16 -0800 Randy Dunlap wrote:
-> On 11/17/20 5:07 PM, Jakub Kicinski wrote:
-> > On Tue, 17 Nov 2020 17:55:54 -0700 David Ahern wrote:  
-> >> On 11/17/20 5:01 PM, Jakub Kicinski wrote:  
-> >>> On Sun, 15 Nov 2020 23:45:09 +0100 Florian Klink wrote:    
-> >>>> Checking for ifdef CONFIG_x fails if CONFIG_x=m.
-> >>>>
-> >>>> Use IS_ENABLED instead, which is true for both built-ins and modules.
-> >>>>
-> >>>> Otherwise, a    
-> >>>>> ip -4 route add 1.2.3.4/32 via inet6 fe80::2 dev eth1      
-> >>>> fails with the message "Error: IPv6 support not enabled in kernel." if
-> >>>> CONFIG_IPV6 is `m`.
-> >>>>
-> >>>> In the spirit of b8127113d01e53adba15b41aefd37b90ed83d631.
-> >>>>
-> >>>> Cc: Kim Phillips <kim.phillips@arm.com>
-> >>>> Signed-off-by: Florian Klink <flokli@flokli.de>    
-> >>>
-> >>> LGTM, this is the fixes tag right?
-> >>>
-> >>> Fixes: d15662682db2 ("ipv4: Allow ipv6 gateway with ipv4 routes")    
-> >>
-> >> yep.
-> >>  
-> >>>
-> >>> CCing David to give him a chance to ack.    
-> >>
-> >> Reviewed-by: David Ahern <dsahern@kernel.org>  
-> > 
-> > Great, applied, thanks!
-> >   
-> >> I looked at this yesterday and got distracted diving into the generated
-> >> file to see the difference:
-> >>
-> >> #define CONFIG_IPV6 1
-> >>
-> >> vs
-> >>
-> >> #define CONFIG_IPV6_MODULE 1  
-> 
-> Digging up ancient history. ;)
-> 
-> > Interesting.
-> > 
-> > drivers/net/ethernet/netronome/nfp/flower/action.c:#ifdef CONFIG_IPV6
-> > 
-> > Oops.  
-> 
-> Notify the maintainer!
+Tue, Nov 17, 2020 at 09:08:19PM CET, jacob.e.keller@intel.com wrote:
+>All drivers which implement the devlink flash update support, with the
+>exception of netdevsim, use either request_firmware or
+>request_firmware_direct to locate the firmware file. Rather than having
+>each driver do this separately as part of its .flash_update
+>implementation, perform the request_firmware within net/core/devlink.c
+>
+>Replace the file_name parameter in the struct devlink_flash_update_params
+>with a pointer to the fw object.
+>
+>Use request_firmware rather than request_firmware_direct. Although most
+>Linux distributions today do not have the fallback mechanism
+>implemented, only about half the drivers used the _direct request, as
+>compared to the generic request_firmware. In the event that
+>a distribution does support the fallback mechanism, the devlink flash
+>update ought to be able to use it to provide the firmware contents. For
+>distributions which do not support the fallback userspace mechanism,
+>there should be essentially no difference between request_firmware and
+>request_firmware_direct.
+>
+>Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 
-The joke was that I was the maintainer when it was added ;)
-
-CCing Simon
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
