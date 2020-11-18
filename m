@@ -2,82 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 363DA2B8016
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 16:07:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F6B72B8030
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 16:16:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726781AbgKRPFW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 10:05:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44538 "EHLO
+        id S1726181AbgKRPOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 10:14:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726672AbgKRPFW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 10:05:22 -0500
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8D9C0613D4
-        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 07:05:21 -0800 (PST)
-Received: by mail-ej1-x642.google.com with SMTP id f20so3208237ejz.4
-        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 07:05:21 -0800 (PST)
+        with ESMTP id S1725787AbgKRPOk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 10:14:40 -0500
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B15ADC0613D4
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 07:14:39 -0800 (PST)
+Received: by mail-ej1-x644.google.com with SMTP id w13so3204354eju.13
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 07:14:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=DS3BCiYH8fQiOJ4hgD9S0sN7nrSRrud2Y7cE9lgdhYY=;
-        b=lzp+sfjarf4jZaB0F1qLbkQXhm2fx6TImm+UcKLZ86zVQYqQnFNJ/w576D8QtAfI9s
-         Lkn5fJjF5jTreAiJDAlDBURkKoL4k43FPLqRsQ6pj7tRh1TTpWLYlwUMXPqzYA00oNZO
-         GXeFGYMf8SF1TFdwaezQIBShUJNYS7dYxcIEgY6aKW0FdlOO2cJhfENfmcpWkr6tLZvy
-         hjJmcKXPFvAtvVtP85sSfOhTKD92EHxnu7TwN0iKRuVTcceUw0dms6aE8fN81Yvjxhlz
-         P6WdMu6HcB6IBRz24ehMhS6znO3g1S1g/rXom6JTr47snQsxBwpiFFxsk/TEu4nb1eyp
-         i8+Q==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=dQYxPgqJKHoyWomXmxrytC+kAd3PRIYMJZ4helooJzE=;
+        b=R113tc6FCKnGKdt8tRnwQYUnSlD4AFHLLnHiUnNwg2jJMVosSMM2Zye4FFAAkKaei6
+         IHarykQcFpYKe0DTqMPEz4TqGEvAAH0vI4VSmSL/bjV0H5bpCv1YFhF+1ZBn6OHPQEfH
+         1hVww+X3vtFj2jxgygoGQxG59yBTP63z3VeEPeP9q+buG1YQtyhhblXMKcZG/Mx02v4i
+         HsunwNtseY6S1yQIkJtg3rG7pIFoT0ex75maJiWJE1vrIVK4ddDdi671utTA+oZx+cH+
+         J9dS5DXyfP7Esj/ToC4EZwSCc/eE4RptGfso9ayZ996REOkYFU78jc87lCjBMcHev6/b
+         5P8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=DS3BCiYH8fQiOJ4hgD9S0sN7nrSRrud2Y7cE9lgdhYY=;
-        b=PBzwR7j41Na8ONaqkrp/kqIRY0yatbob2WpVb2Smg0wLjQF0sgHa9dA0a+tyuXP1nf
-         tX3/u8UQEXQ6vjw4QkFh4r62Q5E2Y78W/VJiWpC7B6fOOXuD5ny4rv64WKVc6N9I0ViI
-         TMHjy/L5iajXI8VY4peKTUA+9HI2kwRl8ODEp+O3+QnBhOmQ5LxbGhmGetYjIAnctN09
-         EjTJq4AaqEzhn1462T7Vr1jW7wlLxxXY+oQUde579OKASEk8H6r9X8IxXBkS1dLgFp9P
-         GAICPiFeVeLxA2dR0WxOM/JlLX33swZ24CXh6M1U8Y5dwOehgAbVtDmlN82mnPsrS8UF
-         T3AQ==
-X-Gm-Message-State: AOAM533f/iWShTkJ0vPa+A6CkNJqWj/SUY/CyeSZ1MXch1wAnDxMtAgY
-        qteIK931X09MB/7WqMbDZL3f6A==
-X-Google-Smtp-Source: ABdhPJzbTuoh2IjUr++nA8kxu3dQcFeBdlSirFrbiZy0m5HGLwdI44v6QAR6Iv2uoBRVoiHEZV9TLA==
-X-Received: by 2002:a17:906:b53:: with SMTP id v19mr23549166ejg.136.1605711920170;
-        Wed, 18 Nov 2020 07:05:20 -0800 (PST)
-Received: from tsr-lap-08.nix.tessares.net ([2a02:578:85b0:e00:4bca:2353:bfc2:c761])
-        by smtp.gmail.com with ESMTPSA id q15sm13306790edt.95.2020.11.18.07.05.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Nov 2020 07:05:19 -0800 (PST)
-Subject: Re: [PATCH iproute2] ss: mptcp: fix add_addr_accepted stat print
-To:     Andrea Claudi <aclaudi@redhat.com>, netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@gmail.com
-References: <a4925e2d0fa0e07a14bbef3744594d299e619249.1605708791.git.aclaudi@redhat.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Message-ID: <961ed3f0-c4d0-b759-5aa9-114b3f325b89@tessares.net>
-Date:   Wed, 18 Nov 2020 16:05:18 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.3
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=dQYxPgqJKHoyWomXmxrytC+kAd3PRIYMJZ4helooJzE=;
+        b=tzeD1fVIpolBeWud6UaMHJU+dZyr3ewGzQJrD3pQhELCjjger3Gn3rurajY0aILb/f
+         C8EF9xFJWTqGxBKiiskZEFeYx6Xdbi8fJmhpJqf/tomqUXHwQ9+Wco+DqgI9ueiUlYDC
+         fHp7YIFD/wBLPmNtNXV8Bz63+iccNtLEycI2TZjKm/hq2kgENM8cyNSSPfbdz48SKyDA
+         yAvlPzJ1+FYd9v5bBAgAfAOJTZ+2qzdZI74SSlzfcAogcARce6Ets7hGWqDDeLY0PmCv
+         f4UTa/1svJT59Hf8vl8Q15AQEVCP1k1IKjMML8aENdo4ny+pN3tiEuG+o6K/YSY3hBJ6
+         2G7Q==
+X-Gm-Message-State: AOAM530nrXeuTqXDhEjOeePVtkJF3UPDyEwwBrexn3UMUx6yGIKPEfFC
+        TslTjlkINLEEXMHwIfHXYTs+sLGtGBcJ4w==
+X-Google-Smtp-Source: ABdhPJygs0NsgH1/I7STX/6o4s3UWq8CmvNlHQ//WPdqq0oBNbRxIi+rDmD8V/sct6FTK4ByvAEabA==
+X-Received: by 2002:a17:906:892:: with SMTP id n18mr23597024eje.1.1605712478310;
+        Wed, 18 Nov 2020 07:14:38 -0800 (PST)
+Received: from tws ([2a0f:6480:3:1:d65d:64ff:fed0:4a9d])
+        by smtp.gmail.com with ESMTPSA id y25sm10668630eje.52.2020.11.18.07.14.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Nov 2020 07:14:37 -0800 (PST)
+Date:   Wed, 18 Nov 2020 16:14:36 +0100
+From:   Oliver Herms <oliver.peter.herms@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
+        yoshfuji@linux-ipv6.org, kuba@kernel.org
+Subject: [PATCH v3] IPv6: RTM_GETROUTE: Add RTA_ENCAP to result
+Message-ID: <20201118151436.GA420026@tws>
 MIME-Version: 1.0
-In-Reply-To: <a4925e2d0fa0e07a14bbef3744594d299e619249.1605708791.git.aclaudi@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrea,
+This patch adds an IPv6 routes encapsulation attribute
+to the result of netlink RTM_GETROUTE requests
+(i.e. ip route get 2001:db8::).
 
-On 18/11/2020 15:24, Andrea Claudi wrote:
-> add_addr_accepted value is not printed if add_addr_signal value is 0.
-> Fix this properly looking for add_addr_accepted value, instead.
+Signed-off-by: Oliver Herms <oliver.peter.herms@gmail.com>
+---
+ net/ipv6/route.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Good catch! We missed that when reviewing the code on MPTCP ML!
-
-Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-
-Cheers,
-Matt
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 7e0ce7af8234..64bda402357b 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -5558,6 +5558,10 @@ static int rt6_fill_node(struct net *net, struct sk_buff *skb,
+ 
+ 		if (dst->dev && nla_put_u32(skb, RTA_OIF, dst->dev->ifindex))
+ 			goto nla_put_failure;
++
++		if (dst && dst->lwtstate &&
++		    lwtunnel_fill_encap(skb, dst->lwtstate, RTA_ENCAP, RTA_ENCAP_TYPE) < 0)
++			goto nla_put_failure;
+ 	} else if (rt->fib6_nsiblings) {
+ 		struct fib6_info *sibling, *next_sibling;
+ 		struct nlattr *mp;
 -- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+2.25.1
+
