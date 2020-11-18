@@ -2,109 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E2F22B852A
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 20:59:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E56F02B8521
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 20:54:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726592AbgKRT5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 14:57:38 -0500
-Received: from gate.crashing.org ([63.228.1.57]:42142 "EHLO gate.crashing.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726081AbgKRT5h (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 14:57:37 -0500
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 0AIJmcsd023146;
-        Wed, 18 Nov 2020 13:48:38 -0600
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 0AIJmb2m023145;
-        Wed, 18 Nov 2020 13:48:37 -0600
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Wed, 18 Nov 2020 13:48:37 -0600
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Florian Weimer <fw@deneb.enyo.de>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Matt Mullins <mmullins@mmlx.us>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        linux-toolchains@vger.kernel.org
-Subject: Re: violating function pointer signature
-Message-ID: <20201118194837.GO2672@gate.crashing.org>
-References: <375636043.48251.1605642440621.JavaMail.zimbra@efficios.com> <20201117153451.3015c5c9@gandalf.local.home> <20201118132136.GJ3121378@hirez.programming.kicks-ass.net> <CAKwvOdkptuS=75WjzwOho9ZjGVHGMirEW3k3u4Ep8ya5wCNajg@mail.gmail.com> <20201118121730.12ee645b@gandalf.local.home> <20201118181226.GK2672@gate.crashing.org> <87o8jutt2h.fsf@mid.deneb.enyo.de> <20201118135823.3f0d24b7@gandalf.local.home> <20201118191127.GM2672@gate.crashing.org> <20201118143343.4e86e79f@gandalf.local.home>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201118143343.4e86e79f@gandalf.local.home>
-User-Agent: Mutt/1.4.2.3i
+        id S1726311AbgKRTyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 14:54:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33068 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725710AbgKRTyS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 14:54:18 -0500
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F957C0613D4
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 11:54:18 -0800 (PST)
+Received: by mail-yb1-xb44.google.com with SMTP id l14so2867479ybq.3
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 11:54:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=8bgKYchYM+nfbrr1GYtm4pfVBjrHm8YD9MQK640tk3o=;
+        b=qRpeAS+bmvZSzyJ4t3jKqlThky4GJ61rSpKwEF/bwrkN/2OgXxha7d56tezehXoiWB
+         a+FrD3XXWdmAGHdUFg6bG+TFkjj11c/5htHQ356SbeMYs5tE92ScLLU7WimxsV+mNt2r
+         EiGeJSQzDumFfBzzwgjiuxgsbgoWg/SK3gof6mpNBRtps/bTQVhYs6WNiJHFiQPRTD3d
+         QXDPoyWmm0kDqKlHB6d4xjfnCne8+n1ggG2yfYN6xYLug9n61JlKjnCxOIbP3ph6ukuW
+         4Aa70jtvm7vTXXcFfHi6Y09u/OEWBRglhnrHu1wQDRJDLPd1b+kYKsVT9ACXf/wEJgBh
+         DvCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=8bgKYchYM+nfbrr1GYtm4pfVBjrHm8YD9MQK640tk3o=;
+        b=CE8Eo8le1SEOwstSplpz8hQJlGn1eiG961oV/JWpPOB43L8qyZtJ1LwsMbxunaQR8r
+         M8KUBkInH7dJtR8rUlKSYb+ioU+vKIAYMM6pgWFJa96OPbHoYYvyNAgxOuhtGS3KAv2z
+         Ps/2fcqWaqBQmglE9bQ+dbk47FNOlRzy3LNQoJ/teYph4m1Wmr+fNYxJSNHw+ZNTLF+b
+         5Z/3Rm4fReLWF7BW2ofHyZUE2FS6jRt9XOObQmULdrBl/9g0wPGUsr5iC0tQ7B6MDHXY
+         M3y7mSQYgwQljijkusW3DQUgILJzfWWjtQxR2gI9KHIczqTlmkd5eiSlC4l5guEl+QA1
+         y4qQ==
+X-Gm-Message-State: AOAM531uCyTh8s5HPUyt8WGlxriA/AM7kb1xyYp4Ll5Hgxfe5vM1tnfg
+        Rf4K1Zx3qoMHH+wdpR5hLamc+P+QlBwZ9hruVK4RvBPkPkQ=
+X-Google-Smtp-Source: ABdhPJxTuapO0G6IJrrkNNVFcECaBL6BIDWdvMeIcWSp2bkBWrh7++G5xYWTMCd0bu6tAlbEZ3CmFGFL+9HZqUMpYfI=
+X-Received: by 2002:a25:6ec3:: with SMTP id j186mr8398593ybc.335.1605729257515;
+ Wed, 18 Nov 2020 11:54:17 -0800 (PST)
+MIME-Version: 1.0
+References: <20201111204308.3352959-1-jianyang.kernel@gmail.com>
+ <20201114101709.42ee19e0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAF2d9jgYgUa4DPVT8CSsbMs9HFjE5fn_U8-P=JuZeOecfiYt-g@mail.gmail.com>
+ <20201116123447.2be5a827@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAF2d9ji24VkLipTCFSAU+L8yqKt9nfPSNfks9_V1Tnb0ztPrfA@mail.gmail.com>
+ <20201117171830.GA286718@shredder.lan> <CAF2d9jhJq76KWaMGZLTTX4rLGvLDp+jLxCG9cTvv6jWZCtcFAA@mail.gmail.com>
+ <b3445db2-5c64-fd31-b555-6a49b0fa524e@gmail.com> <7e16f1f3-2551-dff5-8039-bcede955bbfc@6wind.com>
+ <CAF2d9jiD5OpqB83fyyutsJqtGRg0AsuDkTsS6j4Fc-H-FHWiUQ@mail.gmail.com> <7b3f1d07-eca4-b012-c46a-e1f09bba9d6f@gmail.com>
+In-Reply-To: <7b3f1d07-eca4-b012-c46a-e1f09bba9d6f@gmail.com>
+From:   =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
+        <maheshb@google.com>
+Date:   Wed, 18 Nov 2020 11:54:01 -0800
+Message-ID: <CAF2d9jgJZYtv3fEqB58rK+sFoT_zibvYyQdq64o6=Pgx7EY4+w@mail.gmail.com>
+Subject: Re: [PATCH net-next] net-loopback: allow lo dev initial state to be controlled
+To:     David Ahern <dsahern@gmail.com>
+Cc:     nicolas.dichtel@6wind.com, Ido Schimmel <idosch@idosch.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jian Yang <jianyang.kernel@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        linux-netdev <netdev@vger.kernel.org>,
+        Jian Yang <jianyang@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 02:33:43PM -0500, Steven Rostedt wrote:
-> On Wed, 18 Nov 2020 13:11:27 -0600
-> Segher Boessenkool <segher@kernel.crashing.org> wrote:
-> 
-> > Calling this via a different declared function type is undefined
-> > behaviour, but that is independent of how the function is *defined*.
-> > Your program can make ducks appear from your nose even if that function
-> > is never called, if you do that.  Just don't do UB, not even once!
-> 
-> But that's the whole point of this conversation. We are going to call this
-> from functions that are going to have some random set of parameters.
+On Wed, Nov 18, 2020 at 10:04 AM David Ahern <dsahern@gmail.com> wrote:
+>
+> On 11/18/20 10:39 AM, Mahesh Bandewar (=E0=A4=AE=E0=A4=B9=E0=A5=87=E0=A4=
+=B6 =E0=A4=AC=E0=A4=82=E0=A4=A1=E0=A5=87=E0=A4=B5=E0=A4=BE=E0=A4=B0) wrote:
+> > On Wed, Nov 18, 2020 at 8:58 AM Nicolas Dichtel
+> > <nicolas.dichtel@6wind.com> wrote:
+> >>
+> >> Le 18/11/2020 =C3=A0 02:12, David Ahern a =C3=A9crit :
+> >> [snip]
+> >>> If there is no harm in just creating lo in the up state, why not just=
+ do
+> >>> it vs relying on a sysctl? It only affects 'local' networking so no r=
+eal
+> >>> impact to containers that do not do networking (ie., packets can't
+> >>> escape). Linux has a lot of sysctl options; is this one really needed=
+?
+> >>>
+> > I started with that approach but then I was informed about these
+> > containers that disable networking all together including loopback.
+> > Also bringing up by default would break backward compatibility hence
+> > resorted to sysctl.
+> >> +1
+> >>
+> >> And thus, it will benefit to everybody.
+> >
+> > Well, it benefits everyone who uses networking (most of us) inside
+> > netns but would create problems for workloads that create netns to
+> > disable networking. One can always disable it after creating the netns
+> > but that would mean change in the workflow and it could be viewed as
+> > regression.
+> >
+>
+> Then perhaps the relevant sysctl -- or maybe netns attribute -- is
+> whether to create a loopback device at all.
 
-<snip great summary>
-
-> And you see the above, the macro does:
-> 
-> 	((void(*)(void *, proto))(it_func))(__data, args);
-
-Yup.
-
-> With it_func being the func from the struct tracepoint_func, which is a
-> void pointer, it is typecast to the function that is defined by the
-> tracepoint. args is defined as the arguments that match the proto.
-
-If you have at most four or so args, what you wnat to do will work on
-all systems the kernel currently supports, as far as I can tell.  It
-is not valid C, and none of the compilers have an extension for this
-either.  But it will likely work.
-
-> The problem we are solving is on the removal case, if the memory is tight,
-> it is possible that the new array can not be allocated. But we must still
-> remove the called function. The idea in this case is to replace the
-> function saved with a stub. The above loop will call the stub and not the
-> removed function until another update happens.
-> 
-> This thread is about how safe is it to call:
-> 
-> void tp_stub_func(void) { return ; }
-> 
-> instead of the function that was removed?
-
-Exactly as safe as calling a stub defined in asm.  The undefined
-behaviour happens if your program has such a call, it doesn't matter
-how the called function is defined, it doesn't have to be C.
-
-> Thus, we are indeed calling that stub function from a call site that is not
-> using the same parameters.
-> 
-> The question is, will this break?
-
-It is unlikely to break if you use just a few arguments, all of simple
-scalar types.  Just hope you will never encounter a crazy ABI :-)
-
-
-Segher
+I'm open to ideas within the bounds of maintaining backward
+compatibility. However, not able to see how we can pull it off without
+creating a 'loopback' device.
