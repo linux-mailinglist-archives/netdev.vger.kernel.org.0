@@ -2,177 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97DB72B72D5
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 01:06:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FD202B72F1
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 01:17:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726949AbgKRAGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 19:06:22 -0500
-Received: from www62.your-server.de ([213.133.104.62]:39952 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725771AbgKRAGV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 19:06:21 -0500
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kfAzJ-0006H4-Us; Wed, 18 Nov 2020 01:06:17 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kfAzJ-000NB8-OE; Wed, 18 Nov 2020 01:06:17 +0100
-Subject: Re: [PATCH bpf-next v6 06/34] bpf: prepare for memcg-based memory
- accounting for bpf maps
-To:     Roman Gushchin <guro@fb.com>, bpf@vger.kernel.org
-Cc:     ast@kernel.org, netdev@vger.kernel.org, andrii@kernel.org,
-        akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com
-References: <20201117034108.1186569-1-guro@fb.com>
- <20201117034108.1186569-7-guro@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <41eb5e5b-e651-4cb3-a6ea-9ff6b8aa41fb@iogearbox.net>
-Date:   Wed, 18 Nov 2020 01:06:17 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20201117034108.1186569-7-guro@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25991/Tue Nov 17 14:12:35 2020)
+        id S1727053AbgKRARq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 19:17:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48848 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726202AbgKRARq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 19:17:46 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D088CC0617A6
+        for <netdev@vger.kernel.org>; Tue, 17 Nov 2020 16:17:44 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id c9so59392ybs.8
+        for <netdev@vger.kernel.org>; Tue, 17 Nov 2020 16:17:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=KSzntMlQutgORfFcLQlCCoRzBQW8Wn75jurvpaJoF8E=;
+        b=Rm+nB6H2KrMsrAYrIv1Yg2A06B3tgtEHgKHUzMvuyI+kLnMZMsu9QHqGc3XFv8WgJY
+         58ZX6vEaYkGLbxljUUcXKyV7MfsHqHFYhOW63JjMi1l4W4RGB5Lfjf9jYnwcsTeCSAL9
+         lgGJlHKKt6nMH7XNwQ4C6h41KC1C9A/ueuaEvu9IMN67oA8iKpF7NWMKlfHB2T16k43E
+         neINuSczClnUb7Zm0OBzQesPUbJO9lAcktccRDEAKE0NS6l1f7P4ccUMV1eXqsvnTTYd
+         eC22NGtQALgiiUksx2qaA6A/p0ASaaB1mSHwDhBErlGevq6lq+/ylB04drLQEmFT6047
+         SvZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=KSzntMlQutgORfFcLQlCCoRzBQW8Wn75jurvpaJoF8E=;
+        b=aB5Ni6HHuEf04BpXddsPYZaEq/m/ZjnRiz1K36LHGXuBQuLNk9fPlluC9QLB1f81B3
+         LtdcI/P1jVAnNrB41vnmj9mQJK92308aLVIQMh2eIcmKaE33v/EzqmjXn6LO294k8dT1
+         pQDGXqIT9zETn8q0bgi06/v+vRVMcLavHYgJs/Ne0jV7aJFJVH2jqkHF5pSsxuCNP05W
+         ncE+slP1eAPbUzmuiMb/NeWyOHVrjBAQRGVMEyxkQlGjBOpb5o5v6CID7wrZKYCl9M6q
+         mISx5ON6kVPGArQD3jViXXXQKMkwkVyJUV+S6beSMCBQE/h9bUL+EZ1NAJ38dmIblavy
+         tOVg==
+X-Gm-Message-State: AOAM532JkA9s2C602Ft4Tc9LolhmCvmIbIVUp0cP3rkLPc93kUfxSH1Q
+        DAS6By/mwjHDWsSrDOQhfoWXBqTX5OyWs5GPSNcRTUrsRsjFvuSFeW68m7VAWekrYmVZhKbUxRE
+        J5rXIFOLwP913tTDRU/Ss15QUYFdoPeQVBUoqH4PL+NFEGmc8JueYmw==
+X-Google-Smtp-Source: ABdhPJw4kRiwpjmqN9x2bFVjJhPOCp5kFZFnwAYaQT7Ly2H4YvEb+aTyLkBaH0FZuaaOtqs6Y0wP2uk=
+Sender: "sdf via sendgmr" <sdf@sdf2.svl.corp.google.com>
+X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
+ (user=sdf job=sendgmr) by 2002:a5b:10:: with SMTP id a16mr3748622ybp.242.1605658664033;
+ Tue, 17 Nov 2020 16:17:44 -0800 (PST)
+Date:   Tue, 17 Nov 2020 16:17:39 -0800
+Message-Id: <20201118001742.85005-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.29.2.299.gdc1121823c-goog
+Subject: [PATCH bpf-next 0/3] bpf: expose bpf_{s,g}etsockopt helpers to
+ bind{4,6} hooks
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/17/20 4:40 AM, Roman Gushchin wrote:
-> In the absolute majority of cases if a process is making a kernel
-> allocation, it's memory cgroup is getting charged.
-> 
-> Bpf maps can be updated from an interrupt context and in such
-> case there is no process which can be charged. It makes the memory
-> accounting of bpf maps non-trivial.
-> 
-> Fortunately, after commit 4127c6504f25 ("mm: kmem: enable kernel
-> memcg accounting from interrupt contexts") and b87d8cefe43c
-> ("mm, memcg: rework remote charging API to support nesting")
-> it's finally possible.
-> 
-> To do it, a pointer to the memory cgroup of the process which created
-> the map is saved, and this cgroup is getting charged for all
-> allocations made from an interrupt context.
-> 
-> Allocations made from a process context will be accounted in a usual way.
-> 
-> Signed-off-by: Roman Gushchin <guro@fb.com>
-> Acked-by: Song Liu <songliubraving@fb.com>
-[...]
->   
-> +#ifdef CONFIG_MEMCG_KMEM
-> +static __always_inline int __bpf_map_update_elem(struct bpf_map *map, void *key,
-> +						 void *value, u64 flags)
-> +{
-> +	struct mem_cgroup *old_memcg;
-> +	bool in_interrupt;
-> +	int ret;
-> +
-> +	/*
-> +	 * If update from an interrupt context results in a memory allocation,
-> +	 * the memory cgroup to charge can't be determined from the context
-> +	 * of the current task. Instead, we charge the memory cgroup, which
-> +	 * contained a process created the map.
-> +	 */
-> +	in_interrupt = in_interrupt();
-> +	if (in_interrupt)
-> +		old_memcg = set_active_memcg(map->memcg);
-> +
-> +	ret = map->ops->map_update_elem(map, key, value, flags);
-> +
-> +	if (in_interrupt)
-> +		set_active_memcg(old_memcg);
-> +
-> +	return ret;
+This might be useful for the listener sockets to pre-populate
+some options. Since those helpers require locked sockets,
+I'm changing bind hooks to lock/unlock the sockets. This
+should not cause any performance overhead because at this
+point there shouldn't be any socket lock contention and the
+locking/unlocking should be cheap.
 
-Hmm, this approach here won't work, see also commit 09772d92cd5a ("bpf: avoid
-retpoline for lookup/update/delete calls on maps") which removes the indirect
-call, so the __bpf_map_update_elem() and therefore the set_active_memcg() is
-not invoked for the vast majority of cases.
+Also, as part of the series, I convert test_sock_addr bpf
+assembly into C (and preserve the narrow load tests) to
+make it easier to extend with th bpf_setsockopt later on.
 
-> +}
-> +#else
-> +static __always_inline int __bpf_map_update_elem(struct bpf_map *map, void *key,
-> +						 void *value, u64 flags)
-> +{
-> +	return map->ops->map_update_elem(map, key, value, flags);
-> +}
-> +#endif
-> +
->   BPF_CALL_4(bpf_map_update_elem, struct bpf_map *, map, void *, key,
->   	   void *, value, u64, flags)
->   {
->   	WARN_ON_ONCE(!rcu_read_lock_held());
-> -	return map->ops->map_update_elem(map, key, value, flags);
-> +
-> +	return __bpf_map_update_elem(map, key, value, flags);
->   }
->   
->   const struct bpf_func_proto bpf_map_update_elem_proto = {
-> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> index f3fe9f53f93c..2d77fc2496da 100644
-> --- a/kernel/bpf/syscall.c
-> +++ b/kernel/bpf/syscall.c
-> @@ -31,6 +31,7 @@
->   #include <linux/poll.h>
->   #include <linux/bpf-netns.h>
->   #include <linux/rcupdate_trace.h>
-> +#include <linux/memcontrol.h>
->   
->   #define IS_FD_ARRAY(map) ((map)->map_type == BPF_MAP_TYPE_PERF_EVENT_ARRAY || \
->   			  (map)->map_type == BPF_MAP_TYPE_CGROUP_ARRAY || \
-> @@ -456,6 +457,27 @@ void bpf_map_free_id(struct bpf_map *map, bool do_idr_lock)
->   		__release(&map_idr_lock);
->   }
->   
-> +#ifdef CONFIG_MEMCG_KMEM
-> +static void bpf_map_save_memcg(struct bpf_map *map)
-> +{
-> +	map->memcg = get_mem_cgroup_from_mm(current->mm);
-> +}
-> +
-> +static void bpf_map_release_memcg(struct bpf_map *map)
-> +{
-> +	mem_cgroup_put(map->memcg);
-> +}
-> +
-> +#else
-> +static void bpf_map_save_memcg(struct bpf_map *map)
-> +{
-> +}
-> +
-> +static void bpf_map_release_memcg(struct bpf_map *map)
-> +{
-> +}
-> +#endif
-> +
->   /* called from workqueue */
->   static void bpf_map_free_deferred(struct work_struct *work)
->   {
-> @@ -464,6 +486,7 @@ static void bpf_map_free_deferred(struct work_struct *work)
->   
->   	bpf_map_charge_move(&mem, &map->memory);
->   	security_bpf_map_free(map);
-> +	bpf_map_release_memcg(map);
->   	/* implementation dependent freeing */
->   	map->ops->map_free(map);
->   	bpf_map_charge_finish(&mem);
-> @@ -875,6 +898,8 @@ static int map_create(union bpf_attr *attr)
->   	if (err)
->   		goto free_map_sec;
->   
-> +	bpf_map_save_memcg(map);
-> +
->   	err = bpf_map_new_fd(map, f_flags);
->   	if (err < 0) {
->   		/* failed to allocate fd.
-> 
+Stanislav Fomichev (3):
+  selftests/bpf: rewrite test_sock_addr bind bpf into C
+  bpf: allow bpf_{s,g}etsockopt from cgroup bind{4,6} hooks
+  selftests/bpf: extend bind{4,6} programs with a call to bpf_setsockopt
+
+ include/linux/bpf-cgroup.h                    |  12 +-
+ net/core/filter.c                             |   4 +
+ net/ipv4/af_inet.c                            |   2 +-
+ net/ipv6/af_inet6.c                           |   2 +-
+ .../testing/selftests/bpf/progs/bind4_prog.c  | 104 ++++++++++
+ .../testing/selftests/bpf/progs/bind6_prog.c  | 121 +++++++++++
+ tools/testing/selftests/bpf/test_sock_addr.c  | 196 ++----------------
+ 7 files changed, 249 insertions(+), 192 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/bind4_prog.c
+ create mode 100644 tools/testing/selftests/bpf/progs/bind6_prog.c
+
+-- 
+2.29.2.299.gdc1121823c-goog
 
