@@ -2,90 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B23B72B75FE
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 06:44:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D62842B7609
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 06:52:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726164AbgKRFn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 00:43:57 -0500
-Received: from z5.mailgun.us ([104.130.96.5]:48768 "EHLO z5.mailgun.us"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725794AbgKRFn5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 00:43:57 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1605678236; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=oiBYyN4u0AsOxj8RbLoWgBRf+OoGnfrCBodEqxw5nMk=; b=ZaiO9119BeDhBYXO4SKQm5WKKjsK9FgSRW5iOIP6d2LOeRvdkLxsvCAUZVgfF0tzbtmm/SB4
- AKqhwfEszQ9gbTRd2GQUeJ916SJ/d+QoIVpkRvSjZEMaoL4tB6FoYrgoIiRWwSvuxtFxEfpO
- i74y9FsivUDvWjRiRb13m2v4mRw=
-X-Mailgun-Sending-Ip: 104.130.96.5
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n09.prod.us-east-1.postgun.com with SMTP id
- 5fb4b49a309342b914610d3a (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 18 Nov 2020 05:43:54
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id D0DF4C433ED; Wed, 18 Nov 2020 05:43:53 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 0E41CC433ED;
-        Wed, 18 Nov 2020 05:43:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 0E41CC433ED
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org,
-        Loic Poulain <loic.poulain@linaro.org>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, bbhatt@codeaurora.org,
-        hemantk@codeaurora.org, ath11k@lists.infradead.org
-Subject: Re: [PATCH] bus: mhi: Remove auto-start option
-References: <20201118053102.13119-1-manivannan.sadhasivam@linaro.org>
-Date:   Wed, 18 Nov 2020 07:43:48 +0200
-In-Reply-To: <20201118053102.13119-1-manivannan.sadhasivam@linaro.org>
-        (Manivannan Sadhasivam's message of "Wed, 18 Nov 2020 11:01:02 +0530")
-Message-ID: <877dqjz0bv.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1726234AbgKRFqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 00:46:11 -0500
+Received: from mxout70.expurgate.net ([194.37.255.70]:60821 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725794AbgKRFqL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 00:46:11 -0500
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1kfGIA-0000tM-Br; Wed, 18 Nov 2020 06:46:06 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1kfGI9-00030X-GO; Wed, 18 Nov 2020 06:46:05 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id E4CF1240041;
+        Wed, 18 Nov 2020 06:46:04 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 85840240040;
+        Wed, 18 Nov 2020 06:46:04 +0100 (CET)
+Received: from mschiller01.dev.tdt.de (unknown [10.2.3.20])
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id 290F0204F6;
+        Wed, 18 Nov 2020 06:46:04 +0100 (CET)
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Martin Schiller <ms@dev.tdt.de>
+Subject: [PATCH net-next v4] net/tun: Call netdev notifiers
+Date:   Wed, 18 Nov 2020 06:45:55 +0100
+Message-ID: <20201118054555.14248-1-ms@dev.tdt.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+Content-Transfer-Encoding: quoted-printable
+X-purgate-type: clean
+X-purgate: clean
+X-purgate-ID: 151534::1605678366-000064E4-D961B555/0/0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org> writes:
+Call netdev notifiers before and after changing the device type.
 
-> From: Loic Poulain <loic.poulain@linaro.org>
->
-> There is really no point having an auto-start for channels.
-> This is confusing for the device drivers, some have to enable the
-> channels, others don't have... and waste resources (e.g. pre allocated
-> buffers) that may never be used.
->
-> This is really up to the MHI device(channel) driver to manage the state
-> of its channels.
->
-> While at it, let's also remove the auto-start option from ath11k mhi
-> controller.
->
-> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> [mani: clubbed ath11k change]
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+---
+Changes to v3:
+* Handle return value of call_netdevice_notifiers()
 
-Thanks and feel free to take this to the immutable branch:
+Changes to v2:
+* Use subject_prefix 'net-next' to fix 'fixes_present' issue
 
-Acked-by: Kalle Valo <kvalo@codeaurora.org>
+Changes to v1:
+* Fix 'subject_prefix' and 'checkpatch' warnings
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+---
+ drivers/net/tun.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index 3d45d56172cb..704306695b88 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -3071,10 +3071,19 @@ static long __tun_chr_ioctl(struct file *file, un=
+signed int cmd,
+ 				   "Linktype set failed because interface is up\n");
+ 			ret =3D -EBUSY;
+ 		} else {
++			ret =3D call_netdevice_notifiers(NETDEV_PRE_TYPE_CHANGE,
++						       tun->dev);
++			ret =3D notifier_to_errno(err);
++			if (ret) {
++				netif_info(tun, drv, tun->dev,
++					   "Refused to change device type\n");
++				break;
++			}
+ 			tun->dev->type =3D (int) arg;
+ 			netif_info(tun, drv, tun->dev, "linktype set to %d\n",
+ 				   tun->dev->type);
+-			ret =3D 0;
++			call_netdevice_notifiers(NETDEV_POST_TYPE_CHANGE,
++						 tun->dev);
+ 		}
+ 		break;
+=20
+--=20
+2.20.1
+
