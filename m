@@ -2,101 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96E9A2B888C
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 00:43:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B2942B8892
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 00:45:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727266AbgKRXnD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 18:43:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40332 "EHLO
+        id S1726924AbgKRXoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 18:44:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726304AbgKRXnB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 18:43:01 -0500
+        with ESMTP id S1726300AbgKRXoE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 18:44:04 -0500
 Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA0DC0613D4;
-        Wed, 18 Nov 2020 15:43:01 -0800 (PST)
-Received: by mail-pl1-x643.google.com with SMTP id k7so1917412plk.3;
-        Wed, 18 Nov 2020 15:43:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3C7CC0617A7
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 15:44:04 -0800 (PST)
+Received: by mail-pl1-x643.google.com with SMTP id s2so1899785plr.9
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 15:44:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=my77lXxheR/soSpdh9NtnHrImMTbEyo5ey9OXT+ydGM=;
-        b=tnAh4sgFOOfGkBrOhj0wq7o24G5C2JBdHz8gB2janp1zIdppJcfsfSo5ADiD9HzKDl
-         ONZNEFStlL8hh76GqoHm/4CAwwl+HJt5VzZL8tDtMxOMT3LhJYcUsitgMWkCVRJ8yjEf
-         1jhUWZZHz+GDT67wqy6W60n91buKwZge4mA4GDkpOh0Djdxr56f+WihxbU/k3CJ+BiTY
-         JWyLmz412BGJ4/B6LC7onGP7RBqLxTu4ZOBgzcH0NxQcdRJMFXPHFOw/C0viRZksJ/LJ
-         d9chJReG3R7wSGiY4WBkAxjzwyS7X29/6eI7xxLoy0wJrmI/hBlilbvYsQZJfO0rk+tI
-         hYNQ==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FtRxO4GemGjvQrMlES911DtV5VS1GNyC2f2uIjqIY44=;
+        b=N9sqPWGrOl4w0sTA0YeGv0oEUvPcX29fc3q7s9Lc6kKxI1cin/1FGLDsPklUFx3WH4
+         Ndz3RykX+GS/Umt850AWO/UZmdJ6w8noHEcBr13whNVSIyFNUAiDVC73BcdUMd5gUGK5
+         KhCWhrKUWg8O8mCW6g3b4mzekeBcI7oVzT3qU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=my77lXxheR/soSpdh9NtnHrImMTbEyo5ey9OXT+ydGM=;
-        b=ATAEX97n7p90xDa/u+dng5IDSs6dJeArVWTNJHmSelpHwAw0L1qU0yyfxLlBlIj80c
-         gY8rTtq9Tex7gNz74e3LD0MpIM5HWpLUl4ki4fl0dmI1uk8gRy35rFQI1u9CNBlexrMc
-         T6vdJXPTa+uxByoWwT+IYaJvKU6NTPl1Fn9VL6ELGq9pI46452tnj627jx3+7pZgKY+Y
-         LvofNDGHW1hbnGPvs1GARa86dhCbxFA1By6PZjDh2HcILntQFzzz4ArnS16DTfpojx8J
-         DKJCkj2W3/F/WNIZutyT2tQukJJ0Eu7qI+hCk8wkIYluUgg2ACvfvApueYf7HrqyrKyQ
-         yC/Q==
-X-Gm-Message-State: AOAM530bQbXMmg0rsJrAvu9xUCYSEil/aHoZq6CLBORi3yueDVTIlY9e
-        SO2StEHjC1F4MyFIpNYYGsE=
-X-Google-Smtp-Source: ABdhPJytJ5WdKQGVNxK7E32i8LxD6oXuriCVok63jK7EZZaQ2Zuy/LgRsVqR4sm4/WK/Gf/JM4D7nA==
-X-Received: by 2002:a17:902:b410:b029:d6:614b:679c with SMTP id x16-20020a170902b410b02900d6614b679cmr6512221plr.79.1605742981128;
-        Wed, 18 Nov 2020 15:43:01 -0800 (PST)
-Received: from taoren-ubuntu-R90MNF91 (c-73-252-146-110.hsd1.ca.comcast.net. [73.252.146.110])
-        by smtp.gmail.com with ESMTPSA id g14sm28970005pfk.90.2020.11.18.15.42.59
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 18 Nov 2020 15:43:00 -0800 (PST)
-Date:   Wed, 18 Nov 2020 15:42:53 -0800
-From:   Tao Ren <rentao.bupt@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, openbmc@lists.ozlabs.org, taoren@fb.com,
-        mikechoi@fb.com
-Subject: Re: [PATCH v2 0/2] hwmon: (max127) Add Maxim MAX127 hardware
- monitoring
-Message-ID: <20201118234252.GA18681@taoren-ubuntu-R90MNF91>
-References: <20201118230929.18147-1-rentao.bupt@gmail.com>
- <20201118232719.GI1853236@lunn.ch>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FtRxO4GemGjvQrMlES911DtV5VS1GNyC2f2uIjqIY44=;
+        b=BsZJCwKL0i97BM+zIizgVZS5FSvZOg7CnXenuZGx2h/fceUIsYUiV8x7vlyJNTcxp2
+         hLl60tKFodiD7gQrYorYOEzMwVnjxWZVIZ/EyDzQK+gOJh1liXa5YZGZts9B44wmUDos
+         vEE8+ZWWCftciHdFjRgc/kQVjbV/novgUyFRDfOOU2yqwGabpM27N7uyGVL+Ex4BH3LH
+         MphFDk2D6/qEjh2KhakFs1vNQ/w1PZETOcTapmm/Ed748jtWAautWSObU6ZwbgSpfwob
+         jygOJAkmoyq8PpmxlPHaK8UZH5u0MXy7kcG2fxXsv2D++anhp3wxOu9SfxEPsLo3xxn5
+         IC8A==
+X-Gm-Message-State: AOAM531pG7Nv74Qyu24O8FGSpHy8SBxwgfuMeDLT5Yx1pIqxAVSF0hbg
+        lKCz6AE0d/eJzI3+5hlkGBfviw==
+X-Google-Smtp-Source: ABdhPJw3KGa/xIgwjgSmYgn2Vm5bx1X/lCf6LYoKrbV+HuKqVFwlSCwMEaLLx1mEESdUQH/XI5qWLw==
+X-Received: by 2002:a17:902:be07:b029:d8:afa1:3d76 with SMTP id r7-20020a170902be07b02900d8afa13d76mr6507615pls.14.1605743044245;
+        Wed, 18 Nov 2020 15:44:04 -0800 (PST)
+Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:7220:84ff:fe09:2b94])
+        by smtp.gmail.com with ESMTPSA id f6sm21437435pgi.70.2020.11.18.15.44.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Nov 2020 15:44:03 -0800 (PST)
+From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+To:     marcel@holtmann.org, linux-bluetooth@vger.kernel.org
+Cc:     chromeos-bluetooth-upstreaming@chromium.org, mcchou@chromium.org,
+        danielwinkler@chromium.org,
+        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 0/3] Bluetooth: Power down controller when suspending
+Date:   Wed, 18 Nov 2020 15:43:49 -0800
+Message-Id: <20201118234352.2138694-1-abhishekpandit@chromium.org>
+X-Mailer: git-send-email 2.29.2.299.gdc1121823c-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201118232719.GI1853236@lunn.ch>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 19, 2020 at 12:27:19AM +0100, Andrew Lunn wrote:
-> On Wed, Nov 18, 2020 at 03:09:27PM -0800, rentao.bupt@gmail.com wrote:
-> > From: Tao Ren <rentao.bupt@gmail.com>
-> > 
-> > The patch series adds hardware monitoring driver for the Maxim MAX127
-> > chip.
-> 
-> Hi Tao
-> 
-> Why are using sending a hwmon driver to the networking mailing list?
-> 
->     Andrew
 
-Hi Andrew,
+Hi Marcel and linux-bluetooth,
 
-I added netdev because the mailing list is included in "get_maintainer.pl
-Documentation/hwmon/index.rst" output. Is it the right command to find
-reviewers? Could you please suggest? Thank you.
+This patch series adds support for a quirk that will power down the
+Bluetooth controller when suspending and power it back up when resuming.
+
+On Marvell SDIO Bluetooth controllers (SD8897 and SD8997), we are seeing
+a large number of suspend failures with the following log messages:
+
+[ 4764.773873] Bluetooth: hci_cmd_timeout() hci0 command 0x0c14 tx timeout
+[ 4767.777897] Bluetooth: btmrvl_enable_hs() Host sleep enable command failed
+[ 4767.777920] Bluetooth: btmrvl_sdio_suspend() HS not actived, suspend failed!
+[ 4767.777946] dpm_run_callback(): pm_generic_suspend+0x0/0x48 returns -16
+[ 4767.777963] call mmc2:0001:2+ returned -16 after 4882288 usecs
+
+The daily failure rate with this signature is quite significant and
+users are likely facing this at least once a day (and some unlucky users
+are likely facing it multiple times a day).
+
+Given the severity, we'd like to power off the controller during suspend
+so the driver doesn't need to take any action (or block in any way) when
+suspending and power on during resume. This will break wake-on-bt for
+users but should improve the reliability of suspend.
+
+We don't want to force all users of MVL8897 and MVL8997 to encounter
+this behavior if they're not affected (especially users that depend on
+Bluetooth for keyboard/mouse input) so the new behavior is enabled via
+module param. We are limiting this quirk to only Chromebooks (i.e.
+laptop). Chromeboxes will continue to have the old behavior since users
+may depend on BT HID to wake and use the system.
+
+These changes were tested in the following ways on a Chromebook running
+the 4.19 kernel and a MVL-SD8897 chipset. We added the module param in
+/etc/modprobe.d/btmrvl_sdio.conf with the contents
+  "options btmrvl_sdio power_down_suspend=Y".
+
+Tests run:
+
+With no devices paired:
+- suspend_stress_test --wake_min 10 --suspend_min 10 --count 500
+
+With an LE keyboard paired:
+- suspend_stress_test --wake_min 10 --suspend_min 10 --count 500
+
+Using the ChromeOS AVL test suite (stress tests are 25 iterations):
+- bluetooth_AdapterSRHealth (basic suite)
+- bluetooth_AdapterSRHealth.sr_reconnect_classic_hid_stress
+- bluetooth_AdapterSRHealth.sr_reconnect_le_hid_stress
+
+Thanks,
+Abhishek
 
 
-Cheers,
+Abhishek Pandit-Subedi (3):
+  Bluetooth: Rename and move clean_up_hci_state
+  Bluetooth: Add quirk to power down on suspend
+  Bluetooth: btmrvl_sdio: Power down when suspending
 
-Tao
+ drivers/bluetooth/btmrvl_sdio.c  | 10 ++++
+ include/net/bluetooth/hci.h      |  7 +++
+ include/net/bluetooth/hci_core.h |  6 +++
+ net/bluetooth/hci_core.c         | 93 +++++++++++++++++++++++++++++++-
+ net/bluetooth/hci_request.c      | 26 ++++++++-
+ net/bluetooth/mgmt.c             | 46 +---------------
+ 6 files changed, 140 insertions(+), 48 deletions(-)
+
+-- 
+2.29.2.299.gdc1121823c-goog
+
