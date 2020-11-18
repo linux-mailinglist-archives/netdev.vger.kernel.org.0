@@ -2,81 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C6502B75AB
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 06:21:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 436732B75E2
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 06:28:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726468AbgKRFUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 00:20:03 -0500
-Received: from bilbo.ozlabs.org ([203.11.71.1]:50351 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725446AbgKRFUD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 00:20:03 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4CbWN05PVgz9sPB;
-        Wed, 18 Nov 2020 16:20:00 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1605676801;
-        bh=EkSoM0/Wd+2ehIJc7wy2iQ4BVO0YgFF2ZxrRg4aYSYY=;
-        h=Date:From:To:Cc:Subject:From;
-        b=FbHmYj/uInpQX8WCOKn1yn5CQ67YzXZLjNZZa7MR340CpHRJFYoN/bTqU4NWb2ydH
-         2SArDkzUX6HjX05IvApPsVP0HpIMp/rI5POPseG+zKt08XFNGo2wAK75+31hRwh930
-         SncDk7rxuoApCmBKvG5JywxNczPlKe6mdXab5FJ3CFyRp6EgIlw1quBW1XVH4sbz8H
-         HUXD7Ao2GxSStAi2T3Qk6XjY/4i00XfRArugjp2prtxYY6LmyFHAIe4DTMtWZH++ZU
-         4IiTK/5LNbz/FUHpa4sZZQMg89rEcRZr6npDeliyIp07Xb0r7idjLmjxHyk2eWDc6l
-         E5CNG0LL0lxcQ==
-Date:   Wed, 18 Nov 2020 16:19:59 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Xie He <xie.he.0141@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build warning after merge of the net-next tree
-Message-ID: <20201118161959.1537d7cc@canb.auug.org.au>
+        id S1726550AbgKRFWh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 00:22:37 -0500
+Received: from mxout70.expurgate.net ([91.198.224.70]:10201 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726256AbgKRFWh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 00:22:37 -0500
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1kfFvM-000Pvy-Tr; Wed, 18 Nov 2020 06:22:32 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1kfFvM-000TPg-7R; Wed, 18 Nov 2020 06:22:32 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id E1322240041;
+        Wed, 18 Nov 2020 06:22:31 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 8009F240040;
+        Wed, 18 Nov 2020 06:22:31 +0100 (CET)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id 25B0E204F6;
+        Wed, 18 Nov 2020 06:22:31 +0100 (CET)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/fX96wqYl5Ivf/vW9uXDf.0B";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 18 Nov 2020 06:22:31 +0100
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3] net/tun: Call netdev notifiers
+Organization: TDT AG
+In-Reply-To: <20201117163245.4ff522ef@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+References: <20201116104121.20884-1-ms@dev.tdt.de>
+ <20201117163245.4ff522ef@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Message-ID: <dcb57be8465c1aa21b21b8478290999f@dev.tdt.de>
+X-Sender: ms@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.15
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+X-purgate-type: clean
+X-purgate-ID: 151534::1605676952-000035B9-463974AD/0/0
+X-purgate: clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/fX96wqYl5Ivf/vW9uXDf.0B
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 2020-11-18 01:32, Jakub Kicinski wrote:
+> On Mon, 16 Nov 2020 11:41:21 +0100 Martin Schiller wrote:
+>> Call netdev notifiers before and after changing the device type.
+>> 
+>> Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+>> ---
+>> 
+>> Change from v2:
+>> use subject_prefix 'net-next' to fix 'fixes_present' issue
+>> 
+>> Change from v1:
+>> fix 'subject_prefix' and 'checkpatch' warnings
+>> 
+>> ---
+>>  drivers/net/tun.c | 4 ++++
+>>  1 file changed, 4 insertions(+)
+>> 
+>> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+>> index 3d45d56172cb..2d9a00f41023 100644
+>> --- a/drivers/net/tun.c
+>> +++ b/drivers/net/tun.c
+>> @@ -3071,9 +3071,13 @@ static long __tun_chr_ioctl(struct file *file, 
+>> unsigned int cmd,
+>>  				   "Linktype set failed because interface is up\n");
+>>  			ret = -EBUSY;
+>>  		} else {
+>> +			call_netdevice_notifiers(NETDEV_PRE_TYPE_CHANGE,
+>> +						 tun->dev);
+> 
+> This call may return an error (which has to be unpacked with
+> notifier_to_errno()).
 
-Hi all,
+OK, I'll fix that and send a v3 patch.
 
-After merging the net-next tree, today's linux-next build (htmldocs)
-produced this warning:
-
-Documentation/networking/index.rst:6: WARNING: toctree contains reference t=
-o nonexisting document 'networking/framerelay'
-
-Introduced by commit
-
-  f73659192b0b ("net: wan: Delete the DLCI / SDLA drivers")
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/fX96wqYl5Ivf/vW9uXDf.0B
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl+0rv8ACgkQAVBC80lX
-0Gw/LAf9FUHGJfv/zm+KkX/jeVQ4FXaGqWGj2uJcecfRYy6f6H1+MN5Oy3LFlMkB
-CXVe2P4KKdIrVm7KDaKjD0E5UFEYTAa5jutGJrj970dCbyhe4phEk4qMal5xUfsP
-7yK+bGCZFlGrOjFSD/YPvYgmoJG8pOCu19AQ05rftglkWp4tt6mWOEZPiRFeLuHm
-xj/mWnyNXkQRWj0t1J2AONJ2vCuD3gbO4qIwHOVdJ0kGl0cym1H8/g8IsYyMT8/E
-T/unpw7W34mwzYETbmfjRx4AKIS2f4BYG08l07C94k19d6kQFJEMEv1aOD4CNUVU
-4266HJCOXJ7PDz81C3WZmQp/unPqsA==
-=nj91
------END PGP SIGNATURE-----
-
---Sig_/fX96wqYl5Ivf/vW9uXDf.0B--
+> 
+>>  			tun->dev->type = (int) arg;
+>>  			netif_info(tun, drv, tun->dev, "linktype set to %d\n",
+>>  				   tun->dev->type);
+>> +			call_netdevice_notifiers(NETDEV_POST_TYPE_CHANGE,
+>> +						 tun->dev);
+>>  			ret = 0;
+>>  		}
+>>  		break;
