@@ -2,73 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9A032B8663
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 22:14:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEC342B8665
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 22:15:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726683AbgKRVNi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 16:13:38 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58102 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725948AbgKRVNh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 16:13:37 -0500
-Received: from localhost.localdomain (c-73-231-172-41.hsd1.ca.comcast.net [73.231.172.41])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726787AbgKRVOE convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 18 Nov 2020 16:14:04 -0500
+Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:60089 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726234AbgKRVOE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 16:14:04 -0500
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-174-eaZ1Bnb6M82RkuCO0PUdVQ-1; Wed, 18 Nov 2020 16:13:57 -0500
+X-MC-Unique: eaZ1Bnb6M82RkuCO0PUdVQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E33EA207D3;
-        Wed, 18 Nov 2020 21:13:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1605734016;
-        bh=+8//0K5UnMNFTVC4OTQS6tajK8TIdT39V94cceNEt5o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DxQLDkJc7dR/Owjkxqg6kuft3IOF4f8GMCFk42XTrdXQn+utjhQHzyLVGCYFXgxKw
-         yM1anhZN0FFirIqmnTXx7WuJZhmVUlBq53WYkjinDycCJIbBRT9/6qbnZEXr8AoXrU
-         t4+32GFD2aalCBjNdWef+wGF/2qnkBG9m3Ewr96I=
-Date:   Wed, 18 Nov 2020 13:13:35 -0800
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Dongli Zhang <dongli.zhang@oracle.com>, linux-mm@kvack.org,
-        netdev@vger.kernel.org, willy@infradead.org,
-        aruna.ramakrishna@oracle.com, bert.barbe@oracle.com,
-        rama.nichanamatlu@oracle.com, venkat.x.venkatsubra@oracle.com,
-        manjunath.b.patil@oracle.com, joe.jin@oracle.com,
-        srinivas.eeda@oracle.com, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, vbabka@suse.cz
-Subject: Re: [PATCH v3 1/1] page_frag: Recover from memory pressure
-Message-Id: <20201118131335.738bdade4f3dfcee190ea8c1@linux-foundation.org>
-In-Reply-To: <20201118114654.3435f76c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-References: <20201115201029.11903-1-dongli.zhang@oracle.com>
-        <20201118114654.3435f76c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D102464092;
+        Wed, 18 Nov 2020 21:13:54 +0000 (UTC)
+Received: from krava.redhat.com (unknown [10.40.192.157])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8CBB760853;
+        Wed, 18 Nov 2020 21:13:51 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Cc:     Tony Ambardar <tony.ambardar@gmail.com>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Aurelien Jarno <aurelien@aurel32.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: [PATCH] libbpf: Fix VERSIONED_SYM_COUNT number parsing
+Date:   Wed, 18 Nov 2020 22:13:50 +0100
+Message-Id: <20201118211350.1493421-1-jolsa@kernel.org>
+MIME-Version: 1.0
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kernel.org
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Nov 2020 11:46:54 -0800 Jakub Kicinski <kuba@kernel.org> wrote:
+We remove "other info" from "readelf -s --wide" output when
+parsing GLOBAL_SYM_COUNT variable, which was added in [1].
+But we don't do that for VERSIONED_SYM_COUNT and it's failing
+the check_abi target on powerpc Fedora 33.
 
-> > 1. The kernel is under memory pressure and allocation of
-> > PAGE_FRAG_CACHE_MAX_ORDER in __page_frag_cache_refill() will fail. Instead,
-> > the pfmemalloc page is allocated for page_frag_cache->va.
-> > 
-> > 2: All skb->data from page_frag_cache->va (pfmemalloc) will have
-> > skb->pfmemalloc=true. The skb will always be dropped by sock without
-> > SOCK_MEMALLOC. This is an expected behaviour.
-> > 
-> > 3. Suppose a large amount of pages are reclaimed and kernel is not under
-> > memory pressure any longer. We expect skb->pfmemalloc drop will not happen.
-> > 
-> > 4. Unfortunately, page_frag_alloc() does not proactively re-allocate
-> > page_frag_alloc->va and will always re-use the prior pfmemalloc page. The
-> > skb->pfmemalloc is always true even kernel is not under memory pressure any
-> > longer.
-> > 
-> > Fix this by freeing and re-allocating the page instead of recycling it.
-> 
-> Andrew, are you taking this via -mm or should I put it in net? 
-> I'm sending a PR to Linus tomorrow.
+The extra "other info" wasn't problem for VERSIONED_SYM_COUNT
+parsing until commit [2] added awk in the pipe, which assumes
+that the last column is symbol, but it can be "other info".
 
-Please go ahead - if/when it appears in mainline or linux-next, I'll
-drop the -mm copy.  
+Adding "other info" removal for VERSIONED_SYM_COUNT the same
+way as we did for GLOBAL_SYM_COUNT parsing.
+
+[1] aa915931ac3e ("libbpf: Fix readelf output parsing for Fedora")
+[2] 746f534a4809 ("tools/libbpf: Avoid counting local symbols in ABI check")
+
+Cc: Tony Ambardar <tony.ambardar@gmail.com>
+Cc: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Cc: Aurelien Jarno <aurelien@aurel32.net>
+Fixes: 746f534a4809 ("tools/libbpf: Avoid counting local symbols in ABI check")
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+---
+ tools/lib/bpf/Makefile | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+index 5f9abed3e226..55bd78b3496f 100644
+--- a/tools/lib/bpf/Makefile
++++ b/tools/lib/bpf/Makefile
+@@ -146,6 +146,7 @@ GLOBAL_SYM_COUNT = $(shell readelf -s --wide $(BPF_IN_SHARED) | \
+ 			   awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}' | \
+ 			   sort -u | wc -l)
+ VERSIONED_SYM_COUNT = $(shell readelf --dyn-syms --wide $(OUTPUT)libbpf.so | \
++			      sed 's/\[.*\]//' | \
+ 			      awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}' | \
+ 			      grep -Eo '[^ ]+@LIBBPF_' | cut -d@ -f1 | sort -u | wc -l)
+ 
+@@ -214,6 +215,7 @@ check_abi: $(OUTPUT)libbpf.so
+ 		    awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}'|  \
+ 		    sort -u > $(OUTPUT)libbpf_global_syms.tmp;		 \
+ 		readelf --dyn-syms --wide $(OUTPUT)libbpf.so |		 \
++		    sed 's/\[.*\]//' |					 \
+ 		    awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}'|  \
+ 		    grep -Eo '[^ ]+@LIBBPF_' | cut -d@ -f1 |		 \
+ 		    sort -u > $(OUTPUT)libbpf_versioned_syms.tmp; 	 \
+-- 
+2.26.2
+
