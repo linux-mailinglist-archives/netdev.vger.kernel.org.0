@@ -2,52 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 330092B8464
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 20:09:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44ED62B846B
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 20:10:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726700AbgKRTJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 14:09:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33344 "EHLO mail.kernel.org"
+        id S1726775AbgKRTKG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 14:10:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33482 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726268AbgKRTJT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 14:09:19 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 06D08221EB;
-        Wed, 18 Nov 2020 19:09:18 +0000 (UTC)
+        id S1726198AbgKRTKG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 14:10:06 -0500
+Content-Type: text/plain; charset="utf-8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605726559;
-        bh=j/ghzdEdIvdz6pQ8qWX9PNWPnfD47clX9DfWiJ6PsuY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=wOoW+AYa86UYV+rTwBMd6b6gWH3qT65qc0+mdlYZa5bepYjUe+/E7sMNr/cl6pavp
-         BzfwL1JFLDgKkIha0jxOy241/W0761l/4TSxjwBlADc13Jg0Q2nRMrZl6BkdtxaEwN
-         mfl3s6XzZHDI0Q40chmVsRo1i6jlZUIuuiPonLfQ=
-Date:   Wed, 18 Nov 2020 11:09:18 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@nvidia.com,
-        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net 0/2] mlxsw: Couple of fixes
-Message-ID: <20201118110918.46d2c115@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201117173352.288491-1-idosch@idosch.org>
-References: <20201117173352.288491-1-idosch@idosch.org>
+        s=default; t=1605726605;
+        bh=L4Ne5R+xRIgaQGY5QlTUgiYPocDARZO/nWU3rfr8RTE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Gpi/2WxylPCDSnPGgHnJT7nAaSuFUWfTQduyWTMybeAifrJL9kS9+JjY9pLsHowh/
+         Pnm9bvOFW+H3GlvhGfg4GkSCjkEG61OT73K3V/PXRIeb0UvIV8KY26Pha/UjfiVr2c
+         ynpzTyo2V3WBTmDsZi9w3BG3CQV4g8+BXYiEHsWw=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] atl1e: fix error return code in atl1e_probe()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160572660547.17971.16560992676272496883.git-patchwork-notify@kernel.org>
+Date:   Wed, 18 Nov 2020 19:10:05 +0000
+References: <1605581875-36281-1-git-send-email-zhangchangzhong@huawei.com>
+In-Reply-To: <1605581875-36281-1-git-send-email-zhangchangzhong@huawei.com>
+To:     Zhang Changzhong <zhangchangzhong@huawei.com>
+Cc:     jcliburn@gmail.com, chris.snook@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, christophe.jaillet@wanadoo.fr, mst@redhat.com,
+        leon@kernel.org, hkallweit1@gmail.com, tglx@linutronix.de,
+        jesse.brandeburg@intel.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 17 Nov 2020 19:33:50 +0200 Ido Schimmel wrote:
-> This patch set contains two fixes for mlxsw.
-> 
-> Patch #1 fixes firmware flashing when CONFIG_MLXSW_CORE=y and
-> CONFIG_MLXFW=m.
-> 
-> Patch #2 prevents EMAD transactions from needlessly failing when the
-> system is under heavy load by using exponential backoff.
-> 
-> Please consider patch #2 for stable.
+Hello:
 
-Applied, and queued, thanks!
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Tue, 17 Nov 2020 10:57:55 +0800 you wrote:
+> Fix to return a negative error code from the error handling
+> case instead of 0, as done elsewhere in this function.
+> 
+> Fixes: 85eb5bc33717 ("net: atheros: switch from 'pci_' to 'dma_' API")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - [net] atl1e: fix error return code in atl1e_probe()
+    https://git.kernel.org/netdev/net/c/3a36060bf294
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
