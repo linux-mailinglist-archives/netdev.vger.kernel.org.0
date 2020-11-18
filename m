@@ -2,36 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 913292B8467
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 20:10:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 604082B8469
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 20:10:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727108AbgKRTKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 14:10:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33518 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726891AbgKRTKH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726950AbgKRTKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 18 Nov 2020 14:10:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33510 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726268AbgKRTKG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 14:10:06 -0500
 Content-Type: text/plain; charset="utf-8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1605726605;
-        bh=6GgW/U3n+PWiHOHNSe9TcCso3MWiDZx4E3P0xNwqko8=;
+        bh=hVmwv30NHYCXFiGeRwjLOsTQJXMm2vVkagSC6m0FZck=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=gpq90BQf6i8Uq9w2lLm8K/BHQj4LHGHDmGjCOZn3olNq/laqui1HoUoRvSACpIJNk
-         gMZBMWnZksNYWeqxwrqtN/eN5zb+jsyrgPM/qBYO8tTKDkhCgINyzE8zKibqEoflKZ
-         WzKCYkO2QEQqOXx1sCWJMYeAp1VgC+TZoBcmcpvI=
+        b=OpEUInwgsrt2tsNFXBVlG3QrNYIZjmHGJZ9jaBON+36e0jqjqeQM7xH2HdMvM/BPJ
+         xVS9R+Xiqc7UUi7L/XJhmf5oZygw8D7bNRbaUo6Drg1uNVDsD3zH9XK1qfvZhGcfhI
+         yL/hDOPV39hnANk0AJ7e1FlGq+XOREUAEoRVRvR4=
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] atl1c: fix error return code in atl1c_probe()
+Subject: Re: [PATCH net v2] net: Have netpoll bring-up DSA management interface
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160572660572.17971.13195778405702294005.git-patchwork-notify@kernel.org>
+Message-Id: <160572660568.17971.9397534654388103737.git-patchwork-notify@kernel.org>
 Date:   Wed, 18 Nov 2020 19:10:05 +0000
-References: <1605581721-36028-1-git-send-email-zhangchangzhong@huawei.com>
-In-Reply-To: <1605581721-36028-1-git-send-email-zhangchangzhong@huawei.com>
-To:     Zhang Changzhong <zhangchangzhong@huawei.com>
-Cc:     jcliburn@gmail.com, chris.snook@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, hkallweit1@gmail.com, yanaijie@huawei.com,
-        christophe.jaillet@wanadoo.fr, mst@redhat.com, leon@kernel.org,
-        jesse.brandeburg@intel.com, netdev@vger.kernel.org,
+References: <20201117035236.22658-1-f.fainelli@gmail.com>
+In-Reply-To: <20201117035236.22658-1-f.fainelli@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, olteanv@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, edumazet@google.com, wangyunjian@huawei.com,
         linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -41,19 +39,19 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Tue, 17 Nov 2020 10:55:21 +0800 you wrote:
-> Fix to return a negative error code from the error handling
-> case instead of 0, as done elsewhere in this function.
-> 
-> Fixes: 85eb5bc33717 ("net: atheros: switch from 'pci_' to 'dma_' API")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+On Mon, 16 Nov 2020 19:52:34 -0800 you wrote:
+> DSA network devices rely on having their DSA management interface up and
+> running otherwise their ndo_open() will return -ENETDOWN. Without doing
+> this it would not be possible to use DSA devices as netconsole when
+> configured on the command line. These devices also do not utilize the
+> upper/lower linking so the check about the netpoll device having upper
+> is not going to be a problem.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] atl1c: fix error return code in atl1c_probe()
-    https://git.kernel.org/netdev/net/c/537a14726582
+  - [net,v2] net: Have netpoll bring-up DSA management interface
+    https://git.kernel.org/netdev/net/c/1532b9778478
 
 You are awesome, thank you!
 --
