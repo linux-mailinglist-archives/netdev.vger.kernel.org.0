@@ -2,85 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 131E62B8511
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 20:49:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E2F22B852A
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 20:59:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726457AbgKRTq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 14:46:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40464 "EHLO mail.kernel.org"
+        id S1726592AbgKRT5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 14:57:38 -0500
+Received: from gate.crashing.org ([63.228.1.57]:42142 "EHLO gate.crashing.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726357AbgKRTq5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 14:46:57 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F094A246AA;
-        Wed, 18 Nov 2020 19:46:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605728816;
-        bh=r4rtZMhdAiBSx+HYth3NByAdBaTUCKCee8fL0I2kNRA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lHosobLoK22MXnVs0MjQ4ibqeRWzsM41/a6EmjFHtqfruDDk9og6FzvPaO2faW0zv
-         jQOzL9YbAkVIz/w2o10YIQlrnodjuJmvIEddKJIog1qKb02XCdvby4FWQi8+pJ4hnn
-         FJxAwQkeq4Ut9VCw2cr3TAjjTkzgoyf5DvczvGq4=
-Date:   Wed, 18 Nov 2020 11:46:54 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     akpm@linux-foundation.org
-Cc:     Dongli Zhang <dongli.zhang@oracle.com>, linux-mm@kvack.org,
-        netdev@vger.kernel.org, willy@infradead.org,
-        aruna.ramakrishna@oracle.com, bert.barbe@oracle.com,
-        rama.nichanamatlu@oracle.com, venkat.x.venkatsubra@oracle.com,
-        manjunath.b.patil@oracle.com, joe.jin@oracle.com,
-        srinivas.eeda@oracle.com, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, vbabka@suse.cz
-Subject: Re: [PATCH v3 1/1] page_frag: Recover from memory pressure
-Message-ID: <20201118114654.3435f76c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201115201029.11903-1-dongli.zhang@oracle.com>
-References: <20201115201029.11903-1-dongli.zhang@oracle.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1726081AbgKRT5h (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 14:57:37 -0500
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 0AIJmcsd023146;
+        Wed, 18 Nov 2020 13:48:38 -0600
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 0AIJmb2m023145;
+        Wed, 18 Nov 2020 13:48:37 -0600
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Wed, 18 Nov 2020 13:48:37 -0600
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Florian Weimer <fw@deneb.enyo.de>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Matt Mullins <mmullins@mmlx.us>,
+        Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        linux-toolchains@vger.kernel.org
+Subject: Re: violating function pointer signature
+Message-ID: <20201118194837.GO2672@gate.crashing.org>
+References: <375636043.48251.1605642440621.JavaMail.zimbra@efficios.com> <20201117153451.3015c5c9@gandalf.local.home> <20201118132136.GJ3121378@hirez.programming.kicks-ass.net> <CAKwvOdkptuS=75WjzwOho9ZjGVHGMirEW3k3u4Ep8ya5wCNajg@mail.gmail.com> <20201118121730.12ee645b@gandalf.local.home> <20201118181226.GK2672@gate.crashing.org> <87o8jutt2h.fsf@mid.deneb.enyo.de> <20201118135823.3f0d24b7@gandalf.local.home> <20201118191127.GM2672@gate.crashing.org> <20201118143343.4e86e79f@gandalf.local.home>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201118143343.4e86e79f@gandalf.local.home>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 15 Nov 2020 12:10:29 -0800 Dongli Zhang wrote:
-> The ethernet driver may allocate skb (and skb->data) via napi_alloc_skb().
-> This ends up to page_frag_alloc() to allocate skb->data from
-> page_frag_cache->va.
+On Wed, Nov 18, 2020 at 02:33:43PM -0500, Steven Rostedt wrote:
+> On Wed, 18 Nov 2020 13:11:27 -0600
+> Segher Boessenkool <segher@kernel.crashing.org> wrote:
 > 
-> During the memory pressure, page_frag_cache->va may be allocated as
-> pfmemalloc page. As a result, the skb->pfmemalloc is always true as
-> skb->data is from page_frag_cache->va. The skb will be dropped if the
-> sock (receiver) does not have SOCK_MEMALLOC. This is expected behaviour
-> under memory pressure.
+> > Calling this via a different declared function type is undefined
+> > behaviour, but that is independent of how the function is *defined*.
+> > Your program can make ducks appear from your nose even if that function
+> > is never called, if you do that.  Just don't do UB, not even once!
 > 
-> However, once kernel is not under memory pressure any longer (suppose large
-> amount of memory pages are just reclaimed), the page_frag_alloc() may still
-> re-use the prior pfmemalloc page_frag_cache->va to allocate skb->data. As a
-> result, the skb->pfmemalloc is always true unless page_frag_cache->va is
-> re-allocated, even if the kernel is not under memory pressure any longer.
-> 
-> Here is how kernel runs into issue.
-> 
-> 1. The kernel is under memory pressure and allocation of
-> PAGE_FRAG_CACHE_MAX_ORDER in __page_frag_cache_refill() will fail. Instead,
-> the pfmemalloc page is allocated for page_frag_cache->va.
-> 
-> 2: All skb->data from page_frag_cache->va (pfmemalloc) will have
-> skb->pfmemalloc=true. The skb will always be dropped by sock without
-> SOCK_MEMALLOC. This is an expected behaviour.
-> 
-> 3. Suppose a large amount of pages are reclaimed and kernel is not under
-> memory pressure any longer. We expect skb->pfmemalloc drop will not happen.
-> 
-> 4. Unfortunately, page_frag_alloc() does not proactively re-allocate
-> page_frag_alloc->va and will always re-use the prior pfmemalloc page. The
-> skb->pfmemalloc is always true even kernel is not under memory pressure any
-> longer.
-> 
-> Fix this by freeing and re-allocating the page instead of recycling it.
+> But that's the whole point of this conversation. We are going to call this
+> from functions that are going to have some random set of parameters.
 
-Andrew, are you taking this via -mm or should I put it in net? 
-I'm sending a PR to Linus tomorrow.
+<snip great summary>
+
+> And you see the above, the macro does:
+> 
+> 	((void(*)(void *, proto))(it_func))(__data, args);
+
+Yup.
+
+> With it_func being the func from the struct tracepoint_func, which is a
+> void pointer, it is typecast to the function that is defined by the
+> tracepoint. args is defined as the arguments that match the proto.
+
+If you have at most four or so args, what you wnat to do will work on
+all systems the kernel currently supports, as far as I can tell.  It
+is not valid C, and none of the compilers have an extension for this
+either.  But it will likely work.
+
+> The problem we are solving is on the removal case, if the memory is tight,
+> it is possible that the new array can not be allocated. But we must still
+> remove the called function. The idea in this case is to replace the
+> function saved with a stub. The above loop will call the stub and not the
+> removed function until another update happens.
+> 
+> This thread is about how safe is it to call:
+> 
+> void tp_stub_func(void) { return ; }
+> 
+> instead of the function that was removed?
+
+Exactly as safe as calling a stub defined in asm.  The undefined
+behaviour happens if your program has such a call, it doesn't matter
+how the called function is defined, it doesn't have to be C.
+
+> Thus, we are indeed calling that stub function from a call site that is not
+> using the same parameters.
+> 
+> The question is, will this break?
+
+It is unlikely to break if you use just a few arguments, all of simple
+scalar types.  Just hope you will never encounter a crazy ABI :-)
+
+
+Segher
