@@ -2,355 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57BD52B85F6
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 21:49:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D04AF2B85AD
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 21:36:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727383AbgKRUsA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 15:48:00 -0500
-Received: from mailout01.rmx.de ([94.199.90.91]:57881 "EHLO mailout01.rmx.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726416AbgKRUr7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 15:47:59 -0500
-Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mailout01.rmx.de (Postfix) with ESMTPS id 4Cbvyf245wz2STQb;
-        Wed, 18 Nov 2020 21:47:54 +0100 (CET)
-Received: from mta.arri.de (unknown [217.111.95.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by kdin01.retarus.com (Postfix) with ESMTPS id 4Cbvx536f6z2xF4;
-        Wed, 18 Nov 2020 21:46:33 +0100 (CET)
-Received: from N95HX1G2.wgnetz.xx (192.168.54.25) by mta.arri.de
- (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 18 Nov
- 2020 21:37:13 +0100
-From:   Christian Eggers <ceggers@arri.de>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Richard Cochran <richardcochran@gmail.com>,
-        "Rob Herring" <robh+dt@kernel.org>
-CC:     Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
-        George McCollister <george.mccollister@gmail.com>,
-        Marek Vasut <marex@denx.de>,
-        Helmut Grohne <helmut.grohne@intenta.de>,
-        Paul Barker <pbarker@konsulko.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Christian Eggers <ceggers@arri.de>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next v3 12/12] net: dsa: microchip: ksz9477: add periodic output support
-Date:   Wed, 18 Nov 2020 21:30:13 +0100
-Message-ID: <20201118203013.5077-13-ceggers@arri.de>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201118203013.5077-1-ceggers@arri.de>
-References: <20201118203013.5077-1-ceggers@arri.de>
+        id S1727175AbgKRUfe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 15:35:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39446 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726268AbgKRUfd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 15:35:33 -0500
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7819FC0613D4;
+        Wed, 18 Nov 2020 12:35:33 -0800 (PST)
+Received: by mail-io1-xd44.google.com with SMTP id j12so3532225iow.0;
+        Wed, 18 Nov 2020 12:35:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=E1bOErIYrjLaTz93PnPGTkpm6bBbgOCWVyxMuRhcFbM=;
+        b=C765eYl8DJDZwTjWySFMM2zXZBN/TFUHnk9sfwZaGg5mOZ//zlAtlj4dMkYNvYJQ64
+         3dGNtGKT2m0PhRMMDL5KQhwXW4K7yoE/5qQWE4nc4LK1DjLOLVuQf93epPvHciPonFdO
+         FkEJY2zmfHG0HpfWf9I2GoI+agoEIXnvMKfnOuP8HEQFxZfQ/+JEB8q2itXYsCLJ/AzF
+         2iCRlQAgD7bi7wbYIHpP0Y3Mc4rjl9882HQm6KhT8Vysj1z5v2dtannpbFjUdM/swgmu
+         aJDIwZvz0njZXE9n33uBdaNvDjgfm+gBg+MTlm/9tzda7lQZZrBX177qkytzajHcQEZG
+         877w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=E1bOErIYrjLaTz93PnPGTkpm6bBbgOCWVyxMuRhcFbM=;
+        b=gsM4x2KJfzIWkBOMjITd4keyLZf1H+Y+Tk8UtO8DQlXA2Bd/qBVIO8v+x+aeFnYco/
+         7zeZKKOjVdrdDjJNY/dwpQV5D4rMkzJbagnEnzrFExu7zgZix4XqrwtwMJp1TOC1dd0x
+         zqpp6zk6fGsJHrIGfbyLZF1DfgsYUx0wB6Bt0lsRgkxHT/zZmcoPxQ8frQ5CEDbC4fIh
+         BZUdllSiRI2ZyN62iSe/xIwzurcDiBKISv9/iIfGOgjorVkLZrkwKXJEuJcIiBLXjgwr
+         D2ykotTO8iUy8TeWMKMd8pPZZwv36cTkOfJkQbTEjJT7MpHYpnM+fcbjNXMjW76S/rP9
+         CPxw==
+X-Gm-Message-State: AOAM530zQA+iztUKDD6jiikXmjMKX76iNSkC6MAsCs/53Knx4FfWYzPl
+        Ts2x4Gwvw6HDVNJNX+a648dSEQf0nqZ2+Vn5uIc=
+X-Google-Smtp-Source: ABdhPJzqnOij7D4t7XcGy0d3J4MibkWJWx+/Vlrk4lcUHcyEyczBk8Lvxfo9XeQ2+88hkqSKmxbxuWLDx4h18eLxIac=
+X-Received: by 2002:a5d:964a:: with SMTP id d10mr13066783ios.5.1605731732611;
+ Wed, 18 Nov 2020 12:35:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.54.25]
-X-RMX-ID: 20201118-214637-4Cbvx536f6z2xF4-0@kdin01
-X-RMX-SOURCE: 217.111.95.66
+References: <52ee1b515df977b68497b1b08290d00a22161279.1605518147.git.lucien.xin@gmail.com>
+In-Reply-To: <52ee1b515df977b68497b1b08290d00a22161279.1605518147.git.lucien.xin@gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Wed, 18 Nov 2020 12:35:21 -0800
+Message-ID: <CAKgT0UdnAfYA1h2dRb4naWZRn5CBfe-0jGd_Vr=hmejX6hR1og@mail.gmail.com>
+Subject: Re: [PATCH net-next] ip_gre: remove CRC flag from dev features in gre_gso_segment
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Guillaume Nault <gnault@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The KSZ9563 has a Trigger Output Unit (TOU) which can be used to
-generate periodic signals.
+On Mon, Nov 16, 2020 at 1:17 AM Xin Long <lucien.xin@gmail.com> wrote:
+>
+> This patch is to let it always do CRC checksum in sctp_gso_segment()
+> by removing CRC flag from the dev features in gre_gso_segment() for
+> SCTP over GRE, just as it does in Commit 527beb8ef9c0 ("udp: support
+> sctp over udp in skb_udp_tunnel_segment") for SCTP over UDP.
+>
+> It could set csum/csum_start in GSO CB properly in sctp_gso_segment()
+> after that commit, so it would do checksum with gso_make_checksum()
+> in gre_gso_segment(), and Commit 622e32b7d4a6 ("net: gre: recompute
+> gre csum for sctp over gre tunnels") can be reverted now.
+>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
+>  net/ipv4/gre_offload.c | 14 +++-----------
+>  1 file changed, 3 insertions(+), 11 deletions(-)
+>
+> diff --git a/net/ipv4/gre_offload.c b/net/ipv4/gre_offload.c
+> index e0a2465..a5935d4 100644
+> --- a/net/ipv4/gre_offload.c
+> +++ b/net/ipv4/gre_offload.c
+> @@ -15,12 +15,12 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
+>                                        netdev_features_t features)
+>  {
+>         int tnl_hlen = skb_inner_mac_header(skb) - skb_transport_header(skb);
+> -       bool need_csum, need_recompute_csum, gso_partial;
+>         struct sk_buff *segs = ERR_PTR(-EINVAL);
+>         u16 mac_offset = skb->mac_header;
+>         __be16 protocol = skb->protocol;
+>         u16 mac_len = skb->mac_len;
+>         int gre_offset, outer_hlen;
+> +       bool need_csum, gso_partial;
+>
+>         if (!skb->encapsulation)
+>                 goto out;
+> @@ -41,10 +41,10 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
+>         skb->protocol = skb->inner_protocol;
+>
+>         need_csum = !!(skb_shinfo(skb)->gso_type & SKB_GSO_GRE_CSUM);
+> -       need_recompute_csum = skb->csum_not_inet;
+>         skb->encap_hdr_csum = need_csum;
+>
+>         features &= skb->dev->hw_enc_features;
+> +       features &= ~NETIF_F_SCTP_CRC;
+>
+>         /* segment inner packet. */
+>         segs = skb_mac_gso_segment(skb, features);
 
-The pulse length can be altered via a device attribute.
+Why just blindly strip NETIF_F_SCTP_CRC? It seems like it would make
+more sense if there was an explanation as to why you are stripping the
+offload. I know there are many NICs that could very easily perform
+SCTP CRC offload on the inner data as long as they didn't have to
+offload the outer data. For example the Intel NICs should be able to
+do it, although when I wrote the code up enabling their offloads I
+think it is only looking at the outer headers so that might require
+updating to get it to not use the software fallback.
 
-Tested on a Microchip KSZ9563 switch.
+It really seems like we should only be clearing NETIF_F_SCTP_CRC if
+need_csum is true since we must compute the CRC before we can compute
+the GRE checksum.
 
-Signed-off-by: Christian Eggers <ceggers@arri.de>
----
- drivers/net/dsa/microchip/ksz9477_ptp.c | 197 +++++++++++++++++++++++-
- drivers/net/dsa/microchip/ksz_common.h  |   5 +
- 2 files changed, 201 insertions(+), 1 deletion(-)
+> @@ -99,15 +99,7 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
+>                 }
+>
+>                 *(pcsum + 1) = 0;
+> -               if (need_recompute_csum && !skb_is_gso(skb)) {
+> -                       __wsum csum;
+> -
+> -                       csum = skb_checksum(skb, gre_offset,
+> -                                           skb->len - gre_offset, 0);
+> -                       *pcsum = csum_fold(csum);
+> -               } else {
+> -                       *pcsum = gso_make_checksum(skb, 0);
+> -               }
+> +               *pcsum = gso_make_checksum(skb, 0);
+>         } while ((skb = skb->next));
+>  out:
+>         return segs;
 
-diff --git a/drivers/net/dsa/microchip/ksz9477_ptp.c b/drivers/net/dsa/microchip/ksz9477_ptp.c
-index ce3fdc9a1f9e..3174574d52f6 100644
---- a/drivers/net/dsa/microchip/ksz9477_ptp.c
-+++ b/drivers/net/dsa/microchip/ksz9477_ptp.c
-@@ -90,6 +90,20 @@ static int ksz9477_ptp_tou_cycle_count_set(struct ksz_device *dev, u16 count)
- 	return 0;
- }
- 
-+static int ksz9477_ptp_tou_pulse_verify(u64 pulse_ns)
-+{
-+	u32 data;
-+
-+	if (pulse_ns & 0x3)
-+		return -EINVAL;
-+
-+	data = (pulse_ns / 8);
-+	if (data != (data & TRIG_PULSE_WIDTH_M))
-+		return -ERANGE;
-+
-+	return 0;
-+}
-+
- static int ksz9477_ptp_tou_pulse_set(struct ksz_device *dev, u32 pulse_ns)
- {
- 	u32 data;
-@@ -196,6 +210,7 @@ static int ksz9477_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
- 	return ret;
- }
- 
-+static int ksz9477_ptp_restart_perout(struct ksz_device *dev);
- static int ksz9477_ptp_enable_pps(struct ksz_device *dev, int on);
- 
- static int ksz9477_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
-@@ -241,6 +256,15 @@ static int ksz9477_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
- 	case KSZ_PTP_TOU_IDLE:
- 		break;
- 
-+	case KSZ_PTP_TOU_PEROUT:
-+		dev_info(dev->dev, "Restarting periodic output signal\n");
-+
-+		ret = ksz9477_ptp_restart_perout(dev);
-+		if (ret)
-+			goto error_return;
-+
-+		break;
-+
- 	case KSZ_PTP_TOU_PPS:
- 		dev_info(dev->dev, "Restarting PPS\n");
- 
-@@ -358,6 +382,15 @@ static int ksz9477_ptp_settime(struct ptp_clock_info *ptp,
- 	case KSZ_PTP_TOU_IDLE:
- 		break;
- 
-+	case KSZ_PTP_TOU_PEROUT:
-+		dev_info(dev->dev, "Restarting periodic output signal\n");
-+
-+		ret = ksz9477_ptp_restart_perout(dev);
-+		if (ret)
-+			goto error_return;
-+
-+		break;
-+
- 	case KSZ_PTP_TOU_PPS:
- 		dev_info(dev->dev, "Restarting PPS\n");
- 
-@@ -377,6 +410,159 @@ static int ksz9477_ptp_settime(struct ptp_clock_info *ptp,
- 	return ret;
- }
- 
-+static int ksz9477_ptp_configure_perout(struct ksz_device *dev, u32 cycle_width_ns,
-+					u16 cycle_count, u32 pulse_width_ns,
-+					struct timespec64 const *target_time)
-+{
-+	int ret;
-+	u32 trig_ctrl;
-+
-+	/* Enable notify, set rising edge, set periodic pattern */
-+	trig_ctrl = TRIG_NOTIFY | (TRIG_POS_PERIOD << TRIG_PATTERN_S);
-+	ret = ksz_write32(dev, REG_TRIG_CTRL__4, trig_ctrl);
-+	if (ret)
-+		return ret;
-+
-+	ret = ksz9477_ptp_tou_cycle_width_set(dev, cycle_width_ns);
-+	if (ret)
-+		return ret;
-+
-+	ksz9477_ptp_tou_cycle_count_set(dev,  cycle_count);
-+	if (ret)
-+		return ret;
-+
-+	ret = ksz9477_ptp_tou_pulse_set(dev, pulse_width_ns);
-+	if (ret)
-+		return ret;
-+
-+	ret = ksz9477_ptp_tou_target_time_set(dev, target_time);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static int ksz9477_ptp_enable_perout(struct ksz_device *dev,
-+				     struct ptp_perout_request const *perout_request, int on)
-+{
-+	u32 gpio_stat0;
-+	u64 cycle_width_ns;
-+	int ret;
-+
-+	if (dev->ptp_tou_mode != KSZ_PTP_TOU_PEROUT && dev->ptp_tou_mode != KSZ_PTP_TOU_IDLE)
-+		return -EBUSY;
-+
-+	ret = ksz9477_ptp_tou_reset(dev, 0);
-+	if (ret)
-+		return ret;
-+
-+	if (!on) {
-+		dev->ptp_tou_mode = KSZ_PTP_TOU_IDLE;
-+		return 0;  /* success */
-+	}
-+
-+	dev->ptp_perout_target_time_first.tv_sec  = perout_request->start.sec;
-+	dev->ptp_perout_target_time_first.tv_nsec = perout_request->start.nsec;
-+
-+	dev->ptp_perout_period.tv_sec = perout_request->period.sec;
-+	dev->ptp_perout_period.tv_nsec = perout_request->period.nsec;
-+
-+	cycle_width_ns = timespec64_to_ns(&dev->ptp_perout_period);
-+	if ((cycle_width_ns & GENMASK(31, 0)) != cycle_width_ns)
-+		return -EINVAL;
-+
-+	if (perout_request->flags & PTP_PEROUT_DUTY_CYCLE) {
-+		u64 value = perout_request->on.sec * NSEC_PER_SEC +
-+			    perout_request->on.nsec;
-+
-+		ret = ksz9477_ptp_tou_pulse_verify(value);
-+		if (ret)
-+			return ret;
-+
-+		dev->ptp_perout_pulse_width_ns = value;
-+	}
-+
-+	ret = ksz9477_ptp_configure_perout(dev, cycle_width_ns,
-+					   dev->ptp_perout_cycle_count,
-+					   dev->ptp_perout_pulse_width_ns,
-+					   &dev->ptp_perout_target_time_first);
-+	if (ret)
-+		return ret;
-+
-+	/* Activate trigger unit */
-+	ret = ksz9477_ptp_tou_start(dev, NULL);
-+	if (ret)
-+		return ret;
-+
-+	/* Check error flag:
-+	 * - the ACTIVE flag is NOT cleared an error!
-+	 */
-+	ret = ksz_read32(dev, REG_PTP_TRIG_STATUS__4, &gpio_stat0);
-+	if (ret)
-+		return ret;
-+
-+	if (gpio_stat0 & (1 << (0 + TRIG_ERROR_S))) {
-+		dev_err(dev->dev, "%s: Trigger unit0 error!\n", __func__);
-+		ret = -EIO;
-+		/* Unit will be reset on next access */
-+		return ret;
-+	}
-+
-+	dev->ptp_tou_mode = KSZ_PTP_TOU_PEROUT;
-+	return 0;
-+}
-+
-+static int ksz9477_ptp_restart_perout(struct ksz_device *dev)
-+{
-+	struct timespec64 now;
-+	s64 now_ns, first_ns, period_ns, next_ns;
-+	unsigned int count;
-+	int ret;
-+
-+	ret = _ksz9477_ptp_gettime(dev, &now);
-+	if (ret)
-+		return ret;
-+
-+	now_ns = timespec64_to_ns(&now);
-+	first_ns = timespec64_to_ns(&dev->ptp_perout_target_time_first);
-+
-+	/* Calculate next perout event based on start time and period */
-+	period_ns = timespec64_to_ns(&dev->ptp_perout_period);
-+
-+	if (first_ns < now_ns) {
-+		count = div_u64(now_ns - first_ns, period_ns);
-+		next_ns = first_ns + count * period_ns;
-+	} else {
-+		next_ns = first_ns;
-+	}
-+
-+	/* Ensure 100 ms guard time prior next event */
-+	while (next_ns < now_ns + 100000000)
-+		next_ns += period_ns;
-+
-+	/* Restart periodic output signal */
-+	{
-+		struct timespec64 next = ns_to_timespec64(next_ns);
-+		struct ptp_perout_request perout_request = {
-+			.start = {
-+				.sec  = next.tv_sec,
-+				.nsec = next.tv_nsec
-+			},
-+			.period = {
-+				.sec  = dev->ptp_perout_period.tv_sec,
-+				.nsec = dev->ptp_perout_period.tv_nsec
-+			},
-+			.index = 0,
-+			.flags = 0,  /* keep current values */
-+		};
-+		ret = ksz9477_ptp_enable_perout(dev, &perout_request, 1);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
- #define KSZ9477_PPS_TOU 0   /* currently fixed to trigger output unit 0 */
- 
- static int ksz9477_ptp_enable_pps(struct ksz_device *dev, int on)
-@@ -468,6 +654,15 @@ static int ksz9477_ptp_enable(struct ptp_clock_info *ptp,
- 	int ret;
- 
- 	switch (req->type) {
-+	case PTP_CLK_REQ_PEROUT:
-+	{
-+		struct ptp_perout_request const *perout_request = &req->perout;
-+
-+		mutex_lock(&dev->ptp_mutex);
-+		ret = ksz9477_ptp_enable_perout(dev, perout_request, on);
-+		mutex_unlock(&dev->ptp_mutex);
-+		return ret;
-+	}
- 	case PTP_CLK_REQ_PPS:
- 		mutex_lock(&dev->ptp_mutex);
- 		ret = ksz9477_ptp_enable_pps(dev, on);
-@@ -818,7 +1013,7 @@ int ksz9477_ptp_init(struct ksz_device *dev)
- 	dev->ptp_caps.max_adj     = 6249999;
- 	dev->ptp_caps.n_alarm     = 0;
- 	dev->ptp_caps.n_ext_ts    = 0;  /* currently not implemented */
--	dev->ptp_caps.n_per_out   = 0;
-+	dev->ptp_caps.n_per_out   = 1;
- 	dev->ptp_caps.pps         = 1;
- 	dev->ptp_caps.adjfine     = ksz9477_ptp_adjfine;
- 	dev->ptp_caps.adjtime     = ksz9477_ptp_adjtime;
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 3481477a62e0..3b897a6c882d 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -56,6 +56,7 @@ struct ksz_port {
- 
- enum ksz_ptp_tou_mode {
- 	KSZ_PTP_TOU_IDLE,
-+	KSZ_PTP_TOU_PEROUT,
- 	KSZ_PTP_TOU_PPS,
- };
- 
-@@ -116,6 +117,10 @@ struct ksz_device {
- 	struct mutex ptp_mutex;		/* protects PTP related hardware */
- 	struct ksz_device_ptp_shared ptp_shared;
- 	enum ksz_ptp_tou_mode ptp_tou_mode;
-+	struct timespec64 ptp_perout_target_time_first;  /* start of first perout pulse */
-+	struct timespec64 ptp_perout_period;
-+	u32 ptp_perout_pulse_width_ns;
-+	u16 ptp_perout_cycle_count;
- #endif
- };
- 
--- 
-Christian Eggers
-Embedded software developer
-
-Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRA 57918
-Persoenlich haftender Gesellschafter: Arnold & Richter Cine Technik GmbH
-Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRB 54477
-Geschaeftsfuehrer: Dr. Michael Neuhaeuser; Stephan Schenk; Walter Trauninger; Markus Zeiler
-
+This change doesn't make much sense to me. How are we expecting
+gso_make_checksum to be able to generate a valid checksum when we are
+dealing with a SCTP frame? From what I can tell it looks like it is
+just setting the checksum to ~0 and checksum start to the transport
+header which isn't true because SCTP is using a CRC, not a 1's
+complement checksum, or am I missing something? As such in order to
+get the gre checksum we would need to compute it over the entire
+payload data wouldn't we? Has this been tested with an actual GRE
+tunnel that had checksums enabled? If so was it verified that the GSO
+frames were actually being segmented at the NIC level and not at the
+GRE tunnel level?
