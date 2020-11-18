@@ -2,147 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35DC82B84F4
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 20:35:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 250E92B84F6
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 20:35:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726635AbgKRTdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 14:33:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38958 "EHLO mail.kernel.org"
+        id S1726822AbgKRTek (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 14:34:40 -0500
+Received: from m42-4.mailgun.net ([69.72.42.4]:26336 "EHLO m42-4.mailgun.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725947AbgKRTdt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 14:33:49 -0500
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726199AbgKRTek (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 14:34:40 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1605728078; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=uGAvDjrAALRHrKRcKvLfwMGG8vXZ1b/VTGv+N6uE5Uo=; b=aviuk8Jjz1zdvq1cnTUM6loI6Epp+Oe9nlEL6lRiU1D6MMIpx9aBvdbjGS99VACczUF8woHd
+ jSsLnAnU1KSNHVPhHv5pPHqNa+j+w4X6oARAD8S+vxTw25KS5HCHx67Ledgg2T4X2phaWzHg
+ L6/CLoqJgYs+lKXKsP8Lxv6hPFk=
+X-Mailgun-Sending-Ip: 69.72.42.4
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n09.prod.us-west-2.postgun.com with SMTP id
+ 5fb57746a5a29b56a173f4e4 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 18 Nov 2020 19:34:30
+ GMT
+Sender: jhugo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id EC261C43460; Wed, 18 Nov 2020 19:34:29 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        NICE_REPLY_A,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from [10.226.59.216] (i-global254.qualcomm.com [199.106.103.254])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 56AC3238E6;
-        Wed, 18 Nov 2020 19:33:45 +0000 (UTC)
-Date:   Wed, 18 Nov 2020 14:33:43 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Segher Boessenkool <segher@kernel.crashing.org>
-Cc:     Florian Weimer <fw@deneb.enyo.de>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Matt Mullins <mmullins@mmlx.us>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        linux-toolchains@vger.kernel.org
-Subject: Re: violating function pointer signature
-Message-ID: <20201118143343.4e86e79f@gandalf.local.home>
-In-Reply-To: <20201118191127.GM2672@gate.crashing.org>
-References: <47463878.48157.1605640510560.JavaMail.zimbra@efficios.com>
-        <20201117142145.43194f1a@gandalf.local.home>
-        <375636043.48251.1605642440621.JavaMail.zimbra@efficios.com>
-        <20201117153451.3015c5c9@gandalf.local.home>
-        <20201118132136.GJ3121378@hirez.programming.kicks-ass.net>
-        <CAKwvOdkptuS=75WjzwOho9ZjGVHGMirEW3k3u4Ep8ya5wCNajg@mail.gmail.com>
-        <20201118121730.12ee645b@gandalf.local.home>
-        <20201118181226.GK2672@gate.crashing.org>
-        <87o8jutt2h.fsf@mid.deneb.enyo.de>
-        <20201118135823.3f0d24b7@gandalf.local.home>
-        <20201118191127.GM2672@gate.crashing.org>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        (Authenticated sender: jhugo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 637DFC433C6;
+        Wed, 18 Nov 2020 19:34:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 637DFC433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=jhugo@codeaurora.org
+Subject: Re: [PATCH] net: qrtr: Unprepare MHI channels during remove
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     Bhaumik Bhatt <bbhatt@codeaurora.org>, ath11k@lists.infradead.org,
+        cjhuang@codeaurora.org, clew@codeaurora.org,
+        hemantk@codeaurora.org, kvalo@codeaurora.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, manivannan.sadhasivam@linaro.org,
+        netdev@vger.kernel.org
+References: <1605723625-11206-1-git-send-email-bbhatt@codeaurora.org>
+ <5e94c0be-9402-7309-5d65-857a27d1f491@codeaurora.org>
+ <CAMZdPi_b0=qFNGi1yUke3Dip2bi-zW4ULTg8W4nbyPyEsE3D4w@mail.gmail.com>
+From:   Jeffrey Hugo <jhugo@codeaurora.org>
+Message-ID: <2019fe3c-55c5-61fe-758c-1e9952e1cb33@codeaurora.org>
+Date:   Wed, 18 Nov 2020 12:34:27 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <CAMZdPi_b0=qFNGi1yUke3Dip2bi-zW4ULTg8W4nbyPyEsE3D4w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Nov 2020 13:11:27 -0600
-Segher Boessenkool <segher@kernel.crashing.org> wrote:
+On 11/18/2020 12:14 PM, Loic Poulain wrote:
+> 
+> 
+> Le mer. 18 nov. 2020 à 19:34, Jeffrey Hugo <jhugo@codeaurora.org 
+> <mailto:jhugo@codeaurora.org>> a écrit :
+> 
+>     On 11/18/2020 11:20 AM, Bhaumik Bhatt wrote:
+>      > Reset MHI device channels when driver remove is called due to
+>      > module unload or any crash scenario. This will make sure that
+>      > MHI channels no longer remain enabled for transfers since the
+>      > MHI stack does not take care of this anymore after the auto-start
+>      > channels feature was removed.
+>      >
+>      > Signed-off-by: Bhaumik Bhatt <bbhatt@codeaurora.org
+>     <mailto:bbhatt@codeaurora.org>>
+>      > ---
+>      >   net/qrtr/mhi.c | 1 +
+>      >   1 file changed, 1 insertion(+)
+>      >
+>      > diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
+>      > index 7100f0b..2bf2b19 100644
+>      > --- a/net/qrtr/mhi.c
+>      > +++ b/net/qrtr/mhi.c
+>      > @@ -104,6 +104,7 @@ static void qcom_mhi_qrtr_remove(struct
+>     mhi_device *mhi_dev)
+>      >       struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
+>      >
+>      >       qrtr_endpoint_unregister(&qdev->ep);
+>      > +     mhi_unprepare_from_transfer(mhi_dev);
+>      >       dev_set_drvdata(&mhi_dev->dev, NULL);
+>      >   }
+>      >
+>      >
+> 
+>     I admit, I didn't pay much attention to the auto-start being removed,
+>     but this seems odd to me.
+> 
+>     As a client, the MHI device is being removed, likely because of some
+>     factor outside of my control, but I still need to clean it up?  This
+>     really feels like something MHI should be handling.
+> 
+> 
+> I think this is just about balancing operations, what is done in probe 
+> should be undone in remove, so here channels are started in probe and 
+> stopped/reset in remove.
 
-> Calling this via a different declared function type is undefined
-> behaviour, but that is independent of how the function is *defined*.
-> Your program can make ducks appear from your nose even if that function
-> is never called, if you do that.  Just don't do UB, not even once!
+I understand that perspective, but that doesn't quite match what is 
+going on here.  Regardless of if the channel was started (prepared) in 
+probe, it now needs to be stopped in remove.  That not balanced in all cases
 
-But that's the whole point of this conversation. We are going to call this
-from functions that are going to have some random set of parameters.
+Lets assume, in response to probe(), my client driver goes and creates 
+some other object, maybe a socket.  In response to that socket being 
+opened/activated by the client of my driver, I go and start the mhi 
+channel.  Now, normally, when the socket is closed/deactivated, I stop 
+the MHI channel.  In this case, stopping the MHI channel in remove() is 
+unbalanced with respect to probe(), but is now a requirement.
 
-But there is a limit to that. All the callers will expect a void return,
-and none of the callers will have a variable number of parameters.
+Now you may argue, I should close the object in response to remove, 
+which will then trigger the stop on the channel.  That doesn't apply to 
+everything.  For example, you cannot close an open file in the kernel. 
+You need to wait for userspace to close it.  By the time that happens, 
+the mhi_dev is long gone I expect.
 
-The code in question is tracepoints and static calls. For this
-conversation, I'll stick with tracepoints (even though static calls are
-used too, but including that in the conversation is confusing).
-
-Let me define what is happening:
-
-We have a macro that creates a defined tracepoint with a defined set of
-parameters. But each tracepoint can have a different set of parameters. All
-of them will have "void *" as the first parameter, but what comes after
-that is unique to each tracepoint (defined by a macro). None of them will
-be a variadic function call.
-
-The macro looks like this:
-
-	int __traceiter_##_name(void *__data, proto)			\
-	{								\
-		struct tracepoint_func *it_func_ptr;			\
-		void *it_func;						\
-									\
-		it_func_ptr =						\
-			rcu_dereference_raw((&__tracepoint_##_name)->funcs); \
-		do {							\
-			it_func = (it_func_ptr)->func;			\
-			__data = (it_func_ptr)->data;			\
-			((void(*)(void *, proto))(it_func))(__data, args); \
-		} while ((++it_func_ptr)->func);			\
-		return 0;						\
-	}
+So if, somehow, the client driver is the one causing the remove to 
+occur, then yes it should probably be the one doing the stop, but that's 
+a narrow set of conditions, and I think having that requirement for all 
+scenarios is limiting.
 
 
-There's an array of struct tracepoint_func pointers, which has the
-definition of:
-
-struct tracepoint_func {
-	void *func;
-	void *data;
-	int prio;
-};
-
-
-And you see the above, the macro does:
-
-	((void(*)(void *, proto))(it_func))(__data, args);
-
-With it_func being the func from the struct tracepoint_func, which is a
-void pointer, it is typecast to the function that is defined by the
-tracepoint. args is defined as the arguments that match the proto.
-
-The way the array is updated, is to use an RCU method, which is to create a
-new array, copy the changes to the new array, then switch the "->funcs"
-over to the new copy, and after a RCU grace period is finished, we can free
-the old array.
-
-The problem we are solving is on the removal case, if the memory is tight,
-it is possible that the new array can not be allocated. But we must still
-remove the called function. The idea in this case is to replace the
-function saved with a stub. The above loop will call the stub and not the
-removed function until another update happens.
-
-This thread is about how safe is it to call:
-
-void tp_stub_func(void) { return ; }
-
-instead of the function that was removed?
-
-Thus, we are indeed calling that stub function from a call site that is not
-using the same parameters.
-
-The question is, will this break?
-
--- Steve
+-- 
+Jeffrey Hugo
+Qualcomm Technologies, Inc. is a member of the
+Code Aurora Forum, a Linux Foundation Collaborative Project.
