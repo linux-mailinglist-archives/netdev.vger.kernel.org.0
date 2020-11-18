@@ -2,92 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AAA82B7DFE
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 14:03:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B7782B7E05
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 14:05:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726295AbgKRNBG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 08:01:06 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:56930 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725747AbgKRNBG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 08:01:06 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AID0bm8033164;
-        Wed, 18 Nov 2020 13:00:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=Sa6V/CmnxV/C6v22R7lRkJxn5tiv5ZTRNw/grKo0Fyw=;
- b=TtNKBOJLBymes09UdnbcvDIMR0Xw9SQ373STdFN3/xI7RYSi+6KUsTmEtiVMREWpkuMT
- Yuw2Gd/jWh2acVlFfLsbr7rBqeKJBpR82nPpARLNK7o+aE0NkW4uGivkVmHWANS/6uoa
- ZhixRYyDKCx0GfGPiNwo1fjWI1so0mrPVrKoGxXq7PgxckTR6LuOindKsfoJli54LTiM
- 1bTRDNcBs5vGfjesuOyI4Ld/584NW5c20PLrvFOQZGAjIkbs+QSZ17WBxGeGYncjlX1+
- ezy+V1vte/54hRLzQO94CbTTFt6cU5oaVQoLbAmlnstxJSGX8CqDnMdhie+AmxOuRleJ LQ== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by aserp2120.oracle.com with ESMTP id 34t76kyvr4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 18 Nov 2020 13:00:59 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AICfKOw188510;
-        Wed, 18 Nov 2020 13:00:58 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3020.oracle.com with ESMTP id 34umd0j7df-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 18 Nov 2020 13:00:58 +0000
-Received: from abhmp0006.oracle.com (abhmp0006.oracle.com [141.146.116.12])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0AID0uE9018806;
-        Wed, 18 Nov 2020 13:00:56 GMT
-Received: from mwanda (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 18 Nov 2020 05:00:56 -0800
-Date:   Wed, 18 Nov 2020 16:00:48 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] mlxsw: spectrum_router: Fix a double free on error
-Message-ID: <20201118130048.GA334813@mwanda>
+        id S1726316AbgKRND4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 08:03:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54072 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726243AbgKRNDz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 08:03:55 -0500
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BE11C0613D4;
+        Wed, 18 Nov 2020 05:03:55 -0800 (PST)
+Received: by mail-pl1-x641.google.com with SMTP id j5so943450plk.7;
+        Wed, 18 Nov 2020 05:03:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Xq+1XmdEWFdb62Dr7GHbaDhMaJ4G5daMpt8CI66K5lk=;
+        b=I22hH9NmSBSbNKBE+0Yy/i/DVDsWDTnEXW+CkKJ+sDlIy4a7PDPLY5arHYdW3cI62K
+         fNn6c9XJ59WxiIxL4UdfcCUkBpA0nzj+F/HBxYbwe79Jv4dOW2qxx5Pe2YoDbW9ezukl
+         XkfJvMWZ8jNnb1rFfhdMP5K+3T1YK7JlNvQfSAbKIHDZTgvWPP21a+rWLw7SlygnlkgS
+         euuaAlqhkNFcrwsTxlcFR2heEV7CIYVipUq8C+CPcicDswHJuTcaTiYIJhSody10yOu/
+         /n6/a+BLVzOdxQ327Dr4t34lgAMPn+Cl/Fnzf6Q046IJtB654HNTyA/yPUUWfyB6b1Yd
+         lHIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Xq+1XmdEWFdb62Dr7GHbaDhMaJ4G5daMpt8CI66K5lk=;
+        b=S8iG5HgND3MkEBgg+uqHNC5DiTknexYIqueXue3pk5l9wEIwi7+Ozaz36kkcR3Ak0c
+         yHyM5rcq8ml7K8cGGFOcUPajfFmhCfpCPAdLXuDYBHDnM5O/VXa3l9MwcZ0wK3Nf/IGn
+         44PhheJOKmWeBBvrBzGqzqbyFzXNgMVF5R3jEzssJXTQ++0uODWjorYchI3OWPQGIrOI
+         nSvSLBY+sO/eBKtuZErmDKQ+8MqiC8k3R2ns27xyeQZVBQ8ThvvKEiLlCAOSbSDez6X/
+         7feVZBoctvc+RDObSm013MGlB9Qbdr1VBiB0k1x4ydDReRBFmpO6G2wZ4BXdFZlXlIB3
+         iwBQ==
+X-Gm-Message-State: AOAM533DUzSOQCd9hqBqS5IgURqEOJmwh3BJ5hRQm7d5+Jy+MmqmzM4n
+        ygbxnfbQJdY18l2VieE/K5dC1ov96z9xVrz5Iwk=
+X-Google-Smtp-Source: ABdhPJwBK7xzppEjLKXTxkvFGvieuSmsri9UOQS84oQXu73HhKUZ8VzKNCffG3GjFdCTKNmGprhlbiMsESLuDSXlytA=
+X-Received: by 2002:a17:902:6b45:b029:d6:c43e:ad13 with SMTP id
+ g5-20020a1709026b45b02900d6c43ead13mr4247782plt.77.1605704634957; Wed, 18 Nov
+ 2020 05:03:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9808 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2 mlxscore=0 phishscore=0
- spamscore=0 bulkscore=0 mlxlogscore=999 malwarescore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011180089
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9808 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2 phishscore=0
- adultscore=0 priorityscore=1501 bulkscore=0 clxscore=1011 mlxlogscore=999
- malwarescore=0 mlxscore=0 spamscore=0 lowpriorityscore=0 impostorscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011180090
+References: <20201116135522.21791-1-ms@dev.tdt.de> <20201116135522.21791-6-ms@dev.tdt.de>
+ <CAJht_EM-ic4-jtN7e9F6zcJgG3OTw_ePXiiH1i54M+Sc8zq6bg@mail.gmail.com>
+ <f3ab8d522b2bcd96506352656a1ef513@dev.tdt.de> <CAJht_EPN=hXsGLsCSxj1bB8yTYNOe=yUzwtrtnMzSybiWhL-9Q@mail.gmail.com>
+ <c0c2cedad399b12d152d2610748985fc@dev.tdt.de> <CAJht_EO=G94_xoCupr_7Tt_-kjYxZVfs2n4CTa14mXtu7oYMjg@mail.gmail.com>
+ <c60fe64ff67e244bbe9971cfa08713db@dev.tdt.de>
+In-Reply-To: <c60fe64ff67e244bbe9971cfa08713db@dev.tdt.de>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Wed, 18 Nov 2020 05:03:44 -0800
+Message-ID: <CAJht_EOSZRV9uBcRYq6OBLwFOX7uE9Nox+sFv-U0SXRkLaNBrQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 5/6] net/lapb: support netdev events
+To:     Martin Schiller <ms@dev.tdt.de>
+Cc:     Andrew Hendry <andrew.hendry@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a double free here because mlxsw_sp_nexthop6_group_create() and
-mlxsw_sp_nexthop6_group_info_init() free "nh_grp".  It should only be
-freed in the create function.
+On Wed, Nov 18, 2020 at 12:49 AM Martin Schiller <ms@dev.tdt.de> wrote:
+>
+> Ah, ok. Now I see what you mean.
+> Yes, we should check the lapb->mode in lapb_connect_request().
+...
+> I also have a patch here that implements an "on demand" link feature,
+> which we used for ISDN dialing connections.
+> As ISDN is de facto dead, this is not relevant anymore. But if we want
+> such kind of feature, I think we need to stay with the method to control
+> L2 link state from L3.
 
-Fixes: 7f7a417e6a11 ("mlxsw: spectrum_router: Split nexthop group configuration to a different struct")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 1 -
- 1 file changed, 1 deletion(-)
+I see. Hmm...
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index a2e81ad5790f..fde8667a2f60 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -5423,7 +5423,6 @@ mlxsw_sp_nexthop6_group_info_init(struct mlxsw_sp *mlxsw_sp,
- 		nh = &nhgi->nexthops[i];
- 		mlxsw_sp_nexthop6_fini(mlxsw_sp, nh);
- 	}
--	kfree(nh_grp);
- 	return err;
- }
- 
--- 
-2.29.2
+I guess for ISDN, the current code (before this patch series) is the
+best. We only establish the connection when L3 has packets to send.
 
+Can we do this? We let L2 handle all device-up / device-down /
+carrier-up / carrier-down events. And when L3 has some packets to send
+but it still finds the L2 link is not up, it will then instruct L2 to
+connect.
+
+This way we may be able to both keep the logic simple and still keep
+L3 compatible with ISDN.
