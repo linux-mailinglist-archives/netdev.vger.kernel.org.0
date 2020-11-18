@@ -2,293 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 200D42B83B7
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 19:23:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F3F02B83DD
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 19:32:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726198AbgKRSUb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 13:20:31 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:41474 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725794AbgKRSUa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 13:20:30 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AIIBEmV018577;
-        Wed, 18 Nov 2020 10:20:24 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=j2+GBTdAUdld5tDzl82jh6Eo7u51NEUkjOLY6+x5aTw=;
- b=R4f30tFlf7KtHh0EBB+Cr/1goLwT/gvIptqwazkSLv+6AG30V6Mo9uY6jXknlix6emZm
- GOm+WTax0rHAPe50prfxPAYvgV+RXYW7AHpBy8Txi6yFeVLgnvmF0dH7YddoCN/xA3ED
- JE5fD+zXl8/0Mqkm5v+/oX/JxiVO+LbaVuCJeiEonwOvzUqDD/qlBNR6GGc7K+J5WnPs
- NQtl049Q1t8VPMRPgefJm0+j+ZgIvH3i8PtOK9H+vRp+TiqKOGiDYPj4J/OfBvjS7Cxf
- FYV0x7zpcBGQiuWhlrcv2HnofWqfYAO6OhWsklpBYT3dJ7ylDW0lTt3t394RpTNLiMIC 4A== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0b-0016f401.pphosted.com with ESMTP id 34w7ncref3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 18 Nov 2020 10:20:23 -0800
-Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 18 Nov
- 2020 10:20:22 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 18 Nov
- 2020 10:20:22 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 18 Nov 2020 10:20:22 -0800
-Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id 27C493F7048;
-        Wed, 18 Nov 2020 10:20:19 -0800 (PST)
-From:   <stefanc@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
-        <nadavh@marvell.com>, <ymarkman@marvell.com>,
-        <linux-kernel@vger.kernel.org>,
-        Stefan Chulski <stefanc@marvell.com>
-Subject: [PATCH] net: mvpp2: divide fifo for dts-active ports only
-Date:   Wed, 18 Nov 2020 20:20:56 +0200
-Message-ID: <1605723656-1276-1-git-send-email-stefanc@marvell.com>
-X-Mailer: git-send-email 1.9.1
+        id S1726680AbgKRSbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 13:31:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48302 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726629AbgKRSbi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 13:31:38 -0500
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E742C0613D4;
+        Wed, 18 Nov 2020 10:31:38 -0800 (PST)
+Received: by mail-ot1-x342.google.com with SMTP id n89so2741669otn.3;
+        Wed, 18 Nov 2020 10:31:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9elEQn62+w0ubYLwBnAdtc+sFOJJh0vSOLoYTmHU8ok=;
+        b=OPalrHrnNAc4IK4D4G5WWu7rYdsb15/NRxSflbqxoQ0wwvYD+NVhEySsL8VdFuI5lv
+         EF4wmBLYIl1EfYmQnu76fItk80/Y1Lp1cCG1uaLdP1sTrAKknwB7WEOsgkcwJDyi4gRV
+         igWrXu7V0QVnmNI2ALoeZIvTMz7CePap+J0LEWXtqbLiV/9LKZz/NdrMNZJlZ7M4KqiU
+         uVZNz4owmsSVch08OmFJ4FZw02m4AxcXevLoG5YQXpMTLhpdDRA/65oLuvWFrfcAgKo7
+         sxXTPEIibffQga9KHUsID09B+Wn3mgxKUNGWpdvChO9eBfNKxj7IATU9GCeh/qtF3UC8
+         WVFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9elEQn62+w0ubYLwBnAdtc+sFOJJh0vSOLoYTmHU8ok=;
+        b=WpLEjcYGde/4Yv2GOnPwV56an+6lDr/M8uZm0cFqx5pW3YkowuCo/LuhbqJwMfWHjX
+         TII5nRZ568v2jJvd6BptILXDrYuQzvufLgHt3fG3HS9QmNXAqLPC4iiAzFEmVz9hpgJP
+         oydm2WxxsB9FtcCqS35PMjonxk5J7VFuyvVvR/A3wRPVKemqmPn2egttwLGhhdOxr5Zm
+         SnErEll8jbBiJP8/QrawLgWeOrUnBiOIj+lQ656De9XPwG57BOgUDwXgxUBgtXq0ww9c
+         O0Zuzm54M7KJW7Y2kBK3MAnWjRpWsDA3Sl+8FKiPwaIqscHbWGcjx1a3BfVCZw1e5K0K
+         ffLg==
+X-Gm-Message-State: AOAM530NCVN+eQCXGkjEImmpPrvvJDDHSpQlIdTItSKGPLBpBh7zhz/4
+        RoE1yadNy3pedYW+2kHrNFe8+kCiDUkIjrYVuQ==
+X-Google-Smtp-Source: ABdhPJwCpHNPP44OEZtbEjP0+6VAuYwQK3LY/EhnN/tUiXjKq1h+um791bUX7To4V9nk0r5wSkdf4UToiF9Px3gndmA=
+X-Received: by 2002:a9d:438:: with SMTP id 53mr2097131otc.222.1605724296527;
+ Wed, 18 Nov 2020 10:31:36 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-18_06:2020-11-17,2020-11-18 signatures=0
+References: <20201117145644.1166255-1-danieltimlee@gmail.com>
+ <20201117145644.1166255-3-danieltimlee@gmail.com> <20201118021043.zck246i2jvbboqlu@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20201118021043.zck246i2jvbboqlu@kafai-mbp.dhcp.thefacebook.com>
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+Date:   Wed, 18 Nov 2020 18:31:19 +0900
+Message-ID: <CAEKGpzgfVfevOi4R04_0SBznHPyXWLPoh3rkXB_E9eD_JKCc+A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/9] samples: bpf: refactor hbm program with libbpf
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, brakmo <brakmo@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        David Ahern <dsa@cumulusnetworks.com>,
+        Yonghong Song <yhs@fb.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Ira Weiny <ira.weiny@intel.com>, Thomas Graf <tgraf@suug.ch>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+        Xdp <xdp-newbies@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Chulski <stefanc@marvell.com>
+On Wed, Nov 18, 2020 at 11:10 AM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Tue, Nov 17, 2020 at 02:56:37PM +0000, Daniel T. Lee wrote:
+> [ ... ]
+>
+> > +
+> > +cleanup:
+> > +     if (rc != 0)
+> so this test can be avoided.
+>
 
-Tx/Rx FIFO is a HW resource limited by total size, but shared
-by all ports of same CP110 and impacting port-performance.
-Do not divide the FIFO for ports which are not enabled in DTS,
-so active ports could have more FIFO.
+Thanks for pointing me out! I will follow this approach.
 
-The active port mapping should be done in probe before FIFO-init.
+> > +             bpf_object__close(obj);
+> > +
+> > +     return rc;
+> >  }
+> >
+> > [...]
+> >       if (!outFlag)
+> > -             type = BPF_CGROUP_INET_INGRESS;
+> > -     if (bpf_prog_attach(bpfprog_fd, cg1, type, 0)) {
+> > -             printf("ERROR: bpf_prog_attach fails!\n");
+> > -             log_err("Attaching prog");
+> > +             bpf_program__set_expected_attach_type(bpf_prog, BPF_CGROUP_INET_INGRESS);
+> > +
+> > +     link = bpf_program__attach_cgroup(bpf_prog, cg1);
+> There is a difference here.
+> I think the bpf_prog will be detached when link is gone (e.g. process exit)
+> I am not sure it is what hbm is expected considering
+> cg is not clean-up on the success case.
+>
 
-Signed-off-by: Stefan Chulski <stefanc@marvell.com>
----
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  23 +++--
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 129 +++++++++++++++++-------
- 2 files changed, 108 insertions(+), 44 deletions(-)
+I think you're right. As I did in the third patch, I will use the
+link__pin approach to prevent the link from being cleaned up when the
+process exit.
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-index 8347758..6bd7e40 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-@@ -695,6 +695,9 @@
- /* Maximum number of supported ports */
- #define MVPP2_MAX_PORTS			4
- 
-+/* Loopback port index */
-+#define MVPP2_LOOPBACK_PORT_INDEX	3
-+
- /* Maximum number of TXQs used by single port */
- #define MVPP2_MAX_TXQ			8
- 
-@@ -729,22 +732,21 @@
- #define MVPP2_TX_DESC_ALIGN		(MVPP2_DESC_ALIGNED_SIZE - 1)
- 
- /* RX FIFO constants */
-+#define MVPP2_RX_FIFO_PORT_DATA_SIZE_44KB	0xb000
- #define MVPP2_RX_FIFO_PORT_DATA_SIZE_32KB	0x8000
- #define MVPP2_RX_FIFO_PORT_DATA_SIZE_8KB	0x2000
- #define MVPP2_RX_FIFO_PORT_DATA_SIZE_4KB	0x1000
--#define MVPP2_RX_FIFO_PORT_ATTR_SIZE_32KB	0x200
--#define MVPP2_RX_FIFO_PORT_ATTR_SIZE_8KB	0x80
-+#define MVPP2_RX_FIFO_PORT_ATTR_SIZE(data_size)	((data_size) >> 6)
- #define MVPP2_RX_FIFO_PORT_ATTR_SIZE_4KB	0x40
- #define MVPP2_RX_FIFO_PORT_MIN_PKT		0x80
- 
- /* TX FIFO constants */
--#define MVPP22_TX_FIFO_DATA_SIZE_10KB		0xa
--#define MVPP22_TX_FIFO_DATA_SIZE_3KB		0x3
--#define MVPP2_TX_FIFO_THRESHOLD_MIN		256
--#define MVPP2_TX_FIFO_THRESHOLD_10KB	\
--	(MVPP22_TX_FIFO_DATA_SIZE_10KB * 1024 - MVPP2_TX_FIFO_THRESHOLD_MIN)
--#define MVPP2_TX_FIFO_THRESHOLD_3KB	\
--	(MVPP22_TX_FIFO_DATA_SIZE_3KB * 1024 - MVPP2_TX_FIFO_THRESHOLD_MIN)
-+#define MVPP22_TX_FIFO_DATA_SIZE_16KB		16
-+#define MVPP22_TX_FIFO_DATA_SIZE_10KB		10
-+#define MVPP22_TX_FIFO_DATA_SIZE_3KB		3
-+#define MVPP2_TX_FIFO_THRESHOLD_MIN		256 /* Bytes */
-+#define MVPP2_TX_FIFO_THRESHOLD(kb)	\
-+		((kb) * 1024 - MVPP2_TX_FIFO_THRESHOLD_MIN)
- 
- /* RX buffer constants */
- #define MVPP2_SKB_SHINFO_SIZE \
-@@ -946,6 +948,9 @@ struct mvpp2 {
- 	/* List of pointers to port structures */
- 	int port_count;
- 	struct mvpp2_port *port_list[MVPP2_MAX_PORTS];
-+	/* Map of enabled ports */
-+	unsigned long port_map;
-+
- 	struct mvpp2_tai *tai;
- 
- 	/* Number of Tx threads used */
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index f6616c8..9ff5f57 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -6601,32 +6601,56 @@ static void mvpp2_rx_fifo_init(struct mvpp2 *priv)
- 	mvpp2_write(priv, MVPP2_RX_FIFO_INIT_REG, 0x1);
- }
- 
--static void mvpp22_rx_fifo_init(struct mvpp2 *priv)
-+static void mvpp22_rx_fifo_set_hw(struct mvpp2 *priv, int port, int data_size)
- {
--	int port;
-+	int attr_size = MVPP2_RX_FIFO_PORT_ATTR_SIZE(data_size);
- 
--	/* The FIFO size parameters are set depending on the maximum speed a
--	 * given port can handle:
--	 * - Port 0: 10Gbps
--	 * - Port 1: 2.5Gbps
--	 * - Ports 2 and 3: 1Gbps
--	 */
-+	mvpp2_write(priv, MVPP2_RX_DATA_FIFO_SIZE_REG(port), data_size);
-+	mvpp2_write(priv, MVPP2_RX_ATTR_FIFO_SIZE_REG(port), attr_size);
-+}
- 
--	mvpp2_write(priv, MVPP2_RX_DATA_FIFO_SIZE_REG(0),
--		    MVPP2_RX_FIFO_PORT_DATA_SIZE_32KB);
--	mvpp2_write(priv, MVPP2_RX_ATTR_FIFO_SIZE_REG(0),
--		    MVPP2_RX_FIFO_PORT_ATTR_SIZE_32KB);
-+/* Initialize TX FIFO's: the total FIFO size is 48kB on PPv2.2.
-+ * 4kB fixed space must be assigned for the loopback port.
-+ * Redistribute remaining avialable 44kB space among all active ports.
-+ * Guarantee minimum 32kB for 10G port and 8kB for port 1, capable of 2.5G
-+ * SGMII link.
-+ */
-+static void mvpp22_rx_fifo_init(struct mvpp2 *priv)
-+{
-+	int port, size;
-+	unsigned long port_map;
-+	int remaining_ports_count;
-+	int size_remainder;
-+
-+	/* The loopback requires fixed 4kB of the FIFO space assignment. */
-+	mvpp22_rx_fifo_set_hw(priv, MVPP2_LOOPBACK_PORT_INDEX,
-+			      MVPP2_RX_FIFO_PORT_DATA_SIZE_4KB);
-+	port_map = priv->port_map & ~BIT(MVPP2_LOOPBACK_PORT_INDEX);
-+
-+	/* Set RX FIFO size to 0 for inactive ports. */
-+	for_each_clear_bit(port, &port_map, MVPP2_LOOPBACK_PORT_INDEX)
-+		mvpp22_rx_fifo_set_hw(priv, port, 0);
-+
-+	/* Assign remaining RX FIFO space among all active ports. */
-+	size_remainder = MVPP2_RX_FIFO_PORT_DATA_SIZE_44KB;
-+	remaining_ports_count = hweight_long(port_map);
-+
-+	for_each_set_bit(port, &port_map, MVPP2_LOOPBACK_PORT_INDEX) {
-+		if (remaining_ports_count == 1)
-+			size = size_remainder;
-+		else if (port == 0)
-+			size = max(size_remainder / remaining_ports_count,
-+				   MVPP2_RX_FIFO_PORT_DATA_SIZE_32KB);
-+		else if (port == 1)
-+			size = max(size_remainder / remaining_ports_count,
-+				   MVPP2_RX_FIFO_PORT_DATA_SIZE_8KB);
-+		else
-+			size = size_remainder / remaining_ports_count;
- 
--	mvpp2_write(priv, MVPP2_RX_DATA_FIFO_SIZE_REG(1),
--		    MVPP2_RX_FIFO_PORT_DATA_SIZE_8KB);
--	mvpp2_write(priv, MVPP2_RX_ATTR_FIFO_SIZE_REG(1),
--		    MVPP2_RX_FIFO_PORT_ATTR_SIZE_8KB);
-+		size_remainder -= size;
-+		remaining_ports_count--;
- 
--	for (port = 2; port < MVPP2_MAX_PORTS; port++) {
--		mvpp2_write(priv, MVPP2_RX_DATA_FIFO_SIZE_REG(port),
--			    MVPP2_RX_FIFO_PORT_DATA_SIZE_4KB);
--		mvpp2_write(priv, MVPP2_RX_ATTR_FIFO_SIZE_REG(port),
--			    MVPP2_RX_FIFO_PORT_ATTR_SIZE_4KB);
-+		mvpp22_rx_fifo_set_hw(priv, port, size);
- 	}
- 
- 	mvpp2_write(priv, MVPP2_RX_MIN_PKT_SIZE_REG,
-@@ -6634,24 +6658,53 @@ static void mvpp22_rx_fifo_init(struct mvpp2 *priv)
- 	mvpp2_write(priv, MVPP2_RX_FIFO_INIT_REG, 0x1);
- }
- 
--/* Initialize Tx FIFO's: the total FIFO size is 19kB on PPv2.2 and 10G
-- * interfaces must have a Tx FIFO size of 10kB. As only port 0 can do 10G,
-- * configure its Tx FIFO size to 10kB and the others ports Tx FIFO size to 3kB.
-+static void mvpp22_tx_fifo_set_hw(struct mvpp2 *priv, int port, int size)
-+{
-+	int threshold = MVPP2_TX_FIFO_THRESHOLD(size);
-+
-+	mvpp2_write(priv, MVPP22_TX_FIFO_SIZE_REG(port), size);
-+	mvpp2_write(priv, MVPP22_TX_FIFO_THRESH_REG(port), threshold);
-+}
-+
-+/* Initialize TX FIFO's: the total FIFO size is 19kB on PPv2.2.
-+ * 3kB fixed space must be assigned for the loopback port.
-+ * Redistribute remaining avialable 16kB space among all active ports.
-+ * The 10G interface should use 10kB (which is maximum possible size
-+ * per single port).
-  */
- static void mvpp22_tx_fifo_init(struct mvpp2 *priv)
- {
--	int port, size, thrs;
--
--	for (port = 0; port < MVPP2_MAX_PORTS; port++) {
--		if (port == 0) {
-+	int port, size;
-+	unsigned long port_map;
-+	int remaining_ports_count;
-+	int size_remainder;
-+
-+	/* The loopback requires fixed 3kB of the FIFO space assignment. */
-+	mvpp22_tx_fifo_set_hw(priv, MVPP2_LOOPBACK_PORT_INDEX,
-+			      MVPP22_TX_FIFO_DATA_SIZE_3KB);
-+	port_map = priv->port_map & ~BIT(MVPP2_LOOPBACK_PORT_INDEX);
-+
-+	/* Set TX FIFO size to 0 for inactive ports. */
-+	for_each_clear_bit(port, &port_map, MVPP2_LOOPBACK_PORT_INDEX)
-+		mvpp22_tx_fifo_set_hw(priv, port, 0);
-+
-+	/* Assign remaining TX FIFO space among all active ports. */
-+	size_remainder = MVPP22_TX_FIFO_DATA_SIZE_16KB;
-+	remaining_ports_count = hweight_long(port_map);
-+
-+	for_each_set_bit(port, &port_map, MVPP2_LOOPBACK_PORT_INDEX) {
-+		if (remaining_ports_count == 1)
-+			size = min(size_remainder,
-+				   MVPP22_TX_FIFO_DATA_SIZE_10KB);
-+		else if (port == 0)
- 			size = MVPP22_TX_FIFO_DATA_SIZE_10KB;
--			thrs = MVPP2_TX_FIFO_THRESHOLD_10KB;
--		} else {
--			size = MVPP22_TX_FIFO_DATA_SIZE_3KB;
--			thrs = MVPP2_TX_FIFO_THRESHOLD_3KB;
--		}
--		mvpp2_write(priv, MVPP22_TX_FIFO_SIZE_REG(port), size);
--		mvpp2_write(priv, MVPP22_TX_FIFO_THRESH_REG(port), thrs);
-+		else
-+			size = size_remainder / remaining_ports_count;
-+
-+		size_remainder -= size;
-+		remaining_ports_count--;
-+
-+		mvpp22_tx_fifo_set_hw(priv, port, size);
- 	}
- }
- 
-@@ -6952,6 +7005,12 @@ static int mvpp2_probe(struct platform_device *pdev)
- 			goto err_axi_clk;
- 	}
- 
-+	/* Map DTS-active ports. Should be done before FIFO mvpp2_init */
-+	fwnode_for_each_available_child_node(fwnode, port_fwnode) {
-+		if (!fwnode_property_read_u32(port_fwnode, "port-id", &i))
-+			priv->port_map |= BIT(i);
-+	}
-+
- 	/* Initialize network controller */
- 	err = mvpp2_init(pdev, priv);
- 	if (err < 0) {
+> > +     if (libbpf_get_error(link)) {
+> > +             fprintf(stderr, "ERROR: bpf_program__attach_cgroup failed\n");
+> > +             link = NULL;
+> not needed.  bpf_link__destroy() can handle err ptr.
+>
+
+Thank you for the detailed advice, but in order to make it more clear
+that link is no longer used, how about keeping this approach?
+
+> >               goto err;
+> >       }
+> > [...]
+> > +
+> >       if (cg1)
+> This test looks wrong since cg1 is a fd.
+>
+
+I'll remove unnecessary fd compare.
+
 -- 
-1.9.1
-
+Best,
+Daniel T. Lee
