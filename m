@@ -2,92 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21D1F2B80AB
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 16:39:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F8112B8111
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 16:47:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725823AbgKRPh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 10:37:27 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:54864 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725772AbgKRPh0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 10:37:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605713845;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=d8sRYGEzSwBuvAF+H53zPFqrxK3fJ+m2Pfzo+FY4+Kw=;
-        b=BFWjd9mnkqoLYhcOh1yzaKv5eEFXKnl4IU6QnmiNcKa931nI6vCnklL5uBNufWyoKp4KAS
-        hDibrKKLUY4GepPJLqgec34iB9CEXeHRkV4qWvuSFjzqh06Y9zuVgNr0ykbaMaVCCCPawb
-        OTDq68AOdxHbBDxlzfkJIVoQifQWNhI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-518-Yt0VGFVoMPSF14_iFirexw-1; Wed, 18 Nov 2020 10:37:21 -0500
-X-MC-Unique: Yt0VGFVoMPSF14_iFirexw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        id S1727667AbgKRPo3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 10:44:29 -0500
+Received: from mailout02.rmx.de ([62.245.148.41]:45927 "EHLO mailout02.rmx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726363AbgKRPo3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 10:44:29 -0500
+Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F31E219251BB;
-        Wed, 18 Nov 2020 15:37:18 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F336E60843;
-        Wed, 18 Nov 2020 15:37:11 +0000 (UTC)
-Date:   Wed, 18 Nov 2020 16:37:10 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
-        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
-        colrack@gmail.com, brouer@redhat.com
-Subject: Re: [PATCH bpf-next V6 0/7] Series short description
-Message-ID: <20201118163710.201853da@carbon>
-In-Reply-To: <160571329106.2801162.7380460134461487044.stgit@firesoul>
-References: <160571329106.2801162.7380460134461487044.stgit@firesoul>
+        by mailout02.rmx.de (Postfix) with ESMTPS id 4CbnDT1h6wzNmql;
+        Wed, 18 Nov 2020 16:44:25 +0100 (CET)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin02.retarus.com (Postfix) with ESMTPS id 4CbnCy3Xp7z2TTN0;
+        Wed, 18 Nov 2020 16:43:58 +0100 (CET)
+Received: from N95HX1G2.wgnetz.xx (192.168.54.25) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 18 Nov
+ 2020 16:43:58 +0100
+From:   Christian Eggers <ceggers@arri.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+CC:     Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Christian Eggers <ceggers@arri.de>
+Subject: [PATCH net-next] net: dsa: avoid potential use-after-free error
+Date:   Wed, 18 Nov 2020 16:43:35 +0100
+Message-ID: <20201118154335.1189-1-ceggers@arri.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.54.25]
+X-RMX-ID: 20201118-164358-4CbnCy3Xp7z2TTN0-0@kdin02
+X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+If dsa_switch_ops::port_txtstamp() returns false, clone will be freed
+immediately. Storing the pointer in DSA_SKB_CB(skb)->clone anyway,
+supports annoying use-after-free bugs.
 
-Sorry, please ignore this email.
+Signed-off-by: Christian Eggers <ceggers@arri.de>
+Fixes 146d442c2357 ("net: dsa: Keep a pointer to the skb clone for TX timestamping")
+---
+ net/dsa/slave.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-(Wrong invocation of stg mail from command line)
---Jesper
-
-
-On Wed, 18 Nov 2020 16:28:21 +0100
-Jesper Dangaard Brouer <brouer@redhat.com> wrote:
-
-> The following series implements...
-> 
-> ---
-> 
-> Jesper Dangaard Brouer (7):
->       bpf: Remove MTU check in __bpf_skb_max_len
->       bpf: fix bpf_fib_lookup helper MTU check for SKB ctx
->       bpf: bpf_fib_lookup return MTU value as output when looked up
->       bpf: add BPF-helper for MTU checking
->       bpf: drop MTU check when doing TC-BPF redirect to ingress
->       bpf: make it possible to identify BPF redirected SKBs
->       selftests/bpf: use bpf_check_mtu in selftest test_cls_redirect
-> 
-> 
->  .../selftests/bpf/progs/test_cls_redirect.c        |    7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> --
-> Signature
-
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index ff2266d2b998..7efc753e4d9d 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -522,10 +522,10 @@ static void dsa_skb_tx_timestamp(struct dsa_slave_priv *p,
+ 	if (!clone)
+ 		return;
+ 
+-	DSA_SKB_CB(skb)->clone = clone;
+-
+-	if (ds->ops->port_txtstamp(ds, p->dp->index, clone, type))
++	if (ds->ops->port_txtstamp(ds, p->dp->index, clone, type)) {
++		DSA_SKB_CB(skb)->clone = clone;
+ 		return;
++	}
+ 
+ 	kfree_skb(clone);
+ }
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Christian Eggers
+Embedded software developer
+
+Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRA 57918
+Persoenlich haftender Gesellschafter: Arnold & Richter Cine Technik GmbH
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRB 54477
+Geschaeftsfuehrer: Dr. Michael Neuhaeuser; Stephan Schenk; Walter Trauninger; Markus Zeiler
 
