@@ -2,62 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 086DC2B829E
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 18:07:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECA552B82AE
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 18:11:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728028AbgKRRDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 12:03:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42530 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727346AbgKRRDp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 12:03:45 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727560AbgKRRHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 12:07:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:37407 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727312AbgKRRHb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 12:07:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605719250;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NdNmVhxUL+qsjlMu7MBgepNggunU41E/mqKsIBpVtwM=;
+        b=bHPPLzjH1fQ+tggM19rP4DfpXDWMUbilirC6mYqk6mhEMqYODa/6ChEO+LnZMC2IW9bGLG
+        aXayjPcwfE3y7z93SvIc68P4YUPYIYHsTj4ZvzKe6v+lAMD7zNvQZthHXA5pRcOP9SXJxY
+        6nRblaHMVDrytfivU0zhETzymwJfLfM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-30-_B3r3OoxOt2aQ0BPEHa0SQ-1; Wed, 18 Nov 2020 12:07:28 -0500
+X-MC-Unique: _B3r3OoxOt2aQ0BPEHa0SQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E12C22487D;
-        Wed, 18 Nov 2020 17:03:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605719025;
-        bh=Kx8ENv3A76WC9QIeT3nFCawA0elszPZWLAVhXFrgVuw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DAj5Ox+mIgnUemsmvEg3f/Fy2Gmgv4pA9l8ndkd3MFwP8RzUWiZMpK6M1vRwnGQef
-         gwD8v4QREHCUBo5FE2ZdwpusbWDuB+2dwxdWjcStSkCxxK0ioisMLDHZgsJbUUEH0j
-         1QEHsdvGQjcPQkplAVzs+GfSHM4+2a3HJBcjxrMA=
-Date:   Wed, 18 Nov 2020 09:03:43 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net] enetc: Workaround for MDIO register access issue
-Message-ID: <20201118090343.7bbf0047@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201118170044.57jlk42gjht3gd74@skbuf>
-References: <20201112182608.26177-1-claudiu.manoil@nxp.com>
-        <20201117024450.GH1752213@lunn.ch>
-        <AM0PR04MB6754D77454B6DA79FB59917896E20@AM0PR04MB6754.eurprd04.prod.outlook.com>
-        <20201118133856.GC1804098@lunn.ch>
-        <20201118170044.57jlk42gjht3gd74@skbuf>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4338164098;
+        Wed, 18 Nov 2020 17:07:26 +0000 (UTC)
+Received: from [10.40.195.8] (unknown [10.40.195.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E4F535D9CA;
+        Wed, 18 Nov 2020 17:07:23 +0000 (UTC)
+Message-ID: <be2382dca0d817a4b5ac5b9820307ec82ce30c96.camel@redhat.com>
+Subject: Re: [PATCH net] net/sched: act_mpls: ensure LSE is pullable before
+ reading it
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>, gnault@redhat.com
+In-Reply-To: <20201118164719.GL3913@localhost.localdomain>
+References: <e14a44135817430fc69b3c624895f8584a560975.1605716949.git.dcaratti@redhat.com>
+         <20201118164719.GL3913@localhost.localdomain>
+Organization: red hat
+Content-Type: text/plain; charset="UTF-8"
+Date:   Wed, 18 Nov 2020 18:07:22 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Evolution 3.38.1 (3.38.1-1.fc33) 
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Nov 2020 19:00:44 +0200 Vladimir Oltean wrote:
-> On Wed, Nov 18, 2020 at 02:38:56PM +0100, Andrew Lunn wrote:
-> > Thanks for the explanation. I don't think i've every reviewed a driver
-> > using read/write locks like this. But thinking it through, it does
-> > seem O.K.  
+On Wed, 2020-11-18 at 13:47 -0300, Marcelo Ricardo Leitner wrote:
+> On Wed, Nov 18, 2020 at 05:36:52PM +0100, Davide Caratti wrote:
 > 
-> Thanks for reviewing and getting this merged. It sure is helpful to not
-> have the link flap while running iperf3 or other intensive network
-> activity.
+> Hi,
 > 
-> Even if this use of rwlocks may seem unconventional, I think it is the
-> right tool for working around the hardware bug.
+> >  	case TCA_MPLS_ACT_MODIFY:
+> > +		if (!pskb_may_pull(skb,
+> > +				   skb_network_offset(skb) + sizeof(new_lse)))
+> > +			goto drop;
+> >  		new_lse = tcf_mpls_get_lse(mpls_hdr(skb), p, false);
+> >  		if (skb_mpls_update_lse(skb, new_lse))
+> >  			goto drop;
+> 
+> Seems TCA_MPLS_ACT_DEC_TTL is also affected. skb_mpls_dec_ttl() will
+> also call mpls_hdr(skb) without this check.
+> 
+>   Marcelo
+> 
+... yes, correct; and at a first glance, also set_mpls() in
+openvswitch/action.c has the same (theoretical) issue. I will follow-up
+with other 2 patches, ok?
 
-Out of curiosity - did you measure the performance hit?
+thanks!
+-- 
+davide
+
