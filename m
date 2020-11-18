@@ -2,115 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 396FB2B7452
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 03:48:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C26322B7457
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 03:50:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726891AbgKRCrb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 21:47:31 -0500
-Received: from novek.ru ([213.148.174.62]:50840 "EHLO novek.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726287AbgKRCra (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Nov 2020 21:47:30 -0500
-Received: from [192.168.0.18] (unknown [37.228.234.253])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id BFFF4502C3D;
-        Wed, 18 Nov 2020 05:47:37 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru BFFF4502C3D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1605667659; bh=74yBwqYc+gDVhID6MkFMazkdiOhm4869LFqVujhQqys=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=TKBr4hSxS4ikScZPOGAc1ngRrGrkrW080YwiNBPcrEl4hdAN8GEoeZ+DFUXYtX7Ia
-         o6f69AQXsqESsN3xwTyTRrhLr2Y/rBp3a4ewc0nfqsdyCV/zboJjV6n9vAndFkoUJS
-         x/pAAGknLkAEKyjwyOpmRQ/3FMYtTHvXj3nQHrhM=
-Subject: Re: [net] net/tls: missing received data after fast remote close
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Boris Pismenny <borisp@nvidia.com>,
-        Aviad Yehezkel <aviadye@nvidia.com>, netdev@vger.kernel.org
-References: <1605440628-1283-1-git-send-email-vfedorenko@novek.ru>
- <20201117143847.2040f609@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <71f25f4d-a92c-8c56-da34-9d6f7f808c18@novek.ru>
- <20201117175344.2a29859a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Vadim Fedorenko <vfedorenko@novek.ru>
-Message-ID: <33ede124-583b-4bdd-621b-638bbca1a6c8@novek.ru>
-Date:   Wed, 18 Nov 2020 02:47:24 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727057AbgKRCtJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 21:49:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43988 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726202AbgKRCtI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 21:49:08 -0500
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E0AC0613D4;
+        Tue, 17 Nov 2020 18:49:08 -0800 (PST)
+Received: by mail-yb1-xb41.google.com with SMTP id w5so247665ybj.11;
+        Tue, 17 Nov 2020 18:49:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4tGBegvm7wEk8utzbc4kW94oTcRZevqQjKSDFT/ItuY=;
+        b=am7WFrQ9O+Ab/4h0E1qWRGnxglYQWrbDR4c9x3217xbY23inwLUs/F8+lNUfLlTkId
+         HGCnT+AwXazVk1py+U6BWUyTJvsE4DyGQgM2tdiaz30VvX+L7HiNw4SKIE0gydRSqsDx
+         Nw/vX31jWngubMVzILXN6Yr9fbYwWn4aU7c3LzT8BhHFAypelQtvKU3FyUl8erbmibuW
+         MoJqY+mo8Ycl1CmK2RB7z7zC4MbKcNHa0MSS5FtwUIpZ+Dzzlpylx42jceILbQPgY3Ry
+         SA7K7fB4Wj+OL/BK4EkMM5/DsEQmQuSLAx4QPz/BZnO98EVUe0GdqIKv6Y4ueiSRVhb0
+         MN9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4tGBegvm7wEk8utzbc4kW94oTcRZevqQjKSDFT/ItuY=;
+        b=Yd/G62ekg2EXhn1zR7FXHMoONJHS2xdXOu5+K3ahWqEU0+wgU//msZlrhpYdCIhujJ
+         vs1WQc0B5bEYL315SZNcqStXuLSrE5K7Cl6a5jFiiaXpe9TLPPOiOKAG0iIEJ/0FrkzC
+         bW6YdM7a2sEzKqCs/r/cd+nVW91Uw/wHiRtnssakonA082gnGlRmgCFbqxyCV+SLq0UV
+         I+gOIyg6wTOSEqQfrYemh5YmJ/Q0q/vXTLA8avkSjOwXT4qNiRSNKLasW0FR6fHgXf3d
+         Sbc5ypcDCAkCoJn9e5xuVXvqZID9qDokFzJrAmM5oI+yNVwJyMRUaPzruSvDwoviZIYE
+         mZyQ==
+X-Gm-Message-State: AOAM533Wx7vl+sUmI3VEyR/L9rjc5XrGX3sGvdwBmGDvUuu33KB7vX5x
+        FQN4/2hy82TG7W4bwqdh+pSrxVXXVUq2Pc2J31A=
+X-Google-Smtp-Source: ABdhPJzDl57OjC0DVpWbugcubJ/3p9Q0HMaf/+b/qra0isMpRNoz0LDWKQWa2wdvyZbDvuTkD6Y2FRkywkvBItn7eTo=
+X-Received: by 2002:a25:df8e:: with SMTP id w136mr3502264ybg.230.1605667747855;
+ Tue, 17 Nov 2020 18:49:07 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20201117175344.2a29859a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
-        autolearn_force=no version=3.4.1
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
+References: <20201117145644.1166255-1-danieltimlee@gmail.com> <20201117145644.1166255-10-danieltimlee@gmail.com>
+In-Reply-To: <20201117145644.1166255-10-danieltimlee@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 17 Nov 2020 18:48:57 -0800
+Message-ID: <CAEf4BzaOMOhX14zXGzkPmLxCHLj+e4a98d9YtT4RdJNNtrPnOQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 9/9] samples: bpf: remove bpf_load loader completely
+To:     "Daniel T. Lee" <danieltimlee@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, brakmo <brakmo@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        David Ahern <dsa@cumulusnetworks.com>,
+        Yonghong Song <yhs@fb.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Ira Weiny <ira.weiny@intel.com>, Thomas Graf <tgraf@suug.ch>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Xdp <xdp-newbies@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 18.11.2020 01:53, Jakub Kicinski wrote:
-> On Wed, 18 Nov 2020 00:50:48 +0000 Vadim Fedorenko wrote:
->> On 17.11.2020 22:38, Jakub Kicinski wrote:
->>> On Sun, 15 Nov 2020 14:43:48 +0300 Vadim Fedorenko wrote:
->>>> In case when tcp socket received FIN after some data and the
->>>> parser haven't started before reading data caller will receive
->>>> an empty buffer.
->>> This is pretty terse, too terse for me to understand..
->> The flow is simple. Server sends small amount of data right after the
->> connection is configured and closes the connection. In this case
->> receiver sees TLS Handshake data, configures TLS socket right after
->> Change Cipher Spec record. While the configuration is in process, TCP
->> socket receives small Application Data record, Encrypted Alert record
->> and FIN packet. So the TCP socket changes sk_shutdown to RCV_SHUTDOWN
->> and sk_flag with SK_DONE bit set.
-> Thanks! That's clear. This is a race, right, you can't trigger
-> it reliably?
-It is triggered in the test cases usually but nit always. To trigger
-this problem always I just add some delay before setsockopt() call.
-This delay leaves sometime for kernel to receive all the data from
-sender in test case.
-> BTW please feel free to add your cases to the tls selftest in
-> tools/testing/selftests.
-Sure, will add this case in selftests.
+On Tue, Nov 17, 2020 at 6:58 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
 >
->>>> This behavior differs from plain TCP socket and
->>>> leads to special treating in user-space. Patch unpauses parser
->>>> directly if we have unparsed data in tcp receive queue.
->>> Sure, but why is the parser paused? Does it pause itself on FIN?
->> No, it doesn't start even once. The trace looks like:
->>
->> tcp_recvmsg is called
->> tcp_recvmsg returns 1 (Change Cipher Spec record data)
->> tls_setsockopt is called
->> tls_setsockopt returns
->> tls_recvmsg is called
->> tls_recvmsg returns 0
->> __strp_recv is called
->> stack
->>           __strp_recv+1
->>           tcp_read_sock+169
->>           strp_read_sock+104
->>           strp_work+68
->>           process_one_work+436
->>           worker_thread+80
->>           kthread+276
->>           ret_from_fork+34tls_read_size called
->>
->> So it looks like strp_work was scheduled after tls_recvmsg and
->> nothing triggered parser because all the data was received before
->> tls_setsockopt ended the configuration process.
-> Um. That makes me think we need to flush_work() on the strparser after
-> we configure rx tls, no? Or __unpause at the right time instead of
-> dealing with the async nature of strp_check_rcv()?
-I'm not sure that flush_work() will do right way in this case. Because:
-1. The work is idle after tls_sw_strparser_arm()
-2. The strparser needs socket lock to do it's work - that could be a
-deadlock because setsockopt_conf already holds socket lock. I'm not
-sure that it's a good idea to unlock socket just to wait the strparser.
+> Numerous refactoring that rewrites BPF programs written with bpf_load
+> to use the libbpf loader was finally completed, resulting in BPF
+> programs using bpf_load within the kernel being completely no longer
+> present.
+>
+> This commit removes bpf_load, an outdated bpf loader that is difficult
+> to keep up with the latest kernel BPF and causes confusion.
+>
+> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+> ---
 
-The async nature of parser is OK for classic HTTPS server/client case
-because it's very good to have parsed record before actual call to recvmsg
-or splice_read is done. The code inside the loop in tls_wait_data is slow
-path - maybe just move the check and the __unpause in this slow path?
+RIP, bpf_load().
+
+Probably makes more sense to combine this patch with the previous patch.
+
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+
+>  samples/bpf/bpf_load.c          | 667 --------------------------------
+>  samples/bpf/bpf_load.h          |  57 ---
+>  samples/bpf/xdp2skb_meta_kern.c |   2 +-
+>  3 files changed, 1 insertion(+), 725 deletions(-)
+>  delete mode 100644 samples/bpf/bpf_load.c
+>  delete mode 100644 samples/bpf/bpf_load.h
+>
+
+[...]
