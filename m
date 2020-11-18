@@ -2,94 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE3B32B841E
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 19:50:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25D712B8428
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 19:50:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727006AbgKRSr5 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 18 Nov 2020 13:47:57 -0500
-Received: from mga02.intel.com ([134.134.136.20]:28596 "EHLO mga02.intel.com"
+        id S1727088AbgKRStA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 13:49:00 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56102 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727005AbgKRSr4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 13:47:56 -0500
-IronPort-SDR: e59alZmi8gDrdPn/21m1KNwJNpNqmhLvLTFQTnleaGV0hjfhJggJpD4hGLPw+4AVeOrJogMUm3
- e/yEJt3642Bg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9809"; a="158199760"
-X-IronPort-AV: E=Sophos;i="5.77,488,1596524400"; 
-   d="scan'208";a="158199760"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2020 10:47:55 -0800
-IronPort-SDR: 21awqr29/gdilBdJzZ2L4xrvdgnXZ6iVa17h6o489eSd338sX4jD0bb5vmo0lVDoaH1w1TPVRC
- Ocnd8pVyvV4Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,488,1596524400"; 
-   d="scan'208";a="532843422"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by fmsmga006.fm.intel.com with ESMTP; 18 Nov 2020 10:47:54 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 18 Nov 2020 10:47:54 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 18 Nov 2020 10:47:54 -0800
-Received: from orsmsx610.amr.corp.intel.com ([10.22.229.23]) by
- ORSMSX610.amr.corp.intel.com ([10.22.229.23]) with mapi id 15.01.1713.004;
- Wed, 18 Nov 2020 10:47:54 -0800
-From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Bin Luo <luobin9@huawei.com>
-Subject: RE: [net-next v3 1/2] devlink: move request_firmware out of driver
-Thread-Topic: [net-next v3 1/2] devlink: move request_firmware out of driver
-Thread-Index: AQHWvR2ackQWguMXlk+0V+1rPQ6Nz6nM0gOAgAHsLwD//34d4A==
-Date:   Wed, 18 Nov 2020 18:47:54 +0000
-Message-ID: <c325902b7bfd41588fa3a93484a50f79@intel.com>
-References: <20201117200820.854115-1-jacob.e.keller@intel.com>
-        <20201117200820.854115-2-jacob.e.keller@intel.com>
-        <505ed03a-6e71-5abc-dd18-c3c737c6ade8@intel.com>
- <20201118103224.4662565f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201118103224.4662565f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-x-originating-ip: [10.1.200.100]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1726527AbgKRStA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 13:49:00 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1F897246B9;
+        Wed, 18 Nov 2020 18:48:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605725339;
+        bh=L/3ZL6DbNpQF471NNWS0yqhwfXXZnzfqsalBwXDaaNY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TrLhsOI/tXpfQfbZ09WfCbElHt7PcnfdKVPNY13ZcU1QUoQ2XKD7p6D/G9xI2+mGZ
+         wPx+/Hjuq5/cSuhx9ikihZhufpMuH9Nnk2Pr7MlOYphB1pOwWaH5M+0jMnSLUfJDD9
+         1y+iz1S6DXNwKhL9xJI7D/ARrcvcqC6/qJ+Ipyzw=
+Date:   Wed, 18 Nov 2020 10:48:58 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Simon Horman <simon.horman@netronome.com>
+Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, oss-drivers@netronome.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] nfp: tls: Fix unreachable code issue
+Message-ID: <20201118104858.283cfd87@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201117200646.GA10136@netronome.com>
+References: <20201117171347.GA27231@embeddedor>
+        <20201117200646.GA10136@netronome.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Wednesday, November 18, 2020 10:32 AM
-> To: Keller, Jacob E <jacob.e.keller@intel.com>
-> Cc: netdev@vger.kernel.org; Jiri Pirko <jiri@nvidia.com>; Michael Chan
-> <michael.chan@broadcom.com>; Shannon Nelson <snelson@pensando.io>;
-> Saeed Mahameed <saeedm@nvidia.com>; Boris Pismenny
-> <borisp@nvidia.com>; Bin Luo <luobin9@huawei.com>
-> Subject: Re: [net-next v3 1/2] devlink: move request_firmware out of driver
+On Tue, 17 Nov 2020 21:06:47 +0100 Simon Horman wrote:
+> On Tue, Nov 17, 2020 at 11:13:47AM -0600, Gustavo A. R. Silva wrote:
+> > Fix the following unreachable code issue:
+> > 
+> >    drivers/net/ethernet/netronome/nfp/crypto/tls.c: In function 'nfp_net_tls_add':
+> >    include/linux/compiler_attributes.h:208:41: warning: statement will never be executed [-Wswitch-unreachable]
+> >      208 | # define fallthrough                    __attribute__((__fallthrough__))
+> >          |                                         ^~~~~~~~~~~~~
+> >    drivers/net/ethernet/netronome/nfp/crypto/tls.c:299:3: note: in expansion of macro 'fallthrough'
+> >      299 |   fallthrough;
+> >          |   ^~~~~~~~~~~
+> > 
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>  
 > 
-> On Tue, 17 Nov 2020 12:10:49 -0800 Jacob Keller wrote:
-> > Oof, forgot to metion that the only change since v2 is to fix the typo
-> > in the commit message pointed out by Shannon. Otherwise, this patch is
-> > identical and just comes in series with the other change.
-> 
-> Fine by me, although I thought Shannon asked for some changes to debug
-> prints in ionic?
+> Reviewed-by: Simon Horman <simon.horman@netronome.com>
 
-Oh I might have missed those comments let me go look.
+Applied, thanks!
