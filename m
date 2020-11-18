@@ -2,67 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FE7D2B8343
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 18:44:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C9882B8354
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 18:48:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728084AbgKRRnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 12:43:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40932 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727476AbgKRRnv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 12:43:51 -0500
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F0A2C0613D4;
-        Wed, 18 Nov 2020 09:43:51 -0800 (PST)
-Received: by mail-wm1-x344.google.com with SMTP id c198so1970217wmd.0;
-        Wed, 18 Nov 2020 09:43:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mVeJqHG2em0yWD8MsCr0uHPVXUTlFKiETQWelNfSKrI=;
-        b=J1kcpLv79McSIBrQFrtid7jFBA8H6I3dXaJbjBTK1pOEsvMgSTuyySUmui2kgYrA3K
-         hrhGzuSy/MAUMZZyfnDRgbpUY9X2xdBcQOdm/EjRI8z2oVNY7t49Fl8wo9B0JpJZ9swt
-         ZrD5XgUx61QXpfATypZ5g9Lej7X94agb2zdtHrw2m9a9bsGWyfUP7E6w+y7ktqIA88Xy
-         QSoLwrsesrEDPa6ItXsdOo5s0LW0jL+5uh2CqOD4iD4qWK530J+OsHc/xdHkmZH8+MDB
-         EDUok/35PMvIxZh6TXB34NJsC0DpD6hwCHwqwSxNDt9/EtqM46mtD/NmQFA0X2qzucTO
-         ZgMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mVeJqHG2em0yWD8MsCr0uHPVXUTlFKiETQWelNfSKrI=;
-        b=gsSgIyT/y2HCrpSawQTjoqg3NpXF0pnhZX50EMBpooFmkJKM0KUDNZndiihH2nTxCB
-         wFJcqFSe4kOHKW1b5qUEmq4g9loZAZnmebLQoZCBGgqFR6cffTbbLifEkEHv+1L6sfrv
-         xZOHDBV8s2Kid8Y3P/tHx73AL/ja1UrLHh/r/bsLTaTfJZeeonRPdITYpn8EVTk8v6+u
-         bpNt+2wMSmYFyW6M1zK2w4BFwQeMiLVSVxEX93IsSg0mooJDd6yd1SMLERY82kokyFxB
-         /VsFLHF+cRmfIFKVtQpoKLcs+t74TqSq51bhGhb4kL+Z6DnR8aOVhNm1i/KjXC7cgjXW
-         Vc9Q==
-X-Gm-Message-State: AOAM531KjvmvBhy/f17GXUpjWAgWSEmfUDfCnDG4iIOwrRvTMjB1iSQm
-        zjL3TY0NADFzseaLMTzw3cNJFKg+TD6a0ogmmLs=
-X-Google-Smtp-Source: ABdhPJyMPVwnX2jPHnJtHnaYqJDj1A0VkhVOf1AhgZKW784eyuSL8j3XC8Nd3AdMABRqC4JZ78Xs3fNXOVrIl4M8I80=
-X-Received: by 2002:a7b:c77a:: with SMTP id x26mr214035wmk.63.1605721430045;
- Wed, 18 Nov 2020 09:43:50 -0800 (PST)
+        id S1728116AbgKRRqI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 12:46:08 -0500
+Received: from z5.mailgun.us ([104.130.96.5]:32371 "EHLO z5.mailgun.us"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727754AbgKRRqG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 12:46:06 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1605721566; h=Message-ID: References: In-Reply-To: Reply-To:
+ Subject: Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=CqQUjWS47OeGeZxznxTVUF9IHKIsAQr1JXT3ZOCJz8Y=;
+ b=BKdg5B9boY/OBWozA4aXDiSu7Lfl7KWGuxU64XHd9HNKjslJz7q9+WFyVhxR4pDZg6w6H0v2
+ octLjOPRWSlvmvMjr2WOV7NEYp43ONP8nasjouSwglLavPIAXYQIRHQ6FUXrtARj8OluGx22
+ Ihf9xKmXtBBMdTH37x3xXftWC68=
+X-Mailgun-Sending-Ip: 104.130.96.5
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
+ 5fb55ddd1dba509aaebd5e95 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 18 Nov 2020 17:46:05
+ GMT
+Sender: bbhatt=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 8040EC43463; Wed, 18 Nov 2020 17:46:05 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: bbhatt)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id EE012C433ED;
+        Wed, 18 Nov 2020 17:46:04 +0000 (UTC)
 MIME-Version: 1.0
-References: <20201118071640.83773-1-bjorn.topel@gmail.com>
-In-Reply-To: <20201118071640.83773-1-bjorn.topel@gmail.com>
-From:   Luke Nelson <luke.r.nels@gmail.com>
-Date:   Wed, 18 Nov 2020 09:43:38 -0800
-Message-ID: <CAB-e3NTv1in=QTfaRsA-J8rtLNmoEso8XZ3q_mx9ZBhAUyXkxg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 0/3] RISC-V selftest/bpf fixes
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Xi Wang <xi.wang@gmail.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        andrii.nakryiko@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 18 Nov 2020 09:46:04 -0800
+From:   Bhaumik Bhatt <bbhatt@codeaurora.org>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     Carl Huang <cjhuang@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, hemantk@codeaurora.org,
+        ath11k@lists.infradead.org
+Subject: Re: [PATCH] bus: mhi: Remove auto-start option
+Organization: Qualcomm Innovation Center, Inc.
+Reply-To: bbhatt@codeaurora.org
+Mail-Reply-To: bbhatt@codeaurora.org
+In-Reply-To: <20201118115757.GA5680@thinkpad>
+References: <20201118053102.13119-1-manivannan.sadhasivam@linaro.org>
+ <877dqjz0bv.fsf@codeaurora.org> <20201118093107.GC3286@work>
+ <16c430bbd5117a35496f85f4454095b9@codeaurora.org>
+ <20201118115757.GA5680@thinkpad>
+Message-ID: <1b5eb02e78b3b68b88dd3d12e3f8c60c@codeaurora.org>
+X-Sender: bbhatt@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nice, thanks for the fixes!
+On 2020-11-18 03:57 AM, Manivannan Sadhasivam wrote:
+> On Wed, Nov 18, 2020 at 07:55:19PM +0800, Carl Huang wrote:
+>> On 2020-11-18 17:31, Manivannan Sadhasivam wrote:
+>> > On Wed, Nov 18, 2020 at 07:43:48AM +0200, Kalle Valo wrote:
+>> > > Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org> writes:
+>> > >
+>> > > > From: Loic Poulain <loic.poulain@linaro.org>
+>> > > >
+>> > > > There is really no point having an auto-start for channels.
+>> > > > This is confusing for the device drivers, some have to enable the
+>> > > > channels, others don't have... and waste resources (e.g. pre allocated
+>> > > > buffers) that may never be used.
+>> > > >
+>> > > > This is really up to the MHI device(channel) driver to manage the state
+>> > > > of its channels.
+>> > > >
+>> > > > While at it, let's also remove the auto-start option from ath11k mhi
+>> > > > controller.
+>> > > >
+>> > > > Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
+>> > > > Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+>> > > > [mani: clubbed ath11k change]
+>> > > > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+>> > >
+>> > > Thanks and feel free to take this to the immutable branch:
+>> > >
+>> > > Acked-by: Kalle Valo <kvalo@codeaurora.org>
+>> >
+>> > Patch applied to mhi-ath11k-immutable branch and merged into mhi-next.
+>> >
+>> > Thanks,
+>> > Mani
+>> >
+>> Does net/qrtr/mhi.c need changes? I guess now net/qrtr/mhi.c needs to 
+>> call
+>> mhi_prepare_for_transfer() before transfer.
+>> 
+> 
+> Yes and the patch is also applied:
+> https://git.kernel.org/pub/scm/linux/kernel/git/mani/mhi.git/commit/?h=mhi-ath11k-immutable&id=a2e2cc0dbb1121dfa875da1c04f3dff966fec162
+> 
+> Thanks,
+> Mani
+> 
+>> > >
+>> > > --
+>> > > https://patchwork.kernel.org/project/linux-wireless/list/
+>> > >
+>> > > https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+It looks we forgot to add the mhi_unprepare_from_transfer() equivalent 
+in the remove().
 
-(For the whole series:)
-Acked-by: Luke Nelson <luke.r.nels@gmail.com>
+Will send a patch for it today.
+
+Thanks,
+Bhaumik
+---
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora 
+Forum,
+a Linux Foundation Collaborative Project
