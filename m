@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93F102B74A2
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 04:20:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 921BD2B74A5
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 04:22:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726544AbgKRDTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Nov 2020 22:19:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48686 "EHLO
+        id S1726742AbgKRDVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Nov 2020 22:21:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725613AbgKRDTe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 22:19:34 -0500
-Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13A06C0613D4;
-        Tue, 17 Nov 2020 19:19:34 -0800 (PST)
-Received: by mail-oi1-x243.google.com with SMTP id f11so654590oij.6;
-        Tue, 17 Nov 2020 19:19:34 -0800 (PST)
+        with ESMTP id S1725613AbgKRDVk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Nov 2020 22:21:40 -0500
+Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C848C0613D4;
+        Tue, 17 Nov 2020 19:21:40 -0800 (PST)
+Received: by mail-oi1-x242.google.com with SMTP id w188so689583oib.1;
+        Tue, 17 Nov 2020 19:21:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=mMvR71rN9SB/FAJRr1/hQhfMzQUaMTYk2lhmizB7+4M=;
-        b=jyCyjTwqi2Bwoz6WweTPIpVofTcrWT8uNlhsBVSaxbPwkV2BoaNaMnClB64uNk09BT
-         Rov6XC+ESfP3tB/5ltI18/UvX90VEKehfCE9el1W3l8vx2iQZDJVlaLQK2rBnhYlYEfW
-         SlkRvCJ5gkVICIptrdf8yI8s8lI3diHJ981/uXvl10lpaUvHj75+nh2mCoIV8SaLQnS/
-         9afiohinM2pg4k4db1Ka7+0L3zoGW/I7vYeJaCrMqE5EHPK6i6fafOtr2GcsKhonSoyf
-         aNDirW8dlUKKrU70YFVVHMQ85u+1GzMEUtJHJIVBgcNkaha6dLqNQqhOIgp+SYXIvZyZ
-         Fltw==
+        bh=5EwzV1WY7UR9Ao6IjTB0tUNCWpA/QmhX9rFcnwQF/QI=;
+        b=BXsi3BHwkSZgpqF/ruIi1iLCxuN82HUaEjNUG8i2SBzUyfp6/01OXd5kLjCdsLbDr0
+         IG7HlFCySu9+l9F+JjkuhHpInef7I/hi963bqnWJSrGp7zdvsNQVVoRwcLvx5lburgNw
+         401eBUM4Vpb3KFAnEstjkXTeKj7RCX2wiqxNSUZ6Oxvnfqk/mgUuRfqKNhkvdsjg2YAV
+         Hdih0WIRHQrOD3PaMmoMwGGb5fD3AlpJMExbVFjmY2pyInWo+FJnKB84EYMNpBcdbFrs
+         BW7LYTcuizWzzLfDY1A9ab/tHq08ORkegHqtBb7WFwIeRL+bJk8f9LhEBvrrGTGJsdW2
+         MN0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=mMvR71rN9SB/FAJRr1/hQhfMzQUaMTYk2lhmizB7+4M=;
-        b=IIsO2q9DSWpbI+J/rV11OtM0A0hADbguMq5NHxFbUneEGc6Pp1IaXqm06czktX6JAx
-         yJYmm+9+E6VBaNj5be7CB6Lwkj2eyCwjw8A9RFEwM4BG1j3+uhngTd+/PQzZaDuXF10N
-         TQOTbqVkyknR0xkb+v7ZAkU1wL91YBbrjH4DGIUezl1ECOj4BJE5CR87tutD2hVMeOQS
-         XOxtuy9lH+Uvh/aTezyVmfKFgGO1C7HDDGzdkEsv6IwotoVX9VNkgNdUPtDbRrUhdS3+
-         vjj5dMYaF6JJMlvW0ij5eJyHFZClvVeE5C3kahVsBgj4Ltt0Q1EXPK9PpbnvE/4N3jE0
-         rLcg==
-X-Gm-Message-State: AOAM5329pOvtrG6jgMv8iEzXnHviJHD8OL6f5qBGkQJNqbPxi01bZWSA
-        m85LIreNFl7120PeX38Yg/GawF8vFGbptbmn6A==
-X-Google-Smtp-Source: ABdhPJwZN3gwXa6FAuVxBt2aAM8idx4rsEOpFn42iKEIbfCRHJGBiyrANklzPTklhqQomRYm0EKRWki1U9P34yOZKYw=
-X-Received: by 2002:a05:6808:d0:: with SMTP id t16mr1417854oic.79.1605669573431;
- Tue, 17 Nov 2020 19:19:33 -0800 (PST)
+        bh=5EwzV1WY7UR9Ao6IjTB0tUNCWpA/QmhX9rFcnwQF/QI=;
+        b=GtJDAYB9W81mLmdDyJHstlcic/Yrbt8GnvbiP08tWwTTpdhmlUSup1wKoBfSt9Kgis
+         D/Pw7TecROvTfzT3fZu3986rH552PJ8oxulF619EI/3NOl5H+KkXaovqV/JhRDhGeFBz
+         fHg6SBE2QH9O2mTTRn/kf5rgaypZpgpxd0jwQQjNydc7cJwxH8dWv2xpo2zOi2AcT4wp
+         GmXcREPRaL4AGXEKO1ySfXRAvsekZEny/PG2zug8AinKoaoubqLU5+9f69SJrHJ6XLBc
+         Yjt7jCTX1IqFgSOcs2Lp7VOVAWG3/u++fwpFshf6p4TZq1KsPVx7t4eYLw5Q5Wk+edIi
+         6cxg==
+X-Gm-Message-State: AOAM533w+PYlGMRnvq5eMnZtx69Q7RxgvTmVVpqOogJzvmjHQHZ49sWJ
+        Q93t30S6o1zxIWS3+la2eaMYjgQILMyTAmoWLQ==
+X-Google-Smtp-Source: ABdhPJzn7VyOySNpFE2m+Ct+hNPNMmJ6SatQ5RcWAq+bMaBCefU5Rj2+9+rflNkEL7cVVIA3sa4yepUnFgEpDReRvPQ=
+X-Received: by 2002:aca:e007:: with SMTP id x7mr1531079oig.40.1605669699775;
+ Tue, 17 Nov 2020 19:21:39 -0800 (PST)
 MIME-Version: 1.0
 References: <20201117145644.1166255-1-danieltimlee@gmail.com>
- <20201117145644.1166255-5-danieltimlee@gmail.com> <CAEf4BzaQOfGOvGnzqGRoQmnysoWZrEo=ZBS4RreV3OfcKB3uQQ@mail.gmail.com>
-In-Reply-To: <CAEf4BzaQOfGOvGnzqGRoQmnysoWZrEo=ZBS4RreV3OfcKB3uQQ@mail.gmail.com>
+ <20201117145644.1166255-4-danieltimlee@gmail.com> <CAEf4BzbBT38n8YQNco7yfijahaKXWQWLqxiNGEq1q7Lj7N+_vA@mail.gmail.com>
+In-Reply-To: <CAEf4BzbBT38n8YQNco7yfijahaKXWQWLqxiNGEq1q7Lj7N+_vA@mail.gmail.com>
 From:   "Daniel T. Lee" <danieltimlee@gmail.com>
-Date:   Wed, 18 Nov 2020 12:19:17 +0900
-Message-ID: <CAEKGpzj-4X+OZNmjM+2ZJ+R_k=c_bNBTwiSfsXp2BQ4zV9YE5g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 4/9] samples: bpf: refactor task_fd_query program
- with libbpf
+Date:   Wed, 18 Nov 2020 12:21:23 +0900
+Message-ID: <CAEKGpzi8suN-ftSiERx4WT2y1vtq+=L=0aBYva8NgYmhkWbNeA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/9] samples: bpf: refactor test_cgrp2_sock2
+ program with libbpf
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -72,100 +72,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 11:58 AM Andrii Nakryiko
+On Wed, Nov 18, 2020 at 12:02 PM Andrii Nakryiko
 <andrii.nakryiko@gmail.com> wrote:
 >
 > On Tue, Nov 17, 2020 at 6:57 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
 > >
-> > This commit refactors the existing kprobe program with libbpf bpf
-> > loader. To attach bpf program, this uses generic bpf_program__attach()
-> > approach rather than using bpf_load's load_bpf_file().
+> > This commit refactors the existing cgroup program with libbpf bpf
+> > loader. The original test_cgrp2_sock2 has keeped the bpf program
+> > attached to the cgroup hierarchy even after the exit of user program.
+> > To implement the same functionality with libbpf, this commit uses the
+> > BPF_LINK_PINNING to pin the link attachment even after it is closed.
 > >
-> > To attach bpf to perf_event, instead of using previous ioctl method,
-> > this commit uses bpf_program__attach_perf_event since it manages the
-> > enable of perf_event and attach of BPF programs to it, which is much
-> > more intuitive way to achieve.
+> > Since this uses LINK instead of ATTACH, detach of bpf program from
+> > cgroup with 'test_cgrp2_sock' is not used anymore.
 > >
-> > Also, explicit close(fd) has been removed since event will be closed
-> > inside bpf_link__destroy() automatically.
-> >
-> > DEBUGFS macro from trace_helpers has been used to control uprobe events.
-> > Furthermore, to prevent conflict of same named uprobe events, O_TRUNC
-> > flag has been used to clear 'uprobe_events' interface.
+> > The code to mount the bpf was added to the .sh file in case the bpff
+> > was not mounted on /sys/fs/bpf. Additionally, to fix the problem that
+> > shell script cannot find the binary object from the current path,
+> > relative path './' has been added in front of binary.
 > >
 > > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
 > > ---
-> >  samples/bpf/Makefile             |   2 +-
-> >  samples/bpf/task_fd_query_user.c | 101 ++++++++++++++++++++++---------
-> >  2 files changed, 74 insertions(+), 29 deletions(-)
+> >  samples/bpf/Makefile            |  2 +-
+> >  samples/bpf/test_cgrp2_sock2.c  | 63 ++++++++++++++++++++++++---------
+> >  samples/bpf/test_cgrp2_sock2.sh | 21 ++++++++---
+> >  3 files changed, 64 insertions(+), 22 deletions(-)
 > >
 >
 > [...]
 >
-> >  static int test_debug_fs_uprobe(char *binary_path, long offset, bool is_return)
-> >  {
-> > +       char buf[256], event_alias[sizeof("test_1234567890")];
-> >         const char *event_type = "uprobe";
-> >         struct perf_event_attr attr = {};
-> > -       char buf[256], event_alias[sizeof("test_1234567890")];
-> >         __u64 probe_offset, probe_addr;
-> >         __u32 len, prog_id, fd_type;
-> > -       int err, res, kfd, efd;
-> > +       int err = -1, res, kfd, efd;
-> > +       struct bpf_link *link;
-> >         ssize_t bytes;
 > >
-> > -       snprintf(buf, sizeof(buf), "/sys/kernel/debug/tracing/%s_events",
-> > -                event_type);
-> > -       kfd = open(buf, O_WRONLY | O_APPEND, 0);
-> > +       snprintf(buf, sizeof(buf), DEBUGFS "%s_events", event_type);
-> > +       kfd = open(buf, O_WRONLY | O_TRUNC, 0);
+> > -       return EXIT_SUCCESS;
+> > +       err = bpf_link__pin(link, link_pin_path);
+> > +       if (err < 0) {
+> > +               printf("err : %d\n", err);
 >
-> O_TRUNC will also remove other events, created by users. Not a great
-> experience. Let's leave the old behavior?
+> more meaningful error message would be helpful
 >
 
-The reason why I used O_TRUNC is, it gets conflict error during tests.
-I'm not sure if it is a bug of ftrace uprobes_events or not, but seems adding
-same name of uprobe_events with another type seems not working.
-(adding uretprobes after uprobes returns an error)
+Thanks for pointing out, I will fix it directly!
 
-    samples/bpf # echo 'p:uprobes/test_500836 ./task_fd_query:0x3d80'
->> /sys/kernel/debug/tracing/uprobe_events
-    samples/bpf # cat /sys/kernel/debug/tracing/uprobe_events
-     p:uprobes/test_500836 ./task_fd_query:0x0000000000003d80
-    samples/bpf# echo 'r:uprobes/test_500836 ./task_fd_query:0x3d80'
->> /sys/kernel/debug/tracing/uprobe_events
-     bash: echo: write error: File exists
-
-Since this gets error, I've just truncated on every open of this interface.
-
-> >         CHECK_PERROR_RET(kfd < 0);
-> >
-> >         res = snprintf(event_alias, sizeof(event_alias), "test_%d", getpid());
-> > @@ -240,8 +252,8 @@ static int test_debug_fs_uprobe(char *binary_path, long offset, bool is_return)
-> >         close(kfd);
-> >         kfd = -1;
-> >
-> > -       snprintf(buf, sizeof(buf), "/sys/kernel/debug/tracing/events/%ss/%s/id",
-> > -                event_type, event_alias);
-> > +       snprintf(buf, sizeof(buf), DEBUGFS "events/%ss/%s/id", event_type,
->
-> I'd leave the string verbatim here (and above), I think it's better
-> that way and easier to figure out what's written where. And then no
-> need to expose DEBUGFS.
->
-
-Sounds great. I'll keep the string path as it was.
-
-> > +                event_alias);
-> >         efd = open(buf, O_RDONLY, 0);
-> >         CHECK_PERROR_RET(efd < 0);
-> >
+> > +               goto cleanup;
+> > +       }
+> > +
+> > +       ret = EXIT_SUCCESS;
+> > +
+> > +cleanup:
+> > +       if (ret != EXIT_SUCCESS)
+> > +               bpf_link__destroy(link);
+> > +
+> > +       bpf_object__close(obj);
+> > +       return ret;
+> >  }
 >
 > [...]
+>
+> >
+> >  function attach_bpf {
+> > -       test_cgrp2_sock2 /tmp/cgroupv2/foo sock_flags_kern.o $1
+> > +       ./test_cgrp2_sock2 /tmp/cgroupv2/foo sock_flags_kern.o $1
+>
+> Can you please add Fixes: tag for this?
+>
 
+Will add it in the next version of patch :)
 
+Thanks for your time and effort for the review.
 
 -- 
 Best,
