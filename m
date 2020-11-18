@@ -2,132 +2,467 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D8192B87E0
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 23:42:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A098D2B87F2
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 23:51:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727187AbgKRWls (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 17:41:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59116 "EHLO
+        id S1726433AbgKRWu1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 17:50:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726820AbgKRWlr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 17:41:47 -0500
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67AC8C0613D4
-        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 14:41:47 -0800 (PST)
-Received: by mail-wm1-x342.google.com with SMTP id 23so5053559wmg.1
-        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 14:41:47 -0800 (PST)
+        with ESMTP id S1725710AbgKRWu0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 17:50:26 -0500
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E0CC0613D4
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 14:50:26 -0800 (PST)
+Received: by mail-ed1-x543.google.com with SMTP id y4so3778901edy.5
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 14:50:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=0/oi4PHmkfW2q1I6/exKTlF9GcKFi3SECzeTrBbQebU=;
-        b=jE3dK8BhvqpkqchBe/x8Sbz2gNy7Xw/JLYiS6OfA/dIkMuAnPipCzhwltMppMkUUnQ
-         qrwvVCLw84xehJTDO8v6TXTb3UUJOEc5nd5XMCzcoikvi/+0WVTKMOnqJh5vIk1trMLy
-         Uw8qVT8OS0rTL3L+SbZqnTGOcY/5alGARQuBxzJh7WsqcXrK5Mh7dDHCouv3uF1tObPd
-         7bbOvYjlZ9mskdQPg5ikLjVM2vJPTDEPG1Hzd7PwXlyvhDLjLFCQ/B+TXKevEaTqUy4k
-         25ZFoxUAeqktxTlRjXaTqX/IZgNN1F29lxTvlkYRuNaPrkN1AKSNoRSAkN+/fxtR+1Ca
-         GHcw==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3Cr/xl5KHXU8U2cm13iCLdwydR9VULdoGrjIWA9tVGU=;
+        b=ZNokYxH+H64cxlDB8ppkxRklEqgY1xvmjaUITIzn2GC2Zt1FGnSFVT1J/3KlUiQdpZ
+         2o4GB89mZE/Tsv17oy7XPQrPMImX6WrUNlQwfe6s2rZtQjhBk8C8cedvdA/nqL11RUau
+         yq9lu+AdYw1XNcKZ2EsRE0oSxlXrNRPbKyHg+CjgI58Gtt0mDRFiOePaZvm25msBPIT3
+         9ACW7EWBK/bMhAswzKD5aPPoEUzZzuBIvbUFfZ4gZwD9a8Za6k6lmdCyy3lX+ah8Iwnh
+         F5nqZhAQYFNjoaMDte0CMqqTtlHvwaAIFRR2ucndIf1FEiCOxXdBcVBSYC1EndE159a/
+         A91w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=0/oi4PHmkfW2q1I6/exKTlF9GcKFi3SECzeTrBbQebU=;
-        b=jEwQCYzooJZh1HXKR4+EuErK5/DgtWfBSwjrBFn4/2tpsyd3dJYuQcP16pTK3zLt13
-         v2p6UKF4vybKbAFlUpe/IBsph02t7MqELthsVBbMjrA1Yd7xB2uxblaDVux1AAHNc0iS
-         prRvW0Gb+XEASkHR3BFOM/2PFSKXbnX5pb8kzIhVH+eDUPAnphoxwzQnjHNP16H5QXwJ
-         13Le24uoZh6a4VNicNHAvuklgDP33si6hh4ACrCcJKWAbWa9JucX3qYTG6eg1Tis2u6f
-         ot0G9XJLxNbBhyQXm7RvvE7+uh7WQ+1KgHagmItxPfpxlAOFXtQQ0Ww5NPOfhJGYyKSX
-         FfIQ==
-X-Gm-Message-State: AOAM530PJO3SeLvd9T8hHvyaqY/NwpIoU9xzgSov3LjsyQfh2X7KGkNA
-        Eb58ERArk0O3v4i9RP2woOZI+7eNTgnl+A==
-X-Google-Smtp-Source: ABdhPJyCQ2Q+tc78opGlsXqh8q4kgiMu+fNBueXJBsVM8rmm7bmBB1SZhGKXNMzVPd60FOc1pQcqWQ==
-X-Received: by 2002:a1c:1fcc:: with SMTP id f195mr1285555wmf.121.1605739306134;
-        Wed, 18 Nov 2020 14:41:46 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f23:2800:8de0:6489:28e5:f210? (p200300ea8f2328008de0648928e5f210.dip0.t-ipconnect.de. [2003:ea:8f23:2800:8de0:6489:28e5:f210])
-        by smtp.googlemail.com with ESMTPSA id k3sm15987757wrn.81.2020.11.18.14.41.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Nov 2020 14:41:45 -0800 (PST)
-Subject: Re: [PATCH V1 net 2/4] net: ena: set initial DMA width to avoid intel
- iommu issue
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Shay Agroskin <shayagr@amazon.com>, kuba@kernel.org,
-        netdev@vger.kernel.org
-Cc:     dwmw@amazon.com, zorik@amazon.com, matua@amazon.com,
-        saeedb@amazon.com, msw@amazon.com, aliguori@amazon.com,
-        nafea@amazon.com, gtzalik@amazon.com, netanel@amazon.com,
-        alisaidi@amazon.com, benh@amazon.com, akiyano@amazon.com,
-        sameehj@amazon.com, ndagan@amazon.com,
-        Mike Cui <mikecui@amazon.com>
-References: <20201118215947.8970-1-shayagr@amazon.com>
- <20201118215947.8970-3-shayagr@amazon.com>
- <8bbad77f-03ad-b066-4715-0976141a687b@gmail.com>
-Message-ID: <c477aae1-31f0-8139-28b0-950d01abd182@gmail.com>
-Date:   Wed, 18 Nov 2020 23:41:39 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.3
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3Cr/xl5KHXU8U2cm13iCLdwydR9VULdoGrjIWA9tVGU=;
+        b=CcS+TUjDeoysFspth1CdYRPZtnxngE/7+aftwC1kE8/ZVJqTvJJrbXV1gfrsgXSchU
+         yQ49ZaNSndd+MfuXpGeudQIlYQg1QgWracrMZjik6STp9vWzx5YnuErATtSpIgy40W2G
+         wNPk9D+zsl8bbgLfcnztLETJE5IutFBP+IEStjmuOlj7R/BjsutvORj7hDDseSsItFJl
+         Cf3UrD5ZSVJWIbExDkWF6rsA8g6IRhSua41o0OomlpRCYPw4y2UCP2bREmwdpZ/9h3TI
+         ESzz41D4nRZVr6Rn7lnRrgXczAUvy1ajenJD71ZeAL98ANe6FmBse3LrCyTYRZswt1X+
+         gNxw==
+X-Gm-Message-State: AOAM532g/8n1GfzT3OUT0jNRFxlA6AzOd6bcwkE0u7+H10ku7Ungnhw0
+        CFMA+PPQXEwaPw+AbHEHFPZshqyf2ORHheFPLOLagXIFAX0=
+X-Google-Smtp-Source: ABdhPJzyxckZj/Fh8zfhEkP312cXB6xLL4e7MKBmpc5jlohr8h36QtisyqbA/FEKiVMxPx9RJDG0zF8VCJTWeTxvMR4=
+X-Received: by 2002:a50:b761:: with SMTP id g88mr28215628ede.387.1605739824573;
+ Wed, 18 Nov 2020 14:50:24 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <8bbad77f-03ad-b066-4715-0976141a687b@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+References: <20201109233659.1953461-1-awogbemila@google.com>
+ <20201109233659.1953461-4-awogbemila@google.com> <CAKgT0UcFxqsdWQDxueMA4X90BWM11eDR3Z5f0JhEtbezR226+g@mail.gmail.com>
+In-Reply-To: <CAKgT0UcFxqsdWQDxueMA4X90BWM11eDR3Z5f0JhEtbezR226+g@mail.gmail.com>
+From:   David Awogbemila <awogbemila@google.com>
+Date:   Wed, 18 Nov 2020 14:50:13 -0800
+Message-ID: <CAL9ddJfa3dpie_zjFG+6jyJ0H9wXGWXWs_TTaL540kQbGO4U+Q@mail.gmail.com>
+Subject: Re: [PATCH net-next v6 3/4] gve: Rx Buffer Recycling
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 18.11.2020 um 23:35 schrieb Heiner Kallweit:
-> Am 18.11.2020 um 22:59 schrieb Shay Agroskin:
->> The ENA driver uses the readless mechanism, which uses DMA, to find
->> out what the DMA mask is supposed to be.
->>
->> If DMA is used without setting the dma_mask first, it causes the
->> Intel IOMMU driver to think that ENA is a 32-bit device and therefore
->> disables IOMMU passthrough permanently.
->>
->> This patch sets the dma_mask to be ENA_MAX_PHYS_ADDR_SIZE_BITS=48
->> before readless initialization in
->> ena_device_init()->ena_com_mmio_reg_read_request_init(),
->> which is large enough to workaround the intel_iommu issue.
->>
->> DMA mask is set again to the correct value after it's received from the
->> device after readless is initialized.
->>
->> Fixes: 1738cd3ed342 ("net: ena: Add a driver for Amazon Elastic Network Adapters (ENA)")
->> Signed-off-by: Mike Cui <mikecui@amazon.com>
->> Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
->> Signed-off-by: Shay Agroskin <shayagr@amazon.com>
->> ---
->>  drivers/net/ethernet/amazon/ena/ena_netdev.c | 13 +++++++++++++
->>  1 file changed, 13 insertions(+)
->>
->> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
->> index 574c2b5ba21e..854a22e692bf 100644
->> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
->> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
->> @@ -4146,6 +4146,19 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->>  		return rc;
->>  	}
->>  
->> +	rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(ENA_MAX_PHYS_ADDR_SIZE_BITS));
->> +	if (rc) {
->> +		dev_err(&pdev->dev, "pci_set_dma_mask failed %d\n", rc);
->> +		goto err_disable_device;
->> +	}
->> +
->> +	rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(ENA_MAX_PHYS_ADDR_SIZE_BITS));
->> +	if (rc) {
->> +		dev_err(&pdev->dev, "err_pci_set_consistent_dma_mask failed %d\n",
->> +			rc);
->> +		goto err_disable_device;
->> +	}
->> +
->>  	pci_set_master(pdev);
->>  
->>  	ena_dev = vzalloc(sizeof(*ena_dev));
->>
-> 
-> The old pci_ dma wrappers are being phased out and shouldn't be used in
-> new code. See e.g. e059c6f340f6 ("tulip: switch from 'pci_' to 'dma_' API").
-> So better use:
-> dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(ENA_MAX_PHYS_ADDR_SIZE_BITS));
-> 
+On Wed, Nov 11, 2020 at 9:20 AM Alexander Duyck
+<alexander.duyck@gmail.com> wrote:
+>
+> On Mon, Nov 9, 2020 at 3:39 PM David Awogbemila <awogbemila@google.com> wrote:
+> >
+> > This patch lets the driver reuse buffers that have been freed by the
+> > networking stack.
+> >
+> > In the raw addressing case, this allows the driver avoid allocating new
+> > buffers.
+> > In the qpl case, the driver can avoid copies.
+> >
+> > Signed-off-by: David Awogbemila <awogbemila@google.com>
+> > ---
+> >  drivers/net/ethernet/google/gve/gve.h    |  10 +-
+> >  drivers/net/ethernet/google/gve/gve_rx.c | 196 +++++++++++++++--------
+> >  2 files changed, 131 insertions(+), 75 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
+> > index a8c589dd14e4..9dcf9fd8d128 100644
+> > --- a/drivers/net/ethernet/google/gve/gve.h
+> > +++ b/drivers/net/ethernet/google/gve/gve.h
+> > @@ -50,6 +50,7 @@ struct gve_rx_slot_page_info {
+> >         struct page *page;
+> >         void *page_address;
+> >         u32 page_offset; /* offset to write to in page */
+> > +       bool can_flip;
+>
+> Again avoid putting bool into structures. Preferred approach is to use a u8.
 
-However instead of dev_err(&pdev->dev, ..) you could use pci_err(pdev, ..).
+Ok.
+
+>
+> >  };
+> >
+> >  /* A list of pages registered with the device during setup and used by a queue
+> > @@ -500,15 +501,6 @@ static inline enum dma_data_direction gve_qpl_dma_dir(struct gve_priv *priv,
+> >                 return DMA_FROM_DEVICE;
+> >  }
+> >
+> > -/* Returns true if the max mtu allows page recycling */
+> > -static inline bool gve_can_recycle_pages(struct net_device *dev)
+> > -{
+> > -       /* We can't recycle the pages if we can't fit a packet into half a
+> > -        * page.
+> > -        */
+> > -       return dev->max_mtu <= PAGE_SIZE / 2;
+> > -}
+> > -
+> >  /* buffers */
+> >  int gve_alloc_page(struct gve_priv *priv, struct device *dev,
+> >                    struct page **page, dma_addr_t *dma,
+> > diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
+> > index 49646caf930c..ff28581f4427 100644
+> > --- a/drivers/net/ethernet/google/gve/gve_rx.c
+> > +++ b/drivers/net/ethernet/google/gve/gve_rx.c
+> > @@ -287,8 +287,7 @@ static enum pkt_hash_types gve_rss_type(__be16 pkt_flags)
+> >         return PKT_HASH_TYPE_L2;
+> >  }
+> >
+> > -static struct sk_buff *gve_rx_copy(struct gve_rx_ring *rx,
+> > -                                  struct net_device *dev,
+> > +static struct sk_buff *gve_rx_copy(struct net_device *dev,
+> >                                    struct napi_struct *napi,
+> >                                    struct gve_rx_slot_page_info *page_info,
+> >                                    u16 len)
+> > @@ -306,10 +305,6 @@ static struct sk_buff *gve_rx_copy(struct gve_rx_ring *rx,
+> >
+> >         skb->protocol = eth_type_trans(skb, dev);
+> >
+> > -       u64_stats_update_begin(&rx->statss);
+> > -       rx->rx_copied_pkt++;
+> > -       u64_stats_update_end(&rx->statss);
+> > -
+> >         return skb;
+> >  }
+> >
+> > @@ -334,22 +329,90 @@ static void gve_rx_flip_buff(struct gve_rx_slot_page_info *page_info,
+> >  {
+> >         u64 addr = be64_to_cpu(data_ring->addr);
+> >
+> > +       /* "flip" to other packet buffer on this page */
+> >         page_info->page_offset ^= PAGE_SIZE / 2;
+> >         addr ^= PAGE_SIZE / 2;
+> >         data_ring->addr = cpu_to_be64(addr);
+> >  }
+>
+> So this is just adding a comment to existing code that was added in
+> patch 2. Perhaps it should have been added in that patch.
+
+Ok, I'll put it in the earlier patch.
+
+>
+> > +static bool gve_rx_can_flip_buffers(struct net_device *netdev)
+> > +{
+> > +#if PAGE_SIZE == 4096
+> > +       /* We can't flip a buffer if we can't fit a packet
+> > +        * into half a page.
+> > +        */
+>
+> Seems like this comment is unnecessarily wrapped.
+
+Ok, I'll adjust this.
+
+>
+> > +       return netdev->mtu + GVE_RX_PAD + ETH_HLEN <= PAGE_SIZE / 2;
+> > +#else
+> > +       /* PAGE_SIZE != 4096 - don't try to reuse */
+> > +       return false;
+> > +#endif
+> > +}
+> > +
+>
+> You may look at converting this over to a ternary statement just to save space.
+
+Ok, I'll do that, thanks.
+
+>
+> > +static int gve_rx_can_recycle_buffer(struct page *page)
+> > +{
+> > +       int pagecount = page_count(page);
+> > +
+> > +       /* This page is not being used by any SKBs - reuse */
+> > +       if (pagecount == 1)
+> > +               return 1;
+> > +       /* This page is still being used by an SKB - we can't reuse */
+> > +       else if (pagecount >= 2)
+> > +               return 0;
+> > +       WARN(pagecount < 1, "Pagecount should never be < 1");
+> > +       return -1;
+> > +}
+> > +
+>
+> So using a page count of 1 is expensive. Really if you are going to do
+> this you should probably look at how we do it currently in ixgbe.
+> Basically you want to batch the count updates to avoid expensive
+> atomic operations per skb.
+
+A separate patch will be coming along to change the way the driver
+tracks page count.
+I thought it would be better to have that reviewed separately since
+it's a different issue from what this patch addresses.
+
+>
+> >  static struct sk_buff *
+> >  gve_rx_raw_addressing(struct device *dev, struct net_device *netdev,
+> >                       struct gve_rx_slot_page_info *page_info, u16 len,
+> >                       struct napi_struct *napi,
+> > -                     struct gve_rx_data_slot *data_slot)
+> > +                     struct gve_rx_data_slot *data_slot, bool can_flip)
+> >  {
+> > -       struct sk_buff *skb = gve_rx_add_frags(napi, page_info, len);
+> > +       struct sk_buff *skb;
+> >
+> > +       skb = gve_rx_add_frags(napi, page_info, len);
+>
+> Why split this up?It seemed fine as it was.
+
+It was based on a comment from v3 of the patchset.
+
+>
+> >         if (!skb)
+> >                 return NULL;
+> >
+> > +       /* Optimistically stop the kernel from freeing the page by increasing
+> > +        * the page bias. We will check the refcount in refill to determine if
+> > +        * we need to alloc a new page.
+> > +        */
+> > +       get_page(page_info->page);
+> > +       page_info->can_flip = can_flip;
+> > +
+>
+> Why pass can_flip and page_info only to set it here? Also I don't get
+> why you are taking an extra reference on the page without checking the
+> can_flip variable. It seems like this should be set in the page_info
+> before you call this function and then you call get_page if
+> page_info->can_flip is true.
+
+I think it's important to call get_page here even for buffers we know
+will not be flipped so that if the skb does a put_page twice we would
+not run into the WARNing in gve_rx_can_recycle_buffer when trying to
+refill buffers.
+(Also please note that a future patch changes the way the driver uses
+page refcounts)
+
+>
+> > +       return skb;
+> > +}
+> > +
+> > +static struct sk_buff *
+> > +gve_rx_qpl(struct device *dev, struct net_device *netdev,
+> > +          struct gve_rx_ring *rx, struct gve_rx_slot_page_info *page_info,
+> > +          u16 len, struct napi_struct *napi,
+> > +          struct gve_rx_data_slot *data_slot, bool recycle)
+> > +{
+> > +       struct sk_buff *skb;
+> > +
+> > +       /* if raw_addressing mode is not enabled gvnic can only receive into
+> > +        * registered segments. If the buffer can't be recycled, our only
+> > +        * choice is to copy the data out of it so that we can return it to the
+> > +        * device.
+> > +        */
+> > +       if (recycle) {
+> > +               skb = gve_rx_add_frags(napi, page_info, len);
+> > +               /* No point in recycling if we didn't get the skb */
+> > +               if (skb) {
+> > +                       /* Make sure the networking stack can't free the page */
+> > +                       get_page(page_info->page);
+> > +                       gve_rx_flip_buff(page_info, data_slot);
+>
+> It isn't about the stack freeing the page, it is about letting the
+> buddy allocator know that when the skb frees the page that we are
+> still holding a reference to it so it should not free the memory. The
+> get_page is about what we are doing, not what the stack is doing.
+
+Oh I see, thanks for the explanation. Perhaps a comment like:
+/* Make sure that the page isn't freed. */
+would be more correct.
+
+>
+> > +               }
+> > +       } else {
+> > +               skb = gve_rx_copy(netdev, napi, page_info, len);
+> > +               if (skb) {
+> > +                       u64_stats_update_begin(&rx->statss);
+> > +                       rx->rx_copied_pkt++;
+> > +                       u64_stats_update_end(&rx->statss);
+> > +               }
+> > +       }
+> >         return skb;
+> >  }
+> >
+> > @@ -363,7 +426,6 @@ static bool gve_rx(struct gve_rx_ring *rx, struct gve_rx_desc *rx_desc,
+> >         struct gve_rx_data_slot *data_slot;
+> >         struct sk_buff *skb = NULL;
+> >         dma_addr_t page_bus;
+> > -       int pagecount;
+> >         u16 len;
+> >
+> >         /* drop this packet */
+> > @@ -384,64 +446,37 @@ static bool gve_rx(struct gve_rx_ring *rx, struct gve_rx_desc *rx_desc,
+> >         dma_sync_single_for_cpu(&priv->pdev->dev, page_bus,
+> >                                 PAGE_SIZE, DMA_FROM_DEVICE);
+> >
+> > -       if (PAGE_SIZE == 4096) {
+> > -               if (len <= priv->rx_copybreak) {
+> > -                       /* Just copy small packets */
+> > -                       skb = gve_rx_copy(rx, dev, napi, page_info, len);
+> > -                       u64_stats_update_begin(&rx->statss);
+> > -                       rx->rx_copybreak_pkt++;
+> > -                       u64_stats_update_end(&rx->statss);
+> > -                       goto have_skb;
+> > +       if (len <= priv->rx_copybreak) {
+> > +               /* Just copy small packets */
+> > +               skb = gve_rx_copy(dev, napi, page_info, len);
+> > +               u64_stats_update_begin(&rx->statss);
+> > +               rx->rx_copied_pkt++;
+> > +               rx->rx_copybreak_pkt++;
+> > +               u64_stats_update_end(&rx->statss);
+>
+> I would recommend just storing some local variables in the function
+> for tracking copied and copybreak packets if possible and only
+> updating them at the end of the function. Otherwise you are going to
+> pay a heavy cost on non-64b systems. Also how many threads will be
+> accessing these stats? If you have mutliple threads all updating the
+> copied_pkt for small packets it can lead to a heavy amount of cache
+> thrash.
+
+Thanks for pointing these out. I think the driver will run mostly on
+64-bit systems and rarely on 32-bit systems.
+Also, the potential cache thrashing issue certainly seems like
+something we'd want to look into but we're okay with the driver's
+performance presently and this patch doesn't actually change this
+aspect of the driver's behavior so perhaps it's best addressed in
+another patch. This particular function doesn't loop so we'd probably
+need to do more than moving the stats update to the end, which should
+probably be done in a different patchset.
+
+
+
+
+>
+>
+> > +       } else {
+> > +               bool can_flip = gve_rx_can_flip_buffers(dev);
+> > +               int recycle = 0;
+> > +
+> > +               if (can_flip) {
+> > +                       recycle = gve_rx_can_recycle_buffer(page_info->page);
+> > +                       if (recycle < 0) {
+> > +                               if (!rx->data.raw_addressing)
+> > +                                       gve_schedule_reset(priv);
+> > +                               return false;
+> > +                       }
+> >                 }
+> >                 if (rx->data.raw_addressing) {
+> >                         skb = gve_rx_raw_addressing(&priv->pdev->dev, dev,
+> >                                                     page_info, len, napi,
+> > -                                                    data_slot);
+> > -                       goto have_skb;
+> > -               }
+> > -               if (unlikely(!gve_can_recycle_pages(dev))) {
+> > -                       skb = gve_rx_copy(rx, dev, napi, page_info, len);
+> > -                       goto have_skb;
+> > -               }
+> > -               pagecount = page_count(page_info->page);
+> > -               if (pagecount == 1) {
+> > -                       /* No part of this page is used by any SKBs; we attach
+> > -                        * the page fragment to a new SKB and pass it up the
+> > -                        * stack.
+> > -                        */
+> > -                       skb = gve_rx_add_frags(napi, page_info, len);
+> > -                       if (!skb) {
+> > -                               u64_stats_update_begin(&rx->statss);
+> > -                               rx->rx_skb_alloc_fail++;
+> > -                               u64_stats_update_end(&rx->statss);
+> > -                               return false;
+> > -                       }
+> > -                       /* Make sure the kernel stack can't release the page */
+> > -                       get_page(page_info->page);
+> > -                       /* "flip" to other packet buffer on this page */
+> > -                       gve_rx_flip_buff(page_info, &rx->data.data_ring[idx]);
+> > -               } else if (pagecount >= 2) {
+> > -                       /* We have previously passed the other half of this
+> > -                        * page up the stack, but it has not yet been freed.
+> > -                        */
+> > -                       skb = gve_rx_copy(rx, dev, napi, page_info, len);
+> > +                                                   data_slot,
+> > +                                                   can_flip && recycle);
+> >                 } else {
+> > -                       WARN(pagecount < 1, "Pagecount should never be < 1");
+> > -                       return false;
+> > +                       skb = gve_rx_qpl(&priv->pdev->dev, dev, rx,
+> > +                                        page_info, len, napi, data_slot,
+> > +                                        can_flip && recycle);
+> >                 }
+> > -       } else {
+> > -               if (rx->data.raw_addressing)
+> > -                       skb = gve_rx_raw_addressing(&priv->pdev->dev, dev,
+> > -                                                   page_info, len, napi,
+> > -                                                   data_slot);
+> > -               else
+> > -                       skb = gve_rx_copy(rx, dev, napi, page_info, len);
+> >         }
+> >
+> > -have_skb:
+> > -       /* We didn't manage to allocate an skb but we haven't had any
+> > -        * reset worthy failures.
+> > -        */
+> >         if (!skb) {
+> >                 u64_stats_update_begin(&rx->statss);
+> >                 rx->rx_skb_alloc_fail++;
+> > @@ -494,16 +529,45 @@ static bool gve_rx_refill_buffers(struct gve_priv *priv, struct gve_rx_ring *rx)
+> >
+> >         while (empty || ((fill_cnt & rx->mask) != (rx->cnt & rx->mask))) {
+> >                 struct gve_rx_slot_page_info *page_info;
+> > -               struct device *dev = &priv->pdev->dev;
+> > -               struct gve_rx_data_slot *data_slot;
+> >                 u32 idx = fill_cnt & rx->mask;
+> >
+> >                 page_info = &rx->data.page_info[idx];
+> > -               data_slot = &rx->data.data_ring[idx];
+> > -               gve_rx_free_buffer(dev, page_info, data_slot);
+> > -               page_info->page = NULL;
+> > -               if (gve_rx_alloc_buffer(priv, dev, page_info, data_slot, rx))
+> > -                       break;
+> > +               if (page_info->can_flip) {
+> > +                       /* The other half of the page is free because it was
+> > +                        * free when we processed the descriptor. Flip to it.
+> > +                        */
+> > +                       struct gve_rx_data_slot *data_slot =
+> > +                                               &rx->data.data_ring[idx];
+> > +
+> > +                       gve_rx_flip_buff(page_info, data_slot);
+> > +                       page_info->can_flip = false;
+> > +               } else {
+> > +                       /* It is possible that the networking stack has already
+> > +                        * finished processing all outstanding packets in the buffer
+> > +                        * and it can be reused.
+> > +                        * Flipping is unnecessary here - if the networking stack still
+> > +                        * owns half the page it is impossible to tell which half. Either
+> > +                        * the whole page is free or it needs to be replaced.
+> > +                        */
+> > +                       int recycle = gve_rx_can_recycle_buffer(page_info->page);
+> > +
+> > +                       if (recycle < 0) {
+> > +                               if (!rx->data.raw_addressing)
+> > +                                       gve_schedule_reset(priv);
+> > +                               return false;
+> > +                       }
+> > +                       if (!recycle) {
+> > +                               /* We can't reuse the buffer - alloc a new one*/
+> > +                               struct gve_rx_data_slot *data_slot =
+> > +                                               &rx->data.data_ring[idx];
+> > +                               struct device *dev = &priv->pdev->dev;
+> > +
+> > +                               gve_rx_free_buffer(dev, page_info, data_slot);
+> > +                               page_info->page = NULL;
+> > +                               if (gve_rx_alloc_buffer(priv, dev, page_info, data_slot, rx))
+> > +                                       break;
+> > +                       }
+> > +               }
+> >                 empty = false;
+> >                 fill_cnt++;
+> >         }
+> > --
+> > 2.29.2.222.g5d2a92d10f8-goog
+> >
