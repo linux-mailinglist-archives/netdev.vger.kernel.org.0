@@ -2,78 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D9F12B8827
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 00:09:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 357562B882B
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 00:10:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727153AbgKRXHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 18:07:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34906 "EHLO
+        id S1727180AbgKRXJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 18:09:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726431AbgKRXHr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 18:07:47 -0500
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14513C0613D4
-        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 15:08:04 -0800 (PST)
-Received: by mail-ej1-x644.google.com with SMTP id s25so5149004ejy.6
-        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 15:08:04 -0800 (PST)
+        with ESMTP id S1726457AbgKRXJe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 18:09:34 -0500
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CECDC0613D4;
+        Wed, 18 Nov 2020 15:09:51 -0800 (PST)
+Received: by mail-pg1-x543.google.com with SMTP id j19so2411168pgg.5;
+        Wed, 18 Nov 2020 15:09:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=fhqzU+ZSFf/gvr9JqXlN4rW008kXBPcVMbUDffy6FxA=;
-        b=CSPjjI89sTyJUG7MvxNoDWLg8BtyEdtj681xgqw++mB5YxCpThKfoJ+EdqKbtkgn+7
-         oEAZcTCDR+SXZ/yRcstfrYdKmjkGfCS2EC0mjKz6QXBZcWZJFdQAl0tOM8+Yn8XJNKWj
-         7SdzblTdtrFzkYaGqzGsk/pIqz0aJJJQSVUGpuAu/c2FDEdjcP4i1N74pqYzJR6S98pV
-         g7zO2gReLNgWnEN7hyl3icPTOWzRz3j9sI1Rf2VjQloRdwvNOi+cmC2UKhtRiNou2v6x
-         1NLZ3tp4BJ1J42WCJe1w7rEJyyYD239GT5KmvZ9VUhoxBTNNPV04GZXCfEptWX4iT0jy
-         CwVA==
+        h=from:to:cc:subject:date:message-id;
+        bh=BFitlouLqV5WjAV4yis+SNy1ksEBkbSXVdeVWFMxCgQ=;
+        b=rEThL2sa7EQ5kIQx32rvLbR/kFdz1zobSEUYn4oWYiSZ4fA73aYTdSOu4tSDHYJoMm
+         T600ICRuLEf/w3lxxqIF8O2/k2boZvhWmlWC8MX+OBnC/RnG8giTFafP7Q+YW95HAbqV
+         Zh+cqbqUeMs9FLz1SCwfZ4jD7b8lcgyEUlUgelSgw0eBLuSLueMKtyoE7G/YpKRS4p/y
+         tB11JM1yp8XTNVQsAkHU/bDEB40dw6FVx2yrsvm+KlQcVnEEr2pBhz6MbkycbDgakMmb
+         1jRj1sawhQ1dr3AWU9pmAdj7W9EmlaN+HWUnWEr7nC2hAOAjAYabbl9r5HrGC59WJztp
+         wUmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=fhqzU+ZSFf/gvr9JqXlN4rW008kXBPcVMbUDffy6FxA=;
-        b=ECRSIbHPZ483n3ixFAl9DwaA1FYtyOk+mMWeaFu7z74Sep2B+RMyipkhoQj4xORVac
-         efA7ziCyxrBzu5ZHb+6iXInn/SIU8MMjWFOtlC19f3BU38kktNgWmJ+UtirmZFo2+3KZ
-         QODVdWqbqNH8bFsxpe21eZ2q+EEOMSZiVHruIvLzETQ8JqIa03tmafNXZec3uu3ooIQ9
-         7jnh2/e+xEyxjZRyD9oY5wL+wxA5qcdDlvzrqWl8JqmK3idfTuF9V53vc2mhh1D6S5kl
-         4+vr1QEifIHT/Gs61DfX3XFLuu9YPhK9OfMSKkz3su/sXbW7HGbk2YJta6dR01GJUW/F
-         8f1A==
-X-Gm-Message-State: AOAM531wtOvvWnEF83yuhTsl9YZaFeCDgPM0Ic9tl33NYgEEa6lo6zWP
-        ICQXGl3/UxDvaGxjn83J+EA=
-X-Google-Smtp-Source: ABdhPJzl41A90+bGz/JoPAgJ2Dv6ZlgjtUAOSAuhE6BdO23af/T4on8UTLCOHzmHYZGw5lqnnmjrNw==
-X-Received: by 2002:a17:906:314f:: with SMTP id e15mr25994899eje.496.1605740882818;
-        Wed, 18 Nov 2020 15:08:02 -0800 (PST)
-Received: from ?IPv6:2a0f:6480:3:1:d65d:64ff:fed0:4a9d? ([2a0f:6480:3:1:d65d:64ff:fed0:4a9d])
-        by smtp.gmail.com with ESMTPSA id z2sm14154223edr.47.2020.11.18.15.08.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Nov 2020 15:08:02 -0800 (PST)
-Subject: Re: [PATCH v3] IPv6: RTM_GETROUTE: Add RTA_ENCAP to result
-To:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        kuba@kernel.org
-References: <20201118151436.GA420026@tws>
- <75cc0e7b-1922-850f-da22-550c8c90aac6@gmail.com>
-From:   Oliver Herms <oliver.peter.herms@gmail.com>
-Message-ID: <f228cae5-3952-1562-e92a-59e65009d524@gmail.com>
-Date:   Thu, 19 Nov 2020 00:08:01 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <75cc0e7b-1922-850f-da22-550c8c90aac6@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=BFitlouLqV5WjAV4yis+SNy1ksEBkbSXVdeVWFMxCgQ=;
+        b=q2XgbAfBA9tG3stRvp+QNkm6w0MCsQcW5yAjtUUk3qnmz/Wic4VbSgWeThF80Xx/ER
+         WTA+2oFI2S1Rpqi7M1FWMCqVA7ZGG32jiGt4uk5VdK3/VwuXDayGlz3/PuhC1SKRCuIa
+         w7gBOUiJsYaG+ThUR4Owzif4BePLZFrSzMBc0Fuh+hPkyP+qsbY4x4IHcZJvDSSgDvIh
+         G9tUOpq+QgPKGdV95xjT7ljnNPJ3psrHmcfFrVTjkrZWjFk+08o8AYAkMzly6RxnB2Jc
+         Q4RgHTkbagfdLOSN65nFqiw1Mcq5MVeOfN0zpUabW/+FPP5WX8URt7gMR09yXt2uUndV
+         S1Fg==
+X-Gm-Message-State: AOAM533gXXmGotRQGRffxn7r6sfHhHnfCRLx408u/nybho7uoeTyiWRx
+        8zTPYcyOr8irSkTaWqpUwWCpCr/yEyAWq6tP
+X-Google-Smtp-Source: ABdhPJzuBMVJyfNRuwEIiXq+MUjq865yCE7VpOiJ98dctqAKDL1P+66d8xBL1pFHeAegwr/cCe+HPw==
+X-Received: by 2002:a63:4513:: with SMTP id s19mr10194192pga.254.1605740990817;
+        Wed, 18 Nov 2020 15:09:50 -0800 (PST)
+Received: from taoren-ubuntu-R90MNF91.thefacebook.com (c-73-252-146-110.hsd1.ca.comcast.net. [73.252.146.110])
+        by smtp.gmail.com with ESMTPSA id b21sm2565304pji.24.2020.11.18.15.09.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Nov 2020 15:09:50 -0800 (PST)
+From:   rentao.bupt@gmail.com
+To:     Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, openbmc@lists.ozlabs.org, taoren@fb.com,
+        mikechoi@fb.com
+Cc:     Tao Ren <rentao.bupt@gmail.com>
+Subject: [PATCH v2 0/2] hwmon: (max127) Add Maxim MAX127 hardware monitoring
+Date:   Wed, 18 Nov 2020 15:09:27 -0800
+Message-Id: <20201118230929.18147-1-rentao.bupt@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18.11.20 21:19, David Ahern wrote:
-> 
-> You forgot to remove the dst part of that. rt6 == dst so to be in this
-> branch dst != NULL.
-Damn. I've indeed overseen that one.
-Just submitted version 4.
+From: Tao Ren <rentao.bupt@gmail.com>
 
-Thanks for guiding me through this!
+The patch series adds hardware monitoring driver for the Maxim MAX127
+chip.
+
+Patch #1 adds the max127 hardware monitoring driver, and patch #2 adds
+documentation for the driver.
+
+Tao Ren (2):
+  hwmon: (max127) Add Maxim MAX127 hardware monitoring driver
+  docs: hwmon: Document max127 driver
+
+ Documentation/hwmon/index.rst  |   1 +
+ Documentation/hwmon/max127.rst |  45 +++++
+ drivers/hwmon/Kconfig          |   9 +
+ drivers/hwmon/Makefile         |   1 +
+ drivers/hwmon/max127.c         | 346 +++++++++++++++++++++++++++++++++
+ 5 files changed, 402 insertions(+)
+ create mode 100644 Documentation/hwmon/max127.rst
+ create mode 100644 drivers/hwmon/max127.c
+
+-- 
+2.17.1
 
