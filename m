@@ -2,149 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B2CD2B7C2E
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 12:15:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CBE62B7CFC
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 12:45:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726576AbgKRLO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 06:14:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37100 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725446AbgKRLOZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 06:14:25 -0500
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0979AC0613D4;
-        Wed, 18 Nov 2020 03:14:24 -0800 (PST)
-Received: by mail-wr1-x441.google.com with SMTP id j7so1822076wrp.3;
-        Wed, 18 Nov 2020 03:14:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=S3lVLTHtft+9EnTWp89LC5ry75XIftcYoLGTsHkuSEI=;
-        b=cuyfbM3Gnmv0q0lEnj/zahIJAsze5tSV+HYjtUhbtTpDTTTl5R8sdjgwiBnLkzWNs5
-         3iwKj63ZLxMsBvgbsznmQhqQc7iO02loZ9JwDwdQMnsPr1L76gy9zewresH3cxxRNco2
-         hQaf2flN0qbopYAh7Cfd9ZdxcrRfR++pSJ88GTkGK5v2ubFw3PNVuSbzlUpWB9v4w5/2
-         5VwMqs69gSZskgaDZ5v5j+hQTJ7ioEecmya9O3N2oInLMpZ1I23Gb8hu1nYHYnMKmW1f
-         8tm0rF0khWob2Unb9bLDbUM6hboZabmNBPQmIUHAmvXVXnLSYL+ZNvtdY1yKCKwTag/j
-         FF8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=S3lVLTHtft+9EnTWp89LC5ry75XIftcYoLGTsHkuSEI=;
-        b=jJOafrb+WflsZWheIf2TKRURvJzcHRN0mSRCcBUTlfx+oLVo4Z8wkDT7Xa9JCZnXrK
-         LKsE+Nc2b62hU75uz996gbaYcN8PYdGhqiASdEHXaEkqhjf8nxeTjSLhdwV/JK1Y5zTH
-         BgIvUy3pTP9X3N995mSzglkTe647gY3A0A7GDLNec4Zq+BZMDgTIxCR4j95Qqtmk+Tpq
-         Hm6NIidB0eSNtBXJVe5N4NgsJNFLx+YM/WGcUdiPWYcgtvu9rhp9/3yxbXv+9cBqqPnI
-         HHuto0go7O8ePQ5HhbkDYc4Wen46i92oC6pB1v5xzjNHI8Z3lPeEjf14HvY4hmVJriFG
-         r25A==
-X-Gm-Message-State: AOAM5334MrslJYOwvh/M5lYcBykfV1nuBHllIi/UZktv3nPfk/X6iCg3
-        40DDUkOQT9ZDi9r4dPVhNcg6zn7YybdB9zAIJQ==
-X-Google-Smtp-Source: ABdhPJwhgsRuQfB6oXjbMQreT2rRoZVdWz+p+0mMdTZ2kHP2YSpfSpFEZdRb7Oa8nN1+Z3nZHWuVmw4g/OA4tUveftM=
-X-Received: by 2002:a5d:6288:: with SMTP id k8mr4290464wru.30.1605698062631;
- Wed, 18 Nov 2020 03:14:22 -0800 (PST)
+        id S1727875AbgKRLoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 06:44:37 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:60820 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725781AbgKRLog (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 06:44:36 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AIBeeZP008926;
+        Wed, 18 Nov 2020 03:44:29 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=XMIMJoVEnbjVXt8e/8JPsVEAUrWRiQ4k0RNhkrNlDl0=;
+ b=krAWRZd5lX4bM0DfDXFQ5ew6My95hDp0AQobwu8FGcmFn7sL30R1x6fc4yOhm2mJdVjG
+ XoCUnrzCZtthjkC9Xbb8rTr8aePib4GLSJQTUUdXfjglID9zly3xRNhlH2OU4g7mCteF
+ zSy72o6Id09VJWN+6lvTFrLgAglExdELan1F+0kN16WeIrsz9DabjXgVOutuXolZ+pCT
+ LwnHCsZ0jGUEXePWgh3+fRjjEfEaRobtsNzVOVCEcEHksm67veaJVaoLc1napsKA22X6
+ 1k6cnE7pMlsT/MyGmtUCffK1Tu9cjYuSX008kBRe4N9S4lRboG7F9Rt8H385vi7jBh5/ 6w== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0a-0016f401.pphosted.com with ESMTP id 34vd2scyrq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 18 Nov 2020 03:44:29 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 18 Nov
+ 2020 03:44:28 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 18 Nov
+ 2020 03:44:27 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 18 Nov 2020 03:44:27 -0800
+Received: from hyd1schalla-dt.marvell.com (hyd1schalla-dt.marvell.com [10.29.8.39])
+        by maili.marvell.com (Postfix) with ESMTP id 7382D3F703F;
+        Wed, 18 Nov 2020 03:44:24 -0800 (PST)
+From:   Srujana Challa <schalla@marvell.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <herbert@gondor.apana.org.au>,
+        <kuba@kernel.org>, <sgoutham@marvell.com>, <gakula@marvell.com>,
+        <sbhatta@marvell.com>, <schandran@marvell.com>,
+        <pathreya@marvell.com>, Srujana Challa <schalla@marvell.com>
+Subject: [PATCH v10,net-next,0/3] Add Support for Marvell OcteonTX2 Cryptographic
+Date:   Wed, 18 Nov 2020 17:14:13 +0530
+Message-ID: <20201118114416.28307-1-schalla@marvell.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-References: <20201117095207.GA16407@Sleakybeast> <20201118102307.GA4903@katalix.com>
-In-Reply-To: <20201118102307.GA4903@katalix.com>
-From:   siddhant gupta <siddhantgupta416@gmail.com>
-Date:   Wed, 18 Nov 2020 16:44:11 +0530
-Message-ID: <CA+imup-3pT47CVL7GZn_vJtHGngNexBR060y2gRfw2v5Gr8P0Q@mail.gmail.com>
-Subject: Re: [PATCH] Documentation: networking: Fix Column span alignment
- warnings in l2tp.rst
-To:     Tom Parkin <tparkin@katalix.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Mamta Shukla <mamtashukla555@gmail.com>,
-        Himadri Pandya <himadrispandya@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-18_04:2020-11-17,2020-11-18 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Nov 2020 at 15:53, Tom Parkin <tparkin@katalix.com> wrote:
->
-> On  Tue, Nov 17, 2020 at 15:22:07 +0530, Siddhant Gupta wrote:
-> > Fix Column span alignment problem warnings in the file
-> >
->
-> Thanks for the patch, Siddhant.
->
-> Could you provide some information on how these warnings were
-> triggered?  Using Sphinx 2.4.4 I can't reproduce any warnings for
-> l2tp.rst using the "make htmldocs" target.
->
+This patchset adds support for CPT in OcteonTX2 admin function(AF).
+CPT is a cryptographic accelerator unit and it includes microcoded
+Giga Cipher engines.
 
-I am currently using Sphinx v1.8.5 and I made use of command "make
-htmldocs >> doc_xxx.log 2>&1" for directing the errors into a file and
-the statements in the file showed me these warning, also to confirm
-those I tried using "rst2html" on l2tp.rst file and got same set of
-warnings.
+OcteonTX2 SOC's resource virtualization unit (RVU) supports multiple
+physical and virtual functions. Each of the PF/VF's functionality is
+determined by what kind of resources are attached to it. When the CPT
+block is attached to a VF, it can function as a security device.
+The following document provides an overview of the hardware and
+different drivers for the OcteonTX2 SOC:
+https://www.kernel.org/doc/Documentation/networking/device_drivers/marvell/octeontx2.rst
 
-> > Signed-off-by: Siddhant Gupta <siddhantgupta416@gmail.com>
-> > ---
-> >  Documentation/networking/l2tp.rst | 26 +++++++++++++-------------
-> >  1 file changed, 13 insertions(+), 13 deletions(-)
-> >
-> > diff --git a/Documentation/networking/l2tp.rst b/Documentation/networking/l2tp.rst
-> > index 498b382d25a0..0c0ac4e70586 100644
-> > --- a/Documentation/networking/l2tp.rst
-> > +++ b/Documentation/networking/l2tp.rst
-> > @@ -171,7 +171,8 @@ DEBUG              N        Debug flags.
-> >  ================== ======== ===
-> >  Attribute          Required Use
-> >  ================== ======== ===
-> > -CONN_ID            N        Identifies the tunnel id to be queried.
-> > +CONN_ID            N        Identifies the tunnel id
-> > +                            to be queried.
-> >                              Ignored in DUMP requests.
-> >  ================== ======== ===
-> >
-> > @@ -208,8 +209,8 @@ onto the new session. This is covered in "PPPoL2TP Sockets" later.
-> >  ================== ======== ===
-> >  Attribute          Required Use
-> >  ================== ======== ===
-> > -CONN_ID            Y        Identifies the parent tunnel id of the session
-> > -                            to be destroyed.
-> > +CONN_ID            Y        Identifies the parent tunnel id
-> > +                            of the session to be destroyed.
-> >  SESSION_ID         Y        Identifies the session id to be destroyed.
-> >  IFNAME             N        Identifies the session by interface name. If
-> >                              set, this overrides any CONN_ID and SESSION_ID
-> > @@ -222,13 +223,12 @@ IFNAME             N        Identifies the session by interface name. If
-> >  ================== ======== ===
-> >  Attribute          Required Use
-> >  ================== ======== ===
-> > -CONN_ID            Y        Identifies the parent tunnel id of the session
-> > -                            to be modified.
-> > +CONN_ID            Y        Identifies the parent tunnel
-> > +                            id of the session to be modified.
-> >  SESSION_ID         Y        Identifies the session id to be modified.
-> > -IFNAME             N        Identifies the session by interface name. If
-> > -                            set, this overrides any CONN_ID and SESSION_ID
-> > -                            attributes. Currently supported for L2TPv3
-> > -                            Ethernet sessions only.
-> > +IFNAME             N        Identifies the session by interface name. If set,
-> > +                            this overrides any CONN_ID and SESSION_ID
-> > +                            attributes. Currently supported for L2TPv3 Ethernet sessions only.
-> >  DEBUG              N        Debug flags.
-> >  RECV_SEQ           N        Enable rx data sequence numbers.
-> >  SEND_SEQ           N        Enable tx data sequence numbers.
-> > @@ -243,10 +243,10 @@ RECV_TIMEOUT       N        Timeout to wait when reordering received
-> >  ================== ======== ===
-> >  Attribute          Required Use
-> >  ================== ======== ===
-> > -CONN_ID            N        Identifies the tunnel id to be queried.
-> > -                            Ignored for DUMP requests.
-> > -SESSION_ID         N        Identifies the session id to be queried.
-> > -                            Ignored for DUMP requests.
-> > +CONN_ID            N        Identifies the tunnel id
-> > +                            to be queried. Ignored for DUMP requests.
-> > +SESSION_ID         N        Identifies the session id
-> > +                            to be queried. Ignored for DUMP requests.
-> >  IFNAME             N        Identifies the session by interface name.
-> >                              If set, this overrides any CONN_ID and
-> >                              SESSION_ID attributes. Ignored for DUMP
-> > --
-> > 2.25.1
-> >
+This patch series includes:
+- Patch to update existing Marvell sources to support CPT.
+- Patch that adds mailbox messages to the admin function (AF) driver,
+to configure CPT HW registers.
+- Patch to provide debug information about CPT.
+
+Changes since v9:
+ * Dropped CPT PF & VF driver patches to submit to cryptodev-2.6 in next
+   release cycle.
+Changes since v8:
+ * Load firmware files individually instead of tar.
+Changes since v7:
+ * Removed writable entries in debugfs.
+ * Dropped IPsec support.
+Changes since v6:
+ * Removed driver version.
+Changes since v4:
+ * Rebased the patches onto net-next tree with base
+   'commit bc081a693a56 ("Merge branch 'Offload-tc-vlan-mangle-to-mscc_ocelot-switch'")'
+Changes since v3:
+ * Splitup the patches into smaller patches with more informartion.
+Changes since v2:
+ * Fixed C=1 warnings.
+ * Added code to exit CPT VF driver gracefully.
+ * Moved OcteonTx2 asm code to a header file under include/linux/soc/
+Changes since v1:
+ * Moved Makefile changes from patch4 to patch2 and patch3.
+
+Srujana Challa (3):
+  octeontx2-pf: move lmt flush to include/linux/soc
+  octeontx2-af: add mailbox interface for CPT
+  octeontx2-af: add debugfs entries for CPT block
+
+ MAINTAINERS                                   |   2 +
+ .../ethernet/marvell/octeontx2/af/Makefile    |   3 +-
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |  33 +++
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |   1 +
+ .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 233 +++++++++++++++
+ .../marvell/octeontx2/af/rvu_debugfs.c        | 272 ++++++++++++++++++
+ .../ethernet/marvell/octeontx2/af/rvu_reg.h   |  63 +++-
+ .../marvell/octeontx2/nic/otx2_common.h       |  13 +-
+ include/linux/soc/marvell/octeontx2/asm.h     |  29 ++
+ 9 files changed, 630 insertions(+), 19 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
+ create mode 100644 include/linux/soc/marvell/octeontx2/asm.h
+
+-- 
+2.29.0
+
