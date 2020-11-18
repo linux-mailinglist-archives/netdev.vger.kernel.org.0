@@ -2,118 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DAE52B867F
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 22:22:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E7FB2B868C
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 22:25:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726723AbgKRVUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 16:20:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46440 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726081AbgKRVUr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 16:20:47 -0500
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCC18C0613D4
-        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 13:20:46 -0800 (PST)
-Received: by mail-yb1-xb44.google.com with SMTP id k65so3084228ybk.5
-        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 13:20:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KMhQReRtisQCLWwZY0Qya20ywEC4J4hZ6sMiK5oDuY4=;
-        b=bHLuk9JKx8EBpSkdOY8YbM9n4NT/BbU7PTdhbTm345ZcomyOUTN1Hpm45/KNCKOiiF
-         urTGmBIY6mST50d4wjWpnM2Q5rOBxwf4Cc57RIO/VvSUTN8JVhGoIyc2RDt/qXDZIj+C
-         eIyEct5p/U9aJsgb8qk094nTwTNUd2fdZeeWtPejp7nzJq7t6IEug6nusily7srJroUz
-         aR4a53Rk81yxx9CvDbFAT3e8Z7/PTXYlF5HwvJ8X49qn0KUn5mnc3lnQJuAQqYWAlzy/
-         KU4QmEXjb8Hk+QkFNPWi4otM4RIEixxVKPjN0C0DVpd7Y90mI0jK70EsrRmPnfvgCicI
-         rgWg==
+        id S1726666AbgKRVXz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 16:23:55 -0500
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:43342 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726136AbgKRVXm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 16:23:42 -0500
+Received: by mail-oi1-f195.google.com with SMTP id t143so3849951oif.10;
+        Wed, 18 Nov 2020 13:23:41 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KMhQReRtisQCLWwZY0Qya20ywEC4J4hZ6sMiK5oDuY4=;
-        b=BiZbjehMSjb+8Ey3Vjl+czL3vYuFEqMKwr7eH2w57faPtOiRaSgQI29hpCWBHH+gSU
-         yM8hD02xViYgWh//NejzwSaCkDs51/IAAVA6P2T0rWBrhJoTHgqPV+2LPh2MxTbtLVNT
-         mPY76qp8egYK90gAAY+9DWGUUEcJcpRv7YSTuAufXhA12gf+HqsA3uIqT/Bf7r4CJtuF
-         C2jKT8oowbtcL7vONucOz/G9wxdzAA+JV0dQ5r5O1JclVfb6cmPB72Nuc9r9xeE2kQCr
-         zv+uHPl9XptzU3wWyFLzyYVxtiRYKd8U24symXRRv79QNNbxkbq/mNfrBarVqgbjhEFh
-         5VSQ==
-X-Gm-Message-State: AOAM5324HHd6WZeAb5Xpn9NVLrqoCr3BSDb/CHmt2ISDi98GR1vyLzcO
-        fnV4btJnzH4OOy4VdW+W3H8L5cGPTxdut0c7KJ6fng==
-X-Google-Smtp-Source: ABdhPJxOhKAndWUtvUdyvc+cR6E0nqhlqukRkNiETzmhN0fs1KUhLKEE9LTtj2j45+o+ZYNAnQWj9w0E8V67xAqcu2M=
-X-Received: by 2002:a25:a4a1:: with SMTP id g30mr8826381ybi.195.1605734445925;
- Wed, 18 Nov 2020 13:20:45 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VwNLniwC05uRP38qLvBvwBl3DAlw0ptrgVFyzGmX8aE=;
+        b=o3/ODECGpdNQm1NvbKcapOEhvd1PWULzQ5TLEXIapIlnJlG06Gha2BVughpHGqu2qo
+         urx2sBEulBLHEnt5FhliZBDByz7K6KusYTcsy2gg6hNh+1WP7xae9IJq3JCnmTtmh/J7
+         6bpfrcZIpxcu3+JnA05sBSiNgex9Ogp06gUkBhjZD723lfRX9uO+28CiARAflbDNIT8w
+         CgHKyHas1UQM1iyUcgqUFFlSnBtqhlsIMb1jfixv2Z/5LLE4I5ile6s0h1g0OTdFqNWJ
+         7UrzMRopY1F0H5RDyOjsdBtAjvmxMX/w2XyCCIJJnCbXW+lzkSKdWw8+P3oUu487rwol
+         C8rw==
+X-Gm-Message-State: AOAM5332Qu+j6ynBGvfp6PiHmkj9m0yb1Pl6ahIlC1ihZCIhFtYg94ro
+        hrfFqBtw6iPQdJIcenMfJg==
+X-Google-Smtp-Source: ABdhPJxGFTjxG7CJuPxoqdLsQg9S19jIx83S+QcoWMEsUa1EVmhqHhY1J3hxYWHsPEsETeEM72gnGg==
+X-Received: by 2002:aca:c502:: with SMTP id v2mr728700oif.93.1605734619925;
+        Wed, 18 Nov 2020 13:23:39 -0800 (PST)
+Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id u138sm8120293oie.33.2020.11.18.13.23.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Nov 2020 13:23:39 -0800 (PST)
+Received: (nullmailer pid 1839273 invoked by uid 1000);
+        Wed, 18 Nov 2020 21:23:37 -0000
+Date:   Wed, 18 Nov 2020 15:23:37 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Chunfeng Yun <chunfeng.yun@mediatek.com>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-usb@vger.kernel.org, Kishon Vijay Abraham I <kishon@ti.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jakub Kicinski <kuba@kernel.org>, devicetree@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        David Airlie <airlied@linux.ie>, Vinod Koul <vkoul@kernel.org>,
+        Min Guo <min.guo@mediatek.com>,
+        dri-devel@lists.freedesktop.org,
+        Stanley Chu <stanley.chu@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v3 01/11] dt-bindings: usb: convert usb-device.txt to
+ YAML schema
+Message-ID: <20201118212337.GA1838662@bogus>
+References: <20201118082126.42701-1-chunfeng.yun@mediatek.com>
 MIME-Version: 1.0
-References: <20201118191009.3406652-1-weiwan@google.com> <20201118191009.3406652-3-weiwan@google.com>
- <8578cfd8-dcaf-5a86-7803-922ee27d9e90@infradead.org>
-In-Reply-To: <8578cfd8-dcaf-5a86-7803-922ee27d9e90@infradead.org>
-From:   Wei Wang <weiwan@google.com>
-Date:   Wed, 18 Nov 2020 13:20:34 -0800
-Message-ID: <CAEA6p_BN7XRxc7Avw0rx5N+j_iGqVqB8gpok6AMaHkf2kjPNCA@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 2/5] net: add sysfs attribute to control napi
- threaded mode
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Felix Fietkau <nbd@nbd.name>, Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Hillf Danton <hdanton@sina.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201118082126.42701-1-chunfeng.yun@mediatek.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 12:36 PM Randy Dunlap <rdunlap@infradead.org> wrote:
->
-> On 11/18/20 11:10 AM, Wei Wang wrote:
-> > From: Paolo Abeni <pabeni@redhat.com>
-> >
-> > this patch adds a new sysfs attribute to the network
-> > device class. Said attribute is a bitmask that allows controlling
-> > the threaded mode for all the napi instances of the given
-> > network device.
-> >
-> > The threaded mode can be switched only if related network device
-> > is down.
-> >
-> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> > Signed-off-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
-> > Signed-off-by: Wei Wang <weiwan@google.com>
-> > Reviewed-by: Eric Dumazet <edumazet@google.com>
->
-> Hi,
->
-> Could someone describe the bitmask (is it a bit per instance of the
-> network device?).
-> And how to use the sysfs interface, please?
->
+On Wed, 18 Nov 2020 16:21:16 +0800, Chunfeng Yun wrote:
+> Convert usb-device.txt to YAML schema usb-device.yaml
+> 
+> Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+> ---
+> v3:
+>   1. remove $nodenmae and items key word for compatilbe;
+>   2. add additionalProperties;
+> 
+>   The followings are suggested by Rob:
+>   3. merge the following patch
+>     [v2,1/4] dt-bindings: usb: convert usb-device.txt to YAML schema
+>     [v2,2/4] dt-bindings: usb: add properties for hard wired devices
+>   4. define the unit-address for hard-wired device in usb-hcd.yaml,
+>      also define its 'reg' and 'compatible';
+>   5. This series is base on Serge's series:
+>     https://patchwork.kernel.org/project/linux-usb/cover/20201111090853.14112-1-Sergey.Semin@baikalelectronics.ru/
+>     [v4,00/18] dt-bindings: usb: Add generic USB HCD, xHCI, DWC USB3 DT schema
+> 
+> v2 changes suggested by Rob:
+>   1. modify pattern to support any USB class
+>   2. convert usb-device.txt into usb-device.yaml
+> ---
+>  .../devicetree/bindings/usb/usb-device.txt    | 102 --------------
+>  .../devicetree/bindings/usb/usb-device.yaml   | 125 ++++++++++++++++++
+>  .../devicetree/bindings/usb/usb-hcd.yaml      |  33 +++++
+>  3 files changed, 158 insertions(+), 102 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/usb/usb-device.txt
+>  create mode 100644 Documentation/devicetree/bindings/usb/usb-device.yaml
+> 
 
-It is 1 bit per napi. Depending on the driver implementation, 1 napi
-could correspond to 1 tx queue, or 1 rx queue, or 1 pair of tx/rx
-queues.
-To set bits in the bit mask, you could do:
-echo 0-14 > /sys/class/net/<dev>/threaded
-to set consecutive bits.
-or:
-echo 0,2,4,6,8 >  /sys/class/net/<dev>/threaded
-to set individual bits.
 
-To clear the bit mask, you could do:
-echo > /sys/class/net/<dev>/threaded
+My bot found errors running 'make dt_binding_check' on your patch:
 
-> > ---
-> >  net/core/net-sysfs.c | 103 +++++++++++++++++++++++++++++++++++++++++++
-> >  1 file changed, 103 insertions(+)
-> >
-> > diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-> > index 94fff0700bdd..df8dd25e5e4b 100644
-> > --- a/net/core/net-sysfs.c
-> > +++ b/net/core/net-sysfs.c
->
->
-> thanks.
-> --
-> ~Randy
->
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/intel,keembay-dwc3.example.dt.yaml: usb: #size-cells:0:0: 0 was expected
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/intel,keembay-dwc3.example.dt.yaml: usb: dwc3@34000000:compatible:0: 'snps,dwc3' does not match '^usb[0-9a-f]+,[0-9a-f]+$'
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/qcom,dwc3.example.dt.yaml: usb@a6f8800: #address-cells:0:0: 1 was expected
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/qcom,dwc3.example.dt.yaml: usb@a6f8800: #size-cells:0:0: 0 was expected
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/qcom,dwc3.example.dt.yaml: usb@a6f8800: dwc3@a600000:compatible:0: 'snps,dwc3' does not match '^usb[0-9a-f]+,[0-9a-f]+$'
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/amlogic,meson-g12a-usb-ctrl.example.dt.yaml: usb@ffe09000: #size-cells:0:0: 0 was expected
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/amlogic,meson-g12a-usb-ctrl.example.dt.yaml: usb@ffe09000: usb@ff400000:compatible:0: 'amlogic,meson-g12a-usb' does not match '^usb[0-9a-f]+,[0-9a-f]+$'
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/amlogic,meson-g12a-usb-ctrl.example.dt.yaml: usb@ffe09000: usb@ff400000:compatible: ['amlogic,meson-g12a-usb', 'snps,dwc2'] is too long
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/amlogic,meson-g12a-usb-ctrl.example.dt.yaml: usb@ffe09000: usb@ff400000:compatible: Additional items are not allowed ('snps,dwc2' was unexpected)
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/amlogic,meson-g12a-usb-ctrl.example.dt.yaml: usb@ffe09000: usb@ff500000:compatible:0: 'snps,dwc3' does not match '^usb[0-9a-f]+,[0-9a-f]+$'
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/socionext,uniphier-usb2-phy.example.dt.yaml: usb-controller: phy@0: 'compatible' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/socionext,uniphier-usb2-phy.example.dt.yaml: usb-controller: phy@1: 'compatible' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/socionext,uniphier-usb2-phy.example.dt.yaml: usb-controller: phy@2: 'compatible' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/socionext,uniphier-usb3ss-phy.example.dt.yaml: usb-glue@65b00000: #size-cells:0:0: 0 was expected
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/socionext,uniphier-usb3ss-phy.example.dt.yaml: usb-glue@65b00000: ss-phy@300:compatible:0: 'socionext,uniphier-ld20-usb3-ssphy' does not match '^usb[0-9a-f]+,[0-9a-f]+$'
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/socionext,uniphier-usb3hs-phy.example.dt.yaml: usb-glue@65b00000: #size-cells:0:0: 0 was expected
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/socionext,uniphier-usb3hs-phy.example.dt.yaml: usb-glue@65b00000: hs-phy@200:compatible:0: 'socionext,uniphier-ld20-usb3-hsphy' does not match '^usb[0-9a-f]+,[0-9a-f]+$'
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+
+
+See https://patchwork.ozlabs.org/patch/1402017
+
+The base for the patch is generally the last rc1. Any dependencies
+should be noted.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
