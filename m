@@ -2,85 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35DE32B7628
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 07:10:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17A1D2B762E
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 07:15:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726224AbgKRGIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 01:08:32 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:24698 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726068AbgKRGIc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 01:08:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605679711;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Sz/m+8Uq0tqcNbVPs1/yM0jQdLFpgRv+8LG/piLjalw=;
-        b=HjdidHs3zgma6Y1nUQIfoSUYqwQLo8mUNQBL3NgoGvN5xdzbaGeYJMD5pEZsbC/vtsp9OU
-        Zm8pjjQHCtxSNUyNEPvjKL3RES9GmxXNR1Bw9R/29hYFtlolWqAwSfTn3IJUJ3yZluaiJw
-        DmynXdKO3DQ3to3wvY5eY5PsYAqwbfE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-512-eUvEClr4PgO9a3DPlib2SQ-1; Wed, 18 Nov 2020 01:08:26 -0500
-X-MC-Unique: eUvEClr4PgO9a3DPlib2SQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E287764082;
-        Wed, 18 Nov 2020 06:08:24 +0000 (UTC)
-Received: from [10.72.13.172] (ovpn-13-172.pek2.redhat.com [10.72.13.172])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 72A7D19C59;
-        Wed, 18 Nov 2020 06:08:19 +0000 (UTC)
-Subject: Re: [PATCH net] vhost_vdpa: Return -EFUALT if copy_from_user() fails
-From:   Jason Wang <jasowang@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        kuba@kernel.org
-References: <20201023120853.GI282278@mwanda>
- <20201023113326-mutt-send-email-mst@kernel.org>
- <4485cc8d-ac69-c725-8493-eda120e29c41@redhat.com>
-Message-ID: <e7242333-b364-c2d8-53f5-1f688fc4d0b5@redhat.com>
-Date:   Wed, 18 Nov 2020 14:08:17 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726131AbgKRGPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 01:15:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47454 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725772AbgKRGPC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 01:15:02 -0500
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CAD1C0613D4;
+        Tue, 17 Nov 2020 22:15:02 -0800 (PST)
+Received: by mail-wr1-x442.google.com with SMTP id b6so996853wrt.4;
+        Tue, 17 Nov 2020 22:15:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dIH+s1+Zpj14XWt2KpCVb23dtGbzmzslIvD+/D2vu6M=;
+        b=ViXh1yHmfykfHvFzElxHW/1yHq6VmM/dgcg6wow1+Dk4lkVXde11OdU8hIOBG9UJQs
+         aaTI7CzPqzrq5hUkQ4r6WhC/xYYssH5oZ9gyJXmc7lnUrWXoU4WG0EGFIxXhCldjCpGb
+         qLueb6jDci3l38GSl9rhJgP13iH1AxbmtFuMurNnvfJldsfWsNpr/280cacaFLbq2LhA
+         WvbY9fimyy+jj1qoLdruhCJXRj6w2XSG2tzCi5CAq1vm5j6cktpqKMasz0vmP7YWuvoz
+         x5L4vhrc73tgVkbdgEB0R9dzoK9OTaJWYjMbnjtgIPRlSuIJwekTgdkG3tUBySjdNlr+
+         Rfpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dIH+s1+Zpj14XWt2KpCVb23dtGbzmzslIvD+/D2vu6M=;
+        b=r5Gbqh3sUbE8FNsaxxQ+5jGTDFeAvrARpZ87rUBFZE7ma9E//6uVoe1gnU8VvkKdvQ
+         lJaC5IRpw1VvZWwZQD+dGBmSppXBHJiFJTRqVEFcCnSMeWeikdOEbIaj9M+33g0tiCDD
+         Pjwesd8AEUCUiwUHDGDWV2fER8xVYo/PJbwmZZzYWyzvYmHc+G3zDq+XYUUOiQj/PZjX
+         d/B/ggtaamL63o02EtuhSe9W9snBBcyI7puTWHbLl2u6FUUC4cjHZkTm2yW1s26v31zE
+         XtylwHfzuWhbl5MLyqHJ2t93e6DfwI9Jzlwso0H6jHF5Lle8tIFsiapBklOPhDD3O6q4
+         yX7w==
+X-Gm-Message-State: AOAM5333zGF0FqJ2NXe6g5qMtQbZk4zOqxyVlNgVame/2ueO0x1eX2Ak
+        ZLUVByXi3Lrx+TE3szTH1F841F8CJpR+xUQyrX4=
+X-Google-Smtp-Source: ABdhPJxt6PFdDgnPi3gmrA2zUwR/hjaFQGZ6UaEAOOTr5b20F5wzzDQUxw5Dv+QiQnt9BzhaoMMoOyuAP3qRwYOwbvc=
+X-Received: by 2002:a5d:5701:: with SMTP id a1mr2985209wrv.120.1605680100936;
+ Tue, 17 Nov 2020 22:15:00 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <4485cc8d-ac69-c725-8493-eda120e29c41@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+References: <52ee1b515df977b68497b1b08290d00a22161279.1605518147.git.lucien.xin@gmail.com>
+ <20201117162952.29c1a699@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201117162952.29c1a699@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Wed, 18 Nov 2020 14:14:49 +0800
+Message-ID: <CADvbK_eP4ap74vbZ64S8isYr5nz33ZdLB7qsyqd5zqqGV-rvWA@mail.gmail.com>
+Subject: Re: [PATCH net-next] ip_gre: remove CRC flag from dev features in gre_gso_segment
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        davem <davem@davemloft.net>, Guillaume Nault <gnault@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>, lorenzo@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2020/10/26 上午10:59, Jason Wang wrote:
+On Wed, Nov 18, 2020 at 8:29 AM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> On 2020/10/23 下午11:34, Michael S. Tsirkin wrote:
->> On Fri, Oct 23, 2020 at 03:08:53PM +0300, Dan Carpenter wrote:
->>> The copy_to/from_user() functions return the number of bytes which we
->>> weren't able to copy but the ioctl should return -EFAULT if they fail.
->>>
->>> Fixes: a127c5bbb6a8 ("vhost-vdpa: fix backend feature ioctls")
->>> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
->> Acked-by: Michael S. Tsirkin <mst@redhat.com>
->> Needed for stable I guess.
+> On Mon, 16 Nov 2020 17:15:47 +0800 Xin Long wrote:
+> > This patch is to let it always do CRC checksum in sctp_gso_segment()
+> > by removing CRC flag from the dev features in gre_gso_segment() for
+> > SCTP over GRE, just as it does in Commit 527beb8ef9c0 ("udp: support
+> > sctp over udp in skb_udp_tunnel_segment") for SCTP over UDP.
+> >
+> > It could set csum/csum_start in GSO CB properly in sctp_gso_segment()
+> > after that commit, so it would do checksum with gso_make_checksum()
+> > in gre_gso_segment(), and Commit 622e32b7d4a6 ("net: gre: recompute
+> > gre csum for sctp over gre tunnels") can be reverted now.
+> >
+> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
 >
+> Makes sense, but does GRE tunnels don't always have a csum.
+Do you mean the GRE csum can be offloaded? If so, it seems for GRE tunnel
+we need the similar one as:
+
+commit 4bcb877d257c87298aedead1ffeaba0d5df1991d
+Author: Tom Herbert <therbert@google.com>
+Date:   Tue Nov 4 09:06:52 2014 -0800
+
+    udp: Offload outer UDP tunnel csum if available
+
+I will confirm and implement it in another patch.
+
 >
-> Agree.
+> Is the current hardware not capable of generating CRC csums over
+> encapsulated patches at all?
+There is, but very rare. The thing is after doing CRC csum, the outer
+GRE/UDP checksum will have to be recomputed, as it's NOT zero after
+all fields for CRC scum are summed, which is different from the
+common checksum. So if it's a GRE/UDP tunnel, the inner CRC csum
+has to be done there even if the HW supports its offload.
+
 >
-> Acked-by: Jason Wang <jasowang@redhat.com>
+> I guess UDP tunnels can be configured without the csums as well
+> so the situation isn't much different.
+>
+> > diff --git a/net/ipv4/gre_offload.c b/net/ipv4/gre_offload.c
+> > index e0a2465..a5935d4 100644
+> > --- a/net/ipv4/gre_offload.c
+> > +++ b/net/ipv4/gre_offload.c
+> > @@ -15,12 +15,12 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
+> >                                      netdev_features_t features)
+> >  {
+> >       int tnl_hlen = skb_inner_mac_header(skb) - skb_transport_header(skb);
+> > -     bool need_csum, need_recompute_csum, gso_partial;
+> >       struct sk_buff *segs = ERR_PTR(-EINVAL);
+> >       u16 mac_offset = skb->mac_header;
+> >       __be16 protocol = skb->protocol;
+> >       u16 mac_len = skb->mac_len;
+> >       int gre_offset, outer_hlen;
+> > +     bool need_csum, gso_partial;
+>
+> Nit, rev xmas tree looks broken now.
+Will fix it in v2, :D
 
-
-Hi Michael.
-
-I don't see this in your tree, please consider to merge.
-
-Thanks
-
-
-
+Thanks.
+>
+> >       if (!skb->encapsulation)
+> >               goto out;
+> > @@ -41,10 +41,10 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
+> >       skb->protocol = skb->inner_protocol;
+> >
+> >       need_csum = !!(skb_shinfo(skb)->gso_type & SKB_GSO_GRE_CSUM);
+> > -     need_recompute_csum = skb->csum_not_inet;
+> >       skb->encap_hdr_csum = need_csum;
+> >
+> >       features &= skb->dev->hw_enc_features;
+> > +     features &= ~NETIF_F_SCTP_CRC;
+> >
+> >       /* segment inner packet. */
+> >       segs = skb_mac_gso_segment(skb, features);
+> > @@ -99,15 +99,7 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
+> >               }
+> >
+> >               *(pcsum + 1) = 0;
+> > -             if (need_recompute_csum && !skb_is_gso(skb)) {
+> > -                     __wsum csum;
+> > -
+> > -                     csum = skb_checksum(skb, gre_offset,
+> > -                                         skb->len - gre_offset, 0);
+> > -                     *pcsum = csum_fold(csum);
+> > -             } else {
+> > -                     *pcsum = gso_make_checksum(skb, 0);
+> > -             }
+> > +             *pcsum = gso_make_checksum(skb, 0);
+> >       } while ((skb = skb->next));
+> >  out:
+> >       return segs;
+>
