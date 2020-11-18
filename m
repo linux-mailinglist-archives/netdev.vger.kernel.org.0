@@ -2,101 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D29E22B7E0F
-	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 14:09:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 958422B7E32
+	for <lists+netdev@lfdr.de>; Wed, 18 Nov 2020 14:19:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726464AbgKRNHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 08:07:03 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:56199 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726238AbgKRNHD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 08:07:03 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 9E2DA5C01AA;
-        Wed, 18 Nov 2020 08:07:01 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 18 Nov 2020 08:07:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=12xliv
-        0GVWXgapT/p3BTVZF0wsvcSjjUYvHuS2IMINc=; b=kCQHGR6PhmLlWPiDTqqQlY
-        nNY6nFtEXnuIXYx5wIH9CSC3dq5he13GuTgUAzpwfeWuQ0mS8F3iIEYXgP1x2Ah0
-        GY4jlSUuiIk61OXik/tSZ2fJLs+jmKT9kOENRWRaKjzGy3Edl+D/ueajNGU/JdaN
-        xjBP1tlXM9VmG6xT8Yo6Wl0I+BqrPohO/czjuAfL0JKZlFoIudft04n/rHpZqV3B
-        IDmyPSWR7ZIrRkF5COTGFD1aZNL8ctquAnRj1fPrE+mXeFuVYOZXSeZtdCugVKYz
-        +QWyTGOj5bIQS5GT9bU/DCblsI4loQ1o/J3EEEHsKAHaV/lqRx3PMOp2PpCBsyTg
-        ==
-X-ME-Sender: <xms:dRy1X-AqwNHBH4cVfskYn_-j_oUQzJeLb0GYrD92Fi0ptfGa5d9-Wg>
-    <xme:dRy1X4idzQN48T5odrNfJDsUYv_dEKgB4_n0m8mrkv6WdijCzyE1WpFFChzIl4nRO
-    NITO2eZtpMmfKI>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudefhedggeelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpefgvefgveeuudeuffeiffehieffgfejleevtdetueetueffkeevgffgtddugfek
-    veenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecukfhppeekgedrvddvledrudehge
-    drudegjeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhm
-    pehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:dRy1Xxmb1Hp_QagnuuVya-Ygg2L2el9CwS6AXPDZO0_OsGJ1eJoe_Q>
-    <xmx:dRy1X8zrzT3_jCcJp4XEdGnXuGH-YhmYCLI1GNAUm06LfQiOYekfJQ>
-    <xmx:dRy1XzRy2tbBx4yAYdwR-zEzOJAOiY_tvopgyH2ulOYeNcNGQ3YtPA>
-    <xmx:dRy1X9cyfvZoOpIAJ8TmSxllb3Gi1Tc5VFqw6LViHzh5UEx3cZ5KnQ>
-Received: from localhost (igld-84-229-154-147.inter.net.il [84.229.154.147])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 8E2F23064AAA;
-        Wed, 18 Nov 2020 08:07:00 -0500 (EST)
-Date:   Wed, 18 Nov 2020 15:06:57 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net-next] mlxsw: spectrum_router: Fix a double free on
- error
-Message-ID: <20201118130657.GA335481@shredder.lan>
-References: <20201118130048.GA334813@mwanda>
+        id S1726315AbgKRNSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 08:18:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56372 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725772AbgKRNSv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 08:18:51 -0500
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE2A2C0613D4;
+        Wed, 18 Nov 2020 05:18:51 -0800 (PST)
+Received: by mail-pf1-x443.google.com with SMTP id g7so1421995pfc.2;
+        Wed, 18 Nov 2020 05:18:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=SwgmCoRQqgDi9SwspMTBUmX6vuFIHjell7qTbg11fzE=;
+        b=J8LYV8vaid4hvw7F9n9qrI/Ctn5Y9xYMaCpcVdxPTfdxbxhtE3qBy3JowQgQVGYuPB
+         GM7Sv5KpvlA9OBnlfOuJcEr/vGmXIlvMix9pYM1xhsQtEA/kS/8/caXJP6xnJPdyPFtH
+         xjjtuvbEefrv8MKVAuLy/PUlATfuWp9gqV6eB40LVEVQctNPoYB6VVSeCrLz8qXVRkni
+         PHsCz0Na8goCCXC1UCpInTgopvApd0Y47GYFe1EQxraytSZwOQFBt19sU5xoEK+q03z2
+         RIOaNlBJETigQXj9aLqZ3h741xJtNqjajlCx+3fDInCFRJPnfzw4LNg6dA3Izo70VjmZ
+         BJCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=SwgmCoRQqgDi9SwspMTBUmX6vuFIHjell7qTbg11fzE=;
+        b=KGmIdevIJQPKIGBBczK29YVejCR/KwCjLtIEIV1wA/zXj+IIukCll5uTro/subcvph
+         6p+rjoFVp6oveP8sX7/RJIoudzO1LSFue7WqY2y3856U21HfPt39MeG0Ka7pdrDRd1dP
+         GBGsRMypHU3H1bFcjvjGPS/+kDp4n+iRwNmx+sm4hGU9xO3TDFNSYGiLcCmRn22xXk3x
+         rnKu95FzKMVvxf4hRzAH9Ikr9LPhQKpvBC2l1IIiRO+TMQsjh5IQJdXG10AHnPHj0UuJ
+         XOMv6Vg+r+u8XA4DVi+dNct9Rf1hIuhVXRxXnwaT7bKtIPJ/mE2mMig7k9oE2jrGk9JR
+         OudA==
+X-Gm-Message-State: AOAM530CWBrS4NW6B65WDJOYuMUEVwM4jLZgn6nzzyecBKcConTPAudw
+        vIpvqAUbBjwfyzwSpMCwbaYZtUqjRoA=
+X-Google-Smtp-Source: ABdhPJyoqK2ra5D+t5eEXvemIoZnKKGCufzzjUJO7W3OTTnydsIB2jUSBHacZQAWOPrkCZTeODUESw==
+X-Received: by 2002:a62:75c6:0:b029:18a:d510:ff60 with SMTP id q189-20020a6275c60000b029018ad510ff60mr4533830pfc.35.1605705531280;
+        Wed, 18 Nov 2020 05:18:51 -0800 (PST)
+Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id 131sm10228225pfw.117.2020.11.18.05.18.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Nov 2020 05:18:50 -0800 (PST)
+Date:   Wed, 18 Nov 2020 05:18:47 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Christian Eggers <ceggers@arri.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>
+Subject: Re: [PATCH net-next 1/4] net: ptp: introduce enum ptp_msg_type
+Message-ID: <20201118131847.GE23320@hoboy.vegasvil.org>
+References: <20201117193124.9789-1-ceggers@arri.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201118130048.GA334813@mwanda>
+In-Reply-To: <20201117193124.9789-1-ceggers@arri.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 04:00:48PM +0300, Dan Carpenter wrote:
-> There is a double free here because mlxsw_sp_nexthop6_group_create() and
-> mlxsw_sp_nexthop6_group_info_init() free "nh_grp".  It should only be
-> freed in the create function.
-> 
-> Fixes: 7f7a417e6a11 ("mlxsw: spectrum_router: Split nexthop group configuration to a different struct")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> ---
->  drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-> index a2e81ad5790f..fde8667a2f60 100644
-> --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-> +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-> @@ -5423,7 +5423,6 @@ mlxsw_sp_nexthop6_group_info_init(struct mlxsw_sp *mlxsw_sp,
->  		nh = &nhgi->nexthops[i];
->  		mlxsw_sp_nexthop6_fini(mlxsw_sp, nh);
->  	}
-> -	kfree(nh_grp);
+On Tue, Nov 17, 2020 at 08:31:21PM +0100, Christian Eggers wrote:
+> Using a PTP wide enum will obsolete different driver internal defines
+> and uses of magic numbers.
 
-Thanks for the patch, Dan.
+I like the general idea, but ...
 
-I already sent a patch yesterday:
-https://patchwork.kernel.org/project/netdevbpf/patch/20201117174704.291990-2-idosch@idosch.org/
+> +enum ptp_msg_type {
+> +	PTP_MSGTYPE_SYNC        = 0x0,
+> +	PTP_MSGTYPE_DELAY_REQ   = 0x1,
+> +	PTP_MSGTYPE_PDELAY_REQ  = 0x2,
+> +	PTP_MSGTYPE_PDELAY_RESP = 0x3,
+> +};
 
-Note that it is different than yours. It frees 'nhgi' instead of
-'nh_grp'. It was a typo.
+I would argue that these should be #defines.  After all, they are
+protocol data fields and not an abstract enumerated types.
 
->  	return err;
->  }
+For example ...
+
+> @@ -103,10 +110,10 @@ struct ptp_header *ptp_parse_header(struct sk_buff *skb, unsigned int type);
+>   *
+>   * Return: The message type
+>   */
+> -static inline u8 ptp_get_msgtype(const struct ptp_header *hdr,
+> +static inline enum ptp_msg_type ptp_get_msgtype(const struct ptp_header *hdr,
+>  				 unsigned int type)
+>  {
+> -	u8 msgtype;
+> +	enum ptp_msg_type msgtype;
 >  
-> -- 
-> 2.29.2
-> 
+>  	if (unlikely(type & PTP_CLASS_V1)) {
+>  		/* msg type is located at the control field for ptp v1 */
+
+		msgtype = hdr->control;
+	} else {
+		msgtype = hdr->tsmt & 0x0f;
+
+This assigns directly from protocol data into an enumerated type.
+
+	}
+
+	return msgtype;
+
+Thanks,
+Richard
+
