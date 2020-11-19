@@ -2,128 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F4E42B9B8D
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 20:38:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6504E2B9B98
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 20:39:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727690AbgKSTca (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 14:32:30 -0500
-Received: from sender11-of-o52.zoho.eu ([31.186.226.238]:21322 "EHLO
-        sender11-of-o52.zoho.eu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727108AbgKSTca (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 14:32:30 -0500
-ARC-Seal: i=1; a=rsa-sha256; t=1605814307; cv=none; 
-        d=zohomail.eu; s=zohoarc; 
-        b=RwWZTdRp2JYmVeCCf0JlQ1CPgPJ9h2sfdrzWQ+JP3NhjekGg28hq6JLvBvT2X7fPs/itmFi1sloZeC0pdxk7AqJykFoWLyzsIIsppBId/X5sLwPGnn2cWRYBpWF6BVwCKf13wb4yR5JWhCVsqYapR5NP69gQovwKFvDkAbi7N4k=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.eu; s=zohoarc; 
-        t=1605814307; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=WCR+XAW1Keq97IBhr7Nlm3GBjFFoJGs0nmFksqPSAX4=; 
-        b=DH+OM/BrGvFQni1CVXj67BAv/AyZPhYo1SHOOaV41ckIVa8yBcBj9kp+PFy4aBLI183iYFk4PEueEy3Q+6cdfHkk39xT0UvjMeGGnz4eB9D44VBEiVDLZmUp32Q7Vf+fOuhGfHtMo/fDTimCOJc8amHIfr7JuqwVvXUwHSGLVrU=
-ARC-Authentication-Results: i=1; mx.zohomail.eu;
-        dkim=pass  header.i=shytyi.net;
-        spf=pass  smtp.mailfrom=dmytro@shytyi.net;
-        dmarc=pass header.from=<dmytro@shytyi.net> header.from=<dmytro@shytyi.net>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1605814307;
-        s=hs; d=shytyi.net; i=dmytro@shytyi.net;
-        h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding;
-        bh=WCR+XAW1Keq97IBhr7Nlm3GBjFFoJGs0nmFksqPSAX4=;
-        b=dwq3OrJLTCQ3gKtqZZWzz8aeL7qQs1M7x8mzxLFhIgzO6RqTcuw0g3taSCIt8WXi
-        F9q2ne9jfdE3VfyvDsYTNTYI99ha0z3vnYzZL+of9eHrQ93tvKTfABuu7wgtuRMKOXF
-        GGu3VTxutfnfq1fsyIfmW+b4RknTmOHp0gfQnhP0=
-Received: from mail.zoho.eu by mx.zoho.eu
-        with SMTP id 1605814301266759.2664420513429; Thu, 19 Nov 2020 20:31:41 +0100 (CET)
-Date:   Thu, 19 Nov 2020 20:31:41 +0100
-From:   Dmytro Shytyi <dmytro@shytyi.net>
-To:     "Jakub Kicinski" <kuba@kernel.org>
-Cc:     "yoshfuji" <yoshfuji@linux-ipv6.org>,
-        "kuznet" <kuznet@ms2.inr.ac.ru>,
-        "liuhangbin" <liuhangbin@gmail.com>, "davem" <davem@davemloft.net>,
-        "netdev" <netdev@vger.kernel.org>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>
-Message-ID: <175e1fdb250.1207dca53446410.2492811916841931466@shytyi.net>
-In-Reply-To: <20201119104413.75ca9888@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-References: <175b3433a4c.aea7c06513321.4158329434310691736@shytyi.net>
-        <202011110944.7zNVZmvB-lkp@intel.com>
-        <175bd218cf4.103c639bc117278.4209371191555514829@shytyi.net>
-        <175bf515624.c67e02e8130655.7824060160954233592@shytyi.net>
-        <175c31c6260.10eef97f6180313.755036504412557273@shytyi.net>
-        <20201117124348.132862b1@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <175e0b9826b.c3bb0aae425910.5834444036489233360@shytyi.net> <20201119104413.75ca9888@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Subject: Re: [PATCH net-next V6] net: Variable SLAAC: SLAAC with prefixes of
- arbitrary length in PIO
+        id S1727337AbgKSTgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 14:36:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54916 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727059AbgKSTgi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 14:36:38 -0500
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA881C0613CF
+        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 11:36:37 -0800 (PST)
+Received: by mail-wm1-x341.google.com with SMTP id c9so8267531wml.5
+        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 11:36:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=lknzrUCAk5Msp7YC7WnSpD5mS+qkQIeeYcFnMotQIK4=;
+        b=kDJy9M+SbIQJYo9RpbtEuRU4VA2M58aUuSZZwEhfmRFWWUS72WvmyttxZSG0tFrnMr
+         knOy09ISy8SqUeG/tJMv1YDGW2p+M1hNB5n0d1rq3pd0sp6amRXD55n/9td0AweoGWa4
+         BDJLSjvGh0XdSdMPl+aDMYsCUiRfhhhbg+Bq+ydYCQLCp5f1p47UiLYjXOsRBWuIGUlX
+         IzPzi1qQLs94UKAFjAKadlA6rI+WAkL5SXxsc0PvPqoUzMk4DIzWv8ppGghTVn1ndv22
+         ER9S/9dHZUfylrm3OJduYyD8kXdnpb1L+wqbQFDywxfTrvzt//oAkK4yXsRPpZrbd0v5
+         9ikg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
+        bh=lknzrUCAk5Msp7YC7WnSpD5mS+qkQIeeYcFnMotQIK4=;
+        b=dXMUFpsn353/tYkiLF0np6dmUtu/uYpBPjxYCmVj5e6LVJ4s70u0tgdoTMCCa6sHyQ
+         akjyLQjPemtXj1nFktAxzJPAc7DYAuRqibvSrdNezA2K0XoO0b0HixO/ohoNu4I3Mj58
+         J6A70ng5jQs80nefrpxVxqkTYzVtvixF6aM8LAsqxU+10uQn9RbVO+moIEoZZ0S/PrOf
+         wtI5/LLVpPW4/zNXQBPf1bvORA0CLIVlsLQ/bkDnYMhBfZS//b/g7+A+/Al6/P+FSm9v
+         8yDJDtgf1THKIlNcP9vN15tuVBcFx7qfeNPcV73w3fwVs3xIK8qYthsxtijeV7viFE73
+         JkoA==
+X-Gm-Message-State: AOAM530Ly/yh7Hckt6qrVlmETcftZtl8PzjRkoRhQpqo2R+Bir1fW88E
+        8t8DCPw5v/Z8agwLgBkfmaI=
+X-Google-Smtp-Source: ABdhPJwvMKYLAJA0PbqESH9gMsbv5E2p9KVRknCB6vC8M3xdvdHKh93IEanarsPqQRoAoMWtVYFA1g==
+X-Received: by 2002:a7b:c349:: with SMTP id l9mr6500454wmj.129.1605814596547;
+        Thu, 19 Nov 2020 11:36:36 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f23:2800:6d7c:9ea3:dfaa:d617? (p200300ea8f2328006d7c9ea3dfaad617.dip0.t-ipconnect.de. [2003:ea:8f23:2800:6d7c:9ea3:dfaa:d617])
+        by smtp.googlemail.com with ESMTPSA id y20sm1288327wma.15.2020.11.19.11.36.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Nov 2020 11:36:36 -0800 (PST)
+Subject: Re: [PATCH V1 net 2/4] net: ena: set initial DMA width to avoid intel
+ iommu issue
+To:     Shay Agroskin <shayagr@amazon.com>
+Cc:     kuba@kernel.org, netdev@vger.kernel.org, dwmw@amazon.com,
+        zorik@amazon.com, matua@amazon.com, saeedb@amazon.com,
+        msw@amazon.com, aliguori@amazon.com, nafea@amazon.com,
+        gtzalik@amazon.com, netanel@amazon.com, alisaidi@amazon.com,
+        benh@amazon.com, akiyano@amazon.com, sameehj@amazon.com,
+        ndagan@amazon.com, Mike Cui <mikecui@amazon.com>
+References: <20201118215947.8970-1-shayagr@amazon.com>
+ <20201118215947.8970-3-shayagr@amazon.com>
+ <8bbad77f-03ad-b066-4715-0976141a687b@gmail.com>
+ <c477aae1-31f0-8139-28b0-950d01abd182@gmail.com>
+ <pj41zltutlnojd.fsf@u68c7b5b1d2d758.ant.amazon.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <4fb1eb78-3746-752c-a38d-25783f674b26@gmail.com>
+Date:   Thu, 19 Nov 2020 20:36:31 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
+In-Reply-To: <pj41zltutlnojd.fsf@u68c7b5b1d2d758.ant.amazon.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
----- On Thu, 19 Nov 2020 19:44:13 +0100 Jakub Kicinski <kuba@kernel.org> wr=
-ote ----
-
- > On Thu, 19 Nov 2020 14:37:35 +0100 Dmytro Shytyi wrote:=20
- > > +struct inet6_ifaddr *ipv6_cmp_rcvd_prsnt_prfxs(struct inet6_ifaddr *i=
-fp,=20
- > > +                           struct inet6_dev *in6_dev,=20
- > > +                           struct net *net,=20
- > > +                           const struct prefix_info *pinfo)=20
- > > +{=20
- > > +    struct inet6_ifaddr *result_base =3D NULL;=20
- > > +    struct inet6_ifaddr *result =3D NULL;=20
- > > +    struct in6_addr curr_net_prfx;=20
- > > +    struct in6_addr net_prfx;=20
- > > +    bool prfxs_equal;=20
- > > +=20
- > > +    result_base =3D result;=20
- > > +    rcu_read_lock();=20
- > > +    list_for_each_entry_rcu(ifp, &in6_dev->addr_list, if_list) {=20
- > > +        if (!net_eq(dev_net(ifp->idev->dev), net))=20
- > > +            continue;=20
- > > +        ipv6_addr_prefix_copy(&net_prfx, &pinfo->prefix, pinfo->prefi=
-x_len);=20
- > > +        ipv6_addr_prefix_copy(&curr_net_prfx, &ifp->addr, pinfo->pref=
-ix_len);=20
- > > +        prfxs_equal =3D=20
- > > +            ipv6_prefix_equal(&net_prfx, &curr_net_prfx, pinfo->prefi=
-x_len);=20
- > > +        if (prfxs_equal && pinfo->prefix_len =3D=3D ifp->prefix_len) =
-{=20
- > > +            result =3D ifp;=20
- > > +            in6_ifa_hold(ifp);=20
- > > +            break;=20
- > > +        }=20
- > > +    }=20
- > > +    rcu_read_unlock();=20
- > > +    if (result_base !=3D result)=20
- > > +        ifp =3D result;=20
- > > +    else=20
- > > +        ifp =3D NULL;=20
- > > +=20
- > > +    return ifp;=20
- > > +}=20
- > =20
- > Thanks for adding the helper! Looks like it needs a touch up:=20
-=20
-Understood. Thank you for pointing this out. I think I did not catch this w=
-arning as my Makefile didn't include "-Wmissing-prototypes"
-
- > net/ipv6/addrconf.c:2579:22: warning: no previous prototype for =E2=80=
-=98ipv6_cmp_rcvd_prsnt_prfxs=E2=80=99 [-Wmissing-prototypes]=20
- >  2579 | struct inet6_ifaddr *ipv6_cmp_rcvd_prsnt_prfxs(struct inet6_ifad=
-dr *ifp,=20
- >  |                      ^~~~~~~~~~~~~~~~~~~~~~~~~=20
- > net/ipv6/addrconf.c:2579:21: warning: symbol 'ipv6_cmp_rcvd_prsnt_prfxs'=
- was not declared. Should it be static?=20
- >=20
-
-Hideaki Yoshifuji helped to improve this patch with suggestions. @Hideaki, =
-should I add "Reported-by" tag in this case?
-Jakub Kicinski also helped to find errors and help with improvement. @Jakub=
-, should I add "Reported-by" tag in this case?=20
-
-Thanks,
-Dmytro SHYTYI
-
+Am 19.11.2020 um 20:18 schrieb Shay Agroskin:
+> 
+> Heiner Kallweit <hkallweit1@gmail.com> writes:
+> 
+>> Am 18.11.2020 um 23:35 schrieb Heiner Kallweit:
+>>> Am 18.11.2020 um 22:59 schrieb Shay Agroskin:
+>>>> The ENA driver uses the readless mechanism, which uses DMA, to find
+>>>> out what the DMA mask is supposed to be.
+>>>>
+>>>> If DMA is used without setting the dma_mask first, it causes the
+>>>> Intel IOMMU driver to think that ENA is a 32-bit device and therefore
+>>>> disables IOMMU passthrough permanently.
+>>>>
+>>>> This patch sets the dma_mask to be ENA_MAX_PHYS_ADDR_SIZE_BITS=48
+>>>> before readless initialization in
+>>>> ena_device_init()->ena_com_mmio_reg_read_request_init(),
+>>>> which is large enough to workaround the intel_iommu issue.
+>>>>
+>>>> DMA mask is set again to the correct value after it's received from the
+>>>> device after readless is initialized.
+>>>>
+>>>> Fixes: 1738cd3ed342 ("net: ena: Add a driver for Amazon Elastic Network Adapters (ENA)")
+>>>> Signed-off-by: Mike Cui <mikecui@amazon.com>
+>>>> Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
+>>>> Signed-off-by: Shay Agroskin <shayagr@amazon.com>
+>>>> ---
+>>>>  drivers/net/ethernet/amazon/ena/ena_netdev.c | 13  +++++++++++++
+>>>>  1 file changed, 13 insertions(+)
+>>>>
+>>>> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+>>>> index 574c2b5ba21e..854a22e692bf 100644
+>>>> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
+>>>> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+>>>> @@ -4146,6 +4146,19 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>>>>          return rc;
+>>>>      }
+>>>>  
+>>>> +    rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(ENA_MAX_PHYS_ADDR_SIZE_BITS));
+>>>> +    if (rc) {
+>>>> +        dev_err(&pdev->dev, "pci_set_dma_mask failed %d\n", rc);
+>>>> +        goto err_disable_device;
+>>>> +    }
+>>>> +
+>>>> +    rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(ENA_MAX_PHYS_ADDR_SIZE_BITS));
+>>>> +    if (rc) {
+>>>> +        dev_err(&pdev->dev, "err_pci_set_consistent_dma_mask failed %d\n",
+>>>> +            rc);
+>>>> +        goto err_disable_device;
+>>>> +    }
+>>>> +
+>>>>      pci_set_master(pdev);
+>>>>  
+>>>>      ena_dev = vzalloc(sizeof(*ena_dev));
+>>>>
+>>>
+>>> The old pci_ dma wrappers are being phased out and shouldn't be used in
+>>> new code. See e.g. e059c6f340f6 ("tulip: switch from 'pci_' to 'dma_' API").
+>>> So better use:
+>>> dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(ENA_MAX_PHYS_ADDR_SIZE_BITS));
+> 
+> Thank you for reviewing these patches. We will switch to using dma_set_...() instead
+> 
+>>>
+>>
+>> However instead of dev_err(&pdev->dev, ..) you could use pci_err(pdev, ..).
+> 
+> I see that pci_err evaluates to dev_err. While I see how using pci_* log function helps code readability, I prefer using
+> dev_err here to keep the code consistent with the rest of the driver. We'll discuss changing all log functions in future patches to net-next if that's okay.
+> 
+The comment was just meant to make you aware of pci_err(), there's no need
+to switch to it.
