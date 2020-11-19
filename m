@@ -2,405 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85B382B93E7
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 14:50:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EB4E2B93EE
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 14:55:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727187AbgKSNsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 08:48:06 -0500
-Received: from mail-oo1-f68.google.com ([209.85.161.68]:40531 "EHLO
-        mail-oo1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726644AbgKSNsF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 08:48:05 -0500
-Received: by mail-oo1-f68.google.com with SMTP id t142so1351104oot.7;
-        Thu, 19 Nov 2020 05:48:04 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=t9+s1ApXC1taKZdVie+MQcAAj+ApC6em5/9UfA0Cqa4=;
-        b=YWxv4g/0B8QijLSD1tABVNCIRoQ8RHvHfepsRsxEkvPD6m9Px8DzT5/DA/qCfy9/S0
-         9+NyCaL8YHnDSaA30GRTtEIKyh+1/XOYSslHsBDuWO5Bu4BDSrlWvvIFySW62a/bYBPN
-         TzBwhyGP+nTXOSCMdcrtzUOF9JQ/tLep8V44KMD9e5/ooJnaDDrUXKS6ftTfiyv9oTJc
-         vScfqTzPI7pcGEDzBS+UaW9lmudtV35L20LFXPKsIaGIcrE0xId8cwec6g5IP/R29fAv
-         qcq68w0GUmsVzMPU3NiD1nDxW/NdRZr7je7ksMoi4iv//AAqxe2hHLBpcUfSR95tpUG/
-         R9kA==
-X-Gm-Message-State: AOAM532JZ+vYVNcKUH6o+WrqX7D/H8O6rn4GCRVm/j1LmnZBREFzxFPT
-        FhcVxto6+L00QoEDfrOh9w==
-X-Google-Smtp-Source: ABdhPJxio6D8tQt9OxKmeGLgNbbJpbzhZDaoVQX6XiRtZ3HghBgRL/sNUbG5IbGsw00PCxLUoQHuhw==
-X-Received: by 2002:a4a:8742:: with SMTP id a2mr10109788ooi.23.1605793683419;
-        Thu, 19 Nov 2020 05:48:03 -0800 (PST)
-Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id l19sm8896459otp.65.2020.11.19.05.48.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Nov 2020 05:48:02 -0800 (PST)
-Received: (nullmailer pid 3157673 invoked by uid 1000);
-        Thu, 19 Nov 2020 13:48:01 -0000
-Date:   Thu, 19 Nov 2020 07:48:01 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Christian Eggers <ceggers@arri.de>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
-        George McCollister <george.mccollister@gmail.com>,
-        Marek Vasut <marex@denx.de>,
-        Helmut Grohne <helmut.grohne@intenta.de>,
-        Paul Barker <pbarker@konsulko.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3 01/12] dt-bindings: net: dsa: convert ksz
- bindings document to yaml
-Message-ID: <20201119134801.GB3149565@bogus>
-References: <20201118203013.5077-1-ceggers@arri.de>
- <20201118203013.5077-2-ceggers@arri.de>
+        id S1727319AbgKSNuy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 08:50:54 -0500
+Received: from mail-eopbgr50046.outbound.protection.outlook.com ([40.107.5.46]:30654
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727285AbgKSNuy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Nov 2020 08:50:54 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cHsb3cpNU0pvuGYn0Vsv5xqANs9wlOlrQWQ+zpa0aXstvXCVJP+ain2YKJtIMwWF6FAgrquWF0PVoEr45BvaRzc3ajJIBctf5K/1pJIAJPn9b9gaOvCgcFaB1Gm/B6JkGXAE0p5whSDygiG6b/k2znh4spNb8ytRYx1H+7rxnJ46awW4tMJhKWQafCMVC7/oFIkmU4sTTwbeIAkeMxBaxUgbg2x8CvYEWTZxRJbkevQ6ZjrM3k/uQuInOxaPL3/25oe+fBlkLEODiai5XDpEvV97tf7t+DZdLaksGKwskhXsRbIKWDwaBfo56cKPpPuFhMK3Txg614TQ8sSjPMg88A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PlnZcuoVlCt0MQsxKHN4gg5e1qWqgIOdE+65Mk6Hvdw=;
+ b=DTyz5ZsD7tCJogu0OXqgujXRYCftRdPaHEKNCvxepjeEOBYlAy648CJMqcO1F9pYgbHImOPwMUsT/seNX3cC8a0HqWro8WifIjR73+AVHxFPkB0s74H+fAcxe/SjvR/L4BrNH5QO1Js8ipv8gLGPAVal1ev8ApnR3ZAOCVEJ0Lnd6wfhQ7UxJkrAsWYGnsCaky61e02FuJ88GCJZsALrc6OS5WBqe0Ae7hndz3IIeq3Fc+zB2fUQh3ug2FARxd009Eh3PBtJ7OAUQC7kkv1hvbrfbgJg+Xdn6wHhoPcuSN7ZYXTyezzkANR2OPQOctvl1G1ikSL21NFDsdwJNFJmnQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PlnZcuoVlCt0MQsxKHN4gg5e1qWqgIOdE+65Mk6Hvdw=;
+ b=e1R2tZUoli904eD3UkzuC9mxxuN/tc5b0IoLqwyyA8MXTIct/gqx0VPiUYdFXll3OmxJs3DyYQdB5KOYmBVgOmOBYiqZUkw5rMtXwed48Yy4RlHhCy/3KulArrsfDaK4mTVwEYL5xfnAm1juzGawD67vl5+USLJIip/wGMdWVZo=
+Received: from VI1PR04MB5807.eurprd04.prod.outlook.com (2603:10a6:803:ec::21)
+ by VI1PR04MB5808.eurprd04.prod.outlook.com (2603:10a6:803:e4::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3564.25; Thu, 19 Nov
+ 2020 13:50:50 +0000
+Received: from VI1PR04MB5807.eurprd04.prod.outlook.com
+ ([fe80::45b9:4:f092:6cb6]) by VI1PR04MB5807.eurprd04.prod.outlook.com
+ ([fe80::45b9:4:f092:6cb6%3]) with mapi id 15.20.3564.030; Thu, 19 Nov 2020
+ 13:50:50 +0000
+From:   Camelia Alexandra Groza <camelia.groza@nxp.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "brouer@redhat.com" <brouer@redhat.com>,
+        "saeed@kernel.org" <saeed@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH net-next v2 2/7] dpaa_eth: add basic XDP support
+Thread-Topic: [PATCH net-next v2 2/7] dpaa_eth: add basic XDP support
+Thread-Index: AQHWvCa9ctCJzsNW6U6AL6ijCKrD2KnOm5WAgADhvFA=
+Date:   Thu, 19 Nov 2020 13:50:50 +0000
+Message-ID: <VI1PR04MB58074E743AF8D28D85EC1D7AF2E00@VI1PR04MB5807.eurprd04.prod.outlook.com>
+References: <cover.1605535745.git.camelia.groza@nxp.com>
+        <e8f6ede91ab1c3fa50953076e7983979de04d2b5.1605535745.git.camelia.groza@nxp.com>
+ <20201118162137.149625e3@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201118162137.149625e3@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [82.78.148.61]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: cd7744e9-86dd-4534-d22e-08d88c922023
+x-ms-traffictypediagnostic: VI1PR04MB5808:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB5808FA7F3AAD70E238DF475CF2E00@VI1PR04MB5808.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: vWCYcNA6wuqeeLk8dL0YF7O5GitfubDpG+K0iTxTbI29VIFM9qNavBRUt+AIp73R8YUrrY6noweWRBDG1+E+pFRv3N8JXfy6V0hl8P0c07iSS5o/dHsYqEVniUsH9/TXZDn1tTBrwb4hBKieT7Wb/NZG236EScfex+qsHHjjHWgA/sDJlWDnl8hdsxmFm9Bp2UD02jsJp60GjDRr2CxYJE4Z9mWxHZ5pU6z/UJ3f36qr8s/FBNVz3qkp1b7/G7zRLfQaxO1pwPd89XjSF0YUXP7h8ji/InxCo6dcGLxtRKxFfXXJsBkf/nmh+GhRQ3LJ0SawapcTV91CrKi+swV9lg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(396003)(346002)(366004)(376002)(136003)(8676002)(5660300002)(54906003)(26005)(316002)(2906002)(7696005)(8936002)(55016002)(86362001)(186003)(71200400001)(76116006)(4326008)(52536014)(9686003)(6506007)(33656002)(66446008)(64756008)(66556008)(66476007)(53546011)(83380400001)(6916009)(478600001)(66946007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: sobGz5pffX7niMKhg8bav56yKsHdzlbUtTdKAxq0MQaid2Zkdx5e5FiER9aSKtx4sa1TIQuO3F/DNalTqeXVVL9GX12ruT0msL2qKWhmVdCMo3yrgezbYz4XCeMSaWrBaEM6wL6GIu1ru+YyxLkP+GBa2dI3OLBV630P0Oi112Jhmha9zoe1qHEzCerfokJuKrRLXkCo5vYzL6BP3wneCFVG/YYUE10/8n2pqhWMadqj5koeyqQrT8PEyruwt7r9F2tzXV2D2m6bBEoJeVaGrDnm9UEdGkmHoD84bthgucvYrs+QwezUaaAOrKGFPP4e2jjX3lwyXX3Fq6vDzrMVQG80utxBxWiuQ0fhZFiu0f4N7b9WyPXggdB9KZ7vbDgxbykj9FHgz3M2vl08OZd/32rY6DJ9LopzHQSDSzZsXmmSs66BYtmHAfrvq4yIl1xJl6TlHmtUCJ85N3eIBNRht++bZpx6seY+sFDkkXh2S3Jy/gJbWo/+dwjOswkQAM4wnr58LXNlymxwqxv+e8zYGjH3so3QlKUrCOb5NMYNEVNznmypvaSI/eog0HGXNSC8FVl+5JFFCqz7/udNCtIIzUf/Hcf89EE7bxNBc+EwY2J4PFhl3Vp5qCcnMAii5CyWDunXs2h4JGOEKVs5iEIvMajV4fWvLeht6lr4MW3zDyvkZgLxFQhyNurZmJP+aaty6e1j6eJz9Q6fyEqn87OovDdCrIFknvUCW8qBlnTbYnU6br4jrzau5KsNDtxvFZo1OfVJsRfkVgGfOVXQMCECuWuBbnICn9+eik2s0MFVJ2ChFi6J9llIS8eytGexuMcz16hInyfBKHKPv1M3+UkPpORftpkpKC6S+tI3sSbrwUDm3++BFVYaowdEPCJdL7Ym+A3a72HlvcOD3HjDz9k8Hw==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201118203013.5077-2-ceggers@arri.de>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5807.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cd7744e9-86dd-4534-d22e-08d88c922023
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Nov 2020 13:50:50.4507
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: cIuRxSIKYP8ACGYQJfPLcaLNjLKkC7GPkDP9XVmJs63Y8Q9XbD0wD+y8A0Z8Osdg8gi/KewTufV35WISIQL4Tg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5808
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 09:30:02PM +0100, Christian Eggers wrote:
-> Convert the bindings document for Microchip KSZ Series Ethernet switches
-> from txt to yaml.
-> 
-> Signed-off-by: Christian Eggers <ceggers@arri.de>
-> ---
->  .../devicetree/bindings/net/dsa/ksz.txt       | 125 --------------
->  .../bindings/net/dsa/microchip,ksz.yaml       | 152 ++++++++++++++++++
->  MAINTAINERS                                   |   2 +-
->  3 files changed, 153 insertions(+), 126 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/net/dsa/ksz.txt
->  create mode 100644 Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/dsa/ksz.txt b/Documentation/devicetree/bindings/net/dsa/ksz.txt
-> deleted file mode 100644
-> index 95e91e84151c..000000000000
-> --- a/Documentation/devicetree/bindings/net/dsa/ksz.txt
-> +++ /dev/null
-> @@ -1,125 +0,0 @@
-> -Microchip KSZ Series Ethernet switches
-> -==================================
-> -
-> -Required properties:
-> -
-> -- compatible: For external switch chips, compatible string must be exactly one
-> -  of the following:
-> -  - "microchip,ksz8765"
-> -  - "microchip,ksz8794"
-> -  - "microchip,ksz8795"
-> -  - "microchip,ksz9477"
-> -  - "microchip,ksz9897"
-> -  - "microchip,ksz9896"
-> -  - "microchip,ksz9567"
-> -  - "microchip,ksz8565"
-> -  - "microchip,ksz9893"
-> -  - "microchip,ksz9563"
-> -  - "microchip,ksz8563"
-> -
-> -Optional properties:
-> -
-> -- reset-gpios		: Should be a gpio specifier for a reset line
-> -- microchip,synclko-125 : Set if the output SYNCLKO frequency should be set to
-> -			  125MHz instead of 25MHz.
-> -
-> -See Documentation/devicetree/bindings/net/dsa/dsa.txt for a list of additional
-> -required and optional properties.
-> -
-> -Examples:
-> -
-> -Ethernet switch connected via SPI to the host, CPU port wired to eth0:
-> -
-> -	eth0: ethernet@10001000 {
-> -		fixed-link {
-> -			speed = <1000>;
-> -			full-duplex;
-> -		};
-> -	};
-> -
-> -	spi1: spi@f8008000 {
-> -		pinctrl-0 = <&pinctrl_spi_ksz>;
-> -		cs-gpios = <&pioC 25 0>;
-> -		id = <1>;
-> -
-> -		ksz9477: ksz9477@0 {
-> -			compatible = "microchip,ksz9477";
-> -			reg = <0>;
-> -
-> -			spi-max-frequency = <44000000>;
-> -			spi-cpha;
-> -			spi-cpol;
-> -
-> -			ports {
-> -				#address-cells = <1>;
-> -				#size-cells = <0>;
-> -				port@0 {
-> -					reg = <0>;
-> -					label = "lan1";
-> -				};
-> -				port@1 {
-> -					reg = <1>;
-> -					label = "lan2";
-> -				};
-> -				port@2 {
-> -					reg = <2>;
-> -					label = "lan3";
-> -				};
-> -				port@3 {
-> -					reg = <3>;
-> -					label = "lan4";
-> -				};
-> -				port@4 {
-> -					reg = <4>;
-> -					label = "lan5";
-> -				};
-> -				port@5 {
-> -					reg = <5>;
-> -					label = "cpu";
-> -					ethernet = <&eth0>;
-> -					fixed-link {
-> -						speed = <1000>;
-> -						full-duplex;
-> -					};
-> -				};
-> -			};
-> -		};
-> -		ksz8565: ksz8565@0 {
-> -			compatible = "microchip,ksz8565";
-> -			reg = <0>;
-> -
-> -			spi-max-frequency = <44000000>;
-> -			spi-cpha;
-> -			spi-cpol;
-> -
-> -			ports {
-> -				#address-cells = <1>;
-> -				#size-cells = <0>;
-> -				port@0 {
-> -					reg = <0>;
-> -					label = "lan1";
-> -				};
-> -				port@1 {
-> -					reg = <1>;
-> -					label = "lan2";
-> -				};
-> -				port@2 {
-> -					reg = <2>;
-> -					label = "lan3";
-> -				};
-> -				port@3 {
-> -					reg = <3>;
-> -					label = "lan4";
-> -				};
-> -				port@6 {
-> -					reg = <6>;
-> -					label = "cpu";
-> -					ethernet = <&eth0>;
-> -					fixed-link {
-> -						speed = <1000>;
-> -						full-duplex;
-> -					};
-> -				};
-> -			};
-> -		};
-> -	};
-> diff --git a/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
-> new file mode 100644
-> index 000000000000..010adb09a68f
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
-> @@ -0,0 +1,152 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/dsa/microchip,ksz.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Microchip KSZ Series Ethernet switches
-> +
-> +allOf:
-> +  - $ref: dsa.yaml#
+> -----Original Message-----
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Thursday, November 19, 2020 02:22
+> To: Camelia Alexandra Groza <camelia.groza@nxp.com>
+> Cc: brouer@redhat.com; saeed@kernel.org; davem@davemloft.net;
+> Madalin Bucur (OSS) <madalin.bucur@oss.nxp.com>; Ioana Ciornei
+> <ioana.ciornei@nxp.com>; netdev@vger.kernel.org
+> Subject: Re: [PATCH net-next v2 2/7] dpaa_eth: add basic XDP support
+>=20
+> On Mon, 16 Nov 2020 16:42:28 +0200 Camelia Groza wrote:
+> > +	if (likely(fd_format =3D=3D qm_fd_contig)) {
+> > +		xdp_act =3D dpaa_run_xdp(priv, (struct qm_fd *)fd, vaddr,
+> > +				       &xdp_meta_len);
+> > +		if (xdp_act !=3D XDP_PASS) {
+> > +			percpu_stats->rx_packets++;
+> > +			percpu_stats->rx_bytes +=3D qm_fd_get_length(fd);
+> > +			return qman_cb_dqrr_consume;
+> > +		}
+> >  		skb =3D contig_fd_to_skb(priv, fd);
+> > -	else
+> > +	} else {
+> > +		WARN_ONCE(priv->xdp_prog, "S/G frames not supported
+> under XDP\n");
+> >  		skb =3D sg_fd_to_skb(priv, fd);
+>=20
+> It'd be safer to drop the packet if the format does not allow XDP
+> to run. Otherwise someone can bypass whatever policy XDP is trying
+> to enforce.
 
-Move this after 'maintainers'.
+I agree on the policy enforcement issue. I'll drop instead. Thanks.
 
-> +
-> +maintainers:
-> +  - Marek Vasut <marex@denx.de>
-> +  - Woojung Huh <Woojung.Huh@microchip.com>
-> +
-> +properties:
-> +  # See Documentation/devicetree/bindings/net/dsa/dsa.yaml for a list of additional
-> +  # required and optional properties.
-> +  compatible:
-> +    enum:
-> +      - microchip,ksz8765
-> +      - microchip,ksz8794
-> +      - microchip,ksz8795
-> +      - microchip,ksz9477
-> +      - microchip,ksz9897
-> +      - microchip,ksz9896
-> +      - microchip,ksz9567
-> +      - microchip,ksz8565
-> +      - microchip,ksz9893
-> +      - microchip,ksz9563
-> +      - microchip,ksz8563
-> +
-> +  reset-gpios:
-> +    description:
-> +      Should be a gpio specifier for a reset line.
-> +    maxItems: 1
-> +
-> +  microchip,synclko-125:
-> +    $ref: /schemas/types.yaml#/definitions/flag
-> +    description:
-> +      Set if the output SYNCLKO frequency should be set to 125MHz instead of 25MHz.
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-
-You need to use unevaluatedProperties instead.
-
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +
-> +    // Ethernet switch connected via SPI to the host, CPU port wired to eth0:
-> +    eth0 {
-> +        fixed-link {
-> +            speed = <1000>;
-> +            full-duplex;
-> +        };
-> +    };
-> +
-> +    spi0 {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        pinctrl-0 = <&pinctrl_spi_ksz>;
-> +        cs-gpios = <&pioC 25 0>;
-> +        id = <1>;
-> +
-> +        ksz9477: switch@0 {
-> +            compatible = "microchip,ksz9477";
-> +            reg = <0>;
-> +            reset-gpios = <&gpio5 0 GPIO_ACTIVE_LOW>;
-> +
-> +            spi-max-frequency = <44000000>;
-> +            spi-cpha;
-> +            spi-cpol;
-
-Are these 2 optional or required? Being optional is rare as most 
-devices support 1 mode, but not unheard of. In general, you shouldn't 
-need them as the driver should know how to configure the mode if the h/w 
-is fixed.
-
-> +
-> +            ethernet-ports {
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +                port@0 {
-> +                    reg = <0>;
-> +                    label = "lan1";
-> +                };
-> +                port@1 {
-> +                    reg = <1>;
-> +                    label = "lan2";
-> +                };
-> +                port@2 {
-> +                    reg = <2>;
-> +                    label = "lan3";
-> +                };
-> +                port@3 {
-> +                    reg = <3>;
-> +                    label = "lan4";
-> +                };
-> +                port@4 {
-> +                    reg = <4>;
-> +                    label = "lan5";
-> +                };
-> +                port@5 {
-> +                    reg = <5>;
-> +                    label = "cpu";
-> +                    ethernet = <&eth0>;
-> +                    fixed-link {
-> +                        speed = <1000>;
-> +                        full-duplex;
-> +                    };
-> +                };
-> +            };
-> +        };
-> +
-> +        ksz8565: switch@1 {
-> +            compatible = "microchip,ksz8565";
-> +            reg = <1>;
-> +
-> +            spi-max-frequency = <44000000>;
-> +            spi-cpha;
-> +            spi-cpol;
-> +
-> +            ethernet-ports {
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +                port@0 {
-> +                    reg = <0>;
-> +                    label = "lan1";
-> +                };
-> +                port@1 {
-> +                    reg = <1>;
-> +                    label = "lan2";
-> +                };
-> +                port@2 {
-> +                    reg = <2>;
-> +                    label = "lan3";
-> +                };
-> +                port@3 {
-> +                    reg = <3>;
-> +                    label = "lan4";
-> +                };
-> +                port@6 {
-> +                    reg = <6>;
-> +                    label = "cpu";
-> +                    ethernet = <&eth0>;
-> +                    fixed-link {
-> +                        speed = <1000>;
-> +                        full-duplex;
-> +                    };
-> +                };
-> +            };
-> +        };
-> +    };
-> +...
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 18b5b7896af8..d1003033412f 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -11508,7 +11508,7 @@ M:	Woojung Huh <woojung.huh@microchip.com>
->  M:	Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
->  L:	netdev@vger.kernel.org
->  S:	Maintained
-> -F:	Documentation/devicetree/bindings/net/dsa/ksz.txt
-> +F:	Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
->  F:	drivers/net/dsa/microchip/*
->  F:	include/linux/platform_data/microchip-ksz.h
->  F:	net/dsa/tag_ksz.c
-> -- 
-> Christian Eggers
-> Embedded software developer
-> 
-> Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-> Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRA 57918
-> Persoenlich haftender Gesellschafter: Arnold & Richter Cine Technik GmbH
-> Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRB 54477
-> Geschaeftsfuehrer: Dr. Michael Neuhaeuser; Stephan Schenk; Walter Trauninger; Markus Zeiler
-> 
