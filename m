@@ -2,101 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38CA42B9C01
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 21:31:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBAA32B9C22
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 21:36:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727887AbgKSUar (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 15:30:47 -0500
-Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:10247 "EHLO
-        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727126AbgKSUaq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 15:30:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1605817846; x=1637353846;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=26D/4+8MgXEm/GmImR17KomqwYUP7LW7XQyydu3A9WI=;
-  b=TVj+MqZAPqRGrEs8l7outZ96j26zUd0t34ZzFyzC2C7JiYhVSrPLD+0i
-   X444mvM4c5Ht6Lt+RAiTkoTVokwFrePaUPqxJ5uAv8JHLXAj1MU6TdcAh
-   cZMY/3TNru7RvfmhHxZpV8W3CsOPVMj4pYbq6zNyLbRlgd4INbs0b+3cb
-   Y=;
-X-IronPort-AV: E=Sophos;i="5.78,354,1599523200"; 
-   d="scan'208";a="64986625"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1e-c7c08562.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 19 Nov 2020 20:30:38 +0000
-Received: from EX13D28EUC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-1e-c7c08562.us-east-1.amazon.com (Postfix) with ESMTPS id 48362241429;
-        Thu, 19 Nov 2020 20:30:38 +0000 (UTC)
-Received: from u68c7b5b1d2d758.ant.amazon.com (10.43.162.53) by
- EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 19 Nov 2020 20:30:30 +0000
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     Shay Agroskin <shayagr@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <akiyano@amazon.com>, <sameehj@amazon.com>,
-        <ndagan@amazon.com>
-Subject: [PATCH V2 net 4/4] net: ena: return error code from ena_xdp_xmit_buff
-Date:   Thu, 19 Nov 2020 22:28:51 +0200
-Message-ID: <20201119202851.28077-5-shayagr@amazon.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20201119202851.28077-1-shayagr@amazon.com>
-References: <20201119202851.28077-1-shayagr@amazon.com>
+        id S1727799AbgKSUfB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 15:35:01 -0500
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:55632 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727211AbgKSUfB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 15:35:01 -0500
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0AJKYsx4062615;
+        Thu, 19 Nov 2020 14:34:54 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1605818094;
+        bh=61iPk1aGKqeRJig3dLVfDUO3FiK2c1IwV08di/OTMes=;
+        h=From:To:CC:Subject:Date;
+        b=V+/E2mxXOvVDy2tIo/RcYPh44ZmDcQNv6sopm/G5MU6Bhe9LTBGwyiZsrJcBlq557
+         6Le5YEuMOMOQir50d+KUXKzoKyLnVxhILEa7BGOYcS/KAAz19rjeluZVYJJdjAP49x
+         mI58dM2obzMDlSn8NwRC2QUWnNbkd+8dRLaA9cZs=
+Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0AJKYsX4108917
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 19 Nov 2020 14:34:54 -0600
+Received: from DLEE114.ent.ti.com (157.170.170.25) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 19
+ Nov 2020 14:34:54 -0600
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Thu, 19 Nov 2020 14:34:54 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0AJKYriq090339;
+        Thu, 19 Nov 2020 14:34:53 -0600
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+CC:     <linux-kernel@vger.kernel.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH v2] mdio_bus: suppress err message for reset gpio EPROBE_DEFER
+Date:   Thu, 19 Nov 2020 22:34:46 +0200
+Message-ID: <20201119203446.20857-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.43.162.53]
-X-ClientProxiedBy: EX13D05UWC002.ant.amazon.com (10.43.162.92) To
- EX13D28EUC001.ant.amazon.com (10.43.164.4)
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The function mistakenly returns NETDEV_TX_OK regardless of the
-transmission success. This patch fixes this behavior by returning the
-error code from the function.
+The mdio_bus may have dependencies from GPIO controller and so got
+deferred. Now it will print error message every time -EPROBE_DEFER is
+returned which from:
+__mdiobus_register()
+ |-devm_gpiod_get_optional()
+without actually identifying error code.
 
-Fixes: 548c4940b9f1 ("net: ena: Implement XDP_TX action")
-Signed-off-by: Shay Agroskin <shayagr@amazon.com>
+"mdio_bus 4a101000.mdio: mii_bus 4a101000.mdio couldn't get reset GPIO"
+
+Hence, suppress error message for devm_gpiod_get_optional() returning
+-EPROBE_DEFER case by using dev_err_probe().
+
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
 ---
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 6 +++---
+ drivers/net/phy/mdio_bus.c | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index df1884d57d1a..66b67ab51478 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -284,9 +284,9 @@ static int ena_xdp_xmit_buff(struct net_device *dev,
- 	struct ena_tx_buffer *tx_info;
- 	struct ena_ring *xdp_ring;
- 	u16 next_to_use, req_id;
--	int rc;
- 	void *push_hdr;
- 	u32 push_len;
-+	int rc;
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 757e950fb745..83cd61c3dd01 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -546,10 +546,10 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
+ 	/* de-assert bus level PHY GPIO reset */
+ 	gpiod = devm_gpiod_get_optional(&bus->dev, "reset", GPIOD_OUT_LOW);
+ 	if (IS_ERR(gpiod)) {
+-		dev_err(&bus->dev, "mii_bus %s couldn't get reset GPIO\n",
+-			bus->id);
++		err = dev_err_probe(&bus->dev, PTR_ERR(gpiod),
++				    "mii_bus %s couldn't get reset GPIO\n", bus->id);
+ 		device_del(&bus->dev);
+-		return PTR_ERR(gpiod);
++		return err;
+ 	} else	if (gpiod) {
+ 		bus->reset_gpiod = gpiod;
  
- 	xdp_ring = &adapter->tx_ring[qid];
- 	next_to_use = xdp_ring->next_to_use;
-@@ -322,14 +322,14 @@ static int ena_xdp_xmit_buff(struct net_device *dev,
- 	xdp_ring->tx_stats.doorbells++;
- 	u64_stats_update_end(&xdp_ring->syncp);
- 
--	return NETDEV_TX_OK;
-+	return rc;
- 
- error_unmap_dma:
- 	ena_unmap_tx_buff(xdp_ring, tx_info);
- 	tx_info->xdpf = NULL;
- error_drop_packet:
- 	__free_page(tx_info->xdp_rx_page);
--	return NETDEV_TX_OK;
-+	return rc;
- }
- 
- static int ena_xdp_execute(struct ena_ring *rx_ring,
 -- 
 2.17.1
 
