@@ -2,94 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A787A2B9D71
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 23:15:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05E042B9D74
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 23:15:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726875AbgKSWJ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 17:09:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50432 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725877AbgKSWJ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 17:09:58 -0500
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AA4DC0613CF;
-        Thu, 19 Nov 2020 14:09:57 -0800 (PST)
-Received: by mail-wm1-x330.google.com with SMTP id h21so8097961wmb.2;
-        Thu, 19 Nov 2020 14:09:57 -0800 (PST)
+        id S1726915AbgKSWKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 17:10:52 -0500
+Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:42599 "EHLO
+        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726440AbgKSWKv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 17:10:51 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=ZLPw5t8Q3S6R5Cu4mnS0Y3M36trsW+AyO0nPcsojeRo=;
-        b=jzCDkQhoboxo7W2c72VfZsx+046aVHpoxzkfJ9UK8YCsTMmOxe581haJ2Yt3hced06
-         O3MFwdgvVB5/YtcBoSx3PaydkDnc5UU8RS51o1GDvTpX/HJy9x/fVyKyNexq5/IENXN0
-         cCz3nh4LDoddO6lEW5RfiG+WpgvxRm+Hq3eRIDBQf1HrHCmuV+LXvKE+i9dar+dVKfwx
-         ZcQ5ISszqo/x3Q+HeyCyZc+GwKD+qo+b5SVI+Ju0o/IefSkgUTOXXkkeSkauxcjQjfbc
-         9xM3MxL/+OK93AcWmeTp6BYdv50heIIa9Y/Yex7DgybRkYKBHB7eq8rHj1IPtN/Q+51c
-         Nfgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=ZLPw5t8Q3S6R5Cu4mnS0Y3M36trsW+AyO0nPcsojeRo=;
-        b=J2UfhQd5HimxnGeY7X6hbNG/rvLfqjHVMlUkae8KTjrVEjtx1nffe/qOzubdq0vP9o
-         j3FwgesfrxoNZU6JtpwjhhzyIQR6EOuXCBEifnkegkTQ7iyJa6PuPqRb1zFarXCmv3gP
-         3z12y/33NM6EpUY18/wLINQO5MU1hSP98uXmYvhxeC08RopSjG+IfkBGf63CQQAn7Bbt
-         KJ37/z1QtJA4k+hUU6aoxwtPcD5RFBsnmfy57ZNGo1wvGjbIxSJv8IG8w1Hm2ATFkJ3S
-         mfrK1xTi15jwnSJDq/V0qpEC0yTOSjHtyoKoO4fN5fcVbWYQjk0io3Bdq97pbKobUObR
-         lASQ==
-X-Gm-Message-State: AOAM530vAvZFUi46/F85KG//fh8bImtTftp0VmOJFRESS6+lRTMnXcmy
-        4DEl4ZzSsM0c30t2Xx+c4S177nyz+ic7bg==
-X-Google-Smtp-Source: ABdhPJy/g3bybC2vz16iAR02W/13ZlP5Xo5zGAZKmYwrReaKPoOIMqxD+EjNq4wv4cUr+hRFtZY1fQ==
-X-Received: by 2002:a1c:c205:: with SMTP id s5mr3333169wmf.122.1605823795749;
-        Thu, 19 Nov 2020 14:09:55 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f23:2800:6d7c:9ea3:dfaa:d617? (p200300ea8f2328006d7c9ea3dfaad617.dip0.t-ipconnect.de. [2003:ea:8f23:2800:6d7c:9ea3:dfaa:d617])
-        by smtp.googlemail.com with ESMTPSA id 89sm2090567wrp.58.2020.11.19.14.09.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Nov 2020 14:09:55 -0800 (PST)
-Subject: Re: [PATCH v2] mdio_bus: suppress err message for reset gpio
- EPROBE_DEFER
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-References: <20201119203446.20857-1-grygorii.strashko@ti.com>
- <1a59fbe1-6a5d-81a3-4a86-fa3b5dbfdf8e@gmail.com>
- <cabad89e-23cc-18b3-8306-e5ef1ee4bfa6@ti.com>
- <44a3c8c0-9dbd-4059-bde8-98486dde269f@gmail.com>
- <20201119214139.GL1853236@lunn.ch>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <221941d6-2bb1-9be8-7031-08071a509542@gmail.com>
-Date:   Thu, 19 Nov 2020 23:09:52 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1605823850; x=1637359850;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=KakZVEyQaYj6Wtym9hbgZZFBg0Ru32Ep8T3605AucoY=;
+  b=Wh2XjkHsHKxTM5jzH3Kh3dTGVG1bLAR7D6IBUDJrfg81GdgVLxUTZxsn
+   E2rY/bh5d+kKSG98vYXbCk8eXH+Ts2DYhSkMI2+sebP2m3vedLJEV+hmL
+   AMhrl2Eog1qiS+qkqh1YGGpbKM+kXPamnijK0NpDp2lZ3GIRS3Oi3SEY8
+   o=;
+X-IronPort-AV: E=Sophos;i="5.78,354,1599523200"; 
+   d="scan'208";a="97174361"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2c-456ef9c9.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 19 Nov 2020 22:10:50 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-2c-456ef9c9.us-west-2.amazon.com (Postfix) with ESMTPS id 2BC1EBEB14;
+        Thu, 19 Nov 2020 22:10:47 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 19 Nov 2020 22:10:47 +0000
+Received: from 38f9d3582de7.ant.amazon.com (10.43.162.144) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 19 Nov 2020 22:10:43 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <kafai@fb.com>
+CC:     <ast@kernel.org>, <benh@amazon.com>, <bpf@vger.kernel.org>,
+        <daniel@iogearbox.net>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <kuni1840@gmail.com>,
+        <kuniyu@amazon.co.jp>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+Subject: Re: [RFC PATCH bpf-next 6/8] bpf: Add cookie in sk_reuseport_md.
+Date:   Fri, 20 Nov 2020 07:10:39 +0900
+Message-ID: <20201119221039.77142-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+In-Reply-To: <20201119001154.kapwihc2plp4f7zc@kafai-mbp.dhcp.thefacebook.com>
+References: <20201119001154.kapwihc2plp4f7zc@kafai-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-In-Reply-To: <20201119214139.GL1853236@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.144]
+X-ClientProxiedBy: EX13D14UWC004.ant.amazon.com (10.43.162.99) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 19.11.2020 um 22:41 schrieb Andrew Lunn:
->>>> Doesn't checkpatch complain about line length > 80 here?
->>>
->>> :)
->>>
->>> commit bdc48fa11e46f867ea4d75fa59ee87a7f48be144
->>> Author: Joe Perches <joe@perches.com>
->>> Date:   Fri May 29 16:12:21 2020 -0700
->>>
->>>     checkpatch/coding-style: deprecate 80-column warning
->>>
->>
->> Ah, again something learnt. Thanks for the reference.
+From:   Martin KaFai Lau <kafai@fb.com>
+Date:   Wed, 18 Nov 2020 16:11:54 -0800
+> On Tue, Nov 17, 2020 at 06:40:21PM +0900, Kuniyuki Iwashima wrote:
+> > We will call sock_reuseport.prog for socket migration in the next commit,
+> > so the eBPF program has to know which listener is closing in order to
+> > select the new listener.
+> > 
+> > Currently, we can get a unique ID for each listener in the userspace by
+> > calling bpf_map_lookup_elem() for BPF_MAP_TYPE_REUSEPORT_SOCKARRAY map.
+> > This patch exposes the ID to the eBPF program.
+> > 
+> > Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
+> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> > ---
+> >  include/linux/bpf.h            | 1 +
+> >  include/uapi/linux/bpf.h       | 1 +
+> >  net/core/filter.c              | 8 ++++++++
+> >  tools/include/uapi/linux/bpf.h | 1 +
+> >  4 files changed, 11 insertions(+)
+> > 
+> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > index 581b2a2e78eb..c0646eceffa2 100644
+> > --- a/include/linux/bpf.h
+> > +++ b/include/linux/bpf.h
+> > @@ -1897,6 +1897,7 @@ struct sk_reuseport_kern {
+> >  	u32 hash;
+> >  	u32 reuseport_id;
+> >  	bool bind_inany;
+> > +	u64 cookie;
+> >  };
+> >  bool bpf_tcp_sock_is_valid_access(int off, int size, enum bpf_access_type type,
+> >  				  struct bpf_insn_access_aux *info);
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index 162999b12790..3fcddb032838 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -4403,6 +4403,7 @@ struct sk_reuseport_md {
+> >  	__u32 ip_protocol;	/* IP protocol. e.g. IPPROTO_TCP, IPPROTO_UDP */
+> >  	__u32 bind_inany;	/* Is sock bound to an INANY address? */
+> >  	__u32 hash;		/* A hash of the packet 4 tuples */
+> > +	__u64 cookie;		/* ID of the listener in map */
+> Instead of only adding the cookie of a sk, lets make the sk pointer available:
 > 
-> But it then got revoked for netdev. Or at least it was planned to
-> re-impose 80 for netdev. I don't know if checkpatch got patched yet.
+> 	__bpf_md_ptr(struct bpf_sock *, sk);
 > 
-> 	  Andrew
+> and then use the BPF_FUNC_get_socket_cookie to get the cookie.
 > 
-At a first glance it sounds strange that subsystems may define own
-rules for such basic things. But supposedly there has been a longer
-emotional disucssion about this already ..
+> Other fields of the sk can also be directly accessed too once
+> the sk pointer is available.
+
+Oh, I did not know BPF_FUNC_get_socket_cookie.
+I will add the sk pointer and use the helper function in the next spin!
+Thank you.
