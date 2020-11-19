@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05E042B9D74
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 23:15:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03B4F2B9D79
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 23:15:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726915AbgKSWKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 17:10:52 -0500
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:42599 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726440AbgKSWKv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 17:10:51 -0500
+        id S1726828AbgKSWNo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 17:13:44 -0500
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:52159 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726644AbgKSWNn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 17:13:43 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1605823850; x=1637359850;
+  s=amazon201209; t=1605824022; x=1637360022;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=KakZVEyQaYj6Wtym9hbgZZFBg0Ru32Ep8T3605AucoY=;
-  b=Wh2XjkHsHKxTM5jzH3Kh3dTGVG1bLAR7D6IBUDJrfg81GdgVLxUTZxsn
-   E2rY/bh5d+kKSG98vYXbCk8eXH+Ts2DYhSkMI2+sebP2m3vedLJEV+hmL
-   AMhrl2Eog1qiS+qkqh1YGGpbKM+kXPamnijK0NpDp2lZ3GIRS3Oi3SEY8
-   o=;
+  bh=6ZqawRj90596OyIiJCq+GBiWpU5fbf5vnBgay7an51Y=;
+  b=p2hZ+FACO3ZWm+JqwImGcBOq8I60J5EUrJAVjUOOJ+Iu7duT/Oz3urG/
+   onGzjPiJr+jlODsH12HqMMtvLZvQsNKx5v94MeEzeOAC6KGIhozcKckNl
+   Lik76WxePy5NPtNtabV82wNpsh8ayocJNzhtrNirX83yIEry8Aw3zPWas
+   I=;
 X-IronPort-AV: E=Sophos;i="5.78,354,1599523200"; 
-   d="scan'208";a="97174361"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2c-456ef9c9.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 19 Nov 2020 22:10:50 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-2c-456ef9c9.us-west-2.amazon.com (Postfix) with ESMTPS id 2BC1EBEB14;
-        Thu, 19 Nov 2020 22:10:47 +0000 (UTC)
+   d="scan'208";a="67539107"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1e-c7f73527.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 19 Nov 2020 22:13:41 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-1e-c7f73527.us-east-1.amazon.com (Postfix) with ESMTPS id D8B9EAEF15;
+        Thu, 19 Nov 2020 22:13:40 +0000 (UTC)
 Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 19 Nov 2020 22:10:47 +0000
-Received: from 38f9d3582de7.ant.amazon.com (10.43.162.144) by
+ id 15.0.1497.2; Thu, 19 Nov 2020 22:13:40 +0000
+Received: from 38f9d3582de7.ant.amazon.com (10.43.160.67) by
  EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 19 Nov 2020 22:10:43 +0000
+ id 15.0.1497.2; Thu, 19 Nov 2020 22:13:35 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 To:     <kafai@fb.com>
 CC:     <ast@kernel.org>, <benh@amazon.com>, <bpf@vger.kernel.org>,
@@ -41,71 +41,85 @@ CC:     <ast@kernel.org>, <benh@amazon.com>, <bpf@vger.kernel.org>,
         <edumazet@google.com>, <kuba@kernel.org>, <kuni1840@gmail.com>,
         <kuniyu@amazon.co.jp>, <linux-kernel@vger.kernel.org>,
         <netdev@vger.kernel.org>
-Subject: Re: [RFC PATCH bpf-next 6/8] bpf: Add cookie in sk_reuseport_md.
-Date:   Fri, 20 Nov 2020 07:10:39 +0900
-Message-ID: <20201119221039.77142-1-kuniyu@amazon.co.jp>
+Subject: Re: [RFC PATCH bpf-next 7/8] bpf: Call bpf_run_sk_reuseport() for socket migration.
+Date:   Fri, 20 Nov 2020 07:13:31 +0900
+Message-ID: <20201119221331.77586-1-kuniyu@amazon.co.jp>
 X-Mailer: git-send-email 2.17.2 (Apple Git-113)
-In-Reply-To: <20201119001154.kapwihc2plp4f7zc@kafai-mbp.dhcp.thefacebook.com>
-References: <20201119001154.kapwihc2plp4f7zc@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20201119010045.a6mqkzuv4tjruny6@kafai-mbp.dhcp.thefacebook.com>
+References: <20201119010045.a6mqkzuv4tjruny6@kafai-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.43.162.144]
-X-ClientProxiedBy: EX13D14UWC004.ant.amazon.com (10.43.162.99) To
+X-Originating-IP: [10.43.160.67]
+X-ClientProxiedBy: EX13d09UWC002.ant.amazon.com (10.43.162.102) To
  EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From:   Martin KaFai Lau <kafai@fb.com>
-Date:   Wed, 18 Nov 2020 16:11:54 -0800
-> On Tue, Nov 17, 2020 at 06:40:21PM +0900, Kuniyuki Iwashima wrote:
-> > We will call sock_reuseport.prog for socket migration in the next commit,
-> > so the eBPF program has to know which listener is closing in order to
-> > select the new listener.
+Date:   Wed, 18 Nov 2020 17:00:45 -0800
+> On Tue, Nov 17, 2020 at 06:40:22PM +0900, Kuniyuki Iwashima wrote:
+> > This patch makes it possible to select a new listener for socket migration
+> > by eBPF.
 > > 
-> > Currently, we can get a unique ID for each listener in the userspace by
-> > calling bpf_map_lookup_elem() for BPF_MAP_TYPE_REUSEPORT_SOCKARRAY map.
-> > This patch exposes the ID to the eBPF program.
+> > The noteworthy point is that we select a listening socket in
+> > reuseport_detach_sock() and reuseport_select_sock(), but we do not have
+> > struct skb in the unhash path.
+> > 
+> > Since we cannot pass skb to the eBPF program, we run only the
+> > BPF_PROG_TYPE_SK_REUSEPORT program by calling bpf_run_sk_reuseport() with
+> > skb NULL. So, some fields derived from skb are also NULL in the eBPF
+> > program.
+> More things need to be considered here when skb is NULL.
+> 
+> Some helpers are probably assuming skb is not NULL.
+> 
+> Also, the sk_lookup in filter.c is actually passing a NULL skb to avoid
+> doing the reuseport select.
+
+Honestly, I have missed this point...
+I wanted users to reuse the same eBPF program seamlessly, but it seems unsafe.
+
+
+> > Moreover, we can cancel migration by returning SK_DROP. This feature is
+> > useful when listeners have different settings at the socket API level or
+> > when we want to free resources as soon as possible.
 > > 
 > > Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
 > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 > > ---
-> >  include/linux/bpf.h            | 1 +
-> >  include/uapi/linux/bpf.h       | 1 +
-> >  net/core/filter.c              | 8 ++++++++
-> >  tools/include/uapi/linux/bpf.h | 1 +
-> >  4 files changed, 11 insertions(+)
+> >  net/core/filter.c          | 26 +++++++++++++++++++++-----
+> >  net/core/sock_reuseport.c  | 23 ++++++++++++++++++++---
+> >  net/ipv4/inet_hashtables.c |  2 +-
+> >  3 files changed, 42 insertions(+), 9 deletions(-)
 > > 
-> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > index 581b2a2e78eb..c0646eceffa2 100644
-> > --- a/include/linux/bpf.h
-> > +++ b/include/linux/bpf.h
-> > @@ -1897,6 +1897,7 @@ struct sk_reuseport_kern {
-> >  	u32 hash;
-> >  	u32 reuseport_id;
-> >  	bool bind_inany;
-> > +	u64 cookie;
-> >  };
-> >  bool bpf_tcp_sock_is_valid_access(int off, int size, enum bpf_access_type type,
-> >  				  struct bpf_insn_access_aux *info);
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index 162999b12790..3fcddb032838 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -4403,6 +4403,7 @@ struct sk_reuseport_md {
-> >  	__u32 ip_protocol;	/* IP protocol. e.g. IPPROTO_TCP, IPPROTO_UDP */
-> >  	__u32 bind_inany;	/* Is sock bound to an INANY address? */
-> >  	__u32 hash;		/* A hash of the packet 4 tuples */
-> > +	__u64 cookie;		/* ID of the listener in map */
-> Instead of only adding the cookie of a sk, lets make the sk pointer available:
-> 
-> 	__bpf_md_ptr(struct bpf_sock *, sk);
-> 
-> and then use the BPF_FUNC_get_socket_cookie to get the cookie.
-> 
-> Other fields of the sk can also be directly accessed too once
-> the sk pointer is available.
+> > diff --git a/net/core/filter.c b/net/core/filter.c
+> > index 01e28f283962..ffc4591878b8 100644
+> > --- a/net/core/filter.c
+> > +++ b/net/core/filter.c
+> > @@ -8914,6 +8914,22 @@ static u32 xdp_convert_ctx_access(enum bpf_access_type type,
+> >  	SOCK_ADDR_LOAD_NESTED_FIELD_SIZE_OFF(S, NS, F, NF,		       \
+> >  					     BPF_FIELD_SIZEOF(NS, NF), 0)
+> >  
+> > +#define SOCK_ADDR_LOAD_NESTED_FIELD_SIZE_OFF_OR_NULL(S, NS, F, NF, SIZE, OFF)	\
+> > +	do {									\
+> > +		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(S, F), si->dst_reg,	\
+> > +				      si->src_reg, offsetof(S, F));		\
+> > +		*insn++ = BPF_JMP_IMM(BPF_JEQ, si->dst_reg, 0, 1);		\
+> Although it may not matter much, always doing this check seems not very ideal
+> considering the fast path will always have skb and only the slow
+> path (accept-queue migrate) has skb is NULL.  I think the req_sk usually
+> has the skb also except the timer one.
 
-Oh, I did not know BPF_FUNC_get_socket_cookie.
-I will add the sk pointer and use the helper function in the next spin!
-Thank you.
+Yes, but the migration happens only when/after the listener is closed, so
+I think it does not occur so frequently and will not be a problem.
+
+
+> First thought is to create a temp skb but it has its own issues.
+> or it may actually belong to a new prog type.  However, lets keep
+> exploring possible options (including NULL skb).
+
+I also thought up the two ideas, but the former will be a bit complicated.
+And the latter makes users implement the new eBPF program. I did not want
+users to struggle anymore, so I have selected the NULL skb. However, it is
+not safe, so adding a new prog type seems to be the better way.
