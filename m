@@ -2,91 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBB202B9832
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 17:40:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CD6B2B9835
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 17:40:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728628AbgKSQhy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 11:37:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55628 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727049AbgKSQhx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 11:37:53 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F1CAC0613CF;
-        Thu, 19 Nov 2020 08:37:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=gHMOgW7vGvHwFQ/LwXMNNh7tP/+xntm6sL8PHrnVw+s=; b=Hr69kj/hMZnD83PR8CeMBzd0d5
-        Q8bySE/9SwmQvCwJOXL8pl9Hgl2vtLcNA20vhTmVSJKFxPZeH+G7S12/jDBAAMupPDB16XX/CDjq/
-        9US0PctSeW5F8fnuYYxhPgPaoWj4RbW52vTS6prtUfN0vaEzRir/lKk3BeYKhxj5e3w5947/fwEmx
-        vxhaDol9Ondo8Adw0KHyeD676fYb0KaVy4b3OVewTImc9vsyATu3AgD/ChZyGduwFS4+1/EGqlMuD
-        Sax/dPtVMMQDRJBU7UIfHFsy4sNtxkCE7OaXvZc6nk4qrBrViJmToKpQcdcPo/f0lHEGBgNR0XNcn
-        csNV6l4Q==;
-Received: from [2601:1c0:6280:3f0::bcc4]
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kfmwP-0007TV-7F; Thu, 19 Nov 2020 16:37:49 +0000
-Subject: Re: [PATCH net v2] ipv6: Remove dependency of
- ipv6_frag_thdr_truncated on ipv6 module
-To:     Georg Kohmann <geokohma@cisco.com>, netdev@vger.kernel.org
-Cc:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
-        davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        kuba@kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org
-References: <20201119095833.8409-1-geokohma@cisco.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <e0057da4-4522-f380-b12d-3d7bed8221d3@infradead.org>
-Date:   Thu, 19 Nov 2020 08:37:44 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1729087AbgKSQiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 11:38:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50338 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727768AbgKSQiN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Nov 2020 11:38:13 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 51C3322202;
+        Thu, 19 Nov 2020 16:38:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605803892;
+        bh=tEexf9zYiZGdd5+0cCky5BEDP+RH2TsHc9frvXf4Fng=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qu3VtP4ORfz+9VwkZWf8KJCCvgVmNxOic8/wyyXX0tITt8LsnCD3GvGwvvWNjsSa0
+         Y484BiSVrMf83qmJA+TlAZK7WIT+uGsUpjg4QO6Ikdn2eIsXsM7F2FQMoi0dCjue6Y
+         RSgfK3ctdsM+rtHqIXouSCoG72Zdn1Bu8zWaCQB0=
+Date:   Thu, 19 Nov 2020 08:38:11 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Tariq Toukan <ttoukan.linux@gmail.com>,
+        Jarod Wilson <jarod@redhat.com>
+Cc:     Tariq Toukan <tariqt@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>
+Subject: Re: [PATCH net-next 0/2] TLS TX HW offload for Bond
+Message-ID: <20201119083811.6b68bfa8@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <0e4a04f2-2ffa-179d-3b7b-ef08b52c9290@gmail.com>
+References: <20201115134251.4272-1-tariqt@nvidia.com>
+        <20201118160239.78871842@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <0e4a04f2-2ffa-179d-3b7b-ef08b52c9290@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20201119095833.8409-1-geokohma@cisco.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/19/20 1:58 AM, Georg Kohmann wrote:
-> IPV6=m
-> NF_DEFRAG_IPV6=y
+On Thu, 19 Nov 2020 17:59:38 +0200 Tariq Toukan wrote:
+> On 11/19/2020 2:02 AM, Jakub Kicinski wrote:
+> > On Sun, 15 Nov 2020 15:42:49 +0200 Tariq Toukan wrote:  
+> >> This series opens TLS TX HW offload for bond interfaces.
+> >> This allows bond interfaces to benefit from capable slave devices.
+> >>
+> >> The first patch adds real_dev field in TLS context structure, and aligns
+> >> usages in TLS module and supporting drivers.
+> >> The second patch opens the offload for bond interfaces.
+> >>
+> >> For the configuration above, SW kTLS keeps picking the same slave
+> >> To keep simple track of the HW and SW TLS contexts, we bind each socket to
+> >> a specific slave for the socket's whole lifetime. This is logically valid
+> >> (and similar to the SW kTLS behavior) in the following bond configuration,
+> >> so we restrict the offload support to it:
+> >>
+> >> ((mode == balance-xor) or (mode == 802.3ad))
+> >> and xmit_hash_policy == layer3+4.  
+> > 
+> > This does not feel extremely clean, maybe you can convince me otherwise.
+> > 
+> > Can we extend netdev_get_xmit_slave() and figure out the output dev
+> > (and if it's "stable") in a more generic way? And just feed that dev
+> > into TLS handling?   
 > 
-> ld: net/ipv6/netfilter/nf_conntrack_reasm.o: in function
-> `nf_ct_frag6_gather':
-> net/ipv6/netfilter/nf_conntrack_reasm.c:462: undefined reference to
-> `ipv6_frag_thdr_truncated'
-> 
-> Netfilter is depending on ipv6 symbol ipv6_frag_thdr_truncated. This
-> dependency is forcing IPV6=y.
-> 
-> Remove this dependency by moving ipv6_frag_thdr_truncated out of ipv6. This
-> is the same solution as used with a similar issues: Referring to
-> commit 70b095c843266 ("ipv6: remove dependency of nf_defrag_ipv6 on ipv6
-> module")
-> 
-> Fixes: 9d9e937b1c8b ("ipv6/netfilter: Discard first fragment not including all headers")
-> Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Georg Kohmann <geokohma@cisco.com>
-> ---
-> 
-> Notes:
->     v2: Add Fixes tag and fix spelling in comment.
+> I don't see we go through netdev_get_xmit_slave(), but through 
+> .ndo_start_xmit (bond_start_xmit).
 
-Acked-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
+I may be misunderstanding the purpose of netdev_get_xmit_slave(),
+please correct me if I'm wrong. AFAIU it's supposed to return a
+lower netdev that the skb should then be xmited on.
 
-Thanks.
+So what I was thinking was either construct an skb or somehow reshuffle
+the netdev_get_xmit_slave() code to take a flow dissector output or
+${insert other ideas}. Then add a helper in the core that would drill
+down from the socket netdev to the "egress" netdev. Have TLS call
+that helper, and talk to the "egress" netdev from the start, rather
+than the socket's netdev. Then loosen the checks on software devices.
 
+I'm probably missing the problem you're trying to explain to me :S
+
+Side note - Jarod, I'd be happy to take a patch renaming
+netdev_get_xmit_slave() and the ndo, if you have the cycles to send 
+a patch. It's a recent addition, and in the core we should make more 
+of an effort to avoid sensitive terms.
+
+> Currently I have my check there to 
+> catch all skbs belonging to offloaded TLS sockets.
 > 
->  include/net/ipv6.h                      |  2 --
->  include/net/ipv6_frag.h                 | 30 ++++++++++++++++++++++++++++++
->  net/ipv6/netfilter/nf_conntrack_reasm.c |  2 +-
->  net/ipv6/reassembly.c                   | 31 +------------------------------
->  4 files changed, 32 insertions(+), 33 deletions(-)
-> 
+> The TLS offload get_slave() logic decision is per socket, so the result 
+> cannot be saved in the bond memory. Currently I save the real_dev field 
+> in the TLS context structure.
 
--- 
-~Randy
+Right, but we could just have ctx->netdev be the "egress" netdev
+always, right? Do we expect somewhere that it's going to be matching
+the socket's dst?
+
+> One way to make it more generic is to save it on the sock structure. I 
+> agree that this replaces the TLS-specific logic, but demands increasing 
+> the sock struct, and has larger impact on all other flows...
 
