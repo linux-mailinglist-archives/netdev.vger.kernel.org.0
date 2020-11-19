@@ -2,220 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECDA72B9388
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 14:21:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AB942B932D
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 14:13:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727307AbgKSNPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 08:15:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726938AbgKSNPu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 08:15:50 -0500
-X-Greylist: delayed 579 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 19 Nov 2020 05:15:50 PST
-Received: from smtp-out.kfki.hu (smtp-out.kfki.hu [IPv6:2001:738:5001::48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 428CDC0613CF
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 05:15:50 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by smtp2.kfki.hu (Postfix) with ESMTP id 3A921CC0159;
-        Thu, 19 Nov 2020 14:06:06 +0100 (CET)
-X-Virus-Scanned: Debian amavisd-new at smtp2.kfki.hu
-Received: from smtp2.kfki.hu ([127.0.0.1])
-        by localhost (smtp2.kfki.hu [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP; Thu, 19 Nov 2020 14:06:03 +0100 (CET)
-Received: from blackhole.kfki.hu (blackhole.szhk.kfki.hu [148.6.240.2])
-        by smtp2.kfki.hu (Postfix) with ESMTP id C1849CC0138;
-        Thu, 19 Nov 2020 14:06:03 +0100 (CET)
-Received: by blackhole.kfki.hu (Postfix, from userid 1000)
-        id B7969340D5C; Thu, 19 Nov 2020 14:06:03 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by blackhole.kfki.hu (Postfix) with ESMTP id B3599340D5B;
-        Thu, 19 Nov 2020 14:06:03 +0100 (CET)
-Date:   Thu, 19 Nov 2020 14:06:03 +0100 (CET)
-From:   Jozsef Kadlecsik <kadlec@netfilter.org>
-X-X-Sender: kadlec@blackhole.kfki.hu
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        netfilter-devel@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: Re: [PATCH net] netfilter: ipset: prevent uninit-value in
- hash_ip6_add
-In-Reply-To: <20201119095932.1962839-1-eric.dumazet@gmail.com>
-Message-ID: <alpine.DEB.2.23.453.2011191341570.19567@blackhole.kfki.hu>
-References: <20201119095932.1962839-1-eric.dumazet@gmail.com>
-User-Agent: Alpine 2.23 (DEB 453 2020-06-18)
+        id S1727057AbgKSNJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 08:09:24 -0500
+Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:56343 "EHLO
+        wout3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726958AbgKSNJX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 08:09:23 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id B0D5DED4;
+        Thu, 19 Nov 2020 08:09:22 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Thu, 19 Nov 2020 08:09:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=G8he3nUWdLN/4cqGw
+        egCVclknA74Z5cKG8gW7L7yU2o=; b=V2T7/SsvljC8cSwTlH0eAlrkLOH4UzQpA
+        xPETYS92OZnj174Hwg91UP12nk4oS82I0CIeacaYr1BSwmsaVuYRfHdPG+LmSd7N
+        YPHsQpzsZleuYKDyKe0bSKipukEoTkVkDPGyJQICxmDcvOkx/9Pa6e5ws2QkuyBT
+        Csb4PKZsCgaSoPVFFdcrmbocDELuay1MgCQcBvwAbvV0dZXHoywUX/53RpPqZ0VW
+        CkPsyvR9Z65Us51Ow0auxBKFrXdQe0HFjrTY1JdyZYQDlthl4e9B92D0MvI9YWNn
+        YIAkHfI4ZABXXQxWT3Ixmceu108v2lRgfeTyeJkIqgJosPl7DsHTg==
+X-ME-Sender: <xms:gm62X4hAQpCLJvxtx_7DEy7NgD2XD-8_gOJ-nRlAXwiXERi8vDnw0w>
+    <xme:gm62XxDGhadHw6FLZj-SyR41dB3Ouym-c9vEMz__JEeK87Uuy61oWoBA_VP-lzQ7V
+    OnVBTLBA8oCxJE>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudefjedggeekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
+    etffeikeegheevfedvgeelvdffudfhnecukfhppeekgedrvddvledrudehgedrudegjeen
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
+    gthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:gm62XwENCPIpwR6_4ecLBqdBXff7_nRpQoAr-y5d6nLRvU0y-YFtfA>
+    <xmx:gm62X5Tb62jwP6p3vX4iBigwxsu1xK9u3jqt7fQH1SYFA_QzSV3Nng>
+    <xmx:gm62X1w6Z5Tue8Cy4mK1hDcJ9GLn6eyBNPlAVxCOJMmaverh3DRAXA>
+    <xmx:gm62X990bItbTZXEKPggxqSxvDd_IoNXZo_-dGaSM1Co7PbEMcu2FA>
+Received: from shredder.lan (igld-84-229-154-147.inter.net.il [84.229.154.147])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 393953280063;
+        Thu, 19 Nov 2020 08:09:20 -0500 (EST)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
+        jiri@nvidia.com, mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net-next 0/8] mlxsw: Add support for nexthop objects
+Date:   Thu, 19 Nov 2020 15:08:40 +0200
+Message-Id: <20201119130848.407918-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+From: Ido Schimmel <idosch@nvidia.com>
 
-On Thu, 19 Nov 2020, Eric Dumazet wrote:
+This patch set adds support for nexthop objects in mlxsw. Nexthop
+objects are treated as another front-end for programming nexthops, in
+addition to the existing IPv4 and IPv6 front-ends.
 
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> syzbot found that we are not validating user input properly
-> before copying 16 bytes [1].
-> 
-> Using NLA_BINARY in ipaddr_policy[] for IPv6 address is not correct,
-> since it ensures at most 16 bytes were provided.
-> 
-> We should instead make sure user provided exactly 16 bytes.
-> 
-> In old kernels (before v4.20), fix would be to remove the NLA_BINARY,
-> since NLA_POLICY_EXACT_LEN() was not yet available.
-> 
-> [1]
-> BUG: KMSAN: uninit-value in hash_ip6_add+0x1cba/0x3a50 net/netfilter/ipset/ip_set_hash_gen.h:892
-> CPU: 1 PID: 11611 Comm: syz-executor.0 Not tainted 5.10.0-rc4-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  __dump_stack lib/dump_stack.c:77 [inline]
->  dump_stack+0x21c/0x280 lib/dump_stack.c:118
->  kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:118
->  __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
->  hash_ip6_add+0x1cba/0x3a50 net/netfilter/ipset/ip_set_hash_gen.h:892
->  hash_ip6_uadt+0x976/0xbd0 net/netfilter/ipset/ip_set_hash_ip.c:267
->  call_ad+0x329/0xd00 net/netfilter/ipset/ip_set_core.c:1720
->  ip_set_ad+0x111f/0x1440 net/netfilter/ipset/ip_set_core.c:1808
->  ip_set_uadd+0xf6/0x110 net/netfilter/ipset/ip_set_core.c:1833
->  nfnetlink_rcv_msg+0xc7d/0xdf0 net/netfilter/nfnetlink.c:252
->  netlink_rcv_skb+0x70a/0x820 net/netlink/af_netlink.c:2494
->  nfnetlink_rcv+0x4f0/0x4380 net/netfilter/nfnetlink.c:600
->  netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
->  netlink_unicast+0x11da/0x14b0 net/netlink/af_netlink.c:1330
->  netlink_sendmsg+0x173c/0x1840 net/netlink/af_netlink.c:1919
->  sock_sendmsg_nosec net/socket.c:651 [inline]
->  sock_sendmsg net/socket.c:671 [inline]
->  ____sys_sendmsg+0xc7a/0x1240 net/socket.c:2353
->  ___sys_sendmsg net/socket.c:2407 [inline]
->  __sys_sendmsg+0x6d5/0x830 net/socket.c:2440
->  __do_sys_sendmsg net/socket.c:2449 [inline]
->  __se_sys_sendmsg+0x97/0xb0 net/socket.c:2447
->  __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2447
->  do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> RIP: 0033:0x45deb9
-> Code: 0d b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b3 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-> RSP: 002b:00007fe2e503fc78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-> RAX: ffffffffffffffda RBX: 0000000000029ec0 RCX: 000000000045deb9
-> RDX: 0000000000000000 RSI: 0000000020000140 RDI: 0000000000000003
-> RBP: 000000000118bf60 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 000000000118bf2c
-> R13: 000000000169fb7f R14: 00007fe2e50409c0 R15: 000000000118bf2c
-> 
-> Uninit was stored to memory at:
->  kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
->  kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:289
->  __msan_chain_origin+0x57/0xa0 mm/kmsan/kmsan_instr.c:147
->  ip6_netmask include/linux/netfilter/ipset/pfxlen.h:49 [inline]
->  hash_ip6_netmask net/netfilter/ipset/ip_set_hash_ip.c:185 [inline]
->  hash_ip6_uadt+0xb1c/0xbd0 net/netfilter/ipset/ip_set_hash_ip.c:263
->  call_ad+0x329/0xd00 net/netfilter/ipset/ip_set_core.c:1720
->  ip_set_ad+0x111f/0x1440 net/netfilter/ipset/ip_set_core.c:1808
->  ip_set_uadd+0xf6/0x110 net/netfilter/ipset/ip_set_core.c:1833
->  nfnetlink_rcv_msg+0xc7d/0xdf0 net/netfilter/nfnetlink.c:252
->  netlink_rcv_skb+0x70a/0x820 net/netlink/af_netlink.c:2494
->  nfnetlink_rcv+0x4f0/0x4380 net/netfilter/nfnetlink.c:600
->  netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
->  netlink_unicast+0x11da/0x14b0 net/netlink/af_netlink.c:1330
->  netlink_sendmsg+0x173c/0x1840 net/netlink/af_netlink.c:1919
->  sock_sendmsg_nosec net/socket.c:651 [inline]
->  sock_sendmsg net/socket.c:671 [inline]
->  ____sys_sendmsg+0xc7a/0x1240 net/socket.c:2353
->  ___sys_sendmsg net/socket.c:2407 [inline]
->  __sys_sendmsg+0x6d5/0x830 net/socket.c:2440
->  __do_sys_sendmsg net/socket.c:2449 [inline]
->  __se_sys_sendmsg+0x97/0xb0 net/socket.c:2447
->  __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2447
->  do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> Uninit was stored to memory at:
->  kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
->  kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:289
->  kmsan_memcpy_memmove_metadata+0x25e/0x2d0 mm/kmsan/kmsan.c:226
->  kmsan_memcpy_metadata+0xb/0x10 mm/kmsan/kmsan.c:246
->  __msan_memcpy+0x46/0x60 mm/kmsan/kmsan_instr.c:110
->  ip_set_get_ipaddr6+0x2cb/0x370 net/netfilter/ipset/ip_set_core.c:310
->  hash_ip6_uadt+0x439/0xbd0 net/netfilter/ipset/ip_set_hash_ip.c:255
->  call_ad+0x329/0xd00 net/netfilter/ipset/ip_set_core.c:1720
->  ip_set_ad+0x111f/0x1440 net/netfilter/ipset/ip_set_core.c:1808
->  ip_set_uadd+0xf6/0x110 net/netfilter/ipset/ip_set_core.c:1833
->  nfnetlink_rcv_msg+0xc7d/0xdf0 net/netfilter/nfnetlink.c:252
->  netlink_rcv_skb+0x70a/0x820 net/netlink/af_netlink.c:2494
->  nfnetlink_rcv+0x4f0/0x4380 net/netfilter/nfnetlink.c:600
->  netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
->  netlink_unicast+0x11da/0x14b0 net/netlink/af_netlink.c:1330
->  netlink_sendmsg+0x173c/0x1840 net/netlink/af_netlink.c:1919
->  sock_sendmsg_nosec net/socket.c:651 [inline]
->  sock_sendmsg net/socket.c:671 [inline]
->  ____sys_sendmsg+0xc7a/0x1240 net/socket.c:2353
->  ___sys_sendmsg net/socket.c:2407 [inline]
->  __sys_sendmsg+0x6d5/0x830 net/socket.c:2440
->  __do_sys_sendmsg net/socket.c:2449 [inline]
->  __se_sys_sendmsg+0x97/0xb0 net/socket.c:2447
->  __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2447
->  do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> Uninit was created at:
->  kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
->  kmsan_internal_poison_shadow+0x5c/0xf0 mm/kmsan/kmsan.c:104
->  kmsan_slab_alloc+0x8d/0xe0 mm/kmsan/kmsan_hooks.c:76
->  slab_alloc_node mm/slub.c:2906 [inline]
->  __kmalloc_node_track_caller+0xc61/0x15f0 mm/slub.c:4512
->  __kmalloc_reserve net/core/skbuff.c:142 [inline]
->  __alloc_skb+0x309/0xae0 net/core/skbuff.c:210
->  alloc_skb include/linux/skbuff.h:1094 [inline]
->  netlink_alloc_large_skb net/netlink/af_netlink.c:1176 [inline]
->  netlink_sendmsg+0xdb8/0x1840 net/netlink/af_netlink.c:1894
->  sock_sendmsg_nosec net/socket.c:651 [inline]
->  sock_sendmsg net/socket.c:671 [inline]
->  ____sys_sendmsg+0xc7a/0x1240 net/socket.c:2353
->  ___sys_sendmsg net/socket.c:2407 [inline]
->  __sys_sendmsg+0x6d5/0x830 net/socket.c:2440
->  __do_sys_sendmsg net/socket.c:2449 [inline]
->  __se_sys_sendmsg+0x97/0xb0 net/socket.c:2447
->  __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2447
->  do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> Fixes: a7b4f989a629 ("netfilter: ipset: IP set core support")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> ---
->  net/netfilter/ipset/ip_set_core.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
-> index c7eaa3776238d6d1da28dee0da21306d418ee9fd..89009c82a6b2408f637a2716e73b54eea3bafd0f 100644
-> --- a/net/netfilter/ipset/ip_set_core.c
-> +++ b/net/netfilter/ipset/ip_set_core.c
-> @@ -271,8 +271,7 @@ flag_nested(const struct nlattr *nla)
->  
->  static const struct nla_policy ipaddr_policy[IPSET_ATTR_IPADDR_MAX + 1] = {
->  	[IPSET_ATTR_IPADDR_IPV4]	= { .type = NLA_U32 },
-> -	[IPSET_ATTR_IPADDR_IPV6]	= { .type = NLA_BINARY,
-> -					    .len = sizeof(struct in6_addr) },
-> +	[IPSET_ATTR_IPADDR_IPV6]	= NLA_POLICY_EXACT_LEN(sizeof(struct in6_addr)),
->  };
->  
->  int
-> -- 
+Patch #1 registers a listener to the nexthop notification chain and
+parses the nexthop information into the existing mlxsw data structures
+that are already used by the IPv4 and IPv6 front-ends. Blackhole
+nexthops are currently rejected. Support will be added in a follow-up
+patch set.
 
-Thanks! In the backward compatibility layer in the ipset package I'm going 
-to change the type to NLA_UNSPEC, so the minimal length is ensured.
+Patch #2 extends mlxsw to resolve its internal nexthop objects from the
+nexthop identifier encoded in the FIB info of the notified routes.
 
-Acked-by: Jozsef Kadlecsik <kadlec@netfilter.org>
+Patch #3 finally removes the limitation of rejecting routes that use
+nexthop objects.
 
-Best regards,
-Jozsef
--
-E-mail  : kadlec@blackhole.kfki.hu, kadlecsik.jozsef@wigner.hu
-PGP key : https://wigner.hu/~kadlec/pgp_public_key.txt
-Address : Wigner Research Centre for Physics
-          H-1525 Budapest 114, POB. 49, Hungary
+Patch #4 adds a selftest.
+
+Patches #5-#8 add generic forwarding selftests that can be used with
+veth pairs or physical loopbacks.
+
+Ido Schimmel (8):
+  mlxsw: spectrum_router: Add support for nexthop objects
+  mlxsw: spectrum_router: Enable resolution of nexthop groups from
+    nexthop objects
+  mlxsw: spectrum_router: Allow programming routes with nexthop objects
+  selftests: mlxsw: Add nexthop objects configuration tests
+  selftests: forwarding: Do not configure nexthop objects twice
+  selftests: forwarding: Test IPv4 routes with IPv6 link-local nexthops
+  selftests: forwarding: Add device-only nexthop test
+  selftests: forwarding: Add multipath tunneling nexthop test
+
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 498 +++++++++++++++++-
+ .../ethernet/mellanox/mlxsw/spectrum_router.h |   1 +
+ .../selftests/drivers/net/mlxsw/rtnetlink.sh  | 189 +++++++
+ .../net/forwarding/gre_multipath_nh.sh        | 356 +++++++++++++
+ .../net/forwarding/router_mpath_nh.sh         |  12 +-
+ .../selftests/net/forwarding/router_nh.sh     | 160 ++++++
+ 6 files changed, 1201 insertions(+), 15 deletions(-)
+ create mode 100755 tools/testing/selftests/net/forwarding/gre_multipath_nh.sh
+ create mode 100755 tools/testing/selftests/net/forwarding/router_nh.sh
+
+-- 
+2.28.0
+
