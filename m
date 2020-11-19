@@ -2,146 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D77352B9DF7
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 00:11:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D89B72B9E03
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 00:17:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726466AbgKSXKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 18:10:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59616 "EHLO
+        id S1726391AbgKSXQW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 18:16:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726123AbgKSXKB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 18:10:01 -0500
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74D82C0613CF
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 15:10:01 -0800 (PST)
-Received: by mail-yb1-xb43.google.com with SMTP id l14so6817454ybq.3
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 15:10:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iBfd+tlooPrLaeehxHIKJ1u8OEErsouszEIy8ewVhcM=;
-        b=Qca1plPbvZtgNeORPQ2kD2DqCgTdfBGwLPpZ9uiHbBJzEWVCi3YBgiNfKjrAyAQFCv
-         vnlyre3S9Fw+ES0dPQ/Phak6rmsPe9qlrdpbpiJsRvnCQbRXSx9BIykDUQhQ1OaLTotr
-         ryiZErEr1Sw7lqWcYEzfeYe1wrx64mrRmeVc3786MKkPFGNE5b12qpF2dgOKQmjwq06L
-         efd7FS1/3nrpxyqcLgxAYGOjvd6b5bbSvtQ46TE30SIDLI6H0e642T9LNsQRisTgM8hx
-         CrhVqIe0eQ+JOeVsjO8yyIu4nxeZhtoUHd5aTDyaYr/2oTEFtodKGW499JJR3qu84eN0
-         1jGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iBfd+tlooPrLaeehxHIKJ1u8OEErsouszEIy8ewVhcM=;
-        b=oYztWD1N76Up9+z1w7Y7U7EZbvJz575kLRGHnPIHPQCTEyVbkk7ZhV5ZHdIN/9OphA
-         DRbzxpLlLL5bKEJ/dklkNbIDLnkC7LuXsDatuk3p0Mwuj5IG2XqIiqriGNsDHiZfxAi4
-         ko0JamMwE0etoKKEN/VEAQwltWUcvxwW6Eb57soqpbIJV1CTjXvV8WTYUZPaxW/NiL4k
-         2Q51BkCjItXtYyZRGwpALFdVKyocjji3n5sNlbiOu0vAg1ubwtKBsd0srP6GqCtVkdBe
-         i7+9Wl77Vuvgd0iOijy7TmPMhhwMNJ8Ssw5QWP+2PRHMC/VQuadaBAvjJcoFtsvdcDNn
-         434w==
-X-Gm-Message-State: AOAM532+NsxNxw4BPw1JYJufE8e4QHJRVLTtbsW/qAB0d/4ROnfAhoMH
-        rKllQ2vGD+kUo8lIY4AvzcSUnWsv5NR6cyWiZlu13Q==
-X-Google-Smtp-Source: ABdhPJwntx5yxZFlr+ABHZAtWno7pcNjvqssQwbKMZxMPeu/afiw8yhs6p5yIima6cX9q0Fjcs5qah3HyoAS42uPGV4=
-X-Received: by 2002:a25:ac19:: with SMTP id w25mr21816652ybi.278.1605827400532;
- Thu, 19 Nov 2020 15:10:00 -0800 (PST)
+        with ESMTP id S1726325AbgKSXQW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 18:16:22 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 962A8C0613CF
+        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 15:16:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=d04PQ9hXGMwnNf/9OpR576As/8xUL2kZEnoyB/i5tCw=; b=uNdjHuTE/A3AvtmDVttqqmNnG
+        9Ct4IRwdP2iBVy5pjZRLUf+MmIbvF6Z6MJQS2BMJ9WctbShL0lqI9KhRVyFDbo/fK84yaQqWb2VeN
+        sI1TACgG3qjFks2Wyps5wnDJ0MVhYN9jFg9BZt4KP2LdL66CwqCWdF3r0A1x9xge26XZKpETaajd+
+        ZGTeJkNULS2lNzGjAxOOvlDCjm9H0NgqgdzXcv0vthfTglGugM3cAOPIOU7QuZVAx6t0B7KXV0B+I
+        y4TIS/ZXLAG2EwLYvNOrlb4YwL/MTYAkLS/vG8FxPdc0gdlZBiKetANw2C7P2i20EF/xQMgj6o9RL
+        gINsIsnLA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33582)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kft9z-0002qm-F8; Thu, 19 Nov 2020 23:16:15 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kft9x-0002XJ-Nd; Thu, 19 Nov 2020 23:16:13 +0000
+Date:   Thu, 19 Nov 2020 23:16:13 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Antoine Tenart <atenart@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: net: phy: Dealing with 88e1543 dual-port mode
+Message-ID: <20201119231613.GN1551@shell.armlinux.org.uk>
+References: <20201119152246.085514e1@bootlin.com>
+ <20201119145500.GL1551@shell.armlinux.org.uk>
+ <20201119162451.4c8d220d@bootlin.com>
+ <87k0uh9dd0.fsf@waldekranz.com>
 MIME-Version: 1.0
-References: <160582070138.66684.11785214534154816097.stgit@localhost.localdomain>
- <160582103106.66684.9841738004971200231.stgit@localhost.localdomain>
-In-Reply-To: <160582103106.66684.9841738004971200231.stgit@localhost.localdomain>
-From:   Wei Wang <weiwan@google.com>
-Date:   Thu, 19 Nov 2020 15:09:48 -0800
-Message-ID: <CAEA6p_BTAit9Y2h-9XaTTBdV6h6X4g0Ct5mOy1ZHfJiLD3y_Ww@mail.gmail.com>
-Subject: Re: [net PATCH 1/2] tcp: Allow full IP tos/IPv6 tclass to be
- reflected in L3 header
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf@vger.kernel.org, daniel@iogearbox.net,
-        Martin KaFai Lau <kafai@fb.com>, kernel-team@fb.com,
-        Eric Dumazet <edumazet@google.com>, brakmo@fb.com,
-        alexanderduyck@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87k0uh9dd0.fsf@waldekranz.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 19, 2020 at 1:23 PM Alexander Duyck
-<alexander.duyck@gmail.com> wrote:
->
-> From: Alexander Duyck <alexanderduyck@fb.com>
->
-> An issue was recently found where DCTCP SYN/ACK packets did not have the
-> ECT bit set in the L3 header. A bit of code review found that the recent
-> change referenced below had gone though and added a mask that prevented the
-> ECN bits from being populated in the L3 header.
->
-> This patch addresses that by rolling back the mask so that it is only
-> applied to the flags coming from the incoming TCP request instead of
-> applying it to the socket tos/tclass field. Doing this the ECT bits were
-> restored in the SYN/ACK packets in my testing.
->
-> One thing that is not addressed by this patch set is the fact that
-> tcp_reflect_tos appears to be incompatible with ECN based congestion
-> avoidance algorithms. At a minimum the feature should likely be documented
-> which it currently isn't.
->
-> Fixes: ac8f1710c12b ("tcp: reflect tos value received in SYN to the socket")
+On Thu, Nov 19, 2020 at 11:43:39PM +0100, Tobias Waldekranz wrote:
+> On Thu, Nov 19, 2020 at 16:24, Maxime Chevallier <maxime.chevallier@bootlin.com> wrote:
+> > I don't think we have a way to distinguish from the DT if we are in
+> > SGMII-to-Fibre or in SGMII-to-{Copper + Fibre}, since the description is
+> > the same, we don't have any information in DT about wether or not the
+> > PHY is wired to a Copper RJ45 port.
+> >
+> > Maybe we should have a way to indicate if a PHY is wired to a Copper
+> > port in DT ?
+> 
+> Do you mean something like:
+> 
+> SGMII->SGMII (Fibre):
+> ethernet-phy@0 {
+>    sfp = <&sfp0>;
+> };
+> 
+> SGMII->MDI (Copper):
+> ethernet-phy@0 {
+>     mdi;
+> };
+> 
+> SGMII->Auto Media Detect
+> ethernet-phy@0 {
+>     mdi;
+>     sfp = <&sfp0>;
+> };
 
-Acked-by: Wei Wang <weiwan@google.com>
+This isn't something we could realistically do - think about how many
+DT files are out there today which would not have this for an existing
+PHY. The default has to be that today's DT descriptions continue to work
+as-is, and that includes ones which already support copper and fibre
+either with or without a sfp property.
 
-Thanks for catching this. I was under the wrong impression that the
-ECT bits were marked in tos after the tcp layer. Upon a closer look,
-it seems right now, it only gets marked in inet_sock(sk)->tos from
-tcp_init_congestion_control() once.
-I will submit a follow-up fix to make sure we include the lower 2 bits
-in the reflection case as well.
+So, we can't draw any conclusion about whether the fiber interface is
+wired from whether there is a sfp property or not.
 
-> Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
-> ---
->  net/ipv4/tcp_ipv4.c |    5 +++--
->  net/ipv6/tcp_ipv6.c |    6 +++---
->  2 files changed, 6 insertions(+), 5 deletions(-)
->
-> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> index c2d5132c523c..c5f8b686aa82 100644
-> --- a/net/ipv4/tcp_ipv4.c
-> +++ b/net/ipv4/tcp_ipv4.c
-> @@ -981,7 +981,8 @@ static int tcp_v4_send_synack(const struct sock *sk, struct dst_entry *dst,
->         skb = tcp_make_synack(sk, dst, req, foc, synack_type, syn_skb);
->
->         tos = sock_net(sk)->ipv4.sysctl_tcp_reflect_tos ?
-> -                       tcp_rsk(req)->syn_tos : inet_sk(sk)->tos;
-> +                       tcp_rsk(req)->syn_tos & ~INET_ECN_MASK :
-> +                       inet_sk(sk)->tos;
->
->         if (skb) {
->                 __tcp_v4_send_check(skb, ireq->ir_loc_addr, ireq->ir_rmt_addr);
-> @@ -990,7 +991,7 @@ static int tcp_v4_send_synack(const struct sock *sk, struct dst_entry *dst,
->                 err = ip_build_and_send_pkt(skb, sk, ireq->ir_loc_addr,
->                                             ireq->ir_rmt_addr,
->                                             rcu_dereference(ireq->ireq_opt),
-> -                                           tos & ~INET_ECN_MASK);
-> +                                           tos);
->                 rcu_read_unlock();
->                 err = net_xmit_eval(err);
->         }
-> diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> index 8db59f4e5f13..3d49e8d0afee 100644
-> --- a/net/ipv6/tcp_ipv6.c
-> +++ b/net/ipv6/tcp_ipv6.c
-> @@ -530,12 +530,12 @@ static int tcp_v6_send_synack(const struct sock *sk, struct dst_entry *dst,
->                 rcu_read_lock();
->                 opt = ireq->ipv6_opt;
->                 tclass = sock_net(sk)->ipv4.sysctl_tcp_reflect_tos ?
-> -                               tcp_rsk(req)->syn_tos : np->tclass;
-> +                               tcp_rsk(req)->syn_tos & ~INET_ECN_MASK :
-> +                               np->tclass;
->                 if (!opt)
->                         opt = rcu_dereference(np->opt);
->                 err = ip6_xmit(sk, skb, fl6, sk->sk_mark, opt,
-> -                              tclass & ~INET_ECN_MASK,
-> -                              sk->sk_priority);
-> +                              tclass, sk->sk_priority);
->                 rcu_read_unlock();
->                 err = net_xmit_eval(err);
->         }
->
->
+We also can't draw a conclusion about whether the copper side is wired
+using a "mdi" property, or whether there is a "sfp" property or not.
+
+The only thing we could realistically do today is to introduce a
+property like:
+
+	mdi = "disabled" | "okay";
+
+to indicate whether the copper port can be used, and maybe something
+similar for the fiber interface.  Maybe as you suggest, not "okay"
+but specifying the number of connected pairs would be a good idea,
+or maybe that should be a separate property?
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
