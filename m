@@ -2,73 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 534BA2B8E50
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 10:00:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B25E52B8E53
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 10:00:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726536AbgKSI4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 03:56:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35999 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726182AbgKSI4w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 03:56:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605776211;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vq3O3HAFMM+KXB0NQbPEly52EXAERcRYAp8E1PAbV2c=;
-        b=ZtPWrQPDAp1Ty4aGiEcr42vHpouvXD96oV9I5dW9PeIh8HDIbh5B2Txi8/OrKVqzS8stF5
-        8uY5/cTzGhAY1O2MjHl4llYs06Qg12t3bramhM5sGNzsRHlJ0iQKc2C+HhCTDB+x02jCs1
-        6f60WNl5Ita6cDKvAi8oXoB8RSPuga0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-307-J2SJ9_3bOYmgBdfywSdSKw-1; Thu, 19 Nov 2020 03:56:49 -0500
-X-MC-Unique: J2SJ9_3bOYmgBdfywSdSKw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E4A51107AFDD;
-        Thu, 19 Nov 2020 08:56:47 +0000 (UTC)
-Received: from localhost (unknown [10.40.194.218])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2152B60843;
-        Thu, 19 Nov 2020 08:56:38 +0000 (UTC)
-Date:   Thu, 19 Nov 2020 09:56:36 +0100
-From:   Jiri Benc <jbenc@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        daniel@iogearbox.net, ast@fb.com, andrii@kernel.org,
-        bpf@vger.kernel.org, netdev@vger.kernel.org, brouer@redhat.com,
-        haliu@redhat.com, dsahern@gmail.com
-Subject: Re: [PATCH bpf-next] libbpf: Add libbpf_version() function to get
- library version at runtime
-Message-ID: <20201119095636.67c5b7ec@redhat.com>
-In-Reply-To: <20201118174325.zjomd2gvybof6awa@ast-mbp>
-References: <20201118170738.324226-1-toke@redhat.com>
-        <20201118174325.zjomd2gvybof6awa@ast-mbp>
+        id S1726676AbgKSI4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 03:56:55 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7654 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726505AbgKSI4y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 03:56:54 -0500
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CcD7S2nw0z15MgJ;
+        Thu, 19 Nov 2020 16:56:36 +0800 (CST)
+Received: from [127.0.0.1] (10.74.149.191) by DGGEMS412-HUB.china.huawei.com
+ (10.3.19.212) with Microsoft SMTP Server id 14.3.487.0; Thu, 19 Nov 2020
+ 16:56:42 +0800
+Subject: Re: [RFC net-next 1/2] ethtool: add support for controling the type
+ of adaptive coalescing
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
+        <kuba@kernel.org>
+References: <1605758050-21061-1-git-send-email-tanhuazhong@huawei.com>
+ <1605758050-21061-2-git-send-email-tanhuazhong@huawei.com>
+ <20201119041557.GR1804098@lunn.ch>
+From:   tanhuazhong <tanhuazhong@huawei.com>
+Message-ID: <e43890d1-5596-3439-f4a7-d704c069a035@huawei.com>
+Date:   Thu, 19 Nov 2020 16:56:42 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.5.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20201119041557.GR1804098@lunn.ch>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Originating-IP: [10.74.149.191]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Nov 2020 09:43:25 -0800, Alexei Starovoitov wrote:
-> Just like the kernel doesn't add features for out-of-tree modules
-> libbpf doesn't add features for projects where libbpf is optional.
 
-A more fitting comparison would be the kernel refusing to add a new
-uAPI call because some application refuses to bundle the kernel.
-A libbpf equivalent of a kernel module would be some kind of libbpf
-plugin (which does not exist), asking for an internal libbpf API to be
-added.
 
-Alexei, could you please start cooperating with others and actually
-listening to others' needs? I know you started eBPF but you're not the
-only user anymore and as much convinced you may be about your view,
-people have reasons for what they're doing. It would help greatly if
-you could listen to these reasons.
+On 2020/11/19 12:15, Andrew Lunn wrote:
+>> diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+>> index 9ca87bc..afd8de2 100644
+>> --- a/include/uapi/linux/ethtool.h
+>> +++ b/include/uapi/linux/ethtool.h
+>> @@ -433,6 +433,7 @@ struct ethtool_modinfo {
+>>    *	a TX interrupt, when the packet rate is above @pkt_rate_high.
+>>    * @rate_sample_interval: How often to do adaptive coalescing packet rate
+>>    *	sampling, measured in seconds.  Must not be zero.
+>> + * @use_dim: Use DIM for IRQ coalescing, if adaptive coalescing is enabled.
+>>    *
+>>    * Each pair of (usecs, max_frames) fields specifies that interrupts
+>>    * should be coalesced until
+>> @@ -483,6 +484,7 @@ struct ethtool_coalesce {
+>>   	__u32	tx_coalesce_usecs_high;
+>>   	__u32	tx_max_coalesced_frames_high;
+>>   	__u32	rate_sample_interval;
+>> +	__u32	use_dim;
+>>   };
+> 
+> You cannot do this.
+> 
+> static noinline_for_stack int ethtool_set_coalesce(struct net_device *dev,
+>                                                     void __user *useraddr)
+> {
+>          struct ethtool_coalesce coalesce;
+>          int ret;
+> 
+>          if (!dev->ethtool_ops->set_coalesce)
+>                  return -EOPNOTSUPP;
+> 
+>          if (copy_from_user(&coalesce, useraddr, sizeof(coalesce)))
+>                  return -EFAULT;
+> 
+> An old ethtool binary is not going to set this extra last byte to
+> anything meaningful. You cannot tell if you have an old or new user
+> space, so you have no idea if it put anything into use_dim, or if it
+> is random junk.
+> 
+> You have to leave the IOCTL interface unchanged, and limit this new
+> feature to the netlink API.
+> 
 
- Jiri
+Hi, Andrew.
+thanks for pointing out this problem, i will fix it.
+without callling set_coalesce/set_coalesce of ethtool_ops, do you have 
+any suggestion for writing/reading this new attribute to/from the 
+driver? add a new field in net_device or a new callback function in 
+ethtool_ops seems not good.
+
+>> diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
+>> index e2bf36e..e3458d9 100644
+>> --- a/include/uapi/linux/ethtool_netlink.h
+>> +++ b/include/uapi/linux/ethtool_netlink.h
+>> @@ -366,6 +366,7 @@ enum {
+>>   	ETHTOOL_A_COALESCE_TX_USECS_HIGH,		/* u32 */
+>>   	ETHTOOL_A_COALESCE_TX_MAX_FRAMES_HIGH,		/* u32 */
+>>   	ETHTOOL_A_COALESCE_RATE_SAMPLE_INTERVAL,	/* u32 */
+>> +	ETHTOOL_A_COALESCE_USE_DIM,			/* u8 */
+> 
+> This appears to be a boolean? So /* flag */ would be better. Or do you
+> think there is scope for a few different algorithms, and an enum would
+> be better. If so, you should add the enum with the two current
+> options.
+> 
+> 	Andrew
+> 
+
+ok, boolean seems enough.
+
+Thanks.
+Huazhong.
+> .
+> 
 
