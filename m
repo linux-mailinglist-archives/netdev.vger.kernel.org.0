@@ -2,132 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D6B72B8B0D
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 06:34:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1D772B8B10
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 06:41:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725931AbgKSFdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 00:33:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37590 "EHLO
+        id S1725799AbgKSFky (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 00:40:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725799AbgKSFdD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 00:33:03 -0500
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B462C0613D4;
-        Wed, 18 Nov 2020 21:33:03 -0800 (PST)
-Received: by mail-wm1-x344.google.com with SMTP id c9so5943004wml.5;
-        Wed, 18 Nov 2020 21:33:03 -0800 (PST)
+        with ESMTP id S1725648AbgKSFkx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 00:40:53 -0500
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFB35C0613D4
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 21:40:53 -0800 (PST)
+Received: by mail-io1-xd41.google.com with SMTP id t8so4669691iov.8
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 21:40:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=QWd9qbPGRigsWy3o/O9HDYWfcL9Yf7NlDEvwoZ5Gqio=;
-        b=iZ/miRPtGmtAiQMCiilQdC9dvNttBPwyU0D/8CrKq+P1hcpmdBLCBk0H2k2ticoAkG
-         wfdn9KTO5LIce1pcSr2zccX6kKwEnrpKYGdaBzed+sKfwfWt5B4DBI29aUYTzgDHP/MH
-         duGrkjiY1SGLbGrj6cvXFPB/9ROIXbnIOFl727LIzxEtXDsb/YMvQqc/ckFM8KIqiib3
-         WKV7/VHHE3sCWRfSAx3bXCkQEasxrLSdIrLXrYHKPaSReuuFcoVwGd+VsKZsqZnOfhZ7
-         EDhwGeVWyL+j+GVk2rJBLyDUU45bvbbi9EzSJ5ktqOG37kRaMaco2GwV954tfEaajs6N
-         vs+A==
+        bh=BAkA6JCfmaGYTSKrOsabR0pHYgeUubNA1pcl3TptuMI=;
+        b=aloGKGg4dUlCBUdAKoDdFA2q+BAplgpmt3rl5KLHYAZAo+/ZFAoWP3DnCbfWllDZz6
+         7eMqo8f9hVRiNZM3coVCQykfikY6qUlybWbm9lOjceOJrl+OQYzTkD4xRvnqTX7mwA9w
+         BO75P2cnjaEj3a4kVvouKpj1xyruMVRCG8ph1lrLarnpgCyiHcuc41ra4Cp8uMJCnqlC
+         Dxc/k9wjyxNIneH6zCvhjh0+r8drEgS3OYv4CrlIdwfMv4D1WD8sPp8AUz8xHFskwbz0
+         VmXCUFeaeqNzhaOLfk7CJO25qgNueOlHkcD3sj7T/8PnWq88Ntwmi1JMDS5HJFmCAkFi
+         jVFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=QWd9qbPGRigsWy3o/O9HDYWfcL9Yf7NlDEvwoZ5Gqio=;
-        b=YWmHqNklPRNqSBXt3wZC5FQLgFOFK2aThvuNfsBijWQgNVE8ZxF2+4eeO/5LsgBl4U
-         TeuiQBrAn8tkSAILPT+Zu6SpsD2gzDXU8PJ5+NEyop6mi1uCM43vJuk2xCvH62iqfOk8
-         h/8hC2D8Y9Qn5b87iF4q2trq/u05ada2Y2gszpHv4wSbPG+5CWCP+gsGZZ0QWFvrexkY
-         ZgBFOZ5IV5qhkZMkud+f5NXhAjPbDPpynR/Sd4o/8UWSix5oXyvEp5O7exizbHZSnXPn
-         PD3WUivEbW6M7LUaCMLug43FqC+Flmh6H+LDk6DM9xygZn/5H5wnDtuhcH3bnz38P3xF
-         NzYQ==
-X-Gm-Message-State: AOAM532ZXOsioH34bLmztSsHWsRo1DPkOIPtQl9TnPJymMj6ABS86syo
-        VJ7pnxgaIJOSqqkX/B3PCr9aJD3QRCkxH309oys=
-X-Google-Smtp-Source: ABdhPJxk2JcCiIzdiqowkFHyNpA/VxMgNuKW1E3KIvcDyOURZo6HeKYeNpQUA3zuahRFfEllnj555DF+FoIGXpHkYqw=
-X-Received: by 2002:a1c:ed06:: with SMTP id l6mr2451043wmh.67.1605763982200;
- Wed, 18 Nov 2020 21:33:02 -0800 (PST)
+        bh=BAkA6JCfmaGYTSKrOsabR0pHYgeUubNA1pcl3TptuMI=;
+        b=d7kN0p2Vd2wh202MMckgF68RAdsjbuTf1a9M9quq30qWzngCkw9ZlP2RQthDUo1hXZ
+         Lv537l694Y2COKYt9nHxQAcWboGdrOCUVRQNvjN6HCWJA0Bm00bjsW/kh9NsGkgFRB1a
+         ADa9m3WOKmySpvvo3W1CHd/Xo+6hCMueJQY16jcBWU8DMDhHo4wJfzmFqjlxboRPCH/O
+         PKQ4sNamYlwZmIW3sjO89RwVHD6aEdb/cPV3/TbRmnKuMIzyWmXzMmQmiNXeuWkIEfPQ
+         VYJ4ECJej4TZYW0Cf//G0/2OamPkyJ/GvN4jq4lUithJ5RiQLQqgCqBw9XIoLoKLWGfq
+         Wviw==
+X-Gm-Message-State: AOAM530nEjU+Scff+F7ot+663capsJczrTuPw+Acmhu4FiuJqxjrXR+/
+        pbRoooVgAaSb0P8zpPWusjzb3X2PqSFX0Ny/Pcl7kFsF3Po=
+X-Google-Smtp-Source: ABdhPJwgijqL7GHIOMIWE/xlw7iryL9Mer1OB3UdjJjJjbU1Yf3eXg1CIYNkpAb8BKzdcvboR1cjQ2yUudwcyhykCu4=
+X-Received: by 2002:a02:7797:: with SMTP id g145mr12209524jac.103.1605764451498;
+ Wed, 18 Nov 2020 21:40:51 -0800 (PST)
 MIME-Version: 1.0
-References: <52ee1b515df977b68497b1b08290d00a22161279.1605518147.git.lucien.xin@gmail.com>
- <20201117162952.29c1a699@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <CADvbK_eP4ap74vbZ64S8isYr5nz33ZdLB7qsyqd5zqqGV-rvWA@mail.gmail.com> <20201118084455.10f903ec@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201118084455.10f903ec@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Thu, 19 Nov 2020 13:32:49 +0800
-Message-ID: <CADvbK_eOgye3T8FWb8UuuDfiDeoF7p-RzP7Hb5UOECsR8dZuLQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] ip_gre: remove CRC flag from dev features in gre_gso_segment
+References: <20201116023140.28975-1-tseewald@gmail.com> <20201117142559.37e6847f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201117142559.37e6847f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Tom Seewald <tseewald@gmail.com>
+Date:   Wed, 18 Nov 2020 23:40:40 -0600
+Message-ID: <CAARYdbg+HsjCBu5vU=aHg-OU8L6u52RUBzrYUTuUMke6bXuV3g@mail.gmail.com>
+Subject: Re: [PATCH] cxbgb4: Fix build failure when CHELSIO_TLS_DEVICE=n
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        davem <davem@davemloft.net>, Guillaume Nault <gnault@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>, lorenzo@kernel.org,
-        Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 19, 2020 at 12:44 AM Jakub Kicinski <kuba@kernel.org> wrote:
+On Tue, Nov 17, 2020 at 4:26 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> On Wed, 18 Nov 2020 14:14:49 +0800 Xin Long wrote:
-> > On Wed, Nov 18, 2020 at 8:29 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > On Mon, 16 Nov 2020 17:15:47 +0800 Xin Long wrote:
-> > > > This patch is to let it always do CRC checksum in sctp_gso_segment()
-> > > > by removing CRC flag from the dev features in gre_gso_segment() for
-> > > > SCTP over GRE, just as it does in Commit 527beb8ef9c0 ("udp: support
-> > > > sctp over udp in skb_udp_tunnel_segment") for SCTP over UDP.
-> > > >
-> > > > It could set csum/csum_start in GSO CB properly in sctp_gso_segment()
-> > > > after that commit, so it would do checksum with gso_make_checksum()
-> > > > in gre_gso_segment(), and Commit 622e32b7d4a6 ("net: gre: recompute
-> > > > gre csum for sctp over gre tunnels") can be reverted now.
-> > > >
-> > > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> > >
-> > > Makes sense, but does GRE tunnels don't always have a csum.
-> > Do you mean the GRE csum can be offloaded? If so, it seems for GRE tunnel
-> > we need the similar one as:
+> On Sun, 15 Nov 2020 20:31:40 -0600 Tom Seewald wrote:
+> > After commit 9d2e5e9eeb59 ("cxgb4/ch_ktls: decrypted bit is not enough")
+> > building the kernel with CHELSIO_T4=y and CHELSIO_TLS_DEVICE=n results
+> > in the following error:
 > >
-> > commit 4bcb877d257c87298aedead1ffeaba0d5df1991d
-> > Author: Tom Herbert <therbert@google.com>
-> > Date:   Tue Nov 4 09:06:52 2014 -0800
+> > ld: drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.o: in function
+> > `cxgb_select_queue':
+> > cxgb4_main.c:(.text+0x2dac): undefined reference to `tls_validate_xmit_skb'
 > >
-> >     udp: Offload outer UDP tunnel csum if available
+> > This is caused by cxgb_select_queue() calling cxgb4_is_ktls_skb() without
+> > checking if CHELSIO_TLS_DEVICE=y. Fix this by calling cxgb4_is_ktls_skb()
+> > only when this config option is enabled.
 > >
-> > I will confirm and implement it in another patch.
+> > Fixes: 9d2e5e9eeb59 ("cxgb4/ch_ktls: decrypted bit is not enough")
+> > Signed-off-by: Tom Seewald <tseewald@gmail.com>
+> > ---
+> >  drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c | 4 +++-
+> >  1 file changed, 3 insertions(+), 1 deletion(-)
 > >
-> > >
-> > > Is the current hardware not capable of generating CRC csums over
-> > > encapsulated patches at all?
-> > There is, but very rare. The thing is after doing CRC csum, the outer
-> > GRE/UDP checksum will have to be recomputed, as it's NOT zero after
-> > all fields for CRC scum are summed, which is different from the
-> > common checksum. So if it's a GRE/UDP tunnel, the inner CRC csum
-> > has to be done there even if the HW supports its offload.
+> > diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+> > index 7fd264a6d085..8e8783afd6df 100644
+> > --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+> > +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+> > @@ -1176,7 +1176,9 @@ static u16 cxgb_select_queue(struct net_device *dev, struct sk_buff *skb,
+> >               txq = netdev_pick_tx(dev, skb, sb_dev);
+> >               if (xfrm_offload(skb) || is_ptp_enabled(skb, dev) ||
+> >                   skb->encapsulation ||
+> > -                 cxgb4_is_ktls_skb(skb) ||
+> > +#if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
+> > +             cxgb4_is_ktls_skb(skb) ||
+> > +#endif /* CHELSIO_TLS_DEVICE */
+> >                   (proto != IPPROTO_TCP && proto != IPPROTO_UDP))
+> >                       txq = txq % pi->nqsets;
+> >
 >
-> Ack, my point is that for UDP tunnels (at least with IPv4) the UDP
-> checksum is optional (should be ignored if the header field is 0),
-> and for GRE checksum is optional and it's presence is indicated by
-> a bit in the header IIRC.
-Yes, it's tunnel->parms.o_flags & TUNNEL_CSUM. When it's not set,
-gso_type is set to SKB_GSO_GRE instead of SKB_GSO_GRE_CSUM
-by gre_handle_offloads().
-
-
+> The tls header already tries to solve this issue, it just does it
+> poorly. This is a better fix:
 >
-> So if the HW can compute the CRC csum based on offsets, without parsing
-> the packet, it should be able to do the CRC on tunneled packets w/o
-> checksum in the outer header.
-Right, we can only force it to do CRC csum there when SKB_GSO_GRE_CSUM was set:
-
-        need_csum = !!(skb_shinfo(skb)->gso_type & SKB_GSO_GRE_CSUM);
-        skb->encap_hdr_csum = need_csum;
-
-        features &= skb->dev->hw_enc_features;
-+       if (need_csum)
-+               features &= ~NETIF_F_SCTP_CRC;
-
-I will give it a try.
-
-BTW, __skb_udp_tunnel_segment() doesn't need this, as For UDP encaped SCTP,
-the UDP csum is always set.
-
+> diff --git a/include/net/tls.h b/include/net/tls.h
+> index baf1e99d8193..2ff3f4f7954a 100644
+> --- a/include/net/tls.h
+> +++ b/include/net/tls.h
+> @@ -441,11 +441,11 @@ struct sk_buff *
+>  tls_validate_xmit_skb(struct sock *sk, struct net_device *dev,
+>                       struct sk_buff *skb);
 >
-> IDK how realistic this is, whether it'd work today, and whether we care
-> about it...
+>  static inline bool tls_is_sk_tx_device_offloaded(struct sock *sk)
+>  {
+> -#ifdef CONFIG_SOCK_VALIDATE_XMIT
+> +#ifdef CONFIG_TLS_DEVICE
+>         return sk_fullsock(sk) &&
+>                (smp_load_acquire(&sk->sk_validate_xmit_skb) ==
+>                &tls_validate_xmit_skb);
+>  #else
+>         return false;
+>
+>
+> Please test this and submit if it indeed solves the problem.
+>
+> Thanks!
+
+Hi Jakub,
+
+Thanks for the reply, unfortunately that patch does not resolve the
+issue, I still get the same error as before. After looking into this a
+bit further, the issue seems to be with CONFIG_TLS=m as everything
+works when CONFIG_TLS=y.
+
+I also see that there was a similar issue [1] reported by Intel's
+kbuild test robot where the cxgb4 driver isn't able to see the TLS
+symbols when CONFIG_TLS=m.
+
+[1] https://lkml.org/lkml/2020/8/7/601
