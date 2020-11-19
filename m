@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10DB82B9E14
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 00:27:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD2AC2B9E1C
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 00:27:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726460AbgKSXW6 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 19 Nov 2020 18:22:58 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:54906 "EHLO
+        id S1726590AbgKSXXG convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 19 Nov 2020 18:23:06 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:36622 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726391AbgKSXW5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 18:22:57 -0500
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AJNKgLG027834
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 15:22:56 -0800
+        by vger.kernel.org with ESMTP id S1726553AbgKSXXG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 18:23:06 -0500
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AJNLT6J003407
+        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 15:23:05 -0800
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 34wgckr7mw-1
+        by mx0a-00082601.pphosted.com with ESMTP id 34wsge3j9t-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 15:22:56 -0800
-Received: from intmgw004.03.ash8.facebook.com (2620:10d:c085:108::8) by
- mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 15:23:05 -0800
+Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 19 Nov 2020 15:22:55 -0800
+ 15.1.1979.3; Thu, 19 Nov 2020 15:23:04 -0800
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 4C9EF2EC9B9C; Thu, 19 Nov 2020 15:22:52 -0800 (PST)
+        id 763492EC9B9C; Thu, 19 Nov 2020 15:22:54 -0800 (PST)
 From:   Andrii Nakryiko <andrii@kernel.org>
 To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
         <daniel@iogearbox.net>
 CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH bpf-next 3/6] libbpf: refactor CO-RE relocs to not assume a single BTF object
-Date:   Thu, 19 Nov 2020 15:22:41 -0800
-Message-ID: <20201119232244.2776720-4-andrii@kernel.org>
+Subject: [PATCH bpf-next 4/6] libbpf: add kernel module BTF support for CO-RE relocations
+Date:   Thu, 19 Nov 2020 15:22:42 -0800
+Message-ID: <20201119232244.2776720-5-andrii@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20201119232244.2776720-1-andrii@kernel.org>
 References: <20201119232244.2776720-1-andrii@kernel.org>
@@ -40,322 +40,312 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
  definitions=2020-11-19_14:2020-11-19,2020-11-19 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0 mlxscore=0
- suspectscore=29 clxscore=1034 adultscore=0 spamscore=0 impostorscore=0
- lowpriorityscore=0 bulkscore=0 priorityscore=1501 mlxlogscore=999
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
+ mlxlogscore=999 suspectscore=29 impostorscore=0 lowpriorityscore=0
+ phishscore=0 clxscore=1015 spamscore=0 malwarescore=0 priorityscore=1501
+ bulkscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2009150000 definitions=main-2011190160
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Refactor CO-RE relocation candidate search to not expect a single BTF, rather
-return all candidate types with their corresponding BTF objects. This will
-allow to extend CO-RE relocations to accommodate kernel module BTFs.
+Teach libbpf to search for candidate types for CO-RE relocations across kernel
+modules BTFs, in addition to vmlinux BTF. If at least one candidate type is
+found in vmlinux BTF, kernel module BTFs are not iterated. If vmlinux BTF has
+no matching candidates, then find all kernel module BTFs and search for all
+matching candidates across all of them.
+
+Kernel's support for module BTFs are inferred from the support for BTF name
+pointer in BPF UAPI.
 
 Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 187 ++++++++++++++++++++++++-----------------
- 1 file changed, 111 insertions(+), 76 deletions(-)
+ tools/lib/bpf/libbpf.c | 185 ++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 172 insertions(+), 13 deletions(-)
 
 diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 313034117070..c4a49e8eb7b5 100644
+index c4a49e8eb7b5..ac1ff4e7741a 100644
 --- a/tools/lib/bpf/libbpf.c
 +++ b/tools/lib/bpf/libbpf.c
-@@ -462,11 +462,14 @@ struct bpf_object {
- 	struct list_head list;
+@@ -176,6 +176,8 @@ enum kern_feature_id {
+ 	FEAT_PROBE_READ_KERN,
+ 	/* BPF_PROG_BIND_MAP is supported */
+ 	FEAT_PROG_BIND_MAP,
++	/* Kernel support for module BTFs */
++	FEAT_MODULE_BTF,
+ 	__FEAT_CNT,
+ };
  
- 	struct btf *btf;
-+	struct btf_ext *btf_ext;
-+
- 	/* Parse and load BTF vmlinux if any of the programs in the object need
- 	 * it at load time.
- 	 */
- 	struct btf *btf_vmlinux;
--	struct btf_ext *btf_ext;
-+	/* vmlinux BTF override for CO-RE relocations */
-+	struct btf *btf_vmlinux_override;
+@@ -402,6 +404,12 @@ struct extern_desc {
  
- 	void *priv;
- 	bpf_object_clear_priv_t clear_priv;
-@@ -4600,46 +4603,43 @@ static size_t bpf_core_essential_name_len(const char *name)
- 	return n;
- }
+ static LIST_HEAD(bpf_objects_list);
  
--/* dynamically sized list of type IDs */
--struct ids_vec {
--	__u32 *data;
-+struct core_cand
-+{
-+	const struct btf *btf;
-+	const struct btf_type *t;
-+	const char *name;
++struct module_btf {
++	struct btf *btf;
++	char *name;
 +	__u32 id;
 +};
 +
-+/* dynamically sized list of type IDs and its associated struct btf */
-+struct core_cand_list {
-+	struct core_cand *cands;
- 	int len;
- };
+ struct bpf_object {
+ 	char name[BPF_OBJ_NAME_LEN];
+ 	char license[64];
+@@ -470,6 +478,11 @@ struct bpf_object {
+ 	struct btf *btf_vmlinux;
+ 	/* vmlinux BTF override for CO-RE relocations */
+ 	struct btf *btf_vmlinux_override;
++	/* Lazily initialized kernel module BTFs */
++	struct module_btf *btf_modules;
++	bool btf_modules_loaded;
++	size_t btf_module_cnt;
++	size_t btf_module_cap;
  
--static void bpf_core_free_cands(struct ids_vec *cand_ids)
-+static void bpf_core_free_cands(struct core_cand_list *cands)
- {
--	free(cand_ids->data);
--	free(cand_ids);
-+	free(cands->cands);
-+	free(cands);
+ 	void *priv;
+ 	bpf_object_clear_priv_t clear_priv;
+@@ -3960,6 +3973,36 @@ static int probe_prog_bind_map(void)
+ 	return ret >= 0;
  }
  
--static struct ids_vec *bpf_core_find_cands(const struct btf *local_btf,
--					   __u32 local_type_id,
--					   const struct btf *targ_btf)
-+static int bpf_core_add_cands(struct core_cand *local_cand,
-+			      size_t local_essent_len,
-+			      const struct btf *targ_btf,
-+			      const char *targ_btf_name,
-+			      int targ_start_id,
-+			      struct core_cand_list *cands)
- {
--	size_t local_essent_len, targ_essent_len;
--	const char *local_name, *targ_name;
--	const struct btf_type *t, *local_t;
--	struct ids_vec *cand_ids;
--	__u32 *new_ids;
--	int i, err, n;
--
--	local_t = btf__type_by_id(local_btf, local_type_id);
--	if (!local_t)
--		return ERR_PTR(-EINVAL);
--
--	local_name = btf__name_by_offset(local_btf, local_t->name_off);
--	if (str_is_empty(local_name))
--		return ERR_PTR(-EINVAL);
--	local_essent_len = bpf_core_essential_name_len(local_name);
--
--	cand_ids = calloc(1, sizeof(*cand_ids));
--	if (!cand_ids)
--		return ERR_PTR(-ENOMEM);
-+	struct core_cand *new_cands, *cand;
-+	const struct btf_type *t;
-+	const char *targ_name;
-+	size_t targ_essent_len;
-+	int n, i;
++static int probe_module_btf(void)
++{
++	static const char strs[] = "\0int";
++	__u32 types[] = {
++		/* int */
++		BTF_TYPE_INT_ENC(1, BTF_INT_SIGNED, 0, 32, 4),
++	};
++	struct bpf_btf_info info;
++	__u32 len = sizeof(info);
++	char name[16];
++	int fd, err;
++
++	fd = libbpf__load_raw_btf((char *)types, sizeof(types), strs, sizeof(strs));
++	if (fd < 0)
++		return 0; /* BTF not supported at all */
++
++	len = sizeof(info);
++	memset(&info, 0, sizeof(info));
++	info.name = ptr_to_u64(name);
++	info.name_len = sizeof(name);
++
++	/* check that BPF_OBJ_GET_INFO_BY_FD supports specifying name pointer;
++	 * kernel's module BTF support coincides with support for
++	 * name/name_len fields in struct bpf_btf_info.
++	 */
++	err = bpf_obj_get_info_by_fd(fd, &info, &len);
++	close(fd);
++	return !err;
++}
++
+ enum kern_feature_result {
+ 	FEAT_UNKNOWN = 0,
+ 	FEAT_SUPPORTED = 1,
+@@ -4003,7 +4046,10 @@ static struct kern_feature_desc {
+ 	},
+ 	[FEAT_PROG_BIND_MAP] = {
+ 		"BPF_PROG_BIND_MAP support", probe_prog_bind_map,
+-	}
++	},
++	[FEAT_MODULE_BTF] = {
++		"module BTF support", probe_module_btf,
++	},
+ };
  
- 	n = btf__get_nr_types(targ_btf);
--	for (i = 1; i <= n; i++) {
-+	for (i = targ_start_id; i <= n; i++) {
- 		t = btf__type_by_id(targ_btf, i);
--		if (btf_kind(t) != btf_kind(local_t))
-+		if (btf_kind(t) != btf_kind(local_cand->t))
- 			continue;
+ static bool kernel_supports(enum kern_feature_id feat_id)
+@@ -4674,13 +4720,95 @@ static int bpf_core_add_cands(struct core_cand *local_cand,
+ 	return 0;
+ }
  
- 		targ_name = btf__name_by_offset(targ_btf, t->name_off);
-@@ -4650,25 +4650,62 @@ static struct ids_vec *bpf_core_find_cands(const struct btf *local_btf,
- 		if (targ_essent_len != local_essent_len)
- 			continue;
- 
--		if (strncmp(local_name, targ_name, local_essent_len) == 0) {
--			pr_debug("CO-RE relocating [%d] %s %s: found target candidate [%d] %s %s\n",
--				 local_type_id, btf_kind_str(local_t),
--				 local_name, i, btf_kind_str(t), targ_name);
--			new_ids = libbpf_reallocarray(cand_ids->data,
--						      cand_ids->len + 1,
--						      sizeof(*cand_ids->data));
--			if (!new_ids) {
--				err = -ENOMEM;
--				goto err_out;
--			}
--			cand_ids->data = new_ids;
--			cand_ids->data[cand_ids->len++] = i;
--		}
-+		if (strncmp(local_cand->name, targ_name, local_essent_len) != 0)
++static int load_module_btfs(struct bpf_object *obj)
++{
++	struct bpf_btf_info info;
++	struct module_btf *mod_btf;
++	struct btf *btf;
++	char name[64];
++	__u32 id, len;
++	int err, fd;
++
++	if (obj->btf_modules_loaded)
++		return 0;
++
++	/* don't do this again, even if we find no module BTFs */
++	obj->btf_modules_loaded = true;
++
++	/* kernel too old to support module BTFs */
++	if (!kernel_supports(FEAT_MODULE_BTF))
++		return 0;
++
++	while (true) {
++		err = bpf_btf_get_next_id(id, &id);
++		if (err && errno == ENOENT)
++			return 0;
++		if (err) {
++			err = -errno;
++			pr_warn("failed to iterate BTF objects: %d\n", err);
++			return err;
++		}
++
++		fd = bpf_btf_get_fd_by_id(id);
++		if (fd < 0) {
++			if (errno == ENOENT)
++				continue; /* expected race: BTF was unloaded */
++			err = -errno;
++			pr_warn("failed to get BTF object #%d FD: %d\n", id, err);
++			return err;
++		}
++
++		len = sizeof(info);
++		memset(&info, 0, sizeof(info));
++		info.name = ptr_to_u64(name);
++		info.name_len = sizeof(name);
++
++		err = bpf_obj_get_info_by_fd(fd, &info, &len);
++		if (err) {
++			err = -errno;
++			pr_warn("failed to get BTF object #%d info: %d\n", id, err);
++			return err;
++		}
++
++		/* ignore non-module BTFs */
++		if (!info.kernel_btf || strcmp(name, "vmlinux") == 0) {
++			close(fd);
 +			continue;
++		}
 +
-+		pr_debug("CO-RE relocating [%d] %s %s: found target candidate [%d] %s %s in [%s]\n",
-+			 local_cand->id, btf_kind_str(local_cand->t),
-+			 local_cand->name, i, btf_kind_str(t), targ_name,
-+			 targ_btf_name);
-+		new_cands = libbpf_reallocarray(cands->cands, cands->len + 1,
-+					      sizeof(*cands->cands));
-+		if (!new_cands)
++		btf = btf_get_from_fd(fd, obj->btf_vmlinux);
++		close(fd);
++		if (IS_ERR(btf)) {
++			pr_warn("failed to load module [%s]'s BTF object #%d: %ld\n",
++				name, id, PTR_ERR(btf));
++			return PTR_ERR(btf);
++		}
++
++		err = btf_ensure_mem((void **)&obj->btf_modules, &obj->btf_module_cap,
++				     sizeof(*obj->btf_modules), obj->btf_module_cnt + 1);
++		if (err)
++			return err;
++
++		mod_btf = &obj->btf_modules[obj->btf_module_cnt++];
++
++		mod_btf->btf = btf;
++		mod_btf->id = id;
++		mod_btf->name = strdup(name);
++		if (!mod_btf->name)
 +			return -ENOMEM;
++	}
 +
-+		cand = &new_cands[cands->len];
-+		cand->btf = targ_btf;
-+		cand->t = t;
-+		cand->name = targ_name;
-+		cand->id = i;
-+
-+		cands->cands = new_cands;
-+		cands->len++;
- 	}
--	return cand_ids;
--err_out:
--	bpf_core_free_cands(cand_ids);
--	return ERR_PTR(err);
 +	return 0;
 +}
 +
-+static struct core_cand_list *
-+bpf_core_find_cands(struct bpf_object *obj, const struct btf *local_btf, __u32 local_type_id)
-+{
-+	struct core_cand local_cand = {};
-+	struct core_cand_list *cands;
-+	size_t local_essent_len;
-+	int err;
+ static struct core_cand_list *
+ bpf_core_find_cands(struct bpf_object *obj, const struct btf *local_btf, __u32 local_type_id)
+ {
+ 	struct core_cand local_cand = {};
+ 	struct core_cand_list *cands;
++	const struct btf *main_btf;
+ 	size_t local_essent_len;
+-	int err;
++	int err, i;
+ 
+ 	local_cand.btf = local_btf;
+ 	local_cand.t = btf__type_by_id(local_btf, local_type_id);
+@@ -4697,15 +4825,38 @@ bpf_core_find_cands(struct bpf_object *obj, const struct btf *local_btf, __u32 l
+ 		return ERR_PTR(-ENOMEM);
+ 
+ 	/* Attempt to find target candidates in vmlinux BTF first */
+-	err = bpf_core_add_cands(&local_cand, local_essent_len,
+-				 obj->btf_vmlinux_override ?: obj->btf_vmlinux,
+-				 "vmlinux", 1, cands);
+-	if (err) {
+-		bpf_core_free_cands(cands);
+-		return ERR_PTR(err);
++	main_btf = obj->btf_vmlinux_override ?: obj->btf_vmlinux;
++	err = bpf_core_add_cands(&local_cand, local_essent_len, main_btf, "vmlinux", 1, cands);
++	if (err)
++		goto err_out;
 +
-+	local_cand.btf = local_btf;
-+	local_cand.t = btf__type_by_id(local_btf, local_type_id);
-+	if (!local_cand.t)
-+		return ERR_PTR(-EINVAL);
++	/* if vmlinux BTF has any candidate, don't got for module BTFs */
++	if (cands->len)
++		return cands;
 +
-+	local_cand.name = btf__name_by_offset(local_btf, local_cand.t->name_off);
-+	if (str_is_empty(local_cand.name))
-+		return ERR_PTR(-EINVAL);
-+	local_essent_len = bpf_core_essential_name_len(local_cand.name);
++	/* if vmlinux BTF was overridden, don't attempt to load module BTFs */
++	if (obj->btf_vmlinux_override)
++		return cands;
 +
-+	cands = calloc(1, sizeof(*cands));
-+	if (!cands)
-+		return ERR_PTR(-ENOMEM);
++	/* now look through module BTFs, trying to still find candidates */
++	err = load_module_btfs(obj);
++	if (err)
++		goto err_out;
 +
-+	/* Attempt to find target candidates in vmlinux BTF first */
-+	err = bpf_core_add_cands(&local_cand, local_essent_len,
-+				 obj->btf_vmlinux_override ?: obj->btf_vmlinux,
-+				 "vmlinux", 1, cands);
-+	if (err) {
-+		bpf_core_free_cands(cands);
-+		return ERR_PTR(err);
-+	}
-+
-+	return cands;
++	for (i = 0; i < obj->btf_module_cnt; i++) {
++		err = bpf_core_add_cands(&local_cand, local_essent_len,
++					 obj->btf_modules[i].btf,
++					 obj->btf_modules[i].name,
++					 btf__get_nr_types(obj->btf_vmlinux) + 1,
++					 cands);
++		if (err)
++			goto err_out;
+ 	}
+ 
+ 	return cands;
++err_out:
++	bpf_core_free_cands(cands);
++	return ERR_PTR(err);
  }
  
  /* Check two types for compatibility for the purpose of field access
-@@ -5661,7 +5698,6 @@ static int bpf_core_apply_relo(struct bpf_program *prog,
- 			       const struct bpf_core_relo *relo,
- 			       int relo_idx,
- 			       const struct btf *local_btf,
--			       const struct btf *targ_btf,
- 			       struct hashmap *cand_cache)
- {
- 	struct bpf_core_spec local_spec, cand_spec, targ_spec = {};
-@@ -5669,8 +5705,8 @@ static int bpf_core_apply_relo(struct bpf_program *prog,
- 	struct bpf_core_relo_res cand_res, targ_res;
- 	const struct btf_type *local_type;
- 	const char *local_name;
--	struct ids_vec *cand_ids;
--	__u32 local_id, cand_id;
-+	struct core_cand_list *cands = NULL;
-+	__u32 local_id;
- 	const char *spec_str;
- 	int i, j, err;
- 
-@@ -5717,24 +5753,24 @@ static int bpf_core_apply_relo(struct bpf_program *prog,
- 		return -EOPNOTSUPP;
- 	}
- 
--	if (!hashmap__find(cand_cache, type_key, (void **)&cand_ids)) {
--		cand_ids = bpf_core_find_cands(local_btf, local_id, targ_btf);
--		if (IS_ERR(cand_ids)) {
-+	if (!hashmap__find(cand_cache, type_key, (void **)&cands)) {
-+		cands = bpf_core_find_cands(prog->obj, local_btf, local_id);
-+		if (IS_ERR(cands)) {
- 			pr_warn("prog '%s': relo #%d: target candidate search failed for [%d] %s %s: %ld",
+@@ -5756,7 +5907,7 @@ static int bpf_core_apply_relo(struct bpf_program *prog,
+ 	if (!hashmap__find(cand_cache, type_key, (void **)&cands)) {
+ 		cands = bpf_core_find_cands(prog->obj, local_btf, local_id);
+ 		if (IS_ERR(cands)) {
+-			pr_warn("prog '%s': relo #%d: target candidate search failed for [%d] %s %s: %ld",
++			pr_warn("prog '%s': relo #%d: target candidate search failed for [%d] %s %s: %ld\n",
  				prog->name, relo_idx, local_id, btf_kind_str(local_type),
--				local_name, PTR_ERR(cand_ids));
--			return PTR_ERR(cand_ids);
-+				local_name, PTR_ERR(cands));
-+			return PTR_ERR(cands);
- 		}
--		err = hashmap__set(cand_cache, type_key, cand_ids, NULL, NULL);
-+		err = hashmap__set(cand_cache, type_key, cands, NULL, NULL);
- 		if (err) {
--			bpf_core_free_cands(cand_ids);
-+			bpf_core_free_cands(cands);
- 			return err;
- 		}
+ 				local_name, PTR_ERR(cands));
+ 			return PTR_ERR(cands);
+@@ -5944,7 +6095,7 @@ bpf_object__relocate_core(struct bpf_object *obj, const char *targ_btf_path)
  	}
- 
--	for (i = 0, j = 0; i < cand_ids->len; i++) {
--		cand_id = cand_ids->data[i];
--		err = bpf_core_spec_match(&local_spec, targ_btf, cand_id, &cand_spec);
-+	for (i = 0, j = 0; i < cands->len; i++) {
-+		err = bpf_core_spec_match(&local_spec, cands->cands[i].btf,
-+					  cands->cands[i].id, &cand_spec);
- 		if (err < 0) {
- 			pr_warn("prog '%s': relo #%d: error matching candidate #%d ",
- 				prog->name, relo_idx, i);
-@@ -5778,7 +5814,7 @@ static int bpf_core_apply_relo(struct bpf_program *prog,
- 			return -EINVAL;
- 		}
- 
--		cand_ids->data[j++] = cand_spec.root_type_id;
-+		cands->cands[j++] = cands->cands[i];
- 	}
- 
- 	/*
-@@ -5790,7 +5826,7 @@ static int bpf_core_apply_relo(struct bpf_program *prog,
- 	 * depending on relo's kind.
- 	 */
- 	if (j > 0)
--		cand_ids->len = j;
-+		cands->len = j;
- 
- 	/*
- 	 * If no candidates were found, it might be both a programmer error,
-@@ -5834,20 +5870,19 @@ bpf_object__relocate_core(struct bpf_object *obj, const char *targ_btf_path)
- 	struct hashmap_entry *entry;
- 	struct hashmap *cand_cache = NULL;
- 	struct bpf_program *prog;
--	struct btf *targ_btf;
- 	const char *sec_name;
- 	int i, err = 0, insn_idx, sec_idx;
- 
- 	if (obj->btf_ext->core_relo_info.len == 0)
- 		return 0;
- 
--	if (targ_btf_path)
--		targ_btf = btf__parse(targ_btf_path, NULL);
--	else
--		targ_btf = obj->btf_vmlinux;
--	if (IS_ERR_OR_NULL(targ_btf)) {
--		pr_warn("failed to get target BTF: %ld\n", PTR_ERR(targ_btf));
--		return PTR_ERR(targ_btf);
-+	if (targ_btf_path) {
-+		obj->btf_vmlinux_override = btf__parse(targ_btf_path, NULL);
-+		if (IS_ERR_OR_NULL(obj->btf_vmlinux_override)) {
-+			err = PTR_ERR(obj->btf_vmlinux_override);
-+			pr_warn("failed to parse target BTF: %d\n", err);
-+			return err;
-+		}
- 	}
- 
- 	cand_cache = hashmap__new(bpf_core_hash_fn, bpf_core_equal_fn, NULL);
-@@ -5899,8 +5934,7 @@ bpf_object__relocate_core(struct bpf_object *obj, const char *targ_btf_path)
- 			if (!prog->load)
- 				continue;
- 
--			err = bpf_core_apply_relo(prog, rec, i, obj->btf,
--						  targ_btf, cand_cache);
-+			err = bpf_core_apply_relo(prog, rec, i, obj->btf, cand_cache);
- 			if (err) {
- 				pr_warn("prog '%s': relo #%d: failed to relocate: %d\n",
- 					prog->name, i, err);
-@@ -5911,8 +5945,9 @@ bpf_object__relocate_core(struct bpf_object *obj, const char *targ_btf_path)
  
  out:
- 	/* obj->btf_vmlinux is freed at the end of object load phase */
--	if (targ_btf != obj->btf_vmlinux)
--		btf__free(targ_btf);
-+	btf__free(obj->btf_vmlinux_override);
-+	obj->btf_vmlinux_override = NULL;
+-	/* obj->btf_vmlinux is freed at the end of object load phase */
++	/* obj->btf_vmlinux and module BTFs are freed after object load */
+ 	btf__free(obj->btf_vmlinux_override);
+ 	obj->btf_vmlinux_override = NULL;
+ 
+@@ -7303,6 +7454,14 @@ int bpf_object__load_xattr(struct bpf_object_load_attr *attr)
+ 	err = err ? : bpf_object__relocate(obj, attr->target_btf_path);
+ 	err = err ? : bpf_object__load_progs(obj, attr->log_level);
+ 
++	/* clean up module BTFs */
++	for (i = 0; i < obj->btf_module_cnt; i++) {
++		btf__free(obj->btf_modules[i].btf);
++		free(obj->btf_modules[i].name);
++	}
++	free(obj->btf_modules);
 +
- 	if (!IS_ERR_OR_NULL(cand_cache)) {
- 		hashmap__for_each_entry(cand_cache, entry, i) {
- 			bpf_core_free_cands(entry->value);
++	/* clean up vmlinux BTF */
+ 	btf__free(obj->btf_vmlinux);
+ 	obj->btf_vmlinux = NULL;
+ 
+@@ -8656,9 +8815,6 @@ static inline int __find_vmlinux_btf_id(struct btf *btf, const char *name,
+ 	else
+ 		err = btf__find_by_name_kind(btf, name, BTF_KIND_FUNC);
+ 
+-	if (err <= 0)
+-		pr_warn("%s is not found in vmlinux BTF\n", name);
+-
+ 	return err;
+ }
+ 
+@@ -8675,6 +8831,9 @@ int libbpf_find_vmlinux_btf_id(const char *name,
+ 	}
+ 
+ 	err = __find_vmlinux_btf_id(btf, name, attach_type);
++	if (err <= 0)
++		pr_warn("%s is not found in vmlinux BTF\n", name);
++
+ 	btf__free(btf);
+ 	return err;
+ }
 -- 
 2.24.1
 
