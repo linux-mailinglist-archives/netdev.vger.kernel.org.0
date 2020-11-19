@@ -2,110 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF0832B98B8
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 18:00:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D489C2B98C4
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 18:00:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727364AbgKSQ5D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 11:57:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58636 "EHLO
+        id S1729214AbgKSQ7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 11:59:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725877AbgKSQ5D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 11:57:03 -0500
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 081DEC0613CF
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 08:57:02 -0800 (PST)
-Received: by mail-il1-x142.google.com with SMTP id z14so4225355ilm.10
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 08:57:02 -0800 (PST)
+        with ESMTP id S1727888AbgKSQ7D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 11:59:03 -0500
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ACEAC0613CF;
+        Thu, 19 Nov 2020 08:59:03 -0800 (PST)
+Received: by mail-wr1-x442.google.com with SMTP id k2so7240911wrx.2;
+        Thu, 19 Nov 2020 08:59:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XgdWfY4AlGK4cybPokzm0hmAeGxzWEWyl0m4kyQUFuU=;
-        b=e5jLoFsHXpqzdCLD1MEBMKws56p4S3rA+XZaTKs1ZYiows3jLTZY3aEQLTJAtBA7Dk
-         1t0fHVBEbUvHkYxZbHp1xrjorMmyWqh4VS950k/yCkWoEt1zOMYsWdfTNTSlaEtQ7gJ+
-         vf/4iolkRahFWxD/tNV4eumOSzMVje57JWEC0KhTkGptKrq+NMjjVZtUNeq8Buy7fDpM
-         sL+/dcdYjIG18Hql72gqkeWZihBZccp6Eam6qYv9p7I97rbGJe0IQkRp7nQ8slw9ICm+
-         PfF9UosWTFU5r/grDPMHrJ55Z6CjG7NFEn+cSvwNiduvQ+DOCNzSt45xF+kjNMppvRcI
-         k9XA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=+tQ2BXpjik3+doDfIP6ABRAYhXmrT3iSlTSk4pFFTkU=;
+        b=XEj7iwUMNcqJjovR5s2ZwAvW1v+LRRbZVk34TPQcu071YWvMcS9NqpGTOUVAbsgbQf
+         aNy7pDOToG2/q/Dbv/Qu1klqi+dIi+QHSxPpvt5UZtkUACsqvwNjofh7/qRmPYMCig6q
+         gPQoerZzHJcrDxu5KHuDUowz1Tj3Me8ToIn7mxvqaGnlRiWqKswfCTPO1SLI58DY2X/u
+         nwDwLE4ReWbiaUjFVpgFFyVq/z5ExDWjsGnIV/3Kr/8lrZT06e10lj+pyYItmssu3Kzv
+         A0npQziOhB61zYQ60o5vmKoEt+QGh3xjDdzf70/g3cF2U+1/urk8q1+XrQNtM/Oku+X2
+         tW9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XgdWfY4AlGK4cybPokzm0hmAeGxzWEWyl0m4kyQUFuU=;
-        b=t+Tz2dA/BhabvVJtVwSF0HGe7AdG5qS7w8+ZKbwmHBn+9yr56EY9GQgiN+8YlcXX5l
-         MO6dmmspXqN2mxeV/1KZmI/XvEGoHj4jipGFgLLPR7ni6CM6nX5sQUFiOH+f0zceLVxb
-         BqNqkwwdZe+XKBLbDdwNIpXZDB3ol2qiPJ92YzUg84he/wbFq1JUwh2iMH6924gvfsdP
-         72fvhLgohsvBAhx07MAkHyRGa72zTdpV44CNL8NDcHvXbeFaEkrxyIR0WzOd8ZDwHVz9
-         +iM1TTXyw8+MMNKKBUOlijtBN2VempOP9WSyMsdXjUMV0HURVb5nFNpLlzW6pBtqpmM9
-         NXgw==
-X-Gm-Message-State: AOAM53187XT0wAKidN8nI8Xpw8C62Xmo1Z3Lhw0zcUVdXmQ+v9mXrjOs
-        LfMFUtv22e8MMgCDaOFopUUUrlM6sOLi5R1umJ0E53sSe1Q=
-X-Google-Smtp-Source: ABdhPJxOvoXYfE6sWic/dM1q3hQyffDEMCQE/2EN5xwuzSGSzpRN6ii2LyRl8x8b/cIL5IZ58Wt5a7ImURzU4Q4YQPY=
-X-Received: by 2002:a92:aacc:: with SMTP id p73mr5844381ill.64.1605805021393;
- Thu, 19 Nov 2020 08:57:01 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
+        bh=+tQ2BXpjik3+doDfIP6ABRAYhXmrT3iSlTSk4pFFTkU=;
+        b=RWtoqncGBKDYZ6leGVpowBRHwMDpwsfoeUOH+0iFqfwu29STvuv16PN1z49NXbKlE5
+         FFzYdiXS/3gT9PyWhBJwTf9Y/INrWLuJlgZkYnsBlDik9OhUC4uAvLoY4Ch4IjcWUA4y
+         Gek8NdIWXwxG3lUoKjigNFjonvc5mr9fIYZxtpWnNREusQhtVPc1GtggGWemk+8mlgmA
+         xD18DrY1032lxaCrv2j/SJUXxl1IRJQgfMwBDnjFwDmuphkLOaed4Fz7dOClNLmP9MCQ
+         YdCVc0wcHf547+795kDFAxRNJ0US1S4pTTdcQD+ptWr+CWPtF2UkKFntUoEuH3lwlhva
+         QGsw==
+X-Gm-Message-State: AOAM533QScjWSNUp6b69hZewt8PsfQv0Ddoq+Sb8CXktzQHQW2ntAtiw
+        yTykneey8mRzAENDOm5gchCdhtxGEU1Drg==
+X-Google-Smtp-Source: ABdhPJwY73TmmdJzuxgi3bPv2SUvGTyMS1Ria2Xk+7qjHBx5geBd7xJC6hcyC8IxeiNUEVLmwLU3OQ==
+X-Received: by 2002:adf:f7c7:: with SMTP id a7mr12235117wrq.347.1605805142047;
+        Thu, 19 Nov 2020 08:59:02 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f23:2800:6d7c:9ea3:dfaa:d617? (p200300ea8f2328006d7c9ea3dfaad617.dip0.t-ipconnect.de. [2003:ea:8f23:2800:6d7c:9ea3:dfaa:d617])
+        by smtp.googlemail.com with ESMTPSA id e3sm495182wro.90.2020.11.19.08.59.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Nov 2020 08:59:01 -0800 (PST)
+Subject: Re: [PATCH] mdio_bus: suppress err message for reset gpio
+ EPROBE_DEFER
+To:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>
+Cc:     linux-kernel@vger.kernel.org
+References: <20201118142426.25369-1-grygorii.strashko@ti.com>
+ <0329ed05-371b-0bb5-4f85-75ecaff6a70b@gmail.com>
+ <655ec6e4-6e75-1835-034c-ec18dac505e8@ti.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <7c2e8a07-4cb6-ee9c-9d64-9cf68b0390c7@gmail.com>
+Date:   Thu, 19 Nov 2020 17:58:56 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-References: <20201118232014.2910642-1-awogbemila@google.com>
-In-Reply-To: <20201118232014.2910642-1-awogbemila@google.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Thu, 19 Nov 2020 08:56:50 -0800
-Message-ID: <CAKgT0Udi+zsWCHt7CT8g+O8YN6cge3wLO1kJNrXSrGRL5PWnew@mail.gmail.com>
-Subject: Re: [PATCH net-next v7 0/4] GVE Raw Addressing
-To:     David Awogbemila <awogbemila@google.com>
-Cc:     Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <655ec6e4-6e75-1835-034c-ec18dac505e8@ti.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Where is the description of what this patch set is meant to do? I
-don't recall if I reviewed that in the last patch set but usually the
-cover page should tell us something about the patch set and not just
-be a list of changes which I assume are diffs from v3?
+Am 19.11.2020 um 14:38 schrieb Grygorii Strashko:
+> 
+> 
+> On 19/11/2020 14:30, Heiner Kallweit wrote:
+>> Am 18.11.2020 um 15:24 schrieb Grygorii Strashko:
+>>> The mdio_bus may have dependencies from GPIO controller and so got
+>>> deferred. Now it will print error message every time -EPROBE_DEFER is
+>>> returned from:
+>>> __mdiobus_register()
+>>>   |-devm_gpiod_get_optional()
+>>> without actually identifying error code.
+>>>
+>>> "mdio_bus 4a101000.mdio: mii_bus 4a101000.mdio couldn't get reset GPIO"
+>>>
+>>> Hence, suppress error message when devm_gpiod_get_optional() returning
+>>> -EPROBE_DEFER case.
+>>>
+>>> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+>>> ---
+>>>   drivers/net/phy/mdio_bus.c | 7 ++++---
+>>>   1 file changed, 4 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+>>> index 757e950fb745..54fc13043656 100644
+>>> --- a/drivers/net/phy/mdio_bus.c
+>>> +++ b/drivers/net/phy/mdio_bus.c
+>>> @@ -546,10 +546,11 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
+>>>       /* de-assert bus level PHY GPIO reset */
+>>>       gpiod = devm_gpiod_get_optional(&bus->dev, "reset", GPIOD_OUT_LOW);
+>>>       if (IS_ERR(gpiod)) {
+>>> -        dev_err(&bus->dev, "mii_bus %s couldn't get reset GPIO\n",
+>>> -            bus->id);
+>>> +        err = PTR_ERR(gpiod);
+>>> +        if (err != -EPROBE_DEFER)
+>>> +            dev_err(&bus->dev, "mii_bus %s couldn't get reset GPIO %d\n", bus->id, err);
+>>>           device_del(&bus->dev);
+>>> -        return PTR_ERR(gpiod);
+>>> +        return err;
+>>>       } else    if (gpiod) {
+>>>           bus->reset_gpiod = gpiod;
+>>>  
+>>
+>> Using dev_err_probe() here would simplify the code.
+>>
+> 
+> this was my first though, but was not sure if it's correct as dev_err_probe() will use dev
+> to store defer reason, but the same 'dev' is deleted on the next line.
+> 
+If you look at device_del() you see that it calls driver_deferred_probe_del()
+which frees the reason string. Means you're right in a way that storing
+the deferral reason doesn't provide any benefit here, but it also doesn't
+hurt.
+Good thing about using dev_err_probe() is also that it prints a debug info
+in case of deferral what may help people chasing an issue involving this
+deferral.
 
-On Wed, Nov 18, 2020 at 3:22 PM David Awogbemila <awogbemila@google.com> wrote:
->
-> Patch 1: Use u8 instead of bool for raw_addressing bit in gve_priv structure.
->         Simplify pointer arithmetic: use (option + 1) in gve_get_next_option.
->         Separate option parsing switch statement into individual function.
-> Patch 2: Use u8 instead of bool for raw_addressing bit in gve_gve_rx_data_queue structure.
->         Correct typo in gve_desc.h comment (s/than/then/).
->         Change gve_rx_data_slot from struct to union.
->         Remove dma_mapping_error path change in gve_alloc_page - it should
->         probably be a bug fix.
->         Use & to obtain page address from data_ring->addr.
->         Move declarations of local variables i and slots to if statement where they
->         are used within gve_rx_unfill_pages.
->         Simplify alloc_err path by using "while(i--)", eliminating need for extra "int j"
->         variable in gve_prefill_rx_pages.
->         Apply byteswap to constant in gve_rx_flip_buff.
->         Remove gve_rx_raw_addressing as it does not do much more than gve_rx_add_frags.
->         Remove stats update from elseif block, no need to optimize for infrequent case of
->         work_done = 0.
-> Patch 3: Use u8 instead of bool for can_flip in gve_rx_slot_page_info.
->         Move comment in gve_rx_flip_buff to earlier, more relevant patch.
->         Fix comment wrap in gve_rx_can_flip_buffers.
->         Use ternary statement for gve_rx_can_flip_buffers.
->         Correct comment in gve_rx_qpl.
-> Patch 4: Use u8 instead of bool in gve_tx_ring structure.
->         Get rid of unnecessary local variable "dma" in gve_dma_sync_for_device.
->
-> Catherine Sullivan (3):
->   gve: Add support for raw addressing device option
->   gve: Add support for raw addressing to the rx path
->   gve: Add support for raw addressing in the tx path
->
-> David Awogbemila (1):
->   gve: Rx Buffer Recycling
->
->  drivers/net/ethernet/google/gve/gve.h        |  38 +-
->  drivers/net/ethernet/google/gve/gve_adminq.c |  90 ++++-
->  drivers/net/ethernet/google/gve/gve_adminq.h |  15 +-
->  drivers/net/ethernet/google/gve/gve_desc.h   |  19 +-
->  drivers/net/ethernet/google/gve/gve_main.c   |  11 +-
->  drivers/net/ethernet/google/gve/gve_rx.c     | 403 ++++++++++++++-----
->  drivers/net/ethernet/google/gve/gve_tx.c     | 211 ++++++++--
->  7 files changed, 620 insertions(+), 167 deletions(-)
->
-> --
-> 2.29.2.299.gdc1121823c-goog
->
+> I also thought about using bus->parent, but it's not always provided.
+> 
+> So, if you think dev_err_probe(0) can be used - I can change and re-send.
+> 
+
