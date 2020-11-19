@@ -2,361 +2,336 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C2E12B9F21
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 01:15:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 641FF2B9EF7
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 01:04:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727145AbgKTAOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 19:14:24 -0500
-Received: from m9785.mail.qiye.163.com ([220.181.97.85]:22440 "EHLO
-        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726386AbgKTAOY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 19:14:24 -0500
-Received: from localhost.localdomain (unknown [123.59.132.129])
-        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id 9BC5A5C15F4;
-        Fri, 20 Nov 2020 07:38:37 +0800 (CST)
-From:   wenxu@ucloud.cn
-To:     kuba@kernel.org, marcelo.leitner@gmail.com, vladbu@nvidia.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH v3 net-next 3/3] net/sched: sch_frag: add generic packet fragment support.
-Date:   Fri, 20 Nov 2020 07:38:36 +0800
-Message-Id: <1605829116-10056-4-git-send-email-wenxu@ucloud.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1605829116-10056-1-git-send-email-wenxu@ucloud.cn>
-References: <1605829116-10056-1-git-send-email-wenxu@ucloud.cn>
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
-        oVCBIfWUFZSR4dSBpMGEJIH0hNVkpNS05DSUJKSkxMSkJVGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS0hKTFVLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MVE6MRw6Cj09HDMMLC4dHTVC
-        F0saCkJVSlVKTUtOQ0lCSkpMQkxCVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
-        QlVKSElVSklCWVdZCAFZQUpLTUNPNwY+
-X-HM-Tid: 0a75e2dfc6de2087kuqy9bc5a5c15f4
+        id S1727037AbgKSX7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 18:59:13 -0500
+Received: from mga12.intel.com ([192.55.52.136]:45450 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726255AbgKSX7M (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Nov 2020 18:59:12 -0500
+IronPort-SDR: r0eFVgMMOZZheHMy1CTVJDc4Ci9budgOmYovCSjCh339USF1xu2b9ZB+bYqjGFeg4ZxSlns5Ju
+ 8absZo5HxFXg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9810"; a="150653337"
+X-IronPort-AV: E=Sophos;i="5.78,354,1599548400"; 
+   d="scan'208";a="150653337"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2020 15:59:11 -0800
+IronPort-SDR: O5T0HeilPFqzAdmHGd784uCm5pfve9glzuzYODE+lXK+/jQGn4wDfiaPBRhVaUJr4uvDap8RR3
+ 9xeF61C+314Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.78,354,1599548400"; 
+   d="scan'208";a="534973224"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by fmsmga005.fm.intel.com with ESMTP; 19 Nov 2020 15:59:09 -0800
+Date:   Fri, 20 Nov 2020 00:50:34 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Camelia Groza <camelia.groza@nxp.com>
+Cc:     kuba@kernel.org, brouer@redhat.com, saeed@kernel.org,
+        davem@davemloft.net, madalin.bucur@oss.nxp.com,
+        ioana.ciornei@nxp.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v3 4/7] dpaa_eth: add XDP_TX support
+Message-ID: <20201119235034.GA24983@ranger.igk.intel.com>
+References: <cover.1605802951.git.camelia.groza@nxp.com>
+ <aa8bbb5c404f57fdb7915eb236305a177800becb.1605802951.git.camelia.groza@nxp.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aa8bbb5c404f57fdb7915eb236305a177800becb.1605802951.git.camelia.groza@nxp.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wenxu <wenxu@ucloud.cn>
+On Thu, Nov 19, 2020 at 06:29:33PM +0200, Camelia Groza wrote:
+> Use an xdp_frame structure for managing the frame. Store a backpointer to
+> the structure at the start of the buffer before enqueueing. Use the XDP
+> API for freeing the buffer when it returns to the driver on the TX
+> confirmation path.
 
-Currently kernel tc subsystem can do conntrack in cat_ct. But when several
-fragment packets go through the act_ct, function tcf_ct_handle_fragments
-will defrag the packets to a big one. But the last action will redirect
-mirred to a device which maybe lead the reassembly big packet over the mtu
-of target device.
+Completion path?
 
-This patch add support for a xmit hook to mirred, that gets executed before
-xmiting the packet. Then, when act_ct gets loaded, it configs that hook.
-The frag xmit hook maybe reused by other modules.
+> 
+> This approach will be reused for XDP REDIRECT.
+> 
+> Acked-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
+> Signed-off-by: Camelia Groza <camelia.groza@nxp.com>
+> ---
+>  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 129 ++++++++++++++++++++++++-
+>  drivers/net/ethernet/freescale/dpaa/dpaa_eth.h |   2 +
+>  2 files changed, 126 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> index 242ed45..cd5f4f6 100644
+> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> @@ -1130,6 +1130,24 @@ static int dpaa_fq_init(struct dpaa_fq *dpaa_fq, bool td_enable)
+>  
+>  	dpaa_fq->fqid = qman_fq_fqid(fq);
+>  
+> +	if (dpaa_fq->fq_type == FQ_TYPE_RX_DEFAULT ||
+> +	    dpaa_fq->fq_type == FQ_TYPE_RX_PCD) {
+> +		err = xdp_rxq_info_reg(&dpaa_fq->xdp_rxq, dpaa_fq->net_dev,
+> +				       dpaa_fq->fqid);
+> +		if (err) {
+> +			dev_err(dev, "xdp_rxq_info_reg failed\n");
 
-Signed-off-by: wenxu <wenxu@ucloud.cn>
----
-v2: make act_frag just buildin for tc core but not a module
-    return an error code from tcf_fragment
-    depends on INET for ip_do_fragment
-v3: put the whole sch_frag.c under CONFIG_INET
+Print out the err?
 
- include/net/act_api.h     |   8 +++
- include/net/sch_generic.h |   2 +
- net/sched/Makefile        |   1 +
- net/sched/act_api.c       |  44 ++++++++++++++
- net/sched/act_ct.c        |   7 +++
- net/sched/act_mirred.c    |   2 +-
- net/sched/sch_frag.c      | 150 ++++++++++++++++++++++++++++++++++++++++++++++
- 7 files changed, 213 insertions(+), 1 deletion(-)
- create mode 100644 net/sched/sch_frag.c
+Also, shouldn't you call qman_destroy_fq() for these error paths?
 
-diff --git a/include/net/act_api.h b/include/net/act_api.h
-index 8721492..decb6de 100644
---- a/include/net/act_api.h
-+++ b/include/net/act_api.h
-@@ -239,6 +239,14 @@ int tcf_action_check_ctrlact(int action, struct tcf_proto *tp,
- 			     struct netlink_ext_ack *newchain);
- struct tcf_chain *tcf_action_set_ctrlact(struct tc_action *a, int action,
- 					 struct tcf_chain *newchain);
-+
-+typedef int xmit_hook_func(struct sk_buff *skb,
-+			   int (*xmit)(struct sk_buff *skb));
-+
-+int tcf_dev_queue_xmit(struct sk_buff *skb, int (*xmit)(struct sk_buff *skb));
-+int tcf_set_xmit_hook(xmit_hook_func *xmit_hook);
-+void tcf_clear_xmit_hook(void);
-+
- #endif /* CONFIG_NET_CLS_ACT */
- 
- static inline void tcf_action_stats_update(struct tc_action *a, u64 bytes,
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index dd74f06..162ed62 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -1281,4 +1281,6 @@ void mini_qdisc_pair_init(struct mini_Qdisc_pair *miniqp, struct Qdisc *qdisc,
- void mini_qdisc_pair_block_init(struct mini_Qdisc_pair *miniqp,
- 				struct tcf_block *block);
- 
-+int sch_frag_xmit_hook(struct sk_buff *skb, int (*xmit)(struct sk_buff *skb));
-+
- #endif
-diff --git a/net/sched/Makefile b/net/sched/Makefile
-index 66bbf9a..dd14ef4 100644
---- a/net/sched/Makefile
-+++ b/net/sched/Makefile
-@@ -5,6 +5,7 @@
- 
- obj-y	:= sch_generic.o sch_mq.o
- 
-+obj-$(CONFIG_INET)		+= sch_frag.o
- obj-$(CONFIG_NET_SCHED)		+= sch_api.o sch_blackhole.o
- obj-$(CONFIG_NET_CLS)		+= cls_api.o
- obj-$(CONFIG_NET_CLS_ACT)	+= act_api.o
-diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-index 60e1572..fbb35a8 100644
---- a/net/sched/act_api.c
-+++ b/net/sched/act_api.c
-@@ -22,6 +22,50 @@
- #include <net/act_api.h>
- #include <net/netlink.h>
- 
-+static xmit_hook_func __rcu *tcf_xmit_hook;
-+static DEFINE_SPINLOCK(tcf_xmit_hook_lock);
-+static u16 tcf_xmit_hook_count;
-+
-+int tcf_set_xmit_hook(xmit_hook_func *xmit_hook)
-+{
-+	spin_lock(&tcf_xmit_hook_lock);
-+	if (!tcf_xmit_hook_count) {
-+		rcu_assign_pointer(tcf_xmit_hook, xmit_hook);
-+	} else if (xmit_hook != rcu_access_pointer(tcf_xmit_hook)) {
-+		spin_unlock(&tcf_xmit_hook_lock);
-+		return -EBUSY;
-+	}
-+
-+	tcf_xmit_hook_count++;
-+	spin_unlock(&tcf_xmit_hook_lock);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(tcf_set_xmit_hook);
-+
-+void tcf_clear_xmit_hook(void)
-+{
-+	spin_lock(&tcf_xmit_hook_lock);
-+	if (--tcf_xmit_hook_count == 0)
-+		rcu_assign_pointer(tcf_xmit_hook, NULL);
-+	spin_unlock(&tcf_xmit_hook_lock);
-+
-+	synchronize_rcu();
-+}
-+EXPORT_SYMBOL_GPL(tcf_clear_xmit_hook);
-+
-+int tcf_dev_queue_xmit(struct sk_buff *skb, int (*xmit)(struct sk_buff *skb))
-+{
-+	xmit_hook_func *xmit_hook;
-+
-+	xmit_hook = rcu_dereference(tcf_xmit_hook);
-+	if (xmit_hook)
-+		return xmit_hook(skb, xmit);
-+	else
-+		return xmit(skb);
-+}
-+EXPORT_SYMBOL_GPL(tcf_dev_queue_xmit);
-+
- static void tcf_action_goto_chain_exec(const struct tc_action *a,
- 				       struct tcf_result *res)
- {
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index aba3cd8..f82dc65 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -1541,8 +1541,14 @@ static int __init ct_init_module(void)
- 	if (err)
- 		goto err_register;
- 
-+	err = tcf_set_xmit_hook(sch_frag_xmit_hook);
-+	if (err)
-+		goto err_action;
-+
- 	return 0;
- 
-+err_action:
-+	tcf_unregister_action(&act_ct_ops, &ct_net_ops);
- err_register:
- 	tcf_ct_flow_tables_uninit();
- err_tbl_init:
-@@ -1552,6 +1558,7 @@ static int __init ct_init_module(void)
- 
- static void __exit ct_cleanup_module(void)
- {
-+	tcf_clear_xmit_hook();
- 	tcf_unregister_action(&act_ct_ops, &ct_net_ops);
- 	tcf_ct_flow_tables_uninit();
- 	destroy_workqueue(act_ct_wq);
-diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
-index 17d0095..7153c67 100644
---- a/net/sched/act_mirred.c
-+++ b/net/sched/act_mirred.c
-@@ -210,7 +210,7 @@ static int tcf_mirred_forward(bool want_ingress, struct sk_buff *skb)
- 	int err;
- 
- 	if (!want_ingress)
--		err = dev_queue_xmit(skb);
-+		err = tcf_dev_queue_xmit(skb, dev_queue_xmit);
- 	else
- 		err = netif_receive_skb(skb);
- 
-diff --git a/net/sched/sch_frag.c b/net/sched/sch_frag.c
-new file mode 100644
-index 0000000..e1e77d3
---- /dev/null
-+++ b/net/sched/sch_frag.c
-@@ -0,0 +1,150 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+#include <net/netlink.h>
-+#include <net/sch_generic.h>
-+#include <net/dst.h>
-+#include <net/ip.h>
-+#include <net/ip6_fib.h>
-+
-+struct sch_frag_data {
-+	unsigned long dst;
-+	struct qdisc_skb_cb cb;
-+	__be16 inner_protocol;
-+	u16 vlan_tci;
-+	__be16 vlan_proto;
-+	unsigned int l2_len;
-+	u8 l2_data[VLAN_ETH_HLEN];
-+	int (*xmit)(struct sk_buff *skb);
-+};
-+
-+static DEFINE_PER_CPU(struct sch_frag_data, sch_frag_data_storage);
-+
-+static int sch_frag_xmit(struct net *net, struct sock *sk, struct sk_buff *skb)
-+{
-+	struct sch_frag_data *data = this_cpu_ptr(&sch_frag_data_storage);
-+
-+	if (skb_cow_head(skb, data->l2_len) < 0) {
-+		kfree_skb(skb);
-+		return -ENOMEM;
-+	}
-+
-+	__skb_dst_copy(skb, data->dst);
-+	*qdisc_skb_cb(skb) = data->cb;
-+	skb->inner_protocol = data->inner_protocol;
-+	if (data->vlan_tci & VLAN_CFI_MASK)
-+		__vlan_hwaccel_put_tag(skb, data->vlan_proto,
-+				       data->vlan_tci & ~VLAN_CFI_MASK);
-+	else
-+		__vlan_hwaccel_clear_tag(skb);
-+
-+	/* Reconstruct the MAC header.  */
-+	skb_push(skb, data->l2_len);
-+	memcpy(skb->data, &data->l2_data, data->l2_len);
-+	skb_postpush_rcsum(skb, skb->data, data->l2_len);
-+	skb_reset_mac_header(skb);
-+
-+	return data->xmit(skb);
-+}
-+
-+static void sch_frag_prepare_frag(struct sk_buff *skb,
-+				  int (*xmit)(struct sk_buff *skb))
-+{
-+	unsigned int hlen = skb_network_offset(skb);
-+	struct sch_frag_data *data;
-+
-+	data = this_cpu_ptr(&sch_frag_data_storage);
-+	data->dst = skb->_skb_refdst;
-+	data->cb = *qdisc_skb_cb(skb);
-+	data->xmit = xmit;
-+	data->inner_protocol = skb->inner_protocol;
-+	if (skb_vlan_tag_present(skb))
-+		data->vlan_tci = skb_vlan_tag_get(skb) | VLAN_CFI_MASK;
-+	else
-+		data->vlan_tci = 0;
-+	data->vlan_proto = skb->vlan_proto;
-+	data->l2_len = hlen;
-+	memcpy(&data->l2_data, skb->data, hlen);
-+
-+	memset(IPCB(skb), 0, sizeof(struct inet_skb_parm));
-+	skb_pull(skb, hlen);
-+}
-+
-+static unsigned int
-+sch_frag_dst_get_mtu(const struct dst_entry *dst)
-+{
-+	return dst->dev->mtu;
-+}
-+
-+static struct dst_ops sch_frag_dst_ops = {
-+	.family = AF_UNSPEC,
-+	.mtu = sch_frag_dst_get_mtu,
-+};
-+
-+static int sch_fragment(struct net *net, struct sk_buff *skb,
-+			u16 mru, int (*xmit)(struct sk_buff *skb))
-+{
-+	int ret = -1;
-+
-+	if (skb_network_offset(skb) > VLAN_ETH_HLEN) {
-+		net_warn_ratelimited("L2 header too long to fragment\n");
-+		goto err;
-+	}
-+
-+	if (skb_protocol(skb, true) == htons(ETH_P_IP)) {
-+		struct dst_entry sch_frag_dst;
-+		unsigned long orig_dst;
-+
-+		sch_frag_prepare_frag(skb, xmit);
-+		dst_init(&sch_frag_dst, &sch_frag_dst_ops, NULL, 1,
-+			 DST_OBSOLETE_NONE, DST_NOCOUNT);
-+		sch_frag_dst.dev = skb->dev;
-+
-+		orig_dst = skb->_skb_refdst;
-+		skb_dst_set_noref(skb, &sch_frag_dst);
-+		IPCB(skb)->frag_max_size = mru;
-+
-+		ret = ip_do_fragment(net, skb->sk, skb, sch_frag_xmit);
-+		refdst_drop(orig_dst);
-+	} else if (skb_protocol(skb, true) == htons(ETH_P_IPV6)) {
-+		unsigned long orig_dst;
-+		struct rt6_info sch_frag_rt;
-+
-+		sch_frag_prepare_frag(skb, xmit);
-+		memset(&sch_frag_rt, 0, sizeof(sch_frag_rt));
-+		dst_init(&sch_frag_rt.dst, &sch_frag_dst_ops, NULL, 1,
-+			 DST_OBSOLETE_NONE, DST_NOCOUNT);
-+		sch_frag_rt.dst.dev = skb->dev;
-+
-+		orig_dst = skb->_skb_refdst;
-+		skb_dst_set_noref(skb, &sch_frag_rt.dst);
-+		IP6CB(skb)->frag_max_size = mru;
-+
-+		ret = ipv6_stub->ipv6_fragment(net, skb->sk, skb,
-+					       sch_frag_xmit);
-+		refdst_drop(orig_dst);
-+	} else {
-+		net_warn_ratelimited("Fail frag %s: eth=%x, MRU=%d, MTU=%d\n",
-+				     netdev_name(skb->dev),
-+				     ntohs(skb_protocol(skb, true)), mru,
-+				     skb->dev->mtu);
-+		goto err;
-+	}
-+
-+	return ret;
-+err:
-+	kfree_skb(skb);
-+	return ret;
-+}
-+
-+int sch_frag_xmit_hook(struct sk_buff *skb, int (*xmit)(struct sk_buff *skb))
-+{
-+	u16 mru = qdisc_skb_cb(skb)->mru;
-+	int err;
-+
-+	if (mru && skb->len > mru + skb->dev->hard_header_len)
-+		err = sch_fragment(dev_net(skb->dev), skb, mru, xmit);
-+	else
-+		err = xmit(skb);
-+
-+	return err;
-+}
-+EXPORT_SYMBOL_GPL(sch_frag_xmit_hook);
--- 
-1.8.3.1
+> +			return err;
+> +		}
+> +
+> +		err = xdp_rxq_info_reg_mem_model(&dpaa_fq->xdp_rxq,
+> +						 MEM_TYPE_PAGE_ORDER0, NULL);
+> +		if (err) {
+> +			dev_err(dev, "xdp_rxq_info_reg_mem_model failed\n");
+> +			xdp_rxq_info_unreg(&dpaa_fq->xdp_rxq);
+> +			return err;
+> +		}
+> +	}
+> +
+>  	return 0;
+>  }
+>  
+> @@ -1159,6 +1177,10 @@ static int dpaa_fq_free_entry(struct device *dev, struct qman_fq *fq)
+>  		}
+>  	}
+>  
+> +	if (dpaa_fq->fq_type == FQ_TYPE_RX_DEFAULT ||
+> +	    dpaa_fq->fq_type == FQ_TYPE_RX_PCD)
 
+You should call xdp_rxq_info_is_reg() before the unregister below.
+
+> +		xdp_rxq_info_unreg(&dpaa_fq->xdp_rxq);
+> +
+>  	qman_destroy_fq(fq);
+>  	list_del(&dpaa_fq->list);
+>  
+> @@ -1625,6 +1647,9 @@ static int dpaa_eth_refill_bpools(struct dpaa_priv *priv)
+>   *
+>   * Return the skb backpointer, since for S/G frames the buffer containing it
+>   * gets freed here.
+> + *
+> + * No skb backpointer is set when transmitting XDP frames. Cleanup the buffer
+> + * and return NULL in this case.
+>   */
+>  static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
+>  					  const struct qm_fd *fd, bool ts)
+> @@ -1636,6 +1661,7 @@ static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
+>  	void *vaddr = phys_to_virt(addr);
+>  	const struct qm_sg_entry *sgt;
+>  	struct dpaa_eth_swbp *swbp;
+> +	struct xdp_frame *xdpf;
+
+This local variable feels a bit unnecessary.
+
+>  	struct sk_buff *skb;
+>  	u64 ns;
+>  	int i;
+> @@ -1664,13 +1690,22 @@ static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
+>  		}
+>  	} else {
+>  		dma_unmap_single(priv->tx_dma_dev, addr,
+> -				 priv->tx_headroom + qm_fd_get_length(fd),
+> +				 qm_fd_get_offset(fd) + qm_fd_get_length(fd),
+>  				 dma_dir);
+>  	}
+>  
+>  	swbp = (struct dpaa_eth_swbp *)vaddr;
+>  	skb = swbp->skb;
+>  
+> +	/* No skb backpointer is set when running XDP. An xdp_frame
+> +	 * backpointer is saved instead.
+> +	 */
+> +	if (!skb) {
+> +		xdpf = swbp->xdpf;
+> +		xdp_return_frame(xdpf);
+> +		return NULL;
+> +	}
+> +
+>  	/* DMA unmapping is required before accessing the HW provided info */
+>  	if (ts && priv->tx_tstamp &&
+>  	    skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) {
+> @@ -2350,11 +2385,76 @@ static enum qman_cb_dqrr_result rx_error_dqrr(struct qman_portal *portal,
+>  	return qman_cb_dqrr_consume;
+>  }
+>  
+> +static int dpaa_xdp_xmit_frame(struct net_device *net_dev,
+> +			       struct xdp_frame *xdpf)
+> +{
+> +	struct dpaa_priv *priv = netdev_priv(net_dev);
+> +	struct rtnl_link_stats64 *percpu_stats;
+> +	struct dpaa_percpu_priv *percpu_priv;
+> +	struct dpaa_eth_swbp *swbp;
+> +	struct netdev_queue *txq;
+> +	void *buff_start;
+> +	struct qm_fd fd;
+> +	dma_addr_t addr;
+> +	int err;
+> +
+> +	percpu_priv = this_cpu_ptr(priv->percpu_priv);
+> +	percpu_stats = &percpu_priv->stats;
+> +
+> +	if (xdpf->headroom < DPAA_TX_PRIV_DATA_SIZE) {
+
+Could you shed some light on DPAA_TX_PRIV_DATA_SIZE usage?
+
+> +		err = -EINVAL;
+> +		goto out_error;
+> +	}
+> +
+> +	buff_start = xdpf->data - xdpf->headroom;
+> +
+> +	/* Leave empty the skb backpointer at the start of the buffer.
+> +	 * Save the XDP frame for easy cleanup on confirmation.
+> +	 */
+> +	swbp = (struct dpaa_eth_swbp *)buff_start;
+> +	swbp->skb = NULL;
+> +	swbp->xdpf = xdpf;
+> +
+> +	qm_fd_clear_fd(&fd);
+> +	fd.bpid = FSL_DPAA_BPID_INV;
+> +	fd.cmd |= cpu_to_be32(FM_FD_CMD_FCO);
+> +	qm_fd_set_contig(&fd, xdpf->headroom, xdpf->len);
+> +
+> +	addr = dma_map_single(priv->tx_dma_dev, buff_start,
+> +			      xdpf->headroom + xdpf->len,
+> +			      DMA_TO_DEVICE);
+> +	if (unlikely(dma_mapping_error(priv->tx_dma_dev, addr))) {
+> +		err = -EINVAL;
+> +		goto out_error;
+> +	}
+> +
+> +	qm_fd_addr_set64(&fd, addr);
+> +
+> +	/* Bump the trans_start */
+> +	txq = netdev_get_tx_queue(net_dev, smp_processor_id());
+> +	txq->trans_start = jiffies;
+> +
+> +	err = dpaa_xmit(priv, percpu_stats, smp_processor_id(), &fd);
+
+So it looks like you don't provide the XDP Tx resources and you share the
+netstack's Tx queues with XDP, if I'm reading this right.
+
+Please mention it/explain in the cover letter or commit message of this
+patch. Furthermore, I don't see any locking happenning over here?
+
+> +	if (err) {
+> +		dma_unmap_single(priv->tx_dma_dev, addr,
+> +				 qm_fd_get_offset(&fd) + qm_fd_get_length(&fd),
+> +				 DMA_TO_DEVICE);
+> +		goto out_error;
+> +	}
+> +
+> +	return 0;
+> +
+> +out_error:
+> +	percpu_stats->tx_errors++;
+> +	return err;
+> +}
+> +
+>  static u32 dpaa_run_xdp(struct dpaa_priv *priv, struct qm_fd *fd, void *vaddr,
+> -			unsigned int *xdp_meta_len)
+> +			struct dpaa_fq *dpaa_fq, unsigned int *xdp_meta_len)
+>  {
+>  	ssize_t fd_off = qm_fd_get_offset(fd);
+>  	struct bpf_prog *xdp_prog;
+> +	struct xdp_frame *xdpf;
+>  	struct xdp_buff xdp;
+>  	u32 xdp_act;
+>  
+> @@ -2370,7 +2470,8 @@ static u32 dpaa_run_xdp(struct dpaa_priv *priv, struct qm_fd *fd, void *vaddr,
+>  	xdp.data_meta = xdp.data;
+>  	xdp.data_hard_start = xdp.data - XDP_PACKET_HEADROOM;
+>  	xdp.data_end = xdp.data + qm_fd_get_length(fd);
+> -	xdp.frame_sz = DPAA_BP_RAW_SIZE;
+> +	xdp.frame_sz = DPAA_BP_RAW_SIZE - DPAA_TX_PRIV_DATA_SIZE;
+> +	xdp.rxq = &dpaa_fq->xdp_rxq;
+>  
+>  	xdp_act = bpf_prog_run_xdp(xdp_prog, &xdp);
+>  
+> @@ -2381,6 +2482,22 @@ static u32 dpaa_run_xdp(struct dpaa_priv *priv, struct qm_fd *fd, void *vaddr,
+>  	case XDP_PASS:
+>  		*xdp_meta_len = xdp.data - xdp.data_meta;
+>  		break;
+> +	case XDP_TX:
+> +		/* We can access the full headroom when sending the frame
+> +		 * back out
+
+And normally why a piece of headroom is taken away? I probably should have
+started from the basic XDP support patch, but if you don't mind, please
+explain it a bit.
+
+> +		 */
+> +		xdp.data_hard_start = vaddr;
+> +		xdp.frame_sz = DPAA_BP_RAW_SIZE;
+> +		xdpf = xdp_convert_buff_to_frame(&xdp);
+> +		if (unlikely(!xdpf)) {
+> +			free_pages((unsigned long)vaddr, 0);
+> +			break;
+> +		}
+> +
+> +		if (dpaa_xdp_xmit_frame(priv->net_dev, xdpf))
+> +			xdp_return_frame_rx_napi(xdpf);
+> +
+> +		break;
+>  	default:
+>  		bpf_warn_invalid_xdp_action(xdp_act);
+>  		fallthrough;
+> @@ -2415,6 +2532,7 @@ static enum qman_cb_dqrr_result rx_default_dqrr(struct qman_portal *portal,
+>  	u32 fd_status, hash_offset;
+>  	struct qm_sg_entry *sgt;
+>  	struct dpaa_bp *dpaa_bp;
+> +	struct dpaa_fq *dpaa_fq;
+>  	struct dpaa_priv *priv;
+>  	struct sk_buff *skb;
+>  	int *count_ptr;
+> @@ -2423,9 +2541,10 @@ static enum qman_cb_dqrr_result rx_default_dqrr(struct qman_portal *portal,
+>  	u32 hash;
+>  	u64 ns;
+>  
+> +	dpaa_fq = container_of(fq, struct dpaa_fq, fq_base);
+>  	fd_status = be32_to_cpu(fd->status);
+>  	fd_format = qm_fd_get_format(fd);
+> -	net_dev = ((struct dpaa_fq *)fq)->net_dev;
+> +	net_dev = dpaa_fq->net_dev;
+>  	priv = netdev_priv(net_dev);
+>  	dpaa_bp = dpaa_bpid2pool(dq->fd.bpid);
+>  	if (!dpaa_bp)
+> @@ -2494,7 +2613,7 @@ static enum qman_cb_dqrr_result rx_default_dqrr(struct qman_portal *portal,
+>  
+>  	if (likely(fd_format == qm_fd_contig)) {
+>  		xdp_act = dpaa_run_xdp(priv, (struct qm_fd *)fd, vaddr,
+> -				       &xdp_meta_len);
+> +				       dpaa_fq, &xdp_meta_len);
+>  		if (xdp_act != XDP_PASS) {
+>  			percpu_stats->rx_packets++;
+>  			percpu_stats->rx_bytes += qm_fd_get_length(fd);
+> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h
+> index 94e8613..5c8d52a 100644
+> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h
+> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h
+> @@ -68,6 +68,7 @@ struct dpaa_fq {
+>  	u16 channel;
+>  	u8 wq;
+>  	enum dpaa_fq_type fq_type;
+> +	struct xdp_rxq_info xdp_rxq;
+>  };
+>  
+>  struct dpaa_fq_cbs {
+> @@ -150,6 +151,7 @@ struct dpaa_buffer_layout {
+>   */
+>  struct dpaa_eth_swbp {
+>  	struct sk_buff *skb;
+> +	struct xdp_frame *xdpf;
+>  };
+>  
+>  struct dpaa_priv {
+> -- 
+> 1.9.1
+> 
