@@ -2,104 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEA1A2B895D
+	by mail.lfdr.de (Postfix) with ESMTP id 50F8F2B895C
 	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 02:13:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727348AbgKSBNF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 20:13:05 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:37160 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727298AbgKSBNE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 20:13:04 -0500
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AJ13HSL116837;
-        Wed, 18 Nov 2020 20:12:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references; s=pp1;
- bh=o3SnSx/FUmZ1rbizUSnKEHWZZm9v9ynH8glDMOox6ZA=;
- b=pPP9Mf/KtSueAd/mSM1v+W/G0yjgtr7dDthShSrNyEZ7GrBEHKNGf8S5y1FDjBKw3QVk
- gaFWey5aDIzE1x7mgRrbnFedbFvjIGfQYjW8KDjecv2HQ0DgbVb8y+d3Z0gUkmSz63ga
- mNE/YHOM87wCUvnB23KuzhSPbtuAVssHJDn+i6OGLvqzvD1eAL2ks+n+/pnHfbB0E16X
- 75tHw8GQJTvsw+DX43d4z15OuUJP5/00Atq029f7eWMYROkQ4S1aRU9HBNndXxIV7dr8
- 9U1j9uFDHMQ1XbWv634JzG05E90Os/frapAOaLFrD8RfDZnDZtpSCzhrHbPKtT16m6SQ NQ== 
-Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 34w4rha2h3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 Nov 2020 20:12:59 -0500
-Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
-        by ppma05wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0AJ17FqU026465;
-        Thu, 19 Nov 2020 01:12:58 GMT
-Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
-        by ppma05wdc.us.ibm.com with ESMTP id 34t6v9agv5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 19 Nov 2020 01:12:58 +0000
-Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0AJ1Cm9d59900340
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 19 Nov 2020 01:12:48 GMT
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 296326A05A;
-        Thu, 19 Nov 2020 01:12:57 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 689526A04D;
-        Thu, 19 Nov 2020 01:12:55 +0000 (GMT)
-Received: from oc7186267434.ibm.com (unknown [9.65.199.179])
-        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu, 19 Nov 2020 01:12:55 +0000 (GMT)
-From:   Thomas Falcon <tlfalcon@linux.ibm.com>
-To:     kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        cforno12@linux.ibm.com, ljp@linux.vnet.ibm.com,
-        ricklind@linux.ibm.com, dnbanerg@us.ibm.com,
-        drt@linux.vnet.ibm.com, brking@linux.vnet.ibm.com,
-        sukadev@linux.vnet.ibm.com, tlfalcon@linux.ibm.com
-Subject: [PATCH net-next v2 9/9] ibmvnic: Do not replenish RX buffers after every polling loop
-Date:   Wed, 18 Nov 2020 19:12:25 -0600
-Message-Id: <1605748345-32062-10-git-send-email-tlfalcon@linux.ibm.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1605748345-32062-1-git-send-email-tlfalcon@linux.ibm.com>
-References: <1605748345-32062-1-git-send-email-tlfalcon@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-18_10:2020-11-17,2020-11-18 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=1 clxscore=1015
- mlxscore=0 bulkscore=0 lowpriorityscore=0 mlxlogscore=560 impostorscore=0
- phishscore=0 spamscore=0 malwarescore=0 adultscore=0 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011190003
+        id S1727338AbgKSBND (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 20:13:03 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47022 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727298AbgKSBNC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 20:13:02 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8C5B42145D;
+        Thu, 19 Nov 2020 01:13:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605748381;
+        bh=gVLAMVMPsy8FciFWO9NMYeFylenwizoTwx03CB4IsBo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=uNizKZr0jMIatXWruu4Etr67K+rJiBUOFa3Ycbm9vdig67EdXCwTSD3sRCYWD2AOw
+         IcKZNNHycd30+GcoXC4GpyFbaLch5/VG2OyZwSg8GgdF8OfovzRhi68XFun+LZPqhy
+         PWJIOH3S79gKlnlopgnq6Pq9GTnsP8MxCOEXA3Uo=
+Date:   Wed, 18 Nov 2020 17:13:00 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeedm@nvidia.com>
+Cc:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
+        "Maxim Mikityanskiy" <maximmi@mellanox.com>
+Subject: Re: [PATCH net 1/2] net/tls: Protect from calling tls_dev_del for
+ TLS RX twice
+Message-ID: <20201118171300.71db0be3@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201117203355.389661-1-saeedm@nvidia.com>
+References: <20201117203355.389661-1-saeedm@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Dwip N. Banerjee" <dnbanerg@us.ibm.com>
+On Tue, 17 Nov 2020 12:33:54 -0800 Saeed Mahameed wrote:
+> From: Maxim Mikityanskiy <maximmi@mellanox.com>
+> 
+> tls_device_offload_cleanup_rx doesn't clear tls_ctx->netdev after
+> calling tls_dev_del if TLX TX offload is also enabled. Clearing
+> tls_ctx->netdev gets postponed until tls_device_gc_task. It leaves a
+> time frame when tls_device_down may get called and call tls_dev_del for
+> RX one extra time, confusing the driver, which may lead to a crash.
+> 
+> This patch corrects this racy behavior by adding a flag to prevent
+> tls_device_down from calling tls_dev_del the second time.
+> 
+> Fixes: e8f69799810c ("net/tls: Add generic NIC offload infrastructure")
+> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+> ---
+> For -stable: 5.3
+> 
+>  include/net/tls.h    | 1 +
+>  net/tls/tls_device.c | 3 ++-
+>  2 files changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/net/tls.h b/include/net/tls.h
+> index baf1e99d8193..a0deddfde412 100644
+> --- a/include/net/tls.h
+> +++ b/include/net/tls.h
+> @@ -199,6 +199,7 @@ enum tls_context_flags {
+>  	 * to be atomic.
+>  	 */
+>  	TLS_TX_SYNC_SCHED = 1,
 
-Reduce the amount of time spent replenishing RX buffers by
-only doing so once available buffers has fallen under a certain
-threshold, in this case half of the total number of buffers, or
-if the polling loop exits before the packets processed is less
-than its budget.
+Please add a comment here explaining that this bit is set when device
+state is partially released, and ctx->netdev cannot be cleared but RX
+side was already removed.
 
-Signed-off-by: Dwip N. Banerjee <dnbanerg@us.ibm.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+> +	TLS_RX_DEV_RELEASED = 2,
+>  };
+>  
+>  struct cipher_context {
+> diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+> index cec86229a6a0..b2261caac6be 100644
+> --- a/net/tls/tls_device.c
+> +++ b/net/tls/tls_device.c
+> @@ -1241,6 +1241,7 @@ void tls_device_offload_cleanup_rx(struct sock *sk)
+>  
+>  	netdev->tlsdev_ops->tls_dev_del(netdev, tls_ctx,
+>  					TLS_OFFLOAD_CTX_DIR_RX);
+> +	set_bit(TLS_RX_DEV_RELEASED, &tls_ctx->flags);
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 96df6d8fa277..9fe43ab0496d 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -2537,7 +2537,10 @@ static int ibmvnic_poll(struct napi_struct *napi, int budget)
- 		frames_processed++;
- 	}
- 
--	if (adapter->state != VNIC_CLOSING)
-+	if (adapter->state != VNIC_CLOSING &&
-+	    ((atomic_read(&adapter->rx_pool[scrq_num].available) <
-+	      adapter->req_rx_add_entries_per_subcrq / 2) ||
-+	      frames_processed < budget))
- 		replenish_rx_pool(adapter, &adapter->rx_pool[scrq_num]);
- 	if (frames_processed < budget) {
- 		if (napi_complete_done(napi, frames_processed)) {
--- 
-2.26.2
+Would the semantics of the bit be clearer if we only set the bit in an
+else branch below and renamed it TLS_RX_DEV_CLOSED?
+
+Otherwise it could be confusing to the reader that his bit is only set
+here but not in tls_device_down().
+
+>  	if (tls_ctx->tx_conf != TLS_HW) {
+>  		dev_put(netdev);
+> @@ -1274,7 +1275,7 @@ static int tls_device_down(struct net_device *netdev)
+>  		if (ctx->tx_conf == TLS_HW)
+>  			netdev->tlsdev_ops->tls_dev_del(netdev, ctx,
+>  							TLS_OFFLOAD_CTX_DIR_TX);
+> -		if (ctx->rx_conf == TLS_HW)
+> +		if (ctx->rx_conf == TLS_HW && !test_bit(TLS_RX_DEV_RELEASED, &ctx->flags))
+>  			netdev->tlsdev_ops->tls_dev_del(netdev, ctx,
+>  							TLS_OFFLOAD_CTX_DIR_RX);
+>  		WRITE_ONCE(ctx->netdev, NULL);
 
