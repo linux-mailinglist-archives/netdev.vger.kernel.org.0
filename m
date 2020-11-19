@@ -2,90 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F8EB2B959F
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 16:02:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3B5A2B95B6
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 16:08:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727512AbgKSO74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 09:59:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59088 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726641AbgKSO74 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Nov 2020 09:59:56 -0500
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EDAB624695;
-        Thu, 19 Nov 2020 14:59:52 +0000 (UTC)
-Date:   Thu, 19 Nov 2020 09:59:51 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Segher Boessenkool <segher@kernel.crashing.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Florian Weimer <fw@deneb.enyo.de>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Matt Mullins <mmullins@mmlx.us>,
-        Ingo Molnar <mingo@redhat.com>,
+        id S1728238AbgKSPGb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 10:06:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41352 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726820AbgKSPGb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 10:06:31 -0500
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD106C0613CF;
+        Thu, 19 Nov 2020 07:06:30 -0800 (PST)
+Received: by mail-pf1-x442.google.com with SMTP id g7so4767690pfc.2;
+        Thu, 19 Nov 2020 07:06:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=b1iMvdFarHnzQg6C8XPNfQu8ZLCVHwVNqqrW/LV5ijc=;
+        b=nTfaqu75TMgOVldXLUhLAYkhDG8c7PcyDGf7tPGDDzPQRgrmtsSqIM/YNOm0xxo3Ph
+         uMN1cJNIFFC3I8RVCBqWrraDk+BFd83zrqBwL8xlhpbR9t5v0zc/A+TS+SffgqcOEM/H
+         /WrfeBDpINfco5W5CGy2QnzycMRZ7Rsf9O/MtTd9noTXpzfWvR6MvMRbs+hSCwJ8TGYr
+         HDWx+xI2kWHr61Jpnz5C4Zic1ds2Q59iUHqYLh1/sPDxFkEitAnwYhK5lAhNwl2893E4
+         5S2GR/pbLdSAVQ6iLTkGUdB+TZbpe7yPaiSGPHYQVwIe1BRLzV1EsKtXmHOr92vZdn+S
+         KWwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=b1iMvdFarHnzQg6C8XPNfQu8ZLCVHwVNqqrW/LV5ijc=;
+        b=W1wZK6juzAZ4j+wikWFHMHwGDVsdR87L7A4kwvN19bkEtB0enOIf7WlvSnHmMSdjLi
+         YTLP8vA/dSE1CXpudV8sZkWHzvr91xzUWqlX1Dr6TWxs8re2gC6Pq9OkVsLPQOY5WoqI
+         cVXGiK/YYSnpVqDg1y48zEVsc0TuHlUBDCiLnTWPTvd+UHnlCfzmIdowTVtMKjhWr79v
+         HvcyKLfAT1D3a77OwBhwOeVxbvUH6+VZNijz1LTAL2QMnLmCBAE3ynTAXSFxZs7TDhUr
+         hhNcZFL+EBPv3+jLkmgztpuXM/23lEp0rFXyOdkP8lqi3YSIyvc3LOexSlVGgwgqLojX
+         Mr5w==
+X-Gm-Message-State: AOAM533BpnM72OXS6QwfTdeI9dFn9Sfv91xASUfN97Tm3PZW+AIWJ8mM
+        tnVpYhzA15wqj3kvCIaWBw==
+X-Google-Smtp-Source: ABdhPJwhZL03zRCitPKU3FrV0B2he21J+9gTJ8LKcmFzCdo2d9z1JIW+gtVfrMeQs7UJvcOYmOMaMA==
+X-Received: by 2002:a17:90b:100f:: with SMTP id gm15mr4597598pjb.63.1605798390266;
+        Thu, 19 Nov 2020 07:06:30 -0800 (PST)
+Received: from localhost.localdomain ([182.209.58.45])
+        by smtp.gmail.com with ESMTPSA id b80sm77783pfb.40.2020.11.19.07.06.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Nov 2020 07:06:29 -0800 (PST)
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
+        Andrii Nakryiko <andrii@kernel.org>, brakmo <brakmo@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        David Ahern <dsa@cumulusnetworks.com>,
+        Yonghong Song <yhs@fb.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Ira Weiny <ira.weiny@intel.com>, Thomas Graf <tgraf@suug.ch>,
+        Jakub Kicinski <kuba@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        linux-toolchains@vger.kernel.org
-Subject: Re: violating function pointer signature
-Message-ID: <20201119095951.30269233@gandalf.local.home>
-In-Reply-To: <20201119143735.GU2672@gate.crashing.org>
-References: <375636043.48251.1605642440621.JavaMail.zimbra@efficios.com>
-        <20201117153451.3015c5c9@gandalf.local.home>
-        <20201118132136.GJ3121378@hirez.programming.kicks-ass.net>
-        <CAKwvOdkptuS=75WjzwOho9ZjGVHGMirEW3k3u4Ep8ya5wCNajg@mail.gmail.com>
-        <20201118121730.12ee645b@gandalf.local.home>
-        <20201118181226.GK2672@gate.crashing.org>
-        <87o8jutt2h.fsf@mid.deneb.enyo.de>
-        <20201118135823.3f0d24b7@gandalf.local.home>
-        <20201118191127.GM2672@gate.crashing.org>
-        <20201119083648.GE3121392@hirez.programming.kicks-ass.net>
-        <20201119143735.GU2672@gate.crashing.org>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Xdp <xdp-newbies@vger.kernel.org>
+Subject: [PATCH bpf-next v2 0/7] bpf: remove bpf_load loader completely
+Date:   Thu, 19 Nov 2020 15:06:10 +0000
+Message-Id: <20201119150617.92010-1-danieltimlee@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Nov 2020 08:37:35 -0600
-Segher Boessenkool <segher@kernel.crashing.org> wrote:
+Numerous refactoring that rewrites BPF programs written with bpf_load
+to use the libbpf loader was finally completed, resulting in BPF
+programs using bpf_load within the kernel being completely no longer
+present.
 
-> > Note that we have a fairly extensive tradition of defining away UB with
-> > language extentions, -fno-strict-overflow, -fno-strict-aliasing,  
-> 
-> These are options to make a large swath of not correct C programs
-> compile (and often work) anyway.  This is useful because there are so
-> many such programs, because a) people did not lint; and/or b) the
-> problem never was obvious with some other (or older) compiler; and/or
-> c) people do not care about writing portable C and prefer writing in
-> their own non-C dialect.
+This patchset refactors remaining bpf programs with libbpf and
+completely removes bpf_load, an outdated bpf loader that is difficult
+to keep up with the latest kernel BPF and causes confusion.
 
+Changes in v2:
+ - drop 'move tracing helpers to trace_helper' patch
+ - add link pinning to prevent cleaning up on process exit
+ - add static at global variable and remove unused variable
+ - change to destroy link even after link__pin()
+ - fix return error code on exit
+ - merge commit with changing Makefile
 
-Note, this is not about your average C program. This is about the Linux
-kernel, which already does a lot of tricks in C. There's a lot of code in
-assembly that gets called from C (and vise versa). We modify code on the
-fly (which tracepoints use two methods of that - with asm-goto/jump-labels
-and static functions).
+Daniel T. Lee (7):
+  samples: bpf: refactor hbm program with libbpf
+  samples: bpf: refactor test_cgrp2_sock2 program with libbpf
+  samples: bpf: refactor task_fd_query program with libbpf
+  samples: bpf: refactor ibumad program with libbpf
+  samples: bpf: refactor test_overhead program with libbpf
+  samples: bpf: fix lwt_len_hist reusing previous BPF map
+  samples: bpf: remove bpf_load loader completely
 
-As for your point c), I'm not sure what you mean about portable C (stuck to
-a single compiler, or stuck to a single architecture?). Linux obviously
-supports multiple architectures (more than any other OS), but it is pretty
-stuck to gcc as a compiler (with LLVM just starting to work too).
+ samples/bpf/.gitignore           |   3 +
+ samples/bpf/Makefile             |  20 +-
+ samples/bpf/bpf_load.c           | 667 -------------------------------
+ samples/bpf/bpf_load.h           |  57 ---
+ samples/bpf/do_hbm_test.sh       |  32 +-
+ samples/bpf/hbm.c                | 106 ++---
+ samples/bpf/hbm_kern.h           |   2 +-
+ samples/bpf/ibumad_kern.c        |  26 +-
+ samples/bpf/ibumad_user.c        |  71 +++-
+ samples/bpf/lwt_len_hist.sh      |   2 +
+ samples/bpf/task_fd_query_user.c | 101 +++--
+ samples/bpf/test_cgrp2_sock2.c   |  61 ++-
+ samples/bpf/test_cgrp2_sock2.sh  |  21 +-
+ samples/bpf/test_lwt_bpf.sh      |   0
+ samples/bpf/test_overhead_user.c |  82 ++--
+ samples/bpf/xdp2skb_meta_kern.c  |   2 +-
+ 16 files changed, 345 insertions(+), 908 deletions(-)
+ delete mode 100644 samples/bpf/bpf_load.c
+ delete mode 100644 samples/bpf/bpf_load.h
+ mode change 100644 => 100755 samples/bpf/lwt_len_hist.sh
+ mode change 100644 => 100755 samples/bpf/test_lwt_bpf.sh
 
-We are fine with being stuck to a compiler if it gives us what we want.
+-- 
+2.25.1
 
--- Steve
