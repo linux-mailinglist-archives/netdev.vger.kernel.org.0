@@ -2,93 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1378A2B8B0B
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 06:31:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D6B72B8B0D
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 06:34:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726224AbgKSFad (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 00:30:33 -0500
-Received: from mailout04.rmx.de ([94.199.90.94]:54399 "EHLO mailout04.rmx.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725648AbgKSFad (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Nov 2020 00:30:33 -0500
-Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mailout04.rmx.de (Postfix) with ESMTPS id 4Cc7Yc5wLvz3qt1r;
-        Thu, 19 Nov 2020 06:30:28 +0100 (CET)
-Received: from mta.arri.de (unknown [217.111.95.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by kdin01.retarus.com (Postfix) with ESMTPS id 4Cc7YN1H1Pz2xGL;
-        Thu, 19 Nov 2020 06:30:16 +0100 (CET)
-Received: from n95hx1g2.localnet (192.168.54.21) by mta.arri.de
- (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 19 Nov
- 2020 06:28:50 +0100
-From:   Christian Eggers <ceggers@arri.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        "Richard Cochran" <richardcochran@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Vivien Didelot" <vivien.didelot@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
-        George McCollister <george.mccollister@gmail.com>,
-        Marek Vasut <marex@denx.de>,
-        Helmut Grohne <helmut.grohne@intenta.de>,
-        Paul Barker <pbarker@konsulko.com>,
-        "Codrin Ciubotariu" <codrin.ciubotariu@microchip.com>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v3 00/12] net: dsa: microchip: PTP support for KSZ956x
-Date:   Thu, 19 Nov 2020 06:28:06 +0100
-Message-ID: <2452899.Bt8PnbAPR0@n95hx1g2>
-Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-In-Reply-To: <20201118234018.jltisnhjesddt6kf@skbuf>
-References: <20201118203013.5077-1-ceggers@arri.de> <20201118234018.jltisnhjesddt6kf@skbuf>
+        id S1725931AbgKSFdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 00:33:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37590 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725799AbgKSFdD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 00:33:03 -0500
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B462C0613D4;
+        Wed, 18 Nov 2020 21:33:03 -0800 (PST)
+Received: by mail-wm1-x344.google.com with SMTP id c9so5943004wml.5;
+        Wed, 18 Nov 2020 21:33:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QWd9qbPGRigsWy3o/O9HDYWfcL9Yf7NlDEvwoZ5Gqio=;
+        b=iZ/miRPtGmtAiQMCiilQdC9dvNttBPwyU0D/8CrKq+P1hcpmdBLCBk0H2k2ticoAkG
+         wfdn9KTO5LIce1pcSr2zccX6kKwEnrpKYGdaBzed+sKfwfWt5B4DBI29aUYTzgDHP/MH
+         duGrkjiY1SGLbGrj6cvXFPB/9ROIXbnIOFl727LIzxEtXDsb/YMvQqc/ckFM8KIqiib3
+         WKV7/VHHE3sCWRfSAx3bXCkQEasxrLSdIrLXrYHKPaSReuuFcoVwGd+VsKZsqZnOfhZ7
+         EDhwGeVWyL+j+GVk2rJBLyDUU45bvbbi9EzSJ5ktqOG37kRaMaco2GwV954tfEaajs6N
+         vs+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QWd9qbPGRigsWy3o/O9HDYWfcL9Yf7NlDEvwoZ5Gqio=;
+        b=YWmHqNklPRNqSBXt3wZC5FQLgFOFK2aThvuNfsBijWQgNVE8ZxF2+4eeO/5LsgBl4U
+         TeuiQBrAn8tkSAILPT+Zu6SpsD2gzDXU8PJ5+NEyop6mi1uCM43vJuk2xCvH62iqfOk8
+         h/8hC2D8Y9Qn5b87iF4q2trq/u05ada2Y2gszpHv4wSbPG+5CWCP+gsGZZ0QWFvrexkY
+         ZgBFOZ5IV5qhkZMkud+f5NXhAjPbDPpynR/Sd4o/8UWSix5oXyvEp5O7exizbHZSnXPn
+         PD3WUivEbW6M7LUaCMLug43FqC+Flmh6H+LDk6DM9xygZn/5H5wnDtuhcH3bnz38P3xF
+         NzYQ==
+X-Gm-Message-State: AOAM532ZXOsioH34bLmztSsHWsRo1DPkOIPtQl9TnPJymMj6ABS86syo
+        VJ7pnxgaIJOSqqkX/B3PCr9aJD3QRCkxH309oys=
+X-Google-Smtp-Source: ABdhPJxk2JcCiIzdiqowkFHyNpA/VxMgNuKW1E3KIvcDyOURZo6HeKYeNpQUA3zuahRFfEllnj555DF+FoIGXpHkYqw=
+X-Received: by 2002:a1c:ed06:: with SMTP id l6mr2451043wmh.67.1605763982200;
+ Wed, 18 Nov 2020 21:33:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Originating-IP: [192.168.54.21]
-X-RMX-ID: 20201119-063016-4Cc7YN1H1Pz2xGL-0@kdin01
-X-RMX-SOURCE: 217.111.95.66
+References: <52ee1b515df977b68497b1b08290d00a22161279.1605518147.git.lucien.xin@gmail.com>
+ <20201117162952.29c1a699@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <CADvbK_eP4ap74vbZ64S8isYr5nz33ZdLB7qsyqd5zqqGV-rvWA@mail.gmail.com> <20201118084455.10f903ec@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201118084455.10f903ec@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Thu, 19 Nov 2020 13:32:49 +0800
+Message-ID: <CADvbK_eOgye3T8FWb8UuuDfiDeoF7p-RzP7Hb5UOECsR8dZuLQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] ip_gre: remove CRC flag from dev features in gre_gso_segment
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        davem <davem@davemloft.net>, Guillaume Nault <gnault@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>, lorenzo@kernel.org,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vladimir,
+On Thu, Nov 19, 2020 at 12:44 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Wed, 18 Nov 2020 14:14:49 +0800 Xin Long wrote:
+> > On Wed, Nov 18, 2020 at 8:29 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> > > On Mon, 16 Nov 2020 17:15:47 +0800 Xin Long wrote:
+> > > > This patch is to let it always do CRC checksum in sctp_gso_segment()
+> > > > by removing CRC flag from the dev features in gre_gso_segment() for
+> > > > SCTP over GRE, just as it does in Commit 527beb8ef9c0 ("udp: support
+> > > > sctp over udp in skb_udp_tunnel_segment") for SCTP over UDP.
+> > > >
+> > > > It could set csum/csum_start in GSO CB properly in sctp_gso_segment()
+> > > > after that commit, so it would do checksum with gso_make_checksum()
+> > > > in gre_gso_segment(), and Commit 622e32b7d4a6 ("net: gre: recompute
+> > > > gre csum for sctp over gre tunnels") can be reverted now.
+> > > >
+> > > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > >
+> > > Makes sense, but does GRE tunnels don't always have a csum.
+> > Do you mean the GRE csum can be offloaded? If so, it seems for GRE tunnel
+> > we need the similar one as:
+> >
+> > commit 4bcb877d257c87298aedead1ffeaba0d5df1991d
+> > Author: Tom Herbert <therbert@google.com>
+> > Date:   Tue Nov 4 09:06:52 2014 -0800
+> >
+> >     udp: Offload outer UDP tunnel csum if available
+> >
+> > I will confirm and implement it in another patch.
+> >
+> > >
+> > > Is the current hardware not capable of generating CRC csums over
+> > > encapsulated patches at all?
+> > There is, but very rare. The thing is after doing CRC csum, the outer
+> > GRE/UDP checksum will have to be recomputed, as it's NOT zero after
+> > all fields for CRC scum are summed, which is different from the
+> > common checksum. So if it's a GRE/UDP tunnel, the inner CRC csum
+> > has to be done there even if the HW supports its offload.
+>
+> Ack, my point is that for UDP tunnels (at least with IPv4) the UDP
+> checksum is optional (should be ignored if the header field is 0),
+> and for GRE checksum is optional and it's presence is indicated by
+> a bit in the header IIRC.
+Yes, it's tunnel->parms.o_flags & TUNNEL_CSUM. When it's not set,
+gso_type is set to SKB_GSO_GRE instead of SKB_GSO_GRE_CSUM
+by gre_handle_offloads().
 
-On Thursday, 19 November 2020, 00:40:18 CET, Vladimir Oltean wrote:
-> On Wed, Nov 18, 2020 at 09:30:01PM +0100, Christian Eggers wrote:
-> > This series adds support for PTP to the KSZ956x and KSZ9477 devices.
-> > 
-> > There is only little documentation for PTP available on the data sheet
-> > [1] (more or less only the register reference). Questions to the
-> > Microchip support were seldom answered comprehensively or in reasonable
-> > time. So this is more or less the result of reverse engineering.
-> 
-> [...]
-> One thing that should definitely not be part of this series though is
-> patch 11/12. Christian, given the conversation we had on your previous
-> patch:
-> https://lore.kernel.org/netdev/20201113025311.jpkplhmacjz6lkc5@skbuf/
-sorry, I didn't read that carefully enough. Some of the other requested changes
-were quite challenging for me. Additionally, finding the UDP checksum bug
-needed some time for identifying because I didn't recognize that when it got
-introduced.
 
-> as well as the documentation patch that was submitted in the meantime:
-> https://lore.kernel.org/netdev/20201117213826.18235-1-a.fatoum@pengutronix.de/ 
-I am not subscribed to the list. 
+>
+> So if the HW can compute the CRC csum based on offsets, without parsing
+> the packet, it should be able to do the CRC on tunneled packets w/o
+> checksum in the outer header.
+Right, we can only force it to do CRC csum there when SKB_GSO_GRE_CSUM was set:
 
-> obviously you chose to completely disregard that. May we know why? How
-> are you even making use of the PTP_CLK_REQ_PPS feature?
-Of course I will drop that patch from the next series.
+        need_csum = !!(skb_shinfo(skb)->gso_type & SKB_GSO_GRE_CSUM);
+        skb->encap_hdr_csum = need_csum;
 
-regards
-Christian
+        features &= skb->dev->hw_enc_features;
++       if (need_csum)
++               features &= ~NETIF_F_SCTP_CRC;
 
+I will give it a try.
 
+BTW, __skb_udp_tunnel_segment() doesn't need this, as For UDP encaped SCTP,
+the UDP csum is always set.
 
+>
+> IDK how realistic this is, whether it'd work today, and whether we care
+> about it...
