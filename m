@@ -2,123 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D2262B8F58
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 10:52:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 470802B8FA8
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 11:00:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726843AbgKSJse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 04:48:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46709 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726841AbgKSJsd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 04:48:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605779312;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=DHCn/B90ShQY9gqtIz2dPsnbZY9qpN1QJdlVUR9SABY=;
-        b=VQnqhq94WzM3h0IHskBCqIihpRI6eIGvJI4YeMhhh8WRp2GOUtof6R8IjUOKo7gtCoDfx7
-        csvpr4GEiRnIjkUMyjoBjzQiN21jJyp+KbNaFRo+HDnSiQbffSyhtU32UK9nwKbzr9Q0Ab
-        4ZmkiP2r+IaQizHdKPoeMl8ABvqVjIU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-415-bLTms5kEOH6t4J-aU7gVJA-1; Thu, 19 Nov 2020 04:48:27 -0500
-X-MC-Unique: bLTms5kEOH6t4J-aU7gVJA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 777981005D5E;
-        Thu, 19 Nov 2020 09:48:25 +0000 (UTC)
-Received: from krava (unknown [10.40.195.116])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 2BCE75D6A8;
-        Thu, 19 Nov 2020 09:48:21 +0000 (UTC)
-Date:   Thu, 19 Nov 2020 10:48:21 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Tony Ambardar <tony.ambardar@gmail.com>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Aurelien Jarno <aurelien@aurel32.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: Re: [PATCH] libbpf: Fix VERSIONED_SYM_COUNT number parsing
-Message-ID: <20201119094821.GB1475102@krava>
-References: <20201118211350.1493421-1-jolsa@kernel.org>
- <CAEf4BzYdQz7p3khLPbNA_1cKbVJv-XJCcKtpxbsoXzExo+g_DQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzYdQz7p3khLPbNA_1cKbVJv-XJCcKtpxbsoXzExo+g_DQ@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+        id S1727069AbgKSJ6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 04:58:43 -0500
+Received: from aer-iport-2.cisco.com ([173.38.203.52]:38034 "EHLO
+        aer-iport-2.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726641AbgKSJ6m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 04:58:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=cisco.com; i=@cisco.com; l=4745; q=dns/txt; s=iport;
+  t=1605779921; x=1606989521;
+  h=from:to:cc:subject:date:message-id;
+  bh=XpH5Llq5yqOXzUfAm72xjR7OmEhimEezllApczko3xg=;
+  b=iBewRdPjFqN4VQdesa5jmEv/I95NGVxPhlzWMd/A2L+S12wiM+TqF+zI
+   4Vf4e0JYwOvobsq/jnJVtcU2GifP8SxTDCa4VenFwZ+nm3ZwM4WBFu/Gc
+   RuiGyZAQmFFwA+6kDgNwDfXQ5Km6UjrGbE6BkCslO2YP3Q6XbzdJ0pCvO
+   Q=;
+X-IronPort-AV: E=Sophos;i="5.77,490,1596499200"; 
+   d="scan'208";a="31245973"
+Received: from aer-iport-nat.cisco.com (HELO aer-core-1.cisco.com) ([173.38.203.22])
+  by aer-iport-2.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 19 Nov 2020 09:58:40 +0000
+Received: from rdbuild16.cisco.com.rd.cisco.com (rdbuild16.cisco.com [10.47.15.16])
+        by aer-core-1.cisco.com (8.15.2/8.15.2) with ESMTP id 0AJ9wd5u019107;
+        Thu, 19 Nov 2020 09:58:39 GMT
+From:   Georg Kohmann <geokohma@cisco.com>
+To:     netdev@vger.kernel.org
+Cc:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
+        davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        kuba@kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, rdunlap@infradead.org,
+        Georg Kohmann <geokohma@cisco.com>
+Subject: [PATCH net v2] ipv6: Remove dependency of ipv6_frag_thdr_truncated on ipv6 module
+Date:   Thu, 19 Nov 2020 10:58:33 +0100
+Message-Id: <20201119095833.8409-1-geokohma@cisco.com>
+X-Mailer: git-send-email 2.10.2
+X-Outbound-SMTP-Client: 10.47.15.16, rdbuild16.cisco.com
+X-Outbound-Node: aer-core-1.cisco.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 05:57:25PM -0800, Andrii Nakryiko wrote:
-> On Wed, Nov 18, 2020 at 1:15 PM Jiri Olsa <jolsa@kernel.org> wrote:
-> >
-> > We remove "other info" from "readelf -s --wide" output when
-> > parsing GLOBAL_SYM_COUNT variable, which was added in [1].
-> > But we don't do that for VERSIONED_SYM_COUNT and it's failing
-> > the check_abi target on powerpc Fedora 33.
-> >
-> > The extra "other info" wasn't problem for VERSIONED_SYM_COUNT
-> > parsing until commit [2] added awk in the pipe, which assumes
-> > that the last column is symbol, but it can be "other info".
-> >
-> > Adding "other info" removal for VERSIONED_SYM_COUNT the same
-> > way as we did for GLOBAL_SYM_COUNT parsing.
-> >
-> > [1] aa915931ac3e ("libbpf: Fix readelf output parsing for Fedora")
-> > [2] 746f534a4809 ("tools/libbpf: Avoid counting local symbols in ABI check")
-> >
-> > Cc: Tony Ambardar <tony.ambardar@gmail.com>
-> > Cc: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-> > Cc: Aurelien Jarno <aurelien@aurel32.net>
-> > Fixes: 746f534a4809 ("tools/libbpf: Avoid counting local symbols in ABI check")
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> 
-> LGTM. For the future, though, please specify the destination tree: [PATCH bpf].
+IPV6=m
+NF_DEFRAG_IPV6=y
 
-ugh, sry will do
+ld: net/ipv6/netfilter/nf_conntrack_reasm.o: in function
+`nf_ct_frag6_gather':
+net/ipv6/netfilter/nf_conntrack_reasm.c:462: undefined reference to
+`ipv6_frag_thdr_truncated'
 
-jirka
+Netfilter is depending on ipv6 symbol ipv6_frag_thdr_truncated. This
+dependency is forcing IPV6=y.
 
-> 
-> Acked-by: Andrii Nakryiko <andrii@kernel.org>
-> 
-> 
-> >  tools/lib/bpf/Makefile | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >
-> > diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-> > index 5f9abed3e226..55bd78b3496f 100644
-> > --- a/tools/lib/bpf/Makefile
-> > +++ b/tools/lib/bpf/Makefile
-> > @@ -146,6 +146,7 @@ GLOBAL_SYM_COUNT = $(shell readelf -s --wide $(BPF_IN_SHARED) | \
-> >                            awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}' | \
-> >                            sort -u | wc -l)
-> >  VERSIONED_SYM_COUNT = $(shell readelf --dyn-syms --wide $(OUTPUT)libbpf.so | \
-> > +                             sed 's/\[.*\]//' | \
-> >                               awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}' | \
-> >                               grep -Eo '[^ ]+@LIBBPF_' | cut -d@ -f1 | sort -u | wc -l)
-> >
-> > @@ -214,6 +215,7 @@ check_abi: $(OUTPUT)libbpf.so
-> >                     awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}'|  \
-> >                     sort -u > $(OUTPUT)libbpf_global_syms.tmp;           \
-> >                 readelf --dyn-syms --wide $(OUTPUT)libbpf.so |           \
-> > +                   sed 's/\[.*\]//' |                                   \
-> >                     awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}'|  \
-> >                     grep -Eo '[^ ]+@LIBBPF_' | cut -d@ -f1 |             \
-> >                     sort -u > $(OUTPUT)libbpf_versioned_syms.tmp;        \
-> > --
-> > 2.26.2
-> >
-> 
+Remove this dependency by moving ipv6_frag_thdr_truncated out of ipv6. This
+is the same solution as used with a similar issues: Referring to
+commit 70b095c843266 ("ipv6: remove dependency of nf_defrag_ipv6 on ipv6
+module")
+
+Fixes: 9d9e937b1c8b ("ipv6/netfilter: Discard first fragment not including all headers")
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Georg Kohmann <geokohma@cisco.com>
+---
+
+Notes:
+    v2: Add Fixes tag and fix spelling in comment.
+
+ include/net/ipv6.h                      |  2 --
+ include/net/ipv6_frag.h                 | 30 ++++++++++++++++++++++++++++++
+ net/ipv6/netfilter/nf_conntrack_reasm.c |  2 +-
+ net/ipv6/reassembly.c                   | 31 +------------------------------
+ 4 files changed, 32 insertions(+), 33 deletions(-)
+
+diff --git a/include/net/ipv6.h b/include/net/ipv6.h
+index 637cc6d..bd1f396 100644
+--- a/include/net/ipv6.h
++++ b/include/net/ipv6.h
+@@ -1064,8 +1064,6 @@ int ipv6_skip_exthdr(const struct sk_buff *, int start, u8 *nexthdrp,
+ 
+ bool ipv6_ext_hdr(u8 nexthdr);
+ 
+-bool ipv6_frag_thdr_truncated(struct sk_buff *skb, int start, u8 *nexthdrp);
+-
+ enum {
+ 	IP6_FH_F_FRAG		= (1 << 0),
+ 	IP6_FH_F_AUTH		= (1 << 1),
+diff --git a/include/net/ipv6_frag.h b/include/net/ipv6_frag.h
+index a21e8b1..851029e 100644
+--- a/include/net/ipv6_frag.h
++++ b/include/net/ipv6_frag.h
+@@ -108,5 +108,35 @@ ip6frag_expire_frag_queue(struct net *net, struct frag_queue *fq)
+ 	rcu_read_unlock();
+ 	inet_frag_put(&fq->q);
+ }
++
++/* Check if the upper layer header is truncated in the first fragment. */
++static inline bool
++ipv6frag_thdr_truncated(struct sk_buff *skb, int start, u8 *nexthdrp)
++{
++	u8 nexthdr = *nexthdrp;
++	__be16 frag_off;
++	int offset;
++
++	offset = ipv6_skip_exthdr(skb, start, &nexthdr, &frag_off);
++	if (offset < 0 || (frag_off & htons(IP6_OFFSET)))
++		return false;
++	switch (nexthdr) {
++	case NEXTHDR_TCP:
++		offset += sizeof(struct tcphdr);
++		break;
++	case NEXTHDR_UDP:
++		offset += sizeof(struct udphdr);
++		break;
++	case NEXTHDR_ICMP:
++		offset += sizeof(struct icmp6hdr);
++		break;
++	default:
++		offset += 1;
++	}
++	if (offset > skb->len)
++		return true;
++	return false;
++}
++
+ #endif
+ #endif
+diff --git a/net/ipv6/netfilter/nf_conntrack_reasm.c b/net/ipv6/netfilter/nf_conntrack_reasm.c
+index b9cc0b3..c129ad3 100644
+--- a/net/ipv6/netfilter/nf_conntrack_reasm.c
++++ b/net/ipv6/netfilter/nf_conntrack_reasm.c
+@@ -459,7 +459,7 @@ int nf_ct_frag6_gather(struct net *net, struct sk_buff *skb, u32 user)
+ 	/* Discard the first fragment if it does not include all headers
+ 	 * RFC 8200, Section 4.5
+ 	 */
+-	if (ipv6_frag_thdr_truncated(skb, fhoff, &nexthdr)) {
++	if (ipv6frag_thdr_truncated(skb, fhoff, &nexthdr)) {
+ 		pr_debug("Drop incomplete fragment\n");
+ 		return 0;
+ 	}
+diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
+index e3869ba..47a0dc4 100644
+--- a/net/ipv6/reassembly.c
++++ b/net/ipv6/reassembly.c
+@@ -318,35 +318,6 @@ static int ip6_frag_reasm(struct frag_queue *fq, struct sk_buff *skb,
+ 	return -1;
+ }
+ 
+-/* Check if the upper layer header is truncated in the first fragment. */
+-bool ipv6_frag_thdr_truncated(struct sk_buff *skb, int start, u8 *nexthdrp)
+-{
+-	u8 nexthdr = *nexthdrp;
+-	__be16 frag_off;
+-	int offset;
+-
+-	offset = ipv6_skip_exthdr(skb, start, &nexthdr, &frag_off);
+-	if (offset < 0 || (frag_off & htons(IP6_OFFSET)))
+-		return false;
+-	switch (nexthdr) {
+-	case NEXTHDR_TCP:
+-		offset += sizeof(struct tcphdr);
+-		break;
+-	case NEXTHDR_UDP:
+-		offset += sizeof(struct udphdr);
+-		break;
+-	case NEXTHDR_ICMP:
+-		offset += sizeof(struct icmp6hdr);
+-		break;
+-	default:
+-		offset += 1;
+-	}
+-	if (offset > skb->len)
+-		return true;
+-	return false;
+-}
+-EXPORT_SYMBOL(ipv6_frag_thdr_truncated);
+-
+ static int ipv6_frag_rcv(struct sk_buff *skb)
+ {
+ 	struct frag_hdr *fhdr;
+@@ -390,7 +361,7 @@ static int ipv6_frag_rcv(struct sk_buff *skb)
+ 	 * the source of the fragment, with the Pointer field set to zero.
+ 	 */
+ 	nexthdr = hdr->nexthdr;
+-	if (ipv6_frag_thdr_truncated(skb, skb_transport_offset(skb), &nexthdr)) {
++	if (ipv6frag_thdr_truncated(skb, skb_transport_offset(skb), &nexthdr)) {
+ 		__IP6_INC_STATS(net, __in6_dev_get_safely(skb->dev),
+ 				IPSTATS_MIB_INHDRERRORS);
+ 		icmpv6_param_prob(skb, ICMPV6_HDR_INCOMP, 0);
+-- 
+2.10.2
 
