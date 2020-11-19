@@ -2,136 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87EB92B8C38
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 08:23:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E2AB2B8C6E
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 08:39:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726314AbgKSHWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 02:22:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54402 "EHLO
+        id S1725888AbgKSHgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 02:36:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726107AbgKSHWf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 02:22:35 -0500
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 511D5C0613CF;
-        Wed, 18 Nov 2020 23:22:35 -0800 (PST)
-Received: by mail-pf1-x444.google.com with SMTP id t8so3591602pfg.8;
-        Wed, 18 Nov 2020 23:22:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=1RR09oXTHNj5D+VKWnXusC3Un6VRBPlQtmYv6ZSUsVI=;
-        b=SykaFT23R/hVbaREPLzvW2AP15wUqLT+sWT6x4PeBzYCErRpZXTA1blPK8ZCNOSxv9
-         z/GwsF9uEXlQR2OLiRYvAzouSE8DSpnE24YnQkxJFQONJa7luOgYcXwZfdJkrPRxT0Gu
-         kAX5lmyGFh/3df3LBvVhI0+6/LIPvbIGmYYzvt4o3biOa5rKpVjRcdwg7aaiduza9Zn3
-         MWwUrm3AVbMFTJQ+S/Gqgn/bvoan5rIB3N8hHg5cEdFqJck0lIQdUHrcn9fM33vEMfKj
-         oyTr57Bz8FN2o1sYa+eyj3Rv2XZ7eh5TCuPjJRLUHeX+M+SCVAu8CDYTYdIZOvwfUr0P
-         UfFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=1RR09oXTHNj5D+VKWnXusC3Un6VRBPlQtmYv6ZSUsVI=;
-        b=Z6+1QJDmvtgTvkwfz3hdv7wIIKH9ec2a+LAFH4/zMADv8giAnJ6KGHvzcMmz2x8tAU
-         wTiQSZqcs9CTft6po5WIiwOPv/US8nHl4wa97c1W7YqUf/39rh8EwCQzkZ2Tii4lLtAt
-         iAIqnF6kvepN/TcueR9RQl8kg9eLETOUGNHNDD9Yg+/e8tSyvTu6QkizzX2+RDEjFcGX
-         /D/6Gcaslz1go0gL49MnWViUzUh+blWmv5a8MjH20oAp3rKuXsj6RG9wZon8sqGmhzRc
-         1ZvfDAXKmFaEcJpJL+AgJodCF6I/RAFnAXnUsDEqb3E/Tdo7RB0INcOcI0YjPRJGOZk3
-         O67Q==
-X-Gm-Message-State: AOAM5308NFDH5ua9OWuRC5WCJZJNFKArwV5ltmyusUOWNZI/i1K6bnwp
-        C1Cby87MbBMPCPpWn7NtJaw=
-X-Google-Smtp-Source: ABdhPJwSM7bcPvfkrjRN4rBPjOShGGjdnAqFCLalTUBjlOLyt6Pi2bllffDYwvcM9ExJ8zAEz39WSQ==
-X-Received: by 2002:a17:90a:8d03:: with SMTP id c3mr3172717pjo.100.1605770554821;
-        Wed, 18 Nov 2020 23:22:34 -0800 (PST)
-Received: from taoren-ubuntu-R90MNF91 (c-73-252-146-110.hsd1.ca.comcast.net. [73.252.146.110])
-        by smtp.gmail.com with ESMTPSA id v191sm27585931pfc.19.2020.11.18.23.22.32
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 18 Nov 2020 23:22:34 -0800 (PST)
-Date:   Wed, 18 Nov 2020 23:22:26 -0800
-From:   Tao Ren <rentao.bupt@gmail.com>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Jean Delvare <jdelvare@suse.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, openbmc@lists.ozlabs.org, taoren@fb.com,
-        mikechoi@fb.com
-Subject: Re: [PATCH v2 0/2] hwmon: (max127) Add Maxim MAX127 hardware
- monitoring
-Message-ID: <20201119072225.GA19877@taoren-ubuntu-R90MNF91>
-References: <20201118230929.18147-1-rentao.bupt@gmail.com>
- <20201118232719.GI1853236@lunn.ch>
- <20201118234252.GA18681@taoren-ubuntu-R90MNF91>
- <20201119010119.GA248686@roeck-us.net>
- <20201119012653.GA249502@roeck-us.net>
+        with ESMTP id S1725843AbgKSHgS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 02:36:18 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66621C0613CF
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 23:36:18 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mgr@pengutronix.de>)
+        id 1kfeUL-0004Aa-02; Thu, 19 Nov 2020 08:36:17 +0100
+Received: from mgr by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <mgr@pengutronix.de>)
+        id 1kfeUJ-0007g8-Bv; Thu, 19 Nov 2020 08:36:15 +0100
+Date:   Thu, 19 Nov 2020 08:36:15 +0100
+From:   Michael Grzeschik <mgr@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, davem@davemloft.net,
+        kernel@pengutronix.de, matthias.schiffer@ew.tq-group.com,
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH 05/11] net: dsa: microchip: ksz8795: use mib_cnt where
+ possible
+Message-ID: <20201119073615.GB6507@pengutronix.de>
+References: <20201118220357.22292-1-m.grzeschik@pengutronix.de>
+ <20201118220357.22292-6-m.grzeschik@pengutronix.de>
+ <20201119002047.GI1804098@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="xXmbgvnjoT4axfJE"
 Content-Disposition: inline
-In-Reply-To: <20201119012653.GA249502@roeck-us.net>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20201119002047.GI1804098@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 08:32:01 up 273 days, 15:02, 83 users,  load average: 0.24, 0.20,
+ 0.20
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: mgr@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 05:26:53PM -0800, Guenter Roeck wrote:
-> On Wed, Nov 18, 2020 at 05:01:19PM -0800, Guenter Roeck wrote:
-> > On Wed, Nov 18, 2020 at 03:42:53PM -0800, Tao Ren wrote:
-> > > On Thu, Nov 19, 2020 at 12:27:19AM +0100, Andrew Lunn wrote:
-> > > > On Wed, Nov 18, 2020 at 03:09:27PM -0800, rentao.bupt@gmail.com wrote:
-> > > > > From: Tao Ren <rentao.bupt@gmail.com>
-> > > > > 
-> > > > > The patch series adds hardware monitoring driver for the Maxim MAX127
-> > > > > chip.
-> > > > 
-> > > > Hi Tao
-> > > > 
-> > > > Why are using sending a hwmon driver to the networking mailing list?
-> > > > 
-> > > >     Andrew
-> > > 
-> > > Hi Andrew,
-> > > 
-> > > I added netdev because the mailing list is included in "get_maintainer.pl
-> > > Documentation/hwmon/index.rst" output. Is it the right command to find
-> > > reviewers? Could you please suggest? Thank you.
-> > 
-> > I have no idea why running get_maintainer.pl on
-> > Documentation/hwmon/index.rst returns such a large list of mailing
-> > lists and people. For some reason it includes everyone in the XDP
-> > maintainer list. If anyone has an idea how that happens, please
-> > let me know - we'll want to get this fixed to avoid the same problem
-> > in the future.
-> > 
-> 
-> I found it. The XDP maintainer entry has:
-> 
-> K:    xdp
-> 
-> This matches Documentation/hwmon/index.rst.
-> 
-> $ grep xdp Documentation/hwmon/index.rst
->    xdpe12284
-> 
-> It seems to me that a context match such as "xdp" in MAINTAINERS isn't
-> really appropriate. "xdp" matches a total of 348 files in the kernel.
-> The large majority of those is not XDP related. The maintainers
-> of XDP (and all the listed mailing lists) should not be surprised
-> to get a large number of odd review requests if they want to review
-> every single patch on files which include the term "xdp".
-> 
-> Guenter
 
-Thanks Guenter and Andrew. Given xdp maintainers were included by
-mistake, I will remove them from the future discussions of this hwmon
-patch series.
+--xXmbgvnjoT4axfJE
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+Hi Andrew!
 
-Cheers,
+On Thu, Nov 19, 2020 at 01:20:47AM +0100, Andrew Lunn wrote:
+>On Wed, Nov 18, 2020 at 11:03:51PM +0100, Michael Grzeschik wrote:
+>> The variable mib_cnt is assigned with TOTAL_SWITCH_COUNTER_NUM. This
+>> value can also be derived from the array size of mib_names. This patch
+>> uses this calculated value instead, removes the extra define and uses
+>> mib_cnt everywhere possible instead of the static define
+>> TOTAL_SWITCH_COUNTER_NUM.
+>>
+>> Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+>> ---
+>>  drivers/net/dsa/microchip/ksz8795.c     | 8 ++++----
+>>  drivers/net/dsa/microchip/ksz8795_reg.h | 3 ---
+>>  2 files changed, 4 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/micro=
+chip/ksz8795.c
+>> index 04a571bde7e6a4f..6ddba2de2d3026e 100644
+>> --- a/drivers/net/dsa/microchip/ksz8795.c
+>> +++ b/drivers/net/dsa/microchip/ksz8795.c
+>> @@ -23,7 +23,7 @@
+>>
+>>  static const struct {
+>>  	char string[ETH_GSTRING_LEN];
+>> -} mib_names[TOTAL_SWITCH_COUNTER_NUM] =3D {
+>> +} mib_names[] =3D {
+>>  	{ "rx_hi" },
+>>  	{ "rx_undersize" },
+>>  	{ "rx_fragments" },
+>> @@ -656,7 +656,7 @@ static void ksz8795_get_strings(struct dsa_switch *d=
+s, int port,
+>>  {
+>>  	int i;
+>>
+>> -	for (i =3D 0; i < TOTAL_SWITCH_COUNTER_NUM; i++) {
+>> +	for (i =3D 0; i < dev->mib_cnt; i++) {
+>>  		memcpy(buf + i * ETH_GSTRING_LEN, mib_names[i].string,
+>>  		       ETH_GSTRING_LEN);
+>>  	}
+>> @@ -1236,7 +1236,7 @@ static int ksz8795_switch_init(struct ksz_device *=
+dev)
+>>  	dev->port_mask |=3D dev->host_mask;
+>>
+>>  	dev->reg_mib_cnt =3D KSZ8795_COUNTER_NUM;
+>> -	dev->mib_cnt =3D TOTAL_SWITCH_COUNTER_NUM;
+>> +	dev->mib_cnt =3D ARRAY_SIZE(mib_names);
+>
+>Hi Michael
+>
+>I think it would be better to just use ARRAY_SIZE(mib_names)
+>everywhere. It is one less hoop to jump through when looking for array
+>overruns, etc.
 
-Tao
+I would better stay with the variable, because of two reasons. First it
+is also used in ksz_common.c and ksz_9477.c. Also in my next patches
+I will introduce another mib_names array. We will have ksz8863_mib_names
+and ksz8795_mib_names. In the init function then the mib_cnt will be set
+regarding to the chip that is found.
+
+Do you agree that the extra variable makes the code more readable in
+that case?
+
+Regards,
+Michael
+
+--=20
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+--xXmbgvnjoT4axfJE
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEElXvEUs6VPX6mDPT8C+njFXoeLGQFAl+2IGwACgkQC+njFXoe
+LGRtnA//bu7IgpGtFqiafZMdYGKGLcGMxgzYq2OIgnfN5bJNiNyJUXuvaWBG1xVp
+yXW2iGymldTE8+bOubLUOGZ67G9hAb4z6WoBx0evsMl6dZXhI0aV+PBDzcteVV6e
+aYPouHtdfzTmxeWIWJxc1juJVRzkWYXKTXUsD3xr/Y1QqUADw9Cd08bwJEADC1lq
+/vvr2DI3ZZLSV7WtCWbf7pSnycx6evk8xyCiSelfhjARsqiWOboNFSawJkmyQQDT
+RqosNWDnNKdgAU+rL3ZSep776ALlhDxjAOy2OOHqH7fy7TYPiafXBgLjDm9mO4Kt
+o5YNwFZMz1CAuJStZRATZYeogKYnrb022iUCPEc+8RMba6G9U+XW0yeCT0j8YlCm
+RI8035uA9Qa/FPh9pd5KbPMKSEQ9fTUQkQJ3RV9N2iu1jNbJrzhAkIYYS+ZREuLQ
+B4Apj1J1zp3nqd6SvHHOmMzGLxkgsymX7OODrriHdP2qKmzH1a1eBaWCJDDhnwGN
+5r92+vs2Knaru3YNfunRd2mJ1DJDzWu9MDNKjOgNP2YRNFjySVUVzGd2OKURPznW
+ZygFJmBkrx1Usv4WGRUMYcG6FQPK6DsX2n0bzzSfg3xdeMuO1HrjsQBcUQ73H1aD
+PO1fujdKu/2xxRAEi6Ed1i3hRTzWvXAPyoLivAWNCKIatCGPyDg=
+=CJV4
+-----END PGP SIGNATURE-----
+
+--xXmbgvnjoT4axfJE--
