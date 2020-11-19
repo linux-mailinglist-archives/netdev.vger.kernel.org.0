@@ -2,65 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ACD62B8971
+	by mail.lfdr.de (Postfix) with ESMTP id 7A4852B8972
 	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 02:22:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727037AbgKSBVI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 20:21:08 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:37134 "EHLO vps0.lunn.ch"
+        id S1726616AbgKSBWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 20:22:00 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48010 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727012AbgKSBVI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 20:21:08 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kfYdG-007q29-67; Thu, 19 Nov 2020 02:21:06 +0100
-Date:   Thu, 19 Nov 2020 02:21:06 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Grzeschik <m.grzeschik@pengutronix.de>
-Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, davem@davemloft.net,
-        kernel@pengutronix.de, matthias.schiffer@ew.tq-group.com,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH 10/11] net: dsa: microchip: ksz8795: dynamic allocate
- memory for flush_dyn_mac_table
-Message-ID: <20201119012106.GN1804098@lunn.ch>
-References: <20201118220357.22292-1-m.grzeschik@pengutronix.de>
- <20201118220357.22292-11-m.grzeschik@pengutronix.de>
+        id S1726243AbgKSBWA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 20:22:00 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C481D22260;
+        Thu, 19 Nov 2020 01:21:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605748920;
+        bh=OgI2tWPkXlHIhy9ssxDf+dL+m5jPUuQ6JLHJJGmXZu8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XmpOAtTM34zIPaC7tCvPoAW/xRcANzUQe1P0Xz/unqAtvw9X/0PYGI/VR6V4vgLNh
+         h81k3+9vhelKGMA0kdgUP0GLuD9ylSi/jJAIvuytJ8Q8lB/9C6OmeJUPFvpKrDe4oG
+         Lz40wEtkd8CzlhovrizZ+TA50imae78aITeQHBz4=
+Date:   Wed, 18 Nov 2020 17:21:58 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeedm@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>
+Subject: Re: [pull request][net 0/9] mlx5 fixes 2020-11-17
+Message-ID: <20201118172158.5e7317f5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201117195702.386113-1-saeedm@nvidia.com>
+References: <20201117195702.386113-1-saeedm@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201118220357.22292-11-m.grzeschik@pengutronix.de>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 11:03:56PM +0100, Michael Grzeschik wrote:
-> To get the driver working with other chips using different port counts
-> the dyn_mac_table should be flushed depending on the amount of physical
-> ports.
+On Tue, 17 Nov 2020 11:56:53 -0800 Saeed Mahameed wrote:
+> This series introduces some fixes to mlx5 driver.
+> Please pull and let me know if there is any problem.
 > 
-> Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+> For -stable v4.14
+>  ('net/mlx5: Disable QoS when min_rates on all VFs are zero')
 > 
-> ---
-> v1: - based on "[PATCH v4 05/11] net: dsa: microchip: ksz8795: dynamica allocate memory for flush_dyn_mac_table"
->     - lore: https://lore.kernel.org/netdev/20200803054442.20089-6-m.grzeschik@pengutronix.de/
-> ---
->  drivers/net/dsa/microchip/ksz8795.c     | 8 ++++++--
->  drivers/net/dsa/microchip/ksz8795_reg.h | 2 --
->  2 files changed, 6 insertions(+), 4 deletions(-)
+> For -stable v4.20
+>  ('net/mlx5: Add handling of port type in rule deletion')
 > 
-> diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-> index 9ea5ec61513023f..418f71e5b90761c 100644
-> --- a/drivers/net/dsa/microchip/ksz8795.c
-> +++ b/drivers/net/dsa/microchip/ksz8795.c
-> @@ -750,11 +750,14 @@ static void ksz8795_port_stp_state_set(struct dsa_switch *ds, int port,
->  
->  static void ksz8795_flush_dyn_mac_table(struct ksz_device *dev, int port)
->  {
-> -	u8 learn[TOTAL_PORT_NUM];
->  	int first, index, cnt;
->  	struct ksz_port *p;
-> +	u8 *learn = kzalloc(dev->port_cnt, GFP_KERNEL);
+> For -stable v5.5
+>  ('net/mlx5: Clear bw_share upon VF disable')
+> 
+> For -stable v5.7
+>  ('net/mlx5: E-Switch, Fail mlx5_esw_modify_vport_rate if qos disabled')
+> 
+> For -stable v5.8
+>  ('net/mlx5e: Fix check if netdev is bond slave')
+> 
+> For -stable v5.9
+>  ('net/mlx5e: Fix refcount leak on kTLS RX resync')
 
-Using DSA_MAX_PORTS makes things simpler.
-
-      Andrew
+Pulled, thanks!
