@@ -2,120 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 555682B8F34
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 10:44:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33D212B8F3D
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 10:48:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726496AbgKSJnj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 04:43:39 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:63792 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725816AbgKSJnj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 04:43:39 -0500
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AJ9XOVO046850;
-        Thu, 19 Nov 2020 04:43:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=mime-version : date :
- from : to : cc : subject : in-reply-to : references : message-id :
- content-type : content-transfer-encoding; s=pp1;
- bh=DETla2P0bMOshP3ToLQ7nRIRlzdfwifxmy327xXRyrM=;
- b=YVP8tPXJ4ll6p0k9+xgCRKFWEeKh1XYC+b6zj79BU/Ofktda3pMPkSUkgbOWfsTrSYG0
- 641DTc7ilnW53HiUWQugSbr+XCYUhV+b1fNyqfghJxe51OU892a2MlD526paWRcLbss3
- yK66A3z6jiVIygvjWLkDyVbOe+CBRXm+1SXJ6J0WRyLG6lva5jroLfCXVlr3qliJlWIO
- W4VikgIGkn5xQv3gSAbaxPikVvRm4pCnVkT44Fou6Qy2vdhtMVeNxl9G7z34sbDtnFds
- 6/JVQCKuIhC8mxbb5506EXeH4XPbSsDNHOsqJR5lQ6S1el56XbwsVEp8HbECvryIvOqs FQ== 
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 34wg661hyr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 19 Nov 2020 04:43:34 -0500
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0AJ9SCWu002859;
-        Thu, 19 Nov 2020 09:43:33 GMT
-Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
-        by ppma01wdc.us.ibm.com with ESMTP id 34uyn1m02h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 19 Nov 2020 09:43:32 +0000
-Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
-        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0AJ9hVfB17891634
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 19 Nov 2020 09:43:31 GMT
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A24D7C6059;
-        Thu, 19 Nov 2020 09:43:31 +0000 (GMT)
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4C3FEC6057;
-        Thu, 19 Nov 2020 09:43:31 +0000 (GMT)
-Received: from ltc.linux.ibm.com (unknown [9.16.170.189])
-        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu, 19 Nov 2020 09:43:31 +0000 (GMT)
+        id S1726569AbgKSJpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 04:45:52 -0500
+Received: from mail.katalix.com ([3.9.82.81]:46508 "EHLO mail.katalix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726287AbgKSJpv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Nov 2020 04:45:51 -0500
+Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
+        (Authenticated sender: tom)
+        by mail.katalix.com (Postfix) with ESMTPSA id 492747EBB6;
+        Thu, 19 Nov 2020 09:45:49 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
+        t=1605779149; bh=qZYA4hRJanvw75BeKRiUx+glJe1ExsAwlK0VZObC4Ic=;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+         Content-Disposition:In-Reply-To:From;
+        z=Date:=20Thu,=2019=20Nov=202020=2009:45:48=20+0000|From:=20Tom=20P
+         arkin=20<tparkin@katalix.com>|To:=20siddhant=20gupta=20<siddhantgu
+         pta416@gmail.com>|Cc:=20davem@davemloft.net,=20kuba@kernel.org,=20
+         corbet@lwn.net,=0D=0A=09netdev@vger.kernel.org,=20linux-doc@vger.k
+         ernel.org,=0D=0A=09linux-kernel@vger.kernel.org,=0D=0A=09Mamta=20S
+         hukla=20<mamtashukla555@gmail.com>,=0D=0A=09Himadri=20Pandya=20<hi
+         madrispandya@gmail.com>|Subject:=20Re:=20[PATCH]=20Documentation:=
+         20networking:=20Fix=20Column=20span=20alignment=0D=0A=20warnings=2
+         0in=20l2tp.rst|Message-ID:=20<20201119094548.GA3927@katalix.com>|R
+         eferences:=20<20201117095207.GA16407@Sleakybeast>=0D=0A=20<2020111
+         8102307.GA4903@katalix.com>=0D=0A=20<CA+imup-3pT47CVL7GZn_vJtHGngN
+         exBR060y2gRfw2v5Gr8P0Q@mail.gmail.com>|MIME-Version:=201.0|Content
+         -Disposition:=20inline|In-Reply-To:=20<CA+imup-3pT47CVL7GZn_vJtHGn
+         gNexBR060y2gRfw2v5Gr8P0Q@mail.gmail.com>;
+        b=jHGQYkIhlT4bQULB4OuAlUsI4LhjKmSqSOXuzkCBoFdACySbiC5nXHLAu9mrm7fdQ
+         WViDVAa1gNUVlbkkq+uJLRW8vXzRExhOo7JqaxI0erR7O13eSLz+Dg5AxBvWfa3aqM
+         EFvYm7v0RQy07A3ChOwBXoY5kcU/xW70+fzYgUEKsZ+u+9y44p6FsqCyZasnOwWnto
+         pUwp6CPUUfXJwM8NjpDEoM6qUPL6Gfmuo2SnGOybCF/FqCsTLd9fmo+oD735l+bdMJ
+         nUSaZ5Neo0Kav2/n8vCLIOLRsSdZWMB2auvBfMcyU/4q09DyH75xlj3OHbM68qUtVq
+         +cHxZ2YWsipdQ==
+Date:   Thu, 19 Nov 2020 09:45:48 +0000
+From:   Tom Parkin <tparkin@katalix.com>
+To:     siddhant gupta <siddhantgupta416@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Mamta Shukla <mamtashukla555@gmail.com>,
+        Himadri Pandya <himadrispandya@gmail.com>
+Subject: Re: [PATCH] Documentation: networking: Fix Column span alignment
+ warnings in l2tp.rst
+Message-ID: <20201119094548.GA3927@katalix.com>
+References: <20201117095207.GA16407@Sleakybeast>
+ <20201118102307.GA4903@katalix.com>
+ <CA+imup-3pT47CVL7GZn_vJtHGngNexBR060y2gRfw2v5Gr8P0Q@mail.gmail.com>
 MIME-Version: 1.0
-Date:   Thu, 19 Nov 2020 03:43:31 -0600
-From:   ljp <ljp@linux.vnet.ibm.com>
-To:     Thomas Falcon <tlfalcon@linux.ibm.com>
-Cc:     kuba@kernel.org, cforno12@linux.ibm.com, netdev@vger.kernel.org,
-        ricklind@linux.ibm.com, dnbanerg@us.ibm.com,
-        drt@linux.vnet.ibm.com, brking@linux.vnet.ibm.com,
-        sukadev@linux.vnet.ibm.com, linuxppc-dev@lists.ozlabs.org,
-        Linuxppc-dev 
-        <linuxppc-dev-bounces+ljp=linux.ibm.com@lists.ozlabs.org>
-Subject: Re: [PATCH net-next v2 9/9] ibmvnic: Do not replenish RX buffers
- after every polling loop
-In-Reply-To: <1605748345-32062-10-git-send-email-tlfalcon@linux.ibm.com>
-References: <1605748345-32062-1-git-send-email-tlfalcon@linux.ibm.com>
- <1605748345-32062-10-git-send-email-tlfalcon@linux.ibm.com>
-Message-ID: <1a4e7b1ef1fb101cbb26fb9d5867ee46@linux.vnet.ibm.com>
-X-Sender: ljp@linux.vnet.ibm.com
-User-Agent: Roundcube Webmail/1.0.1
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-19_05:2020-11-17,2020-11-19 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
- suspectscore=0 adultscore=0 impostorscore=0 mlxscore=0 mlxlogscore=782
- lowpriorityscore=0 priorityscore=1501 spamscore=0 bulkscore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011190069
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="SLDf9lqlvOQaIe6s"
+Content-Disposition: inline
+In-Reply-To: <CA+imup-3pT47CVL7GZn_vJtHGngNexBR060y2gRfw2v5Gr8P0Q@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-11-18 19:12, Thomas Falcon wrote:
-> From: "Dwip N. Banerjee" <dnbanerg@us.ibm.com>
-> 
-> Reduce the amount of time spent replenishing RX buffers by
-> only doing so once available buffers has fallen under a certain
-> threshold, in this case half of the total number of buffers, or
-> if the polling loop exits before the packets processed is less
-> than its budget.
-> 
-> Signed-off-by: Dwip N. Banerjee <dnbanerg@us.ibm.com>
-> ---
->  drivers/net/ethernet/ibm/ibmvnic.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c
-> b/drivers/net/ethernet/ibm/ibmvnic.c
-> index 96df6d8fa277..9fe43ab0496d 100644
-> --- a/drivers/net/ethernet/ibm/ibmvnic.c
-> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-> @@ -2537,7 +2537,10 @@ static int ibmvnic_poll(struct napi_struct
-> *napi, int budget)
->  		frames_processed++;
->  	}
-> 
-> -	if (adapter->state != VNIC_CLOSING)
-> +	if (adapter->state != VNIC_CLOSING &&
-> +	    ((atomic_read(&adapter->rx_pool[scrq_num].available) <
-> +	      adapter->req_rx_add_entries_per_subcrq / 2) ||
-> +	      frames_processed < budget))
 
-1/2 seems a simple and good algorithm.
-Explaining why "frames_process < budget" is necessary in the commit 
-message
-or source code also helps.
+--SLDf9lqlvOQaIe6s
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On  Wed, Nov 18, 2020 at 16:44:11 +0530, siddhant gupta wrote:
+> On Wed, 18 Nov 2020 at 15:53, Tom Parkin <tparkin@katalix.com> wrote:
+> >
+> > On  Tue, Nov 17, 2020 at 15:22:07 +0530, Siddhant Gupta wrote:
+> > > Fix Column span alignment problem warnings in the file
+> > >
+> >
+> > Thanks for the patch, Siddhant.
+> >
+> > Could you provide some information on how these warnings were
+> > triggered?  Using Sphinx 2.4.4 I can't reproduce any warnings for
+> > l2tp.rst using the "make htmldocs" target.
+> >
+>=20
+> I am currently using Sphinx v1.8.5 and I made use of command "make
+> htmldocs >> doc_xxx.log 2>&1" for directing the errors into a file and
+> the statements in the file showed me these warning, also to confirm
+> those I tried using "rst2html" on l2tp.rst file and got same set of
+> warnings.
 
->  		replenish_rx_pool(adapter, &adapter->rx_pool[scrq_num]);
->  	if (frames_processed < budget) {
->  		if (napi_complete_done(napi, frames_processed)) {
+Thanks for confirming.
+
+I tried 1.8.5 here in a new virtualenv and I didn't see warnings there
+either.
+
+I can easily imagine different toolchains triggering different
+warnings, but it's frustrating we can't reproduce them.
+
+I have no objection to merging the patch, more interested in catching
+similar problems in the future.
+
+> > > Signed-off-by: Siddhant Gupta <siddhantgupta416@gmail.com>
+> > > ---
+> > >  Documentation/networking/l2tp.rst | 26 +++++++++++++-------------
+> > >  1 file changed, 13 insertions(+), 13 deletions(-)
+> > >
+> > > diff --git a/Documentation/networking/l2tp.rst b/Documentation/networ=
+king/l2tp.rst
+> > > index 498b382d25a0..0c0ac4e70586 100644
+> > > --- a/Documentation/networking/l2tp.rst
+> > > +++ b/Documentation/networking/l2tp.rst
+> > > @@ -171,7 +171,8 @@ DEBUG              N        Debug flags.
+> > >  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=
+=3D=3D=3D=3D =3D=3D=3D
+> > >  Attribute          Required Use
+> > >  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=
+=3D=3D=3D=3D =3D=3D=3D
+> > > -CONN_ID            N        Identifies the tunnel id to be queried.
+> > > +CONN_ID            N        Identifies the tunnel id
+> > > +                            to be queried.
+> > >                              Ignored in DUMP requests.
+> > >  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=
+=3D=3D=3D=3D =3D=3D=3D
+> > >
+> > > @@ -208,8 +209,8 @@ onto the new session. This is covered in "PPPoL2T=
+P Sockets" later.
+> > >  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=
+=3D=3D=3D=3D =3D=3D=3D
+> > >  Attribute          Required Use
+> > >  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=
+=3D=3D=3D=3D =3D=3D=3D
+> > > -CONN_ID            Y        Identifies the parent tunnel id of the s=
+ession
+> > > -                            to be destroyed.
+> > > +CONN_ID            Y        Identifies the parent tunnel id
+> > > +                            of the session to be destroyed.
+> > >  SESSION_ID         Y        Identifies the session id to be destroye=
+d.
+> > >  IFNAME             N        Identifies the session by interface name=
+=2E If
+> > >                              set, this overrides any CONN_ID and SESS=
+ION_ID
+> > > @@ -222,13 +223,12 @@ IFNAME             N        Identifies the sess=
+ion by interface name. If
+> > >  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=
+=3D=3D=3D=3D =3D=3D=3D
+> > >  Attribute          Required Use
+> > >  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=
+=3D=3D=3D=3D =3D=3D=3D
+> > > -CONN_ID            Y        Identifies the parent tunnel id of the s=
+ession
+> > > -                            to be modified.
+> > > +CONN_ID            Y        Identifies the parent tunnel
+> > > +                            id of the session to be modified.
+> > >  SESSION_ID         Y        Identifies the session id to be modified.
+> > > -IFNAME             N        Identifies the session by interface name=
+=2E If
+> > > -                            set, this overrides any CONN_ID and SESS=
+ION_ID
+> > > -                            attributes. Currently supported for L2TP=
+v3
+> > > -                            Ethernet sessions only.
+> > > +IFNAME             N        Identifies the session by interface name=
+=2E If set,
+> > > +                            this overrides any CONN_ID and SESSION_ID
+> > > +                            attributes. Currently supported for L2TP=
+v3 Ethernet sessions only.
+> > >  DEBUG              N        Debug flags.
+> > >  RECV_SEQ           N        Enable rx data sequence numbers.
+> > >  SEND_SEQ           N        Enable tx data sequence numbers.
+> > > @@ -243,10 +243,10 @@ RECV_TIMEOUT       N        Timeout to wait whe=
+n reordering received
+> > >  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=
+=3D=3D=3D=3D =3D=3D=3D
+> > >  Attribute          Required Use
+> > >  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=
+=3D=3D=3D=3D =3D=3D=3D
+> > > -CONN_ID            N        Identifies the tunnel id to be queried.
+> > > -                            Ignored for DUMP requests.
+> > > -SESSION_ID         N        Identifies the session id to be queried.
+> > > -                            Ignored for DUMP requests.
+> > > +CONN_ID            N        Identifies the tunnel id
+> > > +                            to be queried. Ignored for DUMP requests.
+> > > +SESSION_ID         N        Identifies the session id
+> > > +                            to be queried. Ignored for DUMP requests.
+> > >  IFNAME             N        Identifies the session by interface name.
+> > >                              If set, this overrides any CONN_ID and
+> > >                              SESSION_ID attributes. Ignored for DUMP
+> > > --
+> > > 2.25.1
+> > >
+
+--=20
+Tom Parkin
+Katalix Systems Ltd
+https://katalix.com
+Catalysts for your Embedded Linux software development
+
+--SLDf9lqlvOQaIe6s
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAl+2PsgACgkQlIwGZQq6
+i9BnrQf9FdingP4j1x+yAX6Qfk2Aj1cc9hbxrzarGj/rSXVrR/GaKGJlh3o4tKVg
+ijM/GxAoTrEXLcJ4Ovz3BrmrYIesHk3Bks2PXOaKL8RfLvneSRyo8zinMVh1nAva
+UcmKyeKDvjPWc2GpCLsnXSHvxICyfSn15vuI2ctlp1vo4p6ohEIH2zPsJaph53IH
+ZOANB+IMVFf2tmAZb5cUZijcwPqd9NUrkqHv7MtamjocdTPUKRBrKgs6V58tzHw3
+u+sQVHVU60mYmJhZXWIPNoPHdqGbjIHgV1xy5TJWmnTlLhiEUNCbe2/EHq/Hk+rf
+TG6Ka9mBBpAXg0lIxrsbmGJoNR8l6A==
+=CJrS
+-----END PGP SIGNATURE-----
+
+--SLDf9lqlvOQaIe6s--
