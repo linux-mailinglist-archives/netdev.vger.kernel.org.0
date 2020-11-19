@@ -2,85 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2AA72B8905
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 01:24:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BFC2C2B8906
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 01:28:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726815AbgKSAWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 19:22:39 -0500
-Received: from mga17.intel.com ([192.55.52.151]:8363 "EHLO mga17.intel.com"
+        id S1726412AbgKSA06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 19:26:58 -0500
+Received: from novek.ru ([213.148.174.62]:38626 "EHLO novek.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726162AbgKSAWi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 19:22:38 -0500
-IronPort-SDR: /gR/RQUI4w6Y5AAkrS1Wb0hVIqXu0++qQHvd3Fuh7Hgkd1C3imv/4g5mtvPIKldJsXWV9HtbW1
- wrzTLgbfWoRA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9809"; a="151056275"
-X-IronPort-AV: E=Sophos;i="5.77,488,1596524400"; 
-   d="scan'208";a="151056275"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2020 16:22:38 -0800
-IronPort-SDR: WolBowoaeNrGJ0peStyiP01po1wnNwy2OasZK67igl9TNe+Fffxtkf9DoW7u78zFQ8bwu+eUWi
- +fCfEpL8XUDA==
-X-IronPort-AV: E=Sophos;i="5.77,488,1596524400"; 
-   d="scan'208";a="532953743"
-Received: from prasadpr-mobl.amr.corp.intel.com (HELO ellie) ([10.212.21.86])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2020 16:22:38 -0800
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Miroslav Lichvar <mlichvar@redhat.com>,
-        intel-wired-lan@lists.osuosl.org, andre.guedes@intel.com,
-        linux-pci@vger.kernel.org, netdev@vger.kernel.org,
-        bhelgaas@google.com
-Subject: Re: [Intel-wired-lan] [PATCH next-queue v2 3/3] igc: Add support
- for PTP getcrosststamp()
-In-Reply-To: <20201118125451.GC23320@hoboy.vegasvil.org>
-References: <20201114025704.GA15240@hoboy.vegasvil.org>
- <874klo7pwp.fsf@intel.com> <20201117014926.GA26272@hoboy.vegasvil.org>
- <87d00b5uj7.fsf@intel.com> <20201118125451.GC23320@hoboy.vegasvil.org>
-Date:   Wed, 18 Nov 2020 16:22:37 -0800
-Message-ID: <87wnyi2o1e.fsf@intel.com>
+        id S1725947AbgKSA05 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 19:26:57 -0500
+Received: from [192.168.0.18] (unknown [37.228.234.253])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id 8732A501633;
+        Thu, 19 Nov 2020 03:27:06 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 8732A501633
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1605745628; bh=K6MUUk54ulYNAUapum7/o+0d30Gr3UEO9JD2aOX6HSY=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=hFiL0fG/QXVKnZNY8UiO7McQB1YUPnRDm58neN+kAzGNEcBeLiaTH/ufNCa2daiza
+         QWkGwF+vhUCQ3mtODOVheB+uCzgnuZPgUXT1FkqvCsjUMIzTK7Li1XCW6UT2JZ6e59
+         7DAxnPRBzfXtN6zHxTI/kDVHkDteyEWbb0ZeyVBQ=
+Subject: Re: [net] net/tls: missing received data after fast remote close
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Boris Pismenny <borisp@nvidia.com>,
+        Aviad Yehezkel <aviadye@nvidia.com>, netdev@vger.kernel.org
+References: <1605440628-1283-1-git-send-email-vfedorenko@novek.ru>
+ <20201117143847.2040f609@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <71f25f4d-a92c-8c56-da34-9d6f7f808c18@novek.ru>
+ <20201117175344.2a29859a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <33ede124-583b-4bdd-621b-638bbca1a6c8@novek.ru>
+ <20201118082336.6513c6c0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <3c3f9b9d-0fef-fb62-25f8-c9f17ec43a69@novek.ru>
+ <20201118153931.43898a9a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+Message-ID: <12e61d3c-cc7d-71a7-f3be-4b796986a4d5@novek.ru>
+Date:   Thu, 19 Nov 2020 00:26:52 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20201118153931.43898a9a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
+        autolearn_force=no version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Richard,
-
-Richard Cochran <richardcochran@gmail.com> writes:
-
-> On Tue, Nov 17, 2020 at 05:21:48PM -0800, Vinicius Costa Gomes wrote:
->> Agreed that would be easiest/simplest. But what I have in hand seems to
->> not like it, i.e. I have an earlier series implementing this "one shot" way
->> and it's not reliable over long periods of time or against having the
->> system time adjusted.
+On 18.11.2020 23:39, Jakub Kicinski wrote:
+> On Wed, 18 Nov 2020 20:51:30 +0000 Vadim Fedorenko wrote:
+>>>> The async nature of parser is OK for classic HTTPS server/client case
+>>>> because it's very good to have parsed record before actual call to recvmsg
+>>>> or splice_read is done. The code inside the loop in tls_wait_data is slow
+>>>> path - maybe just move the check and the __unpause in this slow path?
+>>> Yeah, looking closer this problem can arise after we start as well :/
+>>>
+>>> How about we move the __unparse code into the loop tho? Seems like this
+>>> could help with latency. Right now AFAICT we get a TCP socket ready
+>>> notification, which wakes the waiter for no good reason and makes
+>>> strparser queue its work, the work then will call tls_queue() ->
+>>> data_ready waking the waiting thread second time this time with the
+>>> record actually parsed.
+>>>
+>>> Did I get that right? Should the waiter not cancel the work on the
+>>> first wake up and just kick of the parsing itself?
+>> I was thinking of the same solution too, but simple check of emptyness of
+>> socket's receive queue is not working in case when we have partial record
+>> in queue - __unpause will return without changing ctx->skb and still having
+>> positive value in socket queue and we will have blocked loop until new data
+>> is received or strp_abort_strp is fired because of timeout. If you could
+>> suggest proper condition to break the loop it would be great.
+>>
+>> Or probably I misunderstood what loop did you mean exactly?
+> Damn, you may be seeing some problem I'm missing again ;) Running
+> __unparse can be opportunistic, if it doesn't parse anything that's
+> fine. I was thinking:
 >
-> Before we go inventing a new API, I think we should first understand
-> why the one shot thing fails.
+> diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+> index 95ab5545a931..6478bd968506 100644
+> --- a/net/tls/tls_sw.c
+> +++ b/net/tls/tls_sw.c
+> @@ -1295,6 +1295,10 @@ static struct sk_buff *tls_wait_data(struct sock *sk, struct sk_psock *psock,
+>                          return NULL;
+>                  }
+>   
+> +               __strp_unpause(&ctx->strp);
+> +               if (ctx->recv_pkt)
+> +                       return ctx->recv_pkt;
+> +
+>                  if (sk->sk_shutdown & RCV_SHUTDOWN)
+>                          return NULL;
+>   
+> Optionally it would be nice if unparse cancelled the work if it managed
+> to parse the record out.
+Oh, simple and fine solution. But is it better to unpause parser conditionally when
+there is something in the socket queue? Otherwise this call will be just wasting
+cycles. Maybe like this:
 
-Talking with the hardware folks, they recommended using the periodic
-method, the one shot method was implemented as a debug/evaluation aid.
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index 2fe9e2c..97c5f6e 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -1295,6 +1295,12 @@ static struct sk_buff *tls_wait_data(struct sock *sk, 
+struct sk_psock *psock,
+                         return NULL;
+                 }
 
-The explanation I have is something along these lines: the hardware
-keeps track of the "delta" between the Master Time and its own clock,
-and uses it to calculate the timestamps exposed in the NIC registers. To
-have a better "delta" it needs more samples. And so it has improved
-stability when PTM dialogs happen more continuously, and that's the
-recommended way.
++               if (!skb_queue_empty(&sk->sk_receive_queue)) {
++                       __strp_unpause(&ctx->strp);
++                       if (ctx->recv_pkt)
++                               return ctx->recv_pkt;
++               }
++
+                 if (sk->sk_shutdown & RCV_SHUTDOWN)
+                         return NULL;
 
-The PCIe PTM specification doesn't suggest how the timestamps need to be
-exposed/calculated, and how long it needs to run, and it sounded to me
-that other implementations could have similar behavior.
-
->
-> If there is problem with the system time being adjusted during PTM,
-> then that needs solving in any case!
-
-When PTM is running in the periodic mode, system clock adjustments are
-handled fine.
-
-
-Cheers,
--- 
-Vinicius
