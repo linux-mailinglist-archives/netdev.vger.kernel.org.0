@@ -2,110 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E6B92B9B96
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 20:39:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F4E42B9B8D
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 20:38:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728327AbgKSTgc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 14:36:32 -0500
-Received: from gate.crashing.org ([63.228.1.57]:39398 "EHLO gate.crashing.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727593AbgKSTgb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Nov 2020 14:36:31 -0500
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 0AJJRBpu004150;
-        Thu, 19 Nov 2020 13:27:11 -0600
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 0AJJR87q004149;
-        Thu, 19 Nov 2020 13:27:08 -0600
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Thu, 19 Nov 2020 13:27:08 -0600
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Florian Weimer <fw@deneb.enyo.de>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Matt Mullins <mmullins@mmlx.us>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        "linux-toolchains@vger.kernel.org" <linux-toolchains@vger.kernel.org>
-Subject: Re: violating function pointer signature
-Message-ID: <20201119192708.GW2672@gate.crashing.org>
-References: <20201118121730.12ee645b@gandalf.local.home> <20201118181226.GK2672@gate.crashing.org> <87o8jutt2h.fsf@mid.deneb.enyo.de> <20201118135823.3f0d24b7@gandalf.local.home> <20201118191127.GM2672@gate.crashing.org> <20201119083648.GE3121392@hirez.programming.kicks-ass.net> <20201119143735.GU2672@gate.crashing.org> <20201119095951.30269233@gandalf.local.home> <20201119163529.GV2672@gate.crashing.org> <fac6049651cf4cef92162bec84550458@AcuMS.aculab.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fac6049651cf4cef92162bec84550458@AcuMS.aculab.com>
-User-Agent: Mutt/1.4.2.3i
+        id S1727690AbgKSTca (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 14:32:30 -0500
+Received: from sender11-of-o52.zoho.eu ([31.186.226.238]:21322 "EHLO
+        sender11-of-o52.zoho.eu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727108AbgKSTca (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 14:32:30 -0500
+ARC-Seal: i=1; a=rsa-sha256; t=1605814307; cv=none; 
+        d=zohomail.eu; s=zohoarc; 
+        b=RwWZTdRp2JYmVeCCf0JlQ1CPgPJ9h2sfdrzWQ+JP3NhjekGg28hq6JLvBvT2X7fPs/itmFi1sloZeC0pdxk7AqJykFoWLyzsIIsppBId/X5sLwPGnn2cWRYBpWF6BVwCKf13wb4yR5JWhCVsqYapR5NP69gQovwKFvDkAbi7N4k=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.eu; s=zohoarc; 
+        t=1605814307; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=WCR+XAW1Keq97IBhr7Nlm3GBjFFoJGs0nmFksqPSAX4=; 
+        b=DH+OM/BrGvFQni1CVXj67BAv/AyZPhYo1SHOOaV41ckIVa8yBcBj9kp+PFy4aBLI183iYFk4PEueEy3Q+6cdfHkk39xT0UvjMeGGnz4eB9D44VBEiVDLZmUp32Q7Vf+fOuhGfHtMo/fDTimCOJc8amHIfr7JuqwVvXUwHSGLVrU=
+ARC-Authentication-Results: i=1; mx.zohomail.eu;
+        dkim=pass  header.i=shytyi.net;
+        spf=pass  smtp.mailfrom=dmytro@shytyi.net;
+        dmarc=pass header.from=<dmytro@shytyi.net> header.from=<dmytro@shytyi.net>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1605814307;
+        s=hs; d=shytyi.net; i=dmytro@shytyi.net;
+        h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding;
+        bh=WCR+XAW1Keq97IBhr7Nlm3GBjFFoJGs0nmFksqPSAX4=;
+        b=dwq3OrJLTCQ3gKtqZZWzz8aeL7qQs1M7x8mzxLFhIgzO6RqTcuw0g3taSCIt8WXi
+        F9q2ne9jfdE3VfyvDsYTNTYI99ha0z3vnYzZL+of9eHrQ93tvKTfABuu7wgtuRMKOXF
+        GGu3VTxutfnfq1fsyIfmW+b4RknTmOHp0gfQnhP0=
+Received: from mail.zoho.eu by mx.zoho.eu
+        with SMTP id 1605814301266759.2664420513429; Thu, 19 Nov 2020 20:31:41 +0100 (CET)
+Date:   Thu, 19 Nov 2020 20:31:41 +0100
+From:   Dmytro Shytyi <dmytro@shytyi.net>
+To:     "Jakub Kicinski" <kuba@kernel.org>
+Cc:     "yoshfuji" <yoshfuji@linux-ipv6.org>,
+        "kuznet" <kuznet@ms2.inr.ac.ru>,
+        "liuhangbin" <liuhangbin@gmail.com>, "davem" <davem@davemloft.net>,
+        "netdev" <netdev@vger.kernel.org>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>
+Message-ID: <175e1fdb250.1207dca53446410.2492811916841931466@shytyi.net>
+In-Reply-To: <20201119104413.75ca9888@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+References: <175b3433a4c.aea7c06513321.4158329434310691736@shytyi.net>
+        <202011110944.7zNVZmvB-lkp@intel.com>
+        <175bd218cf4.103c639bc117278.4209371191555514829@shytyi.net>
+        <175bf515624.c67e02e8130655.7824060160954233592@shytyi.net>
+        <175c31c6260.10eef97f6180313.755036504412557273@shytyi.net>
+        <20201117124348.132862b1@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <175e0b9826b.c3bb0aae425910.5834444036489233360@shytyi.net> <20201119104413.75ca9888@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Subject: Re: [PATCH net-next V6] net: Variable SLAAC: SLAAC with prefixes of
+ arbitrary length in PIO
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Importance: Medium
+User-Agent: Zoho Mail
+X-Mailer: Zoho Mail
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 19, 2020 at 05:42:34PM +0000, David Laight wrote:
-> From: Segher Boessenkool
-> > Sent: 19 November 2020 16:35
-> > I just meant "valid C language code as defined by the standards".  Many
-> > people want all UB to just go away, while that is *impossible* to do for
-> > many compilers: for example where different architectures or different
-> > ABIs have contradictory requirements.
-> 
-> Some of the UB in the C language are (probably) there because
-> certain (now obscure) hardware behaved that way.
 
-Yes.
+---- On Thu, 19 Nov 2020 19:44:13 +0100 Jakub Kicinski <kuba@kernel.org> wr=
+ote ----
 
-> For instance integer arithmetic may saturate on overflow
-> (or do even stranger things if the sign is a separate bit).
+ > On Thu, 19 Nov 2020 14:37:35 +0100 Dmytro Shytyi wrote:=20
+ > > +struct inet6_ifaddr *ipv6_cmp_rcvd_prsnt_prfxs(struct inet6_ifaddr *i=
+fp,=20
+ > > +                           struct inet6_dev *in6_dev,=20
+ > > +                           struct net *net,=20
+ > > +                           const struct prefix_info *pinfo)=20
+ > > +{=20
+ > > +    struct inet6_ifaddr *result_base =3D NULL;=20
+ > > +    struct inet6_ifaddr *result =3D NULL;=20
+ > > +    struct in6_addr curr_net_prfx;=20
+ > > +    struct in6_addr net_prfx;=20
+ > > +    bool prfxs_equal;=20
+ > > +=20
+ > > +    result_base =3D result;=20
+ > > +    rcu_read_lock();=20
+ > > +    list_for_each_entry_rcu(ifp, &in6_dev->addr_list, if_list) {=20
+ > > +        if (!net_eq(dev_net(ifp->idev->dev), net))=20
+ > > +            continue;=20
+ > > +        ipv6_addr_prefix_copy(&net_prfx, &pinfo->prefix, pinfo->prefi=
+x_len);=20
+ > > +        ipv6_addr_prefix_copy(&curr_net_prfx, &ifp->addr, pinfo->pref=
+ix_len);=20
+ > > +        prfxs_equal =3D=20
+ > > +            ipv6_prefix_equal(&net_prfx, &curr_net_prfx, pinfo->prefi=
+x_len);=20
+ > > +        if (prfxs_equal && pinfo->prefix_len =3D=3D ifp->prefix_len) =
+{=20
+ > > +            result =3D ifp;=20
+ > > +            in6_ifa_hold(ifp);=20
+ > > +            break;=20
+ > > +        }=20
+ > > +    }=20
+ > > +    rcu_read_unlock();=20
+ > > +    if (result_base !=3D result)=20
+ > > +        ifp =3D result;=20
+ > > +    else=20
+ > > +        ifp =3D NULL;=20
+ > > +=20
+ > > +    return ifp;=20
+ > > +}=20
+ > =20
+ > Thanks for adding the helper! Looks like it needs a touch up:=20
+=20
+Understood. Thank you for pointing this out. I think I did not catch this w=
+arning as my Makefile didn't include "-Wmissing-prototypes"
 
-And some still does!
+ > net/ipv6/addrconf.c:2579:22: warning: no previous prototype for =E2=80=
+=98ipv6_cmp_rcvd_prsnt_prfxs=E2=80=99 [-Wmissing-prototypes]=20
+ >  2579 | struct inet6_ifaddr *ipv6_cmp_rcvd_prsnt_prfxs(struct inet6_ifad=
+dr *ifp,=20
+ >  |                      ^~~~~~~~~~~~~~~~~~~~~~~~~=20
+ > net/ipv6/addrconf.c:2579:21: warning: symbol 'ipv6_cmp_rcvd_prsnt_prfxs'=
+ was not declared. Should it be static?=20
+ >=20
 
-> I'm not quite sure it was ever possible to write a C compiler
-> for a cpu that processed numbers in ASCII (up to 10 digits),
-> binary arithmetic was almost impossible.
+Hideaki Yoshifuji helped to improve this patch with suggestions. @Hideaki, =
+should I add "Reported-by" tag in this case?
+Jakub Kicinski also helped to find errors and help with improvement. @Jakub=
+, should I add "Reported-by" tag in this case?=20
 
-A machine that really stores decimal numbers?  Not BCD or the like?
-Yeah wow, that will be hard.
+Thanks,
+Dmytro SHYTYI
 
-> There are also the CPU that only have 'word' addressing - so
-> that 'pointers to characters' take extra instructions.
-
-Such machines are still made, and are programmed in C as well.
-
-> ISTM that a few years ago the gcc developers started looking
-> at some of these 'UB' and decided they could make use of
-> them to make some code faster (and break other code).
-
-When UB would happen in some situation, the compiler can simply assume
-that situation does not happen.  This makes it possible to do a lot of
-optimisations (many to do with loops) that cannot be done otherwise
-(including those to do with signed overflow).  And many of those
-optimisations are worthwhile.
-
-> One of the problems with UB is that whereas you might expect
-> UB arithmetic to generate an unexpected result and/or signal
-> it is completely open-ended and could fire an ICBM at the coder.
-
-Yes, UB is undefined behaviour.  Unspecified is something else (and C
-has that as well, also implementation-defined, etc.)
-
-In some cases GCC (and any other modern compiler) can make UB be IB
-instead, with some flag for example, like -fno-strict-* does.  In other
-cases it isn't so easy at all.  In cases like you have here (where the
-validity of what you want to do depends on the ABI in effect) things are
-not easy :-/
-
-
-Segher
