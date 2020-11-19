@@ -2,112 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25F242B8929
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 01:49:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A05D52B892B
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 01:53:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726300AbgKSAtQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 19:49:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41100 "EHLO mail.kernel.org"
+        id S1726503AbgKSAwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 19:52:47 -0500
+Received: from mga17.intel.com ([192.55.52.151]:10633 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726086AbgKSAtQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 19:49:16 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B11EE246B2;
-        Thu, 19 Nov 2020 00:49:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605746955;
-        bh=IRFC16mum/ZyjCJCIjUUxatulzNAKFBXEt4TcpckxG8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lK5xTuJCgaOkr8mlTw5x0BLbKZctRsPH/oxz9HYtDnVsjzwf5OpR/O54LR0hZMu+L
-         uS6ZvRasnII7aiESJ1apQoi2uzXUwKWYo1iLX+SLWjBAtq1Ye3pWidtxPnIV5msB94
-         6Rm/phElVoPi6Tohh054oClS3vRugplXM56vzb2E=
-Date:   Wed, 18 Nov 2020 16:49:13 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vadim Fedorenko <vfedorenko@novek.ru>
-Cc:     Boris Pismenny <borisp@nvidia.com>,
-        Aviad Yehezkel <aviadye@nvidia.com>, netdev@vger.kernel.org
-Subject: Re: [net] net/tls: missing received data after fast remote close
-Message-ID: <20201118164913.3b8a34f3@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <12e61d3c-cc7d-71a7-f3be-4b796986a4d5@novek.ru>
-References: <1605440628-1283-1-git-send-email-vfedorenko@novek.ru>
-        <20201117143847.2040f609@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <71f25f4d-a92c-8c56-da34-9d6f7f808c18@novek.ru>
-        <20201117175344.2a29859a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <33ede124-583b-4bdd-621b-638bbca1a6c8@novek.ru>
-        <20201118082336.6513c6c0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <3c3f9b9d-0fef-fb62-25f8-c9f17ec43a69@novek.ru>
-        <20201118153931.43898a9a@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <12e61d3c-cc7d-71a7-f3be-4b796986a4d5@novek.ru>
+        id S1726163AbgKSAwq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 19:52:46 -0500
+IronPort-SDR: 8HPm4gs1JS7zBDa/oHD2uHpai8v8PUGt6f92AUPAhz7ZyAale4esKZ/noXA36O2GgUGIVm5QOG
+ +hTSSWt5+96A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9809"; a="151059162"
+X-IronPort-AV: E=Sophos;i="5.77,488,1596524400"; 
+   d="scan'208";a="151059162"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2020 16:52:46 -0800
+IronPort-SDR: 6hesk7xiAj6OkjRYuKCQcLetqK8AF0kwZmDswV4EKUJlC9hJVOIPt3CSnM1X7MiAF0gX/vAPml
+ fq8u4V6kTwaw==
+X-IronPort-AV: E=Sophos;i="5.77,488,1596524400"; 
+   d="scan'208";a="330729523"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.247.114]) ([10.212.247.114])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2020 16:52:44 -0800
+Subject: Re: [PATCH net-next 03/13] devlink: Support add and delete devlink
+ port
+To:     Parav Pandit <parav@nvidia.com>, David Ahern <dsahern@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc:     Jiri Pirko <jiri@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Vu Pham <vuhuong@nvidia.com>
+References: <20201112192424.2742-1-parav@nvidia.com>
+ <20201112192424.2742-4-parav@nvidia.com>
+ <e7b2b21f-b7d0-edd5-1af0-a52e2fc542ce@gmail.com>
+ <BY5PR12MB43222AB94ED279AF9B710FF1DCE10@BY5PR12MB4322.namprd12.prod.outlook.com>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <f04da4a9-df6d-3002-ea10-12eaf2637331@intel.com>
+Date:   Wed, 18 Nov 2020 16:52:42 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <BY5PR12MB43222AB94ED279AF9B710FF1DCE10@BY5PR12MB4322.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Nov 2020 00:26:52 +0000 Vadim Fedorenko wrote:
-> > Damn, you may be seeing some problem I'm missing again ;) Running
-> > __unparse can be opportunistic, if it doesn't parse anything that's
-> > fine. I was thinking:
-> >
-> > diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-> > index 95ab5545a931..6478bd968506 100644
-> > --- a/net/tls/tls_sw.c
-> > +++ b/net/tls/tls_sw.c
-> > @@ -1295,6 +1295,10 @@ static struct sk_buff *tls_wait_data(struct sock=
- *sk, struct sk_psock *psock,
-> >                          return NULL;
-> >                  }
-> >  =20
-> > +               __strp_unpause(&ctx->strp);
-> > +               if (ctx->recv_pkt)
-> > +                       return ctx->recv_pkt;
-> > +
-> >                  if (sk->sk_shutdown & RCV_SHUTDOWN)
-> >                          return NULL;
-> >  =20
-> > Optionally it would be nice if unparse cancelled the work if it managed
-> > to parse the record out. =20
-> Oh, simple and fine solution. But is it better to unpause parser conditio=
-nally when
-> there is something in the socket queue? Otherwise this call will be just =
-wasting
-> cycles. Maybe like this:
->=20
-> diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-> index 2fe9e2c..97c5f6e 100644
-> --- a/net/tls/tls_sw.c
-> +++ b/net/tls/tls_sw.c
-> @@ -1295,6 +1295,12 @@ static struct sk_buff *tls_wait_data(struct sock *=
-sk,=20
-> struct sk_psock *psock,
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return N=
-ULL;
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 }
->=20
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 if (!skb_queue_empty(&sk->sk_receive_queue)) {
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 __strp_unpause=
-(&ctx->strp);
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (ctx->recv_=
-pkt)
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return ctx->recv_pkt;
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 }
-> +
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 if (sk->sk_shutdown & RCV_SHUTDOWN)
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return N=
-ULL;
->=20
 
-LGTM!
+
+On 11/18/2020 9:02 AM, Parav Pandit wrote:
+> 
+>> From: David Ahern <dsahern@gmail.com>
+>> Sent: Wednesday, November 18, 2020 9:51 PM
+>>
+>> On 11/12/20 12:24 PM, Parav Pandit wrote:
+>>> Extended devlink interface for the user to add and delete port.
+>>> Extend devlink to connect user requests to driver to add/delete such
+>>> port in the device.
+>>>
+>>> When driver routines are invoked, devlink instance lock is not held.
+>>> This enables driver to perform several devlink objects registration,
+>>> unregistration such as (port, health reporter, resource etc) by using
+>>> exising devlink APIs.
+>>> This also helps to uniformly use the code for port unregistration
+>>> during driver unload and during port deletion initiated by user.
+>>>
+>>> Examples of add, show and delete commands:
+>>> $ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
+>>>
+>>> $ devlink port show
+>>> pci/0000:06:00.0/65535: type eth netdev ens2f0np0 flavour physical
+>>> port 0 splittable false
+>>>
+>>> $ devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88
+>>>
+>>> $ devlink port show pci/0000:06:00.0/32768
+>>> pci/0000:06:00.0/32768: type eth netdev eth0 flavour pcisf controller 0
+>> pfnum 0 sfnum 88 external false splittable false
+>>>   function:
+>>>     hw_addr 00:00:00:00:88:88 state inactive opstate detached
+>>>
+>>
+>> There has to be limits on the number of sub functions that can be created for
+>> a device. How does a user find that limit?
+> Yes, this came up internally, but didn't really converged.
+> The devlink resource looked too verbose for an average or simple use cases.
+> But it may be fine.
+> The hurdle I faced with devlink resource is with defining the granularity.
+> 
+> For example one devlink instance deploys sub functions on multiple pci functions.
+> So how to name them? Currently we have controller and PFs in port annotation.
+> So resource name as 
+> c0pf0_subfunctions -> for controller 0, pf 0 
+> c1pf2_subfunctions -> for controller 1, pf 2
+> 
+> Couldn't convince my self to name it this way.
+
+Yea, I think we need to extend the plumbing of resources to allow
+specifying or assigning parent resources to a subfunction.
+
+> 
+> Below example looked simpler to use but plumbing doesn’t exist for it.
+> 
+> $ devlink resource show pci/0000:03:00.0
+> pci/0000:03:00.0/1: name max_sfs count 256 controller 0 pf 0
+> pci/0000:03:00.0/2: name max_sfs count 100 controller 1 pf 0
+> pci/0000:03:00.0/3: name max_sfs count 64 controller 1 pf 1
+> 
+> $ devlink resource set pci/0000:03:00.0/1 max_sfs 100
+> 
+> Second option I was considering was use port params which doesn't sound so right as resource.
+> 
+
+I don't think port parameters make sense here. They only encapsulate
+single name -> value pairs, and don't really help show the relationships
+between the subfunction ports and the parent device.
+
+>>
+>> Also, seems like there are hardware constraint at play. e.g., can a user reduce
+>> the number of queues used by the physical function to support more sub-
+>> functions? If so how does a user programmatically learn about this limitation?
+>> e.g., devlink could have support to show resource sizing and configure
+>> constraints similar to what mlxsw has.
+> Yes, need to figure out its naming. For mlx5 num queues doesn't have relation to subfunctions.
+> But PCI resource has relation and this is something we want to do in future, as you said may be using devlink resource.
+> 
+
+I've been looking into queue management and being able to add and remove
+queue groups and queues. I'm leaning towards building on top of devlink
+resource for this.
+
+Specifically I have been looking at picking up the work started by
+Magnus last year, around creating interface for representing queues to
+the stack better for AF_XDP, but it also has other possible uses.
+
+I'd like to make sure it aligns with the ideas here for partitioning
+resources. It seems like that should be best done at the devlink level,
+where the main devlink instance knows about all the part limitations and
+can then have new commands for allowing assignment of resources to ports.
