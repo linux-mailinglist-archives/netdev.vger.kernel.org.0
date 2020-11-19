@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D32EB2B95C5
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 16:08:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A60E2B95C8
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 16:08:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728275AbgKSPGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 10:06:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41422 "EHLO
+        id S1728338AbgKSPHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 10:07:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726820AbgKSPGz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 10:06:55 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED25DC0613CF;
-        Thu, 19 Nov 2020 07:06:54 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id b63so4737541pfg.12;
-        Thu, 19 Nov 2020 07:06:54 -0800 (PST)
+        with ESMTP id S1726820AbgKSPG7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 10:06:59 -0500
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD27BC0613CF;
+        Thu, 19 Nov 2020 07:06:59 -0800 (PST)
+Received: by mail-pl1-x643.google.com with SMTP id 5so3082879plj.8;
+        Thu, 19 Nov 2020 07:06:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Y4w/C+u9mn3PS9LuGNFM8q1NWwoA/E6dAzHcv8xL7lg=;
-        b=kd8HawuSAe8znPhifuHx1fDWKoToQ5MPwJFsltFgAUTY4cDIcpdZwh4gcd7WQsQp9o
-         LWo8Tr79wcIoiQw5pvT4t6qLP+wZKr5Y2tTwzi3AZF2sI8mJDObe+d1G7aBvgRzP3tGC
-         ttpKa8SKKJnF2f48t49EhfM8qxeNP79EfFEbLsF9d83KEnY4i4n+1J9d0EQhmFqfUoOM
-         YljmjDyPa2v1hQ8H2fKl0bryq3UtIdvh2SZ3kJSfFNe5ztTZa1Ek9XlD+O7NlZF00QX0
-         6O4sSHA493PBn6aOtDDeeNEbjabOu3IUFhSiJoKGKIDXz+1PdaqIPE6jO5DfRHXphKTj
-         8gug==
+        bh=RS/qSpAFGukp3/v16zb33bFhkDVWoKnFpkOAjHD2Ues=;
+        b=TtA55CbywFGEZgmG2AIEnrf1G1aCZ62XjuGX9tKDdFyZx8TDeAMi9hvpdP1KFnkdqB
+         IhdJXXjEpEJyCXC8/+hN6sKY3KNuvEsidW0kiGas0eh91wPMSa94DfOEeq8YxHXRWOpZ
+         DAaOritJmqPXKTLfDapId7Iae/QL6gQRpsto7levO+WJ0njdBZuvwzHBXbMv4bEq32tV
+         s70BgRO4tLQYq+lx0q2xhXJ0DW34LGY/Qa0mWMU6fTEfLUjRzDOmQvuQ1KGEMGlhs2cK
+         CnEBiFdslPWczmJgLVEEnAIzaSssfA0gN+R/FdedihC0Lo0TIpaOzxj/pAVQkh2wURvz
+         2bgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Y4w/C+u9mn3PS9LuGNFM8q1NWwoA/E6dAzHcv8xL7lg=;
-        b=OoTRzT6ejyZ2p3mepUS9gHogNBeJpYFNBxONO9imL5djsoPhD+4AjN/z+c2RdOg6qf
-         yU6HR9ZnWKzG0isqpCil8MGdB0A7cW9tBs/2UvtbfQ/04/J61f7aooL9nqsNI2ksLer0
-         SUR//hO7DAlzOSFGMYa0hO3zZb6DzkXFjepBTXSHGlzvDfaUk48haISaQUulBdFIZw+l
-         m1ziLn2KXrOCJlV93OyfhP4DMOkL+sll1WlzKOcz58kw+nzbZzu0/9PojLOtZNIPdF8p
-         K0JM7wnQLBzfBoMWSGnSh5lsz0UGEZsN77SnE0PCjcjJElyKZ3NoCF7BXSRWmG5UMban
-         UL9A==
-X-Gm-Message-State: AOAM533jbZHUA8cpYpFqvHRLPK0rG8uSgISsbaZ+gawUx3RDmW3q5yd4
-        SV+7f7M87yDEjSuWoMEFcw==
-X-Google-Smtp-Source: ABdhPJzA8oKoy7jip42gKZtxZt9lqkHxlRPfur3DhR8xFwm41pF7kq9ImP1mdkH0rTMn5kbHVEJT7w==
-X-Received: by 2002:a62:1b02:0:b029:18a:b052:deb1 with SMTP id b2-20020a621b020000b029018ab052deb1mr9758032pfb.32.1605798414383;
-        Thu, 19 Nov 2020 07:06:54 -0800 (PST)
+        bh=RS/qSpAFGukp3/v16zb33bFhkDVWoKnFpkOAjHD2Ues=;
+        b=iff1xE38hHiO05ehOsWuY6NmorJNndLBXkZ0ndOWCnGgnWR8MM15LWOEI9d2dMUcfL
+         w+nmTeL1lbT2jf6N25po9chTUDADAO0TypRRyL7zyBi9x836EH6FLNsUb+eq57JNO+sh
+         KpQPG3ezdvaamE+tO2nBq34ob22BlUfTy3mzJN6nbT6/0KUVqfOfZtAAz9QrOIMITi8V
+         TlKSRNrJq0kRFZglJH2epV1AjaawPcpHAlCjEjoNBy7PA6SyR0pXfms9+W3OcnvO7cec
+         2pFBRWjOB1F3kqtes8O1lpJUcGJg8xze9Pxcb1858CuYZvdZcmK3Kj/3V7CvBHROKtaY
+         S63A==
+X-Gm-Message-State: AOAM532poH/mB+Dyk830/XgnZjHm/L2KWJiGUC1dETnxdNC45Pi9StLV
+        TmjDBbqMZOVJrVXwCMdhGw==
+X-Google-Smtp-Source: ABdhPJzZki7x+0zz4MBNmiQBfAG6eLca/O+2oHgu9w9coQHVQE8Th4CDsKriLmD0aczGF4BJfifa3g==
+X-Received: by 2002:a17:902:9f87:b029:d9:e311:fc86 with SMTP id g7-20020a1709029f87b02900d9e311fc86mr1082667plq.74.1605798419245;
+        Thu, 19 Nov 2020 07:06:59 -0800 (PST)
 Received: from localhost.localdomain ([182.209.58.45])
-        by smtp.gmail.com with ESMTPSA id b80sm77783pfb.40.2020.11.19.07.06.49
+        by smtp.gmail.com with ESMTPSA id b80sm77783pfb.40.2020.11.19.07.06.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Nov 2020 07:06:53 -0800 (PST)
+        Thu, 19 Nov 2020 07:06:58 -0800 (PST)
 From:   "Daniel T. Lee" <danieltimlee@gmail.com>
 To:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -63,9 +63,9 @@ To:     Daniel Borkmann <daniel@iogearbox.net>,
         John Fastabend <john.fastabend@gmail.com>
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         Xdp <xdp-newbies@vger.kernel.org>
-Subject: [PATCH bpf-next v2 5/7] samples: bpf: refactor test_overhead program with libbpf
-Date:   Thu, 19 Nov 2020 15:06:15 +0000
-Message-Id: <20201119150617.92010-6-danieltimlee@gmail.com>
+Subject: [PATCH bpf-next v2 6/7] samples: bpf: fix lwt_len_hist reusing previous BPF map
+Date:   Thu, 19 Nov 2020 15:06:16 +0000
+Message-Id: <20201119150617.92010-7-danieltimlee@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201119150617.92010-1-danieltimlee@gmail.com>
 References: <20201119150617.92010-1-danieltimlee@gmail.com>
@@ -75,171 +75,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit refactors the existing program with libbpf bpf loader.
-Since the kprobe, tracepoint and raw_tracepoint bpf program can be
-attached with single bpf_program__attach() interface, so the
-corresponding function of libbpf is used here.
+Currently, lwt_len_hist's map lwt_len_hist_map is uses pinning, and the
+map isn't cleared on test end. This leds to reuse of that map for
+each test, which prevents the results of the test from being accurate.
 
-Rather than specifying the number of cpus inside the code, this commit
-uses the number of available cpus with _SC_NPROCESSORS_ONLN.
+This commit fixes the problem by removing of pinned map from bpffs.
+Also, this commit add the executable permission to shell script
+files.
 
+Fixes: f74599f7c5309 ("bpf: Add tests and samples for LWT-BPF")
 Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
 ---
-Changes in v2:
- - add static at global variable and drop {}
+ samples/bpf/lwt_len_hist.sh | 2 ++
+ samples/bpf/test_lwt_bpf.sh | 0
+ 2 files changed, 2 insertions(+)
+ mode change 100644 => 100755 samples/bpf/lwt_len_hist.sh
+ mode change 100644 => 100755 samples/bpf/test_lwt_bpf.sh
 
- samples/bpf/Makefile             |  2 +-
- samples/bpf/test_overhead_user.c | 82 +++++++++++++++++++++++---------
- 2 files changed, 60 insertions(+), 24 deletions(-)
-
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 09a249477554..25380e04897e 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -78,7 +78,7 @@ lathist-objs := lathist_user.o
- offwaketime-objs := offwaketime_user.o $(TRACE_HELPERS)
- spintest-objs := spintest_user.o $(TRACE_HELPERS)
- map_perf_test-objs := map_perf_test_user.o
--test_overhead-objs := bpf_load.o test_overhead_user.o
-+test_overhead-objs := test_overhead_user.o
- test_cgrp2_array_pin-objs := test_cgrp2_array_pin.o
- test_cgrp2_attach-objs := test_cgrp2_attach.o
- test_cgrp2_sock-objs := test_cgrp2_sock.o
-diff --git a/samples/bpf/test_overhead_user.c b/samples/bpf/test_overhead_user.c
-index 94f74112a20e..819a6fe86f89 100644
---- a/samples/bpf/test_overhead_user.c
-+++ b/samples/bpf/test_overhead_user.c
-@@ -18,10 +18,14 @@
- #include <time.h>
- #include <sys/resource.h>
- #include <bpf/bpf.h>
--#include "bpf_load.h"
-+#include <bpf/libbpf.h>
+diff --git a/samples/bpf/lwt_len_hist.sh b/samples/bpf/lwt_len_hist.sh
+old mode 100644
+new mode 100755
+index 090b96eaf7f7..0eda9754f50b
+--- a/samples/bpf/lwt_len_hist.sh
++++ b/samples/bpf/lwt_len_hist.sh
+@@ -8,6 +8,8 @@ VETH1=tst_lwt1b
+ TRACE_ROOT=/sys/kernel/debug/tracing
  
- #define MAX_CNT 1000000
- 
-+static struct bpf_link *links[2];
-+static struct bpf_object *obj;
-+static int cnt;
-+
- static __u64 time_get_ns(void)
- {
- 	struct timespec ts;
-@@ -115,20 +119,54 @@ static void run_perf_test(int tasks, int flags)
- 	}
- }
- 
-+static int load_progs(char *filename)
-+{
-+	struct bpf_program *prog;
-+	int err = 0;
-+
-+	obj = bpf_object__open_file(filename, NULL);
-+	err = libbpf_get_error(obj);
-+	if (err < 0) {
-+		fprintf(stderr, "ERROR: opening BPF object file failed\n");
-+		return err;
-+	}
-+
-+	/* load BPF program */
-+	err = bpf_object__load(obj);
-+	if (err < 0) {
-+		fprintf(stderr, "ERROR: loading BPF object file failed\n");
-+		return err;
-+	}
-+
-+	bpf_object__for_each_program(prog, obj) {
-+		links[cnt] = bpf_program__attach(prog);
-+		err = libbpf_get_error(links[cnt]);
-+		if (err < 0) {
-+			fprintf(stderr, "ERROR: bpf_program__attach failed\n");
-+			links[cnt] = NULL;
-+			return err;
-+		}
-+		cnt++;
-+	}
-+
-+	return err;
-+}
-+
- static void unload_progs(void)
- {
--	close(prog_fd[0]);
--	close(prog_fd[1]);
--	close(event_fd[0]);
--	close(event_fd[1]);
-+	while (cnt)
-+		bpf_link__destroy(links[--cnt]);
-+
-+	bpf_object__close(obj);
- }
- 
- int main(int argc, char **argv)
- {
- 	struct rlimit r = {RLIM_INFINITY, RLIM_INFINITY};
--	char filename[256];
--	int num_cpu = 8;
-+	int num_cpu = sysconf(_SC_NPROCESSORS_ONLN);
- 	int test_flags = ~0;
-+	char filename[256];
-+	int err = 0;
- 
- 	setrlimit(RLIMIT_MEMLOCK, &r);
- 
-@@ -145,38 +183,36 @@ int main(int argc, char **argv)
- 	if (test_flags & 0xC) {
- 		snprintf(filename, sizeof(filename),
- 			 "%s_kprobe_kern.o", argv[0]);
--		if (load_bpf_file(filename)) {
--			printf("%s", bpf_log_buf);
--			return 1;
--		}
-+
- 		printf("w/KPROBE\n");
--		run_perf_test(num_cpu, test_flags >> 2);
-+		err = load_progs(filename);
-+		if (!err)
-+			run_perf_test(num_cpu, test_flags >> 2);
-+
- 		unload_progs();
- 	}
- 
- 	if (test_flags & 0x30) {
- 		snprintf(filename, sizeof(filename),
- 			 "%s_tp_kern.o", argv[0]);
--		if (load_bpf_file(filename)) {
--			printf("%s", bpf_log_buf);
--			return 1;
--		}
- 		printf("w/TRACEPOINT\n");
--		run_perf_test(num_cpu, test_flags >> 4);
-+		err = load_progs(filename);
-+		if (!err)
-+			run_perf_test(num_cpu, test_flags >> 4);
-+
- 		unload_progs();
- 	}
- 
- 	if (test_flags & 0xC0) {
- 		snprintf(filename, sizeof(filename),
- 			 "%s_raw_tp_kern.o", argv[0]);
--		if (load_bpf_file(filename)) {
--			printf("%s", bpf_log_buf);
--			return 1;
--		}
- 		printf("w/RAW_TRACEPOINT\n");
--		run_perf_test(num_cpu, test_flags >> 6);
-+		err = load_progs(filename);
-+		if (!err)
-+			run_perf_test(num_cpu, test_flags >> 6);
-+
- 		unload_progs();
- 	}
- 
--	return 0;
-+	return err;
- }
+ function cleanup {
++	# To reset saved histogram, remove pinned map
++	rm /sys/fs/bpf/tc/globals/lwt_len_hist_map
+ 	ip route del 192.168.253.2/32 dev $VETH0 2> /dev/null
+ 	ip link del $VETH0 2> /dev/null
+ 	ip link del $VETH1 2> /dev/null
+diff --git a/samples/bpf/test_lwt_bpf.sh b/samples/bpf/test_lwt_bpf.sh
+old mode 100644
+new mode 100755
 -- 
 2.25.1
 
