@@ -2,102 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78F7E2B8B02
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 06:30:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1378A2B8B0B
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 06:31:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726118AbgKSF3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 00:29:13 -0500
-Received: from mailout11.rmx.de ([94.199.88.76]:59468 "EHLO mailout11.rmx.de"
+        id S1726224AbgKSFad (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 00:30:33 -0500
+Received: from mailout04.rmx.de ([94.199.90.94]:54399 "EHLO mailout04.rmx.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725648AbgKSF3N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Nov 2020 00:29:13 -0500
+        id S1725648AbgKSFad (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Nov 2020 00:30:33 -0500
 Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mailout11.rmx.de (Postfix) with ESMTPS id 4Cc7X511J9z41q6;
-        Thu, 19 Nov 2020 06:29:09 +0100 (CET)
+        by mailout04.rmx.de (Postfix) with ESMTPS id 4Cc7Yc5wLvz3qt1r;
+        Thu, 19 Nov 2020 06:30:28 +0100 (CET)
 Received: from mta.arri.de (unknown [217.111.95.66])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by kdin01.retarus.com (Postfix) with ESMTPS id 4Cc7Wr39GZz2xGP;
-        Thu, 19 Nov 2020 06:28:56 +0100 (CET)
+        by kdin01.retarus.com (Postfix) with ESMTPS id 4Cc7YN1H1Pz2xGL;
+        Thu, 19 Nov 2020 06:30:16 +0100 (CET)
 Received: from n95hx1g2.localnet (192.168.54.21) by mta.arri.de
  (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 19 Nov
- 2020 06:28:19 +0100
+ 2020 06:28:50 +0100
 From:   Christian Eggers <ceggers@arri.de>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-CC:     Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>
-Subject: Re: [PATCH net-next v2 3/3] ptp: ptp_ines: use new PTP_MSGTYPE_* define(s)
-Date:   Thu, 19 Nov 2020 06:28:00 +0100
-Message-ID: <5337022.CNZMXmNBYT@n95hx1g2>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        "Richard Cochran" <richardcochran@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Vivien Didelot" <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
+        George McCollister <george.mccollister@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        "Codrin Ciubotariu" <codrin.ciubotariu@microchip.com>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v3 00/12] net: dsa: microchip: PTP support for KSZ956x
+Date:   Thu, 19 Nov 2020 06:28:06 +0100
+Message-ID: <2452899.Bt8PnbAPR0@n95hx1g2>
 Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-In-Reply-To: <5809d8e0-4848-004c-1551-691cd8bfbd67@intel.com>
-References: <20201118162203.24293-1-ceggers@arri.de> <20201118162203.24293-4-ceggers@arri.de> <5809d8e0-4848-004c-1551-691cd8bfbd67@intel.com>
+In-Reply-To: <20201118234018.jltisnhjesddt6kf@skbuf>
+References: <20201118203013.5077-1-ceggers@arri.de> <20201118234018.jltisnhjesddt6kf@skbuf>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7Bit
 Content-Type: text/plain; charset="us-ascii"
 X-Originating-IP: [192.168.54.21]
-X-RMX-ID: 20201119-062858-4Cc7Wr39GZz2xGP-0@kdin01
+X-RMX-ID: 20201119-063016-4Cc7YN1H1Pz2xGL-0@kdin01
 X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wednesday, 18 November 2020, 22:03:56 CET, Jacob Keller wrote:
-> On 11/18/2020 8:22 AM, Christian Eggers wrote:
-> > Remove driver internal defines for this.
-> > 
-> > Signed-off-by: Christian Eggers <ceggers@arri.de>
-> > Cc: Richard Cochran <richardcochran@gmail.com>
-> > Cc: Kurt Kanzenbach <kurt@linutronix.de>
-> > ---
-> > 
-> >  drivers/ptp/ptp_ines.c | 19 +++++++------------
-> >  1 file changed, 7 insertions(+), 12 deletions(-)
-> > 
-> > diff --git a/drivers/ptp/ptp_ines.c b/drivers/ptp/ptp_ines.c
-> > index 4700ffbdfced..6c7c2843ba0b 100644
-> > --- a/drivers/ptp/ptp_ines.c
-> > +++ b/drivers/ptp/ptp_ines.c
-> > @@ -108,11 +108,6 @@ MODULE_LICENSE("GPL");
-> > 
-> >  #define MESSAGE_TYPE_P_DELAY_RESP	3
-> >  #define MESSAGE_TYPE_DELAY_REQ		4
-> > 
-> > -#define SYNC				0x0
-> > -#define DELAY_REQ			0x1
-> > -#define PDELAY_REQ			0x2
-> > -#define PDELAY_RESP			0x3
-> > -
-> > 
-> >  static LIST_HEAD(ines_clocks);
-> >  static DEFINE_MUTEX(ines_clocks_lock);
-> > 
-> > @@ -683,9 +678,9 @@ static bool is_sync_pdelay_resp(struct sk_buff *skb,
-> > int type)> 
-> >  	msgtype = ptp_get_msgtype(hdr, type);
-> > 
-> > -	switch ((msgtype & 0xf)) {
-> > -	case SYNC:
-> > -	case PDELAY_RESP:
-> > +	switch (msgtype) {
-> > +	case PTP_MSGTYPE_SYNC:
-> 
-> > +	case PTP_MSGTYPE_PDELAY_RESP:
-> This has a functional change of no longer discarding the higher bits of
-> msgtype. While this may be correct, I think it should at least be called
-> out as to why in the commit message.
+Hi Vladimir,
 
-The "& 0xf" is already done within ptp_get_msgtype(). I will add this to the
-commit description for the next series.
+On Thursday, 19 November 2020, 00:40:18 CET, Vladimir Oltean wrote:
+> On Wed, Nov 18, 2020 at 09:30:01PM +0100, Christian Eggers wrote:
+> > This series adds support for PTP to the KSZ956x and KSZ9477 devices.
+> > 
+> > There is only little documentation for PTP available on the data sheet
+> > [1] (more or less only the register reference). Questions to the
+> > Microchip support were seldom answered comprehensively or in reasonable
+> > time. So this is more or less the result of reverse engineering.
+> 
+> [...]
+> One thing that should definitely not be part of this series though is
+> patch 11/12. Christian, given the conversation we had on your previous
+> patch:
+> https://lore.kernel.org/netdev/20201113025311.jpkplhmacjz6lkc5@skbuf/
+sorry, I didn't read that carefully enough. Some of the other requested changes
+were quite challenging for me. Additionally, finding the UDP checksum bug
+needed some time for identifying because I didn't recognize that when it got
+introduced.
+
+> as well as the documentation patch that was submitted in the meantime:
+> https://lore.kernel.org/netdev/20201117213826.18235-1-a.fatoum@pengutronix.de/ 
+I am not subscribed to the list. 
+
+> obviously you chose to completely disregard that. May we know why? How
+> are you even making use of the PTP_CLK_REQ_PPS feature?
+Of course I will drop that patch from the next series.
 
 regards
 Christian
