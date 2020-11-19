@@ -2,186 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B69832B9801
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 17:35:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D77C92B9808
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 17:35:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729082AbgKSQ3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 11:29:49 -0500
-Received: from inva021.nxp.com ([92.121.34.21]:56662 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729060AbgKSQ3s (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Nov 2020 11:29:48 -0500
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 8A38D2004EF;
-        Thu, 19 Nov 2020 17:29:46 +0100 (CET)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 7CB302004ED;
-        Thu, 19 Nov 2020 17:29:46 +0100 (CET)
-Received: from fsr-ub1464-019.ea.freescale.net (fsr-ub1464-019.ea.freescale.net [10.171.81.207])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 2819720329;
-        Thu, 19 Nov 2020 17:29:46 +0100 (CET)
-From:   Camelia Groza <camelia.groza@nxp.com>
-To:     kuba@kernel.org, brouer@redhat.com, saeed@kernel.org,
-        davem@davemloft.net
-Cc:     madalin.bucur@oss.nxp.com, ioana.ciornei@nxp.com,
-        netdev@vger.kernel.org, Camelia Groza <camelia.groza@nxp.com>
-Subject: [PATCH net-next v3 7/7] dpaa_eth: implement the A050385 erratum workaround for XDP
-Date:   Thu, 19 Nov 2020 18:29:36 +0200
-Message-Id: <42fd1691b072a856827436378792ae54183d17ba.1605802951.git.camelia.groza@nxp.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <cover.1605802951.git.camelia.groza@nxp.com>
-References: <cover.1605802951.git.camelia.groza@nxp.com>
-In-Reply-To: <cover.1605802951.git.camelia.groza@nxp.com>
-References: <cover.1605802951.git.camelia.groza@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1728155AbgKSQdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 11:33:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54946 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728026AbgKSQdZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 11:33:25 -0500
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A80FC0613CF
+        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 08:33:25 -0800 (PST)
+Received: by mail-il1-x143.google.com with SMTP id x18so5918105ilq.4
+        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 08:33:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qErTPuUI4MGWEoFE9wv2I0ymBYHITngZsFbhr2s4p/0=;
+        b=OkQC5/PjfBuqb4/lRgBAoYUTIsEfxc9gxJh0bwxw7ZMwzTAdok2XXjb4Epg644qVir
+         IGiDUTszeu8FXufEhQ0H2ANz/opWzz+37+a6mEdg/R4B4QXQCXQvVduJMjH7Yw4qFEHZ
+         fRVafJLshEnCVqqvhto5gXTj1kbDRfYdS8p1A72LcrAGsD/r6rkRBLKvG1gYIHNEnfao
+         qfQJEg05Jm/bHWHy1DL1KrSoHdGSKxM4rciys0xkMQHt3vz/U2hTpdoH7I48YCH4WD4+
+         fx8rSU4E0RgfODrkx0ouBrNuLHcsX9kCNJgeXS9hDQudZ/Yf4ZKzpN9QNQJWWDkAixOs
+         KwDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qErTPuUI4MGWEoFE9wv2I0ymBYHITngZsFbhr2s4p/0=;
+        b=jbwWfIpSIxcEPdtGPhhX83TegF0Jsx7CTFUu1hsxpH71IacWdX9RVZtFO5L0mgGZ80
+         zP+0wt8ETPRqXNONt/Jq4ye2hUvRWPwRsiHHCTSGeurj71RCT+kpNS3i1Qkeju9H2ulc
+         XYF2ymyadNmUcBZXpSNAwENxCxnlnU+2Ul1FnUWDbfN7v75Nt+CZTxFi3Q/r7Yiwk6DA
+         2bVTD23U1g5evSBKy9BJmSXz4xA0zBfktfadP/aZrNnwyurJw2SiLS7Du/nvLsAKpGA8
+         +GRxfwBEKs0nRhS+Fyr7Gm8xHtvZg+ayKWKTbUaG55Z+xV7MjiIko15j4/QfBOPQdDT8
+         uKaQ==
+X-Gm-Message-State: AOAM531TmrFqYEZdzdVdwgBvBq7X3TSTbOI9hAnah/L+PBg9imDgmHuV
+        lO2yUFUqX+2qjGXmTrDxMPuBL8g8eqGACltkKL0=
+X-Google-Smtp-Source: ABdhPJybtbXvGn3W5qsdqPTln573ovIdlbn5RlJTWQUkpmAehjauvLzix49c/eHemOGFZUMpIIMwyD2IkndgGampNn0=
+X-Received: by 2002:a92:730d:: with SMTP id o13mr13719823ilc.95.1605803604467;
+ Thu, 19 Nov 2020 08:33:24 -0800 (PST)
+MIME-Version: 1.0
+References: <20201109233659.1953461-1-awogbemila@google.com>
+ <20201109233659.1953461-5-awogbemila@google.com> <CAKgT0UfMmEjC3Y7W1RUpgf1ex7w2GzSSVrcUBtBMG8TOta8dEw@mail.gmail.com>
+ <CAL9ddJcau-wWVpdA=K3iLzBKoLg86vRzi8HgwB-xJh8rkovs+g@mail.gmail.com>
+In-Reply-To: <CAL9ddJcau-wWVpdA=K3iLzBKoLg86vRzi8HgwB-xJh8rkovs+g@mail.gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Thu, 19 Nov 2020 08:33:13 -0800
+Message-ID: <CAKgT0Ufex3HveUvkWofwtA2Y3L1C12n1oNVPY14Mcp+3kRsOGA@mail.gmail.com>
+Subject: Re: [PATCH net-next v6 4/4] gve: Add support for raw addressing in
+ the tx path
+To:     David Awogbemila <awogbemila@google.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Catherine Sullivan <csully@google.com>,
+        Yangchun Fu <yangchun@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For XDP TX, even tough we start out with correctly aligned buffers, the
-XDP program might change the data's alignment. For REDIRECT, we have no
-control over the alignment either.
+On Wed, Nov 18, 2020 at 3:16 PM David Awogbemila <awogbemila@google.com> wrote:
+>
+> On Wed, Nov 11, 2020 at 9:29 AM Alexander Duyck
+> <alexander.duyck@gmail.com> wrote:
+> >
+> > On Mon, Nov 9, 2020 at 3:39 PM David Awogbemila <awogbemila@google.com> wrote:
+> > >
+> > > From: Catherine Sullivan <csully@google.com>
+> > >
+> > > During TX, skbs' data addresses are dma_map'ed and passed to the NIC.
+> > > This means that the device can perform DMA directly from these addresses
+> > > and the driver does not have to copy the buffer content into
+> > > pre-allocated buffers/qpls (as in qpl mode).
+> > >
+> > > Reviewed-by: Yangchun Fu <yangchun@google.com>
+> > > Signed-off-by: Catherine Sullivan <csully@google.com>
+> > > Signed-off-by: David Awogbemila <awogbemila@google.com>
 
-Create a new workaround for xdp_frame structures to verify the erratum
-conditions and move the data to a fresh buffer if necessary. Create a new
-xdp_frame for managing the new buffer and free the old one using the XDP
-API.
+<snip>
 
-Due to alignment constraints, all frames have a 256 byte headroom that
-is offered fully to XDP under the erratum. If the XDP program uses all
-of it, the data needs to be move to make room for the xdpf backpointer.
+> > > @@ -472,6 +499,100 @@ static int gve_tx_add_skb(struct gve_tx_ring *tx, struct sk_buff *skb,
+> > >         return 1 + payload_nfrags;
+> > >  }
+> > >
+> > > +static int gve_tx_add_skb_no_copy(struct gve_priv *priv, struct gve_tx_ring *tx,
+> > > +                                 struct sk_buff *skb)
+> > > +{
+> > > +       const struct skb_shared_info *shinfo = skb_shinfo(skb);
+> > > +       int hlen, payload_nfrags, l4_hdr_offset, seg_idx_bias;
+> > > +       union gve_tx_desc *pkt_desc, *seg_desc;
+> > > +       struct gve_tx_buffer_state *info;
+> > > +       bool is_gso = skb_is_gso(skb);
+> > > +       u32 idx = tx->req & tx->mask;
+> > > +       struct gve_tx_dma_buf *buf;
+> > > +       int last_mapped = 0;
+> > > +       u64 addr;
+> > > +       u32 len;
+> > > +       int i;
+> > > +
+> > > +       info = &tx->info[idx];
+> > > +       pkt_desc = &tx->desc[idx];
+> > > +
+> > > +       l4_hdr_offset = skb_checksum_start_offset(skb);
+> > > +       /* If the skb is gso, then we want only up to the tcp header in the first segment
+> > > +        * to efficiently replicate on each segment otherwise we want the linear portion
+> > > +        * of the skb (which will contain the checksum because skb->csum_start and
+> > > +        * skb->csum_offset are given relative to skb->head) in the first segment.
+> > > +        */
+> > > +       hlen = is_gso ? l4_hdr_offset + tcp_hdrlen(skb) :
+> > > +                       skb_headlen(skb);
+> > > +       len = skb_headlen(skb);
+> > > +
+> > > +       info->skb =  skb;
+> > > +
+> > > +       addr = dma_map_single(tx->dev, skb->data, len, DMA_TO_DEVICE);
+> > > +       if (unlikely(dma_mapping_error(tx->dev, addr))) {
+> > > +               rtnl_lock();
+> > > +               priv->dma_mapping_error++;
+> > > +               rtnl_unlock();
+> >
+> > Do you really need an rtnl_lock for updating this statistic? That
+> > seems like a glaring issue to me.
+>
+> I thought this would be the way to protect the stat from parallel
+> access as was suggested in a comment in v3 of the patchset but I
+> understand now that rtnl_lock/unlock ought only to be used for net
+> device configurations and not in the data path. Also I now believe
+> that since this driver is very rarely not running on a 64-bit
+> platform, the stat update is atomic anyway and shouldn't need the locks.
 
-Disable the metadata support since the information can be lost.
-
-Acked-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
-Signed-off-by: Camelia Groza <camelia.groza@nxp.com>
----
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 82 +++++++++++++++++++++++++-
- 1 file changed, 79 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index b9d46e6..aaf9112 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -2171,6 +2171,52 @@ static int dpaa_a050385_wa_skb(struct net_device *net_dev, struct sk_buff **s)
- 
- 	return 0;
- }
-+
-+static int dpaa_a050385_wa_xdpf(struct dpaa_priv *priv,
-+				struct xdp_frame **init_xdpf)
-+{
-+	struct xdp_frame *new_xdpf, *xdpf = *init_xdpf;
-+	void *new_buff;
-+	struct page *p;
-+
-+	/* Check the data alignment and make sure the headroom is large
-+	 * enough to store the xdpf backpointer. Use an aligned headroom
-+	 * value.
-+	 *
-+	 * Due to alignment constraints, we give XDP access to the full 256
-+	 * byte frame headroom. If the XDP program uses all of it, copy the
-+	 * data to a new buffer and make room for storing the backpointer.
-+	 */
-+	if (PTR_IS_ALIGNED(xdpf->data, DPAA_A050385_ALIGN) &&
-+	    xdpf->headroom >= priv->tx_headroom) {
-+		xdpf->headroom = priv->tx_headroom;
-+		return 0;
-+	}
-+
-+	p = dev_alloc_pages(0);
-+	if (unlikely(!p))
-+		return -ENOMEM;
-+
-+	/* Copy the data to the new buffer at a properly aligned offset */
-+	new_buff = page_address(p);
-+	memcpy(new_buff + priv->tx_headroom, xdpf->data, xdpf->len);
-+
-+	/* Create an XDP frame around the new buffer in a similar fashion
-+	 * to xdp_convert_buff_to_frame.
-+	 */
-+	new_xdpf = new_buff;
-+	new_xdpf->data = new_buff + priv->tx_headroom;
-+	new_xdpf->len = xdpf->len;
-+	new_xdpf->headroom = priv->tx_headroom;
-+	new_xdpf->frame_sz = DPAA_BP_RAW_SIZE;
-+	new_xdpf->mem.type = MEM_TYPE_PAGE_ORDER0;
-+
-+	/* Release the initial buffer */
-+	xdp_return_frame_rx_napi(xdpf);
-+
-+	*init_xdpf = new_xdpf;
-+	return 0;
-+}
- #endif
- 
- static netdev_tx_t
-@@ -2407,6 +2453,15 @@ static int dpaa_xdp_xmit_frame(struct net_device *net_dev,
- 	percpu_priv = this_cpu_ptr(priv->percpu_priv);
- 	percpu_stats = &percpu_priv->stats;
- 
-+#ifdef CONFIG_DPAA_ERRATUM_A050385
-+	if (unlikely(fman_has_errata_a050385())) {
-+		if (dpaa_a050385_wa_xdpf(priv, &xdpf)) {
-+			err = -ENOMEM;
-+			goto out_error;
-+		}
-+	}
-+#endif
-+
- 	if (xdpf->headroom < DPAA_TX_PRIV_DATA_SIZE) {
- 		err = -EINVAL;
- 		goto out_error;
-@@ -2480,6 +2535,20 @@ static u32 dpaa_run_xdp(struct dpaa_priv *priv, struct qm_fd *fd, void *vaddr,
- 	xdp.frame_sz = DPAA_BP_RAW_SIZE - DPAA_TX_PRIV_DATA_SIZE;
- 	xdp.rxq = &dpaa_fq->xdp_rxq;
- 
-+	/* We reserve a fixed headroom of 256 bytes under the erratum and we
-+	 * offer it all to XDP programs to use. If no room is left for the
-+	 * xdpf backpointer on TX, we will need to copy the data.
-+	 * Disable metadata support since data realignments might be required
-+	 * and the information can be lost.
-+	 */
-+#ifdef CONFIG_DPAA_ERRATUM_A050385
-+	if (unlikely(fman_has_errata_a050385())) {
-+		xdp_set_data_meta_invalid(&xdp);
-+		xdp.data_hard_start = vaddr;
-+		xdp.frame_sz = DPAA_BP_RAW_SIZE;
-+	}
-+#endif
-+
- 	xdp_act = bpf_prog_run_xdp(xdp_prog, &xdp);
- 
- 	/* Update the length and the offset of the FD */
-@@ -2487,7 +2556,8 @@ static u32 dpaa_run_xdp(struct dpaa_priv *priv, struct qm_fd *fd, void *vaddr,
- 
- 	switch (xdp_act) {
- 	case XDP_PASS:
--		*xdp_meta_len = xdp.data - xdp.data_meta;
-+		*xdp_meta_len = xdp_data_meta_unsupported(&xdp) ? 0 :
-+				xdp.data - xdp.data_meta;
- 		break;
- 	case XDP_TX:
- 		/* We can access the full headroom when sending the frame
-@@ -3187,10 +3257,16 @@ static u16 dpaa_get_headroom(struct dpaa_buffer_layout *bl,
- 	 */
- 	headroom = (u16)(bl[port].priv_data_size + DPAA_HWA_SIZE);
- 
--	if (port == RX)
-+	if (port == RX) {
-+#ifdef CONFIG_DPAA_ERRATUM_A050385
-+		if (unlikely(fman_has_errata_a050385()))
-+			headroom = XDP_PACKET_HEADROOM;
-+#endif
-+
- 		return ALIGN(headroom, DPAA_FD_RX_DATA_ALIGNMENT);
--	else
-+	} else {
- 		return ALIGN(headroom, DPAA_FD_DATA_ALIGNMENT);
-+	}
- }
- 
- static int dpaa_eth_probe(struct platform_device *pdev)
--- 
-1.9.1
-
+If nothing else it might be good to look at just creating a per-ring
+stat for this and then aggregating the value before you report it to
+the stack. Then you don't have to worry about multiple threads trying
+to update it simultaneously since it will be protected by the Tx queue
+lock.
