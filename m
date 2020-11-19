@@ -2,61 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D9CC2B8902
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 01:22:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2AA72B8905
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 01:24:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726500AbgKSAVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 19:21:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54226 "EHLO mail.kernel.org"
+        id S1726815AbgKSAWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 19:22:39 -0500
+Received: from mga17.intel.com ([192.55.52.151]:8363 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726162AbgKSAVi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 19:21:38 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ED076246BB;
-        Thu, 19 Nov 2020 00:21:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605745298;
-        bh=xmkOk+SqlBf6qRWj2rvbZ9ZAL1tQsZ7zvM53t2QMDFs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=yfgQ2818rAsTga7DjWcVX+gA5Yjm6xPQu1WXPCBXYuCyExBFguqTkg+mi/X7byU4b
-         Lu9msEZWLKdX0Mi1Gq3N5xutLu+mYA4fRH1LC3uYDgqkIElHY3g+/deaqJeSNvgCkc
-         E4/zOZjSmpR8OjJ2YXIVL06nMi4BZRukT/4gjZeM=
-Date:   Wed, 18 Nov 2020 16:21:37 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Camelia Groza <camelia.groza@nxp.com>
-Cc:     brouer@redhat.com, saeed@kernel.org, davem@davemloft.net,
-        madalin.bucur@oss.nxp.com, ioana.ciornei@nxp.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 2/7] dpaa_eth: add basic XDP support
-Message-ID: <20201118162137.149625e3@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <e8f6ede91ab1c3fa50953076e7983979de04d2b5.1605535745.git.camelia.groza@nxp.com>
-References: <cover.1605535745.git.camelia.groza@nxp.com>
-        <e8f6ede91ab1c3fa50953076e7983979de04d2b5.1605535745.git.camelia.groza@nxp.com>
+        id S1726162AbgKSAWi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 19:22:38 -0500
+IronPort-SDR: /gR/RQUI4w6Y5AAkrS1Wb0hVIqXu0++qQHvd3Fuh7Hgkd1C3imv/4g5mtvPIKldJsXWV9HtbW1
+ wrzTLgbfWoRA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9809"; a="151056275"
+X-IronPort-AV: E=Sophos;i="5.77,488,1596524400"; 
+   d="scan'208";a="151056275"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2020 16:22:38 -0800
+IronPort-SDR: WolBowoaeNrGJ0peStyiP01po1wnNwy2OasZK67igl9TNe+Fffxtkf9DoW7u78zFQ8bwu+eUWi
+ +fCfEpL8XUDA==
+X-IronPort-AV: E=Sophos;i="5.77,488,1596524400"; 
+   d="scan'208";a="532953743"
+Received: from prasadpr-mobl.amr.corp.intel.com (HELO ellie) ([10.212.21.86])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2020 16:22:38 -0800
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Miroslav Lichvar <mlichvar@redhat.com>,
+        intel-wired-lan@lists.osuosl.org, andre.guedes@intel.com,
+        linux-pci@vger.kernel.org, netdev@vger.kernel.org,
+        bhelgaas@google.com
+Subject: Re: [Intel-wired-lan] [PATCH next-queue v2 3/3] igc: Add support
+ for PTP getcrosststamp()
+In-Reply-To: <20201118125451.GC23320@hoboy.vegasvil.org>
+References: <20201114025704.GA15240@hoboy.vegasvil.org>
+ <874klo7pwp.fsf@intel.com> <20201117014926.GA26272@hoboy.vegasvil.org>
+ <87d00b5uj7.fsf@intel.com> <20201118125451.GC23320@hoboy.vegasvil.org>
+Date:   Wed, 18 Nov 2020 16:22:37 -0800
+Message-ID: <87wnyi2o1e.fsf@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Nov 2020 16:42:28 +0200 Camelia Groza wrote:
-> +	if (likely(fd_format == qm_fd_contig)) {
-> +		xdp_act = dpaa_run_xdp(priv, (struct qm_fd *)fd, vaddr,
-> +				       &xdp_meta_len);
-> +		if (xdp_act != XDP_PASS) {
-> +			percpu_stats->rx_packets++;
-> +			percpu_stats->rx_bytes += qm_fd_get_length(fd);
-> +			return qman_cb_dqrr_consume;
-> +		}
->  		skb = contig_fd_to_skb(priv, fd);
-> -	else
-> +	} else {
-> +		WARN_ONCE(priv->xdp_prog, "S/G frames not supported under XDP\n");
->  		skb = sg_fd_to_skb(priv, fd);
+Hi Richard,
 
-It'd be safer to drop the packet if the format does not allow XDP 
-to run. Otherwise someone can bypass whatever policy XDP is trying 
-to enforce.
+Richard Cochran <richardcochran@gmail.com> writes:
 
+> On Tue, Nov 17, 2020 at 05:21:48PM -0800, Vinicius Costa Gomes wrote:
+>> Agreed that would be easiest/simplest. But what I have in hand seems to
+>> not like it, i.e. I have an earlier series implementing this "one shot" way
+>> and it's not reliable over long periods of time or against having the
+>> system time adjusted.
+>
+> Before we go inventing a new API, I think we should first understand
+> why the one shot thing fails.
+
+Talking with the hardware folks, they recommended using the periodic
+method, the one shot method was implemented as a debug/evaluation aid.
+
+The explanation I have is something along these lines: the hardware
+keeps track of the "delta" between the Master Time and its own clock,
+and uses it to calculate the timestamps exposed in the NIC registers. To
+have a better "delta" it needs more samples. And so it has improved
+stability when PTM dialogs happen more continuously, and that's the
+recommended way.
+
+The PCIe PTM specification doesn't suggest how the timestamps need to be
+exposed/calculated, and how long it needs to run, and it sounded to me
+that other implementations could have similar behavior.
+
+>
+> If there is problem with the system time being adjusted during PTM,
+> then that needs solving in any case!
+
+When PTM is running in the periodic mode, system clock adjustments are
+handled fine.
+
+
+Cheers,
+-- 
+Vinicius
