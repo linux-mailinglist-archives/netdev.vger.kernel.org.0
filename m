@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6101D2B9BAE
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 20:49:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47BAC2B9BB0
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 20:49:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727950AbgKSTqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 14:46:14 -0500
-Received: from mga04.intel.com ([192.55.52.120]:13147 "EHLO mga04.intel.com"
+        id S1728014AbgKSTqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 14:46:18 -0500
+Received: from mga04.intel.com ([192.55.52.120]:13142 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727761AbgKSTqL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Nov 2020 14:46:11 -0500
-IronPort-SDR: LA9U7Klb2krUN7l8irHd5draHKLLh3kytY9Z0ij0+8na1CKRU0h1LBz6DtpJ57zwF67QGxxE08
- owavAxtH+d4Q==
-X-IronPort-AV: E=McAfee;i="6000,8403,9810"; a="168780894"
+        id S1727066AbgKSTqO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Nov 2020 14:46:14 -0500
+IronPort-SDR: iCRbN35ISroPzGd0m+dP8U2CBX4gpn+hunIJezatCrhwmiXJiErEjF7/ej1SCY/mseQpG0XbyG
+ PMf9Dz2i0OUg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9810"; a="168780895"
 X-IronPort-AV: E=Sophos;i="5.78,354,1599548400"; 
-   d="scan'208";a="168780894"
+   d="scan'208";a="168780895"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
   by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2020 11:46:09 -0800
-IronPort-SDR: a4Xneb23jbrpyNjw14EYYQCkeNldeRt3X7rcY8FVntRlNJZ80UhhC/39Z/9YwuXcwbj02VwNC2
- jDQGPa9l/fEQ==
+IronPort-SDR: 5f+Jm87yNj+gp8grbHBnkYewo/Cri2U8mTSUrI1KIaJAlbXM5F3963D62AFWhsVayu5RGszihG
+ Xg//eLgxdUbg==
 X-IronPort-AV: E=Sophos;i="5.78,354,1599548400"; 
-   d="scan'208";a="476940478"
+   d="scan'208";a="476940481"
 Received: from mjmartin-nuc02.amr.corp.intel.com ([10.255.229.232])
   by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2020 11:46:09 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>, kuba@kernel.org,
+Cc:     Paolo Abeni <pabeni@redhat.com>, kuba@kernel.org,
         mptcp@lists.01.org, Geliang Tang <geliangtang@gmail.com>,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 04/10] selftests: mptcp: add link failure test case
-Date:   Thu, 19 Nov 2020 11:45:57 -0800
-Message-Id: <20201119194603.103158-5-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 05/10] mptcp: keep unaccepted MPC subflow into join list
+Date:   Thu, 19 Nov 2020 11:45:58 -0800
+Message-Id: <20201119194603.103158-6-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20201119194603.103158-1-mathew.j.martineau@linux.intel.com>
 References: <20201119194603.103158-1-mathew.j.martineau@linux.intel.com>
@@ -43,266 +43,132 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Paolo Abeni <pabeni@redhat.com>
 
-Add a test case where a link fails with multiple subflows.
-The expectation is that MPTCP will transmit any data that
-could not be delivered via the failed link on another subflow.
+This will simplify all operation dealing with subflows
+before accept time (e.g. data fin processing, add_addr).
 
-Co-developed-by: Geliang Tang <geliangtang@gmail.com>
-Signed-off-by: Geliang Tang <geliangtang@gmail.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
+The join list is already flushed by mptcp_stream_accept()
+before returning the newly created msk to the user space.
+
+This also fixes an potential bug present into the old code:
+conn_list was manipulated without helding the msk lock
+in mptcp_stream_accept().
+
+Tested-by: Geliang Tang <geliangtang@gmail.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- .../testing/selftests/net/mptcp/mptcp_join.sh | 104 ++++++++++++++----
- 1 file changed, 82 insertions(+), 22 deletions(-)
+ net/mptcp/protocol.c | 24 ++++++++----------------
+ net/mptcp/protocol.h |  9 +++++++++
+ net/mptcp/subflow.c  | 10 +++++-----
+ 3 files changed, 22 insertions(+), 21 deletions(-)
 
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-index 0d93b243695f..f841ed8186c1 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@ -5,6 +5,7 @@ ret=0
- sin=""
- sout=""
- cin=""
-+cinsent=""
- cout=""
- ksft_skip=4
- timeout=30
-@@ -81,7 +82,7 @@ cleanup_partial()
- cleanup()
- {
- 	rm -f "$cin" "$cout"
--	rm -f "$sin" "$sout"
-+	rm -f "$sin" "$sout" "$cinsent"
- 	cleanup_partial
- }
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 806c0658e42f..0e83887efbc8 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -2342,7 +2342,6 @@ static struct sock *mptcp_accept(struct sock *sk, int flags, int *err,
+ 	if (sk_is_mptcp(newsk)) {
+ 		struct mptcp_subflow_context *subflow;
+ 		struct sock *new_mptcp_sock;
+-		struct sock *ssk = newsk;
  
-@@ -144,6 +145,13 @@ if [ $? -ne 0 ];then
- 	exit $ksft_skip
- fi
+ 		subflow = mptcp_subflow_ctx(newsk);
+ 		new_mptcp_sock = subflow->conn;
+@@ -2357,22 +2356,8 @@ static struct sock *mptcp_accept(struct sock *sk, int flags, int *err,
  
-+print_file_err()
-+{
-+	ls -l "$1" 1>&2
-+	echo "Trailing bytes are: "
-+	tail -c 27 "$1"
-+}
-+
- check_transfer()
- {
- 	in=$1
-@@ -155,6 +163,7 @@ check_transfer()
- 		echo "[ FAIL ] $what does not match (in, out):"
- 		print_file_err "$in"
- 		print_file_err "$out"
-+		ret=1
- 
- 		return 1
- 	fi
-@@ -175,6 +184,17 @@ do_ping()
- 	fi
- }
- 
-+link_failure()
-+{
-+	ns="$1"
-+
-+	l=$((RANDOM%4))
-+	l=$((l+1))
-+
-+	veth="ns1eth$l"
-+	ip -net "$ns" link set "$veth" down
-+}
-+
- do_transfer()
- {
- 	listener_ns="$1"
-@@ -182,9 +202,10 @@ do_transfer()
- 	cl_proto="$3"
- 	srv_proto="$4"
- 	connect_addr="$5"
--	rm_nr_ns1="$6"
--	rm_nr_ns2="$7"
--	speed="$8"
-+	test_link_fail="$6"
-+	rm_nr_ns1="$7"
-+	rm_nr_ns2="$8"
-+	speed="$9"
- 
- 	port=$((10000+$TEST_COUNT))
- 	TEST_COUNT=$((TEST_COUNT+1))
-@@ -220,7 +241,12 @@ do_transfer()
- 
- 	sleep 1
- 
--	ip netns exec ${connector_ns} $mptcp_connect -t $timeout -p $port -s ${cl_proto} $connect_addr < "$cin" > "$cout" &
-+	if [ "$test_link_fail" -eq 0 ];then
-+		ip netns exec ${connector_ns} $mptcp_connect -t $timeout -p $port -s ${cl_proto} $connect_addr < "$cin" > "$cout" &
-+	else
-+		( cat "$cin" ; sleep 2; link_failure $listener_ns ; cat "$cin" ) | tee "$cinsent" | \
-+		ip netns exec ${connector_ns} $mptcp_connect -t $timeout -p $port -s ${cl_proto} $connect_addr > "$cout" &
-+	fi
- 	cpid=$!
- 
- 	if [ $rm_nr_ns1 -gt 0 ]; then
-@@ -265,12 +291,17 @@ do_transfer()
- 		ip netns exec ${connector_ns} ss -nita 1>&2 -o "dport = :$port"
- 
- 		cat "$capout"
-+		ret=1
- 		return 1
- 	fi
- 
- 	check_transfer $sin $cout "file received by client"
- 	retc=$?
--	check_transfer $cin $sout "file received by server"
-+	if [ "$test_link_fail" -eq 0 ];then
-+		check_transfer $cin $sout "file received by server"
-+	else
-+		check_transfer $cinsent $sout "file received by server"
-+	fi
- 	rets=$?
- 
- 	if [ $retc -eq 0 ] && [ $rets -eq 0 ];then
-@@ -286,13 +317,12 @@ make_file()
- {
- 	name=$1
- 	who=$2
-+	size=$3
- 
--	SIZE=1
+ 		/* acquire the 2nd reference for the owning socket */
+ 		sock_hold(new_mptcp_sock);
 -
--	dd if=/dev/urandom of="$name" bs=1024 count=$SIZE 2> /dev/null
-+	dd if=/dev/urandom of="$name" bs=1024 count=$size 2> /dev/null
- 	echo -e "\nMPTCP_TEST_FILE_END_MARKER" >> "$name"
+-		local_bh_disable();
+-		bh_lock_sock(new_mptcp_sock);
+-		msk = mptcp_sk(new_mptcp_sock);
+-		msk->first = newsk;
+-
+ 		newsk = new_mptcp_sock;
+-		mptcp_copy_inaddrs(newsk, ssk);
+-		list_add(&subflow->node, &msk->conn_list);
+-		sock_hold(ssk);
+-
+-		mptcp_rcv_space_init(msk, ssk);
+-		bh_unlock_sock(new_mptcp_sock);
+-
+-		__MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_MPCAPABLEPASSIVEACK);
+-		local_bh_enable();
++		MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_MPCAPABLEPASSIVEACK);
+ 	} else {
+ 		MPTCP_INC_STATS(sock_net(sk),
+ 				MPTCP_MIB_MPCAPABLEPASSIVEFALLBACK);
+@@ -2823,6 +2808,12 @@ static int mptcp_stream_accept(struct socket *sock, struct socket *newsock,
+ 	if (err == 0 && !mptcp_is_tcpsk(newsock->sk)) {
+ 		struct mptcp_sock *msk = mptcp_sk(newsock->sk);
+ 		struct mptcp_subflow_context *subflow;
++		struct sock *newsk = newsock->sk;
++		bool slowpath;
++
++		slowpath = lock_sock_fast(newsk);
++		mptcp_copy_inaddrs(newsk, msk->first);
++		mptcp_rcv_space_init(msk, msk->first);
  
--	echo "Created $name (size $SIZE KB) containing data sent by $who"
-+	echo "Created $name (size $size KB) containing data sent by $who"
+ 		/* set ssk->sk_socket of accept()ed flows to mptcp socket.
+ 		 * This is needed so NOSPACE flag can be set from tcp stack.
+@@ -2834,6 +2825,7 @@ static int mptcp_stream_accept(struct socket *sock, struct socket *newsock,
+ 			if (!ssk->sk_socket)
+ 				mptcp_sock_graft(ssk, newsock);
+ 		}
++		unlock_sock_fast(newsk, slowpath);
+ 	}
+ 
+ 	if (inet_csk_listen_poll(ssock->sk))
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index 10fffc5de9e4..7affaf0b1941 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -403,6 +403,15 @@ mptcp_subflow_get_mapped_dsn(const struct mptcp_subflow_context *subflow)
+ 	return subflow->map_seq + mptcp_subflow_get_map_offset(subflow);
  }
  
- run_tests()
-@@ -300,14 +330,32 @@ run_tests()
- 	listener_ns="$1"
- 	connector_ns="$2"
- 	connect_addr="$3"
--	rm_nr_ns1="${4:-0}"
--	rm_nr_ns2="${5:-0}"
--	speed="${6:-fast}"
-+	test_linkfail="${4:-0}"
-+	rm_nr_ns1="${5:-0}"
-+	rm_nr_ns2="${6:-0}"
-+	speed="${7:-fast}"
- 	lret=0
-+	oldin=""
++static inline void mptcp_add_pending_subflow(struct mptcp_sock *msk,
++					     struct mptcp_subflow_context *subflow)
++{
++	sock_hold(mptcp_subflow_tcp_sock(subflow));
++	spin_lock_bh(&msk->join_list_lock);
++	list_add_tail(&subflow->node, &msk->join_list);
++	spin_unlock_bh(&msk->join_list_lock);
++}
 +
-+	if [ "$test_linkfail" -eq 1 ];then
-+		size=$((RANDOM%1024))
-+		size=$((size+1))
-+		size=$((size*128))
+ int mptcp_is_enabled(struct net *net);
+ unsigned int mptcp_get_add_addr_timeout(struct net *net);
+ void mptcp_subflow_fully_established(struct mptcp_subflow_context *subflow,
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 794259789194..d3c6b3a5ad55 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -578,6 +578,10 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
+ 			 */
+ 			inet_sk_state_store((void *)new_msk, TCP_ESTABLISHED);
+ 
++			/* link the newly created socket to the msk */
++			mptcp_add_pending_subflow(mptcp_sk(new_msk), ctx);
++			WRITE_ONCE(mptcp_sk(new_msk)->first, child);
 +
-+		oldin=$(mktemp)
-+		cp "$cin" "$oldin"
-+		make_file "$cin" "client" $size
-+	fi
+ 			/* new mpc subflow takes ownership of the newly
+ 			 * created mptcp socket
+ 			 */
+@@ -1124,11 +1128,7 @@ int __mptcp_subflow_connect(struct sock *sk, const struct mptcp_addr_info *loc,
+ 	if (err && err != -EINPROGRESS)
+ 		goto failed;
  
- 	do_transfer ${listener_ns} ${connector_ns} MPTCP MPTCP ${connect_addr} \
--		${rm_nr_ns1} ${rm_nr_ns2} ${speed}
-+		${test_linkfail} ${rm_nr_ns1} ${rm_nr_ns2} ${speed}
- 	lret=$?
-+
-+	if [ "$test_linkfail" -eq 1 ];then
-+		cp "$oldin" "$cin"
-+		rm -f "$oldin"
-+	fi
-+
- 	if [ $lret -ne 0 ]; then
- 		ret=$lret
- 		return
-@@ -440,10 +488,11 @@ chk_rm_nr()
- sin=$(mktemp)
- sout=$(mktemp)
- cin=$(mktemp)
-+cinsent=$(mktemp)
- cout=$(mktemp)
- init
--make_file "$cin" "client"
--make_file "$sin" "server"
-+make_file "$cin" "client" 1
-+make_file "$sin" "server" 1
- trap cleanup EXIT
+-	sock_hold(ssk);
+-	spin_lock_bh(&msk->join_list_lock);
+-	list_add_tail(&subflow->node, &msk->join_list);
+-	spin_unlock_bh(&msk->join_list_lock);
+-
++	mptcp_add_pending_subflow(msk, subflow);
+ 	return err;
  
- run_tests $ns1 $ns2 10.0.1.1
-@@ -528,12 +577,23 @@ run_tests $ns1 $ns2 10.0.1.1
- chk_join_nr "multiple subflows and signal" 3 3 3
- chk_add_nr 1 1
- 
-+# accept and use add_addr with additional subflows and link loss
-+reset
-+ip netns exec $ns1 ./pm_nl_ctl limits 0 3
-+ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal
-+ip netns exec $ns2 ./pm_nl_ctl limits 1 3
-+ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
-+ip netns exec $ns2 ./pm_nl_ctl add 10.0.4.2 flags subflow
-+run_tests $ns1 $ns2 10.0.1.1 1
-+chk_join_nr "multiple flows, signal, link failure" 3 3 3
-+chk_add_nr 1 1
-+
- # add_addr timeout
- reset_with_add_addr_timeout
- ip netns exec $ns1 ./pm_nl_ctl limits 0 1
- ip netns exec $ns2 ./pm_nl_ctl limits 1 1
- ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal
--run_tests $ns1 $ns2 10.0.1.1 0 0 slow
-+run_tests $ns1 $ns2 10.0.1.1 0 0 0 slow
- chk_join_nr "signal address, ADD_ADDR timeout" 1 1 1
- chk_add_nr 4 0
- 
-@@ -542,7 +602,7 @@ reset
- ip netns exec $ns1 ./pm_nl_ctl limits 0 1
- ip netns exec $ns2 ./pm_nl_ctl limits 0 1
- ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
--run_tests $ns1 $ns2 10.0.1.1 0 1 slow
-+run_tests $ns1 $ns2 10.0.1.1 0 0 1 slow
- chk_join_nr "remove single subflow" 1 1 1
- chk_rm_nr 1 1
- 
-@@ -552,7 +612,7 @@ ip netns exec $ns1 ./pm_nl_ctl limits 0 2
- ip netns exec $ns2 ./pm_nl_ctl limits 0 2
- ip netns exec $ns2 ./pm_nl_ctl add 10.0.2.2 flags subflow
- ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
--run_tests $ns1 $ns2 10.0.1.1 0 2 slow
-+run_tests $ns1 $ns2 10.0.1.1 0 0 2 slow
- chk_join_nr "remove multiple subflows" 2 2 2
- chk_rm_nr 2 2
- 
-@@ -561,7 +621,7 @@ reset
- ip netns exec $ns1 ./pm_nl_ctl limits 0 1
- ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal
- ip netns exec $ns2 ./pm_nl_ctl limits 1 1
--run_tests $ns1 $ns2 10.0.1.1 1 0 slow
-+run_tests $ns1 $ns2 10.0.1.1 0 1 0 slow
- chk_join_nr "remove single address" 1 1 1
- chk_add_nr 1 1
- chk_rm_nr 0 0
-@@ -572,7 +632,7 @@ ip netns exec $ns1 ./pm_nl_ctl limits 0 2
- ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal
- ip netns exec $ns2 ./pm_nl_ctl limits 1 2
- ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
--run_tests $ns1 $ns2 10.0.1.1 1 1 slow
-+run_tests $ns1 $ns2 10.0.1.1 0 1 1 slow
- chk_join_nr "remove subflow and signal" 2 2 2
- chk_add_nr 1 1
- chk_rm_nr 1 1
-@@ -584,7 +644,7 @@ ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal
- ip netns exec $ns2 ./pm_nl_ctl limits 1 3
- ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
- ip netns exec $ns2 ./pm_nl_ctl add 10.0.4.2 flags subflow
--run_tests $ns1 $ns2 10.0.1.1 1 2 slow
-+run_tests $ns1 $ns2 10.0.1.1 0 1 2 slow
- chk_join_nr "remove subflows and signal" 3 3 3
- chk_add_nr 1 1
- chk_rm_nr 2 2
+ failed:
 -- 
 2.29.2
 
