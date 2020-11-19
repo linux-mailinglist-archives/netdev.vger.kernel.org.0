@@ -2,116 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D89B72B9E03
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 00:17:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 582A42B9E0A
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 00:22:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726391AbgKSXQW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 18:16:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60600 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726325AbgKSXQW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 18:16:22 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 962A8C0613CF
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 15:16:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=d04PQ9hXGMwnNf/9OpR576As/8xUL2kZEnoyB/i5tCw=; b=uNdjHuTE/A3AvtmDVttqqmNnG
-        9Ct4IRwdP2iBVy5pjZRLUf+MmIbvF6Z6MJQS2BMJ9WctbShL0lqI9KhRVyFDbo/fK84yaQqWb2VeN
-        sI1TACgG3qjFks2Wyps5wnDJ0MVhYN9jFg9BZt4KP2LdL66CwqCWdF3r0A1x9xge26XZKpETaajd+
-        ZGTeJkNULS2lNzGjAxOOvlDCjm9H0NgqgdzXcv0vthfTglGugM3cAOPIOU7QuZVAx6t0B7KXV0B+I
-        y4TIS/ZXLAG2EwLYvNOrlb4YwL/MTYAkLS/vG8FxPdc0gdlZBiKetANw2C7P2i20EF/xQMgj6o9RL
-        gINsIsnLA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33582)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kft9z-0002qm-F8; Thu, 19 Nov 2020 23:16:15 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kft9x-0002XJ-Nd; Thu, 19 Nov 2020 23:16:13 +0000
-Date:   Thu, 19 Nov 2020 23:16:13 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Antoine Tenart <atenart@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: net: phy: Dealing with 88e1543 dual-port mode
-Message-ID: <20201119231613.GN1551@shell.armlinux.org.uk>
-References: <20201119152246.085514e1@bootlin.com>
- <20201119145500.GL1551@shell.armlinux.org.uk>
- <20201119162451.4c8d220d@bootlin.com>
- <87k0uh9dd0.fsf@waldekranz.com>
+        id S1726281AbgKSXWv convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 19 Nov 2020 18:22:51 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:2792 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725890AbgKSXWv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 18:22:51 -0500
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AJNJxra003335
+        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 15:22:50 -0800
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 34wtheu7h1-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 15:22:50 -0800
+Received: from intmgw003.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 19 Nov 2020 15:22:47 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id AF24B2EC9B9C; Thu, 19 Nov 2020 15:22:45 -0800 (PST)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>
+Subject: [PATCH bpf-next 0/6] libbpf: add support for kernel module BTF CO-RE relocations
+Date:   Thu, 19 Nov 2020 15:22:38 -0800
+Message-ID: <20201119232244.2776720-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87k0uh9dd0.fsf@waldekranz.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-19_14:2020-11-19,2020-11-19 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=862
+ lowpriorityscore=0 bulkscore=0 phishscore=0 spamscore=0 adultscore=0
+ impostorscore=0 clxscore=1015 priorityscore=1501 suspectscore=8 mlxscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011190160
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 19, 2020 at 11:43:39PM +0100, Tobias Waldekranz wrote:
-> On Thu, Nov 19, 2020 at 16:24, Maxime Chevallier <maxime.chevallier@bootlin.com> wrote:
-> > I don't think we have a way to distinguish from the DT if we are in
-> > SGMII-to-Fibre or in SGMII-to-{Copper + Fibre}, since the description is
-> > the same, we don't have any information in DT about wether or not the
-> > PHY is wired to a Copper RJ45 port.
-> >
-> > Maybe we should have a way to indicate if a PHY is wired to a Copper
-> > port in DT ?
-> 
-> Do you mean something like:
-> 
-> SGMII->SGMII (Fibre):
-> ethernet-phy@0 {
->    sfp = <&sfp0>;
-> };
-> 
-> SGMII->MDI (Copper):
-> ethernet-phy@0 {
->     mdi;
-> };
-> 
-> SGMII->Auto Media Detect
-> ethernet-phy@0 {
->     mdi;
->     sfp = <&sfp0>;
-> };
+Implement libbpf support for performing CO-RE relocations against types in
+kernel module BTFs, in addition to existing vmlinux BTF support.
 
-This isn't something we could realistically do - think about how many
-DT files are out there today which would not have this for an existing
-PHY. The default has to be that today's DT descriptions continue to work
-as-is, and that includes ones which already support copper and fibre
-either with or without a sfp property.
+This is a first step towards fully supporting kernel module BTFs. Subsequent
+patch sets will expand kernel and libbpf sides to allow using other
+BTF-powered capabilities (fentry/fexit, struct_ops, ksym externs, etc). For
+CO-RE relocations support, though, no extra kernel changes are necessary.
 
-So, we can't draw any conclusion about whether the fiber interface is
-wired from whether there is a sfp property or not.
+This patch set also sets up a convenient and fully-controlled custom kernel
+module (called "bpf_sidecar"), that is a predictable playground for all the
+BPF selftests, that rely on module BTFs.
 
-We also can't draw a conclusion about whether the copper side is wired
-using a "mdi" property, or whether there is a "sfp" property or not.
+Andrii Nakryiko (6):
+  bpf: fix bpf_put_raw_tracepoint()'s use of __module_address()
+  libbpf: add internal helper to load BTF data by FD
+  libbpf: refactor CO-RE relocs to not assume a single BTF object
+  libbpf: add kernel module BTF support for CO-RE relocations
+  selftests/bpf: add bpf_sidecar kernel module for testing
+  selftests/bpf: add CO-RE relocs selftest relying on kernel module BTF
 
-The only thing we could realistically do today is to introduce a
-property like:
-
-	mdi = "disabled" | "okay";
-
-to indicate whether the copper port can be used, and maybe something
-similar for the fiber interface.  Maybe as you suggest, not "okay"
-but specifying the number of connected pairs would be a good idea,
-or maybe that should be a separate property?
+ kernel/trace/bpf_trace.c                      |   6 +-
+ tools/lib/bpf/btf.c                           |  61 +--
+ tools/lib/bpf/libbpf.c                        | 352 ++++++++++++++----
+ tools/lib/bpf/libbpf_internal.h               |   1 +
+ tools/testing/selftests/bpf/.gitignore        |   1 +
+ tools/testing/selftests/bpf/Makefile          |  12 +-
+ .../selftests/bpf/bpf_sidecar/.gitignore      |   6 +
+ .../selftests/bpf/bpf_sidecar/Makefile        |  20 +
+ .../bpf/bpf_sidecar/bpf_sidecar-events.h      |  36 ++
+ .../selftests/bpf/bpf_sidecar/bpf_sidecar.c   |  51 +++
+ .../selftests/bpf/bpf_sidecar/bpf_sidecar.h   |  14 +
+ .../selftests/bpf/prog_tests/core_reloc.c     |  72 +++-
+ .../selftests/bpf/progs/core_reloc_types.h    |  17 +
+ .../bpf/progs/test_core_reloc_module.c        |  66 ++++
+ tools/testing/selftests/bpf/test_progs.c      |  52 +++
+ 15 files changed, 647 insertions(+), 120 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/bpf_sidecar/.gitignore
+ create mode 100644 tools/testing/selftests/bpf/bpf_sidecar/Makefile
+ create mode 100644 tools/testing/selftests/bpf/bpf_sidecar/bpf_sidecar-events.h
+ create mode 100644 tools/testing/selftests/bpf/bpf_sidecar/bpf_sidecar.c
+ create mode 100644 tools/testing/selftests/bpf/bpf_sidecar/bpf_sidecar.h
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_module.c
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.24.1
+
