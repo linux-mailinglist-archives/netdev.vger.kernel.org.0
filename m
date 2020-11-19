@@ -2,110 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B14012B9948
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 18:29:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C63402B9950
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 18:30:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729294AbgKSR0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 12:26:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:56258 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728663AbgKSR0v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 12:26:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605806810;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=A9gyGsjXsxFxygwzA3IzjqNNYV6lCQYqmAHBNaZPFrA=;
-        b=hjSDWmDiDSgmm8cwOfttyfTbQWuooKh5BO6XKBEDzGKTSLdTAchn28HhBH4orNjWbIIlXy
-        TYisEc4d+Htx/cwWKV90vYtzzG8OrXF90tEnu2NKJNl+VIHllGMrqJnhbY6fkrV++F4KKm
-        ldC1yrh5zsPtqD0Ob0uUFsWnTzGz1Hk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-406-SsvYuXONNUyT9mp4G0WOog-1; Thu, 19 Nov 2020 12:26:46 -0500
-X-MC-Unique: SsvYuXONNUyT9mp4G0WOog-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1728797AbgKSRax (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 12:30:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41080 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728255AbgKSRaw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Nov 2020 12:30:52 -0500
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5765310766BB;
-        Thu, 19 Nov 2020 17:26:45 +0000 (UTC)
-Received: from firesoul.localdomain (unknown [10.40.208.7])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D010610016F6;
-        Thu, 19 Nov 2020 17:26:41 +0000 (UTC)
-Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 81CA932138455;
-        Thu, 19 Nov 2020 18:26:40 +0100 (CET)
-Subject: [PATCH net-next] MAINTAINERS: Update XDP and AF_XDP entries
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     bpf@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        by mail.kernel.org (Postfix) with ESMTPSA id 888B5208B6;
+        Thu, 19 Nov 2020 17:30:49 +0000 (UTC)
+Date:   Thu, 19 Nov 2020 12:30:47 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Segher Boessenkool <segher@kernel.crashing.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Florian Weimer <fw@deneb.enyo.de>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Matt Mullins <mmullins@mmlx.us>,
+        Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Date:   Thu, 19 Nov 2020 18:26:40 +0100
-Message-ID: <160580680009.2806072.11680148233715741983.stgit@firesoul>
-User-Agent: StGit/0.19
+        KP Singh <kpsingh@chromium.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        linux-toolchains@vger.kernel.org
+Subject: Re: violating function pointer signature
+Message-ID: <20201119123047.66a22235@gandalf.local.home>
+In-Reply-To: <CAADnVQL8d5zKTE_TohUcGgKKp6K1Noo7M22t_hKYQjO_g0Mb0g@mail.gmail.com>
+References: <375636043.48251.1605642440621.JavaMail.zimbra@efficios.com>
+        <20201117153451.3015c5c9@gandalf.local.home>
+        <20201118132136.GJ3121378@hirez.programming.kicks-ass.net>
+        <CAKwvOdkptuS=75WjzwOho9ZjGVHGMirEW3k3u4Ep8ya5wCNajg@mail.gmail.com>
+        <20201118121730.12ee645b@gandalf.local.home>
+        <20201118181226.GK2672@gate.crashing.org>
+        <87o8jutt2h.fsf@mid.deneb.enyo.de>
+        <20201118135823.3f0d24b7@gandalf.local.home>
+        <20201118191127.GM2672@gate.crashing.org>
+        <20201119083648.GE3121392@hirez.programming.kicks-ass.net>
+        <20201119143735.GU2672@gate.crashing.org>
+        <20201119095951.30269233@gandalf.local.home>
+        <CAADnVQL8d5zKTE_TohUcGgKKp6K1Noo7M22t_hKYQjO_g0Mb0g@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Getting too many false positive matches with current use
-of the content regex K: and file regex N: patterns.
+On Thu, 19 Nov 2020 09:04:57 -0800
+Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
 
-This patch drops file match N: and makes K: more restricted.
-Some more normal F: file wildcards are added.
+> On Thu, Nov 19, 2020 at 6:59 AM Steven Rostedt <rostedt@goodmis.org> wrote:
+> > Linux obviously
+> > supports multiple architectures (more than any other OS), but it is pretty
+> > stuck to gcc as a compiler (with LLVM just starting to work too).
+> >
+> > We are fine with being stuck to a compiler if it gives us what we want.  
+> 
+> I beg to disagree.
 
-Notice that AF_XDP forgot to some F: files that is also
-updated in this patch.
+I think you misunderstood.
 
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
----
- MAINTAINERS |   12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+> android, chrome and others changed their kernel builds to
+> "make LLVM=1" some time ago.
+> It's absolutely vital for the health of the kernel to be built with
+> both gcc and llvm.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index af9f6a3ab100..230917ee687f 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -19105,12 +19105,17 @@ L:	netdev@vger.kernel.org
- L:	bpf@vger.kernel.org
- S:	Supported
- F:	include/net/xdp.h
-+F:	include/net/xdp_priv.h
- F:	include/trace/events/xdp.h
- F:	kernel/bpf/cpumap.c
- F:	kernel/bpf/devmap.c
- F:	net/core/xdp.c
--N:	xdp
--K:	xdp
-+F:	samples/bpf/xdp*
-+F:	tools/testing/selftests/bpf/*xdp*
-+F:	tools/testing/selftests/bpf/*/*xdp*
-+F:	drivers/net/ethernet/*/*/*/*/*xdp*
-+F:	drivers/net/ethernet/*/*/*xdp*
-+K:	[^a-z0-9]xdp[^a-z0-9]
- 
- XDP SOCKETS (AF_XDP)
- M:	Björn Töpel <bjorn.topel@intel.com>
-@@ -19119,9 +19124,12 @@ R:	Jonathan Lemon <jonathan.lemon@gmail.com>
- L:	netdev@vger.kernel.org
- L:	bpf@vger.kernel.org
- S:	Maintained
-+F:	Documentation/networking/af_xdp.rst
- F:	include/net/xdp_sock*
- F:	include/net/xsk_buff_pool.h
- F:	include/uapi/linux/if_xdp.h
-+F:	include/uapi/linux/xdp_diag.h
-+F:	include/net/netns/xdp.h
- F:	net/xdp/
- F:	samples/bpf/xdpsock*
- F:	tools/lib/bpf/xsk*
+That's what I meant with "LLVM just starting to work too".
 
+LLVM has been working hard to make sure that it can do the same tricks that
+the kernel depends on gcc for. And LLVM appears to be working fine with the
+nop stub logic (it's already in 5.10-rc with with the static callers).
 
+We can easily create a boot up test (config option) that will test it, and
+if a compiler breaks it, this test would trigger a failure.
+
+Again, both static calls and tracepoint callbacks are limited in what they
+can do. Both return void, and both do are not variadic functions. Although
+passing in a struct as a parameter is possible, we could add testing to
+detect this, as that's rather slow to begin with.
+
+-- Steve
