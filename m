@@ -2,80 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 293582B924C
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 13:15:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3739A2B9292
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 13:33:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727287AbgKSMNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 07:13:13 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50510 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727269AbgKSMNM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Nov 2020 07:13:12 -0500
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0449C206CA;
-        Thu, 19 Nov 2020 12:13:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1605787990;
-        bh=YbzJp5AMK9z88hcsktSOd88hRueoWtYXU2IjjbIiBCQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=g6Xs7ts5C3/99g9gS4+mcp1ePY8hQd9BxXi2oUvBBXwotCIF92NjTV7CFoIxG1E4s
-         9JtQLEkNknkHe9faoqToaAPpjaSBrE9qm9lzix+wvr4vbqlesOi2e4SLRSjhHAJcSj
-         tIMM5+Iwfw0Kr9S3FbGxd7TNtsUtCFTf4ZK+clQ0=
-Date:   Thu, 19 Nov 2020 13:13:54 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de,
-        linux- stable <stable@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
-        netfilter-devel@vger.kernel.org
-Subject: Re: [PATCH 5.9 000/255] 5.9.9-rc1 review
-Message-ID: <X7ZhguSg3BaII1BU@kroah.com>
-References: <20201117122138.925150709@linuxfoundation.org>
- <CA+G9fYt+YNy=34HLHpDrc6=73Nhu14NEf7AP+woyZryny+b-2Q@mail.gmail.com>
+        id S1727097AbgKSM3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 07:29:52 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:8000 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725783AbgKSM3v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 07:29:51 -0500
+Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CcJrx1633zhd2d;
+        Thu, 19 Nov 2020 20:29:21 +0800 (CST)
+Received: from [10.74.191.121] (10.74.191.121) by
+ DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
+ 14.3.487.0; Thu, 19 Nov 2020 20:29:27 +0800
+Subject: Re: [PATCH net-next] net: add in_softirq() debug checking in
+ napi_consume_skb()
+To:     Peter Zijlstra <peterz@infradead.org>
+CC:     Jakub Kicinski <kuba@kernel.org>, <davem@davemloft.net>,
+        <linmiaohe@huawei.com>, <martin.varghese@nokia.com>,
+        <pabeni@redhat.com>, <pshelar@ovn.org>, <fw@strlen.de>,
+        <gnault@redhat.com>, <steffen.klassert@secunet.com>,
+        <kyk.segfault@gmail.com>, <viro@zeniv.linux.org.uk>,
+        <vladimir.oltean@nxp.com>, <edumazet@google.com>,
+        <saeed@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
+References: <1603971288-4786-1-git-send-email-linyunsheng@huawei.com>
+ <20201031153824.7ae83b90@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <5b04ad33-1611-8d7b-8fec-4269c01ecab3@huawei.com>
+ <20201102114110.4a20d461@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <5bd6de52-b8e0-db6f-3362-862ae7b2c728@huawei.com>
+ <20201118074348.3bbd1468@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <20201118155757.GY3121392@hirez.programming.kicks-ass.net>
+ <20201118082658.2aa41190@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <b00f1c28-668c-ecdb-6aa7-282e57475e25@huawei.com>
+ <20201119114149.GI3121392@hirez.programming.kicks-ass.net>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <75dbd476-2e0b-f4e6-4cb0-fff6f659ac8e@huawei.com>
+Date:   Thu, 19 Nov 2020 20:29:26 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CA+G9fYt+YNy=34HLHpDrc6=73Nhu14NEf7AP+woyZryny+b-2Q@mail.gmail.com>
+In-Reply-To: <20201119114149.GI3121392@hirez.programming.kicks-ass.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 11:03:55AM +0530, Naresh Kamboju wrote:
-> On Tue, 17 Nov 2020 at 19:02, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > This is the start of the stable review cycle for the 5.9.9 release.
-> > There are 255 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
-> >
-> > Responses should be made by Thu, 19 Nov 2020 12:20:51 +0000.
-> > Anything received after that time might be too late.
-> >
-> > The whole patch series can be found in one patch at:
-> >         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.9.9-rc1.gz
-> > or in the git tree and branch at:
-> >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.9.y
-> > and the diffstat can be found below.
-> >
-> > thanks,
-> >
-> > greg k-h
+On 2020/11/19 19:41, Peter Zijlstra wrote:
+> On Thu, Nov 19, 2020 at 05:19:44PM +0800, Yunsheng Lin wrote:
+>> On 2020/11/19 0:26, Jakub Kicinski wrote:
+>>> On Wed, 18 Nov 2020 16:57:57 +0100 Peter Zijlstra wrote:
+>>>> On Wed, Nov 18, 2020 at 07:43:48AM -0800, Jakub Kicinski wrote:
+>>>>
+>>>>> TBH the last sentence I wrote isn't clear even to me at this point ;D
+>>>>>
+>>>>> Maybe using just the macros from preempt.h - like this?
+>>>>>
+>>>>> #define lockdep_assert_in_softirq()                                    \
+>>>>> do {                                                                   \
+>>>>>        WARN_ON_ONCE(__lockdep_enabled                  &&              \
+>>>>>                     (!in_softirq() || in_irq() || in_nmi())	\
+>>>>> } while (0)
+>>
+>> One thing I am not so sure about is the different irq context indicator
+>> in preempt.h and lockdep.h, for example lockdep_assert_in_irq() uses
+>> this_cpu_read(hardirq_context) in lockdep.h, and in_irq() uses
+>> current_thread_info()->preempt_count in preempt.h, if they are the same
+>> thing?
 > 
-> Results from Linaro’s test farm.
-> No regressions on arm64, arm, x86_64, and i386.
+> Very close, for more regular code they should be the same.
+
+Thanks for clarifying.
+So I assmue the lockdep_assert_in_softirq() interface we want to add
+is regular code, right?
+
+> .
 > 
-> Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
-
-Thanks for testing all of these and letting me know.
-
-greg k-h
