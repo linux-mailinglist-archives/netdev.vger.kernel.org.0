@@ -2,118 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20FF32B9A36
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 18:56:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8C0D2B9A43
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 19:01:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729700AbgKSR4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 12:56:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39626 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729335AbgKSR4u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 12:56:50 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3735C0613CF
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 09:56:49 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id p8so7407037wrx.5
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 09:56:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=qW8/m9wt1an7LRw7bO85qP5rUEdxBv3m4pQ1jAHQ+0Q=;
-        b=p4nFR19lRi5gdzZmmfG5QDRGQGQFoGItC2GqzByMxMn5rDonvwPfjYd2qaM7vrGCPH
-         Ye/sgu2wJBV2w5c/VoVNSJWQAg9TH2K1498+ii7t8VUeAR2JAfwV49i5iDkNeR1igCKr
-         mfbOkWLtlFYW0htabz7zzf2Ta3tIX37mtaOoriqT21Q9XbN5MS0yxjSDc7elYZyYlXyI
-         pkHnRzzgW6FPcaRhAWfHCN6dKf3RL7QWtoTVnEKvVHupZsQzt5EdJNdfHC8aquD36wn5
-         VpxRBahmWH5k2gR8x2Wu3tHxINvzt08U7ivAoXMe61j/awvM6UfVa4Mfwt3uqAfFilIG
-         0/KA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qW8/m9wt1an7LRw7bO85qP5rUEdxBv3m4pQ1jAHQ+0Q=;
-        b=f80LduNmRU+2DYE9TEwdPEzrmCFmgF0d6dgx1o2KZGuTVopO9T2WkKejpq+ErdCno2
-         w909lwRe03X1ZMx56rWfPYVf93hiDpHSAXFpGFDnUFovxYT1J0e9CGxesN1Q/yBJmT+A
-         8V2c7cOyJHWzPGwdX6x+rrmR6obICASuA9XMBscn5M1VCCGFRBti3izFhDRlGnKv3gHf
-         wN+NwBktXGgmNVo/nP+LrBQ3BPiorK0wogRShGC2pp3aeDxfcJGrGJ4zjPdi66ryqXEf
-         d7yQeYFuxoWlv66BaBCQodBPVii1NnEuE0N+erTrqrR50+aQS1eFETjJ9qjh3oyeYTDk
-         l5Zw==
-X-Gm-Message-State: AOAM530UkGbSFCku/oR6yCqpFpV0VK+ODwV/NQegvFXrjcNHUfXzWIqf
-        u51YSNRx+J3lHfm5Msa7XkcTTAvwqwo=
-X-Google-Smtp-Source: ABdhPJwQnCn5O8IEzo9WwGkpGmwsHTtpCLEgyTMiWWu27ZqatJTAWzFDYSCH0c8wy5Ors1D+8pPzCg==
-X-Received: by 2002:adf:8143:: with SMTP id 61mr11402879wrm.318.1605808606463;
-        Thu, 19 Nov 2020 09:56:46 -0800 (PST)
-Received: from [192.168.8.114] ([37.171.129.101])
-        by smtp.gmail.com with ESMTPSA id c62sm840188wme.22.2020.11.19.09.56.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Nov 2020 09:56:45 -0800 (PST)
-Subject: Re: Flow label persistence
-To:     Tom Herbert <tom@herbertland.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-References: <CALx6S353fPF=x4=yr4=a4zYCKVLfCRbFhEKr14A1mBRug7AfaA@mail.gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <1a40fa35-6ef0-5b42-3505-b23763309165@gmail.com>
-Date:   Thu, 19 Nov 2020 18:56:44 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        id S1729730AbgKSR7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 12:59:31 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59360 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729265AbgKSR7a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Nov 2020 12:59:30 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 382EC2225B;
+        Thu, 19 Nov 2020 17:59:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605808770;
+        bh=Ta3tsz+YYOgNDaVSrDSReSog0hdPUxrDoz7tjhPgBp8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=v4ZtqpY2LAz/9Nfm6jgZ5XJMCJesqYR/Z4WxVWn3ygJvWBVacjqbC2MVHDaO5xuuV
+         KHOQFQoHiIvHJ3UeOFKgiRAX5aVTwFGJ4B5NeinELaVuWGB3/aMAetQHqBghFvPb03
+         xS+00bjvrJE6FVTSlRLcXq9sfIhkgFS9Elb6L0wg=
+Date:   Thu, 19 Nov 2020 09:59:28 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Joe Perches <joe@perches.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Tao Ren <rentao.bupt@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Jean Delvare <jdelvare@suse.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, openbmc@lists.ozlabs.org, taoren@fb.com,
+        mikechoi@fb.com
+Subject: Re: XDP maintainer match (Was  [PATCH v2 0/2] hwmon: (max127) Add
+ Maxim MAX127 hardware monitoring)
+Message-ID: <20201119095928.01fd10e0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <088057533a9feb330964bdab0b1b8d2f69b7a22c.camel@perches.com>
+References: <20201118230929.18147-1-rentao.bupt@gmail.com>
+        <20201118232719.GI1853236@lunn.ch>
+        <20201118234252.GA18681@taoren-ubuntu-R90MNF91>
+        <20201119010119.GA248686@roeck-us.net>
+        <20201119012653.GA249502@roeck-us.net>
+        <20201119074634.2e9cb21b@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <20201119173535.1474743d@carbon>
+        <088057533a9feb330964bdab0b1b8d2f69b7a22c.camel@perches.com>
 MIME-Version: 1.0
-In-Reply-To: <CALx6S353fPF=x4=yr4=a4zYCKVLfCRbFhEKr14A1mBRug7AfaA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 19 Nov 2020 09:09:53 -0800 Joe Perches wrote:
+> On Thu, 2020-11-19 at 17:35 +0100, Jesper Dangaard Brouer wrote:
+> > On Thu, 19 Nov 2020 07:46:34 -0800 Jakub Kicinski <kuba@kernel.org> wro=
+te: =20
+>=20
+> > I think it is a good idea to change the keyword (K:), but I'm not sure
+> > this catch what we want, maybe it does.  The pattern match are meant to
+> > catch drivers containing XDP related bits.
+> >=20
+> > Previously Joe Perches <joe@perches.com> suggested this pattern match,
+> > which I don't fully understand... could you explain Joe?
+> >=20
+> > =C2=A0=C2=A0(?:\b|_)xdp(?:\b|_) =20
+>=20
+> This regex matches only:
+>=20
+> 	xdp
+> 	xdp_<anything>
+> 	<anything>_xdp_<anything>
+> 	<anything>_xdp
+>=20
+> > For the filename (N:) regex match, I'm considering if we should remove
+> > it and list more files explicitly.  I think normal glob * pattern
+> > works, which should be sufficient. =20
+>=20
+> Lists are generally more specific than regex globs.
+
+Checking like Alexei did it seems Joe's version is faster and better:
+
+$ git grep -l -E "[^a-z0-9]xdp[^a-z0-9]" | wc -l
+295
+$ git grep -l -E '(\b|_)xdp(\b|_)' | wc -l
+297
+$ time git grep -l -E '(\b|_)xdp(\b|_)' > /tmp/a
+
+real	0m5.171s
+user	0m32.657s
+sys	0m0.664s
+$ time git grep -l -E "[^a-z0-9]xdp[^a-z0-9]" > /tmp/b
+
+real	0m16.627s
+user	1m48.149s
+sys	0m0.977s
+09:56 linux$ diff /tmp/a /tmp/b
+4d3
+< Documentation/networking/index.rst
+189d187
+< samples/bpf/.gitignore
 
 
-On 11/19/20 4:49 PM, Tom Herbert wrote:
-> HI,
-> 
-> A potential issue came up on v6ops list in IETF that Linux stack
-> changes the flow label for a connection at every RTO, this is the
-> feature where we change the txhash on a failing connection to try to
-> find a route (the flow label is derived from the txhash). The problem
-> with changing the flow label for a connection is that it may cause
-> problems when stateful middleboxes are in the path, for instance if a
-> flow label change causes packets for a connection to take a different
-> route they might be forwarded to a different stateful firewall that
-> didn't see the 3WHS so don't have any flow state and hence drop the
-> packets.
-> 
-> I was under the assumption that we had a sysctl that would enable
-> changing the txhash for a connection and the default was off so that
-> flow labels would be persistent for the life of the connection.
-> Looking at the code now, I don't see that safety net, it looks like
-> the defauly behavior allows changing the hash. Am I missing something?
-> 
-> Thanks,
-> Tom
-> 
-
-
-"Stateful middleboxes" using flowlabels to identify a flow instead of the
-standard 4-tuple are broken.
-
-No sysctl addition/change can possibly help, since it wont appear magically
-on billions of linux hosts.
-
-Your question is a bit ironic, since historically you wrote the
-first change for this stuff, without a sysctl.
-
-commit 265f94ff54d62503663d9c788ba1f082e448f8b8
-Author: Tom Herbert <tom@herbertland.com>
-Date:   Tue Jul 28 16:02:06 2015 -0700
-
-    net: Recompute sk_txhash on negative routing advice
-    
-    When a connection is failing a transport protocol calls
-    dst_negative_advice to try to get a better route. This patch includes
-    changing the sk_txhash in that function. This provides a rudimentary
-    method to try to find a different path in the network since sk_txhash
-    affects ECMP on the local host and through the network (via flow labels
-    or UDP source port in encapsulation).
-    
-    Signed-off-by: Tom Herbert <tom@herbertland.com>
-    Signed-off-by: David S. Miller <davem@davemloft.net>
+Joe would you like to send a patch, or should I?
