@@ -2,97 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7CBC2B8D5E
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 09:32:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17CBD2B8D97
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 09:39:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726731AbgKSIb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 03:31:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36892 "EHLO
+        id S1726580AbgKSIhN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 03:37:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726530AbgKSIb6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 03:31:58 -0500
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C81AC0613CF;
-        Thu, 19 Nov 2020 00:31:58 -0800 (PST)
-Received: by mail-pg1-x543.google.com with SMTP id r18so3569475pgu.6;
-        Thu, 19 Nov 2020 00:31:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Jkyz9oA86nMEZfz7a15VcqRN3v2AQv1c0SdQ6R0sWHE=;
-        b=WlrRxaJl4muoW1PCRTEsgUyJ6qJzN4ysisw+s+nc+tf4zg1Itm63uH8jc3JSu962Ko
-         Hkxg2mfOSsxZPuEjkSGAmc5LyxoRJekpIHBNtsygxRNyqv7BLlx0541g2h4UjINwD3ig
-         QUAocLY4OZBS6TwBvLyFyvi6tntk2JpSf5lhxbDXHo8zxMKU0wL0t4KukOdWMLIks3d+
-         lK1LGRyG3rMHESEypCJAI1mysx8mtvKzNzBEICBdod+m8pOtD3s3TrKU30MBLu4k2GkJ
-         8myPYNjAUT8NPVcyKvpT3NHyiUExzocvAs9H+67sDHhYgLIcm3hp3ZclqInOTbpwRjGz
-         bIOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Jkyz9oA86nMEZfz7a15VcqRN3v2AQv1c0SdQ6R0sWHE=;
-        b=ediNmRuKMUs1/C6HWuOup9wWuArSjBvsPfVBuZRCJr8XcOHiLb6X1v3gmEfmqKE19a
-         S+Ag5Ej/eyh2OaZS8MFEByksLuOY2Rnu6bgYYWmgYD42yuHpd1ZDdtaRDZwqaeLBAw6C
-         C+ODNjx0GsCle3/jDXVgHdgcyI2dgLVNervDjmcNUhKsHEIwJg43kaNjlsq7o/vX0cHT
-         7tT+BZ6jSvyYG1R/sa7IyzZaMvI0A+azAq6utKZXvhBGlVmila+oWeyaywz53KnNHLDz
-         tHxttsYVJoAcAE/+Y+0wmRPBI927FdfPGCpKEb/BI72bKuSpRL1DwNvg/K8Rj5e/AmB8
-         wmMA==
-X-Gm-Message-State: AOAM5303Km+nQlkQMasU50HQeyv+rOGRWcZFMLrC11CpnCzlsoDxmAQq
-        7M6t7KYBlFsdXi6aAYl3DlyZ1pBwc1ILirh5
-X-Google-Smtp-Source: ABdhPJwA9eeaCmA8RxBTEK9yOpT+WYcvswxjEKLWlljsaxcH9Wn3RXRaIswpuanbsHsgLIqTKSYPHg==
-X-Received: by 2002:a17:90a:7c03:: with SMTP id v3mr3371946pjf.28.1605774717036;
-        Thu, 19 Nov 2020 00:31:57 -0800 (PST)
-Received: from btopel-mobl.ger.intel.com ([192.55.55.43])
-        by smtp.gmail.com with ESMTPSA id r2sm5517713pji.55.2020.11.19.00.31.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Nov 2020 00:31:55 -0800 (PST)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        magnus.karlsson@intel.com, ast@kernel.org, daniel@iogearbox.net,
-        maciej.fijalkowski@intel.com, sridhar.samudrala@intel.com,
-        jesse.brandeburg@intel.com, qi.z.zhang@intel.com, kuba@kernel.org,
-        edumazet@google.com, jonathan.lemon@gmail.com, maximmi@nvidia.com
-Subject: [PATCH bpf-next v3 10/10] samples/bpf: add option to set the busy-poll budget
-Date:   Thu, 19 Nov 2020 09:30:24 +0100
-Message-Id: <20201119083024.119566-11-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20201119083024.119566-1-bjorn.topel@gmail.com>
-References: <20201119083024.119566-1-bjorn.topel@gmail.com>
+        with ESMTP id S1726457AbgKSIhN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 03:37:13 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95E8BC0613CF;
+        Thu, 19 Nov 2020 00:37:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=EQ5bBRTWq6ELqPUgP7TVxM2lYlJzPItyKiYHy5i08tU=; b=RUZctQwcZN8oIJJn+j5hHOtuSI
+        VGVegOMV0ogh8QHOuimZalpzMAMUxd/bbKIMQ3cKPZY5hbgrX0m3yeQb+nnhYGfqmWp59lXpBdtcI
+        8vcEMQj+9ww5i60gcb8L+08RM5hyKPBmNFjwVgPH5Lgz9FZLpfwGR4O/Rb4LdSUDZELcT1nHvoqJL
+        WTCuAMFsuIwOkDpXDbsMqIoC5HmJVjYbmClOhHrBpgFPP8+tO4lWZEwu4ivix9tFfAun0JGr2Zj1v
+        N+dWrdYRyavq3WpDcyXIhsfhuc7zkWZjs76X8C5WpX40AR08FnRq0PzY71Brso55d7WfDM9eq2i/e
+        f3idustw==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kffQv-0003tZ-JT; Thu, 19 Nov 2020 08:36:49 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 5A4F0300F7A;
+        Thu, 19 Nov 2020 09:36:48 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 3604B200DF1AB; Thu, 19 Nov 2020 09:36:48 +0100 (CET)
+Date:   Thu, 19 Nov 2020 09:36:48 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Segher Boessenkool <segher@kernel.crashing.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Florian Weimer <fw@deneb.enyo.de>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Matt Mullins <mmullins@mmlx.us>,
+        Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        linux-toolchains@vger.kernel.org
+Subject: Re: violating function pointer signature
+Message-ID: <20201119083648.GE3121392@hirez.programming.kicks-ass.net>
+References: <20201117142145.43194f1a@gandalf.local.home>
+ <375636043.48251.1605642440621.JavaMail.zimbra@efficios.com>
+ <20201117153451.3015c5c9@gandalf.local.home>
+ <20201118132136.GJ3121378@hirez.programming.kicks-ass.net>
+ <CAKwvOdkptuS=75WjzwOho9ZjGVHGMirEW3k3u4Ep8ya5wCNajg@mail.gmail.com>
+ <20201118121730.12ee645b@gandalf.local.home>
+ <20201118181226.GK2672@gate.crashing.org>
+ <87o8jutt2h.fsf@mid.deneb.enyo.de>
+ <20201118135823.3f0d24b7@gandalf.local.home>
+ <20201118191127.GM2672@gate.crashing.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201118191127.GM2672@gate.crashing.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+On Wed, Nov 18, 2020 at 01:11:27PM -0600, Segher Boessenkool wrote:
+> Calling this via a different declared function type is undefined
+> behaviour, but that is independent of how the function is *defined*.
+> Your program can make ducks appear from your nose even if that function
+> is never called, if you do that.  Just don't do UB, not even once!
 
-Support for the SO_BUSY_POLL_BUDGET setsockopt, via the batching
-option ('b').
+Ah, see, here I think we disagree. UB is a flaw of the spec, but the
+real world often has very sane behaviour there (sometimes also very
+much not).
 
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
----
- samples/bpf/xdpsock_user.c | 5 +++++
- 1 file changed, 5 insertions(+)
+In this particular instance the behaviour is UB because the C spec
+doesn't want to pin down the calling convention, which is something I
+can understand. But once you combine the C spec with the ABI(s) at hand,
+there really isn't two ways about it. This has to work, under the
+premise that the ABI defines a caller cleanup calling convention.
 
-diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-index cb1eaee8a32b..deba623e9003 100644
---- a/samples/bpf/xdpsock_user.c
-+++ b/samples/bpf/xdpsock_user.c
-@@ -1479,6 +1479,11 @@ static void apply_setsockopt(struct xsk_socket_info *xsk)
- 	if (setsockopt(xsk_socket__fd(xsk->xsk), SOL_SOCKET, SO_BUSY_POLL,
- 		       (void *)&sock_opt, sizeof(sock_opt)) < 0)
- 		exit_with_error(errno);
-+
-+	sock_opt = opt_batch_size;
-+	if (setsockopt(xsk_socket__fd(xsk->xsk), SOL_SOCKET, SO_BUSY_POLL_BUDGET,
-+		       (void *)&sock_opt, sizeof(sock_opt)) < 0)
-+		exit_with_error(errno);
- }
- 
- int main(int argc, char **argv)
--- 
-2.27.0
+So in the view that the compiler is a glorified assembler, I'll take UB
+every day if it means I can get the thing to do what I want it to.
+
+Obviously in the interest of co-operation and longer term viability, it
+would be nice if we can agree on the behaviour and get a language
+extention covering it.
+
+Note that we have a fairly extensive tradition of defining away UB with
+language extentions, -fno-strict-overflow, -fno-strict-aliasing,
+-fno-delete-null-pointer-checks etc..
+
 
