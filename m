@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 335322B8A4F
+	by mail.lfdr.de (Postfix) with ESMTP id A31572B8A50
 	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 04:08:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726200AbgKSDHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 22:07:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43450 "EHLO
+        id S1726224AbgKSDH2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 22:07:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725964AbgKSDHJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 22:07:09 -0500
+        with ESMTP id S1725964AbgKSDH2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 22:07:28 -0500
 Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A31BCC0613D4
-        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 19:07:09 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id 131so3052587pfb.9
-        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 19:07:09 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 029D8C0613D4
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 19:07:28 -0800 (PST)
+Received: by mail-pf1-x441.google.com with SMTP id c66so3069706pfa.4
+        for <netdev@vger.kernel.org>; Wed, 18 Nov 2020 19:07:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=siNX71xH20+Qh+CRoNhlT36kkkjm24Uj71yvnTLrBf8=;
-        b=lv3IOfPAjlsrA8EEBrIPwTLgdk31g4m+yiC7iAEEdcrtijScjAw6FMk2Uo5/32+OcF
-         O27e+hX5jRReKEXq4fojslUTL/qNfvXwLFma4HCKhUfglA7+e7T0HSO24oesQLJDJieu
-         tieQAeSVv3LbyUwNeu1JF61KVZ3ujrLS5J+m2O714mJGv0FrQqZ8lD12kJdc+7XEzCYC
-         b5yjpRNzI8tUNDimdxDOkCHLj75bHf0c/EeKFsP7vuKmf4wppWOKn7eHIZkSUstXgYOm
-         XAT7VJI9Dn0jIZaazTtSzB5fk/MQL9zbyeCpdgwluw88XixBnAvzX2+hAZcdzQSMsK7t
-         P8JQ==
+        bh=68ho5thaGyJKnKm903ZjjtOOTkAGnPq4vobVihQTMb8=;
+        b=tdQPQ77JCiqGDOcrHinbM6ve1QZvNzMZ0XpDvOvs4VD25FHFgp7X8WaE6e+tQwF5+c
+         RPCsXT9qZTpgsKJ4qWAY5V5++gGlvp6SYQM+WTRu6jbSy2L+5QHpV/9qtlueNguxQERS
+         NgfsrOZ7K2g+87lCyRxcr/6eFiQxSAH0qDKO6KI+9egEJh5uuSoH4Ix3rmMjoE1cFdTH
+         ROumwc9Fl9PJCu5wlNUIqebmOqjcWLCH6rBdHZMtVke3TCs5ngCwtCdSUxWwLqUM9Apj
+         SKjYEkhKxGRvzcqKTeLNi/1wNveC0hB/P8mk8jxDo0q7NKayIomoEeLnASc+LpMmv4Fz
+         RE/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=siNX71xH20+Qh+CRoNhlT36kkkjm24Uj71yvnTLrBf8=;
-        b=EclKLx80Zb4NAwPbh6mx9IR/98ByGmcJcr8uKqJMOuJO4pBj9FAnV0AGD3KNaZZfRb
-         0FjGKMMw8fneHZxM+C7whD90aDrLQf4fqvcIxr1den8Th+GIdFztE8ufiea8s5o51/ZD
-         UiSQcTeXcixMxJN1ry9ubeVfiALzvZbi9ZYj65b9sYQC5//ZgyKJh4bUhep5cjyaoU3P
-         rNFsh67q34CEFpA4iKyM60Er+TKJ042WYy0gw+M9qP4qRSsI3r4RfPAiVpt0Spu+pclo
-         YNPsKOXaxiQ2Ith5oTU2zD/da9WfxkdnZhejW/m6KtKXvn8xSc9n8ov/cOvaEDvKvTTa
-         D1Jg==
-X-Gm-Message-State: AOAM531DnJtEO/gJpbpt8ChcZRmIIZ61FWPX7ZQQZYbdHHP5vInE3rFh
-        012WEzWYHgj05AhY2YwTuQw=
-X-Google-Smtp-Source: ABdhPJyVlkWR34GdqA8weTHiIcxj0imA4B0VjliH05pncdXjhAevbNywNfCkBWZMnaLBKFUH9Qv51w==
-X-Received: by 2002:a17:90a:fa93:: with SMTP id cu19mr2219493pjb.117.1605755229160;
-        Wed, 18 Nov 2020 19:07:09 -0800 (PST)
+        bh=68ho5thaGyJKnKm903ZjjtOOTkAGnPq4vobVihQTMb8=;
+        b=KB4br0s9dcxQMN4tZLqDL1H9FzDjWv2UMpepsumxdHQTCVvx2OaEkvTXwKiqwiHxQL
+         n6qB6h79dtJQbn1bfWq/5ZsBBf2x+QlcgYobO1o4mpa0j8TDRlRDi1HnlI172mClHewA
+         zmIvP5Uso6vQlRgyOqbWbb3z5fJ/Nzg9qkm9HVIOld0TzRVXfkhcasVSKleiapmD+Ff8
+         l1qYs+9KGR1retqeogiIf/1gbfWMKeH9U9ILzEc280uuUBTynSbs5epAS09uaplmUq0p
+         An6Qm9AAHQmb92y24oJHYjB26FOh02DdiCNWFmPrTHD1aqj2vCVhuTsIV55hpLDp01C3
+         ix/g==
+X-Gm-Message-State: AOAM533eV43adsDyvM3Q/ZxCgqmDc+sFaDNziaUVcefa/wFsorbwd2EW
+        mUEcng/WvBUIjzHNzd+294U=
+X-Google-Smtp-Source: ABdhPJzhqM79L5RQnLqQ6E2EiI1skpLHfiez4TTm3VElLHmo6E9VJf7VhmeRq3+9JIVyHnxib2hMIg==
+X-Received: by 2002:a05:6a00:c:b029:18b:eae3:bff0 with SMTP id h12-20020a056a00000cb029018beae3bff0mr7228302pfk.9.1605755247560;
+        Wed, 18 Nov 2020 19:07:27 -0800 (PST)
 Received: from [10.230.28.242] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p18sm3472403pju.17.2020.11.18.19.07.07
+        by smtp.gmail.com with ESMTPSA id a23sm24466436pgv.35.2020.11.18.19.07.24
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Nov 2020 19:07:08 -0800 (PST)
-Subject: Re: [PATCH 02/11] net: dsa: microchip: ksz8795: remove superfluous
- port_cnt assignment
+        Wed, 18 Nov 2020 19:07:26 -0800 (PST)
+Subject: Re: [PATCH 03/11] net: dsa: microchip: ksz8795: move variable
+ assignments from detect to init
 To:     Michael Grzeschik <m.grzeschik@pengutronix.de>,
         netdev@vger.kernel.org
 Cc:     andrew@lunn.ch, davem@davemloft.net, kernel@pengutronix.de,
         matthias.schiffer@ew.tq-group.com, woojung.huh@microchip.com,
         UNGLinuxDriver@microchip.com
 References: <20201118220357.22292-1-m.grzeschik@pengutronix.de>
- <20201118220357.22292-3-m.grzeschik@pengutronix.de>
+ <20201118220357.22292-4-m.grzeschik@pengutronix.de>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <ffad3f4d-a845-eb47-fbd3-cf33e6912901@gmail.com>
-Date:   Wed, 18 Nov 2020 19:07:06 -0800
+Message-ID: <181f569d-ac5c-68ea-bd7d-ba60b6727bf6@gmail.com>
+Date:   Wed, 18 Nov 2020 19:07:24 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Firefox/78.0 Thunderbird/78.4.3
 MIME-Version: 1.0
-In-Reply-To: <20201118220357.22292-3-m.grzeschik@pengutronix.de>
+In-Reply-To: <20201118220357.22292-4-m.grzeschik@pengutronix.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -74,8 +74,9 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 11/18/2020 2:03 PM, Michael Grzeschik wrote:
-> The port_cnt assignment will be done again in the init function.
-> This patch removes the previous assignment in the detect function.
+> This patch moves all variable assignments to the init function. It
+> leaves the detect function for its single purpose to detect which chip
+> version is found.
 > 
 > Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
 
