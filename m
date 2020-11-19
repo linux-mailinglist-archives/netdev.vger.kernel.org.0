@@ -2,60 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C12742B89BE
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 02:50:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E9772B89C8
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 02:52:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727127AbgKSBuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 20:50:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51808 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725947AbgKSBuF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 20:50:05 -0500
-Content-Type: text/plain; charset="utf-8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605750605;
-        bh=/L7LZ1eYlifUcEbUW7b/R6FRtA/yP2ZaCNWmB5MUD9M=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ZwI5G/fBz68ThsdQD3Skibt3oVMjQVUF4jhrFtBXSqy8nc5g1KGJOUNMXqDfwb0l8
-         haTIU93THbTC6J2Wl4/AnyJkIdtUAwy/6Y0LUCwxtqNhc0Iu9udVdSCmy9DSyRVjts
-         Kfao3FPcGa1jB4kX+jo6Jh7hqux49pZS+3oO2+0I=
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net/mlx4_core: Fix init_hca fields offset
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160575060511.14123.3846881104818682846.git-patchwork-notify@kernel.org>
-Date:   Thu, 19 Nov 2020 01:50:05 +0000
-References: <20201118081922.553-1-tariqt@nvidia.com>
-In-Reply-To: <20201118081922.553-1-tariqt@nvidia.com>
-To:     Tariq Toukan <tariqt@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        moshe@nvidia.com, ttoukan.linux@gmail.com, ayal@nvidia.com,
-        eranbe@nvidia.com
+        id S1727434AbgKSBvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 20:51:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60138 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726413AbgKSBvk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 20:51:40 -0500
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 762F1C0613D4;
+        Wed, 18 Nov 2020 17:51:38 -0800 (PST)
+Received: by mail-pf1-x444.google.com with SMTP id y7so2890137pfq.11;
+        Wed, 18 Nov 2020 17:51:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=3r5FZrPv+WHArPH9yqncOxdfTiMaYsbEsDIytgtTf2k=;
+        b=B68UiTUZfXssmJtMqOe1VvpB4J8RMb+KXeHqyINfBPaG9OGRrl9a3ALtiPByvZFTcy
+         R7CUYBAq4tmfgEzDBc8Sc0JnIe1obvw622jeEDHSuh8E6FNqVWB0kXo9ABMY6XRZ707R
+         XOflQwYUMSm2U9uiJelSrw1Q22h+ZCRUb4dyWx8jGQ++bdQ1fM2io0rgxAIGCvdNhgLV
+         cYxu4ZZIi++mocXnbuOvRUMq+h1/YQn5x6fErsAqbXnFonqwQVnlgPtVQEsQ4qJSs7SS
+         I0b6i5jXM7IZ0TSbzDAbNOtMboVrUSuJbeMeU3CDB3aqexqtCxhUGz3w72suGnqZ8HBB
+         M41g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=3r5FZrPv+WHArPH9yqncOxdfTiMaYsbEsDIytgtTf2k=;
+        b=ldYXqNNeM51KB0tzQwVoaAOkdlg5lv4U3YV+lDydwon+6n1KlP4FgEJmUJHVrTmsHJ
+         PuJpaAH9rYhGGUQwgc88zS66geVBvNG9wVW640tyIjToMeZ65kM9/ikgI8K03RUJevDy
+         UKSHAs8taMI1agbswFDKhfxsUl8ZY4L9gL1s7y5Cbp+NHXg0Qg7zqxQ2XdhqM8AZ11U5
+         5NP4Exlrhfixp/n9S9pb7sbQlFFu6JGDaEcuyrrEVCO9AGvTHUVabjXnisxfS8IZwnjY
+         MF0YYDMD+pNd+6kDpj9ouCRZu6Lvn6CqS/YFPXHNcSlSoTYYQ0JrjoWe3uED2v2mgUa0
+         F5HA==
+X-Gm-Message-State: AOAM5317B0en3eD3l/0pWR+MLMP+37Uu7s6V//zEc/WlUDh3DPSm3AWo
+        WYC7MIGBZ8FHG17zUnOAlcs=
+X-Google-Smtp-Source: ABdhPJxn1hPFjguU/lx7e1TERyJiuCSd2U9KvvRdrHXrqmCBn6zNigbbZIltJmjpFG3kOv7JBO0UDw==
+X-Received: by 2002:aa7:981a:0:b029:18b:490f:77d9 with SMTP id e26-20020aa7981a0000b029018b490f77d9mr7033443pfl.46.1605750697927;
+        Wed, 18 Nov 2020 17:51:37 -0800 (PST)
+Received: from localhost.localdomain ([45.56.153.149])
+        by smtp.gmail.com with ESMTPSA id e201sm27003636pfh.73.2020.11.18.17.51.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Nov 2020 17:51:37 -0800 (PST)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+To:     pkshih@realtek.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org, Larry.Finger@lwfinger.net
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH v2 1/4 resend] rtlwifi: rtl8188ee: avoid accessing the data mapped to streaming DMA
+Date:   Thu, 19 Nov 2020 09:51:27 +0800
+Message-Id: <20201119015127.12033-1-baijiaju1990@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+In rtl88ee_tx_fill_cmddesc(), skb->data is mapped to streaming DMA on
+line 677:
+  dma_addr_t mapping = dma_map_single(..., skb->data, ...);
 
-This patch was applied to netdev/net.git (refs/heads/master):
+On line 680, skb->data is assigned to hdr after cast:
+  struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(skb->data);
 
-On Wed, 18 Nov 2020 10:19:22 +0200 you wrote:
-> From: Aya Levin <ayal@nvidia.com>
-> 
-> Slave function read the following capabilities from the wrong offset:
-> 1. log_mc_entry_sz
-> 2. fs_log_entry_sz
-> 3. log_mc_hash_sz
-> 
-> [...]
+Then hdr->frame_control is accessed on line 681:
+  __le16 fc = hdr->frame_control;
 
-Here is the summary with links:
-  - [net] net/mlx4_core: Fix init_hca fields offset
-    https://git.kernel.org/netdev/net/c/6d9c8d15af0e
+This DMA access may cause data inconsistency between CPU and hardwre.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+To fix this bug, hdr->frame_control is accessed before the DMA mapping.
 
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+---
+v2: 
+* Use "rtlwifi" as subject prefix and have all rtlwifi patches in the
+  same pathset.
+  Thank Ping and Larry for good advice.
+
+---
+ drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c
+index b9775eec4c54..c948dafa0c80 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c
+@@ -674,12 +674,12 @@ void rtl88ee_tx_fill_cmddesc(struct ieee80211_hw *hw,
+ 	u8 fw_queue = QSLT_BEACON;
+ 	__le32 *pdesc = (__le32 *)pdesc8;
+ 
+-	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
+-					    skb->len, DMA_TO_DEVICE);
+-
+ 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(skb->data);
+ 	__le16 fc = hdr->frame_control;
+ 
++	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
++					    skb->len, DMA_TO_DEVICE);
++
+ 	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
+ 		rtl_dbg(rtlpriv, COMP_SEND, DBG_TRACE,
+ 			"DMA mapping error\n");
+-- 
+2.17.1
 
