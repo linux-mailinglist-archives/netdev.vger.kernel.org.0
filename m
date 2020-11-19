@@ -2,45 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03C832B8960
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 02:14:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BCAA82B8962
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 02:14:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727376AbgKSBNz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 20:13:55 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:37060 "EHLO vps0.lunn.ch"
+        id S1727388AbgKSBOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 20:14:06 -0500
+Received: from novek.ru ([213.148.174.62]:38874 "EHLO novek.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727037AbgKSBNy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 20:13:54 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kfYWG-007pxJ-Dz; Thu, 19 Nov 2020 02:13:52 +0100
-Date:   Thu, 19 Nov 2020 02:13:52 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Grzeschik <m.grzeschik@pengutronix.de>
-Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, davem@davemloft.net,
-        kernel@pengutronix.de, matthias.schiffer@ew.tq-group.com,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH 09/11] net: dsa: microchip: remove usage of mib_port_count
-Message-ID: <20201119011352.GM1804098@lunn.ch>
-References: <20201118220357.22292-1-m.grzeschik@pengutronix.de>
- <20201118220357.22292-10-m.grzeschik@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201118220357.22292-10-m.grzeschik@pengutronix.de>
+        id S1727037AbgKSBOF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 20:14:05 -0500
+Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id A680E501633;
+        Thu, 19 Nov 2020 04:14:14 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru A680E501633
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1605748456; bh=7VKNROS/i3WHXmOF7ozmuBHEHAdmOix+SRbryUXB07Q=;
+        h=From:To:Cc:Subject:Date:From;
+        b=k/Ji6OS3IllO6M3riDtSGtw9WFDFPhk7Ghe4Qc2p5vJtOZxsHNmy9bsLj6LbDY340
+         FpFjzW8JYpWKfl45Ajh/8UvMWU1+gCww5UkWB2K//UXmFYw8RKIEThaOpU6Ujo0KHg
+         WFK3HCGLzq/EjhIW/xgHqh1G+WLVRl+oHZP0iXKw=
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Aviad Yehezkel <aviadye@nvidia.com>
+Cc:     Vadim Fedorenko <vfedorenko@novek.ru>, netdev@vger.kernel.org
+Subject: [net v2] net/tls: missing received data after fast remote close
+Date:   Thu, 19 Nov 2020 04:13:52 +0300
+Message-Id: <1605748432-19416-1-git-send-email-vfedorenko@novek.ru>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
+        autolearn=ham autolearn_force=no version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 11:03:55PM +0100, Michael Grzeschik wrote:
-> The variable mib_port_cnt has the same meaning as port_cnt.
-> This driver removes the extra variable and is using port_cnt
-> everywhere instead.
-> 
-> Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+In case when tcp socket received FIN after some data and the
+parser haven't started before reading data caller will receive
+an empty buffer. This behavior differs from plain TCP socket and
+leads to special treating in user-space.
+The flow that triggers the race is simple. Server sends small
+amount of data right after the connection is configured to use TLS
+and closes the connection. In this case receiver sees TLS Handshake
+data, configures TLS socket right after Change Cipher Spec record.
+While the configuration is in process, TCP socket receives small
+Application Data record, Encrypted Alert record and FIN packet. So
+the TCP socket changes sk_shutdown to RCV_SHUTDOWN and sk_flag with
+SK_DONE bit set. The received data is not parsed upon arrival and is
+never sent to user-space.
 
-Nice to see another poorly defined variable disappear.
+Patch unpauses parser directly if we have unparsed data in tcp
+receive queue.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
+---
+ net/tls/tls_sw.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-    Andrew
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index 2fe9e2c..97c5f6e 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -1295,6 +1295,12 @@ static struct sk_buff *tls_wait_data(struct sock *sk, struct sk_psock *psock,
+ 			return NULL;
+ 		}
+ 
++		if (skb_queue_empty(&sk->sk_receive_queue)) {
++			__strp_unpause(&ctx->strp);
++			if (ctx->recv_pkt)
++				return ctx->recv_pkt;
++		}
++
+ 		if (sk->sk_shutdown & RCV_SHUTDOWN)
+ 			return NULL;
+ 
+-- 
+1.8.3.1
+
