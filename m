@@ -2,122 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18CFC2B9D15
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 22:49:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C71342B9D2F
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 22:53:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726575AbgKSVp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 16:45:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46700 "EHLO
+        id S1726847AbgKSVv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 16:51:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726159AbgKSVp5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 16:45:57 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36B5C0613CF
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 13:45:56 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id b63so5766093pfg.12
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 13:45:56 -0800 (PST)
+        with ESMTP id S1726811AbgKSVvY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 16:51:24 -0500
+Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 689CBC0617A7
+        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 13:51:24 -0800 (PST)
+Received: by mail-lf1-x141.google.com with SMTP id u19so10487390lfr.7
+        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 13:51:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=adY2gOdI7eN0sjh6fiUAn08VuJZ2PFESMipzyNvraM0=;
-        b=cPcb7kP+lNFejWMRmCmH3XD2T8RmhNrsi3uMb36tCmKnY7z8Q0PpPFDaQ/W+27wPQx
-         vij9EWwDWZv2zkIw393CH7kYf/Xz51HXlUlAITfDCYJnxZcJfDDDo/jCiP+k+nqaA+IN
-         1oVqYzk6fcB3f3cM1FOHdIX1JFQHwgo8hvXsYgdVR55xh42raQSebFU8cD7kf8yUEhqN
-         ZnID3VvtCW/KFvHC7F+UYdBPRW3se9YS1MDty03aMvOHhXhz4DFYKqg1MmRAwOVFNFJ1
-         jFk7Csx27ElSHItXEewF4Wm5k8O8dPr5RvFqPNCnmf5hDgMYIvwOu9dVQhpMuI/KKH14
-         kMag==
+         :cc;
+        bh=zNkP1BfoND8tPkUFRfpyqdTZsuDNt6M1lpZgWEkn6Jc=;
+        b=RAH4dACOk6p+Hl0CUknO6IqaObL74j1ij3JIrmV4Sxb2GuXcuW0/A7vF+XR9RhhFSp
+         GPbynKn+i2ldVeFGmkbi3Ywr0Gu6zT9mlfPOchTMUS2kACmG/ekXrxinbmzEOFWcyYbz
+         /5C73fBQ28oRR8OuM5kZQCthv6ve/myWVsRbg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=adY2gOdI7eN0sjh6fiUAn08VuJZ2PFESMipzyNvraM0=;
-        b=MG4tTpJ9mCWpp/Fbu+zWpDMrgkFulwn2mPzWXmqu2zk2XEL3ENHkyeTIhTwVa6AK0d
-         q1sFHUKuFVvGqO+XPdJTY9R9EgRWcSDYfykoV98OIXffdVoYIMoudXVVLDF5urPFdRge
-         h6aXXt89VKYuDfDPTimTnHQPsZTDTYsMvEbwodBl5PWPkQho+sPmK/8dWuoPWSFMxlJR
-         3+RWka5bfmmT1wwp8kaWeIOm8vGBsFhBQE8Um3Eu33mSmltompkWk5bp5cuDaznCMJMw
-         KLdbC0yc/JZ92KNTwkkmnkPsHQ7GB8wMvqXTBZIXl9zi0AxVkt4gNsaioLV7hY673nAW
-         vaIA==
-X-Gm-Message-State: AOAM530GYzThINLrkYG6YD2dxIa/KMirLmXlzrh81W//mYE4UbwCuYRK
-        iB3CNklF4iVOUNfIvfm0haC1MiNyEr9VwwTBpxw=
-X-Google-Smtp-Source: ABdhPJwI4DnPJsCo7aGNErL9ghQ5XCswi2tb7Z0B9Sn26Yg6GplyTEDF2sUy5JhGVXLTUhahrPTlPXXBv2hozDvBvyg=
-X-Received: by 2002:aa7:84da:0:b029:197:911b:7103 with SMTP id
- x26-20020aa784da0000b0290197911b7103mr8292217pfn.10.1605822356425; Thu, 19
- Nov 2020 13:45:56 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=zNkP1BfoND8tPkUFRfpyqdTZsuDNt6M1lpZgWEkn6Jc=;
+        b=WpnGGjAXcubgjZXLwVDxJBUrBwa4+/EbbPmKxzdQICuXsHujh99sNFhYxJOzgJKrv6
+         KL7xgKvvcFMDQTGdSLYSLCcZuzJzueiu8vpjlOT9HK0PgSnaX8h/K4YDOTQE8MP9AFHV
+         yP4r0+o1NPQS5glCWKmLR0CE6Gb+hd8C8uWymwgmnR6NYSo/Hek2ldbQ6tenGpYBjoW2
+         NgQfeODKKLkydTKIDzMiNaI+CR6zoI9n+DBQc4K7Yj6Qy8VVbPRTo2JeNYxnbBdZGJ/m
+         H1ZGsv4eBTAFm4zKYiZiMRkKes7BY0dQelNcl4KWpFd/FzBiRN/UQaCdLPclq19ePY1i
+         6XHw==
+X-Gm-Message-State: AOAM533Ap7InpsMqBZZJR9aw3I4J0WNdr+cy7GhzLTiP4yhBz9gMzpIO
+        Lcbsv15CHtCvnsoAFSt1N0h5HSi5oYXl1gheIZr4Mg==
+X-Google-Smtp-Source: ABdhPJzAav3mWCYz/rq8AYwkC5wyEpFUWloem8MmqonR2PXl1rjJxoQVJCUYjeBQizBZlQtlvaImLgveQ0rxVWRKRgA=
+X-Received: by 2002:ac2:43b4:: with SMTP id t20mr6247176lfl.146.1605822682841;
+ Thu, 19 Nov 2020 13:51:22 -0800 (PST)
 MIME-Version: 1.0
-References: <1605663468-14275-1-git-send-email-wenxu@ucloud.cn>
- <CAM_iQpVoFrZ9gFNFUsqtt=12OS_Cs+vpokgNCB0eQiBf=hD4dA@mail.gmail.com> <bf2b3221-2325-c913-be30-2db543e6e1e1@ucloud.cn>
-In-Reply-To: <bf2b3221-2325-c913-be30-2db543e6e1e1@ucloud.cn>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 19 Nov 2020 13:45:45 -0800
-Message-ID: <CAM_iQpVu7kke6jqGpoqbnKxJU3SdpQG2WBi-GJ18NrVyrc_W2A@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 3/3] net/sched: sch_frag: add generic packet
- fragment support.
-To:     wenxu <wenxu@ucloud.cn>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <20201119162654.2410685-1-revest@chromium.org> <20201119162654.2410685-2-revest@chromium.org>
+In-Reply-To: <20201119162654.2410685-2-revest@chromium.org>
+From:   KP Singh <kpsingh@chromium.org>
+Date:   Thu, 19 Nov 2020 22:51:12 +0100
+Message-ID: <CACYkzJ79eOai+k1=YfwvP_DNdxX1G+yJ-1vyhgoCqxWyJZGAGQ@mail.gmail.com>
+Subject: Re: [PATCH v2 2/5] bpf: Add a bpf_sock_from_file helper
+To:     Florent Revest <revest@chromium.org>
+Cc:     bpf <bpf@vger.kernel.org>, Al Viro <viro@zeniv.linux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Florent Revest <revest@google.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 12:04 AM wenxu <wenxu@ucloud.cn> wrote:
+On Thu, Nov 19, 2020 at 5:27 PM Florent Revest <revest@chromium.org> wrote:
 >
+> From: Florent Revest <revest@google.com>
 >
-> =E5=9C=A8 2020/11/18 15:00, Cong Wang =E5=86=99=E9=81=93:
-> > On Tue, Nov 17, 2020 at 5:37 PM <wenxu@ucloud.cn> wrote:
-> >> From: wenxu <wenxu@ucloud.cn>
-> >>
-> >> Currently kernel tc subsystem can do conntrack in cat_ct. But when sev=
-eral
-> >> fragment packets go through the act_ct, function tcf_ct_handle_fragmen=
-ts
-> >> will defrag the packets to a big one. But the last action will redirec=
-t
-> >> mirred to a device which maybe lead the reassembly big packet over the=
- mtu
-> >> of target device.
-> >>
-> >> This patch add support for a xmit hook to mirred, that gets executed b=
-efore
-> >> xmiting the packet. Then, when act_ct gets loaded, it configs that hoo=
-k.
-> >> The frag xmit hook maybe reused by other modules.
-> >>
-> >> Signed-off-by: wenxu <wenxu@ucloud.cn>
-> >> ---
-> >> v2: make act_frag just buildin for tc core but not a module
-> >>     return an error code from tcf_fragment
-> >>     depends on INET for ip_do_fragment
-> > Much better now.
-> >
-> >
-> >> +#ifdef CONFIG_INET
-> >> +               ret =3D ip_do_fragment(net, skb->sk, skb, sch_frag_xmi=
-t);
-> >> +#endif
-> >
-> > Doesn't the whole sch_frag need to be put under CONFIG_INET?
-> > I don't think fragmentation could work without CONFIG_INET.
+> While eBPF programs can check whether a file is a socket by file->f_op
+> == &socket_file_ops, they cannot convert the void private_data pointer
+> to a struct socket BTF pointer. In order to do this a new helper
+> wrapping sock_from_file is added.
 >
-> I have already test with this. Without CONFIG_INET it is work.
+> This is useful to tracing programs but also other program types
+> inheriting this set of helpers such as iterators or LSM programs.
 >
-> And only the ip_do_fragment depends on CONFIG_INET
+> Signed-off-by: Florent Revest <revest@google.com>
 
-Passing the compiler test is not what I meant. The whole ipv4/ directory
-is under CONFIG_INET:
+Acked-by: KP Singh <kpsingh@google.com>
 
- obj-$(CONFIG_INET)              +=3D ipv4/
+Some minor comments.
 
-Without it, what code does the fragmentation? I suggest you to just put
-the sch_frag in this way:
+> ---
+>  include/uapi/linux/bpf.h       |  7 +++++++
+>  kernel/trace/bpf_trace.c       | 20 ++++++++++++++++++++
+>  scripts/bpf_helpers_doc.py     |  4 ++++
+>  tools/include/uapi/linux/bpf.h |  7 +++++++
+>  4 files changed, 38 insertions(+)
+>
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 162999b12790..7d598f161dc0 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -3787,6 +3787,12 @@ union bpf_attr {
+>   *             *ARG_PTR_TO_BTF_ID* of type *task_struct*.
+>   *     Return
+>   *             Pointer to the current task.
+> + *
+> + * struct socket *bpf_sock_from_file(struct file *file)
+> + *     Description
+> + *             If the given file contains a socket, returns the associated socket.
 
-obj-$(CONFIG_INET)              +=3D sch_frag.o
+"If the given file is a socket" or "represents a socket" would fit better here.
 
-(and remove the #ifdef CONFIG_INET within it.)
+> + *     Return
+> + *             A pointer to a struct socket on success or NULL on failure.
 
-Thanks.
+NULL if the file is not a socket.
