@@ -2,88 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5B442B90B3
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 12:11:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 472C72B91CB
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 12:54:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726988AbgKSLJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 06:09:44 -0500
-Received: from mailout12.rmx.de ([94.199.88.78]:35266 "EHLO mailout12.rmx.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725783AbgKSLJo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Nov 2020 06:09:44 -0500
-Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mailout12.rmx.de (Postfix) with ESMTPS id 4CcH51163qzRp1J;
-        Thu, 19 Nov 2020 12:09:41 +0100 (CET)
-Received: from mta.arri.de (unknown [217.111.95.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by kdin02.retarus.com (Postfix) with ESMTPS id 4CcH4V2sdZz2TTJR;
-        Thu, 19 Nov 2020 12:09:14 +0100 (CET)
-Received: from N95HX1G2.wgnetz.xx (192.168.54.113) by mta.arri.de
- (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 19 Nov
- 2020 12:09:14 +0100
-From:   Christian Eggers <ceggers@arri.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-CC:     Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Christian Eggers <ceggers@arri.de>
-Subject: [PATCH net-next v2] net: dsa: avoid potential use-after-free error
-Date:   Thu, 19 Nov 2020 12:09:06 +0100
-Message-ID: <20201119110906.25558-1-ceggers@arri.de>
-X-Mailer: git-send-email 2.26.2
+        id S1727849AbgKSLrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 06:47:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37934 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727025AbgKSLmT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 06:42:19 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87CF7C0617A7;
+        Thu, 19 Nov 2020 03:42:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=z2wOlmDrz/QfDBFn6ctWN3OgjQZgcVppTZgX8Pi6wGw=; b=co0OjL/MI1Wj9zjx2cJrcNvsU5
+        R6Y69/TFYkDr9yE5TOSz/Lqu8cu/qMXc8DeMSupBdLz9EiLkMyHOqQn5JZ8KMswn7JwMXloOHNDDh
+        An1mXtVjEZxwi9MXuhv9zWEWy9qv+7iN7BeOumB4D9g+1Aff4Ojk+/LyyIbnvIaMi9XvbwOeCXByl
+        bb4YD2+xUY54Hq9h2IMD/T2iFRCUiDr7/g+dWKaUQ2I8VMK+rGIe7YJhA7TLJNu/iLhWJSbpl3gi2
+        2aq8h4BEZm1zuQAggSLFmHUcOIw6DaUKqyp01IhvG4jPB/YFlgGpuWYhe5j5ETqZhZ/fo5crvUwKg
+        fRI42W3A==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kfiJz-0006HH-Dw; Thu, 19 Nov 2020 11:41:52 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 1E0693069B1;
+        Thu, 19 Nov 2020 12:41:49 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id C85A02C0AB058; Thu, 19 Nov 2020 12:41:49 +0100 (CET)
+Date:   Thu, 19 Nov 2020 12:41:49 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        linmiaohe@huawei.com, martin.varghese@nokia.com, pabeni@redhat.com,
+        pshelar@ovn.org, fw@strlen.de, gnault@redhat.com,
+        steffen.klassert@secunet.com, kyk.segfault@gmail.com,
+        viro@zeniv.linux.org.uk, vladimir.oltean@nxp.com,
+        edumazet@google.com, saeed@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxarm@huawei.com
+Subject: Re: [PATCH net-next] net: add in_softirq() debug checking in
+ napi_consume_skb()
+Message-ID: <20201119114149.GI3121392@hirez.programming.kicks-ass.net>
+References: <1603971288-4786-1-git-send-email-linyunsheng@huawei.com>
+ <20201031153824.7ae83b90@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <5b04ad33-1611-8d7b-8fec-4269c01ecab3@huawei.com>
+ <20201102114110.4a20d461@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <5bd6de52-b8e0-db6f-3362-862ae7b2c728@huawei.com>
+ <20201118074348.3bbd1468@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <20201118155757.GY3121392@hirez.programming.kicks-ass.net>
+ <20201118082658.2aa41190@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <b00f1c28-668c-ecdb-6aa7-282e57475e25@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.54.113]
-X-RMX-ID: 20201119-120914-4CcH4V2sdZz2TTJR-0@kdin02
-X-RMX-SOURCE: 217.111.95.66
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b00f1c28-668c-ecdb-6aa7-282e57475e25@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If dsa_switch_ops::port_txtstamp() returns false, clone will be freed
-immediately. Shouldn't store a pointer to freed memory.
+On Thu, Nov 19, 2020 at 05:19:44PM +0800, Yunsheng Lin wrote:
+> On 2020/11/19 0:26, Jakub Kicinski wrote:
+> > On Wed, 18 Nov 2020 16:57:57 +0100 Peter Zijlstra wrote:
+> >> On Wed, Nov 18, 2020 at 07:43:48AM -0800, Jakub Kicinski wrote:
+> >>
+> >>> TBH the last sentence I wrote isn't clear even to me at this point ;D
+> >>>
+> >>> Maybe using just the macros from preempt.h - like this?
+> >>>
+> >>> #define lockdep_assert_in_softirq()                                    \
+> >>> do {                                                                   \
+> >>>        WARN_ON_ONCE(__lockdep_enabled                  &&              \
+> >>>                     (!in_softirq() || in_irq() || in_nmi())	\
+> >>> } while (0)
+> 
+> One thing I am not so sure about is the different irq context indicator
+> in preempt.h and lockdep.h, for example lockdep_assert_in_irq() uses
+> this_cpu_read(hardirq_context) in lockdep.h, and in_irq() uses
+> current_thread_info()->preempt_count in preempt.h, if they are the same
+> thing?
 
-Signed-off-by: Christian Eggers <ceggers@arri.de>
-Fixes: 146d442c2357 ("net: dsa: Keep a pointer to the skb clone for TX timestamping")
----
-Changes since v1:
-- Fixed "Fixes:" tag (and configured my GIT)
-- Adjusted commit description
-
- net/dsa/slave.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index ff2266d2b998..7efc753e4d9d 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -522,10 +522,10 @@ static void dsa_skb_tx_timestamp(struct dsa_slave_priv *p,
- 	if (!clone)
- 		return;
- 
--	DSA_SKB_CB(skb)->clone = clone;
--
--	if (ds->ops->port_txtstamp(ds, p->dp->index, clone, type))
-+	if (ds->ops->port_txtstamp(ds, p->dp->index, clone, type)) {
-+		DSA_SKB_CB(skb)->clone = clone;
- 		return;
-+	}
- 
- 	kfree_skb(clone);
- }
--- 
-Christian Eggers
-Embedded software developer
-
-Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRA 57918
-Persoenlich haftender Gesellschafter: Arnold & Richter Cine Technik GmbH
-Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRB 54477
-Geschaeftsfuehrer: Dr. Michael Neuhaeuser; Stephan Schenk; Walter Trauninger; Markus Zeiler
-
+Very close, for more regular code they should be the same.
