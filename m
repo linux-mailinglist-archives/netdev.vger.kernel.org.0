@@ -2,89 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43E392B9947
+	by mail.lfdr.de (Postfix) with ESMTP id B14012B9948
 	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 18:29:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728568AbgKSR0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 12:26:06 -0500
-Received: from smtp6-g21.free.fr ([212.27.42.6]:38966 "EHLO smtp6-g21.free.fr"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727195AbgKSR0F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Nov 2020 12:26:05 -0500
-Received: from mail.corsac.net (unknown [IPv6:2a01:e34:ec2f:4e20::5])
-        by smtp6-g21.free.fr (Postfix) with ESMTPS id 9968E7803BF
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 18:25:33 +0100 (CET)
-Received: from scapa.corsac.net (unknown [IPv6:2a01:e34:ec2f:4e20:6af7:28ff:fe8d:2119])
-        by mail.corsac.net (Postfix) with ESMTPS id 6F82597
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 18:24:55 +0100 (CET)
-Received: from corsac (uid 1000)
-        (envelope-from corsac@corsac.net)
-        id a024c
-        by scapa.corsac.net (DragonFly Mail Agent v0.12);
-        Thu, 19 Nov 2020 18:24:55 +0100
-From:   Yves-Alexis Perez <corsac@corsac.net>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Martin Habets <mhabets@solarflare.com>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        "Michael S. Tsirkin" <mst@redhat.com>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Yves-Alexis Perez <corsac@corsac.net>,
-        Matti Vuorela <matti.vuorela@bitfactor.fi>,
-        stable@vger.kernel.org
-Subject: [PATCH] usbnet: ipheth: fix connectivity with iOS 14
-Date:   Thu, 19 Nov 2020 18:24:39 +0100
-Message-Id: <20201119172439.94988-1-corsac@corsac.net>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <CAAn0qaXmysJ9vx3ZEMkViv_B19ju-_ExN8Yn_uSefxpjS6g4Lw@mail.gmail.com>
-References: <CAAn0qaXmysJ9vx3ZEMkViv_B19ju-_ExN8Yn_uSefxpjS6g4Lw@mail.gmail.com>
+        id S1729294AbgKSR0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 12:26:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:56258 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728663AbgKSR0v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 12:26:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605806810;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=A9gyGsjXsxFxygwzA3IzjqNNYV6lCQYqmAHBNaZPFrA=;
+        b=hjSDWmDiDSgmm8cwOfttyfTbQWuooKh5BO6XKBEDzGKTSLdTAchn28HhBH4orNjWbIIlXy
+        TYisEc4d+Htx/cwWKV90vYtzzG8OrXF90tEnu2NKJNl+VIHllGMrqJnhbY6fkrV++F4KKm
+        ldC1yrh5zsPtqD0Ob0uUFsWnTzGz1Hk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-406-SsvYuXONNUyT9mp4G0WOog-1; Thu, 19 Nov 2020 12:26:46 -0500
+X-MC-Unique: SsvYuXONNUyT9mp4G0WOog-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5765310766BB;
+        Thu, 19 Nov 2020 17:26:45 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.40.208.7])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D010610016F6;
+        Thu, 19 Nov 2020 17:26:41 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 81CA932138455;
+        Thu, 19 Nov 2020 18:26:40 +0100 (CET)
+Subject: [PATCH net-next] MAINTAINERS: Update XDP and AF_XDP entries
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Date:   Thu, 19 Nov 2020 18:26:40 +0100
+Message-ID: <160580680009.2806072.11680148233715741983.stgit@firesoul>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Starting with iOS 14 released in September 2020, connectivity using the
-personal hotspot USB tethering function of iOS devices is broken.
+Getting too many false positive matches with current use
+of the content regex K: and file regex N: patterns.
 
-Communication between the host and the device (for example ICMP traffic
-or DNS resolution using the DNS service running in the device itself)
-works fine, but communication to endpoints further away doesn't work.
+This patch drops file match N: and makes K: more restricted.
+Some more normal F: file wildcards are added.
 
-Investigation on the matter shows that UDP and ICMP traffic from the
-tethered host is reaching the Internet at all. For TCP traffic there are
-exchanges between tethered host and server but packets are modified in
-transit leading to impossible communication.
+Notice that AF_XDP forgot to some F: files that is also
+updated in this patch.
 
-After some trials Matti Vuorela discovered that reducing the URB buffer
-size by two bytes restored the previous behavior. While a better
-solution might exist to fix the issue, since the protocol is not
-publicly documented and considering the small size of the fix, let's do
-that.
-
-Tested-by: Matti Vuorela <matti.vuorela@bitfactor.fi>
-Signed-off-by: Yves-Alexis Perez <corsac@corsac.net>
-Link: https://lore.kernel.org/linux-usb/CAAn0qaXmysJ9vx3ZEMkViv_B19ju-_ExN8Yn_uSefxpjS6g4Lw@mail.gmail.com/
-Link: https://github.com/libimobiledevice/libimobiledevice/issues/1038
-Cc: stable@vger.kernel.org
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 ---
- drivers/net/usb/ipheth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ MAINTAINERS |   12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/usb/ipheth.c b/drivers/net/usb/ipheth.c
-index b09b45382faf..207e59e74935 100644
---- a/drivers/net/usb/ipheth.c
-+++ b/drivers/net/usb/ipheth.c
-@@ -59,7 +59,7 @@
- #define IPHETH_USBINTF_SUBCLASS 253
- #define IPHETH_USBINTF_PROTO    1
+diff --git a/MAINTAINERS b/MAINTAINERS
+index af9f6a3ab100..230917ee687f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -19105,12 +19105,17 @@ L:	netdev@vger.kernel.org
+ L:	bpf@vger.kernel.org
+ S:	Supported
+ F:	include/net/xdp.h
++F:	include/net/xdp_priv.h
+ F:	include/trace/events/xdp.h
+ F:	kernel/bpf/cpumap.c
+ F:	kernel/bpf/devmap.c
+ F:	net/core/xdp.c
+-N:	xdp
+-K:	xdp
++F:	samples/bpf/xdp*
++F:	tools/testing/selftests/bpf/*xdp*
++F:	tools/testing/selftests/bpf/*/*xdp*
++F:	drivers/net/ethernet/*/*/*/*/*xdp*
++F:	drivers/net/ethernet/*/*/*xdp*
++K:	[^a-z0-9]xdp[^a-z0-9]
  
--#define IPHETH_BUF_SIZE         1516
-+#define IPHETH_BUF_SIZE         1514
- #define IPHETH_IP_ALIGN		2	/* padding at front of URB */
- #define IPHETH_TX_TIMEOUT       (5 * HZ)
- 
--- 
-2.29.2
+ XDP SOCKETS (AF_XDP)
+ M:	Björn Töpel <bjorn.topel@intel.com>
+@@ -19119,9 +19124,12 @@ R:	Jonathan Lemon <jonathan.lemon@gmail.com>
+ L:	netdev@vger.kernel.org
+ L:	bpf@vger.kernel.org
+ S:	Maintained
++F:	Documentation/networking/af_xdp.rst
+ F:	include/net/xdp_sock*
+ F:	include/net/xsk_buff_pool.h
+ F:	include/uapi/linux/if_xdp.h
++F:	include/uapi/linux/xdp_diag.h
++F:	include/net/netns/xdp.h
+ F:	net/xdp/
+ F:	samples/bpf/xdpsock*
+ F:	tools/lib/bpf/xsk*
+
 
