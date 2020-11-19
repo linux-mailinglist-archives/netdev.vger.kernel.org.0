@@ -2,61 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BB472B89CD
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 02:52:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 734A12B89CF
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 02:52:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727556AbgKSBwF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 20:52:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52194 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726413AbgKSBwD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 20:52:03 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F11F4246B0;
-        Thu, 19 Nov 2020 01:52:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605750723;
-        bh=MB24IZaExrsK4Rzul7nPnkTzjyE07BB/s1BFWrYk4+I=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ct4LN/ipyY6E+W8xPHxFV3gZu/xQ7r1jjMS7RsiYEm7Bcw9xe4O4rVE7Q4gkAsCBl
-         F5VWVhFKy2AmlVHvHy44fHds2U34mj3CHnVJsElnwrIlJ8CZz93oOZhzX4nWaluhbt
-         ogmOYRw3Jk9lu6mqAeD2OqJYSlCPxSWARlrOnzEY=
-Date:   Wed, 18 Nov 2020 17:52:02 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        linux-can@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: pull-request: can 2020-11-18
-Message-ID: <20201118175202.6bee925e@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201118160414.2731659-1-mkl@pengutronix.de>
-References: <20201118160414.2731659-1-mkl@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1727649AbgKSBwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 20:52:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60232 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726413AbgKSBwN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Nov 2020 20:52:13 -0500
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8681CC0617A7;
+        Wed, 18 Nov 2020 17:52:13 -0800 (PST)
+Received: by mail-pg1-x543.google.com with SMTP id m9so2762939pgb.4;
+        Wed, 18 Nov 2020 17:52:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=9025Wc1+t1+Asl4+HE2JiiCcXuZsf9kAEp5Y/mjiQ7I=;
+        b=at1kCgQJTObwy+2jmdlGcjwCXnikQgSV4v9IToVIQLPzLOrm5dSm8lc9gDsISjJpoy
+         kq4DbGbvQ0xnuRXX6nyMsAGyPuEpuUyewplrqz1fSuPaKofSELvTLTw6E+g1SjQbXPac
+         CzOxnVHGN/IUkgzigWpAVtQ2SQaPNHzsudK009LbTx9t+BaoD3E2FR3GvjLjqbRLGUDr
+         EF91MyNDe5Te8ikU5YxBWPft5RiojerqB934+BjIuPUNh2L2I1kfIlwJUN+xSs3bS+Ze
+         R9lqmbFLPCGqHVr7uSpUzku4tRxQOkPIMwdCZUnD194tCquZ9l5UwwaR+BU2nJErxn1J
+         E1YA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=9025Wc1+t1+Asl4+HE2JiiCcXuZsf9kAEp5Y/mjiQ7I=;
+        b=D43soLDih5auf9lmFmGJXMtsHZkiB2+oqDAuDonFa8meLnz4siP/HBvFglra16zZgZ
+         e108XCol5Uu2osq/eW5SUtcDt+NY+bEy8CYoWx5rWmWSJ4o2L2uTawYv6DwlG9NE4LL0
+         CdCDhWIjjUegkfBP5KhYjtvw2euEsOZbpVETiI8P0rmjJ7x0ceD+XQjb2Jc7vjxBDE5p
+         RSDhbDVgbuZ6d0bb16KfjyX9vez5YegBLLv1dbxnFd0DkJOz9KA04qz95usG8PBz5ssZ
+         es0Ei8Lrh4jqHphCtnNmhaaDf6tGtfaZzrTR4PCIRVpiPV2UJquGqRk/qdct8oD7AXZ6
+         sAPA==
+X-Gm-Message-State: AOAM530oVuMTGBctJf5AKGWRgweSY1IcFJwHIbSfp1UUWSRqpVYbSX+a
+        M9p6T+DwUObof+I9mn1wYYw=
+X-Google-Smtp-Source: ABdhPJzICtfYjpI2GQXdBLTyYUvqqtGVGQDEQFhVQmIYp6gzD2kN/3XYB3VuQyBHlPbYZo6seRxoXg==
+X-Received: by 2002:a17:90a:fa04:: with SMTP id cm4mr1815855pjb.24.1605750733194;
+        Wed, 18 Nov 2020 17:52:13 -0800 (PST)
+Received: from localhost.localdomain ([45.56.153.149])
+        by smtp.gmail.com with ESMTPSA id o62sm4038168pjo.7.2020.11.18.17.52.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Nov 2020 17:52:12 -0800 (PST)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+To:     pkshih@realtek.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org, Larry.Finger@lwfinger.net
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH v2 3/4 resend] rtlwifi: rtl8192de: avoid accessing the data mapped to streaming DMA
+Date:   Thu, 19 Nov 2020 09:52:05 +0800
+Message-Id: <20201119015205.12162-1-baijiaju1990@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Nov 2020 17:04:10 +0100 Marc Kleine-Budde wrote:
-> Hello Jakub, hello David,
-> 
-> here's a pull request for net/master consisting of 4 patches for net/master,
-> 
-> Jimmy Assarsson provides two patches for the kvaser_pciefd and kvaser_usb
-> drivers, where the can_bittiming_const are fixed.
-> 
-> The next patch is by me and fixes an erroneous flexcan_transceiver_enable()
-> during bus-off recovery in the flexcan driver.
-> 
-> Jarkko Nikula's patch for the m_can driver fixes the IRQ handler to only
-> process the interrupts if the device is not suspended.
+In rtl92de_tx_fill_cmddesc(), skb->data is mapped to streaming DMA on
+line 667:
+  dma_addr_t mapping = dma_map_single(..., skb->data, ...);
 
-Pulled, thanks!
+On line 669, skb->data is assigned to hdr after cast:
+  struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(skb->data);
 
-> P.S.: Can you merge net/master into net-next/master after merging this pull
-> request?
+Then hdr->frame_control is accessed on line 670:
+  __le16 fc = hdr->frame_control;
 
-That usually happens after Linus pulls from net, I will send a PR to him
-tomorrow, and then merge net -> net-next. Hope that works for you!
+This DMA access may cause data inconsistency between CPU and hardwre.
+
+To fix this bug, hdr->frame_control is accessed before the DMA mapping.
+
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+---
+v2:
+* Use "rtlwifi" as subject prefix and have all rtlwifi patches in the
+  same pathset.
+  Thank Ping and Larry for good advice.
+
+---
+ drivers/net/wireless/realtek/rtlwifi/rtl8192de/trx.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/trx.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/trx.c
+index 8944712274b5..c02813fba934 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/trx.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/trx.c
+@@ -664,12 +664,14 @@ void rtl92de_tx_fill_cmddesc(struct ieee80211_hw *hw,
+ 	struct rtl_ps_ctl *ppsc = rtl_psc(rtlpriv);
+ 	struct rtl_hal *rtlhal = rtl_hal(rtlpriv);
+ 	u8 fw_queue = QSLT_BEACON;
+-	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
+-					    skb->len, DMA_TO_DEVICE);
++
+ 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(skb->data);
+ 	__le16 fc = hdr->frame_control;
+ 	__le32 *pdesc = (__le32 *)pdesc8;
+ 
++	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
++					    skb->len, DMA_TO_DEVICE);
++
+ 	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
+ 		rtl_dbg(rtlpriv, COMP_SEND, DBG_TRACE,
+ 			"DMA mapping error\n");
+-- 
+2.17.1
+
