@@ -2,130 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C62BA2B9A8B
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 19:24:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EA902B9AD6
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 19:47:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729240AbgKSSWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 13:22:44 -0500
-Received: from mg.ssi.bg ([178.16.128.9]:39778 "EHLO mg.ssi.bg"
+        id S1728963AbgKSSoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 13:44:16 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57328 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727881AbgKSSWn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Nov 2020 13:22:43 -0500
-Received: from mg.ssi.bg (localhost [127.0.0.1])
-        by mg.ssi.bg (Proxmox) with ESMTP id 1B7DBEFAB;
-        Thu, 19 Nov 2020 20:22:41 +0200 (EET)
-Received: from ink.ssi.bg (ink.ssi.bg [178.16.128.7])
-        by mg.ssi.bg (Proxmox) with ESMTP id 52838EF23;
-        Thu, 19 Nov 2020 20:22:39 +0200 (EET)
-Received: from ja.ssi.bg (unknown [178.16.129.10])
-        by ink.ssi.bg (Postfix) with ESMTPS id B8BA13C0332;
-        Thu, 19 Nov 2020 20:22:33 +0200 (EET)
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id 0AJIMUmD008429;
-        Thu, 19 Nov 2020 20:22:32 +0200
-Date:   Thu, 19 Nov 2020 20:22:30 +0200 (EET)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     Wang Hai <wanghai38@huawei.com>
-cc:     horms@verge.net.au, pablo@netfilter.org, kadlec@netfilter.org,
-        fw@strlen.de, davem@davemloft.net, kuba@kernel.org,
-        christian@brauner.io, hans.schillstrom@ericsson.com,
-        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] ipvs: fix possible memory leak in
- ip_vs_control_net_init
-In-Reply-To: <20201119104102.67427-1-wanghai38@huawei.com>
-Message-ID: <f111e78-b9c1-453-c6e5-a063e62cd83b@ssi.bg>
-References: <20201119104102.67427-1-wanghai38@huawei.com>
+        id S1728591AbgKSSoP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Nov 2020 13:44:15 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8B75822255;
+        Thu, 19 Nov 2020 18:44:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605811455;
+        bh=hAtWZOOEggXYNF07rt3mds1WRGCi/8ckKjjaTTdIQSs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hAfN8+Rauv+Jr6l1g1tt/CdH3KcPjw3o9SdCBpf9ZgShvX+ikhp7YE02zMaXoPi06
+         FCq4oygpaB2gsMQgukoBUFqMMHvv5eC29CUGR4xOts/zuAu1daIIJuyMwbOaipmMCm
+         aIvEFTlQoLaAiAfGP00E0pN0WBXhMw4AHGpqfE6g=
+Date:   Thu, 19 Nov 2020 10:44:13 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Dmytro Shytyi <dmytro@shytyi.net>
+Cc:     "yoshfuji" <yoshfuji@linux-ipv6.org>,
+        "kuznet" <kuznet@ms2.inr.ac.ru>,
+        "liuhangbin" <liuhangbin@gmail.com>, "davem" <davem@davemloft.net>,
+        "netdev" <netdev@vger.kernel.org>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next V6] net: Variable SLAAC: SLAAC with prefixes of
+ arbitrary length in PIO
+Message-ID: <20201119104413.75ca9888@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <175e0b9826b.c3bb0aae425910.5834444036489233360@shytyi.net>
+References: <175b3433a4c.aea7c06513321.4158329434310691736@shytyi.net>
+        <202011110944.7zNVZmvB-lkp@intel.com>
+        <175bd218cf4.103c639bc117278.4209371191555514829@shytyi.net>
+        <175bf515624.c67e02e8130655.7824060160954233592@shytyi.net>
+        <175c31c6260.10eef97f6180313.755036504412557273@shytyi.net>
+        <20201117124348.132862b1@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <175e0b9826b.c3bb0aae425910.5834444036489233360@shytyi.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 19 Nov 2020 14:37:35 +0100 Dmytro Shytyi wrote:
+> +struct inet6_ifaddr *ipv6_cmp_rcvd_prsnt_prfxs(struct inet6_ifaddr *ifp,
+> +					       struct inet6_dev *in6_dev,
+> +					       struct net *net,
+> +					       const struct prefix_info *pinfo)
+> +{
+> +	struct inet6_ifaddr *result_base =3D NULL;
+> +	struct inet6_ifaddr *result =3D NULL;
+> +	struct in6_addr curr_net_prfx;
+> +	struct in6_addr net_prfx;
+> +	bool prfxs_equal;
+> +
+> +	result_base =3D result;
+> +	rcu_read_lock();
+> +	list_for_each_entry_rcu(ifp, &in6_dev->addr_list, if_list) {
+> +		if (!net_eq(dev_net(ifp->idev->dev), net))
+> +			continue;
+> +		ipv6_addr_prefix_copy(&net_prfx, &pinfo->prefix, pinfo->prefix_len);
+> +		ipv6_addr_prefix_copy(&curr_net_prfx, &ifp->addr, pinfo->prefix_len);
+> +		prfxs_equal =3D
+> +			ipv6_prefix_equal(&net_prfx, &curr_net_prfx, pinfo->prefix_len);
+> +		if (prfxs_equal && pinfo->prefix_len =3D=3D ifp->prefix_len) {
+> +			result =3D ifp;
+> +			in6_ifa_hold(ifp);
+> +			break;
+> +		}
+> +	}
+> +	rcu_read_unlock();
+> +	if (result_base !=3D result)
+> +		ifp =3D result;
+> +	else
+> +		ifp =3D NULL;
+> +
+> +	return ifp;
+> +}
 
-	Hello,
+Thanks for adding the helper! Looks like it needs a touch up:
 
-On Thu, 19 Nov 2020, Wang Hai wrote:
-
-> kmemleak report a memory leak as follows:
-> 
-> BUG: memory leak
-> unreferenced object 0xffff8880759ea000 (size 256):
-> comm "syz-executor.3", pid 6484, jiffies 4297476946 (age 48.546s)
-> hex dump (first 32 bytes):
-> 00 00 00 00 01 00 00 00 08 a0 9e 75 80 88 ff ff ...........u....
-> 08 a0 9e 75 80 88 ff ff 00 00 00 00 ad 4e ad de ...u.........N..
-> backtrace:
-> [<00000000c0bf2deb>] kmem_cache_zalloc include/linux/slab.h:656 [inline]
-> [<00000000c0bf2deb>] __proc_create+0x23d/0x7d0 fs/proc/generic.c:421
-> [<000000009d718d02>] proc_create_reg+0x8e/0x140 fs/proc/generic.c:535
-> [<0000000097bbfc4f>] proc_create_net_data+0x8c/0x1b0 fs/proc/proc_net.c:126
-> [<00000000652480fc>] ip_vs_control_net_init+0x308/0x13a0 net/netfilter/ipvs/ip_vs_ctl.c:4169
-> [<000000004c927ebe>] __ip_vs_init+0x211/0x400 net/netfilter/ipvs/ip_vs_core.c:2429
-> [<00000000aa6b72d9>] ops_init+0xa8/0x3c0 net/core/net_namespace.c:151
-> [<00000000153fd114>] setup_net+0x2de/0x7e0 net/core/net_namespace.c:341
-> [<00000000be4e4f07>] copy_net_ns+0x27d/0x530 net/core/net_namespace.c:482
-> [<00000000f1c23ec9>] create_new_namespaces+0x382/0xa30 kernel/nsproxy.c:110
-> [<00000000098a5757>] copy_namespaces+0x2e6/0x3b0 kernel/nsproxy.c:179
-> [<0000000026ce39e9>] copy_process+0x220a/0x5f00 kernel/fork.c:2072
-> [<00000000b71f4efe>] _do_fork+0xc7/0xda0 kernel/fork.c:2428
-> [<000000002974ee96>] __do_sys_clone3+0x18a/0x280 kernel/fork.c:2703
-> [<0000000062ac0a4d>] do_syscall_64+0x33/0x40 arch/x86/entry/common.c:46
-> [<0000000093f1ce2c>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> In the error path of ip_vs_control_net_init(), remove_proc_entry() needs
-> to be called to remove the added proc entry, otherwise a memory leak
-> will occur.
-> 
-> Fixes: b17fc9963f83 ("IPVS: netns, ip_vs_stats and its procfs")
-> Fixes: 61b1ab4583e2 ("IPVS: netns, add basic init per netns.")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Wang Hai <wanghai38@huawei.com>
-> ---
->  net/netfilter/ipvs/ip_vs_ctl.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
-> index e279ded4e306..d99bb89e7c25 100644
-> --- a/net/netfilter/ipvs/ip_vs_ctl.c
-> +++ b/net/netfilter/ipvs/ip_vs_ctl.c
-> @@ -4180,6 +4180,9 @@ int __net_init ip_vs_control_net_init(struct netns_ipvs *ipvs)
->  	return 0;
-
-	May be we should add some #ifdef CONFIG_PROC_FS because
-proc_create_net* return NULL when PROC is not used. For example:
-
-#ifdef CONFIG_PROC_FS
-	if (!proc_create_net...
-		goto err_vs;
-	if (!proc_create_net...
-		goto err_stats;
-	...
-#endif
-	...
-
->  err:
-
-#ifdef CONFIG_PROC_FS
-> +	remove_proc_entry("ip_vs_stats_percpu", ipvs->net->proc_net);
-
-err_percpu:
-> +	remove_proc_entry("ip_vs_stats", ipvs->net->proc_net);
-
-err_stats:
-> +	remove_proc_entry("ip_vs", ipvs->net->proc_net);
-
-err_vs:
-#endif
-
->  	free_percpu(ipvs->tot_stats.cpustats);
->  	return -ENOMEM;
->  }
-> -- 
-
-Regards
-
---
-Julian Anastasov <ja@ssi.bg>
-
+net/ipv6/addrconf.c:2579:22: warning: no previous prototype for =E2=80=98ip=
+v6_cmp_rcvd_prsnt_prfxs=E2=80=99 [-Wmissing-prototypes]
+ 2579 | struct inet6_ifaddr *ipv6_cmp_rcvd_prsnt_prfxs(struct inet6_ifaddr =
+*ifp,
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~
+net/ipv6/addrconf.c:2579:21: warning: symbol 'ipv6_cmp_rcvd_prsnt_prfxs' wa=
+s not declared. Should it be static?
