@@ -2,312 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E38512B9E1A
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 00:27:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D937F2B9E62
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 00:37:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726541AbgKSXXD convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 19 Nov 2020 18:23:03 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:24186 "EHLO
+        id S1726504AbgKSXcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 18:32:13 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:53548 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726475AbgKSXXC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 18:23:02 -0500
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AJNLTKV003424
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 15:23:01 -0800
+        by vger.kernel.org with ESMTP id S1725890AbgKSXcN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 18:32:13 -0500
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AJNQN2l006103;
+        Thu, 19 Nov 2020 15:31:54 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=3+OTaXk70jTD2A91N+tLzEAfFhoiQOCQzygMd8PWFYo=;
+ b=aWFDqQlZe70pDjDp9Jr8SvvGB3W13/vvyK6c9bwQfvUXPYlCUI2wTQB9WQaAsICvCxqB
+ +PRXtzMS0tbxrDQXJsu55niyjbZadfATLNsZ6hteq3seVr1T2eIHzeYnKTI+8QYxcdIC
+ bpHbwj58TnJa0OHwI9XFRWbPwFBTgphgmqA= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 34wsge3j9p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 15:23:01 -0800
-Received: from intmgw004.03.ash8.facebook.com (2620:10d:c085:108::8) by
- mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
+        by mx0a-00082601.pphosted.com with ESMTP id 34wx1shqc5-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 19 Nov 2020 15:31:54 -0800
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.231) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 19 Nov 2020 15:23:00 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id CACE12EC9B9C; Thu, 19 Nov 2020 15:22:58 -0800 (PST)
-From:   Andrii Nakryiko <andrii@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH bpf-next 6/6] selftests/bpf: add CO-RE relocs selftest relying on kernel module BTF
-Date:   Thu, 19 Nov 2020 15:22:44 -0800
-Message-ID: <20201119232244.2776720-7-andrii@kernel.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20201119232244.2776720-1-andrii@kernel.org>
-References: <20201119232244.2776720-1-andrii@kernel.org>
+ 15.1.1979.3; Thu, 19 Nov 2020 15:31:52 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Rtywz7aAeiHMhcHhPx1qOoY+slbp0NP1eVXzyXnJvHO6EdCnlgkKrcmnY5TIkUelaf7W7SSW2qqxOKO9+S/cxjOPJS4jl70wCHUZ3xh/GtoKaMTKRtz20gdtX9vdWLgT2r4BL46dwZ9zV+AUYzTnRCpaG27gIWm6Rafwo9Soc3+8ZvGu+ttstWeBXKkjagAIx9NVuTO8Q5PFWpzhVUJHxbf06hMJ4hQbqjKGa5cJ0X9jYoMpEJ1XAnTFkBZaSnhUpPuu5R80wZ9Sl2eOELsfiVVvOutxXdP68MDWkgf+MRyTci+LJ8NHYujiKPDt45mzAytvdn97kTzLZjApRtcASQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3+OTaXk70jTD2A91N+tLzEAfFhoiQOCQzygMd8PWFYo=;
+ b=AFv+FkddO6B+pyILvMtOies2wd9/WYDhYElnzxKOAcrdadKONJbScZbe+DncO4ykUiZ2g3LEMRmajh1ssmf2Ag7GIt9A3tWJrtjuunBndPxJ8uSPcbdNjKsRZ1EO4LefLfJAo57kcgGVtjnJqJlZZ0DwPHyh3WcDxXdCqhvz51GDQVYlvzw2aCbsP6bJFZUKmBnVQx7zTNUfrpx9pXfAcZ+K0ooguAjk6OOVmZ+c7FOt4scE+6uIIKDcmHQxge6/r3vVzO3CnQ1KAH5aJ82cMH4DYSgPlMYu967fqqoiWrGXLl03xYBe8QrxOWPALpfhWywptkfrf6+CSQgUfI341Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3+OTaXk70jTD2A91N+tLzEAfFhoiQOCQzygMd8PWFYo=;
+ b=JIyjmdZ5PL1JlFO2zP1UdqeoCBYhpgfyphb0BZFmmmOoKY5b3y46tr8n67M4qBgrux/LdtRn+Id4kWm+dI6md8gZ5W0t7aWdB3n5UHQtqsCi3LviYiJNYf5xG4YxxYk+ZP5erh61xZbwZWuPldl6tJJOhXysSTyx1OAgiDqTYKg=
+Authentication-Results: chromium.org; dkim=none (message not signed)
+ header.d=none;chromium.org; dmarc=none action=none header.from=fb.com;
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BY5PR15MB3668.namprd15.prod.outlook.com (2603:10b6:a03:1fb::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.22; Thu, 19 Nov
+ 2020 23:31:52 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::bc1d:484f:cb1f:78ee]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::bc1d:484f:cb1f:78ee%4]) with mapi id 15.20.3564.034; Thu, 19 Nov 2020
+ 23:31:52 +0000
+Date:   Thu, 19 Nov 2020 15:31:44 -0800
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Florent Revest <revest@chromium.org>
+CC:     <bpf@vger.kernel.org>, <viro@zeniv.linux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <yhs@fb.com>, <andrii@kernel.org>,
+        <kpsingh@chromium.org>, <revest@google.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 2/5] bpf: Add a bpf_sock_from_file helper
+Message-ID: <20201119233127.pvaisojjos75tpo2@kafai-mbp.dhcp.thefacebook.com>
+References: <20201119162654.2410685-1-revest@chromium.org>
+ <20201119162654.2410685-2-revest@chromium.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201119162654.2410685-2-revest@chromium.org>
+X-Originating-IP: [2620:10d:c090:400::5:603e]
+X-ClientProxiedBy: MWHPR02CA0014.namprd02.prod.outlook.com
+ (2603:10b6:300:4b::24) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:603e) by MWHPR02CA0014.namprd02.prod.outlook.com (2603:10b6:300:4b::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.20 via Frontend Transport; Thu, 19 Nov 2020 23:31:50 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0bc868e0-db9d-4c2b-2d30-08d88ce34ad5
+X-MS-TrafficTypeDiagnostic: BY5PR15MB3668:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BY5PR15MB366860330AA30CE298FA405AD5E00@BY5PR15MB3668.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Bp6GORzVFYieHxjUXGSvTogbEQAQmOhcKCpZvlXN40QFP89pzlCYzoFkw1p/O+FwqkNyuKq1F9VZaKA5t2Pn68WhEZIn09BrFnl2nQ3SDhD1J7vE9QbMUxE8vjkAa7uafQg8S2c3uPtIxuz4FwqFmW+5qMuGFtSHWjKhvtKAWX5i8ezsla9r6VuW3CjnQmb9lnInC49xrlOnrEl4T0TUyqqZ/smYrgNG7LPWE6cvpca2xtlXvOezkZOFKXsT9uLp4JlJBff+0EM2kkaDzWK/zNvZao9LcGAppq8JKYAW0ABBD0l+j9iS3vI9rbR1kbHNFG3OFsV0Gev5SbtWst/K7g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(136003)(376002)(396003)(39860400002)(366004)(1076003)(8676002)(7416002)(66556008)(7696005)(52116002)(6666004)(4326008)(55016002)(5660300002)(66476007)(66946007)(86362001)(2906002)(83380400001)(478600001)(8936002)(6916009)(316002)(9686003)(4744005)(16526019)(186003)(6506007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: 8u+ZJQ+Df9PnSgyuHWjMaIb18w8KVsREJ3agcBgHmazC5VTQhF69hx1Ks0nGCibjvFwQkyWmFakdliG5/CxfVdbZB+6UqkV5w2p4SczClZZz1+XhAr0S8tUP62qkNE7uyZ3eNYvPDa9J7pnnnEK9FUvMCFvAqc2D31q26eIPrf9RnMaMMI6z4+HmlNV93hXFV9n3w37O8kOCq5GfpnvrxaWl2K0kDFJI0f7QQYNcY9DgyqNMMVKqmPUlBuHcA+56fNn5HbckqAknIFJNCvG0Q+AEsJ0N0McSEz9iKxAfAcoEK9YLnAFMgZUAO/EJY6i/k86FvePwTu7Q1pyWHhaqg04WT7lqcGIovZb3GemEHJR69zhh48lZ8/QaAU+1418RoMyFJ7uvRdwm7l2nuhrUMdcGeTDIZG0+IVbB8sDC7jWe3e1l3EUse6Dl2VmO+X1Z3DjelIK2+/J5J3K+me8I7JK/kxTRVZT+EWK9Cx6s2f+x2m9AdKYCZK5qhugIiPR/u0jSuETZ4iIN3WeKm+gQZoEeAc11GjD6s8xBMKNKVO6P0dgXULWHr1BnvwDg6shJUZFPiWwIlYKwLzlGkYsRL4wOIuvOmS+S4sHETMGpMikFTiYjFm745s5E2CnknGGh4KJByqbA7Mue4Yd/Mx54ssVwmXDsVszb+ufhtTy44qkg8x27GpIwGP9QodWzfDCxYI2QgpAggxkiNNrIvfRU63ZYxpl2bwy6pOECl2aMbAVzbXMO7LbMCuMFoV6/xJKLs1LskfxVYKynKM+YBsNxtlXiWw35aztNNCRIG6XfXvOwcMKgChoU4j/40z75v00AU1bDGusoMERAoC1pueMqHNoPNO5VMLYPdtKoDzS4gQhsTmOIfbzjgB0D7tnFamxJGzc6yptyKwpNHG/ESn6CsBpqAXP41MRkLu2XkKH0KGI=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0bc868e0-db9d-4c2b-2d30-08d88ce34ad5
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Nov 2020 23:31:51.9321
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SmtjJ6tMqB2XbmfPhyniT/zxeHiPI95F97T1wjpfiV8BNuruaLTYlRys+FO7dWm4
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR15MB3668
+X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
  definitions=2020-11-19_14:2020-11-19,2020-11-19 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
- mlxlogscore=999 suspectscore=8 impostorscore=0 lowpriorityscore=0
- phishscore=0 clxscore=1034 spamscore=0 malwarescore=0 priorityscore=1501
- bulkscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011190160
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
+ priorityscore=1501 mlxlogscore=581 spamscore=0 impostorscore=0 mlxscore=0
+ suspectscore=1 malwarescore=0 adultscore=0 clxscore=1011 phishscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011190161
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a self-tests validating libbpf is able to perform CO-RE relocations
-against the type defined in kernel module BTF.
-
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
----
- .../selftests/bpf/prog_tests/core_reloc.c     | 72 ++++++++++++++++---
- .../selftests/bpf/progs/core_reloc_types.h    | 17 +++++
- .../bpf/progs/test_core_reloc_module.c        | 66 +++++++++++++++++
- 3 files changed, 144 insertions(+), 11 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_module.c
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/core_reloc.c b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-index 30e40ff4b0d8..b3f14e3d9077 100644
---- a/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-+++ b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
- #include "progs/core_reloc_types.h"
-+#include "bpf_sidecar/bpf_sidecar.h"
- #include <sys/mman.h>
- #include <sys/syscall.h>
- #include <bpf/btf.h>
-@@ -9,6 +10,29 @@ static int duration = 0;
- 
- #define STRUCT_TO_CHAR_PTR(struct_name) (const char *)&(struct struct_name)
- 
-+#define MODULES_CASE(name, sec_name, tp_name) {				\
-+	.case_name = name,						\
-+	.bpf_obj_file = "test_core_reloc_module.o",			\
-+	.btf_src_file = NULL, /* find in kernel module BTFs */		\
-+	.input = "",							\
-+	.input_len = 0,							\
-+	.output = STRUCT_TO_CHAR_PTR(core_reloc_module_output) {	\
-+		.read_ctx_sz = sizeof(struct bpf_sidecar_test_read_ctx),\
-+		.read_ctx_exists = true,				\
-+		.buf_exists = true,					\
-+		.len_exists = true,					\
-+		.off_exists = true,					\
-+		.len = 123,						\
-+		.off = 0,						\
-+		.comm = "test_progs",					\
-+		.comm_len = sizeof("test_progs"),			\
-+	},								\
-+	.output_len = sizeof(struct core_reloc_module_output),		\
-+	.prog_sec_name = sec_name,					\
-+	.raw_tp_name = tp_name,						\
-+	.trigger = trigger_module_test_read,				\
-+}
-+
- #define FLAVORS_DATA(struct_name) STRUCT_TO_CHAR_PTR(struct_name) {	\
- 	.a = 42,							\
- 	.b = 0xc001,							\
-@@ -211,7 +235,7 @@ static int duration = 0;
- 	.output = STRUCT_TO_CHAR_PTR(core_reloc_bitfields_output)	\
- 		__VA_ARGS__,						\
- 	.output_len = sizeof(struct core_reloc_bitfields_output),	\
--	.direct_raw_tp = true,						\
-+	.prog_sec_name = "tp_btf/sys_enter",				\
- }
- 
- 
-@@ -222,7 +246,7 @@ static int duration = 0;
- }, {									\
- 	BITFIELDS_CASE_COMMON("test_core_reloc_bitfields_direct.o",	\
- 			      "direct:", name),				\
--	.direct_raw_tp = true,						\
-+	.prog_sec_name = "tp_btf/sys_enter",				\
- 	.fails = true,							\
- }
- 
-@@ -309,6 +333,7 @@ static int duration = 0;
- struct core_reloc_test_case;
- 
- typedef int (*setup_test_fn)(struct core_reloc_test_case *test);
-+typedef int (*trigger_test_fn)(const struct core_reloc_test_case *test);
- 
- struct core_reloc_test_case {
- 	const char *case_name;
-@@ -320,8 +345,10 @@ struct core_reloc_test_case {
- 	int output_len;
- 	bool fails;
- 	bool relaxed_core_relocs;
--	bool direct_raw_tp;
-+	const char *prog_sec_name;
-+	const char *raw_tp_name;
- 	setup_test_fn setup;
-+	trigger_test_fn trigger;
- };
- 
- static int find_btf_type(const struct btf *btf, const char *name, __u32 kind)
-@@ -451,6 +478,23 @@ static int setup_type_id_case_failure(struct core_reloc_test_case *test)
- 	return 0;
- }
- 
-+static int trigger_module_test_read(const struct core_reloc_test_case *test)
-+{
-+	struct core_reloc_module_output *exp = (void *)test->output;
-+	int fd, err;
-+
-+	fd = open("/sys/kernel/bpf_sidecar", O_RDONLY);
-+	err = -errno;
-+	if (CHECK(fd < 0, "sidecar_file_open", "failed: %d\n", err))
-+		return err;
-+
-+	read(fd, NULL, exp->len); /* request expected number of bytes */
-+	close(fd);
-+
-+	return 0;
-+}
-+
-+
- static struct core_reloc_test_case test_cases[] = {
- 	/* validate we can find kernel image and use its BTF for relocs */
- 	{
-@@ -467,6 +511,9 @@ static struct core_reloc_test_case test_cases[] = {
- 		.output_len = sizeof(struct core_reloc_kernel_output),
- 	},
- 
-+	/* validate we can find kernel module BTF types for relocs/attach */
-+	MODULES_CASE("module", "raw_tp/bpf_sidecar_test_read", "bpf_sidecar_test_read"),
-+
- 	/* validate BPF program can use multiple flavors to match against
- 	 * single target BTF type
- 	 */
-@@ -790,13 +837,11 @@ void test_core_reloc(void)
- 			  test_case->bpf_obj_file, PTR_ERR(obj)))
- 			continue;
- 
--		/* for typed raw tracepoints, NULL should be specified */
--		if (test_case->direct_raw_tp) {
--			probe_name = "tp_btf/sys_enter";
--			tp_name = NULL;
--		} else {
--			probe_name = "raw_tracepoint/sys_enter";
--			tp_name = "sys_enter";
-+		probe_name = "raw_tracepoint/sys_enter";
-+		tp_name = "sys_enter";
-+		if (test_case->prog_sec_name) {
-+			probe_name = test_case->prog_sec_name;
-+			tp_name = test_case->raw_tp_name; /* NULL for tp_btf */
- 		}
- 
- 		prog = bpf_object__find_program_by_title(obj, probe_name);
-@@ -837,7 +882,12 @@ void test_core_reloc(void)
- 			goto cleanup;
- 
- 		/* trigger test run */
--		usleep(1);
-+		if (test_case->trigger) {
-+			if (!ASSERT_OK(test_case->trigger(test_case), "test_trigger"))
-+				goto cleanup;
-+		} else {
-+			usleep(1);
-+		}
- 
- 		if (data->skip) {
- 			test__skip();
-diff --git a/tools/testing/selftests/bpf/progs/core_reloc_types.h b/tools/testing/selftests/bpf/progs/core_reloc_types.h
-index e6e616cb7bc9..9a2850850121 100644
---- a/tools/testing/selftests/bpf/progs/core_reloc_types.h
-+++ b/tools/testing/selftests/bpf/progs/core_reloc_types.h
-@@ -15,6 +15,23 @@ struct core_reloc_kernel_output {
- 	int comm_len;
- };
- 
-+/*
-+ * MODULE
-+ */
-+
-+struct core_reloc_module_output {
-+	long long len;
-+	long long off;
-+	int read_ctx_sz;
-+	bool read_ctx_exists;
-+	bool buf_exists;
-+	bool len_exists;
-+	bool off_exists;
-+	/* we have test_progs[-flavor], so cut flavor part */
-+	char comm[sizeof("test_progs")];
-+	int comm_len;
-+};
-+
- /*
-  * FLAVORS
-  */
-diff --git a/tools/testing/selftests/bpf/progs/test_core_reloc_module.c b/tools/testing/selftests/bpf/progs/test_core_reloc_module.c
-new file mode 100644
-index 000000000000..4630301de259
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_core_reloc_module.c
-@@ -0,0 +1,66 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 Facebook */
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_core_read.h>
-+#include <bpf/bpf_tracing.h>
-+
-+char _license[] SEC("license") = "GPL";
-+
-+struct bpf_sidecar_test_read_ctx {
-+	/* field order is mixed up */
-+	size_t len;
-+	char *buf;
-+	loff_t off;
-+} __attribute__((preserve_access_index));
-+
-+struct {
-+	char in[256];
-+	char out[256];
-+	bool skip;
-+	uint64_t my_pid_tgid;
-+} data = {};
-+
-+struct core_reloc_module_output {
-+	long long len;
-+	long long off;
-+	int read_ctx_sz;
-+	bool read_ctx_exists;
-+	bool buf_exists;
-+	bool len_exists;
-+	bool off_exists;
-+	/* we have test_progs[-flavor], so cut flavor part */
-+	char comm[sizeof("test_progs")];
-+	int comm_len;
-+};
-+
-+SEC("raw_tp/bpf_sidecar_test_read")
-+int BPF_PROG(test_core_module,
-+	     struct task_struct *task,
-+	     struct bpf_sidecar_test_read_ctx *read_ctx)
-+{
-+	struct core_reloc_module_output *out = (void *)&data.out;
-+	__u64 pid_tgid = bpf_get_current_pid_tgid();
-+	__u32 real_tgid = (__u32)(pid_tgid >> 32);
-+	__u32 real_pid = (__u32)pid_tgid;
-+
-+	if (data.my_pid_tgid != pid_tgid)
-+		return 0;
-+
-+	if (BPF_CORE_READ(task, pid) != real_pid || BPF_CORE_READ(task, tgid) != real_tgid)
-+		return 0;
-+
-+	out->len = BPF_CORE_READ(read_ctx, len);
-+	out->off = BPF_CORE_READ(read_ctx, off);
-+
-+	out->read_ctx_sz = bpf_core_type_size(struct bpf_sidecar_test_read_ctx);
-+	out->read_ctx_exists = bpf_core_type_exists(struct bpf_sidecar_test_read_ctx);
-+	out->buf_exists = bpf_core_field_exists(read_ctx->buf);
-+	out->off_exists = bpf_core_field_exists(read_ctx->off);
-+	out->len_exists = bpf_core_field_exists(read_ctx->len);
-+
-+	out->comm_len = BPF_CORE_READ_STR_INTO(&out->comm, task, comm);
-+
-+	return 0;
-+}
--- 
-2.24.1
-
+On Thu, Nov 19, 2020 at 05:26:51PM +0100, Florent Revest wrote:
+> From: Florent Revest <revest@google.com>
+> 
+> While eBPF programs can check whether a file is a socket by file->f_op
+> == &socket_file_ops, they cannot convert the void private_data pointer
+> to a struct socket BTF pointer. In order to do this a new helper
+> wrapping sock_from_file is added.
+> 
+> This is useful to tracing programs but also other program types
+> inheriting this set of helpers such as iterators or LSM programs.
+Acked-by: Martin KaFai Lau <kafai@fb.com>
