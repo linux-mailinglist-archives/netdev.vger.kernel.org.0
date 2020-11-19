@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD2AC2B9E1C
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 00:27:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4724D2B9E1D
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 00:27:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726590AbgKSXXG convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 19 Nov 2020 18:23:06 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:36622 "EHLO
+        id S1726560AbgKSXXI convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 19 Nov 2020 18:23:08 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:17276 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726553AbgKSXXG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 18:23:06 -0500
+        by vger.kernel.org with ESMTP id S1726554AbgKSXXH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 18:23:07 -0500
 Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AJNLT6J003407
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AJNLT5C003432
         for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 15:23:05 -0800
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 34wsge3j9t-3
+        by mx0a-00082601.pphosted.com with ESMTP id 34wsge3j9w-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
         for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 15:23:05 -0800
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
+Received: from intmgw004.08.frc2.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.1979.3; Thu, 19 Nov 2020 15:23:04 -0800
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 763492EC9B9C; Thu, 19 Nov 2020 15:22:54 -0800 (PST)
+        id 9F8FD2EC9B9C; Thu, 19 Nov 2020 15:22:56 -0800 (PST)
 From:   Andrii Nakryiko <andrii@kernel.org>
 To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
         <daniel@iogearbox.net>
 CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH bpf-next 4/6] libbpf: add kernel module BTF support for CO-RE relocations
-Date:   Thu, 19 Nov 2020 15:22:42 -0800
-Message-ID: <20201119232244.2776720-5-andrii@kernel.org>
+Subject: [PATCH bpf-next 5/6] selftests/bpf: add bpf_sidecar kernel module for testing
+Date:   Thu, 19 Nov 2020 15:22:43 -0800
+Message-ID: <20201119232244.2776720-6-andrii@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20201119232244.2776720-1-andrii@kernel.org>
 References: <20201119232244.2776720-1-andrii@kernel.org>
@@ -41,7 +41,7 @@ Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
  definitions=2020-11-19_14:2020-11-19,2020-11-19 signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
- mlxlogscore=999 suspectscore=29 impostorscore=0 lowpriorityscore=0
+ mlxlogscore=999 suspectscore=9 impostorscore=0 lowpriorityscore=0
  phishscore=0 clxscore=1015 spamscore=0 malwarescore=0 priorityscore=1501
  bulkscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2009150000 definitions=main-2011190160
@@ -50,302 +50,320 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Teach libbpf to search for candidate types for CO-RE relocations across kernel
-modules BTFs, in addition to vmlinux BTF. If at least one candidate type is
-found in vmlinux BTF, kernel module BTFs are not iterated. If vmlinux BTF has
-no matching candidates, then find all kernel module BTFs and search for all
-matching candidates across all of them.
-
-Kernel's support for module BTFs are inferred from the support for BTF name
-pointer in BPF UAPI.
+Add bpf_sidecar module, which is conceptually out-of-tree module and provides
+ways for selftests/bpf to test various kernel module-related functionality:
+raw tracepoint, fentry/fexit/fmod_ret, etc. This module will be auto-loaded by
+test_progs test runner and expected by some of selftests to be present and
+loaded.
 
 Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 185 ++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 172 insertions(+), 13 deletions(-)
+ tools/testing/selftests/bpf/.gitignore        |  1 +
+ tools/testing/selftests/bpf/Makefile          | 12 +++--
+ .../selftests/bpf/bpf_sidecar/.gitignore      |  6 +++
+ .../selftests/bpf/bpf_sidecar/Makefile        | 20 +++++++
+ .../bpf/bpf_sidecar/bpf_sidecar-events.h      | 36 +++++++++++++
+ .../selftests/bpf/bpf_sidecar/bpf_sidecar.c   | 51 ++++++++++++++++++
+ .../selftests/bpf/bpf_sidecar/bpf_sidecar.h   | 14 +++++
+ tools/testing/selftests/bpf/test_progs.c      | 52 +++++++++++++++++++
+ 8 files changed, 189 insertions(+), 3 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/bpf_sidecar/.gitignore
+ create mode 100644 tools/testing/selftests/bpf/bpf_sidecar/Makefile
+ create mode 100644 tools/testing/selftests/bpf/bpf_sidecar/bpf_sidecar-events.h
+ create mode 100644 tools/testing/selftests/bpf/bpf_sidecar/bpf_sidecar.c
+ create mode 100644 tools/testing/selftests/bpf/bpf_sidecar/bpf_sidecar.h
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index c4a49e8eb7b5..ac1ff4e7741a 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -176,6 +176,8 @@ enum kern_feature_id {
- 	FEAT_PROBE_READ_KERN,
- 	/* BPF_PROG_BIND_MAP is supported */
- 	FEAT_PROG_BIND_MAP,
-+	/* Kernel support for module BTFs */
-+	FEAT_MODULE_BTF,
- 	__FEAT_CNT,
- };
+diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selftests/bpf/.gitignore
+index 395ae040ce1f..752d8edddc66 100644
+--- a/tools/testing/selftests/bpf/.gitignore
++++ b/tools/testing/selftests/bpf/.gitignore
+@@ -35,3 +35,4 @@ test_cpp
+ /tools
+ /runqslower
+ /bench
++*.ko
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 3d5940cd110d..c099f8601604 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -82,7 +82,7 @@ TEST_GEN_PROGS_EXTENDED = test_sock_addr test_skb_cgroup_id_user \
+ 	flow_dissector_load test_flow_dissector test_tcp_check_syncookie_user \
+ 	test_lirc_mode2_user xdping test_cpp runqslower bench
  
-@@ -402,6 +404,12 @@ struct extern_desc {
+-TEST_CUSTOM_PROGS = urandom_read
++TEST_CUSTOM_PROGS = urandom_read bpf_sidecar.ko
  
- static LIST_HEAD(bpf_objects_list);
+ # Emit succinct information message describing current building step
+ # $1 - generic step name (e.g., CC, LINK, etc);
+@@ -104,6 +104,7 @@ OVERRIDE_TARGETS := 1
+ override define CLEAN
+ 	$(call msg,CLEAN)
+ 	$(Q)$(RM) -r $(TEST_GEN_PROGS) $(TEST_GEN_PROGS_EXTENDED) $(TEST_GEN_FILES) $(EXTRA_CLEAN)
++	$(Q)$(MAKE) -C bpf_sidecar clean
+ endef
  
-+struct module_btf {
-+	struct btf *btf;
-+	char *name;
-+	__u32 id;
+ include ../lib.mk
+@@ -136,6 +137,11 @@ $(OUTPUT)/urandom_read: urandom_read.c
+ 	$(call msg,BINARY,,$@)
+ 	$(Q)$(CC) $(LDFLAGS) -o $@ $< $(LDLIBS) -Wl,--build-id=sha1
+ 
++$(OUTPUT)/bpf_sidecar.ko: $(wildcard bpf_sidecar/Makefile bpf_sidecar/*.[ch])
++	$(call msg,MOD,,$@)
++	$(Q)$(MAKE) $(submake_extras) -C bpf_sidecar
++	$(Q)cp bpf_sidecar/bpf_sidecar.ko $@
++
+ $(OUTPUT)/test_stub.o: test_stub.c $(BPFOBJ)
+ 	$(call msg,CC,,$@)
+ 	$(Q)$(CC) -c $(CFLAGS) -o $@ $<
+@@ -388,7 +394,7 @@ TRUNNER_BPF_PROGS_DIR := progs
+ TRUNNER_EXTRA_SOURCES := test_progs.c cgroup_helpers.c trace_helpers.c	\
+ 			 network_helpers.c testing_helpers.c		\
+ 			 btf_helpers.c	flow_dissector_load.h
+-TRUNNER_EXTRA_FILES := $(OUTPUT)/urandom_read				\
++TRUNNER_EXTRA_FILES := $(OUTPUT)/urandom_read $(OUTPUT)/bpf_sidecar.ko	\
+ 		       $(wildcard progs/btf_dump_test_case_*.c)
+ TRUNNER_BPF_BUILD_RULE := CLANG_BPF_BUILD_RULE
+ TRUNNER_BPF_CFLAGS := $(BPF_CFLAGS) $(CLANG_CFLAGS)
+@@ -459,4 +465,4 @@ $(OUTPUT)/bench: $(OUTPUT)/bench.o $(OUTPUT)/testing_helpers.o \
+ EXTRA_CLEAN := $(TEST_CUSTOM_PROGS) $(SCRATCH_DIR)			\
+ 	prog_tests/tests.h map_tests/tests.h verifier/tests.h		\
+ 	feature								\
+-	$(addprefix $(OUTPUT)/,*.o *.skel.h no_alu32 bpf_gcc)
++	$(addprefix $(OUTPUT)/,*.o *.skel.h no_alu32 bpf_gcc bpf_sidecar.ko)
+diff --git a/tools/testing/selftests/bpf/bpf_sidecar/.gitignore b/tools/testing/selftests/bpf/bpf_sidecar/.gitignore
+new file mode 100644
+index 000000000000..ded513777281
+--- /dev/null
++++ b/tools/testing/selftests/bpf/bpf_sidecar/.gitignore
+@@ -0,0 +1,6 @@
++*.mod
++*.mod.c
++*.o
++.ko
++/Module.symvers
++/modules.order
+diff --git a/tools/testing/selftests/bpf/bpf_sidecar/Makefile b/tools/testing/selftests/bpf/bpf_sidecar/Makefile
+new file mode 100644
+index 000000000000..41b2339312a1
+--- /dev/null
++++ b/tools/testing/selftests/bpf/bpf_sidecar/Makefile
+@@ -0,0 +1,20 @@
++BPF_SIDECAR_DIR := $(realpath $(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
++KDIR ?= $(abspath $(BPF_SIDECAR_DIR)/../../../../..)
++
++ifeq ($(V),1)
++Q =
++else
++Q = @
++endif
++
++MODULES = bpf_sidecar.ko
++
++obj-m += bpf_sidecar.o
++CFLAGS_bpf_sidecar.o = -I$(src)
++
++all:
++	+$(Q)make -C $(KDIR) M=$(BPF_SIDECAR_DIR) modules
++
++clean:
++	+$(Q)make -C $(KDIR) M=$(BPF_SIDECAR_DIR) clean
++
+diff --git a/tools/testing/selftests/bpf/bpf_sidecar/bpf_sidecar-events.h b/tools/testing/selftests/bpf/bpf_sidecar/bpf_sidecar-events.h
+new file mode 100644
+index 000000000000..433fca06a7b8
+--- /dev/null
++++ b/tools/testing/selftests/bpf/bpf_sidecar/bpf_sidecar-events.h
+@@ -0,0 +1,36 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright (c) 2020 Facebook */
++#undef TRACE_SYSTEM
++#define TRACE_SYSTEM bpf_sidecar
++
++#if !defined(_BPF_SIDECAR_EVENTS_H) || defined(TRACE_HEADER_MULTI_READ)
++#define _BPF_SIDECAR_EVENTS_H
++
++#include <linux/tracepoint.h>
++#include "bpf_sidecar.h"
++
++TRACE_EVENT(bpf_sidecar_test_read,
++	TP_PROTO(struct task_struct *task, struct bpf_sidecar_test_read_ctx *ctx),
++	TP_ARGS(task, ctx),
++	TP_STRUCT__entry(
++		__field(pid_t, pid)
++		__array(char, comm, TASK_COMM_LEN)
++		__field(loff_t, off)
++		__field(size_t, len)
++	),
++	TP_fast_assign(
++		__entry->pid = task->pid;
++		memcpy(__entry->comm, task->comm, TASK_COMM_LEN);
++		__entry->off = ctx->off;
++		__entry->len = ctx->len;
++	),
++	TP_printk("pid=%d comm=%s off=%llu len=%zu",
++		  __entry->pid, __entry->comm, __entry->off, __entry->len)
++);
++
++#endif /* _BPF_SIDECAR_EVENTS_H */
++
++#undef TRACE_INCLUDE_PATH
++#define TRACE_INCLUDE_PATH .
++#define TRACE_INCLUDE_FILE bpf_sidecar-events
++#include <trace/define_trace.h>
+diff --git a/tools/testing/selftests/bpf/bpf_sidecar/bpf_sidecar.c b/tools/testing/selftests/bpf/bpf_sidecar/bpf_sidecar.c
+new file mode 100644
+index 000000000000..46f48c20d99b
+--- /dev/null
++++ b/tools/testing/selftests/bpf/bpf_sidecar/bpf_sidecar.c
+@@ -0,0 +1,51 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2020 Facebook */
++#include <linux/error-injection.h>
++#include <linux/init.h>
++#include <linux/module.h>
++#include <linux/sysfs.h>
++#include <linux/tracepoint.h>
++#include "bpf_sidecar.h"
++
++#define CREATE_TRACE_POINTS
++#include "bpf_sidecar-events.h"
++
++static noinline ssize_t
++bpf_sidecar_test_read(struct file *file, struct kobject *kobj,
++		      struct bin_attribute *bin_attr,
++		      char *buf, loff_t off, size_t len)
++{
++	struct bpf_sidecar_test_read_ctx ctx = {
++		.buf = buf,
++		.off = off,
++		.len = len,
++	};
++
++	trace_bpf_sidecar_test_read(current, &ctx);
++
++	return -EIO; /* always fail */
++}
++ALLOW_ERROR_INJECTION(bpf_sidecar_test_read, ERRNO);
++
++static struct bin_attribute bin_attr_bpf_sidecar_file __ro_after_init = {
++	.attr = { .name = "bpf_sidecar", .mode = 0444, },
++	.read = bpf_sidecar_test_read,
 +};
 +
- struct bpf_object {
- 	char name[BPF_OBJ_NAME_LEN];
- 	char license[64];
-@@ -470,6 +478,11 @@ struct bpf_object {
- 	struct btf *btf_vmlinux;
- 	/* vmlinux BTF override for CO-RE relocations */
- 	struct btf *btf_vmlinux_override;
-+	/* Lazily initialized kernel module BTFs */
-+	struct module_btf *btf_modules;
-+	bool btf_modules_loaded;
-+	size_t btf_module_cnt;
-+	size_t btf_module_cap;
- 
- 	void *priv;
- 	bpf_object_clear_priv_t clear_priv;
-@@ -3960,6 +3973,36 @@ static int probe_prog_bind_map(void)
- 	return ret >= 0;
++static int bpf_sidecar_init(void)
++{
++	return sysfs_create_bin_file(kernel_kobj, &bin_attr_bpf_sidecar_file);
++}
++
++static void bpf_sidecar_exit(void)
++{
++	return sysfs_remove_bin_file(kernel_kobj, &bin_attr_bpf_sidecar_file);
++}
++
++module_init(bpf_sidecar_init);
++module_exit(bpf_sidecar_exit);
++
++MODULE_AUTHOR("Andrii Nakryiko");
++MODULE_DESCRIPTION("BPF selftests sidecar module");
++MODULE_LICENSE("Dual BSD/GPL");
++
+diff --git a/tools/testing/selftests/bpf/bpf_sidecar/bpf_sidecar.h b/tools/testing/selftests/bpf/bpf_sidecar/bpf_sidecar.h
+new file mode 100644
+index 000000000000..35668d0803ff
+--- /dev/null
++++ b/tools/testing/selftests/bpf/bpf_sidecar/bpf_sidecar.h
+@@ -0,0 +1,14 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright (c) 2020 Facebook */
++#ifndef _BPF_SIDECAR_H
++#define _BPF_SIDECAR_H
++
++#include <linux/types.h>
++
++struct bpf_sidecar_test_read_ctx {
++	char *buf;
++	loff_t off;
++	size_t len;
++};
++
++#endif /* _BPF_SIDECAR_H */
+diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
+index 22943b58d752..544630202247 100644
+--- a/tools/testing/selftests/bpf/test_progs.c
++++ b/tools/testing/selftests/bpf/test_progs.c
+@@ -360,6 +360,56 @@ int extract_build_id(char *build_id, size_t size)
+ 	return -1;
  }
  
-+static int probe_module_btf(void)
++static int finit_module(int fd, const char *param_values, int flags)
 +{
-+	static const char strs[] = "\0int";
-+	__u32 types[] = {
-+		/* int */
-+		BTF_TYPE_INT_ENC(1, BTF_INT_SIGNED, 0, 32, 4),
-+	};
-+	struct bpf_btf_info info;
-+	__u32 len = sizeof(info);
-+	char name[16];
-+	int fd, err;
++	return syscall(__NR_finit_module, fd, param_values, flags);
++}
 +
-+	fd = libbpf__load_raw_btf((char *)types, sizeof(types), strs, sizeof(strs));
-+	if (fd < 0)
-+		return 0; /* BTF not supported at all */
++static int delete_module(const char *name, int flags)
++{
++	return syscall(__NR_delete_module, name, flags);
++}
 +
-+	len = sizeof(info);
-+	memset(&info, 0, sizeof(info));
-+	info.name = ptr_to_u64(name);
-+	info.name_len = sizeof(name);
++void unload_bpf_sidecar_module()
++{
++	if (delete_module("bpf_sidecar", 0)) {
++		if (errno == ENOENT) {
++			if (env.verbosity > VERBOSE_NONE)
++				fprintf(stdout, "bpf_sidecar.ko is already unloaded.\n");
++			return;
++		}
++		fprintf(env.stderr, "Failed to unload bpf_sidecar.ko from kernel: %d\n", -errno);
++		exit(1);
++	}
++	if (env.verbosity > VERBOSE_NONE)
++		fprintf(stdout, "Successfully unloaded bpf_sidecar.ko.\n");
++}
 +
-+	/* check that BPF_OBJ_GET_INFO_BY_FD supports specifying name pointer;
-+	 * kernel's module BTF support coincides with support for
-+	 * name/name_len fields in struct bpf_btf_info.
-+	 */
-+	err = bpf_obj_get_info_by_fd(fd, &info, &len);
++void load_bpf_sidecar_module()
++{
++	int fd;
++
++	/* ensure previous instance of the module is unloaded */
++	unload_bpf_sidecar_module();
++
++	if (env.verbosity > VERBOSE_NONE)
++		fprintf(stdout, "Loading bpf_sidecar.ko...\n");
++
++	fd = open("bpf_sidecar.ko", O_RDONLY);
++	if (fd < 0) {
++		fprintf(env.stderr, "Can't find bpf_sidecar.ko kernel module: %d\n", -errno);
++		exit(1);
++	}
++	if (finit_module(fd, "", 0)) {
++		fprintf(env.stderr, "Failed to load bpf_sidecar.ko into the kernel: %d\n", -errno);
++		exit(1);
++	}
 +	close(fd);
-+	return !err;
++
++	if (env.verbosity > VERBOSE_NONE)
++		fprintf(stdout, "Successfully loaded bpf_sidecar.ko.\n");
 +}
 +
- enum kern_feature_result {
- 	FEAT_UNKNOWN = 0,
- 	FEAT_SUPPORTED = 1,
-@@ -4003,7 +4046,10 @@ static struct kern_feature_desc {
- 	},
- 	[FEAT_PROG_BIND_MAP] = {
- 		"BPF_PROG_BIND_MAP support", probe_prog_bind_map,
--	}
-+	},
-+	[FEAT_MODULE_BTF] = {
-+		"module BTF support", probe_module_btf,
-+	},
- };
+ /* extern declarations for test funcs */
+ #define DEFINE_TEST(name) extern void test_##name(void);
+ #include <prog_tests/tests.h>
+@@ -678,6 +728,7 @@ int main(int argc, char **argv)
  
- static bool kernel_supports(enum kern_feature_id feat_id)
-@@ -4674,13 +4720,95 @@ static int bpf_core_add_cands(struct core_cand *local_cand,
- 	return 0;
- }
+ 	save_netns();
+ 	stdio_hijack();
++	load_bpf_sidecar_module();
+ 	for (i = 0; i < prog_test_cnt; i++) {
+ 		struct prog_test_def *test = &prog_test_defs[i];
  
-+static int load_module_btfs(struct bpf_object *obj)
-+{
-+	struct bpf_btf_info info;
-+	struct module_btf *mod_btf;
-+	struct btf *btf;
-+	char name[64];
-+	__u32 id, len;
-+	int err, fd;
-+
-+	if (obj->btf_modules_loaded)
-+		return 0;
-+
-+	/* don't do this again, even if we find no module BTFs */
-+	obj->btf_modules_loaded = true;
-+
-+	/* kernel too old to support module BTFs */
-+	if (!kernel_supports(FEAT_MODULE_BTF))
-+		return 0;
-+
-+	while (true) {
-+		err = bpf_btf_get_next_id(id, &id);
-+		if (err && errno == ENOENT)
-+			return 0;
-+		if (err) {
-+			err = -errno;
-+			pr_warn("failed to iterate BTF objects: %d\n", err);
-+			return err;
-+		}
-+
-+		fd = bpf_btf_get_fd_by_id(id);
-+		if (fd < 0) {
-+			if (errno == ENOENT)
-+				continue; /* expected race: BTF was unloaded */
-+			err = -errno;
-+			pr_warn("failed to get BTF object #%d FD: %d\n", id, err);
-+			return err;
-+		}
-+
-+		len = sizeof(info);
-+		memset(&info, 0, sizeof(info));
-+		info.name = ptr_to_u64(name);
-+		info.name_len = sizeof(name);
-+
-+		err = bpf_obj_get_info_by_fd(fd, &info, &len);
-+		if (err) {
-+			err = -errno;
-+			pr_warn("failed to get BTF object #%d info: %d\n", id, err);
-+			return err;
-+		}
-+
-+		/* ignore non-module BTFs */
-+		if (!info.kernel_btf || strcmp(name, "vmlinux") == 0) {
-+			close(fd);
-+			continue;
-+		}
-+
-+		btf = btf_get_from_fd(fd, obj->btf_vmlinux);
-+		close(fd);
-+		if (IS_ERR(btf)) {
-+			pr_warn("failed to load module [%s]'s BTF object #%d: %ld\n",
-+				name, id, PTR_ERR(btf));
-+			return PTR_ERR(btf);
-+		}
-+
-+		err = btf_ensure_mem((void **)&obj->btf_modules, &obj->btf_module_cap,
-+				     sizeof(*obj->btf_modules), obj->btf_module_cnt + 1);
-+		if (err)
-+			return err;
-+
-+		mod_btf = &obj->btf_modules[obj->btf_module_cnt++];
-+
-+		mod_btf->btf = btf;
-+		mod_btf->id = id;
-+		mod_btf->name = strdup(name);
-+		if (!mod_btf->name)
-+			return -ENOMEM;
-+	}
-+
-+	return 0;
-+}
-+
- static struct core_cand_list *
- bpf_core_find_cands(struct bpf_object *obj, const struct btf *local_btf, __u32 local_type_id)
- {
- 	struct core_cand local_cand = {};
- 	struct core_cand_list *cands;
-+	const struct btf *main_btf;
- 	size_t local_essent_len;
--	int err;
-+	int err, i;
- 
- 	local_cand.btf = local_btf;
- 	local_cand.t = btf__type_by_id(local_btf, local_type_id);
-@@ -4697,15 +4825,38 @@ bpf_core_find_cands(struct bpf_object *obj, const struct btf *local_btf, __u32 l
- 		return ERR_PTR(-ENOMEM);
- 
- 	/* Attempt to find target candidates in vmlinux BTF first */
--	err = bpf_core_add_cands(&local_cand, local_essent_len,
--				 obj->btf_vmlinux_override ?: obj->btf_vmlinux,
--				 "vmlinux", 1, cands);
--	if (err) {
--		bpf_core_free_cands(cands);
--		return ERR_PTR(err);
-+	main_btf = obj->btf_vmlinux_override ?: obj->btf_vmlinux;
-+	err = bpf_core_add_cands(&local_cand, local_essent_len, main_btf, "vmlinux", 1, cands);
-+	if (err)
-+		goto err_out;
-+
-+	/* if vmlinux BTF has any candidate, don't got for module BTFs */
-+	if (cands->len)
-+		return cands;
-+
-+	/* if vmlinux BTF was overridden, don't attempt to load module BTFs */
-+	if (obj->btf_vmlinux_override)
-+		return cands;
-+
-+	/* now look through module BTFs, trying to still find candidates */
-+	err = load_module_btfs(obj);
-+	if (err)
-+		goto err_out;
-+
-+	for (i = 0; i < obj->btf_module_cnt; i++) {
-+		err = bpf_core_add_cands(&local_cand, local_essent_len,
-+					 obj->btf_modules[i].btf,
-+					 obj->btf_modules[i].name,
-+					 btf__get_nr_types(obj->btf_vmlinux) + 1,
-+					 cands);
-+		if (err)
-+			goto err_out;
+@@ -722,6 +773,7 @@ int main(int argc, char **argv)
+ 		if (test->need_cgroup_cleanup)
+ 			cleanup_cgroup_environment();
  	}
++	unload_bpf_sidecar_module();
+ 	stdio_restore();
  
- 	return cands;
-+err_out:
-+	bpf_core_free_cands(cands);
-+	return ERR_PTR(err);
- }
- 
- /* Check two types for compatibility for the purpose of field access
-@@ -5756,7 +5907,7 @@ static int bpf_core_apply_relo(struct bpf_program *prog,
- 	if (!hashmap__find(cand_cache, type_key, (void **)&cands)) {
- 		cands = bpf_core_find_cands(prog->obj, local_btf, local_id);
- 		if (IS_ERR(cands)) {
--			pr_warn("prog '%s': relo #%d: target candidate search failed for [%d] %s %s: %ld",
-+			pr_warn("prog '%s': relo #%d: target candidate search failed for [%d] %s %s: %ld\n",
- 				prog->name, relo_idx, local_id, btf_kind_str(local_type),
- 				local_name, PTR_ERR(cands));
- 			return PTR_ERR(cands);
-@@ -5944,7 +6095,7 @@ bpf_object__relocate_core(struct bpf_object *obj, const char *targ_btf_path)
- 	}
- 
- out:
--	/* obj->btf_vmlinux is freed at the end of object load phase */
-+	/* obj->btf_vmlinux and module BTFs are freed after object load */
- 	btf__free(obj->btf_vmlinux_override);
- 	obj->btf_vmlinux_override = NULL;
- 
-@@ -7303,6 +7454,14 @@ int bpf_object__load_xattr(struct bpf_object_load_attr *attr)
- 	err = err ? : bpf_object__relocate(obj, attr->target_btf_path);
- 	err = err ? : bpf_object__load_progs(obj, attr->log_level);
- 
-+	/* clean up module BTFs */
-+	for (i = 0; i < obj->btf_module_cnt; i++) {
-+		btf__free(obj->btf_modules[i].btf);
-+		free(obj->btf_modules[i].name);
-+	}
-+	free(obj->btf_modules);
-+
-+	/* clean up vmlinux BTF */
- 	btf__free(obj->btf_vmlinux);
- 	obj->btf_vmlinux = NULL;
- 
-@@ -8656,9 +8815,6 @@ static inline int __find_vmlinux_btf_id(struct btf *btf, const char *name,
- 	else
- 		err = btf__find_by_name_kind(btf, name, BTF_KIND_FUNC);
- 
--	if (err <= 0)
--		pr_warn("%s is not found in vmlinux BTF\n", name);
--
- 	return err;
- }
- 
-@@ -8675,6 +8831,9 @@ int libbpf_find_vmlinux_btf_id(const char *name,
- 	}
- 
- 	err = __find_vmlinux_btf_id(btf, name, attach_type);
-+	if (err <= 0)
-+		pr_warn("%s is not found in vmlinux BTF\n", name);
-+
- 	btf__free(btf);
- 	return err;
- }
+ 	if (env.get_test_cnt) {
 -- 
 2.24.1
 
