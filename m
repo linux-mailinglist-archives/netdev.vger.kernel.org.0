@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A95212B9E18
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 00:27:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBFA62B9E0D
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 00:22:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726494AbgKSXXC convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 19 Nov 2020 18:23:02 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:23634 "EHLO
+        id S1726365AbgKSXWz convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 19 Nov 2020 18:22:55 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:36042 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726474AbgKSXXC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 18:23:02 -0500
+        by vger.kernel.org with ESMTP id S1725890AbgKSXWy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 18:22:54 -0500
 Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AJNKgIZ027851
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 15:23:01 -0800
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AJNKgLG027854
+        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 15:22:53 -0800
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 34wgckr7mx-5
+        by mx0a-00082601.pphosted.com with ESMTP id 34wgckr7me-4
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 15:23:01 -0800
+        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 15:22:53 -0800
 Received: from intmgw003.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.1979.3; Thu, 19 Nov 2020 15:22:51 -0800
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id DAE722EC9B9C; Thu, 19 Nov 2020 15:22:47 -0800 (PST)
+        id 148FB2EC9B9C; Thu, 19 Nov 2020 15:22:50 -0800 (PST)
 From:   Andrii Nakryiko <andrii@kernel.org>
 To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
         <daniel@iogearbox.net>
 CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH bpf-next 1/6] bpf: fix bpf_put_raw_tracepoint()'s use of __module_address()
-Date:   Thu, 19 Nov 2020 15:22:39 -0800
-Message-ID: <20201119232244.2776720-2-andrii@kernel.org>
+Subject: [PATCH bpf-next 2/6] libbpf: add internal helper to load BTF data by FD
+Date:   Thu, 19 Nov 2020 15:22:40 -0800
+Message-ID: <20201119232244.2776720-3-andrii@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20201119232244.2776720-1-andrii@kernel.org>
 References: <20201119232244.2776720-1-andrii@kernel.org>
@@ -41,8 +41,8 @@ Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
  definitions=2020-11-19_14:2020-11-19,2020-11-19 signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0 mlxscore=0
- suspectscore=8 clxscore=1015 adultscore=0 spamscore=0 impostorscore=0
- lowpriorityscore=0 bulkscore=0 priorityscore=1501 mlxlogscore=825
+ suspectscore=25 clxscore=1034 adultscore=0 spamscore=0 impostorscore=0
+ lowpriorityscore=0 bulkscore=0 priorityscore=1501 mlxlogscore=999
  phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2009150000 definitions=main-2011190160
 X-FB-Internal: deliver
@@ -50,33 +50,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-__module_address() needs to be called with preemption disabled or with
-module_mutex taken. preempt_disable() is enough for read-only uses, which is
-what this fix does.
+Add a btf_get_from_fd() helper, which constructs struct btf from in-kernel BTF
+data by FD. This is used for loading module BTFs.
 
-Fixes: a38d1107f937 ("bpf: support raw tracepoints in modules")
 Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 ---
- kernel/trace/bpf_trace.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ tools/lib/bpf/btf.c             | 61 +++++++++++++++++++--------------
+ tools/lib/bpf/libbpf_internal.h |  1 +
+ 2 files changed, 36 insertions(+), 26 deletions(-)
 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index d255bc9b2bfa..bb98a377050a 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -2060,7 +2060,11 @@ struct bpf_raw_event_map *bpf_get_raw_tracepoint(const char *name)
+diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
+index 8ff46cd30ca1..541696d9aed6 100644
+--- a/tools/lib/bpf/btf.c
++++ b/tools/lib/bpf/btf.c
+@@ -1318,35 +1318,27 @@ const char *btf__name_by_offset(const struct btf *btf, __u32 offset)
+ 	return btf__str_by_offset(btf, offset);
+ }
  
- void bpf_put_raw_tracepoint(struct bpf_raw_event_map *btp)
+-int btf__get_from_id(__u32 id, struct btf **btf)
++struct btf *btf_get_from_fd(int btf_fd, struct btf *base_btf)
  {
--	struct module *mod = __module_address((unsigned long)btp);
-+	struct module *mod;
-+
-+	preempt_disable();
-+	mod = __module_address((unsigned long)btp);
-+	preempt_enable();
+-	struct bpf_btf_info btf_info = { 0 };
++	struct bpf_btf_info btf_info;
+ 	__u32 len = sizeof(btf_info);
+ 	__u32 last_size;
+-	int btf_fd;
++	struct btf *btf;
+ 	void *ptr;
+ 	int err;
  
- 	if (mod)
- 		module_put(mod);
+-	err = 0;
+-	*btf = NULL;
+-	btf_fd = bpf_btf_get_fd_by_id(id);
+-	if (btf_fd < 0)
+-		return 0;
+-
+ 	/* we won't know btf_size until we call bpf_obj_get_info_by_fd(). so
+ 	 * let's start with a sane default - 4KiB here - and resize it only if
+ 	 * bpf_obj_get_info_by_fd() needs a bigger buffer.
+ 	 */
+-	btf_info.btf_size = 4096;
+-	last_size = btf_info.btf_size;
++	last_size = 4096;
+ 	ptr = malloc(last_size);
+-	if (!ptr) {
+-		err = -ENOMEM;
+-		goto exit_free;
+-	}
++	if (!ptr)
++		return ERR_PTR(-ENOMEM);
+ 
+-	memset(ptr, 0, last_size);
++	memset(&btf_info, 0, sizeof(btf_info));
+ 	btf_info.btf = ptr_to_u64(ptr);
++	btf_info.btf_size = last_size;
+ 	err = bpf_obj_get_info_by_fd(btf_fd, &btf_info, &len);
+ 
+ 	if (!err && btf_info.btf_size > last_size) {
+@@ -1355,31 +1347,48 @@ int btf__get_from_id(__u32 id, struct btf **btf)
+ 		last_size = btf_info.btf_size;
+ 		temp_ptr = realloc(ptr, last_size);
+ 		if (!temp_ptr) {
+-			err = -ENOMEM;
++			btf = ERR_PTR(-ENOMEM);
+ 			goto exit_free;
+ 		}
+ 		ptr = temp_ptr;
+-		memset(ptr, 0, last_size);
++
++		len = sizeof(btf_info);
++		memset(&btf_info, 0, sizeof(btf_info));
+ 		btf_info.btf = ptr_to_u64(ptr);
++		btf_info.btf_size = last_size;
++
+ 		err = bpf_obj_get_info_by_fd(btf_fd, &btf_info, &len);
+ 	}
+ 
+ 	if (err || btf_info.btf_size > last_size) {
+-		err = errno;
++		btf = err ? ERR_PTR(-errno) : ERR_PTR(-E2BIG);
+ 		goto exit_free;
+ 	}
+ 
+-	*btf = btf__new((__u8 *)(long)btf_info.btf, btf_info.btf_size);
+-	if (IS_ERR(*btf)) {
+-		err = PTR_ERR(*btf);
+-		*btf = NULL;
+-	}
++	btf = btf_new(ptr, btf_info.btf_size, base_btf);
+ 
+ exit_free:
+-	close(btf_fd);
+ 	free(ptr);
++	return btf;
++}
+ 
+-	return err;
++int btf__get_from_id(__u32 id, struct btf **btf)
++{
++	struct btf *res;
++	int btf_fd;
++
++	*btf = NULL;
++	btf_fd = bpf_btf_get_fd_by_id(id);
++	if (btf_fd < 0)
++		return 0;
++
++	res = btf_get_from_fd(btf_fd, NULL);
++	close(btf_fd);
++	if (IS_ERR(res))
++		return PTR_ERR(res);
++
++	*btf = res;
++	return 0;
+ }
+ 
+ int btf__get_map_kv_tids(const struct btf *btf, const char *map_name,
+diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
+index d99bc847bf84..e569ae63808e 100644
+--- a/tools/lib/bpf/libbpf_internal.h
++++ b/tools/lib/bpf/libbpf_internal.h
+@@ -155,6 +155,7 @@ int bpf_object__section_size(const struct bpf_object *obj, const char *name,
+ 			     __u32 *size);
+ int bpf_object__variable_offset(const struct bpf_object *obj, const char *name,
+ 				__u32 *off);
++struct btf *btf_get_from_fd(int btf_fd, struct btf *base_btf);
+ 
+ struct btf_ext_info {
+ 	/*
 -- 
 2.24.1
 
