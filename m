@@ -2,105 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA3F52B925D
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 13:16:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 293582B924C
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 13:15:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727388AbgKSMOO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 07:14:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42918 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727383AbgKSMOM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 07:14:12 -0500
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F2DC0613CF
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 04:14:10 -0800 (PST)
-Received: by mail-lf1-x141.google.com with SMTP id d17so7876550lfq.10
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 04:14:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=content-transfer-encoding:cc:subject:from:to:date:message-id
-         :in-reply-to;
-        bh=43Lm+cdFIN23Awmx15ktrV2KZ2DgXdJjk7MI28AP6nI=;
-        b=dYjn1VLqdhw8ghmRfr11UnbT3RKvIUB8IMbPr16+26+bUmhH8B5qd0i25YNYKFOE5h
-         f/1pQh+0815TO5nD+ZDAQDB0Aw4N2UWdF1ayPDu8Bp8k3hvRqdW2kjhsOU9YLXT6tjvI
-         u7x3CSwmKogcL8JEoaEsCh5h6o6egKfjrsheMUgCyYXO1AvvXMFy1QNi9+2cw+cPKJ4o
-         vBx7XAlArEPex1hlQpGjDkPf/4RY187yEAKDs3VLgWfKo1QOcYYoehbV+JPSvql8N0Ly
-         hcIgAA4Aum5QZBSJDo4HebnYQE7M8s8ufUcK+BDV0edttSEXapfyrwf3/XLBR/53hsqF
-         1krQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:content-transfer-encoding:cc:subject:from:to
-         :date:message-id:in-reply-to;
-        bh=43Lm+cdFIN23Awmx15ktrV2KZ2DgXdJjk7MI28AP6nI=;
-        b=CjP9XkBS6zRcWms9yWF72R7eICmnXkE85XuSphQ8xoapzxAfhSm+tX5rDysyAsHBbu
-         yQZSwWxZ2ElfEs+gqIyOXcEkQM9GsapSJzG1TMKe6A1symDMuQ0HDD7/AvtAvwgTgYXq
-         ejFK010oHIx+ZLnYtrRuwUG9QlUrS7x6snzmiiWILJntJtsx3VpvpUibxBJoUQU9Z9Pp
-         yHm7nVDN+0Tm887R7TOnXWPQ9eQJaXwJR/stksi1Ie4pR92KCi+8tGHw/Yy2mObXSMSX
-         OeJ8JxSbyORvqmbb/k3fAu9u3LQEVGV9ziFDCjICJiLfYpTm95hxzZce2o1bf3C+gYzQ
-         JJ/Q==
-X-Gm-Message-State: AOAM530CuWe9HBQcBNSu+9rRBFczlObwj1j9u+1POCBQeCAIyQDZGQ7M
-        vt4VYXwKE0o/j0Plerx6E3ONgg==
-X-Google-Smtp-Source: ABdhPJz76gvFOp/7qY00aQXJQs4VS6O3//Zk3t0tGCPQlevC9in80/loXZtS5hHm0lTtXPp46Bkj6A==
-X-Received: by 2002:a19:d02:: with SMTP id 2mr5600282lfn.294.1605788048911;
-        Thu, 19 Nov 2020 04:14:08 -0800 (PST)
-Received: from localhost (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id y11sm3441693lfl.119.2020.11.19.04.14.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Nov 2020 04:14:08 -0800 (PST)
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Cc:     <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <netdev@vger.kernel.org>
-Subject: Re: [RFC PATCH 0/4] net: dsa: link aggregation support
-From:   "Tobias Waldekranz" <tobias@waldekranz.com>
-To:     "Vladimir Oltean" <olteanv@gmail.com>
-Date:   Thu, 19 Nov 2020 12:52:14 +0100
-Message-Id: <C777W1ZC293J.3GT3X4KIN7PM9@wkz-x280>
-In-Reply-To: <20201119105112.ahkf6g5tjdbmymhk@skbuf>
+        id S1727287AbgKSMNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 07:13:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50510 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727269AbgKSMNM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Nov 2020 07:13:12 -0500
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0449C206CA;
+        Thu, 19 Nov 2020 12:13:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1605787990;
+        bh=YbzJp5AMK9z88hcsktSOd88hRueoWtYXU2IjjbIiBCQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=g6Xs7ts5C3/99g9gS4+mcp1ePY8hQd9BxXi2oUvBBXwotCIF92NjTV7CFoIxG1E4s
+         9JtQLEkNknkHe9faoqToaAPpjaSBrE9qm9lzix+wvr4vbqlesOi2e4SLRSjhHAJcSj
+         tIMM5+Iwfw0Kr9S3FbGxd7TNtsUtCFTf4ZK+clQ0=
+Date:   Thu, 19 Nov 2020 13:13:54 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de,
+        linux- stable <stable@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
+        netfilter-devel@vger.kernel.org
+Subject: Re: [PATCH 5.9 000/255] 5.9.9-rc1 review
+Message-ID: <X7ZhguSg3BaII1BU@kroah.com>
+References: <20201117122138.925150709@linuxfoundation.org>
+ <CA+G9fYt+YNy=34HLHpDrc6=73Nhu14NEf7AP+woyZryny+b-2Q@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CA+G9fYt+YNy=34HLHpDrc6=73Nhu14NEf7AP+woyZryny+b-2Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu Nov 19, 2020 at 1:51 PM CET, Vladimir Oltean wrote:
-> I have tested these patches on ocelot/felix and all is OK there, I would
-> appreciate if you could resend as non-RFC. In the case of my hardware,
+On Wed, Nov 18, 2020 at 11:03:55AM +0530, Naresh Kamboju wrote:
+> On Tue, 17 Nov 2020 at 19:02, Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >
+> > This is the start of the stable review cycle for the 5.9.9 release.
+> > There are 255 patches in this series, all will be posted as a response
+> > to this one.  If anyone has any issues with these being applied, please
+> > let me know.
+> >
+> > Responses should be made by Thu, 19 Nov 2020 12:20:51 +0000.
+> > Anything received after that time might be too late.
+> >
+> > The whole patch series can be found in one patch at:
+> >         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.9.9-rc1.gz
+> > or in the git tree and branch at:
+> >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.9.y
+> > and the diffstat can be found below.
+> >
+> > thanks,
+> >
+> > greg k-h
+> 
+> Results from Linaro’s test farm.
+> No regressions on arm64, arm, x86_64, and i386.
+> 
+> Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-For sure, I am working on it as we speak. I was mostly waiting for the
-dsa-tag-unification series to make its way to net-next first as v1
-depends on that. But then I remembered that I had to test against the
-bonding driver (I have used team up to this point), and there is some
-bug there that I need to squash first.
+Thanks for testing all of these and letting me know.
 
-> it appears that I don't need the .port_lag_change callback, and that the
-
-Ok, does ocelot automatically rebalance the LAG based on link state? I
-took a quick look through the datasheet for another switch from
-Vitesse, and it explicitly states that you need to update a table on
-link changes.
-
-I.e. in this situation:
-
-    br0
-   /  |
- lag  |
- /|\  |
-1 2 3 4
-| | |  \
-| | |   B
-| | |
-1 2 3
-  A
-
-If you unplug cable 1, does the hardware rebalance all flows between
-A<->B to only use 2 and 3 without software assistance? If not, you
-will loose 1/3 of your flows.
-
-> source port that is being put in the DSA header is still the physical
-> port ID and not the logical port ID (the LAG number). That being said,
-
-Ok, yeah I really wish this was true for mv88e6xxx as well.
-
-> the framework you've built is clearly nice and works well even with
-> bridging a bond.
-
-Thank you!
+greg k-h
