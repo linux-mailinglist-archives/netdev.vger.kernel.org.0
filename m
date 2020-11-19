@@ -2,124 +2,297 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BFAF2B97D3
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 17:27:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A86F2B97DE
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 17:27:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728506AbgKSQZr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 11:25:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53730 "EHLO
+        id S1728824AbgKSQ1e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 11:27:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728011AbgKSQZq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 11:25:46 -0500
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D26CC0613CF
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 08:25:46 -0800 (PST)
-Received: by mail-io1-xd41.google.com with SMTP id i9so6722399ioo.2
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 08:25:46 -0800 (PST)
+        with ESMTP id S1726820AbgKSQ1d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 11:27:33 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46A5FC0613CF
+        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 08:27:33 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id m6so7053407wrg.7
+        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 08:27:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Amk92XByjR3F/5y7FmfHnJ2Hcyltt65mh2oq2R4XBPE=;
-        b=QBH0flBZlJUqvMdGLicTS2kzdpgZ4awOeD9tVpWK+x3afA80zlzZZ8rJHt/HKrBdGn
-         DiHIw2vLm1nYrFK5MYyUjwTMfOxgGtnTZbtKbMQKmsCQrvxIb4J8wNJy/WU+yg5fDB3m
-         mH8VNBEK49OlSTvQVCKGkpONF53BnxXCu9lG8NK1lUbSC8ib9fGLYe7y/2xhdfBuYEL4
-         LT2tvuYGoFA1Pqgpm9Fg9SyxVk2xM5ZDfKniUZBnYtlfdM6qaWMZyp7i3G0auZL9Ex28
-         noc49C8jdJuzspyA01aqr7Hm6q8gcwOWbrPgVxOrqezE0jVBhyhIvRNJvc1mS6DkJ6og
-         hh0w==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IioeS9Dg9AkawJC0rA82bgYAMNg3xp44Pj00qEh6sh0=;
+        b=art9hBd5P5j/+kj2P0wYHIZjL6yunREWPR+kjYldAXaIYpQDQIDE6+hbt9sz5fQl1b
+         6n5/y6CAppjkpeomOnpoztMCbW/12R5Vl5klCknADcQrLXomSUEyO4tKjWdqw6g8yxJm
+         eTyVOHOaKFslVAWrXAy7iR9M7XZzCHQ+lSLY4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Amk92XByjR3F/5y7FmfHnJ2Hcyltt65mh2oq2R4XBPE=;
-        b=Z2uiA3pFwu79xH8nuaOAc88mlWYIv71dPbvXSGL0zULwPhtkO9VvjD0YKhvzXc9otF
-         sVcupHW2uiMOOHksNP17QKi6WzgPotKasCJIun/bAlekx7MGJ4bUFYb5bkk5O/L5uDCs
-         HeGw9vPA2pDq73ByJ+3aGgaMrhf4etfeEH91/zRIHk8tkCgfb+mAbf7p2/mpjdj62glJ
-         /YVJGAB6D0FatEvkI5Xn3wiNFHhXgV7/ByXp0SXGWdS5UTxH/tWtVYmVe2XyUvC5QG76
-         NLIzeOVsfuqcFOwvKDfOXt4IkF3RJCXm/iK+Os5KZwddnuyGEZSXokaO6QIPwDuJP2p1
-         m1Jg==
-X-Gm-Message-State: AOAM530y9n069T7OCWxsiHu3CYhRLQEhaqImiebyH5rIixzW3mT6FOt2
-        V/rgSR0sjOESYpCJUHCrrlqjCZIhJEBb74qybDA=
-X-Google-Smtp-Source: ABdhPJw2K1B/s5YgtnBs44+sG5PdoFunBjnOW/Sv2V9GJ/HAg+aTNJMaVz7mPlHk1pIKhYdyEnX6uDe3vUt+SjsZNLQ=
-X-Received: by 2002:a6b:e40f:: with SMTP id u15mr20571660iog.88.1605803145803;
- Thu, 19 Nov 2020 08:25:45 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IioeS9Dg9AkawJC0rA82bgYAMNg3xp44Pj00qEh6sh0=;
+        b=jwnpUSdZdtCCTofXGSMXFqX9Ed4as2f4/ranUdnGW+1VToqptk2b16An7B8wczfpbw
+         YneKBV5ren5Zd2Qavhe9TdHbEQUcA75J2+N3hmf12uThudyHnfxqNpumfjoHPjGKrv71
+         gH5tAZaak1JrnKk3wPSud04UnwwJ/kzZUfYgDhh7QMg0ubY0ILLp2RbQYlbkHxRdMXa/
+         3bwCa/yDTX4oU31Z34wR1E+eY5LX2N/SbZgHBQwsKDKc4yaxevYsMbj5m9wgt27WXa0h
+         O6jCltsGwNK55GBAy7S+NPEfWBmqGsbmroJ5Py/wKmOZYqw5c8RfHF9056Jce67JtTPc
+         dmrQ==
+X-Gm-Message-State: AOAM533N9mJai/QwjLuUERc8OhAGDO24FGQjMk2GSVW4lMrHsTGnVkZE
+        9EtLXgYb0nonGPjRxhXjsrza1A==
+X-Google-Smtp-Source: ABdhPJxK7kKv1EW1z/PdDbWzwBgQkw86caAXfKxPThm4XVwabqrtLp3LqHZNmdddOkTyzAgbPYHonA==
+X-Received: by 2002:adf:9104:: with SMTP id j4mr11959123wrj.198.1605803251881;
+        Thu, 19 Nov 2020 08:27:31 -0800 (PST)
+Received: from revest.zrh.corp.google.com ([2a00:79e0:42:204:f693:9fff:fef4:a569])
+        by smtp.gmail.com with ESMTPSA id i5sm380061wrw.45.2020.11.19.08.27.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Nov 2020 08:27:31 -0800 (PST)
+From:   Florent Revest <revest@chromium.org>
+To:     bpf@vger.kernel.org
+Cc:     viro@zeniv.linux.org.uk, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, kafai@fb.com, yhs@fb.com,
+        andrii@kernel.org, kpsingh@chromium.org, revest@google.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v2 1/5] net: Remove the err argument from sock_from_file
+Date:   Thu, 19 Nov 2020 17:26:50 +0100
+Message-Id: <20201119162654.2410685-1-revest@chromium.org>
+X-Mailer: git-send-email 2.29.2.299.gdc1121823c-goog
 MIME-Version: 1.0
-References: <20201109233659.1953461-1-awogbemila@google.com>
- <20201109233659.1953461-3-awogbemila@google.com> <CAKgT0Ufx7NS0BDwx_egT9-Q9GwbUsBEWiAY8H5YyLFP1h2WQmw@mail.gmail.com>
- <CAL9ddJdL0KNp69J6tVn_1Bp8xxwo2JxKRVajHfAriY=pUH0r1g@mail.gmail.com>
-In-Reply-To: <CAL9ddJdL0KNp69J6tVn_1Bp8xxwo2JxKRVajHfAriY=pUH0r1g@mail.gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Thu, 19 Nov 2020 08:25:34 -0800
-Message-ID: <CAKgT0UdG+fB=KNzro7zMg-617KcNCAL_dMZcqeL0JrcJuT4_CQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v6 2/4] gve: Add support for raw addressing to
- the rx path
-To:     David Awogbemila <awogbemila@google.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        Catherine Sullivan <csully@google.com>,
-        Yangchun Fu <yangchun@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 3:15 PM David Awogbemila <awogbemila@google.com> wrote:
->
-> On Wed, Nov 11, 2020 at 9:20 AM Alexander Duyck
-> <alexander.duyck@gmail.com> wrote:
-> >
-> > On Mon, Nov 9, 2020 at 3:39 PM David Awogbemila <awogbemila@google.com> wrote:
-> > >
-> > > From: Catherine Sullivan <csully@google.com>
-> > >
-> > > Add support to use raw dma addresses in the rx path. Due to this new
-> > > support we can alloc a new buffer instead of making a copy.
-> > >
-> > > RX buffers are handed to the networking stack and are
-> > > re-allocated as needed, avoiding the need to use
-> > > skb_copy_to_linear_data() as in "qpl" mode.
-> > >
-> > > Reviewed-by: Yangchun Fu <yangchun@google.com>
-> > > Signed-off-by: Catherine Sullivan <csully@google.com>
-> > > Signed-off-by: David Awogbemila <awogbemila@google.com>
-> > > ---
+From: Florent Revest <revest@google.com>
 
-<snip>
+Currently, the sock_from_file prototype takes an "err" pointer that is
+either not set or set to -ENOTSOCK IFF the returned socket is NULL. This
+makes the error redundant and it is ignored by a few callers.
 
-> > > @@ -399,19 +487,45 @@ static bool gve_rx_work_pending(struct gve_rx_ring *rx)
-> > >         return (GVE_SEQNO(flags_seq) == rx->desc.seqno);
-> > >  }
-> > >
-> > > +static bool gve_rx_refill_buffers(struct gve_priv *priv, struct gve_rx_ring *rx)
-> > > +{
-> > > +       bool empty = rx->fill_cnt == rx->cnt;
-> > > +       u32 fill_cnt = rx->fill_cnt;
-> > > +
-> > > +       while (empty || ((fill_cnt & rx->mask) != (rx->cnt & rx->mask))) {
-> >
-> > So one question I would have is why do you need to mask fill_cnt and
-> > cnt here, but not above? Something doesn't match up.
->
-> fill_cnt and cnt are both free-running uints with fill_cnt generally
-> greater than cnt
-> as fill_cnt tracks freed/available buffers while cnt tracks used buffers.
-> The difference between "fill_cnt == cnt" and "(fill_cnt & rx->mask) ==
-> (cnt & rx->mask)" is
-> useful when all the buffers are completely used up.
-> If all the descriptors are used up ("fill_cnt == cnt") when we attempt
-> to refill buffers, the right
-> hand side of the while loop's OR condition, "(fill_cnt & rx->mask) !=
-> (rx->cnt & rx->mask)"
-> will be false and we wouldn't get to attempt to refill the queue's buffers.
+This patch simplifies the API by letting callers deduce the error based
+on whether the returned socket is NULL or not.
 
-I think I see what you are trying to get at, but it seems convoluted.
-Your first check is checking for the empty case where rx->fill_cnt ==
-rx->cnt. The second half of this is about pushing the count up so that
-you cause fill_cnt to wrap and come back around and be equal to cnt.
-That seems like a really convoluted way to get there.
+Suggested-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Florent Revest <revest@google.com>
+---
+ fs/eventpoll.c               |  3 +--
+ fs/io_uring.c                | 16 ++++++++--------
+ include/linux/net.h          |  2 +-
+ net/core/netclassid_cgroup.c |  3 +--
+ net/core/netprio_cgroup.c    |  3 +--
+ net/core/sock.c              |  8 +-------
+ net/socket.c                 | 27 ++++++++++++++++-----------
+ 7 files changed, 29 insertions(+), 33 deletions(-)
 
-Why not just simplify this and do something like the following?:
-while (fill_cnt - rx->cnt  < rx->mask)
+diff --git a/fs/eventpoll.c b/fs/eventpoll.c
+index 4df61129566d..c764d8d5a76a 100644
+--- a/fs/eventpoll.c
++++ b/fs/eventpoll.c
+@@ -415,12 +415,11 @@ static inline void ep_set_busy_poll_napi_id(struct epitem *epi)
+ 	unsigned int napi_id;
+ 	struct socket *sock;
+ 	struct sock *sk;
+-	int err;
+ 
+ 	if (!net_busy_loop_on())
+ 		return;
+ 
+-	sock = sock_from_file(epi->ffd.file, &err);
++	sock = sock_from_file(epi->ffd.file);
+ 	if (!sock)
+ 		return;
+ 
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 8018c7076b25..ace99b15cbd3 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -4341,9 +4341,9 @@ static int io_sendmsg(struct io_kiocb *req, bool force_nonblock,
+ 	unsigned flags;
+ 	int ret;
+ 
+-	sock = sock_from_file(req->file, &ret);
++	sock = sock_from_file(req->file);
+ 	if (unlikely(!sock))
+-		return ret;
++		return -ENOTSOCK;
+ 
+ 	if (req->async_data) {
+ 		kmsg = req->async_data;
+@@ -4390,9 +4390,9 @@ static int io_send(struct io_kiocb *req, bool force_nonblock,
+ 	unsigned flags;
+ 	int ret;
+ 
+-	sock = sock_from_file(req->file, &ret);
++	sock = sock_from_file(req->file);
+ 	if (unlikely(!sock))
+-		return ret;
++		return -ENOTSOCK;
+ 
+ 	ret = import_single_range(WRITE, sr->buf, sr->len, &iov, &msg.msg_iter);
+ 	if (unlikely(ret))
+@@ -4569,9 +4569,9 @@ static int io_recvmsg(struct io_kiocb *req, bool force_nonblock,
+ 	unsigned flags;
+ 	int ret, cflags = 0;
+ 
+-	sock = sock_from_file(req->file, &ret);
++	sock = sock_from_file(req->file);
+ 	if (unlikely(!sock))
+-		return ret;
++		return -ENOTSOCK;
+ 
+ 	if (req->async_data) {
+ 		kmsg = req->async_data;
+@@ -4632,9 +4632,9 @@ static int io_recv(struct io_kiocb *req, bool force_nonblock,
+ 	unsigned flags;
+ 	int ret, cflags = 0;
+ 
+-	sock = sock_from_file(req->file, &ret);
++	sock = sock_from_file(req->file);
+ 	if (unlikely(!sock))
+-		return ret;
++		return -ENOTSOCK;
+ 
+ 	if (req->flags & REQ_F_BUFFER_SELECT) {
+ 		kbuf = io_recv_buffer_select(req, !force_nonblock);
+diff --git a/include/linux/net.h b/include/linux/net.h
+index 0dcd51feef02..9e2324efc26a 100644
+--- a/include/linux/net.h
++++ b/include/linux/net.h
+@@ -240,7 +240,7 @@ int sock_sendmsg(struct socket *sock, struct msghdr *msg);
+ int sock_recvmsg(struct socket *sock, struct msghdr *msg, int flags);
+ struct file *sock_alloc_file(struct socket *sock, int flags, const char *dname);
+ struct socket *sockfd_lookup(int fd, int *err);
+-struct socket *sock_from_file(struct file *file, int *err);
++struct socket *sock_from_file(struct file *file);
+ #define		     sockfd_put(sock) fput(sock->file)
+ int net_ratelimit(void);
+ 
+diff --git a/net/core/netclassid_cgroup.c b/net/core/netclassid_cgroup.c
+index 41b24cd31562..b49c57d35a88 100644
+--- a/net/core/netclassid_cgroup.c
++++ b/net/core/netclassid_cgroup.c
+@@ -68,9 +68,8 @@ struct update_classid_context {
+ 
+ static int update_classid_sock(const void *v, struct file *file, unsigned n)
+ {
+-	int err;
+ 	struct update_classid_context *ctx = (void *)v;
+-	struct socket *sock = sock_from_file(file, &err);
++	struct socket *sock = sock_from_file(file);
+ 
+ 	if (sock) {
+ 		spin_lock(&cgroup_sk_update_lock);
+diff --git a/net/core/netprio_cgroup.c b/net/core/netprio_cgroup.c
+index 9bd4cab7d510..99a431c56f23 100644
+--- a/net/core/netprio_cgroup.c
++++ b/net/core/netprio_cgroup.c
+@@ -220,8 +220,7 @@ static ssize_t write_priomap(struct kernfs_open_file *of,
+ 
+ static int update_netprio(const void *v, struct file *file, unsigned n)
+ {
+-	int err;
+-	struct socket *sock = sock_from_file(file, &err);
++	struct socket *sock = sock_from_file(file);
+ 	if (sock) {
+ 		spin_lock(&cgroup_sk_update_lock);
+ 		sock_cgroup_set_prioidx(&sock->sk->sk_cgrp_data,
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 727ea1cc633c..dd0598d831ef 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2808,14 +2808,8 @@ EXPORT_SYMBOL(sock_no_mmap);
+ void __receive_sock(struct file *file)
+ {
+ 	struct socket *sock;
+-	int error;
+ 
+-	/*
+-	 * The resulting value of "error" is ignored here since we only
+-	 * need to take action when the file is a socket and testing
+-	 * "sock" for NULL is sufficient.
+-	 */
+-	sock = sock_from_file(file, &error);
++	sock = sock_from_file(file);
+ 	if (sock) {
+ 		sock_update_netprioidx(&sock->sk->sk_cgrp_data);
+ 		sock_update_classid(&sock->sk->sk_cgrp_data);
+diff --git a/net/socket.c b/net/socket.c
+index 6e6cccc2104f..c799d9652a2c 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -445,17 +445,15 @@ static int sock_map_fd(struct socket *sock, int flags)
+ /**
+  *	sock_from_file - Return the &socket bounded to @file.
+  *	@file: file
+- *	@err: pointer to an error code return
+  *
+- *	On failure returns %NULL and assigns -ENOTSOCK to @err.
++ *	On failure returns %NULL.
+  */
+ 
+-struct socket *sock_from_file(struct file *file, int *err)
++struct socket *sock_from_file(struct file *file)
+ {
+ 	if (file->f_op == &socket_file_ops)
+ 		return file->private_data;	/* set in sock_map_fd */
+ 
+-	*err = -ENOTSOCK;
+ 	return NULL;
+ }
+ EXPORT_SYMBOL(sock_from_file);
+@@ -484,9 +482,11 @@ struct socket *sockfd_lookup(int fd, int *err)
+ 		return NULL;
+ 	}
+ 
+-	sock = sock_from_file(file, err);
+-	if (!sock)
++	sock = sock_from_file(file);
++	if (!sock) {
++		*err = -ENOTSOCK;
+ 		fput(file);
++	}
+ 	return sock;
+ }
+ EXPORT_SYMBOL(sockfd_lookup);
+@@ -498,11 +498,12 @@ static struct socket *sockfd_lookup_light(int fd, int *err, int *fput_needed)
+ 
+ 	*err = -EBADF;
+ 	if (f.file) {
+-		sock = sock_from_file(f.file, err);
++		sock = sock_from_file(f.file);
+ 		if (likely(sock)) {
+ 			*fput_needed = f.flags & FDPUT_FPUT;
+ 			return sock;
+ 		}
++		*err = -ENOTSOCK;
+ 		fdput(f);
+ 	}
+ 	return NULL;
+@@ -1715,9 +1716,11 @@ int __sys_accept4_file(struct file *file, unsigned file_flags,
+ 	if (SOCK_NONBLOCK != O_NONBLOCK && (flags & SOCK_NONBLOCK))
+ 		flags = (flags & ~SOCK_NONBLOCK) | O_NONBLOCK;
+ 
+-	sock = sock_from_file(file, &err);
+-	if (!sock)
++	sock = sock_from_file(file);
++	if (!sock) {
++		err = -ENOTSOCK;
+ 		goto out;
++	}
+ 
+ 	err = -ENFILE;
+ 	newsock = sock_alloc();
+@@ -1840,9 +1843,11 @@ int __sys_connect_file(struct file *file, struct sockaddr_storage *address,
+ 	struct socket *sock;
+ 	int err;
+ 
+-	sock = sock_from_file(file, &err);
+-	if (!sock)
++	sock = sock_from_file(file);
++	if (!sock) {
++		err = -ENOTSOCK;
+ 		goto out;
++	}
+ 
+ 	err =
+ 	    security_socket_connect(sock, (struct sockaddr *)address, addrlen);
+-- 
+2.29.2.299.gdc1121823c-goog
 
-I would argue that is much easier to read and understand rather than
-having to double up the cases by using the mask field as a mask on the
-free running counters.
