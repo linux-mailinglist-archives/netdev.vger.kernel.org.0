@@ -2,65 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18FD22B88E2
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 01:03:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F7A82B88E4
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 01:07:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726571AbgKSACl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 19:02:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47204 "EHLO mail.kernel.org"
+        id S1726468AbgKSAFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 19:05:21 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:36844 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726304AbgKSACl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 19:02:41 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 88B6C246E0;
-        Thu, 19 Nov 2020 00:02:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605744160;
-        bh=GF5dPzOIifvQCldVIgGATj1Bm6sA+YL8hKFsuU7Re6U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=2hxgpihhSzNB7MKqsQcCqqJtBgIkv00sAyXJinWiGRyGLkX+LvTyoNHhJPsqBaUcn
-         xdobKTbXeiSSH2D6uiOH60zaPeX8YTpRjZp6CCn1eWJVgL7qOPVOWUUsGWQ3Nch9sL
-         McA6X/7oaUHv+nyqsk/a2P31Afrd92xfjaegr/qw=
-Date:   Wed, 18 Nov 2020 16:02:39 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tariq Toukan <tariqt@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
-        Tariq Toukan <ttoukan.linux@gmail.com>
-Subject: Re: [PATCH net-next 0/2] TLS TX HW offload for Bond
-Message-ID: <20201118160239.78871842@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201115134251.4272-1-tariqt@nvidia.com>
-References: <20201115134251.4272-1-tariqt@nvidia.com>
+        id S1726098AbgKSAFV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 19:05:21 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kfXRu-007pM2-Jy; Thu, 19 Nov 2020 01:05:18 +0100
+Date:   Thu, 19 Nov 2020 01:05:18 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Grzeschik <m.grzeschik@pengutronix.de>
+Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, davem@davemloft.net,
+        kernel@pengutronix.de, matthias.schiffer@ew.tq-group.com,
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH 01/11] net: dsa: microchip: ksz8795: remove unused
+ last_port variable
+Message-ID: <20201119000518.GE1804098@lunn.ch>
+References: <20201118220357.22292-1-m.grzeschik@pengutronix.de>
+ <20201118220357.22292-2-m.grzeschik@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201118220357.22292-2-m.grzeschik@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 15 Nov 2020 15:42:49 +0200 Tariq Toukan wrote:
-> This series opens TLS TX HW offload for bond interfaces.
-> This allows bond interfaces to benefit from capable slave devices.
+On Wed, Nov 18, 2020 at 11:03:47PM +0100, Michael Grzeschik wrote:
+> The variable last_port is not used anywhere, this patch removes it.
 > 
-> The first patch adds real_dev field in TLS context structure, and aligns
-> usages in TLS module and supporting drivers.
-> The second patch opens the offload for bond interfaces.
-> 
-> For the configuration above, SW kTLS keeps picking the same slave
-> To keep simple track of the HW and SW TLS contexts, we bind each socket to
-> a specific slave for the socket's whole lifetime. This is logically valid
-> (and similar to the SW kTLS behavior) in the following bond configuration, 
-> so we restrict the offload support to it:
-> 
-> ((mode == balance-xor) or (mode == 802.3ad))
-> and xmit_hash_policy == layer3+4.
+> Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
 
-This does not feel extremely clean, maybe you can convince me otherwise.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Can we extend netdev_get_xmit_slave() and figure out the output dev
-(and if it's "stable") in a more generic way? And just feed that dev
-into TLS handling? All non-crypto upper SW devs should be safe to cross
-with .decrypted = 1 skbs, right?
+    Andrew
