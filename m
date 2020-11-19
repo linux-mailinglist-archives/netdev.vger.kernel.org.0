@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07F6F2B95C1
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 16:08:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D32EB2B95C5
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 16:08:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728324AbgKSPGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 10:06:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41408 "EHLO
+        id S1728275AbgKSPGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 10:06:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727086AbgKSPGu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 10:06:50 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F39C0613CF;
-        Thu, 19 Nov 2020 07:06:50 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id q5so4757994pfk.6;
-        Thu, 19 Nov 2020 07:06:50 -0800 (PST)
+        with ESMTP id S1726820AbgKSPGz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 10:06:55 -0500
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED25DC0613CF;
+        Thu, 19 Nov 2020 07:06:54 -0800 (PST)
+Received: by mail-pf1-x442.google.com with SMTP id b63so4737541pfg.12;
+        Thu, 19 Nov 2020 07:06:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=HPngOSM82/AQhAOxg6kInXieW/P6ExxWnm99recQX+Y=;
-        b=LlHuo2N9wiFZzvXCk91aNPD3Pdsn3MNTBuKuRW2BpcVckdbzemldh6aCqOf6jkKqy0
-         j45TIJBJNkrFnR9VYpREwtBiVL7IQjGRHGgaRw3+6xtoBeABXQnHgMeOeigSitXWMbTA
-         dTMLpzktTgAKJAv32T4g6Kql9UWqksuEgNqHTb2O/ZeMtNg7+skLXNIEKaG79xOA/Ed9
-         6yscXMrWE74+PktoAwLf9ucMHhctmCc85zCyllDJA4BUAMM6t3D1BemI3guDFUto9J3m
-         XKwLTgR0iBEXkLv9oS0CwVwHBIUPmPbn81EvpwJb/4Lb2KTQQ4sqi/aPCztFqXp3eyy6
-         QlrA==
+        bh=Y4w/C+u9mn3PS9LuGNFM8q1NWwoA/E6dAzHcv8xL7lg=;
+        b=kd8HawuSAe8znPhifuHx1fDWKoToQ5MPwJFsltFgAUTY4cDIcpdZwh4gcd7WQsQp9o
+         LWo8Tr79wcIoiQw5pvT4t6qLP+wZKr5Y2tTwzi3AZF2sI8mJDObe+d1G7aBvgRzP3tGC
+         ttpKa8SKKJnF2f48t49EhfM8qxeNP79EfFEbLsF9d83KEnY4i4n+1J9d0EQhmFqfUoOM
+         YljmjDyPa2v1hQ8H2fKl0bryq3UtIdvh2SZ3kJSfFNe5ztTZa1Ek9XlD+O7NlZF00QX0
+         6O4sSHA493PBn6aOtDDeeNEbjabOu3IUFhSiJoKGKIDXz+1PdaqIPE6jO5DfRHXphKTj
+         8gug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=HPngOSM82/AQhAOxg6kInXieW/P6ExxWnm99recQX+Y=;
-        b=OAIszGrZF1pYO4+fqlvR7mWe3st+awYM/nQlT4/jY7+0HcyL5HbOj5d1hDOEVj4Qwb
-         wRfHDVXXOsELylpB7T2y2vOVrEKdyu0pc8FBPMqaPkNBjZMe6+Q6IDgU5bpTE9uxXxPO
-         kgHBxr/MrBTIB0fi3SrhB9iZ5YOaR6IOH7PArIitZDfzxUy0K0efiEbPqxzLEofVR3yo
-         9/SROCmr2//83ZPPLDNiTP3lCDyRUaYx6AFywWbpBET0KinmrT1039KEnL639zq74J8f
-         9gkN1O763aGMc1l99Jd5JWzsArI3MygUgLko4nOctXCs6y9ZP1KkPyXW4tiXmlKac1Sw
-         ynNg==
-X-Gm-Message-State: AOAM530hvBE1UOAcLAC8Ak76oRR6p79K6ItWjfe0ERLXLkVmpJr74A7I
-        825Iw/mdWD77XVAM8G19IQ==
-X-Google-Smtp-Source: ABdhPJxMeb577aQYRkjmLQp/px80a/X6BjuqcTjLJCtTzmCGlfw6/nOgc+IVDiuhU/OjHVu3s/KpDQ==
-X-Received: by 2002:a63:4558:: with SMTP id u24mr12970647pgk.376.1605798409666;
-        Thu, 19 Nov 2020 07:06:49 -0800 (PST)
+        bh=Y4w/C+u9mn3PS9LuGNFM8q1NWwoA/E6dAzHcv8xL7lg=;
+        b=OoTRzT6ejyZ2p3mepUS9gHogNBeJpYFNBxONO9imL5djsoPhD+4AjN/z+c2RdOg6qf
+         yU6HR9ZnWKzG0isqpCil8MGdB0A7cW9tBs/2UvtbfQ/04/J61f7aooL9nqsNI2ksLer0
+         SUR//hO7DAlzOSFGMYa0hO3zZb6DzkXFjepBTXSHGlzvDfaUk48haISaQUulBdFIZw+l
+         m1ziLn2KXrOCJlV93OyfhP4DMOkL+sll1WlzKOcz58kw+nzbZzu0/9PojLOtZNIPdF8p
+         K0JM7wnQLBzfBoMWSGnSh5lsz0UGEZsN77SnE0PCjcjJElyKZ3NoCF7BXSRWmG5UMban
+         UL9A==
+X-Gm-Message-State: AOAM533jbZHUA8cpYpFqvHRLPK0rG8uSgISsbaZ+gawUx3RDmW3q5yd4
+        SV+7f7M87yDEjSuWoMEFcw==
+X-Google-Smtp-Source: ABdhPJzA8oKoy7jip42gKZtxZt9lqkHxlRPfur3DhR8xFwm41pF7kq9ImP1mdkH0rTMn5kbHVEJT7w==
+X-Received: by 2002:a62:1b02:0:b029:18a:b052:deb1 with SMTP id b2-20020a621b020000b029018ab052deb1mr9758032pfb.32.1605798414383;
+        Thu, 19 Nov 2020 07:06:54 -0800 (PST)
 Received: from localhost.localdomain ([182.209.58.45])
-        by smtp.gmail.com with ESMTPSA id b80sm77783pfb.40.2020.11.19.07.06.44
+        by smtp.gmail.com with ESMTPSA id b80sm77783pfb.40.2020.11.19.07.06.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Nov 2020 07:06:49 -0800 (PST)
+        Thu, 19 Nov 2020 07:06:53 -0800 (PST)
 From:   "Daniel T. Lee" <danieltimlee@gmail.com>
 To:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -63,9 +63,9 @@ To:     Daniel Borkmann <daniel@iogearbox.net>,
         John Fastabend <john.fastabend@gmail.com>
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         Xdp <xdp-newbies@vger.kernel.org>
-Subject: [PATCH bpf-next v2 4/7] samples: bpf: refactor ibumad program with libbpf
-Date:   Thu, 19 Nov 2020 15:06:14 +0000
-Message-Id: <20201119150617.92010-5-danieltimlee@gmail.com>
+Subject: [PATCH bpf-next v2 5/7] samples: bpf: refactor test_overhead program with libbpf
+Date:   Thu, 19 Nov 2020 15:06:15 +0000
+Message-Id: <20201119150617.92010-6-danieltimlee@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201119150617.92010-1-danieltimlee@gmail.com>
 References: <20201119150617.92010-1-danieltimlee@gmail.com>
@@ -75,195 +75,169 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit refactors the existing ibumad program with libbpf bpf
-loader. Attach/detach of Tracepoint bpf programs has been managed
-with the generic bpf_program__attach() and bpf_link__destroy() from
-the libbpf.
+This commit refactors the existing program with libbpf bpf loader.
+Since the kprobe, tracepoint and raw_tracepoint bpf program can be
+attached with single bpf_program__attach() interface, so the
+corresponding function of libbpf is used here.
 
-Also, instead of using the previous BPF MAP definition, this commit
-refactors ibumad MAP definition with the new BTF-defined MAP format.
-
-To verify that this bpf program works without an infiniband device,
-try loading ib_umad kernel module and test the program as follows:
-
-    # modprobe ib_umad
-    # ./ibumad
-
-Moreover, TRACE_HELPERS has been removed from the Makefile since it is
-not used on this program.
+Rather than specifying the number of cpus inside the code, this commit
+uses the number of available cpus with _SC_NPROCESSORS_ONLN.
 
 Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 ---
 Changes in v2:
  - add static at global variable and drop {}
- - fix return error code on exit
 
- samples/bpf/Makefile      |  2 +-
- samples/bpf/ibumad_kern.c | 26 +++++++-------
- samples/bpf/ibumad_user.c | 71 +++++++++++++++++++++++++++++----------
- 3 files changed, 68 insertions(+), 31 deletions(-)
+ samples/bpf/Makefile             |  2 +-
+ samples/bpf/test_overhead_user.c | 82 +++++++++++++++++++++++---------
+ 2 files changed, 60 insertions(+), 24 deletions(-)
 
 diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 3bffd42e1482..09a249477554 100644
+index 09a249477554..25380e04897e 100644
 --- a/samples/bpf/Makefile
 +++ b/samples/bpf/Makefile
-@@ -109,7 +109,7 @@ xsk_fwd-objs := xsk_fwd.o
- xdp_fwd-objs := xdp_fwd_user.o
- task_fd_query-objs := task_fd_query_user.o $(TRACE_HELPERS)
- xdp_sample_pkts-objs := xdp_sample_pkts_user.o $(TRACE_HELPERS)
--ibumad-objs := bpf_load.o ibumad_user.o $(TRACE_HELPERS)
-+ibumad-objs := ibumad_user.o
- hbm-objs := hbm.o $(CGROUP_HELPERS)
- 
- # Tell kbuild to always build the programs
-diff --git a/samples/bpf/ibumad_kern.c b/samples/bpf/ibumad_kern.c
-index 3a91b4c1989a..26dcd4dde946 100644
---- a/samples/bpf/ibumad_kern.c
-+++ b/samples/bpf/ibumad_kern.c
-@@ -16,19 +16,19 @@
- #include <bpf/bpf_helpers.h>
- 
- 
--struct bpf_map_def SEC("maps") read_count = {
--	.type        = BPF_MAP_TYPE_ARRAY,
--	.key_size    = sizeof(u32), /* class; u32 required */
--	.value_size  = sizeof(u64), /* count of mads read */
--	.max_entries = 256, /* Room for all Classes */
--};
--
--struct bpf_map_def SEC("maps") write_count = {
--	.type        = BPF_MAP_TYPE_ARRAY,
--	.key_size    = sizeof(u32), /* class; u32 required */
--	.value_size  = sizeof(u64), /* count of mads written */
--	.max_entries = 256, /* Room for all Classes */
--};
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__type(key, u32); /* class; u32 required */
-+	__type(value, u64); /* count of mads read */
-+	__uint(max_entries, 256); /* Room for all Classes */
-+} read_count SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__type(key, u32); /* class; u32 required */
-+	__type(value, u64); /* count of mads written */
-+	__uint(max_entries, 256); /* Room for all Classes */
-+} write_count SEC(".maps");
- 
- #undef DEBUG
- #ifndef DEBUG
-diff --git a/samples/bpf/ibumad_user.c b/samples/bpf/ibumad_user.c
-index fa06eef31a84..d83d8102f489 100644
---- a/samples/bpf/ibumad_user.c
-+++ b/samples/bpf/ibumad_user.c
-@@ -23,10 +23,15 @@
- #include <getopt.h>
- #include <net/if.h>
- 
+@@ -78,7 +78,7 @@ lathist-objs := lathist_user.o
+ offwaketime-objs := offwaketime_user.o $(TRACE_HELPERS)
+ spintest-objs := spintest_user.o $(TRACE_HELPERS)
+ map_perf_test-objs := map_perf_test_user.o
+-test_overhead-objs := bpf_load.o test_overhead_user.o
++test_overhead-objs := test_overhead_user.o
+ test_cgrp2_array_pin-objs := test_cgrp2_array_pin.o
+ test_cgrp2_attach-objs := test_cgrp2_attach.o
+ test_cgrp2_sock-objs := test_cgrp2_sock.o
+diff --git a/samples/bpf/test_overhead_user.c b/samples/bpf/test_overhead_user.c
+index 94f74112a20e..819a6fe86f89 100644
+--- a/samples/bpf/test_overhead_user.c
++++ b/samples/bpf/test_overhead_user.c
+@@ -18,10 +18,14 @@
+ #include <time.h>
+ #include <sys/resource.h>
+ #include <bpf/bpf.h>
 -#include "bpf_load.h"
-+#include <bpf/bpf.h>
- #include "bpf_util.h"
- #include <bpf/libbpf.h>
++#include <bpf/libbpf.h>
  
-+static struct bpf_link *tp_links[3];
+ #define MAX_CNT 1000000
+ 
++static struct bpf_link *links[2];
 +static struct bpf_object *obj;
-+static int map_fd[2];
-+static int tp_cnt;
++static int cnt;
 +
- static void dump_counts(int fd)
+ static __u64 time_get_ns(void)
  {
- 	__u32 key;
-@@ -53,6 +58,11 @@ static void dump_all_counts(void)
- static void dump_exit(int sig)
- {
- 	dump_all_counts();
-+	/* Detach tracepoints */
-+	while (tp_cnt)
-+		bpf_link__destroy(tp_links[--tp_cnt]);
-+
-+	bpf_object__close(obj);
- 	exit(0);
+ 	struct timespec ts;
+@@ -115,20 +119,54 @@ static void run_perf_test(int tasks, int flags)
+ 	}
  }
  
-@@ -73,19 +83,11 @@ static void usage(char *cmd)
- 
- int main(int argc, char **argv)
- {
++static int load_progs(char *filename)
++{
 +	struct bpf_program *prog;
- 	unsigned long delay = 5;
-+	char filename[256];
- 	int longindex = 0;
--	int opt;
--	char bpf_file[256];
--
--	/* Create the eBPF kernel code path name.
--	 * This follows the pattern of all of the other bpf samples
--	 */
--	snprintf(bpf_file, sizeof(bpf_file), "%s_kern.o", argv[0]);
--
--	/* Do one final dump when exiting */
--	signal(SIGINT, dump_exit);
--	signal(SIGTERM, dump_exit);
-+	int opt, err = -1;
- 
- 	while ((opt = getopt_long(argc, argv, "hd:rSw",
- 				  long_options, &longindex)) != -1) {
-@@ -107,16 +109,51 @@ int main(int argc, char **argv)
- 		}
- 	}
- 
--	if (load_bpf_file(bpf_file)) {
--		fprintf(stderr, "ERROR: failed to load eBPF from file : %s\n",
--			bpf_file);
--		return 1;
-+	/* Do one final dump when exiting */
-+	signal(SIGINT, dump_exit);
-+	signal(SIGTERM, dump_exit);
++	int err = 0;
 +
-+	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
 +	obj = bpf_object__open_file(filename, NULL);
-+	if (libbpf_get_error(obj)) {
++	err = libbpf_get_error(obj);
++	if (err < 0) {
 +		fprintf(stderr, "ERROR: opening BPF object file failed\n");
 +		return err;
 +	}
 +
 +	/* load BPF program */
-+	if (bpf_object__load(obj)) {
++	err = bpf_object__load(obj);
++	if (err < 0) {
 +		fprintf(stderr, "ERROR: loading BPF object file failed\n");
-+		goto cleanup;
-+	}
-+
-+	map_fd[0] = bpf_object__find_map_fd_by_name(obj, "read_count");
-+	map_fd[1] = bpf_object__find_map_fd_by_name(obj, "write_count");
-+	if (map_fd[0] < 0 || map_fd[1] < 0) {
-+		fprintf(stderr, "ERROR: finding a map in obj file failed\n");
-+		goto cleanup;
++		return err;
 +	}
 +
 +	bpf_object__for_each_program(prog, obj) {
-+		tp_links[tp_cnt] = bpf_program__attach(prog);
-+		if (libbpf_get_error(tp_links[tp_cnt])) {
++		links[cnt] = bpf_program__attach(prog);
++		err = libbpf_get_error(links[cnt]);
++		if (err < 0) {
 +			fprintf(stderr, "ERROR: bpf_program__attach failed\n");
-+			tp_links[tp_cnt] = NULL;
-+			goto cleanup;
++			links[cnt] = NULL;
++			return err;
 +		}
-+		tp_cnt++;
++		cnt++;
++	}
++
++	return err;
++}
++
+ static void unload_progs(void)
+ {
+-	close(prog_fd[0]);
+-	close(prog_fd[1]);
+-	close(event_fd[0]);
+-	close(event_fd[1]);
++	while (cnt)
++		bpf_link__destroy(links[--cnt]);
++
++	bpf_object__close(obj);
+ }
+ 
+ int main(int argc, char **argv)
+ {
+ 	struct rlimit r = {RLIM_INFINITY, RLIM_INFINITY};
+-	char filename[256];
+-	int num_cpu = 8;
++	int num_cpu = sysconf(_SC_NPROCESSORS_ONLN);
+ 	int test_flags = ~0;
++	char filename[256];
++	int err = 0;
+ 
+ 	setrlimit(RLIMIT_MEMLOCK, &r);
+ 
+@@ -145,38 +183,36 @@ int main(int argc, char **argv)
+ 	if (test_flags & 0xC) {
+ 		snprintf(filename, sizeof(filename),
+ 			 "%s_kprobe_kern.o", argv[0]);
+-		if (load_bpf_file(filename)) {
+-			printf("%s", bpf_log_buf);
+-			return 1;
+-		}
++
+ 		printf("w/KPROBE\n");
+-		run_perf_test(num_cpu, test_flags >> 2);
++		err = load_progs(filename);
++		if (!err)
++			run_perf_test(num_cpu, test_flags >> 2);
++
+ 		unload_progs();
  	}
  
- 	while (1) {
- 		sleep(delay);
- 		dump_all_counts();
- 	}
-+	err = 0;
+ 	if (test_flags & 0x30) {
+ 		snprintf(filename, sizeof(filename),
+ 			 "%s_tp_kern.o", argv[0]);
+-		if (load_bpf_file(filename)) {
+-			printf("%s", bpf_log_buf);
+-			return 1;
+-		}
+ 		printf("w/TRACEPOINT\n");
+-		run_perf_test(num_cpu, test_flags >> 4);
++		err = load_progs(filename);
++		if (!err)
++			run_perf_test(num_cpu, test_flags >> 4);
 +
-+cleanup:
-+	/* Detach tracepoints */
-+	while (tp_cnt)
-+		bpf_link__destroy(tp_links[--tp_cnt]);
+ 		unload_progs();
+ 	}
+ 
+ 	if (test_flags & 0xC0) {
+ 		snprintf(filename, sizeof(filename),
+ 			 "%s_raw_tp_kern.o", argv[0]);
+-		if (load_bpf_file(filename)) {
+-			printf("%s", bpf_log_buf);
+-			return 1;
+-		}
+ 		printf("w/RAW_TRACEPOINT\n");
+-		run_perf_test(num_cpu, test_flags >> 6);
++		err = load_progs(filename);
++		if (!err)
++			run_perf_test(num_cpu, test_flags >> 6);
++
+ 		unload_progs();
+ 	}
  
 -	return 0;
-+	bpf_object__close(obj);
 +	return err;
  }
 -- 
