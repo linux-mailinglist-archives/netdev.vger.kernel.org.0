@@ -2,107 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45D1E2B9578
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 15:52:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D7CE2B94F0
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 15:41:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728412AbgKSOqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 09:46:47 -0500
-Received: from gate.crashing.org ([63.228.1.57]:45519 "EHLO gate.crashing.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728036AbgKSOqr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Nov 2020 09:46:47 -0500
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 0AJEbiJe017745;
-        Thu, 19 Nov 2020 08:37:44 -0600
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 0AJEbarp017727;
-        Thu, 19 Nov 2020 08:37:36 -0600
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Thu, 19 Nov 2020 08:37:35 -0600
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Florian Weimer <fw@deneb.enyo.de>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Matt Mullins <mmullins@mmlx.us>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        linux-toolchains@vger.kernel.org
-Subject: Re: violating function pointer signature
-Message-ID: <20201119143735.GU2672@gate.crashing.org>
-References: <375636043.48251.1605642440621.JavaMail.zimbra@efficios.com> <20201117153451.3015c5c9@gandalf.local.home> <20201118132136.GJ3121378@hirez.programming.kicks-ass.net> <CAKwvOdkptuS=75WjzwOho9ZjGVHGMirEW3k3u4Ep8ya5wCNajg@mail.gmail.com> <20201118121730.12ee645b@gandalf.local.home> <20201118181226.GK2672@gate.crashing.org> <87o8jutt2h.fsf@mid.deneb.enyo.de> <20201118135823.3f0d24b7@gandalf.local.home> <20201118191127.GM2672@gate.crashing.org> <20201119083648.GE3121392@hirez.programming.kicks-ass.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+        id S1727935AbgKSOlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 09:41:24 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:37770 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727415AbgKSOlX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 09:41:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605796882;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lJ+qneU2nhAWwjWgaWCzq4AJrRh+NHf3E08bJzVcmVY=;
+        b=FAdq1bRzIyqHRLbUInRzr1Qbv8YWmb2CE5BNoxvz21wzwcgKtGv83t/aV1mjoGH2Pez0GK
+        CCsSrAQQJFP3luAIPZqsBGGESlfbAVWWJQ9hTdMSYwBtwoyQTJTdOroym8+Pht1isbqtS7
+        LLPR1D8nggK2AP8CUKpNSaVekueWrR8=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-382-dZ9rM4uEOu6PxSVVjWOEBw-1; Thu, 19 Nov 2020 09:41:18 -0500
+X-MC-Unique: dZ9rM4uEOu6PxSVVjWOEBw-1
+Received: by mail-wm1-f71.google.com with SMTP id u123so2426528wmu.5
+        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 06:41:18 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lJ+qneU2nhAWwjWgaWCzq4AJrRh+NHf3E08bJzVcmVY=;
+        b=l2P1q/TAtqq1c5lf3hEXCAsLaITvgCCPumqTTCp8rBvhAF2H2OqUaAP6fQYx2iYHIm
+         utyRT3YJfXd458StHIKOA7FHBWOCeCuNt31A5MlUZnL1AsAo80YlGnUZGcYkw9n/lq9j
+         HhvYjqBF/SdCfznGZLdzGDdTVLP4G1U26iP0+JQ8lNbg3diztZkH1Ey3/TGs2oBcrhwz
+         jAkGL4a3FxXxlQ/QIrEpfslsqo+4g9M0WuqxPZrs/gSJBY77dSYZfj0IwtOC8nIRnsi5
+         riaw+2K1BWzHqygxS8MWDBJroaygsKdhdGp5lb4idgrtVR6salmAYfapM34jB/rfM6wd
+         ggPw==
+X-Gm-Message-State: AOAM530W0soW7vCvcaEuwYTkS8DvM0rfu0WViJrsDKbipClwVppBLkhi
+        je10NAtXwhSZGXUPWIFHHFMgAEv4S2jDZ0lZ0yAt43N8CPUm/xUOv2HdLWDuPWEqQJKd++go96K
+        UvWzvs9qNdoKebx5b
+X-Received: by 2002:a7b:c954:: with SMTP id i20mr5258340wml.56.1605796876999;
+        Thu, 19 Nov 2020 06:41:16 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx3l0Gn+NQD1LvOGgSReyW21vrxXik2TUo1EcRZw8L6b3xoogNTPtUgQEg/Aym/jdTNzpOnpw==
+X-Received: by 2002:a7b:c954:: with SMTP id i20mr5258318wml.56.1605796876768;
+        Thu, 19 Nov 2020 06:41:16 -0800 (PST)
+Received: from steredhat (host-79-17-248-175.retail.telecomitalia.it. [79.17.248.175])
+        by smtp.gmail.com with ESMTPSA id w186sm83103wmb.26.2020.11.19.06.41.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Nov 2020 06:41:16 -0800 (PST)
+Date:   Thu, 19 Nov 2020 15:41:13 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Alexander Graf <graf@amazon.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>, netdev@vger.kernel.org,
+        Jorgen Hansen <jhansen@vmware.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dexuan Cui <decui@microsoft.com>,
+        Anthony Liguori <aliguori@amazon.com>,
+        David Duncan <davdunc@amazon.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        Alexander Graf <graf@amazon.de>
+Subject: Re: [PATCH net] vsock: forward all packets to the host when no H2G
+ is registered
+Message-ID: <20201119144113.glp5mncnrl54nfkn@steredhat>
+References: <20201112133837.34183-1-sgarzare@redhat.com>
+ <20201119140359.GE838210@stefanha-x1.localdomain>
+ <ffdc9e0c-fee2-e334-053b-0a26305b55ae@amazon.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20201119083648.GE3121392@hirez.programming.kicks-ass.net>
-User-Agent: Mutt/1.4.2.3i
+In-Reply-To: <ffdc9e0c-fee2-e334-053b-0a26305b55ae@amazon.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 19, 2020 at 09:36:48AM +0100, Peter Zijlstra wrote:
-> On Wed, Nov 18, 2020 at 01:11:27PM -0600, Segher Boessenkool wrote:
-> > Calling this via a different declared function type is undefined
-> > behaviour, but that is independent of how the function is *defined*.
-> > Your program can make ducks appear from your nose even if that function
-> > is never called, if you do that.  Just don't do UB, not even once!
-> 
-> Ah, see, here I think we disagree. UB is a flaw of the spec, but the
-> real world often has very sane behaviour there (sometimes also very
-> much not).
+On Thu, Nov 19, 2020 at 03:25:42PM +0100, Alexander Graf wrote:
+>
+>On 19.11.20 15:03, Stefan Hajnoczi wrote:
+>>On Thu, Nov 12, 2020 at 02:38:37PM +0100, Stefano Garzarella wrote:
+>>>Before commit c0cfa2d8a788 ("vsock: add multi-transports support"),
+>>>if a G2H transport was loaded (e.g. virtio transport), every packets
+>>>was forwarded to the host, regardless of the destination CID.
+>>>The H2G transports implemented until then (vhost-vsock, VMCI) always
+>>>responded with an error, if the destination CID was not
+>>>VMADDR_CID_HOST.
+>>>
+>>> From that commit, we are using the remote CID to decide which
+>>>transport to use, so packets with remote CID > VMADDR_CID_HOST(2)
+>>>are sent only through H2G transport. If no H2G is available, packets
+>>>are discarded directly in the guest.
+>>>
+>>>Some use cases (e.g. Nitro Enclaves [1]) rely on the old behaviour
+>>>to implement sibling VMs communication, so we restore the old
+>>>behavior when no H2G is registered.
+>>>It will be up to the host to discard packets if the destination is
+>>>not the right one. As it was already implemented before adding
+>>>multi-transport support.
+>>>
+>>>Tested with nested QEMU/KVM by me and Nitro Enclaves by Andra.
+>>>
+>>>[1] Documentation/virt/ne_overview.rst
+>>>
+>>>Cc: Jorgen Hansen <jhansen@vmware.com>
+>>>Cc: Dexuan Cui <decui@microsoft.com>
+>>>Fixes: c0cfa2d8a788 ("vsock: add multi-transports support")
+>>>Reported-by: Andra Paraschiv <andraprs@amazon.com>
+>>>Tested-by: Andra Paraschiv <andraprs@amazon.com>
+>>>Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+>>>---
+>>>  net/vmw_vsock/af_vsock.c | 2 +-
+>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>Acked-by: Stefan Hajnoczi <stefanha@redhat.com>
+>
+>
+>Is there anything we have to do to also get this into the affected 
+>stable trees? :)
+>
 
-That attitude summons ducks.
+The patch is already queued by Jakub in the netdev stable queue:
+https://patchwork.kernel.org/bundle/netdev/stable/?series=382773&state=*
 
-> In this particular instance the behaviour is UB because the C spec
-> doesn't want to pin down the calling convention, which is something I
-> can understand.
+Stefano
 
-How do you know?  Were you at the meetings where this was decided?
-
-The most frequent reason something is made UB is when there are multiple
-existing implementations with irreconcilable differences.
-
-> But once you combine the C spec with the ABI(s) at hand,
-> there really isn't two ways about it. This has to work, under the
-> premise that the ABI defines a caller cleanup calling convention.
-
-This is not clear at all (and what "caller cleanup calling convention"
-would mean isn't either).  A function call at the C level does not
-necessarily correspond at all with a function call at the ABI level, to
-begin with.
-
-> So in the view that the compiler is a glorified assembler,
-
-But it isn't.
-
-> Note that we have a fairly extensive tradition of defining away UB with
-> language extentions, -fno-strict-overflow, -fno-strict-aliasing,
-
-These are options to make a large swath of not correct C programs
-compile (and often work) anyway.  This is useful because there are so
-many such programs, because a) people did not lint; and/or b) the
-problem never was obvious with some other (or older) compiler; and/or
-c) people do not care about writing portable C and prefer writing in
-their own non-C dialect.
-
-> -fno-delete-null-pointer-checks etc..
-
-This was added as a security hardening feature.  It of course also is
-useful for other things -- most flags are.  It was not added to make yet
-another dialect.
-
-
-Segher
