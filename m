@@ -2,97 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2988D2B9955
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 18:35:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5050D2B9966
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 18:43:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729075AbgKSRbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 12:31:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41282 "EHLO mail.kernel.org"
+        id S1729149AbgKSRhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 12:37:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42590 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728077AbgKSRbL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Nov 2020 12:31:11 -0500
+        id S1726485AbgKSRhV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Nov 2020 12:37:21 -0500
 Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 645CA208B6;
-        Thu, 19 Nov 2020 17:31:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DA9472225E;
+        Thu, 19 Nov 2020 17:37:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605807071;
-        bh=yeykAMFKBu2nzLe6DBblFnq3bjKL5vPe7etKdVATJso=;
+        s=default; t=1605807441;
+        bh=/uq3mQV6kvJptom0WX4bY+vpKtitRVsfXStdDA7wB1E=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EeVWmSXxKuDkryGXZngzjxauWVXdBK311KY9GacpXEtrY0ZeR21deA+S9Sgg2A6BV
-         gxLMaIAKWtD0ReTMmvhuKK2aqf5Kb0bnKAcVTO6S95Kem9dZ9iVEeajNH8lUJlFN0M
-         tdHgk8x8HySTyvo93IO7hrrJDIO4RbmXo129mVQ8=
-Date:   Thu, 19 Nov 2020 09:31:09 -0800
+        b=o01h8p6nQ8ZLg224oaybdhlqUt4YdKdlfgkK1l9PumnOtaBxGgBT5FanMT7Ydh0iC
+         P4yzY+cSjkvRjOmsMREVyWg4TwWz9cD40fgMxSRjpZUXc8J6BYfW4qCycQJqQjamYX
+         TINv4zAi0Q1SZ97yBmu+oHVb0F1Hur49I9YZD25E=
+Date:   Thu, 19 Nov 2020 09:37:19 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Markus =?UTF-8?B?QmzDtmNobA==?= <Markus.Bloechl@ipetronik.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ido Schimmel <idosch@idosch.org>, Andrew Lunn <andrew@lunn.ch>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: lan78xx: Disable hardware vlan filtering in
- promiscuous mode
-Message-ID: <20201119093109.1b5c9cd8@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201119153751.ix73o5h4n6dgv4az@ipetronik.com>
-References: <20201110153958.ci5ekor3o2ekg3ky@ipetronik.com>
-        <20201111074341.24cafaf3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <3df0cfa6-cbc9-dddb-0283-9b48fb6516d8@gmail.com>
-        <20201111164727.pqecvbnhk4qgantt@skbuf>
-        <20201112105315.o5q3zqk4p57ddexs@ipetronik.com>
-        <20201114181103.2eeh3eexcdnbcfj2@skbuf>
-        <20201119153751.ix73o5h4n6dgv4az@ipetronik.com>
+To:     Tom Seewald <tseewald@gmail.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH] cxbgb4: Fix build failure when CHELSIO_TLS_DEVICE=n
+Message-ID: <20201119093719.15f19884@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <CAARYdbg+HsjCBu5vU=aHg-OU8L6u52RUBzrYUTuUMke6bXuV3g@mail.gmail.com>
+References: <20201116023140.28975-1-tseewald@gmail.com>
+        <20201117142559.37e6847f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <CAARYdbg+HsjCBu5vU=aHg-OU8L6u52RUBzrYUTuUMke6bXuV3g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Nov 2020 16:37:51 +0100 Markus Bl=C3=B6chl wrote:
-> Implementation
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->=20
-> I then tried to come up with a solution in net/core that would
-> universally disable vlan filtering in promiscuous mode.
+On Wed, 18 Nov 2020 23:40:40 -0600 Tom Seewald wrote:
+> On Tue, Nov 17, 2020 at 4:26 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Sun, 15 Nov 2020 20:31:40 -0600 Tom Seewald wrote:  
+> > > After commit 9d2e5e9eeb59 ("cxgb4/ch_ktls: decrypted bit is not enough")
+> > > building the kernel with CHELSIO_T4=y and CHELSIO_TLS_DEVICE=n results
+> > > in the following error:
+> > >
+> > > ld: drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.o: in function
+> > > `cxgb_select_queue':
+> > > cxgb4_main.c:(.text+0x2dac): undefined reference to `tls_validate_xmit_skb'
+> > >
+> > > This is caused by cxgb_select_queue() calling cxgb4_is_ktls_skb() without
+> > > checking if CHELSIO_TLS_DEVICE=y. Fix this by calling cxgb4_is_ktls_skb()
+> > > only when this config option is enabled.
+> > >
+> > > Fixes: 9d2e5e9eeb59 ("cxgb4/ch_ktls: decrypted bit is not enough")
+> > > Signed-off-by: Tom Seewald <tseewald@gmail.com>
+> > > ---
+> > >  drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c | 4 +++-
+> > >  1 file changed, 3 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+> > > index 7fd264a6d085..8e8783afd6df 100644
+> > > --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+> > > +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+> > > @@ -1176,7 +1176,9 @@ static u16 cxgb_select_queue(struct net_device *dev, struct sk_buff *skb,
+> > >               txq = netdev_pick_tx(dev, skb, sb_dev);
+> > >               if (xfrm_offload(skb) || is_ptp_enabled(skb, dev) ||
+> > >                   skb->encapsulation ||
+> > > -                 cxgb4_is_ktls_skb(skb) ||
+> > > +#if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
+> > > +             cxgb4_is_ktls_skb(skb) ||
+> > > +#endif /* CHELSIO_TLS_DEVICE */
+> > >                   (proto != IPPROTO_TCP && proto != IPPROTO_UDP))
+> > >                       txq = txq % pi->nqsets;
+> > >  
+> >
+> > The tls header already tries to solve this issue, it just does it
+> > poorly. This is a better fix:
+> >
+> > diff --git a/include/net/tls.h b/include/net/tls.h
+> > index baf1e99d8193..2ff3f4f7954a 100644
+> > --- a/include/net/tls.h
+> > +++ b/include/net/tls.h
+> > @@ -441,11 +441,11 @@ struct sk_buff *
+> >  tls_validate_xmit_skb(struct sock *sk, struct net_device *dev,
+> >                       struct sk_buff *skb);
+> >
+> >  static inline bool tls_is_sk_tx_device_offloaded(struct sock *sk)
+> >  {
+> > -#ifdef CONFIG_SOCK_VALIDATE_XMIT
+> > +#ifdef CONFIG_TLS_DEVICE
+> >         return sk_fullsock(sk) &&
+> >                (smp_load_acquire(&sk->sk_validate_xmit_skb) ==
+> >                &tls_validate_xmit_skb);
+> >  #else
+> >         return false;
+> >
+> >
+> > Please test this and submit if it indeed solves the problem.
+> >
+> > Thanks!  
+> 
+> Hi Jakub,
+> 
+> Thanks for the reply, unfortunately that patch does not resolve the
+> issue, I still get the same error as before. After looking into this a
+> bit further, the issue seems to be with CONFIG_TLS=m as everything
+> works when CONFIG_TLS=y.
+> 
+> I also see that there was a similar issue [1] reported by Intel's
+> kbuild test robot where the cxgb4 driver isn't able to see the TLS
+> symbols when CONFIG_TLS=m.
 
-Thanks for taking a look!
+Interesting. Does your original patch solve the allyesconfig + TLS=m
+problem?
 
-> Removing the features in `netdev_fix_features` is easily done, but
-> updating the active set of features whenever IFF_PROMISC changes
-> seems hard.
->=20
-> `__dev_set_promiscuity` is often called in atomic context but
-> `.ndo_set_features` can sleep in many drivers.
-
-Are there paths other than __dev_set_rx_mode() which would call
-__dev_set_promiscuity() in atomic context? The saving grace about=20
-__dev_set_rx_mode() is that it sets promisc explicitly to disable=20
-unicast filtering (dev->uc_promisc), so IMO that case
-(dev->promiscuity =3D=3D dev->uc_promisc) does not need to disable VLAN
-filtering.
-
-But IDK if that's the only atomic path.
-
-> Adding a work_queue or similar to every net_device seems clumsy and
-> inappropriate.
->=20
-> Rewriting ndo_set_features of all drivers to be atomic is not a task
-> you should ask from me...
->=20
-> Calling `netdev_update_features` after every entrypoint that locks
-> the rtnl seems too error-prone and also clumsy.
->=20
-> Only updating the features when promiscuity was explicitly requested
-> by userspace in `dev_change_flags` might leave the device in a
-> weird inconsistent state.
->=20
-> Continue to let each driver enforce the kernels definition of
-> promiscuity. They know how to update the features atomically.
-> Then I am back at my original patch...
->=20
-> I'm afraid, I might need some guidance on how to approach this.
-
+Seems to me that CHELSIO_T4 should depend on (TLS || TLS=n), the
+CONFIG_CHELSIO_TLS_DEVICE has the dependency but AFAICT nothing prevents
+CONFIG_CHELSIO_TLS_DEVICE=m and CHELSIO_T4=y and cxgb4_main.c is under
+the latter.
