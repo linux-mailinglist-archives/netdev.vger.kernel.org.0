@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84D6E2B95C0
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 16:08:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07F6F2B95C1
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 16:08:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728320AbgKSPGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 10:06:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41394 "EHLO
+        id S1728324AbgKSPGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 10:06:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728274AbgKSPGq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 10:06:46 -0500
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 619C7C0613CF;
-        Thu, 19 Nov 2020 07:06:45 -0800 (PST)
-Received: by mail-pl1-x644.google.com with SMTP id u2so3071092pls.10;
-        Thu, 19 Nov 2020 07:06:45 -0800 (PST)
+        with ESMTP id S1727086AbgKSPGu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 10:06:50 -0500
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F39C0613CF;
+        Thu, 19 Nov 2020 07:06:50 -0800 (PST)
+Received: by mail-pf1-x441.google.com with SMTP id q5so4757994pfk.6;
+        Thu, 19 Nov 2020 07:06:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qXzyHl2UKHL9BRwjscN/3wujqc6R2rNgY3Fb/NFAbvQ=;
-        b=lMHVJ6ErAfA7DdK4FwHcZunRrjonfkm+AcHUT1xtOD7Aae0hnntXoVomqd/SzTGtGf
-         IHOPUHWTAouBEJAaca42fOZNuWOLxUQpFyBj5WrpflEutfL6be73HXxf9Ddy3ixZtYgW
-         72HlGYveHWIrlZEuz9vPVQNTiwV2lCRvvbaaG2tGiODOKm7eF/bfp9fYNWchj0azZ0fF
-         F9NTEYSQcVBcTScRbC+A5j453gzwTqG5t0sMaB3bzB2sZgwFSUWFuBwAjf27FZKeUuSq
-         fArotw7BY8mwbaKfj7N7hL1dx+heQqkoInyl7lEFUVKw86Ti+PhWrTrBPWAt7JdIJDU1
-         D7aQ==
+        bh=HPngOSM82/AQhAOxg6kInXieW/P6ExxWnm99recQX+Y=;
+        b=LlHuo2N9wiFZzvXCk91aNPD3Pdsn3MNTBuKuRW2BpcVckdbzemldh6aCqOf6jkKqy0
+         j45TIJBJNkrFnR9VYpREwtBiVL7IQjGRHGgaRw3+6xtoBeABXQnHgMeOeigSitXWMbTA
+         dTMLpzktTgAKJAv32T4g6Kql9UWqksuEgNqHTb2O/ZeMtNg7+skLXNIEKaG79xOA/Ed9
+         6yscXMrWE74+PktoAwLf9ucMHhctmCc85zCyllDJA4BUAMM6t3D1BemI3guDFUto9J3m
+         XKwLTgR0iBEXkLv9oS0CwVwHBIUPmPbn81EvpwJb/4Lb2KTQQ4sqi/aPCztFqXp3eyy6
+         QlrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qXzyHl2UKHL9BRwjscN/3wujqc6R2rNgY3Fb/NFAbvQ=;
-        b=Zek3Npz8t/tiGzYR/HVpui84PxoG1qtIGxFXwPapc55NRGfIxcyGbouRWWtdJMHDsL
-         7CERYHgDRAWyusEs3mQSfe/PXPuvQnI+WqF3oA/X7YYk3FKUcqC9Vz5J+iGY0sHo+3k3
-         8wfQNWUH9M1MGBcUlq5nLk3Sy/1ChvOHkuNwA5is8ltwNNn+xXufQ2Koz92iU4CgATcO
-         a2Nxu6x+wgeA2zfS9oGjCi9HI10ZB21mo9v+4H/Pj9FcqTDnH6c2ihCYcQrO77WXk2mv
-         xJW7CSRyhESGlfZSzCVDozuAoMShd08qFwdVBbHZWruj6ndRqNuhpM0qoqQEWNIC1DBc
-         6M5g==
-X-Gm-Message-State: AOAM531OVUDqbBxsopFq37Hotvr0zSDRpvz15wQ1wpnSwFq7U3ZY5NZK
-        7LWPOSvasehQMOae6HzrGQ==
-X-Google-Smtp-Source: ABdhPJwXfUqJmIBfhGlaGrP41GesX4+sWoKoeXkW04Q0Rr8DgSURsb7Ci8b1z0w0bAc9HFy3YW9b7g==
-X-Received: by 2002:a17:902:144:b029:d7:dbfc:beee with SMTP id 62-20020a1709020144b02900d7dbfcbeeemr9589790plb.32.1605798404629;
-        Thu, 19 Nov 2020 07:06:44 -0800 (PST)
+        bh=HPngOSM82/AQhAOxg6kInXieW/P6ExxWnm99recQX+Y=;
+        b=OAIszGrZF1pYO4+fqlvR7mWe3st+awYM/nQlT4/jY7+0HcyL5HbOj5d1hDOEVj4Qwb
+         wRfHDVXXOsELylpB7T2y2vOVrEKdyu0pc8FBPMqaPkNBjZMe6+Q6IDgU5bpTE9uxXxPO
+         kgHBxr/MrBTIB0fi3SrhB9iZ5YOaR6IOH7PArIitZDfzxUy0K0efiEbPqxzLEofVR3yo
+         9/SROCmr2//83ZPPLDNiTP3lCDyRUaYx6AFywWbpBET0KinmrT1039KEnL639zq74J8f
+         9gkN1O763aGMc1l99Jd5JWzsArI3MygUgLko4nOctXCs6y9ZP1KkPyXW4tiXmlKac1Sw
+         ynNg==
+X-Gm-Message-State: AOAM530hvBE1UOAcLAC8Ak76oRR6p79K6ItWjfe0ERLXLkVmpJr74A7I
+        825Iw/mdWD77XVAM8G19IQ==
+X-Google-Smtp-Source: ABdhPJxMeb577aQYRkjmLQp/px80a/X6BjuqcTjLJCtTzmCGlfw6/nOgc+IVDiuhU/OjHVu3s/KpDQ==
+X-Received: by 2002:a63:4558:: with SMTP id u24mr12970647pgk.376.1605798409666;
+        Thu, 19 Nov 2020 07:06:49 -0800 (PST)
 Received: from localhost.localdomain ([182.209.58.45])
-        by smtp.gmail.com with ESMTPSA id b80sm77783pfb.40.2020.11.19.07.06.40
+        by smtp.gmail.com with ESMTPSA id b80sm77783pfb.40.2020.11.19.07.06.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Nov 2020 07:06:44 -0800 (PST)
+        Thu, 19 Nov 2020 07:06:49 -0800 (PST)
 From:   "Daniel T. Lee" <danieltimlee@gmail.com>
 To:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -63,9 +63,9 @@ To:     Daniel Borkmann <daniel@iogearbox.net>,
         John Fastabend <john.fastabend@gmail.com>
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         Xdp <xdp-newbies@vger.kernel.org>
-Subject: [PATCH bpf-next v2 3/7] samples: bpf: refactor task_fd_query program with libbpf
-Date:   Thu, 19 Nov 2020 15:06:13 +0000
-Message-Id: <20201119150617.92010-4-danieltimlee@gmail.com>
+Subject: [PATCH bpf-next v2 4/7] samples: bpf: refactor ibumad program with libbpf
+Date:   Thu, 19 Nov 2020 15:06:14 +0000
+Message-Id: <20201119150617.92010-5-danieltimlee@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201119150617.92010-1-danieltimlee@gmail.com>
 References: <20201119150617.92010-1-danieltimlee@gmail.com>
@@ -75,259 +75,194 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit refactors the existing kprobe program with libbpf bpf
-loader. To attach bpf program, this uses generic bpf_program__attach()
-approach rather than using bpf_load's load_bpf_file().
+This commit refactors the existing ibumad program with libbpf bpf
+loader. Attach/detach of Tracepoint bpf programs has been managed
+with the generic bpf_program__attach() and bpf_link__destroy() from
+the libbpf.
 
-To attach bpf to perf_event, instead of using previous ioctl method,
-this commit uses bpf_program__attach_perf_event since it manages the
-enable of perf_event and attach of BPF programs to it, which is much
-more intuitive way to achieve.
+Also, instead of using the previous BPF MAP definition, this commit
+refactors ibumad MAP definition with the new BTF-defined MAP format.
 
-Also, explicit close(fd) has been removed since event will be closed
-inside bpf_link__destroy() automatically.
+To verify that this bpf program works without an infiniband device,
+try loading ib_umad kernel module and test the program as follows:
 
-Furthermore, to prevent conflict of same named uprobe events, O_TRUNC
-flag has been used to clear 'uprobe_events' interface.
+    # modprobe ib_umad
+    # ./ibumad
+
+Moreover, TRACE_HELPERS has been removed from the Makefile since it is
+not used on this program.
 
 Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
 ---
 Changes in v2:
  - add static at global variable and drop {}
  - fix return error code on exit
- - restore DEBUGFS macro to absolute string path
 
- samples/bpf/Makefile             |   2 +-
- samples/bpf/task_fd_query_user.c | 101 ++++++++++++++++++++++---------
- 2 files changed, 75 insertions(+), 28 deletions(-)
+ samples/bpf/Makefile      |  2 +-
+ samples/bpf/ibumad_kern.c | 26 +++++++-------
+ samples/bpf/ibumad_user.c | 71 +++++++++++++++++++++++++++++----------
+ 3 files changed, 68 insertions(+), 31 deletions(-)
 
 diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index d31e082c369e..3bffd42e1482 100644
+index 3bffd42e1482..09a249477554 100644
 --- a/samples/bpf/Makefile
 +++ b/samples/bpf/Makefile
-@@ -107,7 +107,7 @@ xdp_adjust_tail-objs := xdp_adjust_tail_user.o
- xdpsock-objs := xdpsock_user.o
- xsk_fwd-objs := xsk_fwd.o
+@@ -109,7 +109,7 @@ xsk_fwd-objs := xsk_fwd.o
  xdp_fwd-objs := xdp_fwd_user.o
--task_fd_query-objs := bpf_load.o task_fd_query_user.o $(TRACE_HELPERS)
-+task_fd_query-objs := task_fd_query_user.o $(TRACE_HELPERS)
+ task_fd_query-objs := task_fd_query_user.o $(TRACE_HELPERS)
  xdp_sample_pkts-objs := xdp_sample_pkts_user.o $(TRACE_HELPERS)
- ibumad-objs := bpf_load.o ibumad_user.o $(TRACE_HELPERS)
+-ibumad-objs := bpf_load.o ibumad_user.o $(TRACE_HELPERS)
++ibumad-objs := ibumad_user.o
  hbm-objs := hbm.o $(CGROUP_HELPERS)
-diff --git a/samples/bpf/task_fd_query_user.c b/samples/bpf/task_fd_query_user.c
-index b68bd2f8fdc9..f6b772faa348 100644
---- a/samples/bpf/task_fd_query_user.c
-+++ b/samples/bpf/task_fd_query_user.c
-@@ -15,12 +15,15 @@
- #include <sys/stat.h>
- #include <linux/perf_event.h>
  
-+#include <bpf/bpf.h>
- #include <bpf/libbpf.h>
+ # Tell kbuild to always build the programs
+diff --git a/samples/bpf/ibumad_kern.c b/samples/bpf/ibumad_kern.c
+index 3a91b4c1989a..26dcd4dde946 100644
+--- a/samples/bpf/ibumad_kern.c
++++ b/samples/bpf/ibumad_kern.c
+@@ -16,19 +16,19 @@
+ #include <bpf/bpf_helpers.h>
+ 
+ 
+-struct bpf_map_def SEC("maps") read_count = {
+-	.type        = BPF_MAP_TYPE_ARRAY,
+-	.key_size    = sizeof(u32), /* class; u32 required */
+-	.value_size  = sizeof(u64), /* count of mads read */
+-	.max_entries = 256, /* Room for all Classes */
+-};
+-
+-struct bpf_map_def SEC("maps") write_count = {
+-	.type        = BPF_MAP_TYPE_ARRAY,
+-	.key_size    = sizeof(u32), /* class; u32 required */
+-	.value_size  = sizeof(u64), /* count of mads written */
+-	.max_entries = 256, /* Room for all Classes */
+-};
++struct {
++	__uint(type, BPF_MAP_TYPE_ARRAY);
++	__type(key, u32); /* class; u32 required */
++	__type(value, u64); /* count of mads read */
++	__uint(max_entries, 256); /* Room for all Classes */
++} read_count SEC(".maps");
++
++struct {
++	__uint(type, BPF_MAP_TYPE_ARRAY);
++	__type(key, u32); /* class; u32 required */
++	__type(value, u64); /* count of mads written */
++	__uint(max_entries, 256); /* Room for all Classes */
++} write_count SEC(".maps");
+ 
+ #undef DEBUG
+ #ifndef DEBUG
+diff --git a/samples/bpf/ibumad_user.c b/samples/bpf/ibumad_user.c
+index fa06eef31a84..d83d8102f489 100644
+--- a/samples/bpf/ibumad_user.c
++++ b/samples/bpf/ibumad_user.c
+@@ -23,10 +23,15 @@
+ #include <getopt.h>
+ #include <net/if.h>
+ 
 -#include "bpf_load.h"
++#include <bpf/bpf.h>
  #include "bpf_util.h"
- #include "perf-sys.h"
- #include "trace_helpers.h"
+ #include <bpf/libbpf.h>
  
-+static struct bpf_program *progs[2];
-+static struct bpf_link *links[2];
++static struct bpf_link *tp_links[3];
++static struct bpf_object *obj;
++static int map_fd[2];
++static int tp_cnt;
 +
- #define CHECK_PERROR_RET(condition) ({			\
- 	int __ret = !!(condition);			\
- 	if (__ret) {					\
-@@ -86,21 +89,22 @@ static int bpf_get_retprobe_bit(const char *event_type)
- 	return ret;
- }
- 
--static int test_debug_fs_kprobe(int prog_fd_idx, const char *fn_name,
-+static int test_debug_fs_kprobe(int link_idx, const char *fn_name,
- 				__u32 expected_fd_type)
+ static void dump_counts(int fd)
  {
- 	__u64 probe_offset, probe_addr;
- 	__u32 len, prog_id, fd_type;
-+	int err, event_fd;
- 	char buf[256];
--	int err;
- 
- 	len = sizeof(buf);
--	err = bpf_task_fd_query(getpid(), event_fd[prog_fd_idx], 0, buf, &len,
-+	event_fd = bpf_link__fd(links[link_idx]);
-+	err = bpf_task_fd_query(getpid(), event_fd, 0, buf, &len,
- 				&prog_id, &fd_type, &probe_offset,
- 				&probe_addr);
- 	if (err < 0) {
- 		printf("FAIL: %s, for event_fd idx %d, fn_name %s\n",
--		       __func__, prog_fd_idx, fn_name);
-+		       __func__, link_idx, fn_name);
- 		perror("    :");
- 		return -1;
- 	}
-@@ -108,7 +112,7 @@ static int test_debug_fs_kprobe(int prog_fd_idx, const char *fn_name,
- 	    fd_type != expected_fd_type ||
- 	    probe_offset != 0x0 || probe_addr != 0x0) {
- 		printf("FAIL: bpf_trace_event_query(event_fd[%d]):\n",
--		       prog_fd_idx);
-+		       link_idx);
- 		printf("buf: %s, fd_type: %u, probe_offset: 0x%llx,"
- 		       " probe_addr: 0x%llx\n",
- 		       buf, fd_type, probe_offset, probe_addr);
-@@ -125,12 +129,13 @@ static int test_nondebug_fs_kuprobe_common(const char *event_type,
- 	int is_return_bit = bpf_get_retprobe_bit(event_type);
- 	int type = bpf_find_probe_type(event_type);
- 	struct perf_event_attr attr = {};
--	int fd;
-+	struct bpf_link *link;
-+	int fd, err = -1;
- 
- 	if (type < 0 || is_return_bit < 0) {
- 		printf("FAIL: %s incorrect type (%d) or is_return_bit (%d)\n",
- 			__func__, type, is_return_bit);
--		return -1;
-+		return err;
- 	}
- 
- 	attr.sample_period = 1;
-@@ -149,14 +154,21 @@ static int test_nondebug_fs_kuprobe_common(const char *event_type,
- 	attr.type = type;
- 
- 	fd = sys_perf_event_open(&attr, -1, 0, -1, 0);
--	CHECK_PERROR_RET(fd < 0);
-+	link = bpf_program__attach_perf_event(progs[0], fd);
-+	if (libbpf_get_error(link)) {
-+		printf("ERROR: bpf_program__attach_perf_event failed\n");
-+		link = NULL;
-+		close(fd);
-+		goto cleanup;
-+	}
- 
--	CHECK_PERROR_RET(ioctl(fd, PERF_EVENT_IOC_ENABLE, 0) < 0);
--	CHECK_PERROR_RET(ioctl(fd, PERF_EVENT_IOC_SET_BPF, prog_fd[0]) < 0);
- 	CHECK_PERROR_RET(bpf_task_fd_query(getpid(), fd, 0, buf, buf_len,
- 			 prog_id, fd_type, probe_offset, probe_addr) < 0);
-+	err = 0;
- 
--	return 0;
-+cleanup:
-+	bpf_link__destroy(link);
-+	return err;
- }
- 
- static int test_nondebug_fs_probe(const char *event_type, const char *name,
-@@ -215,17 +227,18 @@ static int test_nondebug_fs_probe(const char *event_type, const char *name,
- 
- static int test_debug_fs_uprobe(char *binary_path, long offset, bool is_return)
+ 	__u32 key;
+@@ -53,6 +58,11 @@ static void dump_all_counts(void)
+ static void dump_exit(int sig)
  {
-+	char buf[256], event_alias[sizeof("test_1234567890")];
- 	const char *event_type = "uprobe";
- 	struct perf_event_attr attr = {};
--	char buf[256], event_alias[sizeof("test_1234567890")];
- 	__u64 probe_offset, probe_addr;
- 	__u32 len, prog_id, fd_type;
--	int err, res, kfd, efd;
-+	int err = -1, res, kfd, efd;
-+	struct bpf_link *link;
- 	ssize_t bytes;
- 
- 	snprintf(buf, sizeof(buf), "/sys/kernel/debug/tracing/%s_events",
- 		 event_type);
--	kfd = open(buf, O_WRONLY | O_APPEND, 0);
-+	kfd = open(buf, O_WRONLY | O_TRUNC, 0);
- 	CHECK_PERROR_RET(kfd < 0);
- 
- 	res = snprintf(event_alias, sizeof(event_alias), "test_%d", getpid());
-@@ -254,10 +267,15 @@ static int test_debug_fs_uprobe(char *binary_path, long offset, bool is_return)
- 	attr.type = PERF_TYPE_TRACEPOINT;
- 	attr.sample_period = 1;
- 	attr.wakeup_events = 1;
+ 	dump_all_counts();
++	/* Detach tracepoints */
++	while (tp_cnt)
++		bpf_link__destroy(tp_links[--tp_cnt]);
 +
- 	kfd = sys_perf_event_open(&attr, -1, 0, -1, PERF_FLAG_FD_CLOEXEC);
--	CHECK_PERROR_RET(kfd < 0);
--	CHECK_PERROR_RET(ioctl(kfd, PERF_EVENT_IOC_SET_BPF, prog_fd[0]) < 0);
--	CHECK_PERROR_RET(ioctl(kfd, PERF_EVENT_IOC_ENABLE, 0) < 0);
-+	link = bpf_program__attach_perf_event(progs[0], kfd);
-+	if (libbpf_get_error(link)) {
-+		printf("ERROR: bpf_program__attach_perf_event failed\n");
-+		link = NULL;
-+		close(kfd);
-+		goto cleanup;
-+	}
- 
- 	len = sizeof(buf);
- 	err = bpf_task_fd_query(getpid(), kfd, 0, buf, &len,
-@@ -283,9 +301,11 @@ static int test_debug_fs_uprobe(char *binary_path, long offset, bool is_return)
- 		       probe_offset);
- 		return -1;
- 	}
-+	err = 0;
- 
--	close(kfd);
--	return 0;
-+cleanup:
-+	bpf_link__destroy(link);
-+	return err;
++	bpf_object__close(obj);
+ 	exit(0);
  }
+ 
+@@ -73,19 +83,11 @@ static void usage(char *cmd)
  
  int main(int argc, char **argv)
-@@ -294,21 +314,42 @@ int main(int argc, char **argv)
- 	extern char __executable_start;
- 	char filename[256], buf[256];
- 	__u64 uprobe_file_offset;
+ {
 +	struct bpf_program *prog;
-+	struct bpf_object *obj;
-+	int i = 0, err = -1;
+ 	unsigned long delay = 5;
++	char filename[256];
+ 	int longindex = 0;
+-	int opt;
+-	char bpf_file[256];
+-
+-	/* Create the eBPF kernel code path name.
+-	 * This follows the pattern of all of the other bpf samples
+-	 */
+-	snprintf(bpf_file, sizeof(bpf_file), "%s_kern.o", argv[0]);
+-
+-	/* Do one final dump when exiting */
+-	signal(SIGINT, dump_exit);
+-	signal(SIGTERM, dump_exit);
++	int opt, err = -1;
  
--	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
- 	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
- 		perror("setrlimit(RLIMIT_MEMLOCK)");
--		return 1;
-+		return err;
+ 	while ((opt = getopt_long(argc, argv, "hd:rSw",
+ 				  long_options, &longindex)) != -1) {
+@@ -107,16 +109,51 @@ int main(int argc, char **argv)
+ 		}
  	}
  
- 	if (load_kallsyms()) {
- 		printf("failed to process /proc/kallsyms\n");
+-	if (load_bpf_file(bpf_file)) {
+-		fprintf(stderr, "ERROR: failed to load eBPF from file : %s\n",
+-			bpf_file);
 -		return 1;
-+		return err;
-+	}
++	/* Do one final dump when exiting */
++	signal(SIGINT, dump_exit);
++	signal(SIGTERM, dump_exit);
 +
 +	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
 +	obj = bpf_object__open_file(filename, NULL);
 +	if (libbpf_get_error(obj)) {
 +		fprintf(stderr, "ERROR: opening BPF object file failed\n");
 +		return err;
- 	}
- 
--	if (load_bpf_file(filename)) {
--		printf("%s", bpf_log_buf);
--		return 1;
++	}
++
 +	/* load BPF program */
 +	if (bpf_object__load(obj)) {
 +		fprintf(stderr, "ERROR: loading BPF object file failed\n");
 +		goto cleanup;
 +	}
 +
++	map_fd[0] = bpf_object__find_map_fd_by_name(obj, "read_count");
++	map_fd[1] = bpf_object__find_map_fd_by_name(obj, "write_count");
++	if (map_fd[0] < 0 || map_fd[1] < 0) {
++		fprintf(stderr, "ERROR: finding a map in obj file failed\n");
++		goto cleanup;
++	}
++
 +	bpf_object__for_each_program(prog, obj) {
-+		progs[i] = prog;
-+		links[i] = bpf_program__attach(progs[i]);
-+		if (libbpf_get_error(links[i])) {
++		tp_links[tp_cnt] = bpf_program__attach(prog);
++		if (libbpf_get_error(tp_links[tp_cnt])) {
 +			fprintf(stderr, "ERROR: bpf_program__attach failed\n");
-+			links[i] = NULL;
++			tp_links[tp_cnt] = NULL;
 +			goto cleanup;
 +		}
-+		i++;
++		tp_cnt++;
  	}
  
- 	/* test two functions in the corresponding *_kern.c file */
-@@ -378,6 +419,12 @@ int main(int argc, char **argv)
- 					   false));
- 	CHECK_AND_RET(test_debug_fs_uprobe((char *)argv[0], uprobe_file_offset,
- 					   true));
+ 	while (1) {
+ 		sleep(delay);
+ 		dump_all_counts();
+ 	}
 +	err = 0;
++
++cleanup:
++	/* Detach tracepoints */
++	while (tp_cnt)
++		bpf_link__destroy(tp_links[--tp_cnt]);
  
 -	return 0;
-+cleanup:
-+	for (i--; i >= 0; i--)
-+		bpf_link__destroy(links[i]);
-+
 +	bpf_object__close(obj);
 +	return err;
  }
