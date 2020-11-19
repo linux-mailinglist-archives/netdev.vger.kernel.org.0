@@ -2,133 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28C452B9CEA
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 22:29:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 192012B9CEC
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 22:29:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726591AbgKSVX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 16:23:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43256 "EHLO
+        id S1726094AbgKSVXs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 16:23:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726463AbgKSVX2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 16:23:28 -0500
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D0BBC0613CF;
-        Thu, 19 Nov 2020 13:23:28 -0800 (PST)
-Received: by mail-wm1-x344.google.com with SMTP id s13so8001601wmh.4;
-        Thu, 19 Nov 2020 13:23:28 -0800 (PST)
+        with ESMTP id S1725887AbgKSVXs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 16:23:48 -0500
+Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E97F0C0613CF;
+        Thu, 19 Nov 2020 13:23:46 -0800 (PST)
+Received: by mail-qv1-xf43.google.com with SMTP id u23so3676655qvf.1;
+        Thu, 19 Nov 2020 13:23:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=45nojBTeJt4PVraKfZt0D1NIKZLgWx65KRx7cLF+qxM=;
-        b=Rs+2yB+XML6OukEn+u2TAu39SSlZB5FACzhUTNCmBpaIdseGhdfPQ7prKo2ofWzqsk
-         G591dnJfthAqMSi+uA7O3/oUeaHOnezTJgzM6OiCuaV+HSfUSscwGgClZyrfJxoWbfpi
-         6BU8CuoXDFcoAn/r2QKsqk46aGOdopZE8flTm7J3oQors03E0YXwAcDSZ3Fo/oOxD/Gs
-         vJsQzHroko4CgEqqKhukp00fqUuJoy20oZoXVcP3IU0LRwy2meDmsSWD8OFHAVC73fTA
-         xE0FzZq2AzR/AyXrZTW0cp9e8FA57l/HLqKE+JmmfqSL5SRDACpv1G1n3cQMkouA3oM0
-         DGdQ==
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=3EhlA/ojPqIOU5cMnOFpW3uOLWZv3oRbFSBRyB2tWxE=;
+        b=pVd9Ryyl9bj1VALGBGuAU7dA4VzLykh+oRK41Rz1UQBSS9UVbFmu1Gi+xmr+wvBPl4
+         DE4P1blNBT4qVTRbBu7WpY0+xMUGANXBpPKzV6+YlEfjzVfNUYwS4XCwGfH9mVsUtJxe
+         M04NOF/Jo/LoPVJOa+okSMrd09a550jXrraiV/RsqkfZgE6+CoxEULQfBNlOyfz0z6/l
+         Oy00zMtTGbXbqhNeXyQZWz9a6uPuSVTvE0IaSQaS+Yb+MHgBIuBFk36Gou+jy7FXYDKr
+         x5CwLXANfc6EUF3Xt/RAFtoJZsYX3mDlDl/saUmrLHM7MBkDFudOECIrEkrl757ms3i5
+         f5GA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=45nojBTeJt4PVraKfZt0D1NIKZLgWx65KRx7cLF+qxM=;
-        b=UqG16is3UXhvDoaCEZHSRS2uKZ0StJLXR3gFB+dIcIly6Vgu/e/V61zhPXBtVw7UR5
-         H/b6qPC2VfC4VARbO3al4AXk8ONtPlHlMjdolwRX6Qdh7LymrErQBuWdjzyt2X13JbIs
-         8dRFr+SLFceRbptXXR+vlfhp/y+39LadXCNWgpOgWV3wUTqterp6PKu8WGtRKUGfV0tb
-         Jv6VlDptF5UZ5IqmNiZ5+bn56BJrtakugOFpgMdSVA08nFngsHFX4ztDhkMMbfeU6BDM
-         38Vt768KqWqTMNfsSEVGp20f+W5t+8iINOmGykGAKdpZpqMBFEAQtMnleHclxDN4m6cx
-         WWdw==
-X-Gm-Message-State: AOAM5308VaLVOKtW2iTzKX1vCrkHW5d1B2+TeZ5qdsWU3Eq95nneevn5
-        Z4N1qadYVGWPKpMk2T5i3wWCuEd2BaccDg==
-X-Google-Smtp-Source: ABdhPJxRbxFbCPBOwwh1vjoa5pvhjykTmIMTq3nDpSPZ9B5BYzvf2X2hdsYgrAgQcgUjnCyTle9S3g==
-X-Received: by 2002:a1c:f406:: with SMTP id z6mr6393837wma.123.1605821006810;
-        Thu, 19 Nov 2020 13:23:26 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f23:2800:6d7c:9ea3:dfaa:d617? (p200300ea8f2328006d7c9ea3dfaad617.dip0.t-ipconnect.de. [2003:ea:8f23:2800:6d7c:9ea3:dfaa:d617])
-        by smtp.googlemail.com with ESMTPSA id t23sm1793699wmn.4.2020.11.19.13.23.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Nov 2020 13:23:26 -0800 (PST)
-Subject: Re: [PATCH v2] mdio_bus: suppress err message for reset gpio
- EPROBE_DEFER
-To:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>
-Cc:     linux-kernel@vger.kernel.org
-References: <20201119203446.20857-1-grygorii.strashko@ti.com>
- <1a59fbe1-6a5d-81a3-4a86-fa3b5dbfdf8e@gmail.com>
- <cabad89e-23cc-18b3-8306-e5ef1ee4bfa6@ti.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <44a3c8c0-9dbd-4059-bde8-98486dde269f@gmail.com>
-Date:   Thu, 19 Nov 2020 22:23:23 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=3EhlA/ojPqIOU5cMnOFpW3uOLWZv3oRbFSBRyB2tWxE=;
+        b=WQfM7GWOhjqTw/prWQZtayJhiPoO2OWJN6KJHgZLtJlDAf3NwYgXorAiAxc78mbwk5
+         Xmyzm7y5x06gC1lYm14gLAhIRasA5bgVq52Cq9Bv8GP7UBlB0IRDhLMqpY3fMwjjxkCP
+         Kj1WHv83pX/7T5ip2Bz79eS5v9wyOSYKW991y612/8o3/bCIkKqEKpt9E85nu2LBXvlt
+         Bof90wlNSW0CifpWcpdTAIJJHgVjeRZIiYm/IJsNJUos5Bjb5OrkBR5lNyS28bzwIU/8
+         1Mgrii4iBq+BN2FE9RX3j3mLd7D6LQGsHsbCuFRhExrugKbTIkFhTeO/sQcwphjp8fKi
+         BvWA==
+X-Gm-Message-State: AOAM530mgGqkRzEokr3Wgh06471v8JboM6Y8f/LrYLkLuHWFvKJq+Npl
+        3l7sLvucX7STH2N5DDJaQqFYSPla4ZGemw==
+X-Google-Smtp-Source: ABdhPJxeqpO8Clh7MY4Nsc0+VXuCj0ARru09+d6mpeWI0BIKQ7+713M5TfiFy8kzp4QOTHbXgWc8MA==
+X-Received: by 2002:a05:6214:768:: with SMTP id f8mr12339584qvz.1.1605821025917;
+        Thu, 19 Nov 2020 13:23:45 -0800 (PST)
+Received: from localhost.localdomain ([2001:470:b:9c3:9e5c:8eff:fe4f:f2d0])
+        by smtp.gmail.com with ESMTPSA id y192sm831662qkb.12.2020.11.19.13.23.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Nov 2020 13:23:45 -0800 (PST)
+Subject: [net PATCH 0/2] tcp: Address issues with ECT0 not being set in DCTCP
+ packets
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        kernel-team@fb.com, edumazet@google.com, brakmo@fb.com,
+        alexanderduyck@fb.com, weiwan@google.com
+Date:   Thu, 19 Nov 2020 13:23:43 -0800
+Message-ID: <160582070138.66684.11785214534154816097.stgit@localhost.localdomain>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-In-Reply-To: <cabad89e-23cc-18b3-8306-e5ef1ee4bfa6@ti.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 19.11.2020 um 22:17 schrieb Grygorii Strashko:
-> 
-> 
-> On 19/11/2020 23:11, Heiner Kallweit wrote:
->> Am 19.11.2020 um 21:34 schrieb Grygorii Strashko:
->>> The mdio_bus may have dependencies from GPIO controller and so got
->>> deferred. Now it will print error message every time -EPROBE_DEFER is
->>> returned which from:
->>> __mdiobus_register()
->>>   |-devm_gpiod_get_optional()
->>> without actually identifying error code.
->>>
->>> "mdio_bus 4a101000.mdio: mii_bus 4a101000.mdio couldn't get reset GPIO"
->>>
->>> Hence, suppress error message for devm_gpiod_get_optional() returning
->>> -EPROBE_DEFER case by using dev_err_probe().
->>>
->>> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
->>> ---
->>>   drivers/net/phy/mdio_bus.c | 6 +++---
->>>   1 file changed, 3 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
->>> index 757e950fb745..83cd61c3dd01 100644
->>> --- a/drivers/net/phy/mdio_bus.c
->>> +++ b/drivers/net/phy/mdio_bus.c
->>> @@ -546,10 +546,10 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
->>>       /* de-assert bus level PHY GPIO reset */
->>>       gpiod = devm_gpiod_get_optional(&bus->dev, "reset", GPIOD_OUT_LOW);
->>>       if (IS_ERR(gpiod)) {
->>> -        dev_err(&bus->dev, "mii_bus %s couldn't get reset GPIO\n",
->>> -            bus->id);
->>> +        err = dev_err_probe(&bus->dev, PTR_ERR(gpiod),
->>> +                    "mii_bus %s couldn't get reset GPIO\n", bus->id);
->>
->> Doesn't checkpatch complain about line length > 80 here?
-> 
-> :)
-> 
-> commit bdc48fa11e46f867ea4d75fa59ee87a7f48be144
-> Author: Joe Perches <joe@perches.com>
-> Date:   Fri May 29 16:12:21 2020 -0700
-> 
->     checkpatch/coding-style: deprecate 80-column warning
-> 
+This patch set is meant to address issues seen with SYN/ACK packets not
+containing the ECT0 bit when DCTCP is configured as the congestion control
+algorithm for a TCP socket.
 
-Ah, again something learnt. Thanks for the reference.
+A simple test using "tcpdump" and "test_progs -t bpf_tcp_ca" makes the
+issue obvious. Looking at the packets will result in the SYN/ACK packet
+with an ECT0 bit that does not match the other packets for the flow when
+the congestion control agorithm is switch from the default. So for example
+going from non-DCTCP to a DCTCP congestion control algorithm we will see
+the SYN/ACK IPV6 header will not have ECT0 set while the other packets in
+the flow will. Likewise if we switch from a default of DCTCP to cubic we
+will see the ECT0 bit set in the SYN/ACK while the other packets in the
+flow will not.
 
->>
->>>           device_del(&bus->dev);
->>> -        return PTR_ERR(gpiod);
->>> +        return err;
->>>       } else    if (gpiod) {
->>>           bus->reset_gpiod = gpiod;
->>>  
->>
->> Last but not least the net or net-next patch annotation is missing.
->> I'd be fine with treating the change as an improvement (net-next).
->>
->> Apart from that change looks good to me.
->>
-> 
+---
+
+Alexander Duyck (2):
+      tcp: Allow full IP tos/IPv6 tclass to be reflected in L3 header
+      tcp: Set INET_ECN_xmit configuration in tcp_reinit_congestion_control
+
+
+ net/ipv4/tcp_cong.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+--
 
