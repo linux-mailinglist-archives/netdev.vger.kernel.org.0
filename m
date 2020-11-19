@@ -2,44 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9AB52B8978
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 02:24:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 566882B8994
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 02:29:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727252AbgKSBWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Nov 2020 20:22:35 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:37150 "EHLO vps0.lunn.ch"
+        id S1727263AbgKSB11 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Nov 2020 20:27:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48932 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726761AbgKSBWf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Nov 2020 20:22:35 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kfYeg-007q3L-5s; Thu, 19 Nov 2020 02:22:34 +0100
-Date:   Thu, 19 Nov 2020 02:22:34 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Grzeschik <m.grzeschik@pengutronix.de>
-Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, davem@davemloft.net,
-        kernel@pengutronix.de, matthias.schiffer@ew.tq-group.com,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH 11/11] net: dsa: microchip: ksz8795: use num_vlans where
- possible
-Message-ID: <20201119012234.GO1804098@lunn.ch>
-References: <20201118220357.22292-1-m.grzeschik@pengutronix.de>
- <20201118220357.22292-12-m.grzeschik@pengutronix.de>
+        id S1727136AbgKSB10 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Nov 2020 20:27:26 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E0BD6246C0;
+        Thu, 19 Nov 2020 01:27:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605749246;
+        bh=ruN/fazh+ZYXqMcXIkuyqUm+o6MpFy89SaMV9Dvmj1Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=xc/MwMP1ZlJjtBAKv6iZ4/uyWGRy4F1dwSc1dAaklacTGNCz+aFLdMHvOX9rbmv/J
+         x/s/m9LDoNwvsfSJ15cvxJJx3X5a8myn3Sa5+MaHqiZz3kb/amskLkx1LY3PWrmosD
+         sOvfwpHl/Tvx7uNaN0bnB7DXzMc6czWQmL4uYFRg=
+Date:   Wed, 18 Nov 2020 17:27:24 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        David Miller <davem@davemloft.net>,
+        bridge@lists.linux-foundation.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next] net: bridge: replace struct br_vlan_stats with
+ pcpu_sw_netstats
+Message-ID: <20201118172724.3c8e0092@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <04d25c3d-c5f6-3611-6d37-c2f40243dae2@gmail.com>
+References: <04d25c3d-c5f6-3611-6d37-c2f40243dae2@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201118220357.22292-12-m.grzeschik@pengutronix.de>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 11:03:57PM +0100, Michael Grzeschik wrote:
-> The value of the define VLAN_TABLE_ENTRIES can be derived from
-> num_vlans. This patch is using the variable num_vlans instead and
-> removes the extra define.
+On Tue, 17 Nov 2020 21:25:42 +0100 Heiner Kallweit wrote:
+> Struct br_vlan_stats duplicates pcpu_sw_netstats (apart from
+> br_vlan_stats not defining an alignment requirement), therefore
+> switch to using the latter one.
 > 
-> Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
+Applied, thanks!
