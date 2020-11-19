@@ -2,103 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 222312B9D48
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 23:02:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF67F2B9D4C
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 23:02:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726536AbgKSWBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 17:01:54 -0500
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:6946 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726154AbgKSWBy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 17:01:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1605823315; x=1637359315;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=dPnWxdnajZFQOuvUOMzQJleM8jxXhD+BGr5YatZS0dM=;
-  b=fGm014lUe221JAnqbs/JOQ+AmCqGPju2VlSj6aOLf6pMZ2+TloMHnkTT
-   QFgZI/gocJMGjObddNXctPT5pAIz+t0fe3kkPfQRjBl5kZOVyPrPDH3B+
-   ajuMpgMVRgVs9SP5nRsiUw9wJmeLbbHGk2SPtIlHIS5+dxGJCWIGndBsG
-   E=;
-X-IronPort-AV: E=Sophos;i="5.78,354,1599523200"; 
-   d="scan'208";a="66094964"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2a-c5104f52.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 19 Nov 2020 22:01:53 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-2a-c5104f52.us-west-2.amazon.com (Postfix) with ESMTPS id 4D42AA1F2D;
-        Thu, 19 Nov 2020 22:01:51 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 19 Nov 2020 22:01:50 +0000
-Received: from 38f9d3582de7.ant.amazon.com (10.43.161.102) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 19 Nov 2020 22:01:46 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <david.laight@aculab.com>
-CC:     <ast@kernel.org>, <benh@amazon.com>, <bpf@vger.kernel.org>,
-        <daniel@iogearbox.net>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <kuni1840@gmail.com>,
-        <kuniyu@amazon.co.jp>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-Subject: RE: [RFC PATCH bpf-next 0/8] Socket migration for SO_REUSEPORT.
-Date:   Fri, 20 Nov 2020 07:01:41 +0900
-Message-ID: <20201119220141.73844-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.17.2 (Apple Git-113)
-In-Reply-To: <01a5c211a87a4dd69940e19c2ff00334@AcuMS.aculab.com>
-References: <01a5c211a87a4dd69940e19c2ff00334@AcuMS.aculab.com>
+        id S1726791AbgKSWCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 17:02:06 -0500
+Received: from mx2.suse.de ([195.135.220.15]:34968 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725877AbgKSWCF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Nov 2020 17:02:05 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 6FFBAAC41;
+        Thu, 19 Nov 2020 22:02:03 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 13A59603F9; Thu, 19 Nov 2020 23:02:03 +0100 (CET)
+Date:   Thu, 19 Nov 2020 23:02:03 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     tanhuazhong <tanhuazhong@huawei.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxarm@huawei.com, kuba@kernel.org
+Subject: Re: [RFC net-next 1/2] ethtool: add support for controling the type
+ of adaptive coalescing
+Message-ID: <20201119220203.fv2uluoeekyoyxrv@lion.mk-sys.cz>
+References: <1605758050-21061-1-git-send-email-tanhuazhong@huawei.com>
+ <1605758050-21061-2-git-send-email-tanhuazhong@huawei.com>
+ <20201119041557.GR1804098@lunn.ch>
+ <e43890d1-5596-3439-f4a7-d704c069a035@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.161.102]
-X-ClientProxiedBy: EX13D46UWB004.ant.amazon.com (10.43.161.204) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e43890d1-5596-3439-f4a7-d704c069a035@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   David Laight <David.Laight@ACULAB.COM>
-Date:   Wed, 18 Nov 2020 09:18:24 +0000
-> From: Kuniyuki Iwashima
-> > Sent: 17 November 2020 09:40
+On Thu, Nov 19, 2020 at 04:56:42PM +0800, tanhuazhong wrote:
+> On 2020/11/19 12:15, Andrew Lunn wrote:
+> > > diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+> > > index 9ca87bc..afd8de2 100644
+> > > --- a/include/uapi/linux/ethtool.h
+> > > +++ b/include/uapi/linux/ethtool.h
+> > > @@ -433,6 +433,7 @@ struct ethtool_modinfo {
+> > >    *	a TX interrupt, when the packet rate is above @pkt_rate_high.
+> > >    * @rate_sample_interval: How often to do adaptive coalescing packet rate
+> > >    *	sampling, measured in seconds.  Must not be zero.
+> > > + * @use_dim: Use DIM for IRQ coalescing, if adaptive coalescing is enabled.
+> > >    *
+> > >    * Each pair of (usecs, max_frames) fields specifies that interrupts
+> > >    * should be coalesced until
+> > > @@ -483,6 +484,7 @@ struct ethtool_coalesce {
+> > >   	__u32	tx_coalesce_usecs_high;
+> > >   	__u32	tx_max_coalesced_frames_high;
+> > >   	__u32	rate_sample_interval;
+> > > +	__u32	use_dim;
+> > >   };
 > > 
-> > The SO_REUSEPORT option allows sockets to listen on the same port and to
-> > accept connections evenly. However, there is a defect in the current
-> > implementation. When a SYN packet is received, the connection is tied to a
-> > listening socket. Accordingly, when the listener is closed, in-flight
-> > requests during the three-way handshake and child sockets in the accept
-> > queue are dropped even if other listeners could accept such connections.
+> > You cannot do this.
 > > 
-> > This situation can happen when various server management tools restart
-> > server (such as nginx) processes. For instance, when we change nginx
-> > configurations and restart it, it spins up new workers that respect the new
-> > configuration and closes all listeners on the old workers, resulting in
-> > in-flight ACK of 3WHS is responded by RST.
+> > static noinline_for_stack int ethtool_set_coalesce(struct net_device *dev,
+> >                                                     void __user *useraddr)
+> > {
+> >          struct ethtool_coalesce coalesce;
+> >          int ret;
+> > 
+> >          if (!dev->ethtool_ops->set_coalesce)
+> >                  return -EOPNOTSUPP;
+> > 
+> >          if (copy_from_user(&coalesce, useraddr, sizeof(coalesce)))
+> >                  return -EFAULT;
+> > 
+> > An old ethtool binary is not going to set this extra last byte to
+> > anything meaningful. You cannot tell if you have an old or new user
+> > space, so you have no idea if it put anything into use_dim, or if it
+> > is random junk.
+
+Even worse, as there is no indication of data length, ETHTOOL_GCOALESCE
+ioctl request from old ethtool on new kernel would result in kernel
+writing past the end of userspace buffer.
+
+> > You have to leave the IOCTL interface unchanged, and limit this new
+> > feature to the netlink API.
+> > 
 > 
-> Can't you do something to stop new connections being queued (like
-> setting the 'backlog' to zero), then carry on doing accept()s
-> for a guard time (or until the queue length is zero) before finally
-> closing the listening socket.
+> Hi, Andrew.
+> thanks for pointing out this problem, i will fix it.
+> without callling set_coalesce/set_coalesce of ethtool_ops, do you have any
+> suggestion for writing/reading this new attribute to/from the driver? add a
+> new field in net_device or a new callback function in ethtool_ops seems not
+> good.
 
-Yes, but with eBPF.
-There are some ideas suggested and well discussed in the thread below,
-resulting in that connection draining by eBPF was merged.
-https://lore.kernel.org/netdev/1443313848-751-1-git-send-email-tolga.ceylan@gmail.com/
+We could use a similar approach as struct ethtool_link_ksettings, e.g.
 
+	struct kernel_ethtool_coalesce {
+		struct ethtool_coalesce base;
+		/* new members which are not part of UAPI */
+	}
 
-Also, setting zero to backlog does not work well.
-https://lore.kernel.org/netdev/1447262610.17135.114.camel@edumazet-glaptop2.roam.corp.google.com/
+get_coalesce() and set_coalesce() would get pointer to struct
+kernel_ethtool_coalesce and ioctl code would be modified to only touch
+the base (legacy?) part.
 
----8<---
-From: Eric Dumazet <eric.dumazet@gmail.com>
-Subject: Re: [PATCH 1/1] net: Add SO_REUSEPORT_LISTEN_OFF socket option as
- drain mode
-Date: Wed, 11 Nov 2015 09:23:30 -0800
-> Actually listen(fd, 0) is not going to work well :
-> 
-> For request_sock that were created (by incoming SYN packet) before this
-> listen(fd, 0) call, the 3rd packet (ACK coming from client) would not be
-> able to create a child attached to this listener.
-> 
-> sk_acceptq_is_full() test in tcp_v4_syn_recv_sock() would simply drop
-> the thing.
----8<---
+While already changing the ops arguments, we could also add extack
+pointer, either as a separate argument or as struct member (I slightly
+prefer the former).
+
+BtW, please don't forget to update the message descriptions in
+Documentation/networking/ethtool-netlink.rst
+
+Michal
