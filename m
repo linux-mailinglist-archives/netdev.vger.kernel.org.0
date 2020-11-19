@@ -2,87 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 472C72B91CB
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 12:54:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA3F52B925D
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 13:16:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727849AbgKSLrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 06:47:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37934 "EHLO
+        id S1727388AbgKSMOO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 07:14:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727025AbgKSLmT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 06:42:19 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87CF7C0617A7;
-        Thu, 19 Nov 2020 03:42:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=z2wOlmDrz/QfDBFn6ctWN3OgjQZgcVppTZgX8Pi6wGw=; b=co0OjL/MI1Wj9zjx2cJrcNvsU5
-        R6Y69/TFYkDr9yE5TOSz/Lqu8cu/qMXc8DeMSupBdLz9EiLkMyHOqQn5JZ8KMswn7JwMXloOHNDDh
-        An1mXtVjEZxwi9MXuhv9zWEWy9qv+7iN7BeOumB4D9g+1Aff4Ojk+/LyyIbnvIaMi9XvbwOeCXByl
-        bb4YD2+xUY54Hq9h2IMD/T2iFRCUiDr7/g+dWKaUQ2I8VMK+rGIe7YJhA7TLJNu/iLhWJSbpl3gi2
-        2aq8h4BEZm1zuQAggSLFmHUcOIw6DaUKqyp01IhvG4jPB/YFlgGpuWYhe5j5ETqZhZ/fo5crvUwKg
-        fRI42W3A==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kfiJz-0006HH-Dw; Thu, 19 Nov 2020 11:41:52 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 1E0693069B1;
-        Thu, 19 Nov 2020 12:41:49 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id C85A02C0AB058; Thu, 19 Nov 2020 12:41:49 +0100 (CET)
-Date:   Thu, 19 Nov 2020 12:41:49 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
-        linmiaohe@huawei.com, martin.varghese@nokia.com, pabeni@redhat.com,
-        pshelar@ovn.org, fw@strlen.de, gnault@redhat.com,
-        steffen.klassert@secunet.com, kyk.segfault@gmail.com,
-        viro@zeniv.linux.org.uk, vladimir.oltean@nxp.com,
-        edumazet@google.com, saeed@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxarm@huawei.com
-Subject: Re: [PATCH net-next] net: add in_softirq() debug checking in
- napi_consume_skb()
-Message-ID: <20201119114149.GI3121392@hirez.programming.kicks-ass.net>
-References: <1603971288-4786-1-git-send-email-linyunsheng@huawei.com>
- <20201031153824.7ae83b90@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <5b04ad33-1611-8d7b-8fec-4269c01ecab3@huawei.com>
- <20201102114110.4a20d461@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <5bd6de52-b8e0-db6f-3362-862ae7b2c728@huawei.com>
- <20201118074348.3bbd1468@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <20201118155757.GY3121392@hirez.programming.kicks-ass.net>
- <20201118082658.2aa41190@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <b00f1c28-668c-ecdb-6aa7-282e57475e25@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b00f1c28-668c-ecdb-6aa7-282e57475e25@huawei.com>
+        with ESMTP id S1727383AbgKSMOM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 07:14:12 -0500
+Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F2DC0613CF
+        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 04:14:10 -0800 (PST)
+Received: by mail-lf1-x141.google.com with SMTP id d17so7876550lfq.10
+        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 04:14:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=content-transfer-encoding:cc:subject:from:to:date:message-id
+         :in-reply-to;
+        bh=43Lm+cdFIN23Awmx15ktrV2KZ2DgXdJjk7MI28AP6nI=;
+        b=dYjn1VLqdhw8ghmRfr11UnbT3RKvIUB8IMbPr16+26+bUmhH8B5qd0i25YNYKFOE5h
+         f/1pQh+0815TO5nD+ZDAQDB0Aw4N2UWdF1ayPDu8Bp8k3hvRqdW2kjhsOU9YLXT6tjvI
+         u7x3CSwmKogcL8JEoaEsCh5h6o6egKfjrsheMUgCyYXO1AvvXMFy1QNi9+2cw+cPKJ4o
+         vBx7XAlArEPex1hlQpGjDkPf/4RY187yEAKDs3VLgWfKo1QOcYYoehbV+JPSvql8N0Ly
+         hcIgAA4Aum5QZBSJDo4HebnYQE7M8s8ufUcK+BDV0edttSEXapfyrwf3/XLBR/53hsqF
+         1krQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:content-transfer-encoding:cc:subject:from:to
+         :date:message-id:in-reply-to;
+        bh=43Lm+cdFIN23Awmx15ktrV2KZ2DgXdJjk7MI28AP6nI=;
+        b=CjP9XkBS6zRcWms9yWF72R7eICmnXkE85XuSphQ8xoapzxAfhSm+tX5rDysyAsHBbu
+         yQZSwWxZ2ElfEs+gqIyOXcEkQM9GsapSJzG1TMKe6A1symDMuQ0HDD7/AvtAvwgTgYXq
+         ejFK010oHIx+ZLnYtrRuwUG9QlUrS7x6snzmiiWILJntJtsx3VpvpUibxBJoUQU9Z9Pp
+         yHm7nVDN+0Tm887R7TOnXWPQ9eQJaXwJR/stksi1Ie4pR92KCi+8tGHw/Yy2mObXSMSX
+         OeJ8JxSbyORvqmbb/k3fAu9u3LQEVGV9ziFDCjICJiLfYpTm95hxzZce2o1bf3C+gYzQ
+         JJ/Q==
+X-Gm-Message-State: AOAM530CuWe9HBQcBNSu+9rRBFczlObwj1j9u+1POCBQeCAIyQDZGQ7M
+        vt4VYXwKE0o/j0Plerx6E3ONgg==
+X-Google-Smtp-Source: ABdhPJz76gvFOp/7qY00aQXJQs4VS6O3//Zk3t0tGCPQlevC9in80/loXZtS5hHm0lTtXPp46Bkj6A==
+X-Received: by 2002:a19:d02:: with SMTP id 2mr5600282lfn.294.1605788048911;
+        Thu, 19 Nov 2020 04:14:08 -0800 (PST)
+Received: from localhost (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id y11sm3441693lfl.119.2020.11.19.04.14.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Nov 2020 04:14:08 -0800 (PST)
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Cc:     <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <netdev@vger.kernel.org>
+Subject: Re: [RFC PATCH 0/4] net: dsa: link aggregation support
+From:   "Tobias Waldekranz" <tobias@waldekranz.com>
+To:     "Vladimir Oltean" <olteanv@gmail.com>
+Date:   Thu, 19 Nov 2020 12:52:14 +0100
+Message-Id: <C777W1ZC293J.3GT3X4KIN7PM9@wkz-x280>
+In-Reply-To: <20201119105112.ahkf6g5tjdbmymhk@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 19, 2020 at 05:19:44PM +0800, Yunsheng Lin wrote:
-> On 2020/11/19 0:26, Jakub Kicinski wrote:
-> > On Wed, 18 Nov 2020 16:57:57 +0100 Peter Zijlstra wrote:
-> >> On Wed, Nov 18, 2020 at 07:43:48AM -0800, Jakub Kicinski wrote:
-> >>
-> >>> TBH the last sentence I wrote isn't clear even to me at this point ;D
-> >>>
-> >>> Maybe using just the macros from preempt.h - like this?
-> >>>
-> >>> #define lockdep_assert_in_softirq()                                    \
-> >>> do {                                                                   \
-> >>>        WARN_ON_ONCE(__lockdep_enabled                  &&              \
-> >>>                     (!in_softirq() || in_irq() || in_nmi())	\
-> >>> } while (0)
-> 
-> One thing I am not so sure about is the different irq context indicator
-> in preempt.h and lockdep.h, for example lockdep_assert_in_irq() uses
-> this_cpu_read(hardirq_context) in lockdep.h, and in_irq() uses
-> current_thread_info()->preempt_count in preempt.h, if they are the same
-> thing?
+On Thu Nov 19, 2020 at 1:51 PM CET, Vladimir Oltean wrote:
+> I have tested these patches on ocelot/felix and all is OK there, I would
+> appreciate if you could resend as non-RFC. In the case of my hardware,
 
-Very close, for more regular code they should be the same.
+For sure, I am working on it as we speak. I was mostly waiting for the
+dsa-tag-unification series to make its way to net-next first as v1
+depends on that. But then I remembered that I had to test against the
+bonding driver (I have used team up to this point), and there is some
+bug there that I need to squash first.
+
+> it appears that I don't need the .port_lag_change callback, and that the
+
+Ok, does ocelot automatically rebalance the LAG based on link state? I
+took a quick look through the datasheet for another switch from
+Vitesse, and it explicitly states that you need to update a table on
+link changes.
+
+I.e. in this situation:
+
+    br0
+   /  |
+ lag  |
+ /|\  |
+1 2 3 4
+| | |  \
+| | |   B
+| | |
+1 2 3
+  A
+
+If you unplug cable 1, does the hardware rebalance all flows between
+A<->B to only use 2 and 3 without software assistance? If not, you
+will loose 1/3 of your flows.
+
+> source port that is being put in the DSA header is still the physical
+> port ID and not the logical port ID (the LAG number). That being said,
+
+Ok, yeah I really wish this was true for mv88e6xxx as well.
+
+> the framework you've built is clearly nice and works well even with
+> bridging a bond.
+
+Thank you!
