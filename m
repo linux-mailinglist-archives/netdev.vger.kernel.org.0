@@ -2,124 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4B932B9C36
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 21:46:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E6772B9C3C
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 21:49:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726122AbgKSUmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 15:42:19 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:58474 "EHLO
+        id S1725937AbgKSUsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 15:48:08 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:25558 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726172AbgKSUmR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 15:42:17 -0500
+        by vger.kernel.org with ESMTP id S1725853AbgKSUsH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 15:48:07 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605818536;
+        s=mimecast20190719; t=1605818886;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pgYqjANhFZVw2xsV1NPryI63UVScbHN7GEpAwzgrcBA=;
-        b=YkZZUcOhgjbqs0dFE0fdahNBR14lida7kIYW/rmHr9+vJ90U798AZTbjFM+deEMxf7nySg
-        +ls01ctKa+HN8ivadiNpwHVnVo2M2BXIdTM9ONWBOdbDbKIoA9W91f0PaZ67SeQZE/dZfv
-        DWXuIBB9ux2rOtiSnoG/AkSSXI+RUiY=
+         content-transfer-encoding:content-transfer-encoding;
+        bh=hcs7PJOBewwS4zzb52UbMENX6zHkVB8Tl9SGZ0mVElQ=;
+        b=QqappP/X62Xu/0CJWb4nU/wWwfYNvfbL0S9Q99oZz6+8OETxwi4cITe5QZlCmv+jHF0liG
+        NB7wingucfuzDAHdkDQjbqent1o4JwTzGRJDqGCJp2EWxZRfLDzDMbOvZzxzncYLhK2Xgh
+        AJqA+s3kR2HjRnuuxWnlN2i7SPAfPZ0=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-428-J2xKKEZ6OOWubPMcg1L6iQ-1; Thu, 19 Nov 2020 15:42:10 -0500
-X-MC-Unique: J2xKKEZ6OOWubPMcg1L6iQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+ us-mta-143-oZnA0QvKMYmmmJxHTYgbAQ-1; Thu, 19 Nov 2020 15:48:03 -0500
+X-MC-Unique: oZnA0QvKMYmmmJxHTYgbAQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C76F11005D5C;
-        Thu, 19 Nov 2020 20:42:04 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7DFF810016F4;
-        Thu, 19 Nov 2020 20:41:56 +0000 (UTC)
-Date:   Thu, 19 Nov 2020 21:41:55 +0100
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1A15518C43C2;
+        Thu, 19 Nov 2020 20:48:02 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.40.208.7])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D772C60843;
+        Thu, 19 Nov 2020 20:47:58 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 9D17132138453;
+        Thu, 19 Nov 2020 21:47:57 +0100 (CET)
+Subject: [PATCH net-next V2] MAINTAINERS: Update XDP and AF_XDP entries
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Joe Perches <joe@perches.com>, Guenter Roeck <linux@roeck-us.net>,
-        Tao Ren <rentao.bupt@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Jean Delvare <jdelvare@suse.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
+To:     bpf@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, openbmc@lists.ozlabs.org, taoren@fb.com,
-        mikechoi@fb.com, brouer@redhat.com
-Subject: Re: XDP maintainer match (Was  [PATCH v2 0/2] hwmon: (max127) Add
- Maxim MAX127 hardware monitoring)
-Message-ID: <20201119214155.5285e2d2@carbon>
-In-Reply-To: <20201119095928.01fd10e0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-References: <20201118230929.18147-1-rentao.bupt@gmail.com>
-        <20201118232719.GI1853236@lunn.ch>
-        <20201118234252.GA18681@taoren-ubuntu-R90MNF91>
-        <20201119010119.GA248686@roeck-us.net>
-        <20201119012653.GA249502@roeck-us.net>
-        <20201119074634.2e9cb21b@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <20201119173535.1474743d@carbon>
-        <088057533a9feb330964bdab0b1b8d2f69b7a22c.camel@perches.com>
-        <20201119095928.01fd10e0@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Date:   Thu, 19 Nov 2020 21:47:57 +0100
+Message-ID: <160581887691.2806789.9260923642911504043.stgit@firesoul>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Nov 2020 09:59:28 -0800
-Jakub Kicinski <kuba@kernel.org> wrote:
+Getting too many false positive matches with current use
+of the content regex K: and file regex N: patterns.
 
-> On Thu, 19 Nov 2020 09:09:53 -0800 Joe Perches wrote:
-> > On Thu, 2020-11-19 at 17:35 +0100, Jesper Dangaard Brouer wrote: =20
-> > > On Thu, 19 Nov 2020 07:46:34 -0800 Jakub Kicinski <kuba@kernel.org> w=
-rote:   =20
-> >  =20
-> > > I think it is a good idea to change the keyword (K:), but I'm not sure
-> > > this catch what we want, maybe it does.  The pattern match are meant =
-to
-> > > catch drivers containing XDP related bits.
-> > >=20
-> > > Previously Joe Perches <joe@perches.com> suggested this pattern match,
-> > > which I don't fully understand... could you explain Joe?
-> > >=20
-> > > =C2=A0=C2=A0(?:\b|_)xdp(?:\b|_)   =20
-> >=20
-> > This regex matches only:
-> >=20
-> > 	xdp
-> > 	xdp_<anything>
-> > 	<anything>_xdp_<anything>
-> > 	<anything>_xdp
-> >  =20
-> > > For the filename (N:) regex match, I'm considering if we should remove
-> > > it and list more files explicitly.  I think normal glob * pattern
-> > > works, which should be sufficient.   =20
-> >=20
-> > Lists are generally more specific than regex globs. =20
->=20
-> Checking like Alexei did it seems Joe's version is faster and better:
->=20
-> $ git grep -l -E "[^a-z0-9]xdp[^a-z0-9]" | wc -l
-> 295
-> $ git grep -l -E '(\b|_)xdp(\b|_)' | wc -l
-> 297
-> $ time git grep -l -E '(\b|_)xdp(\b|_)' > /tmp/a
+This patch drops file match N: and makes K: more restricted.
+Some more normal F: file wildcards are added.
 
-Okay, I guess this is the pattern you want: '(\b|_)xdp(\b|_)'
+Notice that AF_XDP forgot to some F: files that is also
+updated in this patch.
 
-=20
-> Joe would you like to send a patch, or should I?
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+---
+ MAINTAINERS |   12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-As you noticed I already send out a patch, I can send a new with your
-pattern, as it seems to be faster.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index af9f6a3ab100..fd6119c4be2b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -19105,12 +19105,17 @@ L:	netdev@vger.kernel.org
+ L:	bpf@vger.kernel.org
+ S:	Supported
+ F:	include/net/xdp.h
++F:	include/net/xdp_priv.h
+ F:	include/trace/events/xdp.h
+ F:	kernel/bpf/cpumap.c
+ F:	kernel/bpf/devmap.c
+ F:	net/core/xdp.c
+-N:	xdp
+-K:	xdp
++F:	samples/bpf/xdp*
++F:	tools/testing/selftests/bpf/*xdp*
++F:	tools/testing/selftests/bpf/*/*xdp*
++F:	drivers/net/ethernet/*/*/*/*/*xdp*
++F:	drivers/net/ethernet/*/*/*xdp*
++K:	(\b|_)xdp(\b|_)
+ 
+ XDP SOCKETS (AF_XDP)
+ M:	Björn Töpel <bjorn.topel@intel.com>
+@@ -19119,9 +19124,12 @@ R:	Jonathan Lemon <jonathan.lemon@gmail.com>
+ L:	netdev@vger.kernel.org
+ L:	bpf@vger.kernel.org
+ S:	Maintained
++F:	Documentation/networking/af_xdp.rst
+ F:	include/net/xdp_sock*
+ F:	include/net/xsk_buff_pool.h
+ F:	include/uapi/linux/if_xdp.h
++F:	include/uapi/linux/xdp_diag.h
++F:	include/net/netns/xdp.h
+ F:	net/xdp/
+ F:	samples/bpf/xdpsock*
+ F:	tools/lib/bpf/xsk*
 
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
 
