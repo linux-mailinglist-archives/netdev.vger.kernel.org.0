@@ -2,93 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E7AB2B93FE
-	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 14:58:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FA6D2B9406
+	for <lists+netdev@lfdr.de>; Thu, 19 Nov 2020 15:02:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727363AbgKSN5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 08:57:53 -0500
-Received: from wout2-smtp.messagingengine.com ([64.147.123.25]:46261 "EHLO
-        wout2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727153AbgKSN5x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 08:57:53 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 66EF9D6A;
-        Thu, 19 Nov 2020 08:57:52 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 19 Nov 2020 08:57:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=ejAt+q9G8UiAOjyJB4x8oyn90bu7s3R/wkdqE/r8Xx4=; b=LS8/tsrN
-        c5QuRsLcfLULOPDEo7TMl1VeBDO8tIw/E6bd5DGMDQKAbWwVYP70YhUDI0EuACOw
-        nk5VzLjTVsDG8NU+GLPvivDtW68jTHA3b5c1ZncTI7wrOrHXdoYg41Q7r2Q2c/ZY
-        hotacGPWwaWAEY37RCh6JrMC0XiPUAEJvRVjBFKKsDnUIocBEnPG/u+3qp2cltAJ
-        OABWYgC6m+yOBSVFCt/Y6yow8rxfC2V7TzXuLR1egwNnBl6iHF/eILpOlK8SH7eg
-        NdIT0o0d3ODKkRrGShhejPnondbll32viVAtlYeGICxoy+6o9CYVaQfC8eNGBtYq
-        NxUYc29Ap49XPQ==
-X-ME-Sender: <xms:33m2X8rPvOXN_buNbi7TLiG-EiN9cj8SxHt3TxiqisxWqcMduPaDHQ>
-    <xme:33m2XyoRQnZ20wRjKk4G06wY6RH2R5t3HR0onURd6tRQqEShhg_JR1AQiQS8zRZTp
-    gOmzRbcS6sIW1A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudefjedgheekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehgedrudeg
-    jeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:33m2XxNjpetxfxeGe77tyDSP84hkhZflCet-TFVmWuFB-Qehn7dAFA>
-    <xmx:33m2Xz6t1QBJgo21goyn2GHT_b_JVVkG8MTx7MOAdEEtKH1WTAgc9g>
-    <xmx:33m2X747DAqPuclr5rZTZyo6SvjleQ2qpAu2QyCDQHNvliTNw0mNAw>
-    <xmx:4Hm2X1TicXlJq2RSo2hvCYObDKg2N1axCuR0IwScfFdThi1LhtTVow>
-Received: from shredder.lan (igld-84-229-154-147.inter.net.il [84.229.154.147])
-        by mail.messagingengine.com (Postfix) with ESMTPA id B85653280068;
-        Thu, 19 Nov 2020 08:57:50 -0500 (EST)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, roopa@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH iproute2-next 2/2] nexthop: Always print nexthop flags
-Date:   Thu, 19 Nov 2020 15:57:31 +0200
-Message-Id: <20201119135731.410986-3-idosch@idosch.org>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20201119135731.410986-1-idosch@idosch.org>
-References: <20201119135731.410986-1-idosch@idosch.org>
+        id S1727401AbgKSN7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 08:59:12 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:38264 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726580AbgKSN7M (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Nov 2020 08:59:12 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kfkSr-007wPa-9E; Thu, 19 Nov 2020 14:59:09 +0100
+Date:   Thu, 19 Nov 2020 14:59:09 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Grzeschik <mgr@pengutronix.de>
+Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, davem@davemloft.net,
+        kernel@pengutronix.de, matthias.schiffer@ew.tq-group.com,
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH 06/11] net: dsa: microchip: ksz8795: use phy_port_cnt
+ where possible
+Message-ID: <20201119135909.GU1804098@lunn.ch>
+References: <20201118220357.22292-1-m.grzeschik@pengutronix.de>
+ <20201118220357.22292-7-m.grzeschik@pengutronix.de>
+ <20201119002915.GJ1804098@lunn.ch>
+ <20201119084005.GC6507@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201119084005.GC6507@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+On Thu, Nov 19, 2020 at 09:40:05AM +0100, Michael Grzeschik wrote:
+> On Thu, Nov 19, 2020 at 01:29:15AM +0100, Andrew Lunn wrote:
+> > >  	case BR_STATE_DISABLED:
+> > >  		data |= PORT_LEARN_DISABLE;
+> > > -		if (port < SWITCH_PORT_NUM)
+> > > +		if (port < dev->phy_port_cnt)
+> > >  			member = 0;
+> > >  		break;
+> > 
+> > So this, unlike all the other patches so far, is not obviously
+> > correct. What exactly does phy_port_cnt mean? Can there be ports
+> > without PHYs? What if the PHYs are external? You still need to be able
+> > to change the STP state of such ports.
+> 
+> The variable phy_port_cnt is referring to all external physical
+> available ports, that are not connected internally to the cpu.
+> 
+> That means that the previous code path was already broken, when stp
+> handling should include the cpu_port.
 
-Currently, the nexthop flags are only printed when the nexthop has a
-nexthop device. The offload / trap indication is therefore not printed
-for nexthop groups.
+So using DSA names, it is the number of user ports. And the assumption
+is, the last port is the CPU port.
 
-Instead, always print the nexthop flags, regardless if the nexthop has a
-nexthop device or not.
+Please add to the commit message that this patch fixes the code as
+well. That sort of comment helps the reviewer understand why it is not
+just an obvious mechanical change.
 
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- ip/ipnexthop.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/ip/ipnexthop.c b/ip/ipnexthop.c
-index 22c664918fcc..b7ffff77c160 100644
---- a/ip/ipnexthop.c
-+++ b/ip/ipnexthop.c
-@@ -263,8 +263,7 @@ int print_nexthop(struct nlmsghdr *n, void *arg)
- 			     rtnl_rtprot_n2a(nhm->nh_protocol, b1, sizeof(b1)));
- 	}
- 
--	if (tb[NHA_OIF])
--		print_rt_flags(fp, nhm->nh_flags);
-+	print_rt_flags(fp, nhm->nh_flags);
- 
- 	if (tb[NHA_FDB])
- 		print_null(PRINT_ANY, "fdb", "fdb", NULL);
--- 
-2.28.0
-
+	Andrew
