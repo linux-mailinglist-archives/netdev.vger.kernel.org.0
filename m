@@ -2,61 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 872452BB2DB
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 19:37:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ECD22BB2DF
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 19:37:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729964AbgKTS0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 13:26:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47630 "EHLO mail.kernel.org"
+        id S1729366AbgKTS0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 13:26:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47692 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728002AbgKTS0i (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Nov 2020 13:26:38 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        id S1728002AbgKTS0r (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Nov 2020 13:26:47 -0500
+Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2D9EE2224C;
-        Fri, 20 Nov 2020 18:26:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 624DA2224C;
+        Fri, 20 Nov 2020 18:26:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605896798;
-        bh=sFNKrLDLK54f4Sp1AqlHs6UQ2fZdDbDcWqwJqTgIDkU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PVTnZbfxrziUP4qmHVBjxbAjkp4q6kinrT0UIg+rSLvyzApO7OGYjc1IsMsHvIGgu
-         Qw5ztqDYie9903I/QoJ7CNKh+fUVcAF+BBoGSAO/+HZCASAPXdA8T3PvFMk3sSgBlX
-         0m3xbP2Md/8GoW0+lX/bVuFGb8z2MvtFXJT/Y2B4=
-Date:   Fri, 20 Nov 2020 10:26:37 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vadim Fedorenko <vfedorenko@novek.ru>
-Cc:     Boris Pismenny <borisp@nvidia.com>,
-        Aviad Yehezkel <aviadye@nvidia.com>, netdev@vger.kernel.org
-Subject: Re: [net v3] net/tls: missing received data after fast remote close
-Message-ID: <20201120102637.7d36a9f1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1605801588-12236-1-git-send-email-vfedorenko@novek.ru>
-References: <1605801588-12236-1-git-send-email-vfedorenko@novek.ru>
+        s=default; t=1605896807;
+        bh=MeKVa89bjFAaYgcLc1fUItpAvL7pe24eM5yo8zjhQ4U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hWsULgWAmhRu/Dh2HkOo1HT/wQluzHylYW3QAiGqhdY5Ub7yYm3uN56LbwUwGFmCU
+         FSU8Hi060GR+7lKq/PVKC10zBk3NfJKsx3pPRWRAFA5rMYul9cPgwBmozJHiiH9Dwf
+         sg6fqSXLCGYW7pKryEa3U5xOAh0Ms+eo5vF7pZP0=
+Date:   Fri, 20 Nov 2020 12:26:52 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Ariel Elior <aelior@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     GR-everest-linux-l2@marvell.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: [PATCH 018/141] qed: Fix fall-through warnings for Clang
+Message-ID: <35915deb94f9ad166f8984259050cfadd80b2567.1605896059.git.gustavoars@kernel.org>
+References: <cover.1605896059.git.gustavoars@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1605896059.git.gustavoars@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Nov 2020 18:59:48 +0300 Vadim Fedorenko wrote:
-> In case when tcp socket received FIN after some data and the
-> parser haven't started before reading data caller will receive
-> an empty buffer. This behavior differs from plain TCP socket and
-> leads to special treating in user-space.
-> The flow that triggers the race is simple. Server sends small
-> amount of data right after the connection is configured to use TLS
-> and closes the connection. In this case receiver sees TLS Handshake
-> data, configures TLS socket right after Change Cipher Spec record.
-> While the configuration is in process, TCP socket receives small
-> Application Data record, Encrypted Alert record and FIN packet. So
-> the TCP socket changes sk_shutdown to RCV_SHUTDOWN and sk_flag with
-> SK_DONE bit set. The received data is not parsed upon arrival and is
-> never sent to user-space.
-> 
-> Patch unpauses parser directly if we have unparsed data in tcp
-> receive queue.
-> 
-> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
+In preparation to enable -Wimplicit-fallthrough for Clang, fix multiple
+warnings by explicitly adding a couple of break statements instead of
+just letting the code fall through to the next case.
 
-Applied, thanks!
+Link: https://github.com/KSPP/linux/issues/115
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/net/ethernet/qlogic/qed/qed_l2.c    | 1 +
+ drivers/net/ethernet/qlogic/qed/qed_sriov.c | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_l2.c b/drivers/net/ethernet/qlogic/qed/qed_l2.c
+index 07824bf9d68d..dfaf10edfabf 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_l2.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_l2.c
+@@ -396,6 +396,7 @@ int qed_sp_eth_vport_start(struct qed_hwfn *p_hwfn,
+ 		tpa_param->tpa_ipv6_en_flg = 1;
+ 		tpa_param->tpa_pkt_split_flg = 1;
+ 		tpa_param->tpa_gro_consistent_flg = 1;
++		break;
+ 	default:
+ 		break;
+ 	}
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_sriov.c b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
+index b8dc5c4591ef..ed2b6fe5a78d 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_sriov.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
+@@ -4734,6 +4734,7 @@ void qed_inform_vf_link_state(struct qed_hwfn *hwfn)
+ 			 */
+ 			link.speed = (hwfn->cdev->num_hwfns > 1) ?
+ 				     100000 : 40000;
++			break;
+ 		default:
+ 			/* In auto mode pass PF link image to VF */
+ 			break;
+-- 
+2.27.0
+
