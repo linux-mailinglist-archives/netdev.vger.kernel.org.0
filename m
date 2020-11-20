@@ -2,89 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AEE62BA56B
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 10:08:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 075EA2BA58E
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 10:11:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726529AbgKTJFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 04:05:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38196 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725801AbgKTJFW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 04:05:22 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1036EC0613CF
-        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 01:05:22 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id u18so12389252lfd.9
-        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 01:05:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=MSCard2X4Oizz2IShotDAipEPeeItot6kxo2LP01XQM=;
-        b=iCPziARTyBVR4d7NnOjPyg2bRC6KocAJILLES+9LOVNBZRmbVKoZfU2FJ//RX6m60X
-         lexsda5QWYv+elx0dnu6MNQRHUVbodUChThPL642opTQWoJxhqUAR/YhSPDM9yHYlX7t
-         KCEcHPFCxneAb6u1jeSagKgHSHTFc7RsdZgzg2bq8FhBRdxOiP4JLL8yqBZ6h31Q1jtF
-         uCB54BSlws2rgIi+eYTdITkDAx1kWQbvqCapcnms1/rNTiYB9lQE6JxfasnGcGbwufv6
-         LK/j9+2syvhBchXw0zeMVVHxGWWKMalfSKDqbY+TM4+chTDy+YsY5qQSBouv8Bh0P3r8
-         SfAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=MSCard2X4Oizz2IShotDAipEPeeItot6kxo2LP01XQM=;
-        b=Zmm2n3r4CPLvX+uZ1teOu5MbnHyJgfQk7c4+suwEy+U1gDl4hqE+d+nYNrIoSpOaS9
-         suNwMJ8mxYAU3MN4Eh1j9zprjrB3qm47LZMYFAex+3QHHHhEHcKnM+xLZ27K7Xykzgld
-         XJ+Kp/y6WExWuheDHMsQ5MMZULVYAgTArqYGeBFUT09PRMmMYhNMFB6OlR2AwpRf+RfI
-         S1AZduvGfSFr3SsNO4B3QtB+P3ScwuhvQr4kCKamfJC/DqzYW7kzN/v1mg6j6etgVp/s
-         OugL5ko0zAysdb06bo/D/j+iZx2A4/hC0SvkbJdWIbfi776pFFmdSMM6emGTSm+rB/JH
-         yI2A==
-X-Gm-Message-State: AOAM531SOVjwydtqwLYAho1hCaq9i2YiV52ohQuZYzNl2C4Pklc0eTrM
-        wn19O2LUPj7ijuzGx5gEFZ0GEA==
-X-Google-Smtp-Source: ABdhPJygnPaucjl+f9oOs9ZZV4fWK3vYg9wJ9XZnTvPnat04HWCF2njOx5ms2o1lAnyOuO71Vg/kHA==
-X-Received: by 2002:ac2:53ae:: with SMTP id j14mr8318808lfh.216.1605863120351;
-        Fri, 20 Nov 2020 01:05:20 -0800 (PST)
-Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id d6sm270692lfn.295.2020.11.20.01.05.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Nov 2020 01:05:19 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Antoine Tenart <atenart@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: net: phy: Dealing with 88e1543 dual-port mode
-In-Reply-To: <20201120000050.GV1804098@lunn.ch>
-References: <20201119152246.085514e1@bootlin.com> <20201119145500.GL1551@shell.armlinux.org.uk> <20201119162451.4c8d220d@bootlin.com> <87k0uh9dd0.fsf@waldekranz.com> <20201120000050.GV1804098@lunn.ch>
-Date:   Fri, 20 Nov 2020 10:05:18 +0100
-Message-ID: <87a6vc9z5d.fsf@waldekranz.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S1727401AbgKTJJ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 04:09:58 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:7508 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727058AbgKTJJu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 04:09:50 -0500
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AK95NxU009214;
+        Fri, 20 Nov 2020 04:09:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id; s=pp1;
+ bh=XxSfbu9NyfPtYH/Xd3/dvRJ7iR2hKaxa5WCRuSbNAtM=;
+ b=knofnfr8SXt7eeGTPIbjdOx9EDucruxoJSEsi9dXIhPFZr416SgIgJv1FeBzTjwatF2t
+ wkZmWOCwIDNRq997DUMWXW9SPWsEJWE8KZ0MG1o8wiRi6PobsuT66N7/P6RJ7dX+KctW
+ k2HTYLuzI6oeq+9CHOUCLxh/hrnIISref5FkLmIfCctFqCanJprMb7HisJLSGq6oBbhW
+ AhS40dS7LSX7Sg030acc6kgQKnCM5CoU3/eTdQ3pWW2APs+gxiUpNtNysVXnr891Hg4f
+ QTZ4HZrVQA/RtidFVcsSKSMKYYcXKQh+1KBD11Ar2XeEHU1Mq//9CzMFjptmZCjYHL6b KQ== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 34xakj0fe9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 20 Nov 2020 04:09:45 -0500
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0AK984MR020944;
+        Fri, 20 Nov 2020 09:09:43 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma03ams.nl.ibm.com with ESMTP id 34weby1ggk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 20 Nov 2020 09:09:42 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0AK99e8a9306774
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 20 Nov 2020 09:09:40 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4044F4203F;
+        Fri, 20 Nov 2020 09:09:40 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E49B442041;
+        Fri, 20 Nov 2020 09:09:39 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 20 Nov 2020 09:09:39 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-netdev <netdev@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net 0/4] s390/qeth: fixes 2020-11-20
+Date:   Fri, 20 Nov 2020 10:09:35 +0100
+Message-Id: <20201120090939.101406-1-jwi@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-20_03:2020-11-19,2020-11-20 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ spamscore=0 impostorscore=0 clxscore=1015 malwarescore=0 mlxlogscore=768
+ lowpriorityscore=0 phishscore=0 mlxscore=0 bulkscore=0 adultscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011200056
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 20, 2020 at 01:00, Andrew Lunn <andrew@lunn.ch> wrote:
->> E.g. at Westermo we make switches with M12/M12X connectors [1] that
->> sometimes have a 1G PHY behind a 2-pair M12 connector (for complicated
->> legacy reasons). In such cases we have to remove 1000-HD/FD from the
->> advertised link modes. Being able to describe that in the DT with
->> something like:
->> 
->> ethernet-phy@0 {
->>     mdi = "2-pair";
->> };
->
-> We already have a max-speed property which could be used to do this.
-> It will remove the 1000-HD/FD from the link mode if you set it to 100.
->
->    Andrew
+Hi Jakub,
 
-Oh wow, well strike that argument then :)
+please apply the following patch series to netdev's net tree.
 
-Thank you
+This brings several fixes for qeth's af_iucv-specific code paths.
+
+Also one fix by Alexandra for the recently added BR_LEARNING_SYNC
+support. We want to trust the feature indication bit, so that HW can
+mask it out if there's any issues on their end.
+
+Thanks,
+Julian
+
+Alexandra Winter (1):
+  s390/qeth: Remove pnso workaround
+
+Julian Wiedmann (3):
+  s390/qeth: make af_iucv TX notification call more robust
+  s390/qeth: fix af_iucv notification race
+  s390/qeth: fix tear down of async TX buffers
+
+ drivers/s390/net/qeth_core.h      |  9 ++--
+ drivers/s390/net/qeth_core_main.c | 82 ++++++++++++++++++++-----------
+ drivers/s390/net/qeth_l2_main.c   | 18 +------
+ 3 files changed, 62 insertions(+), 47 deletions(-)
+
+-- 
+2.17.1
+
