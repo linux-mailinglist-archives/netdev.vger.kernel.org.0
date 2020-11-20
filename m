@@ -2,114 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C5DF2BB16D
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 18:30:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A34482BB192
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 18:41:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728673AbgKTR1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 12:27:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59790 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728312AbgKTR1l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 12:27:41 -0500
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 317F0C0613CF;
-        Fri, 20 Nov 2020 09:27:41 -0800 (PST)
-Received: by mail-pg1-x542.google.com with SMTP id f18so7837385pgi.8;
-        Fri, 20 Nov 2020 09:27:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=tTaqUjFR6qohzjo0Ozc5Dz6/DxjLc48CR/b9BYuGS5Y=;
-        b=ZSq9w9daEKh7gjtCs4Qi3wXJinXvZAq4OworGl/BOQCPqCQhz633qsHfEky4mBQPNf
-         We3kDc9/eGtHdwCj09Hm06MDloYQZoTDrjKfk++aMa1fCfVX8eZ3cfLwq0u8lNmw2sh9
-         s9stQwhNl9IKY0FiKoJjAO1M41e6anSpHH0oA169LRq0/RAinLP0YwF/HTIMhv53by5z
-         p+D+jMO4W7bO54tzXbE1Y7PjzLiUzmzGJS7HOi0+FZH7bT3Ee3oRrmWEqL2t1smVOrFz
-         yB/TO+9AIWuZksg0XA3l5LUo5ir7fwchvXB5s5A3N0zvCgWKCvs41qH9EUF7a8/A9UiS
-         EZjg==
+        id S1728872AbgKTRjk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 12:39:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:45193 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728820AbgKTRjj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 12:39:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1605893977;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=k79nRRwuaLmMfVjEedZrAfuZMjECPDf1iyKjzsLMa9s=;
+        b=D+OERA4qlQykMFDj7epUIZ+W2zBdhhW+rePM34FBoNXWglWr/Uupp4o5EA4XCV2RZU4Xfl
+        +shk9KxwiRmx5DNpmRWwnUXFiMpqFl+k1jG7l/F2XCC0yhQckJOrARBQIq0New1iLL19g0
+        ySOd3KnqsIOVVoA5Xs2gKsaVVbDQXYk=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-343-gvgqJAMuOh6j1IZTR2cNXg-1; Fri, 20 Nov 2020 12:39:35 -0500
+X-MC-Unique: gvgqJAMuOh6j1IZTR2cNXg-1
+Received: by mail-qv1-f71.google.com with SMTP id u19so7682049qvx.4
+        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 09:39:35 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=tTaqUjFR6qohzjo0Ozc5Dz6/DxjLc48CR/b9BYuGS5Y=;
-        b=B0W634IzZIFva3plWcLzUUPZfcB16bM4dVhJl9upuodqvV6YZnrkx/TU727qBLnVxD
-         JlwjHfwp+aMdnDxEfKEocOHijhzspQvz0oOXir3yG/2/IUurYLQ4LEFtJu2lzl3lk/Ik
-         yMxhIA5LrGH87K8yPdBEIbBRlQn+H7XANWYbnB5Y6BQdC4896jO47EvKw+flwB3FkN/I
-         BROGcQyGwxiMyRMNrO0yX6bn7iM7LWmi/mhUYZPUYkdNLB7yGvpI5lLtlliSl4f+wyuv
-         DzYRnUxrMLpktRjVucidMw1KkfNV/7X/alTmd2k3d73F+5i0uGmDLNJ99eEiKg9uRgJt
-         IWFw==
-X-Gm-Message-State: AOAM530Yno2OVcyrb3tEkglayZxKuo0fXHHFUwtG/T9Ld9N3AkLOfGdV
-        QgJnkryZl3YjBb1L3LzZ6K52303Ln/YnzQ==
-X-Google-Smtp-Source: ABdhPJxRrba6MdAsnXAspyEBbcbm/tLVhWs2u98EkeXDKVN8iYN/kg2b7/dKjflk0gUXsHzerJhESg==
-X-Received: by 2002:a63:5043:: with SMTP id q3mr17493250pgl.137.1605893260530;
-        Fri, 20 Nov 2020 09:27:40 -0800 (PST)
-Received: from ?IPv6:2601:648:8400:9ef4:34d:9355:e74:4f1b? ([2601:648:8400:9ef4:34d:9355:e74:4f1b])
-        by smtp.gmail.com with ESMTPSA id i13sm4132181pfo.139.2020.11.20.09.27.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Nov 2020 09:27:40 -0800 (PST)
-Message-ID: <b7b2f834e2ecdd0a973d65b0cbaf73ef2c68e899.camel@gmail.com>
-Subject: Re: [PATCH v4 net-next 0/3] add support for sending RFC8335 PROBE
-From:   Andreas Roeseler <andreas.a.roeseler@gmail.com>
-To:     David Ahern <dsahern@gmail.com>, davem@davemloft.net
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Fri, 20 Nov 2020 09:27:39 -0800
-In-Reply-To: <8ac13fd8-69ac-723d-d84d-c16c4fa0a9ab@gmail.com>
-References: <cover.1605659597.git.andreas.a.roeseler@gmail.com>
-         <b4ce1651-4e45-52eb-7b2e-10075890e382@gmail.com>
-         <8ac13fd8-69ac-723d-d84d-c16c4fa0a9ab@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.1 
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc:content-transfer-encoding;
+        bh=k79nRRwuaLmMfVjEedZrAfuZMjECPDf1iyKjzsLMa9s=;
+        b=Pjnd8+K7Bzdi+5z2ezRg/zPiP/wcN7v5p1DzMn5+hVMlJpv1InsMO1SZWrC0m6878B
+         1mvpPT2VN9rgupumrIxmN7FiyWgkS9bj8lXVKmwha8qGRw4gaOYjDUh1PhHF6ly6dTsI
+         3ID87eUC2ZTONda9PKNFVgDFogjj4VZ4iAar8aP4v1ZPFPWFZ+1rcObve7JaIHzFO9Kq
+         /J17KuYGC4GSfpwqiWF8g5nXYtUUPNwiqWq1LAViqELD+BdUGDKlqGk9WVaDrUeGttbU
+         2bet3J6XcmgxYdNQEhsBJe8YoZvo8DZ59Xgq6gNxbu+mLD6eVGeuTC7nyMGScd0v5YQN
+         Cr9w==
+X-Gm-Message-State: AOAM5326Wfvp3iC0LDqExCMcOyT8UEW9k7i8CBQUXApdSqMmhp7S9RfR
+        +370F2BpjZszFAuEx7d5kfhMSsC0cfVKLZCdfVZgvvFmgzyiMay4YU9K4p3TgpURrJNPpVgoxS3
+        gX3DAe6RWa/v3pdeQZcIfoDdmbifWmkB4
+X-Received: by 2002:ad4:4e2f:: with SMTP id dm15mr16739064qvb.7.1605893975000;
+        Fri, 20 Nov 2020 09:39:35 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzE2jexl6RMjRxH8DXU42xINL9zOavX3aTaG8dWKzC5C7AKjV+EUloodH5V5Rd3eEkUaSBcfw3MTYuI4TgcCvk=
+X-Received: by 2002:ad4:4e2f:: with SMTP id dm15mr16739041qvb.7.1605893974801;
+ Fri, 20 Nov 2020 09:39:34 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201119162527.GB9877@fuller.cnet> <CA+aaKfCMa1sOa6bMXFAaP6Wb=5ZgoAcnZAaP9aBmWwOzaAtcHw@mail.gmail.com>
+In-Reply-To: <CA+aaKfCMa1sOa6bMXFAaP6Wb=5ZgoAcnZAaP9aBmWwOzaAtcHw@mail.gmail.com>
+Reply-To: marcel@redhat.com
+From:   Marcel Apfelbaum <mapfelba@redhat.com>
+Date:   Fri, 20 Nov 2020 19:39:24 +0200
+Message-ID: <CA+aaKfD_6qdNVRgr2TdDeuOau1UCFzRqWRB8iM-_GHV7mMrcsg@mail.gmail.com>
+Subject: Re: [kuba@kernel.org: Re: [PATCH net-next v2 0/3] net: introduce rps_default_mask]
+To:     Saeed Mahameed <saeed@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Paolo Abeni <pabeni@redhat.com>, Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Shuah Khan <shuah@kernel.org>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-11-19 at 21:01 -0700, David Ahern wrote:
-> On 11/19/20 8:51 PM, David Ahern wrote:
-> > On 11/17/20 5:46 PM, Andreas Roeseler wrote:
-> > > The popular utility ping has several severe limitations such as
-> > > the
-> > > inability to query specific  interfaces on a node and requiring
-> > > bidirectional connectivity between the probing and the probed
-> > > interfaces. RFC8335 attempts to solve these limitations by
-> > > creating the
-> > > new utility PROBE which is a specialized ICMP message that makes
-> > > use of
-> > > the ICMP Extension Structure outlined in RFC4884.
-> > > 
-> > > This patchset adds definitions for the ICMP Extended Echo Request
-> > > and
-> > > Reply (PROBE) types for both IPv4 and IPv6. It also expands the
-> > > list of
-> > > supported ICMP messages to accommodate PROBEs.
-> > > 
-> > 
-> > You are updating the send, but what about the response side?
-> > 
-> 
-> you also are not setting 'ICMP Extension Structure'. From:
-> https://tools.ietf.org/html/rfc8335
-> 
->    o  ICMP Extension Structure: The ICMP Extension Structure
-> identifies
->       the probed interface.
-> 
->    Section 7 of [RFC4884] defines the ICMP Extension Structure.  As
-> per
->    RFC 4884, the Extension Structure contains exactly one Extension
->    Header followed by one or more objects.  When applied to the ICMP
->    Extended Echo Request message, the ICMP Extension Structure MUST
->    contain exactly one instance of the Interface Identification
-> Object
->    (see Section 2.1).
++netdev
+[Sorry for the second email, I failed to set the text-only mode]
 
-I am currently finishing testing and polishing the response side and
-hope to be sendding out v1 of the patch in the upcoming few weeks.
-
-As for the 'ICMP Extension Structure', I have been working with the
-iputils package to add a command to send PROBE messages, and the
-changes included in this patchset are all that are necessary to be able
-to send PROBEs using the existing ping framework.
+On Fri, Nov 20, 2020 at 7:30 PM Marcel Apfelbaum <mapfelba@redhat.com> wrot=
+e:
+>
+> Hi,
+>
+>>
+>>
+>> ---------- Forwarded message ----------
+>> From: Jakub Kicinski <kuba@kernel.org>
+>> To: Paolo Abeni <pabeni@redhat.com>
+>> Cc: Saeed Mahameed <saeed@kernel.org>, netdev@vger.kernel.org, Jonathan =
+Corbet <corbet@lwn.net>, "David S. Miller" <davem@davemloft.net>, Shuah Kha=
+n <shuah@kernel.org>, linux-doc@vger.kernel.org, linux-kselftest@vger.kerne=
+l.org, Marcelo Tosatti <mtosatti@redhat.com>, Daniel Borkmann <daniel@iogea=
+rbox.net>
+>> Bcc:
+>> Date: Wed, 4 Nov 2020 11:42:26 -0800
+>> Subject: Re: [PATCH net-next v2 0/3] net: introduce rps_default_mask
+>> On Wed, 04 Nov 2020 18:36:08 +0100 Paolo Abeni wrote:
+>> > On Tue, 2020-11-03 at 08:52 -0800, Jakub Kicinski wrote:
+>> > > On Tue, 03 Nov 2020 16:22:07 +0100 Paolo Abeni wrote:
+>> > > > The relevant use case is an host running containers (with the rela=
+ted
+>> > > > orchestration tools) in a RT environment. Virtual devices (veths, =
+ovs
+>> > > > ports, etc.) are created by the orchestration tools at run-time.
+>> > > > Critical processes are allowed to send packets/generate outgoing, =
+it gets a network-interface
+>> > upstart job just as it does on a real host.
+>> >
+>> > > > network traffic - but any interrupt is moved away from the related
+>> > > > cores, so that usual incoming network traffic processing does not
+>> > > > happen there.
+>> > > >
+>> > > > Still an xmit operation on a virtual devices may be transmitted vi=
+a ovs
+>> > > > or veth, with the relevant forwarding operation happening in a sof=
+tirq
+>> > > > on the same CPU originating the packet.
+>> > > >
+>> > > > RPS is configured (even) on such virtual devices to move away the
+>> > > > forwarding from the relevant CPUs.
+>> > > >
+>> > > > As Saeed noted, such configuration could be possibly performed via=
+ some
+>> > > > user-space daemon monitoring network devices and network namespace=
+s
+>> > > > creation. That will be anyway prone to some race: the orchestation=
+ tool
+>> > > > may create and enable the netns and virtual devices before the dae=
+mon
+>> > > > has properly set the RPS mask.
+>> > > >
+>> > > > In the latter scenario some packet forwarding could still slip in =
+the
+>> > > > relevant CPU, causing measurable latency. In all non RT scenarios =
+the
+>> > > > above will be likely irrelevant, but in the RT context that is not
+>> > > > acceptable - e.g. it causes in real environments latency above the
+>> > > > defined limits, while the proposed patches avoid the issue.
+>> > > >
+>> > > > Do you see any other simple way to avoid the above race?
+>> > > >
+>> > > > Please let me know if the above answers your doubts,
+>> > >
+>> > > Thanks, that makes it clearer now.
+>> > >
+>> > > Depending on how RT-aware your container management is it may or may=
+ not
+>> > > be the right place to configure this, as it creates the veth interfa=
+ce.
+>> > > Presumably it's the container management which does the placement of
+>> > > the tasks to cores, why is it not setting other attributes, like RPS=
+?
+>
+>
+> The CPU isolation is done statically at system boot by setting Linux kern=
+el parameters,
+> So the container management component, in this case the Machine Configura=
+tion Operator (for Openshift)
+> or the K8s counterpart can't really help. (actually they would help if a =
+global RPS mask would exist)
+>
+> I tried to tweak the rps_cpus mask using the container management stack, =
+but there
+> is no sane way to do it, please let me get a little into the details.
+>
+> The k8s orchestration component that deals with injecting the network dev=
+ice(s) into the
+> container is CNI, which is interface based and implemented by a lot of pl=
+ugins, making it
+> hardly feasible to go over all the existing plugins and change them. Also=
+ what about
+> the 3rd party ones?
+>
+> Writing a new CNI plugin and chain it into the existing one is also not a=
+n option AFAIK,
+> they work at the network level and do not have access to sysfs (they hand=
+le the network namespaces).
+> Even if it would be possible (I don't have a deep CNI understanding), it =
+will require a cluster global configuration
+> that is actually needed only for some of the cluster nodes.
+>
+> Another approach is to set the RPS configuration from the inside(of the c=
+ontainer),
+> but the /sys mount is read only for unprivileged containers, so we lose a=
+gain.
+>
+> That leaves us with a host daemon hack:
+> Since the virtual network devices are created in the host namespace and
+> then "moved" into the container, we can listen to some udev event
+> and write to the rps_cpus file after the virtual netdev is created and be=
+fore
+> it is moved (as stated above, the work is done by a CNI plugin implementa=
+tion).
+> That is of course extremely racy and not a valid solution.
+>
+>
+>>
+>> >
+>> > The container orchestration is quite complex, and I'm unsure isolation
+>> > and networking configuration are performed (or can be performed) by th=
+e
+>> > same precess (without an heavy refactor).
+>> >
+>> > On the flip hand, the global rps mask knob looked quite
+>> > straightforward to me.
+>>
+>> I understand, but I can't shake the feeling this is a hack.
+>>
+>> Whatever sets the CPU isolation should take care of the RPS settings.
+>
+>
+> Sadly it can't be done, please see above.
+>
+>>
+>>
+>> > Possibly I can reduce the amount of new code introduced by this
+>> > patchset removing some code duplication
+>> > between rps_default_mask_sysctl() and flow_limit_cpu_sysctl(). Would
+>> > that make this change more acceptable? Or should I drop this
+>> > altogether?
+>>
+>> I'm leaning towards drop altogether, unless you can get some
+>> support/review tags from other netdev developers. So far it
+>> appears we only got a down vote from Saeed.
+>>
+>
+> Any solution that will allow the user space to avoid the
+> network soft IRQs on specific CPUs would be welcome.
+>
+> The proposed global mask is a solution, maybe there other ways?
+>
+> Thanks,
+> Marcel
 
