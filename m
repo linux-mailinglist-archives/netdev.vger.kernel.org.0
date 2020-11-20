@@ -2,162 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 776942BB9C1
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 00:15:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BCFB22BB9C6
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 00:15:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728625AbgKTXMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 18:12:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57224 "EHLO
+        id S1728470AbgKTXO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 18:14:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728261AbgKTXMx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 18:12:53 -0500
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C37C0613CF;
-        Fri, 20 Nov 2020 15:12:52 -0800 (PST)
-Received: by mail-yb1-xb41.google.com with SMTP id s8so10032677yba.13;
-        Fri, 20 Nov 2020 15:12:52 -0800 (PST)
+        with ESMTP id S1726719AbgKTXO1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 18:14:27 -0500
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B5DC0613CF;
+        Fri, 20 Nov 2020 15:14:26 -0800 (PST)
+Received: by mail-wm1-x344.google.com with SMTP id 10so12579127wml.2;
+        Fri, 20 Nov 2020 15:14:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XwhX7mqdBZb79BJALMUFBwrzROJPtHHkHdKkiNfguEk=;
-        b=KeDt4hdfc+q/0oF73O4HS7X9TSOYKZZYWGByDrzcIRKJ3NECZTKm7ROxjqcNjnCXp3
-         rPJIy0mLxuiQ9phxJGbWPjhHJzy4nXJZ5ASlaeKJiGH1LujzZBMjWWC94qSFPKtXXLdI
-         hhevbmkhojIMEyNZNinaOI3c93nPTUxbyFGLnSp984PPMVCbPVhiUGmwo8tq5eUsHXB2
-         dQePymuawBEjAa1Fs4xxcu/eRwLS4kg+IzWTPbUpZr9vwtk+2/IbBI0enLZZjfYiRQ2z
-         Bg7sTUNx9Eas3dq9B+QGLdLtW4GG3gRTRsaF9EJSDM4KiXgMSRMYEe0LkM4a+KzYUBfU
-         Yckw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=YofW6+TgUtx+VfdJJUajA6JkPCwEQsNSPv+zs7re168=;
+        b=a/Q7I7Bsy94pgqxGzvDJGspfCA0a1lkllUYelYzguI1VYCaelDnp8VzvbJQlKb6JCw
+         FxxW8BtVb+D5dpOT38+CVw0/oVRCSXxaj7j3YB/q5g3qo89KBuwuV/kLRSIFRXB0X9lZ
+         sLUBEDKn1WZ9JiduKgtd7tgYw+kr4eQmLDWFZ9+skzc+vEdLgBYiBvhew7yLw+RBWkeD
+         FQYkCgEMIZ0OOyAqt9+EMGS/lcpFANl97uHGpWia46291DV4bdpL80SHKymSyi966vQC
+         qUr3Xjb4S31ko4tAkSo10axSUEwmk41SmLDjzGYmXsYcvVMWlPnjzQbJhPy7V3bPSZ4s
+         DXIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XwhX7mqdBZb79BJALMUFBwrzROJPtHHkHdKkiNfguEk=;
-        b=IgNnnzf5J7lymzhqMywWtvIOzDNgJwA0LUu7hsONAeiQPN6KGDNhmpaR42kgOr8sK5
-         Q6JPoUc4qOMiH0lFmdT6TEWAcE2tfOJn/UkHVdmxHC+LLkUB/aSRufKkpwZjJ+lEZfm1
-         CzzSMbP3hn2caDdOyU0kqzqI5FOjuD/UsjqXr8Rr9vmS+2Hxqk9NNycvJvpvRZ2pHQAF
-         XYDcQBb1oyNhrOmwfsVoYxoNHWaVLBh6z4Le/0mUv5JqLBSb+W1SrDWbkE8cgifKA/9t
-         n3HGBgV3yhLYRBkn1V8/m8Wt4klCPOuvsUU/zVQALYM2HwM0Sw1HlYGSdNJmgwMdzVq4
-         WXFw==
-X-Gm-Message-State: AOAM530+RfknFhQx5ZktNe7NOervuHmNIYb6mImJEQ+8l7hsD3cBNU51
-        8LA4S+PQmUOgSBRDfQvcJtuiAhPdV43KknNt/FM=
-X-Google-Smtp-Source: ABdhPJxGZAcp/N28eGNsF140NVGcycVpm0Pu+ec2TbPCFIweRgBoPqjugdoxcpeLth8SEHIfhsSU2e6WulLvvP2Mjy0=
-X-Received: by 2002:a25:585:: with SMTP id 127mr22124564ybf.425.1605913972228;
- Fri, 20 Nov 2020 15:12:52 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YofW6+TgUtx+VfdJJUajA6JkPCwEQsNSPv+zs7re168=;
+        b=ZCSCh6gnNfeZUiyaEqq7GMEy6AaFYaeVdQ14XJ7oSPbwQupuJMoRMEb8DTDfortj+W
+         nXUbw7v2aYJmy91VrdOVWsgRI/oyT3lsFdElE1jDYxYQUB8wcI5eRqvDEPoXGwj240Ne
+         Znd4Ccm4g2L5xZCKA4Q+z6W98qSz0P7lh+IDMl/XhETguiBn5IJxC/OwpTAbiOtXaCz9
+         /AuHEOGvp99snY1H7h/JzmEalweXVEhp6k1fMyAPB3V7FyedQ3n0JwZqAUkubADi/JhK
+         4ryOKvCAkMvjoDXTiH3bkzgpYGlpP+DqZ+KaHN+gKjHZngimI8lWXMdM7GxaIz4zQDDS
+         cENg==
+X-Gm-Message-State: AOAM532Y7zrZ6x/HckDQLpL+Tg6ejoers5LMiuk9OFhDbewTqV9fFrao
+        UaHqg/H9emSJ1nwlJlJk78Y=
+X-Google-Smtp-Source: ABdhPJytvSp5D+9Yj5HVyHMDOMtLNevnT339vTvkQlRUs6X8LsUnA8U7+qMiarQLGxdwUDCl2VHt9A==
+X-Received: by 2002:a1c:9cc9:: with SMTP id f192mr12464800wme.143.1605914064802;
+        Fri, 20 Nov 2020 15:14:24 -0800 (PST)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id 17sm39815529wma.3.2020.11.20.15.14.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Nov 2020 15:14:24 -0800 (PST)
+Date:   Sat, 21 Nov 2020 01:14:22 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Eggers <ceggers@arri.de>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
+        George McCollister <george.mccollister@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3 07/12] net: dsa: microchip: ksz9477: add
+ Posix clock support for chip PTP clock
+Message-ID: <20201120231422.xtvhxcw7zfntx5q2@skbuf>
+References: <20201118203013.5077-1-ceggers@arri.de>
+ <20201118203013.5077-8-ceggers@arri.de>
 MIME-Version: 1.0
-References: <20201119232244.2776720-1-andrii@kernel.org> <20201119232244.2776720-5-andrii@kernel.org>
- <20201120230549.37k4zsjsrxbyjin3@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20201120230549.37k4zsjsrxbyjin3@kafai-mbp.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 20 Nov 2020 15:12:41 -0800
-Message-ID: <CAEf4BzYU8h6CaruMasZW8C2CF27GVhV-2mnM5wz4rpLzyNSYtg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 4/6] libbpf: add kernel module BTF support for
- CO-RE relocations
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201118203013.5077-8-ceggers@arri.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 20, 2020 at 3:06 PM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> On Thu, Nov 19, 2020 at 03:22:42PM -0800, Andrii Nakryiko wrote:
-> [ ... ]
->
-> > +static int load_module_btfs(struct bpf_object *obj)
-> > +{
-> > +     struct bpf_btf_info info;
-> > +     struct module_btf *mod_btf;
-> > +     struct btf *btf;
-> > +     char name[64];
-> > +     __u32 id, len;
-> > +     int err, fd;
-> > +
-> > +     if (obj->btf_modules_loaded)
-> > +             return 0;
-> > +
-> > +     /* don't do this again, even if we find no module BTFs */
-> > +     obj->btf_modules_loaded = true;
-> > +
-> > +     /* kernel too old to support module BTFs */
-> > +     if (!kernel_supports(FEAT_MODULE_BTF))
-> > +             return 0;
-> > +
-> > +     while (true) {
-> > +             err = bpf_btf_get_next_id(id, &id);
-> > +             if (err && errno == ENOENT)
-> > +                     return 0;
-> > +             if (err) {
-> > +                     err = -errno;
-> > +                     pr_warn("failed to iterate BTF objects: %d\n", err);
-> > +                     return err;
-> > +             }
-> > +
-> > +             fd = bpf_btf_get_fd_by_id(id);
-> > +             if (fd < 0) {
-> > +                     if (errno == ENOENT)
-> > +                             continue; /* expected race: BTF was unloaded */
-> > +                     err = -errno;
-> > +                     pr_warn("failed to get BTF object #%d FD: %d\n", id, err);
-> > +                     return err;
-> > +             }
-> > +
-> > +             len = sizeof(info);
-> > +             memset(&info, 0, sizeof(info));
-> > +             info.name = ptr_to_u64(name);
-> > +             info.name_len = sizeof(name);
-> > +
-> > +             err = bpf_obj_get_info_by_fd(fd, &info, &len);
-> > +             if (err) {
-> > +                     err = -errno;
-> > +                     pr_warn("failed to get BTF object #%d info: %d\n", id, err);
->
->                         close(fd);
->
-> > +                     return err;
-> > +             }
-> > +
-> > +             /* ignore non-module BTFs */
-> > +             if (!info.kernel_btf || strcmp(name, "vmlinux") == 0) {
-> > +                     close(fd);
-> > +                     continue;
-> > +             }
-> > +
->
-> [ ... ]
->
-> > @@ -8656,9 +8815,6 @@ static inline int __find_vmlinux_btf_id(struct btf *btf, const char *name,
-> >       else
-> >               err = btf__find_by_name_kind(btf, name, BTF_KIND_FUNC);
-> >
-> > -     if (err <= 0)
-> > -             pr_warn("%s is not found in vmlinux BTF\n", name);
-> > -
-> >       return err;
-> >  }
-> >
-> > @@ -8675,6 +8831,9 @@ int libbpf_find_vmlinux_btf_id(const char *name,
-> >       }
-> >
-> >       err = __find_vmlinux_btf_id(btf, name, attach_type);
-> > +     if (err <= 0)
-> > +             pr_warn("%s is not found in vmlinux BTF\n", name);
-> > +
-> Please explain this move in the commit message.
+On Wed, Nov 18, 2020 at 09:30:08PM +0100, Christian Eggers wrote:
+> Implement routines (adjfine, adjtime, gettime and settime) for
+> manipulating the chip's PTP clock.
+> 
+> Signed-off-by: Christian Eggers <ceggers@arri.de>
+> ---
 
-ok, I'll add something about that. The short answer is that
-__find_vmlinux_btf_id() is now expected to not find a type in vmlinux
-BTF, so emitting error would be wrong. So I moved it up a level where
-it's not expected.
-
->
-> >       btf__free(btf);
-> >       return err;
-> >  }
-> > --
-> > 2.24.1
-> >
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
