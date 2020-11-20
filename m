@@ -2,90 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79D0E2BA13F
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 04:38:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EB7A2BA143
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 04:38:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727235AbgKTDf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 22:35:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43410 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726799AbgKTDf3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Nov 2020 22:35:29 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ACF0D2225E;
-        Fri, 20 Nov 2020 03:35:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605843328;
-        bh=vbS1m1gv7iPYLjNgjf2zIUzIKyTt+1+RUBxI8hDlklg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qY96n5G0JV0vStBiHwu//6ptAiT3YJO6Na3IQ5li3QBB+1ZVsRsv0SE8Ap9/lvXgW
-         TXeXJRHusRpD0bB19MQZIODVnh0uypEaF61OyIiRShSJm5w0o5AE7N+aX7OmkKxrCo
-         aZT2isAP/IJ5MHwGYtrwWkH/l/mCprcapD5Yq4DY=
-Date:   Thu, 19 Nov 2020 19:35:26 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Saeed Mahameed <saeed@kernel.org>, Parav Pandit <parav@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Jiri Pirko <jiri@nvidia.com>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [PATCH net-next 00/13] Add mlx5 subfunction support
-Message-ID: <20201119193526.014b968b@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201119140017.GN244516@ziepe.ca>
-References: <20201112192424.2742-1-parav@nvidia.com>
-        <20201116145226.27b30b1f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <cdd576ebad038a3a9801e7017b7794e061e3ddcc.camel@kernel.org>
-        <20201116175804.15db0b67@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BY5PR12MB43229F23C101AFBCD2971534DCE20@BY5PR12MB4322.namprd12.prod.outlook.com>
-        <20201117091120.0c933a4c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <BY5PR12MB4322F01A4505AF21F696DCA2DCE20@BY5PR12MB4322.namprd12.prod.outlook.com>
-        <20201118182319.7bad1ca6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <28239ff66a27c0ddf8be4f1461e27b0ac0b02871.camel@kernel.org>
-        <20201119140017.GN244516@ziepe.ca>
+        id S1726281AbgKTDiE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 22:38:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44394 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725887AbgKTDiD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 22:38:03 -0500
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82F40C0613CF
+        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 19:38:03 -0800 (PST)
+Received: by mail-io1-xd44.google.com with SMTP id t8so8492751iov.8
+        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 19:38:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qjb0TOjLsMDjUodICH7KCcrpDGKufjexd1+8o7B9kb8=;
+        b=ceTHKqCRixhp7kONN33MxtSkd783OojNPQR5/0AG/7DDFyEw59YudMfnCY7wgicujN
+         M+qkJB0p65VxB5LaBCFKtoxY6vX8sUsueiN04sxxLhRcNO6VWkycNtPbF9ncobZMTWCm
+         RjNmoxfTAwHOQ/2H9q9IdOUiGzlOOIecMdv8Su7g0oN1+yjya03FV1hdAJS45zCIM8le
+         eEJa1TLZZSAUVuIc9ofmknfotd4V1EdtBsxIHJg2QBnuMJ6UzVwtGrUBJ1LvRX0nhYh4
+         7cIvS1a6ET58abJ+N0LkpiHVRf2eNipHohu3wVIzFi2Ji02BXHd508Q9x8hIevmTJlaH
+         9qqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qjb0TOjLsMDjUodICH7KCcrpDGKufjexd1+8o7B9kb8=;
+        b=baVkmU+B0yduxX5WUZRR/sIK8+jpav02rndewJsnM0DHztGwyH7C9/1NuWNHRtr9CP
+         XxoLKBYrtcSfWOwEsdmLjuCEVa8AsN+2R1KwGUcvc9THYS49v6RYsrJN2Lc1i4Jol5/B
+         eTS90opnhEbl2sPBwEBE9vlZmU2izj0iBSJYPsK88Oagqd44UEch31WVa0MwZmy/9Apa
+         61MIH0Dafv007EhtyvmMe4D+EeVZ12SpBYQrrt/AUtXs6RrbrIkNqhMVlt54eJ41ArKO
+         nmIsiRaTgdRwxNgcrB59ebRFPfpZyI+HOqV8M0rLILMa2uzFOrzU717aM0ahkSb3w/s7
+         iP1w==
+X-Gm-Message-State: AOAM533EQd/nPsbeKQyIeoiQosLjteuZgTgMlOIsErOr+a4DKnMvomPh
+        PLOr76/nbqVmapFZEG8eSd4wbrgo8eX90EJ01Xo=
+X-Google-Smtp-Source: ABdhPJypsMqrPht3AzlEWEj54WD7QLcxASxpFnXOhG3GU8sv2Ggz+0Z5+J3rw5aatqCoU3Xoo7EEMPQMqRCCPMzXIt0=
+X-Received: by 2002:a6b:b3d6:: with SMTP id c205mr8665601iof.68.1605843482923;
+ Thu, 19 Nov 2020 19:38:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201119064020.19522-1-dqfext@gmail.com> <20201120022540.GD1804098@lunn.ch>
+In-Reply-To: <20201120022540.GD1804098@lunn.ch>
+From:   DENG Qingfang <dqfext@gmail.com>
+Date:   Fri, 20 Nov 2020 11:37:53 +0800
+Message-ID: <CALW65jZzAh7sk-2ASuAj0gM=DGv6g6M7t_SjfSsBWkG=2pk_Og@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next] net: dsa: mt7530: support setting ageing time
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Greg Ungerer <gerg@kernel.org>,
+        Alex Dewar <alex.dewar90@gmail.com>,
+        Chuanhong Guo <gch981213@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Nov 2020 10:00:17 -0400 Jason Gunthorpe wrote:
-> Finally, in the mlx5 model VDPA is just an "application". It asks the
-> device to create a 'RDMA' raw ethernet packet QP that is uses rings
-> formed in the virtio-net specification. We can create it in the kernel
-> using mlx5_vdpa, and we can create it in userspace through the RDMA
-> subsystem. Like any "RDMA" application it is contained by the security
-> boundary of the PF/VF/SF the mlx5_core is running on.
+On Fri, Nov 20, 2020 at 10:26 AM Andrew Lunn <andrew@lunn.ch> wrote:
+> The bridge code will default to 300 seconds. And after a topology
+> change, it sets it to 2 * the forwarding delay, which defaults to 15
+> seconds. So maybe you can look for these two values, and use
+> pre-computed values?
 
-Thanks for the write up!
+15 and 300 are not larger than 4096 (AGE_UNIT_MAX + 1) so the exact
+match can always be found in the first iteration:
 
-The SF part is pretty clear to me, it is what it is. DPDK camp has been
-pretty excited about ADI/PASID for a while now.
+age_count = 0, age_unit = 14, secs = (0 + 1) * (14 + 1) = 15
+age_count = 0, age_unit = 299, secs = (0 + 1) * (299 + 1) = 300
 
-
-The part that's blurry to me is VDPA.
-
-I was under the impression that for VDPA the device is supposed to
-support native virtio 2.0 (or whatever the "HW friendly" spec was).
-
-I believe that's what the early patches from Intel did.
-
-You're saying it's a client application like any other - do I understand
-it right that the hypervisor driver will be translating descriptors
-between virtio and device-native then?
-
-The vdpa parent is in the hypervisor correct?
-
-Can a VDPA device have multiple children of the same type?
-
-Why do we have a representor for a SF, if the interface is actually VDPA?
-Block and net traffic can't reasonably be treated the same by the switch.
-
-Also I'm confused how block device can bind to mlx5_core - in that case
-I'm assuming the QP is bound 1:1 with a QP on the SmartNIC side, and
-that QP is plugged into an appropriate backend?
+>
+> You still need to handle other values, the user can configure these.
+>
+>              Andrew
