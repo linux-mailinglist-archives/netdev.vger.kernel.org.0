@@ -2,29 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 398522BAB2E
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 14:33:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65AEF2BAB42
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 14:34:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728218AbgKTNdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 08:33:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51728 "EHLO
+        id S1728328AbgKTNdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 08:33:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728207AbgKTNdc (ORCPT
+        with ESMTP id S1728216AbgKTNdc (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 08:33:32 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E73C0613CF
-        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 05:33:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5326AC0613CF
+        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 05:33:32 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kg6XZ-0006Fn-UW; Fri, 20 Nov 2020 14:33:30 +0100
+        id 1kg6Xa-0006Fn-Ez; Fri, 20 Nov 2020 14:33:30 +0100
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [net-next 20/25] can: flexcan: flexcan_close(): change order if commands to properly shut down the controller
-Date:   Fri, 20 Nov 2020 14:33:13 +0100
-Message-Id: <20201120133318.3428231-21-mkl@pengutronix.de>
+        kernel@pengutronix.de, Jimmy Assarsson <extja@kvaser.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [net-next 21/25] can: kvaser_usb: Add USB_{LEAF,HYDRA}_PRODUCT_ID_END defines
+Date:   Fri, 20 Nov 2020 14:33:14 +0100
+Message-Id: <20201120133318.3428231-22-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20201120133318.3428231-1-mkl@pengutronix.de>
 References: <20201120133318.3428231-1-mkl@pengutronix.de>
@@ -38,63 +39,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There haven been reports, that the flexcan_close() soradically hangs during
-simultanious ifdown, sending of CAN messages and probably open CAN bus:
+From: Jimmy Assarsson <extja@kvaser.com>
 
-| (__schedule) from [<808bbd34>] (schedule+0x90/0xb8)
-| (schedule) from [<808bf274>] (schedule_timeout+0x1f8/0x24c)
-| (schedule_timeout) from [<8016be44>] (msleep+0x18/0x1c)
-| (msleep) from [<80746a64>] (napi_disable+0x60/0x70)
-| (napi_disable) from [<8052fdd0>] (flexcan_close+0x2c/0x140)
-| (flexcan_close) from [<80744930>] (__dev_close_many+0xb8/0xd8)
-| (__dev_close_many) from [<8074db9c>] (__dev_change_flags+0xd0/0x1a0)
-| (__dev_change_flags) from [<8074dc84>] (dev_change_flags+0x18/0x48)
-| (dev_change_flags) from [<80760c24>] (do_setlink+0x44c/0x7b4)
-| (do_setlink) from [<80761560>] (rtnl_newlink+0x374/0x68c)
+Add USB_{LEAF,HYDRA}_PRODUCT_ID_END defines, representing the last USB PID
+entry in respectively family. This removes the need to update the
+kvaser_is_{leaf,hydra}() functions whenever new devices are added.
 
-I was unable to reproduce the issue, but a cleanup of the flexcan close
-sequence has probably fixed the problem at the reporting user.
-
-This patch changes the sequence in flexcan_close() to:
-- stop the TX queue
-- disable the interrupts on the chip level and wait via free_irq()
-  synchronously for the interrupt handler to finish
-- disable RX offload, which disables synchronously NAPI
-- disable the flexcan on the chip level
-- free RX offload
-- disable the transceiver
-- close the CAN device
-- disable the clocks
-
-Link: https://lore.kernel.org/r/20201119100917.3013281-6-mkl@pengutronix.de
+Signed-off-by: Jimmy Assarsson <extja@kvaser.com>
+Link: https://lore.kernel.org/r/20201115163027.16851-3-jimmyassarsson@gmail.com
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/flexcan.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-index e98368be1669..e85f20d18d67 100644
---- a/drivers/net/can/flexcan.c
-+++ b/drivers/net/can/flexcan.c
-@@ -1754,15 +1754,15 @@ static int flexcan_close(struct net_device *dev)
- 	struct flexcan_priv *priv = netdev_priv(dev);
+diff --git a/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c b/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
+index d6e18bcb1a7f..1dffcd19c456 100644
+--- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
++++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
+@@ -58,6 +58,8 @@
+ #define USB_LEAF_LIGHT_HS_V2_OEM_PRODUCT_ID	290
+ #define USB_USBCAN_LIGHT_2HS_PRODUCT_ID		291
+ #define USB_MINI_PCIE_2HS_PRODUCT_ID		292
++#define USB_LEAF_PRODUCT_ID_END \
++	USB_MINI_PCIE_2HS_PRODUCT_ID
  
- 	netif_stop_queue(dev);
-+	flexcan_chip_interrupts_disable(dev);
-+	free_irq(dev->irq, dev);
- 	can_rx_offload_disable(&priv->offload);
- 	flexcan_chip_stop_disable_on_error(dev);
--	flexcan_chip_interrupts_disable(dev);
+ /* Kvaser USBCan-II devices product ids */
+ #define USB_USBCAN_REVB_PRODUCT_ID		2
+@@ -78,13 +80,15 @@
+ #define USB_ATI_USBCAN_PRO_2HS_V2_PRODUCT_ID	268
+ #define USB_ATI_MEMO_PRO_2HS_V2_PRODUCT_ID	269
+ #define USB_HYBRID_PRO_CANLIN_PRODUCT_ID	270
++#define USB_HYDRA_PRODUCT_ID_END \
++	USB_HYBRID_PRO_CANLIN_PRODUCT_ID
  
- 	can_rx_offload_del(&priv->offload);
--	free_irq(dev->irq, dev);
- 	flexcan_transceiver_disable(priv);
--
- 	close_candev(dev);
-+
- 	pm_runtime_put(priv->dev);
+ static inline bool kvaser_is_leaf(const struct usb_device_id *id)
+ {
+ 	return (id->idProduct >= USB_LEAF_DEVEL_PRODUCT_ID &&
+ 		id->idProduct <= USB_CAN_R_PRODUCT_ID) ||
+ 		(id->idProduct >= USB_LEAF_LITE_V2_PRODUCT_ID &&
+-		 id->idProduct <= USB_MINI_PCIE_2HS_PRODUCT_ID);
++		 id->idProduct <= USB_LEAF_PRODUCT_ID_END);
+ }
  
- 	can_led_event(dev, CAN_LED_EVENT_STOP);
+ static inline bool kvaser_is_usbcan(const struct usb_device_id *id)
+@@ -96,7 +100,7 @@ static inline bool kvaser_is_usbcan(const struct usb_device_id *id)
+ static inline bool kvaser_is_hydra(const struct usb_device_id *id)
+ {
+ 	return id->idProduct >= USB_BLACKBIRD_V2_PRODUCT_ID &&
+-	       id->idProduct <= USB_HYBRID_PRO_CANLIN_PRODUCT_ID;
++	       id->idProduct <= USB_HYDRA_PRODUCT_ID_END;
+ }
+ 
+ static const struct usb_device_id kvaser_usb_table[] = {
 -- 
 2.29.2
 
