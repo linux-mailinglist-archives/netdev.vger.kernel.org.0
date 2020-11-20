@@ -2,158 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CB312BB7D6
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 21:50:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 558F72BB7E8
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 21:51:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729905AbgKTUsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 15:48:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34824 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729170AbgKTUsG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 15:48:06 -0500
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80078C061A48
-        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 12:48:04 -0800 (PST)
-Received: by mail-pg1-x542.google.com with SMTP id t21so8332775pgl.3
-        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 12:48:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=v0uQ3+ZvQ790GJbfbb1ESqfRrqQ38XoL7hho1t1Gb0k=;
-        b=avd4TaFUM+Ab56B8iWTc3giej2JyPXQeNqj8Vqwh4pMfYMm6E7ROZ43KbUMGq3c2kN
-         Y7wgImiWtwhH33QCuhXwX5xfYnbd8ZoAoymaiVLMsflRM4OrtMTi7raBVieCeB5e9/kv
-         qCr4nXKui27aGXF6t1ziK2ispJ9UlbNRnpYGc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=v0uQ3+ZvQ790GJbfbb1ESqfRrqQ38XoL7hho1t1Gb0k=;
-        b=Yo4lQWkzKga1op4kWiwdjiOJRrq/36DuxJqqn3cShQNpIkJBKgfJAlTupd9iZyAbMH
-         /wIwhsAAjV7Qf1kABZp1L/JbHwgyF4Mt4oqvpZBDYs9Y9FsOPBPiVXeHheDH+6OKb5nD
-         oTzBnDpzKEldSa/v07m3j775+GzF1h3iP8H8TOVMcTyforSAZEz0MeSgUqFob2V8o4nZ
-         3N23pQRlWUnpy4knBUZCUhtCoDg3uuTAVEkc8Dm03vJZr2vmJr+3ZISuiajsUdYMvXGw
-         8EC5Ce0gh1Z0awtOnhAms+4rOhoojQLwVks7lmxDYKAuaQ67L4YVyQaxJZQ+8qGMgVU7
-         yybA==
-X-Gm-Message-State: AOAM532wgOBfPS5olwa49XAynfr2JukUaGpjLLKVQUOwOxLCy6BK/Me0
-        8kEIu42H7aSuXa+w0mCR+qV+xp2dxpkSW5Ij
-X-Google-Smtp-Source: ABdhPJzEbaB+IYipfwOUXoCmdplAutZXXBsmC8OBp1xOfb5CPZl7t2eHSBKNbswFZQhoeAMsBYl7Qg==
-X-Received: by 2002:a62:d108:0:b029:163:d3cf:f00e with SMTP id z8-20020a62d1080000b0290163d3cff00emr15313890pfg.43.1605905283088;
-        Fri, 20 Nov 2020 12:48:03 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id a67sm3215381pfa.77.2020.11.20.12.48.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Nov 2020 12:48:02 -0800 (PST)
-Date:   Fri, 20 Nov 2020 12:48:01 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
-        amd-gfx@lists.freedesktop.org, bridge@lists.linux-foundation.org,
-        ceph-devel@vger.kernel.org, cluster-devel@redhat.com,
-        coreteam@netfilter.org, devel@driverdev.osuosl.org,
-        dm-devel@redhat.com, drbd-dev@lists.linbit.com,
-        dri-devel@lists.freedesktop.org, GR-everest-linux-l2@marvell.com,
-        GR-Linux-NIC-Dev@marvell.com, intel-gfx@lists.freedesktop.org,
-        intel-wired-lan@lists.osuosl.org, keyrings@vger.kernel.org,
-        linux1394-devel@lists.sourceforge.net, linux-acpi@vger.kernel.org,
-        linux-afs@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org,
-        linux-atm-general@lists.sourceforge.net,
-        linux-block@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-cifs@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-decnet-user@lists.sourceforge.net,
-        linux-ext4@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-geode@lists.infradead.org, linux-gpio@vger.kernel.org,
-        linux-hams@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        linux-i3c@lists.infradead.org, linux-ide@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-integrity@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-media@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-mm@kvack.org,
-        linux-mtd@lists.infradead.org, linux-nfs@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, nouveau@lists.freedesktop.org,
-        op-tee@lists.trustedfirmware.org, oss-drivers@netronome.com,
-        patches@opensource.cirrus.com, rds-devel@oss.oracle.com,
-        reiserfs-devel@vger.kernel.org, samba-technical@lists.samba.org,
-        selinux@vger.kernel.org, target-devel@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net,
-        usb-storage@lists.one-eyed-alien.net,
-        virtualization@lists.linux-foundation.org,
-        wcn36xx@lists.infradead.org, x86@kernel.org,
-        xen-devel@lists.xenproject.org, linux-hardening@vger.kernel.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Miguel Ojeda <ojeda@kernel.org>, Joe Perches <joe@perches.com>
-Subject: Re: [PATCH 000/141] Fix fall-through warnings for Clang
-Message-ID: <202011201244.78E002D5@keescook>
-References: <cover.1605896059.git.gustavoars@kernel.org>
- <20201120105344.4345c14e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <202011201129.B13FDB3C@keescook>
- <20201120115142.292999b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1730188AbgKTUum (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 15:50:42 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36810 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729587AbgKTUul (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Nov 2020 15:50:41 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9D9642223F;
+        Fri, 20 Nov 2020 20:50:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605905441;
+        bh=CD6J9aBN3wd+dkrZ6D4o7RWa0H5Idy0AtRGQgdfH1H0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=J1bOxW/cK/+sjBE+Pofli22i2mKXW3WbeCRRHVTEKiKoknf4WK7oSrUYsCwWbeQ0d
+         BDPi9AKjTED0cwrPhpD0Hbj0ZABDGx2u+bh+JU6ppDs2b0bPtiaSOuWUaWatHxoVmh
+         6saxDs3hB4YmUZk4LkhofkGWuo8a5EmkHmPWFjVM=
+Date:   Fri, 20 Nov 2020 12:50:39 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Marcel Apfelbaum <mapfelba@redhat.com>
+Cc:     marcel@redhat.com, Saeed Mahameed <saeed@kernel.org>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Shuah Khan <shuah@kernel.org>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: Re: [kuba@kernel.org: Re: [PATCH net-next v2 0/3] net: introduce
+ rps_default_mask]
+Message-ID: <20201120125039.6a88b0b1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CA+aaKfD_6qdNVRgr2TdDeuOau1UCFzRqWRB8iM-_GHV7mMrcsg@mail.gmail.com>
+References: <20201119162527.GB9877@fuller.cnet>
+        <CA+aaKfCMa1sOa6bMXFAaP6Wb=5ZgoAcnZAaP9aBmWwOzaAtcHw@mail.gmail.com>
+        <CA+aaKfD_6qdNVRgr2TdDeuOau1UCFzRqWRB8iM-_GHV7mMrcsg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201120115142.292999b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 20, 2020 at 11:51:42AM -0800, Jakub Kicinski wrote:
-> On Fri, 20 Nov 2020 11:30:40 -0800 Kees Cook wrote:
-> > On Fri, Nov 20, 2020 at 10:53:44AM -0800, Jakub Kicinski wrote:
-> > > On Fri, 20 Nov 2020 12:21:39 -0600 Gustavo A. R. Silva wrote:  
-> > > > This series aims to fix almost all remaining fall-through warnings in
-> > > > order to enable -Wimplicit-fallthrough for Clang.
-> > > > 
-> > > > In preparation to enable -Wimplicit-fallthrough for Clang, explicitly
-> > > > add multiple break/goto/return/fallthrough statements instead of just
-> > > > letting the code fall through to the next case.
-> > > > 
-> > > > Notice that in order to enable -Wimplicit-fallthrough for Clang, this
-> > > > change[1] is meant to be reverted at some point. So, this patch helps
-> > > > to move in that direction.
-> > > > 
-> > > > Something important to mention is that there is currently a discrepancy
-> > > > between GCC and Clang when dealing with switch fall-through to empty case
-> > > > statements or to cases that only contain a break/continue/return
-> > > > statement[2][3][4].  
-> > > 
-> > > Are we sure we want to make this change? Was it discussed before?
-> > > 
-> > > Are there any bugs Clangs puritanical definition of fallthrough helped
-> > > find?
-> > > 
-> > > IMVHO compiler warnings are supposed to warn about issues that could
-> > > be bugs. Falling through to default: break; can hardly be a bug?!  
-> > 
-> > It's certainly a place where the intent is not always clear. I think
-> > this makes all the cases unambiguous, and doesn't impact the machine
-> > code, since the compiler will happily optimize away any behavioral
-> > redundancy.
-> 
-> If none of the 140 patches here fix a real bug, and there is no change
-> to machine code then it sounds to me like a W=2 kind of a warning.
+On Fri, 20 Nov 2020 19:39:24 +0200 Marcel Apfelbaum wrote:
+> > The CPU isolation is done statically at system boot by setting
+> > Linux kernel parameters, So the container management component, in
+> > this case the Machine Configuration Operator (for Openshift) or the
+> > K8s counterpart can't really help. (actually they would help if a
+> > global RPS mask would exist)
+> >
+> > I tried to tweak the rps_cpus mask using the container management
+> > stack, but there is no sane way to do it, please let me get a
+> > little into the details.
+> >
+> > The k8s orchestration component that deals with injecting the
+> > network device(s) into the container is CNI, which is interface
+> > based and implemented by a lot of plugins, making it hardly
+> > feasible to go over all the existing plugins and change them. Also
+> > what about the 3rd party ones?
 
-I'd like to avoid splitting common -W options between default and W=2
-just based on the compiler. Getting -Wimplicit-fallthrough enabled found
-plenty of bugs, so making sure it works correctly for both compilers
-feels justified to me. (This is just a subset of the same C language
-short-coming.)
+I'm not particularly amenable to the "changing user space is hard"
+argument. Especially that you don't appear to have given it an honest
+try.
 
-> I think clang is just being annoying here, but if I'm the only one who
-> feels this way chances are I'm wrong :)
+> > Writing a new CNI plugin and chain it into the existing one is also
+> > not an option AFAIK, they work at the network level and do not have
+> > access to sysfs (they handle the network namespaces). Even if it
+> > would be possible (I don't have a deep CNI understanding), it will
+> > require a cluster global configuration that is actually needed only
+> > for some of the cluster nodes.
+> >
+> > Another approach is to set the RPS configuration from the inside(of
+> > the container), but the /sys mount is read only for unprivileged
+> > containers, so we lose again.
+> >
+> > That leaves us with a host daemon hack:
+> > Since the virtual network devices are created in the host namespace
+> > and then "moved" into the container, we can listen to some udev
+> > event and write to the rps_cpus file after the virtual netdev is
+> > created and before it is moved (as stated above, the work is done
+> > by a CNI plugin implementation). That is of course extremely racy
+> > and not a valid solution.
+> >
+> >> > Possibly I can reduce the amount of new code introduced by this
+> >> > patchset removing some code duplication
+> >> > between rps_default_mask_sysctl() and flow_limit_cpu_sysctl().
+> >> > Would that make this change more acceptable? Or should I drop
+> >> > this altogether?  
+> >>
+> >> I'm leaning towards drop altogether, unless you can get some
+> >> support/review tags from other netdev developers. So far it
+> >> appears we only got a down vote from Saeed.
 
-It's being pretty pedantic, but I don't think it's unreasonable to
-explicitly state how every case ends. GCC's silence for the case of
-"fall through to a break" doesn't really seem justified.
+As I said here, try to convince some other senior networking developers
+this is the right solution and I'll apply it.
 
--- 
-Kees Cook
+This is giving me flashbacks of trying bend the kernel for OpenStack
+because there was no developer on my team who could change OpenStack.
+
+> > Any solution that will allow the user space to avoid the
+> > network soft IRQs on specific CPUs would be welcome.
+> >
+> > The proposed global mask is a solution, maybe there other ways?
