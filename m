@@ -2,131 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09E832BA703
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 11:07:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DECC2BA70C
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 11:07:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727677AbgKTKFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 05:05:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47560 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726719AbgKTKFd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 05:05:33 -0500
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04581C0613CF;
-        Fri, 20 Nov 2020 02:05:33 -0800 (PST)
-Received: by mail-lj1-x243.google.com with SMTP id y16so9470873ljh.0;
-        Fri, 20 Nov 2020 02:05:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ALC5B9tIQTF680xeFUEICLS4/+UBA8Xb/cTnIHd0DHQ=;
-        b=iv8wJjtJSuqTL/WITf79BDKYpsj3uFnq3hkW6EV+B8Lz68zsE/5lvAC++PPsNSLvZN
-         CXCBSrGIkyQeXKnZGyxnv4xHC/7Y63qCUXK+eWi9QMZJBl884TqSwcozpDdKhPeG7D12
-         scJAXg+P5k8D9xHDU6wLUDPiRheU71/1yFhUD+VSkF7welAMJxD8PjFh4WdDtR23T1de
-         iohw7JuyMFJRfGURNCl1an1QrcWk4vQ3ghN3k9bWtC5Q2ekybiuioGGJJo72x29JP+x0
-         rtTitbq4nCVgmVc0bkuIr3OwgvU96iQ2LNQC2MvoHdLk7F5/+phdm6oacSgC4SQJjpiJ
-         7+Ng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ALC5B9tIQTF680xeFUEICLS4/+UBA8Xb/cTnIHd0DHQ=;
-        b=JZKa2YoMlfwWljW5TBc60zGpJEag/OGcPb/zub31X67gzJ29/iHS1OOgljezZvgGuN
-         y3a/2F1lDTSmz50XMhepEeL36C/+3ZqFJvMtZyUXDK1VnMvMGdqbvVjLx/ZIWSjklq41
-         qZt3cXi3k8es+44eaF0TQU/DUpcwGp+r2U3h4pd4QZ7835q+JGlc9rrVOfYFmBR7YdG+
-         vcKcLpXRyVIuyvYq2aJfyxVL8X+yKYTxr/WhjF5BjAOPvWW3NiPMF8QKRtOlC32VbqHG
-         g8mmmopaEXgwNDIclR/7S+CFMWTaKeZWTiTc245EHQiI2pLGvRMCwUOmlkOo/m3+z/Tb
-         K0XA==
-X-Gm-Message-State: AOAM532FVpj47/JboxDPrfxK9T69iXiZsobgqSMeXY4UWRsCkNcHAGJ1
-        iqLt4MkQ7T0m199J8BisLTM=
-X-Google-Smtp-Source: ABdhPJyhHCSYwZt9lLDpv6+qOXWrxg/urk2JAKWI4lhfby6z1wtDZbj7vQykvECtPgUh2T/NV/yZJA==
-X-Received: by 2002:a2e:7306:: with SMTP id o6mr7255145ljc.306.1605866731494;
-        Fri, 20 Nov 2020 02:05:31 -0800 (PST)
-Received: from [192.168.2.145] (109-252-193-159.dynamic.spd-mgts.ru. [109.252.193.159])
-        by smtp.googlemail.com with ESMTPSA id b12sm241145ljk.117.2020.11.20.02.05.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 Nov 2020 02:05:30 -0800 (PST)
-Subject: Re: [PATCH v2] brcmfmac: expose firmware config files through modinfo
-To:     matthias.bgg@kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>, hdegoede@redhat.com
-Cc:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Chung-Hsien Hsu <stanley.hsu@cypress.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Double Lo <double.lo@cypress.com>,
-        Frank Kao <frank.kao@cypress.com>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        "Gustavo A . R . Silva" <gustavo@embeddedor.com>,
-        netdev@vger.kernel.org,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        Matthias Brugger <mbrugger@suse.com>,
-        Saravanan Shanmugham <saravanan.shanmugham@cypress.com>,
-        brcm80211-dev-list@cypress.com, linux-kernel@vger.kernel.org,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Amar Shankar <amsr@cypress.com>
-References: <20201120095233.19953-1-matthias.bgg@kernel.org>
-From:   Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <2ff4dcc3-6f99-a068-8989-4293d2013627@gmail.com>
-Date:   Fri, 20 Nov 2020 13:05:29 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.2
-MIME-Version: 1.0
-In-Reply-To: <20201120095233.19953-1-matthias.bgg@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        id S1727850AbgKTKHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 05:07:09 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:34852 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727137AbgKTKHI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 05:07:08 -0500
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AKA2A6g160105;
+        Fri, 20 Nov 2020 05:07:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id; s=pp1;
+ bh=ceNSdD8BsGwIi2MityEclqQHO4eg8Omuo9lv4TCw5lw=;
+ b=HnernEPUTwLdJ5CsCZpjRdyxN1ZRdOXR6ytocYvMAnHGbTMN5o7YCjxodpQFBxvt0N0g
+ qhMVCjHjdcGk+wrw4Rk32O+ANveh20ApIwI4PEY4wNSsG/HSNi0k0PIcnquIHxHIuO7B
+ csqGN3LZrMT2h1QW3a//tIDX2Shpiw+iBhD3SoGaT6Gb6jqiZ29CEJj1sQQ6RzNYtMlH
+ bxOqosaZxiKtJ8nwW+Cr1HNDDKALdRzcAaYBVarb9CHVLD3Qz9eBrtc7xSQqQrLp7GBN
+ qEVofGfHU8RgyPmDBqeOvvU92I/Uw3jCh4x4qsZGY3xxGFipBAqLb7mEXx7NedwOnDx4 Bg== 
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 34x9264yvh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 20 Nov 2020 05:07:06 -0500
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0AKA3Y1M032211;
+        Fri, 20 Nov 2020 10:07:03 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma04fra.de.ibm.com with ESMTP id 34t6v8b68j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 20 Nov 2020 10:07:03 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0AKA709V8192754
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 20 Nov 2020 10:07:00 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B399CA4059;
+        Fri, 20 Nov 2020 10:07:00 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6ED6BA4051;
+        Fri, 20 Nov 2020 10:07:00 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 20 Nov 2020 10:07:00 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-netdev <netdev@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net] net/af_iucv: set correct sk_protocol for child sockets
+Date:   Fri, 20 Nov 2020 11:06:57 +0100
+Message-Id: <20201120100657.34407-1-jwi@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-20_04:2020-11-19,2020-11-20 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 spamscore=0
+ suspectscore=2 priorityscore=1501 adultscore=0 mlxlogscore=916 bulkscore=0
+ lowpriorityscore=0 malwarescore=0 impostorscore=0 clxscore=1015 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011200063
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-20.11.2020 12:52, matthias.bgg@kernel.org пишет:
-> From: Matthias Brugger <mbrugger@suse.com>
-> 
-> Apart from a firmware binary the chip needs a config file used by the
-> FW. Add the config files to modinfo so that they can be read by
-> userspace.
-> 
-> Signed-off-by: Matthias Brugger <mbrugger@suse.com>
-> 
-> ---
-> 
-> Changes in v2:
-> In comparison to first version [0] we use wildcards to enumerate the
-> firmware configuration files. Wildcard support was added to dracut
-> recently [1].
-> [0] https://lore.kernel.org/linux-wireless/20200701153123.25602-1-matthias.bgg@kernel.org/
-> [1] https://github.com/dracutdevs/dracut/pull/860
-> 
->  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
-> 
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-> index 99987a789e7e..dd6d287b1b00 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-> @@ -625,6 +625,15 @@ BRCMF_FW_DEF(4359, "brcmfmac4359-sdio");
->  BRCMF_FW_DEF(4373, "brcmfmac4373-sdio");
->  BRCMF_FW_DEF(43012, "brcmfmac43012-sdio");
->  
-> +/* firmware config files */
-> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac4330-sdio.*.txt");
-> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43340-sdio.*.txt");
-> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43362-sdio.*.txt");
-> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43430a0-sdio.*.txt");
-> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43430-sdio.*.txt");
-> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43455-sdio.*.txt");
-> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac4356-pcie.*.txt");
+Child sockets erroneously inherit their parent's sk_type (ie. SOCK_*),
+instead of the PF_IUCV protocol that the parent was created with in
+iucv_sock_create().
 
-This doesn't cover all hardware models. Note that the upstream
-linux-firmware has files only for a few hardware models.
+We're currently not using sk->sk_protocol ourselves, so this shouldn't
+have much impact (except eg. getting the output in skb_dump() right).
 
-I suppose that the correct mask should be "brcm/brcmfmac*-sdio.*.txt".
+Fixes: eac3731bd04c ("[S390]: Add AF_IUCV socket support")
+Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
+---
+ net/iucv/af_iucv.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/iucv/af_iucv.c b/net/iucv/af_iucv.c
+index 047238f01ba6..db7d888914fa 100644
+--- a/net/iucv/af_iucv.c
++++ b/net/iucv/af_iucv.c
+@@ -1645,7 +1645,7 @@ static int iucv_callback_connreq(struct iucv_path *path,
+ 	}
+ 
+ 	/* Create the new socket */
+-	nsk = iucv_sock_alloc(NULL, sk->sk_type, GFP_ATOMIC, 0);
++	nsk = iucv_sock_alloc(NULL, sk->sk_protocol, GFP_ATOMIC, 0);
+ 	if (!nsk) {
+ 		err = pr_iucv->path_sever(path, user_data);
+ 		iucv_path_free(path);
+@@ -1851,7 +1851,7 @@ static int afiucv_hs_callback_syn(struct sock *sk, struct sk_buff *skb)
+ 		goto out;
+ 	}
+ 
+-	nsk = iucv_sock_alloc(NULL, sk->sk_type, GFP_ATOMIC, 0);
++	nsk = iucv_sock_alloc(NULL, sk->sk_protocol, GFP_ATOMIC, 0);
+ 	bh_lock_sock(sk);
+ 	if ((sk->sk_state != IUCV_LISTEN) ||
+ 	    sk_acceptq_is_full(sk) ||
+-- 
+2.17.1
+
