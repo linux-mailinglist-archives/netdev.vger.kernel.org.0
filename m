@@ -2,102 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28CD22BBA1D
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 00:22:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DEDE2BBA21
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 00:26:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729356AbgKTXWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 18:22:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58686 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729165AbgKTXW3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 18:22:29 -0500
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8111BC0613CF;
-        Fri, 20 Nov 2020 15:22:28 -0800 (PST)
-Received: by mail-wm1-x341.google.com with SMTP id x13so3857904wmj.1;
-        Fri, 20 Nov 2020 15:22:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=kwxa6AJuFjND3m5jq1YdigG0kOFcdnFuNwDfJmwLDoU=;
-        b=m2wfek4qA9MeuIpMJBOTTB4dz1p+WDfybIfsLJo7amOXyNDXFyCzEItNfRkcfBre8L
-         6MJegiZ+KQD1OIN0d0rMljhpAtPvQDZ/x3XTZgq05+48wRvFmBKnhzIBOpGxuueAN9+z
-         XNa9TT6ummZ6/XchO2/jYgTvKXloOlJkqgu1g/kj1BI3BRgtK52rq+Zc0ZS1poGaGHjH
-         G42aM8ie0SVcUcGa9CAOLa+DDJWD7MNraNl/grAuCXbADxsijL0F+9O9McR7MeRVY7XR
-         t0Mpb6074DzrBBetLapy2iRKp50LhHziy4GNypMsnAD3+6wUoNrm+TZyxjQm/YF6/yy1
-         KgkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=kwxa6AJuFjND3m5jq1YdigG0kOFcdnFuNwDfJmwLDoU=;
-        b=EjMcEGgNSqiFAlG+VB0u/f8hCvSggMau6+8q5GmUmMMgOni1JNBEOOsH2audRInONQ
-         EWnDCe77j3sLIyCPj0jweotUmTKYcngkgUGJxWlLMOPo+xJTV0Trm7dH7RmXeRWWZqjR
-         GPtOs5Pf21Iu8SyZI1xVr4rpmb+wyGi5Ld+ENZlsR3mt8Gl5KxEoc2ZyLGHDVf0Xt6ot
-         heBi36GJM1ofds+1EBhKdGxoz+f+ac95z66vrQK3zQU2pFbRkZr+ZZaqt6yP6Runza9E
-         c+Z93rNX9j229BD+CWNxtJsZS4gLUAdQojm0csTRvV2FNs26o3Xo+oZR10wrt5jJID0p
-         DbmQ==
-X-Gm-Message-State: AOAM532Lze6TAN7KUVF8RBnpzDFkWlb98URbYPKA1UcNh8XdzgjWATvJ
-        WshSzbQpryxNZcNtGB8lqPE+DayGXg9XZw==
-X-Google-Smtp-Source: ABdhPJy/lvATDDOr64q6OmFUIdrwhy36vGq2PKy2zYaWdG7I2esZA5f+PyjkpKt5pSjBTXuwt1gWlw==
-X-Received: by 2002:a7b:cc94:: with SMTP id p20mr12797097wma.100.1605914547156;
-        Fri, 20 Nov 2020 15:22:27 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f23:2800:85fe:30cb:3ff1:815c? (p200300ea8f23280085fe30cb3ff1815c.dip0.t-ipconnect.de. [2003:ea:8f23:2800:85fe:30cb:3ff1:815c])
-        by smtp.googlemail.com with ESMTPSA id g186sm39300328wma.1.2020.11.20.15.22.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 Nov 2020 15:22:26 -0800 (PST)
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] net: warn if gso_type isn't set for a GSO SKB
-Message-ID: <97c78d21-7f0b-d843-df17-3589f224d2cf@gmail.com>
-Date:   Sat, 21 Nov 2020 00:22:20 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        id S1728883AbgKTXYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 18:24:43 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:42574 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728740AbgKTXYn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Nov 2020 18:24:43 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kgFlf-008BKk-9K; Sat, 21 Nov 2020 00:24:39 +0100
+Date:   Sat, 21 Nov 2020 00:24:39 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     George McCollister <george.mccollister@gmail.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>
+Subject: Re: [PATCH net-next 2/3] net: dsa: add Arrow SpeedChips XRS700x
+ driver
+Message-ID: <20201120232439.GA1949248@lunn.ch>
+References: <20201120181627.21382-1-george.mccollister@gmail.com>
+ <20201120181627.21382-3-george.mccollister@gmail.com>
+ <20201120193321.GP1853236@lunn.ch>
+ <CAFSKS=P=epx3Sr3OzkCg9ycoftmXm__PaMee7HWbAGXYdqgbDw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFSKS=P=epx3Sr3OzkCg9ycoftmXm__PaMee7HWbAGXYdqgbDw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In bug report [0] a warning in r8169 driver was reported that was
-caused by an invalid GSO SKB (gso_type was 0). See [1] for a discussion
-about this issue. Still the origin of the invalid GSO SKB isn't clear.
+Hi George
 
-It shouldn't be a network drivers task to check for invalid GSO SKB's.
-Also, even if issue [0] can be fixed, we can't be sure that a
-similar issue doesn't pop up again at another place.
-Therefore let gso_features_check() check for such invalid GSO SKB's.
+> > > +static void xrs700x_port_stp_state_set(struct dsa_switch *ds, int port,
+> > > +                                    u8 state)
+> > > +{
+> > > +     struct xrs700x *priv = ds->priv;
+> > > +     unsigned int val;
+> > > +
+> > > +     switch (state) {
+> > > +     case BR_STATE_DISABLED:
+> > > +             val = XRS_PORT_DISABLED;
+> > > +             break;
+> > > +     case BR_STATE_LISTENING:
+> > > +             val = XRS_PORT_DISABLED;
+> > > +             break;
+> >
+> > No listening state?
+> 
+> No, just forwarding, learning and disabled. See:
+> https://www.flexibilis.com/downloads/xrs/SpeedChip_XRS7000_3000_User_Manual.pdf
+> page 82.
+> 
+> >
+> > > +     case BR_STATE_LEARNING:
+> > > +             val = XRS_PORT_LEARNING;
+> > > +             break;
+> > > +     case BR_STATE_FORWARDING:
+> > > +             val = XRS_PORT_FORWARDING;
+> > > +             break;
+> > > +     case BR_STATE_BLOCKING:
+> > > +             val = XRS_PORT_DISABLED;
+> > > +             break;
+> >
+> > Hum. What exactly does XRS_PORT_DISABLED mean? When blocking, it is
+> > expected you can still send/receive BPDUs.
+> 
+> Datasheet says: "Disabled. Port neither learns MAC addresses nor forwards data."
 
-[0] https://bugzilla.kernel.org/show_bug.cgi?id=209423
-[1] https://www.spinics.net/lists/netdev/msg690794.html
+I think you need to do some testing here. Put the device into a loop
+with another switch, the bridge will block a port, and see if it still
+can send/receive BPDUs on the blocked port.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- net/core/dev.c | 5 +++++
- 1 file changed, 5 insertions(+)
+If it cannot send/receive BPDUs, it might get into an oscillating
+state. They see each other via BPDUs, decide there is a loop, and
+block a port. The BPDUs stop, they think the loop has been broken and
+so unblock. They see each other via BPUS, decide there is a loop,...
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 4bfdcd6b2..3c3070d9d 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -3495,6 +3495,11 @@ static netdev_features_t gso_features_check(const struct sk_buff *skb,
- 	if (gso_segs > dev->gso_max_segs)
- 		return features & ~NETIF_F_GSO_MASK;
- 
-+	if (!skb_shinfo(skb)->gso_type) {
-+		skb_warn_bad_offload(skb);
-+		return features & ~NETIF_F_GSO_MASK;
-+	}
-+
- 	/* Support for GSO partial features requires software
- 	 * intervention before we can actually process the packets
- 	 * so we need to strip support for any partial features now
--- 
-2.29.2
+> > > +static int xrs700x_i2c_reg_read(void *context, unsigned int reg,
+> > > +                             unsigned int *val)
+> > > +{
+> > > +     int ret;
+> > > +     unsigned char buf[4];
+> > > +     struct device *dev = context;
+> > > +     struct i2c_client *i2c = to_i2c_client(dev);
+> > > +
+> > > +     buf[0] = reg >> 23 & 0xff;
+> > > +     buf[1] = reg >> 15 & 0xff;
+> > > +     buf[2] = reg >> 7 & 0xff;
+> > > +     buf[3] = (reg & 0x7f) << 1;
+> > > +
+> > > +     ret = i2c_master_send(i2c, buf, sizeof(buf));
+> >
+> > Are you allowed to perform transfers on stack buffers? I think any I2C
+> > bus driver using DMA is going to be unhappy.
+> 
+> It should be fine. See the following file, there is a good write up about this:
+> See Documentation/i2c/dma-considerations.rst
 
+O.K, thanks for the pointer.
+
+> > > +static const struct of_device_id xrs700x_i2c_dt_ids[] = {
+> > > +     { .compatible = "arrow,xrs7003" },
+> > > +     { .compatible = "arrow,xrs7004" },
+> > > +     {},
+> >
+> > Please validate that the compatible string actually matches the switch
+> > found. Otherwise we can get into all sorts of horrible backward
+> > compatibility issues.
+> 
+> Okay. What kind of compatibility issues? Do you have a hypothetical
+> example? I guess I will just use of_device_is_compatible() to check.
+
+Since it currently does not matter, you can expect 50% of the boards
+to get it wrong. Sometime later, you find some difference between the
+two, you want to add additional optional properties dependent on the
+compatible string. But that is made hard, because 50% of the boards
+are broken, and the compatible string is now worthless.
+
+Either you need to verify the compatible from day one so it is not
+wrong, or you just use a single compatible "arrow,xrs700x", which
+cannot be wrong.
+
+  Andrew
