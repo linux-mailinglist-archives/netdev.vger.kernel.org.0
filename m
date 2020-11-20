@@ -2,66 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EECA2BB809
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 22:00:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 763C82BB80E
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 22:05:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730609AbgKTU7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 15:59:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40400 "EHLO mail.kernel.org"
+        id S1731062AbgKTVAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 16:00:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41024 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730536AbgKTU7W (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Nov 2020 15:59:22 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CD92622264;
-        Fri, 20 Nov 2020 20:59:21 +0000 (UTC)
+        id S1730262AbgKTVAG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Nov 2020 16:00:06 -0500
+Content-Type: text/plain; charset="utf-8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605905962;
-        bh=PqjxBRRlsPYgF/Ba9j+BP8a/9/gJk8ibwk2z0/X43dU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=N/RG1ZHpO5EMGuTF+3astQMmAEUj6Biwv81lQv/LE6HJ1zU12fiKyEvGRUOQMW3/5
-         i0t5pDpww7WtFbh2WNX4Z+dLCKZ72K0KjGbsJybcWjNakcfimmYz8D3E1jSC21BDzu
-         wsbErUfqDoxyDGQoNq6M4mOzzV5PKV6cNIcheQYA=
-Date:   Fri, 20 Nov 2020 12:59:21 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Christian Eggers <ceggers@arri.de>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2] net: dsa: avoid potential use-after-free
- error
-Message-ID: <20201120125921.1cb76a12@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201120180149.wp4ehikbc2ngvwtf@skbuf>
-References: <20201119110906.25558-1-ceggers@arri.de>
-        <20201120180149.wp4ehikbc2ngvwtf@skbuf>
+        s=default; t=1605906006;
+        bh=rtuW+ab5Bb2RDx2Stbn5gwpOXsN3uWDHTj9UJM+06Jw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Gtynu3GABCU5G2rasW7qXjxuILOShE+IVtmL/m0d8OwxI/irzEeRiCngb5Kvbewdh
+         paMf2D94SGezVVCrIUTYz8cT1RTKHmQdJALcq0IaHk+1F5GnpkGGQK7o+peAQzDIdu
+         NK43ilOL1dHhqXxIw5Y2LVgaWZkctI8p8LasFJAk=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net: stream: fix TCP references when INET is not
+ enabled
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160590600598.16933.15043827876982832532.git-patchwork-notify@kernel.org>
+Date:   Fri, 20 Nov 2020 21:00:05 +0000
+References: <20201118194438.674-1-rdunlap@infradead.org>
+In-Reply-To: <20201118194438.674-1-rdunlap@infradead.org>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     netdev@vger.kernel.org, edumazet@google.com, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 20 Nov 2020 20:01:49 +0200 Vladimir Oltean wrote:
-> On Thu, Nov 19, 2020 at 12:09:06PM +0100, Christian Eggers wrote:
-> > If dsa_switch_ops::port_txtstamp() returns false, clone will be freed
-> > immediately. Shouldn't store a pointer to freed memory.
-> > 
-> > Signed-off-by: Christian Eggers <ceggers@arri.de>
-> > Fixes: 146d442c2357 ("net: dsa: Keep a pointer to the skb clone for TX timestamping")
-> > ---  
-> 
-> IMO this is one of the cases to which the following from
-> Documentation/process/stable-kernel-rules.rst does not apply:
-> 
->  - It must fix a real bug that bothers people (not a, "This could be a
->    problem..." type thing).
-> 
-> Therefore, specifying "net-next" as the target tree here as opposed to
-> "net" is the correct choice.
+Hello:
 
-The commit message doesn't really explain what happens after.
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-Is the dangling pointer ever accessed?
+On Wed, 18 Nov 2020 11:44:38 -0800 you wrote:
+> Fix build of net/core/stream.o when CONFIG_INET is not enabled.
+> Fixes these build errors (sample):
+> 
+> ld: net/core/stream.o: in function `sk_stream_write_space':
+> (.text+0x27e): undefined reference to `tcp_stream_memory_free'
+> ld: (.text+0x29c): undefined reference to `tcp_stream_memory_free'
+> ld: (.text+0x2ab): undefined reference to `tcp_stream_memory_free'
+> ld: net/core/stream.o: in function `sk_stream_wait_memory':
+> (.text+0x5a1): undefined reference to `tcp_stream_memory_free'
+> ld: (.text+0x5bf): undefined reference to `tcp_stream_memory_free'
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] net: stream: fix TCP references when INET is not enabled
+    https://git.kernel.org/netdev/net-next/c/fc9840fbef0c
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
