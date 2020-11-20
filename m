@@ -2,180 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE82D2BAC73
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 16:06:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FA802BADC7
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 16:22:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728265AbgKTPCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 10:02:15 -0500
-Received: from smtp2.axis.com ([195.60.68.18]:54938 "EHLO smtp2.axis.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728230AbgKTPCP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Nov 2020 10:02:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=axis.com; l=5069; q=dns/txt; s=axis-central1;
-  t=1605884534; x=1637420534;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=rjqMVu2KUMS1Pxw2CKwe4RqIVEAuisLy8K6GdODxf5g=;
-  b=JFHcnmfqTvGXUqhUURSNEahDBj66yQO3V/ZvT2vfGHLiVTUejZBBK4JD
-   S61L2NB8aZXJVxm+Cf9gtT5uHsOCqGtdxftcuUjI348a6Cm1qkhAvX3i1
-   Jzt7v9ldjbcrMefhauNejq9k6otxK6sWPKO9Jwqx5LPqDiLZ4ePkstE5/
-   cdStgdbU0J2wP6JM2yjUEjXtM/PZOvhNmzNOMdKH9PpeIGYRlQhdSJOKC
-   EgHVtAqjD4Yti53lGSBt/lvEo7rrkIcAZwMGVsve+YaMbBVGKOaHosMyc
-   52h7evOJeOmb74K+6Dt3uOO7xDvMD2ozFqcnlUOE0VQhfmrVOHW4MWd86
-   g==;
-IronPort-SDR: ijdgRJOxCjyKCp40loxAl70BcLcFwIXboLaR+lKYgPVf6kv2ZgJ+I4nTgPWmlyV9DqvWnfVswk
- Mg06uSO1Az3tN+JNrrMDcuoev8LgaaLHXq7Vuf7mc19iJBuDGQLfzVN97nc5oJgY3dLxDUFCnJ
- UymSW9UJxmtPVsFL2dalDVXmPvPI5o8HXAMmqRo73+ynYg0lhOwyuzFkBh0bxXvfK0UoP2uG5P
- zNyoMnQlKY/AkCkHTWlE3ERFVFip9w90tIl7mdKH4tVqm9xCNf6db8BbTkaU0L+YRP7ECVdfes
- Cbs=
-X-IronPort-AV: E=Sophos;i="5.78,356,1599516000"; 
-   d="scan'208";a="14738095"
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     <peppe.cavallaro@st.com>, <alexandre.torgue@st.com>,
-        <joabreu@synopsys.com>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <kernel@axis.com>, <netdev@vger.kernel.org>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>
-Subject: [PATCH net] net: stmmac: Use hrtimer for TX coalescing
-Date:   Fri, 20 Nov 2020 16:02:08 +0100
-Message-ID: <20201120150208.6838-1-vincent.whitchurch@axis.com>
-X-Mailer: git-send-email 2.28.0
+        id S1729014AbgKTPJx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 10:09:53 -0500
+Received: from mail2.protonmail.ch ([185.70.40.22]:28517 "EHLO
+        mail2.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728986AbgKTPJu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 10:09:50 -0500
+Date:   Fri, 20 Nov 2020 15:09:37 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1605884986; bh=UVOu2hdELOa22PUbrShtG1tB8psu0alU/hmyCLLV9UM=;
+        h=Date:To:From:Cc:Reply-To:Subject:From;
+        b=VueJGVkgQLGRZDT3DiCzapoc33mzRj8lMzTVlVHhhsSoL++7l82zQraWm37Zs+2Re
+         5kkudcRIobbBOblMqkRvMzqAcQCREG8RcQhHqfYnrJnn3tmkvVtlHtHgdaXjN0Ry97
+         nKYwxDBSrG25sgksTSHQBtE+kCprN5HGWT3rNxs7FoFlLZ6aNIC+zb+zeCiu1gluRj
+         FeXLU4u6ABd1bN/hTChV7aed+VuQ0tKKY6Bm4IZyjVC3lo0MmLOycAqQeAfH93YQm4
+         YVMra9byrzdGYVIqjmajZjF7NBe6t6+5u/0I5qw311ILZyYsFMU5OLILyJa5sw2x9F
+         m68851K5chCTg==
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org, fw@strlen.de,
+        razor@blackwall.org, jeremy@azazel.net, tobias@waldekranz.com
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH net-next,v5 0/9] netfilter: flowtable bridge and vlan enhancements
+Message-ID: <JbOm90Raei3ADlleQvsaCY9krt0lOkG1YFpbZEgylgU@cp4-web-014.plabs.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This driver uses a normal timer for TX coalescing, which means that the
-with the default tx-usecs of 1000 microseconds the cleanups actually
-happen 10 ms or more later with HZ=100.  This leads to very low
-througput with TCP when bridged to a slow link such as a 4G modem.  Fix
-this by using an hrtimer instead.
+From: Pablo Neira Ayuso <pablo@netfilter.org>
+Date: Fri, 20 Nov 2020 13:49:12 +0100
 
-On my ARM platform with HZ=100 and the default TX coalescing settings
-(tx-frames 25 tx-usecs 1000), with "tc qdisc add dev eth0 root netem
-delay 60ms 40ms rate 50Mbit" run on the server, netperf's TCP_STREAM
-improves from ~5.5 Mbps to ~100 Mbps.
+> Hi,
 
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  3 ++-
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 23 +++++++++++--------
- 2 files changed, 16 insertions(+), 10 deletions(-)
+Hi Pablo,
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index 727e68dfaf1c..04b7162211cb 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -13,6 +13,7 @@
- #define DRV_MODULE_VERSION	"Jan_2016"
- 
- #include <linux/clk.h>
-+#include <linux/hrtimer.h>
- #include <linux/if_vlan.h>
- #include <linux/stmmac.h>
- #include <linux/phylink.h>
-@@ -46,7 +47,7 @@ struct stmmac_tx_info {
- struct stmmac_tx_queue {
- 	u32 tx_count_frames;
- 	int tbs;
--	struct timer_list txtimer;
-+	struct hrtimer txtimer;
- 	u32 queue_index;
- 	struct stmmac_priv *priv_data;
- 	struct dma_extended_desc *dma_etx ____cacheline_aligned_in_smp;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index ba45fe237512..eea740c06f52 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -111,7 +111,7 @@ static void stmmac_init_fs(struct net_device *dev);
- static void stmmac_exit_fs(struct net_device *dev);
- #endif
- 
--#define STMMAC_COAL_TIMER(x) (jiffies + usecs_to_jiffies(x))
-+#define STMMAC_COAL_TIMER(x) (ns_to_ktime((x) * NSEC_PER_USEC))
- 
- /**
-  * stmmac_verify_args - verify the driver parameters.
-@@ -2051,7 +2051,8 @@ static int stmmac_tx_clean(struct stmmac_priv *priv, int budget, u32 queue)
- 
- 	/* We still have pending packets, let's call for a new scheduling */
- 	if (tx_q->dirty_tx != tx_q->cur_tx)
--		mod_timer(&tx_q->txtimer, STMMAC_COAL_TIMER(priv->tx_coal_timer));
-+		hrtimer_start(&tx_q->txtimer, STMMAC_COAL_TIMER(priv->tx_coal_timer),
-+			      HRTIMER_MODE_REL);
- 
- 	__netif_tx_unlock_bh(netdev_get_tx_queue(priv->dev, queue));
- 
-@@ -2335,7 +2336,8 @@ static void stmmac_tx_timer_arm(struct stmmac_priv *priv, u32 queue)
- {
- 	struct stmmac_tx_queue *tx_q = &priv->tx_queue[queue];
- 
--	mod_timer(&tx_q->txtimer, STMMAC_COAL_TIMER(priv->tx_coal_timer));
-+	hrtimer_start(&tx_q->txtimer, STMMAC_COAL_TIMER(priv->tx_coal_timer),
-+		      HRTIMER_MODE_REL);
- }
- 
- /**
-@@ -2344,9 +2346,9 @@ static void stmmac_tx_timer_arm(struct stmmac_priv *priv, u32 queue)
-  * Description:
-  * This is the timer handler to directly invoke the stmmac_tx_clean.
-  */
--static void stmmac_tx_timer(struct timer_list *t)
-+static enum hrtimer_restart stmmac_tx_timer(struct hrtimer *t)
- {
--	struct stmmac_tx_queue *tx_q = from_timer(tx_q, t, txtimer);
-+	struct stmmac_tx_queue *tx_q = container_of(t, struct stmmac_tx_queue, txtimer);
- 	struct stmmac_priv *priv = tx_q->priv_data;
- 	struct stmmac_channel *ch;
- 
-@@ -2360,6 +2362,8 @@ static void stmmac_tx_timer(struct timer_list *t)
- 		spin_unlock_irqrestore(&ch->lock, flags);
- 		__napi_schedule(&ch->tx_napi);
- 	}
-+
-+	return HRTIMER_NORESTART;
- }
- 
- /**
-@@ -2382,7 +2386,8 @@ static void stmmac_init_coalesce(struct stmmac_priv *priv)
- 	for (chan = 0; chan < tx_channel_count; chan++) {
- 		struct stmmac_tx_queue *tx_q = &priv->tx_queue[chan];
- 
--		timer_setup(&tx_q->txtimer, stmmac_tx_timer, 0);
-+		hrtimer_init(&tx_q->txtimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-+		tx_q->txtimer.function = stmmac_tx_timer;
- 	}
- }
- 
-@@ -2874,7 +2879,7 @@ static int stmmac_open(struct net_device *dev)
- 	phylink_stop(priv->phylink);
- 
- 	for (chan = 0; chan < priv->plat->tx_queues_to_use; chan++)
--		del_timer_sync(&priv->tx_queue[chan].txtimer);
-+		hrtimer_cancel(&priv->tx_queue[chan].txtimer);
- 
- 	stmmac_hw_teardown(dev);
- init_error:
-@@ -2907,7 +2912,7 @@ static int stmmac_release(struct net_device *dev)
- 	stmmac_disable_all_queues(priv);
- 
- 	for (chan = 0; chan < priv->plat->tx_queues_to_use; chan++)
--		del_timer_sync(&priv->tx_queue[chan].txtimer);
-+		hrtimer_cancel(&priv->tx_queue[chan].txtimer);
- 
- 	/* Free the IRQ lines */
- 	free_irq(dev->irq, dev);
-@@ -5140,7 +5145,7 @@ int stmmac_suspend(struct device *dev)
- 	stmmac_disable_all_queues(priv);
- 
- 	for (chan = 0; chan < priv->plat->tx_queues_to_use; chan++)
--		del_timer_sync(&priv->tx_queue[chan].txtimer);
-+		hrtimer_cancel(&priv->tx_queue[chan].txtimer);
- 
- 	/* Stop TX/RX DMA */
- 	stmmac_stop_all_dma(priv);
--- 
-2.28.0
+> The following patchset augments the Netfilter flowtable fastpath to
+> support for network topologies that combine IP forwarding, bridge and
+> VLAN devices.
+
+I'm curious if this new infra can be expanded later to shortcut other
+VLAN-like virtual netdevs e.g. DSA-like switch slaves.
+
+I mean, usually we have port0...portX physical port representors
+and backing CPU port with ethX representor. When in comes to NAT,
+portX is set as destination. Flow offload calls dev_queue_xmit()
+on it, switch stack pushes CPU tag into the skb, change skb->dev
+to ethX and calls another dev_queue_xmit().
+
+If we could (using the new .ndo_fill_forward_path()) tell Netfilter
+that our real dest is ethX and push the CPU tag via dev_hard_header(),
+this will omit one more dev_queue_xmit() and a bunch of indirect calls
+and checks.
+This might require some sort of "custom" or "private" cookies for
+N-Tuple though to separate flows from/to different switch ports (as
+it's done for VLAN: proto + VID).
+
+If so, I'd like to try to implement and publish that idea for reviews
+after this one lands nf-next.
+
+> This v5 includes updates for:
+>=20
+> - Patch #2: fix incorrect xmit type in IPv6 path, per Florian Westphal.
+> - Patch #3: fix possible off by one in dev_fill_forward_path() stack logi=
+c,
+>             per Florian Westphal.
+> - Patch #7: add a note to patch description to specify that FDB topology
+>             updates are not supported at this stage, per Jakub Kicinski.
+>=20
+> A typical scenario that can benefit from this infrastructure is composed
+> of several VMs connected to bridge ports where the bridge master device
+> 'br0' has an IP address. A DHCP server is also assumed to be running to
+> provide connectivity to the VMs. The VMs reach the Internet through
+> 'br0' as default gateway, which makes the packet enter the IP forwarding
+> path. Then, netfilter is used to NAT the packets before they leave
+> through the wan device.
+>=20
+> Something like this:
+>=20
+>                        fast path
+>                 .------------------------.
+>                /                          \
+>                |           IP forwarding   |
+>                |          /             \  .
+>                |       br0               eth0
+>                .       / \
+>                -- veth1  veth2
+>                    .
+>                    .
+>                    .
+>                  eth0
+>            ab:cd:ef:ab:cd:ef
+>                   VM
+>=20
+> The idea is to accelerate forwarding by building a fast path that takes
+> packets from the ingress path of the bridge port and place them in the
+> egress path of the wan device (and vice versa). Hence, skipping the
+> classic bridge and IP stack paths.
+>=20
+> This patchset is composed of:
+>=20
+> Patch #1 adds a placeholder for the hash calculation, instead of using
+>          the dir field.
+>=20
+> Patch #2 adds the transmit path type field to the flow tuple. Two transmi=
+t
+>          paths are supported so far: the neighbour and the xfrm transmit
+>          paths. This patch comes in preparation to add a new direct ether=
+net
+>          transmit path (see patch #7).
+>=20
+> Patch #3 adds dev_fill_forward_path() and .ndo_fill_forward_path() to
+>          netdev_ops. This new function describes the list of netdevice ho=
+ps
+>          to reach a given destination MAC address in the local network to=
+pology,
+>          e.g.
+>=20
+>                            IP forwarding
+>                           /             \
+>                        br0              eth0
+>                        / \
+>                    veth1 veth2
+>                     .
+>                     .
+>                     .
+>                    eth0
+>              ab:cd:ef:ab:cd:ef
+>=20
+>           where veth1 and veth2 are bridge ports and eth0 provides Intern=
+et
+>           connectivity. eth0 is the interface in the VM which is connecte=
+d to
+>           the veth1 bridge port. Then, for packets going to br0 whose
+>           destination MAC address is ab:cd:ef:ab:cd:ef, dev_fill_forward_=
+path()
+>           provides the following path: br0 -> veth1.
+>=20
+> Patch #4 adds .ndo_fill_forward_path for VLAN devices, which provides the=
+ next
+>          device hop via vlan->real_dev. This annotates the VLAN id and pr=
+otocol.
+>          This is useful to know what VLAN headers are expected from the i=
+ngress
+>          device. This also provides information regarding the VLAN header=
+s
+>          to be pushed in the egress path.
+>=20
+> Patch #5 adds .ndo_fill_forward_path for bridge devices, which allows to =
+make
+>          lookups to the FDB to locate the next device hop (bridge port) i=
+n the
+>          forwarding path.
+>=20
+> Patch #6 updates the flowtable to use the dev_fill_forward_path()
+>          infrastructure to obtain the ingress device in the fastpath.
+>=20
+> Patch #7 updates the flowtable to use dev_fill_forward_path() to obtain t=
+he
+>          egress device in the forwarding path. This also adds the direct
+>          ethernet transmit path, which pushes the ethernet header to the
+>          packet and send it through dev_queue_xmit(). This patch adds
+>          support for the bridge, so bridge ports use this direct xmit pat=
+h.
+>=20
+> Patch #8 adds ingress VLAN support (up to 2 VLAN tags, QinQ). The VLAN
+>          information is also provided by dev_fill_forward_path(). Store t=
+he
+>          VLAN id and protocol in the flow tuple for hash lookups. The VLA=
+N
+>          support in the xmit path is achieved by annotating the first vla=
+n
+>          device found in the xmit path and by calling dev_hard_header()
+>          (previous patch #7) before dev_queue_xmit().
+>=20
+> Patch #9 extends nft_flowtable.sh selftest: This is adding a test to
+>          cover bridge and vlan support coming in this patchset.
+>=20
+> =3D Performance numbers
+>=20
+> My testbed environment consists of three containers:
+>=20
+>   192.168.20.2     .20.1     .10.1   10.141.10.2
+>          veth0       veth0 veth1      veth0
+>         ns1 <---------> nsr1 <--------> ns2
+>                             SNAT
+>      iperf -c                          iperf -s
+>=20
+> where nsr1 is used for forwarding. There is a bridge device br0 in nsr1,
+> veth0 is a port of br0. SNAT is performed on the veth1 device of nsr1.
+>=20
+> - ns2 runs iperf -s
+> - ns1 runs iperf -c 10.141.10.2 -n 100G
+>=20
+> My results are:
+>=20
+> - Baseline (no flowtable, classic forwarding path + netfilter): ~16 Gbit/=
+s
+> - Fastpath (with flowtable, this patchset): ~25 Gbit/s
+>=20
+> This is an improvement of ~50% compared to baseline.
+
+Anyway, great work, thanks!
+
+> Please, apply. Thank you.
+>=20
+> Pablo Neira Ayuso (9):
+>   netfilter: flowtable: add hash offset field to tuple
+>   netfilter: flowtable: add xmit path types
+>   net: resolve forwarding path from virtual netdevice and HW destination =
+address
+>   net: 8021q: resolve forwarding path for vlan devices
+>   bridge: resolve forwarding path for bridge devices
+>   netfilter: flowtable: use dev_fill_forward_path() to obtain ingress dev=
+ice
+>   netfilter: flowtable: use dev_fill_forward_path() to obtain egress devi=
+ce
+>   netfilter: flowtable: add vlan support
+>   selftests: netfilter: flowtable bridge and VLAN support
+>=20
+>  include/linux/netdevice.h                     |  35 +++
+>  include/net/netfilter/nf_flow_table.h         |  43 +++-
+>  net/8021q/vlan_dev.c                          |  15 ++
+>  net/bridge/br_device.c                        |  27 +++
+>  net/core/dev.c                                |  46 ++++
+>  net/netfilter/nf_flow_table_core.c            |  51 +++--
+>  net/netfilter/nf_flow_table_ip.c              | 200 ++++++++++++++----
+>  net/netfilter/nft_flow_offload.c              | 159 +++++++++++++-
+>  .../selftests/netfilter/nft_flowtable.sh      |  82 +++++++
+>  9 files changed, 598 insertions(+), 60 deletions(-)
+>=20
+> --
+> 2.20.1
+
+Al
 
