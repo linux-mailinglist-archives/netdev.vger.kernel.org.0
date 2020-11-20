@@ -2,71 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 314BC2BB212
+	by mail.lfdr.de (Postfix) with ESMTP id 9EADD2BB213
 	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 19:07:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728974AbgKTSGP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 13:06:15 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41418 "EHLO mail.kernel.org"
+        id S1729629AbgKTSHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 13:07:06 -0500
+Received: from mga05.intel.com ([192.55.52.43]:16723 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728988AbgKTSGO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Nov 2020 13:06:14 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 866A22240B;
-        Fri, 20 Nov 2020 18:06:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605895574;
-        bh=5QsJhiNlDYF6e5+XXwRtT9R/LRbCv501uDAH0fgcN0Q=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KYlbryWpufKcNB1iYssy8CcD1+/3Gqqh2EdgFmZ9rTm6f4AXmNUy1gjQvi6APx9PN
-         r1AmcaO7XP5Y1fOxjaLen/tWVjpFkEzsN+vCD9HbgGQJ5gIbMizYt3/SxLds3QVXjh
-         6sY9n3QbkPvlEyGj3Ok3Z22jd+4VvnGPpHqfme3w=
-Date:   Fri, 20 Nov 2020 10:06:12 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Anmol Karn <anmol.karan123@gmail.com>
-Cc:     ralf@linux-mips.org, davem@davemloft.net, saeed@kernel.org,
-        gregkh@linuxfoundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hams@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzkaller-bugs@googlegroups.com,
-        syzbot+a1c743815982d9496393@syzkaller.appspotmail.com
-Subject: Re: [Linux-kernel-mentees] [PATCH v5 net] rose: Fix Null pointer
- dereference in rose_send_frame()
-Message-ID: <20201120100612.62d9d770@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201119191043.28813-1-anmol.karan123@gmail.com>
-References: <20201115114448.GA40574@Thinkpad>
-        <20201119191043.28813-1-anmol.karan123@gmail.com>
+        id S1728986AbgKTSHG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Nov 2020 13:07:06 -0500
+IronPort-SDR: Nuf2RLK0QroiCbZDaIhTDkdNGmdm3qYyzOsPC0ujb4nRJTkr1aKntXbOh1UsPjfpVcLTYPjJkq
+ KixmNMWQ0XNQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9811"; a="256226259"
+X-IronPort-AV: E=Sophos;i="5.78,357,1599548400"; 
+   d="scan'208";a="256226259"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2020 10:07:05 -0800
+IronPort-SDR: tKb8etISTp6G3sE1YGUEQowUxGgktn+s03ZWoT851lGGlX1/6L4nORi14y9l1gAiWGVfAR73xc
+ 2IRwZlZEWX4A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.78,357,1599548400"; 
+   d="scan'208";a="535259905"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga005.fm.intel.com with ESMTP; 20 Nov 2020 10:07:04 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>,
+        netdev@vger.kernel.org, sassmann@redhat.com,
+        anthony.l.nguyen@intel.com,
+        Slawomir Laba <slawomirx.laba@intel.com>,
+        Brett Creeley <brett.creeley@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>
+Subject: [PATCH net 1/1] i40e: Fix removing driver while bare-metal VFs pass traffic
+Date:   Fri, 20 Nov 2020 10:06:40 -0800
+Message-Id: <20201120180640.3654474-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 20 Nov 2020 00:40:43 +0530 Anmol Karn wrote:
-> rose_send_frame() dereferences `neigh->dev` when called from
-> rose_transmit_clear_request(), and the first occurrence of the
-> `neigh` is in rose_loopback_timer() as `rose_loopback_neigh`,
-> and it is initialized in rose_add_loopback_neigh() as NULL.
-> i.e when `rose_loopback_neigh` used in rose_loopback_timer()
-> its `->dev` was still NULL and rose_loopback_timer() was calling
-> rose_rx_call_request() without checking for NULL.
-> 
-> - net/rose/rose_link.c
-> This bug seems to get triggered in this line:
-> 
-> rose_call = (ax25_address *)neigh->dev->dev_addr;
-> 
-> Fix it by adding NULL checking for `rose_loopback_neigh->dev`
-> in rose_loopback_timer().
-> 
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Suggested-by: Jakub Kicinski <kuba@kernel.org>
-> Reported-by: syzbot+a1c743815982d9496393@syzkaller.appspotmail.com
-> Tested-by: syzbot+a1c743815982d9496393@syzkaller.appspotmail.com
-> Link: https://syzkaller.appspot.com/bug?id=9d2a7ca8c7f2e4b682c97578dfa3f236258300b3
-> Signed-off-by: Anmol Karn <anmol.karan123@gmail.com>
+From: Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
 
-Applied to net, thanks!
+Prevent VFs from resetting when PF driver is being unloaded:
+- introduce new pf state: __I40E_VF_RESETS_DISABLED;
+- check if pf state has __I40E_VF_RESETS_DISABLED state set,
+  if so, disable any further VFLR event notifications;
+- when i40e_remove (rmmod i40e) is called, disable any resets on
+  the VFs;
+
+Previously if there were bare-metal VFs passing traffic and PF
+driver was removed, there was a possibility of VFs triggering a Tx
+timeout right before iavf_remove. This was causing iavf_close to
+not be called because there is a check in the beginning of  iavf_remove
+that bails out early if adapter->state < IAVF_DOWN_PENDING. This
+makes it so some resources do not get cleaned up.
+
+Fixes: 6a9ddb36eeb8 ("i40e: disable IOV before freeing resources")
+Signed-off-by: Slawomir Laba <slawomirx.laba@intel.com>
+Signed-off-by: Brett Creeley <brett.creeley@intel.com>
+Signed-off-by: Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+ drivers/net/ethernet/intel/i40e/i40e.h        |  1 +
+ drivers/net/ethernet/intel/i40e/i40e_main.c   | 22 +++++++++++-----
+ .../ethernet/intel/i40e/i40e_virtchnl_pf.c    | 26 +++++++++++--------
+ 3 files changed, 31 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/i40e/i40e.h b/drivers/net/ethernet/intel/i40e/i40e.h
+index 537300e762f0..d231a2cdd98f 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e.h
++++ b/drivers/net/ethernet/intel/i40e/i40e.h
+@@ -140,6 +140,7 @@ enum i40e_state_t {
+ 	__I40E_CLIENT_RESET,
+ 	__I40E_VIRTCHNL_OP_PENDING,
+ 	__I40E_RECOVERY_MODE,
++	__I40E_VF_RESETS_DISABLED,	/* disable resets during i40e_remove */
+ 	/* This must be last as it determines the size of the BITMAP */
+ 	__I40E_STATE_SIZE__,
+ };
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 4f8a2154b93f..1337686bd099 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -4010,8 +4010,16 @@ static irqreturn_t i40e_intr(int irq, void *data)
+ 	}
+ 
+ 	if (icr0 & I40E_PFINT_ICR0_VFLR_MASK) {
+-		ena_mask &= ~I40E_PFINT_ICR0_ENA_VFLR_MASK;
+-		set_bit(__I40E_VFLR_EVENT_PENDING, pf->state);
++		/* disable any further VFLR event notifications */
++		if (test_bit(__I40E_VF_RESETS_DISABLED, pf->state)) {
++			u32 reg = rd32(hw, I40E_PFINT_ICR0_ENA);
++
++			reg &= ~I40E_PFINT_ICR0_VFLR_MASK;
++			wr32(hw, I40E_PFINT_ICR0_ENA, reg);
++		} else {
++			ena_mask &= ~I40E_PFINT_ICR0_ENA_VFLR_MASK;
++			set_bit(__I40E_VFLR_EVENT_PENDING, pf->state);
++		}
+ 	}
+ 
+ 	if (icr0 & I40E_PFINT_ICR0_GRST_MASK) {
+@@ -15311,6 +15319,11 @@ static void i40e_remove(struct pci_dev *pdev)
+ 	while (test_bit(__I40E_RESET_RECOVERY_PENDING, pf->state))
+ 		usleep_range(1000, 2000);
+ 
++	if (pf->flags & I40E_FLAG_SRIOV_ENABLED) {
++		set_bit(__I40E_VF_RESETS_DISABLED, pf->state);
++		i40e_free_vfs(pf);
++		pf->flags &= ~I40E_FLAG_SRIOV_ENABLED;
++	}
+ 	/* no more scheduling of any task */
+ 	set_bit(__I40E_SUSPENDED, pf->state);
+ 	set_bit(__I40E_DOWN, pf->state);
+@@ -15337,11 +15350,6 @@ static void i40e_remove(struct pci_dev *pdev)
+ 	 */
+ 	i40e_notify_client_of_netdev_close(pf->vsi[pf->lan_vsi], false);
+ 
+-	if (pf->flags & I40E_FLAG_SRIOV_ENABLED) {
+-		i40e_free_vfs(pf);
+-		pf->flags &= ~I40E_FLAG_SRIOV_ENABLED;
+-	}
+-
+ 	i40e_fdir_teardown(pf);
+ 
+ 	/* If there is a switch structure or any orphans, remove them.
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+index 4919d22d7b6b..1b5390ec3d78 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+@@ -1403,7 +1403,8 @@ static void i40e_cleanup_reset_vf(struct i40e_vf *vf)
+  * @vf: pointer to the VF structure
+  * @flr: VFLR was issued or not
+  *
+- * Returns true if the VF is reset, false otherwise.
++ * Returns true if the VF is in reset, resets successfully, or resets
++ * are disabled and false otherwise.
+  **/
+ bool i40e_reset_vf(struct i40e_vf *vf, bool flr)
+ {
+@@ -1413,11 +1414,14 @@ bool i40e_reset_vf(struct i40e_vf *vf, bool flr)
+ 	u32 reg;
+ 	int i;
+ 
++	if (test_bit(__I40E_VF_RESETS_DISABLED, pf->state))
++		return true;
++
+ 	/* If the VFs have been disabled, this means something else is
+ 	 * resetting the VF, so we shouldn't continue.
+ 	 */
+ 	if (test_and_set_bit(__I40E_VF_DISABLE, pf->state))
+-		return false;
++		return true;
+ 
+ 	i40e_trigger_vf_reset(vf, flr);
+ 
+@@ -1581,6 +1585,15 @@ void i40e_free_vfs(struct i40e_pf *pf)
+ 
+ 	i40e_notify_client_of_vf_enable(pf, 0);
+ 
++	/* Disable IOV before freeing resources. This lets any VF drivers
++	 * running in the host get themselves cleaned up before we yank
++	 * the carpet out from underneath their feet.
++	 */
++	if (!pci_vfs_assigned(pf->pdev))
++		pci_disable_sriov(pf->pdev);
++	else
++		dev_warn(&pf->pdev->dev, "VFs are assigned - not disabling SR-IOV\n");
++
+ 	/* Amortize wait time by stopping all VFs at the same time */
+ 	for (i = 0; i < pf->num_alloc_vfs; i++) {
+ 		if (test_bit(I40E_VF_STATE_INIT, &pf->vf[i].vf_states))
+@@ -1596,15 +1609,6 @@ void i40e_free_vfs(struct i40e_pf *pf)
+ 		i40e_vsi_wait_queues_disabled(pf->vsi[pf->vf[i].lan_vsi_idx]);
+ 	}
+ 
+-	/* Disable IOV before freeing resources. This lets any VF drivers
+-	 * running in the host get themselves cleaned up before we yank
+-	 * the carpet out from underneath their feet.
+-	 */
+-	if (!pci_vfs_assigned(pf->pdev))
+-		pci_disable_sriov(pf->pdev);
+-	else
+-		dev_warn(&pf->pdev->dev, "VFs are assigned - not disabling SR-IOV\n");
+-
+ 	/* free up VF resources */
+ 	tmp = pf->num_alloc_vfs;
+ 	pf->num_alloc_vfs = 0;
+-- 
+2.26.2
+
