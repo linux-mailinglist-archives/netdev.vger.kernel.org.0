@@ -2,252 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6B4F2BB97E
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 23:57:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C96BA2BB97C
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 23:57:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728637AbgKTWz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 17:55:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54610 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728197AbgKTWz5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 17:55:57 -0500
-Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4E4AC0613CF;
-        Fri, 20 Nov 2020 14:55:56 -0800 (PST)
-Received: by mail-oi1-x242.google.com with SMTP id o25so12298339oie.5;
-        Fri, 20 Nov 2020 14:55:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=j2q4yB63jpRKfPiKlVxQWYY9iYkFvzEgdWCDK/79Pks=;
-        b=E4pmW8+9X1sGgWvtQFKf5MPkrYPBp8fd38bbwQVNz/jgI4CgvGd2D+BGU7x6IMRcJX
-         VdOoZTwbQghXZY4I2jliLrhSeVYHgoIQPX8kS9yXTa0gLZwu4fOeGK77I0+rkN4ykl38
-         MM7aThu8/YNXFfMBp3jn3lfCj7PSChM00NqE6e6VPPraCFDir6hZIgoc80wQ1nq0QGyv
-         tSosZO6SYyIK5Yhrq200Wi/QiDE9gUqsXaV6ju9otNm8my/MTvffq/Dda8NpRi5Evmkj
-         oSM5OKqbwZ/GN+FbA2L0cB+Oq01F6nJRn0GxTGYRQItq9vPNzxOeqvrUDtZsrG05BXTk
-         ZRWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=j2q4yB63jpRKfPiKlVxQWYY9iYkFvzEgdWCDK/79Pks=;
-        b=cdMq39U5dbSAf6WFY7kSKLFECI3TKh9WIPnekWpc9T4Yg3E6KJ9MkBHsD9+iSzJev4
-         92n3xsRPIj/vEiCda9cDUnMED+EaEqm7Efq8ZKHewC3riwrXWA9Z2wDmd8BTBgxlWLNN
-         34JGb/BsTkt8J6wUvVjD7k53mCJ2CtKdqyoYKMRrR3Vt+uGnGJFiuLs8u8tMIP4lwae8
-         Oi0nX2eGKyBHxPtJPOw07/F8XGiMSQQA8yYvx11f2x03yv4FMP/ncTVpkwGtzlzPHzwA
-         6eqXSyZM1UpmIuY2Z6hbkydaq2CA9YWzcRgdmRFiXDQ0cJ2WF79TtT0Mo+ubXwIux0yz
-         SadA==
-X-Gm-Message-State: AOAM533ZrUlhPxSi+dZVyFM5AgstOSIa0FgKzKpif4i42BKTVKdQ4Qu+
-        YtnrFedggRyrGiG2cSpYrn75Bx+CUV9RjBK3p80207hvJA==
-X-Google-Smtp-Source: ABdhPJxawIsnxnGWf0GwETGk4r5NMxmJmhPb7zIpZx6YD+pFQGfiFl2pVJ+kdKOuJGC3NNvsJMkDIunacXh37aYjsic=
-X-Received: by 2002:aca:b145:: with SMTP id a66mr8293416oif.92.1605912956298;
- Fri, 20 Nov 2020 14:55:56 -0800 (PST)
+        id S1728391AbgKTWz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 17:55:56 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:59696 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728197AbgKTWz4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 17:55:56 -0500
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AKMVuOw109790
+        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 17:55:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=mime-version : date :
+ from : to : cc : subject : in-reply-to : references : message-id :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=caBHxwEvN2EquZF8r4yIi0K5ncolQSSrjWOBqO8sI/w=;
+ b=HHqsrtK9OZSxWFAIp32nmBqTBD8+4BlzMBb6+1RcCCUf5FHj3G9ie1rkb3c3mIiQ8mOz
+ mBberPrjzKi2wpJBtWDNyhqpOlheM3TJABEKiGHNl18aqNwKFWkZqbtx1gR3c9DKY3xa
+ uKtXYkAK07kt+xn9/RHwG8quKZBd1oqgRhNCO8VH8LA+XxAuXOJc9lG2BisCRTLXWk9V
+ Mmu3SdSKt6VpJt+BSL6/ink57if8MnPDJrINen6Macob6sJRSCtaTAQgA9mEVww1kYv0
+ aLMmqrtLmCTgKaKT6OVusyEC2gV6aGo2Lbjxsr+PBHZlqGskDohNEOPl8HpitMKP9QTe vA== 
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 34xgf549hr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 17:55:54 -0500
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0AKMrpvL031161
+        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 22:55:54 GMT
+Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
+        by ppma02wdc.us.ibm.com with ESMTP id 34w5w8tqa0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 22:55:54 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0AKMtrom14680844
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 20 Nov 2020 22:55:53 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C2016112062;
+        Fri, 20 Nov 2020 22:55:53 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3E286112061;
+        Fri, 20 Nov 2020 22:55:53 +0000 (GMT)
+Received: from ltc.linux.ibm.com (unknown [9.16.170.189])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Fri, 20 Nov 2020 22:55:53 +0000 (GMT)
 MIME-Version: 1.0
-References: <20201120181627.21382-1-george.mccollister@gmail.com>
- <20201120181627.21382-3-george.mccollister@gmail.com> <20201120193321.GP1853236@lunn.ch>
-In-Reply-To: <20201120193321.GP1853236@lunn.ch>
-From:   George McCollister <george.mccollister@gmail.com>
-Date:   Fri, 20 Nov 2020 16:55:44 -0600
-Message-ID: <CAFSKS=P=epx3Sr3OzkCg9ycoftmXm__PaMee7HWbAGXYdqgbDw@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/3] net: dsa: add Arrow SpeedChips XRS700x driver
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Date:   Fri, 20 Nov 2020 14:55:52 -0800
+From:   drt <drt@linux.vnet.ibm.com>
+To:     Lijun Pan <ljp@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, sukadev@linux.ibm.com, drt@linux.ibm.com,
+        Brian King <brking@linux.vnet.ibm.com>
+Subject: Re: [PATCH net v2 3/3] ibmvnic: skip tx timeout reset while in
+ resetting
+In-Reply-To: <20201120224013.46891-4-ljp@linux.ibm.com>
+References: <20201120224013.46891-1-ljp@linux.ibm.com>
+ <20201120224013.46891-4-ljp@linux.ibm.com>
+Message-ID: <9065e0c55422e19e8e9417f26cca469a@linux.vnet.ibm.com>
+X-Sender: drt@linux.vnet.ibm.com
+User-Agent: Roundcube Webmail/1.0.1
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-20_16:2020-11-20,2020-11-20 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
+ priorityscore=1501 lowpriorityscore=0 malwarescore=0 clxscore=1015
+ mlxlogscore=999 suspectscore=0 mlxscore=0 impostorscore=0 bulkscore=0
+ adultscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011200144
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 20, 2020 at 1:33 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > +static const struct xrs700x_mib xrs700x_mibs[] = {
-> > +     {XRS_RX_GOOD_OCTETS_L(0), "rx_good_octets"},
-> > +     {XRS_RX_BAD_OCTETS_L(0), "rx_bad_octets"},
-> > +     {XRS_RX_UNICAST_L(0), "rx_unicast"},
-> > +     {XRS_RX_BROADCAST_L(0), "rx_broadcast"},
-> > +     {XRS_RX_MULTICAST_L(0), "rx_multicast"},
-> > +     {XRS_RX_UNDERSIZE_L(0), "rx_undersize"},
-> > +     {XRS_RX_FRAGMENTS_L(0), "rx_fragments"},
-> > +     {XRS_RX_OVERSIZE_L(0), "rx_oversize"},
-> > +     {XRS_RX_JABBER_L(0), "rx_jabber"},
-> > +     {XRS_RX_ERR_L(0), "rx_err"},
-> > +     {XRS_RX_CRC_L(0), "rx_crc"},
-> > +     {XRS_RX_64_L(0), "rx_64"},
-> > +     {XRS_RX_65_127_L(0), "rx_65_127"},
-> > +     {XRS_RX_128_255_L(0), "rx_128_255"},
-> > +     {XRS_RX_256_511_L(0), "rx_256_511"},
-> > +     {XRS_RX_512_1023_L(0), "rx_512_1023"},
-> > +     {XRS_RX_1024_1536_L(0), "rx_1024_1536"},
-> > +     {XRS_RX_HSR_PRP_L(0), "rx_hsr_prp"},
-> > +     {XRS_RX_WRONGLAN_L(0), "rx_wronglan"},
-> > +     {XRS_RX_DUPLICATE_L(0), "rx_duplicate"},
-> > +     {XRS_TX_OCTETS_L(0), "tx_octets"},
-> > +     {XRS_TX_UNICAST_L(0), "tx_unicast"},
-> > +     {XRS_TX_BROADCAST_L(0), "tx_broadcast"},
-> > +     {XRS_TX_MULTICAST_L(0), "tx_multicast"},
-> > +     {XRS_TX_HSR_PRP_L(0), "tx_hsr_prp"},
-> > +     {XRS_PRIQ_DROP_L(0), "priq_drop"},
-> > +     {XRS_EARLY_DROP_L(0), "early_drop"},
->
-> Can we drop the (0). It does not seem to have any purpose, always
-> being 0.
+On 2020-11-20 14:40, Lijun Pan wrote:
+> Sometimes it takes longer than 5 seconds (watchdog timeout) to complete
+> failover, migration, and other resets. In stead of scheduling another
+> timeout reset, we wait for the current one to complete.
+> 
+> Suggested-by: Brian King <brking@linux.vnet.ibm.com>
+> Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
 
-It hurts my OCD when the register macros don't match the same pattern but okay.
+Reviewed-by: Dany Madden <drt@linux.ibm.com>
 
->
-> > +};
-> > +
->
->
-> > +static void xrs700x_read_port_counters(struct xrs700x *priv, int port)
-> > +{
-> > +     int i;
-> > +     struct xrs700x_port *p = &priv->ports[port];
->
-> Reverse christmas tree. Please check and fix everywhere.
-
-done. I left the order in xrs700x_setup_regmap_range as is because
-they're almost the same length and I want them in the order they're in
-in the register. Let me know if that's an issue and I'll change it.
-
->
-> > +static void xrs700x_port_stp_state_set(struct dsa_switch *ds, int port,
-> > +                                    u8 state)
-> > +{
-> > +     struct xrs700x *priv = ds->priv;
-> > +     unsigned int val;
-> > +
-> > +     switch (state) {
-> > +     case BR_STATE_DISABLED:
-> > +             val = XRS_PORT_DISABLED;
-> > +             break;
-> > +     case BR_STATE_LISTENING:
-> > +             val = XRS_PORT_DISABLED;
-> > +             break;
->
-> No listening state?
-
-No, just forwarding, learning and disabled. See:
-https://www.flexibilis.com/downloads/xrs/SpeedChip_XRS7000_3000_User_Manual.pdf
-page 82.
-
->
-> > +     case BR_STATE_LEARNING:
-> > +             val = XRS_PORT_LEARNING;
-> > +             break;
-> > +     case BR_STATE_FORWARDING:
-> > +             val = XRS_PORT_FORWARDING;
-> > +             break;
-> > +     case BR_STATE_BLOCKING:
-> > +             val = XRS_PORT_DISABLED;
-> > +             break;
->
-> Hum. What exactly does XRS_PORT_DISABLED mean? When blocking, it is
-> expected you can still send/receive BPDUs.
-
-Datasheet says: "Disabled. Port neither learns MAC addresses nor forwards data."
-
->
-> > +struct xrs700x *xrs700x_switch_alloc(struct device *base, void *priv)
-> > +{
-> > +     struct dsa_switch *ds;
-> > +     struct xrs700x *dev;
-> > +
-> > +     ds = devm_kzalloc(base, sizeof(*ds), GFP_KERNEL);
-> > +     if (!ds)
-> > +             return NULL;
-> > +
-> > +     ds->dev = base;
-> > +     ds->num_ports = DSA_MAX_PORTS;
->
-> Is this needed? detect should fill it in.
-
-Removed. I added this before I added detect and forgot to take it out.
-
->
-> > +int xrs700x_switch_register(struct xrs700x *dev)
-> > +{
-> > +     int ret;
-> > +     int i;
-> > +
-> > +     ret = xrs700x_detect(dev);
-> > +     if (ret)
-> > +             return ret;
-> > +
-> > +     ret = xrs700x_setup_regmap_range(dev);
-> > +     if (ret)
-> > +             return ret;
-> > +
-> > +     dev->ports = devm_kzalloc(dev->dev,
-> > +                               sizeof(*dev->ports) * dev->ds->num_ports,
-> > +                               GFP_KERNEL);
-> > +     if (!dev->ports)
-> > +             return -ENOMEM;
-> > +
-> > +     for (i = 0; i < dev->ds->num_ports; i++) {
-> > +             ret = xrs700x_alloc_port_mib(dev, i);
-> > +             if (ret)
-> > +                     return ret;
-> > +     }
-> > +
-> > +     ret = dsa_register_switch(dev->ds);
-> > +
-> > +     if (ret)
-> > +             cancel_delayed_work_sync(&dev->mib_work);
->
-> It would be nice to have to symmetry here. It is not obvious what is
-> starting this? It happens in the setup op? So can this be moved
-> into the teardown op?
-
-Agreed. Moved to teardown.
-
->
-> > +static int xrs700x_i2c_reg_read(void *context, unsigned int reg,
-> > +                             unsigned int *val)
-> > +{
-> > +     int ret;
-> > +     unsigned char buf[4];
-> > +     struct device *dev = context;
-> > +     struct i2c_client *i2c = to_i2c_client(dev);
-> > +
-> > +     buf[0] = reg >> 23 & 0xff;
-> > +     buf[1] = reg >> 15 & 0xff;
-> > +     buf[2] = reg >> 7 & 0xff;
-> > +     buf[3] = (reg & 0x7f) << 1;
-> > +
-> > +     ret = i2c_master_send(i2c, buf, sizeof(buf));
->
-> Are you allowed to perform transfers on stack buffers? I think any I2C
-> bus driver using DMA is going to be unhappy.
-
-It should be fine. See the following file, there is a good write up about this:
-See Documentation/i2c/dma-considerations.rst
-
->
-> > +static const struct of_device_id xrs700x_i2c_dt_ids[] = {
-> > +     { .compatible = "arrow,xrs7003" },
-> > +     { .compatible = "arrow,xrs7004" },
-> > +     {},
->
-> Please validate that the compatible string actually matches the switch
-> found. Otherwise we can get into all sorts of horrible backward
-> compatibility issues.
-
-Okay. What kind of compatibility issues? Do you have a hypothetical
-example? I guess I will just use of_device_is_compatible() to check.
-
->
-> > +static const struct of_device_id xrs700x_mdio_dt_ids[] = {
-> > +     { .compatible = "arrow,xrs7003" },
-> > +     { .compatible = "arrow,xrs7004" },
-> > +     {},
->
-> Same here.
->
->      Andrew
-
-Thanks
+> ---
+> v2: no change
+> 
+>  drivers/net/ethernet/ibm/ibmvnic.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c
+> b/drivers/net/ethernet/ibm/ibmvnic.c
+> index 9665532a9ed2..2aa40b2f225c 100644
+> --- a/drivers/net/ethernet/ibm/ibmvnic.c
+> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
+> @@ -2356,6 +2356,12 @@ static void ibmvnic_tx_timeout(struct
+> net_device *dev, unsigned int txqueue)
+>  {
+>  	struct ibmvnic_adapter *adapter = netdev_priv(dev);
+> 
+> +	if (test_bit(0, &adapter->resetting)) {
+> +		netdev_err(adapter->netdev,
+> +			   "Adapter is resetting, skip timeout reset\n");
+> +		return;
+> +	}
+> +
+>  	ibmvnic_reset(adapter, VNIC_RESET_TIMEOUT);
+>  }
