@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A8E12BB997
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 00:07:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC1F52BB994
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 00:07:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728829AbgKTXEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 18:04:14 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:1195 "EHLO
+        id S1728769AbgKTXEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 18:04:12 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:1186 "EHLO
         hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728637AbgKTXEL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 18:04:11 -0500
+        with ESMTP id S1728559AbgKTXEK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 18:04:10 -0500
 Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fb84b5f0008>; Fri, 20 Nov 2020 15:03:59 -0800
+        id <B5fb84b5f0002>; Fri, 20 Nov 2020 15:03:59 -0800
 Received: from sx1.mtl.com (172.20.13.39) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 20 Nov
  2020 23:04:02 +0000
@@ -20,11 +20,10 @@ From:   Saeed Mahameed <saeedm@nvidia.com>
 To:     Saeed Mahameed <saeedm@nvidia.com>,
         Leon Romanovsky <leonro@mellanox.com>
 CC:     <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        Eli Cohen <eli@mellanox.com>, Mark Bloch <mbloch@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>
-Subject: [PATCH mlx5-next 11/16] net/mlx5: Add VDPA priority to NIC RX namespace
-Date:   Fri, 20 Nov 2020 15:03:34 -0800
-Message-ID: <20201120230339.651609-12-saeedm@nvidia.com>
+        Eli Cohen <elic@nvidia.com>, Mark Bloch <mbloch@nvidia.com>
+Subject: [PATCH mlx5-next 12/16] net/mlx5: Export steering related functions
+Date:   Fri, 20 Nov 2020 15:03:35 -0800
+Message-ID: <20201120230339.651609-13-saeedm@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201120230339.651609-1-saeedm@nvidia.com>
 References: <20201120230339.651609-1-saeedm@nvidia.com>
@@ -35,83 +34,75 @@ X-Originating-IP: [172.20.13.39]
 X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1605913439; bh=eg0ty2XIBWAlcNzqBJzl8yq+DWBoIz5UKxtR3ZdS74M=;
+        t=1605913439; bh=ki7lHks8iH/kfFiDtW1h+H8ISkj2E8Qyyuoavy9EtyM=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Transfer-Encoding:Content-Type:
          X-Originating-IP:X-ClientProxiedBy;
-        b=OsJxFjtvMm5GvaL8HMu3oUpp4zdkx/I0kYXI3Rees8TTUjDMAZ1aSi8/BFrssdQ9D
-         O9iyDm6ivz4kS+a/SWPIITzdOY2mQq4c5VgTHPEjqg2THzNuluXhTkscUyGlax95px
-         CL86dl5dfqDID1VXuDIarL2s0JE+wWZqX/WCPCJEpRhnX+lgebwo9yFDvWYb8Nxkjr
-         kcg1g+GawqQc8ef0nyMtChWvyL8vQn8I/1MFWQjSt4rEU8dZeHuGaKvfxaj7YzZiSH
-         9zaGbe63WOt6Q5+5fU1t+auvIql2MgDvGQWD4ZvqCSFW1GOOAt3SgAhI2VKGnUGg68
-         aimzxH+/S+fdQ==
+        b=WStAD0Lf3BaOkJos3VJgNg+P0Hhdm5nj9gR5eb3+LJKG/G4Fzp+dEHZiCZ+ukXJs0
+         oDoNiU9d4Wd8edVu4LaFoo53NoIoSBrGHTRwoG/lKdNsuzzoMLek1udWz6JWH0GrdV
+         IBfFfm1KyECMMrjIctqCXj8CQq5UzsAiuTTE9VGOI37W0S1iW3/1l6WTcn71DA5XBw
+         br0EeVxjP99MvFqBgobKuRdJp7QG+I6fzL73Pj1ZVmnjFxw3/OD7WcVW9Ztc20VhtH
+         CdJW+SEpqJlzkS72We0kBAVvx6xycXYY+urnBOroPSujKAVkeJkcZg860yd3ZS31l4
+         mCarLebgLV/bA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eli Cohen <eli@mellanox.com>
+From: Eli Cohen <elic@nvidia.com>
 
-Add a new namespace type to the NIC RX root namespace to allow for
-inserting VDPA rules before regular NIC but after bypass, thus allowing
-DPDK to have precedence in packet processing.
+Export
+ mlx5_create_flow_table()
+ mlx5_create_flow_group()
+ mlx5_destroy_flow_group().
 
-Signed-off-by: Eli Cohen <eli@mellanox.com>
+These symbols are required by the VDPA implementation to create rules
+that consume VDPA specific traffic.
+
+We do not deal with putting the prototypes in a header file since they
+already exist in include/linux/mlx5/fs.h.
+
+Signed-off-by: Eli Cohen <elic@nvidia.com>
 Reviewed-by: Mark Bloch <mbloch@nvidia.com>
-Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 10 +++++++++-
- include/linux/mlx5/fs.h                           |  1 +
- 2 files changed, 10 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/ne=
 t/ethernet/mellanox/mlx5/core/fs_core.c
-index 16091838bfcf..e095c5968e67 100644
+index e095c5968e67..9feab81ab919 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -118,6 +118,10 @@
- #define ANCHOR_NUM_PRIOS 1
- #define ANCHOR_MIN_LEVEL (BY_PASS_MIN_LEVEL + 1)
+@@ -1153,6 +1153,7 @@ struct mlx5_flow_table *mlx5_create_flow_table(struct=
+ mlx5_flow_namespace *ns,
+ {
+ 	return __mlx5_create_flow_table(ns, ft_attr, FS_FT_OP_MOD_NORMAL, 0);
+ }
++EXPORT_SYMBOL(mlx5_create_flow_table);
 =20
-+#define VDPA_PRIO_NUM_LEVELS 1
-+#define VDPA_NUM_PRIOS 1
-+#define VDPA_MIN_LEVEL 1
-+
- #define OFFLOADS_MAX_FT 2
- #define OFFLOADS_NUM_PRIOS 2
- #define OFFLOADS_MIN_LEVEL (ANCHOR_MIN_LEVEL + OFFLOADS_NUM_PRIOS)
-@@ -147,7 +151,7 @@ static struct init_tree_node {
- 	enum mlx5_flow_table_miss_action def_miss_action;
- } root_fs =3D {
- 	.type =3D FS_TYPE_NAMESPACE,
--	.ar_size =3D 7,
-+	.ar_size =3D 8,
- 	  .children =3D (struct init_tree_node[]){
- 		  ADD_PRIO(0, BY_PASS_MIN_LEVEL, 0, FS_CHAINING_CAPS,
- 			   ADD_NS(MLX5_FLOW_TABLE_MISS_ACTION_DEF,
-@@ -165,6 +169,10 @@ static struct init_tree_node {
- 			   ADD_NS(MLX5_FLOW_TABLE_MISS_ACTION_DEF,
- 				  ADD_MULTIPLE_PRIO(ETHTOOL_NUM_PRIOS,
- 						    ETHTOOL_PRIO_NUM_LEVELS))),
-+		  ADD_PRIO(0, VDPA_MIN_LEVEL, 0, FS_CHAINING_CAPS,
-+			   ADD_NS(MLX5_FLOW_TABLE_MISS_ACTION_DEF,
-+				  ADD_MULTIPLE_PRIO(VDPA_NUM_PRIOS,
-+						    VDPA_PRIO_NUM_LEVELS))),
- 		  ADD_PRIO(0, KERNEL_MIN_LEVEL, 0, {},
- 			   ADD_NS(MLX5_FLOW_TABLE_MISS_ACTION_DEF,
- 				  ADD_MULTIPLE_PRIO(KERNEL_NIC_TC_NUM_PRIOS,
-diff --git a/include/linux/mlx5/fs.h b/include/linux/mlx5/fs.h
-index 35d2cc1646d3..97176d623d74 100644
---- a/include/linux/mlx5/fs.h
-+++ b/include/linux/mlx5/fs.h
-@@ -67,6 +67,7 @@ enum mlx5_flow_namespace_type {
- 	MLX5_FLOW_NAMESPACE_LAG,
- 	MLX5_FLOW_NAMESPACE_OFFLOADS,
- 	MLX5_FLOW_NAMESPACE_ETHTOOL,
-+	MLX5_FLOW_NAMESPACE_VDPA,
- 	MLX5_FLOW_NAMESPACE_KERNEL,
- 	MLX5_FLOW_NAMESPACE_LEFTOVERS,
- 	MLX5_FLOW_NAMESPACE_ANCHOR,
+ struct mlx5_flow_table *mlx5_create_vport_flow_table(struct mlx5_flow_name=
+space *ns,
+ 						     int prio, int max_fte,
+@@ -1244,6 +1245,7 @@ struct mlx5_flow_group *mlx5_create_flow_group(struct=
+ mlx5_flow_table *ft,
+=20
+ 	return fg;
+ }
++EXPORT_SYMBOL(mlx5_create_flow_group);
+=20
+ static struct mlx5_flow_rule *alloc_rule(struct mlx5_flow_destination *des=
+t)
+ {
+@@ -2146,6 +2148,7 @@ void mlx5_destroy_flow_group(struct mlx5_flow_group *=
+fg)
+ 		mlx5_core_warn(get_dev(&fg->node), "Flow group %d wasn't destroyed, refc=
+ount > 1\n",
+ 			       fg->id);
+ }
++EXPORT_SYMBOL(mlx5_destroy_flow_group);
+=20
+ struct mlx5_flow_namespace *mlx5_get_fdb_sub_ns(struct mlx5_core_dev *dev,
+ 						int n)
 --=20
 2.26.2
 
