@@ -2,108 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 558F72BB7E8
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 21:51:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A76FC2BB7F6
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 21:59:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730188AbgKTUum (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 15:50:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36810 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729587AbgKTUul (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Nov 2020 15:50:41 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9D9642223F;
-        Fri, 20 Nov 2020 20:50:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605905441;
-        bh=CD6J9aBN3wd+dkrZ6D4o7RWa0H5Idy0AtRGQgdfH1H0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=J1bOxW/cK/+sjBE+Pofli22i2mKXW3WbeCRRHVTEKiKoknf4WK7oSrUYsCwWbeQ0d
-         BDPi9AKjTED0cwrPhpD0Hbj0ZABDGx2u+bh+JU6ppDs2b0bPtiaSOuWUaWatHxoVmh
-         6saxDs3hB4YmUZk4LkhofkGWuo8a5EmkHmPWFjVM=
-Date:   Fri, 20 Nov 2020 12:50:39 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Marcel Apfelbaum <mapfelba@redhat.com>
-Cc:     marcel@redhat.com, Saeed Mahameed <saeed@kernel.org>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Shuah Khan <shuah@kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: Re: [kuba@kernel.org: Re: [PATCH net-next v2 0/3] net: introduce
- rps_default_mask]
-Message-ID: <20201120125039.6a88b0b1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CA+aaKfD_6qdNVRgr2TdDeuOau1UCFzRqWRB8iM-_GHV7mMrcsg@mail.gmail.com>
-References: <20201119162527.GB9877@fuller.cnet>
-        <CA+aaKfCMa1sOa6bMXFAaP6Wb=5ZgoAcnZAaP9aBmWwOzaAtcHw@mail.gmail.com>
-        <CA+aaKfD_6qdNVRgr2TdDeuOau1UCFzRqWRB8iM-_GHV7mMrcsg@mail.gmail.com>
+        id S1729885AbgKTUxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 15:53:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35712 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729541AbgKTUxl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 15:53:41 -0500
+Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6C2C061A04
+        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 12:53:40 -0800 (PST)
+Received: by mail-oi1-x243.google.com with SMTP id s18so10791998oih.1
+        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 12:53:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Tm5oQGDIWj52Bp56wXe66Os4mWl35FpTbKVQbQHjiA0=;
+        b=Q/ayshPw7MqVSNseI330O4AYlTJ4Xssc3g4VnY0j0IDdzFMEowMylO8koqPB01IYI9
+         t6ZFW87UdnQlfA0XS8AhgxB6uQ4CUOIKV+qklIG+JulBiVk0DopsABcifPjKvwZEFQyd
+         pMDL9hBMf8V10ABQl6nxC7VrDcQcLsUU+xZeM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Tm5oQGDIWj52Bp56wXe66Os4mWl35FpTbKVQbQHjiA0=;
+        b=kVfZFuAdhgvmNn54LdQx05bgTPghUV49KrX4Uq7gcwjjPh8o1uGjxClJchTAi1MIcu
+         bWdGZi4MMjC7rA1iWYkPuDdKrEIhQrKzT6pLgq8KDjJpzTAL1XpXNndRa4eMafRgPAwg
+         9WbWbgXEoEfDkiPeSJq4ZK9KShZaUgC7UrORCbRE5rznYhOGHaSNKHh61wivxDcA3Xrp
+         FyOyaWBOHvVnl7yu5JbjcObr7EmOq/QTmzw8k7wCXwgqjB+3zHRKyQoCq5lCQLMWvu0t
+         0vMZS6bjtKoBdsyziGpvV6E4WXLDiYdsR3s5/uM0rtnJbv74Ga4QE5Ou7wj+6vKFDLRU
+         psUQ==
+X-Gm-Message-State: AOAM530aQGJjDB34WXdO6iEGF6YBRkKrQyXTcpge9Jt2T0jaoIpWdQfs
+        sPpjgJhl9mqBJDA+3wKPlc6wFQP464skSA==
+X-Google-Smtp-Source: ABdhPJxUQAOjrgbPaygG1TE7u68onizVxuddBoVn7b5vLosR336wueDFz6trVyop82NTcE2LlQuyKw==
+X-Received: by 2002:aca:b8c3:: with SMTP id i186mr3692876oif.78.1605905618338;
+        Fri, 20 Nov 2020 12:53:38 -0800 (PST)
+Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com. [209.85.210.46])
+        by smtp.gmail.com with ESMTPSA id o63sm2168188ooa.10.2020.11.20.12.53.35
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 Nov 2020 12:53:36 -0800 (PST)
+Received: by mail-ot1-f46.google.com with SMTP id k3so9987626otp.12
+        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 12:53:35 -0800 (PST)
+X-Received: by 2002:a05:6830:1291:: with SMTP id z17mr15586229otp.229.1605905615285;
+ Fri, 20 Nov 2020 12:53:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201028142625.18642-1-kitakar@gmail.com> <CA+ASDXPX+fadTKLnxNVZQ0CehsHNwvWHXEdLqZVDoQ6hf6Wp8Q@mail.gmail.com>
+ <7db5b6cba1548308a63855ec1dda836b6d6d9757.camel@gmail.com>
+In-Reply-To: <7db5b6cba1548308a63855ec1dda836b6d6d9757.camel@gmail.com>
+From:   Brian Norris <briannorris@chromium.org>
+Date:   Fri, 20 Nov 2020 12:53:23 -0800
+X-Gmail-Original-Message-ID: <CA+ASDXNPcXtTWS8pOjfoxiYOAcRMmsqZwXe3mnxOw388MCEu9g@mail.gmail.com>
+Message-ID: <CA+ASDXNPcXtTWS8pOjfoxiYOAcRMmsqZwXe3mnxOw388MCEu9g@mail.gmail.com>
+Subject: Re: [PATCH] mwifiex: pcie: add enable_device_dump module parameter
+To:     Tsuchiya Yuto <kitakar@gmail.com>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>, verdre@v0yd.nl
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 20 Nov 2020 19:39:24 +0200 Marcel Apfelbaum wrote:
-> > The CPU isolation is done statically at system boot by setting
-> > Linux kernel parameters, So the container management component, in
-> > this case the Machine Configuration Operator (for Openshift) or the
-> > K8s counterpart can't really help. (actually they would help if a
-> > global RPS mask would exist)
-> >
-> > I tried to tweak the rps_cpus mask using the container management
-> > stack, but there is no sane way to do it, please let me get a
-> > little into the details.
-> >
-> > The k8s orchestration component that deals with injecting the
-> > network device(s) into the container is CNI, which is interface
-> > based and implemented by a lot of plugins, making it hardly
-> > feasible to go over all the existing plugins and change them. Also
-> > what about the 3rd party ones?
+(Sorry if anything's a bit slow here. I don't really have time to
+write out full proposals myself.)
 
-I'm not particularly amenable to the "changing user space is hard"
-argument. Especially that you don't appear to have given it an honest
-try.
+On Fri, Oct 30, 2020 at 3:30 AM Tsuchiya Yuto <kitakar@gmail.com> wrote:
+> Let me know if splitting this patch like this works. 1) The first patch
+> is to add this module parameter but don't change the default behavior.
 
-> > Writing a new CNI plugin and chain it into the existing one is also
-> > not an option AFAIK, they work at the network level and do not have
-> > access to sysfs (they handle the network namespaces). Even if it
-> > would be possible (I don't have a deep CNI understanding), it will
-> > require a cluster global configuration that is actually needed only
-> > for some of the cluster nodes.
-> >
-> > Another approach is to set the RPS configuration from the inside(of
-> > the container), but the /sys mount is read only for unprivileged
-> > containers, so we lose again.
-> >
-> > That leaves us with a host daemon hack:
-> > Since the virtual network devices are created in the host namespace
-> > and then "moved" into the container, we can listen to some udev
-> > event and write to the rps_cpus file after the virtual netdev is
-> > created and before it is moved (as stated above, the work is done
-> > by a CNI plugin implementation). That is of course extremely racy
-> > and not a valid solution.
-> >
-> >> > Possibly I can reduce the amount of new code introduced by this
-> >> > patchset removing some code duplication
-> >> > between rps_default_mask_sysctl() and flow_limit_cpu_sysctl().
-> >> > Would that make this change more acceptable? Or should I drop
-> >> > this altogether?  
-> >>
-> >> I'm leaning towards drop altogether, unless you can get some
-> >> support/review tags from other netdev developers. So far it
-> >> appears we only got a down vote from Saeed.
+That *could* be OK with me, although it's already been said that there
+are many people who dislike extra module parameters. I also don't see
+why this needs to be a module parameter at all. If you do #2 right,
+you don't really need this, as there are already several standard ways
+of doing this (e.g., via Kconfig, or via nl80211 on a per-device
+basis).
 
-As I said here, try to convince some other senior networking developers
-this is the right solution and I'll apply it.
+> 2) The second patch is to change the parameter value depending on the
+> DMI matching or something so that it doesn't break the existing users.
 
-This is giving me flashbacks of trying bend the kernel for OpenStack
-because there was no developer on my team who could change OpenStack.
+Point 2 sounds good, and this is the key point. Note that you can do
+point 2 without making it a module parameter. Just keep a flag in the
+driver-private structures.
 
-> > Any solution that will allow the user space to avoid the
-> > network soft IRQs on specific CPUs would be welcome.
-> >
-> > The proposed global mask is a solution, maybe there other ways?
+> But what I want to say here as well is that, if the firmware can be fixed,
+> we don't need a patch like this.
+
+Sure. That's also where we don't necessarily need more ways to control
+this from user space (e.g., module parameters), but just better
+detection of currently broken systems (in the driver). And if firmware
+ever gets fixed, we can undo the "broken device" detection.
+
+Brian
