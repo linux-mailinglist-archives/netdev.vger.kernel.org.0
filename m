@@ -2,96 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 537D42BA3D5
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 08:50:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08CE32BA3F2
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 08:53:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726523AbgKTHuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 02:50:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54836 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725785AbgKTHuI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 02:50:08 -0500
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAEDEC0613CF;
-        Thu, 19 Nov 2020 23:50:06 -0800 (PST)
-Received: by mail-pf1-x443.google.com with SMTP id q10so7092734pfn.0;
-        Thu, 19 Nov 2020 23:50:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=lEfZb4daZScUklBiNuYLi7g4cfVyq/meS+BFrwd1Myo=;
-        b=Ba2VXotgppH4nkVR4KQKycDMpluqrRUF+MIUS0NRuTh1919LMjlJSmUD5KkqFsN34W
-         C8AKvUR4aziTkR6rUKwdkVmiJV9Ab5bGDHVyIZ7h7ynNd8zncalcQr8rn5tG3v3jTIoW
-         hmABTx16qnq91g8/r8akWcmW2qESyms1LyjFBAmQId6WEviCxWPNEaFcUu1/B4ZlNsS+
-         h+5ranm4RMSjFSWiUDQ73O5QhoRyzo6NjF3P91P9tPpnNiX8sgxQJ1MkST/Cu9zz55z8
-         6667sj0CuYrUKXhNQ+8Oa8LaHcRVipKKB3L3tzyng1kRozvtP9DEbyC5T6exd58ksd/7
-         kMPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=lEfZb4daZScUklBiNuYLi7g4cfVyq/meS+BFrwd1Myo=;
-        b=ZMR35Ipu3XIVlgCqT0PLc65KjNLkdjBJangDIPovylWQS1XhSwVWskjZQUOxM1m74a
-         VEmwdFFCZKe1DOs18iNqW8s1FyKKqpAvjNCO45hzwvqoCY64c2KkgKQjvGuW5nDyRxzj
-         PEb2APbkl27mapI6DMCp4V1zoQgFNtj3fATtrol8BROkoznofUM0cjDWD71MWRCUzFuY
-         RpFa/KucidLzkU6xHlnhymrQ7FWd51CPpmHC74zvxS2tFDh5oifUMyWJVz9muF6GCN6r
-         uUstpxSDDkjp0XxZ9AFkmvCm1VIRDEyXjbzGc3bUAFWPm84BPpE5gn0HSpO6EtWSBc1H
-         tYOw==
-X-Gm-Message-State: AOAM533nPpwTOXwECrEaZJCNOUsNX8XwYz1LoRD9ViPpkpr9JDGdkuAf
-        +cj5iyeeExM4U0gKPSL9pg==
-X-Google-Smtp-Source: ABdhPJw3ttoEDnNbsCZcHmIudvdVSeUFeCLlz3DW9MtaBD5okjoozVR7QiqGeVQ3J6Sr8+sJtx/BRQ==
-X-Received: by 2002:a63:c053:: with SMTP id z19mr15681965pgi.418.1605858606440;
-        Thu, 19 Nov 2020 23:50:06 -0800 (PST)
-Received: from he-cluster.localdomain (67.216.221.250.16clouds.com. [67.216.221.250])
-        by smtp.gmail.com with ESMTPSA id v1sm2503851pjs.16.2020.11.19.23.50.05
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 19 Nov 2020 23:50:05 -0800 (PST)
-From:   xiakaixu1987@gmail.com
-X-Google-Original-From: kaixuxia@tencent.com
-To:     ionut@badula.org, kuba@kernel.org, leon@kernel.org,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Kaixu Xia <kaixuxia@tencent.com>
-Subject: [PATCH] net: adaptec: remove dead code in set_vlan_mode
-Date:   Fri, 20 Nov 2020 15:50:00 +0800
-Message-Id: <1605858600-7096-1-git-send-email-kaixuxia@tencent.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1726768AbgKTHxJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 02:53:09 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:5924 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726629AbgKTHxJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 02:53:09 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AK7o2NN004789;
+        Thu, 19 Nov 2020 23:53:02 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=subject : to :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pfpt0220;
+ bh=FYveW+VGLYA2OP/pWBSDEMo2489TKSjzIRRHzkReqBY=;
+ b=hbajZ5N4UjDHccfPQmKMgAx1kpkcai7aVshoW3afnjgJB7w8ZU8OnDjoND1TZHbQe1aY
+ qiSRBzdKNuR/Y4gnfUOGwVVZjLYehxp94JIW+XAH7Tj5MKun3ZIbrhti3FGfLPgBEagg
+ 4wP6UCmFFg7O4YMnJAH7P07TmwB4xh3D8SY0TQlzV4T+bmQD+BYukroVhOu9iKMUyD3v
+ Bz+eEXAGHUqanAqauNJ1qLL1hzjrIB8aE2ykaaN/bpr08jEy1R431tsgygTJxTNFSJnW
+ N8M+F/K3QtGwA6Hwe6MNZCurhfKvRq6y4r0RFHSlOq77TBePZPsRHxD140Zhw3nrZ7om 5Q== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 34w7ncy8bw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 19 Nov 2020 23:53:02 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 19 Nov
+ 2020 23:53:01 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 19 Nov 2020 23:53:01 -0800
+Received: from [10.193.39.169] (NN-LT0019.marvell.com [10.193.39.169])
+        by maili.marvell.com (Postfix) with ESMTP id AC5D13F703F;
+        Thu, 19 Nov 2020 23:52:59 -0800 (PST)
+Subject: Re: [EXT] [PATCH] aquantia: Remove the build_skb path
+To:     "Ramsay, Lincoln" <Lincoln.Ramsay@digi.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        "Dmitry Bogdanov [C]" <dbogdanov@marvell.com>
+References: <CY4PR1001MB23118EE23F7F5196817B8B2EE8E10@CY4PR1001MB2311.namprd10.prod.outlook.com>
+ <2b392026-c077-2871-3492-eb5ddd582422@marvell.com>
+ <CY4PR1001MB2311C0DA2840AFC20AE6AEB5E8E10@CY4PR1001MB2311.namprd10.prod.outlook.com>
+ <CY4PR1001MB231125B16A35324A79270373E8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
+ <CY4PR1001MB2311E1B5D8E2700C92E7BE2DE8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
+From:   Igor Russkikh <irusskikh@marvell.com>
+Message-ID: <12fbca7a-86c9-ab97-d052-2a5cb0a4f145@marvell.com>
+Date:   Fri, 20 Nov 2020 10:52:58 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:83.0) Gecko/20100101
+ Thunderbird/83.0
+MIME-Version: 1.0
+In-Reply-To: <CY4PR1001MB2311E1B5D8E2700C92E7BE2DE8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-20_03:2020-11-19,2020-11-20 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kaixu Xia <kaixuxia@tencent.com>
 
-The body of the if statement can be executed only when the variable
-vlan_count equals to 32, so the condition of the while statement can
-not be true and the while statement is dead code. Remove it.
 
-Reported-by: Tosk Robot <tencent_os_robot@tencent.com>
-Signed-off-by: Kaixu Xia <kaixuxia@tencent.com>
----
- drivers/net/ethernet/adaptec/starfire.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+On 20/11/2020 1:01 am, Ramsay, Lincoln wrote:
+> External Email
+> 
+> ----------------------------------------------------------------------
+> The build_skb path fails to allow for an SKB header, but the hardware
+> buffer it is built around won't allow for this anyway.
+> 
+> Just always use the slower codepath that copies memory into an
+> allocated SKB.
+> 
+> Signed-off-by: Lincoln Ramsay <lincoln.ramsay@opengear.com>
 
-diff --git a/drivers/net/ethernet/adaptec/starfire.c b/drivers/net/ethernet/adaptec/starfire.c
-index 555299737b51..ad27a9fa5e95 100644
---- a/drivers/net/ethernet/adaptec/starfire.c
-+++ b/drivers/net/ethernet/adaptec/starfire.c
-@@ -1754,14 +1754,9 @@ static u32 set_vlan_mode(struct netdev_private *np)
- 		filter_addr += 16;
- 		vlan_count++;
- 	}
--	if (vlan_count == 32) {
-+	if (vlan_count == 32)
- 		ret |= PerfectFilterVlan;
--		while (vlan_count < 32) {
--			writew(0, filter_addr);
--			filter_addr += 16;
--			vlan_count++;
--		}
--	}
-+
- 	return ret;
- }
- #endif /* VLAN_SUPPORT */
--- 
-2.20.0
+Acked-by: Igor Russkikh <irusskikh@marvell.com>
 
+Yep, that could be the only way to fix this for now.
+
+Have you tried to estimate any performance drops from this?
+
+The most harm may be here on smaller packets, for stuff like UDP.
+
+Regards,
+  Igor
