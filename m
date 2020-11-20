@@ -2,82 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15CD42BA1BC
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 06:22:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28A072BA1EE
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 06:41:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725791AbgKTFVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 00:21:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57074 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725208AbgKTFVY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Nov 2020 00:21:24 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 755F32237B;
-        Fri, 20 Nov 2020 05:21:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605849684;
-        bh=DamdNeE8S3vr+HkxBAfA07bHOd4V6Q+Sf3GVGHmKRKc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=T4kTwO2H43onA7VrcwUAZfM3rdgtx5uFXe0fymKLUGwiS4+i4B6mLrJ21UWg2dJZK
-         sY0uVFKXcnpZzf7BE2dNLQXG6WDOwV8/l/Y6cXSKFxTCbU8UQkWCV6xZupV1BChAmb
-         WTZKxHZI473r6Nt6Y+XjLB8VvcnU1PraZy5vtNe0=
-Date:   Thu, 19 Nov 2020 21:21:22 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] mdio_bus: suppress err message for reset gpio
- EPROBE_DEFER
-Message-ID: <20201119212122.665d5396@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <221941d6-2bb1-9be8-7031-08071a509542@gmail.com>
-References: <20201119203446.20857-1-grygorii.strashko@ti.com>
-        <1a59fbe1-6a5d-81a3-4a86-fa3b5dbfdf8e@gmail.com>
-        <cabad89e-23cc-18b3-8306-e5ef1ee4bfa6@ti.com>
-        <44a3c8c0-9dbd-4059-bde8-98486dde269f@gmail.com>
-        <20201119214139.GL1853236@lunn.ch>
-        <221941d6-2bb1-9be8-7031-08071a509542@gmail.com>
+        id S1725789AbgKTFkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 00:40:53 -0500
+Received: from mxout70.expurgate.net ([91.198.224.70]:55709 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725208AbgKTFkw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 00:40:52 -0500
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1kfzA6-000GFk-FZ; Fri, 20 Nov 2020 06:40:46 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1kfzA5-000JKw-Ks; Fri, 20 Nov 2020 06:40:45 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id D6745240043;
+        Fri, 20 Nov 2020 06:40:42 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 4F087240040;
+        Fri, 20 Nov 2020 06:40:42 +0100 (CET)
+Received: from mschiller01.dev.tdt.de (unknown [10.2.3.20])
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id E404720D9C;
+        Fri, 20 Nov 2020 06:40:41 +0100 (CET)
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     andrew.hendry@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        xie.he.0141@gmail.com
+Cc:     linux-x25@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Martin Schiller <ms@dev.tdt.de>
+Subject: [PATCH net-next v4 0/5] net/x25: netdev event handling
+Date:   Fri, 20 Nov 2020 06:40:31 +0100
+Message-ID: <20201120054036.15199-1-ms@dev.tdt.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
+        autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
 Content-Transfer-Encoding: quoted-printable
+X-purgate-ID: 151534::1605850846-0001FA9D-0BEA42DA/0/0
+X-purgate: clean
+X-purgate-type: clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Nov 2020 23:09:52 +0100 Heiner Kallweit wrote:
-> Am 19.11.2020 um 22:41 schrieb Andrew Lunn:
-> >>>> Doesn't checkpatch complain about line length > 80 here? =20
-> >>>
-> >>> :)
-> >>>
-> >>> commit bdc48fa11e46f867ea4d75fa59ee87a7f48be144
-> >>> Author: Joe Perches <joe@perches.com>
-> >>> Date:=C2=A0=C2=A0 Fri May 29 16:12:21 2020 -0700
-> >>>
-> >>> =C2=A0=C2=A0=C2=A0 checkpatch/coding-style: deprecate 80-column warni=
-ng
-> >>> =20
-> >>
-> >> Ah, again something learnt. Thanks for the reference. =20
-> >=20
-> > But it then got revoked for netdev. Or at least it was planned to
-> > re-impose 80 for netdev. I don't know if checkpatch got patched yet.
+---
 
-FWIW I had a patch for it but before I sent it Dave suggested I ask
-around and Alexei was opposed.
+Changes to v3:
+o another complete rework of the patch-set to split event handling
+  for layer2 (LAPB) and layer3 (X.25)
 
-And I don't have the strength to argue :)
+Changes to v2:
+o restructure complete patch-set
+o keep netdev event handling in layer3 (X.25)
+o add patch to fix lapb_connect_request() for DCE
+o add patch to handle carrier loss correctly in lapb
+o drop patch for x25_neighbour param handling
+  this may need fixes/cleanup and will be resubmitted later.
 
-I'll just tell people case by case when they have 4+ indentation levels
-in their code or use 40+ character variables/defines, in my copious
-spare time.=20
+Changes to v1:
+o fix 'subject_prefix' and 'checkpatch' warnings
 
-> At a first glance it sounds strange that subsystems may define own
-> rules for such basic things. But supposedly there has been a longer
-> emotional disucssion about this already ..
+---
 
-We do have our own comment style rule in networking since the beginning
-of time, and reverse xmas tree, so it's not completely crazy.
+Martin Schiller (5):
+  net/x25: handle additional netdev events
+  net/lapb: support netdev events
+  net/lapb: fix t1 timer handling for LAPB_STATE_0
+  net/x25: fix restart request/confirm handling
+  net/x25: remove x25_kill_by_device()
+
+ net/lapb/lapb_iface.c | 72 +++++++++++++++++++++++++++++++++++++++++++
+ net/lapb/lapb_timer.c | 11 +++++--
+ net/x25/af_x25.c      | 38 ++++++++++-------------
+ net/x25/x25_link.c    | 47 +++++++++++++++++++++-------
+ net/x25/x25_route.c   |  3 --
+ 5 files changed, 133 insertions(+), 38 deletions(-)
+
+--=20
+2.20.1
+
