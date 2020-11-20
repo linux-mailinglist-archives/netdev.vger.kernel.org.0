@@ -2,40 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B9DD2BB2CE
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 19:37:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5E022BB2D1
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 19:37:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729796AbgKTSZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 13:25:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47154 "EHLO mail.kernel.org"
+        id S1729832AbgKTSZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 13:25:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47212 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726898AbgKTSZw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Nov 2020 13:25:52 -0500
+        id S1729147AbgKTSZ7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Nov 2020 13:25:59 -0500
 Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BE6032408E;
-        Fri, 20 Nov 2020 18:25:50 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 33F332224C;
+        Fri, 20 Nov 2020 18:25:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605896751;
-        bh=uZWmxgfdOdFabCbBvzKOKhMyyNHWXjLVdgLFGOjqNzw=;
+        s=default; t=1605896758;
+        bh=dMsOIhXGuMLC9cmVk+Focv2+8LwcryL3ponccTcC2cU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mTHpbrAYm40qVEhS7bOxhqSfxV5D+O9MrDpJZYge2WHFJJ2P17vU16dF3LHrn8bVg
-         AD2vXnsRCxbJR0audAyptm3maXfo9TzPZOctXEEBEFS9sZXFlIu0NmUmFVSg6e5otW
-         QOPESblO+gnEHUF2+SepENZ7DsIFdjI9s4d/AHcw=
-Date:   Fri, 20 Nov 2020 12:25:57 -0600
+        b=vdoYk8zDjzIq4zK4+GavQCsqEvYIX+VZ0jtl62Y3MxYdgYnBybNhEf7E6qY/QkkRQ
+         fkZih2pMI0RVX33+kDfuDPbGl4/ysIHRpefnGqJcfop4MyvK60fxmEIkYkhjS2MMY4
+         ewF6r1BiOii/MbDXRXzHt1sn0KUhv18S5IKw7erg=
+Date:   Fri, 20 Nov 2020 12:26:03 -0600
 From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org,
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: [PATCH 011/141] ipv4: Fix fall-through warnings for Clang
-Message-ID: <198dc0032c5454fed7ebc9e8d05cb6463a6df563.1605896059.git.gustavoars@kernel.org>
+Subject: [PATCH 012/141] ixgbe: Fix fall-through warnings for Clang
+Message-ID: <a50df6c98bcda9454fa27b8d654b19528c5a8ae2.1605896059.git.gustavoars@kernel.org>
 References: <cover.1605896059.git.gustavoars@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -53,71 +51,66 @@ letting the code fall through to the next case.
 Link: https://github.com/KSPP/linux/issues/115
 Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- net/ipv4/ah4.c           | 1 +
- net/ipv4/esp4.c          | 1 +
- net/ipv4/fib_semantics.c | 1 +
- net/ipv4/ip_vti.c        | 1 +
- net/ipv4/ipcomp.c        | 1 +
- 5 files changed, 5 insertions(+)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_82599.c  | 2 ++
+ drivers/net/ethernet/intel/ixgbe/ixgbe_common.c | 1 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c    | 1 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c    | 1 +
+ 4 files changed, 5 insertions(+)
 
-diff --git a/net/ipv4/ah4.c b/net/ipv4/ah4.c
-index d99e1be94019..18d451414601 100644
---- a/net/ipv4/ah4.c
-+++ b/net/ipv4/ah4.c
-@@ -450,6 +450,7 @@ static int ah4_err(struct sk_buff *skb, u32 info)
- 	case ICMP_DEST_UNREACH:
- 		if (icmp_hdr(skb)->code != ICMP_FRAG_NEEDED)
- 			return 0;
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_82599.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_82599.c
+index 8d3798a32f0e..cdfff510a27b 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_82599.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_82599.c
+@@ -1542,6 +1542,7 @@ s32 ixgbe_fdir_set_input_mask_82599(struct ixgbe_hw *hw,
+ 	switch (input_mask->formatted.vm_pool & 0x7F) {
+ 	case 0x0:
+ 		fdirm |= IXGBE_FDIRM_POOL;
 +		break;
- 	case ICMP_REDIRECT:
+ 	case 0x7F:
  		break;
  	default:
-diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
-index 8b07f3a4f2db..a12ef89e8520 100644
---- a/net/ipv4/esp4.c
-+++ b/net/ipv4/esp4.c
-@@ -987,6 +987,7 @@ static int esp4_err(struct sk_buff *skb, u32 info)
- 	case ICMP_DEST_UNREACH:
- 		if (icmp_hdr(skb)->code != ICMP_FRAG_NEEDED)
- 			return 0;
+@@ -1557,6 +1558,7 @@ s32 ixgbe_fdir_set_input_mask_82599(struct ixgbe_hw *hw,
+ 			hw_dbg(hw, " Error on src/dst port mask\n");
+ 			return IXGBE_ERR_CONFIG;
+ 		}
 +		break;
- 	case ICMP_REDIRECT:
+ 	case IXGBE_ATR_L4TYPE_MASK:
  		break;
  	default:
-diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index 1f75dc686b6b..647a67516b80 100644
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -1872,6 +1872,7 @@ static int call_fib_nh_notifiers(struct fib_nh *nh,
- 		    (nh->fib_nh_flags & RTNH_F_DEAD))
- 			return call_fib4_notifiers(dev_net(nh->fib_nh_dev),
- 						   event_type, &info.info);
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
+index 62ddb452f862..8d5a01be1d99 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
+@@ -93,6 +93,7 @@ bool ixgbe_device_supports_autoneg_fc(struct ixgbe_hw *hw)
+ 		default:
+ 			break;
+ 		}
 +		break;
  	default:
  		break;
  	}
-diff --git a/net/ipv4/ip_vti.c b/net/ipv4/ip_vti.c
-index b957cbee2cf7..60e0311ec51f 100644
---- a/net/ipv4/ip_vti.c
-+++ b/net/ipv4/ip_vti.c
-@@ -349,6 +349,7 @@ static int vti4_err(struct sk_buff *skb, u32 info)
- 	case ICMP_DEST_UNREACH:
- 		if (icmp_hdr(skb)->code != ICMP_FRAG_NEEDED)
- 			return 0;
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+index df389a11d3af..0218f6c9b925 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+@@ -132,6 +132,7 @@ static void ixgbe_get_first_reg_idx(struct ixgbe_adapter *adapter, u8 tc,
+ 			else
+ 				*tx = (tc + 4) << 4;	/* 96, 112 */
+ 		}
 +		break;
- 	case ICMP_REDIRECT:
- 		break;
  	default:
-diff --git a/net/ipv4/ipcomp.c b/net/ipv4/ipcomp.c
-index b42683212c65..bbb56f5e06dd 100644
---- a/net/ipv4/ipcomp.c
-+++ b/net/ipv4/ipcomp.c
-@@ -31,6 +31,7 @@ static int ipcomp4_err(struct sk_buff *skb, u32 info)
- 	case ICMP_DEST_UNREACH:
- 		if (icmp_hdr(skb)->code != ICMP_FRAG_NEEDED)
- 			return 0;
+ 		break;
+ 	}
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
+index 22a874eee2e8..23ddfd79fc8b 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
+@@ -999,6 +999,7 @@ static int ixgbe_ptp_set_timestamp_mode(struct ixgbe_adapter *adapter,
+ 	switch (config->tx_type) {
+ 	case HWTSTAMP_TX_OFF:
+ 		tsync_tx_ctl = 0;
 +		break;
- 	case ICMP_REDIRECT:
+ 	case HWTSTAMP_TX_ON:
  		break;
  	default:
 -- 
