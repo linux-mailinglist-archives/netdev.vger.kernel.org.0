@@ -2,63 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E273E2BB9B5
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 00:11:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5F8E2BB9B7
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 00:11:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728514AbgKTXKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 18:10:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42918 "EHLO mail.kernel.org"
+        id S1728197AbgKTXKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 18:10:35 -0500
+Received: from mga02.intel.com ([134.134.136.20]:29811 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728124AbgKTXKF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Nov 2020 18:10:05 -0500
-Content-Type: text/plain; charset="utf-8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605913805;
-        bh=dufixlyJBj0eSptPMFnuG9nA7355vaonyoI8Q3U4z9E=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=iPL+yoFw48GtDwltRQ5aPXJMcb5BSzT1SdQKAKFGGO/Se6GJ6JDHvTf4+xOyCxmq3
-         DOaCRMoZwwBctzlPkxKYKgPbCQmRINSPRaQyjYntWBLRhWtdHegmUJ7zxfMLNo+6wf
-         GXh4QesCvRmt0Jc+ZH5n06U7JLKhVsFwHsP+xZ4s=
+        id S1727417AbgKTXKe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Nov 2020 18:10:34 -0500
+IronPort-SDR: N0V3iEno83xoZBhMuRHwe3LYSEOEA0c/P39O+CwnOdQ2YjK+YMCFzBepS/+jaM+JtltCvFyWD5
+ zEOpgxiX/X2A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9811"; a="158596758"
+X-IronPort-AV: E=Sophos;i="5.78,357,1599548400"; 
+   d="scan'208";a="158596758"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2020 15:10:34 -0800
+IronPort-SDR: Qx/lMTZaPnHCRmDRCE/knT2SyKnev0TcR9rRii4yajJbKr7RzmK7gkT69B4cpBIYOiLDgXUTQk
+ SK4Y2PAk6ceQ==
+X-IronPort-AV: E=Sophos;i="5.78,357,1599548400"; 
+   d="scan'208";a="533724244"
+Received: from jbrandeb-mobl4.amr.corp.intel.com (HELO localhost) ([10.212.67.220])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2020 15:10:33 -0800
+Date:   Fri, 20 Nov 2020 15:10:32 -0800
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        davem@davemloft.net, kuba@kernel.org, brouer@redhat.com,
+        echaudro@redhat.com, john.fastabend@gmail.com
+Subject: Re: [PATCH net-next 0/3] mvneta: access skb_shared_info only on
+ last frag
+Message-ID: <20201120151032.00006bd2@intel.com>
+In-Reply-To: <cover.1605889258.git.lorenzo@kernel.org>
+References: <cover.1605889258.git.lorenzo@kernel.org>
+X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2] net: dsa: avoid potential use-after-free error
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160591380496.14060.1060350832010889995.git-patchwork-notify@kernel.org>
-Date:   Fri, 20 Nov 2020 23:10:04 +0000
-References: <20201119110906.25558-1-ceggers@arri.de>
-In-Reply-To: <20201119110906.25558-1-ceggers@arri.de>
-To:     Christian Eggers <ceggers@arri.de>
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, olteanv@gmail.com,
-        vivien.didelot@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Lorenzo Bianconi wrote:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
-
-On Thu, 19 Nov 2020 12:09:06 +0100 you wrote:
-> If dsa_switch_ops::port_txtstamp() returns false, clone will be freed
-> immediately. Shouldn't store a pointer to freed memory.
+> Build skb_shared_info on mvneta_rx_swbm stack and sync it to xdp_buff
+> skb_shared_info area only on the last fragment.
+> Avoid avoid unnecessary xdp_buff initialization in mvneta_rx_swbm routine.
+> This a preliminary series to complete xdp multi-buff in mvneta driver.
 > 
-> Signed-off-by: Christian Eggers <ceggers@arri.de>
-> Fixes: 146d442c2357 ("net: dsa: Keep a pointer to the skb clone for TX timestamping")
-> ---
-> Changes since v1:
-> - Fixed "Fixes:" tag (and configured my GIT)
-> - Adjusted commit description
+> Lorenzo Bianconi (3):
+>   net: mvneta: avoid unnecessary xdp_buff initialization
+>   net: mvneta: move skb_shared_info in mvneta_xdp_put_buff
+>   net: mvneta: alloc skb_shared_info on the mvneta_rx_swbm stack
 > 
-> [...]
-
-Here is the summary with links:
-  - [net-next,v2] net: dsa: avoid potential use-after-free error
-    https://git.kernel.org/netdev/net-next/c/30abc9cd9c6b
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+>  drivers/net/ethernet/marvell/mvneta.c | 55 +++++++++++++++++----------
+>  1 file changed, 35 insertions(+), 20 deletions(-)
+> 
 
 
+For the series:
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
