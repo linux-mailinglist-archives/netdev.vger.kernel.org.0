@@ -2,53 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE4C92BB8C9
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 23:21:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4602B2BB8CA
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 23:21:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728256AbgKTWTT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 17:19:19 -0500
-Received: from www62.your-server.de ([213.133.104.62]:47664 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726255AbgKTWTT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 17:19:19 -0500
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kgEkO-0003QV-K7; Fri, 20 Nov 2020 23:19:16 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kgEkN-000Wf7-Q2; Fri, 20 Nov 2020 23:19:16 +0100
-Subject: Re: [PATCH bpf-next] bpf: simplify task_file_seq_get_next()
-To:     Song Liu <songliubraving@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     kernel-team@fb.com, ast@kernel.org, andrii@kernel.org,
-        kpsingh@chromium.org, john.fastabend@gmail.com,
-        Yonghong Song <yhs@fb.com>
-References: <20201120002833.2481110-1-songliubraving@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <9c2ef257-7eed-2440-661d-36e1e67613d8@iogearbox.net>
-Date:   Fri, 20 Nov 2020 23:19:08 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1728523AbgKTWTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 17:19:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60600 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726255AbgKTWTn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Nov 2020 17:19:43 -0500
+Received: from lore-desk.redhat.com (unknown [151.66.8.153])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 678E42240C;
+        Fri, 20 Nov 2020 22:19:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605910782;
+        bh=Di7Cz04BB/E+yUiou1mut0FsoFRKNagyabopREDRbHk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=hcZRtCRPa+obmfBhQF125uRJya0h5Q6QRoMw+gHSNFlDsoSbUQARWHJfW5vuuPB2V
+         BTNNHJONiwnNYDXZKgN3p6z7plyY2hIgk3MplKwk6RDPxD8f1e8VtZyNXvASRxAioG
+         MB4iPTyq4c++Lkhqx3ix++BOBCqafX6NouqGtuj4=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        brouer@redhat.com, ilias.apalodimas@linaro.org
+Subject: [PATCH net-next] net: page_pool: Add page_pool_put_page_bulk() to page_pool.rst
+Date:   Fri, 20 Nov 2020 23:19:34 +0100
+Message-Id: <937ccc89a82302a06744bcb6d253f0e95651caa2.1605910519.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-In-Reply-To: <20201120002833.2481110-1-songliubraving@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25994/Fri Nov 20 14:09:26 2020)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/20/20 1:28 AM, Song Liu wrote:
-> Simplify task_file_seq_get_next() by removing two in/out arguments: task
-> and fstruct. Use info->task and info->files instead.
-> 
-> Cc: Yonghong Song <yhs@fb.com>
-> Signed-off-by: Song Liu <songliubraving@fb.com>
+Introduce page_pool_put_page_bulk() entry into the API section of
+page_pool.rst
 
-Applied, thanks!
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ Documentation/networking/page_pool.rst | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/Documentation/networking/page_pool.rst b/Documentation/networking/page_pool.rst
+index 43088ddf95e4..e848f5b995b8 100644
+--- a/Documentation/networking/page_pool.rst
++++ b/Documentation/networking/page_pool.rst
+@@ -97,6 +97,14 @@ a page will cause no race conditions is enough.
+ 
+ * page_pool_get_dma_dir(): Retrieve the stored DMA direction.
+ 
++* page_pool_put_page_bulk(): It tries to refill a bulk of count pages into the
++  ptr_ring cache holding ptr_ring producer lock. If the ptr_ring is full,
++  page_pool_put_page_bulk() will release leftover pages to the page allocator.
++  page_pool_put_page_bulk() is suitable to be run inside the driver NAPI tx
++  completion loop for the XDP_REDIRECT use case.
++  Please consider the caller must not use data area after running
++  page_pool_put_page_bulk(), as this function overwrites it.
++
+ Coding examples
+ ===============
+ 
+-- 
+2.28.0
+
