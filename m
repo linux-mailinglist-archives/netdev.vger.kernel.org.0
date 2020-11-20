@@ -2,88 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E27552BB1EA
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 19:02:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 314BC2BB212
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 19:07:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729232AbgKTSCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 13:02:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36832 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728438AbgKTSCA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 13:02:00 -0500
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A45A9C0613CF;
-        Fri, 20 Nov 2020 10:01:59 -0800 (PST)
-Received: by mail-ej1-x641.google.com with SMTP id y17so14044091ejh.11;
-        Fri, 20 Nov 2020 10:01:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZHlPDc9Juyz9GO1VkrQBp9QuPjGIDPQ8AofEX/x8Cbo=;
-        b=pfZsxNWBLDC2OuhMxDpD7tpabZcdanHEgvnLCF43ZE6dh4fIq+x6OGl3SqCkivi5X4
-         kR2sy6XXhA1geH5kNq6X1l5El+YwY0ASFAQVTe3rQT74DOxBjFJOtHiWujhEhYrXSbJs
-         cJ+WJreH8JfTb2Q/aehF/UUzLcxjuqkLQ4aCwtlWDOveYCtIkAvNB+qkWJUb3vUZXgd9
-         dIbMXpP2XmRzoclTN5WAG7xK0aILXIaMWcQ/ndQPOQbJivC1YI8nAAsg3ZcSun9bVQs4
-         5FSikJGMnYMo2Cy/Ft7unZUETmSyUJL2B+Ew6iUYww/OBEplu0WsxKrb93VWdeiK4NLT
-         DL1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZHlPDc9Juyz9GO1VkrQBp9QuPjGIDPQ8AofEX/x8Cbo=;
-        b=BQeKovkwxjDtZaIgOsnFkH3+26jRurrMnaYkhMmWXMKFSNeAwFp9pLSXYChEj0hzzr
-         rmgyzkQExS8G+jYcnv0o72koqFL0Z1LDhlNvhT+M+W0JL6dDfZXCoYKYZrWXDabJRH+x
-         7fXM3WKf2+btmUIWWE5yeVoNqW+2APUo57rgUXfMnNAERRvrwd5D4AqMxFWyD2iJRNRE
-         ldtA8LUHm7OFCJQnCg9Bop+d7BMmv5WRMRFDrxtHqZk/EesP8zjZ1KrAPp1WaDjIvMCE
-         lJbnmk2JVXodUHoN0jFyPwwNJpF3W5IaPu/FuIV8AzlaTJIxNYi3fffRulS62H/zm++G
-         FaYA==
-X-Gm-Message-State: AOAM530Mj3474eOkpuETO446LqTd60uAikMGlOMDGide2h8MyibY8PRx
-        zDGVd59egAYBy+EHr8GZhcE=
-X-Google-Smtp-Source: ABdhPJzcLHScrILGBpSkLukYGwUpHOE+eU+4Ysaad5rEwj5QtGKsFtJQuoCQ2eZ/UigaTGBq6vM37w==
-X-Received: by 2002:a17:907:2657:: with SMTP id ar23mr16286661ejc.386.1605895318334;
-        Fri, 20 Nov 2020 10:01:58 -0800 (PST)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id 27sm860119ejy.19.2020.11.20.10.01.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Nov 2020 10:01:54 -0800 (PST)
-Date:   Fri, 20 Nov 2020 20:01:49 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Christian Eggers <ceggers@arri.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2] net: dsa: avoid potential use-after-free
- error
-Message-ID: <20201120180149.wp4ehikbc2ngvwtf@skbuf>
-References: <20201119110906.25558-1-ceggers@arri.de>
+        id S1728974AbgKTSGP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 13:06:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41418 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728988AbgKTSGO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Nov 2020 13:06:14 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 866A22240B;
+        Fri, 20 Nov 2020 18:06:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605895574;
+        bh=5QsJhiNlDYF6e5+XXwRtT9R/LRbCv501uDAH0fgcN0Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KYlbryWpufKcNB1iYssy8CcD1+/3Gqqh2EdgFmZ9rTm6f4AXmNUy1gjQvi6APx9PN
+         r1AmcaO7XP5Y1fOxjaLen/tWVjpFkEzsN+vCD9HbgGQJ5gIbMizYt3/SxLds3QVXjh
+         6sY9n3QbkPvlEyGj3Ok3Z22jd+4VvnGPpHqfme3w=
+Date:   Fri, 20 Nov 2020 10:06:12 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Anmol Karn <anmol.karan123@gmail.com>
+Cc:     ralf@linux-mips.org, davem@davemloft.net, saeed@kernel.org,
+        gregkh@linuxfoundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hams@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzkaller-bugs@googlegroups.com,
+        syzbot+a1c743815982d9496393@syzkaller.appspotmail.com
+Subject: Re: [Linux-kernel-mentees] [PATCH v5 net] rose: Fix Null pointer
+ dereference in rose_send_frame()
+Message-ID: <20201120100612.62d9d770@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201119191043.28813-1-anmol.karan123@gmail.com>
+References: <20201115114448.GA40574@Thinkpad>
+        <20201119191043.28813-1-anmol.karan123@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201119110906.25558-1-ceggers@arri.de>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 19, 2020 at 12:09:06PM +0100, Christian Eggers wrote:
-> If dsa_switch_ops::port_txtstamp() returns false, clone will be freed
-> immediately. Shouldn't store a pointer to freed memory.
+On Fri, 20 Nov 2020 00:40:43 +0530 Anmol Karn wrote:
+> rose_send_frame() dereferences `neigh->dev` when called from
+> rose_transmit_clear_request(), and the first occurrence of the
+> `neigh` is in rose_loopback_timer() as `rose_loopback_neigh`,
+> and it is initialized in rose_add_loopback_neigh() as NULL.
+> i.e when `rose_loopback_neigh` used in rose_loopback_timer()
+> its `->dev` was still NULL and rose_loopback_timer() was calling
+> rose_rx_call_request() without checking for NULL.
 > 
-> Signed-off-by: Christian Eggers <ceggers@arri.de>
-> Fixes: 146d442c2357 ("net: dsa: Keep a pointer to the skb clone for TX timestamping")
-> ---
+> - net/rose/rose_link.c
+> This bug seems to get triggered in this line:
+> 
+> rose_call = (ax25_address *)neigh->dev->dev_addr;
+> 
+> Fix it by adding NULL checking for `rose_loopback_neigh->dev`
+> in rose_loopback_timer().
+> 
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Suggested-by: Jakub Kicinski <kuba@kernel.org>
+> Reported-by: syzbot+a1c743815982d9496393@syzkaller.appspotmail.com
+> Tested-by: syzbot+a1c743815982d9496393@syzkaller.appspotmail.com
+> Link: https://syzkaller.appspot.com/bug?id=9d2a7ca8c7f2e4b682c97578dfa3f236258300b3
+> Signed-off-by: Anmol Karn <anmol.karan123@gmail.com>
 
-IMO this is one of the cases to which the following from
-Documentation/process/stable-kernel-rules.rst does not apply:
-
- - It must fix a real bug that bothers people (not a, "This could be a
-   problem..." type thing).
-
-Therefore, specifying "net-next" as the target tree here as opposed to
-"net" is the correct choice.
-
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Tested-by: Vladimir Oltean <olteanv@gmail.com>
+Applied to net, thanks!
