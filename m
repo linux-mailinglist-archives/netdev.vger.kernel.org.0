@@ -2,95 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B07C2BB2CA
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 19:37:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0A1A2BB2C8
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 19:37:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729757AbgKTSZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 13:25:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40520 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728698AbgKTSZe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 13:25:34 -0500
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F44C0613CF;
-        Fri, 20 Nov 2020 10:25:32 -0800 (PST)
-Received: by mail-yb1-xb42.google.com with SMTP id v92so9432225ybi.4;
-        Fri, 20 Nov 2020 10:25:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KBYX9TYTbJdxYhEwWVL/NQM7uRu/QHpfNrlmGwGN0TY=;
-        b=aUPIPXUX+Wn8gXRl/PyDsG1CGYbL+NL0DVNsSZJO4PwWHXVzpXxYePX4AN+oPugQxP
-         bDt2rYDBbYdLJMbj38Vnra4rhqodXQRGFWxn2VHiZc+HzozVRBRfpIniBmrl68O/H1rL
-         EJc2Klyr3gjjGFq1KEj9zoMB1qMzX/lUDcaNSr3STkmVP8IoK0UvMqGyiY5M50dH3C6I
-         aSbPXZ9fuk/DZYBdTBzMoNbGtC4pXkHO9u75DefATJ1c4Vx8KGirX3uXMVLuVq4/tGnz
-         Nc+nFE+dmnCYoeYCCQqGT5p5WI4Rcugf8qawCwRRFjDkiQIUFqvUoiK3N/66hZuXBiAM
-         Yo5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KBYX9TYTbJdxYhEwWVL/NQM7uRu/QHpfNrlmGwGN0TY=;
-        b=RWwIuSjdUasTABLh0+NrhYzjkWKZvDpJ9giSxIXMdnbHj1EuXsKvYM4rrmhasXikJx
-         6a4PkJt15v7jZZGr0fIPZQT1PE+9FlfpqFfQ8w/7n0hwe6jmHiUGV5kfP10dfMxyw3if
-         gAG9tN7bL+uwJEpGrCiMduwpJIErVihFC1K1Ix7dREpJxAS4L3QicWUTyc+cBJlyU+Tw
-         wwx9+iRG+Uk6bI7ssICi1O6BmMDLXDRRFil2a8qlDpf3rardFVIeyAi66hf4DfZcRRtU
-         1DBbZmTQCAwlUSlooaTJWanjhm5mNma3L5IFMaaEW+cTTRe/jrJqjHcwHZ/2YCFJm49v
-         6POg==
-X-Gm-Message-State: AOAM53377kgaadx7IzXo9cY9KlAs4lK9vx564UEtHtx0STnymh8mEW8n
-        BL+0zqpY0swrDUlstRvaD/g8+naE8t2ZA5kxkKk=
-X-Google-Smtp-Source: ABdhPJwNO6gyMO/4ACaFrSCTa8WxKkeWKgf/SvHYqG5ud43m/7hrMnrahQYgjP/3AFTYvBVbqy+svxpCIC+sHGQHTuQ=
-X-Received: by 2002:a25:585:: with SMTP id 127mr20922695ybf.425.1605896732144;
- Fri, 20 Nov 2020 10:25:32 -0800 (PST)
+        id S1729739AbgKTSZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 13:25:31 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46914 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728698AbgKTSZa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Nov 2020 13:25:30 -0500
+Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9FF6A2224C;
+        Fri, 20 Nov 2020 18:25:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605896729;
+        bh=W0doVExi+7l5tGvbjfwECBr+mScLF6o8Q5o+wMEAbOQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=a8D/XtnmN3onvQ7+QylrGfLegFPEylbYocI6o4ld6v/HtHfOOwiQBKnNZKFmAHU/i
+         9bU8O21b6Msl6ofAQR0dy9g8IGiEbQHFpMI6zAZmMSefS8f/70a6mIvxHAXwMSE5Hk
+         HJg8K5Zzu0NSdWOKKoxzzOlG5u/zpNuGHa9t3pIM=
+Date:   Fri, 20 Nov 2020 12:25:35 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: [PATCH 009/141] igb: Fix fall-through warnings for Clang
+Message-ID: <f4696db7798ce0efd9e1d10ce28f6413a09c3c57.1605896059.git.gustavoars@kernel.org>
+References: <cover.1605896059.git.gustavoars@kernel.org>
 MIME-Version: 1.0
-References: <20201119232244.2776720-1-andrii@kernel.org> <20201119232244.2776720-3-andrii@kernel.org>
- <20201120182019.zlzmntlnaewcc5ue@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20201120182019.zlzmntlnaewcc5ue@kafai-mbp.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 20 Nov 2020 10:25:21 -0800
-Message-ID: <CAEf4BzZmkR80AF-gz6NyLH21q=un1Wfpobo=TwpahX+YJ-t3ww@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/6] libbpf: add internal helper to load BTF data
- by FD
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1605896059.git.gustavoars@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 20, 2020 at 10:20 AM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> On Thu, Nov 19, 2020 at 03:22:40PM -0800, Andrii Nakryiko wrote:
-> [ ... ]
->
-> > +int btf__get_from_id(__u32 id, struct btf **btf)
-> > +{
-> > +     struct btf *res;
-> > +     int btf_fd;
-> > +
-> > +     *btf = NULL;
-> > +     btf_fd = bpf_btf_get_fd_by_id(id);
-> > +     if (btf_fd < 0)
-> > +             return 0;
-> It should return an error.
->
+In preparation to enable -Wimplicit-fallthrough for Clang, fix multiple
+warnings by explicitly adding multiple break statements instead of just
+letting the code fall through to the next case.
 
-That would break the original behavior with (ret == 0 && btf == NULL),
-but I think it's more consistent, so I'll fix this and will add Fixes:
-tag.
+Link: https://github.com/KSPP/linux/issues/115
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/net/ethernet/intel/igb/e1000_phy.c   | 1 +
+ drivers/net/ethernet/intel/igb/igb_ethtool.c | 1 +
+ drivers/net/ethernet/intel/igb/igb_ptp.c     | 1 +
+ 3 files changed, 3 insertions(+)
 
-> > +
-> > +     res = btf_get_from_fd(btf_fd, NULL);
-> > +     close(btf_fd);
-> > +     if (IS_ERR(res))
-> > +             return PTR_ERR(res);
-> > +
-> > +     *btf = res;
-> > +     return 0;
-> >  }
-> >
+diff --git a/drivers/net/ethernet/intel/igb/e1000_phy.c b/drivers/net/ethernet/intel/igb/e1000_phy.c
+index 8c8eb82e6272..a018000f7db9 100644
+--- a/drivers/net/ethernet/intel/igb/e1000_phy.c
++++ b/drivers/net/ethernet/intel/igb/e1000_phy.c
+@@ -836,6 +836,7 @@ s32 igb_copper_link_setup_igp(struct e1000_hw *hw)
+ 			break;
+ 		case e1000_ms_auto:
+ 			data &= ~CR_1000T_MS_ENABLE;
++			break;
+ 		default:
+ 			break;
+ 		}
+diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
+index 28baf203459a..486d3e67d3a9 100644
+--- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
++++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
+@@ -3022,6 +3022,7 @@ static int igb_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *cmd)
+ 		break;
+ 	case ETHTOOL_SRXCLSRLDEL:
+ 		ret = igb_del_ethtool_nfc_entry(adapter, cmd);
++		break;
+ 	default:
+ 		break;
+ 	}
+diff --git a/drivers/net/ethernet/intel/igb/igb_ptp.c b/drivers/net/ethernet/intel/igb/igb_ptp.c
+index 7cc5428c3b3d..f3ff565da0a1 100644
+--- a/drivers/net/ethernet/intel/igb/igb_ptp.c
++++ b/drivers/net/ethernet/intel/igb/igb_ptp.c
+@@ -1008,6 +1008,7 @@ static int igb_ptp_set_timestamp_mode(struct igb_adapter *adapter,
+ 	switch (config->tx_type) {
+ 	case HWTSTAMP_TX_OFF:
+ 		tsync_tx_ctl = 0;
++		break;
+ 	case HWTSTAMP_TX_ON:
+ 		break;
+ 	default:
+-- 
+2.27.0
+
