@@ -2,311 +2,302 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 825CD2BAFBE
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 17:14:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9420A2BAFE3
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 17:19:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728590AbgKTQKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 11:10:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47980 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726172AbgKTQKl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 11:10:41 -0500
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E37C0613CF;
-        Fri, 20 Nov 2020 08:10:40 -0800 (PST)
-Received: by mail-io1-xd44.google.com with SMTP id n129so10432558iod.5;
-        Fri, 20 Nov 2020 08:10:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2GpLuC94BV6/RYWqRiMS3YUh12UrnIT7+tAMu5CvXQ4=;
-        b=OtztqmU9SlU1Ic90ouFCspAjma3hX/SGve/Lm1xbdA+WNpt/33wd/pS1MwiHQnl5gd
-         ZS6s6vl7j3NMFHCuVo2LJOU2jTlJmUVUV5Ma7DVDoTGpB3fEg17Fa9ui6r4rdglj3C6J
-         Kn81c8OGRxmfSNIV+B07DVQPJZIvmLIZAFS0Z/3TX+fGAYnD0vkaWVh1BaW6QOfqYnkD
-         aF53ec1egM1etzSM3QO4EK32ZkPjJYp/jk1DPv5N+kd9lyCkElD3YQP0S4nMJxB7ocj8
-         vGp4XdSdf7e+QXV2akPV5T09icPS9tSgUrkFVwHn3AHH1e7vmODpGtztOA27dOEaplIm
-         z1pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2GpLuC94BV6/RYWqRiMS3YUh12UrnIT7+tAMu5CvXQ4=;
-        b=fRm5cO+MLpA7VjnSJQerdI99ef9zhbm5UYnl7v+ooJKy76emzMGeXVUTcgkyEEsMdR
-         34uzDLhb3iGfdpUKyP33gS8KJIauPS044ltDP+TAY1F0karoxXEUFMOFp5UfMjvEbPdK
-         ltktn42GCyrWK/d9cuu/lIhAwad0HBVhWIW1NNMw2UK7rCdgKMjrXZwMYdc8iMUdj1xP
-         mgUoGcPdGTXJ5jx0LgJmCd4CZ8/xiZ3dQZ4mJvr3COWmqHMYH86lpzvcMv3JOpFn8TQq
-         NYQnmZZAHtcfLGjk7ETpx/XFHTVJMOHrTLfcHUxfORGZpK7RHQasdIDrZGZYlYG9HKvy
-         kJKA==
-X-Gm-Message-State: AOAM5336GThk30WaIcmfxCd4uUdTkaiUDeI1rXaJeFhJnQ5i4i+WvZ6C
-        2LsPVqR7Xdhhnc5A9D1Yp5Md4jQDPWRwnX2LyYs=
-X-Google-Smtp-Source: ABdhPJywhEVBYdf2dA/7D7STW/HkhfC8gW0W71UhVKiDQ8Gd0FB/R/uexlDBEEZfRBBXGG+gmNldbNAYdyM9q3/8ZQc=
-X-Received: by 2002:a02:1301:: with SMTP id 1mr19366869jaz.83.1605888639160;
- Fri, 20 Nov 2020 08:10:39 -0800 (PST)
+        id S1728850AbgKTQRG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 11:17:06 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:12019 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728834AbgKTQRE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 11:17:04 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fb7ec0b0002>; Fri, 20 Nov 2020 08:17:15 -0800
+Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL109.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 20 Nov
+ 2020 16:17:03 +0000
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.44) by
+ HQMAIL111.nvidia.com (172.20.187.18) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Fri, 20 Nov 2020 16:17:03 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DihsY/FgQuES4FUV64Rm+9CaYTrBeytQ+S7yd5gbJf0TzO1KRyI5KZUjXgml4U5fygNBU/j0rjeYqXLcy0Xn4Ure02EKhxCPAYjmTqPX2Jmbu7/gh5AEuRYeHPME/5UHNdlvN6wvz2pUyO3A9In1xBMeo5YfKU/3RMQU1bMpkusSzsZKOWcdGykw7ikZKaBf+X59xxnyD1wiLLPDMRUHPFAA6j31H2xCNtEPESizsSivv4YFPhkcO0MDR1wE14YqO+ozTsmL12Jq+NP7UEG64Ya4BlwG4Gq0bxEzvqAW7u768mHIj5stODuPQ/dvLXRB6Hmcpmm5n/h4BGVUV9hyEg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=puRQKXKkgnaa4qwBfeifpMQxVg5wLhoIDrcgqSAgO2o=;
+ b=YEfbe52ehKnFhXNiq6l9jWkll56JHUfM94JLsJndL9RRCq3NkVCpBG6/40QPVPLnrDBvB4znAv8IURy+PxzASl8r062WHsicQs97XxEmYaQFE0TdmW1IL0MlIlPORopp7yLNBO3HvDbQHTN5o0we7BpKuqiRQtymIVRCGyql5YIobcfwIta+o8drzAvB2JvCWlEhZuPZyExrQancdYuuEupGNXgROr7Psd1RIaIRrONsB+BJ+JlhPBrqic+WvwBVNHTw6CLUOWwfjJiqCa6ypXmAIkg+qa/0jwecFIR9Ok8f6WL4vqP0voYDqmPBJC2gH5jMehsGCAyMAQY03bowTA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM5PR1201MB0108.namprd12.prod.outlook.com (2603:10b6:4:58::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.24; Fri, 20 Nov
+ 2020 16:17:02 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::e40c:730c:156c:2ef9]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::e40c:730c:156c:2ef9%7]) with mapi id 15.20.3589.022; Fri, 20 Nov 2020
+ 16:17:02 +0000
+Date:   Fri, 20 Nov 2020 12:16:59 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Saeed Mahameed <saeed@kernel.org>, Parav Pandit <parav@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [PATCH net-next 00/13] Add mlx5 subfunction support
+Message-ID: <20201120161659.GE917484@nvidia.com>
+References: <20201116145226.27b30b1f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <cdd576ebad038a3a9801e7017b7794e061e3ddcc.camel@kernel.org>
+ <20201116175804.15db0b67@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <BY5PR12MB43229F23C101AFBCD2971534DCE20@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <20201117091120.0c933a4c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <BY5PR12MB4322F01A4505AF21F696DCA2DCE20@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <20201118182319.7bad1ca6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <28239ff66a27c0ddf8be4f1461e27b0ac0b02871.camel@kernel.org>
+ <20201119140017.GN244516@ziepe.ca>
+ <20201119193526.014b968b@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20201119193526.014b968b@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+X-ClientProxiedBy: BL0PR02CA0123.namprd02.prod.outlook.com
+ (2603:10b6:208:35::28) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-References: <52ee1b515df977b68497b1b08290d00a22161279.1605518147.git.lucien.xin@gmail.com>
- <CAKgT0UdnAfYA1h2dRb4naWZRn5CBfe-0jGd_Vr=hmejX6hR1og@mail.gmail.com>
- <CADvbK_dDXeOJ_vBRDo-ZUNgRY=ZaJ+44zjCJOCyw_3hBBAi6xw@mail.gmail.com>
- <CAKgT0UeDBQv+OcVo0PNfA=RCHwnSvOxMSb1TG-bEpef7gJxzdg@mail.gmail.com> <CADvbK_depZ618farzMhxUUB9=T9+gosw6iFKesBc2WKw1oguwA@mail.gmail.com>
-In-Reply-To: <CADvbK_depZ618farzMhxUUB9=T9+gosw6iFKesBc2WKw1oguwA@mail.gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 20 Nov 2020 08:10:27 -0800
-Message-ID: <CAKgT0Ud5ft8VBvkaRDewa7qDwJDH8Z=LaaQqiGYVCsu2rgCh-Q@mail.gmail.com>
-Subject: Re: [PATCH net-next] ip_gre: remove CRC flag from dev features in gre_gso_segment
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Guillaume Nault <gnault@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (156.34.48.30) by BL0PR02CA0123.namprd02.prod.outlook.com (2603:10b6:208:35::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.21 via Frontend Transport; Fri, 20 Nov 2020 16:17:01 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1kg95n-008rfm-Re; Fri, 20 Nov 2020 12:16:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1605889035; bh=puRQKXKkgnaa4qwBfeifpMQxVg5wLhoIDrcgqSAgO2o=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType;
+        b=JMuAvEyjBaa+IX3Vk2PL7l8t40VEfe01UJJyhQyZckauowcz77YJG0w2lPUQhNaw0
+         iilxjMeeM6nXeI9uZtmtuq8hy/+XyTtoRiCbu0ZZlw523U0SFO83Jm8FRcK8wOqrt2
+         n9haPztNOzLaeTmzK/alsqn8quo8coRKa4VogbQC9OKBbkn2ur12OvWw+gJ6+WUTl+
+         E6MyU3aHUJRwnL08EE0PHrOoQL15ejLOwCNolgzX9N60TRCnSoxj3odZz5V2PeOZfW
+         8FJ2lzj1S3BwxpDNPhGE+++KzLPUwSaAMMyHLQO2HQhGApsGGl+6w3ZLHSKTuxOjog
+         NTA11yS8FPBAA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 20, 2020 at 2:23 AM Xin Long <lucien.xin@gmail.com> wrote:
->
-> On Fri, Nov 20, 2020 at 1:24 AM Alexander Duyck
-> <alexander.duyck@gmail.com> wrote:
-> >
-> > On Wed, Nov 18, 2020 at 9:53 PM Xin Long <lucien.xin@gmail.com> wrote:
-> > >
-> > > On Thu, Nov 19, 2020 at 4:35 AM Alexander Duyck
-> > > <alexander.duyck@gmail.com> wrote:
-> > > >
-> > > > On Mon, Nov 16, 2020 at 1:17 AM Xin Long <lucien.xin@gmail.com> wrote:
-> > > > >
-> > > > > This patch is to let it always do CRC checksum in sctp_gso_segment()
-> > > > > by removing CRC flag from the dev features in gre_gso_segment() for
-> > > > > SCTP over GRE, just as it does in Commit 527beb8ef9c0 ("udp: support
-> > > > > sctp over udp in skb_udp_tunnel_segment") for SCTP over UDP.
-> > > > > It could set csum/csum_start in GSO CB properly in sctp_gso_segment()
-> > > > > after that commit, so it would do checksum with gso_make_checksum()
-> > > > > in gre_gso_segment(), and Commit 622e32b7d4a6 ("net: gre: recompute
-> > > > > gre csum for sctp over gre tunnels") can be reverted now.
-> > > > >
-> > > > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> > > > > ---
-> > > > >  net/ipv4/gre_offload.c | 14 +++-----------
-> > > > >  1 file changed, 3 insertions(+), 11 deletions(-)
-> > > > >
-> > > > > diff --git a/net/ipv4/gre_offload.c b/net/ipv4/gre_offload.c
-> > > > > index e0a2465..a5935d4 100644
-> > > > > --- a/net/ipv4/gre_offload.c
-> > > > > +++ b/net/ipv4/gre_offload.c
-> > > > > @@ -15,12 +15,12 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
-> > > > >                                        netdev_features_t features)
-> > > > >  {
-> > > > >         int tnl_hlen = skb_inner_mac_header(skb) - skb_transport_header(skb);
-> > > > > -       bool need_csum, need_recompute_csum, gso_partial;
-> > > > >         struct sk_buff *segs = ERR_PTR(-EINVAL);
-> > > > >         u16 mac_offset = skb->mac_header;
-> > > > >         __be16 protocol = skb->protocol;
-> > > > >         u16 mac_len = skb->mac_len;
-> > > > >         int gre_offset, outer_hlen;
-> > > > > +       bool need_csum, gso_partial;
-> > > > >
-> > > > >         if (!skb->encapsulation)
-> > > > >                 goto out;
-> > > > > @@ -41,10 +41,10 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
-> > > > >         skb->protocol = skb->inner_protocol;
-> > > > >
-> > > > >         need_csum = !!(skb_shinfo(skb)->gso_type & SKB_GSO_GRE_CSUM);
-> > > > > -       need_recompute_csum = skb->csum_not_inet;
-> > > > >         skb->encap_hdr_csum = need_csum;
-> > > > >
-> > > > >         features &= skb->dev->hw_enc_features;
-> > > > > +       features &= ~NETIF_F_SCTP_CRC;
-> > > > >
-> > > > >         /* segment inner packet. */
-> > > > >         segs = skb_mac_gso_segment(skb, features);
-> > > >
-> > > > Why just blindly strip NETIF_F_SCTP_CRC? It seems like it would make
-> > > > more sense if there was an explanation as to why you are stripping the
-> > > > offload. I know there are many NICs that could very easily perform
-> > > > SCTP CRC offload on the inner data as long as they didn't have to
-> > > > offload the outer data. For example the Intel NICs should be able to
-> > > > do it, although when I wrote the code up enabling their offloads I
-> > > > think it is only looking at the outer headers so that might require
-> > > > updating to get it to not use the software fallback.
-> > > >
-> > > > It really seems like we should only be clearing NETIF_F_SCTP_CRC if
-> > > > need_csum is true since we must compute the CRC before we can compute
-> > > > the GRE checksum.
-> > > Right, it's also what Jakub commented, thanks.
-> > >
-> > > >
-> > > > > @@ -99,15 +99,7 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
-> > > > >                 }
-> > > > >
-> > > > >                 *(pcsum + 1) = 0;
-> > > > > -               if (need_recompute_csum && !skb_is_gso(skb)) {
-> > > > > -                       __wsum csum;
-> > > > > -
-> > > > > -                       csum = skb_checksum(skb, gre_offset,
-> > > > > -                                           skb->len - gre_offset, 0);
-> > > > > -                       *pcsum = csum_fold(csum);
-> > > > > -               } else {
-> > > > > -                       *pcsum = gso_make_checksum(skb, 0);
-> > > > > -               }
-> > > > > +               *pcsum = gso_make_checksum(skb, 0);
-> > > > >         } while ((skb = skb->next));
-> > > > >  out:
-> > > > >         return segs;
-> > > >
-> > > > This change doesn't make much sense to me. How are we expecting
-> > > > gso_make_checksum to be able to generate a valid checksum when we are
-> > > > dealing with a SCTP frame? From what I can tell it looks like it is
-> > > > just setting the checksum to ~0 and checksum start to the transport
-> > > > header which isn't true because SCTP is using a CRC, not a 1's
-> > > > complement checksum, or am I missing something? As such in order to
-> > > > get the gre checksum we would need to compute it over the entire
-> > > > payload data wouldn't we? Has this been tested with an actual GRE
-> > > > tunnel that had checksums enabled? If so was it verified that the GSO
-> > > > frames were actually being segmented at the NIC level and not at the
-> > > > GRE tunnel level?
-> > > Hi Alex,
-> > >
-> > > I think you're looking at net.git? As on net-next.git, sctp_gso_make_checksum()
-> > > has been fixed to set csum/csum_start properly by Commit 527beb8ef9c0 ("udp:
-> > > support sctp over udp in skb_udp_tunnel_segment"), so that we compute it over
-> > > the entire payload data, as you said above:
-> >
-> > No. I believe the code is still wrong. That is what I was pointing
-> > out. The GSO_CB->csum is supposed to be the checksum of the header
-> > from csum_start up to the end of the payload. In the case of the 1's
-> > complement checksum that is normally the inverse of the pseudo-header
-> > checksum. We don't normally compute it and instead assume it since it
-> > is offloaded. For a CRC based checksum you would need to compute the
-> > checksum over the entire packet since CRC and checksum are very
-> > different computations. That is why we were calling skb_checksum in
-> > the original code.
-> Hi, Alex, sorry for having confused you, see below.
->
-> >
-> > > @@ -27,7 +27,11 @@ static __le32 sctp_gso_make_checksum(struct sk_buff *skb)
-> > >  {
-> > >         skb->ip_summed = CHECKSUM_NONE;
-> > >         skb->csum_not_inet = 0;
-> > > -       gso_reset_checksum(skb, ~0);
-> > > +       /* csum and csum_start in GSO CB may be needed to do the UDP
-> > > +        * checksum when it's a UDP tunneling packet.
-> > > +        */
-> > > +       SKB_GSO_CB(skb)->csum = (__force __wsum)~0;
-> > > +       SKB_GSO_CB(skb)->csum_start = skb_headroom(skb) + skb->len;
-> > >         return sctp_compute_cksum(skb, skb_transport_offset(skb));
-> > >  }
-> > >
-> > > And yes, this patch has been tested with GRE tunnel checksums enabled.
-> > > (... icsum ocsum).
-> > > And yes, it was segmented in the lower NIC level, and we can make it by:
-> > >
-> > > # ethtool -K gre1 tx-sctp-segmentation on
-> > > # ethtool -K veth0 tx-sctp-segmentation off
-> > >
-> > > (Note: "tx-checksum-sctp" and "gso" are on for both devices)
-> > >
-> > > Thanks.
-> >
-> > I would also turn off Tx and Rx checksum offload on your veth device
-> > in order to make certain you aren't falsely sending data across
-> > indicating that the checksums are valid when they are not. It might be
-> > better if you were to run this over an actual NIC as that could then
-> > provide independent verification as it would be a fixed checksum test.
-> >
-> > I'm still not convinced this is working correctly. Basically a crc32c
-> > is not the same thing as a 1's complement checksum so you should need
-> > to compute both if you have an SCTP packet tunneled inside a UDP or
-> > GRE packet with a checksum. I don't see how computing a crc32c should
-> > automatically give you a 1's complement checksum of ~0.
->
-> On the tx Path [1] below, the sctp crc checksum is calculated in
-> sctp_gso_make_checksum() [a], where it calls *sctp_compute_cksum()*
-> to do that, and as for the code in it:
->
->     SKB_GSO_CB(skb)->csum = (__force __wsum)~0;
->     SKB_GSO_CB(skb)->csum_start = skb_headroom(skb) + skb->len;
+On Thu, Nov 19, 2020 at 07:35:26PM -0800, Jakub Kicinski wrote:
+> On Thu, 19 Nov 2020 10:00:17 -0400 Jason Gunthorpe wrote:
+> > Finally, in the mlx5 model VDPA is just an "application". It asks the
+> > device to create a 'RDMA' raw ethernet packet QP that is uses rings
+> > formed in the virtio-net specification. We can create it in the kernel
+> > using mlx5_vdpa, and we can create it in userspace through the RDMA
+> > subsystem. Like any "RDMA" application it is contained by the security
+> > boundary of the PF/VF/SF the mlx5_core is running on.
+> 
+> Thanks for the write up!
 
-Okay, so I think I know how this is working, but the number of things
-relied on is ugly. Normally assuming skb_headroom(skb) + skb->len
-being valid for this would be a non-starter. I was assuming you
-weren't doing the 1's compliment checksum because you weren't using
-__skb_checksum to generate it.
+No problem!
 
-If I am not mistaken SCTP GSO uses the GSO_BY_FRAGS and apparently
-none of the frags are using page fragments within the skb. Am I
-understanding correctly? One thing that would help to address some of
-my concerns would be to clear instead of set NETIF_F_SG in
-sctp_gso_segment since your checksum depends on linear skbs.
+> The part that's blurry to me is VDPA.
 
-> is prepared for doing 1's complement checksum (for outer UDP/GRE), and used
-> in gre_gso_segment() [b], where it calls gso_make_checksum() to do that
-> when need_csum is set. Note that, here it played a TRICK:
->
-> I set SKB_GSO_CB->csum_start to the end of this packet and
-> SKB_GSO_CB->csum = ~0 manually, so that in gso_make_checksum() it will do
-> the 1's complement checksum for outer UDP/GRE by summing all packet bits up.
-> See gso_make_checksum() (called by gre_gso_segment()):
->
->  unsigned char *csum_start = skb_transport_header(skb);
->  int plen = (skb->head + SKB_GSO_CB(skb)->csum_start) - csum_start;
->  /* now plen is from udp header to the END of packet. */
->  __wsum partial = SKB_GSO_CB(skb)->csum;
->
->  return csum_fold(csum_partial(csum_start, plen, partial));
->
-> So yes, here it does compute both if I have an SCTP packet tunnelled inside
-> a UDP or GRE packet with a checksum.
+Okay, I think I see where the gap is, I'm going to elaborate below so
+we are clear.
 
-Assuming you have the payload data in the skb->data section. Normally
-payload is in page frags. That is why I was concerned. You have to
-have guarantees in place that there will not be page fragments
-attached to the skb.
+> I was under the impression that for VDPA the device is supposed to
+> support native virtio 2.0 (or whatever the "HW friendly" spec was).
 
-> But you're right that "the GSO_CB->csum is supposed to be the checksum
-> of the header from csum_start up to the end of the payload". In this
-> TRICK, csum_start is set to the end of packet,  and csum should be
-> set to 0, and I will fix it in sctp_gso_make_checksum(), thanks!
->
-> -       SKB_GSO_CB(skb)->csum = (__force __wsum)~0;
-> +       SKB_GSO_CB(skb)->csum = (__force __wsum)0;
->
-> Does it make sense to you now?
+I think VDPA covers a wide range of things.
 
-For a 1's compliment checksum ~0 and 0 are the same thing. So that
-value doesn't matter. The issue as I have pointed out is the fact that
-you are assuming a linear skb, and I am not certain that is what you
-will actually get out of the call to skb_segment that you make in
-sctp_gso_segment.
+The basic idea is starting with the all SW virtio-net implementation
+we can move parts to HW. Each implementation will probably be a little
+different here. The kernel vdpa subsystem is a toolbox to mix the
+required emulation and HW capability to build a virtio-net PCI
+interface.
 
-> Path [1]:
->  sctp_gso_segment.cold.6+0x3c/0x87 [sctp] <----- [a]
->  inet_gso_segment+0x152/0x3c0
->  skb_mac_gso_segment+0xa2/0x110
->  gre_gso_segment+0x138/0x380 <---- [b]
->  inet_gso_segment+0x152/0x3c0
->  skb_mac_gso_segment+0xa2/0x110
->  __skb_gso_segment+0xba/0x160
->  validate_xmit_skb+0x147/0x300
->  __dev_queue_xmit+0x569/0x920
->  ip_finish_output2+0x264/0x570
->  ip_output+0x6d/0x100
->  iptunnel_xmit+0x16e/0x200
->  ip_tunnel_xmit+0x437/0x870 [ip_tunnel]
->  ipgre_xmit+0x17b/0x210 [ip_gre]
->  dev_hard_start_xmit+0xd4/0x200
->  __dev_queue_xmit+0x78c/0x920
->  ip_finish_output2+0x194/0x570
->  ip_output+0x6d/0x100
->  __ip_queue_xmit+0x15d/0x430
->  sctp_packet_transmit+0x706/0x9b0 [sctp]
->  sctp_outq_flush+0xd7/0x8d0 [sctp]
->  sctp_cmd_interpreter.isra.21+0x721/0x1a20 [sctp]
->  sctp_do_sm+0xc3/0x2a0 [sctp]
->  sctp_primitive_SEND+0x2f/0x40 [sctp]
->  sctp_sendmsg_to_asoc+0x5fa/0x870 [sctp]
->  sctp_sendmsg+0x692/0x9d0 [sctp]
->  sock_sendmsg+0x54/0x60
+The most key question to ask of any VDPA design is "what does the VDPA
+FW do with the packet once the HW accelerator has parsed the
+virtio-net descriptor?".
+
+The VDPA world has refused to agree on this due to vendor squabbling,
+but mlx5 has a clear answer:
+
+ VDPA Tx generates an ethernet packet and sends it out the SF/VF port
+ through a tunnel to the representor and then on to the switchdev.
+
+Other VDPA designs have a different answer!!
+
+This concept is so innate to how Mellanox views the world it is not
+surprising me that the cover letters and patch descriptions don't
+belabor this point much :)
+
+I'm going to deep dive through this answer below. I think you'll see
+this is the most sane and coherent architecture with the tools
+available in netdev.. Mellanox thinks the VDPA world should
+standardize on this design so we can have a standard control plane.
+
+> You're saying it's a client application like any other - do I understand
+> it right that the hypervisor driver will be translating descriptors
+> between virtio and device-native then?
+
+No, the hypervisor creates a QP and tells the HW that this QP's
+descriptor format follows virtio-net. The QP processes those
+descriptors in HW and generates ethernet packets.
+
+A "client application like any other" means that the ethernet packets
+VDPA forms are identical to the ones netdev or RDMA forms. They are
+all delivered into the tunnel on the SF/VF to the representor and on
+to the switch. See below
+
+> The vdpa parent is in the hypervisor correct?
+> 
+> Can a VDPA device have multiple children of the same type?
+
+I'm not sure parent/child are good words here.
+
+The VDPA emulation runs in the hypervisor, and the virtio-net netdev
+driver runs in the guest. The VDPA is attached to a switchdev port and
+representor tunnel by virtue of its QPs being created under a SF/VF.
+
+If we imagine a virtio-rdma, then you might have a SF/VF hosting both
+VDPA and VDPA-RDMA which emulate two PCI devices assigned to a
+VM. Both of these peer virtio's would generate ethernet packets for TX
+on the SF/VF port into the tunnel through the represntor and to the
+switch.
+
+> Why do we have a representor for a SF, if the interface is actually VDPA?
+> Block and net traffic can't reasonably be treated the same by the
+> switch.
+
+I think you are focusing on queues, the architecture at PF/SF/VF is
+not queue based, it is packet based.
+
+At the physical mlx5 the netdev has a switchdev. On that switch I can
+create a *switch port*.
+
+The switch port is composed of a representor and a SF/VF. They form a
+tunnel for packets.
+
+The representor is the hypervisor side of the tunnel and contains all
+packets coming out of and into the SF/VF.
+
+The SF/VF is the guest side of the tunnel and has a full NIC.
+
+The SF/VF can be:
+ - Used in the same OS as the switch
+ - Assigned to a guest VM as a PCI device
+ - Assigned to another processor in the SmartNIC case.
+
+In all cases if I use a queue on a SF/VF to generate an ethernet
+packet then that packet *always* goes into the tunnel to the
+representor and goes into a switch. It is always contained by any
+rules on the switch side. If the switch is set so the representor is
+VLAN tagged then a queue on a SF/VF *cannot* escape the VLAN tag.
+
+Similarly SF/VF cannot Rx any packets that are not sent into the
+tunnel, meaning the switch controls what packets go into the
+representor, through the tunnel and to the SF.
+
+Yes, block and net traffic are all reduced to ethernet packets, sent
+through the tunnel to the representor and treated by the switch. It is
+no different than a physical switch. If there is to be some net/block
+difference it has to be represented in the ethernet packets, eg with
+vlan or something.
+
+This is the fundamental security boundary of the architecture. The
+SF/VF is a security domain and the only exchange of information from
+that security domain to the hypervisor security domain is the tunnel
+to the representor. The exchange across the boundary is only *packets*
+not queues.
+
+Essentially it exactly models the physical world. If I phyically plug
+in a NIC to a switch then the "representor" is the switch port in the
+physical switch OS and the "SF/VF" is the NIC in the server.
+
+The switch OS does not know or care what the NIC is doing. It does not
+know or care if the NIC is doing VDPA, or if the packets are "block"
+or "net" - they are all just packets by the time it gets to switching.
+
+> Also I'm confused how block device can bind to mlx5_core - in that case
+> I'm assuming the QP is bound 1:1 with a QP on the SmartNIC side, and
+> that QP is plugged into an appropriate backend?
+
+Every mlx5_core is a full multi-queue instance. It can have a huge
+number of queues with no problems. Do not focus on the
+queues. *queues* are irrelevant here.
+
+Queues always have two ends. In this model one end is at the CPU and
+the other is just ethernet packets. The purpose of the queue is to
+convert CPU stuff into ethernet packets and vice versa. A mlx5 device
+has a wide range of accelerators that can do all sorts of
+transformations between CPU and packets built into the queues.
+
+A queue can only be attached to a single mlx5_core, meaning all the
+ethernet packets the queue sources/sinks must come from the PF/SF/VF
+port. For SF/VF this port is connected to a tunnel to a representor to
+the switch. Thus every queue has its packet side connected to the
+switch.
+
+However, the *queue* is an opaque detail of how the ethernet packets
+are created from CPU data.
+
+It doesn't matter if the queue is running VDPA, RDMA, netdev, or block
+traffic - all of these things inherently result in ethernet packets,
+and the hypervisor can't tell how the packet was created.
+
+The architecture is *not* like virtio. virtio queues are individual
+tunnels between hypervisor and guest.
+
+This is the key detail: A VDPA queue is *not a tunnel*. It is a engine
+to covert CPU data in virtio-net format to ethernet packets and
+deliver those packet to the SF/VF end of the tunnel to the representor
+and then to the switch. The tunnel is the SF/VF and representor
+pairing, NOT the VDPA queue.
+
+Looking at the logical life of a Tx packet from a VM doing VDPA:
+ - VM's netdev builds the skb and writes a vitio-net formed descriptor
+   to a send qeuue
+ - VM triggers a doorbell via write to a BAR. In mlx5 this write goes
+   to the device - qemu mmaps part of the device BAR to the guest
+ - The HW begins processing a queue. The queue is in virtio-net format
+   so it fetches the descriptor and now has the skb data
+ - The HW forms the skb into an ethernet packet and delivers it to the
+   representor through the tunnel, which immediately sends it to the
+   HW switch. The VDPA QP in the SF/VF is now done.
+
+ - In the switch the HW determines the packet is an exception. It
+   applies RSS rules/etc and dynamically identifies on a per-packet
+   basis what hypervisor queue the packet should be delivered to.
+   This queue is in the hypervisor, and is in mlx5 native format.
+ - The choosen hypervisor queue recives this packet and begins
+   processing. It gets a receive buffer and writes the packet,
+   triggers an interrupts. This queue is now done.
+
+ - hypervisor netdev now has the packet. It does the exception path
+   in netdev and puts the SKB back on another queue for TX to the
+   physical port. This queue is in mlx5 native format, the packet goes
+   to the physical port.
+
+It traversed three queues. The HW dynamically selected the hypervisor
+queue the VDPA packet is delivered to based *entirely* on switch
+rules. The originating queue only informs the switch of what SF/VF
+(and thus switch port) generated the packet.
+
+At no point does the hypervisor know the packet originated from a VDPA
+QP.
+
+The RX side the similar, each PF/SF/VF port has a selector that
+chooses which queue each packet goes to. That chooses how the packet
+is converted to CPU. Each PF/SF/VF can have a huge number of
+selectors, and SF/VF source their packets from the logical tunnel
+attached to a representor which receives packets from the switch.
+
+The selector is how the cross subsystem sharing of the ethernet port
+works, regardless of PF/SF/VF.
+
+Again the hypervisor side has *no idea* what queue the packet will be
+selected to when it delivers the packet to the representor side of the
+tunnel.
+
+Jason
