@@ -2,119 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D217F2BA587
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 10:11:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B1E42BA59A
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 10:13:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727309AbgKTJJx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 04:09:53 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:5588 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726765AbgKTJJu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 04:09:50 -0500
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AK95Jhd009126;
-        Fri, 20 Nov 2020 04:09:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references; s=pp1;
- bh=zcEYbh9PEbpo0u35NzLSoomzBB8B/DZ7utv2nWVLZxs=;
- b=TDVk/93qq15OGc4IGqYEkz5FLe/BObNqqgJUpSA9O8P1SLIZGv+DCvuoSrUCq2yi++b3
- dMVp5BsIeVPEMXN8pXzO1xPOw5xUa24xo5egLR8EC8gWdcMxZN0y46LjoJhPlonAuNqW
- 4rdegcAP1Jw3ix10/U+ZKO6nbnJDJh6g3agaaUxUaF0InGRqq+r13S++YsLkkCos3m0z
- h7ImPrhOI83o6J7SR2bOJyXpCdJqm9f+QgbgRTn5g/P9V+9qlGdRgx0Tg3R1TSY/hvZR
- bOa2Gwr94OgH5Nj2mllMug+lXz2uMsxO4mK/3gw4dzidDOXD6QmX41QjTTHb97+vheD8 Vg== 
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 34xakj0fes-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 Nov 2020 04:09:47 -0500
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0AK98Nri002779;
-        Fri, 20 Nov 2020 09:09:44 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma06fra.de.ibm.com with ESMTP id 34t6ghb5hx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 Nov 2020 09:09:44 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0AK99fQ364881136
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 20 Nov 2020 09:09:41 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A613142049;
-        Fri, 20 Nov 2020 09:09:41 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 61DB142047;
-        Fri, 20 Nov 2020 09:09:41 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 20 Nov 2020 09:09:41 +0000 (GMT)
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-netdev <netdev@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH net 4/4] s390/qeth: fix tear down of async TX buffers
-Date:   Fri, 20 Nov 2020 10:09:39 +0100
-Message-Id: <20201120090939.101406-5-jwi@linux.ibm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201120090939.101406-1-jwi@linux.ibm.com>
-References: <20201120090939.101406-1-jwi@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-20_03:2020-11-19,2020-11-20 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- spamscore=0 impostorscore=0 clxscore=1015 malwarescore=0 mlxlogscore=994
- lowpriorityscore=0 phishscore=0 mlxscore=0 bulkscore=0 adultscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011200056
+        id S1727165AbgKTJMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 04:12:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39328 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727070AbgKTJMq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 04:12:46 -0500
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3E9EC0613CF
+        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 01:12:45 -0800 (PST)
+Received: by mail-lj1-x22c.google.com with SMTP id p12so9280399ljc.9
+        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 01:12:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=9r5GOiFFo33h84co2LKPKA1Auxr9ykx71pUfOcoWfUM=;
+        b=obIcuxbYxxNdSnj0Y8U9InyTQPsYhw2HyBe7eXDoNhz2gL662dNWjarBtQXWs5Ricr
+         GkNravJu2GCQgg4j21fm9svNd/9PMgjz5I0xe0+JwOFCy1xjdNQ7Qwoy/IpDeYN5zFwg
+         HMQsmcu6vlJbNFhWR9PbaC+3Cp62i0jBAYbjIBnNHzu28JyL/LxpWJ6ya6um4//aSL28
+         tKt1rTxtI/RrXgkLekjnrcAqqmGfJUkqJ0+tVWx0oHChjS7ADgxyVwzOgDhTYOUHELpd
+         Vpmn7J1RoTiYJyZBfryP9ufbOnpCEP3xxgM0mve0b4ptmnpf3ik2IsPTUEScqtEIlu3C
+         X5Hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=9r5GOiFFo33h84co2LKPKA1Auxr9ykx71pUfOcoWfUM=;
+        b=QD6/OYYDF7MTvQ2Cr1qkjQpKt3vMIQPM1zhg7jqVQ+22I5NhUjgU56/JxHRvzdiWpW
+         ChJa/EAjLieRgeyp3GD1UU28VAlL8QW6uqBKvh5jZ7GlfJA5tI50Z4vstyLLsivnrJSt
+         6N/K8Y1bedguz2dx+aebBt/rjmSkUVb3h6akkCj7pFAg44+QYSmxhbtO0aAymIDocpfq
+         atYmXYuglPkp6P9wqhSATFPce9VGmE7NXSif9OKwf1Ioqug7aiMTCon6bYgDr6vrp3hS
+         J3h+7984Ffe6nHJrSdC91hEFdQ11vijRYYZZpt6P7CXFSNVrCrFLaGvakfgI8t6G5eSp
+         kkZg==
+X-Gm-Message-State: AOAM5331bFWZskg1Y1TRaZkboV8+2vbvxuFl70xr/47gBxttWDVEA4qY
+        i8fSuZy2jzgkwTfef49LcsVFYg==
+X-Google-Smtp-Source: ABdhPJw00H38Dgoi0uPcMvtPWsl6eW+ApGZttfsMzyOs2CiHH35SmQkw5kPIAphdK6zrgY8gAUtzcw==
+X-Received: by 2002:a2e:9e87:: with SMTP id f7mr6922352ljk.358.1605863564270;
+        Fri, 20 Nov 2020 01:12:44 -0800 (PST)
+Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id d29sm278567lfj.51.2020.11.20.01.12.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Nov 2020 01:12:43 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Antoine Tenart <atenart@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: net: phy: Dealing with 88e1543 dual-port mode
+In-Reply-To: <20201120004048.GO1551@shell.armlinux.org.uk>
+References: <20201119152246.085514e1@bootlin.com> <20201119145500.GL1551@shell.armlinux.org.uk> <20201119162451.4c8d220d@bootlin.com> <87k0uh9dd0.fsf@waldekranz.com> <20201119231613.GN1551@shell.armlinux.org.uk> <87eekoanvj.fsf@waldekranz.com> <20201120004048.GO1551@shell.armlinux.org.uk>
+Date:   Fri, 20 Nov 2020 10:12:43 +0100
+Message-ID: <875z609yt0.fsf@waldekranz.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When qeth_iqd_tx_complete() detects that a TX buffer requires additional
-async completion via QAOB, it might fail to replace the queue entry's
-metadata (and ends up triggering recovery).
+On Fri, Nov 20, 2020 at 00:40, Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
+> I think you're advocating calling the fiber interface "SGMII", which
+> would be totally wrong.
+>
+> SGMII is a Cisco modification of 802.3 1000base-X to allow 10M and 100M
+> speeds to be used over a single serdes lane in each direction.
+>
+> 1000base-X is what you run over a fiber link. This is not SGMII. Using
+> "SGMII" for 1000base-X is incorrect, but a common abuse of the term in
+> industry. Abusing a term does not make it correct, especially when it
+> comes to defining further standards.
+>
+> (This is one of my pet peaves, sorry.)
 
-Assume now that the device gets torn down, overruling the recovery.
-If the QAOB notification then arrives before the tear down has
-sufficiently progressed, the buffer state is changed to
-QETH_QDIO_BUF_HANDLED_DELAYED by qeth_qdio_handle_aob().
+Nomenclature is very important, no excuse necessary.
 
-The tear down code calls qeth_drain_output_queue(), where
-qeth_cleanup_handled_pending() will then attempt to replace such a
-buffer _again_. If it succeeds this time, the buffer ends up dangling in
-its replacement's ->next_pending list ... where it will never be freed,
-since there's no further call to qeth_cleanup_handled_pending().
-
-But the second attempt isn't actually needed, we can simply leave the
-buffer on the queue and re-use it after a potential recovery has
-completed. The qeth_clear_output_buffer() in qeth_drain_output_queue()
-will ensure that it's in a clean state again.
-
-Fixes: 72861ae792c2 ("qeth: recovery through asynchronous delivery")
-Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
----
- drivers/s390/net/qeth_core_main.c | 6 ------
- 1 file changed, 6 deletions(-)
-
-diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
-index 48f9e4a027bf..e27319de7b00 100644
---- a/drivers/s390/net/qeth_core_main.c
-+++ b/drivers/s390/net/qeth_core_main.c
-@@ -500,12 +500,6 @@ static void qeth_cleanup_handled_pending(struct qeth_qdio_out_q *q, int bidx,
- 
- 		}
- 	}
--	if (forced_cleanup && (atomic_read(&(q->bufs[bidx]->state)) ==
--					QETH_QDIO_BUF_HANDLED_DELAYED)) {
--		/* for recovery situations */
--		qeth_init_qdio_out_buf(q, bidx);
--		QETH_CARD_TEXT(q->card, 2, "clprecov");
--	}
- }
- 
- static void qeth_qdio_handle_aob(struct qeth_card *card,
--- 
-2.17.1
-
+You are right that SGMII is not the term I am looking for, but I am not
+sure 1000base-X is either. I am looking for a word that describes the
+serial interface that can run in either 1000base-X or 100base-FX mode
+(and possibly other ancient/proprietary modes). Maybe just "serdes"?
