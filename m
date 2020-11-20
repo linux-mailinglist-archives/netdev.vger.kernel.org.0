@@ -2,40 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7A552BB36E
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 19:38:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C2892BB371
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 19:38:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730838AbgKTSeP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 13:34:15 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52986 "EHLO mail.kernel.org"
+        id S1730857AbgKTSeV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 13:34:21 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53032 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730386AbgKTSeO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Nov 2020 13:34:14 -0500
+        id S1730848AbgKTSeT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Nov 2020 13:34:19 -0500
 Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 75B3D24137;
-        Fri, 20 Nov 2020 18:34:12 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 42E2824124;
+        Fri, 20 Nov 2020 18:34:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605897253;
-        bh=pakzbWYl9qSDvdQo1JS77RCssPZjiEqwWKcWcsHWfRM=;
+        s=default; t=1605897258;
+        bh=LkP90+IldsCEssBoMIIJIVEBsSJUZiiRjlMlCbMHCN8=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=j5b/ZB0VwCSsPLIdQIexWZJdYtCXQ862AOzXRZWoyjKYl1wK7UJC27Rf25lLyu81F
-         yYpp9TLltVMFhrJZ3+aQTsVHP/VBVIMRoOoOQbnuSZSsfAKIG1s3H8whWJRUMhzAwq
-         1Fzvjljmy8H3CDsRolZvs3CKxkpuiBCmbesFK4nk=
-Date:   Fri, 20 Nov 2020 12:34:18 -0600
+        b=jPe4qsAgFXUgT7198akCzbI0y12yn3yR0cBMoXgYFH41C8VproujatSpshDgo7xnI
+         i8UgLUzKjSBLCTW/KUHzZaZiCcY/yTB30yJsvGBADbDIOE+mt0VfkoFj1AJC4SjjLA
+         px/6W70asnHX+MG+9LtGPQLPVEm8o60CBFO4k3Ig=
+Date:   Fri, 20 Nov 2020 12:34:24 -0600
 From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Jiri Slaby <jirislaby@kernel.org>,
-        Nick Kossifidis <mickflemm@gmail.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+To:     Chas Williams <3chas3@gmail.com>
+Cc:     linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: [PATCH 069/141] ath5k: Fix fall-through warnings for Clang
-Message-ID: <e127232621c4de340509047a11d98093958303c5.1605896059.git.gustavoars@kernel.org>
+Subject: [PATCH 070/141] atm: fore200e: Fix fall-through warnings for Clang
+Message-ID: <613a064fad28ee2afbc14d9a81d4a67b3c1634f7.1605896059.git.gustavoars@kernel.org>
 References: <cover.1605896059.git.gustavoars@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -47,27 +42,26 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 In preparation to enable -Wimplicit-fallthrough for Clang, fix a warning
-by explicitly adding a break statement instead of letting the code fall
-through to the next case.
+by explicitly adding a fallthrough pseudo-keyword.
 
 Link: https://github.com/KSPP/linux/issues/115
 Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- drivers/net/wireless/ath/ath5k/mac80211-ops.c | 1 +
+ drivers/atm/fore200e.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/ath/ath5k/mac80211-ops.c b/drivers/net/wireless/ath/ath5k/mac80211-ops.c
-index 5e866a193ed0..8f2719ff463c 100644
---- a/drivers/net/wireless/ath/ath5k/mac80211-ops.c
-+++ b/drivers/net/wireless/ath/ath5k/mac80211-ops.c
-@@ -433,6 +433,7 @@ ath5k_configure_filter(struct ieee80211_hw *hw, unsigned int changed_flags,
- 	case NL80211_IFTYPE_STATION:
- 		if (ah->assoc)
- 			rfilt |= AR5K_RX_FILTER_BEACON;
-+		break;
- 	default:
- 		break;
- 	}
+diff --git a/drivers/atm/fore200e.c b/drivers/atm/fore200e.c
+index 9a70bee84125..ba3ed1b77bc5 100644
+--- a/drivers/atm/fore200e.c
++++ b/drivers/atm/fore200e.c
+@@ -423,6 +423,7 @@ fore200e_shutdown(struct fore200e* fore200e)
+ 	/* XXX shouldn't we *start* by deregistering the device? */
+ 	atm_dev_deregister(fore200e->atm_dev);
+ 
++	fallthrough;
+     case FORE200E_STATE_BLANK:
+ 	/* nothing to do for that state */
+ 	break;
 -- 
 2.27.0
 
