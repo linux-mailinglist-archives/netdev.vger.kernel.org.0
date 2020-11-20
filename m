@@ -2,142 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E729B2BA478
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 09:19:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 388E42BA48E
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 09:24:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726321AbgKTISu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 03:18:50 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:15286 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725942AbgKTISu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 03:18:50 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AK8H4AY022468;
-        Fri, 20 Nov 2020 00:18:38 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pfpt0220;
- bh=K3n18mL71ilBreCCLoL9Nh5fWDK4rNxsZbokbG76gas=;
- b=C88gb+9wzLDiyzZY/a178sIbFd7YpBAdBWagZJMbyyCQFCztt7pRA+59mAZtnNY+zj3U
- 4eZY37BL81J0VKvfeOtopkTmqd99454q3IY6Rvzr26yJAIllehnObdH4J0n9pzqpeaQH
- cuvAmMiYEZEu60SBDRj5crGq8ogf7EqlDKlJ0pER3apan+mIij1hMjFD6X7lhOA0m9TK
- pekvuYRSUsaScIfcQ4aAeCWxe0I4RjLxpAq7hSLYSzlw58QCi8G/64rCVTGp1E4BMXyh
- CieNYFdWkZlkwU8cVd+4sN42JlIT1qFTLernKnWu6HxB4me7RlHOcnKpd0wd3sA+6K7w IQ== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 34w7ncyb1y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 20 Nov 2020 00:18:38 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 20 Nov
- 2020 00:18:37 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 20 Nov 2020 00:18:37 -0800
-Received: from [10.193.39.169] (NN-LT0019.marvell.com [10.193.39.169])
-        by maili.marvell.com (Postfix) with ESMTP id 519003F703F;
-        Fri, 20 Nov 2020 00:18:35 -0800 (PST)
-Subject: Re: [EXT] Re: [PATCH v3] aquantia: Remove the build_skb path
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        "Ramsay, Lincoln" <Lincoln.Ramsay@digi.com>
-CC:     Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        "Dmitry Bogdanov [C]" <dbogdanov@marvell.com>
-References: <CY4PR1001MB23118EE23F7F5196817B8B2EE8E10@CY4PR1001MB2311.namprd10.prod.outlook.com>
- <2b392026-c077-2871-3492-eb5ddd582422@marvell.com>
- <CY4PR1001MB2311C0DA2840AFC20AE6AEB5E8E10@CY4PR1001MB2311.namprd10.prod.outlook.com>
- <CY4PR1001MB231125B16A35324A79270373E8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
- <CY4PR1001MB2311E1B5D8E2700C92E7BE2DE8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
- <CY4PR1001MB2311F01C543420E5F89C0F4DE8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
- <20201119221510.GI15137@breakpoint.cc>
- <CY4PR1001MB23113312D5E0633823F6F75EE8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
- <20201119222800.GJ15137@breakpoint.cc>
- <CY4PR1001MB231116E9371FBA2B8636C23DE8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
- <20201119224916.GA24569@ranger.igk.intel.com>
-From:   Igor Russkikh <irusskikh@marvell.com>
-Message-ID: <2fbb195a-a1b5-cec0-1ba1-bf45efc0ad24@marvell.com>
-Date:   Fri, 20 Nov 2020 11:18:34 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:83.0) Gecko/20100101
- Thunderbird/83.0
+        id S1727107AbgKTIXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 03:23:39 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7708 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725766AbgKTIXj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 03:23:39 -0500
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CcqLJ0WTSzkYwy;
+        Fri, 20 Nov 2020 16:23:04 +0800 (CST)
+Received: from huawei.com (10.175.113.133) by DGGEMS413-HUB.china.huawei.com
+ (10.3.19.213) with Microsoft SMTP Server id 14.3.487.0; Fri, 20 Nov 2020
+ 16:23:19 +0800
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <ja@ssi.bg>, <horms@verge.net.au>, <pablo@netfilter.org>,
+        <kadlec@netfilter.org>, <fw@strlen.de>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <christian@brauner.io>,
+        <hans.schillstrom@ericsson.com>
+CC:     <lvs-devel@vger.kernel.org>, <netfilter-devel@vger.kernel.org>,
+        <coreteam@netfilter.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net v2] ipvs: fix possible memory leak in ip_vs_control_net_init
+Date:   Fri, 20 Nov 2020 16:26:10 +0800
+Message-ID: <20201120082610.60917-1-wanghai38@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <20201119224916.GA24569@ranger.igk.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-20_03:2020-11-19,2020-11-20 signatures=0
+Content-Type: text/plain
+X-Originating-IP: [10.175.113.133]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+kmemleak report a memory leak as follows:
 
+BUG: memory leak
+unreferenced object 0xffff8880759ea000 (size 256):
+comm "syz-executor.3", pid 6484, jiffies 4297476946 (age 48.546s)
+hex dump (first 32 bytes):
+00 00 00 00 01 00 00 00 08 a0 9e 75 80 88 ff ff ...........u....
+08 a0 9e 75 80 88 ff ff 00 00 00 00 ad 4e ad de ...u.........N..
+backtrace:
+[<00000000c0bf2deb>] kmem_cache_zalloc include/linux/slab.h:656 [inline]
+[<00000000c0bf2deb>] __proc_create+0x23d/0x7d0 fs/proc/generic.c:421
+[<000000009d718d02>] proc_create_reg+0x8e/0x140 fs/proc/generic.c:535
+[<0000000097bbfc4f>] proc_create_net_data+0x8c/0x1b0 fs/proc/proc_net.c:126
+[<00000000652480fc>] ip_vs_control_net_init+0x308/0x13a0 net/netfilter/ipvs/ip_vs_ctl.c:4169
+[<000000004c927ebe>] __ip_vs_init+0x211/0x400 net/netfilter/ipvs/ip_vs_core.c:2429
+[<00000000aa6b72d9>] ops_init+0xa8/0x3c0 net/core/net_namespace.c:151
+[<00000000153fd114>] setup_net+0x2de/0x7e0 net/core/net_namespace.c:341
+[<00000000be4e4f07>] copy_net_ns+0x27d/0x530 net/core/net_namespace.c:482
+[<00000000f1c23ec9>] create_new_namespaces+0x382/0xa30 kernel/nsproxy.c:110
+[<00000000098a5757>] copy_namespaces+0x2e6/0x3b0 kernel/nsproxy.c:179
+[<0000000026ce39e9>] copy_process+0x220a/0x5f00 kernel/fork.c:2072
+[<00000000b71f4efe>] _do_fork+0xc7/0xda0 kernel/fork.c:2428
+[<000000002974ee96>] __do_sys_clone3+0x18a/0x280 kernel/fork.c:2703
+[<0000000062ac0a4d>] do_syscall_64+0x33/0x40 arch/x86/entry/common.c:46
+[<0000000093f1ce2c>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-On 20/11/2020 1:49 am, Maciej Fijalkowski wrote:
-> External Email
-> 
-> ----------------------------------------------------------------------
-> On Thu, Nov 19, 2020 at 10:34:48PM +0000, Ramsay, Lincoln wrote:
->> When performing IPv6 forwarding, there is an expectation that SKBs
->> will have some headroom. When forwarding a packet from the aquantia
->> driver, this does not always happen, triggering a kernel warning.
->>
->> The build_skb path fails to allow for an SKB header, but the hardware
->> buffer it is built around won't allow for this anyway. Just always use
-> the
->> slower codepath that copies memory into an allocated SKB.
->>
->> Signed-off-by: Lincoln Ramsay <lincoln.ramsay@opengear.com>
->> ---
-> 
-> (Next time please include in the subject the tree that you're targetting
-> the patch)
-> 
-> I feel like it's only a workaround, not a real solution. On previous
-> thread Igor says:
-> 
-> "The limitation here is we can't tell HW on granularity less than 1K."
-> 
-> Are you saying that the minimum headroom that we could provide is 1k?
+In the error path of ip_vs_control_net_init(), remove_proc_entry() needs
+to be called to remove the added proc entry, otherwise a memory leak
+will occur.
 
-We can tell HW to place packets with 4 bytes granularity addresses, but the
-problem is the length granularity of this buffer - 1K.
+Also, add some '#ifdef CONFIG_PROC_FS' because proc_create_net* return NULL
+when PROC is not used.
 
-This means we can do as Ramsay initially suggested - just offset the packet
-placement. But then we have to guarantee that 1K after this offset is
-available to HW.
+Fixes: b17fc9963f83 ("IPVS: netns, ip_vs_stats and its procfs")
+Fixes: 61b1ab4583e2 ("IPVS: netns, add basic init per netns.")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+---
+v1->v2: add some '#ifdef CONFIG_PROC_FS' and check the return value of proc_create_net*
+ net/netfilter/ipvs/ip_vs_ctl.c | 27 +++++++++++++++++++++------
+ 1 file changed, 21 insertions(+), 6 deletions(-)
 
-Since normal layout is 1400 packets - we do use 2K (half page) for each packet.
-This way we reuse each allocated page for at least two packets (and putting
-skb_shared into the remaining 512b).
-
-Obviously we may allocate 4K page for a single packet, and tell HW that it can
-use 3K for data. This'll give 1K headroom. Quite an overload - assuming IMIX
-is of 0.5K - 1.4K..
-
-Of course that depends on a usecase. If you know all your traffic is 16K
-jumbos - putting 1K headroom is very small overhead on memory usage.
-
-> Maybe put more pressure on memory side and pull in order-1 pages, provide
-> this big headroom and tailroom for skb_shared_info and use build_skb by
-> default? With standard 1500 byte MTU.
-I know many customers do consider AQC chips in near embedded environments
-(routers, etc). They really do care about memories. So that could be risky.
-
-> This issue would pop up again if this driver would like to support XDP
-> where 256 byte headroom will have to be provided.
-
-Actually it already popped. Thats one of the reasons I'm delaying with xdp
-patch series for this driver.
-
-I think the best tradeoff here would be allocating order 1 or 2 pages (i.e. 8K
-or 16K), and reuse the page for multiple placements of 2K XDP packets:
-
-(256+2048)*3 = 6912 (1K overhead for each 3 packets)
-
-(256+2048)*7 = 16128 (200b overhead over 7 packets)
-
-Regards,
-  Igor
-
-
+diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
+index e279ded4e306..c00394ba20db 100644
+--- a/net/netfilter/ipvs/ip_vs_ctl.c
++++ b/net/netfilter/ipvs/ip_vs_ctl.c
+@@ -4167,12 +4167,17 @@ int __net_init ip_vs_control_net_init(struct netns_ipvs *ipvs)
+ 
+ 	spin_lock_init(&ipvs->tot_stats.lock);
+ 
+-	proc_create_net("ip_vs", 0, ipvs->net->proc_net, &ip_vs_info_seq_ops,
+-			sizeof(struct ip_vs_iter));
+-	proc_create_net_single("ip_vs_stats", 0, ipvs->net->proc_net,
+-			ip_vs_stats_show, NULL);
+-	proc_create_net_single("ip_vs_stats_percpu", 0, ipvs->net->proc_net,
+-			ip_vs_stats_percpu_show, NULL);
++#ifdef CONFIG_PROC_FS
++	if (!proc_create_net("ip_vs", 0, ipvs->net->proc_net, &ip_vs_info_seq_ops,
++			sizeof(struct ip_vs_iter)))
++		goto err_vs;
++	if (!proc_create_net_single("ip_vs_stats", 0, ipvs->net->proc_net,
++			ip_vs_stats_show, NULL))
++		goto err_stats;
++	if (!proc_create_net_single("ip_vs_stats_percpu", 0, ipvs->net->proc_net,
++			ip_vs_stats_percpu_show, NULL))
++		goto err_percpu;
++#endif
+ 
+ 	if (ip_vs_control_net_init_sysctl(ipvs))
+ 		goto err;
+@@ -4180,6 +4185,14 @@ int __net_init ip_vs_control_net_init(struct netns_ipvs *ipvs)
+ 	return 0;
+ 
+ err:
++#ifdef CONFIG_PROC_FS
++	remove_proc_entry("ip_vs_stats_percpu", ipvs->net->proc_net);
++err_percpu:
++	remove_proc_entry("ip_vs_stats", ipvs->net->proc_net);
++err_stats:
++	remove_proc_entry("ip_vs", ipvs->net->proc_net);
++err_vs:
++#endif
+ 	free_percpu(ipvs->tot_stats.cpustats);
+ 	return -ENOMEM;
+ }
+@@ -4188,9 +4201,11 @@ void __net_exit ip_vs_control_net_cleanup(struct netns_ipvs *ipvs)
+ {
+ 	ip_vs_trash_cleanup(ipvs);
+ 	ip_vs_control_net_cleanup_sysctl(ipvs);
++#ifdef CONFIG_PROC_FS
+ 	remove_proc_entry("ip_vs_stats_percpu", ipvs->net->proc_net);
+ 	remove_proc_entry("ip_vs_stats", ipvs->net->proc_net);
+ 	remove_proc_entry("ip_vs", ipvs->net->proc_net);
++#endif
+ 	free_percpu(ipvs->tot_stats.cpustats);
+ }
+ 
+-- 
+2.17.1
 
