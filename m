@@ -2,84 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7A462BA537
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 09:57:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AEE62BA56B
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 10:08:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727369AbgKTIzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 03:55:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36712 "EHLO
+        id S1726529AbgKTJFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 04:05:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725789AbgKTIzk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 03:55:40 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46A36C0613CF;
-        Fri, 20 Nov 2020 00:55:40 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id u19so12368618lfr.7;
-        Fri, 20 Nov 2020 00:55:40 -0800 (PST)
+        with ESMTP id S1725801AbgKTJFW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 04:05:22 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1036EC0613CF
+        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 01:05:22 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id u18so12389252lfd.9
+        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 01:05:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eCE5S3AtPfjPlYA0YjZN8U5ZXZvn/LY2xX90AL/N/n4=;
-        b=k2cWikdNzhvRX1o1rxZQ/r3PGgWpEY+B7ESKW2u8t1R8t6f9mVujNibnb0xM6ing7A
-         KfwsHX+X6R14I3BFEZYAn2U7cIM6uOP4q9b31bn1BIYmLL7YkACHogP7alLylVznwrXp
-         BPAn6eXWw7S6VzXwesvbnJDVcNih5Yjsbj8bvdMWMFLvdh/L6RTLse/hcRaYliYD7n9b
-         2XaTSQKoJu7iUAzDApDSnX1PIvTJO5bd0jYPXkLkakYkB5bXMdNe+GiPa25QZqpWJJ9Q
-         WrGRsKc/OarUCS+WnMWlQxNUU9Puo5bdGbrV+FrGgFJIseSpXYTdgvJvH7jp82hq3rJ3
-         Vj1A==
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=MSCard2X4Oizz2IShotDAipEPeeItot6kxo2LP01XQM=;
+        b=iCPziARTyBVR4d7NnOjPyg2bRC6KocAJILLES+9LOVNBZRmbVKoZfU2FJ//RX6m60X
+         lexsda5QWYv+elx0dnu6MNQRHUVbodUChThPL642opTQWoJxhqUAR/YhSPDM9yHYlX7t
+         KCEcHPFCxneAb6u1jeSagKgHSHTFc7RsdZgzg2bq8FhBRdxOiP4JLL8yqBZ6h31Q1jtF
+         uCB54BSlws2rgIi+eYTdITkDAx1kWQbvqCapcnms1/rNTiYB9lQE6JxfasnGcGbwufv6
+         LK/j9+2syvhBchXw0zeMVVHxGWWKMalfSKDqbY+TM4+chTDy+YsY5qQSBouv8Bh0P3r8
+         SfAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eCE5S3AtPfjPlYA0YjZN8U5ZXZvn/LY2xX90AL/N/n4=;
-        b=hiXSAIl6GON8ioS+qTAGDJUkDZCvNkfeuSpruLXsZtf0HF5JrgsPX0KVJIzqQh7JRT
-         eeHCKWF/g8LINcL+7LyQFN3d12mtydouxBgMWR+ijs6jRxe/ST87BIBkeaQNfheH7WCb
-         MPgV6K71pOQGL6gWqo1gXj6xpMy0ItxxXg89fjpY53MM1sy53O/TusG9PemizW/Xv8wa
-         IRso2X7KUEGZDiVXmWScmxuVV0Ol85Kmmlk16WHatSSMnURq5NHccumElC58F0er8nM8
-         vBWHBpgE+S6yluSn7tkChhRziV+J7ZvGm3a3zIugXBZSGCVQsjZyeYTHLwqygH0Iz2O+
-         SnnA==
-X-Gm-Message-State: AOAM533/26bmWBL2NWikCYZnjZE6W89pGNNgVDB2C1F3GBsXPE9hyUtl
-        iFyi9DnJcRuhpJNnldb5zLFhFHunXGHEpa+/mEc=
-X-Google-Smtp-Source: ABdhPJyhgrajddGaPcfQLxvzIx4y0UvcooH+ce7MoDObk9cBX4B6NGc1idbwywPDrlRxQWjGIn5r/eswg6fHVuWIx00=
-X-Received: by 2002:a05:6512:20c:: with SMTP id a12mr7496565lfo.219.1605862538701;
- Fri, 20 Nov 2020 00:55:38 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=MSCard2X4Oizz2IShotDAipEPeeItot6kxo2LP01XQM=;
+        b=Zmm2n3r4CPLvX+uZ1teOu5MbnHyJgfQk7c4+suwEy+U1gDl4hqE+d+nYNrIoSpOaS9
+         suNwMJ8mxYAU3MN4Eh1j9zprjrB3qm47LZMYFAex+3QHHHhEHcKnM+xLZ27K7Xykzgld
+         XJ+Kp/y6WExWuheDHMsQ5MMZULVYAgTArqYGeBFUT09PRMmMYhNMFB6OlR2AwpRf+RfI
+         S1AZduvGfSFr3SsNO4B3QtB+P3ScwuhvQr4kCKamfJC/DqzYW7kzN/v1mg6j6etgVp/s
+         OugL5ko0zAysdb06bo/D/j+iZx2A4/hC0SvkbJdWIbfi776pFFmdSMM6emGTSm+rB/JH
+         yI2A==
+X-Gm-Message-State: AOAM531SOVjwydtqwLYAho1hCaq9i2YiV52ohQuZYzNl2C4Pklc0eTrM
+        wn19O2LUPj7ijuzGx5gEFZ0GEA==
+X-Google-Smtp-Source: ABdhPJygnPaucjl+f9oOs9ZZV4fWK3vYg9wJ9XZnTvPnat04HWCF2njOx5ms2o1lAnyOuO71Vg/kHA==
+X-Received: by 2002:ac2:53ae:: with SMTP id j14mr8318808lfh.216.1605863120351;
+        Fri, 20 Nov 2020 01:05:20 -0800 (PST)
+Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id d6sm270692lfn.295.2020.11.20.01.05.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Nov 2020 01:05:19 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Antoine Tenart <atenart@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: net: phy: Dealing with 88e1543 dual-port mode
+In-Reply-To: <20201120000050.GV1804098@lunn.ch>
+References: <20201119152246.085514e1@bootlin.com> <20201119145500.GL1551@shell.armlinux.org.uk> <20201119162451.4c8d220d@bootlin.com> <87k0uh9dd0.fsf@waldekranz.com> <20201120000050.GV1804098@lunn.ch>
+Date:   Fri, 20 Nov 2020 10:05:18 +0100
+Message-ID: <87a6vc9z5d.fsf@waldekranz.com>
 MIME-Version: 1.0
-References: <CANL0fFQqsGU01Z8iEhznDLQjw5huayarNoqbJ8Nikujs0r+ecQ@mail.gmail.com>
- <6b71718c405541d681f4d8b045a66a79ade0dd4f.camel@intel.com>
-In-Reply-To: <6b71718c405541d681f4d8b045a66a79ade0dd4f.camel@intel.com>
-From:   Gonsolo <gonsolo@gmail.com>
-Date:   Fri, 20 Nov 2020 09:55:27 +0100
-Message-ID: <CANL0fFQeh0SdUd_v98X-YJewZRAOmiaKaCLO+7FsoZBO=SENvQ@mail.gmail.com>
-Subject: Kernel warning "TX on unused queue" for iwlwifi on 7260 with kernel 5.10-rc2
-To:     "Coelho, Luciano" <luciano.coelho@intel.com>
-Cc:     "Damary, Guy" <guy.damary@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Berg, Johannes" <johannes.berg@intel.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "hannes@cmpxchg.org" <hannes@cmpxchg.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Goodstein, Mordechay" <mordechay.goodstein@intel.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        linuxwifi <linuxwifi@intel.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "Grumbach, Emmanuel" <emmanuel.grumbach@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "longman@redhat.com" <longman@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Output of lspci -nn:
+On Fri, Nov 20, 2020 at 01:00, Andrew Lunn <andrew@lunn.ch> wrote:
+>> E.g. at Westermo we make switches with M12/M12X connectors [1] that
+>> sometimes have a 1G PHY behind a 2-pair M12 connector (for complicated
+>> legacy reasons). In such cases we have to remove 1000-HD/FD from the
+>> advertised link modes. Being able to describe that in the DT with
+>> something like:
+>> 
+>> ethernet-phy@0 {
+>>     mdi = "2-pair";
+>> };
+>
+> We already have a max-speed property which could be used to do this.
+> It will remove the 1000-HD/FD from the link mode if you set it to 100.
+>
+>    Andrew
 
-02:00.0 Network controller [0280]: Intel Corporation Wireless 7260
-[8086:08b1] (rev 73)
+Oh wow, well strike that argument then :)
 
-> Guy, can you help with this one? I believe there is a bugzilla issue
-> for this already...
-
-I'd like to know this too.
-
--- 
-g
+Thank you
