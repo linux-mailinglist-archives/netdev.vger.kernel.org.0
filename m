@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A25C22BA4FC
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 09:46:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 248712BA4FD
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 09:46:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727370AbgKTInt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 03:43:49 -0500
-Received: from mailout11.rmx.de ([94.199.88.76]:52256 "EHLO mailout11.rmx.de"
+        id S1727238AbgKTIo3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 03:44:29 -0500
+Received: from mailout06.rmx.de ([94.199.90.92]:33765 "EHLO mailout06.rmx.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727133AbgKTInq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Nov 2020 03:43:46 -0500
+        id S1726559AbgKTIo3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Nov 2020 03:44:29 -0500
 Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mailout11.rmx.de (Postfix) with ESMTPS id 4Ccqp60Dzqz41pL;
-        Fri, 20 Nov 2020 09:43:42 +0100 (CET)
+        by mailout06.rmx.de (Postfix) with ESMTPS id 4Ccqpw5nvnz9wqD;
+        Fri, 20 Nov 2020 09:44:24 +0100 (CET)
 Received: from mta.arri.de (unknown [217.111.95.66])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by kdin02.retarus.com (Postfix) with ESMTPS id 4Ccqn71LHjz2TSBr;
-        Fri, 20 Nov 2020 09:42:51 +0100 (CET)
+        by kdin02.retarus.com (Postfix) with ESMTPS id 4Ccqp608hLz2TRm7;
+        Fri, 20 Nov 2020 09:43:42 +0100 (CET)
 Received: from N95HX1G2.wgnetz.xx (192.168.54.143) by mta.arri.de
  (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 20 Nov
- 2020 09:42:33 +0100
+ 2020 09:43:03 +0100
 From:   Christian Eggers <ceggers@arri.de>
 To:     Richard Cochran <richardcochran@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
@@ -33,12 +33,10 @@ CC:     Vladimir Oltean <olteanv@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
         "David S . Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, Christian Eggers <ceggers@arri.de>,
-        "Ioana Ciornei" <ioana.ciornei@nxp.com>,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
-        Yangbo Lu <yangbo.lu@nxp.com>
-Subject: [PATCH net-next v3 2/3] dpaa2-eth: use new PTP_MSGTYPE_* define(s)
-Date:   Fri, 20 Nov 2020 09:41:05 +0100
-Message-ID: <20201120084106.10046-3-ceggers@arri.de>
+        "Kurt Kanzenbach" <kurt@linutronix.de>
+Subject: [PATCH net-next v3 3/3] ptp: ptp_ines: use new PTP_MSGTYPE_* define(s)
+Date:   Fri, 20 Nov 2020 09:41:06 +0100
+Message-ID: <20201120084106.10046-4-ceggers@arri.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201120084106.10046-1-ceggers@arri.de>
 References: <20201120084106.10046-1-ceggers@arri.de>
@@ -46,44 +44,69 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [192.168.54.143]
-X-RMX-ID: 20201120-094259-4Ccqn71LHjz2TSBr-0@kdin02
+X-RMX-ID: 20201120-094344-4Ccqp608hLz2TRm7-0@kdin02
 X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove usage of magic numbers.
+Remove driver internal defines for this. Masking msgtype with 0xf is
+already done within ptp_get_msgtype().
 
 Signed-off-by: Christian Eggers <ceggers@arri.de>
-Cc: Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc: Ioana Radulescu <ruxandra.radulescu@nxp.com>
-Cc: Yangbo Lu <yangbo.lu@nxp.com>
+Cc: Richard Cochran <richardcochran@gmail.com>
+Cc: Kurt Kanzenbach <kurt@linutronix.de>
 ---
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/ptp/ptp_ines.c | 19 +++++++------------
+ 1 file changed, 7 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index cf9400a9886d..a0a30c721fe7 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -686,7 +686,7 @@ static void dpaa2_eth_enable_tx_tstamp(struct dpaa2_eth_priv *priv,
- 	if (skb->cb[0] == TX_TSTAMP_ONESTEP_SYNC) {
- 		if (dpaa2_eth_ptp_parse(skb, &msgtype, &twostep, &udp,
- 					&offset1, &offset2) ||
--		    msgtype != 0 || twostep) {
-+		    msgtype != PTP_MSGTYPE_SYNC || twostep) {
- 			WARN_ONCE(1, "Bad packet for one-step timestamping\n");
- 			return;
- 		}
-@@ -1212,7 +1212,7 @@ static netdev_tx_t dpaa2_eth_tx(struct sk_buff *skb, struct net_device *net_dev)
- 	if (skb->cb[0] == TX_TSTAMP_ONESTEP_SYNC) {
- 		if (!dpaa2_eth_ptp_parse(skb, &msgtype, &twostep, &udp,
- 					 &offset1, &offset2))
--			if (msgtype == 0 && twostep == 0) {
-+			if (msgtype == PTP_MSGTYPE_SYNC && twostep == 0) {
- 				skb_queue_tail(&priv->tx_skbs, skb);
- 				queue_work(priv->dpaa2_ptp_wq,
- 					   &priv->tx_onestep_tstamp);
+diff --git a/drivers/ptp/ptp_ines.c b/drivers/ptp/ptp_ines.c
+index 4700ffbdfced..6c7c2843ba0b 100644
+--- a/drivers/ptp/ptp_ines.c
++++ b/drivers/ptp/ptp_ines.c
+@@ -108,11 +108,6 @@ MODULE_LICENSE("GPL");
+ #define MESSAGE_TYPE_P_DELAY_RESP	3
+ #define MESSAGE_TYPE_DELAY_REQ		4
+ 
+-#define SYNC				0x0
+-#define DELAY_REQ			0x1
+-#define PDELAY_REQ			0x2
+-#define PDELAY_RESP			0x3
+-
+ static LIST_HEAD(ines_clocks);
+ static DEFINE_MUTEX(ines_clocks_lock);
+ 
+@@ -683,9 +678,9 @@ static bool is_sync_pdelay_resp(struct sk_buff *skb, int type)
+ 
+ 	msgtype = ptp_get_msgtype(hdr, type);
+ 
+-	switch ((msgtype & 0xf)) {
+-	case SYNC:
+-	case PDELAY_RESP:
++	switch (msgtype) {
++	case PTP_MSGTYPE_SYNC:
++	case PTP_MSGTYPE_PDELAY_RESP:
+ 		return true;
+ 	default:
+ 		return false;
+@@ -696,13 +691,13 @@ static u8 tag_to_msgtype(u8 tag)
+ {
+ 	switch (tag) {
+ 	case MESSAGE_TYPE_SYNC:
+-		return SYNC;
++		return PTP_MSGTYPE_SYNC;
+ 	case MESSAGE_TYPE_P_DELAY_REQ:
+-		return PDELAY_REQ;
++		return PTP_MSGTYPE_PDELAY_REQ;
+ 	case MESSAGE_TYPE_P_DELAY_RESP:
+-		return PDELAY_RESP;
++		return PTP_MSGTYPE_PDELAY_RESP;
+ 	case MESSAGE_TYPE_DELAY_REQ:
+-		return DELAY_REQ;
++		return PTP_MSGTYPE_DELAY_REQ;
+ 	}
+ 	return 0xf;
+ }
 -- 
 Christian Eggers
 Embedded software developer
