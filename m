@@ -2,261 +2,457 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF63E2BB495
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 20:00:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F6E02BB49A
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 20:00:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732131AbgKTSyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 13:54:37 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:37560 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732123AbgKTSyg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 13:54:36 -0500
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AKIoCOa005313;
-        Fri, 20 Nov 2020 10:54:15 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=2lARocLmhZeuVxBFzz0qnGj7F3eZIZSFU54OSkNvk58=;
- b=T4pUPQlR8LFiT9T/9YYhbVYoMTqaX20D3mWpi9h1VUFek74KEss+t3ZCPvC6aAfzFWWK
- Bl7ouuj3aEscb2dPV+GBo5D0G+qhXq90MMWSIXHA8zuIvpf9Jrm+E0CQ4L0bDsIqfCAj
- G6Hgajji7L+IplSY/1ST87CgAetbYQZpPQA= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 34xat42w8a-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 20 Nov 2020 10:54:14 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 20 Nov 2020 10:54:14 -0800
+        id S1732137AbgKTSyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 13:54:50 -0500
+Received: from mail-vi1eur05on2079.outbound.protection.outlook.com ([40.107.21.79]:41185
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1732124AbgKTSyt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Nov 2020 13:54:49 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dJuxbtY9fgw501QOoJB9r9eQCFW1iVnH+YDS4ty5hcuAieypqo//RHB+vB6u189cGsyIxiZLVeHeqwDFR/qEXgK5wzkeSu3R+bFNHAfdwBHQe0K5tAfNM87IIXGe63fc0U1qNZeuFiNqx7V14PGdFgQvYeO3bGmMpiDbzZCx0lq1TZvhtx1vthVNiI4soTwCIDZhfif3AEU+1oKjfa+K2dZEJw+/Pi39slF1+onGzoNBdjRZ6h99p7yGsEfW2482C/09xN6107dTTV6lC0imbd/pCjyE1SAQMBwZhG9ZSi+lV+7SsutGR/pEh08QHJK52KvRJ1YrySkXFsogOTBCyg==
+ b=JvUcWZu6tR9U5IYZ00e3/8PhdCxoTsUQnN/JhKnKDKnpvGplqmlSD66KAWz3th8J6TEVKjS/I8jn5htH1azNPGNVhmB7eMZxLc1FcCtNQq9rUqphy++B+u3nwEPwiSX7YAKN7cT2dXsXqiVi13SmqHrt9Wr4d6wKnJyYrxzlT2ibRvgzUhUdG412vazheqiY//pbDwsOQFdEXmOWDKH5hz2JVT5lzSz9ikwl9DgLX5yZyJ9Tg3w882QbfUqJJdJzLA4ASNqA4giT0tW7IEGmIwmI8oYpztzCXQjSUaqkwISIpWG/TuloUqzZ2C+VPh5/i1WStYa3dq6h28Y1qz9pyA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2lARocLmhZeuVxBFzz0qnGj7F3eZIZSFU54OSkNvk58=;
- b=eea46y/Zt9JQFOfpeqQ2MUPzsfpKhoNnLfZqf+wr3OF8vv/0HCt1PgE+V+19YGOkD+OovN63Iu2kWFNYdahMT35SlotJQkQg5EGP3BSNuuOMiGrFDL6eRdefao88ST3hAeFtPPYRJmWBDI+8mQSqYyU4NnBwszum3IcWI4qTvfvqLOtWgfR6Cutbjvuy6xjCs+/ZKOrmMXSxwp/TOAjVqn+X7X3tBRVNvbaK6flJLROOP6CKPBegskSI8z7HweoxZksnOXFC1Yf4MIQZFapfa+ZfdW9s2/BglnW0MoJtvx4swSEOIJqFnJl15brf/6PyJRmt8drOET+lxQsPMnmAxw==
+ bh=O3YxWIRfRcbujRa0HzYs/RG9NKaiRbPm+dfSihICKd0=;
+ b=kvjRGAHQP28Tc76JNybVo0Ug7/dWq+NJBVk1Q4n/KGLKt7ccCI5eZ/J6JFsOh/me/ZIR6508i2CJXJM6cLogstuJ90awo/LHolNaMcPetT3tpwboagw9R9W9A4vkzSzNhlFnB1LUkkht+u39eVdMEa43xbI/4DZwgpbaViu7n7mh4x3hf8REncQM+Luvc3WscLeh+q8y4JC96nleNKvPZ+YBSZ044P1LkhqqOmaKHN+VvFS75/Thh0x8QiqqsG47uKUuE2oAeZ15l+ZxueKJlv9YpOVD/omHFelLjhQia+6991xUux0HPBXHXzO8IBK3kyMyT8tJYtS6kuAnaAjIiQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2lARocLmhZeuVxBFzz0qnGj7F3eZIZSFU54OSkNvk58=;
- b=Emn1MYIOvzxE0sZ5aRrgH8ZCgsJ7A3F//nYbamrA6umJM2tGvMyvreATxHPrSVTvmiEHH5OaRFVR4UJ+mZHR8asdd1jNuE8MlRLOiskWO9gy3RA+uSqnrlqtC8U8LhHbW7r+vKPo3bXRYZN7bCGXPWAdC+hWwIm5gJ549tFhYoU=
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BYAPR15MB3302.namprd15.prod.outlook.com (2603:10b6:a03:10f::13) with
+ bh=O3YxWIRfRcbujRa0HzYs/RG9NKaiRbPm+dfSihICKd0=;
+ b=bTqQuv1BKOe5uD5y5koZ4RZJ9wFLkjC3B64IqXOW5vwEO1fAXJzHcTpk8SdJOwjAnpyfeddCbtvF24vIeIKvQUyUHdbvvj0zvTq34DokLEuLKGIMCqDfkUKF/tc37vwGyokB6zg1bqGmN4dgB7sEA1CUK/4qilsEiptMKd9vnag=
+Received: from VI1PR04MB5807.eurprd04.prod.outlook.com (2603:10a6:803:ec::21)
+ by VI1PR04MB4109.eurprd04.prod.outlook.com (2603:10a6:803:46::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.22; Fri, 20 Nov
- 2020 18:54:12 +0000
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::9ae:1628:daf9:4b03]) by BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::9ae:1628:daf9:4b03%6]) with mapi id 15.20.3564.028; Fri, 20 Nov 2020
- 18:54:12 +0000
-Subject: Re: [PATCH bpf-next v2 2/5] selftests/bpf: xsk selftests - SKB POLL,
- NOPOLL
-To:     Weqaar Janjua <weqaar.janjua@gmail.com>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <daniel@iogearbox.net>, <ast@kernel.org>,
-        <magnus.karlsson@gmail.com>, <bjorn.topel@intel.com>
-CC:     Weqaar Janjua <weqaar.a.janjua@intel.com>, <shuah@kernel.org>,
-        <skhan@linuxfoundation.org>, <linux-kselftest@vger.kernel.org>,
-        <anders.roxell@linaro.org>, <jonathan.lemon@gmail.com>
-References: <20201120130026.19029-1-weqaar.a.janjua@intel.com>
- <20201120130026.19029-3-weqaar.a.janjua@intel.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <c73ca08d-4eae-c56f-f5fe-b4dd1440773b@fb.com>
-Date:   Fri, 20 Nov 2020 10:54:09 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.4.3
-In-Reply-To: <20201120130026.19029-3-weqaar.a.janjua@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.20; Fri, 20 Nov
+ 2020 18:54:43 +0000
+Received: from VI1PR04MB5807.eurprd04.prod.outlook.com
+ ([fe80::45b9:4:f092:6cb6]) by VI1PR04MB5807.eurprd04.prod.outlook.com
+ ([fe80::45b9:4:f092:6cb6%3]) with mapi id 15.20.3589.024; Fri, 20 Nov 2020
+ 18:54:42 +0000
+From:   Camelia Alexandra Groza <camelia.groza@nxp.com>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+CC:     "kuba@kernel.org" <kuba@kernel.org>,
+        "brouer@redhat.com" <brouer@redhat.com>,
+        "saeed@kernel.org" <saeed@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH net-next v3 4/7] dpaa_eth: add XDP_TX support
+Thread-Topic: [PATCH net-next v3 4/7] dpaa_eth: add XDP_TX support
+Thread-Index: AQHWvpEwdu5a75WTZUGsTgQMlE9GsKnQIGgAgAE+gIA=
+Date:   Fri, 20 Nov 2020 18:54:42 +0000
+Message-ID: <VI1PR04MB5807F56500D25ECD20657618F2FF0@VI1PR04MB5807.eurprd04.prod.outlook.com>
+References: <cover.1605802951.git.camelia.groza@nxp.com>
+ <aa8bbb5c404f57fdb7915eb236305a177800becb.1605802951.git.camelia.groza@nxp.com>
+ <20201119235034.GA24983@ranger.igk.intel.com>
+In-Reply-To: <20201119235034.GA24983@ranger.igk.intel.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [2620:10d:c090:400::5:f0a]
-X-ClientProxiedBy: MWHPR22CA0069.namprd22.prod.outlook.com
- (2603:10b6:300:12a::31) To BYAPR15MB4088.namprd15.prod.outlook.com
- (2603:10b6:a02:c3::18)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [82.78.148.61]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 2564e4f8-9565-4842-6e30-08d88d85bdf3
+x-ms-traffictypediagnostic: VI1PR04MB4109:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB41095E933519B5B29979250DF2FF0@VI1PR04MB4109.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: TVSSSV9QtkB1kr2UNX8/NYMD0V/6daiyjhJtMTJ9gHJvW07Oc97otNTbik3pRN3ekvHgr5CrCFBccwU3syVr6CYInUCjqDZxxubwDBrRuYP20rfYHH7elP5b+/uWle8DJsmurJ7UO1bZEv2l6PHGZw8X+g/iCGHr0X47lG6obcQg6eCMH2Rv2c2QfdIJKmwWgRg7g2jzTja/LlH857Y3mA93iB6Ce0afqT9fxQBTzkML3QAFWMO8aPLXzmIryITT4b+O+gxUwSFULNl5dFPrM7HIS4vuJe7QP8SVnRI0n7lEK1Esyd1/Ixr2U2pHIJtDBoz2a/wUX0TFStdO7DnhDQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(136003)(366004)(346002)(39840400004)(396003)(55016002)(9686003)(83380400001)(64756008)(478600001)(5660300002)(76116006)(52536014)(53546011)(66556008)(66476007)(66446008)(6506007)(26005)(186003)(66946007)(7696005)(6916009)(8936002)(8676002)(86362001)(30864003)(2906002)(33656002)(4326008)(54906003)(316002)(71200400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: ql0IG1LFSp5oSmEmczY7Ybkxqr/NW/ORoUVopxp+d6QMR9E3NG8rx8OID2ubcQa4suKvYbkJZIuEl+8FI9WcDO+ZnVlST/BqCkyZIH76nJsaIv6sGnFWbiCyI7plTgXgtKe1YRHMmgKO1orU+h8Ne/L1YtYObEZtPC/Qun73IWnFuvRtFuOjY9eRDRaSSFYPOclKgmtIlcz+jkdGl0eVEIJ2dJzPmlD52Iyx3L4FtPrXh6Cf1zsmhuiKHBXk9bDYYHTxgyJrgbEo8mxI+3h+PjhnhIupoDc3X0msPNqIcbDri3cT3qAJD54UdTI39BsqwSWYZ77x3y7gGur9QIr/3UWg31BijVVFJ5ugwTy2C1XvQ/Ws9hcQEgiU93/w7KskHe+4jyqxBBs+IsPKrVv6QMGk4b0ZG4ohs3BB80yI2Q+xiqTlhRCpr554uDEN9SM7oO6qLs+jdwP28V3dj1Q5dAQOKLee2mCeUXAFN0hAlHNWa2AenIV/J/1WPoCUyZQM5uzbrzqbzNj8jCInA6a6GxTYba5xkqVx55j+tfQVnlb3lr5DeH/tgLXIvPpxXx0C/S9n9pExVLAEbgjRdyosXsE65Aw3LMUPvuAcbSuB3ogZ0ij3ixgSJwUD4e5UeVp6T043x4PAJ8X63pr8VhimJqmlg1YOUp/tYEN+Msz/Lfr/3NT8hr3TL4hN034f0qUsy/5xBfNXWo63rKEWnM7hVrttwFfrX9ma17kIO8XZSizMraAGr5+np/mguttr9eHQsNKQ4hRM7wjX9bUanV4ybaYzweJzYp6zJMhFLz38Om4VQ07fNN87t8K41FxKWB4IjB8xspl297gCgev94kIF3+2j0lVwms/G7gL7Wu0B1CpM6CNAZi/sskT3HLYN6YVvzUcYOG8+2vKc9GStBlVW6Q==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21c1::1688] (2620:10d:c090:400::5:f0a) by MWHPR22CA0069.namprd22.prod.outlook.com (2603:10b6:300:12a::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.20 via Frontend Transport; Fri, 20 Nov 2020 18:54:11 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d669d0ce-b573-49f0-43c5-08d88d85abdd
-X-MS-TrafficTypeDiagnostic: BYAPR15MB3302:
-X-Microsoft-Antispam-PRVS: <BYAPR15MB33026F602285DDD35775AEADD3FF0@BYAPR15MB3302.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 00N+pj34qcyhZHgaM+3ylY5jTFZOP7mnG1+CCC5y9p9ipt8K9ArN2eDY0a4UDIjy0BIkWaA0Tn2FrW/we+w91nTI5exQ9VbqB75uo11If75ca5Y5qBTsjRG4sxiFuaw52s3RqPNAKSkFR2JECslKnnz4YYXpVb+6j/Fok0fTDcqvtaqY470mHzXP4R42S0/yEBs0v4usXoKqjSWmE/OyJAah7adqQZJu3CdEQUaVxvs/LkcU4LTkOcaM8atjk+f+Ky6P4MLxoZQwTlQAk8+6VfJJymif0cvQmS0Y3lYPxLlwotUG6h3JGxFi3mK9Ygq3q7dzj1cBwxC6p0RnhMjorpnc8O6XsDbp3NPmcx2hjMOkI8WdcbfvVG79BXC4zecw
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(376002)(39860400002)(136003)(366004)(396003)(36756003)(5660300002)(53546011)(2906002)(8676002)(186003)(52116002)(16526019)(4326008)(6486002)(7416002)(8936002)(31696002)(316002)(2616005)(66946007)(66476007)(31686004)(83380400001)(66556008)(478600001)(86362001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: Gw/M3Fje9C8zZWpw3F0Fn1Xmg44e/ryQYhkOVFjzrqQcVA91DMjuF7WqX7qcUL6E8Ymjcmr5b4Jwhh+irfFCeDC+pQ2LR/HGUXZy6Rkahv65IU6WkP3+8MZU3rEDBBT7bkV12NqAvEUv5aWGykNwPYcbaISwwPNd4LbcLufvKouUbJDECywNcqDqoNro3A0yxOyNUSDAmB3J8yrXq872AYmJmTjBAb0Sqdq86C0gVgzP9jMxQ88AJExQkEvku78bfEh2bNBVS7nILQsqeWV462GnF1iE1LwImnZWN5n0aMvZHqx9qE/taOtm8ECKEUkkfDOFRBmF4F3J0lCYmTu4ZXO74+66kyGsNYyH55TK3Q5OoUyLSj7ha1R7LLjhrnAT8W2D9F6qUWtcEAmplOff5fXkWaquHGXs9TOictAahrgZ3wVv9fhmffSVJB9QrDBqJPNBG7BejajIHaFgrRmkmuNz64CJvZzy6+MejPeF9TuIJDQgg5gtLzoK1Xvzy4/1lhZJB/GMpIpWfeBl+w3SnSnfC13bTtaJYNqsaUVCYyoNE/azSYHu1AW56Tlgkga9mbSsc2VtggfZcmrB8u7GMmkbYhdp5rD2ssZC0rJFJayjFwmahH5CydW1FixXEROVKgbHRRtUKpgC+bBSGgH4oMaNhmOlxt6zuk49vucqpDUoxU+bp23y+fbsTGC083U7TZ9Vf90zPG0ZvYkMkfyMZuJJ/OnjVRyhugL6ezB4H408Vziojax3+2VIbGpRXA6DiGyrARl0b7paq12Yen+AAKLUwGHUZsxW288O1qE/LZXmb4k1LPzlPRroKA9pqOXypHhIXJTSwdcFqoeZWDToAbJhOWLUwMiuJ5f9daOJnEvvPOPqHfOaxWHl1rYr1wVwqaNJtDm9HijEBRuT8n7kW5wKWiIGEpLrbnYrOz58S6g=
-X-MS-Exchange-CrossTenant-Network-Message-Id: d669d0ce-b573-49f0-43c5-08d88d85abdd
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Nov 2020 18:54:12.8215
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5807.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2564e4f8-9565-4842-6e30-08d88d85bdf3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Nov 2020 18:54:42.8959
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: crLNVXUHQt78b80Xlbo0M0N304mLUaYaiQZ1Q4ndC3EgmDVS5hLp9LAgynWluH/V
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3302
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-20_12:2020-11-20,2020-11-20 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- impostorscore=0 mlxscore=0 adultscore=0 malwarescore=0 bulkscore=0
- suspectscore=0 lowpriorityscore=0 phishscore=0 clxscore=1011 spamscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011200128
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: NHscngWrqLFDGsd6zqVgwyvk8t069QGDVjOxgJboG2jY4lODqvjDPYbI+jnBKi8bkZLAP62YQCgrI4Al3bu9ug==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4109
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> -----Original Message-----
+> From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> Sent: Friday, November 20, 2020 01:51
+> To: Camelia Alexandra Groza <camelia.groza@nxp.com>
+> Cc: kuba@kernel.org; brouer@redhat.com; saeed@kernel.org;
+> davem@davemloft.net; Madalin Bucur (OSS)
+> <madalin.bucur@oss.nxp.com>; Ioana Ciornei <ioana.ciornei@nxp.com>;
+> netdev@vger.kernel.org
+> Subject: Re: [PATCH net-next v3 4/7] dpaa_eth: add XDP_TX support
+>=20
+> On Thu, Nov 19, 2020 at 06:29:33PM +0200, Camelia Groza wrote:
+> > Use an xdp_frame structure for managing the frame. Store a backpointer
+> to
+> > the structure at the start of the buffer before enqueueing. Use the XDP
+> > API for freeing the buffer when it returns to the driver on the TX
+> > confirmation path.
+>=20
+> Completion path?
 
+The DPAA terminology uses confirmation instead of completion, but the meani=
+ng is similar. The dpaa.rst documentation has more details.
 
-On 11/20/20 5:00 AM, Weqaar Janjua wrote:
-> Adds following tests:
-> 
-> 1. AF_XDP SKB mode
->     Generic mode XDP is driver independent, used when the driver does
->     not have support for XDP. Works on any netdevice using sockets and
->     generic XDP path. XDP hook from netif_receive_skb().
->     a. nopoll - soft-irq processing
->     b. poll - using poll() syscall
-> 
-> Signed-off-by: Weqaar Janjua <weqaar.a.janjua@intel.com>
-> ---
->   tools/testing/selftests/bpf/Makefile          |   5 +-
->   .../selftests/bpf/test_xsk_prerequisites.sh   |  15 +-
->   .../selftests/bpf/test_xsk_skb_nopoll.sh      |  20 +
->   ..._xsk_framework.sh => test_xsk_skb_poll.sh} |  12 +-
->   tools/testing/selftests/bpf/xdpxceiver.c      | 961 ++++++++++++++++++
->   tools/testing/selftests/bpf/xdpxceiver.h      | 151 +++
->   tools/testing/selftests/bpf/xsk_env.sh        |  17 +
->   7 files changed, 1174 insertions(+), 7 deletions(-)
->   create mode 100755 tools/testing/selftests/bpf/test_xsk_skb_nopoll.sh
->   rename tools/testing/selftests/bpf/{test_xsk_framework.sh => test_xsk_skb_poll.sh} (61%)
->   create mode 100644 tools/testing/selftests/bpf/xdpxceiver.c
->   create mode 100644 tools/testing/selftests/bpf/xdpxceiver.h
-> 
-> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> index 51436db24f32..17af570a32d7 100644
-> --- a/tools/testing/selftests/bpf/Makefile
-> +++ b/tools/testing/selftests/bpf/Makefile
-> @@ -73,7 +73,8 @@ TEST_PROGS := test_kmod.sh \
->   	test_bpftool.sh \
->   	test_bpftool_metadata.sh \
->   	test_xsk_prerequisites.sh \
-> -	test_xsk_framework.sh
-> +	test_xsk_skb_nopoll.sh \
-> +	test_xsk_skb_poll.sh
->   
->   TEST_PROGS_EXTENDED := with_addr.sh \
->   	with_tunnels.sh \
-> @@ -84,7 +85,7 @@ TEST_PROGS_EXTENDED := with_addr.sh \
->   # Compile but not part of 'make run_tests'
->   TEST_GEN_PROGS_EXTENDED = test_sock_addr test_skb_cgroup_id_user \
->   	flow_dissector_load test_flow_dissector test_tcp_check_syncookie_user \
-> -	test_lirc_mode2_user xdping test_cpp runqslower bench
-> +	test_lirc_mode2_user xdping test_cpp runqslower bench xdpxceiver
->   
->   TEST_CUSTOM_PROGS = urandom_read
->   
-> diff --git a/tools/testing/selftests/bpf/test_xsk_prerequisites.sh b/tools/testing/selftests/bpf/test_xsk_prerequisites.sh
-> index 00bfcf53127c..a9ce8887dffc 100755
-> --- a/tools/testing/selftests/bpf/test_xsk_prerequisites.sh
-> +++ b/tools/testing/selftests/bpf/test_xsk_prerequisites.sh
-> @@ -8,8 +8,17 @@
->   #
->   # Topology:
->   # ---------
-> -#      -----------           -----------
-> -#      |  xskX   | --------- |  xskY   |
-> +#                 -----------
-> +#               _ | Process | _
-> +#              /  -----------  \
-> +#             /        |        \
-> +#            /         |         \
-> +#      -----------     |     -----------
-> +#      | Thread1 |     |     | Thread2 |
-> +#      -----------     |     -----------
-> +#           |          |          |
-> +#      -----------     |     -----------
-> +#      |  xskX   |     |     |  xskY   |
->   #      -----------     |     -----------
->   #           |          |          |
->   #      -----------     |     ----------
-> @@ -40,6 +49,8 @@
->   #       conflict with any existing interface
->   #   * tests the veth and xsk layers of the topology
->   #
-> +# See the source xdpxceiver.c for information on each test
-> +#
->   # Kernel configuration:
->   # ---------------------
->   # See "config" file for recommended kernel config options.
-> diff --git a/tools/testing/selftests/bpf/test_xsk_skb_nopoll.sh b/tools/testing/selftests/bpf/test_xsk_skb_nopoll.sh
-> new file mode 100755
-> index 000000000000..96600b0f5136
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/test_xsk_skb_nopoll.sh
-> @@ -0,0 +1,20 @@
-> +#!/bin/bash
-> +# SPDX-License-Identifier: GPL-2.0
-> +# Copyright(c) 2020 Intel Corporation.
-> +
-> +# See test_xsk_prerequisites.sh for detailed information on tests
-> +
-> +. xsk_prereqs.sh
-> +. xsk_env.sh
-> +
-> +TEST_NAME="SKB NOPOLL"
-> +
-> +vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
-> +
-> +params=("-S")
-> +execxdpxceiver params
-> +
-> +retval=$?
-> +test_status $retval "${TEST_NAME}"
-> +
-> +test_exit $retval 0
-> diff --git a/tools/testing/selftests/bpf/test_xsk_framework.sh b/tools/testing/selftests/bpf/test_xsk_skb_poll.sh
-> similarity index 61%
-> rename from tools/testing/selftests/bpf/test_xsk_framework.sh
-> rename to tools/testing/selftests/bpf/test_xsk_skb_poll.sh
-> index 2e3f099d001c..d152c8a24251 100755
-> --- a/tools/testing/selftests/bpf/test_xsk_framework.sh
-> +++ b/tools/testing/selftests/bpf/test_xsk_skb_poll.sh
-> @@ -7,11 +7,17 @@
->   . xsk_prereqs.sh
->   . xsk_env.sh
+> >
+> > This approach will be reused for XDP REDIRECT.
+> >
+> > Acked-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
+> > Signed-off-by: Camelia Groza <camelia.groza@nxp.com>
+> > ---
+> >  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 129
+> ++++++++++++++++++++++++-
+> >  drivers/net/ethernet/freescale/dpaa/dpaa_eth.h |   2 +
+> >  2 files changed, 126 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> > index 242ed45..cd5f4f6 100644
+> > --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> > +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> > @@ -1130,6 +1130,24 @@ static int dpaa_fq_init(struct dpaa_fq *dpaa_fq,
+> bool td_enable)
+> >
+> >  	dpaa_fq->fqid =3D qman_fq_fqid(fq);
+> >
+> > +	if (dpaa_fq->fq_type =3D=3D FQ_TYPE_RX_DEFAULT ||
+> > +	    dpaa_fq->fq_type =3D=3D FQ_TYPE_RX_PCD) {
+> > +		err =3D xdp_rxq_info_reg(&dpaa_fq->xdp_rxq, dpaa_fq-
+> >net_dev,
+> > +				       dpaa_fq->fqid);
+> > +		if (err) {
+> > +			dev_err(dev, "xdp_rxq_info_reg failed\n");
+>=20
+> Print out the err?
 
-Here both xsk_prereqs.sh and xsk_env.sh are executed.
-But xsk_env.sh also calls xsk_prereqs.sh. This double
-execution of xsk_prereqs.sh is required or is an
-oversight?
+I'll add the err in the next version.
 
->   
-> -TEST_NAME="XSK FRAMEWORK"
-> +TEST_NAME="SKB POLL"
->   
-> -test_status $ksft_pass "${TEST_NAME}"
-> +vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
-> +
-> +params=("-S" "-p")
-> +execxdpxceiver params
-> +
-> +retval=$?
-> +test_status $retval "${TEST_NAME}"
->   
->   # Must be called in the last test to execute
->   cleanup_exit ${VETH0} ${VETH1} ${NS1}
->   
-> -test_exit $ksft_pass 0
-> +test_exit $retval 0
-> diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-[...]
+> Also, shouldn't you call qman_destroy_fq() for these error paths?
+
+Yes, for the point of undoing all configurations on the queue. The entire p=
+robe is aborted if things fail at this point, so everything is cleaned eith=
+er way. I'll fix this in the next version.
+
+> > +			return err;
+> > +		}
+> > +
+> > +		err =3D xdp_rxq_info_reg_mem_model(&dpaa_fq->xdp_rxq,
+> > +						 MEM_TYPE_PAGE_ORDER0,
+> NULL);
+> > +		if (err) {
+> > +			dev_err(dev, "xdp_rxq_info_reg_mem_model
+> failed\n");
+> > +			xdp_rxq_info_unreg(&dpaa_fq->xdp_rxq);
+> > +			return err;
+> > +		}
+> > +	}
+> > +
+> >  	return 0;
+> >  }
+> >
+> > @@ -1159,6 +1177,10 @@ static int dpaa_fq_free_entry(struct device
+> *dev, struct qman_fq *fq)
+> >  		}
+> >  	}
+> >
+> > +	if (dpaa_fq->fq_type =3D=3D FQ_TYPE_RX_DEFAULT ||
+> > +	    dpaa_fq->fq_type =3D=3D FQ_TYPE_RX_PCD)
+>=20
+> You should call xdp_rxq_info_is_reg() before the unregister below.
+
+I'll add it.
+
+> > +		xdp_rxq_info_unreg(&dpaa_fq->xdp_rxq);
+> > +
+> >  	qman_destroy_fq(fq);
+> >  	list_del(&dpaa_fq->list);
+> >
+> > @@ -1625,6 +1647,9 @@ static int dpaa_eth_refill_bpools(struct dpaa_pri=
+v
+> *priv)
+> >   *
+> >   * Return the skb backpointer, since for S/G frames the buffer contain=
+ing it
+> >   * gets freed here.
+> > + *
+> > + * No skb backpointer is set when transmitting XDP frames. Cleanup the
+> buffer
+> > + * and return NULL in this case.
+> >   */
+> >  static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv=
+,
+> >  					  const struct qm_fd *fd, bool ts)
+> > @@ -1636,6 +1661,7 @@ static struct sk_buff *dpaa_cleanup_tx_fd(const
+> struct dpaa_priv *priv,
+> >  	void *vaddr =3D phys_to_virt(addr);
+> >  	const struct qm_sg_entry *sgt;
+> >  	struct dpaa_eth_swbp *swbp;
+> > +	struct xdp_frame *xdpf;
+>=20
+> This local variable feels a bit unnecessary.
+
+Sure, I'll remove it.
+
+> >  	struct sk_buff *skb;
+> >  	u64 ns;
+> >  	int i;
+> > @@ -1664,13 +1690,22 @@ static struct sk_buff
+> *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
+> >  		}
+> >  	} else {
+> >  		dma_unmap_single(priv->tx_dma_dev, addr,
+> > -				 priv->tx_headroom +
+> qm_fd_get_length(fd),
+> > +				 qm_fd_get_offset(fd) +
+> qm_fd_get_length(fd),
+> >  				 dma_dir);
+> >  	}
+> >
+> >  	swbp =3D (struct dpaa_eth_swbp *)vaddr;
+> >  	skb =3D swbp->skb;
+> >
+> > +	/* No skb backpointer is set when running XDP. An xdp_frame
+> > +	 * backpointer is saved instead.
+> > +	 */
+> > +	if (!skb) {
+> > +		xdpf =3D swbp->xdpf;
+> > +		xdp_return_frame(xdpf);
+> > +		return NULL;
+> > +	}
+> > +
+> >  	/* DMA unmapping is required before accessing the HW provided
+> info */
+> >  	if (ts && priv->tx_tstamp &&
+> >  	    skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) {
+> > @@ -2350,11 +2385,76 @@ static enum qman_cb_dqrr_result
+> rx_error_dqrr(struct qman_portal *portal,
+> >  	return qman_cb_dqrr_consume;
+> >  }
+> >
+> > +static int dpaa_xdp_xmit_frame(struct net_device *net_dev,
+> > +			       struct xdp_frame *xdpf)
+> > +{
+> > +	struct dpaa_priv *priv =3D netdev_priv(net_dev);
+> > +	struct rtnl_link_stats64 *percpu_stats;
+> > +	struct dpaa_percpu_priv *percpu_priv;
+> > +	struct dpaa_eth_swbp *swbp;
+> > +	struct netdev_queue *txq;
+> > +	void *buff_start;
+> > +	struct qm_fd fd;
+> > +	dma_addr_t addr;
+> > +	int err;
+> > +
+> > +	percpu_priv =3D this_cpu_ptr(priv->percpu_priv);
+> > +	percpu_stats =3D &percpu_priv->stats;
+> > +
+> > +	if (xdpf->headroom < DPAA_TX_PRIV_DATA_SIZE) {
+>=20
+> Could you shed some light on DPAA_TX_PRIV_DATA_SIZE usage?
+
+We store information at the start of egress buffers that we use on the conf=
+irmation path for cleanup. DPAA_TX_PRIV_DATA_SIZE is the size of this reser=
+ved area. We require buffers to have at least this mush space available at =
+the start before transmitting them.
+
+> > +		err =3D -EINVAL;
+> > +		goto out_error;
+> > +	}
+> > +
+> > +	buff_start =3D xdpf->data - xdpf->headroom;
+> > +
+> > +	/* Leave empty the skb backpointer at the start of the buffer.
+> > +	 * Save the XDP frame for easy cleanup on confirmation.
+> > +	 */
+> > +	swbp =3D (struct dpaa_eth_swbp *)buff_start;
+> > +	swbp->skb =3D NULL;
+> > +	swbp->xdpf =3D xdpf;
+> > +
+> > +	qm_fd_clear_fd(&fd);
+> > +	fd.bpid =3D FSL_DPAA_BPID_INV;
+> > +	fd.cmd |=3D cpu_to_be32(FM_FD_CMD_FCO);
+> > +	qm_fd_set_contig(&fd, xdpf->headroom, xdpf->len);
+> > +
+> > +	addr =3D dma_map_single(priv->tx_dma_dev, buff_start,
+> > +			      xdpf->headroom + xdpf->len,
+> > +			      DMA_TO_DEVICE);
+> > +	if (unlikely(dma_mapping_error(priv->tx_dma_dev, addr))) {
+> > +		err =3D -EINVAL;
+> > +		goto out_error;
+> > +	}
+> > +
+> > +	qm_fd_addr_set64(&fd, addr);
+> > +
+> > +	/* Bump the trans_start */
+> > +	txq =3D netdev_get_tx_queue(net_dev, smp_processor_id());
+> > +	txq->trans_start =3D jiffies;
+> > +
+> > +	err =3D dpaa_xmit(priv, percpu_stats, smp_processor_id(), &fd);
+>=20
+> So it looks like you don't provide the XDP Tx resources and you share the
+> netstack's Tx queues with XDP, if I'm reading this right.
+>=20
+> Please mention it/explain in the cover letter or commit message of this
+> patch. Furthermore, I don't see any locking happenning over here?
+
+Yes, that's correct, we don't have dedicated Tx queues for XDP, we share th=
+em with the netstack.
+
+We don't need locking at this level. We are a LLTX driver so we don't take =
+the netif_tx_lock. I'll mention this in the cover letter.
+
+> > +	if (err) {
+> > +		dma_unmap_single(priv->tx_dma_dev, addr,
+> > +				 qm_fd_get_offset(&fd) +
+> qm_fd_get_length(&fd),
+> > +				 DMA_TO_DEVICE);
+> > +		goto out_error;
+> > +	}
+> > +
+> > +	return 0;
+> > +
+> > +out_error:
+> > +	percpu_stats->tx_errors++;
+> > +	return err;
+> > +}
+> > +
+> >  static u32 dpaa_run_xdp(struct dpaa_priv *priv, struct qm_fd *fd, void
+> *vaddr,
+> > -			unsigned int *xdp_meta_len)
+> > +			struct dpaa_fq *dpaa_fq, unsigned int
+> *xdp_meta_len)
+> >  {
+> >  	ssize_t fd_off =3D qm_fd_get_offset(fd);
+> >  	struct bpf_prog *xdp_prog;
+> > +	struct xdp_frame *xdpf;
+> >  	struct xdp_buff xdp;
+> >  	u32 xdp_act;
+> >
+> > @@ -2370,7 +2470,8 @@ static u32 dpaa_run_xdp(struct dpaa_priv *priv,
+> struct qm_fd *fd, void *vaddr,
+> >  	xdp.data_meta =3D xdp.data;
+> >  	xdp.data_hard_start =3D xdp.data - XDP_PACKET_HEADROOM;
+> >  	xdp.data_end =3D xdp.data + qm_fd_get_length(fd);
+> > -	xdp.frame_sz =3D DPAA_BP_RAW_SIZE;
+> > +	xdp.frame_sz =3D DPAA_BP_RAW_SIZE - DPAA_TX_PRIV_DATA_SIZE;
+> > +	xdp.rxq =3D &dpaa_fq->xdp_rxq;
+> >
+> >  	xdp_act =3D bpf_prog_run_xdp(xdp_prog, &xdp);
+> >
+> > @@ -2381,6 +2482,22 @@ static u32 dpaa_run_xdp(struct dpaa_priv *priv,
+> struct qm_fd *fd, void *vaddr,
+> >  	case XDP_PASS:
+> >  		*xdp_meta_len =3D xdp.data - xdp.data_meta;
+> >  		break;
+> > +	case XDP_TX:
+> > +		/* We can access the full headroom when sending the frame
+> > +		 * back out
+>=20
+> And normally why a piece of headroom is taken away? I probably should
+> have
+> started from the basic XDP support patch, but if you don't mind, please
+> explain it a bit.
+
+I mentioned we require DPAA_TX_PRIV_DATA_SIZE bytes at the start of the buf=
+fer in order to make sure we have enough space for our private info.
+
+When setting up the xdp_buff, this area is reserved from the frame size exp=
+osed to the XDP program.
+ -	xdp.frame_sz =3D DPAA_BP_RAW_SIZE;
+ +	xdp.frame_sz =3D DPAA_BP_RAW_SIZE - DPAA_TX_PRIV_DATA_SIZE;
+
+After the XDP_TX verdict, we're sure that DPAA_TX_PRIV_DATA_SIZE bytes at t=
+he start of the buffer are free and we can use the full headroom how it sui=
+ts us, hence the increase of the frame size back to DPAA_BP_RAW_SIZE.
+
+Thanks for all your feedback.
+
+> > +		 */
+> > +		xdp.data_hard_start =3D vaddr;
+> > +		xdp.frame_sz =3D DPAA_BP_RAW_SIZE;
+> > +		xdpf =3D xdp_convert_buff_to_frame(&xdp);
+> > +		if (unlikely(!xdpf)) {
+> > +			free_pages((unsigned long)vaddr, 0);
+> > +			break;
+> > +		}
+> > +
+> > +		if (dpaa_xdp_xmit_frame(priv->net_dev, xdpf))
+> > +			xdp_return_frame_rx_napi(xdpf);
+> > +
+> > +		break;
+> >  	default:
+> >  		bpf_warn_invalid_xdp_action(xdp_act);
+> >  		fallthrough;
+> > @@ -2415,6 +2532,7 @@ static enum qman_cb_dqrr_result
+> rx_default_dqrr(struct qman_portal *portal,
+> >  	u32 fd_status, hash_offset;
+> >  	struct qm_sg_entry *sgt;
+> >  	struct dpaa_bp *dpaa_bp;
+> > +	struct dpaa_fq *dpaa_fq;
+> >  	struct dpaa_priv *priv;
+> >  	struct sk_buff *skb;
+> >  	int *count_ptr;
+> > @@ -2423,9 +2541,10 @@ static enum qman_cb_dqrr_result
+> rx_default_dqrr(struct qman_portal *portal,
+> >  	u32 hash;
+> >  	u64 ns;
+> >
+> > +	dpaa_fq =3D container_of(fq, struct dpaa_fq, fq_base);
+> >  	fd_status =3D be32_to_cpu(fd->status);
+> >  	fd_format =3D qm_fd_get_format(fd);
+> > -	net_dev =3D ((struct dpaa_fq *)fq)->net_dev;
+> > +	net_dev =3D dpaa_fq->net_dev;
+> >  	priv =3D netdev_priv(net_dev);
+> >  	dpaa_bp =3D dpaa_bpid2pool(dq->fd.bpid);
+> >  	if (!dpaa_bp)
+> > @@ -2494,7 +2613,7 @@ static enum qman_cb_dqrr_result
+> rx_default_dqrr(struct qman_portal *portal,
+> >
+> >  	if (likely(fd_format =3D=3D qm_fd_contig)) {
+> >  		xdp_act =3D dpaa_run_xdp(priv, (struct qm_fd *)fd, vaddr,
+> > -				       &xdp_meta_len);
+> > +				       dpaa_fq, &xdp_meta_len);
+> >  		if (xdp_act !=3D XDP_PASS) {
+> >  			percpu_stats->rx_packets++;
+> >  			percpu_stats->rx_bytes +=3D qm_fd_get_length(fd);
+> > diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h
+> b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h
+> > index 94e8613..5c8d52a 100644
+> > --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h
+> > +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h
+> > @@ -68,6 +68,7 @@ struct dpaa_fq {
+> >  	u16 channel;
+> >  	u8 wq;
+> >  	enum dpaa_fq_type fq_type;
+> > +	struct xdp_rxq_info xdp_rxq;
+> >  };
+> >
+> >  struct dpaa_fq_cbs {
+> > @@ -150,6 +151,7 @@ struct dpaa_buffer_layout {
+> >   */
+> >  struct dpaa_eth_swbp {
+> >  	struct sk_buff *skb;
+> > +	struct xdp_frame *xdpf;
+> >  };
+> >
+> >  struct dpaa_priv {
+> > --
+> > 1.9.1
+> >
