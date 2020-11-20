@@ -2,215 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C9B12BB5A5
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 20:40:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67F4F2BB617
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 20:53:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728415AbgKTTfE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 14:35:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51430 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728282AbgKTTfD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 14:35:03 -0500
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC4D9C0613CF;
-        Fri, 20 Nov 2020 11:35:03 -0800 (PST)
-Received: by mail-yb1-xb41.google.com with SMTP id 10so9586169ybx.9;
-        Fri, 20 Nov 2020 11:35:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Gz1739iBwCHgCBSlGtAiZOrgVZxBWr1CGt1BZBmpYLc=;
-        b=RzB+vNPhSCrctwjVn+9T6hR6Yb4xLi2sRuLX5y1dyGHE7S8qBKJTP60ZFndycLLjWR
-         cfZ+4EeKHWR71BqEEFTdnENFAxgmfIon80UfZY5zzs1BMIRtrNZnKpjAQZ2jfwAaXwGE
-         jIg/wU69lERt1QJmrwiZwBKz+VKPrZ84qCz09yBB4/r1tJ+AQAjppUqBzoTAMzpyXj2f
-         3AXR+EkVhJq9cCM41bfk6ku3vfZOHOhskQX7KJSl+jlDlndy8ihR8rfBKvXxJpFZbt1G
-         z7JrXTeaCMs8evhudiSzZVJOMGJNsPn91wKBD6buBKCemHjbaww+P/VmG3PVi0jU+YPo
-         iuEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Gz1739iBwCHgCBSlGtAiZOrgVZxBWr1CGt1BZBmpYLc=;
-        b=c64RCKBjyJD2N0j+EMO2CtRNAG5sGkx1ty64uDgxAjh6WGSUZ5NKTbHF40whbg4Y5i
-         PKcx8R4zWIkxlrvu63pEoSj179Z5qExblzza2arThZ9dIb9IGEgVhcnXiNU/l0CPK5Zo
-         DrZAvA2K1zzPnERDz2HoRyDUFkkNGD/uNb7Z0mkB4+y6d43k0Wj+yPgCAQdpxmB+QGOj
-         ckkaKkHULOlZBEcvXaYu2nacp/CtJU0Llc6yCkGoTfJFhubpOAedmvQwMVlrO1UxVFkl
-         Oo7lzQrp4a8daSeBbedo078VwyPSecECC3VnKefW+1DcXpACFWj5ewlKR2EsN2eWhUDa
-         S2ng==
-X-Gm-Message-State: AOAM533oJjhSLh7Cus2abLtgPUT3am4ZUIQIJG2k5Ki0qM0ulxZ+GFPx
-        hMV49fYNceJ5unQO4wmQSSRFjQFT6YxZFjNaY8U=
-X-Google-Smtp-Source: ABdhPJwkW17RSiw+obd1e5Nm9Hj38vu7NKehRzeU4T+FN+Gb8602HMGA3LC/1ktxDY/miOWB9z+AA91gQ2RHOGaaUf4=
-X-Received: by 2002:a25:254a:: with SMTP id l71mr30667864ybl.439.1605900902740;
- Fri, 20 Nov 2020 11:35:02 -0800 (PST)
+        id S1730258AbgKTTvy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 14:51:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48630 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729559AbgKTTvu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Nov 2020 14:51:50 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id ADA4D206B6;
+        Fri, 20 Nov 2020 19:51:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605901908;
+        bh=RBzOhaxiAPO90htsWQNreeN48VhmFALIIs8F+S8F2tg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=0HJ898xky9A4AiX47c8E/kv2vloKTCLDsa1B08r0Ns0UI6ViLC8sEEmzvLmSWmHDR
+         rh+QM7asV5JMfRqDaW/zMVHUMAG8pWVLOHT3LXTHM6aAp9QNwMcpVcVlrfF8wRUqJ9
+         pWgdeTKSVxQ+8c5KHivLBQCp2OjpIRpNZteZuQdk=
+Date:   Fri, 20 Nov 2020 11:51:42 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
+        amd-gfx@lists.freedesktop.org, bridge@lists.linux-foundation.org,
+        ceph-devel@vger.kernel.org, cluster-devel@redhat.com,
+        coreteam@netfilter.org, devel@driverdev.osuosl.org,
+        dm-devel@redhat.com, drbd-dev@lists.linbit.com,
+        dri-devel@lists.freedesktop.org, GR-everest-linux-l2@marvell.com,
+        GR-Linux-NIC-Dev@marvell.com, intel-gfx@lists.freedesktop.org,
+        intel-wired-lan@lists.osuosl.org, keyrings@vger.kernel.org,
+        linux1394-devel@lists.sourceforge.net, linux-acpi@vger.kernel.org,
+        linux-afs@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org,
+        linux-atm-general@lists.sourceforge.net,
+        linux-block@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-cifs@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-decnet-user@lists.sourceforge.net,
+        linux-ext4@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-geode@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-hams@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-i3c@lists.infradead.org, linux-ide@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-integrity@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mm@kvack.org,
+        linux-mtd@lists.infradead.org, linux-nfs@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, nouveau@lists.freedesktop.org,
+        op-tee@lists.trustedfirmware.org, oss-drivers@netronome.com,
+        patches@opensource.cirrus.com, rds-devel@oss.oracle.com,
+        reiserfs-devel@vger.kernel.org, samba-technical@lists.samba.org,
+        selinux@vger.kernel.org, target-devel@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net,
+        usb-storage@lists.one-eyed-alien.net,
+        virtualization@lists.linux-foundation.org,
+        wcn36xx@lists.infradead.org, x86@kernel.org,
+        xen-devel@lists.xenproject.org, linux-hardening@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Miguel Ojeda <ojeda@kernel.org>, Joe Perches <joe@perches.com>
+Subject: Re: [PATCH 000/141] Fix fall-through warnings for Clang
+Message-ID: <20201120115142.292999b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <202011201129.B13FDB3C@keescook>
+References: <cover.1605896059.git.gustavoars@kernel.org>
+        <20201120105344.4345c14e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <202011201129.B13FDB3C@keescook>
 MIME-Version: 1.0
-References: <20201120130026.19029-1-weqaar.a.janjua@intel.com>
- <20201120130026.19029-3-weqaar.a.janjua@intel.com> <c73ca08d-4eae-c56f-f5fe-b4dd1440773b@fb.com>
-In-Reply-To: <c73ca08d-4eae-c56f-f5fe-b4dd1440773b@fb.com>
-From:   Weqaar Janjua <weqaar.janjua@gmail.com>
-Date:   Fri, 20 Nov 2020 19:34:36 +0000
-Message-ID: <CAPLEeBaq5yu5Be4dd1KxRxk5JX24PynuA-xreBm9qm-3uMrS0A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 2/5] selftests/bpf: xsk selftests - SKB POLL, NOPOLL
-To:     Yonghong Song <yhs@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Weqaar Janjua <weqaar.a.janjua@intel.com>, shuah@kernel.org,
-        skhan@linuxfoundation.org, linux-kselftest@vger.kernel.org,
-        Anders Roxell <anders.roxell@linaro.org>,
-        jonathan.lemon@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 20 Nov 2020 at 18:54, Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 11/20/20 5:00 AM, Weqaar Janjua wrote:
-> > Adds following tests:
-> >
-> > 1. AF_XDP SKB mode
-> >     Generic mode XDP is driver independent, used when the driver does
-> >     not have support for XDP. Works on any netdevice using sockets and
-> >     generic XDP path. XDP hook from netif_receive_skb().
-> >     a. nopoll - soft-irq processing
-> >     b. poll - using poll() syscall
-> >
-> > Signed-off-by: Weqaar Janjua <weqaar.a.janjua@intel.com>
-> > ---
-> >   tools/testing/selftests/bpf/Makefile          |   5 +-
-> >   .../selftests/bpf/test_xsk_prerequisites.sh   |  15 +-
-> >   .../selftests/bpf/test_xsk_skb_nopoll.sh      |  20 +
-> >   ..._xsk_framework.sh => test_xsk_skb_poll.sh} |  12 +-
-> >   tools/testing/selftests/bpf/xdpxceiver.c      | 961 ++++++++++++++++++
-> >   tools/testing/selftests/bpf/xdpxceiver.h      | 151 +++
-> >   tools/testing/selftests/bpf/xsk_env.sh        |  17 +
-> >   7 files changed, 1174 insertions(+), 7 deletions(-)
-> >   create mode 100755 tools/testing/selftests/bpf/test_xsk_skb_nopoll.sh
-> >   rename tools/testing/selftests/bpf/{test_xsk_framework.sh => test_xsk_skb_poll.sh} (61%)
-> >   create mode 100644 tools/testing/selftests/bpf/xdpxceiver.c
-> >   create mode 100644 tools/testing/selftests/bpf/xdpxceiver.h
-> >
-> > diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> > index 51436db24f32..17af570a32d7 100644
-> > --- a/tools/testing/selftests/bpf/Makefile
-> > +++ b/tools/testing/selftests/bpf/Makefile
-> > @@ -73,7 +73,8 @@ TEST_PROGS := test_kmod.sh \
-> >       test_bpftool.sh \
-> >       test_bpftool_metadata.sh \
-> >       test_xsk_prerequisites.sh \
-> > -     test_xsk_framework.sh
-> > +     test_xsk_skb_nopoll.sh \
-> > +     test_xsk_skb_poll.sh
-> >
-> >   TEST_PROGS_EXTENDED := with_addr.sh \
-> >       with_tunnels.sh \
-> > @@ -84,7 +85,7 @@ TEST_PROGS_EXTENDED := with_addr.sh \
-> >   # Compile but not part of 'make run_tests'
-> >   TEST_GEN_PROGS_EXTENDED = test_sock_addr test_skb_cgroup_id_user \
-> >       flow_dissector_load test_flow_dissector test_tcp_check_syncookie_user \
-> > -     test_lirc_mode2_user xdping test_cpp runqslower bench
-> > +     test_lirc_mode2_user xdping test_cpp runqslower bench xdpxceiver
-> >
-> >   TEST_CUSTOM_PROGS = urandom_read
-> >
-> > diff --git a/tools/testing/selftests/bpf/test_xsk_prerequisites.sh b/tools/testing/selftests/bpf/test_xsk_prerequisites.sh
-> > index 00bfcf53127c..a9ce8887dffc 100755
-> > --- a/tools/testing/selftests/bpf/test_xsk_prerequisites.sh
-> > +++ b/tools/testing/selftests/bpf/test_xsk_prerequisites.sh
-> > @@ -8,8 +8,17 @@
-> >   #
-> >   # Topology:
-> >   # ---------
-> > -#      -----------           -----------
-> > -#      |  xskX   | --------- |  xskY   |
-> > +#                 -----------
-> > +#               _ | Process | _
-> > +#              /  -----------  \
-> > +#             /        |        \
-> > +#            /         |         \
-> > +#      -----------     |     -----------
-> > +#      | Thread1 |     |     | Thread2 |
-> > +#      -----------     |     -----------
-> > +#           |          |          |
-> > +#      -----------     |     -----------
-> > +#      |  xskX   |     |     |  xskY   |
-> >   #      -----------     |     -----------
-> >   #           |          |          |
-> >   #      -----------     |     ----------
-> > @@ -40,6 +49,8 @@
-> >   #       conflict with any existing interface
-> >   #   * tests the veth and xsk layers of the topology
-> >   #
-> > +# See the source xdpxceiver.c for information on each test
-> > +#
-> >   # Kernel configuration:
-> >   # ---------------------
-> >   # See "config" file for recommended kernel config options.
-> > diff --git a/tools/testing/selftests/bpf/test_xsk_skb_nopoll.sh b/tools/testing/selftests/bpf/test_xsk_skb_nopoll.sh
-> > new file mode 100755
-> > index 000000000000..96600b0f5136
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/test_xsk_skb_nopoll.sh
-> > @@ -0,0 +1,20 @@
-> > +#!/bin/bash
-> > +# SPDX-License-Identifier: GPL-2.0
-> > +# Copyright(c) 2020 Intel Corporation.
-> > +
-> > +# See test_xsk_prerequisites.sh for detailed information on tests
-> > +
-> > +. xsk_prereqs.sh
-> > +. xsk_env.sh
-> > +
-> > +TEST_NAME="SKB NOPOLL"
-> > +
-> > +vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
-> > +
-> > +params=("-S")
-> > +execxdpxceiver params
-> > +
-> > +retval=$?
-> > +test_status $retval "${TEST_NAME}"
-> > +
-> > +test_exit $retval 0
-> > diff --git a/tools/testing/selftests/bpf/test_xsk_framework.sh b/tools/testing/selftests/bpf/test_xsk_skb_poll.sh
-> > similarity index 61%
-> > rename from tools/testing/selftests/bpf/test_xsk_framework.sh
-> > rename to tools/testing/selftests/bpf/test_xsk_skb_poll.sh
-> > index 2e3f099d001c..d152c8a24251 100755
-> > --- a/tools/testing/selftests/bpf/test_xsk_framework.sh
-> > +++ b/tools/testing/selftests/bpf/test_xsk_skb_poll.sh
-> > @@ -7,11 +7,17 @@
-> >   . xsk_prereqs.sh
-> >   . xsk_env.sh
->
-> Here both xsk_prereqs.sh and xsk_env.sh are executed.
-> But xsk_env.sh also calls xsk_prereqs.sh. This double
-> execution of xsk_prereqs.sh is required or is an
-> oversight?
->
-Oversight, will fix as v3 - in all 5/5 test_xsk_*.sh, thanks
+On Fri, 20 Nov 2020 11:30:40 -0800 Kees Cook wrote:
+> On Fri, Nov 20, 2020 at 10:53:44AM -0800, Jakub Kicinski wrote:
+> > On Fri, 20 Nov 2020 12:21:39 -0600 Gustavo A. R. Silva wrote:  
+> > > This series aims to fix almost all remaining fall-through warnings in
+> > > order to enable -Wimplicit-fallthrough for Clang.
+> > > 
+> > > In preparation to enable -Wimplicit-fallthrough for Clang, explicitly
+> > > add multiple break/goto/return/fallthrough statements instead of just
+> > > letting the code fall through to the next case.
+> > > 
+> > > Notice that in order to enable -Wimplicit-fallthrough for Clang, this
+> > > change[1] is meant to be reverted at some point. So, this patch helps
+> > > to move in that direction.
+> > > 
+> > > Something important to mention is that there is currently a discrepancy
+> > > between GCC and Clang when dealing with switch fall-through to empty case
+> > > statements or to cases that only contain a break/continue/return
+> > > statement[2][3][4].  
+> > 
+> > Are we sure we want to make this change? Was it discussed before?
+> > 
+> > Are there any bugs Clangs puritanical definition of fallthrough helped
+> > find?
+> > 
+> > IMVHO compiler warnings are supposed to warn about issues that could
+> > be bugs. Falling through to default: break; can hardly be a bug?!  
+> 
+> It's certainly a place where the intent is not always clear. I think
+> this makes all the cases unambiguous, and doesn't impact the machine
+> code, since the compiler will happily optimize away any behavioral
+> redundancy.
 
-> >
-> > -TEST_NAME="XSK FRAMEWORK"
-> > +TEST_NAME="SKB POLL"
-> >
-> > -test_status $ksft_pass "${TEST_NAME}"
-> > +vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
-> > +
-> > +params=("-S" "-p")
-> > +execxdpxceiver params
-> > +
-> > +retval=$?
-> > +test_status $retval "${TEST_NAME}"
-> >
-> >   # Must be called in the last test to execute
-> >   cleanup_exit ${VETH0} ${VETH1} ${NS1}
-> >
-> > -test_exit $ksft_pass 0
-> > +test_exit $retval 0
-> > diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-> [...]
+If none of the 140 patches here fix a real bug, and there is no change
+to machine code then it sounds to me like a W=2 kind of a warning.
+
+I think clang is just being annoying here, but if I'm the only one who
+feels this way chances are I'm wrong :)
