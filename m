@@ -2,109 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DECC2BA70C
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 11:07:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6753C2BA73C
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 11:21:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727850AbgKTKHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 05:07:09 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:34852 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727137AbgKTKHI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 05:07:08 -0500
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AKA2A6g160105;
-        Fri, 20 Nov 2020 05:07:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id; s=pp1;
- bh=ceNSdD8BsGwIi2MityEclqQHO4eg8Omuo9lv4TCw5lw=;
- b=HnernEPUTwLdJ5CsCZpjRdyxN1ZRdOXR6ytocYvMAnHGbTMN5o7YCjxodpQFBxvt0N0g
- qhMVCjHjdcGk+wrw4Rk32O+ANveh20ApIwI4PEY4wNSsG/HSNi0k0PIcnquIHxHIuO7B
- csqGN3LZrMT2h1QW3a//tIDX2Shpiw+iBhD3SoGaT6Gb6jqiZ29CEJj1sQQ6RzNYtMlH
- bxOqosaZxiKtJ8nwW+Cr1HNDDKALdRzcAaYBVarb9CHVLD3Qz9eBrtc7xSQqQrLp7GBN
- qEVofGfHU8RgyPmDBqeOvvU92I/Uw3jCh4x4qsZGY3xxGFipBAqLb7mEXx7NedwOnDx4 Bg== 
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 34x9264yvh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 Nov 2020 05:07:06 -0500
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0AKA3Y1M032211;
-        Fri, 20 Nov 2020 10:07:03 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma04fra.de.ibm.com with ESMTP id 34t6v8b68j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 Nov 2020 10:07:03 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0AKA709V8192754
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 20 Nov 2020 10:07:00 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B399CA4059;
-        Fri, 20 Nov 2020 10:07:00 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6ED6BA4051;
-        Fri, 20 Nov 2020 10:07:00 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 20 Nov 2020 10:07:00 +0000 (GMT)
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
+        id S1726335AbgKTKUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 05:20:09 -0500
+Received: from mga14.intel.com ([192.55.52.115]:2583 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725789AbgKTKUJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Nov 2020 05:20:09 -0500
+IronPort-SDR: qAd9Y4jY3p0s6fUTkdaCkBvlRsug3v4qPBa9h/Q8pAsrZxR0L1uorsqmmBM4aPNyB2Zws1EH+l
+ zqxSLhPV+R4Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9810"; a="170669444"
+X-IronPort-AV: E=Sophos;i="5.78,356,1599548400"; 
+   d="scan'208";a="170669444"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2020 02:20:09 -0800
+IronPort-SDR: wmc0JH8A7o1ERwpw4MsSCZ5YZBzwpK2CGxwjAJk6lkbSCf5qUeJJA8JSeiv2S+AasTeqLfLvwU
+ 3eW9LBYnDlhA==
+X-IronPort-AV: E=Sophos;i="5.78,356,1599548400"; 
+   d="scan'208";a="477175051"
+Received: from schuenem-mobl2.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.37.132])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2020 02:20:06 -0800
+Subject: Re: [PATCH net-next V3] MAINTAINERS: Update XDP and AF_XDP entries
+To:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-netdev <netdev@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH net] net/af_iucv: set correct sk_protocol for child sockets
-Date:   Fri, 20 Nov 2020 11:06:57 +0100
-Message-Id: <20201120100657.34407-1-jwi@linux.ibm.com>
-X-Mailer: git-send-email 2.17.1
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-20_04:2020-11-19,2020-11-20 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 spamscore=0
- suspectscore=2 priorityscore=1501 adultscore=0 mlxlogscore=916 bulkscore=0
- lowpriorityscore=0 malwarescore=0 impostorscore=0 clxscore=1015 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011200063
+Cc:     netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>, joe@perches.com
+References: <160586238944.2808432.4401269290440394008.stgit@firesoul>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <c40b7ae2-78e5-a507-79df-4968924a0cfb@intel.com>
+Date:   Fri, 20 Nov 2020 11:20:04 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.2
+MIME-Version: 1.0
+In-Reply-To: <160586238944.2808432.4401269290440394008.stgit@firesoul>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Child sockets erroneously inherit their parent's sk_type (ie. SOCK_*),
-instead of the PF_IUCV protocol that the parent was created with in
-iucv_sock_create().
+On 2020-11-20 09:53, Jesper Dangaard Brouer wrote:
+> Getting too many false positive matches with current use
+> of the content regex K: and file regex N: patterns.
+> 
+> This patch drops file match N: and makes K: more restricted.
+> Some more normal F: file wildcards are added.
+> 
+> Notice that AF_XDP forgot to some F: files that is also
+> updated in this patch.
+> 
+> Suggested-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-We're currently not using sk->sk_protocol ourselves, so this shouldn't
-have much impact (except eg. getting the output in skb_dump() right).
+Thanks Jesper!
 
-Fixes: eac3731bd04c ("[S390]: Add AF_IUCV socket support")
-Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
----
- net/iucv/af_iucv.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Acked-by: Björn Töpel <bjorn.topel@intel.com>
 
-diff --git a/net/iucv/af_iucv.c b/net/iucv/af_iucv.c
-index 047238f01ba6..db7d888914fa 100644
---- a/net/iucv/af_iucv.c
-+++ b/net/iucv/af_iucv.c
-@@ -1645,7 +1645,7 @@ static int iucv_callback_connreq(struct iucv_path *path,
- 	}
- 
- 	/* Create the new socket */
--	nsk = iucv_sock_alloc(NULL, sk->sk_type, GFP_ATOMIC, 0);
-+	nsk = iucv_sock_alloc(NULL, sk->sk_protocol, GFP_ATOMIC, 0);
- 	if (!nsk) {
- 		err = pr_iucv->path_sever(path, user_data);
- 		iucv_path_free(path);
-@@ -1851,7 +1851,7 @@ static int afiucv_hs_callback_syn(struct sock *sk, struct sk_buff *skb)
- 		goto out;
- 	}
- 
--	nsk = iucv_sock_alloc(NULL, sk->sk_type, GFP_ATOMIC, 0);
-+	nsk = iucv_sock_alloc(NULL, sk->sk_protocol, GFP_ATOMIC, 0);
- 	bh_lock_sock(sk);
- 	if ((sk->sk_state != IUCV_LISTEN) ||
- 	    sk_acceptq_is_full(sk) ||
--- 
-2.17.1
-
+> ---
+>   MAINTAINERS |   12 ++++++++++--
+>   1 file changed, 10 insertions(+), 2 deletions(-)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index af9f6a3ab100..f827f504251b 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -19105,12 +19105,17 @@ L:	netdev@vger.kernel.org
+>   L:	bpf@vger.kernel.org
+>   S:	Supported
+>   F:	include/net/xdp.h
+> +F:	include/net/xdp_priv.h
+>   F:	include/trace/events/xdp.h
+>   F:	kernel/bpf/cpumap.c
+>   F:	kernel/bpf/devmap.c
+>   F:	net/core/xdp.c
+> -N:	xdp
+> -K:	xdp
+> +F:	samples/bpf/xdp*
+> +F:	tools/testing/selftests/bpf/*xdp*
+> +F:	tools/testing/selftests/bpf/*/*xdp*
+> +F:	drivers/net/ethernet/*/*/*/*/*xdp*
+> +F:	drivers/net/ethernet/*/*/*xdp*
+> +K:	(?:\b|_)xdp(?:\b|_)
+>   
+>   XDP SOCKETS (AF_XDP)
+>   M:	Björn Töpel <bjorn.topel@intel.com>
+> @@ -19119,9 +19124,12 @@ R:	Jonathan Lemon <jonathan.lemon@gmail.com>
+>   L:	netdev@vger.kernel.org
+>   L:	bpf@vger.kernel.org
+>   S:	Maintained
+> +F:	Documentation/networking/af_xdp.rst
+>   F:	include/net/xdp_sock*
+>   F:	include/net/xsk_buff_pool.h
+>   F:	include/uapi/linux/if_xdp.h
+> +F:	include/uapi/linux/xdp_diag.h
+> +F:	include/net/netns/xdp.h
+>   F:	net/xdp/
+>   F:	samples/bpf/xdpsock*
+>   F:	tools/lib/bpf/xsk*
+> 
+> 
