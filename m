@@ -2,90 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AFCB2BA202
+	by mail.lfdr.de (Postfix) with ESMTP id E31022BA203
 	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 06:44:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726420AbgKTFl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 00:41:29 -0500
-Received: from mxout70.expurgate.net ([91.198.224.70]:36081 "EHLO
-        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726381AbgKTFl2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 00:41:28 -0500
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.92)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1kfzAi-000S6Y-M4; Fri, 20 Nov 2020 06:41:24 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1kfzAi-000JUM-1i; Fri, 20 Nov 2020 06:41:24 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id C3AC1240041;
-        Fri, 20 Nov 2020 06:41:23 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id 4648C240040;
-        Fri, 20 Nov 2020 06:41:23 +0100 (CET)
-Received: from mschiller01.dev.tdt.de (unknown [10.2.3.20])
-        by mail.dev.tdt.de (Postfix) with ESMTPSA id A4F4B20D9C;
-        Fri, 20 Nov 2020 06:41:22 +0100 (CET)
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     andrew.hendry@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        xie.he.0141@gmail.com
-Cc:     linux-x25@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Martin Schiller <ms@dev.tdt.de>
-Subject: [PATCH net-next v4 5/5] net/x25: remove x25_kill_by_device()
-Date:   Fri, 20 Nov 2020 06:40:36 +0100
-Message-ID: <20201120054036.15199-6-ms@dev.tdt.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201120054036.15199-1-ms@dev.tdt.de>
-References: <20201120054036.15199-1-ms@dev.tdt.de>
+        id S1726460AbgKTFnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 00:43:37 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58922 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726310AbgKTFnh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Nov 2020 00:43:37 -0500
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 70C9A221FC;
+        Fri, 20 Nov 2020 05:43:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605851016;
+        bh=2ecvJkGoQPKbfXk1VdJdZDGJCbqu/p2h/VxKC5SMNgg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=VYhUeEiwfQM0X641vg3ibEMOj3K6jHNmyOCdIKoNmaenWhNPYR4hGtf71pxWn9vck
+         IsGDWOl3W3abdlE8zCEo0XlV3uKlBqaYA/oksx6vxwKzJwvlEXNqWq8OwX0QQO0oPi
+         k+bHg3HcwCKBN5gVg79bUSOhB6NtlTljbKj/6gvg=
+Date:   Thu, 19 Nov 2020 21:43:35 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@nvidia.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Bin Luo <luobin9@huawei.com>
+Subject: Re: [net-next v4 0/2] devlink: move common flash_update calls to
+ core
+Message-ID: <20201119214335.21a244a7@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201118190636.1235045-1-jacob.e.keller@intel.com>
+References: <20201118190636.1235045-1-jacob.e.keller@intel.com>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
-Content-Transfer-Encoding: quoted-printable
-X-purgate-type: clean
-X-purgate-ID: 151534::1605850884-00008E89-CD28E413/0/0
-X-purgate: clean
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove obsolete function x25_kill_by_device(). It's not used any more.
+On Wed, 18 Nov 2020 11:06:34 -0800 Jacob Keller wrote:
+> This series moves a couple common pieces done by all drivers of the
+> ->flash_update interface into devlink.c flash update handler. Specifically,  
+> the core code will now request_firmware and
+> devlink_flash_update_(begin|end)_notify.
+> 
+> This cleanup is intended to simplify driver implementations so that they
+> have less work to do and are less capable of doing the "wrong" thing.
+> 
+> For request_firmware, this simplification is done as it is not expected that
+> drivers would do anything else. It also standardizes all drivers so that
+> they use the same interface (request_firmware, as opposed to
+> request_firmware_direct), and allows reporting the netlink extended ack with
+> the file name attribute.
+> 
+> For status notification, this change prevents drivers from sending a status
+> message without properly sending the status end notification. The current
+> userspace implementation of devlink relies on this end notification to
+> properly close the flash update channel. Without this, the flash update
+> process may hang indefinitely. By moving the begin and end calls into the
+> core code, it is no longer possible for a driver author to get this wrong.
+> 
+> Changes since v3
+> * picked up acked-by and reviewed-by comments
+> * fixed the ionic driver to leave the print statement in place
+> 
+> For the original patch that moved request_firmware, see [1]. For the v2 see
+> [2]. For further discussion of the issues with devlink flash status see [3].
+> For v3 see [4].
 
-Signed-off-by: Martin Schiller <ms@dev.tdt.de>
----
- net/x25/af_x25.c | 16 ----------------
- 1 file changed, 16 deletions(-)
-
-diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
-index 313a6222ded9..1432a05805ab 100644
---- a/net/x25/af_x25.c
-+++ b/net/x25/af_x25.c
-@@ -199,22 +199,6 @@ static void x25_remove_socket(struct sock *sk)
- 	write_unlock_bh(&x25_list_lock);
- }
-=20
--/*
-- *	Kill all bound sockets on a dropped device.
-- */
--static void x25_kill_by_device(struct net_device *dev)
--{
--	struct sock *s;
--
--	write_lock_bh(&x25_list_lock);
--
--	sk_for_each(s, &x25_list)
--		if (x25_sk(s)->neighbour && x25_sk(s)->neighbour->dev =3D=3D dev)
--			x25_disconnect(s, ENETUNREACH, 0, 0);
--
--	write_unlock_bh(&x25_list_lock);
--}
--
- /*
-  *	Handle device status changes.
-  */
---=20
-2.20.1
-
+Applied, thanks!
