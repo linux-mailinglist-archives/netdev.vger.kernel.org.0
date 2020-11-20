@@ -2,137 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FCD12BB87A
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 22:41:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF4192BB899
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 22:51:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728355AbgKTVjq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 16:39:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42802 "EHLO
+        id S1727872AbgKTVvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 16:51:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727993AbgKTVjp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 16:39:45 -0500
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56BA8C0613CF;
-        Fri, 20 Nov 2020 13:39:45 -0800 (PST)
-Received: by mail-qt1-x843.google.com with SMTP id g17so8259242qts.5;
-        Fri, 20 Nov 2020 13:39:45 -0800 (PST)
+        with ESMTP id S1727150AbgKTVvF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 16:51:05 -0500
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A423C0613CF;
+        Fri, 20 Nov 2020 13:51:05 -0800 (PST)
+Received: by mail-pf1-x441.google.com with SMTP id 131so9153696pfb.9;
+        Fri, 20 Nov 2020 13:51:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:subject:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=s1WYbCf4DLtQCOZZjao8Kq3OsBZTVKuAEA5HpJECn0U=;
-        b=Lo6qc0IBxen4XlAgIpJdR6sjJ1pLYCV3g7ArGA/SM2jyVR8pYG/MWvFdccJhivY0wa
-         vW0MOv1VTxK/YFH/8Yf4mRzNdpA0I1G0zr2BJ7FbDoD8SFUQKU09T8ebe/DsA5nNI60I
-         /pGFVG3h4sI1bpOsaCnY9+OiKvEv/rh5hcI5yuwOg/QDKontUYQa6Z8gV6sVlDRQhcrT
-         5ENhtCCLnzijiNk2a5Ql62wErNiDYBtsoChGBfS6f9ABR0uBrDUGK+yEHFgD47MDAvIe
-         6r3nmbz+miE4Upg2IlE9Zr21xWIitL0eHpXPNyv52fo06GFTCl4oHFk8nwu/fARsAqgh
-         pP3Q==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=15x9oN4lE6NCr7rYJM+9lvk6nGck27y4SvqopIZJ3PQ=;
+        b=THK0TbFwuzsee6mbWjIucclFaHTMomCGZTxoUhLrMb3NGYhUuDrxum8OLfg1Zoxpn6
+         e4wQybO+q9cByd+M8E1Lg0NHV/lIyVa+1EHZkVS57IY1SyR1ETsohP3n7U9y6+IIPpRm
+         CfMfbh4aiYlTGYcTIyrLJ8YiOj4fV4qh9sg0CqKs6Uz+1OWvRACzsoeFrQMtjWvjWmbn
+         q/OlhFAx49EAYS/hUL9i+IuE6UzPe5auIObR1W2XV1gUBkixJ/qmsMZUKzh8eRO9m9m8
+         iIYB/JluQlK5Mw9S072P4R+sgsMrNEV+pj/bVbLYv78iJGANjReRgAqHmAJDh2EG8F9l
+         PURw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=s1WYbCf4DLtQCOZZjao8Kq3OsBZTVKuAEA5HpJECn0U=;
-        b=Ourl23PM+zpVFITEndx3hWyX0M0ENQOCRYPuaIdlTw23DYhUxlDFr7oN8qVz4lWRsH
-         Aw5yiUym3Mm5WYrYSmLGI7H+Job5h0oUB1IE9aC/trKorkjqK0EYo/bWqLxJenSYL1Yk
-         xdm2c9ugNWiJ7YzVneIeLElApncyv3/hkw/BXWotU2e9loGrTgZaTBMvxUFcpmzBEzVX
-         40gtXm7f2sE17sml9GydLsWGubh8qfAzAUwDp1KDOY/7ZIwbPb0XVX/O495mhhXgNVt+
-         XqpsclpsvKLVuJS1xxatm6yGTrqTi5b3QNTudHvuwLrjMkHwvu6BbFeh3Ij84UqN1u+f
-         8zDw==
-X-Gm-Message-State: AOAM530zoY/JwnQGql6unyrU/IVuOvO0I+Nz/2SlG1MtbT/i+PbviNrO
-        /dc4WjB7PY1Bprfb8XEyIaurMsniGks=
-X-Google-Smtp-Source: ABdhPJxlEDpvnIi2bfpP/20pkYh6uSD1+pHNqKtO6zJ5NyqxFy86CZQ3Yhy6PKqsimLIwcrAqbTekQ==
-X-Received: by 2002:ac8:5848:: with SMTP id h8mr13137812qth.232.1605908384275;
-        Fri, 20 Nov 2020 13:39:44 -0800 (PST)
-Received: from ?IPv6:2620:10d:c0a8:1102::1844? ([2620:10d:c091:480::1:6eec])
-        by smtp.gmail.com with ESMTPSA id s7sm2823401qkm.124.2020.11.20.13.39.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 Nov 2020 13:39:43 -0800 (PST)
-From:   Jes Sorensen <jes.sorensen@gmail.com>
-X-Google-Original-From: Jes Sorensen <Jes.Sorensen@gmail.com>
-Subject: Re: [PATCH 117/141] rtl8xxxu: Fix fall-through warnings for Clang
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-References: <cover.1605896059.git.gustavoars@kernel.org>
- <d522f387b2d0dde774785c7169c1f25aa529989d.1605896060.git.gustavoars@kernel.org>
-Message-ID: <691515e4-4d40-56cf-5f7a-1819aad1afa9@gmail.com>
-Date:   Fri, 20 Nov 2020 16:39:42 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=15x9oN4lE6NCr7rYJM+9lvk6nGck27y4SvqopIZJ3PQ=;
+        b=haU0DeBV+8MVD1tVav2J+M0FTifYsRMzs++gk584mkrTNyADOvXQft+pvtZ2iS30pS
+         q71oUmsrc0GbVljEZruLGc/4RUgh1C+6482yncwdYY26JJgVYFEcN1I4bYTLKyH7OOvs
+         AL7gMBNddmjqdUvLgTcIRkdWaMQA6U7R0UUu69lty/3RJ0iMCXJn0zsLKiG5U/WHFxit
+         ++xgeWgYPsJjY5fyhYYQ9JQ145c1SMEUa0Iw5xpFHuoPIrZPUWGB1aW9vYIFft1Iym7+
+         Sz4+qPnLOBPa+1Zodrkhwrlu9rm+IlTFKqTIz+xwtgCxhi2yDviF7kh0pTTGq3g/iMt6
+         DUgA==
+X-Gm-Message-State: AOAM532JgFL6qOkF5QDXnXG9Nh6oSs3iClV0AaimW2JQ27fWpiWqG1pK
+        kcKkqMhk1XBLh1lB2bcgIc8=
+X-Google-Smtp-Source: ABdhPJyXGNnXKP2eLXQWcS0KTs9mHTDGi+ekXKR3UEZBi8+qpBZxvFg+2JZFRzgxtAEepV+R3mhDgw==
+X-Received: by 2002:a05:6a00:13a3:b029:18b:d5d2:196 with SMTP id t35-20020a056a0013a3b029018bd5d20196mr16378156pfg.62.1605909064902;
+        Fri, 20 Nov 2020 13:51:04 -0800 (PST)
+Received: from ast-mbp ([2620:10d:c090:400::5:501])
+        by smtp.gmail.com with ESMTPSA id n10sm4291091pgb.45.2020.11.20.13.51.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Nov 2020 13:51:03 -0800 (PST)
+Date:   Fri, 20 Nov 2020 13:50:51 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>, maze@google.com,
+        lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        colrack@gmail.com
+Subject: Re: [PATCH bpf-next V7 8/8] bpf/selftests: activating bpf_check_mtu
+ BPF-helper
+Message-ID: <20201120215051.cqrlmxtujrgaidc6@ast-mbp>
+References: <160588903254.2817268.4861837335793475314.stgit@firesoul>
+ <160588912738.2817268.9380466634324530673.stgit@firesoul>
 MIME-Version: 1.0
-In-Reply-To: <d522f387b2d0dde774785c7169c1f25aa529989d.1605896060.git.gustavoars@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <160588912738.2817268.9380466634324530673.stgit@firesoul>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/20/20 1:38 PM, Gustavo A. R. Silva wrote:
-> In preparation to enable -Wimplicit-fallthrough for Clang, fix
-> multiple warnings by replacing /* fall through */ comments with
-> the new pseudo-keyword macro fallthrough; instead of letting the
-> code fall through to the next case.
+On Fri, Nov 20, 2020 at 05:18:47PM +0100, Jesper Dangaard Brouer wrote:
+> Adding selftest for BPF-helper bpf_check_mtu(). Making sure
+> it can be used from both XDP and TC.
 > 
-> Notice that Clang doesn't recognize /* fall through */ comments as
-> implicit fall-through markings.
-> 
-> Link: https://github.com/KSPP/linux/issues/115
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 > ---
->  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-
-While I wasn't CC'ed on the cover-letter I see Jakub also raised issues
-about this unnecessary patch noise.
-
-Quite frankly, this seems to be patch churn for the sake of patch churn.
-If clang is broken, fix clang instead.
-
-NACK
-
-
-Jes
-
-> diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> index 5cd7ef3625c5..afc97958fa4d 100644
-> --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-> @@ -1145,7 +1145,7 @@ void rtl8xxxu_gen1_config_channel(struct ieee80211_hw *hw)
->  	switch (hw->conf.chandef.width) {
->  	case NL80211_CHAN_WIDTH_20_NOHT:
->  		ht = false;
-> -		/* fall through */
-> +		fallthrough;
->  	case NL80211_CHAN_WIDTH_20:
->  		opmode |= BW_OPMODE_20MHZ;
->  		rtl8xxxu_write8(priv, REG_BW_OPMODE, opmode);
-> @@ -1272,7 +1272,7 @@ void rtl8xxxu_gen2_config_channel(struct ieee80211_hw *hw)
->  	switch (hw->conf.chandef.width) {
->  	case NL80211_CHAN_WIDTH_20_NOHT:
->  		ht = false;
-> -		/* fall through */
-> +		fallthrough;
->  	case NL80211_CHAN_WIDTH_20:
->  		rf_mode_bw |= WMAC_TRXPTCL_CTL_BW_20;
->  		subchannel = 0;
-> @@ -1741,11 +1741,11 @@ static int rtl8xxxu_identify_chip(struct rtl8xxxu_priv *priv)
->  		case 3:
->  			priv->ep_tx_low_queue = 1;
->  			priv->ep_tx_count++;
-> -			/* fall through */
-> +			fallthrough;
->  		case 2:
->  			priv->ep_tx_normal_queue = 1;
->  			priv->ep_tx_count++;
-> -			/* fall through */
-> +			fallthrough;
->  		case 1:
->  			priv->ep_tx_high_queue = 1;
->  			priv->ep_tx_count++;
+>  tools/testing/selftests/bpf/prog_tests/check_mtu.c |   37 ++++++++++++++++++++
+>  tools/testing/selftests/bpf/progs/test_check_mtu.c |   33 ++++++++++++++++++
+>  2 files changed, 70 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/check_mtu.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_check_mtu.c
 > 
+> diff --git a/tools/testing/selftests/bpf/prog_tests/check_mtu.c b/tools/testing/selftests/bpf/prog_tests/check_mtu.c
+> new file mode 100644
+> index 000000000000..09b8f986a17b
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/check_mtu.c
+> @@ -0,0 +1,37 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2020 Red Hat */
+> +#include <uapi/linux/bpf.h>
+> +#include <linux/if_link.h>
+> +#include <test_progs.h>
+> +
+> +#include "test_check_mtu.skel.h"
+> +#define IFINDEX_LO 1
+> +
+> +void test_check_mtu_xdp(struct test_check_mtu *skel)
+> +{
+> +	int err = 0;
+> +	int fd;
+> +
+> +	fd = bpf_program__fd(skel->progs.xdp_use_helper);
+> +	err = bpf_set_link_xdp_fd(IFINDEX_LO, fd, XDP_FLAGS_SKB_MODE);
+> +	if (CHECK_FAIL(err))
+> +		return;
+> +
+> +	bpf_set_link_xdp_fd(IFINDEX_LO, -1, 0);
+> +}
+> +
+> +void test_check_mtu(void)
+> +{
+> +	struct test_check_mtu *skel;
+> +
+> +	skel = test_check_mtu__open_and_load();
+> +	if (CHECK_FAIL(!skel)) {
+> +		perror("test_check_mtu__open_and_load");
+> +		return;
+> +	}
+> +
+> +	if (test__start_subtest("bpf_check_mtu XDP-attach"))
+> +		test_check_mtu_xdp(skel);
+> +
+> +	test_check_mtu__destroy(skel);
+> +}
+> diff --git a/tools/testing/selftests/bpf/progs/test_check_mtu.c b/tools/testing/selftests/bpf/progs/test_check_mtu.c
+> new file mode 100644
+> index 000000000000..ab97ec925a32
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/test_check_mtu.c
+> @@ -0,0 +1,33 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2020 Red Hat */
+> +#include <linux/bpf.h>
+> +#include <bpf/bpf_helpers.h>
+> +
+> +#include <stddef.h>
+> +#include <stdint.h>
+> +
+> +char _license[] SEC("license") = "GPL";
+> +
+> +SEC("xdp")
+> +int xdp_use_helper(struct xdp_md *ctx)
+> +{
+> +	uint32_t mtu_len = 0;
+> +	int delta = 20;
+> +
+> +	if (bpf_check_mtu(ctx, 0, &mtu_len, delta, 0)) {
+> +		return XDP_ABORTED;
+> +	}
+> +	return XDP_PASS;
+> +}
+> +
+> +SEC("classifier")
+> +int tc_use_helper(struct __sk_buff *ctx)
+> +{
+> +	uint32_t mtu_len = 0;
+> +	int delta = -20;
+> +
+> +	if (bpf_check_mtu(ctx, 0, &mtu_len, delta, 0)) {
+> +		return BPF_DROP;
+> +	}
+> +	return BPF_OK;
+> +}
 
+Patches 7 and 8 are not adequate as tests.
+They do not testing the functionality of earlier patches.
+bpf_check_mtu() could be returning random value and "tests" 7 and 8 would still pass.
+Please fix.
