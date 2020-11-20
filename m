@@ -2,114 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69B692BB816
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 22:05:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 354392BB81A
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 22:05:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731232AbgKTVEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 16:04:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37404 "EHLO
+        id S1731739AbgKTVEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 16:04:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730524AbgKTVEg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 16:04:36 -0500
-Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E50B5C0613CF
-        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 13:04:35 -0800 (PST)
-Received: by mail-oi1-x244.google.com with SMTP id d9so12002718oib.3
-        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 13:04:35 -0800 (PST)
+        with ESMTP id S1731276AbgKTVEk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 16:04:40 -0500
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 180E0C0613CF;
+        Fri, 20 Nov 2020 13:04:40 -0800 (PST)
+Received: by mail-ej1-x642.google.com with SMTP id y17so14719414ejh.11;
+        Fri, 20 Nov 2020 13:04:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=veXWdye4EPb1hf22k/yabOHMzQdWo29UrU9Jxr6Z+6g=;
-        b=B2TUNk7NCv+2OSJErtonoLqm/CVdIxLlDhUNhg9hUAKvLxHavqwTBEfy7xbTEig+pi
-         72h1LH2HQOEeZDXMsNSKayDVvWjo1Z96344pykxAqmngrq1s9duCmE4qUtu0oFjLWK8V
-         yuTqiR6RmH00V5KgVczlVzF0pnOm6OWCCfFlg=
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=KOjtLDn9Uq/1YraWwS0wYrH/Ks+SKmiXRPSVSpOE9WQ=;
+        b=PX7ZPBqTcqPGEMMwyLwueVuPCxRPhzurlpiVDbLWahTJzoQQR8EJdYpOQ8YJfLnFKq
+         DMDGN8Uo8Wga3TDxFqgghH20tKBpP+E4U9W1+VDMYIFmkVgRmAexviaYDuX0fFqzLbeK
+         QD2lSl22LVhQ0SrAd7D1knlebBhAaGKPu5vQF4qir+i86zLk12S4XkGg64RTjcKUGMXP
+         VW8YLY7m2jCWKR9I+ON/hKe6cY+6utWbIqBHxzEQiPgSDIP6+mRTZiJIk1dSvyZ4r+d+
+         jCNT0IFYiGPd2aZQ2Pf63/3MtvtQtsBqsCu/njOjAMFfqPsvWnvBDaqICwycw3oc1eKR
+         GxrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=veXWdye4EPb1hf22k/yabOHMzQdWo29UrU9Jxr6Z+6g=;
-        b=fGFMQpB7pg5WXjZwdfYSNspM/9UHMtq8nJK6q9VFcrbvGkbRizje9sk8jioll4/uoe
-         wCx1GH3vl3A1T1JSmR7hmQh3lPa+fY61CAtBYmAkXyzoo8VSC7Sw/METJYAvmkP2mW6p
-         Gp9s5ZP7t/nR/H6ESwfN3bjdZfbpZd/l0xs8BL7wwqADvx26roLYnNw6MbwwpRtPYs+S
-         T7noB+HEeID6AROWpoUi+cUlWLiSWQ5V9erkPcnpK8Ch9OF3ncjP5Neo902RSgM3J66z
-         0CUvGWBKhgpH11hqWoxaad64EJqozZNp17iSZVGVCrKfSy6+ZBPzkwYBLyrvfmfdMTcS
-         Y+bA==
-X-Gm-Message-State: AOAM533PoAjz7yX8DiVtBU+XCwjZDMivIA+bsZSIAjBGOTPe1kl+XuvW
-        p2yrS/Wgmt8XDRSqpAskxWA6LROKt1yW0Q==
-X-Google-Smtp-Source: ABdhPJxQr06oryJAiyrwe013j0wb8718QiC6sjOV9+KFhbEM/91V1F4wNJiHltIuLbWCTpPeJXMLqg==
-X-Received: by 2002:aca:ed0a:: with SMTP id l10mr7809263oih.56.1605906273856;
-        Fri, 20 Nov 2020 13:04:33 -0800 (PST)
-Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com. [209.85.210.42])
-        by smtp.gmail.com with ESMTPSA id p128sm2136566ooa.14.2020.11.20.13.04.31
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 Nov 2020 13:04:32 -0800 (PST)
-Received: by mail-ot1-f42.google.com with SMTP id o3so10024582ota.8
-        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 13:04:31 -0800 (PST)
-X-Received: by 2002:a05:6830:2083:: with SMTP id y3mr16408151otq.203.1605906270889;
- Fri, 20 Nov 2020 13:04:30 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KOjtLDn9Uq/1YraWwS0wYrH/Ks+SKmiXRPSVSpOE9WQ=;
+        b=VtUGf/dK+Ay8Kcd8rj09HTcWF/wxFq0NgxrBY+8z032kPAPx53MUm/cXrgBqVuPhxl
+         YNLN0GKJpsKBV8inCbuVIIvRvhQu+0eH2QKmM0tmtCyyTlI8xxz2eRJed96d4nztkgI2
+         kgu2dKTKqJyEzf9DKBBDcnanNZRpkZGar4LXijbA9eHUbtn0a4LOMHI+BisWP99Y61tM
+         i2lRMATCBRqE33KZilfB46TLBZX+Yzt7pLryAHPQBlGxL/1adjhhnPyLllU4sMiPbPt5
+         vvpg2HzCAVFau06EMj356H3XuMiU4KRjqJC/0HuyD8SSkgiNLV6Eqm/Cy6U0wmycNQfV
+         HFyg==
+X-Gm-Message-State: AOAM533D3/qRuJngBQZKcOPTLg1HEtsna92Q7d7YAKOljltX0uvA/VkC
+        vw/1rOOkqxm4Ta/PF6Sf1cE=
+X-Google-Smtp-Source: ABdhPJx5WdXUwcPVW61sHrqi3xa8l7C3rM5KAKhXBNca2Tlq8NEsAxQ+Na6SRG3UHRhSPeVoH1eWTw==
+X-Received: by 2002:a17:906:dbf4:: with SMTP id yd20mr33533558ejb.53.1605906278755;
+        Fri, 20 Nov 2020 13:04:38 -0800 (PST)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id k23sm1527243edv.97.2020.11.20.13.04.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Nov 2020 13:04:38 -0800 (PST)
+Date:   Fri, 20 Nov 2020 23:04:36 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Christian Eggers <ceggers@arri.de>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2] net: dsa: avoid potential use-after-free
+ error
+Message-ID: <20201120210436.scmic7ygrzviy53o@skbuf>
+References: <20201119110906.25558-1-ceggers@arri.de>
+ <20201120180149.wp4ehikbc2ngvwtf@skbuf>
+ <20201120125921.1cb76a12@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20201028142433.18501-1-kitakar@gmail.com> <20201028142433.18501-2-kitakar@gmail.com>
- <CA+ASDXMfuqy=kCECktP_mYm9cAapXukeLhe=1i3uPbTu9wS2Qw@mail.gmail.com> <8fa12bfff1cc30b655934e303cad78ae75b0fcde.camel@gmail.com>
-In-Reply-To: <8fa12bfff1cc30b655934e303cad78ae75b0fcde.camel@gmail.com>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Fri, 20 Nov 2020 13:04:19 -0800
-X-Gmail-Original-Message-ID: <CA+ASDXMUdYHTKphxFwcAim79N_DJiQFHFN0gDZsPB4rMHyxxXw@mail.gmail.com>
-Message-ID: <CA+ASDXMUdYHTKphxFwcAim79N_DJiQFHFN0gDZsPB4rMHyxxXw@mail.gmail.com>
-Subject: Re: [PATCH 1/3] mwifiex: disable ps_mode explicitly by default instead
-To:     Tsuchiya Yuto <kitakar@gmail.com>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>, verdre@v0yd.nl
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201120125921.1cb76a12@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 30, 2020 at 1:04 AM Tsuchiya Yuto <kitakar@gmail.com> wrote:
-> On Thu, 2020-10-29 at 11:25 -0700, Brian Norris wrote:
-> > For the record, Chrome OS supports plenty of mwifiex systems with 8897
-> > (SDIO only) and 8997 (PCIe), with PS enabled, and you're hurting
-> > those. Your problem sounds to be exclusively a problem with the PCIe
-> > 8897 firmware.
+On Fri, Nov 20, 2020 at 12:59:21PM -0800, Jakub Kicinski wrote:
+> On Fri, 20 Nov 2020 20:01:49 +0200 Vladimir Oltean wrote:
+> > On Thu, Nov 19, 2020 at 12:09:06PM +0100, Christian Eggers wrote:
+> > > If dsa_switch_ops::port_txtstamp() returns false, clone will be freed
+> > > immediately. Shouldn't store a pointer to freed memory.
+> > >
+> > > Signed-off-by: Christian Eggers <ceggers@arri.de>
+> > > Fixes: 146d442c2357 ("net: dsa: Keep a pointer to the skb clone for TX timestamping")
+> > > ---
+> >
+> > IMO this is one of the cases to which the following from
+> > Documentation/process/stable-kernel-rules.rst does not apply:
+> >
+> >  - It must fix a real bug that bothers people (not a, "This could be a
+> >    problem..." type thing).
+> >
+> > Therefore, specifying "net-next" as the target tree here as opposed to
+> > "net" is the correct choice.
 >
-> Actually, I already know that some Chromebooks use these mwifiex cards
-> (but not out PCIe-88W8897) because I personally like chromiumos. I'm
-> always wondering what is the difference. If the difference is firmware,
-> our PCIe-88W8897 firmware should really be fixed instead of this stupid
-> series.
-
-PCIe is a very different beast. (For one, it uses DMA and
-memory-mapped registers, where SDIO has neither.) It was a very
-difficult slog to get PCIe/8997 working reliably for the few
-Chromebooks that shipped it, and lots of that work is in firmware. I
-would not be surprised if the PCIe-related changes Marvell made for
-8997 never fed back into their PCIe-8897 firmware. Or maybe they only
-ever launched PCIe-8897 for Windows, and the Windows driver included
-workarounds that were never published to their Linux driver. But now
-I'm just speculating.
-
-> Yes, I'm sorry that I know this series is just a stupid one but I have to
-> send this anyway because this stability issue has not been fixed for a
-> long time. I should have added this buglink to every commit as well:
+> The commit message doesn't really explain what happens after.
 >
-> BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=109681
->
-> If the firmware can't be fixed, I'm afraid I have to go this way. It makes
-> no sense to keep enabling power_save for the affected devices if we know
-> it's broken.
+> Is the dangling pointer ever accessed?
 
-Condolences and sympathy, seriously. You likely have little chance of
-getting the firmware fixed, so without new information (e.g,. other
-workarounds?), this is the probably the right way to go.
-
-Brian
+Nothing happens afterwards. He explained that he accessed it once while
+working on his ksz9477 PTP series. There's no code affected by this in
+mainline.
