@@ -2,274 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED9FB2BB99B
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 00:07:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B0CF2BB9AE
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 00:07:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728901AbgKTXEQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 18:04:16 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:11715 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728882AbgKTXEQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 18:04:16 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fb84b7b0000>; Fri, 20 Nov 2020 15:04:27 -0800
-Received: from sx1.mtl.com (172.20.13.39) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 20 Nov
- 2020 23:04:05 +0000
-From:   Saeed Mahameed <saeedm@nvidia.com>
-To:     Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leonro@mellanox.com>
-CC:     <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        Parav Pandit <parav@nvidia.com>
-Subject: [PATCH mlx5-next 16/16] net/mlx5: Treat host PF vport as other (non eswitch manager) vport
-Date:   Fri, 20 Nov 2020 15:03:39 -0800
-Message-ID: <20201120230339.651609-17-saeedm@nvidia.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201120230339.651609-1-saeedm@nvidia.com>
-References: <20201120230339.651609-1-saeedm@nvidia.com>
+        id S1729082AbgKTXGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 18:06:16 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:8968 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727417AbgKTXGP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 18:06:15 -0500
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 0AKN08MC023894;
+        Fri, 20 Nov 2020 15:05:59 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=6KMWIDSm6aiSmsEFks3k1XNusuRCF+nTULBZBiignBU=;
+ b=AH2XszNAikrY6q4ZkDOfCyKP+/2zMyPrqEXrJzRfPMGMfaeKCQOrzCUK9ldZ1xN1IR7/
+ 2j2zmm93BT7N+GHziW9V0KqnMW7S8HedQ87duS4WSHHT47532YUf2+EwnwUhha7LVlks
+ 0d8VoqfwCKbfB+NTVek+ZfQnm1QFsG+ZG2k= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 34xb6fv3ad-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 20 Nov 2020 15:05:59 -0800
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 20 Nov 2020 15:05:58 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NGqoDczTnd/yHidwnvuSzg1xoiobRrpqkmZm0WnDfOFIie7Mxsx5ENSoTt+vzejeRoQGYFnvUF1BAcu/GMDuyescS1GsT+ctIPLpLfUr5L9rG42HTnKVFN5SBxBpgfSFTegp03VuU1KDsa67qyrWYmpnwtpWCw0PhkDbqra9b/WGEMtFulqvJZPPddmqKU24Kf2dm79HT7RC2dZyHssCDPJlQ0wA4OwR/BIBav5nuEkKqB9mihLyL50KNy+umVZXywJ2CwmD592nRZEk0CyzAzgd7OsTP/5SvDWvpsm5bdDn7Ulo6+OFYfWOTQsIFdNeYDoPpPC9ZyOc4xOov65r3A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6KMWIDSm6aiSmsEFks3k1XNusuRCF+nTULBZBiignBU=;
+ b=LhRmJQwWgSwe3fcGwE3YvFyhBBnoLbblLKswEQm6Do0eSuiMN/Ro7kdnhpYwZnLwn+Yxti5EDZgQBSzw2YjqBHKTf8vY3s41Mk+NGR3tKQd7JYEU8xai0YXpIk0nP2BGIFjmMVVZiL2Ia3Rm5zdIvacC8+kY3eyv2lwp7M1u7WTv+NxqR2hFFp4Hj/jkArLKhQEEWaVfJnwQj4vmsIhNs/Qmgyvsk0ONQdYOOu711U5d7MNdS3fCZwFNtmsaiIUZtOOpsvCaLzMtyhbVAcsVN1+tGs5y34x8DVQhoVxbkTlMufOQMDtdrBVZa6T1L/78eRf+K2SsG3lm9U4koLW0lA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6KMWIDSm6aiSmsEFks3k1XNusuRCF+nTULBZBiignBU=;
+ b=LLyUK4kfVDUy1bpR+IW4Yn95abr81yE+7AKH6RKDhktMbBMuARUQA5Sf0wk4c3DGK/8dDw60A/KNE29fEyjKyinaHDixd3/qILFLyZo5pEIzL4eSu5KCxrr9NgcN4zLI/Nv4FtVJTklrv5utk+Y1wZ/2AbMYqDlhzupKJXn7drI=
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=fb.com;
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB2584.namprd15.prod.outlook.com (2603:10b6:a03:150::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.21; Fri, 20 Nov
+ 2020 23:05:56 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::bc1d:484f:cb1f:78ee]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::bc1d:484f:cb1f:78ee%4]) with mapi id 15.20.3564.034; Fri, 20 Nov 2020
+ 23:05:56 +0000
+Date:   Fri, 20 Nov 2020 15:05:49 -0800
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Andrii Nakryiko <andrii@kernel.org>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 4/6] libbpf: add kernel module BTF support for
+ CO-RE relocations
+Message-ID: <20201120230549.37k4zsjsrxbyjin3@kafai-mbp.dhcp.thefacebook.com>
+References: <20201119232244.2776720-1-andrii@kernel.org>
+ <20201119232244.2776720-5-andrii@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201119232244.2776720-5-andrii@kernel.org>
+X-Originating-IP: [2620:10d:c090:400::5:603e]
+X-ClientProxiedBy: MWHPR20CA0007.namprd20.prod.outlook.com
+ (2603:10b6:300:13d::17) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-Originating-IP: [172.20.13.39]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1605913467; bh=qcChP+urou3WBJOXWLXsm0s8RnO6f09LtzPnBDy4FSA=;
-        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
-         References:MIME-Version:Content-Transfer-Encoding:Content-Type:
-         X-Originating-IP:X-ClientProxiedBy;
-        b=OT0BGnJ/jTikIaVXATzUn22uM6jrPTcGie0BpDDHOJq/TUSQIV0hnFWCMHXNZoTCk
-         elOcWU/YskJ9wVR/+foPU4YCyLWoetVr2xguBCzT4Izm+NX0spZhrB0TnLZ6bSO4W+
-         jONrq4PfvhRJ06p/WHrSugaeNb3bhgpiVxZ848mKyfhdPR3E5fgWdloJMGmqc4z348
-         UGZSjxUQ94TBkvuzoUcKqpd0P33semkn8OsnNv6URR3mNDQMR98DRfQMtBk4O/TvXH
-         qFHYw3OBUFsaRfhAuCM4WCQSAa1chRHy3pIqJIarEeiAxTRMUXEzif1NFLnG3Xku+Y
-         3Tp/X2BE9r5Cg==
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:603e) by MWHPR20CA0007.namprd20.prod.outlook.com (2603:10b6:300:13d::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.20 via Frontend Transport; Fri, 20 Nov 2020 23:05:55 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 854328a9-e2df-4177-2b07-08d88da8d63a
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2584:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB25843F69D552D1E6206AD2C4D5FF0@BYAPR15MB2584.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:324;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: B9l0BDtIR4ieJerPocSXIuYQraFUkWOB8nn0POukgAXMN6GCCqndyDVmZ/STZdI1/yXIGuR7acm9vhrQNfTwpoSOKhkLEw/dEZ2BXQ+u+vy1N+A/QOxOkmTp8xOXw9YryhA62BlVV9hSoDLx6mVxwRUoQMwxUueUXOn/hDL2ubn5B0zhulpdG2R/VURcid2RkoWBpo2I2N/q25Rhv7hq1pZFyVxBzEoTynLqPBI3dfBj7/YQTrGkxUExMpHB/9Pl4DVeH4KsPm2jWAuThQtVxc5mZ4Vo+I0pIXuENaY+P6uhE6ZA6G3kpKruLFnFlqsJ8MgVoV6wDrsKh8XoT/Py9Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(136003)(39860400002)(346002)(376002)(396003)(316002)(1076003)(66946007)(66476007)(478600001)(2906002)(8676002)(16526019)(83380400001)(5660300002)(6666004)(7696005)(55016002)(52116002)(9686003)(66556008)(6916009)(4326008)(6506007)(8936002)(186003)(86362001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: yArpkFRbbM2SzW82RDQIhqVP8KfZYIQqIeIKheijEHijKwLr49aFOBF5dAKiJ1JR/5qiLhEbaKa+zcljC4GwMBPOkUCtvroaN3xn8avlCZvNJiJZjcwnPKQOkVV1jLXJ5OrKPwDbH/eMu6CiPfBSogEqG7Dc5MSbJB/fLTB9b48nJnZNPP5sTUvXRzejN3wzhpXrxqlK+h2E4EwmGJ8zxRzy9X9NER/XFVmUe5ycQJVlwaDjuWmPkiPQ7A0Vn5Q8Njhf2aKJq0Y35QhRXEWBSBk5sHzQG0UqnJnlg76qaGh4paBC1FeUT3FC4wirs47auz1TanWwc9/s5FAGEgxqLKeFIoy2hYfuKWPYXxOdj+LMraA7Ht0fOaAZlmZckQWpx5osB0fHSqf7KXIbNyUCVAstiHApZDUufxy21tT/bmSPlMzalSaBXgD0yNvLoVeHv1msfOhWsUt/dlluZCQ2nrI93J3eDHzKTFXk7Cdg+W4CF/zrhjMVNnRvPw6dCwK/Bcr1k/VqrPcKgtV4bJ0+2mVfSgZYaxQ9mUOVK4OknqNIVyawTZVzkYGHUaGJCLCjaTWCJhYqylnzFz+VtICud815Y9mdCNtsdO+xR08IQ6CMef55fej4vQgiTPQvxXigOKRLlSk1zV7VLtcg/dclyRiDcZXbDdzFfhY3k5fdsfw/ivwMn/200cmEiW4Ta3WTKKHvClVooP/vqL4FiVUFabIyfyWLCE6b6ClvUP6AsoLgwkjLMEil8vBvUgjs34u69XAPgJ4lzZUrb7EsNgiat9d82MXX8BGJMQ7/uVqOs6hTQydkCf0ACy7UkPbR8WLdnyARml68YYu1Y5tc6WZHk8vHyd3y5ELzwAt7xP+RMsocBiVigp1FnDSw0jPoVOKzt3Sc+YlYNp/MgnrQ/MF1ZryG0NfdtaUgqghiXNZf1/PKROID7pLXJSUdSkIqxp/C
+X-MS-Exchange-CrossTenant-Network-Message-Id: 854328a9-e2df-4177-2b07-08d88da8d63a
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Nov 2020 23:05:56.4391
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: cHg7h6QDm8RFAq1d57QEr4uLqjpTOKv62iWLdqJ0u+NnrYIXe/09t4KzTWvyCczk
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2584
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-20_16:2020-11-20,2020-11-20 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=7
+ lowpriorityscore=0 mlxlogscore=999 impostorscore=0 clxscore=1015
+ bulkscore=0 adultscore=0 phishscore=0 mlxscore=0 priorityscore=1501
+ spamscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011200151
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Parav Pandit <parav@nvidia.com>
+On Thu, Nov 19, 2020 at 03:22:42PM -0800, Andrii Nakryiko wrote:
+[ ... ]
 
-When eswitch manager is running on ECPF, host PF should be treated
-as non eswitch manager port, similar to other VF vports.
-Fail to do so, results in firmware treating PF's vport as ECPF
-vport for eswitch ACL tables.
-Non zero check to figure out if a given vport is other vport or not
-is not sufficient becase PF vport number =3D 0 on ECPF.
-Hence, create esw acl tables with an attribute of other vport.
+> +static int load_module_btfs(struct bpf_object *obj)
+> +{
+> +	struct bpf_btf_info info;
+> +	struct module_btf *mod_btf;
+> +	struct btf *btf;
+> +	char name[64];
+> +	__u32 id, len;
+> +	int err, fd;
+> +
+> +	if (obj->btf_modules_loaded)
+> +		return 0;
+> +
+> +	/* don't do this again, even if we find no module BTFs */
+> +	obj->btf_modules_loaded = true;
+> +
+> +	/* kernel too old to support module BTFs */
+> +	if (!kernel_supports(FEAT_MODULE_BTF))
+> +		return 0;
+> +
+> +	while (true) {
+> +		err = bpf_btf_get_next_id(id, &id);
+> +		if (err && errno == ENOENT)
+> +			return 0;
+> +		if (err) {
+> +			err = -errno;
+> +			pr_warn("failed to iterate BTF objects: %d\n", err);
+> +			return err;
+> +		}
+> +
+> +		fd = bpf_btf_get_fd_by_id(id);
+> +		if (fd < 0) {
+> +			if (errno == ENOENT)
+> +				continue; /* expected race: BTF was unloaded */
+> +			err = -errno;
+> +			pr_warn("failed to get BTF object #%d FD: %d\n", id, err);
+> +			return err;
+> +		}
+> +
+> +		len = sizeof(info);
+> +		memset(&info, 0, sizeof(info));
+> +		info.name = ptr_to_u64(name);
+> +		info.name_len = sizeof(name);
+> +
+> +		err = bpf_obj_get_info_by_fd(fd, &info, &len);
+> +		if (err) {
+> +			err = -errno;
+> +			pr_warn("failed to get BTF object #%d info: %d\n", id, err);
 
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- .../mellanox/mlx5/core/esw/acl/helper.c       |  5 +-
- .../net/ethernet/mellanox/mlx5/core/fs_cmd.c  | 54 +++++++++----------
- .../net/ethernet/mellanox/mlx5/core/fs_core.c | 14 ++---
- include/linux/mlx5/fs.h                       |  5 +-
- 4 files changed, 34 insertions(+), 44 deletions(-)
+			close(fd);
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/helper.c b/dri=
-vers/net/ethernet/mellanox/mlx5/core/esw/acl/helper.c
-index 22f4c1c28006..4a369669e51e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/helper.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/helper.c
-@@ -8,6 +8,7 @@
- struct mlx5_flow_table *
- esw_acl_table_create(struct mlx5_eswitch *esw, u16 vport_num, int ns, int =
-size)
- {
-+	struct mlx5_flow_table_attr ft_attr =3D {};
- 	struct mlx5_core_dev *dev =3D esw->dev;
- 	struct mlx5_flow_namespace *root_ns;
- 	struct mlx5_flow_table *acl;
-@@ -33,7 +34,9 @@ esw_acl_table_create(struct mlx5_eswitch *esw, u16 vport_=
-num, int ns, int size)
- 		return ERR_PTR(-EOPNOTSUPP);
- 	}
-=20
--	acl =3D mlx5_create_vport_flow_table(root_ns, 0, size, 0, vport_num);
-+	ft_attr.max_fte =3D size;
-+	ft_attr.flags =3D MLX5_FLOW_TABLE_OTHER_VPORT;
-+	acl =3D mlx5_create_vport_flow_table(root_ns, &ft_attr, vport_num);
- 	if (IS_ERR(acl)) {
- 		err =3D PTR_ERR(acl);
- 		esw_warn(dev, "vport[%d] create %s ACL table, err(%d)\n", vport_num,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c b/drivers/net=
-/ethernet/mellanox/mlx5/core/fs_cmd.c
-index c2fed9c3d75c..8e06731d3cb3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
-@@ -172,10 +172,9 @@ static int mlx5_cmd_update_root_ft(struct mlx5_flow_ro=
-ot_namespace *ns,
- 		MLX5_SET(set_flow_table_root_in, in, table_id, ft->id);
-=20
- 	MLX5_SET(set_flow_table_root_in, in, underlay_qpn, underlay_qpn);
--	if (ft->vport) {
--		MLX5_SET(set_flow_table_root_in, in, vport_number, ft->vport);
--		MLX5_SET(set_flow_table_root_in, in, other_vport, 1);
--	}
-+	MLX5_SET(set_flow_table_root_in, in, vport_number, ft->vport);
-+	MLX5_SET(set_flow_table_root_in, in, other_vport,
-+		 !!(ft->flags & MLX5_FLOW_TABLE_OTHER_VPORT));
-=20
- 	return mlx5_cmd_exec_in(dev, set_flow_table_root, in);
- }
-@@ -199,10 +198,9 @@ static int mlx5_cmd_create_flow_table(struct mlx5_flow=
-_root_namespace *ns,
- 	MLX5_SET(create_flow_table_in, in, table_type, ft->type);
- 	MLX5_SET(create_flow_table_in, in, flow_table_context.level, ft->level);
- 	MLX5_SET(create_flow_table_in, in, flow_table_context.log_size, log_size)=
-;
--	if (ft->vport) {
--		MLX5_SET(create_flow_table_in, in, vport_number, ft->vport);
--		MLX5_SET(create_flow_table_in, in, other_vport, 1);
--	}
-+	MLX5_SET(create_flow_table_in, in, vport_number, ft->vport);
-+	MLX5_SET(create_flow_table_in, in, other_vport,
-+		 !!(ft->flags & MLX5_FLOW_TABLE_OTHER_VPORT));
-=20
- 	MLX5_SET(create_flow_table_in, in, flow_table_context.decap_en,
- 		 en_decap);
-@@ -252,10 +250,9 @@ static int mlx5_cmd_destroy_flow_table(struct mlx5_flo=
-w_root_namespace *ns,
- 		 MLX5_CMD_OP_DESTROY_FLOW_TABLE);
- 	MLX5_SET(destroy_flow_table_in, in, table_type, ft->type);
- 	MLX5_SET(destroy_flow_table_in, in, table_id, ft->id);
--	if (ft->vport) {
--		MLX5_SET(destroy_flow_table_in, in, vport_number, ft->vport);
--		MLX5_SET(destroy_flow_table_in, in, other_vport, 1);
--	}
-+	MLX5_SET(destroy_flow_table_in, in, vport_number, ft->vport);
-+	MLX5_SET(destroy_flow_table_in, in, other_vport,
-+		 !!(ft->flags & MLX5_FLOW_TABLE_OTHER_VPORT));
-=20
- 	return mlx5_cmd_exec_in(dev, destroy_flow_table, in);
- }
-@@ -283,11 +280,9 @@ static int mlx5_cmd_modify_flow_table(struct mlx5_flow=
-_root_namespace *ns,
- 				 flow_table_context.lag_master_next_table_id, 0);
- 		}
- 	} else {
--		if (ft->vport) {
--			MLX5_SET(modify_flow_table_in, in, vport_number,
--				 ft->vport);
--			MLX5_SET(modify_flow_table_in, in, other_vport, 1);
--		}
-+		MLX5_SET(modify_flow_table_in, in, vport_number, ft->vport);
-+		MLX5_SET(modify_flow_table_in, in, other_vport,
-+			 !!(ft->flags & MLX5_FLOW_TABLE_OTHER_VPORT));
- 		MLX5_SET(modify_flow_table_in, in, modify_field_select,
- 			 MLX5_MODIFY_FLOW_TABLE_MISS_TABLE_ID);
- 		if (next_ft) {
-@@ -325,6 +320,9 @@ static int mlx5_cmd_create_flow_group(struct mlx5_flow_=
-root_namespace *ns,
- 		MLX5_SET(create_flow_group_in, in, other_vport, 1);
- 	}
-=20
-+	MLX5_SET(create_flow_group_in, in, vport_number, ft->vport);
-+	MLX5_SET(create_flow_group_in, in, other_vport,
-+		 !!(ft->flags & MLX5_FLOW_TABLE_OTHER_VPORT));
- 	err =3D mlx5_cmd_exec_inout(dev, create_flow_group, in, out);
- 	if (!err)
- 		fg->id =3D MLX5_GET(create_flow_group_out, out,
-@@ -344,11 +342,9 @@ static int mlx5_cmd_destroy_flow_group(struct mlx5_flo=
-w_root_namespace *ns,
- 	MLX5_SET(destroy_flow_group_in, in, table_type, ft->type);
- 	MLX5_SET(destroy_flow_group_in, in, table_id, ft->id);
- 	MLX5_SET(destroy_flow_group_in, in, group_id, fg->id);
--	if (ft->vport) {
--		MLX5_SET(destroy_flow_group_in, in, vport_number, ft->vport);
--		MLX5_SET(destroy_flow_group_in, in, other_vport, 1);
--	}
--
-+	MLX5_SET(destroy_flow_group_in, in, vport_number, ft->vport);
-+	MLX5_SET(destroy_flow_group_in, in, other_vport,
-+		 !!(ft->flags & MLX5_FLOW_TABLE_OTHER_VPORT));
- 	return mlx5_cmd_exec_in(dev, destroy_flow_group, in);
- }
-=20
-@@ -427,10 +423,9 @@ static int mlx5_cmd_set_fte(struct mlx5_core_dev *dev,
- 	MLX5_SET(set_fte_in, in, ignore_flow_level,
- 		 !!(fte->action.flags & FLOW_ACT_IGNORE_FLOW_LEVEL));
-=20
--	if (ft->vport) {
--		MLX5_SET(set_fte_in, in, vport_number, ft->vport);
--		MLX5_SET(set_fte_in, in, other_vport, 1);
--	}
-+	MLX5_SET(set_fte_in, in, vport_number, ft->vport);
-+	MLX5_SET(set_fte_in, in, other_vport,
-+		 !!(ft->flags & MLX5_FLOW_TABLE_OTHER_VPORT));
-=20
- 	in_flow_context =3D MLX5_ADDR_OF(set_fte_in, in, flow_context);
- 	MLX5_SET(flow_context, in_flow_context, group_id, group_id);
-@@ -604,10 +599,9 @@ static int mlx5_cmd_delete_fte(struct mlx5_flow_root_n=
-amespace *ns,
- 	MLX5_SET(delete_fte_in, in, table_type, ft->type);
- 	MLX5_SET(delete_fte_in, in, table_id, ft->id);
- 	MLX5_SET(delete_fte_in, in, flow_index, fte->index);
--	if (ft->vport) {
--		MLX5_SET(delete_fte_in, in, vport_number, ft->vport);
--		MLX5_SET(delete_fte_in, in, other_vport, 1);
--	}
-+	MLX5_SET(delete_fte_in, in, vport_number, ft->vport);
-+	MLX5_SET(delete_fte_in, in, other_vport,
-+		 !!(ft->flags & MLX5_FLOW_TABLE_OTHER_VPORT));
-=20
- 	return mlx5_cmd_exec_in(dev, delete_fte, in);
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/ne=
-t/ethernet/mellanox/mlx5/core/fs_core.c
-index 9feab81ab919..761581232139 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -1155,17 +1155,11 @@ struct mlx5_flow_table *mlx5_create_flow_table(stru=
-ct mlx5_flow_namespace *ns,
- }
- EXPORT_SYMBOL(mlx5_create_flow_table);
-=20
--struct mlx5_flow_table *mlx5_create_vport_flow_table(struct mlx5_flow_name=
-space *ns,
--						     int prio, int max_fte,
--						     u32 level, u16 vport)
-+struct mlx5_flow_table *
-+mlx5_create_vport_flow_table(struct mlx5_flow_namespace *ns,
-+			     struct mlx5_flow_table_attr *ft_attr, u16 vport)
- {
--	struct mlx5_flow_table_attr ft_attr =3D {};
--
--	ft_attr.max_fte =3D max_fte;
--	ft_attr.level   =3D level;
--	ft_attr.prio    =3D prio;
--
--	return __mlx5_create_flow_table(ns, &ft_attr, FS_FT_OP_MOD_NORMAL, vport)=
-;
-+	return __mlx5_create_flow_table(ns, ft_attr, FS_FT_OP_MOD_NORMAL, vport);
- }
-=20
- struct mlx5_flow_table*
-diff --git a/include/linux/mlx5/fs.h b/include/linux/mlx5/fs.h
-index 97176d623d74..12d84e99ff63 100644
---- a/include/linux/mlx5/fs.h
-+++ b/include/linux/mlx5/fs.h
-@@ -50,6 +50,7 @@ enum {
- 	MLX5_FLOW_TABLE_TUNNEL_EN_DECAP =3D BIT(1),
- 	MLX5_FLOW_TABLE_TERMINATION =3D BIT(2),
- 	MLX5_FLOW_TABLE_UNMANAGED =3D BIT(3),
-+	MLX5_FLOW_TABLE_OTHER_VPORT =3D BIT(4),
- };
-=20
- #define LEFTOVERS_RULE_NUM	 2
-@@ -175,9 +176,7 @@ mlx5_create_auto_grouped_flow_table(struct mlx5_flow_na=
-mespace *ns,
-=20
- struct mlx5_flow_table *
- mlx5_create_vport_flow_table(struct mlx5_flow_namespace *ns,
--			     int prio,
--			     int num_flow_table_entries,
--			     u32 level, u16 vport);
-+			     struct mlx5_flow_table_attr *ft_attr, u16 vport);
- struct mlx5_flow_table *mlx5_create_lag_demux_flow_table(
- 					       struct mlx5_flow_namespace *ns,
- 					       int prio, u32 level);
---=20
-2.26.2
+> +			return err;
+> +		}
+> +
+> +		/* ignore non-module BTFs */
+> +		if (!info.kernel_btf || strcmp(name, "vmlinux") == 0) {
+> +			close(fd);
+> +			continue;
+> +		}
+> +
 
+[ ... ]
+
+> @@ -8656,9 +8815,6 @@ static inline int __find_vmlinux_btf_id(struct btf *btf, const char *name,
+>  	else
+>  		err = btf__find_by_name_kind(btf, name, BTF_KIND_FUNC);
+>  
+> -	if (err <= 0)
+> -		pr_warn("%s is not found in vmlinux BTF\n", name);
+> -
+>  	return err;
+>  }
+>  
+> @@ -8675,6 +8831,9 @@ int libbpf_find_vmlinux_btf_id(const char *name,
+>  	}
+>  
+>  	err = __find_vmlinux_btf_id(btf, name, attach_type);
+> +	if (err <= 0)
+> +		pr_warn("%s is not found in vmlinux BTF\n", name);
+> +
+Please explain this move in the commit message.
+
+>  	btf__free(btf);
+>  	return err;
+>  }
+> -- 
+> 2.24.1
+> 
