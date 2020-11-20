@@ -2,111 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A48E2BA525
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 09:55:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7A462BA537
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 09:57:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726806AbgKTIxW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 03:53:22 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:37588 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725766AbgKTIxW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 03:53:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1605862400;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ya3dNIkAZY6iHGGxpdSqGojKvsyjgILmiyBq9POOMuQ=;
-        b=PGdw6ueEYNb4gRRd4LKLhySTHA4yj2Up03wSw4dlSJXMZQW/P54q5SzfhYWFCXspkOJSoW
-        vV3ZdO1E1b0zgdMnw7tEUMZXULnyHzylbeD7akNYl7Bdy2/sppb8G3fgNX6ZlhfG/IxHvk
-        VBYYFzZWxapRoQvBpV2ykhgKS4NO4KI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-223-QGyMsmvSMg-IJfh8GCbblQ-1; Fri, 20 Nov 2020 03:53:16 -0500
-X-MC-Unique: QGyMsmvSMg-IJfh8GCbblQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 56A17801B14;
-        Fri, 20 Nov 2020 08:53:14 +0000 (UTC)
-Received: from firesoul.localdomain (unknown [10.40.208.7])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1C6A860BE2;
-        Fri, 20 Nov 2020 08:53:11 +0000 (UTC)
-Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id D12EE3213845D;
-        Fri, 20 Nov 2020 09:53:09 +0100 (CET)
-Subject: [PATCH net-next V3] MAINTAINERS: Update XDP and AF_XDP entries
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     bpf@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?utf-8?b?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        joe@perches.com
-Date:   Fri, 20 Nov 2020 09:53:09 +0100
-Message-ID: <160586238944.2808432.4401269290440394008.stgit@firesoul>
-User-Agent: StGit/0.19
+        id S1727369AbgKTIzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 03:55:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36712 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725789AbgKTIzk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 03:55:40 -0500
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46A36C0613CF;
+        Fri, 20 Nov 2020 00:55:40 -0800 (PST)
+Received: by mail-lf1-x129.google.com with SMTP id u19so12368618lfr.7;
+        Fri, 20 Nov 2020 00:55:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eCE5S3AtPfjPlYA0YjZN8U5ZXZvn/LY2xX90AL/N/n4=;
+        b=k2cWikdNzhvRX1o1rxZQ/r3PGgWpEY+B7ESKW2u8t1R8t6f9mVujNibnb0xM6ing7A
+         KfwsHX+X6R14I3BFEZYAn2U7cIM6uOP4q9b31bn1BIYmLL7YkACHogP7alLylVznwrXp
+         BPAn6eXWw7S6VzXwesvbnJDVcNih5Yjsbj8bvdMWMFLvdh/L6RTLse/hcRaYliYD7n9b
+         2XaTSQKoJu7iUAzDApDSnX1PIvTJO5bd0jYPXkLkakYkB5bXMdNe+GiPa25QZqpWJJ9Q
+         WrGRsKc/OarUCS+WnMWlQxNUU9Puo5bdGbrV+FrGgFJIseSpXYTdgvJvH7jp82hq3rJ3
+         Vj1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eCE5S3AtPfjPlYA0YjZN8U5ZXZvn/LY2xX90AL/N/n4=;
+        b=hiXSAIl6GON8ioS+qTAGDJUkDZCvNkfeuSpruLXsZtf0HF5JrgsPX0KVJIzqQh7JRT
+         eeHCKWF/g8LINcL+7LyQFN3d12mtydouxBgMWR+ijs6jRxe/ST87BIBkeaQNfheH7WCb
+         MPgV6K71pOQGL6gWqo1gXj6xpMy0ItxxXg89fjpY53MM1sy53O/TusG9PemizW/Xv8wa
+         IRso2X7KUEGZDiVXmWScmxuVV0Ol85Kmmlk16WHatSSMnURq5NHccumElC58F0er8nM8
+         vBWHBpgE+S6yluSn7tkChhRziV+J7ZvGm3a3zIugXBZSGCVQsjZyeYTHLwqygH0Iz2O+
+         SnnA==
+X-Gm-Message-State: AOAM533/26bmWBL2NWikCYZnjZE6W89pGNNgVDB2C1F3GBsXPE9hyUtl
+        iFyi9DnJcRuhpJNnldb5zLFhFHunXGHEpa+/mEc=
+X-Google-Smtp-Source: ABdhPJyhgrajddGaPcfQLxvzIx4y0UvcooH+ce7MoDObk9cBX4B6NGc1idbwywPDrlRxQWjGIn5r/eswg6fHVuWIx00=
+X-Received: by 2002:a05:6512:20c:: with SMTP id a12mr7496565lfo.219.1605862538701;
+ Fri, 20 Nov 2020 00:55:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+References: <CANL0fFQqsGU01Z8iEhznDLQjw5huayarNoqbJ8Nikujs0r+ecQ@mail.gmail.com>
+ <6b71718c405541d681f4d8b045a66a79ade0dd4f.camel@intel.com>
+In-Reply-To: <6b71718c405541d681f4d8b045a66a79ade0dd4f.camel@intel.com>
+From:   Gonsolo <gonsolo@gmail.com>
+Date:   Fri, 20 Nov 2020 09:55:27 +0100
+Message-ID: <CANL0fFQeh0SdUd_v98X-YJewZRAOmiaKaCLO+7FsoZBO=SENvQ@mail.gmail.com>
+Subject: Kernel warning "TX on unused queue" for iwlwifi on 7260 with kernel 5.10-rc2
+To:     "Coelho, Luciano" <luciano.coelho@intel.com>
+Cc:     "Damary, Guy" <guy.damary@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Berg, Johannes" <johannes.berg@intel.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "hannes@cmpxchg.org" <hannes@cmpxchg.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Goodstein, Mordechay" <mordechay.goodstein@intel.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        linuxwifi <linuxwifi@intel.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "Grumbach, Emmanuel" <emmanuel.grumbach@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "longman@redhat.com" <longman@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Getting too many false positive matches with current use
-of the content regex K: and file regex N: patterns.
+Output of lspci -nn:
 
-This patch drops file match N: and makes K: more restricted.
-Some more normal F: file wildcards are added.
+02:00.0 Network controller [0280]: Intel Corporation Wireless 7260
+[8086:08b1] (rev 73)
 
-Notice that AF_XDP forgot to some F: files that is also
-updated in this patch.
+> Guy, can you help with this one? I believe there is a bugzilla issue
+> for this already...
 
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
----
- MAINTAINERS |   12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+I'd like to know this too.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index af9f6a3ab100..f827f504251b 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -19105,12 +19105,17 @@ L:	netdev@vger.kernel.org
- L:	bpf@vger.kernel.org
- S:	Supported
- F:	include/net/xdp.h
-+F:	include/net/xdp_priv.h
- F:	include/trace/events/xdp.h
- F:	kernel/bpf/cpumap.c
- F:	kernel/bpf/devmap.c
- F:	net/core/xdp.c
--N:	xdp
--K:	xdp
-+F:	samples/bpf/xdp*
-+F:	tools/testing/selftests/bpf/*xdp*
-+F:	tools/testing/selftests/bpf/*/*xdp*
-+F:	drivers/net/ethernet/*/*/*/*/*xdp*
-+F:	drivers/net/ethernet/*/*/*xdp*
-+K:	(?:\b|_)xdp(?:\b|_)
- 
- XDP SOCKETS (AF_XDP)
- M:	Björn Töpel <bjorn.topel@intel.com>
-@@ -19119,9 +19124,12 @@ R:	Jonathan Lemon <jonathan.lemon@gmail.com>
- L:	netdev@vger.kernel.org
- L:	bpf@vger.kernel.org
- S:	Maintained
-+F:	Documentation/networking/af_xdp.rst
- F:	include/net/xdp_sock*
- F:	include/net/xsk_buff_pool.h
- F:	include/uapi/linux/if_xdp.h
-+F:	include/uapi/linux/xdp_diag.h
-+F:	include/net/netns/xdp.h
- F:	net/xdp/
- F:	samples/bpf/xdpsock*
- F:	tools/lib/bpf/xsk*
-
-
+-- 
+g
