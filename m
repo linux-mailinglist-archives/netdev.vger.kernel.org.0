@@ -2,71 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 663032BA01D
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 02:56:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 030FB2BA02E
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 03:11:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727185AbgKTBys (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 20:54:48 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:40326 "EHLO vps0.lunn.ch"
+        id S1726199AbgKTCKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 21:10:19 -0500
+Received: from mga18.intel.com ([134.134.136.126]:32908 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726540AbgKTByr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Nov 2020 20:54:47 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kfvdE-0082qw-MZ; Fri, 20 Nov 2020 02:54:36 +0100
-Date:   Fri, 20 Nov 2020 02:54:36 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek Behun <marek.behun@nic.cz>
-Cc:     Pavana Sharma <pavana.sharma@digi.com>, lkp@intel.com,
-        ashkan.boldaji@digi.com, clang-built-linux@googlegroups.com,
-        davem@davemloft.net, f.fainelli@gmail.com,
-        gregkh@linuxfoundation.org, kbuild-all@lists.01.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, vivien.didelot@gmail.com
-Subject: Re: [PATCH v10 4/4] net: dsa: mv88e6xxx: Add support for mv88e6393x
- family  of Marvell
-Message-ID: <20201120015436.GC1804098@lunn.ch>
-References: <cover.1605830552.git.pavana.sharma@digi.com>
- <df58a3716ab900a0c2a4d727ddae52ef1310fcdc.1605830552.git.pavana.sharma@digi.com>
- <20201120012906.GA1804098@lunn.ch>
- <20201120024311.5021d6b7@nic.cz>
+        id S1726105AbgKTCKT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Nov 2020 21:10:19 -0500
+IronPort-SDR: sJyxijFnti9lBTRsA/1TaNUswerW5IWUwdj83REz6A/7JlueCXXEOQN1cBeKvvS37KQJgnOCyj
+ TakcH6BaAoBA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9810"; a="159170002"
+X-IronPort-AV: E=Sophos;i="5.78,354,1599548400"; 
+   d="scan'208";a="159170002"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2020 18:10:18 -0800
+IronPort-SDR: eLS9s1WqUVI+ku1GyewQS+aKxGIi901ZGh0TjNtO592tk7fVkEd74A7c3oSNG2B2q7xR/az79H
+ kPog+u4qBUXg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.78,354,1599548400"; 
+   d="scan'208";a="477054026"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by orsmga004.jf.intel.com with ESMTP; 19 Nov 2020 18:10:16 -0800
+Date:   Fri, 20 Nov 2020 03:01:40 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     David Awogbemila <awogbemila@google.com>
+Cc:     Saeed Mahameed <saeed@kernel.org>, Netdev <netdev@vger.kernel.org>,
+        Catherine Sullivan <csully@google.com>,
+        Yangchun Fu <yangchun@google.com>
+Subject: Re: [PATCH net-next v7 1/4] gve: Add support for raw addressing
+ device option
+Message-ID: <20201120020140.GA26162@ranger.igk.intel.com>
+References: <20201118232014.2910642-1-awogbemila@google.com>
+ <20201118232014.2910642-2-awogbemila@google.com>
+ <9b38c47593d2dedd5cad2c425b778a60cc7eeedf.camel@kernel.org>
+ <CAL9ddJf1bPH2na9x6G7q22Jk-e_R7gP=yEVTe9y6vzrmnuRm6Q@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201120024311.5021d6b7@nic.cz>
+In-Reply-To: <CAL9ddJf1bPH2na9x6G7q22Jk-e_R7gP=yEVTe9y6vzrmnuRm6Q@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 20, 2020 at 02:43:11AM +0100, Marek Behun wrote:
-> Hi Andrew,
+On Thu, Nov 19, 2020 at 04:22:24PM -0800, David Awogbemila wrote:
+> On Thu, Nov 19, 2020 at 12:21 PM Saeed Mahameed <saeed@kernel.org> wrote:
+> >
+> > On Wed, 2020-11-18 at 15:20 -0800, David Awogbemila wrote:
+> > > From: Catherine Sullivan <csully@google.com>
+> > >
+> > > Add support to describe device for parsing device options. As
+> > > the first device option, add raw addressing.
+> > >
+> > > "Raw Addressing" mode (as opposed to the current "qpl" mode) is an
+> > > operational mode which allows the driver avoid bounce buffer copies
+> > > which it currently performs using pre-allocated qpls
+> > > (queue_page_lists)
+> > > when sending and receiving packets.
+> > > For egress packets, the provided skb data addresses will be
+> > > dma_map'ed and
+> > > passed to the device, allowing the NIC can perform DMA directly - the
+> > > driver will not have to copy the buffer content into pre-allocated
+> > > buffers/qpls (as in qpl mode).
+> > > For ingress packets, copies are also eliminated as buffers are handed
+> > > to
+> > > the networking stack and then recycled or re-allocated as
+> > > necessary, avoiding the use of skb_copy_to_linear_data().
+> > >
+> > > This patch only introduces the option to the driver.
+> > > Subsequent patches will add the ingress and egress functionality.
+> > >
+> > > Reviewed-by: Yangchun Fu <yangchun@google.com>
+> > > Signed-off-by: Catherine Sullivan <csully@google.com>
+> > > Signed-off-by: David Awogbemila <awogbemila@google.com>
+> > > ---
+> > >
+> > ...
+> > > diff --git a/drivers/net/ethernet/google/gve/gve_adminq.c
+> > > b/drivers/net/ethernet/google/gve/gve_adminq.c
+> > > index 24ae6a28a806..1e2d407cb9d2 100644
+> > > --- a/drivers/net/ethernet/google/gve/gve_adminq.c
+> > > +++ b/drivers/net/ethernet/google/gve/gve_adminq.c
+> > > @@ -14,6 +14,57 @@
+> > >  #define GVE_ADMINQ_SLEEP_LEN         20
+> > >  #define GVE_MAX_ADMINQ_EVENT_COUNTER_CHECK   100
+> > >
+> > > +#define GVE_DEVICE_OPTION_ERROR_FMT "%s option error:\n" \
+> > > +"Expected: length=%d, feature_mask=%x.\n" \
+> > > +"Actual: length=%d, feature_mask=%x.\n"
+> > > +
+> > > +static inline
+> > > +struct gve_device_option *gve_get_next_option(struct
+> > >
+> >
+> > Following Dave's policy, no static inline functions in C files.
+> > This is control path so you don't really need the inline here.
 > 
-> On Fri, 20 Nov 2020 02:29:06 +0100
-> Andrew Lunn <andrew@lunn.ch> wrote:
+> Okay, I'll move it to a header file.
+
+That's not what Saeed meant I suppose. Policy says that we let the
+compiler to make the decision whether or not such static function should
+be inlined. And since it's not a performance critical path as Saeed says
+then drop the inline and keep the rest as-is.
+
 > 
-> > > +	if (speed >= 2500 && port > 0 && port < 9)
-> > > +		return -EOPNOTSUPP;  
-> > 
-> > Maybe i'm missing something, but it looks like at this point you can
-> > call
-> > 
-> > 	return mv88e6xxx_port_set_speed_duplex(chip, port, speed, true, true, duplex);
-> 
-> He can't. That function does not support speed 5000. You can't simply
-> add it, because it clashes with register value for speed 2500 on
-> previous switches (Peridot, Topaz).
-> 
-> 	Amethyst reg val	Peridot + Topaz reg val
-> 2500	SPD_1000 | ALT_BIT	SPD_10000 | ALT_BIT
-> 5000	SPD_10000 | ALT_BIT	not supported
-> 10000	SPD_UNFORCED		SPD_UNFORCED
-
-Hi Marek
-
-O.K, as i said, i might be missing something :-)
-
-I think a comment would be nice, pointing this out. Otherwise somebody
-might try refactoring it, and make the same mistake!
-
-      Andrew
+> >
+> >
+> >
