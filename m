@@ -2,112 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B5DF2BA09C
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 03:46:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BDAB2BA0B1
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 04:00:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726444AbgKTCnm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 21:43:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36052 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbgKTCnm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 21:43:42 -0500
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 728E2C0613CF
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 18:43:42 -0800 (PST)
-Received: by mail-pg1-x542.google.com with SMTP id t37so5952005pga.7
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 18:43:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=i3bd5w7GzRneLzcROTo1nSsOPh49W/4XKgcH/lZF7jc=;
-        b=PuEbMwQSjswkkoPJ+tBI22315T/j21sjChTh3CSlYX9yoNROacY7Zie6YCNENex3lf
-         WlNRGquj8Q9uiLA1U8uYGak/qHkPlcRjN6oj6J+zcpnpy984gvSLrbIKZbrtAhg5Exow
-         2ThAz2H7XjFStkC1h0qcFW+Z/W9q+rjZzlmc9t4x0zM7Ao8+mILUqR9LbrgQJ7jwKzgV
-         3CldbknKqh1cD9nzw7U+JbdMgM5q/w3ftrt97Dd9aEJA/KLoVVm6KE63xrX89OFuXy+w
-         /kR2kZm7RrfMteV1+ArEFFD1vFYio9dpl2fQSdp1jy12ldSaDeDsFpd4O9X4a65MlvFt
-         XI/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=i3bd5w7GzRneLzcROTo1nSsOPh49W/4XKgcH/lZF7jc=;
-        b=HjejoF4Og1ZoT5oHGnAEKZtlQCsayRA8Kn/eg8+5RVqCO8i+KFeA74MNFcd+lHxspR
-         uJxo8LfYhBi2pzwpKgD+MkaR+6/s8xvFy83Ek0ayNf28b1e0XV/uuXVWnwlLPBlVOHG8
-         7cX8rlDP4iQLKREvVkVi0IGEKxgIU2MmfY1LatXOVwq9t/yCxYaepw35Yg9EqX6o8YyQ
-         RkXUBv+IMfx9CHKH/eNueq/uWslk60+Rk9nz4gvs7869ed+/b09A0C69h76z91rVdk5I
-         GMZmkm38Tb0TZoTBgs3JmSeBGjKrhgtL6ajdJZ4W4xilrR5f500QbmzTmv3ydtMigDPe
-         OjUA==
-X-Gm-Message-State: AOAM531X9bCvYZ+/+SAkLdWosDOUHBfRu5MwXH5WHKRCUKAJrHme5fc/
-        fYwt/YLh6XMioGzbgpYq0139ByATv8I=
-X-Google-Smtp-Source: ABdhPJxmxHb2isuq2aaeXTRyzRvPNfJWyxX+NOQIMIyUfppSVv2zirau8AVIcf48lTqEteEUmdXrgQ==
-X-Received: by 2002:a17:90a:e28a:: with SMTP id d10mr7492445pjz.70.1605840221472;
-        Thu, 19 Nov 2020 18:43:41 -0800 (PST)
-Received: from [10.230.28.242] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id g4sm1151549pgu.81.2020.11.19.18.43.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Nov 2020 18:43:40 -0800 (PST)
-Subject: Re: [PATCH net-next 2/4] net: dsa: Link aggregation support
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, vivien.didelot@gmail.com,
-        olteanv@gmail.com, j.vosburgh@gmail.com, vfalico@gmail.com,
-        andy@greyhouse.net, netdev@vger.kernel.org
-References: <20201119144508.29468-1-tobias@waldekranz.com>
- <20201119144508.29468-3-tobias@waldekranz.com>
- <20201120003009.GW1804098@lunn.ch>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <5e2d23da-7107-e45e-0ab3-72269d7b6b24@gmail.com>
-Date:   Thu, 19 Nov 2020 18:43:38 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.4.3
+        id S1726575AbgKTDAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 22:00:09 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:8005 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726159AbgKTDAJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 22:00:09 -0500
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4Cch9K3p0XzhcbH;
+        Fri, 20 Nov 2020 10:59:49 +0800 (CST)
+Received: from [127.0.0.1] (10.74.149.191) by DGGEMS404-HUB.china.huawei.com
+ (10.3.19.204) with Microsoft SMTP Server id 14.3.487.0; Fri, 20 Nov 2020
+ 10:59:59 +0800
+Subject: Re: [RFC net-next 1/2] ethtool: add support for controling the type
+ of adaptive coalescing
+To:     Michal Kubecek <mkubecek@suse.cz>
+CC:     Andrew Lunn <andrew@lunn.ch>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@huawei.com>, <kuba@kernel.org>
+References: <1605758050-21061-1-git-send-email-tanhuazhong@huawei.com>
+ <1605758050-21061-2-git-send-email-tanhuazhong@huawei.com>
+ <20201119041557.GR1804098@lunn.ch>
+ <e43890d1-5596-3439-f4a7-d704c069a035@huawei.com>
+ <20201119220203.fv2uluoeekyoyxrv@lion.mk-sys.cz>
+From:   tanhuazhong <tanhuazhong@huawei.com>
+Message-ID: <8e9ba4c4-3ef4-f8bc-ab2f-92d695f62f12@huawei.com>
+Date:   Fri, 20 Nov 2020 10:59:59 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.5.2
 MIME-Version: 1.0
-In-Reply-To: <20201120003009.GW1804098@lunn.ch>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20201119220203.fv2uluoeekyoyxrv@lion.mk-sys.cz>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.149.191]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 11/19/2020 4:30 PM, Andrew Lunn wrote:
->> +static struct dsa_lag *dsa_lag_get(struct dsa_switch_tree *dst,
->> +				   struct net_device *dev)
->> +{
->> +	unsigned long busy = 0;
->> +	struct dsa_lag *lag;
->> +	int id;
->> +
->> +	list_for_each_entry(lag, &dst->lags, list) {
->> +		set_bit(lag->id, &busy);
->> +
->> +		if (lag->dev == dev) {
->> +			kref_get(&lag->refcount);
->> +			return lag;
->> +		}
->> +	}
->> +
->> +	id = find_first_zero_bit(&busy, BITS_PER_LONG);
->> +	if (id >= BITS_PER_LONG)
->> +		return ERR_PTR(-ENOSPC);
->> +
->> +	lag = kzalloc(sizeof(*lag), GFP_KERNEL);
->> +	if (!lag)
->> +		return ERR_PTR(-ENOMEM);
+On 2020/11/20 6:02, Michal Kubecek wrote:
+> On Thu, Nov 19, 2020 at 04:56:42PM +0800, tanhuazhong wrote:
+>> On 2020/11/19 12:15, Andrew Lunn wrote:
+>>>> diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+>>>> index 9ca87bc..afd8de2 100644
+>>>> --- a/include/uapi/linux/ethtool.h
+>>>> +++ b/include/uapi/linux/ethtool.h
+>>>> @@ -433,6 +433,7 @@ struct ethtool_modinfo {
+>>>>     *	a TX interrupt, when the packet rate is above @pkt_rate_high.
+>>>>     * @rate_sample_interval: How often to do adaptive coalescing packet rate
+>>>>     *	sampling, measured in seconds.  Must not be zero.
+>>>> + * @use_dim: Use DIM for IRQ coalescing, if adaptive coalescing is enabled.
+>>>>     *
+>>>>     * Each pair of (usecs, max_frames) fields specifies that interrupts
+>>>>     * should be coalesced until
+>>>> @@ -483,6 +484,7 @@ struct ethtool_coalesce {
+>>>>    	__u32	tx_coalesce_usecs_high;
+>>>>    	__u32	tx_max_coalesced_frames_high;
+>>>>    	__u32	rate_sample_interval;
+>>>> +	__u32	use_dim;
+>>>>    };
+>>>
+>>> You cannot do this.
+>>>
+>>> static noinline_for_stack int ethtool_set_coalesce(struct net_device *dev,
+>>>                                                      void __user *useraddr)
+>>> {
+>>>           struct ethtool_coalesce coalesce;
+>>>           int ret;
+>>>
+>>>           if (!dev->ethtool_ops->set_coalesce)
+>>>                   return -EOPNOTSUPP;
+>>>
+>>>           if (copy_from_user(&coalesce, useraddr, sizeof(coalesce)))
+>>>                   return -EFAULT;
+>>>
+>>> An old ethtool binary is not going to set this extra last byte to
+>>> anything meaningful. You cannot tell if you have an old or new user
+>>> space, so you have no idea if it put anything into use_dim, or if it
+>>> is random junk.
 > 
-> Hi Tobias
+> Even worse, as there is no indication of data length, ETHTOOL_GCOALESCE
+> ioctl request from old ethtool on new kernel would result in kernel
+> writing past the end of userspace buffer.
 > 
-> My comment last time was to statically allocated them at probe
-> time. Worse case scenario is each port is alone in a LAG. Pointless,
-> but somebody could configure it. In dsa_tree_setup_switches() you can
-> count the number of ports and then allocate an array, or while setting
-> up a port, add one more lag to the list of lags.
+>>> You have to leave the IOCTL interface unchanged, and limit this new
+>>> feature to the netlink API.
+>>>
+>>
+>> Hi, Andrew.
+>> thanks for pointing out this problem, i will fix it.
+>> without callling set_coalesce/set_coalesce of ethtool_ops, do you have any
+>> suggestion for writing/reading this new attribute to/from the driver? add a
+>> new field in net_device or a new callback function in ethtool_ops seems not
+>> good.
+> 
+> We could use a similar approach as struct ethtool_link_ksettings, e.g.
+> 
+> 	struct kernel_ethtool_coalesce {
+> 		struct ethtool_coalesce base;
+> 		/* new members which are not part of UAPI */
+> 	}
+> 
+> get_coalesce() and set_coalesce() would get pointer to struct
+> kernel_ethtool_coalesce and ioctl code would be modified to only touch
+> the base (legacy?) part.
+>  > While already changing the ops arguments, we could also add extack
+> pointer, either as a separate argument or as struct member (I slightly
+> prefer the former).
+> 
 
-The allocation is allowed to sleep (have not checked the calling context
-of dsa_lag_get() whether this is OK) so what would be the upside of
-doing upfront dsa_lag allocation which could be wasteful?
--- 
-Florian
+
+Hi, Michal.
+
+If changing the ops arguments, each driver who implement 
+set_coalesce/get_coalesce of ethtool_ops need to be updated. Is it 
+acceptable adding two new ops to get/set ext_coalesce info (like 
+ecc31c60240b ("ethtool: Add link extended state") does)? Maybe i can 
+send V2 in this way, and then could you help to see which one is more 
+suitable?
+
+
+> BtW, please don't forget to update the message descriptions in
+> Documentation/networking/ethtool-netlink.rst
+> 
+> Michal
+> 
+> .
+> 
+
