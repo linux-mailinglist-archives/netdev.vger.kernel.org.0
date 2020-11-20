@@ -2,106 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A76FC2BB7F6
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 21:59:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EECA2BB809
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 22:00:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729885AbgKTUxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 15:53:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35712 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729541AbgKTUxl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 15:53:41 -0500
-Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6C2C061A04
-        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 12:53:40 -0800 (PST)
-Received: by mail-oi1-x243.google.com with SMTP id s18so10791998oih.1
-        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 12:53:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Tm5oQGDIWj52Bp56wXe66Os4mWl35FpTbKVQbQHjiA0=;
-        b=Q/ayshPw7MqVSNseI330O4AYlTJ4Xssc3g4VnY0j0IDdzFMEowMylO8koqPB01IYI9
-         t6ZFW87UdnQlfA0XS8AhgxB6uQ4CUOIKV+qklIG+JulBiVk0DopsABcifPjKvwZEFQyd
-         pMDL9hBMf8V10ABQl6nxC7VrDcQcLsUU+xZeM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Tm5oQGDIWj52Bp56wXe66Os4mWl35FpTbKVQbQHjiA0=;
-        b=kVfZFuAdhgvmNn54LdQx05bgTPghUV49KrX4Uq7gcwjjPh8o1uGjxClJchTAi1MIcu
-         bWdGZi4MMjC7rA1iWYkPuDdKrEIhQrKzT6pLgq8KDjJpzTAL1XpXNndRa4eMafRgPAwg
-         9WbWbgXEoEfDkiPeSJq4ZK9KShZaUgC7UrORCbRE5rznYhOGHaSNKHh61wivxDcA3Xrp
-         FyOyaWBOHvVnl7yu5JbjcObr7EmOq/QTmzw8k7wCXwgqjB+3zHRKyQoCq5lCQLMWvu0t
-         0vMZS6bjtKoBdsyziGpvV6E4WXLDiYdsR3s5/uM0rtnJbv74Ga4QE5Ou7wj+6vKFDLRU
-         psUQ==
-X-Gm-Message-State: AOAM530aQGJjDB34WXdO6iEGF6YBRkKrQyXTcpge9Jt2T0jaoIpWdQfs
-        sPpjgJhl9mqBJDA+3wKPlc6wFQP464skSA==
-X-Google-Smtp-Source: ABdhPJxUQAOjrgbPaygG1TE7u68onizVxuddBoVn7b5vLosR336wueDFz6trVyop82NTcE2LlQuyKw==
-X-Received: by 2002:aca:b8c3:: with SMTP id i186mr3692876oif.78.1605905618338;
-        Fri, 20 Nov 2020 12:53:38 -0800 (PST)
-Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com. [209.85.210.46])
-        by smtp.gmail.com with ESMTPSA id o63sm2168188ooa.10.2020.11.20.12.53.35
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 Nov 2020 12:53:36 -0800 (PST)
-Received: by mail-ot1-f46.google.com with SMTP id k3so9987626otp.12
-        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 12:53:35 -0800 (PST)
-X-Received: by 2002:a05:6830:1291:: with SMTP id z17mr15586229otp.229.1605905615285;
- Fri, 20 Nov 2020 12:53:35 -0800 (PST)
+        id S1730609AbgKTU7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 15:59:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40400 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730536AbgKTU7W (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Nov 2020 15:59:22 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id CD92622264;
+        Fri, 20 Nov 2020 20:59:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605905962;
+        bh=PqjxBRRlsPYgF/Ba9j+BP8a/9/gJk8ibwk2z0/X43dU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=N/RG1ZHpO5EMGuTF+3astQMmAEUj6Biwv81lQv/LE6HJ1zU12fiKyEvGRUOQMW3/5
+         i0t5pDpww7WtFbh2WNX4Z+dLCKZ72K0KjGbsJybcWjNakcfimmYz8D3E1jSC21BDzu
+         wsbErUfqDoxyDGQoNq6M4mOzzV5PKV6cNIcheQYA=
+Date:   Fri, 20 Nov 2020 12:59:21 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Christian Eggers <ceggers@arri.de>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2] net: dsa: avoid potential use-after-free
+ error
+Message-ID: <20201120125921.1cb76a12@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201120180149.wp4ehikbc2ngvwtf@skbuf>
+References: <20201119110906.25558-1-ceggers@arri.de>
+        <20201120180149.wp4ehikbc2ngvwtf@skbuf>
 MIME-Version: 1.0
-References: <20201028142625.18642-1-kitakar@gmail.com> <CA+ASDXPX+fadTKLnxNVZQ0CehsHNwvWHXEdLqZVDoQ6hf6Wp8Q@mail.gmail.com>
- <7db5b6cba1548308a63855ec1dda836b6d6d9757.camel@gmail.com>
-In-Reply-To: <7db5b6cba1548308a63855ec1dda836b6d6d9757.camel@gmail.com>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Fri, 20 Nov 2020 12:53:23 -0800
-X-Gmail-Original-Message-ID: <CA+ASDXNPcXtTWS8pOjfoxiYOAcRMmsqZwXe3mnxOw388MCEu9g@mail.gmail.com>
-Message-ID: <CA+ASDXNPcXtTWS8pOjfoxiYOAcRMmsqZwXe3mnxOw388MCEu9g@mail.gmail.com>
-Subject: Re: [PATCH] mwifiex: pcie: add enable_device_dump module parameter
-To:     Tsuchiya Yuto <kitakar@gmail.com>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>, verdre@v0yd.nl
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(Sorry if anything's a bit slow here. I don't really have time to
-write out full proposals myself.)
+On Fri, 20 Nov 2020 20:01:49 +0200 Vladimir Oltean wrote:
+> On Thu, Nov 19, 2020 at 12:09:06PM +0100, Christian Eggers wrote:
+> > If dsa_switch_ops::port_txtstamp() returns false, clone will be freed
+> > immediately. Shouldn't store a pointer to freed memory.
+> > 
+> > Signed-off-by: Christian Eggers <ceggers@arri.de>
+> > Fixes: 146d442c2357 ("net: dsa: Keep a pointer to the skb clone for TX timestamping")
+> > ---  
+> 
+> IMO this is one of the cases to which the following from
+> Documentation/process/stable-kernel-rules.rst does not apply:
+> 
+>  - It must fix a real bug that bothers people (not a, "This could be a
+>    problem..." type thing).
+> 
+> Therefore, specifying "net-next" as the target tree here as opposed to
+> "net" is the correct choice.
 
-On Fri, Oct 30, 2020 at 3:30 AM Tsuchiya Yuto <kitakar@gmail.com> wrote:
-> Let me know if splitting this patch like this works. 1) The first patch
-> is to add this module parameter but don't change the default behavior.
+The commit message doesn't really explain what happens after.
 
-That *could* be OK with me, although it's already been said that there
-are many people who dislike extra module parameters. I also don't see
-why this needs to be a module parameter at all. If you do #2 right,
-you don't really need this, as there are already several standard ways
-of doing this (e.g., via Kconfig, or via nl80211 on a per-device
-basis).
-
-> 2) The second patch is to change the parameter value depending on the
-> DMI matching or something so that it doesn't break the existing users.
-
-Point 2 sounds good, and this is the key point. Note that you can do
-point 2 without making it a module parameter. Just keep a flag in the
-driver-private structures.
-
-> But what I want to say here as well is that, if the firmware can be fixed,
-> we don't need a patch like this.
-
-Sure. That's also where we don't necessarily need more ways to control
-this from user space (e.g., module parameters), but just better
-detection of currently broken systems (in the driver). And if firmware
-ever gets fixed, we can undo the "broken device" detection.
-
-Brian
+Is the dangling pointer ever accessed?
