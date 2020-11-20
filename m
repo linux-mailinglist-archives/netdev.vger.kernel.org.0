@@ -2,93 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D01B2BA63E
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 10:32:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD54D2BA64E
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 10:36:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726460AbgKTJco (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 04:32:44 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7660 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725824AbgKTJcn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 04:32:43 -0500
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CcrtJ4lbnz15LdN;
-        Fri, 20 Nov 2020 17:32:24 +0800 (CST)
-Received: from huawei.com (10.175.103.91) by DGGEMS410-HUB.china.huawei.com
- (10.3.19.210) with Microsoft SMTP Server id 14.3.487.0; Fri, 20 Nov 2020
- 17:32:36 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>
-Subject: [PATCH] veth: fix memleak in veth_newlink()
-Date:   Fri, 20 Nov 2020 17:30:57 +0800
-Message-ID: <20201120093057.1477009-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S1727340AbgKTJgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 04:36:09 -0500
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:56449 "EHLO
+        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727289AbgKTJgH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 04:36:07 -0500
+X-Greylist: delayed 64216 seconds by postgrey-1.27 at vger.kernel.org; Fri, 20 Nov 2020 04:36:06 EST
+X-Originating-IP: 90.55.104.168
+Received: from bootlin.com (atoulouse-258-1-33-168.w90-55.abo.wanadoo.fr [90.55.104.168])
+        (Authenticated sender: maxime.chevallier@bootlin.com)
+        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 71CEEE0046;
+        Fri, 20 Nov 2020 09:36:02 +0000 (UTC)
+Date:   Fri, 20 Nov 2020 10:36:01 +0100
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Antoine Tenart <atenart@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: net: phy: Dealing with 88e1543 dual-port mode
+Message-ID: <20201120103601.313a166b@bootlin.com>
+In-Reply-To: <87eekoanvj.fsf@waldekranz.com>
+References: <20201119152246.085514e1@bootlin.com>
+        <20201119145500.GL1551@shell.armlinux.org.uk>
+        <20201119162451.4c8d220d@bootlin.com>
+        <87k0uh9dd0.fsf@waldekranz.com>
+        <20201119231613.GN1551@shell.armlinux.org.uk>
+        <87eekoanvj.fsf@waldekranz.com>
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I got a memleak report when doing fault-inject test:
+Hi Tobias,
 
-unreferenced object 0xffff88810ace9000 (size 1024):
-  comm "ip", pid 4622, jiffies 4295457037 (age 43.378s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<00000000008abe41>] __kmalloc+0x10f/0x210
-    [<000000005d3533a6>] veth_dev_init+0x140/0x310
-    [<0000000088353c64>] register_netdevice+0x496/0x7a0
-    [<000000001324d322>] veth_newlink+0x40b/0x960
-    [<00000000d0799866>] __rtnl_newlink+0xd8c/0x1360
-    [<00000000d616040a>] rtnl_newlink+0x6b/0xa0
-    [<00000000e0a1600d>] rtnetlink_rcv_msg+0x3cc/0x9e0
-    [<000000009eeff98b>] netlink_rcv_skb+0x130/0x3a0
-    [<00000000500f8be1>] netlink_unicast+0x4da/0x700
-    [<00000000666c03b3>] netlink_sendmsg+0x7fe/0xcb0
-    [<0000000073b28103>] sock_sendmsg+0x143/0x180
-    [<00000000ad746a30>] ____sys_sendmsg+0x677/0x810
-    [<0000000087dd98e5>] ___sys_sendmsg+0x105/0x180
-    [<00000000028dd365>] __sys_sendmsg+0xf0/0x1c0
-    [<00000000a6bfbae6>] do_syscall_64+0x33/0x40
-    [<00000000e00521b4>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+On Fri, 20 Nov 2020 01:11:12 +0100
+Tobias Waldekranz <tobias@waldekranz.com> wrote:
 
-If call_netdevice_notifiers() failed in register_netdevice(),
-dev->priv_destructor() is not called, it will cause memleak.
-Fix this by assigning ndo_uninit with veth_dev_free(), so
-the memory can be freed in rollback_registered();
+>On Thu, Nov 19, 2020 at 23:16, Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
+>> On Thu, Nov 19, 2020 at 11:43:39PM +0100, Tobias Waldekranz wrote:  
+>>> On Thu, Nov 19, 2020 at 16:24, Maxime Chevallier <maxime.chevallier@bootlin.com> wrote:  
+>>> > I don't think we have a way to distinguish from the DT if we are in
+>>> > SGMII-to-Fibre or in SGMII-to-{Copper + Fibre}, since the description is
+>>> > the same, we don't have any information in DT about wether or not the
+>>> > PHY is wired to a Copper RJ45 port.
+>>> >
+>>> > Maybe we should have a way to indicate if a PHY is wired to a Copper
+>>> > port in DT ?  
+>>> 
+>>> Do you mean something like:
+>>> 
+>>> SGMII->SGMII (Fibre):
+>>> ethernet-phy@0 {
+>>>    sfp = <&sfp0>;
+>>> };
+>>> 
+>>> SGMII->MDI (Copper):
+>>> ethernet-phy@0 {
+>>>     mdi;
+>>> };
+>>> 
+>>> SGMII->Auto Media Detect
+>>> ethernet-phy@0 {
+>>>     mdi;
+>>>     sfp = <&sfp0>;
+>>> };  
+>>
+>> This isn't something we could realistically do - think about how many
+>> DT files are out there today which would not have this for an existing
+>> PHY. The default has to be that today's DT descriptions continue to work
+>> as-is, and that includes ones which already support copper and fibre
+>> either with or without a sfp property.
+>>
+>> So, we can't draw any conclusion about whether the fiber interface is
+>> wired from whether there is a sfp property or not.
+>>
+>> We also can't draw a conclusion about whether the copper side is wired
+>> using a "mdi" property, or whether there is a "sfp" property or not.
+>>
+>> The only thing we could realistically do today is to introduce a
+>> property like:
+>>
+>> 	mdi = "disabled" | "okay";
+>>
+>> to indicate whether the copper port can be used, and maybe something
+>> similar for the fiber interface.  Maybe as you suggest, not "okay"
+>> but specifying the number of connected pairs would be a good idea,
+>> or maybe that should be a separate property?  
+>
+>Maybe you could have optional media nodes under the PHY instead, so that
+>you don't involve the SFP property in the logic (SGMII can be connected
+>to lots of things after all):
+>
+>    ethernet-phy@0 {
+>        ...
+>
+>        sgmii {
+>            status = "okay";
+>            preferred;
+>        };
+>
+>        mdi {
+>           status = "okay";
+>           pairs = <2>;
+>        };
+>    };
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/net/veth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I like that approach too, and I agree that we do need to be very careful
+with not breaking existing PHYs, where most of the time we assume that
+a PHY simply has a 8P8C (RJ45) connector.
 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index 8c737668008a..537d9a60028a 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -1217,6 +1217,7 @@ static int veth_xdp(struct net_device *dev, struct netdev_bpf *xdp)
- 
- static const struct net_device_ops veth_netdev_ops = {
- 	.ndo_init            = veth_dev_init,
-+	.ndo_uninit          = veth_dev_free,
- 	.ndo_open            = veth_open,
- 	.ndo_stop            = veth_close,
- 	.ndo_start_xmit      = veth_xmit,
-@@ -1260,7 +1261,6 @@ static void veth_setup(struct net_device *dev)
- 			       NETIF_F_HW_VLAN_CTAG_RX |
- 			       NETIF_F_HW_VLAN_STAG_RX);
- 	dev->needs_free_netdev = true;
--	dev->priv_destructor = veth_dev_free;
- 	dev->max_mtu = ETH_MAX_MTU;
- 
- 	dev->hw_features = VETH_FEATURES;
--- 
-2.17.1
+Maybe the term MDI is a bit misused here, my understanding was that MDI,
+standing for "Media Dependent Interface" represents the media-side
+interface in general, and not a particular technology such as
+xxxBaseT/X/K or Copper of Fibre.
+
+So maybe we could be a bit more generic, with something along these lines :
+
+    ethernet-phy@0 {
+        ...
+
+        mdi {
+            port@0 {
+                media = "10baseT", "100baseT", "1000baseT";
+                pairs = <1>;
+	    };
+
+            port@1 {
+                media = "1000baseX", "10gbaseR"
+            };
+        };
+    };
+
+This would allow us to explicitely indicate which modes are supported
+by each port.
+
+And in absence of the mdi node, we indeed fallback to the usual behaviour.
+
+>In the absence of any media declarations, you fall back to the driver's
+>default behavior (keeping compatibility with older DTs). But you can
+>still add support for more configurations if the information is
+>available.
+
+I also like the idea of having a way to express the "preferred" media,
+although I wonder if that's something we want to include in DT or that
+we would want to tweak at runtime, through ethtool for example.
+
+What do you think ?
+
+Thanks,
+
+Maxime
 
