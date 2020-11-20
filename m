@@ -2,179 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAE8B2BAB6D
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 14:41:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29E6A2BAB7B
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 14:46:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727728AbgKTNkv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 08:40:51 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:60955 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726541AbgKTNkv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 08:40:51 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
-        with SMTP; 20 Nov 2020 15:40:46 +0200
-Received: from vnc1.mtl.labs.mlnx (vnc1.mtl.labs.mlnx [10.7.2.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0AKDekKo029539;
-        Fri, 20 Nov 2020 15:40:46 +0200
-Received: from vnc1.mtl.labs.mlnx (localhost [127.0.0.1])
-        by vnc1.mtl.labs.mlnx (8.14.4/8.14.4) with ESMTP id 0AKDejTi006178;
-        Fri, 20 Nov 2020 15:40:45 +0200
-Received: (from moshe@localhost)
-        by vnc1.mtl.labs.mlnx (8.14.4/8.14.4/Submit) id 0AKDeh0O006172;
-        Fri, 20 Nov 2020 15:40:43 +0200
-From:   Moshe Shemesh <moshe@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Jiri Pirko <jiri@nvidia.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Moshe Shemesh <moshe@mellanox.com>
-Subject: [PATCH net] devlink: Fix reload stats structure
-Date:   Fri, 20 Nov 2020 15:40:37 +0200
-Message-Id: <1605879637-6114-1-git-send-email-moshe@mellanox.com>
-X-Mailer: git-send-email 1.8.4.3
+        id S1727962AbgKTNo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 08:44:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53520 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726335AbgKTNo6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 08:44:58 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89CDDC0613CF
+        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 05:44:58 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=blackshift.org)
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kg6iU-0000F3-GL; Fri, 20 Nov 2020 14:44:46 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     linux-can@vger.kernel.org, kernel@pengutronix.de, kuba@kernel.org,
+        davem@davemloft.net, Kaixu Xia <kaixuxia@tencent.com>,
+        Tosk Robot <tencent_os_robot@tencent.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 25/25] can: mcp251xfd: remove useless code in mcp251xfd_chip_softreset
+Date:   Fri, 20 Nov 2020 14:44:28 +0100
+Message-Id: <20201120134428.3430191-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20201120133318.3428231-1-mkl@pengutronix.de>
+References: <20201120133318.3428231-1-mkl@pengutronix.de>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix reload stats structure exposed to the user. Change stats structure
-hierarchy to have the reload action as a parent of the stat entry and
-then stat entry includes value per limit. This will also help to avoid
-string concatenation on iproute2 output.
+From: Kaixu Xia <kaixuxia@tencent.com>
 
-Reload stats structure before this fix:
-"stats": {
-    "reload": {
-        "driver_reinit": 2,
-        "fw_activate": 1,
-        "fw_activate_no_reset": 0
-     }
-}
+It would directly return if the variable err equals to 0 or other errors.
+Only when the err equals to -ETIMEDOUT it can reach the 'if (err)'
+statement, so the 'if (err)' and last 'return -ETIMEDOUT' statements are
+useless. Romove them.
 
-After this fix:
-"stats": {
-    "reload": {
-        "driver_reinit": {
-            "unspecified": 2
-        },
-        "fw_activate": {
-            "unspecified": 1,
-            "no_reset": 0
-        }
-}
-
-Fixes: a254c264267e ("devlink: Add reload stats")
-Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Reported-by: Tosk Robot <tencent_os_robot@tencent.com>
+Signed-off-by: Kaixu Xia <kaixuxia@tencent.com>
+Link: https://lore.kernel.org/r/1605605352-25298-1-git-send-email-kaixuxia@tencent.com
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- include/uapi/linux/devlink.h |  2 ++
- net/core/devlink.c           | 48 +++++++++++++++++++++++-------------
- 2 files changed, 33 insertions(+), 17 deletions(-)
+Hello,
 
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index 0113bc4db9f5..5203f54a2be1 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -526,6 +526,8 @@ enum devlink_attr {
- 	DEVLINK_ATTR_RELOAD_STATS_LIMIT,	/* u8 */
- 	DEVLINK_ATTR_RELOAD_STATS_VALUE,	/* u32 */
- 	DEVLINK_ATTR_REMOTE_RELOAD_STATS,	/* nested */
-+	DEVLINK_ATTR_RELOAD_ACTION_INFO,        /* nested */
-+	DEVLINK_ATTR_RELOAD_ACTION_STATS,       /* nested */
+I had to manually resend the patch, as it was lost for unknown reasons.
+
+regards,
+Marc
+
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
+index afa8cfc729b5..3297eb7ecc9c 100644
+--- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
++++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
+@@ -644,10 +644,7 @@ static int mcp251xfd_chip_softreset(const struct mcp251xfd_priv *priv)
+ 		return 0;
+ 	}
  
- 	/* add new attributes above here, update the policy in devlink.c */
- 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index ab4b1368904f..34d38abd74ee 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -517,8 +517,7 @@ devlink_reload_limit_is_supported(struct devlink *devlink, enum devlink_reload_l
- 	return test_bit(limit, &devlink->ops->reload_limits);
+-	if (err)
+-		return err;
+-
+-	return -ETIMEDOUT;
++	return err;
  }
  
--static int devlink_reload_stat_put(struct sk_buff *msg, enum devlink_reload_action action,
--				   enum devlink_reload_limit limit, u32 value)
-+static int devlink_reload_stat_put(struct sk_buff *msg, enum devlink_reload_limit limit, u32 value)
- {
- 	struct nlattr *reload_stats_entry;
- 
-@@ -526,8 +525,7 @@ static int devlink_reload_stat_put(struct sk_buff *msg, enum devlink_reload_acti
- 	if (!reload_stats_entry)
- 		return -EMSGSIZE;
- 
--	if (nla_put_u8(msg, DEVLINK_ATTR_RELOAD_ACTION, action) ||
--	    nla_put_u8(msg, DEVLINK_ATTR_RELOAD_STATS_LIMIT, limit) ||
-+	if (nla_put_u8(msg, DEVLINK_ATTR_RELOAD_STATS_LIMIT, limit) ||
- 	    nla_put_u32(msg, DEVLINK_ATTR_RELOAD_STATS_VALUE, value))
- 		goto nla_put_failure;
- 	nla_nest_end(msg, reload_stats_entry);
-@@ -540,7 +538,7 @@ static int devlink_reload_stat_put(struct sk_buff *msg, enum devlink_reload_acti
- 
- static int devlink_reload_stats_put(struct sk_buff *msg, struct devlink *devlink, bool is_remote)
- {
--	struct nlattr *reload_stats_attr;
-+	struct nlattr *reload_stats_attr, *action_info_attr, *action_stats_attr;
- 	int i, j, stat_idx;
- 	u32 value;
- 
-@@ -552,17 +550,27 @@ static int devlink_reload_stats_put(struct sk_buff *msg, struct devlink *devlink
- 	if (!reload_stats_attr)
- 		return -EMSGSIZE;
- 
--	for (j = 0; j <= DEVLINK_RELOAD_LIMIT_MAX; j++) {
--		/* Remote stats are shown even if not locally supported. Stats
--		 * of actions with unspecified limit are shown though drivers
--		 * don't need to register unspecified limit.
--		 */
--		if (!is_remote && j != DEVLINK_RELOAD_LIMIT_UNSPEC &&
--		    !devlink_reload_limit_is_supported(devlink, j))
-+	for (i = 0; i <= DEVLINK_RELOAD_ACTION_MAX; i++) {
-+		if ((!is_remote && !devlink_reload_action_is_supported(devlink, i)) ||
-+		    i == DEVLINK_RELOAD_ACTION_UNSPEC)
- 			continue;
--		for (i = 0; i <= DEVLINK_RELOAD_ACTION_MAX; i++) {
--			if ((!is_remote && !devlink_reload_action_is_supported(devlink, i)) ||
--			    i == DEVLINK_RELOAD_ACTION_UNSPEC ||
-+		action_info_attr = nla_nest_start(msg, DEVLINK_ATTR_RELOAD_ACTION_INFO);
-+		if (!action_info_attr)
-+			goto nla_put_failure;
-+
-+		if (nla_put_u8(msg, DEVLINK_ATTR_RELOAD_ACTION, i))
-+			goto action_info_nest_cancel;
-+		action_stats_attr = nla_nest_start(msg, DEVLINK_ATTR_RELOAD_ACTION_STATS);
-+		if (!action_stats_attr)
-+			goto action_info_nest_cancel;
-+
-+		for (j = 0; j <= DEVLINK_RELOAD_LIMIT_MAX; j++) {
-+			/* Remote stats are shown even if not locally supported. Stats
-+			 * of actions with unspecified limit are shown though drivers
-+			 * don't need to register unspecified limit.
-+			 */
-+			if ((!is_remote && j != DEVLINK_RELOAD_LIMIT_UNSPEC &&
-+			     !devlink_reload_limit_is_supported(devlink, j)) ||
- 			    devlink_reload_combination_is_invalid(i, j))
- 				continue;
- 
-@@ -571,13 +579,19 @@ static int devlink_reload_stats_put(struct sk_buff *msg, struct devlink *devlink
- 				value = devlink->stats.reload_stats[stat_idx];
- 			else
- 				value = devlink->stats.remote_reload_stats[stat_idx];
--			if (devlink_reload_stat_put(msg, i, j, value))
--				goto nla_put_failure;
-+			if (devlink_reload_stat_put(msg, j, value))
-+				goto action_stats_nest_cancel;
- 		}
-+		nla_nest_end(msg, action_stats_attr);
-+		nla_nest_end(msg, action_info_attr);
- 	}
- 	nla_nest_end(msg, reload_stats_attr);
- 	return 0;
- 
-+action_stats_nest_cancel:
-+	nla_nest_cancel(msg, action_stats_attr);
-+action_info_nest_cancel:
-+	nla_nest_cancel(msg, action_info_attr);
- nla_put_failure:
- 	nla_nest_cancel(msg, reload_stats_attr);
- 	return -EMSGSIZE;
+ static int mcp251xfd_chip_clock_init(const struct mcp251xfd_priv *priv)
 -- 
-2.18.2
+2.29.2
 
