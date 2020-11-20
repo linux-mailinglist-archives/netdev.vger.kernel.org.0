@@ -2,147 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E51B2BB4B0
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 20:00:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FC4C2BB52F
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 20:25:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730248AbgKTS66 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 13:58:58 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:42160 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730111AbgKTS65 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Nov 2020 13:58:57 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kgBcT-0089nQ-9Y; Fri, 20 Nov 2020 19:58:53 +0100
-Date:   Fri, 20 Nov 2020 19:58:53 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     George McCollister <george.mccollister@gmail.com>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller " <davem@davemloft.net>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next 1/3] dsa: add support for Arrow XRS700x tag
- trailer
-Message-ID: <20201120185853.GO1853236@lunn.ch>
-References: <20201120181627.21382-1-george.mccollister@gmail.com>
- <20201120181627.21382-2-george.mccollister@gmail.com>
+        id S1732029AbgKTTYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 14:24:32 -0500
+Received: from gateway24.websitewelcome.com ([192.185.50.66]:14379 "EHLO
+        gateway24.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729495AbgKTTYc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 14:24:32 -0500
+Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
+        by gateway24.websitewelcome.com (Postfix) with ESMTP id 959211D12F
+        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 13:02:31 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id gBfzk7LgLnPrxgBfzkbxPy; Fri, 20 Nov 2020 13:02:31 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=+4VxQ3E1SMf3fqpPxA59SXnFTIYnqNYQQfNHAF4XRGw=; b=n09KqYnyKHrO7dveIUWc55mzig
+        y4HUZZbrqh9oIGiAW16mTaR8pcvnAozTxI+rYVVIt9CxAErudOIqW44giqY0jAAxUq2Az5FkJRw8D
+        DdYM3ceCwzW72Iyh3zFwKX+btf9zXkIFnOla0anfthw4DZBTFFqyoxwOvEOl2OJ26TOTLqWU9obCG
+        intkFNaJRljaeNwR96RWCduzT1c1ht64s9kRw8R+vb7ftuKF/SC10c1DXlPqmQL512w8QCfyvTWtG
+        dzgy+MeNJCgbGq47RynDwYUz9POm4OiFKWoqxvHGtR/GFZ1BW9GSDXleqWC/tOZ433VaTMSGJy7Ut
+        yE2h40Yg==;
+Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:52198 helo=[192.168.15.4])
+        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1kgBfw-0000VH-WA; Fri, 20 Nov 2020 13:02:29 -0600
+Subject: Re: [PATCH 000/141] Fix fall-through warnings for Clang
+To:     Joe Perches <joe@perches.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-kernel@vger.kernel.org
+Cc:     alsa-devel@alsa-project.org, amd-gfx@lists.freedesktop.org,
+        bridge@lists.linux-foundation.org, ceph-devel@vger.kernel.org,
+        cluster-devel@redhat.com, coreteam@netfilter.org,
+        devel@driverdev.osuosl.org, dm-devel@redhat.com,
+        drbd-dev@lists.linbit.com, dri-devel@lists.freedesktop.org,
+        GR-everest-linux-l2@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        intel-gfx@lists.freedesktop.org, intel-wired-lan@lists.osuosl.org,
+        keyrings@vger.kernel.org, linux1394-devel@lists.sourceforge.net,
+        linux-acpi@vger.kernel.org, linux-afs@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org,
+        linux-atm-general@lists.sourceforge.net,
+        linux-block@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-cifs@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-decnet-user@lists.sourceforge.net,
+        linux-ext4@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-geode@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-hams@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-i3c@lists.infradead.org, linux-ide@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-integrity@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mm@kvack.org,
+        linux-mtd@lists.infradead.org, linux-nfs@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, nouveau@lists.freedesktop.org,
+        op-tee@lists.trustedfirmware.org, oss-drivers@netronome.com,
+        patches@opensource.cirrus.com, rds-devel@oss.oracle.com,
+        reiserfs-devel@vger.kernel.org, samba-technical@lists.samba.org,
+        selinux@vger.kernel.org, target-devel@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net,
+        usb-storage@lists.one-eyed-alien.net,
+        virtualization@lists.linux-foundation.org,
+        wcn36xx@lists.infradead.org, x86@kernel.org,
+        xen-devel@lists.xenproject.org, linux-hardening@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Kees Cook <keescook@chromium.org>
+References: <cover.1605896059.git.gustavoars@kernel.org>
+ <3e0bbb1644fe53d79322c2feb28ccaf3e20c0e94.camel@perches.com>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Autocrypt: addr=gustavo@embeddedor.com; keydata=
+ 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
+ AP7RWS474w==
+Message-ID: <9f986394-125a-81f7-7696-fe1a9f4eb4f5@embeddedor.com>
+Date:   Fri, 20 Nov 2020 13:02:34 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201120181627.21382-2-george.mccollister@gmail.com>
+In-Reply-To: <3e0bbb1644fe53d79322c2feb28ccaf3e20c0e94.camel@perches.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.162.31.110
+X-Source-L: No
+X-Exim-ID: 1kgBfw-0000VH-WA
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.4]) [187.162.31.110]:52198
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 56
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 20, 2020 at 12:16:25PM -0600, George McCollister wrote:
-> Add support for Arrow SpeedChips XRS700x single byte tag trailer. This
-> is modeled on tag_trailer.c which works in a similar way.
+
+
+On 11/20/20 12:28, Joe Perches wrote:
+> On Fri, 2020-11-20 at 12:21 -0600, Gustavo A. R. Silva wrote:
+>> Hi all,
+>>
+>> This series aims to fix almost all remaining fall-through warnings in
+>> order to enable -Wimplicit-fallthrough for Clang.
+>>
+>> In preparation to enable -Wimplicit-fallthrough for Clang, explicitly
+>> add multiple break/goto/return/fallthrough statements instead of just
+>> letting the code fall through to the next case.
+>>
+>> Notice that in order to enable -Wimplicit-fallthrough for Clang, this
+>> change[1] is meant to be reverted at some point. So, this patch helps
+>> to move in that direction.
 > 
-> Signed-off-by: George McCollister <george.mccollister@gmail.com>
-> ---
->  include/net/dsa.h     |  2 ++
->  net/dsa/Kconfig       |  6 ++++
->  net/dsa/Makefile      |  1 +
->  net/dsa/tag_xrs700x.c | 91 +++++++++++++++++++++++++++++++++++++++++++++++++++
->  4 files changed, 100 insertions(+)
->  create mode 100644 net/dsa/tag_xrs700x.c
+> This was a bit hard to parse for a second or three.
 > 
-> diff --git a/include/net/dsa.h b/include/net/dsa.h
-> index 2e64e8de4631..eb46ecdcf165 100644
-> --- a/include/net/dsa.h
-> +++ b/include/net/dsa.h
-> @@ -46,6 +46,7 @@ struct phylink_link_state;
->  #define DSA_TAG_PROTO_AR9331_VALUE		16
->  #define DSA_TAG_PROTO_RTL4_A_VALUE		17
->  #define DSA_TAG_PROTO_HELLCREEK_VALUE		18
-> +#define DSA_TAG_PROTO_XRS700X_VALUE		19
->  
->  enum dsa_tag_protocol {
->  	DSA_TAG_PROTO_NONE		= DSA_TAG_PROTO_NONE_VALUE,
-> @@ -67,6 +68,7 @@ enum dsa_tag_protocol {
->  	DSA_TAG_PROTO_AR9331		= DSA_TAG_PROTO_AR9331_VALUE,
->  	DSA_TAG_PROTO_RTL4_A		= DSA_TAG_PROTO_RTL4_A_VALUE,
->  	DSA_TAG_PROTO_HELLCREEK		= DSA_TAG_PROTO_HELLCREEK_VALUE,
-> +	DSA_TAG_PROTO_XRS700X		= DSA_TAG_PROTO_XRS700X_VALUE,
->  };
->  
->  struct packet_type;
-> diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
-> index dfecd7b22fd7..2d226a5c085f 100644
-> --- a/net/dsa/Kconfig
-> +++ b/net/dsa/Kconfig
-> @@ -139,4 +139,10 @@ config NET_DSA_TAG_TRAILER
->  	  Say Y or M if you want to enable support for tagging frames at
->  	  with a trailed. e.g. Marvell 88E6060.
->  
-> +config NET_DSA_TAG_XRS700X
-> +	tristate "Tag driver for XRS700x switches"
-> +	help
-> +	  Say Y or M if you want to enable support for tagging frames for
-> +	  Arrow SpeedChips XRS700x switches that use a single byte tag trailer.
-> +
->  endif
-> diff --git a/net/dsa/Makefile b/net/dsa/Makefile
-> index 0fb2b75a7ae3..92cea2132241 100644
-> --- a/net/dsa/Makefile
-> +++ b/net/dsa/Makefile
-> @@ -18,3 +18,4 @@ obj-$(CONFIG_NET_DSA_TAG_OCELOT) += tag_ocelot.o
->  obj-$(CONFIG_NET_DSA_TAG_QCA) += tag_qca.o
->  obj-$(CONFIG_NET_DSA_TAG_SJA1105) += tag_sja1105.o
->  obj-$(CONFIG_NET_DSA_TAG_TRAILER) += tag_trailer.o
-> +obj-$(CONFIG_NET_DSA_TAG_XRS700X) += tag_xrs700x.o
-> diff --git a/net/dsa/tag_xrs700x.c b/net/dsa/tag_xrs700x.c
-> new file mode 100644
-> index 000000000000..2eda57a4a474
-> --- /dev/null
-> +++ b/net/dsa/tag_xrs700x.c
-> @@ -0,0 +1,91 @@
-> +// SPDX-License-Identifier: GPL-2.0+
-> +/*
-> + * XRS700x tag format handling
-> + * Copyright (c) 2008-2009 Marvell Semiconductor
-> + * Copyright (c) 2020 NovaTech LLC
-> + */
-> +
-> +#include <linux/etherdevice.h>
-> +#include <linux/list.h>
-> +#include <linux/slab.h>
-> +#include <linux/bitops.h>
-> +
-> +#include "dsa_priv.h"
-> +
-> +static struct sk_buff *xrs700x_xmit(struct sk_buff *skb, struct net_device *dev)
-> +{
-> +	struct dsa_port *dp = dsa_slave_to_port(dev);
-> +	struct sk_buff *nskb;
-> +	int padlen;
-> +	u8 *trailer;
-> +
-> +	/* We have to make sure that the trailer ends up as the very
-> +	 * last byte of the packet.  This means that we have to pad
-> +	 * the packet to the minimum ethernet frame size, if necessary,
-> +	 * before adding the trailer.
-> +	 */
-> +	padlen = 0;
-> +	if (skb->len < 63)
-> +		padlen = 63 - skb->len;
-> +
-> +	nskb = alloc_skb(NET_IP_ALIGN + skb->len + padlen + 1, GFP_ATOMIC);
-> +	if (!nskb)
-> +		return NULL;
-> +	skb_reserve(nskb, NET_IP_ALIGN);
+> Thanks Gustavo.
+> 
+> How was this change done?
 
-Hi George
+I audited case by case in order to determine the best fit for each
+situation. Depending on the surrounding logic, sometimes it makes
+more sense a goto or a fallthrough rather than merely a break.
 
-This needs updating to take into account:
-
-commit a3b0b6479700a5b0af2c631cb2ec0fb7a0d978f2
-Author: Vladimir Oltean <vladimir.oltean@nxp.com>
-Date:   Sun Nov 1 21:16:09 2020 +0200
-
-    net: dsa: implement a central TX reallocation procedure
-
-which i think will handle the padding for you.
-
-      Andrew
+Thanks
+--
+Gustavo
