@@ -2,114 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BD2C2BA157
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 04:57:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D52482BA15A
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 05:02:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726118AbgKTDz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Nov 2020 22:55:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47040 "EHLO
+        id S1726304AbgKTEB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Nov 2020 23:01:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725937AbgKTDz1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 22:55:27 -0500
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A466C0613CF
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 19:55:25 -0800 (PST)
-Received: by mail-yb1-xb44.google.com with SMTP id v92so7348101ybi.4
-        for <netdev@vger.kernel.org>; Thu, 19 Nov 2020 19:55:25 -0800 (PST)
+        with ESMTP id S1725944AbgKTEB1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Nov 2020 23:01:27 -0500
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33009C0613CF;
+        Thu, 19 Nov 2020 20:01:27 -0800 (PST)
+Received: by mail-io1-xd42.google.com with SMTP id m13so8528083ioq.9;
+        Thu, 19 Nov 2020 20:01:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=5FzFYaey8liBWPJFQwuMtk0+xYf//gOPidhBjOFWJJo=;
-        b=NWRbI5bK4VwLwrauuA4RZ7iGNnK8D5r6VpE42X7O3jpgyh1h+mvGwlwlsqtp6yCjjl
-         9BbwV8+iFE63ZtdY1mXYIrRt1oPsaGcnyTmfpwEY60cuPU0zX+XMebcO/FnhbaY5CFpc
-         6B73IAayiMPunhrK1SmHbFxdOT3J3K27ECCoPvekYWdX2sO7tfteMs1bQ4jE4OhcULYb
-         SmUdU0SmluaF3jukJDHEol+UxQO66ltzh5r2/j9VMph9aWaZC2wdB409wK02cqQphp+c
-         /BVBpoizicMdsriygGNFgBeZyS9SzxQ0jNH4MmWa49xeRUH0cr08saddeD7d00mVzdS1
-         5Rbw==
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=kRf+0fLjXqPi4tn9lMnjFFTRUejoTSHqOHRd70Pcq7o=;
+        b=TQZwP4aS11yCae/sz1LF5G8I8UOR79JSSsd/hxaTZJoiyDjCHYC7+U6JYRJq+Vo4HS
+         zktQaHnpMta4XwiZ+LfcF9r3qJhFsqPmelYTaBfK/uUw6jMpwFqDap3RjPQZNdb8bwmR
+         s2xZbw92wTDHO2di4yMXXYUnLc0L9J9DZbhTHiXsaP1rKk2aJG/68Hu0brqQ5potAi4n
+         bSrhtsgCAddcMpxQvQthzSOpct0z+Zmgzbd3svVC0BZGZWPwDxdZsUK0i6ycMZy7Lgw3
+         6HLso8/E27uvWIMZ68kPAObPLJJ4AgTU8Zb2+iGPEhadX4zBTxifrJmFnUGwVIoJ56IG
+         KxFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=5FzFYaey8liBWPJFQwuMtk0+xYf//gOPidhBjOFWJJo=;
-        b=A3riBEYsD7l3NDoAatAPFbUpls/dUUjuvfShRK7wEWpwekGuYjv4H6Wkez1EHdpCh/
-         QDAZl9rEbFqb27HJufA4tERqKFDkvHZInJW3Snt80jfHMx5YP6nNFPk8UwM5YZDz2R9U
-         ZYYctPW4Y1OG2rmDizVVKCdxgd2ktw0oQgeHQHHjf6ZMWqnXt6wI5td/eFW9rGjSVO6M
-         V7RX7leitwHBZWlZfWhtUfDVlKT2Mv+63UwwhJmg/s1Lnzpv5bkFH/jGx4wdMTKlFCkr
-         FzeTskzEX82mbbIcOCkIpvMlGhbiC7+Kb9q4fYCqA0isduvgXmnZ4F2hilkyfNPxb4Y0
-         t+Hg==
-X-Gm-Message-State: AOAM532W4LAaMywMUQsFdOwkNcboI3h8hHNAph25ZiK2CAkbissj6c8S
-        cXxFW5jr4VHjtf3Lf83E9b5ecwY3s8xQ5Z2/S8L+9Q==
-X-Google-Smtp-Source: ABdhPJxL9gRQiWuSir7oJokARLblIw7pfGlutKoNggm+9lZQXmMb6ZjasAEB3nZU2Er8gR5xjTv57P7WoCdTMBe7vY4=
-X-Received: by 2002:a25:848e:: with SMTP id v14mr17604149ybk.153.1605844524054;
- Thu, 19 Nov 2020 19:55:24 -0800 (PST)
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=kRf+0fLjXqPi4tn9lMnjFFTRUejoTSHqOHRd70Pcq7o=;
+        b=CsVUDYc83cxNbYc2a3TQ0jWTX3mIXCHYKpYaYpWShtaz6t63mEVy0wzoN6JbVXQ2+q
+         byytPqKjrtEZ2VLlj+CiCrxbKQMRLv6Q+Q5eFJlb8953j7JfusCmBOUysTc2HL6IWPH1
+         vVtEGhXpNSVmZE12NSqykaoAzNZaXEJYp8iQeqoUU1FqqHYHFFjOgdvpTLcuGkoDDW1o
+         wbguHBwosQplm0Oc/2PQ/G2ivkTBN/yxTloyhzcVFkr1+QaXtslTCgl4vvVhnHtA8fUW
+         d3TuLhb9WLfwP/U5V3YtuZK6QwwgUtoWnUcfkq9YM6pkBF64uBY6uFjZxGj10vrPnd5i
+         9vew==
+X-Gm-Message-State: AOAM532BsNmlkXpORGS6LibYX+q+THT68alj4ShlF+qf2HLgNg1vbmtp
+        VkvapKpjldNGzcKV5VIUd+IDMhf4Juo=
+X-Google-Smtp-Source: ABdhPJzVAnaLmKeY3QZv5cyXRFE/TFuXiZSxiGaamS++sLb3IFtvDsgdWXS8NGopOFU8dnWiof9ecA==
+X-Received: by 2002:a5d:9c87:: with SMTP id p7mr9740236iop.49.1605844886495;
+        Thu, 19 Nov 2020 20:01:26 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:7c5d:d56d:e694:8d47])
+        by smtp.googlemail.com with ESMTPSA id z9sm753230iog.3.2020.11.19.20.01.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Nov 2020 20:01:25 -0800 (PST)
+Subject: Re: [PATCH v4 net-next 0/3] add support for sending RFC8335 PROBE
+From:   David Ahern <dsahern@gmail.com>
+To:     Andreas Roeseler <andreas.a.roeseler@gmail.com>,
+        davem@davemloft.net
+Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <cover.1605659597.git.andreas.a.roeseler@gmail.com>
+ <b4ce1651-4e45-52eb-7b2e-10075890e382@gmail.com>
+Message-ID: <8ac13fd8-69ac-723d-d84d-c16c4fa0a9ab@gmail.com>
+Date:   Thu, 19 Nov 2020 21:01:25 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.4.3
 MIME-Version: 1.0
-References: <20201111204308.3352959-1-jianyang.kernel@gmail.com>
- <20201114101709.42ee19e0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAF2d9jgYgUa4DPVT8CSsbMs9HFjE5fn_U8-P=JuZeOecfiYt-g@mail.gmail.com>
- <20201116123447.2be5a827@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAF2d9ji24VkLipTCFSAU+L8yqKt9nfPSNfks9_V1Tnb0ztPrfA@mail.gmail.com>
- <20201117171830.GA286718@shredder.lan> <CAF2d9jhJq76KWaMGZLTTX4rLGvLDp+jLxCG9cTvv6jWZCtcFAA@mail.gmail.com>
- <b3445db2-5c64-fd31-b555-6a49b0fa524e@gmail.com> <7e16f1f3-2551-dff5-8039-bcede955bbfc@6wind.com>
- <CAF2d9jiD5OpqB83fyyutsJqtGRg0AsuDkTsS6j4Fc-H-FHWiUQ@mail.gmail.com> <eb1a89d2-f0c0-1c10-6588-c92939162713@6wind.com>
-In-Reply-To: <eb1a89d2-f0c0-1c10-6588-c92939162713@6wind.com>
-From:   =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
-        <maheshb@google.com>
-Date:   Thu, 19 Nov 2020 19:55:08 -0800
-Message-ID: <CAF2d9jgVhk8wOyNcKewBXP+B16Jh2FGakU64UH3fhFA+cTaNSg@mail.gmail.com>
-Subject: Re: [PATCH net-next] net-loopback: allow lo dev initial state to be controlled
-To:     nicolas.dichtel@6wind.com
-Cc:     David Ahern <dsahern@gmail.com>, Ido Schimmel <idosch@idosch.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jian Yang <jianyang.kernel@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        linux-netdev <netdev@vger.kernel.org>,
-        Jian Yang <jianyang@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <b4ce1651-4e45-52eb-7b2e-10075890e382@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 19, 2020 at 12:03 AM Nicolas Dichtel
-<nicolas.dichtel@6wind.com> wrote:
->
-> Le 18/11/2020 =C3=A0 18:39, Mahesh Bandewar (=E0=A4=AE=E0=A4=B9=E0=A5=87=
-=E0=A4=B6 =E0=A4=AC=E0=A4=82=E0=A4=A1=E0=A5=87=E0=A4=B5=E0=A4=BE=E0=A4=B0) =
-a =C3=A9crit :
-> > On Wed, Nov 18, 2020 at 8:58 AM Nicolas Dichtel
-> > <nicolas.dichtel@6wind.com> wrote:
-> >>
-> >> Le 18/11/2020 =C3=A0 02:12, David Ahern a =C3=A9crit :
-> >> [snip]
-> >>> If there is no harm in just creating lo in the up state, why not just=
- do
-> >>> it vs relying on a sysctl? It only affects 'local' networking so no r=
-eal
-> >>> impact to containers that do not do networking (ie., packets can't
-> >>> escape). Linux has a lot of sysctl options; is this one really needed=
-?
-> >>>
-> > I started with that approach but then I was informed about these
-> > containers that disable networking all together including loopback.
-> > Also bringing up by default would break backward compatibility hence
-> > resorted to sysctl.
-> >> +1
-> >>
-> >> And thus, it will benefit to everybody.
-> >
-> > Well, it benefits everyone who uses networking (most of us) inside
-> Sure.
->
-> > netns but would create problems for workloads that create netns to
-> > disable networking. One can always disable it after creating the netns
-> > but that would mean change in the workflow and it could be viewed as
-> > regression.
-> The networking is very limited with only a loopback. Do you have some rea=
-l use
-> case in mind?
+On 11/19/20 8:51 PM, David Ahern wrote:
+> On 11/17/20 5:46 PM, Andreas Roeseler wrote:
+>> The popular utility ping has several severe limitations such as the
+>> inability to query specific  interfaces on a node and requiring
+>> bidirectional connectivity between the probing and the probed
+>> interfaces. RFC8335 attempts to solve these limitations by creating the
+>> new utility PROBE which is a specialized ICMP message that makes use of
+>> the ICMP Extension Structure outlined in RFC4884.
+>>
+>> This patchset adds definitions for the ICMP Extended Echo Request and
+>> Reply (PROBE) types for both IPv4 and IPv6. It also expands the list of
+>> supported ICMP messages to accommodate PROBEs.
+>>
+> 
+> You are updating the send, but what about the response side?
+> 
 
-My use cases all use networking but I think principally we cannot
-break backward compatibility, right?
-Jakub, WDYT?
+you also are not setting 'ICMP Extension Structure'. From:
+https://tools.ietf.org/html/rfc8335
+
+   o  ICMP Extension Structure: The ICMP Extension Structure identifies
+      the probed interface.
+
+   Section 7 of [RFC4884] defines the ICMP Extension Structure.  As per
+   RFC 4884, the Extension Structure contains exactly one Extension
+   Header followed by one or more objects.  When applied to the ICMP
+   Extended Echo Request message, the ICMP Extension Structure MUST
+   contain exactly one instance of the Interface Identification Object
+   (see Section 2.1).
