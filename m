@@ -2,97 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 601A42BA95B
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 12:41:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 895302BA99D
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 12:54:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727956AbgKTLk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 06:40:29 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.183]:55888 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726541AbgKTLk3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 06:40:29 -0500
-X-Greylist: delayed 485 seconds by postgrey-1.27 at vger.kernel.org; Fri, 20 Nov 2020 06:40:28 EST
-Received: from dispatch1-us1.ppe-hosted.com (localhost.localdomain [127.0.0.1])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 7912521B71A
-        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 11:32:23 +0000 (UTC)
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.144])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 056172006F;
-        Fri, 20 Nov 2020 11:32:23 +0000 (UTC)
-Received: from us4-mdac16-49.at1.mdlocal (unknown [10.110.50.132])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 03D40800A4;
-        Fri, 20 Nov 2020 11:32:23 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.102])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 98FBA4006F;
-        Fri, 20 Nov 2020 11:32:22 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 561B06C0055;
-        Fri, 20 Nov 2020 11:32:22 +0000 (UTC)
-Received: from mh-desktop (10.17.20.62) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 20 Nov
- 2020 11:32:16 +0000
-Date:   Fri, 20 Nov 2020 11:32:07 +0000
-From:   Martin Habets <mhabets@solarflare.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Edward Cree <ecree@solarflare.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>
-Subject: [PATCH net] MAINTAINERS: Change Solarflare maintainers
-Message-ID: <20201120113207.GA1605547@mh-desktop>
-Mail-Followup-To: Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Edward Cree <ecree@solarflare.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-X-Originating-IP: [10.17.20.62]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25800.003
-X-TM-AS-Result: No-4.722800-8.000000-10
-X-TMASE-MatchedRID: qHyM7pCobyHezO9WekFnOHCO70QAsBdCeik/fzJr6ax2V7JNjG7XFDBX
-        Xb/qS263rdoLblq9S5pu+xX/NyzonEfX0Ayg3UN3yZHnIMmQ+DhJaD67iKvY0x3RY4pGTCyHie3
-        MY7Xv0pg2om5FtUobJX8mA3sDDq0AcWlAkEA3e4Nq8/xv2Um1avoLR4+zsDTtEiT56ZiIPauemT
-        ArggdWtqvCbzbsIRLQj7obrUs1KUaGqVWpjnbMDU+7pnt+3ihRxw1z7whTrMu+bT2iPoR396wa8
-        kF5El6Hk2pitPhs16XEetOAikVNK2jj9C2nJxADTkAgCH67EbmdzWPzySgJGu53VB1DJl7uftwZ
-        3X11IV0=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10-4.722800-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25800.003
-X-MDID: 1605871943-9EIPI0wYj1CS
+        id S1726559AbgKTLxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 06:53:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36226 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725809AbgKTLxw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 06:53:52 -0500
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E029C0613CF;
+        Fri, 20 Nov 2020 03:53:52 -0800 (PST)
+Received: by mail-pg1-x544.google.com with SMTP id 62so7087349pgg.12;
+        Fri, 20 Nov 2020 03:53:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=fTyws4Wcb8JbJ0XNofEOfF91urRPW0CoPidlACaoz7U=;
+        b=D7H/6ge4iO+I7BL0bZUHJ1rNLYXA3vNFtQHbUev1Zxkwiz25SlE7lrzhPqzrqYKh4+
+         kvkiJUoYaNoAjpAGTR4lbeg2xdSYyw1HSk8L7NnF1GYHtyUZmtXijdlvSu/RtrQWXkGh
+         sU+5unlzZuxnmL0343wpnPa5TkRvftH6OXSb8XJLSzrQ64XaAVCe8ROjfhtA+UHvoLsG
+         Y0vqwtQoiCV1akveocp6VeIEkxExyKa/4ZJAX/G8KuIX+jU7O0TDDOlvwgZ/KYFYpBIE
+         eTTQEU8Ze9W+HvT97HowEATrY6elejEIDbEsnD6jim9BiDA9JRS/Mnldtekuyn5ZYJKV
+         L8Sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=fTyws4Wcb8JbJ0XNofEOfF91urRPW0CoPidlACaoz7U=;
+        b=IZS4ABtREusNGOuZCiKqtOb8CldOlHVNMOAigpdoECNgMWllqXuZfJiCrbG4vpN/hC
+         XtEaYXWWo63hImLUAfBbNNMSOPs8xizsTpuQjaFGl+5pCT8gDlUtpdK+v+vmi5hX45Iv
+         +Zx2PHTn29vW+Fo56FtNZObXywH1dsy2u75hp0vMz25vSN4EqnaZg7RPMV5jQr12nOUv
+         uhdIhdC2O+6JWBOnVStWyZJzp1hzz1iI7l/fmG863DyQpcb9tySQ8YMm7Zt2q4zW7ozo
+         9TbzZW0KkHaS+AIpWaDicJNwWBFpy4kCSsirWHhzQZsN0Tvg32q8CcUX5j4ObcduCNXQ
+         IIdQ==
+X-Gm-Message-State: AOAM532nHC1Wi/5WB/cCUWpumf01u//B4eDlFV0VSp0zzgDnBwR663cV
+        k4miibV7fMQz6fqPK49zohK+PsA19CsMqyzEucQ=
+X-Google-Smtp-Source: ABdhPJx06t1DqEmP6ElG5P45hXR8UNJ3PeAPO2bEgLkM9yDPDgzcWDEH50z7gF2UFVaqxy6BMzjJuQ==
+X-Received: by 2002:a17:90a:f0f:: with SMTP id 15mr9865390pjy.127.1605873231683;
+        Fri, 20 Nov 2020 03:53:51 -0800 (PST)
+Received: from localhost.localdomain ([192.55.54.40])
+        by smtp.gmail.com with ESMTPSA id k25sm3349155pfi.42.2020.11.20.03.53.48
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 20 Nov 2020 03:53:51 -0800 (PST)
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com
+Cc:     alardam@gmail.com, bpf@vger.kernel.org
+Subject: [PATCH bpf] xsk: fix umem cleanup bug at socket destruct
+Date:   Fri, 20 Nov 2020 12:53:39 +0100
+Message-Id: <1605873219-21629-1-git-send-email-magnus.karlsson@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Email from solarflare.com will stop working. Update the maintainers.
-A replacement for linux-net-drivers@solarflare.com is not working yet,
-for now remove it.
+From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Signed-off-by: Martin Habets <mhabets@solarflare.com>
-Signed-off-by: Edward Cree <ecree@solarflare.com>
+Fix a bug that is triggered when a partially setup socket is
+destroyed. For a fully setup socket, a socket that has been bound to a
+device, the cleanup of the umem is performed at the end of the buffer
+pool's cleanup work queue item. This has to be performed in a work
+queue, and not in RCU cleanup, as it is doing a vunmap that cannot
+execute in interrupt context. However, when a socket has only been
+partially set up so that a umem has been created but the buffer pool
+has not, the code erroneously directly calls the umem cleanup function
+instead of using a work queue, and this leads to a BUG_ON() in
+vunmap().
+
+As there in this case is no buffer pool, we cannot use its work queue,
+so we need to introduce a work queue for the umem and schedule this for
+the cleanup. So in the case there is no pool, we are going to use the
+umem's own work queue to schedule the cleanup. But if there is a
+pool, the cleanup of the umem is still being performed by the pool's
+work queue, as it is important that the umem is cleaned up after the
+pool.
+
+Fixes: e5e1a4bc916d ("xsk: Fix possible memory leak at socket close")
+Reported-by: Marek Majtyka <marekx.majtyka@intel.com>
+Tested-by: Marek Majtyka <marekx.majtyka@intel.com>
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- MAINTAINERS |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ include/net/xdp_sock.h  |  1 +
+ net/xdp/xdp_umem.c      | 19 ++++++++++++++++---
+ net/xdp/xdp_umem.h      |  2 +-
+ net/xdp/xsk.c           |  2 +-
+ net/xdp/xsk_buff_pool.c |  2 +-
+ 5 files changed, 20 insertions(+), 6 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 8cb1aae96bdf..72eb0525c88f 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -15790,9 +15790,8 @@ F:	drivers/slimbus/
- F:	include/linux/slimbus.h
+diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
+index 1a9559c..4f4e93b 100644
+--- a/include/net/xdp_sock.h
++++ b/include/net/xdp_sock.h
+@@ -31,6 +31,7 @@ struct xdp_umem {
+ 	struct page **pgs;
+ 	int id;
+ 	struct list_head xsk_dma_list;
++	struct work_struct work;
+ };
  
- SFC NETWORK DRIVER
--M:	Solarflare linux maintainers <linux-net-drivers@solarflare.com>
--M:	Edward Cree <ecree@solarflare.com>
--M:	Martin Habets <mhabets@solarflare.com>
-+M:	Edward Cree <ecree.xilinx@gmail.com>
-+M:	Martin Habets <habetsm.xilinx@gmail.com>
- L:	netdev@vger.kernel.org
- S:	Supported
- F:	drivers/net/ethernet/sfc/
+ struct xsk_map {
+diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
+index 56d052b..56a28a6 100644
+--- a/net/xdp/xdp_umem.c
++++ b/net/xdp/xdp_umem.c
+@@ -66,18 +66,31 @@ static void xdp_umem_release(struct xdp_umem *umem)
+ 	kfree(umem);
+ }
+ 
++static void xdp_umem_release_deferred(struct work_struct *work)
++{
++	struct xdp_umem *umem = container_of(work, struct xdp_umem, work);
++
++	xdp_umem_release(umem);
++}
++
+ void xdp_get_umem(struct xdp_umem *umem)
+ {
+ 	refcount_inc(&umem->users);
+ }
+ 
+-void xdp_put_umem(struct xdp_umem *umem)
++void xdp_put_umem(struct xdp_umem *umem, bool defer_cleanup)
+ {
+ 	if (!umem)
+ 		return;
+ 
+-	if (refcount_dec_and_test(&umem->users))
+-		xdp_umem_release(umem);
++	if (refcount_dec_and_test(&umem->users)) {
++		if (defer_cleanup) {
++			INIT_WORK(&umem->work, xdp_umem_release_deferred);
++			schedule_work(&umem->work);
++		} else {
++			xdp_umem_release(umem);
++		}
++	}
+ }
+ 
+ static int xdp_umem_pin_pages(struct xdp_umem *umem, unsigned long address)
+diff --git a/net/xdp/xdp_umem.h b/net/xdp/xdp_umem.h
+index 181fdda..aa9fe27 100644
+--- a/net/xdp/xdp_umem.h
++++ b/net/xdp/xdp_umem.h
+@@ -9,7 +9,7 @@
+ #include <net/xdp_sock_drv.h>
+ 
+ void xdp_get_umem(struct xdp_umem *umem);
+-void xdp_put_umem(struct xdp_umem *umem);
++void xdp_put_umem(struct xdp_umem *umem, bool defer_cleanup);
+ struct xdp_umem *xdp_umem_create(struct xdp_umem_reg *mr);
+ 
+ #endif /* XDP_UMEM_H_ */
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index cfbec39..5a6cdf7 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -1147,7 +1147,7 @@ static void xsk_destruct(struct sock *sk)
+ 		return;
+ 
+ 	if (!xp_put_pool(xs->pool))
+-		xdp_put_umem(xs->umem);
++		xdp_put_umem(xs->umem, !xs->pool);
+ 
+ 	sk_refcnt_debug_dec(sk);
+ }
+diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+index 8a3bf4e..3c5a142 100644
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -242,7 +242,7 @@ static void xp_release_deferred(struct work_struct *work)
+ 		pool->cq = NULL;
+ 	}
+ 
+-	xdp_put_umem(pool->umem);
++	xdp_put_umem(pool->umem, false);
+ 	xp_destroy(pool);
+ }
+ 
+-- 
+2.7.4
+
