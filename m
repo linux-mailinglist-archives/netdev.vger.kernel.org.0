@@ -2,169 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B7C72BAA80
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 13:52:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC82A2BAAA7
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 14:00:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727902AbgKTMtv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 07:49:51 -0500
-Received: from correo.us.es ([193.147.175.20]:38078 "EHLO mail.us.es"
+        id S1728076AbgKTM6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 07:58:37 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38988 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727053AbgKTMtu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Nov 2020 07:49:50 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 7F4FF18D008
-        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 13:49:48 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 72B04FC5E5
-        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 13:49:48 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 67E4FFC5E0; Fri, 20 Nov 2020 13:49:48 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 307E8DA73F;
-        Fri, 20 Nov 2020 13:49:46 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Fri, 20 Nov 2020 13:49:46 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1727653AbgKTM6g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Nov 2020 07:58:36 -0500
+Received: from linux-8ccs (p3ee2c6e9.dip0.t-ipconnect.de [62.226.198.233])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPSA id D2B1D4265A5A;
-        Fri, 20 Nov 2020 13:49:45 +0100 (CET)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        fw@strlen.de, razor@blackwall.org, jeremy@azazel.net,
-        tobias@waldekranz.com
-Subject: [PATCH net-next,v5 9/9] selftests: netfilter: flowtable bridge and VLAN support
-Date:   Fri, 20 Nov 2020 13:49:21 +0100
-Message-Id: <20201120124921.32172-10-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201120124921.32172-1-pablo@netfilter.org>
-References: <20201120124921.32172-1-pablo@netfilter.org>
+        by mail.kernel.org (Postfix) with ESMTPSA id 716612224C;
+        Fri, 20 Nov 2020 12:58:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605877115;
+        bh=pJax2K+i/Muhgm/YCZKN1EDGSzLusjUdKG89sWsR/H8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=reAmGndxw3FoA+oBZzcacsxfSRvTBRjtGaDZ7HV1lJVgTQIboc5Q7IUv2KZrcyPXj
+         dRQS4LDw1dI/zQaCkRxv2zPevEjtqK3e/KwpuWpcqVR8xwP/DzmDUP0iax86aQstw4
+         LSYSfUc/5H3ynbxn2pZwsi2+3GY/Whja0wZreH1g=
+Date:   Fri, 20 Nov 2020 13:58:30 +0100
+From:   Jessica Yu <jeyu@kernel.org>
+To:     Andrii Nakryiko <andrii@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, kernel-team@fb.com,
+        Bruce Allan <bruce.w.allan@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: Re: [PATCH bpf-next 2/2] bpf: sanitize BTF data pointer after module
+ is loaded
+Message-ID: <20201120125829.GA7989@linux-8ccs>
+References: <20201119182600.1496862-1-andrii@kernel.org>
+ <20201119182600.1496862-2-andrii@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20201119182600.1496862-2-andrii@kernel.org>
+X-OS:   Linux linux-8ccs 4.12.14-lp150.12.61-default x86_64
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds two new tests to cover bridge and VLAN support:
++++ Andrii Nakryiko [19/11/20 10:26 -0800]:
+>Given .BTF section is not allocatable, it will get trimmed after module is
+>loaded. BPF system handles that properly by creating an independent copy of
+>data. But prevent any accidental misused by resetting the pointer to BTF data.
+>
+>Suggested-by: Jessica Yu <jeyu@kernel.org>
+>Fixes: 36e68442d1af ("bpf: Load and verify kernel module BTFs")
+>Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 
-- Add a bridge device to the Router1 (nsr1) container and attach the
-  veth0 device to the bridge. Set the IP address to the bridge device
-  to exercise the bridge forwarding path.
+Thanks, Andrii!
 
-- Add VLAN encapsulation between to the bridge device in the Router1 and
-  one of the sender containers (ns1).
+Acked-by: Jessica Yu <jeyu@kernel.org>
 
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
-v5: no changes.
-
- .../selftests/netfilter/nft_flowtable.sh      | 82 +++++++++++++++++++
- 1 file changed, 82 insertions(+)
-
-diff --git a/tools/testing/selftests/netfilter/nft_flowtable.sh b/tools/testing/selftests/netfilter/nft_flowtable.sh
-index 431296c0f91c..427d94816f2d 100755
---- a/tools/testing/selftests/netfilter/nft_flowtable.sh
-+++ b/tools/testing/selftests/netfilter/nft_flowtable.sh
-@@ -371,6 +371,88 @@ else
- 	ip netns exec nsr1 nft list ruleset
- fi
- 
-+# Another test:
-+# Add bridge interface br0 to Router1, with NAT enabled.
-+ip -net nsr1 link add name br0 type bridge
-+ip -net nsr1 addr flush dev veth0
-+ip -net nsr1 link set up dev veth0
-+ip -net nsr1 link set veth0 master br0
-+ip -net nsr1 addr add 10.0.1.1/24 dev br0
-+ip -net nsr1 addr add dead:1::1/64 dev br0
-+ip -net nsr1 link set up dev br0
-+
-+ip netns exec nsr1 sysctl net.ipv4.conf.br0.forwarding=1 > /dev/null
-+
-+# br0 with NAT enabled.
-+ip netns exec nsr1 nft -f - <<EOF
-+flush table ip nat
-+table ip nat {
-+   chain prerouting {
-+      type nat hook prerouting priority 0; policy accept;
-+      meta iif "br0" ip daddr 10.6.6.6 tcp dport 1666 counter dnat ip to 10.0.2.99:12345
-+   }
-+
-+   chain postrouting {
-+      type nat hook postrouting priority 0; policy accept;
-+      meta oifname "veth1" counter masquerade
-+   }
-+}
-+EOF
-+
-+if test_tcp_forwarding_nat ns1 ns2; then
-+	echo "PASS: flow offloaded for ns1/ns2 with bridge NAT"
-+else
-+	echo "FAIL: flow offload for ns1/ns2 with bridge NAT" 1>&2
-+	ip netns exec nsr1 nft list ruleset
-+	ret=1
-+fi
-+
-+# Another test:
-+# Add bridge interface br0 to Router1, with NAT and VLAN.
-+ip -net nsr1 link set veth0 nomaster
-+ip -net nsr1 link set down dev veth0
-+ip -net nsr1 link add link veth0 name veth0.10 type vlan id 10
-+ip -net nsr1 link set up dev veth0
-+ip -net nsr1 link set up dev veth0.10
-+ip -net nsr1 link set veth0.10 master br0
-+
-+ip -net ns1 addr flush dev eth0
-+ip -net ns1 link add link eth0 name eth0.10 type vlan id 10
-+ip -net ns1 link set eth0 up
-+ip -net ns1 link set eth0.10 up
-+ip -net ns1 addr add 10.0.1.99/24 dev eth0.10
-+ip -net ns1 route add default via 10.0.1.1
-+ip -net ns1 addr add dead:1::99/64 dev eth0.10
-+
-+if test_tcp_forwarding_nat ns1 ns2; then
-+	echo "PASS: flow offloaded for ns1/ns2 with bridge NAT and VLAN"
-+else
-+	echo "FAIL: flow offload for ns1/ns2 with bridge NAT and VLAN" 1>&2
-+	ip netns exec nsr1 nft list ruleset
-+	ret=1
-+fi
-+
-+# restore test topology (remove bridge and VLAN)
-+ip -net nsr1 link set veth0 nomaster
-+ip -net nsr1 link set veth0 down
-+ip -net nsr1 link set veth0.10 down
-+ip -net nsr1 link delete veth0.10 type vlan
-+ip -net nsr1 link delete br0 type bridge
-+ip -net ns1 addr flush dev eth0.10
-+ip -net ns1 link set eth0.10 down
-+ip -net ns1 link set eth0 down
-+ip -net ns1 link delete eth0.10 type vlan
-+
-+# restore address in ns1 and nsr1
-+ip -net ns1 link set eth0 up
-+ip -net ns1 addr add 10.0.1.99/24 dev eth0
-+ip -net ns1 route add default via 10.0.1.1
-+ip -net ns1 addr add dead:1::99/64 dev eth0
-+ip -net ns1 route add default via dead:1::1
-+ip -net nsr1 addr add 10.0.1.1/24 dev veth0
-+ip -net nsr1 addr add dead:1::1/64 dev veth0
-+ip -net nsr1 link set up dev veth0
-+
- KEY_SHA="0x"$(ps -xaf | sha1sum | cut -d " " -f 1)
- KEY_AES="0x"$(ps -xaf | md5sum | cut -d " " -f 1)
- SPI1=$RANDOM
--- 
-2.20.1
-
+>---
+> kernel/module.c | 5 +++++
+> 1 file changed, 5 insertions(+)
+>
+>diff --git a/kernel/module.c b/kernel/module.c
+>index f2996b02ab2e..18f259d61d14 100644
+>--- a/kernel/module.c
+>+++ b/kernel/module.c
+>@@ -3709,6 +3709,11 @@ static noinline int do_init_module(struct module *mod)
+> 	mod->init_layout.ro_size = 0;
+> 	mod->init_layout.ro_after_init_size = 0;
+> 	mod->init_layout.text_size = 0;
+>+#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
+>+	/* .BTF is not SHF_ALLOC and will get removed, so sanitize pointer */
+>+	mod->btf_data = NULL;
+>+	mod->btf_data_size = 0;
+>+#endif
+> 	/*
+> 	 * We want to free module_init, but be aware that kallsyms may be
+> 	 * walking this with preempt disabled.  In all the failure paths, we
+>-- 
+>2.24.1
+>
