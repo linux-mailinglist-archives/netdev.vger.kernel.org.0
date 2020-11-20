@@ -2,180 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECAE22BAA0B
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 13:26:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38EC42BAA89
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 13:52:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727927AbgKTMYg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 07:24:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40966 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727846AbgKTMYf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 07:24:35 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AC7FC0613CF
-        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 04:24:35 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1kg5Sk-0007Sv-5p; Fri, 20 Nov 2020 13:24:26 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:9503:727f:64a0:8540] (2a03-f580-87bc-d400-9503-727f-64a0-8540.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:9503:727f:64a0:8540])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 793E5597926;
-        Fri, 20 Nov 2020 12:24:24 +0000 (UTC)
-Subject: Re: [PATCH V5 5/5] can: flexcan: add CAN wakeup function for i.MX8QM
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>, robh+dt@kernel.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de
-Cc:     kernel@pengutronix.de, linux-imx@nxp.com,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20201106105627.31061-1-qiangqing.zhang@nxp.com>
- <20201106105627.31061-6-qiangqing.zhang@nxp.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <f88bfd4e-1672-7917-48ce-754a95a6c5ab@pengutronix.de>
-Date:   Fri, 20 Nov 2020 13:24:21 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1728255AbgKTMuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 07:50:04 -0500
+Received: from correo.us.es ([193.147.175.20]:37906 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726586AbgKTMtr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Nov 2020 07:49:47 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 66C8418CE88
+        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 13:49:42 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 4FD3DFC5EE
+        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 13:49:42 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 4520DDA73F; Fri, 20 Nov 2020 13:49:42 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
+        autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id EF2BBFC5E6;
+        Fri, 20 Nov 2020 13:49:39 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Fri, 20 Nov 2020 13:49:39 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from localhost.localdomain (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPSA id A513C4265A5A;
+        Fri, 20 Nov 2020 13:49:39 +0100 (CET)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        fw@strlen.de, razor@blackwall.org, jeremy@azazel.net,
+        tobias@waldekranz.com
+Subject: [PATCH net-next,v5 0/9] netfilter: flowtable bridge and vlan enhancements
+Date:   Fri, 20 Nov 2020 13:49:12 +0100
+Message-Id: <20201120124921.32172-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20201106105627.31061-6-qiangqing.zhang@nxp.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="IlKLrQ2yFtXGaAxw5IIQAzsNhWI3ATTnm"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---IlKLrQ2yFtXGaAxw5IIQAzsNhWI3ATTnm
-Content-Type: multipart/mixed; boundary="49ssAeLkBwYr8TB5XjVTxlUUl0NKIOp4d";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Joakim Zhang <qiangqing.zhang@nxp.com>, robh+dt@kernel.org,
- shawnguo@kernel.org, s.hauer@pengutronix.de
-Cc: kernel@pengutronix.de, linux-imx@nxp.com, linux-can@vger.kernel.org,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-ID: <f88bfd4e-1672-7917-48ce-754a95a6c5ab@pengutronix.de>
-Subject: Re: [PATCH V5 5/5] can: flexcan: add CAN wakeup function for i.MX8QM
-References: <20201106105627.31061-1-qiangqing.zhang@nxp.com>
- <20201106105627.31061-6-qiangqing.zhang@nxp.com>
-In-Reply-To: <20201106105627.31061-6-qiangqing.zhang@nxp.com>
+Hi,
 
---49ssAeLkBwYr8TB5XjVTxlUUl0NKIOp4d
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+The following patchset augments the Netfilter flowtable fastpath to
+support for network topologies that combine IP forwarding, bridge and
+VLAN devices.
 
-On 11/6/20 11:56 AM, Joakim Zhang wrote:
-> The System Controller Firmware (SCFW) is a low-level system function
-> which runs on a dedicated Cortex-M core to provide power, clock, and
-> resource management. It exists on some i.MX8 processors. e.g. i.MX8QM
-> (QM, QP), and i.MX8QX (QXP, DX). SCU driver manages the IPC interface
-> between host CPU and the SCU firmware running on M4.
->=20
-> For i.MX8QM, stop mode request is controlled by System Controller Unit(=
-SCU)
-> firmware, this patch introduces FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW quir=
-k
-> for this function.
->=20
-> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+This v5 includes updates for:
 
-Who is upstreaming this?
+- Patch #2: fix incorrect xmit type in IPv6 path, per Florian Westphal.
+- Patch #3: fix possible off by one in dev_fill_forward_path() stack logic,
+            per Florian Westphal.
+- Patch #7: add a note to patch description to specify that FDB topology
+            updates are not supported at this stage, per Jakub Kicinski.
 
-Marc
+A typical scenario that can benefit from this infrastructure is composed
+of several VMs connected to bridge ports where the bridge master device
+'br0' has an IP address. A DHCP server is also assumed to be running to
+provide connectivity to the VMs. The VMs reach the Internet through
+'br0' as default gateway, which makes the packet enter the IP forwarding
+path. Then, netfilter is used to NAT the packets before they leave
+through the wan device.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+Something like this:
 
+                       fast path
+                .------------------------.
+               /                          \
+               |           IP forwarding   |
+               |          /             \  .
+               |       br0               eth0
+               .       / \
+               -- veth1  veth2
+                   .
+                   .
+                   .
+                 eth0
+           ab:cd:ef:ab:cd:ef
+                  VM
 
---49ssAeLkBwYr8TB5XjVTxlUUl0NKIOp4d--
+The idea is to accelerate forwarding by building a fast path that takes
+packets from the ingress path of the bridge port and place them in the
+egress path of the wan device (and vice versa). Hence, skipping the
+classic bridge and IP stack paths.
 
---IlKLrQ2yFtXGaAxw5IIQAzsNhWI3ATTnm
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+This patchset is composed of:
 
------BEGIN PGP SIGNATURE-----
+Patch #1 adds a placeholder for the hash calculation, instead of using
+         the dir field.
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+3tXUACgkQqclaivrt
-76nKrAf+Kl81yJgWhAlaF5I0irbmzhbYp0jD+IVD/2hhIt8B5HsLDuPITjS+B1xA
-gefmLv8GDY1EYHR2UPbohouTMmkz87jLN/dj43ahp69GELCBjjQFUFPDvaNAeCHp
-B6rA1PtgeK+5W4+xgIy7uYuiUVV4KFNCPXEKRA3tM7E6EBcWzXcTr7qyY53h57Fq
-OeT5WpKIarFJV5AhLTaM6F0IwmjrcC4UHnHvqcP+ft1RrSnai2RFpLxcEo12F48F
-Ec1hqgTDL4oGbtBFXfX7DDcLkXahGa6fiPNSb82z3ZouFJzVS5hTaQzC8vi7uphr
-D9rfU+LIT0PhKtkLpqdkZojuNXB1cw==
-=snJ3
------END PGP SIGNATURE-----
+Patch #2 adds the transmit path type field to the flow tuple. Two transmit
+         paths are supported so far: the neighbour and the xfrm transmit
+         paths. This patch comes in preparation to add a new direct ethernet
+         transmit path (see patch #7).
 
---IlKLrQ2yFtXGaAxw5IIQAzsNhWI3ATTnm--
+Patch #3 adds dev_fill_forward_path() and .ndo_fill_forward_path() to
+         netdev_ops. This new function describes the list of netdevice hops
+         to reach a given destination MAC address in the local network topology,
+         e.g.
+
+                           IP forwarding
+                          /             \
+                       br0              eth0
+                       / \
+                   veth1 veth2
+                    .
+                    .
+                    .
+                   eth0
+             ab:cd:ef:ab:cd:ef
+
+          where veth1 and veth2 are bridge ports and eth0 provides Internet
+          connectivity. eth0 is the interface in the VM which is connected to
+          the veth1 bridge port. Then, for packets going to br0 whose
+          destination MAC address is ab:cd:ef:ab:cd:ef, dev_fill_forward_path()
+          provides the following path: br0 -> veth1.
+
+Patch #4 adds .ndo_fill_forward_path for VLAN devices, which provides the next
+         device hop via vlan->real_dev. This annotates the VLAN id and protocol.
+         This is useful to know what VLAN headers are expected from the ingress
+         device. This also provides information regarding the VLAN headers
+         to be pushed in the egress path.
+
+Patch #5 adds .ndo_fill_forward_path for bridge devices, which allows to make
+         lookups to the FDB to locate the next device hop (bridge port) in the
+         forwarding path.
+
+Patch #6 updates the flowtable to use the dev_fill_forward_path()
+         infrastructure to obtain the ingress device in the fastpath.
+
+Patch #7 updates the flowtable to use dev_fill_forward_path() to obtain the
+         egress device in the forwarding path. This also adds the direct
+         ethernet transmit path, which pushes the ethernet header to the
+         packet and send it through dev_queue_xmit(). This patch adds
+         support for the bridge, so bridge ports use this direct xmit path.
+
+Patch #8 adds ingress VLAN support (up to 2 VLAN tags, QinQ). The VLAN
+         information is also provided by dev_fill_forward_path(). Store the
+         VLAN id and protocol in the flow tuple for hash lookups. The VLAN
+         support in the xmit path is achieved by annotating the first vlan
+         device found in the xmit path and by calling dev_hard_header()
+         (previous patch #7) before dev_queue_xmit().
+
+Patch #9 extends nft_flowtable.sh selftest: This is adding a test to
+         cover bridge and vlan support coming in this patchset.
+
+= Performance numbers
+
+My testbed environment consists of three containers:
+
+  192.168.20.2     .20.1     .10.1   10.141.10.2
+         veth0       veth0 veth1      veth0
+        ns1 <---------> nsr1 <--------> ns2
+                            SNAT
+     iperf -c                          iperf -s
+
+where nsr1 is used for forwarding. There is a bridge device br0 in nsr1,
+veth0 is a port of br0. SNAT is performed on the veth1 device of nsr1.
+
+- ns2 runs iperf -s
+- ns1 runs iperf -c 10.141.10.2 -n 100G
+
+My results are:
+
+- Baseline (no flowtable, classic forwarding path + netfilter): ~16 Gbit/s
+- Fastpath (with flowtable, this patchset): ~25 Gbit/s
+
+This is an improvement of ~50% compared to baseline.
+
+Please, apply. Thank you.
+
+Pablo Neira Ayuso (9):
+  netfilter: flowtable: add hash offset field to tuple
+  netfilter: flowtable: add xmit path types
+  net: resolve forwarding path from virtual netdevice and HW destination address
+  net: 8021q: resolve forwarding path for vlan devices
+  bridge: resolve forwarding path for bridge devices
+  netfilter: flowtable: use dev_fill_forward_path() to obtain ingress device
+  netfilter: flowtable: use dev_fill_forward_path() to obtain egress device
+  netfilter: flowtable: add vlan support
+  selftests: netfilter: flowtable bridge and VLAN support
+
+ include/linux/netdevice.h                     |  35 +++
+ include/net/netfilter/nf_flow_table.h         |  43 +++-
+ net/8021q/vlan_dev.c                          |  15 ++
+ net/bridge/br_device.c                        |  27 +++
+ net/core/dev.c                                |  46 ++++
+ net/netfilter/nf_flow_table_core.c            |  51 +++--
+ net/netfilter/nf_flow_table_ip.c              | 200 ++++++++++++++----
+ net/netfilter/nft_flow_offload.c              | 159 +++++++++++++-
+ .../selftests/netfilter/nft_flowtable.sh      |  82 +++++++
+ 9 files changed, 598 insertions(+), 60 deletions(-)
+
+--
+2.20.1
+
