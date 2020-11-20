@@ -2,127 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EBBA2BA7D8
-	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 11:59:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F03CF2BA8C1
+	for <lists+netdev@lfdr.de>; Fri, 20 Nov 2020 12:14:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725942AbgKTK7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 05:59:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56048 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725789AbgKTK7T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 05:59:19 -0500
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C003C0613CF
-        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 02:59:19 -0800 (PST)
-Received: by mail-lj1-x22f.google.com with SMTP id x9so9591040ljc.7
-        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 02:59:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=VE3SKMnKAFGE067VakEXuJ8H9MwGwlsemZ4gpXwcpHI=;
-        b=hOJ7S3VTOuFmgUr9f+dT4L4zn/tWYiucQplGT4vxNqAQxtjYhca2QPRrNlJUHfkGbT
-         nH/ZFCkF988Ai7c6yHSKCcvJwCCFxfyv1YeSqtfF07nvvWKLkiU5ukOPWZRV7q9/kO+7
-         o9SYMmXmIwBtndcXllA3L2LE7tnPijX4A+2GtKVyanThQ1jHQUf0x8IozRMJy0Pqyq/r
-         aYCHbzP1RrW46ISCZLuEizPVsmChgJZIGAzsffSv/g2+Cfy7gRhcPxgMJ0xojlmhnWYQ
-         vdhGkEvyo+Ka43Z3ydNyujZIZcKY9LFn5RdrtF4lVn/G4tqpxsQEqpxVGZ0s9uKBzriD
-         l7lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=VE3SKMnKAFGE067VakEXuJ8H9MwGwlsemZ4gpXwcpHI=;
-        b=ji3APWap3ovnRvpPmM6gG6SLm2C6hyz7sts3qggMOyuy59QUsmEIzPwVkqivALO+JP
-         2jHVUD/A1zvjwiOwommwbO+JNKxEnalll4lEIk0+rdGjPQHWbgZ3O9XlmPgLole36PQa
-         Vr6b4IJTzt78xvVJ/UjGNQKol1HuMxBS6nLxxlnKsmicwcOh/A1LxzCjsVhIrl9RvUQW
-         iDtEtdkG+qW0J4rdZ6rCIYR42MZXHUwsphhhwyn7S2U7qGrL2DEYUXfWPNBlz0DKjtMv
-         eCiwHytDFE4/pf8tclzt4eGNNK2ltkdD9AcSQb9ZInfM+chOsMxEPNf/Cng5slZ9l4AZ
-         M7aA==
-X-Gm-Message-State: AOAM53252en3Ax0M6PUy9bPA+d54LsXt1kjMNUyGA9+q2AKl0dYEiI7j
-        PvxLDeiNcVoqvopLxPKTo5zhnaVkwZ1BGI+z
-X-Google-Smtp-Source: ABdhPJzxNBVRuOSmrXTM7ICN6C7XrMyB/FroMhtdaC51kElsfjxb4NhyeKKncEuzZ6uSHUxObMykEQ==
-X-Received: by 2002:a2e:240e:: with SMTP id k14mr8216666ljk.332.1605869957788;
-        Fri, 20 Nov 2020 02:59:17 -0800 (PST)
-Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id r16sm304095lfi.121.2020.11.20.02.59.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Nov 2020 02:59:17 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Antoine Tenart <atenart@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: net: phy: Dealing with 88e1543 dual-port mode
-In-Reply-To: <20201120102538.GP1551@shell.armlinux.org.uk>
-References: <20201119152246.085514e1@bootlin.com> <20201119145500.GL1551@shell.armlinux.org.uk> <20201119162451.4c8d220d@bootlin.com> <87k0uh9dd0.fsf@waldekranz.com> <20201119231613.GN1551@shell.armlinux.org.uk> <87eekoanvj.fsf@waldekranz.com> <20201120103601.313a166b@bootlin.com> <20201120102538.GP1551@shell.armlinux.org.uk>
-Date:   Fri, 20 Nov 2020 11:59:16 +0100
-Message-ID: <8736149tvf.fsf@waldekranz.com>
+        id S1728666AbgKTLLN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 06:11:13 -0500
+Received: from mx2.suse.de ([195.135.220.15]:44812 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728196AbgKTLLM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Nov 2020 06:11:12 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1605870670; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=okS+uE4+yBQTM7gr9/lTXNCnQnbhp4qFP4cgEiZ30RY=;
+        b=KdkxFsr940NtcWXuxYcJ1rQdOqMyudA0sk8M9l9s5betLZguUYKLa9D+nMhYUEo14OjrUC
+        qNwxZOU6eUiif1JDiT0cfW2zVRGjlEqlZrIIuVq4dTidkXNzSeYg2d/wjnQ6CsYAfvUbPH
+        +XvtXs+AQ7uXmaJs2NDH4YVJvuCBnxI=
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id AA97AAF37;
+        Fri, 20 Nov 2020 11:11:10 +0000 (UTC)
+Subject: Re: [PATCH v2] brcmfmac: expose firmware config files through modinfo
+To:     Dmitry Osipenko <digetx@gmail.com>, matthias.bgg@kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>, hdegoede@redhat.com
+Cc:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Chung-Hsien Hsu <stanley.hsu@cypress.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Double Lo <double.lo@cypress.com>,
+        Frank Kao <frank.kao@cypress.com>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        "Gustavo A . R . Silva" <gustavo@embeddedor.com>,
+        netdev@vger.kernel.org,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Saravanan Shanmugham <saravanan.shanmugham@cypress.com>,
+        brcm80211-dev-list@cypress.com, linux-kernel@vger.kernel.org,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Amar Shankar <amsr@cypress.com>
+References: <20201120095233.19953-1-matthias.bgg@kernel.org>
+ <2ff4dcc3-6f99-a068-8989-4293d2013627@gmail.com>
+From:   Matthias Brugger <mbrugger@suse.com>
+Message-ID: <7e8e689a-9804-86fc-dd2c-f1622dd40476@suse.com>
+Date:   Fri, 20 Nov 2020 12:11:08 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <2ff4dcc3-6f99-a068-8989-4293d2013627@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 20, 2020 at 10:25, Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
-> On Fri, Nov 20, 2020 at 10:36:01AM +0100, Maxime Chevallier wrote:
->> So maybe we could be a bit more generic, with something along these lines :
->> 
->>     ethernet-phy@0 {
->>         ...
->> 
->>         mdi {
->>             port@0 {
->>                 media = "10baseT", "100baseT", "1000baseT";
->>                 pairs = <1>;
->> 	    };
->> 
->>             port@1 {
->>                 media = "1000baseX", "10gbaseR"
->>             };
->>         };
->>     };
 
-Yeah that looks even better. Though "pairs" is redundant if you can
-specify the list of supported link modes. I guess not specifying "media"
-should mean "use all modes supported by the PHY". And if, for example,
-media is set to 10-T+100-TX, that means that only two pairs will be
-used.
 
-> Don't forget that TP requires a minimum of two pairs. However, as
-> Andrew pointed out, we already have max-speed which can be used to
-> limit the speed below that which requires four pairs.
+On 20/11/2020 11:05, Dmitry Osipenko wrote:
+> 20.11.2020 12:52, matthias.bgg@kernel.org пишет:
+>> From: Matthias Brugger <mbrugger@suse.com>
+>>
+>> Apart from a firmware binary the chip needs a config file used by the
+>> FW. Add the config files to modinfo so that they can be read by
+>> userspace.
+>>
+>> Signed-off-by: Matthias Brugger <mbrugger@suse.com>
+>>
+>> ---
+>>
+>> Changes in v2:
+>> In comparison to first version [0] we use wildcards to enumerate the
+>> firmware configuration files. Wildcard support was added to dracut
+>> recently [1].
+>> [0] https://lore.kernel.org/linux-wireless/20200701153123.25602-1-matthias.bgg@kernel.org/
+>> [1] https://github.com/dracutdevs/dracut/pull/860
+>>
+>>   drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 9 +++++++++
+>>   1 file changed, 9 insertions(+)
+>>
+>> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>> index 99987a789e7e..dd6d287b1b00 100644
+>> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>> @@ -625,6 +625,15 @@ BRCMF_FW_DEF(4359, "brcmfmac4359-sdio");
+>>   BRCMF_FW_DEF(4373, "brcmfmac4373-sdio");
+>>   BRCMF_FW_DEF(43012, "brcmfmac43012-sdio");
+>>   
+>> +/* firmware config files */
+>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac4330-sdio.*.txt");
+>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43340-sdio.*.txt");
+>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43362-sdio.*.txt");
+>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43430a0-sdio.*.txt");
+>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43430-sdio.*.txt");
+>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac43455-sdio.*.txt");
+>> +MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac4356-pcie.*.txt");
+> 
+> This doesn't cover all hardware models. Note that the upstream
+> linux-firmware has files only for a few hardware models.
+> 
+> I suppose that the correct mask should be "brcm/brcmfmac*-sdio.*.txt".
+> 
 
-Maybe "max-speed" is how you solve this in the absense of explicit an
-MDI declaration? Because in the multi-port case, the setting could be
-different for the two ports, so you would source the information from
-the "media" property instead.
+We can use the two "brcm/brcmfmac*-sdio.*.txt" and "brcm/brcmfmac*-pcie.*.txt" 
+to also include firmware files for chips that don't have any config file in 
+linux-firmware. I'm indifferent to that, although I think we should make 
+incentivize to upstream firmware config files to linux-firmware.
 
-> I have untested patches that allow the 88x3310 to be reconfigured
-> between 10GBASE-R and 1000BASE-X depending on the SFP connected -
-> untested because the I2C pull-ups on the Macchiatobin boards I have
-> are way too strong and it results in SFP EEPROM corruption and/or
-> failure to read the EEPROM.
->
->> I also like the idea of having a way to express the "preferred" media,
->> although I wonder if that's something we want to include in DT or that
->> we would want to tweak at runtime, through ethtool for example.
->
-> I think preferred media should be configurable through ethtool -
-> which is preferred will be specific to the user's application.
-
-Yeah I half-regretted putting that in there right after I hit "send" :)
-It should definitely be configurable from ethtool.
-
-> However, there may be scope for DT to be able to specify the default
-> preferred media.
-
-This is where I was coming from. The vendor could potentially have more
-information on what the default should be. But I guess you could also
-argue that there is value in having Linux behave the same across all
-devices.
+Regards,
+Matthias
