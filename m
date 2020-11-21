@@ -2,160 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE40D2BBB2B
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 01:44:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AA022BBB81
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 02:27:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728186AbgKUAnY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 19:43:24 -0500
-Received: from mga07.intel.com ([134.134.136.100]:29746 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726200AbgKUAnY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Nov 2020 19:43:24 -0500
-IronPort-SDR: +6thAyWso02+oypOTXVt50M9HitBetJNM2aKipW5GJJJMbGiNZTSp4M8QuYQ5qz5eV2pF3XhHH
- FEw/gSwLXhGA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9811"; a="235707679"
-X-IronPort-AV: E=Sophos;i="5.78,357,1599548400"; 
-   d="scan'208";a="235707679"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Nov 2020 16:43:23 -0800
-IronPort-SDR: /ONQjlWyUnLeAqG2TQlam7sQ7RV3HTRJ7fjc0Up7Yp4DWLHOzFYH3EMyIPadIMJAdyYE88ePA+
- 7MHTM3YNbzZQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.78,357,1599548400"; 
-   d="scan'208";a="342225259"
-Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
-  by orsmga002.jf.intel.com with ESMTP; 20 Nov 2020 16:43:23 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 20 Nov 2020 16:43:22 -0800
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Fri, 20 Nov 2020 16:43:22 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.44) by
- edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.1713.5; Fri, 20 Nov 2020 16:43:22 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=miOk+uQFRLq8783LHXm4SDQBwpXGc/N8vWy1R36fJpp1XYYv1aPcIVyLQ4OvexfZh82tpkOuipx6qZKpYEM7BZFyx1YiBsmNmNjRvTkNW4BqPfxTVq7P2lrKc7kJImTEeVYhYvsnkmzU999qepjWOItXRAPmVOrYMkXEvoVnUt8wASYj99l071x0bomvKNSIiWOLvIPw4tKCpavu+l28VF2ODwfz9+j8yhfrx+p5hAjwrLBEU+dn6LdX31TuJfjy3SN0vdj2Dl2noVAomiwEjtbgDl3T+rvkMSd2LYphTOA+PP+OLSKNyRMI1kd0ZU9LSKFRLHgmh+falU4J1s9EJg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Zo+q5Io9eu/bauRUozsWxdkkcKriuehLXO6y0a+uP8o=;
- b=XcmZil2F6mJ50gsJzWnTlcNLcySCpBqGzIfgmVAB/gS4ztXzbsmUe/wlCXqIYAHh59ogcX15EOQmBOGT3XYHL4D0KCZ7K/tzX/0nI3Yl3w4TuA2XRBr4VTUsoOy2PZCc2T7jaVwnLXOCMrRo9NNV6aD3AVQxnOnBQtBE3eMaEQTuNUqnLWt6oz6U9UbPZgSTkCoNQQ1f64HzTxlNbVs9DnQ2Dst4HLknpbR1GfHQuihBN98MIrUWjVDo92ZRYNgzhO2ZCq+bv/vWartzD0joxem2hM/NBgZIu7SijbyyxAiiV9Dxtxet3uDIyAuE/IWJMqEt7DMzs6BQd6UjCoakMQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Zo+q5Io9eu/bauRUozsWxdkkcKriuehLXO6y0a+uP8o=;
- b=uz/0qHzXobj/s4CcXC980eFJX9YdCGaThnVuippR/I0rBu/ZGANvC7aJ1EY1iTRdK2khsiQu4RqRmmetmoqT5nhOUTWccsFbWHqUVC3Dc1LfXuNoihbqSxP1Y5FNxdXmwh81VGk4Rn+PxOWvt7D/mbIoubT3rPGoW/5bWvIBaF4=
-Received: from SN6PR11MB3229.namprd11.prod.outlook.com (2603:10b6:805:ba::28)
- by SN6PR11MB3471.namprd11.prod.outlook.com (2603:10b6:805:c1::26) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3564.28; Sat, 21 Nov
- 2020 00:43:21 +0000
-Received: from SN6PR11MB3229.namprd11.prod.outlook.com
- ([fe80::5c92:dd20:ec58:76da]) by SN6PR11MB3229.namprd11.prod.outlook.com
- ([fe80::5c92:dd20:ec58:76da%6]) with mapi id 15.20.3589.024; Sat, 21 Nov 2020
- 00:43:21 +0000
-From:   "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-To:     "alexander.duyck@gmail.com" <alexander.duyck@gmail.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "Brown, Aaron F" <aaron.f.brown@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Stillwell Jr, Paul M" <paul.m.stillwell.jr@intel.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>
-Subject: Re: [net-next v3 08/15] ice: don't always return an error for Get PHY
- Abilities AQ command
-Thread-Topic: [net-next v3 08/15] ice: don't always return an error for Get
- PHY Abilities AQ command
-Thread-Index: AQHWugZE1iBrm4pHyEadjuWdiQP1ZqnG1hCAgAr0gQA=
-Date:   Sat, 21 Nov 2020 00:43:21 +0000
-Message-ID: <9f91c1494edd47345bf5851d31ef19b2e77bd70d.camel@intel.com>
-References: <20201113214429.2131951-1-anthony.l.nguyen@intel.com>
-         <20201113214429.2131951-9-anthony.l.nguyen@intel.com>
-         <CAKgT0Uedphdr1RvdB_Zw5aAH-2CuudwGK8OenrvrQ1bE0XK-pQ@mail.gmail.com>
-In-Reply-To: <CAKgT0Uedphdr1RvdB_Zw5aAH-2CuudwGK8OenrvrQ1bE0XK-pQ@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Evolution 3.28.5 (3.28.5-3.fc28) 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [134.134.136.204]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f97e6f7f-6e17-460f-a52a-08d88db6726b
-x-ms-traffictypediagnostic: SN6PR11MB3471:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <SN6PR11MB3471D564340363C9223F38F0C6FE0@SN6PR11MB3471.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Rtg7Tr89g+0VSA5B+LsE3mv2q09q+OaH1KTD+PqJB9aJWx2aGfxbZKMNQc6ZoDm6u3d6A7MViOP5wyzV92QpT+ZcANaeA+PunpSb8ZkaXfUWNyYz5MROXcPq54MxrDiDWnIViMTk40MpoQaivobTInntkanYp4kYGvNpDEW8xNDVf+UYMm5qQI8evOGM95AuFYhn57K4IdoUGYpsJwfNWLWPn2oc3BdoFbFCT43tB5mqr0z/Snhf+LuYDlcHylf5Xkj0jjiSz6zSKB/dr3P31e0rw6LtsKKHG/pO2RuwUXkbQJMitxsSuNorldstDe7HEYc6ECWZtXWt7CTnyI3Q6L8X6k9hqx1m88OAk1XzwRBbCDQ3YE8n7HcwHNP++Hqf
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3229.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(39860400002)(346002)(396003)(376002)(136003)(64756008)(2906002)(66946007)(8676002)(66476007)(26005)(316002)(5660300002)(83380400001)(4001150100001)(186003)(54906003)(6506007)(53546011)(2616005)(66446008)(91956017)(36756003)(66556008)(6916009)(8936002)(6486002)(86362001)(6512007)(4326008)(76116006)(478600001)(71200400001)(99106002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: w5RzeD+dOlTSo7Fy/bzrarMfxNFdadUL1ml2yA4bTZhNTdckm4IfhSd4V2XDs665q/a/sb5KQAXVeS4LnqtBcQhAIr4aC7JJipeQLJbxlNqVYOtgUXgDbOpaz4II43ztxGjVnuCCF7q2oJyC55jx1wvJ5e0asu37ERrqFWIWTAf+PGacZIZvVf7Jf7buHa9DKQ3/FIItMrNrlwawJw+gLfvF66USKdXRcePII8pJP50hOradW5Y5waLcHwGoU/FM6s52PYFk3uCSchXExsGr09R4uVB7CR+AeEqqfpINg8GOzp+cYOMFblufxZKNwSyYxt6J0HfPfZbHXEMu8LjMpWUn2N1EtHV7GU4wkX8VnZLLBfyzoNUD7YfGmEcZwEXm+F9sHDSADAKukIGR7CQ0FL+N+gXrWlVemX4aWFhivZLLB/PbHtJ1tzMIkBKsvP5p56qJya8qLdFzGn4y0VHtTc2rZTy/8RYICB7EeRlt3sLYaKIv0y3+9WjwK7LSQuRaglkyufC2UBY3vsAlYv7DCVjx/kvX7TWP0SZ7mHe89BFA+b5IapGrLjYf994PdtQkzqRMKXNatkUK4tmPhg345fEI0uZJQCG+WZFzq26FALcOejFK3MZsglsQH/+f3VxwUyjkO8TkvzJOUp+fGqMI5XNlvjoq5L+GEM6E6HpEjeGoZJDi3krzKYqODCNWR0i0/sdKo9+O/rCJUlqZqvFb3fRzB2WBYhgJT808Os8APJfralilfilaj9Gtb3qwzq55mSpUvQa24Nhrq69EJAcXUzceN4EuenyigdkBdnV4Wd2hwrcwKHa9cFI2vOobjrHlfZefZUmIKs8GF0O2JhCwvz/86YP9DYNur5nq9tDypkZBNeuXnY+NS0VI/wJYR6+4oQMzrUMDlJYujYj81LJPiQ==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <BB1E0B3E8E52B944BA53787EBF6157DB@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1728905AbgKUB0R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 20:26:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49488 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725890AbgKUB0R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 20:26:17 -0500
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F1AC0613CF;
+        Fri, 20 Nov 2020 17:26:15 -0800 (PST)
+Received: by mail-ej1-x642.google.com with SMTP id bo9so9659019ejb.13;
+        Fri, 20 Nov 2020 17:26:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=EABbKjZEY14y+isUKqIGvWYP0FHXdvAjUi1vl8mqG8I=;
+        b=oNo/UV2Nyhili9xdPtSgxVwqM3i4HJYYvFnfrv1fDso3YH/b7effxNQSUxmYdrFW43
+         yTPWavrjOuv4CD6L/0Vyhg3mIcuC852SHhZbosEqzGg8oMX0JI8osbc2vSbWboxhrA0u
+         n4HMfjbIZ7P72GnErXDpS4h37FsxM4WppnPYWV/8LOpIX4ukG4cjL/C0E//i5A//gwRv
+         ghFSizc45aRgDNba9r89W+N/LPAn1WrWIt3PbNPPyUkEyw1Byzy3Dx2brgZ9YQXEtSUz
+         K6Oz130Q6xFWv/O5uDG8s1tImwHm7u7WMz7KCp+aWN7yBI+6GdLlslBQiIrF/WGylz6Z
+         fq7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EABbKjZEY14y+isUKqIGvWYP0FHXdvAjUi1vl8mqG8I=;
+        b=BTxCWIo7pcRLkp6iYjQjyA12BveaEtv+yNmdsWcNaBtedtl1TLGXka13uGyIWuh0t9
+         vTdAVrONvNWyJRx4wHjIQTsoW/Lqw/XTjo8SXf11qmy228TIfTQvqTlYk2exNGsan+of
+         CD7/EoDW7XYfsBurFzFLLux3ZfMIPlefl5NCALQK02FddNPbRqNeKnJahoTdPY82RS1v
+         8G2r6zaasLSxmJVILP+mboCUI4gKBFnERYumIHY0FM9y1fGbT8Q+qbD0xPAP8s6qaSK3
+         bGU+gljrvs6JZROkOEUihZfw2dxhk30vxkzC21/bRpzWpKX4eMLAghTZxHRf3xGBx5r1
+         xovw==
+X-Gm-Message-State: AOAM533jgN6G+WdkLtMs1hCvn2TIaaoPWIHe7RcQpn8bsI7sqA+Ht7ST
+        cg01fW7jPv0qN1UwjIqDgPc=
+X-Google-Smtp-Source: ABdhPJxskYu6oKv316/cMM881GPXN887ydYMVX2r0OdBpcIL+EPuzvrH0CR0Yi16TK/Z+ljAht21+g==
+X-Received: by 2002:a17:906:8c6:: with SMTP id o6mr33216875eje.230.1605921973916;
+        Fri, 20 Nov 2020 17:26:13 -0800 (PST)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id f19sm1724057ejk.116.2020.11.20.17.26.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Nov 2020 17:26:13 -0800 (PST)
+Date:   Sat, 21 Nov 2020 03:26:11 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tristram.Ha@microchip.com
+Cc:     ceggers@arri.de, kuba@kernel.org, andrew@lunn.ch,
+        richardcochran@gmail.com, robh+dt@kernel.org,
+        vivien.didelot@gmail.com, davem@davemloft.net,
+        kurt.kanzenbach@linutronix.de, george.mccollister@gmail.com,
+        marex@denx.de, helmut.grohne@intenta.de, pbarker@konsulko.com,
+        Codrin.Ciubotariu@microchip.com, Woojung.Huh@microchip.com,
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3 00/12] net: dsa: microchip: PTP support for
+ KSZ956x
+Message-ID: <20201121012611.r6h5zpd32pypczg3@skbuf>
+References: <20201118203013.5077-1-ceggers@arri.de>
+ <20201118234018.jltisnhjesddt6kf@skbuf>
+ <2452899.Bt8PnbAPR0@n95hx1g2>
+ <BYAPR11MB35582F880B533EB2EE0CDD1DECE00@BYAPR11MB3558.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3229.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f97e6f7f-6e17-460f-a52a-08d88db6726b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Nov 2020 00:43:21.4987
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: cvTJJMbRxMHuEGWJlXDtRymHr2zmKT/O7IMww8PNiQb+gAlMoo/8iRT7tkoEmlJ+dIykLiNcwsJMGmOmmY/7Q/s/4vGcE1keXxeSjdo0wcs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB3471
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BYAPR11MB35582F880B533EB2EE0CDD1DECE00@BYAPR11MB3558.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gRnJpLCAyMDIwLTExLTEzIGF0IDE3OjI1IC0wODAwLCBBbGV4YW5kZXIgRHV5Y2sgd3JvdGU6
-DQo+IE9uIEZyaSwgTm92IDEzLCAyMDIwIGF0IDE6NDkgUE0gVG9ueSBOZ3V5ZW4gPA0KPiBhbnRo
-b255Lmwubmd1eWVuQGludGVsLmNvbT4gd3JvdGU6DQo+ID4gDQo+ID4gRnJvbTogUGF1bCBNIFN0
-aWxsd2VsbCBKciA8cGF1bC5tLnN0aWxsd2VsbC5qckBpbnRlbC5jb20+DQo+ID4gDQo+ID4gVGhl
-cmUgYXJlIHRpbWVzIHdoZW4gdGhlIGRyaXZlciBzaG91bGRuJ3QgcmV0dXJuIGFuIGVycm9yIHdo
-ZW4gdGhlDQo+ID4gR2V0DQo+ID4gUEhZIGFiaWxpdGllcyBBUSBjb21tYW5kICgweDA2MDApIHJl
-dHVybnMgYW4gZXJyb3IuIEluc3RlYWQgdGhlDQo+ID4gZHJpdmVyDQo+ID4gc2hvdWxkIGxvZyB0
-aGF0IHRoZSBlcnJvciBvY2N1cnJlZCBhbmQgY29udGludWUgb24uIFRoaXMgYWxsb3dzIHRoZQ0K
-PiA+IGRyaXZlciB0byBsb2FkIGV2ZW4gdGhvdWdoIHRoZSBBUSBjb21tYW5kIGZhaWxlZC4gVGhl
-IHVzZXIgY2FuIHRoZW4NCj4gPiBsYXRlciBkZXRlcm1pbmUgdGhlIHJlYXNvbiBmb3IgdGhlIGZh
-aWx1cmUgYW5kIGNvcnJlY3QgaXQuDQo+ID4gDQo+ID4gU2lnbmVkLW9mZi1ieTogUGF1bCBNIFN0
-aWxsd2VsbCBKciA8cGF1bC5tLnN0aWxsd2VsbC5qckBpbnRlbC5jb20+DQo+ID4gVGVzdGVkLWJ5
-OiBBYXJvbiBCcm93biA8YWFyb24uZi5icm93bkBpbnRlbC5jb20+DQo+ID4gU2lnbmVkLW9mZi1i
-eTogVG9ueSBOZ3V5ZW4gPGFudGhvbnkubC5uZ3V5ZW5AaW50ZWwuY29tPg0KPiA+IC0tLQ0KPiA+
-ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9pbnRlbC9pY2UvaWNlX2NvbW1vbi5jIHwgMiArLQ0KPiA+
-ICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkNCj4gPiANCj4g
-PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvaW50ZWwvaWNlL2ljZV9jb21tb24u
-Yw0KPiA+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvaW50ZWwvaWNlL2ljZV9jb21tb24uYw0KPiA+
-IGluZGV4IDdkYjVmZDk3NzM2Ny4uM2M2MDA4MDhkMGRhIDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZl
-cnMvbmV0L2V0aGVybmV0L2ludGVsL2ljZS9pY2VfY29tbW9uLmMNCj4gPiArKysgYi9kcml2ZXJz
-L25ldC9ldGhlcm5ldC9pbnRlbC9pY2UvaWNlX2NvbW1vbi5jDQo+ID4gQEAgLTkyNSw3ICs5MjUs
-NyBAQCBlbnVtIGljZV9zdGF0dXMgaWNlX2luaXRfaHcoc3RydWN0IGljZV9odyAqaHcpDQo+ID4g
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIElDRV9BUUNfUkVQT1JUX1RPUE9f
-Q0FQLA0KPiA+IHBjYXBzLCBOVUxMKTsNCj4gPiAgICAgICAgIGRldm1fa2ZyZWUoaWNlX2h3X3Rv
-X2RldihodyksIHBjYXBzKTsNCj4gPiAgICAgICAgIGlmIChzdGF0dXMpDQo+ID4gLSAgICAgICAg
-ICAgICAgIGdvdG8gZXJyX3Vucm9sbF9zY2hlZDsNCj4gPiArICAgICAgICAgICAgICAgaWNlX2Rl
-YnVnKGh3LCBJQ0VfREJHX1BIWSwgIkdldCBQSFkgY2FwYWJpbGl0aWVzDQo+ID4gZmFpbGVkLCBj
-b250aW51aW5nIGFueXdheVxuIik7DQo+ID4gDQo+ID4gICAgICAgICAvKiBJbml0aWFsaXplIHBv
-cnRfaW5mbyBzdHJ1Y3Qgd2l0aCBsaW5rIGluZm9ybWF0aW9uICovDQo+ID4gICAgICAgICBzdGF0
-dXMgPSBpY2VfYXFfZ2V0X2xpbmtfaW5mbyhody0+cG9ydF9pbmZvLCBmYWxzZSwgTlVMTCwNCj4g
-PiBOVUxMKTsNCj4gPiAtLQ0KPiA+IDIuMjYuMg0KPiA+IA0KPiANCj4gSWYgd2UgYXJlIGV4cGVj
-dGluZyB0aGUgdXNlciB0byBjb3JyZWN0IHRoaW5ncyB0aGVuIHdlIHNob3VsZCBiZQ0KPiBwdXR0
-aW5nIG91dCBhIHdhcm5pbmcgdmlhIGRldl93YXJuKCkgcmF0aGVyIHRoYW4gYSBkZWJ1ZyBtZXNz
-YWdlLg0KPiBPdGhlcndpc2UgdGhlIHVzZXIgaXMganVzdCBnb2luZyB0byBoYXZlIHRvIGNvbWUg
-YmFjayB0aHJvdWdoIGFuZA0KPiB0dXJuDQo+IG9uIGRlYnVnZ2luZyBhbmQgcmVsb2FkIHRoZSBk
-cml2ZXIgaW4gb3JkZXIgdG8gZmlndXJlIG91dCB3aGF0IGlzDQo+IGdvaW5nIG9uLiBJbiBteSBt
-aW5kIGl0IHNob3VsZCBnZXQgdGhlIHNhbWUgdHJlYXRtZW50IGFzIGFuIG91dGRhdGVkDQo+IE5W
-TSBpbWFnZSBpbiBpY2VfYXFfdmVyX2NoZWNrKCkuDQoNCldpbGwgY2hhbmdlIHRoaXMgdG8gYSBk
-ZXZfd2FybigpLg0KDQpUaGFua3MsDQpUb255DQo=
+On Thu, Nov 19, 2020 at 06:51:15PM +0000, Tristram.Ha@microchip.com wrote:
+> The initial proposal in tag_ksz.c is for the switch driver to provide callback functions
+> to handle receiving and transmitting.  Then each switch driver can be added to
+> process the tail tag in its own driver and leave tag_ksz.c unchanged.
+>
+> It was rejected because of wanting to keep tag_ksz.c code and switch driver code
+> separate and concern about performance.
+>
+> Now tag_ksz.c is filled with PTP code that is not relevant for other switches and will
+> need to be changed again when another switch driver with PTP function is added.
+>
+> Can we implement that callback mechanism?
+
+I, too, lack the context here. But it sounds like feedback that Andrew
+would give.
+
+If you don't like the #ifdef's, I am not in love with them either. But
+maybe Christian is just optimizing too aggressively, and doesn't actually
+need to put those #ifdef's there and provide stub implementations, but
+could actually just leave the ksz9477_rcv_timestamp and ksz9477_xmit_timestamp
+always compiled-in, and "dead at runtime" in the case there is no PTP.
+
+If there is something else you don't like, what is it? If you know that
+other KSZ switches don't implement timestamping in the same way, well,
+we don't know that. I thought that it's generally up to the second
+implementer to recognize which parts of the code are common and should
+be reused, not for the first one to guess. I would not add function
+pointers for a single implementation if they don't have a clear
+justification.
+
+> One issue with transmission with PTP enabled is that the tail tag needs to contain 4
+> additional bytes.  When the PTP function is off the bytes are not added.  This should
+> be monitored all the time.
+>
+> The extra 4 bytes are only used for 1-step Pdelay_Resp.  It should contain the receive
+> timestamp of previous Pdelay_Req with latency adjusted.  The correction field in
+> Pdelay_Resp should be zero.  It may be a hardware bug to have wrong UDP checksum
+> when the message is sent.
+
+It "may" be a hardware bug? Are you unsure or polite?
+As for the phrase "the correction field in Pdelay_Resp should be zero".
+Consider the case where there is an E2E TC switch attached to that port.
+It will update the correctionField of the Pdelay_Req message. Then the
+application stack running on this ksz9477 switch is forced by the
+standard to copy the correctionField as-is from the Pdelay_Req into the
+Pdelay_Resp message. So that correctionField is never guaranteed to be
+zero, even if Christian doesn't fiddle with it within the driver. Are
+you saying that for proper UDP checksum calculation, the driver should
+be forcing the correctionField to zero and moving that value into the
+tail tag?
+
+> I think the right implementation is for the driver to remember this receive timestamp
+> of Pdelay_Req and puts it in the tail tag when it sees a 1-step Pdelay_Resp is sent.
+
+I have mixed feelings about this. IIUC, you're saying "let's implement a
+fixed-size FIFO of RX timestamps of Pdelay_Req messages, and let's match
+them on TX to Pdelay_Resp messages, by {sequenceId, domainNumber}."
+
+But how deep should we make that FIFO? I.e. how many Pdelay_Req messages
+should we expect before the user space will inject back a Pdelay_Resp
+for transmission?
+
+Again, consider the case of an E2E TC attached to a ksz9477 port. Even
+if we run peer delay, it's not guaranteed that we only have one peer.
+That E2E TC might connect us to a plethora of other peers. And the more
+peers we are connected to, the higher the chance that the size of this
+Pdelay_Req RX timestamp FIFO will not be adequately chosen.
+
+> There is one more requirement that is a little difficult to do.  The calculated peer delay
+> needs to be programmed in hardware register, but the regular PTP stack has no way to
+> send that command.  I think the driver has to do its own calculation by snooping on the
+> Pdelay_Req/Pdelay_Resp/Pdelay_Resp_Follow_Up messages.
+
+What register, and what does the switch do with this peer delay information?
+
+> The receive and transmit latencies are different for different connected speed.  So the
+> driver needs to change them when the link changes.  For that reason the PTP stack
+> should not use its own latency values as generally the application does not care about
+> the linked speed.
+
+The thing is, ptp4l already has ingressLatency and egressLatency
+settings, and I would not be surprised if those config options would get
+extended to cover values at multiple link speeds.
+
+In the general case, the ksz9477 MAC could be attached to any external
+PHY, having its own propagation delay characteristics, or any number of
+other things that cause clock domain crossings. I'm not sure how feasible
+it is for the kernel to abstract this away completely, and adjust
+timestamps automatically based on any and all combinations of MAC and
+PHY. Maybe this is just wishful thinking.
+
+Oh, and by the way, Christian, I'm not even sure if you aren't in fact
+just beating around the bush with these tstamp_rx_latency_ns and
+tstamp_tx_latency_ns values? I mean, the switch adds the latency value
+to the timestamps. And you, from the driver, read the value of the
+register, so you can subtract the value from the timestamp, to
+compensate for its correction. So, all in all, there is no net latency
+compensation seen by the outside world?! If that is the case, can't you
+just set the latency registers to zero, do your compensation from the
+application stack and call it a day?
