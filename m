@@ -2,631 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C20C2BBCD8
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 05:04:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D3292BBD18
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 05:56:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727285AbgKUECg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 23:02:36 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:31350 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725906AbgKUECg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 23:02:36 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AL40YoB011469;
-        Fri, 20 Nov 2020 20:02:29 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=E0FKlRAa3rban2QQEHXrhI+0I+aNS6+ZWVefBNQJPsw=;
- b=hKmyd0Nvnfyn2in8GUZy+QawaY1oaPZ3hkPNBCSp9GoXG1Z+NK5BriNkXslOcCuEWP/N
- VCP+peMwcGJSdBSJy+9UgPZ/J8gt2UEq60WCt57sDJ1rCMg/J+/Sb3H6GFUwnFfvU1Ch
- thywY+N65DhEbpWiAbYAMh78AOL67QwAAyD8Bm0A8I1Sz2EgAgqRQ52/zkNFku1OLdhl
- ibXTKq3cU6sjor4Is+xIPQa4P6PY2i10DSEB5SpasbI85nUoGpkWAxNyzqZmLjkVItGZ
- D7Rk9hhlRcgggDUUpB/7HsnJzXjnCPINb8t6g2gOaH1fUvK/cQXVl6Ro2nl03j9o1u2i pw== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 34w7nd2jte-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 20 Nov 2020 20:02:28 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 20 Nov
- 2020 20:02:26 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 20 Nov 2020 20:02:27 -0800
-Received: from hyd1584.caveonetworks.com (unknown [10.29.37.82])
-        by maili.marvell.com (Postfix) with ESMTP id B31D13F7048;
-        Fri, 20 Nov 2020 20:02:23 -0800 (PST)
-From:   George Cherian <george.cherian@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <kuba@kernel.org>, <davem@davemloft.net>, <sgoutham@marvell.com>,
-        <lcherian@marvell.com>, <gakula@marvell.com>,
-        <masahiroy@kernel.org>, <george.cherian@marvell.com>,
-        <willemdebruijn.kernel@gmail.com>, <saeed@kernel.org>
-Subject: [PATCHv4 net-next 3/3] octeontx2-af: Add devlink health reporters for NIX
-Date:   Sat, 21 Nov 2020 09:32:01 +0530
-Message-ID: <20201121040201.3171542-4-george.cherian@marvell.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201121040201.3171542-1-george.cherian@marvell.com>
-References: <20201121040201.3171542-1-george.cherian@marvell.com>
+        id S1726304AbgKUEzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 23:55:17 -0500
+Received: from mail-il1-f199.google.com ([209.85.166.199]:35567 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726189AbgKUEzR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 23:55:17 -0500
+Received: by mail-il1-f199.google.com with SMTP id l2so9273015ilj.2
+        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 20:55:16 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=Bc8DJgBNhzyknhToDKlCX+JkuaB11Va6geaeIXU01nE=;
+        b=rSMaB81/9o89GSbp9VVYuU1R8ssf6M+KXB8hqUYiv4DzmEDU7h2CjTuByK4ALg15Nt
+         ES9P+mgA/jtMf7d1TpYQefzlzH1FGdoU0KJQhOd1XNmNFkffUIt2ZHkBdptNv/SYjM1H
+         WxePA7gl76upR06Mjc99rw3FZ4u2Zd51qrg67TkQCXbjZ9fQUYEZoFGb+Q9pkzEgXKJ3
+         1vyxjM9aNpE/mYqncdygj1LI72T1H6kowy7OEKvHST5JGrNPZ8NLhC1uBg9Zt9qUvxs/
+         Ss/OpQ/rMBJUhAWp9c8sNcTxzskwdhODtekEDwAYKE2ITx4EccrAhEtLnaRwyMoRr1DL
+         JcKA==
+X-Gm-Message-State: AOAM531rpnRA27E/jEamKJM78HbuzC1lH4UWeIsVF+3mDBwmdyMLZLzX
+        xa5afVSkmBNcsMKxhZLOdoB9gteM7er7PA2Sj+S3Ocw48a8Z
+X-Google-Smtp-Source: ABdhPJy7jTsYFQbu+2stHEviHh2ADsNbk/5yIIh45u18OZoQ1AtChCr2ehXwg0NxNJ5eVesTx/pC19Olx6poLQCbggKPqLZyD3TN
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-21_02:2020-11-20,2020-11-21 signatures=0
+X-Received: by 2002:a6b:b2c4:: with SMTP id b187mr28358647iof.187.1605934515653;
+ Fri, 20 Nov 2020 20:55:15 -0800 (PST)
+Date:   Fri, 20 Nov 2020 20:55:15 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000056928205b496c43b@google.com>
+Subject: INFO: task hung in sync_inodes_sb (4)
+From:   syzbot <syzbot+7d50f1e54a12ba3aeae2@syzkaller.appspotmail.com>
+To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        davem@davemloft.net, emmanuel.grumbach@intel.com,
+        johannes.berg@intel.com, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luciano.coelho@intel.com,
+        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
+        sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com,
+        viro@zeniv.linux.org.uk
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add health reporters for RVU NIX block.
-NIX Health reporter handle following HW event groups
- - GENERAL events
- - RAS events
- - RVU event
-An event counter per event is maintained in SW.
+Hello,
 
-Output:
- # ./devlink health
- pci/0002:01:00.0:
-   reporter npa
-     state healthy error 0 recover 0
-   reporter nix
-     state healthy error 0 recover 0
- # ./devlink  health dump show pci/0002:01:00.0 reporter nix
-  NIX_AF_GENERAL:
-         Memory Fault on NIX_AQ_INST_S read: 0
-         Memory Fault on NIX_AQ_RES_S write: 0
-         AQ Doorbell error: 0
-         Rx on unmapped PF_FUNC: 0
-         Rx multicast replication error: 0
-         Memory fault on NIX_RX_MCE_S read: 0
-         Memory fault on multicast WQE read: 0
-         Memory fault on mirror WQE read: 0
-         Memory fault on mirror pkt write: 0
-         Memory fault on multicast pkt write: 0
-   NIX_AF_RAS:
-         Poisoned data on NIX_AQ_INST_S read: 0
-         Poisoned data on NIX_AQ_RES_S write: 0
-         Poisoned data on HW context read: 0
-         Poisoned data on packet read from mirror buffer: 0
-         Poisoned data on packet read from mcast buffer: 0
-         Poisoned data on WQE read from mirror buffer: 0
-         Poisoned data on WQE read from multicast buffer: 0
-         Poisoned data on NIX_RX_MCE_S read: 0
-   NIX_AF_RVU:
-         Unmap Slot Error: 0
+syzbot found the following issue on:
 
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
-Signed-off-by: Jerin Jacob <jerinj@marvell.com>
-Signed-off-by: George Cherian <george.cherian@marvell.com>
+HEAD commit:    03430750 Add linux-next specific files for 20201116
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=17027fdc500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a1c4c3f27041fdb8
+dashboard link: https://syzkaller.appspot.com/bug?extid=7d50f1e54a12ba3aeae2
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=124a8841500000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15a4fce2500000
+
+The issue was bisected to:
+
+commit c68df2e7be0c1238ea3c281fd744a204ef3b15a0
+Author: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Date:   Thu Sep 15 13:30:02 2016 +0000
+
+    mac80211: allow using AP_LINK_PS with mac80211-generated TIM IE
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1445e981500000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=1645e981500000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1245e981500000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+7d50f1e54a12ba3aeae2@syzkaller.appspotmail.com
+Fixes: c68df2e7be0c ("mac80211: allow using AP_LINK_PS with mac80211-generated TIM IE")
+
+INFO: task syz-executor017:8513 blocked for more than 143 seconds.
+      Not tainted 5.10.0-rc3-next-20201116-syzkaller #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz-executor017 state:D stack:27448 pid: 8513 ppid:  8507 flags:0x00004000
+Call Trace:
+ context_switch kernel/sched/core.c:4269 [inline]
+ __schedule+0x890/0x2030 kernel/sched/core.c:5019
+ schedule+0xcf/0x270 kernel/sched/core.c:5098
+ wb_wait_for_completion+0x17b/0x230 fs/fs-writeback.c:209
+ sync_inodes_sb+0x1a6/0x9d0 fs/fs-writeback.c:2559
+ __sync_filesystem fs/sync.c:34 [inline]
+ sync_filesystem fs/sync.c:67 [inline]
+ sync_filesystem+0x15c/0x260 fs/sync.c:48
+ generic_shutdown_super+0x70/0x370 fs/super.c:448
+ kill_block_super+0x97/0xf0 fs/super.c:1446
+ deactivate_locked_super+0x94/0x160 fs/super.c:335
+ deactivate_super+0xad/0xd0 fs/super.c:366
+ cleanup_mnt+0x3a3/0x530 fs/namespace.c:1123
+ task_work_run+0xdd/0x190 kernel/task_work.c:140
+ tracehook_notify_resume include/linux/tracehook.h:188 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
+ exit_to_user_mode_prepare+0x1f0/0x200 kernel/entry/common.c:199
+ syscall_exit_to_user_mode+0x38/0x260 kernel/entry/common.c:274
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x44e0e7
+Code: Unable to access opcode bytes at RIP 0x44e0bd.
+RSP: 002b:00007fff42061288 EFLAGS: 00000206 ORIG_RAX: 00000000000000a6
+RAX: 0000000000000000 RBX: 00000000000cee4c RCX: 000000000044e0e7
+RDX: 0000000000400be0 RSI: 0000000000000002 RDI: 00007fff42061330
+RBP: 0000000000002142 R08: 0000000000000000 R09: 0000000000000009
+R10: 0000000000000005 R11: 0000000000000206 R12: 00007fff420623e0
+R13: 0000000001f67880 R14: 0000000000000000 R15: 0000000000000000
+
+Showing all locks held in the system:
+2 locks held by kworker/u4:5/225:
+ #0: ffff8881413a4138 ((wq_completion)writeback){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff8881413a4138 ((wq_completion)writeback){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
+ #0: ffff8881413a4138 ((wq_completion)writeback){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
+ #0: ffff8881413a4138 ((wq_completion)writeback){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:616 [inline]
+ #0: ffff8881413a4138 ((wq_completion)writeback){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:643 [inline]
+ #0: ffff8881413a4138 ((wq_completion)writeback){+.+.}-{0:0}, at: process_one_work+0x821/0x15a0 kernel/workqueue.c:2243
+ #1: ffffc9000191fda8 ((work_completion)(&(&wb->dwork)->work)){+.+.}-{0:0}, at: process_one_work+0x854/0x15a0 kernel/workqueue.c:2247
+1 lock held by khungtaskd/1655:
+ #0: ffffffff8b339ce0 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:6252
+1 lock held by in:imklog/8188:
+ #0: ffff888017c8f4f0 (&f->f_pos_lock){+.+.}-{3:3}, at: __fdget_pos+0xe9/0x100 fs/file.c:932
+2 locks held by syz-executor017/8513:
+ #0: ffff88801a8500e0 (&type->s_umount_key#49){+.+.}-{3:3}, at: deactivate_super+0xa5/0xd0 fs/super.c:365
+ #1: ffff888143f5e708 (&bdi->wb_switch_rwsem){+.+.}-{3:3}, at: bdi_down_write_wb_switch_rwsem fs/fs-writeback.c:344 [inline]
+ #1: ffff888143f5e708 (&bdi->wb_switch_rwsem){+.+.}-{3:3}, at: sync_inodes_sb+0x18c/0x9d0 fs/fs-writeback.c:2557
+
+=============================================
+
+NMI backtrace for cpu 0
+CPU: 0 PID: 1655 Comm: khungtaskd Not tainted 5.10.0-rc3-next-20201116-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:120
+ nmi_cpu_backtrace.cold+0x44/0xd7 lib/nmi_backtrace.c:105
+ nmi_trigger_cpumask_backtrace+0x1b3/0x230 lib/nmi_backtrace.c:62
+ trigger_all_cpu_backtrace include/linux/nmi.h:147 [inline]
+ check_hung_uninterruptible_tasks kernel/hung_task.c:253 [inline]
+ watchdog+0xd89/0xf30 kernel/hung_task.c:338
+ kthread+0x3af/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+Sending NMI from CPU 0 to CPUs 1:
+NMI backtrace for cpu 1 skipped: idling at native_safe_halt arch/x86/include/asm/irqflags.h:60 [inline]
+NMI backtrace for cpu 1 skipped: idling at arch_safe_halt arch/x86/include/asm/irqflags.h:103 [inline]
+NMI backtrace for cpu 1 skipped: idling at acpi_safe_halt drivers/acpi/processor_idle.c:111 [inline]
+NMI backtrace for cpu 1 skipped: idling at acpi_idle_do_entry+0x1c9/0x250 drivers/acpi/processor_idle.c:517
+
+
 ---
- .../marvell/octeontx2/af/rvu_devlink.c        | 414 +++++++++++++++++-
- .../marvell/octeontx2/af/rvu_devlink.h        |  31 ++
- .../marvell/octeontx2/af/rvu_struct.h         |  10 +
- 3 files changed, 453 insertions(+), 2 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
-index b7f0691d86b0..c02d0f56ae7a 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
-@@ -35,6 +35,131 @@ static int rvu_report_pair_end(struct devlink_fmsg *fmsg)
- 	return devlink_fmsg_pair_nest_end(fmsg);
- }
- 
-+static irqreturn_t rvu_nix_af_rvu_intr_handler(int irq, void *rvu_irq)
-+{
-+	struct rvu_nix_event_ctx *nix_event_context;
-+	struct rvu_nix_event_cnt *nix_event_count;
-+	struct rvu_devlink *rvu_dl = rvu_irq;
-+	struct rvu *rvu;
-+	int blkaddr;
-+	u64 intr;
-+
-+	rvu = rvu_dl->rvu;
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, 0);
-+	if (blkaddr < 0)
-+		return IRQ_NONE;
-+
-+	nix_event_context = rvu_dl->nix_event_ctx;
-+	nix_event_count = &nix_event_context->nix_event_cnt;
-+	intr = rvu_read64(rvu, blkaddr, NIX_AF_RVU_INT);
-+	nix_event_context->nix_af_rvu_int = intr;
-+
-+	if (intr & BIT_ULL(0))
-+		nix_event_count->unmap_slot_count++;
-+
-+	/* Clear interrupts */
-+	rvu_write64(rvu, blkaddr, NIX_AF_RVU_INT, intr);
-+	rvu_write64(rvu, blkaddr, NIX_AF_RVU_INT_ENA_W1C, ~0ULL);
-+	devlink_health_report(rvu_dl->rvu_nix_health_reporter, "NIX_AF_RVU Error",
-+			      nix_event_context);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t rvu_nix_af_err_intr_handler(int irq, void *rvu_irq)
-+{
-+	struct rvu_nix_event_ctx *nix_event_context;
-+	struct rvu_nix_event_cnt *nix_event_count;
-+	struct rvu_devlink *rvu_dl = rvu_irq;
-+	struct rvu *rvu;
-+	int blkaddr;
-+	u64 intr;
-+
-+	rvu = rvu_dl->rvu;
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, 0);
-+	if (blkaddr < 0)
-+		return IRQ_NONE;
-+
-+	nix_event_context = rvu_dl->nix_event_ctx;
-+	nix_event_count = &nix_event_context->nix_event_cnt;
-+	intr = rvu_read64(rvu, blkaddr, NIX_AF_ERR_INT);
-+	nix_event_context->nix_af_rvu_err = intr;
-+
-+	if (intr & BIT_ULL(14))
-+		nix_event_count->aq_inst_count++;
-+	if (intr & BIT_ULL(13))
-+		nix_event_count->aq_res_count++;
-+	if (intr & BIT_ULL(12))
-+		nix_event_count->aq_db_count++;
-+	if (intr & BIT_ULL(6))
-+		nix_event_count->rx_on_unmap_pf_count++;
-+	if (intr & BIT_ULL(5))
-+		nix_event_count->rx_mcast_repl_count++;
-+	if (intr & BIT_ULL(4))
-+		nix_event_count->rx_mcast_memfault_count++;
-+	if (intr & BIT_ULL(3))
-+		nix_event_count->rx_mcast_wqe_memfault_count++;
-+	if (intr & BIT_ULL(2))
-+		nix_event_count->rx_mirror_wqe_memfault_count++;
-+	if (intr & BIT_ULL(1))
-+		nix_event_count->rx_mirror_pktw_memfault_count++;
-+	if (intr & BIT_ULL(0))
-+		nix_event_count->rx_mcast_pktw_memfault_count++;
-+
-+	/* Clear interrupts */
-+	rvu_write64(rvu, blkaddr, NIX_AF_ERR_INT, intr);
-+	rvu_write64(rvu, blkaddr, NIX_AF_ERR_INT_ENA_W1C, ~0ULL);
-+	devlink_health_report(rvu_dl->rvu_nix_health_reporter, "NIX_AF_ERR Error",
-+			      nix_event_context);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t rvu_nix_af_ras_intr_handler(int irq, void *rvu_irq)
-+{
-+	struct rvu_nix_event_ctx *nix_event_context;
-+	struct rvu_nix_event_cnt *nix_event_count;
-+	struct rvu_devlink *rvu_dl = rvu_irq;
-+	struct rvu *rvu;
-+	int blkaddr;
-+	u64 intr;
-+
-+	rvu = rvu_dl->rvu;
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, 0);
-+	if (blkaddr < 0)
-+		return IRQ_NONE;
-+
-+	nix_event_context = rvu_dl->nix_event_ctx;
-+	nix_event_count = &nix_event_context->nix_event_cnt;
-+	intr = rvu_read64(rvu, blkaddr, NIX_AF_RAS);
-+	nix_event_context->nix_af_rvu_ras = intr;
-+
-+	if (intr & BIT_ULL(34))
-+		nix_event_count->poison_aq_inst_count++;
-+	if (intr & BIT_ULL(33))
-+		nix_event_count->poison_aq_res_count++;
-+	if (intr & BIT_ULL(32))
-+		nix_event_count->poison_aq_cxt_count++;
-+	if (intr & BIT_ULL(4))
-+		nix_event_count->rx_mirror_data_poison_count++;
-+	if (intr & BIT_ULL(3))
-+		nix_event_count->rx_mcast_data_poison_count++;
-+	if (intr & BIT_ULL(2))
-+		nix_event_count->rx_mirror_wqe_poison_count++;
-+	if (intr & BIT_ULL(1))
-+		nix_event_count->rx_mcast_wqe_poison_count++;
-+	if (intr & BIT_ULL(0))
-+		nix_event_count->rx_mce_poison_count++;
-+
-+	/* Clear interrupts */
-+	rvu_write64(rvu, blkaddr, NIX_AF_RAS, intr);
-+	rvu_write64(rvu, blkaddr, NIX_AF_RAS_ENA_W1C, ~0ULL);
-+	devlink_health_report(rvu_dl->rvu_nix_health_reporter, "NIX_AF_RAS Error",
-+			      nix_event_context);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static bool rvu_common_request_irq(struct rvu *rvu, int offset,
- 				   const char *name, irq_handler_t fn)
- {
-@@ -52,6 +177,285 @@ static bool rvu_common_request_irq(struct rvu *rvu, int offset,
- 	return rvu->irq_allocated[offset];
- }
- 
-+static void rvu_nix_blk_unregister_interrupts(struct rvu *rvu,
-+					      int blkaddr)
-+{
-+	struct rvu_devlink *rvu_dl = rvu->rvu_dl;
-+	int offs, i;
-+
-+	offs = rvu_read64(rvu, blkaddr, NIX_PRIV_AF_INT_CFG) & 0x3ff;
-+	if (!offs)
-+		return;
-+
-+	rvu_write64(rvu, blkaddr, NIX_AF_RVU_INT_ENA_W1C, ~0ULL);
-+	rvu_write64(rvu, blkaddr, NIX_AF_ERR_INT_ENA_W1C, ~0ULL);
-+	rvu_write64(rvu, blkaddr, NIX_AF_RAS_ENA_W1C, ~0ULL);
-+
-+	if (rvu->irq_allocated[offs + NIX_AF_INT_VEC_RVU]) {
-+		free_irq(pci_irq_vector(rvu->pdev, offs + NIX_AF_INT_VEC_RVU),
-+			 rvu_dl);
-+		rvu->irq_allocated[offs + NIX_AF_INT_VEC_RVU] = false;
-+	}
-+
-+	for (i = NIX_AF_INT_VEC_AF_ERR; i < NIX_AF_INT_VEC_CNT; i++)
-+		if (rvu->irq_allocated[offs + i]) {
-+			free_irq(pci_irq_vector(rvu->pdev, offs + i), rvu_dl);
-+			rvu->irq_allocated[offs + i] = false;
-+		}
-+}
-+
-+static void rvu_nix_unregister_interrupts(struct rvu *rvu)
-+{
-+	int blkaddr = 0;
-+
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, 0);
-+	if (blkaddr < 0)
-+		return;
-+
-+	rvu_nix_blk_unregister_interrupts(rvu, blkaddr);
-+}
-+
-+static int rvu_nix_blk_register_interrupts(struct rvu *rvu,
-+					   int blkaddr)
-+{
-+	int base;
-+	bool rc;
-+
-+	/* Get NIX AF MSIX vectors offset. */
-+	base = rvu_read64(rvu, blkaddr, NIX_PRIV_AF_INT_CFG) & 0x3ff;
-+	if (!base) {
-+		dev_warn(rvu->dev,
-+			 "Failed to get NIX%d NIX_AF_INT vector offsets\n",
-+			 blkaddr - BLKADDR_NIX0);
-+		return 0;
-+	}
-+	/* Register and enable NIX_AF_RVU_INT interrupt */
-+	rc = rvu_common_request_irq(rvu, base +  NIX_AF_INT_VEC_RVU,
-+				    "NIX_AF_RVU_INT",
-+				    rvu_nix_af_rvu_intr_handler);
-+	if (!rc)
-+		goto err;
-+	rvu_write64(rvu, blkaddr, NIX_AF_RVU_INT_ENA_W1S, ~0ULL);
-+
-+	/* Register and enable NIX_AF_ERR_INT interrupt */
-+	rc = rvu_common_request_irq(rvu, base + NIX_AF_INT_VEC_AF_ERR,
-+				    "NIX_AF_ERR_INT",
-+				    rvu_nix_af_err_intr_handler);
-+	if (!rc)
-+		goto err;
-+	rvu_write64(rvu, blkaddr, NIX_AF_ERR_INT_ENA_W1S, ~0ULL);
-+
-+	/* Register and enable NIX_AF_RAS interrupt */
-+	rc = rvu_common_request_irq(rvu, base + NIX_AF_INT_VEC_POISON,
-+				    "NIX_AF_RAS",
-+				    rvu_nix_af_ras_intr_handler);
-+	if (!rc)
-+		goto err;
-+	rvu_write64(rvu, blkaddr, NIX_AF_RAS_ENA_W1S, ~0ULL);
-+
-+	return 0;
-+err:
-+	rvu_nix_unregister_interrupts(rvu);
-+	return -1;
-+}
-+
-+static int rvu_nix_register_interrupts(struct rvu *rvu)
-+{
-+	int blkaddr = 0;
-+
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, 0);
-+	if (blkaddr < 0)
-+		return blkaddr;
-+
-+	rvu_nix_blk_register_interrupts(rvu, blkaddr);
-+
-+	return 0;
-+}
-+
-+static int rvu_nix_report_show(struct devlink_fmsg *fmsg, struct rvu *rvu)
-+{
-+	struct rvu_nix_event_ctx *nix_event_context;
-+	struct rvu_nix_event_cnt *nix_event_count;
-+	struct rvu_devlink *rvu_dl = rvu->rvu_dl;
-+	int err;
-+
-+	nix_event_context = rvu_dl->nix_event_ctx;
-+	nix_event_count = &nix_event_context->nix_event_cnt;
-+	err = rvu_report_pair_start(fmsg, "NIX_AF_GENERAL");
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\tMemory Fault on NIX_AQ_INST_S read",
-+					nix_event_count->aq_inst_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tMemory Fault on NIX_AQ_RES_S write",
-+					nix_event_count->aq_res_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tAQ Doorbell error",
-+					nix_event_count->aq_db_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tRx on unmapped PF_FUNC",
-+					nix_event_count->rx_on_unmap_pf_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tRx multicast replication error",
-+					nix_event_count->rx_mcast_repl_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tMemory fault on NIX_RX_MCE_S read",
-+					nix_event_count->rx_mcast_memfault_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tMemory fault on multicast WQE read",
-+					nix_event_count->rx_mcast_wqe_memfault_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tMemory fault on mirror WQE read",
-+					nix_event_count->rx_mirror_wqe_memfault_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tMemory fault on mirror pkt write",
-+					nix_event_count->rx_mirror_pktw_memfault_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tMemory fault on multicast pkt write",
-+					nix_event_count->rx_mcast_pktw_memfault_count);
-+	if (err)
-+		return err;
-+	err = rvu_report_pair_end(fmsg);
-+	if (err)
-+		return err;
-+	err = rvu_report_pair_start(fmsg, "NIX_AF_RAS");
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\tPoisoned data on NIX_AQ_INST_S read",
-+					nix_event_count->poison_aq_inst_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tPoisoned data on NIX_AQ_RES_S write",
-+					nix_event_count->poison_aq_res_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tPoisoned data on HW context read",
-+					nix_event_count->poison_aq_cxt_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tPoisoned data on packet read from mirror buffer",
-+					nix_event_count->rx_mirror_data_poison_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tPoisoned data on packet read from mcast buffer",
-+					nix_event_count->rx_mcast_data_poison_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tPoisoned data on WQE read from mirror buffer",
-+					nix_event_count->rx_mirror_wqe_poison_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tPoisoned data on WQE read from multicast buffer",
-+					nix_event_count->rx_mcast_wqe_poison_count);
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\n\tPoisoned data on NIX_RX_MCE_S read",
-+					nix_event_count->rx_mce_poison_count);
-+	if (err)
-+		return err;
-+	err = rvu_report_pair_end(fmsg);
-+	if (err)
-+		return err;
-+	err = rvu_report_pair_start(fmsg, "NIX_AF_RVU");
-+	if (err)
-+		return err;
-+	err = devlink_fmsg_u64_pair_put(fmsg, "\tUnmap Slot Error",
-+					nix_event_count->unmap_slot_count);
-+	if (err)
-+		return err;
-+	err = rvu_report_pair_end(fmsg);
-+	if (err)
-+		return err;
-+	return 0;
-+}
-+
-+static int rvu_nix_reporter_dump(struct devlink_health_reporter *reporter,
-+				 struct devlink_fmsg *fmsg, void *ctx,
-+				 struct netlink_ext_ack *netlink_extack)
-+{
-+	struct rvu *rvu = devlink_health_reporter_priv(reporter);
-+
-+	return rvu_nix_report_show(fmsg, rvu);
-+}
-+
-+static int rvu_nix_reporter_recover(struct devlink_health_reporter *reporter,
-+				    void *ctx, struct netlink_ext_ack *netlink_extack)
-+{
-+	struct rvu *rvu = devlink_health_reporter_priv(reporter);
-+	struct rvu_nix_event_ctx *nix_event_ctx = ctx;
-+	int blkaddr;
-+
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, 0);
-+	if (blkaddr < 0)
-+		return blkaddr;
-+
-+	if (nix_event_ctx->nix_af_rvu_int) {
-+		rvu_write64(rvu, blkaddr, NIX_AF_RVU_INT_ENA_W1S, ~0ULL);
-+		nix_event_ctx->nix_af_rvu_int = 0;
-+	}
-+	if (nix_event_ctx->nix_af_rvu_err) {
-+		rvu_write64(rvu, blkaddr, NIX_AF_ERR_INT_ENA_W1S, ~0ULL);
-+		nix_event_ctx->nix_af_rvu_err = 0;
-+	}
-+	if (nix_event_ctx->nix_af_rvu_ras) {
-+		rvu_write64(rvu, blkaddr, NIX_AF_RAS_ENA_W1S, ~0ULL);
-+		nix_event_ctx->nix_af_rvu_ras = 0;
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct devlink_health_reporter_ops rvu_nix_fault_reporter_ops = {
-+		.name = "hw_nix",
-+		.dump = rvu_nix_reporter_dump,
-+		.recover = rvu_nix_reporter_recover,
-+};
-+
-+static int rvu_nix_health_reporters_create(struct rvu_devlink *rvu_dl)
-+{
-+	struct devlink_health_reporter *rvu_nix_health_reporter;
-+	struct rvu_nix_event_ctx *nix_event_context;
-+	struct rvu *rvu = rvu_dl->rvu;
-+
-+	nix_event_context = kzalloc(sizeof(*nix_event_context), GFP_KERNEL);
-+	if (!nix_event_context)
-+		return -ENOMEM;
-+
-+	rvu_dl->nix_event_ctx = nix_event_context;
-+	rvu_nix_health_reporter = devlink_health_reporter_create(rvu_dl->dl,
-+								 &rvu_nix_fault_reporter_ops,
-+								 0, rvu);
-+	if (IS_ERR(rvu_nix_health_reporter)) {
-+		dev_warn(rvu->dev, "Failed to create nix reporter, err = %ld\n",
-+			 PTR_ERR(rvu_nix_health_reporter));
-+		return PTR_ERR(rvu_nix_health_reporter);
-+	}
-+
-+	rvu_dl->rvu_nix_health_reporter = rvu_nix_health_reporter;
-+	rvu_nix_register_interrupts(rvu);
-+	return 0;
-+}
-+
-+static void rvu_nix_health_reporters_destroy(struct rvu_devlink *rvu_dl)
-+{
-+	struct rvu *rvu = rvu_dl->rvu;
-+
-+	if (!rvu_dl->rvu_nix_health_reporter)
-+		return;
-+
-+	devlink_health_reporter_destroy(rvu_dl->rvu_nix_health_reporter);
-+	rvu_nix_unregister_interrupts(rvu);
-+}
-+
- static irqreturn_t rvu_npa_af_rvu_intr_handler(int irq, void *rvu_irq)
- {
- 	struct rvu_npa_event_ctx *npa_event_context;
-@@ -214,7 +618,7 @@ static irqreturn_t rvu_npa_af_ras_intr_handler(int irq, void *rvu_irq)
- 	/* Clear interrupts */
- 	rvu_write64(rvu, blkaddr, NPA_AF_RAS, intr);
- 	rvu_write64(rvu, blkaddr, NPA_AF_RAS_ENA_W1C, ~0ULL);
--	devlink_health_report(rvu_dl->rvu_npa_health_reporter, "HW NPA_AF_RAS Error reported",
-+	devlink_health_report(rvu_dl->rvu_npa_health_reporter, "NPA_AF_RAS Error",
- 			      npa_event_context);
- 	return IRQ_HANDLED;
- }
-@@ -481,9 +885,14 @@ static void rvu_npa_health_reporters_destroy(struct rvu_devlink *rvu_dl)
- static int rvu_health_reporters_create(struct rvu *rvu)
- {
- 	struct rvu_devlink *rvu_dl;
-+	int err;
- 
- 	rvu_dl = rvu->rvu_dl;
--	return rvu_npa_health_reporters_create(rvu_dl);
-+	err = rvu_npa_health_reporters_create(rvu_dl);
-+	if (err)
-+		return err;
-+
-+	return rvu_nix_health_reporters_create(rvu_dl);
- }
- 
- static void rvu_health_reporters_destroy(struct rvu *rvu)
-@@ -495,6 +904,7 @@ static void rvu_health_reporters_destroy(struct rvu *rvu)
- 
- 	rvu_dl = rvu->rvu_dl;
- 	rvu_npa_health_reporters_destroy(rvu_dl);
-+	rvu_nix_health_reporters_destroy(rvu_dl);
- }
- 
- static int rvu_devlink_info_get(struct devlink *devlink, struct devlink_info_req *req,
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.h
-index e04603a9952c..cfc513d945a0 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.h
-@@ -37,11 +37,42 @@ struct rvu_npa_event_ctx {
- 	u64 npa_af_rvu_ras;
- };
- 
-+struct rvu_nix_event_cnt {
-+	u64 unmap_slot_count;
-+	u64 aq_inst_count;
-+	u64 aq_res_count;
-+	u64 aq_db_count;
-+	u64 rx_on_unmap_pf_count;
-+	u64 rx_mcast_repl_count;
-+	u64 rx_mcast_memfault_count;
-+	u64 rx_mcast_wqe_memfault_count;
-+	u64 rx_mirror_wqe_memfault_count;
-+	u64 rx_mirror_pktw_memfault_count;
-+	u64 rx_mcast_pktw_memfault_count;
-+	u64 poison_aq_inst_count;
-+	u64 poison_aq_res_count;
-+	u64 poison_aq_cxt_count;
-+	u64 rx_mirror_data_poison_count;
-+	u64 rx_mcast_data_poison_count;
-+	u64 rx_mirror_wqe_poison_count;
-+	u64 rx_mcast_wqe_poison_count;
-+	u64 rx_mce_poison_count;
-+};
-+
-+struct rvu_nix_event_ctx {
-+	struct rvu_nix_event_cnt nix_event_cnt;
-+	u64 nix_af_rvu_int;
-+	u64 nix_af_rvu_err;
-+	u64 nix_af_rvu_ras;
-+};
-+
- struct rvu_devlink {
- 	struct devlink *dl;
- 	struct rvu *rvu;
- 	struct devlink_health_reporter *rvu_npa_health_reporter;
- 	struct rvu_npa_event_ctx *npa_event_ctx;
-+	struct devlink_health_reporter *rvu_nix_health_reporter;
-+	struct rvu_nix_event_ctx *nix_event_ctx;
- };
- 
- /* Devlink APIs */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_struct.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_struct.h
-index e2153d47c373..5e15f4fc11e3 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_struct.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_struct.h
-@@ -74,6 +74,16 @@ enum npa_af_int_vec_e {
- 	NPA_AF_INT_VEC_CNT	= 0x5,
- };
- 
-+/* NIX Admin function Interrupt Vector Enumeration */
-+enum nix_af_int_vec_e {
-+	NIX_AF_INT_VEC_RVU	= 0x0,
-+	NIX_AF_INT_VEC_GEN	= 0x1,
-+	NIX_AF_INT_VEC_AQ_DONE	= 0x2,
-+	NIX_AF_INT_VEC_AF_ERR	= 0x3,
-+	NIX_AF_INT_VEC_POISON	= 0x4,
-+	NIX_AF_INT_VEC_CNT	= 0x5,
-+};
-+
- /**
-  * RVU PF Interrupt Vector Enumeration
-  */
--- 
-2.25.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
