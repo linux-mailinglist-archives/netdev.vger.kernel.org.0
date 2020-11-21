@@ -2,59 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB8F92BC284
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 23:50:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4620D2BC286
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 23:54:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728215AbgKUWuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Nov 2020 17:50:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48636 "EHLO mail.kernel.org"
+        id S1726684AbgKUWxv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Nov 2020 17:53:51 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49982 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728171AbgKUWuF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 21 Nov 2020 17:50:05 -0500
-Content-Type: text/plain; charset="utf-8"
+        id S1726175AbgKUWxu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 21 Nov 2020 17:53:50 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 171E62168B;
+        Sat, 21 Nov 2020 22:53:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605999005;
-        bh=59dTnBru2tft41afGYLdjHHG7GwdJpwIORZwX0kdtSo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=klA+Sb9ohP+6jBtpNdxWmVD1GkWidTJy6jVpMMFt/AbxNJTvX95Xz5k0AGL3nVbnV
-         MmuZXfuPQpg9cLQXeqbUnbVlPiHUJeFHTJcSirNPdfCtx5VKDOYZAZ1l7aEOgxTmsC
-         8fJcGQYOchyUnjm7/udN3/LVmXTOBpb1wTl04PWw=
+        s=default; t=1605999230;
+        bh=Af1aJtEqKNBl8t38Z6wC8czbvt6AmdYSSoogoDPHcpE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=r8ZftB8yKDY4d3IoUEOv9HMc9z9wFbLFiO8+rT5GUiTaud+dra38K3fZ8gkeegmv3
+         YBTFnK84udv43Lx2yfjl8fCj+ef14nEnd9Xe5kDC5PfrlJiaMMSllBjgsLlsv7Rtr2
+         V588oqLjtsjTc2gPerkC9zSo3T8RFv29PipbjIPs=
+Date:   Sat, 21 Nov 2020 14:53:49 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Moshe Shemesh <moshe@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] devlink: Fix reload stats structure
+Message-ID: <20201121145349.3824029c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1605879637-6114-1-git-send-email-moshe@mellanox.com>
+References: <1605879637-6114-1-git-send-email-moshe@mellanox.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net/af_iucv: set correct sk_protocol for child sockets
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160599900499.23624.16990303223238817146.git-patchwork-notify@kernel.org>
-Date:   Sat, 21 Nov 2020 22:50:04 +0000
-References: <20201120100657.34407-1-jwi@linux.ibm.com>
-In-Reply-To: <20201120100657.34407-1-jwi@linux.ibm.com>
-To:     Julian Wiedmann <jwi@linux.ibm.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, hca@linux.ibm.com, kgraul@linux.ibm.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Fri, 20 Nov 2020 11:06:57 +0100 you wrote:
-> Child sockets erroneously inherit their parent's sk_type (ie. SOCK_*),
-> instead of the PF_IUCV protocol that the parent was created with in
-> iucv_sock_create().
+On Fri, 20 Nov 2020 15:40:37 +0200 Moshe Shemesh wrote:
+> Fix reload stats structure exposed to the user. Change stats structure
+> hierarchy to have the reload action as a parent of the stat entry and
+> then stat entry includes value per limit. This will also help to avoid
+> string concatenation on iproute2 output.
 > 
-> We're currently not using sk->sk_protocol ourselves, so this shouldn't
-> have much impact (except eg. getting the output in skb_dump() right).
+> Reload stats structure before this fix:
+> "stats": {
+>     "reload": {
+>         "driver_reinit": 2,
+>         "fw_activate": 1,
+>         "fw_activate_no_reset": 0
+>      }
+> }
 > 
-> [...]
+> After this fix:
+> "stats": {
+>     "reload": {
+>         "driver_reinit": {
+>             "unspecified": 2
+>         },
+>         "fw_activate": {
+>             "unspecified": 1,
+>             "no_reset": 0
+>         }
+> }
+> 
+> Fixes: a254c264267e ("devlink: Add reload stats")
+> Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
+> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 
-Here is the summary with links:
-  - [net] net/af_iucv: set correct sk_protocol for child sockets
-    https://git.kernel.org/netdev/net/c/c5dab0941fcd
+At least try to fold the core networking code at 80 characters *please*.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+You folded the comments at 86 chars, neither 100 nor 80.
