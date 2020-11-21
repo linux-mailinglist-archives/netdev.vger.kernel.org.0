@@ -2,42 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8D4A2BC237
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 22:11:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AED7D2BC23A
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 22:16:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728555AbgKUVJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Nov 2020 16:09:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36396 "EHLO mail.kernel.org"
+        id S1728522AbgKUVM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Nov 2020 16:12:57 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39210 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728520AbgKUVJO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 21 Nov 2020 16:09:14 -0500
+        id S1728402AbgKUVM4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 21 Nov 2020 16:12:56 -0500
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4A12220936;
-        Sat, 21 Nov 2020 21:09:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 295E620936;
+        Sat, 21 Nov 2020 21:12:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605992953;
-        bh=TIeS6PaUttvzRgqF20LuCyiAE4CU0g3ARlM/9kTLIBI=;
+        s=default; t=1605993176;
+        bh=5OPPnpq/liVUWNllLDEUx0dDdVZMbmJ0cKnxA3Np6Wo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NkmiTi5Y24PhPioaBOkNQO0nQmuJR6hacM2cXlUL+19gTq3N16ZUs3BDA813sMebx
-         cUf/dsxMydKOztKdZ0CZNqiOuPt4R4AepBvuKTXVSZ9x12AMODMeUQE1hlgeGOox7n
-         r2HCuOQB7d0/bZ1C8xFP2Tfrt4aYqZWtvwXZOY5E=
-Date:   Sat, 21 Nov 2020 13:09:12 -0800
+        b=TJf81O9iWgDkMRsKxus7fTh1DV90KlvDX7Y+OvA1xsTfI2Ft5Lr8nS4tARGmjn5cA
+         Oe2LbQzsOvAbfKkgUQjnWWJNIxm1F0ooIyMDzfRxIJ4LNw+wun380CHUVI0nZh1a9E
+         //aVETFUFuu2Npa8YoKGyNrau7/9N+mswV8iapdU=
+Date:   Sat, 21 Nov 2020 13:12:55 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jamie Iles <jamie@nuviainc.com>, netdev@vger.kernel.org,
-        Qiushi Wu <wu000273@umn.edu>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>
-Subject: Re: [PATCHv3] bonding: wait for sysfs kobject destruction before
- freeing struct slave
-Message-ID: <20201121130912.68903b8a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <X7fjR8ZB6BVwKS++@kroah.com>
-References: <20201113171244.15676-1-jamie@nuviainc.com>
-        <20201120142827.879226-1-jamie@nuviainc.com>
-        <X7fjR8ZB6BVwKS++@kroah.com>
+To:     Tom Seewald <tseewald@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, ayush.sawal@chelsio.com, rajur@chelsio.com
+Subject: Re: [PATCH] cxgb4: Fix build failure when CONFIG_TLS=m
+Message-ID: <20201121131255.051420ed@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201120192528.615-1-tseewald@gmail.com>
+References: <20201120073502.4beeb482@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <20201120192528.615-1-tseewald@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -45,17 +40,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 20 Nov 2020 16:39:51 +0100 Greg Kroah-Hartman wrote:
-> On Fri, Nov 20, 2020 at 02:28:27PM +0000, Jamie Iles wrote:
-> > syzkaller found that with CONFIG_DEBUG_KOBJECT_RELEASE=y, releasing a
-> > struct slave device could result in the following splat:
-
-> > This is a potential use-after-free if the sysfs nodes are being accessed
-> > whilst removing the struct slave, so wait for the object destruction to
-> > complete before freeing the struct slave itself.
+On Fri, 20 Nov 2020 13:25:28 -0600 Tom Seewald wrote:
+> After commit 9d2e5e9eeb59 ("cxgb4/ch_ktls: decrypted bit is not enough")
+> whenever CONFIG_TLS=m and CONFIG_CHELSIO_T4=y, the following build
+> failure occurs:
 > 
-> Nice, it looks like it should have always been done this way!
+> ld: drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.o: in function
+> `cxgb_select_queue':
+> cxgb4_main.c:(.text+0x2dac): undefined reference to `tls_validate_xmit_skb'
 > 
-> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Fix this by ensuring that if TLS is set to be a module, CHELSIO_T4 will
+> also be compiled as a module. As otherwise the cxgb4 driver will not be
+> able to access TLS' symbols.
+> 
+> Fixes: 9d2e5e9eeb59 ("cxgb4/ch_ktls: decrypted bit is not enough")
+> Signed-off-by: Tom Seewald <tseewald@gmail.com>
 
-Applied to net, thanks!
+Applied, thanks!
