@@ -2,61 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A67F22BC11F
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 18:39:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E9CB2BC12D
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 18:52:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727234AbgKURjn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Nov 2020 12:39:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726305AbgKURjn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Nov 2020 12:39:43 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BA87C0613CF;
-        Sat, 21 Nov 2020 09:39:43 -0800 (PST)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1kgWrG-00C5aP-26; Sat, 21 Nov 2020 18:39:34 +0100
-Message-ID: <36507863a9d9a7189b7b3b3d46313299969deea7.camel@sipsolutions.net>
-Subject: Re: [PATCH v5 2/3] net: add kcov handle to skb extensions
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Florian Westphal <fw@strlen.de>, Ido Schimmel <idosch@idosch.org>
-Cc:     Aleksandr Nogikh <aleksandrnogikh@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, edumazet@google.com, andreyknvl@google.com,
-        dvyukov@google.com, elver@google.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        willemdebruijn.kernel@gmail.com,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Willem de Bruijn <willemb@google.com>
-Date:   Sat, 21 Nov 2020 18:39:32 +0100
-In-Reply-To: <20201121165227.GT15137@breakpoint.cc>
-References: <20201029173620.2121359-1-aleksandrnogikh@gmail.com>
-         <20201029173620.2121359-3-aleksandrnogikh@gmail.com>
-         <20201121160941.GA485907@shredder.lan>
-         <20201121165227.GT15137@breakpoint.cc>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1727113AbgKURw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Nov 2020 12:52:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44938 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726463AbgKURw0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 21 Nov 2020 12:52:26 -0500
+Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id DEE9622201;
+        Sat, 21 Nov 2020 17:52:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1605981146;
+        bh=CKnLxQ3uHonPe6Kfh25rVXkY7XtA3b5QLj9601LwXE4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=2iQahGgz4rjwEPx+iXgkG2LkERBEsMYmvadI2kWIrcDo+w56CsPT58hgg30ocumdF
+         lEfJ6N4hKtkuyYRRV69MRnhNq7/RmCCmtFLEFI+13iGNih60R3eB/pDnbbKRCUjz6w
+         o0N55i75iauuVu1EfaC+xejBLe97FqS6ZZLahpiE=
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, hch@lst.de, arnd@arndb.de,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next] compat: always include linux/compat.h from net/compat.h
+Date:   Sat, 21 Nov 2020 09:52:24 -0800
+Message-Id: <20201121175224.1465831-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2020-11-21 at 17:52 +0100, Florian Westphal wrote:
-> 
-> Aleksandr, why was this made into an skb extension in the first place?
-> 
-> AFAIU this feature is usually always disabled at build time.
-> For debug builds (test farm /debug kernel etc) its always needed.
-> 
-> If thats the case this u64 should be an sk_buff member, not an
-> extension.
+We're about to do some reshuffling in networking headers and make
+some of the file lose the implicit includes. This results in:
 
-Because it was requested :-)
+In file included from net/ipv4/netfilter/arp_tables.c:26:
+include/net/compat.h:57:23: error: conflicting types for ‘uintptr_t’
+ #define compat_uptr_t uintptr_t
+                       ^~~~~~~~~
+include/asm-generic/compat.h:22:13: note: in expansion of macro ‘compat_uptr_t’
+ typedef u32 compat_uptr_t;
+             ^~~~~~~~~~~~~
+In file included from include/linux/limits.h:6,
+                 from include/linux/kernel.h:7,
+                 from net/ipv4/netfilter/arp_tables.c:14:
+include/linux/types.h:37:24: note: previous declaration of ‘uintptr_t’ was here
+ typedef unsigned long  uintptr_t;
+                        ^~~~~~~~~
 
-https://lore.kernel.org/netdev/20201009161558.57792e1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
+Currently net/compat.h depends on linux/compat.h being included
+first. After the upcoming changes this would break the 32bit build.
 
-johannes
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+Not sure who officially maintains this. Arnd, Christoph any objections?
+
+ include/net/compat.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/net/compat.h b/include/net/compat.h
+index 745db0d605b6..08a089bbaecc 100644
+--- a/include/net/compat.h
++++ b/include/net/compat.h
+@@ -5,10 +5,10 @@
+ 
+ struct sock;
+ 
+-#if defined(CONFIG_COMPAT)
+-
+ #include <linux/compat.h>
+ 
++#if defined(CONFIG_COMPAT)
++
+ struct compat_msghdr {
+ 	compat_uptr_t	msg_name;	/* void * */
+ 	compat_int_t	msg_namelen;
+-- 
+2.24.1
 
