@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EEFE2BBC8D
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 04:11:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96A882BBC8C
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 04:11:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726985AbgKUDKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 22:10:02 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:8382 "EHLO
+        id S1726332AbgKUDKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 22:10:01 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:8381 "EHLO
         szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725791AbgKUDKC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 22:10:02 -0500
+        with ESMTP id S1725829AbgKUDKB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 22:10:01 -0500
 Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CdJLF3Kclz706C;
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CdJLF2xsWz6y1C;
         Sat, 21 Nov 2020 11:09:41 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.58) by
  DGGEMS407-HUB.china.huawei.com (10.3.19.207) with Microsoft SMTP Server id
@@ -27,9 +27,9 @@ To:     <peterz@infradead.org>, <mingo@redhat.com>, <will@kernel.org>,
         <edumazet@google.com>, <saeed@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linuxarm@huawei.com>
-Subject: [PATCH net-next v2 1/2] lockdep: Introduce in_softirq lockdep assert
-Date:   Sat, 21 Nov 2020 11:06:15 +0800
-Message-ID: <1605927976-232804-2-git-send-email-linyunsheng@huawei.com>
+Subject: [PATCH net-next v2 2/2] net: Use lockdep_assert_in_softirq() in napi_consume_skb()
+Date:   Sat, 21 Nov 2020 11:06:16 +0800
+Message-ID: <1605927976-232804-3-git-send-email-linyunsheng@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1605927976-232804-1-git-send-email-linyunsheng@huawei.com>
 References: <1605927976-232804-1-git-send-email-linyunsheng@huawei.com>
@@ -41,49 +41,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current semantic for napi_consume_skb() is that caller need
-to provide non-zero budget when calling from NAPI context, and
-breaking this semantic will cause hard to debug problem, because
-_kfree_skb_defer() need to run in atomic context in order to push
-the skb to the particular cpu' napi_alloc_cache atomically.
+Use napi_consume_skb() to assert the case when it is not called
+in a atomic softirq context.
 
-So add the lockdep_assert_in_softirq() to assert when the running
-context is not in_softirq, in_softirq means softirq is serving or
-BH is disabled. Because the softirq context can be interrupted by
-hard IRQ or NMI context, so lockdep_assert_in_softirq() need to
-assert about hard IRQ or NMI context too.
-
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 ---
- include/linux/lockdep.h | 7 +++++++
- 1 file changed, 7 insertions(+)
+ net/core/skbuff.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
-index f559487..f5e3d81 100644
---- a/include/linux/lockdep.h
-+++ b/include/linux/lockdep.h
-@@ -594,6 +594,12 @@ do {									\
- 		      this_cpu_read(hardirqs_enabled)));		\
- } while (0)
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index ffe3dcc..effa19d 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -902,6 +902,8 @@ void napi_consume_skb(struct sk_buff *skb, int budget)
+ 		return;
+ 	}
  
-+#define lockdep_assert_in_softirq()					\
-+do {									\
-+	WARN_ON_ONCE(__lockdep_enabled			&&		\
-+		     (!in_softirq() || in_irq() || in_nmi()));		\
-+} while (0)
++	lockdep_assert_in_softirq();
 +
- #else
- # define might_lock(lock) do { } while (0)
- # define might_lock_read(lock) do { } while (0)
-@@ -605,6 +611,7 @@ do {									\
+ 	if (!skb_unref(skb))
+ 		return;
  
- # define lockdep_assert_preemption_enabled() do { } while (0)
- # define lockdep_assert_preemption_disabled() do { } while (0)
-+# define lockdep_assert_in_softirq() do { } while (0)
- #endif
- 
- #ifdef CONFIG_PROVE_RAW_LOCK_NESTING
 -- 
 2.8.1
 
