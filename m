@@ -2,326 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AA7B2BBF24
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 14:05:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEC272BBF2B
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 14:18:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727753AbgKUNDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Nov 2020 08:03:43 -0500
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:33567 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727531AbgKUNDm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Nov 2020 08:03:42 -0500
-Received: by mail-oi1-f196.google.com with SMTP id k26so14005217oiw.0;
-        Sat, 21 Nov 2020 05:03:40 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3fSrNN5cdMc3n/QeXiEijlArkZhDgKdlCFlvtJINQ3E=;
-        b=ZyphX5CEfXFDBgh600zWuIxqOnSgBYdO7IUhPAVV+TKBAceHWoDQT5WuZN2B+g4XaM
-         0QHbejiO46UkLtfSH2mRHU/lmLQE4SJ8Rr1OUJ5Kh7UUOhOTlDOy3sm2vtnMwCNQx5lB
-         +W3ywZfNNSRbNsJ/fjM6pPFXyCRhxT4lHz8Xvw9UJrQSydO8lyfjV2aGbsADDJ88CGwl
-         IusXb7c2D6ZYJS0Bmt9x/2oIU5m4qN6+v+2cgKfzlr2UImA3qX6UDRZF80+rEIAKMOsR
-         yb5vXu0Edrmfs9gZCuXr7/t+stdwNjg0oJTFqXJfTno1iVm6F/5AyzF+mLwcWjK6WF1Q
-         /+tA==
-X-Gm-Message-State: AOAM533fn8q7BzYSaKlIA1Yiv9JbVjlqsf2BnfswybFb8fdRy56n7k0S
-        dcdZh/FdrWoM4X0YzdZPUA==
-X-Google-Smtp-Source: ABdhPJwrgTUmv+wZP0NYn3HS02TUgoEFFBPuTQ9ADhX3rCAytd46HakLApZiuMex/f6mOhMPsbm1zA==
-X-Received: by 2002:aca:ab93:: with SMTP id u141mr8753181oie.19.1605963820361;
-        Sat, 21 Nov 2020 05:03:40 -0800 (PST)
-Received: from xps15 ([2607:fb90:5feb:6270:cdf7:680e:59f2:6ccd])
-        by smtp.gmail.com with ESMTPSA id l1sm2995678otj.17.2020.11.21.05.03.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Nov 2020 05:03:39 -0800 (PST)
-Received: (nullmailer pid 2093033 invoked by uid 1000);
-        Sat, 21 Nov 2020 13:03:36 -0000
-Date:   Sat, 21 Nov 2020 07:03:36 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Cc:     leoyang.li@nxp.com, corbet@lwn.net,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linuxppc-dev@lists.ozlabs.org, ioana.ciornei@nxp.com,
-        Ionut-robert Aron <ionut-robert.aron@nxp.com>
-Subject: Re: [PATCH v3] dt-bindings: misc: convert fsl,qoriq-mc from txt to
- YAML
-Message-ID: <20201121130336.GA2086043@robh.at.kernel.org>
-References: <20201112133254.7291-1-laurentiu.tudor@nxp.com>
+        id S1727802AbgKUNSE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Nov 2020 08:18:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45602 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727668AbgKUNSB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Nov 2020 08:18:01 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92B05C0613CF
+        for <netdev@vger.kernel.org>; Sat, 21 Nov 2020 05:18:01 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kgSm0-00089W-LG; Sat, 21 Nov 2020 14:17:52 +0100
+Received: from [IPv6:2a03:f580:87bc:d400:4c1f:9c86:2b81:b0ea] (unknown [IPv6:2a03:f580:87bc:d400:4c1f:9c86:2b81:b0ea])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 5BCBD5983CB;
+        Sat, 21 Nov 2020 13:17:50 +0000 (UTC)
+Subject: Re: [PATCH 072/141] can: peak_usb: Fix fall-through warnings for
+ Clang
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+References: <cover.1605896059.git.gustavoars@kernel.org>
+ <aab7cf16bf43cc7c3e9c9930d2dae850c1d07a3c.1605896059.git.gustavoars@kernel.org>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <bf3dbc5c-c34e-b3ef-abb6-0c88d8a90332@pengutronix.de>
+Date:   Sat, 21 Nov 2020 14:17:45 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201112133254.7291-1-laurentiu.tudor@nxp.com>
+In-Reply-To: <aab7cf16bf43cc7c3e9c9930d2dae850c1d07a3c.1605896059.git.gustavoars@kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="Um0PBROohAn87SHKH5Z0CxiUa3ZnYBeOM"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 12, 2020 at 03:32:54PM +0200, Laurentiu Tudor wrote:
-> From: Ionut-robert Aron <ionut-robert.aron@nxp.com>
-> 
-> Convert fsl,qoriq-mc to YAML in order to automate the verification
-> process of dts files. In addition, update MAINTAINERS accordingly
-> and, while at it, add some missing files.
-> 
-> Signed-off-by: Ionut-robert Aron <ionut-robert.aron@nxp.com>
-> [laurentiu.tudor@nxp.com: update MINTAINERS, updates & fixes in schema]
-> Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--Um0PBROohAn87SHKH5Z0CxiUa3ZnYBeOM
+Content-Type: multipart/mixed; boundary="uwJFcgT96ZkDsWpG9kNWehKVQzdOYN6eR";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+ Wolfgang Grandegger <wg@grandegger.com>,
+ "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>
+Cc: linux-can@vger.kernel.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Message-ID: <bf3dbc5c-c34e-b3ef-abb6-0c88d8a90332@pengutronix.de>
+Subject: Re: [PATCH 072/141] can: peak_usb: Fix fall-through warnings for
+ Clang
+References: <cover.1605896059.git.gustavoars@kernel.org>
+ <aab7cf16bf43cc7c3e9c9930d2dae850c1d07a3c.1605896059.git.gustavoars@kernel.org>
+In-Reply-To: <aab7cf16bf43cc7c3e9c9930d2dae850c1d07a3c.1605896059.git.gustavoars@kernel.org>
+
+--uwJFcgT96ZkDsWpG9kNWehKVQzdOYN6eR
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+
+On 11/20/20 7:34 PM, Gustavo A. R. Silva wrote:
+> In preparation to enable -Wimplicit-fallthrough for Clang, fix a warnin=
+g
+> by explicitly adding a break statement instead of letting the code fall=
+
+> through to the next case.
+>=20
+> Link: https://github.com/KSPP/linux/issues/115
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 > ---
-> Changes in v3:
->  - dropped duplicated "fsl,qoriq-mc-dpmac" schema and replaced with
->    reference to it
->  - fixed a dt_binding_check warning
-> Changes in v2:
->  - fixed errors reported by yamllint
->  - dropped multiple unnecessary quotes
->  - used schema instead of text in description
->  - added constraints on dpmac reg property
-> 
->  .../devicetree/bindings/misc/fsl,qoriq-mc.txt | 196 ------------------
->  .../bindings/misc/fsl,qoriq-mc.yaml           | 187 +++++++++++++++++
->  .../ethernet/freescale/dpaa2/overview.rst     |   5 +-
->  MAINTAINERS                                   |   4 +-
->  4 files changed, 194 insertions(+), 198 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
->  create mode 100644 Documentation/devicetree/bindings/misc/fsl,qoriq-mc.yaml
+>  drivers/net/can/usb/peak_usb/pcan_usb_core.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>=20
+> diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_core.c b/drivers/net=
+/can/usb/peak_usb/pcan_usb_core.c
+> index c2764799f9ef..fd65a155be3b 100644
+> --- a/drivers/net/can/usb/peak_usb/pcan_usb_core.c
+> +++ b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
+> @@ -299,6 +299,8 @@ static void peak_usb_write_bulk_callback(struct urb=
+ *urb)
+>  		if (net_ratelimit())
+>  			netdev_err(netdev, "Tx urb aborted (%d)\n",
+>  				   urb->status);
+> +		break;
+> +
+>  	case -EPROTO:
+>  	case -ENOENT:
+>  	case -ECONNRESET:
+>=20
+
+What about moving the default to the end if the case, which is more commo=
+n anyways:
+
+diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_core.c b/drivers/net/c=
+an/usb/peak_usb/pcan_usb_core.c
+index 204ccb27d6d9..e8977dd10902 100644
+--- a/drivers/net/can/usb/peak_usb/pcan_usb_core.c
++++ b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
+@@ -295,16 +295,16 @@ static void peak_usb_write_bulk_callback(struct urb=
+ *urb)
+                netif_trans_update(netdev);
+                break;
+=20
+-       default:
+-               if (net_ratelimit())
+-                       netdev_err(netdev, "Tx urb aborted (%d)\n",
+-                                  urb->status);
+        case -EPROTO:
+        case -ENOENT:
+        case -ECONNRESET:
+        case -ESHUTDOWN:
+-
+                break;
++
++       default:
++               if (net_ratelimit())
++                       netdev_err(netdev, "Tx urb aborted (%d)\n",
++                                  urb->status);
+        }
+=20
+        /* should always release echo skb and corresponding context */
 
 
-> diff --git a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.yaml b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.yaml
-> new file mode 100644
-> index 000000000000..1dda2ad29717
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.yaml
-> @@ -0,0 +1,187 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +# Copyright 2020 NXP
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/misc/fsl,qoriq-mc.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +maintainers:
-> +  - Laurentiu Tudor <laurentiu.tudor@nxp.com>
-> +
-> +title: Freescale Management Complex
-> +
-> +description: |
-> +  The Freescale Management Complex (fsl-mc) is a hardware resource
-> +  manager that manages specialized hardware objects used in
-> +  network-oriented packet processing applications. After the fsl-mc
-> +  block is enabled, pools of hardware resources are available, such as
-> +  queues, buffer pools, I/O interfaces. These resources are building
-> +  blocks that can be used to create functional hardware objects/devices
-> +  such as network interfaces, crypto accelerator instances, L2 switches,
-> +  etc.
-> +
-> +  For an overview of the DPAA2 architecture and fsl-mc bus see:
-> +  Documentation/networking/device_drivers/freescale/dpaa2/overview.rst
-> +
-> +  As described in the above overview, all DPAA2 objects in a DPRC share the
-> +  same hardware "isolation context" and a 10-bit value called an ICID
-> +  (isolation context id) is expressed by the hardware to identify
-> +  the requester.
-> +
-> +  The generic 'iommus' property is insufficient to describe the relationship
-> +  between ICIDs and IOMMUs, so an iommu-map property is used to define
-> +  the set of possible ICIDs under a root DPRC and how they map to
-> +  an IOMMU.
-> +
-> +  For generic IOMMU bindings, see:
-> +  Documentation/devicetree/bindings/iommu/iommu.txt.
-> +
-> +  For arm-smmu binding, see:
-> +  Documentation/devicetree/bindings/iommu/arm,smmu.yaml.
-> +
-> +  MC firmware binary images can be found here:
-> +  https://github.com/NXP/qoriq-mc-binary
-> +
-> +properties:
-> +  compatible:
-> +    const: fsl,qoriq-mc
-> +    description:
-> +      A Freescale Management Complex compatible with this binding must have
-> +      Block Revision Registers BRR1 and BRR2 at offset 0x0BF8 and 0x0BFC in
-> +      the MC control register region.
-> +
-> +  reg:
-> +    minItems: 1
-> +    items:
-> +      - description: the command portal for this machine
-> +      - description:
-> +          MC control registers. This region may not be present in some
-> +          scenarios, such as in the device tree presented to a virtual
-> +          machine.
-> +
-> +  ranges:
-> +    description: |
-> +      A standard property. Defines the mapping between the child MC address
-> +      space and the parent system address space.
-> +
-> +      The MC address space is defined by 3 components:
-> +                <region type> <offset hi> <offset lo>
-> +
-> +      Valid values for region type are:
-> +                  0x0 - MC portals
-> +                  0x1 - QBMAN portals
-> +
-> +  '#address-cells':
-> +    const: 3
-> +
-> +  '#size-cells':
-> +    const: 1
-> +
-> +  dpmacs:
-> +    type: object
-> +    description:
-> +      The fsl-mc node may optionally have dpmac sub-nodes that describe the
-> +      relationship between the Ethernet MACs which belong to the MC and the
-> +      Ethernet PHYs on the system board.
-> +
-> +    properties:
-> +      '#address-cells':
-> +        const: 1
-> +
-> +      '#size-cells':
-> +        const: 0
-> +
-> +    patternProperties:
-> +      "^(dpmac@[0-9a-f]+)|(ethernet@[0-9a-f]+)$":
-> +        type: object
-> +
-> +        description:
-> +          see Documentation/devicetree/bindings/net/fsl,qoriq-mc-dpmac.yaml
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 
-Use $ref here.
+Marc
 
-> +
-> +  iommu-map:
-> +    description: |
-> +      Maps an ICID to an IOMMU and associated iommu-specifier data.
-> +
-> +      The property is an arbitrary number of tuples of
-> +      (icid-base, iommu, iommu-base, length).
-> +
-> +      Any ICID i in the interval [icid-base, icid-base + length) is
-> +      associated with the listed IOMMU, with the iommu-specifier
-> +      (i - icid-base + iommu-base).
-> +
-> +  msi-map:
-> +    description: |
-> +      Maps an ICID to a GIC ITS and associated msi-specifier data.
-> +
-> +      The property is an arbitrary number of tuples of
-> +      (icid-base, gic-its, msi-base, length).
-> +
-> +      Any ICID in the interval [icid-base, icid-base + length) is
-> +      associated with the listed GIC ITS, with the msi-specifier
-> +      (i - icid-base + msi-base).
-> +
-> +  msi-parent:
-> +    deprecated: true
-> +    description:
-> +      Points to the MSI controller node handling message interrupts for the MC.
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - iommu-map
-> +  - msi-map
-> +  - ranges
-> +  - '#address-cells'
-> +  - '#size-cells'
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    soc {
-> +      #address-cells = <2>;
-> +      #size-cells = <2>;
-> +
-> +      smmu: iommu@5000000 {
-> +        compatible = "arm,mmu-500";
-> +        #global-interrupts = <1>;
-> +        #iommu-cells = <1>;
-> +        reg = <0 0x5000000 0 0x800000>;
-> +        stream-match-mask = <0x7c00>;
-> +        interrupts = <0 13 4>,
-> +                     <0 146 4>, <0 147 4>,
-> +                     <0 148 4>, <0 149 4>,
-> +                     <0 150 4>, <0 151 4>,
-> +                     <0 152 4>, <0 153 4>;
-> +      };
-> +
-> +      fsl_mc: fsl-mc@80c000000 {
-> +        compatible = "fsl,qoriq-mc";
-> +        reg = <0x00000008 0x0c000000 0 0x40>,    /* MC portal base */
-> +        <0x00000000 0x08340000 0 0x40000>; /* MC control reg */
-> +        /* define map for ICIDs 23-64 */
-> +        iommu-map = <23 &smmu 23 41>;
-> +        /* define msi map for ICIDs 23-64 */
-> +        msi-map = <23 &its 23 41>;
-> +        #address-cells = <3>;
-> +        #size-cells = <1>;
-> +
-> +        /*
-> +        * Region type 0x0 - MC portals
-> +        * Region type 0x1 - QBMAN portals
-> +        */
-> +        ranges = <0x0 0x0 0x0 0x8 0x0c000000 0x4000000
-> +                  0x1 0x0 0x0 0x8 0x18000000 0x8000000>;
-> +
-> +        dpmacs {
-> +          #address-cells = <1>;
-> +          #size-cells = <0>;
-> +
-> +          ethernet@1 {
-> +            compatible = "fsl,qoriq-mc-dpmac";
-> +            reg = <1>;
-> +            phy-handle = <&mdio0_phy0>;
-> +          };
-> +        };
-> +      };
-> +    };
-> diff --git a/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/overview.rst b/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/overview.rst
-> index d638b5a8aadd..b3261c5871cc 100644
-> --- a/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/overview.rst
-> +++ b/Documentation/networking/device_drivers/ethernet/freescale/dpaa2/overview.rst
-> @@ -28,6 +28,9 @@ interfaces, an L2 switch, or accelerator instances.
->  The MC provides memory-mapped I/O command interfaces (MC portals)
->  which DPAA2 software drivers use to operate on DPAA2 objects.
->  
-> +MC firmware binary images can be found here:
-> +https://github.com/NXP/qoriq-mc-binary
-> +
->  The diagram below shows an overview of the DPAA2 resource management
->  architecture::
->  
-> @@ -338,7 +341,7 @@ Key functions include:
->    a bind of the root DPRC to the DPRC driver
->  
->  The binding for the MC-bus device-tree node can be consulted at
-> -*Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt*.
-> +*Documentation/devicetree/bindings/misc/fsl,qoriq-mc.yaml*.
->  The sysfs bind/unbind interfaces for the MC-bus can be consulted at
->  *Documentation/ABI/testing/sysfs-bus-fsl-mc*.
->  
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index b516bb34a8d5..e0ce6e2b663c 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -14409,9 +14409,11 @@ M:	Stuart Yoder <stuyoder@gmail.com>
->  M:	Laurentiu Tudor <laurentiu.tudor@nxp.com>
->  L:	linux-kernel@vger.kernel.org
->  S:	Maintained
-> -F:	Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
-> +F:	Documentation/devicetree/bindings/misc/fsl,dpaa2-console.yaml
-> +F:	Documentation/devicetree/bindings/misc/fsl,qoriq-mc.yaml
->  F:	Documentation/networking/device_drivers/ethernet/freescale/dpaa2/overview.rst
->  F:	drivers/bus/fsl-mc/
-> +F:	include/linux/fsl/mc.h
->  
->  QT1010 MEDIA DRIVER
->  M:	Antti Palosaari <crope@iki.fi>
-> -- 
-> 2.17.1
-> 
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+--uwJFcgT96ZkDsWpG9kNWehKVQzdOYN6eR--
+
+--Um0PBROohAn87SHKH5Z0CxiUa3ZnYBeOM
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+5E3kACgkQqclaivrt
+76kOuAf9FXn8cpXGeMIslKjsSJryU/nEjyGXwnMsE4DWltNdOsTzjaomGpAPxq7V
+lkXiduWwveC8VMEJwfYiK6XwOWctQ+tZvMCXzue25RDjk+wRHGSL93DBY8vnlj6w
+Xq3HueD2jPEbc/P4rXH0Gu/+MnCkT8dwSEDJHslTYxk2Pl7GPYvdS+L6rARGw9tA
+ZtI4J7DMZHOtxCVhCcJitIl5uIa+0gtz64UIyAqq5pR2ffAkLKi4dj9JXMTwbBXt
+mtTun+VyBOaThPCLw0SX70V1SGlT8q8yj34G1TALFuBU+kdh/wau1qf7HjenLEEU
+13++IkqjMhyCTpJXS7Zz8jIMNOs2ug==
+=YRBG
+-----END PGP SIGNATURE-----
+
+--Um0PBROohAn87SHKH5Z0CxiUa3ZnYBeOM--
