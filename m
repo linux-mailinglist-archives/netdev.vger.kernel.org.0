@@ -2,150 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE7742BBE46
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 10:51:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7DA02BBE65
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 11:15:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727392AbgKUJs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Nov 2020 04:48:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41902 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727350AbgKUJs6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Nov 2020 04:48:58 -0500
-Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5AB7C0613CF
-        for <netdev@vger.kernel.org>; Sat, 21 Nov 2020 01:48:57 -0800 (PST)
-Received: by mail-lf1-x144.google.com with SMTP id r24so831021lfm.8
-        for <netdev@vger.kernel.org>; Sat, 21 Nov 2020 01:48:57 -0800 (PST)
+        id S1727347AbgKUKNs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Nov 2020 05:13:48 -0500
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:61637 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726176AbgKUKNs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Nov 2020 05:13:48 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BQiLNTLnW3SLtn0YsnDFKEJnLKO+RrQeEC1pO6DUX3I=;
-        b=NDK1nLAguE/ieGaWEY+FmLBnFzKQ+keiUbLA87fRWbeoBl0TUnxoIWidngljNw3njr
-         T9o8cTivwQ/PNTS8SRA8GGOH3lhovcdXa7KS3UtRt1obJiBdyCZZl9Xlfw4rzkmyGOTd
-         uLGvEZ1QZa5J6Tp8nfw/NzJd+K1nkbMjtRkcCChOxm0B7P2+fVxhLjJYZYL3Q7DkFqaR
-         T3AKSwfY5cZnPoVzlZ66HzscshjnesEaQzqHuuFTVW0GRzwo5rZ75HFGKONmKLB103Am
-         QO3KboK3J0HYVm4pMpi2LzNDqw5WjPohXcC1BMna74BqabedOAZCTbSZTqUHiUTJ5sWr
-         xRZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BQiLNTLnW3SLtn0YsnDFKEJnLKO+RrQeEC1pO6DUX3I=;
-        b=d2+F4orgwfy3PHec4R9eytKOIglwVKMrN0kF0e4sW2Fgp3ZqTE+bwlwxVvr5WTUawt
-         S3sDrIW4AvEW4FqpDc27gZ8HXZIWN0Nr8hOnuxYEL1fBLHP4XAKTqwCLENKN2E4QY095
-         5XnwOfcwIadrboONVHP2paushQBKrzEmOWNF3sSqfDLNOwVO/GKVHA70j0uIiCPOIWMJ
-         D1B1LODI2wxeRE2A05+uTyXbHRoGHFsOfAjFh5i7Zx5KOect1Jn2lN9TenQoTtKCDQ7z
-         EPe/ujrRPUJo1mF2O31+f8kUdQgIzPHCwJazi3VbDN7Cyg/mRATrg0o298jNkE8cdC2c
-         tu3g==
-X-Gm-Message-State: AOAM531Gh+0lzBocP2sCBV8ngiZk9Ge+jFPzrJrbLLBFbiN00fzA2L6g
-        wkq+tT/8P8R/aQZgneMGg0QtN9/3e380sM/D3+47UA==
-X-Google-Smtp-Source: ABdhPJxud8h9+Zsb7MJedEB+VgeNBdrfewqkbrhXLdc6jkC62nTrXEoFHkJAkLhxgIShY2CKy1qJr682LJJZVeaTVL4=
-X-Received: by 2002:a05:6512:110a:: with SMTP id l10mr9769828lfg.167.1605952135886;
- Sat, 21 Nov 2020 01:48:55 -0800 (PST)
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1605953627; x=1637489627;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=sWEOxI7muAIsnweqdEEF9gqvvegGjKtMi9NaOGJpSMs=;
+  b=kHC9JCzyObNDj2zBbLc09cg4NTeIcubutOzSvLN7y6BqppMi7fdQnnt/
+   M5uiT2yppecFR0pBE5NU+MpjLYccgloL/Ntzwt7kyPjShCfR/xRhn39kM
+   jP51ialKgQ1Jeu7CkVdzVzVvgwhxMGsOKtHHNK5va314kOHx7d9hbWoau
+   g=;
+X-IronPort-AV: E=Sophos;i="5.78,359,1599523200"; 
+   d="scan'208";a="67907410"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1d-e69428c4.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 21 Nov 2020 10:13:46 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-1d-e69428c4.us-east-1.amazon.com (Postfix) with ESMTPS id 73D1DC1314;
+        Sat, 21 Nov 2020 10:13:43 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Sat, 21 Nov 2020 10:13:42 +0000
+Received: from 38f9d3582de7.ant.amazon.com (10.43.162.50) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Sat, 21 Nov 2020 10:13:26 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <kafai@fb.com>
+CC:     <ast@kernel.org>, <benh@amazon.com>, <bpf@vger.kernel.org>,
+        <daniel@iogearbox.net>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <kuni1840@gmail.com>,
+        <kuniyu@amazon.co.jp>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+Subject: Re: [RFC PATCH bpf-next 3/8] tcp: Migrate TCP_ESTABLISHED/TCP_SYN_RECV sockets in accept queues.
+Date:   Sat, 21 Nov 2020 19:13:22 +0900
+Message-ID: <20201121101322.97015-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+In-Reply-To: <20201120015346.sokqxwx4uavmoctz@kafai-mbp.dhcp.thefacebook.com>
+References: <20201120015346.sokqxwx4uavmoctz@kafai-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20201119085022.3606135-1-davidgow@google.com> <CAEf4BzY4i0fH34eO=-4WOzVpifgPmJ0ER5ipBJWB0_4Zdv0AQg@mail.gmail.com>
-In-Reply-To: <CAEf4BzY4i0fH34eO=-4WOzVpifgPmJ0ER5ipBJWB0_4Zdv0AQg@mail.gmail.com>
-From:   David Gow <davidgow@google.com>
-Date:   Sat, 21 Nov 2020 17:48:44 +0800
-Message-ID: <CABVgOSn10kCaD7EQCMJTgD8udNx6fOExqUL1gXHzEViemiq3LA@mail.gmail.com>
-Subject: Re: [RFC PATCH] bpf: preload: Fix build error when O= is set
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-um <linux-um@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.50]
+X-ClientProxiedBy: EX13D24UWB003.ant.amazon.com (10.43.161.222) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 21, 2020 at 3:38 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Thu, Nov 19, 2020 at 12:51 AM David Gow <davidgow@google.com> wrote:
-> >
-> > If BPF_PRELOAD is enabled, and an out-of-tree build is requested with
-> > make O=<path>, compilation seems to fail with:
-> >
-> > tools/scripts/Makefile.include:4: *** O=.kunit does not exist.  Stop.
-> > make[4]: *** [../kernel/bpf/preload/Makefile:8: kernel/bpf/preload/libbpf.a] Error 2
-> > make[3]: *** [../scripts/Makefile.build:500: kernel/bpf/preload] Error 2
-> > make[2]: *** [../scripts/Makefile.build:500: kernel/bpf] Error 2
-> > make[2]: *** Waiting for unfinished jobs....
-> > make[1]: *** [.../Makefile:1799: kernel] Error 2
-> > make[1]: *** Waiting for unfinished jobs....
-> > make: *** [Makefile:185: __sub-make] Error 2
-> >
-> > By the looks of things, this is because the (relative path) O= passed on
-> > the command line is being passed to the libbpf Makefile, which then
-> > can't find the directory. Given OUTPUT= is being passed anyway, we can
-> > work around this by explicitly setting an empty O=, which will be
-> > ignored in favour of OUTPUT= in tools/scripts/Makefile.include.
->
-> Strange, but I can't repro it. I use make O=<absolute path> all the
-> time with no issues. I just tried specifically with a make O=.build,
-> where .build is inside Linux repo, and it still worked fine. See also
-> be40920fbf10 ("tools: Let O= makes handle a relative path with -C
-> option") which was supposed to address such an issue. So I'm wondering
-> what exactly is causing this problem.
->
-[+ linux-um list]
+From:   Martin KaFai Lau <kafai@fb.com>
+Date:   Thu, 19 Nov 2020 17:53:46 -0800
+> On Fri, Nov 20, 2020 at 07:09:22AM +0900, Kuniyuki Iwashima wrote:
+> > From: Martin KaFai Lau <kafai@fb.com>
+> > Date: Wed, 18 Nov 2020 15:50:17 -0800
+> > > On Tue, Nov 17, 2020 at 06:40:18PM +0900, Kuniyuki Iwashima wrote:
+> > > > This patch lets reuseport_detach_sock() return a pointer of struct sock,
+> > > > which is used only by inet_unhash(). If it is not NULL,
+> > > > inet_csk_reqsk_queue_migrate() migrates TCP_ESTABLISHED/TCP_SYN_RECV
+> > > > sockets from the closing listener to the selected one.
+> > > > 
+> > > > Listening sockets hold incoming connections as a linked list of struct
+> > > > request_sock in the accept queue, and each request has reference to a full
+> > > > socket and its listener. In inet_csk_reqsk_queue_migrate(), we unlink the
+> > > > requests from the closing listener's queue and relink them to the head of
+> > > > the new listener's queue. We do not process each request, so the migration
+> > > > completes in O(1) time complexity. However, in the case of TCP_SYN_RECV
+> > > > sockets, we will take special care in the next commit.
+> > > > 
+> > > > By default, we select the last element of socks[] as the new listener.
+> > > > This behaviour is based on how the kernel moves sockets in socks[].
+> > > > 
+> > > > For example, we call listen() for four sockets (A, B, C, D), and close the
+> > > > first two by turns. The sockets move in socks[] like below. (See also [1])
+> > > > 
+> > > >   socks[0] : A <-.      socks[0] : D          socks[0] : D
+> > > >   socks[1] : B   |  =>  socks[1] : B <-.  =>  socks[1] : C
+> > > >   socks[2] : C   |      socks[2] : C --'
+> > > >   socks[3] : D --'
+> > > > 
+> > > > Then, if C and D have newer settings than A and B, and each socket has a
+> > > > request (a, b, c, d) in their accept queue, we can redistribute old
+> > > > requests evenly to new listeners.
+> > > I don't think it should emphasize/claim there is a specific way that
+> > > the kernel-pick here can redistribute the requests evenly.  It depends on
+> > > how the application close/listen.  The userspace can not expect the
+> > > ordering of socks[] will behave in a certain way.
+> > 
+> > I've expected replacing listeners by generations as a general use case.
+> > But exactly. Users should not expect the undocumented kernel internal.
+> > 
+> > 
+> > > The primary redistribution policy has to depend on BPF which is the
+> > > policy defined by the user based on its application logic (e.g. how
+> > > its binary restart work).  The application (and bpf) knows which one
+> > > is a dying process and can avoid distributing to it.
+> > > 
+> > > The kernel-pick could be an optional fallback but not a must.  If the bpf
+> > > prog is attached, I would even go further to call bpf to redistribute
+> > > regardless of the sysctl, so I think the sysctl is not necessary.
+> > 
+> > I also think it is just an optional fallback, but to pick out a different
+> > listener everytime, choosing the moved socket was reasonable. So the even
+> > redistribution for a specific use case is a side effect of such socket
+> > selection.
+> > 
+> > But, users should decide to use either way:
+> >   (1) let the kernel select a new listener randomly
+> >   (2) select a particular listener by eBPF
+> > 
+> > I will update the commit message like:
+> > The kernel selects a new listener randomly, but as the side effect, it can
+> > redistribute packets evenly for a specific case where an application
+> > replaces listeners by generations.
+> Since there is no feedback on sysctl, so may be something missed
+> in the lines.
 
-Hmm... From a quick check, I can't reproduce this on x86, so it's
-possibly a UML-specific issue.
+I'm sorry, I have missed this point while thinking about each reply...
 
-The problem here seems to be that $PWD is, for whatever reason, equal
-to the srcdir on x86, but not on UML. In general, $PWD behaves pretty
-weirdly -- I don't fully understand it -- but if I add a tactical "PWD
-:= $(shell pwd)" or use $(CURDIR) instead, the issue shows up on x86
-as well. I guess this is because PWD only gets updated when set by a
-shell or something, and UML does this somewhere?
 
-Thoughts?
+> I don't think this migration logic should depend on a sysctl.
+> At least not when a bpf prog is attached that is capable of doing
+> migration, it is too fragile to ask user to remember to turn on
+> the sysctl before attaching the bpf prog.
+> 
+> Your use case is to primarily based on bpf prog to pick or only based
+> on kernel to do a random pick?
 
-Cheers,
--- David
+I think we have to care about both cases.
 
-> >
-> > Signed-off-by: David Gow <davidgow@google.com>
-> > ---
-> >
-> > Hi all,
-> >
-> > I'm not 100% sure this is the correct fix here -- it seems to work for
-> > me, and makes some sense, but let me know if there's a better way.
-> >
-> > One other thing worth noting is that I've been hitting this with
-> > make allyesconfig on ARCH=um, but there's a comment in the Kconfig
-> > suggesting that, because BPF_PRELOAD depends on !COMPILE_TEST, that
-> > maybe it shouldn't be being built at all. I figured that it was worth
-> > trying to fix this anyway.
-> >
-> > Cheers,
-> > -- David
-> >
-> >
-> >  kernel/bpf/preload/Makefile | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/kernel/bpf/preload/Makefile b/kernel/bpf/preload/Makefile
-> > index 23ee310b6eb4..39848d296097 100644
-> > --- a/kernel/bpf/preload/Makefile
-> > +++ b/kernel/bpf/preload/Makefile
-> > @@ -5,7 +5,7 @@ LIBBPF_A = $(obj)/libbpf.a
-> >  LIBBPF_OUT = $(abspath $(obj))
-> >
-> >  $(LIBBPF_A):
-> > -       $(Q)$(MAKE) -C $(LIBBPF_SRCS) OUTPUT=$(LIBBPF_OUT)/ $(LIBBPF_OUT)/libbpf.a
-> > +       $(Q)$(MAKE) -C $(LIBBPF_SRCS) O= OUTPUT=$(LIBBPF_OUT)/ $(LIBBPF_OUT)/libbpf.a
-> >
-> >  userccflags += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi \
-> >         -I $(srctree)/tools/lib/ -Wno-unused-result
-> > --
-> > 2.29.2.454.gaff20da3a2-goog
-> >
+I think we can always enable the migration feature if eBPF prog is not
+attached. On the other hand, if BPF_PROG_TYPE_SK_REUSEPORT prog is attached
+to select a listener by some rules, along updating the kernel,
+redistributing requests without user intention can break the application.
+So, there is something needed to confirm user intension at least if eBPF
+prog is attached.
+
+But honestly, I believe such eBPF users can follow this change and
+implement migration eBPF prog if we introduce such a breaking change.
+
+
+> Also, IIUC, this sysctl setting sticks at "*reuse", there is no way to
+> change it until all the listening sockets are closed which is exactly
+> the service disruption problem this series is trying to solve here.
+
+Oh, exactly...
+If we apply this series by live patching, we cannot enable the feature
+without service disruption.
+
+To enable the migration feature dynamically, how about this logic?
+In this logic, we do not save the sysctl value and check it at each time.
+
+  1. no eBPF prog attached -> ON
+  2. eBPF prog attached and sysctl is 0 -> OFF
+  3. eBPF prog attached and sysctl is 1 -> ON
+
+So, replacing 
+
+  if (reuse->migrate_req)
+
+to 
+
+  if (!reuse->prog || net->ipv4.sysctl_tcp_migrate_req)
