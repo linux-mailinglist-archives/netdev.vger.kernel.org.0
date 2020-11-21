@@ -2,84 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 590902BC022
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 16:01:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80AD62BC06C
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 17:10:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728090AbgKUPBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Nov 2020 10:01:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33150 "EHLO
+        id S1726192AbgKUQJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Nov 2020 11:09:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728047AbgKUPBW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Nov 2020 10:01:22 -0500
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67276C0613CF
-        for <netdev@vger.kernel.org>; Sat, 21 Nov 2020 07:01:22 -0800 (PST)
-Received: by mail-pl1-x641.google.com with SMTP id 18so6478177pli.13
-        for <netdev@vger.kernel.org>; Sat, 21 Nov 2020 07:01:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=igbTgXkAXSmaPGjybCPWgukT2I3p1JxcpedrQGr5L+Y=;
-        b=cdI0WXE70lXvNJUJZIs0qJutTeAp17lLPsOyna+WJpMFeaMfL20vvZYMIU5HASd2aL
-         feXyFHKgMFIOERbVIWASmIrizZIwdNqQiOcURaJ6c/BhaWcCUk3ictAzh4Lb81f32qTJ
-         clLrdOzNMwN9Yz4hG0LL48KPfPNfs2pGFeFpkdiPJbyZ6pMAToWelWklK5TnIwtWN9ai
-         pCkM9Fz39vD9VgAHGl+x0k/rt4ML6obXxCHDGoIPpZX31e/Y9d2mDmgNig7HLG/JMsdg
-         u2Tg7N3E5OXcLYSojBG72vXPBL04I5c5epmPiA4UXI91flTJ5NP7PyP4h9kT//hSWPzA
-         kUiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=igbTgXkAXSmaPGjybCPWgukT2I3p1JxcpedrQGr5L+Y=;
-        b=Hjb3TUXtmuTRo8U//8m9ei4jkoSjzCNISW8x6b0gfeNEFwnL2d9nmxQ82C1z6QHf0H
-         ra5fZkZ2i3x+vT06BpzzIzGKdNY084rs2tlNQzPr/gH5t9hqrcWr70t+PJHCojRPf8PC
-         Y0uchpUcO2tVq3887BIgYewUphLsgie8EqnfAalA0uHpSmqwZ9UzOSuqbCFpI1gLZPcW
-         wK1w/3FrCyZEagx3ZGZEm4XLzkBvhj+uj3vMDrq+0wnQLrELXNs6jo9XRXGIUDbF3I42
-         b4txd8+rPA7usUT1jcxeKYIkHSnTfY1UykJcYi50z4rpSeSsE0RdmY9cB1ed0IBo51pS
-         m1aQ==
-X-Gm-Message-State: AOAM531A+38iLH6TcwcpC2FAkyfSnGQu+dFXl0rrVadqs8vQntK/++08
-        XEoSXiOe7z/0xzgMVrIS6TROC0pTCBQ=
-X-Google-Smtp-Source: ABdhPJyG5Nwz3WuiXOYUt0CYGvQToA5MI5ywgQv7bV6qE9oSo/4R5ouEPmOz9vQuMCNeudwCw/afjQ==
-X-Received: by 2002:a17:902:c404:b029:d9:fbf5:83d8 with SMTP id k4-20020a170902c404b02900d9fbf583d8mr1215191plk.13.1605970881598;
-        Sat, 21 Nov 2020 07:01:21 -0800 (PST)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id t8sm7120083pfe.65.2020.11.21.07.01.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 21 Nov 2020 07:01:20 -0800 (PST)
-Subject: Re: [PATCH net-next 2/2] net: dsa: hellcreek: Don't print error
- message on defer
-To:     Kurt Kanzenbach <kurt@linutronix.de>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-References: <20201121114455.22422-1-kurt@linutronix.de>
- <20201121114455.22422-3-kurt@linutronix.de>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <567f5cbc-001c-c693-3c02-1b157d5571c5@gmail.com>
-Date:   Sat, 21 Nov 2020 07:01:19 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.5.0
+        with ESMTP id S1725914AbgKUQJS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Nov 2020 11:09:18 -0500
+Received: from mail.buslov.dev (mail.buslov.dev [IPv6:2001:19f0:5001:2e3f:5400:1ff:feed:a259])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B4FC0613CF
+        for <netdev@vger.kernel.org>; Sat, 21 Nov 2020 08:09:17 -0800 (PST)
+Received: from vlad-x1g6.localdomain (unknown [IPv6:2a0b:2bc3:193f:1:a5fe:a7d6:6345:fe8d])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.buslov.dev (Postfix) with ESMTPSA id 181BE1F4E0;
+        Sat, 21 Nov 2020 18:09:13 +0200 (EET)
+From:   Vlad Buslov <vlad@buslov.dev>
+To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        Vlad Buslov <vlad@buslov.dev>
+Subject: [PATCH net-next] net: sched: alias action flags with TCA_ACT_ prefix
+Date:   Sat, 21 Nov 2020 18:09:02 +0200
+Message-Id: <20201121160902.808705-1-vlad@buslov.dev>
+X-Mailer: git-send-email 2.29.1
 MIME-Version: 1.0
-In-Reply-To: <20201121114455.22422-3-kurt@linutronix.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Currently both filter and action flags use same "TCA_" prefix which makes
+them hard to distinguish to code and confusing for users. Create aliases
+for existing action flags constants with "TCA_ACT_" prefix.
 
+Signed-off-by: Vlad Buslov <vlad@buslov.dev>
+---
+ include/uapi/linux/rtnetlink.h | 11 +++++++----
+ net/sched/act_api.c            | 10 +++++-----
+ 2 files changed, 12 insertions(+), 9 deletions(-)
 
-On 11/21/2020 3:44 AM, Kurt Kanzenbach wrote:
-> When DSA is not loaded when the driver is probed an error message is
-> printed. But, that's not really an error, just a defer. Use dev_err_probe()
-> instead.
-> 
-> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+index 2ffbef5da6c1..91db081e5360 100644
+--- a/include/uapi/linux/rtnetlink.h
++++ b/include/uapi/linux/rtnetlink.h
+@@ -768,16 +768,19 @@ enum {
+ #define TA_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct tcamsg))
+ /* tcamsg flags stored in attribute TCA_ROOT_FLAGS
+  *
+- * TCA_FLAG_LARGE_DUMP_ON user->kernel to request for larger than TCA_ACT_MAX_PRIO
+- * actions in a dump. All dump responses will contain the number of actions
+- * being dumped stored in for user app's consumption in TCA_ROOT_COUNT
++ * TCA_ACT_FLAG_LARGE_DUMP_ON user->kernel to request for larger than
++ * TCA_ACT_MAX_PRIO actions in a dump. All dump responses will contain the
++ * number of actions being dumped stored in for user app's consumption in
++ * TCA_ROOT_COUNT
+  *
+- * TCA_FLAG_TERSE_DUMP user->kernel to request terse (brief) dump that only
++ * TCA_ACT_FLAG_TERSE_DUMP user->kernel to request terse (brief) dump that only
+  * includes essential action info (kind, index, etc.)
+  *
+  */
+ #define TCA_FLAG_LARGE_DUMP_ON		(1 << 0)
++#define TCA_ACT_FLAG_LARGE_DUMP_ON	TCA_FLAG_LARGE_DUMP_ON
+ #define TCA_FLAG_TERSE_DUMP		(1 << 1)
++#define TCA_ACT_FLAG_TERSE_DUMP		TCA_FLAG_TERSE_DUMP
+ 
+ /* New extended info filters for IFLA_EXT_MASK */
+ #define RTEXT_FILTER_VF		(1 << 0)
+diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+index fc23f46a315c..99db1c77426b 100644
+--- a/net/sched/act_api.c
++++ b/net/sched/act_api.c
+@@ -278,7 +278,7 @@ static int tcf_dump_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
+ 			index--;
+ 			goto nla_put_failure;
+ 		}
+-		err = (act_flags & TCA_FLAG_TERSE_DUMP) ?
++		err = (act_flags & TCA_ACT_FLAG_TERSE_DUMP) ?
+ 			tcf_action_dump_terse(skb, p, true) :
+ 			tcf_action_dump_1(skb, p, 0, 0);
+ 		if (err < 0) {
+@@ -288,7 +288,7 @@ static int tcf_dump_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
+ 		}
+ 		nla_nest_end(skb, nest);
+ 		n_i++;
+-		if (!(act_flags & TCA_FLAG_LARGE_DUMP_ON) &&
++		if (!(act_flags & TCA_ACT_FLAG_LARGE_DUMP_ON) &&
+ 		    n_i >= TCA_ACT_MAX_PRIO)
+ 			goto done;
+ 	}
+@@ -298,7 +298,7 @@ static int tcf_dump_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
+ 
+ 	mutex_unlock(&idrinfo->lock);
+ 	if (n_i) {
+-		if (act_flags & TCA_FLAG_LARGE_DUMP_ON)
++		if (act_flags & TCA_ACT_FLAG_LARGE_DUMP_ON)
+ 			cb->args[1] = n_i;
+ 	}
+ 	return n_i;
+@@ -1473,8 +1473,8 @@ static int tcf_action_add(struct net *net, struct nlattr *nla,
+ }
+ 
+ static const struct nla_policy tcaa_policy[TCA_ROOT_MAX + 1] = {
+-	[TCA_ROOT_FLAGS] = NLA_POLICY_BITFIELD32(TCA_FLAG_LARGE_DUMP_ON |
+-						 TCA_FLAG_TERSE_DUMP),
++	[TCA_ROOT_FLAGS] = NLA_POLICY_BITFIELD32(TCA_ACT_FLAG_LARGE_DUMP_ON |
++						 TCA_ACT_FLAG_TERSE_DUMP),
+ 	[TCA_ROOT_TIME_DELTA]      = { .type = NLA_U32 },
+ };
+ 
 -- 
-Florian
+2.29.1
+
