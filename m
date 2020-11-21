@@ -2,93 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B39FB2BBF4F
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 14:38:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BCAFC2BBF89
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 15:15:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727872AbgKUNhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Nov 2020 08:37:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48504 "EHLO
+        id S1728033AbgKUOOD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Nov 2020 09:14:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727862AbgKUNhJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Nov 2020 08:37:09 -0500
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ACE4C0613CF
-        for <netdev@vger.kernel.org>; Sat, 21 Nov 2020 05:37:07 -0800 (PST)
-Received: by mail-yb1-xb32.google.com with SMTP id x17so11392913ybr.8
-        for <netdev@vger.kernel.org>; Sat, 21 Nov 2020 05:37:07 -0800 (PST)
+        with ESMTP id S1728020AbgKUOOD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Nov 2020 09:14:03 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD2A0C061A4A
+        for <netdev@vger.kernel.org>; Sat, 21 Nov 2020 06:14:02 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id c198so11774238wmd.0
+        for <netdev@vger.kernel.org>; Sat, 21 Nov 2020 06:14:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=hW+tDMcroBnYjVio+hhjus4Lc01NoQdNAIz2e/PH8bE=;
-        b=HnhelNFUSiMq00wIF6Xs+BuzF9tAL4Hyqx6FmE2Qs2nKx0ekYAvWDJRQBOECqce2p9
-         jFygS0EBt0dgqjVB5MGie63Wk28z3ohWHO9jAEH6pw1QNEFIuSnqQPwGPkGtzDOZE+CO
-         Ukh0G2BlgtNnU4E9xw92CffuxZijak+3MGRRCeg5z5/9qHsxpVeMa/zF7MP1yRUd4dHt
-         trTCUqRbhv8p0jcloO4k2rJtSSPd//QQwzLppkkgRSvGZhFbJjTcyiQ9PgT27WzNe5mJ
-         RqKRBUNq4N2Puy6HV6sqTRscgPBMRCg17BZn/z2sz91Rp0AVNWUB3e4R8Ym8M2x7sGM2
-         +Utg==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=IWYFKF/mJ+HUJoPCxsHdk7pAqaDwieEIuOGknNJBkGE=;
+        b=T5kzv0DqSCFOItJlu9zICD7Mvo71KO8n2HK1FPPMevYCRmL3oFyxfWBoQ3uWLUti+f
+         zYUc6sMQvjXZKlrZZaB9hJ+tEX3Fs3JzeqzfxAZEjoJ+duUlL4VOUM79R50TS4F8OGSa
+         WWkDEMixMKiqwkbvRco+h5W+IMoW7hTI6XLM4Bt/hN7i1Fr6GGH7w4Jq+2k5KkkI78w6
+         8YlFJgB3ZTJW6RjkWOwmJETzneES9a1ANCaykUz4nXsYEVfRNk5AYgzSmClfaUK5ebpu
+         IO9NGeO5y06M+Tn+kyVwGen8IJRqa+E8qrcIJOLvXZjZEnxHO0kbNFII5yHeZCB+QUXO
+         zKnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=hW+tDMcroBnYjVio+hhjus4Lc01NoQdNAIz2e/PH8bE=;
-        b=a2mFQxT+EqLohIcX8dk8ojKilUfsC4WSWvCGgmgRfvutPCLfX5SG19LBk0VlgiypIW
-         2L//KrCSRPejU/GLTkMw9Vbh9zbwoM8NyQpYOlT5Hddh28DThU3zrDEig6Pbz8wr/ddr
-         CeRe9kpXBj04RhZFZdRuP3myzIRx5AmayQQjAg1xXHtV6U4wabPlMw1KXcWI9teXL2u+
-         mpQbH3wCK5HnF7Kfo/kiMt8OJXMMwWcU6p+Mz07qhuEk/xvB4ZncNDQECqoYuWzpc1+u
-         xq544b+0d5NKRGrAePZ6RAQmYslUQTXXfAOVIp/tZQLH1Jn7MrbVH773+i1J5sjR8eoI
-         6UcQ==
-X-Gm-Message-State: AOAM531Z+FCrqDbRCXchYTZtIXiuCr46nHpTsbQVhAavm7GWNhHasvRc
-        iyzNS96Z/eAdR4lbdT4Mr3cMpfp7fw1K0s/PUldqM0JJCHc=
-X-Google-Smtp-Source: ABdhPJxfACPVKowP0RxW20RtWN1Wr03kpFpJwW/uY9rSRwZRn/CkpnG73HYr7SIckCgVF+ejRKFE6K7av9FinNi3uTk=
-X-Received: by 2002:a25:d90:: with SMTP id 138mr24173938ybn.179.1605965826485;
- Sat, 21 Nov 2020 05:37:06 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=IWYFKF/mJ+HUJoPCxsHdk7pAqaDwieEIuOGknNJBkGE=;
+        b=SgjhtxgwO9VttOIdg00E3NrGplRs7tRfyg6B9iqGHibj68Mhb+EAf+pY+QXGLEMS/3
+         iK4Cedy1+hErN411eeg3baPuDiDiiV9b4Uk0pIVtQ4kqTWLatEtbBIt7CgM71flTXls6
+         4XThxFaj3NrDg9qKB2ipdF0fcstxhUxyX1kbZBd8+0dp7H30sQaKK3o3awb77Er56/85
+         p3rsPL7fciWyw5JmR/rHAFY++rGob9oZOcnSJOhtiBRu6U9w+GgY3m5FbwON9Aw9U7r1
+         b4C5qT0986MpUwDLZ+hUI+f3JjBfMlDU5JPQiaoZSh9K6E1TjpZ913fNgPdY8wPwOo3y
+         QxmQ==
+X-Gm-Message-State: AOAM531wuwBdp9uE6ibeHamuss3tm1XVlzP3xY+BzgSgztSNmQa79R0m
+        zeKOx/uuWDqTYpoDhCvIgHIWSXOaof3pwflyiL8=
+X-Google-Smtp-Source: ABdhPJwh+gQ2mbKXw8vN5oViDyMNpn5R8RMKiFi8GDqjtHa3AWKn3to7d/4Mu3/AdMYvKrlqx0MukA==
+X-Received: by 2002:a1c:99d3:: with SMTP id b202mr14764169wme.0.1605968040759;
+        Sat, 21 Nov 2020 06:14:00 -0800 (PST)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id q1sm1519818wrj.8.2020.11.21.06.13.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 Nov 2020 06:14:00 -0800 (PST)
+Date:   Sat, 21 Nov 2020 15:13:59 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     George Cherian <george.cherian@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, sgoutham@marvell.com,
+        lcherian@marvell.com, gakula@marvell.com, masahiroy@kernel.org,
+        willemdebruijn.kernel@gmail.com, saeed@kernel.org
+Subject: Re: [PATCHv4 net-next 2/3] octeontx2-af: Add devlink health
+ reporters for NPA
+Message-ID: <20201121141359.GE3055@nanopsycho.orion>
+References: <20201121040201.3171542-1-george.cherian@marvell.com>
+ <20201121040201.3171542-3-george.cherian@marvell.com>
 MIME-Version: 1.0
-From:   James Courtier-Dutton <james.dutton@gmail.com>
-Date:   Sat, 21 Nov 2020 13:36:30 +0000
-Message-ID: <CAAMvbhFQ_70+OcqofakqrO52PTDy-+401cQ3vYfCT0o_j6yKFA@mail.gmail.com>
-Subject: SO_REUSEADDR compatibility problems
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201121040201.3171542-3-george.cherian@marvell.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Sat, Nov 21, 2020 at 05:02:00AM CET, george.cherian@marvell.com wrote:
+>Add health reporters for RVU NPA block.
+>NPA Health reporters handle following HW event groups
+> - GENERAL events
+> - ERROR events
+> - RAS events
+> - RVU event
+>An event counter per event is maintained in SW.
+>
+>Output:
+> # devlink health
+> pci/0002:01:00.0:
+>   reporter npa
+>     state healthy error 0 recover 0
+> # devlink  health dump show pci/0002:01:00.0 reporter npa
+> NPA_AF_GENERAL:
+>        Unmap PF Error: 0
+>        Free Disabled for NIX0 RX: 0
+>        Free Disabled for NIX0 TX: 0
+>        Free Disabled for NIX1 RX: 0
+>        Free Disabled for NIX1 TX: 0
 
-The use case I am struggling with is the use of a Windows program
-running in wine that is sending and receiving UDP packets.
-This particular windows program uses SO_REUSEADDR socket option and
-opens two sockets. Lets call the first one socket A, and the second
-one Socket B.
+This is for 2 ports if I'm not mistaken. Then you need to have this
+reporter per-port. Register ports and have reporter for each.
 
-The SO_REUSEADDR from the Windows application is translated by "wine" into a
-SO_REUSEADDR in Linux.
-Unfortunately the behaviour of these is different between Windows and
-Linux so the Windows application fails to run on Linux under wine.
-1 ) On windows:
-All received unicast UDP packets will arrive on the first opened
-socket. Thus on socket A.
-2) On Linux:
-All received unicast UDP packets will arrive on the last opened
-socket. Thus on socket B.
-
-The problem is that this windows program only expects to receive
-unicast UDP packets on socket A, and thus it sees no packets.
-
-There are no currently existing socket options in Linux that would
-permit wine to simulate the Windows behaviour.
-And thus, the reason I am asking the question here.
-Please can we add an extra socket option to the Linux socket options
-such that we can get wine to simulate Windows correctly. I.e. behave
-like (1) above.
-Now wine is pretty good at simulating most things Windows throws at
-it, but socket options is not one of them yet.
-Also note, that (1) is actually more secure than (2) because it
-prevents other applications with the same UserID from hijacking the
-socket.
-Although (2) is more helpful in more gracefully handling some error edge cases.
-
-Suggested new option name:  SO_REUSEADDR_WS
-
-Kind Regards
-
-James
+NAK.
