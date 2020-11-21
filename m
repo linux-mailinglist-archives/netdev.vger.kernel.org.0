@@ -2,174 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AA022BBB81
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 02:27:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E5F42BBBAD
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 02:51:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728905AbgKUB0R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 20:26:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49488 "EHLO
+        id S1725944AbgKUBts (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 20:49:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbgKUB0R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 20:26:17 -0500
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F1AC0613CF;
-        Fri, 20 Nov 2020 17:26:15 -0800 (PST)
-Received: by mail-ej1-x642.google.com with SMTP id bo9so9659019ejb.13;
-        Fri, 20 Nov 2020 17:26:15 -0800 (PST)
+        with ESMTP id S1725791AbgKUBtr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 20:49:47 -0500
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A616CC0613CF
+        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 17:49:47 -0800 (PST)
+Received: by mail-io1-xd2f.google.com with SMTP id i18so11927929ioa.3
+        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 17:49:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=EABbKjZEY14y+isUKqIGvWYP0FHXdvAjUi1vl8mqG8I=;
-        b=oNo/UV2Nyhili9xdPtSgxVwqM3i4HJYYvFnfrv1fDso3YH/b7effxNQSUxmYdrFW43
-         yTPWavrjOuv4CD6L/0Vyhg3mIcuC852SHhZbosEqzGg8oMX0JI8osbc2vSbWboxhrA0u
-         n4HMfjbIZ7P72GnErXDpS4h37FsxM4WppnPYWV/8LOpIX4ukG4cjL/C0E//i5A//gwRv
-         ghFSizc45aRgDNba9r89W+N/LPAn1WrWIt3PbNPPyUkEyw1Byzy3Dx2brgZ9YQXEtSUz
-         K6Oz130Q6xFWv/O5uDG8s1tImwHm7u7WMz7KCp+aWN7yBI+6GdLlslBQiIrF/WGylz6Z
-         fq7A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DUcso+azzK9eyJdy0Wag92NnbpvoOyDlBr0Hqgr2xJQ=;
+        b=fuLJp6xtgEYGlRePm3lmODhQ5oDu3kgpH41AKfzpkiSOLa9/KIhxlHxG3G/7XSyqqP
+         6sYm0Kxvar/8iKscqfG9akyhWeoE8P23qA94y3qyzqU2Jx1ybjzSDaOGM8IZ4+SSFoLQ
+         0rWiO5elWbYQv96CWP3sDcAqyuJ8ruPeCpQWHwfvQ5SkOKYHNlvEa2ExOm63p0FPR7uV
+         Eh17DVTJvJuv1Ug4kXmup1kzTgRj8YWFWJKrRi2ZBC+N+p8YzJwSl8JLRc2Zc3o5pj93
+         xmlxUMJmFZ9IbFF5Sa2iP9J9fCI0/ImPpWYT4cgBHHequPq8TxCb5I+Mr+IIm1piOFC+
+         Fa8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EABbKjZEY14y+isUKqIGvWYP0FHXdvAjUi1vl8mqG8I=;
-        b=BTxCWIo7pcRLkp6iYjQjyA12BveaEtv+yNmdsWcNaBtedtl1TLGXka13uGyIWuh0t9
-         vTdAVrONvNWyJRx4wHjIQTsoW/Lqw/XTjo8SXf11qmy228TIfTQvqTlYk2exNGsan+of
-         CD7/EoDW7XYfsBurFzFLLux3ZfMIPlefl5NCALQK02FddNPbRqNeKnJahoTdPY82RS1v
-         8G2r6zaasLSxmJVILP+mboCUI4gKBFnERYumIHY0FM9y1fGbT8Q+qbD0xPAP8s6qaSK3
-         bGU+gljrvs6JZROkOEUihZfw2dxhk30vxkzC21/bRpzWpKX4eMLAghTZxHRf3xGBx5r1
-         xovw==
-X-Gm-Message-State: AOAM533jgN6G+WdkLtMs1hCvn2TIaaoPWIHe7RcQpn8bsI7sqA+Ht7ST
-        cg01fW7jPv0qN1UwjIqDgPc=
-X-Google-Smtp-Source: ABdhPJxskYu6oKv316/cMM881GPXN887ydYMVX2r0OdBpcIL+EPuzvrH0CR0Yi16TK/Z+ljAht21+g==
-X-Received: by 2002:a17:906:8c6:: with SMTP id o6mr33216875eje.230.1605921973916;
-        Fri, 20 Nov 2020 17:26:13 -0800 (PST)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id f19sm1724057ejk.116.2020.11.20.17.26.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Nov 2020 17:26:13 -0800 (PST)
-Date:   Sat, 21 Nov 2020 03:26:11 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tristram.Ha@microchip.com
-Cc:     ceggers@arri.de, kuba@kernel.org, andrew@lunn.ch,
-        richardcochran@gmail.com, robh+dt@kernel.org,
-        vivien.didelot@gmail.com, davem@davemloft.net,
-        kurt.kanzenbach@linutronix.de, george.mccollister@gmail.com,
-        marex@denx.de, helmut.grohne@intenta.de, pbarker@konsulko.com,
-        Codrin.Ciubotariu@microchip.com, Woojung.Huh@microchip.com,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3 00/12] net: dsa: microchip: PTP support for
- KSZ956x
-Message-ID: <20201121012611.r6h5zpd32pypczg3@skbuf>
-References: <20201118203013.5077-1-ceggers@arri.de>
- <20201118234018.jltisnhjesddt6kf@skbuf>
- <2452899.Bt8PnbAPR0@n95hx1g2>
- <BYAPR11MB35582F880B533EB2EE0CDD1DECE00@BYAPR11MB3558.namprd11.prod.outlook.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DUcso+azzK9eyJdy0Wag92NnbpvoOyDlBr0Hqgr2xJQ=;
+        b=GlONj/j4G2Fhrs8KlbvE7MX3x5KrwJb79FjA/81wwmP5IMLXRoPumrxwlFtqpOB50Y
+         X12jDRecIh0PldNQoDMSfXsHi09swQpb/UCrUA3hb42UIMPzaZf+QVplpjv4ZN0744Hk
+         YBem9dQoyoMWUPY+O5D2vcsFiTxIqhmkCqEq3cUrErLRTwbijnfsuqkQ7hFWtOo1oVjo
+         hr7fudgCQaMd4EpAYSTSXZyIxyhpl0wioJB7x4H83zd3DzeLQHYQ7Lg8Wzuky86klIwF
+         VgChuaW/CS5kHZVmKvWYwjDHfw27HIBWaI8F3xSLymph4d1u3KQyn6zF+9i3eGyI+rcx
+         RJew==
+X-Gm-Message-State: AOAM5305m1rlgw2bWJd6/fVMfZHqU8d6Q+OMZCao/AeS7uDfjCE709bc
+        GawA7uEMADHk2+b30s3F8VWWD//H9QWbBk436s4/eGZEjZA=
+X-Google-Smtp-Source: ABdhPJwKURbqmks7YfMsfiH0cFRkpj/EKJ7msnZqYzdYC1xGg8cX9F7p6MyNsPBAj2J33XCNnBOnmQNSJhsjJaqCooM=
+X-Received: by 2002:a02:1301:: with SMTP id 1mr21251860jaz.83.1605923386710;
+ Fri, 20 Nov 2020 17:49:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BYAPR11MB35582F880B533EB2EE0CDD1DECE00@BYAPR11MB3558.namprd11.prod.outlook.com>
+References: <20201113214429.2131951-1-anthony.l.nguyen@intel.com>
+ <20201113214429.2131951-6-anthony.l.nguyen@intel.com> <CAKgT0UeQ5q2M-uiR0-1G=30syPiO8S5OFHvDuN1XtQg5700hCg@mail.gmail.com>
+ <fd0fc6f95f4c107d1aed18bf58239fda91879b26.camel@intel.com>
+In-Reply-To: <fd0fc6f95f4c107d1aed18bf58239fda91879b26.camel@intel.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Fri, 20 Nov 2020 17:49:35 -0800
+Message-ID: <CAKgT0Uewo+Rr19EVf9br9zBPsyOUANGMSQ0kqNVAzOJ8cjWMdw@mail.gmail.com>
+Subject: Re: [net-next v3 05/15] ice: create flow profile
+To:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+Cc:     "Cao, Chinh T" <chinh.t.cao@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "Behera, BrijeshX" <brijeshx.behera@intel.com>,
+        "Valiquette, Real" <real.valiquette@intel.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 19, 2020 at 06:51:15PM +0000, Tristram.Ha@microchip.com wrote:
-> The initial proposal in tag_ksz.c is for the switch driver to provide callback functions
-> to handle receiving and transmitting.  Then each switch driver can be added to
-> process the tail tag in its own driver and leave tag_ksz.c unchanged.
+On Fri, Nov 20, 2020 at 4:42 PM Nguyen, Anthony L
+<anthony.l.nguyen@intel.com> wrote:
 >
-> It was rejected because of wanting to keep tag_ksz.c code and switch driver code
-> separate and concern about performance.
+> On Fri, 2020-11-13 at 15:56 -0800, Alexander Duyck wrote:
+> > On Fri, Nov 13, 2020 at 1:46 PM Tony Nguyen <
+> > anthony.l.nguyen@intel.com> wrote:
+> > >
+> > > From: Real Valiquette <real.valiquette@intel.com>
+> > >
+> > > Implement the initial steps for creating an ACL filter to support
+> > > ntuple
+> > > masks. Create a flow profile based on a given mask rule and program
+> > > it to
+> > > the hardware. Though the profile is written to hardware, no actions
+> > > are
+> > > associated with the profile yet.
+> > >
+> > > Co-developed-by: Chinh Cao <chinh.t.cao@intel.com>
+> > > Signed-off-by: Chinh Cao <chinh.t.cao@intel.com>
+> > > Signed-off-by: Real Valiquette <real.valiquette@intel.com>
+> > > Co-developed-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> > > Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> > > Tested-by: Brijesh Behera <brijeshx.behera@intel.com>
+> >
+> > So I see two big issues with the patch.
+> >
+> > First it looks like there is an anti-pattern of defensive NULL
+> > pointer
+> > checks throughout. Those can probably all go since all of the callers
+> > either use the pointer, or verify it is non-NULL before calling the
+> > function in question.
 >
-> Now tag_ksz.c is filled with PTP code that is not relevant for other switches and will
-> need to be changed again when another switch driver with PTP function is added.
+> I'm removing those checks that you pointed out and some others as well.
 >
-> Can we implement that callback mechanism?
-
-I, too, lack the context here. But it sounds like feedback that Andrew
-would give.
-
-If you don't like the #ifdef's, I am not in love with them either. But
-maybe Christian is just optimizing too aggressively, and doesn't actually
-need to put those #ifdef's there and provide stub implementations, but
-could actually just leave the ksz9477_rcv_timestamp and ksz9477_xmit_timestamp
-always compiled-in, and "dead at runtime" in the case there is no PTP.
-
-If there is something else you don't like, what is it? If you know that
-other KSZ switches don't implement timestamping in the same way, well,
-we don't know that. I thought that it's generally up to the second
-implementer to recognize which parts of the code are common and should
-be reused, not for the first one to guess. I would not add function
-pointers for a single implementation if they don't have a clear
-justification.
-
-> One issue with transmission with PTP enabled is that the tail tag needs to contain 4
-> additional bytes.  When the PTP function is off the bytes are not added.  This should
-> be monitored all the time.
+> >
+> > In addition the mask handling doens't look right to me. It is calling
+> > out a partial mask as being the only time you need an ACL and I would
+> > think it is any time you don't have a full mask for all
+> > ports/addresses since a flow director rule normally pulls in the full
+> > 4 tuple based on ice_ntuple_set_input_set() .
 >
-> The extra 4 bytes are only used for 1-step Pdelay_Resp.  It should contain the receive
-> timestamp of previous Pdelay_Req with latency adjusted.  The correction field in
-> Pdelay_Resp should be zero.  It may be a hardware bug to have wrong UDP checksum
-> when the message is sent.
+> Commented below as well.
+>
+> <snip>
+>
+> > > +/**
+> > > + * ice_is_acl_filter - Checks if it's a FD or ACL filter
+> > > + * @fsp: pointer to ethtool Rx flow specification
+> > > + *
+> > > + * If any field of the provided filter is using a partial mask
+> > > then this is
+> > > + * an ACL filter.
+> > > + *
+> >
+> > I'm not sure this logic is correct. Can the flow director rules
+> > handle
+> > a field that is removed? Last I knew it couldn't. If that is the case
+> > you should be using ACL for any case in which a full mask is not
+> > provided. So in your tests below you could probably drop the check
+> > for
+> > zero as I don't think that is a valid case in which flow director
+> > would work.
+> >
+>
+> I'm not sure what you meant by a field that is removed, but Flow
+> Director can handle reduced input sets. Flow Director is able to handle
+> 0 mask, full mask, and less than 4 tuples. ACL is needed/used only when
+> a partial mask rule is requested.
 
-It "may" be a hardware bug? Are you unsure or polite?
-As for the phrase "the correction field in Pdelay_Resp should be zero".
-Consider the case where there is an E2E TC switch attached to that port.
-It will update the correctionField of the Pdelay_Req message. Then the
-application stack running on this ksz9477 switch is forced by the
-standard to copy the correctionField as-is from the Pdelay_Req into the
-Pdelay_Resp message. So that correctionField is never guaranteed to be
-zero, even if Christian doesn't fiddle with it within the driver. Are
-you saying that for proper UDP checksum calculation, the driver should
-be forcing the correctionField to zero and moving that value into the
-tail tag?
+So historically speaking with flow director you are only allowed one
+mask because it determines the inputs used to generate the hash that
+identifies the flow. So you are only allowed one mask for all flows
+because changing those inputs would break the hash mapping.
 
-> I think the right implementation is for the driver to remember this receive timestamp
-> of Pdelay_Req and puts it in the tail tag when it sees a 1-step Pdelay_Resp is sent.
+Normally this ends up meaning that you have to do like what we did in
+ixgbe and disable ATR and only allow one mask for all inputs. I
+believe for i40e they required that you always use a full 4 tuple. I
+didn't see something like that here. As such you may want to double
+check that you can have a mix of flow director rules that are using 1
+tuple, 2 tuples, 3 tuples, and 4 tuples as last I knew you couldn't.
+Basically if you had fields included they had to be included for all
+the rules on the port or device depending on how the tables are set
+up.
 
-I have mixed feelings about this. IIUC, you're saying "let's implement a
-fixed-size FIFO of RX timestamps of Pdelay_Req messages, and let's match
-them on TX to Pdelay_Resp messages, by {sequenceId, domainNumber}."
+Thanks.
 
-But how deep should we make that FIFO? I.e. how many Pdelay_Req messages
-should we expect before the user space will inject back a Pdelay_Resp
-for transmission?
-
-Again, consider the case of an E2E TC attached to a ksz9477 port. Even
-if we run peer delay, it's not guaranteed that we only have one peer.
-That E2E TC might connect us to a plethora of other peers. And the more
-peers we are connected to, the higher the chance that the size of this
-Pdelay_Req RX timestamp FIFO will not be adequately chosen.
-
-> There is one more requirement that is a little difficult to do.  The calculated peer delay
-> needs to be programmed in hardware register, but the regular PTP stack has no way to
-> send that command.  I think the driver has to do its own calculation by snooping on the
-> Pdelay_Req/Pdelay_Resp/Pdelay_Resp_Follow_Up messages.
-
-What register, and what does the switch do with this peer delay information?
-
-> The receive and transmit latencies are different for different connected speed.  So the
-> driver needs to change them when the link changes.  For that reason the PTP stack
-> should not use its own latency values as generally the application does not care about
-> the linked speed.
-
-The thing is, ptp4l already has ingressLatency and egressLatency
-settings, and I would not be surprised if those config options would get
-extended to cover values at multiple link speeds.
-
-In the general case, the ksz9477 MAC could be attached to any external
-PHY, having its own propagation delay characteristics, or any number of
-other things that cause clock domain crossings. I'm not sure how feasible
-it is for the kernel to abstract this away completely, and adjust
-timestamps automatically based on any and all combinations of MAC and
-PHY. Maybe this is just wishful thinking.
-
-Oh, and by the way, Christian, I'm not even sure if you aren't in fact
-just beating around the bush with these tstamp_rx_latency_ns and
-tstamp_tx_latency_ns values? I mean, the switch adds the latency value
-to the timestamps. And you, from the driver, read the value of the
-register, so you can subtract the value from the timestamp, to
-compensate for its correction. So, all in all, there is no net latency
-compensation seen by the outside world?! If that is the case, can't you
-just set the latency registers to zero, do your compensation from the
-application stack and call it a day?
+- Alex
