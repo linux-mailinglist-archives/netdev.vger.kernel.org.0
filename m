@@ -2,72 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FC792BC25C
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 23:07:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEBE92BC269
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 23:26:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728625AbgKUWDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Nov 2020 17:03:13 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52806 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728554AbgKUWDN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 21 Nov 2020 17:03:13 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 00D2F221EB;
-        Sat, 21 Nov 2020 22:03:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605996192;
-        bh=R6LqJxezNsIXeikq7/GWHBaCNJJhNQqtYGcbp68R/3M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DHo8lItmfyDlGx9rDMqCPK3RRroyKQ1eP/qG2LLbTrbP86PRDurhtMGIjcPjaPGFF
-         GbWL1gsbT9DO9XYEjhQ+Sk+nVuGrCVmCwPe2UfADDYAcqNrmN43VavyrrCmsRg0gM5
-         I3lzR5ifW8oYRN04boVkjovzzP11R6f7R6sNQpZo=
-Date:   Sat, 21 Nov 2020 14:03:11 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yves-Alexis Perez <corsac@corsac.net>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Martin Habets <mhabets@solarflare.com>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        "Michael S. Tsirkin" <mst@redhat.com>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Matti Vuorela <matti.vuorela@bitfactor.fi>,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] usbnet: ipheth: fix connectivity with iOS 14
-Message-ID: <20201121140311.42585c68@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201119172439.94988-1-corsac@corsac.net>
-References: <CAAn0qaXmysJ9vx3ZEMkViv_B19ju-_ExN8Yn_uSefxpjS6g4Lw@mail.gmail.com>
-        <20201119172439.94988-1-corsac@corsac.net>
+        id S1728612AbgKUWW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Nov 2020 17:22:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44124 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728498AbgKUWW7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Nov 2020 17:22:59 -0500
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C36C0613CF;
+        Sat, 21 Nov 2020 14:22:59 -0800 (PST)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1kgbHN-0007bJ-4S; Sat, 21 Nov 2020 23:22:49 +0100
+Date:   Sat, 21 Nov 2020 23:22:49 +0100
+From:   Florian Westphal <fw@strlen.de>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
+        liuzx@knownsec.com, Florian Westphal <fw@strlen.de>,
+        Edward Cree <ecree@solarflare.com>, stable@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [Patch stable] netfilter: clear skb->next in NF_HOOK_LIST()
+Message-ID: <20201121222249.GU15137@breakpoint.cc>
+References: <20201121034317.577081-1-xiyou.wangcong@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201121034317.577081-1-xiyou.wangcong@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Nov 2020 18:24:39 +0100 Yves-Alexis Perez wrote:
-> Starting with iOS 14 released in September 2020, connectivity using the
-> personal hotspot USB tethering function of iOS devices is broken.
+Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
 > 
-> Communication between the host and the device (for example ICMP traffic
-> or DNS resolution using the DNS service running in the device itself)
-> works fine, but communication to endpoints further away doesn't work.
+> NF_HOOK_LIST() uses list_del() to remove skb from the linked list,
+> however, it is not sufficient as skb->next still points to other
+> skb. We should just call skb_list_del_init() to clear skb->next,
+> like the rest places which using skb list.
 > 
-> Investigation on the matter shows that UDP and ICMP traffic from the
-> tethered host is reaching the Internet at all. For TCP traffic there are
-> exchanges between tethered host and server but packets are modified in
-> transit leading to impossible communication.
-> 
-> After some trials Matti Vuorela discovered that reducing the URB buffer
-> size by two bytes restored the previous behavior. While a better
-> solution might exist to fix the issue, since the protocol is not
-> publicly documented and considering the small size of the fix, let's do
-> that.
-> 
-> Tested-by: Matti Vuorela <matti.vuorela@bitfactor.fi>
-> Signed-off-by: Yves-Alexis Perez <corsac@corsac.net>
-> Link: https://lore.kernel.org/linux-usb/CAAn0qaXmysJ9vx3ZEMkViv_B19ju-_ExN8Yn_uSefxpjS6g4Lw@mail.gmail.com/
-> Link: https://github.com/libimobiledevice/libimobiledevice/issues/1038
+> This has been fixed in upstream by commit ca58fbe06c54
+> ("netfilter: add and use nf_hook_slow_list()").
 
-Applied to net with the typo fixed, thanks!
+Thanks Cong, agree with this change, afaics its applicable to 4.19.y and 5.4.y.
+
