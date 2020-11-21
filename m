@@ -2,68 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46CDB2BC279
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 23:41:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B40B12BC27B
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 23:43:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728648AbgKUWkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Nov 2020 17:40:07 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45302 "EHLO mail.kernel.org"
+        id S1728632AbgKUWl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Nov 2020 17:41:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46182 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728603AbgKUWkG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 21 Nov 2020 17:40:06 -0500
-Content-Type: text/plain; charset="utf-8"
+        id S1728588AbgKUWlz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 21 Nov 2020 17:41:55 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 101BA2151B;
+        Sat, 21 Nov 2020 22:41:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605998406;
-        bh=7kJkwQdGZG1kh6JwinI1VNPFdfsmjTrZyHUsgEddo/g=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=RudMpXG6xM+XtpVyWgTTbT/d/qNv5o4k8YEq0sdYB4zI86FKvlvtfBEsg4GDFJMI5
-         GsGledQ5QkxQmdEnF4uA9AwfWAG2VyLlEnOsMnC8aEqtlJvsSXCzgNkbT2uQkT/W3K
-         bBnJcswRY6KF8RdckRLfUZiwT8Jm/NcjSY5EtzJI=
+        s=default; t=1605998515;
+        bh=qomVMm2MeRDCKHvedwhIgYBadhiY7UIQ36rqjlMxvkM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BDnmp4j34qJ0g/oajusdvGqiqXHQUgSg7prTt+uOVdh9jJszcS8aZ4ZDFV0ASgDSU
+         +1Vee89nbbvUS8i2Oo63pjPA6spHEta2mVl3ChF5Tn0JCQWEAL4dZCWbL85ot4f+QA
+         ykFT6zvQsMGa4ixgfE3AbYRa3Bka/WlyHn3AN9rU=
+Date:   Sat, 21 Nov 2020 14:41:54 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        David Miller <davem@davemloft.net>,
+        bridge@lists.linux-foundation.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next] net: bridge: switch to net core statistics
+ counters handling
+Message-ID: <20201121144154.03696203@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <9bad2be2-fd84-7c6e-912f-cee433787018@gmail.com>
+References: <9bad2be2-fd84-7c6e-912f-cee433787018@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/5] net: hns3: misc updates for -next
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160599840626.17366.1453634275952630580.git-patchwork-notify@kernel.org>
-Date:   Sat, 21 Nov 2020 22:40:06 +0000
-References: <1605863783-36995-1-git-send-email-tanhuazhong@huawei.com>
-In-Reply-To: <1605863783-36995-1-git-send-email-tanhuazhong@huawei.com>
-To:     tanhuazhong <tanhuazhong@huawei.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, salil.mehta@huawei.com,
-        yisen.zhuang@huawei.com, linuxarm@huawei.com, kuba@kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Fri, 20 Nov 2020 17:16:18 +0800 you wrote:
-> This series includes some misc updates for the HNS3 ethernet driver.
+On Fri, 20 Nov 2020 12:22:23 +0100 Heiner Kallweit wrote:
+> Use netdev->tstats instead of a member of net_bridge for storing
+> a pointer to the per-cpu counters. This allows us to use core
+> functionality for statistics handling.
 > 
-> #1 adds support for 1280 queues
-> #2 adds mapping for BAR45 which is needed by RoCE client.
-> #3 extend the interrupt resources.
-> #4&#5 add support to query firmware's calculated shaping parameters.
-> 
-> [...]
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-Here is the summary with links:
-  - [net-next,1/5] net: hns3: add support for 1280 queues
-    https://git.kernel.org/netdev/net-next/c/9a5ef4aa5457
-  - [net-next,2/5] net: hns3: add support for mapping device memory
-    https://git.kernel.org/netdev/net-next/c/30ae7f8a6aa7
-  - [net-next,3/5] net: hns3: add support for pf querying new interrupt resources
-    https://git.kernel.org/netdev/net-next/c/3a6863e4e8ee
-  - [net-next,4/5] net: hns3: add support to utilize the firmware calculated shaping parameters
-    https://git.kernel.org/netdev/net-next/c/e364ad303fe3
-  - [net-next,5/5] net: hns3: adds debugfs to dump more info of shaping parameters
-    https://git.kernel.org/netdev/net-next/c/c331ecf1afc1
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Applied, thanks!
