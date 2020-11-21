@@ -2,118 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93AB42BC1A3
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 19:57:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 308BE2BC1A9
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 20:01:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727235AbgKUS41 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Nov 2020 13:56:27 -0500
-Received: from correo.us.es ([193.147.175.20]:60056 "EHLO mail.us.es"
+        id S1728012AbgKUS72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Nov 2020 13:59:28 -0500
+Received: from correo.us.es ([193.147.175.20]:60498 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726305AbgKUS41 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 21 Nov 2020 13:56:27 -0500
+        id S1726305AbgKUS72 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 21 Nov 2020 13:59:28 -0500
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id B13B8160A2E
-        for <netdev@vger.kernel.org>; Sat, 21 Nov 2020 19:56:24 +0100 (CET)
+        by mail.us.es (Postfix) with ESMTP id 3066B160A25
+        for <netdev@vger.kernel.org>; Sat, 21 Nov 2020 19:59:25 +0100 (CET)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id A3164DA73F
-        for <netdev@vger.kernel.org>; Sat, 21 Nov 2020 19:56:24 +0100 (CET)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 1E374DA78D
+        for <netdev@vger.kernel.org>; Sat, 21 Nov 2020 19:59:25 +0100 (CET)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 899B5DA792; Sat, 21 Nov 2020 19:56:24 +0100 (CET)
+        id 135F7DA72F; Sat, 21 Nov 2020 19:59:25 +0100 (CET)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
         SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
         version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 3EDB6DA78B;
-        Sat, 21 Nov 2020 19:56:22 +0100 (CET)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id DE9AEDA722;
+        Sat, 21 Nov 2020 19:59:22 +0100 (CET)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Sat, 21 Nov 2020 19:56:22 +0100 (CET)
+ Sat, 21 Nov 2020 19:59:22 +0100 (CET)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
 Received: from us.es (unknown [90.77.255.23])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 1902E4265A5A;
-        Sat, 21 Nov 2020 19:56:22 +0100 (CET)
-Date:   Sat, 21 Nov 2020 19:56:21 +0100
+        by entrada.int (Postfix) with ESMTPSA id B42C84265A5A;
+        Sat, 21 Nov 2020 19:59:22 +0100 (CET)
+Date:   Sat, 21 Nov 2020 19:59:22 +0100
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Tobias Waldekranz <tobias@waldekranz.com>,
-        netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, razor@blackwall.org, jeremy@azazel.net
-Subject: Re: [PATCH net-next,v3 0/9] netfilter: flowtable bridge and vlan
- enhancements
-Message-ID: <20201121185621.GA23017@salvia>
-References: <20201114115906.GA21025@salvia>
- <87sg9cjaxo.fsf@waldekranz.com>
- <20201114090347.2e7c1457@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201116221815.GA6682@salvia>
- <20201116142844.7c492fb6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201116223615.GA6967@salvia>
- <20201116144521.771da0c6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201116225658.GA7247@salvia>
- <20201121123138.GA21560@salvia>
- <20201121101551.3264c5fd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Laura =?utf-8?Q?Garc=C3=ADa_Li=C3=A9bana?= <nevola@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Netfilter Development Mailing list 
+        <netfilter-devel@vger.kernel.org>, coreteam@netfilter.org,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Thomas Graf <tgraf@suug.ch>, David Miller <davem@davemloft.net>
+Subject: Re: [PATCH nf-next v3 3/3] netfilter: Introduce egress hook
+Message-ID: <20201121185922.GA23266@salvia>
+References: <20200904162154.GA24295@wunner.de>
+ <813edf35-6fcf-c569-aab7-4da654546d9d@iogearbox.net>
+ <20200905052403.GA10306@wunner.de>
+ <e8aecc2b-80cb-8ee5-8efe-7ae5c4eafc70@iogearbox.net>
+ <CAF90-Whc3HL9x-7TJ7m3tZp10RNmQxFD=wdQUJLCaUajL2RqXg@mail.gmail.com>
+ <8e991436-cb1c-1306-51ac-bb582bfaa8a7@iogearbox.net>
+ <CAF90-Wh=wzjNtFWRv9bzn=-Dkg-Qc9G_cnyoq0jSypxQQgg3uA@mail.gmail.com>
+ <29b888f5-5e8e-73fe-18db-6c5dd57c6b4f@iogearbox.net>
+ <20201011082657.GB15225@wunner.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20201121101551.3264c5fd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201011082657.GB15225@wunner.de>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 21, 2020 at 10:15:51AM -0800, Jakub Kicinski wrote:
-> On Sat, 21 Nov 2020 13:31:38 +0100 Pablo Neira Ayuso wrote:
-> > On Mon, Nov 16, 2020 at 11:56:58PM +0100, Pablo Neira Ayuso wrote:
-> > > On Mon, Nov 16, 2020 at 02:45:21PM -0800, Jakub Kicinski wrote:  
-> > > > On Mon, 16 Nov 2020 23:36:15 +0100 Pablo Neira Ayuso wrote:  
-[...]
-> > I have been discussing the topology update by tracking fdb updates
-> > with the bridge maintainer, I'll be exploring extensions to the
-> > existing fdb_notify() infrastructure to deal with this scenario you
-> > describe. On my side this topology update scenario is not a priority
-> > to be supported in this patchset, but it's feasible to support it
-> > later on.
+Hi Lukas,
+
+On Sun, Oct 11, 2020 at 10:26:57AM +0200, Lukas Wunner wrote:
+> On Tue, Sep 15, 2020 at 12:02:03AM +0200, Daniel Borkmann wrote:
+> > today it is possible and
+> > perfectly fine to e.g. redirect to a host-facing veth from tc ingress which
+> > then goes into container. Only traffic that goes up the host stack is seen
+> > by nf ingress hook in that case. Likewise, reply traffic can be redirected
+> > from host-facing veth to phys dev for xmit w/o any netfilter interference.
+> > This means netfilter in host ns really only sees traffic to/from host as
+> > intended. This is fine today, however, if 3rd party entities (e.g. distro
+> > side) start pushing down rules on the two nf hooks, then these use cases will
+> > break on the egress one due to this asymmetric layering violation. Hence my
+> > ask that this needs to be configurable from a control plane perspective so
+> > that both use cases can live next to each other w/o breakage. Most trivial
+> > one I can think of is (aside from the fact to refactor the hooks and improve
+> > their performance) a flag e.g. for skb that can be set from tc/BPF layer to
+> > bypass the nf hooks. Basically a flexible opt-in so that existing use-cases
+> > can be retained w/o breakage.
 > 
-> My concern is that invalidation is _the_ hard part of creating caches.
-> And I feel like merging this as is would be setting our standards pretty
-> low. 
+> I argue that being able to filter traffic coming out of the container
+> is desirable because why should the host trust the software running
+> in the container to never send malicious packets.
+> 
+> As for the flag you're asking for, it already exists in the form of
+> skb->mark.  Just let tc set the mark when the packet exits the container
+> and add a netfilter rule to accept packets carrying that mark.  Or do
+> not set any netfilter egress rules at all to disable the egress
+> filtering and avoid the performance impact it would imply.
 
-Interesting, let's summarize a bit to make sure we're on the same
-page:
+Would you follow up on this? I'd really appreciate if you do.
 
-- This "cache" is optional, you enable it on demand through ruleset.
-- This "cache" is configurable, you can specify through ruleset policy
-  what policies get into the cache and _when_ they are placed in the
-  cache.
-- This is not affecting any existing default configuration, neither
-  Linux networking not even classic path Netfilter configurations,
-  it's a rather new thing.
-- This is showing performance improvement of ~50% with a very simple
-  testbed. With pktgen, back few years ago I was reaching x2.5
-  performance boost in software in a pktgen testbed.
-- This is adding minimal changes to netdev_ops, just a single
-  callback.
-
-For the live VM migration you describe, connections might time out,
-but there are many use-cases where this is still valid, some of them
-has been described already here.
-
-> Please gather some review tags from senior netdev developers. I don't
-> feel confident enough to apply this as 100% my own decision.
-
-Fair enough.
-
-This requirement for very specific Netfilter infrastructure which does
-not affect any other Networking subsystem sounds new to me.
-
-What senior developers specifically you would like I should poke to
-get an acknowledgement on this to get this accepted of your
-preference?
+We're lately discussing more and more usecases in the NFWS meetings
+where the egress can get really useful.
 
 Thank you.
