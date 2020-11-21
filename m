@@ -2,232 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEC272BBF2B
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 14:18:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F30B92BBF2C
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 14:24:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727802AbgKUNSE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Nov 2020 08:18:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45602 "EHLO
+        id S1727682AbgKUNYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Nov 2020 08:24:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727668AbgKUNSB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Nov 2020 08:18:01 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92B05C0613CF
-        for <netdev@vger.kernel.org>; Sat, 21 Nov 2020 05:18:01 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1kgSm0-00089W-LG; Sat, 21 Nov 2020 14:17:52 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:4c1f:9c86:2b81:b0ea] (unknown [IPv6:2a03:f580:87bc:d400:4c1f:9c86:2b81:b0ea])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 5BCBD5983CB;
-        Sat, 21 Nov 2020 13:17:50 +0000 (UTC)
-Subject: Re: [PATCH 072/141] can: peak_usb: Fix fall-through warnings for
- Clang
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-References: <cover.1605896059.git.gustavoars@kernel.org>
- <aab7cf16bf43cc7c3e9c9930d2dae850c1d07a3c.1605896059.git.gustavoars@kernel.org>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <bf3dbc5c-c34e-b3ef-abb6-0c88d8a90332@pengutronix.de>
-Date:   Sat, 21 Nov 2020 14:17:45 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        with ESMTP id S1726175AbgKUNYM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Nov 2020 08:24:12 -0500
+Received: from mail-vs1-xe32.google.com (mail-vs1-xe32.google.com [IPv6:2607:f8b0:4864:20::e32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA70C0613CF
+        for <netdev@vger.kernel.org>; Sat, 21 Nov 2020 05:24:11 -0800 (PST)
+Received: by mail-vs1-xe32.google.com with SMTP id m16so6602677vsl.8
+        for <netdev@vger.kernel.org>; Sat, 21 Nov 2020 05:24:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AQenOEPvudXiTP590FQZFveKk8gAJ+gA7H54pS4S7Iw=;
+        b=jke1Sx0mQtRGzAJpenqJfRPiUTvadnOB6vZD1ehmz/VV/f7eYbQXmNfJ3FRqk04J36
+         by/Sa+4kwCBnb+ITsLBVhDB6ITaFexFiFXVSJURjjpnLhHphf/RHIWQ2qrcCl9ezB/yk
+         n8I+WQ25pJmugWbVZLwPm/RukieNTP0J2NoIimIF/XTct97BpPn3zNxQlkNYbgAH5uBZ
+         7AEDFH7RWQ0fmQOMTHBzMfo3wGKnfczSBLm9yfjXkM3FmqFrYVhAUnnRX0aATtC4MiCw
+         K+7UiRGIUFUnVG92JfJTfvr6oj7txWAJ/GqNG65xP76vGf+yaQAmExqFRojUS7rlDj73
+         tJVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AQenOEPvudXiTP590FQZFveKk8gAJ+gA7H54pS4S7Iw=;
+        b=cWRC925n/Cs4moQJgzq0/FUOor9mOuOyJXd1hv/gRIAUIyTKzWNnFJEUH3d2TI9+/W
+         K2I2uLLmF7AMwv+YT6dZc1WQPAYMEA8nFAULy4rxGpTgAZyBTMzE900sOyUcbxIFlXKC
+         DCYmbKtUUTLwLXUaR0cVxLxxuKAPr1PvTe+e0o1iS1cQ2ltapq5DLYOwyrHTFp7SrmFO
+         4kxuo87c6fq+zyGMeopn0HVKeMXKreMXSiFFaSo0LKYpVUsPCp/qqrX0s9DNDDoEIijS
+         SO74CVilFf8Ax6UVTFK8s5Cxr5t2mFSqXU/2XCtS+mEdDTKz3EHYywIVLq28kd6yX5Zn
+         wD2Q==
+X-Gm-Message-State: AOAM530S30uTbGsrSptT0pLj3n129dFLXdz2YXO5jYsqrWJ3E7jYGCCQ
+        czq45EwpUUmDXbDHDcDsSl2+3UfoRY4=
+X-Google-Smtp-Source: ABdhPJxk1Ohg+MyNjzZKD6U6dsHkBNsyCDT0GdJP53S7lsxSH46pkXKZJrMp0MZwR/tV2f10DMpjjg==
+X-Received: by 2002:a67:68c6:: with SMTP id d189mr16665266vsc.10.1605965049004;
+        Sat, 21 Nov 2020 05:24:09 -0800 (PST)
+Received: from mail-vs1-f42.google.com (mail-vs1-f42.google.com. [209.85.217.42])
+        by smtp.gmail.com with ESMTPSA id 22sm638414uak.8.2020.11.21.05.24.07
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 21 Nov 2020 05:24:08 -0800 (PST)
+Received: by mail-vs1-f42.google.com with SMTP id x11so6604116vsx.12
+        for <netdev@vger.kernel.org>; Sat, 21 Nov 2020 05:24:07 -0800 (PST)
+X-Received: by 2002:a67:ed4b:: with SMTP id m11mr14808682vsp.14.1605965047278;
+ Sat, 21 Nov 2020 05:24:07 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <aab7cf16bf43cc7c3e9c9930d2dae850c1d07a3c.1605896059.git.gustavoars@kernel.org>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="Um0PBROohAn87SHKH5Z0CxiUa3ZnYBeOM"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20201121062817.3178900-1-eyal.birger@gmail.com> <CAHmME9rYRrWOs247vFJX-MAY+Zn3yUudOxVhqL13mWp8E+i0-A@mail.gmail.com>
+In-Reply-To: <CAHmME9rYRrWOs247vFJX-MAY+Zn3yUudOxVhqL13mWp8E+i0-A@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Sat, 21 Nov 2020 08:23:30 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSfcHW=+8=okyU9XuM7=pRnKjjqHdS0q_5ybP7xAUNXHQA@mail.gmail.com>
+Message-ID: <CA+FuTSfcHW=+8=okyU9XuM7=pRnKjjqHdS0q_5ybP7xAUNXHQA@mail.gmail.com>
+Subject: Re: [net,v2] net/packet: fix packet receive on L3 devices without
+ visible hard header
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Eyal Birger <eyal.birger@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Xie He <xie.he.0141@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Um0PBROohAn87SHKH5Z0CxiUa3ZnYBeOM
-Content-Type: multipart/mixed; boundary="uwJFcgT96ZkDsWpG9kNWehKVQzdOYN6eR";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: "Gustavo A. R. Silva" <gustavoars@kernel.org>,
- Wolfgang Grandegger <wg@grandegger.com>,
- "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>
-Cc: linux-can@vger.kernel.org, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Message-ID: <bf3dbc5c-c34e-b3ef-abb6-0c88d8a90332@pengutronix.de>
-Subject: Re: [PATCH 072/141] can: peak_usb: Fix fall-through warnings for
- Clang
-References: <cover.1605896059.git.gustavoars@kernel.org>
- <aab7cf16bf43cc7c3e9c9930d2dae850c1d07a3c.1605896059.git.gustavoars@kernel.org>
-In-Reply-To: <aab7cf16bf43cc7c3e9c9930d2dae850c1d07a3c.1605896059.git.gustavoars@kernel.org>
+On Sat, Nov 21, 2020 at 2:56 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>
+> On 11/21/20, Eyal Birger <eyal.birger@gmail.com> wrote:
+> > In the patchset merged by commit b9fcf0a0d826
+> > ("Merge branch 'support-AF_PACKET-for-layer-3-devices'") L3 devices which
+> > did not have header_ops were given one for the purpose of protocol parsing
+> > on af_packet transmit path.
+> >
+> > That change made af_packet receive path regard these devices as having a
+> > visible L3 header and therefore aligned incoming skb->data to point to the
+> > skb's mac_header. Some devices, such as ipip, xfrmi, and others, do not
+> > reset their mac_header prior to ingress and therefore their incoming
+> > packets became malformed.
+> >
+> > Ideally these devices would reset their mac headers, or af_packet would be
+> > able to rely on dev->hard_header_len being 0 for such cases, but it seems
+> > this is not the case.
+> >
+> > Fix by changing af_packet RX ll visibility criteria to include the
+> > existence of a '.create()' header operation, which is used when creating
+> > a device hard header - via dev_hard_header() - by upper layers, and does
+> > not exist in these L3 devices.
+> >
+> > As this predicate may be useful in other situations, add it as a common
+> > dev_has_header() helper in netdevice.h.
+> >
+> > Fixes: b9fcf0a0d826 ("Merge branch
+> > 'support-AF_PACKET-for-layer-3-devices'")
+> > Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
 
---uwJFcgT96ZkDsWpG9kNWehKVQzdOYN6eR
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
+> Acked-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-On 11/20/20 7:34 PM, Gustavo A. R. Silva wrote:
-> In preparation to enable -Wimplicit-fallthrough for Clang, fix a warnin=
-g
-> by explicitly adding a break statement instead of letting the code fall=
-
-> through to the next case.
->=20
-> Link: https://github.com/KSPP/linux/issues/115
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> ---
->  drivers/net/can/usb/peak_usb/pcan_usb_core.c | 2 ++
->  1 file changed, 2 insertions(+)
->=20
-> diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_core.c b/drivers/net=
-/can/usb/peak_usb/pcan_usb_core.c
-> index c2764799f9ef..fd65a155be3b 100644
-> --- a/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-> +++ b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-> @@ -299,6 +299,8 @@ static void peak_usb_write_bulk_callback(struct urb=
- *urb)
->  		if (net_ratelimit())
->  			netdev_err(netdev, "Tx urb aborted (%d)\n",
->  				   urb->status);
-> +		break;
-> +
->  	case -EPROTO:
->  	case -ENOENT:
->  	case -ECONNRESET:
->=20
-
-What about moving the default to the end if the case, which is more commo=
-n anyways:
-
-diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_core.c b/drivers/net/c=
-an/usb/peak_usb/pcan_usb_core.c
-index 204ccb27d6d9..e8977dd10902 100644
---- a/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-+++ b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-@@ -295,16 +295,16 @@ static void peak_usb_write_bulk_callback(struct urb=
- *urb)
-                netif_trans_update(netdev);
-                break;
-=20
--       default:
--               if (net_ratelimit())
--                       netdev_err(netdev, "Tx urb aborted (%d)\n",
--                                  urb->status);
-        case -EPROTO:
-        case -ENOENT:
-        case -ECONNRESET:
-        case -ESHUTDOWN:
--
-                break;
-+
-+       default:
-+               if (net_ratelimit())
-+                       netdev_err(netdev, "Tx urb aborted (%d)\n",
-+                                  urb->status);
-        }
-=20
-        /* should always release echo skb and corresponding context */
-
-
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---uwJFcgT96ZkDsWpG9kNWehKVQzdOYN6eR--
-
---Um0PBROohAn87SHKH5Z0CxiUa3ZnYBeOM
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+5E3kACgkQqclaivrt
-76kOuAf9FXn8cpXGeMIslKjsSJryU/nEjyGXwnMsE4DWltNdOsTzjaomGpAPxq7V
-lkXiduWwveC8VMEJwfYiK6XwOWctQ+tZvMCXzue25RDjk+wRHGSL93DBY8vnlj6w
-Xq3HueD2jPEbc/P4rXH0Gu/+MnCkT8dwSEDJHslTYxk2Pl7GPYvdS+L6rARGw9tA
-ZtI4J7DMZHOtxCVhCcJitIl5uIa+0gtz64UIyAqq5pR2ffAkLKi4dj9JXMTwbBXt
-mtTun+VyBOaThPCLw0SX70V1SGlT8q8yj34G1TALFuBU+kdh/wau1qf7HjenLEEU
-13++IkqjMhyCTpJXS7Zz8jIMNOs2ug==
-=YRBG
------END PGP SIGNATURE-----
-
---Um0PBROohAn87SHKH5Z0CxiUa3ZnYBeOM--
+Acked-by: Willem de Bruijn <willemb@google.com>
