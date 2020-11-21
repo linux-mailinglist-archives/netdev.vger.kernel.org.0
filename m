@@ -2,102 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53FAA2BC1D5
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 20:53:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 309EF2BC202
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 21:16:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728486AbgKUTuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Nov 2020 14:50:23 -0500
-Received: from smtprelay0079.hostedemail.com ([216.40.44.79]:56188 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728402AbgKUTuW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Nov 2020 14:50:22 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay02.hostedemail.com (Postfix) with ESMTP id 9CD14127B;
-        Sat, 21 Nov 2020 19:50:20 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:967:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:1801:2393:2525:2560:2563:2682:2685:2828:2859:2902:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3871:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4250:4321:4605:5007:7903:9025:10004:10400:10848:11026:11232:11233:11657:11658:11783:11914:12043:12048:12297:12438:12679:12740:12895:13069:13311:13357:13439:13894:14181:14659:14721:21080:21451:21627:21939:30012:30046:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:102,LUA_SUMMARY:none
-X-HE-Tag: knee97_180892727356
-X-Filterd-Recvd-Size: 2999
-Received: from XPS-9350.home (unknown [47.151.128.180])
-        (Authenticated sender: joe@perches.com)
-        by omf17.hostedemail.com (Postfix) with ESMTPA;
-        Sat, 21 Nov 2020 19:50:18 +0000 (UTC)
-Message-ID: <de5b16cf3fdac1f783e291acc325b78368653ec5.camel@perches.com>
-Subject: Re: [PATCH 072/141] can: peak_usb: Fix fall-through warnings for
- Clang
-From:   Joe Perches <joe@perches.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Date:   Sat, 21 Nov 2020 11:50:17 -0800
-In-Reply-To: <bf3dbc5c-c34e-b3ef-abb6-0c88d8a90332@pengutronix.de>
-References: <cover.1605896059.git.gustavoars@kernel.org>
-         <aab7cf16bf43cc7c3e9c9930d2dae850c1d07a3c.1605896059.git.gustavoars@kernel.org>
-         <bf3dbc5c-c34e-b3ef-abb6-0c88d8a90332@pengutronix.de>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.38.1-1 
+        id S1728475AbgKUUPU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Nov 2020 15:15:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52886 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728439AbgKUUPU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Nov 2020 15:15:20 -0500
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3651EC0613CF;
+        Sat, 21 Nov 2020 12:15:20 -0800 (PST)
+Received: by mail-yb1-xb41.google.com with SMTP id t33so12071481ybd.0;
+        Sat, 21 Nov 2020 12:15:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mbw2Y23oAuZzwEvVM0pA0thCp3SZyb/YnzSJ41FnCLM=;
+        b=J5SvMFJ1YRlnd+pAiPvZG/9oSqVoUmC69dGwJmfFqeIFim4DRvpIk6QcDPHGz9yyqm
+         qSPxUv8xkfC6gWuGlM7jwK4NzS839cz24lIgadVB2APJS4+/puoLDUGTnVYScghUqzu0
+         0LIO9up3r3XF8CxHNPkUJvQKqnsZ0Gwz5dGGpq6TVLz17UEsD240nSq5ykFx1JdYGtkp
+         Pn7BqpbuJKcHhLuwtAB0OE5kMrZNb/mEjp9PlhckbH/vSeu2sxuaNYgHwAAWTRDVI8G4
+         C6szmZmxgHXcERQB1dDsq5X2hin9q+hLcGtzT+npJ2ZLD2kMwJvTk2b4Tska505qsEHM
+         mVKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mbw2Y23oAuZzwEvVM0pA0thCp3SZyb/YnzSJ41FnCLM=;
+        b=qIiJu33zAWiveTqltQ9mx7MqTBKPTjKDRC/Uq8QoFatGuXvQ2wttUUzpRzWuqqE4yN
+         e3VW6UZ1UlnxxseUlWFd/+hegwaibQ3suhd2oILE8/QlDE1a/Mn8mT/da7FemsRaNwOH
+         ngjuNxtbxAu7XnOFqPUWTLjGeQzeDBBBHFr4jiLsp9Qy1kcDoJwxSSpuL+Uttk1GGR1x
+         VHZsZXRWJY6mVJ5FVXBfGbLgBaQ4r2Laxqgl6bLCfjljISAwkpGXOWloEOVAEipq0bBv
+         EYH76uk2EO5RHGCPJ5fDBnvChXMEZjbxMNAdqPpo2AuqDui47U+3QCmZ6xQ0dz+Ng7dM
+         0YZQ==
+X-Gm-Message-State: AOAM531evKnthR1Sga5izVA3FmAIXs1SgQ2W5WZOVGk3hlfVG39C9xI2
+        RIqzw/cYBnBvyQPmgKSZU2aRtCw5tG9e3q5Pxmg=
+X-Google-Smtp-Source: ABdhPJzBsk5B8w2UWPoktp6JDdeVbPg3jreUuCgAemoxFbElp24DD8JOmhdwVcYWgz9v/LS55UQoSG2wxvAy01L1yDw=
+X-Received: by 2002:a25:493:: with SMTP id 141mr31799448ybe.104.1605989719314;
+ Sat, 21 Nov 2020 12:15:19 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201120130026.19029-1-weqaar.a.janjua@intel.com>
+ <20201120130026.19029-6-weqaar.a.janjua@intel.com> <86e3a9e4-a375-1281-07bf-6b04781bb02f@fb.com>
+In-Reply-To: <86e3a9e4-a375-1281-07bf-6b04781bb02f@fb.com>
+From:   Weqaar Janjua <weqaar.janjua@gmail.com>
+Date:   Sat, 21 Nov 2020 20:14:53 +0000
+Message-ID: <CAPLEeBY_p_0QsZeqvrr0P+uf1jkL_eFGgawc=KD6Rkuh_177NA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 5/5] selftests/bpf: xsk selftests -
+ Bi-directional Sockets - SKB, DRV
+To:     Yonghong Song <yhs@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Weqaar Janjua <weqaar.a.janjua@intel.com>, shuah@kernel.org,
+        skhan@linuxfoundation.org, linux-kselftest@vger.kernel.org,
+        Anders Roxell <anders.roxell@linaro.org>,
+        jonathan.lemon@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2020-11-21 at 14:17 +0100, Marc Kleine-Budde wrote:
-> On 11/20/20 7:34 PM, Gustavo A. R. Silva wrote:
-> > In preparation to enable -Wimplicit-fallthrough for Clang, fix a warning
-> > by explicitly adding a break statement instead of letting the code fall
-> > through to the next case.
-> > 
-> > Link: https://github.com/KSPP/linux/issues/115
-> > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-[]
-> > diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_core.c b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-[]
-> > @@ -299,6 +299,8 @@ static void peak_usb_write_bulk_callback(struct urb *urb)
-> >  		if (net_ratelimit())
-> >  			netdev_err(netdev, "Tx urb aborted (%d)\n",
-> >  				   urb->status);
-> > +		break;
+On Fri, 20 Nov 2020 at 20:45, Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 11/20/20 5:00 AM, Weqaar Janjua wrote:
+> > Adds following tests:
+> >
+> > 1. AF_XDP SKB mode
+> >     d. Bi-directional Sockets
+> >        Configure sockets as bi-directional tx/rx sockets, sets up fill
+> >        and completion rings on each socket, tx/rx in both directions.
+> >        Only nopoll mode is used
+> >
+> > 2. AF_XDP DRV/Native mode
+> >     d. Bi-directional Sockets
+> >     * Only copy mode is supported because veth does not currently support
+> >       zero-copy mode
+> >
+> > Signed-off-by: Weqaar Janjua <weqaar.a.janjua@intel.com>
+> > ---
+> >   tools/testing/selftests/bpf/Makefile          |   4 +-
+> >   .../bpf/test_xsk_drv_bidirectional.sh         |  23 ++++
+> >   .../selftests/bpf/test_xsk_drv_teardown.sh    |   3 -
+> >   .../bpf/test_xsk_skb_bidirectional.sh         |  20 ++++
+> >   tools/testing/selftests/bpf/xdpxceiver.c      | 100 +++++++++++++-----
+> >   tools/testing/selftests/bpf/xdpxceiver.h      |   4 +
+> >   6 files changed, 126 insertions(+), 28 deletions(-)
+> >   create mode 100755 tools/testing/selftests/bpf/test_xsk_drv_bidirectional.sh
+> >   create mode 100755 tools/testing/selftests/bpf/test_xsk_skb_bidirectional.sh
+> >
+> > diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> > index 515b29d321d7..258bd72812e0 100644
+> > --- a/tools/testing/selftests/bpf/Makefile
+> > +++ b/tools/testing/selftests/bpf/Makefile
+> > @@ -78,7 +78,9 @@ TEST_PROGS := test_kmod.sh \
+> >       test_xsk_drv_nopoll.sh \
+> >       test_xsk_drv_poll.sh \
+> >       test_xsk_skb_teardown.sh \
+> > -     test_xsk_drv_teardown.sh
+> > +     test_xsk_drv_teardown.sh \
+> > +     test_xsk_skb_bidirectional.sh \
+> > +     test_xsk_drv_bidirectional.sh
+> >
+> >   TEST_PROGS_EXTENDED := with_addr.sh \
+> >       with_tunnels.sh \
+> > diff --git a/tools/testing/selftests/bpf/test_xsk_drv_bidirectional.sh b/tools/testing/selftests/bpf/test_xsk_drv_bidirectional.sh
+> > new file mode 100755
+> > index 000000000000..d3a7e2934d83
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/test_xsk_drv_bidirectional.sh
+> > @@ -0,0 +1,23 @@
+> > +#!/bin/bash
+> > +# SPDX-License-Identifier: GPL-2.0
+> > +# Copyright(c) 2020 Intel Corporation.
 > > +
-> >  	case -EPROTO:
-> >  	case -ENOENT:
-> >  	case -ECONNRESET:
-> > 
-> 
-> What about moving the default to the end if the case, which is more common anyways:
-> 
-> diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_core.c b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-[]
-> @@ -295,16 +295,16 @@ static void peak_usb_write_bulk_callback(struct urb *urb)
->                 netif_trans_update(netdev);
->                 break;
->  
-> 
-> -       default:
-> -               if (net_ratelimit())
-> -                       netdev_err(netdev, "Tx urb aborted (%d)\n",
-> -                                  urb->status);
->         case -EPROTO:
->         case -ENOENT:
->         case -ECONNRESET:
->         case -ESHUTDOWN:
-> -
->                 break;
-> +
-> +       default:
-> +               if (net_ratelimit())
-> +                       netdev_err(netdev, "Tx urb aborted (%d)\n",
-> +                                  urb->status);
+> > +# See test_xsk_prerequisites.sh for detailed information on tests
+> > +
+> > +. xsk_prereqs.sh
+> > +. xsk_env.sh
+> > +
+> > +TEST_NAME="DRV BIDIRECTIONAL SOCKETS"
+> > +
+> > +vethXDPnative ${VETH0} ${VETH1} ${NS1}
+> > +
+> > +params=("-N" "-B")
+> > +execxdpxceiver params
+> > +
+> > +retval=$?
+> > +test_status $retval "${TEST_NAME}"
+> > +
+> > +# Must be called in the last test to execute
+> > +cleanup_exit ${VETH0} ${VETH1} ${NS1}
+>
+> This also makes hard to run tests as users will not know this unless
+> they are familiar with the details of the tests.
+>
+> How about you have another scripts test_xsk.sh which includes all these
+> individual tests and pull the above cleanup_exit into test_xsk.sh?
+> User just need to run test_xsk.sh will be able to run all tests you
+> implemented here.
+>
+This works, test_xsk_* >> test_xsk.sh, will ship out as v3.
 
-That's fine and is more generally used style but this
-default: case should IMO also end with a break;
-
-+		break;
-
->         }
-
-
+> > +
+> > +test_exit $retval 0
+> > diff --git a/tools/testing/selftests/bpf/test_xsk_drv_teardown.sh b/tools/testing/selftests/bpf/test_xsk_drv_teardown.sh
+> [...]
