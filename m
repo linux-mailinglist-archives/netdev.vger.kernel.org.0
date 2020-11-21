@@ -2,59 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B1EA2BBC9A
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 04:14:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E7332BBCA4
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 04:18:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727376AbgKUDNA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 22:13:00 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53546 "EHLO mail.kernel.org"
+        id S1726316AbgKUDSR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 22:18:17 -0500
+Received: from z5.mailgun.us ([104.130.96.5]:54577 "EHLO z5.mailgun.us"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725890AbgKUDNA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Nov 2020 22:13:00 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1725791AbgKUDSQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Nov 2020 22:18:16 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1605928696; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=tsjgLaYaSJcIz+X5WrJmtxBmcPAH7mtdLQEdy3BKU04=; b=UsIJfiT8YgKmhjo2Hk6CrPmSq1MJmjjpcd3V+7kPOfHGtAlXm5MIyEfZEq9dZH25ik4ZVRMS
+ cmSiynAdDjZQ4hPgBPjNwERqhIouc+kvcXGw1IYAjqegupLd3Hdrtot8JSBorTd1iJxnfddH
+ zmUaCFiumtucIZDdfl8LSwAfHVg=
+X-Mailgun-Sending-Ip: 104.130.96.5
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
+ 5fb886f71b731a5d9c2f8bc4 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 21 Nov 2020 03:18:15
+ GMT
+Sender: hemantk=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 6BDF5C43461; Sat, 21 Nov 2020 03:18:14 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        NICE_REPLY_A,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from [10.46.162.249] (i-global254.qualcomm.com [199.106.103.254])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C87E9221FE;
-        Sat, 21 Nov 2020 03:12:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605928380;
-        bh=ZISbLObTtcdQpdOYcIgsn9FZhK4G4Pz1hjSqgyDW+R4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=P1lcFv1KgsjZyc8gk7U2iip66sytABKCsaqU/Od5P64fTTF3zqzYXtQ587b1lN0ym
-         qA5LENOWUSuAjwFlIszXfiOwXlvxkj2Q3grqMs+bNddVFMrIY4fbod5RIHdPzc64gK
-         fGmCAEKInf0JjnrRRE+FLX9to73F/zQW2tHuFfFk=
-Date:   Fri, 20 Nov 2020 19:12:58 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] mdio_bus: suppress err message for reset gpio
- EPROBE_DEFER
-Message-ID: <20201120191258.5c645fcd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201119203446.20857-1-grygorii.strashko@ti.com>
-References: <20201119203446.20857-1-grygorii.strashko@ti.com>
+        (Authenticated sender: hemantk)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 348C6C433ED;
+        Sat, 21 Nov 2020 03:18:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 348C6C433ED
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=hemantk@codeaurora.org
+Subject: Re: [PATCH v12 5/5] selftest: mhi: Add support to test MHI LOOPBACK
+ channel
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     gregkh@linuxfoundation.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jhugo@codeaurora.org,
+        bbhatt@codeaurora.org, loic.poulain@linaro.org,
+        netdev@vger.kernel.org, skhan@linuxfoundation.org
+References: <1605566782-38013-1-git-send-email-hemantk@codeaurora.org>
+ <1605566782-38013-6-git-send-email-hemantk@codeaurora.org>
+ <20201120061003.GA3909@work>
+From:   Hemant Kumar <hemantk@codeaurora.org>
+Message-ID: <7673cbe1-0ab1-8e44-2e24-190dd808e2e2@codeaurora.org>
+Date:   Fri, 20 Nov 2020 19:18:12 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20201120061003.GA3909@work>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Nov 2020 22:34:46 +0200 Grygorii Strashko wrote:
-> The mdio_bus may have dependencies from GPIO controller and so got
-> deferred. Now it will print error message every time -EPROBE_DEFER is
-> returned which from:
-> __mdiobus_register()
->  |-devm_gpiod_get_optional()
-> without actually identifying error code.
-> 
-> "mdio_bus 4a101000.mdio: mii_bus 4a101000.mdio couldn't get reset GPIO"
-> 
-> Hence, suppress error message for devm_gpiod_get_optional() returning
-> -EPROBE_DEFER case by using dev_err_probe().
-> 
-> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
 
-Applied (with the line wrapped), thanks!
+Hi Mani,
+On 11/19/20 10:10 PM, Manivannan Sadhasivam wrote:
+> On Mon, Nov 16, 2020 at 02:46:22PM -0800, Hemant Kumar wrote:
+>> Loopback test opens the MHI device file node and writes
+>> a data buffer to it. MHI UCI kernel space driver copies
+>> the data and sends it to MHI uplink (Tx) LOOPBACK channel.
+>> MHI device loops back the same data to MHI downlink (Rx)
+>> LOOPBACK channel. This data is read by test application
+>> and compared against the data sent. Test passes if data
+>> buffer matches between Tx and Rx. Test application performs
+>> open(), poll(), write(), read() and close() file operations.
+>>
+>> Signed-off-by: Hemant Kumar <hemantk@codeaurora.org>
+> 
+> One nitpick below, with that addressed:
+> 
+> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+[..]
+> 
+> Effectively this functions does parse and run, so this should be called
+> as, "loopback_test_parse_run" or pthread creation should be moved here.
+Done.
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
