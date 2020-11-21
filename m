@@ -2,129 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 846882BBDDD
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 08:39:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE2282BBDDF
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 08:43:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727185AbgKUHiH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Nov 2020 02:38:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50194 "EHLO
+        id S1726558AbgKUHlX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Nov 2020 02:41:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726983AbgKUHiG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Nov 2020 02:38:06 -0500
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FA77C0613CF;
-        Fri, 20 Nov 2020 23:38:06 -0800 (PST)
-Received: by mail-yb1-xb44.google.com with SMTP id g15so10827741ybq.6;
-        Fri, 20 Nov 2020 23:38:06 -0800 (PST)
+        with ESMTP id S1726058AbgKUHlW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Nov 2020 02:41:22 -0500
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3402C0613CF;
+        Fri, 20 Nov 2020 23:41:22 -0800 (PST)
+Received: by mail-yb1-xb41.google.com with SMTP id g15so10832457ybq.6;
+        Fri, 20 Nov 2020 23:41:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=V0uMqtuZYyit3rkstjKgdpdIgZ+hwCKX+nB+J4vIPM8=;
-        b=FdaQIrPLzHPeHnyS/kXSYoqjT0PKYicSc5gjxbQyk14akh1tVkLPf6nYY8NvyIht37
-         CfRUoE5ELPs1JpEA+ZRT3arwi3/oIfe1lFreYv09WE0cNi/062yUNXzPtQVqSSISMu26
-         0K4jz9U6UkS/iBFyzmmr/UnzrjkhtLy4IV/17RKc+8hZ6tTRqIbngn//eniYlaS81Je+
-         iIR2wh/PjDHX+JRQozK62Uq9U+PnVetgpe1TShQrGYyx6E/hbUhnYY2gEZFCgxaE/ar6
-         7phwkeAj4F2lO47Xx4bqz5xzyzlIxWLPyDsjENh9nPLf1Tg7Q8qq6AKlGVQ53hrj1EEc
-         wFdw==
+        bh=mDqv5+Tpr3FjAa+NDsoyI1zIWHGb/nwESPI3fQQNXik=;
+        b=txZHbw07aDxDJRwfLqtjJ/YhoWHtW7dg7l4uVBYhi88qrq2/ZJs2MKpEAmA8sVLsnn
+         7wNy5g55vy2Yo/G5nMpoCc9SJrQOnyDfEWY/MoMx03quCB3YrCpDGURP2B2UTcgxZHgH
+         XO/A1mSeeZ5i20LZX6OU97wml0nILJPW0f9ma+TKXsNQL10r1bmsRmXpzhuMpdwlaJsJ
+         L1AzlP245rKLz/RoKbH7cB9aB5BRbNmvWlbx71FZn2tzEziiB2nzZ0htZXFP4j1mzz+e
+         LkMeiUBgtwU8WRPNl7eaWkbmS+OZRn6BJPXVKw72uCdnhWaBnYUZy2yFdzXXMmPX2EGB
+         qhZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=V0uMqtuZYyit3rkstjKgdpdIgZ+hwCKX+nB+J4vIPM8=;
-        b=euIPjoWufOf2T1J+YYaEAKVfV3ClHwzM0L3R58qn+U21cyrJdieu8fyvvm6eYFrFhM
-         USMWSnlPDW5FatfLg4vktMwKbNu3s2E7ZOiyACirSDPJaQEc+e5b0nRvievQ+fd6r2dy
-         DDfLVBPHo1nClO9ZH+r4hr0PFN3t8Z7muNAVu57JLXnB4+HDPKlU2O3hSrti4X7R5xSY
-         pFmBlP/DtWROc2pXVcBG8MAj3CNSCBSeT911aG8IKztIKOEavBvsoOlsH0YiXcdAp1iY
-         i5IC/xMjbY+/3868AXymUA2GuZVc3bzHEFayHWMDBJyYbM417tLmhrPyv9J383z6KOrn
-         duJg==
-X-Gm-Message-State: AOAM530S3VpxdOGX6DQ90PnvLCdPWQuWtFwjEN+ePBkat6ZtlelXf4WE
-        dRnWzOP/nP57LBqui6/FOn/Cd2YdPWASTwtvHuesCvaHD7TAUg==
-X-Google-Smtp-Source: ABdhPJwZ6CjIPowUxq3oip+ROMaNn/h2brOlLVZlRVexvOQ9kEIeM067fq0dbIhpztB7MrHazoYaAK2/gwVGAzBSWm4=
-X-Received: by 2002:a25:df82:: with SMTP id w124mr29190011ybg.347.1605944285647;
- Fri, 20 Nov 2020 23:38:05 -0800 (PST)
+        bh=mDqv5+Tpr3FjAa+NDsoyI1zIWHGb/nwESPI3fQQNXik=;
+        b=bEc44taWH4RwVDnZSwc39dGRjzstv3UQcQc2Vy1XGoFuy2oaadT5SeYcxZ5nKyTDCY
+         ujgfYvphadjExCKksDLStMyNM+92WQVvveOj55RTPLqdAXaK4Y8aEjA21wcFEU43Vhs3
+         YyBLH/AdhJG9YK8aKWK31WpDuiY/kS8ToV7KJGQAzZ9CE49tporT8we2m43PZEqAM2gf
+         lqA5BFcIcLMpW4pCpMJtpLinBwHyNSbKnzYkCa+be7KM9aBWYvE6Y7UmKp3h/oT8rgat
+         EWk6sqDIz3a5/HcAuce275lsS96s4wXBs/kbKKKHTGfvG3ET1zrFVkd68LfkcC/uSW5w
+         hYfw==
+X-Gm-Message-State: AOAM5301XlMpnBMhxXz2lEjljOkaeVOuNeaJhIBqGnQoJq6tUU4mgNXu
+        vLF4azXGH39m7kbE31A6+cTK+KybmQnWdhTsN18=
+X-Google-Smtp-Source: ABdhPJz4UfOM1lUEZlmJBLmFEj5ubY2YwYKmRP+s9MU4x5EznXPClvwUW01x3EeYHqKC+ycfptnrxTJp/QY+G+oo/oo=
+X-Received: by 2002:a25:2845:: with SMTP id o66mr32528179ybo.260.1605944481979;
+ Fri, 20 Nov 2020 23:41:21 -0800 (PST)
 MIME-Version: 1.0
-References: <20201119085022.3606135-1-davidgow@google.com>
-In-Reply-To: <20201119085022.3606135-1-davidgow@google.com>
+References: <160588903254.2817268.4861837335793475314.stgit@firesoul> <160588912738.2817268.9380466634324530673.stgit@firesoul>
+In-Reply-To: <160588912738.2817268.9380466634324530673.stgit@firesoul>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 20 Nov 2020 23:37:54 -0800
-Message-ID: <CAEf4BzY4i0fH34eO=-4WOzVpifgPmJ0ER5ipBJWB0_4Zdv0AQg@mail.gmail.com>
-Subject: Re: [RFC PATCH] bpf: preload: Fix build error when O= is set
-To:     David Gow <davidgow@google.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>
+Date:   Fri, 20 Nov 2020 23:41:11 -0800
+Message-ID: <CAEf4BzbfqvCiHDaZk3yQCPfzwpGJ-35XBw3qaGuPNYkfBHR2Kw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next V7 8/8] bpf/selftests: activating bpf_check_mtu BPF-helper
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
+        Lorenz Bauer <lmb@cloudflare.com>, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Marek Majkowski <marek@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        colrack@gmail.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 19, 2020 at 12:51 AM David Gow <davidgow@google.com> wrote:
+On Fri, Nov 20, 2020 at 8:21 AM Jesper Dangaard Brouer
+<brouer@redhat.com> wrote:
 >
-> If BPF_PRELOAD is enabled, and an out-of-tree build is requested with
-> make O=<path>, compilation seems to fail with:
+> Adding selftest for BPF-helper bpf_check_mtu(). Making sure
+> it can be used from both XDP and TC.
 >
-> tools/scripts/Makefile.include:4: *** O=.kunit does not exist.  Stop.
-> make[4]: *** [../kernel/bpf/preload/Makefile:8: kernel/bpf/preload/libbpf.a] Error 2
-> make[3]: *** [../scripts/Makefile.build:500: kernel/bpf/preload] Error 2
-> make[2]: *** [../scripts/Makefile.build:500: kernel/bpf] Error 2
-> make[2]: *** Waiting for unfinished jobs....
-> make[1]: *** [.../Makefile:1799: kernel] Error 2
-> make[1]: *** Waiting for unfinished jobs....
-> make: *** [Makefile:185: __sub-make] Error 2
->
-> By the looks of things, this is because the (relative path) O= passed on
-> the command line is being passed to the libbpf Makefile, which then
-> can't find the directory. Given OUTPUT= is being passed anyway, we can
-> work around this by explicitly setting an empty O=, which will be
-> ignored in favour of OUTPUT= in tools/scripts/Makefile.include.
-
-Strange, but I can't repro it. I use make O=<absolute path> all the
-time with no issues. I just tried specifically with a make O=.build,
-where .build is inside Linux repo, and it still worked fine. See also
-be40920fbf10 ("tools: Let O= makes handle a relative path with -C
-option") which was supposed to address such an issue. So I'm wondering
-what exactly is causing this problem.
-
->
-> Signed-off-by: David Gow <davidgow@google.com>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 > ---
+>  tools/testing/selftests/bpf/prog_tests/check_mtu.c |   37 ++++++++++++++++++++
+>  tools/testing/selftests/bpf/progs/test_check_mtu.c |   33 ++++++++++++++++++
+>  2 files changed, 70 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/check_mtu.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_check_mtu.c
 >
-> Hi all,
+> diff --git a/tools/testing/selftests/bpf/prog_tests/check_mtu.c b/tools/testing/selftests/bpf/prog_tests/check_mtu.c
+> new file mode 100644
+> index 000000000000..09b8f986a17b
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/check_mtu.c
+> @@ -0,0 +1,37 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2020 Red Hat */
+> +#include <uapi/linux/bpf.h>
+> +#include <linux/if_link.h>
+> +#include <test_progs.h>
+> +
+> +#include "test_check_mtu.skel.h"
+> +#define IFINDEX_LO 1
+> +
+> +void test_check_mtu_xdp(struct test_check_mtu *skel)
+
+this should be static func, otherwise it's treated as an independent selftest.
+
+> +{
+> +       int err = 0;
+> +       int fd;
+> +
+> +       fd = bpf_program__fd(skel->progs.xdp_use_helper);
+> +       err = bpf_set_link_xdp_fd(IFINDEX_LO, fd, XDP_FLAGS_SKB_MODE);
+> +       if (CHECK_FAIL(err))
+
+please use CHECK() or one of ASSERT_xxx() helpers. CHECK_FAIL() should
+be used for high-volume unlikely to fail test (i.e., very rarely).
+
+> +               return;
+> +
+> +       bpf_set_link_xdp_fd(IFINDEX_LO, -1, 0);
+> +}
+> +
+> +void test_check_mtu(void)
+> +{
+> +       struct test_check_mtu *skel;
+> +
+> +       skel = test_check_mtu__open_and_load();
+> +       if (CHECK_FAIL(!skel)) {
+> +               perror("test_check_mtu__open_and_load");
+> +               return;
+> +       }
+> +
+> +       if (test__start_subtest("bpf_check_mtu XDP-attach"))
+> +               test_check_mtu_xdp(skel);
+> +
+> +       test_check_mtu__destroy(skel);
+> +}
+> diff --git a/tools/testing/selftests/bpf/progs/test_check_mtu.c b/tools/testing/selftests/bpf/progs/test_check_mtu.c
+> new file mode 100644
+> index 000000000000..ab97ec925a32
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/test_check_mtu.c
+> @@ -0,0 +1,33 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2020 Red Hat */
+> +#include <linux/bpf.h>
+> +#include <bpf/bpf_helpers.h>
+> +
+> +#include <stddef.h>
+> +#include <stdint.h>
+> +
+> +char _license[] SEC("license") = "GPL";
+> +
+> +SEC("xdp")
+> +int xdp_use_helper(struct xdp_md *ctx)
+> +{
+> +       uint32_t mtu_len = 0;
+> +       int delta = 20;
+> +
+> +       if (bpf_check_mtu(ctx, 0, &mtu_len, delta, 0)) {
+> +               return XDP_ABORTED;
+> +       }
+
+nit: unnecessary {} for single-line if; same below
+
+> +       return XDP_PASS;
+> +}
+> +
+> +SEC("classifier")
+> +int tc_use_helper(struct __sk_buff *ctx)
+> +{
+> +       uint32_t mtu_len = 0;
+> +       int delta = -20;
+> +
+> +       if (bpf_check_mtu(ctx, 0, &mtu_len, delta, 0)) {
+> +               return BPF_DROP;
+> +       }
+> +       return BPF_OK;
+> +}
 >
-> I'm not 100% sure this is the correct fix here -- it seems to work for
-> me, and makes some sense, but let me know if there's a better way.
->
-> One other thing worth noting is that I've been hitting this with
-> make allyesconfig on ARCH=um, but there's a comment in the Kconfig
-> suggesting that, because BPF_PRELOAD depends on !COMPILE_TEST, that
-> maybe it shouldn't be being built at all. I figured that it was worth
-> trying to fix this anyway.
->
-> Cheers,
-> -- David
->
->
->  kernel/bpf/preload/Makefile | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/kernel/bpf/preload/Makefile b/kernel/bpf/preload/Makefile
-> index 23ee310b6eb4..39848d296097 100644
-> --- a/kernel/bpf/preload/Makefile
-> +++ b/kernel/bpf/preload/Makefile
-> @@ -5,7 +5,7 @@ LIBBPF_A = $(obj)/libbpf.a
->  LIBBPF_OUT = $(abspath $(obj))
->
->  $(LIBBPF_A):
-> -       $(Q)$(MAKE) -C $(LIBBPF_SRCS) OUTPUT=$(LIBBPF_OUT)/ $(LIBBPF_OUT)/libbpf.a
-> +       $(Q)$(MAKE) -C $(LIBBPF_SRCS) O= OUTPUT=$(LIBBPF_OUT)/ $(LIBBPF_OUT)/libbpf.a
->
->  userccflags += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi \
->         -I $(srctree)/tools/lib/ -Wno-unused-result
-> --
-> 2.29.2.454.gaff20da3a2-goog
 >
