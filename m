@@ -2,89 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11F672BBCAC
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 04:32:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5778D2BBCBF
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 04:45:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726518AbgKUDbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 22:31:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40702 "EHLO
+        id S1726567AbgKUDnc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 22:43:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbgKUDbM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 22:31:12 -0500
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D944C0613CF
-        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 19:31:11 -0800 (PST)
-Received: by mail-io1-xd41.google.com with SMTP id o8so3605491ioh.0
-        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 19:31:11 -0800 (PST)
+        with ESMTP id S1726417AbgKUDnb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 22:43:31 -0500
+Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F5B7C0613CF;
+        Fri, 20 Nov 2020 19:43:30 -0800 (PST)
+Received: by mail-oi1-x241.google.com with SMTP id j15so7574091oih.4;
+        Fri, 20 Nov 2020 19:43:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=S5oTLg78JQBWGWJuxlIEKrxaMSCrcYlXfYqW0izwtZE=;
-        b=YJx/7mGxfgih7VuDfPueJ8xD24jp1nomS8yHDUKckgQf/tWK/KRmkGx0pTsu9X2J8q
-         UeKzlHMX+52VjkblKl7liHneowPT2lCa1nBtQYllCKvBIisu6V+8naaSlhgFBTodnutt
-         3sRjlEPW67hrsbm+Jq/bQkrFfBwDyaXBdJb0g145Th+wvZHaExoR+NSfYdZYOWQUoXTn
-         xVWqkNBUXHNDKPzrLps4CpZ9DZxrPecjqF46Llx3OnwvG0s45FCYmn3PpA+eu64Y6rdk
-         RRsZZiY8udTA8xlqKadcc/ZSSHES8PrGk/omJ6MdNzKOg+X/1CEk38xJZvnxIyebKqgy
-         SzKA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Y6px9tXuF4Qgiy8xXoUBm2WM7J/cNcGPuCYetBct2LI=;
+        b=sSybWjvwjuHeA6Epva/SygtwaCF3Sc4tQBSZYgSVt9DnrhYDSAIbluz2Se8MErK1Rb
+         zzj/MOqZvcMwxVFWUX7taHPyDhsPGTj1j8l+ZwLoSncjtrfRvl3K3c7ByUUeI3jUBF+F
+         9gt1HsmEygPM2SVCtYc9A9mNKwfivbj5/nOYMCz4H355X924BXBb4yflEoE6zmUhJ/8y
+         f213eDE9mxbT3u8lsnPEnYS6mSYNMQOj8NPbZs4qsA+4xzaLg8YRNPj8pxogwli3fT/d
+         ivm0mzcc2LlGcHXhVf2jiS7Sc7Pd44jfpM1sfAd1hDemFYtNxSPJYfNglYnqdfJkoNrr
+         8H/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=S5oTLg78JQBWGWJuxlIEKrxaMSCrcYlXfYqW0izwtZE=;
-        b=hdaxpbe4Y275MUOKsA1sU86b1UmXrD11m2xSOaHROpBtMu8GsL5C7l8Jk5shnOm1OZ
-         OXqKPsR5DDpS3bbiuaOrLSamw7JA6WKMPo3ybNX8VbPX+UB0PwQB7KY8SttNsYDgLClf
-         1id9kMgEcCrZesmDrcoxQ5bglxXLTkKBQapw9xl2SoydN7wQZcvpIJWhg+AkQXyB9mQO
-         nVOo+c9jCo2QBOomHKS4qR6NBdvyWZ/+tUXIxjb85kgIrWX8inBEFspQEUvSUl8z57vw
-         5jaDFoLDnVnbc9vHCSLabpOnc4ZhKRdqbrr7eMq2TSNJkzYdPTPV52ZQ6B1MQByjtrjl
-         bObg==
-X-Gm-Message-State: AOAM530WcQ/lY+mOdqfDCCWu92gMPl5E1fsr8ZhJyGrNx/xbcq3bNNHB
-        2GKF8hJsEGd5Epc+8LsX5PTReD0LBwo8xQ==
-X-Google-Smtp-Source: ABdhPJwKGtfwDTa0z8IImutIH5wzsEwbU10FnSM3mAB+j17A+Du5XXzMvseGxio0O/YGmN/VdaWMAQ==
-X-Received: by 2002:a6b:b50d:: with SMTP id e13mr26685621iof.168.1605929470694;
-        Fri, 20 Nov 2020 19:31:10 -0800 (PST)
-Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id u11sm2454107iol.51.2020.11.20.19.31.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 Nov 2020 19:31:10 -0800 (PST)
-Subject: Re: [PATCH net-next 4/6] net: ipa: support retries on generic GSI
- commands
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, evgreen@chromium.org, subashab@codeaurora.org,
-        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20201119224929.23819-1-elder@linaro.org>
- <20201119224929.23819-5-elder@linaro.org>
- <20201120184923.404c30bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <88104bdd-f464-326a-264e-570a8e4a81c0@linaro.org>
-Date:   Fri, 20 Nov 2020 21:31:09 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.2
+        bh=Y6px9tXuF4Qgiy8xXoUBm2WM7J/cNcGPuCYetBct2LI=;
+        b=Ml6nKcGHnGg0U9orb/8Y0mm6kG8iwxBhflB3GFc/coDr8FBBypRKB/mDHEkQ+6xXDN
+         1g6o+tb12/QwZ9lp5/+0JoAGE0kycdTmq91KqqZSBNVfUYVG7SF7kpM5IzfDpj4rQdIt
+         z+I3D0Ufr/1SrSBZwxzDKamnKmzr7EnCE/zheM5isR45CDyVjMuyNvKN1krBqx4imluQ
+         C13wNZLUTkccrekVc/iGtqWBbBST6KMH21WecQj6dtga3aqK6K5Vi4RTJm/W2OF4id/+
+         wdHScwIJadH27IBmljVlE1aVEgSAUmdt+5O8RItm8O0F5jhdlJWxRyx1SSMaPMrSQZL5
+         HfNw==
+X-Gm-Message-State: AOAM530TJFxf4+7JSiAonWHV2HDGRSoIIfBo6XgM4ayg/WM0DWNiHHGG
+        gbXvp8spZnEbZ8KGP7wgvbVm3LSOrZBi1w==
+X-Google-Smtp-Source: ABdhPJyLARdT6fIZbi0FUO/sHDWLPrPIxxj3KJqnv7rGqm8tRcARwx75jmemC7w7ZC6Gn1a105aZqw==
+X-Received: by 2002:aca:4849:: with SMTP id v70mr8953990oia.103.1605930209314;
+        Fri, 20 Nov 2020 19:43:29 -0800 (PST)
+Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:c0bb:f8c1:a62c:f78b])
+        by smtp.gmail.com with ESMTPSA id k63sm2832685oif.12.2020.11.20.19.43.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Nov 2020 19:43:28 -0800 (PST)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Cong Wang <cong.wang@bytedance.com>, liuzx@knownsec.com,
+        Florian Westphal <fw@strlen.de>,
+        Edward Cree <ecree@solarflare.com>, stable@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [Patch stable] netfilter: clear skb->next in NF_HOOK_LIST()
+Date:   Fri, 20 Nov 2020 19:43:17 -0800
+Message-Id: <20201121034317.577081-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20201120184923.404c30bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/20/20 8:49 PM, Jakub Kicinski wrote:
-> On Thu, 19 Nov 2020 16:49:27 -0600 Alex Elder wrote:
->> +	do
->> +		ret = gsi_generic_command(gsi, channel_id,
->> +					  GSI_GENERIC_HALT_CHANNEL);
->> +	while (ret == -EAGAIN && retries--);
-> 
-> This may well be the first time I've seen someone write a do while loop
-> without the curly brackets!
+From: Cong Wang <cong.wang@bytedance.com>
 
-I had them at one time, then saw I could get away
-without them.  I don't have a preference but I see
-you accepted it as-is.
+NF_HOOK_LIST() uses list_del() to remove skb from the linked list,
+however, it is not sufficient as skb->next still points to other
+skb. We should just call skb_list_del_init() to clear skb->next,
+like the rest places which using skb list.
 
-I really appreciate your timely responses.
+This has been fixed in upstream by commit ca58fbe06c54
+("netfilter: add and use nf_hook_slow_list()").
 
-					-Alex
+Fixes: 9f17dbf04ddf ("netfilter: fix use-after-free in NF_HOOK_LIST")
+Reported-by: liuzx@knownsec.com
+Tested-by: liuzx@knownsec.com
+Cc: Florian Westphal <fw@strlen.de>
+Cc: Edward Cree <ecree@solarflare.com>
+Cc: stable@vger.kernel.org # between 4.19 and 5.4
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+---
+ include/linux/netfilter.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/linux/netfilter.h b/include/linux/netfilter.h
+index 77ebb61faf48..4c0e6539effd 100644
+--- a/include/linux/netfilter.h
++++ b/include/linux/netfilter.h
+@@ -316,7 +316,7 @@ NF_HOOK_LIST(uint8_t pf, unsigned int hook, struct net *net, struct sock *sk,
+ 
+ 	INIT_LIST_HEAD(&sublist);
+ 	list_for_each_entry_safe(skb, next, head, list) {
+-		list_del(&skb->list);
++		skb_list_del_init(skb);
+ 		if (nf_hook(pf, hook, net, sk, skb, in, out, okfn) == 1)
+ 			list_add_tail(&skb->list, &sublist);
+ 	}
+-- 
+2.25.1
+
