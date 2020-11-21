@@ -2,153 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E5F42BBBAD
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 02:51:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F9232BBBB4
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 02:57:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725944AbgKUBts (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Nov 2020 20:49:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53242 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725791AbgKUBtr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 20:49:47 -0500
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A616CC0613CF
-        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 17:49:47 -0800 (PST)
-Received: by mail-io1-xd2f.google.com with SMTP id i18so11927929ioa.3
-        for <netdev@vger.kernel.org>; Fri, 20 Nov 2020 17:49:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DUcso+azzK9eyJdy0Wag92NnbpvoOyDlBr0Hqgr2xJQ=;
-        b=fuLJp6xtgEYGlRePm3lmODhQ5oDu3kgpH41AKfzpkiSOLa9/KIhxlHxG3G/7XSyqqP
-         6sYm0Kxvar/8iKscqfG9akyhWeoE8P23qA94y3qyzqU2Jx1ybjzSDaOGM8IZ4+SSFoLQ
-         0rWiO5elWbYQv96CWP3sDcAqyuJ8ruPeCpQWHwfvQ5SkOKYHNlvEa2ExOm63p0FPR7uV
-         Eh17DVTJvJuv1Ug4kXmup1kzTgRj8YWFWJKrRi2ZBC+N+p8YzJwSl8JLRc2Zc3o5pj93
-         xmlxUMJmFZ9IbFF5Sa2iP9J9fCI0/ImPpWYT4cgBHHequPq8TxCb5I+Mr+IIm1piOFC+
-         Fa8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DUcso+azzK9eyJdy0Wag92NnbpvoOyDlBr0Hqgr2xJQ=;
-        b=GlONj/j4G2Fhrs8KlbvE7MX3x5KrwJb79FjA/81wwmP5IMLXRoPumrxwlFtqpOB50Y
-         X12jDRecIh0PldNQoDMSfXsHi09swQpb/UCrUA3hb42UIMPzaZf+QVplpjv4ZN0744Hk
-         YBem9dQoyoMWUPY+O5D2vcsFiTxIqhmkCqEq3cUrErLRTwbijnfsuqkQ7hFWtOo1oVjo
-         hr7fudgCQaMd4EpAYSTSXZyIxyhpl0wioJB7x4H83zd3DzeLQHYQ7Lg8Wzuky86klIwF
-         VgChuaW/CS5kHZVmKvWYwjDHfw27HIBWaI8F3xSLymph4d1u3KQyn6zF+9i3eGyI+rcx
-         RJew==
-X-Gm-Message-State: AOAM5305m1rlgw2bWJd6/fVMfZHqU8d6Q+OMZCao/AeS7uDfjCE709bc
-        GawA7uEMADHk2+b30s3F8VWWD//H9QWbBk436s4/eGZEjZA=
-X-Google-Smtp-Source: ABdhPJwKURbqmks7YfMsfiH0cFRkpj/EKJ7msnZqYzdYC1xGg8cX9F7p6MyNsPBAj2J33XCNnBOnmQNSJhsjJaqCooM=
-X-Received: by 2002:a02:1301:: with SMTP id 1mr21251860jaz.83.1605923386710;
- Fri, 20 Nov 2020 17:49:46 -0800 (PST)
+        id S1726398AbgKUB4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Nov 2020 20:56:13 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:7963 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725785AbgKUB4N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Nov 2020 20:56:13 -0500
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4CdGj92yymzhdwG;
+        Sat, 21 Nov 2020 09:55:57 +0800 (CST)
+Received: from [127.0.0.1] (10.74.149.191) by DGGEMS404-HUB.china.huawei.com
+ (10.3.19.204) with Microsoft SMTP Server id 14.3.487.0; Sat, 21 Nov 2020
+ 09:56:03 +0800
+Subject: Re: [RFC net-next 1/2] ethtool: add support for controling the type
+ of adaptive coalescing
+To:     Michal Kubecek <mkubecek@suse.cz>, Andrew Lunn <andrew@lunn.ch>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
+        <kuba@kernel.org>
+References: <1605758050-21061-1-git-send-email-tanhuazhong@huawei.com>
+ <1605758050-21061-2-git-send-email-tanhuazhong@huawei.com>
+ <20201119041557.GR1804098@lunn.ch>
+ <e43890d1-5596-3439-f4a7-d704c069a035@huawei.com>
+ <20201119220203.fv2uluoeekyoyxrv@lion.mk-sys.cz>
+ <8e9ba4c4-3ef4-f8bc-ab2f-92d695f62f12@huawei.com>
+ <20201120072322.slrpgqydcupm63ep@lion.mk-sys.cz>
+ <20201120133938.GG1804098@lunn.ch>
+ <20201120212243.n7vnwo3ldzisr4hl@lion.mk-sys.cz>
+From:   tanhuazhong <tanhuazhong@huawei.com>
+Message-ID: <4451853d-bcbe-5de0-6a44-a3e87b211f6b@huawei.com>
+Date:   Sat, 21 Nov 2020 09:56:02 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.5.2
 MIME-Version: 1.0
-References: <20201113214429.2131951-1-anthony.l.nguyen@intel.com>
- <20201113214429.2131951-6-anthony.l.nguyen@intel.com> <CAKgT0UeQ5q2M-uiR0-1G=30syPiO8S5OFHvDuN1XtQg5700hCg@mail.gmail.com>
- <fd0fc6f95f4c107d1aed18bf58239fda91879b26.camel@intel.com>
-In-Reply-To: <fd0fc6f95f4c107d1aed18bf58239fda91879b26.camel@intel.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 20 Nov 2020 17:49:35 -0800
-Message-ID: <CAKgT0Uewo+Rr19EVf9br9zBPsyOUANGMSQ0kqNVAzOJ8cjWMdw@mail.gmail.com>
-Subject: Re: [net-next v3 05/15] ice: create flow profile
-To:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-Cc:     "Cao, Chinh T" <chinh.t.cao@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "Behera, BrijeshX" <brijeshx.behera@intel.com>,
-        "Valiquette, Real" <real.valiquette@intel.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201120212243.n7vnwo3ldzisr4hl@lion.mk-sys.cz>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.149.191]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 20, 2020 at 4:42 PM Nguyen, Anthony L
-<anthony.l.nguyen@intel.com> wrote:
->
-> On Fri, 2020-11-13 at 15:56 -0800, Alexander Duyck wrote:
-> > On Fri, Nov 13, 2020 at 1:46 PM Tony Nguyen <
-> > anthony.l.nguyen@intel.com> wrote:
-> > >
-> > > From: Real Valiquette <real.valiquette@intel.com>
-> > >
-> > > Implement the initial steps for creating an ACL filter to support
-> > > ntuple
-> > > masks. Create a flow profile based on a given mask rule and program
-> > > it to
-> > > the hardware. Though the profile is written to hardware, no actions
-> > > are
-> > > associated with the profile yet.
-> > >
-> > > Co-developed-by: Chinh Cao <chinh.t.cao@intel.com>
-> > > Signed-off-by: Chinh Cao <chinh.t.cao@intel.com>
-> > > Signed-off-by: Real Valiquette <real.valiquette@intel.com>
-> > > Co-developed-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-> > > Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-> > > Tested-by: Brijesh Behera <brijeshx.behera@intel.com>
-> >
-> > So I see two big issues with the patch.
-> >
-> > First it looks like there is an anti-pattern of defensive NULL
-> > pointer
-> > checks throughout. Those can probably all go since all of the callers
-> > either use the pointer, or verify it is non-NULL before calling the
-> > function in question.
->
-> I'm removing those checks that you pointed out and some others as well.
->
-> >
-> > In addition the mask handling doens't look right to me. It is calling
-> > out a partial mask as being the only time you need an ACL and I would
-> > think it is any time you don't have a full mask for all
-> > ports/addresses since a flow director rule normally pulls in the full
-> > 4 tuple based on ice_ntuple_set_input_set() .
->
-> Commented below as well.
->
-> <snip>
->
-> > > +/**
-> > > + * ice_is_acl_filter - Checks if it's a FD or ACL filter
-> > > + * @fsp: pointer to ethtool Rx flow specification
-> > > + *
-> > > + * If any field of the provided filter is using a partial mask
-> > > then this is
-> > > + * an ACL filter.
-> > > + *
-> >
-> > I'm not sure this logic is correct. Can the flow director rules
-> > handle
-> > a field that is removed? Last I knew it couldn't. If that is the case
-> > you should be using ACL for any case in which a full mask is not
-> > provided. So in your tests below you could probably drop the check
-> > for
-> > zero as I don't think that is a valid case in which flow director
-> > would work.
-> >
->
-> I'm not sure what you meant by a field that is removed, but Flow
-> Director can handle reduced input sets. Flow Director is able to handle
-> 0 mask, full mask, and less than 4 tuples. ACL is needed/used only when
-> a partial mask rule is requested.
 
-So historically speaking with flow director you are only allowed one
-mask because it determines the inputs used to generate the hash that
-identifies the flow. So you are only allowed one mask for all flows
-because changing those inputs would break the hash mapping.
 
-Normally this ends up meaning that you have to do like what we did in
-ixgbe and disable ATR and only allow one mask for all inputs. I
-believe for i40e they required that you always use a full 4 tuple. I
-didn't see something like that here. As such you may want to double
-check that you can have a mix of flow director rules that are using 1
-tuple, 2 tuples, 3 tuples, and 4 tuples as last I knew you couldn't.
-Basically if you had fields included they had to be included for all
-the rules on the port or device depending on how the tables are set
-up.
+On 2020/11/21 5:22, Michal Kubecek wrote:
+> On Fri, Nov 20, 2020 at 02:39:38PM +0100, Andrew Lunn wrote:
+>> On Fri, Nov 20, 2020 at 08:23:22AM +0100, Michal Kubecek wrote:
+>>> On Fri, Nov 20, 2020 at 10:59:59AM +0800, tanhuazhong wrote:
+>>>> On 2020/11/20 6:02, Michal Kubecek wrote:
+>>>>> We could use a similar approach as struct ethtool_link_ksettings, e.g.
+>>>>>
+>>>>> 	struct kernel_ethtool_coalesce {
+>>>>> 		struct ethtool_coalesce base;
+>>>>> 		/* new members which are not part of UAPI */
+>>>>> 	}
+>>>>>
+>>>>> get_coalesce() and set_coalesce() would get pointer to struct
+>>>>> kernel_ethtool_coalesce and ioctl code would be modified to only touch
+>>>>> the base (legacy?) part.
+>>>>>   > While already changing the ops arguments, we could also add extack
+>>>>> pointer, either as a separate argument or as struct member (I slightly
+>>>>> prefer the former).
+>>>> If changing the ops arguments, each driver who implement
+>>>> set_coalesce/get_coalesce of ethtool_ops need to be updated. Is it
+>>>> acceptable adding two new ops to get/set ext_coalesce info (like
+>>>> ecc31c60240b ("ethtool: Add link extended state") does)? Maybe i can send V2
+>>>> in this way, and then could you help to see which one is more suitable?
+>>> If it were just this one case, adding an extra op would be perfectly
+>>> fine. But from long term point of view, we should expect extending also
+>>> other existing ethtool requests and going this way for all of them would
+>>> essentially double the number of callbacks in struct ethtool_ops.
+>> coccinella might be useful here.
+> I played with spatch a bit and it with the spatch and patch below, I got
+> only three build failures (with allmodconfig) that would need to be
+> addressed manually - these drivers call the set_coalesce() callback on
+> device initialization.
+> 
+> I also tried to make the structure argument const in ->set_coalesce()
+> but that was more tricky as adjusting other functions that the structure
+> is passed to required either running the spatch three times or repeating
+> the same two rules three times in the spatch (or perhaps there is
+> a cleaner way but I'm missing relevant knowledge of coccinelle). Then
+> there was one more problem in i40e driver which modifies the structure
+> before passing it on to its helpers. It could be worked around but I'm
+> not sure if constifying the argument is worth these extra complications.
+> 
+> Michal
 
-Thanks.
+will implement it like this in V3.
 
-- Alex
+Regards,
+Huazhong.
+
