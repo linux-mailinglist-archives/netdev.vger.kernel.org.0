@@ -2,70 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 995632BC1B8
-	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 20:32:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 890F92BC1BA
+	for <lists+netdev@lfdr.de>; Sat, 21 Nov 2020 20:32:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728405AbgKUTXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Nov 2020 14:23:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33766 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728397AbgKUTXt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 21 Nov 2020 14:23:49 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 32B4B221F1;
-        Sat, 21 Nov 2020 19:23:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1605986629;
-        bh=0pJCGNTenNNBWUHzsE9A45K0tFQWW7QRUQ80lGJlWW0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CG9V9kJbxNQej5zCRmOcG3KLHP9xM4rfZReh69kz/wlnjOZRHSKma89juw081mNuE
-         LnEJE61A4U4ls+AvohC/TSIG2atv60K3iPRDFF7iCS7OjvheiHWxy53CdZu/A46GkR
-         HbU+hGIcRCrBN5kCWRc/XmtHFlM6jjYDcT+QEsxw=
-Date:   Sat, 21 Nov 2020 11:23:48 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Tobias Waldekranz <tobias@waldekranz.com>,
-        netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, razor@blackwall.org, jeremy@azazel.net
-Subject: Re: [PATCH net-next,v3 0/9] netfilter: flowtable bridge and vlan
- enhancements
-Message-ID: <20201121112348.0e25afa3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201121185621.GA23017@salvia>
-References: <20201114115906.GA21025@salvia>
-        <87sg9cjaxo.fsf@waldekranz.com>
-        <20201114090347.2e7c1457@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20201116221815.GA6682@salvia>
-        <20201116142844.7c492fb6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20201116223615.GA6967@salvia>
-        <20201116144521.771da0c6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20201116225658.GA7247@salvia>
-        <20201121123138.GA21560@salvia>
-        <20201121101551.3264c5fd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20201121185621.GA23017@salvia>
+        id S1728457AbgKUTa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Nov 2020 14:30:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46138 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728404AbgKUTa4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Nov 2020 14:30:56 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D29C0613CF;
+        Sat, 21 Nov 2020 11:30:56 -0800 (PST)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1kgYar-00C8JD-PD; Sat, 21 Nov 2020 20:30:45 +0100
+Message-ID: <106fc65f0459bc316e89beaf6bd71e823c4c01b7.camel@sipsolutions.net>
+Subject: Re: [PATCH v5 2/3] net: add kcov handle to skb extensions
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Florian Westphal <fw@strlen.de>, Ido Schimmel <idosch@idosch.org>,
+        Aleksandr Nogikh <aleksandrnogikh@gmail.com>,
+        davem@davemloft.net, edumazet@google.com, andreyknvl@google.com,
+        dvyukov@google.com, elver@google.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        willemdebruijn.kernel@gmail.com,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Willem de Bruijn <willemb@google.com>
+Date:   Sat, 21 Nov 2020 20:30:44 +0100
+In-Reply-To: <20201121103529.4b4acbff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20201029173620.2121359-1-aleksandrnogikh@gmail.com>
+         <20201029173620.2121359-3-aleksandrnogikh@gmail.com>
+         <20201121160941.GA485907@shredder.lan>
+         <20201121165227.GT15137@breakpoint.cc>
+         <20201121100636.26aaaf8a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         <bcfb0fe1b207d2f4bb52f0d1ef51207f9b5587de.camel@sipsolutions.net>
+         <20201121103529.4b4acbff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 21 Nov 2020 19:56:21 +0100 Pablo Neira Ayuso wrote:
-> > Please gather some review tags from senior netdev developers. I don't
-> > feel confident enough to apply this as 100% my own decision.  
+On Sat, 2020-11-21 at 10:35 -0800, Jakub Kicinski wrote:
+> On Sat, 21 Nov 2020 19:12:21 +0100 Johannes Berg wrote:
+> > > So I'm leaning towards reverting the whole thing. You can attach
+> > > kretprobes and record the information you need in BPF maps.  
+> > 
+> > I'm not going to object to reverting it (and perhaps redoing it better
+> > later), but I will point out that kretprobe isn't going to work, you
+> > eventually need kcov_remote_start() to be called in strategic points
+> > before processing the skb after it bounced through the system.
+> > 
+> > IOW, it's not really about serving userland, it's about enabling (and
+> > later disabling) coverage collection for the bits of code it cares
+> > about, mostly because collecting it for _everything_ is going to be too
+> > slow and will mess up the data since for coverage guided fuzzing you
+> > really need the reported coverage data to be only about the injected
+> > fuzz data...
 > 
-> Fair enough.
-> 
-> This requirement for very specific Netfilter infrastructure which does
-> not affect any other Networking subsystem sounds new to me.
+> All you need is make kcov_remote_start_common() be BPF-able, like 
+> the LSM hooks are now, right? And then BPF can return whatever handle 
+> it pleases.
 
-You mean me asking for reviews from other senior folks when I don't
-feel good about some code? I've asked others the same thing in the
-past, e.g. Paolo for his RPS thing.
+Not sure I understand. Are you saying something should call
+"kcov_remote_start_common()" with, say, the SKB, and leave it to a mass
+of bpf hooks to figure out where the SKB got cloned or copied or
+whatnot, track that in a map, and then ... no, wait, I don't really see
+what you mean, sorry.
 
-> What senior developers specifically you would like I should poke to
-> get an acknowledgement on this to get this accepted of your
-> preference?
+IIUC, fundamentally, you have this:
 
-I don't want to make a list. Maybe netconf attendees are a safe bet?
+ - at the beginning, a task is tagged with "please collect coverage
+   data for this handle"
+ - this task creates an SKB, etc, and all of the code that this task
+   executes is captured and the coverage data is reported
+ - However, the SKB traverses lots of things, gets copied, cloned, or
+   whatnot, and eventually leaves the annotated task, say for further
+   processing in softirq context or elsewhere.
+
+Now since the whole point is to see what chaos this SKB created from
+beginning (allocation) to end (free), since it was filled with fuzzed
+data, you now have to figure out where to pick back up when the SKB is
+processed further.
+
+This is what the infrastructure was meant to solve. But note that the
+SKB might be further cloned etc, so in order to track it you'd have to
+(out-of-band) figure out all the possible places where it could
+be reallocated, any time the skb pointer could change.
+
+Then, when you know you've got interesting code on your hands, like in
+mac80211 that was annotated in patch 3 here, you basically say
+
+  "oohhh, this SKB was annotated before, let's continue capturing
+   coverage data here"
+
+(and turn it off again later by the corresponding kcov_remote_stop().
+
+
+So the only way I could _possibly_ see how to do this would be to
+
+ * capture all possible places where the skb pointer can change
+ * still call something like skb_get_kcov_handle() but let it call out
+   to a BPF program to query a map or something to figure out if this
+   SKB has a handle attached to it
+
+> Or if you don't like BPF or what to KCOV BPF itself in the future you
+> can roll your own mechanism. The point is - this should be relatively
+> easily doable out of line...
+
+Seems pretty complicated to me though ...
+
+johannes
+
