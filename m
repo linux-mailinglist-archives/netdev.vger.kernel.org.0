@@ -2,99 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2C4A2BC335
-	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 03:47:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BD672BC34F
+	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 04:23:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727081AbgKVCq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Nov 2020 21:46:26 -0500
-Received: from smtprelay0147.hostedemail.com ([216.40.44.147]:57810 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726544AbgKVCqZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Nov 2020 21:46:25 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 3F9DB100E7B40;
-        Sun, 22 Nov 2020 02:46:24 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:1801:2393:2559:2562:2828:2898:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3871:3874:4250:4321:4605:5007:6119:10004:10400:10848:11026:11232:11233:11657:11658:11783:11914:12043:12048:12297:12438:12740:12895:13069:13311:13357:13439:13894:14181:14659:14721:21080:21627:21990:30046:30054:30070:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: coil29_120f78c27359
-X-Filterd-Recvd-Size: 2917
-Received: from XPS-9350.home (unknown [47.151.128.180])
-        (Authenticated sender: joe@perches.com)
-        by omf10.hostedemail.com (Postfix) with ESMTPA;
-        Sun, 22 Nov 2020 02:46:22 +0000 (UTC)
-Message-ID: <13a35c0a0d446b72c2f83fda1651dea924707345.camel@perches.com>
-Subject: Re: [PATCH 072/141] can: peak_usb: Fix fall-through warnings for
- Clang
-From:   Joe Perches <joe@perches.com>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Date:   Sat, 21 Nov 2020 18:46:21 -0800
-In-Reply-To: <d2fc3c0e-54de-3f2a-1434-76a80847965c@pengutronix.de>
-References: <cover.1605896059.git.gustavoars@kernel.org>
-         <aab7cf16bf43cc7c3e9c9930d2dae850c1d07a3c.1605896059.git.gustavoars@kernel.org>
-         <bf3dbc5c-c34e-b3ef-abb6-0c88d8a90332@pengutronix.de>
-         <de5b16cf3fdac1f783e291acc325b78368653ec5.camel@perches.com>
-         <d2fc3c0e-54de-3f2a-1434-76a80847965c@pengutronix.de>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.38.1-1 
+        id S1727199AbgKVDXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Nov 2020 22:23:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33526 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726544AbgKVDXe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Nov 2020 22:23:34 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9E05C0613CF;
+        Sat, 21 Nov 2020 19:23:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=t7P1qjxLtvKyLv5lupmc5Zc5j0L3lqaoBXMlGIL9vWk=; b=BCb+FFzpwYCsAL5/GuZs0qQqU7
+        2wigu715rAloO1MXfHFDjsI/DCCkjrJ0RLz4Myz+wD98+zNWw6243kPWNzvqzMn6Tn8JVpmOuQv+x
+        7EKe3xartwVOhq4ran1ZhW92oaIukRN20h1OI3pPMusUrtae1AY4TqDUCPUPtiDgxz6eQOoVcrvcz
+        Ara6lCihfF7KrYMxKPcv522GOw1XE7kmR9pLBWd69WCJIf1380JdPIessAMMrwuE8sqCmQUL7YEHL
+        BXN0W+EBw/mKx6JrVL7roopk6K2PnHDj+T1EiV35semdke1klNMJQXZf1Gvzraa/TLsC310jvDxAq
+        zJ5cWKdw==;
+Received: from willy by casper.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kgfxw-0001fc-2G; Sun, 22 Nov 2020 03:23:04 +0000
+Date:   Sun, 22 Nov 2020 03:23:04 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     trix@redhat.com
+Cc:     joe@perches.com, clang-built-linux@googlegroups.com,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xen-devel@lists.xenproject.org, tboot-devel@lists.sourceforge.net,
+        kvm@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-acpi@vger.kernel.org, devel@acpica.org,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org, netdev@vger.kernel.org,
+        linux-media@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com,
+        linux-scsi@vger.kernel.org, linux-wireless@vger.kernel.org,
+        ibm-acpi-devel@lists.sourceforge.net,
+        platform-driver-x86@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        ecryptfs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        cluster-devel@redhat.com, linux-mtd@lists.infradead.org,
+        keyrings@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, alsa-devel@alsa-project.org,
+        bpf@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-nfs@vger.kernel.org, patches@opensource.cirrus.com
+Subject: Re: [RFC] MAINTAINERS tag for cleanup robot
+Message-ID: <20201122032304.GE4327@casper.infradead.org>
+References: <20201121165058.1644182-1-trix@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201121165058.1644182-1-trix@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2020-11-22 at 00:04 +0100, Marc Kleine-Budde wrote:
-> On 11/21/20 8:50 PM, Joe Perches wrote:
-> > > What about moving the default to the end if the case, which is more common anyways:
-> > > 
-> > > diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_core.c b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-> > []
-> > > @@ -295,16 +295,16 @@ static void peak_usb_write_bulk_callback(struct urb *urb)
-> > >                 netif_trans_update(netdev);
-> > >                 break;
-> > >  
-> > > 
-> > > -       default:
-> > > -               if (net_ratelimit())
-> > > -                       netdev_err(netdev, "Tx urb aborted (%d)\n",
-> > > -                                  urb->status);
-> > >         case -EPROTO:
-> > >         case -ENOENT:
-> > >         case -ECONNRESET:
-> > >         case -ESHUTDOWN:
-> > > -
-> > >                 break;
-> > > +
-> > > +       default:
-> > > +               if (net_ratelimit())
-> > > +                       netdev_err(netdev, "Tx urb aborted (%d)\n",
-> > > +                                  urb->status);
-> > 
-> > That's fine and is more generally used style but this
-> > default: case should IMO also end with a break;
-> > 
-> > +		break;
+On Sat, Nov 21, 2020 at 08:50:58AM -0800, trix@redhat.com wrote:
+> The fixer review is
+> https://reviews.llvm.org/D91789
 > 
-> I don't mind.
+> A run over allyesconfig for x86_64 finds 62 issues, 5 are false positives.
+> The false positives are caused by macros passed to other macros and by
+> some macro expansions that did not have an extra semicolon.
 > 
-> process/coding-style.rst is not totally clear about the break after the default,
-> if this is the lase one the switch statement.
+> This cleans up about 1,000 of the current 10,000 -Wextra-semi-stmt
+> warnings in linux-next.
 
-deprecated.rst has:
-
-All switch/case blocks must end in one of:
-
-* break;
-* fallthrough;
-* continue;
-* goto <label>;
-* return [expression];
-
-I suppose that could be moved into coding-style along with
-maybe a change to "all switch/case/default blocks"
-
+Are any of them not false-positives?  It's all very well to enable
+stricter warnings, but if they don't fix any bugs, they're just churn.
