@@ -2,106 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 145872BC610
-	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 15:37:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88DD92BC629
+	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 15:47:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727828AbgKVOgB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Nov 2020 09:36:01 -0500
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:34325 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727740AbgKVOgA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Nov 2020 09:36:00 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id B06BA5804B5;
-        Sun, 22 Nov 2020 09:35:59 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 22 Nov 2020 09:35:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=nXFQXK
-        fZiozbO2A2p5WSuZcESUVebhywiKS6xDiDX6s=; b=U8PwL9v3InYmP4l5vq69A1
-        CZxjNImJAt8FcmHH040X+sqsnC9VFXehMowLP5QvqJ6QaAeHBsn5R6Bkp4obCw2o
-        d16m5A2EDJccAnmZPBPQXgs3DmjaJdvI1M9H3F/1GKgdc22RwtBU5CfvKlVsiOrT
-        NwjM3LEKZge03FGN+kDzRni8BXfMaAz1F+5ZTfGnP02QCKesSRA/EAowOPY3YLge
-        +PbFYNHfDLo8JaZKqtdGDO48z3NvNzbdoXH5bfaKEbJ2GydjTYJExheD1SsbaiIA
-        kWwsQLZorMa90gmnZ4DrF0b31xzlzODisxfPXGT0OzbFnHPjqqQqEgdWOPFtZBpw
-        ==
-X-ME-Sender: <xms:Tne6X5LrjUt_QQRuBQu2QaF245DPbWILcuOrwCe1ezXEl-Wn32BAJQ>
-    <xme:Tne6X1KVoLtWHnRUiS47OWpxNxsgOGSVZ6l7GR3mOHUlmtWnf-wEOfAhirrAIutZi
-    Iq9HJVWPA1WL5k>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudeggedgieekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    goufhushhpvggtthffohhmrghinhculdegledmnecujfgurhepfffhvffukfhfgggtuggj
-    sehttdertddttddvnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthh
-    esihguohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpeehfeetvdeihefhhedugefh
-    udehfeeugffhgeeuleeiteeludfgvddtheehtddtffenucffohhmrghinhepkhgvrhhnvg
-    hlrdhorhhgpdhhohhpthhordhorhhgnecukfhppeekgedrvddvledrudehgedrudegjeen
-    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
-    gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:Tne6XxuYf-TnrJ2SU1upU008v6QTwk_2IamOrxDR1KesnA-o8cGfng>
-    <xmx:Tne6X6Zxw9SRc03FJVN-9sJBIRvxHZVzZjlAC2Exd75_FKlnF-5Ukg>
-    <xmx:Tne6XwZMniS5pLq4nLKPHxMUmXzpG3figNKPesLSSTS4ZJeCitXZuw>
-    <xmx:T3e6X9Tr58szJ3NekbSv1wvau56RxxKqy-FLtKPehFiEgSkBx-slGw>
-Received: from localhost (igld-84-229-154-147.inter.net.il [84.229.154.147])
-        by mail.messagingengine.com (Postfix) with ESMTPA id C4E043280063;
-        Sun, 22 Nov 2020 09:35:57 -0500 (EST)
-Date:   Sun, 22 Nov 2020 16:35:55 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Christian Eggers <ceggers@arri.de>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Christian Eggers <ceggers@gmx.de>,
-        Petr Machata <petrm@mellanox.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net-next 2/3] mlxsw: spectrum_ptp: use PTP wide message
- type definitions
-Message-ID: <20201122143555.GA515025@shredder.lan>
-References: <20201122082636.12451-1-ceggers@arri.de>
- <20201122082636.12451-3-ceggers@arri.de>
+        id S1727920AbgKVOrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Nov 2020 09:47:06 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:60645 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727912AbgKVOq6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Nov 2020 09:46:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606056417;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=apju6gP6XSpkYwp4WdL57a/nFAvNI/QCKhQkuBxc3S8=;
+        b=B3QsT4A8LeCZurvhQ3pkO3CHwqrTsRIA2lG4zF27B5diCaF2YRPM3AY4lgdrNGYoqjR9Zg
+        iXQz/gVXmZ46gDylcWPBbI0Bu+hPeBXWcDJ9lYQNZwR2+uW76S6WRSmbxzukXV97kRwtI7
+        sh4LQwaHZFIzdyL1r9yqb+B6ukvVZOU=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-33-aM25DHBjPxmSBD02k7SIhg-1; Sun, 22 Nov 2020 09:46:52 -0500
+X-MC-Unique: aM25DHBjPxmSBD02k7SIhg-1
+Received: by mail-qk1-f198.google.com with SMTP id l7so137261qkl.16
+        for <netdev@vger.kernel.org>; Sun, 22 Nov 2020 06:46:52 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=apju6gP6XSpkYwp4WdL57a/nFAvNI/QCKhQkuBxc3S8=;
+        b=iMpBYO+4lxk/QQ0fS8mAxT9IUKp0shJmiJM2gEn999oWV8Ioz73jnaxestnJ6D+bTy
+         RBNq62JVaiqIi1lDJFPneJ0AnjhNFdAXbt3Amd5ow1n6L8h0XKlrhMTAwAxvLrt06wsr
+         W57fMK0V/SM0r/0rXEkbMk7y7v+YGeLaouPJn3gUS4TBAIa2OF0oebOifOJhTAhW3IFt
+         Si9B4SzquH9A1HVbn4U89aIHIye1IECH6zF1BA7BgS3EKPGGkluXZcV6peVkdXIPHI/i
+         VmlYNNSkxtHYl0N7UE/jzuW1d/t3v9yrFI/omwYZSX6zDZX0V/q1iANGLPMmPqBNJuU/
+         e3mQ==
+X-Gm-Message-State: AOAM531iH/J7ii2lfN5yC2wq6M9w/INSJKshzUTdtzZXUUtdYZzkmaHV
+        Summ2WeHtke4J9qg050TYaIYiEFfzCO0WxtZW0/xYBV6ecCZm9TPGF5Iu2TolHYYgn1jBQADTeB
+        k6ase1PQdOdz47BzT
+X-Received: by 2002:ad4:476b:: with SMTP id d11mr26026171qvx.57.1606056412428;
+        Sun, 22 Nov 2020 06:46:52 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyPQ8vJIBgyJxmgPlUVzOaStXFRaD0Z+d8VDmnR7kdLyNkvwByAGPov006wc7+pJBCcgj+/zw==
+X-Received: by 2002:ad4:476b:: with SMTP id d11mr26026152qvx.57.1606056412222;
+        Sun, 22 Nov 2020 06:46:52 -0800 (PST)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id x72sm6888242qkb.90.2020.11.22.06.46.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 22 Nov 2020 06:46:51 -0800 (PST)
+Subject: Re: [RFC] MAINTAINERS tag for cleanup robot
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     joe@perches.com, clang-built-linux@googlegroups.com,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xen-devel@lists.xenproject.org, tboot-devel@lists.sourceforge.net,
+        kvm@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-acpi@vger.kernel.org, devel@acpica.org,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org, netdev@vger.kernel.org,
+        linux-media@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com,
+        linux-scsi@vger.kernel.org, linux-wireless@vger.kernel.org,
+        ibm-acpi-devel@lists.sourceforge.net,
+        platform-driver-x86@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        ecryptfs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        cluster-devel@redhat.com, linux-mtd@lists.infradead.org,
+        keyrings@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, alsa-devel@alsa-project.org,
+        bpf@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-nfs@vger.kernel.org, patches@opensource.cirrus.com
+References: <20201121165058.1644182-1-trix@redhat.com>
+ <20201122032304.GE4327@casper.infradead.org>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <ddb08a27-3ca1-fb2e-d51f-4b471f1a56a3@redhat.com>
+Date:   Sun, 22 Nov 2020 06:46:46 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201122082636.12451-3-ceggers@arri.de>
+In-Reply-To: <20201122032304.GE4327@casper.infradead.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 22, 2020 at 09:26:35AM +0100, Christian Eggers wrote:
-> Use recently introduced PTP wide defines instead of a driver internal
-> enumeration.
-> 
-> Signed-off-by: Christian Eggers <ceggers@gmx.de>
-> Cc: Petr Machata <petrm@mellanox.com>
-> Cc: Jiri Pirko <jiri@nvidia.com>
-> Cc: Ido Schimmel <idosch@nvidia.com>
 
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+On 11/21/20 7:23 PM, Matthew Wilcox wrote:
+> On Sat, Nov 21, 2020 at 08:50:58AM -0800, trix@redhat.com wrote:
+>> The fixer review is
+>> https://reviews.llvm.org/D91789
+>>
+>> A run over allyesconfig for x86_64 finds 62 issues, 5 are false positives.
+>> The false positives are caused by macros passed to other macros and by
+>> some macro expansions that did not have an extra semicolon.
+>>
+>> This cleans up about 1,000 of the current 10,000 -Wextra-semi-stmt
+>> warnings in linux-next.
+> Are any of them not false-positives?  It's all very well to enable
+> stricter warnings, but if they don't fix any bugs, they're just churn.
+>
+While enabling additional warnings may be a side effect of this effort
 
-But:
+the primary goal is to set up a cleaning robot. After that a refactoring robot.
 
-1. Checkpatch complains about:
-WARNING: From:/Signed-off-by: email address mismatch: 'From: Christian Eggers <ceggers@arri.de>' != 'Signed-off-by: Christian Eggers <ceggers@gmx.de>'
+Tom
 
-2. This series does not build, which fails the CI [1][2] and also
-required me to fetch the dependencies that are currently under review
-[3]. I believe it is generally discouraged to create dependencies
-between patch sets that are under review for exactly these reasons. I
-don't know what are Jakub's preferences, but had this happened on our
-internal patchwork instance, I would just ask the author to submit
-another version with all the patches.
-
-Anyway, I added all six patches to our regression as we have some PTP
-tests. Will let you know tomorrow.
-
-Thanks
-
-[1] https://lore.kernel.org/netdev/20201122082636.12451-1-ceggers@arri.de/T/#mcef35858585d23b72b8f75450a51618d5c5d3260
-[2] https://patchwork.hopto.org/static/nipa/389053/11923809/build_allmodconfig_warn/summary
-[3] https://patchwork.kernel.org/project/netdevbpf/cover/20201120084106.10046-1-ceggers@arri.de/
