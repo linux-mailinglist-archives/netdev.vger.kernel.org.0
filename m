@@ -2,101 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C6602BFBDF
-	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 23:02:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A4C32BFBFC
+	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 23:11:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726591AbgKVWBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Nov 2020 17:01:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35524 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725831AbgKVWBR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Nov 2020 17:01:17 -0500
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3B23C0613CF;
-        Sun, 22 Nov 2020 14:01:15 -0800 (PST)
-Received: by mail-ej1-x641.google.com with SMTP id 7so20651519ejm.0;
-        Sun, 22 Nov 2020 14:01:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xds3EV1u8LFX/eLCQkAEEEQ5tbAtE69pORfGo1Yk0E4=;
-        b=qBdPUPS6EKKPu17iN3L111KhOsLD6ml1IZMXCdRQj+shf+z/RfO2R0b38Z/5vKH1FA
-         j+8UNlP8OTMPWrbAdBxpKJwp5of33Sve1g3argPzJSpZCXtXIY8NXdjYNG+0OorYpSNN
-         YmVvuV5FpM8COMtY983KT58FG+7pBuBUEb+5i2U99D76qn/rmSu2Qtin8D1SS4pGZTPC
-         9wUSx+qJgaQChElucO/4DBxcZoYxQJAmnQHcyqpTO340VZab+wEsZTC8oEjJWQ6E62Cp
-         HVSCHDkUdS8RfbqVffiLg5eKc2c3OfvrTa3I4Vnyqv++hgE8UwTJHktdlTd+2MptcbjQ
-         fg/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xds3EV1u8LFX/eLCQkAEEEQ5tbAtE69pORfGo1Yk0E4=;
-        b=iy1c5o0u86rLT8ffoYJtI26ihZOmiefg6moLYjrCgznrxk/IUbf1HB4iu/bx36Db0/
-         ZxjPgRwPIHMd1pmHXZvkE4WNQO3/EiWpxeKnPoTkQxqYLh1zNPlF5mpgzgkk01irMA7q
-         sE94qzEd6cdMBZcAMXUX2Tb15myzYe6i4yQSXVK5KBel2oTY7+Cwdu0Yxs98qsR4iO+7
-         XepWDoQOr51+A05+4X2RLqwJy3KI1jhqpQ77TAkGS6pTgJs2niC3z8DpB6DsFpP0JHwC
-         r/jA7qPRJifCOdX91CmxrOSjWeIvpHDGkuOQs77mLvakN2xJU3zv69Qkw8s2oMc98983
-         a7HQ==
-X-Gm-Message-State: AOAM531y1I1EuULIPIemm+fvZj+tjcGC/7Ikyed8N3ig2XIcf0SaziYL
-        q1q1UN/0mweAHMm2fAszMfc=
-X-Google-Smtp-Source: ABdhPJw1b318SLMdEfEhxRpbnkq7+lW3TIKweZq98g+ZP8iZqn9j8ey5boOlz2blAsXlFG6uXLX7Cg==
-X-Received: by 2002:a17:906:1758:: with SMTP id d24mr3855704eje.287.1606082474566;
-        Sun, 22 Nov 2020 14:01:14 -0800 (PST)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id t11sm3956022ejx.68.2020.11.22.14.01.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Nov 2020 14:01:13 -0800 (PST)
-Date:   Mon, 23 Nov 2020 00:01:12 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Christian Eggers <ceggers@arri.de>
-Cc:     Ido Schimmel <idosch@idosch.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Petr Machata <petrm@mellanox.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net-next 2/3] mlxsw: spectrum_ptp: use PTP wide message
- type definitions
-Message-ID: <20201122220112.6ci624wfqp5hefou@skbuf>
-References: <20201122082636.12451-1-ceggers@arri.de>
- <20201122082636.12451-3-ceggers@arri.de>
- <20201122143555.GA515025@shredder.lan>
- <2074851.ybSLjXPktx@n95hx1g2>
+        id S1726756AbgKVWLC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Nov 2020 17:11:02 -0500
+Received: from asavdk4.altibox.net ([109.247.116.15]:51724 "EHLO
+        asavdk4.altibox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725782AbgKVWK6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Nov 2020 17:10:58 -0500
+Received: from ravnborg.org (unknown [188.228.123.71])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by asavdk4.altibox.net (Postfix) with ESMTPS id 2C52280567;
+        Sun, 22 Nov 2020 23:10:42 +0100 (CET)
+Date:   Sun, 22 Nov 2020 23:10:40 +0100
+From:   Sam Ravnborg <sam@ravnborg.org>
+To:     James Bottomley <James.Bottomley@hansenpartnership.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Jakub Kicinski <kuba@kernel.org>, alsa-devel@alsa-project.org,
+        linux-atm-general@lists.sourceforge.net,
+        reiserfs-devel@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        linux-ide@vger.kernel.org, dm-devel@redhat.com,
+        keyrings@vger.kernel.org, linux-mtd@lists.infradead.org,
+        GR-everest-linux-l2@marvell.com, wcn36xx@lists.infradead.org,
+        samba-technical@lists.samba.org, linux-i3c@lists.infradead.org,
+        linux1394-devel@lists.sourceforge.net,
+        linux-afs@lists.infradead.org,
+        usb-storage@lists.one-eyed-alien.net, drbd-dev@lists.linbit.com,
+        devel@driverdev.osuosl.org, linux-cifs@vger.kernel.org,
+        rds-devel@oss.oracle.com,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-scsi@vger.kernel.org, linux-rdma@vger.kernel.org,
+        oss-drivers@netronome.com, bridge@lists.linux-foundation.org,
+        linux-security-module@vger.kernel.org,
+        amd-gfx@lists.freedesktop.org,
+        linux-stm32@st-md-mailman.stormreply.com, cluster-devel@redhat.com,
+        linux-acpi@vger.kernel.org, coreteam@netfilter.org,
+        intel-wired-lan@lists.osuosl.org, linux-input@vger.kernel.org,
+        Miguel Ojeda <ojeda@kernel.org>,
+        tipc-discussion@lists.sourceforge.net, linux-ext4@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        selinux@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        intel-gfx@lists.freedesktop.org, linux-geode@lists.infradead.org,
+        linux-can@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-gpio@vger.kernel.org, op-tee@lists.trustedfirmware.org,
+        linux-mediatek@lists.infradead.org, xen-devel@lists.xenproject.org,
+        nouveau@lists.freedesktop.org, linux-hams@vger.kernel.org,
+        ceph-devel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        target-devel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-hwmon@vger.kernel.org, x86@kernel.org,
+        linux-nfs@vger.kernel.org, GR-Linux-NIC-Dev@marvell.com,
+        linux-mm@kvack.org, netdev@vger.kernel.org,
+        linux-decnet-user@lists.sourceforge.net, linux-mmc@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-renesas-soc@vger.kernel.org, linux-sctp@vger.kernel.org,
+        linux-usb@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        linux-crypto@vger.kernel.org, patches@opensource.cirrus.com,
+        Joe Perches <joe@perches.com>, linux-integrity@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH 000/141] Fix fall-through warnings for Clang
+Message-ID: <20201122221040.GD566387@ravnborg.org>
+References: <cover.1605896059.git.gustavoars@kernel.org>
+ <20201120105344.4345c14e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <202011201129.B13FDB3C@keescook>
+ <20201120115142.292999b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <202011220816.8B6591A@keescook>
+ <9b57fd4914b46f38d54087d75e072d6e947cb56d.camel@HansenPartnership.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2074851.ybSLjXPktx@n95hx1g2>
+In-Reply-To: <9b57fd4914b46f38d54087d75e072d6e947cb56d.camel@HansenPartnership.com>
+X-CMAE-Score: 0
+X-CMAE-Analysis: v=2.3 cv=VafZwmh9 c=1 sm=1 tr=0
+        a=S6zTFyMACwkrwXSdXUNehg==:117 a=S6zTFyMACwkrwXSdXUNehg==:17
+        a=kj9zAlcOel0A:10 a=VwQbUJbxAAAA:8 a=pGLkceISAAAA:8
+        a=7T594MSkF3521FIrX4wA:9 a=CjuIK1q_8ugA:10 a=AjGcO6oz07-iQ99wixmX:22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 22, 2020 at 08:29:22PM +0100, Christian Eggers wrote:
-> this was also not by intention. Vladimir found some files I missed in the
-> first series. As the whole first series had already been reviewed at that time,
-> I wasn't sure whether I am allowed to add further patches to it. Additionally
-> I didn't concern that although my local build is successful, I should wait
-> until the first series is applied...
+Hi James.
 
-When I said that, what I was thinking of (although it might have not
-been clear) was that if you send further patches, you send them _after_
-the initial series is merged.
+> > > If none of the 140 patches here fix a real bug, and there is no
+> > > change to machine code then it sounds to me like a W=2 kind of a
+> > > warning.
+> > 
+> > FWIW, this series has found at least one bug so far:
+> > https://lore.kernel.org/lkml/CAFCwf11izHF=g1mGry1fE5kvFFFrxzhPSM6qKAO8gxSp=Kr_CQ@mail.gmail.com/
+> 
+> 
+> Well, it's a problem in an error leg, sure, but it's not a really
+> compelling reason for a 141 patch series, is it?  All that fixing this
+> error will do is get the driver to print "oh dear there's a problem"
+> under four more conditions than it previously did.
 
-Alternatively, it would have been just as valid to resend the entire
-series, as a 3+3 patchset with a new revision (v3 -> v4), with review
-tags collected from the first three, and the last 3 being completely
-new. Jakub could have superseded v3 and applied v4.
+You are asking the wrong question here.
 
-The idea behind splicing N patches into a series is that they are
-logically connected to one another. For example, a patch doesn't build
-without another. You _could_ split logically-connected patches into
-separate series and post them independently for review, as long as they
-are build-time independent. If they aren't, well, what happens is
-exactly what happened: various test robots will report build failures,
-which from a maintainer's point of view inspires less confidence to
-apply a patch as-is. I would not be surprised if Jakub asked you to
-resend with no change at all, just to ensure that the patch series
-passes build tests before merging it.
+Yuo should ask  how many hours could have been saved by all the bugs
+people have been fighting with and then fixed *before* the code
+hit the kernel at all.
+
+My personal experience is that I, more than once, have had errors
+related to a missing break in my code. So this warnings is IMO a win.
+
+And if we are only ~100 patches to have it globally enabled then it is a
+no-brainer in my book.
+
+	Sam
