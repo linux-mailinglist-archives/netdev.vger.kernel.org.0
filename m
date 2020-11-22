@@ -2,41 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E8942BC2DD
-	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 01:32:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57D9B2BC2E3
+	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 01:45:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726536AbgKVAbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Nov 2020 19:31:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43048 "EHLO mail.kernel.org"
+        id S1726719AbgKVAoo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Nov 2020 19:44:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47860 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726335AbgKVAbb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 21 Nov 2020 19:31:31 -0500
+        id S1726398AbgKVAoo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 21 Nov 2020 19:44:44 -0500
 Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E12EC2078D;
-        Sun, 22 Nov 2020 00:31:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 83FC9207D3;
+        Sun, 22 Nov 2020 00:44:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606005097;
-        bh=SxU0CbhcuLDJk1tLkPPZnHRso5M0Nu5lb2YNvpiCEQ4=;
+        s=default; t=1606005883;
+        bh=aYAcu9g5uwrUz51rMwTPxA1dHvWAXgrSDJc0DfQ6sLk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lSmRWMVIMxz3yN6kGQ3HaD1kmzuV1pJnsX1AdLTDcl+esfDaOzQZKtJ5bq9bjZSVv
-         3uAmyu8zV7L+V7Am9RW63QsB2hp4MZ1AZbfzg+4SIExph3Gk6v2s9txrT7RHdsGxNO
-         4w0HCEVYaQu4cJ5a45c6trX7F96iWNJRdoD/WozE=
-Date:   Sat, 21 Nov 2020 16:31:36 -0800
+        b=uDNAYn41dWx7zYomT1tUqOihFG17oUmavNHGrF9rQcPuHCb7thM1MBf+gdxVtcp/v
+         UjzqZ73sye8G/710O05oFEwG9Fq6St+/pJvduXkqpJIVwdSrwE89cIvW6JKt7Tt+KF
+         2JdxKDURJ5VwWzYs62/ur8ElLK2p3E3zsopgi3lM=
+Date:   Sat, 21 Nov 2020 16:44:42 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Wei Wang <weiwan@google.com>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Felix Fietkau <nbd@nbd.name>, Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Hillf Danton <hdanton@sina.com>
-Subject: Re: [PATCH net-next v3 1/5] net: implement threaded-able napi poll
- loop support
-Message-ID: <20201121163136.024d636c@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201118191009.3406652-2-weiwan@google.com>
-References: <20201118191009.3406652-1-weiwan@google.com>
-        <20201118191009.3406652-2-weiwan@google.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net 1/4] netfilter: nftables_offload: set address type
+ in control dissector
+Message-ID: <20201121164442.01b39ffb@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201121123601.21733-2-pablo@netfilter.org>
+References: <20201121123601.21733-1-pablo@netfilter.org>
+        <20201121123601.21733-2-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -44,36 +41,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Nov 2020 11:10:05 -0800 Wei Wang wrote:
-> +int napi_set_threaded(struct napi_struct *n, bool threaded)
+On Sat, 21 Nov 2020 13:35:58 +0100 Pablo Neira Ayuso wrote:
+> If the address type is missing through the control dissector, then
+> matching on IPv4 and IPv6 addresses does not work.
+
+Doesn't work where? Are you talking about a specific driver?
+
+> Set it accordingly so
+> rules that specify an IP address succesfully match on packets.
+> 
+> Fixes: c9626a2cbdb2 ("netfilter: nf_tables: add hardware offload support")
+> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+> ---
+>  include/net/netfilter/nf_tables_offload.h |  4 ++++
+>  net/netfilter/nf_tables_offload.c         | 18 ++++++++++++++++++
+>  net/netfilter/nft_payload.c               |  4 ++++
+>  3 files changed, 26 insertions(+)
+> 
+> diff --git a/include/net/netfilter/nf_tables_offload.h b/include/net/netfilter/nf_tables_offload.h
+> index ea7d1d78b92d..bddd34c5bd79 100644
+> --- a/include/net/netfilter/nf_tables_offload.h
+> +++ b/include/net/netfilter/nf_tables_offload.h
+> @@ -37,6 +37,7 @@ void nft_offload_update_dependency(struct nft_offload_ctx *ctx,
+>  
+>  struct nft_flow_key {
+>  	struct flow_dissector_key_basic			basic;
+> +	struct flow_dissector_key_control		control;
+>  	union {
+>  		struct flow_dissector_key_ipv4_addrs	ipv4;
+>  		struct flow_dissector_key_ipv6_addrs	ipv6;
+> @@ -62,6 +63,9 @@ struct nft_flow_rule {
+>  
+>  #define NFT_OFFLOAD_F_ACTION	(1 << 0)
+>  
+> +void nft_flow_rule_set_addr_type(struct nft_flow_rule *flow,
+> +				 enum flow_dissector_key_id addr_type);
+> +
+>  struct nft_rule;
+>  struct nft_flow_rule *nft_flow_rule_create(struct net *net, const struct nft_rule *rule);
+>  void nft_flow_rule_destroy(struct nft_flow_rule *flow);
+> diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
+> index 9f625724a20f..9a3c5ac057b6 100644
+> --- a/net/netfilter/nf_tables_offload.c
+> +++ b/net/netfilter/nf_tables_offload.c
+> @@ -28,6 +28,24 @@ static struct nft_flow_rule *nft_flow_rule_alloc(int num_actions)
+>  	return flow;
+>  }
+>  
+> +void nft_flow_rule_set_addr_type(struct nft_flow_rule *flow,
+> +				 enum flow_dissector_key_id addr_type)
 > +{
-> +	ASSERT_RTNL();
+> +	struct nft_flow_match *match = &flow->match;
+> +	struct nft_flow_key *mask = &match->mask;
+> +	struct nft_flow_key *key = &match->key;
 > +
-> +	if (n->dev->flags & IFF_UP)
-> +		return -EBUSY;
+> +	if (match->dissector.used_keys & BIT(FLOW_DISSECTOR_KEY_CONTROL))
+> +		return;
 > +
-> +	if (threaded == !!test_bit(NAPI_STATE_THREADED, &n->state))
-> +		return 0;
-> +	if (threaded)
-> +		set_bit(NAPI_STATE_THREADED, &n->state);
-> +	else
-> +		clear_bit(NAPI_STATE_THREADED, &n->state);
+> +	key->control.addr_type = addr_type;
+> +	mask->control.addr_type = 0xffff;
+> +	match->dissector.used_keys |= BIT(FLOW_DISSECTOR_KEY_CONTROL);
+> +	match->dissector.offset[FLOW_DISSECTOR_KEY_CONTROL] =
+> +		offsetof(struct nft_flow_key, control);
 
-Do we really need the per-NAPI control here? Does anyone have use cases
-where that makes sense? The user would be guessing which NAPI means
-which queue and which bit, currently.
+Why is this injecting the match conditionally?
 
-> +	/* if the device is initializing, nothing todo */
-> +	if (test_bit(__LINK_STATE_START, &n->dev->state))
-> +		return 0;
-> +
-> +	napi_thread_stop(n);
-> +	napi_thread_start(n);
-> +	return 0;
 > +}
-> +EXPORT_SYMBOL(napi_set_threaded);
+> +EXPORT_SYMBOL_GPL(nft_flow_rule_set_addr_type);
 
-Why was this exported? Do we still need that?
+And why is this exported? 
 
-Please rejig the patches into a reviewable form. You can use the
-Co-developed-by tag to give people credit on individual patches.
+nf_tables-objs := nf_tables_core.o nf_tables_api.o nft_chain_filter.o \
+		  nf_tables_trace.o nft_immediate.o nft_cmp.o nft_range.o \
+		  nft_bitwise.o nft_byteorder.o nft_payload.o nft_lookup.o \
+                                                ^^^^^^^^^^^^^
+		  nft_dynset.o nft_meta.o nft_rt.o nft_exthdr.o \
+		  nft_chain_route.o nf_tables_offload.o \
+                                    ^^^^^^^^^^^^^^^^^^^
+		  nft_set_hash.o nft_set_bitmap.o nft_set_rbtree.o \
+		  nft_set_pipapo.o
+
+These are linked together.
