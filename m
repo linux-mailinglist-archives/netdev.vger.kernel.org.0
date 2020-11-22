@@ -2,122 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D84EC2BC907
-	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 21:02:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 557B32BC916
+	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 21:15:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727677AbgKVUCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Nov 2020 15:02:06 -0500
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:33993 "EHLO
-        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727297AbgKVUCG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Nov 2020 15:02:06 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id EB28258060F;
-        Sun, 22 Nov 2020 15:02:04 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sun, 22 Nov 2020 15:02:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=7Cadpl
-        UTlXRcsPfIWFGFcdBLnPqzbykXqAYEnRn0/t8=; b=lf6wBtnFP/NUxNgthH2/2r
-        9twmeIQCF9C1ozoCcNcqwV80MAVgf78pL4ftBgoC/hWyvKK4SvL7q5buX57jFYiS
-        n75NBxcgX2J5BRmD95UqoVc15QH4G0RGm3K4tilNoGBeIIwp0JO0wmkxeL2Tjb60
-        3bkQNN1NdcppX1LPh610Be2A21fayoUDXlM84HOObOq65Tc2iHuwjt+WYOnFktr1
-        DTCDhdvxM0p4g+0Z2dG9LLzejCbjmW4sfWpUlINxGPw6wFsM0Dv1Dgsw0O67ybEQ
-        45lvgL1zX8qTcNub0vp14xmin4tTRgZSTh6h49YChflNuWx293lY85AXz/FUpUvA
-        ==
-X-ME-Sender: <xms:usO6X7-zr4qUwEwR-D6YNKI-YY5KmXLKWb-Zv-i4urcn49lI3jFiIA>
-    <xme:usO6X3s-V4ZOEZXm4Sf7I27aqEc2xDvAlVmnRcTNiachzmgKmbyzVWsN1-JYw7wE6
-    kYV4lCFiVDHNb0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudeggedgudefhecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
-    leetnecukfhppeekgedrvddvledrudehgedrudegjeenucevlhhushhtvghrufhiiigvpe
-    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:usO6X5B0DNATvM4F9A0O7QAtL4vb2H4VqEEIsomSi_7d0Ha7PBIgOQ>
-    <xmx:usO6X3dtql8yAYYAc1Vo0i2z6TEB5l9DMEDYAYcRmkSUtEt1uH-1rA>
-    <xmx:usO6XwNK4TGTmvz_zG0mgcpksV_sWfbtc7gHh1fUf_yk3qDaH3cF3Q>
-    <xmx:vMO6X_rZIfb7AMrYnwg3vMf-ClPu2NiMFMM1lQcwoAJnoYRHWTcm-g>
-Received: from localhost (igld-84-229-154-147.inter.net.il [84.229.154.147])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 59AD13064AA7;
-        Sun, 22 Nov 2020 15:02:02 -0500 (EST)
-Date:   Sun, 22 Nov 2020 22:01:54 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Christian Eggers <ceggers@arri.de>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Petr Machata <petrm@mellanox.com>,
-        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net-next 2/3] mlxsw: spectrum_ptp: use PTP wide message
- type definitions
-Message-ID: <20201122200154.GA668367@shredder.lan>
-References: <20201122082636.12451-1-ceggers@arri.de>
- <20201122082636.12451-3-ceggers@arri.de>
- <20201122143555.GA515025@shredder.lan>
- <2074851.ybSLjXPktx@n95hx1g2>
+        id S1727593AbgKVUPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Nov 2020 15:15:11 -0500
+Received: from correo.us.es ([193.147.175.20]:37384 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727365AbgKVUPL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 22 Nov 2020 15:15:11 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id C5BCF18CE7E
+        for <netdev@vger.kernel.org>; Sun, 22 Nov 2020 21:15:08 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id B722ADA73F
+        for <netdev@vger.kernel.org>; Sun, 22 Nov 2020 21:15:08 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id AC5B2FC5E6; Sun, 22 Nov 2020 21:15:08 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
+        autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 5154FDA73D;
+        Sun, 22 Nov 2020 21:15:06 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Sun, 22 Nov 2020 21:15:06 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 2FD6B41FF201;
+        Sun, 22 Nov 2020 21:15:06 +0100 (CET)
+Date:   Sun, 22 Nov 2020 21:15:05 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Alexander Lobakin <alobakin@pm.me>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org, fw@strlen.de,
+        razor@blackwall.org, jeremy@azazel.net, tobias@waldekranz.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next,v5 0/9] netfilter: flowtable bridge and vlan
+ enhancements
+Message-ID: <20201122201505.GA31257@salvia>
+References: <20201122102605.2342-1-alobakin@pm.me>
+ <20201122145108.2640-1-alobakin@pm.me>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <2074851.ybSLjXPktx@n95hx1g2>
+In-Reply-To: <20201122145108.2640-1-alobakin@pm.me>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 22, 2020 at 08:29:22PM +0100, Christian Eggers wrote:
-> On Sunday, 22 November 2020, 15:35:55 CET, Ido Schimmel wrote:
-> > On Sun, Nov 22, 2020 at 09:26:35AM +0100, Christian Eggers wrote:
-> > > Use recently introduced PTP wide defines instead of a driver internal
-> > > enumeration.
-> > >
-> > > Signed-off-by: Christian Eggers <ceggers@gmx.de>
-> > > Cc: Petr Machata <petrm@mellanox.com>
-> > > Cc: Jiri Pirko <jiri@nvidia.com>
-> > > Cc: Ido Schimmel <idosch@nvidia.com>
-> >
-> > Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-> >
-> > But:
-> >
-> > 1. Checkpatch complains about:
-> > WARNING: From:/Signed-off-by: email address mismatch: 'From: Christian
-> > Eggers <ceggers@arri.de>' != 'Signed-off-by: Christian Eggers
-> > <ceggers@gmx.de>'
-> unfortunately I changed this after running checkpatch. My intention was to
-> separate my (private) weekend work from the patches I do while I'm on the job.
-
-No problem. Just make sure that authorship and Signed-off-by agree. You
-can use:
-
-# git commit --amend --author="Christian Eggers <ceggers@gmx.de>"
-
+On Sun, Nov 22, 2020 at 02:51:18PM +0000, Alexander Lobakin wrote:
+> From: Pablo Neira Ayuso <pablo@netfilter.org>
+> Date: Sun, 22 Nov 2020 12:42:19 +0100
 > 
-> > 2. This series does not build, which fails the CI [1][2] and also
-> > required me to fetch the dependencies that are currently under review
-> > [3]. I believe it is generally discouraged to create dependencies
-> > between patch sets that are under review for exactly these reasons.
-> this was also not by intention. Vladimir found some files I missed in the
-> first series. As the whole first series had already been reviewed at that time,
-> I wasn't sure whether I am allowed to add further patches to it. Additionally
-> I didn't concern that although my local build is successful, I should wait
-> until the first series is applied...
-
-Yea, I saw that, no problem :)
-
+> > On Sun, Nov 22, 2020 at 10:26:16AM +0000, Alexander Lobakin wrote:
+> >> From: Pablo Neira Ayuso <pablo@netfilter.org>
+> >> Date: Fri, 20 Nov 2020 13:49:12 +0100
+> > [...]
+> >>> Something like this:
+> >>>
+> >>>                        fast path
+> >>>                 .------------------------.
+> >>>                /                          \
+> >>>                |           IP forwarding   |
+> >>>                |          /             \  .
+> >>>                |       br0               eth0
+> >>>                .       / \
+> >>>                -- veth1  veth2
+> >>>                    .
+> >>>                    .
+> >>>                    .
+> >>>                  eth0
+> >>>            ab:cd:ef:ab:cd:ef
+> >>>                   VM
+> >>
+> >> I'm concerned about bypassing vlan and bridge's .ndo_start_xmit() in
+> >> case of this shortcut. We'll have incomplete netdevice Tx stats for
+> >> these two, as it gets updated inside this callbacks.
+> >
+> > TX device stats are being updated accordingly.
+> >
+> > # ip netns exec nsr1 ip -s link
+> > 1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+> >     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+> >     RX: bytes  packets  errors  dropped overrun mcast   
+> >     0          0        0       0       0       0       
+> >     TX: bytes  packets  errors  dropped carrier collsns 
+> >     0          0        0       0       0       0       
+> > 2: veth0@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+> >     link/ether 82:0d:f3:b5:59:5d brd ff:ff:ff:ff:ff:ff link-netns ns1
+> >     RX: bytes  packets  errors  dropped overrun mcast   
+> >     213290848248 4869765  0       0       0       0       
+> >     TX: bytes  packets  errors  dropped carrier collsns 
+> >     315346667  4777953  0       0       0       0       
+> > 3: veth1@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+> >     link/ether 4a:81:2d:9a:02:88 brd ff:ff:ff:ff:ff:ff link-netns ns2
+> >     RX: bytes  packets  errors  dropped overrun mcast   
+> >     315337919  4777833  0       0       0       0       
+> >     TX: bytes  packets  errors  dropped carrier collsns 
+> >     213290844826 4869708  0       0       0       0       
+> > 4: br0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+> >     link/ether 82:0d:f3:b5:59:5d brd ff:ff:ff:ff:ff:ff
+> >     RX: bytes  packets  errors  dropped overrun mcast   
+> >     4101       73       0       0       0       0       
+> >     TX: bytes  packets  errors  dropped carrier collsns 
+> >     5256       74       0       0       0       0       
 > 
-> > I don't know what are Jakub's preferences, but had this happened on our
-> > internal patchwork instance, I would just ask the author to submit
-> > another version with all the patches.
-> Please let me know how I shall proceed...
+> Aren't these counters very low for br0, despite that br0 is an
+> intermediate point of traffic flow?
 
-Jakub has the final say, so I assume he will comment on that.
-
-Regardless, thanks for the patches.
+Most packets follow the flowtable fast path, which is bypassing the
+br0 device. Bumping br0 stats would be misleading, it would make the
+user think that the packets follow the classic bridge layer path,
+while they do not. The flowtable have counters itself to allow the
+user to collect stats regarding the packets that follow the fastpath.
