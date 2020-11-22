@@ -2,73 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBA5A2BC75E
-	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 18:05:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 345412BC779
+	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 18:24:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728285AbgKVRED (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Nov 2020 12:04:03 -0500
-Received: from smtp05.smtpout.orange.fr ([80.12.242.127]:53024 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728145AbgKVRED (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Nov 2020 12:04:03 -0500
-Received: from localhost.localdomain ([81.185.166.181])
-        by mwinf5d28 with ME
-        id vV3y2300E3v9GFD03V3y5W; Sun, 22 Nov 2020 18:03:59 +0100
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 22 Nov 2020 18:03:59 +0100
-X-ME-IP: 81.185.166.181
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        erik.stromdahl@gmail.com
-Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH 2/2] ath10k: Release some resources in an error handling path
-Date:   Sun, 22 Nov 2020 18:03:58 +0100
-Message-Id: <20201122170358.1346065-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.27.0
+        id S1727935AbgKVRYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Nov 2020 12:24:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59398 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727317AbgKVRYP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 22 Nov 2020 12:24:15 -0500
+Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 87B352075A;
+        Sun, 22 Nov 2020 17:24:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606065854;
+        bh=Elh3R1YSSvrCOACWDQxGvtTzosAavyGIFoVducOAnUQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=z4kkeaD0QENS2NPkiKXOmOObDqpsWs8qko7XdkqmPMkpX1V3WFHZUw3RTFkS5zl0v
+         0f/iBwV5IuYtUxkQoMu6JfTwOUEDSnREJNc52u/9gt6+IwCqBPOwNVkEDQg8gjf37H
+         DKB3bB8pGGDdH1VVc9FgQi2D795HIjGwGlVHcF1s=
+Date:   Sun, 22 Nov 2020 12:24:13 -0500
+From:   Sasha Levin <sashal@kernel.org>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org,
+        Cong Wang <cong.wang@bytedance.com>, liuzx@knownsec.com,
+        Edward Cree <ecree@solarflare.com>, stable@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [Patch stable] netfilter: clear skb->next in NF_HOOK_LIST()
+Message-ID: <20201122172413.GG643756@sasha-vm>
+References: <20201121034317.577081-1-xiyou.wangcong@gmail.com>
+ <20201121222249.GU15137@breakpoint.cc>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20201121222249.GU15137@breakpoint.cc>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Should an error occur after calling 'ath10k_usb_create()', it should be
-undone by a corresponding 'ath10k_usb_destroy()' call
+On Sat, Nov 21, 2020 at 11:22:49PM +0100, Florian Westphal wrote:
+>Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>> From: Cong Wang <cong.wang@bytedance.com>
+>>
+>> NF_HOOK_LIST() uses list_del() to remove skb from the linked list,
+>> however, it is not sufficient as skb->next still points to other
+>> skb. We should just call skb_list_del_init() to clear skb->next,
+>> like the rest places which using skb list.
+>>
+>> This has been fixed in upstream by commit ca58fbe06c54
+>> ("netfilter: add and use nf_hook_slow_list()").
+>
+>Thanks Cong, agree with this change, afaics its applicable to 4.19.y and 5.4.y.
 
-Fixes: 4db66499df91 ("ath10k: add initial USB support")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-This patch is speculative and compile tested only.
----
- drivers/net/wireless/ath/ath10k/usb.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+Queued for 5.4 and 4.19, thanks!
 
-diff --git a/drivers/net/wireless/ath/ath10k/usb.c b/drivers/net/wireless/ath/ath10k/usb.c
-index 0b47c3a09794..19b9c27e30e2 100644
---- a/drivers/net/wireless/ath/ath10k/usb.c
-+++ b/drivers/net/wireless/ath/ath10k/usb.c
-@@ -1011,7 +1011,7 @@ static int ath10k_usb_probe(struct usb_interface *interface,
- 	ret = ath10k_core_register(ar, &bus_params);
- 	if (ret) {
- 		ath10k_warn(ar, "failed to register driver core: %d\n", ret);
--		goto err;
-+		goto err_usb_destroy;
- 	}
- 
- 	/* TODO: remove this once USB support is fully implemented */
-@@ -1019,6 +1019,9 @@ static int ath10k_usb_probe(struct usb_interface *interface,
- 
- 	return 0;
- 
-+err_usb_destroy:
-+	ath10k_usb_destroy(ar);
-+
- err:
- 	ath10k_core_destroy(ar);
- 
 -- 
-2.27.0
-
+Thanks,
+Sasha
