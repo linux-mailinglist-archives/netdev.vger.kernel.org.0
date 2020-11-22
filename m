@@ -2,126 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 557B32BC916
-	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 21:15:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AB4F2BC939
+	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 21:36:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727593AbgKVUPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Nov 2020 15:15:11 -0500
-Received: from correo.us.es ([193.147.175.20]:37384 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727365AbgKVUPL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 22 Nov 2020 15:15:11 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id C5BCF18CE7E
-        for <netdev@vger.kernel.org>; Sun, 22 Nov 2020 21:15:08 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id B722ADA73F
-        for <netdev@vger.kernel.org>; Sun, 22 Nov 2020 21:15:08 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id AC5B2FC5E6; Sun, 22 Nov 2020 21:15:08 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 5154FDA73D;
-        Sun, 22 Nov 2020 21:15:06 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Sun, 22 Nov 2020 21:15:06 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 2FD6B41FF201;
-        Sun, 22 Nov 2020 21:15:06 +0100 (CET)
-Date:   Sun, 22 Nov 2020 21:15:05 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Alexander Lobakin <alobakin@pm.me>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org, fw@strlen.de,
-        razor@blackwall.org, jeremy@azazel.net, tobias@waldekranz.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next,v5 0/9] netfilter: flowtable bridge and vlan
- enhancements
-Message-ID: <20201122201505.GA31257@salvia>
-References: <20201122102605.2342-1-alobakin@pm.me>
- <20201122145108.2640-1-alobakin@pm.me>
+        id S1727827AbgKVUgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Nov 2020 15:36:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50712 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727637AbgKVUgK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Nov 2020 15:36:10 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65ADFC0613CF;
+        Sun, 22 Nov 2020 12:36:10 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id g15so14049320ybq.6;
+        Sun, 22 Nov 2020 12:36:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GG13N+h9bYKW0tA8PzZdEh0PqD5/qSPuWfMm4/MLZZE=;
+        b=tX7AFJY3IoP+sTWjLWjwUeA0EiMqyjgmEMGUK52Uheybmur4GieXYHjq/4452d4+Q2
+         I9IJc2W+KgP7eM5cLMrffBSaL1fq5VPLYq7a7Nqy7aqiJs+SWc7hYJy9lsWlIs20dLH2
+         W28Iwaw2K1E1/9bR59jMmk/7Gq8vv14a82SqbrX8Cr26/AWqo5ergIUL6PfX6EI1DxrF
+         H3tDAymEGdy6lnWgT39rAP3JOfP6UnfKa9FSSCeE7ggKiNT9+2hZ/9zdGiTOU+6HH+d5
+         TmFQQAuEaRP9Z2Bh9bU0txdUhaZCbT+Ezs+qExtvq1zOJlrZzRYF6kJpZnKXIPWyTN/2
+         bJqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GG13N+h9bYKW0tA8PzZdEh0PqD5/qSPuWfMm4/MLZZE=;
+        b=ObaZf8pj5VtvDEogGRFMCRClpQMF1vhpF/ASZBGDR2ZMFPBkdlpobUU8gm+iGheaSZ
+         ns2+N8dnF+TmQRtMPogwSxF7N8SLrKtcxLjXbvPj4DcS553z4OJ61Ogch9coMHmZ4Rsq
+         6CPbzxPdfeqRAoDAKy50+BfvqZjsz5eqh3aVSuR2gC7PDJvdZtJxQ2muEGXDCJ40rypk
+         jILpBRDgbW4Z/koTgoC7BhoWSJQOvC8dDrHiWqNZs5sB/BgDPEpDMyacvXBXAGQTzIfY
+         +1aSB0mfzr4Uq1cEv54VG0oDqFZLJAlVLXkYd/LevMeie0/HMexwI8sl1+WQ41CzXpGS
+         4iCA==
+X-Gm-Message-State: AOAM533NuDa+35dARUwFwORCkHM2dODSzVByVhRP4hgefPlm7KOc6ZFl
+        h4MWXQj7WPd+iOpmo5r9qeTUFHedV1cn1RmnU3A=
+X-Google-Smtp-Source: ABdhPJzCLkP7XKvI+ogPcqXNjFlbBz0ulixnxLa8L+LTJiC1sb757UHHSouM0vJ9LX/4+Ocy8hzM6Anb9s4lPpy7cZY=
+X-Received: by 2002:a25:6986:: with SMTP id e128mr4956056ybc.93.1606077369721;
+ Sun, 22 Nov 2020 12:36:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20201122145108.2640-1-alobakin@pm.me>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+References: <cover.1605896059.git.gustavoars@kernel.org> <20201120105344.4345c14e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <202011201129.B13FDB3C@keescook> <20201120115142.292999b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <202011220816.8B6591A@keescook> <9b57fd4914b46f38d54087d75e072d6e947cb56d.camel@HansenPartnership.com>
+In-Reply-To: <9b57fd4914b46f38d54087d75e072d6e947cb56d.camel@HansenPartnership.com>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Sun, 22 Nov 2020 21:35:58 +0100
+Message-ID: <CANiq72nZrHWTA4_Msg6MP9snTyenC6-eGfD27CyfNSu7QoVZbw@mail.gmail.com>
+Subject: Re: [PATCH 000/141] Fix fall-through warnings for Clang
+To:     James Bottomley <James.Bottomley@hansenpartnership.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        alsa-devel@alsa-project.org, amd-gfx@lists.freedesktop.org,
+        bridge@lists.linux-foundation.org, ceph-devel@vger.kernel.org,
+        cluster-devel@redhat.com, coreteam@netfilter.org,
+        devel@driverdev.osuosl.org, dm-devel@redhat.com,
+        drbd-dev@lists.linbit.com, dri-devel@lists.freedesktop.org,
+        GR-everest-linux-l2@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        intel-gfx@lists.freedesktop.org, intel-wired-lan@lists.osuosl.org,
+        keyrings@vger.kernel.org, linux1394-devel@lists.sourceforge.net,
+        linux-acpi@vger.kernel.org, linux-afs@lists.infradead.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm@vger.kernel.org,
+        linux-atm-general@lists.sourceforge.net,
+        linux-block@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-cifs@vger.kernel.org,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-decnet-user@lists.sourceforge.net,
+        Ext4 Developers List <linux-ext4@vger.kernel.org>,
+        linux-fbdev@vger.kernel.org, linux-geode@lists.infradead.org,
+        linux-gpio@vger.kernel.org, linux-hams@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-i3c@lists.infradead.org,
+        linux-ide@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-input <linux-input@vger.kernel.org>,
+        linux-integrity@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        linux-mmc@vger.kernel.org, Linux-MM <linux-mm@kvack.org>,
+        linux-mtd@lists.infradead.org, linux-nfs@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        netfilter-devel@vger.kernel.org, nouveau@lists.freedesktop.org,
+        op-tee@lists.trustedfirmware.org, oss-drivers@netronome.com,
+        patches@opensource.cirrus.com, rds-devel@oss.oracle.com,
+        reiserfs-devel@vger.kernel.org, samba-technical@lists.samba.org,
+        selinux@vger.kernel.org, target-devel@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net,
+        usb-storage@lists.one-eyed-alien.net,
+        virtualization@lists.linux-foundation.org,
+        wcn36xx@lists.infradead.org,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        xen-devel@lists.xenproject.org, linux-hardening@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Miguel Ojeda <ojeda@kernel.org>, Joe Perches <joe@perches.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 22, 2020 at 02:51:18PM +0000, Alexander Lobakin wrote:
-> From: Pablo Neira Ayuso <pablo@netfilter.org>
-> Date: Sun, 22 Nov 2020 12:42:19 +0100
-> 
-> > On Sun, Nov 22, 2020 at 10:26:16AM +0000, Alexander Lobakin wrote:
-> >> From: Pablo Neira Ayuso <pablo@netfilter.org>
-> >> Date: Fri, 20 Nov 2020 13:49:12 +0100
-> > [...]
-> >>> Something like this:
-> >>>
-> >>>                        fast path
-> >>>                 .------------------------.
-> >>>                /                          \
-> >>>                |           IP forwarding   |
-> >>>                |          /             \  .
-> >>>                |       br0               eth0
-> >>>                .       / \
-> >>>                -- veth1  veth2
-> >>>                    .
-> >>>                    .
-> >>>                    .
-> >>>                  eth0
-> >>>            ab:cd:ef:ab:cd:ef
-> >>>                   VM
-> >>
-> >> I'm concerned about bypassing vlan and bridge's .ndo_start_xmit() in
-> >> case of this shortcut. We'll have incomplete netdevice Tx stats for
-> >> these two, as it gets updated inside this callbacks.
-> >
-> > TX device stats are being updated accordingly.
-> >
-> > # ip netns exec nsr1 ip -s link
-> > 1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-> >     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-> >     RX: bytes  packets  errors  dropped overrun mcast   
-> >     0          0        0       0       0       0       
-> >     TX: bytes  packets  errors  dropped carrier collsns 
-> >     0          0        0       0       0       0       
-> > 2: veth0@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
-> >     link/ether 82:0d:f3:b5:59:5d brd ff:ff:ff:ff:ff:ff link-netns ns1
-> >     RX: bytes  packets  errors  dropped overrun mcast   
-> >     213290848248 4869765  0       0       0       0       
-> >     TX: bytes  packets  errors  dropped carrier collsns 
-> >     315346667  4777953  0       0       0       0       
-> > 3: veth1@if2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
-> >     link/ether 4a:81:2d:9a:02:88 brd ff:ff:ff:ff:ff:ff link-netns ns2
-> >     RX: bytes  packets  errors  dropped overrun mcast   
-> >     315337919  4777833  0       0       0       0       
-> >     TX: bytes  packets  errors  dropped carrier collsns 
-> >     213290844826 4869708  0       0       0       0       
-> > 4: br0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
-> >     link/ether 82:0d:f3:b5:59:5d brd ff:ff:ff:ff:ff:ff
-> >     RX: bytes  packets  errors  dropped overrun mcast   
-> >     4101       73       0       0       0       0       
-> >     TX: bytes  packets  errors  dropped carrier collsns 
-> >     5256       74       0       0       0       0       
-> 
-> Aren't these counters very low for br0, despite that br0 is an
-> intermediate point of traffic flow?
+On Sun, Nov 22, 2020 at 7:22 PM James Bottomley
+<James.Bottomley@hansenpartnership.com> wrote:
+>
+> Well, it's a problem in an error leg, sure, but it's not a really
+> compelling reason for a 141 patch series, is it?  All that fixing this
+> error will do is get the driver to print "oh dear there's a problem"
+> under four more conditions than it previously did.
+>
+> We've been at this for three years now with nearly a thousand patches,
+> firstly marking all the fall throughs with /* fall through */ and later
+> changing it to fallthrough.  At some point we do have to ask if the
+> effort is commensurate with the protection afforded.  Please tell me
+> our reward for all this effort isn't a single missing error print.
 
-Most packets follow the flowtable fast path, which is bypassing the
-br0 device. Bumping br0 stats would be misleading, it would make the
-user think that the packets follow the classic bridge layer path,
-while they do not. The flowtable have counters itself to allow the
-user to collect stats regarding the packets that follow the fastpath.
+It isn't that much effort, isn't it? Plus we need to take into account
+the future mistakes that it might prevent, too. So even if there were
+zero problems found so far, it is still a positive change.
+
+I would agree if these changes were high risk, though; but they are
+almost trivial.
+
+Cheers,
+Miguel
