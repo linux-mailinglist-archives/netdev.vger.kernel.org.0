@@ -2,52 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE3602BC2CB
-	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 01:02:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 079D02BC2D2
+	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 01:11:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726660AbgKVAB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Nov 2020 19:01:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60874 "EHLO mail.kernel.org"
+        id S1726631AbgKVAKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Nov 2020 19:10:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35362 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726175AbgKVAB4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 21 Nov 2020 19:01:56 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C1F8B20BED;
-        Sun, 22 Nov 2020 00:01:55 +0000 (UTC)
+        id S1726281AbgKVAKF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 21 Nov 2020 19:10:05 -0500
+Content-Type: text/plain; charset="utf-8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606003316;
-        bh=eOI8bH5V5jGEvjSLw/KcrnwY3zWgvqBRBDD10/wLwLU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tA+PuGrnnIQoeECNIiOCk455GTIs3jwuiG25tDdMdjqavtaIVEFefkRRBCa30Pn53
-         uT37nNtVKNGVL0vL4t1CRaDqnRhKTwj/rkD8b7ZsGHUyTokOs6T0jnk35+KzOwoF8G
-         Lq8yv0DxH3eZBxyEfERw92VvUrDJx2Y9n0yAGNPg=
-Date:   Sat, 21 Nov 2020 16:01:55 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeedm@nvidia.com>
-Cc:     Leon Romanovsky <leonro@mellanox.com>, <netdev@vger.kernel.org>,
-        <linux-rdma@vger.kernel.org>, Eli Cohen <eli@mellanox.com>,
-        Mark Bloch <mbloch@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>
-Subject: Re: [PATCH mlx5-next 11/16] net/mlx5: Add VDPA priority to NIC RX
- namespace
-Message-ID: <20201121160155.39d84650@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201120230339.651609-12-saeedm@nvidia.com>
-References: <20201120230339.651609-1-saeedm@nvidia.com>
-        <20201120230339.651609-12-saeedm@nvidia.com>
+        s=default; t=1606003805;
+        bh=BqriVPf7ZGrQcmkNlNIYizs65iGUGQZPPbawxUj2GZs=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=iC6JKmBjDVewTzkqOhz5W8LBA0V3LGuQSbSkT+b4SnctyZZpixr7ze4CH/TQbeyzy
+         vGKqOJw3HJ1adsQf7y4PP7BVo+adFSkLIdn40s1j+r2tMEx6nqrcEvo76GGHK5sTne
+         IpLTJgFBJ7/D4qh6CTsum7KULWhARRlpwtEPdl3U=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] octeontx2-af: Add support for RSS hashing based on Transport
+ protocol field
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160600380500.25306.17368295839417219301.git-patchwork-notify@kernel.org>
+Date:   Sun, 22 Nov 2020 00:10:05 +0000
+References: <20201120093906.2873616-1-george.cherian@marvell.com>
+In-Reply-To: <20201120093906.2873616-1-george.cherian@marvell.com>
+To:     George Cherian <george.cherian@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, sgoutham@marvell.com,
+        lcherian@marvell.com, gakula@marvell.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 20 Nov 2020 15:03:34 -0800 Saeed Mahameed wrote:
-> From: Eli Cohen <eli@mellanox.com>
-> 
-> Add a new namespace type to the NIC RX root namespace to allow for
-> inserting VDPA rules before regular NIC but after bypass, thus allowing
-> DPDK to have precedence in packet processing.
+Hello:
 
-How does DPDK and VDPA relate in this context?
+This patch was applied to netdev/net-next.git (refs/heads/master):
+
+On Fri, 20 Nov 2020 15:09:06 +0530 you wrote:
+> Add support to choose RSS flow key algorithm with IPv4 transport protocol
+> field included in hashing input data. This will be enabled by default.
+> There-by enabling 3/5 tuple hash
+> 
+> Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+> Signed-off-by: George Cherian <george.cherian@marvell.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - octeontx2-af: Add support for RSS hashing based on Transport protocol field
+    https://git.kernel.org/netdev/net-next/c/f9e425e99b07
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
