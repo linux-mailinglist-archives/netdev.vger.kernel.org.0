@@ -2,123 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57D9B2BC2E3
-	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 01:45:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11B232BC301
+	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 02:37:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726719AbgKVAoo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Nov 2020 19:44:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47860 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726398AbgKVAoo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 21 Nov 2020 19:44:44 -0500
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 83FC9207D3;
-        Sun, 22 Nov 2020 00:44:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606005883;
-        bh=aYAcu9g5uwrUz51rMwTPxA1dHvWAXgrSDJc0DfQ6sLk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uDNAYn41dWx7zYomT1tUqOihFG17oUmavNHGrF9rQcPuHCb7thM1MBf+gdxVtcp/v
-         UjzqZ73sye8G/710O05oFEwG9Fq6St+/pJvduXkqpJIVwdSrwE89cIvW6JKt7Tt+KF
-         2JdxKDURJ5VwWzYs62/ur8ElLK2p3E3zsopgi3lM=
-Date:   Sat, 21 Nov 2020 16:44:42 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net 1/4] netfilter: nftables_offload: set address type
- in control dissector
-Message-ID: <20201121164442.01b39ffb@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201121123601.21733-2-pablo@netfilter.org>
-References: <20201121123601.21733-1-pablo@netfilter.org>
-        <20201121123601.21733-2-pablo@netfilter.org>
+        id S1726939AbgKVBg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Nov 2020 20:36:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45482 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726544AbgKVBgr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Nov 2020 20:36:47 -0500
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9066EC0613CF;
+        Sat, 21 Nov 2020 17:36:45 -0800 (PST)
+Received: by mail-pg1-x541.google.com with SMTP id 62so10879693pgg.12;
+        Sat, 21 Nov 2020 17:36:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=WwAQohGmMP/UiMeBYoppGq4ywWWRc++yLHyyw6pljp0=;
+        b=ZSvFuKzJDq20yV9cD8q3f5oL2uT1IoufooJHf4S1BwoXX3+/65ELeVjWDRUC0kT/QQ
+         JwlTReGDDFOpxXbEFRhjzABXjQYme8/KQ/JXUiHSMATcUUzhfrbCQ1XQwJqZ3UcHsAnZ
+         Ezxfn8vz9fWrSdBWAv75OMy+OEnp/7Ll++a2LrwQKy/Qy4Y8gwJdwqN/IfblXCZpvvbk
+         ic5JWNtqxxt1fKMBM4XXxUWsMuNiFrJ8ZK4DfgigdJ2ZzlJ+KH2eRvTVBxfYhYWZF7QV
+         Sm6y625IuFVFQKUlNIGST6oQ8AJHLsyhSOqaXxymv97c51c7fLt+BkE4mr58RABP3jfY
+         aqGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=WwAQohGmMP/UiMeBYoppGq4ywWWRc++yLHyyw6pljp0=;
+        b=lHyf/XGgYeKByuYzyeZz6WUhjcttOxrD1zKupct3QQ4KHr5YfIjPksD+hsQCiiI54Z
+         vPbS1hJO05LarYdP5kUw5exk/+tILqQDZv6fzzXmSZQOCCsJSpZ5IDd06Sge2jCS4QW5
+         3RhAvVxl+TPngcuNzVll29kTB1e1ggChUzBRx9Za2VoPLQmrGMdiYgk1NVACul0mQlpz
+         hLxOUPP8qutXWbcZbgAnvSgVDgUtK8EzqzsSE1eQDtdQ4aZszS7TSZmzOP4SzpaZrHET
+         wPNb2wPTm0SQNEJk4hDMGQ2FSYZDENPmS2wawP8A9nJ+V4Q4mbn1rmf7aCZwkDwiYia0
+         0icQ==
+X-Gm-Message-State: AOAM532SLnmBMu0bJ9WIJfSZ3/IXcwJJXVFNNktzgASLsCKVzY2DiJpJ
+        5M1s15CvOfFgqRpdr/LP38k=
+X-Google-Smtp-Source: ABdhPJyQFDu9Fztrd006rONVHW0ogMHQyAiT6BU48QCtukjh9oCOWHo1QiyagZOSIyt1pkLlZLIrZg==
+X-Received: by 2002:a62:f20e:0:b029:197:f6d8:8d4d with SMTP id m14-20020a62f20e0000b0290197f6d88d4dmr2294937pfh.58.1606009004985;
+        Sat, 21 Nov 2020 17:36:44 -0800 (PST)
+Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id kb12sm8981106pjb.2.2020.11.21.17.36.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 Nov 2020 17:36:43 -0800 (PST)
+Date:   Sat, 21 Nov 2020 17:36:40 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Tristram.Ha@microchip.com, ceggers@arri.de, kuba@kernel.org,
+        andrew@lunn.ch, robh+dt@kernel.org, vivien.didelot@gmail.com,
+        davem@davemloft.net, kurt.kanzenbach@linutronix.de,
+        george.mccollister@gmail.com, marex@denx.de,
+        helmut.grohne@intenta.de, pbarker@konsulko.com,
+        Codrin.Ciubotariu@microchip.com, Woojung.Huh@microchip.com,
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3 00/12] net: dsa: microchip: PTP support for
+ KSZ956x
+Message-ID: <20201122013640.GA997@hoboy.vegasvil.org>
+References: <20201118203013.5077-1-ceggers@arri.de>
+ <20201118234018.jltisnhjesddt6kf@skbuf>
+ <2452899.Bt8PnbAPR0@n95hx1g2>
+ <BYAPR11MB35582F880B533EB2EE0CDD1DECE00@BYAPR11MB3558.namprd11.prod.outlook.com>
+ <20201121012611.r6h5zpd32pypczg3@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201121012611.r6h5zpd32pypczg3@skbuf>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 21 Nov 2020 13:35:58 +0100 Pablo Neira Ayuso wrote:
-> If the address type is missing through the control dissector, then
-> matching on IPv4 and IPv6 addresses does not work.
-
-Doesn't work where? Are you talking about a specific driver?
-
-> Set it accordingly so
-> rules that specify an IP address succesfully match on packets.
+On Sat, Nov 21, 2020 at 03:26:11AM +0200, Vladimir Oltean wrote:
+> On Thu, Nov 19, 2020 at 06:51:15PM +0000, Tristram.Ha@microchip.com wrote:
+> > The receive and transmit latencies are different for different connected speed.  So the
+> > driver needs to change them when the link changes.  For that reason the PTP stack
+> > should not use its own latency values as generally the application does not care about
+> > the linked speed.
 > 
-> Fixes: c9626a2cbdb2 ("netfilter: nf_tables: add hardware offload support")
-> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-> ---
->  include/net/netfilter/nf_tables_offload.h |  4 ++++
->  net/netfilter/nf_tables_offload.c         | 18 ++++++++++++++++++
->  net/netfilter/nft_payload.c               |  4 ++++
->  3 files changed, 26 insertions(+)
+> The thing is, ptp4l already has ingressLatency and egressLatency
+> settings, and I would not be surprised if those config options would get
+> extended to cover values at multiple link speeds.
 > 
-> diff --git a/include/net/netfilter/nf_tables_offload.h b/include/net/netfilter/nf_tables_offload.h
-> index ea7d1d78b92d..bddd34c5bd79 100644
-> --- a/include/net/netfilter/nf_tables_offload.h
-> +++ b/include/net/netfilter/nf_tables_offload.h
-> @@ -37,6 +37,7 @@ void nft_offload_update_dependency(struct nft_offload_ctx *ctx,
->  
->  struct nft_flow_key {
->  	struct flow_dissector_key_basic			basic;
-> +	struct flow_dissector_key_control		control;
->  	union {
->  		struct flow_dissector_key_ipv4_addrs	ipv4;
->  		struct flow_dissector_key_ipv6_addrs	ipv6;
-> @@ -62,6 +63,9 @@ struct nft_flow_rule {
->  
->  #define NFT_OFFLOAD_F_ACTION	(1 << 0)
->  
-> +void nft_flow_rule_set_addr_type(struct nft_flow_rule *flow,
-> +				 enum flow_dissector_key_id addr_type);
-> +
->  struct nft_rule;
->  struct nft_flow_rule *nft_flow_rule_create(struct net *net, const struct nft_rule *rule);
->  void nft_flow_rule_destroy(struct nft_flow_rule *flow);
-> diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
-> index 9f625724a20f..9a3c5ac057b6 100644
-> --- a/net/netfilter/nf_tables_offload.c
-> +++ b/net/netfilter/nf_tables_offload.c
-> @@ -28,6 +28,24 @@ static struct nft_flow_rule *nft_flow_rule_alloc(int num_actions)
->  	return flow;
->  }
->  
-> +void nft_flow_rule_set_addr_type(struct nft_flow_rule *flow,
-> +				 enum flow_dissector_key_id addr_type)
-> +{
-> +	struct nft_flow_match *match = &flow->match;
-> +	struct nft_flow_key *mask = &match->mask;
-> +	struct nft_flow_key *key = &match->key;
-> +
-> +	if (match->dissector.used_keys & BIT(FLOW_DISSECTOR_KEY_CONTROL))
-> +		return;
-> +
-> +	key->control.addr_type = addr_type;
-> +	mask->control.addr_type = 0xffff;
-> +	match->dissector.used_keys |= BIT(FLOW_DISSECTOR_KEY_CONTROL);
-> +	match->dissector.offset[FLOW_DISSECTOR_KEY_CONTROL] =
-> +		offsetof(struct nft_flow_key, control);
+> In the general case, the ksz9477 MAC could be attached to any external
+> PHY, having its own propagation delay characteristics, or any number of
+> other things that cause clock domain crossings. I'm not sure how feasible
+> it is for the kernel to abstract this away completely, and adjust
+> timestamps automatically based on any and all combinations of MAC and
+> PHY. Maybe this is just wishful thinking.
 
-Why is this injecting the match conditionally?
+The idea that the driver will correctly adjust time stamps according
+to link speed sounds nice in theory, but in practice it fails.  There
+is a at least one other driver that attempted this, but, surprise,
+surprise, the hard coded correction values turned out to be wrong.
 
-> +}
-> +EXPORT_SYMBOL_GPL(nft_flow_rule_set_addr_type);
+I think the best way would be to let user space monitor the link speed
+and apply the matching correction value.  That way, we avoid bogus,
+hard coded values in kernel space.  (This isn't implemented in
+linuxptp, but it certainly could be.)
 
-And why is this exported? 
-
-nf_tables-objs := nf_tables_core.o nf_tables_api.o nft_chain_filter.o \
-		  nf_tables_trace.o nft_immediate.o nft_cmp.o nft_range.o \
-		  nft_bitwise.o nft_byteorder.o nft_payload.o nft_lookup.o \
-                                                ^^^^^^^^^^^^^
-		  nft_dynset.o nft_meta.o nft_rt.o nft_exthdr.o \
-		  nft_chain_route.o nf_tables_offload.o \
-                                    ^^^^^^^^^^^^^^^^^^^
-		  nft_set_hash.o nft_set_bitmap.o nft_set_rbtree.o \
-		  nft_set_pipapo.o
-
-These are linked together.
+Thanks,
+Richard
