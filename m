@@ -2,72 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63C1C2BC556
-	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 12:24:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 047C52BC562
+	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 12:34:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727436AbgKVLYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Nov 2020 06:24:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59800 "EHLO mail.kernel.org"
+        id S1727733AbgKVLdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Nov 2020 06:33:25 -0500
+Received: from correo.us.es ([193.147.175.20]:59186 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727360AbgKVLYI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 22 Nov 2020 06:24:08 -0500
-Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1727373AbgKVLdZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 22 Nov 2020 06:33:25 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id B5F5953D26E
+        for <netdev@vger.kernel.org>; Sun, 22 Nov 2020 12:33:23 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id A40B9DA4D4
+        for <netdev@vger.kernel.org>; Sun, 22 Nov 2020 12:33:23 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 99939DA4C8; Sun, 22 Nov 2020 12:33:23 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
+        autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 64EC6DA73F;
+        Sun, 22 Nov 2020 12:33:21 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Sun, 22 Nov 2020 12:33:21 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6FD74208C3
-        for <netdev@vger.kernel.org>; Sun, 22 Nov 2020 11:24:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606044247;
-        bh=0Kq89qyHyvptVPKtElFZEUG9dY78bzi3WGEYX/n3emg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=W5hlo5EfiwhRGfT/MtMerHQhS4qxNjNhhyUTqO2yFEQ5Eg5jZ6UvyqMtOx/j+fFED
-         f1np59J5Pt/HSVyLdB7/uJZo9Ep1wVTkjy0vKgSGK17Xw5crIMLvVG11UwelJkOiOu
-         iLTlifU12s/wpSywzzU1qRjA41Az0B9VFh8qhKx4=
-Received: by mail-oi1-f182.google.com with SMTP id t143so16342327oif.10
-        for <netdev@vger.kernel.org>; Sun, 22 Nov 2020 03:24:07 -0800 (PST)
-X-Gm-Message-State: AOAM532uFFt1BHhKJfQ8FjJY9DAeVgZg05IHAye5nKDGFDletRGAdNWk
-        c0lzSpL5SNdpZvXXR+YwxCNCj6+oAsz3PZJsirM=
-X-Google-Smtp-Source: ABdhPJxiL363n+SSQWMiIeGZrrt3qxcoba7c4DhiiMfjHpN9p+Ew6CagsrAr/GQm26OMtHa2FCC7WuKc2hdi+h9CUCc=
-X-Received: by 2002:aca:3c54:: with SMTP id j81mr12093693oia.11.1606044246851;
- Sun, 22 Nov 2020 03:24:06 -0800 (PST)
-MIME-Version: 1.0
-References: <20201121214844.1488283-1-kuba@kernel.org>
-In-Reply-To: <20201121214844.1488283-1-kuba@kernel.org>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Sun, 22 Nov 2020 12:23:50 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a32JYqeFUD=BUaN0q6_idVS+mWx1VFwWsOLOYLA_C+3Yg@mail.gmail.com>
-Message-ID: <CAK8P3a32JYqeFUD=BUaN0q6_idVS+mWx1VFwWsOLOYLA_C+3Yg@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] compat: always include linux/compat.h from net/compat.h
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 4860F4265A5A;
+        Sun, 22 Nov 2020 12:33:21 +0100 (CET)
+Date:   Sun, 22 Nov 2020 12:33:20 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Cc:     Tobias Waldekranz <tobias@waldekranz.com>,
+        netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, razor@blackwall.org, jeremy@azazel.net
+Subject: Re: [PATCH net-next,v3 0/9] netfilter: flowtable bridge and vlan
+ enhancements
+Message-ID: <20201122113320.GC26512@salvia>
+References: <20201114090347.2e7c1457@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201116221815.GA6682@salvia>
+ <20201116142844.7c492fb6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201116223615.GA6967@salvia>
+ <20201116144521.771da0c6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201116225658.GA7247@salvia>
+ <20201121123138.GA21560@salvia>
+ <20201121101551.3264c5fd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201121185621.GA23017@salvia>
+ <20201121112348.0e25afa3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20201121112348.0e25afa3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 21, 2020 at 10:49 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> We're about to do reshuffling in networking headers and
-> eliminate some implicit includes. This results in:
->
-> In file included from ../net/ipv4/netfilter/arp_tables.c:26:
-> include/net/compat.h:60:40: error: unknown type name =E2=80=98compat_uptr=
-_t=E2=80=99; did you mean =E2=80=98compat_ptr_ioctl=E2=80=99?
->     struct sockaddr __user **save_addr, compat_uptr_t *ptr,
->                                         ^~~~~~~~~~~~~
->                                         compat_ptr_ioctl
-> include/net/compat.h:61:4: error: unknown type name =E2=80=98compat_size_=
-t=E2=80=99; did you mean =E2=80=98compat_sigset_t=E2=80=99?
->     compat_size_t *len);
->     ^~~~~~~~~~~~~
->     compat_sigset_t
->
-> Currently net/compat.h depends on linux/compat.h being included
-> first. After the upcoming changes this would break the 32bit build.
->
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Hi Jakub,
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+On Sat, Nov 21, 2020 at 11:23:48AM -0800, Jakub Kicinski wrote:
+> On Sat, 21 Nov 2020 19:56:21 +0100 Pablo Neira Ayuso wrote:
+> > > Please gather some review tags from senior netdev developers. I don't
+> > > feel confident enough to apply this as 100% my own decision.  
+> > 
+> > Fair enough.
+> > 
+> > This requirement for very specific Netfilter infrastructure which does
+> > not affect any other Networking subsystem sounds new to me.
+> 
+> You mean me asking for reviews from other senior folks when I don't
+> feel good about some code? I've asked others the same thing in the
+> past, e.g. Paolo for his RPS thing.
+
+No, I'm perfectly fine with peer review.
+
+Note that I am sending this to net-next as a patchset (not as a PR)
+_only_ because this is adding a new .ndo_fill_forward_path to
+netdev_ops.
+
+That's the only thing that is relevant to the Netdev core
+infrastructure IMO, and this new .ndo that is private, not exposed to
+userspace.
+
+Let's have a look at the diffstats again:
+
+ include/linux/netdevice.h                     |  35 +++
+ include/net/netfilter/nf_flow_table.h         |  43 +++-
+ net/8021q/vlan_dev.c                          |  15 ++
+ net/bridge/br_device.c                        |  27 +++
+ net/core/dev.c                                |  46 ++++
+ net/netfilter/nf_flow_table_core.c            |  51 +++--
+ net/netfilter/nf_flow_table_ip.c              | 200 ++++++++++++++----
+ net/netfilter/nft_flow_offload.c              | 159 +++++++++++++-
+ .../selftests/netfilter/nft_flowtable.sh      |  82 +++++++
+ 9 files changed, 598 insertions(+), 60 deletions(-)
+
+So this is adding _minimal_ changes to the NetDev infrastructure. Most
+of the code is an extension to the flowtable Netfilter infrastructure.
+And the flowtable is a cache since its conception.
+
+I am adding the .ndo indirection to avoid the dependencies with
+Netfilter modules, e.g. Netfilter could use direct reference to bridge
+function, but that would pull in bridge modules.
+
+> > What senior developers specifically you would like I should poke to
+> > get an acknowledgement on this to get this accepted of your
+> > preference?
+> 
+> I don't want to make a list. Maybe netconf attendees are a safe bet?
+
+I have no idea who to ask to, traditionally it's the NetDev maintainer
+(AFAIK it's only you at this stage) that have the last word on
+something to get this merged.
+
+I consider all developers that have reviewed this patchset to be
+senior developers.
