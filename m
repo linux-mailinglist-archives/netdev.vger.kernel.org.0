@@ -2,93 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C93D02BC980
-	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 22:12:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C7412BFBD1
+	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 22:55:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727789AbgKVVMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Nov 2020 16:12:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56278 "EHLO
+        id S1726455AbgKVVyd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Nov 2020 16:54:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727398AbgKVVMm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Nov 2020 16:12:42 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39780C0613CF
-        for <netdev@vger.kernel.org>; Sun, 22 Nov 2020 13:12:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=wdE0SkompNbOqgCxdlW3s1eRIC0gVYQ494kzU4dNh2g=; b=NXGdhTwpAwUtJ4GGLOuJ2Sk8ud
-        FsUWNUWFs+WrjI7swnlcPCLdeoOxPQhVXQjOBsaJ1s6K5qc3qOhhSeqo9vtvirx2loK+Xzljz7mp4
-        AhwkJz7ApX/zhyM/t4mz2RNjRpQHlk2Tw0BDrkp5+RlMiDpxJ7i4F6lzYSThYezxg4zoFuPbnfKFN
-        uQKRJWBQdNzkb1QAJi1alLOiVbJgr5TAzBGfXhJi64W5lyLw2OuWh5YzslvMcHB+R2QXP7KtD5uFX
-        twmc03cQoM/N+9J+5Cq2JkMLKmZtkDKMhMywy5JdkyRFRc6IuD1vlpokpRSfBkipMZDlF45ZGChKH
-        1BJ/ilEg==;
-Received: from [2601:1c0:6280:3f0::953c] (helo=smtpauth.infradead.org)
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kgwey-0005jP-Qd; Sun, 22 Nov 2020 21:12:37 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     netdev@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH] net: mlx5e: fix fs_tcp.c build when IPV6 is not enabled
-Date:   Sun, 22 Nov 2020 13:12:31 -0800
-Message-Id: <20201122211231.5682-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.26.2
+        with ESMTP id S1726107AbgKVVyd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Nov 2020 16:54:33 -0500
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF121C0613CF;
+        Sun, 22 Nov 2020 13:54:32 -0800 (PST)
+Received: by mail-ej1-x642.google.com with SMTP id lv15so14764494ejb.12;
+        Sun, 22 Nov 2020 13:54:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=message-id:sender:from:mime-version:content-transfer-encoding
+         :content-description:subject:to:date:reply-to;
+        bh=holMzMixu6L4mPkY4KLX0AXrH3B7KLU6Q1+gVZ1hbDo=;
+        b=CEUjmpzv7uNgM+7dNQCdVnHyNE9pb0tLCZl2HPHTWR/XZh/6gTq/qSqvTMZ4vEXgD9
+         QhTD43QUzbdePcFIVaemb/66EZN5r0Z2n+LP6DnEJl5m5of7lg3V0I0rLesgKZUxhAkZ
+         GZ9w/iFhtcvw5QCFvvifDXBwajd1F7ZxFreiV+nXFenvrxepXxXK5BkuExfQfmfWCFKp
+         sVnYq6yf16JQGF/S8Xt7y8EApGADoap8Hai84VOzYbV1cTGH8Ud1NK6y4UexHc2/wlLD
+         T6mt/KREAVhsSfT3e+ZDVjGkKiNJc/wEnJwN+2Lfvrb2bU8n9E96neH5hWyYmZvoZlf7
+         SQRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:sender:from:mime-version
+         :content-transfer-encoding:content-description:subject:to:date
+         :reply-to;
+        bh=holMzMixu6L4mPkY4KLX0AXrH3B7KLU6Q1+gVZ1hbDo=;
+        b=Uzzi5wFSL2SUMN/Kq/qUzCTjT2SulIvedC2Op8AkL20n61em/wGdpHQAo4a7gDQ62T
+         psbgIYZWsmZu+3o0j5NFLfTvTrCptZ01vonxzXVidjZIttbRgy4SiDbRCYtEqvM6E09e
+         O5uGl9Ihdt81KiGqpeHHPF/2ttfAWU+66KV8Ya2jP442dmcTJzJt2myYsxYyJgrdXhUX
+         7smKi/D4/7oVzzTFOs0FgKPx7nBaQtLvwaHOUvnW+/qgmSpmwfe4CUpkxzrsvOLuP3Kt
+         YB32btWhAYwHPfs/+pI2qOLylgXEdPhpybuM7lfGL/q1yyL5OvLIYqUGsd/f+jhYxfQ+
+         bKwA==
+X-Gm-Message-State: AOAM532K3n+WaHDvzxpzfV07H9DWPcZJcIQGY8O/K+w7gtyht3dr18hy
+        FyNzHDN0vWkDso0oYSFXUV0=
+X-Google-Smtp-Source: ABdhPJzKX/5CiS0eupwwHF/cnlEjOKGTYMX5MbemC4mtq5R2GYEfyCj3t2KMnnDfPMWENl5ZbpPBpw==
+X-Received: by 2002:a17:906:349b:: with SMTP id g27mr43498877ejb.512.1606082071599;
+        Sun, 22 Nov 2020 13:54:31 -0800 (PST)
+Received: from [192.168.43.48] ([197.210.35.67])
+        by smtp.gmail.com with ESMTPSA id i19sm3978482ejz.71.2020.11.22.13.54.26
+        (version=TLS1 cipher=AES128-SHA bits=128/128);
+        Sun, 22 Nov 2020 13:54:31 -0800 (PST)
+Message-ID: <5fbade17.1c69fb81.9b3f2.1059@mx.google.com>
+Sender: Lena Torres <ad482289@gmail.com>
+From:   Adelina Zeuki <anglicaramose@gmail.com>
+X-Google-Original-From: "Adelina Zeuki" <  adelinazeuki@gmail.comm >
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+Content-Description: Mail message body
+Subject: Hello !!
+To:     Recipients <adelinazeuki@gmail.comm>
+Date:   Sun, 22 Nov 2020 21:54:20 +0000
+Reply-To: adelinazeuki@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix build when CONFIG_IPV6 is not enabled by making a function
-be built conditionally.
+Hi dear,
 
-Fixes these build errors and warnings:
-
-../drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c: In function 'accel_fs_tcp_set_ipv6_flow':
-../include/net/sock.h:380:34: error: 'struct sock_common' has no member named 'skc_v6_daddr'; did you mean 'skc_daddr'?
-  380 | #define sk_v6_daddr  __sk_common.skc_v6_daddr
-      |                                  ^~~~~~~~~~~~
-../drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c:55:14: note: in expansion of macro 'sk_v6_daddr'
-   55 |         &sk->sk_v6_daddr, 16);
-      |              ^~~~~~~~~~~
-At top level:
-../drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c:47:13: warning: 'accel_fs_tcp_set_ipv6_flow' defined but not used [-Wunused-function]
-   47 | static void accel_fs_tcp_set_ipv6_flow(struct mlx5_flow_spec *spec, struct sock *sk)
-
-Fixes: 5229a96e59ec ("net/mlx5e: Accel, Expose flow steering API for rules add/del")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Saeed Mahameed <saeedm@nvidia.com>
-Cc: Boris Pismenny <borisp@nvidia.com>
-Cc: Tariq Toukan <tariqt@mellanox.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c |    2 ++
- 1 file changed, 2 insertions(+)
-
---- linux-next-20201120.orig/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c
-+++ linux-next-20201120/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c
-@@ -44,6 +44,7 @@ static void accel_fs_tcp_set_ipv4_flow(s
- 			 outer_headers.dst_ipv4_dst_ipv6.ipv4_layout.ipv4);
- }
- 
-+#if IS_ENABLED(CONFIG_IPV6)
- static void accel_fs_tcp_set_ipv6_flow(struct mlx5_flow_spec *spec, struct sock *sk)
- {
- 	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, outer_headers.ip_protocol);
-@@ -63,6 +64,7 @@ static void accel_fs_tcp_set_ipv6_flow(s
- 			    outer_headers.dst_ipv4_dst_ipv6.ipv6_layout.ipv6),
- 	       0xff, 16);
- }
-+#endif
- 
- void mlx5e_accel_fs_del_sk(struct mlx5_flow_handle *rule)
- {
+Can i talk with you ?
