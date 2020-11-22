@@ -2,102 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19F422BC48C
-	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 09:36:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65B612BC497
+	for <lists+netdev@lfdr.de>; Sun, 22 Nov 2020 10:09:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727379AbgKVIgI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Nov 2020 03:36:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53034 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727330AbgKVIgH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Nov 2020 03:36:07 -0500
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07254C0613CF;
-        Sun, 22 Nov 2020 00:36:05 -0800 (PST)
-Received: by mail-ej1-x641.google.com with SMTP id s25so18964608ejy.6;
-        Sun, 22 Nov 2020 00:36:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=KSBUEVa1x7/4PC/tS/TFqyMip0/VC+6jUS5QTF5o5IM=;
-        b=s+/oKz3oldIl1t5BYk68RHZ+d+pyjpZDzMF15rrugvaDNKM7IsCYxhreJ+gfX9T3Mf
-         ERwEHaUyT3Mxm6EsH7sx8lfGaNaXjprvDkfm5fXFlgG4btElOZxogoJoW8HK9glJP11D
-         MmflztiWl7tZcOD4MiwakyZuXyu+5qJHJuCb+S6yy8dLyePLrOzPRN/zn058KCxaZpdq
-         PNI0Ze+RX1wStPfYdhLkXoM/3YXx73MbaxTyvKiY5nZ/4UBiiFz+atauZXBCU8+fGgTo
-         UiSRogmLW92SoTanXB+tLX+xSQvCWxuC0mTdDfTcKy4r9fLUNcY/ZKIpanJIYKdNWPN6
-         zDgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=KSBUEVa1x7/4PC/tS/TFqyMip0/VC+6jUS5QTF5o5IM=;
-        b=beB/YPP6JCeuDg0aOTHCzADLh4lvd3yav/9L9LKw9jtXfdbvDeCbQRi0O2wxiWBN8Q
-         4DTDYwNKLjnRoeAIzh9KYu0DPJwx/uLIEbpEXKIy3asow8uVLLf2oJaHcqgmjrdQg3nC
-         ac1VKE3eme38wuokTYtAYQFNpNSaR378nT0ArhLCQDPx29WvGxZipNhJNUXSKQFvlPA/
-         bPrlrh9cpY8hWGFE9Du1WPnZt13/XgxYijx5vsOK7G3TPpvZj6HusgrkSSj7qR+VDyTV
-         6QcEzgRIjo6JDOGBen4vzE1ZFnT1pb5tFYFtVzyRGs/I+1DJ5pWb3WxsMDXivijT/p3J
-         n/RQ==
-X-Gm-Message-State: AOAM5320F3u0Z2mKsRQkrRqIbppU3dFLGPDKx1IMT4Lje9zMEI4kLpvv
-        dBU3SO8P2hkVh8yRPxFaqjh5ZZdu7eA=
-X-Google-Smtp-Source: ABdhPJz+yvCpqHMjFz1ak9Nf4Hu9OI+si59vmxOEzFhW7SiCEq8T8FgmLg4BNFAaXrovUEAPxq7h5g==
-X-Received: by 2002:a17:907:7253:: with SMTP id ds19mr8344354ejc.166.1606034164513;
-        Sun, 22 Nov 2020 00:36:04 -0800 (PST)
-Received: from [192.168.0.110] ([77.127.85.120])
-        by smtp.gmail.com with ESMTPSA id p1sm3379016edx.4.2020.11.22.00.36.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 22 Nov 2020 00:36:03 -0800 (PST)
-Subject: Re: [PATCH 044/141] net/mlx4: Fix fall-through warnings for Clang
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-References: <cover.1605896059.git.gustavoars@kernel.org>
- <84cd69bc9b9768cf3bc032c0205ffe485b80ba03.1605896059.git.gustavoars@kernel.org>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-Message-ID: <0ba92238-2e31-b7d8-5664-72933dc76a7b@gmail.com>
-Date:   Sun, 22 Nov 2020 10:36:01 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
-MIME-Version: 1.0
-In-Reply-To: <84cd69bc9b9768cf3bc032c0205ffe485b80ba03.1605896059.git.gustavoars@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1727328AbgKVJFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Nov 2020 04:05:16 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:58717 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726741AbgKVJFP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Nov 2020 04:05:15 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from yanjunz@mellanox.com)
+        with SMTP; 22 Nov 2020 11:05:08 +0200
+Received: from bc-vnc02.mtbc.labs.mlnx (bc-vnc02.mtbc.labs.mlnx [10.75.68.111])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0AM9574e029162;
+        Sun, 22 Nov 2020 11:05:08 +0200
+Received: from bc-vnc02.mtbc.labs.mlnx (localhost [127.0.0.1])
+        by bc-vnc02.mtbc.labs.mlnx (8.14.4/8.14.4) with ESMTP id 0AM95759007355;
+        Sun, 22 Nov 2020 17:05:07 +0800
+Received: (from yanjunz@localhost)
+        by bc-vnc02.mtbc.labs.mlnx (8.14.4/8.14.4/Submit) id 0AM94wGu006843;
+        Sun, 22 Nov 2020 17:04:58 +0800
+From:   Zhu Yanjun <yanjunz@nvidia.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
+        davem@davemloft.net, netdev@vger.kernel.org
+Cc:     Zhu Yanjun <zyjzyj2000@gmail.com>, Zhu Yanjun <yanjunz@nvidia.com>
+Subject: [PATCH 1/1] xdp: compact the function xsk_map_inc
+Date:   Sun, 22 Nov 2020 17:04:51 +0800
+Message-Id: <1606035891-6797-1-git-send-email-yanjunz@nvidia.com>
+X-Mailer: git-send-email 1.7.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Zhu Yanjun <zyjzyj2000@gmail.com>
 
+The function xsk_map_inc always returns zero. As such, changing the
+return type to void and removing the test code.
 
-On 11/20/2020 8:31 PM, Gustavo A. R. Silva wrote:
-> In preparation to enable -Wimplicit-fallthrough for Clang, fix a warning
-> by explicitly adding a break statement instead of just letting the code
-> fall through to the next case.
-> 
-> Link: https://github.com/KSPP/linux/issues/115
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> ---
->   drivers/net/ethernet/mellanox/mlx4/resource_tracker.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx4/resource_tracker.c b/drivers/net/ethernet/mellanox/mlx4/resource_tracker.c
-> index 1187ef1375e2..e6b8b8dc7894 100644
-> --- a/drivers/net/ethernet/mellanox/mlx4/resource_tracker.c
-> +++ b/drivers/net/ethernet/mellanox/mlx4/resource_tracker.c
-> @@ -2660,6 +2660,7 @@ int mlx4_FREE_RES_wrapper(struct mlx4_dev *dev, int slave,
->   	case RES_XRCD:
->   		err = xrcdn_free_res(dev, slave, vhcr->op_modifier, alop,
->   				     vhcr->in_param, &vhcr->out_param);
-> +		break;
->   
->   	default:
->   		break;
-> 
+Signed-off-by: Zhu Yanjun <zyjzyj2000@gmail.com>
+Signed-off-by: Zhu Yanjun <yanjunz@nvidia.com>
+---
+ net/xdp/xsk.c    |    1 -
+ net/xdp/xsk.h    |    2 +-
+ net/xdp/xskmap.c |   10 ++--------
+ 3 files changed, 3 insertions(+), 10 deletions(-)
 
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index cfbec39..c1b8a88 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -548,7 +548,6 @@ static void xsk_unbind_dev(struct xdp_sock *xs)
+ 	node = list_first_entry_or_null(&xs->map_list, struct xsk_map_node,
+ 					node);
+ 	if (node) {
+-		WARN_ON(xsk_map_inc(node->map));
+ 		map = node->map;
+ 		*map_entry = node->map_entry;
+ 	}
+diff --git a/net/xdp/xsk.h b/net/xdp/xsk.h
+index b9e896c..766b9e2 100644
+--- a/net/xdp/xsk.h
++++ b/net/xdp/xsk.h
+@@ -41,7 +41,7 @@ struct xsk_map_node {
+ 
+ void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
+ 			     struct xdp_sock **map_entry);
+-int xsk_map_inc(struct xsk_map *map);
++void xsk_map_inc(struct xsk_map *map);
+ void xsk_map_put(struct xsk_map *map);
+ void xsk_clear_pool_at_qid(struct net_device *dev, u16 queue_id);
+ int xsk_reg_pool_at_qid(struct net_device *dev, struct xsk_buff_pool *pool,
+diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
+index 49da2b8..c7dd94a 100644
+--- a/net/xdp/xskmap.c
++++ b/net/xdp/xskmap.c
+@@ -11,10 +11,9 @@
+ 
+ #include "xsk.h"
+ 
+-int xsk_map_inc(struct xsk_map *map)
++void xsk_map_inc(struct xsk_map *map)
+ {
+ 	bpf_map_inc(&map->map);
+-	return 0;
+ }
+ 
+ void xsk_map_put(struct xsk_map *map)
+@@ -26,17 +25,12 @@ void xsk_map_put(struct xsk_map *map)
+ 					       struct xdp_sock **map_entry)
+ {
+ 	struct xsk_map_node *node;
+-	int err;
+ 
+ 	node = kzalloc(sizeof(*node), GFP_ATOMIC | __GFP_NOWARN);
+ 	if (!node)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	err = xsk_map_inc(map);
+-	if (err) {
+-		kfree(node);
+-		return ERR_PTR(err);
+-	}
++	xsk_map_inc(map);
+ 
+ 	node->map = map;
+ 	node->map_entry = map_entry;
+-- 
+1.7.1
 
-Thanks for your patch.
