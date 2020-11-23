@@ -2,109 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C34892C1844
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 23:18:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 737C32C184C
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 23:18:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731233AbgKWWNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 17:13:40 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42980 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728895AbgKWWNj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Nov 2020 17:13:39 -0500
-Received: from localhost (unknown [176.167.152.233])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A3C92206A5;
-        Mon, 23 Nov 2020 22:13:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606169619;
-        bh=hM7jHo8zGWWV1YNICPw/kIUF7tnOsXfBCzHM7DSHFXE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MdzuxRNaAjTWoHtlDeDAZaeRJGDegGr6iwdVkjJ6m9qRA0fiWNjMrDyNev4Pf4QI5
-         LiP17yfkHfJrzWPLQDlPl9boCiOxCS9cHUqBzSwWZrOkW9KL6B6jM62dMVBwxCHWlX
-         8oD4/sZcNIUtBNHmWTuoHcfDg4WRMQvzDSNj4wPg=
-Date:   Mon, 23 Nov 2020 23:13:36 +0100
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     Alex Belits <abelits@marvell.com>
-Cc:     "nitesh@redhat.com" <nitesh@redhat.com>,
-        Prasun Kapoor <pkapoor@marvell.com>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "trix@redhat.com" <trix@redhat.com>,
-        "mingo@kernel.org" <mingo@kernel.org>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "peterx@redhat.com" <peterx@redhat.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "mtosatti@redhat.com" <mtosatti@redhat.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "leon@sidebranch.com" <leon@sidebranch.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "pauld@redhat.com" <pauld@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v5 7/9] task_isolation: don't interrupt CPUs with
- tick_nohz_full_kick_cpu()
-Message-ID: <20201123221336.GB1751@lothringen>
-References: <8d887e59ca713726f4fcb25a316e1e932b02823e.camel@marvell.com>
- <76ed0b222d2f16fb5aebd144ac0222a7f3b87fa1.camel@marvell.com>
+        id S1731601AbgKWWPR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 17:15:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33676 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730427AbgKWWPP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 17:15:15 -0500
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C012FC0613CF;
+        Mon, 23 Nov 2020 14:15:15 -0800 (PST)
+Received: by mail-pl1-x641.google.com with SMTP id 5so9564084plj.8;
+        Mon, 23 Nov 2020 14:15:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=nucHxpp26qc0ylPI7uSda+OP6ZowlVW2c8oc856XvWs=;
+        b=Qba2Pd2/LUw6ydm54H22Tl0peo96S94ThTMATb1D/yTD0swt3FgUXmZOeQJrgogDyK
+         1AGYeTfKEYqR10ewLRG/jx2vjT6/RNjDmyaianQt239jl/LYywLyw3df7c8FypryESQb
+         /vaTb2XipMDTmVXtS31JXvHqgDdVltQ5L43zZ4i4CyQiJVEwJJN1+ADJYSUxQoJU67nS
+         8Jih65OMUaZKi+3WWV3l98JUoMqvcpcoS4i6d4i1YAAuiXoLBqElvB5PuXEScvd0/CuT
+         j/3T2NXMYtMhKjmrFKq3ctFxp4OneV8MkDWz9HZBuOlZCSEYW1E8dMkiWILbpuIS6GNW
+         ut4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=nucHxpp26qc0ylPI7uSda+OP6ZowlVW2c8oc856XvWs=;
+        b=iAKREkqWx+E84ZoM2O2+2ZhYV0JCCKr1AZgB0Oloh0UUoZc5ibn5Egdc834u7ljBDN
+         e7M2txO3M+763hfCCigvo2msN/mJNxwuA76XMBz+kgyYCgkJ72YK6/Lt+UaHZ5+S1aHQ
+         ARQBVb81umOSTYXNUmayauSxsWRGFZ8qFK3VyQVfclMSMgvqO/doQVcOdVtHVgJKJITE
+         3XAFWykYVSvu4hhTtufm6fHspqLFNv+9ilbdkL54RROBMajpn3/4pHe/CbwSyPMu1S2F
+         BsTB+6PiXyfVYdZA4T3ih84CLzwTTBSeDM6VEaaCb2s+329SbjaVKzWGnIqj3QT1WM+F
+         XmSA==
+X-Gm-Message-State: AOAM531nwJMwWs21SRFfluHFOtpEgjJIWobkBEQ1tgEVtJm2FCenhTOW
+        IwW6LLNq+JQSBnKU1KMyP8ogwE7CW9g=
+X-Google-Smtp-Source: ABdhPJyfBLqnqzskS0IIzPUGTV3XEMGsSzfOqiAQw8PfcsTp/UmNGnYBhojkld+dv1NPLNIXHclMTA==
+X-Received: by 2002:a17:902:7606:b029:d4:c797:a186 with SMTP id k6-20020a1709027606b02900d4c797a186mr1360034pll.38.1606169714951;
+        Mon, 23 Nov 2020 14:15:14 -0800 (PST)
+Received: from [10.230.28.242] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id s4sm362016pjr.44.2020.11.23.14.15.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 Nov 2020 14:15:14 -0800 (PST)
+Subject: Re: [PATCH net-next 3/3] dt-bindings: net: dsa: add bindings for
+ xrs700x switches
+To:     George McCollister <george.mccollister@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org
+References: <20201120181627.21382-1-george.mccollister@gmail.com>
+ <20201120181627.21382-4-george.mccollister@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <63f77359-3475-e37c-395e-26039856927e@gmail.com>
+Date:   Mon, 23 Nov 2020 14:15:12 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <76ed0b222d2f16fb5aebd144ac0222a7f3b87fa1.camel@marvell.com>
+In-Reply-To: <20201120181627.21382-4-george.mccollister@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alex,
 
-On Mon, Nov 23, 2020 at 05:58:22PM +0000, Alex Belits wrote:
-> From: Yuri Norov <ynorov@marvell.com>
-> 
-> For nohz_full CPUs the desirable behavior is to receive interrupts
-> generated by tick_nohz_full_kick_cpu(). But for hard isolation it's
-> obviously not desirable because it breaks isolation.
-> 
-> This patch adds check for it.
-> 
-> Signed-off-by: Yuri Norov <ynorov@marvell.com>
-> [abelits@marvell.com: updated, only exclude CPUs running isolated tasks]
-> Signed-off-by: Alex Belits <abelits@marvell.com>
-> ---
->  kernel/time/tick-sched.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
-> index a213952541db..6c8679e200f0 100644
-> --- a/kernel/time/tick-sched.c
-> +++ b/kernel/time/tick-sched.c
-> @@ -20,6 +20,7 @@
->  #include <linux/sched/clock.h>
->  #include <linux/sched/stat.h>
->  #include <linux/sched/nohz.h>
-> +#include <linux/isolation.h>
->  #include <linux/module.h>
->  #include <linux/irq_work.h>
->  #include <linux/posix-timers.h>
-> @@ -268,7 +269,8 @@ static void tick_nohz_full_kick(void)
->   */
->  void tick_nohz_full_kick_cpu(int cpu)
->  {
-> -	if (!tick_nohz_full_cpu(cpu))
-> +	smp_rmb();
-> +	if (!tick_nohz_full_cpu(cpu) || task_isolation_on_cpu(cpu))
->  		return;
 
-Like I said in subsequent reviews, we are not going to ignore IPIs.
-We must fix the sources of these IPIs instead.
-
-Thanks.
-
->  
->  	irq_work_queue_on(&per_cpu(nohz_full_kick_work, cpu), cpu);
-> -- 
-> 2.20.1
+On 11/20/2020 10:16 AM, George McCollister wrote:
+> Add documentation and an example for Arrow SpeedChips XRS7000 Series
+> single chip Ethernet switches.
 > 
+> Signed-off-by: George McCollister <george.mccollister@gmail.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
