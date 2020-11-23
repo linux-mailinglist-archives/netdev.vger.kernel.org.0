@@ -2,112 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC6BD2C13D0
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 20:09:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3070D2C13E7
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 20:09:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388053AbgKWSnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 13:43:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57210 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729528AbgKWSnp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 13:43:45 -0500
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7040C0613CF;
-        Mon, 23 Nov 2020 10:43:44 -0800 (PST)
-Received: by mail-wm1-x343.google.com with SMTP id a186so176644wme.1;
-        Mon, 23 Nov 2020 10:43:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JSJ4Bmt8TgArHN7URL0MJIhGLyKv+yFMNwC10tsqJE0=;
-        b=L9VLu9ERSvzEcDkaQCZQNPeL4KOS/8yz1HuC3+Id6cad8yv1Ggq8A57wGfeHsv0zWC
-         dDfHJ+lY9iSc5FjqSHiEYot4Llke7tCge6J5B6cJhgHqOGmH5ZubTCJqpIR6Gr66kIb8
-         DaFUrj65tzhrvMP9BEUUH1xRSNH18vYi9Rp9K8OsxDastX7Xyx+C0HmpMbYKbpHWOdji
-         imtcPIBzs2dDy2b8c5KTI1O7rwXf7r/A0CBq0NlRjYPlPHdIMM1xRB8NDGvvV4Lv86EF
-         fGZaWL5lLKpQg/ul/QNUhxll188redZ5n8lj5Kcxg4ULCpjRH4ZktZQU7Hkcgo5CJYTu
-         FjUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JSJ4Bmt8TgArHN7URL0MJIhGLyKv+yFMNwC10tsqJE0=;
-        b=iRkT68MVoSGNXiPMPekfWN6xDdh8p6R54Z4rI9eR+oED/CzG6g7G9DCwfd5N5XiWTW
-         2cSkyYGPeEQGaNQdTm8JgO13nPtRvALQN9fIwtrtOButUJzqwzLWb3eu2X40bKwrZsaT
-         niTOb1Bk3G6jS1AjGKFOJd9mmv1sIin0aayILxr6IIZoeZahBWsCn7UZ+D2VHc+x9Qs4
-         PdWxFrSdqyeDL0sABt+Sjcg5VyYQTYeg5HaUadQRt4gOJ7N4SBFWNy/2JvwdQ2LWbSIq
-         QH3NSs0Ro8m+7UATq/lYrr41CrVJL+mF/WX12hKF9tLpWncsfMyCHC0wAZLtMbGAw8sO
-         ezvQ==
-X-Gm-Message-State: AOAM533Rl+o1D10W+f1Mp3v4vHpN9laNY63dKcov8F6PQhPr/x16U0/S
-        jyQVOghYZ+N/YLhZb7bEjFSeX6qpsuA=
-X-Google-Smtp-Source: ABdhPJwYntDq6XM1iixkuMsKc9NUdSPNoR2jX0jDaHuEUC+PrFvxZ21fKFq+gtjhY1zwLsTTDpSFnQ==
-X-Received: by 2002:a1c:55ca:: with SMTP id j193mr245493wmb.87.1606157023020;
-        Mon, 23 Nov 2020 10:43:43 -0800 (PST)
-Received: from [192.168.8.114] ([37.173.143.196])
-        by smtp.gmail.com with ESMTPSA id d8sm314725wmb.11.2020.11.23.10.43.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Nov 2020 10:43:42 -0800 (PST)
-Subject: Re: [PATCH v8] tcp: fix race condition when creating child sockets
- from syncookies
-To:     Ricardo Dias <rdias@singlestore.com>, davem@davemloft.net,
-        kuba@kernel.org, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        edumazet@google.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20201120111133.GA67501@rdias-suse-pc.lan>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <7eedbc3b-e041-0eec-f015-1583ef4ae2f7@gmail.com>
-Date:   Mon, 23 Nov 2020 19:43:40 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        id S1730773AbgKWSwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 13:52:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46966 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729298AbgKWSwy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Nov 2020 13:52:54 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9357E20657;
+        Mon, 23 Nov 2020 18:52:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606157574;
+        bh=kawMhCYvPZP6hiOaiX8l6x/qN2tGGJWcbbyPOIIFaO8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Zv2qioxlAl6YuA96BOhylOJBeWU8j07RNPwZXIdu9KbSh6jyNIUV8m32Wy4WSaIZk
+         ateIxAXBXiIOWSxQarpGMxjqRsCL7LS9YAB8GWSWER1E8osRzffSZapN4bsme+v9SW
+         lMvUh9mM2HbeuFhdwQ9MaGy5cv//9QuqK48vC4Bo=
+Date:   Mon, 23 Nov 2020 10:52:52 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Jason Wang <jasowang@redhat.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Petr Mladek <pmladek@suse.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        virtualization@lists.linux-foundation.org,
+        Amit Shah <amit@kernel.org>, Itay Aveksis <itayav@nvidia.com>,
+        Ran Rozenstein <ranro@nvidia.com>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: netconsole deadlock with virtnet
+Message-ID: <20201123105252.1c295138@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201123093128.701cf81b@gandalf.local.home>
+References: <20201117102341.GR47002@unreal>
+        <20201117093325.78f1486d@gandalf.local.home>
+        <X7SK9l0oZ+RTivwF@jagdpanzerIV.localdomain>
+        <X7SRxB6C+9Bm+r4q@jagdpanzerIV.localdomain>
+        <93b42091-66f2-bb92-6822-473167b2698d@redhat.com>
+        <20201118091257.2ee6757a@gandalf.local.home>
+        <20201123110855.GD3159@unreal>
+        <20201123093128.701cf81b@gandalf.local.home>
 MIME-Version: 1.0
-In-Reply-To: <20201120111133.GA67501@rdias-suse-pc.lan>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 11/20/20 12:11 PM, Ricardo Dias wrote:
-> When the TCP stack is in SYN flood mode, the server child socket is
-> created from the SYN cookie received in a TCP packet with the ACK flag
-> set.
+On Mon, 23 Nov 2020 09:31:28 -0500 Steven Rostedt wrote:
+> On Mon, 23 Nov 2020 13:08:55 +0200
+> Leon Romanovsky <leon@kernel.org> wrote:
 > 
-> The child socket is created when the server receives the first TCP
-> packet with a valid SYN cookie from the client. Usually, this packet
-> corresponds to the final step of the TCP 3-way handshake, the ACK
-> packet. But is also possible to receive a valid SYN cookie from the
-> first TCP data packet sent by the client, and thus create a child socket
-> from that SYN cookie.
 > 
-> Since a client socket is ready to send data as soon as it receives the
-> SYN+ACK packet from the server, the client can send the ACK packet (sent
-> by the TCP stack code), and the first data packet (sent by the userspace
-> program) almost at the same time, and thus the server will equally
-> receive the two TCP packets with valid SYN cookies almost at the same
-> instant.
+> >  [   10.028024] Chain exists of:
+> >  [   10.028025]   console_owner --> target_list_lock --> _xmit_ETHER#2  
 > 
-> When such event happens, the TCP stack code has a race condition that
-> occurs between the momement a lookup is done to the established
-> connections hashtable to check for the existence of a connection for the
-> same client, and the moment that the child socket is added to the
-> established connections hashtable. As a consequence, this race condition
-> can lead to a situation where we add two child sockets to the
-> established connections hashtable and deliver two sockets to the
-> userspace program to the same client.
-> 
-> This patch fixes the race condition by checking if an existing child
-> socket exists for the same client when we are adding the second child
-> socket to the established connections socket. If an existing child
-> socket exists, we drop the packet and discard the second child socket
-> to the same client.
-> 
-> Signed-off-by: Ricardo Dias <rdias@singlestore.com>
+> Note, the problem is that we have a location that grabs the xmit_lock while
+> holding target_list_lock (and possibly console_owner).
 
-Ok, lets keep this version, thanks !
+Well, it try_locks the xmit_lock. Does lockdep understand try-locks?
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-
+(not that I condone the shenanigans that are going on here)
