@@ -2,97 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91FBF2C1888
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 23:38:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9AAD2C188D
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 23:38:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732648AbgKWWgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 17:36:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36944 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732465AbgKWWgk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 17:36:40 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 741E2C0613CF;
-        Mon, 23 Nov 2020 14:36:40 -0800 (PST)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1606170998;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WvO23hlLALMng1Q2U21zDAYNIYaryK/sfsJBDYAr09U=;
-        b=aMJVTnpeicogkyC/efGjwmX3nDfxPzpU0yCeoeIXHk9+7UoQZhyi3LZ1qE6GkqM7AgAu3T
-        Y1mkgrSzYA2PnBKQNVznhEXV1zhNYvUe1wIOr6yDuSn13/1pc47a9EdHA2t7nijPL/sKKK
-        lK+UkhP7DbZ5FK31B2hEqLh+1kwi1cC1x7JkKNQN8JzVjYjdH3VZ0hJOQ1nsa/4jPuCUj1
-        tRT8DT2YApICqrLqMwM1Sp31fNVdMdm3/DZVw6ACsAHuIliXJm+ILgysM3QUscdBfPRjjX
-        Y+68U89FN8uLHmnO4gOlFpDYp0rN4mRDF45xLqM8g1ioq7HahQkis+gfWtWMTg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1606170998;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WvO23hlLALMng1Q2U21zDAYNIYaryK/sfsJBDYAr09U=;
-        b=/IgFnC1c+C9OlSoASnKFI4bLxgSx6hMe7jg1jeftA5FJxxiWPEQqQmaHRi7vhLQlahgiS9
-        X6tngBQMHZOaXNAQ==
-To:     Alex Belits <abelits@marvell.com>,
-        "nitesh\@redhat.com" <nitesh@redhat.com>,
-        "frederic\@kernel.org" <frederic@kernel.org>
-Cc:     Prasun Kapoor <pkapoor@marvell.com>,
-        "linux-api\@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "davem\@davemloft.net" <davem@davemloft.net>,
-        "trix\@redhat.com" <trix@redhat.com>,
-        "mingo\@kernel.org" <mingo@kernel.org>,
-        "catalin.marinas\@arm.com" <catalin.marinas@arm.com>,
-        "rostedt\@goodmis.org" <rostedt@goodmis.org>,
-        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "peterx\@redhat.com" <peterx@redhat.com>,
-        "linux-arch\@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "mtosatti\@redhat.com" <mtosatti@redhat.com>,
-        "will\@kernel.org" <will@kernel.org>,
-        "peterz\@infradead.org" <peterz@infradead.org>,
-        "leon\@sidebranch.com" <leon@sidebranch.com>,
-        "linux-arm-kernel\@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "pauld\@redhat.com" <pauld@redhat.com>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v5 7/9] task_isolation: don't interrupt CPUs with tick_nohz_full_kick_cpu()
-In-Reply-To: <76ed0b222d2f16fb5aebd144ac0222a7f3b87fa1.camel@marvell.com>
-References: <8d887e59ca713726f4fcb25a316e1e932b02823e.camel@marvell.com> <76ed0b222d2f16fb5aebd144ac0222a7f3b87fa1.camel@marvell.com>
-Date:   Mon, 23 Nov 2020 23:36:37 +0100
-Message-ID: <87360zn1je.fsf@nanos.tec.linutronix.de>
+        id S1732754AbgKWWhP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 17:37:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47808 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732467AbgKWWhO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Nov 2020 17:37:14 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0A97D206B7;
+        Mon, 23 Nov 2020 22:37:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606171034;
+        bh=86BPqIW4lkLZT2JdpPJcJ3aSJ1HvFPGF6MnyB2Lg7K0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=gM7WRWnEaJdl3djNzLnL1MeZOpra0LIPgUAUzRjb05mEFB9YZU9Ts1Eojtkek+1wO
+         w0MlR0P68EosB19hHZ5A7/bRjM0m45rsrClGvgn7vLW9ZjhZLqvqrqNMkpWTVKzMCM
+         BHMWmPe1lc2cZdU/qUPWkxp48/dh63RtihIki8Xc=
+Date:   Mon, 23 Nov 2020 14:37:13 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     Ioana Ciornei <ciorneiioana@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 00/15] net: phy: add support for shared
+ interrupts (part 3)
+Message-ID: <20201123143713.6429c056@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAFBinCBhWKzQFwERW9cy7T4JdOdFwNOqn2qPqFpqdjbat=-DwA@mail.gmail.com>
+References: <20201123153817.1616814-1-ciorneiioana@gmail.com>
+        <CAFBinCBhWKzQFwERW9cy7T4JdOdFwNOqn2qPqFpqdjbat=-DwA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 23 2020 at 17:58, Alex Belits wrote:
-> From: Yuri Norov <ynorov@marvell.com>
->
-> For nohz_full CPUs the desirable behavior is to receive interrupts
-> generated by tick_nohz_full_kick_cpu(). But for hard isolation it's
-> obviously not desirable because it breaks isolation.
->
-> This patch adds check for it.
+On Mon, 23 Nov 2020 23:13:11 +0100 Martin Blumenstingl wrote:
+> > Ioana Ciornei (15):
+> >   net: phy: intel-xway: implement generic .handle_interrupt() callback
+> >   net: phy: intel-xway: remove the use of .ack_interrupt()
+> >   net: phy: icplus: implement generic .handle_interrupt() callback
+> >   net: phy: icplus: remove the use .ack_interrupt()
+> >   net: phy: meson-gxl: implement generic .handle_interrupt() callback
+> >   net: phy: meson-gxl: remove the use of .ack_callback()  
+> I will check the six patches above on Saturday (due to me being very
+> busy with my daytime job)
+> if that's too late for the netdev maintainers then I'm not worried
+> about it. at first glance this looks fine to me. and we can always fix
+> things afterwards (but still before -rc1).
 
-git grep 'This patch' Documentation/process/
-
->   */
->  void tick_nohz_full_kick_cpu(int cpu)
->  {
-> -	if (!tick_nohz_full_cpu(cpu))
-> +	smp_rmb();
-
-Undocumented smp_rmb() ...
-
-> +	if (!tick_nohz_full_cpu(cpu) || task_isolation_on_cpu(cpu))
->  		return;
-
-I still have to see a convincing argument why task isolation is special
-and not just a straight forward extension of NOHZ full cpu isolation.
-
-It's not special as much as you want it to be special.
-
-Thanks,
-
-        tglx
+That is a little long for patches to be hanging around. I was planning
+to apply these on Wed. If either Ioana or you would prefer to get the
+testing performed first, please split those patches out and repost once
+they get validated.
