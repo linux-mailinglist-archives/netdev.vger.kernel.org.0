@@ -2,92 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EE892C03C3
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 12:00:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 794382C0396
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 11:46:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728203AbgKWK7f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 05:59:35 -0500
-Received: from mx22.baidu.com ([220.181.50.185]:47344 "EHLO baidu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727918AbgKWK7e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Nov 2020 05:59:34 -0500
-X-Greylist: delayed 978 seconds by postgrey-1.27 at vger.kernel.org; Mon, 23 Nov 2020 05:59:30 EST
-Received: from BC-Mail-Ex32.internal.baidu.com (unknown [172.31.51.26])
-        by Forcepoint Email with ESMTPS id 0C44FF776B0F2FFAFFD2;
-        Mon, 23 Nov 2020 18:43:09 +0800 (CST)
-Received: from BJHW-Mail-Ex15.internal.baidu.com (10.127.64.38) by
- BC-Mail-Ex32.internal.baidu.com (172.31.51.26) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2044.4; Mon, 23 Nov 2020 18:43:08 +0800
-Received: from BJHW-Mail-Ex15.internal.baidu.com ([100.100.100.38]) by
- BJHW-Mail-Ex15.internal.baidu.com ([100.100.100.38]) with mapi id
- 15.01.1979.006; Mon, 23 Nov 2020 18:43:08 +0800
-From:   "Li,Rongqing" <lirongqing@baidu.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-CC:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Subject: RE: [PATCH] libbpf: add support for canceling cached_cons advance
-Thread-Topic: [PATCH] libbpf: add support for canceling cached_cons advance
-Thread-Index: AQHWwXynm8QoWfKpDkGCKHIPRpnFnqnVhyuQ
-Date:   Mon, 23 Nov 2020 10:43:08 +0000
-Message-ID: <e2431932144f4f298044e5a4aebd59c2@baidu.com>
-References: <1606050623-22963-1-git-send-email-lirongqing@baidu.com>
- <CAJ8uoz3d4x9pWWNxmd9+ozt7ei7WUE=S=FnKE1sLZOqoKRwMJQ@mail.gmail.com>
-In-Reply-To: <CAJ8uoz3d4x9pWWNxmd9+ozt7ei7WUE=S=FnKE1sLZOqoKRwMJQ@mail.gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.22.198.23]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1728739AbgKWKoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 05:44:16 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41248 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726466AbgKWKoQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Nov 2020 05:44:16 -0500
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 691AB2076E;
+        Mon, 23 Nov 2020 10:44:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606128254;
+        bh=0i/Ni3kZzV5fbIzNzcjmFGKPO1GlWbvJIDpSsaZ7xz8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hTJmXcNrqPN4TANS18R1jlGBzZajV2aUWLpzDTGH88XrxC87G+t/jopKrepNEeLwm
+         0+rqIZem3eap2IfVbXVwyersh3veLjNERXei8VwYWymhk4/paAWd+W/p7rGHrkcnXm
+         +pjqXMdHX44U546hSqPOzry+sdpQiJe1afKpQhWs=
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94)
+        (envelope-from <maz@kernel.org>)
+        id 1kh9KO-00Csxc-6S; Mon, 23 Nov 2020 10:44:12 +0000
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 23 Nov 2020 10:44:12 +0000
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jianyong Wu <jianyong.wu@arm.com>
+Cc:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
+        tglx@linutronix.de, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, richardcochran@gmail.com,
+        Mark.Rutland@arm.com, will@kernel.org, suzuki.poulose@arm.com,
+        Andre.Przywara@arm.com, steven.price@arm.com,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
+        Steve.Capper@arm.com, justin.he@arm.com, nd@arm.com
+Subject: Re: [PATCH v15 6/9] arm64/kvm: Add hypercall service for kvm ptp.
+In-Reply-To: <20201111062211.33144-7-jianyong.wu@arm.com>
+References: <20201111062211.33144-1-jianyong.wu@arm.com>
+ <20201111062211.33144-7-jianyong.wu@arm.com>
+User-Agent: Roundcube Webmail/1.4.9
+Message-ID: <d409aa1cb7cfcbf4351e6c5fc34d9c7e@kernel.org>
+X-Sender: maz@kernel.org
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: jianyong.wu@arm.com, netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org, tglx@linutronix.de, pbonzini@redhat.com, sean.j.christopherson@intel.com, richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org, suzuki.poulose@arm.com, Andre.Przywara@arm.com, steven.price@arm.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org, Steve.Capper@arm.com, justin.he@arm.com, nd@arm.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTWFnbnVzIEthcmxzc29u
-IFttYWlsdG86bWFnbnVzLmthcmxzc29uQGdtYWlsLmNvbV0NCj4gU2VudDogTW9uZGF5LCBOb3Zl
-bWJlciAyMywgMjAyMCA1OjQwIFBNDQo+IFRvOiBMaSxSb25ncWluZyA8bGlyb25ncWluZ0BiYWlk
-dS5jb20+DQo+IENjOiBOZXR3b3JrIERldmVsb3BtZW50IDxuZXRkZXZAdmdlci5rZXJuZWwub3Jn
-PjsgYnBmDQo+IDxicGZAdmdlci5rZXJuZWwub3JnPg0KPiBTdWJqZWN0OiBSZTogW1BBVENIXSBs
-aWJicGY6IGFkZCBzdXBwb3J0IGZvciBjYW5jZWxpbmcgY2FjaGVkX2NvbnMgYWR2YW5jZQ0KPiAN
-Cj4gT24gU3VuLCBOb3YgMjIsIDIwMjAgYXQgMjoyMSBQTSBMaSBSb25nUWluZyA8bGlyb25ncWlu
-Z0BiYWlkdS5jb20+IHdyb3RlOg0KPiA+DQo+ID4gSXQgaXMgcG9zc2libGUgdG8gZmFpbCByZWNl
-aXZpbmcgcGFja2V0cyBhZnRlciBjYWxsaW5nDQo+ID4geHNrX3JpbmdfY29uc19fcGVlaywgYXQg
-dGhpcyBjb25kaXRpb24sIGNhY2hlZF9jb25zIGhhcyBiZWVuIGFkdmFuY2VkLA0KPiA+IHNob3Vs
-ZCBiZSBjYW5jZWxsZWQuDQo+IA0KPiBUaGFua3MgUm9uZ1FpbmcsDQo+IA0KPiBJIGhhdmUgbmVl
-ZGVkIHRoaXMgbXlzZWxmIGluIHZhcmlvdXMgc2l0dWF0aW9ucywgc28gSSB0aGluayB3ZSBzaG91
-bGQgYWRkIHRoaXMuDQo+IEJ1dCB5b3VyIG1vdGl2YXRpb24gaW4gdGhlIGNvbW1pdCBtZXNzYWdl
-IGlzIHNvbWV3aGF0IGNvbmZ1c2luZy4gSG93IGFib3V0DQo+IHNvbWV0aGluZyBsaWtlIHRoaXM/
-DQo+IA0KPiBBZGQgYSBuZXcgZnVuY3Rpb24gZm9yIHJldHVybmluZyBkZXNjcmlwdG9ycyB0aGUg
-dXNlciByZWNlaXZlZCBhZnRlciBhbg0KPiB4c2tfcmluZ19jb25zX19wZWVrIGNhbGwuIEFmdGVy
-IHRoZSBhcHBsaWNhdGlvbiBoYXMgZ290dGVuIGEgbnVtYmVyIG9mDQo+IGRlc2NyaXB0b3JzIGZy
-b20gYSByaW5nLCBpdCBtaWdodCBub3QgYmUgYWJsZSB0byBvciB3YW50IHRvIHByb2Nlc3MgdGhl
-bSBhbGwgZm9yDQo+IHZhcmlvdXMgcmVhc29ucy4gVGhlcmVmb3JlLCBpdCB3b3VsZCBiZSB1c2Vm
-dWwgdG8gaGF2ZSBhbiBpbnRlcmZhY2UgZm9yIHJldHVybmluZw0KPiBvciBjYW5jZWxsaW5nIGEg
-bnVtYmVyIG9mIHRoZW0gc28gdGhhdCB0aGV5IGFyZSByZXR1cm5lZCB0byB0aGUgcmluZy4gVGhp
-cyBwYXRjaA0KPiBhZGRzIGEgbmV3IGZ1bmN0aW9uIGNhbGxlZCB4c2tfcmluZ19jb25zX19jYW5j
-ZWwgdGhhdCBwZXJmb3JtcyB0aGlzIG9wZXJhdGlvbg0KPiBvbiBuYiBkZXNjcmlwdG9ycyBjb3Vu
-dGVkIGZyb20gdGhlIGVuZCBvZiB0aGUgYmF0Y2ggb2YgZGVzY3JpcHRvcnMgdGhhdCB3YXMNCj4g
-cmVjZWl2ZWQgdGhyb3VnaCB0aGUgcGVlayBjYWxsLg0KPiANCj4gUmVwbGFjZSB5b3VyIGNvbW1p
-dCBtZXNzYWdlIHdpdGggdGhpcywgZml4IHRoZSBidWcgYmVsb3csIHNlbmQgYSB2MiBhbmQgdGhl
-biBJDQo+IGFtIGhhcHB5IHRvIGFjayB0aGlzLg0KDQoNClRoYW5rIHlvdSB2ZXJ5IG11Y2gNCj4g
-DQo+IC9NYWdudXMNCj4gDQo+ID4gU2lnbmVkLW9mZi1ieTogTGkgUm9uZ1FpbmcgPGxpcm9uZ3Fp
-bmdAYmFpZHUuY29tPg0KPiA+IC0tLQ0KPiA+ICB0b29scy9saWIvYnBmL3hzay5oIHwgNiArKysr
-KysNCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygrKQ0KPiA+DQo+ID4gZGlmZiAt
-LWdpdCBhL3Rvb2xzL2xpYi9icGYveHNrLmggYi90b29scy9saWIvYnBmL3hzay5oIGluZGV4DQo+
-ID4gMTA2OWM0NjM2NGZmLi40MTI4MjE1YzI0NmIgMTAwNjQ0DQo+ID4gLS0tIGEvdG9vbHMvbGli
-L2JwZi94c2suaA0KPiA+ICsrKyBiL3Rvb2xzL2xpYi9icGYveHNrLmgNCj4gPiBAQCAtMTUzLDYg
-KzE1MywxMiBAQCBzdGF0aWMgaW5saW5lIHNpemVfdCB4c2tfcmluZ19jb25zX19wZWVrKHN0cnVj
-dA0KPiB4c2tfcmluZ19jb25zICpjb25zLA0KPiA+ICAgICAgICAgcmV0dXJuIGVudHJpZXM7DQo+
-ID4gIH0NCj4gPg0KPiA+ICtzdGF0aWMgaW5saW5lIHZvaWQgeHNrX3JpbmdfY29uc19fY2FuY2Vs
-KHN0cnVjdCB4c2tfcmluZ19jb25zICpjb25zLA0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgc2l6ZV90IG5iKSB7DQo+ID4gKyAgICAgICByeC0+Y2FjaGVkX2Nv
-bnMgLT0gbmI7DQo+IA0KPiBjb25zLT4gbm90IHJ4LT4uIFBsZWFzZSBtYWtlIHN1cmUgdGhlIHYy
-IGNvbXBpbGVzIGFuZCBwYXNzZXMgY2hlY2twYXRjaC4NCj4gDQoNClNvcnJ5IGZvciBidWlsZGlu
-ZyBlcnJvcg0KSSB3aWxsIHNlbmQgVjINCg0KVGhhbmtzIA0KDQotTGkNCg0KDQo+ID4gK30NCj4g
-PiArDQo+ID4gIHN0YXRpYyBpbmxpbmUgdm9pZCB4c2tfcmluZ19jb25zX19yZWxlYXNlKHN0cnVj
-dCB4c2tfcmluZ19jb25zICpjb25zLA0KPiA+IHNpemVfdCBuYikgIHsNCj4gPiAgICAgICAgIC8q
-IE1ha2Ugc3VyZSBkYXRhIGhhcyBiZWVuIHJlYWQgYmVmb3JlIGluZGljYXRpbmcgd2UgYXJlIGRv
-bmUNCj4gPiAtLQ0KPiA+IDIuMTcuMw0KPiA+DQo=
+On 2020-11-11 06:22, Jianyong Wu wrote:
+> ptp_kvm will get this service through SMCC call.
+> The service offers wall time and cycle count of host to guest.
+> The caller must specify whether they want the host cycle count
+> or the difference between host cycle count and cntvoff.
+> 
+> Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
+> ---
+>  arch/arm64/kvm/hypercalls.c | 61 +++++++++++++++++++++++++++++++++++++
+>  include/linux/arm-smccc.h   | 17 +++++++++++
+>  2 files changed, 78 insertions(+)
+> 
+> diff --git a/arch/arm64/kvm/hypercalls.c b/arch/arm64/kvm/hypercalls.c
+> index b9d8607083eb..f7d189563f3d 100644
+> --- a/arch/arm64/kvm/hypercalls.c
+> +++ b/arch/arm64/kvm/hypercalls.c
+> @@ -9,6 +9,51 @@
+>  #include <kvm/arm_hypercalls.h>
+>  #include <kvm/arm_psci.h>
+> 
+> +static void kvm_ptp_get_time(struct kvm_vcpu *vcpu, u64 *val)
+> +{
+> +	struct system_time_snapshot systime_snapshot;
+> +	u64 cycles = ~0UL;
+> +	u32 feature;
+> +
+> +	/*
+> +	 * system time and counter value must captured in the same
+> +	 * time to keep consistency and precision.
+> +	 */
+> +	ktime_get_snapshot(&systime_snapshot);
+> +
+> +	// binding ptp_kvm clocksource to arm_arch_counter
+> +	if (systime_snapshot.cs_id != CSID_ARM_ARCH_COUNTER)
+> +		return;
+> +
+> +	val[0] = upper_32_bits(systime_snapshot.real);
+> +	val[1] = lower_32_bits(systime_snapshot.real);
+
+What is the endianness of these values? I can't see it defined
+anywhere, and this is likely not to work if guest and hypervisor
+don't align.
+
+> +
+> +	/*
+> +	 * which of virtual counter or physical counter being
+> +	 * asked for is decided by the r1 value of SMCCC
+> +	 * call. If no invalid r1 value offered, default cycle
+> +	 * value(-1) will be returned.
+> +	 * Note: keep in mind that feature is u32 and smccc_get_arg1
+> +	 * will return u64, so need auto cast here.
+> +	 */
+> +	feature = smccc_get_arg1(vcpu);
+> +	switch (feature) {
+> +	case ARM_PTP_VIRT_COUNTER:
+> +		cycles = systime_snapshot.cycles - vcpu_read_sys_reg(vcpu, 
+> CNTVOFF_EL2);
+> +		break;
+> +	case ARM_PTP_PHY_COUNTER:
+> +		cycles = systime_snapshot.cycles;
+> +		break;
+> +	case ARM_PTP_NONE_COUNTER:
+
+What is this "NONE" counter?
+
+> +		break;
+> +	default:
+> +		val[0] = SMCCC_RET_NOT_SUPPORTED;
+> +		break;
+> +	}
+> +	val[2] = upper_32_bits(cycles);
+> +	val[3] = lower_32_bits(cycles);
+
+Same problem as above.
+
+> +}
+> +
+>  int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
+>  {
+>  	u32 func_id = smccc_get_function(vcpu);
+> @@ -79,6 +124,22 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
+>  		break;
+>  	case ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID:
+>  		val[0] = BIT(ARM_SMCCC_KVM_FUNC_FEATURES);
+> +		val[0] |= BIT(ARM_SMCCC_KVM_FUNC_KVM_PTP);
+> +		break;
+> +	/*
+> +	 * This serves virtual kvm_ptp.
+> +	 * Four values will be passed back.
+> +	 * reg0 stores high 32-bits of host ktime;
+> +	 * reg1 stores low 32-bits of host ktime;
+> +	 * For ARM_PTP_VIRT_COUNTER:
+> +	 * reg2 stores high 32-bits of difference of host cycles and cntvoff;
+> +	 * reg3 stores low 32-bits of difference of host cycles and cntvoff.
+> +	 * For ARM_PTP_PHY_COUNTER:
+> +	 * reg2 stores the high 32-bits of host cycles;
+> +	 * reg3 stores the low 32-bits of host cycles.
+> +	 */
+> +	case ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID:
+> +		kvm_ptp_get_time(vcpu, val);
+>  		break;
+>  	default:
+>  		return kvm_psci_call(vcpu);
+> diff --git a/include/linux/arm-smccc.h b/include/linux/arm-smccc.h
+> index d75408141137..a03c5dd409d3 100644
+> --- a/include/linux/arm-smccc.h
+> +++ b/include/linux/arm-smccc.h
+> @@ -103,6 +103,7 @@
+> 
+>  /* KVM "vendor specific" services */
+>  #define ARM_SMCCC_KVM_FUNC_FEATURES		0
+> +#define ARM_SMCCC_KVM_FUNC_KVM_PTP		1
+
+I think having KVM once in the name is enough.
+
+>  #define ARM_SMCCC_KVM_FUNC_FEATURES_2		127
+>  #define ARM_SMCCC_KVM_NUM_FUNCS			128
+> 
+> @@ -114,6 +115,22 @@
+> 
+>  #define SMCCC_ARCH_WORKAROUND_RET_UNAFFECTED	1
+> 
+> +/*
+> + * ptp_kvm is a feature used for time sync between vm and host.
+> + * ptp_kvm module in guest kernel will get service from host using
+> + * this hypercall ID.
+> + */
+> +#define ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID				\
+> +	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
+> +			   ARM_SMCCC_SMC_32,				\
+> +			   ARM_SMCCC_OWNER_VENDOR_HYP,			\
+> +			   ARM_SMCCC_KVM_FUNC_KVM_PTP)
+> +
+> +/* ptp_kvm counter type ID */
+> +#define ARM_PTP_VIRT_COUNTER			0
+> +#define ARM_PTP_PHY_COUNTER			1
+> +#define ARM_PTP_NONE_COUNTER			2
+
+The architecture definitely doesn't have this last counter.
+
+> +
+>  /* Paravirtualised time calls (defined by ARM DEN0057A) */
+>  #define ARM_SMCCC_HV_PV_TIME_FEATURES				\
+>  	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,			\
+
+Thanks,
+
+         M.
+-- 
+Jazz is not dead. It just smells funny...
