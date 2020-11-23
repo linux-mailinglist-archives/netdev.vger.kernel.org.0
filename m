@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F6CD2C09E9
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 14:19:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F9C42C09E4
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 14:19:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387751AbgKWNOC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 08:14:02 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:47281 "EHLO
+        id S2388585AbgKWNNr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 08:13:47 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:52677 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388560AbgKWNNk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 08:13:40 -0500
+        by vger.kernel.org with ESMTP id S2388569AbgKWNNo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 08:13:44 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606137218;
+        s=mimecast20190719; t=1606137222;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=es+GSQz2MU3igYX62Y5g10wVw6Q1DpGz8rOsY1uqmXw=;
-        b=gKcdZHjO1TnH0QLzjU0TGg6XEr+x+n6fbczfVuzTNa4DK/GW2hSgn6/BQjR4FemsXCklgS
-        GAITmsKNBqhylV7/KBtJH4vLMjwiug1RNTv8pGcmhSMNeXqX7Wf+tmeRpXFIjxZYBayAEA
-        k5TuFlfZWocJl5iYy+mwcIyimkSHCMw=
-Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com
- [209.85.214.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-100-Q_HSiF6tM-WAPAtGZgY2dw-1; Mon, 23 Nov 2020 08:13:36 -0500
-X-MC-Unique: Q_HSiF6tM-WAPAtGZgY2dw-1
-Received: by mail-pl1-f200.google.com with SMTP id b4so11147283plr.15
-        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 05:13:36 -0800 (PST)
+        bh=mNpTnhqVT/lkkDzOBStmitBv9qqoRpOHiUUiZ8tRN8I=;
+        b=h2/ua5nF5dsGOZXkx1eQvZTzpL1KUtXtO3+tR4VTvI5rKutJmcMLajsUBS1ttRP6LQQ6Fb
+        5bplkaahqzQtz7SKG2KXD7+UN9FKMiDIgL6GC1tGFXs4DDVgG9bjX0BjtowElb6lZwW3cL
+        m14H2VQfA8ZjwwSzbVyM9YCBxDBi/O4=
+Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com
+ [209.85.215.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-248-Mv7y0W3JMJmS5wGBS78Fxg-1; Mon, 23 Nov 2020 08:13:40 -0500
+X-MC-Unique: Mv7y0W3JMJmS5wGBS78Fxg-1
+Received: by mail-pg1-f198.google.com with SMTP id b35so12384654pgl.8
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 05:13:40 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=es+GSQz2MU3igYX62Y5g10wVw6Q1DpGz8rOsY1uqmXw=;
-        b=qTNCJL6Y2fY1pTmXz8cRQQAdCW7t+ivM07ZJxnDsSYzNSqDF54rFBJuDkcdUB6739r
-         /Jr3H1p00tMUjWyFSrKX1QfulEH7VhChd5BzB24MNEHl3JuqevtieTcA3TmCgeOgCr/V
-         e90dvbE79HVR9THkAtIgElk72LG+WWEGYGy8cgQF01cElrUE61qlBNDMUn1RgGUZCWVF
-         FoFWJjmG3ZNAuZdqPdEuZEUEdo/DYGlLUV3Ibalg4z7oIJdh6cUYU+1uLZWmqxWc9CXM
-         FXa/M4Gb/GEc8sK9eN4rINWBGMywbus/4yGezNKWbR8uj5ZCjU9S9BeWcRU3Pp4WaVQS
-         XuKA==
-X-Gm-Message-State: AOAM530W8Nyxlmx4FbhhRiMsMRC+ToefwEOs7Qt8WT3CxrViXNkYKla6
-        331IT3G2rVmBfQ3FVLWvaY3SJsQMu6IypDNaCJQZuHbTGXUxUUn2bqaOEkOUextGhrMSq5ctc1p
-        YTCABUSmExwJS+gk=
-X-Received: by 2002:a65:5588:: with SMTP id j8mr27014285pgs.245.1606137214553;
-        Mon, 23 Nov 2020 05:13:34 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwNAS1DOyVHPl2ZmtTO7x07AfiymOEs/m9uJIgk9I9nSJ7qXj5gIpYpa9FRA6tsXohvYHNqXQ==
-X-Received: by 2002:a65:5588:: with SMTP id j8mr27014271pgs.245.1606137214318;
-        Mon, 23 Nov 2020 05:13:34 -0800 (PST)
+        bh=mNpTnhqVT/lkkDzOBStmitBv9qqoRpOHiUUiZ8tRN8I=;
+        b=RjmXWiYaVVXpfILiO+TcqR9xdpaYX2+BVbwlg/Fi0AXsnG+Bk5zlW5kI8gjtTI8yZ7
+         dyd1FWAM7GYq1h+o99XWELerZ5vWJ3lK6Ia2OJLZNnjD8Sp9NqSZP2s1iG0E4Hkrd0Qs
+         zSfOmu+sSwsfmk8DEvwNxibzqinWQqr23V5p18L1Rk50Rs1Gby4qAsPVV8HWY8WJILom
+         WY/iU7m1IW+aRXtW0ZN2/tQchqJnYBlnqOjbr3E7wth6IdfIjFmH11XseSo5XzLtXSAl
+         n0ReAg4VKkwtfWIyKkp1T1ZV9F6/TQOuGH0cUYdd88SrTzxb348UWuBdSBfATm0f/wrP
+         vIiQ==
+X-Gm-Message-State: AOAM5320Y2RbAE659ZvOcfNx/0IvuzmKieOFGkVDxjh7c1eM0EoRT39x
+        seRSCZmffEYVi2+Wb7waFcVFGUemjBODXcVnbSUlLDfXezkFT2pMY8AkzlqrBkyTpp4gmD150tP
+        808MJ8FEjCgHOAZE=
+X-Received: by 2002:a17:90b:b15:: with SMTP id bf21mr19755404pjb.21.1606137219442;
+        Mon, 23 Nov 2020 05:13:39 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwBOG0l/Zu18yg12VyJ5W4oaN/nbRzZ/hwb8daUy6SRR3YTXPEHc0TkzVBcKsFuBUiomdjA+Q==
+X-Received: by 2002:a17:90b:b15:: with SMTP id bf21mr19755375pjb.21.1606137219218;
+        Mon, 23 Nov 2020 05:13:39 -0800 (PST)
 Received: from localhost.localdomain.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 84sm12075505pfu.53.2020.11.23.05.13.29
+        by smtp.gmail.com with ESMTPSA id 84sm12075505pfu.53.2020.11.23.05.13.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Nov 2020 05:13:33 -0800 (PST)
+        Mon, 23 Nov 2020 05:13:38 -0800 (PST)
 From:   Hangbin Liu <haliu@redhat.com>
 To:     Stephen Hemminger <stephen@networkplumber.org>,
         David Ahern <dsahern@gmail.com>
@@ -62,9 +62,9 @@ Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         Alexei Starovoitov <alexei.starovoitov@gmail.com>,
         Hangbin Liu <haliu@redhat.com>
-Subject: [PATCHv6 iproute2-next 4/5] examples/bpf: move struct bpf_elf_map defined maps to legacy folder
-Date:   Mon, 23 Nov 2020 21:12:00 +0800
-Message-Id: <20201123131201.4108483-5-haliu@redhat.com>
+Subject: [PATCHv6 iproute2-next 5/5] examples/bpf: add bpf examples with BTF defined maps
+Date:   Mon, 23 Nov 2020 21:12:01 +0800
+Message-Id: <20201123131201.4108483-6-haliu@redhat.com>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <20201123131201.4108483-1-haliu@redhat.com>
 References: <20201116065305.1010651-1-haliu@redhat.com>
@@ -76,110 +76,257 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Users should try use the new BTF defined maps instead of struct
+bpf_elf_map defined maps. The tail call examples are not added yet
+as libbpf doesn't currently support declaratively populating tail call
+maps.
+
 Reviewed-by: Toke Høiland-Jørgensen <toke@redhat.com>
 Signed-off-by: Hangbin Liu <haliu@redhat.com>
 ---
- examples/bpf/README                        | 14 +++++++++-----
- examples/bpf/{ => legacy}/bpf_cyclic.c     |  2 +-
- examples/bpf/{ => legacy}/bpf_graft.c      |  2 +-
- examples/bpf/{ => legacy}/bpf_map_in_map.c |  2 +-
- examples/bpf/{ => legacy}/bpf_shared.c     |  2 +-
- examples/bpf/{ => legacy}/bpf_tailcall.c   |  2 +-
- 6 files changed, 14 insertions(+), 10 deletions(-)
- rename examples/bpf/{ => legacy}/bpf_cyclic.c (95%)
- rename examples/bpf/{ => legacy}/bpf_graft.c (97%)
- rename examples/bpf/{ => legacy}/bpf_map_in_map.c (96%)
- rename examples/bpf/{ => legacy}/bpf_shared.c (97%)
- rename examples/bpf/{ => legacy}/bpf_tailcall.c (98%)
+ examples/bpf/README           |  6 ++++
+ examples/bpf/bpf_graft.c      | 66 +++++++++++++++++++++++++++++++++++
+ examples/bpf/bpf_map_in_map.c | 55 +++++++++++++++++++++++++++++
+ examples/bpf/bpf_shared.c     | 53 ++++++++++++++++++++++++++++
+ include/bpf_api.h             | 13 +++++++
+ 5 files changed, 193 insertions(+)
+ create mode 100644 examples/bpf/bpf_graft.c
+ create mode 100644 examples/bpf/bpf_map_in_map.c
+ create mode 100644 examples/bpf/bpf_shared.c
 
 diff --git a/examples/bpf/README b/examples/bpf/README
-index 1bbdda3f..732bcc83 100644
+index 732bcc83..b7261191 100644
 --- a/examples/bpf/README
 +++ b/examples/bpf/README
-@@ -1,8 +1,12 @@
+@@ -1,6 +1,12 @@
  eBPF toy code examples (running in kernel) to familiarize yourself
  with syntax and features:
  
-- - bpf_shared.c		-> Ingress/egress map sharing example
-- - bpf_tailcall.c	-> Using tail call chains
-- - bpf_cyclic.c		-> Simple cycle as tail calls
-- - bpf_graft.c		-> Demo on altering runtime behaviour
-- - bpf_map_in_map.c     -> Using map in map example
-+ - legacy/bpf_shared.c		-> Ingress/egress map sharing example
-+ - legacy/bpf_tailcall.c	-> Using tail call chains
-+ - legacy/bpf_cyclic.c		-> Simple cycle as tail calls
-+ - legacy/bpf_graft.c		-> Demo on altering runtime behaviour
-+ - legacy/bpf_map_in_map.c	-> Using map in map example
++- BTF defined map examples
++ - bpf_graft.c		-> Demo on altering runtime behaviour
++ - bpf_shared.c 	-> Ingress/egress map sharing example
++ - bpf_map_in_map.c	-> Using map in map example
 +
-+Note: Users should use new BTF way to defined the maps, the examples
-+in legacy folder which is using struct bpf_elf_map defined maps is not
-+recommanded.
-diff --git a/examples/bpf/bpf_cyclic.c b/examples/bpf/legacy/bpf_cyclic.c
-similarity index 95%
-rename from examples/bpf/bpf_cyclic.c
-rename to examples/bpf/legacy/bpf_cyclic.c
-index 11d1c061..33590730 100644
---- a/examples/bpf/bpf_cyclic.c
-+++ b/examples/bpf/legacy/bpf_cyclic.c
-@@ -1,4 +1,4 @@
--#include "../../include/bpf_api.h"
-+#include "../../../include/bpf_api.h"
++- legacy struct bpf_elf_map defined map examples
+  - legacy/bpf_shared.c		-> Ingress/egress map sharing example
+  - legacy/bpf_tailcall.c	-> Using tail call chains
+  - legacy/bpf_cyclic.c		-> Simple cycle as tail calls
+diff --git a/examples/bpf/bpf_graft.c b/examples/bpf/bpf_graft.c
+new file mode 100644
+index 00000000..8066dcce
+--- /dev/null
++++ b/examples/bpf/bpf_graft.c
+@@ -0,0 +1,66 @@
++#include "../../include/bpf_api.h"
++
++/* This example demonstrates how classifier run-time behaviour
++ * can be altered with tail calls. We start out with an empty
++ * jmp_tc array, then add section aaa to the array slot 0, and
++ * later on atomically replace it with section bbb. Note that
++ * as shown in other examples, the tc loader can prepopulate
++ * tail called sections, here we start out with an empty one
++ * on purpose to show it can also be done this way.
++ *
++ * tc filter add dev foo parent ffff: bpf obj graft.o
++ * tc exec bpf dbg
++ *   [...]
++ *   Socket Thread-20229 [001] ..s. 138993.003923: : fallthrough
++ *   <idle>-0            [001] ..s. 138993.202265: : fallthrough
++ *   Socket Thread-20229 [001] ..s. 138994.004149: : fallthrough
++ *   [...]
++ *
++ * tc exec bpf graft m:globals/jmp_tc key 0 obj graft.o sec aaa
++ * tc exec bpf dbg
++ *   [...]
++ *   Socket Thread-19818 [002] ..s. 139012.053587: : aaa
++ *   <idle>-0            [002] ..s. 139012.172359: : aaa
++ *   Socket Thread-19818 [001] ..s. 139012.173556: : aaa
++ *   [...]
++ *
++ * tc exec bpf graft m:globals/jmp_tc key 0 obj graft.o sec bbb
++ * tc exec bpf dbg
++ *   [...]
++ *   Socket Thread-19818 [002] ..s. 139022.102967: : bbb
++ *   <idle>-0            [002] ..s. 139022.155640: : bbb
++ *   Socket Thread-19818 [001] ..s. 139022.156730: : bbb
++ *   [...]
++ */
++
++struct {
++	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
++	__uint(key_size, sizeof(uint32_t));
++	__uint(value_size, sizeof(uint32_t));
++	__uint(max_entries, 1);
++	__uint(pinning, LIBBPF_PIN_BY_NAME);
++} jmp_tc __section(".maps");
++
++__section("aaa")
++int cls_aaa(struct __sk_buff *skb)
++{
++	printt("aaa\n");
++	return TC_H_MAKE(1, 42);
++}
++
++__section("bbb")
++int cls_bbb(struct __sk_buff *skb)
++{
++	printt("bbb\n");
++	return TC_H_MAKE(1, 43);
++}
++
++__section_cls_entry
++int cls_entry(struct __sk_buff *skb)
++{
++	tail_call(skb, &jmp_tc, 0);
++	printt("fallthrough\n");
++	return BPF_H_DEFAULT;
++}
++
++BPF_LICENSE("GPL");
+diff --git a/examples/bpf/bpf_map_in_map.c b/examples/bpf/bpf_map_in_map.c
+new file mode 100644
+index 00000000..39c86268
+--- /dev/null
++++ b/examples/bpf/bpf_map_in_map.c
+@@ -0,0 +1,55 @@
++#include "../../include/bpf_api.h"
++
++struct inner_map {
++	__uint(type, BPF_MAP_TYPE_ARRAY);
++	__uint(key_size, sizeof(uint32_t));
++	__uint(value_size, sizeof(uint32_t));
++	__uint(max_entries, 1);
++} map_inner __section(".maps");
++
++struct {
++	__uint(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);
++	__uint(key_size, sizeof(uint32_t));
++	__uint(value_size, sizeof(uint32_t));
++	__uint(max_entries, 1);
++	__uint(pinning, LIBBPF_PIN_BY_NAME);
++	__array(values, struct inner_map);
++} map_outer __section(".maps") = {
++	.values = {
++		[0] = &map_inner,
++	},
++};
++
++__section("egress")
++int emain(struct __sk_buff *skb)
++{
++	struct bpf_elf_map *map_inner;
++	int key = 0, *val;
++
++	map_inner = map_lookup_elem(&map_outer, &key);
++	if (map_inner) {
++		val = map_lookup_elem(map_inner, &key);
++		if (val)
++			lock_xadd(val, 1);
++	}
++
++	return BPF_H_DEFAULT;
++}
++
++__section("ingress")
++int imain(struct __sk_buff *skb)
++{
++	struct bpf_elf_map *map_inner;
++	int key = 0, *val;
++
++	map_inner = map_lookup_elem(&map_outer, &key);
++	if (map_inner) {
++		val = map_lookup_elem(map_inner, &key);
++		if (val)
++			printt("map val: %d\n", *val);
++	}
++
++	return BPF_H_DEFAULT;
++}
++
++BPF_LICENSE("GPL");
+diff --git a/examples/bpf/bpf_shared.c b/examples/bpf/bpf_shared.c
+new file mode 100644
+index 00000000..99a332f4
+--- /dev/null
++++ b/examples/bpf/bpf_shared.c
+@@ -0,0 +1,53 @@
++#include "../../include/bpf_api.h"
++
++/* Minimal, stand-alone toy map pinning example:
++ *
++ * clang -target bpf -O2 [...] -o bpf_shared.o -c bpf_shared.c
++ * tc filter add dev foo parent 1: bpf obj bpf_shared.o sec egress
++ * tc filter add dev foo parent ffff: bpf obj bpf_shared.o sec ingress
++ *
++ * Both classifier will share the very same map instance in this example,
++ * so map content can be accessed from ingress *and* egress side!
++ *
++ * This example has a pinning of PIN_OBJECT_NS, so it's private and
++ * thus shared among various program sections within the object.
++ *
++ * A setting of PIN_GLOBAL_NS would place it into a global namespace,
++ * so that it can be shared among different object files. A setting
++ * of PIN_NONE (= 0) means no sharing, so each tc invocation a new map
++ * instance is being created.
++ */
++
++struct {
++	__uint(type, BPF_MAP_TYPE_ARRAY);
++	__uint(key_size, sizeof(uint32_t));
++	__uint(value_size, sizeof(uint32_t));
++	__uint(max_entries, 1);
++	__uint(pinning, LIBBPF_PIN_BY_NAME);	/* or LIBBPF_PIN_NONE */
++} map_sh __section(".maps");
++
++__section("egress")
++int emain(struct __sk_buff *skb)
++{
++	int key = 0, *val;
++
++	val = map_lookup_elem(&map_sh, &key);
++	if (val)
++		lock_xadd(val, 1);
++
++	return BPF_H_DEFAULT;
++}
++
++__section("ingress")
++int imain(struct __sk_buff *skb)
++{
++	int key = 0, *val;
++
++	val = map_lookup_elem(&map_sh, &key);
++	if (val)
++		printt("map val: %d\n", *val);
++
++	return BPF_H_DEFAULT;
++}
++
++BPF_LICENSE("GPL");
+diff --git a/include/bpf_api.h b/include/bpf_api.h
+index 89d3488d..82c47089 100644
+--- a/include/bpf_api.h
++++ b/include/bpf_api.h
+@@ -19,6 +19,19 @@
  
- /* Cyclic dependency example to test the kernel's runtime upper
-  * bound on loops. Also demonstrates on how to use direct-actions,
-diff --git a/examples/bpf/bpf_graft.c b/examples/bpf/legacy/bpf_graft.c
-similarity index 97%
-rename from examples/bpf/bpf_graft.c
-rename to examples/bpf/legacy/bpf_graft.c
-index 07113d4a..f4c920cc 100644
---- a/examples/bpf/bpf_graft.c
-+++ b/examples/bpf/legacy/bpf_graft.c
-@@ -1,4 +1,4 @@
--#include "../../include/bpf_api.h"
-+#include "../../../include/bpf_api.h"
+ #include "bpf_elf.h"
  
- /* This example demonstrates how classifier run-time behaviour
-  * can be altered with tail calls. We start out with an empty
-diff --git a/examples/bpf/bpf_map_in_map.c b/examples/bpf/legacy/bpf_map_in_map.c
-similarity index 96%
-rename from examples/bpf/bpf_map_in_map.c
-rename to examples/bpf/legacy/bpf_map_in_map.c
-index ff0e623a..575f8812 100644
---- a/examples/bpf/bpf_map_in_map.c
-+++ b/examples/bpf/legacy/bpf_map_in_map.c
-@@ -1,4 +1,4 @@
--#include "../../include/bpf_api.h"
-+#include "../../../include/bpf_api.h"
++/** libbpf pin type. */
++enum libbpf_pin_type {
++	LIBBPF_PIN_NONE,
++	/* PIN_BY_NAME: pin maps by name (in /sys/fs/bpf by default) */
++	LIBBPF_PIN_BY_NAME,
++};
++
++/** Type helper macros. */
++
++#define __uint(name, val) int (*name)[val]
++#define __type(name, val) typeof(val) *name
++#define __array(name, val) typeof(val) *name[]
++
+ /** Misc macros. */
  
- #define MAP_INNER_ID	42
- 
-diff --git a/examples/bpf/bpf_shared.c b/examples/bpf/legacy/bpf_shared.c
-similarity index 97%
-rename from examples/bpf/bpf_shared.c
-rename to examples/bpf/legacy/bpf_shared.c
-index 21fe6f1e..05b2b9ef 100644
---- a/examples/bpf/bpf_shared.c
-+++ b/examples/bpf/legacy/bpf_shared.c
-@@ -1,4 +1,4 @@
--#include "../../include/bpf_api.h"
-+#include "../../../include/bpf_api.h"
- 
- /* Minimal, stand-alone toy map pinning example:
-  *
-diff --git a/examples/bpf/bpf_tailcall.c b/examples/bpf/legacy/bpf_tailcall.c
-similarity index 98%
-rename from examples/bpf/bpf_tailcall.c
-rename to examples/bpf/legacy/bpf_tailcall.c
-index 161eb606..8ebc554c 100644
---- a/examples/bpf/bpf_tailcall.c
-+++ b/examples/bpf/legacy/bpf_tailcall.c
-@@ -1,5 +1,5 @@
- /* SPDX-License-Identifier: GPL-2.0 */
--#include "../../include/bpf_api.h"
-+#include "../../../include/bpf_api.h"
- 
- #define ENTRY_INIT	3
- #define ENTRY_0		0
+ #ifndef __stringify
 -- 
 2.25.4
 
