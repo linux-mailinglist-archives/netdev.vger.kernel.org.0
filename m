@@ -2,133 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7070A2C0CA8
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 15:14:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 987812C0CAF
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 15:14:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729462AbgKWOBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 09:01:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41650 "EHLO
+        id S1729733AbgKWOCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 09:02:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729372AbgKWOBB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 09:01:01 -0500
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FB03C0613CF;
-        Mon, 23 Nov 2020 06:01:01 -0800 (PST)
-Received: by mail-pl1-x642.google.com with SMTP id 18so8872786pli.13;
-        Mon, 23 Nov 2020 06:01:01 -0800 (PST)
+        with ESMTP id S1729300AbgKWOCk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 09:02:40 -0500
+Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A624C0613CF
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 06:02:38 -0800 (PST)
+Received: by mail-lf1-x141.google.com with SMTP id s27so3897282lfp.5
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 06:02:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=kTzAwGnKctQP6f8k4mc+aVTNiIF28i6q0wCQZdb9TIQ=;
-        b=hzVDgoB/C4oCV5aKdslaJu2N+g9Q9d002IloasUd8GbE1Jvmm8w+D0sl07Jmw8TvqS
-         OMaWK4JoIe+9TvZ7w1XaH1c2zUubPwwrCVGmovVqE73YdvCQm14BsFI9QFhdtHYKEtZn
-         SvXZzykNEljNWrRwwbtQANRdla2V6JiguVQo/7/TNUOMDimtbhXlgtJZzBbL7ECrEkGh
-         Vf7NDk3Ldsbt+q4JAhhI9l7NqTcb33LwRvl0O4fPThQCuvZ+2mQMs4pQW/8uDTUv7r7N
-         DIcJIdd2dz6Jl96XLJ5bCRa7J0fezcdIowEsdtElYAtIWkfHz+pGsDYtIeo49CUMo2NE
-         8y1Q==
+        bh=DYeuO9CyRYlI74SBnZHsqHkWdQ+mk7sZ3M8nh9IDpXI=;
+        b=i0BxWMahO++rC3bV9QEmtNWIGL6rlcn02HBbKIEGje0GBsmG1xjrCtPp8O8PQFjXx6
+         ghWblFt+gcW9vtakoAQrk9FnkoRXZR1ATeMwGHD+CEdrrNgNd0eGxIsW1Bvtw7XljlQr
+         T1KDU5TzShj/9pHMmbWRlh5Hich+3JfraKw/hBx2irA8SEcqaHyyY3XFN9GdYegtyILz
+         XEW3nQZ9pCxyYZKQ7Mg3HrHQuiGfYFhgNnsy2c021e5Oo0JgjXiJTrlEHbBW++O3kXnx
+         Z+thkapqjBSXOBwANQ0oQO0qeLXTxFJdC1GQmSeBfxd2aJYzYjdbvx39LaS3dwK4Oycw
+         VsmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=kTzAwGnKctQP6f8k4mc+aVTNiIF28i6q0wCQZdb9TIQ=;
-        b=jZD4l2J0orwhxCqGubMUxRcgn7vKSSkzsGn33yUkxeGcNIMBOgYQzs8mYSdjaNGi4v
-         i8g7uhC1wtX6kXMEXRWK2izKgBow8WJEYh2haJT3JldZ0pZxkE8aeUehnoFJP6NSay/n
-         mRje9k4GgRcikJ/hgZAzQMnSQBd++xrOr/WVCyWwJItbPwTzPWg0S6jZJ0ULj3blA6p2
-         5QTJtVWjnms0OKy5veWlNdtr9VNe+kZvNNN9Yi2jf2A+h4L94mnaZlR/y8cB9XVU1OTs
-         s4Kw+Zq7JZBFuq9GbnBqxLfdE5VmInyDMk5uGku6ecyqUEco6/fYdxh1eqYX2Ah6N6+J
-         XPkg==
-X-Gm-Message-State: AOAM530iwW6uOG0ivoYZeD5xs5fYiTdNDYbOgWdzwqFmWMexmr9ZkCOb
-        KfEnIWrTa1jSk4xW18QnZrEOSzbhHGt4HXvkClU=
-X-Google-Smtp-Source: ABdhPJyS/m04iepzH+/zdL9XmL9/ST3WynYaUHAn8JSvsCr4+x4OX4zGjTvC/SwXSb6JSirwmHKC6ozm3+5dFIzXT40=
-X-Received: by 2002:a17:902:bd02:b029:da:8fd:af6b with SMTP id
- p2-20020a170902bd02b02900da08fdaf6bmr4870343pls.7.1606140059409; Mon, 23 Nov
- 2020 06:00:59 -0800 (PST)
+        bh=DYeuO9CyRYlI74SBnZHsqHkWdQ+mk7sZ3M8nh9IDpXI=;
+        b=Z3PzPwW4iMhkOCxAPnLKnJMC9FvrK5zXabUfbQA5MrTxdbpoP9p9OXYeTVU6DvXYoG
+         fg8u7JYta7kKvLlI5W0AToH6Ld8yBPLWbGn1WVLTgwZaqbt8BvHoNT7KVMPhFNUjjUuf
+         uqLZImY64URuUP5R5X+ZSWxY8o6xIomtJaLjjCnhuLIO02PZK7zTSENdtXK7OZa7g0dW
+         M3UQikGdfNaXofHLsur1/TluY+TmvSbpfrW/50Q6v/wffbyr57Pku/G+QHAxruCk8yWP
+         F3y8Ag0gbczBG7kCi4yF25tnc68/HLjztwK2CG0ZDIyX/k9OaKodZ1/dNincPo4w0rZz
+         v3DA==
+X-Gm-Message-State: AOAM530DjDPeF+MczoFub0E3emRzJXHWlPhuZi5w2sfhMUY9n1wCaLjA
+        5KDM7piLdwV079DgVbirAYGvbyiEObfVqLJrEmApSw==
+X-Google-Smtp-Source: ABdhPJzD45bDbtioK3UIuEAtyLLjXaU7Tz6Q0nrcpUO7K1SNhRtDZOExOk2ORy/uMCpMMdKopnEe1kQmAFAMF1N4T3A=
+X-Received: by 2002:ac2:528e:: with SMTP id q14mr11971554lfm.34.1606140156521;
+ Mon, 23 Nov 2020 06:02:36 -0800 (PST)
 MIME-Version: 1.0
-References: <3306b4d8-8689-b0e7-3f6d-c3ad873b7093@intel.com> <cover.1605686678.git.xuanzhuo@linux.alibaba.com>
-In-Reply-To: <cover.1605686678.git.xuanzhuo@linux.alibaba.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Mon, 23 Nov 2020 15:00:48 +0100
-Message-ID: <CAJ8uoz0hEiXFY9q_HJmfuY4vpf-DYH_gnDPvRhFpnc6OcQbj_Q@mail.gmail.com>
-Subject: Re: [PATCH 0/3] xsk: fix for xsk_poll writeable
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+References: <CA+G9fYs9sg69JgmQNZhutQnbijb4GzcO03XF66EjkQ6CTpXXxA@mail.gmail.com>
+ <CAK8P3a1Lx1MMQ3s1uWjevsi2wqFo2r=k1hhrxf1spUxEQX_Rag@mail.gmail.com>
+In-Reply-To: <CAK8P3a1Lx1MMQ3s1uWjevsi2wqFo2r=k1hhrxf1spUxEQX_Rag@mail.gmail.com>
+From:   Jann Horn <jannh@google.com>
+Date:   Mon, 23 Nov 2020 15:02:10 +0100
+Message-ID: <CAG48ez17CKBMO4193wxuWLRQWQ+q6EV=Qr5oTWiKivMxEi0zQw@mail.gmail.com>
+Subject: Re: [arm64] kernel BUG at kernel/seccomp.c:1309!
+To:     Arnd Bergmann <arnd@kernel.org>,
+        Gabriel Krisman Bertazi <krisman@collabora.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkft-triage@lists.linaro.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, linux-kernel@vger.kernel.org
+        Kees Cook <keescook@chromium.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        YiFei Zhu <yifeifz2@illinois.edu>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 9:25 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+On Mon, Nov 23, 2020 at 2:45 PM Arnd Bergmann <arnd@kernel.org> wrote:
+> On Mon, Nov 23, 2020 at 12:15 PM Naresh Kamboju
+> <naresh.kamboju@linaro.org> wrote:
+> >
+> > While booting arm64 kernel the following kernel BUG noticed on several arm64
+> > devices running linux next 20201123 tag kernel.
+> >
+> >
+> > $ git log --oneline next-20201120..next-20201123 -- kernel/seccomp.c
+> > 5c5c5fa055ea Merge remote-tracking branch 'seccomp/for-next/seccomp'
+> > bce6a8cba7bf Merge branch 'linus'
+> > 7ef95e3dbcee Merge branch 'for-linus/seccomp' into for-next/seccomp
+> > fab686eb0307 seccomp: Remove bogus __user annotations
+> > 0d8315dddd28 seccomp/cache: Report cache data through /proc/pid/seccomp_cache
+> > 8e01b51a31a1 seccomp/cache: Add "emulator" to check if filter is constant allow
+> > f9d480b6ffbe seccomp/cache: Lookup syscall allowlist bitmap for fast path
+> > 23d67a54857a seccomp: Migrate to use SYSCALL_WORK flag
+> >
+> >
+> > Please find these easy steps to reproduce the kernel build and boot.
 >
-> I tried to combine cq available and tx writeable, but I found it very difficult.
-> Sometimes we pay attention to the status of "available" for both, but sometimes,
-> we may only pay attention to one, such as tx writeable, because we can use the
-> item of fq to write to tx. And this kind of demand may be constantly changing,
-> and it may be necessary to set it every time before entering xsk_poll, so
-> setsockopt is not very convenient. I feel even more that using a new event may
-> be a better solution, such as EPOLLPRI, I think it can be used here, after all,
-> xsk should not have OOB data ^_^.
+> Adding Gabriel Krisman Bertazi to Cc, as the last patch (23d67a54857a) here
+> seems suspicious: it changes
 >
-> However, two other problems were discovered during the test:
+> diff --git a/include/linux/seccomp.h b/include/linux/seccomp.h
+> index 02aef2844c38..47763f3999f7 100644
+> --- a/include/linux/seccomp.h
+> +++ b/include/linux/seccomp.h
+> @@ -42,7 +42,7 @@ struct seccomp {
+>  extern int __secure_computing(const struct seccomp_data *sd);
+>  static inline int secure_computing(void)
+>  {
+> -       if (unlikely(test_thread_flag(TIF_SECCOMP)))
+> +       if (unlikely(test_syscall_work(SECCOMP)))
+>                 return  __secure_computing(NULL);
+>         return 0;
+>  }
 >
-> * The mask returned by datagram_poll always contains EPOLLOUT
-> * It is not particularly reasonable to return EPOLLOUT based on tx not full
+> which is in the call chain directly before
 >
-> After fixing these two problems, I found that when the process is awakened by
-> EPOLLOUT, the process can always get the item from cq.
+> int __secure_computing(const struct seccomp_data *sd)
+> {
+>        int mode = current->seccomp.mode;
 >
-> Because the number of packets that the network card can send at a time is
-> actually limited, suppose this value is "nic_num". Once the number of
-> consumed items in the tx queue is greater than nic_num, this means that there
-> must also be new recycled items in the cq queue from nic.
+> ...
+>         switch (mode) {
+>         case SECCOMP_MODE_STRICT:
+>                 __secure_computing_strict(this_syscall);  /* may call do_exit */
+>                 return 0;
+>         case SECCOMP_MODE_FILTER:
+>                 return __seccomp_filter(this_syscall, sd, false);
+>         default:
+>                 BUG();
+>         }
+> }
 >
-> In this way, as long as the tx configured by the user is larger, we won't have
-> the situation that tx is already in the writeable state but cannot get the item
-> from cq.
+> Clearly, current->seccomp.mode is set to something other
+> than SECCOMP_MODE_STRICT or SECCOMP_MODE_FILTER
+> while the test_syscall_work(SECCOMP) returns true, and this
+> must have not been the case earlier.
 
-I think the overall approach of tying this into poll() instead of
-setsockopt() is the right way to go. But we need a more robust
-solution. Your patch #3 also breaks backwards compatibility and that
-is not allowed. Could you please post some simple code example of what
-it is you would like to do in user space? So you would like to wake up
-when there are entries in the cq that can be retrieved and the reason
-you would like to do this is that you then know you can put some more
-entries into the Tx ring and they will get sent as there now are free
-slots in the cq. Correct me if wrong. Would an event that wakes you up
-when there is both space in the Tx ring and space in the cq work? Is
-there a case in which we would like to be woken up when only the Tx
-ring is non-full? Maybe there are as it might be beneficial to fill
-the Tx and while doing that some entries in the cq has been completed
-and away the packets go. But it would be great if you could post some
-simple example code, does not need to compile or anything. Can be
-pseudo code.
+Ah, I think the problem is actually in
+3136b93c3fb2b7c19e853e049203ff8f2b9dd2cd ("entry: Expose helpers to
+migrate TIF to SYSCALL_WORK flag"). In the !GENERIC_ENTRY case, it
+adds this code:
 
-It would also be good to know if your goal is max throughput, max
-burst size, or something else.
++#define set_syscall_work(fl)                                           \
++       set_ti_thread_flag(current_thread_info(), SYSCALL_WORK_##fl)
++#define test_syscall_work(fl) \
++       test_ti_thread_flag(current_thread_info(), SYSCALL_WORK_##fl)
++#define clear_syscall_work(fl) \
++       clear_ti_thread_flag(current_thread_info(), SYSCALL_WORK_##fl)
++
++#define set_task_syscall_work(t, fl) \
++       set_ti_thread_flag(task_thread_info(t), TIF_##fl)
++#define test_task_syscall_work(t, fl) \
++       test_ti_thread_flag(task_thread_info(t), TIF_##fl)
++#define clear_task_syscall_work(t, fl) \
++       clear_ti_thread_flag(task_thread_info(t), TIF_##fl)
 
-Thanks: Magnus
+but the SYSCALL_WORK_FLAGS are not valid on !GENERIC_ENTRY, we'll mix
+up (on arm64) SYSCALL_WORK_BIT_SECCOMP (==0) and TIF_SIGPENDING (==0).
 
-
-> Xuan Zhuo (3):
->   xsk: replace datagram_poll by sock_poll_wait
->   xsk: change the tx writeable condition
->   xsk: set tx/rx the min entries
->
->  include/uapi/linux/if_xdp.h |  2 ++
->  net/xdp/xsk.c               | 26 ++++++++++++++++++++++----
->  net/xdp/xsk_queue.h         |  6 ++++++
->  3 files changed, 30 insertions(+), 4 deletions(-)
->
-> --
-> 1.8.3.1
->
+As part of fixing this, it might be a good idea to put "enum
+syscall_work_bit" behind a "#ifdef CONFIG_GENERIC_ENTRY" to avoid
+future accidents like this?
