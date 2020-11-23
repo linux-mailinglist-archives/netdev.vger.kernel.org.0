@@ -2,187 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 495922C1677
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 21:29:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D52772C1683
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 21:29:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730670AbgKWUU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 15:20:26 -0500
-Received: from pbmsgap02.intersil.com ([192.157.179.202]:40016 "EHLO
-        pbmsgap02.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729666AbgKWUUZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 15:20:25 -0500
-Received: from pps.filterd (pbmsgap02.intersil.com [127.0.0.1])
-        by pbmsgap02.intersil.com (8.16.0.42/8.16.0.42) with SMTP id 0ANKGuI2005994;
-        Mon, 23 Nov 2020 15:20:23 -0500
-Received: from pbmxdp01.intersil.corp (pbmxdp01.pb.intersil.com [132.158.200.222])
-        by pbmsgap02.intersil.com with ESMTP id 34xwxksbad-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 23 Nov 2020 15:20:23 -0500
-Received: from pbmxdp02.intersil.corp (132.158.200.223) by
- pbmxdp01.intersil.corp (132.158.200.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.1979.3; Mon, 23 Nov 2020 15:20:22 -0500
-Received: from localhost (132.158.202.109) by pbmxdp02.intersil.corp
- (132.158.200.223) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Mon, 23 Nov 2020 15:20:21 -0500
-From:   <min.li.xe@renesas.com>
-To:     <richardcochran@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Min Li <min.li.xe@renesas.com>
-Subject: [PATCH v2 net] ptp: clockmatrix: bug fix for idtcm_strverscmp
-Date:   Mon, 23 Nov 2020 15:20:06 -0500
-Message-ID: <1606162806-14589-1-git-send-email-min.li.xe@renesas.com>
-X-Mailer: git-send-email 2.7.4
-X-TM-AS-MML: disable
+        id S1729470AbgKWUZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 15:25:43 -0500
+Received: from smtprelay0097.hostedemail.com ([216.40.44.97]:34720 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728869AbgKWUZn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 15:25:43 -0500
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 10236100E7B46;
+        Mon, 23 Nov 2020 20:25:42 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2194:2199:2393:2559:2562:2828:2892:2894:2902:3138:3139:3140:3141:3142:3352:3622:3865:3867:3870:3871:3872:4321:5007:9010:10004:10400:10848:11026:11232:11658:11914:12296:12297:12438:12740:12895:13069:13142:13149:13230:13311:13357:13439:13894:14659:14721:14777:21080:21433:21627:21939:30054:30075:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
+X-HE-Tag: cook74_371674827368
+X-Filterd-Recvd-Size: 2017
+Received: from XPS-9350.home (unknown [47.151.128.180])
+        (Authenticated sender: joe@perches.com)
+        by omf18.hostedemail.com (Postfix) with ESMTPA;
+        Mon, 23 Nov 2020 20:25:40 +0000 (UTC)
+Message-ID: <d0d1edf746b8f50ca8897478a5e76a006e5d36ed.camel@perches.com>
+Subject: Re: [PATCH net-next 15/17] rxrpc: Organise connection security to
+ use a union
+From:   Joe Perches <joe@perches.com>
+To:     David Howells <dhowells@redhat.com>, netdev@vger.kernel.org
+Cc:     linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
+Date:   Mon, 23 Nov 2020 12:25:39 -0800
+In-Reply-To: <160616230898.830164.7298470680786861832.stgit@warthog.procyon.org.uk>
+References: <160616220405.830164.2239716599743995145.stgit@warthog.procyon.org.uk>
+         <160616230898.830164.7298470680786861832.stgit@warthog.procyon.org.uk>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.38.1-1 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-23_17:2020-11-23,2020-11-23 signatures=0
-X-Proofpoint-Spam-Details: rule=junk_notspam policy=junk score=0 mlxlogscore=833 adultscore=0
- spamscore=0 suspectscore=4 bulkscore=0 malwarescore=0 phishscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011230130
-X-Proofpoint-Spam-Reason: mlx
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Min Li <min.li.xe@renesas.com>
+On Mon, 2020-11-23 at 20:11 +0000, David Howells wrote:
+> Organise the security information in the rxrpc_connection struct to use a
+> union to allow for different data for different security classes.
 
-Feed kstrtou8 with NULL terminated string.
+Is there a known future purpose to this?
 
-Changes since v1:
--Use strscpy instead of strncpy for safety.
+> diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
 
-Signed-off-by: Min Li <min.li.xe@renesas.com>
----
- drivers/ptp/ptp_clockmatrix.c | 60 ++++++++++++++++++++++++++++++-------------
- tools/bpf/example             | 12 +++++++++
- tools/bpf/novlan              |  7 +++++
- 3 files changed, 61 insertions(+), 18 deletions(-)
- create mode 100644 tools/bpf/example
- create mode 100644 tools/bpf/novlan
+> @@ -448,9 +448,15 @@ struct rxrpc_connection {
+>  	struct list_head	proc_link;	/* link in procfs list */
+>  	struct list_head	link;		/* link in master connection list */
+>  	struct sk_buff_head	rx_queue;	/* received conn-level packets */
+> +
+>  	const struct rxrpc_security *security;	/* applied security module */
+> -	struct crypto_sync_skcipher *cipher;	/* encryption handle */
+> -	struct rxrpc_crypt	csum_iv;	/* packet checksum base */
+> +	union {
+> +		struct {
+> +			struct crypto_sync_skcipher *cipher;	/* encryption handle */
+> +			struct rxrpc_crypt csum_iv;	/* packet checksum base */
+> +			u32	nonce;		/* response re-use preventer */
+> +		} rxkad;
+> +	};
 
-diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
-index e020faf..d4e434b 100644
---- a/drivers/ptp/ptp_clockmatrix.c
-+++ b/drivers/ptp/ptp_clockmatrix.c
-@@ -103,42 +103,66 @@ static int timespec_to_char_array(struct timespec64 const *ts,
- 	return 0;
- }
- 
--static int idtcm_strverscmp(const char *ver1, const char *ver2)
-+static int idtcm_strverscmp(const char *version1, const char *version2)
- {
- 	u8 num1;
- 	u8 num2;
- 	int result = 0;
-+	char ver1[16];
-+	char ver2[16];
-+	char *cur1;
-+	char *cur2;
-+	char *next1;
-+	char *next2;
-+
-+	if (strscpy(ver1, version1, 16) < 0 ||
-+	    strscpy(ver2, version2, 16) < 0)
-+		return -1;
-+	cur1 = ver1;
-+	cur2 = ver2;
- 
- 	/* loop through each level of the version string */
- 	while (result == 0) {
-+		next1 = strchr(cur1, '.');
-+		next2 = strchr(cur2, '.');
-+
-+		/* kstrtou8 could fail for dot */
-+		if (next1) {
-+			*next1 = '\0';
-+			next1++;
-+		}
-+
-+		if (next2) {
-+			*next2 = '\0';
-+			next2++;
-+		}
-+
- 		/* extract leading version numbers */
--		if (kstrtou8(ver1, 10, &num1) < 0)
-+		if (kstrtou8(cur1, 10, &num1) < 0)
- 			return -1;
- 
--		if (kstrtou8(ver2, 10, &num2) < 0)
-+		if (kstrtou8(cur2, 10, &num2) < 0)
- 			return -1;
- 
- 		/* if numbers differ, then set the result */
- 		if (num1 < num2)
-+			return -1;
-+		if (num1 > num2)
-+			return 1;
-+
-+		/* if numbers are the same, go to next level */
-+		if (!next1 && !next2)
-+			break;
-+		else if (!next1) {
- 			result = -1;
--		else if (num1 > num2)
-+		} else if (!next2) {
- 			result = 1;
--		else {
--			/* if numbers are the same, go to next level */
--			ver1 = strchr(ver1, '.');
--			ver2 = strchr(ver2, '.');
--			if (!ver1 && !ver2)
--				break;
--			else if (!ver1)
--				result = -1;
--			else if (!ver2)
--				result = 1;
--			else {
--				ver1++;
--				ver2++;
--			}
-+		} else {
-+			cur1 = next1;
-+			cur2 = next2;
- 		}
- 	}
-+
- 	return result;
- }
- 
-diff --git a/tools/bpf/example b/tools/bpf/example
-new file mode 100644
-index 0000000..a0ac81f
---- /dev/null
-+++ b/tools/bpf/example
-@@ -0,0 +1,12 @@
-+  ldh [12]
-+  jne #0x8100, nonvlan
-+  ldh [16]
-+  jne #0x88f7, bad
-+  ldb [18]
-+  ja test
-+  nonvlan: jne #0x88f7, bad
-+  ldb [14]
-+  test: and #0x8
-+  jeq #0, bad
-+  good: ret #1500
-+  bad: ret #0
-diff --git a/tools/bpf/novlan b/tools/bpf/novlan
-new file mode 100644
-index 0000000..fe35288
---- /dev/null
-+++ b/tools/bpf/novlan
-@@ -0,0 +1,7 @@
-+  ldh [12]
-+  jne #0x88f7, bad
-+  ldb [14]
-+  and #0x8
-+  jeq #0, bad
-+  good: ret #1500
-+  bad: ret #0
--- 
-2.7.4
+It seems no other follow-on patch in the series uses this nameless union.
 
