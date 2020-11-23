@@ -2,160 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B77AD2C0C70
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 14:58:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7070A2C0CA8
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 15:14:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388803AbgKWNxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 08:53:12 -0500
-Received: from www62.your-server.de ([213.133.104.62]:60006 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388791AbgKWNxJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 08:53:09 -0500
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1khCHB-0007wF-Ho; Mon, 23 Nov 2020 14:53:05 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1khCHB-0007fL-A7; Mon, 23 Nov 2020 14:53:05 +0100
-Subject: Re: [PATCH bpf] net, xsk: Avoid taking multiple skbuff references
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        ast@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        jonathan.lemon@gmail.com, yhs@fb.com, weqaar.janjua@gmail.com,
-        magnus.karlsson@intel.com, weqaar.a.janjua@intel.com
-References: <20201123131215.136131-1-bjorn.topel@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <12b970c5-6b44-5288-0c79-2df5178d1165@iogearbox.net>
-Date:   Mon, 23 Nov 2020 14:53:04 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1729462AbgKWOBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 09:01:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41650 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729372AbgKWOBB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 09:01:01 -0500
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FB03C0613CF;
+        Mon, 23 Nov 2020 06:01:01 -0800 (PST)
+Received: by mail-pl1-x642.google.com with SMTP id 18so8872786pli.13;
+        Mon, 23 Nov 2020 06:01:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kTzAwGnKctQP6f8k4mc+aVTNiIF28i6q0wCQZdb9TIQ=;
+        b=hzVDgoB/C4oCV5aKdslaJu2N+g9Q9d002IloasUd8GbE1Jvmm8w+D0sl07Jmw8TvqS
+         OMaWK4JoIe+9TvZ7w1XaH1c2zUubPwwrCVGmovVqE73YdvCQm14BsFI9QFhdtHYKEtZn
+         SvXZzykNEljNWrRwwbtQANRdla2V6JiguVQo/7/TNUOMDimtbhXlgtJZzBbL7ECrEkGh
+         Vf7NDk3Ldsbt+q4JAhhI9l7NqTcb33LwRvl0O4fPThQCuvZ+2mQMs4pQW/8uDTUv7r7N
+         DIcJIdd2dz6Jl96XLJ5bCRa7J0fezcdIowEsdtElYAtIWkfHz+pGsDYtIeo49CUMo2NE
+         8y1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kTzAwGnKctQP6f8k4mc+aVTNiIF28i6q0wCQZdb9TIQ=;
+        b=jZD4l2J0orwhxCqGubMUxRcgn7vKSSkzsGn33yUkxeGcNIMBOgYQzs8mYSdjaNGi4v
+         i8g7uhC1wtX6kXMEXRWK2izKgBow8WJEYh2haJT3JldZ0pZxkE8aeUehnoFJP6NSay/n
+         mRje9k4GgRcikJ/hgZAzQMnSQBd++xrOr/WVCyWwJItbPwTzPWg0S6jZJ0ULj3blA6p2
+         5QTJtVWjnms0OKy5veWlNdtr9VNe+kZvNNN9Yi2jf2A+h4L94mnaZlR/y8cB9XVU1OTs
+         s4Kw+Zq7JZBFuq9GbnBqxLfdE5VmInyDMk5uGku6ecyqUEco6/fYdxh1eqYX2Ah6N6+J
+         XPkg==
+X-Gm-Message-State: AOAM530iwW6uOG0ivoYZeD5xs5fYiTdNDYbOgWdzwqFmWMexmr9ZkCOb
+        KfEnIWrTa1jSk4xW18QnZrEOSzbhHGt4HXvkClU=
+X-Google-Smtp-Source: ABdhPJyS/m04iepzH+/zdL9XmL9/ST3WynYaUHAn8JSvsCr4+x4OX4zGjTvC/SwXSb6JSirwmHKC6ozm3+5dFIzXT40=
+X-Received: by 2002:a17:902:bd02:b029:da:8fd:af6b with SMTP id
+ p2-20020a170902bd02b02900da08fdaf6bmr4870343pls.7.1606140059409; Mon, 23 Nov
+ 2020 06:00:59 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20201123131215.136131-1-bjorn.topel@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25996/Sun Nov 22 14:25:48 2020)
+References: <3306b4d8-8689-b0e7-3f6d-c3ad873b7093@intel.com> <cover.1605686678.git.xuanzhuo@linux.alibaba.com>
+In-Reply-To: <cover.1605686678.git.xuanzhuo@linux.alibaba.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Mon, 23 Nov 2020 15:00:48 +0100
+Message-ID: <CAJ8uoz0hEiXFY9q_HJmfuY4vpf-DYH_gnDPvRhFpnc6OcQbj_Q@mail.gmail.com>
+Subject: Re: [PATCH 0/3] xsk: fix for xsk_poll writeable
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/23/20 2:12 PM, Björn Töpel wrote:
-> From: Björn Töpel <bjorn.topel@intel.com>
-> 
-> Commit 642e450b6b59 ("xsk: Do not discard packet when NETDEV_TX_BUSY")
-> addressed the problem that packets were discarded from the Tx AF_XDP
-> ring, when the driver returned NETDEV_TX_BUSY. Part of the fix was
-> bumping the skbuff reference count, so that the buffer would not be
-> freed by dev_direct_xmit(). A reference count larger than one means
-> that the skbuff is "shared", which is not the case.
-> 
-> If the "shared" skbuff is sent to the generic XDP receive path,
-> netif_receive_generic_xdp(), and pskb_expand_head() is entered the
-> BUG_ON(skb_shared(skb)) will trigger.
-> 
-> This patch adds a variant to dev_direct_xmit(), __dev_direct_xmit(),
-> where a user can select the skbuff free policy. This allows AF_XDP to
-> avoid bumping the reference count, but still keep the NETDEV_TX_BUSY
-> behavior.
-> 
-> Reported-by: Yonghong Song <yhs@fb.com>
-> Fixes: 642e450b6b59 ("xsk: Do not discard packet when NETDEV_TX_BUSY")
-> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
-> ---
->   include/linux/netdevice.h | 1 +
->   net/core/dev.c            | 9 +++++++--
->   net/xdp/xsk.c             | 8 +-------
->   3 files changed, 9 insertions(+), 9 deletions(-)
-> 
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 964b494b0e8d..e7402fca7752 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -2815,6 +2815,7 @@ u16 dev_pick_tx_cpu_id(struct net_device *dev, struct sk_buff *skb,
->   		       struct net_device *sb_dev);
->   int dev_queue_xmit(struct sk_buff *skb);
->   int dev_queue_xmit_accel(struct sk_buff *skb, struct net_device *sb_dev);
-> +int __dev_direct_xmit(struct sk_buff *skb, u16 queue_id, bool free_on_busy);
->   int dev_direct_xmit(struct sk_buff *skb, u16 queue_id);
->   int register_netdevice(struct net_device *dev);
->   void unregister_netdevice_queue(struct net_device *dev, struct list_head *head);
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 82dc6b48e45f..2af79a4253bb 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -4180,7 +4180,7 @@ int dev_queue_xmit_accel(struct sk_buff *skb, struct net_device *sb_dev)
->   }
->   EXPORT_SYMBOL(dev_queue_xmit_accel);
->   
-> -int dev_direct_xmit(struct sk_buff *skb, u16 queue_id)
-> +int __dev_direct_xmit(struct sk_buff *skb, u16 queue_id, bool free_on_busy)
->   {
->   	struct net_device *dev = skb->dev;
->   	struct sk_buff *orig_skb = skb;
-> @@ -4211,7 +4211,7 @@ int dev_direct_xmit(struct sk_buff *skb, u16 queue_id)
->   
->   	local_bh_enable();
->   
-> -	if (!dev_xmit_complete(ret))
-> +	if (free_on_busy && !dev_xmit_complete(ret))
->   		kfree_skb(skb);
->   
->   	return ret;
+On Wed, Nov 18, 2020 at 9:25 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+>
+> I tried to combine cq available and tx writeable, but I found it very difficult.
+> Sometimes we pay attention to the status of "available" for both, but sometimes,
+> we may only pay attention to one, such as tx writeable, because we can use the
+> item of fq to write to tx. And this kind of demand may be constantly changing,
+> and it may be necessary to set it every time before entering xsk_poll, so
+> setsockopt is not very convenient. I feel even more that using a new event may
+> be a better solution, such as EPOLLPRI, I think it can be used here, after all,
+> xsk should not have OOB data ^_^.
+>
+> However, two other problems were discovered during the test:
+>
+> * The mask returned by datagram_poll always contains EPOLLOUT
+> * It is not particularly reasonable to return EPOLLOUT based on tx not full
+>
+> After fixing these two problems, I found that when the process is awakened by
+> EPOLLOUT, the process can always get the item from cq.
+>
+> Because the number of packets that the network card can send at a time is
+> actually limited, suppose this value is "nic_num". Once the number of
+> consumed items in the tx queue is greater than nic_num, this means that there
+> must also be new recycled items in the cq queue from nic.
+>
+> In this way, as long as the tx configured by the user is larger, we won't have
+> the situation that tx is already in the writeable state but cannot get the item
+> from cq.
 
-Hm, but this way free_on_busy, even though constant, cannot be optimized away?
-Can't you just move the dev_xmit_complete() check out into dev_direct_xmit()
-instead? That way you can just drop the bool, and the below dev_direct_xmit()
-should probably just become an __always_line function in netdevice.h so you
-avoid the double call.
+I think the overall approach of tying this into poll() instead of
+setsockopt() is the right way to go. But we need a more robust
+solution. Your patch #3 also breaks backwards compatibility and that
+is not allowed. Could you please post some simple code example of what
+it is you would like to do in user space? So you would like to wake up
+when there are entries in the cq that can be retrieved and the reason
+you would like to do this is that you then know you can put some more
+entries into the Tx ring and they will get sent as there now are free
+slots in the cq. Correct me if wrong. Would an event that wakes you up
+when there is both space in the Tx ring and space in the cq work? Is
+there a case in which we would like to be woken up when only the Tx
+ring is non-full? Maybe there are as it might be beneficial to fill
+the Tx and while doing that some entries in the cq has been completed
+and away the packets go. But it would be great if you could post some
+simple example code, does not need to compile or anything. Can be
+pseudo code.
 
-> @@ -4220,6 +4220,11 @@ int dev_direct_xmit(struct sk_buff *skb, u16 queue_id)
->   	kfree_skb_list(skb);
->   	return NET_XMIT_DROP;
->   }
-> +
-> +int dev_direct_xmit(struct sk_buff *skb, u16 queue_id)
-> +{
-> +	return __dev_direct_xmit(skb, queue_id, true);
-> +}
->   EXPORT_SYMBOL(dev_direct_xmit);
->   
->   /*************************************************************************
-> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index 5a6cdf7b320d..c6ad31b374b7 100644
-> --- a/net/xdp/xsk.c
-> +++ b/net/xdp/xsk.c
-> @@ -411,11 +411,7 @@ static int xsk_generic_xmit(struct sock *sk)
->   		skb_shinfo(skb)->destructor_arg = (void *)(long)desc.addr;
->   		skb->destructor = xsk_destruct_skb;
->   
-> -		/* Hinder dev_direct_xmit from freeing the packet and
-> -		 * therefore completing it in the destructor
-> -		 */
-> -		refcount_inc(&skb->users);
-> -		err = dev_direct_xmit(skb, xs->queue_id);
-> +		err = __dev_direct_xmit(skb, xs->queue_id, false);
->   		if  (err == NETDEV_TX_BUSY) {
->   			/* Tell user-space to retry the send */
->   			skb->destructor = sock_wfree;
-> @@ -429,12 +425,10 @@ static int xsk_generic_xmit(struct sock *sk)
->   		/* Ignore NET_XMIT_CN as packet might have been sent */
->   		if (err == NET_XMIT_DROP) {
->   			/* SKB completed but not sent */
-> -			kfree_skb(skb);
->   			err = -EBUSY;
->   			goto out;
->   		}
->   
-> -		consume_skb(skb);
->   		sent_frame = true;
->   	}
->   
-> 
-> base-commit: 178648916e73e00de83150eb0c90c0d3a977a46a
-> 
+It would also be good to know if your goal is max throughput, max
+burst size, or something else.
 
+Thanks: Magnus
+
+
+> Xuan Zhuo (3):
+>   xsk: replace datagram_poll by sock_poll_wait
+>   xsk: change the tx writeable condition
+>   xsk: set tx/rx the min entries
+>
+>  include/uapi/linux/if_xdp.h |  2 ++
+>  net/xdp/xsk.c               | 26 ++++++++++++++++++++++----
+>  net/xdp/xsk_queue.h         |  6 ++++++
+>  3 files changed, 30 insertions(+), 4 deletions(-)
+>
+> --
+> 1.8.3.1
+>
