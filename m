@@ -2,182 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05CBA2BFECA
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 04:49:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 255E52BFEF5
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 05:21:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727383AbgKWDps (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Nov 2020 22:45:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59990 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726407AbgKWDps (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Nov 2020 22:45:48 -0500
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 308DEC0613CF
-        for <netdev@vger.kernel.org>; Sun, 22 Nov 2020 19:45:46 -0800 (PST)
-Received: by mail-lj1-x244.google.com with SMTP id r18so1693657ljc.2
-        for <netdev@vger.kernel.org>; Sun, 22 Nov 2020 19:45:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UU8EP5wBKEQP6da8/PNv0YuofmsT1cYlYb+MrY2uJNM=;
-        b=puwQs1JgTJ5JRiyxJapv349RmvdEYM882XwnQgxN1WO1XZ/4rIpFptI3nk84L3L1Hf
-         5i95Ku69I51Zru18c78/2JpAew8jGPCHz3QlT/eR+0SLwEBh3tjxGlwlsy7GiXXI7rzo
-         78cdYl1p0ca4UiXeWwQbXaWYL6cmT38E9KXNOhWmNqYXoePp7Re01tF478Yki+Y9n5SH
-         /ttTph36ZcidX5kH2moF64VDHZin68Cklzmq7ckt7FP6L3PTO39iW5XOBEvvQESErIT1
-         zqPoEnqjtZzhb4hbvk1E4ZFxy634LaqtNXgrq2iFjb+6aegWMriXDKar/YuMiyCN58eP
-         6+cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UU8EP5wBKEQP6da8/PNv0YuofmsT1cYlYb+MrY2uJNM=;
-        b=NQlf3ugB9BBty0EauTCJW3QRMwoKKJ2YnAbY28BDI460KBZZJzwNnao125Lr8HTWkW
-         5F3r3k8uICSosv4rE0AOMrZhsVL59+5H9l34bGg+BV2tB+7MLs3FHt0TxwO3FMlrTTBX
-         eVXtiKjLLsYolnVsnSZ3iH1uGkINGJ6z2FZS3l5yMiBcMDe3FnBzXhsCgz2WwzOtMRt1
-         FDIWeTTbRjSNtj/CEeg6tJsqzlH7zr6VTNeDnVfS6TUatp3zz/Di3Pgdzamw0xRqTx4t
-         4eCXR90btP9CA6QvBEusEAMRzL2VeU5MAfkP/uZq5TWvJS8wlPy9CRBBS7SvcT2U9kI3
-         aoVg==
-X-Gm-Message-State: AOAM530IgZTv140lwhlK8T89JVuNhNIxoLVb5tH+1+3kz4D9GTTPDIwk
-        w4hSowp5XUgsosdJ5mBStY+O0SxFrmh9iA==
-X-Google-Smtp-Source: ABdhPJzETsKeKiB7E7nu5SY0i/2zCu1rLnuLi1ddHAgRWYuzzweN0a3lkVu3pPJN0YV6HGYMWrWaMg==
-X-Received: by 2002:a05:651c:203:: with SMTP id y3mr11499902ljn.66.1606103144192;
-        Sun, 22 Nov 2020 19:45:44 -0800 (PST)
-Received: from container-ubuntu.lan ([240e:398:25da:d530::d2c])
-        by smtp.gmail.com with ESMTPSA id f10sm780378ljf.26.2020.11.22.19.45.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Nov 2020 19:45:43 -0800 (PST)
-From:   DENG Qingfang <dqfext@gmail.com>
-To:     netdev@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S1726875AbgKWEUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Nov 2020 23:20:41 -0500
+Received: from outbound-ip23b.ess.barracuda.com ([209.222.82.220]:55596 "EHLO
+        outbound-ip23b.ess.barracuda.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726163AbgKWEUk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Nov 2020 23:20:40 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2100.outbound.protection.outlook.com [104.47.58.100]) by mx1.us-east-2b.ess.aws.cudaops.com (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO); Mon, 23 Nov 2020 04:20:33 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GwCeO/3oCdMPe5ci4yHlW6TGkczcshmQsprR5syVJj8iIXHTPp1x4NWGGuC01BQLzHSTAUhKprxrpTblQM06if8mHNvlu0B+ejavGW6erhBo1W/ZhOyIlMJHE7YbbaseGIU1n5n7gbi/VuPwuXlUNGHNtzjsUt08aPeVv/oQtGIGvhZBwyWCFXSQkkGIZcgbkMtH9VHuXwkL07VcuhsUDTWkvP38UzNWyRdIv33BhQ6WCrQBPZSI3edvFRXX6deuhE5hWbiun4KB1TsLsNLvFSr/xfFDq6dD++Sgi2gOX+5kPUeHDXOW3uXtdH0gYNPDfr+vEW+j2VjqkK3pp+abwA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=t1O13UnkwiRKvjvt+ocD78BDXKZVYOZ7GM+XmeaNydY=;
+ b=HXl3ZNguq/EmEoJNci/9lC0N5q2fgJlgJJAUdRBPIeA8jaFEKSbdg3n73rCsdJqHOWb2NyLBdJriG2W7DzQMoB5l2ji7K6Nhd/K87ik5EZIdoGw+sSR8lpqcYAwW9V21BFu4Imq+ztbeedx/HyAtyqB89dM6wgZAME7Q/oXjg7AWxFFQCLghIxsX5PjucvFQckxixCyObPcVDs45cDaT55biOPbM4ADNBiTVGINtOYyMPx1e0JaQJqpHpHbpQ2m2YD0KceLtd7K3XXKsqeqvsqwq6ywzWMNldooTp7RTCzYrgW2cLgJFtnEVrwJzvXmf8sQzY+s554b70ci8PiG9BA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=digi.com; dmarc=pass action=none header.from=digi.com;
+ dkim=pass header.d=digi.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=digi.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=t1O13UnkwiRKvjvt+ocD78BDXKZVYOZ7GM+XmeaNydY=;
+ b=unv7TwVCFePol1kwBHkrwF/iPvYKIMtqGSgiz8LGEDDinAOOtRjNgTXIrtGQrsaP3UasGTloxl7mAatK8RAsbv63n0lpHDq5NUw9djgk4U8ZwYA3d6eh8wsYOM35NovXoL1lWnpg9nYC4CLUocbfzc76rzN1fMu9BrAXM1nkL3E=
+Received: from CY4PR1001MB2311.namprd10.prod.outlook.com
+ (2603:10b6:910:44::24) by CY4PR1001MB2088.namprd10.prod.outlook.com
+ (2603:10b6:910:40::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3564.28; Mon, 23 Nov
+ 2020 04:20:31 +0000
+Received: from CY4PR1001MB2311.namprd10.prod.outlook.com
+ ([fe80::a956:bdc0:5119:197]) by CY4PR1001MB2311.namprd10.prod.outlook.com
+ ([fe80::a956:bdc0:5119:197%6]) with mapi id 15.20.3564.038; Mon, 23 Nov 2020
+ 04:20:31 +0000
+From:   "Ramsay, Lincoln" <Lincoln.Ramsay@digi.com>
+To:     Igor Russkikh <irusskikh@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Rene van Dorst <opensource@vdorst.com>
-Subject: [PATCH net-next] net: ethernet: mediatek: support setting MTU
-Date:   Mon, 23 Nov 2020 11:45:22 +0800
-Message-Id: <20201123034522.1268-1-dqfext@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Dmitry Bogdanov [C]" <dbogdanov@marvell.com>
+Subject: Re: [EXT] [PATCH] aquantia: Remove the build_skb path
+Thread-Topic: [EXT] [PATCH] aquantia: Remove the build_skb path
+Thread-Index: AQHWvr+D9OUe7+XJI0yBaR2s4ZL4BanQptMAgAQJ92U=
+Date:   Mon, 23 Nov 2020 04:20:31 +0000
+Message-ID: <CY4PR1001MB23115129ED895150C388E12CE8FD0@CY4PR1001MB2311.namprd10.prod.outlook.com>
+References: <CY4PR1001MB23118EE23F7F5196817B8B2EE8E10@CY4PR1001MB2311.namprd10.prod.outlook.com>
+ <2b392026-c077-2871-3492-eb5ddd582422@marvell.com>
+ <CY4PR1001MB2311C0DA2840AFC20AE6AEB5E8E10@CY4PR1001MB2311.namprd10.prod.outlook.com>
+ <CY4PR1001MB231125B16A35324A79270373E8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
+ <CY4PR1001MB2311E1B5D8E2700C92E7BE2DE8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>,<12fbca7a-86c9-ab97-d052-2a5cb0a4f145@marvell.com>
+In-Reply-To: <12fbca7a-86c9-ab97-d052-2a5cb0a4f145@marvell.com>
+Accept-Language: en-AU, en-US
+Content-Language: en-AU
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: marvell.com; dkim=none (message not signed)
+ header.d=none;marvell.com; dmarc=none action=none header.from=digi.com;
+x-originating-ip: [158.140.192.185]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 661864ca-673c-4532-0a51-08d88f671dae
+x-ms-traffictypediagnostic: CY4PR1001MB2088:
+x-microsoft-antispam-prvs: <CY4PR1001MB20887EB2BFA5BD6A92E23581E8FC0@CY4PR1001MB2088.namprd10.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: uiefg+0m70oev/AZaN4fpQ1loIHKoyEI3PlupWon+wkBH5AYJsCujVILJs8Kv/QAqruJmbbJQLnqUvPcN7BVQxTebz2n0ScvNkH4ZJXvy3QxIhrn4XWEzHE8dWohGzsoUC8sDRYoaFL/LEpCTgpEpJvP+tUwDXShlsksO6Duy+EVku3r7QJu1b6ObxtNHSBVWCalhomhjyJCn2DyBIq+M9DnzHPeAPOn+tDNmBCwvSdcpVBnzlQHJWfuMz7DjXD7cV4MDgYbBYr7qglF/Qxijhib5nT1+cvjlcS4yWHN9SmcWR/VWqOmHEsmH4TDMoh7RqJxCrC9A6j0s0kJmDaSKQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR1001MB2311.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39840400004)(136003)(366004)(376002)(346002)(396003)(76116006)(316002)(64756008)(4744005)(66476007)(66556008)(66946007)(5660300002)(91956017)(52536014)(478600001)(26005)(8676002)(8936002)(86362001)(83380400001)(2906002)(55016002)(9686003)(186003)(66446008)(110136005)(7696005)(6506007)(71200400001)(33656002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: FxEOkZEWPLwxsYRjHkKXM9x9/Yb8gbvqTCFALKhtJODuRLzX/LUXv6FNLtHtuanBok8RBx9QhHOcGkrXS2M4sKHtdmVcAZcdB7TotlpaAStg2jimLELqwNFHVUR1SdvpY2shkUr5aeXcwsCjAwn0Dkf5mmaQ3jueUBvGxb34CdFfPamSxfEbN9/rshnbofb1WdGei4z46Ru1q6pMUBOOGGVVTD+NmZYy4sAoQZaNWTWq/Rrnq8tzyaYYJuXD7GZDz0G5mEP/8HLnsSdTNW+j4ImNlckO1ulcy5Kg5ujGhOo6SSgdl/v9Ja/HtUue9ybuEdGWfxZ0vjU58JeQwNhitdCDaRpA1RN27z8YhE4kFJaA72GnSswPJl6JvcafEZWdc5de4gvVdVd81HqApeeD/p95Bm1NT+to61NhZdXMixSMuDqg+r7eQ4/ZDwoz5eC+AnKZ/B36DC835wYSao0OL9dG9XGGSbXz7N2mcBaVaQIL/e1jsFVrCvcsCYfXLPOtrXszKZZ24bbZFyXImdL4wBx0sdBTcdQ/AlSWR7Nzh/xyMdrw2Kx01dfKOFAqWS7roU7IB0jJ5PXD01X/rP7foBCAHY+15/BxS0rPfNVCH5b42yJsJRN1XVybLodH2xCD8CeJakd8nX+bvy+AVt/OZWZqkZzxL/iJAz5HeeDz+ehS6NeH/MZ+VgaFCw7Qe3I+RokmsFZ7iNqdL5wFeivLhx1QczlSCHB/6IHq59ah57282+Gw1K4k472U5bZ1FlWtQg+vqIoRNoCNE+unRj2qvctn7fA6Y0qUNmI9FW721JTPmj6HBTVtMIePL0jLlYtmfhFFZfbYa4lut6hQDzr47k0Oqg4wnHWRv18gldNaEUYvP4gKBJXzJNeEqAk4S6UuWGJjJDY/fSaYLPkvlz9FFA==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: digi.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CY4PR1001MB2311.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 661864ca-673c-4532-0a51-08d88f671dae
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Nov 2020 04:20:31.3844
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: abb4cdb7-1b7e-483e-a143-7ebfd1184b9e
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7EmJn+QbiZvtqlrY+7cvnv/fNQyi7aAoXUbtXJ52OcwR8UeUfQtECrBeW51X7hPRCSYfdJXC37/LZJ6+gIj9Xg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1001MB2088
+X-BESS-ID: 1606105233-893001-21862-157939-1
+X-BESS-VER: 2019.3_20201120.2333
+X-BESS-Apparent-Source-IP: 104.47.58.100
+X-BESS-Outbound-Spam-Score: 0.00
+X-BESS-Outbound-Spam-Report: Code version 3.2, rules version 3.2.2.228379 [from 
+        cloudscan22-139.us-east-2b.ess.aws.cudaops.com]
+        Rule breakdown below
+         pts rule name              description
+        ---- ---------------------- --------------------------------
+        0.00 BSF_BESS_OUTBOUND      META: BESS Outbound 
+X-BESS-Outbound-Spam-Status: SCORE=0.00 using account:ESS112744 scores of KILL_LEVEL=7.0 tests=BSF_BESS_OUTBOUND
+X-BESS-BRTS-Status: 1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-MT762x HW, except for MT7628, supports frame length up to 2048
-(maximum length on GDM), so allow setting MTU up to 2030.
-
-Signed-off-by: DENG Qingfang <dqfext@gmail.com>
----
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 36 ++++++++++++++++++++-
- drivers/net/ethernet/mediatek/mtk_eth_soc.h | 11 +++++--
- 2 files changed, 43 insertions(+), 4 deletions(-)
-
-Changes RFC -> v1:
-	Exclude MT7628
-
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 6d2d60675ffd..27cae3f43972 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -353,7 +353,7 @@ static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
- 	/* Setup gmac */
- 	mcr_cur = mtk_r32(mac->hw, MTK_MAC_MCR(mac->id));
- 	mcr_new = mcr_cur;
--	mcr_new |= MAC_MCR_MAX_RX_1536 | MAC_MCR_IPG_CFG | MAC_MCR_FORCE_MODE |
-+	mcr_new |= MAC_MCR_IPG_CFG | MAC_MCR_FORCE_MODE |
- 		   MAC_MCR_BACKOFF_EN | MAC_MCR_BACKPR_EN | MAC_MCR_FORCE_LINK;
- 
- 	/* Only update control register when needed! */
-@@ -2499,6 +2499,39 @@ static void mtk_uninit(struct net_device *dev)
- 	mtk_rx_irq_disable(eth, ~0);
- }
- 
-+static int mtk_change_mtu(struct net_device *dev, int new_mtu)
-+{
-+	int length = new_mtu + MTK_RX_ETH_HLEN;
-+	struct mtk_mac *mac = netdev_priv(dev);
-+	struct mtk_eth *eth = mac->hw;
-+	u32 mcr_cur, mcr_new;
-+
-+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628)) {
-+		if (length > 1536)
-+			return -EINVAL;
-+	} else {
-+		mcr_cur = mtk_r32(mac->hw, MTK_MAC_MCR(mac->id));
-+		mcr_new = mcr_cur & ~MAC_MCR_MAX_RX_LEN_MASK;
-+
-+		if (length <= 1518)
-+			mcr_new |= MAC_MCR_MAX_RX_LEN(MAC_MCR_MAX_RX_LEN_1518);
-+		else if (length <= 1536)
-+			mcr_new |= MAC_MCR_MAX_RX_LEN(MAC_MCR_MAX_RX_LEN_1536);
-+		else if (length <= 1552)
-+			mcr_new |= MAC_MCR_MAX_RX_LEN(MAC_MCR_MAX_RX_LEN_1552);
-+		else
-+			mcr_new |= MAC_MCR_MAX_RX_LEN(MAC_MCR_MAX_RX_LEN_2048);
-+
-+		/* Only update control register when needed! */
-+		if (mcr_new != mcr_cur)
-+			mtk_w32(mac->hw, mcr_new, MTK_MAC_MCR(mac->id));
-+	}
-+
-+	dev->mtu = new_mtu;
-+
-+	return 0;
-+}
-+
- static int mtk_do_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- {
- 	struct mtk_mac *mac = netdev_priv(dev);
-@@ -2795,6 +2828,7 @@ static const struct net_device_ops mtk_netdev_ops = {
- 	.ndo_set_mac_address	= mtk_set_mac_address,
- 	.ndo_validate_addr	= eth_validate_addr,
- 	.ndo_do_ioctl		= mtk_do_ioctl,
-+	.ndo_change_mtu		= mtk_change_mtu,
- 	.ndo_tx_timeout		= mtk_tx_timeout,
- 	.ndo_get_stats64        = mtk_get_stats64,
- 	.ndo_fix_features	= mtk_fix_features,
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 454cfcd465fd..cfc11654ccd6 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -17,12 +17,12 @@
- #include <linux/phylink.h>
- 
- #define MTK_QDMA_PAGE_SIZE	2048
--#define	MTK_MAX_RX_LENGTH	1536
-+#define MTK_MAX_RX_LENGTH	2048
- #define MTK_TX_DMA_BUF_LEN	0x3fff
- #define MTK_DMA_SIZE		256
- #define MTK_NAPI_WEIGHT		64
- #define MTK_MAC_COUNT		2
--#define MTK_RX_ETH_HLEN		(VLAN_ETH_HLEN + VLAN_HLEN + ETH_FCS_LEN)
-+#define MTK_RX_ETH_HLEN		(ETH_HLEN + ETH_FCS_LEN)
- #define MTK_RX_HLEN		(NET_SKB_PAD + MTK_RX_ETH_HLEN + NET_IP_ALIGN)
- #define MTK_DMA_DUMMY_DESC	0xffffffff
- #define MTK_DEFAULT_MSG_ENABLE	(NETIF_MSG_DRV | \
-@@ -320,7 +320,12 @@
- 
- /* Mac control registers */
- #define MTK_MAC_MCR(x)		(0x10100 + (x * 0x100))
--#define MAC_MCR_MAX_RX_1536	BIT(24)
-+#define MAC_MCR_MAX_RX_LEN_MASK	GENMASK(25, 24)
-+#define MAC_MCR_MAX_RX_LEN(_x)	(MAC_MCR_MAX_RX_LEN_MASK & ((_x) << 24))
-+#define MAC_MCR_MAX_RX_LEN_1518	0x0
-+#define MAC_MCR_MAX_RX_LEN_1536	0x1
-+#define MAC_MCR_MAX_RX_LEN_1552	0x2
-+#define MAC_MCR_MAX_RX_LEN_2048	0x3
- #define MAC_MCR_IPG_CFG		(BIT(18) | BIT(16))
- #define MAC_MCR_FORCE_MODE	BIT(15)
- #define MAC_MCR_TX_EN		BIT(14)
--- 
-2.25.1
-
+> Yep, that could be the only way to fix this for now.=0A=
+> Have you tried to estimate any performance drops from this?=0A=
+=0A=
+Unfortunately, I am not in a very good position to do this. The 10G interfa=
+ces on our device don't actually have enough raw PCI bandwidth available to=
+ hit 10G transfer rates.=0A=
+=0A=
+I did use iperf3 and saw bursts over 2Gbit/sec (with average closer to 1.3G=
+bit/sec on a good run). There was no significant difference between running=
+ with and without the patch. I am told that this is about as good as can be=
+ expected.=0A=
+=0A=
+Make of that what you will :)=0A=
+=0A=
+Lincoln=0A=
