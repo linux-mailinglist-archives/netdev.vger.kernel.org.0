@@ -2,100 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BB142C1628
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 21:29:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 182712C161F
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 21:29:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732919AbgKWULj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 15:11:39 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:21083 "EHLO
+        id S1728628AbgKWULW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 15:11:22 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:22574 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732597AbgKWULN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 15:11:13 -0500
+        by vger.kernel.org with ESMTP id S1732692AbgKWULU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 15:11:20 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606162272;
+        s=mimecast20190719; t=1606162279;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=saslOu984ahwhKQKfNAWbZLu0fw2ozrT5TSfZyQgUMo=;
-        b=OKdrp6yd1xwaCLqF2EIRta5Ds5N9F5OMeZbojCicIt/MHfQUVvKRxqAIWbqeoVf66htabA
-        +V5NLr6zR3zYGbRY2SsdsOzg/0VdNJ/EURaJrcZqjtICiiNR1DQ4VBu4BZVJtvms3FH8+4
-        6ByTP+DZzYeNJSkmdJFK93wmGqRSTtw=
+        bh=BucjfkTdsu/6qMhVKwCOxP6e6VVAYFVqDMnKbCaFjOI=;
+        b=VmQXdasNQN8GZ3zZZUx4JI/GH+IJXY3yB2aQg3q253rJiiYQciTwaOpKMWBTmLW5Iqw4I/
+        YNetwlG+9q6gi1PIplqfaqPo2TS1VVDU8A90sf5GITFEqSGikLwRRKedBP4JT3gWwGShZh
+        oAmpdheJAi0+jsa7x39wcigZKQNQ8+8=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-123-w9mxzQzMMTOA8i4AQPfcbw-1; Mon, 23 Nov 2020 15:11:10 -0500
-X-MC-Unique: w9mxzQzMMTOA8i4AQPfcbw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+ us-mta-165-Z2WovFMLOUCWd9d0-Shb0g-1; Mon, 23 Nov 2020 15:11:17 -0500
+X-MC-Unique: Z2WovFMLOUCWd9d0-Shb0g-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 16B0A8030A5;
-        Mon, 23 Nov 2020 20:11:09 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DC07B8030A5;
+        Mon, 23 Nov 2020 20:11:15 +0000 (UTC)
 Received: from warthog.procyon.org.uk (ovpn-112-111.rdu2.redhat.com [10.10.112.111])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 48A165D6DC;
-        Mon, 23 Nov 2020 20:11:08 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1BEEF9CA0;
+        Mon, 23 Nov 2020 20:11:14 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 09/17] rxrpc: Allow security classes to give more
- info on server keys
+Subject: [PATCH net-next 10/17] rxrpc: Make the parsing of xdr payloads more
+ coherent
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Date:   Mon, 23 Nov 2020 20:11:07 +0000
-Message-ID: <160616226750.830164.2093457327608722796.stgit@warthog.procyon.org.uk>
+Date:   Mon, 23 Nov 2020 20:11:14 +0000
+Message-ID: <160616227430.830164.6815276950448082758.stgit@warthog.procyon.org.uk>
 In-Reply-To: <160616220405.830164.2239716599743995145.stgit@warthog.procyon.org.uk>
 References: <160616220405.830164.2239716599743995145.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/0.23
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow a security class to give more information on an rxrpc_s-type key when
-it is viewed in /proc/keys.  This will allow the upcoming RxGK security
-class to show the enctype name here.
+Make the parsing of xdr-encoded payloads, as passed to add_key, more
+coherent.  Shuttling back and forth between various variables was a bit
+hard to follow.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
 ---
 
- net/rxrpc/ar-internal.h |    3 +++
- net/rxrpc/server_key.c  |    4 ++++
- 2 files changed, 7 insertions(+)
+ net/rxrpc/key.c |   21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
-diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 6682c797b878..0fb294725ff2 100644
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -227,6 +227,9 @@ struct rxrpc_security {
- 	/* Destroy the payload of a server key */
- 	void (*destroy_server_key)(struct key *);
- 
-+	/* Describe a server key */
-+	void (*describe_server_key)(const struct key *, struct seq_file *);
-+
- 	/* initialise a connection's security */
- 	int (*init_connection_security)(struct rxrpc_connection *,
- 					struct rxrpc_key_token *);
-diff --git a/net/rxrpc/server_key.c b/net/rxrpc/server_key.c
-index 1a2f0b63ee1d..ead3471307ee 100644
---- a/net/rxrpc/server_key.c
-+++ b/net/rxrpc/server_key.c
-@@ -105,7 +105,11 @@ static void rxrpc_destroy_s(struct key *key)
- 
- static void rxrpc_describe_s(const struct key *key, struct seq_file *m)
+diff --git a/net/rxrpc/key.c b/net/rxrpc/key.c
+index ed29ec01237b..a9d8f5b466be 100644
+--- a/net/rxrpc/key.c
++++ b/net/rxrpc/key.c
+@@ -135,7 +135,7 @@ static int rxrpc_preparse_xdr_rxkad(struct key_preparsed_payload *prep,
+  */
+ static int rxrpc_preparse_xdr(struct key_preparsed_payload *prep)
  {
-+	const struct rxrpc_security *sec = key->payload.data[1];
-+
- 	seq_puts(m, key->description);
-+	if (sec && sec->describe_server_key)
-+		sec->describe_server_key(key, m);
- }
+-	const __be32 *xdr = prep->data, *token;
++	const __be32 *xdr = prep->data, *token, *p;
+ 	const char *cp;
+ 	unsigned int len, paddedlen, loop, ntoken, toklen, sec_ix;
+ 	size_t datalen = prep->datalen;
+@@ -189,20 +189,20 @@ static int rxrpc_preparse_xdr(struct key_preparsed_payload *prep)
+ 		goto not_xdr;
  
- /*
+ 	/* check each token wrapper */
+-	token = xdr;
++	p = xdr;
+ 	loop = ntoken;
+ 	do {
+ 		if (datalen < 8)
+ 			goto not_xdr;
+-		toklen = ntohl(*xdr++);
+-		sec_ix = ntohl(*xdr);
++		toklen = ntohl(*p++);
++		sec_ix = ntohl(*p);
+ 		datalen -= 4;
+ 		_debug("token: [%x/%zx] %x", toklen, datalen, sec_ix);
+ 		paddedlen = (toklen + 3) & ~3;
+ 		if (toklen < 20 || toklen > datalen || paddedlen > datalen)
+ 			goto not_xdr;
+ 		datalen -= paddedlen;
+-		xdr += paddedlen >> 2;
++		p += paddedlen >> 2;
+ 
+ 	} while (--loop > 0);
+ 
+@@ -214,17 +214,18 @@ static int rxrpc_preparse_xdr(struct key_preparsed_payload *prep)
+ 	 * - we ignore the cellname, relying on the key to be correctly named
+ 	 */
+ 	do {
+-		xdr = token;
+ 		toklen = ntohl(*xdr++);
+-		token = xdr + ((toklen + 3) >> 2);
+-		sec_ix = ntohl(*xdr++);
++		token = xdr;
++		xdr += (toklen + 3) / 4;
++
++		sec_ix = ntohl(*token++);
+ 		toklen -= 4;
+ 
+-		_debug("TOKEN type=%u [%p-%p]", sec_ix, xdr, token);
++		_debug("TOKEN type=%x len=%x", sec_ix, toklen);
+ 
+ 		switch (sec_ix) {
+ 		case RXRPC_SECURITY_RXKAD:
+-			ret = rxrpc_preparse_xdr_rxkad(prep, datalen, xdr, toklen);
++			ret = rxrpc_preparse_xdr_rxkad(prep, datalen, token, toklen);
+ 			if (ret != 0)
+ 				goto error;
+ 			break;
 
 
