@@ -2,181 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 671312C1305
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 19:33:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC5132C1321
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 19:33:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728345AbgKWSUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 13:20:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34638 "EHLO mail.kernel.org"
+        id S1729972AbgKWSbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 13:31:01 -0500
+Received: from smtp.uniroma2.it ([160.80.6.22]:41920 "EHLO smtp.uniroma2.it"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728171AbgKWSUm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Nov 2020 13:20:42 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 21F2320BED;
-        Mon, 23 Nov 2020 18:20:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606155641;
-        bh=yyYRToW6/LjShztiWv4iPEXSDeulM/mTOMd4vEMpTxI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=01HEEUdgM0ltStXiG/yJag4REaiwAFhI3Jv8shuAplB5E7FVs6nxrZtavo6T2+kjI
-         rwOFQWoOr/ivkxGxe0cQ+hyzLhyAZ2eXfyeQ9t+mhubXo9aFsnOMaNzujftXc6ercY
-         yFrF9K/HO9jJIO1GZ9QbKBPMcwNcA39DCkcBzyMg=
-Date:   Mon, 23 Nov 2020 10:20:40 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tariq Toukan <ttoukan.linux@gmail.com>
-Cc:     Jarod Wilson <jarod@redhat.com>, Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>
-Subject: Re: [PATCH net-next 0/2] TLS TX HW offload for Bond
-Message-ID: <20201123102040.338f32c7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <ee42de0e-e657-4108-3fb7-05e252979673@gmail.com>
-References: <20201115134251.4272-1-tariqt@nvidia.com>
-        <20201118160239.78871842@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <0e4a04f2-2ffa-179d-3b7b-ef08b52c9290@gmail.com>
-        <20201119083811.6b68bfa8@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <ee42de0e-e657-4108-3fb7-05e252979673@gmail.com>
+        id S1728631AbgKWSbA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Nov 2020 13:31:00 -0500
+Received: from localhost.localdomain ([160.80.103.126])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 0ANITqge016939
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 23 Nov 2020 19:29:53 +0100
+From:   Andrea Mayer <andrea.mayer@uniroma2.it>
+To:     "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Shrijeet Mukherjee <shrijeet@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+Cc:     Nathan Chancellor <natechancellor@gmail.com>,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Subject: [net-next v3 0/8] seg6: add support for SRv6 End.DT4/DT6 behavior
+Date:   Mon, 23 Nov 2020 19:28:48 +0100
+Message-Id: <20201123182857.4640-1-andrea.mayer@uniroma2.it>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 22 Nov 2020 14:48:04 +0200 Tariq Toukan wrote:
-> On 11/19/2020 6:38 PM, Jakub Kicinski wrote:
-> > On Thu, 19 Nov 2020 17:59:38 +0200 Tariq Toukan wrote:  
-> >> On 11/19/2020 2:02 AM, Jakub Kicinski wrote:  
-> >>> On Sun, 15 Nov 2020 15:42:49 +0200 Tariq Toukan wrote:  
-> >>>> This series opens TLS TX HW offload for bond interfaces.
-> >>>> This allows bond interfaces to benefit from capable slave devices.
-> >>>>
-> >>>> The first patch adds real_dev field in TLS context structure, and aligns
-> >>>> usages in TLS module and supporting drivers.
-> >>>> The second patch opens the offload for bond interfaces.
-> >>>>
-> >>>> For the configuration above, SW kTLS keeps picking the same slave
-> >>>> To keep simple track of the HW and SW TLS contexts, we bind each socket to
-> >>>> a specific slave for the socket's whole lifetime. This is logically valid
-> >>>> (and similar to the SW kTLS behavior) in the following bond configuration,
-> >>>> so we restrict the offload support to it:
-> >>>>
-> >>>> ((mode == balance-xor) or (mode == 802.3ad))
-> >>>> and xmit_hash_policy == layer3+4.  
-> >>>
-> >>> This does not feel extremely clean, maybe you can convince me otherwise.
-> >>>
-> >>> Can we extend netdev_get_xmit_slave() and figure out the output dev
-> >>> (and if it's "stable") in a more generic way? And just feed that dev
-> >>> into TLS handling?  
-> >>
-> >> I don't see we go through netdev_get_xmit_slave(), but through
-> >> .ndo_start_xmit (bond_start_xmit).  
-> > 
-> > I may be misunderstanding the purpose of netdev_get_xmit_slave(),
-> > please correct me if I'm wrong. AFAIU it's supposed to return a
-> > lower netdev that the skb should then be xmited on.  
-> 
-> That's true. It was recently added and used by the RDMA team. Not used 
-> or integrated in the Eth networking stack.
-> 
-> > So what I was thinking was either construct an skb or somehow reshuffle
-> > the netdev_get_xmit_slave() code to take a flow dissector output or
-> > ${insert other ideas}. Then add a helper in the core that would drill
-> > down from the socket netdev to the "egress" netdev. Have TLS call
-> > that helper, and talk to the "egress" netdev from the start, rather
-> > than the socket's netdev. Then loosen the checks on software devices.  
-> 
-> As I understand it, best if we can even generalize this to apply to all 
-> kinds of traffic: bond driver won't do the xmit itself anymore, it just 
-> picks an egress dev and returns it. The core infrastructure will call 
-> the xmit function for the egress dev.
+This patchset provides support for the SRv6 End.DT4 and SRv6 End.DT6 (VRF mode)
+behavior.
 
-I think you went way further than I was intending :) I was only
-considering the control path. Leave the datapath unchanged.
+The SRv6 End.DT4 is used to implement multi-tenant IPv4 L3 VPN. It decapsulates
+the received packets and performs IPv4 routing lookup in the routing table of
+the tenant. The SRv6 End.DT4 Linux implementation leverages a VRF device. The
+SRv6 End.DT4 is defined in the SRv6 Network Programming [1].
 
-AFAIK you're making 3 changes:
- - forwarding tls ops
- - pinning flows
- - handling features
+The Linux kernel already offers an implementation of the SRv6 End.DT6
+behavior which permits IPv6 L3 VPNs over SRv6 networks. This new
+implementation of DT6 is based on the same VRF infrastructure already
+exploited for implementing the SRv6 End.DT4 behavior. The aim of the new
+SRv6 End.DT6 in VRF mode consists in simplifying the construction of IPv6
+L3 VPN services in the multi-tenant environment.
+Currently, the two SRv6 End.DT6 implementations (legacy and VRF mode)
+coexist seamlessly and can be chosen according to the context and the user
+preferences.
 
-Pinning of the TLS device to a leg of the bond looks like ~15LoC.
-I think we can live with that.
+- Patch 1 is needed to solve a pre-existing issue with tunneled packets
+  when a sniffer is attached;
 
-It's the 150 LoC of forwarding TLS ops and duplicating dev selection
-logic in bond_sk_hash_l34() that I'd rather avoid.
+- Patch 2 improves the management of the seg6local attributes used by the
+  SRv6 behaviors;
 
-Handling features is probably fine, too, I haven't thought about that
-much.
+- Patch 3 adds support for optional attributes in SRv6 behaviors;
 
-> I like the idea, it can generalize code structures for all kinds of 
-> upper-devices and sockets, taking them into a common place in core, 
-> which reduces code duplications.
-> 
-> If we go only half the way, i.e. keep xmit logic in bond for 
-> non-TLS-offloaded traffic, then we have to let TLS module (and others in 
-> the future) act deferentially for different kinds of devs (upper/lower) 
-> which IMHO reduces generality.
+- Patch 4 introduces two callbacks used for customizing the
+  creation/destruction of a SRv6 behavior;
 
-How so? I was expecting TLS to just do something like:
+- Patch 5 is the core patch that adds support for the SRv6 End.DT4
+  behavior;
 
-	netdev = sk_get_xmit_dev_lowest(sk);
+- Patch 6 introduces the VRF support for SRv6 End.DT6 behavior;
 
-which would recursively call get_xmit_slave(CONST) until it reaches
-a device which doesn't resolve further.
+- Patch 7 adds the selftest for SRv6 End.DT4 behavior;
 
-BTW is the flow pinning to bond legs actually a must-do? I don't know
-much about bonding but wouldn't that mean that if the selected leg goes
-down we'd lose connectivity, rather than falling back to SW crypto?
+- Patch 8 adds the selftest for SRv6 End.DT6 (VRF mode) behavior;
 
-> I'm in favor of the deeper change. It will be on a larger scale, and 
-> totally orthogonal to the current TLS offload support in bond.
-> 
-> If we decide to apply the idea only to TLS sockets (or any subset of 
-> sockets) we're actually taking a generic one-flow (the xmit patch of a 
-> bond dev) and turning it into two (or potentially more) flows, depending 
-> on the socket type. This also reduces generality.
+- Patch 9 adds the vrftable attribute for End.DT4/DT6 behaviors in iproute2.
 
-I don't follow this part.
+I would like to thank David Ahern for his support during the development of
+this patchset.
 
-> > I'm probably missing the problem you're trying to explain to me :S
-> 
-> I kept the patch minimal, and kept the TLS offload logic internal to the 
-> bond driver, just like it is internal to the device drivers (mlx5e, and 
-> others), with no core infrastructure modification.
-> 
-> > Side note - Jarod, I'd be happy to take a patch renaming
-> > netdev_get_xmit_slave() and the ndo, if you have the cycles to send
-> > a patch. It's a recent addition, and in the core we should make more
-> > of an effort to avoid sensitive terms.
-> >   
-> >> Currently I have my check there to
-> >> catch all skbs belonging to offloaded TLS sockets.
-> >>
-> >> The TLS offload get_slave() logic decision is per socket, so the result
-> >> cannot be saved in the bond memory. Currently I save the real_dev field
-> >> in the TLS context structure.  
-> > 
-> > Right, but we could just have ctx->netdev be the "egress" netdev
-> > always, right? Do we expect somewhere that it's going to be matching
-> > the socket's dst?
-> 
-> So once the offload context is established we totally bypass the bond 
-> dev? and lose interaction or reference to it?
+Comments, suggestions and improvements are very welcome!
 
-Yup, I don't think we need it.
+Thanks,
+Andrea Mayer
 
-> What if the egress dev is detached form the bond? We must then be 
-> notified somehow.
+v3
+ notes about the build bot:
+  - apparently the ',' (comma) in the subject prefix confused the build bot.
+    Removed the ',' in favor of ' ' (space). 
+    
+    Thanks to David Ahern and Konstantin Ryabitsev for shedding light on this
+    fact.
+    Thanks also to Nathan Chancellor for trying to build the patchset v2 by
+    simulating the bot issue.
 
-Do we notify TLS when routing changes? I think it's a separate topic. 
+ add new patch for iproute2:
+  - [9/9] seg6: add support for vrftable attribute in End.DT4/DT6 behaviors
 
-If we have the code to "un-offload" a flow we could handle clearing
-features better and notify from sk_validate_xmit_skb that the flow
-started hitting unexpected dev, hence it should be re-offloaded.
+ add new patch:
+  -  [8/9] selftests: add selftest for the SRv6 End.DT6 (VRF) behavior
 
-I don't think we need an explicit invalidation from the particular
-drivers here.
+ add new patch:
+  - [6/9] seg6: add VRF support for SRv6 End.DT6 behavior
+
+ add new patch:
+  - [3/9] seg6: add support for optional attributes in SRv6 behaviors
+
+ selftests: add selftest for the SRv6 End.DT4 behavior
+  - keep David Ahern's review tag since the code wasn't changed. Thanks to David  
+    Ahern for his review.
+
+ seg6: add support for the SRv6 End.DT4 behavior
+  - remove useless error in seg6_end_dt4_build();
+  - remove #ifdef/#endif stubs for DT4 when CONFIG_NET_L3_MASTER_DEV is not
+    defined;
+  - fix coding style.
+
+    Thanks to Jakub Kicinski for his review and for all his suggestions.
+
+ seg6: add callbacks for customizing the creation/destruction of a behavior
+  - remove typedef(s) slwt_{build/destroy}_state_t;
+  - fix coding style: remove empty lines, trivial comments and rename labels in
+    the seg6_local_build_state() function.
+    
+    Thanks to Jakub Kicinski for his review and for all his suggestions.
+
+ seg6: improve management of behavior attributes
+  - remove defensive programming approach in destroy_attr_srh(),
+    destroy_attr_bpf() and destroy_attrs();
+  - change the __destroy_attrs() function signature, renaming the 'end' argument    
+    'parsed_max'. Now, the __destroy_attrs() keeps only the 'parsed_max' and
+    'slwt' arguments.
+    
+    Thanks to Jakub Kicinski for his review and for all his suggestions.
+
+ vrf: add mac header for tunneled packets when sniffer is attached
+  - keep David Ahern's review tag since the code wasn't changed. 
+    
+    Thanks to Jakub Kicinski for pointing it out and David Ahern for his review.
+
+v2
+ no changes made: resubmitted after false build report.
+
+v1
+ improve comments;
+
+ add new patch 2/5 titled: seg6: improve management of behavior attributes
+
+ seg6: add support for the SRv6 End.DT4 behavior
+  - remove the inline keyword in the definition of fib6_config_get_net().
+
+ selftests: add selftest for the SRv6 End.DT4 behavior
+  - add check for the vrf sysctl
+
+[1] https://tools.ietf.org/html/draft-ietf-spring-srv6-network-programming
+
+Andrea Mayer (8):
+  vrf: add mac header for tunneled packets when sniffer is attached
+  seg6: improve management of behavior attributes
+  seg6: add support for optional attributes in SRv6 behaviors
+  seg6: add callbacks for customizing the creation/destruction of a
+    behavior
+  seg6: add support for the SRv6 End.DT4 behavior
+  seg6: add VRF support for SRv6 End.DT6 behavior
+  selftests: add selftest for the SRv6 End.DT4 behavior
+  selftests: add selftest for the SRv6 End.DT6 (VRF) behavior
+
+ drivers/net/vrf.c                             |  78 ++-
+ include/uapi/linux/seg6_local.h               |   1 +
+ net/ipv6/seg6_local.c                         | 593 +++++++++++++++++-
+ .../selftests/net/srv6_end_dt4_l3vpn_test.sh  | 494 +++++++++++++++
+ .../selftests/net/srv6_end_dt6_l3vpn_test.sh  | 502 +++++++++++++++
+ 5 files changed, 1649 insertions(+), 19 deletions(-)
+ create mode 100755 tools/testing/selftests/net/srv6_end_dt4_l3vpn_test.sh
+ create mode 100755 tools/testing/selftests/net/srv6_end_dt6_l3vpn_test.sh
+
+Paolo Lungaroni (1):
+  seg6: add support for vrftable attribute in End.DT4/DT6 behaviors
+
+ include/uapi/linux/seg6_local.h |  1 +
+ ip/iproute_lwtunnel.c           | 19 ++++++++++++++++---
+ 2 files changed, 17 insertions(+), 3 deletions(-)
+
+-- 
+2.20.1
+
