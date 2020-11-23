@@ -2,92 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 874322C025D
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 10:39:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA2BC2C0263
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 10:43:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726860AbgKWJg5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 04:36:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57270 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725275AbgKWJg4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 04:36:56 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CB30C0613CF;
-        Mon, 23 Nov 2020 01:36:56 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id b6so3935497pfp.7;
-        Mon, 23 Nov 2020 01:36:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LoHYGvz7BTMS2beu4vcf2km2aXO54uIdqhk7iR0tRXo=;
-        b=gjKK+jfD3wcBFkFwYwGRGqY2VZyOTNowyhcwkXXJVW+/62mwFrHik+SbBG3lqiQm2h
-         nTwwxoOG+i61bAwRePrnuYSO+x30xWNAdkoTX8gvm/byF56yoyHaKJJ6LiRN+Nr6a9jn
-         8D8WsAfAPl97V9WhsxwPqL/VvYF4sE9noj2fPqngcfHh0hFueP7KPe0cNsBgmci2TDTV
-         HFSEV0d3EoMQ79G6XeUbYxEmYvNRxetdoQTHTY3j4T6YPelQGEXB+xvw+74SvxIbj3Yr
-         otwIUXJxxqQKcnhSYZt3l0h8zp/fe2LEZy1DZtpRRKojZSh1wZF8yuzI85v54vMZh6SR
-         vVCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LoHYGvz7BTMS2beu4vcf2km2aXO54uIdqhk7iR0tRXo=;
-        b=GI1UlJShwhzUlQnCJ4s9R4qxr1sbOnZ3dQBrMG2OCI+a57gVV0k5s3slKPKSxzNtHD
-         Mc+bRcjHcr1VN8syqQwLCZQc8q/iWC3NcMQMG6GGp7rKBKZ9x4OSkWrOxI4VTewI2kP6
-         0VrNEZN4Z7gLIjsL3R00Isv7vPQUS2SQvNU5+mGokpvSfA2Zw+ATT6WzUxr0mOjzRMcY
-         KHwNo9zdXlstrz0/eSjXvUOpjJ83jFVkOlcysnJwkxeEIk8gz7IUY+kE3jpYs6P+s5z/
-         Ifl7X+JqHY5TN1fOUYVx25M2ld+BOdV/1W81AyXSgII/6zYlSW30VRAtoqwdRC6qN/XL
-         zyNQ==
-X-Gm-Message-State: AOAM532UObRyBp8tBz0HQwpsG7GLKiQw4wIxeBdhcFElERr1fFE4K1C6
-        6obU+J3Tcd5xHpzeRj8ZYb66SAa1rls0j7DQwzI=
-X-Google-Smtp-Source: ABdhPJz5Fi/Lh1bG32uk+0n0ZpwsEhQ3t6C7Bi2G1uiZ8iMUMiH9VfPQfzB5M0sXkvPe6A/kSUV1KyB5V0uDWh5vWhQ=
-X-Received: by 2002:a65:560b:: with SMTP id l11mr27840038pgs.63.1606124215873;
- Mon, 23 Nov 2020 01:36:55 -0800 (PST)
-MIME-Version: 1.0
-References: <20201120054036.15199-1-ms@dev.tdt.de> <20201120054036.15199-3-ms@dev.tdt.de>
- <CAJht_EONd3+S12upVPk2K3PWvzMLdE3BkzY_7c5gA493NHcGnA@mail.gmail.com>
- <CAJht_EP_oqCDs6mMThBZNtz4sgpbyQgMhKkHeqfS_7JmfEzfQg@mail.gmail.com>
- <87a620b6a55ea8386bffefca0a1f8b77@dev.tdt.de> <CAJht_EPc8MF1TjznSjWTPyMbsrw3JVqxST5g=eF0yf_zasUdeA@mail.gmail.com>
- <d85a4543eae46bac1de28ec17a2389dd@dev.tdt.de>
-In-Reply-To: <d85a4543eae46bac1de28ec17a2389dd@dev.tdt.de>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Mon, 23 Nov 2020 01:36:45 -0800
-Message-ID: <CAJht_EMjO_Tkm93QmAeK_2jg2KbLdv2744kCSHiZLy48aXiHnw@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 2/5] net/lapb: support netdev events
-To:     Martin Schiller <ms@dev.tdt.de>
-Cc:     Andrew Hendry <andrew.hendry@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1727663AbgKWJje (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 04:39:34 -0500
+Received: from mail-eopbgr10065.outbound.protection.outlook.com ([40.107.1.65]:3302
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725275AbgKWJje (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Nov 2020 04:39:34 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jFRM8ICIgMYx5VKK9tgCDVvUCTMkpsEUApr8MGqEg0H/rabQiO69tgjmpE8D/fK9iccAjUH1jtMbuFtK9aNlP7tWDw8HnJnAAPqU4AGPxadHLa+T/JacfTRFdItshoCiZZT1wDzBQ2JG9pnL01fd3QJo2ogSS8tEkPwHNDpyLwgC6dgnFtqxrqKBcgurVHelXIorhbosiVdNOw2f5NkK3y9GHz94JL5GNMdp51DSinUgaZBDB6ldpevkY2Y78/OoZ9bcmk6DFU2IelMaQaFclw9PMtjz5SzbgIozlnEAS7N0voLPHU8S2NXZPn6JVBxqHrdN2PdqNh+irmUojYHhXA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wAB4oX3YldQcNMrHU99KaW4yrGzWRv4bvAIUi7MF3UM=;
+ b=hC0SdGnXasyBX4EG/hAhT+ty6TrGwITKWFfbI8H543i1z8Zs9EHOkOX9NbCUiRzj+AGPAZr+5qgFZyLB6hv2QNV6hzrWFkKFVCgJOJ6HipRSHUGpNVDovvYR3uEQZm2sfcjrowS91J3m5F5zglwFL2FP1/uAMZM4xjyCr1kX9CeMEeU+YqtMQ5fiS4fU+gnZdMaMhcqxk74bMsA1PoaIc87BKodx8g4sqiHQNuc8JqZdQkM43IYGp8UyIvTSp6PKH5m/ojsxcHjDM14SNCqQcpISSrgZJijLcrfICgT0h9GDoH7NLJb81jDzO35LF9xE6MKhHbymc3BpdYhQyofeSg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wAB4oX3YldQcNMrHU99KaW4yrGzWRv4bvAIUi7MF3UM=;
+ b=J+9RpZq+u48ji85KZH690WxURDbi44Ql0Noay2n8EP/fES5Tp0Qv6iN+nsXt9a6/vKKLsMZng1qGUqkzddjlfPlLCII89O5sf0ZoXyqlKFMGvQuzJV9uh+lz0PWVaNUD9tp7joq70vZI0V69XxUmQPggyj/Z8BHHa/NstnhMtJ4=
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ (2603:10a6:803:16::14) by VI1PR04MB4031.eurprd04.prod.outlook.com
+ (2603:10a6:803:4c::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.21; Mon, 23 Nov
+ 2020 09:39:29 +0000
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::607d:cbc4:9191:b324]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::607d:cbc4:9191:b324%5]) with mapi id 15.20.3589.028; Mon, 23 Nov 2020
+ 09:39:28 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Ezequiel Garcia <ezequiel@collabora.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        "David S . Miller" <davem@davemloft.net>,
+        Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
+        "kernel@collabora.com" <kernel@collabora.com>
+Subject: Re: [PATCH] dpaa2-eth: Fix compile error due to missing devlink
+ support
+Thread-Topic: [PATCH] dpaa2-eth: Fix compile error due to missing devlink
+ support
+Thread-Index: AQHWwGYkrPZWLBjkiECa2U/nsQMfUKnVeEYA
+Date:   Mon, 23 Nov 2020 09:39:28 +0000
+Message-ID: <20201123093928.pfvlpcdssjaxa37d@skbuf>
+References: <20201122002336.79912-1-ezequiel@collabora.com>
+In-Reply-To: <20201122002336.79912-1-ezequiel@collabora.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: collabora.com; dkim=none (message not signed)
+ header.d=none;collabora.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.25.2.177]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 37a02c6c-4b7c-46e7-b67d-08d88f93ac7a
+x-ms-traffictypediagnostic: VI1PR04MB4031:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB403114D78451B392F7611AADE0FC0@VI1PR04MB4031.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: FKWYrBN24yBDAfbHoFHSDo5ScroBP4RZCFxGN49YvVnN2ZbpVOYtCjgW9AlIBUAC/M4bGICc3iRre4avyp/Ybv7itepGAXNbl6kW89XkDlTKBACch+6SCqEBZQBA+Hcp1s4L3LLVMe3okOoNkyDFC24F9M0oCmDJaVYf5g6jWNOq15CrSPpadhlaoy83TzX3BQEAlvjToge1k7iUy+pi3Heg1w/WWduiKAnlgAIq6cW+QpjLNYXN5JbxhLWXQHgNea/ajiYDOmNHQuXlfLE5bnFzPMVolOOljFz2/u0CTJdSeHRocgoLj/taT5gaGKVZLwgtwjSZCBrMuw8IzrBl8Q==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(136003)(346002)(39860400002)(396003)(376002)(366004)(478600001)(71200400001)(44832011)(8936002)(8676002)(54906003)(6506007)(26005)(316002)(186003)(1076003)(6512007)(9686003)(5660300002)(66446008)(83380400001)(6486002)(66476007)(6916009)(33716001)(66946007)(64756008)(76116006)(86362001)(66556008)(4326008)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: 6nW5SaLFpSu6O+xFUcjsSKQGNQLHbRzoMcPu5DC7SQbJCpkhFs+kRh/lZS77EtYSZ+zbXHeAATUmLy5iw/5St1HjUJjjzPljwFWNiFeAb8zfo0qsqr6TBW6qlfm4FMl27So27/lrOomiUB0IWzTin5sTrOf3ZD/pmawRHl6qOHM/EXCjNcdefT9M/5wL2a4P1dokhfYn+aqRkfrwvV9IKxEB3OEfcXjJUUjSL7+BguziIume7xtScSdXHXJ6C75K2cdouNMiTaE7BfXJ19ZzW61KCVXM/SOBfEq38sQlisoGzrFjBJ9l/a5qSEPo8dnBHA11aNj8PrBNpjn/Av/1+kRPwHVxogF/0brNeWSy1h4jkbvRLIyus0p4w6btr1DkecCwauVuCjRnS3rEXOCxiQfdXh8KYtMg2eJrW8KzV8JWy+q/DrO1rpIJRQN/pL2KwK7HRzRceJHueSAR9vQBifB8J9n5uLgXWRuF65PpMLvEzw3EZmoKWk/FrrEie112UkQibciBRIenCOeKaHpNnm4UicOwbEVGG/SeFpm7fUs8fJdWgKx3PoCuCLEFcVK8MLRrCzUM4VTmkskyH44YtJyaZ/dXIDqJZwuG4+rA4h7OfT9CCs8tmkuI2idVkSvYBQq57CAhWJzn0KBuSuqbjs8r9OOipwZsAfckGf7LVLkG2zH3EFA1efq/6FjQOhfKmHq/HLsapNxTUVuUXl2p5k7uS6w4XY7Wsf2N9xM9x5+aq4eRkEsLySfacL6c5fqp9+qoFLsV6+0k6TfhCdTxq5Duagn1E6Zsq4QcWxahRUSb5yOejuixXGiXF6M+OGcDvsHk2nsAiNqxzjnQbLqaAFGoDb1kQ6/tLyg5IGBSK8dQSaWUxhUJ339H40UFbKQTKl56g/qMeMxt21EPlChUiA==
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <0119F396BC53494F9D33744A4F7A4E74@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3871.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 37a02c6c-4b7c-46e7-b67d-08d88f93ac7a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Nov 2020 09:39:28.8663
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: yR4l689H/L+HITG55vqphy9FeaFpsSc9dlcb8R+kragQxZubSN4izUyYK/RVKoNNgD42XEKgBai/joBH7wgvDA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4031
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 23, 2020 at 1:00 AM Martin Schiller <ms@dev.tdt.de> wrote:
+
+Hi Ezequiel,
+
+Thanks a lot for the fix, I overlooked this when adding devlink support.
+
+On Sat, Nov 21, 2020 at 09:23:36PM -0300, Ezequiel Garcia wrote:
+> The dpaa2 driver depends on devlink, so it should select
+> NET_DEVLINK in order to fix compile errors, such as:
 >
-> AFAIK the carrier can't be up before the device is up. Therefore, there
-> will be a NETDEV_CHANGE event after the NETDEV_UP event.
+> drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.o: in function `dpaa2_eth_=
+rx_err':
+> dpaa2-eth.c:(.text+0x3cec): undefined reference to `devlink_trap_report'
+> drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-devlink.o: in function `dp=
+aa2_eth_dl_info_get':
+> dpaa2-eth-devlink.c:(.text+0x160): undefined reference to `devlink_info_d=
+river_name_put'
 >
-> This is what I can see in my tests (with the HDLC interface).
+
+What tree is this intended for?
+
+Maybe add a fixes tag and send this towards the net tree?
+
+Ioana
+
+> Signed-off-by: Ezequiel Garcia <ezequiel@collabora.com>
+> ---
+>  drivers/net/ethernet/freescale/dpaa2/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
 >
-> Is the behaviour different for e.g. lapbether?
-
-Some drivers don't support carrier status and will never change it.
-Their carrier status will always be UP. There will not be a
-NETDEV_CHANGE event.
-
-lapbether doesn't change carrier status. I also have my own virtual
-HDLC WAN driver (for testing) which also doesn't change carrier
-status.
-
-I just tested with lapbether. When I bring up the interface, there
-will only be NETDEV_PRE_UP and then NETDEV_UP. There will not be
-NETDEV_CHANGE. The carrier status is alway UP.
-
-I haven't tested whether a device can receive NETDEV_CHANGE when it is
-down. It's possible for a device driver to call netif_carrier_on when
-the interface is down. Do you know what will happen if a device driver
-calls netif_carrier_on when the interface is down?
+> diff --git a/drivers/net/ethernet/freescale/dpaa2/Kconfig b/drivers/net/e=
+thernet/freescale/dpaa2/Kconfig
+> index cfd369cf4c8c..aee59ead7250 100644
+> --- a/drivers/net/ethernet/freescale/dpaa2/Kconfig
+> +++ b/drivers/net/ethernet/freescale/dpaa2/Kconfig
+> @@ -2,6 +2,7 @@
+>  config FSL_DPAA2_ETH
+>       tristate "Freescale DPAA2 Ethernet"
+>       depends on FSL_MC_BUS && FSL_MC_DPIO
+> +     select NET_DEVLINK
+>       select PHYLINK
+>       select PCS_LYNX
+>       help
+> --
+> 2.27.0
+>=
