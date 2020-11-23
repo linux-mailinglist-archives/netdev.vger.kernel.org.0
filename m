@@ -2,130 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C953A2C1504
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 21:04:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E5D12C1603
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 21:28:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729171AbgKWUD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 15:03:58 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:17000 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726770AbgKWUDy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 15:03:54 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fbc15a70004>; Mon, 23 Nov 2020 12:03:51 -0800
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 23 Nov
- 2020 20:03:49 +0000
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.103)
- by HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Mon, 23 Nov 2020 20:03:49 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gITd84wMHHzcOptjQRg1Bi4wKYLoloErjGXTzbxbsYYxXpRm6DfDjP1G8JsqPPruG8n8djHpWT3ChykgCoTQdTlPHkj05TPw7WZ4Y46HlI8bprZC3XuF3n009Te/qaTwPxc9ef3s3wxgnUStlvtZrJvP5WQhh3MIKLFTGEWjhLXWcgs1VmoV9q6ndrBwWgPhsRBIC9rKh9qqm9cf9Ujr9sks/ml2cZ4bW16uPSJVifE1ke5RuUikXPZ60YcpNVw15sbmeBPfJ8v059YAkVfr8AOpsBgi+OymMySTg/JYVNFtVJ2pGo3M9pC5txLp474ztgTCR2D9RfvqUQOXT+42RA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QophqWBVIGhmInjMMmoN1JCz5yEuED07MVw87J8AVUY=;
- b=dpOj+p56VpZQgFejSTc+TjZx9PpIbmIlWcJPfXyA8QiV6hyerQ1PNIg37pZm/OoPMM7dRNU+MPO2Sxmva5Z6iKtLQpQNkcM79tS52of8WjxHEmReB+Qc/VB0gzy26dU2FtXMoEzn5Rx6YHRp97uhlWeSk7Nsi1BUrieORD+G9yqkgKBmwQvC726s6EkJ0s32uNc7iMGffyCjKbyBtSLggJX9G9WEJ0m0GYQlYWRE7aVXL+Iy16bXoksvn7nW7YXP74v45GAqxPt7EElquzCZ4kXurFfWXXWM9ThsUobGLm/yb7wWVAmTEM+ttWZwc1mR7P3I+RsId2H9o2Xiqq+zAg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB4338.namprd12.prod.outlook.com (2603:10b6:5:2a2::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.21; Mon, 23 Nov
- 2020 20:03:48 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::e40c:730c:156c:2ef9]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::e40c:730c:156c:2ef9%7]) with mapi id 15.20.3589.022; Mon, 23 Nov 2020
- 20:03:48 +0000
-Date:   Mon, 23 Nov 2020 16:03:45 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        <amd-gfx@lists.freedesktop.org>,
-        <bridge@lists.linux-foundation.org>, <ceph-devel@vger.kernel.org>,
-        <cluster-devel@redhat.com>, <coreteam@netfilter.org>,
-        <devel@driverdev.osuosl.org>, <dm-devel@redhat.com>,
-        <drbd-dev@lists.linbit.com>, <dri-devel@lists.freedesktop.org>,
-        <GR-everest-linux-l2@marvell.com>, <GR-Linux-NIC-Dev@marvell.com>,
-        <intel-gfx@lists.freedesktop.org>,
-        <intel-wired-lan@lists.osuosl.org>, <keyrings@vger.kernel.org>,
-        <linux1394-devel@lists.sourceforge.net>,
-        <linux-acpi@vger.kernel.org>, <linux-afs@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-arm-msm@vger.kernel.org>,
-        <linux-atm-general@lists.sourceforge.net>,
-        <linux-block@vger.kernel.org>, <linux-can@vger.kernel.org>,
-        <linux-cifs@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
-        <linux-decnet-user@lists.sourceforge.net>,
-        <linux-ext4@vger.kernel.org>, <linux-fbdev@vger.kernel.org>,
-        <linux-geode@lists.infradead.org>, <linux-gpio@vger.kernel.org>,
-        <linux-hams@vger.kernel.org>, <linux-hwmon@vger.kernel.org>,
-        <linux-i3c@lists.infradead.org>, <linux-ide@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>,
-        <linux-integrity@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-media@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
-        <linux-mm@kvack.org>, <linux-mtd@lists.infradead.org>,
-        <linux-nfs@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linux-renesas-soc@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
-        <linux-sctp@vger.kernel.org>,
-        <linux-security-module@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-usb@vger.kernel.org>, <linux-watchdog@vger.kernel.org>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <nouveau@lists.freedesktop.org>,
-        <op-tee@lists.trustedfirmware.org>, <oss-drivers@netronome.com>,
-        <patches@opensource.cirrus.com>, <rds-devel@oss.oracle.com>,
-        <reiserfs-devel@vger.kernel.org>,
-        <samba-technical@lists.samba.org>, <selinux@vger.kernel.org>,
-        <target-devel@vger.kernel.org>,
-        <tipc-discussion@lists.sourceforge.net>,
-        <usb-storage@lists.one-eyed-alien.net>,
-        <virtualization@lists.linux-foundation.org>,
-        <wcn36xx@lists.infradead.org>, <x86@kernel.org>,
-        <xen-devel@lists.xenproject.org>,
-        <linux-hardening@vger.kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Miguel Ojeda <ojeda@kernel.org>, Joe Perches <joe@perches.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: Re: [PATCH 000/141] Fix fall-through warnings for Clang
-Message-ID: <20201123200345.GA38546@nvidia.com>
-References: <cover.1605896059.git.gustavoars@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <cover.1605896059.git.gustavoars@kernel.org>
-X-ClientProxiedBy: MN2PR03CA0013.namprd03.prod.outlook.com
- (2603:10b6:208:23a::18) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+        id S1731933AbgKWUKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 15:10:30 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:49912 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731873AbgKWUKL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 15:10:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606162209;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=hcuDNvyq84AB97TqWEefdqqDKsupl/7+ST0mbyjcurA=;
+        b=cwetzx6Tk77hcmumub+oZ5c6outfIlxrAEQt8Ayky3QiM5zmKtoqCofU2vKSp5Md6pDwxO
+        OrpGBdD8L2HeYKhFEtzUBWjwkM0A+4v9o14J9D0H7kBt+97hM5D+axuOCEuipJRJA1PaRl
+        3SvZnfGilGoP6tjfNYfYO4ybXH0UHyo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-386-a9xFkh4uPvKDrXOGeoz3eg-1; Mon, 23 Nov 2020 15:10:06 -0500
+X-MC-Unique: a9xFkh4uPvKDrXOGeoz3eg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A9EEE18C89CD;
+        Mon, 23 Nov 2020 20:10:05 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-112-111.rdu2.redhat.com [10.10.112.111])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DBB1F100164C;
+        Mon, 23 Nov 2020 20:10:04 +0000 (UTC)
+Subject: [PATCH net 00/17] rxrpc: Prelude to gssapi support
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 23 Nov 2020 20:10:04 +0000
+Message-ID: <160616220405.830164.2239716599743995145.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (156.34.48.30) by MN2PR03CA0013.namprd03.prod.outlook.com (2603:10b6:208:23a::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.20 via Frontend Transport; Mon, 23 Nov 2020 20:03:47 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1khI3t-000A35-Tb; Mon, 23 Nov 2020 16:03:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1606161831; bh=QophqWBVIGhmInjMMmoN1JCz5yEuED07MVw87J8AVUY=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
-         From:To:CC:Subject:Message-ID:References:Content-Type:
-         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType;
-        b=Zr1EZlr7FGouweCXJ2A3YJZ8lxsTazMwmiIDkNNgeYuPc4M3hA0h9guNHLXrnnLeX
-         Dp0jtpGLpYuZZsYit0m8+Y/3Pgk+U78P2KDuhjfei0oh+kHbQnRfzB2jD1Wu7rVyZ8
-         A2iuCgvA8hhwNVx8Bo/l4LfRAECKvf8eJj6um7c8+wyJ6oFgyijvPixB8Xcq6YNTLj
-         o7o09Zdo2SkPJV9Ld82VvGAW1KENwGx8qxL8L4kHw5xGizl/kk/4FLfOCs8mx17bXD
-         N2PIS7AsaPoH2bHogxWrZ7vcH6YOCMGYKk/oZQ1BhSoaDoH96AMZAs9BCirfcyYEMq
-         3EMRDyReptNPA==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 20, 2020 at 12:21:39PM -0600, Gustavo A. R. Silva wrote:
 
->   IB/hfi1: Fix fall-through warnings for Clang
->   IB/mlx4: Fix fall-through warnings for Clang
->   IB/qedr: Fix fall-through warnings for Clang
->   RDMA/mlx5: Fix fall-through warnings for Clang
 
-I picked these four to the rdma tree, thanks
+Here are some patches that do some reorganisation of the security class
+handling in rxrpc to allow implementation of the RxGK security class that
+will allow AF_RXRPC to use GSSAPI-negotiated tokens and better crypto.  The
+RxGK security class is not included in this patchset.
 
-Jason
+It does the following things:
+
+ (1) Add a keyrings patch to provide the original key description, as
+     provided to add_key(), to the payload preparser so that it can
+     interpret the content on that basis.  Unfortunately, the rxrpc_s key
+     type wasn't written to interpret its payload as anything other than a
+     string of bytes comprising a key, but for RxGK, more information is
+     required as multiple Kerberos enctypes are supported.
+
+ (2) Remove the rxk5 security class key parsing.  The rxk5 class never got
+     rolled out in OpenAFS and got replaced with rxgk.
+
+ (3) Support the creation of rxrpc keys with multiple tokens of different
+     types.  If some types are not supported, the ENOPKG error is
+     suppressed if at least one other token's type is supported.
+
+ (4) Punt the handling of server keys (rxrpc_s type) to the appropriate
+     security class.
+
+ (5) Organise the security bits in the rxrpc_connection struct into a
+     union to make it easier to override for other classes.
+
+ (6) Move some bits from core code into rxkad that won't be appropriate to
+     rxgk.
+
+The patches are tagged here:
+
+	git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
+	rxrpc-next-20201123
+
+and can also be found on the following branch:
+
+	http://git.kernel.org/cgit/linux/kernel/git/dhowells/linux-fs.git/log/?h=rxrpc-next
+
+David
+---
+David Howells (17):
+      keys: Provide the original description to the key preparser
+      rxrpc: Remove the rxk5 security class as it's now defunct
+      rxrpc: List the held token types in the key description in /proc/keys
+      rxrpc: Support keys with multiple authentication tokens
+      rxrpc: Don't retain the server key in the connection
+      rxrpc: Split the server key type (rxrpc_s) into its own file
+      rxrpc: Hand server key parsing off to the security class
+      rxrpc: Don't leak the service-side session key to userspace
+      rxrpc: Allow security classes to give more info on server keys
+      rxrpc: Make the parsing of xdr payloads more coherent
+      rxrpc: Ignore unknown tokens in key payload unless no known tokens
+      rxrpc: Fix example key name in a comment
+      rxrpc: Merge prime_packet_security into init_connection_security
+      rxrpc: Don't reserve security header in Tx DATA skbuff
+      rxrpc: Organise connection security to use a union
+      rxrpc: rxkad: Don't use pskb_pull() to advance through the response packet
+      rxrpc: Ask the security class how much space to allow in a packet
+
+
+ include/keys/rxrpc-type.h |  56 +---
+ net/rxrpc/Makefile        |   1 +
+ net/rxrpc/ar-internal.h   |  63 ++--
+ net/rxrpc/call_accept.c   |  14 +-
+ net/rxrpc/conn_client.c   |   6 -
+ net/rxrpc/conn_event.c    |   8 +-
+ net/rxrpc/conn_object.c   |   2 -
+ net/rxrpc/conn_service.c  |   2 -
+ net/rxrpc/insecure.c      |  19 +-
+ net/rxrpc/key.c           | 658 ++++----------------------------------
+ net/rxrpc/rxkad.c         | 256 ++++++++++-----
+ net/rxrpc/security.c      |  98 ++++--
+ net/rxrpc/sendmsg.c       |  45 +--
+ net/rxrpc/server_key.c    | 143 +++++++++
+ 14 files changed, 519 insertions(+), 852 deletions(-)
+ create mode 100644 net/rxrpc/server_key.c
+
+
