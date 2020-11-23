@@ -2,102 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 615352C005B
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 07:56:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 121A22C0066
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 08:01:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728021AbgKWGz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 01:55:29 -0500
-Received: from mxout70.expurgate.net ([91.198.224.70]:2187 "EHLO
-        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727852AbgKWGz2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 01:55:28 -0500
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.92)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1kh5kw-000Rnq-HN; Mon, 23 Nov 2020 07:55:22 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1kh5kv-000JSp-MD; Mon, 23 Nov 2020 07:55:21 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id E7E79240041;
-        Mon, 23 Nov 2020 07:55:20 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id 69A4D240040;
-        Mon, 23 Nov 2020 07:55:20 +0100 (CET)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id C2B5220049;
-        Mon, 23 Nov 2020 07:55:18 +0100 (CET)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 23 Nov 2020 07:55:18 +0100
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     Andrew Hendry <andrew.hendry@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1727916AbgKWG70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 01:59:26 -0500
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:45771 "EHLO
+        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726282AbgKWG7Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 01:59:25 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 6B10258044C;
+        Mon, 23 Nov 2020 01:59:24 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Mon, 23 Nov 2020 01:59:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=AIrBU9
+        /FX/0TfVPIhpEOYqgy+ufqoF18Wr1y3cYhAyw=; b=DWq1+p2Y9VP8+vqYyjJLr9
+        MIgW/7ohP/saeaMVsnSbvY0xF7b8AT+bZ0+8hU40GUfcV1KPkZ8xb1hzXb72H4/d
+        qiNK5kzKf3zI/E1BPeoJS6AHx9GuA1bhTT+jAXqPjnuAYWiTpLcBwPfmUmFDpvuF
+        T0MuZrdkoVmou9DNflZtaGBxVj6ADATJFPz3cwJigH+YYtc+/jiFzoSCV1tcpTnb
+        5/TMiEipsJPMf4n8psGUwvsL8xRSBdY6aKZatcSCjZgCt8aOcgiYBvbbOt5eleMK
+        2TYcXS0nsi9tn73UZwITbRAGlmtgxIKVUM+JRK9Rlq/gN4RS/kaAXQFoVRes6lkQ
+        ==
+X-ME-Sender: <xms:yl27XwlT3VYJ_HMb_3Ezy_9C-uCynBzCnYpbLJeOcVTrnQ5aR7oHJA>
+    <xme:yl27X_2MGHfIBFjEz-EmXkdEGZtRQpEgY67i8teGxDUwb5PFFwADTSXykhWQP2VRb
+    2tIXz4upQMIMOU>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudeghedgleekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucfkphepkeegrddvvdelrdduheegrddugeejnecuvehluhhsthgvrhfuihiivgeptd
+    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:yl27X-qtuxqfAp0WeGdltTNgngdfyFfoQ01ZoYfodD0b7mGqOLH17w>
+    <xmx:yl27X8m0xIQZ205PSSJRbr5UBNk6IyheYv9EZjPgj9-Bi66f5HLMdQ>
+    <xmx:yl27X-1TvXVyh5jTQXxtuWYbchYNHYmnLeWZBEPNYxaWoX6TUIpX6g>
+    <xmx:zF27X3u7hNcLEmub9Ly4ThS3hiD0g81COVkFpTp4zexZc-TFqSHTOw>
+Received: from localhost (igld-84-229-154-147.inter.net.il [84.229.154.147])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 3CBFE3280063;
+        Mon, 23 Nov 2020 01:59:22 -0500 (EST)
+Date:   Mon, 23 Nov 2020 08:59:19 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Christian Eggers <ceggers@arri.de>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v4 2/5] net/lapb: support netdev events
-Organization: TDT AG
-In-Reply-To: <CAJht_EP_oqCDs6mMThBZNtz4sgpbyQgMhKkHeqfS_7JmfEzfQg@mail.gmail.com>
-References: <20201120054036.15199-1-ms@dev.tdt.de>
- <20201120054036.15199-3-ms@dev.tdt.de>
- <CAJht_EONd3+S12upVPk2K3PWvzMLdE3BkzY_7c5gA493NHcGnA@mail.gmail.com>
- <CAJht_EP_oqCDs6mMThBZNtz4sgpbyQgMhKkHeqfS_7JmfEzfQg@mail.gmail.com>
-Message-ID: <87a620b6a55ea8386bffefca0a1f8b77@dev.tdt.de>
-X-Sender: ms@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.15
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
-        autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
-X-purgate-type: clean
-X-purgate-ID: 151534::1606114522-000035B9-9654EEDC/0/0
-X-purgate: clean
+        Vladimir Oltean <olteanv@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Christian Eggers <ceggers@gmx.de>,
+        Petr Machata <petrm@mellanox.com>,
+        Jiri Pirko <jiri@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next 2/3] mlxsw: spectrum_ptp: use PTP wide message
+ type definitions
+Message-ID: <20201123065919.GA674954@shredder.lan>
+References: <20201122082636.12451-1-ceggers@arri.de>
+ <20201122082636.12451-3-ceggers@arri.de>
+ <20201122143555.GA515025@shredder.lan>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201122143555.GA515025@shredder.lan>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-11-21 00:50, Xie He wrote:
-> On Fri, Nov 20, 2020 at 3:11 PM Xie He <xie.he.0141@gmail.com> wrote:
->> 
->> Should we also handle the NETDEV_UP event here? In previous versions
->> of this patch series you seemed to want to establish the L2 connection
->> on device-up. But in this patch, you didn't handle NETDEV_UP.
->> 
->> Maybe on device-up, we need to check if the carrier is up, and if it
->> is, we do the same thing as we do on carrier-up.
-> 
-> Are the device up/down status and the carrier up/down status
-> independent of each other? If they are, on device-up or carrier-up, we
-> only need to try establishing the L2 connection if we see both are up.
+On Sun, Nov 22, 2020 at 04:35:58PM +0200, Ido Schimmel wrote:
+> Anyway, I added all six patches to our regression as we have some PTP
+> tests. Will let you know tomorrow.
 
-No, they aren't independent. The carrier can only be up if the device /
-interface is UP. And as far as I can see a NETDEV_CHANGE event will also
-only be generated on interfaces that are UP.
-
-So you can be sure, that if there is a NETDEV_CHANGE event then the
-device is UP.
-
-I removed the NETDEV_UP handling because I don't think it makes sense
-to implicitly try to establish layer2 (LAPB) if there is no carrier.
-And with the first X.25 connection request on that interface, it will
-be established anyway by x25_transmit_link().
-
-I've tested it here with an HDLC WAN Adapter and it works as expected.
-
-These are also the ideal conditions for the already mentioned "on
-demand" scenario. The only necessary change would be to call
-x25_terminate_link() on an interface after clearing the last X.25
-session.
-
-> On NETDEV_GOING_DOWN, we can also check the carrier status first and
-> if it is down, we don't need to call lapb_disconnect_request.
-
-This is not necessary because lapb_disconnect_request() checks the
-current state. And if the carrier is DOWN then the state should also be
-LAPB_STATE_0 and so lapb_disconnect_request() does nothing.
+Looks good
