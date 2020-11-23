@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9A7D2C1459
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 20:29:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C12A92C145B
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 20:29:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729512AbgKWTPe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 14:15:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33884 "EHLO
+        id S1730071AbgKWTPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 14:15:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728930AbgKWTPd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 14:15:33 -0500
+        with ESMTP id S1728930AbgKWTPe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 14:15:34 -0500
 Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D75F5C0613CF;
-        Mon, 23 Nov 2020 11:15:33 -0800 (PST)
-Received: by mail-qk1-x744.google.com with SMTP id u4so18036857qkk.10;
-        Mon, 23 Nov 2020 11:15:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE76CC0613CF;
+        Mon, 23 Nov 2020 11:15:34 -0800 (PST)
+Received: by mail-qk1-x744.google.com with SMTP id b144so3537474qkc.13;
+        Mon, 23 Nov 2020 11:15:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=lsk3l50IUlnXuysK/qr0G1Jf7d6JfVUjA/eYi8O2geA=;
-        b=ZjKCDWGIRLgKDvKwoAQ/Tdf9QWbi/RzXSaxEcWje+l/O3zHCmHqGQzwBMTv9KJ7SN0
-         ai/WCMj5UgddZv0EKbGYTkv/nK1Mm45jOxZAKrlDkv0bdkd2EXiwxL6Cvba0Bsh9JEAZ
-         Yidfd4HZKWnJYPps6+U7hmy5r29ofNIQVpqNsrnu7emVfw7++PxGUQsP57St7qLdTBYd
-         OiS1qNRWLQRnN8dTL2yzYrPT8Lar9twVF1paL347DEIm3DVX2JT/UMuf600jgCfDsFrY
-         NiHFk0tfiaXFNNZiyCcLD3mxNnMJ0LQI5R0TGePgCjPTb8Xwmew1eroPhr9FwIwWyrV1
-         Zc4A==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=R/CpWr48pVOLYZ2UwtgAEuS9Y7dMcGsDjQy5ijlpsqs=;
+        b=S3RpQiLFQvz2Bqz/Oe0Tu4aGMdAZLMkWPI19b4BHTdSzR05CC6BjP4ppzktH7/Xomq
+         VY7lfoSno2Jmyk8Ht6VwFgvnv0G02bfSikZ0EuZmSMpJo5a3aHl8bXk/D6QrUK/SNOs5
+         lFsqv+dUNC3qsf10SCP1UesGwt24WYG2tRFDzBYeaJvaiacDkoTS+d+UkMKyODS8r7UB
+         XLxSmLGOcfdVEzH4TeF3PFdMHEuYDg0a+pMYU8H9s+jwtGyRdjRpA4xyiQMgWbjCdfli
+         6TfnZ4sJm/+YLm20BzA2i85fG7uUiAEemHZV9m1/AfPySeWw9aPdRtqUYi3MFgIb0+g1
+         fCXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=lsk3l50IUlnXuysK/qr0G1Jf7d6JfVUjA/eYi8O2geA=;
-        b=esE0CNY1R9RwXY7ANIKv62/mF+PDcNk1EbapbUJFn0p9SmGr/vkrtT1gBUI1+tHEXk
-         HCjUNzbGIcXT15+xOm3U6U+gB2cMXktAba7XdyYyYZatpmCplnj8/WE5Euxe9yz9Neen
-         ObN3u3ZZL5RKtlkHDuXOSdtOcI4xbQ+ToHEgupvSdxAubVPclj66EqlFJ+9QepjmD4OR
-         j1EdtykE4Dv/LJvusnrvcZgxQnc16yMWW8/C9gYQ1zRaS6nGIJagaM5I9y1nCvGP4rmu
-         0SeYI6Ud0STec05Am+q7+7eMHvPXg7ZT4OmQDPnrD6Lq2lt78M+iF5asQ/JrPo2u8a1Z
-         hOGQ==
-X-Gm-Message-State: AOAM530vt0WIrYSbCP7rsLlWZpMRnRq+eHCoCa/By1NB6SLUy9ZVKgD3
-        8AKdM4JW9212ceIuCo+rAFI=
-X-Google-Smtp-Source: ABdhPJyKiuEn0gESPmF4riPXg80tuJ6CvB027stRO5inddlu4fNnejf5dC2NY6pPZPd16f9AzQtiBw==
-X-Received: by 2002:a37:bac7:: with SMTP id k190mr1009816qkf.464.1606158933051;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=R/CpWr48pVOLYZ2UwtgAEuS9Y7dMcGsDjQy5ijlpsqs=;
+        b=RwVpRImZv7Ti06TkCZRZrbIg1LJBe0iixHDHfDhFs0fxzZSUVc+SMqpvU9cemWAZzx
+         aPTcZaiGRdhkqvUGCoX0ew6/jOmPbLN4af8D0bWDis8jvUfRVMkOAdtE6sjywEKrM5Uw
+         xHTCivt+QW93OszVGySA/sdfL8Vd33QfxGtZ2WrDgdursifBrJSrXIAn+aCvAAszOyVT
+         WIRsAC81JtKG7CUCaXf9WmHtjskCNjjltXA5185fMTPaE5bFJHEFM6RjjfBRQ3b39VW5
+         veKJlKybrWX5XZOdNShlnADxXdZwQQdb/4VNvFggw3W+7V0D3qMjC5WjuAU4OEMVUWIq
+         ULGg==
+X-Gm-Message-State: AOAM533ABhRIs4SjZidcTvD9lOXUN9zbr8ULOXS1ITwr0iiDr8isAB+5
+        DfUIg0SHqZKpkfzDkLhTuKKuf1iCOXo=
+X-Google-Smtp-Source: ABdhPJylaVUOWy8Ow/WhTqPdWsJDnHvz6hRt6h/sJAyEcW9V8+xV85ePFh+RX92aajTTjnIj0qxtzA==
+X-Received: by 2002:a37:5185:: with SMTP id f127mr997434qkb.225.1606158933981;
         Mon, 23 Nov 2020 11:15:33 -0800 (PST)
 Received: from svens-asus.arcx.com ([184.94.50.30])
-        by smtp.gmail.com with ESMTPSA id r190sm10116348qkf.101.2020.11.23.11.15.31
+        by smtp.gmail.com with ESMTPSA id r190sm10116348qkf.101.2020.11.23.11.15.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Nov 2020 11:15:32 -0800 (PST)
+        Mon, 23 Nov 2020 11:15:33 -0800 (PST)
 From:   Sven Van Asbroeck <thesven73@gmail.com>
 X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
 To:     Bryan Whitehead <bryan.whitehead@microchip.com>,
@@ -54,27 +55,31 @@ Cc:     Sven Van Asbroeck <thesven73@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v1 1/2] lan743x: clean up software_isr function
-Date:   Mon, 23 Nov 2020 14:15:28 -0500
-Message-Id: <20201123191529.14908-1-TheSven73@gmail.com>
+Subject: [PATCH net-next v1 2/2] lan743x: replace polling loop by wait_event_timeout()
+Date:   Mon, 23 Nov 2020 14:15:29 -0500
+Message-Id: <20201123191529.14908-2-TheSven73@gmail.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20201123191529.14908-1-TheSven73@gmail.com>
+References: <20201123191529.14908-1-TheSven73@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Sven Van Asbroeck <thesven73@gmail.com>
 
-For no apparent reason, this function reads the INT_STS register, and
-checks if the software interrupt bit is set. These things have already
-been carried out by this function's only caller.
+The driver's ISR sends a 'software interrupt' event to the probe()
+thread using the following method:
+- probe(): write 0 to flag, enable s/w interrupt
+- probe(): poll on flag, relax using usleep_range()
+- ISR    : write 1 to flag
 
-Clean up by removing the redundant code.
+Replace with wake_up() / wait_event_timeout(). Besides being easier
+to get right, this abstraction has better timing and memory
+consistency properties.
 
 Tested-by: Sven Van Asbroeck <thesven73@gmail.com> # lan7430
 Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
 ---
-
-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git # f9e425e99b07
 
 To: Bryan Whitehead <bryan.whitehead@microchip.com>
 To: Jakub Kicinski <kuba@kernel.org>
@@ -84,36 +89,84 @@ Cc: Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
 Cc: netdev@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 
- drivers/net/ethernet/microchip/lan743x_main.c | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/microchip/lan743x_main.c | 28 +++++++++----------
+ drivers/net/ethernet/microchip/lan743x_main.h |  3 +-
+ 2 files changed, 15 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index 87b6c59a1e03..bdc80098c240 100644
+index bdc80098c240..96d34b001198 100644
 --- a/drivers/net/ethernet/microchip/lan743x_main.c
 +++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -140,18 +140,13 @@ static int lan743x_csr_init(struct lan743x_adapter *adapter)
- 	return result;
- }
+@@ -146,7 +146,8 @@ static void lan743x_intr_software_isr(struct lan743x_adapter *adapter)
  
--static void lan743x_intr_software_isr(void *context)
-+static void lan743x_intr_software_isr(struct lan743x_adapter *adapter)
- {
--	struct lan743x_adapter *adapter = context;
- 	struct lan743x_intr *intr = &adapter->intr;
--	u32 int_sts;
- 
--	int_sts = lan743x_csr_read(adapter, INT_STS);
--	if (int_sts & INT_BIT_SW_GP_) {
--		/* disable the interrupt to prevent repeated re-triggering */
--		lan743x_csr_write(adapter, INT_EN_CLR, INT_BIT_SW_GP_);
--		intr->software_isr_flag = 1;
--	}
-+	/* disable the interrupt to prevent repeated re-triggering */
-+	lan743x_csr_write(adapter, INT_EN_CLR, INT_BIT_SW_GP_);
-+	intr->software_isr_flag = 1;
+ 	/* disable the interrupt to prevent repeated re-triggering */
+ 	lan743x_csr_write(adapter, INT_EN_CLR, INT_BIT_SW_GP_);
+-	intr->software_isr_flag = 1;
++	intr->software_isr_flag = true;
++	wake_up(&intr->software_isr_wq);
  }
  
  static void lan743x_tx_isr(void *context, u32 int_sts, u32 flags)
+@@ -344,27 +345,22 @@ static irqreturn_t lan743x_intr_entry_isr(int irq, void *ptr)
+ static int lan743x_intr_test_isr(struct lan743x_adapter *adapter)
+ {
+ 	struct lan743x_intr *intr = &adapter->intr;
+-	int result = -ENODEV;
+-	int timeout = 10;
++	int ret;
+ 
+-	intr->software_isr_flag = 0;
++	intr->software_isr_flag = false;
+ 
+-	/* enable interrupt */
++	/* enable and activate test interrupt */
+ 	lan743x_csr_write(adapter, INT_EN_SET, INT_BIT_SW_GP_);
+-
+-	/* activate interrupt here */
+ 	lan743x_csr_write(adapter, INT_SET, INT_BIT_SW_GP_);
+-	while ((timeout > 0) && (!(intr->software_isr_flag))) {
+-		usleep_range(1000, 20000);
+-		timeout--;
+-	}
+ 
+-	if (intr->software_isr_flag)
+-		result = 0;
++	ret = wait_event_timeout(intr->software_isr_wq,
++				 intr->software_isr_flag,
++				 msecs_to_jiffies(200));
+ 
+-	/* disable interrupts */
++	/* disable test interrupt */
+ 	lan743x_csr_write(adapter, INT_EN_CLR, INT_BIT_SW_GP_);
+-	return result;
++
++	return ret > 0 ? 0 : -ENODEV;
+ }
+ 
+ static int lan743x_intr_register_isr(struct lan743x_adapter *adapter,
+@@ -538,6 +534,8 @@ static int lan743x_intr_open(struct lan743x_adapter *adapter)
+ 		flags |= LAN743X_VECTOR_FLAG_SOURCE_ENABLE_R2C;
+ 	}
+ 
++	init_waitqueue_head(&intr->software_isr_wq);
++
+ 	ret = lan743x_intr_register_isr(adapter, 0, flags,
+ 					INT_BIT_ALL_RX_ | INT_BIT_ALL_TX_ |
+ 					INT_BIT_ALL_OTHER_,
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.h b/drivers/net/ethernet/microchip/lan743x_main.h
+index a536f4a4994d..b92864913e6c 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.h
++++ b/drivers/net/ethernet/microchip/lan743x_main.h
+@@ -616,7 +616,8 @@ struct lan743x_intr {
+ 	int			number_of_vectors;
+ 	bool			using_vectors;
+ 
+-	int			software_isr_flag;
++	bool			software_isr_flag;
++	wait_queue_head_t	software_isr_wq;
+ };
+ 
+ #define LAN743X_MAX_FRAME_SIZE			(9 * 1024)
 -- 
 2.17.1
 
