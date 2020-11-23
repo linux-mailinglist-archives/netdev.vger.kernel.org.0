@@ -2,83 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F7882C1139
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 18:02:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F41482C1177
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 18:08:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732882AbgKWRBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 12:01:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41424 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729514AbgKWRBJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 12:01:09 -0500
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E79C0613CF;
-        Mon, 23 Nov 2020 09:01:09 -0800 (PST)
-Received: by mail-yb1-xb41.google.com with SMTP id 10so16574138ybx.9;
-        Mon, 23 Nov 2020 09:01:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=C8oS1tqNv7f6RkxFUUnN8Th7AIx+SIEYLcj7Qp63p9k=;
-        b=XVEZRacQJCq6PUcwiSqBhTCNm6nCGyDfUWju1rcXBbeqoud9rcUoA0tOMYCMzB16+A
-         Tf2nyNR3t/IgTmwCIQB3ypyJX49r6P9OYc4rr8O0GyP+kH9GvVo57h25AzM2IpNdBJCI
-         6VLJdQ/PQ4UkU3N4pmDXYYgizJ5Pfla+w5/9goVU/6MpEicrzk67JRLBr0Cie208jhlC
-         H98JkfQHihT+nzvH+TLNNG0iXU+4+bFV34QO7OZ83KC7AUou7iPn0+Or7kQLOKk4QbqZ
-         u31mLbMWS6fVKYWBJpOVY66yIIwTk5i1l6O01w6Kg0HE6F0Pd/kbjjmGlUCXMvB2VIHC
-         l2kw==
+        id S2390227AbgKWRGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 12:06:14 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:50551 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1733067AbgKWRGM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 12:06:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606151171;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ETdBmUCF01QVQJOZ+sQu9TUGQeVKu9xOEmE1E5gBvfU=;
+        b=BtEofZ03By1sp6OyH8lSI6IT4Bb/Q48OsWV2XnBXmdgQcceGh9rKSaQV86czSHO4W4CJHn
+        vUaUaH4n0l1WmtKl1NY4JjZQEtZdHR6F0okj/kLdyZp+LnqjvTzaYPmjipu9+IS6RcbTNg
+        lanzsvwsZXvmVS2IMlU/0SstZMlkjqs=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-100-Ej0h8q8_PMyT991yRStmUA-1; Mon, 23 Nov 2020 12:06:09 -0500
+X-MC-Unique: Ej0h8q8_PMyT991yRStmUA-1
+Received: by mail-qt1-f200.google.com with SMTP id y5so14115146qtb.13
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 09:06:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=C8oS1tqNv7f6RkxFUUnN8Th7AIx+SIEYLcj7Qp63p9k=;
-        b=Wc298nc/h42tFExOzZSG/XQQDQWWToqrhSnC1fve28PRg8Y9rQKDUv5xrORNiKFRQ/
-         G7PWlC7Ho08NhwEZgdYeSz0K9LkTgBceZg2+LSK1F10m2D+b3CUYLdXQrra2fsH06rur
-         +tMd+zIKkYbY7RijmRp1p9aPvE2f5JWdC6kXHbIBDjf4008BN/Z+5D5O8QaoooiIYO8W
-         Po7yAHBGou4onkZoPZEoTsEtJ6rDx0ikanbL8ViJBIOoSKSKZSNEci37gB2QN8+NIvFg
-         KWrVVDjBSE/R8VLLjvCAb6lVyVt81cDKTYHIuLuGXJBaztQWMyJNoNbivsxtw5Nh16hn
-         XweQ==
-X-Gm-Message-State: AOAM530qcPfa+7N9eHzjFouQZuSs1rRyBwlfh5gm5XZuOFw+KvesRZg5
-        MEehSIlOWcrdGsNz0IWg8/NlTz2rKxl7NaTsRUw=
-X-Google-Smtp-Source: ABdhPJw65A04SBNaDefIkuI5vF2SMl8iYxkpxXq0HO2LbpXElojOUQFFbXitA0Vl7O8rkXXIAYbjyBqND8UiNocLcps=
-X-Received: by 2002:a25:2e0d:: with SMTP id u13mr381510ybu.247.1606150868581;
- Mon, 23 Nov 2020 09:01:08 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=ETdBmUCF01QVQJOZ+sQu9TUGQeVKu9xOEmE1E5gBvfU=;
+        b=Dm6sj94JN2Q/oAaPuddaN2rhUA2PpIoGgaN405HRSPw1OIZBEw5pvUQjU3QBdkxcGJ
+         Evn/53WrFVD0DYyz4MSwkJXMuWpYOQjdMqX+BrMd17a9Q7ackacdqYCQZdntE5hXnwLA
+         9a3Zmtpx9K/F3B+jKa4KvG7wsY3z0pb/QGLR5x45CFwLvSei0dMSWFHmGv2Oh3NVP50b
+         NWlQP5fOjAjjGnuEYGhgO50n7nSjN+fzN8XiREPJnxyx2eSZeCqpoWRni6ZvwRGneRaa
+         XiLycaC8TSBaoe1wgjm4euEQ951yE+WcgwhIQiFGDAeqitT3VwWP7t8aIOoK6914DF2c
+         PeMA==
+X-Gm-Message-State: AOAM5322Iet/nkOX0xGtFZHplLoNVs/rbSExesFW0aBFeM/vDpn1XvnG
+        y1C7ZRzGJl1wHzfePD6WT7M7ARc4UUOZMAnsHSAmPY/fs2VQIm1ecQbE/oeODGDqNwnBH7/dcAJ
+        +TcUhbLH/pOvSfVaD
+X-Received: by 2002:ac8:5d53:: with SMTP id g19mr70883qtx.354.1606151168820;
+        Mon, 23 Nov 2020 09:06:08 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwHR8oVpP3xv7xpCkK6lH4mawBfXgRI3GL2dEiLGp13/vfLrDKV7SBtsWnvpv2iFDtHltekRw==
+X-Received: by 2002:ac8:5d53:: with SMTP id g19mr70839qtx.354.1606151168572;
+        Mon, 23 Nov 2020 09:06:08 -0800 (PST)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id o187sm10226153qkb.120.2020.11.23.09.06.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 Nov 2020 09:06:07 -0800 (PST)
+Subject: Re: [RFC] MAINTAINERS tag for cleanup robot
+To:     Joe Perches <joe@perches.com>, clang-built-linux@googlegroups.com
+Cc:     linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xen-devel@lists.xenproject.org, tboot-devel@lists.sourceforge.net,
+        kvm@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-acpi@vger.kernel.org, devel@acpica.org,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org, netdev@vger.kernel.org,
+        linux-media@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com,
+        linux-scsi@vger.kernel.org, linux-wireless@vger.kernel.org,
+        ibm-acpi-devel@lists.sourceforge.net,
+        platform-driver-x86@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        ecryptfs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        cluster-devel@redhat.com, linux-mtd@lists.infradead.org,
+        keyrings@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, alsa-devel@alsa-project.org,
+        bpf@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-nfs@vger.kernel.org, patches@opensource.cirrus.com
+References: <20201121165058.1644182-1-trix@redhat.com>
+ <2105f0c05e9eae8bee8e17dcc5314474b3c0bc73.camel@perches.com>
+ <6e8c1926-4209-8f10-d0f9-72c875a85a88@redhat.com>
+ <859bae8ddae3238116824192f6ddf1c91a381913.camel@perches.com>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <88eeba27-ee36-df63-8cd9-3cccbe5e0850@redhat.com>
+Date:   Mon, 23 Nov 2020 09:06:03 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-References: <20201121194339.52290-1-masahiroy@kernel.org> <CANiq72nL7yxGj-Q6aOxG68967g_fB6=hDED0mTBrZ_SjC=U-Pg@mail.gmail.com>
- <CAK7LNARjU5HTcTjJG1-sQTJBFqohC1O8aAvFs3Hn_sXscH_pdg@mail.gmail.com>
-In-Reply-To: <CAK7LNARjU5HTcTjJG1-sQTJBFqohC1O8aAvFs3Hn_sXscH_pdg@mail.gmail.com>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Mon, 23 Nov 2020 18:00:57 +0100
-Message-ID: <CANiq72mcJMRqV+YZbQtLTCR37ydD=8yFjFzg5ZYMmtH5pK1sEQ@mail.gmail.com>
-Subject: Re: [PATCH] compiler_attribute: remove CONFIG_ENABLE_MUST_CHECK
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Shuah Khan <shuah@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        wireguard@lists.zx2c4.com,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <859bae8ddae3238116824192f6ddf1c91a381913.camel@perches.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 23, 2020 at 4:37 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> I can move it to compiler_attribute.h
->
-> This attribute is supported by gcc, clang, and icc.
-> https://godbolt.org/z/ehd6so
->
-> I can send v2.
->
-> I do not mind renaming, but it should be done in a separate patch.
 
-Of course -- sorry, I didn't mean we had to do them now, i.e. we can
-do the move and the rename later on, if you prefer.
+On 11/22/20 10:22 AM, Joe Perches wrote:
+> On Sun, 2020-11-22 at 08:33 -0800, Tom Rix wrote:
+>> On 11/21/20 9:10 AM, Joe Perches wrote:
+>>> On Sat, 2020-11-21 at 08:50 -0800, trix@redhat.com wrote:
+>>>> A difficult part of automating commits is composing the subsystem
+>>>> preamble in the commit log.  For the ongoing effort of a fixer producing
+>>>> one or two fixes a release the use of 'treewide:' does not seem appropriate.
+>>>>
+>>>> It would be better if the normal prefix was used.  Unfortunately normal is
+>>>> not consistent across the tree.
+>>>>
+>>>> So I am looking for comments for adding a new tag to the MAINTAINERS file
+>>>>
+>>>> 	D: Commit subsystem prefix
+>>>>
+>>>> ex/ for FPGA DFL DRIVERS
+>>>>
+>>>> 	D: fpga: dfl:
+>>> I'm all for it.  Good luck with the effort.  It's not completely trivial.
+>>>
+>>> From a decade ago:
+>>>
+>>> https://lore.kernel.org/lkml/1289919077.28741.50.camel@Joe-Laptop/
+>>>
+>>> (and that thread started with extra semicolon patches too)
+>> Reading the history, how about this.
+>>
+>> get_maintainer.pl outputs a single prefix, if multiple files have the
+>> same prefix it works, if they don't its an error.
+>>
+>> Another script 'commit_one_file.sh' does the call to get_mainainter.pl
+>> to get the prefix and be called by run-clang-tools.py to get the fixer
+>> specific message.
+> It's not whether the script used is get_maintainer or any other script,
+> the question is really if the MAINTAINERS file is the appropriate place
+> to store per-subsystem patch specific prefixes.
+>
+> It is.
+>
+> Then the question should be how are the forms described and what is the
+> inheritance priority.  My preference would be to have a default of
+> inherit the parent base and add basename(subsystem dirname).
+>
+> Commit history seems to have standardized on using colons as the separator
+> between the commit prefix and the subject.
+>
+> A good mechanism to explore how various subsystems have uses prefixes in
+> the past might be something like:
+>
+> $ git log --no-merges --pretty='%s' -<commit_count> <subsystem_path> | \
+>   perl -n -e 'print substr($_, 0, rindex($_, ":") + 1) . "\n";' | \
+>   sort | uniq -c | sort -rn
 
-Cheers,
-Miguel
+Thanks, I have shamelessly stolen this line and limited the commits to the maintainer.
+
+I will post something once the generation of the prefixes is done.
+
+Tom
+
