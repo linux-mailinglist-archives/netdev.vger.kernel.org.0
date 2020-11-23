@@ -2,58 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E592F2C18A6
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 23:44:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB8A32C18BE
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 23:59:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732947AbgKWWmx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 17:42:53 -0500
-Received: from mga17.intel.com ([192.55.52.151]:19640 "EHLO mga17.intel.com"
+        id S1733158AbgKWWpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 17:45:16 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49444 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731256AbgKWWmx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Nov 2020 17:42:53 -0500
-IronPort-SDR: 87DmANnE7o2Rr+IY+8jHF8Nm4+iXbClIYDRZAwpm5soQjAIXyqkc4U0t//zKs0c2+hdlJFXOKW
- irzTAgnUUgzw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9814"; a="151698745"
-X-IronPort-AV: E=Sophos;i="5.78,364,1599548400"; 
-   d="scan'208";a="151698745"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2020 14:42:52 -0800
-IronPort-SDR: 2OsBzmgX8tyPu2NGVoLl/WxdhYtC3uvvCVYJcrBnBVudNq6A2iPX4j1tm6eB3Q5BUaA3iozbBy
- PmF5UOKBOudw==
-X-IronPort-AV: E=Sophos;i="5.78,364,1599548400"; 
-   d="scan'208";a="546586676"
-Received: from jbrandeb-mobl4.amr.corp.intel.com (HELO localhost) ([10.209.57.186])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2020 14:42:52 -0800
-Date:   Mon, 23 Nov 2020 14:42:52 -0800
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     Claudiu Manoil <claudiu.manoil@nxp.com>
-Cc:     <netdev@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next resend 1/2] enetc: Fix endianness issues for
- enetc_ethtool
-Message-ID: <20201123144252.000066b8@intel.com>
-In-Reply-To: <20201119101215.19223-2-claudiu.manoil@nxp.com>
-References: <20201119101215.19223-1-claudiu.manoil@nxp.com>
-        <20201119101215.19223-2-claudiu.manoil@nxp.com>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+        id S1731223AbgKWWpQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Nov 2020 17:45:16 -0500
+Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9A844206D8;
+        Mon, 23 Nov 2020 22:45:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606171515;
+        bh=/p/jbTtRLIIWEgXXbATB4oqtwL6MJqcX0TPc3/A1S1s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=L7pIakUiJFfSqyMuKWUtj7dcC/pGT+jMfh4oYXmVVaTOxpwPgUopS/y6fhjoGpmJN
+         9BiQRMqqZlm9SPhmdGnmXzyJiZNQPogZuwlxs3B4Gkv6IdP1Y9KJULXJk7a79W8MTW
+         phoxsfTUURqkfyS16t7/Pfc2NImXhIKGTBOscWrI=
+Date:   Mon, 23 Nov 2020 16:45:29 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH 015/141] netfilter: Fix fall-through warnings for Clang
+Message-ID: <20201123224529.GE21644@embeddedor>
+References: <cover.1605896059.git.gustavoars@kernel.org>
+ <ed43418cabacc651f198fbad9a9fcfe32c6ddf6f.1605896059.git.gustavoars@kernel.org>
+ <20201120224737.GR15137@breakpoint.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201120224737.GR15137@breakpoint.cc>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Claudiu Manoil wrote:
-
-> These particular fields are specified in the H/W reference
-> manual as having network byte order format, so enforce big
-> endian annotation for them and clear the related sparse
-> warnings in the process.
+On Fri, Nov 20, 2020 at 11:47:37PM +0100, Florian Westphal wrote:
+> Gustavo A. R. Silva <gustavoars@kernel.org> wrote:
+> > In preparation to enable -Wimplicit-fallthrough for Clang, fix multiple
+> > warnings by explicitly adding multiple break statements instead of just
+> > letting the code fall through to the next case.
 > 
-> Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+> Acked-by: Florian Westphal <fw@strlen.de>
+> 
+> Feel free to carry this in next iteration of series, if any.
 
-Thanks for fixing these warnings!
-
-Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Thanks, Florian.
+--
+Gustavo
