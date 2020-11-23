@@ -2,115 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC5452C0524
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 13:03:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7BF02C053C
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 13:12:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729290AbgKWL7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 06:59:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56526 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729277AbgKWL7N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Nov 2020 06:59:13 -0500
-Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 368802076E;
-        Mon, 23 Nov 2020 11:59:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606132752;
-        bh=SNzmc2sgfjK6RMMu/GL0rJxigW65dyO8WaugKYy1Ed4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HQQpseAIMOO0IZb4YiComOvdilzhwi7IJMFaJHJk7huXj7OGXw6ILYx117GWvUA13
-         /KeJ8/5AgMzifF6/kwnF4ABjF+D92ZqMB+gPby5nu1oYUfLLF18DPYlSbZmowyanA/
-         qETj81GnR39/kacyhwt/ZzX7XQeUcwXitxywMDIU=
-Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94)
-        (envelope-from <maz@kernel.org>)
-        id 1khAUw-00Cu3B-03; Mon, 23 Nov 2020 11:59:10 +0000
+        id S1728860AbgKWMLK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 07:11:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52832 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728701AbgKWMLJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 07:11:09 -0500
+Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28747C0613CF
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 04:11:08 -0800 (PST)
+Received: by mail-ot1-x341.google.com with SMTP id f12so4211561oto.10
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 04:11:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=kNYD7tU2FkkDCamcofYBHHM0yWmu6sghfg0fn6PxKOQ=;
+        b=P1fLZ4l9mW1lMjjA8DgQOt+DNvp6yejvlIz/BMIXKu1PovM1cAu1BQS1LbojeUNpEZ
+         Iefb1JskwaaOJ3DFcFo/HcypFUnuLoZ+Op3+CfYvtXIz63v/xKRHGem47fZ6IS1Wp3GX
+         iJimusFEjfOwuO9LYmawnr/rOlBJCTAggFeZfA5qsaz3S+DqKXF132in3RGNANggyIHC
+         le3tz2dtqZbGhzaMbvQU+McesbCM44FPanBxGW95HA6Mff/cE/h88VWW0wSAYgDHEjdx
+         VjlMH/jae+6qm7b4MF3Ysrc6ewjKe6pRa0nw8L2b+Y/pKd8Z3sgqSQ6NuKGxV/H0uuL1
+         tlRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=kNYD7tU2FkkDCamcofYBHHM0yWmu6sghfg0fn6PxKOQ=;
+        b=DAkO1m7eB2v29SF2I/XgzkxNBf28sFZHO8OabamuTEhtLgZTw/UbRRfo/AvQTWTvDh
+         JV2fX/mLFg+pZmC5Vm/3VlSIIeoQRjH+NAcZHLvuWM9F+CsNBBOk/Ue5FDTI7JoHXAY/
+         3hAk8CDuj1lxPentaZzzQnFJp+exroJYq4ArW3YbDeVzB5ANF/ACNrn43pd4FtMfYJMp
+         pitQcdfUtSlEVH3KJjitl9SHXLobyKG/BkU/tdi0Fs2f014vTyLsqhq3IuC/GdWKJr7R
+         38g9WPR8vLJnn7hegbmZJCg6fYV8rPQ7hWyvlFElS9+R8LXvjczM1s0ay3DVcO5+UZoR
+         fNhg==
+X-Gm-Message-State: AOAM5308tsQl+FpU2yjUD3pMSOM2Wj5VOx9ZvTwI89ZhY7EjiKSzTh4c
+        QaRuypxYWPXm1BpnoRWdlduxIl1uWbvp3UbmMHw=
+X-Google-Smtp-Source: ABdhPJwHDEy6U7dUzJaDWh//ZBu9Q2Uwn1usG+ObJPk6jLpBEOYAXtI1r7QwVhPUIsWfAQ8XyJlOlOAxVnba8v/d1hM=
+X-Received: by 2002:a05:6830:d7:: with SMTP id x23mr21910586oto.59.1606133467610;
+ Mon, 23 Nov 2020 04:11:07 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 23 Nov 2020 11:59:09 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     Jianyong Wu <jianyong.wu@arm.com>
-Cc:     justin.he@arm.com, kvm@vger.kernel.org, netdev@vger.kernel.org,
-        richardcochran@gmail.com, linux-kernel@vger.kernel.org,
-        sean.j.christopherson@intel.com, steven.price@arm.com,
-        Andre.Przywara@arm.com, john.stultz@linaro.org, yangbo.lu@nxp.com,
-        pbonzini@redhat.com, tglx@linutronix.de, nd@arm.com,
-        will@kernel.org, kvmarm@lists.cs.columbia.edu,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v15 6/9] arm64/kvm: Add hypercall service for kvm ptp.
-In-Reply-To: <d409aa1cb7cfcbf4351e6c5fc34d9c7e@kernel.org>
-References: <20201111062211.33144-1-jianyong.wu@arm.com>
- <20201111062211.33144-7-jianyong.wu@arm.com>
- <d409aa1cb7cfcbf4351e6c5fc34d9c7e@kernel.org>
-User-Agent: Roundcube Webmail/1.4.9
-Message-ID: <276428d3d291f703e2f0c2c323194e98@kernel.org>
-X-Sender: maz@kernel.org
-X-SA-Exim-Connect-IP: 51.254.78.96
-X-SA-Exim-Rcpt-To: jianyong.wu@arm.com, justin.he@arm.com, kvm@vger.kernel.org, netdev@vger.kernel.org, richardcochran@gmail.com, linux-kernel@vger.kernel.org, sean.j.christopherson@intel.com, steven.price@arm.com, Andre.Przywara@arm.com, john.stultz@linaro.org, yangbo.lu@nxp.com, pbonzini@redhat.com, tglx@linutronix.de, nd@arm.com, will@kernel.org, kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+References: <20201123120531.724963-1-zyjzyj2000@gmail.com>
+In-Reply-To: <20201123120531.724963-1-zyjzyj2000@gmail.com>
+From:   Zhu Yanjun <zyjzyj2000@gmail.com>
+Date:   Mon, 23 Nov 2020 20:10:56 +0800
+Message-ID: <CAD=hENfysbUCNapfFZ6i0tOFo5Ge3QS+iQSt2ySBDb10zFdgwg@mail.gmail.com>
+Subject: Re: [PATCHv2 1/1] xdp: remove the function xsk_map_inc
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-11-23 10:44, Marc Zyngier wrote:
-> On 2020-11-11 06:22, Jianyong Wu wrote:
->> ptp_kvm will get this service through SMCC call.
->> The service offers wall time and cycle count of host to guest.
->> The caller must specify whether they want the host cycle count
->> or the difference between host cycle count and cntvoff.
->> 
->> Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
->> ---
->>  arch/arm64/kvm/hypercalls.c | 61 
->> +++++++++++++++++++++++++++++++++++++
->>  include/linux/arm-smccc.h   | 17 +++++++++++
->>  2 files changed, 78 insertions(+)
->> 
->> diff --git a/arch/arm64/kvm/hypercalls.c b/arch/arm64/kvm/hypercalls.c
->> index b9d8607083eb..f7d189563f3d 100644
->> --- a/arch/arm64/kvm/hypercalls.c
->> +++ b/arch/arm64/kvm/hypercalls.c
->> @@ -9,6 +9,51 @@
->>  #include <kvm/arm_hypercalls.h>
->>  #include <kvm/arm_psci.h>
->> 
->> +static void kvm_ptp_get_time(struct kvm_vcpu *vcpu, u64 *val)
->> +{
->> +	struct system_time_snapshot systime_snapshot;
->> +	u64 cycles = ~0UL;
->> +	u32 feature;
->> +
->> +	/*
->> +	 * system time and counter value must captured in the same
->> +	 * time to keep consistency and precision.
->> +	 */
->> +	ktime_get_snapshot(&systime_snapshot);
->> +
->> +	// binding ptp_kvm clocksource to arm_arch_counter
->> +	if (systime_snapshot.cs_id != CSID_ARM_ARCH_COUNTER)
->> +		return;
->> +
->> +	val[0] = upper_32_bits(systime_snapshot.real);
->> +	val[1] = lower_32_bits(systime_snapshot.real);
-> 
-> What is the endianness of these values? I can't see it defined
-> anywhere, and this is likely not to work if guest and hypervisor
-> don't align.
+On Mon, Nov 23, 2020 at 8:05 PM <zyjzyj2000@gmail.com> wrote:
+>
+> From: Zhu Yanjun <zyjzyj2000@gmail.com>
+>
+> The function xsk_map_inc is a simple wrapper of bpf_map_inc and
+> always returns zero. As such, replacing this function with bpf_map_inc
+> and removing the test code.
+>
+> Signed-off-by: Zhu Yanjun <zyjzyj2000@gmail.com>
 
-Scratch that. This is all passed via registers, so the endianness
-of the data is irrelevant. Please discard any comment about endianness
-I made in this review.
 
-The documentation aspect still requires to be beefed up.
+> ---
+>  net/xdp/xsk.c    |  1 -
+>  net/xdp/xsk.h    |  1 -
+>  net/xdp/xskmap.c | 13 +------------
+>  3 files changed, 1 insertion(+), 14 deletions(-)
+>
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index cfbec3989a76..c1b8a888591c 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -548,7 +548,6 @@ static struct xsk_map *xsk_get_map_list_entry(struct xdp_sock *xs,
+>         node = list_first_entry_or_null(&xs->map_list, struct xsk_map_node,
+>                                         node);
+>         if (node) {
+> -               WARN_ON(xsk_map_inc(node->map));
+>                 map = node->map;
+>                 *map_entry = node->map_entry;
+>         }
+> diff --git a/net/xdp/xsk.h b/net/xdp/xsk.h
+> index b9e896cee5bb..0aad25c0e223 100644
+> --- a/net/xdp/xsk.h
+> +++ b/net/xdp/xsk.h
+> @@ -41,7 +41,6 @@ static inline struct xdp_sock *xdp_sk(struct sock *sk)
+>
+>  void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
+>                              struct xdp_sock **map_entry);
+> -int xsk_map_inc(struct xsk_map *map);
+>  void xsk_map_put(struct xsk_map *map);
+>  void xsk_clear_pool_at_qid(struct net_device *dev, u16 queue_id);
+>  int xsk_reg_pool_at_qid(struct net_device *dev, struct xsk_buff_pool *pool,
+> diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
+> index 49da2b8ace8b..6b7e9a72b101 100644
+> --- a/net/xdp/xskmap.c
+> +++ b/net/xdp/xskmap.c
+> @@ -11,12 +11,6 @@
+>
+>  #include "xsk.h"
+>
+> -int xsk_map_inc(struct xsk_map *map)
+> -{
+> -       bpf_map_inc(&map->map);
+> -       return 0;
+> -}
 
-Thanks,
+Hi, Magnus
 
-         M.
--- 
-Jazz is not dead. It just smells funny...
+The function xsk_map_inc is replaced with bpf_map_inc.
+
+Zhu Yanjun
+
+> -
+>  void xsk_map_put(struct xsk_map *map)
+>  {
+>         bpf_map_put(&map->map);
+> @@ -26,17 +20,12 @@ static struct xsk_map_node *xsk_map_node_alloc(struct xsk_map *map,
+>                                                struct xdp_sock **map_entry)
+>  {
+>         struct xsk_map_node *node;
+> -       int err;
+>
+>         node = kzalloc(sizeof(*node), GFP_ATOMIC | __GFP_NOWARN);
+>         if (!node)
+>                 return ERR_PTR(-ENOMEM);
+>
+> -       err = xsk_map_inc(map);
+> -       if (err) {
+> -               kfree(node);
+> -               return ERR_PTR(err);
+> -       }
+> +       bpf_map_inc(&map->map);
+>
+>         node->map = map;
+>         node->map_entry = map_entry;
+> --
+> 2.25.1
+>
