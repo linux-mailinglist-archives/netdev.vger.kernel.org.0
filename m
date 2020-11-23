@@ -2,103 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A7162C10F9
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 17:48:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F7882C1139
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 18:02:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390168AbgKWQmq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 11:42:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59850 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390147AbgKWQmp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Nov 2020 11:42:45 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BE8DA20757;
-        Mon, 23 Nov 2020 16:42:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606149765;
-        bh=cPilrH5xGiqNYdjc64WOjkSB0wbIDCfP7pT/Zze32DU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=v0DA7ZO/ZmlPL6xp4gBal2lx0TTIaYFXmHHrXDrVhoSv8qfvVWrDFpxxwavXOr21P
-         pgkF1vwhRfwh40imvaM/CqAaN0AhS+ZIi2+iOex6zQr0KOFLJtrPMm9ROvtoITpSYP
-         fghw80UMbTPAD08K5zqwFW4u8xp3b8m4ZIpZZmZ0=
-Date:   Mon, 23 Nov 2020 08:42:43 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Ramsay, Lincoln" <Lincoln.Ramsay@digi.com>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Dmitry Bogdanov <dbogdanov@marvell.com>
-Subject: Re: [PATCH v4] aquantia: Remove the build_skb path
-Message-ID: <20201123084243.423b23a4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CY4PR1001MB2311E9770EF466FB922CBB27E8FD0@CY4PR1001MB2311.namprd10.prod.outlook.com>
-References: <CY4PR1001MB23118EE23F7F5196817B8B2EE8E10@CY4PR1001MB2311.namprd10.prod.outlook.com>
-        <CY4PR1001MB231125B16A35324A79270373E8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
-        <CY4PR1001MB2311E1B5D8E2700C92E7BE2DE8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
-        <CY4PR1001MB2311F01C543420E5F89C0F4DE8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
-        <20201119221510.GI15137@breakpoint.cc>
-        <CY4PR1001MB23113312D5E0633823F6F75EE8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
-        <20201119222800.GJ15137@breakpoint.cc>
-        <CY4PR1001MB231116E9371FBA2B8636C23DE8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
-        <20201119225842.GK15137@breakpoint.cc>
-        <CY4PR1001MB2311844FE8390F00A3363DEEE8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
-        <20201121132204.43f9c4fb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20201121132324.72d79e94@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CY4PR1001MB2311E9770EF466FB922CBB27E8FD0@CY4PR1001MB2311.namprd10.prod.outlook.com>
+        id S1732882AbgKWRBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 12:01:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41424 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729514AbgKWRBJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 12:01:09 -0500
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E79C0613CF;
+        Mon, 23 Nov 2020 09:01:09 -0800 (PST)
+Received: by mail-yb1-xb41.google.com with SMTP id 10so16574138ybx.9;
+        Mon, 23 Nov 2020 09:01:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=C8oS1tqNv7f6RkxFUUnN8Th7AIx+SIEYLcj7Qp63p9k=;
+        b=XVEZRacQJCq6PUcwiSqBhTCNm6nCGyDfUWju1rcXBbeqoud9rcUoA0tOMYCMzB16+A
+         Tf2nyNR3t/IgTmwCIQB3ypyJX49r6P9OYc4rr8O0GyP+kH9GvVo57h25AzM2IpNdBJCI
+         6VLJdQ/PQ4UkU3N4pmDXYYgizJ5Pfla+w5/9goVU/6MpEicrzk67JRLBr0Cie208jhlC
+         H98JkfQHihT+nzvH+TLNNG0iXU+4+bFV34QO7OZ83KC7AUou7iPn0+Or7kQLOKk4QbqZ
+         u31mLbMWS6fVKYWBJpOVY66yIIwTk5i1l6O01w6Kg0HE6F0Pd/kbjjmGlUCXMvB2VIHC
+         l2kw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=C8oS1tqNv7f6RkxFUUnN8Th7AIx+SIEYLcj7Qp63p9k=;
+        b=Wc298nc/h42tFExOzZSG/XQQDQWWToqrhSnC1fve28PRg8Y9rQKDUv5xrORNiKFRQ/
+         G7PWlC7Ho08NhwEZgdYeSz0K9LkTgBceZg2+LSK1F10m2D+b3CUYLdXQrra2fsH06rur
+         +tMd+zIKkYbY7RijmRp1p9aPvE2f5JWdC6kXHbIBDjf4008BN/Z+5D5O8QaoooiIYO8W
+         Po7yAHBGou4onkZoPZEoTsEtJ6rDx0ikanbL8ViJBIOoSKSKZSNEci37gB2QN8+NIvFg
+         KWrVVDjBSE/R8VLLjvCAb6lVyVt81cDKTYHIuLuGXJBaztQWMyJNoNbivsxtw5Nh16hn
+         XweQ==
+X-Gm-Message-State: AOAM530qcPfa+7N9eHzjFouQZuSs1rRyBwlfh5gm5XZuOFw+KvesRZg5
+        MEehSIlOWcrdGsNz0IWg8/NlTz2rKxl7NaTsRUw=
+X-Google-Smtp-Source: ABdhPJw65A04SBNaDefIkuI5vF2SMl8iYxkpxXq0HO2LbpXElojOUQFFbXitA0Vl7O8rkXXIAYbjyBqND8UiNocLcps=
+X-Received: by 2002:a25:2e0d:: with SMTP id u13mr381510ybu.247.1606150868581;
+ Mon, 23 Nov 2020 09:01:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201121194339.52290-1-masahiroy@kernel.org> <CANiq72nL7yxGj-Q6aOxG68967g_fB6=hDED0mTBrZ_SjC=U-Pg@mail.gmail.com>
+ <CAK7LNARjU5HTcTjJG1-sQTJBFqohC1O8aAvFs3Hn_sXscH_pdg@mail.gmail.com>
+In-Reply-To: <CAK7LNARjU5HTcTjJG1-sQTJBFqohC1O8aAvFs3Hn_sXscH_pdg@mail.gmail.com>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Mon, 23 Nov 2020 18:00:57 +0100
+Message-ID: <CANiq72mcJMRqV+YZbQtLTCR37ydD=8yFjFzg5ZYMmtH5pK1sEQ@mail.gmail.com>
+Subject: Re: [PATCH] compiler_attribute: remove CONFIG_ENABLE_MUST_CHECK
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Shuah Khan <shuah@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        wireguard@lists.zx2c4.com,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 22 Nov 2020 22:36:22 +0000 Ramsay, Lincoln wrote:
-> > (Next time please include in the subject the tree that you're targetting
-> > the patch)  
-> 
-> I guess you mean like [PATCH master v5] ? Should I be targeting
-> something other than the master branch on the main git repo?
-> (https://github.com/torvalds/linux.git)
+On Mon, Nov 23, 2020 at 4:37 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> I can move it to compiler_attribute.h
+>
+> This attribute is supported by gcc, clang, and icc.
+> https://godbolt.org/z/ehd6so
+>
+> I can send v2.
+>
+> I do not mind renaming, but it should be done in a separate patch.
 
-In this case the patch will be merged into the networking tree, and
-then travel downstream to Linus. So you want to target this tree:
+Of course -- sorry, I didn't mean we had to do them now, i.e. we can
+do the move and the rename later on, if you prefer.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/
-
-IOW [PATCH net v5].
-
-> > please add a From: line at the beginning of the mail which matches
-> > the signoff (or use git-send-email, it'll get it right).  
-> 
-> Sure.
-> 
-> > Ah, one more thing, this is the correct fixes tag, right?
-> > Fixes: 018423e90bee ("net: ethernet: aquantia: Add ring support code")
-> > Please add it right before the signoff line.  
-> 
-> I didn't quite understand this header... but yeah, I guess that's the
-> commit that adds the fast path I am removing.
-
-Yup, it points to the oldest revision of the code where the bug is
-present. In your case oldest revision where:
-
-    When performing IPv6 forwarding, there is an expectation that SKBs
-    will have some headroom. When forwarding a packet from the aquantia
-    driver, this does not always happen, triggering a kernel warning.
-
-> > > Align continuations of the lines under '(' like:  
-> > 
-> > I am only changing the leading indent. Am I still expected to satisfy the patch checker?
-> > 
-> > The current patch is very clear about what is happening if you do a diff -w but if I start
-> > changing other things to satisfy the checker, that goes away.  
-> 
-> Some of the patch checker complaints are only leading whitespace
-> (obviously not a problem for diff -w), but 2 of them involve actual
-> changes (changing , to ; and moving the first argument from the line
-> below to the line above).
-
-I don't think it'll make a huge difference for the review-ability of
-this change to heed checkpatch's warnings here.
+Cheers,
+Miguel
