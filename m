@@ -2,116 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 144342C017A
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 09:36:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 775252C01BE
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 09:55:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727434AbgKWIbu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 03:31:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47328 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725320AbgKWIbt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 03:31:49 -0500
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C509C0613CF;
-        Mon, 23 Nov 2020 00:31:48 -0800 (PST)
-Received: by mail-pf1-x443.google.com with SMTP id b6so3793727pfp.7;
-        Mon, 23 Nov 2020 00:31:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=A2OCYPW48+EaJEiSvyQJ2+kFYlsiz/LUK7yoFIj7s/0=;
-        b=ARYHclAhefMjQHT4pgy8KkNlOofEUe0LkbQSPGkdnzqUV2+hD6tBxSunTjYE5sCLw5
-         uvuR9gciPL3KO0c8LfdT/WsDQyWWd+8g4+W/ZeM7hApLOw7CHS6PwFO0uXjUfPIpW8Rd
-         atZazrkI4VZL27dree/jNephYhEoySeNnC0jFyiocUZ8WlGVYoIqytNkHjT/0gmiGaOx
-         S2qdJszwvrGaAonzGFg9OAPsvqYO5yNiCoSt7nS2C8dHNUDX2EvA1Pa+Sj0kgJawS9td
-         uJZB6Sp8xX5ouYYG2dtlYMSJ4/ani1XY3s1n5qXaCSlAnTxylkV4YOteyF2R5YeO31N9
-         txqg==
+        id S1727647AbgKWIyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 03:54:23 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35801 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726360AbgKWIyX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 03:54:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606121661;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=P8CGtKbmihjdsyd0p+Vdkg1jk8d6S8Wxkrx6dLJVykI=;
+        b=Xxx9V0QToqPbvCky2OBs0EllAy9/8FoRMr0URLvl5JGySjcw8sBRDb8EDEcYMchWljEeKa
+        ynh/83vzQC0yOb6n7L1vZsodw3bcR9sJPtQ5q8bmakry76LH7HQzrBJ9Xzh3FnVn9Q/Psf
+        C2/KCOeY9RtOaXaHq7FnC0rP84kyocU=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-179-Yj-qrKnbNyKgJPkR7RoUSA-1; Mon, 23 Nov 2020 03:54:19 -0500
+X-MC-Unique: Yj-qrKnbNyKgJPkR7RoUSA-1
+Received: by mail-wm1-f70.google.com with SMTP id n19so1233877wmc.1
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 00:54:19 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=A2OCYPW48+EaJEiSvyQJ2+kFYlsiz/LUK7yoFIj7s/0=;
-        b=qA6MKfmz51/1KbXqXchcmjyinHT+QZPAiuQj+ZGXw/UQw15r2ohlIEbL5u/OWzTGUc
-         dIB15d2Qy2TTdw94thjsPhTLcp6H6u47NXt/+re7dAqGROarapodTMfC4a6Z59UHGxAN
-         Ks8xomn8BZ8bxzFD/B7KsPSL8qvhMdE4b4o6VaCstj7LUvFG05T72mPDkKb6tFjHy/Ys
-         WyfRFKEzQFi8ZMnx8380hBx633h9KHSbiJfHadzIyvOcZzBo3l8j/yTIyxnJw3WnsUPv
-         BPgJgjviO5tFqkiacpSwWNUamjLR1XXs5HS3Om85pABBDRNLkxUkCvAqfP/QMdsYitPI
-         wemQ==
-X-Gm-Message-State: AOAM533XJu/KPXzlmqlX4zdkzhemTJCNo7INnXMpLnWo2/PkN2i0Zc8E
-        sY7sQ+BEYjEAGTIxj98x/ZY8Z4hDL7/sZN0dHajpI51wcMw=
-X-Google-Smtp-Source: ABdhPJyxRfMW6NRCYI589d8PdoA0y+Re41zIClMnGwIgTP3GCGEMMmHLctaZH8yt14IL9Xa5GUD3Cegsb3DsGBGuwSw=
-X-Received: by 2002:a65:560b:: with SMTP id l11mr27674361pgs.63.1606120307543;
- Mon, 23 Nov 2020 00:31:47 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=P8CGtKbmihjdsyd0p+Vdkg1jk8d6S8Wxkrx6dLJVykI=;
+        b=QmI0GA1rizz/6wUVfsm0Y2ZRSRPyH55pchichTNNXGdem0Kyspzx69ODOSWUvFSPNc
+         vO4pT+1/hVBQPX2bLaZGj+pUFepZIvCfrEN40Z41khSSoy/KYxWdepjgdhpBw2WwYk0e
+         HyyDOWMillBWifu7Ujo/l1L81QuNxT8OoRC4TUjBJYtbSjbyvGORtX0QZWXA5UoBfupW
+         w2fyW0w099UrLVH2lo2MVqu6FV+CJmsuBZiQLnR109Y8hqwEY6sD1TEdLiEVDHqqaUif
+         KD2LXc4Ex1oScon9C6O6eKVhj+fIYAjdCXRECrPWcRbqPpF73KuzYEh//2r0ETpTPBk5
+         TvoA==
+X-Gm-Message-State: AOAM531NyFlsEt5Jbs7TeF72PppWlImxJ9+P67cyF9zFF81OaLhant4g
+        MuhV8xsTsYc3YReBl8YysPthS+/HQov5ISc1TxOXhyMAChgQilX334mZ6MuooB7L1ch+WObSSkL
+        agYjW57ZQ+VZFdb/A
+X-Received: by 2002:adf:e2c9:: with SMTP id d9mr29309944wrj.11.1606121658200;
+        Mon, 23 Nov 2020 00:54:18 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzAvPOpcZwccjrURVoxu3LAWxhq91ZNi5t7X2R4USsynvncqS7wwTqgkqusW4u6MuhhlZ3+gQ==
+X-Received: by 2002:adf:e2c9:: with SMTP id d9mr29309928wrj.11.1606121658005;
+        Mon, 23 Nov 2020 00:54:18 -0800 (PST)
+Received: from localhost ([151.66.8.153])
+        by smtp.gmail.com with ESMTPSA id b14sm18424925wrq.47.2020.11.23.00.54.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Nov 2020 00:54:17 -0800 (PST)
+Date:   Mon, 23 Nov 2020 09:54:13 +0100
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, brouer@redhat.com
+Subject: Re: [PATCH net-next] net: page_pool: Add page_pool_put_page_bulk()
+ to page_pool.rst
+Message-ID: <20201123085413.GB2115@lore-desk>
+References: <937ccc89a82302a06744bcb6d253f0e95651caa2.1605910519.git.lorenzo@kernel.org>
+ <X7tteeAxhH9G0TwF@apalos.home>
 MIME-Version: 1.0
-References: <20201120054036.15199-1-ms@dev.tdt.de> <20201120054036.15199-3-ms@dev.tdt.de>
- <CAJht_EONd3+S12upVPk2K3PWvzMLdE3BkzY_7c5gA493NHcGnA@mail.gmail.com>
- <CAJht_EP_oqCDs6mMThBZNtz4sgpbyQgMhKkHeqfS_7JmfEzfQg@mail.gmail.com> <87a620b6a55ea8386bffefca0a1f8b77@dev.tdt.de>
-In-Reply-To: <87a620b6a55ea8386bffefca0a1f8b77@dev.tdt.de>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Mon, 23 Nov 2020 00:31:36 -0800
-Message-ID: <CAJht_EPc8MF1TjznSjWTPyMbsrw3JVqxST5g=eF0yf_zasUdeA@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 2/5] net/lapb: support netdev events
-To:     Martin Schiller <ms@dev.tdt.de>
-Cc:     Andrew Hendry <andrew.hendry@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="wq9mPyueHGvFACwf"
+Content-Disposition: inline
+In-Reply-To: <X7tteeAxhH9G0TwF@apalos.home>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 22, 2020 at 10:55 PM Martin Schiller <ms@dev.tdt.de> wrote:
->
-> No, they aren't independent. The carrier can only be up if the device /
-> interface is UP. And as far as I can see a NETDEV_CHANGE event will also
-> only be generated on interfaces that are UP.
->
-> So you can be sure, that if there is a NETDEV_CHANGE event then the
-> device is UP.
 
-OK. Thanks for your explanation!
+--wq9mPyueHGvFACwf
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> I removed the NETDEV_UP handling because I don't think it makes sense
-> to implicitly try to establish layer2 (LAPB) if there is no carrier.
+> On Fri, Nov 20, 2020 at 11:19:34PM +0100, Lorenzo Bianconi wrote:
+> > Introduce page_pool_put_page_bulk() entry into the API section of
+> > page_pool.rst
+> >=20
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >  Documentation/networking/page_pool.rst | 8 ++++++++
+> >  1 file changed, 8 insertions(+)
+> >=20
+> > diff --git a/Documentation/networking/page_pool.rst b/Documentation/net=
+working/page_pool.rst
+> > index 43088ddf95e4..e848f5b995b8 100644
+> > --- a/Documentation/networking/page_pool.rst
+> > +++ b/Documentation/networking/page_pool.rst
+> > @@ -97,6 +97,14 @@ a page will cause no race conditions is enough.
+> > =20
+> >  * page_pool_get_dma_dir(): Retrieve the stored DMA direction.
+> > =20
+> > +* page_pool_put_page_bulk(): It tries to refill a bulk of count pages =
+into the
+>=20
+> Tries to refill a number of pages sounds better?
 
-As I understand, when the device goes up, the carrier can be either
-down or up. Right?
+ack, will fix it in v2
 
-If this is true, when a device goes up and the carrier then goes up
-after that, L2 will automatically connect, but if a device goes up and
-the carrier is already up, L2 will not automatically connect. I think
-it might be better to eliminate this difference in handling. It might
-be better to make it automatically connect in both situations, or in
-neither situations.
+>=20
+> > +  ptr_ring cache holding ptr_ring producer lock. If the ptr_ring is fu=
+ll,
+> > +  page_pool_put_page_bulk() will release leftover pages to the page al=
+locator.
+> > +  page_pool_put_page_bulk() is suitable to be run inside the driver NA=
+PI tx
+> > +  completion loop for the XDP_REDIRECT use case.
+> > +  Please consider the caller must not use data area after running
+>=20
+> s/consider/note/
 
-If you want to go with the second way (auto connect in neither
-situations), the next (3rd) patch of this series might be also not
-needed.
+ack, will fix it in v2
 
-I just want to make the behavior of LAPB more consistent. I think we
-should either make LAPB auto-connect in all situations, or make LAPB
-wait for L3's instruction to connect in all situations.
+Regards,
+Lorenzo
 
-> And with the first X.25 connection request on that interface, it will
-> be established anyway by x25_transmit_link().
->
-> I've tested it here with an HDLC WAN Adapter and it works as expected.
->
-> These are also the ideal conditions for the already mentioned "on
-> demand" scenario. The only necessary change would be to call
-> x25_terminate_link() on an interface after clearing the last X.25
-> session.
->
-> > On NETDEV_GOING_DOWN, we can also check the carrier status first and
-> > if it is down, we don't need to call lapb_disconnect_request.
->
-> This is not necessary because lapb_disconnect_request() checks the
-> current state. And if the carrier is DOWN then the state should also be
-> LAPB_STATE_0 and so lapb_disconnect_request() does nothing.
+>=20
+> > +  page_pool_put_page_bulk(), as this function overwrites it.
+> > +
+> >  Coding examples
+> >  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > =20
+> > --=20
+> > 2.28.0
+> >=20
+>=20
+>=20
+> Other than that=20
+> Acked-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+>=20
 
-Yes, I understand. I just thought adding this check might make the
-code cleaner. But you are right.
+--wq9mPyueHGvFACwf
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCX7t4swAKCRA6cBh0uS2t
+rEdRAQCVPIR2Tcs/Fa+WQcCepBe7TMxrupYsmbpCNS5fCEL8FgEArBiGCIVuqnKn
+uhWWawWZSr83cCwUT5wL/qGLAEkkWQU=
+=ThC1
+-----END PGP SIGNATURE-----
+
+--wq9mPyueHGvFACwf--
+
