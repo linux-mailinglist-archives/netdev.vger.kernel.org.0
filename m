@@ -2,316 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29BD42C1670
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 21:29:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 495922C1677
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 21:29:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387841AbgKWURk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 15:17:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43744 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731265AbgKWURV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 15:17:21 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004AAC0613CF;
-        Mon, 23 Nov 2020 12:17:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=91SXVfrzcwQmOXV/JRM2Sz+9cjXrCZiDoPH+NJY7MEg=; b=iL4zpMjX5W5m0T4WyGp+pXC+i
-        ydoZcuF/TpPdcLBopuashFo5lrXmQiEjmRCgfkP3hY/femY7sJi67cGqQ6Jx7C4ZuGYgBxfXZ7od3
-        UlIGU83gka38q1JzgJ9VEv7sHo6RN/TUrsdO8WIr/SqRTM1pQ5IMNSmHehY2EfufwvUTlzsO1lTpI
-        3hjnACUlTRtTZh4zSGQ3xpG4VuPFxkIWzJ5+q46JpXAy4sMWR4KKM2/+897ouaAUyrPV0cxFiwFNh
-        6ZoLYev+gEQ+ZVogYdQ4Ok9GAhyc9x96wwHySg//jXch1w41B7xfLdmRV4tobbnz6cRRDj2W1U/Tq
-        PAd10sg8w==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35196)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1khIGz-0006ZS-V2; Mon, 23 Nov 2020 20:17:17 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1khIGx-0006cZ-UL; Mon, 23 Nov 2020 20:17:15 +0000
-Date:   Mon, 23 Nov 2020 20:17:15 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     stefanc@marvell.com
-Cc:     netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        davem@davemloft.net, nadavh@marvell.com, ymarkman@marvell.com,
-        linux-kernel@vger.kernel.org, kuba@kernel.org, mw@semihalf.com,
-        andrew@lunn.ch
-Subject: Re: [PATCH v2] net: mvpp2: divide fifo for dts-active ports only
-Message-ID: <20201123201715.GZ1551@shell.armlinux.org.uk>
-References: <1606154073-28267-1-git-send-email-stefanc@marvell.com>
+        id S1730670AbgKWUU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 15:20:26 -0500
+Received: from pbmsgap02.intersil.com ([192.157.179.202]:40016 "EHLO
+        pbmsgap02.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729666AbgKWUUZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 15:20:25 -0500
+Received: from pps.filterd (pbmsgap02.intersil.com [127.0.0.1])
+        by pbmsgap02.intersil.com (8.16.0.42/8.16.0.42) with SMTP id 0ANKGuI2005994;
+        Mon, 23 Nov 2020 15:20:23 -0500
+Received: from pbmxdp01.intersil.corp (pbmxdp01.pb.intersil.com [132.158.200.222])
+        by pbmsgap02.intersil.com with ESMTP id 34xwxksbad-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 23 Nov 2020 15:20:23 -0500
+Received: from pbmxdp02.intersil.corp (132.158.200.223) by
+ pbmxdp01.intersil.corp (132.158.200.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.1979.3; Mon, 23 Nov 2020 15:20:22 -0500
+Received: from localhost (132.158.202.109) by pbmxdp02.intersil.corp
+ (132.158.200.223) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Mon, 23 Nov 2020 15:20:21 -0500
+From:   <min.li.xe@renesas.com>
+To:     <richardcochran@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Min Li <min.li.xe@renesas.com>
+Subject: [PATCH v2 net] ptp: clockmatrix: bug fix for idtcm_strverscmp
+Date:   Mon, 23 Nov 2020 15:20:06 -0500
+Message-ID: <1606162806-14589-1-git-send-email-min.li.xe@renesas.com>
+X-Mailer: git-send-email 2.7.4
+X-TM-AS-MML: disable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1606154073-28267-1-git-send-email-stefanc@marvell.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-23_17:2020-11-23,2020-11-23 signatures=0
+X-Proofpoint-Spam-Details: rule=junk_notspam policy=junk score=0 mlxlogscore=833 adultscore=0
+ spamscore=0 suspectscore=4 bulkscore=0 malwarescore=0 phishscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011230130
+X-Proofpoint-Spam-Reason: mlx
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 23, 2020 at 07:54:33PM +0200, stefanc@marvell.com wrote:
-> From: Stefan Chulski <stefanc@marvell.com>
-> 
-> Tx/Rx FIFO is a HW resource limited by total size, but shared
-> by all ports of same CP110 and impacting port-performance.
-> Do not divide the FIFO for ports which are not enabled in DTS,
-> so active ports could have more FIFO.
-> No change in FIFO allocation if all 3 ports on the communication
-> processor enabled in DTS.
-> 
-> The active port mapping should be done in probe before FIFO-init.
-> 
-> Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+From: Min Li <min.li.xe@renesas.com>
 
-Thanks.
+Feed kstrtou8 with NULL terminated string.
 
-Reviewed-by: Russell King <rmk+kernel@armlinux.org.uk>
+Changes since v1:
+-Use strscpy instead of strncpy for safety.
 
-One thing I didn't point out is that netdev would like patch submissions
-to indicate which tree they are targetting. Are you intending this for
-net or net-next?
+Signed-off-by: Min Li <min.li.xe@renesas.com>
+---
+ drivers/ptp/ptp_clockmatrix.c | 60 ++++++++++++++++++++++++++++++-------------
+ tools/bpf/example             | 12 +++++++++
+ tools/bpf/novlan              |  7 +++++
+ 3 files changed, 61 insertions(+), 18 deletions(-)
+ create mode 100644 tools/bpf/example
+ create mode 100644 tools/bpf/novlan
 
-[PATCH net vX] ...
-
-or
-
-[PATCH net-next vX] ...
-
-in the subject line please.
-
-> ---
->  drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  23 +++--
->  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 129 +++++++++++++++++-------
->  2 files changed, 108 insertions(+), 44 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-> index 8347758..6bd7e40 100644
-> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-> @@ -695,6 +695,9 @@
->  /* Maximum number of supported ports */
->  #define MVPP2_MAX_PORTS			4
->  
-> +/* Loopback port index */
-> +#define MVPP2_LOOPBACK_PORT_INDEX	3
-> +
->  /* Maximum number of TXQs used by single port */
->  #define MVPP2_MAX_TXQ			8
->  
-> @@ -729,22 +732,21 @@
->  #define MVPP2_TX_DESC_ALIGN		(MVPP2_DESC_ALIGNED_SIZE - 1)
->  
->  /* RX FIFO constants */
-> +#define MVPP2_RX_FIFO_PORT_DATA_SIZE_44KB	0xb000
->  #define MVPP2_RX_FIFO_PORT_DATA_SIZE_32KB	0x8000
->  #define MVPP2_RX_FIFO_PORT_DATA_SIZE_8KB	0x2000
->  #define MVPP2_RX_FIFO_PORT_DATA_SIZE_4KB	0x1000
-> -#define MVPP2_RX_FIFO_PORT_ATTR_SIZE_32KB	0x200
-> -#define MVPP2_RX_FIFO_PORT_ATTR_SIZE_8KB	0x80
-> +#define MVPP2_RX_FIFO_PORT_ATTR_SIZE(data_size)	((data_size) >> 6)
->  #define MVPP2_RX_FIFO_PORT_ATTR_SIZE_4KB	0x40
->  #define MVPP2_RX_FIFO_PORT_MIN_PKT		0x80
->  
->  /* TX FIFO constants */
-> -#define MVPP22_TX_FIFO_DATA_SIZE_10KB		0xa
-> -#define MVPP22_TX_FIFO_DATA_SIZE_3KB		0x3
-> -#define MVPP2_TX_FIFO_THRESHOLD_MIN		256
-> -#define MVPP2_TX_FIFO_THRESHOLD_10KB	\
-> -	(MVPP22_TX_FIFO_DATA_SIZE_10KB * 1024 - MVPP2_TX_FIFO_THRESHOLD_MIN)
-> -#define MVPP2_TX_FIFO_THRESHOLD_3KB	\
-> -	(MVPP22_TX_FIFO_DATA_SIZE_3KB * 1024 - MVPP2_TX_FIFO_THRESHOLD_MIN)
-> +#define MVPP22_TX_FIFO_DATA_SIZE_16KB		16
-> +#define MVPP22_TX_FIFO_DATA_SIZE_10KB		10
-> +#define MVPP22_TX_FIFO_DATA_SIZE_3KB		3
-> +#define MVPP2_TX_FIFO_THRESHOLD_MIN		256 /* Bytes */
-> +#define MVPP2_TX_FIFO_THRESHOLD(kb)	\
-> +		((kb) * 1024 - MVPP2_TX_FIFO_THRESHOLD_MIN)
->  
->  /* RX buffer constants */
->  #define MVPP2_SKB_SHINFO_SIZE \
-> @@ -946,6 +948,9 @@ struct mvpp2 {
->  	/* List of pointers to port structures */
->  	int port_count;
->  	struct mvpp2_port *port_list[MVPP2_MAX_PORTS];
-> +	/* Map of enabled ports */
-> +	unsigned long port_map;
-> +
->  	struct mvpp2_tai *tai;
->  
->  	/* Number of Tx threads used */
-> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> index f6616c8..08c237a 100644
-> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> @@ -6601,32 +6601,56 @@ static void mvpp2_rx_fifo_init(struct mvpp2 *priv)
->  	mvpp2_write(priv, MVPP2_RX_FIFO_INIT_REG, 0x1);
->  }
->  
-> -static void mvpp22_rx_fifo_init(struct mvpp2 *priv)
-> +static void mvpp22_rx_fifo_set_hw(struct mvpp2 *priv, int port, int data_size)
->  {
-> -	int port;
-> +	int attr_size = MVPP2_RX_FIFO_PORT_ATTR_SIZE(data_size);
->  
-> -	/* The FIFO size parameters are set depending on the maximum speed a
-> -	 * given port can handle:
-> -	 * - Port 0: 10Gbps
-> -	 * - Port 1: 2.5Gbps
-> -	 * - Ports 2 and 3: 1Gbps
-> -	 */
-> +	mvpp2_write(priv, MVPP2_RX_DATA_FIFO_SIZE_REG(port), data_size);
-> +	mvpp2_write(priv, MVPP2_RX_ATTR_FIFO_SIZE_REG(port), attr_size);
-> +}
->  
-> -	mvpp2_write(priv, MVPP2_RX_DATA_FIFO_SIZE_REG(0),
-> -		    MVPP2_RX_FIFO_PORT_DATA_SIZE_32KB);
-> -	mvpp2_write(priv, MVPP2_RX_ATTR_FIFO_SIZE_REG(0),
-> -		    MVPP2_RX_FIFO_PORT_ATTR_SIZE_32KB);
-> +/* Initialize TX FIFO's: the total FIFO size is 48kB on PPv2.2.
-> + * 4kB fixed space must be assigned for the loopback port.
-> + * Redistribute remaining avialable 44kB space among all active ports.
-> + * Guarantee minimum 32kB for 10G port and 8kB for port 1, capable of 2.5G
-> + * SGMII link.
-> + */
-> +static void mvpp22_rx_fifo_init(struct mvpp2 *priv)
-> +{
-> +	int remaining_ports_count;
-> +	unsigned long port_map;
-> +	int size_remainder;
-> +	int port, size;
-> +
-> +	/* The loopback requires fixed 4kB of the FIFO space assignment. */
-> +	mvpp22_rx_fifo_set_hw(priv, MVPP2_LOOPBACK_PORT_INDEX,
-> +			      MVPP2_RX_FIFO_PORT_DATA_SIZE_4KB);
-> +	port_map = priv->port_map & ~BIT(MVPP2_LOOPBACK_PORT_INDEX);
-> +
-> +	/* Set RX FIFO size to 0 for inactive ports. */
-> +	for_each_clear_bit(port, &port_map, MVPP2_LOOPBACK_PORT_INDEX)
-> +		mvpp22_rx_fifo_set_hw(priv, port, 0);
-> +
-> +	/* Assign remaining RX FIFO space among all active ports. */
-> +	size_remainder = MVPP2_RX_FIFO_PORT_DATA_SIZE_44KB;
-> +	remaining_ports_count = hweight_long(port_map);
-> +
-> +	for_each_set_bit(port, &port_map, MVPP2_LOOPBACK_PORT_INDEX) {
-> +		if (remaining_ports_count == 1)
-> +			size = size_remainder;
-> +		else if (port == 0)
-> +			size = max(size_remainder / remaining_ports_count,
-> +				   MVPP2_RX_FIFO_PORT_DATA_SIZE_32KB);
-> +		else if (port == 1)
-> +			size = max(size_remainder / remaining_ports_count,
-> +				   MVPP2_RX_FIFO_PORT_DATA_SIZE_8KB);
-> +		else
-> +			size = size_remainder / remaining_ports_count;
->  
-> -	mvpp2_write(priv, MVPP2_RX_DATA_FIFO_SIZE_REG(1),
-> -		    MVPP2_RX_FIFO_PORT_DATA_SIZE_8KB);
-> -	mvpp2_write(priv, MVPP2_RX_ATTR_FIFO_SIZE_REG(1),
-> -		    MVPP2_RX_FIFO_PORT_ATTR_SIZE_8KB);
-> +		size_remainder -= size;
-> +		remaining_ports_count--;
->  
-> -	for (port = 2; port < MVPP2_MAX_PORTS; port++) {
-> -		mvpp2_write(priv, MVPP2_RX_DATA_FIFO_SIZE_REG(port),
-> -			    MVPP2_RX_FIFO_PORT_DATA_SIZE_4KB);
-> -		mvpp2_write(priv, MVPP2_RX_ATTR_FIFO_SIZE_REG(port),
-> -			    MVPP2_RX_FIFO_PORT_ATTR_SIZE_4KB);
-> +		mvpp22_rx_fifo_set_hw(priv, port, size);
->  	}
->  
->  	mvpp2_write(priv, MVPP2_RX_MIN_PKT_SIZE_REG,
-> @@ -6634,24 +6658,53 @@ static void mvpp22_rx_fifo_init(struct mvpp2 *priv)
->  	mvpp2_write(priv, MVPP2_RX_FIFO_INIT_REG, 0x1);
->  }
->  
-> -/* Initialize Tx FIFO's: the total FIFO size is 19kB on PPv2.2 and 10G
-> - * interfaces must have a Tx FIFO size of 10kB. As only port 0 can do 10G,
-> - * configure its Tx FIFO size to 10kB and the others ports Tx FIFO size to 3kB.
-> +static void mvpp22_tx_fifo_set_hw(struct mvpp2 *priv, int port, int size)
-> +{
-> +	int threshold = MVPP2_TX_FIFO_THRESHOLD(size);
-> +
-> +	mvpp2_write(priv, MVPP22_TX_FIFO_SIZE_REG(port), size);
-> +	mvpp2_write(priv, MVPP22_TX_FIFO_THRESH_REG(port), threshold);
-> +}
-> +
-> +/* Initialize TX FIFO's: the total FIFO size is 19kB on PPv2.2.
-> + * 3kB fixed space must be assigned for the loopback port.
-> + * Redistribute remaining avialable 16kB space among all active ports.
-> + * The 10G interface should use 10kB (which is maximum possible size
-> + * per single port).
->   */
->  static void mvpp22_tx_fifo_init(struct mvpp2 *priv)
->  {
-> -	int port, size, thrs;
-> -
-> -	for (port = 0; port < MVPP2_MAX_PORTS; port++) {
-> -		if (port == 0) {
-> +	int remaining_ports_count;
-> +	unsigned long port_map;
-> +	int size_remainder;
-> +	int port, size;
-> +
-> +	/* The loopback requires fixed 3kB of the FIFO space assignment. */
-> +	mvpp22_tx_fifo_set_hw(priv, MVPP2_LOOPBACK_PORT_INDEX,
-> +			      MVPP22_TX_FIFO_DATA_SIZE_3KB);
-> +	port_map = priv->port_map & ~BIT(MVPP2_LOOPBACK_PORT_INDEX);
-> +
-> +	/* Set TX FIFO size to 0 for inactive ports. */
-> +	for_each_clear_bit(port, &port_map, MVPP2_LOOPBACK_PORT_INDEX)
-> +		mvpp22_tx_fifo_set_hw(priv, port, 0);
-> +
-> +	/* Assign remaining TX FIFO space among all active ports. */
-> +	size_remainder = MVPP22_TX_FIFO_DATA_SIZE_16KB;
-> +	remaining_ports_count = hweight_long(port_map);
-> +
-> +	for_each_set_bit(port, &port_map, MVPP2_LOOPBACK_PORT_INDEX) {
-> +		if (remaining_ports_count == 1)
-> +			size = min(size_remainder,
-> +				   MVPP22_TX_FIFO_DATA_SIZE_10KB);
-> +		else if (port == 0)
->  			size = MVPP22_TX_FIFO_DATA_SIZE_10KB;
-> -			thrs = MVPP2_TX_FIFO_THRESHOLD_10KB;
-> -		} else {
-> -			size = MVPP22_TX_FIFO_DATA_SIZE_3KB;
-> -			thrs = MVPP2_TX_FIFO_THRESHOLD_3KB;
-> -		}
-> -		mvpp2_write(priv, MVPP22_TX_FIFO_SIZE_REG(port), size);
-> -		mvpp2_write(priv, MVPP22_TX_FIFO_THRESH_REG(port), thrs);
-> +		else
-> +			size = size_remainder / remaining_ports_count;
-> +
-> +		size_remainder -= size;
-> +		remaining_ports_count--;
-> +
-> +		mvpp22_tx_fifo_set_hw(priv, port, size);
->  	}
->  }
->  
-> @@ -6952,6 +7005,12 @@ static int mvpp2_probe(struct platform_device *pdev)
->  			goto err_axi_clk;
->  	}
->  
-> +	/* Map DTS-active ports. Should be done before FIFO mvpp2_init */
-> +	fwnode_for_each_available_child_node(fwnode, port_fwnode) {
-> +		if (!fwnode_property_read_u32(port_fwnode, "port-id", &i))
-> +			priv->port_map |= BIT(i);
-> +	}
-> +
->  	/* Initialize network controller */
->  	err = mvpp2_init(pdev, priv);
->  	if (err < 0) {
-> -- 
-> 1.9.1
-> 
-> 
-
+diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
+index e020faf..d4e434b 100644
+--- a/drivers/ptp/ptp_clockmatrix.c
++++ b/drivers/ptp/ptp_clockmatrix.c
+@@ -103,42 +103,66 @@ static int timespec_to_char_array(struct timespec64 const *ts,
+ 	return 0;
+ }
+ 
+-static int idtcm_strverscmp(const char *ver1, const char *ver2)
++static int idtcm_strverscmp(const char *version1, const char *version2)
+ {
+ 	u8 num1;
+ 	u8 num2;
+ 	int result = 0;
++	char ver1[16];
++	char ver2[16];
++	char *cur1;
++	char *cur2;
++	char *next1;
++	char *next2;
++
++	if (strscpy(ver1, version1, 16) < 0 ||
++	    strscpy(ver2, version2, 16) < 0)
++		return -1;
++	cur1 = ver1;
++	cur2 = ver2;
+ 
+ 	/* loop through each level of the version string */
+ 	while (result == 0) {
++		next1 = strchr(cur1, '.');
++		next2 = strchr(cur2, '.');
++
++		/* kstrtou8 could fail for dot */
++		if (next1) {
++			*next1 = '\0';
++			next1++;
++		}
++
++		if (next2) {
++			*next2 = '\0';
++			next2++;
++		}
++
+ 		/* extract leading version numbers */
+-		if (kstrtou8(ver1, 10, &num1) < 0)
++		if (kstrtou8(cur1, 10, &num1) < 0)
+ 			return -1;
+ 
+-		if (kstrtou8(ver2, 10, &num2) < 0)
++		if (kstrtou8(cur2, 10, &num2) < 0)
+ 			return -1;
+ 
+ 		/* if numbers differ, then set the result */
+ 		if (num1 < num2)
++			return -1;
++		if (num1 > num2)
++			return 1;
++
++		/* if numbers are the same, go to next level */
++		if (!next1 && !next2)
++			break;
++		else if (!next1) {
+ 			result = -1;
+-		else if (num1 > num2)
++		} else if (!next2) {
+ 			result = 1;
+-		else {
+-			/* if numbers are the same, go to next level */
+-			ver1 = strchr(ver1, '.');
+-			ver2 = strchr(ver2, '.');
+-			if (!ver1 && !ver2)
+-				break;
+-			else if (!ver1)
+-				result = -1;
+-			else if (!ver2)
+-				result = 1;
+-			else {
+-				ver1++;
+-				ver2++;
+-			}
++		} else {
++			cur1 = next1;
++			cur2 = next2;
+ 		}
+ 	}
++
+ 	return result;
+ }
+ 
+diff --git a/tools/bpf/example b/tools/bpf/example
+new file mode 100644
+index 0000000..a0ac81f
+--- /dev/null
++++ b/tools/bpf/example
+@@ -0,0 +1,12 @@
++  ldh [12]
++  jne #0x8100, nonvlan
++  ldh [16]
++  jne #0x88f7, bad
++  ldb [18]
++  ja test
++  nonvlan: jne #0x88f7, bad
++  ldb [14]
++  test: and #0x8
++  jeq #0, bad
++  good: ret #1500
++  bad: ret #0
+diff --git a/tools/bpf/novlan b/tools/bpf/novlan
+new file mode 100644
+index 0000000..fe35288
+--- /dev/null
++++ b/tools/bpf/novlan
+@@ -0,0 +1,7 @@
++  ldh [12]
++  jne #0x88f7, bad
++  ldb [14]
++  and #0x8
++  jeq #0, bad
++  good: ret #1500
++  bad: ret #0
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.7.4
+
