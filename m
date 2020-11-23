@@ -2,99 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7579B2C037A
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 11:41:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EE892C03C3
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 12:00:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728675AbgKWKin (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 05:38:43 -0500
-Received: from mxout70.expurgate.net ([194.37.255.70]:52431 "EHLO
-        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727444AbgKWKim (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 05:38:42 -0500
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1kh9Ey-0006Lm-RV; Mon, 23 Nov 2020 11:38:36 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1kh9Ex-0007AY-QM; Mon, 23 Nov 2020 11:38:35 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 60F53240041;
-        Mon, 23 Nov 2020 11:38:35 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id D7AE8240040;
-        Mon, 23 Nov 2020 11:38:34 +0100 (CET)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id 7EC19203C7;
-        Mon, 23 Nov 2020 11:38:34 +0100 (CET)
+        id S1728203AbgKWK7f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 05:59:35 -0500
+Received: from mx22.baidu.com ([220.181.50.185]:47344 "EHLO baidu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727918AbgKWK7e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Nov 2020 05:59:34 -0500
+X-Greylist: delayed 978 seconds by postgrey-1.27 at vger.kernel.org; Mon, 23 Nov 2020 05:59:30 EST
+Received: from BC-Mail-Ex32.internal.baidu.com (unknown [172.31.51.26])
+        by Forcepoint Email with ESMTPS id 0C44FF776B0F2FFAFFD2;
+        Mon, 23 Nov 2020 18:43:09 +0800 (CST)
+Received: from BJHW-Mail-Ex15.internal.baidu.com (10.127.64.38) by
+ BC-Mail-Ex32.internal.baidu.com (172.31.51.26) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2044.4; Mon, 23 Nov 2020 18:43:08 +0800
+Received: from BJHW-Mail-Ex15.internal.baidu.com ([100.100.100.38]) by
+ BJHW-Mail-Ex15.internal.baidu.com ([100.100.100.38]) with mapi id
+ 15.01.1979.006; Mon, 23 Nov 2020 18:43:08 +0800
+From:   "Li,Rongqing" <lirongqing@baidu.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+CC:     Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Subject: RE: [PATCH] libbpf: add support for canceling cached_cons advance
+Thread-Topic: [PATCH] libbpf: add support for canceling cached_cons advance
+Thread-Index: AQHWwXynm8QoWfKpDkGCKHIPRpnFnqnVhyuQ
+Date:   Mon, 23 Nov 2020 10:43:08 +0000
+Message-ID: <e2431932144f4f298044e5a4aebd59c2@baidu.com>
+References: <1606050623-22963-1-git-send-email-lirongqing@baidu.com>
+ <CAJ8uoz3d4x9pWWNxmd9+ozt7ei7WUE=S=FnKE1sLZOqoKRwMJQ@mail.gmail.com>
+In-Reply-To: <CAJ8uoz3d4x9pWWNxmd9+ozt7ei7WUE=S=FnKE1sLZOqoKRwMJQ@mail.gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.22.198.23]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 23 Nov 2020 11:38:34 +0100
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     Andrew Hendry <andrew.hendry@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v4 2/5] net/lapb: support netdev events
-Organization: TDT AG
-In-Reply-To: <CAJht_EO+enBOFMkVVB5y6aRnyMEsOZtUBJcAvOFBS91y7CauyQ@mail.gmail.com>
-References: <20201120054036.15199-1-ms@dev.tdt.de>
- <20201120054036.15199-3-ms@dev.tdt.de>
- <CAJht_EONd3+S12upVPk2K3PWvzMLdE3BkzY_7c5gA493NHcGnA@mail.gmail.com>
- <CAJht_EP_oqCDs6mMThBZNtz4sgpbyQgMhKkHeqfS_7JmfEzfQg@mail.gmail.com>
- <87a620b6a55ea8386bffefca0a1f8b77@dev.tdt.de>
- <CAJht_EPc8MF1TjznSjWTPyMbsrw3JVqxST5g=eF0yf_zasUdeA@mail.gmail.com>
- <d85a4543eae46bac1de28ec17a2389dd@dev.tdt.de>
- <CAJht_EMjO_Tkm93QmAeK_2jg2KbLdv2744kCSHiZLy48aXiHnw@mail.gmail.com>
- <CAJht_EO+enBOFMkVVB5y6aRnyMEsOZtUBJcAvOFBS91y7CauyQ@mail.gmail.com>
-Message-ID: <16b7e74e6e221f43420da7836659d7df@dev.tdt.de>
-X-Sender: ms@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.15
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
-        autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
-X-purgate: clean
-X-purgate-ID: 151534::1606127916-000074F7-5C8CC61A/0/0
-X-purgate-type: clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-11-23 11:08, Xie He wrote:
-> On Mon, Nov 23, 2020 at 1:36 AM Xie He <xie.he.0141@gmail.com> wrote:
->> 
->> Some drivers don't support carrier status and will never change it.
->> Their carrier status will always be UP. There will not be a
->> NETDEV_CHANGE event.
-
-Well, one could argue that we would have to repair these drivers, but I
-don't think that will get us anywhere.
-
- From this point of view it will be the best to handle the NETDEV_UP in
-the lapb event handler and establish the link analog to the
-NETDEV_CHANGE event if the carrier is UP.
-
->> 
->> lapbether doesn't change carrier status. I also have my own virtual
->> HDLC WAN driver (for testing) which also doesn't change carrier
->> status.
->> 
->> I just tested with lapbether. When I bring up the interface, there
->> will only be NETDEV_PRE_UP and then NETDEV_UP. There will not be
->> NETDEV_CHANGE. The carrier status is alway UP.
->> 
->> I haven't tested whether a device can receive NETDEV_CHANGE when it is
->> down. It's possible for a device driver to call netif_carrier_on when
->> the interface is down. Do you know what will happen if a device driver
->> calls netif_carrier_on when the interface is down?
-> 
-> I just did a test on lapbether and saw there would be no NETDEV_CHANGE
-> event when the netif is down, even if netif_carrier_on/off is called.
-> So we can rest assured of this part.
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTWFnbnVzIEthcmxzc29u
+IFttYWlsdG86bWFnbnVzLmthcmxzc29uQGdtYWlsLmNvbV0NCj4gU2VudDogTW9uZGF5LCBOb3Zl
+bWJlciAyMywgMjAyMCA1OjQwIFBNDQo+IFRvOiBMaSxSb25ncWluZyA8bGlyb25ncWluZ0BiYWlk
+dS5jb20+DQo+IENjOiBOZXR3b3JrIERldmVsb3BtZW50IDxuZXRkZXZAdmdlci5rZXJuZWwub3Jn
+PjsgYnBmDQo+IDxicGZAdmdlci5rZXJuZWwub3JnPg0KPiBTdWJqZWN0OiBSZTogW1BBVENIXSBs
+aWJicGY6IGFkZCBzdXBwb3J0IGZvciBjYW5jZWxpbmcgY2FjaGVkX2NvbnMgYWR2YW5jZQ0KPiAN
+Cj4gT24gU3VuLCBOb3YgMjIsIDIwMjAgYXQgMjoyMSBQTSBMaSBSb25nUWluZyA8bGlyb25ncWlu
+Z0BiYWlkdS5jb20+IHdyb3RlOg0KPiA+DQo+ID4gSXQgaXMgcG9zc2libGUgdG8gZmFpbCByZWNl
+aXZpbmcgcGFja2V0cyBhZnRlciBjYWxsaW5nDQo+ID4geHNrX3JpbmdfY29uc19fcGVlaywgYXQg
+dGhpcyBjb25kaXRpb24sIGNhY2hlZF9jb25zIGhhcyBiZWVuIGFkdmFuY2VkLA0KPiA+IHNob3Vs
+ZCBiZSBjYW5jZWxsZWQuDQo+IA0KPiBUaGFua3MgUm9uZ1FpbmcsDQo+IA0KPiBJIGhhdmUgbmVl
+ZGVkIHRoaXMgbXlzZWxmIGluIHZhcmlvdXMgc2l0dWF0aW9ucywgc28gSSB0aGluayB3ZSBzaG91
+bGQgYWRkIHRoaXMuDQo+IEJ1dCB5b3VyIG1vdGl2YXRpb24gaW4gdGhlIGNvbW1pdCBtZXNzYWdl
+IGlzIHNvbWV3aGF0IGNvbmZ1c2luZy4gSG93IGFib3V0DQo+IHNvbWV0aGluZyBsaWtlIHRoaXM/
+DQo+IA0KPiBBZGQgYSBuZXcgZnVuY3Rpb24gZm9yIHJldHVybmluZyBkZXNjcmlwdG9ycyB0aGUg
+dXNlciByZWNlaXZlZCBhZnRlciBhbg0KPiB4c2tfcmluZ19jb25zX19wZWVrIGNhbGwuIEFmdGVy
+IHRoZSBhcHBsaWNhdGlvbiBoYXMgZ290dGVuIGEgbnVtYmVyIG9mDQo+IGRlc2NyaXB0b3JzIGZy
+b20gYSByaW5nLCBpdCBtaWdodCBub3QgYmUgYWJsZSB0byBvciB3YW50IHRvIHByb2Nlc3MgdGhl
+bSBhbGwgZm9yDQo+IHZhcmlvdXMgcmVhc29ucy4gVGhlcmVmb3JlLCBpdCB3b3VsZCBiZSB1c2Vm
+dWwgdG8gaGF2ZSBhbiBpbnRlcmZhY2UgZm9yIHJldHVybmluZw0KPiBvciBjYW5jZWxsaW5nIGEg
+bnVtYmVyIG9mIHRoZW0gc28gdGhhdCB0aGV5IGFyZSByZXR1cm5lZCB0byB0aGUgcmluZy4gVGhp
+cyBwYXRjaA0KPiBhZGRzIGEgbmV3IGZ1bmN0aW9uIGNhbGxlZCB4c2tfcmluZ19jb25zX19jYW5j
+ZWwgdGhhdCBwZXJmb3JtcyB0aGlzIG9wZXJhdGlvbg0KPiBvbiBuYiBkZXNjcmlwdG9ycyBjb3Vu
+dGVkIGZyb20gdGhlIGVuZCBvZiB0aGUgYmF0Y2ggb2YgZGVzY3JpcHRvcnMgdGhhdCB3YXMNCj4g
+cmVjZWl2ZWQgdGhyb3VnaCB0aGUgcGVlayBjYWxsLg0KPiANCj4gUmVwbGFjZSB5b3VyIGNvbW1p
+dCBtZXNzYWdlIHdpdGggdGhpcywgZml4IHRoZSBidWcgYmVsb3csIHNlbmQgYSB2MiBhbmQgdGhl
+biBJDQo+IGFtIGhhcHB5IHRvIGFjayB0aGlzLg0KDQoNClRoYW5rIHlvdSB2ZXJ5IG11Y2gNCj4g
+DQo+IC9NYWdudXMNCj4gDQo+ID4gU2lnbmVkLW9mZi1ieTogTGkgUm9uZ1FpbmcgPGxpcm9uZ3Fp
+bmdAYmFpZHUuY29tPg0KPiA+IC0tLQ0KPiA+ICB0b29scy9saWIvYnBmL3hzay5oIHwgNiArKysr
+KysNCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygrKQ0KPiA+DQo+ID4gZGlmZiAt
+LWdpdCBhL3Rvb2xzL2xpYi9icGYveHNrLmggYi90b29scy9saWIvYnBmL3hzay5oIGluZGV4DQo+
+ID4gMTA2OWM0NjM2NGZmLi40MTI4MjE1YzI0NmIgMTAwNjQ0DQo+ID4gLS0tIGEvdG9vbHMvbGli
+L2JwZi94c2suaA0KPiA+ICsrKyBiL3Rvb2xzL2xpYi9icGYveHNrLmgNCj4gPiBAQCAtMTUzLDYg
+KzE1MywxMiBAQCBzdGF0aWMgaW5saW5lIHNpemVfdCB4c2tfcmluZ19jb25zX19wZWVrKHN0cnVj
+dA0KPiB4c2tfcmluZ19jb25zICpjb25zLA0KPiA+ICAgICAgICAgcmV0dXJuIGVudHJpZXM7DQo+
+ID4gIH0NCj4gPg0KPiA+ICtzdGF0aWMgaW5saW5lIHZvaWQgeHNrX3JpbmdfY29uc19fY2FuY2Vs
+KHN0cnVjdCB4c2tfcmluZ19jb25zICpjb25zLA0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgc2l6ZV90IG5iKSB7DQo+ID4gKyAgICAgICByeC0+Y2FjaGVkX2Nv
+bnMgLT0gbmI7DQo+IA0KPiBjb25zLT4gbm90IHJ4LT4uIFBsZWFzZSBtYWtlIHN1cmUgdGhlIHYy
+IGNvbXBpbGVzIGFuZCBwYXNzZXMgY2hlY2twYXRjaC4NCj4gDQoNClNvcnJ5IGZvciBidWlsZGlu
+ZyBlcnJvcg0KSSB3aWxsIHNlbmQgVjINCg0KVGhhbmtzIA0KDQotTGkNCg0KDQo+ID4gK30NCj4g
+PiArDQo+ID4gIHN0YXRpYyBpbmxpbmUgdm9pZCB4c2tfcmluZ19jb25zX19yZWxlYXNlKHN0cnVj
+dCB4c2tfcmluZ19jb25zICpjb25zLA0KPiA+IHNpemVfdCBuYikgIHsNCj4gPiAgICAgICAgIC8q
+IE1ha2Ugc3VyZSBkYXRhIGhhcyBiZWVuIHJlYWQgYmVmb3JlIGluZGljYXRpbmcgd2UgYXJlIGRv
+bmUNCj4gPiAtLQ0KPiA+IDIuMTcuMw0KPiA+DQo=
