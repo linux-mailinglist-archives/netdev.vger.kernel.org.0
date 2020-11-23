@@ -2,57 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE0D12C007E
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 08:23:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DB5A2C007F
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 08:23:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726861AbgKWHOH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 02:14:07 -0500
-Received: from wout5-smtp.messagingengine.com ([64.147.123.21]:51765 "EHLO
+        id S1727088AbgKWHOJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 02:14:09 -0500
+Received: from wout5-smtp.messagingengine.com ([64.147.123.21]:37359 "EHLO
         wout5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726051AbgKWHOH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 02:14:07 -0500
+        by vger.kernel.org with ESMTP id S1726051AbgKWHOI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 02:14:08 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 33EBFF40;
-        Mon, 23 Nov 2020 02:14:06 -0500 (EST)
+        by mailout.west.internal (Postfix) with ESMTP id 74745F51;
+        Mon, 23 Nov 2020 02:14:07 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 23 Nov 2020 02:14:06 -0500
+  by compute3.internal (MEProxy); Mon, 23 Nov 2020 02:14:07 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=097UPPkWIyX64kjGB
-        yJnypJ2lkCFLIbAViTyUaeTTjk=; b=c/g2lNqlccbTjTWglP4L3FyIIKCvS9VNG
-        OoAULtN2Xp7eVnRLkSJwMjpLLHX2H00d+frE0clFJqT3fXEcenFytdbVz9f65y7R
-        ejXce8ZqGTQY+MOJopo0Lcn8p+vQzXDG4VfrqHvML8CiFRwHIe3XAaVh5AkgTTq8
-        ZknIyeqRKA3f/XIZyDQH0NqiUvGtTaUweReaQL2evPK1/Nb//KFTWbDzposxIKt7
-        ODPBmKEvR37PHjUGR5I9kwfz8yywKcXcpUJIr+AX0MytwVug5e2gcB3Aq0Tfu6y3
-        c1wCyO1XBPRCqRKtN7pPpV2B3z9Patmgnm3C6T+bozdusKQMeZ0Dw==
-X-ME-Sender: <xms:PWG7X9JBWevRstCJWLSv_Rs0ypATGx1BI8ZuBChmgHITNLGygAbSxA>
-    <xme:PWG7X5LOsXetVTlsnzzi0rhdV-LRDDAMya_n3aVa3Zs_nCVpuZSe3940QOS_Nsb79
-    KJKwVwhxFeznDE>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; bh=OdsxC5vWQ+DGyAIgqM13yQHdPZR88Ui5ek2qEXxzPQ4=; b=Zp6j5xPy
+        +Mct7ZoHtqe7wLM3uJwpUfRKJuYPyS4PWknRS1bWtkOV0PpjAvqvy8quIYyqNaVF
+        Fn9xSUWo1fZkdvOh/iYN/7x15UE4eC8UYC6+ujTbmuvDtE3QG95nG4ZgDMDOGeeC
+        XL8ZghFB8UxtYuays9CoDMeTrV436dDGSlT7fSPA6oWdgF+xihztbG+l6B7oYmbk
+        aXKhUd/eWzHZ7nbPFclTS05fSPQ8Xt78xfR1llYUyuuXAf54BngTQjmyVV8+hzNA
+        z+kHv9gaeSwauL1tR7hnVgk3f9xI7ciGiKKSbdbE0UJ1Jm1KJ4ohIzBdBpQQ1gS8
+        OwdXfJMNLNA5rQ==
+X-ME-Sender: <xms:PmG7X0-NhjqUM2IZ8PM0v-7m03DF_2rC_xIf5ws_4OZKraFWHojbxA>
+    <xme:PmG7X8tACd16kdgXNZ56VG7SJs3VG7CpvzFdJPATCKZM6iHx8ZE95_syLfpu6kwoG
+    zX2SJiixvpmeOc>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudeghedguddtvdcutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertd
-    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
-    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuhe
-    ehteffieekgeehveefvdegledvffduhfenucfkphepkeegrddvvdelrdduheegrddugeej
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:PWG7X1t4RLj0yvXveRrNUYf-LbMoiJ3N_e-dClUjAucR_qX3IS-RGg>
-    <xmx:PWG7X-ZsEByZt7f0eiN9RAiz9O0C5cU7YIAHQwhDJcMvKgsl5Uyzdw>
-    <xmx:PWG7X0bGIMnEn-VhjffXhboYTmfeSo5P-2ykayRWg-oATZbsXrShtg>
-    <xmx:PWG7X8G1M3cMNH4Toqb2uw5Y_V3QNh0K6v8qGvzckpWaT1qCCNAmNw>
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
+    ertdertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
+    ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhf
+    ekhefgtdfftefhledvjefggfehgfevjeekhfenucfkphepkeegrddvvdelrdduheegrddu
+    geejnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
+    guohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:P2G7X6BQqyn1GbZbsXuj-stYFgow2kpia4F7T85KAjGTBVr4GTihcA>
+    <xmx:P2G7X0eAxACERr-fqfr2Os_O-clEPfvp_sL4ppnWkgt6xi7mrwBAQg>
+    <xmx:P2G7X5Msou4gp-dEmlcgHivtpBBTnRK8n0INYYFEwDGsh2mCzJ3DEw>
+    <xmx:P2G7X6riNl5KX1kp0ElcBYhKbmClOwDfBFf-RM4D06s7-RK1VWNn4Q>
 Received: from shredder.lan (igld-84-229-154-147.inter.net.il [84.229.154.147])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 38A643280060;
-        Mon, 23 Nov 2020 02:14:04 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id AF398328005E;
+        Mon, 23 Nov 2020 02:14:05 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         dsahern@gmail.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 00/10] mlxsw: Add support for blackhole nexthops
-Date:   Mon, 23 Nov 2020 09:12:20 +0200
-Message-Id: <20201123071230.676469-1-idosch@idosch.org>
+Subject: [PATCH net-next 01/10] mlxsw: spectrum_router: Create loopback RIF during initialization
+Date:   Mon, 23 Nov 2020 09:12:21 +0200
+Message-Id: <20201123071230.676469-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20201123071230.676469-1-idosch@idosch.org>
+References: <20201123071230.676469-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -61,54 +64,98 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-This patch set adds support for blackhole nexthops in mlxsw. These
-nexthops are exactly the same as other nexthops, but instead of
-forwarding packets to an egress router interface (RIF), they are
-programmed to silently drop them.
+Up until now RIFs (router interfaces) were created on demand (e.g.,
+when an IP address was added to a netdev). However, sometimes the device
+needs to be provided with a RIF when one might not be available.
 
-Patches #1-#4 are preparations.
+For example, adjacency entries that drop packets need to be programmed
+with an egress RIF despite the RIF not being used to forward packets.
 
-Patch #5 adds support for blackhole nexthops and removes the check that
-prevented them from being programmed.
+Create such a RIF during initialization so that it could be used later
+on to support blackhole nexthops.
 
-Patch #6 adds a selftests over mlxsw which tests that blackhole nexthops
-can be programmed and are marked as offloaded.
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+---
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 31 +++++++++++++++++++
+ .../ethernet/mellanox/mlxsw/spectrum_router.h |  1 +
+ 2 files changed, 32 insertions(+)
 
-Patch #7 extends the existing nexthop forwarding test to also test
-blackhole functionality.
-
-Patches #8-#10 add support for a new packet trap ('blackhole_nexthop')
-which should be triggered whenever packets are dropped by a blackhole
-nexthop. Obviously, by default, the trap action is set to 'drop' so that
-dropped packets will not be reported.
-
-Ido Schimmel (10):
-  mlxsw: spectrum_router: Create loopback RIF during initialization
-  mlxsw: spectrum_router: Use different trap identifier for unresolved
-    nexthops
-  mlxsw: spectrum_router: Use loopback RIF for unresolved nexthops
-  mlxsw: spectrum_router: Resolve RIF from nexthop struct instead of
-    neighbour
-  mlxsw: spectrum_router: Add support for blackhole nexthops
-  selftests: mlxsw: Add blackhole nexthop configuration tests
-  selftests: forwarding: Add blackhole nexthops tests
-  devlink: Add blackhole_nexthop trap
-  mlxsw: spectrum_trap: Add blackhole_nexthop trap
-  selftests: mlxsw: Add blackhole_nexthop trap test
-
- .../networking/devlink/devlink-trap.rst       |  4 +
- .../ethernet/mellanox/mlxsw/spectrum_dpipe.c  |  9 +-
- .../ethernet/mellanox/mlxsw/spectrum_router.c | 92 ++++++++++++++++---
- .../ethernet/mellanox/mlxsw/spectrum_router.h |  2 +
- .../ethernet/mellanox/mlxsw/spectrum_trap.c   |  8 +-
- drivers/net/ethernet/mellanox/mlxsw/trap.h    |  1 +
- include/net/devlink.h                         |  4 +-
- net/core/devlink.c                            |  1 +
- .../net/mlxsw/devlink_trap_l3_drops.sh        | 36 ++++++++
- .../selftests/drivers/net/mlxsw/rtnetlink.sh  | 25 ++++-
- .../net/forwarding/router_mpath_nh.sh         | 58 +++++++++++-
- 11 files changed, 218 insertions(+), 22 deletions(-)
-
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 42a7bec3fd88..c61751e67750 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -8918,6 +8918,30 @@ static void mlxsw_sp_router_ll_op_ctx_fini(struct mlxsw_sp_router *router)
+ 	kfree(router->ll_op_ctx);
+ }
+ 
++static int mlxsw_sp_lb_rif_init(struct mlxsw_sp *mlxsw_sp)
++{
++	u16 lb_rif_index;
++	int err;
++
++	/* Create a generic loopback RIF associated with the main table
++	 * (default VRF). Any table can be used, but the main table exists
++	 * anyway, so we do not waste resources.
++	 */
++	err = mlxsw_sp_router_ul_rif_get(mlxsw_sp, RT_TABLE_MAIN,
++					 &lb_rif_index);
++	if (err)
++		return err;
++
++	mlxsw_sp->router->lb_rif_index = lb_rif_index;
++
++	return 0;
++}
++
++static void mlxsw_sp_lb_rif_fini(struct mlxsw_sp *mlxsw_sp)
++{
++	mlxsw_sp_router_ul_rif_put(mlxsw_sp, mlxsw_sp->router->lb_rif_index);
++}
++
+ int mlxsw_sp_router_init(struct mlxsw_sp *mlxsw_sp,
+ 			 struct netlink_ext_ack *extack)
+ {
+@@ -8974,6 +8998,10 @@ int mlxsw_sp_router_init(struct mlxsw_sp *mlxsw_sp,
+ 	if (err)
+ 		goto err_vrs_init;
+ 
++	err = mlxsw_sp_lb_rif_init(mlxsw_sp);
++	if (err)
++		goto err_lb_rif_init;
++
+ 	err = mlxsw_sp_neigh_init(mlxsw_sp);
+ 	if (err)
+ 		goto err_neigh_init;
+@@ -9039,6 +9067,8 @@ int mlxsw_sp_router_init(struct mlxsw_sp *mlxsw_sp,
+ err_mp_hash_init:
+ 	mlxsw_sp_neigh_fini(mlxsw_sp);
+ err_neigh_init:
++	mlxsw_sp_lb_rif_fini(mlxsw_sp);
++err_lb_rif_init:
+ 	mlxsw_sp_vrs_fini(mlxsw_sp);
+ err_vrs_init:
+ 	mlxsw_sp_mr_fini(mlxsw_sp);
+@@ -9074,6 +9104,7 @@ void mlxsw_sp_router_fini(struct mlxsw_sp *mlxsw_sp)
+ 	mlxsw_core_flush_owq();
+ 	WARN_ON(!list_empty(&mlxsw_sp->router->fib_event_queue));
+ 	mlxsw_sp_neigh_fini(mlxsw_sp);
++	mlxsw_sp_lb_rif_fini(mlxsw_sp);
+ 	mlxsw_sp_vrs_fini(mlxsw_sp);
+ 	mlxsw_sp_mr_fini(mlxsw_sp);
+ 	mlxsw_sp_lpm_fini(mlxsw_sp);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
+index 023f70827db0..f9a59d454e28 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.h
+@@ -75,6 +75,7 @@ struct mlxsw_sp_router {
+ 	/* One set of ops for each protocol: IPv4 and IPv6 */
+ 	const struct mlxsw_sp_router_ll_ops *proto_ll_ops[MLXSW_SP_L3_PROTO_MAX];
+ 	struct mlxsw_sp_fib_entry_op_ctx *ll_op_ctx;
++	u16 lb_rif_index;
+ };
+ 
+ struct mlxsw_sp_fib_entry_priv {
 -- 
 2.28.0
 
