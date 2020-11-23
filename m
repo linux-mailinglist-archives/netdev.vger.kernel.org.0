@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 735112C0F0B
+	by mail.lfdr.de (Postfix) with ESMTP id E0C872C0F0C
 	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 16:40:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389693AbgKWPjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 10:39:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56908 "EHLO
+        id S2389702AbgKWPjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 10:39:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389685AbgKWPjC (ORCPT
+        with ESMTP id S2389649AbgKWPjC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 10:39:02 -0500
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE348C0613CF;
-        Mon, 23 Nov 2020 07:39:00 -0800 (PST)
-Received: by mail-ed1-x544.google.com with SMTP id k1so4617307eds.13;
-        Mon, 23 Nov 2020 07:39:00 -0800 (PST)
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D486C061A4D;
+        Mon, 23 Nov 2020 07:39:02 -0800 (PST)
+Received: by mail-ej1-x644.google.com with SMTP id a16so23935599ejj.5;
+        Mon, 23 Nov 2020 07:39:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=cqDNeq3r/DZ3Fa6vyHKMYrzd94gpNO8C1c5X2bRnhJY=;
-        b=QhDIP0U2vCHqonbpJ2sMdYVCddNT/RjlHFiSLCiW9/tJC+hwXnRnkAHhTfxvwqhYTT
-         YozXdT//y7ra0VjjdywHFD7LpLsklOIPgUM1kAurCWB9ysp9Deyk95OoGqwfXVlM2tHv
-         jOLWh7HWkluMjWuQU/LBWlXzMyWRMxQyGlTKevjlbrfkrF8kwGvacNaCpu1G4Pq+nhzK
-         PtQ23WNU1TBnh51qcKC11cxPZureadf8Zx2eaonu7f+EvARzFgNoCTizOyrA84/ZPAS1
-         gpWVaVoXhd/auPNKt19H3LTVnFK9XF+TrRz3hO7614KreHhhGrsukisQGnZFVk/sFMiq
-         eN9A==
+        bh=+FeXibTuIgwGfVQRfzn1QNcdeuVRN4zL8aR37xT1P1E=;
+        b=IurMSwYnPKLYb4Iqmtc/C5bWUGna4RmdWi5lMn3oj6+TZM4aoCTJOatM+LSEcqAfc5
+         5+OU7an60iO34LKtloCoKslhW4st8kvXA5OsUrxRUxWEA92gwFBymUS9GsdWaWW3Wgpm
+         gvru1ESD0UGXOlOPSTK3IqIdLEAL4FJAQv+FFq/W9dk5p5VtDAkay8mm7NvL4ltDHTu5
+         Tp34i13xf5oxXL8PSikjD2EmuESLBqkfSBZCbcflL17LwLjTVAdzcMKdkpo3EPzYo6xn
+         lI+9KhosO4mGrMrg1furqV/We6lxHj95syomMT2fGggoyFltUu9WORRsatht7Y7awke0
+         x1pw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=cqDNeq3r/DZ3Fa6vyHKMYrzd94gpNO8C1c5X2bRnhJY=;
-        b=HJgKNcLBM6OaPeO15cyYYi79kycZXb77arFw5UfiG3vIjD6P2Qm+RzNX2ghpkhG5VW
-         C0xLi31C7pNSuW1g/1ZzjZH4N+FkM1Rlt89qSStOfLXFrLeA5E2SBi7ANGM1vxgF91SA
-         t0edKB412VQ+cEOjbr0bRbYeJbdHcWe/KIK9JUCHvPlfUNGUiDIfoYON/AI3FNlV+/hH
-         vXVGee84VIFGuMD5SIEHGV01K+Edq+A5dDIif9jDAfc97Yzy3pW2QWANL109rb0GUxWY
-         UxzK6PPw0lc2V6fCvbxSwdqa05IHscrNwE/9Ba7zpVQVMFF/E/dHr9DYfsAxOEul1Jq/
-         l2+Q==
-X-Gm-Message-State: AOAM532PifCPRMa6ZMsxQ4ioLOuEjuzUfQ7YEszDtq32W4Edml9oGynr
-        h6FqWAlHl+VVzxjTCkyEBmQ=
-X-Google-Smtp-Source: ABdhPJzHGXDkG++aTYU4CeeveWrHoP2UUo1eJ5SGSQiyUcx+H06KETz8U0JU2zEGPAy0yk3fvOJQjw==
-X-Received: by 2002:aa7:d615:: with SMTP id c21mr48136666edr.23.1606145939544;
-        Mon, 23 Nov 2020 07:38:59 -0800 (PST)
+        bh=+FeXibTuIgwGfVQRfzn1QNcdeuVRN4zL8aR37xT1P1E=;
+        b=cmnUDFsDJEA0ZZWRMmdFlYDKcrYKlV/DJFK4TBcK3UCSTgn9KHyEJAcZGVVOYufPFE
+         SXUh5XpC2/ojiYOR5mPDXLCcZya2+8wBw9zluBhfc5kXNgBNYVITpVVUrFLZTP11+jHO
+         iTDCwldoXvF2laTT5VfZ4J4Nx1d/d5gS0/0qWhXs5zmWmq64ohx/QatBtG0ON3IbEVLv
+         j3cWkma/mmEi9u7aBtmT8tZR+V4sZ9RXxmlLMHsjgXJWOKb4U3X5l0bLc2+QP5r/BOW6
+         bkn9CmA/U+K6XO221XJ1pQ7UOJ5kuRHSLjIsScsmQGgplRMW4ZGj9DLNgCcS+WpoyZgp
+         bnMg==
+X-Gm-Message-State: AOAM530/GlpvPZBXgweNDToVJ3aVt/UU9kFeY+4eShaaLK7yWuSA5JyD
+        lOZftWNBWnsD2OnGv8DZqho=
+X-Google-Smtp-Source: ABdhPJzbXW1OKamSInKqoX74QDVRyyD9wIGtXiZ+468HVMMYCEfeb5bXfTxii9EAgtnswat5868SQw==
+X-Received: by 2002:a17:906:f186:: with SMTP id gs6mr162629ejb.171.1606145940827;
+        Mon, 23 Nov 2020 07:39:00 -0800 (PST)
 Received: from yoga-910.localhost ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id c6sm4800126edy.62.2020.11.23.07.38.58
+        by smtp.gmail.com with ESMTPSA id c6sm4800126edy.62.2020.11.23.07.38.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Nov 2020 07:38:58 -0800 (PST)
+        Mon, 23 Nov 2020 07:39:00 -0800 (PST)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -55,9 +55,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next 13/15] net: phy: qsemi: implement generic .handle_interrupt() callback
-Date:   Mon, 23 Nov 2020 17:38:15 +0200
-Message-Id: <20201123153817.1616814-14-ciorneiioana@gmail.com>
+Subject: [PATCH net-next 14/15] net: phy: qsemi: remove the use of .ack_interrupt()
+Date:   Mon, 23 Nov 2020 17:38:16 +0200
+Message-Id: <20201123153817.1616814-15-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201123153817.1616814-1-ciorneiioana@gmail.com>
 References: <20201123153817.1616814-1-ciorneiioana@gmail.com>
@@ -69,59 +69,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-In an attempt to actually support shared IRQs in phylib, we now move the
-responsibility of triggering the phylib state machine or just returning
-IRQ_NONE, based on the IRQ status register, to the PHY driver. Having
-3 different IRQ handling callbacks (.handle_interrupt(),
-.did_interrupt() and .ack_interrupt() ) is confusing so let the PHY
-driver implement directly an IRQ handler like any other device driver.
-Make this driver follow the new convention.
+In preparation of removing the .ack_interrupt() callback, we must replace
+its occurrences (aka phy_clear_interrupt), from the 2 places where it is
+called from (phy_enable_interrupts and phy_disable_interrupts), with
+equivalent functionality.
+
+This means that clearing interrupts now becomes something that the PHY
+driver is responsible of doing, before enabling interrupts and after
+clearing them. Make this driver follow the new contract.
+
+Also, add a comment describing the multiple step interrupt
+acknoledgement process.
 
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
- drivers/net/phy/qsemi.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ drivers/net/phy/qsemi.c | 20 +++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/phy/qsemi.c b/drivers/net/phy/qsemi.c
-index 1b15a991ee06..97f29ed2f0ca 100644
+index 97f29ed2f0ca..d5c1aaa8236a 100644
 --- a/drivers/net/phy/qsemi.c
 +++ b/drivers/net/phy/qsemi.c
-@@ -106,6 +106,27 @@ static int qs6612_config_intr(struct phy_device *phydev)
+@@ -75,6 +75,10 @@ static int qs6612_ack_interrupt(struct phy_device *phydev)
+ {
+ 	int err;
  
- }
++	/* The Interrupt Source register is not self-clearing, bits 4 and 5 are
++	 * cleared when MII_BMSR is read and bits 1 and 3 are cleared when
++	 * MII_EXPANSION is read
++	 */
+ 	err = phy_read(phydev, MII_QS6612_ISR);
  
-+static irqreturn_t qs6612_handle_interrupt(struct phy_device *phydev)
-+{
-+	int irq_status;
+ 	if (err < 0)
+@@ -96,11 +100,22 @@ static int qs6612_ack_interrupt(struct phy_device *phydev)
+ static int qs6612_config_intr(struct phy_device *phydev)
+ {
+ 	int err;
+-	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
++	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
++		/* clear any interrupts before enabling them */
++		err = qs6612_ack_interrupt(phydev);
++		if (err)
++			return err;
 +
-+	irq_status = phy_read(phydev, MII_QS6612_ISR);
-+	if (irq_status < 0) {
-+		phy_error(phydev);
-+		return IRQ_NONE;
+ 		err = phy_write(phydev, MII_QS6612_IMR,
+ 				MII_QS6612_IMR_INIT);
+-	else
++	} else {
+ 		err = phy_write(phydev, MII_QS6612_IMR, 0);
++		if (err)
++			return err;
++
++		/* clear any leftover interrupts */
++		err = qs6612_ack_interrupt(phydev);
 +	}
-+
-+	if (!(irq_status & MII_QS6612_IMR_INIT))
-+		return IRQ_NONE;
-+
-+	/* the interrupt source register is not self-clearing */
-+	qs6612_ack_interrupt(phydev);
-+
-+	phy_trigger_machine(phydev);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static struct phy_driver qs6612_driver[] = { {
- 	.phy_id		= 0x00181440,
- 	.name		= "QS6612",
-@@ -114,6 +135,7 @@ static struct phy_driver qs6612_driver[] = { {
- 	.config_init	= qs6612_config_init,
- 	.ack_interrupt	= qs6612_ack_interrupt,
- 	.config_intr	= qs6612_config_intr,
-+	.handle_interrupt = qs6612_handle_interrupt,
- } };
  
- module_phy_driver(qs6612_driver);
+ 	return err;
+ 
+@@ -133,7 +148,6 @@ static struct phy_driver qs6612_driver[] = { {
+ 	.phy_id_mask	= 0xfffffff0,
+ 	/* PHY_BASIC_FEATURES */
+ 	.config_init	= qs6612_config_init,
+-	.ack_interrupt	= qs6612_ack_interrupt,
+ 	.config_intr	= qs6612_config_intr,
+ 	.handle_interrupt = qs6612_handle_interrupt,
+ } };
 -- 
 2.28.0
 
