@@ -2,167 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89AFB2C0C04
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 14:57:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 801222C0C07
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 14:57:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729919AbgKWNhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 08:37:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37976 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729781AbgKWNhj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 08:37:39 -0500
-Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D83BC0613CF
-        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 05:37:39 -0800 (PST)
-Received: by mail-oi1-x243.google.com with SMTP id o25so19688771oie.5
-        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 05:37:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Mltk67DXea7zsfQ6fqyLDZT0KhzJoiu2sHs7lYzBdPQ=;
-        b=G3g3wD4zYiz1vznpVLO6PbSJSeyhlOPKP7QiicBq35IjwMRqT6Ne8BM4h0JHiBMkqt
-         2rS42/GrDVNuwirM1p/FQ6VIidKtim3wcxC7jXuWLwK/JFQxuE+a1ySQE0zGt1wLCM92
-         hDMhVTvLiBfOPBOF5KPHn9qHvz+buZhDsb2oVwAjp0EYvkcjsruNjpaUcYczbSXM5vAE
-         Y0ixRp9wUknIAhTx1ozvRvdKFemxWydEFA2id9kf46/iPsXfMNB89HW2HayKgs4GvHVX
-         GkCOfE3W0+jhN7nn3ZlOyz7jvl5B9Y7czCv05Wud7dIILgSWLbwf1S1H95PBjPchUOkN
-         esEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Mltk67DXea7zsfQ6fqyLDZT0KhzJoiu2sHs7lYzBdPQ=;
-        b=s5OPyGrxUnzOjAIr6rSCGlGxX5CluGFbhqwQo2STq+RAb/nH2GaNOg7UK5CNM1kHAz
-         oU6qHziGqJniXfZyTXI4QBK1Xlle8x+RMXj6GFDh1YUhQnel+zm6yCW3yBQQ53tHL62P
-         9yLZpODfLJhCmgDOlHgJwz2FVTuPqnz9IBfBnTaoEozkx3fnBTsxOwMOJAKOXGiIl/wB
-         Wsp7P8ixiOY/2I8+RbyY3t+dxWghB9D7UqF3H4MKcV4QLyUmXLBApQC93IhvTT9hILmE
-         bXG7DASOm1LM/i5KDSAk8874jB7i6Jxlh2dWJwZwP1La8ou4nPFdLQfo0+fvEIyI8IH3
-         sROA==
-X-Gm-Message-State: AOAM530hrQC2HkSpecmdQ9Y77hNs26US2x+3ba9q+L6Mt3JjRKd1KDyr
-        cilQycB0/RYre5TV8ePkuyj1cD0ak3SGrEfZutY=
-X-Google-Smtp-Source: ABdhPJzn9XtlnbN2WI3KtjZT8J8qsVzar5TyCBtHMtrND/68YIx2PSXNe7E7kIssamgeXq6MHkAZHPeh61V+1r60ypM=
-X-Received: by 2002:aca:7554:: with SMTP id q81mr15199484oic.89.1606138658514;
- Mon, 23 Nov 2020 05:37:38 -0800 (PST)
+        id S1729741AbgKWNkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 08:40:53 -0500
+Received: from novek.ru ([213.148.174.62]:54828 "EHLO novek.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729539AbgKWNkx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Nov 2020 08:40:53 -0500
+Received: from [192.168.0.18] (unknown [37.228.234.253])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id 68C3450032C;
+        Mon, 23 Nov 2020 16:41:04 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 68C3450032C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1606138865; bh=LXEs/kZPhXIcnj5xcjzLIOOA8NK3CbJKOH5BjpB5xMg=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=A8AZQ0u3DaCUd4odtcnCjRiVVKNDYPAM3wVnNSuG0XCyn7TCniJ6vceFRVRKVwtKK
+         eab2Y2rcdpLdm0QTvhAS4DRFH7HYiN+zCkYpJgB7Lg1U1j3iTi4akO15WaA3pg/g6l
+         D3IQ3SFS59jR9dBbeFtNJiV71Cd+1+orLSirpvXU=
+Subject: Re: [net v3] net/tls: missing received data after fast remote close
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Boris Pismenny <borisp@nvidia.com>,
+        Aviad Yehezkel <aviadye@nvidia.com>, netdev@vger.kernel.org
+References: <1605801588-12236-1-git-send-email-vfedorenko@novek.ru>
+ <20201120102637.7d36a9f1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+Message-ID: <64311360-e363-133c-6862-4de1298942ee@novek.ru>
+Date:   Mon, 23 Nov 2020 13:40:46 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20201123120531.724963-1-zyjzyj2000@gmail.com> <CAD=hENfysbUCNapfFZ6i0tOFo5Ge3QS+iQSt2ySBDb10zFdgwg@mail.gmail.com>
- <CAJ8uoz1TO7ULPDTK0ajyrjVFqB2REw=ncgT1c-NDhTciDeNfNg@mail.gmail.com>
-In-Reply-To: <CAJ8uoz1TO7ULPDTK0ajyrjVFqB2REw=ncgT1c-NDhTciDeNfNg@mail.gmail.com>
-From:   Zhu Yanjun <zyjzyj2000@gmail.com>
-Date:   Mon, 23 Nov 2020 21:37:27 +0800
-Message-ID: <CAD=hENeHFSJOO=Kt060y0R29d4wn87ESdrqY6n6ACA--LkZEFA@mail.gmail.com>
-Subject: Re: [PATCHv2 1/1] xdp: remove the function xsk_map_inc
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201120102637.7d36a9f1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
+        autolearn_force=no version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 23, 2020 at 8:19 PM Magnus Karlsson
-<magnus.karlsson@gmail.com> wrote:
->
-> On Mon, Nov 23, 2020 at 1:11 PM Zhu Yanjun <zyjzyj2000@gmail.com> wrote:
-> >
-> > On Mon, Nov 23, 2020 at 8:05 PM <zyjzyj2000@gmail.com> wrote:
-> > >
-> > > From: Zhu Yanjun <zyjzyj2000@gmail.com>
-> > >
-> > > The function xsk_map_inc is a simple wrapper of bpf_map_inc and
-> > > always returns zero. As such, replacing this function with bpf_map_inc
-> > > and removing the test code.
-> > >
-> > > Signed-off-by: Zhu Yanjun <zyjzyj2000@gmail.com>
-> >
-> >
-> > > ---
-> > >  net/xdp/xsk.c    |  1 -
-> > >  net/xdp/xsk.h    |  1 -
-> > >  net/xdp/xskmap.c | 13 +------------
-> > >  3 files changed, 1 insertion(+), 14 deletions(-)
-> > >
-> > > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> > > index cfbec3989a76..c1b8a888591c 100644
-> > > --- a/net/xdp/xsk.c
-> > > +++ b/net/xdp/xsk.c
-> > > @@ -548,7 +548,6 @@ static struct xsk_map *xsk_get_map_list_entry(struct xdp_sock *xs,
-> > >         node = list_first_entry_or_null(&xs->map_list, struct xsk_map_node,
-> > >                                         node);
-> > >         if (node) {
-> > > -               WARN_ON(xsk_map_inc(node->map));
->
-> This should be bpf_map_inc(&node->map->map); Think you forgot to
-> convert this one.
+On 20.11.2020 18:26, Jakub Kicinski wrote:
+> On Thu, 19 Nov 2020 18:59:48 +0300 Vadim Fedorenko wrote:
+>> In case when tcp socket received FIN after some data and the
+>> parser haven't started before reading data caller will receive
+>> an empty buffer. This behavior differs from plain TCP socket and
+>> leads to special treating in user-space.
+>> The flow that triggers the race is simple. Server sends small
+>> amount of data right after the connection is configured to use TLS
+>> and closes the connection. In this case receiver sees TLS Handshake
+>> data, configures TLS socket right after Change Cipher Spec record.
+>> While the configuration is in process, TCP socket receives small
+>> Application Data record, Encrypted Alert record and FIN packet. So
+>> the TCP socket changes sk_shutdown to RCV_SHUTDOWN and sk_flag with
+>> SK_DONE bit set. The received data is not parsed upon arrival and is
+>> never sent to user-space.
+>>
+>> Patch unpauses parser directly if we have unparsed data in tcp
+>> receive queue.
+>>
+>> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
+> Applied, thanks!
+Looks like I missed fixes tag to queue this patch to -stable.
 
-In include/linux/bpf.h:
-"
-...
-1213 void bpf_map_inc(struct bpf_map *map);
-...
-"
+Fixes: c46234ebb4d1 ("tls: RX path for ktls")
 
-Zhu Yanjun
->
-> > >                 map = node->map;
-> > >                 *map_entry = node->map_entry;
-> > >         }
-> > > diff --git a/net/xdp/xsk.h b/net/xdp/xsk.h
-> > > index b9e896cee5bb..0aad25c0e223 100644
-> > > --- a/net/xdp/xsk.h
-> > > +++ b/net/xdp/xsk.h
-> > > @@ -41,7 +41,6 @@ static inline struct xdp_sock *xdp_sk(struct sock *sk)
-> > >
-> > >  void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
-> > >                              struct xdp_sock **map_entry);
-> > > -int xsk_map_inc(struct xsk_map *map);
-> > >  void xsk_map_put(struct xsk_map *map);
-> > >  void xsk_clear_pool_at_qid(struct net_device *dev, u16 queue_id);
-> > >  int xsk_reg_pool_at_qid(struct net_device *dev, struct xsk_buff_pool *pool,
-> > > diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
-> > > index 49da2b8ace8b..6b7e9a72b101 100644
-> > > --- a/net/xdp/xskmap.c
-> > > +++ b/net/xdp/xskmap.c
-> > > @@ -11,12 +11,6 @@
-> > >
-> > >  #include "xsk.h"
-> > >
-> > > -int xsk_map_inc(struct xsk_map *map)
-> > > -{
-> > > -       bpf_map_inc(&map->map);
-> > > -       return 0;
-> > > -}
-> >
-> > Hi, Magnus
-> >
-> > The function xsk_map_inc is replaced with bpf_map_inc.
-> >
-> > Zhu Yanjun
-> >
-> > > -
-> > >  void xsk_map_put(struct xsk_map *map)
-> > >  {
-> > >         bpf_map_put(&map->map);
-> > > @@ -26,17 +20,12 @@ static struct xsk_map_node *xsk_map_node_alloc(struct xsk_map *map,
-> > >                                                struct xdp_sock **map_entry)
-> > >  {
-> > >         struct xsk_map_node *node;
-> > > -       int err;
-> > >
-> > >         node = kzalloc(sizeof(*node), GFP_ATOMIC | __GFP_NOWARN);
-> > >         if (!node)
-> > >                 return ERR_PTR(-ENOMEM);
-> > >
-> > > -       err = xsk_map_inc(map);
-> > > -       if (err) {
-> > > -               kfree(node);
-> > > -               return ERR_PTR(err);
-> > > -       }
-> > > +       bpf_map_inc(&map->map);
-> > >
-> > >         node->map = map;
-> > >         node->map_entry = map_entry;
-> > > --
-> > > 2.25.1
-> > >
