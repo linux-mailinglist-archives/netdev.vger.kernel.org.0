@@ -2,115 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADEAD2C0267
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 10:43:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB3B02C0265
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 10:43:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727913AbgKWJkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 04:40:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
+        id S1727870AbgKWJka (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 04:40:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727874AbgKWJka (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 04:40:30 -0500
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C225BC0613CF;
-        Mon, 23 Nov 2020 01:40:30 -0800 (PST)
-Received: by mail-pg1-x542.google.com with SMTP id w4so13713598pgg.13;
-        Mon, 23 Nov 2020 01:40:30 -0800 (PST)
+        with ESMTP id S1725275AbgKWJk3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 04:40:29 -0500
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 405CCC0613CF
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 01:40:29 -0800 (PST)
+Received: by mail-wm1-x344.google.com with SMTP id h21so16579410wmb.2
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 01:40:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ySaaDJj3FNEmrbWbcGYLmfeN18a4YdousMGDCBvU6jk=;
-        b=unPNP+t9GaBpFqpa9me97hdsQ/OBmpl48spMDQfiA1k0V21CTihfYEU7yZayAozEN/
-         kXVQ4p4TRZDrylTUKyXahesyy+sivDq47lTZOPkq5AhHkINTdr4UqZ02c/Er0VR4LV+L
-         TqKL1PAOHlZS7MN/z11lyf7V1vTl5LOsE7XbRd4rT4NLrIc5B2s30uKil+p+dav1x8B8
-         qDSeZPY+3MKS1MaCF+PHrBGHr72kultchvZCvPz9142LPzoyWmNxNRbKKzgNOfeGD/GR
-         uRxLI3q70ZgTW3xVW0J1bIc5qfDfAoWuaD8wylWVAknK0ceUcilEiPuecuaSb4Fa9HdH
-         xoeA==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=tGsmN+GKaX7yYJkwfaBxmDkjMYGs2JFf+vI7xCtXl+c=;
+        b=Ipo/cMAQ0WeveU8fNhd76pL0nqY6B7mRDA7/pjLLrJNoGJmMhgr1aq6rG3o8B90y4/
+         sUzKAyfnPd7J7x8yidEqCb0AWbt2/s2Q+woNHiFpy1RRG7T7vaSG1g0mC1N9K45omEzR
+         piKmOEGFku9pwIdHhqBKR5OECjje61vFWp5Q6A/+USricHVkfcmue5w3Fcafhxq2W35C
+         G3PK9IFe2uKJ6gsssS1lkZXJakVbyUPWb0n8QwNriS32nAkGyVMTf5Up3IoLO2wEkyMV
+         MmjPi1dHY5BfyqjJdnht5K2/9aSaM7Zoj16dAls90pRW4tqpXzTyK64bHeQNUpwuql6A
+         zRZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ySaaDJj3FNEmrbWbcGYLmfeN18a4YdousMGDCBvU6jk=;
-        b=nMkH/1Azb7+FCAO8PzTO4D6mJeNsvzJUwfygF4DpzVwk4TlbVS+49pWlkNmbibsP93
-         XRBep84xYaAlO1i8HkGbJkxFKTRlcqza3lx5Ov90MCn7GkAvjSMKDCf3BP5OjA0KRssq
-         ScTdCZwnCZ0b+lwBiJQgE3CaHbF2t7iQcy18kI6ZzdxXS2Q2m51OzrqDnKvOsnWufapy
-         vfHhUfoY/FMGAXubmkE+dfy0BwVKryrjStfOqh7Xewk29S9afbNh/8BCmkuNBiVMC5og
-         D2l/bQYGTm8AU7DIiE15eKbhLOWlH2jkoX/7UbH2MydRU2cPb9gAPHRG7rWaG8TWcPl7
-         hZKA==
-X-Gm-Message-State: AOAM532BcugWgUO0z0Ciwc0eM8xMZRuOAlio0vQN3Ww1aCBfNG6/KxIF
-        PiMZBh+xJa2qwqtOVu3y2WUydk9At5OaDY+Rn1b/ir8eZplxnLnB
-X-Google-Smtp-Source: ABdhPJxlSdyRLYA8cIXJOOFc10Rd1EjyFau7MY37/lMw/uxdiT6KcFNnJgtf/c8+MgkjyQfx2yqGJxeHlDuKqaPESXY=
-X-Received: by 2002:a62:445:0:b029:196:61fc:2756 with SMTP id
- 66-20020a6204450000b029019661fc2756mr24783083pfe.12.1606124430231; Mon, 23
- Nov 2020 01:40:30 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tGsmN+GKaX7yYJkwfaBxmDkjMYGs2JFf+vI7xCtXl+c=;
+        b=V6MWx7/x8KwgZsETrcNc/o8bdNHSYLRjJnzY7Zzg3jVIlpMQ5YpYZh8T+Y/eEeiBrR
+         a8HmHqVLZEW2XQqCO+JQmm91N82of3L8ZRpba6ZC1Xi96viU+pmNU23tq/da0bxmWRCT
+         zHs2uClaElwfZ8oQ5bVQ0QM5eCsVPnEZqe1GU5OeT2a5iRCsddW+CNnT5iiEhe/F5odN
+         bi1A/3A7qvvvlWYDUH8UpypCVAbJENhUE+i6XSIjFQPII4nvPqG42OP5U48dSzr0Cl+9
+         pj7G/c/AMTEvXKJ55dVw8eWzZHw7AU4Cn3Yscmbety2QiXNEhkwLVdm+3SS25r2BHAI2
+         Y9QQ==
+X-Gm-Message-State: AOAM532kznZTzQc79mLG437OvHBpJxfjeIj6VM6zj8TKXpevlQWJrWlN
+        oRy46ZjwFe7cUqiWBbwpZ9xZ1g==
+X-Google-Smtp-Source: ABdhPJxPGevhCi533Bj22BTAiWRzndS9Y8wMAOe97w1sXurxVvRQb1K1zDhAqE/t1baES6L7DkkmhQ==
+X-Received: by 2002:a1c:b487:: with SMTP id d129mr23614025wmf.38.1606124427984;
+        Mon, 23 Nov 2020 01:40:27 -0800 (PST)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id e1sm15211664wmd.16.2020.11.23.01.40.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Nov 2020 01:40:27 -0800 (PST)
+Date:   Mon, 23 Nov 2020 10:40:26 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Edwin Peer <edwin.peer@broadcom.com>
+Cc:     Ido Schimmel <idosch@idosch.org>, netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, jiri@nvidia.com,
+        danieller@nvidia.com, andrew@lunn.ch, f.fainelli@gmail.com,
+        mkubecek@suse.cz, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next 1/6] ethtool: Extend link modes settings uAPI
+ with lanes
+Message-ID: <20201123094026.GF3055@nanopsycho.orion>
+References: <20201010154119.3537085-1-idosch@idosch.org>
+ <20201010154119.3537085-2-idosch@idosch.org>
+ <CAKOOJTw1rRdS0+WRqeWY4Hc9gzwvPn7FGFdZuVd3hFYORcRz4g@mail.gmail.com>
 MIME-Version: 1.0
-References: <1606050623-22963-1-git-send-email-lirongqing@baidu.com>
-In-Reply-To: <1606050623-22963-1-git-send-email-lirongqing@baidu.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Mon, 23 Nov 2020 10:40:19 +0100
-Message-ID: <CAJ8uoz3d4x9pWWNxmd9+ozt7ei7WUE=S=FnKE1sLZOqoKRwMJQ@mail.gmail.com>
-Subject: Re: [PATCH] libbpf: add support for canceling cached_cons advance
-To:     Li RongQing <lirongqing@baidu.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKOOJTw1rRdS0+WRqeWY4Hc9gzwvPn7FGFdZuVd3hFYORcRz4g@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 22, 2020 at 2:21 PM Li RongQing <lirongqing@baidu.com> wrote:
+Thu, Nov 19, 2020 at 09:38:34PM CET, edwin.peer@broadcom.com wrote:
+>On Sat, Oct 10, 2020 at 3:54 PM Ido Schimmel <idosch@idosch.org> wrote:
 >
-> It is possible to fail receiving packets after calling
-> xsk_ring_cons__peek, at this condition, cached_cons has
-> been advanced, should be cancelled.
-
-Thanks RongQing,
-
-I have needed this myself in various situations, so I think we should
-add this. But your motivation in the commit message is somewhat
-confusing. How about something like this?
-
-Add a new function for returning descriptors the user received after
-an xsk_ring_cons__peek call. After the application has gotten a number
-of descriptors from a ring, it might not be able to or want to process
-them all for various reasons. Therefore, it would be useful to have an
-interface for returning or cancelling a number of them so that they
-are returned to the ring. This patch adds a new function called
-xsk_ring_cons__cancel that performs this operation on nb descriptors
-counted from the end of the batch of descriptors that was received
-through the peek call.
-
-Replace your commit message with this, fix the bug below, send a v2
-and then I am happy to ack this.
-
-/Magnus
-
-> Signed-off-by: Li RongQing <lirongqing@baidu.com>
-> ---
->  tools/lib/bpf/xsk.h | 6 ++++++
->  1 file changed, 6 insertions(+)
+>> Add 'ETHTOOL_A_LINKMODES_LANES' attribute and expand 'struct
+>> ethtool_link_settings' with lanes field in order to implement a new
+>> lanes-selector that will enable the user to advertise a specific number
+>> of lanes as well.
 >
-> diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
-> index 1069c46364ff..4128215c246b 100644
-> --- a/tools/lib/bpf/xsk.h
-> +++ b/tools/lib/bpf/xsk.h
-> @@ -153,6 +153,12 @@ static inline size_t xsk_ring_cons__peek(struct xsk_ring_cons *cons,
->         return entries;
->  }
->
-> +static inline void xsk_ring_cons__cancel(struct xsk_ring_cons *cons,
-> +                                        size_t nb)
-> +{
-> +       rx->cached_cons -= nb;
+>Why can't this be implied by port break-out configuration? For higher
+>speed signalling modes like PAM4, what's the difference between a
+>port with unused lanes vs the same port split into multiple logical
+>ports? In essence, the driver could then always choose the slowest
 
-cons-> not rx->. Please make sure the v2 compiles and passes checkpatch.
+There is a crucial difference. Split port is configured alwasy by user.
+Each split port has a devlink instace, netdevice associated with it.
+It is one level above the lanes.
 
-> +}
-> +
->  static inline void xsk_ring_cons__release(struct xsk_ring_cons *cons, size_t nb)
->  {
->         /* Make sure data has been read before indicating we are done
-> --
-> 2.17.3
+
+>signalling mode that utilizes all the available lanes.
 >
+>Regards,
+>Edwin Peer
+
+
