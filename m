@@ -2,103 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 592312C1434
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 20:10:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9A7D2C1459
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 20:29:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730296AbgKWTJi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 14:09:38 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53462 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728672AbgKWTJh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Nov 2020 14:09:37 -0500
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E840222252;
-        Mon, 23 Nov 2020 19:09:35 +0000 (UTC)
-Date:   Mon, 23 Nov 2020 14:09:34 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Petr Mladek <pmladek@suse.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        virtualization@lists.linux-foundation.org,
-        Amit Shah <amit@kernel.org>, Itay Aveksis <itayav@nvidia.com>,
-        Ran Rozenstein <ranro@nvidia.com>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: netconsole deadlock with virtnet
-Message-ID: <20201123140934.38748be3@gandalf.local.home>
-In-Reply-To: <20201123105252.1c295138@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20201117102341.GR47002@unreal>
-        <20201117093325.78f1486d@gandalf.local.home>
-        <X7SK9l0oZ+RTivwF@jagdpanzerIV.localdomain>
-        <X7SRxB6C+9Bm+r4q@jagdpanzerIV.localdomain>
-        <93b42091-66f2-bb92-6822-473167b2698d@redhat.com>
-        <20201118091257.2ee6757a@gandalf.local.home>
-        <20201123110855.GD3159@unreal>
-        <20201123093128.701cf81b@gandalf.local.home>
-        <20201123105252.1c295138@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1729512AbgKWTPe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 14:15:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33884 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728930AbgKWTPd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 14:15:33 -0500
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D75F5C0613CF;
+        Mon, 23 Nov 2020 11:15:33 -0800 (PST)
+Received: by mail-qk1-x744.google.com with SMTP id u4so18036857qkk.10;
+        Mon, 23 Nov 2020 11:15:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=lsk3l50IUlnXuysK/qr0G1Jf7d6JfVUjA/eYi8O2geA=;
+        b=ZjKCDWGIRLgKDvKwoAQ/Tdf9QWbi/RzXSaxEcWje+l/O3zHCmHqGQzwBMTv9KJ7SN0
+         ai/WCMj5UgddZv0EKbGYTkv/nK1Mm45jOxZAKrlDkv0bdkd2EXiwxL6Cvba0Bsh9JEAZ
+         Yidfd4HZKWnJYPps6+U7hmy5r29ofNIQVpqNsrnu7emVfw7++PxGUQsP57St7qLdTBYd
+         OiS1qNRWLQRnN8dTL2yzYrPT8Lar9twVF1paL347DEIm3DVX2JT/UMuf600jgCfDsFrY
+         NiHFk0tfiaXFNNZiyCcLD3mxNnMJ0LQI5R0TGePgCjPTb8Xwmew1eroPhr9FwIwWyrV1
+         Zc4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=lsk3l50IUlnXuysK/qr0G1Jf7d6JfVUjA/eYi8O2geA=;
+        b=esE0CNY1R9RwXY7ANIKv62/mF+PDcNk1EbapbUJFn0p9SmGr/vkrtT1gBUI1+tHEXk
+         HCjUNzbGIcXT15+xOm3U6U+gB2cMXktAba7XdyYyYZatpmCplnj8/WE5Euxe9yz9Neen
+         ObN3u3ZZL5RKtlkHDuXOSdtOcI4xbQ+ToHEgupvSdxAubVPclj66EqlFJ+9QepjmD4OR
+         j1EdtykE4Dv/LJvusnrvcZgxQnc16yMWW8/C9gYQ1zRaS6nGIJagaM5I9y1nCvGP4rmu
+         0SeYI6Ud0STec05Am+q7+7eMHvPXg7ZT4OmQDPnrD6Lq2lt78M+iF5asQ/JrPo2u8a1Z
+         hOGQ==
+X-Gm-Message-State: AOAM530vt0WIrYSbCP7rsLlWZpMRnRq+eHCoCa/By1NB6SLUy9ZVKgD3
+        8AKdM4JW9212ceIuCo+rAFI=
+X-Google-Smtp-Source: ABdhPJyKiuEn0gESPmF4riPXg80tuJ6CvB027stRO5inddlu4fNnejf5dC2NY6pPZPd16f9AzQtiBw==
+X-Received: by 2002:a37:bac7:: with SMTP id k190mr1009816qkf.464.1606158933051;
+        Mon, 23 Nov 2020 11:15:33 -0800 (PST)
+Received: from svens-asus.arcx.com ([184.94.50.30])
+        by smtp.gmail.com with ESMTPSA id r190sm10116348qkf.101.2020.11.23.11.15.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Nov 2020 11:15:32 -0800 (PST)
+From:   Sven Van Asbroeck <thesven73@gmail.com>
+X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
+To:     Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David S Miller <davem@davemloft.net>
+Cc:     Sven Van Asbroeck <thesven73@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v1 1/2] lan743x: clean up software_isr function
+Date:   Mon, 23 Nov 2020 14:15:28 -0500
+Message-Id: <20201123191529.14908-1-TheSven73@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 23 Nov 2020 10:52:52 -0800
-Jakub Kicinski <kuba@kernel.org> wrote:
+From: Sven Van Asbroeck <thesven73@gmail.com>
 
-> On Mon, 23 Nov 2020 09:31:28 -0500 Steven Rostedt wrote:
-> > On Mon, 23 Nov 2020 13:08:55 +0200
-> > Leon Romanovsky <leon@kernel.org> wrote:
-> > 
-> >   
-> > >  [   10.028024] Chain exists of:
-> > >  [   10.028025]   console_owner --> target_list_lock --> _xmit_ETHER#2    
-> > 
-> > Note, the problem is that we have a location that grabs the xmit_lock while
-> > holding target_list_lock (and possibly console_owner).  
-> 
-> Well, it try_locks the xmit_lock. Does lockdep understand try-locks?
-> 
-> (not that I condone the shenanigans that are going on here)
+For no apparent reason, this function reads the INT_STS register, and
+checks if the software interrupt bit is set. These things have already
+been carried out by this function's only caller.
 
-Does it?
+Clean up by removing the redundant code.
 
-	virtnet_poll_tx() {
-		__netif_tx_lock() {
-			spin_lock(&txq->_xmit_lock);
+Tested-by: Sven Van Asbroeck <thesven73@gmail.com> # lan7430
+Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
+---
 
-That looks like we can have:
+Tree: git://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git # f9e425e99b07
 
+To: Bryan Whitehead <bryan.whitehead@microchip.com>
+To: Jakub Kicinski <kuba@kernel.org>
+To: "David S. Miller" <davem@davemloft.net>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 
-	CPU0		CPU1
-	----		----
-   lock(xmit_lock)
+ drivers/net/ethernet/microchip/lan743x_main.c | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
-		    lock(console)
-		    lock(target_list_lock)
-		    __netif_tx_lock()
-		        lock(xmit_lock);
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+index 87b6c59a1e03..bdc80098c240 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.c
++++ b/drivers/net/ethernet/microchip/lan743x_main.c
+@@ -140,18 +140,13 @@ static int lan743x_csr_init(struct lan743x_adapter *adapter)
+ 	return result;
+ }
+ 
+-static void lan743x_intr_software_isr(void *context)
++static void lan743x_intr_software_isr(struct lan743x_adapter *adapter)
+ {
+-	struct lan743x_adapter *adapter = context;
+ 	struct lan743x_intr *intr = &adapter->intr;
+-	u32 int_sts;
+ 
+-	int_sts = lan743x_csr_read(adapter, INT_STS);
+-	if (int_sts & INT_BIT_SW_GP_) {
+-		/* disable the interrupt to prevent repeated re-triggering */
+-		lan743x_csr_write(adapter, INT_EN_CLR, INT_BIT_SW_GP_);
+-		intr->software_isr_flag = 1;
+-	}
++	/* disable the interrupt to prevent repeated re-triggering */
++	lan743x_csr_write(adapter, INT_EN_CLR, INT_BIT_SW_GP_);
++	intr->software_isr_flag = 1;
+ }
+ 
+ static void lan743x_tx_isr(void *context, u32 int_sts, u32 flags)
+-- 
+2.17.1
 
-			[BLOCKED]
-
-   <interrupt>
-   lock(console)
-
-   [BLOCKED]
-
-
-
- DEADLOCK.
-
-
-So where is the trylock here?
-
-Perhaps you need the trylock in virtnet_poll_tx()?
-
--- Steve
