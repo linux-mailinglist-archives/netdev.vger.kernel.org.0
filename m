@@ -2,183 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C0D72BFFA9
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 06:37:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1178E2BFFE2
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 07:19:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726989AbgKWFgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 00:36:50 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:36270 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726265AbgKWFgt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 00:36:49 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
-        with SMTP; 23 Nov 2020 07:36:43 +0200
-Received: from vnc1.mtl.labs.mlnx (vnc1.mtl.labs.mlnx [10.7.2.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0AN5ahTA000721;
-        Mon, 23 Nov 2020 07:36:43 +0200
-Received: from vnc1.mtl.labs.mlnx (localhost [127.0.0.1])
-        by vnc1.mtl.labs.mlnx (8.14.4/8.14.4) with ESMTP id 0AN5ahth025283;
-        Mon, 23 Nov 2020 07:36:43 +0200
-Received: (from moshe@localhost)
-        by vnc1.mtl.labs.mlnx (8.14.4/8.14.4/Submit) id 0AN5abhC025268;
-        Mon, 23 Nov 2020 07:36:37 +0200
-From:   Moshe Shemesh <moshe@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Jiri Pirko <jiri@nvidia.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Moshe Shemesh <moshe@mellanox.com>
-Subject: [PATCH net v2] devlink: Fix reload stats structure
-Date:   Mon, 23 Nov 2020 07:36:25 +0200
-Message-Id: <1606109785-25197-1-git-send-email-moshe@mellanox.com>
-X-Mailer: git-send-email 1.8.4.3
+        id S1728054AbgKWGSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 01:18:15 -0500
+Received: from mxout70.expurgate.net ([194.37.255.70]:41501 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725275AbgKWGSP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 01:18:15 -0500
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1kh5Av-0005Mz-SP; Mon, 23 Nov 2020 07:18:09 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1kh5Au-0005Mn-OT; Mon, 23 Nov 2020 07:18:08 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 50DED240041;
+        Mon, 23 Nov 2020 07:18:08 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id E4FAA240040;
+        Mon, 23 Nov 2020 07:18:07 +0100 (CET)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id 72EE020624;
+        Mon, 23 Nov 2020 07:18:07 +0100 (CET)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 23 Nov 2020 07:18:07 +0100
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v5] net/tun: Call netdev notifiers
+Organization: TDT AG
+In-Reply-To: <20201120102827.6b432dc5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20201118063919.29485-1-ms@dev.tdt.de>
+ <20201120102827.6b432dc5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Message-ID: <a00d2725bce23f451cd030b9e621a764@dev.tdt.de>
+X-Sender: ms@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.15
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+X-purgate-type: clean
+X-purgate-ID: 151534::1606112289-000074F7-130D8890/0/0
+X-purgate: clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix reload stats structure exposed to the user. Change stats structure
-hierarchy to have the reload action as a parent of the stat entry and
-then stat entry includes value per limit. This will also help to avoid
-string concatenation on iproute2 output.
+On 2020-11-20 19:28, Jakub Kicinski wrote:
+> On Wed, 18 Nov 2020 07:39:19 +0100 Martin Schiller wrote:
+>> Call netdev notifiers before and after changing the device type.
+>> 
+>> Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+> 
+> This is a fix, right? Can you give an example of something that goes
+> wrong without this patch?
 
-Reload stats structure before this fix:
-"stats": {
-    "reload": {
-        "driver_reinit": 2,
-        "fw_activate": 1,
-        "fw_activate_no_reset": 0
-     }
-}
+This change is related to my latest patches to the X.25 Subsystem:
+https://patchwork.kernel.org/project/netdevbpf/list/?series=388087
 
-After this fix:
-"stats": {
-    "reload": {
-        "driver_reinit": {
-            "unspecified": 2
-        },
-        "fw_activate": {
-            "unspecified": 1,
-            "no_reset": 0
-        }
-}
+I use a tun interface in a XoT (X.25 over TCP) application and use the
+TUNSETLINK ioctl to change the device type to ARPHRD_X25.
+As the default device type is ARPHRD_NONE the initial NETDEV_REGISTER
+event won't be catched by the X.25 Stack.
 
-Fixes: a254c264267e ("devlink: Add reload stats")
-Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
----
-v1 -> v2:
-- Fold comment at 80 characters.
----
- include/uapi/linux/devlink.h |  2 ++
- net/core/devlink.c           | 49 +++++++++++++++++++++++-------------
- 2 files changed, 34 insertions(+), 17 deletions(-)
+Therefore I have to use the NETDEV_POST_TYPE_CHANGE to make sure that
+the corresponding neighbour structure is created.
 
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index 0113bc4db9f5..5203f54a2be1 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -526,6 +526,8 @@ enum devlink_attr {
- 	DEVLINK_ATTR_RELOAD_STATS_LIMIT,	/* u8 */
- 	DEVLINK_ATTR_RELOAD_STATS_VALUE,	/* u32 */
- 	DEVLINK_ATTR_REMOTE_RELOAD_STATS,	/* nested */
-+	DEVLINK_ATTR_RELOAD_ACTION_INFO,        /* nested */
-+	DEVLINK_ATTR_RELOAD_ACTION_STATS,       /* nested */
- 
- 	/* add new attributes above here, update the policy in devlink.c */
- 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index e6fb1fdedded..bf79d018990c 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -517,8 +517,7 @@ devlink_reload_limit_is_supported(struct devlink *devlink, enum devlink_reload_l
- 	return test_bit(limit, &devlink->ops->reload_limits);
- }
- 
--static int devlink_reload_stat_put(struct sk_buff *msg, enum devlink_reload_action action,
--				   enum devlink_reload_limit limit, u32 value)
-+static int devlink_reload_stat_put(struct sk_buff *msg, enum devlink_reload_limit limit, u32 value)
- {
- 	struct nlattr *reload_stats_entry;
- 
-@@ -526,8 +525,7 @@ static int devlink_reload_stat_put(struct sk_buff *msg, enum devlink_reload_acti
- 	if (!reload_stats_entry)
- 		return -EMSGSIZE;
- 
--	if (nla_put_u8(msg, DEVLINK_ATTR_RELOAD_ACTION, action) ||
--	    nla_put_u8(msg, DEVLINK_ATTR_RELOAD_STATS_LIMIT, limit) ||
-+	if (nla_put_u8(msg, DEVLINK_ATTR_RELOAD_STATS_LIMIT, limit) ||
- 	    nla_put_u32(msg, DEVLINK_ATTR_RELOAD_STATS_VALUE, value))
- 		goto nla_put_failure;
- 	nla_nest_end(msg, reload_stats_entry);
-@@ -540,7 +538,7 @@ static int devlink_reload_stat_put(struct sk_buff *msg, enum devlink_reload_acti
- 
- static int devlink_reload_stats_put(struct sk_buff *msg, struct devlink *devlink, bool is_remote)
- {
--	struct nlattr *reload_stats_attr;
-+	struct nlattr *reload_stats_attr, *action_info_attr, *action_stats_attr;
- 	int i, j, stat_idx;
- 	u32 value;
- 
-@@ -552,17 +550,28 @@ static int devlink_reload_stats_put(struct sk_buff *msg, struct devlink *devlink
- 	if (!reload_stats_attr)
- 		return -EMSGSIZE;
- 
--	for (j = 0; j <= DEVLINK_RELOAD_LIMIT_MAX; j++) {
--		/* Remote stats are shown even if not locally supported. Stats
--		 * of actions with unspecified limit are shown though drivers
--		 * don't need to register unspecified limit.
--		 */
--		if (!is_remote && j != DEVLINK_RELOAD_LIMIT_UNSPEC &&
--		    !devlink_reload_limit_is_supported(devlink, j))
-+	for (i = 0; i <= DEVLINK_RELOAD_ACTION_MAX; i++) {
-+		if ((!is_remote && !devlink_reload_action_is_supported(devlink, i)) ||
-+		    i == DEVLINK_RELOAD_ACTION_UNSPEC)
- 			continue;
--		for (i = 0; i <= DEVLINK_RELOAD_ACTION_MAX; i++) {
--			if ((!is_remote && !devlink_reload_action_is_supported(devlink, i)) ||
--			    i == DEVLINK_RELOAD_ACTION_UNSPEC ||
-+		action_info_attr = nla_nest_start(msg, DEVLINK_ATTR_RELOAD_ACTION_INFO);
-+		if (!action_info_attr)
-+			goto nla_put_failure;
-+
-+		if (nla_put_u8(msg, DEVLINK_ATTR_RELOAD_ACTION, i))
-+			goto action_info_nest_cancel;
-+		action_stats_attr = nla_nest_start(msg, DEVLINK_ATTR_RELOAD_ACTION_STATS);
-+		if (!action_stats_attr)
-+			goto action_info_nest_cancel;
-+
-+		for (j = 0; j <= DEVLINK_RELOAD_LIMIT_MAX; j++) {
-+			/* Remote stats are shown even if not locally supported.
-+			 * Stats of actions with unspecified limit are shown
-+			 * though drivers don't need to register unspecified
-+			 * limit.
-+			 */
-+			if ((!is_remote && j != DEVLINK_RELOAD_LIMIT_UNSPEC &&
-+			     !devlink_reload_limit_is_supported(devlink, j)) ||
- 			    devlink_reload_combination_is_invalid(i, j))
- 				continue;
- 
-@@ -571,13 +580,19 @@ static int devlink_reload_stats_put(struct sk_buff *msg, struct devlink *devlink
- 				value = devlink->stats.reload_stats[stat_idx];
- 			else
- 				value = devlink->stats.remote_reload_stats[stat_idx];
--			if (devlink_reload_stat_put(msg, i, j, value))
--				goto nla_put_failure;
-+			if (devlink_reload_stat_put(msg, j, value))
-+				goto action_stats_nest_cancel;
- 		}
-+		nla_nest_end(msg, action_stats_attr);
-+		nla_nest_end(msg, action_info_attr);
- 	}
- 	nla_nest_end(msg, reload_stats_attr);
- 	return 0;
- 
-+action_stats_nest_cancel:
-+	nla_nest_cancel(msg, action_stats_attr);
-+action_info_nest_cancel:
-+	nla_nest_cancel(msg, action_info_attr);
- nla_put_failure:
- 	nla_nest_cancel(msg, reload_stats_attr);
- 	return -EMSGSIZE;
--- 
-2.18.2
+I could imagine that other protocols have similar requirements.
 
+Whether this is a fix or a functional extension is hard to say.
+
+Some time ago there was also a corresponding patch for the WAN/HDLC
+subsystem:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit?id=2f8364a291e8
