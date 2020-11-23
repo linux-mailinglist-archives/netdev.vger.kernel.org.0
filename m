@@ -2,131 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 195F22C0BC3
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 14:57:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 329F32C0BD5
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 14:57:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389275AbgKWNac (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 08:30:32 -0500
-Received: from www62.your-server.de ([213.133.104.62]:56794 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389068AbgKWNaa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 08:30:30 -0500
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1khBv0-0006CV-6y; Mon, 23 Nov 2020 14:30:10 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1khBuz-000NhL-VQ; Mon, 23 Nov 2020 14:30:10 +0100
-Subject: Re: [PATCH bpf-next v7 00/34] bpf: switch to memcg-based memory
- accounting
-To:     Roman Gushchin <guro@fb.com>, bpf@vger.kernel.org
-Cc:     ast@kernel.org, netdev@vger.kernel.org, andrii@kernel.org,
-        akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com
-References: <20201119173754.4125257-1-guro@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <9134a408-e26c-a7f2-23a7-5fc221bafdde@iogearbox.net>
-Date:   Mon, 23 Nov 2020 14:30:09 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1730250AbgKWNbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 08:31:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37030 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731864AbgKWNb2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 08:31:28 -0500
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1635C0613CF;
+        Mon, 23 Nov 2020 05:31:27 -0800 (PST)
+Received: by mail-wr1-x441.google.com with SMTP id r17so18655743wrw.1;
+        Mon, 23 Nov 2020 05:31:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=6VjVsILSsDd5SInux6/cPvrLq3EX5hfYBfnNEoH8afc=;
+        b=p3hPzFrD8yTk9+Gx4YckDx35JRnq+e6c0hSMGloeC/toffjNM/LrzjXcNTcdTTPFUh
+         UpENDkd8Cabeebm20HEr2p3HAfjLKzHjtWCw71w85vNXLp/v6TmQSXg6vMIqZ3hsjqgM
+         cbXHXSyHvUUnJhL0DQQnMvvenDqPnO5LRqTbHADqUj2IlXtwe1bt6kwvZDeHzDUie5ne
+         GiBxdItO6teTxK1KPCKTLzujQMKjR/sjfwb4LfTl0WSPan7YhkLrAsqgTsLemLlqLQz7
+         4K/hEUkLxPoDBn6SCIZfmBFUpngYscaQQWSYKjftNF2pLBM6vJTHzfbDwTT9pRee3aQ/
+         1W1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=6VjVsILSsDd5SInux6/cPvrLq3EX5hfYBfnNEoH8afc=;
+        b=gXtxHEGadMmCMpGFBUWwFA4P9nbzkrOXC/WDrUo/XgWISt0wY2DDnzEnLYx6q4nSS1
+         CUbHzr2tCKptifFD2YsPhsQaIxCa5SMjVqwFG2eUSTPpPNhV2WJG/JkGxhOrfjhZVsgD
+         6sAX3/r8g8Xd1Te1Ep49ajyoKrbfn04b/AVn+SU8WaOu/YnjRY83q06lwRKN5iOSxwqD
+         CL8GVWSMBpdwtf1F9sIK70pipyjei84JSpYQLUitk0hW4JuWreBPPj7hkoqgc6UgLxY2
+         4clNC32huc5/yIisYy5z3/5vB9U2Q0AksW6X9tV9LFOHWAszZh+VwZ+B6tg5lqQL+HR7
+         cyrw==
+X-Gm-Message-State: AOAM533pFIfK0epNNxQziOiKtH4P7ojz68Tms1sv+NQCmVoZ0Gop6IrK
+        2OLmjm9/EBD86S5cznBhaWPPykDN70/Zztc5mHg=
+X-Google-Smtp-Source: ABdhPJxHjYOYrucIemLufVB68BJFElUQ078uhX2AV6WAjHWd+fVmVZV/gI+EsM1L9UvKZOVEKQYr9iP1U/rL89E2NDk=
+X-Received: by 2002:adf:f241:: with SMTP id b1mr30710060wrp.248.1606138286688;
+ Mon, 23 Nov 2020 05:31:26 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20201119173754.4125257-1-guro@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25996/Sun Nov 22 14:25:48 2020)
+References: <20201119083024.119566-1-bjorn.topel@gmail.com>
+In-Reply-To: <20201119083024.119566-1-bjorn.topel@gmail.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Mon, 23 Nov 2020 14:31:14 +0100
+Message-ID: <CAJ+HfNh4Kybjuzi1KOvJBUBvQWFDCZgt7zZNU=ZS8FLCsNKiRQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 00/10] Introduce preferred busy-polling
+To:     Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Netdev <netdev@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Zhang, Qi Z" <qi.z.zhang@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>, maximmi@nvidia.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/19/20 6:37 PM, Roman Gushchin wrote:
-> Currently bpf is using the memlock rlimit for the memory accounting.
-> This approach has its downsides and over time has created a significant
-> amount of problems:
-> 
-> 1) The limit is per-user, but because most bpf operations are performed
->     as root, the limit has a little value.
-> 
-> 2) It's hard to come up with a specific maximum value. Especially because
->     the counter is shared with non-bpf users (e.g. memlock() users).
->     Any specific value is either too low and creates false failures
->     or too high and useless.
-> 
-> 3) Charging is not connected to the actual memory allocation. Bpf code
->     should manually calculate the estimated cost and precharge the counter,
->     and then take care of uncharging, including all fail paths.
->     It adds to the code complexity and makes it easy to leak a charge.
-> 
-> 4) There is no simple way of getting the current value of the counter.
->     We've used drgn for it, but it's far from being convenient.
-> 
-> 5) Cryptic -EPERM is returned on exceeding the limit. Libbpf even had
->     a function to "explain" this case for users.
-> 
-> In order to overcome these problems let's switch to the memcg-based
-> memory accounting of bpf objects. With the recent addition of the percpu
-> memory accounting, now it's possible to provide a comprehensive accounting
-> of the memory used by bpf programs and maps.
-> 
-> This approach has the following advantages:
-> 1) The limit is per-cgroup and hierarchical. It's way more flexible and allows
->     a better control over memory usage by different workloads. Of course, it
->     requires enabled cgroups and kernel memory accounting and properly configured
->     cgroup tree, but it's a default configuration for a modern Linux system.
-> 
-> 2) The actual memory consumption is taken into account. It happens automatically
->     on the allocation time if __GFP_ACCOUNT flags is passed. Uncharging is also
->     performed automatically on releasing the memory. So the code on the bpf side
->     becomes simpler and safer.
-> 
-> 3) There is a simple way to get the current value and statistics.
-> 
-> In general, if a process performs a bpf operation (e.g. creates or updates
-> a map), it's memory cgroup is charged. However map updates performed from
-> an interrupt context are charged to the memory cgroup which contained
-> the process, which created the map.
-> 
-> Providing a 1:1 replacement for the rlimit-based memory accounting is
-> a non-goal of this patchset. Users and memory cgroups are completely
-> orthogonal, so it's not possible even in theory.
-> Memcg-based memory accounting requires a properly configured cgroup tree
-> to be actually useful. However, it's the way how the memory is managed
-> on a modern Linux system.
+On Thu, 19 Nov 2020 at 09:30, Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>=
+ wrote:
+>
+> This series introduces three new features:
+>
+> 1. A new "heavy traffic" busy-polling variant that works in concert
+>    with the existing napi_defer_hard_irqs and gro_flush_timeout knobs.
+>
+> 2. A new socket option that let a user change the busy-polling NAPI
+>    budget.
+>
+> 3. Allow busy-polling to be performed on XDP sockets.
+>
+> The existing busy-polling mode, enabled by the SO_BUSY_POLL socket
+> option or system-wide using the /proc/sys/net/core/busy_read knob, is
+> an opportunistic. That means that if the NAPI context is not
+> scheduled, it will poll it. If, after busy-polling, the budget is
+> exceeded the busy-polling logic will schedule the NAPI onto the
+> regular softirq handling.
+>
+> One implication of the behavior above is that a busy/heavy loaded NAPI
+> context will never enter/allow for busy-polling. Some applications
+> prefer that most NAPI processing would be done by busy-polling.
+>
+> This series adds a new socket option, SO_PREFER_BUSY_POLL, that works
+> in concert with the napi_defer_hard_irqs and gro_flush_timeout
+> knobs. The napi_defer_hard_irqs and gro_flush_timeout knobs were
+> introduced in commit 6f8b12d661d0 ("net: napi: add hard irqs deferral
+> feature"), and allows for a user to defer interrupts to be enabled and
+> instead schedule the NAPI context from a watchdog timer. When a user
+> enables the SO_PREFER_BUSY_POLL, again with the other knobs enabled,
+> and the NAPI context is being processed by a softirq, the softirq NAPI
+> processing will exit early to allow the busy-polling to be performed.
+>
+> If the application stops performing busy-polling via a system call,
+> the watchdog timer defined by gro_flush_timeout will timeout, and
+> regular softirq handling will resume.
+>
+> In summary; Heavy traffic applications that prefer busy-polling over
+> softirq processing should use this option.
+>
 
-The cover letter here only describes the advantages of this series, but leaves
-out discussion of the disadvantages. They definitely must be part of the series
-to provide a clear description of the semantic changes to readers. Last time we
-discussed them, they were i) no mem limits in general on unprivileged users when
-memory cgroups was not configured in the kernel, and ii) no mem limits by default
-if not configured in the cgroup specifically. Did we made any progress on these
-in the meantime? How do we want to address them? What is the concrete justification
-to not address them?
+Eric/Jakub, any more thoughts/input? Tomatoes? :-P
 
-Also I wonder what are the risk of regressions here, for example, if an existing
-orchestrator has configured memory cgroup limits that are tailored to the application's
-needs.. now, with kernel upgrade BPF will start to interfere, e.g. if a BPF program
-attached to cgroups (e.g. connect/sendmsg/recvmsg or general cgroup skb egress hook)
-starts charging to the process' memcg due to map updates?
 
-   [0] https://lore.kernel.org/bpf/20200803190639.GD1020566@carbon.DHCP.thefacebook.com/
-
-> The patchset consists of the following parts:
-> 1) 4 mm patches, which are already in the mm tree, but are required
->     to avoid a regression (otherwise vmallocs cannot be mapped to userspace).
-> 2) memcg-based accounting for various bpf objects: progs and maps
-> 3) removal of the rlimit-based accounting
-> 4) removal of rlimit adjustments in userspace samples
-> 
-> First 4 patches are not supposed to be merged via the bpf tree. I'm including
-> them to make sure bpf tests will pass.
-> 
-> v7:
->    - introduced bpf_map_kmalloc_node() and bpf_map_alloc_percpu(), by Alexei
->    - switched allocations made from an interrupt context to new helpers,
->      by Daniel
->    - rebase and minor fixes
+Thank you,
+Bj=C3=B6rn
