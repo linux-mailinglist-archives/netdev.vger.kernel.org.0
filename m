@@ -2,80 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 189782C0E46
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 16:00:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26F172C0E6B
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 16:07:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389163AbgKWOzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 09:55:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50256 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727446AbgKWOzu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 09:55:50 -0500
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACC13C0613CF
-        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 06:55:48 -0800 (PST)
-Received: by mail-io1-xd42.google.com with SMTP id i9so18374109ioo.2
-        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 06:55:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CqyI3EQt2bmPt5VisvW9e8Pv56v0kXNU0qvEIjly+uw=;
-        b=tEtOlEx2qU8KDHO8JpqNT4/7QQ7DseRlOHh4tAXIJ/nj4RKuv9tIQ8qC5EwlREa5oV
-         Qa5iM1F4Ns+IlpnCSFgqc5iyXvjD0ABoXCtXTd0HF6XMzZbwALgBoYj5BCN8PVus9Pte
-         /u98oBMioxJeIl+gENEIT3RZkq1XqHPzfv6bmzuMScwSg6uuJzzvd47RY80LPKp/tbwg
-         69EbxT1XKJsd26jEVmO4Mt0JFsXpuHRY+n3EiE5hekHjrozid5gUVaom7MEahHtJw1b3
-         yxra7meZdgTTdWu+sYhV5YP2iq8g0tisqvPCy+/giyg1t1wsHRY0HdaobgjBZPFKuFWK
-         eOeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CqyI3EQt2bmPt5VisvW9e8Pv56v0kXNU0qvEIjly+uw=;
-        b=AklN1WV3Jccqcw4szrvQ5BZtG1IDqAR0QizbtJy1qSkeb0HPdWinDcqhMPwKqWrytn
-         RhXTiury63rnNIPKKowOqnyDhpm7d6qW2T5CYSn5INgrxQh1kx6TXhmf/9kYRXH7rVEu
-         qSy1t/wnYpGXiCLlnl5x0iA0JefYLKFaQyCEhxnP++t1GdiLyANVscPrQOuaHDkcDaBd
-         5snm8E6kJhHp6ZUMfOaPiVUaNVtsbvcPokJHWuGZTYDxknGu0eHxPqBizoAWLxxkBUuB
-         2M+jvYHaDZHtRsPFpiaUvVRHH5kcmkc2d19ck4nUurBot1QaiNKOd51d40u7QZ/p69nT
-         iKCA==
-X-Gm-Message-State: AOAM533sm9pa6nXo5K5OevRtcC1BjRyiv1Zg6M7MQwIwhu4dmbckht9M
-        6wNeh/0Esy7Ex6GXqNIG/f9gv0bcsIMQle14wYTISW23SLHjpJri
-X-Google-Smtp-Source: ABdhPJwpnn99NzbGBOBMNHFXpAYlfnGwVheQo+eBFmdClW6unzq6nXeGJVkkgES4B9zFx4MW6PDmqPSGb70eRX2/Lxo=
-X-Received: by 2002:a5d:948d:: with SMTP id v13mr63638ioj.117.1606143347829;
- Mon, 23 Nov 2020 06:55:47 -0800 (PST)
-MIME-Version: 1.0
-References: <20201123141256.14208-1-tariqt@nvidia.com>
-In-Reply-To: <20201123141256.14208-1-tariqt@nvidia.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 23 Nov 2020 15:55:35 +0100
-Message-ID: <CANn89iKRVyTZg-tNQvo_Ub-RZ_A+OOQQY8Py3J9fx=NOZXF9Qw@mail.gmail.com>
-Subject: Re: [PATCH net] netdevice.h: Fix unintentional disable of ALL_FOR_ALL
- features on upper device
-To:     Tariq Toukan <tariqt@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev <netdev@vger.kernel.org>,
-        Moshe Shemesh <moshe@nvidia.com>,
-        Tariq Toukan <ttoukan.linux@gmail.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S2389343AbgKWPF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 10:05:28 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:41666 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729602AbgKWPF2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 10:05:28 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from yanjunz@mellanox.com)
+        with SMTP; 23 Nov 2020 17:05:24 +0200
+Received: from bc-vnc02.mtbc.labs.mlnx (bc-vnc02.mtbc.labs.mlnx [10.75.68.111])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0ANF5NUE014263;
+        Mon, 23 Nov 2020 17:05:24 +0200
+Received: from bc-vnc02.mtbc.labs.mlnx (localhost [127.0.0.1])
+        by bc-vnc02.mtbc.labs.mlnx (8.14.4/8.14.4) with ESMTP id 0ANF5Nhh025369;
+        Mon, 23 Nov 2020 23:05:23 +0800
+Received: (from yanjunz@localhost)
+        by bc-vnc02.mtbc.labs.mlnx (8.14.4/8.14.4/Submit) id 0ANF5Hpt025364;
+        Mon, 23 Nov 2020 23:05:17 +0800
+From:   Zhu Yanjun <yanjunz@nvidia.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
+        davem@davemloft.net, netdev@vger.kernel.org
+Cc:     Zhu Yanjun <zyjzyj2000@gmail.com>
+Subject: [PATCH v3 1/1] xdp: remove the function xsk_map_inc
+Date:   Mon, 23 Nov 2020 23:05:15 +0800
+Message-Id: <1606143915-25335-1-git-send-email-yanjunz@nvidia.com>
+X-Mailer: git-send-email 1.7.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 23, 2020 at 3:13 PM Tariq Toukan <tariqt@nvidia.com> wrote:
->
-> Calling netdev_increment_features() on upper/master device from
-> netdev_add_tso_features() implies unintentional clearance of ALL_FOR_ALL
-> features supported by all slaves.  Fix it by passing ALL_FOR_ALL in
-> addition to ALL_TSO.
->
-> Fixes: b0ce3508b25e ("bonding: allow TSO being set on bonding master")
+From: Zhu Yanjun <zyjzyj2000@gmail.com>
 
-I think you should give more details to your bug report, because
-netdev_add_tso_features() is used from different
-places.
+The function xsk_map_inc is a simple wrapper of bpf_map_inc and
+always returns zero. As such, replacing this function with bpf_map_inc
+and removing the test code.
 
-Thanks.
+Signed-off-by: Zhu Yanjun <zyjzyj2000@gmail.com>
+---
+ net/xdp/xsk.c    |  2 +-
+ net/xdp/xsk.h    |  1 -
+ net/xdp/xskmap.c | 13 +------------
+ 3 files changed, 2 insertions(+), 14 deletions(-)
+
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index cfbec3989a76..a3c1f07d77d8 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -548,7 +548,7 @@ static struct xsk_map *xsk_get_map_list_entry(struct xdp_sock *xs,
+ 	node = list_first_entry_or_null(&xs->map_list, struct xsk_map_node,
+ 					node);
+ 	if (node) {
+-		WARN_ON(xsk_map_inc(node->map));
++		bpf_map_inc(&node->map->map);
+ 		map = node->map;
+ 		*map_entry = node->map_entry;
+ 	}
+diff --git a/net/xdp/xsk.h b/net/xdp/xsk.h
+index b9e896cee5bb..0aad25c0e223 100644
+--- a/net/xdp/xsk.h
++++ b/net/xdp/xsk.h
+@@ -41,7 +41,6 @@ static inline struct xdp_sock *xdp_sk(struct sock *sk)
+ 
+ void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
+ 			     struct xdp_sock **map_entry);
+-int xsk_map_inc(struct xsk_map *map);
+ void xsk_map_put(struct xsk_map *map);
+ void xsk_clear_pool_at_qid(struct net_device *dev, u16 queue_id);
+ int xsk_reg_pool_at_qid(struct net_device *dev, struct xsk_buff_pool *pool,
+diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
+index 49da2b8ace8b..6b7e9a72b101 100644
+--- a/net/xdp/xskmap.c
++++ b/net/xdp/xskmap.c
+@@ -11,12 +11,6 @@
+ 
+ #include "xsk.h"
+ 
+-int xsk_map_inc(struct xsk_map *map)
+-{
+-	bpf_map_inc(&map->map);
+-	return 0;
+-}
+-
+ void xsk_map_put(struct xsk_map *map)
+ {
+ 	bpf_map_put(&map->map);
+@@ -26,17 +20,12 @@ static struct xsk_map_node *xsk_map_node_alloc(struct xsk_map *map,
+ 					       struct xdp_sock **map_entry)
+ {
+ 	struct xsk_map_node *node;
+-	int err;
+ 
+ 	node = kzalloc(sizeof(*node), GFP_ATOMIC | __GFP_NOWARN);
+ 	if (!node)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	err = xsk_map_inc(map);
+-	if (err) {
+-		kfree(node);
+-		return ERR_PTR(err);
+-	}
++	bpf_map_inc(&map->map);
+ 
+ 	node->map = map;
+ 	node->map_entry = map_entry;
+-- 
+2.25.1
+
