@@ -2,131 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 182712C161F
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 21:29:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C73C2C1624
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 21:29:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728628AbgKWULW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 15:11:22 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:22574 "EHLO
+        id S1732778AbgKWULa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 15:11:30 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:34723 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732692AbgKWULU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 15:11:20 -0500
+        by vger.kernel.org with ESMTP id S1732747AbgKWUL3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 15:11:29 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606162279;
+        s=mimecast20190719; t=1606162288;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=BucjfkTdsu/6qMhVKwCOxP6e6VVAYFVqDMnKbCaFjOI=;
-        b=VmQXdasNQN8GZ3zZZUx4JI/GH+IJXY3yB2aQg3q253rJiiYQciTwaOpKMWBTmLW5Iqw4I/
-        YNetwlG+9q6gi1PIplqfaqPo2TS1VVDU8A90sf5GITFEqSGikLwRRKedBP4JT3gWwGShZh
-        oAmpdheJAi0+jsa7x39wcigZKQNQ8+8=
+        bh=ayTU8pfXD3zuC5xCy5xhogMoo0+7btygjIX1vriz5kg=;
+        b=VbC32Uidw5nfbW42+nqXNIExc1cM8lY9JtVmkdNZznUwyZ0UTmbmhelaghz3aSMWkKkNrQ
+        KgQ6RhFZXM1QPpNHcBKoX1n2w7ZxtxwSgeegR0E3u3PkFUUMIWUbtibqDOadOv1UFGvoCJ
+        zqj3L0mw7OVoSxOeSMKKOen9FldaF/Q=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-165-Z2WovFMLOUCWd9d0-Shb0g-1; Mon, 23 Nov 2020 15:11:17 -0500
-X-MC-Unique: Z2WovFMLOUCWd9d0-Shb0g-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+ us-mta-98-H0cCCR_wO0uv3l84LYNj1g-1; Mon, 23 Nov 2020 15:11:24 -0500
+X-MC-Unique: H0cCCR_wO0uv3l84LYNj1g-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DC07B8030A5;
-        Mon, 23 Nov 2020 20:11:15 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AB17E8030D3;
+        Mon, 23 Nov 2020 20:11:22 +0000 (UTC)
 Received: from warthog.procyon.org.uk (ovpn-112-111.rdu2.redhat.com [10.10.112.111])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1BEEF9CA0;
-        Mon, 23 Nov 2020 20:11:14 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DE1805C1BB;
+        Mon, 23 Nov 2020 20:11:21 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 10/17] rxrpc: Make the parsing of xdr payloads more
- coherent
+Subject: [PATCH net-next 11/17] rxrpc: Ignore unknown tokens in key payload
+ unless no known tokens
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Date:   Mon, 23 Nov 2020 20:11:14 +0000
-Message-ID: <160616227430.830164.6815276950448082758.stgit@warthog.procyon.org.uk>
+Date:   Mon, 23 Nov 2020 20:11:21 +0000
+Message-ID: <160616228111.830164.18024627408904902488.stgit@warthog.procyon.org.uk>
 In-Reply-To: <160616220405.830164.2239716599743995145.stgit@warthog.procyon.org.uk>
 References: <160616220405.830164.2239716599743995145.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/0.23
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make the parsing of xdr-encoded payloads, as passed to add_key, more
-coherent.  Shuttling back and forth between various variables was a bit
-hard to follow.
+When parsing a payload for an rxrpc-type key, ignore any tokens that are
+not of a known type and don't give an error for them - unless there are no
+tokens of a known type.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
 ---
 
- net/rxrpc/key.c |   21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+ net/rxrpc/key.c |   31 +++++++++++++++++++++----------
+ 1 file changed, 21 insertions(+), 10 deletions(-)
 
 diff --git a/net/rxrpc/key.c b/net/rxrpc/key.c
-index ed29ec01237b..a9d8f5b466be 100644
+index a9d8f5b466be..7e6d19263ce3 100644
 --- a/net/rxrpc/key.c
 +++ b/net/rxrpc/key.c
-@@ -135,7 +135,7 @@ static int rxrpc_preparse_xdr_rxkad(struct key_preparsed_payload *prep,
-  */
- static int rxrpc_preparse_xdr(struct key_preparsed_payload *prep)
- {
--	const __be32 *xdr = prep->data, *token;
-+	const __be32 *xdr = prep->data, *token, *p;
+@@ -139,7 +139,7 @@ static int rxrpc_preparse_xdr(struct key_preparsed_payload *prep)
  	const char *cp;
  	unsigned int len, paddedlen, loop, ntoken, toklen, sec_ix;
  	size_t datalen = prep->datalen;
-@@ -189,20 +189,20 @@ static int rxrpc_preparse_xdr(struct key_preparsed_payload *prep)
- 		goto not_xdr;
+-	int ret;
++	int ret, ret2;
  
- 	/* check each token wrapper */
--	token = xdr;
-+	p = xdr;
- 	loop = ntoken;
- 	do {
- 		if (datalen < 8)
- 			goto not_xdr;
--		toklen = ntohl(*xdr++);
--		sec_ix = ntohl(*xdr);
-+		toklen = ntohl(*p++);
-+		sec_ix = ntohl(*p);
- 		datalen -= 4;
- 		_debug("token: [%x/%zx] %x", toklen, datalen, sec_ix);
- 		paddedlen = (toklen + 3) & ~3;
- 		if (toklen < 20 || toklen > datalen || paddedlen > datalen)
- 			goto not_xdr;
- 		datalen -= paddedlen;
--		xdr += paddedlen >> 2;
-+		p += paddedlen >> 2;
- 
- 	} while (--loop > 0);
- 
-@@ -214,17 +214,18 @@ static int rxrpc_preparse_xdr(struct key_preparsed_payload *prep)
+ 	_enter(",{%x,%x,%x,%x},%zu",
+ 	       ntohl(xdr[0]), ntohl(xdr[1]), ntohl(xdr[2]), ntohl(xdr[3]),
+@@ -213,6 +213,7 @@ static int rxrpc_preparse_xdr(struct key_preparsed_payload *prep)
+ 	/* okay: we're going to assume it's valid XDR format
  	 * - we ignore the cellname, relying on the key to be correctly named
  	 */
++	ret = -EPROTONOSUPPORT;
  	do {
--		xdr = token;
  		toklen = ntohl(*xdr++);
--		token = xdr + ((toklen + 3) >> 2);
--		sec_ix = ntohl(*xdr++);
-+		token = xdr;
-+		xdr += (toklen + 3) / 4;
-+
-+		sec_ix = ntohl(*token++);
- 		toklen -= 4;
- 
--		_debug("TOKEN type=%u [%p-%p]", sec_ix, xdr, token);
-+		_debug("TOKEN type=%x len=%x", sec_ix, toklen);
+ 		token = xdr;
+@@ -225,27 +226,37 @@ static int rxrpc_preparse_xdr(struct key_preparsed_payload *prep)
  
  		switch (sec_ix) {
  		case RXRPC_SECURITY_RXKAD:
--			ret = rxrpc_preparse_xdr_rxkad(prep, datalen, xdr, toklen);
-+			ret = rxrpc_preparse_xdr_rxkad(prep, datalen, token, toklen);
- 			if (ret != 0)
- 				goto error;
+-			ret = rxrpc_preparse_xdr_rxkad(prep, datalen, token, toklen);
+-			if (ret != 0)
+-				goto error;
++			ret2 = rxrpc_preparse_xdr_rxkad(prep, datalen, token, toklen);
++			break;
++		default:
++			ret2 = -EPROTONOSUPPORT;
  			break;
++		}
+ 
++		switch (ret2) {
++		case 0:
++			ret = 0;
++			break;
++		case -EPROTONOSUPPORT:
++			break;
++		case -ENOPKG:
++			if (ret != 0)
++				ret = -ENOPKG;
++			break;
+ 		default:
+-			ret = -EPROTONOSUPPORT;
++			ret = ret2;
+ 			goto error;
+ 		}
+ 
+ 	} while (--ntoken > 0);
+ 
+-	_leave(" = 0");
+-	return 0;
++error:
++	_leave(" = %d", ret);
++	return ret;
+ 
+ not_xdr:
+ 	_leave(" = -EPROTO");
+ 	return -EPROTO;
+-error:
+-	_leave(" = %d", ret);
+-	return ret;
+ }
+ 
+ /*
 
 
