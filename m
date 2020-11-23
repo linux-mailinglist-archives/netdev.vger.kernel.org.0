@@ -2,151 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A1AB2C1901
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 23:59:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 565352C1905
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 23:59:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387646AbgKWWzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 17:55:20 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:32743 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387933AbgKWWzO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 17:55:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606172112;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=a0OtA5Iq4NqvlIu8lUkfVDZHwl0Vuf5SQX9Ysya8MhQ=;
-        b=K9pLpOcg8Tfos/Eaq4JRSr+dzbgq+5Hg+zzCG6tOdeZQLFQr06pKR+vd+sYIBvfs48vRhX
-        2EGx64wLDesUnJoZhqAVUHqh6+c4uNyYisdApB/97IaZVnYUAuDkFpcsZ7m+KLL4U8QXA1
-        V7wQvfyxqt/uKFgArRfcyxkXVumSQB4=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-24-sEcEMjM-OpKDEQTYAaGMVw-1; Mon, 23 Nov 2020 17:55:09 -0500
-X-MC-Unique: sEcEMjM-OpKDEQTYAaGMVw-1
-Received: by mail-wr1-f69.google.com with SMTP id r12so922569wrl.3
-        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 14:55:09 -0800 (PST)
+        id S2388006AbgKWWzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 17:55:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39952 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387788AbgKWWzr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 17:55:47 -0500
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35ABEC0613CF;
+        Mon, 23 Nov 2020 14:55:47 -0800 (PST)
+Received: by mail-ed1-x541.google.com with SMTP id d18so18845416edt.7;
+        Mon, 23 Nov 2020 14:55:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=EFk0nJ4z1D5JbLIY8TqRxM5y3KT+VTwAl77Ny6IlPqg=;
+        b=Dc3rEbK7XCvA71Jg+hUh6cPr7ZAsFWaPYkBwuFsb1XiAB6Q9yxAb4gak2gI+FchyG1
+         AM8xjoGNkKyBGPYtLFgiQrpiAa1voF+c53J0oPe9MzF+SpIz12uGtlrTwAK0W8vm9PLN
+         C7bg8jU/n8pLy0l2l9R5mO1cY7lmyhlggUfZYaPZLaznuwJTGx9o+54jkemUWDCRVana
+         f2kA1uVu/ok55W6WGBJ2FGr4rLra5aSJ5/59nKM3FEqEvDA49R4Oz45dmWYX50rgZ88L
+         etOVR0JudoP8ugIabe8VHVbJ9cKw0GROruVvqsIg+jDTeQFT7UIHMNl1TK66x2jaJdIA
+         GY/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=a0OtA5Iq4NqvlIu8lUkfVDZHwl0Vuf5SQX9Ysya8MhQ=;
-        b=ZsrFrxJ9b7BTabRLBxM9GMk3mEJ7XpkLyl2fTkGpxldVKEX637sSd4WVF1eG1c2oqp
-         ivbwRzV6aNFmGw90VVb2UR1IDsvRLYG7UGoVJeV4we1n+JJELlVYizHwk1d83ZCqwu9Y
-         xhVxkgM64VAnHm85W0yP58iw5vRSaDEcS0ellNP7i5fhEZ8IzQVCUEC/m/jTUFmuDaGG
-         f1eiIM8sdVK3JK7w31Dg2N1fAGdsgVkFpm3p7HNozAhk9JsGBoSvtJH3m/Z50HVzfdhJ
-         5oLFmsJWscyLDCpOycuzu3ycVQcYkwntCAxmApTN9Ow8X+9Lf9QpWoQruY8XPlW9dKZA
-         mtFw==
-X-Gm-Message-State: AOAM531/2plHcMM7IgogQ4WFWqc7dyhu+oazUzU62miOA/pOYnG4N4Ez
-        o4mQVYxkuiv0V9ldGVvehjdisySvU4ahDxsj4MOJXiL41s3OHr0ABLRQLrAYANK7GK9pE17Ibz7
-        9LF20ZcRjByaw8J4v
-X-Received: by 2002:a5d:4046:: with SMTP id w6mr1961982wrp.51.1606172108369;
-        Mon, 23 Nov 2020 14:55:08 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyQsS3jYxSKcktGLshl9mY10WagGxMEkX3oz8FWWkgBnuGCHUwGHWPoih9L2PAC0WZ+yLZJtA==
-X-Received: by 2002:a5d:4046:: with SMTP id w6mr1961973wrp.51.1606172108166;
-        Mon, 23 Nov 2020 14:55:08 -0800 (PST)
-Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id k81sm2471319wma.2.2020.11.23.14.55.06
+        bh=EFk0nJ4z1D5JbLIY8TqRxM5y3KT+VTwAl77Ny6IlPqg=;
+        b=TYiZkTWys5vsBvRgyPI2Wre/8tCIjkr8wXJotHk5IrJFjFNSvfRalXIhocAZaa2Wg1
+         plv+QeV5MSqG5D35BO4EhSqVW4DgNCyYvvESu7o5h1r94AY3cdkNXY7z1RTM9AYYom3a
+         9zYQs1sV6Yd1yJWQa4ZklnTJr0Sndy4QYx3oezrikcuA6WqLKL0Zyr7Kq4mzmNL7vfYX
+         6F0eMVKXvjCOGteIrAucEdFx/lILNzdO3uaB2PTJSqQfQRUb6MZc2UIObXDZ5BGNpoDg
+         4ECCcn4OKbUUcoQxzfrVtUT2RUEZ/ufvLsjppUpIUojOyJnzbkDOL4DeGRHHqS+ZYtVR
+         jlcg==
+X-Gm-Message-State: AOAM5317Vx89s19tUowr4gS8hf1ON00Ckv5ozJQfUjrXCNFXmn5lF+gf
+        YStggHWjXBR0BxqKbKe+2Y4=
+X-Google-Smtp-Source: ABdhPJwiXGuZBCQvzN/kDyDf2ONIRRegWP7tMpmvsh+S8w2cH6t1+Ad0Pf5LV2T7vb7iN2009tTecA==
+X-Received: by 2002:a50:ed8d:: with SMTP id h13mr1378936edr.180.1606172145920;
+        Mon, 23 Nov 2020 14:55:45 -0800 (PST)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id rs27sm5108616ejb.34.2020.11.23.14.55.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Nov 2020 14:55:07 -0800 (PST)
-Date:   Mon, 23 Nov 2020 23:55:05 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Russell Strong <russell@strong.id.au>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: DSCP in IPv4 routing v2
-Message-ID: <20201123225505.GA21345@linux.home>
-References: <20201121182250.661bfee5@192-168-1-16.tpgi.com.au>
+        Mon, 23 Nov 2020 14:55:45 -0800 (PST)
+From:   Ioana Ciornei <ciorneiioana@gmail.com>
+X-Google-Original-From: Ioana Ciornei <ciornei.ioana@gmail.com>
+Date:   Tue, 24 Nov 2020 00:55:44 +0200
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Ioana Ciornei <ciorneiioana@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 00/15] net: phy: add support for shared
+ interrupts (part 3)
+Message-ID: <20201123225544.bywwgcoa75kmapad@skbuf>
+References: <20201123153817.1616814-1-ciorneiioana@gmail.com>
+ <CAFBinCBhWKzQFwERW9cy7T4JdOdFwNOqn2qPqFpqdjbat=-DwA@mail.gmail.com>
+ <20201123143713.6429c056@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201121182250.661bfee5@192-168-1-16.tpgi.com.au>
+In-Reply-To: <20201123143713.6429c056@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 21, 2020 at 06:24:46PM +1000, Russell Strong wrote:
-> From 2f27f92d5a6f4dd69ac4af32cdb51ba8d2083606 Mon Sep 17 00:00:00 2001
-> From: Russell Strong <russell@strong.id.au>
-> Date: Sat, 21 Nov 2020 18:12:43 +1000
-> Subject: [PATCH] DSCP in IPv4 routing v2
+On Mon, Nov 23, 2020 at 02:37:13PM -0800, Jakub Kicinski wrote:
+> On Mon, 23 Nov 2020 23:13:11 +0100 Martin Blumenstingl wrote:
+> > > Ioana Ciornei (15):
+> > >   net: phy: intel-xway: implement generic .handle_interrupt() callback
+> > >   net: phy: intel-xway: remove the use of .ack_interrupt()
+> > >   net: phy: icplus: implement generic .handle_interrupt() callback
+> > >   net: phy: icplus: remove the use .ack_interrupt()
+> > >   net: phy: meson-gxl: implement generic .handle_interrupt() callback
+> > >   net: phy: meson-gxl: remove the use of .ack_callback()  
+> > I will check the six patches above on Saturday (due to me being very
+> > busy with my daytime job)
+> > if that's too late for the netdev maintainers then I'm not worried
+> > about it. at first glance this looks fine to me. and we can always fix
+> > things afterwards (but still before -rc1).
 > 
-> This patch allows the use of DSCP values in routing
+> That is a little long for patches to be hanging around. I was planning
+> to apply these on Wed. If either Ioana or you would prefer to get the
+> testing performed first, please split those patches out and repost once
+> they get validated.
 
-Thanks. There are some problems with this patch though.
+If there is no issue reported in the meantime, I would say to apply the
+series. I can always quickly fixup any problems that Martin might find.
 
-About the email:
-  * Why did you duplicate email headers in the body?
-  * For the subject, please put the "v2" in the "[PATCH ... ]" part.
-  * You're modifying many files, but haven't Cc-ed any of their authors
-    or maintainers.
-  * The patch content is corrupted.
-
-> Use of TOS macros are replaced with DSCP macros
-> where the change does not change the user space API
-> with one exception:
-> 
-> net/ipv4/fib_rules.c has been changed to accept a
-> wider range of values ( dscp values ).  Previously
-> this would have returned an error.
-
-Have you really verified that replacing each of these RT_TOS calls had
-no unwanted side effect?
-
-RT_TOS didn't clear the second lowest bit, while the new IP_DSCP does.
-Therefore, there's no guarantee that such a blanket replacement isn't
-going to change existing behaviours. Replacements have to be done
-step by step and accompanied by an explanation of why they're safe.
-
-BTW, I think there are some problems with RT_TOS that need to be fixed
-separately first.
-
-For example some of the ip6_make_flowinfo() calls can probably
-erroneously mark some packets with ECT(0). Instead of masking the
-problem in this patch, I think it'd be better to have an explicit fix
-that'd mask the ECN bits in ip6_make_flowinfo() and drop the buggy
-RT_TOS() in the callers.
-
-Another example is inet_rtm_getroute(). It calls
-ip_route_output_key_hash_rcu() without masking the tos field first.
-Therefore it can return a different route than what the routing code
-would actually use. Like for the ip6_make_flowinfo() case, it might
-be better to stop relying on the callers to mask ECN bits and do that
-in ip_route_output_key_hash_rcu() instead.
-
-I'll verify that these two problems can actually happen in practice
-and will send patches if necessary.
-
-> iproute2 already supports setting dscp values through
-> ip route add dsfield <dscp value> lookup ......
-> 
-> Signed-off-by: Russell Strong <russell@strong.id.au>
-> ---
->  .../ethernet/mellanox/mlx5/core/en/tc_tun.c   |  2 +-
->  drivers/net/geneve.c                          |  4 ++--
->  drivers/net/ipvlan/ipvlan_core.c              |  2 +-
->  drivers/net/ppp/pptp.c                        |  2 +-
->  drivers/net/vrf.c                             |  2 +-
->  drivers/net/vxlan.c                           |  4 ++--
->  include/net/ip.h                              |  2 +-
->  include/net/route.h                           |  6 ++----
->  include/uapi/linux/ip.h                       |  2 ++
->  net/bridge/br_netfilter_hooks.c               |  2 +-
->  net/core/filter.c                             |  4 ++--
->  net/core/lwt_bpf.c                            |  2 +-
->  net/ipv4/fib_frontend.c                       |  2 +-
->  net/ipv4/fib_rules.c                          |  2 +-
->  net/ipv4/icmp.c                               |  6 +++---
->  net/ipv4/ip_gre.c                             |  2 +-
->  net/ipv4/ip_output.c                          |  2 +-
->  net/ipv4/ip_tunnel.c                          |  6 +++---
->  net/ipv4/ipmr.c                               |  6 +++---
->  net/ipv4/netfilter.c                          |  2 +-
->  net/ipv4/netfilter/ipt_rpfilter.c             |  2 +-
->  net/ipv4/netfilter/nf_dup_ipv4.c              |  2 +-
->  net/ipv4/route.c                              | 20 +++++++++----------
->  net/ipv6/ip6_output.c                         |  2 +-
->  net/ipv6/ip6_tunnel.c                         |  4 ++--
->  net/ipv6/sit.c                                |  4 ++--
->  net/xfrm/xfrm_policy.c                        |  2 +-
->  27 files changed, 49 insertions(+), 49 deletions(-)
-
+Ioana
