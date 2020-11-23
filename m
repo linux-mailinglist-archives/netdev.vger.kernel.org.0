@@ -2,73 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F9C42C09E4
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 14:19:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68EBF2C09D0
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 14:19:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388585AbgKWNNr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 08:13:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:52677 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388569AbgKWNNo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 08:13:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606137222;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mNpTnhqVT/lkkDzOBStmitBv9qqoRpOHiUUiZ8tRN8I=;
-        b=h2/ua5nF5dsGOZXkx1eQvZTzpL1KUtXtO3+tR4VTvI5rKutJmcMLajsUBS1ttRP6LQQ6Fb
-        5bplkaahqzQtz7SKG2KXD7+UN9FKMiDIgL6GC1tGFXs4DDVgG9bjX0BjtowElb6lZwW3cL
-        m14H2VQfA8ZjwwSzbVyM9YCBxDBi/O4=
-Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com
- [209.85.215.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-248-Mv7y0W3JMJmS5wGBS78Fxg-1; Mon, 23 Nov 2020 08:13:40 -0500
-X-MC-Unique: Mv7y0W3JMJmS5wGBS78Fxg-1
-Received: by mail-pg1-f198.google.com with SMTP id b35so12384654pgl.8
-        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 05:13:40 -0800 (PST)
+        id S2387892AbgKWNMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 08:12:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34160 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730459AbgKWNMu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 08:12:50 -0500
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6384C0613CF;
+        Mon, 23 Nov 2020 05:12:50 -0800 (PST)
+Received: by mail-pf1-x441.google.com with SMTP id w6so14881661pfu.1;
+        Mon, 23 Nov 2020 05:12:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8PerAbw8X9GpFmXgDgTfgJ6bCTqd2WGnMdhkkg2spdI=;
+        b=VFN2GDfAtravz2TUuDaQaNkq+Syi4uNoA4YVzpJjAp4Ps8DlWFo79XOM4jaIy1Pp2W
+         28aGmI05fEsvFSZlBFuwz5eYH2kCR0VLFY4C+HWWM/p+DQ2izlXbSNVfIU4VMQMM7Tu6
+         AYLygCd5wCyOrdVUK3ErvNChYM4mSyPikYl/pBooW3XI/XSPg75R5qFTHR6OdACqcYnm
+         vhEXfj7Uc6k105kqW9LqHdoD9XH2TT/hdVKyjaKNd1g6MIffSZCiqvt1MDUeWczYV94A
+         3sc6AX1fhk9mq2LamljvGWOSaDPGC167V2diN6oQ7BfLKmXMmeRXJANGxk87dA90lG+r
+         GIIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=mNpTnhqVT/lkkDzOBStmitBv9qqoRpOHiUUiZ8tRN8I=;
-        b=RjmXWiYaVVXpfILiO+TcqR9xdpaYX2+BVbwlg/Fi0AXsnG+Bk5zlW5kI8gjtTI8yZ7
-         dyd1FWAM7GYq1h+o99XWELerZ5vWJ3lK6Ia2OJLZNnjD8Sp9NqSZP2s1iG0E4Hkrd0Qs
-         zSfOmu+sSwsfmk8DEvwNxibzqinWQqr23V5p18L1Rk50Rs1Gby4qAsPVV8HWY8WJILom
-         WY/iU7m1IW+aRXtW0ZN2/tQchqJnYBlnqOjbr3E7wth6IdfIjFmH11XseSo5XzLtXSAl
-         n0ReAg4VKkwtfWIyKkp1T1ZV9F6/TQOuGH0cUYdd88SrTzxb348UWuBdSBfATm0f/wrP
-         vIiQ==
-X-Gm-Message-State: AOAM5320Y2RbAE659ZvOcfNx/0IvuzmKieOFGkVDxjh7c1eM0EoRT39x
-        seRSCZmffEYVi2+Wb7waFcVFGUemjBODXcVnbSUlLDfXezkFT2pMY8AkzlqrBkyTpp4gmD150tP
-        808MJ8FEjCgHOAZE=
-X-Received: by 2002:a17:90b:b15:: with SMTP id bf21mr19755404pjb.21.1606137219442;
-        Mon, 23 Nov 2020 05:13:39 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwBOG0l/Zu18yg12VyJ5W4oaN/nbRzZ/hwb8daUy6SRR3YTXPEHc0TkzVBcKsFuBUiomdjA+Q==
-X-Received: by 2002:a17:90b:b15:: with SMTP id bf21mr19755375pjb.21.1606137219218;
-        Mon, 23 Nov 2020 05:13:39 -0800 (PST)
-Received: from localhost.localdomain.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 84sm12075505pfu.53.2020.11.23.05.13.34
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8PerAbw8X9GpFmXgDgTfgJ6bCTqd2WGnMdhkkg2spdI=;
+        b=ejkaPhSk3Xa8G5Fg+VK2tbLK0x6zg45UGRDGeoCVQ8cbNL8MO06G5OwDeHbKphYaee
+         yXv9B4gJJhD/09ORONgcj0PsOzp1Pi4LnLPErW8Z3CL6sROBuQ6ZGH0qHbo/iQvoMr9p
+         BKhbRjadcVd/RlVCzQyliA/g5bzwktTqcI+zGZXUr390ywv+D9xB+2iDTAt0jvkAjETx
+         KNLozJLlKQqn+yAyRvONPrvatcsX0RcR2BcOXhpGbegMc5nBgUFGoA0T58GEkXqhA+sf
+         yJqCX5WwpTj77KNUY0IVdY1DB/fdv3qgSJ46hBbmLm8xXvn8NSl9tsJyjkYCqV7r1KuF
+         a6+g==
+X-Gm-Message-State: AOAM533rzOHE7pF2/o74QlI1R5FgZMqZcv+AvcxWQlO0hr8Cj1NEMi+R
+        yySXQ1VbowxDt+8shiRYIw8=
+X-Google-Smtp-Source: ABdhPJzrs9gjDc/tmdXIefNQhuYO6A1P0d/VPN9mTDa4zVbHnVycm/8TglIT84L63YaZ2fIoFW5pfw==
+X-Received: by 2002:a17:90a:d246:: with SMTP id o6mr24193569pjw.236.1606137170249;
+        Mon, 23 Nov 2020 05:12:50 -0800 (PST)
+Received: from btopel-mobl.ger.intel.com ([192.55.54.40])
+        by smtp.gmail.com with ESMTPSA id t85sm10457143pgb.29.2020.11.23.05.12.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Nov 2020 05:13:38 -0800 (PST)
-From:   Hangbin Liu <haliu@redhat.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Jiri Benc <jbenc@redhat.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Hangbin Liu <haliu@redhat.com>
-Subject: [PATCHv6 iproute2-next 5/5] examples/bpf: add bpf examples with BTF defined maps
-Date:   Mon, 23 Nov 2020 21:12:01 +0800
-Message-Id: <20201123131201.4108483-6-haliu@redhat.com>
-X-Mailer: git-send-email 2.25.4
-In-Reply-To: <20201123131201.4108483-1-haliu@redhat.com>
-References: <20201116065305.1010651-1-haliu@redhat.com>
- <20201123131201.4108483-1-haliu@redhat.com>
+        Mon, 23 Nov 2020 05:12:48 -0800 (PST)
+From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
+        jonathan.lemon@gmail.com, yhs@fb.com, weqaar.janjua@gmail.com,
+        magnus.karlsson@intel.com, weqaar.a.janjua@intel.com
+Subject: [PATCH bpf] net, xsk: Avoid taking multiple skbuff references
+Date:   Mon, 23 Nov 2020 14:12:15 +0100
+Message-Id: <20201123131215.136131-1-bjorn.topel@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -76,257 +64,111 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Users should try use the new BTF defined maps instead of struct
-bpf_elf_map defined maps. The tail call examples are not added yet
-as libbpf doesn't currently support declaratively populating tail call
-maps.
+From: Björn Töpel <bjorn.topel@intel.com>
 
-Reviewed-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Signed-off-by: Hangbin Liu <haliu@redhat.com>
+Commit 642e450b6b59 ("xsk: Do not discard packet when NETDEV_TX_BUSY")
+addressed the problem that packets were discarded from the Tx AF_XDP
+ring, when the driver returned NETDEV_TX_BUSY. Part of the fix was
+bumping the skbuff reference count, so that the buffer would not be
+freed by dev_direct_xmit(). A reference count larger than one means
+that the skbuff is "shared", which is not the case.
+
+If the "shared" skbuff is sent to the generic XDP receive path,
+netif_receive_generic_xdp(), and pskb_expand_head() is entered the
+BUG_ON(skb_shared(skb)) will trigger.
+
+This patch adds a variant to dev_direct_xmit(), __dev_direct_xmit(),
+where a user can select the skbuff free policy. This allows AF_XDP to
+avoid bumping the reference count, but still keep the NETDEV_TX_BUSY
+behavior.
+
+Reported-by: Yonghong Song <yhs@fb.com>
+Fixes: 642e450b6b59 ("xsk: Do not discard packet when NETDEV_TX_BUSY")
+Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
 ---
- examples/bpf/README           |  6 ++++
- examples/bpf/bpf_graft.c      | 66 +++++++++++++++++++++++++++++++++++
- examples/bpf/bpf_map_in_map.c | 55 +++++++++++++++++++++++++++++
- examples/bpf/bpf_shared.c     | 53 ++++++++++++++++++++++++++++
- include/bpf_api.h             | 13 +++++++
- 5 files changed, 193 insertions(+)
- create mode 100644 examples/bpf/bpf_graft.c
- create mode 100644 examples/bpf/bpf_map_in_map.c
- create mode 100644 examples/bpf/bpf_shared.c
+ include/linux/netdevice.h | 1 +
+ net/core/dev.c            | 9 +++++++--
+ net/xdp/xsk.c             | 8 +-------
+ 3 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/examples/bpf/README b/examples/bpf/README
-index 732bcc83..b7261191 100644
---- a/examples/bpf/README
-+++ b/examples/bpf/README
-@@ -1,6 +1,12 @@
- eBPF toy code examples (running in kernel) to familiarize yourself
- with syntax and features:
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 964b494b0e8d..e7402fca7752 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -2815,6 +2815,7 @@ u16 dev_pick_tx_cpu_id(struct net_device *dev, struct sk_buff *skb,
+ 		       struct net_device *sb_dev);
+ int dev_queue_xmit(struct sk_buff *skb);
+ int dev_queue_xmit_accel(struct sk_buff *skb, struct net_device *sb_dev);
++int __dev_direct_xmit(struct sk_buff *skb, u16 queue_id, bool free_on_busy);
+ int dev_direct_xmit(struct sk_buff *skb, u16 queue_id);
+ int register_netdevice(struct net_device *dev);
+ void unregister_netdevice_queue(struct net_device *dev, struct list_head *head);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 82dc6b48e45f..2af79a4253bb 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4180,7 +4180,7 @@ int dev_queue_xmit_accel(struct sk_buff *skb, struct net_device *sb_dev)
+ }
+ EXPORT_SYMBOL(dev_queue_xmit_accel);
  
-+- BTF defined map examples
-+ - bpf_graft.c		-> Demo on altering runtime behaviour
-+ - bpf_shared.c 	-> Ingress/egress map sharing example
-+ - bpf_map_in_map.c	-> Using map in map example
-+
-+- legacy struct bpf_elf_map defined map examples
-  - legacy/bpf_shared.c		-> Ingress/egress map sharing example
-  - legacy/bpf_tailcall.c	-> Using tail call chains
-  - legacy/bpf_cyclic.c		-> Simple cycle as tail calls
-diff --git a/examples/bpf/bpf_graft.c b/examples/bpf/bpf_graft.c
-new file mode 100644
-index 00000000..8066dcce
---- /dev/null
-+++ b/examples/bpf/bpf_graft.c
-@@ -0,0 +1,66 @@
-+#include "../../include/bpf_api.h"
-+
-+/* This example demonstrates how classifier run-time behaviour
-+ * can be altered with tail calls. We start out with an empty
-+ * jmp_tc array, then add section aaa to the array slot 0, and
-+ * later on atomically replace it with section bbb. Note that
-+ * as shown in other examples, the tc loader can prepopulate
-+ * tail called sections, here we start out with an empty one
-+ * on purpose to show it can also be done this way.
-+ *
-+ * tc filter add dev foo parent ffff: bpf obj graft.o
-+ * tc exec bpf dbg
-+ *   [...]
-+ *   Socket Thread-20229 [001] ..s. 138993.003923: : fallthrough
-+ *   <idle>-0            [001] ..s. 138993.202265: : fallthrough
-+ *   Socket Thread-20229 [001] ..s. 138994.004149: : fallthrough
-+ *   [...]
-+ *
-+ * tc exec bpf graft m:globals/jmp_tc key 0 obj graft.o sec aaa
-+ * tc exec bpf dbg
-+ *   [...]
-+ *   Socket Thread-19818 [002] ..s. 139012.053587: : aaa
-+ *   <idle>-0            [002] ..s. 139012.172359: : aaa
-+ *   Socket Thread-19818 [001] ..s. 139012.173556: : aaa
-+ *   [...]
-+ *
-+ * tc exec bpf graft m:globals/jmp_tc key 0 obj graft.o sec bbb
-+ * tc exec bpf dbg
-+ *   [...]
-+ *   Socket Thread-19818 [002] ..s. 139022.102967: : bbb
-+ *   <idle>-0            [002] ..s. 139022.155640: : bbb
-+ *   Socket Thread-19818 [001] ..s. 139022.156730: : bbb
-+ *   [...]
-+ */
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
-+	__uint(key_size, sizeof(uint32_t));
-+	__uint(value_size, sizeof(uint32_t));
-+	__uint(max_entries, 1);
-+	__uint(pinning, LIBBPF_PIN_BY_NAME);
-+} jmp_tc __section(".maps");
-+
-+__section("aaa")
-+int cls_aaa(struct __sk_buff *skb)
-+{
-+	printt("aaa\n");
-+	return TC_H_MAKE(1, 42);
-+}
-+
-+__section("bbb")
-+int cls_bbb(struct __sk_buff *skb)
-+{
-+	printt("bbb\n");
-+	return TC_H_MAKE(1, 43);
-+}
-+
-+__section_cls_entry
-+int cls_entry(struct __sk_buff *skb)
-+{
-+	tail_call(skb, &jmp_tc, 0);
-+	printt("fallthrough\n");
-+	return BPF_H_DEFAULT;
-+}
-+
-+BPF_LICENSE("GPL");
-diff --git a/examples/bpf/bpf_map_in_map.c b/examples/bpf/bpf_map_in_map.c
-new file mode 100644
-index 00000000..39c86268
---- /dev/null
-+++ b/examples/bpf/bpf_map_in_map.c
-@@ -0,0 +1,55 @@
-+#include "../../include/bpf_api.h"
-+
-+struct inner_map {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(key_size, sizeof(uint32_t));
-+	__uint(value_size, sizeof(uint32_t));
-+	__uint(max_entries, 1);
-+} map_inner __section(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);
-+	__uint(key_size, sizeof(uint32_t));
-+	__uint(value_size, sizeof(uint32_t));
-+	__uint(max_entries, 1);
-+	__uint(pinning, LIBBPF_PIN_BY_NAME);
-+	__array(values, struct inner_map);
-+} map_outer __section(".maps") = {
-+	.values = {
-+		[0] = &map_inner,
-+	},
-+};
-+
-+__section("egress")
-+int emain(struct __sk_buff *skb)
-+{
-+	struct bpf_elf_map *map_inner;
-+	int key = 0, *val;
-+
-+	map_inner = map_lookup_elem(&map_outer, &key);
-+	if (map_inner) {
-+		val = map_lookup_elem(map_inner, &key);
-+		if (val)
-+			lock_xadd(val, 1);
-+	}
-+
-+	return BPF_H_DEFAULT;
-+}
-+
-+__section("ingress")
-+int imain(struct __sk_buff *skb)
-+{
-+	struct bpf_elf_map *map_inner;
-+	int key = 0, *val;
-+
-+	map_inner = map_lookup_elem(&map_outer, &key);
-+	if (map_inner) {
-+		val = map_lookup_elem(map_inner, &key);
-+		if (val)
-+			printt("map val: %d\n", *val);
-+	}
-+
-+	return BPF_H_DEFAULT;
-+}
-+
-+BPF_LICENSE("GPL");
-diff --git a/examples/bpf/bpf_shared.c b/examples/bpf/bpf_shared.c
-new file mode 100644
-index 00000000..99a332f4
---- /dev/null
-+++ b/examples/bpf/bpf_shared.c
-@@ -0,0 +1,53 @@
-+#include "../../include/bpf_api.h"
-+
-+/* Minimal, stand-alone toy map pinning example:
-+ *
-+ * clang -target bpf -O2 [...] -o bpf_shared.o -c bpf_shared.c
-+ * tc filter add dev foo parent 1: bpf obj bpf_shared.o sec egress
-+ * tc filter add dev foo parent ffff: bpf obj bpf_shared.o sec ingress
-+ *
-+ * Both classifier will share the very same map instance in this example,
-+ * so map content can be accessed from ingress *and* egress side!
-+ *
-+ * This example has a pinning of PIN_OBJECT_NS, so it's private and
-+ * thus shared among various program sections within the object.
-+ *
-+ * A setting of PIN_GLOBAL_NS would place it into a global namespace,
-+ * so that it can be shared among different object files. A setting
-+ * of PIN_NONE (= 0) means no sharing, so each tc invocation a new map
-+ * instance is being created.
-+ */
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(key_size, sizeof(uint32_t));
-+	__uint(value_size, sizeof(uint32_t));
-+	__uint(max_entries, 1);
-+	__uint(pinning, LIBBPF_PIN_BY_NAME);	/* or LIBBPF_PIN_NONE */
-+} map_sh __section(".maps");
-+
-+__section("egress")
-+int emain(struct __sk_buff *skb)
-+{
-+	int key = 0, *val;
-+
-+	val = map_lookup_elem(&map_sh, &key);
-+	if (val)
-+		lock_xadd(val, 1);
-+
-+	return BPF_H_DEFAULT;
-+}
-+
-+__section("ingress")
-+int imain(struct __sk_buff *skb)
-+{
-+	int key = 0, *val;
-+
-+	val = map_lookup_elem(&map_sh, &key);
-+	if (val)
-+		printt("map val: %d\n", *val);
-+
-+	return BPF_H_DEFAULT;
-+}
-+
-+BPF_LICENSE("GPL");
-diff --git a/include/bpf_api.h b/include/bpf_api.h
-index 89d3488d..82c47089 100644
---- a/include/bpf_api.h
-+++ b/include/bpf_api.h
-@@ -19,6 +19,19 @@
+-int dev_direct_xmit(struct sk_buff *skb, u16 queue_id)
++int __dev_direct_xmit(struct sk_buff *skb, u16 queue_id, bool free_on_busy)
+ {
+ 	struct net_device *dev = skb->dev;
+ 	struct sk_buff *orig_skb = skb;
+@@ -4211,7 +4211,7 @@ int dev_direct_xmit(struct sk_buff *skb, u16 queue_id)
  
- #include "bpf_elf.h"
+ 	local_bh_enable();
  
-+/** libbpf pin type. */
-+enum libbpf_pin_type {
-+	LIBBPF_PIN_NONE,
-+	/* PIN_BY_NAME: pin maps by name (in /sys/fs/bpf by default) */
-+	LIBBPF_PIN_BY_NAME,
-+};
-+
-+/** Type helper macros. */
-+
-+#define __uint(name, val) int (*name)[val]
-+#define __type(name, val) typeof(val) *name
-+#define __array(name, val) typeof(val) *name[]
-+
- /** Misc macros. */
+-	if (!dev_xmit_complete(ret))
++	if (free_on_busy && !dev_xmit_complete(ret))
+ 		kfree_skb(skb);
  
- #ifndef __stringify
+ 	return ret;
+@@ -4220,6 +4220,11 @@ int dev_direct_xmit(struct sk_buff *skb, u16 queue_id)
+ 	kfree_skb_list(skb);
+ 	return NET_XMIT_DROP;
+ }
++
++int dev_direct_xmit(struct sk_buff *skb, u16 queue_id)
++{
++	return __dev_direct_xmit(skb, queue_id, true);
++}
+ EXPORT_SYMBOL(dev_direct_xmit);
+ 
+ /*************************************************************************
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index 5a6cdf7b320d..c6ad31b374b7 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -411,11 +411,7 @@ static int xsk_generic_xmit(struct sock *sk)
+ 		skb_shinfo(skb)->destructor_arg = (void *)(long)desc.addr;
+ 		skb->destructor = xsk_destruct_skb;
+ 
+-		/* Hinder dev_direct_xmit from freeing the packet and
+-		 * therefore completing it in the destructor
+-		 */
+-		refcount_inc(&skb->users);
+-		err = dev_direct_xmit(skb, xs->queue_id);
++		err = __dev_direct_xmit(skb, xs->queue_id, false);
+ 		if  (err == NETDEV_TX_BUSY) {
+ 			/* Tell user-space to retry the send */
+ 			skb->destructor = sock_wfree;
+@@ -429,12 +425,10 @@ static int xsk_generic_xmit(struct sock *sk)
+ 		/* Ignore NET_XMIT_CN as packet might have been sent */
+ 		if (err == NET_XMIT_DROP) {
+ 			/* SKB completed but not sent */
+-			kfree_skb(skb);
+ 			err = -EBUSY;
+ 			goto out;
+ 		}
+ 
+-		consume_skb(skb);
+ 		sent_frame = true;
+ 	}
+ 
+
+base-commit: 178648916e73e00de83150eb0c90c0d3a977a46a
 -- 
-2.25.4
+2.27.0
 
