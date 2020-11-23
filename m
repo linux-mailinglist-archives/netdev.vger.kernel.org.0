@@ -2,180 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9423F2C0C64
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 14:58:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B77AD2C0C70
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 14:58:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388747AbgKWNwq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 08:52:46 -0500
-Received: from mga14.intel.com ([192.55.52.115]:1517 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388215AbgKWNwp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Nov 2020 08:52:45 -0500
-IronPort-SDR: xZrBQt7b0ASNcfjrHLtpX8uHPR4ya2TWYxfK+EQuWxUHA0khSWyR7ZRmOhE776IijHaxklaQxs
- l8MG6gRrA1YA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9813"; a="170981526"
-X-IronPort-AV: E=Sophos;i="5.78,363,1599548400"; 
-   d="scan'208";a="170981526"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2020 05:52:44 -0800
-IronPort-SDR: msN81Kew0WmDV9OhiACVMXr84Ac9RfCeAfeWBKF2npy9ueNplzmhmjerAbcQOOq8Z3q68kPXm9
- tG4V4ulhZC9A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.78,363,1599548400"; 
-   d="scan'208";a="370035683"
-Received: from bgsxx0031.iind.intel.com ([10.106.222.40])
-  by orsmga007.jf.intel.com with ESMTP; 23 Nov 2020 05:52:42 -0800
-From:   M Chetan Kumar <m.chetan.kumar@intel.com>
-To:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-Cc:     johannes@sipsolutions.net, krishna.c.sudi@intel.com,
-        m.chetan.kumar@intel.com
-Subject: [RFC 18/18] net: iosm: infrastructure
-Date:   Mon, 23 Nov 2020 19:21:23 +0530
-Message-Id: <20201123135123.48892-19-m.chetan.kumar@intel.com>
-X-Mailer: git-send-email 2.12.3
-In-Reply-To: <20201123135123.48892-1-m.chetan.kumar@intel.com>
-References: <20201123135123.48892-1-m.chetan.kumar@intel.com>
+        id S2388803AbgKWNxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 08:53:12 -0500
+Received: from www62.your-server.de ([213.133.104.62]:60006 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388791AbgKWNxJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 08:53:09 -0500
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1khCHB-0007wF-Ho; Mon, 23 Nov 2020 14:53:05 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1khCHB-0007fL-A7; Mon, 23 Nov 2020 14:53:05 +0100
+Subject: Re: [PATCH bpf] net, xsk: Avoid taking multiple skbuff references
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        ast@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        jonathan.lemon@gmail.com, yhs@fb.com, weqaar.janjua@gmail.com,
+        magnus.karlsson@intel.com, weqaar.a.janjua@intel.com
+References: <20201123131215.136131-1-bjorn.topel@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <12b970c5-6b44-5288-0c79-2df5178d1165@iogearbox.net>
+Date:   Mon, 23 Nov 2020 14:53:04 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <20201123131215.136131-1-bjorn.topel@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25996/Sun Nov 22 14:25:48 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1) Kconfig & Makefile changes for IOSM Driver compilation.
-2) Modified driver/net Kconfig & Makefile for driver inclusion.
-3) Modified MAINTAINER file for IOSM Driver addition.
+On 11/23/20 2:12 PM, Björn Töpel wrote:
+> From: Björn Töpel <bjorn.topel@intel.com>
+> 
+> Commit 642e450b6b59 ("xsk: Do not discard packet when NETDEV_TX_BUSY")
+> addressed the problem that packets were discarded from the Tx AF_XDP
+> ring, when the driver returned NETDEV_TX_BUSY. Part of the fix was
+> bumping the skbuff reference count, so that the buffer would not be
+> freed by dev_direct_xmit(). A reference count larger than one means
+> that the skbuff is "shared", which is not the case.
+> 
+> If the "shared" skbuff is sent to the generic XDP receive path,
+> netif_receive_generic_xdp(), and pskb_expand_head() is entered the
+> BUG_ON(skb_shared(skb)) will trigger.
+> 
+> This patch adds a variant to dev_direct_xmit(), __dev_direct_xmit(),
+> where a user can select the skbuff free policy. This allows AF_XDP to
+> avoid bumping the reference count, but still keep the NETDEV_TX_BUSY
+> behavior.
+> 
+> Reported-by: Yonghong Song <yhs@fb.com>
+> Fixes: 642e450b6b59 ("xsk: Do not discard packet when NETDEV_TX_BUSY")
+> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+> ---
+>   include/linux/netdevice.h | 1 +
+>   net/core/dev.c            | 9 +++++++--
+>   net/xdp/xsk.c             | 8 +-------
+>   3 files changed, 9 insertions(+), 9 deletions(-)
+> 
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 964b494b0e8d..e7402fca7752 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -2815,6 +2815,7 @@ u16 dev_pick_tx_cpu_id(struct net_device *dev, struct sk_buff *skb,
+>   		       struct net_device *sb_dev);
+>   int dev_queue_xmit(struct sk_buff *skb);
+>   int dev_queue_xmit_accel(struct sk_buff *skb, struct net_device *sb_dev);
+> +int __dev_direct_xmit(struct sk_buff *skb, u16 queue_id, bool free_on_busy);
+>   int dev_direct_xmit(struct sk_buff *skb, u16 queue_id);
+>   int register_netdevice(struct net_device *dev);
+>   void unregister_netdevice_queue(struct net_device *dev, struct list_head *head);
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 82dc6b48e45f..2af79a4253bb 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -4180,7 +4180,7 @@ int dev_queue_xmit_accel(struct sk_buff *skb, struct net_device *sb_dev)
+>   }
+>   EXPORT_SYMBOL(dev_queue_xmit_accel);
+>   
+> -int dev_direct_xmit(struct sk_buff *skb, u16 queue_id)
+> +int __dev_direct_xmit(struct sk_buff *skb, u16 queue_id, bool free_on_busy)
+>   {
+>   	struct net_device *dev = skb->dev;
+>   	struct sk_buff *orig_skb = skb;
+> @@ -4211,7 +4211,7 @@ int dev_direct_xmit(struct sk_buff *skb, u16 queue_id)
+>   
+>   	local_bh_enable();
+>   
+> -	if (!dev_xmit_complete(ret))
+> +	if (free_on_busy && !dev_xmit_complete(ret))
+>   		kfree_skb(skb);
+>   
+>   	return ret;
 
-Signed-off-by: M Chetan Kumar <m.chetan.kumar@intel.com>
----
- MAINTAINERS                    |  7 +++++++
- drivers/net/Kconfig            |  1 +
- drivers/net/Makefile           |  1 +
- drivers/net/wwan/Kconfig       | 13 +++++++++++++
- drivers/net/wwan/Makefile      |  5 +++++
- drivers/net/wwan/iosm/Kconfig  | 10 ++++++++++
- drivers/net/wwan/iosm/Makefile | 27 +++++++++++++++++++++++++++
- 7 files changed, 64 insertions(+)
- create mode 100644 drivers/net/wwan/Kconfig
- create mode 100644 drivers/net/wwan/Makefile
- create mode 100644 drivers/net/wwan/iosm/Kconfig
- create mode 100644 drivers/net/wwan/iosm/Makefile
+Hm, but this way free_on_busy, even though constant, cannot be optimized away?
+Can't you just move the dev_xmit_complete() check out into dev_direct_xmit()
+instead? That way you can just drop the bool, and the below dev_direct_xmit()
+should probably just become an __always_line function in netdevice.h so you
+avoid the double call.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index a008b70f3c16..cb1fc8fabffd 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -9099,6 +9099,13 @@ M:	Mario Limonciello <mario.limonciello@dell.com>
- S:	Maintained
- F:	drivers/platform/x86/intel-wmi-thunderbolt.c
- 
-+INTEL WWAN IOSM DRIVER
-+M:      M Chetan Kumar <m.chetan.kumar@intel.com>
-+M:      Intel Corporation <linuxwwan@intel.com>
-+L:      netdev@vger.kernel.org
-+S:      Maintained
-+F:      drivers/net/wwan/iosm/
-+
- INTEL(R) TRACE HUB
- M:	Alexander Shishkin <alexander.shishkin@linux.intel.com>
- S:	Supported
-diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index c3dbe64e628e..e0f869a2c52f 100644
---- a/drivers/net/Kconfig
-+++ b/drivers/net/Kconfig
-@@ -593,4 +593,5 @@ config NET_FAILOVER
- 	  a VM with direct attached VF by failing over to the paravirtual
- 	  datapath when the VF is unplugged.
- 
-+source "drivers/net/wwan/Kconfig"
- endif # NETDEVICES
-diff --git a/drivers/net/Makefile b/drivers/net/Makefile
-index 72e18d505d1a..025fb399d2af 100644
---- a/drivers/net/Makefile
-+++ b/drivers/net/Makefile
-@@ -84,3 +84,4 @@ thunderbolt-net-y += thunderbolt.o
- obj-$(CONFIG_USB4_NET) += thunderbolt-net.o
- obj-$(CONFIG_NETDEVSIM) += netdevsim/
- obj-$(CONFIG_NET_FAILOVER) += net_failover.o
-+obj-$(CONFIG_WWAN)+= wwan/
-diff --git a/drivers/net/wwan/Kconfig b/drivers/net/wwan/Kconfig
-new file mode 100644
-index 000000000000..715dfd0598f9
---- /dev/null
-+++ b/drivers/net/wwan/Kconfig
-@@ -0,0 +1,13 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+# Wireless WAN device configuration
-+#
-+
-+menuconfig WWAN
-+	bool "Wireless WAN"
-+	help
-+	  This section contains all Wireless WAN driver configurations.
-+
-+if WWAN
-+source "drivers/net/wwan/iosm/Kconfig"
-+endif # WWAN
-diff --git a/drivers/net/wwan/Makefile b/drivers/net/wwan/Makefile
-new file mode 100644
-index 000000000000..a81ff28e6cd9
---- /dev/null
-+++ b/drivers/net/wwan/Makefile
-@@ -0,0 +1,5 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+# Makefile for the Linux WWAN Device Drivers.
-+#
-+obj-$(CONFIG_IOSM)+= iosm/
-diff --git a/drivers/net/wwan/iosm/Kconfig b/drivers/net/wwan/iosm/Kconfig
-new file mode 100644
-index 000000000000..fed382fc9cd7
---- /dev/null
-+++ b/drivers/net/wwan/iosm/Kconfig
-@@ -0,0 +1,10 @@
-+# SPDX-License-Identifier: (GPL-2.0-only)
-+#
-+# IOSM Driver configuration
-+#
-+
-+config IOSM
-+	tristate "IOSM Driver"
-+	depends on INTEL_IOMMU
-+	help
-+	  This driver enables Intel M.2 WWAN Device communication.
-diff --git a/drivers/net/wwan/iosm/Makefile b/drivers/net/wwan/iosm/Makefile
-new file mode 100644
-index 000000000000..153ae0360244
---- /dev/null
-+++ b/drivers/net/wwan/iosm/Makefile
-@@ -0,0 +1,27 @@
-+# SPDX-License-Identifier: (GPL-2.0-only)
-+#
-+# Copyright (C) 2020 Intel Corporation.
-+#
-+
-+iosm-y = \
-+	iosm_ipc_task_queue.o	\
-+	iosm_ipc_imem.o			\
-+	iosm_ipc_imem_ops.o		\
-+	iosm_ipc_mmio.o			\
-+	iosm_ipc_sio.o			\
-+	iosm_ipc_mbim.o			\
-+	iosm_ipc_wwan.o			\
-+	iosm_ipc_uevent.o		\
-+	iosm_ipc_pm.o			\
-+	iosm_ipc_pcie.o			\
-+	iosm_ipc_irq.o			\
-+	iosm_ipc_chnl_cfg.o		\
-+	iosm_ipc_protocol.o		\
-+	iosm_ipc_protocol_ops.o	\
-+	iosm_ipc_mux.o			\
-+	iosm_ipc_mux_codec.o
-+
-+obj-$(CONFIG_IOSM) := iosm.o
-+
-+# compilation flags
-+#ccflags-y += -DDEBUG
--- 
-2.12.3
+> @@ -4220,6 +4220,11 @@ int dev_direct_xmit(struct sk_buff *skb, u16 queue_id)
+>   	kfree_skb_list(skb);
+>   	return NET_XMIT_DROP;
+>   }
+> +
+> +int dev_direct_xmit(struct sk_buff *skb, u16 queue_id)
+> +{
+> +	return __dev_direct_xmit(skb, queue_id, true);
+> +}
+>   EXPORT_SYMBOL(dev_direct_xmit);
+>   
+>   /*************************************************************************
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index 5a6cdf7b320d..c6ad31b374b7 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -411,11 +411,7 @@ static int xsk_generic_xmit(struct sock *sk)
+>   		skb_shinfo(skb)->destructor_arg = (void *)(long)desc.addr;
+>   		skb->destructor = xsk_destruct_skb;
+>   
+> -		/* Hinder dev_direct_xmit from freeing the packet and
+> -		 * therefore completing it in the destructor
+> -		 */
+> -		refcount_inc(&skb->users);
+> -		err = dev_direct_xmit(skb, xs->queue_id);
+> +		err = __dev_direct_xmit(skb, xs->queue_id, false);
+>   		if  (err == NETDEV_TX_BUSY) {
+>   			/* Tell user-space to retry the send */
+>   			skb->destructor = sock_wfree;
+> @@ -429,12 +425,10 @@ static int xsk_generic_xmit(struct sock *sk)
+>   		/* Ignore NET_XMIT_CN as packet might have been sent */
+>   		if (err == NET_XMIT_DROP) {
+>   			/* SKB completed but not sent */
+> -			kfree_skb(skb);
+>   			err = -EBUSY;
+>   			goto out;
+>   		}
+>   
+> -		consume_skb(skb);
+>   		sent_frame = true;
+>   	}
+>   
+> 
+> base-commit: 178648916e73e00de83150eb0c90c0d3a977a46a
+> 
 
