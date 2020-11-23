@@ -2,116 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 329F32C0BD5
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 14:57:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89AFB2C0C04
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 14:57:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730250AbgKWNbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 08:31:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37030 "EHLO
+        id S1729919AbgKWNhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 08:37:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731864AbgKWNb2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 08:31:28 -0500
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1635C0613CF;
-        Mon, 23 Nov 2020 05:31:27 -0800 (PST)
-Received: by mail-wr1-x441.google.com with SMTP id r17so18655743wrw.1;
-        Mon, 23 Nov 2020 05:31:27 -0800 (PST)
+        with ESMTP id S1729781AbgKWNhj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 08:37:39 -0500
+Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D83BC0613CF
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 05:37:39 -0800 (PST)
+Received: by mail-oi1-x243.google.com with SMTP id o25so19688771oie.5
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 05:37:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=6VjVsILSsDd5SInux6/cPvrLq3EX5hfYBfnNEoH8afc=;
-        b=p3hPzFrD8yTk9+Gx4YckDx35JRnq+e6c0hSMGloeC/toffjNM/LrzjXcNTcdTTPFUh
-         UpENDkd8Cabeebm20HEr2p3HAfjLKzHjtWCw71w85vNXLp/v6TmQSXg6vMIqZ3hsjqgM
-         cbXHXSyHvUUnJhL0DQQnMvvenDqPnO5LRqTbHADqUj2IlXtwe1bt6kwvZDeHzDUie5ne
-         GiBxdItO6teTxK1KPCKTLzujQMKjR/sjfwb4LfTl0WSPan7YhkLrAsqgTsLemLlqLQz7
-         4K/hEUkLxPoDBn6SCIZfmBFUpngYscaQQWSYKjftNF2pLBM6vJTHzfbDwTT9pRee3aQ/
-         1W1A==
+         :cc;
+        bh=Mltk67DXea7zsfQ6fqyLDZT0KhzJoiu2sHs7lYzBdPQ=;
+        b=G3g3wD4zYiz1vznpVLO6PbSJSeyhlOPKP7QiicBq35IjwMRqT6Ne8BM4h0JHiBMkqt
+         2rS42/GrDVNuwirM1p/FQ6VIidKtim3wcxC7jXuWLwK/JFQxuE+a1ySQE0zGt1wLCM92
+         hDMhVTvLiBfOPBOF5KPHn9qHvz+buZhDsb2oVwAjp0EYvkcjsruNjpaUcYczbSXM5vAE
+         Y0ixRp9wUknIAhTx1ozvRvdKFemxWydEFA2id9kf46/iPsXfMNB89HW2HayKgs4GvHVX
+         GkCOfE3W0+jhN7nn3ZlOyz7jvl5B9Y7czCv05Wud7dIILgSWLbwf1S1H95PBjPchUOkN
+         esEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=6VjVsILSsDd5SInux6/cPvrLq3EX5hfYBfnNEoH8afc=;
-        b=gXtxHEGadMmCMpGFBUWwFA4P9nbzkrOXC/WDrUo/XgWISt0wY2DDnzEnLYx6q4nSS1
-         CUbHzr2tCKptifFD2YsPhsQaIxCa5SMjVqwFG2eUSTPpPNhV2WJG/JkGxhOrfjhZVsgD
-         6sAX3/r8g8Xd1Te1Ep49ajyoKrbfn04b/AVn+SU8WaOu/YnjRY83q06lwRKN5iOSxwqD
-         CL8GVWSMBpdwtf1F9sIK70pipyjei84JSpYQLUitk0hW4JuWreBPPj7hkoqgc6UgLxY2
-         4clNC32huc5/yIisYy5z3/5vB9U2Q0AksW6X9tV9LFOHWAszZh+VwZ+B6tg5lqQL+HR7
-         cyrw==
-X-Gm-Message-State: AOAM533pFIfK0epNNxQziOiKtH4P7ojz68Tms1sv+NQCmVoZ0Gop6IrK
-        2OLmjm9/EBD86S5cznBhaWPPykDN70/Zztc5mHg=
-X-Google-Smtp-Source: ABdhPJxHjYOYrucIemLufVB68BJFElUQ078uhX2AV6WAjHWd+fVmVZV/gI+EsM1L9UvKZOVEKQYr9iP1U/rL89E2NDk=
-X-Received: by 2002:adf:f241:: with SMTP id b1mr30710060wrp.248.1606138286688;
- Mon, 23 Nov 2020 05:31:26 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=Mltk67DXea7zsfQ6fqyLDZT0KhzJoiu2sHs7lYzBdPQ=;
+        b=s5OPyGrxUnzOjAIr6rSCGlGxX5CluGFbhqwQo2STq+RAb/nH2GaNOg7UK5CNM1kHAz
+         oU6qHziGqJniXfZyTXI4QBK1Xlle8x+RMXj6GFDh1YUhQnel+zm6yCW3yBQQ53tHL62P
+         9yLZpODfLJhCmgDOlHgJwz2FVTuPqnz9IBfBnTaoEozkx3fnBTsxOwMOJAKOXGiIl/wB
+         Wsp7P8ixiOY/2I8+RbyY3t+dxWghB9D7UqF3H4MKcV4QLyUmXLBApQC93IhvTT9hILmE
+         bXG7DASOm1LM/i5KDSAk8874jB7i6Jxlh2dWJwZwP1La8ou4nPFdLQfo0+fvEIyI8IH3
+         sROA==
+X-Gm-Message-State: AOAM530hrQC2HkSpecmdQ9Y77hNs26US2x+3ba9q+L6Mt3JjRKd1KDyr
+        cilQycB0/RYre5TV8ePkuyj1cD0ak3SGrEfZutY=
+X-Google-Smtp-Source: ABdhPJzn9XtlnbN2WI3KtjZT8J8qsVzar5TyCBtHMtrND/68YIx2PSXNe7E7kIssamgeXq6MHkAZHPeh61V+1r60ypM=
+X-Received: by 2002:aca:7554:: with SMTP id q81mr15199484oic.89.1606138658514;
+ Mon, 23 Nov 2020 05:37:38 -0800 (PST)
 MIME-Version: 1.0
-References: <20201119083024.119566-1-bjorn.topel@gmail.com>
-In-Reply-To: <20201119083024.119566-1-bjorn.topel@gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Mon, 23 Nov 2020 14:31:14 +0100
-Message-ID: <CAJ+HfNh4Kybjuzi1KOvJBUBvQWFDCZgt7zZNU=ZS8FLCsNKiRQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 00/10] Introduce preferred busy-polling
-To:     Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Netdev <netdev@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "Zhang, Qi Z" <qi.z.zhang@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>, maximmi@nvidia.com
+References: <20201123120531.724963-1-zyjzyj2000@gmail.com> <CAD=hENfysbUCNapfFZ6i0tOFo5Ge3QS+iQSt2ySBDb10zFdgwg@mail.gmail.com>
+ <CAJ8uoz1TO7ULPDTK0ajyrjVFqB2REw=ncgT1c-NDhTciDeNfNg@mail.gmail.com>
+In-Reply-To: <CAJ8uoz1TO7ULPDTK0ajyrjVFqB2REw=ncgT1c-NDhTciDeNfNg@mail.gmail.com>
+From:   Zhu Yanjun <zyjzyj2000@gmail.com>
+Date:   Mon, 23 Nov 2020 21:37:27 +0800
+Message-ID: <CAD=hENeHFSJOO=Kt060y0R29d4wn87ESdrqY6n6ACA--LkZEFA@mail.gmail.com>
+Subject: Re: [PATCHv2 1/1] xdp: remove the function xsk_map_inc
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Nov 2020 at 09:30, Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>=
- wrote:
+On Mon, Nov 23, 2020 at 8:19 PM Magnus Karlsson
+<magnus.karlsson@gmail.com> wrote:
 >
-> This series introduces three new features:
+> On Mon, Nov 23, 2020 at 1:11 PM Zhu Yanjun <zyjzyj2000@gmail.com> wrote:
+> >
+> > On Mon, Nov 23, 2020 at 8:05 PM <zyjzyj2000@gmail.com> wrote:
+> > >
+> > > From: Zhu Yanjun <zyjzyj2000@gmail.com>
+> > >
+> > > The function xsk_map_inc is a simple wrapper of bpf_map_inc and
+> > > always returns zero. As such, replacing this function with bpf_map_inc
+> > > and removing the test code.
+> > >
+> > > Signed-off-by: Zhu Yanjun <zyjzyj2000@gmail.com>
+> >
+> >
+> > > ---
+> > >  net/xdp/xsk.c    |  1 -
+> > >  net/xdp/xsk.h    |  1 -
+> > >  net/xdp/xskmap.c | 13 +------------
+> > >  3 files changed, 1 insertion(+), 14 deletions(-)
+> > >
+> > > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> > > index cfbec3989a76..c1b8a888591c 100644
+> > > --- a/net/xdp/xsk.c
+> > > +++ b/net/xdp/xsk.c
+> > > @@ -548,7 +548,6 @@ static struct xsk_map *xsk_get_map_list_entry(struct xdp_sock *xs,
+> > >         node = list_first_entry_or_null(&xs->map_list, struct xsk_map_node,
+> > >                                         node);
+> > >         if (node) {
+> > > -               WARN_ON(xsk_map_inc(node->map));
 >
-> 1. A new "heavy traffic" busy-polling variant that works in concert
->    with the existing napi_defer_hard_irqs and gro_flush_timeout knobs.
->
-> 2. A new socket option that let a user change the busy-polling NAPI
->    budget.
->
-> 3. Allow busy-polling to be performed on XDP sockets.
->
-> The existing busy-polling mode, enabled by the SO_BUSY_POLL socket
-> option or system-wide using the /proc/sys/net/core/busy_read knob, is
-> an opportunistic. That means that if the NAPI context is not
-> scheduled, it will poll it. If, after busy-polling, the budget is
-> exceeded the busy-polling logic will schedule the NAPI onto the
-> regular softirq handling.
->
-> One implication of the behavior above is that a busy/heavy loaded NAPI
-> context will never enter/allow for busy-polling. Some applications
-> prefer that most NAPI processing would be done by busy-polling.
->
-> This series adds a new socket option, SO_PREFER_BUSY_POLL, that works
-> in concert with the napi_defer_hard_irqs and gro_flush_timeout
-> knobs. The napi_defer_hard_irqs and gro_flush_timeout knobs were
-> introduced in commit 6f8b12d661d0 ("net: napi: add hard irqs deferral
-> feature"), and allows for a user to defer interrupts to be enabled and
-> instead schedule the NAPI context from a watchdog timer. When a user
-> enables the SO_PREFER_BUSY_POLL, again with the other knobs enabled,
-> and the NAPI context is being processed by a softirq, the softirq NAPI
-> processing will exit early to allow the busy-polling to be performed.
->
-> If the application stops performing busy-polling via a system call,
-> the watchdog timer defined by gro_flush_timeout will timeout, and
-> regular softirq handling will resume.
->
-> In summary; Heavy traffic applications that prefer busy-polling over
-> softirq processing should use this option.
->
+> This should be bpf_map_inc(&node->map->map); Think you forgot to
+> convert this one.
 
-Eric/Jakub, any more thoughts/input? Tomatoes? :-P
+In include/linux/bpf.h:
+"
+...
+1213 void bpf_map_inc(struct bpf_map *map);
+...
+"
 
-
-Thank you,
-Bj=C3=B6rn
+Zhu Yanjun
+>
+> > >                 map = node->map;
+> > >                 *map_entry = node->map_entry;
+> > >         }
+> > > diff --git a/net/xdp/xsk.h b/net/xdp/xsk.h
+> > > index b9e896cee5bb..0aad25c0e223 100644
+> > > --- a/net/xdp/xsk.h
+> > > +++ b/net/xdp/xsk.h
+> > > @@ -41,7 +41,6 @@ static inline struct xdp_sock *xdp_sk(struct sock *sk)
+> > >
+> > >  void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
+> > >                              struct xdp_sock **map_entry);
+> > > -int xsk_map_inc(struct xsk_map *map);
+> > >  void xsk_map_put(struct xsk_map *map);
+> > >  void xsk_clear_pool_at_qid(struct net_device *dev, u16 queue_id);
+> > >  int xsk_reg_pool_at_qid(struct net_device *dev, struct xsk_buff_pool *pool,
+> > > diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
+> > > index 49da2b8ace8b..6b7e9a72b101 100644
+> > > --- a/net/xdp/xskmap.c
+> > > +++ b/net/xdp/xskmap.c
+> > > @@ -11,12 +11,6 @@
+> > >
+> > >  #include "xsk.h"
+> > >
+> > > -int xsk_map_inc(struct xsk_map *map)
+> > > -{
+> > > -       bpf_map_inc(&map->map);
+> > > -       return 0;
+> > > -}
+> >
+> > Hi, Magnus
+> >
+> > The function xsk_map_inc is replaced with bpf_map_inc.
+> >
+> > Zhu Yanjun
+> >
+> > > -
+> > >  void xsk_map_put(struct xsk_map *map)
+> > >  {
+> > >         bpf_map_put(&map->map);
+> > > @@ -26,17 +20,12 @@ static struct xsk_map_node *xsk_map_node_alloc(struct xsk_map *map,
+> > >                                                struct xdp_sock **map_entry)
+> > >  {
+> > >         struct xsk_map_node *node;
+> > > -       int err;
+> > >
+> > >         node = kzalloc(sizeof(*node), GFP_ATOMIC | __GFP_NOWARN);
+> > >         if (!node)
+> > >                 return ERR_PTR(-ENOMEM);
+> > >
+> > > -       err = xsk_map_inc(map);
+> > > -       if (err) {
+> > > -               kfree(node);
+> > > -               return ERR_PTR(err);
+> > > -       }
+> > > +       bpf_map_inc(&map->map);
+> > >
+> > >         node->map = map;
+> > >         node->map_entry = map_entry;
+> > > --
+> > > 2.25.1
+> > >
