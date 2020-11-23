@@ -2,90 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FCEC2C02FC
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 11:09:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34A602C02FE
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 11:09:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728121AbgKWKIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 05:08:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33840 "EHLO
+        id S1728202AbgKWKI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 05:08:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726891AbgKWKIQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 05:08:16 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF426C0613CF;
-        Mon, 23 Nov 2020 02:08:14 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id x24so2176887pfn.6;
-        Mon, 23 Nov 2020 02:08:14 -0800 (PST)
+        with ESMTP id S1726891AbgKWKI1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 05:08:27 -0500
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B53C0613CF
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 02:08:26 -0800 (PST)
+Received: by mail-ej1-x642.google.com with SMTP id a16so22478778ejj.5
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 02:08:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pq+GpfO2gw/px08Gc8Ao87p67ooWQK82Ig1Fe5tdBxQ=;
-        b=mHnsPITnNU+s25kR1sMD6EGzHhppd68DOyo0El7jQGNzKNfOILf7LxeWw3vN2AuRCg
-         cVIi0E8kKAWV3jvH5UC2C2KfkfAoAsCa6hOBrUyBmspU9Kzx0iWAgLPPseWDsaxMezQe
-         06nYSprynZb+9kb90ljsXaq1IAdETsok4Cb4eq+6vrs/6mjhRH1hf45PKAuCsvWICMUq
-         2dPPoji5Hx5td+6CrMuojI10lL53dU0fRmnAgi3krYky8E/VVLDHWj5yktF/LPS2VgTx
-         j6z2m84lTOyDeoK3JIZMsGqeSnzlXB0D6cXuKBWH+PWoKlNqoQqRjAStqUTMIOt89WBV
-         1OGQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=WoWKjemo0iT1DbHN9ts85XqT0YGU8IxLpaJUob8pzgE=;
+        b=jNDlM2fmUkFpbF4NdTLHccsNny9g++VKsQoqBWSKF8V1j5Kxg41Xv+584AKjUSM2LR
+         lwOLy/v1XV47wzT39aKhOz9at7a4rpcJ2nzSRH21xgRHkaQ85jsLwfd4ycyL5JilJTAa
+         BRAc5Ju9jzGHvaDds3X2yd1puMSesgrJ6oXD4bSEsda84gUII8uepEDu7anHGJR9poVJ
+         fhdzZTlXMoMWhDAR8NyElXptLJq+iS/gwpfj2Md8zwSUJ8ZoC8jer8amx8dJorDLDFK+
+         EWgnx53EibtrAoyBVHAqwibkFyYXsmiVBVQNHSjlfLYyuTTa+MVddsEQUuyUHN5G/jBp
+         xFcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pq+GpfO2gw/px08Gc8Ao87p67ooWQK82Ig1Fe5tdBxQ=;
-        b=Le4s3FphfZf4Nu2zJkKJqC1Fn6/WR/78xi1FyvPXYWxuck/j06QJXipOnbG+iTyXOb
-         kQyEqClQ32G+0u38XS4/hkPczBXz5akqdTPKBL6wNl9g0aXOd2zRyYeYN7u7jrnoSoUq
-         cB//mJZ3NItOhazrX9F8Zd4ByDRznGa6awjXx3FZ4fVe2WjOyr+3MbJQfoQhc3AiUQYN
-         59dw4/K8qk60eJuUdtPTmOqAkE8+9iMW8A0SAdDAeP2Bh4DkV80LSPP9U4bUjH5KLRlU
-         0+BopVLiqcvEM5hJuwc267/HXNGKb0ZMcg0oNBxbasr3BYhBxGoeIoi/iGuUGED+MF2t
-         S9Og==
-X-Gm-Message-State: AOAM532EUshgoIumSVYWeE+V88KhiGbAJTAcAUpFssi9oDDAGY00LGyA
-        PPkxaRDbfDWXlDaeW+gZhwG9AZBpKmsQdPfVYrtMCX+WmUo=
-X-Google-Smtp-Source: ABdhPJwOl6MN766kwT1IyuhwcGbndBX2wq7s6AtGjLzjNTGUBeHeDVuplDzZeFxVzBZSYhGiaM7DG+SdVxzN0BwtDH8=
-X-Received: by 2002:a62:170a:0:b029:196:5765:4abc with SMTP id
- 10-20020a62170a0000b029019657654abcmr24618032pfx.4.1606126094535; Mon, 23 Nov
- 2020 02:08:14 -0800 (PST)
-MIME-Version: 1.0
-References: <20201120054036.15199-1-ms@dev.tdt.de> <20201120054036.15199-3-ms@dev.tdt.de>
- <CAJht_EONd3+S12upVPk2K3PWvzMLdE3BkzY_7c5gA493NHcGnA@mail.gmail.com>
- <CAJht_EP_oqCDs6mMThBZNtz4sgpbyQgMhKkHeqfS_7JmfEzfQg@mail.gmail.com>
- <87a620b6a55ea8386bffefca0a1f8b77@dev.tdt.de> <CAJht_EPc8MF1TjznSjWTPyMbsrw3JVqxST5g=eF0yf_zasUdeA@mail.gmail.com>
- <d85a4543eae46bac1de28ec17a2389dd@dev.tdt.de> <CAJht_EMjO_Tkm93QmAeK_2jg2KbLdv2744kCSHiZLy48aXiHnw@mail.gmail.com>
-In-Reply-To: <CAJht_EMjO_Tkm93QmAeK_2jg2KbLdv2744kCSHiZLy48aXiHnw@mail.gmail.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Mon, 23 Nov 2020 02:08:03 -0800
-Message-ID: <CAJht_EO+enBOFMkVVB5y6aRnyMEsOZtUBJcAvOFBS91y7CauyQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 2/5] net/lapb: support netdev events
-To:     Martin Schiller <ms@dev.tdt.de>
-Cc:     Andrew Hendry <andrew.hendry@gmail.com>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=WoWKjemo0iT1DbHN9ts85XqT0YGU8IxLpaJUob8pzgE=;
+        b=DRDvOfV4Ukk6LiFyOTPPucYQx3EASglEqges0cvTkLXZ29dyOvA5/g9Cqn5nkCXDRR
+         sUtDjpyQVMfAEqphiFTDSgJpJLdZtqKsbKKzWVfapeXa+xVh3iap5cXXRBT493ZvRfP9
+         3lqI0K4JfGYPeGTSjBdfERCy10O2lrB0G3+qXf5d8n/mx972CIm+d1pyvs0EdO4oivC/
+         8vJN69OXr3mIAQJbsKDFtSW5XH7oFr3TwQBjDEVzMjgizsDOmi9MMf6F9ZiciI8lf5Ty
+         sIQeE4h0Rx8/Lk4aiKCDAC+u37FK+FR1NQKn8QFUI/vNHtJgV+q6vmmkEroskCWy+AmF
+         VVgg==
+X-Gm-Message-State: AOAM532XNmxpakGqH4u/3KxSuQ2sy29BdTD2Ucl4FDv7lZgZvLGhg3fc
+        e3yGi2jXZTAOXPU3+/stFvk=
+X-Google-Smtp-Source: ABdhPJyJtue+2LUYGpkPOG0iH/Rf/Upa6Mja3j52BFOt9UkuXLsy21YKzGz1n39zFbCiiDG+b/qxfQ==
+X-Received: by 2002:a17:906:a106:: with SMTP id t6mr41640365ejy.63.1606126105668;
+        Mon, 23 Nov 2020 02:08:25 -0800 (PST)
+Received: from [192.168.1.110] ([77.124.63.70])
+        by smtp.gmail.com with ESMTPSA id c8sm4719508edr.29.2020.11.23.02.08.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 Nov 2020 02:08:24 -0800 (PST)
+Subject: Re: [PATCH] net: mlx5e: fix fs_tcp.c build when IPV6 is not enabled
+To:     Randy Dunlap <rdunlap@infradead.org>, netdev@vger.kernel.org
+Cc:     kernel test robot <lkp@intel.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>
+References: <20201122211231.5682-1-rdunlap@infradead.org>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+Message-ID: <bcb539df-901f-c5a5-697a-a022c1c3bfe5@gmail.com>
+Date:   Mon, 23 Nov 2020 12:08:22 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
+MIME-Version: 1.0
+In-Reply-To: <20201122211231.5682-1-rdunlap@infradead.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 23, 2020 at 1:36 AM Xie He <xie.he.0141@gmail.com> wrote:
->
-> Some drivers don't support carrier status and will never change it.
-> Their carrier status will always be UP. There will not be a
-> NETDEV_CHANGE event.
->
-> lapbether doesn't change carrier status. I also have my own virtual
-> HDLC WAN driver (for testing) which also doesn't change carrier
-> status.
->
-> I just tested with lapbether. When I bring up the interface, there
-> will only be NETDEV_PRE_UP and then NETDEV_UP. There will not be
-> NETDEV_CHANGE. The carrier status is alway UP.
->
-> I haven't tested whether a device can receive NETDEV_CHANGE when it is
-> down. It's possible for a device driver to call netif_carrier_on when
-> the interface is down. Do you know what will happen if a device driver
-> calls netif_carrier_on when the interface is down?
 
-I just did a test on lapbether and saw there would be no NETDEV_CHANGE
-event when the netif is down, even if netif_carrier_on/off is called.
-So we can rest assured of this part.
+
+On 11/22/2020 11:12 PM, Randy Dunlap wrote:
+> Fix build when CONFIG_IPV6 is not enabled by making a function
+> be built conditionally.
+> 
+> Fixes these build errors and warnings:
+> 
+> ../drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c: In function 'accel_fs_tcp_set_ipv6_flow':
+> ../include/net/sock.h:380:34: error: 'struct sock_common' has no member named 'skc_v6_daddr'; did you mean 'skc_daddr'?
+>    380 | #define sk_v6_daddr  __sk_common.skc_v6_daddr
+>        |                                  ^~~~~~~~~~~~
+> ../drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c:55:14: note: in expansion of macro 'sk_v6_daddr'
+>     55 |         &sk->sk_v6_daddr, 16);
+>        |              ^~~~~~~~~~~
+> At top level:
+> ../drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c:47:13: warning: 'accel_fs_tcp_set_ipv6_flow' defined but not used [-Wunused-function]
+>     47 | static void accel_fs_tcp_set_ipv6_flow(struct mlx5_flow_spec *spec, struct sock *sk)
+> 
+> Fixes: 5229a96e59ec ("net/mlx5e: Accel, Expose flow steering API for rules add/del")
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Cc: Saeed Mahameed <saeedm@nvidia.com>
+> Cc: Boris Pismenny <borisp@nvidia.com>
+> Cc: Tariq Toukan <tariqt@mellanox.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> ---
+
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+
+Thanks for your patch.
