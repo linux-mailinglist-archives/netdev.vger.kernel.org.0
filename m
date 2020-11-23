@@ -2,151 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 462D02C1322
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 19:33:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B31712C133B
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 19:33:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730040AbgKWSbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 13:31:01 -0500
-Received: from smtp.uniroma2.it ([160.80.6.22]:41919 "EHLO smtp.uniroma2.it"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728717AbgKWSa6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Nov 2020 13:30:58 -0500
-Received: from localhost.localdomain ([160.80.103.126])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 0ANITqgn016939
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 23 Nov 2020 19:29:55 +0100
-From:   Andrea Mayer <andrea.mayer@uniroma2.it>
-To:     "David S. Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Shrijeet Mukherjee <shrijeet@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Cc:     Nathan Chancellor <natechancellor@gmail.com>,
-        Stefano Salsano <stefano.salsano@uniroma2.it>,
-        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
-        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
-        Andrea Mayer <andrea.mayer@uniroma2.it>
-Subject: [iproute2-next v1 1/1] seg6: add support for vrftable attribute in End.DT4/DT6 behaviors
-Date:   Mon, 23 Nov 2020 19:28:57 +0100
-Message-Id: <20201123182857.4640-10-andrea.mayer@uniroma2.it>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201123182857.4640-1-andrea.mayer@uniroma2.it>
-References: <20201123182857.4640-1-andrea.mayer@uniroma2.it>
+        id S1733305AbgKWSc6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 13:32:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55544 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730117AbgKWSc6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 13:32:58 -0500
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7C2C0613CF;
+        Mon, 23 Nov 2020 10:32:58 -0800 (PST)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1khGdx-0006GV-Dv; Mon, 23 Nov 2020 19:32:53 +0100
+Date:   Mon, 23 Nov 2020 19:32:53 +0100
+From:   Florian Westphal <fw@strlen.de>
+To:     Antoine Tenart <atenart@kernel.org>
+Cc:     kuba@kernel.org, pablo@netfilter.org, kadlec@netfilter.org,
+        fw@strlen.de, roopa@nvidia.com, nikolay@nvidia.com,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, sbrivio@redhat.com
+Subject: Re: [PATCH net-next] netfilter: bridge: reset skb->pkt_type after
+ NF_INET_POST_ROUTING traversal
+Message-ID: <20201123183253.GA2730@breakpoint.cc>
+References: <20201123174902.622102-1-atenart@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201123174902.622102-1-atenart@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-introduces the "vrftable" attribute for supporting the End.DT4 and
-End.DT6 behaviors in iproute2.
-The "vrftable" attribute indicates the routing table associated with
-the VRF device used by SRv6 End.DT4/DT6 for routing IPv4/IPv6 packets.
+Antoine Tenart <atenart@kernel.org> wrote:
+> Netfilter changes PACKET_OTHERHOST to PACKET_HOST before invoking the
+> hooks as, while it's an expected value for a bridge, routing expects
+> PACKET_HOST. The change is undone later on after hook traversal. This
+> can be seen with pairs of functions updating skb>pkt_type and then
+> reverting it to its original value:
+> 
+> For hook NF_INET_PRE_ROUTING:
+>   setup_pre_routing / br_nf_pre_routing_finish
+> 
+> For hook NF_INET_FORWARD:
+>   br_nf_forward_ip / br_nf_forward_finish
+> 
+> But the third case where netfilter does this, for hook
+> NF_INET_POST_ROUTING, the packet type is changed in br_nf_post_routing
+> but never reverted. A comment says:
+> 
+>   /* We assume any code from br_dev_queue_push_xmit onwards doesn't care
+>    * about the value of skb->pkt_type. */
 
-The End.DT4/DT6 is used to implement IPv4/IPv6 L3 VPNs based on Segment
-Routing over IPv6 networks in multi-tenants environments.
-It decapsulates the received packets and it performs the IPv4/IPv6 routing
-lookup in the routing table of the tenant.
+[..]
+> But when having a tunnel (say vxlan) attached to a bridge we have the
+> following call trace:
 
-The End.DT4/DT6 leverages a VRF device in order to force the routing
-lookup into the associated routing table using the "vrftable" attribute.
+> In this specific case, this creates issues such as when an ICMPv6 PTB
+> should be sent back. When CONFIG_BRIDGE_NETFILTER is enabled, the PTB
+> isn't sent (as skb_tunnel_check_pmtu checks if pkt_type is PACKET_HOST
+> and returns early).
+> 
+> If the comment is right and no one cares about the value of
+> skb->pkt_type after br_dev_queue_push_xmit (which isn't true), resetting
+> it to its original value should be safe.
 
-Some examples:
- $ ip -6 route add 2001:db8::1 encap seg6local action End.DT4 vrftable 100 dev eth0
- $ ip -6 route add 2001:db8::2 encap seg6local action End.DT6 vrftable 200 dev eth0
+That comment is 18 years old, safe bet noone thought of
+ipv6-in-tunnel-interface-added-as-bridge-port back then.
 
-Standard Output:
- $ ip -6 route show 2001:db8::1
- 2001:db8::1  encap seg6local action End.DT4 vrftable 100 dev eth0 metric 1024 pref medium
-
-JSON Output:
-$ ip -6 -j -p route show 2001:db8::2
-[ {
-        "dst": "2001:db8::2",
-        "encap": "seg6local",
-        "action": "End.DT6",
-        "vrftable": 200,
-        "dev": "eth0",
-        "metric": 1024,
-        "flags": [ ],
-        "pref": "medium"
-} ]
-
-Signed-off-by: Paolo Lungaroni <paolo.lungaroni@cnit.it>
-Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
----
- include/uapi/linux/seg6_local.h |  1 +
- ip/iproute_lwtunnel.c           | 19 ++++++++++++++++---
- 2 files changed, 17 insertions(+), 3 deletions(-)
-
-diff --git a/include/uapi/linux/seg6_local.h b/include/uapi/linux/seg6_local.h
-index 5312de80..bb5c8ddf 100644
---- a/include/uapi/linux/seg6_local.h
-+++ b/include/uapi/linux/seg6_local.h
-@@ -26,6 +26,7 @@ enum {
- 	SEG6_LOCAL_IIF,
- 	SEG6_LOCAL_OIF,
- 	SEG6_LOCAL_BPF,
-+	SEG6_LOCAL_VRFTABLE,
- 	__SEG6_LOCAL_MAX,
- };
- #define SEG6_LOCAL_MAX (__SEG6_LOCAL_MAX - 1)
-diff --git a/ip/iproute_lwtunnel.c b/ip/iproute_lwtunnel.c
-index 9b4f0885..1ab95cd2 100644
---- a/ip/iproute_lwtunnel.c
-+++ b/ip/iproute_lwtunnel.c
-@@ -294,6 +294,11 @@ static void print_encap_seg6local(FILE *fp, struct rtattr *encap)
- 			     rtnl_rttable_n2a(rta_getattr_u32(tb[SEG6_LOCAL_TABLE]),
- 			     b1, sizeof(b1)));
- 
-+	if (tb[SEG6_LOCAL_VRFTABLE])
-+		print_string(PRINT_ANY, "vrftable", "vrftable %s ",
-+			     rtnl_rttable_n2a(rta_getattr_u32(tb[SEG6_LOCAL_VRFTABLE]),
-+			     b1, sizeof(b1)));
-+
- 	if (tb[SEG6_LOCAL_NH4]) {
- 		print_string(PRINT_ANY, "nh4",
- 			     "nh4 %s ", rt_addr_n2a_rta(AF_INET, tb[SEG6_LOCAL_NH4]));
-@@ -860,9 +865,10 @@ static int lwt_parse_bpf(struct rtattr *rta, size_t len,
- static int parse_encap_seg6local(struct rtattr *rta, size_t len, int *argcp,
- 				 char ***argvp)
- {
--	int segs_ok = 0, hmac_ok = 0, table_ok = 0, nh4_ok = 0, nh6_ok = 0;
--	int iif_ok = 0, oif_ok = 0, action_ok = 0, srh_ok = 0, bpf_ok = 0;
--	__u32 action = 0, table, iif, oif;
-+	int segs_ok = 0, hmac_ok = 0, table_ok = 0, vrftable_ok = 0;
-+	int nh4_ok = 0, nh6_ok = 0, iif_ok = 0, oif_ok = 0;
-+	__u32 action = 0, table, vrftable, iif, oif;
-+	int action_ok = 0, srh_ok = 0, bpf_ok = 0;
- 	struct ipv6_sr_hdr *srh;
- 	char **argv = *argvp;
- 	int argc = *argcp;
-@@ -887,6 +893,13 @@ static int parse_encap_seg6local(struct rtattr *rta, size_t len, int *argcp,
- 				duparg2("table", *argv);
- 			rtnl_rttable_a2n(&table, *argv);
- 			ret = rta_addattr32(rta, len, SEG6_LOCAL_TABLE, table);
-+		} else if (strcmp(*argv, "vrftable") == 0) {
-+			NEXT_ARG();
-+			if (vrftable_ok++)
-+				duparg2("vrftable", *argv);
-+			rtnl_rttable_a2n(&vrftable, *argv);
-+			ret = rta_addattr32(rta, len, SEG6_LOCAL_VRFTABLE,
-+					    vrftable);
- 		} else if (strcmp(*argv, "nh4") == 0) {
- 			NEXT_ARG();
- 			if (nh4_ok++)
--- 
-2.20.1
-
+Reviewed-by: Florian Westphal <fw@strlen.de>
