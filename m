@@ -2,75 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B31712C133B
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 19:33:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B6872C13C5
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 20:09:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733305AbgKWSc6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 13:32:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55544 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730117AbgKWSc6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 13:32:58 -0500
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7C2C0613CF;
-        Mon, 23 Nov 2020 10:32:58 -0800 (PST)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1khGdx-0006GV-Dv; Mon, 23 Nov 2020 19:32:53 +0100
-Date:   Mon, 23 Nov 2020 19:32:53 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     kuba@kernel.org, pablo@netfilter.org, kadlec@netfilter.org,
-        fw@strlen.de, roopa@nvidia.com, nikolay@nvidia.com,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, sbrivio@redhat.com
-Subject: Re: [PATCH net-next] netfilter: bridge: reset skb->pkt_type after
- NF_INET_POST_ROUTING traversal
-Message-ID: <20201123183253.GA2730@breakpoint.cc>
-References: <20201123174902.622102-1-atenart@kernel.org>
+        id S1732135AbgKWSkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 13:40:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41902 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728953AbgKWSkt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Nov 2020 13:40:49 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 726D120658;
+        Mon, 23 Nov 2020 18:40:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606156848;
+        bh=lKYaXTjHJn8GOjDGPFp/KXiJY5WjpK+thWbciPM8/6A=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=iQyM1nVnsVwDXya8I17ExQ3b2MUGNnMGMBF1moe9+O5JLuJUrDCWvW6JalvGBuP2J
+         aND97Q6T1Kh8guM/UKMKX7zZE5lk3vLjUGk2ZqrpL27dGFsyfNl6Yx6xIYlE6had+D
+         gPE2+Fk0IlgM0P44iZhiPJZmCbAvnmSOknBYjROs=
+Date:   Mon, 23 Nov 2020 10:40:47 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Martin Schiller <ms@dev.tdt.de>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v5] net/tun: Call netdev notifiers
+Message-ID: <20201123104047.3f7dd7d8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <a00d2725bce23f451cd030b9e621a764@dev.tdt.de>
+References: <20201118063919.29485-1-ms@dev.tdt.de>
+        <20201120102827.6b432dc5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <a00d2725bce23f451cd030b9e621a764@dev.tdt.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201123174902.622102-1-atenart@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Antoine Tenart <atenart@kernel.org> wrote:
-> Netfilter changes PACKET_OTHERHOST to PACKET_HOST before invoking the
-> hooks as, while it's an expected value for a bridge, routing expects
-> PACKET_HOST. The change is undone later on after hook traversal. This
-> can be seen with pairs of functions updating skb>pkt_type and then
-> reverting it to its original value:
+On Mon, 23 Nov 2020 07:18:07 +0100 Martin Schiller wrote:
+> On 2020-11-20 19:28, Jakub Kicinski wrote:
+> > On Wed, 18 Nov 2020 07:39:19 +0100 Martin Schiller wrote:  
+> >> Call netdev notifiers before and after changing the device type.
+> >> 
+> >> Signed-off-by: Martin Schiller <ms@dev.tdt.de>  
+> > 
+> > This is a fix, right? Can you give an example of something that goes
+> > wrong without this patch?  
 > 
-> For hook NF_INET_PRE_ROUTING:
->   setup_pre_routing / br_nf_pre_routing_finish
+> This change is related to my latest patches to the X.25 Subsystem:
+> https://patchwork.kernel.org/project/netdevbpf/list/?series=388087
 > 
-> For hook NF_INET_FORWARD:
->   br_nf_forward_ip / br_nf_forward_finish
+> I use a tun interface in a XoT (X.25 over TCP) application and use the
+> TUNSETLINK ioctl to change the device type to ARPHRD_X25.
+> As the default device type is ARPHRD_NONE the initial NETDEV_REGISTER
+> event won't be catched by the X.25 Stack.
 > 
-> But the third case where netfilter does this, for hook
-> NF_INET_POST_ROUTING, the packet type is changed in br_nf_post_routing
-> but never reverted. A comment says:
+> Therefore I have to use the NETDEV_POST_TYPE_CHANGE to make sure that
+> the corresponding neighbour structure is created.
 > 
->   /* We assume any code from br_dev_queue_push_xmit onwards doesn't care
->    * about the value of skb->pkt_type. */
+> I could imagine that other protocols have similar requirements.
+> 
+> Whether this is a fix or a functional extension is hard to say.
+> 
+> Some time ago there was also a corresponding patch for the WAN/HDLC
+> subsystem:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit?id=2f8364a291e8
 
-[..]
-> But when having a tunnel (say vxlan) attached to a bridge we have the
-> following call trace:
-
-> In this specific case, this creates issues such as when an ICMPv6 PTB
-> should be sent back. When CONFIG_BRIDGE_NETFILTER is enabled, the PTB
-> isn't sent (as skb_tunnel_check_pmtu checks if pkt_type is PACKET_HOST
-> and returns early).
-> 
-> If the comment is right and no one cares about the value of
-> skb->pkt_type after br_dev_queue_push_xmit (which isn't true), resetting
-> it to its original value should be safe.
-
-That comment is 18 years old, safe bet noone thought of
-ipv6-in-tunnel-interface-added-as-bridge-port back then.
-
-Reviewed-by: Florian Westphal <fw@strlen.de>
+Thanks for this info, applied to net-next.
