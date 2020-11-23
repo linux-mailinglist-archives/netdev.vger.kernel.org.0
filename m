@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7207D2C1615
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 21:29:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50A292C1619
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 21:29:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732541AbgKWULD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 15:11:03 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:45328 "EHLO
+        id S1732581AbgKWULL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 15:11:11 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35419 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728711AbgKWULB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 15:11:01 -0500
+        by vger.kernel.org with ESMTP id S1728628AbgKWULG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 15:11:06 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606162260;
+        s=mimecast20190719; t=1606162265;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Vkih/W5mWZ3jGyhYgsTgO0G7yF7D1xQdCeMxl0ijBV8=;
-        b=g5H0UJjppdc/v5CS6iblnjblC4ZeFfvrQSwIHLTcE3XdQ9mitJXGv3QxOKbGA/Z6JZu/d6
-        UGZO9c5Ddbes3Oi6iRT5qy6XtWt1oI9PF6/uSeXn8YZWugLnGEV6or38zbrWnhO0ZOCpBJ
-        18pOmNKE7terJacFN0KFEvIXa6kSwbo=
+        bh=lLiWQ1Ub39QiOJBZyHpbbBOEA4STj6F1nTXs9clDkFI=;
+        b=XF8w8mUtwKVzNKDY1LrPdBe5ddMyAvQaj6/IizpRLaZKbEDopsp7PN8rmnse2iv1muhNFn
+        zu1QBWpYqH1kia6U6Q0De34doN1nSrn2+xs90Ct75bonDS6fjyIU0pxlLcJOtYEWH71yAr
+        zLXY+nsX3mq3zaBLB7mFyzlh2w0iG4A=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-595-_p8WmiP-OG69_hQK4iOr6g-1; Mon, 23 Nov 2020 15:10:56 -0500
-X-MC-Unique: _p8WmiP-OG69_hQK4iOr6g-1
+ us-mta-233-qvlvlkgbNc-QorDZHatfZA-1; Mon, 23 Nov 2020 15:11:03 -0500
+X-MC-Unique: qvlvlkgbNc-QorDZHatfZA-1
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7490D1084C80;
-        Mon, 23 Nov 2020 20:10:55 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 446591006C81;
+        Mon, 23 Nov 2020 20:11:02 +0000 (UTC)
 Received: from warthog.procyon.org.uk (ovpn-112-111.rdu2.redhat.com [10.10.112.111])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8F7E519D80;
-        Mon, 23 Nov 2020 20:10:54 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 75B9119D80;
+        Mon, 23 Nov 2020 20:11:01 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 07/17] rxrpc: Hand server key parsing off to the
- security class
+Subject: [PATCH net-next 08/17] rxrpc: Don't leak the service-side session key
+ to userspace
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Date:   Mon, 23 Nov 2020 20:10:53 +0000
-Message-ID: <160616225383.830164.7963116197511045625.stgit@warthog.procyon.org.uk>
+Date:   Mon, 23 Nov 2020 20:11:00 +0000
+Message-ID: <160616226068.830164.15086742974070752693.stgit@warthog.procyon.org.uk>
 In-Reply-To: <160616220405.830164.2239716599743995145.stgit@warthog.procyon.org.uk>
 References: <160616220405.830164.2239716599743995145.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/0.23
@@ -56,245 +56,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hand responsibility for parsing a server key off to the security class.  We
-can determine which class from the description.  This is necessary as rxgk
-server keys have different lookup requirements and different content
-requirements (dependent on crypto type) to those of rxkad server keys.
+Don't let someone reading a service-side rxrpc-type key get access to the
+session key that was exchanged with the client.  The server application
+will, at some point, need to be able to read the information in the ticket,
+but this probably shouldn't include the key material.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
 ---
 
- net/rxrpc/ar-internal.h |   11 +++++++++
- net/rxrpc/rxkad.c       |   47 +++++++++++++++++++++++++++++++++++++++
- net/rxrpc/security.c    |    2 +-
- net/rxrpc/server_key.c  |   56 +++++++++++++++++++++++------------------------
- 4 files changed, 86 insertions(+), 30 deletions(-)
+ include/keys/rxrpc-type.h |    1 +
+ net/rxrpc/key.c           |    8 ++++++--
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 6427bcfb4df5..6682c797b878 100644
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -35,6 +35,7 @@ struct rxrpc_crypt {
- #define rxrpc_queue_delayed_work(WS,D)	\
- 	queue_delayed_work(rxrpc_workqueue, (WS), (D))
- 
-+struct key_preparsed_payload;
- struct rxrpc_connection;
- 
- /*
-@@ -217,6 +218,15 @@ struct rxrpc_security {
- 	/* Clean up a security service */
- 	void (*exit)(void);
- 
-+	/* Parse the information from a server key */
-+	int (*preparse_server_key)(struct key_preparsed_payload *);
-+
-+	/* Clean up the preparse buffer after parsing a server key */
-+	void (*free_preparse_server_key)(struct key_preparsed_payload *);
-+
-+	/* Destroy the payload of a server key */
-+	void (*destroy_server_key)(struct key *);
-+
- 	/* initialise a connection's security */
- 	int (*init_connection_security)(struct rxrpc_connection *,
- 					struct rxrpc_key_token *);
-@@ -1050,6 +1060,7 @@ extern const struct rxrpc_security rxkad;
-  * security.c
+diff --git a/include/keys/rxrpc-type.h b/include/keys/rxrpc-type.h
+index 8e4ced9b4ecf..333c0f49a9cd 100644
+--- a/include/keys/rxrpc-type.h
++++ b/include/keys/rxrpc-type.h
+@@ -36,6 +36,7 @@ struct rxkad_key {
   */
- int __init rxrpc_init_security(void);
-+const struct rxrpc_security *rxrpc_security_lookup(u8);
- void rxrpc_exit_security(void);
- int rxrpc_init_client_conn_security(struct rxrpc_connection *);
- const struct rxrpc_security *rxrpc_get_incoming_security(struct rxrpc_sock *,
-diff --git a/net/rxrpc/rxkad.c b/net/rxrpc/rxkad.c
-index 0d21935dac27..3057f00a6978 100644
---- a/net/rxrpc/rxkad.c
-+++ b/net/rxrpc/rxkad.c
-@@ -15,6 +15,7 @@
- #include <linux/scatterlist.h>
- #include <linux/ctype.h>
- #include <linux/slab.h>
-+#include <linux/key-type.h>
- #include <net/sock.h>
- #include <net/af_rxrpc.h>
- #include <keys/rxrpc-type.h>
-@@ -46,6 +47,49 @@ static struct crypto_sync_skcipher *rxkad_ci;
- static struct skcipher_request *rxkad_ci_req;
- static DEFINE_MUTEX(rxkad_ci_mutex);
+ struct rxrpc_key_token {
+ 	u16	security_index;		/* RxRPC header security index */
++	bool	no_leak_key;		/* Don't copy the key to userspace */
+ 	struct rxrpc_key_token *next;	/* the next token in the list */
+ 	union {
+ 		struct rxkad_key *kad;
+diff --git a/net/rxrpc/key.c b/net/rxrpc/key.c
+index 3bd7b9d48d27..ed29ec01237b 100644
+--- a/net/rxrpc/key.c
++++ b/net/rxrpc/key.c
+@@ -579,7 +579,8 @@ static long rxrpc_read(const struct key *key,
+ 		case RXRPC_SECURITY_RXKAD:
+ 			toksize += 8 * 4;	/* viceid, kvno, key*2, begin,
+ 						 * end, primary, tktlen */
+-			toksize += RND(token->kad->ticket_len);
++			if (!token->no_leak_key)
++				toksize += RND(token->kad->ticket_len);
+ 			break;
  
-+/*
-+ * Parse the information from a server key
-+ *
-+ * The data should be the 8-byte secret key.
-+ */
-+static int rxkad_preparse_server_key(struct key_preparsed_payload *prep)
-+{
-+	struct crypto_skcipher *ci;
-+
-+	if (prep->datalen != 8)
-+		return -EINVAL;
-+
-+	memcpy(&prep->payload.data[2], prep->data, 8);
-+
-+	ci = crypto_alloc_skcipher("pcbc(des)", 0, CRYPTO_ALG_ASYNC);
-+	if (IS_ERR(ci)) {
-+		_leave(" = %ld", PTR_ERR(ci));
-+		return PTR_ERR(ci);
-+	}
-+
-+	if (crypto_skcipher_setkey(ci, prep->data, 8) < 0)
-+		BUG();
-+
-+	prep->payload.data[0] = ci;
-+	_leave(" = 0");
-+	return 0;
-+}
-+
-+static void rxkad_free_preparse_server_key(struct key_preparsed_payload *prep)
-+{
-+	
-+	if (prep->payload.data[0])
-+		crypto_free_skcipher(prep->payload.data[0]);
-+}
-+
-+static void rxkad_destroy_server_key(struct key *key)
-+{
-+	if (key->payload.data[0]) {
-+		crypto_free_skcipher(key->payload.data[0]);
-+		key->payload.data[0] = NULL;
-+	}
-+}
-+
- /*
-  * initialise connection security
-  */
-@@ -1302,6 +1346,9 @@ const struct rxrpc_security rxkad = {
- 	.no_key_abort			= RXKADUNKNOWNKEY,
- 	.init				= rxkad_init,
- 	.exit				= rxkad_exit,
-+	.preparse_server_key		= rxkad_preparse_server_key,
-+	.free_preparse_server_key	= rxkad_free_preparse_server_key,
-+	.destroy_server_key		= rxkad_destroy_server_key,
- 	.init_connection_security	= rxkad_init_connection_security,
- 	.prime_packet_security		= rxkad_prime_packet_security,
- 	.secure_packet			= rxkad_secure_packet,
-diff --git a/net/rxrpc/security.c b/net/rxrpc/security.c
-index bef9971e15cd..50cb5f1ee0c0 100644
---- a/net/rxrpc/security.c
-+++ b/net/rxrpc/security.c
-@@ -55,7 +55,7 @@ void rxrpc_exit_security(void)
- /*
-  * look up an rxrpc security module
-  */
--static const struct rxrpc_security *rxrpc_security_lookup(u8 security_index)
-+const struct rxrpc_security *rxrpc_security_lookup(u8 security_index)
- {
- 	if (security_index >= ARRAY_SIZE(rxrpc_security_types))
- 		return NULL;
-diff --git a/net/rxrpc/server_key.c b/net/rxrpc/server_key.c
-index b75bda05120d..1a2f0b63ee1d 100644
---- a/net/rxrpc/server_key.c
-+++ b/net/rxrpc/server_key.c
-@@ -30,8 +30,8 @@ static void rxrpc_destroy_s(struct key *);
- static void rxrpc_describe_s(const struct key *, struct seq_file *);
+ 		default: /* we have a ticket we can't encode */
+@@ -654,7 +655,10 @@ static long rxrpc_read(const struct key *key,
+ 			ENCODE(token->kad->start);
+ 			ENCODE(token->kad->expiry);
+ 			ENCODE(token->kad->primary_flag);
+-			ENCODE_DATA(token->kad->ticket_len, token->kad->ticket);
++			if (token->no_leak_key)
++				ENCODE(0);
++			else
++				ENCODE_DATA(token->kad->ticket_len, token->kad->ticket);
+ 			break;
  
- /*
-- * rxrpc server defined keys take "<serviceId>:<securityIndex>" as the
-- * description and an 8-byte decryption key as the payload
-+ * rxrpc server keys take "<serviceId>:<securityIndex>[:<sec-specific>]" as the
-+ * description and the key material as the payload.
-  */
- struct key_type key_type_rxrpc_s = {
- 	.name		= "rxrpc_s",
-@@ -45,64 +45,62 @@ struct key_type key_type_rxrpc_s = {
- };
- 
- /*
-- * Vet the description for an RxRPC server key
-+ * Vet the description for an RxRPC server key.
-  */
- static int rxrpc_vet_description_s(const char *desc)
- {
--	unsigned long num;
-+	unsigned long service, sec_class;
- 	char *p;
- 
--	num = simple_strtoul(desc, &p, 10);
--	if (*p != ':' || num > 65535)
-+	service = simple_strtoul(desc, &p, 10);
-+	if (*p != ':' || service > 65535)
- 		return -EINVAL;
--	num = simple_strtoul(p + 1, &p, 10);
--	if (*p || num < 1 || num > 255)
-+	sec_class = simple_strtoul(p + 1, &p, 10);
-+	if ((*p && *p != ':') || sec_class < 1 || sec_class > 255)
- 		return -EINVAL;
- 	return 0;
- }
- 
- /*
-  * Preparse a server secret key.
-- *
-- * The data should be the 8-byte secret key.
-  */
- static int rxrpc_preparse_s(struct key_preparsed_payload *prep)
- {
--	struct crypto_skcipher *ci;
-+	const struct rxrpc_security *sec;
-+	unsigned int service, sec_class;
-+	int n;
- 
- 	_enter("%zu", prep->datalen);
- 
--	if (prep->datalen != 8)
-+	if (!prep->orig_description)
- 		return -EINVAL;
- 
--	memcpy(&prep->payload.data[2], prep->data, 8);
-+	if (sscanf(prep->orig_description, "%u:%u%n", &service, &sec_class, &n) != 2)
-+		return -EINVAL;
- 
--	ci = crypto_alloc_skcipher("pcbc(des)", 0, CRYPTO_ALG_ASYNC);
--	if (IS_ERR(ci)) {
--		_leave(" = %ld", PTR_ERR(ci));
--		return PTR_ERR(ci);
--	}
-+	sec = rxrpc_security_lookup(sec_class);
-+	if (!sec)
-+		return -ENOPKG;
- 
--	if (crypto_skcipher_setkey(ci, prep->data, 8) < 0)
--		BUG();
-+	prep->payload.data[1] = (struct rxrpc_security *)sec;
- 
--	prep->payload.data[0] = ci;
--	_leave(" = 0");
--	return 0;
-+	return sec->preparse_server_key(prep);
- }
- 
- static void rxrpc_free_preparse_s(struct key_preparsed_payload *prep)
- {
--	if (prep->payload.data[0])
--		crypto_free_skcipher(prep->payload.data[0]);
-+	const struct rxrpc_security *sec = prep->payload.data[1];
-+
-+	if (sec)
-+		sec->free_preparse_server_key(prep);
- }
- 
- static void rxrpc_destroy_s(struct key *key)
- {
--	if (key->payload.data[0]) {
--		crypto_free_skcipher(key->payload.data[0]);
--		key->payload.data[0] = NULL;
--	}
-+	const struct rxrpc_security *sec = key->payload.data[1];
-+
-+	if (sec)
-+		sec->destroy_server_key(key);
- }
- 
- static void rxrpc_describe_s(const struct key *key, struct seq_file *m)
+ 		default:
 
 
