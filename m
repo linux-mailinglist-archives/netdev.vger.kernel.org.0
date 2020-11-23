@@ -2,83 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1460D2C04FD
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 12:54:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72D3C2C050B
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 12:57:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729267AbgKWLxS convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 23 Nov 2020 06:53:18 -0500
-Received: from coyote.holtmann.net ([212.227.132.17]:42761 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729098AbgKWLxR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 06:53:17 -0500
-Received: from marcel-macbook.holtmann.net (unknown [37.83.193.87])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 77795CECCF;
-        Mon, 23 Nov 2020 13:00:27 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.20.0.2.21\))
-Subject: Re: [PATCH] Bluetooth: sco: Fix crash when using BT_SNDMTU/BT_RCVMTU
- option
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20201116132421.94624-1-weiyongjun1@huawei.com>
-Date:   Mon, 23 Nov 2020 12:53:15 +0100
-Cc:     =?utf-8?Q?Marcel_Holtmann_Johan_Hedberg_Jakub_Kicinski_Joseph_Hwang_Al?=
-         =?utf-8?Q?ain_Michaud_Abhishek_Pandit-Subedi_Pali_Roh=C3=A1r?= 
-        <"marcel@holtmann.orgjohan.hedberg@gmail.comkuba@kernel.orgjosephsih@chromium.orgalainm@chromium.orgabhishekpandit@chromium.orgpali"@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        Hulk Robot <hulkci@huawei.com>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <B55CF6CB-6C4F-4F9D-9FFC-83B495913A96@holtmann.org>
-References: <20201116132421.94624-1-weiyongjun1@huawei.com>
-To:     Wei Yongjun <weiyongjun1@huawei.com>
-X-Mailer: Apple Mail (2.3654.20.0.2.21)
+        id S1729168AbgKWL5W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 06:57:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50722 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728857AbgKWL5V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 06:57:21 -0500
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84827C0613CF
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 03:57:20 -0800 (PST)
+Received: by mail-wm1-x344.google.com with SMTP id a3so16965815wmb.5
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 03:57:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=rlYXaarQWYr1z9FaJrhWlTj9jM6iSzALwXjPhaLgP9M=;
+        b=g7aY8SaHFaDFAGRBx+nyswkUbD1mQbY/tWTBxvVsFmXjjsp+UvAoa+8YtdIF+OeCpw
+         SHtmrQ6NTkbeIQC45+qsus86mhhD2T2V6vV2PYX0Dx7uRaWZ8ARgmcuKk8KGhdCua0wB
+         N0eOEsJyl27Pbk+NylmQ+e12tRZyz5hBIR/oUeigmamzsJP43/6vBr+doiYdyXlWnUEj
+         4GJgytD18z7EHsR9Q3bw5u4bhieEn14B4JQkHvCU++M2R1HVIck8UnX37FfGfCQ7rMnP
+         RHMmb8aO2t0hdwX74RQej9DocYTaqij1HxVxz6BeMvUIkiFXZ7Dqe3nNKg/w+7SAjrEJ
+         cI1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=rlYXaarQWYr1z9FaJrhWlTj9jM6iSzALwXjPhaLgP9M=;
+        b=GspytIHDp9TVYSoyv7730+VOtGRPkRZ+rVgJ7ICP++2tsjl62hIiv2wCewt28T+o33
+         1dhUbEL7YXSn784dhKhqh12FRVUd9XbK8R5WtH8nVze86Kq7qqzCBPxHEDrI6sImamxN
+         P7HXai0HBMVDEgA6fPlKR9gU3PzimstDUiSjn2gsBCkJDEZzJqSwvYxZWIEaVIOPejqw
+         Cu774hbNok9AhpF0thyhUImLW+PYDweotZZuZxO7PDAkM+Av/r2usMZM6ePMyniaqo5U
+         gB9i9DJikGe9Ie93oV3NuHB4slSBDr9Eq307mQ+IkJ5rL+qfIm2LSuVc2/7+XW4ceR2T
+         rq5w==
+X-Gm-Message-State: AOAM532ykDp6t3UnFOxoNKlk6rsKu4R1/UYkaNUw0XUgWjqF1EuS+RAL
+        E1/Hzb0ie0IO/NbKpabOcUo=
+X-Google-Smtp-Source: ABdhPJwTPPcAqsTmdP2VSVG2pXq8IvbWhNxlFZjEEA9LEktUN5sYGr/0DCy5AgAfC5cNPITvIeuLew==
+X-Received: by 2002:a1c:4884:: with SMTP id v126mr24280812wma.160.1606132639319;
+        Mon, 23 Nov 2020 03:57:19 -0800 (PST)
+Received: from [192.168.8.114] ([37.164.107.50])
+        by smtp.gmail.com with ESMTPSA id d13sm20908780wrb.39.2020.11.23.03.57.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 Nov 2020 03:57:18 -0800 (PST)
+Subject: Re: [PATCH net-next 10/10] mptcp: refine MPTCP-level ack scheduling
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        netdev@vger.kernel.org
+Cc:     Paolo Abeni <pabeni@redhat.com>, kuba@kernel.org,
+        mptcp@lists.01.org
+References: <20201119194603.103158-1-mathew.j.martineau@linux.intel.com>
+ <20201119194603.103158-11-mathew.j.martineau@linux.intel.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <ca0b65f8-7a69-ff4e-9e0d-66a7a923b0c1@gmail.com>
+Date:   Mon, 23 Nov 2020 12:57:17 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
+MIME-Version: 1.0
+In-Reply-To: <20201119194603.103158-11-mathew.j.martineau@linux.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Wei,
 
-> This commit add the invalid check for connected socket, without it will
-> causes the following crash due to sco_pi(sk)->conn being NULL:
+
+On 11/19/20 8:46 PM, Mat Martineau wrote:
+> From: Paolo Abeni <pabeni@redhat.com>
 > 
-> KASAN: null-ptr-deref in range [0x0000000000000050-0x0000000000000057]
-> CPU: 3 PID: 4284 Comm: test_sco Not tainted 5.10.0-rc3+ #1
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1 04/01/2014
-> RIP: 0010:sco_sock_getsockopt+0x45d/0x8e0
-> Code: 48 c1 ea 03 80 3c 02 00 0f 85 ca 03 00 00 49 8b 9d f8 04 00 00 48 b8 00
->      00 00 00 00 fc ff df 48 8d 7b 50 48 89 fa 48 c1 ea 03 <0f> b6 04 02 84
->      c0 74 08 3c 03 0f 8e b5 03 00 00 8b 43 50 48 8b 0c
-> RSP: 0018:ffff88801bb17d88 EFLAGS: 00010206
-> RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff83a4ecdf
-> RDX: 000000000000000a RSI: ffffc90002fce000 RDI: 0000000000000050
-> RBP: 1ffff11003762fb4 R08: 0000000000000001 R09: ffff88810e1008c0
-> R10: ffffffffbd695dcf R11: fffffbfff7ad2bb9 R12: 0000000000000000
-> R13: ffff888018ff1000 R14: dffffc0000000000 R15: 000000000000000d
-> FS:  00007fb4f76c1700(0000) GS:ffff88811af80000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00005555e3b7a938 CR3: 00000001117be001 CR4: 0000000000770ee0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> PKRU: 55555554
-> Call Trace:
-> ? sco_skb_put_cmsg+0x80/0x80
-> ? sco_skb_put_cmsg+0x80/0x80
-> __sys_getsockopt+0x12a/0x220
-> ? __ia32_sys_setsockopt+0x150/0x150
-> ? syscall_enter_from_user_mode+0x18/0x50
-> ? rcu_read_lock_bh_held+0xb0/0xb0
-> __x64_sys_getsockopt+0xba/0x150
-> ? syscall_enter_from_user_mode+0x1d/0x50
-> do_syscall_64+0x33/0x40
-> entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> Send timely MPTCP-level ack is somewhat difficult when
+> the insertion into the msk receive level is performed
+> by the worker.
 > 
-> Fixes: 0fc1a726f897 ("Bluetooth: sco: new getsockopt options BT_SNDMTU/BT_RCVMTU")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+> It needs TCP-level dup-ack to notify the MPTCP-level
+> ack_seq increase, as both the TCP-level ack seq and the
+> rcv window are unchanged.
+> 
+> We can actually avoid processing incoming data with the
+> worker, and let the subflow or recevmsg() send ack as needed.
+> 
+> When recvmsg() moves the skbs inside the msk receive queue,
+> the msk space is still unchanged, so tcp_cleanup_rbuf() could
+> end-up skipping TCP-level ack generation. Anyway, when
+> __mptcp_move_skbs() is invoked, a known amount of bytes is
+> going to be consumed soon: we update rcv wnd computation taking
+> them in account.
+> 
+> Additionally we need to explicitly trigger tcp_cleanup_rbuf()
+> when recvmsg() consumes a significant amount of the receive buffer.
+> 
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+> ---
+>  net/mptcp/options.c  |   1 +
+>  net/mptcp/protocol.c | 105 +++++++++++++++++++++----------------------
+>  net/mptcp/protocol.h |   8 ++++
+>  net/mptcp/subflow.c  |   4 +-
+>  4 files changed, 61 insertions(+), 57 deletions(-)
+> 
+> diff --git a/net/mptcp/options.c b/net/mptcp/options.c
+> index 248e3930c0cb..8a59b3e44599 100644
+> --- a/net/mptcp/options.c
+> +++ b/net/mptcp/options.c
+> @@ -530,6 +530,7 @@ static bool mptcp_established_options_dss(struct sock *sk, struct sk_buff *skb,
+>  		opts->ext_copy.ack64 = 0;
+>  	}
+>  	opts->ext_copy.use_ack = 1;
+> +	WRITE_ONCE(msk->old_wspace, __mptcp_space((struct sock *)msk));
+>  
+>  	/* Add kind/length/subtype/flag overhead if mapping is not populated */
+>  	if (dss_size == 0)
+> diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+> index 4ae2c4a30e44..748343f1a968 100644
+> --- a/net/mptcp/protocol.c
+> +++ b/net/mptcp/protocol.c
+> @@ -407,16 +407,42 @@ static void mptcp_set_timeout(const struct sock *sk, const struct sock *ssk)
+>  	mptcp_sk(sk)->timer_ival = tout > 0 ? tout : TCP_RTO_MIN;
+>  }
+>  
+> -static void mptcp_send_ack(struct mptcp_sock *msk)
+> +static bool mptcp_subflow_active(struct mptcp_subflow_context *subflow)
+> +{
+> +	struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
+> +
+> +	/* can't send if JOIN hasn't completed yet (i.e. is usable for mptcp) */
+> +	if (subflow->request_join && !subflow->fully_established)
+> +		return false;
+> +
+> +	/* only send if our side has not closed yet */
+> +	return ((1 << ssk->sk_state) & (TCPF_ESTABLISHED | TCPF_CLOSE_WAIT));
+> +}
+> +
+> +static void mptcp_send_ack(struct mptcp_sock *msk, bool force)
+>  {
+>  	struct mptcp_subflow_context *subflow;
+> +	struct sock *pick = NULL;
+>  
+>  	mptcp_for_each_subflow(msk, subflow) {
+>  		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
+>  
+> -		lock_sock(ssk);
+> -		tcp_send_ack(ssk);
+> -		release_sock(ssk);
+> +		if (force) {
+> +			lock_sock(ssk);
+> +			tcp_send_ack(ssk);
+> +			release_sock(ssk);
+> +			continue;
+> +		}
+> +
+> +		/* if the hintes ssk is still active, use it */
+> +		pick = ssk;
+> +		if (ssk == msk->ack_hint)
+> +			break;
+> +	}
+> +	if (!force && pick) {
+> +		lock_sock(pick);
+> +		tcp_cleanup_rbuf(pick, 1);
 
-patch has been applied to bluetooth-next tree.
+Calling tcp_cleanup_rbuf() on a socket that was never established is going to fail
+with a divide by 0 (mss being 0)
 
-Regards
+AFAIK, mptcp_recvmsg() can be called right after a socket(AF_INET, SOCK_STREAM, IPPROTO_MPTCP)
+call.
 
-Marcel
+Probably, after a lock_sock(), you should double check socket state (same above before calling tcp_send_ack())
+
+
+
+> +		release_sock(pick);
+>  	}
+>  }
+>  
+
+
+....
+
+>  
+> +		/* be sure to advertise window change */
+> +		old_space = READ_ONCE(msk->old_wspace);
+> +		if ((tcp_space(sk) - old_space) >= old_space)
+> +			mptcp_send_ack(msk, false);
+> +
+
+Yes, if we call recvmsg() right after socket(), we will end up calling tcp_cleanup_rbuf(),
+while no byte was ever copied/drained.
 
