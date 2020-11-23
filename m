@@ -2,74 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 548192C10BC
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 17:39:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAA472C10BF
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 17:39:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732054AbgKWQeq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 11:34:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57492 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732584AbgKWQe0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Nov 2020 11:34:26 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0CDDB20665;
-        Mon, 23 Nov 2020 16:34:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606149265;
-        bh=rRy1XN3BM1aJ+1OM2XKGfERXpJFhceWamOKyhXrGVO8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PBSap7QXYKnMdtrYl8Xk6i4UvChYotLmarg0pAI4uW2U57DxQSkZIUqU2qmKT32vX
-         eN3dTLPZKPji3F4MuOrj9U1KbngzlBRcTHXt2O3WuKlEl8AG4I7RwBQv87LJbswcSd
-         MMRusshAWImd/ZvOGFx/lVnKqJzwQiVNhcb5H9MA=
-Date:   Mon, 23 Nov 2020 08:34:24 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vadim Fedorenko <vfedorenko@novek.ru>
-Cc:     Boris Pismenny <borisp@nvidia.com>,
-        Aviad Yehezkel <aviadye@nvidia.com>, netdev@vger.kernel.org
-Subject: Re: [net v3] net/tls: missing received data after fast remote close
-Message-ID: <20201123083424.34f9ba9f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <64311360-e363-133c-6862-4de1298942ee@novek.ru>
-References: <1605801588-12236-1-git-send-email-vfedorenko@novek.ru>
-        <20201120102637.7d36a9f1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <64311360-e363-133c-6862-4de1298942ee@novek.ru>
+        id S2389766AbgKWQg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 11:36:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37578 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732948AbgKWQg2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 11:36:28 -0500
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7CFC0613CF
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 08:36:27 -0800 (PST)
+Received: by mail-ej1-x642.google.com with SMTP id bo9so18430906ejb.13
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 08:36:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GYk3dJx34xIhJzh03gWspIBSARbL0ljd6SSr9H+RSk4=;
+        b=d6RwES2RUQjTmJQeMK008Ue4vrXe7N1XH3bwqdSCDdwlREdkpbIq2RBG1+JI8v881b
+         NyA0aWobqWK10VABaRMxB4Caiv3cbghNsiAI5ZoqAyHnuVTMktOdkSU0PUiqpM4XZHJh
+         41pI0fTp8maiMuM47LHcgSuFKA+vyUoTjZ/4IRne+/DvJJbkcP8xX5hsuMC7+AwCttPR
+         q5egwdirBlwu7eE9DaJbhpX4h0+c4UR3t77XSYjz9RKD32EwwubIEMEOVBKwhxmJ1RW0
+         AiP+AqBsLUoX3RekqHX5Cyl1GbjNb9Re1XckWTvavtrtJde8la2cVP5BGnVbbuKNhezb
+         ewMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GYk3dJx34xIhJzh03gWspIBSARbL0ljd6SSr9H+RSk4=;
+        b=gDe3DvaI7D+wprS9olUZ0scrRTaG6HgK1mKOprcAruU0EQNSqP5cvkU2tv712n4UY4
+         2bdWC2uz8Rd4EHshdN1nxI8nG2YiZgWxDMzyhqWXrB/XM/EEXVdR9VCb7iqh1OnrN6I9
+         +5o6948xm3vo7A+28UHVUDUAwwFCGVO6exv4iEB/nYCI4goMcfTyYzhHAyEF0oj03R5d
+         SNfmFoW41Jq38A0Jbqi17N2nWumq5Yuhz45a7H5kOSIia7oOibuUl7e6hroGx7lpIPu5
+         rCykiiN/Nmoefs4kRX761kQiadOS6UB72DvngQ7Z6Um0Go0azcYo7zsQvel1fajaCnoQ
+         lnCg==
+X-Gm-Message-State: AOAM5312GFAIMWRCOQsHnVoq59k1QkrJZ79ygVNCpVk6R5VYOYwFcHWy
+        3oPs6ZnFt93kQ7h9Qo5XZd4=
+X-Google-Smtp-Source: ABdhPJwUjfUjsgzer/Xn8HLd69082y4UjkRXmf21Wj5tkgMGdFp+uqUbJfOQQoB2/t87xk96PeLOUw==
+X-Received: by 2002:a17:906:179a:: with SMTP id t26mr395579eje.49.1606149386575;
+        Mon, 23 Nov 2020 08:36:26 -0800 (PST)
+Received: from yoga-910.localhost ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id i90sm4754971edd.40.2020.11.23.08.36.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Nov 2020 08:36:26 -0800 (PST)
+From:   Ioana Ciornei <ciorneiioana@gmail.com>
+To:     kuba@kernel.org, netdev@vger.kernel.org
+Cc:     Ezequiel Garcia <ezequiel@collabora.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH net] dpaa2-eth: Fix compile error due to missing devlink support
+Date:   Mon, 23 Nov 2020 18:35:53 +0200
+Message-Id: <20201123163553.1666476-1-ciorneiioana@gmail.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 23 Nov 2020 13:40:46 +0000 Vadim Fedorenko wrote:
-> On 20.11.2020 18:26, Jakub Kicinski wrote:
-> > On Thu, 19 Nov 2020 18:59:48 +0300 Vadim Fedorenko wrote:  
-> >> In case when tcp socket received FIN after some data and the
-> >> parser haven't started before reading data caller will receive
-> >> an empty buffer. This behavior differs from plain TCP socket and
-> >> leads to special treating in user-space.
-> >> The flow that triggers the race is simple. Server sends small
-> >> amount of data right after the connection is configured to use TLS
-> >> and closes the connection. In this case receiver sees TLS Handshake
-> >> data, configures TLS socket right after Change Cipher Spec record.
-> >> While the configuration is in process, TCP socket receives small
-> >> Application Data record, Encrypted Alert record and FIN packet. So
-> >> the TCP socket changes sk_shutdown to RCV_SHUTDOWN and sk_flag with
-> >> SK_DONE bit set. The received data is not parsed upon arrival and is
-> >> never sent to user-space.
-> >>
-> >> Patch unpauses parser directly if we have unparsed data in tcp
-> >> receive queue.
-> >>
-> >> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>  
-> > Applied, thanks!  
-> Looks like I missed fixes tag to queue this patch to -stable.
-> 
-> Fixes: c46234ebb4d1 ("tls: RX path for ktls")
+From: Ezequiel Garcia <ezequiel@collabora.com>
 
-I put this on:
+The dpaa2 driver depends on devlink, so it should select
+NET_DEVLINK in order to fix compile errors, such as:
 
-Fixes: fcf4793e278e ("tls: check RCV_SHUTDOWN in tls_wait_data")
+drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.o: in function `dpaa2_eth_rx_err':
+dpaa2-eth.c:(.text+0x3cec): undefined reference to `devlink_trap_report'
+drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-devlink.o: in function `dpaa2_eth_dl_info_get':
+dpaa2-eth-devlink.c:(.text+0x160): undefined reference to `devlink_info_driver_name_put'
 
-It's queued for stable, but it needs to hit Linus' tree first, so it'll
-take another week or so to show up in stable releases.
+Fixes: ceeb03ad8e22 ("dpaa2-eth: add basic devlink support")
+Signed-off-by: Ezequiel Garcia <ezequiel@collabora.com>
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+---
+ drivers/net/ethernet/freescale/dpaa2/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/ethernet/freescale/dpaa2/Kconfig b/drivers/net/ethernet/freescale/dpaa2/Kconfig
+index c0e05f71826d..ee7a906e30b3 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/Kconfig
++++ b/drivers/net/ethernet/freescale/dpaa2/Kconfig
+@@ -5,6 +5,7 @@ config FSL_DPAA2_ETH
+ 	select PHYLINK
+ 	select PCS_LYNX
+ 	select FSL_XGMAC_MDIO
++	select NET_DEVLINK
+ 	help
+ 	  This is the DPAA2 Ethernet driver supporting Freescale SoCs
+ 	  with DPAA2 (DataPath Acceleration Architecture v2).
+-- 
+2.28.0
+
