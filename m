@@ -2,173 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68EBF2C09D0
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 14:19:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00DA12C0A0E
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 14:19:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387892AbgKWNMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 08:12:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34160 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730459AbgKWNMu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 08:12:50 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6384C0613CF;
-        Mon, 23 Nov 2020 05:12:50 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id w6so14881661pfu.1;
-        Mon, 23 Nov 2020 05:12:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8PerAbw8X9GpFmXgDgTfgJ6bCTqd2WGnMdhkkg2spdI=;
-        b=VFN2GDfAtravz2TUuDaQaNkq+Syi4uNoA4YVzpJjAp4Ps8DlWFo79XOM4jaIy1Pp2W
-         28aGmI05fEsvFSZlBFuwz5eYH2kCR0VLFY4C+HWWM/p+DQ2izlXbSNVfIU4VMQMM7Tu6
-         AYLygCd5wCyOrdVUK3ErvNChYM4mSyPikYl/pBooW3XI/XSPg75R5qFTHR6OdACqcYnm
-         vhEXfj7Uc6k105kqW9LqHdoD9XH2TT/hdVKyjaKNd1g6MIffSZCiqvt1MDUeWczYV94A
-         3sc6AX1fhk9mq2LamljvGWOSaDPGC167V2diN6oQ7BfLKmXMmeRXJANGxk87dA90lG+r
-         GIIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8PerAbw8X9GpFmXgDgTfgJ6bCTqd2WGnMdhkkg2spdI=;
-        b=ejkaPhSk3Xa8G5Fg+VK2tbLK0x6zg45UGRDGeoCVQ8cbNL8MO06G5OwDeHbKphYaee
-         yXv9B4gJJhD/09ORONgcj0PsOzp1Pi4LnLPErW8Z3CL6sROBuQ6ZGH0qHbo/iQvoMr9p
-         BKhbRjadcVd/RlVCzQyliA/g5bzwktTqcI+zGZXUr390ywv+D9xB+2iDTAt0jvkAjETx
-         KNLozJLlKQqn+yAyRvONPrvatcsX0RcR2BcOXhpGbegMc5nBgUFGoA0T58GEkXqhA+sf
-         yJqCX5WwpTj77KNUY0IVdY1DB/fdv3qgSJ46hBbmLm8xXvn8NSl9tsJyjkYCqV7r1KuF
-         a6+g==
-X-Gm-Message-State: AOAM533rzOHE7pF2/o74QlI1R5FgZMqZcv+AvcxWQlO0hr8Cj1NEMi+R
-        yySXQ1VbowxDt+8shiRYIw8=
-X-Google-Smtp-Source: ABdhPJzrs9gjDc/tmdXIefNQhuYO6A1P0d/VPN9mTDa4zVbHnVycm/8TglIT84L63YaZ2fIoFW5pfw==
-X-Received: by 2002:a17:90a:d246:: with SMTP id o6mr24193569pjw.236.1606137170249;
-        Mon, 23 Nov 2020 05:12:50 -0800 (PST)
-Received: from btopel-mobl.ger.intel.com ([192.55.54.40])
-        by smtp.gmail.com with ESMTPSA id t85sm10457143pgb.29.2020.11.23.05.12.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Nov 2020 05:12:48 -0800 (PST)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        jonathan.lemon@gmail.com, yhs@fb.com, weqaar.janjua@gmail.com,
-        magnus.karlsson@intel.com, weqaar.a.janjua@intel.com
-Subject: [PATCH bpf] net, xsk: Avoid taking multiple skbuff references
-Date:   Mon, 23 Nov 2020 14:12:15 +0100
-Message-Id: <20201123131215.136131-1-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        id S2387824AbgKWNQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 08:16:13 -0500
+Received: from mga09.intel.com ([134.134.136.24]:21645 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1733151AbgKWNQD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Nov 2020 08:16:03 -0500
+IronPort-SDR: 0FkDYs1Tihi5bf+F/Pc9RBV19SM3nODPX8rWHJfiTnH/hRnZi+O1bUEsfqH0vmwvC0q8PalZFq
+ HNGPFpxK1KrA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9813"; a="171920115"
+X-IronPort-AV: E=Sophos;i="5.78,363,1599548400"; 
+   d="scan'208";a="171920115"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2020 05:15:58 -0800
+IronPort-SDR: opjIh0SfR+qcuwJ63MUK5+FFRYvTqAUr+8ek3GSZ7jA2gkh3UQztQVuTGibv0S6J2Am1OgIMdO
+ xeL/BfTjTC6g==
+X-IronPort-AV: E=Sophos;i="5.78,363,1599548400"; 
+   d="scan'208";a="546408371"
+Received: from gcavallu-mobl.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.53.119])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2020 05:15:54 -0800
+Subject: Re: [PATCH bpf-next v2 0/5] selftests/bpf: xsk selftests
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+To:     Yonghong Song <yhs@fb.com>,
+        Weqaar Janjua <weqaar.janjua@gmail.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        magnus.karlsson@gmail.com
+Cc:     Weqaar Janjua <weqaar.a.janjua@intel.com>, shuah@kernel.org,
+        skhan@linuxfoundation.org, linux-kselftest@vger.kernel.org,
+        anders.roxell@linaro.org, jonathan.lemon@gmail.com
+References: <20201120130026.19029-1-weqaar.a.janjua@intel.com>
+ <586d63b4-1828-f633-a4ff-88e4e23d164a@fb.com>
+ <8b7cccf1-9845-fd9a-6f6b-bc70b9b3f9b1@intel.com>
+Message-ID: <732c1252-1fac-20b9-0fd8-f1663b18de45@intel.com>
+Date:   Mon, 23 Nov 2020 14:15:50 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <8b7cccf1-9845-fd9a-6f6b-bc70b9b3f9b1@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+On 2020-11-23 13:20, Björn Töpel wrote:
+> On 2020-11-21 01:31, Yonghong Song wrote:
+>>
+>>
+>> On 11/20/20 5:00 AM, Weqaar Janjua wrote:
+>>> This patch set adds AF_XDP selftests based on veth to selftests/bpf.
+>>>
+>>> # Topology:
+>>> # ---------
+>>> #                 -----------
+>>> #               _ | Process | _
+>>> #              /  -----------  \
+>>> #             /        |        \
+>>> #            /         |         \
+>>> #      -----------     |     -----------
+>>> #      | Thread1 |     |     | Thread2 |
+>>> #      -----------     |     -----------
+>>> #           |          |          |
+>>> #      -----------     |     -----------
+>>> #      |  xskX   |     |     |  xskY   |
+>>> #      -----------     |     -----------
+>>> #           |          |          |
+>>> #      -----------     |     ----------
+>>> #      |  vethX  | --------- |  vethY |
+>>> #      -----------   peer    ----------
+>>> #           |          |          |
+>>> #      namespaceX      |     namespaceY
+>>>
+>>> These selftests test AF_XDP SKB and Native/DRV modes using veth Virtual
+>>> Ethernet interfaces.
+>>>
+>>> The test program contains two threads, each thread is single socket with
+>>> a unique UMEM. It validates in-order packet delivery and packet content
+>>> by sending packets to each other.
+>>>
+>>> Prerequisites setup by script test_xsk_prerequisites.sh:
+>>>
+>>>     Set up veth interfaces as per the topology shown ^^:
+>>>     * setup two veth interfaces and one namespace
+>>>     ** veth<xxxx> in root namespace
+>>>     ** veth<yyyy> in af_xdp<xxxx> namespace
+>>>     ** namespace af_xdp<xxxx>
+>>>     * create a spec file veth.spec that includes this run-time 
+>>> configuration
+>>>       that is read by test scripts - filenames prefixed with test_xsk_
+>>>     *** xxxx and yyyy are randomly generated 4 digit numbers used to 
+>>> avoid
+>>>         conflict with any existing interface
+>>>
+>>> The following tests are provided:
+>>>
+>>> 1. AF_XDP SKB mode
+>>>     Generic mode XDP is driver independent, used when the driver does
+>>>     not have support for XDP. Works on any netdevice using sockets and
+>>>     generic XDP path. XDP hook from netif_receive_skb().
+>>>     a. nopoll - soft-irq processing
+>>>     b. poll - using poll() syscall
+>>>     c. Socket Teardown
+>>>        Create a Tx and a Rx socket, Tx from one socket, Rx on another.
+>>>        Destroy both sockets, then repeat multiple times. Only nopoll 
+>>> mode
+>>>       is used
+>>>     d. Bi-directional Sockets
+>>>        Configure sockets as bi-directional tx/rx sockets, sets up fill
+>>>       and completion rings on each socket, tx/rx in both directions.
+>>>       Only nopoll mode is used
+>>>
+>>> 2. AF_XDP DRV/Native mode
+>>>     Works on any netdevice with XDP_REDIRECT support, driver dependent.
+>>>     Processes packets before SKB allocation. Provides better performance
+>>>     than SKB. Driver hook available just after DMA of buffer descriptor.
+>>>     a. nopoll
+>>>     b. poll
+>>>     c. Socket Teardown
+>>>     d. Bi-directional Sockets
+>>>     * Only copy mode is supported because veth does not currently 
+>>> support
+>>>       zero-copy mode
+>>>
+>>> Total tests: 8
+>>>
+>>> Flow:
+>>> * Single process spawns two threads: Tx and Rx
+>>> * Each of these two threads attach to a veth interface within their
+>>>    assigned namespaces
+>>> * Each thread creates one AF_XDP socket connected to a unique umem
+>>>    for each veth interface
+>>> * Tx thread transmits 10k packets from veth<xxxx> to veth<yyyy>
+>>> * Rx thread verifies if all 10k packets were received and delivered
+>>>    in-order, and have the right content
+>>>
+>>> v2 changes:
+>>> * Move selftests/xsk to selftests/bpf
+>>> * Remove Makefiles under selftests/xsk, and utilize 
+>>> selftests/bpf/Makefile
+>>>
+>>> Structure of the patch set:
+>>>
+>>> Patch 1: This patch adds XSK Selftests framework under selftests/bpf
+>>> Patch 2: Adds tests: SKB poll and nopoll mode, and mac-ip-udp debug
+>>> Patch 3: Adds tests: DRV poll and nopoll mode
+>>> Patch 4: Adds tests: SKB and DRV Socket Teardown
+>>> Patch 5: Adds tests: SKB and DRV Bi-directional Sockets
+>>
+>> I just want to report that after applying the above 5 patches
+>> on top of bpf-next commit 450d060e8f75 ("bpftool: Add {i,d}tlb_misses 
+>> support for bpftool profile"), I hit the following error with below 
+>> command sequences:
+>>
+>>   $ ./test_xsk_prerequisites.sh
+>>   $ ./test_xsk_skb_poll.sh
+>> # Interface found: ve1480
+>> # Interface found: ve9258
+>> # NS switched: af_xdp9258
+>> 1..1
+>> # Interface [ve9258] vector [Rx]
+>> # Interface [ve1480] vector [Tx]
+>> # Sending 10000 packets on interface ve1480
+>> [  331.741244] ------------[ cut here ]------------
+>> [  331.741741] kernel BUG at net/core/skbuff.c:1621!
+>> [  331.742265] invalid opcode: 0000 [#1] PREEMPT SMP PTI
+>> [  331.742837] CPU: 0 PID: 1883 Comm: xdpxceiver Not tainted 
+>> 5.10.0-rc3+ #1037
+>> [  331.743468] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), 
+>> BIOS 1.9.3
+>> -1.el7.centos 04/01/2014
+>> [  331.744300] RIP: 0010:pskb_expand_head+0x27b/0x310
+> 
+> Ugh, looks like the tests are working. :-P
+> 
+> This is a BUG_ON(skb_shared(skb)) trigger, related to the skbuff 
+> refcount changes done recently in AF_XDP.
+> 
+> I'll cook a patch! Thanks for the report!
+>
 
-Commit 642e450b6b59 ("xsk: Do not discard packet when NETDEV_TX_BUSY")
-addressed the problem that packets were discarded from the Tx AF_XDP
-ring, when the driver returned NETDEV_TX_BUSY. Part of the fix was
-bumping the skbuff reference count, so that the buffer would not be
-freed by dev_direct_xmit(). A reference count larger than one means
-that the skbuff is "shared", which is not the case.
+Posted a fix [1].
 
-If the "shared" skbuff is sent to the generic XDP receive path,
-netif_receive_generic_xdp(), and pskb_expand_head() is entered the
-BUG_ON(skb_shared(skb)) will trigger.
+Please not that it's for the bpf tree, so when Weqaar pushes the v3 of
+the selftests to bpf-next, [1] needs to be pulled in.
 
-This patch adds a variant to dev_direct_xmit(), __dev_direct_xmit(),
-where a user can select the skbuff free policy. This allows AF_XDP to
-avoid bumping the reference count, but still keep the NETDEV_TX_BUSY
-behavior.
 
-Reported-by: Yonghong Song <yhs@fb.com>
-Fixes: 642e450b6b59 ("xsk: Do not discard packet when NETDEV_TX_BUSY")
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
----
- include/linux/netdevice.h | 1 +
- net/core/dev.c            | 9 +++++++--
- net/xdp/xsk.c             | 8 +-------
- 3 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 964b494b0e8d..e7402fca7752 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2815,6 +2815,7 @@ u16 dev_pick_tx_cpu_id(struct net_device *dev, struct sk_buff *skb,
- 		       struct net_device *sb_dev);
- int dev_queue_xmit(struct sk_buff *skb);
- int dev_queue_xmit_accel(struct sk_buff *skb, struct net_device *sb_dev);
-+int __dev_direct_xmit(struct sk_buff *skb, u16 queue_id, bool free_on_busy);
- int dev_direct_xmit(struct sk_buff *skb, u16 queue_id);
- int register_netdevice(struct net_device *dev);
- void unregister_netdevice_queue(struct net_device *dev, struct list_head *head);
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 82dc6b48e45f..2af79a4253bb 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4180,7 +4180,7 @@ int dev_queue_xmit_accel(struct sk_buff *skb, struct net_device *sb_dev)
- }
- EXPORT_SYMBOL(dev_queue_xmit_accel);
- 
--int dev_direct_xmit(struct sk_buff *skb, u16 queue_id)
-+int __dev_direct_xmit(struct sk_buff *skb, u16 queue_id, bool free_on_busy)
- {
- 	struct net_device *dev = skb->dev;
- 	struct sk_buff *orig_skb = skb;
-@@ -4211,7 +4211,7 @@ int dev_direct_xmit(struct sk_buff *skb, u16 queue_id)
- 
- 	local_bh_enable();
- 
--	if (!dev_xmit_complete(ret))
-+	if (free_on_busy && !dev_xmit_complete(ret))
- 		kfree_skb(skb);
- 
- 	return ret;
-@@ -4220,6 +4220,11 @@ int dev_direct_xmit(struct sk_buff *skb, u16 queue_id)
- 	kfree_skb_list(skb);
- 	return NET_XMIT_DROP;
- }
-+
-+int dev_direct_xmit(struct sk_buff *skb, u16 queue_id)
-+{
-+	return __dev_direct_xmit(skb, queue_id, true);
-+}
- EXPORT_SYMBOL(dev_direct_xmit);
- 
- /*************************************************************************
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 5a6cdf7b320d..c6ad31b374b7 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -411,11 +411,7 @@ static int xsk_generic_xmit(struct sock *sk)
- 		skb_shinfo(skb)->destructor_arg = (void *)(long)desc.addr;
- 		skb->destructor = xsk_destruct_skb;
- 
--		/* Hinder dev_direct_xmit from freeing the packet and
--		 * therefore completing it in the destructor
--		 */
--		refcount_inc(&skb->users);
--		err = dev_direct_xmit(skb, xs->queue_id);
-+		err = __dev_direct_xmit(skb, xs->queue_id, false);
- 		if  (err == NETDEV_TX_BUSY) {
- 			/* Tell user-space to retry the send */
- 			skb->destructor = sock_wfree;
-@@ -429,12 +425,10 @@ static int xsk_generic_xmit(struct sock *sk)
- 		/* Ignore NET_XMIT_CN as packet might have been sent */
- 		if (err == NET_XMIT_DROP) {
- 			/* SKB completed but not sent */
--			kfree_skb(skb);
- 			err = -EBUSY;
- 			goto out;
- 		}
- 
--		consume_skb(skb);
- 		sent_frame = true;
- 	}
- 
+Björn
 
-base-commit: 178648916e73e00de83150eb0c90c0d3a977a46a
--- 
-2.27.0
+[1] 
+https://lore.kernel.org/bpf/20201123131215.136131-1-bjorn.topel@gmail.com/
 
+
+> 
+> Björn
