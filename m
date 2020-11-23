@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77AB52C0C44
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 14:58:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DAC22C0C46
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 14:58:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730712AbgKWNwR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 08:52:17 -0500
+        id S1730783AbgKWNwS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 08:52:18 -0500
 Received: from mga14.intel.com ([192.55.52.115]:1467 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729455AbgKWNwP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Nov 2020 08:52:15 -0500
-IronPort-SDR: a2bd40c91DcbpzZpjgq4vZ4Ia93oBQ5z6/4UBPAdSFubVH8I7hrbS3WB6ODhmCUUE6dlsa9hfp
- 9k9x27A+dUvQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9813"; a="170981463"
+        id S1730688AbgKWNwR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Nov 2020 08:52:17 -0500
+IronPort-SDR: 52wSzIYbMeHjt6IUD/KRrnIops2/CP9yn+o5EdILEjay8QTMiDo+O2AgjEoMegwZIoC2I72Ib7
+ H2srxv7jU/9Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9813"; a="170981473"
 X-IronPort-AV: E=Sophos;i="5.78,363,1599548400"; 
-   d="scan'208";a="170981463"
+   d="scan'208";a="170981473"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2020 05:52:14 -0800
-IronPort-SDR: +36Rq6FaH2mev9KCyshvDQkWeXrJDLwjCLfBxof5e8r39JxAL/kh3yiOnhQ8MDBQ6RYs0JRrg7
- +GmhKsW2mpZw==
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2020 05:52:16 -0800
+IronPort-SDR: RbnEwIigslklF7n3qJ07WGF+ouoOiRFLhaNpP++g3ubdtJcAZBt+3UlkdEBaUmI0oJnVNgsjyu
+ rXJ5G0G+6vww==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.78,363,1599548400"; 
-   d="scan'208";a="370035554"
+   d="scan'208";a="370035563"
 Received: from bgsxx0031.iind.intel.com ([10.106.222.40])
-  by orsmga007.jf.intel.com with ESMTP; 23 Nov 2020 05:52:11 -0800
+  by orsmga007.jf.intel.com with ESMTP; 23 Nov 2020 05:52:14 -0800
 From:   M Chetan Kumar <m.chetan.kumar@intel.com>
 To:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
 Cc:     johannes@sipsolutions.net, krishna.c.sudi@intel.com,
         m.chetan.kumar@intel.com
-Subject: [RFC 08/18] net: iosm: MBIM control device
-Date:   Mon, 23 Nov 2020 19:21:13 +0530
-Message-Id: <20201123135123.48892-9-m.chetan.kumar@intel.com>
+Subject: [RFC 09/18] net: iosm: bottom half
+Date:   Mon, 23 Nov 2020 19:21:14 +0530
+Message-Id: <20201123135123.48892-10-m.chetan.kumar@intel.com>
 X-Mailer: git-send-email 2.12.3
 In-Reply-To: <20201123135123.48892-1-m.chetan.kumar@intel.com>
 References: <20201123135123.48892-1-m.chetan.kumar@intel.com>
@@ -41,257 +41,331 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implements a char device for MBIM protocol communication &
-provides a simple IOCTL for max transfer buffer size
-configuration.
+1) Bottom half(tasklet) for IRQ and task processing.
+2) Tasks are processed asynchronous and synchronously.
 
 Signed-off-by: M Chetan Kumar <m.chetan.kumar@intel.com>
 ---
- drivers/net/wwan/iosm/iosm_ipc_mbim.c | 205 ++++++++++++++++++++++++++++++++++
- drivers/net/wwan/iosm/iosm_ipc_mbim.h |  24 ++++
- 2 files changed, 229 insertions(+)
- create mode 100644 drivers/net/wwan/iosm/iosm_ipc_mbim.c
- create mode 100644 drivers/net/wwan/iosm/iosm_ipc_mbim.h
+ drivers/net/wwan/iosm/iosm_ipc_task_queue.c | 258 ++++++++++++++++++++++++++++
+ drivers/net/wwan/iosm/iosm_ipc_task_queue.h |  46 +++++
+ 2 files changed, 304 insertions(+)
+ create mode 100644 drivers/net/wwan/iosm/iosm_ipc_task_queue.c
+ create mode 100644 drivers/net/wwan/iosm/iosm_ipc_task_queue.h
 
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_mbim.c b/drivers/net/wwan/iosm/iosm_ipc_mbim.c
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_task_queue.c b/drivers/net/wwan/iosm/iosm_ipc_task_queue.c
 new file mode 100644
-index 000000000000..b263c77d6eb2
+index 000000000000..34f6783f7533
 --- /dev/null
-+++ b/drivers/net/wwan/iosm/iosm_ipc_mbim.c
-@@ -0,0 +1,205 @@
++++ b/drivers/net/wwan/iosm/iosm_ipc_task_queue.c
+@@ -0,0 +1,258 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Copyright (C) 2020 Intel Corporation.
 + */
 +
-+#include <linux/poll.h>
-+#include <linux/uaccess.h>
++#include <linux/slab.h>
 +
-+#include "iosm_ipc_imem_ops.h"
-+#include "iosm_ipc_mbim.h"
-+#include "iosm_ipc_sio.h"
++#include "iosm_ipc_task_queue.h"
 +
-+#define IOCTL_WDM_MAX_COMMAND _IOR('H', 0xA0, __u16)
-+#define WDM_MAX_SIZE 4096
-+#define IPC_READ_TIMEOUT 500
++/* Number of available element for the input message queue of the IPC
++ * ipc_task.
++ */
++#define IPC_THREAD_QUEUE_SIZE 256
 +
-+/* MBIM IOCTL for max buffer size. */
-+static long ipc_mbim_fop_unlocked_ioctl(struct file *filp, unsigned int cmd,
-+					unsigned long arg)
++/**
++ * struct ipc_task_queue_args - Struct for Task queue arguments
++ * @instance:	Instance pointer for function to be called in tasklet context
++ * @msg:	Message argument for tasklet function. (optional, can be NULL)
++ * @completion:	OS object used to wait for the tasklet function to finish for
++ *		synchronous calls
++ * @func:	Function to be called in tasklet (tl) context
++ * @arg:	Generic integer argument for tasklet function (optional)
++ * @size:	Message size argument for tasklet function (optional)
++ * @response:	Return code of tasklet function for synchronous calls
++ * @is_copy:	Is true if msg contains a pointer to a copy of the original msg
++ *		for async. calls that needs to be freed once the tasklet returns
++ * @response:	Return code of tasklet function for synchronous calls
++ */
++struct ipc_task_queue_args {
++	void *instance;
++	void *msg;
++	struct completion *completion;
++	int (*func)(void *instance, int arg, void *msg, size_t size);
++	int arg;
++	size_t size;
++	int response;
++	u8 is_copy : 1;
++};
++
++/**
++ * struct ipc_task_queue - Struct for Task queue
++ * @dev:	pointer to device structure
++ * @q_lock:	Protect the message queue of the ipc ipc_task
++ * @args:	Message queue of the IPC ipc_task
++ * @q_rpos:	First queue element to process.
++ * @q_wpos:	First free element of the input queue.
++ */
++struct ipc_task_queue {
++	struct device *dev;
++	spinlock_t q_lock; /* for atomic operation on queue */
++	struct ipc_task_queue_args args[IPC_THREAD_QUEUE_SIZE];
++	unsigned int q_rpos;
++	unsigned int q_wpos;
++};
++
++/* Actual tasklet function, will be called whenever tasklet is scheduled.
++ * Calls event handler callback for each element in the message queue
++ */
++static void ipc_task_queue_handler(unsigned long data)
 +{
-+	struct iosm_sio *ipc_mbim =
-+		container_of(filp->private_data, struct iosm_sio, misc);
++	struct ipc_task_queue *ipc_task = (struct ipc_task_queue *)data;
++	unsigned int q_rpos = ipc_task->q_rpos;
 +
-+	if (cmd != IOCTL_WDM_MAX_COMMAND ||
-+	    !access_ok((void __user *)arg, sizeof(ipc_mbim->wmaxcommand)))
-+		return -EINVAL;
++	/* Loop over the input queue contents. */
++	while (q_rpos != ipc_task->q_wpos) {
++		/* Get the current first queue element. */
++		struct ipc_task_queue_args *args = &ipc_task->args[q_rpos];
 +
-+	if (copy_to_user((void __user *)arg, &ipc_mbim->wmaxcommand,
-+			 sizeof(ipc_mbim->wmaxcommand)))
-+		return -EFAULT;
++		/* Process the input message. */
++		if (args->func)
++			args->response = args->func(args->instance, args->arg,
++						    args->msg, args->size);
 +
-+	return 0;
-+}
++		/* Signal completion for synchronous calls */
++		if (args->completion)
++			complete(args->completion);
 +
-+/* Open a shared memory device and initialize the head of the rx skbuf list. */
-+static int ipc_mbim_fop_open(struct inode *inode, struct file *filp)
-+{
-+	struct iosm_sio *ipc_mbim =
-+		container_of(filp->private_data, struct iosm_sio, misc);
++		/* Free message if copy was allocated. */
++		if (args->is_copy)
++			kfree(args->msg);
 +
-+	if (test_and_set_bit(0, &ipc_mbim->mbim_is_open))
-+		return -EBUSY;
-+
-+	ipc_mbim->channel_id = imem_sys_mbim_open(ipc_mbim->imem_instance);
-+
-+	if (ipc_mbim->channel_id < 0)
-+		return -EIO;
-+
-+	return 0;
-+}
-+
-+/* Close a shared memory control device and free the rx skbuf list. */
-+static int ipc_mbim_fop_release(struct inode *inode, struct file *filp)
-+{
-+	struct iosm_sio *ipc_mbim =
-+		container_of(filp->private_data, struct iosm_sio, misc);
-+
-+	if (ipc_mbim->channel_id < 0)
-+		return -EINVAL;
-+
-+	imem_sys_sio_close(ipc_mbim);
-+
-+	clear_bit(0, &ipc_mbim->mbim_is_open);
-+	return 0;
-+}
-+
-+/* Copy the data from skbuff to the user buffer */
-+static ssize_t ipc_mbim_fop_read(struct file *filp, char __user *buf,
-+				 size_t size, loff_t *l)
-+{
-+	struct sk_buff *skb = NULL;
-+	struct iosm_sio *ipc_mbim;
-+	bool is_blocking;
-+
-+	if (!access_ok(buf, size))
-+		return -EINVAL;
-+
-+	ipc_mbim = container_of(filp->private_data, struct iosm_sio, misc);
-+
-+	is_blocking = !(filp->f_flags & O_NONBLOCK);
-+
-+	/* First provide the pending skbuf to the user. */
-+	if (ipc_mbim->rx_pending_buf) {
-+		skb = ipc_mbim->rx_pending_buf;
-+		ipc_mbim->rx_pending_buf = NULL;
-+	}
-+
-+	/* Check rx queue until skb is available */
-+	while (!skb) {
-+		skb = skb_dequeue(&ipc_mbim->rx_list);
-+		if (skb)
-+			break;
-+
-+		if (!is_blocking)
-+			return -EAGAIN;
-+
-+		/* Suspend the user app and wait a certain time for data
-+		 * from CP.
++		/* Set invalid queue element. Technically
++		 * spin_lock_irqsave is not required here as
++		 * the array element has been processed already
++		 * so we can assume that immediately after processing
++		 * ipc_task element, queue will not rotate again to
++		 * ipc_task same element within such short time.
 +		 */
-+		if (WAIT_FOR_TIMEOUT(&ipc_mbim->read_sem, IPC_READ_TIMEOUT) < 0)
-+			return -ETIMEDOUT;
-+	}
++		args->completion = NULL;
++		args->func = NULL;
++		args->msg = NULL;
++		args->size = 0;
++		args->is_copy = false;
 +
-+	return imem_sys_sio_read(ipc_mbim, buf, size, skb);
++		/* calculate the new read ptr and update the volatile read
++		 * ptr
++		 */
++		q_rpos = (q_rpos + 1) % IPC_THREAD_QUEUE_SIZE;
++		ipc_task->q_rpos = q_rpos;
++	}
 +}
 +
-+/* Route the user data to the shared memory layer. */
-+static ssize_t ipc_mbim_fop_write(struct file *filp, const char __user *buf,
-+				  size_t size, loff_t *l)
++/* Free memory alloc and trigger completions left in the queue during dealloc */
++static void ipc_task_queue_cleanup(struct ipc_task_queue *ipc_task)
 +{
-+	struct iosm_sio *ipc_mbim;
-+	bool is_blocking;
++	unsigned int q_rpos = ipc_task->q_rpos;
 +
-+	if (!access_ok(buf, size))
++	while (q_rpos != ipc_task->q_wpos) {
++		struct ipc_task_queue_args *args = &ipc_task->args[q_rpos];
++
++		if (args->completion) {
++			complete(args->completion);
++			args->completion = NULL;
++		}
++
++		if (args->is_copy) {
++			kfree(args->msg);
++			args->is_copy = false;
++			args->msg = NULL;
++		}
++
++		q_rpos = (q_rpos + 1) % IPC_THREAD_QUEUE_SIZE;
++		ipc_task->q_rpos = q_rpos;
++	}
++}
++
++/* Add a message to the queue and trigger the ipc_task. */
++static int
++ipc_task_queue_add_task(struct tasklet_struct *ipc_tasklet,
++			struct ipc_task_queue *ipc_task,
++			int arg, void *argmnt,
++			int (*func)(void *instance, int arg, void *msg,
++				    size_t size),
++			void *instance, size_t size, bool is_copy, bool wait)
++{
++	struct completion completion;
++	unsigned int pos, nextpos;
++	unsigned long flags;
++	int result = -1;
++
++	init_completion(&completion);
++
++	/* tasklet send may be called from both interrupt or thread
++	 * context, therefore protect queue operation by spinlock
++	 */
++	spin_lock_irqsave(&ipc_task->q_lock, flags);
++
++	pos = ipc_task->q_wpos;
++	nextpos = (pos + 1) % IPC_THREAD_QUEUE_SIZE;
++
++	/* Get next queue position. */
++	if (nextpos != ipc_task->q_rpos) {
++		/* Get the reference to the queue element and save the passed
++		 * values.
++		 */
++		ipc_task->args[pos].arg = arg;
++		ipc_task->args[pos].msg = argmnt;
++		ipc_task->args[pos].func = func;
++		ipc_task->args[pos].instance = instance;
++		ipc_task->args[pos].size = size;
++		ipc_task->args[pos].is_copy = is_copy;
++		ipc_task->args[pos].completion = wait ? &completion : NULL;
++		ipc_task->args[pos].response = -1;
++
++		/* apply write barrier so that ipc_task->q_rpos elements
++		 * are updated before ipc_task->q_wpos is being updated.
++		 */
++		smp_wmb();
++
++		/* Update the status of the free queue space. */
++		ipc_task->q_wpos = nextpos;
++		result = 0;
++	}
++
++	spin_unlock_irqrestore(&ipc_task->q_lock, flags);
++
++	if (result == 0) {
++		tasklet_schedule(ipc_tasklet);
++
++		if (wait) {
++			wait_for_completion(&completion);
++			result = ipc_task->args[pos].response;
++		}
++	} else {
++		dev_err(ipc_task->dev, "queue is full");
++	}
++
++	return result;
++}
++
++int ipc_task_queue_send_task(struct iosm_imem *imem,
++			     int (*func)(void *instance, int arg, void *msg,
++					 size_t size),
++			     int arg, void *msg, size_t size, bool wait)
++{
++	struct tasklet_struct *ipc_tasklet = imem->ipc_tasklet;
++	struct ipc_task_queue *ipc_task = imem->ipc_task;
++	bool is_copy = false;
++	void *copy = msg;
++
++	if (!ipc_task || !func)
 +		return -EINVAL;
 +
-+	ipc_mbim = container_of(filp->private_data, struct iosm_sio, misc);
++	if (size > 0) {
++		copy = kmemdup(msg, size, GFP_ATOMIC);
++		if (!copy)
++			return -ENOMEM;
 +
-+	is_blocking = !(filp->f_flags & O_NONBLOCK);
-+
-+	if (ipc_mbim->channel_id < 0)
-+		return -EPERM;
-+
-+	return imem_sys_sio_write(ipc_mbim, buf, size, is_blocking);
-+}
-+
-+/* Poll mechanism for applications that use nonblocking IO */
-+static __poll_t ipc_mbim_fop_poll(struct file *filp, poll_table *wait)
-+{
-+	struct iosm_sio *ipc_mbim =
-+		container_of(filp->private_data, struct iosm_sio, misc);
-+	__poll_t mask = EPOLLOUT | EPOLLWRNORM; /* writable */
-+
-+	/* Just registers wait_queue hook. This doesn't really wait. */
-+	poll_wait(filp, &ipc_mbim->poll_inq, wait);
-+
-+	/* Test the fill level of the skbuf rx queue. */
-+	if (!skb_queue_empty(&ipc_mbim->rx_list) || ipc_mbim->rx_pending_buf)
-+		mask |= EPOLLIN | EPOLLRDNORM; /* readable */
-+
-+	return mask;
-+}
-+
-+struct iosm_sio *ipc_mbim_init(struct iosm_imem *ipc_imem, const char *name)
-+{
-+	struct iosm_sio *ipc_mbim = kzalloc(sizeof(*ipc_mbim), GFP_KERNEL);
-+
-+	static const struct file_operations fops = {
-+		.owner = THIS_MODULE,
-+		.open = ipc_mbim_fop_open,
-+		.release = ipc_mbim_fop_release,
-+		.read = ipc_mbim_fop_read,
-+		.write = ipc_mbim_fop_write,
-+		.poll = ipc_mbim_fop_poll,
-+		.unlocked_ioctl = ipc_mbim_fop_unlocked_ioctl,
-+	};
-+
-+	if (!ipc_mbim)
-+		return NULL;
-+
-+	ipc_mbim->dev = ipc_imem->dev;
-+	ipc_mbim->pcie = ipc_imem->pcie;
-+	ipc_mbim->imem_instance = ipc_imem;
-+
-+	ipc_mbim->wmaxcommand = WDM_MAX_SIZE;
-+	ipc_mbim->channel_id = -1;
-+	ipc_mbim->mbim_is_open = 0;
-+
-+	init_completion(&ipc_mbim->read_sem);
-+
-+	skb_queue_head_init(&ipc_mbim->rx_list);
-+	init_waitqueue_head(&ipc_mbim->poll_inq);
-+	init_waitqueue_head(&ipc_mbim->poll_outq);
-+
-+	strncpy(ipc_mbim->devname, name, sizeof(ipc_mbim->devname) - 1);
-+	ipc_mbim->devname[IPC_SIO_DEVNAME_LEN - 1] = '\0';
-+
-+	ipc_mbim->misc.minor = MISC_DYNAMIC_MINOR;
-+	ipc_mbim->misc.name = ipc_mbim->devname;
-+	ipc_mbim->misc.fops = &fops;
-+	ipc_mbim->misc.mode = IPC_CHAR_DEVICE_DEFAULT_MODE;
-+
-+	if (misc_register(&ipc_mbim->misc)) {
-+		kfree(ipc_mbim);
-+		return NULL;
++		is_copy = true;
 +	}
 +
-+	dev_set_drvdata(ipc_mbim->misc.this_device, ipc_mbim);
++	if (ipc_task_queue_add_task(ipc_tasklet, ipc_task, arg, copy, func,
++				    imem, size, is_copy, wait) < 0) {
++		dev_err(ipc_task->dev,
++			"add task failed for %ps(%d, %p, %zu, %d)", func, arg,
++			copy, size, is_copy);
++		if (is_copy)
++			kfree(copy);
++		return -1;
++	}
 +
-+	return ipc_mbim;
++	return 0;
 +}
 +
-+void ipc_mbim_deinit(struct iosm_sio *ipc_mbim)
++struct ipc_task_queue *ipc_task_queue_init(struct tasklet_struct *ipc_tasklet,
++					   struct device *dev)
 +{
-+	misc_deregister(&ipc_mbim->misc);
++	struct ipc_task_queue *ipc_task =
++		kzalloc(sizeof(*ipc_task), GFP_KERNEL);
++	if (!ipc_task)
++		return NULL;
 +
-+	/* Wakeup the user app. */
-+	complete(&ipc_mbim->read_sem);
++	ipc_task->dev = dev;
 +
-+	ipc_pcie_kfree_skb(ipc_mbim->pcie, ipc_mbim->rx_pending_buf);
-+	ipc_mbim->rx_pending_buf = NULL;
++	/* Initialize the spinlock needed to protect the message queue of the
++	 * ipc_task
++	 */
++	spin_lock_init(&ipc_task->q_lock);
 +
-+	skb_queue_purge(&ipc_mbim->rx_list);
-+	kfree(ipc_mbim);
++	tasklet_init(ipc_tasklet, ipc_task_queue_handler,
++		     (unsigned long)ipc_task);
++
++	return ipc_task;
 +}
-diff --git a/drivers/net/wwan/iosm/iosm_ipc_mbim.h b/drivers/net/wwan/iosm/iosm_ipc_mbim.h
++
++void ipc_task_queue_deinit(struct ipc_task_queue *ipc_task)
++{
++	/* Handle NULL ptr gracefully similar to free() */
++	if (!ipc_task)
++		return;
++
++	/* This will free/complete any outstanding messages,
++	 * without calling the actual handler
++	 */
++	ipc_task_queue_cleanup(ipc_task);
++
++	kfree(ipc_task);
++}
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_task_queue.h b/drivers/net/wwan/iosm/iosm_ipc_task_queue.h
 new file mode 100644
-index 000000000000..4d87c52903ed
+index 000000000000..e25dc7d9f985
 --- /dev/null
-+++ b/drivers/net/wwan/iosm/iosm_ipc_mbim.h
-@@ -0,0 +1,24 @@
++++ b/drivers/net/wwan/iosm/iosm_ipc_task_queue.h
+@@ -0,0 +1,46 @@
 +/* SPDX-License-Identifier: GPL-2.0-only
 + *
 + * Copyright (C) 2020 Intel Corporation.
 + */
 +
-+#ifndef IOSM_IPC_MBIM_H
-+#define IOSM_IPC_MBIM_H
++#ifndef IOSM_IPC_TASK_QUEUE_H
++#define IOSM_IPC_TASK_QUEUE_H
++
++#include <linux/interrupt.h>
++
++#include "iosm_ipc_imem.h"
 +
 +/**
-+ * ipc_mbim_init - Initialize and create a character device
-+ * @ipc_imem:	Pointer to iosm_imem structure
-+ * @name:	Pointer to character device name
++ * ipc_task_queue_init - Allocate a tasklet
++ * @ipc_tasklet:	Pointer to tasklet_struct
++ * @dev:		Pointer to device structure
 + *
-+ * Returns: 0 on success
++ * Returns: Pointer to allocated ipc_task data-struct or NULL on failure.
 + */
-+struct iosm_sio *ipc_mbim_init(struct iosm_imem *ipc_imem, const char *name);
++struct ipc_task_queue *ipc_task_queue_init(struct tasklet_struct *ipc_tasklet,
++					   struct device *dev);
 +
 +/**
-+ * ipc_mbim_deinit - Frees all the memory allocated for the ipc mbim structure.
-+ * @ipc_mbim:	Pointer to the ipc mbim data-struct
++ * ipc_task_queue_deinit - Free a tasklet, invalidating its pointer.
++ * @ipc_task:	Pointer to ipc_task instance
 + */
-+void ipc_mbim_deinit(struct iosm_sio *ipc_mbim);
++void ipc_task_queue_deinit(struct ipc_task_queue *ipc_task);
++
++/**
++ * ipc_task_queue_send_task - Synchronously/Asynchronously call a function in
++ *			      tasklet context.
++ * @imem:		Pointer to iosm_imem struct
++ * @func:		Function to be called in tasklet context
++ * @arg:		Integer argument for func
++ * @msg:		Message pointer argument for func
++ * @size:		Size argument for func
++ * @wait:		if true wait for result
++ *
++ * Returns: Result value returned by func or -1 if func could not be called.
++ */
++int ipc_task_queue_send_task(struct iosm_imem *imem,
++			     int (*func)(void *instance, int arg, void *msg,
++					 size_t size),
++			     int arg, void *msg, size_t size, bool wait);
 +
 +#endif
 -- 
