@@ -2,215 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98AC82C1629
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 21:29:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F36E2C162B
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 21:29:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732937AbgKWULn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 15:11:43 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29304 "EHLO
+        id S1732992AbgKWULu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 15:11:50 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46526 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732597AbgKWULm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 15:11:42 -0500
+        by vger.kernel.org with ESMTP id S1728162AbgKWULs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 15:11:48 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606162300;
+        s=mimecast20190719; t=1606162307;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=VILtSbrWguqcwGbYs1fq5uCRIgrhXgGibPCBbk+7Iu4=;
-        b=h4/4e5lwFp3X6lyWfi8kyn2pOe8GYOis/uZrahVTS95ywYxUIh56s2+edSibyulSpgYkjO
-        arIrAHLPAClUQThhOZRB4So/Ji50WbK7KL/uAkl5SnQqVLAX3eZs15bZlMIFqOv6/EeipP
-        w8QIJa1QujZo1zZG4HF49u4Z1mY7mVI=
+        bh=SoN/ACT2VVjQ1GRAshPjTLOyA8Ge+xe0S0yzS14Cu90=;
+        b=EyA3/7jAtE4ys9mrmoofheajAghZe65TsoB15Awl+38rXeqcsF39Rsfb+9ds+XrOmPgQBD
+        y92C9hEHt1Kvo5KGSN4ahSFoKpIFR9nlJUQPT2k1iWky5cQJ4vHNA9SwwQY9fRSwF4J6cN
+        WO/d/ItBPzVHVfRZ6ZYPNqMnHF3dOMg=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-423-uEUwuNUiM7iVnqCz3QpfQg-1; Mon, 23 Nov 2020 15:11:37 -0500
-X-MC-Unique: uEUwuNUiM7iVnqCz3QpfQg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+ us-mta-297-0VdtJnUyNmKJqMXCNwJ2Ig-1; Mon, 23 Nov 2020 15:11:44 -0500
+X-MC-Unique: 0VdtJnUyNmKJqMXCNwJ2Ig-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C24A61084C81;
-        Mon, 23 Nov 2020 20:11:36 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BBD3618C89EE;
+        Mon, 23 Nov 2020 20:11:43 +0000 (UTC)
 Received: from warthog.procyon.org.uk (ovpn-112-111.rdu2.redhat.com [10.10.112.111])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A92E819D9F;
-        Mon, 23 Nov 2020 20:11:35 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C8BE75C1BB;
+        Mon, 23 Nov 2020 20:11:42 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 13/17] rxrpc: Merge prime_packet_security into
- init_connection_security
+Subject: [PATCH net-next 14/17] rxrpc: Don't reserve security header in Tx
+ DATA skbuff
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Date:   Mon, 23 Nov 2020 20:11:34 +0000
-Message-ID: <160616229484.830164.5485017699725233871.stgit@warthog.procyon.org.uk>
+Date:   Mon, 23 Nov 2020 20:11:42 +0000
+Message-ID: <160616230202.830164.16155645465545214353.stgit@warthog.procyon.org.uk>
 In-Reply-To: <160616220405.830164.2239716599743995145.stgit@warthog.procyon.org.uk>
 References: <160616220405.830164.2239716599743995145.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/0.23
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Merge the ->prime_packet_security() into the ->init_connection_security()
-hook as they're always called together.
+Insert the security header into the skbuff representing a DATA packet to be
+transmitted rather than using skb_reserve() when the packet is allocated.
+This makes it easier to apply crypto that spans the security header and the
+data, particularly in the upcoming RxGK class where we have a common
+encrypt-and-checksum function that is used in a number of circumstances.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
 ---
 
- net/rxrpc/ar-internal.h |    2 --
- net/rxrpc/conn_client.c |    6 ------
- net/rxrpc/conn_event.c  |    4 ----
- net/rxrpc/insecure.c    |    6 ------
- net/rxrpc/rxkad.c       |   20 +++++++++++++++-----
- 5 files changed, 15 insertions(+), 23 deletions(-)
+ net/rxrpc/ar-internal.h |    5 +----
+ net/rxrpc/insecure.c    |    6 ++----
+ net/rxrpc/rxkad.c       |   24 +++++++++---------------
+ net/rxrpc/sendmsg.c     |    6 ++----
+ 4 files changed, 14 insertions(+), 27 deletions(-)
 
 diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 0fb294725ff2..6aaa0f49dab0 100644
+index 6aaa0f49dab0..742a69fb8e60 100644
 --- a/net/rxrpc/ar-internal.h
 +++ b/net/rxrpc/ar-internal.h
-@@ -234,8 +234,6 @@ struct rxrpc_security {
- 	int (*init_connection_security)(struct rxrpc_connection *,
- 					struct rxrpc_key_token *);
+@@ -236,10 +236,7 @@ struct rxrpc_security {
  
--	/* prime a connection's packet security */
--	int (*prime_packet_security)(struct rxrpc_connection *);
  
  	/* impose security on a packet */
- 	int (*secure_packet)(struct rxrpc_call *,
-diff --git a/net/rxrpc/conn_client.c b/net/rxrpc/conn_client.c
-index 7e574c75be8e..dbea0bfee48e 100644
---- a/net/rxrpc/conn_client.c
-+++ b/net/rxrpc/conn_client.c
-@@ -180,10 +180,6 @@ rxrpc_alloc_client_connection(struct rxrpc_bundle *bundle, gfp_t gfp)
- 	if (ret < 0)
- 		goto error_1;
+-	int (*secure_packet)(struct rxrpc_call *,
+-			     struct sk_buff *,
+-			     size_t,
+-			     void *);
++	int (*secure_packet)(struct rxrpc_call *, struct sk_buff *, size_t);
  
--	ret = conn->security->prime_packet_security(conn);
--	if (ret < 0)
--		goto error_2;
--
- 	atomic_inc(&rxnet->nr_conns);
- 	write_lock(&rxnet->conn_lock);
- 	list_add_tail(&conn->proc_link, &rxnet->conn_proc_list);
-@@ -203,8 +199,6 @@ rxrpc_alloc_client_connection(struct rxrpc_bundle *bundle, gfp_t gfp)
- 	_leave(" = %p", conn);
- 	return conn;
- 
--error_2:
--	conn->security->clear(conn);
- error_1:
- 	rxrpc_put_client_connection_id(conn);
- error_0:
-diff --git a/net/rxrpc/conn_event.c b/net/rxrpc/conn_event.c
-index 03a482ba770f..aab069701398 100644
---- a/net/rxrpc/conn_event.c
-+++ b/net/rxrpc/conn_event.c
-@@ -338,10 +338,6 @@ static int rxrpc_process_event(struct rxrpc_connection *conn,
- 		if (ret < 0)
- 			return ret;
- 
--		ret = conn->security->prime_packet_security(conn);
--		if (ret < 0)
--			return ret;
--
- 		spin_lock(&conn->bundle->channel_lock);
- 		spin_lock_bh(&conn->state_lock);
- 
+ 	/* verify the security on a received packet */
+ 	int (*verify_packet)(struct rxrpc_call *, struct sk_buff *,
 diff --git a/net/rxrpc/insecure.c b/net/rxrpc/insecure.c
-index cf3ecffcf424..914e2f2e2990 100644
+index 914e2f2e2990..e06725e21c05 100644
 --- a/net/rxrpc/insecure.c
 +++ b/net/rxrpc/insecure.c
-@@ -14,11 +14,6 @@ static int none_init_connection_security(struct rxrpc_connection *conn,
+@@ -14,10 +14,8 @@ static int none_init_connection_security(struct rxrpc_connection *conn,
  	return 0;
  }
  
--static int none_prime_packet_security(struct rxrpc_connection *conn)
--{
--	return 0;
--}
--
- static int none_secure_packet(struct rxrpc_call *call,
- 			      struct sk_buff *skb,
- 			      size_t data_size,
-@@ -87,7 +82,6 @@ const struct rxrpc_security rxrpc_no_security = {
- 	.init				= none_init,
- 	.exit				= none_exit,
- 	.init_connection_security	= none_init_connection_security,
--	.prime_packet_security		= none_prime_packet_security,
- 	.free_call_crypto		= none_free_call_crypto,
- 	.secure_packet			= none_secure_packet,
- 	.verify_packet			= none_verify_packet,
+-static int none_secure_packet(struct rxrpc_call *call,
+-			      struct sk_buff *skb,
+-			      size_t data_size,
+-			      void *sechdr)
++static int none_secure_packet(struct rxrpc_call *call, struct sk_buff *skb,
++			      size_t data_size)
+ {
+ 	return 0;
+ }
 diff --git a/net/rxrpc/rxkad.c b/net/rxrpc/rxkad.c
-index 3057f00a6978..301894857473 100644
+index 301894857473..37335d887570 100644
 --- a/net/rxrpc/rxkad.c
 +++ b/net/rxrpc/rxkad.c
-@@ -38,6 +38,9 @@ struct rxkad_level2_hdr {
- 	__be32	checksum;	/* decrypted data checksum */
- };
- 
-+static int rxkad_prime_packet_security(struct rxrpc_connection *conn,
-+				       struct crypto_sync_skcipher *ci);
-+
- /*
-  * this holds a pinned cipher so that keventd doesn't get called by the cipher
-  * alloc routine, but since we have it to hand, we use it to decrypt RESPONSE
-@@ -130,8 +133,15 @@ static int rxkad_init_connection_security(struct rxrpc_connection *conn,
- 		goto error;
- 	}
- 
-+	ret = rxkad_prime_packet_security(conn, ci);
-+	if (ret < 0)
-+		goto error_ci;
-+
- 	conn->cipher = ci;
--	ret = 0;
-+	return 0;
-+
-+error_ci:
-+	crypto_free_sync_skcipher(ci);
- error:
- 	_leave(" = %d", ret);
- 	return ret;
-@@ -141,7 +151,8 @@ static int rxkad_init_connection_security(struct rxrpc_connection *conn,
-  * prime the encryption state with the invariant parts of a connection's
-  * description
+@@ -230,9 +230,7 @@ static void rxkad_free_call_crypto(struct rxrpc_call *call)
+  * partially encrypt a packet (level 1 security)
   */
--static int rxkad_prime_packet_security(struct rxrpc_connection *conn)
-+static int rxkad_prime_packet_security(struct rxrpc_connection *conn,
-+				       struct crypto_sync_skcipher *ci)
+ static int rxkad_secure_packet_auth(const struct rxrpc_call *call,
+-				    struct sk_buff *skb,
+-				    u32 data_size,
+-				    void *sechdr,
++				    struct sk_buff *skb, u32 data_size,
+ 				    struct skcipher_request *req)
  {
- 	struct skcipher_request *req;
- 	struct rxrpc_key_token *token;
-@@ -159,7 +170,7 @@ static int rxkad_prime_packet_security(struct rxrpc_connection *conn)
- 	if (!tmpbuf)
- 		return -ENOMEM;
+ 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
+@@ -247,12 +245,12 @@ static int rxkad_secure_packet_auth(const struct rxrpc_call *call,
+ 	data_size |= (u32)check << 16;
  
--	req = skcipher_request_alloc(&conn->cipher->base, GFP_NOFS);
-+	req = skcipher_request_alloc(&ci->base, GFP_NOFS);
- 	if (!req) {
- 		kfree(tmpbuf);
- 		return -ENOMEM;
-@@ -174,7 +185,7 @@ static int rxkad_prime_packet_security(struct rxrpc_connection *conn)
- 	tmpbuf[3] = htonl(conn->security_ix);
+ 	hdr.data_size = htonl(data_size);
+-	memcpy(sechdr, &hdr, sizeof(hdr));
++	memcpy(skb->head, &hdr, sizeof(hdr));
  
- 	sg_init_one(&sg, tmpbuf, tmpsize);
--	skcipher_request_set_sync_tfm(req, conn->cipher);
-+	skcipher_request_set_sync_tfm(req, ci);
+ 	/* start the encryption afresh */
+ 	memset(&iv, 0, sizeof(iv));
+ 
+-	sg_init_one(&sg, sechdr, 8);
++	sg_init_one(&sg, skb->head, 8);
+ 	skcipher_request_set_sync_tfm(req, call->conn->cipher);
  	skcipher_request_set_callback(req, 0, NULL, NULL);
- 	skcipher_request_set_crypt(req, &sg, &sg, tmpsize, iv.x);
- 	crypto_skcipher_encrypt(req);
-@@ -1350,7 +1361,6 @@ const struct rxrpc_security rxkad = {
- 	.free_preparse_server_key	= rxkad_free_preparse_server_key,
- 	.destroy_server_key		= rxkad_destroy_server_key,
- 	.init_connection_security	= rxkad_init_connection_security,
--	.prime_packet_security		= rxkad_prime_packet_security,
- 	.secure_packet			= rxkad_secure_packet,
- 	.verify_packet			= rxkad_verify_packet,
- 	.free_call_crypto		= rxkad_free_call_crypto,
+ 	skcipher_request_set_crypt(req, &sg, &sg, 8, iv.x);
+@@ -269,7 +267,6 @@ static int rxkad_secure_packet_auth(const struct rxrpc_call *call,
+ static int rxkad_secure_packet_encrypt(const struct rxrpc_call *call,
+ 				       struct sk_buff *skb,
+ 				       u32 data_size,
+-				       void *sechdr,
+ 				       struct skcipher_request *req)
+ {
+ 	const struct rxrpc_key_token *token;
+@@ -289,13 +286,13 @@ static int rxkad_secure_packet_encrypt(const struct rxrpc_call *call,
+ 
+ 	rxkhdr.data_size = htonl(data_size | (u32)check << 16);
+ 	rxkhdr.checksum = 0;
+-	memcpy(sechdr, &rxkhdr, sizeof(rxkhdr));
++	memcpy(skb->head, &rxkhdr, sizeof(rxkhdr));
+ 
+ 	/* encrypt from the session key */
+ 	token = call->conn->params.key->payload.data[0];
+ 	memcpy(&iv, token->kad->session_key, sizeof(iv));
+ 
+-	sg_init_one(&sg[0], sechdr, sizeof(rxkhdr));
++	sg_init_one(&sg[0], skb->head, sizeof(rxkhdr));
+ 	skcipher_request_set_sync_tfm(req, call->conn->cipher);
+ 	skcipher_request_set_callback(req, 0, NULL, NULL);
+ 	skcipher_request_set_crypt(req, &sg[0], &sg[0], sizeof(rxkhdr), iv.x);
+@@ -310,7 +307,7 @@ static int rxkad_secure_packet_encrypt(const struct rxrpc_call *call,
+ 	len &= ~(call->conn->size_align - 1);
+ 
+ 	sg_init_table(sg, ARRAY_SIZE(sg));
+-	err = skb_to_sgvec(skb, sg, 0, len);
++	err = skb_to_sgvec(skb, sg, 8, len);
+ 	if (unlikely(err < 0))
+ 		goto out;
+ 	skcipher_request_set_crypt(req, sg, sg, len, iv.x);
+@@ -329,8 +326,7 @@ static int rxkad_secure_packet_encrypt(const struct rxrpc_call *call,
+  */
+ static int rxkad_secure_packet(struct rxrpc_call *call,
+ 			       struct sk_buff *skb,
+-			       size_t data_size,
+-			       void *sechdr)
++			       size_t data_size)
+ {
+ 	struct rxrpc_skb_priv *sp;
+ 	struct skcipher_request	*req;
+@@ -383,12 +379,10 @@ static int rxkad_secure_packet(struct rxrpc_call *call,
+ 		ret = 0;
+ 		break;
+ 	case RXRPC_SECURITY_AUTH:
+-		ret = rxkad_secure_packet_auth(call, skb, data_size, sechdr,
+-					       req);
++		ret = rxkad_secure_packet_auth(call, skb, data_size, req);
+ 		break;
+ 	case RXRPC_SECURITY_ENCRYPT:
+-		ret = rxkad_secure_packet_encrypt(call, skb, data_size,
+-						  sechdr, req);
++		ret = rxkad_secure_packet_encrypt(call, skb, data_size, req);
+ 		break;
+ 	default:
+ 		ret = -EPERM;
+diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+index d27140c836cc..367654a558c2 100644
+--- a/net/rxrpc/sendmsg.c
++++ b/net/rxrpc/sendmsg.c
+@@ -372,8 +372,7 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
+ 			ASSERTCMP(skb->mark, ==, 0);
+ 
+ 			_debug("HS: %u", call->conn->security_size);
+-			skb_reserve(skb, call->conn->security_size);
+-			skb->len += call->conn->security_size;
++			__skb_put(skb, call->conn->security_size);
+ 
+ 			sp->remain = chunk;
+ 			if (sp->remain > skb_tailroom(skb))
+@@ -446,8 +445,7 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
+ 				 call->tx_winsize)
+ 				sp->hdr.flags |= RXRPC_MORE_PACKETS;
+ 
+-			ret = call->security->secure_packet(
+-				call, skb, skb->mark, skb->head);
++			ret = call->security->secure_packet(call, skb, skb->mark);
+ 			if (ret < 0)
+ 				goto out;
+ 
 
 
