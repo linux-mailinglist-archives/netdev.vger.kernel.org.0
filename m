@@ -2,155 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B58492C0562
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 13:21:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B53A2C0568
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 13:21:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729397AbgKWMTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 07:19:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54130 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729270AbgKWMTb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 07:19:31 -0500
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227C2C0613CF
-        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 04:19:31 -0800 (PST)
-Received: by mail-pg1-x541.google.com with SMTP id m9so14110986pgb.4
-        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 04:19:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pVI+N1FMbYf8eOWMx62FiQ7FrS7V4kw0rtHUnYPHBCc=;
-        b=KjaXqcPC1U/3XG7HH7wGxJS9SsXvSPKs29b/Gf90Lxdj67jnPnUlTtVZSx2xK95Y8w
-         sSH+Czmhk/8skqHPKYYNirRBuPBYEMOXGxCBzK3rwQfWSdKsh+R/97L9rUAZ770/L0bU
-         yAtGpzKZwCtPwQ0WPtRq6BbFfX31ZZoumdG6Tx3aHdgWnf2W6LmP30KPOXgYwxv7i7tT
-         8rsIUM+UPvP6vfIPqq21OGme8/3Z9q8wC7HB+nJVzkHUfcvAaeU1xww7PaUxRPR+/aO6
-         z1u+rysP2JmLrBt+5CW6GDby1R0fcy5wxGUmq3Md+GU/GjbY/3Sd+z/CBUjoKXn2iZ3M
-         J8nA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pVI+N1FMbYf8eOWMx62FiQ7FrS7V4kw0rtHUnYPHBCc=;
-        b=IDYsWcHH5TM0PrE8M7z53V0TEv6TlZWLgAzhxnTdLjyxvV0Nx55i8m/7QLkboFQEMO
-         OUdWNjEJrprl4uUhj554cu5IYK8vivCmGaIxKonoSkoYOYad8raSeQWmk7+/PfC3nuNl
-         RXaRmJ/QMVZJPywiuKpowMaG5qNakZp/hyALiUgbb4c88KPtYzsafcXMUgHpL42zCeO4
-         6WwwRaOmPi4gWGmxSZAAbPUhQeYIrZdHGOndGastv2ClHIcfUUHjb4Uf15Iei+8SEsm4
-         c/u58xOst+prsGGTAAUdCgyW0w6pMiTMOAgkM90apwQ+6AZp6JOggp30p2xDQKXyjjI2
-         u+vQ==
-X-Gm-Message-State: AOAM530y+uPPp9r3a/AcgYwJreIbLfQu8DXH/FhbL/PIgojm5dnc57Wy
-        SFyO53WbDvsNsjV00x9rFRAteUK2wA9NGoOp668ZOv3wbR5pVEva
-X-Google-Smtp-Source: ABdhPJyk++ujNVWBZ+DONQMV864RMKG/PW9sfSjph9k5W1zjd8VRwWsZD6+saq/AnefvGcgVj9hiiq3x768G7nBQSpg=
-X-Received: by 2002:a62:2bd0:0:b029:18a:df0f:dd61 with SMTP id
- r199-20020a622bd00000b029018adf0fdd61mr24065137pfr.19.1606133970568; Mon, 23
- Nov 2020 04:19:30 -0800 (PST)
+        id S1729406AbgKWMVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 07:21:02 -0500
+Received: from mga12.intel.com ([192.55.52.136]:39192 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728895AbgKWMVC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Nov 2020 07:21:02 -0500
+IronPort-SDR: Zz1w8plttsWbmKxb9QAE8+yiizj52Rn/ml6NWfxMjoix6bYTz7Ppjhq6kZXQ9MhGcTy9NrtXqG
+ pXE3sKUyBMcQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9813"; a="151013964"
+X-IronPort-AV: E=Sophos;i="5.78,363,1599548400"; 
+   d="scan'208";a="151013964"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2020 04:20:58 -0800
+IronPort-SDR: 22iTex5m9S/kk/mkkh0WkOsIP6fsqtcXP2dqrFoD/SVlO+duLAoxPnmdpsQcfNMAOcs773bhkG
+ TNsUZiYG0Dnw==
+X-IronPort-AV: E=Sophos;i="5.78,363,1599548400"; 
+   d="scan'208";a="546391854"
+Received: from gcavallu-mobl.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.53.119])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2020 04:20:53 -0800
+Subject: Re: [PATCH bpf-next v2 0/5] selftests/bpf: xsk selftests
+To:     Yonghong Song <yhs@fb.com>,
+        Weqaar Janjua <weqaar.janjua@gmail.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        magnus.karlsson@gmail.com
+Cc:     Weqaar Janjua <weqaar.a.janjua@intel.com>, shuah@kernel.org,
+        skhan@linuxfoundation.org, linux-kselftest@vger.kernel.org,
+        anders.roxell@linaro.org, jonathan.lemon@gmail.com
+References: <20201120130026.19029-1-weqaar.a.janjua@intel.com>
+ <586d63b4-1828-f633-a4ff-88e4e23d164a@fb.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <8b7cccf1-9845-fd9a-6f6b-bc70b9b3f9b1@intel.com>
+Date:   Mon, 23 Nov 2020 13:20:51 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.2
 MIME-Version: 1.0
-References: <20201123120531.724963-1-zyjzyj2000@gmail.com> <CAD=hENfysbUCNapfFZ6i0tOFo5Ge3QS+iQSt2ySBDb10zFdgwg@mail.gmail.com>
-In-Reply-To: <CAD=hENfysbUCNapfFZ6i0tOFo5Ge3QS+iQSt2ySBDb10zFdgwg@mail.gmail.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Mon, 23 Nov 2020 13:19:19 +0100
-Message-ID: <CAJ8uoz1TO7ULPDTK0ajyrjVFqB2REw=ncgT1c-NDhTciDeNfNg@mail.gmail.com>
-Subject: Re: [PATCHv2 1/1] xdp: remove the function xsk_map_inc
-To:     Zhu Yanjun <zyjzyj2000@gmail.com>
-Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <586d63b4-1828-f633-a4ff-88e4e23d164a@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 23, 2020 at 1:11 PM Zhu Yanjun <zyjzyj2000@gmail.com> wrote:
->
-> On Mon, Nov 23, 2020 at 8:05 PM <zyjzyj2000@gmail.com> wrote:
-> >
-> > From: Zhu Yanjun <zyjzyj2000@gmail.com>
-> >
-> > The function xsk_map_inc is a simple wrapper of bpf_map_inc and
-> > always returns zero. As such, replacing this function with bpf_map_inc
-> > and removing the test code.
-> >
-> > Signed-off-by: Zhu Yanjun <zyjzyj2000@gmail.com>
->
->
-> > ---
-> >  net/xdp/xsk.c    |  1 -
-> >  net/xdp/xsk.h    |  1 -
-> >  net/xdp/xskmap.c | 13 +------------
-> >  3 files changed, 1 insertion(+), 14 deletions(-)
-> >
-> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> > index cfbec3989a76..c1b8a888591c 100644
-> > --- a/net/xdp/xsk.c
-> > +++ b/net/xdp/xsk.c
-> > @@ -548,7 +548,6 @@ static struct xsk_map *xsk_get_map_list_entry(struct xdp_sock *xs,
-> >         node = list_first_entry_or_null(&xs->map_list, struct xsk_map_node,
-> >                                         node);
-> >         if (node) {
-> > -               WARN_ON(xsk_map_inc(node->map));
+On 2020-11-21 01:31, Yonghong Song wrote:
+> 
+> 
+> On 11/20/20 5:00 AM, Weqaar Janjua wrote:
+>> This patch set adds AF_XDP selftests based on veth to selftests/bpf.
+>>
+>> # Topology:
+>> # ---------
+>> #                 -----------
+>> #               _ | Process | _
+>> #              /  -----------  \
+>> #             /        |        \
+>> #            /         |         \
+>> #      -----------     |     -----------
+>> #      | Thread1 |     |     | Thread2 |
+>> #      -----------     |     -----------
+>> #           |          |          |
+>> #      -----------     |     -----------
+>> #      |  xskX   |     |     |  xskY   |
+>> #      -----------     |     -----------
+>> #           |          |          |
+>> #      -----------     |     ----------
+>> #      |  vethX  | --------- |  vethY |
+>> #      -----------   peer    ----------
+>> #           |          |          |
+>> #      namespaceX      |     namespaceY
+>>
+>> These selftests test AF_XDP SKB and Native/DRV modes using veth Virtual
+>> Ethernet interfaces.
+>>
+>> The test program contains two threads, each thread is single socket with
+>> a unique UMEM. It validates in-order packet delivery and packet content
+>> by sending packets to each other.
+>>
+>> Prerequisites setup by script test_xsk_prerequisites.sh:
+>>
+>>     Set up veth interfaces as per the topology shown ^^:
+>>     * setup two veth interfaces and one namespace
+>>     ** veth<xxxx> in root namespace
+>>     ** veth<yyyy> in af_xdp<xxxx> namespace
+>>     ** namespace af_xdp<xxxx>
+>>     * create a spec file veth.spec that includes this run-time 
+>> configuration
+>>       that is read by test scripts - filenames prefixed with test_xsk_
+>>     *** xxxx and yyyy are randomly generated 4 digit numbers used to 
+>> avoid
+>>         conflict with any existing interface
+>>
+>> The following tests are provided:
+>>
+>> 1. AF_XDP SKB mode
+>>     Generic mode XDP is driver independent, used when the driver does
+>>     not have support for XDP. Works on any netdevice using sockets and
+>>     generic XDP path. XDP hook from netif_receive_skb().
+>>     a. nopoll - soft-irq processing
+>>     b. poll - using poll() syscall
+>>     c. Socket Teardown
+>>        Create a Tx and a Rx socket, Tx from one socket, Rx on another.
+>>        Destroy both sockets, then repeat multiple times. Only nopoll mode
+>>       is used
+>>     d. Bi-directional Sockets
+>>        Configure sockets as bi-directional tx/rx sockets, sets up fill
+>>       and completion rings on each socket, tx/rx in both directions.
+>>       Only nopoll mode is used
+>>
+>> 2. AF_XDP DRV/Native mode
+>>     Works on any netdevice with XDP_REDIRECT support, driver dependent.
+>>     Processes packets before SKB allocation. Provides better performance
+>>     than SKB. Driver hook available just after DMA of buffer descriptor.
+>>     a. nopoll
+>>     b. poll
+>>     c. Socket Teardown
+>>     d. Bi-directional Sockets
+>>     * Only copy mode is supported because veth does not currently support
+>>       zero-copy mode
+>>
+>> Total tests: 8
+>>
+>> Flow:
+>> * Single process spawns two threads: Tx and Rx
+>> * Each of these two threads attach to a veth interface within their
+>>    assigned namespaces
+>> * Each thread creates one AF_XDP socket connected to a unique umem
+>>    for each veth interface
+>> * Tx thread transmits 10k packets from veth<xxxx> to veth<yyyy>
+>> * Rx thread verifies if all 10k packets were received and delivered
+>>    in-order, and have the right content
+>>
+>> v2 changes:
+>> * Move selftests/xsk to selftests/bpf
+>> * Remove Makefiles under selftests/xsk, and utilize 
+>> selftests/bpf/Makefile
+>>
+>> Structure of the patch set:
+>>
+>> Patch 1: This patch adds XSK Selftests framework under selftests/bpf
+>> Patch 2: Adds tests: SKB poll and nopoll mode, and mac-ip-udp debug
+>> Patch 3: Adds tests: DRV poll and nopoll mode
+>> Patch 4: Adds tests: SKB and DRV Socket Teardown
+>> Patch 5: Adds tests: SKB and DRV Bi-directional Sockets
+> 
+> I just want to report that after applying the above 5 patches
+> on top of bpf-next commit 450d060e8f75 ("bpftool: Add {i,d}tlb_misses 
+> support for bpftool profile"), I hit the following error with below 
+> command sequences:
+> 
+>   $ ./test_xsk_prerequisites.sh
+>   $ ./test_xsk_skb_poll.sh
+> # Interface found: ve1480
+> # Interface found: ve9258
+> # NS switched: af_xdp9258
+> 1..1
+> # Interface [ve9258] vector [Rx]
+> # Interface [ve1480] vector [Tx]
+> # Sending 10000 packets on interface ve1480
+> [  331.741244] ------------[ cut here ]------------
+> [  331.741741] kernel BUG at net/core/skbuff.c:1621!
+> [  331.742265] invalid opcode: 0000 [#1] PREEMPT SMP PTI
+> [  331.742837] CPU: 0 PID: 1883 Comm: xdpxceiver Not tainted 5.10.0-rc3+ 
+> #1037
+> [  331.743468] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), 
+> BIOS 1.9.3
+> -1.el7.centos 04/01/2014
+> [  331.744300] RIP: 0010:pskb_expand_head+0x27b/0x310
 
-This should be bpf_map_inc(&node->map->map); Think you forgot to
-convert this one.
+Ugh, looks like the tests are working. :-P
 
-> >                 map = node->map;
-> >                 *map_entry = node->map_entry;
-> >         }
-> > diff --git a/net/xdp/xsk.h b/net/xdp/xsk.h
-> > index b9e896cee5bb..0aad25c0e223 100644
-> > --- a/net/xdp/xsk.h
-> > +++ b/net/xdp/xsk.h
-> > @@ -41,7 +41,6 @@ static inline struct xdp_sock *xdp_sk(struct sock *sk)
-> >
-> >  void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
-> >                              struct xdp_sock **map_entry);
-> > -int xsk_map_inc(struct xsk_map *map);
-> >  void xsk_map_put(struct xsk_map *map);
-> >  void xsk_clear_pool_at_qid(struct net_device *dev, u16 queue_id);
-> >  int xsk_reg_pool_at_qid(struct net_device *dev, struct xsk_buff_pool *pool,
-> > diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
-> > index 49da2b8ace8b..6b7e9a72b101 100644
-> > --- a/net/xdp/xskmap.c
-> > +++ b/net/xdp/xskmap.c
-> > @@ -11,12 +11,6 @@
-> >
-> >  #include "xsk.h"
-> >
-> > -int xsk_map_inc(struct xsk_map *map)
-> > -{
-> > -       bpf_map_inc(&map->map);
-> > -       return 0;
-> > -}
->
-> Hi, Magnus
->
-> The function xsk_map_inc is replaced with bpf_map_inc.
->
-> Zhu Yanjun
->
-> > -
-> >  void xsk_map_put(struct xsk_map *map)
-> >  {
-> >         bpf_map_put(&map->map);
-> > @@ -26,17 +20,12 @@ static struct xsk_map_node *xsk_map_node_alloc(struct xsk_map *map,
-> >                                                struct xdp_sock **map_entry)
-> >  {
-> >         struct xsk_map_node *node;
-> > -       int err;
-> >
-> >         node = kzalloc(sizeof(*node), GFP_ATOMIC | __GFP_NOWARN);
-> >         if (!node)
-> >                 return ERR_PTR(-ENOMEM);
-> >
-> > -       err = xsk_map_inc(map);
-> > -       if (err) {
-> > -               kfree(node);
-> > -               return ERR_PTR(err);
-> > -       }
-> > +       bpf_map_inc(&map->map);
-> >
-> >         node->map = map;
-> >         node->map_entry = map_entry;
-> > --
-> > 2.25.1
-> >
+This is a BUG_ON(skb_shared(skb)) trigger, related to the skbuff 
+refcount changes done recently in AF_XDP.
+
+I'll cook a patch! Thanks for the report!
+
+
+Björn
