@@ -2,94 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B19812C183D
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 23:11:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D41492C1842
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 23:18:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732269AbgKWWJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 17:09:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32840 "EHLO
+        id S1730141AbgKWWNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 17:13:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729245AbgKWWJy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 17:09:54 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 767F1C0613CF;
-        Mon, 23 Nov 2020 14:09:54 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id v12so16290553pfm.13;
-        Mon, 23 Nov 2020 14:09:54 -0800 (PST)
+        with ESMTP id S1728895AbgKWWNY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 17:13:24 -0500
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF1DC0613CF;
+        Mon, 23 Nov 2020 14:13:24 -0800 (PST)
+Received: by mail-ej1-x643.google.com with SMTP id z5so5461339ejp.4;
+        Mon, 23 Nov 2020 14:13:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=googlemail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=FA3bZWejjzUky+cRUDelSVf+reBgBIWV9vO6dtK4fYI=;
-        b=cUmfrb3nRvaRxOO7vYL2kyuceAP4S2Lb6WvrYCOPs9nqxPdHdFzmYnsShUdQyjh6ic
-         Hu0Pg+okTXYE+CKl3uwDoRHEcbZ8SK3VCPTTJE97fc5AuR/MEo22EfW6DINwVaLx2UBv
-         ruK81gxj6Vafguega2sA5w7GjXleqeF43MSh15H+cDgNa9APVzXlLNMJZcRdZErT0kmn
-         bUxCdAV2j14kVEZ7uai6Wcgzqg4B2dZp3s15at7VE9akgMQ1C6dc/49RMj74bpzPLpNU
-         O1Cn73+n8SAKWFkDKLfSh3Z6zN256I1hpLwliR6h0mC9HPWN+/GeT+WIfvtHzvdI9/ss
-         mr/w==
+        bh=aedbDIe0kppDqmpQwJUwG3Q1C8jUFeud8NZUBAa8548=;
+        b=Uz4lpSpKnskHiXRtTu7qNQ9uA1Gl4wJ5kPr5PLlxDJWqzxD9qf8KL/Rq1DD8l0A8qo
+         8hYDKVSrGQJCM2WwhHHMD1NYd4GtO+NKyk3lWUU6QY9/hdvJtSifr+odSyODjvDaa+oh
+         iZEXv6aeEeDhGeD9dG3KCu6X+DJd5wpXB6H6hH31I+twnDPidkf0dkHXEgbwmT0Aut4p
+         zaQn08pz9M5cdBKK9Xj6+AdQa8zBkdj4nfsTi+3dB0s10fCU4cH5xtlpyevEb0AUkH7R
+         5jPU/5pX7T29yTptylZOba00FKOe//sEyZIu8CQc7cKA8N0Hb3ywGu/VbgirbGtnpV9V
+         A0bg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=FA3bZWejjzUky+cRUDelSVf+reBgBIWV9vO6dtK4fYI=;
-        b=fjJp1vK4S5HsMoXuVcmPdMcoPMjoAPa8OaphIEF4sg0vgASN7HGWjkX1gaqMDUhkSn
-         WiYsAXTYiC9ZW3PlBLSbmhxRIsVo7Qx4iOiJhrlDFeVt35yUSIAq8rRYuS7GwgSaNKKF
-         ClwGmDINDgEPVU2m24jnEpLP3Y7HEbPMV5E1DhqI3KsOM7tbXwSuWn1LauFT7mH+N32C
-         fTAlZSTvLhQzDspu9vVlj27gWrXKPvGyVU4Re7qDq+5RDLC1mWGxsvPQvEgj3hefMSSh
-         ZPYaxmpTJunccPm6kaJOi0r5AxYCU1VZ1TclSV7aQgQZrOidXcy9qc7Z51/GTPm/lTkk
-         rM5Q==
-X-Gm-Message-State: AOAM532GBgnmCR19CQMod6EmpMXSVL12PvXtFhgpZ3tIQ0CuQneB4EH1
-        l+UzOZ/SLMayAfSafWTbF7lbTcLnRAcch8JBBRg=
-X-Google-Smtp-Source: ABdhPJxsbutLKr/ZXRfWfXQaLIqzdBEpd5PYgphqaKw0pwcFr4UloC5AULzjz1FhGEUvzE1y+VGfBLPPKxCDu6XNb7Q=
-X-Received: by 2002:a62:170a:0:b029:196:5765:4abc with SMTP id
- 10-20020a62170a0000b029019657654abcmr1442601pfx.4.1606169394089; Mon, 23 Nov
- 2020 14:09:54 -0800 (PST)
+        bh=aedbDIe0kppDqmpQwJUwG3Q1C8jUFeud8NZUBAa8548=;
+        b=fdtjSJAFj7EbRKtM0Qy1lxYYgu/7TJWCcxROsXVhhBCFqfhJ4+UCC/72jdJI5GSHWP
+         dVH2k85WaOsjzpG5gwj0DDAe8nLb6OMFg6bbyEN3WtZvyjuwuYG3td+QaBvfJ0/Tfasr
+         ndJNZdq5Zc7jQG2QC6kJwcXhNPSpx34q3+XspE8VdU1KN7KHcnXHROqbhOjbM3kd5F9V
+         tD7KEw+OoK/aMBWicQ23KFoI+pcoIbJRJdIFRByKNhF3vYv+3rLImmCyCzfhkJfOVDBx
+         gFnEelemtGznx8ITyD1Y40YZhRb1FagKzbEj6WD2JoBh883mOn9ypsnOY2pAp2Jk/Bzw
+         /RVQ==
+X-Gm-Message-State: AOAM530l+9yxyOa7UCQJnH/uKApKK+mcXZfaj3nELUT8o9BhN8xLn1k9
+        nMlfTUH7mSJiGXGoFdYAe8QdRhfqf7Q5Vob756zNqJeG
+X-Google-Smtp-Source: ABdhPJz7V34lDsd/RDVixOE5qqAwGLH8CPXpTForzS8a+k1NYY4CNM2oS1AExuK/BnRPQoOFL9b0ctTdid4fhG99t2o=
+X-Received: by 2002:a17:906:bce6:: with SMTP id op6mr1599498ejb.2.1606169602846;
+ Mon, 23 Nov 2020 14:13:22 -0800 (PST)
 MIME-Version: 1.0
-References: <20201120054036.15199-1-ms@dev.tdt.de> <20201120054036.15199-3-ms@dev.tdt.de>
- <CAJht_EONd3+S12upVPk2K3PWvzMLdE3BkzY_7c5gA493NHcGnA@mail.gmail.com>
- <CAJht_EP_oqCDs6mMThBZNtz4sgpbyQgMhKkHeqfS_7JmfEzfQg@mail.gmail.com>
- <87a620b6a55ea8386bffefca0a1f8b77@dev.tdt.de> <CAJht_EPc8MF1TjznSjWTPyMbsrw3JVqxST5g=eF0yf_zasUdeA@mail.gmail.com>
- <d85a4543eae46bac1de28ec17a2389dd@dev.tdt.de> <CAJht_EMjO_Tkm93QmAeK_2jg2KbLdv2744kCSHiZLy48aXiHnw@mail.gmail.com>
- <CAJht_EO+enBOFMkVVB5y6aRnyMEsOZtUBJcAvOFBS91y7CauyQ@mail.gmail.com>
- <16b7e74e6e221f43420da7836659d7df@dev.tdt.de> <CAJht_EPtPDOSYfwc=9trBMdzLw4BbTzJbGvaEgWoyiy2624Q+Q@mail.gmail.com>
- <20201123113622.115c474b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201123113622.115c474b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Mon, 23 Nov 2020 14:09:43 -0800
-Message-ID: <CAJht_EOA4+DSjnKYZX3udrXX9jGHRmFw3OQesUb3AncD2oowwA@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 2/5] net/lapb: support netdev events
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Martin Schiller <ms@dev.tdt.de>,
-        Andrew Hendry <andrew.hendry@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20201123153817.1616814-1-ciorneiioana@gmail.com>
+In-Reply-To: <20201123153817.1616814-1-ciorneiioana@gmail.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Mon, 23 Nov 2020 23:13:11 +0100
+Message-ID: <CAFBinCBhWKzQFwERW9cy7T4JdOdFwNOqn2qPqFpqdjbat=-DwA@mail.gmail.com>
+Subject: Re: [PATCH net-next 00/15] net: phy: add support for shared
+ interrupts (part 3)
+To:     Ioana Ciornei <ciorneiioana@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 23, 2020 at 11:36 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> > >  From this point of view it will be the best to handle the NETDEV_UP in
-> > > the lapb event handler and establish the link analog to the
-> > > NETDEV_CHANGE event if the carrier is UP.
-> >
-> > Thanks! This way we can make sure LAPB would automatically connect in
-> > all situations.
-> >
-> > Since we'll have a netif_carrier_ok check in NETDEV_UP handing, it
-> > might make the code look prettier to also have a netif_carrier_ok
-> > check in NETDEV_GOING_DOWN handing (for symmetry). Just a suggestion.
-> > You can do whatever looks good to you :)
->
-> Xie other than this the patches look good to you?
->
-> Martin should I expect a respin to follow Xie's suggestion
-> or should I apply v4?
+Hello Ioana,
 
-There should be a respin because we need to handle the NETDEV_UP
-event. The lapbether driver (and possibly some HDLC WAN drivers)
-doesn't generate carrier events so we need to do auto-connect in the
-NETDEV_UP event.
+On Mon, Nov 23, 2020 at 4:38 PM Ioana Ciornei <ciorneiioana@gmail.com> wrote:
+[...]
+> Ioana Ciornei (15):
+>   net: phy: intel-xway: implement generic .handle_interrupt() callback
+>   net: phy: intel-xway: remove the use of .ack_interrupt()
+>   net: phy: icplus: implement generic .handle_interrupt() callback
+>   net: phy: icplus: remove the use .ack_interrupt()
+>   net: phy: meson-gxl: implement generic .handle_interrupt() callback
+>   net: phy: meson-gxl: remove the use of .ack_callback()
+I will check the six patches above on Saturday (due to me being very
+busy with my daytime job)
+if that's too late for the netdev maintainers then I'm not worried
+about it. at first glance this looks fine to me. and we can always fix
+things afterwards (but still before -rc1).
+
+
+Best regards,
+Martin
