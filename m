@@ -2,80 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD4242C18D1
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 23:59:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C2EE2C1900
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 23:59:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732807AbgKWWtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 17:49:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50350 "EHLO mail.kernel.org"
+        id S2387943AbgKWWzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 17:55:14 -0500
+Received: from mga11.intel.com ([192.55.52.93]:14836 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731277AbgKWWtH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Nov 2020 17:49:07 -0500
-Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BA28520717;
-        Mon, 23 Nov 2020 22:49:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606171746;
-        bh=+hKfuSHtqGsRaUlQQNwPdgKj27lIN/ygWLqzb1ZJ66Q=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HMAZyDQeQSAs0W/bPxyPtzCxLRZ7s1hQvX1mNyHpGtFuOECj+L0yEo5YVevuFWeGh
-         Z8peswtZ2QfhlPvauJAwl+Op6VMKOgsvxotsve8pH/sbISHmSMXs8Rpv+J3ioOt8Sf
-         /1yTBx5QByhZiNZYtZ5DqRBzEzAC+0mVbirGmHSE=
-Date:   Mon, 23 Nov 2020 16:49:20 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Tariq Toukan <ttoukan.linux@gmail.com>
-Cc:     Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH 044/141] net/mlx4: Fix fall-through warnings for Clang
-Message-ID: <20201123224920.GL21644@embeddedor>
-References: <cover.1605896059.git.gustavoars@kernel.org>
- <84cd69bc9b9768cf3bc032c0205ffe485b80ba03.1605896059.git.gustavoars@kernel.org>
- <0ba92238-2e31-b7d8-5664-72933dc76a7b@gmail.com>
+        id S2387934AbgKWWzO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Nov 2020 17:55:14 -0500
+IronPort-SDR: qj3gTLg1WW1DGjHUrhcpsT6qQm2ZuYe9G2QWQOFFzgOqFfkpX9TJQLMJLp1NYptTUxwHUu240m
+ lRz6M5G8TE6A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9814"; a="168348219"
+X-IronPort-AV: E=Sophos;i="5.78,364,1599548400"; 
+   d="scan'208";a="168348219"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2020 14:55:10 -0800
+IronPort-SDR: sINrrY2GOCALc3Zhd6FPs0Dnm1638t4PbO26AGV6AsajeMHLhZvMNuThVukLQ4FkN8e4UIajq9
+ KW8C5UtRCbrg==
+X-IronPort-AV: E=Sophos;i="5.78,364,1599548400"; 
+   d="scan'208";a="546591122"
+Received: from jbrandeb-mobl4.amr.corp.intel.com (HELO localhost) ([10.209.57.186])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Nov 2020 14:55:03 -0800
+Date:   Mon, 23 Nov 2020 14:55:02 -0800
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <salil.mehta@huawei.com>,
+        <yisen.zhuang@huawei.com>, <linuxarm@huawei.com>, <kuba@kernel.org>
+Subject: Re: [PATCH V4 net-next 0/4] net: hns3: updates for -next
+Message-ID: <20201123145502.00001e2a@intel.com>
+In-Reply-To: <1605514854-11205-1-git-send-email-tanhuazhong@huawei.com>
+References: <1605514854-11205-1-git-send-email-tanhuazhong@huawei.com>
+X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0ba92238-2e31-b7d8-5664-72933dc76a7b@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 22, 2020 at 10:36:01AM +0200, Tariq Toukan wrote:
-> 
-> 
-> On 11/20/2020 8:31 PM, Gustavo A. R. Silva wrote:
-> > In preparation to enable -Wimplicit-fallthrough for Clang, fix a warning
-> > by explicitly adding a break statement instead of just letting the code
-> > fall through to the next case.
-> > 
-> > Link: https://github.com/KSPP/linux/issues/115
-> > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> > ---
-> >   drivers/net/ethernet/mellanox/mlx4/resource_tracker.c | 1 +
-> >   1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/drivers/net/ethernet/mellanox/mlx4/resource_tracker.c b/drivers/net/ethernet/mellanox/mlx4/resource_tracker.c
-> > index 1187ef1375e2..e6b8b8dc7894 100644
-> > --- a/drivers/net/ethernet/mellanox/mlx4/resource_tracker.c
-> > +++ b/drivers/net/ethernet/mellanox/mlx4/resource_tracker.c
-> > @@ -2660,6 +2660,7 @@ int mlx4_FREE_RES_wrapper(struct mlx4_dev *dev, int slave,
-> >   	case RES_XRCD:
-> >   		err = xrcdn_free_res(dev, slave, vhcr->op_modifier, alop,
-> >   				     vhcr->in_param, &vhcr->out_param);
-> > +		break;
-> >   	default:
-> >   		break;
-> > 
-> 
-> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-> 
-> Thanks for your patch.
+Huazhong Tan wrote:
 
-Thanks, Tariq.
---
-Gustavo
+> There are several updates relating to the interrupt coalesce for
+> the HNS3 ethernet driver.
+> 
+> #1 adds support for QL(quantity limiting, interrupt coalesce
+>    based on the frame quantity).
+> #2 queries the maximum value of GL from the firmware instead of
+>    a fixed value in code.
+> #3 adds support for 1us unit GL(gap limiting, interrupt coalesce
+>    based on the gap time).
+> #4 renames gl_adapt_enable in struct hns3_enet_coalesce to fit
+>    its new usage.
+> 
+> change log:
+> V4 - remove #5~#10 from this series, which needs more discussion.
+> V3 - fix a typo error in #1 reported by Jakub Kicinski.
+>      rewrite #9 commit log.
+>      remove #11 from this series.
+> V2 - reorder #2 & #3 to fix compiler error.
+>      fix some checkpatch warnings in #10 & #11.
+
+
+For the series:
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
