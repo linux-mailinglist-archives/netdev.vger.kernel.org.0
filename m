@@ -2,104 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A39C22C14BA
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 20:50:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C953A2C1504
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 21:04:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730834AbgKWTsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 14:48:22 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:38902 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730764AbgKWTsW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 14:48:22 -0500
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0ANJW4GO081859;
-        Mon, 23 Nov 2020 14:48:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=DueikaWdt4eAgq6mXBuQOf4tVyxdnsqeGtZbgVApeC4=;
- b=mKPTsGI9KQAegykXslejFtYgC9y3vYuREGR62I9pMCl6n8hvRW5CJKbDuhf19mD0j6Ct
- 9NRInEtmECfsuVXqUEqGWPWqJK4vDJ6MUyCy3LBi3Ku09DbUQi0t94l0oAa/neAwGEXe
- yo+rKC+DfawlmsW0/3orM1YptMbebxneKlAyVpf/4srVPX3ladrCQgNW+zSnbdVK6LG8
- lxGUWUj878GdnpxAhl14BIxeeFukHjdRTLJ/49W+HVZOSVD1qeWoIYxm8gq1s6Miiqy4
- Uar13q2u9LSWKeMEEo0QqLojY/mPi6zLM7L2FV6cul7qGv9vlnUwtoANuluiZ3CxplQ+ dw== 
-Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 350fe71efx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 Nov 2020 14:48:20 -0500
-Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
-        by ppma02wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0ANJkpBY014362;
-        Mon, 23 Nov 2020 19:48:19 GMT
-Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
-        by ppma02wdc.us.ibm.com with ESMTP id 34xth8ss1r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 Nov 2020 19:48:19 +0000
-Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
-        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0ANJm9Aw13500938
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 23 Nov 2020 19:48:09 GMT
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D38E8136053;
-        Mon, 23 Nov 2020 19:48:18 +0000 (GMT)
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 96AC413604F;
-        Mon, 23 Nov 2020 19:48:18 +0000 (GMT)
-Received: from suka-w540.localdomain (unknown [9.85.207.248])
-        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Mon, 23 Nov 2020 19:48:18 +0000 (GMT)
-Received: by suka-w540.localdomain (Postfix, from userid 1000)
-        id 230752E0643; Mon, 23 Nov 2020 11:48:15 -0800 (PST)
-Date:   Mon, 23 Nov 2020 11:48:14 -0800
-From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Lijun Pan <ljp@linux.ibm.com>, netdev@vger.kernel.org,
-        drt@linux.ibm.com
-Subject: Re: [PATCH net 15/15] ibmvnic: add some debugs
-Message-ID: <20201123194814.GA2084825@us.ibm.com>
-References: <20201120224049.46933-1-ljp@linux.ibm.com>
- <20201120224049.46933-16-ljp@linux.ibm.com>
- <20201121154549.10f6fb7d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+        id S1729171AbgKWUD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 15:03:58 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:17000 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726770AbgKWUDy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 15:03:54 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fbc15a70004>; Mon, 23 Nov 2020 12:03:51 -0800
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 23 Nov
+ 2020 20:03:49 +0000
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.103)
+ by HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Mon, 23 Nov 2020 20:03:49 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gITd84wMHHzcOptjQRg1Bi4wKYLoloErjGXTzbxbsYYxXpRm6DfDjP1G8JsqPPruG8n8djHpWT3ChykgCoTQdTlPHkj05TPw7WZ4Y46HlI8bprZC3XuF3n009Te/qaTwPxc9ef3s3wxgnUStlvtZrJvP5WQhh3MIKLFTGEWjhLXWcgs1VmoV9q6ndrBwWgPhsRBIC9rKh9qqm9cf9Ujr9sks/ml2cZ4bW16uPSJVifE1ke5RuUikXPZ60YcpNVw15sbmeBPfJ8v059YAkVfr8AOpsBgi+OymMySTg/JYVNFtVJ2pGo3M9pC5txLp474ztgTCR2D9RfvqUQOXT+42RA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QophqWBVIGhmInjMMmoN1JCz5yEuED07MVw87J8AVUY=;
+ b=dpOj+p56VpZQgFejSTc+TjZx9PpIbmIlWcJPfXyA8QiV6hyerQ1PNIg37pZm/OoPMM7dRNU+MPO2Sxmva5Z6iKtLQpQNkcM79tS52of8WjxHEmReB+Qc/VB0gzy26dU2FtXMoEzn5Rx6YHRp97uhlWeSk7Nsi1BUrieORD+G9yqkgKBmwQvC726s6EkJ0s32uNc7iMGffyCjKbyBtSLggJX9G9WEJ0m0GYQlYWRE7aVXL+Iy16bXoksvn7nW7YXP74v45GAqxPt7EElquzCZ4kXurFfWXXWM9ThsUobGLm/yb7wWVAmTEM+ttWZwc1mR7P3I+RsId2H9o2Xiqq+zAg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB4338.namprd12.prod.outlook.com (2603:10b6:5:2a2::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.21; Mon, 23 Nov
+ 2020 20:03:48 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::e40c:730c:156c:2ef9]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::e40c:730c:156c:2ef9%7]) with mapi id 15.20.3589.022; Mon, 23 Nov 2020
+ 20:03:48 +0000
+Date:   Mon, 23 Nov 2020 16:03:45 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <amd-gfx@lists.freedesktop.org>,
+        <bridge@lists.linux-foundation.org>, <ceph-devel@vger.kernel.org>,
+        <cluster-devel@redhat.com>, <coreteam@netfilter.org>,
+        <devel@driverdev.osuosl.org>, <dm-devel@redhat.com>,
+        <drbd-dev@lists.linbit.com>, <dri-devel@lists.freedesktop.org>,
+        <GR-everest-linux-l2@marvell.com>, <GR-Linux-NIC-Dev@marvell.com>,
+        <intel-gfx@lists.freedesktop.org>,
+        <intel-wired-lan@lists.osuosl.org>, <keyrings@vger.kernel.org>,
+        <linux1394-devel@lists.sourceforge.net>,
+        <linux-acpi@vger.kernel.org>, <linux-afs@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-atm-general@lists.sourceforge.net>,
+        <linux-block@vger.kernel.org>, <linux-can@vger.kernel.org>,
+        <linux-cifs@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+        <linux-decnet-user@lists.sourceforge.net>,
+        <linux-ext4@vger.kernel.org>, <linux-fbdev@vger.kernel.org>,
+        <linux-geode@lists.infradead.org>, <linux-gpio@vger.kernel.org>,
+        <linux-hams@vger.kernel.org>, <linux-hwmon@vger.kernel.org>,
+        <linux-i3c@lists.infradead.org>, <linux-ide@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-input@vger.kernel.org>,
+        <linux-integrity@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-media@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
+        <linux-mm@kvack.org>, <linux-mtd@lists.infradead.org>,
+        <linux-nfs@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linux-renesas-soc@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
+        <linux-sctp@vger.kernel.org>,
+        <linux-security-module@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-usb@vger.kernel.org>, <linux-watchdog@vger.kernel.org>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <nouveau@lists.freedesktop.org>,
+        <op-tee@lists.trustedfirmware.org>, <oss-drivers@netronome.com>,
+        <patches@opensource.cirrus.com>, <rds-devel@oss.oracle.com>,
+        <reiserfs-devel@vger.kernel.org>,
+        <samba-technical@lists.samba.org>, <selinux@vger.kernel.org>,
+        <target-devel@vger.kernel.org>,
+        <tipc-discussion@lists.sourceforge.net>,
+        <usb-storage@lists.one-eyed-alien.net>,
+        <virtualization@lists.linux-foundation.org>,
+        <wcn36xx@lists.infradead.org>, <x86@kernel.org>,
+        <xen-devel@lists.xenproject.org>,
+        <linux-hardening@vger.kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Miguel Ojeda <ojeda@kernel.org>, Joe Perches <joe@perches.com>,
+        Kees Cook <keescook@chromium.org>
+Subject: Re: [PATCH 000/141] Fix fall-through warnings for Clang
+Message-ID: <20201123200345.GA38546@nvidia.com>
+References: <cover.1605896059.git.gustavoars@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20201121154549.10f6fb7d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Operating-System: Linux 2.0.32 on an i486
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-23_17:2020-11-23,2020-11-23 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 mlxscore=0
- bulkscore=0 suspectscore=1 lowpriorityscore=0 adultscore=0 impostorscore=0
- clxscore=1011 priorityscore=1501 phishscore=0 spamscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011230124
+In-Reply-To: <cover.1605896059.git.gustavoars@kernel.org>
+X-ClientProxiedBy: MN2PR03CA0013.namprd03.prod.outlook.com
+ (2603:10b6:208:23a::18) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (156.34.48.30) by MN2PR03CA0013.namprd03.prod.outlook.com (2603:10b6:208:23a::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.20 via Frontend Transport; Mon, 23 Nov 2020 20:03:47 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1khI3t-000A35-Tb; Mon, 23 Nov 2020 16:03:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1606161831; bh=QophqWBVIGhmInjMMmoN1JCz5yEuED07MVw87J8AVUY=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType;
+        b=Zr1EZlr7FGouweCXJ2A3YJZ8lxsTazMwmiIDkNNgeYuPc4M3hA0h9guNHLXrnnLeX
+         Dp0jtpGLpYuZZsYit0m8+Y/3Pgk+U78P2KDuhjfei0oh+kHbQnRfzB2jD1Wu7rVyZ8
+         A2iuCgvA8hhwNVx8Bo/l4LfRAECKvf8eJj6um7c8+wyJ6oFgyijvPixB8Xcq6YNTLj
+         o7o09Zdo2SkPJV9Ld82VvGAW1KENwGx8qxL8L4kHw5xGizl/kk/4FLfOCs8mx17bXD
+         N2PIS7AsaPoH2bHogxWrZ7vcH6YOCMGYKk/oZQ1BhSoaDoH96AMZAs9BCirfcyYEMq
+         3EMRDyReptNPA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski [kuba@kernel.org] wrote:
-> On Fri, 20 Nov 2020 16:40:49 -0600 Lijun Pan wrote:
-> > From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-> > 
-> > We sometimes run into situations where a soft/hard reset of the adapter
-> > takes a long time or fails to complete. Having additional messages that
-> > include important adapter state info will hopefully help understand what
-> > is happening, reduce the guess work and minimize requests to reproduce
-> > problems with debug patches.
-> 
-> This doesn't qualify as a bug fix, please send it to net-next.
+On Fri, Nov 20, 2020 at 12:21:39PM -0600, Gustavo A. R. Silva wrote:
 
-Ok.
+>   IB/hfi1: Fix fall-through warnings for Clang
+>   IB/mlx4: Fix fall-through warnings for Clang
+>   IB/qedr: Fix fall-through warnings for Clang
+>   RDMA/mlx5: Fix fall-through warnings for Clang
 
-> 
-> > +	netdev_err(adapter->netdev,
-> > +		   "[S:%d FRR:%d WFR:%d] Done processing resets\n",
-> > +		   adapter->state, adapter->force_reset_recovery,
-> > +		   adapter->wait_for_reset);
-> 
-> Does reset only happen as a result of an error? Should this be a
-> netdev_info() instead?
+I picked these four to the rdma tree, thanks
 
-It is an informational message, will change to netdev_info().
-
-Thanks,
-
-Sukadev
+Jason
