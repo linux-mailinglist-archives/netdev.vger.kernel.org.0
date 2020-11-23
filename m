@@ -2,147 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 251052C0D61
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 15:27:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E9282C0D65
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 15:27:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389131AbgKWOUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 09:20:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44650 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388810AbgKWOUI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 09:20:08 -0500
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DCBAC0613CF;
-        Mon, 23 Nov 2020 06:20:06 -0800 (PST)
-Received: by mail-yb1-xb43.google.com with SMTP id t33so16099316ybd.0;
-        Mon, 23 Nov 2020 06:20:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WUYMqcUnfpAQa1YuH9tQ3ze5bp2bxaoGLXc9Sg/470Y=;
-        b=b0LkeT2q71Z3peIccxL7MkU5QadaCN3igdEC89IE4ykmdOxIlhuoo/0+H7pQCoNmlh
-         0UX19Z7soasUpz2fDZHX56luUWrH4GLKAJ9K28HwPu9km7qlcvasqfBffaQW+LtXvh6a
-         fVP4J8wQFxbi1QWFB10Wsq9dLONxRShLcqQtcaktrZCy3tSRV5R4FOw2MSdgwNuCxNwd
-         cKQMyE/jYgmlc9Qm972BZKz9xJaasT5iW6gpZgai8YpCh1sxJNgZFzlfCpv21Fvd7rwb
-         akOsznbnFT4mJT95mXFDUPnplTdAJirWAcm8YfzHFRAfOGn9Vk91PuRcq7JipLelDPMB
-         VWgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WUYMqcUnfpAQa1YuH9tQ3ze5bp2bxaoGLXc9Sg/470Y=;
-        b=k/qgZ8Z9bBqeNograULAsVmY6QgH/o27YDc4TQqwadJEFPSHfj8njq8ybzc5p5uAqz
-         G2SF1GHjXgxVX+FODMOQfjlRZXXNW8F8Ux14RKIUmWQY2couN16YR3yqVIzbwT4iX+yY
-         VYevTNouvCvLvx1xngkvK6RPKneGbHmGKG5FWBekf4NZ/3kPDSYqCl0zGT3EJ0yk0X4t
-         kU+csohpniyEyWF3yBeZ4aH/Tq8NjSKFDNPVh4gegMfVdeoJsrqFPE3o5GJQHSG5qjFd
-         /s6X6u/SLjhTMvHx9dFj3eBhExXvELYjltJz7wnCgTa8WRq49qIZaylj2t5HkrN/zQMT
-         LOBg==
-X-Gm-Message-State: AOAM533+WIFD/5i1qM3ecRgslbKC6w7KewwGOZRW9A2m2jL8dzVHgZRd
-        FqTd3sI8v3im//r2zntxY7nbBjfQQlZgP2y43RA=
-X-Google-Smtp-Source: ABdhPJyiJqjBIpEzWlk5pyqpoGG3+KpoWdKnlyza2YA6ODhXnRhATytwh5Bq+iGOzNqc5gs+zuqHC8iB1cjfDTXU/ik=
-X-Received: by 2002:a25:bcc7:: with SMTP id l7mr32380985ybm.115.1606141205830;
- Mon, 23 Nov 2020 06:20:05 -0800 (PST)
-MIME-Version: 1.0
-References: <cover.1605896059.git.gustavoars@kernel.org> <20201120105344.4345c14e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <202011201129.B13FDB3C@keescook> <20201120115142.292999b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <202011220816.8B6591A@keescook> <9b57fd4914b46f38d54087d75e072d6e947cb56d.camel@HansenPartnership.com>
- <CANiq72nZrHWTA4_Msg6MP9snTyenC6-eGfD27CyfNSu7QoVZbw@mail.gmail.com> <1c7d7fde126bc0acf825766de64bf2f9b888f216.camel@HansenPartnership.com>
-In-Reply-To: <1c7d7fde126bc0acf825766de64bf2f9b888f216.camel@HansenPartnership.com>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Mon, 23 Nov 2020 15:19:55 +0100
-Message-ID: <CANiq72m22Jb5_+62NnwX8xds2iUdWDMAqD8PZw9cuxdHd95W0A@mail.gmail.com>
-Subject: Re: [PATCH 000/141] Fix fall-through warnings for Clang
-To:     James Bottomley <James.Bottomley@hansenpartnership.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        alsa-devel@alsa-project.org, amd-gfx@lists.freedesktop.org,
-        bridge@lists.linux-foundation.org, ceph-devel@vger.kernel.org,
-        cluster-devel@redhat.com, coreteam@netfilter.org,
-        devel@driverdev.osuosl.org, dm-devel@redhat.com,
-        drbd-dev@lists.linbit.com, dri-devel@lists.freedesktop.org,
-        GR-everest-linux-l2@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        intel-gfx@lists.freedesktop.org, intel-wired-lan@lists.osuosl.org,
-        keyrings@vger.kernel.org, linux1394-devel@lists.sourceforge.net,
-        linux-acpi@vger.kernel.org, linux-afs@lists.infradead.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm@vger.kernel.org,
-        linux-atm-general@lists.sourceforge.net,
-        linux-block@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-cifs@vger.kernel.org,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        linux-decnet-user@lists.sourceforge.net,
-        Ext4 Developers List <linux-ext4@vger.kernel.org>,
-        linux-fbdev@vger.kernel.org, linux-geode@lists.infradead.org,
-        linux-gpio@vger.kernel.org, linux-hams@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-i3c@lists.infradead.org,
-        linux-ide@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input <linux-input@vger.kernel.org>,
-        linux-integrity@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        linux-mmc@vger.kernel.org, Linux-MM <linux-mm@kvack.org>,
-        linux-mtd@lists.infradead.org, linux-nfs@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        netfilter-devel@vger.kernel.org, nouveau@lists.freedesktop.org,
-        op-tee@lists.trustedfirmware.org, oss-drivers@netronome.com,
-        patches@opensource.cirrus.com, rds-devel@oss.oracle.com,
-        reiserfs-devel@vger.kernel.org, samba-technical@lists.samba.org,
-        selinux@vger.kernel.org, target-devel@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net,
-        usb-storage@lists.one-eyed-alien.net,
-        virtualization@lists.linux-foundation.org,
-        wcn36xx@lists.infradead.org,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        xen-devel@lists.xenproject.org, linux-hardening@vger.kernel.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Miguel Ojeda <ojeda@kernel.org>, Joe Perches <joe@perches.com>
+        id S1730057AbgKWOVL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 09:21:11 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:27620 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729597AbgKWOVL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 09:21:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606141270;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sFX100UN+MAeeLeuZvJUKayCL3HfCEMAs7islFSWnWY=;
+        b=O9qMgqTy4LfKMoR+UzzN2WnOf0y+iAqBDQ8qBSWbYxVlNadeXlrbB+V5/YAhR8qwR3NXfF
+        C9oSHn77Jv+RrwUvR9HyJo+tz7vgg9DNLbUeagiFSmSohRWjlG6qNOwJFpvp9/c3/H5LsA
+        7U2TZcmuLvbV7O0EGw1ghpMSk5jsoJ0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-96-uYz1eSMKNlii2XWjJ3YoJA-1; Mon, 23 Nov 2020 09:21:07 -0500
+X-MC-Unique: uYz1eSMKNlii2XWjJ3YoJA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9EBCD1868429;
+        Mon, 23 Nov 2020 14:21:06 +0000 (UTC)
+Received: from ovpn-114-150.ams2.redhat.com (ovpn-114-150.ams2.redhat.com [10.36.114.150])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2B3915D6DC;
+        Mon, 23 Nov 2020 14:21:04 +0000 (UTC)
+Message-ID: <88ac6b9ddbdc6cf825ac3d7f65c9e0ee7f5cadd9.camel@redhat.com>
+Subject: Re: [PATCH net-next 10/10] mptcp: refine MPTCP-level ack scheduling
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        netdev@vger.kernel.org
+Cc:     kuba@kernel.org, mptcp@lists.01.org
+Date:   Mon, 23 Nov 2020 15:21:03 +0100
+In-Reply-To: <ca0b65f8-7a69-ff4e-9e0d-66a7a923b0c1@gmail.com>
+References: <20201119194603.103158-1-mathew.j.martineau@linux.intel.com>
+         <20201119194603.103158-11-mathew.j.martineau@linux.intel.com>
+         <ca0b65f8-7a69-ff4e-9e0d-66a7a923b0c1@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 22, 2020 at 11:36 PM James Bottomley
-<James.Bottomley@hansenpartnership.com> wrote:
->
-> Well, it seems to be three years of someone's time plus the maintainer
-> review time and series disruption of nearly a thousand patches.  Let's
-> be conservative and assume the producer worked about 30% on the series
-> and it takes about 5-10 minutes per patch to review, merge and for
-> others to rework existing series.  So let's say it's cost a person year
-> of a relatively junior engineer producing the patches and say 100h of
-> review and application time.  The latter is likely the big ticket item
-> because it's what we have in least supply in the kernel (even though
-> it's 20x vs the producer time).
+Hi,
 
-How are you arriving at such numbers? It is a total of ~200 trivial lines.
+On Mon, 2020-11-23 at 12:57 +0100, Eric Dumazet wrote:
+> > diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+> > index 4ae2c4a30e44..748343f1a968 100644
+> > --- a/net/mptcp/protocol.c
+> > +++ b/net/mptcp/protocol.c
+> > @@ -407,16 +407,42 @@ static void mptcp_set_timeout(const struct sock *sk, const struct sock *ssk)
+> >  	mptcp_sk(sk)->timer_ival = tout > 0 ? tout : TCP_RTO_MIN;
+> >  }
+> >  
+> > -static void mptcp_send_ack(struct mptcp_sock *msk)
+> > +static bool mptcp_subflow_active(struct mptcp_subflow_context *subflow)
+> > +{
+> > +	struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
+> > +
+> > +	/* can't send if JOIN hasn't completed yet (i.e. is usable for mptcp) */
+> > +	if (subflow->request_join && !subflow->fully_established)
+> > +		return false;
+> > +
+> > +	/* only send if our side has not closed yet */
+> > +	return ((1 << ssk->sk_state) & (TCPF_ESTABLISHED | TCPF_CLOSE_WAIT));
+> > +}
+> > +
+> > +static void mptcp_send_ack(struct mptcp_sock *msk, bool force)
+> >  {
+> >  	struct mptcp_subflow_context *subflow;
+> > +	struct sock *pick = NULL;
+> >  
+> >  	mptcp_for_each_subflow(msk, subflow) {
+> >  		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
+> >  
+> > -		lock_sock(ssk);
+> > -		tcp_send_ack(ssk);
+> > -		release_sock(ssk);
+> > +		if (force) {
+> > +			lock_sock(ssk);
+> > +			tcp_send_ack(ssk);
+> > +			release_sock(ssk);
+> > +			continue;
+> > +		}
+> > +
+> > +		/* if the hintes ssk is still active, use it */
+> > +		pick = ssk;
+> > +		if (ssk == msk->ack_hint)
+> > +			break;
+> > +	}
+> > +	if (!force && pick) {
+> > +		lock_sock(pick);
+> > +		tcp_cleanup_rbuf(pick, 1);
+> 
+> Calling tcp_cleanup_rbuf() on a socket that was never established is going to fail
+> with a divide by 0 (mss being 0)
+> 
+> AFAIK, mptcp_recvmsg() can be called right after a socket(AF_INET, SOCK_STREAM, IPPROTO_MPTCP)
+> call.
+> 
+> Probably, after a lock_sock(), you should double check socket state (same above before calling tcp_send_ack())
 
-> It's not about the risk of the changes it's about the cost of
-> implementing them.  Even if you discount the producer time (which
-> someone gets to pay for, and if I were the engineering manager, I'd be
-> unhappy about), the review/merge/rework time is pretty significant in
-> exchange for six minor bug fixes.  Fine, when a new compiler warning
-> comes along it's certainly reasonable to see if we can benefit from it
-> and the fact that the compiler people think it's worthwhile is enough
-> evidence to assume this initially.  But at some point you have to ask
-> whether that assumption is supported by the evidence we've accumulated
-> over the time we've been using it.  And if the evidence doesn't support
-> it perhaps it is time to stop the experiment.
+Thank you for looking into this.
 
-Maintainers routinely review 1-line trivial patches, not to mention
-internal API changes, etc.
-
-If some company does not want to pay for that, that's fine, but they
-don't get to be maintainers and claim `Supported`.
+Indeed you are right! I'll try to cook a fix.
 
 Cheers,
-Miguel
+
+Paolo
+
