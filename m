@@ -2,139 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6689D2BFE92
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 04:18:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D0352BFEC2
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 04:37:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727505AbgKWDRg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Nov 2020 22:17:36 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:26438 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727247AbgKWDRd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Nov 2020 22:17:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606101452;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=IpGdwt8jdg4GGv7ektWNsDixKkYiXczr59YjdWQtig8=;
-        b=daE1ic0khqWnU/GqClYCJExGKqWl0wFHvKNiq5jNXz2MEX1WiUHWl2yrXkf00HOWTfAw/F
-        kzZA9yzlAh6/jGQtb95MZbBtLTquX+gaSLmC81Iep1sogpRd+AmPxrLDVnjx78Cfzo4vZX
-        5OBECwzuC3noNZM7ao60E0n1SEXnO0w=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-427-s5HL3oc_O7K-W82RV-NkAQ-1; Sun, 22 Nov 2020 22:17:28 -0500
-X-MC-Unique: s5HL3oc_O7K-W82RV-NkAQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 47B871005D71;
-        Mon, 23 Nov 2020 03:17:26 +0000 (UTC)
-Received: from f33vm.wilsonet.com.wilsonet.com (dhcp-17-185.bos.redhat.com [10.18.17.185])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 643F160BF3;
-        Mon, 23 Nov 2020 03:17:21 +0000 (UTC)
-From:   Jarod Wilson <jarod@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jarod Wilson <jarod@redhat.com>, Ivan Vecera <ivecera@redhat.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org
-Subject: [PATCH net] bonding: fix feature flag setting at init time
-Date:   Sun, 22 Nov 2020 22:17:16 -0500
-Message-Id: <20201123031716.6179-1-jarod@redhat.com>
+        id S1727289AbgKWDhf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Nov 2020 22:37:35 -0500
+Received: from conssluserg-06.nifty.com ([210.131.2.91]:60881 "EHLO
+        conssluserg-06.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726885AbgKWDhf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Nov 2020 22:37:35 -0500
+X-Greylist: delayed 114773 seconds by postgrey-1.27 at vger.kernel.org; Sun, 22 Nov 2020 22:37:34 EST
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174]) (authenticated)
+        by conssluserg-06.nifty.com with ESMTP id 0AN3atLh032027;
+        Mon, 23 Nov 2020 12:36:56 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 0AN3atLh032027
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1606102616;
+        bh=YL64JWX8+POTNkn/GZ7B+nszuW5O8YQqSfoss8+OVhk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ooQtKrxm1EI5JJsobUKyeYXAjIV+RoefFSoPmKabq0sodI0Y1kw+Yxf5jMgOU3v1w
+         W5HSJfgC7Ej7Hg80VGtMAFcmNyxPtUQaK73w6lhwLwGliH3flZ7yc57MtqiU0FIx1m
+         6ei0KbX+XgpmmGOGSBQzYwXM2775PqN2AfMu9nvZqWvl9UpfrzAvVIN8/t7ILYBwYH
+         45J1SGSHpQVjwYtVGtQYTkEn2Kr42iG243csfHSuHHxaWZznhqAqqXpo8QhOA2CISk
+         fTy4GoIZHjWNKw1q5jrUotX5w6+Bpqm4pJdEapeAZihlZrCYUbcY4lRZB9/0cdKDIn
+         5Z0iWPVnvOMWg==
+X-Nifty-SrcIP: [209.85.214.174]
+Received: by mail-pl1-f174.google.com with SMTP id p6so5794187plr.7;
+        Sun, 22 Nov 2020 19:36:55 -0800 (PST)
+X-Gm-Message-State: AOAM531WfhrVdtMP9OyP5ISyB7HQDflJ/SYNzwEHso0Q801m5Q3ktDC6
+        0MTESIXBhHJtfiI9lAS6ceYpFz0FcBrgmLPCrqE=
+X-Google-Smtp-Source: ABdhPJzNuqDamg2p4M+v2AI8oS/thdIABCwyrr94QP7NGfbG5kGWuCZOsctgZMaDSWL8YqmDoi92WL62fYY5d0QrEd4=
+X-Received: by 2002:a17:902:ff0e:b029:d6:820d:cb81 with SMTP id
+ f14-20020a170902ff0eb02900d6820dcb81mr22899656plj.47.1606102615011; Sun, 22
+ Nov 2020 19:36:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+References: <20201121194339.52290-1-masahiroy@kernel.org> <CANiq72nL7yxGj-Q6aOxG68967g_fB6=hDED0mTBrZ_SjC=U-Pg@mail.gmail.com>
+In-Reply-To: <CANiq72nL7yxGj-Q6aOxG68967g_fB6=hDED0mTBrZ_SjC=U-Pg@mail.gmail.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Mon, 23 Nov 2020 12:36:18 +0900
+X-Gmail-Original-Message-ID: <CAK7LNARjU5HTcTjJG1-sQTJBFqohC1O8aAvFs3Hn_sXscH_pdg@mail.gmail.com>
+Message-ID: <CAK7LNARjU5HTcTjJG1-sQTJBFqohC1O8aAvFs3Hn_sXscH_pdg@mail.gmail.com>
+Subject: Re: [PATCH] compiler_attribute: remove CONFIG_ENABLE_MUST_CHECK
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Shuah Khan <shuah@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        wireguard@lists.zx2c4.com,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Have run into a case where bond_option_mode_set() gets called before
-hw_features has been filled in, and very bad things happen when
-netdev_change_features() then gets called, because the empty hw_features
-wipes out almost all features. Further reading of netdev feature flag
-documentation suggests drivers aren't supposed to touch wanted_features,
-so this changes bond_option_mode_set() to use netdev_increment_features()
-and &= ~BOND_XFRM_FEATURES on mode changes and then only calling
-netdev_features_change() if there was actually a change of features. This
-specifically fixes bonding on top of mlxsw interfaces, and has been
-regression-tested with ixgbe interfaces. This change also simplifies the
-xfrm-specific code in bond_setup() a little bit as well.
+On Sun, Nov 22, 2020 at 5:45 AM Miguel Ojeda
+<miguel.ojeda.sandonis@gmail.com> wrote:
+>
+> On Sat, Nov 21, 2020 at 8:44 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+> >
+> > Our goal is to always enable __must_check where appreciate, so this
+> > CONFIG option is no longer needed.
+>
+> This would be great. It also implies we can then move it to
+> `compiler_attributes.h` since it does not depend on config options
+> anymore.
+>
+> We should also rename it to `__nodiscard`, since that is the
+> standardized name (coming soon to C2x and in C++ for years).
+>
+> Cc'ing the Clang folks too to make them aware.
+>
 
-Fixes: a3b658cfb664 ("bonding: allow xfrm offload setup post-module-load")
-Reported-by: Ivan Vecera <ivecera@redhat.com>
-Cc: Jay Vosburgh <j.vosburgh@gmail.com>
-Cc: Veaceslav Falico <vfalico@gmail.com>
-Cc: Andy Gospodarek <andy@greyhouse.net>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Thomas Davis <tadavis@lbl.gov>
-Cc: netdev@vger.kernel.org
-Signed-off-by: Jarod Wilson <jarod@redhat.com>
----
- drivers/net/bonding/bond_main.c    | 10 ++++------
- drivers/net/bonding/bond_options.c | 14 +++++++++++---
- 2 files changed, 15 insertions(+), 9 deletions(-)
+I can move it to compiler_attribute.h
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 71c9677d135f..b8e0cb4f9480 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -4721,15 +4721,13 @@ void bond_setup(struct net_device *bond_dev)
- 				NETIF_F_HW_VLAN_CTAG_FILTER;
- 
- 	bond_dev->hw_features |= NETIF_F_GSO_ENCAP_ALL;
--#ifdef CONFIG_XFRM_OFFLOAD
--	bond_dev->hw_features |= BOND_XFRM_FEATURES;
--#endif /* CONFIG_XFRM_OFFLOAD */
- 	bond_dev->features |= bond_dev->hw_features;
- 	bond_dev->features |= NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_STAG_TX;
- #ifdef CONFIG_XFRM_OFFLOAD
--	/* Disable XFRM features if this isn't an active-backup config */
--	if (BOND_MODE(bond) != BOND_MODE_ACTIVEBACKUP)
--		bond_dev->features &= ~BOND_XFRM_FEATURES;
-+	bond_dev->hw_features |= BOND_XFRM_FEATURES;
-+	/* Only enable XFRM features if this is an active-backup config */
-+	if (BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP)
-+		bond_dev->features |= BOND_XFRM_FEATURES;
- #endif /* CONFIG_XFRM_OFFLOAD */
- }
- 
-diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
-index 9abfaae1c6f7..bce34648d97d 100644
---- a/drivers/net/bonding/bond_options.c
-+++ b/drivers/net/bonding/bond_options.c
-@@ -748,6 +748,9 @@ const struct bond_option *bond_opt_get(unsigned int option)
- static int bond_option_mode_set(struct bonding *bond,
- 				const struct bond_opt_value *newval)
- {
-+	netdev_features_t features = bond->dev->features;
-+	netdev_features_t mask = features & BOND_XFRM_FEATURES;
-+
- 	if (!bond_mode_uses_arp(newval->value)) {
- 		if (bond->params.arp_interval) {
- 			netdev_dbg(bond->dev, "%s mode is incompatible with arp monitoring, start mii monitoring\n",
-@@ -769,10 +772,15 @@ static int bond_option_mode_set(struct bonding *bond,
- 
- #ifdef CONFIG_XFRM_OFFLOAD
- 	if (newval->value == BOND_MODE_ACTIVEBACKUP)
--		bond->dev->wanted_features |= BOND_XFRM_FEATURES;
-+		features = netdev_increment_features(features,
-+						     BOND_XFRM_FEATURES, mask);
- 	else
--		bond->dev->wanted_features &= ~BOND_XFRM_FEATURES;
--	netdev_change_features(bond->dev);
-+		features &= ~BOND_XFRM_FEATURES;
-+
-+	if (bond->dev->features != features) {
-+		bond->dev->features = features;
-+		netdev_features_change(bond->dev);
-+	}
- #endif /* CONFIG_XFRM_OFFLOAD */
- 
- 	/* don't cache arp_validate between modes */
+This attribute is supported by gcc, clang, and icc.
+https://godbolt.org/z/ehd6so
+
+I can send v2.
+
+
+
+I do not mind renaming, but it should be done in a separate patch.
+
+
+
+
 -- 
-2.28.0
-
+Best Regards
+Masahiro Yamada
