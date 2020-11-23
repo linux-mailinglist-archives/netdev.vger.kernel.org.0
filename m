@@ -2,104 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34A602C02FE
-	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 11:09:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32B302C0301
+	for <lists+netdev@lfdr.de>; Mon, 23 Nov 2020 11:12:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728202AbgKWKI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 05:08:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33872 "EHLO
+        id S1728273AbgKWKKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 05:10:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726891AbgKWKI1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 05:08:27 -0500
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B53C0613CF
-        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 02:08:26 -0800 (PST)
-Received: by mail-ej1-x642.google.com with SMTP id a16so22478778ejj.5
-        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 02:08:26 -0800 (PST)
+        with ESMTP id S1727070AbgKWKKA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 05:10:00 -0500
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF98AC0613CF
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 02:09:59 -0800 (PST)
+Received: by mail-pl1-x644.google.com with SMTP id bj5so7790583plb.4
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 02:09:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=WoWKjemo0iT1DbHN9ts85XqT0YGU8IxLpaJUob8pzgE=;
-        b=jNDlM2fmUkFpbF4NdTLHccsNny9g++VKsQoqBWSKF8V1j5Kxg41Xv+584AKjUSM2LR
-         lwOLy/v1XV47wzT39aKhOz9at7a4rpcJ2nzSRH21xgRHkaQ85jsLwfd4ycyL5JilJTAa
-         BRAc5Ju9jzGHvaDds3X2yd1puMSesgrJ6oXD4bSEsda84gUII8uepEDu7anHGJR9poVJ
-         fhdzZTlXMoMWhDAR8NyElXptLJq+iS/gwpfj2Md8zwSUJ8ZoC8jer8amx8dJorDLDFK+
-         EWgnx53EibtrAoyBVHAqwibkFyYXsmiVBVQNHSjlfLYyuTTa+MVddsEQUuyUHN5G/jBp
-         xFcQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vz5OQ2DxoYXYRZB2CCFGSGjbBdZ/Cxd2LHpsd7WJgXw=;
+        b=YknmvFKVc0DTH4DhbrEaHXqGVaKW6slE7ZrJv05CNYnVWomhh3HaQJecVCIyWKWuUE
+         UZtRIDEC5yYXeM7IDWzTClbnivylhUV7hLBYb3tliLex7t0LO57uXKujhLp0U0CjxFJ4
+         FtztnXjXsVeKwkMn14jaCfT5wbeRlQ43oy1NYzcV819BrrD8mLiU+Qv2gSxSGSQCRjjE
+         2glFWAKvawfpWE8EBt3jzC4lO5aIoiQ+L0XsLyPP6IiG+7EDyX56DjmjoFA1s4hny0YH
+         thDomEgoxgd40zA+XGU8xMIJb7BYP1puPd6vk6Q1wy1XyNhng75UEaZ3kCkOk3/yCQrG
+         Zo9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=WoWKjemo0iT1DbHN9ts85XqT0YGU8IxLpaJUob8pzgE=;
-        b=DRDvOfV4Ukk6LiFyOTPPucYQx3EASglEqges0cvTkLXZ29dyOvA5/g9Cqn5nkCXDRR
-         sUtDjpyQVMfAEqphiFTDSgJpJLdZtqKsbKKzWVfapeXa+xVh3iap5cXXRBT493ZvRfP9
-         3lqI0K4JfGYPeGTSjBdfERCy10O2lrB0G3+qXf5d8n/mx972CIm+d1pyvs0EdO4oivC/
-         8vJN69OXr3mIAQJbsKDFtSW5XH7oFr3TwQBjDEVzMjgizsDOmi9MMf6F9ZiciI8lf5Ty
-         sIQeE4h0Rx8/Lk4aiKCDAC+u37FK+FR1NQKn8QFUI/vNHtJgV+q6vmmkEroskCWy+AmF
-         VVgg==
-X-Gm-Message-State: AOAM532XNmxpakGqH4u/3KxSuQ2sy29BdTD2Ucl4FDv7lZgZvLGhg3fc
-        e3yGi2jXZTAOXPU3+/stFvk=
-X-Google-Smtp-Source: ABdhPJyJtue+2LUYGpkPOG0iH/Rf/Upa6Mja3j52BFOt9UkuXLsy21YKzGz1n39zFbCiiDG+b/qxfQ==
-X-Received: by 2002:a17:906:a106:: with SMTP id t6mr41640365ejy.63.1606126105668;
-        Mon, 23 Nov 2020 02:08:25 -0800 (PST)
-Received: from [192.168.1.110] ([77.124.63.70])
-        by smtp.gmail.com with ESMTPSA id c8sm4719508edr.29.2020.11.23.02.08.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Nov 2020 02:08:24 -0800 (PST)
-Subject: Re: [PATCH] net: mlx5e: fix fs_tcp.c build when IPV6 is not enabled
-To:     Randy Dunlap <rdunlap@infradead.org>, netdev@vger.kernel.org
-Cc:     kernel test robot <lkp@intel.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20201122211231.5682-1-rdunlap@infradead.org>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-Message-ID: <bcb539df-901f-c5a5-697a-a022c1c3bfe5@gmail.com>
-Date:   Mon, 23 Nov 2020 12:08:22 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vz5OQ2DxoYXYRZB2CCFGSGjbBdZ/Cxd2LHpsd7WJgXw=;
+        b=nrA7dC4VD35lc0aH8FrnWg1IlFoek1lZbayoF8KDRjpZJLdB6DGuJOkIhbjLk9qPai
+         Y1q3CIGN3Yu4gbISTTgy8PUqVbNwHAYv5zo7LjjLXvrw5s9fGJrgf/8CKqeVL3JWN9fq
+         IDoOh0jVzhmboUlzb4s/EUPhyKxFSfIzYxLE35beBKSwcwPUprycYzlXAvbmxpSrLXd0
+         7H1Zuj82c9og9X1N3JDkRGz50haGw6lHbH2KiHKCRUU+B4Qmox7YL44Dro/lDK3uwYDT
+         SvGistp0n6USMosBhqBa4V4HV9fgN2DiZYP4XxFNd5cBxGiAb78ijjASaIwhTv60sY8L
+         kSvg==
+X-Gm-Message-State: AOAM530lzuhuqC/vs3CCTFTios2jWQa/T40qfThrrgwzdUjQ4JBOrHQa
+        IPSZPvpxPNftRSU+BfL/BPGG1xtAY/TchDcfYRXcDKgoqbYAMg==
+X-Google-Smtp-Source: ABdhPJwWRJLcs1FayQx/wc38zxnSC164FcdKpLpIocYnh+GV/ypzTrMvM1x7ymOtRo3UYuUE22KmDT9NkbSiZImx++E=
+X-Received: by 2002:a17:902:be07:b029:da:c5e:81b6 with SMTP id
+ r7-20020a170902be07b02900da0c5e81b6mr3260665pls.43.1606126199511; Mon, 23 Nov
+ 2020 02:09:59 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20201122211231.5682-1-rdunlap@infradead.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <1606035891-6797-1-git-send-email-yanjunz@nvidia.com>
+In-Reply-To: <1606035891-6797-1-git-send-email-yanjunz@nvidia.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Mon, 23 Nov 2020 11:09:48 +0100
+Message-ID: <CAJ8uoz033qSMR3HcFKULJX=BEYW3v_UR=uJwOVcrXFzpwc-uqQ@mail.gmail.com>
+Subject: Re: [PATCH 1/1] xdp: compact the function xsk_map_inc
+To:     Zhu Yanjun <yanjunz@nvidia.com>
+Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 11/22/2020 11:12 PM, Randy Dunlap wrote:
-> Fix build when CONFIG_IPV6 is not enabled by making a function
-> be built conditionally.
-> 
-> Fixes these build errors and warnings:
-> 
-> ../drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c: In function 'accel_fs_tcp_set_ipv6_flow':
-> ../include/net/sock.h:380:34: error: 'struct sock_common' has no member named 'skc_v6_daddr'; did you mean 'skc_daddr'?
->    380 | #define sk_v6_daddr  __sk_common.skc_v6_daddr
->        |                                  ^~~~~~~~~~~~
-> ../drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c:55:14: note: in expansion of macro 'sk_v6_daddr'
->     55 |         &sk->sk_v6_daddr, 16);
->        |              ^~~~~~~~~~~
-> At top level:
-> ../drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c:47:13: warning: 'accel_fs_tcp_set_ipv6_flow' defined but not used [-Wunused-function]
->     47 | static void accel_fs_tcp_set_ipv6_flow(struct mlx5_flow_spec *spec, struct sock *sk)
-> 
-> Fixes: 5229a96e59ec ("net/mlx5e: Accel, Expose flow steering API for rules add/del")
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Cc: Saeed Mahameed <saeedm@nvidia.com>
-> Cc: Boris Pismenny <borisp@nvidia.com>
-> Cc: Tariq Toukan <tariqt@mellanox.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
+On Sun, Nov 22, 2020 at 10:07 AM Zhu Yanjun <yanjunz@nvidia.com> wrote:
+>
+> From: Zhu Yanjun <zyjzyj2000@gmail.com>
+>
+> The function xsk_map_inc always returns zero. As such, changing the
+> return type to void and removing the test code.
+>
+> Signed-off-by: Zhu Yanjun <zyjzyj2000@gmail.com>
+> Signed-off-by: Zhu Yanjun <yanjunz@nvidia.com>
 > ---
+>  net/xdp/xsk.c    |    1 -
+>  net/xdp/xsk.h    |    2 +-
+>  net/xdp/xskmap.c |   10 ++--------
+>  3 files changed, 3 insertions(+), 10 deletions(-)
+>
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index cfbec39..c1b8a88 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -548,7 +548,6 @@ static void xsk_unbind_dev(struct xdp_sock *xs)
+>         node = list_first_entry_or_null(&xs->map_list, struct xsk_map_node,
+>                                         node);
+>         if (node) {
+> -               WARN_ON(xsk_map_inc(node->map));
+>                 map = node->map;
+>                 *map_entry = node->map_entry;
+>         }
+> diff --git a/net/xdp/xsk.h b/net/xdp/xsk.h
+> index b9e896c..766b9e2 100644
+> --- a/net/xdp/xsk.h
+> +++ b/net/xdp/xsk.h
+> @@ -41,7 +41,7 @@ struct xsk_map_node {
+>
+>  void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
+>                              struct xdp_sock **map_entry);
+> -int xsk_map_inc(struct xsk_map *map);
+> +void xsk_map_inc(struct xsk_map *map);
+>  void xsk_map_put(struct xsk_map *map);
+>  void xsk_clear_pool_at_qid(struct net_device *dev, u16 queue_id);
+>  int xsk_reg_pool_at_qid(struct net_device *dev, struct xsk_buff_pool *pool,
+> diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
+> index 49da2b8..c7dd94a 100644
+> --- a/net/xdp/xskmap.c
+> +++ b/net/xdp/xskmap.c
+> @@ -11,10 +11,9 @@
+>
+>  #include "xsk.h"
+>
+> -int xsk_map_inc(struct xsk_map *map)
+> +void xsk_map_inc(struct xsk_map *map)
+>  {
+>         bpf_map_inc(&map->map);
+> -       return 0;
+>  }
 
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Thank you Yanjun for your cleanup. I think we can take this one step
+further and remove the function xsk_map_inc completely and use
+bpf_map_inc directly in the code. Could you please do this and submit
+a v2?
 
-Thanks for your patch.
+>  void xsk_map_put(struct xsk_map *map)
+> @@ -26,17 +25,12 @@ void xsk_map_put(struct xsk_map *map)
+>                                                struct xdp_sock **map_entry)
+>  {
+>         struct xsk_map_node *node;
+> -       int err;
+>
+>         node = kzalloc(sizeof(*node), GFP_ATOMIC | __GFP_NOWARN);
+>         if (!node)
+>                 return ERR_PTR(-ENOMEM);
+>
+> -       err = xsk_map_inc(map);
+> -       if (err) {
+> -               kfree(node);
+> -               return ERR_PTR(err);
+> -       }
+> +       xsk_map_inc(map);
+>
+>         node->map = map;
+>         node->map_entry = map_entry;
+> --
+> 1.7.1
+>
