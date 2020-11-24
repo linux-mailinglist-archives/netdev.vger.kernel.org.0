@@ -2,121 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA52B2C24DF
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 12:43:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE27E2C2523
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 13:02:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733041AbgKXLnJ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 24 Nov 2020 06:43:09 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:41433 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732917AbgKXLnH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 06:43:07 -0500
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-91-jyJxJe5aNJiyxE4leEQJIA-1; Tue, 24 Nov 2020 11:43:03 +0000
-X-MC-Unique: jyJxJe5aNJiyxE4leEQJIA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Tue, 24 Nov 2020 11:43:02 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Tue, 24 Nov 2020 11:43:02 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Martin Schiller' <ms@dev.tdt.de>,
-        "andrew.hendry@gmail.com" <andrew.hendry@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "xie.he.0141@gmail.com" <xie.he.0141@gmail.com>
-CC:     "linux-x25@vger.kernel.org" <linux-x25@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next v5 3/5] net/lapb: fix t1 timer handling for
- LAPB_STATE_0
-Thread-Topic: [PATCH net-next v5 3/5] net/lapb: fix t1 timer handling for
- LAPB_STATE_0
-Thread-Index: AQHWwkWB5njMObAgO0WeknXMDXzKn6nXJulw
-Date:   Tue, 24 Nov 2020 11:43:02 +0000
-Message-ID: <2d40b42aee314611b9ba1627e5eab30b@AcuMS.aculab.com>
-References: <20201124093538.21177-1-ms@dev.tdt.de>
- <20201124093538.21177-4-ms@dev.tdt.de>
-In-Reply-To: <20201124093538.21177-4-ms@dev.tdt.de>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1733157AbgKXMAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 07:00:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44940 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729172AbgKXMAd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 07:00:33 -0500
+Received: from localhost.localdomain (unknown [213.195.126.134])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 39E2B2076E;
+        Tue, 24 Nov 2020 12:00:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606219233;
+        bh=EQ3qNXyrD0FnMOq6ggilGWtupETyN3N8CFyBBuVBxh0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=gcP6Nhok4oHyifW6lw25dPmRr6Fsm3jMYieJrh4HWPpJOLiC3XyHk7UabSCC+Skal
+         qESXdJ6kDPjzpC3vk7BL9V2RXcHyX8Dy6Dnf57c98+Kym90+FDF+NGNpY4tZz0mFWd
+         iRhzlkAsIddkXLvoo5DaG3+Zb5Ty77vQfzPnRja8=
+From:   matthias.bgg@kernel.org
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>, hdegoede@redhat.com
+Cc:     =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Chung-Hsien Hsu <stanley.hsu@cypress.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Double Lo <double.lo@cypress.com>,
+        Frank Kao <frank.kao@cypress.com>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        "Gustavo A . R . Silva" <gustavo@embeddedor.com>,
+        netdev@vger.kernel.org,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Matthias Brugger <mbrugger@suse.com>, digetx@gmail.com,
+        Saravanan Shanmugham <saravanan.shanmugham@cypress.com>,
+        linux-kernel@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
+        Amar Shankar <amsr@cypress.com>, brcm80211-dev-list@cypress.com
+Subject: [PATCH v3] brcmfmac: expose firmware config files through modinfo
+Date:   Tue, 24 Nov 2020 13:00:18 +0100
+Message-Id: <20201124120018.31358-1-matthias.bgg@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin Schiller
-> Sent: 24 November 2020 09:36
-> 
-> 1. DTE interface changes immediately to LAPB_STATE_1 and start sending
->    SABM(E).
-> 
-> 2. DCE interface sends N2-times DM and changes to LAPB_STATE_1
->    afterwards if there is no response in the meantime.
+From: Matthias Brugger <mbrugger@suse.com>
 
-Seems reasonable.
-It is 35 years since I wrote LAPB and I can't exactly remember
-what we did.
-If I stole a copy of the code it's on a QIC-150 tape cartridge!
+Apart from a firmware binary the chip needs a config file used by the
+FW. Add the config files to modinfo so that they can be read by
+userspace.
 
-I really don't remember having a DTE/DCE option.
-It is likely that LAPB came up sending DM (response without F)
-until level3 requested the link come up when it would send
-N2 SABM+P hoping to get a UA+F.
-It would then send DM-F until a retry request was made.
+Signed-off-by: Matthias Brugger <mbrugger@suse.com>
 
-We certainly had several different types of crossover connectors
-for DTE-DTE working.
+---
 
-	David
+Changes in v3:
+Use only two more generic wildcards.
 
-> 
-> Signed-off-by: Martin Schiller <ms@dev.tdt.de>
-> ---
->  net/lapb/lapb_timer.c | 11 +++++++++--
->  1 file changed, 9 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/lapb/lapb_timer.c b/net/lapb/lapb_timer.c
-> index 8f5b17001a07..baa247fe4ed0 100644
-> --- a/net/lapb/lapb_timer.c
-> +++ b/net/lapb/lapb_timer.c
-> @@ -85,11 +85,18 @@ static void lapb_t1timer_expiry(struct timer_list *t)
->  	switch (lapb->state) {
-> 
->  		/*
-> -		 *	If we are a DCE, keep going DM .. DM .. DM
-> +		 *	If we are a DCE, send DM up to N2 times, then switch to
-> +		 *	STATE_1 and send SABM(E).
->  		 */
->  		case LAPB_STATE_0:
-> -			if (lapb->mode & LAPB_DCE)
-> +			if (lapb->mode & LAPB_DCE &&
-> +			    lapb->n2count != lapb->n2) {
-> +				lapb->n2count++;
->  				lapb_send_control(lapb, LAPB_DM, LAPB_POLLOFF, LAPB_RESPONSE);
-> +			} else {
-> +				lapb->state = LAPB_STATE_1;
-> +				lapb_establish_data_link(lapb);
-> +			}
->  			break;
-> 
->  		/*
-> --
-> 2.20.1
+Changes in v2:
+In comparison to first version [0] we use wildcards to enumerate the
+firmware configuration files. Wildcard support was added to dracut
+recently [1].
+[0] https://lore.kernel.org/linux-wireless/20200701153123.25602-1-matthias.bgg@kernel.org/
+[1] https://github.com/dracutdevs/dracut/pull/860
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+index 99987a789e7e..6fe91c537adf 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+@@ -625,6 +625,10 @@ BRCMF_FW_DEF(4359, "brcmfmac4359-sdio");
+ BRCMF_FW_DEF(4373, "brcmfmac4373-sdio");
+ BRCMF_FW_DEF(43012, "brcmfmac43012-sdio");
+ 
++/* firmware config files */
++MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac*-sdio.*.txt");
++MODULE_FIRMWARE(BRCMF_FW_DEFAULT_PATH "brcm/brcmfmac*-pcie.*.txt");
++
+ static const struct brcmf_firmware_mapping brcmf_sdio_fwnames[] = {
+ 	BRCMF_FW_ENTRY(BRCM_CC_43143_CHIP_ID, 0xFFFFFFFF, 43143),
+ 	BRCMF_FW_ENTRY(BRCM_CC_43241_CHIP_ID, 0x0000001F, 43241B0),
+-- 
+2.29.2
 
