@@ -2,90 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBE0F2C1EFE
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 08:41:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5592E2C1F15
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 08:47:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730131AbgKXHjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 02:39:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35766 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730064AbgKXHjy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 02:39:54 -0500
-X-Greylist: delayed 502 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 23 Nov 2020 23:39:53 PST
-Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFB82C0613CF;
-        Mon, 23 Nov 2020 23:39:53 -0800 (PST)
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
-        by bmailout3.hostsharing.net (Postfix) with ESMTPS id A9BAD100BA619;
-        Tue, 24 Nov 2020 08:31:25 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id DEDA867C55; Tue, 24 Nov 2020 08:31:26 +0100 (CET)
-Date:   Tue, 24 Nov 2020 08:31:26 +0100
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Laura =?iso-8859-1?Q?Garc=EDa_Li=E9bana?= <nevola@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Netfilter Development Mailing list 
-        <netfilter-devel@vger.kernel.org>, coreteam@netfilter.org,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Thomas Graf <tgraf@suug.ch>, David Miller <davem@davemloft.net>
-Subject: Re: [PATCH nf-next v3 3/3] netfilter: Introduce egress hook
-Message-ID: <20201124073126.GA4856@wunner.de>
-References: <e8aecc2b-80cb-8ee5-8efe-7ae5c4eafc70@iogearbox.net>
- <CAF90-Whc3HL9x-7TJ7m3tZp10RNmQxFD=wdQUJLCaUajL2RqXg@mail.gmail.com>
- <8e991436-cb1c-1306-51ac-bb582bfaa8a7@iogearbox.net>
- <CAF90-Wh=wzjNtFWRv9bzn=-Dkg-Qc9G_cnyoq0jSypxQQgg3uA@mail.gmail.com>
- <29b888f5-5e8e-73fe-18db-6c5dd57c6b4f@iogearbox.net>
- <20201011082657.GB15225@wunner.de>
- <20201121185922.GA23266@salvia>
- <CAADnVQK8qHwdZrqMzQ+4Q9Cg589xLX5zTve92ZKN_zftJg_WHw@mail.gmail.com>
- <20201122110145.GB26512@salvia>
- <20201124033422.gvwhvsjmwt3b3irx@ast-mbp>
+        id S1730216AbgKXHpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 02:45:08 -0500
+Received: from mailout10.rmx.de ([94.199.88.75]:60773 "EHLO mailout10.rmx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726359AbgKXHpH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 02:45:07 -0500
+Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mailout10.rmx.de (Postfix) with ESMTPS id 4CgGJb3wNSz2yLj;
+        Tue, 24 Nov 2020 08:45:03 +0100 (CET)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin01.retarus.com (Postfix) with ESMTPS id 4CgGJL67sFz2xdT;
+        Tue, 24 Nov 2020 08:44:50 +0100 (CET)
+Received: from N95HX1G2.wgnetz.xx (192.168.54.100) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Tue, 24 Nov
+ 2020 08:44:27 +0100
+From:   Christian Eggers <ceggers@arri.de>
+To:     Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Vladimir Oltean <olteanv@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Christian Eggers <ceggers@arri.de>
+Subject: [PATCH net-next v2 0/3] net: ptp: use common defines for PTP message types in further drivers
+Date:   Tue, 24 Nov 2020 08:44:15 +0100
+Message-ID: <20201124074418.2609-1-ceggers@arri.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201124033422.gvwhvsjmwt3b3irx@ast-mbp>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.54.100]
+X-RMX-ID: 20201124-084452-4CgGJL67sFz2xdT-0@kdin01
+X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 23, 2020 at 07:34:22PM -0800, Alexei Starovoitov wrote:
-> It's a missing hook for out-of-tree module. That's why it stinks so much.
-
-As I've said before, the motivation for these patches has pivoted away
-from the original use case (which was indeed an out-of-tree module by
-a company for which I no longer work):
-
-https://lore.kernel.org/netdev/20200905052403.GA10306@wunner.de/
-
-When first submitting this series I also posted a patch to use the nft
-egress hook from userspace for filtering and mangling.  It seems Zevenet
-is actively using that:
-
-https://lore.kernel.org/netdev/CAF90-Wi4W1U4FSYqyBTqe7sANbdO6=zgr-u+YY+X-gvNmOgc6A@mail.gmail.com/
+Changes in v2:
+----------------
+- resend, as v1 was sent before the prerequisites were merged
+- removed mismatch between From: and Signed-off-by:
+- [2/3] Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+- [3/3] Reviewed-by: Antoine Tenart <atenart@kernel.org>
+- [3/3] removed dead email addresses from Cc:
 
 
-> So please consider augmenting your nft k8s solution with a tiny bit of bpf.
-> bpf can add a new helper to call into nf_hook_slow().
+This series replaces further driver internal enumeration / uses of magic
+numbers with the newly introduced PTP_MSGTYPE_* defines.
 
-The out-of-tree module had nothing to do with k8s, it was for industrial
-fieldbus communication.  But again, I no longer work for that company.
-We're talking about a hook that's used by userspace, not by an out-of-tree
-module.
+On Friday, 20 November 2020, 23:39:10 CET, Vladimir Oltean wrote:
+> On Fri, Nov 20, 2020 at 09:41:03AM +0100, Christian Eggers wrote:
+> > This series introduces commen defines for PTP event messages. Driver
+> > internal defines are removed and some uses of magic numbers are replaced
+> > by the new defines.
+> > [...]
+> 
+> I understand that you don't want to spend a lifetime on this, but I see
+> that there are more drivers which you did not touch.
+> 
+> is_sync() in drivers/net/phy/dp83640.c can be made to
+> 	return ptp_get_msgtype(hdr, type) == PTP_MSGTYPE_SYNC;
+> 
+> this can be removed from drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.h:
+> enum {
+> 	MLXSW_SP_PTP_MESSAGE_TYPE_SYNC,
+> 	MLXSW_SP_PTP_MESSAGE_TYPE_DELAY_REQ,
+> 	MLXSW_SP_PTP_MESSAGE_TYPE_PDELAY_REQ,
+> 	MLXSW_SP_PTP_MESSAGE_TYPE_PDELAY_RESP,
+> };
+I think that I have found an addtional one in the Microsemi VSC85xx PHY driver.
 
 
-> If it was not driven by
-> out-of-tree kernel module I wouldn't have any problem with it.
 
-Good!  Thank you.  Let me update and repost the patches then.
 
-Lukas
