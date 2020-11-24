@@ -2,197 +2,323 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D7F62C313F
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 20:49:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C51E52C318D
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 21:00:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728056AbgKXTqq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 14:46:46 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:11520 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726787AbgKXToT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 14:44:19 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fbd62960004>; Tue, 24 Nov 2020 11:44:22 -0800
-Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 24 Nov
- 2020 19:44:16 +0000
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.168)
- by HQMAIL111.nvidia.com (172.20.187.18) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Tue, 24 Nov 2020 19:44:16 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SwVS3X2UaIJpYblDfxQPIqc/tQaGdTaSvJJsVd/imn75AjiRyOkQyrbHMAVDj892Ky4dHsGi/rSh72ZtvdlWTphgYHrujW2ctpBnfdhYB1bi+KlS6Zh5c+nopJAKofsvxYqHTm9SE4YhoMCxqqED1NHdoOaihJcTeVYfLQcZwJtruTfGN82qs+HrJhP5E2RyP8tzpkSPPaJBFMgPD4D2KZUTl1CPsEtQEtALvJhBceqFbBhK+Pc0EKrd3sCdP0hOzhYl400Bo4gRZhjMxfHV7aJjGZrbcYTatKPQOYSyWOt4uqjO/R2GHnqpHzTGj5EXsi8wnyKwufzG8x6uyOYkRw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pdUkppd5o8S9TP9RMwZEGKCoIhFSHDuwGg+bFwprZ/w=;
- b=D6gLIhyCBSxNJ+eEOLLaGYxk/YXAG5jqFoj29ZhDS7cmA4K5roJ+oOusKEQs+pcrLA4doBUkweMgASvZexzheFuiHhs49lj6aZAHACMxjscKJsdfXUoBzLZkuD+A6lCPFtunS3UDZtysh4Uv4I8OSQJyY53IfuZJ5d+KOuP27KcJ19AkOw9Ok4CpbtjouZCfolbgxCK9zp4ewxW/d34iYCoIOEJ658YxGjq4YAL+ijkaTSpkEVD+zfLlSD4ys2zr4XjTcucUygZx5wqSX4/rilmQzjDdFy6mH1sIj7SsbimdOkRvea53Zsm9EsKf4IUvFxWXufOEAcTWcI28EYNa6A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM5PR1201MB2489.namprd12.prod.outlook.com (2603:10b6:3:e2::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.20; Tue, 24 Nov
- 2020 19:44:14 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::e40c:730c:156c:2ef9]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::e40c:730c:156c:2ef9%7]) with mapi id 15.20.3589.022; Tue, 24 Nov 2020
- 19:44:14 +0000
-Date:   Tue, 24 Nov 2020 15:44:13 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Saeed Mahameed <saeedm@nvidia.com>, Eli Cohen <elic@nvidia.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        Eli Cohen <eli@mellanox.com>, Mark Bloch <mbloch@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>
-Subject: Re: [PATCH mlx5-next 11/16] net/mlx5: Add VDPA priority to NIC RX
- namespace
-Message-ID: <20201124194413.GF4800@nvidia.com>
-References: <20201120230339.651609-1-saeedm@nvidia.com>
- <20201120230339.651609-12-saeedm@nvidia.com>
- <20201121160155.39d84650@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201122064158.GA9749@mtl-vdi-166.wap.labs.mlnx>
- <20201124091219.5900e7bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201124180210.GJ5487@ziepe.ca>
- <20201124104106.0b1201b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20201124104106.0b1201b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-ClientProxiedBy: MN2PR16CA0044.namprd16.prod.outlook.com
- (2603:10b6:208:234::13) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+        id S1729908AbgKXUAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 15:00:17 -0500
+Received: from mga12.intel.com ([192.55.52.136]:19192 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729774AbgKXUAQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 15:00:16 -0500
+IronPort-SDR: +pWAIMvIn5W2OHhFttQ65a46sK2u0BgKTRHw/3Y/WUE4Y26Sy92YH1wNBFvNz4tw9ZvzMY/A2M
+ kxqVi1rcqUGw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9815"; a="151267817"
+X-IronPort-AV: E=Sophos;i="5.78,366,1599548400"; 
+   d="scan'208";a="151267817"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2020 12:00:15 -0800
+IronPort-SDR: /VNnG9QoUOh4mrhRivpF/LeKMGbJMErXIAxgMxW1+NbwtuiPSLRPNY6w0bUtQ5C70U3Msd2ewl
+ jcFKm+oo9Y7A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.78,366,1599548400"; 
+   d="scan'208";a="362004770"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by fmsmga004.fm.intel.com with ESMTP; 24 Nov 2020 12:00:05 -0800
+Date:   Tue, 24 Nov 2020 20:52:04 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Camelia Groza <camelia.groza@nxp.com>
+Cc:     kuba@kernel.org, brouer@redhat.com, saeed@kernel.org,
+        davem@davemloft.net, madalin.bucur@oss.nxp.com,
+        ioana.ciornei@nxp.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v4 4/7] dpaa_eth: add XDP_TX support
+Message-ID: <20201124195204.GC12808@ranger.igk.intel.com>
+References: <cover.1606150838.git.camelia.groza@nxp.com>
+ <6491d6ba855c7e736383e7f603321fe7184681bc.1606150838.git.camelia.groza@nxp.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (156.34.48.30) by MN2PR16CA0044.namprd16.prod.outlook.com (2603:10b6:208:234::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.20 via Frontend Transport; Tue, 24 Nov 2020 19:44:14 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1kheEX-000utR-5n; Tue, 24 Nov 2020 15:44:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1606247062; bh=EhSGM/Cq+5T6xoxe0HDrr1Oje1f5aQx0c8IgLrPl/rA=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
-         From:To:CC:Subject:Message-ID:References:Content-Type:
-         Content-Disposition:Content-Transfer-Encoding:In-Reply-To:
-         X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType;
-        b=WWzYEZwBprybK23VILDs4YL+gyJ+LqsPWowIjPfBYVpTnpGMPsMIPvRxhd1hiGUs0
-         6t8bEehafExmvZVkhnPjJxUhPp1lqa+vVhzd/rRqoGhY6lNcdT7AQqyfmX8jBxfdEt
-         5dtibU/JpVs7oRVlMEVrH5Ur7L7XH0rNteDBwn93pvVSoabG1sbrxjS0Wlh4tlu12w
-         G1PSVk03LBnUpmS+EYfdfOFoEl6q0ksNcv6LS8xs4Rf5akSSBBu1r2Lc6TEIDHSSxr
-         R2zzXCJqvl0hkJD5LxynnBR0wnlWbyWCQyRRuYdrnWBe/cdEZcBekWQCg19kEQSpZd
-         cyLHcVB96d7zA==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6491d6ba855c7e736383e7f603321fe7184681bc.1606150838.git.camelia.groza@nxp.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 24, 2020 at 10:41:06AM -0800, Jakub Kicinski wrote:
-> On Tue, 24 Nov 2020 14:02:10 -0400 Jason Gunthorpe wrote:
-> > On Tue, Nov 24, 2020 at 09:12:19AM -0800, Jakub Kicinski wrote:
-> > > On Sun, 22 Nov 2020 08:41:58 +0200 Eli Cohen wrote: =20
-> > > > On Sat, Nov 21, 2020 at 04:01:55PM -0800, Jakub Kicinski wrote: =20
-> > > > > On Fri, 20 Nov 2020 15:03:34 -0800 Saeed Mahameed wrote:   =20
-> > > > > > From: Eli Cohen <eli@mellanox.com>
-> > > > > >=20
-> > > > > > Add a new namespace type to the NIC RX root namespace to allow =
-for
-> > > > > > inserting VDPA rules before regular NIC but after bypass, thus =
-allowing
-> > > > > > DPDK to have precedence in packet processing.   =20
-> > > > >=20
-> > > > > How does DPDK and VDPA relate in this context?   =20
-> > > >=20
-> > > > mlx5 steering is hierarchical and defines precedence amongst namesp=
-aces.
-> > > > Up till now, the VDPA implementation would insert a rule into the
-> > > > MLX5_FLOW_NAMESPACE_BYPASS hierarchy which is used by DPDK thus tak=
-ing
-> > > > all the incoming traffic.
-> > > >=20
-> > > > The MLX5_FLOW_NAMESPACE_VDPA hirerachy comes after
-> > > > MLX5_FLOW_NAMESPACE_BYPASS. =20
-> > >=20
-> > > Our policy was no DPDK driver bifurcation. There's no asterisk saying
-> > > "unless you pretend you need flow filters for RDMA, get them upstream
-> > > and then drop the act". =20
-> >=20
-> > Huh?
-> >=20
-> > mlx5 DPDK is an *RDMA* userspace application.=20
->=20
-> Forgive me for my naivet=C3=A9.=20
->=20
-> Here I thought the RDMA subsystem is for doing RDMA.
+On Mon, Nov 23, 2020 at 07:36:22PM +0200, Camelia Groza wrote:
+> Use an xdp_frame structure for managing the frame. Store a backpointer to
+> the structure at the start of the buffer before enqueueing for cleanup
+> on TX confirmation. Reserve DPAA_TX_PRIV_DATA_SIZE bytes from the frame
+> size shared with the XDP program for this purpose. Use the XDP
+> API for freeing the buffer when it returns to the driver on the TX
+> confirmation path.
+> 
+> The frame queues are shared with the netstack.
 
-RDMA covers a wide range of accelerated networking these days.. Where
-else are you going to put this stuff in the kernel?
+Can you also provide the info from cover letter about locklessness (is
+that even a word?) in here?
 
-> I'm sure if you start doing crypto over ibverbs crypto people will want
-> to have a look.
+One question below and:
 
-Well, RDMA has crypto transforms for a few years now too. Why would
-crypto subsystem people be involved? It isn't using or duplicating
-their APIs.
+Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-> > libibverbs. It runs on the RDMA stack. It uses RDMA flow filtering and
-> > RDMA raw ethernet QPs.=20
->=20
-> I'm not saying that's not the case. I'm saying I don't think this was
-> something that netdev developers signed-off on.
+> 
+> This approach will be reused for XDP REDIRECT.
+> 
+> Acked-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
+> Signed-off-by: Camelia Groza <camelia.groza@nxp.com>
+> ---
+> Changes in v4:
+> - call xdp_rxq_info_is_reg() before unregistering
+> - minor cleanups (remove unneeded variable, print error code)
+> - add more details in the commit message
+> - did not call qman_destroy_fq() in case of xdp_rxq_info_reg() failure
+> since it would lead to a double free of the fq resources
+> 
+>  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 128 ++++++++++++++++++++++++-
+>  drivers/net/ethernet/freescale/dpaa/dpaa_eth.h |   2 +
+>  2 files changed, 125 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> index ee076f4..0deffcc 100644
+> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> @@ -1130,6 +1130,24 @@ static int dpaa_fq_init(struct dpaa_fq *dpaa_fq, bool td_enable)
+> 
+>  	dpaa_fq->fqid = qman_fq_fqid(fq);
+> 
+> +	if (dpaa_fq->fq_type == FQ_TYPE_RX_DEFAULT ||
+> +	    dpaa_fq->fq_type == FQ_TYPE_RX_PCD) {
+> +		err = xdp_rxq_info_reg(&dpaa_fq->xdp_rxq, dpaa_fq->net_dev,
+> +				       dpaa_fq->fqid);
+> +		if (err) {
+> +			dev_err(dev, "xdp_rxq_info_reg() = %d\n", err);
+> +			return err;
+> +		}
+> +
+> +		err = xdp_rxq_info_reg_mem_model(&dpaa_fq->xdp_rxq,
+> +						 MEM_TYPE_PAGE_ORDER0, NULL);
+> +		if (err) {
+> +			dev_err(dev, "xdp_rxq_info_reg_mem_model() = %d\n", err);
+> +			xdp_rxq_info_unreg(&dpaa_fq->xdp_rxq);
+> +			return err;
+> +		}
+> +	}
+> +
+>  	return 0;
+>  }
+> 
+> @@ -1159,6 +1177,11 @@ static int dpaa_fq_free_entry(struct device *dev, struct qman_fq *fq)
+>  		}
+>  	}
+> 
+> +	if ((dpaa_fq->fq_type == FQ_TYPE_RX_DEFAULT ||
+> +	     dpaa_fq->fq_type == FQ_TYPE_RX_PCD) &&
+> +	    xdp_rxq_info_is_reg(&dpaa_fq->xdp_rxq))
+> +		xdp_rxq_info_unreg(&dpaa_fq->xdp_rxq);
+> +
+>  	qman_destroy_fq(fq);
+>  	list_del(&dpaa_fq->list);
+> 
+> @@ -1625,6 +1648,9 @@ static int dpaa_eth_refill_bpools(struct dpaa_priv *priv)
+>   *
+>   * Return the skb backpointer, since for S/G frames the buffer containing it
+>   * gets freed here.
+> + *
+> + * No skb backpointer is set when transmitting XDP frames. Cleanup the buffer
+> + * and return NULL in this case.
+>   */
+>  static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
+>  					  const struct qm_fd *fd, bool ts)
+> @@ -1664,13 +1690,21 @@ static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
+>  		}
+>  	} else {
+>  		dma_unmap_single(priv->tx_dma_dev, addr,
+> -				 priv->tx_headroom + qm_fd_get_length(fd),
+> +				 qm_fd_get_offset(fd) + qm_fd_get_length(fd),
+>  				 dma_dir);
+>  	}
+> 
+>  	swbp = (struct dpaa_eth_swbp *)vaddr;
+>  	skb = swbp->skb;
+> 
+> +	/* No skb backpointer is set when running XDP. An xdp_frame
+> +	 * backpointer is saved instead.
+> +	 */
+> +	if (!skb) {
+> +		xdp_return_frame(swbp->xdpf);
+> +		return NULL;
+> +	}
+> +
+>  	/* DMA unmapping is required before accessing the HW provided info */
+>  	if (ts && priv->tx_tstamp &&
+>  	    skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) {
+> @@ -2350,11 +2384,76 @@ static enum qman_cb_dqrr_result rx_error_dqrr(struct qman_portal *portal,
+>  	return qman_cb_dqrr_consume;
+>  }
+> 
+> +static int dpaa_xdp_xmit_frame(struct net_device *net_dev,
+> +			       struct xdp_frame *xdpf)
+> +{
+> +	struct dpaa_priv *priv = netdev_priv(net_dev);
+> +	struct rtnl_link_stats64 *percpu_stats;
+> +	struct dpaa_percpu_priv *percpu_priv;
+> +	struct dpaa_eth_swbp *swbp;
+> +	struct netdev_queue *txq;
+> +	void *buff_start;
+> +	struct qm_fd fd;
+> +	dma_addr_t addr;
+> +	int err;
+> +
+> +	percpu_priv = this_cpu_ptr(priv->percpu_priv);
+> +	percpu_stats = &percpu_priv->stats;
+> +
+> +	if (xdpf->headroom < DPAA_TX_PRIV_DATA_SIZE) {
+> +		err = -EINVAL;
+> +		goto out_error;
+> +	}
+> +
+> +	buff_start = xdpf->data - xdpf->headroom;
+> +
+> +	/* Leave empty the skb backpointer at the start of the buffer.
+> +	 * Save the XDP frame for easy cleanup on confirmation.
+> +	 */
+> +	swbp = (struct dpaa_eth_swbp *)buff_start;
+> +	swbp->skb = NULL;
+> +	swbp->xdpf = xdpf;
+> +
+> +	qm_fd_clear_fd(&fd);
+> +	fd.bpid = FSL_DPAA_BPID_INV;
+> +	fd.cmd |= cpu_to_be32(FM_FD_CMD_FCO);
+> +	qm_fd_set_contig(&fd, xdpf->headroom, xdpf->len);
+> +
+> +	addr = dma_map_single(priv->tx_dma_dev, buff_start,
+> +			      xdpf->headroom + xdpf->len,
+> +			      DMA_TO_DEVICE);
 
-Part of the point of the subsystem split was to end the fighting that
-started all of it. It was very clear during the whole iWarp and TCP
-Offload Engine buisness in the mid 2000's that netdev wanted nothing
-to do with the accelerator world.
+Not sure if I asked that.  What is the purpose for including the headroom
+in frame being set? I would expect to take into account only frame from
+xdpf->data.
 
-So why would netdev need sign off on any accelerator stuff?  Do you
-want to start co-operating now? I'm willing to talk about how to do
-that.
-
-> And our policy on DPDK is pretty widely known.
-
-I honestly have no idea on the netdev DPDK policy, I'm maintaining the
-RDMA subsystem not DPDK :)
-
-> Would you mind pointing us to the introduction of raw Ethernet QPs?
->=20
-> Is there any production use for that without DPDK?
-
-Hmm.. It is very old. RAW (InfiniBand) QPs were part of the original
-IBA specification cira 2000. When RoCE was defined (around 2010) they
-were naturally carried forward to Ethernet. The "flow steering"
-concept to make raw ethernet QP useful was added to verbs around 2012
-- 2013. It officially made it upstream in commit 436f2ad05a0b
-("IB/core: Export ib_create/destroy_flow through uverbs")
-
-If I recall properly the first real application was ultra low latency
-ethernet processing for financial applications.
-
-dpdk later adopted the first mlx4 PMD using this libibverbs API around
-2015. Interestingly the mlx4 PMD was made through an open source
-process with minimal involvment from Mellanox, based on the
-pre-existing RDMA work.
-
-Currently there are many projects, and many open source, built on top
-of the RDMA raw ethernet QP and RDMA flow steering model. It is now
-long established kernel ABI.
-
-> > It has been like this for years, it is not some "act".
-> >=20
-> > It is long standing uABI that accelerators like RDMA/etc get to take
-> > the traffic before netdev. This cannot be reverted. I don't really
-> > understand what you are expecting here?
->=20
-> Same. I don't really know what you expect me to do either. I don't
-> think I can sign-off on kernel changes needed for DPDK.
-
-This patch is fine tuning the shared logic that splits the traffic to
-accelerator subsystems, I don't think netdev should have a veto
-here. This needs to be consensus among the various communities and
-subsystems that rely on this.
-
-Eli did not explain this well in his commit message. When he said DPDK
-he means RDMA which is the owner of the FLOW_NAMESPACE. Each
-accelerator subsystem gets hooked into this, so here VPDA is getting
-its own hook because re-using the the same hook between two kernel
-subsystems is buggy.
-
-Jason
+> +	if (unlikely(dma_mapping_error(priv->tx_dma_dev, addr))) {
+> +		err = -EINVAL;
+> +		goto out_error;
+> +	}
+> +
+> +	qm_fd_addr_set64(&fd, addr);
+> +
+> +	/* Bump the trans_start */
+> +	txq = netdev_get_tx_queue(net_dev, smp_processor_id());
+> +	txq->trans_start = jiffies;
+> +
+> +	err = dpaa_xmit(priv, percpu_stats, smp_processor_id(), &fd);
+> +	if (err) {
+> +		dma_unmap_single(priv->tx_dma_dev, addr,
+> +				 qm_fd_get_offset(&fd) + qm_fd_get_length(&fd),
+> +				 DMA_TO_DEVICE);
+> +		goto out_error;
+> +	}
+> +
+> +	return 0;
+> +
+> +out_error:
+> +	percpu_stats->tx_errors++;
+> +	return err;
+> +}
+> +
+>  static u32 dpaa_run_xdp(struct dpaa_priv *priv, struct qm_fd *fd, void *vaddr,
+> -			unsigned int *xdp_meta_len)
+> +			struct dpaa_fq *dpaa_fq, unsigned int *xdp_meta_len)
+>  {
+>  	ssize_t fd_off = qm_fd_get_offset(fd);
+>  	struct bpf_prog *xdp_prog;
+> +	struct xdp_frame *xdpf;
+>  	struct xdp_buff xdp;
+>  	u32 xdp_act;
+> 
+> @@ -2370,7 +2469,8 @@ static u32 dpaa_run_xdp(struct dpaa_priv *priv, struct qm_fd *fd, void *vaddr,
+>  	xdp.data_meta = xdp.data;
+>  	xdp.data_hard_start = xdp.data - XDP_PACKET_HEADROOM;
+>  	xdp.data_end = xdp.data + qm_fd_get_length(fd);
+> -	xdp.frame_sz = DPAA_BP_RAW_SIZE;
+> +	xdp.frame_sz = DPAA_BP_RAW_SIZE - DPAA_TX_PRIV_DATA_SIZE;
+> +	xdp.rxq = &dpaa_fq->xdp_rxq;
+> 
+>  	xdp_act = bpf_prog_run_xdp(xdp_prog, &xdp);
+> 
+> @@ -2381,6 +2481,22 @@ static u32 dpaa_run_xdp(struct dpaa_priv *priv, struct qm_fd *fd, void *vaddr,
+>  	case XDP_PASS:
+>  		*xdp_meta_len = xdp.data - xdp.data_meta;
+>  		break;
+> +	case XDP_TX:
+> +		/* We can access the full headroom when sending the frame
+> +		 * back out
+> +		 */
+> +		xdp.data_hard_start = vaddr;
+> +		xdp.frame_sz = DPAA_BP_RAW_SIZE;
+> +		xdpf = xdp_convert_buff_to_frame(&xdp);
+> +		if (unlikely(!xdpf)) {
+> +			free_pages((unsigned long)vaddr, 0);
+> +			break;
+> +		}
+> +
+> +		if (dpaa_xdp_xmit_frame(priv->net_dev, xdpf))
+> +			xdp_return_frame_rx_napi(xdpf);
+> +
+> +		break;
+>  	default:
+>  		bpf_warn_invalid_xdp_action(xdp_act);
+>  		fallthrough;
+> @@ -2415,6 +2531,7 @@ static enum qman_cb_dqrr_result rx_default_dqrr(struct qman_portal *portal,
+>  	u32 fd_status, hash_offset;
+>  	struct qm_sg_entry *sgt;
+>  	struct dpaa_bp *dpaa_bp;
+> +	struct dpaa_fq *dpaa_fq;
+>  	struct dpaa_priv *priv;
+>  	struct sk_buff *skb;
+>  	int *count_ptr;
+> @@ -2423,9 +2540,10 @@ static enum qman_cb_dqrr_result rx_default_dqrr(struct qman_portal *portal,
+>  	u32 hash;
+>  	u64 ns;
+> 
+> +	dpaa_fq = container_of(fq, struct dpaa_fq, fq_base);
+>  	fd_status = be32_to_cpu(fd->status);
+>  	fd_format = qm_fd_get_format(fd);
+> -	net_dev = ((struct dpaa_fq *)fq)->net_dev;
+> +	net_dev = dpaa_fq->net_dev;
+>  	priv = netdev_priv(net_dev);
+>  	dpaa_bp = dpaa_bpid2pool(dq->fd.bpid);
+>  	if (!dpaa_bp)
+> @@ -2494,7 +2612,7 @@ static enum qman_cb_dqrr_result rx_default_dqrr(struct qman_portal *portal,
+> 
+>  	if (likely(fd_format == qm_fd_contig)) {
+>  		xdp_act = dpaa_run_xdp(priv, (struct qm_fd *)fd, vaddr,
+> -				       &xdp_meta_len);
+> +				       dpaa_fq, &xdp_meta_len);
+>  		if (xdp_act != XDP_PASS) {
+>  			percpu_stats->rx_packets++;
+>  			percpu_stats->rx_bytes += qm_fd_get_length(fd);
+> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h
+> index 94e8613..5c8d52a 100644
+> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h
+> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h
+> @@ -68,6 +68,7 @@ struct dpaa_fq {
+>  	u16 channel;
+>  	u8 wq;
+>  	enum dpaa_fq_type fq_type;
+> +	struct xdp_rxq_info xdp_rxq;
+>  };
+> 
+>  struct dpaa_fq_cbs {
+> @@ -150,6 +151,7 @@ struct dpaa_buffer_layout {
+>   */
+>  struct dpaa_eth_swbp {
+>  	struct sk_buff *skb;
+> +	struct xdp_frame *xdpf;
+>  };
+> 
+>  struct dpaa_priv {
+> --
+> 1.9.1
+> 
