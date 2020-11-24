@@ -2,98 +2,269 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55B222C1DBB
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 06:49:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70F5F2C1DC8
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 07:00:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728371AbgKXFti (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 00:49:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47156 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725815AbgKXFth (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 00:49:37 -0500
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB86EC0613CF;
-        Mon, 23 Nov 2020 21:49:37 -0800 (PST)
-Received: by mail-pg1-x543.google.com with SMTP id l17so6025161pgk.1;
-        Mon, 23 Nov 2020 21:49:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Uhw7TTm+4bnlZWqRapgwb4EjM+pZeg28coQzxyKfOOY=;
-        b=my1V1W7eM8N2VTazKMRl2UmMUzqDAO9PdoHgNL2rmP2M3YnX1HRAn9cNhrAqXFoIOk
-         syA9FNMYoNDr6kODMLb0JSGTE+FtMSQ5i7EyWCEj/GcC3MmiZGZlAbPwSaConaqGZm+A
-         1bcnzvm+rI0Ml81kiUbPCPL4EsyupJkCeccc/Tm+tyq7GRVlOpgyIgJr9nU4jC9sue96
-         flBT+Hd9NOesv6Sm0VqtFbXm/VQUoLmSWO3fuSmF3TM+GQUVoQHRJj50V70cD6hBEEI+
-         kVW569fC8KgrWKMyMM2acii9rM+LLm1EBF1OuTSWfxiWG49viBmPcpI4+xu2jNN94S+e
-         pVJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Uhw7TTm+4bnlZWqRapgwb4EjM+pZeg28coQzxyKfOOY=;
-        b=kNa4HtZZKyRBypBqPC8xGf0A6Pg1RAdoj/RQySuN1HV34jZqSLFkmY28RaEqpEX9rD
-         ymcA69Q2qpvjFNrylXuEtQ9keoniqNrQTbymxMLtA4wZaMzH5/wX2LiWMzsHRgUJeLMr
-         QK4ncGw7AOCcgMl3CaFdLLiRW3r0mwAwF77wJJ9OKIqCHANib5wfg9taEd8SaIEQNboG
-         D/jCn++3nNOPMSBIFccGq6CZSrtPE5WR+FMXGZJTvjwyzAsAOjxXyXDyyrMhuu8klFIJ
-         KG/EavEmjhihHLAZ/Vefi8DH9PA6NP8mSJloyz6jUBswfNKvsRW/viScbTESJ9GFRIMB
-         27bw==
-X-Gm-Message-State: AOAM533XFLSPi/YkL+LiN3krawD9AW1Zh+buhB86EUgAraTTVMCN6w7x
-        RYdhUNnZttOBMY7p/HIpNgQ=
-X-Google-Smtp-Source: ABdhPJzDMPd9+rvFglewuCnZMyTaqUuJJHyRNizth43khZ5pF4czJ/SSdKka6UAjGi5BQjv7wAPOOw==
-X-Received: by 2002:a17:90a:4814:: with SMTP id a20mr2924577pjh.163.1606196977260;
-        Mon, 23 Nov 2020 21:49:37 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:400::5:2397])
-        by smtp.gmail.com with ESMTPSA id u197sm13930077pfc.127.2020.11.23.21.49.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Nov 2020 21:49:36 -0800 (PST)
-Date:   Mon, 23 Nov 2020 21:49:24 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 1/6] bpf: fix bpf_put_raw_tracepoint()'s use of
- __module_address()
-Message-ID: <20201124054924.i7zq7vig4xqmddyr@ast-mbp>
-References: <20201119232244.2776720-1-andrii@kernel.org>
- <20201119232244.2776720-2-andrii@kernel.org>
+        id S1728702AbgKXF7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 00:59:19 -0500
+Received: from hydra.tuxags.com ([64.13.172.54]:34234 "EHLO mail.tuxags.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725786AbgKXF7T (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 00:59:19 -0500
+Received: by mail.tuxags.com (Postfix, from userid 1000)
+        id C14948971543; Mon, 23 Nov 2020 21:59:18 -0800 (PST)
+Date:   Mon, 23 Nov 2020 21:59:18 -0800
+From:   Matt Mullins <mmullins@mmlx.us>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Florian Weimer <fw@deneb.enyo.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Matt Mullins <mmullins@mmlx.us>,
+        Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        linux-toolchains@vger.kernel.org
+Subject: Re: [PATCH v3] tracepoint: Do not fail unregistering a probe due to
+ memory allocation
+Message-ID: <20201124055918.k5m6htif7ukhch6v@hydra.tuxags.com>
+Mail-Followup-To: Steven Rostedt <rostedt@goodmis.org>,
+        Florian Weimer <fw@deneb.enyo.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Matt Mullins <mmullins@mmlx.us>, Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Dmitry Vyukov <dvyukov@google.com>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, netdev <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kees Cook <keescook@chromium.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        linux-toolchains@vger.kernel.org
+References: <20201116175107.02db396d@gandalf.local.home>
+ <47463878.48157.1605640510560.JavaMail.zimbra@efficios.com>
+ <20201117142145.43194f1a@gandalf.local.home>
+ <375636043.48251.1605642440621.JavaMail.zimbra@efficios.com>
+ <20201117153451.3015c5c9@gandalf.local.home>
+ <20201118132136.GJ3121378@hirez.programming.kicks-ass.net>
+ <87h7pmwyta.fsf@mid.deneb.enyo.de>
+ <20201118141226.GV3121392@hirez.programming.kicks-ass.net>
+ <874klmwxxm.fsf@mid.deneb.enyo.de>
+ <20201118093405.7a6d2290@gandalf.local.home>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201119232244.2776720-2-andrii@kernel.org>
+In-Reply-To: <20201118093405.7a6d2290@gandalf.local.home>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 19, 2020 at 03:22:39PM -0800, Andrii Nakryiko wrote:
-> __module_address() needs to be called with preemption disabled or with
-> module_mutex taken. preempt_disable() is enough for read-only uses, which is
-> what this fix does.
+On Wed, Nov 18, 2020 at 09:34:05AM -0500, Steven Rostedt wrote:
+> From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
 > 
-> Fixes: a38d1107f937 ("bpf: support raw tracepoints in modules")
-> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-> ---
->  kernel/trace/bpf_trace.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
+> The list of tracepoint callbacks is managed by an array that is protected
+> by RCU. To update this array, a new array is allocated, the updates are
+> copied over to the new array, and then the list of functions for the
+> tracepoint is switched over to the new array. After a completion of an RCU
+> grace period, the old array is freed.
 > 
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index d255bc9b2bfa..bb98a377050a 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -2060,7 +2060,11 @@ struct bpf_raw_event_map *bpf_get_raw_tracepoint(const char *name)
->  
->  void bpf_put_raw_tracepoint(struct bpf_raw_event_map *btp)
->  {
-> -	struct module *mod = __module_address((unsigned long)btp);
-> +	struct module *mod;
-> +
-> +	preempt_disable();
-> +	mod = __module_address((unsigned long)btp);
-> +	preempt_enable();
->  
->  	if (mod)
->  		module_put(mod);
+> This process happens for both adding a callback as well as removing one.
+> But on removing a callback, if the new array fails to be allocated, the
+> callback is not removed, and may be used after it is freed by the clients
+> of the tracepoint.
+> 
+> There's really no reason to fail if the allocation for a new array fails
+> when removing a function. Instead, the function can simply be replaced by a
+> stub function that could be cleaned up on the next modification of the
+> array. That is, instead of calling the function registered to the
+> tracepoint, it would call a stub function in its place.
+> 
+> Link: https://lore.kernel.org/r/20201115055256.65625-1-mmullins@mmlx.us
+> Link: https://lore.kernel.org/r/20201116175107.02db396d@gandalf.local.home
+> Link: https://lore.kernel.org/r/20201117211836.54acaef2@oasis.local.home
+> 
+> Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+> Cc: Ingo Molnar <mingo@redhat.com>
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Dmitry Vyukov <dvyukov@google.com>
+> Cc: Martin KaFai Lau <kafai@fb.com>
+> Cc: Song Liu <songliubraving@fb.com>
+> Cc: Yonghong Song <yhs@fb.com>
+> Cc: Andrii Nakryiko <andriin@fb.com>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: KP Singh <kpsingh@chromium.org>
+> Cc: netdev <netdev@vger.kernel.org>
+> Cc: bpf <bpf@vger.kernel.org>
+> Cc: Kees Cook <keescook@chromium.org>
+> Cc: Florian Weimer <fw@deneb.enyo.de>
+> Fixes: 97e1c18e8d17b ("tracing: Kernel Tracepoints")
+> Reported-by: syzbot+83aa762ef23b6f0d1991@syzkaller.appspotmail.com
+> Reported-by: syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com
+> Reported-by: Matt Mullins <mmullins@mmlx.us>
+> Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
 
-I don't understand why 'mod' cannot become dangling pointer after preempt_enable().
-Either it needs a comment explaining why it's ok or module_put() should
-be in preempt disabled section.
+I'm a bit late answering your initial query, but yes indeed this fixes
+the bug I was hunting.  I just watched it live through the reproducer
+for about a half-hour, while unpatched I get an instant "BUG: unable to
+handle page fault".
+
+Tested-by: Matt Mullins <mmullins@mmlx.us>
+
+> ---
+> Changes since v2:
+>    - Went back to using a stub function and not touching
+>       the fast path.
+>    - Removed adding __GFP_NOFAIL from the allocation of the removal.
+> 
+>  kernel/tracepoint.c | 80 ++++++++++++++++++++++++++++++++++++---------
+>  1 file changed, 64 insertions(+), 16 deletions(-)
+> 
+> diff --git a/kernel/tracepoint.c b/kernel/tracepoint.c
+> index 3f659f855074..3e261482296c 100644
+> --- a/kernel/tracepoint.c
+> +++ b/kernel/tracepoint.c
+> @@ -53,6 +53,12 @@ struct tp_probes {
+>  	struct tracepoint_func probes[];
+>  };
+>  
+> +/* Called in removal of a func but failed to allocate a new tp_funcs */
+> +static void tp_stub_func(void)
+> +{
+> +	return;
+> +}
+> +
+>  static inline void *allocate_probes(int count)
+>  {
+>  	struct tp_probes *p  = kmalloc(struct_size(p, probes, count),
+> @@ -131,6 +137,7 @@ func_add(struct tracepoint_func **funcs, struct tracepoint_func *tp_func,
+>  {
+>  	struct tracepoint_func *old, *new;
+>  	int nr_probes = 0;
+> +	int stub_funcs = 0;
+>  	int pos = -1;
+>  
+>  	if (WARN_ON(!tp_func->func))
+> @@ -147,14 +154,34 @@ func_add(struct tracepoint_func **funcs, struct tracepoint_func *tp_func,
+>  			if (old[nr_probes].func == tp_func->func &&
+>  			    old[nr_probes].data == tp_func->data)
+>  				return ERR_PTR(-EEXIST);
+> +			if (old[nr_probes].func == tp_stub_func)
+> +				stub_funcs++;
+>  		}
+>  	}
+> -	/* + 2 : one for new probe, one for NULL func */
+> -	new = allocate_probes(nr_probes + 2);
+> +	/* + 2 : one for new probe, one for NULL func - stub functions */
+> +	new = allocate_probes(nr_probes + 2 - stub_funcs);
+>  	if (new == NULL)
+>  		return ERR_PTR(-ENOMEM);
+>  	if (old) {
+> -		if (pos < 0) {
+> +		if (stub_funcs) {
+> +			/* Need to copy one at a time to remove stubs */
+> +			int probes = 0;
+> +
+> +			pos = -1;
+> +			for (nr_probes = 0; old[nr_probes].func; nr_probes++) {
+> +				if (old[nr_probes].func == tp_stub_func)
+> +					continue;
+> +				if (pos < 0 && old[nr_probes].prio < prio)
+> +					pos = probes++;
+> +				new[probes++] = old[nr_probes];
+> +			}
+> +			nr_probes = probes;
+> +			if (pos < 0)
+> +				pos = probes;
+> +			else
+> +				nr_probes--; /* Account for insertion */
+> +
+> +		} else if (pos < 0) {
+>  			pos = nr_probes;
+>  			memcpy(new, old, nr_probes * sizeof(struct tracepoint_func));
+>  		} else {
+> @@ -188,8 +215,9 @@ static void *func_remove(struct tracepoint_func **funcs,
+>  	/* (N -> M), (N > 1, M >= 0) probes */
+>  	if (tp_func->func) {
+>  		for (nr_probes = 0; old[nr_probes].func; nr_probes++) {
+> -			if (old[nr_probes].func == tp_func->func &&
+> -			     old[nr_probes].data == tp_func->data)
+> +			if ((old[nr_probes].func == tp_func->func &&
+> +			     old[nr_probes].data == tp_func->data) ||
+> +			    old[nr_probes].func == tp_stub_func)
+>  				nr_del++;
+>  		}
+>  	}
+> @@ -208,14 +236,32 @@ static void *func_remove(struct tracepoint_func **funcs,
+>  		/* N -> M, (N > 1, M > 0) */
+>  		/* + 1 for NULL */
+>  		new = allocate_probes(nr_probes - nr_del + 1);
+> -		if (new == NULL)
+> -			return ERR_PTR(-ENOMEM);
+> -		for (i = 0; old[i].func; i++)
+> -			if (old[i].func != tp_func->func
+> -					|| old[i].data != tp_func->data)
+> -				new[j++] = old[i];
+> -		new[nr_probes - nr_del].func = NULL;
+> -		*funcs = new;
+> +		if (new) {
+> +			for (i = 0; old[i].func; i++)
+> +				if ((old[i].func != tp_func->func
+> +				     || old[i].data != tp_func->data)
+> +				    && old[i].func != tp_stub_func)
+> +					new[j++] = old[i];
+> +			new[nr_probes - nr_del].func = NULL;
+> +			*funcs = new;
+> +		} else {
+> +			/*
+> +			 * Failed to allocate, replace the old function
+> +			 * with calls to tp_stub_func.
+> +			 */
+> +			for (i = 0; old[i].func; i++)
+> +				if (old[i].func == tp_func->func &&
+> +				    old[i].data == tp_func->data) {
+> +					old[i].func = tp_stub_func;
+> +					/* Set the prio to the next event. */
+> +					if (old[i + 1].func)
+> +						old[i].prio =
+> +							old[i + 1].prio;
+> +					else
+> +						old[i].prio = -1;
+> +				}
+> +			*funcs = old;
+> +		}
+>  	}
+>  	debug_print_probes(*funcs);
+>  	return old;
+> @@ -295,10 +341,12 @@ static int tracepoint_remove_func(struct tracepoint *tp,
+>  	tp_funcs = rcu_dereference_protected(tp->funcs,
+>  			lockdep_is_held(&tracepoints_mutex));
+>  	old = func_remove(&tp_funcs, func);
+> -	if (IS_ERR(old)) {
+> -		WARN_ON_ONCE(PTR_ERR(old) != -ENOMEM);
+> +	if (WARN_ON_ONCE(IS_ERR(old)))
+>  		return PTR_ERR(old);
+> -	}
+> +
+> +	if (tp_funcs == old)
+> +		/* Failed allocating new tp_funcs, replaced func with stub */
+> +		return 0;
+>  
+>  	if (!tp_funcs) {
+>  		/* Removed last function */
+> -- 
+> 2.25.4
+> 
