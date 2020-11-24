@@ -2,91 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA2242C25AF
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 13:29:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A8AE2C25B1
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 13:29:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387550AbgKXM3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 07:29:00 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:10089 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729172AbgKXM3A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 07:29:00 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fbcfc920001>; Tue, 24 Nov 2020 04:29:06 -0800
-Received: from [172.27.14.166] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 24 Nov
- 2020 12:28:51 +0000
-Subject: Re: [PATCH iproute2 1/1] tc flower: fix parsing vlan_id and vlan_prio
-To:     <netdev@vger.kernel.org>
-CC:     Simon Horman <simon.horman@netronome.com>,
-        David Ahern <dsahern@gmail.com>, <zahari.doychev@linux.com>,
-        <jianbol@mellanox.com>, <jhs@mojatatu.com>
-References: <20201124122641.46696-1-roid@nvidia.com>
-From:   Roi Dayan <roid@nvidia.com>
-Message-ID: <ceb8f7c3-04f9-1d6c-f1aa-4c5690ddccc8@nvidia.com>
-Date:   Tue, 24 Nov 2020 14:28:48 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        id S2387577AbgKXM3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 07:29:14 -0500
+Received: from mxout70.expurgate.net ([91.198.224.70]:26591 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729172AbgKXM3O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 07:29:14 -0500
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1khXRU-000H9v-8h; Tue, 24 Nov 2020 13:29:08 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1khXRT-000H8C-5G; Tue, 24 Nov 2020 13:29:07 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 9D702240041;
+        Tue, 24 Nov 2020 13:29:06 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 10B03240040;
+        Tue, 24 Nov 2020 13:29:06 +0100 (CET)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id 593DF20049;
+        Tue, 24 Nov 2020 13:29:05 +0100 (CET)
 MIME-Version: 1.0
-In-Reply-To: <20201124122641.46696-1-roid@nvidia.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1606220946; bh=2xR3/lUsfGkem8KEe5NGki6utNP0+T3hrtUSFpvN0x8=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-        b=kyQ/xOsRc6nLLVv8uf4gZQOtLC5U9cT+yokqSFn0CyDYO2xJrKPExoefYxPCfXLO+
-         aGC25MWX6xAfCOQCcFtirNLPhACMIFmPp9lkGfnLYtZ33TmA47Acbc9LM4cmHVyt0X
-         z8BitGvPPeCeaR3Gh38XPQAI5OjeZ4YcNbhMEFFR6JxAxQW8xzJDwWHMtjz+6b/J80
-         Qq8rKBj4ctH21LmIA60v0Up1LUEpYhmwqZG1QSwE/rxO7YipNVEWi63SgxDe4s4oUa
-         PAm/SPWhKOe6Kvqdkv6V1MWOyJestYY53tC4+SdiBIkCddy3J2fh4kTxT+Tci8rRUj
-         quBmub/LTttvw==
+Date:   Tue, 24 Nov 2020 13:29:05 +0100
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     andrew.hendry@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        xie.he.0141@gmail.com, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v5 3/5] net/lapb: fix t1 timer handling for
+ LAPB_STATE_0
+Organization: TDT AG
+In-Reply-To: <2d40b42aee314611b9ba1627e5eab30b@AcuMS.aculab.com>
+References: <20201124093538.21177-1-ms@dev.tdt.de>
+ <20201124093538.21177-4-ms@dev.tdt.de>
+ <2d40b42aee314611b9ba1627e5eab30b@AcuMS.aculab.com>
+Message-ID: <3d3f3733c08168bc8417021206cd93b9@dev.tdt.de>
+X-Sender: ms@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.15
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
+        autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+X-purgate-type: clean
+X-purgate: clean
+X-purgate-ID: 151534::1606220947-00017060-88198D89/0/0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2020-11-24 2:26 PM, Roi Dayan wrote:
-> When protocol is vlan then eth_type is set to the vlan eth type.
-> So when parsing vlan_id and vlan_prio need to check tc_proto
-> is vlan and not eth_type.
+On 2020-11-24 12:43, David Laight wrote:
+> From: Martin Schiller
+>> Sent: 24 November 2020 09:36
+>> 
+>> 1. DTE interface changes immediately to LAPB_STATE_1 and start sending
+>>    SABM(E).
+>> 
+>> 2. DCE interface sends N2-times DM and changes to LAPB_STATE_1
+>>    afterwards if there is no response in the meantime.
 > 
-> Fixes: 4c551369e083 ("tc flower: use right ethertype in icmp/arp parsing")
-> Signed-off-by: Roi Dayan <roid@nvidia.com>
-> ---
->   tc/f_flower.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
+> Seems reasonable.
+> It is 35 years since I wrote LAPB and I can't exactly remember
+> what we did.
+> If I stole a copy of the code it's on a QIC-150 tape cartridge!
 > 
-> diff --git a/tc/f_flower.c b/tc/f_flower.c
-> index 58e1140d7391..9b278f3c0e83 100644
-> --- a/tc/f_flower.c
-> +++ b/tc/f_flower.c
-> @@ -1432,7 +1432,7 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
->   			__u16 vid;
->   
->   			NEXT_ARG();
-> -			if (!eth_type_vlan(eth_type)) {
-> +			if (!eth_type_vlan(tc_proto)) {
->   				fprintf(stderr, "Can't set \"vlan_id\" if ethertype isn't 802.1Q or 802.1AD\n");
->   				return -1;
->   			}
-> @@ -1446,7 +1446,7 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
->   			__u8 vlan_prio;
->   
->   			NEXT_ARG();
-> -			if (!eth_type_vlan(eth_type)) {
-> +			if (!eth_type_vlan(tc_proto)) {
->   				fprintf(stderr, "Can't set \"vlan_prio\" if ethertype isn't 802.1Q or 802.1AD\n");
->   				return -1;
->   			}
+> I really don't remember having a DTE/DCE option.
+> It is likely that LAPB came up sending DM (response without F)
+> until level3 requested the link come up when it would send
+> N2 SABM+P hoping to get a UA+F.
+> It would then send DM-F until a retry request was made.
+> 
+> We certainly had several different types of crossover connectors
+> for DTE-DTE working.
+> 
+> 	David
 > 
 
+The support for DTE/DCE was already in the LAPB code and I made it
+configurable from userspace (at least for hdlc interfaces) with this
+commit:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit?id=f362e5fe0f1f
 
-sorry should have tagged as iproute2-next.
-ignore this i sent with correct tag.
+For Layer3 (X.25) I will add it with an addional patch (you already
+commented on that) on a next step.
+
+The described behaviour above is my interpretation of point 2.4.4.1 of
+the "ITU-T Recommendation X.25 (10/96) aka "Blue Book" [1].
+
+[1] https://www.itu.int/rec/T-REC-X.25-199610-I/
+
+>> 
+>> Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+>> ---
+>>  net/lapb/lapb_timer.c | 11 +++++++++--
+>>  1 file changed, 9 insertions(+), 2 deletions(-)
+>> 
+>> diff --git a/net/lapb/lapb_timer.c b/net/lapb/lapb_timer.c
+>> index 8f5b17001a07..baa247fe4ed0 100644
+>> --- a/net/lapb/lapb_timer.c
+>> +++ b/net/lapb/lapb_timer.c
+>> @@ -85,11 +85,18 @@ static void lapb_t1timer_expiry(struct timer_list 
+>> *t)
+>>  	switch (lapb->state) {
+>> 
+>>  		/*
+>> -		 *	If we are a DCE, keep going DM .. DM .. DM
+>> +		 *	If we are a DCE, send DM up to N2 times, then switch to
+>> +		 *	STATE_1 and send SABM(E).
+>>  		 */
+>>  		case LAPB_STATE_0:
+>> -			if (lapb->mode & LAPB_DCE)
+>> +			if (lapb->mode & LAPB_DCE &&
+>> +			    lapb->n2count != lapb->n2) {
+>> +				lapb->n2count++;
+>>  				lapb_send_control(lapb, LAPB_DM, LAPB_POLLOFF, LAPB_RESPONSE);
+>> +			} else {
+>> +				lapb->state = LAPB_STATE_1;
+>> +				lapb_establish_data_link(lapb);
+>> +			}
+>>  			break;
+>> 
+>>  		/*
+>> --
+>> 2.20.1
+> 
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes,
+> MK1 1PT, UK
+> Registration No: 1397386 (Wales)
