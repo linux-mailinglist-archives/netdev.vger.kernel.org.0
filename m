@@ -2,147 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 959132C2F55
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 18:54:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 563782C2F6B
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 18:59:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404176AbgKXRvw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 12:51:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46486 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404165AbgKXRvv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 12:51:51 -0500
-Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF540C061A4D
-        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 09:51:50 -0800 (PST)
-Received: by mail-ot1-x341.google.com with SMTP id h19so7533039otr.1
-        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 09:51:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=dgZcAum397p2JLnSMu9Tfx6bFmJxJljXgwdxIBft2qU=;
-        b=OOAeaexTNdWrtNkAmYHlsVBFA5sTlRmOiCsFvy4pL27tRynQOBBbcqmUn3veDD2lRu
-         lwC1uI8VTYahxiSjJiZjhClgMUfsBfBbBkWftfy7pihRRTdR5mN7hCA2SgMzS8pi7a/7
-         OjPm6zaaP2vN9Geb6kS6S3Zi2N+ksSftuK+iKFOWNvgpnE9Ie5mhgB0Z8xyWNqfNKyit
-         436vILyqH/QaPh7syOXlp48jgjaa+WuY3DzwxmE9dXEbtemLjqqaP5OlUfq4j5GRtDpS
-         IK119lCxbp3A5toiNMhLqDofinxMJTRFtIbrNRL5d4oipX5KnUaWN3vXZ/rRK+D7wGLX
-         8kfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dgZcAum397p2JLnSMu9Tfx6bFmJxJljXgwdxIBft2qU=;
-        b=lvgypATXaCjdV7gSPItL79R+yvWiojC9P/0G1qF+3ST6LVR3N6/gbhwwi/SW0Ek+Y+
-         A+L/uMSWA2Exv+Zwk4ra8Ov4q77YaSmXRfjZB+VnOd1JRQ5A7bgSOhaKzevn8XqOMdu9
-         bY9sldsk29GhInb0VAq2TQPeLG9wzyD+0S0OIAPasr6YtZukfZ3U4LB0QbSKu68Of3lG
-         4O4MEG7FakG3ytWg5AKgRVVcsHX77JMu97OlQj682fN0E9MRDoz9yXoIozBnJ/pYhxPO
-         oDzazE5nBVJkTdoNaO0oOkP3cI4N+1WJhMxqGLQp/QIVfp64TvuxSKnriunif1kGD86p
-         jIXA==
-X-Gm-Message-State: AOAM533ztbki5OSX0PKsN93TLlRZtiv/9v1eQDTnGnFYKyM5rpOcQ+iH
-        kmdOQDw3R3YvPig7aZWU6BrLEA==
-X-Google-Smtp-Source: ABdhPJx0Bi9BI557Z8UPwegAPJqDFuQ2QJg9nE12QgAZLSFJWx9gcK7pnLUE2oNRHmHHuA+dXznesA==
-X-Received: by 2002:a9d:1f5:: with SMTP id e108mr4289207ote.309.1606240310256;
-        Tue, 24 Nov 2020 09:51:50 -0800 (PST)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id u10sm10051960oig.54.2020.11.24.09.51.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Nov 2020 09:51:48 -0800 (PST)
-Date:   Tue, 24 Nov 2020 11:51:46 -0600
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Amit Pundir <amit.pundir@linaro.org>, Rob Herring <robh@kernel.org>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        David S Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Konrad Dybcio <konradybcio@gmail.com>,
-        ath10k <ath10k@lists.infradead.org>,
-        dt <devicetree@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ath10k: Introduce a devicetree quirk to skip host cap
- QMI requests
-Message-ID: <20201124175146.GG185852@builder.lan>
-References: <1601058581-19461-1-git-send-email-amit.pundir@linaro.org>
- <20200929190817.GA968845@bogus>
- <20201029134017.GA807@yoga>
- <CAMi1Hd20UpNhZm6z5t5Kcy8eTABiAj7X_Gm66QnJspZWSio0Ew@mail.gmail.com>
+        id S2404004AbgKXR6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 12:58:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40284 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2403966AbgKXR6O (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 12:58:14 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id F119E206B5;
+        Tue, 24 Nov 2020 17:58:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606240693;
+        bh=OpON11OTYtw3Gj2Go6/CNZMridVMk6ZFje6DvMSp3f4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FNvYrs+XZX6OH5f9dQoh1mZz7MCtgPWIfzG1O8w7I8a/vQaP2YFUAhTU3C1VhSIqD
+         r2fTGcz2zvtql6quR79dm6NohFqOQmWUa0dCqbo49jBp9UvX9GX8Ype56/PxO2SQBH
+         qVVwRNV7aNNfDPqERKVJVNTJRlXJJS+zuR7/vHNI=
+Date:   Tue, 24 Nov 2020 09:58:12 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Po Liu <po.liu@nxp.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Subject: Re: [PATCH net] enetc: Advance the taprio base time in the future
+Message-ID: <20201124095812.539b9d1e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <VE1PR04MB64967D95BBDB594A286C139A92FB0@VE1PR04MB6496.eurprd04.prod.outlook.com>
+References: <20201124012005.2442293-1-vladimir.oltean@nxp.com>
+        <VE1PR04MB64967D95BBDB594A286C139A92FB0@VE1PR04MB6496.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMi1Hd20UpNhZm6z5t5Kcy8eTABiAj7X_Gm66QnJspZWSio0Ew@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue 03 Nov 01:48 CST 2020, Amit Pundir wrote:
+On Tue, 24 Nov 2020 02:40:29 +0000 Po Liu wrote:
+> > The tc-taprio base time indicates the beginning of the tc-taprio schedule,
+> > which is cyclic by definition (where the length of the cycle in nanoseconds
+> > is called the cycle time). The base time is a 64-bit PTP time in the TAI
+> > domain.
+> > 
+> > Logically, the base-time should be a future time. But that imposes some
+> > restrictions to user space, which has to retrieve the current PTP time first
+> > from the NIC first, then calculate a base time that will still be larger than
 
-> Hi Rob, Bjorn, Kalle,
-> 
-> On Thu, 29 Oct 2020 at 19:10, Bjorn Andersson
-> <bjorn.andersson@linaro.org> wrote:
-> >
-> > On Tue 29 Sep 14:08 CDT 2020, Rob Herring wrote:
-> >
-> > > On Fri, Sep 25, 2020 at 11:59:41PM +0530, Amit Pundir wrote:
-> > > > There are firmware versions which do not support host capability
-> > > > QMI request. We suspect either the host cap is not implemented or
-> > > > there may be firmware specific issues, but apparently there seem
-> > > > to be a generation of firmware that has this particular behavior.
-> > > >
-> > > > For example, firmware build on Xiaomi Poco F1 (sdm845) phone:
-> > > > "QC_IMAGE_VERSION_STRING=WLAN.HL.2.0.c3-00257-QCAHLSWMTPLZ-1"
-> > > >
-> > > > If we do not skip the host cap QMI request on Poco F1, then we
-> > > > get a QMI_ERR_MALFORMED_MSG_V01 error message in the
-> > > > ath10k_qmi_host_cap_send_sync(). But this error message is not
-> > > > fatal to the firmware nor to the ath10k driver and we can still
-> > > > bring up the WiFi services successfully if we just ignore it.
-> > > >
-> > > > Hence introducing this DeviceTree quirk to skip host capability
-> > > > QMI request for the firmware versions which do not support this
-> > > > feature.
-> > >
-> > > So if you change the WiFi firmware, you may force a DT change too. Those
-> > > are pretty independent things otherwise.
-> > >
-> >
-> > Yes and that's not good. But I looked at somehow derive this from
-> > firmware version numbers etc and it's not working out, so I'm out of
-> > ideas for alternatives.
-> >
-> > > Why can't you just always ignore this error? If you can't deal with this
-> > > entirely in the driver, then it should be part of the WiFi firmware so
-> > > it's always in sync.
-> > >
-> >
-> > Unfortunately the firmware versions I've hit this problem on has gone
-> > belly up when receiving this request, that's why I asked Amit to add a
-> > flag to skip it.
-> 
-> So what is next for this DT quirk?
-> 
+Says first twice.
 
-Rob, we still have this problem and we've not come up with any way to
-determine in runtime that we need to skip this part of the
-initialization.
-
-Regards,
-Bjorn
-
-> I'm OK to go back to my previous of_machine_is_compatible()
-> device specific hack, for now,
-> https://patchwork.kernel.org/project/linux-wireless/patch/1600328501-8832-1-git-send-email-amit.pundir@linaro.org/
-> till we have a reasonable fix in place or receive a vendor firmware
-> drop which fixes this problem (which I believe is highly unlikely
-> though, for this 2+ years old device).
+> > the base time by the time the kernel driver programs this value into the
+> > hardware. Actually ensuring that the programmed base time is in the
+> > future is still a problem even if the kernel alone deals with this - what the
+> > proposed patch does is to "reserve" 100 ms for potential delays, but
+> > otherwise this is an unsolved problem in the general case.
+> > 
+> > Nonetheless, what is important for tc-taprio in a LAN is not precisely the
+> > base-time value, but rather the fact that the taprio schedules are
+> > synchronized across all nodes in the network, or at least have a given
+> > phase offset.
+> > 
+> > Therefore, the expectation for user space is that specifying a base-time of
+> > 0 would mean that the tc-taprio schedule should start "right away", with
+> > one twist: the effective base-time written into the NIC is still congruent
+> > with the originally specified base-time. Otherwise stated, if the current PTP
+> > time of the NIC is 2.123456789, the base-time of the schedule is
+> > 0.000000000 and the cycle-time is 0.500000000, then the effective base-
+> > time should be 2.500000000, since that is the first beginning of a new cycle
+> > starting at base-time 0.000000000, with a cycle time of 500 ms, that is
+> > larger than the current PTP time.
+> > 
+> > So in short, the kernel driver, or the hardware, should allow user space to
+> > skip the calculation of the future base time, and transparently allow a PTP
+> > time in the past. The formula for advancing the base time should be:
+> > 
+> > effective-base-time = base-time + N x cycle-time
+> > 
+> > where N is the smallest integer number of cycles such that effective-base-
+> > time >= now.
+> > 
+> > Actually, the base-time of 0.000000000 is not special in any way.
+> > Reiterating the example above, just with a base-time of 0.000500000. The
+> > effective base time in this case should be 2.500500000, according to the
+> > formula. There are use cases for applying phase shifts like this.
+> > 
+> > The enetc driver is not doing that. It special-cases the case where the
+> > specified base time is zero, and it replaces that with a plain "current PTP
+> > time".
+> > 
+> > Such an implementation is unusable for applications that expect the
+> > phase to be preserved. We already have drivers in the kernel that comply
+> > to the behavior described above (maybe more than just the ones listed
+> > below):
+> > - the software implementation of taprio does it in taprio_get_start_time:
+> > 
+> > 	/* Schedule the start time for the beginning of the next
+> > 	 * cycle.
+> > 	 */
+> > 	n = div64_s64(ktime_sub_ns(now, base), cycle);
+> > 	*start = ktime_add_ns(base, (n + 1) * cycle);
+> >   
 > 
-> Regards,
-> Amit Pundir
+> This is the right way for calculation. For the ENETC,  hardware also do the same calculation before send to Operation State Machine. 
+> For some TSN IP, like Felix and DesignWare TSN in RT1170 and IMX8MP require the basetime limite the range not less than the current time 8 cycles, software may do calculation before setting to the hardware.
+> Actually, I do suggest this calculation to sch_taprio.c, but I found same calculation only for the TXTIME by taprio_get_start_time().
+> Which means: 
+> If (currenttime < basetime)
+>        Admin_basetime = basetime;
+> Else
+>        Admin_basetime =  basetime + (n+1)* cycletime;
+> N is the minimal value which make Admin_basetime is larger than the currenttime.
 > 
-> >
-> > That said, in the devices I've hit this I've managed to get newer
-> > firmware working, which doesn't have either problem.
-> >
-> > Regards,
-> > Bjorn
+> User space never to get the current time. Just set a value as offset OR future time user want.
+> For example: set basetime = 1000000ns, means he want time align to 1000000ns, and on the other device, also set the basetime = 1000000ns, then the two devices are aligned cycle.
+> If user want all the devices start at 11.24.2020 11:00 then set basetime = 1606273200.0 s.
+> 
+> > - the sja1105 offload does it via future_base_time()
+> > - the ocelot/felix offload does it via vsc9959_new_base_time()
+> > 
+> > As for the obvious question: doesn't the hardware just "do the right thing"
+> > if passed a time in the past? I've tested and it doesn't look like it. I cannot  
+> 
+> So hardware already do calculation same way.
+
+So the patch is unnecessary? Or correct? Not sure what you're saying..
+
+> > determine what base-time it uses in that case, however traffic does not
+> > have the correct phase alignment.
+> > 
+> > Fixes: 34c6adf1977b ("enetc: Configure the Time-Aware Scheduler via tc-
+> > taprio offload")
+> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > ---
+> >  .../net/ethernet/freescale/enetc/enetc_qos.c  | 34 +++++++++++++------
+> >  1 file changed, 23 insertions(+), 11 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+> > b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+> > index aeb21dc48099..379deef5d9e0 100644
+> > --- a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+> > +++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+> > @@ -45,6 +45,20 @@ void enetc_sched_speed_set(struct enetc_ndev_priv
+> > *priv, int speed)
+> >  		      | pspeed);
+> >  }
+> > 
+> > +static inline s64 future_base_time(s64 base_time, s64 cycle_time, s64
+> > +now) {
+
+nit: no need for this inline
+
+> > +	s64 a, b, n;
+> > +
+> > +	if (base_time >= now)
+> > +		return base_time;
+> > +
+> > +	a = now - base_time;
+> > +	b = cycle_time;
+> > +	n = div_s64(a + b - 1, b);
+> > +
+> > +	return base_time + n * cycle_time;
+> > +}
