@@ -2,158 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 640522C3427
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 23:42:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92A902C3430
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 23:47:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731878AbgKXWla (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 17:41:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35024 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725930AbgKXWla (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 17:41:30 -0500
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD906C0613D6;
-        Tue, 24 Nov 2020 14:41:29 -0800 (PST)
-Received: by mail-ed1-x543.google.com with SMTP id v22so481188edt.9;
-        Tue, 24 Nov 2020 14:41:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=h5/NEGcRaQbxARJ7pOs7y+QOBtL6oZcm2nApnzpGIeU=;
-        b=tisrnfnNV0MN7LKo+eRixINZfF2YyukdJ0mMUJ/faW/TTm+THkoK/9rTFT6saK6c0v
-         fCmT8ebTjTuvp7GAgfDeYjDhXA9qpVAcD0eLtNWOa/PvZstDDhiZuPkTUIRA7OvPgVsW
-         KdGGnVcvaiRuXoOu7iPaNuAF7UmPR+0oeDvYRCHgmonTUblHbzyqxC+P2BJ6Q/MvLnuS
-         WgYBwa7QJoRlsx9qbxJdLaTsAsWMxqPy7dwYiXHI2NONni3isuzTAnP/yTnlkclnSz8G
-         dRVNyWu97UBvK/Q8qw4EUvMtcg1nOd79KmIRahpAsySX+txQw7dFiKwlbldjD49XS67V
-         8D7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=h5/NEGcRaQbxARJ7pOs7y+QOBtL6oZcm2nApnzpGIeU=;
-        b=SL0iyNQsRR37qDMCzSsLfCo/uyVdPAB5wklvT+qEv94D59CypNTQIzq6hNFvpucKM8
-         RsrFgmmEZ4pHHlWLWK8t3jg9i3nLbx534UGLC2IUpM9lniIelboLkDX2CtmCm4W+Ig6j
-         uQOVdP3Wg5pt1M6iMdNqyQr6HNn4MMzkVB/tbB9fkUpNT0B/jhNxh3ZzGrEnpUb8YM29
-         K04vreeKvCNKzzAuPTSGyb7kRojrB3Bs6oajABrU8mf6QslYcEcplYHzPvF3Bt/c/K40
-         cM1zVg9C3sX0E14slV1fKQ5HQ0B8vmDXGiC/3EyvQVGpKf7QXEsRszkshPf99H8Ykbsi
-         Brpw==
-X-Gm-Message-State: AOAM532icC06Ktgz4Pye2O1Do2MQVsY/HIvqI/zYdjU9Ps/eWT3Wzn6Z
-        DjrzpOZyWAHtb/KWZqBuQrz3srMRvbm54w==
-X-Google-Smtp-Source: ABdhPJwuPDJI1WZoraBmg8raCR7kxU3Wd02gqO0CY0qzV+l7YVW3chHPqsco8qNktNOn2N1x4J7ZQA==
-X-Received: by 2002:aa7:d8c4:: with SMTP id k4mr740838eds.248.1606257688414;
-        Tue, 24 Nov 2020 14:41:28 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f23:2800:145e:bd05:1fb8:712a? (p200300ea8f232800145ebd051fb8712a.dip0.t-ipconnect.de. [2003:ea:8f23:2800:145e:bd05:1fb8:712a])
-        by smtp.googlemail.com with ESMTPSA id dk4sm136419edb.54.2020.11.24.14.41.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 Nov 2020 14:41:27 -0800 (PST)
-Subject: Re: [PATCH v2] net: phy: realtek: read actual speed on rtl8211f to
- detect downshift
-To:     Antonio Borneo <antonio.borneo@st.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Yonglong Liu <liuyonglong@huawei.com>,
-        Willy Liu <willy.liu@realtek.com>
-Cc:     linuxarm@huawei.com, Salil Mehta <salil.mehta@huawei.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-kernel@vger.kernel.org
-References: <20201124143848.874894-1-antonio.borneo@st.com>
- <20201124215932.885306-1-antonio.borneo@st.com>
- <7d8bf728-7d73-fa8c-d63d-49e9e6c872fd@gmail.com>
- <57457fcd335e7d6bfd543187de02608bcccf812f.camel@st.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <b469247f-607b-6f92-9f09-9ce345ca6f61@gmail.com>
-Date:   Tue, 24 Nov 2020 23:41:15 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        id S2390015AbgKXWn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 17:43:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56030 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725930AbgKXWn4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 17:43:56 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7140C206D4;
+        Tue, 24 Nov 2020 22:43:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606257834;
+        bh=1Luz3E29AIffRwBhr81HenyYu8mhB/BAK65N+Kn/S54=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WpJZdDvZeQMQt2KBymrc6QvatNCC0nd4M0lD8C0DtljlsqW30XFG+AwClwuDXK5he
+         s5SiYl3S9Kne6k6AIyET+tI8nxYIrvICxtdYmexS/MtxAV1NL0RasiX2/P3PKHAu5x
+         sPfvTb61Q/54n9RgBxHBVYrxSMfo+BSmsIfJ6+Lw=
+Date:   Tue, 24 Nov 2020 14:43:53 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Bongsu Jeon <bongsu.jeon@samsung.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        linux-nfc@lists.01.org
+Subject: Re: [PATCH net-next v2] net/nfc/nci: Support NCI 2.x initial
+ sequence
+Message-ID: <20201124144353.7c759cae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201123101208epcms2p71d4c8d66f08fb7a2e10ae422abde3389@epcms2p7>
+References: <CGME20201123101208epcms2p71d4c8d66f08fb7a2e10ae422abde3389@epcms2p7>
+        <20201123101208epcms2p71d4c8d66f08fb7a2e10ae422abde3389@epcms2p7>
 MIME-Version: 1.0
-In-Reply-To: <57457fcd335e7d6bfd543187de02608bcccf812f.camel@st.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 24.11.2020 um 23:33 schrieb Antonio Borneo:
-> On Tue, 2020-11-24 at 23:22 +0100, Heiner Kallweit wrote:
->> Am 24.11.2020 um 22:59 schrieb Antonio Borneo:
->>> The rtl8211f supports downshift and before commit 5502b218e001
->>> ("net: phy: use phy_resolve_aneg_linkmode in genphy_read_status")
->>> the read-back of register MII_CTRL1000 was used to detect the
->>> negotiated link speed.
->>> The code added in commit d445dff2df60 ("net: phy: realtek: read
->>> actual speed to detect downshift") is working fine also for this
->>> phy and it's trivial re-using it to restore the downshift
->>> detection on rtl8211f.
->>>
->>> Add the phy specific read_status() pointing to the existing
->>> function rtlgen_read_status().
->>>
->>> Signed-off-by: Antonio Borneo <antonio.borneo@st.com>
->>> Link: https://lore.kernel.org/r/478f871a-583d-01f1-9cc5-2eea56d8c2a7@huawei.com
->>> ---
->>> To: Andrew Lunn <andrew@lunn.ch>
->>> To: Heiner Kallweit <hkallweit1@gmail.com>
->>> To: Russell King <linux@armlinux.org.uk>
->>> To: "David S. Miller" <davem@davemloft.net>
->>> To: Jakub Kicinski <kuba@kernel.org>
->>> To: netdev@vger.kernel.org
->>> To: Yonglong Liu <liuyonglong@huawei.com>
->>> To: Willy Liu <willy.liu@realtek.com>
->>> Cc: linuxarm@huawei.com
->>> Cc: Salil Mehta <salil.mehta@huawei.com>
->>> Cc: linux-stm32@st-md-mailman.stormreply.com
->>> Cc: linux-kernel@vger.kernel.org
->>> In-Reply-To: <20201124143848.874894-1-antonio.borneo@st.com>
->>>
->>> V1 => V2
->>> 	move from a generic implementation affecting every phy
->>> 	to a rtl8211f specific implementation
->>> ---
->>>  drivers/net/phy/realtek.c | 1 +
->>>  1 file changed, 1 insertion(+)
->>>
->>> diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
->>> index 575580d3ffe0..8ff8a4edc173 100644
->>> --- a/drivers/net/phy/realtek.c
->>> +++ b/drivers/net/phy/realtek.c
->>> @@ -621,6 +621,7 @@ static struct phy_driver realtek_drvs[] = {
->>>  		PHY_ID_MATCH_EXACT(0x001cc916),
->>>  		.name		= "RTL8211F Gigabit Ethernet",
->>>  		.config_init	= &rtl8211f_config_init,
->>> +		.read_status	= rtlgen_read_status,
->>>  		.ack_interrupt	= &rtl8211f_ack_interrupt,
->>>  		.config_intr	= &rtl8211f_config_intr,
->>>  		.suspend	= genphy_suspend,
->>>
->>> base-commit: 9bd2702d292cb7b565b09e949d30288ab7a26d51
->>>
->>
->> Pefect would be to make this a fix for 5502b218e001,
->> but rtlgen_read_status() was added one year after this change.
->> Marking the change that added rtlgen_read_status() as "Fixes"
->> would be technically ok, but as it's not actually broken not
->> everybody may be happy with this.
->> Having said that I'd be fine with treating this as an improvement,
->> downshift should be a rare case.
+On Mon, 23 Nov 2020 19:12:08 +0900 Bongsu Jeon wrote:
+> implement the NCI 2.x initial sequence to support NCI 2.x NFCC.
+> Since NCI 2.0, CORE_RESET and CORE_INIT sequence have been changed.
+> If NFCEE supports NCI 2.x, then NCI 2.x initial sequence will work.
 > 
-> Correct! Being the commit that adds rtlgen_read_status() an improvement,
-> should not be backported, so this patch is not marked anymore as a fix!
-> Plus, this does not fix 5502b218e001 in the general case, but limited to
-> one specific phy, making the 'fixes' label less relevant.
-> Anyway, the commit message reports all the ingredients for a backport.
+> In NCI 1.0, Initial sequence and payloads are as below:
+> (DH)                     (NFCC)
+>  |  -- CORE_RESET_CMD --> |
+>  |  <-- CORE_RESET_RSP -- |
+>  |  -- CORE_INIT_CMD -->  |
+>  |  <-- CORE_INIT_RSP --  |
+>  CORE_RESET_RSP payloads are Status, NCI version, Configuration Status.
+>  CORE_INIT_CMD payloads are empty.
+>  CORE_INIT_RSP payloads are Status, NFCC Features,
+>     Number of Supported RF Interfaces, Supported RF Interface,
+>     Max Logical Connections, Max Routing table Size,
+>     Max Control Packet Payload Size, Max Size for Large Parameters,
+>     Manufacturer ID, Manufacturer Specific Information.
 > 
-> By the way, I have incorrectly sent this based on netdev, but it's not a
-> fix anymore! Should I rebase it on netdev-next and resend?
+> In NCI 2.0, Initial Sequence and Parameters are as below:
+> (DH)                     (NFCC)
+>  |  -- CORE_RESET_CMD --> |
+>  |  <-- CORE_RESET_RSP -- |
+>  |  <-- CORE_RESET_NTF -- |
+>  |  -- CORE_INIT_CMD -->  |
+>  |  <-- CORE_INIT_RSP --  |
+>  CORE_RESET_RSP payloads are Status.
+>  CORE_RESET_NTF payloads are Reset Trigger,
+>     Configuration Status, NCI Version, Manufacturer ID,
+>     Manufacturer Specific Information Length,
+>     Manufacturer Specific Information.
+>  CORE_INIT_CMD payloads are Feature1, Feature2.
+>  CORE_INIT_RSP payloads are Status, NFCC Features,
+>     Max Logical Connections, Max Routing Table Size,
+>     Max Control Packet Payload Size,
+>     Max Data Packet Payload Size of the Static HCI Connection,
+>     Number of Credits of the Static HCI Connection,
+>     Max NFC-V RF Frame Size, Number of Supported RF Interfaces,
+>     Supported RF Interfaces.
 > 
-For this small change it shouldn't make a difference whether it's based
-on net or net-next. I don't think anything has changed here. But better
-check whether patch applies cleanly on net-next. Patch should have been
-annotated as [PATCH net-next], but I think a re-send isn't needed as
-Jakub can see it based on this communication.
+> Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
 
-> Antonio
-> 
+NFC folks, looks like when the NFC core got orphaned it lost all links
+in MAINTAINERS. Should we add the L: linux-nfc@lists.01.org so that
+there is a better chance that someone knowledgeable will provide
+reviews?
 
+Also if anyone is up for it feel free to add your M: or R: entries!
+
+>  #define NCI_OP_CORE_INIT_CMD		nci_opcode_pack(NCI_GID_CORE, 0x01)
+> +/* To support NCI 2.x */
+> +struct nci_core_init_v2_cmd {
+> +	unsigned char	feature1;
+> +	unsigned char	feature2;
+> +} __packed;
+
+No need for this to be packed.
+
+>  #define NCI_OP_CORE_SET_CONFIG_CMD	nci_opcode_pack(NCI_GID_CORE, 0x02)
+>  struct set_config_param {
+> @@ -316,6 +326,11 @@ struct nci_core_reset_rsp {
+>  	__u8	config_status;
+>  } __packed;
+>  
+> +/* To support NCI ver 2.x */
+> +struct nci_core_reset_rsp_nci_ver2 {
+> +	unsigned char	status;
+> +} __packed;
+
+ditto
+
+>  #define NCI_OP_CORE_INIT_RSP		nci_opcode_pack(NCI_GID_CORE, 0x01)
+>  struct nci_core_init_rsp_1 {
+>  	__u8	status;
+> @@ -334,6 +349,20 @@ struct nci_core_init_rsp_2 {
+>  	__le32	manufact_specific_info;
+>  } __packed;
+>  
+> +/* To support NCI ver 2.x */
+> +struct nci_core_init_rsp_nci_ver2 {
+> +	unsigned char	status;
+> +	__le32	nfcc_features;
+> +	unsigned char	max_logical_connections;
+> +	__le16	max_routing_table_size;
+> +	unsigned char	max_ctrl_pkt_payload_len;
+> +	unsigned char	max_data_pkt_hci_payload_len;
+> +	unsigned char	number_of_hci_credit;
+> +	__le16	max_nfc_v_frame_size;
+> +	unsigned char	num_supported_rf_interfaces;
+> +	unsigned char	supported_rf_interfaces[];
+> +} __packed;
+> +
+>  #define NCI_OP_CORE_SET_CONFIG_RSP	nci_opcode_pack(NCI_GID_CORE, 0x02)
+>  struct nci_core_set_config_rsp {
+>  	__u8	status;
+> @@ -372,6 +401,16 @@ struct nci_nfcee_discover_rsp {
+>  /* --------------------------- */
+>  /* ---- NCI Notifications ---- */
+>  /* --------------------------- */
+> +#define NCI_OP_CORE_RESET_NTF		nci_opcode_pack(NCI_GID_CORE, 0x00)
+> +struct nci_core_reset_ntf {
+> +	unsigned char	reset_trigger;
+> +	unsigned char	config_status;
+> +	unsigned char	nci_ver;
+> +	unsigned char	manufact_id;
+> +	unsigned char	manufacturer_specific_len;
+> +	__le32	manufact_specific_info;
+> +} __packed;
+> +
+>  #define NCI_OP_CORE_CONN_CREDITS_NTF	nci_opcode_pack(NCI_GID_CORE, 0x06)
+>  struct conn_credit_entry {
+>  	__u8	conn_id;
+> diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
+> index 4953ee5146e1..68889faadda2 100644
+> --- a/net/nfc/nci/core.c
+> +++ b/net/nfc/nci/core.c
+> @@ -165,7 +165,14 @@ static void nci_reset_req(struct nci_dev *ndev, unsigned long opt)
+>  
+>  static void nci_init_req(struct nci_dev *ndev, unsigned long opt)
+>  {
+> -	nci_send_cmd(ndev, NCI_OP_CORE_INIT_CMD, 0, NULL);
+> +	struct nci_core_init_v2_cmd *cmd = (struct nci_core_init_v2_cmd *)opt;
+> +
+> +	if (!cmd) {
+> +		nci_send_cmd(ndev, NCI_OP_CORE_INIT_CMD, 0, NULL);
+> +	} else {
+> +		/* if nci version is 2.0, then use the feature parameters */
+> +		nci_send_cmd(ndev, NCI_OP_CORE_INIT_CMD, sizeof(struct nci_core_init_v2_cmd), cmd);
+
+Please wrap this line.
+
+> +	}
+
+Parenthesis unnecessary.
+
+>  }
+>  
+>  static void nci_init_complete_req(struct nci_dev *ndev, unsigned long opt)
+
+> +static unsigned char nci_core_init_rsp_packet_v2(struct nci_dev *ndev, struct sk_buff *skb)
+> +{
+> +	struct nci_core_init_rsp_nci_ver2 *rsp = (void *)skb->data;
+> +	unsigned char rf_interface_idx = 0;
+> +	unsigned char rf_extension_cnt = 0;
+> +	unsigned char *supported_rf_interface = rsp->supported_rf_interfaces;
+> +
+> +	pr_debug("status %x\n", rsp->status);
+> +
+> +	if (rsp->status != NCI_STATUS_OK)
+> +		return rsp->status;
+> +
+> +	ndev->nfcc_features = __le32_to_cpu(rsp->nfcc_features);
+> +	ndev->num_supported_rf_interfaces = rsp->num_supported_rf_interfaces;
+> +
+> +	if (ndev->num_supported_rf_interfaces >
+> +	    NCI_MAX_SUPPORTED_RF_INTERFACES) {
+> +		ndev->num_supported_rf_interfaces =
+> +			NCI_MAX_SUPPORTED_RF_INTERFACES;
+> +	}
+
+brackets unnecessary unnecessary 
+
+also:
+
+	ndev->num_supported_rf_interfaces =
+		min(ndev->num_supported_rf_interfaces,
+		    NCI_MAX_SUPPORTED_RF_INTERFACES);
+
+> +	while (rf_interface_idx < ndev->num_supported_rf_interfaces) {
+> +		ndev->supported_rf_interfaces[rf_interface_idx++] = *supported_rf_interface++;
+> +
+> +		/* skip rf extension parameters */
+> +		rf_extension_cnt = *supported_rf_interface++;
+> +		supported_rf_interface += rf_extension_cnt;
+> +	}
