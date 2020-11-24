@@ -2,110 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCF9D2C3046
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 19:57:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EB152C305F
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 20:03:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390942AbgKXS44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 13:56:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35468 "EHLO mail.kernel.org"
+        id S2404104AbgKXTCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 14:02:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42782 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390919AbgKXS4z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 13:56:55 -0500
+        id S2390881AbgKXTCF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 14:02:05 -0500
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 585E2208B8;
-        Tue, 24 Nov 2020 18:56:54 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 35C00204FD;
+        Tue, 24 Nov 2020 19:02:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606244215;
-        bh=9EeXvYxhc+xygm951jAEsP8Q6mZuaqaa24L32cHPcPc=;
+        s=default; t=1606244525;
+        bh=PW4WMI4gJ6Ccl9hIj/7wrZ3x0ZDqbNJOOj0gKSntkbc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VJZaXlBJHkMCoewgWb8aXdZ1RrA1dJX7Zg1ZTsrOfUsQXQhXL/f+tq6i/n3Xv+sDy
-         yhlkpL7F/7iM2hyfE1vn+ugehJ4gaLx95i8+BaYcWglq9PM9Pno+w8Z6pmM87NokLY
-         hXLVqiFYs6LQnVhEyu8qqbSkssb9l82omiO/pxwk=
-Date:   Tue, 24 Nov 2020 10:56:53 -0800
+        b=sN5ZukW2s3wpA8/aMX1/mW0W5ROOvDFe7mOIUTu3xUvhDw/tsBBp6s4lpPgfBBjko
+         wrpcUsvv8QbDp0YR+Q6nRCV4RBgAT5Z6MhSYWqWvtd1UqssF0eVGeL5IyvE6dkNkFQ
+         zbqmuYjzMJqWYQm21z1Zqo/ZLA2N4rMHd6i1jGSs=
+Date:   Tue, 24 Nov 2020 11:02:02 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Antonio Borneo <antonio.borneo@st.com>
-Cc:     Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "Jose Abreu" <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        has <has@pengutronix.de>
-Subject: Re: [PATCH] net: stmmac: add flexible PPS to dwmac 4.10a
-Message-ID: <20201124105653.40426fe7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <4a53794f1a0cea5eb009fce0b4b4c4846771f8be.camel@st.com>
-References: <20191007154306.95827-1-antonio.borneo@st.com>
-        <20191007154306.95827-5-antonio.borneo@st.com>
-        <20191009152618.33b45c2d@cakuba.netronome.com>
-        <42960ede-9355-1277-9a6f-4eac3c22365c@pengutronix.de>
-        <e2b2b623700401538fe91e70495c348c08b5d2e3.camel@st.com>
-        <20201124102022.1a6e6085@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <4a53794f1a0cea5eb009fce0b4b4c4846771f8be.camel@st.com>
+To:     "Ramsay, Lincoln" <Lincoln.Ramsay@digi.com>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Dmitry Bogdanov <dbogdanov@marvell.com>
+Subject: Re: [PATCH net v5] aquantia: Remove the build_skb path
+Message-ID: <20201124110202.38dc6d5b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <MWHPR1001MB23184F3EAFA413E0D1910EC9E8FC0@MWHPR1001MB2318.namprd10.prod.outlook.com>
+References: <CY4PR1001MB23118EE23F7F5196817B8B2EE8E10@CY4PR1001MB2311.namprd10.prod.outlook.com>
+        <CY4PR1001MB2311F01C543420E5F89C0F4DE8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
+        <20201119221510.GI15137@breakpoint.cc>
+        <CY4PR1001MB23113312D5E0633823F6F75EE8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
+        <20201119222800.GJ15137@breakpoint.cc>
+        <CY4PR1001MB231116E9371FBA2B8636C23DE8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
+        <20201119225842.GK15137@breakpoint.cc>
+        <CY4PR1001MB2311844FE8390F00A3363DEEE8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
+        <20201121132204.43f9c4fb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20201121132324.72d79e94@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CY4PR1001MB2311E9770EF466FB922CBB27E8FD0@CY4PR1001MB2311.namprd10.prod.outlook.com>
+        <20201123084243.423b23a4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <MWHPR1001MB23184F3EAFA413E0D1910EC9E8FC0@MWHPR1001MB2318.namprd10.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 24 Nov 2020 19:27:03 +0100 Antonio Borneo wrote:
-> On Tue, 2020-11-24 at 10:20 -0800, Jakub Kicinski wrote:
-> > On Tue, 24 Nov 2020 15:23:27 +0100 Antonio Borneo wrote: =20
-> > > On Tue, 2020-11-24 at 15:15 +0100, Ahmad Fatoum wrote: =20
-> > > > On 10.10.19 00:26, Jakub Kicinski wrote:   =20
-> > > > > On Mon, 7 Oct 2019 17:43:06 +0200, Antonio Borneo wrote:   =20
-> > > > > > All the registers and the functionalities used in the callback
-> > > > > > dwmac5_flex_pps_config() are common between dwmac 4.10a [1] and
-> > > > > > 5.00a [2].
-> > > > > >=20
-> > > > > > Reuse the same callback for dwmac 4.10a too.
-> > > > > >=20
-> > > > > > Tested on STM32MP15x, based on dwmac 4.10a.
-> > > > > >=20
-> > > > > > [1] DWC Ethernet QoS Databook 4.10a October 2014
-> > > > > > [2] DWC Ethernet QoS Databook 5.00a September 2017
-> > > > > >=20
-> > > > > > Signed-off-by: Antonio Borneo <antonio.borneo@st.com>   =20
-> > > > >=20
-> > > > > Applied to net-next.   =20
-> > > >=20
-> > > > This patch seems to have been fuzzily applied at the wrong location.
-> > > > The diff describes extension of dwmac 4.10a and so does the @@ line:
-> > > >=20
-> > > > =C2=A0=C2=A0@@ -864,6 +864,7 @@ const struct stmmac_ops dwmac410_op=
-s =3D {
-> > > >=20
-> > > > The patch was applied mainline as 757926247836 ("net: stmmac: add
-> > > > flexible PPS to dwmac 4.10a"), but it extends dwmac4_ops instead:
-> > > >=20
-> > > > =C2=A0=C2=A0@@ -938,6 +938,7 @@ const struct stmmac_ops dwmac4_ops =
-=3D {
-> > > >=20
-> > > > I don't know if dwmac4 actually supports FlexPPS, so I think it's
-> > > > better to be on the safe side and revert 757926247836 and add the
-> > > > change for the correct variant.   =20
-> > >=20
-> > > Agree,
-> > > the patch get applied to the wrong place! =20
-> >=20
-> > :-o
-> >=20
-> > This happens sometimes with stable backports but I've never seen it
-> > happen working on "current" branches.
-> >=20
-> > Sorry about that!
-> >=20
-> > Would you mind sending the appropriate patches? I can do the revert if
-> > you prefer, but since you need to send the fix anyway.. =20
->=20
-> You mean sending two patches one for revert and one to re-apply the code?
-> Or a single patch for the fix?
+On Mon, 23 Nov 2020 21:40:43 +0000 Ramsay, Lincoln wrote:
+> From: Lincoln Ramsay <lincoln.ramsay@opengear.com>
+> 
+> When performing IPv6 forwarding, there is an expectation that SKBs
+> will have some headroom. When forwarding a packet from the aquantia
+> driver, this does not always happen, triggering a kernel warning.
+> 
+> aq_ring.c has this code (edited slightly for brevity):
+> 
+> if (buff->is_eop && buff->len <= AQ_CFG_RX_FRAME_MAX - AQ_SKB_ALIGN) {
+>     skb = build_skb(aq_buf_vaddr(&buff->rxdata), AQ_CFG_RX_FRAME_MAX);
+> } else {
+>     skb = napi_alloc_skb(napi, AQ_CFG_RX_HDR_SIZE);
+> 
+> There is a significant difference between the SKB produced by these
+> 2 code paths. When napi_alloc_skb creates an SKB, there is a certain
+> amount of headroom reserved. However, this is not done in the
+> build_skb codepath.
+> 
+> As the hardware buffer that build_skb is built around does not
+> handle the presence of the SKB header, this code path is being
+> removed and the napi_alloc_skb path will always be used. This code
+> path does have to copy the packet header into the SKB, but it adds
+> the packet data as a frag.
+> 
+> Fixes: 018423e90bee ("net: ethernet: aquantia: Add ring support code")
+> Signed-off-by: Lincoln Ramsay <lincoln.ramsay@opengear.com>
 
-Either way is fine by me. If I was doing it - I'd probably send just one
-patch, but if you prefer to revert first - nothing wrong with that.
+Applied, queued of stable.
+
+Thanks!
