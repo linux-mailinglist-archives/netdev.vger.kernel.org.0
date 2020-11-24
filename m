@@ -2,136 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83EB32C2B3F
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 16:27:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 785A72C2B61
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 16:34:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389729AbgKXP0x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 10:26:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52076 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730900AbgKXP0w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 10:26:52 -0500
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D57AC0613D6;
-        Tue, 24 Nov 2020 07:26:51 -0800 (PST)
-Received: by mail-wr1-x444.google.com with SMTP id s8so22683974wrw.10;
-        Tue, 24 Nov 2020 07:26:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=k+Iagc0aS3/EnNIwiIo6ZqVN4M6qIqWHIstOKgb6RBM=;
-        b=TGjvJ/O8mQ4BBtCTUOVEuvsV/ulyv9D3/nkqLq3r4zf6F7FGNZdEDkcWnlyy4a+l7U
-         P043tqdh98oNoPbqC//vEqQcPSrD07vn+8jH3FwcRaW6FAVACV6ZPVWYs+UywSdYXPWm
-         JD35x6fSFaLzfOKw/PiTl2n1NS9OVamy9frAiCvPPnkoxUNuaObcfq1XcPzxu2xVc4il
-         BhoDo2nUI0+EEB1ECp/CaDUJS/LOXHGY5P2Tz94BbS7SbLoT/fGHNUDGgRd2JXRVcA8I
-         FgmrO0BpEOffA/txtAGYaVFgaUCs6KQzQZ7oaQvrzP9Dnz9hTvLa30tTHcozdCFFmDf1
-         8Hwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=k+Iagc0aS3/EnNIwiIo6ZqVN4M6qIqWHIstOKgb6RBM=;
-        b=KLfU1VZsN3V8jLgqXkdvWg7AeKIOpce/U33NFMBOuYY82SpuqwScT6ZAeI8w30CEUk
-         4vxWnb8NFHbkY+nHzRzd0Yzo/yZXRb9M6hm35vi2hKdzkQSXztvKIbSJoMF/SLIOfKJo
-         5qdTcPoKFfttFSe0jc6aT424pP1CGUAKVhxCgZ4ciir2KQjHNmW3FFCFlxDa/tbDaOwx
-         qn8m22qg96OGXHoqUV9AN8K5o4PCWl/BW52467lU77C7zHBVvEc1LuGQBlBXVOdAJsOR
-         cH8pLRJZDXfN+ahc4LTVhfsGVxp0DDAR/y4Vb/nNDrGvWOr38zL43II8lVcY0TQqwp9E
-         7mCQ==
-X-Gm-Message-State: AOAM532rTuftOHE50cwEfjl+19mDWEPMMJJXNvjAfLmN74k775hvi3YC
-        0GIMzRBl2G0Si3l4sw98Tuop6tVImoEynQ==
-X-Google-Smtp-Source: ABdhPJzo+2coZTD3QonwH13kAa3QAamwILg9Hc5MxylE0mG7e5z8jQKj9Ha49b3oHAPAyOhQC2sNtg==
-X-Received: by 2002:a5d:4004:: with SMTP id n4mr5768370wrp.230.1606231609659;
-        Tue, 24 Nov 2020 07:26:49 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f23:2800:4cf3:cdf5:5d2a:5c8c? (p200300ea8f2328004cf3cdf55d2a5c8c.dip0.t-ipconnect.de. [2003:ea:8f23:2800:4cf3:cdf5:5d2a:5c8c])
-        by smtp.googlemail.com with ESMTPSA id g131sm6426505wma.35.2020.11.24.07.26.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 Nov 2020 07:26:49 -0800 (PST)
+        id S2389745AbgKXPcw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 10:32:52 -0500
+Received: from mx07-00178001.pphosted.com ([185.132.182.106]:58121 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2389078AbgKXPcv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 10:32:51 -0500
+Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0AOFWFUL031036;
+        Tue, 24 Nov 2020 16:32:33 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=STMicroelectronics;
+ bh=Ypt08g8yC5E1a0xePLAiZgQfojweHehBCCzNvuLtWM8=;
+ b=ct7IcYWFG9R1S++YtI/eB2Q8vNwL6mXtwZlS2wUZq07usEjhSZD7BLNSBiVxQgI0YE6H
+ 50lJkKkHklPp1rD9O+aZhvbEGPFdmniLjpQjP4Wns0NEuLQEUlLdm7z7cUWH8Fg/t5oR
+ /Wf+o7sMQr29/Ks6YbiDniNXGqF/tWNDE3u9i72WtV4mVxe6DXg50Y4OcKG7DMkLXl6u
+ cHalXrkDGDXFofZnexU1DdnXaJ+A6K7Namw3ZmD3tbzRNbmXo4srOuXSqDWpWAMwoZPK
+ xRA8Uys5hcX8RKXplwdNcgGh0HO9ZvL+Gfj39jTMBSkm8L37ycix4du1ZtEdtuAdqnWi mw== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 34y05h898p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 24 Nov 2020 16:32:33 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 7000F10002A;
+        Tue, 24 Nov 2020 16:32:32 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag1node3.st.com [10.75.127.3])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 562A52568E0;
+        Tue, 24 Nov 2020 16:32:32 +0100 (CET)
+Received: from [10.129.7.42] (10.75.127.50) by SFHDAG1NODE3.st.com
+ (10.75.127.3) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 24 Nov
+ 2020 16:32:30 +0100
+Message-ID: <e6cd5bdc3b50dedc4b751f86b8769dad6219591e.camel@st.com>
 Subject: Re: [PATCH] net: phy: fix auto-negotiation in case of 'down-shift'
-To:     Antonio Borneo <antonio.borneo@st.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+From:   Antonio Borneo <antonio.borneo@st.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+CC:     Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Yonglong Liu <liuyonglong@huawei.com>, stable@vger.kernel.org,
-        linuxarm@huawei.com, Salil Mehta <salil.mehta@huawei.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-kernel@vger.kernel.org
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        Yonglong Liu <liuyonglong@huawei.com>,
+        <stable@vger.kernel.org>, <linuxarm@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-kernel@vger.kernel.org>
+Date:   Tue, 24 Nov 2020 16:31:40 +0100
+In-Reply-To: <20201124151716.GG1551@shell.armlinux.org.uk>
 References: <20201124143848.874894-1-antonio.borneo@st.com>
- <20201124145647.GF1551@shell.armlinux.org.uk>
- <bd83b9c15f6cfed5df90da4f6b50d1a3f479b831.camel@st.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <2dc7ad93-5719-dd8a-44a9-8667a22a3b19@gmail.com>
-Date:   Tue, 24 Nov 2020 16:26:43 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+         <4684304a-37f5-e0cd-91cf-3f86318979c3@gmail.com>
+         <20201124151716.GG1551@shell.armlinux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.2 
 MIME-Version: 1.0
-In-Reply-To: <bd83b9c15f6cfed5df90da4f6b50d1a3f479b831.camel@st.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.50]
+X-ClientProxiedBy: SFHDAG1NODE2.st.com (10.75.127.2) To SFHDAG1NODE3.st.com
+ (10.75.127.3)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-24_04:2020-11-24,2020-11-24 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 24.11.2020 um 16:17 schrieb Antonio Borneo:
-> On Tue, 2020-11-24 at 14:56 +0000, Russell King - ARM Linux admin wrote:
->> On Tue, Nov 24, 2020 at 03:38:48PM +0100, Antonio Borneo wrote:
->>> If the auto-negotiation fails to establish a gigabit link, the phy
->>> can try to 'down-shift': it resets the bits in MII_CTRL1000 to
->>> stop advertising 1Gbps and retries the negotiation at 100Mbps.
->>>
->>> From commit 5502b218e001 ("net: phy: use phy_resolve_aneg_linkmode
->>> in genphy_read_status") the content of MII_CTRL1000 is not checked
->>> anymore at the end of the negotiation, preventing the detection of
->>> phy 'down-shift'.
->>> In case of 'down-shift' phydev->advertising gets out-of-sync wrt
->>> MII_CTRL1000 and still includes modes that the phy have already
->>> dropped. The link partner could still advertise higher speeds,
->>> while the link is established at one of the common lower speeds.
->>> The logic 'and' in phy_resolve_aneg_linkmode() between
->>> phydev->advertising and phydev->lp_advertising will report an
->>> incorrect mode.
->>>
->>> Issue detected with a local phy rtl8211f connected with a gigabit
->>> capable router through a two-pairs network cable.
->>>
->>> After auto-negotiation, read back MII_CTRL1000 and mask-out from
->>> phydev->advertising the modes that have been eventually discarded
->>> due to the 'down-shift'.
->>
->> Sorry, but no. While your solution will appear to work, in
->> introduces unexpected changes to the user visible APIs.
->>
->>>  	if (phydev->autoneg == AUTONEG_ENABLE && phydev->autoneg_complete) {
->>> +		if (phydev->is_gigabit_capable) {
->>> +			adv = phy_read(phydev, MII_CTRL1000);
->>> +			if (adv < 0)
->>> +				return adv;
->>> +			/* update advertising in case of 'down-shift' */
->>> +			mii_ctrl1000_mod_linkmode_adv_t(phydev->advertising,
->>> +							adv);
->>
->> If a down-shift occurs, this will cause the configured advertising
->> mask to lose the 1G speed, which will be visible to userspace.
+On Tue, 2020-11-24 at 15:17 +0000, Russell King - ARM Linux admin wrote:
+> On Tue, Nov 24, 2020 at 04:03:40PM +0100, Heiner Kallweit wrote:
+> > Am 24.11.2020 um 15:38 schrieb Antonio Borneo:
+> > > If the auto-negotiation fails to establish a gigabit link, the phy
+> > > can try to 'down-shift': it resets the bits in MII_CTRL1000 to
+> > > stop advertising 1Gbps and retries the negotiation at 100Mbps.
+> > > 
+> > I see that Russell answered already. My 2cts:
+> > 
+> > Are you sure all PHY's supporting downshift adjust the
+> > advertisement bits? IIRC an Aquantia PHY I dealt with does not.
+> > And if a PHY does so I'd consider this problematic:
+> > Let's say you have a broken cable and the PHY downshifts to
+> > 100Mbps. If you change the cable then the PHY would still negotiate
+> > 100Mbps only.
 > 
-> You are right, it gets propagated to user that 1Gbps is not advertised
+> From what I've seen, that is not how downshift works, at least on
+> the PHYs I've seen.
 > 
->> Userspace doesn't expect the advertising mask to change beneath it.
->> Since updates from userspace are done using a read-modify-write of
->> the ksettings, this can have the undesired effect of removing 1G
->> from the configured advertising mask.
->>
->> We've had other PHYs have this behaviour; the correct solution is for
->> the PHY driver to implement reading the resolution from the PHY rather
->> than relying on the generic implementation if it can down-shift
+> When the PHY downshifts, it modifies the advertisement registers,
+> but it also remembers the original value. When the cable is
+> unplugged, it restores the setting to what was previously set.
+
+In fact, at least rtl8211f is able to recover the original settings and
+returns to 1Gbps once a decent cable gets plugged-in.
+
 > 
-> If it's already upstream, could you please point to one of the phy driver
-> that already implements this properly?
+> It is _far_ from nice, but the fact is that your patch that Antonio
+> identified has broken previously working support, something that I
+> brought up when I patched one of the PHY drivers that was broken by
+> this very same problem by your patch.
+
+The idea to fix it for a general case was indeed triggered by the fact that
+before commit 5502b218e001 this was the norm. I considered it as a
+regression.
+
+> 
+> That said, _if_ the PHY has a way to read the resolved state rather
+> than reading the advertisement registers, that is what should be
+> used (as I said previously) rather than trying to decode the
+> advertisement registers ourselves. That is normally more reliable
+> for speed and duplex.
 > 
 
-See e.g. aqr107_read_rate(), used by aqr107_read_status().
+Wrt rtl8211f I don't have info other then the public datasheet, and there I
+didn't found any way other than reading the advertisement register.
 
-> Thanks
-> Antonio
-> 
+I have read the latest comment from Heiner. I will check aqr107!
+
+Thanks
+Antonio
 
