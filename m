@@ -2,149 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F04C52C1FD4
+	by mail.lfdr.de (Postfix) with ESMTP id 020FB2C1FD2
 	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 09:27:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730513AbgKXI0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 03:26:52 -0500
-Received: from esa3.microchip.iphmx.com ([68.232.153.233]:30024 "EHLO
-        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730500AbgKXI0v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 03:26:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1606206410; x=1637742410;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=rzJrrzklVRf9eadjbGgdPrbEEAvaq8klfJmDth8IB6k=;
-  b=gkMQtnbeOu3uOt/nIWdGcDe4JaQTV+vZLKgC75xdFQDKnx0F700d4155
-   QDgrLYQ9GVt8WcMOSeG3dURBwz8YH16LydUoA7x+Snz+KN6I3W3BJMDW9
-   PLrAYPyEuG0jUiaOsOMvLz21Y/0z6de0Wy+/Zmw/6Fqv1VzZJ5lfsmeXT
-   9sLAK82uE7QbsZKhM+mXCQTtNuDuDfWYkLRTYMKQ5ttAp6RTefFMg6PDT
-   p7FBX18vy9ZUhPeVsJLmj62+hcZTs0A8GTH2fLkmLsQC22CK+RMvUMMBu
-   ENZInHN4Inll/MXOXYdEYYYBIm+d3lfdLzXM/+Pb2HugcSxccjDeXCsnU
-   A==;
-IronPort-SDR: QsNdaq2mYQ18qkeBJuDwfPejPHjc8ujw50pSYHh3XyK1VMyKomLVh+EtaLOwatoX2jpVU4REDn
- DWpDzE3SOBdM97PkPPqTBzfkMGW+5FjRlQiTbWzXOhMwoaKGGRIkaxBAG0M4+GdWTvdGJbwgaC
- p8GL+/jGfM4lvjKI4JKfFnWuVktsAfSIf1g/dyBeR4KHbNp4RNNHM0osk8oKsq+WK46sl4/143
- +a9PdjqIAntwEhMTtZQGuVsf7gyPT5sK0p5yeLXAPh0IF9QRaV1+tDB4DKpce8iJEOtxSIu30H
- Txk=
-X-IronPort-AV: E=Sophos;i="5.78,365,1599548400"; 
-   d="scan'208";a="100156753"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Nov 2020 01:26:49 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 24 Nov 2020 01:26:49 -0700
-Received: from soft-dev3.localdomain (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Tue, 24 Nov 2020 01:26:48 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <nikolay@nvidia.com>, <roopa@nvidia.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>
-CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v2] bridge: mrp: Implement LC mode for MRP
-Date:   Tue, 24 Nov 2020 09:25:25 +0100
-Message-ID: <20201124082525.273820-1-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.27.0
+        id S1730415AbgKXI0b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 03:26:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42996 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730479AbgKXI0a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 03:26:30 -0500
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 959FFC0613CF
+        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 00:26:29 -0800 (PST)
+Received: by mail-pf1-x444.google.com with SMTP id 131so17757935pfb.9
+        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 00:26:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7xGxPFU7HmUNTL7v9rR1KKUCp1Qoz4dTjclFZr76Whc=;
+        b=oG+NK7YiDL3f+UEh4bd1sNm6Ba+ZQvdxB9Vb0hEbs8c/ViUfcKA1flrP2fldAa7APS
+         IZfVxYNYD1opKEZunGU8oEdM/BoDkFOrztWQakVbRRGboTFZaI9qWxlO+hkiMwqFxrPA
+         g/OQvbo7ufL+feMyudwp2R7RPOUzR0uYdNjJ2k3DRNRJrXdjjsmT8kcBgvxzryB7iEsH
+         DPEsuOKcKSQAg3Z/fr7rYn7FeeWaNJr/IS1zar0lUqcM0a8YcSHrDU/t5gfW51foCpWL
+         6S56d7uw6mwYvAJJT+5Z+KcwbFMbnl7v715YjghVFmdCBU6N0xS3VTxhQ4DNwEJh8Mua
+         M65Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7xGxPFU7HmUNTL7v9rR1KKUCp1Qoz4dTjclFZr76Whc=;
+        b=fNQM/p+fxWoElKidnjoeBPkD6S6LTlCQqvx13g8Ef5V87oXMT824cbamZBsScKCk+5
+         qhgNhYLLQP6Z6vGkU/N1+Z+RODqwuu2yqL+5zM7PE16Acl2gvrXrYycS5wouoJngAKe8
+         Zzi5WYM25GVUdwT+bofPoGFyPFuK3akEYIctx3tqmo3qN86bB5VRtkmvqCPyS1rQe47g
+         Q1zBSJOIymIN2KF1swDMpbE573x2qUeRo0nKluvcrwCDhH5OZqGleaBiauGzf36Ifuqc
+         MHqGG3LKlWEXRGAgYuRHxoIjy4KCkT7JCqpNHo/PSaLk7bRfUS5FrfadBR/2esj8sR8f
+         oqCA==
+X-Gm-Message-State: AOAM531REjn2G8BkaWZ/3OWc4zMy0tS+PxA7B+GU/Bu8jLVVjOWCOjsi
+        QoVzROF2XHL1hjAcsFgTMi0cUF6IBFLHloClMBhQkXAhTyK/eE7EmIY=
+X-Google-Smtp-Source: ABdhPJzY6SMk0Xm0x+zWmhj/XD/O1Ty40O5s+M7a3WArOFAT7J5vkF/PSWVBEe7iCAP88IfCAfIfePfvls0s1xmWG3c=
+X-Received: by 2002:a62:445:0:b029:196:61fc:2756 with SMTP id
+ 66-20020a6204450000b029019661fc2756mr3159092pfe.12.1606206389121; Tue, 24 Nov
+ 2020 00:26:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <1606143915-25335-1-git-send-email-yanjunz@nvidia.com>
+In-Reply-To: <1606143915-25335-1-git-send-email-yanjunz@nvidia.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 24 Nov 2020 09:26:18 +0100
+Message-ID: <CAJ8uoz0wMroBhRig1uoSO0vXkpms+E6B7LwTK-HXd821XDZrbg@mail.gmail.com>
+Subject: Re: [PATCH v3 1/1] xdp: remove the function xsk_map_inc
+To:     Zhu Yanjun <yanjunz@nvidia.com>
+Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend MRP to support LC mode(link check) for the interconnect port.
-This applies only to the interconnect ring.
+On Mon, Nov 23, 2020 at 4:07 PM Zhu Yanjun <yanjunz@nvidia.com> wrote:
+>
+> From: Zhu Yanjun <zyjzyj2000@gmail.com>
+>
+> The function xsk_map_inc is a simple wrapper of bpf_map_inc and
+> always returns zero. As such, replacing this function with bpf_map_inc
+> and removing the test code.
 
-Opposite to RC mode(ring check) the LC mode is using CFM frames to
-detect when the link goes up or down and based on that the userspace
-will need to react.
-One advantage of the LC mode over RC mode is that there will be fewer
-frames in the normal rings. Because RC mode generates InTest on all
-ports while LC mode sends CFM frame only on the interconnect port.
+Applied it to bpf-next, compiled it and tested it and it passed. Thank
+you Yanjun!
 
-All 4 nodes part of the interconnect ring needs to have the same mode.
-And it is not possible to have running LC and RC mode at the same time
-on a node.
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Whenever the MIM starts it needs to detect the status of the other 3
-nodes in the interconnect ring so it would send a frame called
-InLinkStatus, on which the clients needs to reply with their link
-status.
-
-This patch adds InLinkStatus frame type and extends existing rules on
-how to forward this frame.
-
-Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-
----
-v1 -> v2:
-  - remove struct 'br_mrp_in_link_status_hdr' as is unused
----
- include/uapi/linux/mrp_bridge.h |  1 +
- net/bridge/br_mrp.c             | 18 +++++++++++++++---
- 2 files changed, 16 insertions(+), 3 deletions(-)
-
-diff --git a/include/uapi/linux/mrp_bridge.h b/include/uapi/linux/mrp_bridge.h
-index 6aeb13ef0b1e..9744773de5ff 100644
---- a/include/uapi/linux/mrp_bridge.h
-+++ b/include/uapi/linux/mrp_bridge.h
-@@ -61,6 +61,7 @@ enum br_mrp_tlv_header_type {
- 	BR_MRP_TLV_HEADER_IN_TOPO = 0x7,
- 	BR_MRP_TLV_HEADER_IN_LINK_DOWN = 0x8,
- 	BR_MRP_TLV_HEADER_IN_LINK_UP = 0x9,
-+	BR_MRP_TLV_HEADER_IN_LINK_STATUS = 0xa,
- 	BR_MRP_TLV_HEADER_OPTION = 0x7f,
- };
- 
-diff --git a/net/bridge/br_mrp.c b/net/bridge/br_mrp.c
-index bb12fbf9aaf2..cec2c4e4561d 100644
---- a/net/bridge/br_mrp.c
-+++ b/net/bridge/br_mrp.c
-@@ -858,7 +858,8 @@ static bool br_mrp_in_frame(struct sk_buff *skb)
- 	if (hdr->type == BR_MRP_TLV_HEADER_IN_TEST ||
- 	    hdr->type == BR_MRP_TLV_HEADER_IN_TOPO ||
- 	    hdr->type == BR_MRP_TLV_HEADER_IN_LINK_DOWN ||
--	    hdr->type == BR_MRP_TLV_HEADER_IN_LINK_UP)
-+	    hdr->type == BR_MRP_TLV_HEADER_IN_LINK_UP ||
-+	    hdr->type == BR_MRP_TLV_HEADER_IN_LINK_STATUS)
- 		return true;
- 
- 	return false;
-@@ -1126,9 +1127,9 @@ static int br_mrp_rcv(struct net_bridge_port *p,
- 						goto no_forward;
- 				}
- 			} else {
--				/* MIM should forward IntLinkChange and
-+				/* MIM should forward IntLinkChange/Status and
- 				 * IntTopoChange between ring ports but MIM
--				 * should not forward IntLinkChange and
-+				 * should not forward IntLinkChange/Status and
- 				 * IntTopoChange if the frame was received at
- 				 * the interconnect port
- 				 */
-@@ -1155,6 +1156,17 @@ static int br_mrp_rcv(struct net_bridge_port *p,
- 			     in_type == BR_MRP_TLV_HEADER_IN_LINK_DOWN))
- 				goto forward;
- 
-+			/* MIC should forward IntLinkStatus frames only to
-+			 * interconnect port if it was received on a ring port.
-+			 * If it is received on interconnect port then, it
-+			 * should be forward on both ring ports
-+			 */
-+			if (br_mrp_is_ring_port(p_port, s_port, p) &&
-+			    in_type == BR_MRP_TLV_HEADER_IN_LINK_STATUS) {
-+				p_dst = NULL;
-+				s_dst = NULL;
-+			}
-+
- 			/* Should forward the InTopo frames only between the
- 			 * ring ports
- 			 */
--- 
-2.27.0
-
+> Signed-off-by: Zhu Yanjun <zyjzyj2000@gmail.com>
+> ---
+>  net/xdp/xsk.c    |  2 +-
+>  net/xdp/xsk.h    |  1 -
+>  net/xdp/xskmap.c | 13 +------------
+>  3 files changed, 2 insertions(+), 14 deletions(-)
+>
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index cfbec3989a76..a3c1f07d77d8 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -548,7 +548,7 @@ static struct xsk_map *xsk_get_map_list_entry(struct xdp_sock *xs,
+>         node = list_first_entry_or_null(&xs->map_list, struct xsk_map_node,
+>                                         node);
+>         if (node) {
+> -               WARN_ON(xsk_map_inc(node->map));
+> +               bpf_map_inc(&node->map->map);
+>                 map = node->map;
+>                 *map_entry = node->map_entry;
+>         }
+> diff --git a/net/xdp/xsk.h b/net/xdp/xsk.h
+> index b9e896cee5bb..0aad25c0e223 100644
+> --- a/net/xdp/xsk.h
+> +++ b/net/xdp/xsk.h
+> @@ -41,7 +41,6 @@ static inline struct xdp_sock *xdp_sk(struct sock *sk)
+>
+>  void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
+>                              struct xdp_sock **map_entry);
+> -int xsk_map_inc(struct xsk_map *map);
+>  void xsk_map_put(struct xsk_map *map);
+>  void xsk_clear_pool_at_qid(struct net_device *dev, u16 queue_id);
+>  int xsk_reg_pool_at_qid(struct net_device *dev, struct xsk_buff_pool *pool,
+> diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
+> index 49da2b8ace8b..6b7e9a72b101 100644
+> --- a/net/xdp/xskmap.c
+> +++ b/net/xdp/xskmap.c
+> @@ -11,12 +11,6 @@
+>
+>  #include "xsk.h"
+>
+> -int xsk_map_inc(struct xsk_map *map)
+> -{
+> -       bpf_map_inc(&map->map);
+> -       return 0;
+> -}
+> -
+>  void xsk_map_put(struct xsk_map *map)
+>  {
+>         bpf_map_put(&map->map);
+> @@ -26,17 +20,12 @@ static struct xsk_map_node *xsk_map_node_alloc(struct xsk_map *map,
+>                                                struct xdp_sock **map_entry)
+>  {
+>         struct xsk_map_node *node;
+> -       int err;
+>
+>         node = kzalloc(sizeof(*node), GFP_ATOMIC | __GFP_NOWARN);
+>         if (!node)
+>                 return ERR_PTR(-ENOMEM);
+>
+> -       err = xsk_map_inc(map);
+> -       if (err) {
+> -               kfree(node);
+> -               return ERR_PTR(err);
+> -       }
+> +       bpf_map_inc(&map->map);
+>
+>         node->map = map;
+>         node->map_entry = map_entry;
+> --
+> 2.25.1
+>
