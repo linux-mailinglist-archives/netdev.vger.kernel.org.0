@@ -2,119 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B825E2C29F9
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 15:46:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 344A92C2A31
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 15:48:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389244AbgKXOoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 09:44:55 -0500
-Received: from z5.mailgun.us ([104.130.96.5]:38689 "EHLO z5.mailgun.us"
+        id S2389322AbgKXOrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 09:47:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58050 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388913AbgKXOoy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 09:44:54 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1606229094; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=GJYW42IjQPe76onlnrQnVKos7pxA3IfstGH6J+iXtwQ=;
- b=h6o34MxU31gkKwM7jpTcS6knMJGWTnAIXl0RphHio3S9TObAL3xvHtrdINVnjLfhoWt2Oxio
- YxezI5CDXMZ7VKwqIkSlZGin5g+xxwnxuxlwAYteXal+R0VzG2oaBn/i3OHnHyVF0L08fwIY
- q3cxEgys1jkgjvg19oetqdd0YA0=
-X-Mailgun-Sending-Ip: 104.130.96.5
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
- 5fbd1c61a5c560669c94b940 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 24 Nov 2020 14:44:49
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 532C5C43461; Tue, 24 Nov 2020 14:44:48 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        id S2389219AbgKXOq6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 09:46:58 -0500
+Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id B24EDC43460;
-        Tue, 24 Nov 2020 14:44:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B24EDC43460
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        by mail.kernel.org (Postfix) with ESMTPSA id 296CF206F9;
+        Tue, 24 Nov 2020 14:46:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606229216;
+        bh=3zQtrTTCw8twqJtP/1a4NB1MKrz6/NphiIiwgRncCiQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Nf940VeIUgpffOGETTY1L3G0QcIjfozBFvnFoqG8O328ZSxeeaAXcr0hOe3zQgRlG
+         fbix380mdFR2g9eZBg8DhbUZBvf1w7UYgoM6pwiYDzTHildmv27dPl4/uYYBPb4fgA
+         1gCiZGhi+wbnwk7bOx0yc8Qq/SRuVl9DTTdMTQVI=
+Date:   Tue, 24 Nov 2020 08:47:05 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
+        amd-gfx@lists.freedesktop.org, bridge@lists.linux-foundation.org,
+        ceph-devel@vger.kernel.org, cluster-devel@redhat.com,
+        coreteam@netfilter.org, devel@driverdev.osuosl.org,
+        dm-devel@redhat.com, drbd-dev@lists.linbit.com,
+        dri-devel@lists.freedesktop.org, GR-everest-linux-l2@marvell.com,
+        GR-Linux-NIC-Dev@marvell.com, intel-gfx@lists.freedesktop.org,
+        intel-wired-lan@lists.osuosl.org, keyrings@vger.kernel.org,
+        linux1394-devel@lists.sourceforge.net, linux-acpi@vger.kernel.org,
+        linux-afs@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org,
+        linux-atm-general@lists.sourceforge.net,
+        linux-block@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-cifs@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-decnet-user@lists.sourceforge.net,
+        linux-ext4@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-geode@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-hams@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-i3c@lists.infradead.org, linux-ide@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-integrity@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mm@kvack.org,
+        linux-mtd@lists.infradead.org, linux-nfs@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, nouveau@lists.freedesktop.org,
+        op-tee@lists.trustedfirmware.org, oss-drivers@netronome.com,
+        patches@opensource.cirrus.com, rds-devel@oss.oracle.com,
+        reiserfs-devel@vger.kernel.org, samba-technical@lists.samba.org,
+        selinux@vger.kernel.org, target-devel@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net,
+        usb-storage@lists.one-eyed-alien.net,
+        virtualization@lists.linux-foundation.org,
+        wcn36xx@lists.infradead.org, x86@kernel.org,
+        xen-devel@lists.xenproject.org, linux-hardening@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Miguel Ojeda <ojeda@kernel.org>, Joe Perches <joe@perches.com>,
+        Kees Cook <keescook@chromium.org>
+Subject: Re: [PATCH 000/141] Fix fall-through warnings for Clang
+Message-ID: <20201124144705.GK16084@embeddedor>
+References: <cover.1605896059.git.gustavoars@kernel.org>
+ <20201123200345.GA38546@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] [v7] wireless: Initial driver submission for pureLiFi STA
- devices
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20201116092253.1302196-1-srini.raju@purelifi.com>
-References: <20201116092253.1302196-1-srini.raju@purelifi.com>
-To:     Srinivasan Raju <srini.raju@purelifi.com>
-Cc:     unlisted-recipients:; (no To-header on input)
-        mostafa.afgani@purelifi.com,
-        Srinivasan Raju <srini.raju@purelifi.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        linux-kernel@vger.kernel.org (open list),
-        linux-wireless@vger.kernel.org (open list:NETWORKING DRIVERS (WIRELESS)),
-        netdev@vger.kernel.org (open list:NETWORKING DRIVERS)
-Illegal-Object: Syntax error in Cc: address found on vger.kernel.org:
-        Cc:     unlisted-recipients:; (no To-header on input)mostafa.afgani@purelifi.com
-                                                                     ^-missing end of address
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20201124144448.532C5C43461@smtp.codeaurora.org>
-Date:   Tue, 24 Nov 2020 14:44:48 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201123200345.GA38546@nvidia.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Srinivasan Raju <srini.raju@purelifi.com> wrote:
-
-> This introduces the pureLiFi LiFi driver for LiFi-X, LiFi-XC
-> and LiFi-XL USB devices.
+On Mon, Nov 23, 2020 at 04:03:45PM -0400, Jason Gunthorpe wrote:
+> On Fri, Nov 20, 2020 at 12:21:39PM -0600, Gustavo A. R. Silva wrote:
 > 
-> This driver implementation has been based on the zd1211rw driver.
+> >   IB/hfi1: Fix fall-through warnings for Clang
+> >   IB/mlx4: Fix fall-through warnings for Clang
+> >   IB/qedr: Fix fall-through warnings for Clang
+> >   RDMA/mlx5: Fix fall-through warnings for Clang
 > 
-> Driver is based on 802.11 softMAC Architecture and uses
-> native 802.11 for configuration and management.
-> 
-> The driver is compiled and tested in ARM, x86 architectures and
-> compiled in powerpc architecture.
-> 
-> Signed-off-by: Srinivasan Raju <srini.raju@purelifi.com>
-> 
-> Changes v6->v7:
-> - Magic numbers removed and used IEEE80211 macors
-> - usb.c is split into two files firmware.c and dbgfs.c
-> - Other code style and timer function fixes (mod_timer)
-> Changes v5->v6:
-> - Code style fix patch from Joe Perches
-> Changes v4->v5:
-> - Code refactoring for clarity and redundnacy removal
-> - Fix warnings from kernel test robot
-> Changes v3->v4:
-> - Code refactoring based on kernel code guidelines
-> - Remove multi level macors and use kernel debug macros
-> Changes v2->v3:
-> - Code style fixes kconfig fix
-> Changes v1->v2:
-> - v1 was submitted to staging, v2 submitted to wireless-next
-> - Code style fixes and copyright statement fix
+> I picked these four to the rdma tree, thanks
 
-I haven't had a chance to review this yet but we have some documentation for new drivers:
+Awesome. :)
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches#new_driver
-
-Is the firmware publically available?
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20201116092253.1302196-1-srini.raju@purelifi.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Thank you, Jason.
+--
+Gustavo
