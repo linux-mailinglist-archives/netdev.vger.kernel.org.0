@@ -2,70 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 834172C2E23
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 18:12:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 442D02C2E79
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 18:29:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390624AbgKXRMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 12:12:21 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45806 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390534AbgKXRMV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 12:12:21 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9AABA20715;
-        Tue, 24 Nov 2020 17:12:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606237941;
-        bh=A9kI0sXskid0dUQ+4tbWVmia8SQLYDJbB7Ex5MCCzzY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MvLN/4KA5aLMPkVzKsrYg3EDhtuxHElHwE4Za16V3OubguwhQ3WJLo+k3eUAvWimx
-         9wV6ExJSVtj7Rt92gY46rkHsPxEs21zL6QleiRwOj4fxzwMkAUzPSBxA+hBiUFm/6y
-         n2SvLRjWzlMo9CufPzc7hz2O5xZWz2+HTTmr9y0U=
-Date:   Tue, 24 Nov 2020 09:12:19 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeedm@nvidia.com>
-Cc:     Eli Cohen <elic@nvidia.com>, Leon Romanovsky <leonro@mellanox.com>,
-        <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        Eli Cohen <eli@mellanox.com>, Mark Bloch <mbloch@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>
-Subject: Re: [PATCH mlx5-next 11/16] net/mlx5: Add VDPA priority to NIC RX
- namespace
-Message-ID: <20201124091219.5900e7bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201122064158.GA9749@mtl-vdi-166.wap.labs.mlnx>
-References: <20201120230339.651609-1-saeedm@nvidia.com>
-        <20201120230339.651609-12-saeedm@nvidia.com>
-        <20201121160155.39d84650@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20201122064158.GA9749@mtl-vdi-166.wap.labs.mlnx>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S2390820AbgKXR0e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 12:26:34 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:56336 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2390777AbgKXR0d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 12:26:33 -0500
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AOH4ZIs159506;
+        Tue, 24 Nov 2020 12:26:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id; s=pp1;
+ bh=vTB1+f0FDreX/k8U727Z/d3cLYhfd2XTM4Dj4d7tRzY=;
+ b=SvUGd9qbIK1bRJA7RYE91sPGx2O5WgL0LDXhbZJNc10sjIAM4GCC5UYyXhhZbF+9AW1w
+ 8ckbwZMrT5Qg+p8g58Vjxs457Xw9fxPDz/kTltr7kTCXOPAkdfszNa8e/xWBKD0x2jal
+ eJeH+HIVORM14lcx8OD7h4m0H2Tuc6CZgMMKq/Ng8wt7R8JPWy3TW0jREG1+aJUowNxb
+ C2zDCTCnUVARiqW7mmbzlZ1bqzMcd2vsJMxsyKPDzWdkka9D5v52xpXGoPL6Dtukk1Ka
+ SGQphRAq5uIcTwOF3jXN/lDjtUBha1tuesAf4A7c9Mw3As7iOJSr651M02VTJF48dCre Bw== 
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 350fe1e62t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 24 Nov 2020 12:26:26 -0500
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0AOHN9df004578;
+        Tue, 24 Nov 2020 17:26:25 GMT
+Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
+        by ppma03wdc.us.ibm.com with ESMTP id 35133nsg7a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 24 Nov 2020 17:26:25 +0000
+Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
+        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0AOHQOtS47317342
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 24 Nov 2020 17:26:24 GMT
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 26DE76A04F;
+        Tue, 24 Nov 2020 17:26:24 +0000 (GMT)
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DF50D6A04D;
+        Tue, 24 Nov 2020 17:26:21 +0000 (GMT)
+Received: from oc7186267434.ibm.com (unknown [9.160.17.166])
+        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Tue, 24 Nov 2020 17:26:21 +0000 (GMT)
+From:   Thomas Falcon <tlfalcon@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     linuxppc-dev@lists.ozlabs.org, cforno12@linux.ibm.com,
+        ljp@linux.vnet.ibm.com, ricklind@linux.ibm.com,
+        dnbanerg@us.ibm.com, drt@linux.vnet.ibm.com,
+        brking@linux.vnet.ibm.com, sukadev@linux.vnet.ibm.com,
+        tlfalcon@linux.ibm.com
+Subject: [PATCH net 0/2] ibmvnic: Bug fixes for queue descriptor processing
+Date:   Tue, 24 Nov 2020 11:26:14 -0600
+Message-Id: <1606238776-30259-1-git-send-email-tlfalcon@linux.ibm.com>
+X-Mailer: git-send-email 1.8.3.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-24_05:2020-11-24,2020-11-24 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxlogscore=937
+ phishscore=0 impostorscore=0 suspectscore=1 mlxscore=0 spamscore=0
+ clxscore=1015 adultscore=0 malwarescore=0 priorityscore=1501
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011240104
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 22 Nov 2020 08:41:58 +0200 Eli Cohen wrote:
-> On Sat, Nov 21, 2020 at 04:01:55PM -0800, Jakub Kicinski wrote:
-> > On Fri, 20 Nov 2020 15:03:34 -0800 Saeed Mahameed wrote:  
-> > > From: Eli Cohen <eli@mellanox.com>
-> > > 
-> > > Add a new namespace type to the NIC RX root namespace to allow for
-> > > inserting VDPA rules before regular NIC but after bypass, thus allowing
-> > > DPDK to have precedence in packet processing.  
-> > 
-> > How does DPDK and VDPA relate in this context?  
-> 
-> mlx5 steering is hierarchical and defines precedence amongst namespaces.
-> Up till now, the VDPA implementation would insert a rule into the
-> MLX5_FLOW_NAMESPACE_BYPASS hierarchy which is used by DPDK thus taking
-> all the incoming traffic.
-> 
-> The MLX5_FLOW_NAMESPACE_VDPA hirerachy comes after
-> MLX5_FLOW_NAMESPACE_BYPASS.
+This series resolves a few issues in the ibmvnic driver's
+RX buffer and TX completion processing. The first patch
+includes memory barriers to synchronize queue descriptor
+reads. The second patch fixes a memory leak that could
+occur if the device returns a TX completion with an error
+code in the descriptor, in which case the respective socket
+buffer and other relevant data structures may not be freed
+or updated properly.
 
-Our policy was no DPDK driver bifurcation. There's no asterisk saying
-"unless you pretend you need flow filters for RDMA, get them upstream
-and then drop the act".
+Thomas Falcon (2):
+  ibmvnic: Ensure that SCRQ entry reads are correctly ordered
+  ibmvnic: Fix TX completion error handling
 
-What do you expect me to do?
+ drivers/net/ethernet/ibm/ibmvnic.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+-- 
+1.8.3.1
+
