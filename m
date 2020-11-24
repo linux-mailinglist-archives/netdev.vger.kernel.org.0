@@ -2,103 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 986EC2C2E7C
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 18:29:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C228A2C2E87
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 18:29:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390832AbgKXR0l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 12:26:41 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:7676 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2390825AbgKXR0k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 12:26:40 -0500
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AOH1bst128785;
-        Tue, 24 Nov 2020 12:26:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references; s=pp1;
- bh=FxLK2HZu1U7SnTHn2fS8+ElfbIjbvxVsikXKZqocNyk=;
- b=JQZKOGStuPTqJSd7kHgVjqSMLmNs7c90SGdA67pTLAS082XLtoJZpnTQ2WjQxdcDHnwB
- tuIHWDMUI9SY1IKUNtHoDIVVuKiSsAVliYDRQPOw385OM8XX3/Fs5U+kTp27uz0pW92i
- slBPYKmRQDsaYD9HW5SoO41N08EuksEJcFvrwnQk6lldwNTnLlb4h/18J13C2gCGfO41
- kRe7qgxxpYdCiZK1aLDHQxeWB9ZQ0kDQ+/mMNx3EoS3i9hlmIZcLidPsT1ftbDVPozxZ
- 4oNHoOKeF5T+HFaS6il6h9PQtGGlYI3BYZhgTXT8elKESgpIdZkNwHLND44mnKlBblpY lQ== 
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 34ygtu5a29-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 24 Nov 2020 12:26:36 -0500
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0AOHNbWK006253;
-        Tue, 24 Nov 2020 17:26:35 GMT
-Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
-        by ppma01wdc.us.ibm.com with ESMTP id 34xth912x8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 24 Nov 2020 17:26:35 +0000
-Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0AOHQX5E57999706
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 24 Nov 2020 17:26:33 GMT
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9C30A6A04D;
-        Tue, 24 Nov 2020 17:26:33 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id ADB796A054;
-        Tue, 24 Nov 2020 17:26:31 +0000 (GMT)
-Received: from oc7186267434.ibm.com (unknown [9.160.17.166])
-        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Tue, 24 Nov 2020 17:26:31 +0000 (GMT)
-From:   Thomas Falcon <tlfalcon@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     linuxppc-dev@lists.ozlabs.org, cforno12@linux.ibm.com,
-        ljp@linux.vnet.ibm.com, ricklind@linux.ibm.com,
-        dnbanerg@us.ibm.com, drt@linux.vnet.ibm.com,
-        brking@linux.vnet.ibm.com, sukadev@linux.vnet.ibm.com,
-        tlfalcon@linux.ibm.com
-Subject: [PATCH net 2/2] ibmvnic: Fix TX completion error handling
-Date:   Tue, 24 Nov 2020 11:26:16 -0600
-Message-Id: <1606238776-30259-3-git-send-email-tlfalcon@linux.ibm.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1606238776-30259-1-git-send-email-tlfalcon@linux.ibm.com>
-References: <1606238776-30259-1-git-send-email-tlfalcon@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-24_04:2020-11-24,2020-11-24 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 clxscore=1015
- mlxscore=0 impostorscore=0 malwarescore=0 mlxlogscore=999 suspectscore=1
- bulkscore=0 spamscore=0 phishscore=0 lowpriorityscore=0 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011240103
+        id S2390873AbgKXR2n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 12:28:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53506 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728749AbgKXR2n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 12:28:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606238922;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=RZw14nu0WeV+0cJEy4Uy5oc23Dz6DkXIjUHuB46N0lw=;
+        b=e4+fTOGG5EIAFynu+kRSke9b8bX2Gl1t/VlEeeEX3v7F8WtNDNuZ1TFoLtrMMvp0wxSdkg
+        nnTfyfvO5EtwK4KeHq7SQERl9as13zUUS+eRv4++C4FcBWvsAlLBD2ITGU5+uComcmuDVt
+        dnvOQBcF4PCOpK5uf0AA0LEjGjZQnls=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-55-ZtBdNc6ROYu6ZKfJtVALig-1; Tue, 24 Nov 2020 12:28:40 -0500
+X-MC-Unique: ZtBdNc6ROYu6ZKfJtVALig-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 574AA1009464;
+        Tue, 24 Nov 2020 17:28:38 +0000 (UTC)
+Received: from f31.redhat.com (ovpn-113-8.rdu2.redhat.com [10.10.113.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8AD7C5C1A3;
+        Tue, 24 Nov 2020 17:28:35 +0000 (UTC)
+From:   jmaloy@redhat.com
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     tipc-discussion@lists.sourceforge.net,
+        tung.q.nguyen@dektech.com.au, hoang.h.le@dektech.com.au,
+        tuong.t.lien@dektech.com.au, jmaloy@redhat.com, maloy@donjonn.com,
+        xinl@redhat.com, ying.xue@windriver.com,
+        parthasarathy.bhuvaragan@gmail.com
+Subject: [net-next 0/3] tipc: some minor improvements
+Date:   Tue, 24 Nov 2020 12:28:31 -0500
+Message-Id: <20201124172834.317966-1-jmaloy@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TX completions received with an error return code are not
-being processed properly. When an error code is seen, do not
-proceed to the next completion before cleaning up the existing
-entry's data structures.
+From: Jon Maloy <jmaloy@redhat.com>
 
-Fixes: 032c5e828 ("Driver for IBM System i/p VNIC protocol")
-Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+We add some improvements that will be useful in future commits.
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 489ed5e..7097bcb 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -3105,11 +3105,9 @@ static int ibmvnic_complete_tx(struct ibmvnic_adapter *adapter,
- 
- 		next = ibmvnic_next_scrq(adapter, scrq);
- 		for (i = 0; i < next->tx_comp.num_comps; i++) {
--			if (next->tx_comp.rcs[i]) {
-+			if (next->tx_comp.rcs[i])
- 				dev_err(dev, "tx error %x\n",
- 					next->tx_comp.rcs[i]);
--				continue;
--			}
- 			index = be32_to_cpu(next->tx_comp.correlators[i]);
- 			if (index & IBMVNIC_TSO_POOL_MASK) {
- 				tx_pool = &adapter->tso_pool[pool];
+Jon Maloy (3):
+  tipc: refactor tipc_sk_bind() function
+  tipc: make node number calculation reproducible
+  tipc: update address terminology in code
+
+ net/tipc/addr.c       |   7 ++-
+ net/tipc/addr.h       |   1 +
+ net/tipc/core.h       |  12 +++++
+ net/tipc/group.c      |   3 +-
+ net/tipc/group.h      |   3 +-
+ net/tipc/name_table.c |  11 +++--
+ net/tipc/net.c        |   2 +-
+ net/tipc/socket.c     | 110 ++++++++++++++++++++----------------------
+ net/tipc/subscr.c     |   5 +-
+ net/tipc/subscr.h     |   5 +-
+ net/tipc/topsrv.c     |   4 +-
+ 11 files changed, 87 insertions(+), 76 deletions(-)
+
 -- 
-1.8.3.1
+2.25.4
 
