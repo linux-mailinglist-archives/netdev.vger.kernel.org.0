@@ -2,121 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A81562C24A2
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 12:39:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1221B2C24CB
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 12:43:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732880AbgKXLgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 06:36:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44572 "EHLO
+        id S1732950AbgKXLjw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 06:39:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731640AbgKXLgv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 06:36:51 -0500
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 161D5C0613D6;
-        Tue, 24 Nov 2020 03:36:51 -0800 (PST)
-Received: by mail-pf1-x444.google.com with SMTP id b63so18209478pfg.12;
-        Tue, 24 Nov 2020 03:36:51 -0800 (PST)
+        with ESMTP id S1727909AbgKXLjw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 06:39:52 -0500
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE1CC0613D6;
+        Tue, 24 Nov 2020 03:39:51 -0800 (PST)
+Received: by mail-io1-xd41.google.com with SMTP id o11so21556080ioo.11;
+        Tue, 24 Nov 2020 03:39:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=BxmO4/Fh9U9UfKFcny2xWXoX/3HscybzrQ/hZv32x4c=;
-        b=DjCGIJKuqQNI3tXEw/W+jIcQcI5P9WPzbPvZcB8SNNOOGJVqDZemCmbfCWRtyRiF92
-         BCB+SAi8MK/gD4m3z43vuzGr5IEIlqGHABpzjjAnDIdzR+2ZDEjbatieGGv6ZWUyb9w2
-         ZmEBsE3dbqhkIzdQrEy6bL/KXxHCdtIjCRr7cPNbiuZG0PJ8EdQTV3eCkQbI9oLBwkLv
-         1tCtOasFrhzpmfSjVd0V2iDnYR44Erae+Y4xcWHg7h/38ZcFLrwlwWsgXd4oIY5JKeZm
-         ZIi2UqIf9qvUuDSjSocyqou2+9nzoU+fqnYjAIckEwT58xYhqkKsSeQLw62Tw0EMsBBi
-         zpEw==
+        bh=o+pLgnufOu586P5N25km8tKyPfvWEh+E0AYw7VCffmc=;
+        b=fAlU84St8aTSVSdLa7K2XwZARe2D+EuLN2meQQBV4nfKO4qX+KWuvYvessuPsLRGVQ
+         GN29tZ50ReEtksCCcofpdnqRZzJv/7V6CWQCr9tx1nzRTGfVYZX2WdbpytUw8bzZ9Zas
+         5qq9lxwbQngbd77gwvPkPlQTtdajvoxaClGI1hdEXRI6U6mBi4yKYSxCoUV2cX1yWDrC
+         zdhnL1searhMs4HOOYWZgCkoFiJK0TZFLYl9AiFzZRuK20zGfTy4HOLCw3ex1A+eI+I4
+         8U+lgToKbExpLb/YDcmy/Oxsuf5rfumWsV4aSFdbH6o/ZHz+HT3LYhXUnS/nL/pkrkr2
+         mtVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=BxmO4/Fh9U9UfKFcny2xWXoX/3HscybzrQ/hZv32x4c=;
-        b=gcOCIYIBklwDZCHieSK8NuT+UCEpxayfnJViMVddGQB3qXYg9XeLNSO856MWfSLeYo
-         ty/78PQZcmpWaUjt6Fqu7PG9+A7l1/B/dmvaUCJO2TRBHjZE30UCyabCiwSYRYUZzg2f
-         HSdiCJq+63o1m4qiOZzfLP54CmOKJwHagAGAEMJa8uwFvvl70HAyKpwCyQ/XK7oyGMQ2
-         27uEvT01SkqHOnXfpeDxbF+b2sZgZTBVfhuukqIh0kdGypFvpOY0OFTYUKiR8VMf9g9e
-         j2TXAobYfmHabrpM6EyVemSYfW3vSYNajwkrouBFFKF4Su5iEXVuN5ztYf9fHyK5rlyy
-         ZRVg==
-X-Gm-Message-State: AOAM5319i9RN76cqjhXPsySq3Glv0TwHvxYrBGqAOZ6lPtJ4YhKLiUuN
-        R9ScgCrRPh2Ek874a4ok1yJ2C7dZSWSejQW8uEw=
-X-Google-Smtp-Source: ABdhPJx9EBbvQeVdCe952FLZ0pM49E46cC8dD+CrqW+vm+1pPXNhJuUuwyr5buuS+Z620D9aaZIiiRGOVdaLae8kmJA=
-X-Received: by 2002:a17:90a:fb4e:: with SMTP id iq14mr4590421pjb.117.1606217810698;
- Tue, 24 Nov 2020 03:36:50 -0800 (PST)
+        bh=o+pLgnufOu586P5N25km8tKyPfvWEh+E0AYw7VCffmc=;
+        b=UGOz40LTly7X3qUVLYRs10b3Q18MLD83+IeZeV8I4BpB0zvvY2gqCs5Ur+dloqdKn5
+         YuFPeP+fWxOsfzz71uKaI5LpNdvstUo795kqtTUAk6ONGAn3diwhuxPAGM6D6OO8Gzo/
+         mNefqHjP68Nvlo0KsD8fD3TbxIobvlg2grpAs/IWM9XmNpyIdWZJV3l0LJDP4367MT36
+         UFxTDDwyTJglGlx9zc0IQ5nQV4gs4ATbMzqlg40YsJuPWWv0qctdnTC3HudUVZDxydrx
+         3/OlC4WPoz+AnGb+0tS73U41Ta9+J6qI+z4+Cq/ZisPBRoaMACyDpRfTSYlD20rSisu1
+         P2fQ==
+X-Gm-Message-State: AOAM533GrtM1XOTDGHpkB5CZA0KdiLWiCUYF1JCpKs0UG2PUXth9+NSm
+        s7p4f9DiZ7EgXQgu1vsnzSInTb5SBaS4On2Yd0Y=
+X-Google-Smtp-Source: ABdhPJyAuwpxepiQkMqr6HXHH/PjSQ2oJsHlN/rNT/dhgM+V8+l1AuOD348LrUQ2R1isVaXMJMSeQXxPhPCU2I6n07g=
+X-Received: by 2002:a6b:fc16:: with SMTP id r22mr653203ioh.55.1606217991225;
+ Tue, 24 Nov 2020 03:39:51 -0800 (PST)
 MIME-Version: 1.0
-References: <3306b4d8-8689-b0e7-3f6d-c3ad873b7093@intel.com>
- <cover.1605686678.git.xuanzhuo@linux.alibaba.com> <dfa43bcf7083edd0823e276c0cf8e21f3a226da6.1605686678.git.xuanzhuo@linux.alibaba.com>
- <CAJ8uoz3PtqzbfCD6bv1LQOtPVH3qf4mc=V=u_emTxtq3yYUeYw@mail.gmail.com>
-In-Reply-To: <CAJ8uoz3PtqzbfCD6bv1LQOtPVH3qf4mc=V=u_emTxtq3yYUeYw@mail.gmail.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Tue, 24 Nov 2020 12:36:39 +0100
-Message-ID: <CAJ8uoz1S1brwy+2u48Y9jn3ys6QEHQjtw3OQDj3wrgxCf7Or3w@mail.gmail.com>
-Subject: Re: [PATCH 1/3] xsk: replace datagram_poll by sock_poll_wait
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, linux-kernel@vger.kernel.org
+References: <CGME20201123075526epcms2p59410a8ba942f8942f53a593d9df764d0@epcms2p5>
+ <20201123075526epcms2p59410a8ba942f8942f53a593d9df764d0@epcms2p5> <20201123080123.GA5656@kozik-lap>
+In-Reply-To: <20201123080123.GA5656@kozik-lap>
+From:   Bongsu Jeon <bongsu.jeon2@gmail.com>
+Date:   Tue, 24 Nov 2020 20:39:40 +0900
+Message-ID: <CACwDmQBh77pqivk=bBv3SJ14HLucY42jZyEaKAX+n=yS3TSqFw@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/2] dt-bindings: net: nfc: s3fwrn5: Support a
+ UART interface
+To:     "krzk@kernel.org" <krzk@kernel.org>
+Cc:     Bongsu Jeon <bongsu.jeon@samsung.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux-nfc@lists.01.org" <linux-nfc@lists.01.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 23, 2020 at 3:11 PM Magnus Karlsson
-<magnus.karlsson@gmail.com> wrote:
+On Mon, Nov 23, 2020 at 5:02 PM krzk@kernel.org <krzk@kernel.org> wrote:
 >
-> On Wed, Nov 18, 2020 at 9:26 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+> On Mon, Nov 23, 2020 at 04:55:26PM +0900, Bongsu Jeon wrote:
+> > Since S3FWRN82 NFC Chip, The UART interface can be used.
+> > S3FWRN82 supports I2C and UART interface.
 > >
-> > datagram_poll will judge the current socket status (EPOLLIN, EPOLLOUT)
-> > based on the traditional socket information (eg: sk_wmem_alloc), but
-> > this does not apply to xsk. So this patch uses sock_poll_wait instead of
-> > datagram_poll, and the mask is calculated by xsk_poll.
-> >
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
 > > ---
-> >  net/xdp/xsk.c | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
+> >  .../bindings/net/nfc/samsung,s3fwrn5.yaml     | 28 +++++++++++++++++--
+> >  1 file changed, 26 insertions(+), 2 deletions(-)
 > >
-> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> > index cfbec39..7f0353e 100644
-> > --- a/net/xdp/xsk.c
-> > +++ b/net/xdp/xsk.c
-> > @@ -477,11 +477,13 @@ static int xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
-> >  static __poll_t xsk_poll(struct file *file, struct socket *sock,
-> >                              struct poll_table_struct *wait)
-> >  {
-> > -       __poll_t mask = datagram_poll(file, sock, wait);
-> > +       __poll_t mask = 0;
+> > diff --git a/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml b/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+> > index cb0b8a560282..37b3e5ae5681 100644
+> > --- a/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+> > +++ b/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+> > @@ -13,6 +13,7 @@ maintainers:
+> >  properties:
+> >    compatible:
+> >      const: samsung,s3fwrn5-i2c
+> > +    const: samsung,s3fwrn82-uart
 >
-> It would indeed be nice to not execute a number of tests in
-> datagram_poll that will never be triggered. It will speed up things
-> for sure. But we need to make sure that removing those flags that
-> datagram_poll sets do not have any bad effects in the code above this.
-> But let us tentatively keep this patch for the next version of the
-> patch set. Just need to figure out how to solve your problem in a nice
-> way first. See discussion in patch 0/3.
+> This does not work, you need to use enum. Did you run at least
+> dt_bindings_check?
 >
-> >         struct sock *sk = sock->sk;
-> >         struct xdp_sock *xs = xdp_sk(sk);
-> >         struct xsk_buff_pool *pool;
+Sorry. I didn't. I fixed it as below and ran dt_bindings_check.
+    compatible:
+       oneOf:
+           - enum:
+               - samsung,s3fwrn5-i2c
+               - samsung,s3fwrn82
+
+
+> The compatible should be just "samsung,s3fwrn82". I think it was a
+> mistake in the first s3fwrn5 submission to add a interface to
+> compatible.
+>
+Ok. I will change the name.
+
 > >
-> > +       sock_poll_wait(file, sock, wait);
+> >    en-gpios:
+> >      maxItems: 1
+> > @@ -47,10 +48,19 @@ additionalProperties: false
+> >  required:
+> >    - compatible
+> >    - en-gpios
+> > -  - interrupts
+> > -  - reg
+> >    - wake-gpios
+> >
+> > +allOf:
+> > +  - if:
+> > +      properties:
+> > +        compatible:
+> > +          contains:
+> > +            const: samsung,s3fwrn5-i2c
+> > +    then:
+> > +      required:
+> > +        - interrupts
+> > +        - reg
 > > +
-> >         if (unlikely(!xsk_is_bound(xs)))
-> >                 return mask;
-> >
-> > --
-> > 1.8.3.1
-> >
+> >  examples:
+> >    - |
+> >      #include <dt-bindings/gpio/gpio.h>
+> > @@ -71,3 +81,17 @@ examples:
+> >              wake-gpios = <&gpj0 2 GPIO_ACTIVE_HIGH>;
+> >          };
+> >      };
+> > +  # UART example on Raspberry Pi
+> > +  - |
+> > +    &uart0 {
+> > +        status = "okay";
+> > +
+> > +        s3fwrn82_uart {
+>
+> Just "bluetooth" to follow Devicetree specification.
+Sorry. I don't understand this comment.
+Could you explain it?
+Does it mean i need to refer to the net/broadcom-bluetooth.txt?
 
-The fix looks correct and it will speed things up too as a bonus.
-Please include this patch in the v2 as outlined in my answer to 0/3.
-
-Thanks!
+>
+> Best regards,
+> Krzysztof
