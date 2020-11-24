@@ -2,53 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BE6E2C215E
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 10:29:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 572732C217D
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 10:39:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731293AbgKXJ2p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 04:28:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52698 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731004AbgKXJ2p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 04:28:45 -0500
-Received: from mail.buslov.dev (mail.buslov.dev [IPv6:2001:19f0:5001:2e3f:5400:1ff:feed:a259])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DFB8C0613D6
-        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 01:28:45 -0800 (PST)
-Received: from vlad-x1g6 (unknown [IPv6:2a0b:2bc3:193f:1:a5fe:a7d6:6345:fe8d])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.buslov.dev (Postfix) with ESMTPSA id 9934D1FA90;
-        Tue, 24 Nov 2020 11:28:39 +0200 (EET)
-References: <20201121160902.808705-1-vlad@buslov.dev> <20201123132244.55768678@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-agent: mu4e 1.4.13; emacs 26.3
-From:   Vlad Buslov <vlad@buslov.dev>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us
-Subject: Re: [PATCH net-next] net: sched: alias action flags with TCA_ACT_ prefix
-In-reply-to: <20201123132244.55768678@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Date:   Tue, 24 Nov 2020 11:28:37 +0200
-Message-ID: <87v9dv9k8q.fsf@buslov.dev>
+        id S1731187AbgKXJf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 04:35:57 -0500
+Received: from mxout70.expurgate.net ([194.37.255.70]:39519 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727901AbgKXJf4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 04:35:56 -0500
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1khUjm-0008M0-KM; Tue, 24 Nov 2020 10:35:50 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1khUjl-0005kh-Gq; Tue, 24 Nov 2020 10:35:49 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 74089240041;
+        Tue, 24 Nov 2020 10:35:48 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id E5EA2240040;
+        Tue, 24 Nov 2020 10:35:47 +0100 (CET)
+Received: from mschiller01.dev.tdt.de (unknown [10.2.3.20])
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id 7857B20115;
+        Tue, 24 Nov 2020 10:35:47 +0100 (CET)
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     andrew.hendry@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        xie.he.0141@gmail.com
+Cc:     linux-x25@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Martin Schiller <ms@dev.tdt.de>
+Subject: [PATCH net-next v5 0/5] net/x25: netdev event handling
+Date:   Tue, 24 Nov 2020 10:35:33 +0100
+Message-ID: <20201124093538.21177-1-ms@dev.tdt.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
+        autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+Content-Transfer-Encoding: quoted-printable
+X-purgate-type: clean
+X-purgate-ID: 151534::1606210550-000064E4-2563A932/0/0
+X-purgate: clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon 23 Nov 2020 at 23:22, Jakub Kicinski <kuba@kernel.org> wrote:
-> On Sat, 21 Nov 2020 18:09:02 +0200 Vlad Buslov wrote:
->> Currently both filter and action flags use same "TCA_" prefix which makes
->> them hard to distinguish to code and confusing for users. Create aliases
->> for existing action flags constants with "TCA_ACT_" prefix.
->> 
->> Signed-off-by: Vlad Buslov <vlad@buslov.dev>
->
-> Are we expecting to add both aliases for all new flags?
+---
 
-I don't think it makes sense to have both aliases for any new flags.
+Changes to v4:
+o also establish layer2 (LAPB) on NETDEV_UP events, if the carrier is
+  already UP.
 
->
-> TCA_FLAG_TERSE_DUMP exists only in net-next, we could rename it, right?
+Changes to v3:
+o another complete rework of the patch-set to split event handling
+  for layer2 (LAPB) and layer3 (X.25)
 
-You are right. I'll send a fix.
+Changes to v2:
+o restructure complete patch-set
+o keep netdev event handling in layer3 (X.25)
+o add patch to fix lapb_connect_request() for DCE
+o add patch to handle carrier loss correctly in lapb
+o drop patch for x25_neighbour param handling
+  this may need fixes/cleanup and will be resubmitted later.
+
+Changes to v1:
+o fix 'subject_prefix' and 'checkpatch' warnings
+
+---
+
+Martin Schiller (5):
+  net/x25: handle additional netdev events
+  net/lapb: support netdev events
+  net/lapb: fix t1 timer handling for LAPB_STATE_0
+  net/x25: fix restart request/confirm handling
+  net/x25: remove x25_kill_by_device()
+
+ net/lapb/lapb_iface.c | 94 +++++++++++++++++++++++++++++++++++++++++++
+ net/lapb/lapb_timer.c | 11 ++++-
+ net/x25/af_x25.c      | 38 ++++++++---------
+ net/x25/x25_link.c    | 47 +++++++++++++++++-----
+ net/x25/x25_route.c   |  3 --
+ 5 files changed, 155 insertions(+), 38 deletions(-)
+
+--=20
+2.20.1
 
