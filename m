@@ -2,69 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B8F82C340B
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 23:31:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB15C2C3411
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 23:35:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388820AbgKXWa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 17:30:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53058 "EHLO mail.kernel.org"
+        id S2388899AbgKXWdL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 17:33:11 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:48390 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388830AbgKXWa5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 17:30:57 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1040B2086A;
-        Tue, 24 Nov 2020 22:30:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606257057;
-        bh=haVbQE67bUPl8yf3hLTzqO9Xvkyr2yR+y1fnDrX7Bhg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WYAc7UPkHzbZvldveDZYzbv2ANaiBmwOdq9RqDkjFv8DpuA3gE/rdU/3f/DBO5vGF
-         bDJbCP23+TrbD0/j/CYOaHcxHP8wSSbiEdOWd/zAHz2OlURZ6q7fBhyyqXgyYmJu/u
-         qe0Fy5u5SSXLDdKMAOLcU9EgXcMvAN3E4fskrPxw=
-Date:   Tue, 24 Nov 2020 14:30:56 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, davem@davemloft.net,
-        brouer@redhat.com, echaudro@redhat.com, john.fastabend@gmail.com,
-        alexei.starovoitov@gmail.com
-Subject: Re: [PATCH net-next 0/3] mvneta: access skb_shared_info only on
- last frag
-Message-ID: <20201124143056.606fd5d0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <09034687-75d5-7102-8f9a-7dde69d04a63@iogearbox.net>
-References: <cover.1605889258.git.lorenzo@kernel.org>
-        <20201124122639.6fa91460@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20201124221854.GA64351@lore-desk>
-        <09034687-75d5-7102-8f9a-7dde69d04a63@iogearbox.net>
+        id S1728844AbgKXWdL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 17:33:11 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1khgrs-008h2D-6H; Tue, 24 Nov 2020 23:33:00 +0100
+Date:   Tue, 24 Nov 2020 23:33:00 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     =?utf-8?Q?=C5=81ukasz?= Stelmach <l.stelmach@samsung.com>
+Cc:     jim.cromie@gmail.com, Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Kukjin Kim <kgene@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        =?utf-8?Q?Bart=C5=82omiej_=C5=BBolnierkiewicz?= 
+        <b.zolnierkie@samsung.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH v7 3/3] net: ax88796c: ASIX AX88796C SPI Ethernet Adapter
+ Driver
+Message-ID: <20201124223300.GJ2036992@lunn.ch>
+References: <20201124120330.32445-1-l.stelmach@samsung.com>
+ <CGME20201124120337eucas1p268c7e3147ea36e62d40d252278c5dcb7@eucas1p2.samsung.com>
+ <20201124120330.32445-4-l.stelmach@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201124120330.32445-4-l.stelmach@samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 24 Nov 2020 23:25:11 +0100 Daniel Borkmann wrote:
-> On 11/24/20 11:18 PM, Lorenzo Bianconi wrote:
-> >> On Fri, 20 Nov 2020 18:05:41 +0100 Lorenzo Bianconi wrote:  
-> >>> Build skb_shared_info on mvneta_rx_swbm stack and sync it to xdp_buff
-> >>> skb_shared_info area only on the last fragment.
-> >>> Avoid avoid unnecessary xdp_buff initialization in mvneta_rx_swbm routine.
-> >>> This a preliminary series to complete xdp multi-buff in mvneta driver.  
-> >>
-> >> Looks fine, but since you need this for XDP multi-buff it should
-> >> probably go via bpf-next, right?
-> >>
-> >> Reviewed-by: Jakub Kicinski <kuba@kernel.org>  
-> > 
-> > Hi Jakub,
-> > 
-> > thx for the review. Since the series changes networking-only bits I sent it for
-> > net-next, but I agree bpf-next is better.
-> > 
-> > @Alexei, Daniel: is it fine to merge the series in bpf-next?  
+On Tue, Nov 24, 2020 at 01:03:30PM +0100, Łukasz Stelmach wrote:
+> ASIX AX88796[1] is a versatile ethernet adapter chip, that can be
+> connected to a CPU with a 8/16-bit bus or with an SPI. This driver
+> supports SPI connection.
 > 
-> Yeah totally fine, will take it into bpf-next in a bit.
+> The driver has been ported from the vendor kernel for ARTIK5[2]
+> boards. Several changes were made to adapt it to the current kernel
+> which include:
+> 
+> + updated DT configuration,
+> + clock configuration moved to DT,
+> + new timer, ethtool and gpio APIs,
+> + dev_* instead of pr_* and custom printk() wrappers,
+> + removed awkward vendor power managemtn.
+> + introduced ethtool tunable to control SPI compression
+> 
+> [1] https://www.asix.com.tw/products.php?op=pItemdetail&PItemID=104;65;86&PLine=65
+> [2] https://git.tizen.org/cgit/profile/common/platform/kernel/linux-3.10-artik/
+> 
+> The other ax88796 driver is for NE2000 compatible AX88796L chip. These
+> chips are not compatible. Hence, two separate drivers are required.
+> 
+> Signed-off-by: Łukasz Stelmach <l.stelmach@samsung.com>
 
-FWIW watch out with the Link:s, it wasn't CCed to bpf@vger.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
