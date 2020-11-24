@@ -2,82 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B79232C3528
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 00:58:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAE452C352B
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 01:00:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726654AbgKXX6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 18:58:01 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46078 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726594AbgKXX6B (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 18:58:01 -0500
-Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 048642137B;
-        Tue, 24 Nov 2020 23:57:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606262280;
-        bh=RC2bgkm+xUG7RQ1zFnMO2b06e8dIAZeplG9t7RM0NYQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=hNbyw4F68JHPXDvMGquOJ5eWiCIVsUW+LnV1ByJdKaAmUGvBHMN/lSID9O4Gw51ny
-         xVJlz7sx/a+LcMsmauBx4mnb+9zpMIivET8PHrCzP4E/VNUSlx4OFDdbTMtMr61HG2
-         h4vfmtX2iZViEN+yFs3RjvSDpqOYKyUUGNLKIQyU=
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, brouer@redhat.com, f.fainelli@gmail.com,
-        andrea.mayer@uniroma2.it, dsahern@gmail.com,
-        stephen@networkplumber.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net] Documentation: netdev-FAQ: suggest how to post co-dependent series
-Date:   Tue, 24 Nov 2020 15:57:54 -0800
-Message-Id: <20201124235755.159903-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.26.2
+        id S1726718AbgKXX7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 18:59:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47002 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725868AbgKXX7L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 18:59:11 -0500
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9991FC0613D6;
+        Tue, 24 Nov 2020 15:59:11 -0800 (PST)
+Received: by mail-pl1-x631.google.com with SMTP id 18so146594pli.13;
+        Tue, 24 Nov 2020 15:59:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=nS9jd/mrs9MANJ2dhJ0iSNpa7XNy6i71AQudliWRJZs=;
+        b=LExSxRx8TVfjgyGXal3rtgrWM44StwuPTNQiCVcmURvHxBm40B70wdMMcbm37X5pPt
+         43OCNOmxjMPIk8lGxrw8rbt+sdCjGkoRbOxnwuWdgs0ER64dijCQDUGS9E0EONM2eQQg
+         hF1Iz/5IvfG2nqzBb89iGfwtjLT2MS2ije71MC/FM8voq4swAhbg53RsUPH/eE0GYCQ0
+         nxpFK8o/Ab6+zTeByqjMNQDtZ1yeI8OAnECWgvoUxdD0bqZlF4jLVpFw6LDSqabd6bL6
+         y5HlYHSiipkdBycN0IErhjb98BQPVIrWMBjAIYXMNaFR4nZLkl4q9w+tHRbp465DXikt
+         1XlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=nS9jd/mrs9MANJ2dhJ0iSNpa7XNy6i71AQudliWRJZs=;
+        b=ccprlBdBpUvR89ya7f34E9Hd6DjyQC9jMbI0lylb/PdulEUUO+EP9jiw6SuSYcZrXi
+         q0Z/zrM5SsmV6Qh4bBsUmj8JbDV8bpgtFIwC+UCodh4aqw2atdLzjWEqhEy5klLL4HI0
+         LEBkvJrtAydQUjiPTfRiBfZd84QtxL2+jKOt3cQ/PgHWu1Anl9K0J1IAt9sOOsSXogYx
+         yflPPmzvKilBQqYiy4cKPxgDoinnBQURRgTDRm8+6rPHenAkDUq+9tbDLkwThLLDuvr8
+         9lB6O/y0O/UnfYryNlhUAcNNZYpJeAu+Pqpr32sLYL52a5smvFDoPa7hbwR0ojE3GdCT
+         ZnoA==
+X-Gm-Message-State: AOAM531yJczw/W/AiroJTUuwmynQ9c8Yfgmx1mgM5vXjVCejXO//N2UU
+        lMyPInU+uH2SxYmyBCSjLTdCZc6o4CQ=
+X-Google-Smtp-Source: ABdhPJxswtE7pW/hB1P2nB8d4Bmmr58dbtRs53uE9Fo26gn6rry66Dxb3se2Vr8aUR/XK9wzLHI4bg==
+X-Received: by 2002:a17:902:9a84:b029:d9:d5ad:a669 with SMTP id w4-20020a1709029a84b02900d9d5ada669mr783347plp.53.1606262351169;
+        Tue, 24 Nov 2020 15:59:11 -0800 (PST)
+Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id f18sm136532pfa.167.2020.11.24.15.59.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Nov 2020 15:59:10 -0800 (PST)
+Date:   Tue, 24 Nov 2020 15:59:08 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     min.li.xe@renesas.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 net] ptp: clockmatrix: bug fix for idtcm_strverscmp
+Message-ID: <20201124235908.GA28743@hoboy.vegasvil.org>
+References: <1606233686-22785-1-git-send-email-min.li.xe@renesas.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1606233686-22785-1-git-send-email-min.li.xe@renesas.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make an explicit suggestion how to post user space side of kernel
-patches to avoid reposts when patchwork groups the wrong patches.
+On Tue, Nov 24, 2020 at 11:01:26AM -0500, min.li.xe@renesas.com wrote:
+> From: Min Li <min.li.xe@renesas.com>
+> 
+> Feed kstrtou8 with NULL terminated string.
+> 
+> Changes since v1:
+> -Use sscanf to get rid of adhoc string parse.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- Documentation/networking/netdev-FAQ.rst | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+This is much nicer.  Small issue remains...
 
-diff --git a/Documentation/networking/netdev-FAQ.rst b/Documentation/networking/netdev-FAQ.rst
-index 21537766be4d..553eda8da9c7 100644
---- a/Documentation/networking/netdev-FAQ.rst
-+++ b/Documentation/networking/netdev-FAQ.rst
-@@ -254,6 +254,26 @@ you will have done run-time testing specific to your change, but at a
- minimum, your changes should survive an ``allyesconfig`` and an
- ``allmodconfig`` build without new warnings or failures.
- 
-+Q: How do I post corresponding changes to user space components?
-+----------------------------------------------------------------
-+A: Kernel patches often come with support in user space tooling
-+(e.g. `iproute2`). It's best to post both kernel and user space
-+code at the same time, so that reviewers have a chance to see how
-+user space side looks when reviewing kernel code.
-+If user space tooling lives in a separate repository kernel and user
-+space patches should form separate series (threads) when posted
-+to the mailing list, e.g.::
-+
-+  [PATCH net-next 0/3] net: some feature cover letter
-+   └─ [PATCH net-next 1/3] net: some feature prep
-+   └─ [PATCH net-next 2/3] net: some feature do it
-+   └─ [PATCH net-next 3/3] selftest: net: some feature
-+
-+  [PATCH iproute2-next] ip: add support for some feature
-+
-+Posting as one thread is discouraged because it confuses patchwork
-+(as of patchwork 2.2.2).
-+
- Q: Any other tips to help ensure my net/net-next patch gets OK'd?
- -----------------------------------------------------------------
- A: Attention to detail.  Re-read your own work as if you were the
--- 
-2.26.2
+> +	u8 ver1[3], ver2[3];
+> +	int i;
+> +
+> +	if (sscanf(version1, "%hhu.%hhu.%hhu",
+> +		   &ver1[0], &ver1[1], &ver1[2]) < 0)
+> +		return -1;
 
+The sscanf function returns the number of scanned items, and so you
+should check that it returns 3 (three).
+
+> +	if (sscanf(version2, "%hhu.%hhu.%hhu",
+> +		   &ver2[0], &ver2[1], &ver2[2]) < 0)
+> +		return -1;
+
+Same here.
+
+Thanks,
+Richard
