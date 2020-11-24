@@ -2,231 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3866B2C3373
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 22:45:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 153262C337F
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 22:47:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733074AbgKXVoZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 16:44:25 -0500
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:34236 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729173AbgKXVoZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 16:44:25 -0500
-Received: by mail-oi1-f194.google.com with SMTP id s18so383466oih.1;
-        Tue, 24 Nov 2020 13:44:24 -0800 (PST)
+        id S1733292AbgKXVpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 16:45:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54654 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729173AbgKXVpo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 16:45:44 -0500
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A07FC061A4E
+        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 13:45:44 -0800 (PST)
+Received: by mail-pf1-x444.google.com with SMTP id w6so350315pfu.1
+        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 13:45:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qUk28dgg2DUj1+6HYL179P0h9eGbzR54HIME/VXKOvg=;
+        b=eRM5pcDjTejd77WL4qH2l3Waz69TXUmimfeFmBp2KHeoI2kfUj04HHD+5AX5l7h/w1
+         itFs9VMoa+OfcKZEFM2+nNziTHhP1TuagNH1mSUGrd7szPzTIDoItWAQpcFZaq7E0jDr
+         YVscjYb/iBIjuSqEbH0Z5p2PzgyBUZdEvhQRI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ynn4WsuenF5rxzvm4PJlKi7riFcaJvh4r7eszSzg7Ac=;
-        b=gHns9CpRO/gUeYtnlWJwIZlGgDnJxuByJHTZXAns2ZqvkU7dgJzQA7UqqBUW63A4P2
-         5DrHgXLltyvqqG6lIlu2LEbyBbkx5LSoQCk7my8vdpYYURrVDYVMZjbrrVW6bGm5lml1
-         Vw1nCJfmr57ugoDmuwXU6KjcK0Hm8TIjqT1bC9o4bRX2g+JTUJug0YG8Y0JQxaNaUccH
-         GawYeMcrajO9ybDsPavwJGk6t34xfbG4/CRcQMu/QR9LrJlw4g3jGk4Pf/iCPlq7Jw/X
-         0p24dF9IrmJWTUnKYYsM9du+gAvda5QIVm9DgXWFmykUscyQdNTpx4w2uVYzABU3uRU8
-         79rw==
-X-Gm-Message-State: AOAM531Oesrw6Uuj79XByfY4j5L45nyivDFciGs66i0R1KByNk3Ea7Ij
-        KmVz4ei3M86s55ierYIJi0tAuUBcNFq/wQ==
-X-Google-Smtp-Source: ABdhPJzGctiO1AiWe+TjXKq0gkjo8ZSE4+2hj5Tr5cmnByARxuAX9+YmAZ6YrB4WNeN4FjqsKtfqTA==
-X-Received: by 2002:aca:4783:: with SMTP id u125mr191171oia.23.1606254254725;
-        Tue, 24 Nov 2020 13:44:14 -0800 (PST)
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com. [209.85.167.178])
-        by smtp.gmail.com with ESMTPSA id w6sm130475otj.12.2020.11.24.13.44.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 Nov 2020 13:44:13 -0800 (PST)
-Received: by mail-oi1-f178.google.com with SMTP id s18so382921oih.1;
-        Tue, 24 Nov 2020 13:44:13 -0800 (PST)
-X-Received: by 2002:aca:db0b:: with SMTP id s11mr180582oig.51.1606254252864;
- Tue, 24 Nov 2020 13:44:12 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qUk28dgg2DUj1+6HYL179P0h9eGbzR54HIME/VXKOvg=;
+        b=MqcyFB1SKCGgeaWvBkjJHx8bXN3INonW+wru45913ZxaUECBuvsNMMJaGKWvHyj8oH
+         l2rj5pcAsVJhbEI9KL4aISt9OWirYR0RMLCrm6kHzQyvXEJ+I6bc3XtvSsLd1LQN+xdr
+         u5HX6Rf7KM8oRjaIdcFS/0kkglo4qI79bD2JMeaNRTTwW1ooYxGGIYfbEgnhTcf6abXp
+         xrSlhi5jtRuIasBtanntDL524gdlUtFCd4ARx+PCKmcm+49tImyodTfpgZ4SvahECChb
+         JsJ8ARQUdAtObE6hYL29ucqEiuCTEQyNZwUGHoZk0B5AvPCcI3nsZpCAGLa9Cfk/oy8N
+         r8HA==
+X-Gm-Message-State: AOAM531o+cYhNKY/kZiWJQTaka0E2nROZB2pIE1MbMybPJHMDdHtDJVM
+        F+ksbN/5PossBtqOLd/aXUi43w==
+X-Google-Smtp-Source: ABdhPJwv8R+bkXuk+Z/BW6O2He05dVF33WUNfAsVqf9ApwHY3+AZ3TRvyrcxfXYudQSX8IyrNUawFA==
+X-Received: by 2002:a63:cf52:: with SMTP id b18mr344446pgj.338.1606254343911;
+        Tue, 24 Nov 2020 13:45:43 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id z10sm17931pfa.149.2020.11.24.13.45.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Nov 2020 13:45:43 -0800 (PST)
+Date:   Tue, 24 Nov 2020 13:45:42 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Gabriel Krisman Bertazi <krisman@collabora.com>
+Cc:     Jann Horn <jannh@google.com>, Arnd Bergmann <arnd@kernel.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkft-triage@lists.linaro.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        YiFei Zhu <yifeifz2@illinois.edu>
+Subject: Re: [PATCH] entry: Fix boot for !CONFIG_GENERIC_ENTRY
+Message-ID: <202011241345.FAF4D7E@keescook>
+References: <CA+G9fYs9sg69JgmQNZhutQnbijb4GzcO03XF66EjkQ6CTpXXxA@mail.gmail.com>
+ <CAK8P3a1Lx1MMQ3s1uWjevsi2wqFo2r=k1hhrxf1spUxEQX_Rag@mail.gmail.com>
+ <CAG48ez17CKBMO4193wxuWLRQWQ+q6EV=Qr5oTWiKivMxEi0zQw@mail.gmail.com>
+ <87h7pgqhdf.fsf@collabora.com>
+ <87a6v8qd9p.fsf_-_@collabora.com>
 MIME-Version: 1.0
-References: <20201124062234.678-1-liwei391@huawei.com>
-In-Reply-To: <20201124062234.678-1-liwei391@huawei.com>
-From:   Li Yang <leoyang.li@nxp.com>
-Date:   Tue, 24 Nov 2020 15:44:01 -0600
-X-Gmail-Original-Message-ID: <CADRPPNQDW4w-4so=smxqLnkBpDzF82NPXmpZ-pyVz_aTwVzREw@mail.gmail.com>
-Message-ID: <CADRPPNQDW4w-4so=smxqLnkBpDzF82NPXmpZ-pyVz_aTwVzREw@mail.gmail.com>
-Subject: Re: [PATCH] net/ethernet/freescale: Fix incorrect IS_ERR_VALUE macro usages
-To:     Wei Li <liwei391@huawei.com>, Zhao Qiang <qiang.zhao@nxp.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Kumar Gala <galak@kernel.crashing.org>,
-        Timur Tabi <timur@freescale.com>,
-        Netdev <netdev@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        lkml <linux-kernel@vger.kernel.org>, guohanjun@huawei.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87a6v8qd9p.fsf_-_@collabora.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 24, 2020 at 12:24 AM Wei Li <liwei391@huawei.com> wrote:
->
-> IS_ERR_VALUE macro should be used only with unsigned long type.
-> Especially it works incorrectly with unsigned shorter types on
-> 64bit machines.
+On Mon, Nov 23, 2020 at 10:54:58AM -0500, Gabriel Krisman Bertazi wrote:
+> Gabriel Krisman Bertazi <krisman@collabora.com> writes:
+> 
+> > Jann Horn <jannh@google.com> writes:
+> >> As part of fixing this, it might be a good idea to put "enum
+> >> syscall_work_bit" behind a "#ifdef CONFIG_GENERIC_ENTRY" to avoid
+> >> future accidents like this?
+> >
+> > Hi Jan, Arnd,
+> >
+> > That is correct.  This is a copy pasta mistake.  My apologies.  I didn't
+> > have a !GENERIC_ENTRY device to test, but just the ifdef would have
+> > caught it.
+> 
+> I have patched it as suggested.  Tested on qemu for arm32 and on bare
+> metal for x86-64.
+> 
+> Once again, my apologies for the mistake.
+> 
+> -- >8 --
+> Subject: [PATCH] entry: Fix boot for !CONFIG_GENERIC_ENTRY
+> 
+> A copy-pasta mistake tries to set SYSCALL_WORK flags instead of TIF
+> flags for !CONFIG_GENERIC_ENTRY.  Also, add safeguards to catch this at
+> compilation time.
+> 
+> Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+> Suggested-by: Jann Horn <jannh@google.com>
+> Signed-off-by: Gabriel Krisman Bertazi <krisman@collabora.com>
 
-This is truly a problem for the driver to run on 64-bit architectures.
-But from an earlier discussion
-https://patchwork.kernel.org/project/linux-kbuild/patch/1464384685-347275-1-git-send-email-arnd@arndb.de/,
-the preferred solution would be removing the IS_ERR_VALUE() usage or
-make the values to be unsigned long.
+Thanks for getting this fixed!
 
-It looks like we are having a bigger problem with the 64-bit support
-for the driver that the offset variables can also be real pointers
-which cannot be held with 32-bit data types(when uf_info->bd_mem_part
-== MEM_PART_SYSTEM).  So actually we have to change these offsets to
-unsigned long, otherwise we are having more serious issues on 64-bit
-systems.  Are you willing to make such changes or you want us to deal
-with it?
+3136b93c3fb2 ("entry: Expose helpers to migrate TIF to SYSCALL_WORK flags")
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
-Regards,
-Leo
->
-> Fixes: 4c35630ccda5 ("[POWERPC] Change rheap functions to use ulongs instead of pointers")
-> Signed-off-by: Wei Li <liwei391@huawei.com>
-> ---
->  drivers/net/ethernet/freescale/ucc_geth.c | 30 +++++++++++------------
->  1 file changed, 15 insertions(+), 15 deletions(-)
->
-> diff --git a/drivers/net/ethernet/freescale/ucc_geth.c b/drivers/net/ethernet/freescale/ucc_geth.c
-> index 714b501be7d0..8656d9be256a 100644
-> --- a/drivers/net/ethernet/freescale/ucc_geth.c
-> +++ b/drivers/net/ethernet/freescale/ucc_geth.c
-> @@ -286,7 +286,7 @@ static int fill_init_enet_entries(struct ucc_geth_private *ugeth,
->                 else {
->                         init_enet_offset =
->                             qe_muram_alloc(thread_size, thread_alignment);
-> -                       if (IS_ERR_VALUE(init_enet_offset)) {
-> +                       if (IS_ERR_VALUE((unsigned long)(int)init_enet_offset)) {
->                                 if (netif_msg_ifup(ugeth))
->                                         pr_err("Can not allocate DPRAM memory\n");
->                                 qe_put_snum((u8) snum);
-> @@ -2223,7 +2223,7 @@ static int ucc_geth_alloc_tx(struct ucc_geth_private *ugeth)
->                         ugeth->tx_bd_ring_offset[j] =
->                             qe_muram_alloc(length,
->                                            UCC_GETH_TX_BD_RING_ALIGNMENT);
-> -                       if (!IS_ERR_VALUE(ugeth->tx_bd_ring_offset[j]))
-> +                       if (!IS_ERR_VALUE((unsigned long)(int)ugeth->tx_bd_ring_offset[j]))
->                                 ugeth->p_tx_bd_ring[j] =
->                                     (u8 __iomem *) qe_muram_addr(ugeth->
->                                                          tx_bd_ring_offset[j]);
-> @@ -2300,7 +2300,7 @@ static int ucc_geth_alloc_rx(struct ucc_geth_private *ugeth)
->                         ugeth->rx_bd_ring_offset[j] =
->                             qe_muram_alloc(length,
->                                            UCC_GETH_RX_BD_RING_ALIGNMENT);
-> -                       if (!IS_ERR_VALUE(ugeth->rx_bd_ring_offset[j]))
-> +                       if (!IS_ERR_VALUE((unsigned long)(int)ugeth->rx_bd_ring_offset[j]))
->                                 ugeth->p_rx_bd_ring[j] =
->                                     (u8 __iomem *) qe_muram_addr(ugeth->
->                                                          rx_bd_ring_offset[j]);
-> @@ -2510,7 +2510,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
->         ugeth->tx_glbl_pram_offset =
->             qe_muram_alloc(sizeof(struct ucc_geth_tx_global_pram),
->                            UCC_GETH_TX_GLOBAL_PRAM_ALIGNMENT);
-> -       if (IS_ERR_VALUE(ugeth->tx_glbl_pram_offset)) {
-> +       if (IS_ERR_VALUE((unsigned long)(int)ugeth->tx_glbl_pram_offset)) {
->                 if (netif_msg_ifup(ugeth))
->                         pr_err("Can not allocate DPRAM memory for p_tx_glbl_pram\n");
->                 return -ENOMEM;
-> @@ -2530,7 +2530,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
->                            sizeof(struct ucc_geth_thread_data_tx) +
->                            32 * (numThreadsTxNumerical == 1),
->                            UCC_GETH_THREAD_DATA_ALIGNMENT);
-> -       if (IS_ERR_VALUE(ugeth->thread_dat_tx_offset)) {
-> +       if (IS_ERR_VALUE((unsigned long)(int)ugeth->thread_dat_tx_offset)) {
->                 if (netif_msg_ifup(ugeth))
->                         pr_err("Can not allocate DPRAM memory for p_thread_data_tx\n");
->                 return -ENOMEM;
-> @@ -2557,7 +2557,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
->             qe_muram_alloc(ug_info->numQueuesTx *
->                            sizeof(struct ucc_geth_send_queue_qd),
->                            UCC_GETH_SEND_QUEUE_QUEUE_DESCRIPTOR_ALIGNMENT);
-> -       if (IS_ERR_VALUE(ugeth->send_q_mem_reg_offset)) {
-> +       if (IS_ERR_VALUE((unsigned long)(int)ugeth->send_q_mem_reg_offset)) {
->                 if (netif_msg_ifup(ugeth))
->                         pr_err("Can not allocate DPRAM memory for p_send_q_mem_reg\n");
->                 return -ENOMEM;
-> @@ -2597,7 +2597,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
->                 ugeth->scheduler_offset =
->                     qe_muram_alloc(sizeof(struct ucc_geth_scheduler),
->                                    UCC_GETH_SCHEDULER_ALIGNMENT);
-> -               if (IS_ERR_VALUE(ugeth->scheduler_offset)) {
-> +               if (IS_ERR_VALUE((unsigned long)(int)ugeth->scheduler_offset)) {
->                         if (netif_msg_ifup(ugeth))
->                                 pr_err("Can not allocate DPRAM memory for p_scheduler\n");
->                         return -ENOMEM;
-> @@ -2644,7 +2644,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
->                     qe_muram_alloc(sizeof
->                                    (struct ucc_geth_tx_firmware_statistics_pram),
->                                    UCC_GETH_TX_STATISTICS_ALIGNMENT);
-> -               if (IS_ERR_VALUE(ugeth->tx_fw_statistics_pram_offset)) {
-> +               if (IS_ERR_VALUE((unsigned long)(int)ugeth->tx_fw_statistics_pram_offset)) {
->                         if (netif_msg_ifup(ugeth))
->                                 pr_err("Can not allocate DPRAM memory for p_tx_fw_statistics_pram\n");
->                         return -ENOMEM;
-> @@ -2681,7 +2681,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
->         ugeth->rx_glbl_pram_offset =
->             qe_muram_alloc(sizeof(struct ucc_geth_rx_global_pram),
->                            UCC_GETH_RX_GLOBAL_PRAM_ALIGNMENT);
-> -       if (IS_ERR_VALUE(ugeth->rx_glbl_pram_offset)) {
-> +       if (IS_ERR_VALUE((unsigned long)(int)ugeth->rx_glbl_pram_offset)) {
->                 if (netif_msg_ifup(ugeth))
->                         pr_err("Can not allocate DPRAM memory for p_rx_glbl_pram\n");
->                 return -ENOMEM;
-> @@ -2700,7 +2700,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
->             qe_muram_alloc(numThreadsRxNumerical *
->                            sizeof(struct ucc_geth_thread_data_rx),
->                            UCC_GETH_THREAD_DATA_ALIGNMENT);
-> -       if (IS_ERR_VALUE(ugeth->thread_dat_rx_offset)) {
-> +       if (IS_ERR_VALUE((unsigned long)(int)ugeth->thread_dat_rx_offset)) {
->                 if (netif_msg_ifup(ugeth))
->                         pr_err("Can not allocate DPRAM memory for p_thread_data_rx\n");
->                 return -ENOMEM;
-> @@ -2721,7 +2721,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
->                     qe_muram_alloc(sizeof
->                                    (struct ucc_geth_rx_firmware_statistics_pram),
->                                    UCC_GETH_RX_STATISTICS_ALIGNMENT);
-> -               if (IS_ERR_VALUE(ugeth->rx_fw_statistics_pram_offset)) {
-> +               if (IS_ERR_VALUE((unsigned long)(int)ugeth->rx_fw_statistics_pram_offset)) {
->                         if (netif_msg_ifup(ugeth))
->                                 pr_err("Can not allocate DPRAM memory for p_rx_fw_statistics_pram\n");
->                         return -ENOMEM;
-> @@ -2741,7 +2741,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
->             qe_muram_alloc(ug_info->numQueuesRx *
->                            sizeof(struct ucc_geth_rx_interrupt_coalescing_entry)
->                            + 4, UCC_GETH_RX_INTERRUPT_COALESCING_ALIGNMENT);
-> -       if (IS_ERR_VALUE(ugeth->rx_irq_coalescing_tbl_offset)) {
-> +       if (IS_ERR_VALUE((unsigned long)(int)ugeth->rx_irq_coalescing_tbl_offset)) {
->                 if (netif_msg_ifup(ugeth))
->                         pr_err("Can not allocate DPRAM memory for p_rx_irq_coalescing_tbl\n");
->                 return -ENOMEM;
-> @@ -2807,7 +2807,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
->                            (sizeof(struct ucc_geth_rx_bd_queues_entry) +
->                             sizeof(struct ucc_geth_rx_prefetched_bds)),
->                            UCC_GETH_RX_BD_QUEUES_ALIGNMENT);
-> -       if (IS_ERR_VALUE(ugeth->rx_bd_qs_tbl_offset)) {
-> +       if (IS_ERR_VALUE((unsigned long)(int)ugeth->rx_bd_qs_tbl_offset)) {
->                 if (netif_msg_ifup(ugeth))
->                         pr_err("Can not allocate DPRAM memory for p_rx_bd_qs_tbl\n");
->                 return -ENOMEM;
-> @@ -2892,7 +2892,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
->                 ugeth->exf_glbl_param_offset =
->                     qe_muram_alloc(sizeof(struct ucc_geth_exf_global_pram),
->                 UCC_GETH_RX_EXTENDED_FILTERING_GLOBAL_PARAMETERS_ALIGNMENT);
-> -               if (IS_ERR_VALUE(ugeth->exf_glbl_param_offset)) {
-> +               if (IS_ERR_VALUE((unsigned long)(int)ugeth->exf_glbl_param_offset)) {
->                         if (netif_msg_ifup(ugeth))
->                                 pr_err("Can not allocate DPRAM memory for p_exf_glbl_param\n");
->                         return -ENOMEM;
-> @@ -3026,7 +3026,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
->
->         /* Allocate InitEnet command parameter structure */
->         init_enet_pram_offset = qe_muram_alloc(sizeof(struct ucc_geth_init_pram), 4);
-> -       if (IS_ERR_VALUE(init_enet_pram_offset)) {
-> +       if (IS_ERR_VALUE((unsigned long)(int)init_enet_pram_offset)) {
->                 if (netif_msg_ifup(ugeth))
->                         pr_err("Can not allocate DPRAM memory for p_init_enet_pram\n");
->                 return -ENOMEM;
-> --
-> 2.17.1
->
+-- 
+Kees Cook
