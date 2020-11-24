@@ -2,66 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00CC72C234A
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 11:56:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1E8B2C2348
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 11:52:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732271AbgKXKxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 05:53:14 -0500
-Received: from szxga06-in.huawei.com ([45.249.212.32]:7976 "EHLO
-        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732047AbgKXKxO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 05:53:14 -0500
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4CgLTN66WwzhY7V;
-        Tue, 24 Nov 2020 18:52:56 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.58) by
- DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
- 14.3.487.0; Tue, 24 Nov 2020 18:53:02 +0800
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-To:     <peterz@infradead.org>, <mingo@redhat.com>, <will@kernel.org>,
-        <viro@zeniv.linux.org.uk>, <kyk.segfault@gmail.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <linmiaohe@huawei.com>,
-        <martin.varghese@nokia.com>, <pabeni@redhat.com>,
-        <pshelar@ovn.org>, <fw@strlen.de>, <gnault@redhat.com>,
-        <steffen.klassert@secunet.com>, <vladimir.oltean@nxp.com>,
-        <edumazet@google.com>, <saeed@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@huawei.com>
-Subject: [PATCH net-next v3 2/2] net: Use lockdep_assert_in_softirq() in napi_consume_skb()
-Date:   Tue, 24 Nov 2020 18:49:29 +0800
-Message-ID: <1606214969-97849-3-git-send-email-linyunsheng@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1606214969-97849-1-git-send-email-linyunsheng@huawei.com>
-References: <1606214969-97849-1-git-send-email-linyunsheng@huawei.com>
+        id S1732194AbgKXKvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 05:51:50 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:25579 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732047AbgKXKvt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 05:51:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606215108;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=QR0hwxfJBFbTcikY7jKHx2SjONRnEHHp9y8eP6Nt/Rs=;
+        b=CgggYpcaNIyTE0JoMUaUJopFwrJgPDjql2+Rb5IFtWd+9K6/sbxAK+6I8VFKBMRRHaRZjV
+        36TGqImIJdR7TDr21rEXQKQemMfK4s/gPwF7OA6+xeiGOl1VIzCUmqWLtVv04fcvJH3RMo
+        QHjg+JRN9Ca9tB93PKvygf68eof4flc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-391-lVfLYPZHNE-APTlxM1R_oA-1; Tue, 24 Nov 2020 05:51:45 -0500
+X-MC-Unique: lVfLYPZHNE-APTlxM1R_oA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B7D821006C87;
+        Tue, 24 Nov 2020 10:51:43 +0000 (UTC)
+Received: from [10.36.113.14] (ovpn-113-14.ams2.redhat.com [10.36.113.14])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 38C9960864;
+        Tue, 24 Nov 2020 10:51:42 +0000 (UTC)
+From:   "Eelco Chaudron" <echaudro@redhat.com>
+To:     "Pravin Shelar" <pravin.ovn@gmail.com>
+Cc:     "Linux Kernel Network Developers" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "ovs dev" <dev@openvswitch.org>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "Bindiya Kurle" <bindiyakurle@gmail.com>,
+        "Ilya Maximets" <i.maximets@ovn.org>, mcroce@linux.microsoft.com
+Subject: Re: [PATCH net] net: openvswitch: fix TTL decrement action netlink
+ message format
+Date:   Tue, 24 Nov 2020 11:51:40 +0100
+Message-ID: <FBF56C40-90B7-4BAF-9AE3-B8304283E2D8@redhat.com>
+In-Reply-To: <CAOrHB_Be-B8oLwx-zYXpwhjpQAWdkw1NrYh36S8e6bRH8X0cqg@mail.gmail.com>
+References: <160577663600.7755.4779460826621858224.stgit@wsfd-netdev64.ntdv.lab.eng.bos.redhat.com>
+ <CAOrHB_Be-B8oLwx-zYXpwhjpQAWdkw1NrYh36S8e6bRH8X0cqg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; format=flowed
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use napi_consume_skb() to assert the case when it is not called
-in a atomic softirq context.
 
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
----
- net/core/skbuff.c | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index ffe3dcc..effa19d 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -902,6 +902,8 @@ void napi_consume_skb(struct sk_buff *skb, int budget)
- 		return;
- 	}
- 
-+	lockdep_assert_in_softirq();
-+
- 	if (!skb_unref(skb))
- 		return;
- 
--- 
-2.8.1
+On 20 Nov 2020, at 23:16, Pravin Shelar wrote:
+
+> On Thu, Nov 19, 2020 at 1:04 AM Eelco Chaudron <echaudro@redhat.com> 
+> wrote:
+>>
+>> Currently, the openvswitch module is not accepting the correctly 
+>> formated
+>> netlink message for the TTL decrement action. For both setting and 
+>> getting
+>> the dec_ttl action, the actions should be nested in the
+>> OVS_DEC_TTL_ATTR_ACTION attribute as mentioned in the openvswitch.h 
+>> uapi.
+>>
+>> Fixes: 744676e77720 ("openvswitch: add TTL decrement action")
+>> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+> Thanks for working on this. can you share OVS kmod unit test for this 
+> action?
+
+Hi Pravin,
+
+I did add a self-test, however, my previous plan was to send out the 
+updated OVS patch after this change got accepted. But due to all the 
+comments, I sent it out anyway, so here it is with a datapath test:
+
+https://mail.openvswitch.org/pipermail/ovs-dev/2020-November/377795.html
+
+//Eelco
 
