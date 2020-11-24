@@ -2,117 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 275652C2989
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 15:27:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E51812C2982
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 15:27:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388998AbgKXO0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 09:26:18 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:55414 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2388969AbgKXO0R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 09:26:17 -0500
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0AOEGZiR017030;
-        Tue, 24 Nov 2020 15:24:19 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=STMicroelectronics;
- bh=/Lr2yKdeXEPI/ALwJxE9iloE/mG9CzbQupaWiqLE3wM=;
- b=G38+FG9jP/010Etf8q+4RN8sdlaTwcdjAdhjhmB9/fagRQTrGL4phffCwVXN7RkYUrEF
- AKkoUw57L0qtNJZIU3nJCYOMXt71Rw9WVgD2ZX4dpd/7uq5B5zmLqOIu7RRyFbcYJnCg
- R6QrqiX3rltVYf44Vys7ThcAQjaCYaR1BGzjwCexgHqc/xkKAWkxBtLaxXtQ0aUFlIti
- ZGpAY31DgioYTOVnkpxbR7VhdfA1TcjznugPG1Lm2C+aGYFaInoJkZQH0lMXuD9PxbVU
- VeyyRuP0jgnqvDtv3exNGj96b6CunQNT2nInKWBHy8x+NXFWgv6Db5xtiz+OLvtkg+us qg== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 34y0fgsrnf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 24 Nov 2020 15:24:19 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id E17DD10002A;
-        Tue, 24 Nov 2020 15:24:18 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag1node3.st.com [10.75.127.3])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 9045E2B8A38;
-        Tue, 24 Nov 2020 15:24:18 +0100 (CET)
-Received: from [10.129.7.42] (10.75.127.48) by SFHDAG1NODE3.st.com
- (10.75.127.3) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 24 Nov
- 2020 15:24:15 +0100
-Message-ID: <e2b2b623700401538fe91e70495c348c08b5d2e3.camel@st.com>
-Subject: Re: [PATCH] net: stmmac: add flexible PPS to dwmac 4.10a
-From:   Antonio Borneo <antonio.borneo@st.com>
-To:     Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        has <has@pengutronix.de>
-Date:   Tue, 24 Nov 2020 15:23:27 +0100
-In-Reply-To: <42960ede-9355-1277-9a6f-4eac3c22365c@pengutronix.de>
-References: <20191007154306.95827-1-antonio.borneo@st.com>
-         <20191007154306.95827-5-antonio.borneo@st.com>
-         <20191009152618.33b45c2d@cakuba.netronome.com>
-         <42960ede-9355-1277-9a6f-4eac3c22365c@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.2 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.75.127.48]
-X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG1NODE3.st.com
- (10.75.127.3)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-24_04:2020-11-24,2020-11-24 signatures=0
+        id S2388963AbgKXO0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 09:26:07 -0500
+Received: from m12-11.163.com ([220.181.12.11]:60573 "EHLO m12-11.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388847AbgKXO0E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 09:26:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=Qid/xS3X8ptRmr6qcN
+        tUBWX3+AdSSzykCmHbw+dEXCM=; b=FO94fehuvM6TX50kJVtAuzE9fwftFCWp0Z
+        TRHmjnVnP5GGA1LIDNo6zbAwJ56tdqQ+72yUzyoGazuNSyfglOI+EDam6q/K8epQ
+        qflqWgQd55MJefK4ZQ3NLVCCb5ouJauVdJ+nfXAnYKJgiOgJPScH3NVV4YCZuOCK
+        LN6wCxlB8=
+Received: from hby-server.localdomain (unknown [27.18.76.181])
+        by smtp7 (Coremail) with SMTP id C8CowABHQZnEF71f8BJyAA--.2076S2;
+        Tue, 24 Nov 2020 22:25:09 +0800 (CST)
+From:   hby <hby2003@163.com>
+To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, hby <hby2003@163.com>
+Subject: [PATCH v2] brmcfmac: fix compile when DEBUG is defined
+Date:   Tue, 24 Nov 2020 22:24:40 +0800
+Message-Id: <20201124142440.67554-1-hby2003@163.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: C8CowABHQZnEF71f8BJyAA--.2076S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7CF13CFWftw4xtr1fXw1rXrb_yoW5Jr4fpw
+        srGa4qyr18u3y3Kay8JFZrAF1rKas7G34qk3y8uw13GFykAw1Fqr40gFyrur1jkF4xJ3y7
+        AF10qr9xJFW7K3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRBWlQUUUUU=
+X-Originating-IP: [27.18.76.181]
+X-CM-SenderInfo: hke1jiiqt6il2tof0z/1tbiQAXmHFSIhGHHKAAAsp
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-11-24 at 15:15 +0100, Ahmad Fatoum wrote:
-> Hello Jakub,
-> 
-> On 10.10.19 00:26, Jakub Kicinski wrote:
-> > On Mon, 7 Oct 2019 17:43:06 +0200, Antonio Borneo wrote:
-> > > All the registers and the functionalities used in the callback
-> > > dwmac5_flex_pps_config() are common between dwmac 4.10a [1] and
-> > > 5.00a [2].
-> > > 
-> > > Reuse the same callback for dwmac 4.10a too.
-> > > 
-> > > Tested on STM32MP15x, based on dwmac 4.10a.
-> > > 
-> > > [1] DWC Ethernet QoS Databook 4.10a October 2014
-> > > [2] DWC Ethernet QoS Databook 5.00a September 2017
-> > > 
-> > > Signed-off-by: Antonio Borneo <antonio.borneo@st.com>
-> > 
-> > Applied to net-next.
-> 
-> This patch seems to have been fuzzily applied at the wrong location.
-> The diff describes extension of dwmac 4.10a and so does the @@ line:
-> 
->   @@ -864,6 +864,7 @@ const struct stmmac_ops dwmac410_ops = {
-> 
-> The patch was applied mainline as 757926247836 ("net: stmmac: add
-> flexible PPS to dwmac 4.10a"), but it extends dwmac4_ops instead:
-> 
->   @@ -938,6 +938,7 @@ const struct stmmac_ops dwmac4_ops = {
-> 
-> I don't know if dwmac4 actually supports FlexPPS, so I think it's
-> better to be on the safe side and revert 757926247836 and add the
-> change for the correct variant.
+The steps:
+1. add "#define DEBUG" in drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c line 61.
+2. make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- O=../Out_Linux bcm2835_defconfig
+3. make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- O=../Out_Linux/ zImage modules dtbs -j8
 
-Agree,
-the patch get applied to the wrong place!
+Then, it will fail, the compile log described below:
 
-Antonio
+Kernel: arch/arm/boot/zImage is ready
+MODPOST Module.symvers
+ERROR: modpost: "brcmf_debugfs_add_entry" [drivers/net/wireless/broadcom/brcm80211/brcmfmac/brcmfmac.ko] undefined!
+ERROR: modpost: "brcmf_debugfs_get_devdir" [drivers/net/wireless/broadcom/brcm80211/brcmfmac/brcmfmac.ko] undefined!
+ERROR: modpost: "__brcmf_dbg" [drivers/net/wireless/broadcom/brcm80211/brcmfmac/brcmfmac.ko] undefined!
+scripts/Makefile.modpost:111: recipe for target 'Module.symvers' failed
+make[2]: *** [Module.symvers] Error 1
+make[2]: *** Deleting file 'Module.symvers'
+Makefile:1390: recipe for target 'modules' failed
+make[1]: *** [modules] Error 2
+make[1]: Leaving directory '/home/hby/gitee/linux_origin/Out_Linux'
+Makefile:185: recipe for target '__sub-make' failed
+make: *** [__sub-make] Error 2
 
-> 
-> Cheers,
-> Ahmad
-> 
-> 
+Signed-off-by: hby <hby2003@163.com>
+---
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/debug.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/debug.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/debug.h
+index 4146faeed..c2eb3aa67 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/debug.h
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/debug.h
+@@ -60,7 +60,7 @@ void __brcmf_err(struct brcmf_bus *bus, const char *func, const char *fmt, ...);
+ 				  ##__VA_ARGS__);			\
+ 	} while (0)
+ 
+-#if defined(DEBUG) || defined(CONFIG_BRCM_TRACING)
++#if defined(CONFIG_BRCM_TRACING) || defined(CONFIG_BRCMDBG)
+ 
+ /* For debug/tracing purposes treat info messages as errors */
+ #define brcmf_info brcmf_err
+@@ -114,7 +114,7 @@ extern int brcmf_msg_level;
+ 
+ struct brcmf_bus;
+ struct brcmf_pub;
+-#ifdef DEBUG
++#if defined(CONFIG_BRCMDBG)
+ struct dentry *brcmf_debugfs_get_devdir(struct brcmf_pub *drvr);
+ void brcmf_debugfs_add_entry(struct brcmf_pub *drvr, const char *fn,
+ 			     int (*read_fn)(struct seq_file *seq, void *data));
+-- 
+2.17.1
 
