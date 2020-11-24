@@ -2,109 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B22722C2D16
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 17:40:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B22E52C2D22
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 17:40:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390525AbgKXQih (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 11:38:37 -0500
-Received: from z5.mailgun.us ([104.130.96.5]:49785 "EHLO z5.mailgun.us"
+        id S2390528AbgKXQjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 11:39:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44760 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390341AbgKXQih (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 11:38:37 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1606235916; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=/yuutWrK2u+4K08NALiylBdAyr0QJpYhGwtKtmqhAis=; b=PNdLUmJ8Mw9aNTHNSDy3CqLzE2tNlZ9UfUjH4L886QJ9NS0ddKfcPD1r6rMkAMx0lCAdeScE
- +vfE0z57CmXtkdSz4dQKHegbHKlu9CgNQiwrex+nTj/bT7+nuORMXoEd/GnshE+hSfHT7MmD
- v7F7w7BxJpLUEfb//SSwqkaCQho=
-X-Mailgun-Sending-Ip: 104.130.96.5
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
- 5fbd3707b9b39088ed5af70b (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 24 Nov 2020 16:38:31
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 74DE7C433ED; Tue, 24 Nov 2020 16:38:30 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726105AbgKXQjs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 11:39:48 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 18813C433C6;
-        Tue, 24 Nov 2020 16:38:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 18813C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-Subject: Re: pull-request: wireless-drivers-2020-11-23
-References: <20201123161037.C11D1C43460@smtp.codeaurora.org>
-        <20201123153002.2200d6be@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <87im9vql7i.fsf@codeaurora.org>
-        <20201124080858.0aa8462b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Date:   Tue, 24 Nov 2020 18:38:26 +0200
-In-Reply-To: <20201124080858.0aa8462b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        (Jakub Kicinski's message of "Tue, 24 Nov 2020 08:08:58 -0800")
-Message-ID: <875z5ur9q5.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        by mail.kernel.org (Postfix) with ESMTPSA id 39DA12063A;
+        Tue, 24 Nov 2020 16:39:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606235987;
+        bh=RjHgFLnFlpd2v/PnpD2xwRkJUOhxW5jIh0Zv4IK+S8Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=uETXL75FovKQ3O7BKr+SG62KxhsFF5HviPp9gUOAIU/wje39+F2tLNjTm2K/4W4Sx
+         SIBtbxuhxvtCRHG3ISKtqLsXHWrswasEB4MDs1qPiITIk7ZPzzFagjevQpxP5/Qtf/
+         kcjmWRydfMy5O628ZvRSCfS370A8zfe6wjTGAQsY=
+Date:   Tue, 24 Nov 2020 08:39:46 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yves-Alexis Perez <corsac@corsac.net>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Martin Habets <mhabets@solarflare.com>,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        "Michael S. Tsirkin" <mst@redhat.com>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Matti Vuorela <matti.vuorela@bitfactor.fi>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] usbnet: ipheth: fix connectivity with iOS 14
+Message-ID: <20201124083946.66caed0e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <02c032512dab22c1ab758d953affd94a4064fdbd.camel@corsac.net>
+References: <CAAn0qaXmysJ9vx3ZEMkViv_B19ju-_ExN8Yn_uSefxpjS6g4Lw@mail.gmail.com>
+        <20201119172439.94988-1-corsac@corsac.net>
+        <20201121140311.42585c68@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <02c032512dab22c1ab758d953affd94a4064fdbd.camel@corsac.net>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> writes:
+On Tue, 24 Nov 2020 11:41:40 +0100 Yves-Alexis Perez wrote:
+> On Sat, 2020-11-21 at 14:03 -0800, Jakub Kicinski wrote:
+> > Applied to net with the typo fixed, thanks!  
+> 
+> Thanks!
+> 
+> Is there any chance it'll be in 5.10 or will it have to wait for the 5.11
+> merge window?
 
-> On Tue, 24 Nov 2020 09:15:45 +0200 Kalle Valo wrote:
->> Jakub Kicinski <kuba@kernel.org> writes:
->> 
->> > On Mon, 23 Nov 2020 16:10:37 +0000 (UTC) Kalle Valo wrote:  
->> >> wireless-drivers fixes for v5.10
->> >> 
->> >> First set of fixes for v5.10. One fix for iwlwifi kernel panic, others
->> >> less notable.
->> >> 
->> >> rtw88
->> >> 
->> >> * fix a bogus test found by clang
->> >> 
->> >> iwlwifi
->> >> 
->> >> * fix long memory reads causing soft lockup warnings
->> >> 
->> >> * fix kernel panic during Channel Switch Announcement (CSA)
->> >> 
->> >> * other smaller fixes
->> >> 
->> >> MAINTAINERS
->> >> 
->> >> * email address updates  
->> >
->> > Pulled, thanks!
->> >
->> > Please watch out for missing sign-offs.  
->> 
->> I assume you refer to commit 97cc16943f23, sorry about that. Currently
->> I'm just manually checking sign-offs and missed this patch. My plan is
->> to implement proper checks to my patchwork script so I'll notice these
->> before I commit the patch (or pull request), just have not yet find the
->> time to do that.
->
-> Check out verify_fixes and verify_signoff in Greg's repo:
->
-> https://github.com/gregkh/gregkh-linux/tree/master/work
+It'll be in 5.10-rc6.
 
-Thanks, I will.
+> Also it should be applied to all supported/stable kernels. I guess that'll
+> have to wait until it's in Linus tree according [1] to but I'm unsure if I
+> need to trigger the action myself or if Greg (or Dave, according to [2]) will
+> do it.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+Dave (or someone helping him, like myself) will do it, probably around
+the time 5.10-rc6 is released.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+> I looked at [3] and it seems that adding the CC: stable in my commit message
+> maybe was an error because it's marked as a Failure, so if there's anything
+> needed from me here, don't hesitate to ask.
+
+No worries, I stripped the CC and put the patch in Dave's stable queue.
