@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C228A2C2E87
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 18:29:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B1722C2E88
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 18:29:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390873AbgKXR2n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 12:28:43 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53506 "EHLO
+        id S2390878AbgKXR2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 12:28:48 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:37749 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728749AbgKXR2n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 12:28:43 -0500
+        by vger.kernel.org with ESMTP id S1728749AbgKXR2s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 12:28:48 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606238922;
+        s=mimecast20190719; t=1606238927;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=RZw14nu0WeV+0cJEy4Uy5oc23Dz6DkXIjUHuB46N0lw=;
-        b=e4+fTOGG5EIAFynu+kRSke9b8bX2Gl1t/VlEeeEX3v7F8WtNDNuZ1TFoLtrMMvp0wxSdkg
-        nnTfyfvO5EtwK4KeHq7SQERl9as13zUUS+eRv4++C4FcBWvsAlLBD2ITGU5+uComcmuDVt
-        dnvOQBcF4PCOpK5uf0AA0LEjGjZQnls=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=w3UIbweN2X4UtNNbokxEfstuvXkroSzVxkp7iA/VMu4=;
+        b=Y+C6t/oTDEUUqI3+UGenB8qbdWmnw6eOLk/JSg/P/tYuSPkgAKrZKKiN7/hstEreVAOe7Q
+        oTFfZGFIGaxLEsDwj3+OQ4N2OwjqNWtcHUUAraKSFUcuItNpSedLYZLYGzKmCDsAP3NCVM
+        wrVDPOuPzJGH7kOwgHK4RSizVbG00fQ=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-55-ZtBdNc6ROYu6ZKfJtVALig-1; Tue, 24 Nov 2020 12:28:40 -0500
-X-MC-Unique: ZtBdNc6ROYu6ZKfJtVALig-1
+ us-mta-45-g7-PnteRO7ynwTRjdJbEPA-1; Tue, 24 Nov 2020 12:28:44 -0500
+X-MC-Unique: g7-PnteRO7ynwTRjdJbEPA-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 574AA1009464;
-        Tue, 24 Nov 2020 17:28:38 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 11F1218C89D1;
+        Tue, 24 Nov 2020 17:28:43 +0000 (UTC)
 Received: from f31.redhat.com (ovpn-113-8.rdu2.redhat.com [10.10.113.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8AD7C5C1A3;
-        Tue, 24 Nov 2020 17:28:35 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A0CAA5C1A3;
+        Tue, 24 Nov 2020 17:28:38 +0000 (UTC)
 From:   jmaloy@redhat.com
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     tipc-discussion@lists.sourceforge.net,
@@ -39,9 +40,11 @@ Cc:     tipc-discussion@lists.sourceforge.net,
         tuong.t.lien@dektech.com.au, jmaloy@redhat.com, maloy@donjonn.com,
         xinl@redhat.com, ying.xue@windriver.com,
         parthasarathy.bhuvaragan@gmail.com
-Subject: [net-next 0/3] tipc: some minor improvements
-Date:   Tue, 24 Nov 2020 12:28:31 -0500
-Message-Id: <20201124172834.317966-1-jmaloy@redhat.com>
+Subject: [net-next 1/3] tipc: refactor tipc_sk_bind() function
+Date:   Tue, 24 Nov 2020 12:28:32 -0500
+Message-Id: <20201124172834.317966-2-jmaloy@redhat.com>
+In-Reply-To: <20201124172834.317966-1-jmaloy@redhat.com>
+References: <20201124172834.317966-1-jmaloy@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
@@ -51,26 +54,122 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jon Maloy <jmaloy@redhat.com>
 
-We add some improvements that will be useful in future commits.
+We refactor the tipc_sk_bind() function, so that the lock handling
+is handled separately from the logics. We also move some sanity
+tests to earlier in the call chain, to the function tipc_bind().
 
-Jon Maloy (3):
-  tipc: refactor tipc_sk_bind() function
-  tipc: make node number calculation reproducible
-  tipc: update address terminology in code
+Acked-by: Ying Xue <ying.xue@windriver.com>
+Signed-off-by: Jon Maloy <jmaloy@redhat.com>
+---
+ net/tipc/socket.c | 66 +++++++++++++++++++++--------------------------
+ 1 file changed, 30 insertions(+), 36 deletions(-)
 
- net/tipc/addr.c       |   7 ++-
- net/tipc/addr.h       |   1 +
- net/tipc/core.h       |  12 +++++
- net/tipc/group.c      |   3 +-
- net/tipc/group.h      |   3 +-
- net/tipc/name_table.c |  11 +++--
- net/tipc/net.c        |   2 +-
- net/tipc/socket.c     | 110 ++++++++++++++++++++----------------------
- net/tipc/subscr.c     |   5 +-
- net/tipc/subscr.h     |   5 +-
- net/tipc/topsrv.c     |   4 +-
- 11 files changed, 87 insertions(+), 76 deletions(-)
-
+diff --git a/net/tipc/socket.c b/net/tipc/socket.c
+index 69c4b16e8184..2b633463f40d 100644
+--- a/net/tipc/socket.c
++++ b/net/tipc/socket.c
+@@ -1,8 +1,9 @@
+ /*
+  * net/tipc/socket.c: TIPC socket API
+  *
+- * Copyright (c) 2001-2007, 2012-2017, Ericsson AB
++ * Copyright (c) 2001-2007, 2012-2019, Ericsson AB
+  * Copyright (c) 2004-2008, 2010-2013, Wind River Systems
++ * Copyright (c) 2020, Red Hat Inc
+  * All rights reserved.
+  *
+  * Redistribution and use in source and binary forms, with or without
+@@ -644,10 +645,10 @@ static int tipc_release(struct socket *sock)
+ }
+ 
+ /**
+- * tipc_bind - associate or disassocate TIPC name(s) with a socket
++ * __tipc_bind - associate or disassocate TIPC name(s) with a socket
+  * @sock: socket structure
+- * @uaddr: socket address describing name(s) and desired operation
+- * @uaddr_len: size of socket address data structure
++ * @skaddr: socket address describing name(s) and desired operation
++ * @alen: size of socket address data structure
+  *
+  * Name and name sequence binding is indicated using a positive scope value;
+  * a negative scope value unbinds the specified name.  Specifying no name
+@@ -658,44 +659,33 @@ static int tipc_release(struct socket *sock)
+  * NOTE: This routine doesn't need to take the socket lock since it doesn't
+  *       access any non-constant socket information.
+  */
+-
+-int tipc_sk_bind(struct socket *sock, struct sockaddr *uaddr, int uaddr_len)
++static int __tipc_bind(struct socket *sock, struct sockaddr *skaddr, int alen)
+ {
+-	struct sock *sk = sock->sk;
+-	struct sockaddr_tipc *addr = (struct sockaddr_tipc *)uaddr;
+-	struct tipc_sock *tsk = tipc_sk(sk);
+-	int res = -EINVAL;
++	struct sockaddr_tipc *addr = (struct sockaddr_tipc *)skaddr;
++	struct tipc_sock *tsk = tipc_sk(sock->sk);
+ 
+-	lock_sock(sk);
+-	if (unlikely(!uaddr_len)) {
+-		res = tipc_sk_withdraw(tsk, 0, NULL);
+-		goto exit;
+-	}
+-	if (tsk->group) {
+-		res = -EACCES;
+-		goto exit;
+-	}
+-	if (uaddr_len < sizeof(struct sockaddr_tipc)) {
+-		res = -EINVAL;
+-		goto exit;
+-	}
+-	if (addr->family != AF_TIPC) {
+-		res = -EAFNOSUPPORT;
+-		goto exit;
+-	}
++	if (unlikely(!alen))
++		return tipc_sk_withdraw(tsk, 0, NULL);
+ 
+ 	if (addr->addrtype == TIPC_ADDR_NAME)
+ 		addr->addr.nameseq.upper = addr->addr.nameseq.lower;
+-	else if (addr->addrtype != TIPC_ADDR_NAMESEQ) {
+-		res = -EAFNOSUPPORT;
+-		goto exit;
+-	}
+ 
+-	res = (addr->scope >= 0) ?
+-		tipc_sk_publish(tsk, addr->scope, &addr->addr.nameseq) :
+-		tipc_sk_withdraw(tsk, -addr->scope, &addr->addr.nameseq);
+-exit:
+-	release_sock(sk);
++	if (tsk->group)
++		return -EACCES;
++
++	if (addr->scope >= 0)
++		return tipc_sk_publish(tsk, addr->scope, &addr->addr.nameseq);
++	else
++		return tipc_sk_withdraw(tsk, -addr->scope, &addr->addr.nameseq);
++}
++
++int tipc_sk_bind(struct socket *sock, struct sockaddr *skaddr, int alen)
++{
++	int res;
++
++	lock_sock(sock->sk);
++	res = __tipc_bind(sock, skaddr, alen);
++	release_sock(sock->sk);
+ 	return res;
+ }
+ 
+@@ -706,6 +696,10 @@ static int tipc_bind(struct socket *sock, struct sockaddr *skaddr, int alen)
+ 	if (alen) {
+ 		if (alen < sizeof(struct sockaddr_tipc))
+ 			return -EINVAL;
++		if (addr->family != AF_TIPC)
++			return -EAFNOSUPPORT;
++		if (addr->addrtype > TIPC_SERVICE_ADDR)
++			return -EAFNOSUPPORT;
+ 		if (addr->addr.nameseq.type < TIPC_RESERVED_TYPES) {
+ 			pr_warn_once("Can't bind to reserved service type %u\n",
+ 				     addr->addr.nameseq.type);
 -- 
 2.25.4
 
