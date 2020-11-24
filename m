@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDD4E2C19F3
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 01:28:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 735502C1A30
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 01:46:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729325AbgKXA0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 19:26:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39632 "EHLO mail.kernel.org"
+        id S1726051AbgKXAqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 19:46:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45230 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729299AbgKXA0l (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Nov 2020 19:26:41 -0500
+        id S1725308AbgKXAqB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Nov 2020 19:46:01 -0500
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 76DB320729;
-        Tue, 24 Nov 2020 00:26:40 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EB716206D8;
+        Tue, 24 Nov 2020 00:46:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606177600;
-        bh=WXIqWDgfwfSgFlM60ucFJzcL3gUNdU0FIdf0MVwQS10=;
+        s=default; t=1606178761;
+        bh=LNzWfS8gQpObxUqtr/8w6xS2nMhVDLpEtpiV7X2JT0Q=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZGD6pXauuInRUOUYulE9u2R6qQml9sZ5cXFM/ClgJmwlAECkvKN1BlpvF+N2jIOKd
-         1lAzdvCY/A/y9UddzEwO9+Oph7zi4kR++PRDPDmBlF5+CpYQW/n/2YG138EH2+f84M
-         Nsw7GxvAy9G0I8EhqSuAzg8DNQYgsMQMBEpTkaoY=
-Date:   Mon, 23 Nov 2020 16:26:39 -0800
+        b=stiK9RC1xKIlC3dBpBzzNdVFnGH3v04QHV+eXg73kOPOIvjOqIx3r2jWvUaAFQdKL
+         6vSApZA/IgZS2klOVGxDRNpgis70LDrA5SXRH43aThGCOfrjyZl3T87C2M8DglVXSx
+         hTME09W6DLdxiy1qXCQYBDoh8RI+K6xTHNR4PyTA=
+Date:   Mon, 23 Nov 2020 16:46:00 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Limin Wang <lwang.nbl@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: LRO: creating vlan subports affects parent port's LRO settings
-Message-ID: <20201123162639.5d692198@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CACpdL32SRKb8hXzuF_APybip+hyxkXRYoxCW_OMhn0odRSQKuw@mail.gmail.com>
-References: <CACpdL32SRKb8hXzuF_APybip+hyxkXRYoxCW_OMhn0odRSQKuw@mail.gmail.com>
+To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
+Cc:     <peppe.cavallaro@st.com>, <alexandre.torgue@st.com>,
+        <joabreu@synopsys.com>, <davem@davemloft.net>, <kernel@axis.com>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH net] net: stmmac: Use hrtimer for TX coalescing
+Message-ID: <20201123164600.434b6a9e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201120150208.6838-1-vincent.whitchurch@axis.com>
+References: <20201120150208.6838-1-vincent.whitchurch@axis.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -38,12 +40,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Nov 2020 20:37:27 -0500 Limin Wang wrote:
-> Under relatively recent kernels (v4.4+), creating a vlan subport on a
-> LRO supported parent NIC may turn LRO off on the parent port and
-> further render its LRO feature practically unchangeable.
+On Fri, 20 Nov 2020 16:02:08 +0100 Vincent Whitchurch wrote:
+> This driver uses a normal timer for TX coalescing, which means that the
+> with the default tx-usecs of 1000 microseconds the cleanups actually
+> happen 10 ms or more later with HZ=100.  This leads to very low
+> througput with TCP when bridged to a slow link such as a 4G modem.  Fix
+> this by using an hrtimer instead.
+> 
+> On my ARM platform with HZ=100 and the default TX coalescing settings
+> (tx-frames 25 tx-usecs 1000), with "tc qdisc add dev eth0 root netem
+> delay 60ms 40ms rate 50Mbit" run on the server, netperf's TCP_STREAM
+> improves from ~5.5 Mbps to ~100 Mbps.
+> 
+> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
 
-That does sound like an oversight in commit fd867d51f889 ("net/core:
-generic support for disabling netdev features down stack").
-
-Are you able to create a patch to fix this?
+Looks perfectly reasonable, but you marked it for net. Do you consider
+this to be a bug fix, and need it backported to stable? Otherwise I'd
+rather apply it to net-next.
