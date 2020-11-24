@@ -2,202 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC0002C3403
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 23:29:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43F5A2C3406
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 23:29:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732234AbgKXW2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 17:28:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33052 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730228AbgKXW2q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 17:28:46 -0500
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A45BC0613D6;
-        Tue, 24 Nov 2020 14:28:46 -0800 (PST)
-Received: by mail-qk1-x742.google.com with SMTP id q22so857400qkq.6;
-        Tue, 24 Nov 2020 14:28:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=c6qMIhhD46wjafMaBI21a9ElTyDuse9nsqsmVwzT8Ik=;
-        b=rP4DYdE7UjerZlo7keZfkgNqBJHFNWsMd9asuVuFtDUyUZdqIOeVmSG/elFu0VxEyO
-         FxsaHwtTwOKxoDIAVqFvQNqBwviaag9+tzjc8bqW48TClJQbKDb24LZCHBxRysDh4IQv
-         viJNCKxlWY12DIZZiG/qkdh9Ix7MSaXIyFJv6+VwquqZeE5FSTXXatM9mSkgGXsFAB7S
-         hIydWSXmExCXW81D++/PJdBe1RDCy2V9EjP4/82MQ0QQtrjLnML3z88w/K1qmQ+2eQW7
-         vt/wHhOgZtPO7ISMHUe6Sxecksm4gkOBMguK0h7PcmPnRY0b/gbZQ9jQh2i06GsrbK6J
-         3pOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=c6qMIhhD46wjafMaBI21a9ElTyDuse9nsqsmVwzT8Ik=;
-        b=NQzgFetUAQ1LQACKTvfIQYcpZSWBTb9xKIfaOebaTJvOlATsvX0RTIYP5SamI/o6yz
-         0KYaW9DtrLWvAKdXRJqMyXAgblV6lHvaGaWSGdkB8U0xJhGlBv/DVwAjJkbk9h26OQ+N
-         UjJgRBMDdvrxj3kjsKNnNlQwkJyWh/V7QUJGxkhXikzX06ygYEheMAlHyPzISd6yvIeO
-         6S21pvHPUAZniF2ZK7l5yfWmD9Mcrt8xTio0/1CfJB3hLKIW4zrYugZnufAhZgiMHT0O
-         pqtm4eXitO986yAXFkt90WlexB/j0ztFuAMZUFcm0be0Q50HiFiLWCHipe73YY3C2knK
-         atZA==
-X-Gm-Message-State: AOAM533yRM+wDafzZ68aWwG195rhPz2mF6WwIOJXYlvIF4FWHjsleSAa
-        4nMdLk3cjTU7FXAaMSnFhu7S6YiMrDBvBOYZ0fQ=
-X-Google-Smtp-Source: ABdhPJwI4LWUge2nxBwIPjqMgyQ9sFqVrE0uXQ1iuSeG0Mg6lIidvh2/K7fbvboxzO+Z71bC4L9RQdUdp5b74/jxQnU=
-X-Received: by 2002:a25:493:: with SMTP id 141mr380822ybe.104.1606256925365;
- Tue, 24 Nov 2020 14:28:45 -0800 (PST)
+        id S2388713AbgKXW3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 17:29:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52556 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388693AbgKXW3M (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 17:29:12 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6D646206D4;
+        Tue, 24 Nov 2020 22:29:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606256951;
+        bh=s9ufHWKMyaUHsFoaG6W5yELgqEHNOQ7QZZ336B6RmA4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=RR/QxVcHODkcci/X6kE1p9x8S3hTfgsWOxwqZQnGu9UE+HOxC9mrgBTO0F7pxl8zw
+         O0o66g7Ltz/wSy2JJWJnAjjcUHcm0ee06g9rtz4erv+7EmB+kE9jAF0rEFeFkIDY9s
+         8CcdjRNIXhU8LscMXm4Y/soQWYomTjtwszV7QpzE=
+Date:   Tue, 24 Nov 2020 14:29:10 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>, <jiri@nvidia.com>
+Subject: Re: [PATCH net 1/2] devlink: Hold rtnl lock while reading netdev
+ attributes
+Message-ID: <20201124142910.14cadc35@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201122061257.60425-2-parav@nvidia.com>
+References: <20201122061257.60425-1-parav@nvidia.com>
+        <20201122061257.60425-2-parav@nvidia.com>
 MIME-Version: 1.0
-References: <20201120130026.19029-1-weqaar.a.janjua@intel.com>
- <20201120130026.19029-6-weqaar.a.janjua@intel.com> <86e3a9e4-a375-1281-07bf-6b04781bb02f@fb.com>
- <CAPLEeBY_p_0QsZeqvrr0P+uf1jkL_eFGgawc=KD6Rkuh_177NA@mail.gmail.com>
- <CAPLEeBYMy3N0D9XT6zO9HPrZfSua4_KpnTh4fY8JyFJ6JickZA@mail.gmail.com> <ebfb17fa-39e0-5810-f1a6-20c6804172c8@fb.com>
-In-Reply-To: <ebfb17fa-39e0-5810-f1a6-20c6804172c8@fb.com>
-From:   Weqaar Janjua <weqaar.janjua@gmail.com>
-Date:   Tue, 24 Nov 2020 22:28:19 +0000
-Message-ID: <CAPLEeBb3oVRY_mSJYzEHAeCwFD2+ZsozZt-JQfU=Qd+MAh6ieg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 5/5] selftests/bpf: xsk selftests -
- Bi-directional Sockets - SKB, DRV
-To:     Yonghong Song <yhs@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Weqaar Janjua <weqaar.a.janjua@intel.com>, shuah@kernel.org,
-        skhan@linuxfoundation.org, linux-kselftest@vger.kernel.org,
-        Anders Roxell <anders.roxell@linaro.org>,
-        jonathan.lemon@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 24 Nov 2020 at 17:10, Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 11/24/20 7:11 AM, Weqaar Janjua wrote:
-> > On Sat, 21 Nov 2020 at 20:14, Weqaar Janjua <weqaar.janjua@gmail.com> wrote:
-> >>
-> >> On Fri, 20 Nov 2020 at 20:45, Yonghong Song <yhs@fb.com> wrote:
-> >>>
-> >>>
-> >>>
-> >>> On 11/20/20 5:00 AM, Weqaar Janjua wrote:
-> >>>> Adds following tests:
-> >>>>
-> >>>> 1. AF_XDP SKB mode
-> >>>>      d. Bi-directional Sockets
-> >>>>         Configure sockets as bi-directional tx/rx sockets, sets up fill
-> >>>>         and completion rings on each socket, tx/rx in both directions.
-> >>>>         Only nopoll mode is used
-> >>>>
-> >>>> 2. AF_XDP DRV/Native mode
-> >>>>      d. Bi-directional Sockets
-> >>>>      * Only copy mode is supported because veth does not currently support
-> >>>>        zero-copy mode
-> >>>>
-> >>>> Signed-off-by: Weqaar Janjua <weqaar.a.janjua@intel.com>
-> >>>> ---
-> >>>>    tools/testing/selftests/bpf/Makefile          |   4 +-
-> >>>>    .../bpf/test_xsk_drv_bidirectional.sh         |  23 ++++
-> >>>>    .../selftests/bpf/test_xsk_drv_teardown.sh    |   3 -
-> >>>>    .../bpf/test_xsk_skb_bidirectional.sh         |  20 ++++
-> >>>>    tools/testing/selftests/bpf/xdpxceiver.c      | 100 +++++++++++++-----
-> >>>>    tools/testing/selftests/bpf/xdpxceiver.h      |   4 +
-> >>>>    6 files changed, 126 insertions(+), 28 deletions(-)
-> >>>>    create mode 100755 tools/testing/selftests/bpf/test_xsk_drv_bidirectional.sh
-> >>>>    create mode 100755 tools/testing/selftests/bpf/test_xsk_skb_bidirectional.sh
-> >>>>
-> >>>> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> >>>> index 515b29d321d7..258bd72812e0 100644
-> >>>> --- a/tools/testing/selftests/bpf/Makefile
-> >>>> +++ b/tools/testing/selftests/bpf/Makefile
-> >>>> @@ -78,7 +78,9 @@ TEST_PROGS := test_kmod.sh \
-> >>>>        test_xsk_drv_nopoll.sh \
-> >>>>        test_xsk_drv_poll.sh \
-> >>>>        test_xsk_skb_teardown.sh \
-> >>>> -     test_xsk_drv_teardown.sh
-> >>>> +     test_xsk_drv_teardown.sh \
-> >>>> +     test_xsk_skb_bidirectional.sh \
-> >>>> +     test_xsk_drv_bidirectional.sh
-> >>>>
-> >>>>    TEST_PROGS_EXTENDED := with_addr.sh \
-> >>>>        with_tunnels.sh \
-> >>>> diff --git a/tools/testing/selftests/bpf/test_xsk_drv_bidirectional.sh b/tools/testing/selftests/bpf/test_xsk_drv_bidirectional.sh
-> >>>> new file mode 100755
-> >>>> index 000000000000..d3a7e2934d83
-> >>>> --- /dev/null
-> >>>> +++ b/tools/testing/selftests/bpf/test_xsk_drv_bidirectional.sh
-> >>>> @@ -0,0 +1,23 @@
-> >>>> +#!/bin/bash
-> >>>> +# SPDX-License-Identifier: GPL-2.0
-> >>>> +# Copyright(c) 2020 Intel Corporation.
-> >>>> +
-> >>>> +# See test_xsk_prerequisites.sh for detailed information on tests
-> >>>> +
-> >>>> +. xsk_prereqs.sh
-> >>>> +. xsk_env.sh
-> >>>> +
-> >>>> +TEST_NAME="DRV BIDIRECTIONAL SOCKETS"
-> >>>> +
-> >>>> +vethXDPnative ${VETH0} ${VETH1} ${NS1}
-> >>>> +
-> >>>> +params=("-N" "-B")
-> >>>> +execxdpxceiver params
-> >>>> +
-> >>>> +retval=$?
-> >>>> +test_status $retval "${TEST_NAME}"
-> >>>> +
-> >>>> +# Must be called in the last test to execute
-> >>>> +cleanup_exit ${VETH0} ${VETH1} ${NS1}
-> >>>
-> >>> This also makes hard to run tests as users will not know this unless
-> >>> they are familiar with the details of the tests.
-> >>>
-> >>> How about you have another scripts test_xsk.sh which includes all these
-> >>> individual tests and pull the above cleanup_exit into test_xsk.sh?
-> >>> User just need to run test_xsk.sh will be able to run all tests you
-> >>> implemented here.
-> >>>
-> >> This works, test_xsk_* >> test_xsk.sh, will ship out as v3.
-> >>
-> > An issue with merging all tests in a single test_xsk.sh is reporting
-> > number of test failures, with this approach a single test status is
-> > printed by kselftest:
-> >
-> > # PREREQUISITES: [ PASS ]
-> > # SKB NOPOLL: [ FAIL ]
-> > # SKB POLL: [ PASS ]
-> > ok 1 selftests: xsk-patch2: test_xsk.sh
-> >
-> > This is due to the fact Makefile has one TEST_PROGS = test_xsk.sh
-> > (thus kselftest considers it one test?), where in the original
-> > approach all tests have separate TEST_PROGS .sh which makes reporting
-> > match each test and status. This can be a problem for automation.
-> >
-> > An alternative would be to exit each test with failure status but then
-> > the tests will stop execution at the failed test without executing the
-> > rest of xsk tests, which we probably wouldn't want.
-> >
-> > Suggestions please?
->
-> I think it is okay to put everything xsk related to one test.
-> If later on the test becomes more complex, you can have
-> test_xsk_<1>.sh test_xsk_<2>.sh etc. But each .sh should be able to
-> run independently without any particular order.
->
-> You can have subtests inside the .sh file. See test_offload.py as
-> an example. You do not need to exit after one subtest fails, you can
-> continue to run the next one. currently test_offload.py
-> may exit when some subtest failed, but I think you don't have to.
->
-ACK, I will go ahead and merge all test_xsk_*.sh into test_xsk.sh.
+On Sun, 22 Nov 2020 08:12:56 +0200 Parav Pandit wrote:
+> A netdevice of a devlink port can be moved to different
+> net namespace than its parent devlink instance.
+> This scenario occurs when devlink reload is not used for
+> maintaining backward compatibility.
+> 
+> When netdevice is undergoing migration to net namespace,
+> its ifindex and name may change.
+> 
+> In such use case, devlink port query may read stale netdev
+> attributes.
+> 
+> Fix it by reading them under rtnl lock.
+> 
+> Fixes: bfcd3a466172 ("Introduce devlink infrastructure")
+> Signed-off-by: Parav Pandit <parav@nvidia.com>
+> ---
+>  net/core/devlink.c | 30 ++++++++++++++++++++++++------
+>  1 file changed, 24 insertions(+), 6 deletions(-)
+> 
+> diff --git a/net/core/devlink.c b/net/core/devlink.c
+> index acc29d5157f4..6135ef5972ce 100644
+> --- a/net/core/devlink.c
+> +++ b/net/core/devlink.c
+> @@ -775,6 +775,23 @@ devlink_nl_port_function_attrs_put(struct sk_buff *msg, struct devlink_port *por
+>  	return err;
+>  }
+>  
+> +static int devlink_nl_port_netdev_fill(struct sk_buff *msg, struct devlink_port *devlink_port)
+> +{
+> +	struct net_device *netdev = devlink_port->type_dev;
+> +	int err;
+> +
+> +	ASSERT_RTNL();
+> +	if (!netdev)
+> +		return 0;
+> +
+> +	err = nla_put_u32(msg, DEVLINK_ATTR_PORT_NETDEV_IFINDEX, netdev->ifindex);
 
-Just to clarify that all current xsk tests are independent, there is
-no subtest at present, and do not need to run in any order.
+The line wrapping was correct, please keep in under 80. Please tell
+your colleges at Mellanox.
 
-Thanks,
-/Weqaar
+> +	if (err)
+> +		goto done;
 
-> >
-> >>>> +
-> >>>> +test_exit $retval 0
-> >>>> diff --git a/tools/testing/selftests/bpf/test_xsk_drv_teardown.sh b/tools/testing/selftests/bpf/test_xsk_drv_teardown.sh
-> >>> [...]
+	return err;
+
+> +	err = nla_put_string(msg, DEVLINK_ATTR_PORT_NETDEV_NAME, netdev->name);
+
+	return nla_put_...
+
+> +done:
+> +	return err;
+> +}
+> +
+>  static int devlink_nl_port_fill(struct sk_buff *msg, struct devlink *devlink,
+>  				struct devlink_port *devlink_port,
+>  				enum devlink_command cmd, u32 portid,
+> @@ -792,6 +809,8 @@ static int devlink_nl_port_fill(struct sk_buff *msg, struct devlink *devlink,
+>  	if (nla_put_u32(msg, DEVLINK_ATTR_PORT_INDEX, devlink_port->index))
+>  		goto nla_put_failure;
+>  
+> +	/* Hold rtnl lock while accessing port's netdev attributes. */
+> +	rtnl_lock();
+>  	spin_lock_bh(&devlink_port->type_lock);
+>  	if (nla_put_u16(msg, DEVLINK_ATTR_PORT_TYPE, devlink_port->type))
+>  		goto nla_put_failure_type_locked;
+> @@ -800,13 +819,10 @@ static int devlink_nl_port_fill(struct sk_buff *msg, struct devlink *devlink,
+>  			devlink_port->desired_type))
+>  		goto nla_put_failure_type_locked;
+>  	if (devlink_port->type == DEVLINK_PORT_TYPE_ETH) {
+> -		struct net_device *netdev = devlink_port->type_dev;
+> +		int err;
+
+What's the point of this local variable?
+
+> -		if (netdev &&
+> -		    (nla_put_u32(msg, DEVLINK_ATTR_PORT_NETDEV_IFINDEX,
+> -				 netdev->ifindex) ||
+> -		     nla_put_string(msg, DEVLINK_ATTR_PORT_NETDEV_NAME,
+> -				    netdev->name)))
+> +		err = devlink_nl_port_netdev_fill(msg, devlink_port);
+> +		if (err)
+
+just put the call in the if ()
+
+>  			goto nla_put_failure_type_locked;
+>  	}
+>  	if (devlink_port->type == DEVLINK_PORT_TYPE_IB) {
+
+
+Honestly this patch is doing too much for a fix.
+
+All you need is the RTNL lock and then add:
+
++               struct net *net = devlink_net(devlink_port->devlink);
+                struct net_device *netdev = devlink_port->type_dev;
+ 
+                if (netdev &&
++                   net_eq(net, dev_net(netdev)) &&
+                    (nla_put_u32(msg, DEVLINK_ATTR_PORT_NETDEV_IFINDEX,
+                                 netdev->ifindex) ||
+                     nla_put_string(msg, DEVLINK_ATTR_PORT_NETDEV_NAME,
+
+
+You can do refactoring later in net-next. Maybe even add a check that
+drivers which support reload set namespace local on their netdevs.
