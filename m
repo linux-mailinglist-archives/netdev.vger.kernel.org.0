@@ -2,123 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BE782C2D2B
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 17:42:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 047872C2D2C
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 17:42:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390556AbgKXQlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 11:41:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35504 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390511AbgKXQla (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 11:41:30 -0500
-Received: from mail.buslov.dev (mail.buslov.dev [IPv6:2001:19f0:5001:2e3f:5400:1ff:feed:a259])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A095AC0613D6
-        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 08:41:30 -0800 (PST)
-Received: from vlad-x1g6.localdomain (unknown [IPv6:2a0b:2bc3:193f:1:a5fe:a7d6:6345:fe8d])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        id S2390476AbgKXQma (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 11:42:30 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:40434 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2389808AbgKXQma (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 11:42:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606236149;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UML18iK4FeVRxgH1z30ZZ5sJxCIQ6EOKqFAoGExwoeg=;
+        b=UnWdGFeWpj1wogD3Oxg5wBX6tr8WW3I+D8L9s2Rx5TZLC+kB/tpm2ftmAd+w7CcdNDFaLO
+        2bhQEGxV91CIHrkZUExYjTf8qo+ECnYH6JdsWtuffub9X6cbJ02sUoJukZD0hJ2nLMrVl1
+        RfmKAeTezMpFUWIkLlh0pjSCNDI4Ap0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-16-wliC9L8tNA6GfPrwAahZgA-1; Tue, 24 Nov 2020 11:42:24 -0500
+X-MC-Unique: wliC9L8tNA6GfPrwAahZgA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.buslov.dev (Postfix) with ESMTPSA id A05AE205AB;
-        Tue, 24 Nov 2020 18:41:27 +0200 (EET)
-From:   Vlad Buslov <vlad@buslov.dev>
-To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        Vlad Buslov <vlad@buslov.dev>
-Subject: [PATCH net-next v2] net: sched: alias action flags with TCA_ACT_ prefix
-Date:   Tue, 24 Nov 2020 18:40:54 +0200
-Message-Id: <20201124164054.893168-1-vlad@buslov.dev>
-X-Mailer: git-send-email 2.29.1
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B4B3818C43D2;
+        Tue, 24 Nov 2020 16:42:23 +0000 (UTC)
+Received: from ovpn-113-119.ams2.redhat.com (ovpn-113-119.ams2.redhat.com [10.36.113.119])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 552C660C43;
+        Tue, 24 Nov 2020 16:42:22 +0000 (UTC)
+Message-ID: <e44300a0567cdec8241c06d1c6b78083cdd4254a.camel@redhat.com>
+Subject: Re: [PATCH net-next] mptcp: put reference in mptcp timeout timer
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org
+Cc:     mptcp@lists.01.org, Davide Caratti <dcaratti@redhat.com>
+Date:   Tue, 24 Nov 2020 17:42:21 +0100
+In-Reply-To: <20201124162446.11448-1-fw@strlen.de>
+References: <20201124162446.11448-1-fw@strlen.de>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently both filter and action flags use same "TCA_" prefix which makes
-them hard to distinguish to code and confusing for users. Create aliases
-for existing action flags constants with "TCA_ACT_" prefix.
+On Tue, 2020-11-24 at 17:24 +0100, Florian Westphal wrote:
+> On close this timer might be scheduled. mptcp uses sk_reset_timer for
+> this, so the a reference on the mptcp socket is taken.
+> 
+> This causes a refcount leak which can for example be reproduced
+> with 'mp_join_server_v4.pkt' from the mptcp-packetdrill repo.
 
-Signed-off-by: Vlad Buslov <vlad@buslov.dev>
----
+Whoops, my fault!
 
-Notes:
-    Changes V1 -> V2:
-    
-    - Removed old-style alias for terse dump flag.
+> The leak has nothing to do with join requests, v1_mp_capable_bind_no_cs.pkt
+> works too when replacing the last ack mpcapable to v1 instead of v0.
+> 
+> unreferenced object 0xffff888109bba040 (size 2744):
+>   comm "packetdrill", [..]
+>   backtrace:
+>     [..] sk_prot_alloc.isra.0+0x2b/0xc0
+>     [..] sk_clone_lock+0x2f/0x740
+>     [..] mptcp_sk_clone+0x33/0x1a0
+>     [..] subflow_syn_recv_sock+0x2b1/0x690 [..]
+> 
+> Fixes: e16163b6e2b7 ("mptcp: refactor shutdown and close")
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Davide Caratti <dcaratti@redhat.com>
+> Signed-off-by: Florian Westphal <fw@strlen.de>
+> ---
+>  net/mptcp/protocol.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+> index 4b7794835fea..dc979571f561 100644
+> --- a/net/mptcp/protocol.c
+> +++ b/net/mptcp/protocol.c
+> @@ -1710,6 +1710,7 @@ static void mptcp_timeout_timer(struct timer_list *t)
+>  	struct sock *sk = from_timer(sk, t, sk_timer);
+>  
+>  	mptcp_schedule_work(sk);
+> +	sock_put(sk);
+>  }
+>  
+>  /* Find an idle subflow.  Return NULL if there is unacked data at tcp
 
- include/uapi/linux/rtnetlink.h | 12 +++++++-----
- net/sched/act_api.c            | 10 +++++-----
- 2 files changed, 12 insertions(+), 10 deletions(-)
-
-diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
-index 2ffbef5da6c1..b841caa4657e 100644
---- a/include/uapi/linux/rtnetlink.h
-+++ b/include/uapi/linux/rtnetlink.h
-@@ -768,16 +768,18 @@ enum {
- #define TA_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct tcamsg))
- /* tcamsg flags stored in attribute TCA_ROOT_FLAGS
-  *
-- * TCA_FLAG_LARGE_DUMP_ON user->kernel to request for larger than TCA_ACT_MAX_PRIO
-- * actions in a dump. All dump responses will contain the number of actions
-- * being dumped stored in for user app's consumption in TCA_ROOT_COUNT
-+ * TCA_ACT_FLAG_LARGE_DUMP_ON user->kernel to request for larger than
-+ * TCA_ACT_MAX_PRIO actions in a dump. All dump responses will contain the
-+ * number of actions being dumped stored in for user app's consumption in
-+ * TCA_ROOT_COUNT
-  *
-- * TCA_FLAG_TERSE_DUMP user->kernel to request terse (brief) dump that only
-+ * TCA_ACT_FLAG_TERSE_DUMP user->kernel to request terse (brief) dump that only
-  * includes essential action info (kind, index, etc.)
-  *
-  */
- #define TCA_FLAG_LARGE_DUMP_ON		(1 << 0)
--#define TCA_FLAG_TERSE_DUMP		(1 << 1)
-+#define TCA_ACT_FLAG_LARGE_DUMP_ON	TCA_FLAG_LARGE_DUMP_ON
-+#define TCA_ACT_FLAG_TERSE_DUMP		(1 << 1)
- 
- /* New extended info filters for IFLA_EXT_MASK */
- #define RTEXT_FILTER_VF		(1 << 0)
-diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-index fc23f46a315c..99db1c77426b 100644
---- a/net/sched/act_api.c
-+++ b/net/sched/act_api.c
-@@ -278,7 +278,7 @@ static int tcf_dump_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
- 			index--;
- 			goto nla_put_failure;
- 		}
--		err = (act_flags & TCA_FLAG_TERSE_DUMP) ?
-+		err = (act_flags & TCA_ACT_FLAG_TERSE_DUMP) ?
- 			tcf_action_dump_terse(skb, p, true) :
- 			tcf_action_dump_1(skb, p, 0, 0);
- 		if (err < 0) {
-@@ -288,7 +288,7 @@ static int tcf_dump_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
- 		}
- 		nla_nest_end(skb, nest);
- 		n_i++;
--		if (!(act_flags & TCA_FLAG_LARGE_DUMP_ON) &&
-+		if (!(act_flags & TCA_ACT_FLAG_LARGE_DUMP_ON) &&
- 		    n_i >= TCA_ACT_MAX_PRIO)
- 			goto done;
- 	}
-@@ -298,7 +298,7 @@ static int tcf_dump_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
- 
- 	mutex_unlock(&idrinfo->lock);
- 	if (n_i) {
--		if (act_flags & TCA_FLAG_LARGE_DUMP_ON)
-+		if (act_flags & TCA_ACT_FLAG_LARGE_DUMP_ON)
- 			cb->args[1] = n_i;
- 	}
- 	return n_i;
-@@ -1473,8 +1473,8 @@ static int tcf_action_add(struct net *net, struct nlattr *nla,
- }
- 
- static const struct nla_policy tcaa_policy[TCA_ROOT_MAX + 1] = {
--	[TCA_ROOT_FLAGS] = NLA_POLICY_BITFIELD32(TCA_FLAG_LARGE_DUMP_ON |
--						 TCA_FLAG_TERSE_DUMP),
-+	[TCA_ROOT_FLAGS] = NLA_POLICY_BITFIELD32(TCA_ACT_FLAG_LARGE_DUMP_ON |
-+						 TCA_ACT_FLAG_TERSE_DUMP),
- 	[TCA_ROOT_TIME_DELTA]      = { .type = NLA_U32 },
- };
- 
--- 
-2.29.1
+LGTM, thanks!
+Acked-by: Paolo Abeni <pabeni@redhat.com>
 
