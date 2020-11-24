@@ -2,250 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B8262C2117
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 10:25:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BE812C212E
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 10:27:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731144AbgKXJZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 04:25:04 -0500
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:21649 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730978AbgKXJZD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 04:25:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1606209901; x=1637745901;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=lNZw1uUZvmxbFzlzMe0Blki4ZEHZ2wPeHOWCvjmyBDI=;
-  b=hUPOnXmrV0c4iyHmA7HHEACkwM5wlpb9Jt4SW9vXrnIJ63+LeUGTYkCX
-   cL5MjXybTvLcS5YYAoXCd6phEzjy5AnZkiYsgQVX1U24Byc2reonap0V4
-   /Vyc+EFR/Q5GB/QxFM0xZTLeFwiXLyMAvSwTGB8W4UM+fboNpJZYrDB7N
-   0=;
-X-IronPort-AV: E=Sophos;i="5.78,365,1599523200"; 
-   d="scan'208";a="66940334"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2a-1c1b5cdd.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 24 Nov 2020 09:24:59 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2a-1c1b5cdd.us-west-2.amazon.com (Postfix) with ESMTPS id 281D6A06E2;
-        Tue, 24 Nov 2020 09:24:58 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 24 Nov 2020 09:24:57 +0000
-Received: from 38f9d3582de7.ant.amazon.com (10.43.160.21) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 24 Nov 2020 09:24:53 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <kafai@fb.com>
-CC:     <ast@kernel.org>, <benh@amazon.com>, <bpf@vger.kernel.org>,
-        <daniel@iogearbox.net>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <kuni1840@gmail.com>,
-        <kuniyu@amazon.co.jp>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-Subject: Re: [RFC PATCH bpf-next 3/8] tcp: Migrate TCP_ESTABLISHED/TCP_SYN_RECV sockets in accept queues.
-Date:   Tue, 24 Nov 2020 18:24:48 +0900
-Message-ID: <20201124092448.27711-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.17.2 (Apple Git-113)
-In-Reply-To: <20201123003828.xjpjdtk4ygl6tg6h@kafai-mbp.dhcp.thefacebook.com>
-References: <20201123003828.xjpjdtk4ygl6tg6h@kafai-mbp.dhcp.thefacebook.com>
+        id S1731190AbgKXJ02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 04:26:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36068 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730978AbgKXJ00 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 04:26:26 -0500
+Received: from localhost (searspoint.nvidia.com [216.228.112.21])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EA8D32076B;
+        Tue, 24 Nov 2020 09:26:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606209985;
+        bh=eIrBvn6VIWhITdI4WjRtSSOqgfi0NiymQmtvmzBl3bg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=2eMylOdZtU6X8AOAcTgyLTdXy6WLXnN6oFZXs+DEEh9lpjzgjqVVx5O2kZb2bStkN
+         /Q4/xCyLcpBQdykEOebV/RwfSRBioFTCqzqqYbkqO5SQMnsW7CPmMYoT3x0DymRzA9
+         SCGa6Kc6oWnyChsjbERzLAa4UZhhhDNBNgGf2v60=
+Date:   Tue, 24 Nov 2020 11:26:21 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Petr Mladek <pmladek@suse.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        virtualization@lists.linux-foundation.org,
+        Amit Shah <amit@kernel.org>, Itay Aveksis <itayav@nvidia.com>,
+        Ran Rozenstein <ranro@nvidia.com>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: netconsole deadlock with virtnet
+Message-ID: <20201124092621.GH3159@unreal>
+References: <93b42091-66f2-bb92-6822-473167b2698d@redhat.com>
+ <20201118091257.2ee6757a@gandalf.local.home>
+ <20201123110855.GD3159@unreal>
+ <20201123093128.701cf81b@gandalf.local.home>
+ <20201123105252.1c295138@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201123140934.38748be3@gandalf.local.home>
+ <20201123112130.759b9487@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <1133f1a4-6772-8aa3-41dd-edbc1ee76cee@redhat.com>
+ <20201124080152.GG3159@unreal>
+ <6f046c51-cdcc-77f9-4859-2508d08126f8@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.21]
-X-ClientProxiedBy: EX13D39UWA003.ant.amazon.com (10.43.160.235) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <6f046c51-cdcc-77f9-4859-2508d08126f8@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Martin KaFai Lau <kafai@fb.com>
-Date:   Sun, 22 Nov 2020 16:40:20 -0800
-> On Sat, Nov 21, 2020 at 07:13:22PM +0900, Kuniyuki Iwashima wrote:
-> > From:   Martin KaFai Lau <kafai@fb.com>
-> > Date:   Thu, 19 Nov 2020 17:53:46 -0800
-> > > On Fri, Nov 20, 2020 at 07:09:22AM +0900, Kuniyuki Iwashima wrote:
-> > > > From: Martin KaFai Lau <kafai@fb.com>
-> > > > Date: Wed, 18 Nov 2020 15:50:17 -0800
-> > > > > On Tue, Nov 17, 2020 at 06:40:18PM +0900, Kuniyuki Iwashima wrote:
-> > > > > > This patch lets reuseport_detach_sock() return a pointer of struct sock,
-> > > > > > which is used only by inet_unhash(). If it is not NULL,
-> > > > > > inet_csk_reqsk_queue_migrate() migrates TCP_ESTABLISHED/TCP_SYN_RECV
-> > > > > > sockets from the closing listener to the selected one.
-> > > > > > 
-> > > > > > Listening sockets hold incoming connections as a linked list of struct
-> > > > > > request_sock in the accept queue, and each request has reference to a full
-> > > > > > socket and its listener. In inet_csk_reqsk_queue_migrate(), we unlink the
-> > > > > > requests from the closing listener's queue and relink them to the head of
-> > > > > > the new listener's queue. We do not process each request, so the migration
-> > > > > > completes in O(1) time complexity. However, in the case of TCP_SYN_RECV
-> > > > > > sockets, we will take special care in the next commit.
-> > > > > > 
-> > > > > > By default, we select the last element of socks[] as the new listener.
-> > > > > > This behaviour is based on how the kernel moves sockets in socks[].
-> > > > > > 
-> > > > > > For example, we call listen() for four sockets (A, B, C, D), and close the
-> > > > > > first two by turns. The sockets move in socks[] like below. (See also [1])
-> > > > > > 
-> > > > > >   socks[0] : A <-.      socks[0] : D          socks[0] : D
-> > > > > >   socks[1] : B   |  =>  socks[1] : B <-.  =>  socks[1] : C
-> > > > > >   socks[2] : C   |      socks[2] : C --'
-> > > > > >   socks[3] : D --'
-> > > > > > 
-> > > > > > Then, if C and D have newer settings than A and B, and each socket has a
-> > > > > > request (a, b, c, d) in their accept queue, we can redistribute old
-> > > > > > requests evenly to new listeners.
-> > > > > I don't think it should emphasize/claim there is a specific way that
-> > > > > the kernel-pick here can redistribute the requests evenly.  It depends on
-> > > > > how the application close/listen.  The userspace can not expect the
-> > > > > ordering of socks[] will behave in a certain way.
-> > > > 
-> > > > I've expected replacing listeners by generations as a general use case.
-> > > > But exactly. Users should not expect the undocumented kernel internal.
-> > > > 
-> > > > 
-> > > > > The primary redistribution policy has to depend on BPF which is the
-> > > > > policy defined by the user based on its application logic (e.g. how
-> > > > > its binary restart work).  The application (and bpf) knows which one
-> > > > > is a dying process and can avoid distributing to it.
-> > > > > 
-> > > > > The kernel-pick could be an optional fallback but not a must.  If the bpf
-> > > > > prog is attached, I would even go further to call bpf to redistribute
-> > > > > regardless of the sysctl, so I think the sysctl is not necessary.
-> > > > 
-> > > > I also think it is just an optional fallback, but to pick out a different
-> > > > listener everytime, choosing the moved socket was reasonable. So the even
-> > > > redistribution for a specific use case is a side effect of such socket
-> > > > selection.
-> > > > 
-> > > > But, users should decide to use either way:
-> > > >   (1) let the kernel select a new listener randomly
-> > > >   (2) select a particular listener by eBPF
-> > > > 
-> > > > I will update the commit message like:
-> > > > The kernel selects a new listener randomly, but as the side effect, it can
-> > > > redistribute packets evenly for a specific case where an application
-> > > > replaces listeners by generations.
-> > > Since there is no feedback on sysctl, so may be something missed
-> > > in the lines.
-> > 
-> > I'm sorry, I have missed this point while thinking about each reply...
-> > 
-> > 
-> > > I don't think this migration logic should depend on a sysctl.
-> > > At least not when a bpf prog is attached that is capable of doing
-> > > migration, it is too fragile to ask user to remember to turn on
-> > > the sysctl before attaching the bpf prog.
-> > > 
-> > > Your use case is to primarily based on bpf prog to pick or only based
-> > > on kernel to do a random pick?
-> Again, what is your primarily use case?
+On Tue, Nov 24, 2020 at 04:57:23PM +0800, Jason Wang wrote:
+>
+> On 2020/11/24 下午4:01, Leon Romanovsky wrote:
+> > On Tue, Nov 24, 2020 at 11:22:03AM +0800, Jason Wang wrote:
+> > > On 2020/11/24 上午3:21, Jakub Kicinski wrote:
+> > > > On Mon, 23 Nov 2020 14:09:34 -0500 Steven Rostedt wrote:
+> > > > > On Mon, 23 Nov 2020 10:52:52 -0800
+> > > > > Jakub Kicinski <kuba@kernel.org> wrote:
+> > > > >
+> > > > > > On Mon, 23 Nov 2020 09:31:28 -0500 Steven Rostedt wrote:
+> > > > > > > On Mon, 23 Nov 2020 13:08:55 +0200
+> > > > > > > Leon Romanovsky <leon@kernel.org> wrote:
+> > > > > > >
+> > > > > > > >    [   10.028024] Chain exists of:
+> > > > > > > >    [   10.028025]   console_owner --> target_list_lock --> _xmit_ETHER#2
+> > > > > > > Note, the problem is that we have a location that grabs the xmit_lock while
+> > > > > > > holding target_list_lock (and possibly console_owner).
+> > > > > > Well, it try_locks the xmit_lock. Does lockdep understand try-locks?
+> > > > > >
+> > > > > > (not that I condone the shenanigans that are going on here)
+> > > > > Does it?
+> > > > >
+> > > > > 	virtnet_poll_tx() {
+> > > > > 		__netif_tx_lock() {
+> > > > > 			spin_lock(&txq->_xmit_lock);
+> > > > Umpf. Right. I was looking at virtnet_poll_cleantx()
+> > > >
+> > > > > That looks like we can have:
+> > > > >
+> > > > >
+> > > > > 	CPU0		CPU1
+> > > > > 	----		----
+> > > > >      lock(xmit_lock)
+> > > > >
+> > > > > 		    lock(console)
+> > > > > 		    lock(target_list_lock)
+> > > > > 		    __netif_tx_lock()
+> > > > > 		        lock(xmit_lock);
+> > > > >
+> > > > > 			[BLOCKED]
+> > > > >
+> > > > >      <interrupt>
+> > > > >      lock(console)
+> > > > >
+> > > > >      [BLOCKED]
+> > > > >
+> > > > >
+> > > > >
+> > > > >    DEADLOCK.
+> > > > >
+> > > > >
+> > > > > So where is the trylock here?
+> > > > >
+> > > > > Perhaps you need the trylock in virtnet_poll_tx()?
+> > > > That could work. Best if we used normal lock if !!budget, and trylock
+> > > > when budget is 0. But maybe that's too hairy.
+> > >
+> > > If we use trylock, we probably lose(or delay) tx notification that may have
+> > > side effects to the stack.
+> > >
+> > >
+> > > > I'm assuming all this trickiness comes from virtqueue_get_buf() needing
+> > > > locking vs the TX path? It's pretty unusual for the completion path to
+> > > > need locking vs xmit path.
+> > >
+> > > Two reasons for doing this:
+> > >
+> > > 1) For some historical reason, we try to free transmitted tx packets in xmit
+> > > (see free_old_xmit_skbs() in start_xmit()), we can probably remove this if
+> > > we remove the non tx interrupt mode.
+> > > 2) virtio core requires virtqueue_get_buf() to be synchronized with
+> > > virtqueue_add(), we probably can solve this but it requires some non trivial
+> > > refactoring in the virtio core
+> > So how will we solve our lockdep issues?
+> >
+> > Thanks
+>
+>
+> It's not clear to me that whether it's a virtio-net specific issue. E.g the
+> above deadlock looks like a generic issue so workaround it via virtio-net
+> may not help for other drivers.
 
-We have so many services and components that I cannot grasp all of their
-implementations, but I have started this series because a service component
-based on the random pick by the kernel suffered from the issue.
+It is hard to say, no one else complained except me who is using virtio :).
 
+Thanks
 
-> > I think we have to care about both cases.
-> > 
-> > I think we can always enable the migration feature if eBPF prog is not
-> > attached. On the other hand, if BPF_PROG_TYPE_SK_REUSEPORT prog is attached
-> > to select a listener by some rules, along updating the kernel,
-> > redistributing requests without user intention can break the application.
-> > So, there is something needed to confirm user intension at least if eBPF
-> > prog is attached.
-> Right, something being able to tell if the bpf prog can do migration
-> can confirm the user intention here.  However, this will not be a
-> sysctl.
-> 
-> A new bpf_attach_type "BPF_SK_REUSEPORT_SELECT_OR_MIGRATE" can be added.
-> "prog->expected_attach_type == BPF_SK_REUSEPORT_SELECT_OR_MIGRATE"
-> can be used to decide if migration can be done by the bpf prog.
-> Although the prog->expected_attach_type has not been checked for
-> BPF_PROG_TYPE_SK_REUSEPORT, there was an earlier discussion
-> that the risk of breaking is very small and is acceptable.
-> 
-> Instead of depending on !reuse_md->data to decide if it
-> is doing migration or not, a clearer signal should be given
-> to the bpf prog.  A "u8 migration" can be added to "struct sk_reuseport_kern"
-> (and to "struct sk_reuseport_md" accordingly).  It can tell
-> the bpf prog that it is doing migration.  It should also tell if it is
-> migrating a list of established sk(s) or an individual req_sk.
-> Accessing "reuse_md->migration" should only be allowed for
-> BPF_SK_REUSEPORT_SELECT_OR_MIGRATE during is_valid_access().
-> 
-> During migration, if skb is not available, an empty skb can be used.
-> Migration is a slow path and does not happen very often, so it will
-> be fine even it has to create a temp skb (or may be a static const skb
-> can be used, not sure but this is implementation details).
-
-I greatly appreciate your detailed idea and explanation!
-I will try to implement this.
-
-
-> > But honestly, I believe such eBPF users can follow this change and
-> > implement migration eBPF prog if we introduce such a breaking change.
-> > 
-> > 
-> > > Also, IIUC, this sysctl setting sticks at "*reuse", there is no way to
-> > > change it until all the listening sockets are closed which is exactly
-> > > the service disruption problem this series is trying to solve here.
-> > 
-> > Oh, exactly...
-> > If we apply this series by live patching, we cannot enable the feature
-> > without service disruption.
-> > 
-> > To enable the migration feature dynamically, how about this logic?
-> > In this logic, we do not save the sysctl value and check it at each time.
-> > 
-> >   1. no eBPF prog attached -> ON
-> >   2. eBPF prog attached and sysctl is 0 -> OFF
-> No.  When bpf prog is attached and it clearly signals (expected_attach_type
-> here) it can do migration, it should not depend on anything else.  It is very
-> confusing to use.  When a prog is successfully loaded, verified
-> and attached, it is expected to run.
-> 
-> This sysctl essentially only disables the bpf prog with
-> type == BPF_PROG_TYPE_SK_REUSEPORT running at a particular point.
-> This is going down a path that having another sysctl in the future
-> to disable another bpf prog type.  If there would be a need to disable
-> bpf prog on a type-by-type bases, it would need a more
-> generic solution on the bpf side and do it in a consistent way
-> for all prog types.  It needs a separate and longer discussion.
-> 
-> All behaviors of the BPF_SK_REUSEPORT_SELECT_OR_MIGRATE bpf prog
-> should not depend on this sysctl at all .
-> 
-> /* Pseudo code to show the idea only.
->  * Actual implementation should try to fit
->  * better into the current code and should look
->  * quite different from here.
->  */
-> 
-> if ((prog && prog->expected_attach_type == BPF_SK_REUSEPORT_SELECT_OR_MIGRATE)) {
-> 	/* call bpf to migrate */
-> 	action = BPF_PROG_RUN(prog, &reuse_kern);
-> 
-> 	if (action == SK_PASS) {
-> 		if (!reuse_kern.selected_sk)
-> 			/* fallback to kernel random pick */
-> 		else
-> 			/* migrate to reuse_kern.selected_sk */
-> 	} else {
-> 		/* action == SK_DROP. don't do migration at all and
-> 		 * don't fallback to kernel random pick.
-> 		 */ 
-> 	}
-> }
-> 
-> Going back to the sysctl, with BPF_SK_REUSEPORT_SELECT_OR_MIGRATE,
-> do you still have a need on adding sysctl_tcp_migrate_req?
-
-No, now I do not think the option should be sysctl.
-It will be BPF_SK_REUSEPORT_SELECT_OR_MIGRATE in the next series.
-Thank you!
-
-
-> Regardless, if there is still a need,
-> the document for sysctl_tcp_migrate_req should be something like:
-> "the kernel will do a random pick when there is no bpf prog
->  attached to the reuseport group...."
-> 
-> [ ps, my reply will be slow in this week. ]
+>
+> Thanks
+>
+>
+> >
+> > > Btw, have a quick search, there are several other drivers that uses tx lock
+> > > in the tx NAPI.
+> > >
+> > > Thanks
+> > >
+>
