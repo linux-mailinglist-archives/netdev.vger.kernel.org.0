@@ -2,73 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C3952C2CCC
+	by mail.lfdr.de (Postfix) with ESMTP id 0D2E22C2CCB
 	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 17:25:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390362AbgKXQZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 11:25:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32952 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390358AbgKXQZA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 11:25:00 -0500
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1077C0613D6
-        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 08:24:59 -0800 (PST)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1khb7f-0003tW-TS; Tue, 24 Nov 2020 17:24:55 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     <mptcp@lists.01.org>, Florian Westphal <fw@strlen.de>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Davide Caratti <dcaratti@redhat.com>
-Subject: [PATCH net-next] mptcp: put reference in mptcp timeout timer
-Date:   Tue, 24 Nov 2020 17:24:46 +0100
-Message-Id: <20201124162446.11448-1-fw@strlen.de>
-X-Mailer: git-send-email 2.26.2
+        id S2390356AbgKXQYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 11:24:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59018 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729093AbgKXQYt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 11:24:49 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 12C1920715;
+        Tue, 24 Nov 2020 16:24:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606235089;
+        bh=1Vn4Wt8OwoULfCk6TfBwQGf9M5km1Nq74a6ad2SKloA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pxfCcQ+HNCRsVfWVXd7f+0ykX9zJz8aMSaAsCc266ybL3MKKAenFJcf04Ubj8z7w7
+         17M2ASgbH2t6Nlq7rnNAvfx3aQ6M5R+x8ETIiSM9U0BjkAktlBGwo/zcwFbuCMBnOL
+         WZBCCITO5Oy7yZkQf3rwryr2eewhcLQp2Q6xYHow=
+Date:   Tue, 24 Nov 2020 08:24:48 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vlad Buslov <vlad@buslov.dev>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us
+Subject: Re: [PATCH net-next] net: sched: alias action flags with TCA_ACT_
+ prefix
+Message-ID: <20201124082448.56a03de5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <87v9dv9k8q.fsf@buslov.dev>
+References: <20201121160902.808705-1-vlad@buslov.dev>
+        <20201123132244.55768678@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <87v9dv9k8q.fsf@buslov.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On close this timer might be scheduled. mptcp uses sk_reset_timer for
-this, so the a reference on the mptcp socket is taken.
+On Tue, 24 Nov 2020 11:28:37 +0200 Vlad Buslov wrote:
+> > TCA_FLAG_TERSE_DUMP exists only in net-next, we could rename it, right?  
+> 
+> You are right. I'll send a fix.
 
-This causes a refcount leak which can for example be reproduced
-with 'mp_join_server_v4.pkt' from the mptcp-packetdrill repo.
-
-The leak has nothing to do with join requests, v1_mp_capable_bind_no_cs.pkt
-works too when replacing the last ack mpcapable to v1 instead of v0.
-
-unreferenced object 0xffff888109bba040 (size 2744):
-  comm "packetdrill", [..]
-  backtrace:
-    [..] sk_prot_alloc.isra.0+0x2b/0xc0
-    [..] sk_clone_lock+0x2f/0x740
-    [..] mptcp_sk_clone+0x33/0x1a0
-    [..] subflow_syn_recv_sock+0x2b1/0x690 [..]
-
-Fixes: e16163b6e2b7 ("mptcp: refactor shutdown and close")
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Davide Caratti <dcaratti@redhat.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- net/mptcp/protocol.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 4b7794835fea..dc979571f561 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -1710,6 +1710,7 @@ static void mptcp_timeout_timer(struct timer_list *t)
- 	struct sock *sk = from_timer(sk, t, sk_timer);
- 
- 	mptcp_schedule_work(sk);
-+	sock_put(sk);
- }
- 
- /* Find an idle subflow.  Return NULL if there is unacked data at tcp
--- 
-2.26.2
-
+You mean v2, not a follow up, right? :)
