@@ -2,64 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53D0C2C2B24
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 16:23:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EF8A2C2B35
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 16:25:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389647AbgKXPWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 10:22:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37182 "EHLO mail.kernel.org"
+        id S2389690AbgKXPZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 10:25:13 -0500
+Received: from novek.ru ([213.148.174.62]:47198 "EHLO novek.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728426AbgKXPWe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 10:22:34 -0500
-Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
+        id S2389434AbgKXPZN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 10:25:13 -0500
+Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A6C97206D8;
-        Tue, 24 Nov 2020 15:22:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606231353;
-        bh=2hbCCL7O02WI45ZdHMPX8DD3dn6U9eXNVBGwpDSoMjg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pMaSbZ09M4pk5nFkB8zya1HHv4yBAjOA4PKOvGnXE89HldAlIqazbiGeyib2LJYww
-         npa+yzLi2XxikSMYXQETBxz7bP24c3uXAzV8uv6ejMRoNda6E1Juy6w+lgTGGe/t3U
-         0YaIXXb/dy0IdToL5scjhcMpO6QZIryZ4ed4v8f8=
-Date:   Tue, 24 Nov 2020 09:22:48 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH][next] mwifiex: Fix fall-through warnings for Clang
-Message-ID: <20201124152248.GA17735@embeddedor>
-References: <20201117160958.GA18807@embeddedor>
- <20201124150614.68C3EC43461@smtp.codeaurora.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201124150614.68C3EC43461@smtp.codeaurora.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        by novek.ru (Postfix) with ESMTPSA id 1A3125030A7;
+        Tue, 24 Nov 2020 18:25:24 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 1A3125030A7
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1606231525; bh=mO+bX/215FkY07mOamMQiBMBu8TNVFK/UNvxc7Ptm8Q=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Osok2aHXwuCEYE8k6Ee0FpzIhEGVQiKN3ylTsmQy/5489KL71pWfhoEbhNM6FQAlC
+         vfoly82GE2bMV9/B317XuY0N4xTQ46rrNgoZEc8Un1G1vtnR0BSdqOr6vDxpZ+3m2C
+         uxBuAIRi1HPG81mko9S92fTQ4+eBvc9GmSO+f4aI=
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Aviad Yehezkel <aviadye@nvidia.com>
+Cc:     Vadim Fedorenko <vfedorenko@novek.ru>, netdev@vger.kernel.org,
+        linux-crypto@vger.kernel.org
+Subject: [net-next v2 0/5] Add CHACHA20-POLY1305 cipher to Kernel TLS
+Date:   Tue, 24 Nov 2020 18:24:45 +0300
+Message-Id: <1606231490-653-1-git-send-email-vfedorenko@novek.ru>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
+        autolearn=ham autolearn_force=no version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 24, 2020 at 03:06:14PM +0000, Kalle Valo wrote:
-> "Gustavo A. R. Silva" <gustavoars@kernel.org> wrote:
-> 
-> > In preparation to enable -Wimplicit-fallthrough for Clang, fix multiple
-> > warnings by explicitly adding multiple break statements instead of
-> > letting the code fall through to the next case.
-> > 
-> > Link: https://github.com/KSPP/linux/issues/115
-> > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> 
-> Patch applied to wireless-drivers-next.git, thanks.
-> 
-> 003317581372 mwifiex: Fix fall-through warnings for Clang
+RFC 7905 defines usage of ChaCha20-Poly1305 in TLS connections. This
+cipher is widely used nowadays and it's good to have a support for it
+in TLS connections in kernel.
+Changes v2: 
+  nit fixes suggested by Jakub Kicinski
+  add linux-crypto to review patch set
 
-Thank you, Kalle.
---
-Gustavo
+Vadim Fedorenko (5):
+  net/tls: make inline helpers protocol-aware
+  net/tls: add CHACHA20-POLY1305 specific defines and structures
+  net/tls: add CHACHA20-POLY1305 specific behavior
+  net/tls: add CHACHA20-POLY1305 configuration
+  selftests/tls: add CHACHA20-POLY1305 to tls selftests
+
+ include/net/tls.h                 | 32 ++++++++++++++++---------------
+ include/uapi/linux/tls.h          | 15 +++++++++++++++
+ net/tls/tls_device.c              |  2 +-
+ net/tls/tls_device_fallback.c     | 13 +++++++------
+ net/tls/tls_main.c                |  3 +++
+ net/tls/tls_sw.c                  | 34 ++++++++++++++++++++++++---------
+ tools/testing/selftests/net/tls.c | 40 ++++++++++++++++++++++++++++++++-------
+ 7 files changed, 101 insertions(+), 38 deletions(-)
+
+-- 
+1.8.3.1
+
