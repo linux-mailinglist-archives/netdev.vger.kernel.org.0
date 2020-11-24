@@ -2,216 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFAE72C1ACA
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 02:24:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 864302C1AF0
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 02:34:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729996AbgKXBXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 20:23:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34596 "EHLO
+        id S1730043AbgKXBdR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 20:33:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726958AbgKXBXq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 20:23:46 -0500
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC8B6C0613CF;
-        Mon, 23 Nov 2020 17:23:45 -0800 (PST)
-Received: by mail-pg1-x544.google.com with SMTP id f17so7419710pge.6;
-        Mon, 23 Nov 2020 17:23:45 -0800 (PST)
+        with ESMTP id S1730068AbgKXBdJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 20:33:09 -0500
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB1C7C09424B
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 17:33:05 -0800 (PST)
+Received: by mail-pg1-x541.google.com with SMTP id w16so3606365pga.9
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 17:33:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=OMYZVmLxvpinIxrZR3tpbtIDXrT2La7cS1aFAtH9vbo=;
-        b=TPmItr141Jc1Xz+SViqYaQacSdCX6R7SpeJuCaIkauxmcCS6/vMevcs9tsXMGPqpk8
-         uynI+2U5ul7nWn7tPAY7c30xC8Pe6wGpUZDBeWuBJQg4ibmfH298mVdY5uLG86TJFupi
-         wtJ6ssCHv1wSvp1NdVe47ps/l7JebzdmJvphQXAoCSw6r/ZNuNIn+W0vNUlHX6BEJrnb
-         Bv4Qt8K6tG42X5DNO5fQ7VqFGYXSeQK78uhkOjgAgl2h6y+GJRa0G2E7fNdNDRB63Y+j
-         yCmVaasCg08PbJuo17sprazs2GXRhtpSUStP+fuFozi1nWPjTq6VS/ssktFvlsxaRplG
-         PBVg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1Fpt+3NGNjcuXPoKd+YKzvfWCCI+i2QS11ln4xb/K2c=;
+        b=mZ10EKN9Q6HwSmECmmsUHbUHF/oTLT4c/YpQVGCE0gPLnlz6SgHQW3ieQ7zeUHJnUi
+         XUPs+F1GoZaFLBKWU3CvMTPUTS8a5+RdM3NBjgdsJpNB5L7Gee8a5rDblh6bnWIWT9TK
+         uir+AjWjaGJnRAA0K84IM0yu+WQnaSePUaJNJPiE7LfLBhB3Pd0A4gWblql3Lao7defI
+         n9Uw15itvZVSId22hyle+f6GM1M4THjCwMgL7v1hyU5f7oNm+YC3/Fk6KnTIGBq7Lgby
+         +eM5Ju8Jh9l5BxBe3HwjA5bt+bnUjVm7e9zM9zQUlIbVcSVLiqKYS2m+arIIzBAIXu/j
+         s+uw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=OMYZVmLxvpinIxrZR3tpbtIDXrT2La7cS1aFAtH9vbo=;
-        b=ZYzh12TJA7FFkBpTfECLpPSg3vr6RWQ1JOPA3h/VmDMR37k2Y4VQLzNlnmiWRxV6iO
-         6xLofetDQ5C8vMNCT9yA86FRmCwiz6YLOAguBLVdb6kgo8oaWaBBbJpMJn1Weh40bV0P
-         CS3jO1b8oaeS9SuhXLA8l4RCpwqf4PTzrWehSJSnY7bYh1kLNs4NccaTlK4nIavE/fbH
-         I2AE08xbTHGJ10bCEMeW8OXHxfnkOFkMv9oXFDf6RHY+mUCOJcQASC8hnqWantEOYHdT
-         qPn7BiRM5KQynqkQRW5SHkMjrPE72QgCSF31I2vj4PhRcv8qOkZDlOyRsFsSvw10P2i7
-         x3VQ==
-X-Gm-Message-State: AOAM530CX2nnLhsXjcIKX+XplC3DpnWx20WHfiVHKE+6nQPSakUfM+1e
-        M/AWwiIVcEs0aoofkkolhx9RR+a/Z3k=
-X-Google-Smtp-Source: ABdhPJy2Wf3uASqu24uYdW6SjJI64BpcFrwu2xrg2EKjE/aezcbm8m57ukLEBl0VHOyoPkMsMpB4cg==
-X-Received: by 2002:a17:90a:eb04:: with SMTP id j4mr1928592pjz.103.1606181025503;
-        Mon, 23 Nov 2020 17:23:45 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id r4sm12082154pgs.54.2020.11.23.17.23.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Nov 2020 17:23:44 -0800 (PST)
-Date:   Mon, 23 Nov 2020 17:23:42 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     min.li.xe@renesas.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 net] ptp: clockmatrix: bug fix for idtcm_strverscmp
-Message-ID: <20201124012342.GA6592@hoboy.vegasvil.org>
-References: <1606162806-14589-1-git-send-email-min.li.xe@renesas.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1Fpt+3NGNjcuXPoKd+YKzvfWCCI+i2QS11ln4xb/K2c=;
+        b=f4GKOgb4tLrGUKdil++KacW/ZZjqMsNtMvJLHnhzLbPpfoZcLxzNQC8iMSxoWBjojH
+         bFajPr9LP9cIgMfHkVieDwfnWudxbIATDNQQ+7jbsRiGJXq7RzgrwWI9DHu6vTXNxjLr
+         I0suyes1BFtwNOASj96/E5PGV6oR1BBe3LY6LsquFXKaLIDAziVazEhsIxTYcDkGcora
+         JBPANc2hjRJGtKVF6nddAp3IW6h4l/bdVvRtzImY/i2veUfmzJzMQBJZDc2Iozizr9rM
+         wW0lKH30y0V/d7zthP2g7MdXX4syqFD1VUAfGk7aBc+HGANO5fN5zZ8NBrlz/8coB2AQ
+         DYpA==
+X-Gm-Message-State: AOAM531a06yuHWIx51s9F391kxlSWvpNtW633JL0FYF21DqJqM3DdQHU
+        +XH3xxPCWBW/HrSqD2xr4Esn5KDcXpJqFmjtArpGSg==
+X-Google-Smtp-Source: ABdhPJwQDF2vxX46wbajF4ioOOwzM/J33jC4qlEIQ0nX0CJ8Ae2/iYNAtfiNkgC6UbM9BT3sKlieSNPFWrTquhIIwSk=
+X-Received: by 2002:a65:6a4e:: with SMTP id o14mr1859973pgu.263.1606181584110;
+ Mon, 23 Nov 2020 17:33:04 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1606162806-14589-1-git-send-email-min.li.xe@renesas.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <cover.1605896059.git.gustavoars@kernel.org> <20201120105344.4345c14e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <202011201129.B13FDB3C@keescook> <20201120115142.292999b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <202011220816.8B6591A@keescook>
+In-Reply-To: <202011220816.8B6591A@keescook>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 23 Nov 2020 17:32:51 -0800
+Message-ID: <CAKwvOdntVfXj2WRR5n6Kw7BfG7FdKpTeHeh5nPu5AzwVMhOHTg@mail.gmail.com>
+Subject: Re: [PATCH 000/141] Fix fall-through warnings for Clang
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, alsa-devel@alsa-project.org,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        bridge@lists.linux-foundation.org, ceph-devel@vger.kernel.org,
+        cluster-devel@redhat.com, coreteam@netfilter.org,
+        devel@driverdev.osuosl.org, dm-devel@redhat.com,
+        drbd-dev@lists.linbit.com,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        GR-everest-linux-l2@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        intel-gfx@lists.freedesktop.org, intel-wired-lan@lists.osuosl.org,
+        keyrings@vger.kernel.org, linux1394-devel@lists.sourceforge.net,
+        linux-acpi@vger.kernel.org, linux-afs@lists.infradead.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        linux-atm-general@lists.sourceforge.net,
+        linux-block@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-cifs@vger.kernel.org,
+        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
+        <linux-crypto@vger.kernel.org>,
+        linux-decnet-user@lists.sourceforge.net,
+        linux-ext4@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-geode@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-hams@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        linux-i3c@lists.infradead.org, linux-ide@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-integrity@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-media@vger.kernel.org,
+        linux-mmc@vger.kernel.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        linux-mtd@lists.infradead.org, linux-nfs@vger.kernel.org,
+        linux-rdma@vger.kernel.org,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        netfilter-devel@vger.kernel.org, nouveau@lists.freedesktop.org,
+        op-tee@lists.trustedfirmware.org, oss-drivers@netronome.com,
+        patches@opensource.cirrus.com, rds-devel@oss.oracle.com,
+        reiserfs-devel@vger.kernel.org, samba-technical@lists.samba.org,
+        selinux@vger.kernel.org, target-devel@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net,
+        usb-storage@lists.one-eyed-alien.net,
+        virtualization@lists.linux-foundation.org,
+        wcn36xx@lists.infradead.org,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        xen-devel@lists.xenproject.org, linux-hardening@vger.kernel.org,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Miguel Ojeda <ojeda@kernel.org>, Joe Perches <joe@perches.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 23, 2020 at 03:20:06PM -0500, min.li.xe@renesas.com wrote:
-> From: Min Li <min.li.xe@renesas.com>
-> 
-> Feed kstrtou8 with NULL terminated string.
-> 
-> Changes since v1:
-> -Use strscpy instead of strncpy for safety.
-> 
-> Signed-off-by: Min Li <min.li.xe@renesas.com>
-> ---
->  drivers/ptp/ptp_clockmatrix.c | 60 ++++++++++++++++++++++++++++++-------------
->  tools/bpf/example             | 12 +++++++++
->  tools/bpf/novlan              |  7 +++++
->  3 files changed, 61 insertions(+), 18 deletions(-)
->  create mode 100644 tools/bpf/example
->  create mode 100644 tools/bpf/novlan
-> 
-> diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
-> index e020faf..d4e434b 100644
-> --- a/drivers/ptp/ptp_clockmatrix.c
-> +++ b/drivers/ptp/ptp_clockmatrix.c
-> @@ -103,42 +103,66 @@ static int timespec_to_char_array(struct timespec64 const *ts,
->  	return 0;
->  }
->  
-> -static int idtcm_strverscmp(const char *ver1, const char *ver2)
-> +static int idtcm_strverscmp(const char *version1, const char *version2)
->  {
->  	u8 num1;
->  	u8 num2;
->  	int result = 0;
-> +	char ver1[16];
-> +	char ver2[16];
-> +	char *cur1;
-> +	char *cur2;
-> +	char *next1;
-> +	char *next2;
-> +
-> +	if (strscpy(ver1, version1, 16) < 0 ||
-> +	    strscpy(ver2, version2, 16) < 0)
-> +		return -1;
-> +	cur1 = ver1;
-> +	cur2 = ver2;
->  
->  	/* loop through each level of the version string */
->  	while (result == 0) {
-> +		next1 = strchr(cur1, '.');
-> +		next2 = strchr(cur2, '.');
-> +
-> +		/* kstrtou8 could fail for dot */
-> +		if (next1) {
-> +			*next1 = '\0';
-> +			next1++;
-> +		}
-> +
-> +		if (next2) {
-> +			*next2 = '\0';
-> +			next2++;
-> +		}
-> +
+On Sun, Nov 22, 2020 at 8:17 AM Kees Cook <keescook@chromium.org> wrote:
+>
+> On Fri, Nov 20, 2020 at 11:51:42AM -0800, Jakub Kicinski wrote:
+> > If none of the 140 patches here fix a real bug, and there is no change
+> > to machine code then it sounds to me like a W=2 kind of a warning.
+>
+> FWIW, this series has found at least one bug so far:
+> https://lore.kernel.org/lkml/CAFCwf11izHF=g1mGry1fE5kvFFFrxzhPSM6qKAO8gxSp=Kr_CQ@mail.gmail.com/
 
-All of this looping and ad-hoc string parsing can be make MUCH
-simpler by using sscanf() and then comparing the binary values
-directly.
+So looks like the bulk of these are:
+switch (x) {
+  case 0:
+    ++x;
+  default:
+    break;
+}
 
->  		/* extract leading version numbers */
-> -		if (kstrtou8(ver1, 10, &num1) < 0)
-> +		if (kstrtou8(cur1, 10, &num1) < 0)
->  			return -1;
->  
-> -		if (kstrtou8(ver2, 10, &num2) < 0)
-> +		if (kstrtou8(cur2, 10, &num2) < 0)
->  			return -1;
->  
->  		/* if numbers differ, then set the result */
->  		if (num1 < num2)
-> +			return -1;
-> +		if (num1 > num2)
-> +			return 1;
-> +
-> +		/* if numbers are the same, go to next level */
-> +		if (!next1 && !next2)
-> +			break;
-> +		else if (!next1) {
->  			result = -1;
-> -		else if (num1 > num2)
-> +		} else if (!next2) {
->  			result = 1;
-> -		else {
-> -			/* if numbers are the same, go to next level */
-> -			ver1 = strchr(ver1, '.');
-> -			ver2 = strchr(ver2, '.');
-> -			if (!ver1 && !ver2)
-> -				break;
-> -			else if (!ver1)
-> -				result = -1;
-> -			else if (!ver2)
-> -				result = 1;
-> -			else {
-> -				ver1++;
-> -				ver2++;
-> -			}
-> +		} else {
-> +			cur1 = next1;
-> +			cur2 = next2;
->  		}
->  	}
-> +
->  	return result;
->  }
->  
+I have a patch that fixes those up for clang:
+https://reviews.llvm.org/D91895
 
-> diff --git a/tools/bpf/example b/tools/bpf/example
-> new file mode 100644
-> index 0000000..a0ac81f
-> --- /dev/null
-> +++ b/tools/bpf/example
-> @@ -0,0 +1,12 @@
-> +  ldh [12]
-> +  jne #0x8100, nonvlan
-> +  ldh [16]
-> +  jne #0x88f7, bad
-> +  ldb [18]
-> +  ja test
-> +  nonvlan: jne #0x88f7, bad
-> +  ldb [14]
-> +  test: and #0x8
-> +  jeq #0, bad
-> +  good: ret #1500
-> +  bad: ret #0
+There's 3 other cases that don't quite match between GCC and Clang I
+observe in the kernel:
+switch (x) {
+  case 0:
+    ++x;
+  default:
+    goto y;
+}
+y:;
 
-Looks like this hunk and the next got included by mistake.
+switch (x) {
+  case 0:
+    ++x;
+  default:
+    return;
+}
 
+switch (x) {
+  case 0:
+    ++x;
+  default:
+    ;
+}
+
+Based on your link, and Nathan's comment on my patch, maybe Clang
+should continue to warn for the above (at least the `default: return;`
+case) and GCC should change?  While the last case looks harmless,
+there were only 1 or 2 across the tree in my limited configuration
+testing; I really think we should just add `break`s for those.
+-- 
 Thanks,
-Richard
-
-> diff --git a/tools/bpf/novlan b/tools/bpf/novlan
-> new file mode 100644
-> index 0000000..fe35288
-> --- /dev/null
-> +++ b/tools/bpf/novlan
-> @@ -0,0 +1,7 @@
-> +  ldh [12]
-> +  jne #0x88f7, bad
-> +  ldb [14]
-> +  and #0x8
-> +  jeq #0, bad
-> +  good: ret #1500
-> +  bad: ret #0
-> -- 
-> 2.7.4
-> 
+~Nick Desaulniers
