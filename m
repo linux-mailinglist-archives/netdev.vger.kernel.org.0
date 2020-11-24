@@ -2,431 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22ECE2C2552
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 13:07:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77F492C2571
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 13:14:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387454AbgKXMGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 07:06:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49148 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729172AbgKXMGG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 07:06:06 -0500
-Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09579C0613D6;
-        Tue, 24 Nov 2020 04:06:06 -0800 (PST)
-Received: by mail-lf1-x144.google.com with SMTP id a9so28537266lfh.2;
-        Tue, 24 Nov 2020 04:06:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=X1gWKsLM8WhU8BIYUm/PDJ+UEVUdceUwgZGfwp9Tdo4=;
-        b=mbyD0ZxA9b9ZriZi2hg1urENNnACQ15IfL2TRhb7ZJzmJJgLI0vyIx67W6QaGyvM7O
-         Pz8KBLZly6Gnn4ma0i1cx0yWJQNQ6AZhWoun7xCT/xCDt580Ii0VUNdzU152Vs8KWRGS
-         0ekXa8dymW51DkW/spUp5dWtJ9ac2y4kmuq3+L2gcpXNUi4r2ohpx/zOGr6EVQgr0twd
-         Ho/twtCOUFelLXuoIwrQBf7/jrJa10nWaTS0S4c7us+XoMsRq3qYCyG5pRLHyZLB6WyV
-         IlqeXrKyJpKHhxvBE6yIOyrDyt3cd6JbcBCiKPGOr8bh3702auWLDraqcQo6htXO8pVJ
-         SIsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=X1gWKsLM8WhU8BIYUm/PDJ+UEVUdceUwgZGfwp9Tdo4=;
-        b=MZVT16dj4aZxOZAwp8cR4uGWqrJVyfDnKyeU2MJzKb+BV/NKfjMvUFq+JrWXxeH4n0
-         K2WNW0D4Q0NRpty+fFRmnbucBJPZ7THaSgt6SkKYJHriEzneK6WOXvjAbG75Qj+XjLjW
-         QFlvHuyspuZ4T1SgchPaP0pAsQA5juGOXl0TxAqo9XPT+fJmX/uoyhoZUDB+rQ7os4zP
-         horLqMxIDmHV4bhD7WlO3tL2/SeBUqgu9qkgCO938SDeKmrjAR9zy4MOLa8VteKN9uwn
-         HqynhpezmUMefzuKPXkipypIViC0h0DhN2CFkNG7lyQn9ZzgvNvcwQvd8tvu5By5UccZ
-         Rk9A==
-X-Gm-Message-State: AOAM533qMIQy7xOU7FY2OjZpfDgE+E0t4ARvWkNK5YDycsCoIyoLD9p8
-        LZrly6ohxPUMiFY/Qi/DJrfHYdU1uWuZr1z2yS0=
-X-Google-Smtp-Source: ABdhPJwgdnxMDfraL0+FptbpHyQAQ3ebsJdjgdLIkFQ1dbTCVc569vD1l13vWGfyZYOauxMvXw0ZmSdD6xiblQU3Xks=
-X-Received: by 2002:ac2:5e91:: with SMTP id b17mr1562721lfq.442.1606219564293;
- Tue, 24 Nov 2020 04:06:04 -0800 (PST)
+        id S1733306AbgKXMOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 07:14:05 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:8642 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729172AbgKXMOF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 07:14:05 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fbcf9130000>; Tue, 24 Nov 2020 04:14:11 -0800
+Received: from [172.27.14.166] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 24 Nov
+ 2020 12:13:54 +0000
+Subject: Re: [PATCH iproute2-next v2] tc flower: use right ethertype in
+ icmp/arp parsing
+From:   Roi Dayan <roid@nvidia.com>
+To:     David Ahern <dsahern@gmail.com>,
+        Zahari Doychev <zahari.doychev@linux.com>,
+        <netdev@vger.kernel.org>
+CC:     <simon.horman@netronome.com>, <jhs@mojatatu.com>,
+        <jianbol@mellanox.com>
+References: <20201110075355.52075-1-zahari.doychev@linux.com>
+ <c51abdae-6596-54ec-2b96-9b010c27cdb1@gmail.com>
+ <3ae696c9-b4dd-a2e5-77d5-c572e98a4000@nvidia.com>
+Message-ID: <6bf5c24a-13bf-afbd-0b45-1488c09ecc56@nvidia.com>
+Date:   Tue, 24 Nov 2020 14:13:51 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-References: <CGME20201123075658epcms2p5a6237314f7a72a2556545d3f96261c93@epcms2p5>
- <20201123075658epcms2p5a6237314f7a72a2556545d3f96261c93@epcms2p5> <20201123081940.GA9323@kozik-lap>
-In-Reply-To: <20201123081940.GA9323@kozik-lap>
-From:   Bongsu Jeon <bongsu.jeon2@gmail.com>
-Date:   Tue, 24 Nov 2020 21:05:52 +0900
-Message-ID: <CACwDmQDOm6PAyphMiUFizueENMdW3Bo5PvdP_VC_sfBEHc9pMQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/2] net: nfc: s3fwrn5: Support a UART interface
-To:     "krzk@kernel.org" <krzk@kernel.org>
-Cc:     Bongsu Jeon <bongsu.jeon@samsung.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-nfc@lists.01.org" <linux-nfc@lists.01.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <3ae696c9-b4dd-a2e5-77d5-c572e98a4000@nvidia.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1606220051; bh=Nz+SeA9JhiwgaYXlIGE5BRHYkTNCAj/vZhSd2BXy2cI=;
+        h=Subject:From:To:CC:References:Message-ID:Date:User-Agent:
+         MIME-Version:In-Reply-To:Content-Type:Content-Language:
+         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
+        b=mioN7SobBmTjXDPqXCcurWMNTNDfuSBbi46Dy3bOEKKVKBW03wWtIkZOyND+FvhEO
+         Sd9qmp4bkH7YxTpQkg4RMS9WtoaIyLgw6fREAOLrT+6vpAOqf+rkdy1N0nFmPT0LwS
+         M8cXZZF4kut2TgdCRIPz/giayWKgRShX27PGEdPryWSA3JyyvXmf6t5RU4mNgPHBXJ
+         XSRzsvPa4EpWND9OyAXLOS06eKiHHpAEL6bOZ2iWGEkze2f0m73CgrGURypYxQMbrM
+         UZQCNbeJ3QgDzJBh9Go5nQeitrDphiAegQuPZecwAqL/VDrOxbU6BKjhCIwpY0v1s/
+         Prmw5NWUd1TGA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 23, 2020 at 5:55 PM krzk@kernel.org <krzk@kernel.org> wrote:
->
-> On Mon, Nov 23, 2020 at 04:56:58PM +0900, Bongsu Jeon wrote:
-> > Since S3FWRN82 NFC Chip, The UART interface can be used.
-> > S3FWRN82 uses NCI protocol and supports I2C and UART interface.
-> >
-> > Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
->
-> Please start sending emails properly, e.g. with git send-email, so all
-> your patches in the patchset are referencing the first patch.
->
-Ok. I will do that.
 
-> > ---
-> >  drivers/nfc/s3fwrn5/Kconfig  |  12 ++
-> >  drivers/nfc/s3fwrn5/Makefile |   2 +
-> >  drivers/nfc/s3fwrn5/uart.c   | 250 +++++++++++++++++++++++++++++++++++
-> >  3 files changed, 264 insertions(+)
-> >  create mode 100644 drivers/nfc/s3fwrn5/uart.c
-> >
-> > diff --git a/drivers/nfc/s3fwrn5/Kconfig b/drivers/nfc/s3fwrn5/Kconfig
-> > index 3f8b6da58280..6f88737769e1 100644
-> > --- a/drivers/nfc/s3fwrn5/Kconfig
-> > +++ b/drivers/nfc/s3fwrn5/Kconfig
-> > @@ -20,3 +20,15 @@ config NFC_S3FWRN5_I2C
-> >         To compile this driver as a module, choose m here. The module will
-> >         be called s3fwrn5_i2c.ko.
-> >         Say N if unsure.
-> > +
-> > +config NFC_S3FWRN82_UART
-> > +     tristate "Samsung S3FWRN82 UART support"
-> > +     depends on NFC_NCI && SERIAL_DEV_BUS
->
-> What about SERIAL_DEV_BUS as module? Shouldn't this be
-> SERIAL_DEV_BUS || !SERIAL_DEV_BUS?
->
 
-SERIAL_DEV_BUS is okay even if SERIAL_DEV_BUS is defined as module.
+On 2020-11-24 11:39 AM, Roi Dayan wrote:
+>=20
+>=20
+> On 2020-11-14 5:12 AM, David Ahern wrote:
+>> On 11/10/20 12:53 AM, Zahari Doychev wrote:
+>>> Currently the icmp and arp parsing functions are called with incorrect
+>>> ethtype in case of vlan or cvlan filter options. In this case either
+>>> cvlan_ethtype or vlan_ethtype has to be used. The ethtype is now update=
+d
+>>> each time a vlan ethtype is matched during parsing.
+>>>
+>>> Signed-off-by: Zahari Doychev <zahari.doychev@linux.com>
+>>> ---
+>>> =C2=A0 tc/f_flower.c | 52 +++++++++++++++++++++++----------------------=
+------
+>>> =C2=A0 1 file changed, 23 insertions(+), 29 deletions(-)
+>>>
+>>
+>> Thanks, looks much better.
+>>
+>> applied to iproute2-next.
+>>
+>=20
+> Hi,
+>=20
+> I didn't debug yet but with this commit I am failing to add a tc
+> rule I always could before. also the error msg doesn't make sense.
+>=20
+> Example:
+>=20
+> # tc filter add dev enp8s0f0 protocol 802.1Q parent ffff: prio 1 flower\
+>  =C2=A0skip_hw dst_mac e4:11:22:11:4a:51 src_mac e4:11:22:11:4a:50\
+>  =C2=A0vlan_ethtype 0x800 vlan_id 100 vlan_prio 0 action vlan pop action\
+>  =C2=A0mirred egress redirect dev enp8s0f0_0
+>=20
+>=20
+> Can't set "vlan_id" if ethertype isn't 802.1Q or 802.1AD
+>=20
+>=20
+> I used protocol 802.1Q and vlan_ethtype 0x800.
+> am i missing something? the rule should look different now?
+>=20
+> Thanks,
+> Roi
 
-> > +     select NFC_S3FWRN5
-> > +     help
-> > +       This module adds support for a UART interface to the S3FWRN82 chip.
-> > +       Select this if your platform is using the UART bus.
-> > +
-> > +       To compile this driver as a module, choose m here. The module will
-> > +       be called s3fwrn82_uart.ko.
-> > +       Say N if unsure.
-> > diff --git a/drivers/nfc/s3fwrn5/Makefile b/drivers/nfc/s3fwrn5/Makefile
-> > index d0ffa35f50e8..d1902102060b 100644
-> > --- a/drivers/nfc/s3fwrn5/Makefile
-> > +++ b/drivers/nfc/s3fwrn5/Makefile
-> > @@ -5,6 +5,8 @@
-> >
-> >  s3fwrn5-objs = core.o firmware.o nci.o
-> >  s3fwrn5_i2c-objs = i2c.o
-> > +s3fwrn82_uart-objs = uart.o
-> >
-> >  obj-$(CONFIG_NFC_S3FWRN5) += s3fwrn5.o
-> >  obj-$(CONFIG_NFC_S3FWRN5_I2C) += s3fwrn5_i2c.o
-> > +obj-$(CONFIG_NFC_S3FWRN82_UART) += s3fwrn82_uart.o
-> > diff --git a/drivers/nfc/s3fwrn5/uart.c b/drivers/nfc/s3fwrn5/uart.c
-> > new file mode 100644
-> > index 000000000000..b3c36a5b28d3
-> > --- /dev/null
-> > +++ b/drivers/nfc/s3fwrn5/uart.c
-> > @@ -0,0 +1,250 @@
-> > +// SPDX-License-Identifier: GPL-2.0+
-> > +/*
-> > + * UART Link Layer for S3FWRN82 NCI based Driver
-> > + *
-> > + * Copyright (C) 2020 Samsung Electronics
-> > + * Author: Bongsu Jeon <bongsu.jeon@samsung.com>
->
-> You copied a lot from existing i2c.c. Please keep also the original
-> copyrights.
->
 
-Okay. I will keep also the original copyrights.
+Hi,
 
-> > + * All rights reserved.
-> > + */
-> > +
-> > +#include <linux/device.h>
-> > +#include <linux/kernel.h>
-> > +#include <linux/module.h>
-> > +#include <linux/nfc.h>
-> > +#include <linux/netdevice.h>
-> > +#include <linux/of.h>
-> > +#include <linux/serdev.h>
-> > +#include <linux/gpio.h>
-> > +#include <linux/of_gpio.h>
-> > +
-> > +#include "s3fwrn5.h"
-> > +
-> > +#define S3FWRN82_UART_DRIVER_NAME "s3fwrn82_uart"
->
-> Remove the define, it is used only once.
->
-> > +#define S3FWRN82_NCI_HEADER 3
-> > +#define S3FWRN82_NCI_IDX 2
-> > +#define S3FWRN82_EN_WAIT_TIME 20
-> > +#define NCI_SKB_BUFF_LEN 258
-> > +
-> > +struct s3fwrn82_uart_phy {
-> > +     struct serdev_device *ser_dev;
-> > +     struct nci_dev *ndev;
-> > +     struct sk_buff *recv_skb;
-> > +
-> > +     unsigned int gpio_en;
-> > +     unsigned int gpio_fw_wake;
-> > +
-> > +     /* mutex is used to synchronize */
->
-> Please do not write obvious comments. Mutex is always used to
-> synchronize, what else is it for? Instead you must describe what exactly
-> is protected with mutex.
->
+I debugged this and it break vlan rules.
+The issue is from this part of the change
 
-I understand it. I will fix it.
 
-> > +     struct mutex mutex;
-> > +     enum s3fwrn5_mode mode;
-> > +};
-> > +
-> > +static void s3fwrn82_uart_set_wake(void *phy_id, bool wake)
-> > +{
-> > +     struct s3fwrn82_uart_phy *phy = phy_id;
-> > +
-> > +     mutex_lock(&phy->mutex);
-> > +     gpio_set_value(phy->gpio_fw_wake, wake);
-> > +     msleep(S3FWRN82_EN_WAIT_TIME);
-> > +     mutex_unlock(&phy->mutex);
-> > +}
-> > +
-> > +static void s3fwrn82_uart_set_mode(void *phy_id, enum s3fwrn5_mode mode)
-> > +{
-> > +     struct s3fwrn82_uart_phy *phy = phy_id;
-> > +
-> > +     mutex_lock(&phy->mutex);
-> > +     if (phy->mode == mode)
-> > +             goto out;
-> > +     phy->mode = mode;
-> > +     gpio_set_value(phy->gpio_en, 1);
-> > +     gpio_set_value(phy->gpio_fw_wake, 0);
-> > +     if (mode == S3FWRN5_MODE_FW)
-> > +             gpio_set_value(phy->gpio_fw_wake, 1);
-> > +     if (mode != S3FWRN5_MODE_COLD) {
-> > +             msleep(S3FWRN82_EN_WAIT_TIME);
-> > +             gpio_set_value(phy->gpio_en, 0);
-> > +             msleep(S3FWRN82_EN_WAIT_TIME);
-> > +     }
-> > +out:
-> > +     mutex_unlock(&phy->mutex);
-> > +}
-> > +
-> > +static enum s3fwrn5_mode s3fwrn82_uart_get_mode(void *phy_id)
-> > +{
-> > +     struct s3fwrn82_uart_phy *phy = phy_id;
-> > +     enum s3fwrn5_mode mode;
-> > +
-> > +     mutex_lock(&phy->mutex);
-> > +     mode = phy->mode;
-> > +     mutex_unlock(&phy->mutex);
-> > +     return mode;
-> > +}
->
-> All this duplicates I2C version. You need to start either reusing common
-> blocks.
->
+@@ -1464,6 +1464,8 @@ static int flower_parse_opt(struct filter_util=20
+*qu, char *handle,
+                                                  &vlan_ethtype, n);
+                         if (ret < 0)
+                                 return -1;
++                       /* get new ethtype for later parsing  */
++                       eth_type =3D vlan_ethtype;
 
-Okay. I will do refactoring on i2c.c and uart.c to make common blocks.
- is it okay to separate a patch for it?
 
-> > +
-> > +static int s3fwrn82_uart_write(void *phy_id, struct sk_buff *out)
-> > +{
-> > +     struct s3fwrn82_uart_phy *phy = phy_id;
-> > +     int err;
-> > +
-> > +     err = serdev_device_write(phy->ser_dev,
-> > +                               out->data, out->len,
-> > +                               MAX_SCHEDULE_TIMEOUT);
-> > +     if (err < 0)
-> > +             return err;
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static const struct s3fwrn5_phy_ops uart_phy_ops = {
-> > +     .set_wake = s3fwrn82_uart_set_wake,
-> > +     .set_mode = s3fwrn82_uart_set_mode,
-> > +     .get_mode = s3fwrn82_uart_get_mode,
-> > +     .write = s3fwrn82_uart_write,
-> > +};
-> > +
-> > +static int s3fwrn82_uart_read(struct serdev_device *serdev,
-> > +                           const unsigned char *data,
-> > +                           size_t count)
-> > +{
-> > +     struct s3fwrn82_uart_phy *phy = serdev_device_get_drvdata(serdev);
-> > +     size_t i;
-> > +
-> > +     for (i = 0; i < count; i++) {
-> > +             skb_put_u8(phy->recv_skb, *data++);
-> > +
-> > +             if (phy->recv_skb->len < S3FWRN82_NCI_HEADER)
-> > +                     continue;
-> > +
-> > +             if ((phy->recv_skb->len - S3FWRN82_NCI_HEADER)
-> > +                             < phy->recv_skb->data[S3FWRN82_NCI_IDX])
-> > +                     continue;
-> > +
-> > +             s3fwrn5_recv_frame(phy->ndev, phy->recv_skb, phy->mode);
-> > +             phy->recv_skb = alloc_skb(NCI_SKB_BUFF_LEN, GFP_KERNEL);
-> > +             if (!phy->recv_skb)
-> > +                     return 0;
-> > +     }
-> > +
-> > +     return i;
-> > +}
-> > +
-> > +static struct serdev_device_ops s3fwrn82_serdev_ops = {
->
-> const
->
-> > +     .receive_buf = s3fwrn82_uart_read,
-> > +     .write_wakeup = serdev_device_write_wakeup,
-> > +};
-> > +
-> > +static const struct of_device_id s3fwrn82_uart_of_match[] = {
-> > +     { .compatible = "samsung,s3fwrn82-uart", },
-> > +     {},
-> > +};
-> > +MODULE_DEVICE_TABLE(of, s3fwrn82_uart_of_match);
-> > +
-> > +static int s3fwrn82_uart_parse_dt(struct serdev_device *serdev)
-> > +{
-> > +     struct s3fwrn82_uart_phy *phy = serdev_device_get_drvdata(serdev);
-> > +     struct device_node *np = serdev->dev.of_node;
-> > +
-> > +     if (!np)
-> > +             return -ENODEV;
-> > +
-> > +     phy->gpio_en = of_get_named_gpio(np, "en-gpios", 0);
-> > +     if (!gpio_is_valid(phy->gpio_en))
-> > +             return -ENODEV;
-> > +
-> > +     phy->gpio_fw_wake = of_get_named_gpio(np, "wake-gpios", 0);
->
-> You should not cast it it unsigned int. I'll fix the s3fwrn5 from which
-> you copied this apparently.
->
 
-Okay. I will fix it.
+Now params vlan_id, vlan_prio check if eth_type is vlan but it's not.
+it's 0x0800 as the example as it was set to the vlan_ethtype.
 
-> > +     if (!gpio_is_valid(phy->gpio_fw_wake))
-> > +             return -ENODEV;
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static int s3fwrn82_uart_probe(struct serdev_device *serdev)
-> > +{
-> > +     struct s3fwrn82_uart_phy *phy;
-> > +     int ret = -ENOMEM;
-> > +
-> > +     phy = devm_kzalloc(&serdev->dev, sizeof(*phy), GFP_KERNEL);
-> > +     if (!phy)
-> > +             goto err_exit;
-> > +
-> > +     phy->recv_skb = alloc_skb(NCI_SKB_BUFF_LEN, GFP_KERNEL);
-> > +     if (!phy->recv_skb)
-> > +             goto err_free;
-> > +
-> > +     mutex_init(&phy->mutex);
-> > +     phy->mode = S3FWRN5_MODE_COLD;
-> > +
-> > +     phy->ser_dev = serdev;
-> > +     serdev_device_set_drvdata(serdev, phy);
-> > +     serdev_device_set_client_ops(serdev, &s3fwrn82_serdev_ops);
-> > +     ret = serdev_device_open(serdev);
-> > +     if (ret) {
-> > +             dev_err(&serdev->dev, "Unable to open device\n");
-> > +             goto err_skb;
-> > +     }
-> > +
-> > +     ret = serdev_device_set_baudrate(serdev, 115200);
->
-> Why baudrate is fixed?
->
+Need to continue check the outer, so tc_proto.
+i'll prep a fix commit for review.
 
-RN82 NFC chip only supports 115200 baudrate for UART.
 
-> > +     if (ret != 115200) {
-> > +             ret = -EINVAL;
-> > +             goto err_serdev;
-> > +     }
-> > +
-> > +     serdev_device_set_flow_control(serdev, false);
-> > +
-> > +     ret = s3fwrn82_uart_parse_dt(serdev);
-> > +     if (ret < 0)
-> > +             goto err_serdev;
-> > +
-> > +     ret = devm_gpio_request_one(&phy->ser_dev->dev,
-> > +                                 phy->gpio_en,
-> > +                                 GPIOF_OUT_INIT_HIGH,
-> > +                                 "s3fwrn82_en");
->
-> This is weirdly wrapped.
->
-
-Did you ask about devem_gpio_request_one function's parenthesis and parameters?
-If it is right, I changed it after i ran the checkpatch.pl --strict and
-i saw message like the alignment should match open parenthesis.
-
-> > +     if (ret < 0)
-> > +             goto err_serdev;
-> > +
-> > +     ret = devm_gpio_request_one(&phy->ser_dev->dev,
-> > +                                 phy->gpio_fw_wake,
-> > +                                 GPIOF_OUT_INIT_LOW,
-> > +                                 "s3fwrn82_fw_wake");
-> > +     if (ret < 0)
-> > +             goto err_serdev;
-> > +
-> > +     ret = s3fwrn5_probe(&phy->ndev, phy, &phy->ser_dev->dev, &uart_phy_ops);
-> > +     if (ret < 0)
-> > +             goto err_serdev;
-> > +
-> > +     return ret;
-> > +
-> > +err_serdev:
-> > +     serdev_device_close(serdev);
-> > +err_skb:
-> > +     kfree_skb(phy->recv_skb);
-> > +err_free:
-> > +     kfree(phy);
->
-> Eee.... why? Did you test this code?
->
-
-I didn't test this code. i just added this code as defense code.
-If the error happens, then allocated memory and device will be free
-according to the fail case.
-
-> > +err_exit:
-> > +     return ret;
-> > +}
-> > +
-> > +static void s3fwrn82_uart_remove(struct serdev_device *serdev)
-> > +{
-> > +     struct s3fwrn82_uart_phy *phy = serdev_device_get_drvdata(serdev);
-> > +
-> > +     s3fwrn5_remove(phy->ndev);
-> > +     serdev_device_close(serdev);
-> > +     kfree_skb(phy->recv_skb);
-> > +     kfree(phy);
->
-> This does not look like tested...
->
-
-I tested this code using unbind of the serial device.
-It worked and I saw the debugging log that i added for checking the
-code to be sure.
-
-> Best regards,
-> Krzysztof
+Thanks,
+Roi
