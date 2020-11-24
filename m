@@ -2,125 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8BF62C2FF2
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 19:28:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D1172C3015
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 19:41:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390940AbgKXS2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 13:28:18 -0500
-Received: from mx07-00178001.pphosted.com ([185.132.182.106]:60852 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388355AbgKXS2R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 13:28:17 -0500
-Received: from pps.filterd (m0046037.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0AOIM4kb025926;
-        Tue, 24 Nov 2020 19:27:55 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=STMicroelectronics;
- bh=y5PgpLZWvVwrpeHOFsuBgZhKVxqtD4Xptw10KGhvdy4=;
- b=vbSWJ12V61pAqdp7nkwx9J0SWmlRvZVvUs855sbw3qQIvE8KyVce03B9rbIaeFrguXgv
- H8seVVGnXKeH0M4od4FAEbKznw59NnXViF1UrFuOAmUb29AUOUEZ7maGG5EgLyMVTFlT
- 7BEFV03eN20MbS0uejQOD05Y4J1eT11s9w5Kh9EePrNYGzxFh64taUMDdeFl8YMa4M0v
- +4oMmdKk/qVxCqgp9pu6ea30fgfRcVpq2bL7RlbEP2M3rNppGiDgIpf37L8FwbOF16TU
- /DsYSpEgmix4z48P/A0iMIZDBnFup79e+Cybnh/czsxcjfsxwSy84jOc114sCVpbLRwN IQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 34y01ch3c6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 24 Nov 2020 19:27:55 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 2159010002A;
-        Tue, 24 Nov 2020 19:27:54 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag1node3.st.com [10.75.127.3])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id CBE9621FEBB;
-        Tue, 24 Nov 2020 19:27:54 +0100 (CET)
-Received: from [10.129.7.42] (10.75.127.51) by SFHDAG1NODE3.st.com
- (10.75.127.3) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 24 Nov
- 2020 19:27:53 +0100
-Message-ID: <4a53794f1a0cea5eb009fce0b4b4c4846771f8be.camel@st.com>
-Subject: Re: [PATCH] net: stmmac: add flexible PPS to dwmac 4.10a
-From:   Antonio Borneo <antonio.borneo@st.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "Jose Abreu" <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        has <has@pengutronix.de>
-Date:   Tue, 24 Nov 2020 19:27:03 +0100
-In-Reply-To: <20201124102022.1a6e6085@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20191007154306.95827-1-antonio.borneo@st.com>
-         <20191007154306.95827-5-antonio.borneo@st.com>
-         <20191009152618.33b45c2d@cakuba.netronome.com>
-         <42960ede-9355-1277-9a6f-4eac3c22365c@pengutronix.de>
-         <e2b2b623700401538fe91e70495c348c08b5d2e3.camel@st.com>
-         <20201124102022.1a6e6085@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.2 
+        id S2404250AbgKXSlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 13:41:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57796 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2404168AbgKXSlO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 13:41:14 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.3])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5AFF2206D8;
+        Tue, 24 Nov 2020 18:41:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606243273;
+        bh=yVfi6Rus2ygw10iMKFhX/lFhewUdnnSLDtB4juWYiy4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jdS/5hQ7BCLJDwu2/PmHPPsMJcah6FlbFJ3tBgSXoWjbpwLxb06pmGPjNisbxsxK8
+         opi6lm9ersrzUU+45Dh91LjMDW88bRaobxY9VbsQK+BqSzoyTmCGX4rY+WE3nsBMM7
+         NOq/fnS8xsDU4FGzP+QZXSn2zPa6yU3+6OYfFMTw=
+Date:   Tue, 24 Nov 2020 10:41:06 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, Eli Cohen <elic@nvidia.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        Eli Cohen <eli@mellanox.com>, Mark Bloch <mbloch@nvidia.com>,
+        Maor Gottlieb <maorg@nvidia.com>
+Subject: Re: [PATCH mlx5-next 11/16] net/mlx5: Add VDPA priority to NIC RX
+ namespace
+Message-ID: <20201124104106.0b1201b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201124180210.GJ5487@ziepe.ca>
+References: <20201120230339.651609-1-saeedm@nvidia.com>
+        <20201120230339.651609-12-saeedm@nvidia.com>
+        <20201121160155.39d84650@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20201122064158.GA9749@mtl-vdi-166.wap.labs.mlnx>
+        <20201124091219.5900e7bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20201124180210.GJ5487@ziepe.ca>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.75.127.51]
-X-ClientProxiedBy: SFHDAG3NODE2.st.com (10.75.127.8) To SFHDAG1NODE3.st.com
- (10.75.127.3)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-24_05:2020-11-24,2020-11-24 signatures=0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-11-24 at 10:20 -0800, Jakub Kicinski wrote:
-> On Tue, 24 Nov 2020 15:23:27 +0100 Antonio Borneo wrote:
-> > On Tue, 2020-11-24 at 15:15 +0100, Ahmad Fatoum wrote:
-> > > On 10.10.19 00:26, Jakub Kicinski wrote:  
-> > > > On Mon, 7 Oct 2019 17:43:06 +0200, Antonio Borneo wrote:  
-> > > > > All the registers and the functionalities used in the callback
-> > > > > dwmac5_flex_pps_config() are common between dwmac 4.10a [1] and
-> > > > > 5.00a [2].
-> > > > > 
-> > > > > Reuse the same callback for dwmac 4.10a too.
-> > > > > 
-> > > > > Tested on STM32MP15x, based on dwmac 4.10a.
-> > > > > 
-> > > > > [1] DWC Ethernet QoS Databook 4.10a October 2014
-> > > > > [2] DWC Ethernet QoS Databook 5.00a September 2017
-> > > > > 
-> > > > > Signed-off-by: Antonio Borneo <antonio.borneo@st.com>  
-> > > > 
-> > > > Applied to net-next.  
-> > > 
-> > > This patch seems to have been fuzzily applied at the wrong location.
-> > > The diff describes extension of dwmac 4.10a and so does the @@ line:
-> > > 
-> > >   @@ -864,6 +864,7 @@ const struct stmmac_ops dwmac410_ops = {
-> > > 
-> > > The patch was applied mainline as 757926247836 ("net: stmmac: add
-> > > flexible PPS to dwmac 4.10a"), but it extends dwmac4_ops instead:
-> > > 
-> > >   @@ -938,6 +938,7 @@ const struct stmmac_ops dwmac4_ops = {
-> > > 
-> > > I don't know if dwmac4 actually supports FlexPPS, so I think it's
-> > > better to be on the safe side and revert 757926247836 and add the
-> > > change for the correct variant.  
-> > 
-> > Agree,
-> > the patch get applied to the wrong place!
-> 
-> :-o
-> 
-> This happens sometimes with stable backports but I've never seen it
-> happen working on "current" branches.
-> 
-> Sorry about that!
-> 
-> Would you mind sending the appropriate patches? I can do the revert if
-> you prefer, but since you need to send the fix anyway..
+On Tue, 24 Nov 2020 14:02:10 -0400 Jason Gunthorpe wrote:
+> On Tue, Nov 24, 2020 at 09:12:19AM -0800, Jakub Kicinski wrote:
+> > On Sun, 22 Nov 2020 08:41:58 +0200 Eli Cohen wrote: =20
+> > > On Sat, Nov 21, 2020 at 04:01:55PM -0800, Jakub Kicinski wrote: =20
+> > > > On Fri, 20 Nov 2020 15:03:34 -0800 Saeed Mahameed wrote:   =20
+> > > > > From: Eli Cohen <eli@mellanox.com>
+> > > > >=20
+> > > > > Add a new namespace type to the NIC RX root namespace to allow for
+> > > > > inserting VDPA rules before regular NIC but after bypass, thus al=
+lowing
+> > > > > DPDK to have precedence in packet processing.   =20
+> > > >=20
+> > > > How does DPDK and VDPA relate in this context?   =20
+> > >=20
+> > > mlx5 steering is hierarchical and defines precedence amongst namespac=
+es.
+> > > Up till now, the VDPA implementation would insert a rule into the
+> > > MLX5_FLOW_NAMESPACE_BYPASS hierarchy which is used by DPDK thus taking
+> > > all the incoming traffic.
+> > >=20
+> > > The MLX5_FLOW_NAMESPACE_VDPA hirerachy comes after
+> > > MLX5_FLOW_NAMESPACE_BYPASS. =20
+> >=20
+> > Our policy was no DPDK driver bifurcation. There's no asterisk saying
+> > "unless you pretend you need flow filters for RDMA, get them upstream
+> > and then drop the act". =20
+>=20
+> Huh?
+>=20
+> mlx5 DPDK is an *RDMA* userspace application.=20
 
-You mean sending two patches one for revert and one to re-apply the code?
-Or a single patch for the fix?
+Forgive me for my naivet=C3=A9.=20
 
-Antonio
+Here I thought the RDMA subsystem is for doing RDMA.
 
+I'm sure if you start doing crypto over ibverbs crypto people will want
+to have a look.
+
+> libibverbs. It runs on the RDMA stack. It uses RDMA flow filtering and
+> RDMA raw ethernet QPs.=20
+
+I'm not saying that's not the case. I'm saying I don't think this was
+something that netdev developers signed-off on. And our policy on DPDK
+is pretty widely known.
+
+Would you mind pointing us to the introduction of raw Ethernet QPs?
+
+Is there any production use for that without DPDK?
+
+> It has been like this for years, it is not some "act".
+>=20
+> It is long standing uABI that accelerators like RDMA/etc get to take
+> the traffic before netdev. This cannot be reverted. I don't really
+> understand what you are expecting here?
+
+Same. I don't really know what you expect me to do either. I don't
+think I can sign-off on kernel changes needed for DPDK.
