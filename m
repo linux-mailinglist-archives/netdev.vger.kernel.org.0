@@ -2,216 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5147D2C2FAB
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 19:08:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AC282C2FAD
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 19:08:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404279AbgKXSIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 13:08:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49028 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404271AbgKXSIC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 13:08:02 -0500
-Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2063C061A4D
-        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 10:08:01 -0800 (PST)
-Received: by mail-qt1-x84a.google.com with SMTP id y5so16843782qtb.13
-        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 10:08:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=jr6n+gGQ0gPUfD8Udg6Byq8ZbVVPkJmpa2QPyf3HxP0=;
-        b=bRjdXk+YNRs6MGMHpIX7PpUx3mpM9cFJM/71xN+gyLK2BLi19VstuHwyktRYwQoaCS
-         Veb2hjhaqQLqSh6rmORx+hGHxW9/EdaRy+yQ9o42B7NjlGknybT/Og3dvR2PWcTF/Pvd
-         n32vpF3CAPSFFJ84aBNlG+vZvjkVt0y8DULM8AnzYd5sZ/N9K6RiJOBNQdJKi3JrEf8Y
-         KzWIY+rgW5ddA3oMIT78HCvdNlcfT8Q8iNQka59QjBXcs+VMP5DB21kmYnxbhSdGHeyt
-         hKcrx9qIoz8mB8HamXwima6aOi7SweqXE+ia2dMIpj+eV735ZUYhyKFxQ21vPvflyqv9
-         xYsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=jr6n+gGQ0gPUfD8Udg6Byq8ZbVVPkJmpa2QPyf3HxP0=;
-        b=Il4L4H0OUPZnAytca4HscB6y7FbuGcfRHPC4mBpQD2fiEeJAyUAjMBpkc0aumF2jUj
-         nVFA5+lO8flZRjthSIHI+47lm4fwAl8bQD/x/p+WfakjbWSspNV7Db95veEmkOiCIFyl
-         c5ZCzbqwyOMXAfolKtcHVysPcfEo7Hih2cd791PodXBTKXBOUDGiTXz+rQ22YEESe2Ns
-         zG/i7kxP1t73JgyySjYtEFAxtEZGNBXrbMDZMme+E7cj3yQPkHafYPCJcmaQYQNHL07P
-         4PG75AO2JK6nDrJoWoRzfRjwc3MIIk2KalHNi30hiXRBvYF7MWcgqvAxqBC6DnTJtwVR
-         djXw==
-X-Gm-Message-State: AOAM532pStS2QPNsaFRA6miSgiIUieKU+dlA+NPeYYMASD1cvK/olod0
-        iwtcX3I+4ppIGHGIUwKZr8Ot649LJaLPAuqe1FWY
-X-Google-Smtp-Source: ABdhPJxU22Xs03oChrUB09+FOvQjo/u+MSGq91eBAAfhOgxcxBhGj5ZQrIVYFaaXRoIWJGq9iyH5G29iSj4a6BNuQOj1
-Sender: "danielwinkler via sendgmr" 
-        <danielwinkler@danielwinkler-linux.mtv.corp.google.com>
-X-Received: from danielwinkler-linux.mtv.corp.google.com ([2620:15c:202:201:f693:9fff:fef4:4e59])
- (user=danielwinkler job=sendgmr) by 2002:a0c:ba20:: with SMTP id
- w32mr6092787qvf.50.1606241281016; Tue, 24 Nov 2020 10:08:01 -0800 (PST)
-Date:   Tue, 24 Nov 2020 10:07:46 -0800
-In-Reply-To: <20201124180746.1773091-1-danielwinkler@google.com>
-Message-Id: <20201124100610.v5.5.I5068c01cae3cea674a96e103a0cf4d8c81425a4f@changeid>
-Mime-Version: 1.0
-References: <20201124180746.1773091-1-danielwinkler@google.com>
-X-Mailer: git-send-email 2.29.2.454.gaff20da3a2-goog
-Subject: [PATCH v5 5/5] Bluetooth: Change MGMT security info CMD to be more generic
-From:   Daniel Winkler <danielwinkler@google.com>
-To:     marcel@holtmann.org
-Cc:     chromeos-bluetooth-upstreaming@chromium.org,
-        linux-bluetooth@vger.kernel.org,
-        Daniel Winkler <danielwinkler@google.com>,
-        Sonny Sasaka <sonnysasaka@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        id S2404296AbgKXSIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 13:08:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56286 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2404248AbgKXSIL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 13:08:11 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 708D321D7A;
+        Tue, 24 Nov 2020 18:08:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606241290;
+        bh=a3zcbxyM7m3QhyNcCwvEWkswxRtkEpWapn/npBZTDtU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qqLLHvUK6BmYgrnlEQkR4uim+B6Zm/jfdijYnag2spkAJLR1ioOxkrfPdvBFz99ng
+         Kx6KWXI1LfJjlvEYDK/mp5XnTePA0JTQpQTOwIBW8oVuxWbLUuXyMx95zkFmeNtrjg
+         NNAvUaZmCcMCgD0B/A1XAetjcIJS3HnbhQWOR/+M=
+Date:   Tue, 24 Nov 2020 10:08:09 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, mptcp@lists.01.org,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: Re: [PATCH net-next] mptcp: be careful on MPTCP-level ack.
+Message-ID: <20201124100809.08360e4c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <722e1a13493897c7cc194035e9b394e0dbeeb1af.1606213920.git.pabeni@redhat.com>
+References: <722e1a13493897c7cc194035e9b394e0dbeeb1af.1606213920.git.pabeni@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For advertising, we wish to know the LE tx power capabilities of the
-controller in userspace, so this patch edits the Security Info MGMT
-command to be more generic, such that other various controller
-capabilities can be included in the EIR data. This change also includes
-the LE min and max tx power into this newly-named command.
+On Tue, 24 Nov 2020 12:20:11 +0100 Paolo Abeni wrote:
+> -static void mptcp_send_ack(struct mptcp_sock *msk, bool force)
+> +static inline bool tcp_can_send_ack(const struct sock *ssk)
+> +{
+> +	return !((1 << inet_sk_state_load(ssk)) &
+> +	       (TCPF_SYN_SENT | TCPF_SYN_RECV | TCPF_TIME_WAIT | TCPF_CLOSE));
+> +}
 
-The change was tested by manually verifying that the MGMT command
-returns the tx power range as expected in userspace.
-
-Reviewed-by: Sonny Sasaka <sonnysasaka@chromium.org>
-Signed-off-by: Daniel Winkler <danielwinkler@google.com>
----
-
-Changes in v5: None
-Changes in v4:
-- Combine LE tx range into a single EIR field for MGMT capabilities cmd
-
-Changes in v3:
-- Re-using security info MGMT command to carry controller capabilities
-
-Changes in v2:
-- Fixed sparse error in Capabilities MGMT command
-
- include/net/bluetooth/mgmt.h | 15 +++++++++-----
- net/bluetooth/mgmt.c         | 39 +++++++++++++++++++++++-------------
- 2 files changed, 35 insertions(+), 19 deletions(-)
-
-diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
-index 2e18e4173e2fa5..f9a6638e20b3c6 100644
---- a/include/net/bluetooth/mgmt.h
-+++ b/include/net/bluetooth/mgmt.h
-@@ -686,11 +686,16 @@ struct mgmt_cp_set_blocked_keys {
- 
- #define MGMT_OP_SET_WIDEBAND_SPEECH	0x0047
- 
--#define MGMT_OP_READ_SECURITY_INFO	0x0048
--#define MGMT_READ_SECURITY_INFO_SIZE	0
--struct mgmt_rp_read_security_info {
--	__le16   sec_len;
--	__u8     sec[];
-+#define MGMT_CAP_SEC_FLAGS		0x01
-+#define MGMT_CAP_MAX_ENC_KEY_SIZE	0x02
-+#define MGMT_CAP_SMP_MAX_ENC_KEY_SIZE	0x03
-+#define MGMT_CAP_LE_TX_PWR		0x04
-+
-+#define MGMT_OP_READ_CONTROLLER_CAP	0x0048
-+#define MGMT_READ_CONTROLLER_CAP_SIZE	0
-+struct mgmt_rp_read_controller_cap {
-+	__le16   cap_len;
-+	__u8     cap[0];
- } __packed;
- 
- #define MGMT_OP_READ_EXP_FEATURES_INFO	0x0049
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index 668a62c8181eb1..d8adf78a437e0b 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -110,7 +110,7 @@ static const u16 mgmt_commands[] = {
- 	MGMT_OP_SET_APPEARANCE,
- 	MGMT_OP_SET_BLOCKED_KEYS,
- 	MGMT_OP_SET_WIDEBAND_SPEECH,
--	MGMT_OP_READ_SECURITY_INFO,
-+	MGMT_OP_READ_CONTROLLER_CAP,
- 	MGMT_OP_READ_EXP_FEATURES_INFO,
- 	MGMT_OP_SET_EXP_FEATURE,
- 	MGMT_OP_READ_DEF_SYSTEM_CONFIG,
-@@ -176,7 +176,7 @@ static const u16 mgmt_untrusted_commands[] = {
- 	MGMT_OP_READ_CONFIG_INFO,
- 	MGMT_OP_READ_EXT_INDEX_LIST,
- 	MGMT_OP_READ_EXT_INFO,
--	MGMT_OP_READ_SECURITY_INFO,
-+	MGMT_OP_READ_CONTROLLER_CAP,
- 	MGMT_OP_READ_EXP_FEATURES_INFO,
- 	MGMT_OP_READ_DEF_SYSTEM_CONFIG,
- 	MGMT_OP_READ_DEF_RUNTIME_CONFIG,
-@@ -3710,13 +3710,14 @@ static int set_wideband_speech(struct sock *sk, struct hci_dev *hdev,
- 	return err;
- }
- 
--static int read_security_info(struct sock *sk, struct hci_dev *hdev,
--			      void *data, u16 data_len)
-+static int read_controller_cap(struct sock *sk, struct hci_dev *hdev,
-+			       void *data, u16 data_len)
- {
--	char buf[16];
--	struct mgmt_rp_read_security_info *rp = (void *)buf;
--	u16 sec_len = 0;
-+	char buf[20];
-+	struct mgmt_rp_read_controller_cap *rp = (void *)buf;
-+	u16 cap_len = 0;
- 	u8 flags = 0;
-+	u8 tx_power_range[2];
- 
- 	bt_dev_dbg(hdev, "sock %p", sk);
- 
-@@ -3740,23 +3741,33 @@ static int read_security_info(struct sock *sk, struct hci_dev *hdev,
- 
- 	flags |= 0x08;		/* Encryption key size enforcement (LE) */
- 
--	sec_len = eir_append_data(rp->sec, sec_len, 0x01, &flags, 1);
-+	cap_len = eir_append_data(rp->cap, cap_len, MGMT_CAP_SEC_FLAGS,
-+				  &flags, 1);
- 
- 	/* When the Read Simple Pairing Options command is supported, then
- 	 * also max encryption key size information is provided.
- 	 */
- 	if (hdev->commands[41] & 0x08)
--		sec_len = eir_append_le16(rp->sec, sec_len, 0x02,
-+		cap_len = eir_append_le16(rp->cap, cap_len,
-+					  MGMT_CAP_MAX_ENC_KEY_SIZE,
- 					  hdev->max_enc_key_size);
- 
--	sec_len = eir_append_le16(rp->sec, sec_len, 0x03, SMP_MAX_ENC_KEY_SIZE);
-+	cap_len = eir_append_le16(rp->cap, cap_len,
-+				  MGMT_CAP_SMP_MAX_ENC_KEY_SIZE,
-+				  SMP_MAX_ENC_KEY_SIZE);
-+
-+	/* Append the min/max LE tx power parameters */
-+	memcpy(&tx_power_range[0], &hdev->min_le_tx_power, 1);
-+	memcpy(&tx_power_range[1], &hdev->max_le_tx_power, 1);
-+	cap_len = eir_append_data(rp->cap, cap_len, MGMT_CAP_LE_TX_PWR,
-+				  tx_power_range, 2);
- 
--	rp->sec_len = cpu_to_le16(sec_len);
-+	rp->cap_len = cpu_to_le16(cap_len);
- 
- 	hci_dev_unlock(hdev);
- 
--	return mgmt_cmd_complete(sk, hdev->id, MGMT_OP_READ_SECURITY_INFO, 0,
--				 rp, sizeof(*rp) + sec_len);
-+	return mgmt_cmd_complete(sk, hdev->id, MGMT_OP_READ_CONTROLLER_CAP, 0,
-+				 rp, sizeof(*rp) + cap_len);
- }
- 
- #ifdef CONFIG_BT_FEATURE_DEBUG
-@@ -8193,7 +8204,7 @@ static const struct hci_mgmt_handler mgmt_handlers[] = {
- 	{ set_blocked_keys,	   MGMT_OP_SET_BLOCKED_KEYS_SIZE,
- 						HCI_MGMT_VAR_LEN },
- 	{ set_wideband_speech,	   MGMT_SETTING_SIZE },
--	{ read_security_info,      MGMT_READ_SECURITY_INFO_SIZE,
-+	{ read_controller_cap,     MGMT_READ_CONTROLLER_CAP_SIZE,
- 						HCI_MGMT_UNTRUSTED },
- 	{ read_exp_features_info,  MGMT_READ_EXP_FEATURES_INFO_SIZE,
- 						HCI_MGMT_UNTRUSTED |
--- 
-2.29.2.454.gaff20da3a2-goog
-
+Does the compiler really not inline this trivial static function?
