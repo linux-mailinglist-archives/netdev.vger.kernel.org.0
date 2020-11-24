@@ -2,66 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45DA82C2320
+	by mail.lfdr.de (Postfix) with ESMTP id B212C2C2321
 	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 11:41:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732087AbgKXKla (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 05:41:30 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:8020 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731505AbgKXKl3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 05:41:29 -0500
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CgLCl5wRWzhdcQ;
-        Tue, 24 Nov 2020 18:41:07 +0800 (CST)
-Received: from thunder-town.china.huawei.com (10.174.178.208) by
- DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
- 14.3.487.0; Tue, 24 Nov 2020 18:41:19 +0800
-From:   Zhen Lei <thunder.leizhen@huawei.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-CC:     Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH 1/1] tools/bpftool: fix error return value in build_btf_type_table()
-Date:   Tue, 24 Nov 2020 18:41:00 +0800
-Message-ID: <20201124104100.491-1-thunder.leizhen@huawei.com>
-X-Mailer: git-send-email 2.26.0.windows.1
+        id S1732153AbgKXKlq convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 24 Nov 2020 05:41:46 -0500
+Received: from pic75-3-78-194-244-226.fbxo.proxad.net ([78.194.244.226]:40976
+        "EHLO mail.corsac.net" rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org
+        with ESMTP id S1732140AbgKXKlq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 05:41:46 -0500
+Received: from scapa.corsac.net (unknown [IPv6:2a01:e34:ec2f:4e20:6af7:28ff:fe8d:2119])
+        by mail.corsac.net (Postfix) with ESMTPS id E9D62A2
+        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 11:41:40 +0100 (CET)
+Received: from corsac (uid 1000)
+        (envelope-from corsac@corsac.net)
+        id a00a5
+        by scapa.corsac.net (DragonFly Mail Agent v0.12);
+        Tue, 24 Nov 2020 11:41:40 +0100
+Message-ID: <02c032512dab22c1ab758d953affd94a4064fdbd.camel@corsac.net>
+Subject: Re: [PATCH] usbnet: ipheth: fix connectivity with iOS 14
+From:   Yves-Alexis Perez <corsac@corsac.net>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Martin Habets <mhabets@solarflare.com>,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        "Michael S. Tsirkin" <mst@redhat.com>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Matti Vuorela <matti.vuorela@bitfactor.fi>,
+        stable@vger.kernel.org
+Date:   Tue, 24 Nov 2020 11:41:40 +0100
+In-Reply-To: <20201121140311.42585c68@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <CAAn0qaXmysJ9vx3ZEMkViv_B19ju-_ExN8Yn_uSefxpjS6g4Lw@mail.gmail.com>
+         <20201119172439.94988-1-corsac@corsac.net>
+         <20201121140311.42585c68@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.38.1-2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.174.178.208]
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-An appropriate return value should be set on the failed path.
+On Sat, 2020-11-21 at 14:03 -0800, Jakub Kicinski wrote:
+> Applied to net with the typo fixed, thanks!
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- tools/bpf/bpftool/btf.c | 1 +
- 1 file changed, 1 insertion(+)
+Thanks!
 
-diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
-index 8ab142ff5eac..2afb7d5b1aca 100644
---- a/tools/bpf/bpftool/btf.c
-+++ b/tools/bpf/bpftool/btf.c
-@@ -693,6 +693,7 @@ build_btf_type_table(struct btf_attach_table *tab, enum bpf_obj_type type,
- 		obj_node = calloc(1, sizeof(*obj_node));
- 		if (!obj_node) {
- 			p_err("failed to allocate memory: %s", strerror(errno));
-+			err = -ENOMEM;
- 			goto err_free;
- 		}
- 
+Is there any chance it'll be in 5.10 or will it have to wait for the 5.11
+merge window?
+
+Also it should be applied to all supported/stable kernels. I guess that'll
+have to wait until it's in Linus tree according [1] to but I'm unsure if I
+need to trigger the action myself or if Greg (or Dave, according to [2]) will
+do it.
+
+I looked at [3] and it seems that adding the CC: stable in my commit message
+maybe was an error because it's marked as a Failure, so if there's anything
+needed from me here, don't hesitate to ask.
+
+[1] https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+[2]
+https://www.kernel.org/doc/html/latest/networking/netdev-FAQ.html#q-how-can-i-tell-what-patches-are-queued-up-for-backporting-to-the-various-stable-releases
+[3] https://patchwork.kernel.org/bundle/netdev/stable/?state=*
+
+Regards,
 -- 
-2.26.0.106.g9fadedd
-
-
+Yves-Alexis
