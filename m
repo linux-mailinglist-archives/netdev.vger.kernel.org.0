@@ -2,91 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13A912C29A2
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 15:30:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D66CC2C29A6
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 15:30:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389068AbgKXO3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 09:29:36 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:33416 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388014AbgKXO3g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 09:29:36 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0AOEPCue010051;
-        Tue, 24 Nov 2020 06:29:27 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=subject : to :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pfpt0220;
- bh=bKTEaB+h/bQFHNUOWJf9rkxNLNyTMHb3Pf84oN9IMq0=;
- b=ZPBGBeOhAIgAVhWl9LiST36cRCQ1ITysd8ukQzQOQhH4AKR3OJyoQFl0/rqJq2EvltwY
- c5z2R0Qylesso1rZFWABPM9da259KxP+s6tGQwPOHw7yKvAinWv45gl8ybHaKo2NYgz6
- qahLV7zRgfe0GThl0GsFGuiqzm+1GYHKEXQO2NfSH76BXRFynVusJtIOXNcIQIt0gUAu
- 7I8MHyyFGsZ7+7LuP4YCYLvrAcW5jtRluPx5u3IZJrsl84QSiXkcmTaJJsAHaTIC7WEC
- 89wfxUdUH+DMvJUPDFVrxr/0gvh1Wis+Ym3Tp5W6mXRrk81Pxyqnt9YLYG+1nx1nM/Zz Pw== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 34y39r9vpj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 24 Nov 2020 06:29:27 -0800
-Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 24 Nov
- 2020 06:29:26 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 24 Nov
- 2020 06:29:26 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 24 Nov 2020 06:29:26 -0800
-Received: from [10.193.39.169] (NN-LT0019.marvell.com [10.193.39.169])
-        by maili.marvell.com (Postfix) with ESMTP id 705553F703F;
-        Tue, 24 Nov 2020 06:29:24 -0800 (PST)
-Subject: Re: [EXT] [PATCH] aquantia: Remove the build_skb path
-To:     "Ramsay, Lincoln" <Lincoln.Ramsay@digi.com>,
+        id S2388265AbgKXOaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 09:30:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43250 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726145AbgKXOaI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 09:30:08 -0500
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA83C0613D6
+        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 06:30:08 -0800 (PST)
+Received: by mail-ej1-x641.google.com with SMTP id i19so28758163ejx.9
+        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 06:30:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=HA/SrIK113BuXrImyLyO23K25JxNPP6srrWYVaCENIw=;
+        b=bYW1lAY//P1VUkd3XTKs5RKKiBBoc2DG04fyDsqNr/mQYrbfBWuzkZkAN9d04tpXgM
+         DRW6DuHI1mgqX5H/GF44CqmNmH6qpW6k8cLYhlzWdpl38i3cY/uAKfGAYYp5vPbgMg9p
+         T7hxL7lhYAUpYXPd08zECOTmR8T2wWZ6eUXa6IRZqC37/HTr6iAuQm87Kq1H0uDT9x5x
+         m8XHbU6zZvvBXcYqX0ymi8aoNJllIYHha+snfbfsCbQyxz/HHlGhFemYvtqEgO8WtvoO
+         jmHl9S7dJiVbewuk1caJq2BGVQtGz1hV/rzGAFoKg4cH32/hLKibVFJxeNqOmzmQhCqN
+         7ycA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=HA/SrIK113BuXrImyLyO23K25JxNPP6srrWYVaCENIw=;
+        b=Gux5yJANEtbPkiLAQAaNUTshPph4EnZDFhQqmmZlvp9jkvjAo1Z8PUFTAt1rvUgaVV
+         yWZdsp4KBp5VLVM0++L55CYRGxUH5EjOCb9dYl0vjD6bIAxvdpCfa3SCHPpCPa8zlcC/
+         yiDGal/DaNhxA2dfx96BwOcX1c4JhZzlCRi52uOO39RodiRZ8t1oMdMtHdds1aARKndr
+         Kp2+K/ZU23jeT1USoVmobDd2hZGmpcjG0rLVoJoX+l2PyOvwG7FE4lvN2y9p27MLa+ex
+         OJ02AEIb4ykNkerswwCQLyVxLTOtPQcw07vLtX0dcgN/O5LuCkcXMSQPNQtAvArXeoGd
+         s2lg==
+X-Gm-Message-State: AOAM53119ZeLOa/yofbysU9kEJ/a+IyROjU0irI/jxkHltEYd3GAk68x
+        tcNwL/RYz4LcUyQp6EMRpJM=
+X-Google-Smtp-Source: ABdhPJw610QyVYVUlTCpXmgiaoZv0tALtURR3qFzDv6TvHRkrItpJIRarx+fR+9sL47VbY6iqFZiXw==
+X-Received: by 2002:a17:906:bcd4:: with SMTP id lw20mr4231466ejb.527.1606228207133;
+        Tue, 24 Nov 2020 06:30:07 -0800 (PST)
+Received: from [192.168.1.110] ([77.124.63.70])
+        by smtp.gmail.com with ESMTPSA id s20sm7029081edw.26.2020.11.24.06.30.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 24 Nov 2020 06:30:06 -0800 (PST)
+Subject: Re: [PATCH net] netdevice.h: Fix unintentional disable of ALL_FOR_ALL
+ features on upper device
+To:     Eric Dumazet <edumazet@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     Tariq Toukan <tariqt@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        "Dmitry Bogdanov [C]" <dbogdanov@marvell.com>
-References: <CY4PR1001MB23118EE23F7F5196817B8B2EE8E10@CY4PR1001MB2311.namprd10.prod.outlook.com>
- <2b392026-c077-2871-3492-eb5ddd582422@marvell.com>
- <CY4PR1001MB2311C0DA2840AFC20AE6AEB5E8E10@CY4PR1001MB2311.namprd10.prod.outlook.com>
- <CY4PR1001MB231125B16A35324A79270373E8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
- <CY4PR1001MB2311E1B5D8E2700C92E7BE2DE8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
- <12fbca7a-86c9-ab97-d052-2a5cb0a4f145@marvell.com>
- <CY4PR1001MB23115129ED895150C388E12CE8FD0@CY4PR1001MB2311.namprd10.prod.outlook.com>
-From:   Igor Russkikh <irusskikh@marvell.com>
-Message-ID: <5b6ae6ab-be6d-3a18-341d-c18719ffaaad@marvell.com>
-Date:   Tue, 24 Nov 2020 17:29:22 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:84.0) Gecko/20100101
- Thunderbird/84.0
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+References: <20201123141256.14208-1-tariqt@nvidia.com>
+ <CANn89iKRVyTZg-tNQvo_Ub-RZ_A+OOQQY8Py3J9fx=NOZXF9Qw@mail.gmail.com>
+ <9bf8ba40-cd40-2af6-d358-48dd98526434@gmail.com>
+ <CANn89iK8MXp0QmZbBKdMDHxi7A4afrVdBtgQq7cSY5SRefwraA@mail.gmail.com>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+Message-ID: <4a2fb20f-3112-ce9d-abf8-f0a1e0f80656@gmail.com>
+Date:   Tue, 24 Nov 2020 16:30:03 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-In-Reply-To: <CY4PR1001MB23115129ED895150C388E12CE8FD0@CY4PR1001MB2311.namprd10.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CANn89iK8MXp0QmZbBKdMDHxi7A4afrVdBtgQq7cSY5SRefwraA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-24_04:2020-11-24,2020-11-24 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 23/11/2020 7:20 am, Ramsay, Lincoln wrote:
->> Yep, that could be the only way to fix this for now.
->> Have you tried to estimate any performance drops from this?
+On 11/24/2020 12:48 PM, Eric Dumazet wrote:
+> On Mon, Nov 23, 2020 at 5:15 PM Tariq Toukan <ttoukan.linux@gmail.com> wrote:
+>>
+>>
+>>
+>> On 11/23/2020 4:55 PM, Eric Dumazet wrote:
+>>> On Mon, Nov 23, 2020 at 3:13 PM Tariq Toukan <tariqt@nvidia.com> wrote:
+>>>>
+>>>> Calling netdev_increment_features() on upper/master device from
+>>>> netdev_add_tso_features() implies unintentional clearance of ALL_FOR_ALL
+>>>> features supported by all slaves.  Fix it by passing ALL_FOR_ALL in
+>>>> addition to ALL_TSO.
+>>>>
+>>>> Fixes: b0ce3508b25e ("bonding: allow TSO being set on bonding master")
+>>>
+>>> I think you should give more details to your bug report, because
+>>> netdev_add_tso_features() is used from different
+>>> places.
+>>>
+>>> Thanks.
+>>>
+>>
+>> Right. I'll include these in the re-spin:
+>> Fixes: 247f6d0f8667 ("team: allow TSO being set on master")
+>> Fixes: f902e8812ef6 ("bridge: Add ability to enable TSO")
 > 
-> Unfortunately, I am not in a very good position to do this. The 10G
-> interfaces on our device don't actually have enough raw PCI bandwidth
-> available to hit 10G transfer rates.
+> I was more thinking about what exact issue you had, and how we can
+> reproduce it, and test the fix.
 > 
-> I did use iperf3 and saw bursts over 2Gbit/sec (with average closer to
-> 1.3Gbit/sec on a good run). There was no significant difference between
-> running with and without the patch. I am told that this is about as good
-> as can be expected.
+
+Issue reproduction is very simple:
+Pick any of the features under ALL_FOR_ALL, like tx-nocache-copy.
+Turn it on for all slaves.
+Turn it on for the bond.
+You'll still not be able to use it:
+     tx-nocache-copy: off [requested on]
+
+Reason is that the call to netdev_add_tso_features() being considered as 
+a "dummy" slave that has this feature bit cleared, breaking ALL_FOR_ALL 
+logic.
+
+>>
+>> I wonder though if netdev_increment_features() is expected to clear
+>> features that are not part of the mask.
 > 
-> Make of that what you will :)
+> Well, the 'increment' part was suggesting the function was adding
+> flags, not removing them.
+> 
 
-Thats not very useful, but since we anyway have to fix that - lets do it.
+Yes, that's confusing... Although ALL_FOR_ALL logic is just about 
+removing, unlike ONE_FOR_ALL.
 
-I'll try to estimate potential perf drop on my setup when possible.
+> We might ask Herbert Xu if we :
+> 
+> 1) Need to comment the function, or change its name to be more descriptive.
+> 2) Change the behavior (as you suggested)
+> 3) Other choice.
+> 
 
-Thanks,
-  Igor
+
