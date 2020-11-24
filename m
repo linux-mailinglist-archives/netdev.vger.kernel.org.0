@@ -2,63 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32B302C3446
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 00:01:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10BB72C344A
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 00:01:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729521AbgKXXAG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 18:00:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58638 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728404AbgKXXAG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 18:00:06 -0500
-Content-Type: text/plain; charset="utf-8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606258805;
-        bh=JVUDvk47SnyR2f5xhpj8JB3bkMCNnXzwJpVV0356upU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=jimY1Zrf94/dilv9CYAd5RJo0MmfeKnvsY39HkwrwHYpzUJQnyy1RgmYAZUT5y8YH
-         /AzREVLIKs/X/qzLjClqL7kAU8LpcYS5IYwOm1foTjHS5CXN2A0OyonzxMjBNAgNHf
-         NYVgCDhti4KEqvA7HnurNX4oLQG0r8kzYqSYh5F8=
+        id S1730157AbgKXXAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 18:00:35 -0500
+Received: from www62.your-server.de ([213.133.104.62]:45190 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728404AbgKXXAf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 18:00:35 -0500
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1khhIY-0004GY-0T; Wed, 25 Nov 2020 00:00:34 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1khhIX-000V7T-Pm; Wed, 25 Nov 2020 00:00:33 +0100
+Subject: Re: [PATCH net-next 0/3] mvneta: access skb_shared_info only on last
+ frag
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, davem@davemloft.net,
+        brouer@redhat.com, echaudro@redhat.com, john.fastabend@gmail.com,
+        alexei.starovoitov@gmail.com
+References: <cover.1605889258.git.lorenzo@kernel.org>
+ <20201124122639.6fa91460@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201124221854.GA64351@lore-desk>
+ <09034687-75d5-7102-8f9a-7dde69d04a63@iogearbox.net>
+ <20201124143056.606fd5d0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <ef387ff6-48e0-ba17-1143-6e9a88ea2367@iogearbox.net>
+Date:   Wed, 25 Nov 2020 00:00:33 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] dpaa2-eth: Fix compile error due to missing devlink
- support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160625880541.8800.564472300134890025.git-patchwork-notify@kernel.org>
-Date:   Tue, 24 Nov 2020 23:00:05 +0000
-References: <20201123163553.1666476-1-ciorneiioana@gmail.com>
-In-Reply-To: <20201123163553.1666476-1-ciorneiioana@gmail.com>
-To:     Ioana Ciornei <ciorneiioana@gmail.com>
-Cc:     kuba@kernel.org, netdev@vger.kernel.org, ezequiel@collabora.com,
-        ioana.ciornei@nxp.com
+In-Reply-To: <20201124143056.606fd5d0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25998/Tue Nov 24 14:16:50 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Mon, 23 Nov 2020 18:35:53 +0200 you wrote:
-> From: Ezequiel Garcia <ezequiel@collabora.com>
+On 11/24/20 11:30 PM, Jakub Kicinski wrote:
+> On Tue, 24 Nov 2020 23:25:11 +0100 Daniel Borkmann wrote:
+>> On 11/24/20 11:18 PM, Lorenzo Bianconi wrote:
+>>>> On Fri, 20 Nov 2020 18:05:41 +0100 Lorenzo Bianconi wrote:
+>>>>> Build skb_shared_info on mvneta_rx_swbm stack and sync it to xdp_buff
+>>>>> skb_shared_info area only on the last fragment.
+>>>>> Avoid avoid unnecessary xdp_buff initialization in mvneta_rx_swbm routine.
+>>>>> This a preliminary series to complete xdp multi-buff in mvneta driver.
+>>>>
+>>>> Looks fine, but since you need this for XDP multi-buff it should
+>>>> probably go via bpf-next, right?
+>>>>
+>>>> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+>>>
+>>> Hi Jakub,
+>>>
+>>> thx for the review. Since the series changes networking-only bits I sent it for
+>>> net-next, but I agree bpf-next is better.
+>>>
+>>> @Alexei, Daniel: is it fine to merge the series in bpf-next?
+>>
+>> Yeah totally fine, will take it into bpf-next in a bit.
 > 
-> The dpaa2 driver depends on devlink, so it should select
-> NET_DEVLINK in order to fix compile errors, such as:
-> 
-> drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.o: in function `dpaa2_eth_rx_err':
-> dpaa2-eth.c:(.text+0x3cec): undefined reference to `devlink_trap_report'
-> drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-devlink.o: in function `dpaa2_eth_dl_info_get':
-> dpaa2-eth-devlink.c:(.text+0x160): undefined reference to `devlink_info_driver_name_put'
-> 
-> [...]
+> FWIW watch out with the Link:s, it wasn't CCed to bpf@vger.
 
-Here is the summary with links:
-  - [net] dpaa2-eth: Fix compile error due to missing devlink support
-    https://git.kernel.org/netdev/net/c/078eb55cdf25
+@Jakub, I think it's less hassle if you take the series in. Looking closer, net-next has
+commit 9c79a8ab5f12 ("net: mvneta: fix possible memory leak in mvneta_swbm_add_rx_fragment")
+which bpf-next is currently lacking, and this series here is touching the part of this
+code, so it will create unnecessary merge conflicts. I'll likely flush out bpf-next PR
+on Thurs/Fri at latest, so bpf-next will then have everything needed once we sync back
+from net-next after merge.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks,
+Daniel
