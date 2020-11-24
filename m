@@ -2,431 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FF252C2E8B
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 18:29:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB4822C2EFD
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 18:42:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390890AbgKXR3d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 12:29:33 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32373 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2390815AbgKXR3d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 12:29:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606238970;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kw/6zL0+DwqJJoi4AemVttrsG0jEunMq0o/xAEP6HHU=;
-        b=Np3duxPhSbr1gdoUM7gUaWI094SU5kthlu7hi3zEix0km6uCdI//O/K0pPxAo5MRE9ilOT
-        TSnKlkpdqk3VhIvd9ERdqLl+BSyMVWgDTB+ya02EHUmRwswU0orkhr5LwETbjvWpampakX
-        OmqoDa0qOnyGqOqhpLAqJRAGCekJ2I0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-61-OiTTr571PO67B39HYqt_fw-1; Tue, 24 Nov 2020 12:28:51 -0500
-X-MC-Unique: OiTTr571PO67B39HYqt_fw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0A8B586ABD6;
-        Tue, 24 Nov 2020 17:28:50 +0000 (UTC)
-Received: from f31.redhat.com (ovpn-113-8.rdu2.redhat.com [10.10.113.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 995195C1A3;
-        Tue, 24 Nov 2020 17:28:46 +0000 (UTC)
-From:   jmaloy@redhat.com
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     tipc-discussion@lists.sourceforge.net,
-        tung.q.nguyen@dektech.com.au, hoang.h.le@dektech.com.au,
-        tuong.t.lien@dektech.com.au, jmaloy@redhat.com, maloy@donjonn.com,
-        xinl@redhat.com, ying.xue@windriver.com,
-        parthasarathy.bhuvaragan@gmail.com
-Subject: [net-next 3/3] tipc: update address terminology in code
-Date:   Tue, 24 Nov 2020 12:28:34 -0500
-Message-Id: <20201124172834.317966-4-jmaloy@redhat.com>
-In-Reply-To: <20201124172834.317966-1-jmaloy@redhat.com>
-References: <20201124172834.317966-1-jmaloy@redhat.com>
+        id S2403957AbgKXRlq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 12:41:46 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:60394 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2390613AbgKXRlq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 12:41:46 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0AOHe2PH031364;
+        Tue, 24 Nov 2020 09:40:54 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=pfpt0220;
+ bh=LMRgz+rY9/HavjE2CVzuVjC6iuDx+iXyAgHGdFl2WIg=;
+ b=Des+JfJn12E/FAdEAndKBCY+eC0UZlfadIOuPf92yqf603FZn4Xm9L5NQHf/piuvGO0V
+ jvwMkrGOM03SN2VZ7C25DnaPAinu5PUoLa7E0vp07noJG3uAPpp0g/s/2LoJFRdDHZ7d
+ H9x195dv/pWLKRomRosC5zmXk0L2OFOhlYxu4rtZCMWqXmJ6vlLiEAbRF3wh81TwSrSW
+ jh7EPLErGcxzHjwiR2CN/gDj+l9NMweIuXUzLHrqxxL/Rr9gTHnm4zuvbeiFJgju1G8A
+ 7vsgMeuhf8zXA9Jt3u1RErKs9URKHeVKbLUdGbGfFHZBAIU5s9DqJROs2I/NwOt/D3Ju Kw== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0a-0016f401.pphosted.com with ESMTP id 34y14ub5cq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 24 Nov 2020 09:40:54 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 24 Nov
+ 2020 09:40:53 -0800
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 24 Nov
+ 2020 09:40:52 -0800
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.171)
+ by SC-EXCH03.marvell.com (10.93.176.83) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Tue, 24 Nov 2020 09:40:52 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XPczTl8cataKyxivn2o7c8P03LngiyGiI3o8D3YrGtRSU6AUSLkpmy2ky2RBdbCyWli1ebknZUiljSgRsLhjXi23EQ3MKUtlkE1CI68VS/9vqtGPKuXEXcsSrrPLi6zSwExFUS3NJucb7xxZTKC4RKbsCkZ1kloOk5NWsWt5kHRTN0WAr7uAtQuPyzc20ab4kVX1N7JvUOub6VYTg/JlkS+zWc2faf9djtr/mRbADu5cK2AJDub4cyJDDkXGi9EjRasgCCcPhNj0GOTukbfXnIdlkizIhWf/vgN9ZdlDFIsJtStiR5J/0QJaH3k2laoRd4gvvwxBS2PDm/21ZDgxSw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LMRgz+rY9/HavjE2CVzuVjC6iuDx+iXyAgHGdFl2WIg=;
+ b=GYcRSHEZ+HHMSCs+5ni1F3IGVqVTS9EuyT3TfGa8LCg2120ruFVnuVkd9VdlH/z6PVZzboo73EF0XbMaH7rCe2fHe5STHAwx+2xyddTMFq6CA7K5cPZp+G/NfzhnFB9GO0JtEuChymTNyncESYRhqdJTnXlDVDaXSJkEsUfiddnN6sjzDTip6m5bNFEN3TP7tatA74UPyb2Ii/MUJ16k52v8Q4FkFuQNd2cxJ6rDxqRDeMWfAka+pjvlfaaAoT3/EjgcxaaNE7QSjXqAeeo0Mak/PQ2YQViD4JVoEQC7N2YReyO4cLJ17EwNnaOnDHWiFHRkIj0Qw6gKXtH+FqquPA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LMRgz+rY9/HavjE2CVzuVjC6iuDx+iXyAgHGdFl2WIg=;
+ b=UEhNkQZrrrJHr6PE7/aybjSqt6ou3ca/mdc22acyMxzDjOyIIKEmIzB0dps+FBUYl3w1faFvQaT4sfpBIt2/NwT3/b1RMt6ujGWxmAH5O1hWYB9jwTo2ZN38pb/9R8es1aSTLpmbSGYSbBmIBcNGW8dJoZ7iSN5M37K+ymsB4GI=
+Received: from MW2PR18MB2267.namprd18.prod.outlook.com (2603:10b6:907:3::11)
+ by MWHPR18MB0927.namprd18.prod.outlook.com (2603:10b6:300:9a::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.22; Tue, 24 Nov
+ 2020 17:40:49 +0000
+Received: from MW2PR18MB2267.namprd18.prod.outlook.com
+ ([fe80::e17f:37fb:4eb3:c703]) by MW2PR18MB2267.namprd18.prod.outlook.com
+ ([fe80::e17f:37fb:4eb3:c703%4]) with mapi id 15.20.3564.039; Tue, 24 Nov 2020
+ 17:40:49 +0000
+From:   Alex Belits <abelits@marvell.com>
+To:     "trix@redhat.com" <trix@redhat.com>
+CC:     Prasun Kapoor <pkapoor@marvell.com>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "mingo@kernel.org" <mingo@kernel.org>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "peterx@redhat.com" <peterx@redhat.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "nitesh@redhat.com" <nitesh@redhat.com>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "mtosatti@redhat.com" <mtosatti@redhat.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "frederic@kernel.org" <frederic@kernel.org>,
+        "leon@sidebranch.com" <leon@sidebranch.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "pauld@redhat.com" <pauld@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [EXT] Re: [PATCH v5 0/9] "Task_isolation" mode
+Thread-Topic: [EXT] Re: [PATCH v5 0/9] "Task_isolation" mode
+Thread-Index: AQHWwcAN4HMJq5rZb0WNk0YfmsaUganXfHoAgAAR6IA=
+Date:   Tue, 24 Nov 2020 17:40:49 +0000
+Message-ID: <a31f81cfa62936ff5edc420be63a5ac0b318b594.camel@marvell.com>
+References: <8d887e59ca713726f4fcb25a316e1e932b02823e.camel@marvell.com>
+         <b0e7afd3-4c11-c8f3-834b-699c20dbdd90@redhat.com>
+In-Reply-To: <b0e7afd3-4c11-c8f3-834b-699c20dbdd90@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=marvell.com;
+x-originating-ip: [173.228.7.197]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d48ef156-f7fd-4657-ec3b-08d890a01502
+x-ms-traffictypediagnostic: MWHPR18MB0927:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR18MB0927833C5F81682579F317BCBCFB0@MWHPR18MB0927.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:517;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: PAe9dPWZIWvLV61t0xLWkF1BuYOjgrxXryuqQKMwL3DBfODf+9PgX938x543TJBickmBVk8ulZ+s0N4BVhNSvdHpTflIPVkgasnNgxi3BHHNC3W6E7V70RLqiGmILmXVOPWUb0rTqD1NvcxZkEa9spUUPxAkSRMnjz2ZYF/mknjftw5YmvEoRnQAt9lEWLDnl9MwhOD7OpNWstETR7Kku1ChcglCWa8QxAfOiD0vOYPI5Xt76VYFrRUwzyPZGgeb+sC5FpOAXLcm9ddmh2oQRaCtI4pBW1judN9GxLVmYnP9sK4K5b/AlX9lS2xVEtqjCsLvivrP+HsWv++bbK3XdA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW2PR18MB2267.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(2616005)(4001150100001)(2906002)(6512007)(71200400001)(83380400001)(54906003)(5660300002)(26005)(6486002)(186003)(64756008)(8936002)(53546011)(86362001)(66446008)(498600001)(8676002)(91956017)(4744005)(7416002)(6916009)(66476007)(66556008)(76116006)(36756003)(66946007)(4326008)(6506007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: pxZ1V49IcSIpsiLQ+ZI7coE6VnjJqEMR+5Dezf44lUR0TUaFKmZnZmoFwpM5NJO41IuvLnSKmMg0PxKs7vcsZ7grt++DfH1xAI1A0LoS060IElgLY7AsKZpe2pkrEAs3YwomXW+mSj/lHcWjU3IbWq+dVtp/M+Agbgw6EOEh3SNt2+tOHurtQRuhvuStZFC1Jh5TYU/tqhpup4vSXvsipJrcXJQCThLIMYMsll1EjzgkOxeZcLJ2v77esXwdlvpX14c7ocVYdskntGj1DNEEm23JMtWT5jm71Wc1ZSEIcrQTpK26R7czICc4mN6EHEtYbX9wlLebbqrF8jGdEUuoVhTR3mXUgbesqGQvkHvzI6K2FuJKov9roNOi98rfn3LHtJ8dI5YRbd59d8p+d09SX65Qg1JE1Soz2UjNDpRgiTPfGOM6j1mFisGa8IpUA6yttKx7/VPRw5STIXvMgj7UQR4KgeENJcKxLJbY6NgOmPx1vmyoRXFoSsqp213qDrUt6qo+rpzHQsXYtCddRLGXOGfayjb8VfPpXfETMzdxThTKzGJXN+lsLzu1MN+CoDPg7+1XlTU7+WwirWmWBL2dIxwNDvDk7KqHv7Cj8S4htQhh/X7J7mvJSRYp5JpmHBy3GbsijWJ9ATPY4dI9lqZmEWyOEkitvQ8xv/4ZPnrXTKzl4dVDYeeJ6uMxvlcair5mJqHic0+nWvqRvstVmmekWWOIb0HZm82NWGQbwM1+Isv4u0jLjz3mpwKBH0X6MEF+Y0pZoS0oBqt2d4w3I+Z/htmdDbj7lvhQlByz0LrErfqiWUGVkKznmQka38lyn0ZOc1hjO6ZwMJNod/htVWQpIL4lnafTeMlU2l5XrmFUP2TCCVV0zOpEKRyTih1TycRcOEoCewcIWOPrE0n2ZO75rw==
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <065E67963AFA9B4AA53162870E453322@namprd18.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW2PR18MB2267.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d48ef156-f7fd-4657-ec3b-08d890a01502
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Nov 2020 17:40:49.2586
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: r/mJu5rOmTUgzetmBo7zt45gSd4CIEfLLMe6uidczDhYn/jbatcPwsXY64wU1kARK4cwxVPNgyzfvtt8Cb1eSA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR18MB0927
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-24_05:2020-11-24,2020-11-24 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jon Maloy <jmaloy@redhat.com>
-
-We update the terminology in the code so that deprecated structure
-names and macros are replaced with those currently recommended in
-the user API.
-
-struct tipc_portid   -> struct tipc_socket_addr
-struct tipc_name     -> struct tipc_service_addr
-struct tipc_name_seq -> struct tipc_service_range
-
-TIPC_ADDR_ID       -> TIPC_SOCKET_ADDR
-TIPC_ADDR_NAME     -> TIPC_SERVICE_ADDR
-TIPC_ADDR_NAMESEQ  -> TIPC_SERVICE_RANGE
-TIPC_CFG_SRV       -> TIPC_NODE_STATE
-
-Acked-by: Ying Xue <ying.xue@windriver.com>
-Signed-off-by: Jon Maloy <jmaloy@redhat.com>
----
- net/tipc/group.c      |  3 ++-
- net/tipc/group.h      |  3 ++-
- net/tipc/name_table.c | 11 ++++++-----
- net/tipc/net.c        |  2 +-
- net/tipc/socket.c     | 44 +++++++++++++++++++++----------------------
- net/tipc/subscr.c     |  5 +++--
- net/tipc/subscr.h     |  5 +++--
- net/tipc/topsrv.c     |  4 ++--
- 8 files changed, 41 insertions(+), 36 deletions(-)
-
-diff --git a/net/tipc/group.c b/net/tipc/group.c
-index b1fcd2ad5ecf..3e137d8c9d2f 100644
---- a/net/tipc/group.c
-+++ b/net/tipc/group.c
-@@ -2,6 +2,7 @@
-  * net/tipc/group.c: TIPC group messaging code
-  *
-  * Copyright (c) 2017, Ericsson AB
-+ * Copyright (c) 2020, Red Hat Inc
-  * All rights reserved.
-  *
-  * Redistribution and use in source and binary forms, with or without
-@@ -359,7 +360,7 @@ struct tipc_nlist *tipc_group_dests(struct tipc_group *grp)
- 	return &grp->dests;
- }
- 
--void tipc_group_self(struct tipc_group *grp, struct tipc_name_seq *seq,
-+void tipc_group_self(struct tipc_group *grp, struct tipc_service_range *seq,
- 		     int *scope)
- {
- 	seq->type = grp->type;
-diff --git a/net/tipc/group.h b/net/tipc/group.h
-index 76b4e5a7b39d..ea4c3be64c78 100644
---- a/net/tipc/group.h
-+++ b/net/tipc/group.h
-@@ -2,6 +2,7 @@
-  * net/tipc/group.h: Include file for TIPC group unicast/multicast functions
-  *
-  * Copyright (c) 2017, Ericsson AB
-+ * Copyright (c) 2020, Red Hat Inc
-  * All rights reserved.
-  *
-  * Redistribution and use in source and binary forms, with or without
-@@ -50,7 +51,7 @@ void tipc_group_delete(struct net *net, struct tipc_group *grp);
- void tipc_group_add_member(struct tipc_group *grp, u32 node,
- 			   u32 port, u32 instance);
- struct tipc_nlist *tipc_group_dests(struct tipc_group *grp);
--void tipc_group_self(struct tipc_group *grp, struct tipc_name_seq *seq,
-+void tipc_group_self(struct tipc_group *grp, struct tipc_service_range *seq,
- 		     int *scope);
- u32 tipc_group_exclude(struct tipc_group *grp);
- void tipc_group_filter_msg(struct tipc_group *grp,
-diff --git a/net/tipc/name_table.c b/net/tipc/name_table.c
-index 2ac33d32edc2..e1233d6d5163 100644
---- a/net/tipc/name_table.c
-+++ b/net/tipc/name_table.c
-@@ -3,6 +3,7 @@
-  *
-  * Copyright (c) 2000-2006, 2014-2018, Ericsson AB
-  * Copyright (c) 2004-2008, 2010-2014, Wind River Systems
-+ * Copyright (c) 2020, Red Hat Inc
-  * All rights reserved.
-  *
-  * Redistribution and use in source and binary forms, with or without
-@@ -403,12 +404,12 @@ static void tipc_service_subscribe(struct tipc_service *service,
- 	struct publication *p, *first, *tmp;
- 	struct list_head publ_list;
- 	struct service_range *sr;
--	struct tipc_name_seq ns;
-+	struct tipc_service_range r;
- 	u32 filter;
- 
--	ns.type = tipc_sub_read(sb, seq.type);
--	ns.lower = tipc_sub_read(sb, seq.lower);
--	ns.upper = tipc_sub_read(sb, seq.upper);
-+	r.type = tipc_sub_read(sb, seq.type);
-+	r.lower = tipc_sub_read(sb, seq.lower);
-+	r.upper = tipc_sub_read(sb, seq.upper);
- 	filter = tipc_sub_read(sb, filter);
- 
- 	tipc_sub_get(sub);
-@@ -418,7 +419,7 @@ static void tipc_service_subscribe(struct tipc_service *service,
- 		return;
- 
- 	INIT_LIST_HEAD(&publ_list);
--	service_range_foreach_match(sr, service, ns.lower, ns.upper) {
-+	service_range_foreach_match(sr, service, r.lower, r.upper) {
- 		first = NULL;
- 		list_for_each_entry(p, &sr->all_publ, all_publ) {
- 			if (filter & TIPC_SUB_PORTS)
-diff --git a/net/tipc/net.c b/net/tipc/net.c
-index 0bb2323201da..a129f661bee3 100644
---- a/net/tipc/net.c
-+++ b/net/tipc/net.c
-@@ -132,7 +132,7 @@ static void tipc_net_finalize(struct net *net, u32 addr)
- 	tipc_named_reinit(net);
- 	tipc_sk_reinit(net);
- 	tipc_mon_reinit_self(net);
--	tipc_nametbl_publish(net, TIPC_CFG_SRV, addr, addr,
-+	tipc_nametbl_publish(net, TIPC_NODE_STATE, addr, addr,
- 			     TIPC_CLUSTER_SCOPE, 0, addr);
- }
- 
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index 2b633463f40d..75e81fc8e9a8 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -139,9 +139,9 @@ static int tipc_accept(struct socket *sock, struct socket *new_sock, int flags,
- 		       bool kern);
- static void tipc_sk_timeout(struct timer_list *t);
- static int tipc_sk_publish(struct tipc_sock *tsk, uint scope,
--			   struct tipc_name_seq const *seq);
-+			   struct tipc_service_range const *seq);
- static int tipc_sk_withdraw(struct tipc_sock *tsk, uint scope,
--			    struct tipc_name_seq const *seq);
-+			    struct tipc_service_range const *seq);
- static int tipc_sk_leave(struct tipc_sock *tsk);
- static struct tipc_sock *tipc_sk_lookup(struct net *net, u32 portid);
- static int tipc_sk_insert(struct tipc_sock *tsk);
-@@ -667,7 +667,7 @@ static int __tipc_bind(struct socket *sock, struct sockaddr *skaddr, int alen)
- 	if (unlikely(!alen))
- 		return tipc_sk_withdraw(tsk, 0, NULL);
- 
--	if (addr->addrtype == TIPC_ADDR_NAME)
-+	if (addr->addrtype == TIPC_SERVICE_ADDR)
- 		addr->addr.nameseq.upper = addr->addr.nameseq.lower;
- 
- 	if (tsk->group)
-@@ -740,7 +740,7 @@ static int tipc_getname(struct socket *sock, struct sockaddr *uaddr,
- 		addr->addr.id.node = tipc_own_addr(sock_net(sk));
- 	}
- 
--	addr->addrtype = TIPC_ADDR_ID;
-+	addr->addrtype = TIPC_SOCKET_ADDR;
- 	addr->family = AF_TIPC;
- 	addr->scope = 0;
- 	addr->addr.name.domain = 0;
-@@ -818,7 +818,7 @@ static __poll_t tipc_poll(struct file *file, struct socket *sock,
-  * Called from function tipc_sendmsg(), which has done all sanity checks
-  * Returns the number of bytes sent on success, or errno
-  */
--static int tipc_sendmcast(struct  socket *sock, struct tipc_name_seq *seq,
-+static int tipc_sendmcast(struct  socket *sock, struct tipc_service_range *seq,
- 			  struct msghdr *msg, size_t dlen, long timeout)
- {
- 	struct sock *sk = sock->sk;
-@@ -1403,7 +1403,7 @@ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dlen)
- 	bool syn = !tipc_sk_type_connectionless(sk);
- 	struct tipc_group *grp = tsk->group;
- 	struct tipc_msg *hdr = &tsk->phdr;
--	struct tipc_name_seq *seq;
-+	struct tipc_service_range *seq;
- 	struct sk_buff_head pkts;
- 	u32 dport = 0, dnode = 0;
- 	u32 type = 0, inst = 0;
-@@ -1422,9 +1422,9 @@ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dlen)
- 	if (grp) {
- 		if (!dest)
- 			return tipc_send_group_bcast(sock, m, dlen, timeout);
--		if (dest->addrtype == TIPC_ADDR_NAME)
-+		if (dest->addrtype == TIPC_SERVICE_ADDR)
- 			return tipc_send_group_anycast(sock, m, dlen, timeout);
--		if (dest->addrtype == TIPC_ADDR_ID)
-+		if (dest->addrtype == TIPC_SOCKET_ADDR)
- 			return tipc_send_group_unicast(sock, m, dlen, timeout);
- 		if (dest->addrtype == TIPC_ADDR_MCAST)
- 			return tipc_send_group_mcast(sock, m, dlen, timeout);
-@@ -1444,7 +1444,7 @@ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dlen)
- 			return -EISCONN;
- 		if (tsk->published)
- 			return -EOPNOTSUPP;
--		if (dest->addrtype == TIPC_ADDR_NAME) {
-+		if (dest->addrtype == TIPC_SERVICE_ADDR) {
- 			tsk->conn_type = dest->addr.name.name.type;
- 			tsk->conn_instance = dest->addr.name.name.instance;
- 		}
-@@ -1455,14 +1455,14 @@ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dlen)
- 	if (dest->addrtype == TIPC_ADDR_MCAST)
- 		return tipc_sendmcast(sock, seq, m, dlen, timeout);
- 
--	if (dest->addrtype == TIPC_ADDR_NAME) {
-+	if (dest->addrtype == TIPC_SERVICE_ADDR) {
- 		type = dest->addr.name.name.type;
- 		inst = dest->addr.name.name.instance;
- 		dnode = dest->addr.name.domain;
- 		dport = tipc_nametbl_translate(net, type, inst, &dnode);
- 		if (unlikely(!dport && !dnode))
- 			return -EHOSTUNREACH;
--	} else if (dest->addrtype == TIPC_ADDR_ID) {
-+	} else if (dest->addrtype == TIPC_SOCKET_ADDR) {
- 		dnode = dest->addr.id.node;
- 	} else {
- 		return -EINVAL;
-@@ -1474,7 +1474,7 @@ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dlen)
- 	if (unlikely(rc))
- 		return rc;
- 
--	if (dest->addrtype == TIPC_ADDR_NAME) {
-+	if (dest->addrtype == TIPC_SERVICE_ADDR) {
- 		msg_set_type(hdr, TIPC_NAMED_MSG);
- 		msg_set_hdr_sz(hdr, NAMED_H_SIZE);
- 		msg_set_nametype(hdr, type);
-@@ -1482,7 +1482,7 @@ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dlen)
- 		msg_set_lookup_scope(hdr, tipc_node2scope(dnode));
- 		msg_set_destnode(hdr, dnode);
- 		msg_set_destport(hdr, dport);
--	} else { /* TIPC_ADDR_ID */
-+	} else { /* TIPC_SOCKET_ADDR */
- 		msg_set_type(hdr, TIPC_DIRECT_MSG);
- 		msg_set_lookup_scope(hdr, 0);
- 		msg_set_destnode(hdr, dnode);
-@@ -1687,7 +1687,7 @@ static void tipc_sk_set_orig_addr(struct msghdr *m, struct sk_buff *skb)
- 		return;
- 
- 	srcaddr->sock.family = AF_TIPC;
--	srcaddr->sock.addrtype = TIPC_ADDR_ID;
-+	srcaddr->sock.addrtype = TIPC_SOCKET_ADDR;
- 	srcaddr->sock.scope = 0;
- 	srcaddr->sock.addr.id.ref = msg_origport(hdr);
- 	srcaddr->sock.addr.id.node = msg_orignode(hdr);
-@@ -1699,7 +1699,7 @@ static void tipc_sk_set_orig_addr(struct msghdr *m, struct sk_buff *skb)
- 
- 	/* Group message users may also want to know sending member's id */
- 	srcaddr->member.family = AF_TIPC;
--	srcaddr->member.addrtype = TIPC_ADDR_NAME;
-+	srcaddr->member.addrtype = TIPC_SERVICE_ADDR;
- 	srcaddr->member.scope = 0;
- 	srcaddr->member.addr.name.name.type = msg_nametype(hdr);
- 	srcaddr->member.addr.name.name.instance = TIPC_SKB_CB(skb)->orig_member;
-@@ -2867,7 +2867,7 @@ static void tipc_sk_timeout(struct timer_list *t)
- }
- 
- static int tipc_sk_publish(struct tipc_sock *tsk, uint scope,
--			   struct tipc_name_seq const *seq)
-+			   struct tipc_service_range const *seq)
- {
- 	struct sock *sk = &tsk->sk;
- 	struct net *net = sock_net(sk);
-@@ -2895,7 +2895,7 @@ static int tipc_sk_publish(struct tipc_sock *tsk, uint scope,
- }
- 
- static int tipc_sk_withdraw(struct tipc_sock *tsk, uint scope,
--			    struct tipc_name_seq const *seq)
-+			    struct tipc_service_range const *seq)
- {
- 	struct net *net = sock_net(&tsk->sk);
- 	struct publication *publ;
-@@ -3042,7 +3042,7 @@ static int tipc_sk_join(struct tipc_sock *tsk, struct tipc_group_req *mreq)
- 	struct net *net = sock_net(&tsk->sk);
- 	struct tipc_group *grp = tsk->group;
- 	struct tipc_msg *hdr = &tsk->phdr;
--	struct tipc_name_seq seq;
-+	struct tipc_service_range seq;
- 	int rc;
- 
- 	if (mreq->type < TIPC_RESERVED_TYPES)
-@@ -3079,7 +3079,7 @@ static int tipc_sk_leave(struct tipc_sock *tsk)
- {
- 	struct net *net = sock_net(&tsk->sk);
- 	struct tipc_group *grp = tsk->group;
--	struct tipc_name_seq seq;
-+	struct tipc_service_range seq;
- 	int scope;
- 
- 	if (!grp)
-@@ -3203,7 +3203,7 @@ static int tipc_getsockopt(struct socket *sock, int lvl, int opt,
- {
- 	struct sock *sk = sock->sk;
- 	struct tipc_sock *tsk = tipc_sk(sk);
--	struct tipc_name_seq seq;
-+	struct tipc_service_range seq;
- 	int len, scope;
- 	u32 value;
- 	int res;
-@@ -3304,12 +3304,12 @@ static int tipc_socketpair(struct socket *sock1, struct socket *sock2)
- 	u32 onode = tipc_own_addr(sock_net(sock1->sk));
- 
- 	tsk1->peer.family = AF_TIPC;
--	tsk1->peer.addrtype = TIPC_ADDR_ID;
-+	tsk1->peer.addrtype = TIPC_SOCKET_ADDR;
- 	tsk1->peer.scope = TIPC_NODE_SCOPE;
- 	tsk1->peer.addr.id.ref = tsk2->portid;
- 	tsk1->peer.addr.id.node = onode;
- 	tsk2->peer.family = AF_TIPC;
--	tsk2->peer.addrtype = TIPC_ADDR_ID;
-+	tsk2->peer.addrtype = TIPC_SOCKET_ADDR;
- 	tsk2->peer.scope = TIPC_NODE_SCOPE;
- 	tsk2->peer.addr.id.ref = tsk1->portid;
- 	tsk2->peer.addr.id.node = onode;
-diff --git a/net/tipc/subscr.c b/net/tipc/subscr.c
-index f340e53da625..5edfb2d522b9 100644
---- a/net/tipc/subscr.c
-+++ b/net/tipc/subscr.c
-@@ -3,6 +3,7 @@
-  *
-  * Copyright (c) 2000-2017, Ericsson AB
-  * Copyright (c) 2005-2007, 2010-2013, Wind River Systems
-+ * Copyright (c) 2020, Red Hat Inc
-  * All rights reserved.
-  *
-  * Redistribution and use in source and binary forms, with or without
-@@ -60,7 +61,7 @@ static void tipc_sub_send_event(struct tipc_subscription *sub,
-  *
-  * Returns 1 if there is overlap, otherwise 0.
-  */
--int tipc_sub_check_overlap(struct tipc_name_seq *seq, u32 found_lower,
-+int tipc_sub_check_overlap(struct tipc_service_range *seq, u32 found_lower,
- 			   u32 found_upper)
- {
- 	if (found_lower < seq->lower)
-@@ -79,7 +80,7 @@ void tipc_sub_report_overlap(struct tipc_subscription *sub,
- {
- 	struct tipc_subscr *s = &sub->evt.s;
- 	u32 filter = tipc_sub_read(s, filter);
--	struct tipc_name_seq seq;
-+	struct tipc_service_range seq;
- 
- 	seq.type = tipc_sub_read(s, seq.type);
- 	seq.lower = tipc_sub_read(s, seq.lower);
-diff --git a/net/tipc/subscr.h b/net/tipc/subscr.h
-index 6ebbec1bedd1..a083b1b0c1d2 100644
---- a/net/tipc/subscr.h
-+++ b/net/tipc/subscr.h
-@@ -3,6 +3,7 @@
-  *
-  * Copyright (c) 2003-2017, Ericsson AB
-  * Copyright (c) 2005-2007, 2012-2013, Wind River Systems
-+ * Copyright (c) 2020, Red Hat Inc
-  * All rights reserved.
-  *
-  * Redistribution and use in source and binary forms, with or without
-@@ -71,8 +72,8 @@ struct tipc_subscription *tipc_sub_subscribe(struct net *net,
- 					     int conid);
- void tipc_sub_unsubscribe(struct tipc_subscription *sub);
- 
--int tipc_sub_check_overlap(struct tipc_name_seq *seq, u32 found_lower,
--			   u32 found_upper);
-+int tipc_sub_check_overlap(struct tipc_service_range *seq,
-+			   u32 found_lower, u32 found_upper);
- void tipc_sub_report_overlap(struct tipc_subscription *sub,
- 			     u32 found_lower, u32 found_upper,
- 			     u32 event, u32 port, u32 node,
-diff --git a/net/tipc/topsrv.c b/net/tipc/topsrv.c
-index 88ad39e47a98..5522865deae9 100644
---- a/net/tipc/topsrv.c
-+++ b/net/tipc/topsrv.c
-@@ -519,8 +519,8 @@ static int tipc_topsrv_create_listener(struct tipc_topsrv *srv)
- 		goto err;
- 
- 	saddr.family	                = AF_TIPC;
--	saddr.addrtype		        = TIPC_ADDR_NAMESEQ;
--	saddr.addr.nameseq.type         = TIPC_TOP_SRV;
-+	saddr.addrtype		        = TIPC_SERVICE_RANGE;
-+	saddr.addr.nameseq.type	= TIPC_TOP_SRV;
- 	saddr.addr.nameseq.lower	= TIPC_TOP_SRV;
- 	saddr.addr.nameseq.upper	= TIPC_TOP_SRV;
- 	saddr.scope			= TIPC_NODE_SCOPE;
--- 
-2.25.4
-
+DQpPbiBUdWUsIDIwMjAtMTEtMjQgYXQgMDg6MzYgLTA4MDAsIFRvbSBSaXggd3JvdGU6DQo+IEV4
+dGVybmFsIEVtYWlsDQo+IA0KPiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+IC0tLQ0KPiANCj4gT24gMTEvMjMvMjAg
+OTo0MiBBTSwgQWxleCBCZWxpdHMgd3JvdGU6DQo+ID4gVGhpcyBpcyBhbiB1cGRhdGUgb2YgdGFz
+ayBpc29sYXRpb24gd29yayB0aGF0IHdhcyBvcmlnaW5hbGx5IGRvbmUNCj4gPiBieQ0KPiA+IENo
+cmlzIE1ldGNhbGYgPGNtZXRjYWxmQG1lbGxhbm94LmNvbT4gYW5kIG1haW50YWluZWQgYnkgaGlt
+IHVudGlsDQo+ID4gTm92ZW1iZXIgMjAxNy4gSXQgaXMgYWRhcHRlZCB0byB0aGUgY3VycmVudCBr
+ZXJuZWwgYW5kIGNsZWFuZWQgdXANCj4gPiB0bw0KPiA+IGltcGxlbWVudCBpdHMgZnVuY3Rpb25h
+bGl0eSBpbiBhIG1vcmUgY29tcGxldGUgYW5kIGNsZWFuZXIgbWFubmVyLg0KPiANCj4gSSBhbSBo
+YXZpbmcgcHJvYmxlbXMgYXBwbHlpbmcgdGhlIHBhdGNoc2V0IHRvIHRvZGF5J3MgbGludXgtbmV4
+dC4NCj4gDQo+IFdoaWNoIGtlcm5lbCBzaG91bGQgSSBiZSB1c2luZyA/DQoNClRoZSBwYXRjaGVz
+IGFyZSBhZ2FpbnN0IExpbnVzJyB0cmVlLCBpbiBwYXJ0aWN1bGFyLCBjb21taXQNCmEzNDllNGM2
+NTk2MDlmZDIwZTRiZWVhODllNWM0YTQwMzhlMzNhOTUNCg0KLS0gDQpBbGV4DQo=
