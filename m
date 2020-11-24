@@ -2,388 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE7722C2B14
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 16:21:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB3972C2B23
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 16:23:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389450AbgKXPSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 10:18:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36498 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387697AbgKXPSs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 10:18:48 -0500
-Received: from threadripper.lan (HSI-KBW-46-223-126-90.hsi.kabel-badenwuerttemberg.de [46.223.126.90])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5637B206D5;
-        Tue, 24 Nov 2020 15:18:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606231127;
-        bh=6CGs0fMLNY3x7sxLYsTt6iKTR6KheXOvnC5HRdMWN1A=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ENsn+raAkpDtR9h9MRDuzfK2n/ZY07nbd8fYPDKMDamUzPC+CYXCigi5R9CpjriOd
-         03pwvPQmN+SQmUYFBWymhqCF0p/3bSBAEG08qdkLBPCztmTtmQ4cYA3qCZZVgJHDic
-         ZrgJdEAOF9pRM1E3CuvkUlXgmMg8tvVndHkT2KDw=
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH v4 4/4] net: socket: rework compat_ifreq_ioctl()
-Date:   Tue, 24 Nov 2020 16:18:28 +0100
-Message-Id: <20201124151828.169152-5-arnd@kernel.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20201124151828.169152-1-arnd@kernel.org>
-References: <20201124151828.169152-1-arnd@kernel.org>
+        id S2389280AbgKXPWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 10:22:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:30160 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730757AbgKXPWb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 10:22:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606231349;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ChAGzIwucY8bxXwOeJCi+g4y29+3D7RAHEPEShB7UzE=;
+        b=RXnRIt9DnwyZZja3722y/H98sbedY3nOvIUkvTWToRpeKK164gAGW9u5dRhmbJxlilHb4p
+        NxzjAwMRxDnw+oj3NPdi30yMW4phKRLoVyxSVzfon+89piVw2qmyK7LGqXkje3L5iqoN6g
+        6W9jrnlJ99E/87OexKvzL/myxLQfLsU=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-541-fhtCutbLOGK678-_tCtNVA-1; Tue, 24 Nov 2020 10:22:27 -0500
+X-MC-Unique: fhtCutbLOGK678-_tCtNVA-1
+Received: by mail-wm1-f70.google.com with SMTP id k128so1340596wme.7
+        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 07:22:27 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ChAGzIwucY8bxXwOeJCi+g4y29+3D7RAHEPEShB7UzE=;
+        b=XAyJZE5upSzcMfGxl5HUNh6dRxhYeIEI6vszZMgHh4ORr2Bdj6tzKl7w6ivItS/m4z
+         NNOLGm+9nhgQgdlqfmJmOaSMqfxqAyTxAjIflxc+msz40EEkpnsBqiC9Qp7HoRGjr2cb
+         F2AlM5FR1U3j2x+F4ccxkqGxeUEHcBqDUSoKMH0pSGCZJFj5KLM4Z5UTrssR4TOSGNId
+         S4AG63Z8mYUUBAO4lhTqnRtQ4kfhcLQZ3/5trWphhocEZuRz8rfOlatwvrEPnkS726dZ
+         v1SvFEeZIeFLNVlU0CWpIeYjcLyzsTCLzqlFiDfdBNuBnJGzq9DrjZ/Q6GTcsrusbVmS
+         44cQ==
+X-Gm-Message-State: AOAM532PB7foHEtBxxljHBsMuKWU3hR30kMWkohqSTiefQvyIK9HmKp6
+        JojFCwMrBmudvtUSSDPCyWRrSw+3uievtCQzH4W6ANUE4HbHnBmkPXY3WuuE/Sz7Zrl0flwPkd4
+        W3bJ9a0cFBFqtPSHC
+X-Received: by 2002:a05:600c:2048:: with SMTP id p8mr5076972wmg.165.1606231345521;
+        Tue, 24 Nov 2020 07:22:25 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyLjMuLs03pFbeTYSspfYd5oqq8ImIVkcA8plASm2UM7XPda7IPVlBeduajR9CCi+8XiOF6cw==
+X-Received: by 2002:a05:600c:2048:: with SMTP id p8mr5076955wmg.165.1606231345290;
+        Tue, 24 Nov 2020 07:22:25 -0800 (PST)
+Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id b4sm6904403wmc.1.2020.11.24.07.22.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Nov 2020 07:22:24 -0800 (PST)
+Date:   Tue, 24 Nov 2020 16:22:22 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Russell Strong <russell@strong.id.au>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: DSCP in IPv4 routing v2
+Message-ID: <20201124152222.GB28947@linux.home>
+References: <20201121182250.661bfee5@192-168-1-16.tpgi.com.au>
+ <20201123225505.GA21345@linux.home>
+ <20201124124149.11fe991e@192-168-1-16.tpgi.com.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201124124149.11fe991e@192-168-1-16.tpgi.com.au>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Tue, Nov 24, 2020 at 12:41:49PM +1000, Russell Strong wrote:
+> On Mon, 23 Nov 2020 23:55:05 +0100 Guillaume Nault <gnault@redhat.com> wrote:
+> > On Sat, Nov 21, 2020 at 06:24:46PM +1000, Russell Strong wrote:
+> 
+> I was wondering if one patch would be acceptable, or should it be broken
+> up?  If broken up. It would not make sense to apply 1/2 of them.
 
-compat_ifreq_ioctl() is one of the last users of copy_in_user() and
-compat_alloc_user_space(), as it attempts to convert the 'struct ifreq'
-arguments from 32-bit to 64-bit format as used by dev_ioctl() and a
-couple of socket family specific interpretations.
+A patch series would be applied in its entirety or not applied at all.
+However, it's not acceptable to temporarily bring regressions in one
+patch and fix it later in the series. The tree has to remain
+bisectable.
 
-The current implementation works correctly when calling dev_ioctl(),
-inet_ioctl(), ieee802154_sock_ioctl(), atalk_ioctl(), qrtr_ioctl()
-and packet_ioctl(). The ioctl handlers for x25, netrom, rose and x25 do
-not interpret the arguments and only block the corresponding commands,
-so they do not care.
+Anyway, I believe there's no need to replace all the TOS macros in the
+same patch series. DSCP doesn't have to be enabled everywhere at once.
+Small, targeted, patch series are much easier to review.
 
-For af_inet6 and af_decnet however, the compat conversion is slightly
-incorrect, as it will copy more data than the native handler accesses,
-both of them use a structure that is shorter than ifreq.
+> > RT_TOS didn't clear the second lowest bit, while the new IP_DSCP does.
+> > Therefore, there's no guarantee that such a blanket replacement isn't
+> > going to change existing behaviours. Replacements have to be done
+> > step by step and accompanied by an explanation of why they're safe.
+> 
+> Original TOS did not use this bit until it was added in RFC1349 as "lowcost".
+> The DSCP change (RFC2474) marked these as currently unused, but worse than that,
+> with the introduction of ECN, both of those now "unused" bits are for ECN.
+> Other parts of the kernel are using those bits for ECN, so bit 1 probably
+> shouldn't be used in routing anymore as congestion could create unexpected
+> routing behaviour, i.e. fib_rules
 
-Replace the copy_in_user() conversion with a pair of accessor functions
-to read and write the ifreq data in place with the correct length where
-needed, while leaving the other ones to copy the (already compatible)
-structures directly.
+The IETF meaning and history of these bits are well understood. But we
+can't write patches based on assumptions like "bit 1 probably shouldn't
+be used". The actual code is what matters. That's why, again, changes
+have to be done incrementally and in a reviewable manner.
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- include/linux/compat.h    |  53 ++++++++++----------
- include/linux/netdevice.h |   2 +
- net/appletalk/ddp.c       |   4 +-
- net/ieee802154/socket.c   |   4 +-
- net/ipv4/af_inet.c        |   6 +--
- net/qrtr/qrtr.c           |   4 +-
- net/socket.c              | 100 ++++++++++++++++++++++++--------------
- 7 files changed, 101 insertions(+), 72 deletions(-)
+> > For example some of the ip6_make_flowinfo() calls can probably
+> > erroneously mark some packets with ECT(0). Instead of masking the
+> > problem in this patch, I think it'd be better to have an explicit fix
+> > that'd mask the ECN bits in ip6_make_flowinfo() and drop the buggy
+> > RT_TOS() in the callers.
+> > 
+> > Another example is inet_rtm_getroute(). It calls
+> > ip_route_output_key_hash_rcu() without masking the tos field first.
+> 
+> Should rtm->tos be checked for validity in inet_rtm_valid_getroute_req? Seems
+> like it was missed.
 
-diff --git a/include/linux/compat.h b/include/linux/compat.h
-index a97f80b704ab..db722ba9ec58 100644
---- a/include/linux/compat.h
-+++ b/include/linux/compat.h
-@@ -110,6 +110,33 @@ struct compat_ifconf {
- 	compat_uptr_t	ifcbuf;
- };
- 
-+struct compat_if_settings {
-+	unsigned int type;	/* Type of physical device or protocol */
-+	unsigned int size;	/* Size of the data allocated by the caller */
-+	compat_uptr_t ifs_ifsu;	/* union of pointers */
-+};
-+
-+struct compat_ifreq {
-+	union {
-+		char	ifrn_name[IFNAMSIZ];    /* if name, e.g. "en0" */
-+	} ifr_ifrn;
-+	union {
-+		struct	sockaddr ifru_addr;
-+		struct	sockaddr ifru_dstaddr;
-+		struct	sockaddr ifru_broadaddr;
-+		struct	sockaddr ifru_netmask;
-+		struct	sockaddr ifru_hwaddr;
-+		short	ifru_flags;
-+		compat_int_t	ifru_ivalue;
-+		compat_int_t	ifru_mtu;
-+		struct	compat_ifmap ifru_map;
-+		char	ifru_slave[IFNAMSIZ];   /* Just fits the size */
-+		char	ifru_newname[IFNAMSIZ];
-+		compat_uptr_t	ifru_data;
-+		struct	compat_if_settings ifru_settings;
-+	} ifr_ifru;
-+};
-+
- #ifdef CONFIG_COMPAT
- 
- #ifndef compat_user_stack_pointer
-@@ -328,32 +355,6 @@ typedef struct compat_sigevent {
- 	} _sigev_un;
- } compat_sigevent_t;
- 
--struct compat_ifreq {
--	union {
--		char	ifrn_name[IFNAMSIZ];    /* if name, e.g. "en0" */
--	} ifr_ifrn;
--	union {
--		struct	sockaddr ifru_addr;
--		struct	sockaddr ifru_dstaddr;
--		struct	sockaddr ifru_broadaddr;
--		struct	sockaddr ifru_netmask;
--		struct	sockaddr ifru_hwaddr;
--		short	ifru_flags;
--		compat_int_t	ifru_ivalue;
--		compat_int_t	ifru_mtu;
--		struct	compat_ifmap ifru_map;
--		char	ifru_slave[IFNAMSIZ];   /* Just fits the size */
--		char	ifru_newname[IFNAMSIZ];
--		compat_caddr_t	ifru_data;
--		struct	compat_if_settings ifru_settings;
--	} ifr_ifru;
--};
--
--struct compat_ifconf {
--	compat_int_t	ifc_len;                /* size of buffer */
--	compat_caddr_t  ifcbuf;
--};
--
- struct compat_robust_list {
- 	compat_uptr_t			next;
- };
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index e99450a60d8e..c7935c3e5e05 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3860,6 +3860,8 @@ int netdev_rx_handler_register(struct net_device *dev,
- void netdev_rx_handler_unregister(struct net_device *dev);
- 
- bool dev_valid_name(const char *name);
-+int get_user_ifreq(struct ifreq *ifr, void __user **ifrdata, void __user *arg);
-+int put_user_ifreq(struct ifreq *ifr, void __user *arg);
- int dev_ioctl(struct net *net, unsigned int cmd, struct ifreq *ifr,
- 		bool *need_copyout);
- int dev_ifconf(struct net *net, struct ifconf __user *ifc);
-diff --git a/net/appletalk/ddp.c b/net/appletalk/ddp.c
-index ca1a0d07a087..d598e2e57633 100644
---- a/net/appletalk/ddp.c
-+++ b/net/appletalk/ddp.c
-@@ -666,7 +666,7 @@ static int atif_ioctl(int cmd, void __user *arg)
- 	struct rtentry rtdef;
- 	int add_route;
- 
--	if (copy_from_user(&atreq, arg, sizeof(atreq)))
-+	if (get_user_ifreq(&atreq, NULL, arg))
- 		return -EFAULT;
- 
- 	dev = __dev_get_by_name(&init_net, atreq.ifr_name);
-@@ -865,7 +865,7 @@ static int atif_ioctl(int cmd, void __user *arg)
- 		return 0;
- 	}
- 
--	return copy_to_user(arg, &atreq, sizeof(atreq)) ? -EFAULT : 0;
-+	return put_user_ifreq(&atreq, arg);
- }
- 
- static int atrtr_ioctl_addrt(struct rtentry *rt)
-diff --git a/net/ieee802154/socket.c b/net/ieee802154/socket.c
-index a45a0401adc5..f5077de3619e 100644
---- a/net/ieee802154/socket.c
-+++ b/net/ieee802154/socket.c
-@@ -129,7 +129,7 @@ static int ieee802154_dev_ioctl(struct sock *sk, struct ifreq __user *arg,
- 	int ret = -ENOIOCTLCMD;
- 	struct net_device *dev;
- 
--	if (copy_from_user(&ifr, arg, sizeof(struct ifreq)))
-+	if (get_user_ifreq(&ifr, NULL, arg))
- 		return -EFAULT;
- 
- 	ifr.ifr_name[IFNAMSIZ-1] = 0;
-@@ -143,7 +143,7 @@ static int ieee802154_dev_ioctl(struct sock *sk, struct ifreq __user *arg,
- 	if (dev->type == ARPHRD_IEEE802154 && dev->netdev_ops->ndo_do_ioctl)
- 		ret = dev->netdev_ops->ndo_do_ioctl(dev, &ifr, cmd);
- 
--	if (!ret && copy_to_user(arg, &ifr, sizeof(struct ifreq)))
-+	if (!ret && put_user_ifreq(&ifr, arg))
- 		ret = -EFAULT;
- 	dev_put(dev);
- 
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index b7260c8cef2e..fb66d3f17a17 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -949,10 +949,10 @@ int inet_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
- 	case SIOCGIFNETMASK:
- 	case SIOCGIFDSTADDR:
- 	case SIOCGIFPFLAGS:
--		if (copy_from_user(&ifr, p, sizeof(struct ifreq)))
-+		if (get_user_ifreq(&ifr, NULL, p))
- 			return -EFAULT;
- 		err = devinet_ioctl(net, cmd, &ifr);
--		if (!err && copy_to_user(p, &ifr, sizeof(struct ifreq)))
-+		if (!err && put_user_ifreq(&ifr, p))
- 			err = -EFAULT;
- 		break;
- 
-@@ -962,7 +962,7 @@ int inet_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
- 	case SIOCSIFDSTADDR:
- 	case SIOCSIFPFLAGS:
- 	case SIOCSIFFLAGS:
--		if (copy_from_user(&ifr, p, sizeof(struct ifreq)))
-+		if (get_user_ifreq(&ifr, NULL, p))
- 			return -EFAULT;
- 		err = devinet_ioctl(net, cmd, &ifr);
- 		break;
-diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-index f4ab3ca6d73b..ea56026457f7 100644
---- a/net/qrtr/qrtr.c
-+++ b/net/qrtr/qrtr.c
-@@ -1157,14 +1157,14 @@ static int qrtr_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
- 		rc = put_user(len, (int __user *)argp);
- 		break;
- 	case SIOCGIFADDR:
--		if (copy_from_user(&ifr, argp, sizeof(ifr))) {
-+		if (get_user_ifreq(&ifr, NULL, argp)) {
- 			rc = -EFAULT;
- 			break;
- 		}
- 
- 		sq = (struct sockaddr_qrtr *)&ifr.ifr_addr;
- 		*sq = ipc->us;
--		if (copy_to_user(argp, &ifr, sizeof(ifr))) {
-+		if (put_user_ifreq(&ifr, argp)) {
- 			rc = -EFAULT;
- 			break;
- 		}
-diff --git a/net/socket.c b/net/socket.c
-index 41158e459f0b..4515c5f42bb0 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -3078,6 +3078,54 @@ void socket_seq_show(struct seq_file *seq)
- }
- #endif				/* CONFIG_PROC_FS */
- 
-+/* Handle the fact that while struct ifreq has the same *layout* on
-+ * 32/64 for everything but ifreq::ifru_ifmap and ifreq::ifru_data,
-+ * which are handled elsewhere, it still has different *size* due to
-+ * ifreq::ifru_ifmap (which is 16 bytes on 32 bit, 24 bytes on 64-bit,
-+ * resulting in struct ifreq being 32 and 40 bytes respectively).
-+ * As a result, if the struct happens to be at the end of a page and
-+ * the next page isn't readable/writable, we get a fault. To prevent
-+ * that, copy back and forth to the full size.
-+ */
-+int get_user_ifreq(struct ifreq *ifr, void __user **ifrdata, void __user *arg)
-+{
-+	if (in_compat_syscall()) {
-+		struct compat_ifreq *ifr32 = (struct compat_ifreq *)ifr;
-+
-+		memset(ifr, 0, sizeof(*ifr));
-+		if (copy_from_user(ifr32, arg, sizeof(*ifr32)))
-+			return -EFAULT;
-+
-+		if (ifrdata)
-+			*ifrdata = compat_ptr(ifr32->ifr_data);
-+
-+		return 0;
-+	}
-+
-+	if (copy_from_user(ifr, arg, sizeof(*ifr)))
-+		return -EFAULT;
-+
-+	if (ifrdata)
-+		*ifrdata = ifr->ifr_data;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(get_user_ifreq);
-+
-+int put_user_ifreq(struct ifreq *ifr, void __user *arg)
-+{
-+	size_t size = sizeof(*ifr);
-+
-+	if (in_compat_syscall())
-+		size = sizeof(struct compat_ifreq);
-+
-+	if (copy_to_user(arg, ifr, size))
-+		return -EFAULT;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(put_user_ifreq);
-+
- #ifdef CONFIG_COMPAT
- static int compat_siocwandev(struct net *net, struct compat_ifreq __user *uifr32)
- {
-@@ -3086,7 +3134,7 @@ static int compat_siocwandev(struct net *net, struct compat_ifreq __user *uifr32
- 	void __user *saved;
- 	int err;
- 
--	if (copy_from_user(&ifr, uifr32, sizeof(struct compat_ifreq)))
-+	if (get_user_ifreq(&ifr, NULL, uifr32))
- 		return -EFAULT;
- 
- 	if (get_user(uptr32, &uifr32->ifr_settings.ifs_ifsu))
-@@ -3098,7 +3146,7 @@ static int compat_siocwandev(struct net *net, struct compat_ifreq __user *uifr32
- 	err = dev_ioctl(net, SIOCWANDEV, &ifr, NULL);
- 	if (!err) {
- 		ifr.ifr_settings.ifs_ifsu.raw_hdlc = saved;
--		if (copy_to_user(uifr32, &ifr, sizeof(struct compat_ifreq)))
-+		if (put_user_ifreq(&ifr, uifr32))
- 			err = -EFAULT;
- 	}
- 	return err;
-@@ -3124,47 +3172,25 @@ static int compat_ifreq_ioctl(struct net *net, struct socket *sock,
- 			      unsigned int cmd,
- 			      struct compat_ifreq __user *uifr32)
- {
--	struct ifreq __user *uifr;
-+	struct ifreq ifr;
-+	bool need_copyout;
- 	int err;
- 
--	/* Handle the fact that while struct ifreq has the same *layout* on
--	 * 32/64 for everything but ifreq::ifru_ifmap and ifreq::ifru_data,
--	 * which are handled elsewhere, it still has different *size* due to
--	 * ifreq::ifru_ifmap (which is 16 bytes on 32 bit, 24 bytes on 64-bit,
--	 * resulting in struct ifreq being 32 and 40 bytes respectively).
--	 * As a result, if the struct happens to be at the end of a page and
--	 * the next page isn't readable/writable, we get a fault. To prevent
--	 * that, copy back and forth to the full size.
-+	err = sock->ops->ioctl(sock, cmd, arg);
-+
-+	/* If this ioctl is unknown try to hand it down
-+	 * to the NIC driver.
- 	 */
-+	if (err != -ENOIOCTLCMD)
-+		return err;
- 
--	uifr = compat_alloc_user_space(sizeof(*uifr));
--	if (copy_in_user(uifr, uifr32, sizeof(*uifr32)))
-+	if (get_user_ifreq(&ifr, NULL, uifr32))
- 		return -EFAULT;
-+	err = dev_ioctl(net, cmd, &ifr, &need_copyout);
-+	if (!err && need_copyout)
-+		if (put_user_ifreq(&ifr, uifr32))
-+			return -EFAULT;
- 
--	err = sock_do_ioctl(net, sock, cmd, (unsigned long)uifr);
--
--	if (!err) {
--		switch (cmd) {
--		case SIOCGIFFLAGS:
--		case SIOCGIFMETRIC:
--		case SIOCGIFMTU:
--		case SIOCGIFMEM:
--		case SIOCGIFHWADDR:
--		case SIOCGIFINDEX:
--		case SIOCGIFADDR:
--		case SIOCGIFBRDADDR:
--		case SIOCGIFDSTADDR:
--		case SIOCGIFNETMASK:
--		case SIOCGIFPFLAGS:
--		case SIOCGIFTXQLEN:
--		case SIOCGMIIPHY:
--		case SIOCGMIIREG:
--		case SIOCGIFNAME:
--			if (copy_in_user(uifr32, uifr, sizeof(*uifr32)))
--				err = -EFAULT;
--			break;
--		}
--	}
- 	return err;
- }
- 
--- 
-2.27.0
+Well, I don't think so. inet_rtm_valid_getroute_req() is supposed to
+return an error if a parameter is wrong. Verifying ->tos should have
+been done since day 1, yes. However, in practice, we've been accepting
+any value for years. That's the kind of user space behaviour that we
+can't really change. The only solution I can see is to mask the ECN
+bits silently. That way, users can still pass whatever they like (we
+won't break any script), but the result will be right (that is,
+consistent with what routing does).
+
+> > Therefore it can return a different route than what the routing code
+> > would actually use. Like for the ip6_make_flowinfo() case, it might
+> > be better to stop relying on the callers to mask ECN bits and do that
+> > in ip_route_output_key_hash_rcu() instead.
+> 
+> In this context one of the ECN bits is not an ECN bit, as can be seen by
+> 
+> #define RT_FL_TOS(oldflp4) \
+>         ((oldflp4)->flowi4_tos & (IP_DSCP_MASK | RTO_ONLINK))
+
+The RTO_ONLINK flag would have to be passed in a different way. Not a
+trivial task (many places to audit), but that looks feasible.
+
+> It's all a bit messy and spread about.  Reducing the distributed nature of
+> the masking would be good.
+
+Yes, that's why I'd like to stop sprinkling RT_TOS everywhere and mask
+the bits in central places when possible. Once the RT_TOS situation
+improves, adding DSCP support will be much easier.
+
+> > I'll verify that these two problems can actually happen in practice
+> > and will send patches if necessary.
+> 
+> Thanks
+> 
 
