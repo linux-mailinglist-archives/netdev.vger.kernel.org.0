@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46DF62C217F
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 10:39:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25EBC2C2183
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 10:39:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731240AbgKXJgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 04:36:04 -0500
-Received: from mxout70.expurgate.net ([194.37.255.70]:47671 "EHLO
+        id S1731292AbgKXJgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 04:36:14 -0500
+Received: from mxout70.expurgate.net ([194.37.255.70]:38559 "EHLO
         mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727901AbgKXJgD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 04:36:03 -0500
+        with ESMTP id S1727901AbgKXJgN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 04:36:13 -0500
 Received: from [127.0.0.1] (helo=localhost)
         by relay.expurgate.net with smtp (Exim 4.90)
         (envelope-from <ms@dev.tdt.de>)
-        id 1khUjv-00006J-HE; Tue, 24 Nov 2020 10:35:59 +0100
+        id 1khUk4-0005zY-Ex; Tue, 24 Nov 2020 10:36:08 +0100
 Received: from [195.243.126.94] (helo=securemail.tdt.de)
         by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.90)
         (envelope-from <ms@dev.tdt.de>)
-        id 1khUjt-0004vq-P9; Tue, 24 Nov 2020 10:35:57 +0100
+        id 1khUk3-0001zV-Nk; Tue, 24 Nov 2020 10:36:07 +0100
 Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 55DE7240041;
-        Tue, 24 Nov 2020 10:35:57 +0100 (CET)
+        by securemail.tdt.de (Postfix) with ESMTP id 497C8240041;
+        Tue, 24 Nov 2020 10:36:07 +0100 (CET)
 Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id CC2CB240040;
-        Tue, 24 Nov 2020 10:35:56 +0100 (CET)
+        by securemail.tdt.de (Postfix) with ESMTP id C0C2B240040;
+        Tue, 24 Nov 2020 10:36:06 +0100 (CET)
 Received: from mschiller01.dev.tdt.de (unknown [10.2.3.20])
-        by mail.dev.tdt.de (Postfix) with ESMTPSA id 668C720115;
-        Tue, 24 Nov 2020 10:35:56 +0100 (CET)
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id 3B10F20115;
+        Tue, 24 Nov 2020 10:36:01 +0100 (CET)
 From:   Martin Schiller <ms@dev.tdt.de>
 To:     andrew.hendry@gmail.com, davem@davemloft.net, kuba@kernel.org,
         xie.he.0141@gmail.com
 Cc:     linux-x25@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Martin Schiller <ms@dev.tdt.de>
-Subject: [PATCH net-next v5 1/5] net/x25: handle additional netdev events
-Date:   Tue, 24 Nov 2020 10:35:34 +0100
-Message-ID: <20201124093538.21177-2-ms@dev.tdt.de>
+Subject: [PATCH net-next v5 2/5] net/lapb: support netdev events
+Date:   Tue, 24 Nov 2020 10:35:35 +0100
+Message-ID: <20201124093538.21177-3-ms@dev.tdt.de>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20201124093538.21177-1-ms@dev.tdt.de>
 References: <20201124093538.21177-1-ms@dev.tdt.de>
@@ -45,125 +45,155 @@ X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
         autolearn_force=no version=3.4.2
 X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
 Content-Transfer-Encoding: quoted-printable
+X-purgate-ID: 151534::1606210568-000013A4-830CFDC4/0/0
 X-purgate-type: clean
 X-purgate: clean
-X-purgate-ID: 151534::1606210559-000064E4-5DC19E8D/0/0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1. Add / remove x25_link_device by NETDEV_REGISTER/UNREGISTER and also
-   by NETDEV_POST_TYPE_CHANGE/NETDEV_PRE_TYPE_CHANGE.
+This patch allows layer2 (LAPB) to react to netdev events itself and
+avoids the detour via layer3 (X.25).
 
-   This change is needed so that the x25_neigh struct for an interface
-   is already created when it shows up and is kept independently if the
-   interface goes UP or DOWN.
+1. Establish layer2 on NETDEV_UP events, if the carrier is already up.
 
-   This is used in an upcomming commit, where x25 params of an neighbour
-   will get configurable through ioctls.
+2. Call lapb_disconnect_request() on NETDEV_GOING_DOWN events to signal
+   the peer that the connection will go down.
+   (Only when the carrier is up.)
 
-2. NETDEV_CHANGE event makes it possible to handle carrier loss and
-   detection. If carrier is lost, clean up everything related to this
-   neighbour by calling x25_link_terminated().
+2. When a NETDEV_DOWN event occur, clear all queues, enter state
+   LAPB_STATE_0 and stop all timers.
 
-3. Also call x25_link_terminated() for NETDEV_DOWN events and remove the
-   call to x25_clear_forward_by_dev() in x25_route_device_down(), as
-   this is already called by x25_kill_by_neigh() which gets called by
-   x25_link_terminated().
+3. The NETDEV_CHANGE event makes it possible to handle carrier loss and
+   detection.
 
-4. Do nothing for NETDEV_UP and NETDEV_GOING_DOWN events, as these will
-   be handled in layer 2 (LAPB) and layer3 (X.25) will be informed by
-   layer2 when layer2 link is established and layer3 link should be
-   initiated.
+   In case of Carrier Loss, clear all queues, enter state LAPB_STATE_0
+   and stop all timers.
+
+   In case of Carrier Detection, we start timer t1 on a DCE interface,
+   and on a DTE interface we change to state LAPB_STATE_1 and start
+   sending SABM(E).
 
 Signed-off-by: Martin Schiller <ms@dev.tdt.de>
 ---
- net/x25/af_x25.c    | 22 ++++++++++++++++------
- net/x25/x25_link.c  |  6 +++---
- net/x25/x25_route.c |  3 ---
- 3 files changed, 19 insertions(+), 12 deletions(-)
+ net/lapb/lapb_iface.c | 94 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 94 insertions(+)
 
-diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
-index 046d3fee66a9..313a6222ded9 100644
---- a/net/x25/af_x25.c
-+++ b/net/x25/af_x25.c
-@@ -233,21 +233,31 @@ static int x25_device_event(struct notifier_block *=
-this, unsigned long event,
- #endif
- 	 ) {
- 		switch (event) {
--		case NETDEV_UP:
-+		case NETDEV_REGISTER:
-+		case NETDEV_POST_TYPE_CHANGE:
- 			x25_link_device_up(dev);
- 			break;
--		case NETDEV_GOING_DOWN:
-+		case NETDEV_DOWN:
- 			nb =3D x25_get_neigh(dev);
- 			if (nb) {
--				x25_terminate_link(nb);
-+				x25_link_terminated(nb);
- 				x25_neigh_put(nb);
- 			}
--			break;
--		case NETDEV_DOWN:
--			x25_kill_by_device(dev);
- 			x25_route_device_down(dev);
-+			break;
-+		case NETDEV_PRE_TYPE_CHANGE:
-+		case NETDEV_UNREGISTER:
- 			x25_link_device_down(dev);
- 			break;
-+		case NETDEV_CHANGE:
-+			if (!netif_carrier_ok(dev)) {
-+				nb =3D x25_get_neigh(dev);
-+				if (nb) {
-+					x25_link_terminated(nb);
-+					x25_neigh_put(nb);
+diff --git a/net/lapb/lapb_iface.c b/net/lapb/lapb_iface.c
+index 3c03f6512c5f..f226d354aaf0 100644
+--- a/net/lapb/lapb_iface.c
++++ b/net/lapb/lapb_iface.c
+@@ -418,14 +418,108 @@ int lapb_data_transmit(struct lapb_cb *lapb, struc=
+t sk_buff *skb)
+ 	return used;
+ }
+=20
++/* Handle device status changes. */
++static int lapb_device_event(struct notifier_block *this, unsigned long =
+event,
++			     void *ptr)
++{
++	struct net_device *dev =3D netdev_notifier_info_to_dev(ptr);
++	struct lapb_cb *lapb;
++
++	if (!net_eq(dev_net(dev), &init_net))
++		return NOTIFY_DONE;
++
++	if (dev->type =3D=3D ARPHRD_X25) {
++		switch (event) {
++		case NETDEV_UP:
++			lapb_dbg(0, "(%p) Interface up: %s\n", dev,
++				 dev->name);
++
++			if (netif_carrier_ok(dev)) {
++				lapb =3D lapb_devtostruct(dev);
++				if (!lapb)
++					break;
++
++				lapb_dbg(0, "(%p): Carrier is already up: %s\n",
++					 dev, dev->name);
++				if (lapb->mode & LAPB_DCE) {
++					lapb_start_t1timer(lapb);
++				} else {
++					if (lapb->state =3D=3D LAPB_STATE_0) {
++						lapb->state =3D LAPB_STATE_1;
++						lapb_establish_data_link(lapb);
++					}
 +				}
 +			}
 +			break;
- 		}
- 	}
-=20
-diff --git a/net/x25/x25_link.c b/net/x25/x25_link.c
-index fdae054b7dc1..11e868aa625d 100644
---- a/net/x25/x25_link.c
-+++ b/net/x25/x25_link.c
-@@ -232,6 +232,9 @@ void x25_link_established(struct x25_neigh *nb)
- void x25_link_terminated(struct x25_neigh *nb)
- {
- 	nb->state =3D X25_LINK_STATE_0;
-+	skb_queue_purge(&nb->queue);
-+	x25_stop_t20timer(nb);
++		case NETDEV_GOING_DOWN:
++			if (netif_carrier_ok(dev))
++				lapb_disconnect_request(dev);
++			break;
++		case NETDEV_DOWN:
++			lapb =3D lapb_devtostruct(dev);
++			if (!lapb)
++				break;
 +
- 	/* Out of order: clear existing virtual calls (X.25 03/93 4.6.3) */
- 	x25_kill_by_neigh(nb);
- }
-@@ -277,9 +280,6 @@ void x25_link_device_up(struct net_device *dev)
-  */
- static void __x25_remove_neigh(struct x25_neigh *nb)
++			lapb_dbg(0, "(%p) Interface down: %s\n", dev,
++				 dev->name);
++			lapb_dbg(0, "(%p) S%d -> S0\n", dev,
++				 lapb->state);
++			lapb_clear_queues(lapb);
++			lapb->state =3D LAPB_STATE_0;
++			lapb->n2count   =3D 0;
++			lapb_stop_t1timer(lapb);
++			lapb_stop_t2timer(lapb);
++			break;
++		case NETDEV_CHANGE:
++			lapb =3D lapb_devtostruct(dev);
++			if (!lapb)
++				break;
++
++			if (netif_carrier_ok(dev)) {
++				lapb_dbg(0, "(%p): Carrier detected: %s\n",
++					 dev, dev->name);
++				if (lapb->mode & LAPB_DCE) {
++					lapb_start_t1timer(lapb);
++				} else {
++					if (lapb->state =3D=3D LAPB_STATE_0) {
++						lapb->state =3D LAPB_STATE_1;
++						lapb_establish_data_link(lapb);
++					}
++				}
++			} else {
++				lapb_dbg(0, "(%p) Carrier lost: %s\n", dev,
++					 dev->name);
++				lapb_dbg(0, "(%p) S%d -> S0\n", dev,
++					 lapb->state);
++				lapb_clear_queues(lapb);
++				lapb->state =3D LAPB_STATE_0;
++				lapb->n2count   =3D 0;
++				lapb_stop_t1timer(lapb);
++				lapb_stop_t2timer(lapb);
++			}
++			break;
++		}
++	}
++
++	return NOTIFY_DONE;
++}
++
++static struct notifier_block lapb_dev_notifier =3D {
++	.notifier_call =3D lapb_device_event,
++};
++
+ static int __init lapb_init(void)
  {
--	skb_queue_purge(&nb->queue);
--	x25_stop_t20timer(nb);
--
- 	if (nb->node.next) {
- 		list_del(&nb->node);
- 		x25_neigh_put(nb);
-diff --git a/net/x25/x25_route.c b/net/x25/x25_route.c
-index 00e46c9a5280..ec2a39e9b3e6 100644
---- a/net/x25/x25_route.c
-+++ b/net/x25/x25_route.c
-@@ -115,9 +115,6 @@ void x25_route_device_down(struct net_device *dev)
- 			__x25_remove_route(rt);
- 	}
- 	write_unlock_bh(&x25_route_list_lock);
--
--	/* Remove any related forwarding */
--	x25_clear_forward_by_dev(dev);
++	register_netdevice_notifier(&lapb_dev_notifier);
++
+ 	return 0;
  }
 =20
- /*
+ static void __exit lapb_exit(void)
+ {
+ 	WARN_ON(!list_empty(&lapb_list));
++
++	unregister_netdevice_notifier(&lapb_dev_notifier);
+ }
+=20
+ MODULE_AUTHOR("Jonathan Naylor <g4klx@g4klx.demon.co.uk>");
 --=20
 2.20.1
 
