@@ -2,118 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 572702C1EBA
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 08:17:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95A152C1EB7
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 08:15:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729959AbgKXHQH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 02:16:07 -0500
-Received: from z5.mailgun.us ([104.130.96.5]:26821 "EHLO z5.mailgun.us"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729283AbgKXHQH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 02:16:07 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1606202166; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=w+M3PJorKwyCBVU1Kq/koy0K88GFFtVnVBJQ9wVlNr8=; b=CFCB3dXd8VnyCPNqHfaP82Te93bhmMn7DW/i+1UokopDCId8n9OGZngboJwlpsPGkH8p7Oor
- EL1YJv8i50hear7UMDO9lnz3YxcgPNOeXuqrlWY0EF8VoN1e4YAItcWYEExQzFl1jneNDY5i
- KM9Bmq8ZUAKNjqmMxaX8waJYorU=
-X-Mailgun-Sending-Ip: 104.130.96.5
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
- 5fbcb32577b63cdb341361a7 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 24 Nov 2020 07:15:49
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 29283C43460; Tue, 24 Nov 2020 07:15:49 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 981EBC433C6;
-        Tue, 24 Nov 2020 07:15:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 981EBC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-Subject: Re: pull-request: wireless-drivers-2020-11-23
-References: <20201123161037.C11D1C43460@smtp.codeaurora.org>
-        <20201123153002.2200d6be@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Date:   Tue, 24 Nov 2020 09:15:45 +0200
-In-Reply-To: <20201123153002.2200d6be@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        (Jakub Kicinski's message of "Mon, 23 Nov 2020 15:30:02 -0800")
-Message-ID: <87im9vql7i.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1729937AbgKXHO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 02:14:56 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7723 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729240AbgKXHOz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 02:14:55 -0500
+Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CgFdC1kjRzkdG0;
+        Tue, 24 Nov 2020 15:14:23 +0800 (CST)
+Received: from huawei.com (10.175.113.133) by DGGEMS411-HUB.china.huawei.com
+ (10.3.19.211) with Microsoft SMTP Server id 14.3.487.0; Tue, 24 Nov 2020
+ 15:14:43 +0800
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <kuba@kernel.org>, <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
+        <yoshfuji@linux-ipv6.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net v2] ipv6: addrlabel: fix possible memory leak in ip6addrlbl_net_init
+Date:   Tue, 24 Nov 2020 15:17:28 +0800
+Message-ID: <20201124071728.8385-1-wanghai38@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain
+X-Originating-IP: [10.175.113.133]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> writes:
+kmemleak report a memory leak as follows:
 
-> On Mon, 23 Nov 2020 16:10:37 +0000 (UTC) Kalle Valo wrote:
->> wireless-drivers fixes for v5.10
->> 
->> First set of fixes for v5.10. One fix for iwlwifi kernel panic, others
->> less notable.
->> 
->> rtw88
->> 
->> * fix a bogus test found by clang
->> 
->> iwlwifi
->> 
->> * fix long memory reads causing soft lockup warnings
->> 
->> * fix kernel panic during Channel Switch Announcement (CSA)
->> 
->> * other smaller fixes
->> 
->> MAINTAINERS
->> 
->> * email address updates
->
-> Pulled, thanks!
->
-> Please watch out for missing sign-offs.
+unreferenced object 0xffff8880059c6a00 (size 64):
+  comm "ip", pid 23696, jiffies 4296590183 (age 1755.384s)
+  hex dump (first 32 bytes):
+    20 01 00 10 00 00 00 00 00 00 00 00 00 00 00 00   ...............
+    1c 00 00 00 00 00 00 00 00 00 00 00 07 00 00 00  ................
+  backtrace:
+    [<00000000aa4e7a87>] ip6addrlbl_add+0x90/0xbb0
+    [<0000000070b8d7f1>] ip6addrlbl_net_init+0x109/0x170
+    [<000000006a9ca9d4>] ops_init+0xa8/0x3c0
+    [<000000002da57bf2>] setup_net+0x2de/0x7e0
+    [<000000004e52d573>] copy_net_ns+0x27d/0x530
+    [<00000000b07ae2b4>] create_new_namespaces+0x382/0xa30
+    [<000000003b76d36f>] unshare_nsproxy_namespaces+0xa1/0x1d0
+    [<0000000030653721>] ksys_unshare+0x3a4/0x780
+    [<0000000007e82e40>] __x64_sys_unshare+0x2d/0x40
+    [<0000000031a10c08>] do_syscall_64+0x33/0x40
+    [<0000000099df30e7>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-I assume you refer to commit 97cc16943f23, sorry about that. Currently
-I'm just manually checking sign-offs and missed this patch. My plan is
-to implement proper checks to my patchwork script so I'll notice these
-before I commit the patch (or pull request), just have not yet find the
-time to do that.
+We should free all rules when we catch an error in ip6addrlbl_net_init().
+otherwise a memory leak will occur.
 
-commit 97cc16943f23078535fdbce4f6391b948b4ccc08
-Author:     Avraham Stern <avraham.stern@intel.com>
-AuthorDate: Sat Nov 7 10:50:09 2020 +0200
-Commit:     Kalle Valo <kvalo@codeaurora.org>
-CommitDate: Tue Nov 10 20:45:34 2020 +0200
+Fixes: 2a8cc6c89039 ("[IPV6] ADDRCONF: Support RFC3484 configurable address selection policy table.")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+---
+v1->v2: simplify this function
+ net/ipv6/addrlabel.c | 26 +++++++++++++++++---------
+ 1 file changed, 17 insertions(+), 9 deletions(-)
 
-    iwlwifi: mvm: write queue_sync_state only for sync
-    
-    We use mvm->queue_sync_state to wait for synchronous queue sync
-    messages, but if an async one happens inbetween we shouldn't
-    clear mvm->queue_sync_state after sending the async one, that
-    can run concurrently (at least from the CPU POV) with another
-    synchronous queue sync.
-    
-    Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-    Fixes: 3c514bf831ac ("iwlwifi: mvm: add a loose synchronization of the NSSN across Rx queues")
-    Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-    Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-    Link: https://lore.kernel.org/r/iwlwifi.20201107104557.51a3148f2c14.I0772171dbaec87433a11513e9586d98b5d920b5f@changeid
-
+diff --git a/net/ipv6/addrlabel.c b/net/ipv6/addrlabel.c
+index 642fc6ac13d2..8a22486cf270 100644
+--- a/net/ipv6/addrlabel.c
++++ b/net/ipv6/addrlabel.c
+@@ -306,7 +306,9 @@ static int ip6addrlbl_del(struct net *net,
+ /* add default label */
+ static int __net_init ip6addrlbl_net_init(struct net *net)
+ {
+-	int err = 0;
++	struct ip6addrlbl_entry *p = NULL;
++	struct hlist_node *n;
++	int err;
+ 	int i;
+ 
+ 	ADDRLABEL(KERN_DEBUG "%s\n", __func__);
+@@ -315,14 +317,20 @@ static int __net_init ip6addrlbl_net_init(struct net *net)
+ 	INIT_HLIST_HEAD(&net->ipv6.ip6addrlbl_table.head);
+ 
+ 	for (i = 0; i < ARRAY_SIZE(ip6addrlbl_init_table); i++) {
+-		int ret = ip6addrlbl_add(net,
+-					 ip6addrlbl_init_table[i].prefix,
+-					 ip6addrlbl_init_table[i].prefixlen,
+-					 0,
+-					 ip6addrlbl_init_table[i].label, 0);
+-		/* XXX: should we free all rules when we catch an error? */
+-		if (ret && (!err || err != -ENOMEM))
+-			err = ret;
++		err = ip6addrlbl_add(net,
++				     ip6addrlbl_init_table[i].prefix,
++				     ip6addrlbl_init_table[i].prefixlen,
++				     0,
++				     ip6addrlbl_init_table[i].label, 0);
++		if (err)
++			goto err_ip6addrlbl_add;
++	}
++	return 0;
++
++err_ip6addrlbl_add:
++	hlist_for_each_entry_safe(p, n, &net->ipv6.ip6addrlbl_table.head, list) {
++		hlist_del_rcu(&p->list);
++		kfree_rcu(p, rcu);
+ 	}
+ 	return err;
+ }
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.17.1
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
