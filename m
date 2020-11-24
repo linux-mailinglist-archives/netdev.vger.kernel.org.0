@@ -2,111 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 148512C33B2
+	by mail.lfdr.de (Postfix) with ESMTP id EEE7E2C33B4
 	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 23:14:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388489AbgKXWLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 17:11:17 -0500
-Received: from www62.your-server.de ([213.133.104.62]:38508 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728523AbgKXWLQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 17:11:16 -0500
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1khgWg-0008Hh-A8; Tue, 24 Nov 2020 23:11:06 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1khgWg-000Pkc-55; Tue, 24 Nov 2020 23:11:06 +0100
-Subject: Re: [PATCH v3 1/1] xdp: remove the function xsk_map_inc
-To:     Zhu Yanjun <yanjunz@nvidia.com>, magnus.karlsson@intel.com,
-        bjorn.topel@intel.com, davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Zhu Yanjun <zyjzyj2000@gmail.com>
-References: <1606143915-25335-1-git-send-email-yanjunz@nvidia.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <c3472d5f-54da-2e20-2c3c-3f6690de6f04@iogearbox.net>
-Date:   Tue, 24 Nov 2020 23:11:05 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S2388976AbgKXWLV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 17:11:21 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49038 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728523AbgKXWLV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 17:11:21 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6E26A20715;
+        Tue, 24 Nov 2020 22:11:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606255880;
+        bh=2dwrTnBapMpeeKOlbFjCouY1RJBlpScC7T+FqQWSpjo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IV98qterQcQMxMoALBJYPCpjEbCIXf+g5DQQkP6ym0AhK77rDsK769R0GsezSZWBq
+         g+AGgdxu7OPiW99q555tMlIFoqE1C45PvxjWn2b9qsMJHj527810ehoumvuDjBmuLH
+         PWAm71QLH5pKQkFLg9uorIfMRIJMWppCznzdfKCE=
+Date:   Tue, 24 Nov 2020 14:11:19 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next] net: warn if gso_type isn't set for a GSO SKB
+Message-ID: <20201124141119.49972889@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <97c78d21-7f0b-d843-df17-3589f224d2cf@gmail.com>
+References: <97c78d21-7f0b-d843-df17-3589f224d2cf@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <1606143915-25335-1-git-send-email-yanjunz@nvidia.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25998/Tue Nov 24 14:16:50 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/23/20 4:05 PM, Zhu Yanjun wrote:
-> From: Zhu Yanjun <zyjzyj2000@gmail.com>
+On Sat, 21 Nov 2020 00:22:20 +0100 Heiner Kallweit wrote:
+> In bug report [0] a warning in r8169 driver was reported that was
+> caused by an invalid GSO SKB (gso_type was 0). See [1] for a discussion
+> about this issue. Still the origin of the invalid GSO SKB isn't clear.
 > 
-> The function xsk_map_inc is a simple wrapper of bpf_map_inc and
-> always returns zero. As such, replacing this function with bpf_map_inc
-> and removing the test code.
+> It shouldn't be a network drivers task to check for invalid GSO SKB's.
+> Also, even if issue [0] can be fixed, we can't be sure that a
+> similar issue doesn't pop up again at another place.
+> Therefore let gso_features_check() check for such invalid GSO SKB's.
 > 
-> Signed-off-by: Zhu Yanjun <zyjzyj2000@gmail.com>
-> ---
->   net/xdp/xsk.c    |  2 +-
->   net/xdp/xsk.h    |  1 -
->   net/xdp/xskmap.c | 13 +------------
->   3 files changed, 2 insertions(+), 14 deletions(-)
+> [0] https://bugzilla.kernel.org/show_bug.cgi?id=209423
+> [1] https://www.spinics.net/lists/netdev/msg690794.html
 > 
-> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index cfbec3989a76..a3c1f07d77d8 100644
-> --- a/net/xdp/xsk.c
-> +++ b/net/xdp/xsk.c
-> @@ -548,7 +548,7 @@ static struct xsk_map *xsk_get_map_list_entry(struct xdp_sock *xs,
->   	node = list_first_entry_or_null(&xs->map_list, struct xsk_map_node,
->   					node);
->   	if (node) {
-> -		WARN_ON(xsk_map_inc(node->map));
-> +		bpf_map_inc(&node->map->map);
->   		map = node->map;
->   		*map_entry = node->map_entry;
->   	}
-> diff --git a/net/xdp/xsk.h b/net/xdp/xsk.h
-> index b9e896cee5bb..0aad25c0e223 100644
-> --- a/net/xdp/xsk.h
-> +++ b/net/xdp/xsk.h
-> @@ -41,7 +41,6 @@ static inline struct xdp_sock *xdp_sk(struct sock *sk)
->   
->   void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
->   			     struct xdp_sock **map_entry);
-> -int xsk_map_inc(struct xsk_map *map);
->   void xsk_map_put(struct xsk_map *map);
->   void xsk_clear_pool_at_qid(struct net_device *dev, u16 queue_id);
->   int xsk_reg_pool_at_qid(struct net_device *dev, struct xsk_buff_pool *pool,
-> diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
-> index 49da2b8ace8b..6b7e9a72b101 100644
-> --- a/net/xdp/xskmap.c
-> +++ b/net/xdp/xskmap.c
-> @@ -11,12 +11,6 @@
->   
->   #include "xsk.h"
->   
-> -int xsk_map_inc(struct xsk_map *map)
-> -{
-> -	bpf_map_inc(&map->map);
-> -	return 0;
-> -}
-> -
->   void xsk_map_put(struct xsk_map *map)
->   {
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-So, the xsk_map_put() is defined as:
-
-   void xsk_map_put(struct xsk_map *map)
-   {
-         bpf_map_put(&map->map);
-   }
-
-What is the reason to get rid of xsk_map_inc() but not xsk_map_put() wrapper?
-Can't we just remove both while we're at it?
-
-Thanks,
-Daniel
+Applied, thanks!
