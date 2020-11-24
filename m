@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8405D2C25AC
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 13:27:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BD502C25AE
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 13:29:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387571AbgKXM1D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 07:27:03 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:40711 "EHLO
+        id S1733307AbgKXM24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 07:28:56 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:40822 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729172AbgKXM1D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 07:27:03 -0500
+        with ESMTP id S1729172AbgKXM24 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 07:28:56 -0500
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from roid@nvidia.com)
-        with SMTP; 24 Nov 2020 14:26:57 +0200
+        with SMTP; 24 Nov 2020 14:28:54 +0200
 Received: from c-236-0-240-241.mtl.labs.mlnx (c-236-0-240-241.mtl.labs.mlnx [10.236.0.241])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0AOCQvkW022191;
-        Tue, 24 Nov 2020 14:26:57 +0200
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0AOCSsLd022390;
+        Tue, 24 Nov 2020 14:28:54 +0200
 From:   Roi Dayan <roid@nvidia.com>
 To:     netdev@vger.kernel.org
 Cc:     Roi Dayan <roid@nvidia.com>,
         Simon Horman <simon.horman@netronome.com>,
         David Ahern <dsahern@gmail.com>, zahari.doychev@linux.com,
         jianbol@mellanox.com, jhs@mojatatu.com
-Subject: [PATCH iproute2 1/1] tc flower: fix parsing vlan_id and vlan_prio
-Date:   Tue, 24 Nov 2020 14:26:41 +0200
-Message-Id: <20201124122641.46696-1-roid@nvidia.com>
+Subject: [PATCH iproute2-next 1/1] tc flower: fix parsing vlan_id and vlan_prio
+Date:   Tue, 24 Nov 2020 14:28:10 +0200
+Message-Id: <20201124122810.46790-1-roid@nvidia.com>
 X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
