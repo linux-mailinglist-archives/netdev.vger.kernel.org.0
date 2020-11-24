@@ -2,141 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E5BF2C29DE
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 15:40:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B825E2C29F9
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 15:46:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389200AbgKXOki (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 09:40:38 -0500
-Received: from mx07-00178001.pphosted.com ([185.132.182.106]:46251 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730481AbgKXOkh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 09:40:37 -0500
-Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0AOEWCAQ017400;
-        Tue, 24 Nov 2020 15:40:05 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=STMicroelectronics;
- bh=/gBlAC28FXcb6RG+VvW/oP4Fyova5QfXA8ljSa5ZgMM=;
- b=N5aQzoJB5+owiet0hUrQ8lbEAFlZleMRGjdeT6Oh8/jBfDPLADy5462QlHPHxEJ6yODd
- pj/9ZMumQRigtx0i19nrP2K6ENE/+2zkmt2FHinnf6ZQeT2ktT8O6vKHPFhIXNO5dQF6
- 0juf8LtcOVS2gnP9faz3xzv11hchL/eI6cEep62CH0Jg5ToIsuXpinDTjPC4TNHoXan8
- qFfWRPBWNobDL+S7QTi5L9ukzqLGTHRtJYdlPUEVE6vIRosksPbwuQA0GuAQbR1Vp291
- 7U3Beyh7n85UsF5XuVHfm+GqssLhAB4vnQtFEW7ocC30jXVa7p8GqsOmdCnrAnyjgANq ew== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 34y05h80b7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 24 Nov 2020 15:40:05 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id D8FCA10002A;
-        Tue, 24 Nov 2020 15:40:00 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag1node3.st.com [10.75.127.3])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id AEBA82BA2BB;
-        Tue, 24 Nov 2020 15:40:00 +0100 (CET)
-Received: from localhost (10.75.127.50) by SFHDAG1NODE3.st.com (10.75.127.3)
- with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 24 Nov 2020 15:40:00
- +0100
-From:   Antonio Borneo <antonio.borneo@st.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        Yonglong Liu <liuyonglong@huawei.com>
-CC:     Antonio Borneo <antonio.borneo@st.com>, <stable@vger.kernel.org>,
-        <linuxarm@huawei.com>, Salil Mehta <salil.mehta@huawei.com>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] net: phy: fix auto-negotiation in case of 'down-shift'
-Date:   Tue, 24 Nov 2020 15:38:48 +0100
-Message-ID: <20201124143848.874894-1-antonio.borneo@st.com>
-X-Mailer: git-send-email 2.29.2
+        id S2389244AbgKXOoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 09:44:55 -0500
+Received: from z5.mailgun.us ([104.130.96.5]:38689 "EHLO z5.mailgun.us"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388913AbgKXOoy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 09:44:54 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1606229094; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=GJYW42IjQPe76onlnrQnVKos7pxA3IfstGH6J+iXtwQ=;
+ b=h6o34MxU31gkKwM7jpTcS6knMJGWTnAIXl0RphHio3S9TObAL3xvHtrdINVnjLfhoWt2Oxio
+ YxezI5CDXMZ7VKwqIkSlZGin5g+xxwnxuxlwAYteXal+R0VzG2oaBn/i3OHnHyVF0L08fwIY
+ q3cxEgys1jkgjvg19oetqdd0YA0=
+X-Mailgun-Sending-Ip: 104.130.96.5
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
+ 5fbd1c61a5c560669c94b940 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 24 Nov 2020 14:44:49
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 532C5C43461; Tue, 24 Nov 2020 14:44:48 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id B24EDC43460;
+        Tue, 24 Nov 2020 14:44:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B24EDC43460
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.50]
-X-ClientProxiedBy: SFHDAG4NODE3.st.com (10.75.127.12) To SFHDAG1NODE3.st.com
- (10.75.127.3)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-24_04:2020-11-24,2020-11-24 signatures=0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] [v7] wireless: Initial driver submission for pureLiFi STA
+ devices
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20201116092253.1302196-1-srini.raju@purelifi.com>
+References: <20201116092253.1302196-1-srini.raju@purelifi.com>
+To:     Srinivasan Raju <srini.raju@purelifi.com>
+Cc:     unlisted-recipients:; (no To-header on input)
+        mostafa.afgani@purelifi.com,
+        Srinivasan Raju <srini.raju@purelifi.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        linux-kernel@vger.kernel.org (open list),
+        linux-wireless@vger.kernel.org (open list:NETWORKING DRIVERS (WIRELESS)),
+        netdev@vger.kernel.org (open list:NETWORKING DRIVERS)
+Illegal-Object: Syntax error in Cc: address found on vger.kernel.org:
+        Cc:     unlisted-recipients:; (no To-header on input)mostafa.afgani@purelifi.com
+                                                                     ^-missing end of address
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20201124144448.532C5C43461@smtp.codeaurora.org>
+Date:   Tue, 24 Nov 2020 14:44:48 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the auto-negotiation fails to establish a gigabit link, the phy
-can try to 'down-shift': it resets the bits in MII_CTRL1000 to
-stop advertising 1Gbps and retries the negotiation at 100Mbps.
+Srinivasan Raju <srini.raju@purelifi.com> wrote:
 
-From commit 5502b218e001 ("net: phy: use phy_resolve_aneg_linkmode
-in genphy_read_status") the content of MII_CTRL1000 is not checked
-anymore at the end of the negotiation, preventing the detection of
-phy 'down-shift'.
-In case of 'down-shift' phydev->advertising gets out-of-sync wrt
-MII_CTRL1000 and still includes modes that the phy have already
-dropped. The link partner could still advertise higher speeds,
-while the link is established at one of the common lower speeds.
-The logic 'and' in phy_resolve_aneg_linkmode() between
-phydev->advertising and phydev->lp_advertising will report an
-incorrect mode.
+> This introduces the pureLiFi LiFi driver for LiFi-X, LiFi-XC
+> and LiFi-XL USB devices.
+> 
+> This driver implementation has been based on the zd1211rw driver.
+> 
+> Driver is based on 802.11 softMAC Architecture and uses
+> native 802.11 for configuration and management.
+> 
+> The driver is compiled and tested in ARM, x86 architectures and
+> compiled in powerpc architecture.
+> 
+> Signed-off-by: Srinivasan Raju <srini.raju@purelifi.com>
+> 
+> Changes v6->v7:
+> - Magic numbers removed and used IEEE80211 macors
+> - usb.c is split into two files firmware.c and dbgfs.c
+> - Other code style and timer function fixes (mod_timer)
+> Changes v5->v6:
+> - Code style fix patch from Joe Perches
+> Changes v4->v5:
+> - Code refactoring for clarity and redundnacy removal
+> - Fix warnings from kernel test robot
+> Changes v3->v4:
+> - Code refactoring based on kernel code guidelines
+> - Remove multi level macors and use kernel debug macros
+> Changes v2->v3:
+> - Code style fixes kconfig fix
+> Changes v1->v2:
+> - v1 was submitted to staging, v2 submitted to wireless-next
+> - Code style fixes and copyright statement fix
 
-Issue detected with a local phy rtl8211f connected with a gigabit
-capable router through a two-pairs network cable.
+I haven't had a chance to review this yet but we have some documentation for new drivers:
 
-After auto-negotiation, read back MII_CTRL1000 and mask-out from
-phydev->advertising the modes that have been eventually discarded
-due to the 'down-shift'.
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches#new_driver
 
-Fixes: 5502b218e001 ("net: phy: use phy_resolve_aneg_linkmode in genphy_read_status")
-Cc: stable@vger.kernel.org # v5.1+
-Signed-off-by: Antonio Borneo <antonio.borneo@st.com>
-Link: https://lore.kernel.org/r/478f871a-583d-01f1-9cc5-2eea56d8c2a7@huawei.com
----
-To: Andrew Lunn <andrew@lunn.ch>
-To: Heiner Kallweit <hkallweit1@gmail.com>
-To: Russell King <linux@armlinux.org.uk>
-To: "David S. Miller" <davem@davemloft.net>
-To: Jakub Kicinski <kuba@kernel.org>
-To: netdev@vger.kernel.org
-To: Yonglong Liu <liuyonglong@huawei.com>
-Cc: linuxarm@huawei.com
-Cc: Salil Mehta <salil.mehta@huawei.com>
-Cc: linux-stm32@st-md-mailman.stormreply.com
-Cc: linux-kernel@vger.kernel.org
-Cc: Antonio Borneo <antonio.borneo@st.com>
+Is the firmware publically available?
 
- drivers/net/phy/phy_device.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 5dab6be6fc38..5d1060aa1b25 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -2331,7 +2331,7 @@ EXPORT_SYMBOL(genphy_read_status_fixed);
-  */
- int genphy_read_status(struct phy_device *phydev)
- {
--	int err, old_link = phydev->link;
-+	int adv, err, old_link = phydev->link;
- 
- 	/* Update the link, but return if there was an error */
- 	err = genphy_update_link(phydev);
-@@ -2356,6 +2356,14 @@ int genphy_read_status(struct phy_device *phydev)
- 		return err;
- 
- 	if (phydev->autoneg == AUTONEG_ENABLE && phydev->autoneg_complete) {
-+		if (phydev->is_gigabit_capable) {
-+			adv = phy_read(phydev, MII_CTRL1000);
-+			if (adv < 0)
-+				return adv;
-+			/* update advertising in case of 'down-shift' */
-+			mii_ctrl1000_mod_linkmode_adv_t(phydev->advertising,
-+							adv);
-+		}
- 		phy_resolve_aneg_linkmode(phydev);
- 	} else if (phydev->autoneg == AUTONEG_DISABLE) {
- 		err = genphy_read_status_fixed(phydev);
-
-base-commit: d549699048b4b5c22dd710455bcdb76966e55aa3
 -- 
-2.29.2
+https://patchwork.kernel.org/project/linux-wireless/patch/20201116092253.1302196-1-srini.raju@purelifi.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
