@@ -2,163 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B2BB2C2ABC
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 16:04:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 754E22C2AC0
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 16:04:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389473AbgKXPDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 10:03:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48508 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389452AbgKXPDu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 10:03:50 -0500
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F365AC0613D6;
-        Tue, 24 Nov 2020 07:03:49 -0800 (PST)
-Received: by mail-wm1-x344.google.com with SMTP id 10so2695519wml.2;
-        Tue, 24 Nov 2020 07:03:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=HFdlhJaaYtVAHZoZx+O2cfNnd2v0cgIEGMNjYfyBtsM=;
-        b=ZeuxxeGJizVrTQ8/+drC2BXOjRHNr8TNITrPHM54Kju6SErP4aUNRGzd2no43NToYD
-         GdUOSa+9BSjoQiP7X9sNWQ1giuNJPUv72hBAZXSCVj4MRdTf0HYgdM+tAR3fMuYvagD9
-         aOs6Dsgc8B7gcIHIz3Fenf0FpsxsbUQ4dR0YImjAtUWhpYyJJHznwBpsjgiP7MmQvPtH
-         j2bxpkbKc3T6wGJ6ono2W6k/NDP5bzUzFG9wyD4fI0ps2BZ5QDv73Q4CHF3bZz4iUKSy
-         Cw58Ivn2TvJpbCBhBu+BUT66wspodlZlJu6QPslG71dFXtiDQ10NrADNfnNilXlL8kQS
-         LlkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=HFdlhJaaYtVAHZoZx+O2cfNnd2v0cgIEGMNjYfyBtsM=;
-        b=tzmJ3Y7sTG9xosC3Hzf2cRBm4/gSE5uoK99S1ss07fuGInruwJwqIrrp8cECX5W0jc
-         sJcy/Bc/4WSeJ0jOR6IDRKbTC36xKRihD7lnSArVhkx/GeLIHnuzK+ZjRiYZqsUK1mKB
-         tMHfrwpEM3UDBaSe4WNuSNdlm89avwy6ExbGPSUMDXGcAYJr4n54BsLLFZTpUSwnkn/0
-         IpJstu+PXbb2n0T5Xpy1IoOSmnSL2B5aMt46YqGTrJZvOCzIEMc/yOBK0vQR4Q4SQRsK
-         Vmi8a2+FA4SFZzh9U0pcu5E09sWhqRDxDkCn0yixznp1/zm87svSuVa7oMw90nRYOotW
-         eWnw==
-X-Gm-Message-State: AOAM531Iy7x9GCtKz1GSUrdv6sSLN+oB/K3n3ehBXG5whtZqrtX52LaK
-        C6E4eB5i5GaFE7iHTfuYPIwBB3VD0urx2g==
-X-Google-Smtp-Source: ABdhPJww+D+Kpjg5W65A9K3BrPYYERd+hjbvhkiesPVWAgqYd7TEqnJVbB08jzGFXDLnyziJPgEzhQ==
-X-Received: by 2002:a1c:3d05:: with SMTP id k5mr5093414wma.151.1606230225625;
-        Tue, 24 Nov 2020 07:03:45 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f23:2800:4cf3:cdf5:5d2a:5c8c? (p200300ea8f2328004cf3cdf55d2a5c8c.dip0.t-ipconnect.de. [2003:ea:8f23:2800:4cf3:cdf5:5d2a:5c8c])
-        by smtp.googlemail.com with ESMTPSA id u5sm5669309wml.13.2020.11.24.07.03.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 Nov 2020 07:03:44 -0800 (PST)
-Subject: Re: [PATCH] net: phy: fix auto-negotiation in case of 'down-shift'
-To:     Antonio Borneo <antonio.borneo@st.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Yonglong Liu <liuyonglong@huawei.com>
-Cc:     stable@vger.kernel.org, linuxarm@huawei.com,
-        Salil Mehta <salil.mehta@huawei.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-kernel@vger.kernel.org
-References: <20201124143848.874894-1-antonio.borneo@st.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <4684304a-37f5-e0cd-91cf-3f86318979c3@gmail.com>
-Date:   Tue, 24 Nov 2020 16:03:40 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        id S2389498AbgKXPEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 10:04:13 -0500
+Received: from z5.mailgun.us ([104.130.96.5]:61567 "EHLO z5.mailgun.us"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388176AbgKXPEM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 10:04:12 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1606230252; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=HbEXkE4/5qcA3cH25AXK1z4uk2ABDyVF5WqikAQO1x4=;
+ b=WliYkEObEXo1VZf68x7p90yF+wkee1i2sPxngs2GPqqM16wvWASVJbntykk4xkCbxx/4dalD
+ YPcGpUoo3tfsvHtEK8O7pOuxtB7ok99AGxfhwwAxRSOy2ssw3BPmMq7e03QbzqiIExCh8dZB
+ dDTBIlcerO9LUmf75tdCbQtvKik=
+X-Mailgun-Sending-Ip: 104.130.96.5
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
+ 5fbd20eb4146c5eefdf7be91 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 24 Nov 2020 15:04:11
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id F3D99C43468; Tue, 24 Nov 2020 15:04:10 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 42D52C43460;
+        Tue, 24 Nov 2020 15:04:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 42D52C43460
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20201124143848.874894-1-antonio.borneo@st.com>
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] brcmsmac: ampdu: Check BA window size before checking
+ block
+ ack
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20201116030635.645811-1-dima@arista.com>
+References: <20201116030635.645811-1-dima@arista.com>
+To:     Dmitry Safonov <dima@arista.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        Dmitry Safonov <dima@arista.com>,
+        Yuji Nakao <contact@yujinakao.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20201124150410.F3D99C43468@smtp.codeaurora.org>
+Date:   Tue, 24 Nov 2020 15:04:10 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 24.11.2020 um 15:38 schrieb Antonio Borneo:
-> If the auto-negotiation fails to establish a gigabit link, the phy
-> can try to 'down-shift': it resets the bits in MII_CTRL1000 to
-> stop advertising 1Gbps and retries the negotiation at 100Mbps.
-> 
-I see that Russell answered already. My 2cts:
+Dmitry Safonov <dima@arista.com> wrote:
 
-Are you sure all PHY's supporting downshift adjust the
-advertisement bits? IIRC an Aquantia PHY I dealt with does not.
-And if a PHY does so I'd consider this problematic:
-Let's say you have a broken cable and the PHY downshifts to
-100Mbps. If you change the cable then the PHY would still negotiate
-100Mbps only.
+> bindex can be out of BA window (64):
+>   tid 0 seq 2983, start_seq 2915, bindex 68, index 39
+>   tid 0 seq 2984, start_seq 2915, bindex 69, index 40
+>   tid 0 seq 2985, start_seq 2915, bindex 70, index 41
+>   tid 0 seq 2986, start_seq 2915, bindex 71, index 42
+>   tid 0 seq 2879, start_seq 2915, bindex 4060, index 63
+>   tid 0 seq 2854, start_seq 2915, bindex 4035, index 38
+>   tid 0 seq 2795, start_seq 2915, bindex 3976, index 43
+>   tid 0 seq 2989, start_seq 2924, bindex 65, index 45
+>   tid 0 seq 2992, start_seq 2924, bindex 68, index 48
+>   tid 0 seq 2993, start_seq 2924, bindex 69, index 49
+>   tid 0 seq 2994, start_seq 2924, bindex 70, index 50
+>   tid 0 seq 2997, start_seq 2924, bindex 73, index 53
+>   tid 0 seq 2795, start_seq 2941, bindex 3950, index 43
+>   tid 0 seq 2921, start_seq 2941, bindex 4076, index 41
+>   tid 0 seq 2929, start_seq 2941, bindex 4084, index 49
+>   tid 0 seq 3011, start_seq 2946, bindex 65, index 3
+>   tid 0 seq 3012, start_seq 2946, bindex 66, index 4
+>   tid 0 seq 3013, start_seq 2946, bindex 67, index 5
+> 
+> In result isset() will try to dereference something on the stack,
+> causing panics:
+>   BUG: unable to handle page fault for address: ffffa742800ed01f
+>   #PF: supervisor read access in kernel mode
+>   #PF: error_code(0x0000) - not-present page
+>   PGD 6a4e9067 P4D 6a4e9067 PUD 6a4ec067 PMD 6a4ed067 PTE 0
+>   Oops: 0000 [#1] PREEMPT SMP PTI
+>   CPU: 1 PID: 0 Comm: swapper/1 Kdump: loaded Not tainted 5.8.5-arch1-1-kdump #1
+>   Hardware name: Apple Inc. MacBookAir3,1/Mac-942452F5819B1C1B, BIOS    MBA31.88Z.0061.B07.1201241641 01/24/12
+>   RIP: 0010:brcms_c_ampdu_dotxstatus+0x343/0x9f0 [brcmsmac]
+>   Code: 54 24 20 66 81 e2 ff 0f 41 83 e4 07 89 d1 0f b7 d2 66 c1 e9 03 0f b7 c9 4c 8d 5c 0c 48 49 8b 4d 10 48 8b 79 68 41 57 44 89 e1 <41> 0f b6 33 41 d3 e0 48 c7 c1 38 e0 ea c0 48 83 c7 10 44 21 c6 4c
+>   RSP: 0018:ffffa742800ecdd0 EFLAGS: 00010207
+>   RAX: 0000000000000019 RBX: 000000000000000b RCX: 0000000000000006
+>   RDX: 0000000000000ffe RSI: 0000000000000004 RDI: ffff8fc6ad776800
+>   RBP: ffff8fc6855acb00 R08: 0000000000000001 R09: 00000000000005d9
+>   R10: 00000000fffffffe R11: ffffa742800ed01f R12: 0000000000000006
+>   R13: ffff8fc68d75a000 R14: 00000000000005db R15: 0000000000000019
+>   FS:  0000000000000000(0000) GS:ffff8fc6aad00000(0000) knlGS:0000000000000000
+>   CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>   CR2: ffffa742800ed01f CR3: 000000002480a000 CR4: 00000000000406e0
+>   Call Trace:
+>    <IRQ>
+>    brcms_c_dpc+0xb46/0x1020 [brcmsmac]
+>    ? wlc_intstatus+0xc8/0x180 [brcmsmac]
+>    ? __raise_softirq_irqoff+0x1a/0x80
+>    brcms_dpc+0x37/0xd0 [brcmsmac]
+>    tasklet_action_common.constprop.0+0x51/0xb0
+>    __do_softirq+0xff/0x340
+>    ? handle_level_irq+0x1a0/0x1a0
+>    asm_call_on_stack+0x12/0x20
+>    </IRQ>
+>    do_softirq_own_stack+0x5f/0x80
+>    irq_exit_rcu+0xcb/0x120
+>    common_interrupt+0xd1/0x200
+>    asm_common_interrupt+0x1e/0x40
+>   RIP: 0010:cpuidle_enter_state+0xb3/0x420
+> 
+> Check if the block is within BA window and only then check block's
+> status. Otherwise as Behan wrote: "When I came back to Dublin I
+> was courtmartialed in my absence and sentenced to death in my absence,
+> so I said they could shoot me in my absence."
+> 
+> Also reported:
+> https://bbs.archlinux.org/viewtopic.php?id=258428
+> https://lore.kernel.org/linux-wireless/87tuwgi92n.fsf@yujinakao.com/
+> 
+> Reported-by: Yuji Nakao <contact@yujinakao.com>
+> Signed-off-by: Dmitry Safonov <dima@arista.com>
 
-Also I think phydev->advertising reflects what the user wants to
-advertise, as mentioned by Russell before.
+Patch applied to wireless-drivers-next.git, thanks.
 
+01c195de620b brcmsmac: ampdu: Check BA window size before checking block ack
 
->>From commit 5502b218e001 ("net: phy: use phy_resolve_aneg_linkmode
-> in genphy_read_status") the content of MII_CTRL1000 is not checked
-> anymore at the end of the negotiation, preventing the detection of
-> phy 'down-shift'.
-> In case of 'down-shift' phydev->advertising gets out-of-sync wrt
-> MII_CTRL1000 and still includes modes that the phy have already
-> dropped. The link partner could still advertise higher speeds,
-> while the link is established at one of the common lower speeds.
-> The logic 'and' in phy_resolve_aneg_linkmode() between
-> phydev->advertising and phydev->lp_advertising will report an
-> incorrect mode.
-> 
-> Issue detected with a local phy rtl8211f connected with a gigabit
-> capable router through a two-pairs network cable.
-> 
-> After auto-negotiation, read back MII_CTRL1000 and mask-out from
-> phydev->advertising the modes that have been eventually discarded
-> due to the 'down-shift'.
-> 
-> Fixes: 5502b218e001 ("net: phy: use phy_resolve_aneg_linkmode in genphy_read_status")
-> Cc: stable@vger.kernel.org # v5.1+
-> Signed-off-by: Antonio Borneo <antonio.borneo@st.com>
-> Link: https://lore.kernel.org/r/478f871a-583d-01f1-9cc5-2eea56d8c2a7@huawei.com
-> ---
-> To: Andrew Lunn <andrew@lunn.ch>
-> To: Heiner Kallweit <hkallweit1@gmail.com>
-> To: Russell King <linux@armlinux.org.uk>
-> To: "David S. Miller" <davem@davemloft.net>
-> To: Jakub Kicinski <kuba@kernel.org>
-> To: netdev@vger.kernel.org
-> To: Yonglong Liu <liuyonglong@huawei.com>
-> Cc: linuxarm@huawei.com
-> Cc: Salil Mehta <salil.mehta@huawei.com>
-> Cc: linux-stm32@st-md-mailman.stormreply.com
-> Cc: linux-kernel@vger.kernel.org
-> Cc: Antonio Borneo <antonio.borneo@st.com>
-> 
->  drivers/net/phy/phy_device.c | 10 +++++++++-
->  1 file changed, 9 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> index 5dab6be6fc38..5d1060aa1b25 100644
-> --- a/drivers/net/phy/phy_device.c
-> +++ b/drivers/net/phy/phy_device.c
-> @@ -2331,7 +2331,7 @@ EXPORT_SYMBOL(genphy_read_status_fixed);
->   */
->  int genphy_read_status(struct phy_device *phydev)
->  {
-> -	int err, old_link = phydev->link;
-> +	int adv, err, old_link = phydev->link;
->  
->  	/* Update the link, but return if there was an error */
->  	err = genphy_update_link(phydev);
-> @@ -2356,6 +2356,14 @@ int genphy_read_status(struct phy_device *phydev)
->  		return err;
->  
->  	if (phydev->autoneg == AUTONEG_ENABLE && phydev->autoneg_complete) {
-> +		if (phydev->is_gigabit_capable) {
-> +			adv = phy_read(phydev, MII_CTRL1000);
-> +			if (adv < 0)
-> +				return adv;
-> +			/* update advertising in case of 'down-shift' */
-> +			mii_ctrl1000_mod_linkmode_adv_t(phydev->advertising,
-> +							adv);
-> +		}
->  		phy_resolve_aneg_linkmode(phydev);
->  	} else if (phydev->autoneg == AUTONEG_DISABLE) {
->  		err = genphy_read_status_fixed(phydev);
-> 
-> base-commit: d549699048b4b5c22dd710455bcdb76966e55aa3
-> 
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20201116030635.645811-1-dima@arista.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
