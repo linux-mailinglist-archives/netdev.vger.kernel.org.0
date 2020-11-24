@@ -2,99 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69D1E2C2402
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 12:21:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A81562C24A2
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 12:39:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732583AbgKXLU6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 06:20:58 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:42586 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732536AbgKXLU5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 06:20:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606216856;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=GH+H2YnDA3HWNvV6KTs7I4rQ/ojbTweHhS7d+924qN4=;
-        b=jWTg2gmh2ijtFrj03e3hmWm1Cyo8Gwyp4cRCQfYbnY9SH8gb2I5+e1HofgraaNeLReFKZZ
-        6/TO8qe5c2lZ7g8XcAX/tnNnzJ1gFFf9hpXb5Fr8kbirpoE3zB3PvWXhWZsIiNNPfbfvyk
-        QrFbF2QqOR8/XK63PClfyh+nnu6vJlg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-429-d7qi9-rhPnyLghcNrS2XiA-1; Tue, 24 Nov 2020 06:20:54 -0500
-X-MC-Unique: d7qi9-rhPnyLghcNrS2XiA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2903E5223;
-        Tue, 24 Nov 2020 11:20:53 +0000 (UTC)
-Received: from [10.36.113.14] (ovpn-113-14.ams2.redhat.com [10.36.113.14])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id AF7D71001E73;
-        Tue, 24 Nov 2020 11:20:51 +0000 (UTC)
-From:   "Eelco Chaudron" <echaudro@redhat.com>
-To:     "Jakub Kicinski" <kuba@kernel.org>
-Cc:     "Matteo Croce" <mcroce@linux.microsoft.com>,
-        netdev@vger.kernel.org, "David Miller" <davem@davemloft.net>,
-        dev@openvswitch.org, "Pravin B Shelar" <pshelar@ovn.org>,
-        bindiyakurle@gmail.com, "Ilya Maximets" <i.maximets@ovn.org>
-Subject: Re: [PATCH net] net: openvswitch: fix TTL decrement action netlink
- message format
-Date:   Tue, 24 Nov 2020 12:20:49 +0100
-Message-ID: <5A0D68D9-AEB5-49BB-8FEA-465E1B32FC1A@redhat.com>
-In-Reply-To: <20201123175739.13a27aed@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <160577663600.7755.4779460826621858224.stgit@wsfd-netdev64.ntdv.lab.eng.bos.redhat.com>
- <20201120131228.489c3b52@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAFnufp1RRtwDLwrWayvyZVPmDjab_dTx50u7xWeNwK7J6azqWw@mail.gmail.com>
- <20201123175739.13a27aed@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1732880AbgKXLgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 06:36:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44572 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731640AbgKXLgv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 06:36:51 -0500
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 161D5C0613D6;
+        Tue, 24 Nov 2020 03:36:51 -0800 (PST)
+Received: by mail-pf1-x444.google.com with SMTP id b63so18209478pfg.12;
+        Tue, 24 Nov 2020 03:36:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BxmO4/Fh9U9UfKFcny2xWXoX/3HscybzrQ/hZv32x4c=;
+        b=DjCGIJKuqQNI3tXEw/W+jIcQcI5P9WPzbPvZcB8SNNOOGJVqDZemCmbfCWRtyRiF92
+         BCB+SAi8MK/gD4m3z43vuzGr5IEIlqGHABpzjjAnDIdzR+2ZDEjbatieGGv6ZWUyb9w2
+         ZmEBsE3dbqhkIzdQrEy6bL/KXxHCdtIjCRr7cPNbiuZG0PJ8EdQTV3eCkQbI9oLBwkLv
+         1tCtOasFrhzpmfSjVd0V2iDnYR44Erae+Y4xcWHg7h/38ZcFLrwlwWsgXd4oIY5JKeZm
+         ZIi2UqIf9qvUuDSjSocyqou2+9nzoU+fqnYjAIckEwT58xYhqkKsSeQLw62Tw0EMsBBi
+         zpEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BxmO4/Fh9U9UfKFcny2xWXoX/3HscybzrQ/hZv32x4c=;
+        b=gcOCIYIBklwDZCHieSK8NuT+UCEpxayfnJViMVddGQB3qXYg9XeLNSO856MWfSLeYo
+         ty/78PQZcmpWaUjt6Fqu7PG9+A7l1/B/dmvaUCJO2TRBHjZE30UCyabCiwSYRYUZzg2f
+         HSdiCJq+63o1m4qiOZzfLP54CmOKJwHagAGAEMJa8uwFvvl70HAyKpwCyQ/XK7oyGMQ2
+         27uEvT01SkqHOnXfpeDxbF+b2sZgZTBVfhuukqIh0kdGypFvpOY0OFTYUKiR8VMf9g9e
+         j2TXAobYfmHabrpM6EyVemSYfW3vSYNajwkrouBFFKF4Su5iEXVuN5ztYf9fHyK5rlyy
+         ZRVg==
+X-Gm-Message-State: AOAM5319i9RN76cqjhXPsySq3Glv0TwHvxYrBGqAOZ6lPtJ4YhKLiUuN
+        R9ScgCrRPh2Ek874a4ok1yJ2C7dZSWSejQW8uEw=
+X-Google-Smtp-Source: ABdhPJx9EBbvQeVdCe952FLZ0pM49E46cC8dD+CrqW+vm+1pPXNhJuUuwyr5buuS+Z620D9aaZIiiRGOVdaLae8kmJA=
+X-Received: by 2002:a17:90a:fb4e:: with SMTP id iq14mr4590421pjb.117.1606217810698;
+ Tue, 24 Nov 2020 03:36:50 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+References: <3306b4d8-8689-b0e7-3f6d-c3ad873b7093@intel.com>
+ <cover.1605686678.git.xuanzhuo@linux.alibaba.com> <dfa43bcf7083edd0823e276c0cf8e21f3a226da6.1605686678.git.xuanzhuo@linux.alibaba.com>
+ <CAJ8uoz3PtqzbfCD6bv1LQOtPVH3qf4mc=V=u_emTxtq3yYUeYw@mail.gmail.com>
+In-Reply-To: <CAJ8uoz3PtqzbfCD6bv1LQOtPVH3qf4mc=V=u_emTxtq3yYUeYw@mail.gmail.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 24 Nov 2020 12:36:39 +0100
+Message-ID: <CAJ8uoz1S1brwy+2u48Y9jn3ys6QEHQjtw3OQDj3wrgxCf7Or3w@mail.gmail.com>
+Subject: Re: [PATCH 1/3] xsk: replace datagram_poll by sock_poll_wait
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 24 Nov 2020, at 2:57, Jakub Kicinski wrote:
-
-> On Mon, 23 Nov 2020 20:36:39 +0100 Matteo Croce wrote:
->> On Fri, Nov 20, 2020 at 10:12 PM Jakub Kicinski <kuba@kernel.org> 
->> wrote:
->>> On Thu, 19 Nov 2020 04:04:04 -0500 Eelco Chaudron wrote:
->>>> Currently, the openvswitch module is not accepting the correctly 
->>>> formated
->>>> netlink message for the TTL decrement action. For both setting and 
->>>> getting
->>>> the dec_ttl action, the actions should be nested in the
->>>> OVS_DEC_TTL_ATTR_ACTION attribute as mentioned in the openvswitch.h 
->>>> uapi.
->>>
->>> IOW this change will not break any known user space, correct?
->>>
->>> But existing OvS user space already expects it to work like you
->>> make it work now?
->>>
->>> What's the harm in leaving it as is?
->>>
->>>> Fixes: 744676e77720 ("openvswitch: add TTL decrement action")
->>>> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
->>>
->>> Can we get a review from OvS folks? Matteo looks good to you (as the
->>> original author)?
->>
->> I think that the userspace still has to implement the dec_ttl action;
->> by now dec_ttl is implemented with set_ttl().
->> So there is no breakage yet.
->>
->> Eelco, with this fix we will encode the netlink attribute in the same
->> way for the kernel and netdev datapath?
+On Mon, Nov 23, 2020 at 3:11 PM Magnus Karlsson
+<magnus.karlsson@gmail.com> wrote:
 >
-> We don't allow breaking uAPI. Sounds like the user space never
-> implemented this and perhaps the nesting is just inconvenient
-> but not necessarily broken? If it is broken and unusable that
-> has to be clearly explained in the commit message. I'm dropping
-> v1 from patchwork.
+> On Wed, Nov 18, 2020 at 9:26 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+> >
+> > datagram_poll will judge the current socket status (EPOLLIN, EPOLLOUT)
+> > based on the traditional socket information (eg: sk_wmem_alloc), but
+> > this does not apply to xsk. So this patch uses sock_poll_wait instead of
+> > datagram_poll, and the mask is calculated by xsk_poll.
+> >
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > ---
+> >  net/xdp/xsk.c | 4 +++-
+> >  1 file changed, 3 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> > index cfbec39..7f0353e 100644
+> > --- a/net/xdp/xsk.c
+> > +++ b/net/xdp/xsk.c
+> > @@ -477,11 +477,13 @@ static int xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
+> >  static __poll_t xsk_poll(struct file *file, struct socket *sock,
+> >                              struct poll_table_struct *wait)
+> >  {
+> > -       __poll_t mask = datagram_poll(file, sock, wait);
+> > +       __poll_t mask = 0;
+>
+> It would indeed be nice to not execute a number of tests in
+> datagram_poll that will never be triggered. It will speed up things
+> for sure. But we need to make sure that removing those flags that
+> datagram_poll sets do not have any bad effects in the code above this.
+> But let us tentatively keep this patch for the next version of the
+> patch set. Just need to figure out how to solve your problem in a nice
+> way first. See discussion in patch 0/3.
+>
+> >         struct sock *sk = sock->sk;
+> >         struct xdp_sock *xs = xdp_sk(sk);
+> >         struct xsk_buff_pool *pool;
+> >
+> > +       sock_poll_wait(file, sock, wait);
+> > +
+> >         if (unlikely(!xsk_is_bound(xs)))
+> >                 return mask;
+> >
+> > --
+> > 1.8.3.1
+> >
 
-Thanks, I will add some explaining comments to the V2, and sent it out.
+The fix looks correct and it will speed things up too as a bonus.
+Please include this patch in the v2 as outlined in my answer to 0/3.
 
+Thanks!
