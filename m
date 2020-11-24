@@ -2,95 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CFBF2C21D9
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 10:40:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00B052C21FA
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 10:45:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731391AbgKXJkG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 04:40:06 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:4725 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731388AbgKXJkC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 04:40:02 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fbcd4f20001>; Tue, 24 Nov 2020 01:40:02 -0800
-Received: from [172.27.14.166] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 24 Nov
- 2020 09:39:52 +0000
-Subject: Re: [PATCH iproute2-next v2] tc flower: use right ethertype in
- icmp/arp parsing
-To:     David Ahern <dsahern@gmail.com>,
-        Zahari Doychev <zahari.doychev@linux.com>,
-        <netdev@vger.kernel.org>
-CC:     <simon.horman@netronome.com>, <jhs@mojatatu.com>,
-        <jianbol@mellanox.com>
-References: <20201110075355.52075-1-zahari.doychev@linux.com>
- <c51abdae-6596-54ec-2b96-9b010c27cdb1@gmail.com>
-From:   Roi Dayan <roid@nvidia.com>
-Message-ID: <3ae696c9-b4dd-a2e5-77d5-c572e98a4000@nvidia.com>
-Date:   Tue, 24 Nov 2020 11:39:50 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        id S1731704AbgKXJnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 04:43:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54984 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731697AbgKXJnU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 04:43:20 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07DB3C0613D6
+        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 01:43:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=EuT23AKRIC/iMYu9c3D4WIiXJeSq7VPYKY9MWUx0yKQ=; b=Pob53MAWrGWSpBPg73zphTZK9
+        TjX/s/aT62xfEQ9rXzjIPe3TKhH9wKQAL2WSsvCMct7bHOcK+78JiYqXC37NM7SUUHsqbHl5YFWCf
+        j2bQHOE091PMnnXJup7d49Sv5NkF61f+DTL6x761vbRVnO/3SW9QQy3/E5d+YU3lnVyd3STXoY4Zb
+        LvQws5xxL9YS0vrb+qz5yTQdL3AT9x6FoB0wPrtUjaGf4hGaqpFHLtGyBATwTt9npX3Lx3QVoVoWF
+        Vq0RFf+605REjHXGKBAAI1VVjaQhvaw3TLgAIhsri9aOvX9Yxx1RXzqrFyxHs2uXZDtYtowthMbkN
+        L/TQXx0Jw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35434)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1khUqy-0007QG-T7; Tue, 24 Nov 2020 09:43:17 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1khUqw-0007Ew-QD; Tue, 24 Nov 2020 09:43:14 +0000
+Date:   Tue, 24 Nov 2020 09:43:14 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next] net: sfp: VSOL V2801F / CarlitoxxPro
+ CPGOS03-0490 v2.0 workaround
+Message-ID: <20201124094314.GC1551@shell.armlinux.org.uk>
+References: <E1khJlv-0003Jq-ET@rmk-PC.armlinux.org.uk>
+ <20201124002021.GB2031446@lunn.ch>
 MIME-Version: 1.0
-In-Reply-To: <c51abdae-6596-54ec-2b96-9b010c27cdb1@gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1606210802; bh=ZNFt8DS9khx9MR6Ir3B+cUVJVfYRDp6l7kIYKGG3XuM=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-        b=h0lhW0PL1sWQK/3+geCs3oRwHVojLdkmBNskwSbbRD42KxXWRHQwVupazyDHj30RO
-         5ymsiLPqi4aVR2sHaFcC9rkc8PMEdH/g/MALqxRgQ/eKUHE06vlX6Qqlil4a/byJXy
-         OP8IUoBVbVU4X2ERPBAGaa+MK84glRkh6y3qGuPWSjg/2Zu7q72SjGcJfs0VMaZ3oA
-         WlD830Urz/YWBaLFyhNtoEEIiWm7eJkzMTvSlOc6TNnpzCOCJ871jF7RSX4E6fXd++
-         RA+JbZNYf+LU2qbf0G63RFT4+s0Wg86TzT9bb6/wQxtsOGcD0oUK+k4avZ/NHMsUlN
-         dcndt2XQ6W0Zg==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201124002021.GB2031446@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2020-11-14 5:12 AM, David Ahern wrote:
-> On 11/10/20 12:53 AM, Zahari Doychev wrote:
->> Currently the icmp and arp parsing functions are called with incorrect
->> ethtype in case of vlan or cvlan filter options. In this case either
->> cvlan_ethtype or vlan_ethtype has to be used. The ethtype is now updated
->> each time a vlan ethtype is matched during parsing.
->>
->> Signed-off-by: Zahari Doychev <zahari.doychev@linux.com>
->> ---
->>   tc/f_flower.c | 52 +++++++++++++++++++++++----------------------------
->>   1 file changed, 23 insertions(+), 29 deletions(-)
->>
+On Tue, Nov 24, 2020 at 01:20:21AM +0100, Andrew Lunn wrote:
+> > @@ -335,10 +336,19 @@ static int sfp_i2c_read(struct sfp *sfp, bool a2, u8 dev_addr, void *buf,
+> >  			size_t len)
+> >  {
+> >  	struct i2c_msg msgs[2];
+> > -	u8 bus_addr = a2 ? 0x51 : 0x50;
+> > +	size_t block_size;
+> >  	size_t this_len;
+> > +	u8 bus_addr;
+> >  	int ret;
+> >  
+> > +	if (a2) {
+> > +		block_size = 16;
+> > +		bus_addr = 0x51;
 > 
-> Thanks, looks much better.
+> Hi Russell, Thomas
 > 
-> applied to iproute2-next.
-> 
+> Does this man the diagnostic page can be read 16 bytes at a time, even
+> when the other page has to be 1 bytes at a time? That seems rather
+> odd. Or is the diagnostic page not implemented in these SFPs?
 
-Hi,
+SFF8472 requires that multibyte values are read using sequential
+reads. So we can't use single byte reads to read a multibyte value -
+it's just not atomic.
 
-I didn't debug yet but with this commit I am failing to add a tc
-rule I always could before. also the error msg doesn't make sense.
-
-Example:
-
-# tc filter add dev enp8s0f0 protocol 802.1Q parent ffff: prio 1 flower\
-  skip_hw dst_mac e4:11:22:11:4a:51 src_mac e4:11:22:11:4a:50\
-  vlan_ethtype 0x800 vlan_id 100 vlan_prio 0 action vlan pop action\
-  mirred egress redirect dev enp8s0f0_0
-
-
-Can't set "vlan_id" if ethertype isn't 802.1Q or 802.1AD
-
-
-I used protocol 802.1Q and vlan_ethtype 0x800.
-am i missing something? the rule should look different now?
-
-Thanks,
-Roi
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
