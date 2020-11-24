@@ -2,160 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 824CC2C2FB4
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 19:11:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD2472C2FC8
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 19:13:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404303AbgKXSJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 13:09:33 -0500
-Received: from mg.ssi.bg ([178.16.128.9]:43550 "EHLO mg.ssi.bg"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390797AbgKXSJd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 13:09:33 -0500
-Received: from mg.ssi.bg (localhost [127.0.0.1])
-        by mg.ssi.bg (Proxmox) with ESMTP id 2F6A98AA6;
-        Tue, 24 Nov 2020 20:09:30 +0200 (EET)
-Received: from ink.ssi.bg (ink.ssi.bg [178.16.128.7])
-        by mg.ssi.bg (Proxmox) with ESMTP id 3048F8B0F;
-        Tue, 24 Nov 2020 20:09:29 +0200 (EET)
-Received: from ja.ssi.bg (unknown [178.16.129.10])
-        by ink.ssi.bg (Postfix) with ESMTPS id E69383C09CA;
-        Tue, 24 Nov 2020 20:09:22 +0200 (EET)
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id 0AOI9Jqm006735;
-        Tue, 24 Nov 2020 20:09:21 +0200
-Date:   Tue, 24 Nov 2020 20:09:19 +0200 (EET)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     Wang Hai <wanghai38@huawei.com>
-cc:     horms@verge.net.au, pablo@netfilter.org, kadlec@netfilter.org,
-        fw@strlen.de, davem@davemloft.net, kuba@kernel.org,
-        christian@brauner.io, hans.schillstrom@ericsson.com,
-        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v3] ipvs: fix possible memory leak in
- ip_vs_control_net_init
-In-Reply-To: <20201124080749.69160-1-wanghai38@huawei.com>
-Message-ID: <3164a9e0-962a-c54-129e-9ad780c454c8@ssi.bg>
-References: <20201124080749.69160-1-wanghai38@huawei.com>
+        id S2404358AbgKXSLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 13:11:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49604 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404244AbgKXSLr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 13:11:47 -0500
+Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C64AC0617A6
+        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 10:11:46 -0800 (PST)
+Received: by mail-vs1-xe41.google.com with SMTP id r5so11586774vsp.7
+        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 10:11:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ouJWx2zn47zlu4B7Xfyb3QjpWbpG3sniI+fG+9qwz44=;
+        b=keElOytw+bW5u4OHHELAO6GvMZwm9P3rZG2D9PgVidraJ2wkVJ4XAxmgP7uk5Xhq7t
+         jugn8eA/idk5JUYzvj+SlC78RC97IpCahdJwy8AzwwMbiS5bcEXzFsDeqeV5abZ7Ru6T
+         emSPvBK30MPW19TJin6Lda9nq8+Oxl8zSGyAlemWhxOXlTcorC/ceiEP70sB7gmG6RN5
+         TEczYXEA/Tqqcr03KP82Q950UKgs5z/GoharONh7yZhdCzruV+M0r4k0MSkMwv1FPEnk
+         zbPk9etNMFykhbVZi3afEapbwtFn9csFyZ5YBUDuQEX388KfnRl1hauzgx2B2Igujb6d
+         rEMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ouJWx2zn47zlu4B7Xfyb3QjpWbpG3sniI+fG+9qwz44=;
+        b=Zn1UEhbduqssz2AqV3jlH1UGsLG6SYdPbbP/uI9f3FbKTltK7nmny3fYCMI9zzugvQ
+         nqHP1nd4GgprM3WKWCgkQHadBlDewXobn3TSwgWllkPF7qEssbhFO99gJx4x/KufLV1m
+         bf1U8VYnoiGZtVcWD3jC6lPZOLfZDEFOX7XXfhfRFJCIqmBIQEgntRcAdiiuGt9FN8aJ
+         1cpNYBq48WTuprlM3XSV+W2O62EK1QDhZ/2sdwMVNzqUE0xeza9mA5JmCm16wViJJi7O
+         /fTJ7wNDogsYeV5tTkclWOz4G3xEr5xUnpNu7NUMavRGt297iIMupLzqBVYp4GfUmM/W
+         7Fnw==
+X-Gm-Message-State: AOAM533UCBkeyZu2+PMSy5571MjVuUA5D5IcwTRQuDcwd6h/lwclaIS0
+        Zp7F39KgzyHiJJ4EaVhLA7J9u9MpjwLx0LTqIdTsYQ==
+X-Google-Smtp-Source: ABdhPJy+hS/FIG91pYhATyBawd1c7DF5HOWh7ONR/zbRKCgSFSoucmfTn6eh5ncGH+6TuwmecDrA8VRByK38jlEKsuo=
+X-Received: by 2002:a67:fa1a:: with SMTP id i26mr5152293vsq.31.1606241505127;
+ Tue, 24 Nov 2020 10:11:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <20201001230403.2445035-1-danielwinkler@google.com>
+ <CAP2xMbtC0invbRT2q6LuamfEbE9ppMkRUO+jOisgtBG17JkrwA@mail.gmail.com>
+ <CABBYNZJ65vXxeyJmZ_L_D+9pm7uDHo0+_ioHzMyh0q8sVmREsQ@mail.gmail.com>
+ <CAP2xMbs4sUyap_-YAFA6=52Qj+_uxGww7LwmbWACVC0j0LvbLQ@mail.gmail.com>
+ <CABBYNZ+0LW0sOPPe+QHWLn7XXdAjqKB3Prm21SyUQLeQqW=StA@mail.gmail.com>
+ <CAP2xMbsJ6EQYbJvS=59Dpj83sugFGaP98Mq-1SgxrJ+aSqd4pA@mail.gmail.com> <CABBYNZL835FLHq3y_1_k0vyQEW2_teoqvkt=pPDjqENegTU4FQ@mail.gmail.com>
+In-Reply-To: <CABBYNZL835FLHq3y_1_k0vyQEW2_teoqvkt=pPDjqENegTU4FQ@mail.gmail.com>
+From:   Daniel Winkler <danielwinkler@google.com>
+Date:   Tue, 24 Nov 2020 10:11:34 -0800
+Message-ID: <CAP2xMbsqvS__k5c0d+27miywwZ0oe968BhcPnxmY9YH7DvpsLA@mail.gmail.com>
+Subject: Re: [PATCH v4 0/5] Bluetooth: Add new MGMT interface for advertising add
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        BlueZ <linux-bluetooth@vger.kernel.org>,
+        chromeos-bluetooth-upstreaming 
+        <chromeos-bluetooth-upstreaming@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Luiz,
 
-	Hello,
+Thank you again for the support on this issue. I have just provided a
+patch series here:
 
-On Tue, 24 Nov 2020, Wang Hai wrote:
+https://patchwork.kernel.org/project/bluetooth/list/?series=390411
 
-> kmemleak report a memory leak as follows:
-> 
-> BUG: memory leak
-> unreferenced object 0xffff8880759ea000 (size 256):
-> backtrace:
-> [<00000000c0bf2deb>] kmem_cache_zalloc include/linux/slab.h:656 [inline]
-> [<00000000c0bf2deb>] __proc_create+0x23d/0x7d0 fs/proc/generic.c:421
-> [<000000009d718d02>] proc_create_reg+0x8e/0x140 fs/proc/generic.c:535
-> [<0000000097bbfc4f>] proc_create_net_data+0x8c/0x1b0 fs/proc/proc_net.c:126
-> [<00000000652480fc>] ip_vs_control_net_init+0x308/0x13a0 net/netfilter/ipvs/ip_vs_ctl.c:4169
-> [<000000004c927ebe>] __ip_vs_init+0x211/0x400 net/netfilter/ipvs/ip_vs_core.c:2429
-> [<00000000aa6b72d9>] ops_init+0xa8/0x3c0 net/core/net_namespace.c:151
-> [<00000000153fd114>] setup_net+0x2de/0x7e0 net/core/net_namespace.c:341
-> [<00000000be4e4f07>] copy_net_ns+0x27d/0x530 net/core/net_namespace.c:482
-> [<00000000f1c23ec9>] create_new_namespaces+0x382/0xa30 kernel/nsproxy.c:110
-> [<00000000098a5757>] copy_namespaces+0x2e6/0x3b0 kernel/nsproxy.c:179
-> [<0000000026ce39e9>] copy_process+0x220a/0x5f00 kernel/fork.c:2072
-> [<00000000b71f4efe>] _do_fork+0xc7/0xda0 kernel/fork.c:2428
-> [<000000002974ee96>] __do_sys_clone3+0x18a/0x280 kernel/fork.c:2703
-> [<0000000062ac0a4d>] do_syscall_64+0x33/0x40 arch/x86/entry/common.c:46
-> [<0000000093f1ce2c>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> In the error path of ip_vs_control_net_init(), remove_proc_entry() needs
-> to be called to remove the added proc entry, otherwise a memory leak
-> will occur.
-> 
-> Also, add some '#ifdef CONFIG_PROC_FS' because proc_create_net* return NULL
-> when PROC is not used.
-> 
-> Fixes: b17fc9963f83 ("IPVS: netns, ip_vs_stats and its procfs")
-> Fixes: 61b1ab4583e2 ("IPVS: netns, add basic init per netns.")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Wang Hai <wanghai38@huawei.com>
+to include test coverage for the new APIs via mgmt-tester. In
+addition, as this coverage helped me find a minor bug in returning
+remaining adv data size in the MGMT response, I've submitted a fix in
+the kernel patch series. Please let me know if there is anything
+further I can provide.
 
-	Looks good to me, thanks!
+Thanks!
+Daniel
 
-Acked-by: Julian Anastasov <ja@ssi.bg>
 
-> ---
-> v2->v3: improve code format
-> v1->v2: add some '#ifdef CONFIG_PROC_FS' and check the return value of proc_create_net*
->  net/netfilter/ipvs/ip_vs_ctl.c | 31 +++++++++++++++++++++++++------
->  1 file changed, 25 insertions(+), 6 deletions(-)
-> 
-> diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
-> index e279ded4e306..d45dbcba8b49 100644
-> --- a/net/netfilter/ipvs/ip_vs_ctl.c
-> +++ b/net/netfilter/ipvs/ip_vs_ctl.c
-> @@ -4167,12 +4167,18 @@ int __net_init ip_vs_control_net_init(struct netns_ipvs *ipvs)
->  
->  	spin_lock_init(&ipvs->tot_stats.lock);
->  
-> -	proc_create_net("ip_vs", 0, ipvs->net->proc_net, &ip_vs_info_seq_ops,
-> -			sizeof(struct ip_vs_iter));
-> -	proc_create_net_single("ip_vs_stats", 0, ipvs->net->proc_net,
-> -			ip_vs_stats_show, NULL);
-> -	proc_create_net_single("ip_vs_stats_percpu", 0, ipvs->net->proc_net,
-> -			ip_vs_stats_percpu_show, NULL);
-> +#ifdef CONFIG_PROC_FS
-> +	if (!proc_create_net("ip_vs", 0, ipvs->net->proc_net,
-> +			     &ip_vs_info_seq_ops, sizeof(struct ip_vs_iter)))
-> +		goto err_vs;
-> +	if (!proc_create_net_single("ip_vs_stats", 0, ipvs->net->proc_net,
-> +				    ip_vs_stats_show, NULL))
-> +		goto err_stats;
-> +	if (!proc_create_net_single("ip_vs_stats_percpu", 0,
-> +				    ipvs->net->proc_net,
-> +				    ip_vs_stats_percpu_show, NULL))
-> +		goto err_percpu;
-> +#endif
->  
->  	if (ip_vs_control_net_init_sysctl(ipvs))
->  		goto err;
-> @@ -4180,6 +4186,17 @@ int __net_init ip_vs_control_net_init(struct netns_ipvs *ipvs)
->  	return 0;
->  
->  err:
-> +#ifdef CONFIG_PROC_FS
-> +	remove_proc_entry("ip_vs_stats_percpu", ipvs->net->proc_net);
-> +
-> +err_percpu:
-> +	remove_proc_entry("ip_vs_stats", ipvs->net->proc_net);
-> +
-> +err_stats:
-> +	remove_proc_entry("ip_vs", ipvs->net->proc_net);
-> +
-> +err_vs:
-> +#endif
->  	free_percpu(ipvs->tot_stats.cpustats);
->  	return -ENOMEM;
->  }
-> @@ -4188,9 +4205,11 @@ void __net_exit ip_vs_control_net_cleanup(struct netns_ipvs *ipvs)
->  {
->  	ip_vs_trash_cleanup(ipvs);
->  	ip_vs_control_net_cleanup_sysctl(ipvs);
-> +#ifdef CONFIG_PROC_FS
->  	remove_proc_entry("ip_vs_stats_percpu", ipvs->net->proc_net);
->  	remove_proc_entry("ip_vs_stats", ipvs->net->proc_net);
->  	remove_proc_entry("ip_vs", ipvs->net->proc_net);
-> +#endif
->  	free_percpu(ipvs->tot_stats.cpustats);
->  }
->  
-> -- 
-> 2.17.1
-
-Regards
-
---
-Julian Anastasov <ja@ssi.bg>
-
+On Tue, Nov 3, 2020 at 1:25 PM Luiz Augusto von Dentz
+<luiz.dentz@gmail.com> wrote:
+>
+> Hi Daniel,
+>
+> On Tue, Nov 3, 2020 at 9:42 AM Daniel Winkler <danielwinkler@google.com> wrote:
+> >
+> > Hello Luiz,
+> >
+> > Thank you for the information. It is good to know that this tool is
+> > actively used and that there is a way to skip existing flaky tests.
+> > Just for clarification, is this a requirement to land the kernel
+> > changes, i.e. should I prioritize adding these tests immediately to
+> > move the process forward? Or can we land the changes based on the
+> > testing I have already done and I'll work on these tests in parallel?
+>
+> We used to require updates to mgmt-tester but it seems some of recent
+> command did not have a test yet, but if we intend to have the CI to
+> tests the kernel changes properly I think we should start to requiring
+> it some basic testing, obviously it will be hard to cover everything
+> that is affected by a new command but the basic formatting, etc, we
+> should be able to test, also tester supports the concept of 'not run'
+> which we can probably use for experimental commands.
+>
+> > Thanks,
+> > Daniel
+> >
+> > On Thu, Oct 29, 2020 at 5:04 PM Luiz Augusto von Dentz
+> > <luiz.dentz@gmail.com> wrote:
+> > >
+> > > Hi Daniel,
+> > >
+> > > On Thu, Oct 29, 2020 at 3:25 PM Daniel Winkler <danielwinkler@google.com> wrote:
+> > > >
+> > > > Hi Luiz,
+> > > >
+> > > > Thank you for the feedback regarding mgmt-tester. I intended to use
+> > > > the tool, but found that it had a very high rate of test failure even
+> > > > before I started adding new tests. If you have a strong preference for
+> > > > its use, I can look into it again but it may take some time. These
+> > > > changes were tested with manual and automated functional testing on
+> > > > our end.
+> > > >
+> > > > Please let me know your thoughts.
+> > >
+> > > Total: 406, Passed: 358 (88.2%), Failed: 43, Not Run: 5
+> > >
+> > > Looks like there are some 43 tests failing, we will need to fix these
+> > > but it should prevent us to add new ones as well, you can use -p to
+> > > filter what tests to run if you want to avoid these for now.
+>
+>
+>
+> --
+> Luiz Augusto von Dentz
