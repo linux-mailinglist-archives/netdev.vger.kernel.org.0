@@ -2,142 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE5FE2C2F36
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 18:51:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 240632C2F38
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 18:51:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404071AbgKXRui (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 12:50:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46274 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2403994AbgKXRue (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 12:50:34 -0500
-Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E02E7C0613D6
-        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 09:50:32 -0800 (PST)
-Received: by mail-ot1-x343.google.com with SMTP id y24so14612819otk.3
-        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 09:50:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CxnIfXHdix7GS8g6GFHW2wnM4FONLsoFnSqqsSh6GHc=;
-        b=CIAKGGvoM96bHX3qTKMq571WXskFxiweMjicyDzm9KHiiheeWHdpTze+EgY18uIFGx
-         TXFUYqijSsUYaxZiQcM7TYGH3z11FfmFvQNv2y3S2sIjM3xz6X9Dv3/H71SwBzYqqehJ
-         HzjZ8sV6azFHmOF4wsalz23pw0MbUDHblBMgZc1G4Mq3HT85EILFV28n0mWxd09wBj18
-         CBTshWNFG/8o2TuKB972+0ln4ohBt/IOIzkYBfbGgUBtgBnE0DZujjGJ3ECGLzzLonFi
-         a9nA/bXdldgtzi2sb+U0j2TAu+sT8TMQJG0Vwb/FZiGMNGbCzD3f292aS5hLoEeyqePk
-         yKYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CxnIfXHdix7GS8g6GFHW2wnM4FONLsoFnSqqsSh6GHc=;
-        b=ii53tPp14P9i8zF8mSt2fYELzoqoJJt6FuySlRYgW5HKRB7ms1nzMu8B3W9SH63yof
-         Ck+RoDZboTY04WytUZqwBHrqYyXCDMc5A44h/+wxINvbTH4GKVGIHPVd+j7qbvzQdXM1
-         /r7VTUswGcO2LdTYR5AeT0L6RVyCg0prC9klgTL6207DzozaQX3h1xon5IO/HmmeSolY
-         qokVPkoX/VZafiwEEbt5lpR+PrsPuCH1ZD1TexxsoJdtl1jjywWHUf33DmRxYjnkhqX3
-         tOH2gYS+7F/Vf8/8B3W+lPuSy4tHzHsSo9MmEvLjO1SR9Vww/CDnqUyXy1PnvhLcVebq
-         IArw==
-X-Gm-Message-State: AOAM533kYmd2rPqVsx6yjeSvH/xZGkZv/nkapkPyxh3Wqp0h1ogHxUD9
-        WTgvrvAIjPIAY4HITVYTS9Zo4w==
-X-Google-Smtp-Source: ABdhPJyZvx5cnvHRa/z/iiGkOzVz/4uQCaX+SxK6/doJ9JNN3u9FKbqfKaLVCF+7bhrzd4wOCRtp/w==
-X-Received: by 2002:a9d:3d06:: with SMTP id a6mr4103420otc.368.1606240232274;
-        Tue, 24 Nov 2020 09:50:32 -0800 (PST)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id t126sm9735070oih.51.2020.11.24.09.50.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Nov 2020 09:50:31 -0800 (PST)
-Date:   Tue, 24 Nov 2020 11:50:29 -0600
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Amit Pundir <amit.pundir@linaro.org>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        David S Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Konrad Dybcio <konradybcio@gmail.com>, Joel S <jo@jsfamily.in>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, phone-devel@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] ath10k: qmi: Skip host capability request for Xiaomi
- Poco F1
-Message-ID: <20201124175029.GF185852@builder.lan>
-References: <1606127329-6942-1-git-send-email-amit.pundir@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1606127329-6942-1-git-send-email-amit.pundir@linaro.org>
+        id S2404077AbgKXRvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 12:51:10 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:51174 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2404038AbgKXRvK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 12:51:10 -0500
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AOHVIL1183311;
+        Tue, 24 Nov 2020 12:51:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id; s=pp1;
+ bh=ha31WKqVxW0QdZVPFmiTDhEi7aUohvmkJMZSstcUgmk=;
+ b=UFRsnk2JC3q1xzm6Gs2H4Sa1do/HqBXzNa6c9F4rAAMDXvyh6QxD3hSrYimLkxvGJr+x
+ H5JQuHTt2H968P2tcWUeMKg4jCQekVNN5mQfSlGu3JHTFV+rde0bvmNioZHc+ZTit7Z/
+ mffrKoEfTqWwYxxnV0KnxQsosz62uZ+vsO3B+JWvTzF0ohzNcKTMSrNoQ94S8083PLyu
+ of/Xpf1i2qfmHTO8I83U1YweolPCznP7I2XXYch+YCfvRuYkV8KGPXalSRKLkGg6zeSU
+ yT2bc0PjtcpP137T4n67pr9UPidwHnW0X0rLwaPOpAT5cKYBquhniuhGBX7HsgTO2nWh EA== 
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3513uwevqs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 24 Nov 2020 12:51:04 -0500
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0AOHhU3N002686;
+        Tue, 24 Nov 2020 17:51:02 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma02fra.de.ibm.com with ESMTP id 350cvrsbt0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 24 Nov 2020 17:51:02 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0AOHoxHg52298222
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 24 Nov 2020 17:50:59 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6405CA4053;
+        Tue, 24 Nov 2020 17:50:59 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2DF06A406B;
+        Tue, 24 Nov 2020 17:50:59 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 24 Nov 2020 17:50:59 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Heiko Carstens <hca@linux.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org
+Subject: [PATCH net-next v5 00/14] net/smc: Add support for generic netlink API
+Date:   Tue, 24 Nov 2020 18:50:33 +0100
+Message-Id: <20201124175047.56949-1-kgraul@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-24_05:2020-11-24,2020-11-24 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ priorityscore=1501 lowpriorityscore=0 bulkscore=0 spamscore=0 phishscore=0
+ mlxscore=0 mlxlogscore=762 clxscore=1015 impostorscore=0 adultscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011240104
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon 23 Nov 04:28 CST 2020, Amit Pundir wrote:
+Please apply the following patch series for smc to netdev's net-next tree.
 
-> Workaround to get WiFi working on Xiaomi Poco F1 (sdm845)
-> phone. We get a non-fatal QMI_ERR_MALFORMED_MSG_V01 error
-> message in ath10k_qmi_host_cap_send_sync(), but we can still
-> bring up WiFi services successfully on AOSP if we ignore it.
-> 
-> We suspect either the host cap is not implemented or there
-> may be firmware specific issues. Firmware version is
-> QC_IMAGE_VERSION_STRING=WLAN.HL.2.0.c3-00257-QCAHLSWMTPLZ-1
-> 
-> qcom,snoc-host-cap-8bit-quirk didn't help. If I use this
-> quirk, then the host capability request does get accepted,
-> but we run into fatal "msa info req rejected" error and
-> WiFi interface doesn't come up.
-> 
-> Attempts are being made to debug the failure reasons but no
-> luck so far. Hence this device specific workaround instead
-> of checking for QMI_ERR_MALFORMED_MSG_V01 error message.
-> Tried ath10k/WCN3990/hw1.0/wlanmdsp.mbn from the upstream
-> linux-firmware project but it didn't help and neither did
-> building board-2.bin file from stock bdwlan* files.
-> 
-> This workaround will be removed once we have a viable fix.
-> Thanks to postmarketOS guys for catching this.
-> 
-> Signed-off-by: Amit Pundir <amit.pundir@linaro.org>
-> ---
-> We dropped this workaround last time in the favor of
-> a generic dts quirk to skip host cap check. But that
-> is under under discussion for a while now,
-> https://lkml.org/lkml/2020/9/25/1119, so resending
-> this short term workaround for the time being.
-> 
+Previous version of this patch series was using the sock_diag netlink
+infrastructure. This version is using the generic netlink API. Generic
+netlink API offers a better type safety between kernel and userspace
+communication.
+Using the generic netlink API, smc module can provide now information
+about SMC linkgroups, links and devices (both for SMC-R and SMC-D).
 
-I still want the quirk, because we have this on other machines as well.
+v2: Add missing include to uapi header smc_diag.h.
 
-> v2: ath10k-check complained about a too long line last
->     time, so moved the comment to a new line.
->     
->  drivers/net/wireless/ath/ath10k/qmi.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/wireless/ath/ath10k/qmi.c b/drivers/net/wireless/ath/ath10k/qmi.c
-> index ae6b1f402adf..1c58b0ff1d29 100644
-> --- a/drivers/net/wireless/ath/ath10k/qmi.c
-> +++ b/drivers/net/wireless/ath/ath10k/qmi.c
-> @@ -653,7 +653,9 @@ static int ath10k_qmi_host_cap_send_sync(struct ath10k_qmi *qmi)
->  
->  	/* older FW didn't support this request, which is not fatal */
->  	if (resp.resp.result != QMI_RESULT_SUCCESS_V01 &&
-> -	    resp.resp.error != QMI_ERR_NOT_SUPPORTED_V01) {
-> +	    resp.resp.error != QMI_ERR_NOT_SUPPORTED_V01 &&
-> +	    /* Xiaomi Poco F1 workaround */
+v3: Apply code style recommendations from review comments.
+    Instead of using EXPORTs to allow the smc_diag module to access
+    data of the smc module, introduce struct smc_diag_ops and let
+    smc_diag access the required data using function pointers.
 
-If we go with a temporary approach this comment should describe why this
-is here. (And it probably shouldn't be in the middle of the expression
-list in the conditional.
+v4: Address checkpatch.pl warnings. Do not use static inline for
+    functions.
 
-Regards,
-Bjorn
+v5: Use generic netlink API instead of the sock_diag netlink
+    infrastructure.
 
-> +	    !of_machine_is_compatible("xiaomi,beryllium")) {
->  		ath10k_err(ar, "host capability request rejected: %d\n", resp.resp.error);
->  		ret = -EINVAL;
->  		goto out;
-> -- 
-> 2.7.4
-> 
+Guvenc Gulce (13):
+  net/smc: Use active link of the connection
+  net/smc: Add connection counters for links
+  net/smc: Add link counters for IB device ports
+  net/smc: Add diagnostic information to smc ib-device
+  net/smc: Add diagnostic information to link structure
+  net/smc: Refactor smc ism v2 capability handling
+  net/smc: Introduce generic netlink interface for diagnostic purposes
+  net/smc: Add support for obtaining system information
+  net/smc: Introduce SMCR get linkgroup command
+  net/smc: Introduce SMCR get link command
+  net/smc: Add SMC-D Linkgroup diagnostic support
+  net/smc: Add support for obtaining SMCD device list
+  net/smc: Add support for obtaining SMCR device list
+
+Karsten Graul (1):
+  net/smc: use helper smc_conn_abort() in listen processing
+
+ include/uapi/linux/smc.h | 126 ++++++++++++
+ net/smc/Makefile         |   2 +-
+ net/smc/af_smc.c         |  33 ++--
+ net/smc/smc_clc.c        |   5 +
+ net/smc/smc_clc.h        |   1 +
+ net/smc/smc_core.c       | 407 ++++++++++++++++++++++++++++++++++++++-
+ net/smc/smc_core.h       |  49 +++++
+ net/smc/smc_diag.c       |  23 +--
+ net/smc/smc_ib.c         | 204 ++++++++++++++++++++
+ net/smc/smc_ib.h         |   6 +
+ net/smc/smc_ism.c        | 103 +++++++++-
+ net/smc/smc_ism.h        |   6 +-
+ net/smc/smc_netlink.c    | 104 ++++++++++
+ net/smc/smc_netlink.h    |  32 +++
+ net/smc/smc_pnet.c       |   2 +
+ 15 files changed, 1059 insertions(+), 44 deletions(-)
+ create mode 100644 net/smc/smc_netlink.c
+ create mode 100644 net/smc/smc_netlink.h
+
+-- 
+2.17.1
+
