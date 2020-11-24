@@ -2,86 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EB152C305F
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 20:03:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D33912C3062
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 20:03:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404104AbgKXTCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 14:02:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42782 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390881AbgKXTCF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 14:02:05 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 35C00204FD;
-        Tue, 24 Nov 2020 19:02:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606244525;
-        bh=PW4WMI4gJ6Ccl9hIj/7wrZ3x0ZDqbNJOOj0gKSntkbc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=sN5ZukW2s3wpA8/aMX1/mW0W5ROOvDFe7mOIUTu3xUvhDw/tsBBp6s4lpPgfBBjko
-         wrpcUsvv8QbDp0YR+Q6nRCV4RBgAT5Z6MhSYWqWvtd1UqssF0eVGeL5IyvE6dkNkFQ
-         zbqmuYjzMJqWYQm21z1Zqo/ZLA2N4rMHd6i1jGSs=
-Date:   Tue, 24 Nov 2020 11:02:02 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Ramsay, Lincoln" <Lincoln.Ramsay@digi.com>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Dmitry Bogdanov <dbogdanov@marvell.com>
-Subject: Re: [PATCH net v5] aquantia: Remove the build_skb path
-Message-ID: <20201124110202.38dc6d5b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <MWHPR1001MB23184F3EAFA413E0D1910EC9E8FC0@MWHPR1001MB2318.namprd10.prod.outlook.com>
-References: <CY4PR1001MB23118EE23F7F5196817B8B2EE8E10@CY4PR1001MB2311.namprd10.prod.outlook.com>
-        <CY4PR1001MB2311F01C543420E5F89C0F4DE8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
-        <20201119221510.GI15137@breakpoint.cc>
-        <CY4PR1001MB23113312D5E0633823F6F75EE8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
-        <20201119222800.GJ15137@breakpoint.cc>
-        <CY4PR1001MB231116E9371FBA2B8636C23DE8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
-        <20201119225842.GK15137@breakpoint.cc>
-        <CY4PR1001MB2311844FE8390F00A3363DEEE8E00@CY4PR1001MB2311.namprd10.prod.outlook.com>
-        <20201121132204.43f9c4fb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20201121132324.72d79e94@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CY4PR1001MB2311E9770EF466FB922CBB27E8FD0@CY4PR1001MB2311.namprd10.prod.outlook.com>
-        <20201123084243.423b23a4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <MWHPR1001MB23184F3EAFA413E0D1910EC9E8FC0@MWHPR1001MB2318.namprd10.prod.outlook.com>
+        id S2404354AbgKXTCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 14:02:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57376 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404289AbgKXTCP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 14:02:15 -0500
+Received: from mail-vs1-xe44.google.com (mail-vs1-xe44.google.com [IPv6:2607:f8b0:4864:20::e44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71B4FC061A4D
+        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 11:02:15 -0800 (PST)
+Received: by mail-vs1-xe44.google.com with SMTP id f7so11668115vsh.10
+        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 11:02:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=kc8KsgesSQBcYK6Gf282xpdD2zcj++JCOXz1+UYSV2k=;
+        b=IjcDFxlfcHV4pz4eTgNuT8AouoGXtbtDX16v7bgZ20+KdKkXUG565iyB1gSAbLBIS9
+         o00eH5ygcnQ5EU91bEdZep8QGzdCDZLJM/7GbSGkkvdyV1/DVs4+QIM4ZBxHSsUNEVMy
+         HNyfKouSspCNkAN+qbmSyv86Solcpejg3l6h0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=kc8KsgesSQBcYK6Gf282xpdD2zcj++JCOXz1+UYSV2k=;
+        b=Xm0v4ZMe1zxms4qj1hSRaZ7NMLgEl5ykmVGow0Hpo+7B2vepEiSX48dlWdlgoKjzfP
+         csNobGuCaN+1uSnVAJ3rOABpdRR7xkXaRTawOkN4/VYjeugh1YNXNGcXlEONvL2TSoVG
+         GNLzf5JkXBHz+414C3iOvs8DB/EAFZaF57qnTtxG5VU9rn3TTianp54ZtE678Vh9VFPl
+         P5azfGhuEVFkyaMmB4da+mhcFF3Zk72+ylJ4MKgNiMWiPK1/uAkiJuVA5fxoGVPXQQHv
+         hsBtHvEY6LSgaGkBvF5J6IqooERTDCDjYqjGiDF44VfiUuxC4ywT6WhXg3pbJ7IvIhk1
+         UrLw==
+X-Gm-Message-State: AOAM530yF+pjJm8/PvB9X8Ek7JShy3ndRFDceilKHaLErm6OtVWNE+jy
+        W196XD96dzLVUcjVHpbjBdhMitdW58AOygTMHux6Pw==
+X-Google-Smtp-Source: ABdhPJz0msw3gheojDTN1y1Or7/pFfuAmO/78wVkNcKJjiVo7yDwZMTuFngQgn4FkhABj8BMb6xzyFieHO+AkXj7v14=
+X-Received: by 2002:a67:fb8f:: with SMTP id n15mr5701991vsr.30.1606244534393;
+ Tue, 24 Nov 2020 11:02:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201118234352.2138694-1-abhishekpandit@chromium.org> <7235CD4E-963C-4BCB-B891-62494AD7F10D@holtmann.org>
+In-Reply-To: <7235CD4E-963C-4BCB-B891-62494AD7F10D@holtmann.org>
+From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+Date:   Tue, 24 Nov 2020 11:02:03 -0800
+Message-ID: <CANFp7mVSGNbwCkWCj=bVzbE8L38nwu0+UMR9jkOYcYQmGBaAEw@mail.gmail.com>
+Subject: Re: [PATCH 0/3] Bluetooth: Power down controller when suspending
+To:     Marcel Holtmann <marcel@holtmann.org>, crlo@marvell.com,
+        akarwar@marvell.com
+Cc:     BlueZ development <linux-bluetooth@vger.kernel.org>,
+        ChromeOS Bluetooth Upstreaming 
+        <chromeos-bluetooth-upstreaming@chromium.org>,
+        Miao-chen Chou <mcchou@chromium.org>,
+        Daniel Winkler <danielwinkler@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 23 Nov 2020 21:40:43 +0000 Ramsay, Lincoln wrote:
-> From: Lincoln Ramsay <lincoln.ramsay@opengear.com>
-> 
-> When performing IPv6 forwarding, there is an expectation that SKBs
-> will have some headroom. When forwarding a packet from the aquantia
-> driver, this does not always happen, triggering a kernel warning.
-> 
-> aq_ring.c has this code (edited slightly for brevity):
-> 
-> if (buff->is_eop && buff->len <= AQ_CFG_RX_FRAME_MAX - AQ_SKB_ALIGN) {
->     skb = build_skb(aq_buf_vaddr(&buff->rxdata), AQ_CFG_RX_FRAME_MAX);
-> } else {
->     skb = napi_alloc_skb(napi, AQ_CFG_RX_HDR_SIZE);
-> 
-> There is a significant difference between the SKB produced by these
-> 2 code paths. When napi_alloc_skb creates an SKB, there is a certain
-> amount of headroom reserved. However, this is not done in the
-> build_skb codepath.
-> 
-> As the hardware buffer that build_skb is built around does not
-> handle the presence of the SKB header, this code path is being
-> removed and the napi_alloc_skb path will always be used. This code
-> path does have to copy the packet header into the SKB, but it adds
-> the packet data as a frag.
-> 
-> Fixes: 018423e90bee ("net: ethernet: aquantia: Add ring support code")
-> Signed-off-by: Lincoln Ramsay <lincoln.ramsay@opengear.com>
+Hi Marcel,
 
-Applied, queued of stable.
 
-Thanks!
+On Mon, Nov 23, 2020 at 3:46 AM Marcel Holtmann <marcel@holtmann.org> wrote=
+:
+>
+> Hi Abhishek,
+>
+> > This patch series adds support for a quirk that will power down the
+> > Bluetooth controller when suspending and power it back up when resuming=
+.
+> >
+> > On Marvell SDIO Bluetooth controllers (SD8897 and SD8997), we are seein=
+g
+> > a large number of suspend failures with the following log messages:
+> >
+> > [ 4764.773873] Bluetooth: hci_cmd_timeout() hci0 command 0x0c14 tx time=
+out
+> > [ 4767.777897] Bluetooth: btmrvl_enable_hs() Host sleep enable command =
+failed
+> > [ 4767.777920] Bluetooth: btmrvl_sdio_suspend() HS not actived, suspend=
+ failed!
+> > [ 4767.777946] dpm_run_callback(): pm_generic_suspend+0x0/0x48 returns =
+-16
+> > [ 4767.777963] call mmc2:0001:2+ returned -16 after 4882288 usecs
+> >
+> > The daily failure rate with this signature is quite significant and
+> > users are likely facing this at least once a day (and some unlucky user=
+s
+> > are likely facing it multiple times a day).
+> >
+> > Given the severity, we'd like to power off the controller during suspen=
+d
+> > so the driver doesn't need to take any action (or block in any way) whe=
+n
+> > suspending and power on during resume. This will break wake-on-bt for
+> > users but should improve the reliability of suspend.
+> >
+> > We don't want to force all users of MVL8897 and MVL8997 to encounter
+> > this behavior if they're not affected (especially users that depend on
+> > Bluetooth for keyboard/mouse input) so the new behavior is enabled via
+> > module param. We are limiting this quirk to only Chromebooks (i.e.
+> > laptop). Chromeboxes will continue to have the old behavior since users
+> > may depend on BT HID to wake and use the system.
+>
+> I don=E2=80=99t have a super great feeling with this change.
+>
+> So historically only hciconfig hci0 up/down was doing a power cycle of th=
+e controller and when adding the mgmt interface we moved that to the mgmt i=
+nterface. In addition we added a special case of power up via hdev->setup. =
+We never had an intention that the kernel otherwise can power up/down the c=
+ontroller as it pleases.
+
+Aside from the powered setting, the stack is resilient to the
+controller crashing (which would be akin to a power off and power on).
+From the view of bluez, adapter lost and power down should be almost
+equivalent right? ChromeOS has several platforms where Bluetooth has
+been reset after suspend, usually due USB being powered off in S3, and
+the stack is still well-behaving when that occurs.
+
+>
+> Can we ask Marvell first to investigate why this is fundamentally broken =
+with their hardware?
+
++Chin-Ran Lo and +Amitkumar Karwar (added based on changes to
+drivers/bluetooth/btmrvl_main.c)
+
+Could you please take a look at the original cover letter and comment
+(or add others at Marvell who may be able to)? Is this a known issue
+or a fix?
+
+>Since what you are proposing is a pretty heavy change that might has side =
+affects. For example the state machine for the mgmt interface has no concep=
+t of a power down/up from the kernel. It is all triggered by bluetoothd.
+>
+> I am careful here since the whole power up/down path is already complicat=
+ed enough.
+>
+
+That sounds reasonable. I have landed this within ChromeOS so we can
+test whether a) this improves stability enough and b) whether the
+power off/on in the kernel has significant side effects. This will go
+through our automated testing and dogfooding over the next few weeks
+and hopefully identify those side-effects. I will re-raise this topic
+with updates once we have more data.
+
+Also, in case it wasn't very clear, I put this behind a module param
+that defaults to False because this is so heavy handed. We're only
+using it on specific Chromebooks that are exhibiting the worst
+behavior and not disabling it wholesale for all btmrvl controllers.
+
+Thanks
+Abhishek
+
+> Regards
+>
+> Marcel
+>
