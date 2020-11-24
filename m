@@ -2,80 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E77412C1B50
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 03:13:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52CAB2C1B62
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 03:21:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726897AbgKXCMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 21:12:38 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59400 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726376AbgKXCMh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Nov 2020 21:12:37 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F3CFB206E0;
-        Tue, 24 Nov 2020 02:12:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606183957;
-        bh=sqKYie7uVLawkQgPh0ppY6pbZ/7Cp5NejBMG75XWVfU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=d1C4B1OOcEzKb9faD2SuSiBDhz0vjHI3Ui6TTo9a57jgDHmm3/lRxeblKBchWrPjq
-         MGrK6oS4zxsynqMkC1mjBEEr29FFe+8sxrfGfzeewvkmKx0hjAVH5W3vGt+fBT70kG
-         xvG9Uoto6ZbEgN79/3Ve4f9+AGC9v1D6VdD87unI=
-Date:   Mon, 23 Nov 2020 18:12:36 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vadim Fedorenko <vfedorenko@novek.ru>
-Cc:     Boris Pismenny <borisp@nvidia.com>,
-        Aviad Yehezkel <aviadye@nvidia.com>, netdev@vger.kernel.org
-Subject: Re: [net-next 4/5] net/tls: add CHACHA20-POLY1305 configuration
-Message-ID: <20201123181236.75616d6d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1606010265-30471-5-git-send-email-vfedorenko@novek.ru>
-References: <1606010265-30471-1-git-send-email-vfedorenko@novek.ru>
-        <1606010265-30471-5-git-send-email-vfedorenko@novek.ru>
+        id S1728170AbgKXCS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 21:18:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43110 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726817AbgKXCS5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Nov 2020 21:18:57 -0500
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F857C0613CF
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 18:18:57 -0800 (PST)
+Received: by mail-pg1-x542.google.com with SMTP id s63so6197955pgc.8
+        for <netdev@vger.kernel.org>; Mon, 23 Nov 2020 18:18:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=YlrrUTAwUKDHOkEUpWWu/j7q/VQ6CZsrnhGOpp3ktaE=;
+        b=lpxRHkpLLRiDeUBDfL+zweoBZjHluAMt6UxVrXaY/ra3jz0X5Xm/GmPh/t8AUPMrsM
+         gV9qJqpMf7kcbtGfBzlUxEukHfpQyWyDRqHvjuLCe1mcRQEqtX6QAy2IieMcelvutX+b
+         r6rViYRZ3HWw9kUi5PROGq0kDZNs6mJbELumGniNhVYHk82XS9jhfQk5rHAsxv7lUjq6
+         d2zUgNZq3TbKsNpOJ3CPkCP4ymU+Nho4J4r6F6Cen+VIjvD9F72R9WREJeSUb1Ywm9ll
+         HxqqCFnG2oKEcJN5LoM1PjQumlkBnyCYSODxOAPI/CPtmAIPOezpjIcjx+gDBYqGZltq
+         DkbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=YlrrUTAwUKDHOkEUpWWu/j7q/VQ6CZsrnhGOpp3ktaE=;
+        b=IFXzSl5l5ebD5Zlhaxo2NR5vkeHcoMb5xGeD1x9czVR0xNp9xf+Z1v0HVOT3PEiQuV
+         YTMDdxSnGVnN6xdAXPi2rjGKcxGKSmCN5OfrY1wTnuBkX8NR6EQpC93DNbkFEKz2cfDy
+         pT5xKteZaGZtYROuQ8An0B9x4CnCirbaRGeADG2e1mTUi3NTQHBBFAI+3EJ1PWTR2Bbx
+         njq7pUECqXBhP+Ix1eJMXb8PTn1HJzvYrDvutKOirHdUCpeaziYq8xlfE26YT9G26AML
+         CkLxThh0y65W2EjNHWuDX8kckVDDmiQ7peU5EAL3HPInHEHVJPXRjDbKBZqbQF62JgyX
+         NmQg==
+X-Gm-Message-State: AOAM530hGHAr1/eqUWW1zmdfH/CkJdEsGQ4m5ERXZ3liQdrvBldjr+WH
+        Zsmv/Ztqi1dEBNzwVAUc4Zg2+jHfDLA=
+X-Google-Smtp-Source: ABdhPJxU4zcMo7ueL1CILHdHw8HZGTWSgJI8rM1y37OgF6md2kGA3ihD0s5vD8DgivOo96lmqrhcIQ==
+X-Received: by 2002:a17:90a:fd88:: with SMTP id cx8mr2063649pjb.220.1606184337062;
+        Mon, 23 Nov 2020 18:18:57 -0800 (PST)
+Received: from [172.20.20.103] ([222.151.198.97])
+        by smtp.gmail.com with ESMTPSA id y20sm12584456pfr.159.2020.11.23.18.18.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 Nov 2020 18:18:56 -0800 (PST)
+Subject: Re: [PATCH] veth: fix memleak in veth_newlink()
+To:     Yang Yingliang <yangyingliang@huawei.com>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net
+References: <20201120093057.1477009-1-yangyingliang@huawei.com>
+From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
+Message-ID: <560f4040-e6a4-5745-050b-4628deecb070@gmail.com>
+Date:   Tue, 24 Nov 2020 11:18:50 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20201120093057.1477009-1-yangyingliang@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The series LGTM, great to see chacha support!
+On 2020/11/20 18:30, Yang Yingliang wrote:
 
-One nit here, and when you post v2 would you mind ccing crypto?
+Hi,
 
-=46rom TLS perspective I think this code is ready to be merged, but
-my crypto knowledge is close to none, so best if we give crypto
-folks a chance to take a look.
+> I got a memleak report when doing fault-inject test:
+> 
+> unreferenced object 0xffff88810ace9000 (size 1024):
+>    comm "ip", pid 4622, jiffies 4295457037 (age 43.378s)
+>    hex dump (first 32 bytes):
+>      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>      00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>    backtrace:
+>      [<00000000008abe41>] __kmalloc+0x10f/0x210
+>      [<000000005d3533a6>] veth_dev_init+0x140/0x310
+>      [<0000000088353c64>] register_netdevice+0x496/0x7a0
+>      [<000000001324d322>] veth_newlink+0x40b/0x960
+>      [<00000000d0799866>] __rtnl_newlink+0xd8c/0x1360
+>      [<00000000d616040a>] rtnl_newlink+0x6b/0xa0
+>      [<00000000e0a1600d>] rtnetlink_rcv_msg+0x3cc/0x9e0
+>      [<000000009eeff98b>] netlink_rcv_skb+0x130/0x3a0
+>      [<00000000500f8be1>] netlink_unicast+0x4da/0x700
+>      [<00000000666c03b3>] netlink_sendmsg+0x7fe/0xcb0
+>      [<0000000073b28103>] sock_sendmsg+0x143/0x180
+>      [<00000000ad746a30>] ____sys_sendmsg+0x677/0x810
+>      [<0000000087dd98e5>] ___sys_sendmsg+0x105/0x180
+>      [<00000000028dd365>] __sys_sendmsg+0xf0/0x1c0
+>      [<00000000a6bfbae6>] do_syscall_64+0x33/0x40
+>      [<00000000e00521b4>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> 
+> If call_netdevice_notifiers() failed in register_netdevice(),
+> dev->priv_destructor() is not called, it will cause memleak.
+> Fix this by assigning ndo_uninit with veth_dev_free(), so
+> the memory can be freed in rollback_registered();
 
-On Sun, 22 Nov 2020 04:57:44 +0300 Vadim Fedorenko wrote:
-> +	case TLS_CIPHER_CHACHA20_POLY1305: {
-> +		nonce_size =3D 0;
-> +		tag_size =3D TLS_CIPHER_CHACHA20_POLY1305_TAG_SIZE;
-> +		iv_size =3D TLS_CIPHER_CHACHA20_POLY1305_IV_SIZE;
-> +		iv =3D ((struct tls12_crypto_info_chacha20_poly1305 *)crypto_info)->iv;
+We have discussed this before and it seems we should fix
+register_netdevice() rather than each driver.
 
-[1]
+https://patchwork.ozlabs.org/project/netdev/patch/20200830131336.275844-1-rkovhaev@gmail.com/
 
-> +		rec_seq_size =3D TLS_CIPHER_CHACHA20_POLY1305_REC_SEQ_SIZE;
-> +		rec_seq =3D
-> +		((struct tls12_crypto_info_chacha20_poly1305 *)crypto_info)->rec_seq;
-
-[2]
-
-> +		chacha20_poly1305_info =3D
-> +		(struct tls12_crypto_info_chacha20_poly1305 *)crypto_info;
-
-Move this line up, and use it in [1] and [2].
-
-You can also make it:
-
-	chacha20_poly1305_info =3D (void *)crypto_info;
-
-> +		keysize =3D TLS_CIPHER_CHACHA20_POLY1305_KEY_SIZE;
-> +		key =3D chacha20_poly1305_info->key;
-> +		salt =3D chacha20_poly1305_info->salt;
-> +		salt_size =3D TLS_CIPHER_CHACHA20_POLY1305_SALT_SIZE;
-> +		cipher_name =3D "rfc7539(chacha20,poly1305)";
-> +		break;
-> +	}
+Toshiaki Makita
