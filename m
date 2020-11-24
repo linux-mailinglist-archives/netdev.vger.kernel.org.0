@@ -2,269 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70F5F2C1DC8
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 07:00:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A225A2C1E20
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 07:24:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728702AbgKXF7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 00:59:19 -0500
-Received: from hydra.tuxags.com ([64.13.172.54]:34234 "EHLO mail.tuxags.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725786AbgKXF7T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 00:59:19 -0500
-Received: by mail.tuxags.com (Postfix, from userid 1000)
-        id C14948971543; Mon, 23 Nov 2020 21:59:18 -0800 (PST)
-Date:   Mon, 23 Nov 2020 21:59:18 -0800
-From:   Matt Mullins <mmullins@mmlx.us>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Florian Weimer <fw@deneb.enyo.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Matt Mullins <mmullins@mmlx.us>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        linux-toolchains@vger.kernel.org
-Subject: Re: [PATCH v3] tracepoint: Do not fail unregistering a probe due to
- memory allocation
-Message-ID: <20201124055918.k5m6htif7ukhch6v@hydra.tuxags.com>
-Mail-Followup-To: Steven Rostedt <rostedt@goodmis.org>,
-        Florian Weimer <fw@deneb.enyo.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Matt Mullins <mmullins@mmlx.us>, Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dmitry Vyukov <dvyukov@google.com>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, netdev <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        linux-toolchains@vger.kernel.org
-References: <20201116175107.02db396d@gandalf.local.home>
- <47463878.48157.1605640510560.JavaMail.zimbra@efficios.com>
- <20201117142145.43194f1a@gandalf.local.home>
- <375636043.48251.1605642440621.JavaMail.zimbra@efficios.com>
- <20201117153451.3015c5c9@gandalf.local.home>
- <20201118132136.GJ3121378@hirez.programming.kicks-ass.net>
- <87h7pmwyta.fsf@mid.deneb.enyo.de>
- <20201118141226.GV3121392@hirez.programming.kicks-ass.net>
- <874klmwxxm.fsf@mid.deneb.enyo.de>
- <20201118093405.7a6d2290@gandalf.local.home>
+        id S1729550AbgKXGXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 01:23:20 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:7971 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728601AbgKXGXU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 01:23:20 -0500
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4CgDTw29jxzhbkW;
+        Tue, 24 Nov 2020 14:23:00 +0800 (CST)
+Received: from euler.huawei.com (10.175.124.27) by
+ DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
+ 14.3.487.0; Tue, 24 Nov 2020 14:23:05 +0800
+From:   Wei Li <liwei391@huawei.com>
+To:     Li Yang <leoyang.li@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Kumar Gala <galak@kernel.crashing.org>,
+        "Timur Tabi" <timur@freescale.com>
+CC:     <netdev@vger.kernel.org>, <linuxppc-dev@lists.ozlabs.org>,
+        <linux-kernel@vger.kernel.org>, <guohanjun@huawei.com>
+Subject: [PATCH] net/ethernet/freescale: Fix incorrect IS_ERR_VALUE macro usages
+Date:   Tue, 24 Nov 2020 14:22:34 +0800
+Message-ID: <20201124062234.678-1-liwei391@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201118093405.7a6d2290@gandalf.local.home>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain
+X-Originating-IP: [10.175.124.27]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 09:34:05AM -0500, Steven Rostedt wrote:
-> From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
-> 
-> The list of tracepoint callbacks is managed by an array that is protected
-> by RCU. To update this array, a new array is allocated, the updates are
-> copied over to the new array, and then the list of functions for the
-> tracepoint is switched over to the new array. After a completion of an RCU
-> grace period, the old array is freed.
-> 
-> This process happens for both adding a callback as well as removing one.
-> But on removing a callback, if the new array fails to be allocated, the
-> callback is not removed, and may be used after it is freed by the clients
-> of the tracepoint.
-> 
-> There's really no reason to fail if the allocation for a new array fails
-> when removing a function. Instead, the function can simply be replaced by a
-> stub function that could be cleaned up on the next modification of the
-> array. That is, instead of calling the function registered to the
-> tracepoint, it would call a stub function in its place.
-> 
-> Link: https://lore.kernel.org/r/20201115055256.65625-1-mmullins@mmlx.us
-> Link: https://lore.kernel.org/r/20201116175107.02db396d@gandalf.local.home
-> Link: https://lore.kernel.org/r/20201117211836.54acaef2@oasis.local.home
-> 
-> Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> Cc: Ingo Molnar <mingo@redhat.com>
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Dmitry Vyukov <dvyukov@google.com>
-> Cc: Martin KaFai Lau <kafai@fb.com>
-> Cc: Song Liu <songliubraving@fb.com>
-> Cc: Yonghong Song <yhs@fb.com>
-> Cc: Andrii Nakryiko <andriin@fb.com>
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: KP Singh <kpsingh@chromium.org>
-> Cc: netdev <netdev@vger.kernel.org>
-> Cc: bpf <bpf@vger.kernel.org>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Florian Weimer <fw@deneb.enyo.de>
-> Fixes: 97e1c18e8d17b ("tracing: Kernel Tracepoints")
-> Reported-by: syzbot+83aa762ef23b6f0d1991@syzkaller.appspotmail.com
-> Reported-by: syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com
-> Reported-by: Matt Mullins <mmullins@mmlx.us>
-> Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+IS_ERR_VALUE macro should be used only with unsigned long type.
+Especially it works incorrectly with unsigned shorter types on
+64bit machines.
 
-I'm a bit late answering your initial query, but yes indeed this fixes
-the bug I was hunting.  I just watched it live through the reproducer
-for about a half-hour, while unpatched I get an instant "BUG: unable to
-handle page fault".
+Fixes: 4c35630ccda5 ("[POWERPC] Change rheap functions to use ulongs instead of pointers")
+Signed-off-by: Wei Li <liwei391@huawei.com>
+---
+ drivers/net/ethernet/freescale/ucc_geth.c | 30 +++++++++++------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
-Tested-by: Matt Mullins <mmullins@mmlx.us>
+diff --git a/drivers/net/ethernet/freescale/ucc_geth.c b/drivers/net/ethernet/freescale/ucc_geth.c
+index 714b501be7d0..8656d9be256a 100644
+--- a/drivers/net/ethernet/freescale/ucc_geth.c
++++ b/drivers/net/ethernet/freescale/ucc_geth.c
+@@ -286,7 +286,7 @@ static int fill_init_enet_entries(struct ucc_geth_private *ugeth,
+ 		else {
+ 			init_enet_offset =
+ 			    qe_muram_alloc(thread_size, thread_alignment);
+-			if (IS_ERR_VALUE(init_enet_offset)) {
++			if (IS_ERR_VALUE((unsigned long)(int)init_enet_offset)) {
+ 				if (netif_msg_ifup(ugeth))
+ 					pr_err("Can not allocate DPRAM memory\n");
+ 				qe_put_snum((u8) snum);
+@@ -2223,7 +2223,7 @@ static int ucc_geth_alloc_tx(struct ucc_geth_private *ugeth)
+ 			ugeth->tx_bd_ring_offset[j] =
+ 			    qe_muram_alloc(length,
+ 					   UCC_GETH_TX_BD_RING_ALIGNMENT);
+-			if (!IS_ERR_VALUE(ugeth->tx_bd_ring_offset[j]))
++			if (!IS_ERR_VALUE((unsigned long)(int)ugeth->tx_bd_ring_offset[j]))
+ 				ugeth->p_tx_bd_ring[j] =
+ 				    (u8 __iomem *) qe_muram_addr(ugeth->
+ 							 tx_bd_ring_offset[j]);
+@@ -2300,7 +2300,7 @@ static int ucc_geth_alloc_rx(struct ucc_geth_private *ugeth)
+ 			ugeth->rx_bd_ring_offset[j] =
+ 			    qe_muram_alloc(length,
+ 					   UCC_GETH_RX_BD_RING_ALIGNMENT);
+-			if (!IS_ERR_VALUE(ugeth->rx_bd_ring_offset[j]))
++			if (!IS_ERR_VALUE((unsigned long)(int)ugeth->rx_bd_ring_offset[j]))
+ 				ugeth->p_rx_bd_ring[j] =
+ 				    (u8 __iomem *) qe_muram_addr(ugeth->
+ 							 rx_bd_ring_offset[j]);
+@@ -2510,7 +2510,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
+ 	ugeth->tx_glbl_pram_offset =
+ 	    qe_muram_alloc(sizeof(struct ucc_geth_tx_global_pram),
+ 			   UCC_GETH_TX_GLOBAL_PRAM_ALIGNMENT);
+-	if (IS_ERR_VALUE(ugeth->tx_glbl_pram_offset)) {
++	if (IS_ERR_VALUE((unsigned long)(int)ugeth->tx_glbl_pram_offset)) {
+ 		if (netif_msg_ifup(ugeth))
+ 			pr_err("Can not allocate DPRAM memory for p_tx_glbl_pram\n");
+ 		return -ENOMEM;
+@@ -2530,7 +2530,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
+ 			   sizeof(struct ucc_geth_thread_data_tx) +
+ 			   32 * (numThreadsTxNumerical == 1),
+ 			   UCC_GETH_THREAD_DATA_ALIGNMENT);
+-	if (IS_ERR_VALUE(ugeth->thread_dat_tx_offset)) {
++	if (IS_ERR_VALUE((unsigned long)(int)ugeth->thread_dat_tx_offset)) {
+ 		if (netif_msg_ifup(ugeth))
+ 			pr_err("Can not allocate DPRAM memory for p_thread_data_tx\n");
+ 		return -ENOMEM;
+@@ -2557,7 +2557,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
+ 	    qe_muram_alloc(ug_info->numQueuesTx *
+ 			   sizeof(struct ucc_geth_send_queue_qd),
+ 			   UCC_GETH_SEND_QUEUE_QUEUE_DESCRIPTOR_ALIGNMENT);
+-	if (IS_ERR_VALUE(ugeth->send_q_mem_reg_offset)) {
++	if (IS_ERR_VALUE((unsigned long)(int)ugeth->send_q_mem_reg_offset)) {
+ 		if (netif_msg_ifup(ugeth))
+ 			pr_err("Can not allocate DPRAM memory for p_send_q_mem_reg\n");
+ 		return -ENOMEM;
+@@ -2597,7 +2597,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
+ 		ugeth->scheduler_offset =
+ 		    qe_muram_alloc(sizeof(struct ucc_geth_scheduler),
+ 				   UCC_GETH_SCHEDULER_ALIGNMENT);
+-		if (IS_ERR_VALUE(ugeth->scheduler_offset)) {
++		if (IS_ERR_VALUE((unsigned long)(int)ugeth->scheduler_offset)) {
+ 			if (netif_msg_ifup(ugeth))
+ 				pr_err("Can not allocate DPRAM memory for p_scheduler\n");
+ 			return -ENOMEM;
+@@ -2644,7 +2644,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
+ 		    qe_muram_alloc(sizeof
+ 				   (struct ucc_geth_tx_firmware_statistics_pram),
+ 				   UCC_GETH_TX_STATISTICS_ALIGNMENT);
+-		if (IS_ERR_VALUE(ugeth->tx_fw_statistics_pram_offset)) {
++		if (IS_ERR_VALUE((unsigned long)(int)ugeth->tx_fw_statistics_pram_offset)) {
+ 			if (netif_msg_ifup(ugeth))
+ 				pr_err("Can not allocate DPRAM memory for p_tx_fw_statistics_pram\n");
+ 			return -ENOMEM;
+@@ -2681,7 +2681,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
+ 	ugeth->rx_glbl_pram_offset =
+ 	    qe_muram_alloc(sizeof(struct ucc_geth_rx_global_pram),
+ 			   UCC_GETH_RX_GLOBAL_PRAM_ALIGNMENT);
+-	if (IS_ERR_VALUE(ugeth->rx_glbl_pram_offset)) {
++	if (IS_ERR_VALUE((unsigned long)(int)ugeth->rx_glbl_pram_offset)) {
+ 		if (netif_msg_ifup(ugeth))
+ 			pr_err("Can not allocate DPRAM memory for p_rx_glbl_pram\n");
+ 		return -ENOMEM;
+@@ -2700,7 +2700,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
+ 	    qe_muram_alloc(numThreadsRxNumerical *
+ 			   sizeof(struct ucc_geth_thread_data_rx),
+ 			   UCC_GETH_THREAD_DATA_ALIGNMENT);
+-	if (IS_ERR_VALUE(ugeth->thread_dat_rx_offset)) {
++	if (IS_ERR_VALUE((unsigned long)(int)ugeth->thread_dat_rx_offset)) {
+ 		if (netif_msg_ifup(ugeth))
+ 			pr_err("Can not allocate DPRAM memory for p_thread_data_rx\n");
+ 		return -ENOMEM;
+@@ -2721,7 +2721,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
+ 		    qe_muram_alloc(sizeof
+ 				   (struct ucc_geth_rx_firmware_statistics_pram),
+ 				   UCC_GETH_RX_STATISTICS_ALIGNMENT);
+-		if (IS_ERR_VALUE(ugeth->rx_fw_statistics_pram_offset)) {
++		if (IS_ERR_VALUE((unsigned long)(int)ugeth->rx_fw_statistics_pram_offset)) {
+ 			if (netif_msg_ifup(ugeth))
+ 				pr_err("Can not allocate DPRAM memory for p_rx_fw_statistics_pram\n");
+ 			return -ENOMEM;
+@@ -2741,7 +2741,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
+ 	    qe_muram_alloc(ug_info->numQueuesRx *
+ 			   sizeof(struct ucc_geth_rx_interrupt_coalescing_entry)
+ 			   + 4, UCC_GETH_RX_INTERRUPT_COALESCING_ALIGNMENT);
+-	if (IS_ERR_VALUE(ugeth->rx_irq_coalescing_tbl_offset)) {
++	if (IS_ERR_VALUE((unsigned long)(int)ugeth->rx_irq_coalescing_tbl_offset)) {
+ 		if (netif_msg_ifup(ugeth))
+ 			pr_err("Can not allocate DPRAM memory for p_rx_irq_coalescing_tbl\n");
+ 		return -ENOMEM;
+@@ -2807,7 +2807,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
+ 			   (sizeof(struct ucc_geth_rx_bd_queues_entry) +
+ 			    sizeof(struct ucc_geth_rx_prefetched_bds)),
+ 			   UCC_GETH_RX_BD_QUEUES_ALIGNMENT);
+-	if (IS_ERR_VALUE(ugeth->rx_bd_qs_tbl_offset)) {
++	if (IS_ERR_VALUE((unsigned long)(int)ugeth->rx_bd_qs_tbl_offset)) {
+ 		if (netif_msg_ifup(ugeth))
+ 			pr_err("Can not allocate DPRAM memory for p_rx_bd_qs_tbl\n");
+ 		return -ENOMEM;
+@@ -2892,7 +2892,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
+ 		ugeth->exf_glbl_param_offset =
+ 		    qe_muram_alloc(sizeof(struct ucc_geth_exf_global_pram),
+ 		UCC_GETH_RX_EXTENDED_FILTERING_GLOBAL_PARAMETERS_ALIGNMENT);
+-		if (IS_ERR_VALUE(ugeth->exf_glbl_param_offset)) {
++		if (IS_ERR_VALUE((unsigned long)(int)ugeth->exf_glbl_param_offset)) {
+ 			if (netif_msg_ifup(ugeth))
+ 				pr_err("Can not allocate DPRAM memory for p_exf_glbl_param\n");
+ 			return -ENOMEM;
+@@ -3026,7 +3026,7 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
+ 
+ 	/* Allocate InitEnet command parameter structure */
+ 	init_enet_pram_offset = qe_muram_alloc(sizeof(struct ucc_geth_init_pram), 4);
+-	if (IS_ERR_VALUE(init_enet_pram_offset)) {
++	if (IS_ERR_VALUE((unsigned long)(int)init_enet_pram_offset)) {
+ 		if (netif_msg_ifup(ugeth))
+ 			pr_err("Can not allocate DPRAM memory for p_init_enet_pram\n");
+ 		return -ENOMEM;
+-- 
+2.17.1
 
-> ---
-> Changes since v2:
->    - Went back to using a stub function and not touching
->       the fast path.
->    - Removed adding __GFP_NOFAIL from the allocation of the removal.
-> 
->  kernel/tracepoint.c | 80 ++++++++++++++++++++++++++++++++++++---------
->  1 file changed, 64 insertions(+), 16 deletions(-)
-> 
-> diff --git a/kernel/tracepoint.c b/kernel/tracepoint.c
-> index 3f659f855074..3e261482296c 100644
-> --- a/kernel/tracepoint.c
-> +++ b/kernel/tracepoint.c
-> @@ -53,6 +53,12 @@ struct tp_probes {
->  	struct tracepoint_func probes[];
->  };
->  
-> +/* Called in removal of a func but failed to allocate a new tp_funcs */
-> +static void tp_stub_func(void)
-> +{
-> +	return;
-> +}
-> +
->  static inline void *allocate_probes(int count)
->  {
->  	struct tp_probes *p  = kmalloc(struct_size(p, probes, count),
-> @@ -131,6 +137,7 @@ func_add(struct tracepoint_func **funcs, struct tracepoint_func *tp_func,
->  {
->  	struct tracepoint_func *old, *new;
->  	int nr_probes = 0;
-> +	int stub_funcs = 0;
->  	int pos = -1;
->  
->  	if (WARN_ON(!tp_func->func))
-> @@ -147,14 +154,34 @@ func_add(struct tracepoint_func **funcs, struct tracepoint_func *tp_func,
->  			if (old[nr_probes].func == tp_func->func &&
->  			    old[nr_probes].data == tp_func->data)
->  				return ERR_PTR(-EEXIST);
-> +			if (old[nr_probes].func == tp_stub_func)
-> +				stub_funcs++;
->  		}
->  	}
-> -	/* + 2 : one for new probe, one for NULL func */
-> -	new = allocate_probes(nr_probes + 2);
-> +	/* + 2 : one for new probe, one for NULL func - stub functions */
-> +	new = allocate_probes(nr_probes + 2 - stub_funcs);
->  	if (new == NULL)
->  		return ERR_PTR(-ENOMEM);
->  	if (old) {
-> -		if (pos < 0) {
-> +		if (stub_funcs) {
-> +			/* Need to copy one at a time to remove stubs */
-> +			int probes = 0;
-> +
-> +			pos = -1;
-> +			for (nr_probes = 0; old[nr_probes].func; nr_probes++) {
-> +				if (old[nr_probes].func == tp_stub_func)
-> +					continue;
-> +				if (pos < 0 && old[nr_probes].prio < prio)
-> +					pos = probes++;
-> +				new[probes++] = old[nr_probes];
-> +			}
-> +			nr_probes = probes;
-> +			if (pos < 0)
-> +				pos = probes;
-> +			else
-> +				nr_probes--; /* Account for insertion */
-> +
-> +		} else if (pos < 0) {
->  			pos = nr_probes;
->  			memcpy(new, old, nr_probes * sizeof(struct tracepoint_func));
->  		} else {
-> @@ -188,8 +215,9 @@ static void *func_remove(struct tracepoint_func **funcs,
->  	/* (N -> M), (N > 1, M >= 0) probes */
->  	if (tp_func->func) {
->  		for (nr_probes = 0; old[nr_probes].func; nr_probes++) {
-> -			if (old[nr_probes].func == tp_func->func &&
-> -			     old[nr_probes].data == tp_func->data)
-> +			if ((old[nr_probes].func == tp_func->func &&
-> +			     old[nr_probes].data == tp_func->data) ||
-> +			    old[nr_probes].func == tp_stub_func)
->  				nr_del++;
->  		}
->  	}
-> @@ -208,14 +236,32 @@ static void *func_remove(struct tracepoint_func **funcs,
->  		/* N -> M, (N > 1, M > 0) */
->  		/* + 1 for NULL */
->  		new = allocate_probes(nr_probes - nr_del + 1);
-> -		if (new == NULL)
-> -			return ERR_PTR(-ENOMEM);
-> -		for (i = 0; old[i].func; i++)
-> -			if (old[i].func != tp_func->func
-> -					|| old[i].data != tp_func->data)
-> -				new[j++] = old[i];
-> -		new[nr_probes - nr_del].func = NULL;
-> -		*funcs = new;
-> +		if (new) {
-> +			for (i = 0; old[i].func; i++)
-> +				if ((old[i].func != tp_func->func
-> +				     || old[i].data != tp_func->data)
-> +				    && old[i].func != tp_stub_func)
-> +					new[j++] = old[i];
-> +			new[nr_probes - nr_del].func = NULL;
-> +			*funcs = new;
-> +		} else {
-> +			/*
-> +			 * Failed to allocate, replace the old function
-> +			 * with calls to tp_stub_func.
-> +			 */
-> +			for (i = 0; old[i].func; i++)
-> +				if (old[i].func == tp_func->func &&
-> +				    old[i].data == tp_func->data) {
-> +					old[i].func = tp_stub_func;
-> +					/* Set the prio to the next event. */
-> +					if (old[i + 1].func)
-> +						old[i].prio =
-> +							old[i + 1].prio;
-> +					else
-> +						old[i].prio = -1;
-> +				}
-> +			*funcs = old;
-> +		}
->  	}
->  	debug_print_probes(*funcs);
->  	return old;
-> @@ -295,10 +341,12 @@ static int tracepoint_remove_func(struct tracepoint *tp,
->  	tp_funcs = rcu_dereference_protected(tp->funcs,
->  			lockdep_is_held(&tracepoints_mutex));
->  	old = func_remove(&tp_funcs, func);
-> -	if (IS_ERR(old)) {
-> -		WARN_ON_ONCE(PTR_ERR(old) != -ENOMEM);
-> +	if (WARN_ON_ONCE(IS_ERR(old)))
->  		return PTR_ERR(old);
-> -	}
-> +
-> +	if (tp_funcs == old)
-> +		/* Failed allocating new tp_funcs, replaced func with stub */
-> +		return 0;
->  
->  	if (!tp_funcs) {
->  		/* Removed last function */
-> -- 
-> 2.25.4
-> 
