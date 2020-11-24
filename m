@@ -2,56 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FAB32C2CB8
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 17:22:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7684F2C2CBE
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 17:24:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390378AbgKXQV5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 11:21:57 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56038 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390367AbgKXQV5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 11:21:57 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2C8D120715;
-        Tue, 24 Nov 2020 16:21:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606234916;
-        bh=GjdpPd0YVe4JnlTabDKyPkCEnuLaEUJR5g0XA7bdCPw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=z0oZGxSSCfePGNVS/cWWmpOUBbcg0VMNghCgMmErBwTxIHmeBFnBC0W5ox4PLTFCg
-         jqL+xfVJfgYxFaNIaAZcMTF1l+Sqxt9Jzxbbpl+wClp1UqjsqNwHx+YCKF6Rot++ib
-         z/bH3k3Wp0lX/ZdQ+nYdrJrNAXF+BvGTF+C4UGAg=
-Date:   Tue, 24 Nov 2020 08:21:55 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        =?UTF-8?B?QmrDtnJuIFQ=?= =?UTF-8?B?w7ZwZWw=?= 
-        <bjorn.topel@intel.com>, magnus.karlsson@intel.com, ast@kernel.org,
-        daniel@iogearbox.net, maciej.fijalkowski@intel.com,
-        sridhar.samudrala@intel.com, jesse.brandeburg@intel.com,
-        qi.z.zhang@intel.com, edumazet@google.com,
-        jonathan.lemon@gmail.com, maximmi@nvidia.com
-Subject: Re: [PATCH bpf-next v3 02/10] net: add SO_BUSY_POLL_BUDGET socket
- option
-Message-ID: <20201124082155.1642cf1f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201119083024.119566-3-bjorn.topel@gmail.com>
-References: <20201119083024.119566-1-bjorn.topel@gmail.com>
-        <20201119083024.119566-3-bjorn.topel@gmail.com>
+        id S2390393AbgKXQW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 11:22:57 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:42001 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390160AbgKXQW4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 11:22:56 -0500
+Received: by mail-wr1-f65.google.com with SMTP id l1so22894871wrb.9;
+        Tue, 24 Nov 2020 08:22:56 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=beptYMt7+eafD2ZEQSEovk9FzgjHfPs3g/lAfS8j9uM=;
+        b=t/FNO/fvyKb5Pp9X5qeI/wK96CCsRhoEuWSjU5FNQGJeDNh/RIqckAR8R/30U8d/9i
+         yY9l2zZhHfFVoqoms9HhW9BuxDgUeIBpvBVKsZ6nSrhiPoFpfeRearN7xTY9d8dIOjnU
+         oGRXBBGh78QxEwAxziJFBHEiMTW4sbeOkwp9Pg6ADyu/bmifX1pWOCBAgaXGHWYP+kH5
+         DAStr7Bac8O09h6tTVsL7C2Iyof8tjnrPp/fEqO4fW1L4fXdxsOyByzjeiuFR6PEHyKa
+         GnFsnmeKpDwX4svHNbT76UIieBOvKOBNVr9uQMP9UH+nA4vWBrlV2gutUYX0sSq8JGgW
+         cp8Q==
+X-Gm-Message-State: AOAM533qVYbmYaxRPFvrGkzPxjg60SYW2T6G7pPLtwMc3nzuLTubemDO
+        FgHYm5BgyOzaCwBBqG6ilDk=
+X-Google-Smtp-Source: ABdhPJzNWJISAR6jpBemgnrfO4WfQurOZMlhDm6aMhArKWRtwu3b2mmXuZb+ypGKjS10uTSkrzVDfA==
+X-Received: by 2002:adf:f441:: with SMTP id f1mr6141880wrp.225.1606234975722;
+        Tue, 24 Nov 2020 08:22:55 -0800 (PST)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id x9sm20773316wrt.70.2020.11.24.08.22.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Nov 2020 08:22:55 -0800 (PST)
+Date:   Tue, 24 Nov 2020 16:22:53 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        "K . Y . Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, linux-hyperv@vger.kernel.org,
+        Michael Kelley <mikelley@microsoft.com>,
+        Juan Vazquez <juvazq@microsoft.com>,
+        Saruhan Karademir <skarade@microsoft.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH] hv_netvsc: Validate number of allocated sub-channels
+Message-ID: <20201124162253.3qpfgo7rtvut4nqn@liuwe-devbox-debian-v2>
+References: <20201118153310.112404-1-parri.andrea@gmail.com>
+ <20201118173715.60b5a8f2@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201118173715.60b5a8f2@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Nov 2020 09:30:16 +0100 Bj=C3=B6rn T=C3=B6pel wrote:
-> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
->=20
-> This option lets a user set a per socket NAPI budget for
-> busy-polling. If the options is not set, it will use the default of 8.
->=20
-> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+On Wed, Nov 18, 2020 at 05:37:15PM -0800, Jakub Kicinski wrote:
+> On Wed, 18 Nov 2020 16:33:10 +0100 Andrea Parri (Microsoft) wrote:
+> > Lack of validation could lead to out-of-bound reads and information
+> > leaks (cf. usage of nvdev->chan_table[]).  Check that the number of
+> > allocated sub-channels fits into the expected range.
+> > 
+> > Suggested-by: Saruhan Karademir <skarade@microsoft.com>
+> > Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+> > Cc: "David S. Miller" <davem@davemloft.net>
+> > Cc: Jakub Kicinski <kuba@kernel.org>
+> > Cc: netdev@vger.kernel.org
+> 
+> Acked-by: Jakub Kicinski <kuba@kernel.org>
 
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+Applied to hyperv-next.
