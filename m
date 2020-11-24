@@ -2,60 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D82262C1A7F
+	by mail.lfdr.de (Postfix) with ESMTP id 680102C1A7E
 	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 02:12:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727571AbgKXBAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Nov 2020 20:00:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47176 "EHLO mail.kernel.org"
+        id S1727498AbgKXBAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Nov 2020 20:00:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47206 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726630AbgKXBAG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726958AbgKXBAG (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 23 Nov 2020 20:00:06 -0500
 Content-Type: text/plain; charset="utf-8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606179605;
-        bh=FB/vSPZnN4Bjc7LlvjvI8kHdZYZBGe+dqTl/Ijm+Vi8=;
+        s=default; t=1606179606;
+        bh=bd0l1PSEPO38a7uwAXy+Q+w+HSKiaXQuYHdvfAYEELw=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=GJnt2Jy5ePGXJfdeTlYKw12CsLwndOwFwfEx3Gzo8IWse9eTREDouGHvXxe2SfCa2
-         zE80XSzNuMoeDwvk+WEBsxDO4fM9SyjLlDxu1dpgwHYyFmRveyv7sHkz3IS29Nv5uW
-         XbDdi+0IiBEARqiduFH7ryHRJMo7f8IU5d+KxiuA=
+        b=CSDB1YK+vNfHwVBC0EH/+9EkL3pFpDnuTq4lTrWu5Wij/jSB5l8EfZXntFHkzcrb/
+         BQEDXHiZkN69MPOxmOKnK/g00ooPvZWjp0svskH2WDpN8DJ0ngRh35ouvayEyaor3F
+         ej65Vu74mR9w+nzxsDLNysf2E2OrnXpj8qX7ewcc=
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 1/1] i40e: Fix removing driver while bare-metal VFs pass
- traffic
+Subject: Re: [PATCH net-next 0/2] net: dsa: hellcreek: Minor cleanups
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160617960585.25502.16566944216033465342.git-patchwork-notify@kernel.org>
-Date:   Tue, 24 Nov 2020 01:00:05 +0000
-References: <20201120180640.3654474-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20201120180640.3654474-1-anthony.l.nguyen@intel.com>
-To:     Nguyen@ci.codeaurora.org, Anthony L <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        sylwesterx.dziedziuch@intel.com, netdev@vger.kernel.org,
-        sassmann@redhat.com, slawomirx.laba@intel.com,
-        brett.creeley@intel.com, konrad0.jankowski@intel.com
+Message-Id: <160617960633.25502.4860248883818219651.git-patchwork-notify@kernel.org>
+Date:   Tue, 24 Nov 2020 01:00:06 +0000
+References: <20201121114455.22422-1-kurt@linutronix.de>
+In-Reply-To: <20201121114455.22422-1-kurt@linutronix.de>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Fri, 20 Nov 2020 10:06:40 -0800 you wrote:
-> From: Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
+On Sat, 21 Nov 2020 12:44:53 +0100 you wrote:
+> Hi,
 > 
-> Prevent VFs from resetting when PF driver is being unloaded:
-> - introduce new pf state: __I40E_VF_RESETS_DISABLED;
-> - check if pf state has __I40E_VF_RESETS_DISABLED state set,
->   if so, disable any further VFLR event notifications;
-> - when i40e_remove (rmmod i40e) is called, disable any resets on
->   the VFs;
+> fix two minor issues in the hellcreek driver.
+> 
+> Thanks,
+> Kurt
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/1] i40e: Fix removing driver while bare-metal VFs pass traffic
-    https://git.kernel.org/netdev/net/c/2980cbd4dce7
+  - [net-next,1/2] net: dsa: tag_hellcreek: Cleanup includes
+    https://git.kernel.org/netdev/net-next/c/8551fad63cd3
+  - [net-next,2/2] net: dsa: hellcreek: Don't print error message on defer
+    https://git.kernel.org/netdev/net-next/c/ed5ef9fb2023
 
 You are awesome, thank you!
 --
