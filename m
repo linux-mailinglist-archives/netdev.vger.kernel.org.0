@@ -2,135 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53F672C30AE
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 20:20:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFCB82C3087
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 20:12:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404309AbgKXTTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 14:19:38 -0500
-Received: from mga09.intel.com ([134.134.136.24]:62208 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391022AbgKXTTh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 14:19:37 -0500
-IronPort-SDR: S+ar7CT5k9GLk0Uq+L75rqpySEVDs43KvgcZwUE2f4Kze+iKPizlknw1JUD6YgBK1v5MuOF9hR
- CWf2C9oo4/Mg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9815"; a="172160404"
-X-IronPort-AV: E=Sophos;i="5.78,366,1599548400"; 
-   d="scan'208";a="172160404"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2020 11:19:34 -0800
-IronPort-SDR: 5XL5SA9mfJKwLrTGBPZq2dMEMNogQexk3LvQOLBSgZpOqSzzeFNIC4Jq9M1THdZs9y2Iaf0UgQ
- TijH/Iui+RZg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.78,366,1599548400"; 
-   d="scan'208";a="361995567"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by fmsmga004.fm.intel.com with ESMTP; 24 Nov 2020 11:19:32 -0800
-Date:   Tue, 24 Nov 2020 20:11:36 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Camelia Groza <camelia.groza@nxp.com>
-Cc:     kuba@kernel.org, brouer@redhat.com, saeed@kernel.org,
-        davem@davemloft.net, madalin.bucur@oss.nxp.com,
-        ioana.ciornei@nxp.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v4 3/7] dpaa_eth: limit the possible MTU range
- when XDP is enabled
-Message-ID: <20201124191136.GB12808@ranger.igk.intel.com>
-References: <cover.1606150838.git.camelia.groza@nxp.com>
- <654d6300001825e542341bc052c31433b48b1913.1606150838.git.camelia.groza@nxp.com>
+        id S2390970AbgKXTLq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 14:11:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58840 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389340AbgKXTLp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 14:11:45 -0500
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88000C0613D6
+        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 11:11:45 -0800 (PST)
+Received: by mail-wr1-x441.google.com with SMTP id 23so23432124wrc.8
+        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 11:11:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=4ndO1xvogRtr2zNXkCqf7Eua99uQYb3bNeFB8uv4np0=;
+        b=Goy/5E8CdtOpJfXFI5tVTWTOLeMDQF8q7sIZID1i+mIeCxGTbSv/K+E1ClsAcmewbh
+         GkCq2FJ9gl4L/P5W+HQWYrinBFxhoxP8XGctTXyP0igp6u5zWkBc2RBYCIjNSucaXqGK
+         C7t59PYC7qA3sxcd7xIlfnuD+fWylzhegzFQtMagyZ8+jIqm8yCzry80N0ELBOOLcaw5
+         9u2cUCvEOQ+FtXG0tkx9Qg8GGcYLppeh3NFFCJrj/ca8ezWHSa2uTpV0QWPJ7WX9hflZ
+         D5lR3YPQrLZykZYBxFOH8w2cvBmKYdcdxS4Axhzq2jUBh7QjyLDUW13LT0sX5W2BGfQB
+         jvyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4ndO1xvogRtr2zNXkCqf7Eua99uQYb3bNeFB8uv4np0=;
+        b=OXiZvTTFmxJECyf1OEGl/yUXkm5S1fM9PwMbAUJIZe5idKxxWPP05wLY4NJg9rk9li
+         r+O3UEBWSnyCZYPQSq7nLHtVAQ4ONZjUnSVN76L6jo1L3r3izMt2sakCGXRwV9w7xzTL
+         nI8dUwka9D2p+LaSLLMWTInOmmyLzqj+K67sO+elamAQY4eMSzjEZYDBD3NyzPkF0usF
+         GjsHookoRMtgjX+bYRcgNJ3FLXLnUYnXAkVC7PIzCndvX9V6NmogqpiamQcMuyGlutR4
+         V3i6V5XAzzlpfFIDOyC9iFp/reJUYEY/1g27IUHAQSJXsHk6fYcgcVLlX7l12+/ZyzuP
+         BEfQ==
+X-Gm-Message-State: AOAM533xWlBk4NVJvvV7gcJJF52XKIZsLDDpkqPptuS9EDGAxC6+RhyF
+        Cjm2n1mBnXth2MDjBDxkyK8=
+X-Google-Smtp-Source: ABdhPJzzgv8i3HRFZ2dJ3NIDGtWwsN53VCi3lgkyHD7oS0VApfLg9f/3ndT+yRzYs3xn49MRiwaMyw==
+X-Received: by 2002:adf:e44d:: with SMTP id t13mr7256738wrm.144.1606245104305;
+        Tue, 24 Nov 2020 11:11:44 -0800 (PST)
+Received: from [192.168.8.114] ([37.166.80.220])
+        by smtp.gmail.com with ESMTPSA id h4sm27769890wrq.3.2020.11.24.11.11.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 24 Nov 2020 11:11:43 -0800 (PST)
+Subject: Re: [PATCH net-next 1/3] net: remove napi_hash_del() from
+ driver-facing API
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kernel-team@fb.com
+References: <20200909173753.229124-1-kuba@kernel.org>
+ <20200909173753.229124-2-kuba@kernel.org>
+ <8735d11e-e734-2ba9-7ced-d047682f9f3e@gmail.com>
+ <20201124105413.0406e879@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <a9ab432f-6d3c-aa8e-66bd-a82fac5d1098@gmail.com>
+Date:   Tue, 24 Nov 2020 20:11:42 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <654d6300001825e542341bc052c31433b48b1913.1606150838.git.camelia.groza@nxp.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20201124105413.0406e879@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 23, 2020 at 07:36:21PM +0200, Camelia Groza wrote:
-> Implement the ndo_change_mtu callback to prevent users from setting an
-> MTU that would permit processing of S/G frames. The maximum MTU size
-> is dependent on the buffer size.
-> 
-> Acked-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
-> Signed-off-by: Camelia Groza <camelia.groza@nxp.com>
-> ---
->  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 40 ++++++++++++++++++++------
->  1 file changed, 31 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> index 8acce62..ee076f4 100644
-> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> @@ -2756,23 +2756,44 @@ static int dpaa_eth_stop(struct net_device *net_dev)
->  	return err;
->  }
->  
-> +static bool xdp_validate_mtu(struct dpaa_priv *priv, int mtu)
-> +{
-> +	int max_contig_data = priv->dpaa_bp->size - priv->rx_headroom;
-> +
-> +	/* We do not support S/G fragments when XDP is enabled.
-> +	 * Limit the MTU in relation to the buffer size.
-> +	 */
-> +	if (mtu + VLAN_ETH_HLEN + ETH_FCS_LEN > max_contig_data) {
 
-Do you support VLAN double tagging? We normally take into acount to two vlan
-headers in these checks.
 
-Other than that:
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-
-> +		dev_warn(priv->net_dev->dev.parent,
-> +			 "The maximum MTU for XDP is %d\n",
-> +			 max_contig_data - VLAN_ETH_HLEN - ETH_FCS_LEN);
-> +		return false;
-> +	}
-> +
-> +	return true;
-> +}
-> +
-> +static int dpaa_change_mtu(struct net_device *net_dev, int new_mtu)
-> +{
-> +	struct dpaa_priv *priv = netdev_priv(net_dev);
-> +
-> +	if (priv->xdp_prog && !xdp_validate_mtu(priv, new_mtu))
-> +		return -EINVAL;
-> +
-> +	net_dev->mtu = new_mtu;
-> +	return 0;
-> +}
-> +
->  static int dpaa_setup_xdp(struct net_device *net_dev, struct bpf_prog *prog)
->  {
->  	struct dpaa_priv *priv = netdev_priv(net_dev);
->  	struct bpf_prog *old_prog;
-> -	int err, max_contig_data;
-> +	int err;
->  	bool up;
->  
-> -	max_contig_data = priv->dpaa_bp->size - priv->rx_headroom;
-> -
->  	/* S/G fragments are not supported in XDP-mode */
-> -	if (prog &&
-> -	    (net_dev->mtu + VLAN_ETH_HLEN + ETH_FCS_LEN > max_contig_data)) {
-> -		dev_warn(net_dev->dev.parent,
-> -			 "The maximum MTU for XDP is %d\n",
-> -			 max_contig_data - VLAN_ETH_HLEN - ETH_FCS_LEN);
-> +	if (prog && !xdp_validate_mtu(priv, net_dev->mtu))
->  		return -EINVAL;
-> -	}
->  
->  	up = netif_running(net_dev);
->  
-> @@ -2870,6 +2891,7 @@ static int dpaa_ioctl(struct net_device *net_dev, struct ifreq *rq, int cmd)
->  	.ndo_set_rx_mode = dpaa_set_rx_mode,
->  	.ndo_do_ioctl = dpaa_ioctl,
->  	.ndo_setup_tc = dpaa_setup_tc,
-> +	.ndo_change_mtu = dpaa_change_mtu,
->  	.ndo_bpf = dpaa_xdp,
->  };
->  
-> -- 
-> 1.9.1
+On 11/24/20 7:54 PM, Jakub Kicinski wrote:
+> On Tue, 24 Nov 2020 19:00:50 +0100 Eric Dumazet wrote:
+>> On 9/9/20 7:37 PM, Jakub Kicinski wrote:
+>>> We allow drivers to call napi_hash_del() before calling
+>>> netif_napi_del() to batch RCU grace periods. This makes
+>>> the API asymmetric and leaks internal implementation details.
+>>> Soon we will want the grace period to protect more than just
+>>> the NAPI hash table.
+>>>
+>>> Restructure the API and have drivers call a new function -
+>>> __netif_napi_del() if they want to take care of RCU waits.
+>>>
+>>> Note that only core was checking the return status from
+>>> napi_hash_del() so the new helper does not report if the
+>>> NAPI was actually deleted.
+>>>
+>>> Some notes on driver oddness:
+>>>  - veth observed the grace period before calling netif_napi_del()
+>>>    but that should not matter
+>>>  - myri10ge observed normal RCU flavor
+>>>  - bnx2x and enic did not actually observe the grace period
+>>>    (unless they did so implicitly)
+>>>  - virtio_net and enic only unhashed Rx NAPIs
+>>>
+>>> The last two points seem to indicate that the calls to
+>>> napi_hash_del() were a left over rather than an optimization.
+>>> Regardless, it's easy enough to correct them.
+>>>
+>>> This patch may introduce extra synchronize_net() calls for
+>>> interfaces which set NAPI_STATE_NO_BUSY_POLL and depend on
+>>> free_netdev() to call netif_napi_del(). This seems inevitable
+>>> since we want to use RCU for netpoll dev->napi_list traversal,
+>>> and almost no drivers set IFF_DISABLE_NETPOLL.
+>>>
+>>> Signed-off-by: Jakub Kicinski <kuba@kernel.org>  
+>>
+>> After this patch, gro_cells_destroy() became damn slow
+>> on hosts with a lot of cores.
+>>
+>> After your change, we have one additional synchronize_net() per cpu as
+>> you stated in your changelog.
 > 
+> Sorry :S  I hope it didn't waste too much of your time..
+
+Do not worry ;)
+
+> 
+>> gro_cells_init() is setting NAPI_STATE_NO_BUSY_POLL, and this was enough
+>> to not have one synchronize_net() call per netif_napi_del()
+>>
+>> I will test something like :
+>> I am not yet convinced the synchronize_net() is needed, since these
+>> NAPI structs are not involved in busy polling.
+> 
+> IDK how this squares against netpoll, though?
+> 
+
+Can we actually attach netpoll to a virtual device using gro_cells ?
+
