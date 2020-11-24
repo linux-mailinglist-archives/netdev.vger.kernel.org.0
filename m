@@ -2,55 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D8302C3432
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 23:48:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E23102C3435
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 23:50:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728013AbgKXWrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 17:47:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56502 "EHLO mail.kernel.org"
+        id S1727648AbgKXWuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 17:50:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56948 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726546AbgKXWrX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 17:47:23 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3D69E206F7;
-        Tue, 24 Nov 2020 22:47:22 +0000 (UTC)
+        id S1725440AbgKXWuF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 17:50:05 -0500
+Content-Type: text/plain; charset="utf-8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606258042;
-        bh=j7dE/X3pN76ALwr+9rLM+WgE9O8WkcLEkKzskJ9PPzE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=aO0/HqqVklMx1LF3C/Bpsjsw9vD3slXmL7727trxTojZeLi6DAuEN1PDfkLomHnKm
-         4EFTYzbKmcoSNjGxcp5FPI0wf5oQaEWuYIk8nc4EJMG3lWM411FbhwufJp77Fyh48u
-         JYDBKdwHzNWUi6gjycZC6VIg+J10zpQVyjE+nPNI=
-Date:   Tue, 24 Nov 2020 14:47:21 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Rikard Falkeborn <rikard.falkeborn@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alex Elder <elder@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org
-Subject: Re: [PATCH net-next 1/2] soc: qcom: ipa: Constify static qmi
- structs
-Message-ID: <20201124144721.3e80698c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201122234031.33432-2-rikard.falkeborn@gmail.com>
-References: <20201122234031.33432-1-rikard.falkeborn@gmail.com>
-        <20201122234031.33432-2-rikard.falkeborn@gmail.com>
+        s=default; t=1606258205;
+        bh=2yESr43CsOKk3eRqhvT38PxLVf+tyKUs5fZHJtOdgmI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Ujdb6m1z/Xb3KbQOUS90VHwP8E4G+/n5MqkRLeMU3AjuR74uDSAE9GC3BrC7Wvi82
+         aSEwNfZVIpzTz2noPqwWC/VuNO7KZ5Y7NwY5vzMrmjTEh5CwDcV7x5CBCXw/xNmkPZ
+         QikjDyeuc4j2Vy0VDA7orKhWbEdBTyEG+0TGcnU8=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next V2] MAINTAINERS: Update page pool entry
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160625820498.5085.14261744420418089748.git-patchwork-notify@kernel.org>
+Date:   Tue, 24 Nov 2020 22:50:04 +0000
+References: <160613894639.2826716.14635284017814375894.stgit@firesoul>
+In-Reply-To: <160613894639.2826716.14635284017814375894.stgit@firesoul>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org,
+        ilias.apalodimas@linaro.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 23 Nov 2020 00:40:30 +0100 Rikard Falkeborn wrote:
-> These are only used as input arguments to qmi_handle_init() which
-> accepts const pointers to both qmi_ops and qmi_msg_handler. Make them
-> const to allow the compiler to put them in read-only memory.
+Hello:
+
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Mon, 23 Nov 2020 14:42:26 +0100 you wrote:
+> Add some file F: matches that is related to page_pool.
 > 
-> Signed-off-by: Rikard Falkeborn <rikard.falkeborn@gmail.com>
+> Acked-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
+>  MAINTAINERS |    2 ++
+>  1 file changed, 2 insertions(+)
 
-I can take this one if Alex acks it.
+Here is the summary with links:
+  - [net-next,V2] MAINTAINERS: Update page pool entry
+    https://git.kernel.org/netdev/net/c/bc40a3691f15
 
-The other patch is probably best handled by Kalle.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
