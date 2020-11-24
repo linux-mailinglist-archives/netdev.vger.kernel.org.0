@@ -2,148 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43F5A2C3406
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 23:29:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4DAB2C340A
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 23:31:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388713AbgKXW3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 17:29:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52556 "EHLO mail.kernel.org"
+        id S2388808AbgKXWaG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 17:30:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52784 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388693AbgKXW3M (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 17:29:12 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6D646206D4;
-        Tue, 24 Nov 2020 22:29:11 +0000 (UTC)
+        id S2387714AbgKXWaF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 17:30:05 -0500
+Content-Type: text/plain; charset="utf-8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606256951;
-        bh=s9ufHWKMyaUHsFoaG6W5yELgqEHNOQ7QZZ336B6RmA4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RR/QxVcHODkcci/X6kE1p9x8S3hTfgsWOxwqZQnGu9UE+HOxC9mrgBTO0F7pxl8zw
-         O0o66g7Ltz/wSy2JJWJnAjjcUHcm0ee06g9rtz4erv+7EmB+kE9jAF0rEFeFkIDY9s
-         8CcdjRNIXhU8LscMXm4Y/soQWYomTjtwszV7QpzE=
-Date:   Tue, 24 Nov 2020 14:29:10 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>, <jiri@nvidia.com>
-Subject: Re: [PATCH net 1/2] devlink: Hold rtnl lock while reading netdev
- attributes
-Message-ID: <20201124142910.14cadc35@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201122061257.60425-2-parav@nvidia.com>
-References: <20201122061257.60425-1-parav@nvidia.com>
-        <20201122061257.60425-2-parav@nvidia.com>
+        s=default; t=1606257005;
+        bh=Dph1ZK1vQqK/ULAE+cLL8yH/aR9yZ19moRF+hYJckj0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=A/vU6p6TB7dJkTIUMRYNBYLRPrCwsH8pv29u4ypOY24aMiZ6qfzxP5GI6rZU84AgV
+         XiQWFCo/K4OfrdBIhuogvwtXKj/1OJ56KTOR0aTY6+radkbqC+m74XE5sy1S5KZHph
+         4sz92TYCdC89TBZTvT+B4S/O5GRwehXZneMWfI1o=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 1/1] tools/bpftool: fix error return value in
+ build_btf_type_table()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160625700509.27050.8212004857900634536.git-patchwork-notify@kernel.org>
+Date:   Tue, 24 Nov 2020 22:30:05 +0000
+References: <20201124104100.491-1-thunder.leizhen@huawei.com>
+In-Reply-To: <20201124104100.491-1-thunder.leizhen@huawei.com>
+To:     Leizhen (ThunderTown) <thunder.leizhen@huawei.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@chromium.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 22 Nov 2020 08:12:56 +0200 Parav Pandit wrote:
-> A netdevice of a devlink port can be moved to different
-> net namespace than its parent devlink instance.
-> This scenario occurs when devlink reload is not used for
-> maintaining backward compatibility.
+Hello:
+
+This patch was applied to bpf/bpf.git (refs/heads/master):
+
+On Tue, 24 Nov 2020 18:41:00 +0800 you wrote:
+> An appropriate return value should be set on the failed path.
 > 
-> When netdevice is undergoing migration to net namespace,
-> its ifindex and name may change.
-> 
-> In such use case, devlink port query may read stale netdev
-> attributes.
-> 
-> Fix it by reading them under rtnl lock.
-> 
-> Fixes: bfcd3a466172 ("Introduce devlink infrastructure")
-> Signed-off-by: Parav Pandit <parav@nvidia.com>
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 > ---
->  net/core/devlink.c | 30 ++++++++++++++++++++++++------
->  1 file changed, 24 insertions(+), 6 deletions(-)
-> 
-> diff --git a/net/core/devlink.c b/net/core/devlink.c
-> index acc29d5157f4..6135ef5972ce 100644
-> --- a/net/core/devlink.c
-> +++ b/net/core/devlink.c
-> @@ -775,6 +775,23 @@ devlink_nl_port_function_attrs_put(struct sk_buff *msg, struct devlink_port *por
->  	return err;
->  }
->  
-> +static int devlink_nl_port_netdev_fill(struct sk_buff *msg, struct devlink_port *devlink_port)
-> +{
-> +	struct net_device *netdev = devlink_port->type_dev;
-> +	int err;
-> +
-> +	ASSERT_RTNL();
-> +	if (!netdev)
-> +		return 0;
-> +
-> +	err = nla_put_u32(msg, DEVLINK_ATTR_PORT_NETDEV_IFINDEX, netdev->ifindex);
+>  tools/bpf/bpftool/btf.c | 1 +
+>  1 file changed, 1 insertion(+)
 
-The line wrapping was correct, please keep in under 80. Please tell
-your colleges at Mellanox.
+Here is the summary with links:
+  - [1/1] tools/bpftool: fix error return value in build_btf_type_table()
+    https://git.kernel.org/bpf/bpf/c/68878a5c5b85
 
-> +	if (err)
-> +		goto done;
-
-	return err;
-
-> +	err = nla_put_string(msg, DEVLINK_ATTR_PORT_NETDEV_NAME, netdev->name);
-
-	return nla_put_...
-
-> +done:
-> +	return err;
-> +}
-> +
->  static int devlink_nl_port_fill(struct sk_buff *msg, struct devlink *devlink,
->  				struct devlink_port *devlink_port,
->  				enum devlink_command cmd, u32 portid,
-> @@ -792,6 +809,8 @@ static int devlink_nl_port_fill(struct sk_buff *msg, struct devlink *devlink,
->  	if (nla_put_u32(msg, DEVLINK_ATTR_PORT_INDEX, devlink_port->index))
->  		goto nla_put_failure;
->  
-> +	/* Hold rtnl lock while accessing port's netdev attributes. */
-> +	rtnl_lock();
->  	spin_lock_bh(&devlink_port->type_lock);
->  	if (nla_put_u16(msg, DEVLINK_ATTR_PORT_TYPE, devlink_port->type))
->  		goto nla_put_failure_type_locked;
-> @@ -800,13 +819,10 @@ static int devlink_nl_port_fill(struct sk_buff *msg, struct devlink *devlink,
->  			devlink_port->desired_type))
->  		goto nla_put_failure_type_locked;
->  	if (devlink_port->type == DEVLINK_PORT_TYPE_ETH) {
-> -		struct net_device *netdev = devlink_port->type_dev;
-> +		int err;
-
-What's the point of this local variable?
-
-> -		if (netdev &&
-> -		    (nla_put_u32(msg, DEVLINK_ATTR_PORT_NETDEV_IFINDEX,
-> -				 netdev->ifindex) ||
-> -		     nla_put_string(msg, DEVLINK_ATTR_PORT_NETDEV_NAME,
-> -				    netdev->name)))
-> +		err = devlink_nl_port_netdev_fill(msg, devlink_port);
-> +		if (err)
-
-just put the call in the if ()
-
->  			goto nla_put_failure_type_locked;
->  	}
->  	if (devlink_port->type == DEVLINK_PORT_TYPE_IB) {
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-Honestly this patch is doing too much for a fix.
-
-All you need is the RTNL lock and then add:
-
-+               struct net *net = devlink_net(devlink_port->devlink);
-                struct net_device *netdev = devlink_port->type_dev;
- 
-                if (netdev &&
-+                   net_eq(net, dev_net(netdev)) &&
-                    (nla_put_u32(msg, DEVLINK_ATTR_PORT_NETDEV_IFINDEX,
-                                 netdev->ifindex) ||
-                     nla_put_string(msg, DEVLINK_ATTR_PORT_NETDEV_NAME,
-
-
-You can do refactoring later in net-next. Maybe even add a check that
-drivers which support reload set namespace local on their netdevs.
