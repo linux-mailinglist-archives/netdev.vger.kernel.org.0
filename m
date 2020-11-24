@@ -2,230 +2,248 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E39F2C26CB
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 14:08:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAC472C27F3
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 14:33:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387856AbgKXNGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 08:06:23 -0500
-Received: from mail-eopbgr130043.outbound.protection.outlook.com ([40.107.13.43]:61006
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2387839AbgKXNGR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 08:06:17 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HB3sYbhfzP5yYijRzg6NtdC0as/OuueU42WQjYliqTv9iGlKb5axAFz8xjKXhYmq7ysrFHteiaBgA6lhGQRhIxa7crm6IROpkbSS0T2I4ZooOaDRuEv15hDjEhKIsx+EYB+usb/XGGww/u4FMZPPbarW5UqDcYMDnYZsSYtfvlQbJlr/eTd0Ps7t3hVmSXkgFOil8T4ma4b6mnVi7CvnkgYdU++HXOzoul5uGsi3MSZqcdx3pusGl+4LOsfjpkgaQiOXOxNLakl2MQqmHvKwd0zRHOgEshyyBgFyC6fY4ej6hD4opzeKLqD9x8jeWhWr8y9anCHaufdN7ifppgXomA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rhPE7PHdKrt6yoJvqA4Hjvp1wYW00Lmo1qECV81jaD4=;
- b=KgckKWOLFyx/+sMP6xUxxWXFkgaMLVNpBxuGrrXKVpAO1Zf+KRdDBk0Nx1Rkm79NZGvR8pNF69zbWTT9+ESoSpmrPR1mMLzX3PByzZDPEhB9W12x/zXVCsOBzVBcZ1ZxWWflsifOPqDtg0QydhqC6gjehxCNx7J5XSSybsYPb2wdCpApdOxMIlwqyBPxx4bXocBfhVLMR8rugOH37MBi/Ri+j95hD2WsP3DKrVhSDCMNAB+bw7kMgxGFFYO7Q1QedR8A2YkYcNTaNx/Z16MjP6jfpxzfZCUFZTuu/ioLjqubCL7DrRM76LtNjZyMPNHIxgSxxN4fnDwlCNiYzCWjBQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rhPE7PHdKrt6yoJvqA4Hjvp1wYW00Lmo1qECV81jaD4=;
- b=PX0OEXUqJXjTDr5of+cGYAPnVRwk+CvIzpvBlMXx9aUWfhlmy7wou5EnpbMp242GBzNXGntafRtAtVjCTCbruXKnQhCVBZy+ZNDTTGNA2biEJf+SEHNQI+3bsBvp37DaxQjZikfU3LexvJC3YcOmGIBOn/hLUldwWo86mQ/ppqc=
-Received: from VI1PR04MB5807.eurprd04.prod.outlook.com (2603:10a6:803:ec::21)
- by VI1PR0401MB2430.eurprd04.prod.outlook.com (2603:10a6:800:2b::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.20; Tue, 24 Nov
- 2020 13:06:10 +0000
-Received: from VI1PR04MB5807.eurprd04.prod.outlook.com
- ([fe80::45b9:4:f092:6cb6]) by VI1PR04MB5807.eurprd04.prod.outlook.com
- ([fe80::45b9:4:f092:6cb6%3]) with mapi id 15.20.3589.024; Tue, 24 Nov 2020
- 13:06:09 +0000
-From:   Camelia Alexandra Groza <camelia.groza@nxp.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-CC:     "kuba@kernel.org" <kuba@kernel.org>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "saeed@kernel.org" <saeed@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH net-next v3 4/7] dpaa_eth: add XDP_TX support
-Thread-Topic: [PATCH net-next v3 4/7] dpaa_eth: add XDP_TX support
-Thread-Index: AQHWvpEwdu5a75WTZUGsTgQMlE9GsKnQIGgAgAE+gICABPEZgIAA8pJA
-Date:   Tue, 24 Nov 2020 13:06:09 +0000
-Message-ID: <VI1PR04MB5807F31980912EE063F00BF0F2FB0@VI1PR04MB5807.eurprd04.prod.outlook.com>
-References: <cover.1605802951.git.camelia.groza@nxp.com>
- <aa8bbb5c404f57fdb7915eb236305a177800becb.1605802951.git.camelia.groza@nxp.com>
- <20201119235034.GA24983@ranger.igk.intel.com>
- <VI1PR04MB5807F56500D25ECD20657618F2FF0@VI1PR04MB5807.eurprd04.prod.outlook.com>
- <20201123221829.GC11618@ranger.igk.intel.com>
-In-Reply-To: <20201123221829.GC11618@ranger.igk.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [82.78.148.61]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 43626296-d6d8-400c-6e07-08d89079b67a
-x-ms-traffictypediagnostic: VI1PR0401MB2430:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR0401MB24304A9D396EED3F3A426AE9F2FB0@VI1PR0401MB2430.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: De6Hh+1f8Kjncx600BvM/nTt+CdLPn/bW6W6yq+s7UQafiFOgMcerqyLDBPatNZgIRsuv+8igE4A60sLq7zah/V8SDLBo1cBMv34rHsN+Xyn4xeeapZqIPcewyarPRkRldno3bL9D67WTCvcALWgU9m9QBRRVsuKyNb73Xgl+++DyhgoryHdgHe6o0whmeWu6nxChn29G2+Z4tDXdm8ChJx3ham8i4C8NagFRVK9CtYUJutm169T1pmfNoTV2IiO7VA9ID5tqwJw034FWqcWDaYHP7RKMFz3M3gu51p+juEfaMhblkk7q23u1F0x/Idc
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(396003)(366004)(376002)(136003)(6506007)(26005)(76116006)(2906002)(5660300002)(66556008)(9686003)(86362001)(478600001)(55016002)(64756008)(66476007)(7696005)(66446008)(33656002)(66946007)(53546011)(52536014)(186003)(6916009)(54906003)(316002)(71200400001)(8936002)(4326008)(8676002)(83380400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?jybKugz8EF/9v0dssXdilZ/QseRFwUZfuUfp/ueCQKDfdYzbtuTqUgbQ9VhB?=
- =?us-ascii?Q?eCGmUoRK5aP7nZIJ3hL7ROde5rEiEbi2mVYAvtYpTHBrl44P1FUJ/2PyzGsQ?=
- =?us-ascii?Q?rlPu2EoMyinz1HKtJ/TMMgMapvPUDrVT6cZd/9gP1Ma8tzSgfi366kW745QU?=
- =?us-ascii?Q?MkIM1v0chDDmrvcSg5RK/WQ7IU5JezUMFGGXwRUhNXOUCshIoTfDM8N00gP4?=
- =?us-ascii?Q?2Vmzm8IzxnDOmMvd5/Ju8NM6yn8/7/MjTJwNjUHQBdTTU31zOkeZs4wMfuOR?=
- =?us-ascii?Q?dP4J6zYkpsv6qcIfVjWazQE2BjGMcqqpHLyFeHF31joR51lhg03KXmC1nX8U?=
- =?us-ascii?Q?czdLir2xzFFH9raPdBBW4ZPA93nu+EAhcxhr5+rEZoSSC3nI+PEII8Sdp0yq?=
- =?us-ascii?Q?+WoonU71hLXZ16jVOSsog1Ci+odIl7InFM1JjwA/TIuvtHJU6fa72ILsZGnv?=
- =?us-ascii?Q?Yof51/JPSlGhpCgp9FKhaslCu/sPIoy/NYueHmvtlkvazVwM01S5Ibl+ejMD?=
- =?us-ascii?Q?XBygpBn5CR8SBmhvIeM3GYaYUbpVMILYoL3+op70HJwT/psKcBPlcImaBjh6?=
- =?us-ascii?Q?BDbCDSUUF03I5UD1ye2//XqAMlnr2I3pKXDk/djFX/zszJS3i3akBAvrTw/O?=
- =?us-ascii?Q?FjslrYfksMY5YG8vuE5QN9Vkm+sx3zky5wR+IZASGV0Pw9tYP/x5bGg/HYu7?=
- =?us-ascii?Q?xdND/dOPsgOt0kC9qlTk24md+5htlx+Gbc+ok/8V/YMSpDAohu5TKyEsy5Nu?=
- =?us-ascii?Q?F6QwJoYZcPrawBFyMj1K6rckALAdeIZ3XibjPF9zWZdMsO3eOC407oRueVDM?=
- =?us-ascii?Q?JVYgX4lIsRF7htRqwImdszY8qxDjzOkjnFexK5lamGcRHvtaZ1jN4rTcOe76?=
- =?us-ascii?Q?v2CySE4TU8/JPoeCNDJm3fZ/cqdztKPF2IcsXQNyl63F2Qi+4sJ7E2WEEmKj?=
- =?us-ascii?Q?FCJS61nc7WTbLbT5cMYDwsMs6xcTdJzoUfFnMTFN9E0=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S2388284AbgKXNaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 08:30:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34000 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388265AbgKXNau (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 08:30:50 -0500
+Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DDF1C0617A6;
+        Tue, 24 Nov 2020 05:30:50 -0800 (PST)
+Received: by mail-lf1-x141.google.com with SMTP id d17so28846359lfq.10;
+        Tue, 24 Nov 2020 05:30:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Yj8//tES5JifY9hwp6jFeWxm++VYIcYaGL5w6dvNlO4=;
+        b=XCYUhbAirWmW2IKGXl+amz0I0Zd0vtR8emnhwIRRSli0+gR65/bgcByOEjOKMv9FfF
+         r/aZ4MENr/wiukLIl4Xyn7xS8/KoqybLCTTmYfTAZdibVPo4B/BMaBZMMRTz+wfTpD6s
+         csGYk9+p0r3z9U+O//IzP6yEJk5GqEo9ya0zUdwPq6i0idEWuA5wiFJH6uICjQr7Pv89
+         +K28akYmH7pk7R7LB95sckhe2uvWnCUWxXeQ6yAOyP30fhT0QlX+Uyod3kjSQXQxkK/6
+         0HOCS47jP1q5eBaMf92KCPg+RIfnADuvjn4geqXHIXj74uYRFEUUFhNRUeciX8ulXGUG
+         lyjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Yj8//tES5JifY9hwp6jFeWxm++VYIcYaGL5w6dvNlO4=;
+        b=YOloWMNI8n87H2QnCdBMnWHH8CIL0DHAhvC3lPbizRarRdR43UxyPM3TsuF2pG3xQl
+         UIQlkqGJZ1cQcglLEVJPz4KoM6eHM27ic4sFOMsa6pWjsj7GjEqPqvBYpYw4QpwRcCsG
+         WDRRZ1V3Twtm1AcIchYAS2U1SiluO6LiKdlxhRVljXRIWHMFEavvPgCkP7JpOteS8RKE
+         6t0KwLNx/BpTSAhV0KaE/iXcaYAUOrEk28AocSkiKaxOj3BVZxF03NSSutCmLZZrHkcK
+         g0frY25hIy0LAfdVz/kCm1VAkJF5R8Tn0iBLFmk/TC+ozRjXLAQ8frC3aY30BgQyVwVb
+         jV7w==
+X-Gm-Message-State: AOAM533lPRT3bT4VOBIbM2zXlqR+iXCGAni50GV5DhSDi1M3yn7GfU7V
+        xL2UzQCD+rTMJZctOq3XUKaaZem3xxMYB8Ggb3k=
+X-Google-Smtp-Source: ABdhPJzOyqZqMOVd1je87oMgp/Y86wszZeyHTlVYShts9xljCpu60tQ61wrV4dkosIZB+CHaxvQT3z+UQlxj13XTdKc=
+X-Received: by 2002:a19:3cb:: with SMTP id 194mr1638604lfd.437.1606224648521;
+ Tue, 24 Nov 2020 05:30:48 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5807.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 43626296-d6d8-400c-6e07-08d89079b67a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Nov 2020 13:06:09.8595
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: bv5fyOctYwY4KarTG5RHY3V43d/bvP8RKTxugYF1le9y4oHcB1Fld92nzcldZoDbyJ6DkKTlvgF8R9mr7M2nyA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2430
+References: <52ee1b515df977b68497b1b08290d00a22161279.1605518147.git.lucien.xin@gmail.com>
+ <CAKgT0UdnAfYA1h2dRb4naWZRn5CBfe-0jGd_Vr=hmejX6hR1og@mail.gmail.com>
+ <CADvbK_dDXeOJ_vBRDo-ZUNgRY=ZaJ+44zjCJOCyw_3hBBAi6xw@mail.gmail.com>
+ <CAKgT0UeDBQv+OcVo0PNfA=RCHwnSvOxMSb1TG-bEpef7gJxzdg@mail.gmail.com>
+ <CADvbK_depZ618farzMhxUUB9=T9+gosw6iFKesBc2WKw1oguwA@mail.gmail.com>
+ <CAKgT0Ud5ft8VBvkaRDewa7qDwJDH8Z=LaaQqiGYVCsu2rgCh-Q@mail.gmail.com>
+ <CADvbK_cY3y-DonBDp7DjKdxbnxkP1r18v1dggW_b3q9cih5coA@mail.gmail.com> <CAKgT0Udkk9uEnjbPxrz7kxa=p-cysmkzqJX1Pw067dkbUceyHA@mail.gmail.com>
+In-Reply-To: <CAKgT0Udkk9uEnjbPxrz7kxa=p-cysmkzqJX1Pw067dkbUceyHA@mail.gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Tue, 24 Nov 2020 21:30:37 +0800
+Message-ID: <CADvbK_e_PTpq9pNEv-o2fQWjJ9qyV=JdMscTniSMKQttnpgF8Q@mail.gmail.com>
+Subject: Re: [PATCH net-next] ip_gre: remove CRC flag from dev features in gre_gso_segment
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Guillaume Nault <gnault@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> Sent: Tuesday, November 24, 2020 00:18
-> To: Camelia Alexandra Groza <camelia.groza@nxp.com>
-> Cc: kuba@kernel.org; brouer@redhat.com; saeed@kernel.org;
-> davem@davemloft.net; Madalin Bucur (OSS)
-> <madalin.bucur@oss.nxp.com>; Ioana Ciornei <ioana.ciornei@nxp.com>;
-> netdev@vger.kernel.org
-> Subject: Re: [PATCH net-next v3 4/7] dpaa_eth: add XDP_TX support
->=20
-> On Fri, Nov 20, 2020 at 06:54:42PM +0000, Camelia Alexandra Groza wrote:
-> > > -----Original Message-----
-> > > From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > > Sent: Friday, November 20, 2020 01:51
-> > > To: Camelia Alexandra Groza <camelia.groza@nxp.com>
-> > > Cc: kuba@kernel.org; brouer@redhat.com; saeed@kernel.org;
-> > > davem@davemloft.net; Madalin Bucur (OSS)
-> > > <madalin.bucur@oss.nxp.com>; Ioana Ciornei <ioana.ciornei@nxp.com>;
-> > > netdev@vger.kernel.org
-> > > Subject: Re: [PATCH net-next v3 4/7] dpaa_eth: add XDP_TX support
+On Tue, Nov 24, 2020 at 6:23 AM Alexander Duyck
+<alexander.duyck@gmail.com> wrote:
+>
+> On Mon, Nov 23, 2020 at 1:14 AM Xin Long <lucien.xin@gmail.com> wrote:
+> >
+> > On Sat, Nov 21, 2020 at 12:10 AM Alexander Duyck
+> > <alexander.duyck@gmail.com> wrote:
 > > >
-> > > On Thu, Nov 19, 2020 at 06:29:33PM +0200, Camelia Groza wrote:
-> > > > Use an xdp_frame structure for managing the frame. Store a
-> backpointer
-> > > to
-> > > > the structure at the start of the buffer before enqueueing. Use the=
- XDP
-> > > > API for freeing the buffer when it returns to the driver on the TX
-> > > > confirmation path.
+> > > On Fri, Nov 20, 2020 at 2:23 AM Xin Long <lucien.xin@gmail.com> wrote:
+> > > >
+> > > > On Fri, Nov 20, 2020 at 1:24 AM Alexander Duyck
+> > > > <alexander.duyck@gmail.com> wrote:
+> > > > >
+> > > > > On Wed, Nov 18, 2020 at 9:53 PM Xin Long <lucien.xin@gmail.com> wrote:
+> > > > > >
+> > > > > > On Thu, Nov 19, 2020 at 4:35 AM Alexander Duyck
+> > > > > > <alexander.duyck@gmail.com> wrote:
+> > > > > > >
+> > > > > > > On Mon, Nov 16, 2020 at 1:17 AM Xin Long <lucien.xin@gmail.com> wrote:
+> > > > > > > >
+>
+> <snip>
+>
+> > > > > > @@ -27,7 +27,11 @@ static __le32 sctp_gso_make_checksum(struct sk_buff *skb)
+> > > > > >  {
+> > > > > >         skb->ip_summed = CHECKSUM_NONE;
+> > > > > >         skb->csum_not_inet = 0;
+> > > > > > -       gso_reset_checksum(skb, ~0);
+> > > > > > +       /* csum and csum_start in GSO CB may be needed to do the UDP
+> > > > > > +        * checksum when it's a UDP tunneling packet.
+> > > > > > +        */
+> > > > > > +       SKB_GSO_CB(skb)->csum = (__force __wsum)~0;
+> > > > > > +       SKB_GSO_CB(skb)->csum_start = skb_headroom(skb) + skb->len;
+> > > > > >         return sctp_compute_cksum(skb, skb_transport_offset(skb));
+> > > > > >  }
+> > > > > >
+> > > > > > And yes, this patch has been tested with GRE tunnel checksums enabled.
+> > > > > > (... icsum ocsum).
+> > > > > > And yes, it was segmented in the lower NIC level, and we can make it by:
+> > > > > >
+> > > > > > # ethtool -K gre1 tx-sctp-segmentation on
+> > > > > > # ethtool -K veth0 tx-sctp-segmentation off
+> > > > > >
+> > > > > > (Note: "tx-checksum-sctp" and "gso" are on for both devices)
+> > > > > >
+> > > > > > Thanks.
+> > > > >
+> > > > > I would also turn off Tx and Rx checksum offload on your veth device
+> > > > > in order to make certain you aren't falsely sending data across
+> > > > > indicating that the checksums are valid when they are not. It might be
+> > > > > better if you were to run this over an actual NIC as that could then
+> > > > > provide independent verification as it would be a fixed checksum test.
+> > > > >
+> > > > > I'm still not convinced this is working correctly. Basically a crc32c
+> > > > > is not the same thing as a 1's complement checksum so you should need
+> > > > > to compute both if you have an SCTP packet tunneled inside a UDP or
+> > > > > GRE packet with a checksum. I don't see how computing a crc32c should
+> > > > > automatically give you a 1's complement checksum of ~0.
+> > > >
+> > > > On the tx Path [1] below, the sctp crc checksum is calculated in
+> > > > sctp_gso_make_checksum() [a], where it calls *sctp_compute_cksum()*
+> > > > to do that, and as for the code in it:
+> > > >
+> > > >     SKB_GSO_CB(skb)->csum = (__force __wsum)~0;
+> > > >     SKB_GSO_CB(skb)->csum_start = skb_headroom(skb) + skb->len;
 > > >
->=20
-> [...]
->=20
-> > > >  static u32 dpaa_run_xdp(struct dpaa_priv *priv, struct qm_fd *fd, =
-void
-> > > *vaddr,
-> > > > -			unsigned int *xdp_meta_len)
-> > > > +			struct dpaa_fq *dpaa_fq, unsigned int
-> > > *xdp_meta_len)
-> > > >  {
-> > > >  	ssize_t fd_off =3D qm_fd_get_offset(fd);
-> > > >  	struct bpf_prog *xdp_prog;
-> > > > +	struct xdp_frame *xdpf;
-> > > >  	struct xdp_buff xdp;
-> > > >  	u32 xdp_act;
-> > > >
-> > > > @@ -2370,7 +2470,8 @@ static u32 dpaa_run_xdp(struct dpaa_priv
-> *priv,
-> > > struct qm_fd *fd, void *vaddr,
-> > > >  	xdp.data_meta =3D xdp.data;
-> > > >  	xdp.data_hard_start =3D xdp.data - XDP_PACKET_HEADROOM;
-> > > >  	xdp.data_end =3D xdp.data + qm_fd_get_length(fd);
-> > > > -	xdp.frame_sz =3D DPAA_BP_RAW_SIZE;
-> > > > +	xdp.frame_sz =3D DPAA_BP_RAW_SIZE - DPAA_TX_PRIV_DATA_SIZE;
-> > > > +	xdp.rxq =3D &dpaa_fq->xdp_rxq;
-> > > >
-> > > >  	xdp_act =3D bpf_prog_run_xdp(xdp_prog, &xdp);
-> > > >
-> > > > @@ -2381,6 +2482,22 @@ static u32 dpaa_run_xdp(struct dpaa_priv
-> *priv,
-> > > struct qm_fd *fd, void *vaddr,
-> > > >  	case XDP_PASS:
-> > > >  		*xdp_meta_len =3D xdp.data - xdp.data_meta;
-> > > >  		break;
-> > > > +	case XDP_TX:
-> > > > +		/* We can access the full headroom when sending the frame
-> > > > +		 * back out
+> > > Okay, so I think I know how this is working, but the number of things
+> > > relied on is ugly. Normally assuming skb_headroom(skb) + skb->len
+> > > being valid for this would be a non-starter. I was assuming you
+> > > weren't doing the 1's compliment checksum because you weren't using
+> > > __skb_checksum to generate it.
 > > >
-> > > And normally why a piece of headroom is taken away? I probably should
-> > > have
-> > > started from the basic XDP support patch, but if you don't mind, plea=
-se
-> > > explain it a bit.
+> > > If I am not mistaken SCTP GSO uses the GSO_BY_FRAGS and apparently
+> > > none of the frags are using page fragments within the skb. Am I
+> > > understanding correctly? One thing that would help to address some of
+> > > my concerns would be to clear instead of set NETIF_F_SG in
+> > > sctp_gso_segment since your checksum depends on linear skbs.
+> > Right, no frag is using page fragments for SCTP GSO.
+> > NETIF_F_SG is set here, because in skb_segment():
 > >
-> > I mentioned we require DPAA_TX_PRIV_DATA_SIZE bytes at the start of
-> the buffer in order to make sure we have enough space for our private inf=
-o.
->=20
-> What is your private info?
+> >                 if (hsize > len || !sg)
+> >                         hsize = len;
+> >
+> >                 if (!hsize && i >= nfrags && skb_headlen(list_skb) &&
+> >                     (skb_headlen(list_skb) == len || sg)) { <------
+> > for flag_list
+> >
+> > without sg set, it won't go to this 'if' block, which is the process
+> > of frag_list, see
+>
+> I don't think that is processing frag_list, it is processing frags. It
+> is just updating list_skb as needed, however it is also configured
+> outside of that block.
+For SCTP's  gso, we expect it going to the branch of matching
+(skb_headlen(list_skb) == len), as it will reuse the skb->data.
 
-The dpaa_eth_swbp struct from the first patch. It's the xdp_frame reference=
- mentioned in the patch description, stored for cleanup on confirmation. We=
- also store a skb reference for non-XDP use cases.
+>
+> > commit 89319d3801d1d3ac29c7df1f067038986f267d29
+> > Author: Herbert Xu <herbert@gondor.apana.org.au>
+> > Date:   Mon Dec 15 23:26:06 2008 -0800
+> >
+> >     net: Add frag_list support to skb_segment
+> >
+> > do you think this might be a bug in skb_segment()?
+>
+> I would say it is assuming your logic is correct. Basically it should
+> be able to segment the frame regardless of if the lower device
+> supports NETIF_F_SG or not.
+>
+> > I was also thinking if SCTP GSO could go with the way of UDP's
+> > with skb_segment_list() instead of GSO_BY_FRAGS things.
+> > the different is that the head skb does not only include header,
+> > but may also include userdata/payload with skb_segment_list().
+>
+> The problem is right now the way the checksum is being configured you
+> would have to keep the payload and data all in one logical data
+> segment starting at skb->data. We cannot have any data stored in
+> shinfo->frags, nor shinfo->frag_list.
+That's right, current SCTP protocol stack don't save tx data into
+frags or frag_list, and SCTP doesn't support GRO by now.
 
-> >
-> > When setting up the xdp_buff, this area is reserved from the frame size
-> exposed to the XDP program.
-> >  -	xdp.frame_sz =3D DPAA_BP_RAW_SIZE;
-> >  +	xdp.frame_sz =3D DPAA_BP_RAW_SIZE - DPAA_TX_PRIV_DATA_SIZE;
-> >
-> > After the XDP_TX verdict, we're sure that DPAA_TX_PRIV_DATA_SIZE
-> bytes at the start of the buffer are free and we can use the full headroo=
-m
-> how it suits us, hence the increase of the frame size back to
-> DPAA_BP_RAW_SIZE.
->=20
-> Not at the *end* of the buffer?
+>
+> > >
+> > > > is prepared for doing 1's complement checksum (for outer UDP/GRE), and used
+> > > > in gre_gso_segment() [b], where it calls gso_make_checksum() to do that
+> > > > when need_csum is set. Note that, here it played a TRICK:
+> > > >
+> > > > I set SKB_GSO_CB->csum_start to the end of this packet and
+> > > > SKB_GSO_CB->csum = ~0 manually, so that in gso_make_checksum() it will do
+> > > > the 1's complement checksum for outer UDP/GRE by summing all packet bits up.
+> > > > See gso_make_checksum() (called by gre_gso_segment()):
+> > > >
+> > > >  unsigned char *csum_start = skb_transport_header(skb);
+> > > >  int plen = (skb->head + SKB_GSO_CB(skb)->csum_start) - csum_start;
+> > > >  /* now plen is from udp header to the END of packet. */
+> > > >  __wsum partial = SKB_GSO_CB(skb)->csum;
+> > > >
+> > > >  return csum_fold(csum_partial(csum_start, plen, partial));
+> > > >
+> > > > So yes, here it does compute both if I have an SCTP packet tunnelled inside
+> > > > a UDP or GRE packet with a checksum.
+> > >
+> > > Assuming you have the payload data in the skb->data section. Normally
+> > > payload is in page frags. That is why I was concerned. You have to
+> > > have guarantees in place that there will not be page fragments
+> > > attached to the skb.
+> > On SCTP TX path, sctp_packet_transmit() will always alloc linear skbs
+> > and reserve headers for lower-layer protocols. I think this will guarantee it.
+>
+> That ends up being my big concern. We need to make certain that is
+> true for all GRO and GSO cases if we are going to operate on the
+> assumption that just doing a linear checksum will work in the GSO
+> code. Otherwise we need to make certain that segmentation will correct
+> this for us if it cannot be guaranteed. That is why I would be much
+> more comfortable if we were able to just drop the NETIF_F_SG bit when
+> doing the segmentation since that would guarantee the results we are
+> looking for.
+before doing that, we should have a fix below:
 
-No, we store this information at the start of the buffer, before the XDP_PA=
-CKET_HEADROOM.
-=20
-> >
-> > Thanks for all your feedback.
-> >
-> > > > +		 */
-> > > > +		xdp.data_hard_start =3D vaddr;
-> > > > +		xdp.frame_sz =3D DPAA_BP_RAW_SIZE;
-> > > > +		xdpf =3D xdp_convert_buff_to_frame(&xdp);
-> > > > +		if (unlikely(!xdpf)) {
-> > > > +			free_pages((unsigned long)vaddr, 0);
-> > > > +			break;
-> > > > +		}
-> > > > +
-> > > > +		if (dpaa_xdp_xmit_frame(priv->net_dev, xdpf))
-> > > > +			xdp_return_frame_rx_napi(xdpf);
-> > > > +
-> > > > +		break;
-> > > >  	default:
-> > > >  		bpf_warn_invalid_xdp_action(xdp_act);
-> > > >  		fallthrough;
-> > > > @@ -2415,6 +2532,7 @@ static enum qman_cb_dqrr_result
+@@ -3850,8 +3850,6 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
+                hsize = skb_headlen(head_skb) - offset;
+                if (hsize < 0)
+                        hsize = 0;
+-               if (hsize > len || !sg)
+-                       hsize = len;
+
+                if (!hsize && i >= nfrags && skb_headlen(list_skb) &&
+                    (skb_headlen(list_skb) == len || sg)) {
+@@ -3896,6 +3894,9 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
+                        skb_release_head_state(nskb);
+                        __skb_push(nskb, doffset);
+                } else {
++                       if (hsize > len || !sg)
++                               hsize = len;
++
+
+I believe it makes more sense to move this check to the 'else' branch.
