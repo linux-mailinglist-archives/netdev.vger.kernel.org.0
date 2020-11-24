@@ -2,124 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51EC32C2B17
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 16:21:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E21D2C2B10
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 16:21:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389476AbgKXPTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 10:19:05 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:5090 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2387697AbgKXPTF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 10:19:05 -0500
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0AOFE0qS030284;
-        Tue, 24 Nov 2020 16:18:35 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=STMicroelectronics;
- bh=PNHkZVe3AttnbUmeq2ofjE3UKCcL2HVMofSkBnS5Mmg=;
- b=LE3v7C8hAwZzxUZbZ73/ENWPRkfoShYeZbkd5n5lTLdL/LYJrGOIarfn+2EKShYc2qy9
- T7/PC1Te8myqXkiuk6O+DP8dcPm4B7R/iwrq3+GXvsCE6Lp0Y9Wv9Lq9JZRqz5tM4LBE
- OZiS6qKFIdXjdEILVrKJRCNWp5bWq1kn444ZCQDUhuMli3pt1vT/+7nhR7e9bGQBsOdv
- i/7pnt670Doh/b7yKDng7pKwktFGraj8R880eoQuJSlIqD/OcrRIg221lRuSwl8qEqT2
- UkkyyeFH/AhvzMjvU5hM2AG6NOOyVsdb5m/MTYKeVJZQGpDOXZPbujmFXNzLSEbBEkPR 3Q== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 34y0hja1rh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 24 Nov 2020 16:18:35 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 08E9910002A;
-        Tue, 24 Nov 2020 16:18:33 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag1node3.st.com [10.75.127.3])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id E3C822ADA1B;
-        Tue, 24 Nov 2020 16:18:32 +0100 (CET)
-Received: from [10.129.7.42] (10.75.127.48) by SFHDAG1NODE3.st.com
- (10.75.127.3) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 24 Nov
- 2020 16:18:31 +0100
-Message-ID: <bd83b9c15f6cfed5df90da4f6b50d1a3f479b831.camel@st.com>
-Subject: Re: [PATCH] net: phy: fix auto-negotiation in case of 'down-shift'
-From:   Antonio Borneo <antonio.borneo@st.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        id S2388438AbgKXPSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 10:18:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36456 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732490AbgKXPSn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 10:18:43 -0500
+Received: from threadripper.lan (HSI-KBW-46-223-126-90.hsi.kabel-badenwuerttemberg.de [46.223.126.90])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4378A206D5;
+        Tue, 24 Nov 2020 15:18:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606231122;
+        bh=MnqF57UH63iXjzy798rGPIrvpOmsMor/v8SjKsNmLD4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=lhCQpvCcczcIJvlOOAtOz0HndDUjPv+GfD3/y5jwU/6MLaqdCbXXBADVC3rvbFGmf
+         bQufY7lecmoDsEU6pJdNG31KhIk4QCDA8Kg5BPQV3MH7IXAB7gYjvsnkp8K/8ARlIE
+         yibO2D+vhMy1QnhA0RkNw4px2qYhG+s117ZgHgOM=
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     Arnd Bergmann <arnd@arndb.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        Yonglong Liu <liuyonglong@huawei.com>,
-        <stable@vger.kernel.org>, <linuxarm@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-kernel@vger.kernel.org>
-Date:   Tue, 24 Nov 2020 16:17:42 +0100
-In-Reply-To: <20201124145647.GF1551@shell.armlinux.org.uk>
-References: <20201124143848.874894-1-antonio.borneo@st.com>
-         <20201124145647.GF1551@shell.armlinux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.2 
+        Jakub Kicinski <kuba@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v4 0/4] remove compat_alloc_user_space()
+Date:   Tue, 24 Nov 2020 16:18:24 +0100
+Message-Id: <20201124151828.169152-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.75.127.48]
-X-ClientProxiedBy: SFHDAG4NODE1.st.com (10.75.127.10) To SFHDAG1NODE3.st.com
- (10.75.127.3)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-24_04:2020-11-24,2020-11-24 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-11-24 at 14:56 +0000, Russell King - ARM Linux admin wrote:
-> On Tue, Nov 24, 2020 at 03:38:48PM +0100, Antonio Borneo wrote:
-> > If the auto-negotiation fails to establish a gigabit link, the phy
-> > can try to 'down-shift': it resets the bits in MII_CTRL1000 to
-> > stop advertising 1Gbps and retries the negotiation at 100Mbps.
-> > 
-> > From commit 5502b218e001 ("net: phy: use phy_resolve_aneg_linkmode
-> > in genphy_read_status") the content of MII_CTRL1000 is not checked
-> > anymore at the end of the negotiation, preventing the detection of
-> > phy 'down-shift'.
-> > In case of 'down-shift' phydev->advertising gets out-of-sync wrt
-> > MII_CTRL1000 and still includes modes that the phy have already
-> > dropped. The link partner could still advertise higher speeds,
-> > while the link is established at one of the common lower speeds.
-> > The logic 'and' in phy_resolve_aneg_linkmode() between
-> > phydev->advertising and phydev->lp_advertising will report an
-> > incorrect mode.
-> > 
-> > Issue detected with a local phy rtl8211f connected with a gigabit
-> > capable router through a two-pairs network cable.
-> > 
-> > After auto-negotiation, read back MII_CTRL1000 and mask-out from
-> > phydev->advertising the modes that have been eventually discarded
-> > due to the 'down-shift'.
-> 
-> Sorry, but no. While your solution will appear to work, in
-> introduces unexpected changes to the user visible APIs.
-> 
-> >  	if (phydev->autoneg == AUTONEG_ENABLE && phydev->autoneg_complete) {
-> > +		if (phydev->is_gigabit_capable) {
-> > +			adv = phy_read(phydev, MII_CTRL1000);
-> > +			if (adv < 0)
-> > +				return adv;
-> > +			/* update advertising in case of 'down-shift' */
-> > +			mii_ctrl1000_mod_linkmode_adv_t(phydev->advertising,
-> > +							adv);
-> 
-> If a down-shift occurs, this will cause the configured advertising
-> mask to lose the 1G speed, which will be visible to userspace.
+From: Arnd Bergmann <arnd@arndb.de>
 
-You are right, it gets propagated to user that 1Gbps is not advertised
+This is the fourth version of my series, now spanning four patches
+instead of two, with a new approach for handling struct ifreq
+compatibility after I realized that my earlier approach introduces
+additional problems.
 
-> Userspace doesn't expect the advertising mask to change beneath it.
-> Since updates from userspace are done using a read-modify-write of
-> the ksettings, this can have the undesired effect of removing 1G
-> from the configured advertising mask.
-> 
-> We've had other PHYs have this behaviour; the correct solution is for
-> the PHY driver to implement reading the resolution from the PHY rather
-> than relying on the generic implementation if it can down-shift
+The idea here is to always push down the compat conversion
+deeper into the call stack: rather than pretending to be
+native mode with a modified copy of the original data on
+the user space stack, have the code that actually works on
+the data understand the difference between native and compat
+versions.
 
-If it's already upstream, could you please point to one of the phy driver
-that already implements this properly?
+I have spent a long time looking at all drivers that implement
+an ndo_do_ioctl callback to verify that my assumptions are
+correct. This has led to a series of 29 additional patches
+that I am not including here but will post separately, fixing
+a number of bugs in SIOCDEVPRIVATE ioctls, removing dead
+code, and splitting ndo_do_ioctl into two new ndo callbacks
+for private and ethernet specific commands.
 
-Thanks
-Antonio
+The patches are identical to v3 that I sent a few weeks ago,
+except this avoids the build failure when CONFIG_COMPAT is
+disabled.
+
+      Arnd
+
+Changes in v4:
+ - build fix without CONFIG_INET
+ - build fix without CONFIG_COMPAT
+ - style fixes pointed out by hch
+
+Changes in v3:
+ - complete rewrite of the series
+
+
+Arnd Bergmann (4):
+  ethtool: improve compat ioctl handling
+  net: socket: rework SIOC?IFMAP ioctls
+  net: socket: simplify dev_ifconf handling
+  net: socket: rework compat_ifreq_ioctl()
+
+ include/linux/compat.h     |  82 +++++------
+ include/linux/ethtool.h    |   4 -
+ include/linux/inetdevice.h |   9 ++
+ include/linux/netdevice.h  |  12 +-
+ net/appletalk/ddp.c        |   4 +-
+ net/core/dev_ioctl.c       | 152 ++++++++++---------
+ net/ethtool/ioctl.c        | 143 ++++++++++++++++--
+ net/ieee802154/socket.c    |   4 +-
+ net/ipv4/af_inet.c         |   6 +-
+ net/ipv4/devinet.c         |   4 +-
+ net/qrtr/qrtr.c            |   4 +-
+ net/socket.c               | 289 ++++++++-----------------------------
+ 12 files changed, 338 insertions(+), 375 deletions(-)
+
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Christoph Hellwig <hch@infradead.org>
+Cc: Jiri Pirko <jiri@mellanox.com>
+Cc: Taehee Yoo <ap420073@gmail.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+
+
+-- 
+2.27.0
 
