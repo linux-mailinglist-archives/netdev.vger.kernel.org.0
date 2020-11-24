@@ -2,155 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BE812C212E
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 10:27:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB1722C215F
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 10:29:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731190AbgKXJ02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 04:26:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36068 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730978AbgKXJ00 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 04:26:26 -0500
-Received: from localhost (searspoint.nvidia.com [216.228.112.21])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EA8D32076B;
-        Tue, 24 Nov 2020 09:26:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606209985;
-        bh=eIrBvn6VIWhITdI4WjRtSSOqgfi0NiymQmtvmzBl3bg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=2eMylOdZtU6X8AOAcTgyLTdXy6WLXnN6oFZXs+DEEh9lpjzgjqVVx5O2kZb2bStkN
-         /Q4/xCyLcpBQdykEOebV/RwfSRBioFTCqzqqYbkqO5SQMnsW7CPmMYoT3x0DymRzA9
-         SCGa6Kc6oWnyChsjbERzLAa4UZhhhDNBNgGf2v60=
-Date:   Tue, 24 Nov 2020 11:26:21 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Petr Mladek <pmladek@suse.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        virtualization@lists.linux-foundation.org,
-        Amit Shah <amit@kernel.org>, Itay Aveksis <itayav@nvidia.com>,
-        Ran Rozenstein <ranro@nvidia.com>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: netconsole deadlock with virtnet
-Message-ID: <20201124092621.GH3159@unreal>
-References: <93b42091-66f2-bb92-6822-473167b2698d@redhat.com>
- <20201118091257.2ee6757a@gandalf.local.home>
- <20201123110855.GD3159@unreal>
- <20201123093128.701cf81b@gandalf.local.home>
- <20201123105252.1c295138@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201123140934.38748be3@gandalf.local.home>
- <20201123112130.759b9487@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <1133f1a4-6772-8aa3-41dd-edbc1ee76cee@redhat.com>
- <20201124080152.GG3159@unreal>
- <6f046c51-cdcc-77f9-4859-2508d08126f8@redhat.com>
+        id S1731312AbgKXJ2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 04:28:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52710 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731024AbgKXJ2s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 04:28:48 -0500
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3414C0613D6;
+        Tue, 24 Nov 2020 01:28:47 -0800 (PST)
+Received: by mail-pf1-x444.google.com with SMTP id w202so2108896pff.10;
+        Tue, 24 Nov 2020 01:28:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bHKb7nomqkZKADTymOqb9YebPYk5PICoUgtAna9zlJA=;
+        b=kUjmDLTzJAMIAUeMr0l6en9vgdoe6CAUWMsC1khPiePFd01zJwUlO9BM0Y0FZ9aevz
+         UuXpqW5MEhhEgxiJybCmJkUd11D1zymEkd0P6UC8fCf8h6sOGAqrsjwNOSv1mZQpq0zZ
+         fZlpvwfJTi3YHbKIyxz8zY77tpIBemrM+ONVEO20Mv+MPgkkcKOyd0r9Y9rNZkMQnjNl
+         sBhNUyOo+DOSQoz6NQYXO+sxKBvvZ+JRvCzfItY+k4r0/NDORlvz5jSKEeSoQiPTW9WC
+         /s/+PPiOgrJFNWN5PnxVPOHnizrU6pDvXAyKBNR76m5mLGKuEYucE4XUr4W5PXlC7fKE
+         Vy7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bHKb7nomqkZKADTymOqb9YebPYk5PICoUgtAna9zlJA=;
+        b=q2jktmY7o4LnmbbfPB1+nZejDj2PWU6RG/svkzuXaRno97KbPmWOC9z4VZLnsFOlFw
+         SjbSr+UEkxKxHWIx4ea+QvNgd+JW5e5uYrce2I5Hikzo1WYcNpYYPTVR0eMzePSoZUyN
+         WVFFzgQlBMfDhDXPIyv58Bd4P5RmYFT9i6RQX7z5nItn1SB+VbfGvP4KnBwShgNeHojV
+         DAFhwSHKl2J4GwMKUf2AazG3wZ3cYrg0HW8/YkZpLkkN3MlvpPP7BlTfzBW9ONtDkJCs
+         dMRzLaQPBbCumipF0O5nKvO1OnkjiKU9aljD/KN/hURiei9q3KI8IZTJ+mmVtOyNF67d
+         hfbg==
+X-Gm-Message-State: AOAM5320BOoFgDH/KqZ1AZnSnz7p383Y/5wHVpX0AVkgA17zj2pEIdto
+        wLsKpv3mhEl48DMFefbZm83pTmNaHHyDUmHIr5g=
+X-Google-Smtp-Source: ABdhPJx/5TVimn8Gf3cgvlwp5FjpuTfABlr3VrMAEiLMC1K6AxnhqJ0Qm6dcxy+ddZgRSA0ATSDhCzK7WxVTmS24PVk=
+X-Received: by 2002:a63:3e0f:: with SMTP id l15mr3103811pga.208.1606210127443;
+ Tue, 24 Nov 2020 01:28:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <6f046c51-cdcc-77f9-4859-2508d08126f8@redhat.com>
+References: <3306b4d8-8689-b0e7-3f6d-c3ad873b7093@intel.com>
+ <cover.1605686678.git.xuanzhuo@linux.alibaba.com> <b7b0432d49ab05064efb85f1858b6e6f9e1274bd.1605686678.git.xuanzhuo@linux.alibaba.com>
+In-Reply-To: <b7b0432d49ab05064efb85f1858b6e6f9e1274bd.1605686678.git.xuanzhuo@linux.alibaba.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 24 Nov 2020 10:28:36 +0100
+Message-ID: <CAJ8uoz2N_bRgJE94wqX4jSL0VfPDcVq6ppjbmgeMLgD-Qu9Oiw@mail.gmail.com>
+Subject: Re: [PATCH 2/3] xsk: change the tx writeable condition
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 24, 2020 at 04:57:23PM +0800, Jason Wang wrote:
+On Wed, Nov 18, 2020 at 9:25 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
 >
-> On 2020/11/24 下午4:01, Leon Romanovsky wrote:
-> > On Tue, Nov 24, 2020 at 11:22:03AM +0800, Jason Wang wrote:
-> > > On 2020/11/24 上午3:21, Jakub Kicinski wrote:
-> > > > On Mon, 23 Nov 2020 14:09:34 -0500 Steven Rostedt wrote:
-> > > > > On Mon, 23 Nov 2020 10:52:52 -0800
-> > > > > Jakub Kicinski <kuba@kernel.org> wrote:
-> > > > >
-> > > > > > On Mon, 23 Nov 2020 09:31:28 -0500 Steven Rostedt wrote:
-> > > > > > > On Mon, 23 Nov 2020 13:08:55 +0200
-> > > > > > > Leon Romanovsky <leon@kernel.org> wrote:
-> > > > > > >
-> > > > > > > >    [   10.028024] Chain exists of:
-> > > > > > > >    [   10.028025]   console_owner --> target_list_lock --> _xmit_ETHER#2
-> > > > > > > Note, the problem is that we have a location that grabs the xmit_lock while
-> > > > > > > holding target_list_lock (and possibly console_owner).
-> > > > > > Well, it try_locks the xmit_lock. Does lockdep understand try-locks?
-> > > > > >
-> > > > > > (not that I condone the shenanigans that are going on here)
-> > > > > Does it?
-> > > > >
-> > > > > 	virtnet_poll_tx() {
-> > > > > 		__netif_tx_lock() {
-> > > > > 			spin_lock(&txq->_xmit_lock);
-> > > > Umpf. Right. I was looking at virtnet_poll_cleantx()
-> > > >
-> > > > > That looks like we can have:
-> > > > >
-> > > > >
-> > > > > 	CPU0		CPU1
-> > > > > 	----		----
-> > > > >      lock(xmit_lock)
-> > > > >
-> > > > > 		    lock(console)
-> > > > > 		    lock(target_list_lock)
-> > > > > 		    __netif_tx_lock()
-> > > > > 		        lock(xmit_lock);
-> > > > >
-> > > > > 			[BLOCKED]
-> > > > >
-> > > > >      <interrupt>
-> > > > >      lock(console)
-> > > > >
-> > > > >      [BLOCKED]
-> > > > >
-> > > > >
-> > > > >
-> > > > >    DEADLOCK.
-> > > > >
-> > > > >
-> > > > > So where is the trylock here?
-> > > > >
-> > > > > Perhaps you need the trylock in virtnet_poll_tx()?
-> > > > That could work. Best if we used normal lock if !!budget, and trylock
-> > > > when budget is 0. But maybe that's too hairy.
-> > >
-> > > If we use trylock, we probably lose(or delay) tx notification that may have
-> > > side effects to the stack.
-> > >
-> > >
-> > > > I'm assuming all this trickiness comes from virtqueue_get_buf() needing
-> > > > locking vs the TX path? It's pretty unusual for the completion path to
-> > > > need locking vs xmit path.
-> > >
-> > > Two reasons for doing this:
-> > >
-> > > 1) For some historical reason, we try to free transmitted tx packets in xmit
-> > > (see free_old_xmit_skbs() in start_xmit()), we can probably remove this if
-> > > we remove the non tx interrupt mode.
-> > > 2) virtio core requires virtqueue_get_buf() to be synchronized with
-> > > virtqueue_add(), we probably can solve this but it requires some non trivial
-> > > refactoring in the virtio core
-> > So how will we solve our lockdep issues?
-> >
-> > Thanks
+> Modify the tx writeable condition from the queue is not full to the
+> number of remaining tx queues is less than the half of the total number
+> of queues. Because the tx queue not full is a very short time, this will
+> cause a large number of EPOLLOUT events, and cause a large number of
+> process wake up.
 >
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> ---
+>  net/xdp/xsk.c       | 20 +++++++++++++++++---
+>  net/xdp/xsk_queue.h |  6 ++++++
+>  2 files changed, 23 insertions(+), 3 deletions(-)
 >
-> It's not clear to me that whether it's a virtio-net specific issue. E.g the
-> above deadlock looks like a generic issue so workaround it via virtio-net
-> may not help for other drivers.
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index 7f0353e..bc3d4ece 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -211,6 +211,17 @@ static int __xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp, u32 len,
+>         return 0;
+>  }
+>
+> +static bool xsk_writeable(struct xdp_sock *xs)
 
-It is hard to say, no one else complained except me who is using virtio :).
+Not clear what this function does from the name. How about
+xsk_tx_half_free() or maybe xsk_tx_writeable()?
 
-Thanks
+> +{
+> +       if (!xs->tx)
+> +               return false;
 
+Skip this test as it will slow down the code. It is only needed in one
+place below.
+
+> +       if (xskq_cons_left(xs->tx) > xs->tx->nentries / 2)
+> +               return false;
+> +
+> +       return true;
+> +}
+> +
+>  static bool xsk_is_bound(struct xdp_sock *xs)
+>  {
+>         if (READ_ONCE(xs->state) == XSK_BOUND) {
+> @@ -296,7 +307,8 @@ void xsk_tx_release(struct xsk_buff_pool *pool)
+>         rcu_read_lock();
+>         list_for_each_entry_rcu(xs, &pool->xsk_tx_list, tx_list) {
+>                 __xskq_cons_release(xs->tx);
+> -               xs->sk.sk_write_space(&xs->sk);
+> +               if (xsk_writeable(xs))
+> +                       xs->sk.sk_write_space(&xs->sk);
+>         }
+>         rcu_read_unlock();
+>  }
+> @@ -442,7 +454,8 @@ static int xsk_generic_xmit(struct sock *sk)
 >
-> Thanks
+>  out:
+>         if (sent_frame)
+> -               sk->sk_write_space(sk);
+> +               if (xsk_writeable(xs))
+> +                       sk->sk_write_space(sk);
 >
+>         mutex_unlock(&xs->mutex);
+>         return err;
+> @@ -499,7 +512,8 @@ static __poll_t xsk_poll(struct file *file, struct socket *sock,
 >
-> >
-> > > Btw, have a quick search, there are several other drivers that uses tx lock
-> > > in the tx NAPI.
-> > >
-> > > Thanks
-> > >
+>         if (xs->rx && !xskq_prod_is_empty(xs->rx))
+>                 mask |= EPOLLIN | EPOLLRDNORM;
+> -       if (xs->tx && !xskq_cons_is_full(xs->tx))
+> +
+
+No reason to introduce a newline here.
+
+> +       if (xsk_writeable(xs))
+
+Add an explicit "xs->tx &&" in the if statement here as we removed the
+test in xsk_writeable.
+
+>                 mask |= EPOLLOUT | EPOLLWRNORM;
+>
+>         return mask;
+> diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+> index cdb9cf3..82a5228 100644
+> --- a/net/xdp/xsk_queue.h
+> +++ b/net/xdp/xsk_queue.h
+> @@ -264,6 +264,12 @@ static inline bool xskq_cons_is_full(struct xsk_queue *q)
+>                 q->nentries;
+>  }
+>
+> +static inline __u64 xskq_cons_left(struct xsk_queue *q)
+
+Let us call this xskq_cons_entries_present() or
+xskq_cons_filled_entries(). The word "left" has the connotation that I
+still have stuff left to do. While this is kind of true for this case,
+it might not be for other cases that can use your function. The
+function provides how many (filled) entries that are present in the
+ring. Can you come up with a better name as I am not super fond of my
+suggestions? It would have been nice to call it xskq_cons_nb_entries()
+but there is already such a function that is lazy in nature and that
+allows access to the entries.
+
+> +{
+> +       /* No barriers needed since data is not accessed */
+> +       return READ_ONCE(q->ring->producer) - READ_ONCE(q->ring->consumer);
+> +}
+> +
+>  /* Functions for producers */
+>
+>  static inline bool xskq_prod_is_full(struct xsk_queue *q)
+> --
+> 1.8.3.1
 >
