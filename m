@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB70C2C31BA
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 21:12:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 399472C31DA
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 21:21:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730222AbgKXUJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 15:09:01 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51310 "EHLO mail.kernel.org"
+        id S1730762AbgKXUTg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 15:19:36 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33346 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726433AbgKXUJB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 15:09:01 -0500
+        id S1730745AbgKXUTf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 15:19:35 -0500
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AF86C2067D;
-        Tue, 24 Nov 2020 20:09:00 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9F2BC2086A;
+        Tue, 24 Nov 2020 20:19:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606248541;
-        bh=xRlZ6dmBUu08TU3vy5/5TLMN9Zw/P7z3PuKFEkz4xo4=;
+        s=default; t=1606249175;
+        bh=iyUABk+Kftit0om6BCrmfYWf1wo25QMwHwc7jF9Urhk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Wval/qzPSXW6OSsfuN6Xd41KgrSoPNwlRmo39HOyYBB9ZoczERldwsjycKv49ubUu
-         mPZmEFLfEppIKPijPbMRNPPr91Guf0HgQ/D4LdgrxWq9oeXujMY43N3We47xhiQuRX
-         bFPUmZuI8ZHE//FIi2wpDKDtXJTXHkfXL1ZiOAm8=
-Date:   Tue, 24 Nov 2020 12:08:59 -0800
+        b=YiW+P/KMpffCfo6pdA540NhTzywPQuPb8pYD94zzwKGD9BHCfFPod6nWdoCJF9pPD
+         tvhosB8tfeBlS0oi/i66M6NUQ0Oorj119TSkasO7iM0R6eYhFfAfVU6ArQ2g+uqOy9
+         xHSH/ne4kJzwCPZ4pN9iGkV9iw7Pskw2D69lf2OU=
+Date:   Tue, 24 Nov 2020 12:19:33 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Howells <dhowells@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net 00/17] rxrpc: Prelude to gssapi support
-Message-ID: <20201124120859.10037dd6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <160616220405.830164.2239716599743995145.stgit@warthog.procyon.org.uk>
-References: <160616220405.830164.2239716599743995145.stgit@warthog.procyon.org.uk>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@nvidia.com,
+        dsahern@gmail.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next 00/10] mlxsw: Add support for blackhole
+ nexthops
+Message-ID: <20201124121933.568323a4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201123071230.676469-1-idosch@idosch.org>
+References: <20201123071230.676469-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -39,35 +41,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 23 Nov 2020 20:10:04 +0000 David Howells wrote:
-> Here are some patches that do some reorganisation of the security class
-> handling in rxrpc to allow implementation of the RxGK security class that
-> will allow AF_RXRPC to use GSSAPI-negotiated tokens and better crypto.  The
-> RxGK security class is not included in this patchset.
+On Mon, 23 Nov 2020 09:12:20 +0200 Ido Schimmel wrote:
+> This patch set adds support for blackhole nexthops in mlxsw. These
+> nexthops are exactly the same as other nexthops, but instead of
+> forwarding packets to an egress router interface (RIF), they are
+> programmed to silently drop them.
 > 
-> It does the following things:
+> Patches #1-#4 are preparations.
 > 
->  (1) Add a keyrings patch to provide the original key description, as
->      provided to add_key(), to the payload preparser so that it can
->      interpret the content on that basis.  Unfortunately, the rxrpc_s key
->      type wasn't written to interpret its payload as anything other than a
->      string of bytes comprising a key, but for RxGK, more information is
->      required as multiple Kerberos enctypes are supported.
+> Patch #5 adds support for blackhole nexthops and removes the check that
+> prevented them from being programmed.
 > 
->  (2) Remove the rxk5 security class key parsing.  The rxk5 class never got
->      rolled out in OpenAFS and got replaced with rxgk.
+> Patch #6 adds a selftests over mlxsw which tests that blackhole nexthops
+> can be programmed and are marked as offloaded.
 > 
->  (3) Support the creation of rxrpc keys with multiple tokens of different
->      types.  If some types are not supported, the ENOPKG error is
->      suppressed if at least one other token's type is supported.
+> Patch #7 extends the existing nexthop forwarding test to also test
+> blackhole functionality.
 > 
->  (4) Punt the handling of server keys (rxrpc_s type) to the appropriate
->      security class.
-> 
->  (5) Organise the security bits in the rxrpc_connection struct into a
->      union to make it easier to override for other classes.
-> 
->  (6) Move some bits from core code into rxkad that won't be appropriate to
->      rxgk.
+> Patches #8-#10 add support for a new packet trap ('blackhole_nexthop')
+> which should be triggered whenever packets are dropped by a blackhole
+> nexthop. Obviously, by default, the trap action is set to 'drop' so that
+> dropped packets will not be reported.
 
-Pulled into net-next, thank you!
+Applied, thanks!
