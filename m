@@ -2,253 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CDFB2C20A2
-	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 10:01:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15D192C20BE
+	for <lists+netdev@lfdr.de>; Tue, 24 Nov 2020 10:05:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730947AbgKXJBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 04:01:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48486 "EHLO
+        id S1730982AbgKXJDY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 04:03:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726458AbgKXJBd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 04:01:33 -0500
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12E1C0613CF;
-        Tue, 24 Nov 2020 01:01:33 -0800 (PST)
-Received: by mail-pg1-x542.google.com with SMTP id j19so16867287pgg.5;
-        Tue, 24 Nov 2020 01:01:33 -0800 (PST)
+        with ESMTP id S1730963AbgKXJDV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 04:03:21 -0500
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C059C0613D6;
+        Tue, 24 Nov 2020 01:03:21 -0800 (PST)
+Received: by mail-pf1-x442.google.com with SMTP id n137so7818462pfd.3;
+        Tue, 24 Nov 2020 01:03:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OGxCRem2plcSbshMzDeeuRRkFaO8+Fvd+z+GotYkgBU=;
-        b=dR6unxlx2P2VbynjJ1HysD5gwJ37BNNlaHY48ld0oGI4GzHKdSVCqWTBEF5ekUxIwk
-         AAxG6AvQa2yHB7f2jMP/24+/WrQ00fFWEP1ZRavYZryvbhvRpbJQnJyWvQAYJB5B2u7m
-         MXtIf9j8Q8lWiqsDZZGpbkEYhb/eZ81EePeNIBongQTvYisd8eu4CYPpWNOCsHXbQMoM
-         NQE/s9oi8Qu+jiYDKuyiwMFKnHRkQluuvKXIG7W6mBO4cnNBvxACkmAneugG1y5Myqs6
-         4dlU42rI95kDkc1gjLwTeFXd/rzZiGbBY7nSY8xpK49G6O26EKOA+QklIqunLPu5nsDe
-         AnzQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wiLd0/TSwe2nuoLJss8waB08tybiqKtSb+1THieScy0=;
+        b=dKu27BjEBhXB/oREyktx+6rQX5UrULhoij+0lIf4zJV4igyu8rF5ItzD2SJF91Lme1
+         CewIye0LpSP8UU4C1ncnwAR5P3GyYmq6xzoDBwrsPzOrJronmxcZW/aeV2QgdWnMlQXV
+         CUgzxioP3IR+fUMk9m7sWiRtL+rNO+GHMZJMn5MNZh6GJlqQNYjo5y78QuyszCCv6CT/
+         Ug5ANkcfUkr5yp0l8NLJOYmDuyRquAHUuUnRkbOY/9aW82A8po/m2fJZE0uozMW6o8xy
+         i45rps3aFebsMreJV29F7cInYkSqsgCassOyqFZZc4DtnYeHukN5Eh7NO2UUa6KCaYDc
+         UoLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OGxCRem2plcSbshMzDeeuRRkFaO8+Fvd+z+GotYkgBU=;
-        b=LypQ2OUMfxqrvI8F5lQSoOy3hZ039hhqRrGZSKt9ydLDwCTFf5Ie1jBmZvWJDd0ZLL
-         5Iq3IGMWZC+9Zh5jVmEd+b6inHVgNn03J3LIL0pnA0cRO+a6voQVw7/tb8+51fsdgpuC
-         OEvUMFD/5X1PAho9nLJEuvgvN5xc0Cr24grzvMObzLCOtUjvmknaanYfq5BsYTkAVnk0
-         N+8g6InPnqcOE4kaS2q8Jamv5J4bCLuxn/0ThhpF8BnJ9aWuWTQ+shyZ+SiYw1UJNnS3
-         SXdSgHg0XqD6H+OOOt2yrZg0ZQ9SZ3TA170s3KdTchidJMcpplbQ51wvFxWmn1OK2aIg
-         99JA==
-X-Gm-Message-State: AOAM532PwPlbn1mV0wYbqTE8qabLOJebxlMcay/LxBpcwOUlmWUTzArB
-        R1NcfKM9Mi9/+wweAsb0JImHQ+pFe3VDgzePjbrvD40oV22D4FscJvw=
-X-Google-Smtp-Source: ABdhPJwfRu2XGeqBBBx2PCSQfK2H2pK1P/kfhdAXKrSvxuwtXHIba46MdPqE1UJayQFnw87fFZ+9mFSP/mky7AZ/bnc=
-X-Received: by 2002:a17:90a:4687:: with SMTP id z7mr3718398pjf.168.1606208493175;
- Tue, 24 Nov 2020 01:01:33 -0800 (PST)
-MIME-Version: 1.0
-References: <CAJ8uoz0hEiXFY9q_HJmfuY4vpf-DYH_gnDPvRhFpnc6OcQbj_Q@mail.gmail.com>
- <1606142229.4575405-1-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <1606142229.4575405-1-xuanzhuo@linux.alibaba.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Tue, 24 Nov 2020 10:01:22 +0100
-Message-ID: <CAJ8uoz1yxjYyfrKkvJrjLWOzm78M2CtNVRC+GkeGRCWBq5xAYA@mail.gmail.com>
-Subject: Re: [PATCH 0/3] xsk: fix for xsk_poll writeable
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wiLd0/TSwe2nuoLJss8waB08tybiqKtSb+1THieScy0=;
+        b=CQCufjr++Cl12dpfxdf7TPBy2Mf5BfpVbtzO1HlMeuRtuFG+yFYYDibSOAayrAP7w0
+         mVcp+PIYOBJqoeAK5BnCnFsrt42mLkw5PkPzIOA7DowrrrsXyHTshTAFunmNRHk+HjzH
+         ivap0GQ3YdRbcY7BO+y2fTPQy1vOs3gE8ccFdtzFeRLpD/CW4/cgUeuLSF2rFFcsM/Ix
+         Hdr+yYduOYogv2FMlHDdPuTP3jV+J8fy4MGfDpu9F2gF8kaMb6MT7lIC57TL1GZM5LCo
+         Ev6Rm7pXyoZyN/2eudDR3zvwd3CfCOmYN66RsoAskZlIQDYxldxODNHbHuExsz/R79hO
+         osVQ==
+X-Gm-Message-State: AOAM531pV94mz4+YtvewL5+TrjiMvALCSv8Vr1cPENY33YNgPO3p53Dz
+        ESnA758kksJzD/SgH1aREpQru/hHavkg
+X-Google-Smtp-Source: ABdhPJx/L8pqKN8Hysfiagr9yYREtEj4YyUcM2LdRFuyfHpkYe5/BY53sfyWrPhgKP+8yax+ChtLlg==
+X-Received: by 2002:a63:e:: with SMTP id 14mr2889143pga.253.1606208600851;
+        Tue, 24 Nov 2020 01:03:20 -0800 (PST)
+Received: from localhost.localdomain ([182.209.58.45])
+        by smtp.gmail.com with ESMTPSA id n68sm14084345pfn.161.2020.11.24.01.03.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Nov 2020 01:03:20 -0800 (PST)
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Andrii Nakryiko <andrii@kernel.org>, brakmo <brakmo@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        David Ahern <dsa@cumulusnetworks.com>,
+        Yonghong Song <yhs@fb.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Ira Weiny <ira.weiny@intel.com>, Thomas Graf <tgraf@suug.ch>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Xdp <xdp-newbies@vger.kernel.org>
+Subject: [PATCH bpf-next v3 0/7] bpf: remove bpf_load loader completely
+Date:   Tue, 24 Nov 2020 09:03:03 +0000
+Message-Id: <20201124090310.24374-1-danieltimlee@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 23, 2020 at 4:21 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
->
-> On Mon, 23 Nov 2020 15:00:48 +0100, Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
-> > On Wed, Nov 18, 2020 at 9:25 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
-> > >
-> > > I tried to combine cq available and tx writeable, but I found it very difficult.
-> > > Sometimes we pay attention to the status of "available" for both, but sometimes,
-> > > we may only pay attention to one, such as tx writeable, because we can use the
-> > > item of fq to write to tx. And this kind of demand may be constantly changing,
-> > > and it may be necessary to set it every time before entering xsk_poll, so
-> > > setsockopt is not very convenient. I feel even more that using a new event may
-> > > be a better solution, such as EPOLLPRI, I think it can be used here, after all,
-> > > xsk should not have OOB data ^_^.
-> > >
-> > > However, two other problems were discovered during the test:
-> > >
-> > > * The mask returned by datagram_poll always contains EPOLLOUT
-> > > * It is not particularly reasonable to return EPOLLOUT based on tx not full
-> > >
-> > > After fixing these two problems, I found that when the process is awakened by
-> > > EPOLLOUT, the process can always get the item from cq.
-> > >
-> > > Because the number of packets that the network card can send at a time is
-> > > actually limited, suppose this value is "nic_num". Once the number of
-> > > consumed items in the tx queue is greater than nic_num, this means that there
-> > > must also be new recycled items in the cq queue from nic.
-> > >
-> > > In this way, as long as the tx configured by the user is larger, we won't have
-> > > the situation that tx is already in the writeable state but cannot get the item
-> > > from cq.
-> >
-> > I think the overall approach of tying this into poll() instead of
-> > setsockopt() is the right way to go. But we need a more robust
-> > solution. Your patch #3 also breaks backwards compatibility and that
-> > is not allowed. Could you please post some simple code example of what
-> > it is you would like to do in user space? So you would like to wake up
-> > when there are entries in the cq that can be retrieved and the reason
-> > you would like to do this is that you then know you can put some more
-> > entries into the Tx ring and they will get sent as there now are free
-> > slots in the cq. Correct me if wrong. Would an event that wakes you up
-> > when there is both space in the Tx ring and space in the cq work? Is
-> > there a case in which we would like to be woken up when only the Tx
-> > ring is non-full? Maybe there are as it might be beneficial to fill
-> > the Tx and while doing that some entries in the cq has been completed
-> > and away the packets go. But it would be great if you could post some
-> > simple example code, does not need to compile or anything. Can be
-> > pseudo code.
-> >
-> > It would also be good to know if your goal is max throughput, max
-> > burst size, or something else.
-> >
-> > Thanks: Magnus
-> >
->
-> My goal is max pps, If possible, increase the size of buf appropriately to
-> improve throughput. like pktgen.
->
-> The code like this: (tx and umem cq also is 1024, and that works with zero
-> copy.)
->
-> ```
-> void send_handler(xsk)
-> {
->     char buf[22];
->
->         while (true) {
->             while (true){
->                 if (send_buf_to_tx_ring(xsk, buf, sizeof(buf)))
->                     break; // break this when no cq or tx is full
->             }
->
->             if (sendto(xsk->fd))
->                 break;
->                 }
->         }
-> }
->
->
-> static int loop(int efd, xsk)
-> {
->         struct epoll_event e[1024];
->         struct epoll_event ee;
->         int n, i;
->
->         ee.events = EPOLLOUT;
->         ee.data.ptr = NULL;
->
->         epoll_ctl(efd, EPOLL_CTL_ADD, xsk->fd, &e);
->
->         while (1) {
->                 n = epoll_wait(efd, e, sizeof(e)/sizeof(e[0]), -1);
->
->                 if (n == 0)
->                         continue;
->
->                 if (n < 0) {
->                         continue;
->                 }
->
->                 for (i = 0; i < n; ++i) {
->             send_handler(xsk);
->                 }
->         }
-> }
-> ```
->
-> 1. Now, since datagram_poll(that determine whether it is write able based on
->    sock_writeable function) will return EPOLLOUT every time, epoll_wait will
->    always return directly(this results in cpu 100%).
+Numerous refactoring that rewrites BPF programs written with bpf_load
+to use the libbpf loader was finally completed, resulting in BPF
+programs using bpf_load within the kernel being completely no longer
+present.
 
-We should keep patch #1. Just need to make sure we do not break
-anything as I am not familiar with the path after xsk_poll returns.
+This patchset refactors remaining bpf programs with libbpf and
+completely removes bpf_load, an outdated bpf loader that is difficult
+to keep up with the latest kernel BPF and causes confusion.
 
-> 2. After removing datagram_poll, since tx full is a very short moment, so every
->    time tx is not full is always true, epoll_wait will still return directly
-> 3. After epoll_wait returns, app will try to get cq and writes it to tx again,
->    but this time basically it will fail when getting cq. My analysis is that
->    cq item has not returned from the network card at this time.
->
->
-> Under normal circumstances, the judgment preparation for this event that can be
-> written is not whether the queue or buffer is full. The judgment criterion of
-> tcp is whether the free space is more than half.
-> This is the origin of my #2 patch, and I found that after adding this patch, my
-> above problems no longer appear.
-> 1. epoll_wait no longer exits directly
-> 2. Every time you receive EPOLLOUT, you can always get cq
+Changes in v2:
+ - drop 'move tracing helpers to trace_helper' patch
+ - add link pinning to prevent cleaning up on process exit
+ - add static at global variable and remove unused variable
+ - change to destroy link even after link__pin()
+ - fix return error code on exit
+ - merge commit with changing Makefile
 
-Got it. Make sense. And good that there is some precedence that you
-are not supposed to wake up when there is one free slot. Instead you
-should wake up when a lot of them are free so you can insert a batch.
-So let us also keep patch #2, though I might have some comments on it,
-but I will reply to that patch in that case.
+Changes in v3:
+ - cleanup bpf_link, bpf_object and cgroup fd both on success and error
 
-But patch #3 needs to go. How about you instead make the Tx ring
-double the size of the completion ring? Let us assume patch #1 and #2
-are in place. You will get woken up when at least half the entries in
-the Tx ring are available. At this point fill the Tx ring completely
-and after that start cleaning the completion ring. Hopefully by this
-time, there will be a number of entries in there that can be cleaned
-up. Then you call sendto(). It might even be a good idea to do cq, Tx,
-cq in that order.
+Daniel T. Lee (7):
+  samples: bpf: refactor hbm program with libbpf
+  samples: bpf: refactor test_cgrp2_sock2 program with libbpf
+  samples: bpf: refactor task_fd_query program with libbpf
+  samples: bpf: refactor ibumad program with libbpf
+  samples: bpf: refactor test_overhead program with libbpf
+  samples: bpf: fix lwt_len_hist reusing previous BPF map
+  samples: bpf: remove bpf_load loader completely
 
-I consider #1 and #2 bug fixes so please base them on the bpf tree and
-note this in your mail header like this: "[PATCH bpf 0/3] xsk: fix for
-xsk_poll writeable".
+ samples/bpf/.gitignore           |   3 +
+ samples/bpf/Makefile             |  20 +-
+ samples/bpf/bpf_load.c           | 667 -------------------------------
+ samples/bpf/bpf_load.h           |  57 ---
+ samples/bpf/do_hbm_test.sh       |  32 +-
+ samples/bpf/hbm.c                | 111 ++---
+ samples/bpf/hbm_kern.h           |   2 +-
+ samples/bpf/ibumad_kern.c        |  26 +-
+ samples/bpf/ibumad_user.c        |  71 +++-
+ samples/bpf/lwt_len_hist.sh      |   2 +
+ samples/bpf/task_fd_query_user.c | 101 +++--
+ samples/bpf/test_cgrp2_sock2.c   |  61 ++-
+ samples/bpf/test_cgrp2_sock2.sh  |  21 +-
+ samples/bpf/test_lwt_bpf.sh      |   0
+ samples/bpf/test_overhead_user.c |  82 ++--
+ samples/bpf/xdp2skb_meta_kern.c  |   2 +-
+ 16 files changed, 350 insertions(+), 908 deletions(-)
+ delete mode 100644 samples/bpf/bpf_load.c
+ delete mode 100644 samples/bpf/bpf_load.h
+ mode change 100644 => 100755 samples/bpf/lwt_len_hist.sh
+ mode change 100644 => 100755 samples/bpf/test_lwt_bpf.sh
 
->
-> In addition:
->     What is the goal of TX_BATCH_SIZE and why this "restriction" should be added,
->     which causes a lot of trouble in programming without using zero copy
+-- 
+2.25.1
 
-You are right, this is likely too low. I never thought of this as
-something that would be used as a "fast-path". It was only a generic
-fall back. But it need not be. Please produce a patch #3 that sets
-this to a higher value. We do need the limit though. How about 512?
-
-If you are interested in improving the performance of the Tx SKB path,
-then there might be other avenues to try if you are interested. Here
-are some examples:
-
-* Batch dev_direct_xmit. Maybe skb lists can be used.
-* Do not unlock and lock for every single packet in dev_direct_xmit().
-Can be combined with the above.
-* Use fragments instead of copying packets into the skb itself
-* Can the bool more in netdev_start_xmit be used to increase performance
-
->
-> Thanks.
->
-> >
-> > > Xuan Zhuo (3):
-> > >   xsk: replace datagram_poll by sock_poll_wait
-> > >   xsk: change the tx writeable condition
-> > >   xsk: set tx/rx the min entries
-> > >
-> > >  include/uapi/linux/if_xdp.h |  2 ++
-> > >  net/xdp/xsk.c               | 26 ++++++++++++++++++++++----
-> > >  net/xdp/xsk_queue.h         |  6 ++++++
-> > >  3 files changed, 30 insertions(+), 4 deletions(-)
-> > >
-> > > --
-> > > 1.8.3.1
-> > >
