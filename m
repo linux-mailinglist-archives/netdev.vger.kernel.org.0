@@ -2,112 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB5AD2C4AC0
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 23:20:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D50672C4ADF
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 23:43:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732909AbgKYWS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 17:18:27 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:17925 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731225AbgKYWS1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 17:18:27 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fbed8320002>; Wed, 25 Nov 2020 14:18:26 -0800
-Received: from sx1.mtl.com (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 25 Nov
- 2020 22:18:21 +0000
-From:   Saeed Mahameed <saeedm@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
-        "Maxim Mikityanskiy" <maximmi@mellanox.com>
-Subject: [PATCH V2 net] net/tls: Protect from calling tls_dev_del for TLS RX twice
-Date:   Wed, 25 Nov 2020 14:18:10 -0800
-Message-ID: <20201125221810.69870-1-saeedm@nvidia.com>
-X-Mailer: git-send-email 2.26.2
+        id S1727498AbgKYWms (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 17:42:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60626 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725836AbgKYWms (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 17:42:48 -0500
+Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8852BC0617A7
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 14:42:48 -0800 (PST)
+Received: by mail-oi1-x242.google.com with SMTP id a130so92837oif.7
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 14:42:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=f1PVKlmL3TJCVAgQFKxha9czXUuPklpO8Bu1h8i+26E=;
+        b=pgzp6Ubn73wNcMon0636wnyvAsgppUo+gylhtax9SBZH+rcaRux/E8k5+Htq31MOge
+         NiT6nl8LnC2tL8IFTlEguF/d1YfWTCmiaa+pIFZV0Zwh7V3tZFToKAD7eHeydIIOJNAC
+         QYOii5xqrCTk53KBGZueOL54HygtYTbWbanIPg85eJpwE+3TS4fl6gzlY211aSn4b5ze
+         MMNTy6ODNQlW28WZqAA88/tsYiCkAYm2jckjUoYaknkq7g3CPvhiNbreiGj3gZACdQFf
+         N8n1Hb2Ri/whDV7kZorFWlDPiWOAO8y8gWNUpccTRY2+uwQY2aOOtKkbq3z9qLo+IMgF
+         EU0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=f1PVKlmL3TJCVAgQFKxha9czXUuPklpO8Bu1h8i+26E=;
+        b=lXVNiToeZwOp8y+k9w068gtxaNatNXmWGHLo6ykxB3MDvwgmclwDWZ3DGa3RACHtPY
+         XDix/2kYGGCbjw6dE2AM21MU0j2N7tBKlSYWhIF++rTmdWshCQUTB+Y+gm1zNgHQ7EWu
+         1YxYnwMZub5ECZugI8c3ru6ii/v/5IWO2qxJP+/SVeKLPzPscVgkG4BMQUoktfVtIQQ6
+         NUtaHptEDAJdlB/UmASsfPEwMybRGeVlI1dgZ0G5dIxWscwDYNYH9AloB/WEfx5/RlNl
+         lCgiHt3AfVgtcL6p3Dd+hJuuLmXF1fumSSv89XgrQvFrR7eozfZA7W3kj0CmHi+AU40I
+         7OPQ==
+X-Gm-Message-State: AOAM530eOqbGf3cpucFFqHXdtewIkUPgXoJ5aVtNbro9iOCI5ny8TTxR
+        5qBNjqeE6/ijj1+JZ5qqXa/QEXjXSFBMCZ3zUSzHtw==
+X-Google-Smtp-Source: ABdhPJzjRavk1ufBlUCV/33Hy2qhC9jbb5v2ICAvB39VW9s28siNQGRRZK3BZNFBatp0GwI71EKJMH66vO3HMZoutgg=
+X-Received: by 2002:a54:4394:: with SMTP id u20mr245293oiv.70.1606344167711;
+ Wed, 25 Nov 2020 14:42:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1606342706; bh=BBb1S07Lu30cjc3dEpimNRaPJcuIpT3gZ9CRxoBYDIQ=;
-        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-         Content-Transfer-Encoding:Content-Type:X-Originating-IP:
-         X-ClientProxiedBy;
-        b=TzQSwqjG4+5/DCePiaY4C06+pYuez0Wp41VVD0OtvPm3F83r8jTtJ/ZMfZAZuxc04
-         L6z5WQ4Elp2Zliyb9KXrzjLIUlPpoLGuylLm5STfIS76zlHieRbkHBeDg+EVZcGvBN
-         ZK7xb7SXD0qiNs8V2XXn2ht9TcNT2c22o4EZxTDWfKStB5BbZXWhZkiIy8kWm5QrBK
-         CTowbd6R+jyGQxNT51MbXM+owZRLE921gyBJB5m65zLbh7WlU8VdbZaXD23vnoIkBW
-         7H2j3wQtYhur7/EH+vVkIk2W6kLFhCV5//ua0qchz+sgI66siFoMd/Z69MI7t+97Mf
-         wP/BWKF12C4oA==
+References: <20201125173436.1894624-1-elver@google.com> <20201125124313.593fc2b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201125124313.593fc2b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Marco Elver <elver@google.com>
+Date:   Wed, 25 Nov 2020 23:42:36 +0100
+Message-ID: <CANpmjNP_=Awx0-eZisMXzgXxKqf7hcrZYCYzFXuebPcwZtkoLw@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: switch to storing KCOV handle directly in sk_buff
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Aleksandr Nogikh <a.nogikh@gmail.com>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
+        Ido Schimmel <idosch@idosch.org>,
+        Florian Westphal <fw@strlen.de>,
+        Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@mellanox.com>
+On Wed, 25 Nov 2020 at 21:43, Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Wed, 25 Nov 2020 18:34:36 +0100 Marco Elver wrote:
+> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > index ffe3dcc0ebea..070b1077d976 100644
+> > --- a/net/core/skbuff.c
+> > +++ b/net/core/skbuff.c
+> > @@ -233,6 +233,7 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
+> >       skb->end = skb->tail + size;
+> >       skb->mac_header = (typeof(skb->mac_header))~0U;
+> >       skb->transport_header = (typeof(skb->transport_header))~0U;
+> > +     skb_set_kcov_handle(skb, kcov_common_handle());
+> >
+> >       /* make sure we initialize shinfo sequentially */
+> >       shinfo = skb_shinfo(skb);
+> > @@ -249,9 +250,6 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
+> >
+> >               fclones->skb2.fclone = SKB_FCLONE_CLONE;
+> >       }
+> > -
+> > -     skb_set_kcov_handle(skb, kcov_common_handle());
+>
+> Why the move?
 
-tls_device_offload_cleanup_rx doesn't clear tls_ctx->netdev after
-calling tls_dev_del if TLX TX offload is also enabled. Clearing
-tls_ctx->netdev gets postponed until tls_device_gc_task. It leaves a
-time frame when tls_device_down may get called and call tls_dev_del for
-RX one extra time, confusing the driver, which may lead to a crash.
+v2 of the original series had it above. I frankly don't mind.
 
-This patch corrects this racy behavior by adding a flag to prevent
-tls_device_down from calling tls_dev_del the second time.
+1. Group it with the other fields above?
 
-Fixes: e8f69799810c ("net/tls: Add generic NIC offload infrastructure")
-Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
- Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
-v1->v2:=20
-   - Add comment explaining TLS_RX_DEV_RELEASED
-   - set the bit in else branch
+2. Leave it at the end here?
 
- include/net/tls.h    | 6 ++++++
- net/tls/tls_device.c | 4 +++-
- 2 files changed, 9 insertions(+), 1 deletion(-)
+> >  out:
+> >       return skb;
+> >  nodata:
+> > @@ -285,8 +283,6 @@ static struct sk_buff *__build_skb_around(struct sk_buff *skb,
+> >       memset(shinfo, 0, offsetof(struct skb_shared_info, dataref));
+> >       atomic_set(&shinfo->dataref, 1);
+> >
+> > -     skb_set_kcov_handle(skb, kcov_common_handle());
+> > -
+> >       return skb;
+> >  }
+>
+> And why are we dropping this?
 
-diff --git a/include/net/tls.h b/include/net/tls.h
-index cf1473099453..2bdd802212fe 100644
---- a/include/net/tls.h
-+++ b/include/net/tls.h
-@@ -199,6 +199,12 @@ enum tls_context_flags {
- 	 * to be atomic.
- 	 */
- 	TLS_TX_SYNC_SCHED =3D 1,
-+	/* tls_dev_del was called for the RX side, device state was released,
-+	 * but tls_ctx->netdev might still be kept, because TX-side driver
-+	 * resources might not be released yet. Used to prevent the second
-+	 * tls_dev_del call in tls_device_down if it happens simultaneously.
-+	 */
-+	TLS_RX_DEV_CLOSED =3D 2,
- };
-=20
- struct cipher_context {
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index 54d3e161d198..8c2125caeb8a 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -1262,6 +1262,8 @@ void tls_device_offload_cleanup_rx(struct sock *sk)
- 	if (tls_ctx->tx_conf !=3D TLS_HW) {
- 		dev_put(netdev);
- 		tls_ctx->netdev =3D NULL;
-+	} else {
-+		set_bit(TLS_RX_DEV_CLOSED, &tls_ctx->flags);
- 	}
- out:
- 	up_read(&device_offload_lock);
-@@ -1291,7 +1293,7 @@ static int tls_device_down(struct net_device *netdev)
- 		if (ctx->tx_conf =3D=3D TLS_HW)
- 			netdev->tlsdev_ops->tls_dev_del(netdev, ctx,
- 							TLS_OFFLOAD_CTX_DIR_TX);
--		if (ctx->rx_conf =3D=3D TLS_HW)
-+		if (ctx->rx_conf =3D=3D TLS_HW && !test_bit(TLS_RX_DEV_CLOSED, &ctx->fla=
-gs))
- 			netdev->tlsdev_ops->tls_dev_del(netdev, ctx,
- 							TLS_OFFLOAD_CTX_DIR_RX);
- 		WRITE_ONCE(ctx->netdev, NULL);
---=20
-2.26.2
+It wasn't here originally.
 
+> If this was omitted in earlier versions it's just a independent bug,
+> I don't think build_skb() will call __alloc_skb(), so we need a to
+> set the handle here.
+
+Correct, that was an original omission.
+
+Will send v2.
