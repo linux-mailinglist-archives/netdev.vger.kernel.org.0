@@ -2,172 +2,374 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 830712C39B6
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 08:06:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E4802C39C4
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 08:14:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727863AbgKYHFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 02:05:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55828 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726032AbgKYHFm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 02:05:42 -0500
-Received: from bedivere.hansenpartnership.com (bedivere.hansenpartnership.com [IPv6:2607:fcd0:100:8a00::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 571CDC0613D6;
-        Tue, 24 Nov 2020 23:05:42 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-        by bedivere.hansenpartnership.com (Postfix) with ESMTP id 2D9901280404;
-        Tue, 24 Nov 2020 23:05:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-        d=hansenpartnership.com; s=20151216; t=1606287940;
-        bh=PpyvloC8ztllb7q8ndtGKJRs78ChiB3jg6tteM0zYL0=;
-        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
-        b=DUjk2u5mMxkvusJZ7TUknDmT+9jEkjAK5Du54VYrLnX3ZVAsqbXKInJF3+bjbWxe1
-         sPTOm9Jo8O4FiM37EcbSbGJ09Z6i3toRLj70BanOqmx/doOouqQw1ofRfirJ315HKN
-         ACp6UaCD/rMf1rqLOvr/v7W+FqOYQZREI5LkhaoU=
-Received: from bedivere.hansenpartnership.com ([127.0.0.1])
-        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 8h4rTuJEi-3j; Tue, 24 Nov 2020 23:05:40 -0800 (PST)
-Received: from jarvis.int.hansenpartnership.com (unknown [IPv6:2601:600:8280:66d1::527])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id A873112803EC;
-        Tue, 24 Nov 2020 23:05:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-        d=hansenpartnership.com; s=20151216; t=1606287940;
-        bh=PpyvloC8ztllb7q8ndtGKJRs78ChiB3jg6tteM0zYL0=;
-        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
-        b=DUjk2u5mMxkvusJZ7TUknDmT+9jEkjAK5Du54VYrLnX3ZVAsqbXKInJF3+bjbWxe1
-         sPTOm9Jo8O4FiM37EcbSbGJ09Z6i3toRLj70BanOqmx/doOouqQw1ofRfirJ315HKN
-         ACp6UaCD/rMf1rqLOvr/v7W+FqOYQZREI5LkhaoU=
-Message-ID: <a841536fe65bb33f1c72ce2455a6eb47a0107565.camel@HansenPartnership.com>
-Subject: Re: [Intel-wired-lan] [PATCH 000/141] Fix fall-through warnings for
- Clang
-From:   James Bottomley <James.Bottomley@HansenPartnership.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Joe Perches <joe@perches.com>,
-        Jakub Kicinski <kuba@kernel.org>, alsa-devel@alsa-project.org,
-        linux-atm-general@lists.sourceforge.net,
-        reiserfs-devel@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        linux-ide@vger.kernel.org, dm-devel@redhat.com,
-        keyrings@vger.kernel.org, linux-mtd@lists.infradead.org,
-        GR-everest-linux-l2@marvell.com, wcn36xx@lists.infradead.org,
-        samba-technical@lists.samba.org, linux-i3c@lists.infradead.org,
-        linux1394-devel@lists.sourceforge.net,
-        linux-afs@lists.infradead.org,
-        usb-storage@lists.one-eyed-alien.net, drbd-dev@lists.linbit.com,
-        devel@driverdev.osuosl.org, linux-cifs@vger.kernel.org,
-        rds-devel@oss.oracle.com,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-scsi@vger.kernel.org, linux-rdma@vger.kernel.org,
-        oss-drivers@netronome.com, bridge@lists.linux-foundation.org,
-        linux-security-module@vger.kernel.org,
-        amd-gfx@lists.freedesktop.org,
-        linux-stm32@st-md-mailman.stormreply.com, cluster-devel@redhat.com,
-        linux-acpi@vger.kernel.org, coreteam@netfilter.org,
-        intel-wired-lan@lists.osuosl.org, linux-input@vger.kernel.org,
-        Miguel Ojeda <ojeda@kernel.org>,
-        tipc-discussion@lists.sourceforge.net, linux-ext4@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        selinux@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, linux-geode@lists.infradead.org,
-        linux-can@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-gpio@vger.kernel.org, op-tee@lists.trustedfirmware.org,
-        linux-mediatek@lists.infradead.org, xen-devel@lists.xenproject.org,
-        nouveau@lists.freedesktop.org, linux-hams@vger.kernel.org,
-        ceph-devel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org,
-        x86@kernel.org, linux-nfs@vger.kernel.org,
-        GR-Linux-NIC-Dev@marvell.com, linux-mm@kvack.org,
-        netdev@vger.kernel.org, linux-decnet-user@lists.sourceforge.net,
-        linux-mmc@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-sctp@vger.kernel.org, linux-usb@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        patches@opensource.cirrus.com, linux-integrity@vger.kernel.org,
-        target-devel@vger.kernel.org, linux-hardening@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-Date:   Tue, 24 Nov 2020 23:05:35 -0800
-In-Reply-To: <202011241327.BB28F12F6@keescook>
-References: <202011201129.B13FDB3C@keescook>
-         <20201120115142.292999b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <202011220816.8B6591A@keescook>
-         <9b57fd4914b46f38d54087d75e072d6e947cb56d.camel@HansenPartnership.com>
-         <ca071decb87cc7e905411423c05a48f9fd2f58d7.camel@perches.com>
-         <0147972a72bc13f3629de8a32dee6f1f308994b5.camel@HansenPartnership.com>
-         <d8d1e9add08cdd4158405e77762d4946037208f8.camel@perches.com>
-         <dbd2cb703ed9eefa7dde9281ea26ab0f7acc8afe.camel@HansenPartnership.com>
-         <20201123130348.GA3119@embeddedor>
-         <8f5611bb015e044fa1c0a48147293923c2d904e4.camel@HansenPartnership.com>
-         <202011241327.BB28F12F6@keescook>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.4 
+        id S1728013AbgKYHHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 02:07:49 -0500
+Received: from mail.loongson.cn ([114.242.206.163]:50304 "EHLO loongson.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726760AbgKYHHr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Nov 2020 02:07:47 -0500
+Received: from [10.130.0.150] (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9AxqtC4Ar5f+mwWAA--.36698S3;
+        Wed, 25 Nov 2020 15:07:36 +0800 (CST)
+Subject: Re: [PATCH] stmmac: pci: Add support for LS7A bridge chip
+To:     Jiaxun Yang <jiaxun.yang@flygoat.com>, davem@davemloft.net,
+        kuba@kernel.org, mcoquelin.stm32@gmail.com
+References: <1606125828-15742-1-git-send-email-lizhi01@loongson.cn>
+ <38b7eede-18de-f37c-eed9-8b59c2daf3dd@flygoat.com>
+Cc:     lixuefeng@loongson.com, gaojuxin@loongson.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+From:   Zhi Li <lizhi01@loongson.cn>
+Message-ID: <a218ab75-4c0c-62bb-f5b9-a9d692d38880@loongson.cn>
+Date:   Wed, 25 Nov 2020 15:07:35 +0800
+User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:45.0) Gecko/20100101
+ Thunderbird/45.4.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <38b7eede-18de-f37c-eed9-8b59c2daf3dd@flygoat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf9AxqtC4Ar5f+mwWAA--.36698S3
+X-Coremail-Antispam: 1UD129KBjvJXoW3JrykJF1UXFy5AF47KFWDCFg_yoWfXr4kpF
+        Z5Aa98Gry8Xr1xKw1vqrWDXF90yrWftryj9rW7ta4a9Fyqyry0qFyDKrWUur97ArWDGF12
+        v3WjkrsF9Fs8Ga7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU9ab7Iv0xC_Cr1lb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I2
+        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xII
+        jxv20xvEc7CjxVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I
+        8E87Iv6xkF7I0E14v26rxl6s0DM2vYz4IE04k24VAvwVAKI4IrM2AIxVAIcxkEcVAq07x2
+        0xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18Mc
+        Ij6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lc7I2
+        V7IY0VAS07AlzVAYIcxG8wCY02Avz4vE14v_GF4l42xK82IYc2Ij64vIr41l4I8I3I0E4I
+        kC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWU
+        WwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr
+        0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWr
+        Zr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr0_Gr
+        UvcSsGvfC2KfnxnUUI43ZEXa7IU8J3ktUUUUU==
+X-CM-SenderInfo: xol2xxqqr6z05rqj20fqof0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-11-24 at 13:32 -0800, Kees Cook wrote:
-> On Mon, Nov 23, 2020 at 08:31:30AM -0800, James Bottomley wrote:
-> > Really, no ... something which produces no improvement has no value
-> > at all ... we really shouldn't be wasting maintainer time with it
-> > because it has a cost to merge.  I'm not sure we understand where
-> > the balance lies in value vs cost to merge but I am confident in
-> > the zero value case.
-> 
-> What? We can't measure how many future bugs aren't introduced because
-> the kernel requires explicit case flow-control statements for all new
-> code.
+Hi Jiaxun,
 
-No but we can measure how vulnerable our current coding habits are to
-the mistake this warning would potentially prevent.  I don't think it's
-wrong to extrapolate that if we had no instances at all of prior coding
-problems we likely wouldn't have any in future either making adopting
-the changes needed to enable the warning valueless ... that's the zero
-value case I was referring to above.
+It's my fault, I didn't know to send mail to the mailing list.
 
-Now, what we have seems to be about 6 cases (at least what's been shown
-in this thread) where a missing break would cause potentially user
-visible issues.  That means the value of this isn't zero, but it's not
-a no-brainer massive win either.  That's why I think asking what we've
-invested vs the return isn't a useless exercise.
+We will discuss your suggestions and correct the errors in the code.
 
-> We already enable -Wimplicit-fallthrough globally, so that's not the
-> discussion. The issue is that Clang is (correctly) even more strict
-> than GCC for this, so these are the remaining ones to fix for full
-> Clang coverage too.
-> 
-> People have spent more time debating this already than it would have
-> taken to apply the patches. :)
+I will send a new patch to the mailing list.
 
-You mean we've already spent 90% of the effort to come this far so we
-might as well go the remaining 10% because then at least we get some
-return? It's certainly a clinching argument in defence procurement ...
+Thanks.
 
-> This is about robustness and language wrangling. It's a big code-
-> base, and this is the price of our managing technical debt for
-> permanent robustness improvements. (The numbers I ran from Gustavo's
-> earlier patches were that about 10% of the places adjusted were
-> identified as legitimate bugs being fixed. This final series may be
-> lower, but there are still bugs being found from it -- we need to
-> finish this and shut the door on it for good.)
-
-I got my six patches by analyzing the lwn.net report of the fixes that
-was cited which had 21 of which 50% didn't actually change the emitted
-code, and 25% didn't have a user visible effect.
-
-But the broader point I'm making is just because the compiler people
-come up with a shiny new warning doesn't necessarily mean the problem
-it's detecting is one that causes us actual problems in the code base. 
-I'd really be happier if we had a theory about what classes of CVE or
-bug we could eliminate before we embrace the next new warning.
-
-James
+-Lizhi
 
 
+On 11/23/2020 06:31 PM, Jiaxun Yang wrote:
+> Hi Lizhi,
+>
+> You didn't send the patch to any mail list, is this intentional?
+>
+> 在 2020/11/23 18:03, lizhi01 写道:
+>> Add gmac driver to support LS7A bridge chip.
+>>
+>> Signed-off-by: lizhi01 <lizhi01@loongson.cn>
+>> ---
+>>   arch/mips/configs/loongson3_defconfig              |   4 +-
+>>   drivers/net/ethernet/stmicro/stmmac/Kconfig        |   8 +
+>>   drivers/net/ethernet/stmicro/stmmac/Makefile       |   1 +
+>>   .../net/ethernet/stmicro/stmmac/dwmac-loongson.c   | 194 
+>> +++++++++++++++++++++
+>>   4 files changed, 206 insertions(+), 1 deletion(-)
+>>   create mode 100644 
+>> drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
+>>
+>> diff --git a/arch/mips/configs/loongson3_defconfig 
+>> b/arch/mips/configs/loongson3_defconfig
+>> index 38a817e..2e8d2be 100644
+>> --- a/arch/mips/configs/loongson3_defconfig
+>> +++ b/arch/mips/configs/loongson3_defconfig
+>> @@ -225,7 +225,9 @@ CONFIG_R8169=y
+>>   # CONFIG_NET_VENDOR_SILAN is not set
+>>   # CONFIG_NET_VENDOR_SIS is not set
+>>   # CONFIG_NET_VENDOR_SMSC is not set
+>> -# CONFIG_NET_VENDOR_STMICRO is not set
+>> +CONFIG_NET_VENDOR_STMICR=y
+>> +CONFIG_STMMAC_ETH=y
+>> +CONFIG_DWMAC_LOONGSON=y
+>>   # CONFIG_NET_VENDOR_SUN is not set
+>>   # CONFIG_NET_VENDOR_TEHUTI is not set
+>>   # CONFIG_NET_VENDOR_TI is not set
+>> diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig 
+>> b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+>> index 53f14c5..30117cb 100644
+>> --- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
+>> +++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+>> @@ -230,6 +230,14 @@ config DWMAC_INTEL
+>>         This selects the Intel platform specific bus support for the
+>>         stmmac driver. This driver is used for Intel Quark/EHL/TGL.
+>>   +config DWMAC_LOONGSON
+>> +    tristate "Intel GMAC support"
+>> +    depends on STMMAC_ETH && PCI
+>> +    depends on COMMON_CLK
+>> +    help
+>> +      This selects the Intel platform specific bus support for the
+>> +      stmmac driver.
+>
+> Intel ???
+>
+>> +
+>>   config STMMAC_PCI
+>>       tristate "STMMAC PCI bus support"
+>>       depends on STMMAC_ETH && PCI
+>> diff --git a/drivers/net/ethernet/stmicro/stmmac/Makefile 
+>> b/drivers/net/ethernet/stmicro/stmmac/Makefile
+>> index 24e6145..11ea4569 100644
+>> --- a/drivers/net/ethernet/stmicro/stmmac/Makefile
+>> +++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
+>> @@ -34,4 +34,5 @@ dwmac-altr-socfpga-objs := altr_tse_pcs.o 
+>> dwmac-socfpga.o
+>>     obj-$(CONFIG_STMMAC_PCI)    += stmmac-pci.o
+>>   obj-$(CONFIG_DWMAC_INTEL)    += dwmac-intel.o
+>> +obj-$(CONFIG_DWMAC_LOONGSON)    += dwmac-loongson.o
+>>   stmmac-pci-objs:= stmmac_pci.o
+>> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c 
+>> b/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
+>> new file mode 100644
+>> index 0000000..765412e
+>> --- /dev/null
+>> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
+>> @@ -0,0 +1,194 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +/* Copyright (c) 2020, Loongson Corporation
+>> + */
+>> +
+>> +#include <linux/clk-provider.h>
+>> +#include <linux/pci.h>
+>> +#include <linux/dmi.h>
+>> +#include <linux/device.h>
+>> +#include <linux/of_irq.h>
+>> +#include "stmmac.h"
+>> +
+>> +struct stmmac_pci_info {
+>> +    int (*setup)(struct pci_dev *pdev, struct plat_stmmacenet_data 
+>> *plat);
+>> +};
+>> +
+>> +static void common_default_data(struct plat_stmmacenet_data *plat)
+>> +{
+>> +    plat->clk_csr = 2;
+>> +    plat->has_gmac = 1;
+>> +    plat->force_sf_dma_mode = 1;
+>> +
+>> +    plat->mdio_bus_data->needs_reset = true;
+>> +
+>> +    plat->multicast_filter_bins = HASH_TABLE_SIZE;
+>> +
+>> +    plat->unicast_filter_entries = 1;
+>> +
+>> +    plat->maxmtu = JUMBO_LEN;
+>> +
+>> +    plat->tx_queues_to_use = 1;
+>> +    plat->rx_queues_to_use = 1;
+>> +
+>> +    plat->tx_queues_cfg[0].use_prio = false;
+>> +    plat->rx_queues_cfg[0].use_prio = false;
+>> +
+>> +    plat->rx_queues_cfg[0].pkt_route = 0x0;
+>> +}
+>> +
+>> +static int loongson_default_data(struct pci_dev *pdev, struct 
+>> plat_stmmacenet_data *plat)
+>> +{
+>> +    common_default_data(plat);
+>> +
+>> +    plat->bus_id = pci_dev_id(pdev);
+>> +    plat->phy_addr = -1;
+>> +    plat->interface = PHY_INTERFACE_MODE_GMII;
+>> +
+>> +    plat->dma_cfg->pbl = 32;
+>> +    plat->dma_cfg->pblx8 = true;
+>> +
+>> +    plat->multicast_filter_bins = 256;
+>> +
+>> +    return 0;
+>> +}
+>
+>
+> You can merge common and Loongson config as the driver is solely used 
+> by Loongson.
+>
+> The callback is not necessary as well...
+>
+>
+>> +
+>> +static const struct stmmac_pci_info loongson_pci_info = {
+>> +    .setup = loongson_default_data,
+>> +};
+>> +
+>> +static int loongson_gmac_probe(struct pci_dev *pdev, const struct 
+>> pci_device_id *id)
+>> +{
+>> +    struct stmmac_pci_info *info = (struct stmmac_pci_info 
+>> *)id->driver_data;
+>> +    struct plat_stmmacenet_data *plat;
+>> +    struct stmmac_resources res;
+>> +    int ret, i, lpi_irq;
+>> +    struct device_node *np;
+>> +
+>> +    plat = devm_kzalloc(&pdev->dev, sizeof(struct 
+>> plat_stmmacenet_data), GFP_KERNEL);
+>> +    if (!plat)
+>> +        return -ENOMEM;
+>> +
+>> +    plat->mdio_bus_data = devm_kzalloc(&pdev->dev, sizeof(struct 
+>> stmmac_mdio_bus_data), GFP_KERNEL);
+>> +    if (!plat->mdio_bus_data) {
+>> +        kfree(plat);
+>> +        return -ENOMEM;
+>> +    }
+>> +
+>> +    plat->dma_cfg = devm_kzalloc(&pdev->dev, sizeof(struct 
+>> stmmac_dma_cfg), GFP_KERNEL);
+>> +    if (!plat->dma_cfg)    {
+>> +        kfree(plat);
+>> +        return -ENOMEM;
+>> +    }
+>> +
+>> +    ret = pci_enable_device(pdev);
+>> +    if (ret) {
+>> +        dev_err(&pdev->dev, "%s: ERROR: failed to enable device\n", 
+>> __func__);
+>> +        kfree(plat);
+>> +        return ret;
+>> +    }
+>> +
+>> +    for (i = 0; i < PCI_STD_NUM_BARS; i++) {
+>> +        if (pci_resource_len(pdev, i) == 0)
+>> +            continue;
+>> +        ret = pcim_iomap_regions(pdev, BIT(0), pci_name(pdev));
+>> +        if (ret)
+>> +            return ret;
+>> +        break;
+>> +    }
+>
+>
+> The BAR order is fixed on Loongson so there is no need to check it one 
+> by one.
+>
+> Simply use BAR0 instead.
+>
+>
+>> +
+>> +    pci_set_master(pdev);
+>> +
+>> +    ret = info->setup(pdev, plat);
+>> +    if (ret)
+>> +        return ret;
+>> +
+>> +    pci_enable_msi(pdev);
+>> +
+>> +    memset(&res, 0, sizeof(res));
+>> +    res.addr = pcim_iomap_table(pdev)[i];
+>> +    res.irq = pdev->irq;
+>> +    res.wol_irq = pdev->irq;
+>> +
+>> +    np = dev_of_node(&pdev->dev);
+>
+>
+> Please check the node earlier and bailing out in case if there is no 
+> node.
+>
+> Also you should get both IRQs via DT to avoid misordering.
+>
+>
+>> +    lpi_irq = of_irq_get_byname(np, "eth_lpi");
+>> +    res.lpi_irq = lpi_irq;
+>> +
+>> +    return stmmac_dvr_probe(&pdev->dev, plat, &res);
+>> +}
+>> +
+>> +static void loongson_gmac_remove(struct pci_dev *pdev)
+>> +{
+>> +    int i;
+>> +
+>> +    stmmac_dvr_remove(&pdev->dev);
+>> +
+>> +    for (i = 0; i < PCI_STD_NUM_BARS; i++) {
+>> +        if (pci_resource_len(pdev, i) == 0)
+>> +            continue;
+>> +        pcim_iounmap_regions(pdev, BIT(i));
+>> +        break;
+>> +    }
+>> +
+>> +    pci_disable_device(pdev);
+>> +}
+>> +
+>> +static int __maybe_unused loongson_eth_pci_suspend(struct device *dev)
+>> +{
+>> +    struct pci_dev *pdev = to_pci_dev(dev);
+>> +    int ret;
+>> +
+>> +    ret = stmmac_suspend(dev);
+>> +    if (ret)
+>> +        return ret;
+>> +
+>> +    ret = pci_save_state(pdev);
+>> +    if (ret)
+>> +        return ret;
+>> +
+>> +    pci_disable_device(pdev);
+>> +    pci_wake_from_d3(pdev, true);
+>> +    return 0;
+>> +}
+>> +
+>> +static int __maybe_unused loongson_eth_pci_resume(struct device *dev)
+>> +{
+>> +    struct pci_dev *pdev = to_pci_dev(dev);
+>> +    int ret;
+>> +
+>> +    pci_restore_state(pdev);
+>> +    pci_set_power_state(pdev, PCI_D0);
+>> +
+>> +    ret = pci_enable_device(pdev);
+>> +    if (ret)
+>> +        return ret;
+>> +
+>> +    pci_set_master(pdev);
+>> +
+>> +    return stmmac_resume(dev);
+>> +}
+>> +
+>> +static SIMPLE_DEV_PM_OPS(loongson_eth_pm_ops, 
+>> loongson_eth_pci_suspend, loongson_eth_pci_resume);
+>> +
+>> +#define PCI_DEVICE_ID_LOONGSON_GMAC 0x7a03
+>> +
+>> +static const struct pci_device_id loongson_gmac_table[] = {
+>> +    { PCI_DEVICE_DATA(LOONGSON, GMAC, &loongson_pci_info) },
+>> +    {}
+>> +};
+>> +MODULE_DEVICE_TABLE(pci, loongson_gmac_table);
+>> +
+>> +struct pci_driver loongson_gmac_driver = {
+>> +    .name = "loongson gmac",
+>> +    .id_table = loongson_gmac_table,
+>> +    .probe = loongson_gmac_probe,
+>> +    .remove = loongson_gmac_remove,
+>> +    .driver = {
+>> +        .pm = &loongson_eth_pm_ops,
+>> +    },
+>> +};
+>> +
+>> +module_pci_driver(loongson_gmac_driver);
+>> +
+>> +MODULE_DESCRIPTION("Loongson DWMAC PCI driver");
+>> +MODULE_AUTHOR("Zhi Li <lizhi01@loongson.com>");
+>> +MODULE_LICENSE("GPL v2");
+>
+>
+> Thanks
+>
+> - Jiaxun
 
