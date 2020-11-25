@@ -2,118 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E25CE2C3B86
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 10:03:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6ED02C3B8F
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 10:06:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727149AbgKYJCq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 04:02:46 -0500
-Received: from www62.your-server.de ([213.133.104.62]:48552 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726103AbgKYJCl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 04:02:41 -0500
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1khqhB-0004Nu-0C; Wed, 25 Nov 2020 10:02:37 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1khqhA-000MzQ-RB; Wed, 25 Nov 2020 10:02:36 +0100
-Subject: Re: [PATCH][V2] libbpf: add support for canceling cached_cons advance
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     Li RongQing <lirongqing@baidu.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>
-References: <1606202474-8119-1-git-send-email-lirongqing@baidu.com>
- <CAJ8uoz0WNm6no8NRehgUH5RiGgvjJkKeD-Yyoah8xJerpLhgdg@mail.gmail.com>
- <fe9eeaa5-d40a-9be4-a96b-cdd80095da47@iogearbox.net>
- <CAJ8uoz1JdmHc9nwa4cY20S-GN62RAJUEPGY4LcmdTM4FjuGTow@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <aa4cdc17-1e54-7782-2b64-14d7a3ac892e@iogearbox.net>
-Date:   Wed, 25 Nov 2020 10:02:36 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726132AbgKYJGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 04:06:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46058 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725776AbgKYJGV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 04:06:21 -0500
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C023C0613D6
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 01:06:21 -0800 (PST)
+Received: by mail-ed1-x543.google.com with SMTP id k1so1686681eds.13
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 01:06:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=v4gNQmDRHbR01jUPm5SYwLaqDhJEPbPGmwjuf8wFdX8=;
+        b=kpPifnF6YK8KEwZbf7ulYTIOe65yvPOgYzVylt2M23h/mjcCibmfUmC+bERkFtDYzY
+         pqVdfd/+KgOI6WZAKoNHZxwoY2pH1CG+Ll10ZeBNVTyoP8DFx1MeT5yyk0MJnatBa3mP
+         f+GImqlX72fKrEJ1V6LDZ4w37gGa+v5Znwi0wkWkG6u/6ZMNLDh1EwaJhcj11jPPvAfX
+         vZsDgoUtw5Jw6L+0xvD8Jf7OGmSlAABpifFIqNYR1PJRccXqK4wm3fhHdk5uygvyYVIo
+         7NLyU2fiH970XHNHJPaSKOLk1XZHjDUt+oNDMamoiVJdelAWHdaYH2QcHyCdLqCTjfP2
+         ZUmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=v4gNQmDRHbR01jUPm5SYwLaqDhJEPbPGmwjuf8wFdX8=;
+        b=nDJ7hpzhLIVNvaqc4XePJe0QdJLC2bI/juNPokazTT7xw9fmoBl4dGVp7qs3/Y1HCW
+         SRx35vTAmiLwOA0D0Ya0viWEltPL7FVTDLEIgB2li2M6M3aBoAylh2g9Ib/1wwnRjnqW
+         JCfASWFELNc+B80ejFwKyp/DtQFWcH/hCeRGLwkYO5jFiocrkq1mXewx1f04EVljgP1N
+         7qzTZVWBnVCQyxZJ5c4pkMDVCcvR2cRsLbUyZG9Xfj6wen3bhBDaA/4DJi20xdbiqvPO
+         pVVFRjoHPwusYUUEVMyc9ah1es3M9DQtFkbnI1he95Icwp/UB33dJyOXqePyG9h3oKJ+
+         AnVA==
+X-Gm-Message-State: AOAM533Zw/tGMlL8iqGGZ84AG6UYJPgMbiu5X20yskVCn8vJcFOv72Y3
+        0MPJDATpLsxGZFes4UqrqrvzE5wkv2Y=
+X-Google-Smtp-Source: ABdhPJxwSAnZ+nf5yhBT04qrDGVstKwu9//EGa3SSFc8pBIRpUPMGJWkTirjVj+PBN1ktrKrXKRRUQ==
+X-Received: by 2002:a50:c04c:: with SMTP id u12mr1241414edd.188.1606295179876;
+        Wed, 25 Nov 2020 01:06:19 -0800 (PST)
+Received: from [192.168.0.110] ([77.127.85.120])
+        by smtp.gmail.com with ESMTPSA id d23sm819443edp.36.2020.11.25.01.06.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 25 Nov 2020 01:06:19 -0800 (PST)
+Subject: Re: [PATCH net] netdevice.h: Fix unintentional disable of ALL_FOR_ALL
+ features on upper device
+To:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Tariq Toukan <tariqt@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+References: <20201123141256.14208-1-tariqt@nvidia.com>
+ <CANn89iKRVyTZg-tNQvo_Ub-RZ_A+OOQQY8Py3J9fx=NOZXF9Qw@mail.gmail.com>
+ <9bf8ba40-cd40-2af6-d358-48dd98526434@gmail.com>
+ <CANn89iK8MXp0QmZbBKdMDHxi7A4afrVdBtgQq7cSY5SRefwraA@mail.gmail.com>
+ <20201125032549.GA13059@gondor.apana.org.au>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+Message-ID: <329952c5-b208-1781-5604-2b408796ec90@gmail.com>
+Date:   Wed, 25 Nov 2020 11:06:16 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-In-Reply-To: <CAJ8uoz1JdmHc9nwa4cY20S-GN62RAJUEPGY4LcmdTM4FjuGTow@mail.gmail.com>
+In-Reply-To: <20201125032549.GA13059@gondor.apana.org.au>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25998/Tue Nov 24 14:16:50 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/25/20 9:30 AM, Magnus Karlsson wrote:
-> On Tue, Nov 24, 2020 at 10:58 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->> On 11/24/20 9:12 AM, Magnus Karlsson wrote:
->>> On Tue, Nov 24, 2020 at 8:33 AM Li RongQing <lirongqing@baidu.com> wrote:
->>>>
->>>> Add a new function for returning descriptors the user received
->>>> after an xsk_ring_cons__peek call. After the application has
->>>> gotten a number of descriptors from a ring, it might not be able
->>>> to or want to process them all for various reasons. Therefore,
->>>> it would be useful to have an interface for returning or
->>>> cancelling a number of them so that they are returned to the ring.
->>>>
->>>> This patch adds a new function called xsk_ring_cons__cancel that
->>>> performs this operation on nb descriptors counted from the end of
->>>> the batch of descriptors that was received through the peek call.
->>>>
->>>> Signed-off-by: Li RongQing <lirongqing@baidu.com>
->>>> [ Magnus Karlsson: rewrote changelog ]
->>>> Cc: Magnus Karlsson <magnus.karlsson@intel.com>
->>>> ---
->>>> diff with v1: fix the building, and rewrote changelog
->>>>
->>>>    tools/lib/bpf/xsk.h | 6 ++++++
->>>>    1 file changed, 6 insertions(+)
->>>>
->>>> diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
->>>> index 1069c46364ff..1719a327e5f9 100644
->>>> --- a/tools/lib/bpf/xsk.h
->>>> +++ b/tools/lib/bpf/xsk.h
->>>> @@ -153,6 +153,12 @@ static inline size_t xsk_ring_cons__peek(struct xsk_ring_cons *cons,
->>>>           return entries;
->>>>    }
->>>>
->>>> +static inline void xsk_ring_cons__cancel(struct xsk_ring_cons *cons,
->>>> +                                        size_t nb)
->>>> +{
->>>> +       cons->cached_cons -= nb;
->>>> +}
->>>> +
->>>>    static inline void xsk_ring_cons__release(struct xsk_ring_cons *cons, size_t nb)
->>>>    {
->>>>           /* Make sure data has been read before indicating we are done
->>>> --
->>>> 2.17.3
->>>
->>> Thank you RongQing.
->>>
->>> Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+
+
+On 11/25/2020 5:25 AM, Herbert Xu wrote:
+> On Tue, Nov 24, 2020 at 11:48:35AM +0100, Eric Dumazet wrote:
 >>
->> @Magnus: shouldn't the xsk_ring_cons__cancel() nb type be '__u32 nb' instead?
+>> Well, the 'increment' part was suggesting the function was adding
+>> flags, not removing them.
 > 
-> All the other interfaces have size_t as the type for "nb". It is kind
-> of weird as a __u32 would have made more sense, but cannot actually
-> remember why I chose a size_t two years ago. But for consistency with
-> the other interfaces, let us keep it a size_t for now. I will do some
-> research around the reason.
+> The idea of the increment part is that we're adding a constituent
+> device, not that we're adding features.  There have always been
+> features which were conjunctions, i.e., they must be supported by
+> all underlying devices for them to be enabled on the virtual device.
+> 
+> Your use of the increment function is unusual, as you're not adding
+> features that belong to one underlying device, but rather you're
+> trying to enable a feature on the virtual device unconditionally.
+> 
+>> We might ask Herbert Xu if we :
+>>
+>> 1) Need to comment the function, or change its name to be more descriptive.
+>> 2) Change the behavior (as you suggested)
+>> 3) Other choice.
+> 
+> I think Tariq's patch is fine, although a comment should be added
+> to netdev_add_tso_features as this use of the increment function
+> is nonstandard.
+> 
 
-It's actually a bit of a mix currently which is what got me confused:
+Thanks Herbert, I'll add a comment and re-spin.
 
-static inline __u32 xsk_prod_nb_free(struct xsk_ring_prod *r, __u32 nb)
-static inline __u32 xsk_cons_nb_avail(struct xsk_ring_cons *r, __u32 nb)
-static inline size_t xsk_ring_prod__reserve(struct xsk_ring_prod *prod, size_t nb, __u32 *idx)
-static inline void xsk_ring_prod__submit(struct xsk_ring_prod *prod, size_t nb)
-static inline size_t xsk_ring_cons__peek(struct xsk_ring_cons *cons, size_t nb, __u32 *idx)
-static inline void xsk_ring_cons__release(struct xsk_ring_cons *cons, size_t nb)
-
-(I can take it in as-is, but would be nice to clean it up a bit to avoid confusion.)
-
-Thanks,
-Daniel
+> Thanks,
+> 
