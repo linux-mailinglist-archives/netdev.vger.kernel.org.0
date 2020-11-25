@@ -2,45 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CD732C4AAC
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 23:18:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA40F2C4AB4
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 23:18:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730414AbgKYWLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 17:11:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48626 "EHLO mail.kernel.org"
+        id S1732404AbgKYWOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 17:14:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49344 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730419AbgKYWLj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Nov 2020 17:11:39 -0500
+        id S1731403AbgKYWOz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Nov 2020 17:14:55 -0500
 Received: from lt-jalone-7480.mtl.com (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C1C7F206D9;
-        Wed, 25 Nov 2020 22:11:37 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7154C206D9;
+        Wed, 25 Nov 2020 22:14:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606342298;
-        bh=N/kXEo9GLhv/gq1WfsNtE0guD9npFWg+7sGbyIyFg98=;
+        s=default; t=1606342494;
+        bh=CIIEI1N0OEO62kS72zlu3fHgH6X1ZJ5oaZRnW06r38s=;
         h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=QHeIvuC0dLr8ofLeXqmhinzxfHCyJ0lQUPMH8V8XaACdFQjlSwq+3cK6XcdxxIqlg
-         6rEWRc01XfPZxJ8qEbjMKCNpicf338/8gXLy0+frmWYC43O3UliB7ZnU/L3Pe3h0K4
-         iLJI8PxZFxnmWHoTbcyGzcbIyCsHcOmoy+oxC+yE=
-Message-ID: <01cf3d2bbaf3f090affa642e402c799a565f8ea9.camel@kernel.org>
-Subject: Re: [PATCH net 2/2] net: Call skb destructor on
- NAPI_GRO_FREE_STOLEN_HEAD
+        b=Gvzd97BejmdO/GMpkGwWhybt+R/yYsfmsXbzko7OqFNbMyJTYeJKkvZsQuVH1vqCs
+         JAtysf6OD8apv45Y0g9s1KHSWXLzc0yITC+E0j1jCh1l4V9ZK+6TuySAS0gFpbbRNJ
+         yjKybazjk4TSn5/QDthtFkhBJEwSsDQdbVo/Bof4=
+Message-ID: <1c07586328a66c3fe9bc084e2c45590b854aed9c.camel@kernel.org>
+Subject: Re: [PATCH net 1/2] net/tls: Protect from calling tls_dev_del for
+ TLS RX twice
 From:   Saeed Mahameed <saeed@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Date:   Wed, 25 Nov 2020 14:11:36 -0800
-In-Reply-To: <CANn89iL2p33Z4LDUOb-6YOw+AiNiOhNWOjAu1+_N8_3aKDCFVQ@mail.gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>
+Date:   Wed, 25 Nov 2020 14:14:53 -0800
+In-Reply-To: <20201118171300.71db0be3@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 References: <20201117203355.389661-1-saeedm@nvidia.com>
-         <20201117203355.389661-2-saeedm@nvidia.com>
-         <20201118112207.2b8bea44@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-         <CANn89iJ=430ri_x_NbfnV2jrP3S0nWK+VUWf0WgrCVBz2oLNfA@mail.gmail.com>
-         <20201118121422.512ced1d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-         <CANn89iL2p33Z4LDUOb-6YOw+AiNiOhNWOjAu1+_N8_3aKDCFVQ@mail.gmail.com>
+         <20201118171300.71db0be3@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
@@ -49,98 +42,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-11-18 at 21:21 +0100, Eric Dumazet wrote:
-> On Wed, Nov 18, 2020 at 9:14 PM Jakub Kicinski <kuba@kernel.org>
-> wrote:
-> > On Wed, 18 Nov 2020 21:02:29 +0100 Eric Dumazet wrote:
-> > > On Wed, Nov 18, 2020 at 8:22 PM Jakub Kicinski <kuba@kernel.org>
-> > > wrote:
-> > > > On Tue, 17 Nov 2020 12:33:55 -0800 Saeed Mahameed wrote:
-> > > > > From: Maxim Mikityanskiy <maximmi@mellanox.com>
-> > > > > 
-> > > > > All GRO flows except one call skb->destructor, however,
-> > > > > GRO_MERGED_FREE
-> > > > > doesn't do it in case of NAPI_GRO_FREE_STOLEN_HEAD. For
-> > > > > better
-> > > > > consistency and to add resiliency against the drivers that
-> > > > > may pass SKBs
-> > > > > with a destructor, this patch changes
-> > > > > napi_skb_free_stolen_head to use
-> > > > > skb_release_head_state, which should perform all the needed
-> > > > > cleanups,
-> > > > > including a call to the destructor. This way the code of
-> > > > > GRO_MERGED_FREE
-> > > > > becomes similar to kfree_skb_partial.
-> > > > > 
-> > > > > Fixes: e44699d2c280 ("net: handle NAPI_GRO_FREE_STOLEN_HEAD
-> > > > > case also in napi_frags_finish()")
-> > > > > Fixes: d7e8883cfcf4 ("net: make GRO aware of skb->head_frag")
-> > > > > Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-> > > > > Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-> > > > > Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-> > > > 
-> > > > CC Eric for GRO expertise.
-> > > 
-> > > Thanks for CCing me.
-> > > 
-> > > Since when drivers can pass funny skbs with destructors ???
-> > > 
-> > > Can we please stop adding more cycles to _already_ expensive GRO
-> > > ?
+On Wed, 2020-11-18 at 17:13 -0800, Jakub Kicinski wrote:
+> On Tue, 17 Nov 2020 12:33:54 -0800 Saeed Mahameed wrote:
+> > From: Maxim Mikityanskiy <maximmi@mellanox.com>
 > > 
-> > I don't think they do that today much (save for the ktls
-> > optimization
-> > in mlx5 Maxim is fixing separately). But I believe the idea of
-> > early
-> > demux in XDP had been floated in the past.
+> > tls_device_offload_cleanup_rx doesn't clear tls_ctx->netdev after
+> > calling tls_dev_del if TLX TX offload is also enabled. Clearing
+> > tls_ctx->netdev gets postponed until tls_device_gc_task. It leaves
+> > a
+> > time frame when tls_device_down may get called and call tls_dev_del
+> > for
+> > RX one extra time, confusing the driver, which may lead to a crash.
 > > 
-> > If we don't want that to happen we should document it (stating the
-> > obvious).
+> > This patch corrects this racy behavior by adding a flag to prevent
+> > tls_device_down from calling tls_dev_del the second time.
+> > 
+> > Fixes: e8f69799810c ("net/tls: Add generic NIC offload
+> > infrastructure")
+> > Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
+> > Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+> > ---
+> > For -stable: 5.3
+> > 
+> >  include/net/tls.h    | 1 +
+> >  net/tls/tls_device.c | 3 ++-
+> >  2 files changed, 3 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/include/net/tls.h b/include/net/tls.h
+> > index baf1e99d8193..a0deddfde412 100644
+> > --- a/include/net/tls.h
+> > +++ b/include/net/tls.h
+> > @@ -199,6 +199,7 @@ enum tls_context_flags {
+> >  	 * to be atomic.
+> >  	 */
+> >  	TLS_TX_SYNC_SCHED = 1,
 > 
-> This is a patch targeting the net tree, with Fixes: tag pretending
-> this is an old bug.
+> Please add a comment here explaining that this bit is set when device
+> state is partially released, and ctx->netdev cannot be cleared but RX
+> side was already removed.
 > 
-> How can we possibly merge two skbs if they have destructors ?
+> > +	TLS_RX_DEV_RELEASED = 2,
+> >  };
+> >  
+> >  struct cipher_context {
+> > diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+> > index cec86229a6a0..b2261caac6be 100644
+> > --- a/net/tls/tls_device.c
+> > +++ b/net/tls/tls_device.c
+> > @@ -1241,6 +1241,7 @@ void tls_device_offload_cleanup_rx(struct
+> > sock *sk)
+> >  
+> >  	netdev->tlsdev_ops->tls_dev_del(netdev, tls_ctx,
+> >  					TLS_OFFLOAD_CTX_DIR_RX);
+> > +	set_bit(TLS_RX_DEV_RELEASED, &tls_ctx->flags);
 > 
-> We do not make sure it is even possible.
+> Would the semantics of the bit be clearer if we only set the bit in
+> an
+> else branch below and renamed it TLS_RX_DEV_CLOSED?
 > 
-> Many destructors track skb->truesize against a socket wmem_alloc or
-> rmem_alloc,
-> this stuff can not possibly work, unless stronger checks in GRO,
-> since
-> GRO changes skb->truesize
-> without checking skb->destructor.
-> 
-> If skb has a destructor, just bypass GRO completely, this is the only
-> thing we can do.
-> This would be quite unfortunate to add such a check "just because
-> someone tries to fool us"
+> Otherwise it could be confusing to the reader that his bit is only
+> set
+> here but not in tls_device_down().
 > 
 
-Thanks Eric !!
-We don't actually need this patch, as the kTLS SKBs are handled locally
-in the drivers, I think we don't need to add any extra check in the
-datapath and just enforce the policy somehow with debug macros
-maybe WARN_ONE_ONCE()
+Thanks Jakub, Maxim handled both comments, I will send V2 and drop the
+other patch !
 
-I will drop this patch, but the XDP folks who are going to implement
-XDP early demux should take care of this themselves.
-
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index
-> 4bfdcd6b20e8836e2884c51c6ce349ed54130bfa..76f0a627b6a1ee02339a724ecb6
-> e4dbade80501b
-> 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -5920,7 +5920,7 @@ static enum gro_result dev_gro_receive(struct
-> napi_struct *napi, struct sk_buff
->         int same_flow;
->         int grow;
-> 
-> -       if (netif_elide_gro(skb->dev))
-> +       if (netif_elide_gro(skb->dev) || skb->destructor)
->                 goto normal;
-> 
->         gro_head = gro_list_prepare(napi, skb);
 
