@@ -2,374 +2,265 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E4802C39C4
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 08:14:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADE992C39CF
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 08:14:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728013AbgKYHHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 02:07:49 -0500
-Received: from mail.loongson.cn ([114.242.206.163]:50304 "EHLO loongson.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726760AbgKYHHr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Nov 2020 02:07:47 -0500
-Received: from [10.130.0.150] (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9AxqtC4Ar5f+mwWAA--.36698S3;
-        Wed, 25 Nov 2020 15:07:36 +0800 (CST)
-Subject: Re: [PATCH] stmmac: pci: Add support for LS7A bridge chip
-To:     Jiaxun Yang <jiaxun.yang@flygoat.com>, davem@davemloft.net,
-        kuba@kernel.org, mcoquelin.stm32@gmail.com
-References: <1606125828-15742-1-git-send-email-lizhi01@loongson.cn>
- <38b7eede-18de-f37c-eed9-8b59c2daf3dd@flygoat.com>
-Cc:     lixuefeng@loongson.com, gaojuxin@loongson.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-From:   Zhi Li <lizhi01@loongson.cn>
-Message-ID: <a218ab75-4c0c-62bb-f5b9-a9d692d38880@loongson.cn>
-Date:   Wed, 25 Nov 2020 15:07:35 +0800
-User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:45.0) Gecko/20100101
- Thunderbird/45.4.0
+        id S1726827AbgKYHNn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 02:13:43 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:2617 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726032AbgKYHNm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 02:13:42 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fbe04290000>; Tue, 24 Nov 2020 23:13:45 -0800
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 25 Nov
+ 2020 07:13:41 +0000
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.168)
+ by HQMAIL109.nvidia.com (172.20.187.15) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Wed, 25 Nov 2020 07:13:41 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HoAKnr/6Db+YiNkNiV368F2ELWlbnIMagx5iNamvqVupSIPYAAgXUp2HYt1FR0/EAUBAQtQtLbplgxda18rFIP52RHSk7ANkV7HhtNbKB4Z4UpTpxhFqFlv81o/IKSDnTaH63t8KT7AsYJ9dQbXziWvwMdRmIwDiuNBoI4l2a2D+rWadoJvju3eiHsO/GSiGF3DZuXvbwhr16M+Dz/L7qabgESVAQEiIlmKVpnRrZWjUnA0TVnWnAu88JBsm9kGZ15FRlCKJ7hXdgRbqhoSWxHxbKvgmKU58oNgayGgKlT7/hgw2ouxXun8fRc+EkJNe01tfCUHTEXtTtLb0DQu8sQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vh2plEGQ1MleHEGB1363xjbcIuRP8FZquVhzk5mwafw=;
+ b=cIPGBi30bJjt7f6ohsNxRn3wRs1b4MmotX7d05Z8lDc/HxR8CnCSBuFA756IT7O8Wkc335L9S1O4GlH5+pLAqK+9Am2luiMlKouS1hqm44pwrORPjEy8/0dJYNqSVg8GNz3Ys9IGmhbIHadKEuOUl+LMvoduIaH95gLfNqi5C45i0sX5HqGNXLCJ4CooG6ajAyRmWF9YiikTO9YxvCNFXCAmCw/zWZiVRSU2a+XdauChtpL5FtULyGjNtpqtf8qllLcnx2fiPBXAUtgyMz6ozhfsS1N8dfwwkQxsJyzYgf31fuTSw8LboJtvGLVzxcagG/Dx14x4/qF2Xw0aBP+ZLQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from BY5PR12MB4322.namprd12.prod.outlook.com (2603:10b6:a03:20a::20)
+ by BYAPR12MB2616.namprd12.prod.outlook.com (2603:10b6:a03:66::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3541.25; Wed, 25 Nov
+ 2020 07:13:40 +0000
+Received: from BY5PR12MB4322.namprd12.prod.outlook.com
+ ([fe80::a1d2:bfae:116c:2f24]) by BY5PR12MB4322.namprd12.prod.outlook.com
+ ([fe80::a1d2:bfae:116c:2f24%5]) with mapi id 15.20.3589.030; Wed, 25 Nov 2020
+ 07:13:40 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@nvidia.com>
+Subject: RE: [PATCH net 1/2] devlink: Hold rtnl lock while reading netdev
+ attributes
+Thread-Topic: [PATCH net 1/2] devlink: Hold rtnl lock while reading netdev
+ attributes
+Thread-Index: AQHWwJaWgnmE6THF8EOAVnewN97U66nX4UcAgACKclA=
+Date:   Wed, 25 Nov 2020 07:13:40 +0000
+Message-ID: <BY5PR12MB43224995BFBAE791FE75552ADCFA0@BY5PR12MB4322.namprd12.prod.outlook.com>
+References: <20201122061257.60425-1-parav@nvidia.com>
+        <20201122061257.60425-2-parav@nvidia.com>
+ <20201124142910.14cadc35@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201124142910.14cadc35@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
+x-originating-ip: [49.207.223.255]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b49d398c-41ff-4023-79df-08d89111a2f6
+x-ms-traffictypediagnostic: BYAPR12MB2616:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR12MB2616E2261A6EE50503E50D9FDCFA0@BYAPR12MB2616.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: fRFyKwGzTJb2b6hcQOBp2fkh215PDJFFl1arAU6qLX/XVyasjhGUN0Ro4fraIAcmnTveOdtUFmKjgekRBWbaVSpl51PFhfjyM4OaqvvPWys/F/Ig6v2Dzy4MulTM4VAnAL7nZrhMN4SDR1aCXQSIxS1XJiTxS02fcF3OhzNBjmGeseAOTUhabY1j1u1SZ8NxIR7d/EncJ9JFUWE9p3+V1d0kcCWKYv16qy8/XcMqAtnVWylgKUtfMQ+TCf02fQqY6TlCIjbrwViRk8vylJ+efot3ir7rbuWsiDtIVXBi+fNdvAk2qE2j2KCWcRKg/k9W4QE10+dWA4Oq4JSzy/Kkcw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4322.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(136003)(396003)(346002)(39860400002)(376002)(55236004)(7696005)(6916009)(6506007)(71200400001)(86362001)(54906003)(4326008)(2906002)(478600001)(107886003)(52536014)(316002)(5660300002)(64756008)(66446008)(66946007)(76116006)(66556008)(8936002)(26005)(33656002)(186003)(8676002)(83380400001)(9686003)(55016002)(66476007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?rQpeJ54toLEs/sRs7c8mfXoi4Zto3JRBinI9SZKdlMTBXS6KXJoqT/in2sBB?=
+ =?us-ascii?Q?IJ8DLgYPHLYSsZaXplx8QdnX9oVvECOPlcmZRcte/VKz0CTv1U3EAy0rAWMv?=
+ =?us-ascii?Q?VvgBq8eJlug6xJKZ9Glz2HkEDClTjYgRiTFF0D/p1GN30zUAWc/Kkn9dxljl?=
+ =?us-ascii?Q?mndQ7WDo9Ez0MZPYFK9QtuA3MXtCVve0b0Jl5cgUSdG+DTNHJrIheLjryfd+?=
+ =?us-ascii?Q?zMQlzxexIt/L9e2uYjtfp8s5Yxp0ljHSxYVaMSn9HL1pLWYqEFJ6efFl3GgI?=
+ =?us-ascii?Q?K2VNM6JXBijPRKT6wltDxNCqzXaUpimIcWScwb2c995Djcvt8YWnnbN5pFOn?=
+ =?us-ascii?Q?xuzjNQRSg6KyJ74HAtk4h9P8tMpulrksdL1z8SQKfmTSCuP8KeVmDPQJQjXg?=
+ =?us-ascii?Q?16CPuonE0pJamZ+pxOVnnJr8Pa3S21w6oYFNEBlaI9+rg6dK1DXmowEwF7oG?=
+ =?us-ascii?Q?d+LJE29ZGhAcEcoduDqltB4WUkEr+ffbrMTLUOgFABYOhX0bAUCrTT9+QOkn?=
+ =?us-ascii?Q?WJ1ML0AtxoGFepeQHc8pNBMlsxmxGzFneePp8c13M1y5Kx9VJ7j+/CwMvC5O?=
+ =?us-ascii?Q?m2nA/ArpfzjhgFSffZ5mkX64hrB/b8Ph5y/c+q0vc0pUiKF/9SGvt8bVvGHt?=
+ =?us-ascii?Q?ZzgNE3D/1cj/WTW6CXON6YUMVB4+qVEQfUdKx3b6fVyKlk6zsE6hmFUTiusN?=
+ =?us-ascii?Q?96keEqk8bPfeWcEIQ733TD5G95uZ3HniAVa8NuumOOdPlpL8fBuNEnKrLBwz?=
+ =?us-ascii?Q?o+rl2H4MmQ/xwaJim7aQ0oDWqsCRqUnNOFuRY/I4afx7aVet4NesdYpZpPPg?=
+ =?us-ascii?Q?CO1lWu9TILrRdIQuaAZhZlOB6GzRqSOxOcb0SHqdY+IQ3fk4YZSr+VzjUqOZ?=
+ =?us-ascii?Q?Jp1bFiwwOOTtajyzamoX/q1BuiR2Lm/xpx+/QgmA1x3ihVrHn+gBXeq35+t1?=
+ =?us-ascii?Q?yczBTWuqTmTEiIgUhnBV0jlzaO0LOKu6LVZ7JOTDt9k=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <38b7eede-18de-f37c-eed9-8b59c2daf3dd@flygoat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf9AxqtC4Ar5f+mwWAA--.36698S3
-X-Coremail-Antispam: 1UD129KBjvJXoW3JrykJF1UXFy5AF47KFWDCFg_yoWfXr4kpF
-        Z5Aa98Gry8Xr1xKw1vqrWDXF90yrWftryj9rW7ta4a9Fyqyry0qFyDKrWUur97ArWDGF12
-        v3WjkrsF9Fs8Ga7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUU9ab7Iv0xC_Cr1lb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I2
-        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
-        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xII
-        jxv20xvEc7CjxVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I
-        8E87Iv6xkF7I0E14v26rxl6s0DM2vYz4IE04k24VAvwVAKI4IrM2AIxVAIcxkEcVAq07x2
-        0xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18Mc
-        Ij6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lc7I2
-        V7IY0VAS07AlzVAYIcxG8wCY02Avz4vE14v_GF4l42xK82IYc2Ij64vIr41l4I8I3I0E4I
-        kC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWU
-        WwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr
-        0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWr
-        Zr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr0_Gr
-        UvcSsGvfC2KfnxnUUI43ZEXa7IU8J3ktUUUUU==
-X-CM-SenderInfo: xol2xxqqr6z05rqj20fqof0/
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4322.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b49d398c-41ff-4023-79df-08d89111a2f6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Nov 2020 07:13:40.6423
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 0EGKqnDEI5QKJQ9haL2Pz0zeLG2+IHqB8mo/oOueAumlD/zXgc87G9oF6gmjG6jIOZ//dRWs5pXUx0fT5sXU0A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2616
+X-OriginatorOrg: Nvidia.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1606288425; bh=vh2plEGQ1MleHEGB1363xjbcIuRP8FZquVhzk5mwafw=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:From:To:
+         CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
+         In-Reply-To:Accept-Language:Content-Language:X-MS-Has-Attach:
+         X-MS-TNEF-Correlator:authentication-results:x-originating-ip:
+         x-ms-publictraffictype:x-ms-office365-filtering-correlation-id:
+         x-ms-traffictypediagnostic:x-ms-exchange-transport-forked:
+         x-microsoft-antispam-prvs:x-ms-oob-tlc-oobclassifiers:
+         x-ms-exchange-senderadcheck:x-microsoft-antispam:
+         x-microsoft-antispam-message-info:x-forefront-antispam-report:
+         x-ms-exchange-antispam-messagedata:Content-Type:
+         Content-Transfer-Encoding:MIME-Version:
+         X-MS-Exchange-CrossTenant-AuthAs:
+         X-MS-Exchange-CrossTenant-AuthSource:
+         X-MS-Exchange-CrossTenant-Network-Message-Id:
+         X-MS-Exchange-CrossTenant-originalarrivaltime:
+         X-MS-Exchange-CrossTenant-fromentityheader:
+         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+         X-MS-Exchange-CrossTenant-userprincipalname:
+         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+        b=IuJQdcmE7OszVZ2Qb3rfO2N1OOlVwsQmsYnIkVeiAGCTV2K9xUsv3oqqSIIq9u4Ct
+         CVtXIVoTxwCb2AxLTnlp6FtirWUqnLPN2FqdmZcmnFnrMm1e8WuQfzRvN2JVqz8CRD
+         fmfpj2IdObytZiNFaEbso5xxChIxMO1YE6iebzoB1Mh8/J8KU+oWAatd31GvzYnW9M
+         hkwxdeilmRRzLhqOf/fwFeXJsw3XnqamOdGvLm5zVeqM5kOvuaPMqsIIJ32QWZmtgZ
+         WPWft64cRX1iDjDH9GwkuqeYyp4dQUTib78XN0Ynxzv3P3K/RxCQcuVYcb+QhjD9QQ
+         WecDVmHwDAumA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jiaxun,
-
-It's my fault, I didn't know to send mail to the mailing list.
-
-We will discuss your suggestions and correct the errors in the code.
-
-I will send a new patch to the mailing list.
-
-Thanks.
-
--Lizhi
 
 
-On 11/23/2020 06:31 PM, Jiaxun Yang wrote:
-> Hi Lizhi,
->
-> You didn't send the patch to any mail list, is this intentional?
->
-> 在 2020/11/23 18:03, lizhi01 写道:
->> Add gmac driver to support LS7A bridge chip.
->>
->> Signed-off-by: lizhi01 <lizhi01@loongson.cn>
->> ---
->>   arch/mips/configs/loongson3_defconfig              |   4 +-
->>   drivers/net/ethernet/stmicro/stmmac/Kconfig        |   8 +
->>   drivers/net/ethernet/stmicro/stmmac/Makefile       |   1 +
->>   .../net/ethernet/stmicro/stmmac/dwmac-loongson.c   | 194 
->> +++++++++++++++++++++
->>   4 files changed, 206 insertions(+), 1 deletion(-)
->>   create mode 100644 
->> drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
->>
->> diff --git a/arch/mips/configs/loongson3_defconfig 
->> b/arch/mips/configs/loongson3_defconfig
->> index 38a817e..2e8d2be 100644
->> --- a/arch/mips/configs/loongson3_defconfig
->> +++ b/arch/mips/configs/loongson3_defconfig
->> @@ -225,7 +225,9 @@ CONFIG_R8169=y
->>   # CONFIG_NET_VENDOR_SILAN is not set
->>   # CONFIG_NET_VENDOR_SIS is not set
->>   # CONFIG_NET_VENDOR_SMSC is not set
->> -# CONFIG_NET_VENDOR_STMICRO is not set
->> +CONFIG_NET_VENDOR_STMICR=y
->> +CONFIG_STMMAC_ETH=y
->> +CONFIG_DWMAC_LOONGSON=y
->>   # CONFIG_NET_VENDOR_SUN is not set
->>   # CONFIG_NET_VENDOR_TEHUTI is not set
->>   # CONFIG_NET_VENDOR_TI is not set
->> diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig 
->> b/drivers/net/ethernet/stmicro/stmmac/Kconfig
->> index 53f14c5..30117cb 100644
->> --- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
->> +++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
->> @@ -230,6 +230,14 @@ config DWMAC_INTEL
->>         This selects the Intel platform specific bus support for the
->>         stmmac driver. This driver is used for Intel Quark/EHL/TGL.
->>   +config DWMAC_LOONGSON
->> +    tristate "Intel GMAC support"
->> +    depends on STMMAC_ETH && PCI
->> +    depends on COMMON_CLK
->> +    help
->> +      This selects the Intel platform specific bus support for the
->> +      stmmac driver.
->
-> Intel ???
->
->> +
->>   config STMMAC_PCI
->>       tristate "STMMAC PCI bus support"
->>       depends on STMMAC_ETH && PCI
->> diff --git a/drivers/net/ethernet/stmicro/stmmac/Makefile 
->> b/drivers/net/ethernet/stmicro/stmmac/Makefile
->> index 24e6145..11ea4569 100644
->> --- a/drivers/net/ethernet/stmicro/stmmac/Makefile
->> +++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
->> @@ -34,4 +34,5 @@ dwmac-altr-socfpga-objs := altr_tse_pcs.o 
->> dwmac-socfpga.o
->>     obj-$(CONFIG_STMMAC_PCI)    += stmmac-pci.o
->>   obj-$(CONFIG_DWMAC_INTEL)    += dwmac-intel.o
->> +obj-$(CONFIG_DWMAC_LOONGSON)    += dwmac-loongson.o
->>   stmmac-pci-objs:= stmmac_pci.o
->> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c 
->> b/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
->> new file mode 100644
->> index 0000000..765412e
->> --- /dev/null
->> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
->> @@ -0,0 +1,194 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/* Copyright (c) 2020, Loongson Corporation
->> + */
->> +
->> +#include <linux/clk-provider.h>
->> +#include <linux/pci.h>
->> +#include <linux/dmi.h>
->> +#include <linux/device.h>
->> +#include <linux/of_irq.h>
->> +#include "stmmac.h"
->> +
->> +struct stmmac_pci_info {
->> +    int (*setup)(struct pci_dev *pdev, struct plat_stmmacenet_data 
->> *plat);
->> +};
->> +
->> +static void common_default_data(struct plat_stmmacenet_data *plat)
->> +{
->> +    plat->clk_csr = 2;
->> +    plat->has_gmac = 1;
->> +    plat->force_sf_dma_mode = 1;
->> +
->> +    plat->mdio_bus_data->needs_reset = true;
->> +
->> +    plat->multicast_filter_bins = HASH_TABLE_SIZE;
->> +
->> +    plat->unicast_filter_entries = 1;
->> +
->> +    plat->maxmtu = JUMBO_LEN;
->> +
->> +    plat->tx_queues_to_use = 1;
->> +    plat->rx_queues_to_use = 1;
->> +
->> +    plat->tx_queues_cfg[0].use_prio = false;
->> +    plat->rx_queues_cfg[0].use_prio = false;
->> +
->> +    plat->rx_queues_cfg[0].pkt_route = 0x0;
->> +}
->> +
->> +static int loongson_default_data(struct pci_dev *pdev, struct 
->> plat_stmmacenet_data *plat)
->> +{
->> +    common_default_data(plat);
->> +
->> +    plat->bus_id = pci_dev_id(pdev);
->> +    plat->phy_addr = -1;
->> +    plat->interface = PHY_INTERFACE_MODE_GMII;
->> +
->> +    plat->dma_cfg->pbl = 32;
->> +    plat->dma_cfg->pblx8 = true;
->> +
->> +    plat->multicast_filter_bins = 256;
->> +
->> +    return 0;
->> +}
->
->
-> You can merge common and Loongson config as the driver is solely used 
-> by Loongson.
->
-> The callback is not necessary as well...
->
->
->> +
->> +static const struct stmmac_pci_info loongson_pci_info = {
->> +    .setup = loongson_default_data,
->> +};
->> +
->> +static int loongson_gmac_probe(struct pci_dev *pdev, const struct 
->> pci_device_id *id)
->> +{
->> +    struct stmmac_pci_info *info = (struct stmmac_pci_info 
->> *)id->driver_data;
->> +    struct plat_stmmacenet_data *plat;
->> +    struct stmmac_resources res;
->> +    int ret, i, lpi_irq;
->> +    struct device_node *np;
->> +
->> +    plat = devm_kzalloc(&pdev->dev, sizeof(struct 
->> plat_stmmacenet_data), GFP_KERNEL);
->> +    if (!plat)
->> +        return -ENOMEM;
->> +
->> +    plat->mdio_bus_data = devm_kzalloc(&pdev->dev, sizeof(struct 
->> stmmac_mdio_bus_data), GFP_KERNEL);
->> +    if (!plat->mdio_bus_data) {
->> +        kfree(plat);
->> +        return -ENOMEM;
->> +    }
->> +
->> +    plat->dma_cfg = devm_kzalloc(&pdev->dev, sizeof(struct 
->> stmmac_dma_cfg), GFP_KERNEL);
->> +    if (!plat->dma_cfg)    {
->> +        kfree(plat);
->> +        return -ENOMEM;
->> +    }
->> +
->> +    ret = pci_enable_device(pdev);
->> +    if (ret) {
->> +        dev_err(&pdev->dev, "%s: ERROR: failed to enable device\n", 
->> __func__);
->> +        kfree(plat);
->> +        return ret;
->> +    }
->> +
->> +    for (i = 0; i < PCI_STD_NUM_BARS; i++) {
->> +        if (pci_resource_len(pdev, i) == 0)
->> +            continue;
->> +        ret = pcim_iomap_regions(pdev, BIT(0), pci_name(pdev));
->> +        if (ret)
->> +            return ret;
->> +        break;
->> +    }
->
->
-> The BAR order is fixed on Loongson so there is no need to check it one 
-> by one.
->
-> Simply use BAR0 instead.
->
->
->> +
->> +    pci_set_master(pdev);
->> +
->> +    ret = info->setup(pdev, plat);
->> +    if (ret)
->> +        return ret;
->> +
->> +    pci_enable_msi(pdev);
->> +
->> +    memset(&res, 0, sizeof(res));
->> +    res.addr = pcim_iomap_table(pdev)[i];
->> +    res.irq = pdev->irq;
->> +    res.wol_irq = pdev->irq;
->> +
->> +    np = dev_of_node(&pdev->dev);
->
->
-> Please check the node earlier and bailing out in case if there is no 
-> node.
->
-> Also you should get both IRQs via DT to avoid misordering.
->
->
->> +    lpi_irq = of_irq_get_byname(np, "eth_lpi");
->> +    res.lpi_irq = lpi_irq;
->> +
->> +    return stmmac_dvr_probe(&pdev->dev, plat, &res);
->> +}
->> +
->> +static void loongson_gmac_remove(struct pci_dev *pdev)
->> +{
->> +    int i;
->> +
->> +    stmmac_dvr_remove(&pdev->dev);
->> +
->> +    for (i = 0; i < PCI_STD_NUM_BARS; i++) {
->> +        if (pci_resource_len(pdev, i) == 0)
->> +            continue;
->> +        pcim_iounmap_regions(pdev, BIT(i));
->> +        break;
->> +    }
->> +
->> +    pci_disable_device(pdev);
->> +}
->> +
->> +static int __maybe_unused loongson_eth_pci_suspend(struct device *dev)
->> +{
->> +    struct pci_dev *pdev = to_pci_dev(dev);
->> +    int ret;
->> +
->> +    ret = stmmac_suspend(dev);
->> +    if (ret)
->> +        return ret;
->> +
->> +    ret = pci_save_state(pdev);
->> +    if (ret)
->> +        return ret;
->> +
->> +    pci_disable_device(pdev);
->> +    pci_wake_from_d3(pdev, true);
->> +    return 0;
->> +}
->> +
->> +static int __maybe_unused loongson_eth_pci_resume(struct device *dev)
->> +{
->> +    struct pci_dev *pdev = to_pci_dev(dev);
->> +    int ret;
->> +
->> +    pci_restore_state(pdev);
->> +    pci_set_power_state(pdev, PCI_D0);
->> +
->> +    ret = pci_enable_device(pdev);
->> +    if (ret)
->> +        return ret;
->> +
->> +    pci_set_master(pdev);
->> +
->> +    return stmmac_resume(dev);
->> +}
->> +
->> +static SIMPLE_DEV_PM_OPS(loongson_eth_pm_ops, 
->> loongson_eth_pci_suspend, loongson_eth_pci_resume);
->> +
->> +#define PCI_DEVICE_ID_LOONGSON_GMAC 0x7a03
->> +
->> +static const struct pci_device_id loongson_gmac_table[] = {
->> +    { PCI_DEVICE_DATA(LOONGSON, GMAC, &loongson_pci_info) },
->> +    {}
->> +};
->> +MODULE_DEVICE_TABLE(pci, loongson_gmac_table);
->> +
->> +struct pci_driver loongson_gmac_driver = {
->> +    .name = "loongson gmac",
->> +    .id_table = loongson_gmac_table,
->> +    .probe = loongson_gmac_probe,
->> +    .remove = loongson_gmac_remove,
->> +    .driver = {
->> +        .pm = &loongson_eth_pm_ops,
->> +    },
->> +};
->> +
->> +module_pci_driver(loongson_gmac_driver);
->> +
->> +MODULE_DESCRIPTION("Loongson DWMAC PCI driver");
->> +MODULE_AUTHOR("Zhi Li <lizhi01@loongson.com>");
->> +MODULE_LICENSE("GPL v2");
->
->
-> Thanks
->
-> - Jiaxun
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Wednesday, November 25, 2020 3:59 AM
+>=20
+> On Sun, 22 Nov 2020 08:12:56 +0200 Parav Pandit wrote:
+> > A netdevice of a devlink port can be moved to different net namespace
+> > than its parent devlink instance.
+> > This scenario occurs when devlink reload is not used for maintaining
+> > backward compatibility.
+> >
+> > When netdevice is undergoing migration to net namespace, its ifindex
+> > and name may change.
+> >
+> > In such use case, devlink port query may read stale netdev attributes.
+> >
+> > Fix it by reading them under rtnl lock.
+> >
+> > Fixes: bfcd3a466172 ("Introduce devlink infrastructure")
+> > Signed-off-by: Parav Pandit <parav@nvidia.com>
+> > ---
+> >  net/core/devlink.c | 30 ++++++++++++++++++++++++------
+> >  1 file changed, 24 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/net/core/devlink.c b/net/core/devlink.c index
+> > acc29d5157f4..6135ef5972ce 100644
+> > --- a/net/core/devlink.c
+> > +++ b/net/core/devlink.c
+> > @@ -775,6 +775,23 @@ devlink_nl_port_function_attrs_put(struct sk_buff
+> *msg, struct devlink_port *por
+> >  	return err;
+> >  }
+> >
+> > +static int devlink_nl_port_netdev_fill(struct sk_buff *msg, struct
+> > +devlink_port *devlink_port) {
+> > +	struct net_device *netdev =3D devlink_port->type_dev;
+> > +	int err;
+> > +
+> > +	ASSERT_RTNL();
+> > +	if (!netdev)
+> > +		return 0;
+> > +
+> > +	err =3D nla_put_u32(msg, DEVLINK_ATTR_PORT_NETDEV_IFINDEX,
+> > +netdev->ifindex);
+>=20
+> The line wrapping was correct, please keep in under 80. Please tell your =
+colleges
+> at Mellanox.
+>=20
+> > +	if (err)
+> > +		goto done;
+>=20
+> 	return err;
+>=20
+> > +	err =3D nla_put_string(msg, DEVLINK_ATTR_PORT_NETDEV_NAME,
+> > +netdev->name);
+>=20
+> 	return nla_put_...
+>=20
+> > +done:
+> > +	return err;
+> > +}
+> > +
+> >  static int devlink_nl_port_fill(struct sk_buff *msg, struct devlink *d=
+evlink,
+> >  				struct devlink_port *devlink_port,
+> >  				enum devlink_command cmd, u32 portid, @@ -
+> 792,6 +809,8 @@ static
+> > int devlink_nl_port_fill(struct sk_buff *msg, struct devlink *devlink,
+> >  	if (nla_put_u32(msg, DEVLINK_ATTR_PORT_INDEX, devlink_port-
+> >index))
+> >  		goto nla_put_failure;
+> >
+> > +	/* Hold rtnl lock while accessing port's netdev attributes. */
+> > +	rtnl_lock();
+> >  	spin_lock_bh(&devlink_port->type_lock);
+> >  	if (nla_put_u16(msg, DEVLINK_ATTR_PORT_TYPE, devlink_port->type))
+> >  		goto nla_put_failure_type_locked;
+> > @@ -800,13 +819,10 @@ static int devlink_nl_port_fill(struct sk_buff *m=
+sg,
+> struct devlink *devlink,
+> >  			devlink_port->desired_type))
+> >  		goto nla_put_failure_type_locked;
+> >  	if (devlink_port->type =3D=3D DEVLINK_PORT_TYPE_ETH) {
+> > -		struct net_device *netdev =3D devlink_port->type_dev;
+> > +		int err;
+>=20
+> What's the point of this local variable?
+>=20
+I will avoid refactor for now, so above comment doesn't need to be addresse=
+d.
+> > -		if (netdev &&
+> > -		    (nla_put_u32(msg, DEVLINK_ATTR_PORT_NETDEV_IFINDEX,
+> > -				 netdev->ifindex) ||
+> > -		     nla_put_string(msg, DEVLINK_ATTR_PORT_NETDEV_NAME,
+> > -				    netdev->name)))
+> > +		err =3D devlink_nl_port_netdev_fill(msg, devlink_port);
+> > +		if (err)
+>=20
+> just put the call in the if ()
+Ok.
+>=20
+> >  			goto nla_put_failure_type_locked;
+> >  	}
+> >  	if (devlink_port->type =3D=3D DEVLINK_PORT_TYPE_IB) {
+>=20
+>=20
+> Honestly this patch is doing too much for a fix.
+>=20
+> All you need is the RTNL lock and then add:
+>=20
+Ok. I will differ the refactor to later point.
 
+> +               struct net *net =3D devlink_net(devlink_port->devlink);
+>                 struct net_device *netdev =3D devlink_port->type_dev;
+>=20
+>                 if (netdev &&
+> +                   net_eq(net, dev_net(netdev)) &&
+>                     (nla_put_u32(msg, DEVLINK_ATTR_PORT_NETDEV_IFINDEX,
+>                                  netdev->ifindex) ||
+>                      nla_put_string(msg, DEVLINK_ATTR_PORT_NETDEV_NAME,
+>=20
+>=20
+> You can do refactoring later in net-next. Maybe even add a check that dri=
+vers
+> which support reload set namespace local on their netdevs.
+This will break the backward compatibility as orchestration for VFs are not=
+ using devlink reload, which is supported very recently.
+But yes, for SF who doesn't have backward compatibility issue, as soon as i=
+nitial series is merged, I will mark it as local, so that orchestration doe=
+sn't start on wrong foot.
