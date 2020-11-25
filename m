@@ -2,122 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8F372C3B1B
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 09:33:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5AEC2C3B26
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 09:34:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726812AbgKYIbG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 03:31:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40636 "EHLO
+        id S1726515AbgKYIdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 03:33:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726515AbgKYIbF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 03:31:05 -0500
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A57C0613D4;
-        Wed, 25 Nov 2020 00:31:05 -0800 (PST)
-Received: by mail-pg1-x541.google.com with SMTP id w4so1751011pgg.13;
-        Wed, 25 Nov 2020 00:31:05 -0800 (PST)
+        with ESMTP id S1725287AbgKYIdZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 03:33:25 -0500
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1701BC0613D4
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 00:33:21 -0800 (PST)
+Received: by mail-pf1-x442.google.com with SMTP id q10so1662639pfn.0
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 00:33:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=N7xGopky69OBXYiirtoLdMN6Zr9cEz2IQpL5ojSkxnM=;
-        b=Xk6NMfOL3m5WhIAFhwkEIqOHkI16g7MRWX6o+UdNUxBLjRHs/n9n7viSWmiHsKSmA2
-         zju2iLn/g6TfHUsdXJK61M4kCTYQMwvrc0twhq9HOJGQt5bqAJgHDiwF18UTmfp7JLBQ
-         OBQOwMdsDKalNEdHzSzzgOqRPWT41e3F3IAX32kCSAj4X76q4iNV5HPmwe2+4TidUS3L
-         86yIoIOZNg0n8T1zcBKXvBB/Ld4BeLLhCQfU2h5Dlu8PmPtzKA8vg/Vm4rjkF4u3WHzP
-         Fjpjs8HL1UzixIJwP57/ZMEhEdkOCLl8JNv9dOMpAiGW2RC9zp85zSQPi+yIUD47gRdH
-         ZS6g==
+        bh=L7u8tuTuSm8ghjOH6e9+EEtngo0gcd0IGL/XJf0nIO8=;
+        b=oozjlueywfdZ+jbKMi9EuDKhHqsbsrxSP7KZ2ijkxSpYe0uOAkrhq3Pa3yDjscMC9m
+         ThoYP+7oBEE6NyDN8gDv4/zGCa+aJw9oMNHqOv4jxprtApnlvh9YTkt5zTc55Njycs+B
+         D7nMXXFycCcOc9nO5C480lEGHjjU1JCYA1qsy3/aSTxTLAKWr5vuGJfvMXmCMI7Wb7y2
+         RTlohVHC5TBugXPi6E3hzz2P7N5w1YKou5N2hNk7WBiEPNcqm0kcIZTnCXtxvdF7SI58
+         NF2dqd8SP898pyVmU0+xL41aAjdL4NbwfESQsLjaIqWaqTnb64lW0mcgbZ0vKsC2hIZt
+         Ig6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=N7xGopky69OBXYiirtoLdMN6Zr9cEz2IQpL5ojSkxnM=;
-        b=VVq81uZ0l7GfPzcKYg0sFtpl+QLQnxa/raNxhCqa/a+W+0EH8CuRBrArg8dhwfSP9z
-         WMKTP1H4kP255HUeqFRJffff++zlCrnjjiYCHGBtarTNZk/3fJ5u8xEr1wcdN6VjLt2/
-         DYpxaIUgO0VkwqTfqKMcogcXjMR0lBZi3R8GMizbMxHixWgZddONd8fVK0pQG01FdMIz
-         9i9Gk74lqpYZroy4wPDnQKyAIdXoMFDbYYLNYRdni6l6r7pxhro3+2tHf4mJ2aOq2kTJ
-         cINfTyEhqWOK6umQdMZ7uw/y19ZO29+aCqu+DnLthgWQNR1MxH9tXMJDwryivs/HUumu
-         s0qA==
-X-Gm-Message-State: AOAM53274/p+CzHsGavOSnvVBmdDrwPfDk8l0dxB4paQ43wzLT7eXdjC
-        XN5JL5xVWMuYDjTjxCz+B3xNJEvJrSydI5lCX5k=
-X-Google-Smtp-Source: ABdhPJweLpimAZFICk7o14nG9tAxizh24vU608v80QOUQtpP+fVDzRK5HR1hWu1fqCBKcZKXSSD2OTU/f7UsdxGjAGc=
-X-Received: by 2002:a62:2bd0:0:b029:18a:df0f:dd61 with SMTP id
- r199-20020a622bd00000b029018adf0fdd61mr2168919pfr.19.1606293065179; Wed, 25
- Nov 2020 00:31:05 -0800 (PST)
+        bh=L7u8tuTuSm8ghjOH6e9+EEtngo0gcd0IGL/XJf0nIO8=;
+        b=gmvxzkw6ZZDHa1t06HQqryX5+wvONZ20ppudrnRHiu2OA15S7LJ0W8576H9YzQ1bcc
+         WAg5mtPz4K228T+17VKkUc7lid4IJUGY3nttJS88DIB4gtSpP1twsJY96oZ+ZGTxoa7R
+         uhgdHlICMoD6zi9EsU/a9Qy4vbXGkKaC/Kni48c3wE0ntNGss2dS9zmmPBt5s7fneWIE
+         dSMTiR38nqBu9bDtn1CmNSRT56bFyaBIKwSi2rjANHosp1AULsZ762R2u8tEnNb08l4K
+         pnMBQohnNb8SchEnuDv+Z9SLcmD+gC5yUF19v/AVl4/YmylJm2cUBx9Vr950zEgXYyTl
+         TTlw==
+X-Gm-Message-State: AOAM533maFVqQjAIr+7tbBUf9fgxxijHcGa0Zdlt3kIehkk64PM9cqlM
+        MoA51HW7I7lY2DqmbCb2HQ41UimSh5vsL5wiWms=
+X-Google-Smtp-Source: ABdhPJyBo/Fu11h7nyPmF/y9s1I+up1sp5xg1rRMGbUL/l66bJ8WjcDUitCvtlCg0O5D6w+K850E+Tc6yxdcv1mccUE=
+X-Received: by 2002:a17:90a:4687:: with SMTP id z7mr2806684pjf.168.1606293200711;
+ Wed, 25 Nov 2020 00:33:20 -0800 (PST)
 MIME-Version: 1.0
-References: <1606202474-8119-1-git-send-email-lirongqing@baidu.com>
- <CAJ8uoz0WNm6no8NRehgUH5RiGgvjJkKeD-Yyoah8xJerpLhgdg@mail.gmail.com> <fe9eeaa5-d40a-9be4-a96b-cdd80095da47@iogearbox.net>
-In-Reply-To: <fe9eeaa5-d40a-9be4-a96b-cdd80095da47@iogearbox.net>
+References: <1606143915-25335-1-git-send-email-yanjunz@nvidia.com> <c3472d5f-54da-2e20-2c3c-3f6690de6f04@iogearbox.net>
+In-Reply-To: <c3472d5f-54da-2e20-2c3c-3f6690de6f04@iogearbox.net>
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Wed, 25 Nov 2020 09:30:53 +0100
-Message-ID: <CAJ8uoz1JdmHc9nwa4cY20S-GN62RAJUEPGY4LcmdTM4FjuGTow@mail.gmail.com>
-Subject: Re: [PATCH][V2] libbpf: add support for canceling cached_cons advance
+Date:   Wed, 25 Nov 2020 09:33:09 +0100
+Message-ID: <CAJ8uoz3WssKhD_CRhJSHRQDAB7nrkjz1P8Uaozxy3UwLZWnNaw@mail.gmail.com>
+Subject: Re: [PATCH v3 1/1] xdp: remove the function xsk_map_inc
 To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Li RongQing <lirongqing@baidu.com>,
+Cc:     Zhu Yanjun <yanjunz@nvidia.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>
+        Zhu Yanjun <zyjzyj2000@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 24, 2020 at 10:58 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+On Wed, Nov 25, 2020 at 1:02 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
 >
-> On 11/24/20 9:12 AM, Magnus Karlsson wrote:
-> > On Tue, Nov 24, 2020 at 8:33 AM Li RongQing <lirongqing@baidu.com> wrote:
-> >>
-> >> Add a new function for returning descriptors the user received
-> >> after an xsk_ring_cons__peek call. After the application has
-> >> gotten a number of descriptors from a ring, it might not be able
-> >> to or want to process them all for various reasons. Therefore,
-> >> it would be useful to have an interface for returning or
-> >> cancelling a number of them so that they are returned to the ring.
-> >>
-> >> This patch adds a new function called xsk_ring_cons__cancel that
-> >> performs this operation on nb descriptors counted from the end of
-> >> the batch of descriptors that was received through the peek call.
-> >>
-> >> Signed-off-by: Li RongQing <lirongqing@baidu.com>
-> >> [ Magnus Karlsson: rewrote changelog ]
-> >> Cc: Magnus Karlsson <magnus.karlsson@intel.com>
-> >> ---
-> >> diff with v1: fix the building, and rewrote changelog
-> >>
-> >>   tools/lib/bpf/xsk.h | 6 ++++++
-> >>   1 file changed, 6 insertions(+)
-> >>
-> >> diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
-> >> index 1069c46364ff..1719a327e5f9 100644
-> >> --- a/tools/lib/bpf/xsk.h
-> >> +++ b/tools/lib/bpf/xsk.h
-> >> @@ -153,6 +153,12 @@ static inline size_t xsk_ring_cons__peek(struct xsk_ring_cons *cons,
-> >>          return entries;
-> >>   }
-> >>
-> >> +static inline void xsk_ring_cons__cancel(struct xsk_ring_cons *cons,
-> >> +                                        size_t nb)
-> >> +{
-> >> +       cons->cached_cons -= nb;
-> >> +}
-> >> +
-> >>   static inline void xsk_ring_cons__release(struct xsk_ring_cons *cons, size_t nb)
-> >>   {
-> >>          /* Make sure data has been read before indicating we are done
-> >> --
-> >> 2.17.3
+> On 11/23/20 4:05 PM, Zhu Yanjun wrote:
+> > From: Zhu Yanjun <zyjzyj2000@gmail.com>
 > >
-> > Thank you RongQing.
+> > The function xsk_map_inc is a simple wrapper of bpf_map_inc and
+> > always returns zero. As such, replacing this function with bpf_map_inc
+> > and removing the test code.
 > >
-> > Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > Signed-off-by: Zhu Yanjun <zyjzyj2000@gmail.com>
+> > ---
+> >   net/xdp/xsk.c    |  2 +-
+> >   net/xdp/xsk.h    |  1 -
+> >   net/xdp/xskmap.c | 13 +------------
+> >   3 files changed, 2 insertions(+), 14 deletions(-)
+> >
+> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> > index cfbec3989a76..a3c1f07d77d8 100644
+> > --- a/net/xdp/xsk.c
+> > +++ b/net/xdp/xsk.c
+> > @@ -548,7 +548,7 @@ static struct xsk_map *xsk_get_map_list_entry(struct xdp_sock *xs,
+> >       node = list_first_entry_or_null(&xs->map_list, struct xsk_map_node,
+> >                                       node);
+> >       if (node) {
+> > -             WARN_ON(xsk_map_inc(node->map));
+> > +             bpf_map_inc(&node->map->map);
+> >               map = node->map;
+> >               *map_entry = node->map_entry;
+> >       }
+> > diff --git a/net/xdp/xsk.h b/net/xdp/xsk.h
+> > index b9e896cee5bb..0aad25c0e223 100644
+> > --- a/net/xdp/xsk.h
+> > +++ b/net/xdp/xsk.h
+> > @@ -41,7 +41,6 @@ static inline struct xdp_sock *xdp_sk(struct sock *sk)
+> >
+> >   void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
+> >                            struct xdp_sock **map_entry);
+> > -int xsk_map_inc(struct xsk_map *map);
+> >   void xsk_map_put(struct xsk_map *map);
+> >   void xsk_clear_pool_at_qid(struct net_device *dev, u16 queue_id);
+> >   int xsk_reg_pool_at_qid(struct net_device *dev, struct xsk_buff_pool *pool,
+> > diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
+> > index 49da2b8ace8b..6b7e9a72b101 100644
+> > --- a/net/xdp/xskmap.c
+> > +++ b/net/xdp/xskmap.c
+> > @@ -11,12 +11,6 @@
+> >
+> >   #include "xsk.h"
+> >
+> > -int xsk_map_inc(struct xsk_map *map)
+> > -{
+> > -     bpf_map_inc(&map->map);
+> > -     return 0;
+> > -}
+> > -
+> >   void xsk_map_put(struct xsk_map *map)
+> >   {
 >
-> @Magnus: shouldn't the xsk_ring_cons__cancel() nb type be '__u32 nb' instead?
+> So, the xsk_map_put() is defined as:
+>
+>    void xsk_map_put(struct xsk_map *map)
+>    {
+>          bpf_map_put(&map->map);
+>    }
+>
+> What is the reason to get rid of xsk_map_inc() but not xsk_map_put() wrapper?
+> Can't we just remove both while we're at it?
 
-All the other interfaces have size_t as the type for "nb". It is kind
-of weird as a __u32 would have made more sense, but cannot actually
-remember why I chose a size_t two years ago. But for consistency with
-the other interfaces, let us keep it a size_t for now. I will do some
-research around the reason.
+Yes, why not. Makes sense.
+
+Yanjun, could you please send a new version that removes this too?
+
+Thank you both!
 
 > Thanks,
 > Daniel
