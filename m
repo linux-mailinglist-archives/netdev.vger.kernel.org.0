@@ -2,278 +2,307 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAC8E2C37C0
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 05:02:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23AAE2C37DA
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 05:02:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727417AbgKYDoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 22:44:37 -0500
-Received: from m42-4.mailgun.net ([69.72.42.4]:19394 "EHLO m42-4.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726533AbgKYDog (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 22:44:36 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1606275875; h=Content-Transfer-Encoding: Content-Type:
- MIME-Version: Message-ID: Date: Subject: In-Reply-To: References: Cc:
- To: From: Sender; bh=Ge28rP6SbSH4Lai1lEMWW7z009l0Z3qjpj91J969oSI=; b=CYPNvZhKas1kOHxKzF5r/Ji8XkVhedQleC8yqaS8VpHz/pbiguYvD43JBlJgC152a2ERqv6A
- APcLHKGOnQYjR7oQXc7GsWutgcJOCnuC3/CKz4UIJ23AmxrFVaCjrOFozDeRqKdCv2hen23Z
- 9vmAJSyU7fhJRGFPFf9xU4u5KNM=
-X-Mailgun-Sending-Ip: 69.72.42.4
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 5fbdd31a7ef0a8d843ef8196 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 25 Nov 2020 03:44:26
- GMT
-Sender: pillair=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 1D932C43462; Wed, 25 Nov 2020 03:44:26 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from Pillair (unknown [49.205.247.166])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: pillair)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7B0A2C433ED;
-        Wed, 25 Nov 2020 03:44:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7B0A2C433ED
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=pillair@codeaurora.org
-From:   "Rakesh Pillai" <pillair@codeaurora.org>
-To:     "'Doug Anderson'" <dianders@chromium.org>
-Cc:     "'Abhishek Kumar'" <kuabhs@chromium.org>,
-        "'Kalle Valo'" <kvalo@codeaurora.org>,
-        "'LKML'" <linux-kernel@vger.kernel.org>,
-        "'ath10k'" <ath10k@lists.infradead.org>,
-        "'Brian Norris'" <briannorris@chromium.org>,
-        "'linux-wireless'" <linux-wireless@vger.kernel.org>,
-        "'David S. Miller'" <davem@davemloft.net>,
-        "'Jakub Kicinski'" <kuba@kernel.org>,
-        "'netdev'" <netdev@vger.kernel.org>
-References: <20201112200906.991086-1-kuabhs@chromium.org> <20201112200856.v2.1.Ia526132a366886e3b5cf72433d0d58bb7bb1be0f@changeid> <CAD=FV=XKCLgL6Bt+3KfqKByyP5fpwXOh6TNHXAoXkaQJRzjKjQ@mail.gmail.com> <002401d6c242$d78f2140$86ad63c0$@codeaurora.org> <CAD=FV=UnecON-M9eZVQePuNpdygN_E9OtLN495Xe1GL_PA94DQ@mail.gmail.com>
-In-Reply-To: <CAD=FV=UnecON-M9eZVQePuNpdygN_E9OtLN495Xe1GL_PA94DQ@mail.gmail.com>
-Subject: RE: [PATCH v2 1/1] ath10k: add option for chip-id based BDF selection
-Date:   Wed, 25 Nov 2020 09:14:16 +0530
-Message-ID: <002d01d6c2dd$4386d880$ca948980$@codeaurora.org>
+        id S1727397AbgKYEBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 23:01:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55862 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726595AbgKYEBE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 23:01:04 -0500
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C65C0613D4;
+        Tue, 24 Nov 2020 20:01:04 -0800 (PST)
+Received: by mail-lf1-x143.google.com with SMTP id s30so1194886lfc.4;
+        Tue, 24 Nov 2020 20:01:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc;
+        bh=d3sDFGVk0SqwFhBEaUj4npS/6CvmGDBt2IRKkek14HQ=;
+        b=UJk6LZdaErwdVpQF721a2+ZWHGgUXwPf6rS/hoboYQRsEFWClgyN9SafurayeRlLVC
+         xIlIVUSyql2O1tIxPCrOsU9oPDPkBDRpupq0rLJDffEUnPYuKMZbR7d4wg+HZJ2GCj+1
+         HgCLEfzXKjAwqyarmh63zpBKC4yBwEh3yC+f5TjiD3ppHYJMKRy9zPnn+plRaK/1tMaJ
+         anQ2PGlJOyMFuz/mgfc7tgvWJ8jFGnLxz5oGHFoiFmfBLhfJs5E6VOgZUHSj8XxTumoQ
+         6FvOJ2ExOjs2v40+JufgeN6gFYUlVwkDsdz7pa8v6lgUQpOzrxONSqqaEqsCXSMoTinQ
+         crwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc;
+        bh=d3sDFGVk0SqwFhBEaUj4npS/6CvmGDBt2IRKkek14HQ=;
+        b=lF5pWs7xQcYoobNoqUr4riYbUdcpxbnOuCvFo1NR60cPaeyfA3ac4nb42RfQqHUXke
+         KWThlae0avfnRvgkR6KYx2R1x/C2SE81pPCMMBriq7DVjykmugAOjiPG4n52yCN9znOm
+         DY9ke/O5YLZTQ9+2zFOyMl3KgpXvi21vegg3e69aSvzhJqANBR3jNSVGeEGdoONDfbIg
+         CqmWgKjFfxR1FFYBDs+j8p3yK+ZnMOkW5lwRfmGBuf+q2FIaVfIQm6PX+Sgi9E1vbn8g
+         xnEOMFecIx3SDEGj+uJabMW3XZ2BcqsWfxzcOQz4obGt6059RMZa26sl5j4C9x/qKCXQ
+         3NXw==
+X-Gm-Message-State: AOAM531vEUPeG+6oX17QmOL2Y8yKl85rAL7LjUSAv/qZpUqGmXE80A7T
+        VrTKGNmLb3x3uTGunSdvZpaEWeAjzT3MasW9Xfo=
+X-Google-Smtp-Source: ABdhPJzocaWFFHSlgxizbDLyGWgo+jzVOEfkBDkmPEBgJKG12nx78TyiXPEa646/24LGPjMfKnCz4ZFzloAISgGLKHo=
+X-Received: by 2002:a19:ca05:: with SMTP id a5mr547499lfg.571.1606276862567;
+ Tue, 24 Nov 2020 20:01:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQKxMSkDsdRsNwK99YDuloz1ISNQFAKbjoqbAYQwjuUA6sHy1gG3Fmuop+1JeFA=
-Content-Language: en-us
+Received: by 2002:a9a:999:0:b029:97:eac4:b89e with HTTP; Tue, 24 Nov 2020
+ 20:01:01 -0800 (PST)
+In-Reply-To: <20201124141547.GA3316@kozik-lap>
+References: <CGME20201123075658epcms2p5a6237314f7a72a2556545d3f96261c93@epcms2p5>
+ <20201123075658epcms2p5a6237314f7a72a2556545d3f96261c93@epcms2p5>
+ <20201123081940.GA9323@kozik-lap> <CACwDmQDOm6PAyphMiUFizueENMdW3Bo5PvdP_VC_sfBEHc9pMQ@mail.gmail.com>
+ <20201124141547.GA3316@kozik-lap>
+From:   Bongsu Jeon <bongsu.jeon2@gmail.com>
+Date:   Wed, 25 Nov 2020 13:01:01 +0900
+Message-ID: <CACwDmQC_ptQ+R1xLXRzZq=ewDsp2nA5v-Wb44yudcX92y=HQsA@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/2] net: nfc: s3fwrn5: Support a UART interface
+To:     "krzk@kernel.org" <krzk@kernel.org>
+Cc:     Bongsu Jeon <bongsu.jeon@samsung.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-nfc@lists.01.org" <linux-nfc@lists.01.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 11/24/20, krzk@kernel.org <krzk@kernel.org> wrote:
+> On Tue, Nov 24, 2020 at 09:05:52PM +0900, Bongsu Jeon wrote:
+>> On Mon, Nov 23, 2020 at 5:55 PM krzk@kernel.org <krzk@kernel.org> wrote:
+>> > > +static enum s3fwrn5_mode s3fwrn82_uart_get_mode(void *phy_id)
+>> > > +{
+>> > > +     struct s3fwrn82_uart_phy *phy = phy_id;
+>> > > +     enum s3fwrn5_mode mode;
+>> > > +
+>> > > +     mutex_lock(&phy->mutex);
+>> > > +     mode = phy->mode;
+>> > > +     mutex_unlock(&phy->mutex);
+>> > > +     return mode;
+>> > > +}
+>> >
+>> > All this duplicates I2C version. You need to start either reusing
+>> > common
+>> > blocks.
+>> >
+>>
+>> Okay. I will do refactoring on i2c.c and uart.c to make common blocks.
+>>  is it okay to separate a patch for it?
+>
+> Yes, that would be the best - refactor the driver to split some common
+> methods and then in next patch add new s3fwrn82 UART driver.
+>
+>> > > +
+>> > > +static int s3fwrn82_uart_write(void *phy_id, struct sk_buff *out)
+>> > > +{
+>> > > +     struct s3fwrn82_uart_phy *phy = phy_id;
+>> > > +     int err;
+>> > > +
+>> > > +     err = serdev_device_write(phy->ser_dev,
+>> > > +                               out->data, out->len,
+>> > > +                               MAX_SCHEDULE_TIMEOUT);
+>> > > +     if (err < 0)
+>> > > +             return err;
+>> > > +
+>> > > +     return 0;
+>> > > +}
+>> > > +
+>> > > +static const struct s3fwrn5_phy_ops uart_phy_ops = {
+>> > > +     .set_wake = s3fwrn82_uart_set_wake,
+>> > > +     .set_mode = s3fwrn82_uart_set_mode,
+>> > > +     .get_mode = s3fwrn82_uart_get_mode,
+>> > > +     .write = s3fwrn82_uart_write,
+>> > > +};
+>> > > +
+>> > > +static int s3fwrn82_uart_read(struct serdev_device *serdev,
+>> > > +                           const unsigned char *data,
+>> > > +                           size_t count)
+>> > > +{
+>> > > +     struct s3fwrn82_uart_phy *phy =
+>> > > serdev_device_get_drvdata(serdev);
+>> > > +     size_t i;
+>> > > +
+>> > > +     for (i = 0; i < count; i++) {
+>> > > +             skb_put_u8(phy->recv_skb, *data++);
+>> > > +
+>> > > +             if (phy->recv_skb->len < S3FWRN82_NCI_HEADER)
+>> > > +                     continue;
+>> > > +
+>> > > +             if ((phy->recv_skb->len - S3FWRN82_NCI_HEADER)
+>> > > +                             <
+>> > > phy->recv_skb->data[S3FWRN82_NCI_IDX])
+>> > > +                     continue;
+>> > > +
+>> > > +             s3fwrn5_recv_frame(phy->ndev, phy->recv_skb,
+>> > > phy->mode);
+>> > > +             phy->recv_skb = alloc_skb(NCI_SKB_BUFF_LEN,
+>> > > GFP_KERNEL);
+>> > > +             if (!phy->recv_skb)
+>> > > +                     return 0;
+>> > > +     }
+>> > > +
+>> > > +     return i;
+>> > > +}
+>> > > +
+>> > > +static struct serdev_device_ops s3fwrn82_serdev_ops = {
+>> >
+>> > const
+>> >
+>> > > +     .receive_buf = s3fwrn82_uart_read,
+>> > > +     .write_wakeup = serdev_device_write_wakeup,
+>> > > +};
+>> > > +
+>> > > +static const struct of_device_id s3fwrn82_uart_of_match[] = {
+>> > > +     { .compatible = "samsung,s3fwrn82-uart", },
+>> > > +     {},
+>> > > +};
+>> > > +MODULE_DEVICE_TABLE(of, s3fwrn82_uart_of_match);
+>> > > +
+>> > > +static int s3fwrn82_uart_parse_dt(struct serdev_device *serdev)
+>> > > +{
+>> > > +     struct s3fwrn82_uart_phy *phy =
+>> > > serdev_device_get_drvdata(serdev);
+>> > > +     struct device_node *np = serdev->dev.of_node;
+>> > > +
+>> > > +     if (!np)
+>> > > +             return -ENODEV;
+>> > > +
+>> > > +     phy->gpio_en = of_get_named_gpio(np, "en-gpios", 0);
+>> > > +     if (!gpio_is_valid(phy->gpio_en))
+>> > > +             return -ENODEV;
+>> > > +
+>> > > +     phy->gpio_fw_wake = of_get_named_gpio(np, "wake-gpios", 0);
+>> >
+>> > You should not cast it it unsigned int. I'll fix the s3fwrn5 from which
+>> > you copied this apparently.
+>> >
+>>
+>> Okay. I will fix it.
+>>
+>> > > +     if (!gpio_is_valid(phy->gpio_fw_wake))
+>> > > +             return -ENODEV;
+>> > > +
+>> > > +     return 0;
+>> > > +}
+>> > > +
+>> > > +static int s3fwrn82_uart_probe(struct serdev_device *serdev)
+>> > > +{
+>> > > +     struct s3fwrn82_uart_phy *phy;
+>> > > +     int ret = -ENOMEM;
+>> > > +
+>> > > +     phy = devm_kzalloc(&serdev->dev, sizeof(*phy), GFP_KERNEL);
+>> > > +     if (!phy)
+>> > > +             goto err_exit;
+>> > > +
+>> > > +     phy->recv_skb = alloc_skb(NCI_SKB_BUFF_LEN, GFP_KERNEL);
+>> > > +     if (!phy->recv_skb)
+>> > > +             goto err_free;
+>> > > +
+>> > > +     mutex_init(&phy->mutex);
+>> > > +     phy->mode = S3FWRN5_MODE_COLD;
+>> > > +
+>> > > +     phy->ser_dev = serdev;
+>> > > +     serdev_device_set_drvdata(serdev, phy);
+>> > > +     serdev_device_set_client_ops(serdev, &s3fwrn82_serdev_ops);
+>> > > +     ret = serdev_device_open(serdev);
+>> > > +     if (ret) {
+>> > > +             dev_err(&serdev->dev, "Unable to open device\n");
+>> > > +             goto err_skb;
+>> > > +     }
+>> > > +
+>> > > +     ret = serdev_device_set_baudrate(serdev, 115200);
+>> >
+>> > Why baudrate is fixed?
+>> >
+>>
+>> RN82 NFC chip only supports 115200 baudrate for UART.
+>
+> OK, I guess it could be extended in the future for other frequencies, if
+> needed.
+>
+>>
+>> > > +     if (ret != 115200) {
+>> > > +             ret = -EINVAL;
+>> > > +             goto err_serdev;
+>> > > +     }
+>> > > +
+>> > > +     serdev_device_set_flow_control(serdev, false);
+>> > > +
+>> > > +     ret = s3fwrn82_uart_parse_dt(serdev);
+>> > > +     if (ret < 0)
+>> > > +             goto err_serdev;
+>> > > +
+>> > > +     ret = devm_gpio_request_one(&phy->ser_dev->dev,
+>> > > +                                 phy->gpio_en,
+>> > > +                                 GPIOF_OUT_INIT_HIGH,
+>> > > +                                 "s3fwrn82_en");
+>> >
+>> > This is weirdly wrapped.
+>> >
+>>
+>> Did you ask about devem_gpio_request_one function's parenthesis and
+>> parameters?
+>> If it is right, I changed it after i ran the checkpatch.pl --strict and
+>> i saw message like the alignment should match open parenthesis.
+>
+> Yeah, but it does not mean to wrap after each argument. It should be
+> something like:
+>
+>         ret = devm_gpio_request_one(&phy->ser_dev->dev, phy->gpio_en,
+>                                     GPIOF_OUT_INIT_HIGH, "s3fwrn82_en");
+>
+>>
+>> > > +     if (ret < 0)
+>> > > +             goto err_serdev;
+>> > > +
+>> > > +     ret = devm_gpio_request_one(&phy->ser_dev->dev,
+>> > > +                                 phy->gpio_fw_wake,
+>> > > +                                 GPIOF_OUT_INIT_LOW,
+>> > > +                                 "s3fwrn82_fw_wake");
+>> > > +     if (ret < 0)
+>> > > +             goto err_serdev;
+>> > > +
+>> > > +     ret = s3fwrn5_probe(&phy->ndev, phy, &phy->ser_dev->dev,
+>> > > &uart_phy_ops);
+>> > > +     if (ret < 0)
+>> > > +             goto err_serdev;
+>> > > +
+>> > > +     return ret;
+>> > > +
+>> > > +err_serdev:
+>> > > +     serdev_device_close(serdev);
+>> > > +err_skb:
+>> > > +     kfree_skb(phy->recv_skb);
+>> > > +err_free:
+>> > > +     kfree(phy);
+>> >
+>> > Eee.... why? Did you test this code?
+>> >
+>>
+>> I didn't test this code. i just added this code as defense code.
+>> If the error happens, then allocated memory and device will be free
+>> according to the fail case.
+>
+> Really, this won't work. It's kind of obvious why... You cannot use
+> kfree() on memory which is not allocated with kzalloc(). Or IOW, you
+> cannot use it if it is being freed by devm.
+>
+> I doubt that you tested either this or the remove callback because if
+> you did test it, you would see easily:
+>
 
+Thanks to explain it in detail.
 
-> -----Original Message-----
-> From: Doug Anderson <dianders@chromium.org>
-> Sent: Tuesday, November 24, 2020 9:56 PM
-> To: Rakesh Pillai <pillair@codeaurora.org>
-> Cc: Abhishek Kumar <kuabhs@chromium.org>; Kalle Valo
-> <kvalo@codeaurora.org>; LKML <linux-kernel@vger.kernel.org>; ath10k
-> <ath10k@lists.infradead.org>; Brian Norris <briannorris@chromium.org>;
-> linux-wireless <linux-wireless@vger.kernel.org>; David S. Miller
-> <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; netdev
-> <netdev@vger.kernel.org>
-> Subject: Re: [PATCH v2 1/1] ath10k: add option for chip-id based BDF
-> selection
->=20
-> Hi,
->=20
-> On Tue, Nov 24, 2020 at 1:19 AM Rakesh Pillai <pillair@codeaurora.org>
-> wrote:
-> >
-> > > -----Original Message-----
-> > > From: Doug Anderson <dianders@chromium.org>
-> > > Sent: Tuesday, November 24, 2020 6:27 AM
-> > > To: Abhishek Kumar <kuabhs@chromium.org>
-> > > Cc: Kalle Valo <kvalo@codeaurora.org>; Rakesh Pillai
-> > > <pillair@codeaurora.org>; LKML <linux-kernel@vger.kernel.org>; =
-ath10k
-> > > <ath10k@lists.infradead.org>; Brian Norris =
-<briannorris@chromium.org>;
-> > > linux-wireless <linux-wireless@vger.kernel.org>; David S. Miller
-> > > <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; netdev
-> > > <netdev@vger.kernel.org>
-> > > Subject: Re: [PATCH v2 1/1] ath10k: add option for chip-id based =
-BDF
-> > > selection
-> > >
-> > > Hi,
-> > >
-> > > On Thu, Nov 12, 2020 at 12:09 PM Abhishek Kumar
-> <kuabhs@chromium.org>
-> > > wrote:
-> > > >
-> > > > In some devices difference in chip-id should be enough to pick
-> > > > the right BDF. Add another support for chip-id based BDF =
-selection.
-> > > > With this new option, ath10k supports 2 fallback options.
-> > > >
-> > > > The board name with chip-id as option looks as follows
-> > > > board name 'bus=3Dsnoc,qmi-board-id=3Dff,qmi-chip-id=3D320'
-> > > >
-> > > > Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.3.2.2-00696-
-> QCAHLSWMTPL-1
-> > > > Tested-on: QCA6174 HW3.2 WLAN.RM.4.4.1-00157-QCARMSWPZ-1
-> > > > Signed-off-by: Abhishek Kumar <kuabhs@chromium.org>
-> > > > ---
-> > > >
-> > > > (no changes since v1)
-> > >
-> > > I think you need to work on the method you're using to generate =
-your
-> > > patches.  There are most definitely changes since v1.  You =
-described
-> > > them in your cover letter (which you don't really need for a =
-singleton
-> > > patch) instead of here.
-> > >
-> > >
-> > > > @@ -1438,12 +1439,17 @@ static int
-> > > ath10k_core_create_board_name(struct ath10k *ar, char *name,
-> > > >         }
-> > > >
-> > > >         if (ar->id.qmi_ids_valid) {
-> > > > -               if (with_variant && ar->id.bdf_ext[0] !=3D '\0')
-> > > > +               if (with_additional_params && ar->id.bdf_ext[0] =
-!=3D '\0')
-> > > >                         scnprintf(name, name_len,
-> > > >                                   =
-"bus=3D%s,qmi-board-id=3D%x,qmi-chip-id=3D%x%s",
-> > > >                                   ath10k_bus_str(ar->hif.bus),
-> > > >                                   ar->id.qmi_board_id, =
-ar->id.qmi_chip_id,
-> > > >                                   variant);
-> > > > +               else if (with_additional_params)
-> > > > +                       scnprintf(name, name_len,
-> > > > +                                 =
-"bus=3D%s,qmi-board-id=3D%x,qmi-chip-id=3D%x",
-> > > > +                                 ath10k_bus_str(ar->hif.bus),
-> > > > +                                 ar->id.qmi_board_id, =
-ar->id.qmi_chip_id);
-> > >
-> > > I believe this is exactly opposite of what Rakesh was requesting.
-> > > Specifically, he was trying to eliminate the extra scnprintf() but =
-I
-> > > think he still agreed that it was a good idea to generate 3 =
-different
-> > > strings.  I believe the proper diff to apply to v1 is:
-> > >
-> > > https://crrev.com/c/255643
->=20
-> Wow, I seem to have deleted the last digit from my URL.  Should have =
-been:
->=20
-> https://crrev.com/c/2556437
->=20
-> > >
-> > > -Doug
-> >
-> > Hi Abhishek/Doug,
-> >
-> > I missed on reviewing this change. Also I agree with Doug that this =
-is not
-> the change I was looking for.
-> >
-> > The argument "with_variant" can be renamed to "with_extra_params".
-> There is no need for any new argument to this function.
-> > Case 1: with_extra_params=3D0,  ar->id.bdf_ext[0] =3D 0             =
-->   The default
-> name will be used (bus=3Dsnoc,qmi_board_id=3D0xab)
-> > Case 2: with_extra_params=3D1,  ar->id.bdf_ext[0] =3D 0             =
-->
-> bus=3Dsnoc,qmi_board_id=3D0xab,qmi_chip_id=3D0xcd
-> > Case 3: with_extra_params=3D1,  ar->id.bdf_ext[0] =3D "xyz"      ->
-> bus=3Dsnoc,qmi_board_id=3D0xab,qmi_chip_id=3D0xcd,variant=3Dxyz
-> >
-> > ar->id.bdf_ext[0] depends on the DT entry for variant field.
->=20
-> I'm confused about your suggestion.  Maybe you can help clarify.  Are
-> you suggesting:
->=20
-> a) Only two calls to ath10k_core_create_board_name()
->=20
-> I'm pretty sure this will fail in some cases.  Specifically consider
-> the case where the device tree has a "variant" defined but the BRD
-> file only has one entry for (board-id) and one for (board-id +
-> chip-id) but no entry for (board-id + chip-id + variant).  If you are
-> only making two calls then I don't think you'll pick the right one.
->=20
-> Said another way...
->=20
-> If the device tree has a variant:
-> 1. We should prefer a BRD entry that has board-id + chip-id + variant
-> 2. If #1 isn't there, we should prefer a BRD entry that has board-id + =
-chip-id
-> 3. If #1 and #2 aren't there we fall back to a BRD entry that has =
-board-id.
->=20
-> ...without 3 calls to ath10k_core_create_board_name() we can't handle
-> all 3 cases.
+> Please fix the double-free.
+>
 
-This can be handled by two calls to ath10k_core_create_board_name
-1) ath10k_core_create_board_name(ar, boardname, sizeof(boardname), true) =
-  :  As per my suggestions, this can result in two possible board names
-    a) If DT have the "variant" node, it outputs the #1 from your =
-suggestion  (1. We should prefer a BRD entry that has board-id + chip-id =
-+ variant)
-    b) If DT does not have the "variant" node, it outputs the #2 from =
-your suggestion (2. If #1 isn't there, we should prefer a BRD entry that =
-has board-id + chip-id)
+I understand it and will remove the kfree(phy).
+And i did the remove callback test using following echo command's
+parameters on raspberry pi.
+But i didn't see the error log like yours.
 
-2) ath10k_core_create_board_name(ar, boardname, sizeof(boardname), =
-false)    :  This is the second call to this function and outputs the #3 =
-from your suggestion (3. If #1 and #2 aren't there we fall back to a BRD =
-entry that has board-id)
+Echo serial0-0 > /sys/bus/serial/devices/serial0/serial0-0/driver/unbind
 
-
-Below is the snippet of code change I am suggesting.=20
-
- static int ath10k_core_create_board_name(struct ath10k *ar, char *name,
--                                        size_t name_len, bool =
-with_variant)
-+                                        size_t name_len, bool =
-with_extra_params)
- {
-        /* strlen(',variant=3D') + strlen(ar->id.bdf_ext) */
-        char variant[9 + ATH10K_SMBIOS_BDF_EXT_STR_LENGTH] =3D { 0 };
-
--       if (with_variant && ar->id.bdf_ext[0] !=3D '\0')
-+       if (ar->id.bdf_ext[0] !=3D '\0')
-                scnprintf(variant, sizeof(variant), ",variant=3D%s",
-                          ar->id.bdf_ext);
-
-@@ -1493,7 +1493,7 @@ static int ath10k_core_create_board_name(struct =
-ath10k *ar, char *name,
-        }
-
-        if (ar->id.qmi_ids_valid) {
--               if (with_variant && ar->id.bdf_ext[0] !=3D '\0')
-+               if (with_extra_params)
-                        scnprintf(name, name_len,
-                                  =
-"bus=3D%s,qmi-board-id=3D%x,qmi-chip-id=3D%x%s",
-                                  ath10k_bus_str(ar->hif.bus),
-
-
-Thanks,
-Rakesh Pillai.
-
->=20
->=20
-> b) Three calls to ath10k_core_create_board_name() but the caller
-> manually whacks "ar->id.bdf_ext[0]" for one of the calls
->=20
-> This doesn't look like it's a clean solution, but maybe I'm missing =
-something.
->=20
->=20
-> -Doug
-
+> Best regards,
+> Krzysztof
+>
+>
