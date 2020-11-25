@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1A082C4921
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 21:35:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 349212C4924
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 21:35:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730080AbgKYUed (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 15:34:33 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:50270 "EHLO vps0.lunn.ch"
+        id S1730138AbgKYUeu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 15:34:50 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:50278 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729826AbgKYUec (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Nov 2020 15:34:32 -0500
+        id S1729826AbgKYUet (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Nov 2020 15:34:49 -0500
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1ki1Uj-008qXx-8L; Wed, 25 Nov 2020 21:34:29 +0100
-Date:   Wed, 25 Nov 2020 21:34:29 +0100
+        id 1ki1V2-008qYa-25; Wed, 25 Nov 2020 21:34:48 +0100
+Date:   Wed, 25 Nov 2020 21:34:48 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     George McCollister <george.mccollister@gmail.com>
 Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
@@ -24,7 +24,7 @@ Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
         devicetree@vger.kernel.org
 Subject: Re: [PATCH net-next v2 1/3] dsa: add support for Arrow XRS700x tag
  trailer
-Message-ID: <20201125203429.GF2073444@lunn.ch>
+Message-ID: <20201125203448.GG2073444@lunn.ch>
 References: <20201125193740.36825-1-george.mccollister@gmail.com>
  <20201125193740.36825-2-george.mccollister@gmail.com>
 MIME-Version: 1.0
@@ -35,24 +35,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static struct sk_buff *xrs700x_rcv(struct sk_buff *skb, struct net_device *dev,
-> +				   struct packet_type *pt)
-> +{
-> +	int source_port;
-> +	u8 *trailer;
-> +
-> +	if (skb_linearize(skb))
-> +		return NULL;
+On Wed, Nov 25, 2020 at 01:37:38PM -0600, George McCollister wrote:
+> Add support for Arrow SpeedChips XRS700x single byte tag trailer. This
+> is modeled on tag_trailer.c which works in a similar way.
+> 
+> Signed-off-by: George McCollister <george.mccollister@gmail.com>
 
-Something for Vladimir:
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Could this linearise be moved into the core, depending on the
-tail_tag?
-
-> +	if (pskb_trim_rcsum(skb, skb->len - 1))
-> +		return NULL;
-
-And the overhead is also in dsa_devlink_ops, so maybe this can be
-moved as well?
-
-      Andrew
+    Andrew
