@@ -2,122 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFBE82C4A3F
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 22:49:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C81A2C4A48
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 22:58:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732892AbgKYVt2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 16:49:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40600 "EHLO mail.kernel.org"
+        id S1730958AbgKYVzx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 16:55:53 -0500
+Received: from mx04.lhost.no ([5.158.192.85]:48653 "EHLO mx04.lhost.no"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732851AbgKYVt1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Nov 2020 16:49:27 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ACE602083E;
-        Wed, 25 Nov 2020 21:49:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606340967;
-        bh=kwlAvwQ9x4w4c8oPPCfGpynB2t32g0wSKIXIqjXmwR0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PGGCjppsUSg6q4yK+aIE7KQ6BZ9kyOUsHKRuYbcXLJDZGDAiKEpBmcb3HjyiyyBZU
-         eCitBdLNVcCUyna8/Orrjfup3rjcaA/Uvyw30grsZzBBVPulXev50u1Eeleh1oSVNC
-         ji3JZFhFt5YHwE8STfvw6Y4jUKFTmD92pmSFwIwM=
-Date:   Wed, 25 Nov 2020 13:49:25 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Martin Schiller <ms@dev.tdt.de>
-Cc:     andrew.hendry@gmail.com, davem@davemloft.net,
-        xie.he.0141@gmail.com, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v6 2/5] net/lapb: support netdev events
-Message-ID: <20201125134925.26d851f7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201124093938.22012-3-ms@dev.tdt.de>
-References: <20201124093938.22012-1-ms@dev.tdt.de>
-        <20201124093938.22012-3-ms@dev.tdt.de>
+        id S1730523AbgKYVzx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Nov 2020 16:55:53 -0500
+X-ASG-Debug-ID: 1606341348-0ffc06424c52dc0001-BZBGGp
+Received: from s103.paneda.no ([5.158.193.76]) by mx04.lhost.no with ESMTP id GCro6RUr83z83cvS (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NO); Wed, 25 Nov 2020 22:55:49 +0100 (CET)
+X-Barracuda-Envelope-From: thomas.karlsson@paneda.se
+X-Barracuda-Effective-Source-IP: UNKNOWN[5.158.193.76]
+X-Barracuda-Apparent-Source-IP: 5.158.193.76
+X-ASG-Whitelist: Client
+Received: from [192.168.10.188] (83.140.179.234) by s103.paneda.no
+ (10.16.55.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id 15.1.1979.3; Wed, 25
+ Nov 2020 22:55:47 +0100
+Subject: [PATCH net-next v2] macvlan: Support for high multicast packet rate
+To:     Jakub Kicinski <kuba@kernel.org>
+X-ASG-Orig-Subj: [PATCH net-next v2] macvlan: Support for high multicast packet rate
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        <thomas.karlsson@paneda.se>
+References: <485531aec7e243659ee4e3bb7fa2186d@paneda.se>
+ <147b704ac1d5426fbaa8617289dad648@paneda.se>
+ <20201123143052.1176407d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <b93a6031-f1b4-729d-784b-b1f465d27071@paneda.se>
+ <385b9b4c-25f5-b507-4e69-419883fa8043@paneda.se>
+From:   Thomas Karlsson <thomas.karlsson@paneda.se>
+Message-ID: <28768621-5c08-fd5a-ffa2-7fc51c80e479@paneda.se>
+Date:   Wed, 25 Nov 2020 22:55:47 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <385b9b4c-25f5-b507-4e69-419883fa8043@paneda.se>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [83.140.179.234]
+X-ClientProxiedBy: s103.paneda.no (10.16.55.12) To s103.paneda.no
+ (10.16.55.12)
+X-Barracuda-Connect: UNKNOWN[5.158.193.76]
+X-Barracuda-Start-Time: 1606341349
+X-Barracuda-Encrypted: ECDHE-RSA-AES256-SHA384
+X-Barracuda-URL: https://mx04.lhost.no:443/cgi-mod/mark.cgi
+X-Virus-Scanned: by bsmtpd at lhost.no
+X-Barracuda-Scan-Msg-Size: 2095
+X-Barracuda-BRTS-Status: 1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 24 Nov 2020 10:39:35 +0100 Martin Schiller wrote:
-> This patch allows layer2 (LAPB) to react to netdev events itself and
-> avoids the detour via layer3 (X.25).
-> 
-> 1. Establish layer2 on NETDEV_UP events, if the carrier is already up.
-> 
-> 2. Call lapb_disconnect_request() on NETDEV_GOING_DOWN events to signal
->    the peer that the connection will go down.
->    (Only when the carrier is up.)
-> 
-> 3. When a NETDEV_DOWN event occur, clear all queues, enter state
->    LAPB_STATE_0 and stop all timers.
-> 
-> 4. The NETDEV_CHANGE event makes it possible to handle carrier loss and
->    detection.
-> 
->    In case of Carrier Loss, clear all queues, enter state LAPB_STATE_0
->    and stop all timers.
-> 
->    In case of Carrier Detection, we start timer t1 on a DCE interface,
->    and on a DTE interface we change to state LAPB_STATE_1 and start
->    sending SABM(E).
-> 
-> Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+Background:
+Broadcast and multicast packages are enqueued for later processing.
+This queue was previously hardcoded to 1000.
 
-> +/* Handle device status changes. */
-> +static int lapb_device_event(struct notifier_block *this, unsigned long event,
-> +			     void *ptr)
-> +{
-> +	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
-> +	struct lapb_cb *lapb;
-> +
-> +	if (!net_eq(dev_net(dev), &init_net))
-> +		return NOTIFY_DONE;
-> +
-> +	if (dev->type == ARPHRD_X25) {
+This proved insufficient for handling very high packet rates.
+This resulted in packet drops for multicast.
+While at the same time unicast worked fine.
 
-Flip condition, save indentation.
+The change:
+This patch make the queue len adjustable to accommodate
+for environments with very high multicast packet rate.
+But still keeps the default value of 1000 unless specified.
 
-	if (dev->type != ARPHRD_X25)
-		return NOTIFY_DONE;
+The queue len is specified using the bc_queue_len module parameter.
 
-You can also pull out of all the cases:
+Signed-off-by: Thomas Karlsson <thomas.karlsson@paneda.se>
+---
+v2: Patch created on top of 'net-next' instead of 'torvalds/linux'
 
-	lapb = lapb_devtostruct(dev);
-	if (!lapb)
-		return NOTIFY_DONE;
+diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+index d9b6c44a5911..ed67fbfff450 100644
+--- a/drivers/net/macvlan.c
++++ b/drivers/net/macvlan.c
+@@ -12,6 +12,7 @@
+ #include <linux/kernel.h>
+ #include <linux/types.h>
+ #include <linux/module.h>
++#include <linux/moduleparam.h>
+ #include <linux/init.h>
+ #include <linux/errno.h>
+ #include <linux/slab.h>
+@@ -35,11 +36,15 @@
 
-right?
+ #define MACVLAN_HASH_BITS      8
+ #define MACVLAN_HASH_SIZE      (1<<MACVLAN_HASH_BITS)
+-#define MACVLAN_BC_QUEUE_LEN   1000
++#define MACVLAN_DEFAULT_BC_QUEUE_LEN   1000
 
-> +		switch (event) {
-> +		case NETDEV_UP:
-> +			lapb_dbg(0, "(%p) Interface up: %s\n", dev,
-> +				 dev->name);
-> +
-> +			if (netif_carrier_ok(dev)) {
-> +				lapb = lapb_devtostruct(dev);
-> +				if (!lapb)
-> +					break;
+ #define MACVLAN_F_PASSTHRU     1
+ #define MACVLAN_F_ADDRCHANGE   2
 
->  static int __init lapb_init(void)
->  {
-> +	register_netdevice_notifier(&lapb_dev_notifier);
++static uint bc_queue_len = MACVLAN_DEFAULT_BC_QUEUE_LEN;
++module_param(bc_queue_len, uint, 0444);
++MODULE_PARM_DESC(bc_queue_len, "The maximum length of the broadcast/multicast work queue");
++
+ struct macvlan_port {
+        struct net_device       *dev;
+        struct hlist_head       vlan_hash[MACVLAN_HASH_SIZE];
+@@ -354,7 +359,7 @@ static void macvlan_broadcast_enqueue(struct macvlan_port *port,
+        MACVLAN_SKB_CB(nskb)->src = src;
 
-This can fail, so:
-
-	return register_netdevice_notifier(&lapb_dev_notifier);
-
->  	return 0;
->  }
->  
->  static void __exit lapb_exit(void)
->  {
->  	WARN_ON(!list_empty(&lapb_list));
-> +
-> +	unregister_netdevice_notifier(&lapb_dev_notifier);
->  }
->  
->  MODULE_AUTHOR("Jonathan Naylor <g4klx@g4klx.demon.co.uk>");
-
+        spin_lock(&port->bc_queue.lock);
+-       if (skb_queue_len(&port->bc_queue) < MACVLAN_BC_QUEUE_LEN) {
++       if (skb_queue_len(&port->bc_queue) < bc_queue_len) {
+                if (src)
+                        dev_hold(src->dev);
+                __skb_queue_tail(&port->bc_queue, nskb);
+--
+2.28.0
