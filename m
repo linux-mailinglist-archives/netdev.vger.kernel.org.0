@@ -2,52 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E32BC2C35AA
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 01:34:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E91E2C35B3
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 01:41:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727729AbgKYAd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 19:33:29 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:48576 "EHLO vps0.lunn.ch"
+        id S1727663AbgKYAkG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 19:40:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39506 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727688AbgKYAd3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 19:33:29 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1khikD-008huN-Sk; Wed, 25 Nov 2020 01:33:13 +0100
-Date:   Wed, 25 Nov 2020 01:33:13 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Chris Packham <chris.packham@alliedtelesis.co.nz>
-Cc:     vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, linux@armlinux.org.uk,
-        pavana.sharma@digi.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH v5 1/4] net: dsa: mv88e6xxx: Don't force link
- when using in-band-status
-Message-ID: <20201125003313.GB2075216@lunn.ch>
-References: <20201124043440.28400-1-chris.packham@alliedtelesis.co.nz>
- <20201124043440.28400-2-chris.packham@alliedtelesis.co.nz>
+        id S1727084AbgKYAkG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 19:40:06 -0500
+Content-Type: text/plain; charset="utf-8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606264805;
+        bh=5KDzC9BPZzYbsqpcRCFBxEoBybh3W1z1iK7Tw0/kG4I=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=WV8xignHODss2JvajJow54ob6bcssqWfQK3oyEkvzQN86O50/xBnQzcHJGxEL8iR3
+         wPEOWxSinxeayyZAX6Dr54hCz7MsZVf+7lXf3X/mxdJajO9YtHhaQ3BaMI+n4X4bEw
+         MJAhS/iYG5p/Lkz6T4IYgpnNeg3LTbs1NHujPilc=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201124043440.28400-2-chris.packham@alliedtelesis.co.nz>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2 0/3] ibmvnic: null pointer dereference
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160626480590.25353.12237678107052938005.git-patchwork-notify@kernel.org>
+Date:   Wed, 25 Nov 2020 00:40:05 +0000
+References: <20201123193547.57225-1-ljp@linux.ibm.com>
+In-Reply-To: <20201123193547.57225-1-ljp@linux.ibm.com>
+To:     Lijun Pan <ljp@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, sukadev@linux.ibm.com, drt@linux.ibm.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 24, 2020 at 05:34:37PM +1300, Chris Packham wrote:
-> When a port is configured with 'managed = "in-band-status"' switch chips
-> like the 88E6390 need to propagate the SERDES link state to the MAC
-> because the link state is not correctly detected. This causes problems
-> on the 88E6185/88E6097 where the link partner won't see link state
-> changes because we're forcing the link.
-> 
-> To address this introduce a new device specific op port_sync_link() and
-> push the logic from mv88e6xxx_mac_link_up() into that. Provide an
-> implementation for the 88E6185 like devices which doesn't force the
-> link.
-> 
-> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+Hello:
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+This series was applied to netdev/net.git (refs/heads/master):
 
-    Andrew
+On Mon, 23 Nov 2020 13:35:44 -0600 you wrote:
+> Fix two NULL pointer dereference crash issues.
+> Improve module removal procedure.
+> 
+> In v2, we split v1 into 3 sets according to patch dependencies so that
+> individual author can rework on them during the coming holiday.
+> 1-11 as a set since they are dependent and most of them are Dany's.
+> 12-14 as a set since they are independent of 1-11.
+> 15 to be sent to net-next.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,v2,1/3] ibmvnic: fix NULL pointer dereference in reset_sub_crq_queues
+    https://git.kernel.org/netdev/net/c/a0faaa27c716
+  - [net,v2,2/3] ibmvnic: fix NULL pointer dereference in ibmvic_reset_crq
+    https://git.kernel.org/netdev/net/c/0e435befaea4
+  - [net,v2,3/3] ibmvnic: enhance resetting status check during module exit
+    https://git.kernel.org/netdev/net/c/3ada288150fb
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
