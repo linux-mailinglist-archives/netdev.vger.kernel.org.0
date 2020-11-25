@@ -2,250 +2,584 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E2D02C49AF
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 22:11:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DDA72C49C0
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 22:15:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731525AbgKYVKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 16:10:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46220 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729981AbgKYVKL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 16:10:11 -0500
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD194C061A54
-        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 13:10:04 -0800 (PST)
-Received: by mail-pg1-x543.google.com with SMTP id k11so838335pgq.2
-        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 13:10:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=5kDOOuMOjwqEdI4fOY8lF/zJwxoesF7EbkKd66qXZt4=;
-        b=AWR/7M4mhE4fi43nRvdimsQoF0WR0/yRvzcmpbbdNnukQZ4s3FUnDOA4HlPrcfy1KL
-         TnDV3Sp7ib0l66wO1u9Qkihqc0ymqk7uAD73hLx1Hbj+4zgGkd46Av0r6N17g4aWHL9f
-         T52peLS6H3gWn2HtVm1n8SJNqsSbmk3lehF9k=
+        id S1731057AbgKYVOR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 16:14:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:23617 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725876AbgKYVOR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 16:14:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606338854;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=riqPBXLsj3daIRkGe6zDFFwZ0EF5ICHex6iERZ0x1Oo=;
+        b=Zhe5KgVQPTzHxcbPESHYNtzOb/8NPPo8mSoBNC3KWo6I8MwaIaMHhBaog7vJ5z4KiXKmCs
+        4BRk/JYumf37gRaiEdR+T/z4qDQVtqmFv+1VMZHxF6WIT5VTpjQggo4cm/tAxHFh4WXA7B
+        T9p/hEGWibrQ+3HV9MSZuanWmn+K07Q=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-422-aV8G-zXuPJOpXHtTUnBfjg-1; Wed, 25 Nov 2020 16:14:12 -0500
+X-MC-Unique: aV8G-zXuPJOpXHtTUnBfjg-1
+Received: by mail-wr1-f72.google.com with SMTP id 91so1223359wrk.17
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 13:14:11 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5kDOOuMOjwqEdI4fOY8lF/zJwxoesF7EbkKd66qXZt4=;
-        b=rUfg+8SLCWu1fgXnBA+1AFvdkjVhHaKofxahYIOTjr2WOBuheGauKO6HK9spP069Vg
-         1wFJxn/8O0rDjFgasDG2YdHmU/zsQ9QnXx+MMoa++KnZZ498sn870jtwV3w83aI5TXPt
-         3/ad0CphuftLLr045YYkLmOVnhBxlVXAoTPvSFfNsG4STg2gvqi6OXgkA9Svoo5Z+IBC
-         kVAhL9znagh0N9nsrMU2qleUB2PAA4LUaZjFVnQ5QHn6PG9oj7S3V9W69xWDs+kW/j/o
-         fuZfFwCptEUa4hul9YoOXE3HeCjvmfzr+oUPAtx+BZIyrJ3+Y+Ou4XtE+aZKbxs4TD96
-         7EXA==
-X-Gm-Message-State: AOAM531OeJhKC7XHiq7lo5CHyNL1k7uGg+q10Rw0dEffvI7JyHY62dZh
-        sxFzqE2zE4Qf5x3XWyAhnzzi1e5/QWtnqEvP
-X-Google-Smtp-Source: ABdhPJx/eEsXFJ4LN0K87oZeE7bvP2eO9KEt7vLrempCPcmRQAJuuV8YImLC928PO4R7i7Khu5FszQ==
-X-Received: by 2002:a65:6547:: with SMTP id a7mr4391475pgw.198.1606338602870;
-        Wed, 25 Nov 2020 13:10:02 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id x30sm2796297pgc.86.2020.11.25.13.10.01
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=riqPBXLsj3daIRkGe6zDFFwZ0EF5ICHex6iERZ0x1Oo=;
+        b=Q1PBED515NnVj3OC7dC+7dNGAmlSuIJTpaUOyRIIKktNzh6d4+ZMf2t1/aEa3mzulW
+         Tk8q3ee0bLtxiIPWZGE6SIzwa22afvgpX0LXHKkgR4MmKwdSMHGWK4JSzhtKjwcUuL8J
+         PRnafM77q+77ccadvZWjtOEdJB2KLTf0G6dXPcwEmhvYI8zQwD6USt+mvtilqRkckKlm
+         9K4Gr61A9Dr0lHfFh8Ls/JkIrxFJ7DykrWkPCW/oq9+2lVECxXMppdYIAS5zm2IIPI0d
+         qyv9UhKljCbe5G+rJk0wpqVdgX1hkFMbVQn/Jrk6pZOMbGCU5M5KSpYFc2e2a8VkEvMJ
+         /iJQ==
+X-Gm-Message-State: AOAM530S+4YgCwRaCifmIf9kNEGrYkqHVOxCnyhRLMwc7bPg8z9v5GJP
+        nY9ypSJXWzwNjWJXNyB6WhDnWkWLRtse7+03W2OuDzAozLayWXc62yrety/ei2TL/h4KaGMRKV8
+        P95fehUURoHNhpx1t
+X-Received: by 2002:a1c:6382:: with SMTP id x124mr4830353wmb.46.1606338850126;
+        Wed, 25 Nov 2020 13:14:10 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzzYEthBgXky9P3qiWSEwQ7BqYz0cHN2HeOwgQh5OhpJuy0OJF+fPtIduOumRR3DtPBjMlJ6A==
+X-Received: by 2002:a1c:6382:: with SMTP id x124mr4830319wmb.46.1606338849761;
+        Wed, 25 Nov 2020 13:14:09 -0800 (PST)
+Received: from redhat.com (bzq-79-176-44-197.red.bezeqint.net. [79.176.44.197])
+        by smtp.gmail.com with ESMTPSA id s4sm6178763wro.10.2020.11.25.13.14.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Nov 2020 13:10:01 -0800 (PST)
-Date:   Wed, 25 Nov 2020 13:10:00 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     James Bottomley <James.Bottomley@HansenPartnership.com>
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Joe Perches <joe@perches.com>,
-        Jakub Kicinski <kuba@kernel.org>, alsa-devel@alsa-project.org,
-        linux-atm-general@lists.sourceforge.net,
-        reiserfs-devel@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        linux-ide@vger.kernel.org, dm-devel@redhat.com,
-        keyrings@vger.kernel.org, linux-mtd@lists.infradead.org,
-        GR-everest-linux-l2@marvell.com, wcn36xx@lists.infradead.org,
-        samba-technical@lists.samba.org, linux-i3c@lists.infradead.org,
-        linux1394-devel@lists.sourceforge.net,
-        linux-afs@lists.infradead.org,
-        usb-storage@lists.one-eyed-alien.net, drbd-dev@lists.linbit.com,
-        devel@driverdev.osuosl.org, linux-cifs@vger.kernel.org,
-        rds-devel@oss.oracle.com,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-scsi@vger.kernel.org, linux-rdma@vger.kernel.org,
-        oss-drivers@netronome.com, bridge@lists.linux-foundation.org,
-        linux-security-module@vger.kernel.org,
-        amd-gfx@lists.freedesktop.org,
-        linux-stm32@st-md-mailman.stormreply.com, cluster-devel@redhat.com,
-        linux-acpi@vger.kernel.org, coreteam@netfilter.org,
-        intel-wired-lan@lists.osuosl.org, linux-input@vger.kernel.org,
-        Miguel Ojeda <ojeda@kernel.org>,
-        tipc-discussion@lists.sourceforge.net, linux-ext4@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        selinux@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, linux-geode@lists.infradead.org,
-        linux-can@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-gpio@vger.kernel.org, op-tee@lists.trustedfirmware.org,
-        linux-mediatek@lists.infradead.org, xen-devel@lists.xenproject.org,
-        nouveau@lists.freedesktop.org, linux-hams@vger.kernel.org,
-        ceph-devel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org,
-        x86@kernel.org, linux-nfs@vger.kernel.org,
-        GR-Linux-NIC-Dev@marvell.com, linux-mm@kvack.org,
-        netdev@vger.kernel.org, linux-decnet-user@lists.sourceforge.net,
-        linux-mmc@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-sctp@vger.kernel.org, linux-usb@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        patches@opensource.cirrus.com, linux-integrity@vger.kernel.org,
-        target-devel@vger.kernel.org, linux-hardening@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [Intel-wired-lan] [PATCH 000/141] Fix fall-through warnings for
- Clang
-Message-ID: <202011251240.1E67BE900@keescook>
-References: <202011220816.8B6591A@keescook>
- <9b57fd4914b46f38d54087d75e072d6e947cb56d.camel@HansenPartnership.com>
- <ca071decb87cc7e905411423c05a48f9fd2f58d7.camel@perches.com>
- <0147972a72bc13f3629de8a32dee6f1f308994b5.camel@HansenPartnership.com>
- <d8d1e9add08cdd4158405e77762d4946037208f8.camel@perches.com>
- <dbd2cb703ed9eefa7dde9281ea26ab0f7acc8afe.camel@HansenPartnership.com>
- <20201123130348.GA3119@embeddedor>
- <8f5611bb015e044fa1c0a48147293923c2d904e4.camel@HansenPartnership.com>
- <202011241327.BB28F12F6@keescook>
- <a841536fe65bb33f1c72ce2455a6eb47a0107565.camel@HansenPartnership.com>
+        Wed, 25 Nov 2020 13:14:08 -0800 (PST)
+Date:   Wed, 25 Nov 2020 16:14:03 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        magnus.karlsson@intel.com, ast@kernel.org, daniel@iogearbox.net,
+        maciej.fijalkowski@intel.com, sridhar.samudrala@intel.com,
+        jesse.brandeburg@intel.com, qi.z.zhang@intel.com, kuba@kernel.org,
+        edumazet@google.com, jonathan.lemon@gmail.com, maximmi@nvidia.com,
+        intel-wired-lan@lists.osuosl.org, netanel@amazon.com,
+        akiyano@amazon.com, michael.chan@broadcom.com,
+        sgoutham@marvell.com, ioana.ciornei@nxp.com,
+        ruxandra.radulescu@nxp.com, thomas.petazzoni@bootlin.com,
+        mcroce@microsoft.com, saeedm@nvidia.com, tariqt@nvidia.com,
+        aelior@marvell.com, ecree@solarflare.com,
+        ilias.apalodimas@linaro.org, grygorii.strashko@ti.com,
+        sthemmin@microsoft.com, kda@linux-powerpc.org
+Subject: Re: [PATCH bpf-next v3 06/10] xsk: propagate napi_id to XDP socket
+ Rx path
+Message-ID: <20201125161355-mutt-send-email-mst@kernel.org>
+References: <20201119083024.119566-1-bjorn.topel@gmail.com>
+ <20201119083024.119566-7-bjorn.topel@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <a841536fe65bb33f1c72ce2455a6eb47a0107565.camel@HansenPartnership.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201119083024.119566-7-bjorn.topel@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 24, 2020 at 11:05:35PM -0800, James Bottomley wrote:
-> Now, what we have seems to be about 6 cases (at least what's been shown
-> in this thread) where a missing break would cause potentially user
-> visible issues.  That means the value of this isn't zero, but it's not
-> a no-brainer massive win either.  That's why I think asking what we've
-> invested vs the return isn't a useless exercise.
+On Thu, Nov 19, 2020 at 09:30:20AM +0100, Björn Töpel wrote:
+> From: Björn Töpel <bjorn.topel@intel.com>
+> 
+> Add napi_id to the xdp_rxq_info structure, and make sure the XDP
+> socket pick up the napi_id in the Rx path. The napi_id is used to find
+> the corresponding NAPI structure for socket busy polling.
+> 
+> Acked-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+> Acked-by: Tariq Toukan <tariqt@nvidia.com>
+> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
 
-The number is much higher[1]. If it were 6 in the entire history of the
-kernel, I would agree with you. :) Some were fixed _before_ Gustavo's
-effort too, which I also count towards the idea of "this is a dangerous
-weakness in C, and now we have stopped it forever."
+For virtio:
 
-> But the broader point I'm making is just because the compiler people
-> come up with a shiny new warning doesn't necessarily mean the problem
-> it's detecting is one that causes us actual problems in the code base. 
-> I'd really be happier if we had a theory about what classes of CVE or
-> bug we could eliminate before we embrace the next new warning.
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
-But we did! It was long ago justified and documented[2], and even links to
-the CWE[3] for it. This wasn't random joy over discovering a new warning
-we could turn on, this was turning on a warning that the compiler folks
-finally gave us to handle an entire class of flaws. If we need to update
-the code-base to address it not a useful debate -- that was settled
-already, even if you're only discovering it now. :P. This last patch
-set is about finishing that work for Clang, which is correctly even
-more strict than GCC.
+> ---
+>  drivers/net/ethernet/amazon/ena/ena_netdev.c  |  2 +-
+>  drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  2 +-
+>  .../ethernet/cavium/thunder/nicvf_queues.c    |  2 +-
+>  .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |  2 +-
+>  drivers/net/ethernet/intel/i40e/i40e_txrx.c   |  2 +-
+>  drivers/net/ethernet/intel/ice/ice_base.c     |  4 ++--
+>  drivers/net/ethernet/intel/ice/ice_txrx.c     |  2 +-
+>  drivers/net/ethernet/intel/igb/igb_main.c     |  2 +-
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  2 +-
+>  .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |  2 +-
+>  drivers/net/ethernet/marvell/mvneta.c         |  2 +-
+>  .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  4 ++--
+>  drivers/net/ethernet/mellanox/mlx4/en_rx.c    |  2 +-
+>  .../net/ethernet/mellanox/mlx5/core/en_main.c |  2 +-
+>  .../ethernet/netronome/nfp/nfp_net_common.c   |  2 +-
+>  drivers/net/ethernet/qlogic/qede/qede_main.c  |  2 +-
+>  drivers/net/ethernet/sfc/rx_common.c          |  2 +-
+>  drivers/net/ethernet/socionext/netsec.c       |  2 +-
+>  drivers/net/ethernet/ti/cpsw_priv.c           |  2 +-
+>  drivers/net/hyperv/netvsc.c                   |  2 +-
+>  drivers/net/tun.c                             |  2 +-
+>  drivers/net/veth.c                            | 12 ++++++++----
+>  drivers/net/virtio_net.c                      |  2 +-
+>  drivers/net/xen-netfront.c                    |  2 +-
+>  include/net/busy_poll.h                       | 19 +++++++++++++++----
+>  include/net/xdp.h                             |  3 ++-
+>  net/core/dev.c                                |  2 +-
+>  net/core/xdp.c                                |  3 ++-
+>  net/xdp/xsk.c                                 |  1 +
+>  29 files changed, 54 insertions(+), 36 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> index e8131dadc22c..6ad59f0068f6 100644
+> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+> @@ -416,7 +416,7 @@ static int ena_xdp_register_rxq_info(struct ena_ring *rx_ring)
+>  {
+>  	int rc;
+>  
+> -	rc = xdp_rxq_info_reg(&rx_ring->xdp_rxq, rx_ring->netdev, rx_ring->qid);
+> +	rc = xdp_rxq_info_reg(&rx_ring->xdp_rxq, rx_ring->netdev, rx_ring->qid, 0);
+>  
+>  	if (rc) {
+>  		netif_err(rx_ring->adapter, ifup, rx_ring->netdev,
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> index 7975f59735d6..725d929eddb1 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> @@ -2884,7 +2884,7 @@ static int bnxt_alloc_rx_rings(struct bnxt *bp)
+>  		if (rc)
+>  			return rc;
+>  
+> -		rc = xdp_rxq_info_reg(&rxr->xdp_rxq, bp->dev, i);
+> +		rc = xdp_rxq_info_reg(&rxr->xdp_rxq, bp->dev, i, 0);
+>  		if (rc < 0)
+>  			return rc;
+>  
+> diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_queues.c b/drivers/net/ethernet/cavium/thunder/nicvf_queues.c
+> index 7a141ce32e86..f782e6af45e9 100644
+> --- a/drivers/net/ethernet/cavium/thunder/nicvf_queues.c
+> +++ b/drivers/net/ethernet/cavium/thunder/nicvf_queues.c
+> @@ -770,7 +770,7 @@ static void nicvf_rcv_queue_config(struct nicvf *nic, struct queue_set *qs,
+>  	rq->caching = 1;
+>  
+>  	/* Driver have no proper error path for failed XDP RX-queue info reg */
+> -	WARN_ON(xdp_rxq_info_reg(&rq->xdp_rxq, nic->netdev, qidx) < 0);
+> +	WARN_ON(xdp_rxq_info_reg(&rq->xdp_rxq, nic->netdev, qidx, 0) < 0);
+>  
+>  	/* Send a mailbox msg to PF to config RQ */
+>  	mbx.rq.msg = NIC_MBOX_MSG_RQ_CFG;
+> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> index cf9400a9886d..40953980e846 100644
+> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> @@ -3334,7 +3334,7 @@ static int dpaa2_eth_setup_rx_flow(struct dpaa2_eth_priv *priv,
+>  		return 0;
+>  
+>  	err = xdp_rxq_info_reg(&fq->channel->xdp_rxq, priv->net_dev,
+> -			       fq->flowid);
+> +			       fq->flowid, 0);
+>  	if (err) {
+>  		dev_err(dev, "xdp_rxq_info_reg failed\n");
+>  		return err;
+> diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> index c21548c71bb1..9f73cd7aee09 100644
+> --- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> +++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+> @@ -1447,7 +1447,7 @@ int i40e_setup_rx_descriptors(struct i40e_ring *rx_ring)
+>  	/* XDP RX-queue info only needed for RX rings exposed to XDP */
+>  	if (rx_ring->vsi->type == I40E_VSI_MAIN) {
+>  		err = xdp_rxq_info_reg(&rx_ring->xdp_rxq, rx_ring->netdev,
+> -				       rx_ring->queue_index);
+> +				       rx_ring->queue_index, rx_ring->q_vector->napi.napi_id);
+>  		if (err < 0)
+>  			return err;
+>  	}
+> diff --git a/drivers/net/ethernet/intel/ice/ice_base.c b/drivers/net/ethernet/intel/ice/ice_base.c
+> index fe4320e2d1f2..3124a3bf519a 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_base.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_base.c
+> @@ -306,7 +306,7 @@ int ice_setup_rx_ctx(struct ice_ring *ring)
+>  		if (!xdp_rxq_info_is_reg(&ring->xdp_rxq))
+>  			/* coverity[check_return] */
+>  			xdp_rxq_info_reg(&ring->xdp_rxq, ring->netdev,
+> -					 ring->q_index);
+> +					 ring->q_index, ring->q_vector->napi.napi_id);
+>  
+>  		ring->xsk_pool = ice_xsk_pool(ring);
+>  		if (ring->xsk_pool) {
+> @@ -333,7 +333,7 @@ int ice_setup_rx_ctx(struct ice_ring *ring)
+>  				/* coverity[check_return] */
+>  				xdp_rxq_info_reg(&ring->xdp_rxq,
+>  						 ring->netdev,
+> -						 ring->q_index);
+> +						 ring->q_index, ring->q_vector->napi.napi_id);
+>  
+>  			err = xdp_rxq_info_reg_mem_model(&ring->xdp_rxq,
+>  							 MEM_TYPE_PAGE_SHARED,
+> diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
+> index eae75260fe20..77d5eae6b4c2 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_txrx.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
+> @@ -483,7 +483,7 @@ int ice_setup_rx_ring(struct ice_ring *rx_ring)
+>  	if (rx_ring->vsi->type == ICE_VSI_PF &&
+>  	    !xdp_rxq_info_is_reg(&rx_ring->xdp_rxq))
+>  		if (xdp_rxq_info_reg(&rx_ring->xdp_rxq, rx_ring->netdev,
+> -				     rx_ring->q_index))
+> +				     rx_ring->q_index, rx_ring->q_vector->napi.napi_id))
+>  			goto err;
+>  	return 0;
+>  
+> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+> index 5fc2c381da55..6a4ef4934fcf 100644
+> --- a/drivers/net/ethernet/intel/igb/igb_main.c
+> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
+> @@ -4352,7 +4352,7 @@ int igb_setup_rx_resources(struct igb_ring *rx_ring)
+>  
+>  	/* XDP RX-queue info */
+>  	if (xdp_rxq_info_reg(&rx_ring->xdp_rxq, rx_ring->netdev,
+> -			     rx_ring->queue_index) < 0)
+> +			     rx_ring->queue_index, 0) < 0)
+>  		goto err;
+>  
+>  	return 0;
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> index 45ae33e15303..50e6b8b6ba7b 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> @@ -6577,7 +6577,7 @@ int ixgbe_setup_rx_resources(struct ixgbe_adapter *adapter,
+>  
+>  	/* XDP RX-queue info */
+>  	if (xdp_rxq_info_reg(&rx_ring->xdp_rxq, adapter->netdev,
+> -			     rx_ring->queue_index) < 0)
+> +			     rx_ring->queue_index, rx_ring->q_vector->napi.napi_id) < 0)
+>  		goto err;
+>  
+>  	rx_ring->xdp_prog = adapter->xdp_prog;
+> diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+> index 82fce27f682b..4061cd7db5dd 100644
+> --- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+> +++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+> @@ -3493,7 +3493,7 @@ int ixgbevf_setup_rx_resources(struct ixgbevf_adapter *adapter,
+>  
+>  	/* XDP RX-queue info */
+>  	if (xdp_rxq_info_reg(&rx_ring->xdp_rxq, adapter->netdev,
+> -			     rx_ring->queue_index) < 0)
+> +			     rx_ring->queue_index, 0) < 0)
+>  		goto err;
+>  
+>  	rx_ring->xdp_prog = adapter->xdp_prog;
+> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+> index 183530ed4d1d..ba6dcb19bb1d 100644
+> --- a/drivers/net/ethernet/marvell/mvneta.c
+> +++ b/drivers/net/ethernet/marvell/mvneta.c
+> @@ -3227,7 +3227,7 @@ static int mvneta_create_page_pool(struct mvneta_port *pp,
+>  		return err;
+>  	}
+>  
+> -	err = xdp_rxq_info_reg(&rxq->xdp_rxq, pp->dev, rxq->id);
+> +	err = xdp_rxq_info_reg(&rxq->xdp_rxq, pp->dev, rxq->id, 0);
+>  	if (err < 0)
+>  		goto err_free_pp;
+>  
+> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> index 3069e192d773..5504cbc24970 100644
+> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> @@ -2614,11 +2614,11 @@ static int mvpp2_rxq_init(struct mvpp2_port *port,
+>  	mvpp2_rxq_status_update(port, rxq->id, 0, rxq->size);
+>  
+>  	if (priv->percpu_pools) {
+> -		err = xdp_rxq_info_reg(&rxq->xdp_rxq_short, port->dev, rxq->id);
+> +		err = xdp_rxq_info_reg(&rxq->xdp_rxq_short, port->dev, rxq->id, 0);
+>  		if (err < 0)
+>  			goto err_free_dma;
+>  
+> -		err = xdp_rxq_info_reg(&rxq->xdp_rxq_long, port->dev, rxq->id);
+> +		err = xdp_rxq_info_reg(&rxq->xdp_rxq_long, port->dev, rxq->id, 0);
+>  		if (err < 0)
+>  			goto err_unregister_rxq_short;
+>  
+> diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+> index b0f79a5151cf..40775cb8fb2a 100644
+> --- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+> +++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+> @@ -283,7 +283,7 @@ int mlx4_en_create_rx_ring(struct mlx4_en_priv *priv,
+>  	ring->log_stride = ffs(ring->stride) - 1;
+>  	ring->buf_size = ring->size * ring->stride + TXBB_SIZE;
+>  
+> -	if (xdp_rxq_info_reg(&ring->xdp_rxq, priv->dev, queue_index) < 0)
+> +	if (xdp_rxq_info_reg(&ring->xdp_rxq, priv->dev, queue_index, 0) < 0)
+>  		goto err_ring;
+>  
+>  	tmp = size * roundup_pow_of_two(MLX4_EN_MAX_RX_FRAGS *
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> index 527c5f12c5af..427fc376fe1a 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+> @@ -434,7 +434,7 @@ static int mlx5e_alloc_rq(struct mlx5e_channel *c,
+>  	rq_xdp_ix = rq->ix;
+>  	if (xsk)
+>  		rq_xdp_ix += params->num_channels * MLX5E_RQ_GROUP_XSK;
+> -	err = xdp_rxq_info_reg(&rq->xdp_rxq, rq->netdev, rq_xdp_ix);
+> +	err = xdp_rxq_info_reg(&rq->xdp_rxq, rq->netdev, rq_xdp_ix, 0);
+>  	if (err < 0)
+>  		goto err_rq_xdp_prog;
+>  
+> diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+> index b150da43adb2..b4acf2f41e84 100644
+> --- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+> +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+> @@ -2533,7 +2533,7 @@ nfp_net_rx_ring_alloc(struct nfp_net_dp *dp, struct nfp_net_rx_ring *rx_ring)
+>  
+>  	if (dp->netdev) {
+>  		err = xdp_rxq_info_reg(&rx_ring->xdp_rxq, dp->netdev,
+> -				       rx_ring->idx);
+> +				       rx_ring->idx, rx_ring->r_vec->napi.napi_id);
+>  		if (err < 0)
+>  			return err;
+>  	}
+> diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
+> index 05e3a3b60269..9cf960a6d007 100644
+> --- a/drivers/net/ethernet/qlogic/qede/qede_main.c
+> +++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
+> @@ -1762,7 +1762,7 @@ static void qede_init_fp(struct qede_dev *edev)
+>  
+>  			/* Driver have no error path from here */
+>  			WARN_ON(xdp_rxq_info_reg(&fp->rxq->xdp_rxq, edev->ndev,
+> -						 fp->rxq->rxq_id) < 0);
+> +						 fp->rxq->rxq_id, 0) < 0);
+>  
+>  			if (xdp_rxq_info_reg_mem_model(&fp->rxq->xdp_rxq,
+>  						       MEM_TYPE_PAGE_ORDER0,
+> diff --git a/drivers/net/ethernet/sfc/rx_common.c b/drivers/net/ethernet/sfc/rx_common.c
+> index 19cf7cac1e6e..68fc7d317693 100644
+> --- a/drivers/net/ethernet/sfc/rx_common.c
+> +++ b/drivers/net/ethernet/sfc/rx_common.c
+> @@ -262,7 +262,7 @@ void efx_init_rx_queue(struct efx_rx_queue *rx_queue)
+>  
+>  	/* Initialise XDP queue information */
+>  	rc = xdp_rxq_info_reg(&rx_queue->xdp_rxq_info, efx->net_dev,
+> -			      rx_queue->core_index);
+> +			      rx_queue->core_index, 0);
+>  
+>  	if (rc) {
+>  		netif_err(efx, rx_err, efx->net_dev,
+> diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+> index 1503cc9ec6e2..27d3c9d9210e 100644
+> --- a/drivers/net/ethernet/socionext/netsec.c
+> +++ b/drivers/net/ethernet/socionext/netsec.c
+> @@ -1304,7 +1304,7 @@ static int netsec_setup_rx_dring(struct netsec_priv *priv)
+>  		goto err_out;
+>  	}
+>  
+> -	err = xdp_rxq_info_reg(&dring->xdp_rxq, priv->ndev, 0);
+> +	err = xdp_rxq_info_reg(&dring->xdp_rxq, priv->ndev, 0, priv->napi.napi_id);
+>  	if (err)
+>  		goto err_out;
+>  
+> diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
+> index 31c5e36ff706..6dd73bd0f458 100644
+> --- a/drivers/net/ethernet/ti/cpsw_priv.c
+> +++ b/drivers/net/ethernet/ti/cpsw_priv.c
+> @@ -1186,7 +1186,7 @@ static int cpsw_ndev_create_xdp_rxq(struct cpsw_priv *priv, int ch)
+>  	pool = cpsw->page_pool[ch];
+>  	rxq = &priv->xdp_rxq[ch];
+>  
+> -	ret = xdp_rxq_info_reg(rxq, priv->ndev, ch);
+> +	ret = xdp_rxq_info_reg(rxq, priv->ndev, ch, 0);
+>  	if (ret)
+>  		return ret;
+>  
+> diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
+> index 0c3de94b5178..fa8341f8359a 100644
+> --- a/drivers/net/hyperv/netvsc.c
+> +++ b/drivers/net/hyperv/netvsc.c
+> @@ -1499,7 +1499,7 @@ struct netvsc_device *netvsc_device_add(struct hv_device *device,
+>  		u64_stats_init(&nvchan->tx_stats.syncp);
+>  		u64_stats_init(&nvchan->rx_stats.syncp);
+>  
+> -		ret = xdp_rxq_info_reg(&nvchan->xdp_rxq, ndev, i);
+> +		ret = xdp_rxq_info_reg(&nvchan->xdp_rxq, ndev, i, 0);
+>  
+>  		if (ret) {
+>  			netdev_err(ndev, "xdp_rxq_info_reg fail: %d\n", ret);
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index 3d45d56172cb..8867d39db6ac 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -780,7 +780,7 @@ static int tun_attach(struct tun_struct *tun, struct file *file,
+>  	} else {
+>  		/* Setup XDP RX-queue info, for new tfile getting attached */
+>  		err = xdp_rxq_info_reg(&tfile->xdp_rxq,
+> -				       tun->dev, tfile->queue_index);
+> +				       tun->dev, tfile->queue_index, 0);
+>  		if (err < 0)
+>  			goto out;
+>  		err = xdp_rxq_info_reg_mem_model(&tfile->xdp_rxq,
+> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+> index 8c737668008a..9bd37c7151f8 100644
+> --- a/drivers/net/veth.c
+> +++ b/drivers/net/veth.c
+> @@ -884,7 +884,6 @@ static int veth_napi_add(struct net_device *dev)
+>  	for (i = 0; i < dev->real_num_rx_queues; i++) {
+>  		struct veth_rq *rq = &priv->rq[i];
+>  
+> -		netif_napi_add(dev, &rq->xdp_napi, veth_poll, NAPI_POLL_WEIGHT);
+>  		napi_enable(&rq->xdp_napi);
+>  	}
+>  
+> @@ -926,7 +925,8 @@ static int veth_enable_xdp(struct net_device *dev)
+>  		for (i = 0; i < dev->real_num_rx_queues; i++) {
+>  			struct veth_rq *rq = &priv->rq[i];
+>  
+> -			err = xdp_rxq_info_reg(&rq->xdp_rxq, dev, i);
+> +			netif_napi_add(dev, &rq->xdp_napi, veth_poll, NAPI_POLL_WEIGHT);
+> +			err = xdp_rxq_info_reg(&rq->xdp_rxq, dev, i, rq->xdp_napi.napi_id);
+>  			if (err < 0)
+>  				goto err_rxq_reg;
+>  
+> @@ -952,8 +952,12 @@ static int veth_enable_xdp(struct net_device *dev)
+>  err_reg_mem:
+>  	xdp_rxq_info_unreg(&priv->rq[i].xdp_rxq);
+>  err_rxq_reg:
+> -	for (i--; i >= 0; i--)
+> -		xdp_rxq_info_unreg(&priv->rq[i].xdp_rxq);
+> +	for (i--; i >= 0; i--) {
+> +		struct veth_rq *rq = &priv->rq[i];
+> +
+> +		xdp_rxq_info_unreg(&rq->xdp_rxq);
+> +		netif_napi_del(&rq->xdp_napi);
+> +	}
+>  
+>  	return err;
+>  }
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 21b71148c532..052975ea0af4 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -1485,7 +1485,7 @@ static int virtnet_open(struct net_device *dev)
+>  			if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
+>  				schedule_delayed_work(&vi->refill, 0);
+>  
+> -		err = xdp_rxq_info_reg(&vi->rq[i].xdp_rxq, dev, i);
+> +		err = xdp_rxq_info_reg(&vi->rq[i].xdp_rxq, dev, i, vi->rq[i].napi.napi_id);
+>  		if (err < 0)
+>  			return err;
+>  
+> diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
+> index 920cac4385bf..b01848ef4649 100644
+> --- a/drivers/net/xen-netfront.c
+> +++ b/drivers/net/xen-netfront.c
+> @@ -2014,7 +2014,7 @@ static int xennet_create_page_pool(struct netfront_queue *queue)
+>  	}
+>  
+>  	err = xdp_rxq_info_reg(&queue->xdp_rxq, queue->info->netdev,
+> -			       queue->id);
+> +			       queue->id, 0);
+>  	if (err) {
+>  		netdev_err(queue->info->netdev, "xdp_rxq_info_reg failed\n");
+>  		goto err_free_pp;
+> diff --git a/include/net/busy_poll.h b/include/net/busy_poll.h
+> index 2f8f51807b83..45b3e04b99d3 100644
+> --- a/include/net/busy_poll.h
+> +++ b/include/net/busy_poll.h
+> @@ -135,14 +135,25 @@ static inline void sk_mark_napi_id(struct sock *sk, const struct sk_buff *skb)
+>  	sk_rx_queue_set(sk, skb);
+>  }
+>  
+> -/* variant used for unconnected sockets */
+> -static inline void sk_mark_napi_id_once(struct sock *sk,
+> -					const struct sk_buff *skb)
+> +static inline void __sk_mark_napi_id_once_xdp(struct sock *sk, unsigned int napi_id)
+>  {
+>  #ifdef CONFIG_NET_RX_BUSY_POLL
+>  	if (!READ_ONCE(sk->sk_napi_id))
+> -		WRITE_ONCE(sk->sk_napi_id, skb->napi_id);
+> +		WRITE_ONCE(sk->sk_napi_id, napi_id);
+>  #endif
+>  }
+>  
+> +/* variant used for unconnected sockets */
+> +static inline void sk_mark_napi_id_once(struct sock *sk,
+> +					const struct sk_buff *skb)
+> +{
+> +	__sk_mark_napi_id_once_xdp(sk, skb->napi_id);
+> +}
+> +
+> +static inline void sk_mark_napi_id_once_xdp(struct sock *sk,
+> +					    const struct xdp_buff *xdp)
+> +{
+> +	__sk_mark_napi_id_once_xdp(sk, xdp->rxq->napi_id);
+> +}
+> +
+>  #endif /* _LINUX_NET_BUSY_POLL_H */
+> diff --git a/include/net/xdp.h b/include/net/xdp.h
+> index 7d48b2ae217a..700ad5db7f5d 100644
+> --- a/include/net/xdp.h
+> +++ b/include/net/xdp.h
+> @@ -59,6 +59,7 @@ struct xdp_rxq_info {
+>  	u32 queue_index;
+>  	u32 reg_state;
+>  	struct xdp_mem_info mem;
+> +	unsigned int napi_id;
+>  } ____cacheline_aligned; /* perf critical, avoid false-sharing */
+>  
+>  struct xdp_txq_info {
+> @@ -226,7 +227,7 @@ static inline void xdp_release_frame(struct xdp_frame *xdpf)
+>  }
+>  
+>  int xdp_rxq_info_reg(struct xdp_rxq_info *xdp_rxq,
+> -		     struct net_device *dev, u32 queue_index);
+> +		     struct net_device *dev, u32 queue_index, unsigned int napi_id);
+>  void xdp_rxq_info_unreg(struct xdp_rxq_info *xdp_rxq);
+>  void xdp_rxq_info_unused(struct xdp_rxq_info *xdp_rxq);
+>  bool xdp_rxq_info_is_reg(struct xdp_rxq_info *xdp_rxq);
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 7a1e5936c67f..3b6b0e175fe7 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -9810,7 +9810,7 @@ static int netif_alloc_rx_queues(struct net_device *dev)
+>  		rx[i].dev = dev;
+>  
+>  		/* XDP RX-queue setup */
+> -		err = xdp_rxq_info_reg(&rx[i].xdp_rxq, dev, i);
+> +		err = xdp_rxq_info_reg(&rx[i].xdp_rxq, dev, i, 0);
+>  		if (err < 0)
+>  			goto err_rxq_info;
+>  	}
+> diff --git a/net/core/xdp.c b/net/core/xdp.c
+> index 3d330ebda893..17ffd33c6b18 100644
+> --- a/net/core/xdp.c
+> +++ b/net/core/xdp.c
+> @@ -158,7 +158,7 @@ static void xdp_rxq_info_init(struct xdp_rxq_info *xdp_rxq)
+>  
+>  /* Returns 0 on success, negative on failure */
+>  int xdp_rxq_info_reg(struct xdp_rxq_info *xdp_rxq,
+> -		     struct net_device *dev, u32 queue_index)
+> +		     struct net_device *dev, u32 queue_index, unsigned int napi_id)
+>  {
+>  	if (xdp_rxq->reg_state == REG_STATE_UNUSED) {
+>  		WARN(1, "Driver promised not to register this");
+> @@ -179,6 +179,7 @@ int xdp_rxq_info_reg(struct xdp_rxq_info *xdp_rxq,
+>  	xdp_rxq_info_init(xdp_rxq);
+>  	xdp_rxq->dev = dev;
+>  	xdp_rxq->queue_index = queue_index;
+> +	xdp_rxq->napi_id = napi_id;
+>  
+>  	xdp_rxq->reg_state = REG_STATE_REGISTERED;
+>  	return 0;
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index ecc4579e41ee..d4cb1c5c1abf 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -233,6 +233,7 @@ static int xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp,
+>  	if (xs->dev != xdp->rxq->dev || xs->queue_id != xdp->rxq->queue_index)
+>  		return -EINVAL;
+>  
+> +	sk_mark_napi_id_once_xdp(&xs->sk, xdp);
+>  	len = xdp->data_end - xdp->data;
+>  
+>  	return xdp->rxq->mem.type == MEM_TYPE_XSK_BUFF_POOL ?
+> -- 
+> 2.27.0
 
--Kees
-
-[1] https://outflux.net/slides/2019/lss/kspp.pdf calls out specific
-    numbers (about 6.5% of the patches fixed missing breaks):
-	v4.19:  3 of 129
-	v4.20:  2 of  59
-	v5.0:   3 of  56
-	v5.1:  10 of 100
-	v5.2:   6 of  71
-	v5.3:   7 of  69
-
-    And in the history of the kernel, it's been an ongoing source of
-    flaws:
-
-    $ l --no-merges | grep -i 'missing break' | wc -l
-    185
-
-    The frequency of such errors being "naturally" found was pretty
-    steady until the static checkers started warning, and then it was
-    on the rise, but the full effort flushed the rest out, and now it's
-    dropped to almost zero:
-
-      1 v2.6.12
-      3 v2.6.16.28
-      1 v2.6.17
-      1 v2.6.19
-      2 v2.6.21
-      1 v2.6.22
-      3 v2.6.24
-      3 v2.6.29
-      1 v2.6.32
-      1 v2.6.33
-      1 v2.6.35
-      4 v2.6.36
-      3 v2.6.38
-      2 v2.6.39
-      7 v3.0
-      2 v3.1
-      2 v3.2
-      2 v3.3
-      3 v3.4
-      1 v3.5
-      8 v3.6
-      7 v3.7
-      3 v3.8
-      6 v3.9
-      3 v3.10
-      2 v3.11
-      5 v3.12
-      5 v3.13
-      2 v3.14
-      4 v3.15
-      2 v3.16
-      3 v3.17
-      2 v3.18
-      2 v3.19
-      1 v4.0
-      2 v4.1
-      5 v4.2
-      4 v4.5
-      5 v4.7
-      6 v4.8
-      1 v4.9
-      3 v4.10
-      2 v4.11
-      6 v4.12
-      3 v4.13
-      2 v4.14
-      5 v4.15
-      2 v4.16
-      7 v4.18
-      2 v4.19
-      6 v4.20
-      3 v5.0
-     12 v5.1
-      3 v5.2
-      4 v5.3
-      2 v5.4
-      1 v5.8
-
-
-    And the reason it's fully zero, is because we still have the cases we're
-    cleaning up right now. Even this last one from v5.8 is specifically of
-    the same type this series addresses:
-
-        case 4:
-                color_index = TrueCModeIndex;
-+               break;
-        default:
-                return;
-        }
-
-
-[2] https://www.kernel.org/doc/html/latest/process/deprecated.html#implicit-switch-case-fall-through
-
-	All switch/case blocks must end in one of:
-
-	break;
-	fallthrough;
-	continue;
-	goto <label>;
-	return [expression];
-
-[3] https://cwe.mitre.org/data/definitions/484.html
-
--- 
-Kees Cook
