@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B55172C4464
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 16:50:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 117802C4480
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 16:53:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731555AbgKYPtv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 10:49:51 -0500
-Received: from mail-vi1eur05on2054.outbound.protection.outlook.com ([40.107.21.54]:15968
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        id S1731864AbgKYPwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 10:52:39 -0500
+Received: from mail-eopbgr10079.outbound.protection.outlook.com ([40.107.1.79]:64386
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730318AbgKYPtv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Nov 2020 10:49:51 -0500
+        id S1731364AbgKYPwj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Nov 2020 10:52:39 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nyMn3tb4nO6FrZH81b2UTYZ1ay6H+No6/3wR2e8un5EQ+j/eqCBE6ENEUV6vr09GiEZLcb3a0RMmufUBX/GK1Pp22286vwdUzOwWeXQWd5EwizLACfhGNeLVpq9KOTLh94mP2x3ROdvNsVnal/0DAv0ZTduK8hjjoch96/3aBRjN8VzJYcSRxUItq7KvB5FViNuBDwDOdZbR9ejzlzcWTjixJccknsDR7meIC0FQzWHuEGYwjC7Gma+UwfkOmdFTVyPhieuZW0wmf+Rtgom6lP7LHyu1qvFibViYGGtjZNeXRhM3ygpyyZfdisyq8MHtwY0Pfn27JF8OxsJG6ORkhQ==
+ b=lDxiS3ajPTyPtSUz0FOKlrysswLXlJ57n/x0FTBu83bjjhwNVokGLTnn/7QX7ESxBxoi1IO/QOiQ4cN1TgVoe5Wa6SXFRgb9vUHCS4CC3bE8891VtS+GijbCY+5qdDdiaSK4douH/P9sPhhEH6r414yktFRV0zT8Du/sYLxEhPUftkUPLxkYendoanmN0r4GldiWvhYmeTNgJHu4W2JVl9UGSiRxofk4JZHkeZPPUMqCWJbdZXrUumPql0XNWQrBmQoYa3WcYlUM2n4anFRwM7Un/wlp57o03/6j3EyFJ9DQBs3TIhNzeXXWd0vBRH/5t4e3HLwTAntHCDVTov0Cmg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=85tswAw/XY5UF9HtE/+8QXifcLXSH7/S2ZQHRUzS+Vo=;
- b=UGK0PZMk+uRCZxAkp3JaOphHjzfQOis6BfSMmZdQtFEzq6blf1PDPcrm+PMfBk5b4zoGhQE+IzyjGDQpxDLzNK6fWgFX9I1/eMUjW6DDPi/Y3m+Dot7ao4D/PrJj4NaZSQx6BOPM9YbG9fvm+na7wm6EbAdY3YrJwVEMu4YTNPfRthuvUXEvsVrf03uh0Yq29fBDb+oVx+vtZvSyLny7MoN3qtbJgKgGC3H1CFy7iFx4bIfopdbMAIhQzy96DgOdDFv8ZSn9pIPUX/0fdkXBOvh4AkKQ3OGaO6B4YeegizVrhgYIMkOriksmzdbpQCbDvHgJMmJskV9wy2Rmom3xDA==
+ bh=dz9GrxQ2qV2a5xtYHJIHrteHPsiKjMrYjCo+NsMov10=;
+ b=IGXRvHodUvINvh/sgvvFSMJIEsF60/5zCtlJ6i56s2DD1hySoxZZKBaD5+KiftfpGJjvhLN5Wa45mUG0GN4Q5ZdzaYfCp7z6UIjdeqEcqmuWFGaWHBpgJamCUYxZ9MoOF2HRKrEga4K5QZuutnXOEVHIxqbc08Dam3j4nQJRBM1cGprXpjF4SAUwsZuedqcfOvrjJKZD0csXR4S9pE/pU5q0ik7vS7oLx/k66ak1JgIZAvosWzWaoDd1LAkeykVkl8jJkU4HyWyVRGr2zgVLr8Aj4r7ZQi2PVHYiWUHwChODDk1Z873GaHMNKLiYv/Cu9msFREfAeJ1ZPlc0d9y8OQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=85tswAw/XY5UF9HtE/+8QXifcLXSH7/S2ZQHRUzS+Vo=;
- b=q+PKa6s5O5ESRa9hMyZTu7P+lv7QQNFyV4sUKi5PDdOuY/SxazojsX5zOoiHwqgs4vnmUCfrsqVfgXcWTAdf3nYFXDc1+JPlmuf52nYQ/9ZQ/eSQ1nntl9Zew85Au1w+/M7G1GluJg+VTo0xXeOZFlkyd633iRYrq9vxYtzblLs=
+ bh=dz9GrxQ2qV2a5xtYHJIHrteHPsiKjMrYjCo+NsMov10=;
+ b=VKuz99a3o27M10ECEmOUlcCQxYx/QEixhU6jfaCuWX5d6V5L1afE2teLVLPtybvj/oRZEhxI/Kj4RofY1riE19574gcyV58AwRej6GHNb9/chjVxKLWG+M6qKYHcAFuxOwlFc7SYQ+LJRCFijz6riL947N/s8FWZmVRlao6EW+o=
 Received: from VI1PR04MB5807.eurprd04.prod.outlook.com (2603:10a6:803:ec::21)
- by VE1PR04MB6464.eurprd04.prod.outlook.com (2603:10a6:803:11f::17) with
+ by VI1PR04MB4112.eurprd04.prod.outlook.com (2603:10a6:803:45::25) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.20; Wed, 25 Nov
- 2020 15:49:45 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.20; Wed, 25 Nov
+ 2020 15:52:33 +0000
 Received: from VI1PR04MB5807.eurprd04.prod.outlook.com
  ([fe80::45b9:4:f092:6cb6]) by VI1PR04MB5807.eurprd04.prod.outlook.com
  ([fe80::45b9:4:f092:6cb6%3]) with mapi id 15.20.3589.024; Wed, 25 Nov 2020
- 15:49:45 +0000
+ 15:52:33 +0000
 From:   Camelia Alexandra Groza <camelia.groza@nxp.com>
 To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 CC:     "kuba@kernel.org" <kuba@kernel.org>,
@@ -44,15 +44,17 @@ CC:     "kuba@kernel.org" <kuba@kernel.org>,
         "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH net-next v4 4/7] dpaa_eth: add XDP_TX support
-Thread-Topic: [PATCH net-next v4 4/7] dpaa_eth: add XDP_TX support
-Thread-Index: AQHWwb81iW4HPpJqH0qKrje1nVOayKnXsxEAgAFOQYA=
-Date:   Wed, 25 Nov 2020 15:49:45 +0000
-Message-ID: <VI1PR04MB5807BAB32C7B43C752C7B662F2FA0@VI1PR04MB5807.eurprd04.prod.outlook.com>
+Subject: RE: [PATCH net-next v4 7/7] dpaa_eth: implement the A050385 erratum
+ workaround for XDP
+Thread-Topic: [PATCH net-next v4 7/7] dpaa_eth: implement the A050385 erratum
+ workaround for XDP
+Thread-Index: AQHWwb82V4rZvSFht06Jb/xRZf8LCanXw3EAgAE+V3A=
+Date:   Wed, 25 Nov 2020 15:52:33 +0000
+Message-ID: <VI1PR04MB5807F77BA161E9BB7729C2B6F2FA0@VI1PR04MB5807.eurprd04.prod.outlook.com>
 References: <cover.1606150838.git.camelia.groza@nxp.com>
- <6491d6ba855c7e736383e7f603321fe7184681bc.1606150838.git.camelia.groza@nxp.com>
- <20201124195204.GC12808@ranger.igk.intel.com>
-In-Reply-To: <20201124195204.GC12808@ranger.igk.intel.com>
+ <e53e361d320cb901b0d9b9b82e6c16a04fbe6f86.1606150838.git.camelia.groza@nxp.com>
+ <20201124205040.GA19977@ranger.igk.intel.com>
+In-Reply-To: <20201124205040.GA19977@ranger.igk.intel.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -62,367 +64,246 @@ authentication-results: intel.com; dkim=none (message not signed)
 x-originating-ip: [82.78.148.61]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: f8a4933b-1c66-468b-e18a-08d89159bb76
-x-ms-traffictypediagnostic: VE1PR04MB6464:
+x-ms-office365-filtering-correlation-id: de527dc0-1691-47ad-b35b-08d8915a1f82
+x-ms-traffictypediagnostic: VI1PR04MB4112:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VE1PR04MB64640745ABBB4229B064837FF2FA0@VE1PR04MB6464.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-microsoft-antispam-prvs: <VI1PR04MB41127A799153FAC7589F0B5DF2FA0@VI1PR04MB4112.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: JQc1DSHE76/dc8OvzytYoyH/ZtJgtFAyNZ0+Dd1LXLQeAindAhk8U2vO8iXjiGLsKVqNYPZlIAtgzQEvDlpODhiX02NJ9pOY67sK11cxmAoz0KZ4iRhTzJZiea/LBGalIVAzctnRrPiHrBYV3DO9rsbC/j3C4mi2LnEioL1uZt9fQwjZpo7JUDjDK8uciSunrLmpC9F/HtBhNBlderYdaEkGr0LZK1cd0viW1QWVZdAfJpjxqdpIXV4U4cR565qvP70StVZfJ89MCZ+Bl4hYer//z6E/pIrT//6TarR/KkD7eDxuIUQQ2qGLtSwtTX8GUk/wmJg7dhk23XZwkBbPxA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(376002)(396003)(39860400002)(136003)(366004)(86362001)(4326008)(6916009)(478600001)(9686003)(55016002)(52536014)(316002)(8676002)(8936002)(6506007)(76116006)(83380400001)(53546011)(5660300002)(33656002)(66946007)(7696005)(66476007)(71200400001)(64756008)(66446008)(66556008)(54906003)(186003)(26005)(2906002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?3MGjWFTo2ZU4ZCbR+6IHQrwcQ4g4vXbB58RIWmkzQuvRnOVXKbWbfP8VNGD5?=
- =?us-ascii?Q?oxaj53vYINp7mouOJZGI3dsmCF80XB6dfvGKkeyxKaWarL1KJ8RD47kNLNK0?=
- =?us-ascii?Q?RL4fd7kEbk+iqkXPpwfBVYT2hx8TsNTonHlZhJfWRr8yCnLAX3maQF7JQii1?=
- =?us-ascii?Q?8wgJhUrDbx88D65828294x9uvAYry9tTCCTZJEjkjOuNgwxtwu2KyDtwCcu2?=
- =?us-ascii?Q?gCaeSACvYmxx/DNiXK/Cu1egQimy4PQ3F6wOovAZgd1qCZ6LBv6IQsHiCrzk?=
- =?us-ascii?Q?9q/+N/VUUdsktm6BLvQf1xtUdFzywsuGJnkT+JlhfBGt6l5Y7d38RkXpwVIr?=
- =?us-ascii?Q?nTGW9nNZPK6I/yDyCO8Hy2qC5zFJnrsxJcj8SOZMrhAQIhIF1X+1Z29mvYBM?=
- =?us-ascii?Q?C6B5AffagbpfSe2eJJqYV5PJECih+SDCBpJ43un+uvaXhYZ0BQvhF0XJHdnt?=
- =?us-ascii?Q?f+En+I99x6oceqdZ+nUBm28g1prd2mLfB/s9keiK51cVojF6kgMuxBuD3ZfE?=
- =?us-ascii?Q?pS0CcwFYDjXmJ6amVSQx3EDXvIEdbzrISChcZDfB5ejfwWRiAzCXad47RaDs?=
- =?us-ascii?Q?x7Awz1mwbEc3eGSUWJJ85jN9LFT6vo5GiQfBRcD4HBx54ub6BtIxaWScf0O2?=
- =?us-ascii?Q?Ca1wawdO6wXpea6qYnmWvfpm9esVHAWi6HhWxQFYSirsBVpq1nB/7L09FadV?=
- =?us-ascii?Q?tkmVsBEV7EwkHWJhuAGda3HrdfKfgIbVxIrynpFAWtNdOhl2o/luLDMI+Q0j?=
- =?us-ascii?Q?y7YMuzeF7rierO1wF3Nlsf53OhlMS1/k539Suty4KNcaF2jEz6EAf7ve0KVk?=
- =?us-ascii?Q?wD+1Fdexvwvwmzf0V7qDJrDz/4ZjRHbrMcljklKb8YYvElJkHxBqe9xfrFiR?=
- =?us-ascii?Q?BQCUVWLnc3wT4hKJWdS1s484KtOqOfmPF7v7t1ctphIO46g5EVtIfuiYtOMY?=
- =?us-ascii?Q?rs71e0izfJf03WOWOJb3il/yfJeCqsQDNqWNUUWrQ7A=3D?=
+x-microsoft-antispam-message-info: SM6JLLJTF7/diK6kObpx/YTG7tEHsdhokQswAV5EYasdoSW8ApcdKN9ksmePfycUWtmDzxDF9Uv7uD41e2UhBuwzcXLfEGB3YnVOfFsdleZZKYHAj+ctYQvtSZYgEDxTvXpdHcsjhc/9Kxc4vBOLpAzMGb6WeIOYAyfarAE7o1cJvpyVuahXJAsQXwZfn+OlZD26QWNpFPDFgMFSqcqLqfQfzznC4iMdlTdzztA+XRW0etDuyzHtT+QPDQfuNVc+cNFSH3mr+RlEUJF9abpn3tTDw1ZM8okl3mWJROeKSWHjfxiuB5MX/ztjNefSHp4w
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(396003)(366004)(346002)(39860400002)(136003)(76116006)(53546011)(55016002)(71200400001)(6916009)(54906003)(66946007)(478600001)(52536014)(4326008)(8676002)(316002)(8936002)(7696005)(5660300002)(9686003)(2906002)(66476007)(64756008)(66446008)(186003)(6506007)(66556008)(33656002)(26005)(86362001)(83380400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?SXxDgCr+dV+X2UPbogYi5pZh37ZOigZlo8t/p0UxXKfAdZkUNeucEQpUT/dH?=
+ =?us-ascii?Q?UNE1y9NpL6dO5DI0SsEdgIzN6VXE40+HV/iPT0zpIvqL44V+qBGDwtj8IUfR?=
+ =?us-ascii?Q?XO7WH91YgznjNFueQFuk6jsOZXJl7sB9RZhLW+kjvyPs8ZK09qZKsCjCUG6E?=
+ =?us-ascii?Q?azqKa0+qwMgLHfOP99QwQ26c4y1GueGZQcNibrfNaLb5UeC6pSNY95DQnrpt?=
+ =?us-ascii?Q?BuT8taEdJLE8cmkK6ZbZzqwp591KPVcPdmWVC1QrQxsaJgzuq55qo1C4QmnH?=
+ =?us-ascii?Q?02RXqKCH30qvFsOHPk1YxIgpiEN2phA4nMmQ6DDCiMQuC09zph6nf/t1k7nm?=
+ =?us-ascii?Q?nQl7q/FsC94/gvC2ajaDTreakajKZRCR0m2Fb5o92ofnmy3WretuRPnV7Hel?=
+ =?us-ascii?Q?GoVL5YWJW4D7bucGxxopPTcvzmnBPC2D0a+PX9kmBqXobBoDr+7WWQrXFIoJ?=
+ =?us-ascii?Q?/AaVj4/mBChnPIK6IEK+jlV7PRFlrBdXwrfOsQW35Wk9bEFR/ZO8TvtgZz3A?=
+ =?us-ascii?Q?LR0BG/M2NEC52iMFBEVbBEDqMX+sNcCev3bSFpMS/AP8HkCEgHnyW663Verg?=
+ =?us-ascii?Q?L5mp4V5glLaCz87FvFUaC3QpU8vGX1h2bSG2lTZioSlVSmSL8ABrarJTE5rO?=
+ =?us-ascii?Q?/wrHOzr3BDzSMddAyW8cPM5vPKuVbWRmjFYOFo60WNV1xuB35zpSSkDBK0tH?=
+ =?us-ascii?Q?1h2FYWSMv8tT5rf2DG51s7S01T1F1EvxBHCrm9DRwxCFZCmn/yM1Yb5c3Pve?=
+ =?us-ascii?Q?YXWS96SZ3QhL7oCIzy5lp4V4bxy8ofw4BOhgETVQIhv+zoi94Zca347xHasw?=
+ =?us-ascii?Q?kZnPQj5+SbVHQlet0JwD9M/Ta0nZGCyn4Am2cvJBiYyMtHbHDgjAWvV2AJWK?=
+ =?us-ascii?Q?jW1c/EG08PE1kTvNnHIH4GtGNNXJVqvv9UsFSlrSSkGhn1pVyDfTeBN9sMAx?=
+ =?us-ascii?Q?BspsGLnh0h1L7YCEff/f7Mh6+a4Tov4Fv632FdQNqXQ=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5807.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f8a4933b-1c66-468b-e18a-08d89159bb76
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Nov 2020 15:49:45.5452
+X-MS-Exchange-CrossTenant-Network-Message-Id: de527dc0-1691-47ad-b35b-08d8915a1f82
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Nov 2020 15:52:33.3419
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +ONCjTy4Ri8TikOxVHV9PYP1oHu+EZCRhZ6Ki4qcxnnNq0MBxOfGGZqyIjTKYGgx04JLKjkicabZhFCIZ9v2qg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6464
+X-MS-Exchange-CrossTenant-userprincipalname: XNTZZcdWcFzC2+t9g+qibs5m13r244C0dNSUt6JmUv9GtWuKirxH8LI4y7XASrdTgaeuh9+/TgvMOv4aPVsBNA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4112
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 > -----Original Message-----
 > From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> Sent: Tuesday, November 24, 2020 21:52
+> Sent: Tuesday, November 24, 2020 22:51
 > To: Camelia Alexandra Groza <camelia.groza@nxp.com>
 > Cc: kuba@kernel.org; brouer@redhat.com; saeed@kernel.org;
 > davem@davemloft.net; Madalin Bucur (OSS)
 > <madalin.bucur@oss.nxp.com>; Ioana Ciornei <ioana.ciornei@nxp.com>;
 > netdev@vger.kernel.org
-> Subject: Re: [PATCH net-next v4 4/7] dpaa_eth: add XDP_TX support
+> Subject: Re: [PATCH net-next v4 7/7] dpaa_eth: implement the A050385
+> erratum workaround for XDP
 >=20
-> On Mon, Nov 23, 2020 at 07:36:22PM +0200, Camelia Groza wrote:
-> > Use an xdp_frame structure for managing the frame. Store a backpointer
-> to
-> > the structure at the start of the buffer before enqueueing for cleanup
-> > on TX confirmation. Reserve DPAA_TX_PRIV_DATA_SIZE bytes from the
-> frame
-> > size shared with the XDP program for this purpose. Use the XDP
-> > API for freeing the buffer when it returns to the driver on the TX
-> > confirmation path.
+> On Mon, Nov 23, 2020 at 07:36:25PM +0200, Camelia Groza wrote:
+> > For XDP TX, even tough we start out with correctly aligned buffers, the
+> > XDP program might change the data's alignment. For REDIRECT, we have no
+> > control over the alignment either.
 > >
-> > The frame queues are shared with the netstack.
->=20
-> Can you also provide the info from cover letter about locklessness (is
-> that even a word?) in here?
-
-Sure.
-
-> One question below and:
->=20
-> Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
->=20
+> > Create a new workaround for xdp_frame structures to verify the erratum
+> > conditions and move the data to a fresh buffer if necessary. Create a n=
+ew
+> > xdp_frame for managing the new buffer and free the old one using the
+> XDP
+> > API.
 > >
-> > This approach will be reused for XDP REDIRECT.
+> > Due to alignment constraints, all frames have a 256 byte headroom that
+> > is offered fully to XDP under the erratum. If the XDP program uses all
+> > of it, the data needs to be move to make room for the xdpf backpointer.
+>=20
+> Out of curiosity, wouldn't it be easier to decrease the headroom that is
+> given to xdp rather doing to full copy of a buffer in case you miss a few
+> bytes on headroom?
+
+First of all, I'm not sure if offering less than XDP_PACKET_HEADROOM to XDP=
+ programs is allowed. Second, we require the data to be strictly aligned un=
+der this erratum. This first condition would be broken even if we reduce th=
+e size of the offered headroom.
+
+> >
+> > Disable the metadata support since the information can be lost.
 > >
 > > Acked-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
 > > Signed-off-by: Camelia Groza <camelia.groza@nxp.com>
 > > ---
-> > Changes in v4:
-> > - call xdp_rxq_info_is_reg() before unregistering
-> > - minor cleanups (remove unneeded variable, print error code)
-> > - add more details in the commit message
-> > - did not call qman_destroy_fq() in case of xdp_rxq_info_reg() failure
-> > since it would lead to a double free of the fq resources
-> >
-> >  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 128
-> ++++++++++++++++++++++++-
-> >  drivers/net/ethernet/freescale/dpaa/dpaa_eth.h |   2 +
-> >  2 files changed, 125 insertions(+), 5 deletions(-)
+> >  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 82
+> +++++++++++++++++++++++++-
+> >  1 file changed, 79 insertions(+), 3 deletions(-)
 > >
 > > diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
 > b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> > index ee076f4..0deffcc 100644
+> > index 149b549..d8fc19d 100644
 > > --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
 > > +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> > @@ -1130,6 +1130,24 @@ static int dpaa_fq_init(struct dpaa_fq *dpaa_fq,
-> bool td_enable)
+> > @@ -2170,6 +2170,52 @@ static int dpaa_a050385_wa_skb(struct
+> net_device *net_dev, struct sk_buff **s)
 > >
-> >  	dpaa_fq->fqid =3D qman_fq_fqid(fq);
-> >
-> > +	if (dpaa_fq->fq_type =3D=3D FQ_TYPE_RX_DEFAULT ||
-> > +	    dpaa_fq->fq_type =3D=3D FQ_TYPE_RX_PCD) {
-> > +		err =3D xdp_rxq_info_reg(&dpaa_fq->xdp_rxq, dpaa_fq-
-> >net_dev,
-> > +				       dpaa_fq->fqid);
-> > +		if (err) {
-> > +			dev_err(dev, "xdp_rxq_info_reg() =3D %d\n", err);
-> > +			return err;
-> > +		}
-> > +
-> > +		err =3D xdp_rxq_info_reg_mem_model(&dpaa_fq->xdp_rxq,
-> > +						 MEM_TYPE_PAGE_ORDER0,
-> NULL);
-> > +		if (err) {
-> > +			dev_err(dev, "xdp_rxq_info_reg_mem_model() =3D
-> %d\n", err);
-> > +			xdp_rxq_info_unreg(&dpaa_fq->xdp_rxq);
-> > +			return err;
-> > +		}
-> > +	}
-> > +
 > >  	return 0;
 > >  }
-> >
-> > @@ -1159,6 +1177,11 @@ static int dpaa_fq_free_entry(struct device
-> *dev, struct qman_fq *fq)
-> >  		}
-> >  	}
-> >
-> > +	if ((dpaa_fq->fq_type =3D=3D FQ_TYPE_RX_DEFAULT ||
-> > +	     dpaa_fq->fq_type =3D=3D FQ_TYPE_RX_PCD) &&
-> > +	    xdp_rxq_info_is_reg(&dpaa_fq->xdp_rxq))
-> > +		xdp_rxq_info_unreg(&dpaa_fq->xdp_rxq);
 > > +
-> >  	qman_destroy_fq(fq);
-> >  	list_del(&dpaa_fq->list);
-> >
-> > @@ -1625,6 +1648,9 @@ static int dpaa_eth_refill_bpools(struct dpaa_pri=
-v
-> *priv)
-> >   *
-> >   * Return the skb backpointer, since for S/G frames the buffer contain=
-ing it
-> >   * gets freed here.
-> > + *
-> > + * No skb backpointer is set when transmitting XDP frames. Cleanup the
-> buffer
-> > + * and return NULL in this case.
-> >   */
-> >  static struct sk_buff *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv=
-,
-> >  					  const struct qm_fd *fd, bool ts)
-> > @@ -1664,13 +1690,21 @@ static struct sk_buff
-> *dpaa_cleanup_tx_fd(const struct dpaa_priv *priv,
-> >  		}
-> >  	} else {
-> >  		dma_unmap_single(priv->tx_dma_dev, addr,
-> > -				 priv->tx_headroom +
-> qm_fd_get_length(fd),
-> > +				 qm_fd_get_offset(fd) +
-> qm_fd_get_length(fd),
-> >  				 dma_dir);
-> >  	}
-> >
-> >  	swbp =3D (struct dpaa_eth_swbp *)vaddr;
-> >  	skb =3D swbp->skb;
-> >
-> > +	/* No skb backpointer is set when running XDP. An xdp_frame
-> > +	 * backpointer is saved instead.
-> > +	 */
-> > +	if (!skb) {
-> > +		xdp_return_frame(swbp->xdpf);
-> > +		return NULL;
-> > +	}
-> > +
-> >  	/* DMA unmapping is required before accessing the HW provided
-> info */
-> >  	if (ts && priv->tx_tstamp &&
-> >  	    skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) {
-> > @@ -2350,11 +2384,76 @@ static enum qman_cb_dqrr_result
-> rx_error_dqrr(struct qman_portal *portal,
-> >  	return qman_cb_dqrr_consume;
-> >  }
-> >
-> > +static int dpaa_xdp_xmit_frame(struct net_device *net_dev,
-> > +			       struct xdp_frame *xdpf)
+> > +static int dpaa_a050385_wa_xdpf(struct dpaa_priv *priv,
+> > +				struct xdp_frame **init_xdpf)
 > > +{
-> > +	struct dpaa_priv *priv =3D netdev_priv(net_dev);
-> > +	struct rtnl_link_stats64 *percpu_stats;
-> > +	struct dpaa_percpu_priv *percpu_priv;
-> > +	struct dpaa_eth_swbp *swbp;
-> > +	struct netdev_queue *txq;
-> > +	void *buff_start;
-> > +	struct qm_fd fd;
-> > +	dma_addr_t addr;
-> > +	int err;
+> > +	struct xdp_frame *new_xdpf, *xdpf =3D *init_xdpf;
+> > +	void *new_buff;
+> > +	struct page *p;
 > > +
-> > +	percpu_priv =3D this_cpu_ptr(priv->percpu_priv);
-> > +	percpu_stats =3D &percpu_priv->stats;
-> > +
-> > +	if (xdpf->headroom < DPAA_TX_PRIV_DATA_SIZE) {
-> > +		err =3D -EINVAL;
-> > +		goto out_error;
-> > +	}
-> > +
-> > +	buff_start =3D xdpf->data - xdpf->headroom;
-> > +
-> > +	/* Leave empty the skb backpointer at the start of the buffer.
-> > +	 * Save the XDP frame for easy cleanup on confirmation.
+> > +	/* Check the data alignment and make sure the headroom is large
+> > +	 * enough to store the xdpf backpointer. Use an aligned headroom
+> > +	 * value.
+> > +	 *
+> > +	 * Due to alignment constraints, we give XDP access to the full 256
+> > +	 * byte frame headroom. If the XDP program uses all of it, copy the
+> > +	 * data to a new buffer and make room for storing the backpointer.
 > > +	 */
-> > +	swbp =3D (struct dpaa_eth_swbp *)buff_start;
-> > +	swbp->skb =3D NULL;
-> > +	swbp->xdpf =3D xdpf;
+> > +	if (PTR_IS_ALIGNED(xdpf->data, DPAA_A050385_ALIGN) &&
+> > +	    xdpf->headroom >=3D priv->tx_headroom) {
+> > +		xdpf->headroom =3D priv->tx_headroom;
+> > +		return 0;
+> > +	}
 > > +
-> > +	qm_fd_clear_fd(&fd);
-> > +	fd.bpid =3D FSL_DPAA_BPID_INV;
-> > +	fd.cmd |=3D cpu_to_be32(FM_FD_CMD_FCO);
-> > +	qm_fd_set_contig(&fd, xdpf->headroom, xdpf->len);
+> > +	p =3D dev_alloc_pages(0);
+> > +	if (unlikely(!p))
+> > +		return -ENOMEM;
 > > +
-> > +	addr =3D dma_map_single(priv->tx_dma_dev, buff_start,
-> > +			      xdpf->headroom + xdpf->len,
-> > +			      DMA_TO_DEVICE);
+> > +	/* Copy the data to the new buffer at a properly aligned offset */
+> > +	new_buff =3D page_address(p);
+> > +	memcpy(new_buff + priv->tx_headroom, xdpf->data, xdpf->len);
+> > +
+> > +	/* Create an XDP frame around the new buffer in a similar fashion
+> > +	 * to xdp_convert_buff_to_frame.
+> > +	 */
+> > +	new_xdpf =3D new_buff;
+> > +	new_xdpf->data =3D new_buff + priv->tx_headroom;
+> > +	new_xdpf->len =3D xdpf->len;
+> > +	new_xdpf->headroom =3D priv->tx_headroom;
 >=20
-> Not sure if I asked that.  What is the purpose for including the headroom
-> in frame being set? I would expect to take into account only frame from
-> xdpf->data.
+> What if ptr was not aligned so you got here but tx_headroom was less than
+> xdpf->headroom? Shouldn't you choose the bigger one? Aren't you shrinking
+> the headroom for this case.
 
-The xdpf headroom becomes the fd's offset, the area before the data where t=
-he backpointers for cleanup are stored. This area isn't sent out with the f=
-rame.
+Yes, I am shrinking the headroom. At this point, the headroom's content isn=
+'t relevant anymore (this path is executed when transmitting the frame afte=
+r TX or REDIRECT). What is important is the data's alignment, and it is dic=
+tated by the headroom's (fd's offset) size.
 
-> > +	if (unlikely(dma_mapping_error(priv->tx_dma_dev, addr))) {
-> > +		err =3D -EINVAL;
-> > +		goto out_error;
-> > +	}
+> > +	new_xdpf->frame_sz =3D DPAA_BP_RAW_SIZE;
+> > +	new_xdpf->mem.type =3D MEM_TYPE_PAGE_ORDER0;
 > > +
-> > +	qm_fd_addr_set64(&fd, addr);
+> > +	/* Release the initial buffer */
+> > +	xdp_return_frame_rx_napi(xdpf);
 > > +
-> > +	/* Bump the trans_start */
-> > +	txq =3D netdev_get_tx_queue(net_dev, smp_processor_id());
-> > +	txq->trans_start =3D jiffies;
-> > +
-> > +	err =3D dpaa_xmit(priv, percpu_stats, smp_processor_id(), &fd);
-> > +	if (err) {
-> > +		dma_unmap_single(priv->tx_dma_dev, addr,
-> > +				 qm_fd_get_offset(&fd) +
-> qm_fd_get_length(&fd),
-> > +				 DMA_TO_DEVICE);
-> > +		goto out_error;
-> > +	}
-> > +
+> > +	*init_xdpf =3D new_xdpf;
 > > +	return 0;
-> > +
-> > +out_error:
-> > +	percpu_stats->tx_errors++;
-> > +	return err;
 > > +}
+> >  #endif
+> >
+> >  static netdev_tx_t
+> > @@ -2406,6 +2452,15 @@ static int dpaa_xdp_xmit_frame(struct
+> net_device *net_dev,
+> >  	percpu_priv =3D this_cpu_ptr(priv->percpu_priv);
+> >  	percpu_stats =3D &percpu_priv->stats;
+> >
+> > +#ifdef CONFIG_DPAA_ERRATUM_A050385
+> > +	if (unlikely(fman_has_errata_a050385())) {
+> > +		if (dpaa_a050385_wa_xdpf(priv, &xdpf)) {
+> > +			err =3D -ENOMEM;
+> > +			goto out_error;
+> > +		}
+> > +	}
+> > +#endif
 > > +
-> >  static u32 dpaa_run_xdp(struct dpaa_priv *priv, struct qm_fd *fd, void
-> *vaddr,
-> > -			unsigned int *xdp_meta_len)
-> > +			struct dpaa_fq *dpaa_fq, unsigned int
-> *xdp_meta_len)
-> >  {
-> >  	ssize_t fd_off =3D qm_fd_get_offset(fd);
-> >  	struct bpf_prog *xdp_prog;
-> > +	struct xdp_frame *xdpf;
-> >  	struct xdp_buff xdp;
-> >  	u32 xdp_act;
-> >
-> > @@ -2370,7 +2469,8 @@ static u32 dpaa_run_xdp(struct dpaa_priv *priv,
+> >  	if (xdpf->headroom < DPAA_TX_PRIV_DATA_SIZE) {
+> >  		err =3D -EINVAL;
+> >  		goto out_error;
+> > @@ -2479,6 +2534,20 @@ static u32 dpaa_run_xdp(struct dpaa_priv *priv,
 > struct qm_fd *fd, void *vaddr,
-> >  	xdp.data_meta =3D xdp.data;
-> >  	xdp.data_hard_start =3D xdp.data - XDP_PACKET_HEADROOM;
-> >  	xdp.data_end =3D xdp.data + qm_fd_get_length(fd);
-> > -	xdp.frame_sz =3D DPAA_BP_RAW_SIZE;
-> > +	xdp.frame_sz =3D DPAA_BP_RAW_SIZE - DPAA_TX_PRIV_DATA_SIZE;
-> > +	xdp.rxq =3D &dpaa_fq->xdp_rxq;
+> >  	xdp.frame_sz =3D DPAA_BP_RAW_SIZE - DPAA_TX_PRIV_DATA_SIZE;
+> >  	xdp.rxq =3D &dpaa_fq->xdp_rxq;
 > >
-> >  	xdp_act =3D bpf_prog_run_xdp(xdp_prog, &xdp);
-> >
-> > @@ -2381,6 +2481,22 @@ static u32 dpaa_run_xdp(struct dpaa_priv *priv,
-> struct qm_fd *fd, void *vaddr,
-> >  	case XDP_PASS:
-> >  		*xdp_meta_len =3D xdp.data - xdp.data_meta;
-> >  		break;
-> > +	case XDP_TX:
-> > +		/* We can access the full headroom when sending the frame
-> > +		 * back out
-> > +		 */
+> > +	/* We reserve a fixed headroom of 256 bytes under the erratum and
+> we
+> > +	 * offer it all to XDP programs to use. If no room is left for the
+> > +	 * xdpf backpointer on TX, we will need to copy the data.
+> > +	 * Disable metadata support since data realignments might be
+> required
+> > +	 * and the information can be lost.
+> > +	 */
+> > +#ifdef CONFIG_DPAA_ERRATUM_A050385
+> > +	if (unlikely(fman_has_errata_a050385())) {
+> > +		xdp_set_data_meta_invalid(&xdp);
 > > +		xdp.data_hard_start =3D vaddr;
 > > +		xdp.frame_sz =3D DPAA_BP_RAW_SIZE;
-> > +		xdpf =3D xdp_convert_buff_to_frame(&xdp);
-> > +		if (unlikely(!xdpf)) {
-> > +			free_pages((unsigned long)vaddr, 0);
-> > +			break;
-> > +		}
+> > +	}
+> > +#endif
 > > +
-> > +		if (dpaa_xdp_xmit_frame(priv->net_dev, xdpf))
-> > +			xdp_return_frame_rx_napi(xdpf);
+> >  	xdp_act =3D bpf_prog_run_xdp(xdp_prog, &xdp);
+> >
+> >  	/* Update the length and the offset of the FD */
+> > @@ -2486,7 +2555,8 @@ static u32 dpaa_run_xdp(struct dpaa_priv *priv,
+> struct qm_fd *fd, void *vaddr,
+> >
+> >  	switch (xdp_act) {
+> >  	case XDP_PASS:
+> > -		*xdp_meta_len =3D xdp.data - xdp.data_meta;
+> > +		*xdp_meta_len =3D xdp_data_meta_unsupported(&xdp) ? 0 :
+> > +				xdp.data - xdp.data_meta;
+>=20
+> You could consider surrounding this with ifdef and keep the old version i=
+n
+> the else branch so that old case is not hurt with that additional branch
+> that you're introducing with that ternary operator.
+
+Sure, I'll do that. Thanks.
+
+> >  		break;
+> >  	case XDP_TX:
+> >  		/* We can access the full headroom when sending the frame
+> > @@ -3188,10 +3258,16 @@ static u16 dpaa_get_headroom(struct
+> dpaa_buffer_layout *bl,
+> >  	 */
+> >  	headroom =3D (u16)(bl[port].priv_data_size + DPAA_HWA_SIZE);
+> >
+> > -	if (port =3D=3D RX)
+> > +	if (port =3D=3D RX) {
+> > +#ifdef CONFIG_DPAA_ERRATUM_A050385
+> > +		if (unlikely(fman_has_errata_a050385()))
+> > +			headroom =3D XDP_PACKET_HEADROOM;
+> > +#endif
 > > +
-> > +		break;
-> >  	default:
-> >  		bpf_warn_invalid_xdp_action(xdp_act);
-> >  		fallthrough;
-> > @@ -2415,6 +2531,7 @@ static enum qman_cb_dqrr_result
-> rx_default_dqrr(struct qman_portal *portal,
-> >  	u32 fd_status, hash_offset;
-> >  	struct qm_sg_entry *sgt;
-> >  	struct dpaa_bp *dpaa_bp;
-> > +	struct dpaa_fq *dpaa_fq;
-> >  	struct dpaa_priv *priv;
-> >  	struct sk_buff *skb;
-> >  	int *count_ptr;
-> > @@ -2423,9 +2540,10 @@ static enum qman_cb_dqrr_result
-> rx_default_dqrr(struct qman_portal *portal,
-> >  	u32 hash;
-> >  	u64 ns;
+> >  		return ALIGN(headroom,
+> DPAA_FD_RX_DATA_ALIGNMENT);
+> > -	else
+> > +	} else {
+> >  		return ALIGN(headroom, DPAA_FD_DATA_ALIGNMENT);
+> > +	}
+> >  }
 > >
-> > +	dpaa_fq =3D container_of(fq, struct dpaa_fq, fq_base);
-> >  	fd_status =3D be32_to_cpu(fd->status);
-> >  	fd_format =3D qm_fd_get_format(fd);
-> > -	net_dev =3D ((struct dpaa_fq *)fq)->net_dev;
-> > +	net_dev =3D dpaa_fq->net_dev;
-> >  	priv =3D netdev_priv(net_dev);
-> >  	dpaa_bp =3D dpaa_bpid2pool(dq->fd.bpid);
-> >  	if (!dpaa_bp)
-> > @@ -2494,7 +2612,7 @@ static enum qman_cb_dqrr_result
-> rx_default_dqrr(struct qman_portal *portal,
-> >
-> >  	if (likely(fd_format =3D=3D qm_fd_contig)) {
-> >  		xdp_act =3D dpaa_run_xdp(priv, (struct qm_fd *)fd, vaddr,
-> > -				       &xdp_meta_len);
-> > +				       dpaa_fq, &xdp_meta_len);
-> >  		if (xdp_act !=3D XDP_PASS) {
-> >  			percpu_stats->rx_packets++;
-> >  			percpu_stats->rx_bytes +=3D qm_fd_get_length(fd);
-> > diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h
-> b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h
-> > index 94e8613..5c8d52a 100644
-> > --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h
-> > +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.h
-> > @@ -68,6 +68,7 @@ struct dpaa_fq {
-> >  	u16 channel;
-> >  	u8 wq;
-> >  	enum dpaa_fq_type fq_type;
-> > +	struct xdp_rxq_info xdp_rxq;
-> >  };
-> >
-> >  struct dpaa_fq_cbs {
-> > @@ -150,6 +151,7 @@ struct dpaa_buffer_layout {
-> >   */
-> >  struct dpaa_eth_swbp {
-> >  	struct sk_buff *skb;
-> > +	struct xdp_frame *xdpf;
-> >  };
-> >
-> >  struct dpaa_priv {
+> >  static int dpaa_eth_probe(struct platform_device *pdev)
 > > --
 > > 1.9.1
 > >
