@@ -2,237 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E7152C4B1A
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 23:53:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB4F42C4B1F
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 23:54:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728839AbgKYWxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 17:53:01 -0500
-Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:22348 "EHLO
-        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728808AbgKYWxA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 17:53:00 -0500
+        id S1729045AbgKYWyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 17:54:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34138 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728151AbgKYWx7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 17:53:59 -0500
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 807C7C0613D4
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 14:53:59 -0800 (PST)
+Received: by mail-io1-xd2e.google.com with SMTP id o8so3789198ioh.0
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 14:53:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1606344780; x=1637880780;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=TgRZ0yK3r5FaTO9KUQ7uC6vb8LyENFQKc6LY7cuT2dY=;
-  b=EjISJeCoidfk/OTNSXmmlsLYT7hmILLQRjkQ0ydF+G+87tcQKcXwYLrY
-   YFi4++a4FUnl+kTnoiSr/qwQUR77uOnCVu912OcVt9WCpTc46prBg20/8
-   WeqzW45aZ1HNQI+em7GnfDsVfp67fPFBVt6m9V6uMAW5ctJ0COVMJbmYj
-   c=;
-X-IronPort-AV: E=Sophos;i="5.78,370,1599523200"; 
-   d="scan'208";a="68816342"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2c-cc689b93.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 25 Nov 2020 22:52:53 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-2c-cc689b93.us-west-2.amazon.com (Postfix) with ESMTPS id F0EF1120EA5;
-        Wed, 25 Nov 2020 22:52:51 +0000 (UTC)
-Received: from EX13D10UWA004.ant.amazon.com (10.43.160.64) by
- EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 25 Nov 2020 22:52:40 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (10.43.160.58) by
- EX13D10UWA004.ant.amazon.com (10.43.160.64) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 25 Nov 2020 22:52:40 +0000
-Received: from HFA15-G63729NC.amazon.com (10.1.213.33) by
- mail-relay.amazon.com (10.43.160.118) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Wed, 25 Nov 2020 22:52:35 +0000
-From:   <akiyano@amazon.com>
-To:     <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <ndagan@amazon.com>, <shayagr@amazon.com>,
-        <sameehj@amazon.com>
-Subject: [PATCH V1 net-next 9/9] net: ena: introduce ndo_xdp_xmit() function for XDP_REDIRECT
-Date:   Thu, 26 Nov 2020 00:51:48 +0200
-Message-ID: <1606344708-11100-10-git-send-email-akiyano@amazon.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1606344708-11100-1-git-send-email-akiyano@amazon.com>
-References: <1606344708-11100-1-git-send-email-akiyano@amazon.com>
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=oVUnr7E2mvu+n0bKwmlxscbZJeF25SzxpVY68WfFlcQ=;
+        b=bje2ArzppJri6mdXBPneJf1469GdCaFzhxFfJZIT4WPKrO8dOeqPoamc4P0pxtM1+z
+         NE+VkKIYeCv5/gJscx7gO10YjKUxhtbjQepWUwdXCMCJPF3xZGp6aBxs+xjHenlPoYGi
+         IK1MfuPG7aFqoPgMexIgh+TekiOHUO7DHcgSwhZ7ZOlS5PN3YAzNKiN1HJR8SWThB4rC
+         w4WVZcbgYl949t7NZD7ZhV/OE3hJaRD/Iyjtxi4Gv+ZtB+JZKn3Orib/ykVvb9657imt
+         Y2EwM8ZbqrzP6z8XW/0oELlTn+38nFh6vIjn2SPucneEmwPWBarOcQdW8p7jksrHmbFB
+         qWGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=oVUnr7E2mvu+n0bKwmlxscbZJeF25SzxpVY68WfFlcQ=;
+        b=GPxvWhm68Lup1YOtox5K4vd5mxOAIFmuKFTd9x3bPQ513uNvpJhWkijEFP5ru3Rn0G
+         iH4rn1mXTYPQvgzXF63d7AkRFGWZObeYGSCiknS4aFKDl32Fhp6+S7e3g+y+ebhCIGpn
+         e4GBBurhuaFJAEhNSvmMt9Pry7NehyFmvIK+lM7fq0xYFtA7JgS3hJuvTuPZYmCqmE2j
+         WCvDD+VRnTLPYp00VW+IGtgvPw6kjVyhDHyPBrTuo4g3mA94czSwT27PMj/O3JHId/99
+         h4eTGyrgZIux2yptvzf54cjdyKK1LGmwF/ds+KfJwvABO3qWT7Oqx0Q6iKemDvoZmCp/
+         kBBw==
+X-Gm-Message-State: AOAM531Ym5wWVpnRR4UDu/5KDT1Se8m4a3zHHIH5AXIwOd5u958Nqi34
+        xt/u0DaTWYnUKbt/n4ecifs=
+X-Google-Smtp-Source: ABdhPJyI++LmMjECPnTn/c5cRKUvCvXRoti35pRelkgzx5d6k1IM7qZbDFXoQ9xYiytPz8PU9pzhJQ==
+X-Received: by 2002:a6b:760e:: with SMTP id g14mr130810iom.136.1606344838827;
+        Wed, 25 Nov 2020 14:53:58 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:1c24:45b7:26d4:a203])
+        by smtp.googlemail.com with ESMTPSA id m7sm1459231iow.46.2020.11.25.14.53.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 25 Nov 2020 14:53:58 -0800 (PST)
+Subject: Re: [PATCH net-next 0/5] mlxsw: Update adjacency index more
+ efficiently
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
+        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
+References: <20201125193505.1052466-1-idosch@idosch.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <4c97e61a-6267-f4c1-5e82-f8b3f15252e7@gmail.com>
+Date:   Wed, 25 Nov 2020 15:53:57 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20201125193505.1052466-1-idosch@idosch.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arthur Kiyanovski <akiyano@amazon.com>
+On 11/25/20 12:35 PM, Ido Schimmel wrote:
+> Example:
+> 
+> 8k IPv6 routes were added in an alternating manner to two VRFs. All the
+> routes are using the same nexthop object ('nhid 1').
+> 
+> Before:
+> 
+> # perf stat -e devlink:devlink_hwmsg --filter='incoming==0' -- ip nexthop replace id 1 via 2001:db8:1::2 dev swp3
+> 
+>  Performance counter stats for 'ip nexthop replace id 1 via 2001:db8:1::2 dev swp3':
+> 
+>             16,385      devlink:devlink_hwmsg
+> 
+>        4.255933213 seconds time elapsed
+> 
+>        0.000000000 seconds user
+>        0.666923000 seconds sys
+> 
+> Number of EMAD transactions corresponds to number of routes using the
+> nexthop group.
+> 
+> After:
+> 
+> # perf stat -e devlink:devlink_hwmsg --filter='incoming==0' -- ip nexthop replace id 1 via 2001:db8:1::2 dev swp3
+> 
+>  Performance counter stats for 'ip nexthop replace id 1 via 2001:db8:1::2 dev swp3':
+> 
+>                  3      devlink:devlink_hwmsg
+> 
+>        0.077655094 seconds time elapsed
+> 
+>        0.000000000 seconds user
+>        0.076698000 seconds sys
+> 
+> Number of EMAD transactions corresponds to number of VRFs / VRs.
 
-This patch implements the ndo_xdp_xmit() net_device function which is
-called when a packet is redirected to this driver using an
-XDP_REDIRECT directive.
-
-The function receives an array of xdp frames that it needs to xmit.
-The TX queues that are used to xmit these frames are the XDP
-queues used by the XDP_TX flow. Therefore a lock is added to synchronize
-both flows (XDP_TX and XDP_REDIRECT).
-
-Signed-off-by: Shay Agroskin <shayagr@amazon.com>
-Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
----
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 84 +++++++++++++++++---
- drivers/net/ethernet/amazon/ena/ena_netdev.h |  1 +
- 2 files changed, 72 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index f110f9dbf955..231aed8871a1 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -282,20 +282,18 @@ static int ena_xdp_tx_map_frame(struct ena_ring *xdp_ring,
- 	return -EINVAL;
- }
- 
--static int ena_xdp_xmit_frame(struct net_device *dev,
-+static int ena_xdp_xmit_frame(struct ena_ring *xdp_ring,
-+			      struct net_device *dev,
- 			      struct xdp_frame *xdpf,
--			      int qid)
-+			      int flags)
- {
--	struct ena_adapter *adapter = netdev_priv(dev);
- 	struct ena_com_tx_ctx ena_tx_ctx = {};
- 	struct ena_tx_buffer *tx_info;
--	struct ena_ring *xdp_ring;
- 	u16 next_to_use, req_id;
--	int rc;
- 	void *push_hdr;
- 	u32 push_len;
-+	int rc;
- 
--	xdp_ring = &adapter->tx_ring[qid];
- 	next_to_use = xdp_ring->next_to_use;
- 	req_id = xdp_ring->free_ids[next_to_use];
- 	tx_info = &xdp_ring->tx_buffer_info[req_id];
-@@ -322,26 +320,76 @@ static int ena_xdp_xmit_frame(struct net_device *dev,
- 	/* trigger the dma engine. ena_com_write_sq_doorbell()
- 	 * has a mb
- 	 */
--	ena_com_write_sq_doorbell(xdp_ring->ena_com_io_sq);
--	ena_increase_stat_atomic(&xdp_ring->tx_stats.doorbells, 1,
--		&xdp_ring->syncp);
-+	if (flags & XDP_XMIT_FLUSH) {
-+		ena_com_write_sq_doorbell(xdp_ring->ena_com_io_sq);
-+		ena_increase_stat_atomic(&xdp_ring->tx_stats.doorbells, 1,
-+			&xdp_ring->syncp);
-+	}
- 
--	return NETDEV_TX_OK;
-+	return rc;
- 
- error_unmap_dma:
- 	ena_unmap_tx_buff(xdp_ring, tx_info);
- 	tx_info->xdpf = NULL;
- error_drop_packet:
- 	xdp_return_frame(xdpf);
--	return NETDEV_TX_OK;
-+	return rc;
-+}
-+
-+static int ena_xdp_xmit(struct net_device *dev, int n,
-+			struct xdp_frame **frames, u32 flags)
-+{
-+	struct ena_adapter *adapter = netdev_priv(dev);
-+	int qid, i, err, drops = 0;
-+	struct ena_ring *xdp_ring;
-+
-+	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
-+		return -EINVAL;
-+
-+	if (!test_bit(ENA_FLAG_DEV_UP, &adapter->flags))
-+		return -ENETDOWN;
-+
-+	/* We assume that all rings have the same XDP program */
-+	if (!READ_ONCE(adapter->rx_ring->xdp_bpf_prog))
-+		return -ENXIO;
-+
-+	qid = smp_processor_id() % adapter->xdp_num_queues;
-+	qid += adapter->xdp_first_ring;
-+	xdp_ring = &adapter->tx_ring[qid];
-+
-+	/* Other CPU ids might try to send thorugh this queue */
-+	spin_lock(&xdp_ring->xdp_tx_lock);
-+
-+	for (i = 0; i < n; i++) {
-+		err = ena_xdp_xmit_frame(xdp_ring, dev, frames[i], 0);
-+		/* The descriptor is freed by ena_xdp_xmit_frame in case
-+		 * of an error.
-+		 */
-+		if (err)
-+			drops++;
-+	}
-+
-+	/* Ring doorbell to make device aware of the packets */
-+	if (flags & XDP_XMIT_FLUSH) {
-+		ena_com_write_sq_doorbell(xdp_ring->ena_com_io_sq);
-+		ena_increase_stat_atomic(&xdp_ring->tx_stats.doorbells, 1,
-+			&xdp_ring->syncp);
-+	}
-+
-+	spin_unlock(&xdp_ring->xdp_tx_lock);
-+
-+	/* Return number of packets sent */
-+	return n - drops;
- }
- 
- static int ena_xdp_execute(struct ena_ring *rx_ring, struct xdp_buff *xdp)
- {
- 	struct bpf_prog *xdp_prog;
-+	struct ena_ring *xdp_ring;
- 	u32 verdict = XDP_PASS;
- 	struct xdp_frame *xdpf;
- 	u64 *xdp_stat;
-+	int qid;
- 
- 	rcu_read_lock();
- 	xdp_prog = READ_ONCE(rx_ring->xdp_bpf_prog);
-@@ -354,8 +402,16 @@ static int ena_xdp_execute(struct ena_ring *rx_ring, struct xdp_buff *xdp)
- 	switch (verdict) {
- 	case XDP_TX:
- 		xdpf = xdp_convert_buff_to_frame(xdp);
--		ena_xdp_xmit_frame(rx_ring->netdev, xdpf,
--				   rx_ring->qid + rx_ring->adapter->num_io_queues);
-+		/* Find xmit queue */
-+		qid = rx_ring->qid + rx_ring->adapter->num_io_queues;
-+		xdp_ring = &rx_ring->adapter->tx_ring[qid];
-+
-+		/* The XDP queues are shared between XDP_TX and XDP_REDIRECT */
-+		spin_lock(&xdp_ring->xdp_tx_lock);
-+
-+		ena_xdp_xmit_frame(xdp_ring, rx_ring->netdev, xdpf, XDP_XMIT_FLUSH);
-+
-+		spin_unlock(&xdp_ring->xdp_tx_lock);
- 		xdp_stat = &rx_ring->rx_stats.xdp_tx;
- 		break;
- 	case XDP_REDIRECT:
-@@ -646,6 +702,7 @@ static void ena_init_io_rings(struct ena_adapter *adapter,
- 		txr->smoothed_interval =
- 			ena_com_get_nonadaptive_moderation_interval_tx(ena_dev);
- 		txr->disable_meta_caching = adapter->disable_meta_caching;
-+		spin_lock_init(&txr->xdp_tx_lock);
- 
- 		/* Don't init RX queues for xdp queues */
- 		if (!ENA_IS_XDP_INDEX(adapter, i)) {
-@@ -3239,6 +3296,7 @@ static const struct net_device_ops ena_netdev_ops = {
- 	.ndo_set_mac_address	= NULL,
- 	.ndo_validate_addr	= eth_validate_addr,
- 	.ndo_bpf		= ena_xdp,
-+	.ndo_xdp_xmit		= ena_xdp_xmit,
- };
- 
- static int ena_device_validate_params(struct ena_adapter *adapter,
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.h b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-index fed79c50a870..74af15d62ee1 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-@@ -258,6 +258,7 @@ struct ena_ring {
- 	struct ena_com_io_sq *ena_com_io_sq;
- 	struct bpf_prog *xdp_bpf_prog;
- 	struct xdp_rxq_info xdp_rxq;
-+	spinlock_t xdp_tx_lock;	/* synchronize XDP TX/Redirect traffic */
- 
- 	u16 next_to_use;
- 	u16 next_to_clean;
--- 
-2.23.3
+wow, that is a huge difference - a good example of the efficiencies the
+nexthop model allows.
 
