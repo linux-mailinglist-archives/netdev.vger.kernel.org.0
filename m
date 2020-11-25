@@ -2,193 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C5B52C45FE
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 17:54:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 891142C461D
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 17:59:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732540AbgKYQxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 11:53:52 -0500
-Received: from inva021.nxp.com ([92.121.34.21]:33256 "EHLO inva021.nxp.com"
+        id S1731918AbgKYQ5W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 11:57:22 -0500
+Received: from spam.lhost.no ([5.158.192.85]:41687 "EHLO mx04.lhost.no"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732526AbgKYQxu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Nov 2020 11:53:50 -0500
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 33A2220172E;
-        Wed, 25 Nov 2020 17:53:49 +0100 (CET)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 2661820173F;
-        Wed, 25 Nov 2020 17:53:49 +0100 (CET)
-Received: from fsr-ub1464-019.ea.freescale.net (fsr-ub1464-019.ea.freescale.net [10.171.81.207])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id BEC472030D;
-        Wed, 25 Nov 2020 17:53:48 +0100 (CET)
-From:   Camelia Groza <camelia.groza@nxp.com>
-To:     kuba@kernel.org, maciej.fijalkowski@intel.com, brouer@redhat.com,
-        saeed@kernel.org, davem@davemloft.net
-Cc:     madalin.bucur@oss.nxp.com, ioana.ciornei@nxp.com,
-        netdev@vger.kernel.org, Camelia Groza <camelia.groza@nxp.com>
-Subject: [PATCH net-next v5 7/7] dpaa_eth: implement the A050385 erratum workaround for XDP
-Date:   Wed, 25 Nov 2020 18:53:36 +0200
-Message-Id: <96ecc037faaa23d3e7f89487c3c8dac9a0eb0444.1606322126.git.camelia.groza@nxp.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <cover.1606322126.git.camelia.groza@nxp.com>
-References: <cover.1606322126.git.camelia.groza@nxp.com>
-In-Reply-To: <cover.1606322126.git.camelia.groza@nxp.com>
-References: <cover.1606322126.git.camelia.groza@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1730062AbgKYQ5W (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Nov 2020 11:57:22 -0500
+X-ASG-Debug-ID: 1606323434-0ffc060722f1b960001-BZBGGp
+Received: from s103.paneda.no ([5.158.193.76]) by mx04.lhost.no with ESMTP id QT2HyX3uPiy22kK1 (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NO); Wed, 25 Nov 2020 17:57:17 +0100 (CET)
+X-Barracuda-Envelope-From: thomas.karlsson@paneda.se
+X-Barracuda-Effective-Source-IP: UNKNOWN[5.158.193.76]
+X-Barracuda-Apparent-Source-IP: 5.158.193.76
+X-ASG-Whitelist: Client
+Received: from [192.168.10.188] (83.140.179.234) by s103.paneda.no
+ (10.16.55.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id 15.1.1979.3; Wed, 25
+ Nov 2020 17:57:14 +0100
+Subject: [PATCH] macvlan: Support for high multicast packet rate
+From:   Thomas Karlsson <thomas.karlsson@paneda.se>
+X-ASG-Orig-Subj: [PATCH] macvlan: Support for high multicast packet rate
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        <thomas.karlsson@paneda.se>
+References: <485531aec7e243659ee4e3bb7fa2186d@paneda.se>
+ <147b704ac1d5426fbaa8617289dad648@paneda.se>
+ <20201123143052.1176407d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <b93a6031-f1b4-729d-784b-b1f465d27071@paneda.se>
+Message-ID: <385b9b4c-25f5-b507-4e69-419883fa8043@paneda.se>
+Date:   Wed, 25 Nov 2020 17:57:13 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
+MIME-Version: 1.0
+In-Reply-To: <b93a6031-f1b4-729d-784b-b1f465d27071@paneda.se>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [83.140.179.234]
+X-ClientProxiedBy: s103.paneda.no (10.16.55.12) To s103.paneda.no
+ (10.16.55.12)
+X-Barracuda-Connect: UNKNOWN[5.158.193.76]
+X-Barracuda-Start-Time: 1606323437
+X-Barracuda-Encrypted: ECDHE-RSA-AES256-SHA384
+X-Barracuda-URL: https://mx04.lhost.no:443/cgi-mod/mark.cgi
+X-Virus-Scanned: by bsmtpd at lhost.no
+X-Barracuda-Scan-Msg-Size: 2038
+X-Barracuda-BRTS-Status: 1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For XDP TX, even tough we start out with correctly aligned buffers, the
-XDP program might change the data's alignment. For REDIRECT, we have no
-control over the alignment either.
+Background:
+Broadcast and multicast packages are enqueued for later processing.
+This queue was previously hardcoded to 1000 packages.
 
-Create a new workaround for xdp_frame structures to verify the erratum
-conditions and move the data to a fresh buffer if necessary. Create a new
-xdp_frame for managing the new buffer and free the old one using the XDP
-API.
+This proved insufficient for handling very high packet rates.
+This resulted in packet drops for multicast.
+While at the same time unicast worked fine.
 
-Due to alignment constraints, all frames have a 256 byte headroom that
-is offered fully to XDP under the erratum. If the XDP program uses all
-of it, the data needs to be move to make room for the xdpf backpointer.
+The change:
+This patch make the queue len adjustable to accommodate
+for environments with very high multicast packet rate.
+But still keeps the default value of 1000 unless specified.
 
-Disable the metadata support since the information can be lost.
+The queue len is specified using the bc_queue_len module parameter.
 
-Acked-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
-Signed-off-by: Camelia Groza <camelia.groza@nxp.com>
----
-Changes in v5:
-- reduce the impact of the A050385 erratum workaround code on non-erratum
-platforms
+Signed-off-by: Thomas Karlsson <thomas.karlsson@paneda.se>
 
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 84 +++++++++++++++++++++++++-
- 1 file changed, 82 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index c63f5fe..947b3d2 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -2171,6 +2171,52 @@ static int dpaa_a050385_wa_skb(struct net_device *net_dev, struct sk_buff **s)
-
- 	return 0;
- }
+diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+index c8d803d3616c..5c92ef2db284 100644
+--- a/drivers/net/macvlan.c
++++ b/drivers/net/macvlan.c
+@@ -12,6 +12,7 @@
+ #include <linux/kernel.h>
+ #include <linux/types.h>
+ #include <linux/module.h>
++#include <linux/moduleparam.h>
+ #include <linux/init.h>
+ #include <linux/errno.h>
+ #include <linux/slab.h>
+@@ -35,11 +36,15 @@
+ 
+ #define MACVLAN_HASH_BITS      8
+ #define MACVLAN_HASH_SIZE      (1<<MACVLAN_HASH_BITS)
+-#define MACVLAN_BC_QUEUE_LEN   1000
++#define MACVLAN_DEFAULT_BC_QUEUE_LEN   1000
+ 
+ #define MACVLAN_F_PASSTHRU     1
+ #define MACVLAN_F_ADDRCHANGE   2
+ 
++static uint bc_queue_len = MACVLAN_DEFAULT_BC_QUEUE_LEN;
++module_param(bc_queue_len, uint, 0444);
++MODULE_PARM_DESC(bc_queue_len, "The maximum length of the broadcast/multicast work queue");
 +
-+static int dpaa_a050385_wa_xdpf(struct dpaa_priv *priv,
-+				struct xdp_frame **init_xdpf)
-+{
-+	struct xdp_frame *new_xdpf, *xdpf = *init_xdpf;
-+	void *new_buff;
-+	struct page *p;
-+
-+	/* Check the data alignment and make sure the headroom is large
-+	 * enough to store the xdpf backpointer. Use an aligned headroom
-+	 * value.
-+	 *
-+	 * Due to alignment constraints, we give XDP access to the full 256
-+	 * byte frame headroom. If the XDP program uses all of it, copy the
-+	 * data to a new buffer and make room for storing the backpointer.
-+	 */
-+	if (PTR_IS_ALIGNED(xdpf->data, DPAA_A050385_ALIGN) &&
-+	    xdpf->headroom >= priv->tx_headroom) {
-+		xdpf->headroom = priv->tx_headroom;
-+		return 0;
-+	}
-+
-+	p = dev_alloc_pages(0);
-+	if (unlikely(!p))
-+		return -ENOMEM;
-+
-+	/* Copy the data to the new buffer at a properly aligned offset */
-+	new_buff = page_address(p);
-+	memcpy(new_buff + priv->tx_headroom, xdpf->data, xdpf->len);
-+
-+	/* Create an XDP frame around the new buffer in a similar fashion
-+	 * to xdp_convert_buff_to_frame.
-+	 */
-+	new_xdpf = new_buff;
-+	new_xdpf->data = new_buff + priv->tx_headroom;
-+	new_xdpf->len = xdpf->len;
-+	new_xdpf->headroom = priv->tx_headroom;
-+	new_xdpf->frame_sz = DPAA_BP_RAW_SIZE;
-+	new_xdpf->mem.type = MEM_TYPE_PAGE_ORDER0;
-+
-+	/* Release the initial buffer */
-+	xdp_return_frame_rx_napi(xdpf);
-+
-+	*init_xdpf = new_xdpf;
-+	return 0;
-+}
- #endif
-
- static netdev_tx_t
-@@ -2407,6 +2453,15 @@ static int dpaa_xdp_xmit_frame(struct net_device *net_dev,
- 	percpu_priv = this_cpu_ptr(priv->percpu_priv);
- 	percpu_stats = &percpu_priv->stats;
-
-+#ifdef CONFIG_DPAA_ERRATUM_A050385
-+	if (unlikely(fman_has_errata_a050385())) {
-+		if (dpaa_a050385_wa_xdpf(priv, &xdpf)) {
-+			err = -ENOMEM;
-+			goto out_error;
-+		}
-+	}
-+#endif
-+
- 	if (xdpf->headroom < DPAA_TX_PRIV_DATA_SIZE) {
- 		err = -EINVAL;
- 		goto out_error;
-@@ -2480,6 +2535,20 @@ static u32 dpaa_run_xdp(struct dpaa_priv *priv, struct qm_fd *fd, void *vaddr,
- 	xdp.frame_sz = DPAA_BP_RAW_SIZE - DPAA_TX_PRIV_DATA_SIZE;
- 	xdp.rxq = &dpaa_fq->xdp_rxq;
-
-+	/* We reserve a fixed headroom of 256 bytes under the erratum and we
-+	 * offer it all to XDP programs to use. If no room is left for the
-+	 * xdpf backpointer on TX, we will need to copy the data.
-+	 * Disable metadata support since data realignments might be required
-+	 * and the information can be lost.
-+	 */
-+#ifdef CONFIG_DPAA_ERRATUM_A050385
-+	if (unlikely(fman_has_errata_a050385())) {
-+		xdp_set_data_meta_invalid(&xdp);
-+		xdp.data_hard_start = vaddr;
-+		xdp.frame_sz = DPAA_BP_RAW_SIZE;
-+	}
-+#endif
-+
- 	xdp_act = bpf_prog_run_xdp(xdp_prog, &xdp);
-
- 	/* Update the length and the offset of the FD */
-@@ -2487,7 +2556,12 @@ static u32 dpaa_run_xdp(struct dpaa_priv *priv, struct qm_fd *fd, void *vaddr,
-
- 	switch (xdp_act) {
- 	case XDP_PASS:
-+#ifdef CONFIG_DPAA_ERRATUM_A050385
-+		*xdp_meta_len = xdp_data_meta_unsupported(&xdp) ? 0 :
-+				xdp.data - xdp.data_meta;
-+#else
- 		*xdp_meta_len = xdp.data - xdp.data_meta;
-+#endif
- 		break;
- 	case XDP_TX:
- 		/* We can access the full headroom when sending the frame
-@@ -3191,10 +3265,16 @@ static u16 dpaa_get_headroom(struct dpaa_buffer_layout *bl,
- 	 */
- 	headroom = (u16)(bl[port].priv_data_size + DPAA_HWA_SIZE);
-
--	if (port == RX)
-+	if (port == RX) {
-+#ifdef CONFIG_DPAA_ERRATUM_A050385
-+		if (unlikely(fman_has_errata_a050385()))
-+			headroom = XDP_PACKET_HEADROOM;
-+#endif
-+
- 		return ALIGN(headroom, DPAA_FD_RX_DATA_ALIGNMENT);
--	else
-+	} else {
- 		return ALIGN(headroom, DPAA_FD_DATA_ALIGNMENT);
-+	}
- }
-
- static int dpaa_eth_probe(struct platform_device *pdev)
---
-1.9.1
+ struct macvlan_port {
+        struct net_device       *dev;
+        struct hlist_head       vlan_hash[MACVLAN_HASH_SIZE];
+@@ -354,7 +359,7 @@ static void macvlan_broadcast_enqueue(struct macvlan_port *port,
+        MACVLAN_SKB_CB(nskb)->src = src;
+ 
+        spin_lock(&port->bc_queue.lock);
+-       if (skb_queue_len(&port->bc_queue) < MACVLAN_BC_QUEUE_LEN) {
++       if (skb_queue_len(&port->bc_queue) < bc_queue_len) {
+                if (src)
+                        dev_hold(src->dev);
+                __skb_queue_tail(&port->bc_queue, nskb);
+-- 
+2.28.0
 
