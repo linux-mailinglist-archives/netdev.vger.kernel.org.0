@@ -2,111 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CBCC2C4095
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 13:52:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5193F2C40A7
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 13:57:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728990AbgKYMvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 07:51:47 -0500
-Received: from spam.lhost.no ([5.158.192.84]:45958 "EHLO mx03.lhost.no"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728902AbgKYMvr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Nov 2020 07:51:47 -0500
-X-ASG-Debug-ID: 1606308702-0ffc0558218067f0001-BZBGGp
-Received: from s103.paneda.no ([5.158.193.76]) by mx03.lhost.no with ESMTP id Zkrydus2MPyFH3QS (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NO); Wed, 25 Nov 2020 13:51:42 +0100 (CET)
-X-Barracuda-Envelope-From: thomas.karlsson@paneda.se
-X-Barracuda-Effective-Source-IP: UNKNOWN[5.158.193.76]
-X-Barracuda-Apparent-Source-IP: 5.158.193.76
-X-ASG-Whitelist: Client
-Received: from [192.168.10.188] (83.140.179.234) by s103.paneda.no
- (10.16.55.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id 15.1.1979.3; Wed, 25
- Nov 2020 13:51:38 +0100
-Subject: Re: Hardcoded multicast queue length in macvlan.c driver causes poor
- multicast receive performance
-To:     Jakub Kicinski <kuba@kernel.org>
-X-ASG-Orig-Subj: Re: Hardcoded multicast queue length in macvlan.c driver causes poor
- multicast receive performance
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <485531aec7e243659ee4e3bb7fa2186d@paneda.se>
- <147b704ac1d5426fbaa8617289dad648@paneda.se>
- <20201123143052.1176407d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Thomas Karlsson <thomas.karlsson@paneda.se>
-Message-ID: <b93a6031-f1b4-729d-784b-b1f465d27071@paneda.se>
-Date:   Wed, 25 Nov 2020 13:51:41 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        id S1729135AbgKYM45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 07:56:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53704 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725875AbgKYM44 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 07:56:56 -0500
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7785BC0613D4;
+        Wed, 25 Nov 2020 04:56:56 -0800 (PST)
+Received: by mail-qk1-x744.google.com with SMTP id y18so4110220qki.11;
+        Wed, 25 Nov 2020 04:56:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=nNpoxskH44KK9KKuJ0pwAXxPc7WlonO/AVDvFJYaTko=;
+        b=kyfFznwFpssDqWqK1A5JgwNdKa6yVAJ+mBMjofSKBvAU6ZKKWBZuSJ0jfcPOPmtq84
+         bbVFCNJFKwgSFr4M2mOFguiLUh8MU2O2p/9mzOXo/tV/eNITnU3Pi1IgDicVfurnklB5
+         rzY7zCceW9oaxIyptlaB0JUYsVjtokvbXWtVmXI655as7UOlm/JDxTDSGHLSuwyNZpsK
+         y999e+tUAx20Xyu0x87WO6lBSlCXyTJ9duWU+MIxytl5ieQNkEljo5fHxQoS3JGPKABG
+         Z0ddyatzmmp6zwty6MFjaGnIEoJT64QuOxadPHVr1nrH3bAgQAUJE4uqbViTlJxhqDG/
+         Ievg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=nNpoxskH44KK9KKuJ0pwAXxPc7WlonO/AVDvFJYaTko=;
+        b=VKRNgz3TDQ2NnaCu18OlqcuO2/tgdKU7BlLHaJNyNIeMTE8LeNz7Rw/byhFcQklp4V
+         AW39hhN8vQMp3lYkqsI7lNC+7btqf2kTLoqL/sxwIDgO1R8ORO5L/y5rl0U8u4UPfkuN
+         WezejggZhZDz63uRSZXNAxAAQI1M5VcZxo6VUwoYf0q4YDub+hFhBVHt+DnZcmXlO+67
+         K/sO6LhJcWi7vYqjMKcJqqKMCyRDXZMdVq/EeflAiGr8ViOIk/SHABcpxni2nj7/I/QN
+         NvFobw9CTkx9WIukuiIxAhfZojK9+GlW8ImLnVls43CSkRFqSpqtqoRSvRZ2d8EWaZh3
+         ttRQ==
+X-Gm-Message-State: AOAM531UpvG+4IwyJ2qP/eurchnFKqOzqrW3yYa3V9wYF0fBIcLx1/eW
+        Irv4zHWJXtdAstz4MTrJ0nw=
+X-Google-Smtp-Source: ABdhPJxRCQXHNQOoJssE+ci+cutD9wtDvvPGp6Y2V8zgIIt9kEvbmCBIhvzEWNU3Yd15VxFc6500LQ==
+X-Received: by 2002:a05:620a:710:: with SMTP id 16mr3219043qkc.202.1606309015653;
+        Wed, 25 Nov 2020 04:56:55 -0800 (PST)
+Received: from localhost (dhcp-6c-ae-f6-dc-d8-61.cpe.echoes.net. [72.28.8.195])
+        by smtp.gmail.com with ESMTPSA id j63sm2229529qke.67.2020.11.25.04.56.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Nov 2020 04:56:54 -0800 (PST)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Wed, 25 Nov 2020 07:56:32 -0500
+From:   Tejun Heo <tj@kernel.org>
+To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>
+Cc:     lizefan@huawei.com, hannes@cmpxchg.org, christian@brauner.io,
+        ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andrii@kernel.org,
+        john.fastabend@gmail.com, kpsingh@chromium.org,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH] kernel: cgroup: Mundane spelling fixes throughout the
+ file
+Message-ID: <X75UgCWXJjplQ8Kw@mtj.duckdns.org>
+References: <20201109103111.10078-1-unixbhaskar@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20201123143052.1176407d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [83.140.179.234]
-X-ClientProxiedBy: s103.paneda.no (10.16.55.12) To s103.paneda.no
- (10.16.55.12)
-X-Barracuda-Connect: UNKNOWN[5.158.193.76]
-X-Barracuda-Start-Time: 1606308702
-X-Barracuda-Encrypted: ECDHE-RSA-AES256-SHA384
-X-Barracuda-URL: https://mx03.lhost.no:443/cgi-mod/mark.cgi
-X-Virus-Scanned: by bsmtpd at lhost.no
-X-Barracuda-Scan-Msg-Size: 2736
-X-Barracuda-BRTS-Status: 1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201109103111.10078-1-unixbhaskar@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-Den 2020-11-23 kl. 23:30, skrev Jakub Kicinski:
-> On Mon, 23 Nov 2020 14:22:31 +0000 Thomas Karlsson wrote:
->> Hello,
->>
->> There is a special queue handling in macvlan.c for broadcast and
->> multicast packages that was arbitrarily set to 1000 in commit
->> 07d92d5cc977a7fe1e683e1d4a6f723f7f2778cb . While this is probably
->> sufficient for most uses cases it is insufficient to support high
->> packet rates. I currently have a setup with 144 000 multicast packets
->> incoming per second (144 different live audio RTP streams) and suffer
->> very frequent packet loss. With unicast this is not an issue and I
->> can in addition to the 144kpps load the macvlan interface with
->> another 450mbit/s using iperf.
->>
->> In order to verify that the queue is the problem I edited the define
->> to 100000 and recompiled the kernel module. After replacing it with
->> rmmod/insmod I get 0 packet loss (measured over 2 days where I before
->> had losses every other second or so) and can also load an additional
->> 450 mbit/s multicast traffic using iperf without losses. So basically
->> no change in performance between unicast/multicast when it comes to
->> lost packets on my machine.
->>
->> I think It would be best if this queue length was configurable
->> somehow. Either an option when creating the macvlan (like how
->> bridge/passthrough/etc are set) or at least when loading the module
->> (for instance by using a config in /etc/modprobe.d). One size does
->> not fit all in this situation.
+On Mon, Nov 09, 2020 at 04:01:11PM +0530, Bhaskar Chowdhury wrote:
+> Few spelling fixes throughout the file.
 > 
-> The former please. You can add a netlink attribute, should be
-> reasonably straightforward. The other macvlan attrs are defined
-> under "MACVLAN section" in if_link.h.
-> 
+> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
 
-I did some work towards a patch using the first option,
-by adding a netlink attribute in if_link.h as suggested.
-I agree that this was reasonably straightforward, until userspace.
+Applied to cgroup/for-5.10-fixes.
 
-In order to use/test my new parameter I need to update iproute2 package
-as far as I understand. But then since I use the macvlan with docker
-I also need to update the docker macvlan driver to send this new
-option to the kernel module.
+Thanks.
 
-For this reason I would like to know if you would consider
-merging a patch using the module_param(...) variant instead?
-
-I would argue that this still makes the situation better
-and resolves the packet-loss issue, although not necessarily
-in an optimal way. However, The upside of being able to specify the
-parameter on a per macvlan interface level instead of globally is not
-that big in this situation. Normally you don't use that much
-multicast anyway so it's a parameter that only will be touched by
-a very small user base that can understand and handle the implications
-of such a global setting.
+-- 
+tejun
