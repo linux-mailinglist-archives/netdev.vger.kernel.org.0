@@ -2,139 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5AEC2C3B26
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 09:34:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45DDD2C3BBA
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 10:10:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726515AbgKYIdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 03:33:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40986 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725287AbgKYIdZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 03:33:25 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1701BC0613D4
-        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 00:33:21 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id q10so1662639pfn.0
-        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 00:33:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=L7u8tuTuSm8ghjOH6e9+EEtngo0gcd0IGL/XJf0nIO8=;
-        b=oozjlueywfdZ+jbKMi9EuDKhHqsbsrxSP7KZ2ijkxSpYe0uOAkrhq3Pa3yDjscMC9m
-         ThoYP+7oBEE6NyDN8gDv4/zGCa+aJw9oMNHqOv4jxprtApnlvh9YTkt5zTc55Njycs+B
-         D7nMXXFycCcOc9nO5C480lEGHjjU1JCYA1qsy3/aSTxTLAKWr5vuGJfvMXmCMI7Wb7y2
-         RTlohVHC5TBugXPi6E3hzz2P7N5w1YKou5N2hNk7WBiEPNcqm0kcIZTnCXtxvdF7SI58
-         NF2dqd8SP898pyVmU0+xL41aAjdL4NbwfESQsLjaIqWaqTnb64lW0mcgbZ0vKsC2hIZt
-         Ig6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=L7u8tuTuSm8ghjOH6e9+EEtngo0gcd0IGL/XJf0nIO8=;
-        b=gmvxzkw6ZZDHa1t06HQqryX5+wvONZ20ppudrnRHiu2OA15S7LJ0W8576H9YzQ1bcc
-         WAg5mtPz4K228T+17VKkUc7lid4IJUGY3nttJS88DIB4gtSpP1twsJY96oZ+ZGTxoa7R
-         uhgdHlICMoD6zi9EsU/a9Qy4vbXGkKaC/Kni48c3wE0ntNGss2dS9zmmPBt5s7fneWIE
-         dSMTiR38nqBu9bDtn1CmNSRT56bFyaBIKwSi2rjANHosp1AULsZ762R2u8tEnNb08l4K
-         pnMBQohnNb8SchEnuDv+Z9SLcmD+gC5yUF19v/AVl4/YmylJm2cUBx9Vr950zEgXYyTl
-         TTlw==
-X-Gm-Message-State: AOAM533maFVqQjAIr+7tbBUf9fgxxijHcGa0Zdlt3kIehkk64PM9cqlM
-        MoA51HW7I7lY2DqmbCb2HQ41UimSh5vsL5wiWms=
-X-Google-Smtp-Source: ABdhPJyBo/Fu11h7nyPmF/y9s1I+up1sp5xg1rRMGbUL/l66bJ8WjcDUitCvtlCg0O5D6w+K850E+Tc6yxdcv1mccUE=
-X-Received: by 2002:a17:90a:4687:: with SMTP id z7mr2806684pjf.168.1606293200711;
- Wed, 25 Nov 2020 00:33:20 -0800 (PST)
-MIME-Version: 1.0
-References: <1606143915-25335-1-git-send-email-yanjunz@nvidia.com> <c3472d5f-54da-2e20-2c3c-3f6690de6f04@iogearbox.net>
-In-Reply-To: <c3472d5f-54da-2e20-2c3c-3f6690de6f04@iogearbox.net>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Wed, 25 Nov 2020 09:33:09 +0100
-Message-ID: <CAJ8uoz3WssKhD_CRhJSHRQDAB7nrkjz1P8Uaozxy3UwLZWnNaw@mail.gmail.com>
-Subject: Re: [PATCH v3 1/1] xdp: remove the function xsk_map_inc
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Zhu Yanjun <yanjunz@nvidia.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1727745AbgKYJJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 04:09:56 -0500
+Received: from gofer.mess.org ([88.97.38.141]:33717 "EHLO gofer.mess.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726284AbgKYJJw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Nov 2020 04:09:52 -0500
+X-Greylist: delayed 492 seconds by postgrey-1.27 at vger.kernel.org; Wed, 25 Nov 2020 04:09:46 EST
+Received: by gofer.mess.org (Postfix, from userid 1000)
+        id C2D44C63FB; Wed, 25 Nov 2020 09:01:14 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mess.org; s=2020;
+        t=1606294874; bh=KH9dzgywMXfGPGDwmO8Qm6o//zr8KQDL4nO6EawRuDY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SJYLrwiKZrmMRjkeBYo7cqsbs6xljPuQypU3vE6W0mhxhiBNmXN2bqL5RV07d2awA
+         Wb5Oa7L0TiIxfU/vxoLt2vFycI3gN8Kh1qdOF59uK2dEnqITAnDV+wsiQw/exDF78D
+         hoTz22IC76edW7bl4Xm8hYrqoRAlLOCNTSbizDTKI7x8BBnutJW03OyPsTxurVqfdC
+         T9t8y4uSMzXA9L5TYoAbkkzEdR07qHfBTYdhaiYGGYuE1E1bdzLhtRTU2iYu251NBa
+         zqIr2827TZMk9I1fNh/951tgkmCQWewUCt5nrmXnkgqHhLp9nxDE6gWAGCUXG6XCXv
+         3mw8Hv064saVQ==
+Date:   Wed, 25 Nov 2020 09:01:14 +0000
+From:   Sean Young <sean@mess.org>
+To:     James Bottomley <James.Bottomley@HansenPartnership.com>
+Cc:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+        Kees Cook <keescook@chromium.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        alsa-devel@alsa-project.org, amd-gfx@lists.freedesktop.org,
+        bridge@lists.linux-foundation.org, ceph-devel@vger.kernel.org,
+        cluster-devel@redhat.com, coreteam@netfilter.org,
+        devel@driverdev.osuosl.org, dm-devel@redhat.com,
+        drbd-dev@lists.linbit.com, dri-devel@lists.freedesktop.org,
+        GR-everest-linux-l2@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        intel-gfx@lists.freedesktop.org, intel-wired-lan@lists.osuosl.org,
+        keyrings@vger.kernel.org, linux1394-devel@lists.sourceforge.net,
+        linux-acpi@vger.kernel.org, linux-afs@lists.infradead.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm@vger.kernel.org,
+        linux-atm-general@lists.sourceforge.net,
+        linux-block@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-cifs@vger.kernel.org,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-decnet-user@lists.sourceforge.net,
+        Ext4 Developers List <linux-ext4@vger.kernel.org>,
+        linux-fbdev@vger.kernel.org, linux-geode@lists.infradead.org,
+        linux-gpio@vger.kernel.org, linux-hams@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-i3c@lists.infradead.org,
+        linux-ide@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-input <linux-input@vger.kernel.org>,
+        linux-integrity@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        linux-mmc@vger.kernel.org, Linux-MM <linux-mm@kvack.org>,
+        linux-mtd@lists.infradead.org, linux-nfs@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
         Network Development <netdev@vger.kernel.org>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        netfilter-devel@vger.kernel.org, nouveau@lists.freedesktop.org,
+        op-tee@lists.trustedfirmware.org, oss-drivers@netronome.com,
+        patches@opensource.cirrus.com, rds-devel@oss.oracle.com,
+        reiserfs-devel@vger.kernel.org, samba-technical@lists.samba.org,
+        selinux@vger.kernel.org, target-devel@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net,
+        usb-storage@lists.one-eyed-alien.net,
+        virtualization@lists.linux-foundation.org,
+        wcn36xx@lists.infradead.org,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        xen-devel@lists.xenproject.org, linux-hardening@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Miguel Ojeda <ojeda@kernel.org>, Joe Perches <joe@perches.com>
+Subject: Re: [PATCH 000/141] Fix fall-through warnings for Clang
+Message-ID: <20201125090114.GA24274@gofer.mess.org>
+References: <cover.1605896059.git.gustavoars@kernel.org>
+ <20201120105344.4345c14e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <202011201129.B13FDB3C@keescook>
+ <20201120115142.292999b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <202011220816.8B6591A@keescook>
+ <9b57fd4914b46f38d54087d75e072d6e947cb56d.camel@HansenPartnership.com>
+ <CANiq72nZrHWTA4_Msg6MP9snTyenC6-eGfD27CyfNSu7QoVZbw@mail.gmail.com>
+ <1c7d7fde126bc0acf825766de64bf2f9b888f216.camel@HansenPartnership.com>
+ <CANiq72m22Jb5_+62NnwX8xds2iUdWDMAqD8PZw9cuxdHd95W0A@mail.gmail.com>
+ <fc45750b6d0277c401015b7aa11e16cd15f32ab2.camel@HansenPartnership.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fc45750b6d0277c401015b7aa11e16cd15f32ab2.camel@HansenPartnership.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 25, 2020 at 1:02 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 11/23/20 4:05 PM, Zhu Yanjun wrote:
-> > From: Zhu Yanjun <zyjzyj2000@gmail.com>
-> >
-> > The function xsk_map_inc is a simple wrapper of bpf_map_inc and
-> > always returns zero. As such, replacing this function with bpf_map_inc
-> > and removing the test code.
-> >
-> > Signed-off-by: Zhu Yanjun <zyjzyj2000@gmail.com>
-> > ---
-> >   net/xdp/xsk.c    |  2 +-
-> >   net/xdp/xsk.h    |  1 -
-> >   net/xdp/xskmap.c | 13 +------------
-> >   3 files changed, 2 insertions(+), 14 deletions(-)
-> >
-> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> > index cfbec3989a76..a3c1f07d77d8 100644
-> > --- a/net/xdp/xsk.c
-> > +++ b/net/xdp/xsk.c
-> > @@ -548,7 +548,7 @@ static struct xsk_map *xsk_get_map_list_entry(struct xdp_sock *xs,
-> >       node = list_first_entry_or_null(&xs->map_list, struct xsk_map_node,
-> >                                       node);
-> >       if (node) {
-> > -             WARN_ON(xsk_map_inc(node->map));
-> > +             bpf_map_inc(&node->map->map);
-> >               map = node->map;
-> >               *map_entry = node->map_entry;
-> >       }
-> > diff --git a/net/xdp/xsk.h b/net/xdp/xsk.h
-> > index b9e896cee5bb..0aad25c0e223 100644
-> > --- a/net/xdp/xsk.h
-> > +++ b/net/xdp/xsk.h
-> > @@ -41,7 +41,6 @@ static inline struct xdp_sock *xdp_sk(struct sock *sk)
-> >
-> >   void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
-> >                            struct xdp_sock **map_entry);
-> > -int xsk_map_inc(struct xsk_map *map);
-> >   void xsk_map_put(struct xsk_map *map);
-> >   void xsk_clear_pool_at_qid(struct net_device *dev, u16 queue_id);
-> >   int xsk_reg_pool_at_qid(struct net_device *dev, struct xsk_buff_pool *pool,
-> > diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
-> > index 49da2b8ace8b..6b7e9a72b101 100644
-> > --- a/net/xdp/xskmap.c
-> > +++ b/net/xdp/xskmap.c
-> > @@ -11,12 +11,6 @@
-> >
-> >   #include "xsk.h"
-> >
-> > -int xsk_map_inc(struct xsk_map *map)
-> > -{
-> > -     bpf_map_inc(&map->map);
-> > -     return 0;
-> > -}
-> > -
-> >   void xsk_map_put(struct xsk_map *map)
-> >   {
->
-> So, the xsk_map_put() is defined as:
->
->    void xsk_map_put(struct xsk_map *map)
->    {
->          bpf_map_put(&map->map);
->    }
->
-> What is the reason to get rid of xsk_map_inc() but not xsk_map_put() wrapper?
-> Can't we just remove both while we're at it?
+On Mon, Nov 23, 2020 at 07:58:06AM -0800, James Bottomley wrote:
+> On Mon, 2020-11-23 at 15:19 +0100, Miguel Ojeda wrote:
+> > On Sun, Nov 22, 2020 at 11:36 PM James Bottomley
+> > <James.Bottomley@hansenpartnership.com> wrote:
+> > > It's not about the risk of the changes it's about the cost of
+> > > implementing them.  Even if you discount the producer time (which
+> > > someone gets to pay for, and if I were the engineering manager, I'd
+> > > be unhappy about), the review/merge/rework time is pretty
+> > > significant in exchange for six minor bug fixes.  Fine, when a new
+> > > compiler warning comes along it's certainly reasonable to see if we
+> > > can benefit from it and the fact that the compiler people think
+> > > it's worthwhile is enough evidence to assume this initially.  But
+> > > at some point you have to ask whether that assumption is supported
+> > > by the evidence we've accumulated over the time we've been using
+> > > it.  And if the evidence doesn't support it perhaps it is time to
+> > > stop the experiment.
+> > 
+> > Maintainers routinely review 1-line trivial patches, not to mention
+> > internal API changes, etc.
+> 
+> We're also complaining about the inability to recruit maintainers:
+> 
+> https://www.theregister.com/2020/06/30/hard_to_find_linux_maintainers_says_torvalds/
+> 
+> And burn out:
+> 
+> http://antirez.com/news/129
+> 
+> The whole crux of your argument seems to be maintainers' time isn't
+> important so we should accept all trivial patches ... I'm pushing back
+> on that assumption in two places, firstly the valulessness of the time
+> and secondly that all trivial patches are valuable.
 
-Yes, why not. Makes sense.
+You're assuming burn out or recruitment problems is due to patch workload
+or too many "trivial" patches.
 
-Yanjun, could you please send a new version that removes this too?
+In my experience, "other maintainers" is by far the biggest cause of
+burn out for my kernel maintenance work.
 
-Thank you both!
+Certainly arguing with a maintainer about some obviously-correct patch
+series must be a good example of this.
 
-> Thanks,
-> Daniel
+
+Sean
