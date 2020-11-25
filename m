@@ -2,387 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CD1A2C47D1
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 19:40:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 543852C47E3
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 19:49:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733151AbgKYSiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 13:38:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50562 "EHLO
+        id S1732236AbgKYSsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 13:48:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729679AbgKYSip (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 13:38:45 -0500
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F87C0613D4;
-        Wed, 25 Nov 2020 10:38:29 -0800 (PST)
-Received: by mail-wr1-x443.google.com with SMTP id t4so2873994wrr.12;
-        Wed, 25 Nov 2020 10:38:29 -0800 (PST)
+        with ESMTP id S1729755AbgKYSsM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 13:48:12 -0500
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6070FC0613D4
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 10:48:12 -0800 (PST)
+Received: by mail-qk1-x741.google.com with SMTP id b144so5595780qkc.13
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 10:48:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=FjBZ7KV9yrVslvsdIenrNACdy98tncy6XNFocJcBUtA=;
-        b=Vxta5m9iBYfOdzxNyeHg0Md6WU2APXkvmzIbKkXK1x8boOL8hOk77v1rf29KKkdH+R
-         JKrAiVxbRxF3ZCfnM7pwHCp/qDUfvncuje1QArR5bvyOraY5EXkBwBu4OMXPkeIuMlZv
-         VBhH3vGeNGx/adzc7ZO7pcQLMoWoDXMPQHrfMO8y0+JsyeFBhAdGXwVxKL31p5mXsmkR
-         OT7zb0JcKOcR3CNT1a9jCg/aWdBY6dFoRaeOHMQeNmrxl0mXAgdIKLV6b9DFLG3O+S/r
-         NTjDzF8pyUsXAOmfKg5p9nsn9kKKV2oAQFPjx8uz+ZcF1/X3A7rrHuDHozKqh9h0cOuv
-         KjFg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ry8PSGCSfmuMoqDc/F+BQpmRt+JWuXMWpfH2F4VC6vI=;
+        b=Z2pVQJJvie3+Zppe6BMy7zZEWYSGPOkmWzQu4j7iWApXVYJemfZ9qEAn502TivEh0l
+         QDorChwhbgtJz6/quAdhiDL7QfN50PNHT/Y4kSP0Mv8kTfVqFLyTYfxQPtYQK1qfC+30
+         hCljrKvmdn3N1Eq+sphsiv6lnCWm1WAI1xVvAAw831rngQvjYSr9qcnuk2EbTFFWkK13
+         nhtcUqOter1nWXMjxt6fnXG0MjkvISIfLikN77bK3/05oCnWH9FIoSNlZS0h37aoh7Oj
+         akQkHFD58ynTLn2OGPl3qhk44iBu86YqVv4gw3p1m2k87+XDsu/jBEHh2n6+rxmKgWUA
+         34Ow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FjBZ7KV9yrVslvsdIenrNACdy98tncy6XNFocJcBUtA=;
-        b=Iil1euwqxj1YF2cdJmPh5/oNw/y4zcx+X2x0JlzSxkbjPExMRt6O6nhjaK1+HWfUPm
-         dGM3bQRfmV1fz+Fmm/SB4Tb7LEpo51onPE2oCFd4W4bU878xXd72WOMfGNBzM9AYIqcL
-         tsKA0jh70gFb9L8WlX3QWz/tm59kQz9Ebi2Gv0L9nkgSsMsiQQDIkS032cX8iTeHo02A
-         kHDU0H3MEPm+MKYem+yrLtD7QYfcyP1kZZtlwV4U4ggYwX+HC3meOQSfc9UTvZNsiblm
-         XxCP1hk6pxR07ok5H5hwHrU31QyHZh9DPMF9K4wTLYC66LsKz6qUxq6nNJzvTiuZVHMN
-         jihw==
-X-Gm-Message-State: AOAM533q8z2gr06vZDnIb+emPeQFqJRSJRZPYKYrMvwN5B0iEP35SE5d
-        kIlX6N0Bs83k4FLMsGkzLlUHrrlFItdPfrc5
-X-Google-Smtp-Source: ABdhPJxfARxxmidJAwKOay40Jp0cpUmws80qBbGh1uASNoNAj6ytugZ9+/FDwrzDlHIXCElaVBPdNw==
-X-Received: by 2002:adf:a3d1:: with SMTP id m17mr5475126wrb.289.1606329507684;
-        Wed, 25 Nov 2020 10:38:27 -0800 (PST)
-Received: from kernel-dev.chello.ie ([80.111.136.190])
-        by smtp.gmail.com with ESMTPSA id h2sm5830035wrv.76.2020.11.25.10.38.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Nov 2020 10:38:27 -0800 (PST)
-From:   Weqaar Janjua <weqaar.janjua@gmail.com>
-X-Google-Original-From: Weqaar Janjua <weqaar.a.janjua@intel.com>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
-        ast@kernel.org, yhs@fb.com, magnus.karlsson@gmail.com,
-        bjorn.topel@intel.com
-Cc:     Weqaar Janjua <weqaar.a.janjua@intel.com>, shuah@kernel.org,
-        skhan@linuxfoundation.org, linux-kselftest@vger.kernel.org,
-        anders.roxell@linaro.org, jonathan.lemon@gmail.com
-Subject: [PATCH bpf-next v3 5/5] selftests/bpf: xsk selftests - Bi-directional Sockets - SKB, DRV
-Date:   Wed, 25 Nov 2020 18:37:49 +0000
-Message-Id: <20201125183749.13797-6-weqaar.a.janjua@intel.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201125183749.13797-1-weqaar.a.janjua@intel.com>
-References: <20201125183749.13797-1-weqaar.a.janjua@intel.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ry8PSGCSfmuMoqDc/F+BQpmRt+JWuXMWpfH2F4VC6vI=;
+        b=qb8lwdh8agbNwZEO2Art9o+7vTQmeZYfqKTgY9tmTNOcl8abOPD+gnnIspqb2E+NIB
+         1zQuV9kZCihhBJiOM+IBbivFdqabIqCszlKszWmH3x5zYNS74RuJeiVAz0qDHC5Y+unf
+         fjTblsQiKYjhCd5+nKoLEYp+5e/hfLolKLvrwZHTY5WWiyU/z3U/vyaTorUyjdZQ6uOW
+         Zpz2cwvM6/fBxQOwXQZNr7VV+YBtGFE4rex45zmOqHgAl6JjlWNlWWHpnJ1/ZblmDqGg
+         we0+B2WA4Xecda7zaCkTG4Hst5/Cl8jjveEX65yoLJ4tLS2ddcWp/t6DiGewQ9/9VAt8
+         RTTg==
+X-Gm-Message-State: AOAM532PY7dPDX1t0hb5OF4OI+YlP5H5dEwZ4p6SaAs4hInRnbPOHGkH
+        Kfag7VofMyu2uchq4zGoFs6PHbxtPFCEjMwLRAS60A==
+X-Google-Smtp-Source: ABdhPJwYA+tsyCDUh48RpqbN0YTdmhHLCkvA1vhatub9+hran8ZOWDL0Hc0poQEstLRqpeQeDkWdK+v8evLCHiByMOw=
+X-Received: by 2002:a05:620a:15ce:: with SMTP id o14mr238776qkm.231.1606330091334;
+ Wed, 25 Nov 2020 10:48:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <00000000000041019205b4c4e9ad@google.com> <b134c098-2f34-15ee-cfec-2103a12da326@hartkopp.net>
+In-Reply-To: <b134c098-2f34-15ee-cfec-2103a12da326@hartkopp.net>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Wed, 25 Nov 2020 19:48:00 +0100
+Message-ID: <CACT4Y+aAtWO5r+VCxqN0UFn-S1OEvDe5QS3r44kXSeA7mfhUMw@mail.gmail.com>
+Subject: Re: BUG: receive list entry not found for dev vxcan1, id 002, mask C00007FF
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     syzbot <syzbot+381d06e0c8eaacb8706f@syzkaller.appspotmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds following tests:
+On Wed, Nov 25, 2020 at 5:04 PM Oliver Hartkopp <socketcan@hartkopp.net> wrote:
+>
+> Hello all,
+>
+> AFAICS the problems are caused by the WARN() statement here:
+>
+> https://elixir.bootlin.com/linux/v5.10-rc4/source/net/can/af_can.c#L546
+>
+> The idea was to check whether CAN protocol implementations work
+> correctly on their filter lists.
+>
+> With the fault injection it seem like we're getting a race between
+> closing the socket and removing the netdevice.
+>
+> This seems to be very seldom but it does not break anything.
+>
+> Would removing the WARN(1) or replacing it with pr_warn() be ok to close
+> this issue?
 
-1. AF_XDP SKB mode
-   d. Bi-directional Sockets
-      Configure sockets as bi-directional tx/rx sockets, sets up fill
-      and completion rings on each socket, tx/rx in both directions.
-      Only nopoll mode is used
+Hi Oliver,
 
-2. AF_XDP DRV/Native mode
-   d. Bi-directional Sockets
-   * Only copy mode is supported because veth does not currently support
-     zero-copy mode
+Yes, this is the intended way to deal with this:
+https://elixir.bootlin.com/linux/v5.10-rc5/source/include/asm-generic/bug.h#L75
 
-Signed-off-by: Weqaar Janjua <weqaar.a.janjua@intel.com>
----
- tools/testing/selftests/bpf/test_xsk.sh  |  24 ++++++
- tools/testing/selftests/bpf/xdpxceiver.c | 100 +++++++++++++++++------
- tools/testing/selftests/bpf/xdpxceiver.h |   4 +
- 3 files changed, 104 insertions(+), 24 deletions(-)
+Maybe a good opportunity to add some explanatory comment as well
+regarding how it should not happen but can.
 
-diff --git a/tools/testing/selftests/bpf/test_xsk.sh b/tools/testing/selftests/bpf/test_xsk.sh
-index 76de8080092d..05df57806d95 100755
---- a/tools/testing/selftests/bpf/test_xsk.sh
-+++ b/tools/testing/selftests/bpf/test_xsk.sh
-@@ -200,6 +200,30 @@ retval=$?
- test_status $retval "${TEST_NAME}"
- statusList+=($retval)
- 
-+### TEST 7
-+TEST_NAME="SKB BIDIRECTIONAL SOCKETS"
-+
-+vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
-+
-+params=("-S" "-B")
-+execxdpxceiver params
-+
-+retval=$?
-+test_status $retval "${TEST_NAME}"
-+statusList+=($retval)
-+
-+### TEST 8
-+TEST_NAME="DRV BIDIRECTIONAL SOCKETS"
-+
-+vethXDPnative ${VETH0} ${VETH1} ${NS1}
-+
-+params=("-N" "-B")
-+execxdpxceiver params
-+
-+retval=$?
-+test_status $retval "${TEST_NAME}"
-+statusList+=($retval)
-+
- ## END TESTS
- 
- cleanup_exit ${VETH0} ${VETH1} ${NS1}
-diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-index 62560e058111..5a508a94d8f9 100644
---- a/tools/testing/selftests/bpf/xdpxceiver.c
-+++ b/tools/testing/selftests/bpf/xdpxceiver.c
-@@ -29,6 +29,10 @@
-  *    c. Socket Teardown
-  *       Create a Tx and a Rx socket, Tx from one socket, Rx on another. Destroy
-  *       both sockets, then repeat multiple times. Only nopoll mode is used
-+ *    d. Bi-directional sockets
-+ *       Configure sockets as bi-directional tx/rx sockets, sets up fill and
-+ *       completion rings on each socket, tx/rx in both directions. Only nopoll
-+ *       mode is used
-  *
-  * 2. AF_XDP DRV/Native mode
-  *    Works on any netdevice with XDP_REDIRECT support, driver dependent. Processes
-@@ -37,10 +41,11 @@
-  *    a. nopoll
-  *    b. poll
-  *    c. Socket Teardown
-+ *    d. Bi-directional sockets
-  *    - Only copy mode is supported because veth does not currently support
-  *      zero-copy mode
-  *
-- * Total tests: 6
-+ * Total tests: 8
-  *
-  * Flow:
-  * -----
-@@ -100,8 +105,9 @@ static void __exit_with_error(int error, const char *file, const char *func, int
- #define exit_with_error(error) __exit_with_error(error, __FILE__, __func__, __LINE__)
- 
- #define print_ksft_result(void)\
--	(ksft_test_result_pass("PASS: %s %s %s\n", uut ? "DRV" : "SKB", opt_poll ? "POLL" :\
--			       "NOPOLL", opt_teardown ? "Socket Teardown" : ""))
-+	(ksft_test_result_pass("PASS: %s %s %s%s\n", uut ? "DRV" : "SKB", opt_poll ? "POLL" :\
-+			       "NOPOLL", opt_teardown ? "Socket Teardown" : "",\
-+			       opt_bidi ? "Bi-directional Sockets" : ""))
- 
- static void pthread_init_mutex(void)
- {
-@@ -307,8 +313,13 @@ static int xsk_configure_socket(struct ifobject *ifobject)
- 	cfg.xdp_flags = opt_xdp_flags;
- 	cfg.bind_flags = opt_xdp_bind_flags;
- 
--	rxr = (ifobject->fv.vector == rx) ? &ifobject->xsk->rx : NULL;
--	txr = (ifobject->fv.vector == tx) ? &ifobject->xsk->tx : NULL;
-+	if (!opt_bidi) {
-+		rxr = (ifobject->fv.vector == rx) ? &ifobject->xsk->rx : NULL;
-+		txr = (ifobject->fv.vector == tx) ? &ifobject->xsk->tx : NULL;
-+	} else {
-+		rxr = &ifobject->xsk->rx;
-+		txr = &ifobject->xsk->tx;
-+	}
- 
- 	ret = xsk_socket__create(&ifobject->xsk->xsk, ifobject->ifname,
- 				 opt_queue, ifobject->umem->umem, rxr, txr, &cfg);
-@@ -327,6 +338,7 @@ static struct option long_options[] = {
- 	{"xdp-native", no_argument, 0, 'N'},
- 	{"copy", no_argument, 0, 'c'},
- 	{"tear-down", no_argument, 0, 'T'},
-+	{"bidi", optional_argument, 0, 'B'},
- 	{"debug", optional_argument, 0, 'D'},
- 	{"tx-pkt-count", optional_argument, 0, 'C'},
- 	{0, 0, 0, 0}
-@@ -344,6 +356,7 @@ static void usage(const char *prog)
- 	    "  -N, --xdp-native=n   Enforce XDP DRV (native) mode\n"
- 	    "  -c, --copy           Force copy mode\n"
- 	    "  -T, --tear-down      Tear down sockets by repeatedly recreating them\n"
-+	    "  -B, --bidi           Bi-directional sockets test\n"
- 	    "  -D, --debug          Debug mode - dump packets L2 - L5\n"
- 	    "  -C, --tx-pkt-count=n Number of packets to send\n";
- 	ksft_print_msg(str, prog);
-@@ -434,7 +447,7 @@ static void parse_command_line(int argc, char **argv)
- 	opterr = 0;
- 
- 	for (;;) {
--		c = getopt_long(argc, argv, "i:q:pSNcTDC:", long_options, &option_index);
-+		c = getopt_long(argc, argv, "i:q:pSNcTBDC:", long_options, &option_index);
- 
- 		if (c == -1)
- 			break;
-@@ -475,6 +488,9 @@ static void parse_command_line(int argc, char **argv)
- 		case 'T':
- 			opt_teardown = 1;
- 			break;
-+		case 'B':
-+			opt_bidi = 1;
-+			break;
- 		case 'D':
- 			debug_pkt_dump = 1;
- 			break;
-@@ -784,22 +800,25 @@ static void *worker_testapp_validate(void *arg)
- 	struct generic_data *data = (struct generic_data *)malloc(sizeof(struct generic_data));
- 	struct iphdr *ip_hdr = (struct iphdr *)(pkt_data + sizeof(struct ethhdr));
- 	struct ethhdr *eth_hdr = (struct ethhdr *)pkt_data;
--	void *bufs;
-+	void *bufs = NULL;
- 
- 	pthread_attr_setstacksize(&attr, THREAD_STACK);
- 
--	bufs = mmap(NULL, num_frames * XSK_UMEM__DEFAULT_FRAME_SIZE,
--		    PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
--	if (bufs == MAP_FAILED)
--		exit_with_error(errno);
-+	if (!bidi_pass) {
-+		bufs = mmap(NULL, num_frames * XSK_UMEM__DEFAULT_FRAME_SIZE,
-+			    PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-+		if (bufs == MAP_FAILED)
-+			exit_with_error(errno);
- 
--	if (strcmp(((struct ifobject *)arg)->nsname, ""))
--		switch_namespace(((struct ifobject *)arg)->ifdict_index);
-+		if (strcmp(((struct ifobject *)arg)->nsname, ""))
-+			switch_namespace(((struct ifobject *)arg)->ifdict_index);
-+	}
- 
- 	if (((struct ifobject *)arg)->fv.vector == tx) {
- 		int spinningrxctr = 0;
- 
--		thread_common_ops(arg, bufs, &sync_mutex_tx, &spinning_tx);
-+		if (!bidi_pass)
-+			thread_common_ops(arg, bufs, &sync_mutex_tx, &spinning_tx);
- 
- 		while (atomic_load(&spinning_rx) && spinningrxctr < SOCK_RECONF_CTR) {
- 			spinningrxctr++;
-@@ -829,7 +848,8 @@ static void *worker_testapp_validate(void *arg)
- 		struct pollfd fds[MAX_SOCKS] = { };
- 		int ret;
- 
--		thread_common_ops(arg, bufs, &sync_mutex_tx, &spinning_rx);
-+		if (!bidi_pass)
-+			thread_common_ops(arg, bufs, &sync_mutex_tx, &spinning_rx);
- 
- 		ksft_print_msg("Interface [%s] vector [Rx]\n", ((struct ifobject *)arg)->ifname);
- 		xsk_populate_fill_ring(((struct ifobject *)arg)->umem);
-@@ -868,8 +888,10 @@ static void *worker_testapp_validate(void *arg)
- 			ksft_print_msg("Destroying socket\n");
- 	}
- 
--	xsk_socket__delete(((struct ifobject *)arg)->xsk->xsk);
--	(void)xsk_umem__delete(((struct ifobject *)arg)->umem->umem);
-+	if (!opt_bidi || (opt_bidi && bidi_pass)) {
-+		xsk_socket__delete(((struct ifobject *)arg)->xsk->xsk);
-+		(void)xsk_umem__delete(((struct ifobject *)arg)->umem->umem);
-+	}
- 	pthread_exit(NULL);
- }
- 
-@@ -878,11 +900,26 @@ static void testapp_validate(void)
- 	pthread_attr_init(&attr);
- 	pthread_attr_setstacksize(&attr, THREAD_STACK);
- 
-+	if (opt_bidi && bidi_pass) {
-+		pthread_init_mutex();
-+		if (!switching_notify) {
-+			ksft_print_msg("Switching Tx/Rx vectors\n");
-+			switching_notify++;
-+		}
-+	}
-+
- 	pthread_mutex_lock(&sync_mutex);
- 
- 	/*Spawn RX thread */
--	if (pthread_create(&t0, &attr, worker_testapp_validate, (void *)ifdict[1]))
--		exit_with_error(errno);
-+	if (!opt_bidi || (opt_bidi && !bidi_pass)) {
-+		if (pthread_create(&t0, &attr, worker_testapp_validate, (void *)ifdict[1]))
-+			exit_with_error(errno);
-+	} else if (opt_bidi && bidi_pass) {
-+		/*switch Tx/Rx vectors */
-+		ifdict[0]->fv.vector = rx;
-+		if (pthread_create(&t0, &attr, worker_testapp_validate, (void *)ifdict[0]))
-+			exit_with_error(errno);
-+	}
- 
- 	struct timespec max_wait = { 0, 0 };
- 
-@@ -896,8 +933,15 @@ static void testapp_validate(void)
- 	pthread_mutex_unlock(&sync_mutex);
- 
- 	/*Spawn TX thread */
--	if (pthread_create(&t1, &attr, worker_testapp_validate, (void *)ifdict[0]))
--		exit_with_error(errno);
-+	if (!opt_bidi || (opt_bidi && !bidi_pass)) {
-+		if (pthread_create(&t1, &attr, worker_testapp_validate, (void *)ifdict[0]))
-+			exit_with_error(errno);
-+	} else if (opt_bidi && bidi_pass) {
-+		/*switch Tx/Rx vectors */
-+		ifdict[1]->fv.vector = tx;
-+		if (pthread_create(&t1, &attr, worker_testapp_validate, (void *)ifdict[1]))
-+			exit_with_error(errno);
-+	}
- 
- 	pthread_join(t1, NULL);
- 	pthread_join(t0, NULL);
-@@ -911,18 +955,19 @@ static void testapp_validate(void)
- 		free(pkt_buf);
- 	}
- 
--	if (!opt_teardown)
-+	if (!opt_teardown && !opt_bidi)
- 		print_ksft_result();
- }
- 
- static void testapp_sockets(void)
- {
--	for (int i = 0; i < MAX_TEARDOWN_ITER; i++) {
-+	for (int i = 0; i < (opt_teardown ? MAX_TEARDOWN_ITER : MAX_BIDI_ITER); i++) {
- 		pkt_counter = 0;
- 		prev_pkt = -1;
- 		sigvar = 0;
- 		ksft_print_msg("Creating socket\n");
- 		testapp_validate();
-+		opt_bidi ? bidi_pass++ : bidi_pass;
- 	}
- 
- 	print_ksft_result();
-@@ -991,7 +1036,14 @@ int main(int argc, char **argv)
- 
- 	ksft_set_plan(1);
- 
--	opt_teardown ? testapp_sockets() : testapp_validate();
-+	if (!opt_teardown && !opt_bidi) {
-+		testapp_validate();
-+	} else if (opt_teardown && opt_bidi) {
-+		ksft_test_result_fail("ERROR: parameters -T and -B cannot be used together\n");
-+		ksft_exit_xfail();
-+	} else {
-+		testapp_sockets();
-+	}
- 
- 	for (int i = 0; i < MAX_INTERFACES; i++)
- 		free(ifdict[i]);
-diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
-index 9d2670f28d86..d6630a19140b 100644
---- a/tools/testing/selftests/bpf/xdpxceiver.h
-+++ b/tools/testing/selftests/bpf/xdpxceiver.h
-@@ -22,6 +22,7 @@
- #define MAX_INTERFACES_NAMESPACE_CHARS 10
- #define MAX_SOCKS 1
- #define MAX_TEARDOWN_ITER 10
-+#define MAX_BIDI_ITER 2
- #define PKT_HDR_SIZE (sizeof(struct ethhdr) + sizeof(struct iphdr) + \
- 			sizeof(struct udphdr))
- #define MIN_PKT_SIZE 64
-@@ -51,12 +52,15 @@ enum TESTS {
- u8 uut;
- u8 debug_pkt_dump;
- u32 num_frames;
-+u8 switching_notify;
-+u8 bidi_pass;
- 
- static u32 opt_xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
- static int opt_queue;
- static int opt_pkt_count;
- static int opt_poll;
- static int opt_teardown;
-+static int opt_bidi;
- static u32 opt_xdp_bind_flags = XDP_USE_NEED_WAKEUP;
- static u8 pkt_data[XSK_UMEM__DEFAULT_FRAME_SIZE];
- static u32 pkt_counter;
--- 
-2.20.1
+Thanks for looking into this.
 
+
+
+
+> On 23.11.20 12:58, syzbot wrote:
+> > Hello,
+> >
+> > syzbot found the following issue on:
+> >
+> > HEAD commit:    c2e7554e Merge tag 'gfs2-v5.10-rc4-fixes' of git://git.ker..
+> > git tree:       upstream
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=117f03ba500000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=75292221eb79ace2
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=381d06e0c8eaacb8706f
+> > compiler:       gcc (GCC) 10.1.0-syz 20200507
+> >
+> > Unfortunately, I don't have any reproducer for this issue yet.
+> >
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+381d06e0c8eaacb8706f@syzkaller.appspotmail.com
+> >
+> > ------------[ cut here ]------------
+> > BUG: receive list entry not found for dev vxcan1, id 002, mask C00007FF
+> > WARNING: CPU: 1 PID: 12946 at net/can/af_can.c:546 can_rx_unregister+0x5a4/0x700 net/can/af_can.c:546
+> > Modules linked in:
+> > CPU: 1 PID: 12946 Comm: syz-executor.1 Not tainted 5.10.0-rc4-syzkaller #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > RIP: 0010:can_rx_unregister+0x5a4/0x700 net/can/af_can.c:546
+> > Code: 8b 7c 24 78 44 8b 64 24 68 49 c7 c5 20 ac 56 8a e8 01 6c 97 f9 44 89 f9 44 89 e2 4c 89 ee 48 c7 c7 60 ac 56 8a e8 66 af d3 00 <0f> 0b 48 8b 7c 24 28 e8 b0 25 0f 01 e9 54 fb ff ff e8 26 e0 d8 f9
+> > RSP: 0018:ffffc90017e2fb38 EFLAGS: 00010286
+> > RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+> > RDX: ffff8880147a8000 RSI: ffffffff8158f3c5 RDI: fffff52002fc5f59
+> > RBP: 0000000000000118 R08: 0000000000000001 R09: ffff8880b9f2011b
+> > R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000002
+> > R13: ffff8880254c0000 R14: 1ffff92002fc5f6e R15: 00000000c00007ff
+> > FS:  0000000001ddc940(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
+> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > CR2: 0000001b2f121000 CR3: 00000000152c0000 CR4: 00000000001506e0
+> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > Call Trace:
+> >   isotp_notifier+0x2a7/0x540 net/can/isotp.c:1303
+> >   call_netdevice_notifier net/core/dev.c:1735 [inline]
+> >   call_netdevice_unregister_notifiers+0x156/0x1c0 net/core/dev.c:1763
+> >   call_netdevice_unregister_net_notifiers net/core/dev.c:1791 [inline]
+> >   unregister_netdevice_notifier+0xcd/0x170 net/core/dev.c:1870
+> >   isotp_release+0x136/0x600 net/can/isotp.c:1011
+> >   __sock_release+0xcd/0x280 net/socket.c:596
+> >   sock_close+0x18/0x20 net/socket.c:1277
+> >   __fput+0x285/0x920 fs/file_table.c:281
+> >   task_work_run+0xdd/0x190 kernel/task_work.c:151
+> >   tracehook_notify_resume include/linux/tracehook.h:188 [inline]
+> >   exit_to_user_mode_loop kernel/entry/common.c:164 [inline]
+> >   exit_to_user_mode_prepare+0x17e/0x1a0 kernel/entry/common.c:191
+> >   syscall_exit_to_user_mode+0x38/0x260 kernel/entry/common.c:266
+> >   entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> > RIP: 0033:0x417811
+> > Code: 75 14 b8 03 00 00 00 0f 05 48 3d 01 f0 ff ff 0f 83 a4 1a 00 00 c3 48 83 ec 08 e8 0a fc ff ff 48 89 04 24 b8 03 00 00 00 0f 05 <48> 8b 3c 24 48 89 c2 e8 53 fc ff ff 48 89 d0 48 83 c4 08 48 3d 01
+> > RSP: 002b:000000000169fbf0 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
+> > RAX: 0000000000000000 RBX: 0000000000000004 RCX: 0000000000417811
+> > RDX: 0000000000000000 RSI: 00000000000013b7 RDI: 0000000000000003
+> > RBP: 0000000000000001 R08: 00000000acabb3b7 R09: 00000000acabb3bb
+> > R10: 000000000169fcd0 R11: 0000000000000293 R12: 000000000118c9a0
+> > R13: 000000000118c9a0 R14: 00000000000003e8 R15: 000000000118bf2c
+> >
+> >
+> > ---
+> > This report is generated by a bot. It may contain errors.
+> > See https://goo.gl/tpsmEJ for more information about syzbot.
+> > syzbot engineers can be reached at syzkaller@googlegroups.com.
+> >
+> > syzbot will keep track of this issue. See:
+> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> >
+>
+> --
+> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/b134c098-2f34-15ee-cfec-2103a12da326%40hartkopp.net.
