@@ -2,142 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D73CD2C44A1
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 17:06:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B60DB2C4504
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 17:27:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730439AbgKYQEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 11:04:06 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.165]:25784 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725792AbgKYQEG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 11:04:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1606320241;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=In-Reply-To:Date:Message-ID:From:References:To:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=LjnFeCgpj60B5cvTEJDsWgPSYIro4/2CufStGHdmH4k=;
-        b=rUUv9s9Uw7YrdTEkBzgj2+wJHiV4w7IhVfbKFdUH2Gfpc99ZtmIlaiPkZdXAIvCBvl
-        7yDfeOhYIONtmH2whanjClU8+HLiOHdi276uNAahHsAg1UyXeKtivVyk8teNFVAAGRd4
-        J7q/8JjZxBiBECl2SKKSeyKp80JCbzkOO/btDPMJ7YTMEM7WOF1cR4Du006Ak5kkplk6
-        xmPtGUP0t6g7phtCev4mjRVP2K3KdO1SgDu3DpUg5rbuUtm3OmjRhYIIOgwwXz3saVrI
-        LtEnSdV3fXm10ph3yQYDpiMJGx7ic74I9mG/KYmDIUz/FeZTOXZNLVCJyAKWXOjVNF5B
-        gLAw==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3TMaFqTEVR+J8xrzF0="
-X-RZG-CLASS-ID: mo00
-Received: from [192.168.10.137]
-        by smtp.strato.de (RZmta 47.3.4 SBL|AUTH)
-        with ESMTPSA id n07f3bwAPG3mq4W
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Wed, 25 Nov 2020 17:03:48 +0100 (CET)
-Subject: Re: BUG: receive list entry not found for dev vxcan1, id 002, mask
- C00007FF
-To:     syzbot <syzbot+381d06e0c8eaacb8706f@syzkaller.appspotmail.com>,
-        davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mkl@pengutronix.de,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-References: <00000000000041019205b4c4e9ad@google.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <b134c098-2f34-15ee-cfec-2103a12da326@hartkopp.net>
-Date:   Wed, 25 Nov 2020 17:03:43 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
-MIME-Version: 1.0
-In-Reply-To: <00000000000041019205b4c4e9ad@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1731249AbgKYQZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 11:25:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58024 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731180AbgKYQZc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 11:25:32 -0500
+Received: from mail-qv1-xf49.google.com (mail-qv1-xf49.google.com [IPv6:2607:f8b0:4864:20::f49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85FB9C061A51
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 08:25:32 -0800 (PST)
+Received: by mail-qv1-xf49.google.com with SMTP id o16so2932446qvq.4
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 08:25:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=kvx4ypKzsvTsNRkpKLbQXMSUgG7LqQJ459IESbUi2Pg=;
+        b=F46PSwOpar3alalr8VdSc32WF8ZCnTqLw516KRpy+NOz0v2dRAp7gABdRgRy8vjc3h
+         7j9Nl1u6k9E/YCFDbyixPa0kxt5kmVdTEoYgRoNMuG8nh9WznyRGlXREt4+7KWt3t5+D
+         0mbpMOJCD+b0a0SrqcmW9u+MwFadoYmAehlXbW3jlik8aKZyrBKtL0hIBc1pcmkV9ckJ
+         /urKKWEifAqDent70J4kJ4VQMtzZikcxO6WeycD/z/Cx5HgOuW3K23BXrunnfAwuVTj0
+         6XJhNI0VCNdf8bjVH+fXHX4pma9+ByASbgUTb42vKQ38Hn/oC/oiOeTpyouKnSfEPx6l
+         YCMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=kvx4ypKzsvTsNRkpKLbQXMSUgG7LqQJ459IESbUi2Pg=;
+        b=AraZhARPJMuWx8bgqoiNt8g4uf3XlNB7xaMKIzsJAc2EYondYBMVNg8FVKLN/uIJ7+
+         a/mXbqvD/slPIb5PDCJdN3aVkZAfYM7hj4RisgLsHCXDhYPQmIKhzxHvJk49tPtFN1WW
+         P3GvRpmRAcD2ByRc56urVTdIDiRB0TuH65p5NsWZA3oRmveOBMLUItwqGLyPwRKek/Oh
+         Zu3u4u+TkdHwAD8gLRoLzIyRiyuYWtATE3iBo5TWYPQBSrkPEa/B32LU2BP6l6ERD0Fm
+         gaaTrivz0pwR90WvSshLqtaY6stZX+fNfOIxiH3pbf7tAJCH+vF7u0cWHfkFZQPjnC0J
+         1YHw==
+X-Gm-Message-State: AOAM5335aGVso1r+XsqjmEBy5Pn390wnRmt+q8vCQkadG3L9NjjthOFq
+        v440EpLkspzdnYqG4GX177UBn6pysg==
+X-Google-Smtp-Source: ABdhPJxvAj93w4pXw/f7H9LNJVuezNeFs/6sMy3/w1UTClQjk6mqW2m/0/aBkAlKr80YHn7hMsyar/P5Vg==
+Sender: "elver via sendgmr" <elver@elver.muc.corp.google.com>
+X-Received: from elver.muc.corp.google.com ([2a00:79e0:15:13:f693:9fff:fef4:2449])
+ (user=elver job=sendgmr) by 2002:a0c:9e6b:: with SMTP id z43mr4415819qve.6.1606321531530;
+ Wed, 25 Nov 2020 08:25:31 -0800 (PST)
+Date:   Wed, 25 Nov 2020 17:24:52 +0100
+Message-Id: <20201125162455.1690502-1-elver@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.29.2.454.gaff20da3a2-goog
+Subject: [PATCH v6 0/3] net, mac80211, kernel: enable KCOV remote coverage
+ collection for 802.11 frame handling
+From:   Marco Elver <elver@google.com>
+To:     elver@google.com, davem@davemloft.net, kuba@kernel.org,
+        johannes@sipsolutions.net
+Cc:     akpm@linux-foundation.org, a.nogikh@gmail.com, edumazet@google.com,
+        andreyknvl@google.com, dvyukov@google.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, idosch@idosch.org, fw@strlen.de,
+        willemb@google.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello all,
+From: Aleksandr Nogikh <nogikh@google.com>
 
-AFAICS the problems are caused by the WARN() statement here:
+This patch series enables remote KCOV coverage collection during 802.11
+frames processing. These changes make it possible to perform
+coverage-guided fuzzing in search of remotely triggerable bugs.
 
-https://elixir.bootlin.com/linux/v5.10-rc4/source/net/can/af_can.c#L546
+Normally, KCOV collects coverage information for the code that is
+executed inside the system call context. It is easy to identify where
+that coverage should go and whether it should be collected at all by
+looking at the current process. If KCOV was enabled on that process,
+coverage will be stored in a buffer specific to that process.
+Howerever, it is not always enough as handling can happen elsewhere
+(e.g. in separate kernel threads).
 
-The idea was to check whether CAN protocol implementations work 
-correctly on their filter lists.
+When it is impossible to infer KCOV-related info just by looking at the
+currently running process, one needs to manually pass some information
+to the code that should be instrumented. The information takes the form
+of 64 bit integers (KCOV remote handles). Zero is the special value that
+corresponds to an empty handle. More details on KCOV and remote coverage
+collection can be found in Documentation/dev-tools/kcov.rst.
 
-With the fault injection it seem like we're getting a race between 
-closing the socket and removing the netdevice.
+The series consists of three patches:
 
-This seems to be very seldom but it does not break anything.
+1. Apply a minor fix to kcov_common_handle() so that it returns a valid
+   handle (zero) when called in an interrupt context.
 
-Would removing the WARN(1) or replacing it with pr_warn() be ok to close 
-this issue?
+2. Take the remote handle from KCOV and attach it to newly allocated
+   SKBs. If the allocation happens inside a system call context, the SKB
+   will be tied to the process that issued the syscall (if that process
+   is interested in remote coverage collection).
 
-Best regards,
-Oliver
+3. Annotate the code that processes incoming 802.11 frames with
+   kcov_remote_start()/kcov_remote_stop().
 
-On 23.11.20 12:58, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    c2e7554e Merge tag 'gfs2-v5.10-rc4-fixes' of git://git.ker..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=117f03ba500000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=75292221eb79ace2
-> dashboard link: https://syzkaller.appspot.com/bug?extid=381d06e0c8eaacb8706f
-> compiler:       gcc (GCC) 10.1.0-syz 20200507
-> 
-> Unfortunately, I don't have any reproducer for this issue yet.
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+381d06e0c8eaacb8706f@syzkaller.appspotmail.com
-> 
-> ------------[ cut here ]------------
-> BUG: receive list entry not found for dev vxcan1, id 002, mask C00007FF
-> WARNING: CPU: 1 PID: 12946 at net/can/af_can.c:546 can_rx_unregister+0x5a4/0x700 net/can/af_can.c:546
-> Modules linked in:
-> CPU: 1 PID: 12946 Comm: syz-executor.1 Not tainted 5.10.0-rc4-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:can_rx_unregister+0x5a4/0x700 net/can/af_can.c:546
-> Code: 8b 7c 24 78 44 8b 64 24 68 49 c7 c5 20 ac 56 8a e8 01 6c 97 f9 44 89 f9 44 89 e2 4c 89 ee 48 c7 c7 60 ac 56 8a e8 66 af d3 00 <0f> 0b 48 8b 7c 24 28 e8 b0 25 0f 01 e9 54 fb ff ff e8 26 e0 d8 f9
-> RSP: 0018:ffffc90017e2fb38 EFLAGS: 00010286
-> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-> RDX: ffff8880147a8000 RSI: ffffffff8158f3c5 RDI: fffff52002fc5f59
-> RBP: 0000000000000118 R08: 0000000000000001 R09: ffff8880b9f2011b
-> R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000002
-> R13: ffff8880254c0000 R14: 1ffff92002fc5f6e R15: 00000000c00007ff
-> FS:  0000000001ddc940(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000001b2f121000 CR3: 00000000152c0000 CR4: 00000000001506e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->   isotp_notifier+0x2a7/0x540 net/can/isotp.c:1303
->   call_netdevice_notifier net/core/dev.c:1735 [inline]
->   call_netdevice_unregister_notifiers+0x156/0x1c0 net/core/dev.c:1763
->   call_netdevice_unregister_net_notifiers net/core/dev.c:1791 [inline]
->   unregister_netdevice_notifier+0xcd/0x170 net/core/dev.c:1870
->   isotp_release+0x136/0x600 net/can/isotp.c:1011
->   __sock_release+0xcd/0x280 net/socket.c:596
->   sock_close+0x18/0x20 net/socket.c:1277
->   __fput+0x285/0x920 fs/file_table.c:281
->   task_work_run+0xdd/0x190 kernel/task_work.c:151
->   tracehook_notify_resume include/linux/tracehook.h:188 [inline]
->   exit_to_user_mode_loop kernel/entry/common.c:164 [inline]
->   exit_to_user_mode_prepare+0x17e/0x1a0 kernel/entry/common.c:191
->   syscall_exit_to_user_mode+0x38/0x260 kernel/entry/common.c:266
->   entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> RIP: 0033:0x417811
-> Code: 75 14 b8 03 00 00 00 0f 05 48 3d 01 f0 ff ff 0f 83 a4 1a 00 00 c3 48 83 ec 08 e8 0a fc ff ff 48 89 04 24 b8 03 00 00 00 0f 05 <48> 8b 3c 24 48 89 c2 e8 53 fc ff ff 48 89 d0 48 83 c4 08 48 3d 01
-> RSP: 002b:000000000169fbf0 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
-> RAX: 0000000000000000 RBX: 0000000000000004 RCX: 0000000000417811
-> RDX: 0000000000000000 RSI: 00000000000013b7 RDI: 0000000000000003
-> RBP: 0000000000000001 R08: 00000000acabb3b7 R09: 00000000acabb3bb
-> R10: 000000000169fcd0 R11: 0000000000000293 R12: 000000000118c9a0
-> R13: 000000000118c9a0 R14: 00000000000003e8 R15: 000000000118bf2c
-> 
-> 
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> 
+
+v6:
+* Revert usage of skb extensions due to potential memory leak. Patch 2/3 is now
+  idential to that in v2.
+* Patches 1/3 and 3/3 are otherwise identical to v5.
+
+v5: https://lore.kernel.org/linux-wireless/20201029173620.2121359-1-aleksandrnogikh@gmail.com/
+* Collecting remote coverate at ieee80211_rx_list() instead of
+  ieee80211_rx()
+
+v4: https://lkml.kernel.org/r/20201028182018.1780842-1-aleksandrnogikh@gmail.com
+* CONFIG_SKB_EXTENSIONS is now automatically selected by CONFIG_KCOV.
+* Elaborated on a minor optimization in skb_set_kcov_handle().
+
+v3: https://lkml.kernel.org/r/20201026150851.528148-1-aleksandrnogikh@gmail.com
+* kcov_handle is now stored in skb extensions instead of sk_buff
+  itself.
+* Updated the cover letter.
+
+v2: https://lkml.kernel.org/r/20201009170202.103512-1-a.nogikh@gmail.com
+* Moved KCOV annotations from ieee80211_tasklet_handler to
+  ieee80211_rx.
+* Updated kcov_common_handle() to return 0 if it is called in
+  interrupt context.
+
+v1: https://lkml.kernel.org/r/20201007101726.3149375-1-a.nogikh@gmail.com
+
+Aleksandr Nogikh (3):
+  kernel: make kcov_common_handle consider the current context
+  net: store KCOV remote handle in sk_buff
+  mac80211: add KCOV remote annotations to incoming frame processing
+
+ include/linux/skbuff.h | 21 +++++++++++++++++++++
+ kernel/kcov.c          |  2 ++
+ net/core/skbuff.c      |  1 +
+ net/mac80211/iface.c   |  2 ++
+ net/mac80211/rx.c      | 16 +++++++++-------
+ 5 files changed, 35 insertions(+), 7 deletions(-)
+
+-- 
+2.29.2.454.gaff20da3a2-goog
+
