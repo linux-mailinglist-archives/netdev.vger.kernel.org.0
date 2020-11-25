@@ -2,163 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 085FA2C4961
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 21:55:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A52F42C4994
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 22:11:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731263AbgKYUyt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 15:54:49 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.50]:11554 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730178AbgKYUyt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 15:54:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1606337685;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=ZdMw2N7bIn+sWgwKCW7dNdvwpqJ3CkbRwBrllFj08Bw=;
-        b=sEkJmNsU7OHeliA3KDKsmR8eujKL57S5zHkP8NTorojkVVUHDyYvnIv8PxyOqd1Hzk
-        NgzLi8lRT5v7zs7ydwFUjhThPXkXDAk6cj6nveLxzWbKRIeOFTuAUOcaD4z49/YReQ5S
-        NibIxX+6mLGVQYP+huI9OpWQZ5xkluRQ5q2M0e0Z6t31QSvpfhMSIA/V3j2b/RejsIRp
-        hVU7btdSfOBdTx8tAgtqhyzFKVshhZql8MtRLd/ShhF7J4FJMQkJFZWjRjAi4XCNEAiH
-        tZesw62oxEylfRcd53lxtkU7NBhP3LREKJnMbujXlu/qRB77syuyi6OTMAdXRwstvjuI
-        NojA==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3HMbEWKOdeTT9I="
-X-RZG-CLASS-ID: mo00
-Received: from [192.168.50.177]
-        by smtp.strato.de (RZmta 47.3.4 DYNA|AUTH)
-        with ESMTPSA id n07f3bwAPKsZqb5
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Wed, 25 Nov 2020 21:54:35 +0100 (CET)
-Subject: Re: BUG: receive list entry not found for dev vxcan1, id 002, mask
- C00007FF
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     syzbot <syzbot+381d06e0c8eaacb8706f@syzkaller.appspotmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-References: <00000000000041019205b4c4e9ad@google.com>
- <b134c098-2f34-15ee-cfec-2103a12da326@hartkopp.net>
- <CACT4Y+aAtWO5r+VCxqN0UFn-S1OEvDe5QS3r44kXSeA7mfhUMw@mail.gmail.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <c206db48-6d8a-8ff3-79e3-7efab2fdce0f@hartkopp.net>
-Date:   Wed, 25 Nov 2020 21:54:29 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1730941AbgKYVKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 16:10:00 -0500
+Received: from mailout07.rmx.de ([94.199.90.95]:47693 "EHLO mailout07.rmx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729981AbgKYVJ7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Nov 2020 16:09:59 -0500
+Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mailout07.rmx.de (Postfix) with ESMTPS id 4ChD6q59sWzBvCq;
+        Wed, 25 Nov 2020 22:09:55 +0100 (CET)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin01.retarus.com (Postfix) with ESMTPS id 4ChD6Z68Y1z2xFb;
+        Wed, 25 Nov 2020 22:09:42 +0100 (CET)
+Received: from n95hx1g2.localnet (192.168.54.19) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 25 Nov
+ 2020 22:08:41 +0100
+From:   Christian Eggers <ceggers@arri.de>
+To:     <Tristram.Ha@microchip.com>
+CC:     <olteanv@gmail.com>, <kuba@kernel.org>, <andrew@lunn.ch>,
+        <richardcochran@gmail.com>, <robh+dt@kernel.org>,
+        <vivien.didelot@gmail.com>, <davem@davemloft.net>,
+        <kurt.kanzenbach@linutronix.de>, <george.mccollister@gmail.com>,
+        <marex@denx.de>, <helmut.grohne@intenta.de>,
+        <pbarker@konsulko.com>, <Codrin.Ciubotariu@microchip.com>,
+        <Woojung.Huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v3 00/12] net: dsa: microchip: PTP support for KSZ956x
+Date:   Wed, 25 Nov 2020 22:08:39 +0100
+Message-ID: <3569829.EPWo3g8d0Q@n95hx1g2>
+Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+In-Reply-To: <BYAPR11MB35582F880B533EB2EE0CDD1DECE00@BYAPR11MB3558.namprd11.prod.outlook.com>
+References: <20201118203013.5077-1-ceggers@arri.de> <2452899.Bt8PnbAPR0@n95hx1g2> <BYAPR11MB35582F880B533EB2EE0CDD1DECE00@BYAPR11MB3558.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <CACT4Y+aAtWO5r+VCxqN0UFn-S1OEvDe5QS3r44kXSeA7mfhUMw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Originating-IP: [192.168.54.19]
+X-RMX-ID: 20201125-220942-4ChD6Z68Y1z2xFb-0@kdin01
+X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dmitry,
+I need some help from Microchip, please read below.
 
-On 25.11.20 19:48, Dmitry Vyukov wrote:
-> On Wed, Nov 25, 2020 at 5:04 PM Oliver Hartkopp <socketcan@hartkopp.net> wrote:
+On Thursday, 19 November 2020, 19:51:15 CET, Tristram.Ha@microchip.com wrote:
+> There is one more requirement that is a little difficult to do.  The calculated peer delay
+> needs to be programmed in hardware register, but the regular PTP stack has no way to
+> send that command.  I think the driver has to do its own calculation by snooping on the
+> Pdelay_Req/Pdelay_Resp/Pdelay_Resp_Follow_Up messages.
 
->> This seems to be very seldom but it does not break anything.
->>
->> Would removing the WARN(1) or replacing it with pr_warn() be ok to close
->> this issue?
-> 
+In an (offline) discussion with Vladimir we discovered, that the KSZ switch
+behaves different as ptp4l expects: 
 
-> Yes, this is the intended way to deal with this:
-> https://elixir.bootlin.com/linux/v5.10-rc5/source/include/asm-generic/bug.h#L75
-> 
-> Maybe a good opportunity to add some explanatory comment as well
-> regarding how it should not happen but can.
-I already prepared a patch for it which has indeed 90% explanatory 
-comment ;-)
+The KSZ switch forwards PTP (e.g. SYNC) messages in hardware (with updating
+the correction field). For this, the peer delays need be configured for each
+port.
 
-Will send out a patch tomorrow after collecting all the three/four? 
-syskaller bug IDs that popped up with this issue :-D
+ptp4l in turn expects to do the forwarding in software (for the P2P_TC clock
+configuration). For this, no hardware configuration of the peer delay is
+necessary. But due to limitations of currently available hardware, this TC
+forwarding is currently only supported for 2 step clocks, as a one-step clock
+would probably fully replace the originTimestamp field (similar as a BC, but
+not as a TC).
 
-Many thanks!
-Oliver
+Vladimir suggested to configure an ACL in the KSZ switch to block forwarding
+of PTP messages between the user ports and to run ptp4l as BC. My idea is to
+simply block forwarding of UDP messages with destination ports 319+320 and
+L2 messages with the PTP Ether-Type.
+
+I installed the following ACL (for UDP) in the Port ACL Access registers 0-F:
+|_0__1__2__3__4__5__6__7__8__9__A__B__C__D__E__F
+| 00 39 01 40 01 3F 42 22 00 00 00 60 00 00 00 01
+ACL index: 0
+
+Match: 
+- MD=11 (L4)
+- ENB=10 (UDP ports)
+- S/D=0 (dst)
+- EQ=1 (equal)
+- MAX_PORT=320
+- MIN_PORT=319
+- PC=01 (min or max)
+- PRO=17 (UDP, don't care?)
+- FME=0 (disabled)
+
+Action:
+- PM=0 (disabled)
+- P=0 (don't care)
+- RPE=0 (disabled)
+- RP=0 (don't care)
+- MM=11 (replace)
+- PORT_FWD_MAP: all ports to 0
+
+Processing entry:
+- Ruleset=0x0001
+- FRN=0
+
+Unfortunately, with this configuration PTP messages are still forwarded from
+port 1 to port 2. Although I was successful in blocking other communication
+(e.g. by MAC address), the matching rules above seem not to work. Is there an
+error in the ACL, or is forwarding of PTP traffic independent of configured
+ACLs?
+
+regards
+Christian
 
 
-> 
-> 
-> 
-> 
->> On 23.11.20 12:58, syzbot wrote:
->>> Hello,
->>>
->>> syzbot found the following issue on:
->>>
->>> HEAD commit:    c2e7554e Merge tag 'gfs2-v5.10-rc4-fixes' of git://git.ker..
->>> git tree:       upstream
->>> console output: https://syzkaller.appspot.com/x/log.txt?x=117f03ba500000
->>> kernel config:  https://syzkaller.appspot.com/x/.config?x=75292221eb79ace2
->>> dashboard link: https://syzkaller.appspot.com/bug?extid=381d06e0c8eaacb8706f
->>> compiler:       gcc (GCC) 10.1.0-syz 20200507
->>>
->>> Unfortunately, I don't have any reproducer for this issue yet.
->>>
->>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
->>> Reported-by: syzbot+381d06e0c8eaacb8706f@syzkaller.appspotmail.com
->>>
->>> ------------[ cut here ]------------
->>> BUG: receive list entry not found for dev vxcan1, id 002, mask C00007FF
->>> WARNING: CPU: 1 PID: 12946 at net/can/af_can.c:546 can_rx_unregister+0x5a4/0x700 net/can/af_can.c:546
->>> Modules linked in:
->>> CPU: 1 PID: 12946 Comm: syz-executor.1 Not tainted 5.10.0-rc4-syzkaller #0
->>> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
->>> RIP: 0010:can_rx_unregister+0x5a4/0x700 net/can/af_can.c:546
->>> Code: 8b 7c 24 78 44 8b 64 24 68 49 c7 c5 20 ac 56 8a e8 01 6c 97 f9 44 89 f9 44 89 e2 4c 89 ee 48 c7 c7 60 ac 56 8a e8 66 af d3 00 <0f> 0b 48 8b 7c 24 28 e8 b0 25 0f 01 e9 54 fb ff ff e8 26 e0 d8 f9
->>> RSP: 0018:ffffc90017e2fb38 EFLAGS: 00010286
->>> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
->>> RDX: ffff8880147a8000 RSI: ffffffff8158f3c5 RDI: fffff52002fc5f59
->>> RBP: 0000000000000118 R08: 0000000000000001 R09: ffff8880b9f2011b
->>> R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000002
->>> R13: ffff8880254c0000 R14: 1ffff92002fc5f6e R15: 00000000c00007ff
->>> FS:  0000000001ddc940(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
->>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->>> CR2: 0000001b2f121000 CR3: 00000000152c0000 CR4: 00000000001506e0
->>> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->>> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->>> Call Trace:
->>>    isotp_notifier+0x2a7/0x540 net/can/isotp.c:1303
->>>    call_netdevice_notifier net/core/dev.c:1735 [inline]
->>>    call_netdevice_unregister_notifiers+0x156/0x1c0 net/core/dev.c:1763
->>>    call_netdevice_unregister_net_notifiers net/core/dev.c:1791 [inline]
->>>    unregister_netdevice_notifier+0xcd/0x170 net/core/dev.c:1870
->>>    isotp_release+0x136/0x600 net/can/isotp.c:1011
->>>    __sock_release+0xcd/0x280 net/socket.c:596
->>>    sock_close+0x18/0x20 net/socket.c:1277
->>>    __fput+0x285/0x920 fs/file_table.c:281
->>>    task_work_run+0xdd/0x190 kernel/task_work.c:151
->>>    tracehook_notify_resume include/linux/tracehook.h:188 [inline]
->>>    exit_to_user_mode_loop kernel/entry/common.c:164 [inline]
->>>    exit_to_user_mode_prepare+0x17e/0x1a0 kernel/entry/common.c:191
->>>    syscall_exit_to_user_mode+0x38/0x260 kernel/entry/common.c:266
->>>    entry_SYSCALL_64_after_hwframe+0x44/0xa9
->>> RIP: 0033:0x417811
->>> Code: 75 14 b8 03 00 00 00 0f 05 48 3d 01 f0 ff ff 0f 83 a4 1a 00 00 c3 48 83 ec 08 e8 0a fc ff ff 48 89 04 24 b8 03 00 00 00 0f 05 <48> 8b 3c 24 48 89 c2 e8 53 fc ff ff 48 89 d0 48 83 c4 08 48 3d 01
->>> RSP: 002b:000000000169fbf0 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
->>> RAX: 0000000000000000 RBX: 0000000000000004 RCX: 0000000000417811
->>> RDX: 0000000000000000 RSI: 00000000000013b7 RDI: 0000000000000003
->>> RBP: 0000000000000001 R08: 00000000acabb3b7 R09: 00000000acabb3bb
->>> R10: 000000000169fcd0 R11: 0000000000000293 R12: 000000000118c9a0
->>> R13: 000000000118c9a0 R14: 00000000000003e8 R15: 000000000118bf2c
->>>
->>>
->>> ---
->>> This report is generated by a bot. It may contain errors.
->>> See https://goo.gl/tpsmEJ for more information about syzbot.
->>> syzbot engineers can be reached at syzkaller@googlegroups.com.
->>>
->>> syzbot will keep track of this issue. See:
->>> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
->>>
->>
->> --
->> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
->> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
->> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/b134c098-2f34-15ee-cfec-2103a12da326%40hartkopp.net.
+
