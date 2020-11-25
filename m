@@ -2,188 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 808102C4B01
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 23:45:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C81E2C4B08
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 23:49:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733120AbgKYWop (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 17:44:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60936 "EHLO
+        id S1728078AbgKYWsr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 17:48:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727365AbgKYWol (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 17:44:41 -0500
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CDD7C0617A7;
-        Wed, 25 Nov 2020 14:44:40 -0800 (PST)
-Received: by mail-wm1-x342.google.com with SMTP id h21so247913wmb.2;
-        Wed, 25 Nov 2020 14:44:40 -0800 (PST)
+        with ESMTP id S1728079AbgKYWsr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 17:48:47 -0500
+Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15EFFC061A4F
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 14:48:47 -0800 (PST)
+Received: by mail-qt1-x84a.google.com with SMTP id w88so3478427qtd.4
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 14:48:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=mMrMdknFbsC77SFRvwwD3pm1cwl3V2MP65kzVJE6tY4=;
-        b=mE3/9/w1S1BsFafykdzrNl6nUKLQtv3irXzEz/AwtJdLppuZQnzVWeoYFC7Qb5OQef
-         2DAcZ7D6Froq/rlKPIBwqGtt0C/0XmhDJf/Ua0btTGl1wBl77rh04suLM7Drqc/fd1vb
-         erjCUGXrwTRfKAEK60/5plkWP59Lm5M7QZ9ENMraFyUEU5TYdKtuuKGBjQ65xtLyj0UE
-         nayIBzzwS8QdOAkDbWxTvDHZJGPoguOAiztDitejPSo1Rp931ceTN4KgHMls79AEVEp8
-         0UjkiGW0It0CwNfB/koaXcS1sEgjLFm2K1jcT9QDdZUmcgiCMPoll+6KvJ2hAfFlaA1V
-         8PSw==
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=I/075ht73AX9Kc7flNELYjveaVIhsSGQzC21UbF6hgI=;
+        b=lStWPDddstoAXeYRqd5z0qlHDtcQk1WJNK8DLchpGZkeyZi7OteAoP2zsEptNCZvvG
+         EoYqW+NE5OO4n8e/x83gwGlTfu3QtVpje9ZEQ1rh+zToUd6WoWySMz2Cf17x3X24M66+
+         65cv4VblOOe6OHOmy7wDmGmbQfixctL252G21aYa07ifY0/q2Ixd3tb1q73Fjdqfmmkc
+         gwQkVdyZO/U1LGOul9EITUmJhbiP7AKcDAR+rNAy4e7Kfe2EAFqYELc+QKaI4nUMmc3l
+         B8vW0VxF30CgFB5dbs1q9Gv7iTPumfQAUTj2ZhnxsfjY7pKb6p3FOPcTgnv1CEuYonwD
+         pzww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=mMrMdknFbsC77SFRvwwD3pm1cwl3V2MP65kzVJE6tY4=;
-        b=R38/AmTlsvIM12T7AyYl9h5ED9p/mJot6malZaFBOIhS1UbeLy13OmOyiz1xgjm04T
-         /HydEJD7nW6ZSDAP65iNZ4ZyQpQlKfNvvG8Zrwvv8uLZSOWvDS2YWdYP5VxYEjwyVAE8
-         YSM+eHBamHifsktd0Jjq0qynS/ayYPbhL9PwSiXdby3yGWsiEU1fpts0VkT3C/7OPWXj
-         ocRKFhPpzn6ePa6qPzRQhHBuDfNd4agXbMDyMhpJ4ap7fdFyO0BWuBv8VWH5RgyxCUwY
-         6Y0qWuDQb3TIvXwQT3pLdiSqYvZXlMRLdWDiZDbV/WByUr20I1nWQ2LPTZlO1wjSr71m
-         2AEQ==
-X-Gm-Message-State: AOAM532eKSvBjVG+OsfR5iiFXRN7Ljtttg7gTeLIoTGmff0y9VxAQec7
-        jDz3jNowF+BUGdrP0/LKn/s=
-X-Google-Smtp-Source: ABdhPJzVXPr1uOlB1vaw2cfl6zSoOiLq1F6oo5r6Yg/UanqxqpZONWe00UKvdrBaRFZ4o0pgYT/ByA==
-X-Received: by 2002:a7b:cf0a:: with SMTP id l10mr6364382wmg.103.1606344279394;
-        Wed, 25 Nov 2020 14:44:39 -0800 (PST)
-Received: from [192.168.1.122] (cpc92720-cmbg20-2-0-cust364.5-4.cable.virginm.net. [82.21.83.109])
-        by smtp.gmail.com with ESMTPSA id h15sm6411655wrw.15.2020.11.25.14.44.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Nov 2020 14:44:38 -0800 (PST)
-Subject: Re: [PATCH 000/141] Fix fall-through warnings for Clang
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        alsa-devel@alsa-project.org, amd-gfx@lists.freedesktop.org,
-        bridge@lists.linux-foundation.org, ceph-devel@vger.kernel.org,
-        cluster-devel@redhat.com, coreteam@netfilter.org,
-        devel@driverdev.osuosl.org, dm-devel@redhat.com,
-        drbd-dev@lists.linbit.com, dri-devel@lists.freedesktop.org,
-        GR-everest-linux-l2@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        intel-gfx@lists.freedesktop.org, intel-wired-lan@lists.osuosl.org,
-        keyrings@vger.kernel.org, linux1394-devel@lists.sourceforge.net,
-        linux-acpi@vger.kernel.org, linux-afs@lists.infradead.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm@vger.kernel.org,
-        linux-atm-general@lists.sourceforge.net,
-        linux-block@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-cifs@vger.kernel.org,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        linux-decnet-user@lists.sourceforge.net,
-        Ext4 Developers List <linux-ext4@vger.kernel.org>,
-        linux-fbdev@vger.kernel.org, linux-geode@lists.infradead.org,
-        linux-gpio@vger.kernel.org, linux-hams@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-i3c@lists.infradead.org,
-        linux-ide@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-input <linux-input@vger.kernel.org>,
-        linux-integrity@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        linux-mmc@vger.kernel.org, Linux-MM <linux-mm@kvack.org>,
-        linux-mtd@lists.infradead.org, linux-nfs@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-sctp@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        netfilter-devel@vger.kernel.org, nouveau@lists.freedesktop.org,
-        op-tee@lists.trustedfirmware.org, oss-drivers@netronome.com,
-        patches@opensource.cirrus.com, rds-devel@oss.oracle.com,
-        reiserfs-devel@vger.kernel.org, samba-technical@lists.samba.org,
-        selinux@vger.kernel.org, target-devel@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net,
-        usb-storage@lists.one-eyed-alien.net,
-        virtualization@lists.linux-foundation.org,
-        wcn36xx@lists.infradead.org,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        xen-devel@lists.xenproject.org, linux-hardening@vger.kernel.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Miguel Ojeda <ojeda@kernel.org>, Joe Perches <joe@perches.com>
-References: <cover.1605896059.git.gustavoars@kernel.org>
- <20201120105344.4345c14e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <202011201129.B13FDB3C@keescook>
- <20201120115142.292999b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <202011220816.8B6591A@keescook>
- <9b57fd4914b46f38d54087d75e072d6e947cb56d.camel@HansenPartnership.com>
- <CANiq72nZrHWTA4_Msg6MP9snTyenC6-eGfD27CyfNSu7QoVZbw@mail.gmail.com>
- <1c7d7fde126bc0acf825766de64bf2f9b888f216.camel@HansenPartnership.com>
- <CANiq72m22Jb5_+62NnwX8xds2iUdWDMAqD8PZw9cuxdHd95W0A@mail.gmail.com>
- <fc45750b6d0277c401015b7aa11e16cd15f32ab2.camel@HansenPartnership.com>
- <CANiq72k5tpDoDPmJ0ZWc1DGqm+81Gi-uEENAtvEs9v3SZcx6_Q@mail.gmail.com>
- <4993259d01a0064f8bb22770503490f9252f3659.camel@HansenPartnership.com>
- <CANiq72kqO=bYMJnFS2uYRpgWATJ=uXxZuNUsTXT+3aLtrpnzvQ@mail.gmail.com>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <44005bde-f6d4-5eaa-39b8-1a5efeedb2d3@gmail.com>
-Date:   Wed, 25 Nov 2020 22:44:35 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <CANiq72kqO=bYMJnFS2uYRpgWATJ=uXxZuNUsTXT+3aLtrpnzvQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=I/075ht73AX9Kc7flNELYjveaVIhsSGQzC21UbF6hgI=;
+        b=YjBD5x1tSiGEO6H8iiOsrAIqgvs1zny6f0OTDA3vMvgkAk0xXUSym+zPwjC38EjQrz
+         NFYT7r8OdUD1+tSf2xrSJsMG14DlYT+IyUMrvv/0YSgcfhJKG+ZHQP+aWmQxeJfSaud9
+         G+bFvNad8X/Db5my2y+btynd33ucgDo0OL0MuRlgwResUc7Eaz92aRJhYF2Qj5KfRIqt
+         zwkYwnLQYOCssTzlNaf2ng+iuY/MebZ/bFyEz+k8VkT75x6UAabU9e88vfohqFygvg5S
+         OkclimRcksY9VhqGP4AXCKgJ6Oqh1JgahNwD7f3SCKUBm1OA9pnZekp4Sm8qHq2Waoro
+         7fcw==
+X-Gm-Message-State: AOAM5306PvrWHTqMP1azh9F6PjKWTyoCxrB73IjeLiTinQjigRIjwNCI
+        mZOPHWVbrE46HhHbP+UXrcl397fvvg==
+X-Google-Smtp-Source: ABdhPJyfAUOOdfCug3XnQAY0HY7GW15qb62GOtkQHazukM4VAvjapZE/kQUdB9bYiJ4LGnzlgKXnC6MAWg==
+Sender: "elver via sendgmr" <elver@elver.muc.corp.google.com>
+X-Received: from elver.muc.corp.google.com ([2a00:79e0:15:13:f693:9fff:fef4:2449])
+ (user=elver job=sendgmr) by 2002:a05:6214:504:: with SMTP id
+ v4mr390062qvw.38.1606344526039; Wed, 25 Nov 2020 14:48:46 -0800 (PST)
+Date:   Wed, 25 Nov 2020 23:48:40 +0100
+Message-Id: <20201125224840.2014773-1-elver@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.29.2.454.gaff20da3a2-goog
+Subject: [PATCH net-next v2] net: switch to storing KCOV handle directly in sk_buff
+From:   Marco Elver <elver@google.com>
+To:     elver@google.com, kuba@kernel.org, davem@davemloft.net
+Cc:     johannes@sipsolutions.net, a.nogikh@gmail.com,
+        andreyknvl@google.com, dvyukov@google.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, idosch@idosch.org, fw@strlen.de,
+        willemb@google.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25/11/2020 00:32, Miguel Ojeda wrote:
-> I have said *authoring* lines of *this* kind takes a minute per line.
-> Specifically: lines fixing the fallthrough warning mechanically and
-> repeatedly where the compiler tells you to, and doing so full-time for
-> a month.
-<snip>
-> It is useful since it makes intent clear.
-To make the intent clear, you have to first be certain that you
- understand the intent; otherwise by adding either a break or a
- fallthrough to suppress the warning you are just destroying the
- information that "the intent of this code is unknown".
-Figuring out the intent of a piece of unfamiliar code takes more
- than 1 minute; just because
-    case foo:
-        thing;
-    case bar:
-        break;
- produces identical code to
-    case foo:
-        thing;
-        break;
-    case bar:
-        break;
- doesn't mean that *either* is correct — maybe the author meant
- to write
-    case foo:
-        return thing;
-    case bar:
-        break;
- and by inserting that break you've destroyed the marker that
- would direct someone who knew what the code was about to look
- at that point in the code and spot the problem.
-Thus, you *always* have to look at more than just the immediate
- mechanical context of the code, to make a proper judgement that
- yes, this was the intent.  If you think that that sort of thing
- can be done in an *average* time of one minute, then I hope you
- stay away from code I'm responsible for!
-One minute would be an optimistic target for code that, as the
- maintainer, one is already somewhat familiar with.  For code
- that you're seeing for the first time, as is usually the case
- with the people doing these mechanical fix-a-warning patches,
- it's completely unrealistic.
+It turns out that usage of skb extensions can cause memory leaks. Ido
+Schimmel reported: "[...] there are instances that blindly overwrite
+'skb->extensions' by invoking skb_copy_header() after __alloc_skb()."
 
-A warning is only useful because it makes you *think* about the
- code.  If you suppress the warning without doing that thinking,
- then you made the warning useless; and if the warning made you
- think about code that didn't *need* it, then the warning was
- useless from the start.
+Therefore, give up on using skb extensions for KCOV handle, and instead
+directly store kcov_handle in sk_buff.
 
-So make your mind up: does Clang's stricter -Wimplicit-fallthrough
- flag up code that needs thought (in which case the fixes take
- effort both to author and to review) or does it flag up code
- that can be mindlessly "fixed" (in which case the warning is
- worthless)?  Proponents in this thread seem to be trying to
- have it both ways.
+Fixes: 6370cc3bbd8a ("net: add kcov handle to skb extensions")
+Fixes: 85ce50d337d1 ("net: kcov: don't select SKB_EXTENSIONS when there is no NET")
+Fixes: 97f53a08cba1 ("net: linux/skbuff.h: combine SKB_EXTENSIONS + KCOV handling")
+Link: https://lore.kernel.org/linux-wireless/20201121160941.GA485907@shredder.lan/
+Reported-by: Ido Schimmel <idosch@idosch.org>
+Signed-off-by: Marco Elver <elver@google.com>
+---
+v2:
+* Restore missing skb_set_kcov_handle() which got lost in the rebase.
+---
+ include/linux/skbuff.h | 37 +++++++++++++------------------------
+ lib/Kconfig.debug      |  1 -
+ net/core/skbuff.c      |  6 ------
+ 3 files changed, 13 insertions(+), 31 deletions(-)
 
--ed
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 0a1239819fd2..333bcdc39635 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -701,6 +701,7 @@ typedef unsigned char *sk_buff_data_t;
+  *	@transport_header: Transport layer header
+  *	@network_header: Network layer header
+  *	@mac_header: Link layer header
++ *	@kcov_handle: KCOV remote handle for remote coverage collection
+  *	@tail: Tail pointer
+  *	@end: End pointer
+  *	@head: Head of buffer
+@@ -904,6 +905,10 @@ struct sk_buff {
+ 	__u16			network_header;
+ 	__u16			mac_header;
+ 
++#ifdef CONFIG_KCOV
++	u64			kcov_handle;
++#endif
++
+ 	/* private: */
+ 	__u32			headers_end[0];
+ 	/* public: */
+@@ -4150,9 +4155,6 @@ enum skb_ext_id {
+ #endif
+ #if IS_ENABLED(CONFIG_MPTCP)
+ 	SKB_EXT_MPTCP,
+-#endif
+-#if IS_ENABLED(CONFIG_KCOV)
+-	SKB_EXT_KCOV_HANDLE,
+ #endif
+ 	SKB_EXT_NUM, /* must be last */
+ };
+@@ -4608,35 +4610,22 @@ static inline void skb_reset_redirect(struct sk_buff *skb)
+ #endif
+ }
+ 
+-#if IS_ENABLED(CONFIG_KCOV) && IS_ENABLED(CONFIG_SKB_EXTENSIONS)
+ static inline void skb_set_kcov_handle(struct sk_buff *skb,
+ 				       const u64 kcov_handle)
+ {
+-	/* Do not allocate skb extensions only to set kcov_handle to zero
+-	 * (as it is zero by default). However, if the extensions are
+-	 * already allocated, update kcov_handle anyway since
+-	 * skb_set_kcov_handle can be called to zero a previously set
+-	 * value.
+-	 */
+-	if (skb_has_extensions(skb) || kcov_handle) {
+-		u64 *kcov_handle_ptr = skb_ext_add(skb, SKB_EXT_KCOV_HANDLE);
+-
+-		if (kcov_handle_ptr)
+-			*kcov_handle_ptr = kcov_handle;
+-	}
++#ifdef CONFIG_KCOV
++	skb->kcov_handle = kcov_handle;
++#endif
+ }
+ 
+ static inline u64 skb_get_kcov_handle(struct sk_buff *skb)
+ {
+-	u64 *kcov_handle = skb_ext_find(skb, SKB_EXT_KCOV_HANDLE);
+-
+-	return kcov_handle ? *kcov_handle : 0;
+-}
++#ifdef CONFIG_KCOV
++	return skb->kcov_handle;
+ #else
+-static inline void skb_set_kcov_handle(struct sk_buff *skb,
+-				       const u64 kcov_handle) { }
+-static inline u64 skb_get_kcov_handle(struct sk_buff *skb) { return 0; }
+-#endif /* CONFIG_KCOV && CONFIG_SKB_EXTENSIONS */
++	return 0;
++#endif
++}
+ 
+ #endif	/* __KERNEL__ */
+ #endif	/* _LINUX_SKBUFF_H */
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index 826a205ffd1c..1d15cdaf1b89 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -1879,7 +1879,6 @@ config KCOV
+ 	depends on CC_HAS_SANCOV_TRACE_PC || GCC_PLUGINS
+ 	select DEBUG_FS
+ 	select GCC_PLUGIN_SANCOV if !CC_HAS_SANCOV_TRACE_PC
+-	select SKB_EXTENSIONS if NET
+ 	help
+ 	  KCOV exposes kernel code coverage information in a form suitable
+ 	  for coverage-guided fuzzing (randomized testing).
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index ffe3dcc0ebea..b21f01662f98 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -4208,9 +4208,6 @@ static const u8 skb_ext_type_len[] = {
+ #if IS_ENABLED(CONFIG_MPTCP)
+ 	[SKB_EXT_MPTCP] = SKB_EXT_CHUNKSIZEOF(struct mptcp_ext),
+ #endif
+-#if IS_ENABLED(CONFIG_KCOV)
+-	[SKB_EXT_KCOV_HANDLE] = SKB_EXT_CHUNKSIZEOF(u64),
+-#endif
+ };
+ 
+ static __always_inline unsigned int skb_ext_total_length(void)
+@@ -4227,9 +4224,6 @@ static __always_inline unsigned int skb_ext_total_length(void)
+ #endif
+ #if IS_ENABLED(CONFIG_MPTCP)
+ 		skb_ext_type_len[SKB_EXT_MPTCP] +
+-#endif
+-#if IS_ENABLED(CONFIG_KCOV)
+-		skb_ext_type_len[SKB_EXT_KCOV_HANDLE] +
+ #endif
+ 		0;
+ }
+
+base-commit: 470dfd808ac4135f313967f9d3e107b87fc6a0b3
+-- 
+2.29.2.454.gaff20da3a2-goog
+
