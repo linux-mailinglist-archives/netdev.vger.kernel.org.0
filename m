@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C678B2C3A6E
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 09:00:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9BA32C3A71
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 09:01:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726880AbgKYH7s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 02:59:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35830 "EHLO
+        id S1727329AbgKYIBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 03:01:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725616AbgKYH7s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 02:59:48 -0500
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FB9CC0613D4;
-        Tue, 24 Nov 2020 23:59:48 -0800 (PST)
-Received: by mail-pg1-x542.google.com with SMTP id v21so1723629pgi.2;
-        Tue, 24 Nov 2020 23:59:48 -0800 (PST)
+        with ESMTP id S1725616AbgKYIBE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 03:01:04 -0500
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 155A1C0613D4;
+        Wed, 25 Nov 2020 00:00:55 -0800 (PST)
+Received: by mail-pf1-x444.google.com with SMTP id e8so1583759pfh.2;
+        Wed, 25 Nov 2020 00:00:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=gGirE1fk9ycO/945LUizDxbsEckV/SVkmRIJ5uRwwqk=;
-        b=GU1bEeuj8Mqv9v+W3J71JmmyuhUnDRuCU1DS5zyXYYyH7DezGx0GtrWQjhswmIzYUG
-         hG1JgK7XURHkTNPOuzj+CBSot6BrfXT6K6tcU5m6ML+C4YuD4GREnLL8+k16th8NCemc
-         JpRdDZ3GnynYbXqUjOg4M76aj4RWUevdl0Gg5NHyUh50NQyBDb7vjNggI0Z35KPdqjo7
-         JY5bZIW83ZpkmhyaWCEQHLqCTDW94dOYDg2yA+0xqRc3ihv1NDK8l2bAC8BwVXzoYqCD
-         GxM0UmjsA/7c4xL+NPJ3jIlMfehE75Bg/vkbJngHkYPuX4N61RSnwxUHDl+4LogwPaxB
-         UqgA==
+        bh=R6bj5k93ILC33b5weERAxxA9VSG1mRSLslj8OKwpnZk=;
+        b=jaRVsO9wkotKUcE9N+4DT46nevjEADFVjPXEZNaKlWnSGHhnN5j7/urPp3qFopgyzR
+         bcNEuVVkhFmnX4V3aKts8eScnHUhggiftgG93d8nryUz6/VGCHvHPk3ezjfk7+UfiI7K
+         zj35nB+96MTiJb2+sqtz+5xIOS0DBxPc3nj3VV2KRc6rmDYHkUQn8dFwj8vuJwq/5qF+
+         zmiWpBHTbfOfLtY0k8QM+GXUn2prOIekdmIACNbSUUwTSD53oYIFyuaKfdyzQ8yFg2Q6
+         q1NXTrz62/bNFyv7Gp2Lf3jzv/41eeFFdMgr23e/vf+LMjIUEs6dbgJVHgRldB+jr/21
+         CQKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=gGirE1fk9ycO/945LUizDxbsEckV/SVkmRIJ5uRwwqk=;
-        b=sDrBrWDNM0UVs/eg/e0n9kcI/DpnaEYhxZletzyYJKUfLCY+BXu95o9q9agzjGq56t
-         HOdUIDvGC7GY9d6noISQA/4md9KhudPP8xx4wQRQbPasWPXwPDYjiRjD3bZFnDw8K3TR
-         zUHcyb0QPXkOY16QFc88EYJorXFrjvaYHXG7X6j+QW3TmuBpyGPdnu+0bIsUvGnu1/lu
-         EQJ3dWt7yOx0FMjOru42NKeNibUy/IoVbBdhtT3nDmtvq6f0GGU0nD2L5c4T5a613HN3
-         DY7jGuVTzYbt9Ws9NuKMXwSMNUHpLVi58fhIUmhfPY9fAZp4Jj+YSCGuFlet9gh8bOji
-         GuYA==
-X-Gm-Message-State: AOAM532WJVyu6/Ycx9L61ujweuup06ruJOSt9uox+WkWOqy7Ob8GwI2J
-        v/3v7o2fBR6HdBst/lGDXEOJ8fM/n0sWpxAcA8Y=
-X-Google-Smtp-Source: ABdhPJy2zrjvoHf2/X5gXVcpm4Fh8Z5QQOCPDpOI8f5kw4NZteA7uNBiTW+dSkojaBdsde6OMzt9twwHy77h8FwK3Ls=
-X-Received: by 2002:a17:90a:ea05:: with SMTP id w5mr2705755pjy.204.1606291187769;
- Tue, 24 Nov 2020 23:59:47 -0800 (PST)
+        bh=R6bj5k93ILC33b5weERAxxA9VSG1mRSLslj8OKwpnZk=;
+        b=TaNQAQcDPadN+77m8fFX2BfcMqS+KLFC96lsFtZpepWi8FtNAQdxXWt2iPgCQE3q81
+         adf+yuHt2uQUg+pJ6QZU//f4wfZ8PNVLhI1u1FEsWQtsnhF5yaBtkFihm91Dk9VzSPoJ
+         vNkINkTNfaFPX5KlyA/Lj+2vtd0pkkRulEBzcz3Tvxnw/7O7QkKiGE9piIysUSn54CBK
+         Asmm8VEvN+QfKM+UpUcEvFB2ScfLGOw9BZWUCaRfvWt9IrEcYZcH42P5WNYvJulDA32f
+         TgAmiNwfzb8nE2k7wQwPaGoY6UsJdI3HGgeGVharFkWUDbmTXVzikpoRUKQCakOahWAB
+         AqCw==
+X-Gm-Message-State: AOAM530JBziAl6I+zdVGBEVuFQ49cf96kwjnNpcQY81KmuggmhQ5ANZ6
+        8D3mWJC0uVCaPUt+QSB9im242hhR2yim4Oe2Rx8=
+X-Google-Smtp-Source: ABdhPJxrJZjWAKuJx2W/ebbuv1AKgFR8/KaJIBisKTIyiTRjd0fUicapDzcDYqmlGqShC6qo5fOIVIJ9dykAgJM1p+0=
+X-Received: by 2002:a62:445:0:b029:196:61fc:2756 with SMTP id
+ 66-20020a6204450000b029019661fc2756mr2116352pfe.12.1606291254422; Wed, 25 Nov
+ 2020 00:00:54 -0800 (PST)
 MIME-Version: 1.0
-References: <20201119083024.119566-1-bjorn.topel@gmail.com> <20201119083024.119566-8-bjorn.topel@gmail.com>
-In-Reply-To: <20201119083024.119566-8-bjorn.topel@gmail.com>
+References: <20201119083024.119566-1-bjorn.topel@gmail.com> <20201119083024.119566-9-bjorn.topel@gmail.com>
+In-Reply-To: <20201119083024.119566-9-bjorn.topel@gmail.com>
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Wed, 25 Nov 2020 08:59:36 +0100
-Message-ID: <CAJ8uoz0Z6nTCf==qUGivQZv-o9cNpVbX2KpWMtZh33TrkA2+Kg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 07/10] samples/bpf: use recvfrom() in xdpsock/rxdrop
+Date:   Wed, 25 Nov 2020 09:00:43 +0100
+Message-ID: <CAJ8uoz2URCA=Q40dmhiiu3_ri4P4R04x+stH6f2HrarChZBQyQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 08/10] samples/bpf: use recvfrom() in xdpsock/l2fwd
 To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
 Cc:     Network Development <netdev@vger.kernel.org>,
         bpf <bpf@vger.kernel.org>,
@@ -71,36 +72,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 19, 2020 at 9:34 AM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.co=
+On Thu, Nov 19, 2020 at 9:33 AM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.co=
 m> wrote:
 >
 > From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
 >
-> Start using recvfrom() the rxdrop scenario.
+> Start using recvfrom() the l2fwd scenario, instead of poll() which is
+> more expensive and need additional knobs for busy-polling.
 >
 > Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
 > ---
->  samples/bpf/xdpsock_user.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+>  samples/bpf/xdpsock_user.c | 25 +++++++++++--------------
+>  1 file changed, 11 insertions(+), 14 deletions(-)
 
 Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
 > diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-> index 2567f0db5aca..f90111b95b2e 100644
+> index f90111b95b2e..24aa7511c4c8 100644
 > --- a/samples/bpf/xdpsock_user.c
 > +++ b/samples/bpf/xdpsock_user.c
-> @@ -1170,7 +1170,7 @@ static inline void complete_tx_only(struct xsk_sock=
-et_info *xsk,
->         }
+> @@ -1098,8 +1098,7 @@ static void kick_tx(struct xsk_socket_info *xsk)
+>         exit_with_error(errno);
 >  }
 >
-> -static void rx_drop(struct xsk_socket_info *xsk, struct pollfd *fds)
-> +static void rx_drop(struct xsk_socket_info *xsk)
+> -static inline void complete_tx_l2fwd(struct xsk_socket_info *xsk,
+> -                                    struct pollfd *fds)
+> +static inline void complete_tx_l2fwd(struct xsk_socket_info *xsk)
+>  {
+>         struct xsk_umem_info *umem =3D xsk->umem;
+>         u32 idx_cq =3D 0, idx_fq =3D 0;
+> @@ -1134,7 +1133,7 @@ static inline void complete_tx_l2fwd(struct xsk_soc=
+ket_info *xsk,
+>                                 exit_with_error(-ret);
+>                         if (xsk_ring_prod__needs_wakeup(&umem->fq)) {
+>                                 xsk->app_stats.fill_fail_polls++;
+> -                               ret =3D poll(fds, num_socks, opt_timeout)=
+;
+> +                               recvfrom(xsk_socket__fd(xsk->xsk), NULL, =
+0, MSG_DONTWAIT, NULL, NULL);
+>                         }
+>                         ret =3D xsk_ring_prod__reserve(&umem->fq, rcvd, &=
+idx_fq);
+>                 }
+> @@ -1331,19 +1330,19 @@ static void tx_only_all(void)
+>                 complete_tx_only_all();
+>  }
+>
+> -static void l2fwd(struct xsk_socket_info *xsk, struct pollfd *fds)
+> +static void l2fwd(struct xsk_socket_info *xsk)
 >  {
 >         unsigned int rcvd, i;
->         u32 idx_rx =3D 0, idx_fq =3D 0;
-> @@ -1180,7 +1180,7 @@ static void rx_drop(struct xsk_socket_info *xsk, st=
-ruct pollfd *fds)
+>         u32 idx_rx =3D 0, idx_tx =3D 0;
+>         int ret;
+>
+> -       complete_tx_l2fwd(xsk, fds);
+> +       complete_tx_l2fwd(xsk);
+>
+>         rcvd =3D xsk_ring_cons__peek(&xsk->rx, opt_batch_size, &idx_rx);
 >         if (!rcvd) {
 >                 if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq)) {
 >                         xsk->app_stats.rx_empty_polls++;
@@ -110,24 +138,42 @@ ONTWAIT, NULL, NULL);
 >                 }
 >                 return;
 >         }
-> @@ -1191,7 +1191,7 @@ static void rx_drop(struct xsk_socket_info *xsk, st=
-ruct pollfd *fds)
+> @@ -1353,7 +1352,7 @@ static void l2fwd(struct xsk_socket_info *xsk, stru=
+ct pollfd *fds)
+>         while (ret !=3D rcvd) {
+>                 if (ret < 0)
 >                         exit_with_error(-ret);
->                 if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq)) {
->                         xsk->app_stats.fill_fail_polls++;
-> -                       ret =3D poll(fds, num_socks, opt_timeout);
-> +                       recvfrom(xsk_socket__fd(xsk->xsk), NULL, 0, MSG_D=
-ONTWAIT, NULL, NULL);
->                 }
->                 ret =3D xsk_ring_prod__reserve(&xsk->umem->fq, rcvd, &idx=
-_fq);
->         }
-> @@ -1233,7 +1233,7 @@ static void rx_drop_all(void)
+> -               complete_tx_l2fwd(xsk, fds);
+> +               complete_tx_l2fwd(xsk);
+>                 if (xsk_ring_prod__needs_wakeup(&xsk->tx)) {
+>                         xsk->app_stats.tx_wakeup_sendtos++;
+>                         kick_tx(xsk);
+> @@ -1388,22 +1387,20 @@ static void l2fwd_all(void)
+>         struct pollfd fds[MAX_SOCKS] =3D {};
+>         int i, ret;
+>
+> -       for (i =3D 0; i < num_socks; i++) {
+> -               fds[i].fd =3D xsk_socket__fd(xsks[i]->xsk);
+> -               fds[i].events =3D POLLOUT | POLLIN;
+> -       }
+> -
+>         for (;;) {
+>                 if (opt_poll) {
+> -                       for (i =3D 0; i < num_socks; i++)
+> +                       for (i =3D 0; i < num_socks; i++) {
+> +                               fds[i].fd =3D xsk_socket__fd(xsks[i]->xsk=
+);
+> +                               fds[i].events =3D POLLOUT | POLLIN;
+>                                 xsks[i]->app_stats.opt_polls++;
+> +                       }
+>                         ret =3D poll(fds, num_socks, opt_timeout);
+>                         if (ret <=3D 0)
+>                                 continue;
 >                 }
 >
 >                 for (i =3D 0; i < num_socks; i++)
-> -                       rx_drop(xsks[i], fds);
-> +                       rx_drop(xsks[i]);
+> -                       l2fwd(xsks[i], fds);
+> +                       l2fwd(xsks[i]);
 >
 >                 if (benchmark_done)
 >                         break;
