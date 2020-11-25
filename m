@@ -2,92 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAE452C352B
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 01:00:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1688C2C352D
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 01:04:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726718AbgKXX7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 18:59:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47002 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725868AbgKXX7L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 18:59:11 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9991FC0613D6;
-        Tue, 24 Nov 2020 15:59:11 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id 18so146594pli.13;
-        Tue, 24 Nov 2020 15:59:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=nS9jd/mrs9MANJ2dhJ0iSNpa7XNy6i71AQudliWRJZs=;
-        b=LExSxRx8TVfjgyGXal3rtgrWM44StwuPTNQiCVcmURvHxBm40B70wdMMcbm37X5pPt
-         43OCNOmxjMPIk8lGxrw8rbt+sdCjGkoRbOxnwuWdgs0ER64dijCQDUGS9E0EONM2eQQg
-         hF1Iz/5IvfG2nqzBb89iGfwtjLT2MS2ije71MC/FM8voq4swAhbg53RsUPH/eE0GYCQ0
-         nxpFK8o/Ab6+zTeByqjMNQDtZ1yeI8OAnECWgvoUxdD0bqZlF4jLVpFw6LDSqabd6bL6
-         y5HlYHSiipkdBycN0IErhjb98BQPVIrWMBjAIYXMNaFR4nZLkl4q9w+tHRbp465DXikt
-         1XlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=nS9jd/mrs9MANJ2dhJ0iSNpa7XNy6i71AQudliWRJZs=;
-        b=ccprlBdBpUvR89ya7f34E9Hd6DjyQC9jMbI0lylb/PdulEUUO+EP9jiw6SuSYcZrXi
-         q0Z/zrM5SsmV6Qh4bBsUmj8JbDV8bpgtFIwC+UCodh4aqw2atdLzjWEqhEy5klLL4HI0
-         LEBkvJrtAydQUjiPTfRiBfZd84QtxL2+jKOt3cQ/PgHWu1Anl9K0J1IAt9sOOsSXogYx
-         yflPPmzvKilBQqYiy4cKPxgDoinnBQURRgTDRm8+6rPHenAkDUq+9tbDLkwThLLDuvr8
-         9lB6O/y0O/UnfYryNlhUAcNNZYpJeAu+Pqpr32sLYL52a5smvFDoPa7hbwR0ojE3GdCT
-         ZnoA==
-X-Gm-Message-State: AOAM531yJczw/W/AiroJTUuwmynQ9c8Yfgmx1mgM5vXjVCejXO//N2UU
-        lMyPInU+uH2SxYmyBCSjLTdCZc6o4CQ=
-X-Google-Smtp-Source: ABdhPJxswtE7pW/hB1P2nB8d4Bmmr58dbtRs53uE9Fo26gn6rry66Dxb3se2Vr8aUR/XK9wzLHI4bg==
-X-Received: by 2002:a17:902:9a84:b029:d9:d5ad:a669 with SMTP id w4-20020a1709029a84b02900d9d5ada669mr783347plp.53.1606262351169;
-        Tue, 24 Nov 2020 15:59:11 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id f18sm136532pfa.167.2020.11.24.15.59.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Nov 2020 15:59:10 -0800 (PST)
-Date:   Tue, 24 Nov 2020 15:59:08 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     min.li.xe@renesas.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 net] ptp: clockmatrix: bug fix for idtcm_strverscmp
-Message-ID: <20201124235908.GA28743@hoboy.vegasvil.org>
-References: <1606233686-22785-1-git-send-email-min.li.xe@renesas.com>
+        id S1727105AbgKYACM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 19:02:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46976 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727070AbgKYACM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 19:02:12 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 10BF22145D;
+        Wed, 25 Nov 2020 00:02:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606262531;
+        bh=QvFvOpzNbVkTVaMl/BVjSM2x46W/RWWsxeEl70LOhck=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fgp8vDn8/WdjXeZRjR9NUfgcYUDE/CAxlniPbqcUfxnO4RKH0Hc/mQ1w8PvCwTaB7
+         Fk5xbz4Y3QRvzrQh1edMl4XCSnRrkMmIV7XUHjHwvJqHef605pyXLqWSxtHkKgkra/
+         hCM6blgMEMeG7+t5nxitEqNCiSAEIejDvmVXVLhI=
+Date:   Tue, 24 Nov 2020 16:02:10 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     wenxu <wenxu@ucloud.cn>
+Cc:     marcelo.leitner@gmail.com, vladbu@nvidia.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 3/3] net/sched: sch_frag: add generic packet
+ fragment support.
+Message-ID: <20201124160210.3648b823@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <e25b0a93-0fb1-60cf-9451-c82920c45076@ucloud.cn>
+References: <1605829116-10056-1-git-send-email-wenxu@ucloud.cn>
+        <1605829116-10056-4-git-send-email-wenxu@ucloud.cn>
+        <20201124112430.64143482@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <e25b0a93-0fb1-60cf-9451-c82920c45076@ucloud.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1606233686-22785-1-git-send-email-min.li.xe@renesas.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 24, 2020 at 11:01:26AM -0500, min.li.xe@renesas.com wrote:
-> From: Min Li <min.li.xe@renesas.com>
-> 
-> Feed kstrtou8 with NULL terminated string.
-> 
-> Changes since v1:
-> -Use sscanf to get rid of adhoc string parse.
+On Wed, 25 Nov 2020 07:10:43 +0800 wenxu wrote:
+> =E5=9C=A8 2020/11/25 3:24, Jakub Kicinski =E5=86=99=E9=81=93:
+> > On Fri, 20 Nov 2020 07:38:36 +0800 wenxu@ucloud.cn wrote: =20
+> >> +int tcf_dev_queue_xmit(struct sk_buff *skb, int (*xmit)(struct sk_buf=
+f *skb))
+> >> +{
+> >> +	xmit_hook_func *xmit_hook;
+> >> +
+> >> +	xmit_hook =3D rcu_dereference(tcf_xmit_hook);
+> >> +	if (xmit_hook)
+> >> +		return xmit_hook(skb, xmit);
+> >> +	else
+> >> +		return xmit(skb);
+> >> +}
+> >> +EXPORT_SYMBOL_GPL(tcf_dev_queue_xmit); =20
+> > I'm concerned about the performance impact of these indirect calls.
+> >
+> > Did you check what code compiler will generate? What the impact with
+> > retpolines enabled is going to be?
+> >
+> > Now that sch_frag is no longer a module this could be simplified.
+> >
+> > First of all - xmit_hook can only be sch_frag_xmit_hook, so please use
+> > that directly.=20
+> >
+> > 	if (READ_ONCE(tcf_xmit_hook_count))=20
+> > 		sch_frag_xmit_hook(...
+> > 	else
+> > 		dev_queue_xmit(...
+> >
+> > The abstraction is costly and not necessary right now IMO.
+> >
+> > Then probably the counter should be:
+> >
+> > 	u32 __read_mostly tcf_xmit_hook_count;
+> >
+> > To avoid byte loads and having it be places in an unlucky cache line. =
+=20
+> Maybe a static key replace=C2=A0 tcf_xmit_hook_count is more simplified=
+=EF=BC=9F
+>=20
+> DEFINE_STATIC_KEY_FALSE(tcf_xmit_hook_in_use);
 
-This is much nicer.  Small issue remains...
-
-> +	u8 ver1[3], ver2[3];
-> +	int i;
-> +
-> +	if (sscanf(version1, "%hhu.%hhu.%hhu",
-> +		   &ver1[0], &ver1[1], &ver1[2]) < 0)
-> +		return -1;
-
-The sscanf function returns the number of scanned items, and so you
-should check that it returns 3 (three).
-
-> +	if (sscanf(version2, "%hhu.%hhu.%hhu",
-> +		   &ver2[0], &ver2[1], &ver2[2]) < 0)
-> +		return -1;
-
-Same here.
-
-Thanks,
-Richard
+I wasn't sure if static key would work with the module (mirred being a
+module) but thinking about it again, if tcf_dev_queue_xmit() is not an
+static inline but a normal function, it should work. Sounds good!
