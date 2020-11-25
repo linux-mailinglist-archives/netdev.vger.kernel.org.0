@@ -2,45 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25CD92C4918
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 21:31:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33F042C491E
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 21:33:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729993AbgKYUaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 15:30:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59848 "EHLO mail.kernel.org"
+        id S1730067AbgKYUdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 15:33:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33096 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729957AbgKYUaQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Nov 2020 15:30:16 -0500
+        id S1725876AbgKYUdW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Nov 2020 15:33:22 -0500
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E62C2206F7;
-        Wed, 25 Nov 2020 20:30:14 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 32BC3206F7;
+        Wed, 25 Nov 2020 20:33:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606336215;
-        bh=eAQmp5GZGUdkf04vSOwtkPQYMmhghulNucwaE29RuR0=;
+        s=default; t=1606336402;
+        bh=xxByuzrg9ts+Axv6Kf2r/EfXCXoHXfNsKMoH58vJx2Q=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oYKUyxis/nHy8FReftxkimZWOWuWMj9JA5cLvpjpBA9/HoLk6xLwY9+mGZQ17NcIS
-         r6J6TJHDimtnfExA6cJFSDDV5CcoT+5bRVxVbjRo0yCcDNhcaiqNrk1VX3czGlFng6
-         BJrVPxQW4rECcSSthzkLBlkQ8WYJWUfMe9kVm5L8=
-Date:   Wed, 25 Nov 2020 12:30:13 -0800
+        b=ZD5k9a+uH9PyURPflde5JL+3VaRHRXWSHluvSg0/+UCjzOhVgxezyuIgpOyWYQXsR
+         DFILvdSe2q7r3uGNlPuCGa8uNKOu7yuaLa1a89FLWDSSixwKUC7YIO3WPeoWcL0YuE
+         +zJFGcRwJHaCc+Uolx6LbktELhg2brB2BBOjwv1o=
+Date:   Wed, 25 Nov 2020 12:33:20 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Antonio Borneo <antonio.borneo@st.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Yonglong Liu <liuyonglong@huawei.com>,
-        Willy Liu <willy.liu@realtek.com>, <linuxarm@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 net-next] net: phy: realtek: read actual speed on
- rtl8211f to detect downshift
-Message-ID: <20201125123013.0a59c23b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201124230756.887925-1-antonio.borneo@st.com>
-References: <20201124143848.874894-1-antonio.borneo@st.com>
-        <20201124230756.887925-1-antonio.borneo@st.com>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
+        mptcp@lists.01.org, Davide Caratti <dcaratti@redhat.com>
+Subject: Re: [PATCH net-next] mptcp: put reference in mptcp timeout timer
+Message-ID: <20201125123317.678761e6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <e44300a0567cdec8241c06d1c6b78083cdd4254a.camel@redhat.com>
+References: <20201124162446.11448-1-fw@strlen.de>
+        <e44300a0567cdec8241c06d1c6b78083cdd4254a.camel@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -48,20 +40,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 25 Nov 2020 00:07:56 +0100 Antonio Borneo wrote:
-> The rtl8211f supports downshift and before commit 5502b218e001
-> ("net: phy: use phy_resolve_aneg_linkmode in genphy_read_status")
-> the read-back of register MII_CTRL1000 was used to detect the
-> negotiated link speed.
-> The code added in commit d445dff2df60 ("net: phy: realtek: read
-> actual speed to detect downshift") is working fine also for this
-> phy and it's trivial re-using it to restore the downshift
-> detection on rtl8211f.
+On Tue, 24 Nov 2020 17:42:21 +0100 Paolo Abeni wrote:
+> On Tue, 2020-11-24 at 17:24 +0100, Florian Westphal wrote:
+> > On close this timer might be scheduled. mptcp uses sk_reset_timer for
+> > this, so the a reference on the mptcp socket is taken.
+> > 
+> > This causes a refcount leak which can for example be reproduced
+> > with 'mp_join_server_v4.pkt' from the mptcp-packetdrill repo.  
 > 
-> Add the phy specific read_status() pointing to the existing
-> function rtlgen_read_status().
+> Whoops, my fault!
 > 
-> Signed-off-by: Antonio Borneo <antonio.borneo@st.com>
-> Link: https://lore.kernel.org/r/478f871a-583d-01f1-9cc5-2eea56d8c2a7@huawei.com
+> > The leak has nothing to do with join requests, v1_mp_capable_bind_no_cs.pkt
+> > works too when replacing the last ack mpcapable to v1 instead of v0.
+> > 
+> > unreferenced object 0xffff888109bba040 (size 2744):
+> >   comm "packetdrill", [..]
+> >   backtrace:
+> >     [..] sk_prot_alloc.isra.0+0x2b/0xc0
+> >     [..] sk_clone_lock+0x2f/0x740
+> >     [..] mptcp_sk_clone+0x33/0x1a0
+> >     [..] subflow_syn_recv_sock+0x2b1/0x690 [..]
+> > 
+> > Fixes: e16163b6e2b7 ("mptcp: refactor shutdown and close")
+> > Cc: Paolo Abeni <pabeni@redhat.com>
+> > Cc: Davide Caratti <dcaratti@redhat.com>
+> > Signed-off-by: Florian Westphal <fw@strlen.de>
+> > ---
+> >  net/mptcp/protocol.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+> > index 4b7794835fea..dc979571f561 100644
+> > --- a/net/mptcp/protocol.c
+> > +++ b/net/mptcp/protocol.c
+> > @@ -1710,6 +1710,7 @@ static void mptcp_timeout_timer(struct timer_list *t)
+> >  	struct sock *sk = from_timer(sk, t, sk_timer);
+> >  
+> >  	mptcp_schedule_work(sk);
+> > +	sock_put(sk);
+> >  }
+> >  
+> >  /* Find an idle subflow.  Return NULL if there is unacked data at tcp  
+> 
+> LGTM, thanks!
+> Acked-by: Paolo Abeni <pabeni@redhat.com>
 
-Applied, thanks everyone!
+Applied, thanks!
