@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 706B02C450A
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 17:27:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BC492C451E
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 17:27:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731392AbgKYQZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 11:25:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58048 "EHLO
+        id S1731800AbgKYQZ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 11:25:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730835AbgKYQZi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 11:25:38 -0500
-Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3C0C061A4F
-        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 08:25:37 -0800 (PST)
-Received: by mail-qv1-xf4a.google.com with SMTP id bn4so2902922qvb.9
-        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 08:25:37 -0800 (PST)
+        with ESMTP id S1731485AbgKYQZk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 11:25:40 -0500
+Received: from mail-ej1-x64a.google.com (mail-ej1-x64a.google.com [IPv6:2a00:1450:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D16FC061A53
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 08:25:40 -0800 (PST)
+Received: by mail-ej1-x64a.google.com with SMTP id g18so950575eje.1
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 08:25:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=sender:date:in-reply-to:message-id:mime-version:references:subject
          :from:to:cc;
-        bh=8MW/chtXMDHQuBOgmTsYPh05am1GlhIQ+niX5dI50VM=;
-        b=eFXlKdUKA/vjcLYDGy2YZypDYWN0dgy0Y6A4XyQsPrfX2awkMNy6GC8/qz5jXr/RbX
-         4kqY5wdBcTbby7EUyLssjlseLlDvWoKqNKmiG+aWlJuXxI2wl766v2coEgAXLXjUe8zX
-         hXiOK99HBJ5eZ86ZpKO3jfPctTPDEvs/A6A703q2lrIHr07lxW2FjZu/Vw7h8XC57xf7
-         ddI9JaRsPJv8Cbq7LGVe3VJr7VELWBfEIpHoHbtbKnGQNv/jWnykRYWNU0fIE8+hRc9e
-         jzby0pb9dy041+Iirv35fTN+OzEJUrfhUgAlJ1S9rOldcWisemLLaDBOuH8km1jO2DMj
-         vFxQ==
+        bh=ns+ALaUjBfFLyzcgXQh+NiEv1r+gQQ1waIohWFLeGG4=;
+        b=BVtZZrYK8UoweuFZ6q9VwAcATSuAzjAo90G0FD6sKkmM+oSnR/7UUi1aS/HtPqcWfv
+         xyjX43XNUWmXRA0cQAF/pegFrqQhniaDA0QWdf4XZe9m+rje7y6mPpCSF68r+fXrqpS/
+         jibZCQP/45ZmCH4GZHeBqybqm3KrgrAvYCEO2DaNyN0Sp3tlcEa3v6I6S+xLXcspbWob
+         EE3W3Eywnh8beo2ISlC4shjwdbc2GhXuXTtJB5VqcbBnDLrjDG6dDJ0+zcEGOVIZk/iN
+         c/tZzHO6FFY/AEKumD3urgQqeVBPPLsnSmuvcx3gR2a+y+0wK7iOIGWhNQtUpGkuPCpH
+         96aw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=8MW/chtXMDHQuBOgmTsYPh05am1GlhIQ+niX5dI50VM=;
-        b=ZgygkdpIn3f1RTQ1mVUNXSMIfM1y9iINeyjPPfrQ5rZDcquySH1xI8YUQ077bcg9jb
-         1nBpJC1o0yiJF+zUihUPUe7lAiPtydnPruE1IzJ2nyHfkKk1sSmheqXVGj4gRyIpSd3s
-         SwMjZIM9TXyILKXokFpJMNT4pTt845f9ZLLOSwPgj62v0qOMqpqJoiX4jDxIYEr8TlYp
-         R5mxqvjGCduY0mhar4KLmdc91xTOFUaVpREaRS9DTidQDUCNIQXJfQubk2r8NN3ndPMC
-         hGXYFOs4uNPUZY6vXFBZeG7AxGyktnO/N3ozZ4z5vfx7brLCIwLUBOW6xp/04L4JWj8Z
-         Flag==
-X-Gm-Message-State: AOAM533obeakMiGYUBi9/kjjTE0HSgLGvoazwpfAjvNmgommwGl3D94f
-        wKux6krwVMYuTfdaig85yAd64SnsFA==
-X-Google-Smtp-Source: ABdhPJyWrXROveE+lnqlHl3GFcXbQJSvpc7FKf4l7NOn3ehvhx7hWLp+tK0+s/HDN4S905d6iVLYWcLHOw==
+        bh=ns+ALaUjBfFLyzcgXQh+NiEv1r+gQQ1waIohWFLeGG4=;
+        b=keVnsxOY4HuDDnrnV1kMfQ1r98GhsmSSEhMg9C92LQmMQR/gaQTtTxVDJlt2jtTqWJ
+         bn1gbh2RMxduT0ObwdG9JZJjU2Bd0uZ/LeJWepWgM4TewJ/zl/fm+OGKOEjXPWCvGkGU
+         yu+CHlxaf2AL1W/Q5accXXEzqcbueeKT7Pz7CEEZDxIlnyI3ONvu45z3dxE9vaLCesMz
+         uLTfd5WSd2aJb9QbKeq77s5RAov2GmROMQuNupNtHWc+O0g7pBmsVP4E8ENZxmemOtiK
+         SLDJk+UuwnDKGbRMSKpMt8/DeHOhEy9S0R6EFlj/f6GIGzmw1kmlhNcptXUUGt+MeF0L
+         SY3Q==
+X-Gm-Message-State: AOAM531B2MG10+UJPOuvXHNDcfNCFzgDlWEodecgTDfCcIHHWcPifXuh
+        3jybxVjuyD9I4z/qTQh3lCrKmfH0HQ==
+X-Google-Smtp-Source: ABdhPJzl6SL1b2GM2ZIg1Swr5cqBB5jmFSLWXFilIZCgmO/PbKagnh7GePGNgx32CZOFvWwMmfGNCu3rPQ==
 Sender: "elver via sendgmr" <elver@elver.muc.corp.google.com>
 X-Received: from elver.muc.corp.google.com ([2a00:79e0:15:13:f693:9fff:fef4:2449])
- (user=elver job=sendgmr) by 2002:a0c:a802:: with SMTP id w2mr2490859qva.9.1606321536477;
- Wed, 25 Nov 2020 08:25:36 -0800 (PST)
-Date:   Wed, 25 Nov 2020 17:24:54 +0100
+ (user=elver job=sendgmr) by 2002:a17:906:d102:: with SMTP id
+ b2mr3829579ejz.52.1606321538854; Wed, 25 Nov 2020 08:25:38 -0800 (PST)
+Date:   Wed, 25 Nov 2020 17:24:55 +0100
 In-Reply-To: <20201125162455.1690502-1-elver@google.com>
-Message-Id: <20201125162455.1690502-3-elver@google.com>
+Message-Id: <20201125162455.1690502-4-elver@google.com>
 Mime-Version: 1.0
 References: <20201125162455.1690502-1-elver@google.com>
 X-Mailer: git-send-email 2.29.2.454.gaff20da3a2-goog
-Subject: [PATCH v6 2/3] net: store KCOV remote handle in sk_buff
+Subject: [PATCH v6 3/3] mac80211: add KCOV remote annotations to incoming
+ frame processing
 From:   Marco Elver <elver@google.com>
 To:     elver@google.com, davem@davemloft.net, kuba@kernel.org,
         johannes@sipsolutions.net
@@ -67,99 +68,74 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Aleksandr Nogikh <nogikh@google.com>
 
-Remote KCOV coverage collection enables coverage-guided fuzzing of the
-code that is not reachable during normal system call execution. It is
-especially helpful for fuzzing networking subsystems, where it is
-common to perform packet handling in separate work queues even for the
-packets that originated directly from the user space. More details can
-be found in Documentation/dev-tools/kcov.rst.
-
-Enable coverage-guided frame injection by adding a kcov_handle
-parameter to sk_buff structure. Initializate this field in __alloc_skb
-to kcov_common_handle() so that no socket buffer that was generated
-during a system call is missed. For sk_buffs that were allocated in an
-interrupt context, kcov_handle will be initialized to 0.
-
-Code that is of interest and that performs packet processing should be
-annotated with kcov_remote_start()/kcov_remote_stop().
-
-An alternative approach is to determine kcov_handle solely on the
-basis of the device/interface that received the specific socket
-buffer. However, in this case it would be impossible to distinguish
-between packets that originated from normal background network
-processes and those that were intentionally injected from the user
-space.
+Add KCOV remote annotations to ieee80211_iface_work() and
+ieee80211_rx_list(). This will enable coverage-guided fuzzing of
+mac80211 code that processes incoming 802.11 frames.
 
 Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
 Signed-off-by: Marco Elver <elver@google.com>
+Reviewed-by: Johannes Berg <johannes@sipsolutions.net>
 ---
-v6:
-* Revert usage of skb extensions in favour of directly storing the
-  kcov_handle in in sk_buff.  skb extensions were leading to a memory
-  leak as reported by Ido Schimmel:
-  https://lore.kernel.org/linux-wireless/20201121160941.GA485907@shredder.lan/
----
- include/linux/skbuff.h | 21 +++++++++++++++++++++
- net/core/skbuff.c      |  1 +
- 2 files changed, 22 insertions(+)
+ net/mac80211/iface.c |  2 ++
+ net/mac80211/rx.c    | 16 +++++++++-------
+ 2 files changed, 11 insertions(+), 7 deletions(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index a828cf99c521..5639f27e05ef 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -701,6 +701,7 @@ typedef unsigned char *sk_buff_data_t;
-  *	@transport_header: Transport layer header
-  *	@network_header: Network layer header
-  *	@mac_header: Link layer header
-+ *	@kcov_handle: KCOV remote handle for remote coverage collection
-  *	@tail: Tail pointer
-  *	@end: End pointer
-  *	@head: Head of buffer
-@@ -904,6 +905,10 @@ struct sk_buff {
- 	__u16			network_header;
- 	__u16			mac_header;
+diff --git a/net/mac80211/iface.c b/net/mac80211/iface.c
+index 1be775979132..56a1bcea2c1c 100644
+--- a/net/mac80211/iface.c
++++ b/net/mac80211/iface.c
+@@ -1356,6 +1356,7 @@ static void ieee80211_iface_work(struct work_struct *work)
+ 	while ((skb = skb_dequeue(&sdata->skb_queue))) {
+ 		struct ieee80211_mgmt *mgmt = (void *)skb->data;
  
-+#ifdef CONFIG_KCOV
-+	u64			kcov_handle;
-+#endif
-+
- 	/* private: */
- 	__u32			headers_end[0];
- 	/* public: */
-@@ -4605,5 +4610,21 @@ static inline void skb_reset_redirect(struct sk_buff *skb)
- #endif
- }
++		kcov_remote_start_common(skb_get_kcov_handle(skb));
+ 		if (ieee80211_is_action(mgmt->frame_control) &&
+ 		    mgmt->u.action.category == WLAN_CATEGORY_BACK) {
+ 			int len = skb->len;
+@@ -1465,6 +1466,7 @@ static void ieee80211_iface_work(struct work_struct *work)
+ 		}
  
-+static inline void skb_set_kcov_handle(struct sk_buff *skb, const u64 kcov_handle)
-+{
-+#ifdef CONFIG_KCOV
-+	skb->kcov_handle = kcov_handle;
-+#endif
-+}
-+
-+static inline u64 skb_get_kcov_handle(struct sk_buff *skb)
-+{
-+#ifdef CONFIG_KCOV
-+	return skb->kcov_handle;
-+#else
-+	return 0;
-+#endif
-+}
-+
- #endif	/* __KERNEL__ */
- #endif	/* _LINUX_SKBUFF_H */
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 1ba8f0163744..2f27635c3e97 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -233,6 +233,7 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
- 	skb->end = skb->tail + size;
- 	skb->mac_header = (typeof(skb->mac_header))~0U;
- 	skb->transport_header = (typeof(skb->transport_header))~0U;
-+	skb_set_kcov_handle(skb, kcov_common_handle());
+ 		kfree_skb(skb);
++		kcov_remote_stop();
+ 	}
  
- 	/* make sure we initialize shinfo sequentially */
- 	shinfo = skb_shinfo(skb);
+ 	/* then other type-dependent work */
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index 1e2e5a406d58..09d1c9fb8872 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -4742,6 +4742,8 @@ void ieee80211_rx_list(struct ieee80211_hw *hw, struct ieee80211_sta *pubsta,
+ 
+ 	status->rx_flags = 0;
+ 
++	kcov_remote_start_common(skb_get_kcov_handle(skb));
++
+ 	/*
+ 	 * Frames with failed FCS/PLCP checksum are not returned,
+ 	 * all other frames are returned without radiotap header
+@@ -4749,15 +4751,15 @@ void ieee80211_rx_list(struct ieee80211_hw *hw, struct ieee80211_sta *pubsta,
+ 	 * Also, frames with less than 16 bytes are dropped.
+ 	 */
+ 	skb = ieee80211_rx_monitor(local, skb, rate);
+-	if (!skb)
+-		return;
+-
+-	ieee80211_tpt_led_trig_rx(local,
+-			((struct ieee80211_hdr *)skb->data)->frame_control,
+-			skb->len);
++	if (skb) {
++		ieee80211_tpt_led_trig_rx(local,
++					  ((struct ieee80211_hdr *)skb->data)->frame_control,
++					  skb->len);
+ 
+-	__ieee80211_rx_handle_packet(hw, pubsta, skb, list);
++		__ieee80211_rx_handle_packet(hw, pubsta, skb, list);
++	}
+ 
++	kcov_remote_stop();
+ 	return;
+  drop:
+ 	kfree_skb(skb);
 -- 
 2.29.2.454.gaff20da3a2-goog
 
