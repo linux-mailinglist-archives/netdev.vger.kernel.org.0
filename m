@@ -2,92 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D9092C3A38
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 08:39:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A1C82C3A6A
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 08:59:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728084AbgKYHhe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 02:37:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52166 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725815AbgKYHhe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Nov 2020 02:37:34 -0500
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D95CB206D9;
-        Wed, 25 Nov 2020 07:37:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606289853;
-        bh=pfubf2Eam/M4OwhA361SdUjqP5Jpv5yEhn0hQW/qEXM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=t1ilZtQl84DIdUr/Ndzh2aOEoxPNsNOyqAs7YwWNxFOl4LZqMrxDzTxTLVGwV/ARZ
-         5aMRl7wAttYA+TX0jAvo+IgqvlbpsuyYEN2a6trloHLJYgVsExhLbnlcjOQSpjKNr0
-         0tlBSE7OqbHnbe4fyyRNmWOx2CXBLCX3nLHFn8kY=
-Received: by mail-ed1-f42.google.com with SMTP id q16so1456589edv.10;
-        Tue, 24 Nov 2020 23:37:32 -0800 (PST)
-X-Gm-Message-State: AOAM530Apxe1P79mtr70UXq5kx/+vDBYha0N+VvJAlDzjKGv7uT8izpj
-        dlnReu7YE3x7Ezi2qc765D++eNAOJj2VcllCnUo=
-X-Google-Smtp-Source: ABdhPJwuArKsAqTsBCAJDIDSansjrfy5FPVUgH9SvGi2jdhaUnKWI21oZXoXdA3HGRZkIUlEqhKaZTPWEalobRnY4l8=
-X-Received: by 2002:a05:6402:2218:: with SMTP id cq24mr2305279edb.246.1606289851348;
- Tue, 24 Nov 2020 23:37:31 -0800 (PST)
+        id S1726654AbgKYH6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 02:58:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35654 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725616AbgKYH6j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 02:58:39 -0500
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 693E1C0613D4;
+        Tue, 24 Nov 2020 23:58:39 -0800 (PST)
+Received: by mail-pg1-x541.google.com with SMTP id m9so1715831pgb.4;
+        Tue, 24 Nov 2020 23:58:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=DtIe8G2KMacN//ZG4sPWF0YSzSjWO1RKSMmBk0516Zw=;
+        b=eBh/tjOGY8/AEwE6++RhULLNGa/LH/FoE9SrfWa3coO6zClhPluVwsNr/FfD98l3ie
+         eQsPRBglePTeeB2bkj8wkoMXflNIgxAkqnT0mlu+IW9PDoAIoukjJ8bXyQ3U+m5cNN3q
+         Z9eHynsm1Gfay6dbRx5NfEIWrIHgEyBvEbCOcXmiokfiBb6S4rQuNvgGcKaQoJ2WUaW3
+         5bx9JbC3OUuyOO+k2VeS0/Uq/Q6C2pAPPOClAHsTEiLSdfuaWGig8CRLx8WM/DYMJ0zf
+         4WHQXx7wp+VA//VfUx7uB16xh3laDqQcw5Zffn4hMw7vmf1TO7XRnMXBm8Ib2j5yvW9X
+         ErBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=DtIe8G2KMacN//ZG4sPWF0YSzSjWO1RKSMmBk0516Zw=;
+        b=mE+kA+ObN8DWuJCktO2p0oR4R/dP7yTsvpoq5y9A/1UE2WOn9SSsSxxNrqPBwNV1BL
+         EDfjFMIHDkZV3r/XOKIiVxE/0N9DSPInjoPWVcr9z1k8Qz9afRmkPzmxEnnRMuK7XKdu
+         +LD7HWooU0KXtG9KjGigI05jF6Vq9FMIqPTwk0c01f9wymyypiLpJYWEmc/tW7iVZFf4
+         bygMiKXLWKcJk4SJAF+CqtK5OMYl8H+uX7uV4qebutqUKz0yVdcqM/MtCR6vJ3k4GYfe
+         6VXHhLlLx67wj9GOccad0LB34fkxXAAOeH+7sZ+et1MC6d1M4xGntAruvCXPQmiutb8A
+         riYA==
+X-Gm-Message-State: AOAM531qex0LSxtpH74z2GKtrp4oz99Am5VN2PxeoI1p04xnlS1ZuZkk
+        iOEAdCyGpDPduUQ3BRKZFDaSfLLvTNApEiZJaDQ=
+X-Google-Smtp-Source: ABdhPJyi1245gyBuB5CYVo4ZzoP9q9pQpRlkiQIWTbzuglIHucNjUoeC2TfjyL/n+QEldYMc1Y7wNgtcJDZSJZlJwfs=
+X-Received: by 2002:a17:90a:ea05:: with SMTP id w5mr2701550pjy.204.1606291118966;
+ Tue, 24 Nov 2020 23:58:38 -0800 (PST)
 MIME-Version: 1.0
-References: <CGME20201123075526epcms2p59410a8ba942f8942f53a593d9df764d0@epcms2p5>
- <20201123075526epcms2p59410a8ba942f8942f53a593d9df764d0@epcms2p5>
- <20201123080123.GA5656@kozik-lap> <CACwDmQBh77pqivk=bBv3SJ14HLucY42jZyEaKAX+n=yS3TSqFw@mail.gmail.com>
- <20201124114151.GA32873@kozik-lap> <CACwDmQDWtfa8tXkG8W+EQxjdYJ6rkVgN9PjOVQdK8CwUXAURMg@mail.gmail.com>
-In-Reply-To: <CACwDmQDWtfa8tXkG8W+EQxjdYJ6rkVgN9PjOVQdK8CwUXAURMg@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-Date:   Wed, 25 Nov 2020 08:37:19 +0100
-X-Gmail-Original-Message-ID: <CAJKOXPc1sBvuZACRM_4fjiSJECg7eRqWB+c2aQPDE1iPWHbdmA@mail.gmail.com>
-Message-ID: <CAJKOXPc1sBvuZACRM_4fjiSJECg7eRqWB+c2aQPDE1iPWHbdmA@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] dt-bindings: net: nfc: s3fwrn5: Support a
- UART interface
-To:     Bongsu Jeon <bongsu.jeon2@gmail.com>
-Cc:     Bongsu Jeon <bongsu.jeon@samsung.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux-nfc@lists.01.org" <linux-nfc@lists.01.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20201119083024.119566-1-bjorn.topel@gmail.com> <20201119083024.119566-6-bjorn.topel@gmail.com>
+In-Reply-To: <20201119083024.119566-6-bjorn.topel@gmail.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Wed, 25 Nov 2020 08:58:27 +0100
+Message-ID: <CAJ8uoz0Dobvq1WJBcyjfEn-e9dHys2DUCGL9rgdr-z8a57MWWw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 05/10] xsk: add busy-poll support for {recv,send}msg()
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Zhang, Qi Z" <qi.z.zhang@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 25 Nov 2020 at 04:08, Bongsu Jeon <bongsu.jeon2@gmail.com> wrote:
+On Thu, Nov 19, 2020 at 9:33 AM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.co=
+m> wrote:
 >
-> On 11/24/20, krzk@kernel.org <krzk@kernel.org> wrote:
-> > On Tue, Nov 24, 2020 at 08:39:40PM +0900, Bongsu Jeon wrote:
-> >> On Mon, Nov 23, 2020 at 5:02 PM krzk@kernel.org <krzk@kernel.org> wrote:
-> >> >
-> >> > On Mon, Nov 23, 2020 at 04:55:26PM +0900, Bongsu Jeon wrote:
-> >  > >  examples:
-> >> > >    - |
-> >> > >      #include <dt-bindings/gpio/gpio.h>
-> >> > > @@ -71,3 +81,17 @@ examples:
-> >> > >              wake-gpios = <&gpj0 2 GPIO_ACTIVE_HIGH>;
-> >> > >          };
-> >> > >      };
-> >> > > +  # UART example on Raspberry Pi
-> >> > > +  - |
-> >> > > +    &uart0 {
-> >> > > +        status = "okay";
-> >> > > +
-> >> > > +        s3fwrn82_uart {
-> >> >
-> >> > Just "bluetooth" to follow Devicetree specification.
-> >> Sorry. I don't understand this comment.
-> >> Could you explain it?
-> >> Does it mean i need to refer to the net/broadcom-bluetooth.txt?
-> >
-> > The node name should be "bluetooth", not "s3fwrn82_uart", because of
-> > Devicetree naming convention - node names should represent generic class
-> > of a device.
-> >
-> Actually, RN82 is the nfc device.
-> So, is it okay to use the name as nfc instead of Bluetooth?
+> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+>
+> Wire-up XDP socket busy-poll support for recvmsg() and sendmsg(). If
+> the XDP socket prefers busy-polling, make sure that no wakeup/IPI is
+> performed.
+>
+> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> ---
+>  net/xdp/xsk.c | 24 ++++++++++++++++++++++++
+>  1 file changed, 24 insertions(+)
 
-Oops, of course, nfc, I don't know why the Bluetooth stuck in my mind.
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Best regards,
-Krzysztof
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index bf0f5c34af6c..ecc4579e41ee 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -23,6 +23,7 @@
+>  #include <linux/netdevice.h>
+>  #include <linux/rculist.h>
+>  #include <net/xdp_sock_drv.h>
+> +#include <net/busy_poll.h>
+>  #include <net/xdp.h>
+>
+>  #include "xsk_queue.h"
+> @@ -517,6 +518,17 @@ static int __xsk_sendmsg(struct sock *sk)
+>         return xs->zc ? xsk_zc_xmit(xs) : xsk_generic_xmit(sk);
+>  }
+>
+> +static bool xsk_no_wakeup(struct sock *sk)
+> +{
+> +#ifdef CONFIG_NET_RX_BUSY_POLL
+> +       /* Prefer busy-polling, skip the wakeup. */
+> +       return READ_ONCE(sk->sk_prefer_busy_poll) && READ_ONCE(sk->sk_ll_=
+usec) &&
+> +               READ_ONCE(sk->sk_napi_id) >=3D MIN_NAPI_ID;
+> +#else
+> +       return false;
+> +#endif
+> +}
+> +
+>  static int xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t tot=
+al_len)
+>  {
+>         bool need_wait =3D !(m->msg_flags & MSG_DONTWAIT);
+> @@ -529,6 +541,12 @@ static int xsk_sendmsg(struct socket *sock, struct m=
+sghdr *m, size_t total_len)
+>         if (unlikely(need_wait))
+>                 return -EOPNOTSUPP;
+>
+> +       if (sk_can_busy_loop(sk))
+> +               sk_busy_loop(sk, 1); /* only support non-blocking sockets=
+ */
+> +
+> +       if (xsk_no_wakeup(sk))
+> +               return 0;
+> +
+>         pool =3D xs->pool;
+>         if (pool->cached_need_wakeup & XDP_WAKEUP_TX)
+>                 return __xsk_sendmsg(sk);
+> @@ -550,6 +568,12 @@ static int xsk_recvmsg(struct socket *sock, struct m=
+sghdr *m, size_t len, int fl
+>         if (unlikely(need_wait))
+>                 return -EOPNOTSUPP;
+>
+> +       if (sk_can_busy_loop(sk))
+> +               sk_busy_loop(sk, 1); /* only support non-blocking sockets=
+ */
+> +
+> +       if (xsk_no_wakeup(sk))
+> +               return 0;
+> +
+>         if (xs->pool->cached_need_wakeup & XDP_WAKEUP_RX && xs->zc)
+>                 return xsk_wakeup(xs, XDP_WAKEUP_RX);
+>         return 0;
+> --
+> 2.27.0
+>
