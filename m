@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 601702C3808
+	by mail.lfdr.de (Postfix) with ESMTP id CD2592C3809
 	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 05:21:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727866AbgKYEVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 23:21:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58906 "EHLO
+        id S1727885AbgKYEVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 23:21:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726330AbgKYEU7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 23:20:59 -0500
+        with ESMTP id S1726330AbgKYEVE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 23:21:04 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4AEEC0613D4
-        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 20:20:59 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC868C0613D4
+        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 20:21:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=kbl3usflLvVsbvwBmk1GORUzslG18jOOUBMowWbhqN4=; b=Z2VmU+vfFDV1llfhMayh7kx4aA
-        Ju6TFvfuIk+cGca7vbbiUTpla5UzOxvaZyhs1mRqGRGrYVRFGyg1pfzZvnWfR1omROMOs/o501snX
-        XLRQUz9n3HZtl9uEaFaQtKMT4ARu21KEjmqtPLfFw0FOKviszRrt95U5cu/GTRgrS9qZo6fesdD2j
-        LPvCXnZHgSVxPMqKRKcRmYmr2pFR8m/grnJZLdz3yDgu1WkY6OqwnAfWbEfIROMgIw9BZlItOH+JO
-        TeMCSUs8f6ydWVxqNTOKgS8k9+ZKnTQLvLS07kKgmJSuHlysJWlxAP3g67QebXYhZfJAw0IAaLoGP
-        gL2Wel/g==;
+        bh=QipUbZNRebB5kqxTpNzmNIjt/HkwOH4MpjpSByLWjHM=; b=t6ep8kIxePIRlMfnBb69p87Phx
+        i1exmnhajk+N8p4vpc9qO9+IDaxjzN5QjRf4P5FVvTAroV9cuDPvJIlMmHYcAtjWvVLG7jlDF7/wi
+        0hg5BEait8Xtl6+0Lk3kSDaNV7c7pUUSmuC4+LJee/HWICoCgNWbB9KMT4wg0+0HC0R7bskFSUCf0
+        8kQRy95mNMFtBPt3kb+QiP1j5oWaQvIzULxnQf9hirNs7U6Zo2qxoGZsSF/nphUh/XmEjVKp3NqeJ
+        UtNp3R6PSpnkGVdDlNtF8mNHi4J3gdNnBsqYYRI83yXOcHzh9hnXQWgINKj1MOsYcJWHJcDseaGXo
+        KJacgjJg==;
 Received: from [2601:1c0:6280:3f0::cc1f] (helo=smtpauth.infradead.org)
         by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1khmIX-0000SB-2T; Wed, 25 Nov 2020 04:20:53 +0000
+        id 1khmIZ-0000SB-OK; Wed, 25 Nov 2020 04:20:57 +0000
 From:   Randy Dunlap <rdunlap@infradead.org>
 Cc:     Randy Dunlap <rdunlap@infradead.org>,
         Jon Maloy <jmaloy@redhat.com>,
@@ -34,9 +34,9 @@ Cc:     Randy Dunlap <rdunlap@infradead.org>,
         tipc-discussion@lists.sourceforge.net,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 08/10 net-next] net/tipc: fix socket.c kernel-doc
-Date:   Tue, 24 Nov 2020 20:20:25 -0800
-Message-Id: <20201125042026.25374-10-rdunlap@infradead.org>
+Subject: [PATCH 02/10 net-next] net/tipc: fix various kernel-doc warnings
+Date:   Tue, 24 Nov 2020 20:20:26 -0800
+Message-Id: <20201125042026.25374-11-rdunlap@infradead.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201125042026.25374-1-rdunlap@infradead.org>
 References: <20201125042026.25374-1-rdunlap@infradead.org>
@@ -47,40 +47,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix socket.c kernel-doc warnings in preparation for adding to the
-networking docbook.
+kernel-doc and Sphinx fixes to eliminate lots of warnings
+in preparation for adding to the networking docbook.
 
-Also, for rcvbuf_limit(), use bullet notation so that the lines do
-not run together.
+../net/tipc/crypto.c:57: warning: cannot understand function prototype: 'enum '
+../net/tipc/crypto.c:69: warning: cannot understand function prototype: 'enum '
+../net/tipc/crypto.c:130: warning: Function parameter or member 'tfm' not described in 'tipc_tfm'
+../net/tipc/crypto.c:130: warning: Function parameter or member 'list' not described in 'tipc_tfm'
+../net/tipc/crypto.c:172: warning: Function parameter or member 'stat' not described in 'tipc_crypto_stats'
+../net/tipc/crypto.c:232: warning: Function parameter or member 'flags' not described in 'tipc_crypto'
+../net/tipc/crypto.c:329: warning: Function parameter or member 'ukey' not described in 'tipc_aead_key_validate'
+../net/tipc/crypto.c:329: warning: Function parameter or member 'info' not described in 'tipc_aead_key_validate'
+../net/tipc/crypto.c:482: warning: Function parameter or member 'aead' not described in 'tipc_aead_tfm_next'
+../net/tipc/trace.c:43: warning: cannot understand function prototype: 'unsigned long sysctl_tipc_sk_filter[5] __read_mostly = '
 
-../net/tipc/socket.c:130: warning: Function parameter or member 'cong_links' not described in 'tipc_sock'
-../net/tipc/socket.c:130: warning: Function parameter or member 'probe_unacked' not described in 'tipc_sock'
-../net/tipc/socket.c:130: warning: Function parameter or member 'snd_win' not described in 'tipc_sock'
-../net/tipc/socket.c:130: warning: Function parameter or member 'peer_caps' not described in 'tipc_sock'
-../net/tipc/socket.c:130: warning: Function parameter or member 'rcv_win' not described in 'tipc_sock'
-../net/tipc/socket.c:130: warning: Function parameter or member 'group' not described in 'tipc_sock'
-../net/tipc/socket.c:130: warning: Function parameter or member 'oneway' not described in 'tipc_sock'
-../net/tipc/socket.c:130: warning: Function parameter or member 'nagle_start' not described in 'tipc_sock'
-../net/tipc/socket.c:130: warning: Function parameter or member 'snd_backlog' not described in 'tipc_sock'
-../net/tipc/socket.c:130: warning: Function parameter or member 'msg_acc' not described in 'tipc_sock'
-../net/tipc/socket.c:130: warning: Function parameter or member 'pkt_cnt' not described in 'tipc_sock'
-../net/tipc/socket.c:130: warning: Function parameter or member 'expect_ack' not described in 'tipc_sock'
-../net/tipc/socket.c:130: warning: Function parameter or member 'nodelay' not described in 'tipc_sock'
-../net/tipc/socket.c:130: warning: Function parameter or member 'group_is_open' not described in 'tipc_sock'
-../net/tipc/socket.c:267: warning: Function parameter or member 'sk' not described in 'tsk_advance_rx_queue'
-../net/tipc/socket.c:295: warning: Function parameter or member 'sk' not described in 'tsk_rej_rx_queue'
-../net/tipc/socket.c:295: warning: Function parameter or member 'error' not described in 'tsk_rej_rx_queue'
-../net/tipc/socket.c:894: warning: Function parameter or member 'tsk' not described in 'tipc_send_group_msg'
-../net/tipc/socket.c:1187: warning: Function parameter or member 'net' not described in 'tipc_sk_mcast_rcv'
-../net/tipc/socket.c:1323: warning: Function parameter or member 'inputq' not described in 'tipc_sk_conn_proto_rcv'
-../net/tipc/socket.c:1323: warning: Function parameter or member 'xmitq' not described in 'tipc_sk_conn_proto_rcv'
-../net/tipc/socket.c:1885: warning: Function parameter or member 'sock' not described in 'tipc_recvmsg'
-../net/tipc/socket.c:1993: warning: Function parameter or member 'sock' not described in 'tipc_recvstream'
-../net/tipc/socket.c:2313: warning: Function parameter or member 'xmitq' not described in 'tipc_sk_filter_rcv'
-../net/tipc/socket.c:2404: warning: Function parameter or member 'xmitq' not described in 'tipc_sk_enqueue'
-../net/tipc/socket.c:2456: warning: Function parameter or member 'net' not described in 'tipc_sk_rcv'
-../net/tipc/socket.c:2693: warning: Function parameter or member 'kern' not described in 'tipc_accept'
-../net/tipc/socket.c:3816: warning: Excess function parameter 'sysctl_tipc_sk_filter' description in 'tipc_sk_filtering'
+Documentation/networking/tipc:57: ../net/tipc/msg.c:584: WARNING: Unexpected indentation.
+Documentation/networking/tipc:63: ../net/tipc/name_table.c:536: WARNING: Unexpected indentation.
+Documentation/networking/tipc:63: ../net/tipc/name_table.c:537: WARNING: Block quote ends without a blank line; unexpected unindent.
+Documentation/networking/tipc:78: ../net/tipc/socket.c:3809: WARNING: Unexpected indentation.
+Documentation/networking/tipc:78: ../net/tipc/socket.c:3807: WARNING: Inline strong start-string without end-string.
+Documentation/networking/tipc:72: ../net/tipc/node.c:904: WARNING: Unexpected indentation.
+Documentation/networking/tipc:39: ../net/tipc/crypto.c:97: WARNING: Block quote ends without a blank line; unexpected unindent.
+Documentation/networking/tipc:39: ../net/tipc/crypto.c:98: WARNING: Block quote ends without a blank line; unexpected unindent.
+Documentation/networking/tipc:39: ../net/tipc/crypto.c:141: WARNING: Inline strong start-string without end-string.
+
+../net/tipc/discover.c:82: warning: Function parameter or member 'skb' not described in 'tipc_disc_init_msg'
+
+../net/tipc/msg.c:69: warning: Function parameter or member 'gfp' not described in 'tipc_buf_acquire'
+../net/tipc/msg.c:382: warning: Function parameter or member 'offset' not described in 'tipc_msg_build'
+../net/tipc/msg.c:708: warning: Function parameter or member 'net' not described in 'tipc_msg_lookup_dest'
+
+../net/tipc/subscr.c:65: warning: Function parameter or member 'seq' not described in 'tipc_sub_check_overlap'
+../net/tipc/subscr.c:65: warning: Function parameter or member 'found_lower' not described in 'tipc_sub_check_overlap'
+../net/tipc/subscr.c:65: warning: Function parameter or member 'found_upper' not described in 'tipc_sub_check_overlap'
+
+../net/tipc/udp_media.c:75: warning: Function parameter or member 'proto' not described in 'udp_media_addr'
+../net/tipc/udp_media.c:75: warning: Function parameter or member 'port' not described in 'udp_media_addr'
+../net/tipc/udp_media.c:75: warning: Function parameter or member 'ipv4' not described in 'udp_media_addr'
+../net/tipc/udp_media.c:75: warning: Function parameter or member 'ipv6' not described in 'udp_media_addr'
+../net/tipc/udp_media.c:98: warning: Function parameter or member 'rcast' not described in 'udp_bearer'
 
 Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
 Cc: Jon Maloy <jmaloy@redhat.com>
@@ -90,142 +95,254 @@ Cc: tipc-discussion@lists.sourceforge.net
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
 ---
- net/tipc/socket.c |   31 +++++++++++++++++++++++++++++--
- 1 file changed, 29 insertions(+), 2 deletions(-)
+ net/tipc/crypto.c     |   17 ++++++++++++-----
+ net/tipc/discover.c   |    1 +
+ net/tipc/msg.c        |   10 +++++++---
+ net/tipc/name_table.c |    4 ++--
+ net/tipc/node.c       |    5 +++--
+ net/tipc/socket.c     |    4 ++--
+ net/tipc/subscr.c     |    6 ++++--
+ net/tipc/trace.c      |    2 +-
+ net/tipc/udp_media.c  |    8 +++++++-
+ 9 files changed, 39 insertions(+), 18 deletions(-)
 
---- linux-next-20201102.orig/net/tipc/socket.c
-+++ linux-next-20201102/net/tipc/socket.c
-@@ -79,19 +79,32 @@ struct sockaddr_pair {
-  * @maxnagle: maximum size of msg which can be subject to nagle
-  * @portid: unique port identity in TIPC socket hash table
-  * @phdr: preformatted message header used when sending messages
-- * #cong_links: list of congested links
-+ * @cong_links: list of congested links
-  * @publications: list of publications for port
-  * @blocking_link: address of the congested link we are currently sleeping on
-  * @pub_count: total # of publications port has made during its lifetime
-  * @conn_timeout: the time we can wait for an unresponded setup request
-+ * @probe_unacked: probe has not received ack yet
-  * @dupl_rcvcnt: number of bytes counted twice, in both backlog and rcv queue
-  * @cong_link_cnt: number of congested links
-  * @snt_unacked: # messages sent by socket, and not yet acked by peer
-+ * @snd_win: send window size
-+ * @peer_caps: peer capabilities mask
-  * @rcv_unacked: # messages read by user, but not yet acked back to peer
-+ * @rcv_win: receive window size
-  * @peer: 'connected' peer for dgram/rdm
-  * @node: hash table node
-  * @mc_method: cookie for use between socket and broadcast layer
-  * @rcu: rcu struct for tipc_sock
-+ * @group: TIPC communications group
-+ * @oneway: message count in one direction (FIXME)
-+ * @nagle_start: current nagle value
-+ * @snd_backlog: send backlog count
-+ * @msg_acc: messages accepted; used in managing backlog and nagle
-+ * @pkt_cnt: TIPC socket packet count
-+ * @expect_ack: whether this TIPC socket is expecting an ack
-+ * @nodelay: setsockopt() TIPC_NODELAY setting
-+ * @group_is_open: TIPC socket group is fully open (FIXME)
+--- linux-next-20201124.orig/net/tipc/crypto.c
++++ linux-next-20201124/net/tipc/crypto.c
+@@ -1,5 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
+-/**
++/*
+  * net/tipc/crypto.c: TIPC crypto for key handling & packet en/decryption
+  *
+  * Copyright (c) 2019, Ericsson AB
+@@ -51,7 +51,7 @@
+ 
+ #define TIPC_REKEYING_INTV_DEF	(60 * 24) /* default: 1 day */
+ 
+-/**
++/*
+  * TIPC Key ids
   */
- struct tipc_sock {
- 	struct sock sk;
-@@ -260,6 +273,7 @@ static void tsk_set_nagle(struct tipc_so
+ enum {
+@@ -63,7 +63,7 @@ enum {
+ 	KEY_MAX = KEY_3,
+ };
+ 
+-/**
++/*
+  * TIPC Crypto statistics
+  */
+ enum {
+@@ -90,7 +90,7 @@ int sysctl_tipc_max_tfms __read_mostly =
+ /* Key exchange switch, default: on */
+ int sysctl_tipc_key_exchange_enabled __read_mostly = 1;
+ 
+-/**
++/*
+  * struct tipc_key - TIPC keys' status indicator
+  *
+  *         7     6     5     4     3     2     1     0
+@@ -123,6 +123,8 @@ struct tipc_key {
  
  /**
-  * tsk_advance_rx_queue - discard first buffer in socket receive queue
-+ * @sk: network socket
-  *
-  * Caller must hold socket lock
+  * struct tipc_tfm - TIPC TFM structure to form a list of TFMs
++ * @tfm: cipher handle/key
++ * @list: linked list of TFMs
   */
-@@ -288,6 +302,8 @@ static void tipc_sk_respond(struct sock
+ struct tipc_tfm {
+ 	struct crypto_aead *tfm;
+@@ -138,7 +140,7 @@ struct tipc_tfm {
+  * @salt: the key's SALT value
+  * @authsize: authentication tag size (max = 16)
+  * @mode: crypto mode is applied to the key
+- * @hint[]: a hint for user key
++ * @hint: a hint for user key
+  * @rcu: struct rcu_head
+  * @key: the aead key
+  * @gen: the key's generation
+@@ -166,6 +168,7 @@ struct tipc_aead {
  
  /**
-  * tsk_rej_rx_queue - reject all buffers in socket receive queue
-+ * @sk: network socket
-+ * @error: response error code
-  *
-  * Caller must hold socket lock
+  * struct tipc_crypto_stats - TIPC Crypto statistics
++ * @stat: array of crypto statistics
   */
-@@ -882,6 +898,7 @@ static int tipc_sendmcast(struct  socket
- /**
-  * tipc_send_group_msg - send a message to a member in the group
-  * @net: network namespace
-+ * @tsk: tipc socket
-  * @m: message to send
-  * @mb: group member
-  * @dnode: destination node
-@@ -1177,6 +1194,7 @@ static int tipc_send_group_mcast(struct
+ struct tipc_crypto_stats {
+ 	unsigned int stat[MAX_STATS];
+@@ -194,6 +197,7 @@ struct tipc_crypto_stats {
+  * @key_master: flag indicates if master key exists
+  * @legacy_user: flag indicates if a peer joins w/o master key (for bwd comp.)
+  * @nokey: no key indication
++ * @flags: combined flags field
+  * @lock: tipc_key lock
+  */
+ struct tipc_crypto {
+@@ -324,6 +328,8 @@ do {									\
  
  /**
-  * tipc_sk_mcast_rcv - Deliver multicast messages to all destination sockets
-+ * @net: the associated network namespace
-  * @arrvq: queue with arriving messages, to be cloned after destination lookup
-  * @inputq: queue with cloned messages, delivered to socket after dest lookup
-  *
-@@ -1316,6 +1334,8 @@ static void tipc_sk_push_backlog(struct
-  * tipc_sk_conn_proto_rcv - receive a connection mng protocol message
-  * @tsk: receiving socket
-  * @skb: pointer to message buffer.
-+ * @inputq: buffer list containing the buffers
-+ * @xmitq: output message area
+  * tipc_aead_key_validate - Validate a AEAD user key
++ * @ukey: pointer to user key data
++ * @info: netlink info pointer
   */
- static void tipc_sk_conn_proto_rcv(struct tipc_sock *tsk, struct sk_buff *skb,
- 				   struct sk_buff_head *inputq,
-@@ -1871,6 +1891,7 @@ static int tipc_wait_for_rcvmsg(struct s
+ int tipc_aead_key_validate(struct tipc_aead_key *ukey, struct genl_info *info)
+ {
+@@ -477,6 +483,7 @@ static void tipc_aead_users_set(struct t
  
  /**
-  * tipc_recvmsg - receive packet-oriented message
-+ * @sock: network socket
-  * @m: descriptor for message info
-  * @buflen: length of user buffer area
-  * @flags: receive flags
-@@ -1979,6 +2000,7 @@ exit:
+  * tipc_aead_tfm_next - Move TFM entry to the next one in list and return it
++ * @aead: the AEAD key pointer
+  */
+ static struct crypto_aead *tipc_aead_tfm_next(struct tipc_aead *aead)
+ {
+--- linux-next-20201124.orig/net/tipc/trace.c
++++ linux-next-20201124/net/tipc/trace.c
+@@ -36,7 +36,7 @@
+ #define CREATE_TRACE_POINTS
+ #include "trace.h"
+ 
+-/**
++/*
+  * socket tuples for filtering in socket traces:
+  * (portid, sock type, name type, name lower, name upper)
+  */
+--- linux-next-20201124.orig/net/tipc/msg.c
++++ linux-next-20201124/net/tipc/msg.c
+@@ -58,11 +58,13 @@ static unsigned int align(unsigned int i
+ /**
+  * tipc_buf_acquire - creates a TIPC message buffer
+  * @size: message size (including TIPC header)
++ * @gfp: memory allocation flags
+  *
+  * Returns a new buffer with data pointers set to the specified size.
+  *
+- * NOTE: Headroom is reserved to allow prepending of a data link header.
+- *       There may also be unrequested tailroom present at the buffer's end.
++ * NOTE:
++ * Headroom is reserved to allow prepending of a data link header.
++ * There may also be unrequested tailroom present at the buffer's end.
+  */
+ struct sk_buff *tipc_buf_acquire(u32 size, gfp_t gfp)
+ {
+@@ -367,6 +369,7 @@ error:
+  * tipc_msg_build - create buffer chain containing specified header and data
+  * @mhdr: Message header, to be prepended to data
+  * @m: User message
++ * @offset: buffer offset for fragmented messages (FIXME)
+  * @dsz: Total length of user data
+  * @pktmax: Max packet size that can be used
+  * @list: Buffer or chain of buffers to be returned to caller
+@@ -580,7 +583,7 @@ bundle:
+  *  @skb: buffer to be extracted from.
+  *  @iskb: extracted inner buffer, to be returned
+  *  @pos: position in outer message of msg to be extracted.
+- *        Returns position of next msg
++ *  Returns position of next msg.
+  *  Consumes outer buffer when last packet extracted
+  *  Returns true when there is an extracted buffer, otherwise false
+  */
+@@ -698,6 +701,7 @@ bool tipc_msg_skb_clone(struct sk_buff_h
  
  /**
-  * tipc_recvstream - receive stream-oriented data
-+ * @sock: network socket
-  * @m: descriptor for message info
-  * @buflen: total size of user buffer area
-  * @flags: receive flags
-@@ -2301,6 +2323,7 @@ static unsigned int rcvbuf_limit(struct
-  * tipc_sk_filter_rcv - validate incoming message
-  * @sk: socket
-  * @skb: pointer to message.
-+ * @xmitq: output message area (FIXME)
+  * tipc_msg_lookup_dest(): try to find new destination for named message
++ * @net: pointer to associated network namespace
+  * @skb: the buffer containing the message.
+  * @err: error code to be used by caller if lookup fails
+  * Does not consume buffer
+--- linux-next-20201124.orig/net/tipc/name_table.c
++++ linux-next-20201124/net/tipc/name_table.c
+@@ -533,9 +533,9 @@ exit:
   *
-  * Enqueues message on receive queue if acceptable; optionally handles
-  * disconnect indication for a connected socket.
-@@ -2396,6 +2419,7 @@ static int tipc_sk_backlog_rcv(struct so
-  * @inputq: list of incoming buffers with potentially different destinations
-  * @sk: socket where the buffers should be enqueued
-  * @dport: port number for the socket
-+ * @xmitq: output queue
+  * On exit:
+  * - if translation is deferred to another node, leave 'dnode' unchanged and
+- *   return 0
++ * return 0
+  * - if translation is attempted and succeeds, set 'dnode' to the publishing
+- *   node and return the published (non-zero) port number
++ * node and return the published (non-zero) port number
+  * - if translation is attempted and fails, set 'dnode' to 0 and return 0
   *
-  * Caller must hold socket lock
-  */
-@@ -2448,6 +2472,7 @@ static void tipc_sk_enqueue(struct sk_bu
- 
- /**
-  * tipc_sk_rcv - handle a chain of incoming buffers
-+ * @net: the associated network namespace
-  * @inputq: buffer list containing the buffers
-  * Consumes all buffers in list until inputq is empty
-  * Note: may be called in multiple threads referring to the same queue
-@@ -2685,6 +2710,7 @@ static int tipc_wait_for_accept(struct s
-  * @sock: listening socket
-  * @new_sock: new socket that is to be connected
-  * @flags: file-related flags associated with socket
-+ * @kern: caused by kernel or by userspace?
-  *
-  * Returns 0 on success, errno otherwise
-  */
-@@ -3805,7 +3831,8 @@ int tipc_nl_publ_dump(struct sk_buff *sk
+  * Note that for legacy users (node configured with Z.C.N address format) the
+--- linux-next-20201124.orig/net/tipc/socket.c
++++ linux-next-20201124/net/tipc/socket.c
+@@ -3805,8 +3805,8 @@ int tipc_nl_publ_dump(struct sk_buff *sk
  /**
   * tipc_sk_filtering - check if a socket should be traced
   * @sk: the socket to be examined
-- * @sysctl_tipc_sk_filter: the socket tuple for filtering:
-+ *
-+ * @sysctl_tipc_sk_filter is used as the socket tuple for filtering:
-  * (portid, sock type, name type, name lower, name upper)
+- * @sysctl_tipc_sk_filter[]: the socket tuple for filtering,
+- *  (portid, sock type, name type, name lower, name upper)
++ * @sysctl_tipc_sk_filter: the socket tuple for filtering:
++ * (portid, sock type, name type, name lower, name upper)
   *
   * Returns true if the socket meets the socket tuple data
+  * (value 0 = 'any') or when there is no tuple set (all = 0),
+--- linux-next-20201124.orig/net/tipc/node.c
++++ linux-next-20201124/net/tipc/node.c
+@@ -900,10 +900,11 @@ static void tipc_node_link_up(struct tip
+  *
+  * This function is only called in a very special situation where link
+  * failover can be already started on peer node but not on this node.
+- * This can happen when e.g.
++ * This can happen when e.g.::
++ *
+  *	1. Both links <1A-2A>, <1B-2B> down
+  *	2. Link endpoint 2A up, but 1A still down (e.g. due to network
+- *	   disturbance, wrong session, etc.)
++ *	disturbance, wrong session, etc.)
+  *	3. Link <1B-2B> up
+  *	4. Link endpoint 2A down (e.g. due to link tolerance timeout)
+  *	5. Node 2 starts failover onto link <1B-2B>
+--- linux-next-20201124.orig/net/tipc/discover.c
++++ linux-next-20201124/net/tipc/discover.c
+@@ -74,6 +74,7 @@ struct tipc_discoverer {
+ /**
+  * tipc_disc_init_msg - initialize a link setup message
+  * @net: the applicable net namespace
++ * @skb: buffer containing message
+  * @mtyp: message type (request or response)
+  * @b: ptr to bearer issuing message
+  */
+--- linux-next-20201124.orig/net/tipc/subscr.c
++++ linux-next-20201124/net/tipc/subscr.c
+@@ -55,8 +55,10 @@ static void tipc_sub_send_event(struct t
+ }
+ 
+ /**
+- * tipc_sub_check_overlap - test for subscription overlap with the
+- * given values
++ * tipc_sub_check_overlap - test for subscription overlap with the given values
++ * @seq: tipc_name_seq to check
++ * @found_lower: lower value to test
++ * @found_upper: upper value to test
+  *
+  * Returns 1 if there is overlap, otherwise 0.
+  */
+--- linux-next-20201124.orig/net/tipc/udp_media.c
++++ linux-next-20201124/net/tipc/udp_media.c
+@@ -64,6 +64,11 @@
+  *
+  * This is the bearer level originating address used in neighbor discovery
+  * messages, and all fields should be in network byte order
++ *
++ * @proto: Ethernet protocol in use
++ * @port: port being used
++ * @ipv4: IPv4 address of neighbor
++ * @ipv6: IPv6 address of neighbor
+  */
+ struct udp_media_addr {
+ 	__be16	proto;
+@@ -88,6 +93,7 @@ struct udp_replicast {
+  * @ubsock:	bearer associated socket
+  * @ifindex:	local address scope
+  * @work:	used to schedule deferred work on a bearer
++ * @rcast:	associated udp_replicast container
+  */
+ struct udp_bearer {
+ 	struct tipc_bearer __rcu *bearer;
+@@ -772,7 +778,7 @@ static int tipc_udp_enable(struct net *n
+ 	if (err)
+ 		goto free;
+ 
+-	/**
++	/*
+ 	 * The bcast media address port is used for all peers and the ip
+ 	 * is used if it's a multicast address.
+ 	 */
