@@ -2,146 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 382E42C3FDB
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 13:23:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E9F42C3FFA
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 13:25:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728161AbgKYMW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 07:22:59 -0500
-Received: from www62.your-server.de ([213.133.104.62]:56340 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726898AbgKYMW7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 07:22:59 -0500
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1khtoz-0001NT-Gp; Wed, 25 Nov 2020 13:22:53 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1khtoz-0009Ew-Ag; Wed, 25 Nov 2020 13:22:53 +0100
-Subject: Re: [PATCH][V2] libbpf: add support for canceling cached_cons advance
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     Li RongQing <lirongqing@baidu.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>
-References: <1606202474-8119-1-git-send-email-lirongqing@baidu.com>
- <CAJ8uoz0WNm6no8NRehgUH5RiGgvjJkKeD-Yyoah8xJerpLhgdg@mail.gmail.com>
- <fe9eeaa5-d40a-9be4-a96b-cdd80095da47@iogearbox.net>
- <CAJ8uoz1JdmHc9nwa4cY20S-GN62RAJUEPGY4LcmdTM4FjuGTow@mail.gmail.com>
- <aa4cdc17-1e54-7782-2b64-14d7a3ac892e@iogearbox.net>
- <CAJ8uoz2F3F_w8o1uBzOdxqy5Z1pcg4g4kqG22FnxrQ4+pY5UKg@mail.gmail.com>
- <542d88a0-71c0-6d1f-e949-b375d0ac8369@iogearbox.net>
- <CAJ8uoz36wS+cQSXxRm_GVyH7O1vhzASmC-LUoLcS0dW7SsqcNw@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <43f92e67-b454-b297-4a1d-d61c011a3b3f@iogearbox.net>
-Date:   Wed, 25 Nov 2020 13:22:52 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1729260AbgKYMYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 07:24:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48656 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729232AbgKYMYl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 07:24:41 -0500
+Received: from mail-vs1-xe44.google.com (mail-vs1-xe44.google.com [IPv6:2607:f8b0:4864:20::e44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B0F9C08C5F2
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 04:24:41 -0800 (PST)
+Received: by mail-vs1-xe44.google.com with SMTP id y78so1100014vsy.6
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 04:24:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9IH0l2L/ELs04A0W/6GC4nhC0e+RvRGWJ1bAzD1+dFc=;
+        b=GyrkIL7rJc/Wrkz9wtYqXZYvGBry6qXFkQono0nmrBFDlUCiGmbX9ByD1wUhih87ZW
+         XCd/8etF0h65aGuVNHVvGVnSoIRV2cIFxWeuMsMEKDZ+SIKsK6eM3KIHPaY2Au+pxfCB
+         jFmSmO0a8jtSnIjbAi/709gkMW9hnqxggrhUNIGI/2GrlejcLn7tyz9MFlSEpE31y19Z
+         9ARaZhNBbaKZzII6ioDoEFmbbi01XI+4/fF65wWR3SGfZuCMoV2cgGUJ8Osa8sFeqdbz
+         KLllcyBsC3gtRPDbq4Yc+z3inKaZT7D05cYTb7CBHNDdR/afLH0A7E5JHrBWilMAefn4
+         uS6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9IH0l2L/ELs04A0W/6GC4nhC0e+RvRGWJ1bAzD1+dFc=;
+        b=SuVFjYQjzFyMcmKIyeyNLv/IxSYzqKHK6fYrRgLzd3xPDLUdewf+Oi2chmeq30Qe8b
+         zlGUqDcWYVhkEmEvN43KbP/vRTFR4tjVtLgDhk5j2l2j5C/21f1XRVABvhPtrj2waZln
+         l6whe/+Xedy1j6xRVNNtUcLsI27uDeBCZiUfVeIux4CDaVr00cwe9VSXNwtOfZJGz5Uk
+         uCHjITv9rfqtLNX9Z6D2BTMvlp+NHSgeFddzFv979poH1L9jZcSumSZFUQknTcZ2sXeV
+         vajlFsPt3zkUSjvJU0llwRzKG2mQwvWwW3jpa2+B044f8MuVZTlZ5lbWr0mkcDEkYpOr
+         qeXw==
+X-Gm-Message-State: AOAM530YHoohYkztYSTZktojrZcpg658BXdhxq7N0LCLEM/vqsgsybwx
+        8cuzzgyEtHyycaykGPOQCPW2IjYmT7dkUviu/Tf3pv3wFam1UQ==
+X-Google-Smtp-Source: ABdhPJySo35UzNwHodlreVMfJuWPwHO1z+zkcbFfSYU3Avf+sN4n16LJPBb97SBockWyJEKx3Xs8q1wCvzejZmwrmAM=
+X-Received: by 2002:a62:7905:0:b029:197:f300:5a2a with SMTP id
+ u5-20020a6279050000b0290197f3005a2amr2898775pfc.30.1606307078380; Wed, 25 Nov
+ 2020 04:24:38 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <CAJ8uoz36wS+cQSXxRm_GVyH7O1vhzASmC-LUoLcS0dW7SsqcNw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25998/Tue Nov 24 14:16:50 2020)
+References: <202011201129.B13FDB3C@keescook> <20201120115142.292999b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <202011220816.8B6591A@keescook> <9b57fd4914b46f38d54087d75e072d6e947cb56d.camel@HansenPartnership.com>
+ <ca071decb87cc7e905411423c05a48f9fd2f58d7.camel@perches.com>
+ <0147972a72bc13f3629de8a32dee6f1f308994b5.camel@HansenPartnership.com>
+ <d8d1e9add08cdd4158405e77762d4946037208f8.camel@perches.com>
+ <dbd2cb703ed9eefa7dde9281ea26ab0f7acc8afe.camel@HansenPartnership.com>
+ <20201123130348.GA3119@embeddedor> <8f5611bb015e044fa1c0a48147293923c2d904e4.camel@HansenPartnership.com>
+ <202011241327.BB28F12F6@keescook> <a841536fe65bb33f1c72ce2455a6eb47a0107565.camel@HansenPartnership.com>
+In-Reply-To: <a841536fe65bb33f1c72ce2455a6eb47a0107565.camel@HansenPartnership.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Wed, 25 Nov 2020 04:24:27 -0800
+Message-ID: <CAKwvOdkGBn7nuWTAqrORMeN1G+w3YwBfCqqaRD2nwvoAXKi=Aw@mail.gmail.com>
+Subject: Re: [Intel-wired-lan] [PATCH 000/141] Fix fall-through warnings for Clang
+To:     James Bottomley <James.Bottomley@hansenpartnership.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Joe Perches <joe@perches.com>,
+        Jakub Kicinski <kuba@kernel.org>, alsa-devel@alsa-project.org,
+        linux-atm-general@lists.sourceforge.net,
+        reiserfs-devel@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        linux-fbdev@vger.kernel.org,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        linux-ide@vger.kernel.org, dm-devel@redhat.com,
+        keyrings@vger.kernel.org, linux-mtd@lists.infradead.org,
+        GR-everest-linux-l2@marvell.com, wcn36xx@lists.infradead.org,
+        samba-technical@lists.samba.org, linux-i3c@lists.infradead.org,
+        linux1394-devel@lists.sourceforge.net,
+        linux-afs@lists.infradead.org,
+        usb-storage@lists.one-eyed-alien.net, drbd-dev@lists.linbit.com,
+        devel@driverdev.osuosl.org, linux-cifs@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-scsi@vger.kernel.org,
+        linux-rdma@vger.kernel.org, oss-drivers@netronome.com,
+        bridge@lists.linux-foundation.org,
+        linux-security-module@vger.kernel.org,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        linux-stm32@st-md-mailman.stormreply.com, cluster-devel@redhat.com,
+        linux-acpi@vger.kernel.org, coreteam@netfilter.org,
+        intel-wired-lan@lists.osuosl.org, linux-input@vger.kernel.org,
+        Miguel Ojeda <ojeda@kernel.org>,
+        tipc-discussion@lists.sourceforge.net, linux-ext4@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        selinux@vger.kernel.org,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        intel-gfx@lists.freedesktop.org, linux-geode@lists.infradead.org,
+        linux-can@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-gpio@vger.kernel.org, op-tee@lists.trustedfirmware.org,
+        linux-mediatek@lists.infradead.org, xen-devel@lists.xenproject.org,
+        nouveau@lists.freedesktop.org, linux-hams@vger.kernel.org,
+        ceph-devel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-hwmon@vger.kernel.org,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        linux-nfs@vger.kernel.org, GR-Linux-NIC-Dev@marvell.com,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-decnet-user@lists.sourceforge.net, linux-mmc@vger.kernel.org,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        linux-sctp@vger.kernel.org, linux-usb@vger.kernel.org,
+        netfilter-devel@vger.kernel.org,
+        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
+        <linux-crypto@vger.kernel.org>, patches@opensource.cirrus.com,
+        linux-integrity@vger.kernel.org, target-devel@vger.kernel.org,
+        linux-hardening@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Greg KH <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/25/20 11:09 AM, Magnus Karlsson wrote:
-> On Wed, Nov 25, 2020 at 11:07 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->>
->> On 11/25/20 10:13 AM, Magnus Karlsson wrote:
->>> On Wed, Nov 25, 2020 at 10:02 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->>>> On 11/25/20 9:30 AM, Magnus Karlsson wrote:
->>>>> On Tue, Nov 24, 2020 at 10:58 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->>>>>> On 11/24/20 9:12 AM, Magnus Karlsson wrote:
->>>>>>> On Tue, Nov 24, 2020 at 8:33 AM Li RongQing <lirongqing@baidu.com> wrote:
->>>>>>>>
->>>>>>>> Add a new function for returning descriptors the user received
->>>>>>>> after an xsk_ring_cons__peek call. After the application has
->>>>>>>> gotten a number of descriptors from a ring, it might not be able
->>>>>>>> to or want to process them all for various reasons. Therefore,
->>>>>>>> it would be useful to have an interface for returning or
->>>>>>>> cancelling a number of them so that they are returned to the ring.
->>>>>>>>
->>>>>>>> This patch adds a new function called xsk_ring_cons__cancel that
->>>>>>>> performs this operation on nb descriptors counted from the end of
->>>>>>>> the batch of descriptors that was received through the peek call.
->>>>>>>>
->>>>>>>> Signed-off-by: Li RongQing <lirongqing@baidu.com>
->>>>>>>> [ Magnus Karlsson: rewrote changelog ]
->>>>>>>> Cc: Magnus Karlsson <magnus.karlsson@intel.com>
->>>>>>>> ---
->>>>>>>> diff with v1: fix the building, and rewrote changelog
->>>>>>>>
->>>>>>>>      tools/lib/bpf/xsk.h | 6 ++++++
->>>>>>>>      1 file changed, 6 insertions(+)
->>>>>>>>
->>>>>>>> diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
->>>>>>>> index 1069c46364ff..1719a327e5f9 100644
->>>>>>>> --- a/tools/lib/bpf/xsk.h
->>>>>>>> +++ b/tools/lib/bpf/xsk.h
->>>>>>>> @@ -153,6 +153,12 @@ static inline size_t xsk_ring_cons__peek(struct xsk_ring_cons *cons,
->>>>>>>>             return entries;
->>>>>>>>      }
->>>>>>>>
->>>>>>>> +static inline void xsk_ring_cons__cancel(struct xsk_ring_cons *cons,
->>>>>>>> +                                        size_t nb)
->>>>>>>> +{
->>>>>>>> +       cons->cached_cons -= nb;
->>>>>>>> +}
->>>>>>>> +
->>>>>>>>      static inline void xsk_ring_cons__release(struct xsk_ring_cons *cons, size_t nb)
->>>>>>>>      {
->>>>>>>>             /* Make sure data has been read before indicating we are done
->>>>>>>> --
->>>>>>>> 2.17.3
->>>>>>>
->>>>>>> Thank you RongQing.
->>>>>>>
->>>>>>> Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
->>>>>>
->>>>>> @Magnus: shouldn't the xsk_ring_cons__cancel() nb type be '__u32 nb' instead?
->>>>>
->>>>> All the other interfaces have size_t as the type for "nb". It is kind
->>>>> of weird as a __u32 would have made more sense, but cannot actually
->>>>> remember why I chose a size_t two years ago. But for consistency with
->>>>> the other interfaces, let us keep it a size_t for now. I will do some
->>>>> research around the reason.
->>>>
->>>> It's actually a bit of a mix currently which is what got me confused:
->>>>
->>>> static inline __u32 xsk_prod_nb_free(struct xsk_ring_prod *r, __u32 nb)
->>>> static inline __u32 xsk_cons_nb_avail(struct xsk_ring_cons *r, __u32 nb)
->>>> static inline size_t xsk_ring_prod__reserve(struct xsk_ring_prod *prod, size_t nb, __u32 *idx)
->>>> static inline void xsk_ring_prod__submit(struct xsk_ring_prod *prod, size_t nb)
->>>> static inline size_t xsk_ring_cons__peek(struct xsk_ring_cons *cons, size_t nb, __u32 *idx)
->>>> static inline void xsk_ring_cons__release(struct xsk_ring_cons *cons, size_t nb)
->>>>
->>>> (I can take it in as-is, but would be nice to clean it up a bit to avoid confusion.)
->>>
->>> Hmm, that is confusing indeed. Well, the best choice would be __u32
->>> everywhere since the ring pointers themselves are __u32. But I am
->>> somewhat afraid of changing an API. Can we guarantee that a change
->>> from size_t to __u32 will not break some user's compilation? Another
->>> option would be to clean this up next year when we will very likely
->>> produce a 1.0 version of this API and at that point we can change some
->>> things. What do you think would be the best approach?
->>
->> Given they're all inlines, imho, risk should be fairly low to switch all to __u32.
->> I would probably go and verify first with DPDK as main user of the lib and/or write
->> some test cases to see if compiler spills any new warnings and the like, but if not
->> the case then we should do it for bpf-next so this has plenty of exposure in the
->> meantime. Any nb large than u32 max is a bug in any case.
-> 
-> Sounds good. Will do and get back to you.
+On Tue, Nov 24, 2020 at 11:05 PM James Bottomley
+<James.Bottomley@hansenpartnership.com> wrote:
+>
+> On Tue, 2020-11-24 at 13:32 -0800, Kees Cook wrote:
+> > We already enable -Wimplicit-fallthrough globally, so that's not the
+> > discussion. The issue is that Clang is (correctly) even more strict
+> > than GCC for this, so these are the remaining ones to fix for full
+> > Clang coverage too.
+> >
+> > People have spent more time debating this already than it would have
+> > taken to apply the patches. :)
+>
+> You mean we've already spent 90% of the effort to come this far so we
+> might as well go the remaining 10% because then at least we get some
+> return? It's certainly a clinching argument in defence procurement ...
 
-Great, thanks, I took in the current patch to bpf-next in that case and the rest can
-be followed-up as discussed.
+So developers and distributions using Clang can't have
+-Wimplicit-fallthrough enabled because GCC is less strict (which has
+been shown in this thread to lead to bugs)?  We'd like to have nice
+things too, you know.
 
+I even agree that most of the churn comes from
+
+case 0:
+  ++x;
+default:
+  break;
+
+which I have a patch for: https://reviews.llvm.org/D91895.  I agree
+that can never lead to bugs.  But that's not the sole case of this
+series, just most of them.
+
+Though, note how the reviewer (C++ spec editor and clang front end
+owner) in https://reviews.llvm.org/D91895 even asks in that review how
+maybe a new flag would be more appropriate for a watered
+down/stylistic variant of the existing behavior.  And if the current
+wording of Documentation/process/deprecated.rst around "fallthrough"
+is a straightforward rule of thumb, I kind of agree with him.
+
+>
+> > This is about robustness and language wrangling. It's a big code-
+> > base, and this is the price of our managing technical debt for
+> > permanent robustness improvements. (The numbers I ran from Gustavo's
+> > earlier patches were that about 10% of the places adjusted were
+> > identified as legitimate bugs being fixed. This final series may be
+> > lower, but there are still bugs being found from it -- we need to
+> > finish this and shut the door on it for good.)
+>
+> I got my six patches by analyzing the lwn.net report of the fixes that
+> was cited which had 21 of which 50% didn't actually change the emitted
+> code, and 25% didn't have a user visible effect.
+>
+> But the broader point I'm making is just because the compiler people
+> come up with a shiny new warning doesn't necessarily mean the problem
+
+That's not what this is though; you're attacking a strawman.  I'd
+encourage you to bring that up when that actually occurs, unlike this
+case since it's actively hindering getting -Wimplicit-fallthrough
+enabled for Clang.  This is not a shiny new warning; it's already on
+for GCC and has existed in both compilers for multiple releases.
+
+And I'll also note that warnings are warnings and not errors because
+they cannot be proven to be bugs in 100% of cases, but they have led
+to bugs in the past.  They require a human to review their intent and
+remove ambiguities.  If 97% of cases would end in a break ("Expert C
+Programming: Deep C Secrets" - Peter van der Linden), then it starts
+to look to me like a language defect; certainly an incorrectly chosen
+default.  But the compiler can't know those 3% were intentional,
+unless you're explicit for those exceptional cases.
+
+> it's detecting is one that causes us actual problems in the code base.
+> I'd really be happier if we had a theory about what classes of CVE or
+> bug we could eliminate before we embrace the next new warning.
+
+We don't generally file CVEs and waiting for them to occur might be
+too reactive, but I agree that pointing to some additional
+documentation in commit messages about how a warning could lead to a
+bug would make it clearer to reviewers why being able to enable it
+treewide, even if there's no bug in their particular subsystem, is in
+the general interest of the commons.
+
+On Mon, Nov 23, 2020 at 7:58 AM James Bottomley
+<James.Bottomley@hansenpartnership.com> wrote:
+>
+> We're also complaining about the inability to recruit maintainers:
+>
+> https://www.theregister.com/2020/06/30/hard_to_find_linux_maintainers_says_torvalds/
+>
+> And burn out:
+>
+> http://antirez.com/news/129
+>
+> The whole crux of your argument seems to be maintainers' time isn't
+> important so we should accept all trivial patches ... I'm pushing back
+> on that assumption in two places, firstly the valulessness of the time
+> and secondly that all trivial patches are valuable.
+
+It's critical to the longevity of any open source project that there
+are not single points of failure.  If someone is not expendable or
+replaceable (or claims to be) then that's a risk to the project and a
+bottleneck.  Not having a replacement in training or some form of
+redundancy is short sighted.
+
+If trivial patches are adding too much to your workload, consider
+training a co-maintainer or asking for help from one of your reviewers
+whom you trust.  I don't doubt it's hard to find maintainers, but
+existing maintainers should go out of their way to entrust
+co-maintainers especially when they find their workload becomes too
+high.  And reviewing/picking up trivial patches is probably a great
+way to get started.  If we allow too much knowledge of any one
+subsystem to collect with one maintainer, what happens when that
+maintainer leaves the community (which, given a finite lifespan, is an
+inevitability)?
+-- 
 Thanks,
-Daniel
+~Nick Desaulniers
