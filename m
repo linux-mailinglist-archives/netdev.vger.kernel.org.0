@@ -2,116 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38DDD2C3E8F
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 11:57:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CCFA2C3E9B
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 12:00:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726903AbgKYK4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 05:56:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34922 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726654AbgKYK4D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 05:56:03 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15638C0613D4
-        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 02:56:03 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1khsSt-0004DY-GD; Wed, 25 Nov 2020 11:55:59 +0100
-Subject: Re: [PATCH] net: stmmac: fix incorrect merge of patch upstream
-To:     Antonio Borneo <antonio.borneo@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     stable@vger.kernel.org,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <42960ede-9355-1277-9a6f-4eac3c22365c@pengutronix.de>
- <20201124223729.886992-1-antonio.borneo@st.com>
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-Message-ID: <3ba1c4b3-18a0-5448-2188-aa6e2802c57e@pengutronix.de>
-Date:   Wed, 25 Nov 2020 11:55:52 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.1
+        id S1726898AbgKYK6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 05:58:02 -0500
+Received: from jabberwock.ucw.cz ([46.255.230.98]:37066 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725836AbgKYK6B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 05:58:01 -0500
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id C89711C0B7D; Wed, 25 Nov 2020 11:57:58 +0100 (CET)
+Date:   Wed, 25 Nov 2020 11:57:57 +0100
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Marek Behun <marek.behun@nic.cz>
+Cc:     netdev <netdev@vger.kernel.org>, linux-leds@vger.kernel.org,
+        David Miller <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: Request for Comment: LED device naming for netdev LEDs
+Message-ID: <20201125105757.GF25562@amd>
+References: <20200927004025.33c6cfce@nic.cz>
+ <20200927025258.38585d5e@nic.cz>
 MIME-Version: 1.0
-In-Reply-To: <20201124223729.886992-1-antonio.borneo@st.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="GV0iVqYguTV4Q9ER"
+Content-Disposition: inline
+In-Reply-To: <20200927025258.38585d5e@nic.cz>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-On 24.11.20 23:37, Antonio Borneo wrote:
-> Commit 757926247836 ("net: stmmac: add flexible PPS to dwmac
-> 4.10a") was intended to modify the struct dwmac410_ops, but it got
-> somehow badly merged and modified the struct dwmac4_ops.
-> 
-> Revert the modification in struct dwmac4_ops and re-apply it
-> properly in struct dwmac410_ops.
-> 
-> Fixes: 757926247836 ("net: stmmac: add flexible PPS to dwmac 4.10a")
-> Cc: stable@vger.kernel.org # v5.6+
+--GV0iVqYguTV4Q9ER
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I don't think extension of dwmac410_ops should be backported to stable.
-It's a new feature and should go into net-next like any other.
-The fix that could be backported is reverting the unintentional change
-of dwmac4.
+Hi!
 
-Cheers,
-Ahmad
+> > What I am wondering is how should we select a name for the device part
+> > of the LED for network devices, when network namespaces are enabled.
+> >=20
+> > a) We could just use the interface name (eth0:yellow:activity). The
+> >    problem is what should happen when the interface is renamed, or
+> >    moved to another network namespace.
+> >    Pavel doesn't want to complicate the LED subsystem with LED device
+> >    renaming, nor, I think, with namespace mechanism. I, for my part, am
+> >    not opposed to LED renaming, but do not know what should happen when
+> >    the interface is moved to another namespace.
+> >=20
+> > b) We could use the device name, as in struct device *. But these names
+> >    are often too long and may contain characters that we do not want in
+> >    LED name (':', or '/', for example).
+> >
+> > c) We could create a new naming mechanism, something like
+> >    device_pretty_name(dev), which some classes may implement somehow.
+> >=20
+> > What are your ideas about this problem?
+>=20
+> BTW option b) and c) can be usable if we create a new utility, ledtool,
+> to report infromation about LEDs and configure LEDs.
+>=20
+> In that case it does not matter if the LED is named
+>   ethernet-adapter0:red:activity
+> or
+>   ethernet-phy0:red:activity
 
-> Signed-off-by: Antonio Borneo <antonio.borneo@st.com>
-> Reported-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
-> ---
-> To: Alexandre Torgue <alexandre.torgue@st.com>
-> To: Jose Abreu <joabreu@synopsys.com>
-> To: "David S. Miller" <davem@davemloft.net>
-> To: Jakub Kicinski <kuba@kernel.org>
-> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-> Cc: netdev@vger.kernel.org
-> Cc: linux-stm32@st-md-mailman.stormreply.com
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-kernel@vger.kernel.org
-> In-Reply-To: <42960ede-9355-1277-9a6f-4eac3c22365c@pengutronix.de>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-> index 002791b77356..ced6d76a0d85 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-> @@ -1171,7 +1171,6 @@ const struct stmmac_ops dwmac4_ops = {
->  	.pcs_get_adv_lp = dwmac4_get_adv_lp,
->  	.debug = dwmac4_debug,
->  	.set_filter = dwmac4_set_filter,
-> -	.flex_pps_config = dwmac5_flex_pps_config,
->  	.set_mac_loopback = dwmac4_set_mac_loopback,
->  	.update_vlan_hash = dwmac4_update_vlan_hash,
->  	.sarc_configure = dwmac4_sarc_configure,
-> @@ -1213,6 +1212,7 @@ const struct stmmac_ops dwmac410_ops = {
->  	.pcs_get_adv_lp = dwmac4_get_adv_lp,
->  	.debug = dwmac4_debug,
->  	.set_filter = dwmac4_set_filter,
-> +	.flex_pps_config = dwmac5_flex_pps_config,
->  	.set_mac_loopback = dwmac4_set_mac_loopback,
->  	.update_vlan_hash = dwmac4_update_vlan_hash,
->  	.sarc_configure = dwmac4_sarc_configure,
-> 
-> base-commit: 9bd2702d292cb7b565b09e949d30288ab7a26d51
-> 
+Or simply ethernet0:... or ether0:... I'd avoid using eth0 to make it
+clear that this is different namespace from ethX.
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Best regards,
+								Pavel
+--=20
+http://www.livejournal.com/~pavelmachek
+
+--GV0iVqYguTV4Q9ER
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAl++OLUACgkQMOfwapXb+vJRwACeOs8CHFEX3LHMVsuVyZMRrle9
+HnoAoIsTx4vpQDFVGqMs7hFYKO7T8Sp4
+=p60e
+-----END PGP SIGNATURE-----
+
+--GV0iVqYguTV4Q9ER--
