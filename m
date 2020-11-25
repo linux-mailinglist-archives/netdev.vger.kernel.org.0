@@ -2,100 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C7642C4058
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 13:38:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CBCC2C4095
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 13:52:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726654AbgKYMiT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 07:38:19 -0500
-Received: from jabberwock.ucw.cz ([46.255.230.98]:44114 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726009AbgKYMiT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 07:38:19 -0500
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 75AE61C0B7D; Wed, 25 Nov 2020 13:38:17 +0100 (CET)
-Date:   Wed, 25 Nov 2020 13:38:17 +0100
-From:   Pavel Machek <pavel@ucw.cz>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-leds@vger.kernel.org,
-        Dan Murphy <dmurphy@ti.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Ben Whitten <ben.whitten@gmail.com>
-Subject: Re: [PATCH RFC leds + net-next 7/7] net: phy: marvell: support LEDs
- connected on Marvell PHYs
-Message-ID: <20201125123817.GI29328@amd>
-References: <20201030114435.20169-1-kabel@kernel.org>
- <20201030114435.20169-8-kabel@kernel.org>
+        id S1728990AbgKYMvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 07:51:47 -0500
+Received: from spam.lhost.no ([5.158.192.84]:45958 "EHLO mx03.lhost.no"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728902AbgKYMvr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Nov 2020 07:51:47 -0500
+X-ASG-Debug-ID: 1606308702-0ffc0558218067f0001-BZBGGp
+Received: from s103.paneda.no ([5.158.193.76]) by mx03.lhost.no with ESMTP id Zkrydus2MPyFH3QS (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NO); Wed, 25 Nov 2020 13:51:42 +0100 (CET)
+X-Barracuda-Envelope-From: thomas.karlsson@paneda.se
+X-Barracuda-Effective-Source-IP: UNKNOWN[5.158.193.76]
+X-Barracuda-Apparent-Source-IP: 5.158.193.76
+X-ASG-Whitelist: Client
+Received: from [192.168.10.188] (83.140.179.234) by s103.paneda.no
+ (10.16.55.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id 15.1.1979.3; Wed, 25
+ Nov 2020 13:51:38 +0100
+Subject: Re: Hardcoded multicast queue length in macvlan.c driver causes poor
+ multicast receive performance
+To:     Jakub Kicinski <kuba@kernel.org>
+X-ASG-Orig-Subj: Re: Hardcoded multicast queue length in macvlan.c driver causes poor
+ multicast receive performance
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <485531aec7e243659ee4e3bb7fa2186d@paneda.se>
+ <147b704ac1d5426fbaa8617289dad648@paneda.se>
+ <20201123143052.1176407d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Thomas Karlsson <thomas.karlsson@paneda.se>
+Message-ID: <b93a6031-f1b4-729d-784b-b1f465d27071@paneda.se>
+Date:   Wed, 25 Nov 2020 13:51:41 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="svExV93C05KqedWb"
-Content-Disposition: inline
-In-Reply-To: <20201030114435.20169-8-kabel@kernel.org>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20201123143052.1176407d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [83.140.179.234]
+X-ClientProxiedBy: s103.paneda.no (10.16.55.12) To s103.paneda.no
+ (10.16.55.12)
+X-Barracuda-Connect: UNKNOWN[5.158.193.76]
+X-Barracuda-Start-Time: 1606308702
+X-Barracuda-Encrypted: ECDHE-RSA-AES256-SHA384
+X-Barracuda-URL: https://mx03.lhost.no:443/cgi-mod/mark.cgi
+X-Virus-Scanned: by bsmtpd at lhost.no
+X-Barracuda-Scan-Msg-Size: 2736
+X-Barracuda-BRTS-Status: 1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---svExV93C05KqedWb
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
+Den 2020-11-23 kl. 23:30, skrev Jakub Kicinski:
+> On Mon, 23 Nov 2020 14:22:31 +0000 Thomas Karlsson wrote:
+>> Hello,
+>>
+>> There is a special queue handling in macvlan.c for broadcast and
+>> multicast packages that was arbitrarily set to 1000 in commit
+>> 07d92d5cc977a7fe1e683e1d4a6f723f7f2778cb . While this is probably
+>> sufficient for most uses cases it is insufficient to support high
+>> packet rates. I currently have a setup with 144 000 multicast packets
+>> incoming per second (144 different live audio RTP streams) and suffer
+>> very frequent packet loss. With unicast this is not an issue and I
+>> can in addition to the 144kpps load the macvlan interface with
+>> another 450mbit/s using iperf.
+>>
+>> In order to verify that the queue is the problem I edited the define
+>> to 100000 and recompiled the kernel module. After replacing it with
+>> rmmod/insmod I get 0 packet loss (measured over 2 days where I before
+>> had losses every other second or so) and can also load an additional
+>> 450 mbit/s multicast traffic using iperf without losses. So basically
+>> no change in performance between unicast/multicast when it comes to
+>> lost packets on my machine.
+>>
+>> I think It would be best if this queue length was configurable
+>> somehow. Either an option when creating the macvlan (like how
+>> bridge/passthrough/etc are set) or at least when loading the module
+>> (for instance by using a config in /etc/modprobe.d). One size does
+>> not fit all in this situation.
+> 
+> The former please. You can add a netlink attribute, should be
+> reasonably straightforward. The other macvlan attrs are defined
+> under "MACVLAN section" in if_link.h.
+> 
 
-> +/* FIXME: Blinking rate is shared by all LEDs on a PHY. Should we check =
-whether
-> + * another LED is currently blinking with incompatible rate? It would be=
- cleaner
-> + * if we in this case failed to offload blinking this LED.
-> + * But consider this situation:
-> + *   1. user sets LED[1] to blink with period 500ms for some reason. Thi=
-s would
-> + *      start blinking LED[1] with perion 670ms here
+I did some work towards a patch using the first option,
+by adding a netlink attribute in if_link.h as suggested.
+I agree that this was reasonably straightforward, until userspace.
 
-period.
+In order to use/test my new parameter I need to update iproute2 package
+as far as I understand. But then since I use the macvlan with docker
+I also need to update the docker macvlan driver to send this new
+option to the kernel module.
 
-> + *   2. user sets netdev trigger to LED[0] to blink on activity, default=
- there
-> + *      is 100ms period, which would translate here to 84ms. This is
-> + *      incompatible with the already blinking LED, so we fail to offloa=
-d to HW,
-> + *      and netdev trigger does software offloading instead.
-> + *   3. user unsets blinking od LED[1], so now we theoretically can offl=
-oad
-> + *      netdev trigger to LED[0], but we don't know about it, and so it =
-is left
-> + *      in SW triggering until user writes the settings again
-> + * This could be solved by the netdev trigger periodically trying to off=
-load to
-> + * HW if we reported that it is theoretically possible (by returning -EA=
-GAIN
-> + * instead of -EOPNOTSUPP, for example). Do we want to do this?
-> + */
+For this reason I would like to know if you would consider
+merging a patch using the module_param(...) variant instead?
 
-I believe we should check & fallback to software if there's already
-incompatible rate in use. No need to periodically re-try to activate
-the offload.
-
-Best regards,
-								Pavel
-
---=20
-http://www.livejournal.com/~pavelmachek
-
---svExV93C05KqedWb
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAl++UDgACgkQMOfwapXb+vLU+QCeIvaVls1D/9bwcT1TryOay98A
-4OcAoJb1JLKf2Wm28zSTI1HPjyhcwf2K
-=17Ul
------END PGP SIGNATURE-----
-
---svExV93C05KqedWb--
+I would argue that this still makes the situation better
+and resolves the packet-loss issue, although not necessarily
+in an optimal way. However, The upside of being able to specify the
+parameter on a per macvlan interface level instead of globally is not
+that big in this situation. Normally you don't use that much
+multicast anyway so it's a parameter that only will be touched by
+a very small user base that can understand and handle the implications
+of such a global setting.
