@@ -2,236 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E9F42C3FFA
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 13:25:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BC182C4042
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 13:34:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729260AbgKYMYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 07:24:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48656 "EHLO
+        id S1729347AbgKYMeC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 07:34:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729232AbgKYMYl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 07:24:41 -0500
-Received: from mail-vs1-xe44.google.com (mail-vs1-xe44.google.com [IPv6:2607:f8b0:4864:20::e44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B0F9C08C5F2
-        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 04:24:41 -0800 (PST)
-Received: by mail-vs1-xe44.google.com with SMTP id y78so1100014vsy.6
-        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 04:24:41 -0800 (PST)
+        with ESMTP id S1727520AbgKYMeB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 07:34:01 -0500
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A4C7C0613D4
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 04:34:01 -0800 (PST)
+Received: by mail-lj1-x241.google.com with SMTP id r18so2124705ljc.2
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 04:34:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=9IH0l2L/ELs04A0W/6GC4nhC0e+RvRGWJ1bAzD1+dFc=;
-        b=GyrkIL7rJc/Wrkz9wtYqXZYvGBry6qXFkQono0nmrBFDlUCiGmbX9ByD1wUhih87ZW
-         XCd/8etF0h65aGuVNHVvGVnSoIRV2cIFxWeuMsMEKDZ+SIKsK6eM3KIHPaY2Au+pxfCB
-         jFmSmO0a8jtSnIjbAi/709gkMW9hnqxggrhUNIGI/2GrlejcLn7tyz9MFlSEpE31y19Z
-         9ARaZhNBbaKZzII6ioDoEFmbbi01XI+4/fF65wWR3SGfZuCMoV2cgGUJ8Osa8sFeqdbz
-         KLllcyBsC3gtRPDbq4Yc+z3inKaZT7D05cYTb7CBHNDdR/afLH0A7E5JHrBWilMAefn4
-         uS6g==
+        bh=EVe5POv3aa7dU3vUuog57QbOZrixAdov9pVP3eydeoo=;
+        b=Ck94bbY1W+pkNSnAX3vx03SXp8N3MtZaykkN05t2hLTXxMwTHVH4sB/LxBHLH6AZS9
+         oQL/18hH9tVyHJFtmvkP8+oVmZBB4cPa53+dxZoN/wSanLjll1mtJcCYJTPg4Gm8N80X
+         Y2vZkB8MjfJfWO03ZJeN+/xkyVeFKAXdF/T3ypAMmqCrggPdhYj8AP/GHfeeyLqSqQ2k
+         D/3XFKnUgghljTkJNB6obDycku6SGRsG8Ou9eRBgYGhRwmSQnUSLSa9ubJQwqbUhgnyB
+         KKTUnxUcjrtGjrprY1dJQyzJGhMpUt6+i4kh1UNl8reZoMiCHpERnM2MUOdieZP2oHU1
+         f/Pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=9IH0l2L/ELs04A0W/6GC4nhC0e+RvRGWJ1bAzD1+dFc=;
-        b=SuVFjYQjzFyMcmKIyeyNLv/IxSYzqKHK6fYrRgLzd3xPDLUdewf+Oi2chmeq30Qe8b
-         zlGUqDcWYVhkEmEvN43KbP/vRTFR4tjVtLgDhk5j2l2j5C/21f1XRVABvhPtrj2waZln
-         l6whe/+Xedy1j6xRVNNtUcLsI27uDeBCZiUfVeIux4CDaVr00cwe9VSXNwtOfZJGz5Uk
-         uCHjITv9rfqtLNX9Z6D2BTMvlp+NHSgeFddzFv979poH1L9jZcSumSZFUQknTcZ2sXeV
-         vajlFsPt3zkUSjvJU0llwRzKG2mQwvWwW3jpa2+B044f8MuVZTlZ5lbWr0mkcDEkYpOr
-         qeXw==
-X-Gm-Message-State: AOAM530YHoohYkztYSTZktojrZcpg658BXdhxq7N0LCLEM/vqsgsybwx
-        8cuzzgyEtHyycaykGPOQCPW2IjYmT7dkUviu/Tf3pv3wFam1UQ==
-X-Google-Smtp-Source: ABdhPJySo35UzNwHodlreVMfJuWPwHO1z+zkcbFfSYU3Avf+sN4n16LJPBb97SBockWyJEKx3Xs8q1wCvzejZmwrmAM=
-X-Received: by 2002:a62:7905:0:b029:197:f300:5a2a with SMTP id
- u5-20020a6279050000b0290197f3005a2amr2898775pfc.30.1606307078380; Wed, 25 Nov
- 2020 04:24:38 -0800 (PST)
+        bh=EVe5POv3aa7dU3vUuog57QbOZrixAdov9pVP3eydeoo=;
+        b=cvCTtKPs45yxaRODKaTPZF18gYUw3xgaDYjJzqTg4XmV6L0x1pEtxUO8grkBbbFnWn
+         BEtxXO2Y9C+eUxeOeNsVBOcO2FLqlHfnpexEkIatXnIlNmG1K9SgaiSZo7Fsj7el3t29
+         VjVShDBY2k9gHuULGhXh+kgZTpB7yeL7snGlRxyMhNuhCXqRRIINt/akhlt/hsLAK4Q1
+         7IgPgFQAYzltkfNlfmuj9dk+TIT13mNXCEhq33niWo6Lx3GutsuCB2hlsZLNztG6aHel
+         wO5KoEhi8TE6nTiD+PlfKhAWpF90hYNozZULr223IsqYND7uPlNnmFVOfKcEEKfKhtxM
+         HEyw==
+X-Gm-Message-State: AOAM5306JzVFNK5ftzehlOZxZg8mcKS/Mwe+mGkUweFVSqw9rowDIsEv
+        DWzEDePkf6qixYXTzQB7U11bQVpCT4BGGPWgEyg=
+X-Google-Smtp-Source: ABdhPJzOriSnYKwSvxwLxgmL/BdKHWLv0aU/RWxvb68hF8AtjeQzog70BmohNuchgsRmSD0LtBU9eWGSO1YzEeKTzFM=
+X-Received: by 2002:a2e:9346:: with SMTP id m6mr1022377ljh.195.1606307639998;
+ Wed, 25 Nov 2020 04:33:59 -0800 (PST)
 MIME-Version: 1.0
-References: <202011201129.B13FDB3C@keescook> <20201120115142.292999b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <202011220816.8B6591A@keescook> <9b57fd4914b46f38d54087d75e072d6e947cb56d.camel@HansenPartnership.com>
- <ca071decb87cc7e905411423c05a48f9fd2f58d7.camel@perches.com>
- <0147972a72bc13f3629de8a32dee6f1f308994b5.camel@HansenPartnership.com>
- <d8d1e9add08cdd4158405e77762d4946037208f8.camel@perches.com>
- <dbd2cb703ed9eefa7dde9281ea26ab0f7acc8afe.camel@HansenPartnership.com>
- <20201123130348.GA3119@embeddedor> <8f5611bb015e044fa1c0a48147293923c2d904e4.camel@HansenPartnership.com>
- <202011241327.BB28F12F6@keescook> <a841536fe65bb33f1c72ce2455a6eb47a0107565.camel@HansenPartnership.com>
-In-Reply-To: <a841536fe65bb33f1c72ce2455a6eb47a0107565.camel@HansenPartnership.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Wed, 25 Nov 2020 04:24:27 -0800
-Message-ID: <CAKwvOdkGBn7nuWTAqrORMeN1G+w3YwBfCqqaRD2nwvoAXKi=Aw@mail.gmail.com>
-Subject: Re: [Intel-wired-lan] [PATCH 000/141] Fix fall-through warnings for Clang
-To:     James Bottomley <James.Bottomley@hansenpartnership.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Joe Perches <joe@perches.com>,
-        Jakub Kicinski <kuba@kernel.org>, alsa-devel@alsa-project.org,
-        linux-atm-general@lists.sourceforge.net,
-        reiserfs-devel@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        linux-fbdev@vger.kernel.org,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        linux-ide@vger.kernel.org, dm-devel@redhat.com,
-        keyrings@vger.kernel.org, linux-mtd@lists.infradead.org,
-        GR-everest-linux-l2@marvell.com, wcn36xx@lists.infradead.org,
-        samba-technical@lists.samba.org, linux-i3c@lists.infradead.org,
-        linux1394-devel@lists.sourceforge.net,
-        linux-afs@lists.infradead.org,
-        usb-storage@lists.one-eyed-alien.net, drbd-dev@lists.linbit.com,
-        devel@driverdev.osuosl.org, linux-cifs@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-scsi@vger.kernel.org,
-        linux-rdma@vger.kernel.org, oss-drivers@netronome.com,
-        bridge@lists.linux-foundation.org,
-        linux-security-module@vger.kernel.org,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        linux-stm32@st-md-mailman.stormreply.com, cluster-devel@redhat.com,
-        linux-acpi@vger.kernel.org, coreteam@netfilter.org,
-        intel-wired-lan@lists.osuosl.org, linux-input@vger.kernel.org,
-        Miguel Ojeda <ojeda@kernel.org>,
-        tipc-discussion@lists.sourceforge.net, linux-ext4@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        selinux@vger.kernel.org,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        intel-gfx@lists.freedesktop.org, linux-geode@lists.infradead.org,
-        linux-can@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-gpio@vger.kernel.org, op-tee@lists.trustedfirmware.org,
-        linux-mediatek@lists.infradead.org, xen-devel@lists.xenproject.org,
-        nouveau@lists.freedesktop.org, linux-hams@vger.kernel.org,
-        ceph-devel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-hwmon@vger.kernel.org,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        linux-nfs@vger.kernel.org, GR-Linux-NIC-Dev@marvell.com,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-decnet-user@lists.sourceforge.net, linux-mmc@vger.kernel.org,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        linux-sctp@vger.kernel.org, linux-usb@vger.kernel.org,
-        netfilter-devel@vger.kernel.org,
-        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
-        <linux-crypto@vger.kernel.org>, patches@opensource.cirrus.com,
-        linux-integrity@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-hardening@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Greg KH <gregkh@linuxfoundation.org>
+References: <CGME20201123101208epcms2p71d4c8d66f08fb7a2e10ae422abde3389@epcms2p7>
+ <20201123101208epcms2p71d4c8d66f08fb7a2e10ae422abde3389@epcms2p7> <20201124144353.7c759cae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201124144353.7c759cae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Bongsu Jeon <bongsu.jeon2@gmail.com>
+Date:   Wed, 25 Nov 2020 21:33:48 +0900
+Message-ID: <CACwDmQAZ48JrM3AuiKwuSdhcpfo_d2_P0B+mtd4Mshfa3WUVpA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] net/nfc/nci: Support NCI 2.x initial sequence
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Bongsu Jeon <bongsu.jeon@samsung.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        linux-nfc@lists.01.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 24, 2020 at 11:05 PM James Bottomley
-<James.Bottomley@hansenpartnership.com> wrote:
+On Wed, Nov 25, 2020 at 9:03 AM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> On Tue, 2020-11-24 at 13:32 -0800, Kees Cook wrote:
-> > We already enable -Wimplicit-fallthrough globally, so that's not the
-> > discussion. The issue is that Clang is (correctly) even more strict
-> > than GCC for this, so these are the remaining ones to fix for full
-> > Clang coverage too.
+> On Mon, 23 Nov 2020 19:12:08 +0900 Bongsu Jeon wrote:
+> > implement the NCI 2.x initial sequence to support NCI 2.x NFCC.
+> > Since NCI 2.0, CORE_RESET and CORE_INIT sequence have been changed.
+> > If NFCEE supports NCI 2.x, then NCI 2.x initial sequence will work.
 > >
-> > People have spent more time debating this already than it would have
-> > taken to apply the patches. :)
+> > In NCI 1.0, Initial sequence and payloads are as below:
+> > (DH)                     (NFCC)
+> >  |  -- CORE_RESET_CMD --> |
+> >  |  <-- CORE_RESET_RSP -- |
+> >  |  -- CORE_INIT_CMD -->  |
+> >  |  <-- CORE_INIT_RSP --  |
+> >  CORE_RESET_RSP payloads are Status, NCI version, Configuration Status.
+> >  CORE_INIT_CMD payloads are empty.
+> >  CORE_INIT_RSP payloads are Status, NFCC Features,
+> >     Number of Supported RF Interfaces, Supported RF Interface,
+> >     Max Logical Connections, Max Routing table Size,
+> >     Max Control Packet Payload Size, Max Size for Large Parameters,
+> >     Manufacturer ID, Manufacturer Specific Information.
+> >
+> > In NCI 2.0, Initial Sequence and Parameters are as below:
+> > (DH)                     (NFCC)
+> >  |  -- CORE_RESET_CMD --> |
+> >  |  <-- CORE_RESET_RSP -- |
+> >  |  <-- CORE_RESET_NTF -- |
+> >  |  -- CORE_INIT_CMD -->  |
+> >  |  <-- CORE_INIT_RSP --  |
+> >  CORE_RESET_RSP payloads are Status.
+> >  CORE_RESET_NTF payloads are Reset Trigger,
+> >     Configuration Status, NCI Version, Manufacturer ID,
+> >     Manufacturer Specific Information Length,
+> >     Manufacturer Specific Information.
+> >  CORE_INIT_CMD payloads are Feature1, Feature2.
+> >  CORE_INIT_RSP payloads are Status, NFCC Features,
+> >     Max Logical Connections, Max Routing Table Size,
+> >     Max Control Packet Payload Size,
+> >     Max Data Packet Payload Size of the Static HCI Connection,
+> >     Number of Credits of the Static HCI Connection,
+> >     Max NFC-V RF Frame Size, Number of Supported RF Interfaces,
+> >     Supported RF Interfaces.
+> >
+> > Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
 >
-> You mean we've already spent 90% of the effort to come this far so we
-> might as well go the remaining 10% because then at least we get some
-> return? It's certainly a clinching argument in defence procurement ...
-
-So developers and distributions using Clang can't have
--Wimplicit-fallthrough enabled because GCC is less strict (which has
-been shown in this thread to lead to bugs)?  We'd like to have nice
-things too, you know.
-
-I even agree that most of the churn comes from
-
-case 0:
-  ++x;
-default:
-  break;
-
-which I have a patch for: https://reviews.llvm.org/D91895.  I agree
-that can never lead to bugs.  But that's not the sole case of this
-series, just most of them.
-
-Though, note how the reviewer (C++ spec editor and clang front end
-owner) in https://reviews.llvm.org/D91895 even asks in that review how
-maybe a new flag would be more appropriate for a watered
-down/stylistic variant of the existing behavior.  And if the current
-wording of Documentation/process/deprecated.rst around "fallthrough"
-is a straightforward rule of thumb, I kind of agree with him.
-
+> NFC folks, looks like when the NFC core got orphaned it lost all links
+> in MAINTAINERS. Should we add the L: linux-nfc@lists.01.org so that
+> there is a better chance that someone knowledgeable will provide
+> reviews?
 >
-> > This is about robustness and language wrangling. It's a big code-
-> > base, and this is the price of our managing technical debt for
-> > permanent robustness improvements. (The numbers I ran from Gustavo's
-> > earlier patches were that about 10% of the places adjusted were
-> > identified as legitimate bugs being fixed. This final series may be
-> > lower, but there are still bugs being found from it -- we need to
-> > finish this and shut the door on it for good.)
+> Also if anyone is up for it feel free to add your M: or R: entries!
 >
-> I got my six patches by analyzing the lwn.net report of the fixes that
-> was cited which had 21 of which 50% didn't actually change the emitted
-> code, and 25% didn't have a user visible effect.
+
+Okay. It's better. I will add linux-nfc@lists.01.org when I resend the
+new version.
+
+> >  #define NCI_OP_CORE_INIT_CMD         nci_opcode_pack(NCI_GID_CORE, 0x01)
+> > +/* To support NCI 2.x */
+> > +struct nci_core_init_v2_cmd {
+> > +     unsigned char   feature1;
+> > +     unsigned char   feature2;
+> > +} __packed;
 >
-> But the broader point I'm making is just because the compiler people
-> come up with a shiny new warning doesn't necessarily mean the problem
-
-That's not what this is though; you're attacking a strawman.  I'd
-encourage you to bring that up when that actually occurs, unlike this
-case since it's actively hindering getting -Wimplicit-fallthrough
-enabled for Clang.  This is not a shiny new warning; it's already on
-for GCC and has existed in both compilers for multiple releases.
-
-And I'll also note that warnings are warnings and not errors because
-they cannot be proven to be bugs in 100% of cases, but they have led
-to bugs in the past.  They require a human to review their intent and
-remove ambiguities.  If 97% of cases would end in a break ("Expert C
-Programming: Deep C Secrets" - Peter van der Linden), then it starts
-to look to me like a language defect; certainly an incorrectly chosen
-default.  But the compiler can't know those 3% were intentional,
-unless you're explicit for those exceptional cases.
-
-> it's detecting is one that causes us actual problems in the code base.
-> I'd really be happier if we had a theory about what classes of CVE or
-> bug we could eliminate before we embrace the next new warning.
-
-We don't generally file CVEs and waiting for them to occur might be
-too reactive, but I agree that pointing to some additional
-documentation in commit messages about how a warning could lead to a
-bug would make it clearer to reviewers why being able to enable it
-treewide, even if there's no bug in their particular subsystem, is in
-the general interest of the commons.
-
-On Mon, Nov 23, 2020 at 7:58 AM James Bottomley
-<James.Bottomley@hansenpartnership.com> wrote:
+> No need for this to be packed.
 >
-> We're also complaining about the inability to recruit maintainers:
+> >  #define NCI_OP_CORE_SET_CONFIG_CMD   nci_opcode_pack(NCI_GID_CORE, 0x02)
+> >  struct set_config_param {
+> > @@ -316,6 +326,11 @@ struct nci_core_reset_rsp {
+> >       __u8    config_status;
+> >  } __packed;
+> >
+> > +/* To support NCI ver 2.x */
+> > +struct nci_core_reset_rsp_nci_ver2 {
+> > +     unsigned char   status;
+> > +} __packed;
 >
-> https://www.theregister.com/2020/06/30/hard_to_find_linux_maintainers_says_torvalds/
+> ditto
 >
-> And burn out:
->
-> http://antirez.com/news/129
->
-> The whole crux of your argument seems to be maintainers' time isn't
-> important so we should accept all trivial patches ... I'm pushing back
-> on that assumption in two places, firstly the valulessness of the time
-> and secondly that all trivial patches are valuable.
 
-It's critical to the longevity of any open source project that there
-are not single points of failure.  If someone is not expendable or
-replaceable (or claims to be) then that's a risk to the project and a
-bottleneck.  Not having a replacement in training or some form of
-redundancy is short sighted.
+Okay I will fix it.
 
-If trivial patches are adding too much to your workload, consider
-training a co-maintainer or asking for help from one of your reviewers
-whom you trust.  I don't doubt it's hard to find maintainers, but
-existing maintainers should go out of their way to entrust
-co-maintainers especially when they find their workload becomes too
-high.  And reviewing/picking up trivial patches is probably a great
-way to get started.  If we allow too much knowledge of any one
-subsystem to collect with one maintainer, what happens when that
-maintainer leaves the community (which, given a finite lifespan, is an
-inevitability)?
--- 
-Thanks,
-~Nick Desaulniers
+> >  #define NCI_OP_CORE_INIT_RSP         nci_opcode_pack(NCI_GID_CORE, 0x01)
+> >  struct nci_core_init_rsp_1 {
+> >       __u8    status;
+> > @@ -334,6 +349,20 @@ struct nci_core_init_rsp_2 {
+> >       __le32  manufact_specific_info;
+> >  } __packed;
+> >
+> > +/* To support NCI ver 2.x */
+> > +struct nci_core_init_rsp_nci_ver2 {
+> > +     unsigned char   status;
+> > +     __le32  nfcc_features;
+> > +     unsigned char   max_logical_connections;
+> > +     __le16  max_routing_table_size;
+> > +     unsigned char   max_ctrl_pkt_payload_len;
+> > +     unsigned char   max_data_pkt_hci_payload_len;
+> > +     unsigned char   number_of_hci_credit;
+> > +     __le16  max_nfc_v_frame_size;
+> > +     unsigned char   num_supported_rf_interfaces;
+> > +     unsigned char   supported_rf_interfaces[];
+> > +} __packed;
+> > +
+> >  #define NCI_OP_CORE_SET_CONFIG_RSP   nci_opcode_pack(NCI_GID_CORE, 0x02)
+> >  struct nci_core_set_config_rsp {
+> >       __u8    status;
+> > @@ -372,6 +401,16 @@ struct nci_nfcee_discover_rsp {
+> >  /* --------------------------- */
+> >  /* ---- NCI Notifications ---- */
+> >  /* --------------------------- */
+> > +#define NCI_OP_CORE_RESET_NTF                nci_opcode_pack(NCI_GID_CORE, 0x00)
+> > +struct nci_core_reset_ntf {
+> > +     unsigned char   reset_trigger;
+> > +     unsigned char   config_status;
+> > +     unsigned char   nci_ver;
+> > +     unsigned char   manufact_id;
+> > +     unsigned char   manufacturer_specific_len;
+> > +     __le32  manufact_specific_info;
+> > +} __packed;
+> > +
+> >  #define NCI_OP_CORE_CONN_CREDITS_NTF nci_opcode_pack(NCI_GID_CORE, 0x06)
+> >  struct conn_credit_entry {
+> >       __u8    conn
+> > diff --git a/net/nfc/nci/core.c b/net/nfc/nci/core.c
+> > index 4953ee5146e1..68889faadda2 100644
+> > --- a/net/nfc/nci/core.c
+> > +++ b/net/nfc/nci/core.c
+> > @@ -165,7 +165,14 @@ static void nci_reset_req(struct nci_dev *ndev, unsigned long opt)
+> >
+> >  static void nci_init_req(struct nci_dev *ndev, unsigned long opt)
+> >  {
+> > -     nci_send_cmd(ndev, NCI_OP_CORE_INIT_CMD, 0, NULL);
+> > +     struct nci_core_init_v2_cmd *cmd = (struct nci_core_init_v2_cmd *)opt;
+> > +
+> > +     if (!cmd) {
+> > +             nci_send_cmd(ndev, NCI_OP_CORE_INIT_CMD, 0, NULL);
+> > +     } else {
+> > +             /* if nci version is 2.0, then use the feature parameters */
+> > +             nci_send_cmd(ndev, NCI_OP_CORE_INIT_CMD, sizeof(struct nci_core_init_v2_cmd), cmd);
+>
+> Please wrap this line.
+>
+
+Sorry, Could you explain it in detail?
+
+> > +     }
+>
+> Parenthesis unnecessary.
+>
+
+Ok. I will fix it.
+
+> >  }
+> >
+> >  static void nci_init_complete_req(struct nci_dev *ndev, unsigned long opt)
+>
+> > +static unsigned char nci_core_init_rsp_packet_v2(struct nci_dev *ndev, struct sk_buff *skb)
+> > +{
+> > +     struct nci_core_init_rsp_nci_ver2 *rsp = (void *)skb->data;
+> > +     unsigned char rf_interface_idx = 0;
+> > +     unsigned char rf_extension_cnt = 0;
+> > +     unsigned char *supported_rf_interface = rsp->supported_rf_interfaces;
+> > +
+> > +     pr_debug("status %x\n", rsp->status);
+> > +
+> > +     if (rsp->status != NCI_STATUS_OK)
+> > +             return rsp->status;
+> > +
+> > +     ndev->nfcc_features = __le32_to_cpu(rsp->nfcc_features);
+> > +     ndev->num_supported_rf_interfaces = rsp->num_supported_rf_interfaces;
+> > +
+> > +     if (ndev->num_supported_rf_interfaces >
+> > +         NCI_MAX_SUPPORTED_RF_INTERFACES) {
+> > +             ndev->num_supported_rf_interfaces =
+> > +                     NCI_MAX_SUPPORTED_RF_INTERFACES;
+> > +     }
+>
+> brackets unnecessary unnecessary
+>
+> also:
+>
+>         ndev->num_supported_rf_interfaces =
+>                 min(ndev->num_supported_rf_interfaces,
+>                     NCI_MAX_SUPPORTED_RF_INTERFACES);
+>
+
+Okay. I will fix it.
+Thanks for reviewing this code.
+
+> > +     while (rf_interface_idx < ndev->num_supported_rf_interfaces) {
+> > +             ndev->supported_rf_interfaces[rf_interface_idx++] = *supported_rf_interface++;
+> > +
+> > +             /* skip rf extension parameters */
+> > +             rf_extension_cnt = *supported_rf_interface++;
+> > +             supported_rf_interface += rf_extension_cnt;
+> > +     }
