@@ -2,90 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1688C2C352D
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 01:04:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E1882C3531
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 01:06:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727105AbgKYACM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 19:02:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46976 "EHLO mail.kernel.org"
+        id S1726623AbgKYAFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 19:05:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47376 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727070AbgKYACM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Nov 2020 19:02:12 -0500
+        id S1725930AbgKYAFD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Nov 2020 19:05:03 -0500
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 10BF22145D;
-        Wed, 25 Nov 2020 00:02:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8D2402145D;
+        Wed, 25 Nov 2020 00:05:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606262531;
-        bh=QvFvOpzNbVkTVaMl/BVjSM2x46W/RWWsxeEl70LOhck=;
+        s=default; t=1606262702;
+        bh=GDphglMR0qfjZO1dfIE2YnPKz9gS3qOrfYOsru8FUhY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fgp8vDn8/WdjXeZRjR9NUfgcYUDE/CAxlniPbqcUfxnO4RKH0Hc/mQ1w8PvCwTaB7
-         Fk5xbz4Y3QRvzrQh1edMl4XCSnRrkMmIV7XUHjHwvJqHef605pyXLqWSxtHkKgkra/
-         hCM6blgMEMeG7+t5nxitEqNCiSAEIejDvmVXVLhI=
-Date:   Tue, 24 Nov 2020 16:02:10 -0800
+        b=YrBNIFMqnNBwu4pCNCxJskuZGTA2odbT39OkTCerJV83vy0+/MIM+DqcQV0oh9n4y
+         V6mgh4ORxROaMur1RLeCeBGgHC0Ufq32DatIaGiBOUXoNdWq05dnG6jM1Euh5zpNEn
+         tmlV0Z6ucR+4L+4p/J6M3TC0DLb4C1PxUCFlvCn8=
+Date:   Tue, 24 Nov 2020 16:05:01 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     wenxu <wenxu@ucloud.cn>
-Cc:     marcelo.leitner@gmail.com, vladbu@nvidia.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 3/3] net/sched: sch_frag: add generic packet
- fragment support.
-Message-ID: <20201124160210.3648b823@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <e25b0a93-0fb1-60cf-9451-c82920c45076@ucloud.cn>
-References: <1605829116-10056-1-git-send-email-wenxu@ucloud.cn>
-        <1605829116-10056-4-git-send-email-wenxu@ucloud.cn>
-        <20201124112430.64143482@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <e25b0a93-0fb1-60cf-9451-c82920c45076@ucloud.cn>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Po Liu <po.liu@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Subject: Re: [PATCH net] enetc: Advance the taprio base time in the future
+Message-ID: <20201124160501.514f3be5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201124210003.kyzqkaudfjl7q3dw@skbuf>
+References: <20201124012005.2442293-1-vladimir.oltean@nxp.com>
+        <VE1PR04MB64967D95BBDB594A286C139A92FB0@VE1PR04MB6496.eurprd04.prod.outlook.com>
+        <20201124095812.539b9d1e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20201124210003.kyzqkaudfjl7q3dw@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 25 Nov 2020 07:10:43 +0800 wenxu wrote:
-> =E5=9C=A8 2020/11/25 3:24, Jakub Kicinski =E5=86=99=E9=81=93:
-> > On Fri, 20 Nov 2020 07:38:36 +0800 wenxu@ucloud.cn wrote: =20
-> >> +int tcf_dev_queue_xmit(struct sk_buff *skb, int (*xmit)(struct sk_buf=
-f *skb))
-> >> +{
-> >> +	xmit_hook_func *xmit_hook;
-> >> +
-> >> +	xmit_hook =3D rcu_dereference(tcf_xmit_hook);
-> >> +	if (xmit_hook)
-> >> +		return xmit_hook(skb, xmit);
-> >> +	else
-> >> +		return xmit(skb);
-> >> +}
-> >> +EXPORT_SYMBOL_GPL(tcf_dev_queue_xmit); =20
-> > I'm concerned about the performance impact of these indirect calls.
+On Tue, 24 Nov 2020 21:00:04 +0000 Vladimir Oltean wrote:
+> On Tue, Nov 24, 2020 at 09:58:12AM -0800, Jakub Kicinski wrote:
+> > > This is the right way for calculation. For the ENETC,  hardware also
+> > > do the same calculation before send to Operation State Machine.
+> > > For some TSN IP, like Felix and DesignWare TSN in RT1170 and IMX8MP
+> > > require the basetime limite the range not less than the current time
+> > > 8 cycles, software may do calculation before setting to the
+> > > hardware.
+> > > Actually, I do suggest this calculation to sch_taprio.c, but I found
+> > > same calculation only for the TXTIME by taprio_get_start_time().
+> > > Which means:
+> > > If (currenttime < basetime)
+> > >        Admin_basetime = basetime;
+> > > Else
+> > >        Admin_basetime =  basetime + (n+1)* cycletime;
+> > > N is the minimal value which make Admin_basetime is larger than the
+> > > currenttime.
+> > >
+> > > User space never to get the current time. Just set a value as offset
+> > > OR future time user want.
+> > > For example: set basetime = 1000000ns, means he want time align to
+> > > 1000000ns, and on the other device, also set the basetime =
+> > > 1000000ns, then the two devices are aligned cycle.
+> > > If user want all the devices start at 11.24.2020 11:00 then set
+> > > basetime = 1606273200.0 s.
+> > >  
+> > > > - the sja1105 offload does it via future_base_time()
+> > > > - the ocelot/felix offload does it via vsc9959_new_base_time()
+> > > >
+> > > > As for the obvious question: doesn't the hardware just "do the right thing"
+> > > > if passed a time in the past? I've tested and it doesn't look like it. I cannot  
+> > >
+> > > So hardware already do calculation same way.  
 > >
-> > Did you check what code compiler will generate? What the impact with
-> > retpolines enabled is going to be?
-> >
-> > Now that sch_frag is no longer a module this could be simplified.
-> >
-> > First of all - xmit_hook can only be sch_frag_xmit_hook, so please use
-> > that directly.=20
-> >
-> > 	if (READ_ONCE(tcf_xmit_hook_count))=20
-> > 		sch_frag_xmit_hook(...
-> > 	else
-> > 		dev_queue_xmit(...
-> >
-> > The abstraction is costly and not necessary right now IMO.
-> >
-> > Then probably the counter should be:
-> >
-> > 	u32 __read_mostly tcf_xmit_hook_count;
-> >
-> > To avoid byte loads and having it be places in an unlucky cache line. =
-=20
-> Maybe a static key replace=C2=A0 tcf_xmit_hook_count is more simplified=
-=EF=BC=9F
->=20
-> DEFINE_STATIC_KEY_FALSE(tcf_xmit_hook_in_use);
+> > So the patch is unnecessary? Or correct? Not sure what you're saying..  
+> 
+> He's not saying the patch is unnecessary. What the enetc driver
+> currently does for the case where the base_time is zero is bogus anyway.
+> 
+> What Po is saying is that calling future_base_time() should not be
+> needed. Instead, he is suggesting we could program directly the
+> admin_conf->base_time into the hardware, which will do the right thing
+> as long as the driver doesn't mangle it in various ways, such as replace
+> the base_time with the current time.
+> 
+> And what I said in the commit message is that I've been there before and
+> there were some still apparent issues with the schedule's phase. I had
+> some issues at the application layer as well. In the meantime I sorted
+> those out, and after re-applying the simple kernel change and giving the
+> system some thorough testing, it looks like Po is right.
 
-I wasn't sure if static key would work with the module (mirred being a
-module) but thinking about it again, if tcf_dev_queue_xmit() is not an
-static inline but a normal function, it should work. Sounds good!
+Thanks for explaining!
