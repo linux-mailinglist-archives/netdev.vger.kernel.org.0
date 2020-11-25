@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 483902C3908
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 07:20:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA76F2C390B
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 07:22:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726483AbgKYGUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 01:20:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:21154 "EHLO
+        id S1726614AbgKYGWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 01:22:13 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44967 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725838AbgKYGUe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 01:20:34 -0500
+        by vger.kernel.org with ESMTP id S1725838AbgKYGWN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 01:22:13 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606285233;
+        s=mimecast20190719; t=1606285331;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=hzf8L+pJkmJC6kuPctTHWalVfjiH6jJR7fCpq2GAvzk=;
-        b=TADp4melm1A32Mr2mey/51KceMl6SVCZiMupcyEDf2j0h2DFKpf+4f8EAdelrL9nMm4wlC
-        ctJ3yB8agvPXCZ63nLJxlLbrUaYgkrp0+VHNk2YilFvqRgXMf/g9mhh2c/l2CwhCUCtq36
-        dyPBGjGg4Q6BI81Tt2HMVsUmxnxEsXA=
+        bh=mSLDibXdDhyTDavCf11nSYFrrSbOyY/Z0MxYwfAK1NU=;
+        b=d+d1VFAEv/L148ZtiOn+bciJVCDjFlqZjv8sG5do+OSMAknfkC8w3+dey8fQDV+doAjeBt
+        eDNrD4bIcWnt7sjnBBHL6z2WfCeYHLvuXlMaLJAIBAeCb5QtoN/+DR89TRAAIsq7OQAsAL
+        2U2OdG03IX3Ck+7d4ZQKP6Zi4RubeqQ=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-542-s7V2aL5HN0Sj_o7CAHGE0w-1; Wed, 25 Nov 2020 01:20:28 -0500
-X-MC-Unique: s7V2aL5HN0Sj_o7CAHGE0w-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+ us-mta-595-caX8nhwhOEiiRcw5KnoPAQ-1; Wed, 25 Nov 2020 01:22:06 -0500
+X-MC-Unique: caX8nhwhOEiiRcw5KnoPAQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DCB6F8144E5;
-        Wed, 25 Nov 2020 06:20:26 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C346E8A2A22;
+        Wed, 25 Nov 2020 06:21:44 +0000 (UTC)
 Received: from [10.72.13.165] (ovpn-13-165.pek2.redhat.com [10.72.13.165])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 940005D9C0;
-        Wed, 25 Nov 2020 06:20:19 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0D6485B4AE;
+        Wed, 25 Nov 2020 06:21:13 +0000 (UTC)
 Subject: Re: netconsole deadlock with virtnet
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
         Leon Romanovsky <leon@kernel.org>,
         Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
         "Michael S. Tsirkin" <mst@redhat.com>,
@@ -56,47 +56,63 @@ References: <20201117102341.GR47002@unreal>
  <20201123140934.38748be3@gandalf.local.home>
  <20201123112130.759b9487@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
  <1133f1a4-6772-8aa3-41dd-edbc1ee76cee@redhat.com>
- <20201124093137.48d1e603@gandalf.local.home>
+ <20201124082035.3e658fa4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <fb001549-a4d4-b758-03cf-387eaf81e389@redhat.com>
-Date:   Wed, 25 Nov 2020 14:20:17 +0800
+Message-ID: <6e55048e-53ed-c196-729d-f7a5ab3c82fe@redhat.com>
+Date:   Wed, 25 Nov 2020 14:21:12 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20201124093137.48d1e603@gandalf.local.home>
+In-Reply-To: <20201124082035.3e658fa4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2020/11/24 下午10:31, Steven Rostedt wrote:
-> On Tue, 24 Nov 2020 11:22:03 +0800
-> Jason Wang <jasowang@redhat.com> wrote:
+On 2020/11/25 上午12:20, Jakub Kicinski wrote:
+> On Tue, 24 Nov 2020 11:22:03 +0800 Jason Wang wrote:
+>>>> Perhaps you need the trylock in virtnet_poll_tx()?
+>>> That could work. Best if we used normal lock if !!budget, and trylock
+>>> when budget is 0. But maybe that's too hairy.
+>> If we use trylock, we probably lose(or delay) tx notification that may
+>> have side effects to the stack.
+> That's why I said only trylock with budget == 0. Only netpoll calls with
+> budget == 0, AFAIK.
+
+
+Oh right.
+
+So I think maybe we can switch to use trylock when budget is zero and 
+try to schedule another TX NAPI if we trylock fail.
+
+
 >
+>>> I'm assuming all this trickiness comes from virtqueue_get_buf() needing
+>>> locking vs the TX path? It's pretty unusual for the completion path to
+>>> need locking vs xmit path.
+>> Two reasons for doing this:
+>>
+>> 1) For some historical reason, we try to free transmitted tx packets in
+>> xmit (see free_old_xmit_skbs() in start_xmit()), we can probably remove
+>> this if we remove the non tx interrupt mode.
+>> 2) virtio core requires virtqueue_get_buf() to be synchronized with
+>> virtqueue_add(), we probably can solve this but it requires some non
+>> trivial refactoring in the virtio core
+>>
 >> Btw, have a quick search, there are several other drivers that uses tx
 >> lock in the tx NAPI.
-> tx NAPI is not the issue. The issue is that write_msg() (in netconsole.c)
-> calls this polling logic with the target_list_lock held.
-
-
-But in the tx NAPI poll it tries to lock TX instead of using trylock.
-
-
+> Unless they do:
 >
-> Are those other drivers called by netconsole? If not, then this is unique
-> to virtio-net.
+> 	netdev->priv_flags |= IFF_DISABLE_NETPOLL;
+>
+> they are all broken.
 
 
-I think the answer is yes, since net console is not disabled in the codes.
+Yes.
 
 Thanks
-
-
->
-> -- Steve
->
 
