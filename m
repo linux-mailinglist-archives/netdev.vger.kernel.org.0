@@ -2,431 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 526F72C47A3
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 19:30:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 286AB2C47C2
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 19:40:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733083AbgKYS3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 13:29:35 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32056 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1733067AbgKYS3f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 13:29:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606328972;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kw/6zL0+DwqJJoi4AemVttrsG0jEunMq0o/xAEP6HHU=;
-        b=QCuUVwALvW9F7K1oQl4ZVoKxfut4xrNWzdpmUJ182Al7Oj9wsGyP0CLnroiVNAM0FODjnu
-        DXuRlogJEDchb6HsPhu9KgwYXh8ZSkHP0v5OyTkOB3ZXzMiiXT7sQfXv+PcNzZJeQrZ/l+
-        HehJeHJaBgWFsmk3aP3knrUHWAxLmpw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-277-_YTdX4pnPyqzz7B0b1nHFw-1; Wed, 25 Nov 2020 13:29:28 -0500
-X-MC-Unique: _YTdX4pnPyqzz7B0b1nHFw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D73B4873110;
-        Wed, 25 Nov 2020 18:29:25 +0000 (UTC)
-Received: from f31.redhat.com (ovpn-113-167.rdu2.redhat.com [10.10.113.167])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3823519C48;
-        Wed, 25 Nov 2020 18:29:24 +0000 (UTC)
-From:   jmaloy@redhat.com
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     tipc-discussion@lists.sourceforge.net,
-        tung.q.nguyen@dektech.com.au, hoang.h.le@dektech.com.au,
-        tuong.t.lien@dektech.com.au, jmaloy@redhat.com, maloy@donjonn.com,
-        xinl@redhat.com, ying.xue@windriver.com,
-        parthasarathy.bhuvaragan@gmail.com
-Subject: [net-next 3/3] tipc: update address terminology in code
-Date:   Wed, 25 Nov 2020 13:29:15 -0500
-Message-Id: <20201125182915.711370-4-jmaloy@redhat.com>
-In-Reply-To: <20201125182915.711370-1-jmaloy@redhat.com>
-References: <20201125182915.711370-1-jmaloy@redhat.com>
+        id S1731280AbgKYSiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 13:38:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50534 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729679AbgKYSiY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 13:38:24 -0500
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91062C0613D4;
+        Wed, 25 Nov 2020 10:38:23 -0800 (PST)
+Received: by mail-wr1-x441.google.com with SMTP id t4so2873689wrr.12;
+        Wed, 25 Nov 2020 10:38:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1ILPp3EC0bGPZc7QAejnetDCG1gvARXf7a++EJ/QnaI=;
+        b=R878PtjX4MvoBt6ZyO6OJ7jLqKgjxV2WZW14owpwkqguShHRV19ADdCIRJhOPYl6vm
+         GfxAqbbnSRmuA/IpwhuZdFfI8uh0MBnmchtn0eWon8/NHP6IIqu18ItyJ5tOAJo2XYqk
+         7rFxh40DCx4cO7uO8/gXH/SMKtkxuVGS2xrIj2hRqiTLJlfLZC0AwiEEeH5iCnPSoi/v
+         P/xQxlZUJebn/fMWcjxQFwIePhu2dwOXHx87amBomHk6fhIaGDscL+mUpghK+h1vFFos
+         qssKerebbweMOMRxn8LTPFHqbgSb4t6bUs+7m2VaQwglcwv21sxiEEDqdVJjRuRqlYVi
+         pLmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1ILPp3EC0bGPZc7QAejnetDCG1gvARXf7a++EJ/QnaI=;
+        b=UDKSI26mbUgUk3Qq1LLpDVF3JJ8Kos7u9osfuJe2qUfn8+jpWSxzX+zdqRmLKgpW8c
+         iw241FGEGH0bC5WqGtq5UvLbRxG694epzGUtqeWiLeYisVHZCuVNyTIumHUUw6dAxhR0
+         0tB3vXXqVrpGRh/VMb3SPkjRAgfne5OtHi85Nrlg8A7NmPQwBhTP+KPhME5O0TC72Q+F
+         IrwBTo1MYD4xBrSX7lzgqqUzAEf4n46HwtcXtfAgjDjH/RO211BZjEprBSuo17SndGL+
+         pmyqJHFAXl8FM+B7GmdmxjlKRLAZEG5j1A9VlVkOFeAIEJ9d1b8QgVOuN2npMZW6V+Xr
+         KC0g==
+X-Gm-Message-State: AOAM5336zWkgNyDi3QLHmK+E0A/Yp9oYr+/23oLQ448WjKPQ2L78nv4S
+        OYBr2bKWZr9wsD+sh7wa4b4r4sW5K32yHuEL
+X-Google-Smtp-Source: ABdhPJw7wmxu9KycGGcV15TkTcMTep714zKA77Xf2wtQpa9pqdRrhyoTRe5B7oJGvhOrjwq1XzY+5Q==
+X-Received: by 2002:adf:e6c8:: with SMTP id y8mr5679091wrm.414.1606329501759;
+        Wed, 25 Nov 2020 10:38:21 -0800 (PST)
+Received: from kernel-dev.chello.ie ([80.111.136.190])
+        by smtp.gmail.com with ESMTPSA id h2sm5830035wrv.76.2020.11.25.10.38.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Nov 2020 10:38:20 -0800 (PST)
+From:   Weqaar Janjua <weqaar.janjua@gmail.com>
+X-Google-Original-From: Weqaar Janjua <weqaar.a.janjua@intel.com>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
+        ast@kernel.org, magnus.karlsson@gmail.com, bjorn.topel@intel.com,
+        yhs@fb.com
+Cc:     Weqaar Janjua <weqaar.a.janjua@intel.com>, shuah@kernel.org,
+        skhan@linuxfoundation.org, linux-kselftest@vger.kernel.org,
+        anders.roxell@linaro.org, jonathan.lemon@gmail.com
+Subject: [PATCH bpf-next v3 0/5] selftests/bpf: xsk selftests
+Date:   Wed, 25 Nov 2020 18:37:44 +0000
+Message-Id: <20201125183749.13797-1-weqaar.a.janjua@intel.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jon Maloy <jmaloy@redhat.com>
+This patch set adds AF_XDP selftests based on veth to selftests/bpf.
 
-We update the terminology in the code so that deprecated structure
-names and macros are replaced with those currently recommended in
-the user API.
+# Topology:
+# ---------
+#                 -----------
+#               _ | Process | _
+#              /  -----------  \
+#             /        |        \
+#            /         |         \
+#      -----------     |     -----------
+#      | Thread1 |     |     | Thread2 |
+#      -----------     |     -----------
+#           |          |          |
+#      -----------     |     -----------
+#      |  xskX   |     |     |  xskY   |
+#      -----------     |     -----------
+#           |          |          |
+#      -----------     |     ----------
+#      |  vethX  | --------- |  vethY |
+#      -----------   peer    ----------
+#           |          |          |
+#      namespaceX      |     namespaceY
 
-struct tipc_portid   -> struct tipc_socket_addr
-struct tipc_name     -> struct tipc_service_addr
-struct tipc_name_seq -> struct tipc_service_range
+These selftests test AF_XDP SKB and Native/DRV modes using veth Virtual
+Ethernet interfaces.
 
-TIPC_ADDR_ID       -> TIPC_SOCKET_ADDR
-TIPC_ADDR_NAME     -> TIPC_SERVICE_ADDR
-TIPC_ADDR_NAMESEQ  -> TIPC_SERVICE_RANGE
-TIPC_CFG_SRV       -> TIPC_NODE_STATE
+The test program contains two threads, each thread is single socket with
+a unique UMEM. It validates in-order packet delivery and packet content
+by sending packets to each other.
 
-Acked-by: Ying Xue <ying.xue@windriver.com>
-Signed-off-by: Jon Maloy <jmaloy@redhat.com>
----
- net/tipc/group.c      |  3 ++-
- net/tipc/group.h      |  3 ++-
- net/tipc/name_table.c | 11 ++++++-----
- net/tipc/net.c        |  2 +-
- net/tipc/socket.c     | 44 +++++++++++++++++++++----------------------
- net/tipc/subscr.c     |  5 +++--
- net/tipc/subscr.h     |  5 +++--
- net/tipc/topsrv.c     |  4 ++--
- 8 files changed, 41 insertions(+), 36 deletions(-)
+Prerequisites setup by script test_xsk.sh:
 
-diff --git a/net/tipc/group.c b/net/tipc/group.c
-index b1fcd2ad5ecf..3e137d8c9d2f 100644
---- a/net/tipc/group.c
-+++ b/net/tipc/group.c
-@@ -2,6 +2,7 @@
-  * net/tipc/group.c: TIPC group messaging code
-  *
-  * Copyright (c) 2017, Ericsson AB
-+ * Copyright (c) 2020, Red Hat Inc
-  * All rights reserved.
-  *
-  * Redistribution and use in source and binary forms, with or without
-@@ -359,7 +360,7 @@ struct tipc_nlist *tipc_group_dests(struct tipc_group *grp)
- 	return &grp->dests;
- }
- 
--void tipc_group_self(struct tipc_group *grp, struct tipc_name_seq *seq,
-+void tipc_group_self(struct tipc_group *grp, struct tipc_service_range *seq,
- 		     int *scope)
- {
- 	seq->type = grp->type;
-diff --git a/net/tipc/group.h b/net/tipc/group.h
-index 76b4e5a7b39d..ea4c3be64c78 100644
---- a/net/tipc/group.h
-+++ b/net/tipc/group.h
-@@ -2,6 +2,7 @@
-  * net/tipc/group.h: Include file for TIPC group unicast/multicast functions
-  *
-  * Copyright (c) 2017, Ericsson AB
-+ * Copyright (c) 2020, Red Hat Inc
-  * All rights reserved.
-  *
-  * Redistribution and use in source and binary forms, with or without
-@@ -50,7 +51,7 @@ void tipc_group_delete(struct net *net, struct tipc_group *grp);
- void tipc_group_add_member(struct tipc_group *grp, u32 node,
- 			   u32 port, u32 instance);
- struct tipc_nlist *tipc_group_dests(struct tipc_group *grp);
--void tipc_group_self(struct tipc_group *grp, struct tipc_name_seq *seq,
-+void tipc_group_self(struct tipc_group *grp, struct tipc_service_range *seq,
- 		     int *scope);
- u32 tipc_group_exclude(struct tipc_group *grp);
- void tipc_group_filter_msg(struct tipc_group *grp,
-diff --git a/net/tipc/name_table.c b/net/tipc/name_table.c
-index 2ac33d32edc2..e1233d6d5163 100644
---- a/net/tipc/name_table.c
-+++ b/net/tipc/name_table.c
-@@ -3,6 +3,7 @@
-  *
-  * Copyright (c) 2000-2006, 2014-2018, Ericsson AB
-  * Copyright (c) 2004-2008, 2010-2014, Wind River Systems
-+ * Copyright (c) 2020, Red Hat Inc
-  * All rights reserved.
-  *
-  * Redistribution and use in source and binary forms, with or without
-@@ -403,12 +404,12 @@ static void tipc_service_subscribe(struct tipc_service *service,
- 	struct publication *p, *first, *tmp;
- 	struct list_head publ_list;
- 	struct service_range *sr;
--	struct tipc_name_seq ns;
-+	struct tipc_service_range r;
- 	u32 filter;
- 
--	ns.type = tipc_sub_read(sb, seq.type);
--	ns.lower = tipc_sub_read(sb, seq.lower);
--	ns.upper = tipc_sub_read(sb, seq.upper);
-+	r.type = tipc_sub_read(sb, seq.type);
-+	r.lower = tipc_sub_read(sb, seq.lower);
-+	r.upper = tipc_sub_read(sb, seq.upper);
- 	filter = tipc_sub_read(sb, filter);
- 
- 	tipc_sub_get(sub);
-@@ -418,7 +419,7 @@ static void tipc_service_subscribe(struct tipc_service *service,
- 		return;
- 
- 	INIT_LIST_HEAD(&publ_list);
--	service_range_foreach_match(sr, service, ns.lower, ns.upper) {
-+	service_range_foreach_match(sr, service, r.lower, r.upper) {
- 		first = NULL;
- 		list_for_each_entry(p, &sr->all_publ, all_publ) {
- 			if (filter & TIPC_SUB_PORTS)
-diff --git a/net/tipc/net.c b/net/tipc/net.c
-index 0bb2323201da..a129f661bee3 100644
---- a/net/tipc/net.c
-+++ b/net/tipc/net.c
-@@ -132,7 +132,7 @@ static void tipc_net_finalize(struct net *net, u32 addr)
- 	tipc_named_reinit(net);
- 	tipc_sk_reinit(net);
- 	tipc_mon_reinit_self(net);
--	tipc_nametbl_publish(net, TIPC_CFG_SRV, addr, addr,
-+	tipc_nametbl_publish(net, TIPC_NODE_STATE, addr, addr,
- 			     TIPC_CLUSTER_SCOPE, 0, addr);
- }
- 
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index 2b633463f40d..75e81fc8e9a8 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -139,9 +139,9 @@ static int tipc_accept(struct socket *sock, struct socket *new_sock, int flags,
- 		       bool kern);
- static void tipc_sk_timeout(struct timer_list *t);
- static int tipc_sk_publish(struct tipc_sock *tsk, uint scope,
--			   struct tipc_name_seq const *seq);
-+			   struct tipc_service_range const *seq);
- static int tipc_sk_withdraw(struct tipc_sock *tsk, uint scope,
--			    struct tipc_name_seq const *seq);
-+			    struct tipc_service_range const *seq);
- static int tipc_sk_leave(struct tipc_sock *tsk);
- static struct tipc_sock *tipc_sk_lookup(struct net *net, u32 portid);
- static int tipc_sk_insert(struct tipc_sock *tsk);
-@@ -667,7 +667,7 @@ static int __tipc_bind(struct socket *sock, struct sockaddr *skaddr, int alen)
- 	if (unlikely(!alen))
- 		return tipc_sk_withdraw(tsk, 0, NULL);
- 
--	if (addr->addrtype == TIPC_ADDR_NAME)
-+	if (addr->addrtype == TIPC_SERVICE_ADDR)
- 		addr->addr.nameseq.upper = addr->addr.nameseq.lower;
- 
- 	if (tsk->group)
-@@ -740,7 +740,7 @@ static int tipc_getname(struct socket *sock, struct sockaddr *uaddr,
- 		addr->addr.id.node = tipc_own_addr(sock_net(sk));
- 	}
- 
--	addr->addrtype = TIPC_ADDR_ID;
-+	addr->addrtype = TIPC_SOCKET_ADDR;
- 	addr->family = AF_TIPC;
- 	addr->scope = 0;
- 	addr->addr.name.domain = 0;
-@@ -818,7 +818,7 @@ static __poll_t tipc_poll(struct file *file, struct socket *sock,
-  * Called from function tipc_sendmsg(), which has done all sanity checks
-  * Returns the number of bytes sent on success, or errno
-  */
--static int tipc_sendmcast(struct  socket *sock, struct tipc_name_seq *seq,
-+static int tipc_sendmcast(struct  socket *sock, struct tipc_service_range *seq,
- 			  struct msghdr *msg, size_t dlen, long timeout)
- {
- 	struct sock *sk = sock->sk;
-@@ -1403,7 +1403,7 @@ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dlen)
- 	bool syn = !tipc_sk_type_connectionless(sk);
- 	struct tipc_group *grp = tsk->group;
- 	struct tipc_msg *hdr = &tsk->phdr;
--	struct tipc_name_seq *seq;
-+	struct tipc_service_range *seq;
- 	struct sk_buff_head pkts;
- 	u32 dport = 0, dnode = 0;
- 	u32 type = 0, inst = 0;
-@@ -1422,9 +1422,9 @@ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dlen)
- 	if (grp) {
- 		if (!dest)
- 			return tipc_send_group_bcast(sock, m, dlen, timeout);
--		if (dest->addrtype == TIPC_ADDR_NAME)
-+		if (dest->addrtype == TIPC_SERVICE_ADDR)
- 			return tipc_send_group_anycast(sock, m, dlen, timeout);
--		if (dest->addrtype == TIPC_ADDR_ID)
-+		if (dest->addrtype == TIPC_SOCKET_ADDR)
- 			return tipc_send_group_unicast(sock, m, dlen, timeout);
- 		if (dest->addrtype == TIPC_ADDR_MCAST)
- 			return tipc_send_group_mcast(sock, m, dlen, timeout);
-@@ -1444,7 +1444,7 @@ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dlen)
- 			return -EISCONN;
- 		if (tsk->published)
- 			return -EOPNOTSUPP;
--		if (dest->addrtype == TIPC_ADDR_NAME) {
-+		if (dest->addrtype == TIPC_SERVICE_ADDR) {
- 			tsk->conn_type = dest->addr.name.name.type;
- 			tsk->conn_instance = dest->addr.name.name.instance;
- 		}
-@@ -1455,14 +1455,14 @@ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dlen)
- 	if (dest->addrtype == TIPC_ADDR_MCAST)
- 		return tipc_sendmcast(sock, seq, m, dlen, timeout);
- 
--	if (dest->addrtype == TIPC_ADDR_NAME) {
-+	if (dest->addrtype == TIPC_SERVICE_ADDR) {
- 		type = dest->addr.name.name.type;
- 		inst = dest->addr.name.name.instance;
- 		dnode = dest->addr.name.domain;
- 		dport = tipc_nametbl_translate(net, type, inst, &dnode);
- 		if (unlikely(!dport && !dnode))
- 			return -EHOSTUNREACH;
--	} else if (dest->addrtype == TIPC_ADDR_ID) {
-+	} else if (dest->addrtype == TIPC_SOCKET_ADDR) {
- 		dnode = dest->addr.id.node;
- 	} else {
- 		return -EINVAL;
-@@ -1474,7 +1474,7 @@ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dlen)
- 	if (unlikely(rc))
- 		return rc;
- 
--	if (dest->addrtype == TIPC_ADDR_NAME) {
-+	if (dest->addrtype == TIPC_SERVICE_ADDR) {
- 		msg_set_type(hdr, TIPC_NAMED_MSG);
- 		msg_set_hdr_sz(hdr, NAMED_H_SIZE);
- 		msg_set_nametype(hdr, type);
-@@ -1482,7 +1482,7 @@ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dlen)
- 		msg_set_lookup_scope(hdr, tipc_node2scope(dnode));
- 		msg_set_destnode(hdr, dnode);
- 		msg_set_destport(hdr, dport);
--	} else { /* TIPC_ADDR_ID */
-+	} else { /* TIPC_SOCKET_ADDR */
- 		msg_set_type(hdr, TIPC_DIRECT_MSG);
- 		msg_set_lookup_scope(hdr, 0);
- 		msg_set_destnode(hdr, dnode);
-@@ -1687,7 +1687,7 @@ static void tipc_sk_set_orig_addr(struct msghdr *m, struct sk_buff *skb)
- 		return;
- 
- 	srcaddr->sock.family = AF_TIPC;
--	srcaddr->sock.addrtype = TIPC_ADDR_ID;
-+	srcaddr->sock.addrtype = TIPC_SOCKET_ADDR;
- 	srcaddr->sock.scope = 0;
- 	srcaddr->sock.addr.id.ref = msg_origport(hdr);
- 	srcaddr->sock.addr.id.node = msg_orignode(hdr);
-@@ -1699,7 +1699,7 @@ static void tipc_sk_set_orig_addr(struct msghdr *m, struct sk_buff *skb)
- 
- 	/* Group message users may also want to know sending member's id */
- 	srcaddr->member.family = AF_TIPC;
--	srcaddr->member.addrtype = TIPC_ADDR_NAME;
-+	srcaddr->member.addrtype = TIPC_SERVICE_ADDR;
- 	srcaddr->member.scope = 0;
- 	srcaddr->member.addr.name.name.type = msg_nametype(hdr);
- 	srcaddr->member.addr.name.name.instance = TIPC_SKB_CB(skb)->orig_member;
-@@ -2867,7 +2867,7 @@ static void tipc_sk_timeout(struct timer_list *t)
- }
- 
- static int tipc_sk_publish(struct tipc_sock *tsk, uint scope,
--			   struct tipc_name_seq const *seq)
-+			   struct tipc_service_range const *seq)
- {
- 	struct sock *sk = &tsk->sk;
- 	struct net *net = sock_net(sk);
-@@ -2895,7 +2895,7 @@ static int tipc_sk_publish(struct tipc_sock *tsk, uint scope,
- }
- 
- static int tipc_sk_withdraw(struct tipc_sock *tsk, uint scope,
--			    struct tipc_name_seq const *seq)
-+			    struct tipc_service_range const *seq)
- {
- 	struct net *net = sock_net(&tsk->sk);
- 	struct publication *publ;
-@@ -3042,7 +3042,7 @@ static int tipc_sk_join(struct tipc_sock *tsk, struct tipc_group_req *mreq)
- 	struct net *net = sock_net(&tsk->sk);
- 	struct tipc_group *grp = tsk->group;
- 	struct tipc_msg *hdr = &tsk->phdr;
--	struct tipc_name_seq seq;
-+	struct tipc_service_range seq;
- 	int rc;
- 
- 	if (mreq->type < TIPC_RESERVED_TYPES)
-@@ -3079,7 +3079,7 @@ static int tipc_sk_leave(struct tipc_sock *tsk)
- {
- 	struct net *net = sock_net(&tsk->sk);
- 	struct tipc_group *grp = tsk->group;
--	struct tipc_name_seq seq;
-+	struct tipc_service_range seq;
- 	int scope;
- 
- 	if (!grp)
-@@ -3203,7 +3203,7 @@ static int tipc_getsockopt(struct socket *sock, int lvl, int opt,
- {
- 	struct sock *sk = sock->sk;
- 	struct tipc_sock *tsk = tipc_sk(sk);
--	struct tipc_name_seq seq;
-+	struct tipc_service_range seq;
- 	int len, scope;
- 	u32 value;
- 	int res;
-@@ -3304,12 +3304,12 @@ static int tipc_socketpair(struct socket *sock1, struct socket *sock2)
- 	u32 onode = tipc_own_addr(sock_net(sock1->sk));
- 
- 	tsk1->peer.family = AF_TIPC;
--	tsk1->peer.addrtype = TIPC_ADDR_ID;
-+	tsk1->peer.addrtype = TIPC_SOCKET_ADDR;
- 	tsk1->peer.scope = TIPC_NODE_SCOPE;
- 	tsk1->peer.addr.id.ref = tsk2->portid;
- 	tsk1->peer.addr.id.node = onode;
- 	tsk2->peer.family = AF_TIPC;
--	tsk2->peer.addrtype = TIPC_ADDR_ID;
-+	tsk2->peer.addrtype = TIPC_SOCKET_ADDR;
- 	tsk2->peer.scope = TIPC_NODE_SCOPE;
- 	tsk2->peer.addr.id.ref = tsk1->portid;
- 	tsk2->peer.addr.id.node = onode;
-diff --git a/net/tipc/subscr.c b/net/tipc/subscr.c
-index f340e53da625..5edfb2d522b9 100644
---- a/net/tipc/subscr.c
-+++ b/net/tipc/subscr.c
-@@ -3,6 +3,7 @@
-  *
-  * Copyright (c) 2000-2017, Ericsson AB
-  * Copyright (c) 2005-2007, 2010-2013, Wind River Systems
-+ * Copyright (c) 2020, Red Hat Inc
-  * All rights reserved.
-  *
-  * Redistribution and use in source and binary forms, with or without
-@@ -60,7 +61,7 @@ static void tipc_sub_send_event(struct tipc_subscription *sub,
-  *
-  * Returns 1 if there is overlap, otherwise 0.
-  */
--int tipc_sub_check_overlap(struct tipc_name_seq *seq, u32 found_lower,
-+int tipc_sub_check_overlap(struct tipc_service_range *seq, u32 found_lower,
- 			   u32 found_upper)
- {
- 	if (found_lower < seq->lower)
-@@ -79,7 +80,7 @@ void tipc_sub_report_overlap(struct tipc_subscription *sub,
- {
- 	struct tipc_subscr *s = &sub->evt.s;
- 	u32 filter = tipc_sub_read(s, filter);
--	struct tipc_name_seq seq;
-+	struct tipc_service_range seq;
- 
- 	seq.type = tipc_sub_read(s, seq.type);
- 	seq.lower = tipc_sub_read(s, seq.lower);
-diff --git a/net/tipc/subscr.h b/net/tipc/subscr.h
-index 6ebbec1bedd1..a083b1b0c1d2 100644
---- a/net/tipc/subscr.h
-+++ b/net/tipc/subscr.h
-@@ -3,6 +3,7 @@
-  *
-  * Copyright (c) 2003-2017, Ericsson AB
-  * Copyright (c) 2005-2007, 2012-2013, Wind River Systems
-+ * Copyright (c) 2020, Red Hat Inc
-  * All rights reserved.
-  *
-  * Redistribution and use in source and binary forms, with or without
-@@ -71,8 +72,8 @@ struct tipc_subscription *tipc_sub_subscribe(struct net *net,
- 					     int conid);
- void tipc_sub_unsubscribe(struct tipc_subscription *sub);
- 
--int tipc_sub_check_overlap(struct tipc_name_seq *seq, u32 found_lower,
--			   u32 found_upper);
-+int tipc_sub_check_overlap(struct tipc_service_range *seq,
-+			   u32 found_lower, u32 found_upper);
- void tipc_sub_report_overlap(struct tipc_subscription *sub,
- 			     u32 found_lower, u32 found_upper,
- 			     u32 event, u32 port, u32 node,
-diff --git a/net/tipc/topsrv.c b/net/tipc/topsrv.c
-index 88ad39e47a98..5522865deae9 100644
---- a/net/tipc/topsrv.c
-+++ b/net/tipc/topsrv.c
-@@ -519,8 +519,8 @@ static int tipc_topsrv_create_listener(struct tipc_topsrv *srv)
- 		goto err;
- 
- 	saddr.family	                = AF_TIPC;
--	saddr.addrtype		        = TIPC_ADDR_NAMESEQ;
--	saddr.addr.nameseq.type         = TIPC_TOP_SRV;
-+	saddr.addrtype		        = TIPC_SERVICE_RANGE;
-+	saddr.addr.nameseq.type	= TIPC_TOP_SRV;
- 	saddr.addr.nameseq.lower	= TIPC_TOP_SRV;
- 	saddr.addr.nameseq.upper	= TIPC_TOP_SRV;
- 	saddr.scope			= TIPC_NODE_SCOPE;
+   Set up veth interfaces as per the topology shown ^^:
+   * setup two veth interfaces and one namespace
+   ** veth<xxxx> in root namespace
+   ** veth<yyyy> in af_xdp<xxxx> namespace
+   ** namespace af_xdp<xxxx>
+   * create a spec file veth.spec that includes this run-time configuration
+   *** xxxx and yyyy are randomly generated 4 digit numbers used to avoid
+       conflict with any existing interface
+
+The following tests are provided:
+
+1. AF_XDP SKB mode
+   Generic mode XDP is driver independent, used when the driver does
+   not have support for XDP. Works on any netdevice using sockets and
+   generic XDP path. XDP hook from netif_receive_skb().
+   a. nopoll - soft-irq processing
+   b. poll - using poll() syscall
+   c. Socket Teardown
+      Create a Tx and a Rx socket, Tx from one socket, Rx on another.
+      Destroy both sockets, then repeat multiple times. Only nopoll mode
+	  is used
+   d. Bi-directional Sockets
+      Configure sockets as bi-directional tx/rx sockets, sets up fill
+	  and completion rings on each socket, tx/rx in both directions.
+	  Only nopoll mode is used
+
+2. AF_XDP DRV/Native mode
+   Works on any netdevice with XDP_REDIRECT support, driver dependent.
+   Processes packets before SKB allocation. Provides better performance
+   than SKB. Driver hook available just after DMA of buffer descriptor.
+   a. nopoll
+   b. poll
+   c. Socket Teardown
+   d. Bi-directional Sockets
+   * Only copy mode is supported because veth does not currently support
+     zero-copy mode
+
+Total tests: 8
+
+Flow:
+* Single process spawns two threads: Tx and Rx
+* Each of these two threads attach to a veth interface within their
+  assigned namespaces
+* Each thread creates one AF_XDP socket connected to a unique umem
+  for each veth interface
+* Tx thread transmits 10k packets from veth<xxxx> to veth<yyyy>
+* Rx thread verifies if all 10k packets were received and delivered
+  in-order, and have the right content
+
+v2 changes:
+* Move selftests/xsk to selftests/bpf
+* Remove Makefiles under selftests/xsk, and utilize selftests/bpf/Makefile
+
+v3 changes:
+* merge all test scripts test_xsk_*.sh into test_xsk.sh
+
+This patch set requires applying patch from bpf stable tree:
+commit 36ccdf85829a by Björn Töpel <bjorn.topel@intel.com>
+[PATCH bpf v2] net, xsk: Avoid taking multiple skbuff references
+
+Structure of the patch set:
+
+Patch 1: This patch adds XSK Selftests framework under selftests/bpf
+Patch 2: Adds tests: SKB poll and nopoll mode, and mac-ip-udp debug
+Patch 3: Adds tests: DRV poll and nopoll mode
+Patch 4: Adds tests: SKB and DRV Socket Teardown
+Patch 5: Adds tests: SKB and DRV Bi-directional Sockets
+
+Thanks: Weqaar
+
+Weqaar Janjua (5):
+  selftests/bpf: xsk selftests framework
+  selftests/bpf: xsk selftests - SKB POLL, NOPOLL
+  selftests/bpf: xsk selftests - DRV POLL, NOPOLL
+  selftests/bpf: xsk selftests - Socket Teardown - SKB, DRV
+  selftests/bpf: xsk selftests - Bi-directional Sockets - SKB, DRV
+
+ tools/testing/selftests/bpf/Makefile       |    7 +-
+ tools/testing/selftests/bpf/test_xsk.sh    |  238 +++++
+ tools/testing/selftests/bpf/xdpxceiver.c   | 1056 ++++++++++++++++++++
+ tools/testing/selftests/bpf/xdpxceiver.h   |  158 +++
+ tools/testing/selftests/bpf/xsk_env.sh     |   28 +
+ tools/testing/selftests/bpf/xsk_prereqs.sh |  119 +++
+ 6 files changed, 1604 insertions(+), 2 deletions(-)
+ create mode 100755 tools/testing/selftests/bpf/test_xsk.sh
+ create mode 100644 tools/testing/selftests/bpf/xdpxceiver.c
+ create mode 100644 tools/testing/selftests/bpf/xdpxceiver.h
+ create mode 100755 tools/testing/selftests/bpf/xsk_env.sh
+ create mode 100755 tools/testing/selftests/bpf/xsk_prereqs.sh
+
 -- 
-2.25.4
+2.20.1
 
