@@ -2,110 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8BDE2C3828
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 05:40:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A9262C3835
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 05:44:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726992AbgKYEjL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Nov 2020 23:39:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33400 "EHLO
+        id S1727847AbgKYEnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Nov 2020 23:43:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726039AbgKYEjL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 23:39:11 -0500
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66967C0613D4
-        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 20:38:58 -0800 (PST)
-Received: by mail-il1-x143.google.com with SMTP id y9so959674ilb.0
-        for <netdev@vger.kernel.org>; Tue, 24 Nov 2020 20:38:58 -0800 (PST)
+        with ESMTP id S1725817AbgKYEnQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Nov 2020 23:43:16 -0500
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E737BC0613D4;
+        Tue, 24 Nov 2020 20:43:03 -0800 (PST)
+Received: by mail-pg1-x544.google.com with SMTP id l17so1288723pgk.1;
+        Tue, 24 Nov 2020 20:43:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=wuvCxCUyDw0maOAHbIfj8AAmeWOiQAsI4pw9FsSwaMA=;
-        b=r9QrsDaxxdBjVObs90I/xupcP3d5ZLsxNKvLG8YMz0/KOwD3pbpMrJHA7XkL6khjQq
-         N4ACKlzIGZjhqFknfIMS7xDxoRHoeUnUu3+os3s1g076pwknOZihKkAmSfc0CDxJDI7l
-         FMenFALRX58L9cnVTBAqaEiRG+pIoSWljiVuhrgkH4tlDs6NkOStZE9b9UfZH02MC8Ne
-         dm9c7mF2I2HxSCUw8nW5mDU5liVn1qt9qCtZbdNS+f6jkbTBP8Bc+eWteZ7hdx0vtDiy
-         IxcKwzlQcMli1vc/W7I/KJ7SeDbGdanz/qXVfVVk8GiWF6zg905ptmB/ymfFvANJFsTD
-         5Oiw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WgwvIE+SYJNhqADKQZurakSjkdWc52Z6zNoc9HGWK/E=;
+        b=u+gTAkG7TRnXQQyxFbV4O/o++vcK3Je5QsfaGcBDaaDf1H+hl1GwQhy8MMHAb3SPzq
+         H06w+2QpAjMOQR+6E+yK189WGcRtUQj7fUDFSm+SIqqENspIReOTxNAy0mflASfMfsK1
+         IH0Lqjo3GsJweS/gfEMGJn177FF6XlIhrI73BLExxDkvQjcs1ebYtklrKk9ueB5GSBZZ
+         soBOKjVvCp+iM32y0xjIM8OfwHLpwuEwxnJRfTBxs4h/S2KdLfM5NxavMldYPzHt/z/5
+         2NRtuONGmq3A1SgSE+F4Q8en3KPvpH7otic+cKDltC/gylbtEMTO4uFU//G+sedbHSPw
+         uvqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=wuvCxCUyDw0maOAHbIfj8AAmeWOiQAsI4pw9FsSwaMA=;
-        b=VCbXv58XU+4ag/yfR26Md10J8n0q2N04vzvhLwuZ3JRFaEZfYAQFqe8iT5obfLLF9L
-         tVJE9phvkw/OfY8nNDRACRosjUHI3KmltZKlllio8s3M8POxNs7vwnBlbe6dYhHlGq21
-         F6ZOihjIrAohlz9v77q+m28dWOIaAvWayyp/g66Uj9lt0D3Xv9JWg1b3SqufSk683eyL
-         Kx/9TZbwmKmvzXoD/6hLjo6hNBaNN9tWw8T+F0wZ4ynRAAUHxG8h7xGUO+bw8ibFXwCo
-         QapacHnCo6AGJ0SwU+erq/EoPIdrnQ3bJoYkceB3aeKcQXBPE1NPGRbHxZquxYxLWyTc
-         Llxw==
-X-Gm-Message-State: AOAM533ykfbx+C/oCHBXrHXlXd9GaUmwcQ3dMK2+H0MkahwDzwrZEb6W
-        GjYrjwgPzfuuZQajV3Gp/PI=
-X-Google-Smtp-Source: ABdhPJzGUKW+XjSeWdIGDEzLLnrUCiBUlOs14PQBU6bzOJZin+Fh4XSIgq1CODlmD0GnvoVVJGieow==
-X-Received: by 2002:a92:8bcb:: with SMTP id i194mr1566858ild.200.1606279137842;
-        Tue, 24 Nov 2020 20:38:57 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:284:8203:54f0:b920:c7b8:6a02:a6c0])
-        by smtp.googlemail.com with ESMTPSA id 26sm408212iof.35.2020.11.24.20.38.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 Nov 2020 20:38:57 -0800 (PST)
-Subject: Re: [PATCH net v2] Documentation: netdev-FAQ: suggest how to post
- co-dependent series
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, brouer@redhat.com, f.fainelli@gmail.com,
-        andrea.mayer@uniroma2.it, stephen@networkplumber.org,
-        ast@kernel.org
-References: <20201125041524.190170-1-kuba@kernel.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <3ddc9fac-b399-cd11-b5e7-e703e7dee855@gmail.com>
-Date:   Tue, 24 Nov 2020 21:38:56 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.5.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WgwvIE+SYJNhqADKQZurakSjkdWc52Z6zNoc9HGWK/E=;
+        b=cBUBiVJYw/z5y8A/9Q78DP6n5uRb1wq5UbcZ+Yu7zew/SDlKuzGcl4Cox9Spp72cri
+         JMGL3tqvKqYq+wveGHrKS7K8Rffglxoy6ywYiyjzFYi5AWviJ1RXYQZI+QEGS7tQWSgm
+         93eIWWe46zwq8DgMXOajIBmRUWAA8L7e/xTey7HzS6zQlQUGuKKVjYMpOLls+7x0J+G+
+         +beXspUjvpZW9YwQic8fZQkCo2oHu3Nv6USgZlbSC29p8kqsVBtyldjsTiCwA4a3mVL7
+         eoH3MFZE3vBR8GrtKG7Buif+NfaH9K6GCbM9rf7Br2TT3TkAK4sQ2vURcqKnUl9lNP0Y
+         lxIA==
+X-Gm-Message-State: AOAM532IqBUdkndrp4iQ3ptgJdZDW5GxeOzF8GXvyfaIRJT0n85EFd1J
+        Y9XfVotB3fTgyTb6M8170GM=
+X-Google-Smtp-Source: ABdhPJwpT35k8tzGkp7unYNbt9QDIr3R8n8s1F35Y7VWvmB6cP19Xflh8P7ICspTdg9F8JP2GuZ2uw==
+X-Received: by 2002:a62:864a:0:b029:197:ad58:4184 with SMTP id x71-20020a62864a0000b0290197ad584184mr932183pfd.55.1606279383324;
+        Tue, 24 Nov 2020 20:43:03 -0800 (PST)
+Received: from f3 (ag097173.dynamic.ppp.asahi-net.or.jp. [157.107.97.173])
+        by smtp.gmail.com with ESMTPSA id j10sm830146pji.29.2020.11.24.20.43.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Nov 2020 20:43:02 -0800 (PST)
+Date:   Wed, 25 Nov 2020 13:42:57 +0900
+From:   Benjamin Poirier <benjamin.poirier@gmail.com>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Manish Chopra <manishc@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH 127/141] staging: qlge: Fix fall-through warnings for
+ Clang
+Message-ID: <20201125044257.GA142382@f3>
+References: <cover.1605896059.git.gustavoars@kernel.org>
+ <673bd9f27bcc2df8c9d12be94f54001d8066d4ab.1605896060.git.gustavoars@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20201125041524.190170-1-kuba@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <673bd9f27bcc2df8c9d12be94f54001d8066d4ab.1605896060.git.gustavoars@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/24/20 9:15 PM, Jakub Kicinski wrote:
-> Make an explicit suggestion how to post user space side of kernel
-> patches to avoid reposts when patchwork groups the wrong patches.
+On 2020-11-20 12:39 -0600, Gustavo A. R. Silva wrote:
+> In preparation to enable -Wimplicit-fallthrough for Clang, fix a warning
+> by explicitly adding a break statement instead of letting the code fall
+> through to the next case.
 > 
-> v2: mention the cases unlike iproute2 explicitly
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> Link: https://github.com/KSPP/linux/issues/115
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 > ---
->  Documentation/networking/netdev-FAQ.rst | 26 +++++++++++++++++++++++++
->  1 file changed, 26 insertions(+)
+>  drivers/staging/qlge/qlge_main.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/Documentation/networking/netdev-FAQ.rst b/Documentation/networking/netdev-FAQ.rst
-> index 21537766be4d..4b9ed5874d5a 100644
-> --- a/Documentation/networking/netdev-FAQ.rst
-> +++ b/Documentation/networking/netdev-FAQ.rst
-> @@ -254,6 +254,32 @@ you will have done run-time testing specific to your change, but at a
->  minimum, your changes should survive an ``allyesconfig`` and an
->  ``allmodconfig`` build without new warnings or failures.
->  
-> +Q: How do I post corresponding changes to user space components?
-> +----------------------------------------------------------------
-> +A: User space code exercising kernel features should be posted
-> +alongside kernel patches. This gives reviewers a chance to see
-> +how any new interface is used and how well it works.
-> +
-> +When user space tools reside in the kernel repo itself all changes
-> +should generally come as one series. If series becomes too large
-> +or the user space project is not reviewed on netdev include a link
-> +to a public repo where user space patches can be seen.
-> +
-> +In case user space tooling lives in a separate repository but is
-> +reviewed on netdev  (e.g. patches to `iproute2` tools) kernel and
+> diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+> index 27da386f9d87..c41b1373dcf8 100644
+> --- a/drivers/staging/qlge/qlge_main.c
+> +++ b/drivers/staging/qlge/qlge_main.c
+> @@ -1385,6 +1385,7 @@ static void ql_categorize_rx_err(struct ql_adapter *qdev, u8 rx_err,
+>  		break;
+>  	case IB_MAC_IOCB_RSP_ERR_CRC:
+>  		stats->rx_crc_err++;
+> +		break;
+>  	default:
+>  		break;
+>  	}
 
-double space. besides that:
-Reviewed-by: David Ahern <dsahern@kernel.org>
-
-
-
-
+In this instance, it think it would be more appropriate to remove the
+"default" case.
