@@ -2,123 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33E432C415C
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 14:49:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F27E2C4169
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 14:51:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729463AbgKYNrU convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 25 Nov 2020 08:47:20 -0500
-Received: from coyote.holtmann.net ([212.227.132.17]:59644 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725792AbgKYNrU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 08:47:20 -0500
-Received: from marcel-macbook.holtmann.net (unknown [37.83.193.87])
-        by mail.holtmann.org (Postfix) with ESMTPSA id B42A0CED07;
-        Wed, 25 Nov 2020 14:54:29 +0100 (CET)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.20.0.2.21\))
-Subject: Re: [PATCH 0/3] Bluetooth: Power down controller when suspending
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <CANFp7mVSGNbwCkWCj=bVzbE8L38nwu0+UMR9jkOYcYQmGBaAEw@mail.gmail.com>
-Date:   Wed, 25 Nov 2020 14:47:16 +0100
-Cc:     crlo@marvell.com, akarwar@marvell.com,
-        BlueZ development <linux-bluetooth@vger.kernel.org>,
-        ChromeOS Bluetooth Upstreaming 
-        <chromeos-bluetooth-upstreaming@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        Daniel Winkler <danielwinkler@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <F681A79B-D4BC-465B-9102-C0322FF8D01F@holtmann.org>
-References: <20201118234352.2138694-1-abhishekpandit@chromium.org>
- <7235CD4E-963C-4BCB-B891-62494AD7F10D@holtmann.org>
- <CANFp7mVSGNbwCkWCj=bVzbE8L38nwu0+UMR9jkOYcYQmGBaAEw@mail.gmail.com>
-To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-X-Mailer: Apple Mail (2.3654.20.0.2.21)
+        id S1729650AbgKYNvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 08:51:19 -0500
+Received: from mail-il1-f198.google.com ([209.85.166.198]:42962 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729637AbgKYNvT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 08:51:19 -0500
+Received: by mail-il1-f198.google.com with SMTP id j18so1841837ilc.9
+        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 05:51:19 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=oz91lyUj1R68WEu1dVaiKojIcWkJEytay+zVxaWFIvc=;
+        b=Zu71RNwSmNBvU29i5zXRRunrAXdFDNL3V7ZiP/4bJ8K2/dQV8Sop7Y/fQZba4KHuqx
+         1N1D+Hx1U4dVvet85g0v5br8pMwSh4NsmMqSeqq6yU14FEusjJB15rBHKjc6CQBJB2fO
+         s5Jpo4VgliwzVJkDfx+HHl8mNfnhnhuCnQTp6dgkIMS/VZtVGC5B7i2uDdP02SxOgFvQ
+         Ie3jWI0dpi1d/0KmnAMfbOD3rISSF0u9DlEpzYC7HIWBVexdmQm/o/AjP/yyzbh5nGvr
+         UpPOucyYMZhwgg9EuXjg3iYUdSfhq9xoUNWDKghufO8dYEW2/j5D1tFX7AHnuSPOJyxM
+         KeXA==
+X-Gm-Message-State: AOAM53104Di/7jevGUYSw0p0XKbD1GTA4r8PkQTTSQVWnRC+XT+NNXte
+        hx5W9eUnIkrYaLD5O3NJjxAMODJbvHDeDhBWwfC+pgIs4doU
+X-Google-Smtp-Source: ABdhPJxTaZDFdE+wuyS+L4vT57rz7AKDgRPXgcLbABypoLQW9FA4vh0IYJPFYRmsuoG/Z9uqRtVzWfvvEpnBOta65UEdOkky4bJL
+MIME-Version: 1.0
+X-Received: by 2002:a05:6638:d4e:: with SMTP id d14mr3446791jak.26.1606312278807;
+ Wed, 25 Nov 2020 05:51:18 -0800 (PST)
+Date:   Wed, 25 Nov 2020 05:51:18 -0800
+In-Reply-To: <00000000000041019205b4c4e9ad@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000c6d7a205b4eeb89b@google.com>
+Subject: Re: BUG: receive list entry not found for dev vxcan1, id 002, mask C00007FF
+From:   syzbot <syzbot+381d06e0c8eaacb8706f@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mkl@pengutronix.de,
+        netdev@vger.kernel.org, socketcan@hartkopp.net,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Abhishek,
+syzbot has found a reproducer for the following issue on:
 
->>> This patch series adds support for a quirk that will power down the
->>> Bluetooth controller when suspending and power it back up when resuming.
->>> 
->>> On Marvell SDIO Bluetooth controllers (SD8897 and SD8997), we are seeing
->>> a large number of suspend failures with the following log messages:
->>> 
->>> [ 4764.773873] Bluetooth: hci_cmd_timeout() hci0 command 0x0c14 tx timeout
->>> [ 4767.777897] Bluetooth: btmrvl_enable_hs() Host sleep enable command failed
->>> [ 4767.777920] Bluetooth: btmrvl_sdio_suspend() HS not actived, suspend failed!
->>> [ 4767.777946] dpm_run_callback(): pm_generic_suspend+0x0/0x48 returns -16
->>> [ 4767.777963] call mmc2:0001:2+ returned -16 after 4882288 usecs
->>> 
->>> The daily failure rate with this signature is quite significant and
->>> users are likely facing this at least once a day (and some unlucky users
->>> are likely facing it multiple times a day).
->>> 
->>> Given the severity, we'd like to power off the controller during suspend
->>> so the driver doesn't need to take any action (or block in any way) when
->>> suspending and power on during resume. This will break wake-on-bt for
->>> users but should improve the reliability of suspend.
->>> 
->>> We don't want to force all users of MVL8897 and MVL8997 to encounter
->>> this behavior if they're not affected (especially users that depend on
->>> Bluetooth for keyboard/mouse input) so the new behavior is enabled via
->>> module param. We are limiting this quirk to only Chromebooks (i.e.
->>> laptop). Chromeboxes will continue to have the old behavior since users
->>> may depend on BT HID to wake and use the system.
->> 
->> I don’t have a super great feeling with this change.
->> 
->> So historically only hciconfig hci0 up/down was doing a power cycle of the controller and when adding the mgmt interface we moved that to the mgmt interface. In addition we added a special case of power up via hdev->setup. We never had an intention that the kernel otherwise can power up/down the controller as it pleases.
-> 
-> Aside from the powered setting, the stack is resilient to the
-> controller crashing (which would be akin to a power off and power on).
-> From the view of bluez, adapter lost and power down should be almost
-> equivalent right? ChromeOS has several platforms where Bluetooth has
-> been reset after suspend, usually due USB being powered off in S3, and
-> the stack is still well-behaving when that occurs.
+HEAD commit:    470dfd80 lan743x: replace polling loop by wait_event_timeo..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=107c26a5500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=df65150a33f23d8c
+dashboard link: https://syzkaller.appspot.com/bug?extid=381d06e0c8eaacb8706f
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12bcd669500000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17ecad3e500000
 
-it gets multitudes more complicated if you look at HCI User Channel and other pieces that utilize the core HCI infrastructure.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+381d06e0c8eaacb8706f@syzkaller.appspotmail.com
 
-HCI interface lost, because of USB disconnect is different. That is a clean path. Similar to RFKILL that just only does a power down.
-
->> Can we ask Marvell first to investigate why this is fundamentally broken with their hardware?
-> 
-> +Chin-Ran Lo and +Amitkumar Karwar (added based on changes to
-> drivers/bluetooth/btmrvl_main.c)
-> 
-> Could you please take a look at the original cover letter and comment
-> (or add others at Marvell who may be able to)? Is this a known issue
-> or a fix?
-
-I wonder if sending a HCI Reset at before entering suspend would be enough. Meaning clear all controller states first and then suspend. This will still disable any kind of remote wakeup support, but might avoid having to fully power down and power up again.
-
->> Since what you are proposing is a pretty heavy change that might has side affects. For example the state machine for the mgmt interface has no concept of a power down/up from the kernel. It is all triggered by bluetoothd.
->> 
->> I am careful here since the whole power up/down path is already complicated enough.
->> 
-> 
-> That sounds reasonable. I have landed this within ChromeOS so we can
-> test whether a) this improves stability enough and b) whether the
-> power off/on in the kernel has significant side effects. This will go
-> through our automated testing and dogfooding over the next few weeks
-> and hopefully identify those side-effects. I will re-raise this topic
-> with updates once we have more data.
-> 
-> Also, in case it wasn't very clear, I put this behind a module param
-> that defaults to False because this is so heavy handed. We're only
-> using it on specific Chromebooks that are exhibiting the worst
-> behavior and not disabling it wholesale for all btmrvl controllers.
-
-We really need a conformance hci-tester that checks if a controller is behaving correctly as promised.
-
-Regards
-
-Marcel
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00000000004442a9
+RDX: 0000000000000018 RSI: 0000000020000000 RDI: 0000000000000004
+RBP: 00007ffc870fdef0 R08: 0000000000000001 R09: 0000000001bbbbbb
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffc870fdf00
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+------------[ cut here ]------------
+BUG: receive list entry not found for dev vxcan1, id 002, mask C00007FF
+WARNING: CPU: 0 PID: 8713 at net/can/af_can.c:546 can_rx_unregister+0x5a4/0x700 net/can/af_can.c:546
+Modules linked in:
+CPU: 0 PID: 8713 Comm: syz-executor284 Not tainted 5.10.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:can_rx_unregister+0x5a4/0x700 net/can/af_can.c:546
+Code: 8b 7c 24 78 44 8b 64 24 68 49 c7 c5 e0 de 56 8a e8 51 d3 95 f9 44 89 f9 44 89 e2 4c 89 ee 48 c7 c7 20 df 56 8a e8 a6 76 d3 00 <0f> 0b 48 8b 7c 24 28 e8 40 e9 0e 01 e9 54 fb ff ff e8 66 db d7 f9
+RSP: 0018:ffffc90001b2fb38 EFLAGS: 00010286
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff888014db8000 RSI: ffffffff8158f3c5 RDI: fffff52000365f59
+RBP: 0000000000000118 R08: 0000000000000001 R09: ffff8880b9e30627
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000002
+R13: ffff8880261f0000 R14: 1ffff92000365f6e R15: 00000000c00007ff
+FS:  0000000000807880(0000) GS:ffff8880b9e00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000004bdfc4 CR3: 0000000014c7c000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ isotp_notifier+0x2a7/0x540 net/can/isotp.c:1303
+ call_netdevice_notifier net/core/dev.c:1735 [inline]
+ call_netdevice_unregister_notifiers+0x156/0x1c0 net/core/dev.c:1763
+ call_netdevice_unregister_net_notifiers net/core/dev.c:1791 [inline]
+ unregister_netdevice_notifier+0xcd/0x170 net/core/dev.c:1870
+ isotp_release+0x136/0x600 net/can/isotp.c:1011
+ __sock_release+0xcd/0x280 net/socket.c:596
+ sock_close+0x18/0x20 net/socket.c:1255
+ __fput+0x285/0x920 fs/file_table.c:281
+ task_work_run+0xdd/0x190 kernel/task_work.c:151
+ tracehook_notify_resume include/linux/tracehook.h:188 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:164 [inline]
+ exit_to_user_mode_prepare+0x17e/0x1a0 kernel/entry/common.c:191
+ syscall_exit_to_user_mode+0x38/0x260 kernel/entry/common.c:266
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x403b20
+Code: 01 f0 ff ff 0f 83 40 0d 00 00 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 83 3d 6d bc 2d 00 00 75 14 b8 03 00 00 00 0f 05 <48> 3d 01 f0 ff ff 0f 83 14 0d 00 00 c3 48 83 ec 08 e8 7a 02 00 00
+RSP: 002b:00007ffc870fdee8 EFLAGS: 00000246 ORIG_RAX: 0000000000000003
+RAX: 0000000000000000 RBX: 0000000000000005 RCX: 0000000000403b20
+RDX: 0000000000000018 RSI: 0000000020000000 RDI: 0000000000000004
+RBP: 00007ffc870fdef0 R08: 0000000000000001 R09: 0000000001bbbbbb
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffc870fdf00
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
 
