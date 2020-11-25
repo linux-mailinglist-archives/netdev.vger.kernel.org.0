@@ -2,118 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A52F42C4994
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 22:11:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BC7D2C4991
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 22:11:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730941AbgKYVKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 16:10:00 -0500
-Received: from mailout07.rmx.de ([94.199.90.95]:47693 "EHLO mailout07.rmx.de"
+        id S1730817AbgKYVI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 16:08:57 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48006 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729981AbgKYVJ7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Nov 2020 16:09:59 -0500
-Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1729981AbgKYVI4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Nov 2020 16:08:56 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mailout07.rmx.de (Postfix) with ESMTPS id 4ChD6q59sWzBvCq;
-        Wed, 25 Nov 2020 22:09:55 +0100 (CET)
-Received: from mta.arri.de (unknown [217.111.95.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by kdin01.retarus.com (Postfix) with ESMTPS id 4ChD6Z68Y1z2xFb;
-        Wed, 25 Nov 2020 22:09:42 +0100 (CET)
-Received: from n95hx1g2.localnet (192.168.54.19) by mta.arri.de
- (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 25 Nov
- 2020 22:08:41 +0100
-From:   Christian Eggers <ceggers@arri.de>
-To:     <Tristram.Ha@microchip.com>
-CC:     <olteanv@gmail.com>, <kuba@kernel.org>, <andrew@lunn.ch>,
-        <richardcochran@gmail.com>, <robh+dt@kernel.org>,
-        <vivien.didelot@gmail.com>, <davem@davemloft.net>,
-        <kurt.kanzenbach@linutronix.de>, <george.mccollister@gmail.com>,
-        <marex@denx.de>, <helmut.grohne@intenta.de>,
-        <pbarker@konsulko.com>, <Codrin.Ciubotariu@microchip.com>,
-        <Woojung.Huh@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v3 00/12] net: dsa: microchip: PTP support for KSZ956x
-Date:   Wed, 25 Nov 2020 22:08:39 +0100
-Message-ID: <3569829.EPWo3g8d0Q@n95hx1g2>
-Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-In-Reply-To: <BYAPR11MB35582F880B533EB2EE0CDD1DECE00@BYAPR11MB3558.namprd11.prod.outlook.com>
-References: <20201118203013.5077-1-ceggers@arri.de> <2452899.Bt8PnbAPR0@n95hx1g2> <BYAPR11MB35582F880B533EB2EE0CDD1DECE00@BYAPR11MB3558.namprd11.prod.outlook.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id 2F10E206F9;
+        Wed, 25 Nov 2020 21:08:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606338536;
+        bh=Qnl/GZSXG3Q/uSLd95lx8IpC32MuLIMDcM9abz+pXr8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=JvkXv2M690IH9Fj99ASnrn+Iup65/JrUlsGqAke5dCUi4JkTKrS5/tU94qM7ZDQiP
+         c8h3MKtO7TygySLp+NvjWKdP7a5WlsJ5HkKzWF/sgGm8trX/Odn8fO6YLYunRzMDAK
+         Vqi3s2/eYCUgEkGdbSQGD6vsa3GJWMrqkycZRD3o=
+Date:   Wed, 25 Nov 2020 13:08:55 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Dany Madden <drt@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, sukadev@linux.ibm.com, ljp@linux.ibm.com
+Subject: Re: [PATCH net-next v2] ibmvnic: process HMC disable command
+Message-ID: <20201125130855.7eb08d0f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201123235841.6515-1-drt@linux.ibm.com>
+References: <20201123235841.6515-1-drt@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Originating-IP: [192.168.54.19]
-X-RMX-ID: 20201125-220942-4ChD6Z68Y1z2xFb-0@kdin01
-X-RMX-SOURCE: 217.111.95.66
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I need some help from Microchip, please read below.
+On Mon, 23 Nov 2020 18:58:41 -0500 Dany Madden wrote:
+> Currently ibmvnic does not support the "Disable vNIC" command from
+> the Hardware Management Console. The HMC uses this command to disconnect
+> the adapter from the network if the adapter is misbehaving or sending
+> malicious traffic. The effect of this command is equivalent to setting
+> the link to the "down" state on the linux client.
+> 
+> Enable support in ibmvnic driver for the Disable vNIC command.
+> 
+> Signed-off-by: Dany Madden <drt@linux.ibm.com>
 
-On Thursday, 19 November 2020, 19:51:15 CET, Tristram.Ha@microchip.com wrote:
-> There is one more requirement that is a little difficult to do.  The calculated peer delay
-> needs to be programmed in hardware register, but the regular PTP stack has no way to
-> send that command.  I think the driver has to do its own calculation by snooping on the
-> Pdelay_Req/Pdelay_Resp/Pdelay_Resp_Follow_Up messages.
+It seems that (a) user looking at the system where NIC was disabled has
+no idea why netdev is not working even tho it's UP, and (b) AFAICT
+nothing prevents the user from bringing the device down and back up
+again.
 
-In an (offline) discussion with Vladimir we discovered, that the KSZ switch
-behaves different as ptp4l expects: 
+You said this is to disable misbehaving and/or sending malicious vnic,
+obviously the guest can ignore the command so it's not very dependable,
+anyway.
 
-The KSZ switch forwards PTP (e.g. SYNC) messages in hardware (with updating
-the correction field). For this, the peer delays need be configured for each
-port.
-
-ptp4l in turn expects to do the forwarding in software (for the P2P_TC clock
-configuration). For this, no hardware configuration of the peer delay is
-necessary. But due to limitations of currently available hardware, this TC
-forwarding is currently only supported for 2 step clocks, as a one-step clock
-would probably fully replace the originTimestamp field (similar as a BC, but
-not as a TC).
-
-Vladimir suggested to configure an ACL in the KSZ switch to block forwarding
-of PTP messages between the user ports and to run ptp4l as BC. My idea is to
-simply block forwarding of UDP messages with destination ports 319+320 and
-L2 messages with the PTP Ether-Type.
-
-I installed the following ACL (for UDP) in the Port ACL Access registers 0-F:
-|_0__1__2__3__4__5__6__7__8__9__A__B__C__D__E__F
-| 00 39 01 40 01 3F 42 22 00 00 00 60 00 00 00 01
-ACL index: 0
-
-Match: 
-- MD=11 (L4)
-- ENB=10 (UDP ports)
-- S/D=0 (dst)
-- EQ=1 (equal)
-- MAX_PORT=320
-- MIN_PORT=319
-- PC=01 (min or max)
-- PRO=17 (UDP, don't care?)
-- FME=0 (disabled)
-
-Action:
-- PM=0 (disabled)
-- P=0 (don't care)
-- RPE=0 (disabled)
-- RP=0 (don't care)
-- MM=11 (replace)
-- PORT_FWD_MAP: all ports to 0
-
-Processing entry:
-- Ruleset=0x0001
-- FRN=0
-
-Unfortunately, with this configuration PTP messages are still forwarded from
-port 1 to port 2. Although I was successful in blocking other communication
-(e.g. by MAC address), the matching rules above seem not to work. Is there an
-error in the ACL, or is forwarding of PTP traffic independent of configured
-ACLs?
-
-regards
-Christian
-
-
-
+Would it not be sufficient to mark the carrier state as down to cut the
+vnic off?
