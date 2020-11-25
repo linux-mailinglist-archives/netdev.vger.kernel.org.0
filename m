@@ -2,146 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F280F2C3C29
-	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 10:28:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43F252C3D35
+	for <lists+netdev@lfdr.de>; Wed, 25 Nov 2020 11:07:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727669AbgKYJ1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 04:27:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49332 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727427AbgKYJ1l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 04:27:41 -0500
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C78EEC0613D4
-        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 01:27:41 -0800 (PST)
-Received: by mail-il1-x144.google.com with SMTP id y9so1516432ilb.0
-        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 01:27:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=12BXPuNJpNTHLbSDTDBbC2XwK7gRTi74c0tpy/C/gVs=;
-        b=DL6B9nqeR6LzP+opt8NQb2EWEgCJw2ZZpywq/ttZp0mAYGOtkcCRtxKw/tvNEhNJzC
-         R/XUbqLILBes9bob+EAvyUATlWzwUX5p7kJG9E6DSota4pLH51XD2t947sS+Sb11gvxi
-         d4/wd7P2MpRM+KOmJI05tGbp3GZ1MxPxT/n1TXBY2yS2zIhmVk2cMMqoSmzbp4V4Mr8L
-         cks3k7LtsSsrmBFJZaFOsXPcIrNPXOGi1H/mCQyjK5K1PvBOLBRCJ4DGqKL4K1JjhcYn
-         EG5ffAq3ilInn5uA9AaqVSfynPUrFR8eMD4WxEeAl3qrVi6slsVBPvsuT7FLXxvVS7YB
-         HAIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=12BXPuNJpNTHLbSDTDBbC2XwK7gRTi74c0tpy/C/gVs=;
-        b=bnUWvaS0zJXiA/DbopQQPv0LWYm27Bu/D8V7TyrMqGJKTOuiNPwhP8vPJmAEr2z4Lk
-         RwvWmzYRBfCOauUkcAq5GB0Nt6zAPb+FeDdBQxBuxTUWvyQHis5DZMtuKn/qYwiJmze4
-         Bmb/xX0/pZ4St5pr/lszDGpgdgj6zUH7hDv4zVMvJvn6jaWOgbCfhW9SrPMCQwUvCwMd
-         J1e7JR8LaDTbksyERAhuKqN2CwpSAgmVMx8E32wx4dv70ixOEQVSRi0NVIEId4q8h5tC
-         2n+Ldp35SusUkkyb6cmzTMqJxx/YOEmuDSXbiuIBeIFkbLv/8aq6oiGrj+uytOWU1Nmw
-         9CfA==
-X-Gm-Message-State: AOAM533WdEnfTjyi0+/Z+RfW3NMAIghfZpg5eFqRUJd11PWq5Fp9E3G4
-        RipIEhRYDPrP7P/TXpKIMx2p+spw0i2MwqETnsxOMA==
-X-Google-Smtp-Source: ABdhPJwcM6mRyuDXMbLzzPtsS4uBK6m4U1duek75JJHp8iqTm3wFW2C0m6f/MnYhbN3gtd4kw4p5m0ih0RokpulgCJ0=
-X-Received: by 2002:a92:358e:: with SMTP id c14mr2267983ilf.69.1606296460480;
- Wed, 25 Nov 2020 01:27:40 -0800 (PST)
+        id S1728824AbgKYKHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 05:07:04 -0500
+Received: from www62.your-server.de ([213.133.104.62]:60964 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726124AbgKYKHE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 05:07:04 -0500
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1khrhT-00035U-Am; Wed, 25 Nov 2020 11:06:59 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1khrhT-000Fbj-4f; Wed, 25 Nov 2020 11:06:59 +0100
+Subject: Re: [PATCH][V2] libbpf: add support for canceling cached_cons advance
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     Li RongQing <lirongqing@baidu.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>
+References: <1606202474-8119-1-git-send-email-lirongqing@baidu.com>
+ <CAJ8uoz0WNm6no8NRehgUH5RiGgvjJkKeD-Yyoah8xJerpLhgdg@mail.gmail.com>
+ <fe9eeaa5-d40a-9be4-a96b-cdd80095da47@iogearbox.net>
+ <CAJ8uoz1JdmHc9nwa4cY20S-GN62RAJUEPGY4LcmdTM4FjuGTow@mail.gmail.com>
+ <aa4cdc17-1e54-7782-2b64-14d7a3ac892e@iogearbox.net>
+ <CAJ8uoz2F3F_w8o1uBzOdxqy5Z1pcg4g4kqG22FnxrQ4+pY5UKg@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <542d88a0-71c0-6d1f-e949-b375d0ac8369@iogearbox.net>
+Date:   Wed, 25 Nov 2020 11:06:58 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20201123141256.14208-1-tariqt@nvidia.com> <CANn89iKRVyTZg-tNQvo_Ub-RZ_A+OOQQY8Py3J9fx=NOZXF9Qw@mail.gmail.com>
- <9bf8ba40-cd40-2af6-d358-48dd98526434@gmail.com> <CANn89iK8MXp0QmZbBKdMDHxi7A4afrVdBtgQq7cSY5SRefwraA@mail.gmail.com>
- <20201125032549.GA13059@gondor.apana.org.au> <329952c5-b208-1781-5604-2b408796ec90@gmail.com>
-In-Reply-To: <329952c5-b208-1781-5604-2b408796ec90@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 25 Nov 2020 10:27:28 +0100
-Message-ID: <CANn89iLTsTgW9UPFn_LNN5Qvs9+0drfcW2cQHtCVYMoboHdv4Q@mail.gmail.com>
-Subject: Re: [PATCH net] netdevice.h: Fix unintentional disable of ALL_FOR_ALL
- features on upper device
-To:     Tariq Toukan <ttoukan.linux@gmail.com>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Moshe Shemesh <moshe@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAJ8uoz2F3F_w8o1uBzOdxqy5Z1pcg4g4kqG22FnxrQ4+pY5UKg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25998/Tue Nov 24 14:16:50 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 25, 2020 at 10:06 AM Tariq Toukan <ttoukan.linux@gmail.com> wrote:
->
->
->
-> On 11/25/2020 5:25 AM, Herbert Xu wrote:
-> > On Tue, Nov 24, 2020 at 11:48:35AM +0100, Eric Dumazet wrote:
-> >>
-> >> Well, the 'increment' part was suggesting the function was adding
-> >> flags, not removing them.
-> >
-> > The idea of the increment part is that we're adding a constituent
-> > device, not that we're adding features.  There have always been
-> > features which were conjunctions, i.e., they must be supported by
-> > all underlying devices for them to be enabled on the virtual device.
-> >
-> > Your use of the increment function is unusual, as you're not adding
-> > features that belong to one underlying device, but rather you're
-> > trying to enable a feature on the virtual device unconditionally.
+On 11/25/20 10:13 AM, Magnus Karlsson wrote:
+> On Wed, Nov 25, 2020 at 10:02 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>> On 11/25/20 9:30 AM, Magnus Karlsson wrote:
+>>> On Tue, Nov 24, 2020 at 10:58 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>>>> On 11/24/20 9:12 AM, Magnus Karlsson wrote:
+>>>>> On Tue, Nov 24, 2020 at 8:33 AM Li RongQing <lirongqing@baidu.com> wrote:
+>>>>>>
+>>>>>> Add a new function for returning descriptors the user received
+>>>>>> after an xsk_ring_cons__peek call. After the application has
+>>>>>> gotten a number of descriptors from a ring, it might not be able
+>>>>>> to or want to process them all for various reasons. Therefore,
+>>>>>> it would be useful to have an interface for returning or
+>>>>>> cancelling a number of them so that they are returned to the ring.
+>>>>>>
+>>>>>> This patch adds a new function called xsk_ring_cons__cancel that
+>>>>>> performs this operation on nb descriptors counted from the end of
+>>>>>> the batch of descriptors that was received through the peek call.
+>>>>>>
+>>>>>> Signed-off-by: Li RongQing <lirongqing@baidu.com>
+>>>>>> [ Magnus Karlsson: rewrote changelog ]
+>>>>>> Cc: Magnus Karlsson <magnus.karlsson@intel.com>
+>>>>>> ---
+>>>>>> diff with v1: fix the building, and rewrote changelog
+>>>>>>
+>>>>>>     tools/lib/bpf/xsk.h | 6 ++++++
+>>>>>>     1 file changed, 6 insertions(+)
+>>>>>>
+>>>>>> diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
+>>>>>> index 1069c46364ff..1719a327e5f9 100644
+>>>>>> --- a/tools/lib/bpf/xsk.h
+>>>>>> +++ b/tools/lib/bpf/xsk.h
+>>>>>> @@ -153,6 +153,12 @@ static inline size_t xsk_ring_cons__peek(struct xsk_ring_cons *cons,
+>>>>>>            return entries;
+>>>>>>     }
+>>>>>>
+>>>>>> +static inline void xsk_ring_cons__cancel(struct xsk_ring_cons *cons,
+>>>>>> +                                        size_t nb)
+>>>>>> +{
+>>>>>> +       cons->cached_cons -= nb;
+>>>>>> +}
+>>>>>> +
+>>>>>>     static inline void xsk_ring_cons__release(struct xsk_ring_cons *cons, size_t nb)
+>>>>>>     {
+>>>>>>            /* Make sure data has been read before indicating we are done
+>>>>>> --
+>>>>>> 2.17.3
+>>>>>
+>>>>> Thank you RongQing.
+>>>>>
+>>>>> Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+>>>>
+>>>> @Magnus: shouldn't the xsk_ring_cons__cancel() nb type be '__u32 nb' instead?
+>>>
+>>> All the other interfaces have size_t as the type for "nb". It is kind
+>>> of weird as a __u32 would have made more sense, but cannot actually
+>>> remember why I chose a size_t two years ago. But for consistency with
+>>> the other interfaces, let us keep it a size_t for now. I will do some
+>>> research around the reason.
+>>
+>> It's actually a bit of a mix currently which is what got me confused:
+>>
+>> static inline __u32 xsk_prod_nb_free(struct xsk_ring_prod *r, __u32 nb)
+>> static inline __u32 xsk_cons_nb_avail(struct xsk_ring_cons *r, __u32 nb)
+>> static inline size_t xsk_ring_prod__reserve(struct xsk_ring_prod *prod, size_t nb, __u32 *idx)
+>> static inline void xsk_ring_prod__submit(struct xsk_ring_prod *prod, size_t nb)
+>> static inline size_t xsk_ring_cons__peek(struct xsk_ring_cons *cons, size_t nb, __u32 *idx)
+>> static inline void xsk_ring_cons__release(struct xsk_ring_cons *cons, size_t nb)
+>>
+>> (I can take it in as-is, but would be nice to clean it up a bit to avoid confusion.)
+> 
+> Hmm, that is confusing indeed. Well, the best choice would be __u32
+> everywhere since the ring pointers themselves are __u32. But I am
+> somewhat afraid of changing an API. Can we guarantee that a change
+> from size_t to __u32 will not break some user's compilation? Another
+> option would be to clean this up next year when we will very likely
+> produce a 1.0 version of this API and at that point we can change some
+> things. What do you think would be the best approach?
 
-This was not the intent.
+Given they're all inlines, imho, risk should be fairly low to switch all to __u32.
+I would probably go and verify first with DPDK as main user of the lib and/or write
+some test cases to see if compiler spills any new warnings and the like, but if not
+the case then we should do it for bpf-next so this has plenty of exposure in the
+meantime. Any nb large than u32 max is a bug in any case.
 
-We can still disable TSO on the bonding device if desired.
-
-pk51:~# for i in bond0 eth1 eth2; do ethtool -k $i|grep
-tcp-segmentation-offload; done
-tcp-segmentation-offload: on
-tcp-segmentation-offload: on
-tcp-segmentation-offload: on
-lpk51:~# ethtool -K bond0 tso off
-Actual changes:
-tcp-segmentation-offload: off
-tx-tcp-segmentation: off
-tx-tcp-ecn-segmentation: off
-tx-tcp-mangleid-segmentation: off
-tx-tcp6-segmentation: off
-large-receive-offload: off [requested on]
-lpk51:~# for i in bond0 eth1 eth2; do ethtool -k $i|grep
-tcp-segmentation-offload; done
-tcp-segmentation-offload: off
-tcp-segmentation-offload: on
-tcp-segmentation-offload: on
-
-The intent was that we could have :
-
-lpk51:~# ethtool -K bond0 tso on
-Actual changes:
-tcp-segmentation-offload: on
-tx-tcp-segmentation: on
-tx-tcp-ecn-segmentation: on
-tx-tcp-mangleid-segmentation: on
-tx-tcp6-segmentation: on
-lpk51:~# ethtool -K eth1 tso off
-lpk51:~# ethtool -K eth2 tso off
-lpk51:~# for i in bond0 eth1 eth2; do ethtool -k $i|grep
-tcp-segmentation-offload; done
-tcp-segmentation-offload: on
-tcp-segmentation-offload: off
-tcp-segmentation-offload: off
-lpk51:~#
-
-
-> >
-> >> We might ask Herbert Xu if we :
-> >>
-> >> 1) Need to comment the function, or change its name to be more descriptive.
-> >> 2) Change the behavior (as you suggested)
-> >> 3) Other choice.
-> >
-> > I think Tariq's patch is fine, although a comment should be added
-> > to netdev_add_tso_features as this use of the increment function
-> > is nonstandard.
-> >
->
-> Thanks Herbert, I'll add a comment and re-spin.
-
-I think we should remove the use of  netdev_increment_features() and
-replace it with something else,
-because there is too much confusion.
+Thanks,
+Daniel
