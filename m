@@ -2,90 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 105002C4EDD
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 07:39:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F8B42C4EE6
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 07:43:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388209AbgKZGgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Nov 2020 01:36:43 -0500
-Received: from mxout70.expurgate.net ([194.37.255.70]:48235 "EHLO
-        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388201AbgKZGgm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 01:36:42 -0500
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1kiAtS-0007Fv-HT; Thu, 26 Nov 2020 07:36:38 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1kiAtR-0004Xe-Pu; Thu, 26 Nov 2020 07:36:37 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 59824240041;
-        Thu, 26 Nov 2020 07:36:37 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id D1473240040;
-        Thu, 26 Nov 2020 07:36:36 +0100 (CET)
-Received: from mschiller01.dev.tdt.de (unknown [10.2.3.20])
-        by mail.dev.tdt.de (Postfix) with ESMTPSA id A6583200F6;
-        Thu, 26 Nov 2020 07:36:36 +0100 (CET)
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     andrew.hendry@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        xie.he.0141@gmail.com
-Cc:     linux-x25@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Martin Schiller <ms@dev.tdt.de>
-Subject: [PATCH net-next v7 5/5] net/x25: remove x25_kill_by_device()
-Date:   Thu, 26 Nov 2020 07:35:57 +0100
-Message-ID: <20201126063557.1283-6-ms@dev.tdt.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201126063557.1283-1-ms@dev.tdt.de>
-References: <20201126063557.1283-1-ms@dev.tdt.de>
+        id S1727372AbgKZGlC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 01:41:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49788 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726417AbgKZGlC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 01:41:02 -0500
+Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B178C0613D4;
+        Wed, 25 Nov 2020 22:41:02 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4ChSnk6p6pz9sRK;
+        Thu, 26 Nov 2020 17:40:58 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1606372859;
+        bh=jHqoz6QPKR8oEcPZi+KhlcgcjTok0fnVD34cOly/NgU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=LcvKpcsqsXaOUiSd0fSsL0r2ueMvqT7X2HJyN1aQFJhYzXsAVPHWoVy5DHGfdZWfH
+         ItaVPb1cD0t720qt6EcRwa2O6Ar4qapixH0THpNzSWOwjElOqPtP12w1ZX++04NE42
+         WmurCIJllMw+O86+5mJMbItQksyuQUIIKvazOLPkEi8qM80xvTUgG/MW25jkhu0sbs
+         jm9xZjih/zU/VEt6UGWw4eA8Uk0wBIWkO5uAxYYttHfK7kIKCJA0KsQKRB3leEQCxl
+         RHlkt6ElX9aDCNgwRFqaos6dWYdCdS9Yzy0KCuT4vC3rNdz1qkL/g6JDM6DYuSYLLF
+         1bOnmdemYRvSw==
+Date:   Thu, 26 Nov 2020 17:40:57 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build warning after merge of the net-next tree
+Message-ID: <20201126174057.0ac8d95b@canb.auug.org.au>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
-Content-Transfer-Encoding: quoted-printable
-X-purgate-ID: 151534::1606372598-000074F7-584554A9/0/0
-X-purgate: clean
-X-purgate-type: clean
+Content-Type: multipart/signed; boundary="Sig_/Vufd.iS+ai17bJrXOVtFLmO";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove obsolete function x25_kill_by_device(). It's not used any more.
+--Sig_/Vufd.iS+ai17bJrXOVtFLmO
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Martin Schiller <ms@dev.tdt.de>
----
- net/x25/af_x25.c | 16 ----------------
- 1 file changed, 16 deletions(-)
+Hi all,
 
-diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
-index 313a6222ded9..1432a05805ab 100644
---- a/net/x25/af_x25.c
-+++ b/net/x25/af_x25.c
-@@ -199,22 +199,6 @@ static void x25_remove_socket(struct sock *sk)
- 	write_unlock_bh(&x25_list_lock);
- }
-=20
--/*
-- *	Kill all bound sockets on a dropped device.
-- */
--static void x25_kill_by_device(struct net_device *dev)
--{
--	struct sock *s;
--
--	write_lock_bh(&x25_list_lock);
--
--	sk_for_each(s, &x25_list)
--		if (x25_sk(s)->neighbour && x25_sk(s)->neighbour->dev =3D=3D dev)
--			x25_disconnect(s, ENETUNREACH, 0, 0);
--
--	write_unlock_bh(&x25_list_lock);
--}
--
- /*
-  *	Handle device status changes.
-  */
+After merging the net-next tree, today's linux-next build (htmldocs)
+produced this warning:
+
+include/linux/phy.h:869: warning: Function parameter or member 'config_intr=
+' not described in 'phy_driver'
+
+Introduced by commit
+
+  6527b938426f ("net: phy: remove the .did_interrupt() and .ack_interrupt()=
+ callback")
+
 --=20
-2.20.1
+Cheers,
+Stephen Rothwell
 
+--Sig_/Vufd.iS+ai17bJrXOVtFLmO
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl+/TfkACgkQAVBC80lX
+0GxWQwf+JMVkCS78ZP+b33PuwnN1x65yes9I48opNrbk7KseUCVsPSwoCE6SUm19
+pACqAfhfp4iYdr1BBUn/ZhbEoksZKvChxBrksV3akE97oHlY7e188wwT6I72Sy0A
+OFcV++DakuyOL2mCBM8UooYHjHRZEY4u84NintTMCGqQVilwiEXdBJe0+NwACNGK
+a3Ibt8TshMhjL8JoAdU4niX/wyNXbTtDJGVkXtgfwrj5l6VzospYdsQ7Jxhs5OUD
+FrKE08uztJHCItYIqrRw4U68XoudbEO/fXpJPHT5CVqVVkj4O0rCWQur5VjIcbFS
+9LrTcUVEHXYRMC/hd7kIazMutrM3gg==
+=Ahu5
+-----END PGP SIGNATURE-----
+
+--Sig_/Vufd.iS+ai17bJrXOVtFLmO--
