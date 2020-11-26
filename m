@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83D7E2C569C
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 15:04:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AD402C569E
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 15:04:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390104AbgKZODF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Nov 2020 09:03:05 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:47170 "EHLO
+        id S2390169AbgKZODG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 09:03:06 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:5434 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2389434AbgKZODD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 09:03:03 -0500
+        by vger.kernel.org with ESMTP id S2389847AbgKZODF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 09:03:05 -0500
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0AQE0K5q028820;
-        Thu, 26 Nov 2020 06:02:57 -0800
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0AQDxm8M028290;
+        Thu, 26 Nov 2020 06:03:01 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=pfpt0220; bh=0lMQuVyeSLaCjUzlC/0+yjavvRfmhPNeL7CyRnFdi0I=;
- b=WywXpOSx+ju9aqH//zsTOHRswTK8cC8ZTBBMl7jq08q17/XrMJZzaATU4dfmEVMnuA2O
- dEHIZzDguyXVHKx3WE1MeNByvHB00AXqPuuxjO6yFooXCyUnXAU4bMwWfzbbM9IXoABg
- hIHnB8xcgmnx60w4jmZ8CXOHlFkCqmNQL/ivSIZySsaACHvD0mvAgJoHLLtmU19FiNlZ
- e7f0w7mPHf2IsbFwJgZdsP7OobzwjgBfNLwhw4RLzTy/pssCp4fw5+pQLNwzJRHzsT7Q
- zgqKvrYJBxTHqyrSvo6pjzZfGcVkzcnrnIOdM+/bcddt5wss5wI6wGCr94VyaKOkIMJP XA== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0b-0016f401.pphosted.com with ESMTP id 34y39rhnvc-1
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=pfpt0220;
+ bh=CWZB6uSGlb1xnaXuJpCulG7xmsFg++yfRJMQhJP4ywc=;
+ b=QZFjqdNnLq4Zgh5Yttyr0i3LudsqhdR0RupVX9+N9Mn/1F0dvnB68FPiNphfmAIdOyFx
+ QehXs+1UlLj99M4wzC7H000UUeOj8lW6WEA3oQIaZ4+cRIOU9Lw7gcvn6h+F3QkjeToU
+ ivVH7WQfh6IejNUOUwA1BeUkiCmLTheUQj6H/aNuGwbriDr9/QVy0cgu/WjMn+KZxGiH
+ 13bHIAak7MSjXQDKpp6pC9j6DLDYxxp0kWWK32XcjVxQpc4GMFCxj1SDIu5+7Aymnjvm
+ zSJw9WstX+6Hd8DMzhEE/1MmslX4I7MZQQmDSx2VnuUlmfZZo45izxduxagBJisorFRh ew== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 34y39rhnvm-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 26 Nov 2020 06:02:57 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 26 Nov
- 2020 06:02:55 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 26 Nov 2020 06:02:55 -0800
+        Thu, 26 Nov 2020 06:03:01 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 26 Nov
+ 2020 06:02:59 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 26 Nov 2020 06:03:00 -0800
 Received: from hyd1584.caveonetworks.com (unknown [10.29.37.82])
-        by maili.marvell.com (Postfix) with ESMTP id 482203F7041;
-        Thu, 26 Nov 2020 06:02:52 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 649123F703F;
+        Thu, 26 Nov 2020 06:02:56 -0800 (PST)
 From:   George Cherian <george.cherian@marvell.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     <kuba@kernel.org>, <davem@davemloft.net>, <sgoutham@marvell.com>,
@@ -42,10 +43,12 @@ CC:     <kuba@kernel.org>, <davem@davemloft.net>, <sgoutham@marvell.com>,
         <masahiroy@kernel.org>, <george.cherian@marvell.com>,
         <willemdebruijn.kernel@gmail.com>, <saeed@kernel.org>,
         <jiri@resnulli.us>
-Subject: [PATCHv5 net-next 0/3] Add devlink and devlink health reporters to 
-Date:   Thu, 26 Nov 2020 19:32:48 +0530
-Message-ID: <20201126140251.963048-1-george.cherian@marvell.com>
+Subject: [PATCHv5 net-next 1/3] octeontx2-af: Add devlink suppoort to af driver
+Date:   Thu, 26 Nov 2020 19:32:49 +0530
+Message-ID: <20201126140251.963048-2-george.cherian@marvell.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20201126140251.963048-1-george.cherian@marvell.com>
+References: <20201126140251.963048-1-george.cherian@marvell.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -55,49 +58,219 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Add devlink support to AF driver. Basic devlink support is added.
+Currently info_get is the only supported devlink ops.
 
-Add basic devlink and devlink health reporters.
-Devlink health reporters are added for NPA and NIX blocks.
-These reporters report the error count in respective blocks.
+devlink ouptput looks like this
+ # devlink dev
+ pci/0002:01:00.0
+ # devlink dev info
+ pci/0002:01:00.0:
+  driver octeontx2-af
+  versions:
+      fixed:
+        mbox version: 9
 
-Address Jakub's comment to add devlink support for error reporting.
-https://www.spinics.net/lists/netdev/msg670712.html
-
-Change-log:
-v5 
- - Address Jiri's comment
- - use devlink_fmsg_arr_pair_nest_start() for NIX blocks 
-
-v4 
- - Rebase to net-next (no logic changes).
- 
-v3
- - Address Saeed's comments on v2.
- - Renamed the reporter name as hw_*.
- - Call devlink_health_report() when an event is raised.
- - Added recover op too.
-
-v2
- - Address Willem's comments on v1.
- - Fixed the sparse issues, reported by Jakub.
-
-
-George Cherian (3):
-  octeontx2-af: Add devlink suppoort to af driver
-  octeontx2-af: Add devlink health reporters for NPA
-  octeontx2-af: Add devlink health reporters for NIX
-
- .../net/ethernet/marvell/octeontx2/Kconfig    |   1 +
- .../ethernet/marvell/octeontx2/af/Makefile    |   2 +-
- .../net/ethernet/marvell/octeontx2/af/rvu.c   |   9 +-
- .../net/ethernet/marvell/octeontx2/af/rvu.h   |   4 +
- .../marvell/octeontx2/af/rvu_devlink.c        | 978 ++++++++++++++++++
- .../marvell/octeontx2/af/rvu_devlink.h        |  82 ++
- .../marvell/octeontx2/af/rvu_struct.h         |  33 +
- 7 files changed, 1107 insertions(+), 2 deletions(-)
+Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
+Signed-off-by: Jerin Jacob <jerinj@marvell.com>
+Signed-off-by: George Cherian <george.cherian@marvell.com>
+---
+ .../net/ethernet/marvell/octeontx2/Kconfig    |  1 +
+ .../ethernet/marvell/octeontx2/af/Makefile    |  2 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu.c   |  9 ++-
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |  4 ++
+ .../marvell/octeontx2/af/rvu_devlink.c        | 72 +++++++++++++++++++
+ .../marvell/octeontx2/af/rvu_devlink.h        | 20 ++++++
+ 6 files changed, 106 insertions(+), 2 deletions(-)
  create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
  create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.h
 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/Kconfig b/drivers/net/ethernet/marvell/octeontx2/Kconfig
+index 543a1d047567..16caa02095fe 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/Kconfig
++++ b/drivers/net/ethernet/marvell/octeontx2/Kconfig
+@@ -9,6 +9,7 @@ config OCTEONTX2_MBOX
+ config OCTEONTX2_AF
+ 	tristate "Marvell OcteonTX2 RVU Admin Function driver"
+ 	select OCTEONTX2_MBOX
++	select NET_DEVLINK
+ 	depends on (64BIT && COMPILE_TEST) || ARM64
+ 	depends on PCI
+ 	help
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/Makefile b/drivers/net/ethernet/marvell/octeontx2/af/Makefile
+index 7100d1dd856e..eb535c98ca38 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/Makefile
++++ b/drivers/net/ethernet/marvell/octeontx2/af/Makefile
+@@ -10,4 +10,4 @@ obj-$(CONFIG_OCTEONTX2_AF) += octeontx2_af.o
+ octeontx2_mbox-y := mbox.o rvu_trace.o
+ octeontx2_af-y := cgx.o rvu.o rvu_cgx.o rvu_npa.o rvu_nix.o \
+ 		  rvu_reg.o rvu_npc.o rvu_debugfs.o ptp.o rvu_npc_fs.o \
+-		  rvu_cpt.o
++		  rvu_cpt.o rvu_devlink.o
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+index 9f901c0edcbb..e8fd712860a1 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+@@ -2826,17 +2826,23 @@ static int rvu_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	if (err)
+ 		goto err_flr;
+ 
++	err = rvu_register_dl(rvu);
++	if (err)
++		goto err_irq;
++
+ 	rvu_setup_rvum_blk_revid(rvu);
+ 
+ 	/* Enable AF's VFs (if any) */
+ 	err = rvu_enable_sriov(rvu);
+ 	if (err)
+-		goto err_irq;
++		goto err_dl;
+ 
+ 	/* Initialize debugfs */
+ 	rvu_dbg_init(rvu);
+ 
+ 	return 0;
++err_dl:
++	rvu_unregister_dl(rvu);
+ err_irq:
+ 	rvu_unregister_interrupts(rvu);
+ err_flr:
+@@ -2868,6 +2874,7 @@ static void rvu_remove(struct pci_dev *pdev)
+ 
+ 	rvu_dbg_exit(rvu);
+ 	rvu_unregister_interrupts(rvu);
++	rvu_unregister_dl(rvu);
+ 	rvu_flr_wq_destroy(rvu);
+ 	rvu_cgx_exit(rvu);
+ 	rvu_fwdata_exit(rvu);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+index b6c0977499ab..b1a6ecfd563e 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+@@ -12,7 +12,10 @@
+ #define RVU_H
+ 
+ #include <linux/pci.h>
++#include <net/devlink.h>
++
+ #include "rvu_struct.h"
++#include "rvu_devlink.h"
+ #include "common.h"
+ #include "mbox.h"
+ #include "npc.h"
+@@ -422,6 +425,7 @@ struct rvu {
+ #ifdef CONFIG_DEBUG_FS
+ 	struct rvu_debugfs	rvu_dbg;
+ #endif
++	struct rvu_devlink	*rvu_dl;
+ };
+ 
+ static inline void rvu_write64(struct rvu *rvu, u64 block, u64 offset, u64 val)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
+new file mode 100644
+index 000000000000..04ef945e7e75
+--- /dev/null
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.c
+@@ -0,0 +1,72 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Marvell OcteonTx2 RVU Devlink
++ *
++ * Copyright (C) 2020 Marvell.
++ *
++ */
++
++#include "rvu.h"
++
++#define DRV_NAME "octeontx2-af"
++
++static int rvu_devlink_info_get(struct devlink *devlink, struct devlink_info_req *req,
++				struct netlink_ext_ack *extack)
++{
++	char buf[10];
++	int err;
++
++	err = devlink_info_driver_name_put(req, DRV_NAME);
++	if (err)
++		return err;
++
++	sprintf(buf, "%X", OTX2_MBOX_VERSION);
++	return devlink_info_version_fixed_put(req, "mbox version:", buf);
++}
++
++static const struct devlink_ops rvu_devlink_ops = {
++	.info_get = rvu_devlink_info_get,
++};
++
++int rvu_register_dl(struct rvu *rvu)
++{
++	struct rvu_devlink *rvu_dl;
++	struct devlink *dl;
++	int err;
++
++	rvu_dl = kzalloc(sizeof(*rvu_dl), GFP_KERNEL);
++	if (!rvu_dl)
++		return -ENOMEM;
++
++	dl = devlink_alloc(&rvu_devlink_ops, sizeof(struct rvu_devlink));
++	if (!dl) {
++		dev_warn(rvu->dev, "devlink_alloc failed\n");
++		kfree(rvu_dl);
++		return -ENOMEM;
++	}
++
++	err = devlink_register(dl, rvu->dev);
++	if (err) {
++		dev_err(rvu->dev, "devlink register failed with error %d\n", err);
++		devlink_free(dl);
++		kfree(rvu_dl);
++		return err;
++	}
++
++	rvu_dl->dl = dl;
++	rvu_dl->rvu = rvu;
++	rvu->rvu_dl = rvu_dl;
++	return 0;
++}
++
++void rvu_unregister_dl(struct rvu *rvu)
++{
++	struct rvu_devlink *rvu_dl = rvu->rvu_dl;
++	struct devlink *dl = rvu_dl->dl;
++
++	if (!dl)
++		return;
++
++	devlink_unregister(dl);
++	devlink_free(dl);
++	kfree(rvu_dl);
++}
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.h
+new file mode 100644
+index 000000000000..1ed6dde79a4e
+--- /dev/null
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_devlink.h
+@@ -0,0 +1,20 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*  Marvell OcteonTx2 RVU Devlink
++ *
++ * Copyright (C) 2020 Marvell.
++ *
++ */
++
++#ifndef RVU_DEVLINK_H
++#define  RVU_DEVLINK_H
++
++struct rvu_devlink {
++	struct devlink *dl;
++	struct rvu *rvu;
++};
++
++/* Devlink APIs */
++int rvu_register_dl(struct rvu *rvu);
++void rvu_unregister_dl(struct rvu *rvu);
++
++#endif /* RVU_DEVLINK_H */
 -- 
 2.25.1
 
