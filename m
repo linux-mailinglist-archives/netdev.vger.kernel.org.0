@@ -2,287 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7EC22C52A9
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 12:17:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA1C62C52DA
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 12:22:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388797AbgKZLPp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Nov 2020 06:15:45 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:34956 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728965AbgKZLPo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 06:15:44 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
-        with SMTP; 26 Nov 2020 13:15:39 +0200
-Received: from vnc1.mtl.labs.mlnx (vnc1.mtl.labs.mlnx [10.7.2.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0AQBFdBi025621;
-        Thu, 26 Nov 2020 13:15:39 +0200
-Received: from vnc1.mtl.labs.mlnx (localhost [127.0.0.1])
-        by vnc1.mtl.labs.mlnx (8.14.4/8.14.4) with ESMTP id 0AQBFd2E004265;
-        Thu, 26 Nov 2020 13:15:39 +0200
-Received: (from moshe@localhost)
-        by vnc1.mtl.labs.mlnx (8.14.4/8.14.4/Submit) id 0AQBFdDv004264;
-        Thu, 26 Nov 2020 13:15:39 +0200
-From:   Moshe Shemesh <moshe@mellanox.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
-        netdev@vger.kernel.org
-Cc:     Moshe Shemesh <moshe@mellanox.com>
-Subject: [PATCH iproute2-net 3/3] devlink: Add reload stats to dev show
-Date:   Thu, 26 Nov 2020 13:14:56 +0200
-Message-Id: <1606389296-3906-4-git-send-email-moshe@mellanox.com>
-X-Mailer: git-send-email 1.8.4.3
-In-Reply-To: <1606389296-3906-1-git-send-email-moshe@mellanox.com>
-References: <1606389296-3906-1-git-send-email-moshe@mellanox.com>
+        id S2388910AbgKZLVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 06:21:47 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.54]:19773 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729932AbgKZLVr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 06:21:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1606389705;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=uNCS1aFmz5+GRjbGXLATLfWOc3SHgcCVSH1L0o5r82g=;
+        b=Yb5k4FHxkAX3gmnIslJIjnS8PKtNh14Lf8BlBEOpdcnnJkimu6XN5zQqeLHkrfb/u1
+        5HtK/h69To3dqIHU2wWCSe3ilzYBvmIJCj0HytcCLZ/jtoDAPjWcHLiRRS2StMXIiCwk
+        BNbmXAb/U/IrwnTZ9KFgxoXW58t1w73nu7VJKwFHK02hYLR3qIGWE0n7Y6En8WzQsD0b
+        5/DOM46ZzPJb2Hpv8/SQFqJD1IpOqpI5MjpY2OO06onrKHPdaeuIfTxSb90Z0Vs7F4cL
+        dcL61bbHCqtvAFNiJ9jkOlfWR97Zy1hfKV8ktEd2XdNvTdUNozx+i0DxrIUILg/9b6wV
+        U9Cg==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3TMaFqTGVxiOMVupw=="
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.10.137]
+        by smtp.strato.de (RZmta 47.3.4 DYNA|AUTH)
+        with ESMTPSA id n07f3bwAQBLgsaF
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Thu, 26 Nov 2020 12:21:42 +0100 (CET)
+Subject: Re: [PATCH] can: m_can: add support for bosch mcan version 3.3.0
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Pankaj Sharma <pankj.sharma@samsung.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     sriram.dash@samsung.com, dmurphy@ti.com, wg@grandegger.com,
+        davem@davemloft.net, kuba@kernel.org, pankaj.dubey@samsung.com
+References: <CGME20201126045221epcas5p46f00cd452b8023262f5556e6f4567352@epcas5p4.samsung.com>
+ <1606366302-5520-1-git-send-email-pankj.sharma@samsung.com>
+ <e7a65c29-d0b0-358f-fc5f-c08944ada4df@pengutronix.de>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <e6f36ce5-1197-d93b-705b-2f7d68761f04@hartkopp.net>
+Date:   Thu, 26 Nov 2020 12:21:36 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
+MIME-Version: 1.0
+In-Reply-To: <e7a65c29-d0b0-358f-fc5f-c08944ada4df@pengutronix.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Show reload statistics through devlink dev show using devlink stats
-flag. The reload statistics show the history per reload action type and
-limit. Add remote reload statistics to show the history of actions
-performed due devlink reload commands initiated by remote host.
 
-Output examples:
-$ devlink dev show -s
-pci/0000:82:00.0:
-  stats:
-      reload:
-          driver_reinit:
-            unspecified 2
-          fw_activate:
-            unspecified 1 no_reset 0
-      remote_reload:
-          driver_reinit:
-            unspecified 0
-          fw_activate:
-            unspecified 0 no_reset 0
-pci/0000:82:00.1:
-  stats:
-      reload:
-          driver_reinit:
-            unspecified 0
-          fw_activate:
-            unspecified 0 no_reset 0
-      remote_reload:
-          driver_reinit:
-            unspecified 1
-          fw_activate:
-            unspecified 1 no_reset 0
 
-$ devlink dev show -s -jp
-{
-    "dev": {
-        "pci/0000:82:00.0": {
-            "stats": {
-                "reload": {
-                    "driver_reinit": {
-                        "unspecified": 2
-                    },
-                    "fw_activate": {
-                        "unspecified": 1,
-                        "no_reset": 0
-                    }
-                },
-                "remote_reload": {
-                    "driver_reinit": {
-                        "unspecified": 0
-                    },
-                    "fw_activate": {
-                        "unspecified": 0,
-                        "no_reset": 0
-                    }
-                }
-            }
-        },
-        "pci/0000:82:00.1": {
-            "stats": {
-                "reload": {
-                    "driver_reinit": {
-                        "unspecified": 0
-                    },
-                    "fw_activate": {
-                        "unspecified": 0,
-                        "no_reset": 0
-                    }
-                },
-                "remote_reload": {
-                    "driver_reinit": {
-                        "unspecified": 1
-                    },
-                    "fw_activate": {
-                        "unspecified": 1,
-                        "no_reset": 0
-                    }
-                }
-            }
-        }
-    }
-}
+On 26.11.20 11:48, Marc Kleine-Budde wrote:
+> On 11/26/20 5:51 AM, Pankaj Sharma wrote:
+>> Add support for mcan bit timing and control mode according to bosch mcan IP
+>> version 3.3.0
+>> The mcan version read from the Core Release field of CREL register would be
+>> 33. Accordingly the properties are to be set for mcan v3.3.0
+> 
+> BTW: do you have the v3.2 and v3.1 datasheets?
 
-Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
----
- devlink/devlink.c            | 102 ++++++++++++++++++++++++++++++++++-
- include/uapi/linux/devlink.h |   2 +
- 2 files changed, 102 insertions(+), 2 deletions(-)
+Unfortunately Bosch does not give access to older documents, so I tried 
+to concentrate all my downloaded versions of public available 
+information here:
 
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index bd588869..b588ba98 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -682,6 +682,15 @@ static const enum mnl_attr_data_type devlink_policy[DEVLINK_ATTR_MAX + 1] = {
- 	[DEVLINK_ATTR_TRAP_METADATA] = MNL_TYPE_NESTED,
- 	[DEVLINK_ATTR_TRAP_GROUP_NAME] = MNL_TYPE_STRING,
- 	[DEVLINK_ATTR_RELOAD_FAILED] = MNL_TYPE_U8,
-+	[DEVLINK_ATTR_DEV_STATS] = MNL_TYPE_NESTED,
-+	[DEVLINK_ATTR_RELOAD_STATS] = MNL_TYPE_NESTED,
-+	[DEVLINK_ATTR_RELOAD_STATS_ENTRY] = MNL_TYPE_NESTED,
-+	[DEVLINK_ATTR_RELOAD_ACTION] = MNL_TYPE_U8,
-+	[DEVLINK_ATTR_RELOAD_STATS_LIMIT] = MNL_TYPE_U8,
-+	[DEVLINK_ATTR_RELOAD_STATS_VALUE] = MNL_TYPE_U32,
-+	[DEVLINK_ATTR_REMOTE_RELOAD_STATS] = MNL_TYPE_NESTED,
-+	[DEVLINK_ATTR_RELOAD_ACTION_INFO] = MNL_TYPE_NESTED,
-+	[DEVLINK_ATTR_RELOAD_ACTION_STATS] = MNL_TYPE_NESTED,
- 	[DEVLINK_ATTR_TRAP_POLICER_ID] = MNL_TYPE_U32,
- 	[DEVLINK_ATTR_TRAP_POLICER_RATE] = MNL_TYPE_U64,
- 	[DEVLINK_ATTR_TRAP_POLICER_BURST] = MNL_TYPE_U64,
-@@ -2370,6 +2379,18 @@ static const char *reload_action_name(uint8_t reload_action)
- 	}
- }
- 
-+static const char *reload_limit_name(uint8_t reload_limit)
-+{
-+	switch (reload_limit) {
-+	case DEVLINK_RELOAD_LIMIT_UNSPEC:
-+		return "unspecified";
-+	case DEVLINK_RELOAD_LIMIT_NO_RESET:
-+		return "no_reset";
-+	default:
-+		return "<unknown reload action>";
-+	}
-+}
-+
- static const char *eswitch_mode_name(uint32_t mode)
- {
- 	switch (mode) {
-@@ -2975,17 +2996,93 @@ static int cmd_dev_param(struct dl *dl)
- 	return -ENOENT;
- }
- 
--static void pr_out_dev(struct dl *dl, struct nlattr **tb)
-+static void pr_out_action_stats(struct dl *dl, struct nlattr *action_stats)
-+{
-+	struct nlattr *tb_stats_entry[DEVLINK_ATTR_MAX + 1] = {};
-+	struct nlattr *reload_stats_entry;
-+	enum devlink_reload_limit limit;
-+	uint32_t value;
-+	int err;
-+
-+	mnl_attr_for_each_nested(reload_stats_entry, action_stats) {
-+		err = mnl_attr_parse_nested(reload_stats_entry, attr_cb, tb_stats_entry);
-+		if (err != MNL_CB_OK)
-+			return;
-+		if (!tb_stats_entry[DEVLINK_ATTR_RELOAD_STATS_LIMIT] ||
-+		    !tb_stats_entry[DEVLINK_ATTR_RELOAD_STATS_VALUE])
-+			return;
-+
-+		check_indent_newline(dl);
-+		limit = mnl_attr_get_u8(tb_stats_entry[DEVLINK_ATTR_RELOAD_STATS_LIMIT]);
-+		value = mnl_attr_get_u32(tb_stats_entry[DEVLINK_ATTR_RELOAD_STATS_VALUE]);
-+		print_uint_name_value(reload_limit_name(limit), value);
-+	}
-+}
-+
-+static void pr_out_reload_stats(struct dl *dl, struct nlattr *reload_stats)
-+{
-+	struct nlattr *tb_action_info[DEVLINK_ATTR_MAX + 1] = {};
-+	enum devlink_reload_action action;
-+	struct nlattr *action_info;
-+	int err;
-+
-+	mnl_attr_for_each_nested(action_info, reload_stats) {
-+		err = mnl_attr_parse_nested(action_info, attr_cb, tb_action_info);
-+		if (err != MNL_CB_OK)
-+			return;
-+		if (!tb_action_info[DEVLINK_ATTR_RELOAD_ACTION] ||
-+		    !tb_action_info[DEVLINK_ATTR_RELOAD_ACTION_STATS])
-+			return;
-+
-+		action = mnl_attr_get_u8(tb_action_info[DEVLINK_ATTR_RELOAD_ACTION]);
-+		pr_out_object_start(dl, reload_action_name(action));
-+		pr_out_action_stats(dl, tb_action_info[DEVLINK_ATTR_RELOAD_ACTION_STATS]);
-+		pr_out_object_end(dl);
-+	}
-+}
-+
-+static void pr_out_reload_data(struct dl *dl, struct nlattr **tb)
- {
-+	struct nlattr *tb_stats[DEVLINK_ATTR_MAX + 1] = {};
- 	uint8_t reload_failed = 0;
-+	int err;
- 
- 	if (tb[DEVLINK_ATTR_RELOAD_FAILED])
- 		reload_failed = mnl_attr_get_u8(tb[DEVLINK_ATTR_RELOAD_FAILED]);
- 
- 	if (reload_failed) {
--		__pr_out_handle_start(dl, tb, true, false);
- 		check_indent_newline(dl);
- 		print_bool(PRINT_ANY, "reload_failed", "reload_failed %s", true);
-+	}
-+	if (!tb[DEVLINK_ATTR_DEV_STATS] || !dl->stats)
-+		return;
-+	err = mnl_attr_parse_nested(tb[DEVLINK_ATTR_DEV_STATS], attr_cb, tb_stats);
-+	if (err != MNL_CB_OK)
-+		return;
-+
-+	pr_out_object_start(dl, "stats");
-+
-+	if (tb_stats[DEVLINK_ATTR_RELOAD_STATS]) {
-+		pr_out_object_start(dl, "reload");
-+		pr_out_reload_stats(dl, tb_stats[DEVLINK_ATTR_RELOAD_STATS]);
-+		pr_out_object_end(dl);
-+	}
-+	if (tb_stats[DEVLINK_ATTR_REMOTE_RELOAD_STATS]) {
-+		pr_out_object_start(dl, "remote_reload");
-+		pr_out_reload_stats(dl, tb_stats[DEVLINK_ATTR_REMOTE_RELOAD_STATS]);
-+		pr_out_object_end(dl);
-+	}
-+
-+	pr_out_object_end(dl);
-+}
-+
-+
-+static void pr_out_dev(struct dl *dl, struct nlattr **tb)
-+{
-+	if ((tb[DEVLINK_ATTR_RELOAD_FAILED] && mnl_attr_get_u8(tb[DEVLINK_ATTR_RELOAD_FAILED])) ||
-+	    (tb[DEVLINK_ATTR_DEV_STATS] && dl->stats)) {
-+		__pr_out_handle_start(dl, tb, true, false);
-+		pr_out_reload_data(dl, tb);
- 		pr_out_handle_end(dl);
- 	} else {
- 		pr_out_handle(dl, tb);
-@@ -4844,6 +4941,7 @@ static int cmd_mon_show_cb(const struct nlmsghdr *nlh, void *data)
- 		if (!tb[DEVLINK_ATTR_BUS_NAME] || !tb[DEVLINK_ATTR_DEV_NAME])
- 			return MNL_CB_ERROR;
- 		pr_out_mon_header(genl->cmd);
-+		dl->stats = true;
- 		pr_out_dev(dl, tb);
- 		pr_out_mon_footer();
- 		break;
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index e639a4e5..6ffa0121 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -526,6 +526,8 @@ enum devlink_attr {
- 	DEVLINK_ATTR_RELOAD_STATS_LIMIT,	/* u8 */
- 	DEVLINK_ATTR_RELOAD_STATS_VALUE,	/* u32 */
- 	DEVLINK_ATTR_REMOTE_RELOAD_STATS,	/* nested */
-+	DEVLINK_ATTR_RELOAD_ACTION_INFO,	/* nested */
-+	DEVLINK_ATTR_RELOAD_ACTION_STATS,	/* nested */
- 
- 	/* add new attributes above here, update the policy in devlink.c */
- 
--- 
-2.18.2
+https://github.com/hartkopp/M_CAN-User-Manual-History
 
+PR's with updates are welcome ;-)
+
+Best,
+Oliver
+
+ps. @Bosch Semiconductors - Read the README there! I would like to 
+remove my own collection.
+
+> 
+> Marc
+> 
+>> Signed-off-by: Pankaj Sharma <pankj.sharma@samsung.com>
+>> ---
+>> Depends on:
+>> https://marc.info/?l=linux-can&m=160624495218700&w=2
+>>
+>>   drivers/net/can/m_can/m_can.c | 2 ++
+>>   1 file changed, 2 insertions(+)
+>>
+>> diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+>> index 86bbbfa..7652175 100644
+>> --- a/drivers/net/can/m_can/m_can.c
+>> +++ b/drivers/net/can/m_can/m_can.c
+>> @@ -1385,6 +1385,8 @@ static int m_can_dev_setup(struct m_can_classdev *m_can_dev)
+>>   						&m_can_data_bittiming_const_31X;
+>>   		break;
+>>   	case 32:
+>> +	case 33:
+>> +		/* Support both MCAN version v3.2.x and v3.3.0 */
+>>   		m_can_dev->can.bittiming_const = m_can_dev->bit_timing ?
+>>   			m_can_dev->bit_timing : &m_can_bittiming_const_31X;
+>>   
+>>
+> 
+> 
