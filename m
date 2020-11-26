@@ -2,190 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08C0B2C4E39
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 06:23:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 569A32C4E8D
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 06:58:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387746AbgKZFW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Nov 2020 00:22:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37842 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387735AbgKZFW5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 00:22:57 -0500
-Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32E2BC0613D4;
-        Wed, 25 Nov 2020 21:22:57 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4ChR3b6Z6pz9sTv;
-        Thu, 26 Nov 2020 16:22:51 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1606368172;
-        bh=5qXyp906ZkdpWVuTRjT+MKJ/gkNv6GNhdDY5IWnW8KE=;
-        h=Date:From:To:Cc:Subject:From;
-        b=FJs5XeMZRGcMrCJfkoepCRB0q9akJ+po2U9iBugFAN0hFlILjEWD3A7a4KiobsJRp
-         n7POCsCNXpYrLXotu2bmaniChimTnHSi4e4u7qcJ6q7YQJzH719wxyspO5FECsVBDk
-         mVBeg+0CBFOlmItoUrtJJbqW2gspya9cPQ+buyxLOW6eOh7rJoWxxgxkifn/LeFqdN
-         l0J/ZNwQc3wT78MVF401uEPoGIo1qyS+PAGxBRW5fLk+D4ey7uxU1rwQOAqbpJG1QT
-         UYaK4RuD/ZwCO7GaQBpSzG2q+GvG1UvwMPmsQPce45pVgmnS6vrOFSmkmsnVMKaleY
-         oQ58XV3iHws8A==
-Date:   Thu, 26 Nov 2020 16:22:48 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>
-Subject: linux-next: manual merge of the userns tree with the bpf-next tree
-Message-ID: <20201126162248.7e7963fe@canb.auug.org.au>
+        id S2387889AbgKZF56 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 00:57:58 -0500
+Received: from mxout70.expurgate.net ([91.198.224.70]:19219 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387863AbgKZF56 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 00:57:58 -0500
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1kiAHv-000AYz-QN; Thu, 26 Nov 2020 06:57:51 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1kiAHu-000AYo-VI; Thu, 26 Nov 2020 06:57:50 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id A1F9E240041;
+        Thu, 26 Nov 2020 06:57:50 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 1A759240040;
+        Thu, 26 Nov 2020 06:57:50 +0100 (CET)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id 77508200F6;
+        Thu, 26 Nov 2020 06:57:44 +0100 (CET)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/D_a4snb_.UIVWOd2syNDGQv";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 26 Nov 2020 06:57:44 +0100
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     andrew.hendry@gmail.com, davem@davemloft.net,
+        xie.he.0141@gmail.com, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v6 2/5] net/lapb: support netdev events
+Organization: TDT AG
+In-Reply-To: <20201125134925.26d851f7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20201124093938.22012-1-ms@dev.tdt.de>
+ <20201124093938.22012-3-ms@dev.tdt.de>
+ <20201125134925.26d851f7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Message-ID: <82d7a9cb1375a24c8cf26615f71ca99b@dev.tdt.de>
+X-Sender: ms@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.15
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+X-purgate-type: clean
+X-purgate: clean
+X-purgate-ID: 151534::1606370271-00001F6B-90FFE692/0/0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/D_a4snb_.UIVWOd2syNDGQv
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 2020-11-25 22:49, Jakub Kicinski wrote:
+> On Tue, 24 Nov 2020 10:39:35 +0100 Martin Schiller wrote:
+>> This patch allows layer2 (LAPB) to react to netdev events itself and
+>> avoids the detour via layer3 (X.25).
+>> 
+>> 1. Establish layer2 on NETDEV_UP events, if the carrier is already up.
+>> 
+>> 2. Call lapb_disconnect_request() on NETDEV_GOING_DOWN events to 
+>> signal
+>>    the peer that the connection will go down.
+>>    (Only when the carrier is up.)
+>> 
+>> 3. When a NETDEV_DOWN event occur, clear all queues, enter state
+>>    LAPB_STATE_0 and stop all timers.
+>> 
+>> 4. The NETDEV_CHANGE event makes it possible to handle carrier loss 
+>> and
+>>    detection.
+>> 
+>>    In case of Carrier Loss, clear all queues, enter state LAPB_STATE_0
+>>    and stop all timers.
+>> 
+>>    In case of Carrier Detection, we start timer t1 on a DCE interface,
+>>    and on a DTE interface we change to state LAPB_STATE_1 and start
+>>    sending SABM(E).
+>> 
+>> Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+> 
+>> +/* Handle device status changes. */
+>> +static int lapb_device_event(struct notifier_block *this, unsigned 
+>> long event,
+>> +			     void *ptr)
+>> +{
+>> +	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+>> +	struct lapb_cb *lapb;
+>> +
+>> +	if (!net_eq(dev_net(dev), &init_net))
+>> +		return NOTIFY_DONE;
+>> +
+>> +	if (dev->type == ARPHRD_X25) {
+> 
+> Flip condition, save indentation.
+> 
+> 	if (dev->type != ARPHRD_X25)
+> 		return NOTIFY_DONE;
+> 
+> You can also pull out of all the cases:
+> 
+> 	lapb = lapb_devtostruct(dev);
+> 	if (!lapb)
+> 		return NOTIFY_DONE;
+> 
+> right?
+> 
+>> +		switch (event) {
+>> +		case NETDEV_UP:
+>> +			lapb_dbg(0, "(%p) Interface up: %s\n", dev,
+>> +				 dev->name);
+>> +
+>> +			if (netif_carrier_ok(dev)) {
+>> +				lapb = lapb_devtostruct(dev);
+>> +				if (!lapb)
+>> +					break;
+> 
+>>  static int __init lapb_init(void)
+>>  {
+>> +	register_netdevice_notifier(&lapb_dev_notifier);
+> 
+> This can fail, so:
+> 
+> 	return register_netdevice_notifier(&lapb_dev_notifier);
+> 
+>>  	return 0;
+>>  }
+>> 
+>>  static void __exit lapb_exit(void)
+>>  {
+>>  	WARN_ON(!list_empty(&lapb_list));
+>> +
+>> +	unregister_netdevice_notifier(&lapb_dev_notifier);
+>>  }
+>> 
+>>  MODULE_AUTHOR("Jonathan Naylor <g4klx@g4klx.demon.co.uk>");
 
-Hi all,
-
-Today's linux-next merge of the userns tree got a conflict in:
-
-  kernel/bpf/task_iter.c
-
-between commit:
-
-  91b2db27d3ff ("bpf: Simplify task_file_seq_get_next()")
-
-from the bpf-next tree and commit:
-
-  edc52f17257a ("bpf/task_iter: In task_file_seq_get_next use task_lookup_n=
-ext_fd_rcu")
-
-from the userns tree.
-
-I fixed it up (I think, see below) and can carry the fix as
-necessary. This is now fixed as far as linux-next is concerned, but any
-non trivial conflicts should be mentioned to your upstream maintainer
-when your tree is submitted for merging.  You may also want to consider
-cooperating with the maintainer of the conflicting tree to minimise any
-particularly complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc kernel/bpf/task_iter.c
-index 0458a40edf10,4ec63170c741..000000000000
---- a/kernel/bpf/task_iter.c
-+++ b/kernel/bpf/task_iter.c
-@@@ -136,41 -135,29 +135,30 @@@ struct bpf_iter_seq_task_file_info=20
-  };
- =20
-  static struct file *
- -task_file_seq_get_next(struct bpf_iter_seq_task_file_info *info,
- -		       struct task_struct **task)
- +task_file_seq_get_next(struct bpf_iter_seq_task_file_info *info)
-  {
-  	struct pid_namespace *ns =3D info->common.ns;
-- 	u32 curr_tid =3D info->tid, max_fds;
-- 	struct files_struct *curr_files;
-+ 	u32 curr_tid =3D info->tid;
-  	struct task_struct *curr_task;
-- 	int curr_fd =3D info->fd;
-+ 	unsigned int curr_fd =3D info->fd;
- =20
-  	/* If this function returns a non-NULL file object,
-- 	 * it held a reference to the task/files_struct/file.
-+ 	 * it held a reference to the task/file.
-  	 * Otherwise, it does not hold any reference.
-  	 */
-  again:
- -	if (*task) {
- -		curr_task =3D *task;
- +	if (info->task) {
- +		curr_task =3D info->task;
-- 		curr_files =3D info->files;
-  		curr_fd =3D info->fd;
-  	} else {
-  		curr_task =3D task_seq_get_next(ns, &curr_tid, true);
- -		if (!curr_task)
- +		if (!curr_task) {
- +			info->task =3D NULL;
-- 			info->files =3D NULL;
-  			return NULL;
- +		}
- =20
-- 		curr_files =3D get_files_struct(curr_task);
-- 		if (!curr_files) {
-- 			put_task_struct(curr_task);
-- 			curr_tid =3D ++(info->tid);
-- 			info->fd =3D 0;
-- 			goto again;
-- 		}
--=20
-- 		info->files =3D curr_files;
-+ 		/* set *task and info->tid */
- -		*task =3D curr_task;
- +		info->task =3D curr_task;
-  		if (curr_tid =3D=3D info->tid) {
-  			curr_fd =3D info->fd;
-  		} else {
-@@@ -198,10 -183,8 +184,8 @@@
- =20
-  	/* the current task is done, go to the next task */
-  	rcu_read_unlock();
-- 	put_files_struct(curr_files);
-  	put_task_struct(curr_task);
- -	*task =3D NULL;
- +	info->task =3D NULL;
-- 	info->files =3D NULL;
-  	info->fd =3D 0;
-  	curr_tid =3D ++(info->tid);
-  	goto again;
-@@@ -210,13 -193,18 +194,12 @@@
-  static void *task_file_seq_start(struct seq_file *seq, loff_t *pos)
-  {
-  	struct bpf_iter_seq_task_file_info *info =3D seq->private;
- -	struct task_struct *task =3D NULL;
-  	struct file *file;
- =20
- -	file =3D task_file_seq_get_next(info, &task);
- -	if (!file) {
- -		info->task =3D NULL;
- -		return NULL;
- -	}
- -
- -	if (*pos =3D=3D 0)
- +	info->task =3D NULL;
-- 	info->files =3D NULL;
- +	file =3D task_file_seq_get_next(info);
- +	if (file && *pos =3D=3D 0)
-  		++*pos;
- -	info->task =3D task;
- =20
-  	return file;
-  }
-
---Sig_/D_a4snb_.UIVWOd2syNDGQv
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl+/O6kACgkQAVBC80lX
-0Gzrggf/VpiznQ4Zk4fDSOLKmXhy26KEC9CD9lgBvHomviB358nv1viil985EKj+
-gGFsFlalZgHrdFC5ovsSK1uThZOvFgPzKGFy8ybcb2F276L9lmFmmFiBjnBBfxr2
-70vQ/yPqXEvO2U0LIj6iGRx/lUirnO0gxnVbPBlea+5IvaUDk9caBb9DNF1RfRaK
-TGMNQ52HKuSl1Tm/LbpHMMZmGPii7dl1Xn75tfoUgPeo5uVrB7Af15oN8dbhv6ZB
-dFRiZQWgKMlrZxuzcZ1WWRH7Wfl5/JukK1gtsdDqWhrpymSmHHphBsdBse4u/zfe
-8+7NjkP4Unk6K1MfEPl8WKzj8Xs2YQ==
-=pnHp
------END PGP SIGNATURE-----
-
---Sig_/D_a4snb_.UIVWOd2syNDGQv--
+Thanks for your hints! I will send an update.
