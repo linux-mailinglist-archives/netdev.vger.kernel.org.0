@@ -2,243 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21AF92C4DFE
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 05:24:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC98C2C4E23
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 06:02:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387652AbgKZEWv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 23:22:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56818 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387625AbgKZEWt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 23:22:49 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF960C0613D4
-        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 20:22:49 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id 4so1237324ybv.11
-        for <netdev@vger.kernel.org>; Wed, 25 Nov 2020 20:22:49 -0800 (PST)
+        id S1727908AbgKZFBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 00:01:32 -0500
+Received: from mail-eopbgr110130.outbound.protection.outlook.com ([40.107.11.130]:17565
+        "EHLO GBR01-CWL-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725846AbgKZFBb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Nov 2020 00:01:31 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Zg8IlNqjt/qW+NipdHelqjdbWWb3z+H6kbOQuQJFznh1mAUWE/v+VgYWDVnXBLVJXFaPXRN2jwFoDg9R11QJ7yh3g4sV6JW9DwUk3+iwmAW0RcLYi2SlxnN1lhfT+x+M6vkHsDbnXqSrhXgxBC58ru4mq9yKKwQ9umVhHKyh5wZwIWmGunRgOay9Ev1sk1daCgZskU0bZPu/sA0IGMQiFyXOGNB+isq1OhHhS7FzJzyid5oDIyb6gfQh8Q4HFPoH2iZ7qKvxYPyz1ljWv2tZbaK8NUki4IIA8OGh2WGrCClQsofowX0ccII+gAff/gaNXj2oD3YMeuoJDS7eZUi45g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qHYrsIFQP6xLkBg6mg8RoMXOyIYUJyyshQMi5sz0Bb8=;
+ b=gGrNQ1nm/2Hdq9nXFq0lV+fya5oc9VmdGgn2PtJL2yFz5SiilotYxGyHJnrJBC2UC7ihkFKlLVPHxcT22Znkr8HUHZeZRozwMRU3k1UpQwNUxYSIZsvokvYJexK7Li3qc/S3a8xwGTCj6ungUgXrBDwn3QTSNwlei+l4pudmfwz9Nw3+M0jA0BzYC6RiToMdDraSamVQzVgTGsL2jfD3rMIo6QiJnx5dq071C8lBH/P0+MorNFnDLIGAA/7T+63dD4VWc/38QQcAh60xWIYsoukY4SX3vyt1Gj9p3nSmlG0Mg0fKaHO9u4fo0mh/LClP/bsl/m6Joo93fpwQM1XPZw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=purelifi.com; dmarc=pass action=none header.from=purelifi.com;
+ dkim=pass header.d=purelifi.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=OEmCYU2wE2pMwO9qaMpsDa79P/ofsNacQ+feLvvDdbE=;
-        b=STf4eE3pfgxCyhwWt+LTitCOCfInJE/KMsuIjgDAYgXLjvzcRY4SOzGthXqp/3C8j/
-         z7HYYHsz515hqxVJYKhZV40GWExlUAiqj3gEqwX7zD9ZLfV2JK2j+kfKZSeGozC2fOP+
-         LoUsE2GgSdEeyhZy2Oul1dhlRiCiKeH1J9c7AECPpJJ1fs+EIBy739iF0L1ew19s6JSH
-         xAu/7CCOjWTWexShnYk36/Na6oCf9Nig3N1JypGKkSTRcdZpLPSXbcqbUcXs8YYZ8srF
-         gUkk9hT5hnmp233/l8CON2TpVQdJUJxor57jmeY4ZB9xPFxmUt/1ax3KUz+JczXrWs2d
-         wJBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=OEmCYU2wE2pMwO9qaMpsDa79P/ofsNacQ+feLvvDdbE=;
-        b=VbAMlQQG8ptQtR7dXtaoGxHop1RuBflkRmiOEUei3dAc6hI8m5x05bwpKPvYum/nVY
-         w4+HcTtNaO58LB1JSxVeS2neBTeF/1QXNJCZS9xYueuPW9sbnKOt45Ytk3nbN/R9vSym
-         0Y7e5TvQjE4ANY7BwKdsOos/5ipr8PAINs8KMnyp1wmFEs36wfd1Ll0hRcdhraJEG7r8
-         Y6u+n6B38YWOzq9nrIxi4oeojoR9ZxpBswuvh0IGrzvc7gcF3CGatqgMu8BwMgNExZzQ
-         kSS8CayHnkLMz4bnSQJA6Bt2wG5oIqyVXy25vVZb/PCR4dFgjNFPnADosxWVEy/6vwKy
-         nFPA==
-X-Gm-Message-State: AOAM530zWEzWWfLoBitmzisgoUukJA6ejgugEuN34zmWRarirn8TwCjx
-        M1zyC0ElW3udVj/C2OS964NrhPOGD83MH4pGZg==
-X-Google-Smtp-Source: ABdhPJyJPvTdX6cnHg9r5S5byve52ylm8v9Tw9Lfek0Vg61lMmjC6V3sPbNP2HXv+g/NvXl6PEmtWuZF//PJomJGrg==
-Sender: "howardchung via sendgmr" 
-        <howardchung@howardchung-p920.tpe.corp.google.com>
-X-Received: from howardchung-p920.tpe.corp.google.com ([2401:fa00:1:10:f693:9fff:fef4:4e45])
- (user=howardchung job=sendgmr) by 2002:a25:6949:: with SMTP id
- e70mr1356451ybc.313.1606364568995; Wed, 25 Nov 2020 20:22:48 -0800 (PST)
-Date:   Thu, 26 Nov 2020 12:22:25 +0800
-In-Reply-To: <20201126122109.v11.1.Ib75f58e90c477f9b82c5598f00c59f0e95a1a352@changeid>
-Message-Id: <20201126122109.v11.5.I756c1fecc03bcc0cd94400b4992cd7e743f4b3e2@changeid>
-Mime-Version: 1.0
-References: <20201126122109.v11.1.Ib75f58e90c477f9b82c5598f00c59f0e95a1a352@changeid>
-X-Mailer: git-send-email 2.29.2.454.gaff20da3a2-goog
-Subject: [PATCH v11 5/5] Bluetooth: Add toggle to switch off interleave scan
-From:   Howard Chung <howardchung@google.com>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        luiz.dentz@gmail.com
-Cc:     alainm@chromium.org, mcchou@chromium.org, mmandlik@chromium.org,
-        Howard Chung <howardchung@google.com>,
+ d=purevlc.onmicrosoft.com; s=selector2-purevlc-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qHYrsIFQP6xLkBg6mg8RoMXOyIYUJyyshQMi5sz0Bb8=;
+ b=qB0bxE2zBXn69m0UzGj733pYaVbEcTSEkGfUfJbYcNCEbVF4pL9bO0IVDO5U0WwZcEMYfyaLT1zysG3wIEm1i8wvgKYSX756YBhmxaX1WtneYcMB7yNsa9QzZWg5ZdpglRB04okXSKB/2adWFq8qDq++jm93HaPTdnDaAGYScyk=
+Received: from CWXP265MB1799.GBRP265.PROD.OUTLOOK.COM (2603:10a6:400:3a::14)
+ by CWLP265MB0435.GBRP265.PROD.OUTLOOK.COM (2603:10a6:401:18::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.20; Thu, 26 Nov
+ 2020 05:01:28 +0000
+Received: from CWXP265MB1799.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::f8b6:b3c:d651:2dde]) by CWXP265MB1799.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::f8b6:b3c:d651:2dde%7]) with mapi id 15.20.3611.022; Thu, 26 Nov 2020
+ 05:01:28 +0000
+From:   Srinivasan Raju <srini.raju@purelifi.com>
+To:     Kalle Valo <kvalo@codeaurora.org>
+CC:     Mostafa Afgani <mostafa.afgani@purelifi.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS (WIRELESS)" 
+        <linux-wireless@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] [v7] wireless: Initial driver submission for pureLiFi STA
+ devices
+Thread-Topic: [PATCH] [v7] wireless: Initial driver submission for pureLiFi
+ STA devices
+Thread-Index: AQHWu/oh8T+esyecpUerAB1FdPgUnqnXaMIAgAKA/Dg=
+Date:   Thu, 26 Nov 2020 05:01:28 +0000
+Message-ID: <CWXP265MB17998453F1460D55FA667E51E0F90@CWXP265MB1799.GBRP265.PROD.OUTLOOK.COM>
+References: <20201116092253.1302196-1-srini.raju@purelifi.com>,<20201124144448.4E95EC43460@smtp.codeaurora.org>
+In-Reply-To: <20201124144448.4E95EC43460@smtp.codeaurora.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: codeaurora.org; dkim=none (message not signed)
+ header.d=none;codeaurora.org; dmarc=none action=none
+ header.from=purelifi.com;
+x-originating-ip: [106.203.70.227]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2963f816-652f-4b58-5fe5-08d891c8553f
+x-ms-traffictypediagnostic: CWLP265MB0435:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CWLP265MB0435CEE6696F848D39FF200FE0F90@CWLP265MB0435.GBRP265.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: NBJOmsUTv1thfZFUL6qILglOXyFQehkhrhs4gcUwnawbMw77C/egmvZWphDG00URS3NZUzLMEEt5+Gq6YDWSDneGb0q7UI/q7BfUp65muxzg5YKtHxLEgNWimJunJeJbnwkCNB80qX0FJW/Z2SLAQtFWX0yG2tMSZwfUYaYTH98fUBypkxvG659NDCr3g07MbFOnceJJ6fM3kROaJKZmVaDe9s4421tj5VMc0VrtJaZ66ahPzDsuIS5dVvJhoXVmFEDHWECYqHxwGaJEqJplLN6xBdlHkOkwx4HC9Ii3nmVnOVs/TTdeZzOAB4L2uQBZe3X3Id1sllr9nMTA+8iqefpnVQDNfhnY9LyAEsHipmOvlEYDcdtlSwvFkVgykSLAuFbaUvX0oYaMeHWN9IWXfw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CWXP265MB1799.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(6029001)(4636009)(396003)(366004)(376002)(39830400003)(346002)(136003)(186003)(8936002)(4326008)(71200400001)(83380400001)(26005)(7696005)(76116006)(6916009)(478600001)(33656002)(2906002)(86362001)(9686003)(4744005)(55016002)(966005)(66946007)(52536014)(64756008)(316002)(8676002)(6506007)(66476007)(66446008)(54906003)(5660300002)(66556008)(55236004)(91956017);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: mbqPLqMYYctQ6WYmhBYEWf0qoHtnbjGeeiI7fGaqsxd7GbXcfH3N49b3jj9WgD1+/pQFGc2JmDHhlELLZofeU2BwapjXR9zlXBdbLuw3WugCFkUs0xS9X8DMFCJfhIoqqzlzy6x9aNHFqzLOB+40zsQ3qlukuV/upRTrZir/KW1UFvBI7tR19t/TPjKR/0uZWnVFxzRL0UbGobx4WYa618JBs3Hjeu6f1d2D8ibklqNZCEYKm2aG1T6OLuAXevR10VXhSdmTepWHn2vjElgTV/QMIP1Gxk41G+sH1wILoA5JtTZ91o3MIm19QBUWgzX9lm7LQuwW62epJpxnfH8rIp53I7k9ECv0L+g5OADjQtLCo6vEdGYLyi6xMyn7OZ0sm9WlmLyhbCJFBpaOgw4l3jqaIhUcjnU32aRY+zz07+F5vTbl4kB3cSXb9ia+tz8DtUjztvU454vokUe/CTWutP3j0xv8sKcgjDq9Ca+N/yzKAl6L1vnbU1k9Fsdzx9g+FTh5elavjo81ei2vaW+kX12ojAkFbIQ3RCtup2P1pRX5pRK84nulc4ABs81wX8rrqiuT71aSxXa63g7e3K3ljnhh7Sfx6D5NATuBtYwr0lS8+N85mpMxMsRq1Nok26hV7XqTZxC88ZqqMa/upS9MRrFG3ysW6m0fGAX8+HYAO+TII4Jr1Z0LctL/dw9Ts2k2lChTlRV/lMBDA3h+2UNJboXHvFsoH469KbEff+EzeK01wvcLklr/3qP+EkDKIW757UV3q3ZOkiQmaV0aJnjaxT7/gENy+yRegC+55U0+fo6lwwH5gfn03VJMDa1c3Tn7/G+h54HD2jed2ioT+sAcNsPwoLPyCJ0h6yimD8YIs1ig2KQ1HfyJlFITsfibwz9ky74o2XmacPL/oPERcCX7HA==
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: purelifi.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CWXP265MB1799.GBRP265.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2963f816-652f-4b58-5fe5-08d891c8553f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Nov 2020 05:01:28.1722
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 5cf4eba2-7b8f-4236-bed4-a2ac41f1a6dc
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: +4HFlZNe34CZH+/6dJguqbbvy4UL7JNoEi8J+AgBqN5//dRPNpDbes9Svn561eeLiN19ZhH98RaFZ5fs2SbJNA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CWLP265MB0435
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch add a configurable parameter to switch off the interleave
-scan feature.
-
-Signed-off-by: Howard Chung <howardchung@google.com>
-Reviewed-by: Alain Michaud <alainm@chromium.org>
----
-
-(no changes since v9)
-
-Changes in v9:
-- Update and rename the macro TLV_GET_LE8
-
-Changes in v7:
-- Fix bt_dev_warn arguemnt type warning
-
-Changes in v6:
-- Set EnableAdvMonInterleaveScan to 1 byte long
-
-Changes in v4:
-- Set EnableAdvMonInterleaveScan default to Disable
-- Fix 80 chars limit in mgmt_config.c
-
- include/net/bluetooth/hci_core.h |  1 +
- net/bluetooth/hci_core.c         |  1 +
- net/bluetooth/hci_request.c      |  3 ++-
- net/bluetooth/mgmt_config.c      | 41 +++++++++++++++++++++++++-------
- 4 files changed, 37 insertions(+), 9 deletions(-)
-
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index cfede18709d8f..63c6d656564a1 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -363,6 +363,7 @@ struct hci_dev {
- 	__u32		clock;
- 	__u16		advmon_allowlist_duration;
- 	__u16		advmon_no_filter_duration;
-+	__u8		enable_advmon_interleave_scan;
- 
- 	__u16		devid_source;
- 	__u16		devid_vendor;
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 20506b31492d6..8cfcf43eb08fd 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3594,6 +3594,7 @@ struct hci_dev *hci_alloc_dev(void)
- 
- 	hdev->advmon_allowlist_duration = 300;
- 	hdev->advmon_no_filter_duration = 500;
-+	hdev->enable_advmon_interleave_scan = 0x00;	/* Default to disable */
- 
- 	hdev->sniff_max_interval = 800;
- 	hdev->sniff_min_interval = 80;
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index 0c326e32e240c..d0d0fbbb3fa57 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -1057,7 +1057,8 @@ void hci_req_add_le_passive_scan(struct hci_request *req)
- 				      &own_addr_type))
- 		return;
- 
--	if (__hci_update_interleaved_scan(hdev))
-+	if (hdev->enable_advmon_interleave_scan &&
-+	    __hci_update_interleaved_scan(hdev))
- 		return;
- 
- 	bt_dev_dbg(hdev, "interleave state %d", hdev->interleave_scan_state);
-diff --git a/net/bluetooth/mgmt_config.c b/net/bluetooth/mgmt_config.c
-index 282fbf82f3192..1deb0ca7a9297 100644
---- a/net/bluetooth/mgmt_config.c
-+++ b/net/bluetooth/mgmt_config.c
-@@ -17,12 +17,24 @@
- 		__le16 value; \
- 	} __packed _param_name_
- 
-+#define HDEV_PARAM_U8(_param_name_) \
-+	struct {\
-+		struct mgmt_tlv entry; \
-+		__u8 value; \
-+	} __packed _param_name_
-+
- #define TLV_SET_U16(_param_code_, _param_name_) \
- 	{ \
- 		{ cpu_to_le16(_param_code_), sizeof(__u16) }, \
- 		cpu_to_le16(hdev->_param_name_) \
- 	}
- 
-+#define TLV_SET_U8(_param_code_, _param_name_) \
-+	{ \
-+		{ cpu_to_le16(_param_code_), sizeof(__u8) }, \
-+		hdev->_param_name_ \
-+	}
-+
- #define TLV_SET_U16_JIFFIES_TO_MSECS(_param_code_, _param_name_) \
- 	{ \
- 		{ cpu_to_le16(_param_code_), sizeof(__u16) }, \
-@@ -65,6 +77,7 @@ int read_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 		HDEV_PARAM_U16(def_le_autoconnect_timeout);
- 		HDEV_PARAM_U16(advmon_allowlist_duration);
- 		HDEV_PARAM_U16(advmon_no_filter_duration);
-+		HDEV_PARAM_U8(enable_advmon_interleave_scan);
- 	} __packed rp = {
- 		TLV_SET_U16(0x0000, def_page_scan_type),
- 		TLV_SET_U16(0x0001, def_page_scan_int),
-@@ -97,6 +110,7 @@ int read_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 					     def_le_autoconnect_timeout),
- 		TLV_SET_U16(0x001d, advmon_allowlist_duration),
- 		TLV_SET_U16(0x001e, advmon_no_filter_duration),
-+		TLV_SET_U8(0x001f, enable_advmon_interleave_scan),
- 	};
- 
- 	bt_dev_dbg(hdev, "sock %p", sk);
-@@ -109,6 +123,7 @@ int read_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 
- #define TO_TLV(x)		((struct mgmt_tlv *)(x))
- #define TLV_GET_LE16(tlv)	le16_to_cpu(*((__le16 *)(TO_TLV(tlv)->value)))
-+#define TLV_GET_U8(tlv)		(*((__u8 *)(TO_TLV(tlv)->value)))
- 
- int set_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 			  u16 data_len)
-@@ -125,6 +140,7 @@ int set_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 	/* First pass to validate the tlv */
- 	while (buffer_left >= sizeof(struct mgmt_tlv)) {
- 		const u8 len = TO_TLV(buffer)->length;
-+		size_t exp_type_len;
- 		const u16 exp_len = sizeof(struct mgmt_tlv) +
- 				    len;
- 		const u16 type = le16_to_cpu(TO_TLV(buffer)->type);
-@@ -170,20 +186,26 @@ int set_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 		case 0x001b:
- 		case 0x001d:
- 		case 0x001e:
--			if (len != sizeof(u16)) {
--				bt_dev_warn(hdev, "invalid length %d, exp %zu for type %d",
--					    len, sizeof(u16), type);
--
--				return mgmt_cmd_status(sk, hdev->id,
--					MGMT_OP_SET_DEF_SYSTEM_CONFIG,
--					MGMT_STATUS_INVALID_PARAMS);
--			}
-+			exp_type_len = sizeof(u16);
-+			break;
-+		case 0x001f:
-+			exp_type_len = sizeof(u8);
- 			break;
- 		default:
-+			exp_type_len = 0;
- 			bt_dev_warn(hdev, "unsupported parameter %u", type);
- 			break;
- 		}
- 
-+		if (exp_type_len && len != exp_type_len) {
-+			bt_dev_warn(hdev, "invalid length %d, exp %zu for type %d",
-+				    len, exp_type_len, type);
-+
-+			return mgmt_cmd_status(sk, hdev->id,
-+				MGMT_OP_SET_DEF_SYSTEM_CONFIG,
-+				MGMT_STATUS_INVALID_PARAMS);
-+		}
-+
- 		buffer_left -= exp_len;
- 		buffer += exp_len;
- 	}
-@@ -289,6 +311,9 @@ int set_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
- 		case 0x0001e:
- 			hdev->advmon_no_filter_duration = TLV_GET_LE16(buffer);
- 			break;
-+		case 0x0001f:
-+			hdev->enable_advmon_interleave_scan = TLV_GET_U8(buffer);
-+			break;
- 		default:
- 			bt_dev_warn(hdev, "unsupported parameter %u", type);
- 			break;
--- 
-2.29.2.454.gaff20da3a2-goog
-
+=0A=
+=0A=
+> I haven't had a chance to review this yet but we have some documentation =
+for new drivers:=0A=
+=0A=
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpa=
+tches#new_driver=0A=
+=0A=
+> Is the firmware publically available?=0A=
+=0A=
+Thanks Kalle, We will make the firmware available in our website for public=
+ access and share the details.=0A=
+=0A=
+Regards=0A=
+Srini=0A=
+=0A=
