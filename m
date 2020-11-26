@@ -2,135 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E9CC2C5178
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 10:40:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4683C2C51A8
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 10:57:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389719AbgKZJhs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Nov 2020 04:37:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48928 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389633AbgKZJhr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 04:37:47 -0500
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2DFDC0613D4;
-        Thu, 26 Nov 2020 01:37:47 -0800 (PST)
-Received: by mail-pg1-x544.google.com with SMTP id m9so1262735pgb.4;
-        Thu, 26 Nov 2020 01:37:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=05yC4RFsIGTfcpN6kDZHIOGx5M/LBqIoRBXgG3kCTno=;
-        b=EKf2L//RC9rc76OhMlxsP8kgYNX7bhPPEaFKpUarDq5pFeEZDP+85thbHlF9Z3hXGC
-         n4ez6O7KeK5mSwpPQO2WgyL2wdcy57fLZAc0chQsIkiuB9vsALl701QLV82vhQ65tmhf
-         JpgfcI4Y4LeB6CcACQRqruOhsx3CMCKGospMsm7w6Iy10yzfH8kv48sOMiFiz7Y2X/iG
-         qTfJlFLgcZVhr3j6kx3Vyx/51z+Q5tLTU7P/mSEqFYeyI9Q/4RXbK0m23tlE/mIY6clI
-         +xNR+0mqJV5PwIKChyvgVJMWzEhX9Y3ZVCVhxDTzftaMkfDpCvJLyP0NmyYyS5+UjaNo
-         f8kA==
+        id S2387469AbgKZJ4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 04:56:25 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:43928 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726099AbgKZJ4Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 04:56:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606384582;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=XL2h/hir+tmct6ROumYIQmrzt7JrIUdXPqptvlCNWjc=;
+        b=SDO+oy5YgaCWMa5ozRHVXyan/7v4X/DnKd6P5hkhvJCBvEfiABJtlwtOi4/505zEj6oYw5
+        VVjbvZZGElHY+Rt1KKiVrS9y8aZGCXgPY6Cf9Wgh060Qg8xlInW1DjuQHEQOpQjydemzji
+        XnW2tFolfUp63FsKr86vwLYpYfs91n4=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-74-Ozlmav_SOGm6ACRil7JVzQ-1; Thu, 26 Nov 2020 04:56:16 -0500
+X-MC-Unique: Ozlmav_SOGm6ACRil7JVzQ-1
+Received: by mail-ed1-f71.google.com with SMTP id s7so809571eds.17
+        for <netdev@vger.kernel.org>; Thu, 26 Nov 2020 01:56:14 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=05yC4RFsIGTfcpN6kDZHIOGx5M/LBqIoRBXgG3kCTno=;
-        b=XsT/BDdD6VXgPwaBO8OxF3KQXqN9kXOZj19lrsR5rmjSud788J4A6r1sPn84iGa2hK
-         c6nbKdo37D8yvEwGnX/rhk+8uz6Z+bQzE/VpdKJtODkNCfgTGPzCrqmp2pXtl9bprD1X
-         ksQIRDBrftviL0DbKZOrPEvJWTGCVUppi2peEcuBg9NuU8IapyUWJSz/hqjRLkLU4hfZ
-         /2Qv/6AnerbLmL22HCZONZw13L6iEB+r0djvjkyR/e7r1xYjDWz5R+Cbs+ZtJkgfOEu5
-         bcRqPCxAfcON02ldxga7E4yF3i+x8K6u+ZF/bZheIgFRay4Om8DcYgZVHAglJqUabx8W
-         Opqg==
-X-Gm-Message-State: AOAM530nsIIAH6ahR9br9I30IRJAqiqVyG3WmCTp3NGfiMiH7lGuBJVa
-        ZBThpw3i2Yy/sghLKOAAzuM=
-X-Google-Smtp-Source: ABdhPJxj7Yny+1x/twRHNnla0hC8DS4pX60QhstphitRJjmgqse/RQY6YSCB2QwflrrM+RlpSrsoXQ==
-X-Received: by 2002:a17:90a:3cc4:: with SMTP id k4mr2750325pjd.106.1606383467370;
-        Thu, 26 Nov 2020 01:37:47 -0800 (PST)
-Received: from VM.ger.corp.intel.com ([192.55.54.42])
-        by smtp.gmail.com with ESMTPSA id q72sm4250969pfq.62.2020.11.26.01.37.44
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 26 Nov 2020 01:37:46 -0800 (PST)
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com
-Cc:     bpf@vger.kernel.org
-Subject: [PATCH bpf-next] libbpf: replace size_t with __u32 in xsk interfaces
-Date:   Thu, 26 Nov 2020 10:37:35 +0100
-Message-Id: <1606383455-8243-1-git-send-email-magnus.karlsson@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=XL2h/hir+tmct6ROumYIQmrzt7JrIUdXPqptvlCNWjc=;
+        b=N3V8QBOPgzvrdLZAEkmcjM10a29YOyY6jXS5tPAp2dtqufFoloreeErFN8vfNhC8AY
+         6tivcMPzWmI4jQumRYFOA2uKGWHxhNv8hHTv0tNiUcUCaRBeRGCRU+uLP0ACQLET5xNv
+         +NLAV28TDafBlxctqbrdHpSfiL+BplTYQvtljTkPfuVUt2bmLL5b3uxUJq8he+CKS1Af
+         hHzQn56AoeyIq+geOe2OmUX0qSj1/EbFk0y0J3/0mCf46TsmVvZbVm4eQN0K+52KsiIA
+         9p9whG/6eIaypcqWH3282K0jOqOBu8fWmt96/Kq375ra9BpxqNHsuRxyY3OAdHgPE3vs
+         xYQQ==
+X-Gm-Message-State: AOAM531fBJErIrpBHfEyjImR5IfTzZAjDDYHicKHsz1ud36auMDlxEoY
+        RL6rwZScRnTR6/1DCXpAOUh4Znv89T5jNUOO5xJXpDdwjWCqiNhHYPAxPVz0aqFiEYND6LAeEpw
+        jPKVMMwbhGjbOFnlz
+X-Received: by 2002:a17:906:4149:: with SMTP id l9mr2025941ejk.48.1606384573589;
+        Thu, 26 Nov 2020 01:56:13 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxpwWVFyFaUq292qnGC1BLOcKdLXpzzdLATaHboam1LmcQEjYpWqGxMbDjjskkqrrnuIe1btQ==
+X-Received: by 2002:a17:906:4149:: with SMTP id l9mr2025917ejk.48.1606384573185;
+        Thu, 26 Nov 2020 01:56:13 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id jr13sm2742167ejb.50.2020.11.26.01.56.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Nov 2020 01:56:12 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 13A1E183064; Thu, 26 Nov 2020 10:56:12 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Roman Gushchin <guro@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, netdev@vger.kernel.org,
+        andrii@kernel.org, akpm@linux-foundation.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, kernel-team@fb.com,
+        hannes@cmpxchg.org, tj@kernel.org
+Subject: Re: [PATCH bpf-next v8 06/34] bpf: prepare for memcg-based memory
+ accounting for bpf maps
+In-Reply-To: <20201126023000.GB840171@carbon.dhcp.thefacebook.com>
+References: <20201125030119.2864302-1-guro@fb.com>
+ <20201125030119.2864302-7-guro@fb.com>
+ <ef140167-8d80-c581-318c-36c0430e4cfa@iogearbox.net>
+ <20201126023000.GB840171@carbon.dhcp.thefacebook.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 26 Nov 2020 10:56:12 +0100
+Message-ID: <87lfeol9vn.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Magnus Karlsson <magnus.karlsson@intel.com>
+Roman Gushchin <guro@fb.com> writes:
 
-Replace size_t with __u32 in the xsk interfaces that contain
-this. There is no reason to have size_t since the internal variable
-that is manipulated is a __u32. The following APIs are affected:
+> On Thu, Nov 26, 2020 at 01:21:41AM +0100, Daniel Borkmann wrote:
+>> On 11/25/20 4:00 AM, Roman Gushchin wrote:
+>> > In the absolute majority of cases if a process is making a kernel
+>> > allocation, it's memory cgroup is getting charged.
+>> > 
+>> > Bpf maps can be updated from an interrupt context and in such
+>> > case there is no process which can be charged. It makes the memory
+>> > accounting of bpf maps non-trivial.
+>> > 
+>> > Fortunately, after commit 4127c6504f25 ("mm: kmem: enable kernel
+>> > memcg accounting from interrupt contexts") and b87d8cefe43c
+>> > ("mm, memcg: rework remote charging API to support nesting")
+>> > it's finally possible.
+>> > 
+>> > To do it, a pointer to the memory cgroup of the process, which created
+>> > the map, is saved, and this cgroup can be charged for all allocations
+>> > made from an interrupt context. This commit introduces 2 helpers:
+>> > bpf_map_kmalloc_node() and bpf_map_alloc_percpu(). They can be used in
+>> > the bpf code for accounted memory allocations, both in the process and
+>> > interrupt contexts. In the interrupt context they're using the saved
+>> > memory cgroup, otherwise the current cgroup is getting charged.
+>> > 
+>> > Signed-off-by: Roman Gushchin <guro@fb.com>
+>> 
+>> Thanks for updating the cover letter; replying in this series instead
+>> on one more item that came to mind:
+>> 
+>> [...]
+>> > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+>> > index f3fe9f53f93c..4154c616788c 100644
+>> > --- a/kernel/bpf/syscall.c
+>> > +++ b/kernel/bpf/syscall.c
+>> > @@ -31,6 +31,8 @@
+>> >   #include <linux/poll.h>
+>> >   #include <linux/bpf-netns.h>
+>> >   #include <linux/rcupdate_trace.h>
+>> > +#include <linux/memcontrol.h>
+>> > +#include <linux/sched/mm.h>
+>> >   #define IS_FD_ARRAY(map) ((map)->map_type == BPF_MAP_TYPE_PERF_EVENT_ARRAY || \
+>> >   			  (map)->map_type == BPF_MAP_TYPE_CGROUP_ARRAY || \
+>> > @@ -456,6 +458,77 @@ void bpf_map_free_id(struct bpf_map *map, bool do_idr_lock)
+>> >   		__release(&map_idr_lock);
+>> >   }
+>> > +#ifdef CONFIG_MEMCG_KMEM
+>> > +static void bpf_map_save_memcg(struct bpf_map *map)
+>> > +{
+>> > +	map->memcg = get_mem_cgroup_from_mm(current->mm);
+>> > +}
+>> > +
+>> > +static void bpf_map_release_memcg(struct bpf_map *map)
+>> > +{
+>> > +	mem_cgroup_put(map->memcg);
+>> > +}
+>> > +
+>> > +void *bpf_map_kmalloc_node(const struct bpf_map *map, size_t size, gfp_t flags,
+>> > +			   int node)
+>> > +{
+>> > +	struct mem_cgroup *old_memcg;
+>> > +	bool in_interrupt;
+>> > +	void *ptr;
+>> > +
+>> > +	/*
+>> > +	 * If the memory allocation is performed from an interrupt context,
+>> > +	 * the memory cgroup to charge can't be determined from the context
+>> > +	 * of the current task. Instead, we charge the memory cgroup, which
+>> > +	 * contained the process created the map.
+>> > +	 */
+>> > +	in_interrupt = in_interrupt();
+>> > +	if (in_interrupt)
+>> > +		old_memcg = set_active_memcg(map->memcg);
+>> > +
+>> > +	ptr = kmalloc_node(size, flags, node);
+>> > +
+>> > +	if (in_interrupt)
+>> > +		set_active_memcg(old_memcg);
+>> > +
+>> > +	return ptr;
+>> > +}
+>> > +
+>> > +void __percpu *bpf_map_alloc_percpu(const struct bpf_map *map, size_t size,
+>> > +				    size_t align, gfp_t gfp)
+>> > +{
+>> > +	struct mem_cgroup *old_memcg;
+>> > +	bool in_interrupt;
+>> > +	void *ptr;
+>> > +
+>> > +	/*
+>> > +	 * If the memory allocation is performed from an interrupt context,
+>> > +	 * the memory cgroup to charge can't be determined from the context
+>> > +	 * of the current task. Instead, we charge the memory cgroup, which
+>> > +	 * contained the process created the map.
+>> > +	 */
+>> > +	in_interrupt = in_interrupt();
+>> > +	if (in_interrupt)
+>> > +		old_memcg = set_active_memcg(map->memcg);
+>> > +
+>> > +	ptr = __alloc_percpu_gfp(size, align, gfp);
+>> > +
+>> > +	if (in_interrupt)
+>> > +		set_active_memcg(old_memcg);
+>> 
+>> For this and above bpf_map_kmalloc_node() one, wouldn't it make more sense to
+>> perform the temporary memcg unconditionally?
+>> 
+>> 	old_memcg = set_active_memcg(map->memcg);
+>> 	ptr = kmalloc_node(size, flags, node);
+>> 	set_active_memcg(old_memcg);
+>> 
+>> I think the semantics are otherwise a bit weird and the charging unpredictable;
+>> this way it would /always/ be accounted against the prog in the memcg that
+>> originally created the map.
+>> 
+>> E.g. maps could be shared between progs attached to, say, XDP/tc where in_interrupt()
+>> holds true with progs attached to skb-cgroup/egress where we're still in process
+>> context. So some part of the memory is charged against the original map's memcg and
+>> some other part against the current process' memcg which seems odd, no? Or, for example,
+>> if we start to run a tracing BPF prog which updates state in a BPF map ... that tracing
+>> prog now interferes with processes in other memcgs which may not be intentional & could
+>> lead to potential failures there as opposed when the tracing prog is not run. My concern
+>> is that the semantics are not quite clear and behavior unpredictable compared to always
+>> charging against map->memcg.
+>> 
+>> Similarly, what if an orchestration prog creates dedicated memcg(s) for maps with
+>> individual limits ... the assumed behavior (imho) would be that whatever memory is
+>> accounted on the map it can be accurately retrieved from there & similarly limits
+>> enforced, no? It seems that would not be the case currently.
+>> 
+>> Thoughts?
+>
+> I did consider this option. There are pros and cons. In general we
+> tend to charge the cgroup which actually allocates the memory, and I
+> decided to stick with this rule. I agree, it's fairly easy to come
+> with arguments why always charging the map creator is better. The
+> opposite is also true: it's not clear why bpf is different here. So
+> I'm fine with both options, if there is a wide consensus, I'm happy to
+> switch to the other option. In general, I believe that the current
+> scheme is more flexible: if someone want to pay in advance, they are
+> free to preallocate the map. Otherwise it's up to whoever wants to
+> populate it.
 
-__u32 xsk_ring_prod__reserve(struct xsk_ring_prod *prod, __u32 nb,
-                             __u32 *idx)
-void xsk_ring_prod__submit(struct xsk_ring_prod *prod, __u32 nb)
-__u32 xsk_ring_cons__peek(struct xsk_ring_cons *cons, __u32 nb, __u32 *idx)
-void xsk_ring_cons__cancel(struct xsk_ring_cons *cons, __u32 nb)
-void xsk_ring_cons__release(struct xsk_ring_cons *cons, __u32 nb)
+I think I agree with Daniel here: conceptually the memory used by a map
+ought to belong to that map's memcg. I can see how the other scheme can
+be more flexible, but as Daniel points out it seems like it can lead to
+hard-to-debug errors...
 
-The "nb" variable and the return values have been changed from size_t
-to __u32.
+(Side note: I'm really excited about this work in general! The ulimit
+thing has been a major pain...)
 
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
----
- tools/lib/bpf/xsk.h | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
-
-diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
-index 1719a327e5f9..5865e082ba0b 100644
---- a/tools/lib/bpf/xsk.h
-+++ b/tools/lib/bpf/xsk.h
-@@ -113,8 +113,7 @@ static inline __u32 xsk_cons_nb_avail(struct xsk_ring_cons *r, __u32 nb)
- 	return (entries > nb) ? nb : entries;
- }
- 
--static inline size_t xsk_ring_prod__reserve(struct xsk_ring_prod *prod,
--					    size_t nb, __u32 *idx)
-+static inline __u32 xsk_ring_prod__reserve(struct xsk_ring_prod *prod, __u32 nb, __u32 *idx)
- {
- 	if (xsk_prod_nb_free(prod, nb) < nb)
- 		return 0;
-@@ -125,7 +124,7 @@ static inline size_t xsk_ring_prod__reserve(struct xsk_ring_prod *prod,
- 	return nb;
- }
- 
--static inline void xsk_ring_prod__submit(struct xsk_ring_prod *prod, size_t nb)
-+static inline void xsk_ring_prod__submit(struct xsk_ring_prod *prod, __u32 nb)
- {
- 	/* Make sure everything has been written to the ring before indicating
- 	 * this to the kernel by writing the producer pointer.
-@@ -135,10 +134,9 @@ static inline void xsk_ring_prod__submit(struct xsk_ring_prod *prod, size_t nb)
- 	*prod->producer += nb;
- }
- 
--static inline size_t xsk_ring_cons__peek(struct xsk_ring_cons *cons,
--					 size_t nb, __u32 *idx)
-+static inline __u32 xsk_ring_cons__peek(struct xsk_ring_cons *cons, __u32 nb, __u32 *idx)
- {
--	size_t entries = xsk_cons_nb_avail(cons, nb);
-+	__u32 entries = xsk_cons_nb_avail(cons, nb);
- 
- 	if (entries > 0) {
- 		/* Make sure we do not speculatively read the data before
-@@ -153,13 +151,12 @@ static inline size_t xsk_ring_cons__peek(struct xsk_ring_cons *cons,
- 	return entries;
- }
- 
--static inline void xsk_ring_cons__cancel(struct xsk_ring_cons *cons,
--					 size_t nb)
-+static inline void xsk_ring_cons__cancel(struct xsk_ring_cons *cons, __u32 nb)
- {
- 	cons->cached_cons -= nb;
- }
- 
--static inline void xsk_ring_cons__release(struct xsk_ring_cons *cons, size_t nb)
-+static inline void xsk_ring_cons__release(struct xsk_ring_cons *cons, __u32 nb)
- {
- 	/* Make sure data has been read before indicating we are done
- 	 * with the entries by updating the consumer pointer.
--- 
-2.7.4
+-Toke
 
