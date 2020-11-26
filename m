@@ -2,81 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D80202C4C74
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 02:16:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93E832C4C8E
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 02:21:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730635AbgKZBPE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 20:15:04 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:2444 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729131AbgKZBPE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 20:15:04 -0500
-Received: from dggeme760-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4ChKYD6vgTz4yNM;
-        Thu, 26 Nov 2020 09:14:40 +0800 (CST)
-Received: from [127.0.0.1] (10.57.36.170) by dggeme760-chm.china.huawei.com
- (10.3.19.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1913.5; Thu, 26
- Nov 2020 09:15:01 +0800
-Subject: Re: [PATCH v3 net-next] net: phy: realtek: read actual speed on
- rtl8211f to detect downshift
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-CC:     Antonio Borneo <antonio.borneo@st.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        Willy Liu <willy.liu@realtek.com>,
-        <linux-kernel@vger.kernel.org>,
-        Salil Mehta <salil.mehta@huawei.com>, <linuxarm@huawei.com>,
-        <linux-stm32@st-md-mailman.stormreply.com>
-References: <20201124143848.874894-1-antonio.borneo@st.com>
- <20201124230756.887925-1-antonio.borneo@st.com>
- <d62710c3-7813-7506-f209-fcfa65931778@huawei.com>
- <f24476cc-39f0-ea5f-d6af-faad481e3235@huawei.com>
- <20201125170714.GK1551@shell.armlinux.org.uk>
-From:   Yonglong Liu <liuyonglong@huawei.com>
-Message-ID: <3fdb1d11-d59e-9d3d-a5a8-8f20e4ca7f0a@huawei.com>
-Date:   Thu, 26 Nov 2020 09:15:01 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.0.1
+        id S1730666AbgKZBUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 20:20:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39772 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729760AbgKZBUv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Nov 2020 20:20:51 -0500
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8C759206C0;
+        Thu, 26 Nov 2020 01:20:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606353651;
+        bh=HVfb+vjvtP8sjwyANgn0PuGQJ4nghXCcbT8s6rkT0ho=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YkAvw2QWF/ZWm9XSd6+6SatdW5/AbtnfMGs1c6+W0oCSp8xTmrzk0BlZ+0+AhQxq/
+         brjVpUhzRmcaQy+9QIBLvXP1bGMyNH5UbEuZwFe68nexAg5HeEjef6bIbo105xy957
+         Uh99FrWJhyPdYfq3wo4lL9o0CgrHBGG5EvDB7fmU=
+Date:   Wed, 25 Nov 2020 17:20:49 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     <akiyano@amazon.com>
+Cc:     <netdev@vger.kernel.org>, <dwmw@amazon.com>, <zorik@amazon.com>,
+        <matua@amazon.com>, <saeedb@amazon.com>, <msw@amazon.com>,
+        <aliguori@amazon.com>, <nafea@amazon.com>, <gtzalik@amazon.com>,
+        <netanel@amazon.com>, <alisaidi@amazon.com>, <benh@amazon.com>,
+        <ndagan@amazon.com>, <shayagr@amazon.com>, <sameehj@amazon.com>
+Subject: Re: [PATCH V1 net-next 0/9] XDP Redirect implementation for ENA
+ driver
+Message-ID: <20201125172049.1a7f173e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1606344708-11100-1-git-send-email-akiyano@amazon.com>
+References: <1606344708-11100-1-git-send-email-akiyano@amazon.com>
 MIME-Version: 1.0
-In-Reply-To: <20201125170714.GK1551@shell.armlinux.org.uk>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [10.57.36.170]
-X-ClientProxiedBy: dggeme715-chm.china.huawei.com (10.1.199.111) To
- dggeme760-chm.china.huawei.com (10.3.19.106)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, Russell:
+On Thu, 26 Nov 2020 00:51:39 +0200 akiyano@amazon.com wrote:
+> This series requires the patchset sent to 'net' to be applied cleanly. Decided
+> to send this one up front to reduce the risk of not getting XDP Redirect in next
+> version.
 
-     I found this message in kernel log, thanks!
+Netdev maintainers don't track dependencies between series.
 
-On 2020/11/26 1:07, Russell King - ARM Linux admin wrote:
-> On Thu, Nov 26, 2020 at 12:57:37AM +0800, Yonglong Liu wrote:
->> Hi, Antonio:
->>
->>      Could you help to provide a downshift warning message when this happen?
->>
->>      It's a little strange that the adv and the lpa support 1000M, but
->> finally the link speed is 100M.
-> That is an identifying feature of downshift.
->
-> Downshift can happen at either end of the link, and since we must not
-> change the "Advertised link modes" since this is what userspace
-> configured, if a downshift occurs at the local end, then you will get
-> the ethtool output you provide, where the speed does not agree with
-> the reported advertisements.
->
-> You should already be getting a warning in the kernel log when this
-> happens; phy_check_downshift() which is part of the phylib core code
-> will check this every time the link comes up. You should already
-> have a message "Downshift occurred ..." in your kernel log. Please
-> check.
->
+Hopefully you'll can get some reviews but you'll need to repost next
+week after net is merged into net-next.
 
+Post this kind of stuff as an RFC next time around, please.
