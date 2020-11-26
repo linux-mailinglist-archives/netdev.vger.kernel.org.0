@@ -2,114 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66ED12C5CC5
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 21:01:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B93602C5D16
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 21:39:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404258AbgKZUAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Nov 2020 15:00:54 -0500
-Received: from mx04.lhost.no ([5.158.192.85]:51283 "EHLO mx04.lhost.no"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728118AbgKZUAx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Nov 2020 15:00:53 -0500
-X-ASG-Debug-ID: 1606420847-0ffc06424c740d0001-BZBGGp
-Received: from s103.paneda.no ([5.158.193.76]) by mx04.lhost.no with ESMTP id ZJfHbLK3bTw0eRff (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NO); Thu, 26 Nov 2020 21:00:49 +0100 (CET)
-X-Barracuda-Envelope-From: thomas.karlsson@paneda.se
-X-Barracuda-Effective-Source-IP: UNKNOWN[5.158.193.76]
-X-Barracuda-Apparent-Source-IP: 5.158.193.76
-X-ASG-Whitelist: Client
-Received: from [192.168.10.188] (83.140.179.234) by s103.paneda.no
- (10.16.55.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id 15.1.1979.3; Thu, 26
- Nov 2020 21:00:45 +0100
-Subject: Re: Hardcoded multicast queue length in macvlan.c driver causes poor
- multicast receive performance
-To:     Jakub Kicinski <kuba@kernel.org>
-X-ASG-Orig-Subj: Re: Hardcoded multicast queue length in macvlan.c driver causes poor
- multicast receive performance
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <485531aec7e243659ee4e3bb7fa2186d@paneda.se>
- <147b704ac1d5426fbaa8617289dad648@paneda.se>
- <20201123143052.1176407d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <b93a6031-f1b4-729d-784b-b1f465d27071@paneda.se>
- <20201125085848.4f330dea@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <4e3c9f30-d43c-54b1-2796-86f38d316ef3@paneda.se>
- <20201125100710.7e766d7e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <956c4fca-2a54-97cb-5b4c-3a286743884b@paneda.se>
- <20201125150100.287ac72a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Thomas Karlsson <thomas.karlsson@paneda.se>
-Message-ID: <3a30c2f6-e400-7001-69ec-683245620f2d@paneda.se>
-Date:   Thu, 26 Nov 2020 21:00:46 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
-MIME-Version: 1.0
-In-Reply-To: <20201125150100.287ac72a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [83.140.179.234]
-X-ClientProxiedBy: s103.paneda.no (10.16.55.12) To s103.paneda.no
- (10.16.55.12)
-X-Barracuda-Connect: UNKNOWN[5.158.193.76]
-X-Barracuda-Start-Time: 1606420849
-X-Barracuda-Encrypted: ECDHE-RSA-AES256-SHA384
-X-Barracuda-URL: https://mx04.lhost.no:443/cgi-mod/mark.cgi
-X-Virus-Scanned: by bsmtpd at lhost.no
-X-Barracuda-Scan-Msg-Size: 2206
-X-Barracuda-BRTS-Status: 1
+        id S2390862AbgKZUja (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 15:39:30 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:24974 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731876AbgKZUja (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 15:39:30 -0500
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AQKWYwt135982;
+        Thu, 26 Nov 2020 15:39:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id; s=pp1;
+ bh=pmIMzYQBt29CRMNybnh56i8MrKprOvl+WEisRXkv0fs=;
+ b=fMh2kghYLUoSkMPzFvjJh4RtYuIXaMd5Br3l1UuaOTARK0j7TGm+4sWJuo8FDpw1Xj3J
+ lZKLnBarlkgP3+nl6kcZFZOQhZsxOosVozawzR6TyeY6TAUPCudFP4xV9NvZJzRq1PWg
+ NSAJOE89uX0dLBN02x+H6/4U6VWYt3Q2FcfA6jWOD1WsKF+XzCAgmI5gDidnBNOyRP7C
+ Dr/EmN2lN8o5bUGQmbl+YUCm998/O1Mv3jkGfxcVplI+aXyH0EvsktwEe1s6kcZft8TH
+ Nsrf0y3Y+Q4PvZemDgqQ+WUeTJCCb/t0a2nLe9uGJpDN3XUMDuGTvAx2VnJY4jmNgaHQ bg== 
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 352kdg05kb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 26 Nov 2020 15:39:26 -0500
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0AQKbO9i001629;
+        Thu, 26 Nov 2020 20:39:24 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma06fra.de.ibm.com with ESMTP id 351pca0qk6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 26 Nov 2020 20:39:24 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0AQKdLcs55902638
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 26 Nov 2020 20:39:21 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 03D25A404D;
+        Thu, 26 Nov 2020 20:39:21 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C1DF1A4040;
+        Thu, 26 Nov 2020 20:39:20 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 26 Nov 2020 20:39:20 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Heiko Carstens <hca@linux.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org
+Subject: [PATCH net-next v6 00/14] net/smc: Add support for generic netlink API
+Date:   Thu, 26 Nov 2020 21:39:02 +0100
+Message-Id: <20201126203916.56071-1-kgraul@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-26_09:2020-11-26,2020-11-26 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 adultscore=0
+ mlxlogscore=740 suspectscore=0 clxscore=1015 lowpriorityscore=0
+ impostorscore=0 mlxscore=0 malwarescore=0 spamscore=0 phishscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011260124
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-11-26 00:01, Jakub Kicinski wrote:
-> On Wed, 25 Nov 2020 23:15:39 +0100 Thomas Karlsson wrote:
->>>> This is my first time ever attemting a contribution to the kernel so
->>>> I'm quite happy to keep it simple like that too :)  
->>>
->>> Module params are highly inflexible, we have a general policy not 
->>> to accept them in the netdev world.
->>
->> I see, although the current define seems even less flexible :)
-> 
-> Just to be clear - the module parameter is a no-go. 
-> No point discussing it.
+Please apply the following patch series for smc to netdev's net-next tree.
 
-Got it!
+Up to version 4 this patch series was using the sock_diag netlink
+infrastructure. This version is using the generic netlink API. Generic
+netlink API offers a better type safety between kernel and userspace
+communication.
+Using the generic netlink API the smc module can now provide information
+about SMC linkgroups, links and devices (both for SMC-R and SMC-D).
 
-> 
->> Although, I might not have fully understood the .changelink you suggest.
->> Is it via the ip link set ... command? 
-> 
-> Yes.
-> 
->> Or is there a way to set the parameters in a more "raw" form that
->> does not require a patch to iproute2 with parameter parsing, error
->> handing, man pages updates, etc. I feel that I'm getting in over my
->> head here.
-> 
-> We're here to assist! Netlink takes a little bit of effort 
-> to comprehend but it's very simple once you get the mechanics!
-> 
+v2: Add missing include to uapi header smc_diag.h.
 
-Thanks for the encouragement, I have been able to build iproute2 today and
-I am successfully communicating with the driver now being able to set and retrieve my queue len!
+v3: Apply code style recommendations from review comments.
+    Instead of using EXPORTs to allow the smc_diag module to access
+    data of the smc module, introduce struct smc_diag_ops and let
+    smc_diag access the required data using function pointers.
 
-As I'm working on this I do got a question. I placed the bc_queue_len into the struct macvlan_port *port
-since that is where the bc_queue is located today. But when I change and retrieve the queue from userspace I realize
-that all macvlan interfaces that share the same physical lowerdev uses the same port structure and thus
-the same bc_queue_len.
+v4: Address checkpatch.pl warnings. Do not use static inline for
+    functions.
 
-It confused me at first and I'm not sure if that is how it should be. I expected the driver to have different
-bc_queues for all macvlan interfaces no matter which lowerdev they were using but obviously that is not the case.
+v5: Use generic netlink API instead of the sock_diag netlink
+    infrastructure.
 
-It may be a bit confusing to change bc_queue_len on one macvlan and see that the change was applied to more than one.
+v6: Integrate more review comments from Jakub.
 
-But I'm not sure if I should just move bc_queue_len to the struct macvlan_dev either. because then different macvlans will use different queue lengths while they still use the same queue. Which may also be considered a bit illogical
+Guvenc Gulce (13):
+  net/smc: Use active link of the connection
+  net/smc: Add connection counters for links
+  net/smc: Add link counters for IB device ports
+  net/smc: Add diagnostic information to smc ib-device
+  net/smc: Add diagnostic information to link structure
+  net/smc: Refactor smc ism v2 capability handling
+  net/smc: Introduce generic netlink interface for diagnostic purposes
+  net/smc: Add support for obtaining system information
+  net/smc: Introduce SMCR get linkgroup command
+  net/smc: Introduce SMCR get link command
+  net/smc: Add SMC-D Linkgroup diagnostic support
+  net/smc: Add support for obtaining SMCD device list
+  net/smc: Add support for obtaining SMCR device list
 
-Let me know what you prefer here!
+Karsten Graul (1):
+  net/smc: use helper smc_conn_abort() in listen processing
 
-Thanks!
+ include/uapi/linux/smc.h | 126 +++++++++++++
+ net/smc/Makefile         |   2 +-
+ net/smc/af_smc.c         |  39 ++--
+ net/smc/smc_clc.c        |   5 +
+ net/smc/smc_clc.h        |   1 +
+ net/smc/smc_core.c       | 399 ++++++++++++++++++++++++++++++++++++++-
+ net/smc/smc_core.h       |  49 +++++
+ net/smc/smc_diag.c       |  23 +--
+ net/smc/smc_ib.c         | 200 ++++++++++++++++++++
+ net/smc/smc_ib.h         |   6 +
+ net/smc/smc_ism.c        |  99 +++++++++-
+ net/smc/smc_ism.h        |   6 +-
+ net/smc/smc_netlink.c    |  78 ++++++++
+ net/smc/smc_netlink.h    |  32 ++++
+ net/smc/smc_pnet.c       |   2 +
+ 15 files changed, 1022 insertions(+), 45 deletions(-)
+ create mode 100644 net/smc/smc_netlink.c
+ create mode 100644 net/smc/smc_netlink.h
 
-
-
+-- 
+2.17.1
 
