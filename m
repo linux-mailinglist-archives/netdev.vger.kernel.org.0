@@ -2,106 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6635A2C573E
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 15:40:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A87042C574D
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 15:47:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390345AbgKZOjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Nov 2020 09:39:55 -0500
-Received: from out03.mta.xmission.com ([166.70.13.233]:46226 "EHLO
-        out03.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389991AbgKZOjz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 09:39:55 -0500
-X-Greylist: delayed 3495 seconds by postgrey-1.27 at vger.kernel.org; Thu, 26 Nov 2020 09:39:54 EST
-Received: from in01.mta.xmission.com ([166.70.13.51])
-        by out03.mta.xmission.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1kiHWk-00FtFp-7u; Thu, 26 Nov 2020 06:41:38 -0700
-Received: from ip68-227-160-95.om.om.cox.net ([68.227.160.95] helo=x220.xmission.com)
-        by in01.mta.xmission.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.87)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1kiHWj-0003Ma-5I; Thu, 26 Nov 2020 06:41:38 -0700
-From:   ebiederm@xmission.com (Eric W. Biederman)
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>
-References: <20201126162248.7e7963fe@canb.auug.org.au>
-Date:   Thu, 26 Nov 2020 07:41:12 -0600
-In-Reply-To: <20201126162248.7e7963fe@canb.auug.org.au> (Stephen Rothwell's
-        message of "Thu, 26 Nov 2020 16:22:48 +1100")
-Message-ID: <87a6v4nslj.fsf@x220.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S2390878AbgKZOpu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 09:45:50 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:51432 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389847AbgKZOpu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Nov 2020 09:45:50 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kiIWo-008zJb-AI; Thu, 26 Nov 2020 15:45:46 +0100
+Date:   Thu, 26 Nov 2020 15:45:46 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lukasz Majewski <lukma@denx.de>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Peng Fan <peng.fan@nxp.com>, Fugang Duan <fugang.duan@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>, stefan.agner@toradex.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        krzk@kernel.org, "David S . Miller" <davem@davemloft.net>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [RFC 0/4] net: l2switch: Provide support for L2 switch on i.MX28
+ SoC
+Message-ID: <20201126144546.GN2075216@lunn.ch>
+References: <20201125232459.378-1-lukma@denx.de>
+ <20201126000049.GL2073444@lunn.ch>
+ <c717666c-8357-60a2-7c66-5d9e9f18d250@gmail.com>
+ <20201126031021.GK2075216@lunn.ch>
+ <20201126111014.5a6a2049@jawa>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1kiHWj-0003Ma-5I;;;mid=<87a6v4nslj.fsf@x220.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.160.95;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX19590D4YxTqaZNbKHQ7oHvcJ0XZUjADk20=
-X-SA-Exim-Connect-IP: 68.227.160.95
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on sa04.xmission.com
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.3 required=8.0 tests=ALL_TRUSTED,BAYES_20,
-        DCC_CHECK_NEGATIVE,T_TM2_M_HEADER_IN_MSG,XMSubLong autolearn=disabled
-        version=3.4.2
-X-Spam-Report: * -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-        * -0.0 BAYES_20 BODY: Bayes spam probability is 5 to 20%
-        *      [score: 0.1073]
-        *  0.7 XMSubLong Long Subject
-        *  0.0 T_TM2_M_HEADER_IN_MSG BODY: No description available.
-        * -0.0 DCC_CHECK_NEGATIVE Not listed in DCC
-        *      [sa04 1397; Body=1 Fuz1=1 Fuz2=1]
-X-Spam-DCC: XMission; sa04 1397; Body=1 Fuz1=1 Fuz2=1 
-X-Spam-Combo: ;Stephen Rothwell <sfr@canb.auug.org.au>
-X-Spam-Relay-Country: 
-X-Spam-Timing: total 526 ms - load_scoreonly_sql: 0.10 (0.0%),
-        signal_user_changed: 13 (2.5%), b_tie_ro: 11 (2.1%), parse: 1.42
-        (0.3%), extract_message_metadata: 17 (3.3%), get_uri_detail_list: 1.38
-        (0.3%), tests_pri_-1000: 7 (1.4%), tests_pri_-950: 1.78 (0.3%),
-        tests_pri_-900: 1.40 (0.3%), tests_pri_-90: 67 (12.8%), check_bayes:
-        65 (12.4%), b_tokenize: 7 (1.3%), b_tok_get_all: 6 (1.1%),
-        b_comp_prob: 2.3 (0.4%), b_tok_touch_all: 47 (8.9%), b_finish: 1.18
-        (0.2%), tests_pri_0: 165 (31.4%), check_dkim_signature: 0.67 (0.1%),
-        check_dkim_adsp: 2.6 (0.5%), poll_dns_idle: 217 (41.2%), tests_pri_10:
-        4.2 (0.8%), tests_pri_500: 243 (46.1%), rewrite_mail: 0.00 (0.0%)
-Subject: Re: linux-next: manual merge of the userns tree with the bpf-next tree
-X-Spam-Flag: No
-X-SA-Exim-Version: 4.2.1 (built Thu, 05 May 2016 13:38:54 -0600)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201126111014.5a6a2049@jawa>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stephen Rothwell <sfr@canb.auug.org.au> writes:
+> > What is not yet clear to me is how you direct frames out specific
+> > interfaces. This is where i think we hit problems. I don't see a
+> > generic mechanism, which is probably why Lukasz put tagger as None. 
+> 
+> I've put the "None" tag just to share the "testable" RFC code.
 
-> Hi all,
->
-> Today's linux-next merge of the userns tree got a conflict in:
->
->   kernel/bpf/task_iter.c
->
-> between commit:
->
->   91b2db27d3ff ("bpf: Simplify task_file_seq_get_next()")
->
-> from the bpf-next tree and commit:
->
->   edc52f17257a ("bpf/task_iter: In task_file_seq_get_next use task_lookup_next_fd_rcu")
->
-> from the userns tree.
->
-> I fixed it up (I think, see below) and can carry the fix as
-> necessary. This is now fixed as far as linux-next is concerned, but any
-> non trivial conflicts should be mentioned to your upstream maintainer
-> when your tree is submitted for merging.  You may also want to consider
-> cooperating with the maintainer of the conflicting tree to minimise any
-> particularly complex conflicts.
+Tagging is a core feature of DSA. Without being able to direct a
+packet out a specific port, it is not really a DSA driver.  It is also
+core requirement of integrating a switch into Linux. A DSA driver, or
+a pure switchdev driver expects to be able to forward frames out
+specific ports.
 
-Thanks.  Reading through the diff that looks right, and it has been already
-reported.
+> It is possible to "tag" frames - at least from the manual [0]:
+> Chapter: "29.4.9.2 Forced Forwarding".
+> 
+> With using register HW_ENET_SWI_FORCE_FWD_P0
+> 29.9.34 ENET SWI Enable forced forwarding for a frame processed
+> from port 0 (HW_ENET_SWI_FORCE_FWD_P0)
+> 
+> One can "tag" the packet going from port0 (internal one from SoC) to be
+> forwarded to port1 (ENET-MAC0) or port2 (ENET-MAC1).
+> 
+> According to the legacy driver [1]:
+> "* It only replace the MAC lookup function,
+>  * all other filtering(eg.VLAN verification) act as normal"
 
-Eric
+This might solve your outgoing frame problems. But you need to dive
+deep into how the FEC driver works, especially in a DSA like
+setup. The normal path would be, the slave interface passes a frame to
+the tagger driver, living in net/dsa/tag_*.c. Normally, it adds a
+header/trailer which the switch looks at. It then hands to packet over
+to the master Ethernet driver, which at some point will send the
+frame. Because the frame is self contained, we don't care what that
+ethernet driver actually does. It can add it to a queue and send it
+later. It can look at the QoS tags and send it with low priority after
+other frames, or could put it to the head of the queue and send it
+before other frames etc.
 
+Since you don't have self contained frames, this is a problem. After
+writing to this register, you need to ensure what is transmitted next
+is the specific frame you intend. It cannot be added to an existing
+queue etc. You need to know when the frame has been sent, so you can
+re-write this register for the next frame.
+
+This is why i said i don't know if the DSA architecture will work. You
+need a close coupling between the tagger setting the force bits, and
+the DMA engine sending the frame.
+
+The other option is you totally ignore most of this and statically
+assign VLANs. Frames sent with VLAN 1 are forwarded out port 1. Frames
+sent with VLAN 2 are sent out port 2. You need the port to
+append/strip these VLAN tags for ingress/egress. tag_8021q.c gives you
+some code to help with this. But can you still use the hardware to
+switch frames between ports 1 and 2 without them going via the CPU?
+
+       Andrew.
