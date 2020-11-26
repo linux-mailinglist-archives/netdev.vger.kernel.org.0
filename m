@@ -2,87 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22EB62C4CBD
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 02:43:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61FFE2C4CE9
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 02:52:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731709AbgKZBmS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 20:42:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48240 "EHLO mail.kernel.org"
+        id S1731223AbgKZBuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 20:50:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51114 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731508AbgKZBmR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Nov 2020 20:42:17 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E364020B1F;
-        Thu, 26 Nov 2020 01:42:15 +0000 (UTC)
+        id S1726009AbgKZBuG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Nov 2020 20:50:06 -0500
+Content-Type: text/plain; charset="utf-8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606354936;
-        bh=1n7rTiSq/Dl9ElQSRoo+DQUTBlTZJshQf6dUa/6L/Yg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tt7UxcPh2Kf5CU4/rC7P1QT91+o/GEI3er56O1WMH+wgM7SY03wr9QReKx+gmAscc
-         KC0+dFqwIoGCEB3kuNMQomc+OvI6mSCWKxJ/7YOy3nGMGJX7FmCexAJ+kXUwEEubmR
-         V1gF/6fIA9o/lHKcP84rB4uMQU4R6y5aW8ykREcA=
-Date:   Wed, 25 Nov 2020 17:42:14 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     George McCollister <george.mccollister@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller " <davem@davemloft.net>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v2 2/3] net: dsa: add Arrow SpeedChips XRS700x
- driver
-Message-ID: <20201125174214.0c9dd5a9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201125193740.36825-3-george.mccollister@gmail.com>
-References: <20201125193740.36825-1-george.mccollister@gmail.com>
-        <20201125193740.36825-3-george.mccollister@gmail.com>
+        s=default; t=1606355405;
+        bh=iYhxrss7MhMiYqNNS9B2cjjil5+XFkJFPsQg4U9/vXM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=n4mtTV62O+xtX6YkHUjmqXCtmnKJaQB5cCf9WZtUG+VadpHcvehgTlUCO03k3fRlp
+         dQEmnjtimWR8IYfP0Dbap9tQ9I/sPjd3w94jifUbeswHfb1mhmsvcNwwXez9xmared
+         3Fh6OeGZ+RnQN6/KYrCVpdLfAqcZA4wjPEjesBuA=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [net v2] ch_ktls: lock is not freed
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160635540561.25105.4046390358781889028.git-patchwork-notify@kernel.org>
+Date:   Thu, 26 Nov 2020 01:50:05 +0000
+References: <20201125072626.10861-1-rohitm@chelsio.com>
+In-Reply-To: <20201125072626.10861-1-rohitm@chelsio.com>
+To:     Rohit Maheshwari <rohitm@chelsio.com>
+Cc:     kuba@kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
+        secdev@chelsio.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 25 Nov 2020 13:37:39 -0600 George McCollister wrote:
-> Add a driver with initial support for the Arrow SpeedChips XRS7000
-> series of gigabit Ethernet switch chips which are typically used in
-> critical networking applications.
+Hello:
+
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Wed, 25 Nov 2020 12:56:26 +0530 you wrote:
+> Currently lock gets freed only if timeout expires, but missed a
+> case when HW returns failure and goes for cleanup.
 > 
-> The switches have up to three RGMII ports and one RMII port.
-> Management to the switches can be performed over i2c or mdio.
-> 
-> Support for advanced features such as PTP and
-> HSR/PRP (IEC 62439-3 Clause 5 & 4) is not included in this patch and
-> may be added at a later date.
-> 
-> Signed-off-by: George McCollister <george.mccollister@gmail.com>
+> Fixes: efca3878a5fb ("ch_ktls: Issue if connection offload fails")
+> Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
+> ---
+>  .../net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c    | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 
-You need to add symbol exports otherwise this won't build with
-allmodconfig:
+Here is the summary with links:
+  - [net,v2] ch_ktls: lock is not freed
+    https://git.kernel.org/netdev/net/c/cbf3d60329c4
 
-ERROR: modpost: "xrs7004f_info"
-[drivers/net/dsa/xrs700x/xrs700x_mdio.ko] undefined! ERROR: modpost:
-"xrs7004e_info" [drivers/net/dsa/xrs700x/xrs700x_mdio.ko] undefined!
-ERROR: modpost: "xrs7003f_info"
-[drivers/net/dsa/xrs700x/xrs700x_mdio.ko] undefined! ERROR: modpost:
-"xrs7003e_info" [drivers/net/dsa/xrs700x/xrs700x_mdio.ko] undefined!
-ERROR: modpost: "xrs7004f_info"
-[drivers/net/dsa/xrs700x/xrs700x_i2c.ko] undefined! ERROR: modpost:
-"xrs7004e_info" [drivers/net/dsa/xrs700x/xrs700x_i2c.ko] undefined!
-ERROR: modpost: "xrs7003f_info"
-[drivers/net/dsa/xrs700x/xrs700x_i2c.ko] undefined! ERROR: modpost:
-"xrs7003e_info" [drivers/net/dsa/xrs700x/xrs700x_i2c.ko] undefined!
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-> +	{XRS_RX_UNDERSIZE_L, "rx_undersize"},
-> +	{XRS_RX_FRAGMENTS_L, "rx_fragments"},
-> +	{XRS_RX_OVERSIZE_L, "rx_oversize"},
-> +	{XRS_RX_JABBER_L, "rx_jabber"},
-> +	{XRS_RX_ERR_L, "rx_err"},
-> +	{XRS_RX_CRC_L, "rx_crc"},
 
-As Vladimir already mentioned to you the statistics which have
-corresponding entries in struct rtnl_link_stats64 should be reported
-the standard way. The infra for DSA may not be in place yet, so best 
-if you just drop those for now.
