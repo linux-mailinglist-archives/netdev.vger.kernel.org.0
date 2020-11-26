@@ -2,61 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 084662C5102
+	by mail.lfdr.de (Postfix) with ESMTP id E2BD72C5104
 	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 10:23:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389252AbgKZJWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Nov 2020 04:22:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46562 "EHLO
+        id S2389259AbgKZJW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 04:22:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389212AbgKZJWy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 04:22:54 -0500
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2906C0613D4;
-        Thu, 26 Nov 2020 01:22:53 -0800 (PST)
-Received: by mail-lj1-x243.google.com with SMTP id t22so1592830ljk.0;
-        Thu, 26 Nov 2020 01:22:53 -0800 (PST)
+        with ESMTP id S2389212AbgKZJW5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 04:22:57 -0500
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E39DC0613D4;
+        Thu, 26 Nov 2020 01:22:56 -0800 (PST)
+Received: by mail-lj1-x241.google.com with SMTP id y7so1552735lji.8;
+        Thu, 26 Nov 2020 01:22:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=W5cDrqOq1jzXEgXMRHHlPKanhU5lRqHfG08zZXyqcKE=;
-        b=npQznwAg0T5cbCntbegXSBXM30S87sWTYC2hE94mbOncuuIF1qRbLsnAdAB7Bk8x8r
-         SFYGDkna8xw+ggQDHwW61FwOpqeH7o1MFhmN14xzqqdPrRF+AOw6OGXHwhIhlgbuxgya
-         wZ1GfhiZZtIx9y5bL4VFjntheEAJy0JcX48uDhOuMnHt5tPVS9doetvKyYmuJq6AYMkJ
-         qziHVh7eHzGrkj7DLgB1QVqrO0F38rrp7QEYd4E+XeXAc4tUg8V7TRRsy6MIVzcJcY0k
-         mzV8GKZ1g/4nU9QcCQbgtTcSifqnTMAcd85Nv2l1gLlRyr/eC40k617/Qp3Y5OSCvcQZ
-         PrHA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=+vmO/a8EuHfN+0gCApJv0Z+4yazI9QZiD8etvYqBRdk=;
+        b=VHgFIToQR9n+BhO/NclRVtkrR9cAoetlYxAYfwmxrKCYXzqtDM3sa6eXuxh7jmTDLy
+         x4u2Nta4hldO0rG9kERc9dzIZgCantbejjDTXX+8mQHcHl+wy31K0Wo23qGHOn5kg6X3
+         OjCDFCW29p23QyMvkpg3fqN6jCns0c2OyZ81vQwLgho5t14rLnqybywOSZY35ZLfCE0P
+         KAKVluucnWeCJ86WsJOi6Nuq9ZJUdWyek4OrhmRVCxb7oxoMPkgYMqcob/pvhFDTx3I+
+         +nroWeSdqmxjEIhlh8V5x+YNXuWkqLAxkR1HUNExCPteHJ4OeGcfkbdkBKxd+Uiet9aU
+         OgWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=W5cDrqOq1jzXEgXMRHHlPKanhU5lRqHfG08zZXyqcKE=;
-        b=WtaQVhnXODQ1RWstwgIiEtrzwUG1MyLNxlvAq4Hx4NXOVd72d6TSWMkR11iIdds2mn
-         bzGlaU7uFWQTx0cBlPlenjfL2CcfHJ7jsEKlz8ba933l4/m+uqvVIylMT2Wo74Ibi4wL
-         zGMYKGSmD/vgsR/+B/vb0Y57xgT0smQpfx3VwlTLqYjmUvJaLO4AvB/wcht06JQnBPJy
-         RNo/1b7XGFVxOFYz9fxV1nxKxitKlfSYmWRjxPHuR193LRO3B4QSHTBUqDQ15KZbO1kc
-         Vboa5GP3JFTp0dKNR9JQNJbUT8awKM5ZbNgZhtk/4vLUYJyCfUAjVbTAQU4Y7x8P03lZ
-         eplg==
-X-Gm-Message-State: AOAM532yUTAagJ26C8ufulafgli/yJzskQftTjsamJLqVWwGRygU1Kyg
-        18cSUqbPkVYVSllp98fDMCRu5BbBOLGnaszJ
-X-Google-Smtp-Source: ABdhPJwovc0C7ek/CqZD2u2n6U4XSN9cv+D3S9k/8kZq+ZryELqUq/dxcBGVb0Yp49/Yc7FZDxcwzQ==
-X-Received: by 2002:a2e:9793:: with SMTP id y19mr895984lji.437.1606382572183;
-        Thu, 26 Nov 2020 01:22:52 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=+vmO/a8EuHfN+0gCApJv0Z+4yazI9QZiD8etvYqBRdk=;
+        b=ESqZiB0wWo6aiMvSngXb0prVQym6UUW7/PK2fDnPwJE+CzALU/pb3komQvSh41PPHC
+         ayo9fOnYqhHwFatdH+Sd3B27YnjNOHLv5e/ptWSDWcoLuLLny7rtB7aafOpZSw9LCMDF
+         X4vbK1dId8h+hBLY1pmubhrerljNyS+lkfxDC+LQiV9Xdpa8pdx67CbvIpgU4OJB9IY7
+         +8t5ko3fzVtmDglqHbgc8DnDDceBVyisPF8g3Qw4c3QT9rwekGVZr9W65D/qoprNOlLw
+         R8PtSYwoj0z4fCkcyx+gzv+ADS/O7vYQRXzISAxL7L+UHOrzw2v/w3kWWqH7IBbo/wmJ
+         eFDA==
+X-Gm-Message-State: AOAM531KWnLnSEKfSazh4mMwmxY7onSmxycwn+YJ9M91jVtOv9/ll5Br
+        v9Lgn9ZB2oF31NRmJJN4UbM=
+X-Google-Smtp-Source: ABdhPJyLbhD547YzyUYsI1fZhrKyErOjTzT2BCceELdvkNWwox6ddsdm5WwuvQX1/q/QzW94MhfopQ==
+X-Received: by 2002:a2e:9a4c:: with SMTP id k12mr948347ljj.366.1606382574694;
+        Thu, 26 Nov 2020 01:22:54 -0800 (PST)
 Received: from localhost.localdomain (host-89-229-233-64.dynamic.mm.pl. [89.229.233.64])
-        by smtp.gmail.com with ESMTPSA id z188sm239622lfa.141.2020.11.26.01.22.50
+        by smtp.gmail.com with ESMTPSA id z188sm239622lfa.141.2020.11.26.01.22.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Nov 2020 01:22:51 -0800 (PST)
+        Thu, 26 Nov 2020 01:22:53 -0800 (PST)
 From:   mariusz.dudek@gmail.com
 X-Google-Original-From: mariuszx.dudek@intel.com
 To:     andrii.nakryiko@gmail.com, magnus.karlsson@intel.com,
         bjorn.topel@intel.com, ast@kernel.org, daniel@iogearbox.net,
         netdev@vger.kernel.org, jonathan.lemon@gmail.com
 Cc:     bpf@vger.kernel.org, Mariusz Dudek <mariuszx.dudek@intel.com>
-Subject: [PATCH v4 bpf-next 0/2] libbpf: add support for privileged/unprivileged control separation
-Date:   Thu, 26 Nov 2020 10:22:46 +0100
-Message-Id: <20201126092248.6192-1-mariuszx.dudek@intel.com>
+Subject: [PATCH v4 bpf-next 1/2] libbpf: separate XDP program load with xsk socket creation
+Date:   Thu, 26 Nov 2020 10:22:47 +0100
+Message-Id: <20201126092248.6192-2-mariuszx.dudek@intel.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20201126092248.6192-1-mariuszx.dudek@intel.com>
+References: <20201126092248.6192-1-mariuszx.dudek@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -65,85 +67,198 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Mariusz Dudek <mariuszx.dudek@intel.com>
 
-This patch series adds support for separation of eBPF program
-load and xsk socket creation. In for example a Kubernetes
-environment you can have an AF_XDP CNI or daemonset that is 
-responsible for launching pods that execute an application 
-using AF_XDP sockets. It is desirable that the pod runs with
-as low privileges as possible, CAP_NET_RAW in this case, 
-and that all operations that require privileges are contained
-in the CNI or daemonset.
-	
-In this case, you have to be able separate ePBF program load from
-xsk socket creation.
+Add support for separation of eBPF program load and xsk socket
+creation.
 
-Currently, this will not work with the xsk_socket__create APIs
-because you need to have CAP_NET_ADMIN privileges to load eBPF
-program and CAP_SYS_ADMIN privileges to create update xsk_bpf_maps.
-To be exact xsk_set_bpf_maps does not need those privileges but
-it takes the prog_fd and xsks_map_fd and those are known only to
-process that was loading eBPF program. The api bpf_prog_get_fd_by_id
-that looks up the fd of the prog using an prog_id and
-bpf_map_get_fd_by_id that looks for xsks_map_fd usinb map_id both
-requires CAP_SYS_ADMIN.
+This is needed for use-case when you want to privide as little
+privileges as possible to the data plane application that will
+handle xsk socket creation and incoming traffic.
 
-With this patch, the pod can be run with CAP_NET_RAW capability
-only. In case your umem is larger or equal process limit for
-MEMLOCK you need either increase the limit or CAP_IPC_LOCK capability. 
-Without this patch in case of insufficient rights ENOPERM is
-returned by xsk_socket__create.
+With this patch the data entity container can be run with only
+CAP_NET_RAW capability to fulfill its purpose of creating xsk
+socket and handling packages. In case your umem is larger or
+equal process limit for MEMLOCK you need either increase the
+limit or CAP_IPC_LOCK capability.
 
-To resolve this privileges issue two new APIs are introduced:
+To resolve privileges issue two APIs are introduced:
+
 - xsk_setup_xdp_prog - loads the built in XDP program. It can
-also return xsks_map_fd which is needed by unprivileged
-process to update xsks_map with AF_XDP socket "fd"
-- xsk_sokcet__update_xskmap - inserts an AF_XDP socket into an
-xskmap for a particular xsk_socket
+also return xsks_map_fd which is needed by unprivileged process
+to update xsks_map with AF_XDP socket "fd"
 
-Usage example:
-int xsk_setup_xdp_prog(int ifindex, int *xsks_map_fd)
+- xsk_socket__update_xskmap - inserts an AF_XDP socket into an xskmap
+for a particular xsk_socket
 
-int xsk_socket__update_xskmap(struct xsk_socket *xsk, int xsks_map_fd);
+Signed-off-by: Mariusz Dudek <mariuszx.dudek@intel.com>
+---
+ tools/lib/bpf/libbpf.map |  2 +
+ tools/lib/bpf/xsk.c      | 92 ++++++++++++++++++++++++++++++++++++----
+ tools/lib/bpf/xsk.h      |  5 +++
+ 3 files changed, 90 insertions(+), 9 deletions(-)
 
-Inserts AF_XDP socket "fd" into the xskmap.
-
-The first patch introduces the new APIs. The second patch provides
-a new sample applications working as control and modification to
-existing xdpsock application to work with less privileges.
-
-This patch set is based on bpf-next commit fb3558127cb6
-("bpf: Fix selftest compilation on clang 11")
-
-Since v3:
-- force_set_map flag removed
-- leaking of xsk struct fixed
-- unified function error returning policy implemented
-
-Since v2:
-- new APIs moved itto LIBBPF_0.3.0 section
-- struct bpf_prog_cfg_opts removed 
-- loading own eBPF program via xsk_setup_xdp_prog functionality removed
-
-Since v1:
-- struct bpf_prog_cfg improved for backward/forward compatibility
-- API xsk_update_xskmap renamed to xsk_socket__update_xskmap
-- commit message formatting fixed
-
-Mariusz Dudek (2):
-  libbpf: separate XDP program load with xsk socket creation
-  samples/bpf: sample application for eBPF load and socket creation
-    split
-
- samples/bpf/Makefile            |   4 +-
- samples/bpf/xdpsock.h           |   8 ++
- samples/bpf/xdpsock_ctrl_proc.c | 187 ++++++++++++++++++++++++++++++++
- samples/bpf/xdpsock_user.c      | 146 +++++++++++++++++++++++--
- tools/lib/bpf/libbpf.map        |   2 +
- tools/lib/bpf/xsk.c             |  92 ++++++++++++++--
- tools/lib/bpf/xsk.h             |   5 +
- 7 files changed, 425 insertions(+), 19 deletions(-)
- create mode 100644 samples/bpf/xdpsock_ctrl_proc.c
-
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+index 29ff4807b909..d939d5ac092e 100644
+--- a/tools/lib/bpf/libbpf.map
++++ b/tools/lib/bpf/libbpf.map
+@@ -345,4 +345,6 @@ LIBBPF_0.3.0 {
+ 		btf__parse_split;
+ 		btf__new_empty_split;
+ 		btf__new_split;
++		xsk_setup_xdp_prog;
++		xsk_socket__update_xskmap;
+ } LIBBPF_0.2.0;
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index 9bc537d0b92d..4b051ec7cfbb 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -566,8 +566,35 @@ static int xsk_set_bpf_maps(struct xsk_socket *xsk)
+ 				   &xsk->fd, 0);
+ }
+ 
+-static int xsk_setup_xdp_prog(struct xsk_socket *xsk)
++static int xsk_create_xsk_struct(int ifindex, struct xsk_socket *xsk)
+ {
++	char ifname[IFNAMSIZ];
++	struct xsk_ctx *ctx;
++	char *interface;
++
++	ctx = calloc(1, sizeof(*ctx));
++	if (!ctx)
++		return -ENOMEM;
++
++	interface = if_indextoname(ifindex, &ifname[0]);
++	if (!interface) {
++		free(ctx);
++		return -errno;
++	}
++
++	ctx->ifindex = ifindex;
++	strncpy(ctx->ifname, ifname, IFNAMSIZ - 1);
++	ctx->ifname[IFNAMSIZ - 1] = 0;
++
++	xsk->ctx = ctx;
++
++	return 0;
++}
++
++static int __xsk_setup_xdp_prog(struct xsk_socket *_xdp,
++				int *xsks_map_fd)
++{
++	struct xsk_socket *xsk = _xdp;
+ 	struct xsk_ctx *ctx = xsk->ctx;
+ 	__u32 prog_id = 0;
+ 	int err;
+@@ -584,8 +611,7 @@ static int xsk_setup_xdp_prog(struct xsk_socket *xsk)
+ 
+ 		err = xsk_load_xdp_prog(xsk);
+ 		if (err) {
+-			xsk_delete_bpf_maps(xsk);
+-			return err;
++			goto err_load_xdp_prog;
+ 		}
+ 	} else {
+ 		ctx->prog_fd = bpf_prog_get_fd_by_id(prog_id);
+@@ -598,15 +624,29 @@ static int xsk_setup_xdp_prog(struct xsk_socket *xsk)
+ 		}
+ 	}
+ 
+-	if (xsk->rx)
++	if (xsk->rx) {
+ 		err = xsk_set_bpf_maps(xsk);
+-	if (err) {
+-		xsk_delete_bpf_maps(xsk);
+-		close(ctx->prog_fd);
+-		return err;
++		if (err) {
++			if (!prog_id) {
++				goto err_set_bpf_maps;
++			} else {
++				close(ctx->prog_fd);
++				return err;
++			}
++		}
+ 	}
++	if (xsks_map_fd)
++		*xsks_map_fd = ctx->xsks_map_fd;
+ 
+ 	return 0;
++
++err_set_bpf_maps:
++	close(ctx->prog_fd);
++	bpf_set_link_xdp_fd(ctx->ifindex, -1, 0);
++err_load_xdp_prog:
++	xsk_delete_bpf_maps(xsk);
++
++	return err;
+ }
+ 
+ static struct xsk_ctx *xsk_get_ctx(struct xsk_umem *umem, int ifindex,
+@@ -689,6 +729,40 @@ static struct xsk_ctx *xsk_create_ctx(struct xsk_socket *xsk,
+ 	return ctx;
+ }
+ 
++static void xsk_destroy_xsk_struct(struct xsk_socket *xsk)
++{
++	free(xsk->ctx);
++	free(xsk);
++}
++
++int xsk_socket__update_xskmap(struct xsk_socket *xsk, int fd)
++{
++	xsk->ctx->xsks_map_fd = fd;
++	return xsk_set_bpf_maps(xsk);
++}
++
++int xsk_setup_xdp_prog(int ifindex, int *xsks_map_fd)
++{
++	struct xsk_socket *xsk;
++	int res;
++
++	xsk = calloc(1, sizeof(*xsk));
++	if (!xsk)
++		return -ENOMEM;
++
++	res = xsk_create_xsk_struct(ifindex, xsk);
++	if (res) {
++		free(xsk);
++		return -EINVAL;
++	}
++
++	res = __xsk_setup_xdp_prog(xsk, xsks_map_fd);
++
++	xsk_destroy_xsk_struct(xsk);
++
++	return res;
++}
++
+ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
+ 			      const char *ifname,
+ 			      __u32 queue_id, struct xsk_umem *umem,
+@@ -838,7 +912,7 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
+ 	ctx->prog_fd = -1;
+ 
+ 	if (!(xsk->config.libbpf_flags & XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD)) {
+-		err = xsk_setup_xdp_prog(xsk);
++		err = __xsk_setup_xdp_prog(xsk, NULL);
+ 		if (err)
+ 			goto out_mmap_tx;
+ 	}
+diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
+index 1719a327e5f9..10b4259f8875 100644
+--- a/tools/lib/bpf/xsk.h
++++ b/tools/lib/bpf/xsk.h
+@@ -207,6 +207,11 @@ struct xsk_umem_config {
+ 	__u32 flags;
+ };
+ 
++LIBBPF_API int xsk_setup_xdp_prog(int ifindex,
++				  int *xsks_map_fd);
++LIBBPF_API int xsk_socket__update_xskmap(struct xsk_socket *xsk,
++					 int xsks_map_fd);
++
+ /* Flags for the libbpf_flags field. */
+ #define XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD (1 << 0)
+ 
 -- 
 2.20.1
 
