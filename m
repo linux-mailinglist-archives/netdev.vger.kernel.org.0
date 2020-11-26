@@ -2,102 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8D292C553C
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 14:26:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82E9E2C552C
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 14:24:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389955AbgKZNZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Nov 2020 08:25:33 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7739 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389760AbgKZNZc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 08:25:32 -0500
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4ChdlY68ChzkftB;
-        Thu, 26 Nov 2020 21:24:41 +0800 (CST)
-Received: from huawei.com (10.175.103.91) by DGGEMS408-HUB.china.huawei.com
- (10.3.19.208) with Microsoft SMTP Server id 14.3.487.0; Thu, 26 Nov 2020
- 21:25:02 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <toshiaki.makita1@gmail.com>, <rkovhaev@gmail.com>,
-        <yangyingliang@huawei.com>
-Subject: [PATCH net] net: fix memory leak in register_netdevice() on error path
-Date:   Thu, 26 Nov 2020 21:23:12 +0800
-Message-ID: <20201126132312.3593725-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S2389743AbgKZNYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 08:24:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55792 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389603AbgKZNYW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 08:24:22 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54F05C0613D4;
+        Thu, 26 Nov 2020 05:24:22 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id q16so2250500edv.10;
+        Thu, 26 Nov 2020 05:24:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xUQ9iYS8DZZmFJG3hqLV8u3HjCR6GcQ7ha8Yn9D0h2Y=;
+        b=Kw0QcVVgvszkH6wATTStoi3oNXb+T6n31svBwuwDpSiCFcFJum/ZInLX/ST27iw53M
+         SQ43vuJ3MQbJkx7+4wViSwgxDBeXS8ABn+aYMv3DITa200rxk6WmDyfyBRZdfYUyVLTN
+         vTDBG3IoDAbCW4bttz5+EIfC3e49eeqGPwrfOovAl0k6nfzkPU3rzJWsGkpD253/7VwF
+         7XeEdxH88RNB+YPKSYzVAfq+VVQZaEdcZvwubHFhYZux2X5ThT1e/b4t4zmmP9tQp2WC
+         Smc7/kXl5p4h7EHNg7qQb+bq0AkwTYFJuA9cw1/YJD197/C72bLd4Qsut9/aVhm4jCG0
+         twzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xUQ9iYS8DZZmFJG3hqLV8u3HjCR6GcQ7ha8Yn9D0h2Y=;
+        b=pS9b/xZFmzajLw7AYtVtT2jwaEE6P/nFvQ2kbhFdE4JM3vRx52BpSXJLQLrZ/f0TIs
+         +lvYkaQvJMN7AVEgwvBlbHM2jGX2CjLCOmflz+I6JfezeDI4/j/eiZnzGZdhaRS3IPbk
+         h5hAkDfkYQaRkbsEkBCjIZ7QxUjGAxewcv+qpR8ljC10qqsTI26DwPDjraIeK0j26FAd
+         P0eAeabyeZZBwyL5y4z05rbnhjnTfgUbC60qbQrfW/f39VKf7mQ2WLOj3pQ7IgWthtoF
+         wXpvbRFNM1ZLjofHgpWEpOcMTTaO+y6RSsOm6piDYUXWvS31l+EuajlTi7GEHWM/IKuk
+         xrSg==
+X-Gm-Message-State: AOAM532WHi3ZgyNmIwIbmDlL/6xnOAHIr/ITFbXfUOmn//J8mIlX7gY2
+        4Gud8x2IkZD6FYgdDWZj9gI=
+X-Google-Smtp-Source: ABdhPJwVCwjfW/pragoptzjKbLnTua6xsV3kAXviMnijgS59C8xrddDUKW+unl+E0Vg6amIQKbifkg==
+X-Received: by 2002:a50:ef13:: with SMTP id m19mr2534718eds.34.1606397060891;
+        Thu, 26 Nov 2020 05:24:20 -0800 (PST)
+Received: from skbuf ([188.25.2.120])
+        by smtp.gmail.com with ESMTPSA id b15sm3222314edv.85.2020.11.26.05.24.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Nov 2020 05:24:19 -0800 (PST)
+Date:   Thu, 26 Nov 2020 15:24:18 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     George McCollister <george.mccollister@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 2/3] net: dsa: add Arrow SpeedChips XRS700x
+ driver
+Message-ID: <20201126132418.zigx6c2iuc4kmlvy@skbuf>
+References: <20201125193740.36825-1-george.mccollister@gmail.com>
+ <20201125193740.36825-3-george.mccollister@gmail.com>
+ <20201125174214.0c9dd5a9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAFSKS=OY_-Agd6JPoFgm3MS5HE6soexHnDHfq8g9WVrCc82_sA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFSKS=OY_-Agd6JPoFgm3MS5HE6soexHnDHfq8g9WVrCc82_sA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I got a memleak report when doing fault-inject test:
+On Wed, Nov 25, 2020 at 08:25:11PM -0600, George McCollister wrote:
+> > > +     {XRS_RX_UNDERSIZE_L, "rx_undersize"},
+> > > +     {XRS_RX_FRAGMENTS_L, "rx_fragments"},
+> > > +     {XRS_RX_OVERSIZE_L, "rx_oversize"},
+> > > +     {XRS_RX_JABBER_L, "rx_jabber"},
+> > > +     {XRS_RX_ERR_L, "rx_err"},
+> > > +     {XRS_RX_CRC_L, "rx_crc"},
+> >
+> > As Vladimir already mentioned to you the statistics which have
+> > corresponding entries in struct rtnl_link_stats64 should be reported
+> > the standard way. The infra for DSA may not be in place yet, so best
+> > if you just drop those for now.
+> 
+> Okay, that clears it up a bit. Just drop these 6? I'll read through
+> that thread again and try to make sense of it.
 
-unreferenced object 0xffff88810ace9000 (size 1024):
-  comm "ip", pid 4622, jiffies 4295457037 (age 43.378s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<00000000008abe41>] __kmalloc+0x10f/0x210
-    [<000000005d3533a6>] veth_dev_init+0x140/0x310
-    [<0000000088353c64>] register_netdevice+0x496/0x7a0
-    [<000000001324d322>] veth_newlink+0x40b/0x960
-    [<00000000d0799866>] __rtnl_newlink+0xd8c/0x1360
-    [<00000000d616040a>] rtnl_newlink+0x6b/0xa0
-    [<00000000e0a1600d>] rtnetlink_rcv_msg+0x3cc/0x9e0
-    [<000000009eeff98b>] netlink_rcv_skb+0x130/0x3a0
-    [<00000000500f8be1>] netlink_unicast+0x4da/0x700
-    [<00000000666c03b3>] netlink_sendmsg+0x7fe/0xcb0
-    [<0000000073b28103>] sock_sendmsg+0x143/0x180
-    [<00000000ad746a30>] ____sys_sendmsg+0x677/0x810
-    [<0000000087dd98e5>] ___sys_sendmsg+0x105/0x180
-    [<00000000028dd365>] __sys_sendmsg+0xf0/0x1c0
-    [<00000000a6bfbae6>] do_syscall_64+0x33/0x40
-    [<00000000e00521b4>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-It seems ifb and loopback may also hit the leak, so I try to fix this in
-register_netdevice().
-
-In common case, priv_destructor() will be called in netdev_run_todo()
-after calling ndo_uninit() in rollback_registered(), on other error
-path in register_netdevice(), ndo_uninit() and priv_destructor() are
-called before register_netdevice() return, but in this case,
-priv_destructor() will never be called, then it causes memory leak,
-so we should call priv_destructor() here.
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- net/core/dev.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 82dc6b48e45f..907204395b64 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -10000,6 +10000,17 @@ int register_netdevice(struct net_device *dev)
- 	ret = notifier_to_errno(ret);
- 	if (ret) {
- 		rollback_registered(dev);
-+		/*
-+		 * In common case, priv_destructor() will be
-+		 * called in netdev_run_todo() after calling
-+		 * ndo_uninit() in rollback_registered().
-+		 * But in this case, priv_destructor() will
-+		 * never be called, then it causes memory
-+		 * leak, so we should call priv_destructor()
-+		 * here.
-+		 */
-+		if (dev->priv_destructor)
-+			dev->priv_destructor(dev);
- 		rcu_barrier();
- 
- 		dev->reg_state = NETREG_UNREGISTERED;
--- 
-2.25.1
-
+I feel that I should ask. Do you want me to look into exposing RMON
+interface counters through rtnetlink (I've never done anything like that
+before either, but there's a beginning for everything), or are you going
+to?
