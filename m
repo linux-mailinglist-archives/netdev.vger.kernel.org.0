@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 310EB2C4BD7
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 01:10:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEE332C4BD0
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 01:10:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728795AbgKZAJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Nov 2020 19:09:41 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:39488 "EHLO
+        id S1729318AbgKZAJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Nov 2020 19:09:43 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:19396 "EHLO
         mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727142AbgKZAJl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 19:09:41 -0500
+        by vger.kernel.org with ESMTP id S1727198AbgKZAJm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Nov 2020 19:09:42 -0500
 Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AQ02p8l127529;
-        Wed, 25 Nov 2020 19:09:37 -0500
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AQ02nfg127340;
+        Wed, 25 Nov 2020 19:09:38 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=ufFDuUsOLLTxrA0S0tG0aMXmRaCyLMJ842UgHxqusag=;
- b=R1NuxDwtRFk+a/FnvSnYmB+9TBEDwOBMNJI+Yh1AdGJ0vBdj+2Y7D/9UZT7Yewtf3Ux8
- XG1F697xt0cBaCmvbhKjXLJ2NCa5ru3gzx+CZqezEzjzY9sPzDfnll32ugc41N8f+ZRY
- NnFmLXtRDmtDRYnmcYNqI+U3VDlQjr0Q4ICZK3mbirsnGBqy+NeshhqaqzrKWy/lTVgR
- 45Om0RY2J1WmPCXiZAg+FHk1BqX3EMsimiEmW7zjUBQSbn40+h4nP2raUsbvrSSllYGB
- Y2FwCXk4ln/v8Ro7vH/VZJFYEYdn+AzPIJUokKV8f8aLLtVzoM99egYctjeAW+ejQm3p cw== 
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 351yjcjkyh-1
+ bh=cFw+uSJ1cd8hPDNazQblCyis+UMfYlDD8Y3lfw6qeTk=;
+ b=RMxHKhr6VBCHQzL7NtWFWNuHx2ipp5BwOaLMTnYcV7ZG8E6yssQ6oEWNIiOHqX14AynP
+ 0aMJa15qBthFUiI7xSYRxX69BaxSEgZKaVsAGpLRw2WtOj1hxkG9JzwXADlfq+Vq+USG
+ vh8qUTFINnkGg2Iy15I+nnkk4eFPgR7id95+dcVlqGmhQBe8Z/CZ1qKL9LQ+CWicpmes
+ PCYfnC8/xWGpsjth0hHs3wJQwC+RfR/3KrnkkgiE8kFBzieguDDCAo3f1irrkqWEa9vz
+ YGlYZHPbjmtsQetxUYaMtXnoTfyGkfoOAm5452LkYPsh1/TZfntsYyC+1gNKT0O1Tu9/ sw== 
+Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 351yjcjkyq-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 25 Nov 2020 19:09:37 -0500
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-        by ppma03wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0AQ07CNO009967;
+        Wed, 25 Nov 2020 19:09:38 -0500
+Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
+        by ppma05wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0AQ07WZ4001026;
         Thu, 26 Nov 2020 00:09:37 GMT
-Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
-        by ppma03wdc.us.ibm.com with ESMTP id 35133p3hpg-1
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma05wdc.us.ibm.com with ESMTP id 34xth9b59j-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Thu, 26 Nov 2020 00:09:37 +0000
 Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
-        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0AQ09ali2884228
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0AQ09bnr6947382
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 26 Nov 2020 00:09:36 GMT
+        Thu, 26 Nov 2020 00:09:37 GMT
 Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A5A76AC05B;
-        Thu, 26 Nov 2020 00:09:36 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 1CB07AC060;
+        Thu, 26 Nov 2020 00:09:37 +0000 (GMT)
 Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 471FAAC067;
+        by IMSVA (Postfix) with ESMTP id BE5A6AC059;
         Thu, 26 Nov 2020 00:09:36 +0000 (GMT)
 Received: from linux-i8xm.aus.stglabs.ibm.com (unknown [9.40.195.200])
         by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
@@ -50,10 +50,10 @@ Received: from linux-i8xm.aus.stglabs.ibm.com (unknown [9.40.195.200])
 From:   Dany Madden <drt@linux.ibm.com>
 To:     netdev@vger.kernel.org
 Cc:     ljp@linux.ibm.com, sukadev@linux.ibm.com,
-        linuxppc-dev@lists.ozlabs.org, Dany Madden <drt@linux.ibm.com>
-Subject: [PATCH net v3 4/9] ibmvnic: restore adapter state on failed reset
-Date:   Wed, 25 Nov 2020 18:04:27 -0600
-Message-Id: <20201126000432.29897-5-drt@linux.ibm.com>
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH net v3 5/9] ibmvnic: delay next reset if hard reset fails
+Date:   Wed, 25 Nov 2020 18:04:28 -0600
+Message-Id: <20201126000432.29897-6-drt@linux.ibm.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201126000432.29897-1-drt@linux.ibm.com>
 References: <20201126000432.29897-1-drt@linux.ibm.com>
@@ -71,181 +71,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In a failed reset, driver could end up in VNIC_PROBED or VNIC_CLOSED
-state and cannot recover in subsequent resets, leaving it offline.
-This patch restores the adapter state to reset_state, the original
-state when reset was called.
+From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 
-Fixes: b27507bb59ed5 ("net/ibmvnic: unlock rtnl_lock in reset so linkwatch_event can run")
-Fixes: 2770a7984db58 ("ibmvnic: Introduce hard reset recovery")
-Signed-off-by: Dany Madden <drt@linux.ibm.com>
+If auto-priority failover is enabled, the backing device needs time
+to settle if hard resetting fails for any reason. Add a delay of 60
+seconds before retrying the hard-reset.
+
+Fixes: 2770a7984db5 ("ibmvnic: Introduce hard reset recovery")
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 67 ++++++++++++++++--------------
- 1 file changed, 36 insertions(+), 31 deletions(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index b08f95017825..ff474a790181 100644
+index ff474a790181..e2f9b0e9dea8 100644
 --- a/drivers/net/ethernet/ibm/ibmvnic.c
 +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -1857,7 +1857,7 @@ static int do_change_param_reset(struct ibmvnic_adapter *adapter,
- 	if (reset_state == VNIC_OPEN) {
- 		rc = __ibmvnic_close(netdev);
- 		if (rc)
--			return rc;
-+			goto out;
- 	}
- 
- 	release_resources(adapter);
-@@ -1875,24 +1875,25 @@ static int do_change_param_reset(struct ibmvnic_adapter *adapter,
- 	}
- 
- 	rc = ibmvnic_reset_init(adapter, true);
--	if (rc)
--		return IBMVNIC_INIT_FAILED;
-+	if (rc) {
-+		rc = IBMVNIC_INIT_FAILED;
-+		goto out;
-+	}
- 
- 	/* If the adapter was in PROBE state prior to the reset,
- 	 * exit here.
- 	 */
- 	if (reset_state == VNIC_PROBED)
--		return 0;
-+		goto out;
- 
- 	rc = ibmvnic_login(netdev);
- 	if (rc) {
--		adapter->state = reset_state;
--		return rc;
-+		goto out;
- 	}
- 
- 	rc = init_resources(adapter);
- 	if (rc)
--		return rc;
-+		goto out;
- 
- 	ibmvnic_disable_irqs(adapter);
- 
-@@ -1902,8 +1903,10 @@ static int do_change_param_reset(struct ibmvnic_adapter *adapter,
- 		return 0;
- 
- 	rc = __ibmvnic_open(netdev);
--	if (rc)
--		return IBMVNIC_OPEN_FAILED;
-+	if (rc) {
-+		rc = IBMVNIC_OPEN_FAILED;
-+		goto out;
-+	}
- 
- 	/* refresh device's multicast list */
- 	ibmvnic_set_multi(netdev);
-@@ -1912,7 +1915,10 @@ static int do_change_param_reset(struct ibmvnic_adapter *adapter,
- 	for (i = 0; i < adapter->req_rx_queues; i++)
- 		napi_schedule(&adapter->napi[i]);
- 
--	return 0;
-+out:
-+	if (rc)
-+		adapter->state = reset_state;
-+	return rc;
- }
- 
- /**
-@@ -2015,7 +2021,6 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 
- 		rc = ibmvnic_login(netdev);
- 		if (rc) {
--			adapter->state = reset_state;
- 			goto out;
- 		}
- 
-@@ -2083,6 +2088,9 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 	rc = 0;
- 
- out:
-+	/* restore the adapter state if reset failed */
-+	if (rc)
-+		adapter->state = reset_state;
- 	rtnl_unlock();
- 
- 	return rc;
-@@ -2115,43 +2123,46 @@ static int do_hard_reset(struct ibmvnic_adapter *adapter,
- 	if (rc) {
- 		netdev_err(adapter->netdev,
- 			   "Couldn't initialize crq. rc=%d\n", rc);
--		return rc;
-+		goto out;
- 	}
- 
- 	rc = ibmvnic_reset_init(adapter, false);
- 	if (rc)
--		return rc;
-+		goto out;
- 
- 	/* If the adapter was in PROBE state prior to the reset,
- 	 * exit here.
- 	 */
- 	if (reset_state == VNIC_PROBED)
--		return 0;
-+		goto out;
- 
- 	rc = ibmvnic_login(netdev);
--	if (rc) {
--		adapter->state = VNIC_PROBED;
--		return 0;
--	}
-+	if (rc)
-+		goto out;
- 
- 	rc = init_resources(adapter);
- 	if (rc)
--		return rc;
-+		goto out;
- 
- 	ibmvnic_disable_irqs(adapter);
- 	adapter->state = VNIC_CLOSED;
- 
- 	if (reset_state == VNIC_CLOSED)
--		return 0;
-+		goto out;
- 
- 	rc = __ibmvnic_open(netdev);
--	if (rc)
--		return IBMVNIC_OPEN_FAILED;
-+	if (rc) {
-+		rc = IBMVNIC_OPEN_FAILED;
-+		goto out;
-+	}
- 
- 	call_netdevice_notifiers(NETDEV_NOTIFY_PEERS, netdev);
- 	call_netdevice_notifiers(NETDEV_RESEND_IGMP, netdev);
--
--	return 0;
-+out:
-+	/* restore adapter state if reset failed */
-+	if (rc)
-+		adapter->state = reset_state;
-+	return rc;
- }
- 
- static struct ibmvnic_rwi *get_next_rwi(struct ibmvnic_adapter *adapter)
-@@ -2236,13 +2247,7 @@ static void __ibmvnic_reset(struct work_struct *work)
+@@ -2242,6 +2242,14 @@ static void __ibmvnic_reset(struct work_struct *work)
+ 				rc = do_hard_reset(adapter, rwi, reset_state);
+ 				rtnl_unlock();
+ 			}
++			if (rc) {
++				/* give backing device time to settle down */
++				netdev_dbg(adapter->netdev,
++					   "[S:%d] Hard reset failed, waiting 60 secs\n",
++					   adapter->state);
++				set_current_state(TASK_UNINTERRUPTIBLE);
++				schedule_timeout(60 * HZ);
++			}
+ 		} else if (!(rwi->reset_reason == VNIC_RESET_FATAL &&
+ 				adapter->from_passive_init)) {
  			rc = do_reset(adapter, rwi, reset_state);
- 		}
- 		kfree(rwi);
--		if (rc == IBMVNIC_OPEN_FAILED) {
--			if (list_empty(&adapter->rwi_list))
--				adapter->state = VNIC_CLOSED;
--			else
--				adapter->state = reset_state;
--			rc = 0;
--		}
-+
- 		if (rc)
- 			netdev_dbg(adapter->netdev, "Reset failed, rc=%d\n", rc);
- 
 -- 
 2.26.2
 
