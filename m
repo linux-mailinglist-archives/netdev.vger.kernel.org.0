@@ -2,134 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D77F2C57B6
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 15:59:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EF0F2C57BA
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 16:00:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390450AbgKZO70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Nov 2020 09:59:26 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:45026 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2389911AbgKZO7Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 09:59:25 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from yanjunz@mellanox.com)
-        with SMTP; 26 Nov 2020 16:59:22 +0200
-Received: from bc-vnc02.mtbc.labs.mlnx (bc-vnc02.mtbc.labs.mlnx [10.75.68.111])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0AQExMaT010579;
-        Thu, 26 Nov 2020 16:59:22 +0200
-Received: from bc-vnc02.mtbc.labs.mlnx (localhost [127.0.0.1])
-        by bc-vnc02.mtbc.labs.mlnx (8.14.4/8.14.4) with ESMTP id 0AQExLZV011709;
-        Thu, 26 Nov 2020 22:59:21 +0800
-Received: (from yanjunz@localhost)
-        by bc-vnc02.mtbc.labs.mlnx (8.14.4/8.14.4/Submit) id 0AQExINh011704;
-        Thu, 26 Nov 2020 22:59:18 +0800
-From:   Zhu Yanjun <yanjunz@nvidia.com>
-To:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
-        davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: [PATCH v4 1/1] xdp: remove the function xsk_map_inc
-Date:   Thu, 26 Nov 2020 22:59:11 +0800
-Message-Id: <1606402751-11669-1-git-send-email-yanjunz@nvidia.com>
-X-Mailer: git-send-email 1.7.1
+        id S2391151AbgKZPAC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 10:00:02 -0500
+Received: from mx2.suse.de ([195.135.220.15]:59826 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389911AbgKZPAC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Nov 2020 10:00:02 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1606402800; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=MN+K+KATzL0V3+o8x50winEV8cRDI7V0yHzEukvAr/I=;
+        b=mnXLMbV65ayeOxDZehLW2H/5ikrbBLfEIKpFBbQcuPncs36ZRlctwz0O0xw4YH3OtEAaIr
+        UO7XmfWrAobsy3yEHcqe5F2B+edxUAoV8O52IqbF9k6i4FWnNWkmYBK7cPmnBWOijFu78+
+        w9CxbnP1iuzqzFFDQbPhJTzzrsQ2Pks=
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 6C159ACE0;
+        Thu, 26 Nov 2020 15:00:00 +0000 (UTC)
+Message-ID: <986e95f8d75780ddeda90e135237eccf1d9b1e55.camel@suse.com>
+Subject: struct mii_if_info in usbnet.h
+From:   Oliver Neukum <oneukum@suse.com>
+To:     linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Cc:     hayeswang@realtek.com, hkallweit1@gmail.com, tremyfr@gmail.com
+Date:   Thu, 26 Nov 2020 15:59:37 +0100
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zhu Yanjun <zyjzyj2000@gmail.com>
+Hi,
 
-The functions xsk_map_put and xsk_map_inc are simple wrappers.
-As such, replacing these functions with the functions bpf_map_inc
-and bpf_map_put and removing some test codes.
+I was looking at usbnet_get_link_ksettings() and it seems in hindsight
+that the idea it rests upon makes an assumption about the hardware
+that was at the time it was introduced was often true, but today
+isn't.
 
-Fixes: d20a1676df7e ("xsk: Move xskmap.c to net/xdp/")
-Signed-off-by: Zhu Yanjun <zyjzyj2000@gmail.com>
----
- net/xdp/xsk.c    |  4 ++--
- net/xdp/xsk.h    |  2 --
- net/xdp/xskmap.c | 20 ++------------------
- 3 files changed, 4 insertions(+), 22 deletions(-)
+struct usbnet contains a member struct mii_if_info. Why? That makes
+a pretty strong assumption about the hardware. Inparticular I see
+no way to sanely implement mdio_read() and mdio_write() on hardware
+this assumption does not fit.
 
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index cfbec3989a76..4f0250f5d676 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -548,7 +548,7 @@ static struct xsk_map *xsk_get_map_list_entry(struct xdp_sock *xs,
- 	node = list_first_entry_or_null(&xs->map_list, struct xsk_map_node,
- 					node);
- 	if (node) {
--		WARN_ON(xsk_map_inc(node->map));
-+		bpf_map_inc(&node->map->map);
- 		map = node->map;
- 		*map_entry = node->map_entry;
- 	}
-@@ -578,7 +578,7 @@ static void xsk_delete_from_maps(struct xdp_sock *xs)
- 
- 	while ((map = xsk_get_map_list_entry(xs, &map_entry))) {
- 		xsk_map_try_sock_delete(map, xs, map_entry);
--		xsk_map_put(map);
-+		bpf_map_put(&map->map);
- 	}
- }
- 
-diff --git a/net/xdp/xsk.h b/net/xdp/xsk.h
-index b9e896cee5bb..edcf249ad1f1 100644
---- a/net/xdp/xsk.h
-+++ b/net/xdp/xsk.h
-@@ -41,8 +41,6 @@ static inline struct xdp_sock *xdp_sk(struct sock *sk)
- 
- void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
- 			     struct xdp_sock **map_entry);
--int xsk_map_inc(struct xsk_map *map);
--void xsk_map_put(struct xsk_map *map);
- void xsk_clear_pool_at_qid(struct net_device *dev, u16 queue_id);
- int xsk_reg_pool_at_qid(struct net_device *dev, struct xsk_buff_pool *pool,
- 			u16 queue_id);
-diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
-index 49da2b8ace8b..66231ba6c348 100644
---- a/net/xdp/xskmap.c
-+++ b/net/xdp/xskmap.c
-@@ -11,32 +11,16 @@
- 
- #include "xsk.h"
- 
--int xsk_map_inc(struct xsk_map *map)
--{
--	bpf_map_inc(&map->map);
--	return 0;
--}
--
--void xsk_map_put(struct xsk_map *map)
--{
--	bpf_map_put(&map->map);
--}
--
- static struct xsk_map_node *xsk_map_node_alloc(struct xsk_map *map,
- 					       struct xdp_sock **map_entry)
- {
- 	struct xsk_map_node *node;
--	int err;
- 
- 	node = kzalloc(sizeof(*node), GFP_ATOMIC | __GFP_NOWARN);
- 	if (!node)
- 		return ERR_PTR(-ENOMEM);
- 
--	err = xsk_map_inc(map);
--	if (err) {
--		kfree(node);
--		return ERR_PTR(err);
--	}
-+	bpf_map_inc(&map->map);
- 
- 	node->map = map;
- 	node->map_entry = map_entry;
-@@ -45,7 +29,7 @@ static struct xsk_map_node *xsk_map_node_alloc(struct xsk_map *map,
- 
- static void xsk_map_node_free(struct xsk_map_node *node)
- {
--	xsk_map_put(node->map);
-+	bpf_map_put(&node->map->map);
- 	kfree(node);
- }
- 
--- 
-2.25.1
+On this hardware usbnet_get_link_ksettings() does not do its job.
+So what is to be done? Technically it is a layering violation. Yet
+it is obviously useful to many drivers?
+Suggestions?
+
+	Regards
+		Oliver
+
 
