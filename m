@@ -2,621 +2,384 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3F1F2C50AD
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 09:41:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FC982C50B3
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 09:45:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730302AbgKZIlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Nov 2020 03:41:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40144 "EHLO
+        id S2388873AbgKZInm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 03:43:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728862AbgKZIlB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 03:41:01 -0500
-Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4A3CC0613D4;
-        Thu, 26 Nov 2020 00:41:00 -0800 (PST)
-Received: by mail-ot1-x342.google.com with SMTP id h39so1243955otb.5;
-        Thu, 26 Nov 2020 00:41:00 -0800 (PST)
+        with ESMTP id S1726479AbgKZInm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 03:43:42 -0500
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80C47C0613D4;
+        Thu, 26 Nov 2020 00:43:40 -0800 (PST)
+Received: by mail-pf1-x442.google.com with SMTP id 131so1023052pfb.9;
+        Thu, 26 Nov 2020 00:43:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=O9hLmtKi6V0AaoeVGQ8uAYWPm0hmK4DNmcHY6mm324M=;
-        b=EtqW7CBamvGIaWQ0Ou4TYheBTqqUWX2w4Z5DoR7VxLOkaCL+yOJ5duR8xzwBi6nrIw
-         u0Panwi0FNHphP5Rr+KJ8QCEqzAFkDn4SZ5fpHB3Z9X5ajV0LxpuudiWyNMpGyGCgRvF
-         iZNyisFgto4qj39PvLwKG5L4hqHZIEOp23M+OGLU8KLTF1TnaQNWu2TxHpVCme0Q5giR
-         c0ox1g2c8k71xEDbb7jo4fl0ioN/e8AgITG4mCUIZwKjBZQrTZbNKjHJ/v/uPwsRhEqD
-         XlC/qjwwaabN6MYhFn7ZiMsOQd61Slg6JnHDZHXKZUNzAkBRtOppwXYA/jXycPbian/K
-         tCJg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=L+Z3pSePklJXcs5IMElgRcq2FF0BDegclv5eVyDKRL8=;
+        b=uzMIVb7Sy/IRfutNT+hp2RqRRSS5HY1p4sHmKRKAhknILN+5YB/vaoQIex0qubuhD1
+         wIcjuGiDJjpp+fP3895K8B9pzLYUH7HSfWFYIpxAjND0v4kgl4gIhDvdGrkVSsfkao00
+         E5gIe4jD7VpcfRkqRlIdF4QXrrR/SJVKKl+ATEgxNK7n4rbQmAAoOolZT31TpOWKEdn+
+         dY8WB+8BEBYTcOzUt0x65h2yo3m2uKS2K0zvbQ5YZV1RsdsP2WDBIOZ9NZupe4CJg7ol
+         ppbDAE459IO2oU9kvWz4/GyR5JsNq7GxsfIOSdxxIb54gDrmTeQ8r7oJw+Y1CyGwc5Ba
+         BfTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=O9hLmtKi6V0AaoeVGQ8uAYWPm0hmK4DNmcHY6mm324M=;
-        b=k25gHXUV5DvoZYOxMmVESONA+HKqKQ9oFtntozNFhhbv2+s8SIxjvT2MkGjIDaLmd5
-         E48rUlqWzyMHQoTWiqVuuGwEUiad7hrFHU46/7dkwGl4VKIvTKFtHv/XKPoRGhH97zY4
-         zwmcP03TN0Vc3Nos1rnaeRu1Vfs6N4pvjdjl7P18MRO96QEtSjpAwTc+feHhRiLHvfw4
-         PJtlJ1WNIwo6Du5icn3o+RAcg6iq8sYuVqAhPhKZIQkwK/ci5GAdFfEJ95kA0MUJJdi+
-         QChBnPTsw8A7qBnmeTFsCfe7YlnPppKBnchsM92CP1vTaoq1Syifd+DvVXr1DVhd/f0K
-         E4AQ==
-X-Gm-Message-State: AOAM533oqMePTDn3SUBeM48K+k4wgQng7/FXxi7tTndXvfFw+WiRg+E6
-        AShPXsD/JgojbJ0nPf7mMysvN7XzULqmi9hNbtHivhekSlSaaA==
-X-Google-Smtp-Source: ABdhPJzktfnmSquzFrIpq4WPvAaYRaXNCWSpDpUhY7ar0XE/Ob4mHbUWJonCog1Jw2PuqSGRLZPlV9tqfRT0mAcZ+f8=
-X-Received: by 2002:a05:6830:789:: with SMTP id w9mr1610816ots.243.1606380060029;
- Thu, 26 Nov 2020 00:41:00 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=L+Z3pSePklJXcs5IMElgRcq2FF0BDegclv5eVyDKRL8=;
+        b=gQ9YWSrahfGbDwrPnbdoInVctUAA9dzSqaxHNhvOZqtwgHtV2/exowJZYZmapR9pV7
+         eS3HAyZdtdk+ZBHyVBtaMoruWvhNkpuKAh3ggxFFIdZsuLgITqPJ7HnlZ1b94C2Rayjd
+         46g10NnLpEdHkHvHcfoc7HpbAfwjdAKNG/enB+bqQUob1RLsjr4BYqdSXlEgL2GmqB9r
+         c0JDkm9Okh+gk2eQ9bQmK58K4gg1Sm1hn2VbYkck5YTn8e/pEoWZ+hqHYBFlmpVLqqlE
+         F6MaE/++Jpmu2NRcswx0cbW34wTNCSKPwbLrr15Zj5apJbFMLFHQwPIfoufajeco9SNl
+         rKSA==
+X-Gm-Message-State: AOAM533Dagx0hhx31HeMdBsMDzzZP7anjGH37MUI5CYdRRjCIAxf8OdH
+        Vfee3Cbiwp8V3jd+evdTYNEHBmIOU7vjfl8Q
+X-Google-Smtp-Source: ABdhPJw5Vo5zEVEP3dhq+uhZ8roLREz/sarybS27oTvJSHEJcV+m7mi3vJ+YqZBQgdPWYHKZZ1LWsg==
+X-Received: by 2002:a17:90a:902:: with SMTP id n2mr2546233pjn.126.1606380219784;
+        Thu, 26 Nov 2020 00:43:39 -0800 (PST)
+Received: from localhost.localdomain.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id q23sm4135298pfg.18.2020.11.26.00.43.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Nov 2020 00:43:39 -0800 (PST)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCHv2 bpf-next] samples/bpf: add xdp program on egress for xdp_redirect_map
+Date:   Thu, 26 Nov 2020 16:43:25 +0800
+Message-Id: <20201126084325.477470-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20201110124639.1941654-1-liuhangbin@gmail.com>
+References: <20201110124639.1941654-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-References: <20201118083253.4150-1-mariuszx.dudek@intel.com>
- <20201118083253.4150-3-mariuszx.dudek@intel.com> <CAJ8uoz328+iVfT+NbZ5TNUHObBTg_rRaPw-qQPofDro4xfSB1Q@mail.gmail.com>
-In-Reply-To: <CAJ8uoz328+iVfT+NbZ5TNUHObBTg_rRaPw-qQPofDro4xfSB1Q@mail.gmail.com>
-From:   Mariusz Dudek <mariusz.dudek@gmail.com>
-Date:   Thu, 26 Nov 2020 09:40:49 +0100
-Message-ID: <CADm5B_Or4nU0tEm1MMrfVJi1ZwyuAvZof5wWqSa87hmVjD2DyA@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 2/2] samples/bpf: sample application for eBPF
- load and socket creation split
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        bpf <bpf@vger.kernel.org>,
-        Mariusz Dudek <mariuszx.dudek@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 25, 2020 at 3:42 PM Magnus Karlsson
-<magnus.karlsson@gmail.com> wrote:
->
-> On Wed, Nov 18, 2020 at 9:34 AM <mariusz.dudek@gmail.com> wrote:
-> >
-> > From: Mariusz Dudek <mariuszx.dudek@intel.com>
-> >
-> > Introduce a sample program to demonstrate the control and data
-> > plane split. For the control plane part a new program called
-> > xdpsock_ctrl_proc is introduced. For the data plane part, some code
-> > was added to xdpsock_user.c to act as the data plane entity.
-> >
-> > Application xdpsock_ctrl_proc works as control entity with sudo
-> > privileges (CAP_SYS_ADMIN and CAP_NET_ADMIN are sufficient) and the
-> > extended xdpsock as data plane entity with CAP_NET_RAW capability
-> > only.
-> >
-> > Usage example:
-> >
-> > sudo ./samples/bpf/xdpsock_ctrl_proc -i <interface>
-> >
-> > sudo ./samples/bpf/xdpsock -i <interface> -q <queue_id>
-> >         -n <interval> -N -l -R
-> >
-> > Signed-off-by: Mariusz Dudek <mariuszx.dudek@intel.com>
-> > ---
-> >  samples/bpf/Makefile            |   4 +-
-> >  samples/bpf/xdpsock.h           |   8 ++
-> >  samples/bpf/xdpsock_ctrl_proc.c | 184 ++++++++++++++++++++++++++++++++
-> >  samples/bpf/xdpsock_user.c      | 146 +++++++++++++++++++++++--
-> >  4 files changed, 332 insertions(+), 10 deletions(-)
-> >  create mode 100644 samples/bpf/xdpsock_ctrl_proc.c
-> >
-> > diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-> > index aeebf5d12f32..8fb8be1c0144 100644
-> > --- a/samples/bpf/Makefile
-> > +++ b/samples/bpf/Makefile
-> > @@ -48,6 +48,7 @@ tprogs-y += syscall_tp
-> >  tprogs-y += cpustat
-> >  tprogs-y += xdp_adjust_tail
-> >  tprogs-y += xdpsock
-> > +tprogs-y += xdpsock_ctrl_proc
-> >  tprogs-y += xsk_fwd
-> >  tprogs-y += xdp_fwd
-> >  tprogs-y += task_fd_query
-> > @@ -105,6 +106,7 @@ syscall_tp-objs := syscall_tp_user.o
-> >  cpustat-objs := cpustat_user.o
-> >  xdp_adjust_tail-objs := xdp_adjust_tail_user.o
-> >  xdpsock-objs := xdpsock_user.o
-> > +xdpsock_ctrl_proc-objs := xdpsock_ctrl_proc.o
-> >  xsk_fwd-objs := xsk_fwd.o
-> >  xdp_fwd-objs := xdp_fwd_user.o
-> >  task_fd_query-objs := bpf_load.o task_fd_query_user.o $(TRACE_HELPERS)
-> > @@ -204,7 +206,7 @@ TPROGLDLIBS_tracex4         += -lrt
-> >  TPROGLDLIBS_trace_output       += -lrt
-> >  TPROGLDLIBS_map_perf_test      += -lrt
-> >  TPROGLDLIBS_test_overhead      += -lrt
-> > -TPROGLDLIBS_xdpsock            += -pthread
-> > +TPROGLDLIBS_xdpsock            += -pthread -lcap
-> >  TPROGLDLIBS_xsk_fwd            += -pthread
-> >
-> >  # Allows pointing LLC/CLANG to a LLVM backend with bpf support, redefine on cmdline:
-> > diff --git a/samples/bpf/xdpsock.h b/samples/bpf/xdpsock.h
-> > index b7eca15c78cc..fd70cce60712 100644
-> > --- a/samples/bpf/xdpsock.h
-> > +++ b/samples/bpf/xdpsock.h
-> > @@ -8,4 +8,12 @@
-> >
-> >  #define MAX_SOCKS 4
-> >
-> > +#define SOCKET_NAME "sock_cal_bpf_fd"
-> > +#define MAX_NUM_OF_CLIENTS 10
-> > +
-> > +#define CLOSE_CONN  1
-> > +
-> > +typedef __u64 u64;
-> > +typedef __u32 u32;
-> > +
-> >  #endif /* XDPSOCK_H */
-> > diff --git a/samples/bpf/xdpsock_ctrl_proc.c b/samples/bpf/xdpsock_ctrl_proc.c
-> > new file mode 100644
-> > index 000000000000..9d9e65e5552d
-> > --- /dev/null
-> > +++ b/samples/bpf/xdpsock_ctrl_proc.c
-> > @@ -0,0 +1,184 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/* Copyright(c) 2017 - 2018 Intel Corporation. */
-> > +
-> > +#include <errno.h>
-> > +#include <getopt.h>
-> > +#include <libgen.h>
-> > +#include <net/if.h>
-> > +#include <stdio.h>
-> > +#include <stdlib.h>
-> > +#include <sys/socket.h>
-> > +#include <sys/un.h>
-> > +#include <unistd.h>
-> > +
-> > +#include <bpf/bpf.h>
-> > +#include <bpf/xsk.h>
-> > +#include "xdpsock.h"
-> > +
-> > +static const char *opt_if = "";
-> > +
-> > +static struct option long_options[] = {
-> > +       {"interface", required_argument, 0, 'i'},
-> > +       {0, 0, 0, 0}
-> > +};
-> > +
-> > +static void usage(const char *prog)
-> > +{
-> > +       const char *str =
-> > +               "  Usage: %s [OPTIONS]\n"
-> > +               "  Options:\n"
-> > +               "  -i, --interface=n    Run on interface n\n"
-> > +               "\n";
-> > +       fprintf(stderr, "%s\n", str);
-> > +
-> > +       exit(0);
-> > +}
-> > +
-> > +static void parse_command_line(int argc, char **argv)
-> > +{
-> > +       int option_index, c;
-> > +
-> > +       opterr = 0;
-> > +
-> > +       for (;;) {
-> > +               c = getopt_long(argc, argv, "i:",
-> > +                               long_options, &option_index);
-> > +               if (c == -1)
-> > +                       break;
-> > +
-> > +               switch (c) {
-> > +               case 'i':
-> > +                       opt_if = optarg;
-> > +                       break;
-> > +               default:
-> > +                       usage(basename(argv[0]));
-> > +               }
-> > +       }
-> > +}
-> > +
-> > +static int send_xsks_map_fd(int sock, int fd)
-> > +{
-> > +       char cmsgbuf[CMSG_SPACE(sizeof(int))];
-> > +       struct msghdr msg;
-> > +       struct iovec iov;
-> > +       int value = 0;
-> > +
-> > +       if (fd == -1) {
-> > +               fprintf(stderr, "Incorrect fd = %d\n", fd);
-> > +               return -1;
-> > +       }
-> > +       iov.iov_base = &value;
-> > +       iov.iov_len = sizeof(int);
-> > +
-> > +       msg.msg_name = NULL;
-> > +       msg.msg_namelen = 0;
-> > +       msg.msg_iov = &iov;
-> > +       msg.msg_iovlen = 1;
-> > +       msg.msg_flags = 0;
-> > +       msg.msg_control = cmsgbuf;
-> > +       msg.msg_controllen = CMSG_LEN(sizeof(int));
-> > +
-> > +       struct cmsghdr *cmsg = CMSG_FIRSTHDR(&msg);
-> > +
-> > +       cmsg->cmsg_level = SOL_SOCKET;
-> > +       cmsg->cmsg_type = SCM_RIGHTS;
-> > +       cmsg->cmsg_len = CMSG_LEN(sizeof(int));
-> > +
-> > +       *(int *)CMSG_DATA(cmsg) = fd;
-> > +       int ret = sendmsg(sock, &msg, 0);
-> > +
-> > +       if (ret == -1) {
-> > +               fprintf(stderr, "Sendmsg failed with %s", strerror(errno));
-> > +               return -errno;
-> > +       }
-> > +
-> > +       return ret;
-> > +}
-> > +
-> > +int
-> > +main(int argc, char **argv)
-> > +{
-> > +       struct sockaddr_un server;
-> > +       int listening = 1;
-> > +       int rval, msgsock;
-> > +       int ifindex = 0;
-> > +       int flag = 1;
-> > +       int cmd = 0;
-> > +       int sock;
-> > +       int err;
-> > +       int xsks_map_fd;
-> > +
-> > +       parse_command_line(argc, argv);
-> > +
-> > +       ifindex = if_nametoindex(opt_if);
-> > +       if (ifindex == 0)
->
-> How about printing an error message here too? Interface name not
-> valid, or something like that.
+Current sample test xdp_redirect_map only count pkts on ingress. But we
+can't know whether the pkts are redirected or dropped. So add a counter
+on egress interface so we could know how many pkts are redirect in fact.
 
-Error message added
->
-> > +               return -errno;
-> > +
-> > +       sock = socket(AF_UNIX, SOCK_STREAM, 0);
-> > +       if (sock < 0) {
-> > +               fprintf(stderr, "Opening socket stream failed: %s", strerror(errno));
-> > +               exit(EXIT_FAILURE);
->
-> You mix returning error numbers and using exit(EXIT_FAILURE). I say
-> stick to returning an error, return err.
-Will fix that and stick to returning an errno.
->
-> > +       }
-> > +
-> > +       server.sun_family = AF_UNIX;
-> > +       strcpy(server.sun_path, SOCKET_NAME);
-> > +
-> > +       setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(int));
-> > +
-> > +       if (bind(sock, (struct sockaddr *)&server, sizeof(struct sockaddr_un))) {
-> > +               fprintf(stderr, "Binding to socket stream failed: %s", strerror(errno));
-> > +               exit(EXIT_FAILURE);
-> > +       }
-> > +
-> > +       listen(sock, MAX_NUM_OF_CLIENTS);
-> > +
-> > +       err = xsk_setup_xdp_prog(ifindex, &xsks_map_fd);
-> > +       if (err) {
-> > +               fprintf(stderr, "Setup of xdp program failed\n");
-> > +               goto close_sock;
-> > +       }
-> > +
-> > +       while (listening) {
-> > +               msgsock = accept(sock, 0, 0);
-> > +               if (msgsock == -1) {
-> > +                       fprintf(stderr, "Error accepting connection: %s", strerror(errno));
-> > +                       err = -errno;
-> > +                       goto close_sock;
-> > +               }
-> > +               err = send_xsks_map_fd(msgsock, xsks_map_fd);
-> > +               if (err <= 0) {
-> > +                       fprintf(stderr, "Error %d sending xsks_map_fd\n", err);
-> > +                       goto cleanup;
-> > +               }
-> > +               do {
-> > +                       rval = read(msgsock, &cmd, sizeof(int));
-> > +                       if (rval < 0) {
-> > +                               fprintf(stderr, "Error reading stream message");
-> > +                       } else {
-> > +                               if (cmd != CLOSE_CONN)
-> > +                                       fprintf(stderr, "Recv unknown cmd = %d\n", cmd);
-> > +                               listening = 0;
-> > +                               break;
-> > +                       }
-> > +               } while (rval > 0);
-> > +       }
-> > +       close(msgsock);
-> > +       close(sock);
-> > +       unlink(SOCKET_NAME);
-> > +
-> > +       /* Unset fd for given ifindex */
-> > +       err = bpf_set_link_xdp_fd(ifindex, -1, 0);
-> > +       if (err) {
-> > +               fprintf(stderr, "Error when unsetting bpf prog_fd for ifindex(%d)\n", ifindex);
-> > +               return err;
-> > +       }
-> > +
-> > +       return 0;
-> > +
-> > +cleanup:
-> > +       close(msgsock);
-> > +close_sock:
-> > +       close(sock);
-> > +       unlink(SOCKET_NAME);
-> > +       return err;
-> > +}
-> > diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-> > index 2567f0db5aca..589344fd1eb5 100644
-> > --- a/samples/bpf/xdpsock_user.c
-> > +++ b/samples/bpf/xdpsock_user.c
-> > @@ -24,10 +24,12 @@
-> >  #include <stdio.h>
-> >  #include <stdlib.h>
-> >  #include <string.h>
-> > +#include <sys/capability.h>
-> >  #include <sys/mman.h>
-> >  #include <sys/resource.h>
-> >  #include <sys/socket.h>
-> >  #include <sys/types.h>
-> > +#include <sys/un.h>
-> >  #include <time.h>
-> >  #include <unistd.h>
-> >
-> > @@ -95,6 +97,7 @@ static int opt_timeout = 1000;
-> >  static bool opt_need_wakeup = true;
-> >  static u32 opt_num_xsks = 1;
-> >  static u32 prog_id;
-> > +static bool opt_reduced_cap;
-> >
-> >  struct xsk_ring_stats {
-> >         unsigned long rx_npkts;
-> > @@ -153,6 +156,7 @@ struct xsk_socket_info {
-> >
-> >  static int num_socks;
-> >  struct xsk_socket_info *xsks[MAX_SOCKS];
-> > +int sock;
-> >
-> >  static unsigned long get_nsecs(void)
-> >  {
-> > @@ -460,6 +464,7 @@ static void *poller(void *arg)
-> >  static void remove_xdp_program(void)
-> >  {
-> >         u32 curr_prog_id = 0;
-> > +       int cmd = CLOSE_CONN;
-> >
-> >         if (bpf_get_link_xdp_id(opt_ifindex, &curr_prog_id, opt_xdp_flags)) {
-> >                 printf("bpf_get_link_xdp_id failed\n");
-> > @@ -471,6 +476,13 @@ static void remove_xdp_program(void)
-> >                 printf("couldn't find a prog id on a given interface\n");
-> >         else
-> >                 printf("program on interface changed, not removing\n");
-> > +
-> > +       if (opt_reduced_cap) {
-> > +               if (write(sock, &cmd, sizeof(int)) < 0) {
-> > +                       fprintf(stderr, "Error writing into stream socket: %s", strerror(errno));
-> > +                       exit(EXIT_FAILURE);
-> > +               }
-> > +       }
-> >  }
-> >
-> >  static void int_exit(int sig)
-> > @@ -853,7 +865,7 @@ static struct xsk_socket_info *xsk_configure_socket(struct xsk_umem_info *umem,
-> >         xsk->umem = umem;
-> >         cfg.rx_size = XSK_RING_CONS__DEFAULT_NUM_DESCS;
-> >         cfg.tx_size = XSK_RING_PROD__DEFAULT_NUM_DESCS;
-> > -       if (opt_num_xsks > 1)
-> > +       if (opt_num_xsks > 1 || opt_reduced_cap)
-> >                 cfg.libbpf_flags = XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD;
-> >         else
-> >                 cfg.libbpf_flags = 0;
-> > @@ -911,6 +923,7 @@ static struct option long_options[] = {
-> >         {"quiet", no_argument, 0, 'Q'},
-> >         {"app-stats", no_argument, 0, 'a'},
-> >         {"irq-string", no_argument, 0, 'I'},
-> > +       {"reduce-cap", no_argument, 0, 'R'},
-> >         {0, 0, 0, 0}
-> >  };
-> >
-> > @@ -933,7 +946,7 @@ static void usage(const char *prog)
-> >                 "  -m, --no-need-wakeup Turn off use of driver need wakeup flag.\n"
-> >                 "  -f, --frame-size=n   Set the frame size (must be a power of two in aligned mode, default is %d).\n"
-> >                 "  -u, --unaligned      Enable unaligned chunk placement\n"
-> > -               "  -M, --shared-umem    Enable XDP_SHARED_UMEM\n"
-> > +               "  -M, --shared-umem    Enable XDP_SHARED_UMEM (cannot be used with -R)\n"
-> >                 "  -F, --force          Force loading the XDP prog\n"
-> >                 "  -d, --duration=n     Duration in secs to run command.\n"
-> >                 "                       Default: forever.\n"
-> > @@ -949,6 +962,7 @@ static void usage(const char *prog)
-> >                 "  -Q, --quiet          Do not display any stats.\n"
-> >                 "  -a, --app-stats      Display application (syscall) statistics.\n"
-> >                 "  -I, --irq-string     Display driver interrupt statistics for interface associated with irq-string.\n"
-> > +               "  -R, --reduce-cap     Use reduced capabilities (cannot be used with -M)\n"
-> >                 "\n";
-> >         fprintf(stderr, str, prog, XSK_UMEM__DEFAULT_FRAME_SIZE,
-> >                 opt_batch_size, MIN_PKT_SIZE, MIN_PKT_SIZE,
-> > @@ -964,7 +978,7 @@ static void parse_command_line(int argc, char **argv)
-> >         opterr = 0;
-> >
-> >         for (;;) {
-> > -               c = getopt_long(argc, argv, "Frtli:q:pSNn:czf:muMd:b:C:s:P:xQaI:",
-> > +               c = getopt_long(argc, argv, "Frtli:q:pSNn:czf:muMd:b:C:s:P:xQaI:R",
-> >                                 long_options, &option_index);
-> >                 if (c == -1)
-> >                         break;
-> > @@ -1063,6 +1077,9 @@ static void parse_command_line(int argc, char **argv)
-> >                                 usage(basename(argv[0]));
-> >                         }
-> >
-> > +                       break;
-> > +               case 'R':
-> > +                       opt_reduced_cap = true;
-> >                         break;
-> >                 default:
-> >                         usage(basename(argv[0]));
-> > @@ -1085,6 +1102,11 @@ static void parse_command_line(int argc, char **argv)
-> >                         opt_xsk_frame_size);
-> >                 usage(basename(argv[0]));
-> >         }
-> > +
-> > +       if (opt_reduced_cap && opt_num_xsks > 1) {
-> > +               fprintf(stderr, "ERROR: -M and -R cannot be used together\n");
-> > +               usage(basename(argv[0]));
-> > +       }
->
-> There is nothing in principle that hinders this, but it would be a
-> much more complicated example, so this restriction is fine.
->
-> >  }
-> >
-> >  static void kick_tx(struct xsk_socket_info *xsk)
-> > @@ -1461,26 +1483,117 @@ static void enter_xsks_into_map(struct bpf_object *obj)
-> >         }
-> >  }
-> >
-> > +static int recv_xsks_map_fd_from_ctrl_node(int sock, int *_fd)
-> > +{
-> > +       char cms[CMSG_SPACE(sizeof(int))];
-> > +       struct cmsghdr *cmsg;
-> > +       struct msghdr msg;
-> > +       struct iovec iov;
-> > +       int value;
-> > +       int len;
-> > +
-> > +       iov.iov_base = &value;
-> > +       iov.iov_len = sizeof(int);
-> > +
-> > +       msg.msg_name = 0;
-> > +       msg.msg_namelen = 0;
-> > +       msg.msg_iov = &iov;
-> > +       msg.msg_iovlen = 1;
-> > +       msg.msg_flags = 0;
-> > +       msg.msg_control = (caddr_t)cms;
-> > +       msg.msg_controllen = sizeof(cms);
-> > +
-> > +       len = recvmsg(sock, &msg, 0);
-> > +
-> > +       if (len < 0) {
-> > +               fprintf(stderr, "Recvmsg failed length incorrect.\n");
-> > +               return -EINVAL;
-> > +       }
-> > +
-> > +       if (len == 0) {
-> > +               fprintf(stderr, "Recvmsg failed no data\n");
-> > +               return -EINVAL;
-> > +       }
-> > +
-> > +       cmsg = CMSG_FIRSTHDR(&msg);
-> > +       *_fd = *(int *)CMSG_DATA(cmsg);
-> > +
-> > +       return 0;
-> > +}
-> > +
-> > +static int
-> > +recv_xsks_map_fd(int *xsks_map_fd)
-> > +{
-> > +       struct sockaddr_un server;
-> > +       int err;
-> > +
-> > +       sock = socket(AF_UNIX, SOCK_STREAM, 0);
-> > +       if (sock < 0) {
-> > +               fprintf(stderr, "Error opening socket stream: %s", strerror(errno));
-> > +               return errno;
-> > +       }
-> > +
-> > +       server.sun_family = AF_UNIX;
-> > +       strcpy(server.sun_path, SOCKET_NAME);
-> > +
-> > +       if (connect(sock, (struct sockaddr *)&server, sizeof(struct sockaddr_un)) < 0) {
-> > +               close(sock);
-> > +               fprintf(stderr, "Error connecting stream socket: %s", strerror(errno));
-> > +               return errno;
-> > +       }
-> > +
-> > +       err = recv_xsks_map_fd_from_ctrl_node(sock, xsks_map_fd);
-> > +       if (err) {
-> > +               fprintf(stderr, "Error %d recieving fd\n", err);
-> > +               return err;
-> > +       }
-> > +       return 0;
-> > +}
-> > +
-> >  int main(int argc, char **argv)
-> >  {
-> > +       struct __user_cap_header_struct hdr = { _LINUX_CAPABILITY_VERSION_3, 0 };
-> > +       struct __user_cap_data_struct data[2] = { { 0 } };
-> >         struct rlimit r = {RLIM_INFINITY, RLIM_INFINITY};
-> >         bool rx = false, tx = false;
-> >         struct xsk_umem_info *umem;
-> >         struct bpf_object *obj;
-> > +       int xsks_map_fd = 0;
-> >         pthread_t pt;
-> >         int i, ret;
-> >         void *bufs;
-> >
-> >         parse_command_line(argc, argv);
-> >
-> > -       if (setrlimit(RLIMIT_MEMLOCK, &r)) {
-> > -               fprintf(stderr, "ERROR: setrlimit(RLIMIT_MEMLOCK) \"%s\"\n",
-> > -                       strerror(errno));
-> > -               exit(EXIT_FAILURE);
-> > +       if (opt_reduced_cap) {
-> > +               if (capget(&hdr, data)  < 0)
-> > +                       fprintf(stderr, "Error getting capabilities\n");
-> > +
-> > +               data->effective &= CAP_TO_MASK(CAP_NET_RAW);
-> > +               data->permitted &= CAP_TO_MASK(CAP_NET_RAW);
-> > +
-> > +               if (capset(&hdr, data) < 0)
-> > +                       fprintf(stderr, "Setting capabilities failed\n");
-> > +
-> > +               if (capget(&hdr, data)  < 0) {
-> > +                       fprintf(stderr, "Error getting capabilities\n");
-> > +               } else {
-> > +                       fprintf(stderr, "Capabilities EFF %x Caps INH %x Caps Per %x\n",
-> > +                               data[0].effective, data[0].inheritable, data[0].permitted);
-> > +                       fprintf(stderr, "Capabilities EFF %x Caps INH %x Caps Per %x\n",
-> > +                               data[1].effective, data[1].inheritable, data[1].permitted);
-> > +               }
-> > +       } else {
-> > +               if (setrlimit(RLIMIT_MEMLOCK, &r)) {
-> > +                       fprintf(stderr, "ERROR: setrlimit(RLIMIT_MEMLOCK) \"%s\"\n",
-> > +                               strerror(errno));
-> > +                       exit(EXIT_FAILURE);
-> > +               }
-> > +
-> > +               if (opt_num_xsks > 1)
-> > +                       load_xdp_program(argv, &obj);
-> >         }
-> >
-> > -       if (opt_num_xsks > 1)
-> > -               load_xdp_program(argv, &obj);
-> >
-> >         /* Reserve memory for the umem. Use hugepages if unaligned chunk mode */
-> >         bufs = mmap(NULL, NUM_FRAMES * opt_xsk_frame_size,
-> > @@ -1512,6 +1625,21 @@ int main(int argc, char **argv)
-> >         if (opt_num_xsks > 1 && opt_bench != BENCH_TXONLY)
-> >                 enter_xsks_into_map(obj);
-> >
-> > +       if (opt_reduced_cap) {
-> > +               ret = recv_xsks_map_fd(&xsks_map_fd);
-> > +               if (ret) {
-> > +                       fprintf(stderr, "Error %d receiving xsks_map_fd\n", ret);
-> > +                       exit_with_error(ret);
-> > +               }
-> > +               if (xsks[0]->xsk) {
-> > +                       ret = xsk_socket__update_xskmap(xsks[0]->xsk, xsks_map_fd);
-> > +                       if (ret) {
-> > +                               fprintf(stderr, "Update of BPF map failed(%d)\n", ret);
-> > +                               exit_with_error(ret);
-> > +                       }
-> > +               }
-> > +       }
-> > +
-> >         signal(SIGINT, int_exit);
-> >         signal(SIGTERM, int_exit);
-> >         signal(SIGABRT, int_exit);
-> > --
-> > 2.20.1
-> >
+sample result:
+
+$ ./xdp_redirect_map -X veth1 veth2
+input: 5 output: 6
+libbpf: elf: skipping unrecognized data section(9) .rodata.str1.16
+libbpf: elf: skipping unrecognized data section(23) .eh_frame
+libbpf: elf: skipping relo section(24) .rel.eh_frame for section(23) .eh_frame
+in ifindex 5:          1 pkt/s, out ifindex 6:          1 pkt/s
+in ifindex 5:          1 pkt/s, out ifindex 6:          1 pkt/s
+in ifindex 5:          0 pkt/s, out ifindex 6:          0 pkt/s
+in ifindex 5:         68 pkt/s, out ifindex 6:         68 pkt/s
+in ifindex 5:         91 pkt/s, out ifindex 6:         91 pkt/s
+in ifindex 5:         91 pkt/s, out ifindex 6:         91 pkt/s
+in ifindex 5:         66 pkt/s, out ifindex 6:         66 pkt/s
+
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+v2:
+a) use pkt counter instead of IP ttl modification on egress program
+b) make the egress program selectable by option -X
+
+---
+ samples/bpf/xdp_redirect_map_kern.c |  26 +++--
+ samples/bpf/xdp_redirect_map_user.c | 142 ++++++++++++++++++----------
+ 2 files changed, 113 insertions(+), 55 deletions(-)
+
+diff --git a/samples/bpf/xdp_redirect_map_kern.c b/samples/bpf/xdp_redirect_map_kern.c
+index 6489352ab7a4..fd6704a4f7e2 100644
+--- a/samples/bpf/xdp_redirect_map_kern.c
++++ b/samples/bpf/xdp_redirect_map_kern.c
+@@ -22,19 +22,19 @@
+ struct {
+ 	__uint(type, BPF_MAP_TYPE_DEVMAP);
+ 	__uint(key_size, sizeof(int));
+-	__uint(value_size, sizeof(int));
++	__uint(value_size, sizeof(struct bpf_devmap_val));
+ 	__uint(max_entries, 100);
+ } tx_port SEC(".maps");
+ 
+-/* Count RX packets, as XDP bpf_prog doesn't get direct TX-success
+- * feedback.  Redirect TX errors can be caught via a tracepoint.
++/* Count RX/TX packets, use key 0 for rx pkt count, key 1 for tx
++ * pkt count.
+  */
+ struct {
+ 	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
+ 	__type(key, u32);
+ 	__type(value, long);
+-	__uint(max_entries, 1);
+-} rxcnt SEC(".maps");
++	__uint(max_entries, 2);
++} pktcnt SEC(".maps");
+ 
+ static void swap_src_dst_mac(void *data)
+ {
+@@ -72,7 +72,7 @@ int xdp_redirect_map_prog(struct xdp_md *ctx)
+ 	vport = 0;
+ 
+ 	/* count packet in global counter */
+-	value = bpf_map_lookup_elem(&rxcnt, &key);
++	value = bpf_map_lookup_elem(&pktcnt, &key);
+ 	if (value)
+ 		*value += 1;
+ 
+@@ -82,6 +82,20 @@ int xdp_redirect_map_prog(struct xdp_md *ctx)
+ 	return bpf_redirect_map(&tx_port, vport, 0);
+ }
+ 
++SEC("xdp_devmap/map_prog")
++int xdp_devmap_prog(struct xdp_md *ctx)
++{
++	long *value;
++	u32 key = 1;
++
++	/* count packet in global counter */
++	value = bpf_map_lookup_elem(&pktcnt, &key);
++	if (value)
++		*value += 1;
++
++	return XDP_PASS;
++}
++
+ /* Redirect require an XDP bpf_prog loaded on the TX device */
+ SEC("xdp_redirect_dummy")
+ int xdp_redirect_dummy_prog(struct xdp_md *ctx)
+diff --git a/samples/bpf/xdp_redirect_map_user.c b/samples/bpf/xdp_redirect_map_user.c
+index 35e16dee613e..8bdec0865e1d 100644
+--- a/samples/bpf/xdp_redirect_map_user.c
++++ b/samples/bpf/xdp_redirect_map_user.c
+@@ -21,12 +21,13 @@
+ 
+ static int ifindex_in;
+ static int ifindex_out;
+-static bool ifindex_out_xdp_dummy_attached = true;
++static bool ifindex_out_xdp_dummy_attached = false;
++static bool xdp_prog_attached = false;
+ static __u32 prog_id;
+ static __u32 dummy_prog_id;
+ 
+ static __u32 xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
+-static int rxcnt_map_fd;
++static int pktcnt_map_fd;
+ 
+ static void int_exit(int sig)
+ {
+@@ -60,26 +61,46 @@ static void int_exit(int sig)
+ 	exit(0);
+ }
+ 
+-static void poll_stats(int interval, int ifindex)
++static void poll_stats(int interval, int if_ingress, int if_egress)
+ {
+ 	unsigned int nr_cpus = bpf_num_possible_cpus();
+-	__u64 values[nr_cpus], prev[nr_cpus];
++	__u64 values[nr_cpus], in_prev[nr_cpus], e_prev[nr_cpus];
++	__u64 sum;
++	__u32 key;
++	int i;
+ 
+-	memset(prev, 0, sizeof(prev));
++	memset(in_prev, 0, sizeof(in_prev));
++	memset(e_prev, 0, sizeof(e_prev));
+ 
+ 	while (1) {
+-		__u64 sum = 0;
+-		__u32 key = 0;
+-		int i;
++		sum = 0;
++		key = 0;
+ 
+ 		sleep(interval);
+-		assert(bpf_map_lookup_elem(rxcnt_map_fd, &key, values) == 0);
+-		for (i = 0; i < nr_cpus; i++)
+-			sum += (values[i] - prev[i]);
+-		if (sum)
+-			printf("ifindex %i: %10llu pkt/s\n",
+-			       ifindex, sum / interval);
+-		memcpy(prev, values, sizeof(values));
++		if (bpf_map_lookup_elem(pktcnt_map_fd, &key, values) == 0) {
++			for (i = 0; i < nr_cpus; i++)
++				sum += (values[i] - in_prev[i]);
++			if (sum)
++				printf("in ifindex %i: %10llu pkt/s",
++				       if_ingress, sum / interval);
++			memcpy(in_prev, values, sizeof(values));
++		}
++
++		if (!xdp_prog_attached) {
++			printf("\n");
++			continue;
++		}
++
++		sum = 0;
++		key = 1;
++		if (bpf_map_lookup_elem(pktcnt_map_fd, &key, values) == 0) {
++			for (i = 0; i < nr_cpus; i++)
++				sum += (values[i] - e_prev[i]);
++			if (sum)
++				printf(", out ifindex %i: %10llu pkt/s\n",
++				       if_egress, sum / interval);
++			memcpy(e_prev, values, sizeof(values));
++		}
+ 	}
+ }
+ 
+@@ -90,7 +111,8 @@ static void usage(const char *prog)
+ 		"OPTS:\n"
+ 		"    -S    use skb-mode\n"
+ 		"    -N    enforce native mode\n"
+-		"    -F    force loading prog\n",
++		"    -F    force loading prog\n"
++		"    -X    load xdp program on egress\n",
+ 		prog);
+ }
+ 
+@@ -98,13 +120,14 @@ int main(int argc, char **argv)
+ {
+ 	struct rlimit r = {RLIM_INFINITY, RLIM_INFINITY};
+ 	struct bpf_prog_load_attr prog_load_attr = {
+-		.prog_type	= BPF_PROG_TYPE_XDP,
++		.prog_type	= BPF_PROG_TYPE_UNSPEC,
+ 	};
+-	struct bpf_program *prog, *dummy_prog;
++	struct bpf_program *prog, *dummy_prog, *devmap_prog;
++	int prog_fd, dummy_prog_fd, devmap_prog_fd = -1;
++	struct bpf_devmap_val devmap_val;
+ 	struct bpf_prog_info info = {};
+ 	__u32 info_len = sizeof(info);
+-	int prog_fd, dummy_prog_fd;
+-	const char *optstr = "FSN";
++	const char *optstr = "FSNX";
+ 	struct bpf_object *obj;
+ 	int ret, opt, key = 0;
+ 	char filename[256];
+@@ -121,6 +144,9 @@ int main(int argc, char **argv)
+ 		case 'F':
+ 			xdp_flags &= ~XDP_FLAGS_UPDATE_IF_NOEXIST;
+ 			break;
++		case 'X':
++			xdp_prog_attached = true;
++			break;
+ 		default:
+ 			usage(basename(argv[0]));
+ 			return 1;
+@@ -157,23 +183,14 @@ int main(int argc, char **argv)
+ 		return 1;
+ 
+ 	prog = bpf_program__next(NULL, obj);
+-	dummy_prog = bpf_program__next(prog, obj);
+-	if (!prog || !dummy_prog) {
+-		printf("finding a prog in obj file failed\n");
+-		return 1;
+-	}
+-	/* bpf_prog_load_xattr gives us the pointer to first prog's fd,
+-	 * so we're missing only the fd for dummy prog
+-	 */
+-	dummy_prog_fd = bpf_program__fd(dummy_prog);
+-	if (prog_fd < 0 || dummy_prog_fd < 0) {
+-		printf("bpf_prog_load_xattr: %s\n", strerror(errno));
++	if (!prog || prog_fd <0) {
++		printf("finding prog in obj file failed\n");
+ 		return 1;
+ 	}
+ 
+ 	tx_port_map_fd = bpf_object__find_map_fd_by_name(obj, "tx_port");
+-	rxcnt_map_fd = bpf_object__find_map_fd_by_name(obj, "rxcnt");
+-	if (tx_port_map_fd < 0 || rxcnt_map_fd < 0) {
++	pktcnt_map_fd = bpf_object__find_map_fd_by_name(obj, "pktcnt");
++	if (tx_port_map_fd < 0 || pktcnt_map_fd < 0) {
+ 		printf("bpf_object__find_map_fd_by_name failed\n");
+ 		return 1;
+ 	}
+@@ -190,32 +207,59 @@ int main(int argc, char **argv)
+ 	}
+ 	prog_id = info.id;
+ 
+-	/* Loading dummy XDP prog on out-device */
+-	if (bpf_set_link_xdp_fd(ifindex_out, dummy_prog_fd,
+-			    (xdp_flags | XDP_FLAGS_UPDATE_IF_NOEXIST)) < 0) {
+-		printf("WARN: link set xdp fd failed on %d\n", ifindex_out);
+-		ifindex_out_xdp_dummy_attached = false;
+-	}
++	/* Loading dummy XDP prog on out-device if no xdp_prog_attached*/
++	if (xdp_prog_attached) {
++		devmap_prog = bpf_object__find_program_by_title(obj, "xdp_devmap/map_prog");
++		if (!devmap_prog) {
++			printf("finding devmap_prog in obj file failed\n");
++			return 1;
++		}
++		devmap_prog_fd = bpf_program__fd(devmap_prog);
++		if (devmap_prog_fd < 0) {
++			printf("find devmap_prog fd: %s\n", strerror(errno));
++			return 1;
++		}
++	} else {
++		dummy_prog = bpf_object__find_program_by_title(obj, "xdp_redirect_dummy");
++		if (!dummy_prog) {
++			printf("finding dummy_prog in obj file failed\n");
++			return 1;
++		}
+ 
+-	memset(&info, 0, sizeof(info));
+-	ret = bpf_obj_get_info_by_fd(dummy_prog_fd, &info, &info_len);
+-	if (ret) {
+-		printf("can't get prog info - %s\n", strerror(errno));
+-		return ret;
++		dummy_prog_fd = bpf_program__fd(dummy_prog);
++		if (dummy_prog_fd < 0) {
++			printf("find dummy_prog fd: %s\n", strerror(errno));
++			return 1;
++		}
++
++		if (bpf_set_link_xdp_fd(ifindex_out, dummy_prog_fd,
++				    (xdp_flags | XDP_FLAGS_UPDATE_IF_NOEXIST)) == 0) {
++			ifindex_out_xdp_dummy_attached = true;
++		} else {
++			printf("WARN: link set xdp fd failed on %d\n", ifindex_out);
++		}
++
++		memset(&info, 0, sizeof(info));
++		ret = bpf_obj_get_info_by_fd(dummy_prog_fd, &info, &info_len);
++		if (ret) {
++			printf("can't get prog info - %s\n", strerror(errno));
++			return ret;
++		}
++		dummy_prog_id = info.id;
+ 	}
+-	dummy_prog_id = info.id;
+ 
+ 	signal(SIGINT, int_exit);
+ 	signal(SIGTERM, int_exit);
+ 
+-	/* populate virtual to physical port map */
+-	ret = bpf_map_update_elem(tx_port_map_fd, &key, &ifindex_out, 0);
++	devmap_val.ifindex = ifindex_out;
++	devmap_val.bpf_prog.fd = devmap_prog_fd;
++	ret = bpf_map_update_elem(tx_port_map_fd, &key, &devmap_val, 0);
+ 	if (ret) {
+-		perror("bpf_update_elem");
++		perror("bpf_update_elem tx_port_map_fd");
+ 		goto out;
+ 	}
+ 
+-	poll_stats(2, ifindex_out);
++	poll_stats(2, ifindex_in, ifindex_out);
+ 
+ out:
+ 	return 0;
+-- 
+2.26.2
+
