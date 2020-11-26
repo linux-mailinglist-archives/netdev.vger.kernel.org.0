@@ -2,253 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BB522C51D2
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 11:11:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB9332C5221
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 11:36:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387655AbgKZKKq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Nov 2020 05:10:46 -0500
-Received: from mail-out.m-online.net ([212.18.0.9]:57821 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728014AbgKZKKp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 05:10:45 -0500
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 4ChYRk162Dz1qt3d;
-        Thu, 26 Nov 2020 11:10:41 +0100 (CET)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 4ChYRj3dXwz1tTZC;
-        Thu, 26 Nov 2020 11:10:41 +0100 (CET)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id oA5g7oF2f3su; Thu, 26 Nov 2020 11:10:38 +0100 (CET)
-X-Auth-Info: eelqe7hB93hzxjN0Q1yceCv73mttuPF1pF1tmko+Exo=
-Received: from jawa (89-64-5-98.dynamic.chello.pl [89.64.5.98])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Thu, 26 Nov 2020 11:10:38 +0100 (CET)
-Date:   Thu, 26 Nov 2020 11:10:14 +0100
-From:   Lukasz Majewski <lukma@denx.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Peng Fan <peng.fan@nxp.com>, Fugang Duan <fugang.duan@nxp.com>,
-        Shawn Guo <shawnguo@kernel.org>, stefan.agner@toradex.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        krzk@kernel.org, "David S . Miller" <davem@davemloft.net>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [RFC 0/4] net: l2switch: Provide support for L2 switch on
- i.MX28 SoC
-Message-ID: <20201126111014.5a6a2049@jawa>
-In-Reply-To: <20201126031021.GK2075216@lunn.ch>
-References: <20201125232459.378-1-lukma@denx.de>
-        <20201126000049.GL2073444@lunn.ch>
-        <c717666c-8357-60a2-7c66-5d9e9f18d250@gmail.com>
-        <20201126031021.GK2075216@lunn.ch>
-Organization: denx.de
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
- boundary="Sig_/pVwO0Cmh1OVyaGVvC901_rO"; protocol="application/pgp-signature"
+        id S2388114AbgKZKel (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 05:34:41 -0500
+Received: from mailout2.samsung.com ([203.254.224.25]:48492 "EHLO
+        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727427AbgKZKek (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 05:34:40 -0500
+Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20201126103436epoutp0222bcc02d03be59856a892faab9a62ec3~LCFp9UUDR2916829168epoutp02N
+        for <netdev@vger.kernel.org>; Thu, 26 Nov 2020 10:34:36 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20201126103436epoutp0222bcc02d03be59856a892faab9a62ec3~LCFp9UUDR2916829168epoutp02N
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1606386876;
+        bh=SLA+YxSxwuaVy5M4r5sM0kRP4lwMguF/Prn+O9V/IEI=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=qt2D70inCTC4LDmk5lr1eTgqho36/gz9LtKosz7MHBS63vH/CMBYhMNSHGRNM6oaI
+         uJy5x5Ud3dVv5OlIAHDy4LzZismHMzGR5ZLjHb8Ikqd6JdJu8sOKhqSgsxXw3g1/cr
+         6aPkj512U36Tet8UnvK+LvssHssOp2B8wWwYkXp4=
+Received: from epsmges5p3new.samsung.com (unknown [182.195.42.75]) by
+        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
+        20201126103436epcas5p180b833cd843d91f42f7321724051be5d~LCFpNe70L2350023500epcas5p1T;
+        Thu, 26 Nov 2020 10:34:36 +0000 (GMT)
+Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
+        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        2F.25.33964.BB48FBF5; Thu, 26 Nov 2020 19:34:35 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
+        20201126045221epcas5p46f00cd452b8023262f5556e6f4567352~K9a1ZhjFi0428904289epcas5p4b;
+        Thu, 26 Nov 2020 04:52:21 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20201126045221epsmtrp29075bc18fcb1d5b52cbde980e22b689d~K9a1Ysv8o2791927919epsmtrp2J;
+        Thu, 26 Nov 2020 04:52:21 +0000 (GMT)
+X-AuditID: b6c32a4b-eb7ff700000184ac-76-5fbf84bb50d7
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        D5.A0.13470.5843FBF5; Thu, 26 Nov 2020 13:52:21 +0900 (KST)
+Received: from ubuntu.sa.corp.samsungelectronics.net (unknown
+        [107.108.83.125]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20201126045220epsmtip1a5102e03d1a816fa0344453580167107~K9azy9Xka1656716567epsmtip1C;
+        Thu, 26 Nov 2020 04:52:20 +0000 (GMT)
+From:   Pankaj Sharma <pankj.sharma@samsung.com>
+To:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     sriram.dash@samsung.com, dmurphy@ti.com, wg@grandegger.com,
+        mkl@pengutronix.de, davem@davemloft.net, kuba@kernel.org,
+        pankaj.dubey@samsung.com, Pankaj Sharma <pankj.sharma@samsung.com>
+Subject: [PATCH] can: m_can: add support for bosch mcan version 3.3.0
+Date:   Thu, 26 Nov 2020 10:21:42 +0530
+Message-Id: <1606366302-5520-1-git-send-email-pankj.sharma@samsung.com>
+X-Mailer: git-send-email 2.7.4
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrEIsWRmVeSWpSXmKPExsWy7bCmhu7ulv3xBh9vmVvMOd/CYtF9egur
+        xYVtfawWq75PZba4vGsOm8X6RVNYLI4tELNYtPULu8XyrvvMFjfWs1ssvbeT1YHbY8vKm0we
+        Hy/dZvTYtKqTzaP/r4FH35ZVjB7Hb2xn8vi8SS6APYrLJiU1J7MstUjfLoErY+n8t2wFJ9kr
+        jv/bwdbAuJyti5GTQ0LAROLVp8vsXYxcHEICuxkl/myZzwLhfGKUOPd1KlTmG6NEy4r7rDAt
+        OzbPg6rayyhx6fEsVginhUni94zvYFVsAnoSl95PBlsiIhAqsax3AlicWeAAo8SvnzldjBwc
+        wgKuEo2nSkDCLAKqEucPPWIHsXkF3CVm/u2EWiYncfNcJzPIfAmBa+wS154cY4dIuEgcW3yd
+        EcIWlnh1fAtUXEri87u9UM9lSyzc3c8CsktCoEKibYYwRNhe4sCVOWBhZgFNifW79CHCshJT
+        T61jgriST6L39xMmiDivxI55MLaaxNSn76C2ykjcebQZapOHxJLDV8FsIYFYiW2Xl7JOYJSd
+        hbBhASPjKkbJ1ILi3PTUYtMC47zUcr3ixNzi0rx0veT83E2M4GSh5b2D8dGDD3qHGJk4GA8x
+        SnAwK4nwugvvjRfiTUmsrEotyo8vKs1JLT7EKM3BoiTOq/TjTJyQQHpiSWp2ampBahFMlomD
+        U6qByTZn0xVO3wmL2CatzRX49e5LYPypSXl/5nLEpv3+cmN6rTnThJd2zVIsxrrft25luxzz
+        hOXl9O03rPh+KpvUJciaZLKy3fvKLb7ksJug7p8288QDajr3Mz8/EH65o+F3VkyPgIKrit+O
+        TVJTVnpfbtefkZIVsce/+fF97cKO7KonfdNyVljduchsE2x7e8NOj2uCItEXVmxJN24Qnidb
+        6Cg9NWnn2vVV/6SuuU/5+86zwin4+A7m+OsSL1bNeMqe9c38zs0XTh+MMlM+M3Z1RTvM5As6
+        J2JaqLi9ya/plEzp1C9r1oXelW+/8nnH2de9aScF906PXeH4+2PXdz6LeTL8E6K2vNxzWbt5
+        wX+9g0osxRmJhlrMRcWJAC5/IWeFAwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprJLMWRmVeSWpSXmKPExsWy7bCSnG6ryf54g8OTTCzmnG9hseg+vYXV
+        4sK2PlaLVd+nMltc3jWHzWL9oiksFscWiFks2vqF3WJ5131mixvr2S2W3tvJ6sDtsWXlTSaP
+        j5duM3psWtXJ5tH/18Cjb8sqRo/jN7YzeXzeJBfAHsVlk5Kak1mWWqRvl8CVsXT+W7aCk+wV
+        x//tYGtgXM7WxcjJISFgIrFj8zyWLkYuDiGB3YwSi6a9AEpwACVkJBZ/roaoEZZY+e85O0RN
+        E5PEzpe7GEESbAJ6EpfeTwYbJCIQLrFzQhcTSBGzwClGiU93VzCBDBIWcJVoPFUCUsMioCpx
+        /tAjdhCbV8BdYubfTlaIBXISN891Mk9g5FnAyLCKUTK1oDg3PbfYsMAwL7Vcrzgxt7g0L10v
+        OT93EyM49LQ0dzBuX/VB7xAjEwfjIUYJDmYlEV534b3xQrwpiZVVqUX58UWlOanFhxilOViU
+        xHlvFC6MExJITyxJzU5NLUgtgskycXBKNTAt61wQasWxRKNZcTc3+xnrxx55+zdm39Dauyj/
+        +oXZ7swWqQeaHTkd/2xeJeDxVL/u2HLNhhfOxlw9mSwe+Wl37my6dbQzeX7qma+ONYcrk09X
+        +p17qR7qGntg755zn19YLlY50V/HuNSAyVXGKfmoB1+Y+Nq9V/Vrjwe/3cg4gVXe+zy3rOVE
+        g6hdDRtXFeSt5vvN5GXPdtkl8NOOgwb9wW4b99kp+jnHKpxkbNa9qnNr2ySzLzm/uJxEWipN
+        63/paf/z/bnwUV9Iwll1ibu8tQs7QtyU9u8/5t550umC5bo5es7ip1bHnX/GGajZ0+30ZK/Y
+        t7g6h113bi/T/PqmUcltw3qNhD+hkvOMipVYijMSDbWYi4oTAffoYf+sAgAA
+X-CMS-MailID: 20201126045221epcas5p46f00cd452b8023262f5556e6f4567352
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: REQ_APPROVE
+CMS-TYPE: 105P
+X-CMS-RootMailID: 20201126045221epcas5p46f00cd452b8023262f5556e6f4567352
+References: <CGME20201126045221epcas5p46f00cd452b8023262f5556e6f4567352@epcas5p4.samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/pVwO0Cmh1OVyaGVvC901_rO
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Add support for mcan bit timing and control mode according to bosch mcan IP
+version 3.3.0
+The mcan version read from the Core Release field of CREL register would be
+33. Accordingly the properties are to be set for mcan v3.3.0
 
-Hi Andrew, Florian,
+Signed-off-by: Pankaj Sharma <pankj.sharma@samsung.com>
+---
+Depends on:
+https://marc.info/?l=linux-can&m=160624495218700&w=2
 
-> On Wed, Nov 25, 2020 at 05:30:04PM -0800, Florian Fainelli wrote:
-> >=20
-> >=20
-> > On 11/25/2020 4:00 PM, Andrew Lunn wrote: =20
-> > > On Thu, Nov 26, 2020 at 12:24:55AM +0100, Lukasz Majewski wrote: =20
-> > >> This is the first attempt to add support for L2 switch available
-> > >> on some NXP devices - i.e. iMX287 or VF610. This patch set uses
-> > >> common FEC and DSA code. =20
-> > >=20
-> > > Interesting. I need to take another look at the Vybrid manual.
-> > > Last time i looked, i was more thinking of a pure switchdev
-> > > driver, not a DSA driver. So i'm not sure this is the correct
-> > > architecture. But has been a while since i looked at the
-> > > datasheet. =20
-> >=20
-> > Agreed the block diagram shows one DMA for each "switch port" which
-> > definitively fits more within the switchdev model than the DSA model
-> > that re-purposes an existing Ethernet MAC controller as-is and
-> > bolts on an integrated or external switch IC. =20
->=20
-> Hi Florian
->=20
-> I'm not sure it is that simple. I'm looking at the Vybrid
-> datasheet. There are two major configurations.
->=20
-> 1) The switch is pass through, and does nothing. Then two DMA channels
-> are used, one per external port.
+ drivers/net/can/m_can/m_can.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-This is the "default" state (at least for imx28) - Chapter 29.3.2 on
-User Manual [0].
+diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+index 86bbbfa..7652175 100644
+--- a/drivers/net/can/m_can/m_can.c
++++ b/drivers/net/can/m_can/m_can.c
+@@ -1385,6 +1385,8 @@ static int m_can_dev_setup(struct m_can_classdev *m_can_dev)
+ 						&m_can_data_bittiming_const_31X;
+ 		break;
+ 	case 32:
++	case 33:
++		/* Support both MCAN version v3.2.x and v3.3.0 */
+ 		m_can_dev->can.bittiming_const = m_can_dev->bit_timing ?
+ 			m_can_dev->bit_timing : &m_can_bittiming_const_31X;
+ 
+-- 
+2.7.4
 
-Then you use DMA0 and DMA1 to read/write data to ENET-MAC{01}.
-
-> You basically just have two Ethernet
-> interfaces
-
-If I may add important note - on the imx28 the ENET-MAC1 is configured
-via ENET-MAC0 (it has FEC_QUIRK_SINGLE_MDIO set in fec_main.c). On this
-device it is clearly stated that ENET-MAC1 block functionality is
-reduced and its main purpose is to be used with L2 switch.
-
-On the contrary, this flag is not set for vf610 in fec_main.c
-
->=20
-> 2) The switch is active. You then have a 3 port switch, 2 ports for
-> the external interfaces, and one port connected to a single DMA
-> channel.
-
-+1 (Only DMA0 is used)
-
->=20
-> So when in an active mode, it does look more like a DSA switch.
-
-It also looked like this for me.
-
->=20
-> What is not yet clear to me is how you direct frames out specific
-> interfaces. This is where i think we hit problems. I don't see a
-> generic mechanism, which is probably why Lukasz put tagger as None.=20
-
-I've put the "None" tag just to share the "testable" RFC code.
-
-It is possible to "tag" frames - at least from the manual [0]:
-Chapter: "29.4.9.2 Forced Forwarding".
-
-With using register HW_ENET_SWI_FORCE_FWD_P0
-29.9.34 ENET SWI Enable forced forwarding for a frame processed
-from port 0 (HW_ENET_SWI_FORCE_FWD_P0)
-
-One can "tag" the packet going from port0 (internal one from SoC) to be
-forwarded to port1 (ENET-MAC0) or port2 (ENET-MAC1).
-
-According to the legacy driver [1]:
-"* It only replace the MAC lookup function,
- * all other filtering(eg.VLAN verification) act as normal"
-
-> It
-> does appear you can control the output of BPDUs, but it is not very
-> friendly. You write a register with the port you would like the next
-> BPDU to go out, queue the frame up on the DMA, and then poll a bit in
-> the register which flips when the frame is actually processed in the
-> switch. I don't see how you determine what port a BPDU came in on!
-> Maybe you have to use the learning interface?
-
-The learning interface works with the legacy NXP driver (2.6.35) which
-copy can be found here[1].
-
->=20
-> Ah, the ESW_FFEN register can be used to send a frame out a specific
-> port. Write this register with the destination port, DMA a frame, and
-> it goes out the specific port. You then need to write the register
-> again for the next frame.
-
-It seems like the description of HW_ENET_SWI_FORCE_FWD_P0 described
-above for imx28.
-
->=20
-> I get the feeling this is going to need a very close relationship
-> between the 'tagger' and the DMA engine. I don't see how this can be
-> done using the DSA architecture, the coupling is too loose.
-
-My first impression was that it could be possible to set this
-register in the DSA callback (which normally append the tag to the
-frame).
-
-This would work if we can assure that after calling this callback this
-frame is transmitted (wait and poll?). Have I correctly understood
-your above concern?
-
-I do know that L2 switch has some kind of buffer from DMA0 (port0 - its
-input port). However, I don't have access so such detailed manual.
-
->=20
-> It seems like the HW design assumes frames from the CPU will be
-> switched using the switch internal FDB, making Linux integration
-> "interesting"
-
-The MoreThanIP L2 switch (on imx28) has 2K entries for setting FDB. It
-also uses some hash function to speed up access/presence assessment.
-
->=20
-> It does not look like this is a classic DSA switch with a tagging
-> protocol.=20
-
-This whole L2 switch implementation available on NXP's SoCs is a bit
-odd. It is very highly coupled with FEC, ENET and DMA.
-
-The original driver (2.6.35) was just a copy of FEC driver with some
-switch adjustments.
-
-Do you have any idea how to proceed?=20
-
-The vf610 and imx28 are still produced and widely used, so this is
-still "actual" topic.
-
-> It might be possible to do VLAN per port, in order to direct
-> frames out a specific port?
-
-The old driver had code to support VLANs.
-
-=46rom the manual[0] (29.1):
-" Programmable Ingress and Egress VLAN tag addition, removal and
-manipulation supporting single and double-tagged VLAN frames"
-
-Also the "29.4.10 Frame Forwarding Tasks" from [0] sheds some more
-light on it.
-
-=46rom the manual (29.4.10.2) it looks like the VLAN tag can be appended.
-However, I don't know if it will work with VLAN built with L2 switch output=
- ports.
-
->=20
->        Andrew
-
-Links:
-
-[0] - "i.MX28 Applications Processor Reference Manual, Rev. 2, 08/2013"
-[1] -
-https://github.com/lmajewski/linux-imx28-l2switch/commit/e3c7a6eab73401e021=
-aef0070e1935a0dba84fb5
-
-Best regards,
-
-Lukasz Majewski
-
---
-
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-59 Fax: (+49)-8142-66989-80 Email: lukma@denx.de
-
---Sig_/pVwO0Cmh1OVyaGVvC901_rO
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEgAyFJ+N6uu6+XupJAR8vZIA0zr0FAl+/fwYACgkQAR8vZIA0
-zr0ymggA4vcElv9I6ZnNL8N4EssoUiXM/9YY4pfPVLYUKZN4zZp55tcleGY5f/cG
-LgvU5bVCiElYzSvBqcFQ/6sjVr0BdBfEcbgiq7NB+X2obkpay9OsnJgq7u0fJWxi
-OX5Rlef75O/4a1oDkNJZqSFRGsrDZzHG6bhl5dI+Z9pempc5nrlFDrTzsu2EhT1u
-jaLZBg3KYnMrL7RJ5+fQcXqImIZcoz+DKjoo5dXZEvhKaQsrb6/KWxjD/oJO+FEF
-ZLGHgk0RO4ljK0cKMxXaqVPphqvJ1efcFp/sJG/rNWWg4txgStIp+dfSotWE0u2a
-f+DdtMcU+pEXeKA7+hprqIIkpnUg3A==
-=2/xW
------END PGP SIGNATURE-----
-
---Sig_/pVwO0Cmh1OVyaGVvC901_rO--
