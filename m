@@ -2,110 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3384F2C5709
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 15:25:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7FC42C571D
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 15:30:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391088AbgKZOX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Nov 2020 09:23:26 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:7498 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390803AbgKZOX0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 09:23:26 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fbfba640001>; Thu, 26 Nov 2020 06:23:32 -0800
-Received: from [10.26.72.188] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 26 Nov
- 2020 14:23:13 +0000
-Subject: Re: [PATCH net-next v2 0/2] Add support for DSFP transceiver type
+        id S2390140AbgKZO2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 09:28:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37748 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389951AbgKZO2P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 09:28:15 -0500
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54F0EC0613D4;
+        Thu, 26 Nov 2020 06:28:15 -0800 (PST)
+Received: by mail-ej1-x644.google.com with SMTP id jx16so2594016ejb.10;
+        Thu, 26 Nov 2020 06:28:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=afHSQLTHLwScibOaB2/Ixwl6R8JNhm0d7lLRx+ngzZo=;
+        b=hBXzxrei/MvFB3OISYjM8bBcdmNgJgNyIrWnesu5+fuGb9qsQA0d+J1zQhrNKAQgGi
+         J7dFJ3QFk5vpwND9TzdnX+CTz98JXMuGODmkIoPqFxwqOS5eGuejuqVvvt/BLtRDL6SK
+         bkMKkmPO396HDIr5e+W6Shpozz+yEVRQW9QQIbQ3l7HwJY/tErY4SiQAgo8LKxv407zW
+         tf9ktLeSsXvEefgjioJRwg20AWGagmzO+b1V6+eDNiH76uP3U2la5cqkMTfTfIzOegw/
+         HVnsE6n9bkwjcwD28QipzA7L3ndpx8wA7TpoB36D4uIJemG/ImgFIy7w4jaB+0Az1wL3
+         OPsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=afHSQLTHLwScibOaB2/Ixwl6R8JNhm0d7lLRx+ngzZo=;
+        b=kcz7A7osut5lnNWuqYRU8PfjtvDkCOwRgukWcWo0np0x3RE9Ta1lY4xriIPkzTaR1a
+         +kqM4Q9iJFFC9obhjcF886NxL80MqxWtVduzpV6s5p/ISwRa0D/BHDDCpDZdxnGv2HGi
+         ubmwTwCq0enkfsowtgO11WG/nocxKZZjBbEJWbp6TCuAPA9gxY6p9XrKYXi7UDH69xUT
+         2fCu4VBKYRYODq+dB4jkc3ke73Px5VMj2NxCYkx+VEoO9/MtDdAknCH+qgy80BlxM2oc
+         ltKZrlINYXXLUJY2mpHoffei/vXL7fQaHFMT/BWSLR4g1yXckfdOTPZxb1L52iuI6Gvj
+         cjcg==
+X-Gm-Message-State: AOAM533HDk5RsCyo4LM9tCGrrmVbnLEH6YAkFV0BJgRkDbCvkc4DbbiQ
+        +QY7jnNT/RnaroItyLOQNJw=
+X-Google-Smtp-Source: ABdhPJy75OQesPPME0B0LOXYXe0Df/KOFzgYzzK1P20HvvMJ1e3kqn/jdRXdxBruBl8tZBQQzVwvig==
+X-Received: by 2002:a17:906:2313:: with SMTP id l19mr2939327eja.443.1606400893991;
+        Thu, 26 Nov 2020 06:28:13 -0800 (PST)
+Received: from skbuf ([188.25.2.120])
+        by smtp.gmail.com with ESMTPSA id dk14sm3145765ejb.97.2020.11.26.06.28.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Nov 2020 06:28:13 -0800 (PST)
+Date:   Thu, 26 Nov 2020 16:28:12 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Jakub Kicinski <kuba@kernel.org>,
-        Moshe Shemesh <moshe@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Adrian Pop <pop.adrian61@gmail.com>,
-        Michal Kubecek <mkubecek@suse.cz>, <netdev@vger.kernel.org>,
-        "Vladyslav Tarasiuk" <vladyslavt@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>
-References: <1606123198-6230-1-git-send-email-moshe@mellanox.com>
- <20201124011459.GD2031446@lunn.ch>
- <20201124131608.1b884063@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <98319caa-de5f-6f5e-9c9e-ee680e5abdc0@nvidia.com>
- <20201125141822.GI2075216@lunn.ch>
-From:   Moshe Shemesh <moshe@nvidia.com>
-Message-ID: <a9835ab6-70a1-5a15-194e-977ff9c859ec@nvidia.com>
-Date:   Thu, 26 Nov 2020 16:23:10 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.3
+Cc:     George McCollister <george.mccollister@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller " <davem@davemloft.net>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v2 1/3] dsa: add support for Arrow XRS700x tag
+ trailer
+Message-ID: <20201126142812.4jr3kskwqf76cx5d@skbuf>
+References: <20201125193740.36825-1-george.mccollister@gmail.com>
+ <20201125193740.36825-2-george.mccollister@gmail.com>
+ <20201125203429.GF2073444@lunn.ch>
+ <20201126135004.aq2lruz5kxptmsvl@skbuf>
+ <20201126140126.GL2075216@lunn.ch>
 MIME-Version: 1.0
-In-Reply-To: <20201125141822.GI2075216@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Content-Language: en-US
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1606400612; bh=WpNUnDTDVrCO7cZthOExAehl0Kt0b9gDTd44Rc4r07M=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding:
-         Content-Language:X-Originating-IP:X-ClientProxiedBy;
-        b=Zj1sGwGBj7ZwnBbRcKi9XRTvPZxbVJX6mF+UBqxmk3KCeWkiCZEadm2rwoKN60tCF
-         E696Qf8sbCt3PSIe4a/pfmRcvVMDIGGAcC0KQC8W6puGt12PPFf94gZjVXLx3pzu2X
-         XTpVQDWRClznvTdyaCEhLF3nR3LUs/kpULxjiEmXqzH5zZSl3lq9YmIqLCeHCoTLz9
-         JheIowZkiqcf6yxZ0u0qTcjts1yhmPJ4kxdGWT/OAFvkuDQP9wOvbnB78TQmNjkdar
-         E2EKs+njH2+mIKACmqD4/qijEhJBO/2/EItzGKBQyFdtXOWrR7aRvlNMsQbvpvLRgw
-         zhSiW/16ztwNA==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201126140126.GL2075216@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Nov 26, 2020 at 03:01:26PM +0100, Andrew Lunn wrote:
+> On Thu, Nov 26, 2020 at 03:50:04PM +0200, Vladimir Oltean wrote:
+> > On Wed, Nov 25, 2020 at 09:34:29PM +0100, Andrew Lunn wrote:
+> > > > +static struct sk_buff *xrs700x_rcv(struct sk_buff *skb, struct net_device *dev,
+> > > > +				   struct packet_type *pt)
+> > > > +{
+> > > > +	int source_port;
+> > > > +	u8 *trailer;
+> > > > +
+> > > > +	if (skb_linearize(skb))
+> > > > +		return NULL;
+> > >
+> > > Something for Vladimir:
+> > >
+> > > Could this linearise be moved into the core, depending on the
+> > > tail_tag?
+> > 
+> > Honestly I believe that the skb_linearize is not needed at all.
+> 
+> Humm
+> 
+> I'm assuming this is here in case the frame is in fragments, and the
+> trailer could be spread over two fragments? If so, you cannot access
+> the trailer using straight pointers. Linearize should copy it into one
+> buffer.
+> 
+> For the normal case of a 1500 byte frame, i doubt we have hardware
+> which uses multiple scatter/gather buffers. But for jumbo frames?
 
-On 11/25/2020 4:18 PM, Andrew Lunn wrote:
-> External email: Use caution opening links or attachments
->
->
->> OK, we will add API options to select bank and page to read any specific
->> page the user selects. So advanced user will use it get the optional pag=
-es
->> he needs, but what about non advanced user who wants to use the current =
-API
->> with a current script for DSFP EEPROM. Isn't it better that he will get =
-the
->> 5 mandatory pages then keep it not supported ?
-> Users using ethtool will not see a difference. They get a dump of what
-> ethtool knows how to decode. It should try the netlink API first, and
-> then fall back to the old ioctl interface.
-Yes, it makes sense that whenever command not supported by netlink API=20
-it falls back to old ioctl interface. As I see it we want here to add=20
-bank and page options to netlink API=C2=A0 to get data from specific page.
->
-> If i was implementing the ethtool side of it, i would probably do some
-> sort of caching system. We know page 0 should always exist, so
-> pre-load that into the cache. Try the netlink API first. If that
-> fails, use the ioctl interface. If the ioctl is used, put everything
-> returned into the cache.
-I am not sure what you mean by cache here. Don't you want to read page 0=20
-once you got the ethtool command to read from the module ? If not, then=20
-at what stage ?
->   The decoder can then start decoding, see what
-> bits are set indicating other pages should be available. Ask for them
-> from the cache. The netlink API can go fetch them and load them into
-> the cache. If they cannot be loaded return ENODEV, and the decoder has
-> to skip what it wanted to decode.
+In this particular case, I don't think that one byte can be in multiple
+fragments at once, unless it is a quantum byte. So skb_linearize should
+still be removed.
 
-So the decoder should read page 0 and check according to page 0 and=20
-specification which pages should be present, right ?
+Are you saying that we should do something like this? I would need to
+performance-test it:
 
-What about the global offset that we currently got when user doesn't=20
-specify a page, do you mean that this global offset goes through the=20
-optional and non optional pages that exist and skip the ones that are=20
-missing according to the specific EEPROM ?
+diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
+index a1b1dc8a4d87..4c2065bec8d5 100644
+--- a/net/dsa/dsa.c
++++ b/net/dsa/dsa.c
+@@ -212,6 +212,13 @@ static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
+ 	if (!skb)
+ 		return 0;
+ 
++	if (cpu_dp->tag_ops->tail_tag && cpu_dp->tag_ops->overhead > 1) {
++		if (unlikely(skb_linearize(skb))) {
++			dev_kfree_skb_any(skb);
++			return 0;
++		}
++	}
++
+ 	nskb = cpu_dp->rcv(skb, dev, pt);
+ 	if (!nskb) {
+ 		kfree_skb(skb);
 
->   If you do it correctly, the decoder
-> should not care about ioctl vs netlink.
->
-> I can do a follow up patch for the generic SFP code in
-> drivers/net/phy, once you have done the first implementation. But i
-> only have a limited number of SFPs and most are 1G only. Russell King
-> can hopefully test with his collection.
->
->       Andrew
+Also, since we are now finally touching the cacheline with tag_ops,
+maybe we could remove the copy of rcv() from struct dsa_port? Although
+there is a chance that this might destabilize things and could need a
+bit of tweaking to get right.
+
+> > > > +	if (pskb_trim_rcsum(skb, skb->len - 1))
+> > > > +		return NULL;
+> > >
+> > > And the overhead is also in dsa_devlink_ops, so maybe this can be
+> > > moved as well?
+> > 
+> > Sorry, I don't understand this comment.
+> 
+> I'm meaning, could that also be moved into the core? We seem to have
+> the needed information to do it in the core.
+
+Ok, I got confused by the devlink reference.
+Currently the tag is always stripped by the tagger driver, because there
+are 3 cases:
+- tag is before Ethernet MAC DA
+- tag is before Ethernet Type
+- tag is before FCS
+We do not have a way to distinguish between cases 1 and 2 such that DSA
+could strip the tag in all cases and provide a uniform interface to all
+types of taggers.
