@@ -2,185 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A17C82C5C0D
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 19:32:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF72C2C5C16
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 19:44:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404929AbgKZSbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Nov 2020 13:31:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47148 "EHLO
+        id S2391670AbgKZSlD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 13:41:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404553AbgKZSbN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 13:31:13 -0500
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA41EC0613D4;
-        Thu, 26 Nov 2020 10:31:12 -0800 (PST)
-Received: by mail-pl1-x643.google.com with SMTP id u2so1492079pls.10;
-        Thu, 26 Nov 2020 10:31:12 -0800 (PST)
+        with ESMTP id S2391551AbgKZSlD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 13:41:03 -0500
+Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE227C0613D4
+        for <netdev@vger.kernel.org>; Thu, 26 Nov 2020 10:41:02 -0800 (PST)
+Received: by mail-qv1-xf42.google.com with SMTP id y11so1309426qvu.10
+        for <netdev@vger.kernel.org>; Thu, 26 Nov 2020 10:41:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=+v07REWnnzENKrJ+DKBOFO9MF0WIxUweMXdA5GAB/a8=;
-        b=LEfhlCMh9kipTDWJ7p7GpHTqaKo4PWqH7wxrdAB7ZIoaqbLoV4k0PtoPZDF+1R/jlk
-         NWQvVbhaWq+xVN5rDzkVdoT7QD5OadczzSZ0xqJzQBMywlc9awNavJPLjr9hmUAMUIkH
-         LiOVLsTdPfji0zOPh8hqAN3GkkCpGIOfZ7PNQ9ut1m4kvZklp3QPvjguXxVgX/crJhQv
-         XNDE9JzrqqZUHYEJ5vGQ7u4wAx5MlxGphVUSOoUxJIkr9wbDn2+ppQQBYmk4ukSmkIGs
-         1ye1Tb1hk+iAg8phsTG+Yj5dax7KaGyFHvhjjkLKNKdRRBl6Msu86g7ocxBVFSS9xshZ
-         k/vw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=b3SFEGwubfMyOkGFhEqYaAJv1k3uNxPZvPp5/hsmGoM=;
+        b=H/l43Nq1oqmsMaWcSZneW/UD+Mg2qdRIMfmThcSlu4bY/N4prhaC9WwuKXKZNhHr3V
+         bWgg5LSsiY74y4RsEi/FR//6wzzH3xoECmGW6Xa8hgMKB3VEimKGkgukNav2mUFwQS/n
+         GM8NDADi+NY0wAfT+A24lpHfcFfWU+26Ku2wQwE8ed1x0wx0kea/qsmAJfcaAXSitC2U
+         HGpyPEzPnWRRPOg5HN3r5Bapn838EjiHJalYwKCQdivpmBJvOyfL70e+QgJhXFlyJ9er
+         zorRG08Vnnt3DpRxdO2mqo5BtCPvAq/U4XX4veqm6RsI3XCcYtTZpNX/fQbWQg/oKui1
+         ulBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=+v07REWnnzENKrJ+DKBOFO9MF0WIxUweMXdA5GAB/a8=;
-        b=B4jn4vSeralL5floKhITGBrDMe1RTtl8ku4aq3Wir17bbMaac0YoiuiVViZMIgEusd
-         PsH3+JPjIaqwrfjb2movRRYj5cFdCzNqX64/tgZh+/fAb6ogMfoZJni4cc4oxJSXJ2ov
-         YeTMzt4bai4Vab5KDMv9QL0e3FnKLkhKR2FJE+7SWLjWYpYVB0kgbIM4raN5165wa/YO
-         GwwU9OJ7VgNDt/MgCftUUd/TLl3p+6AgcWAnpt8QGcGXqf+Z7FRXxW+m81D4/9xtAE80
-         6YN2Mk9lDq8JvRLO+vMFJrT9ud5MFlvQLXBJJZCRYz4cUTMOSiKzWatZdel92s64PFw/
-         0yaQ==
-X-Gm-Message-State: AOAM531PTrt+qT9gzHykrymCZ0RWAZNeAy7qKHaMgmKiKhQkFzkfGUkI
-        pNmxd2qgZy19YmseOwcxkD0=
-X-Google-Smtp-Source: ABdhPJyuRi0WDD8c1FJ22qb8BEWNE4PG5SQFCTK7rtVUhl3YMpWMtwzrTvqfKEnKXhsdCR17gJbj1g==
-X-Received: by 2002:a17:902:bf0b:b029:d8:f677:30f2 with SMTP id bi11-20020a170902bf0bb02900d8f67730f2mr3770386plb.25.1606415472382;
-        Thu, 26 Nov 2020 10:31:12 -0800 (PST)
-Received: from [192.168.1.155] (i60-35-254-237.s41.a020.ap.plala.or.jp. [60.35.254.237])
-        by smtp.gmail.com with ESMTPSA id x16sm7052116pjh.39.2020.11.26.10.31.07
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=b3SFEGwubfMyOkGFhEqYaAJv1k3uNxPZvPp5/hsmGoM=;
+        b=J1EXPvc/myEAQ3/8bWsMrzxrpxgwCn64CfLs9Iv0v1su5DNd8jsG6OYMkKplgX/ScT
+         0sAa+JwgAtwdZq9499X948eKpADyxtgs6CYJK/abfs+qq9lFOw0U/Nix935iH1vfsScz
+         12QINBhyLKlp+s676i/QgWtg7j0WAj1AeCk2V7PTZFzKycrVN57CSIQL6HnaghyfhRHv
+         LubgK5iJvIEeSscM0BrLiTzPyy1JIa4HCEP3FLlc0dua3FmY2YECefO3Qn/X0raqWq3g
+         cpocT+n9IcmuxLXJ53X6ZrykRQMBv+A/C9B5wuIOj4lp2Je7AkbYnRFmwG6zaFOhrwIq
+         W/VA==
+X-Gm-Message-State: AOAM5321qUSQuEpGU0ew5cS1a0N9xd9xDPtJ/TO3IzYs/ljMuVr10nmf
+        L7WHd0AQ993T2AGoZRcuBSIjf7xNXgqd+A==
+X-Google-Smtp-Source: ABdhPJzZP+0Oyp4QpcCyt0hg07smbbKdfcDJSErVn/egPhgEdF5ob5ZO0DofAkGDkl2psJYUoS2C9g==
+X-Received: by 2002:a0c:f585:: with SMTP id k5mr4417839qvm.13.1606416061851;
+        Thu, 26 Nov 2020 10:41:01 -0800 (PST)
+Received: from localhost.localdomain ([2001:1284:f016:a9aa:d5fd:a8e2:2c56:68bf])
+        by smtp.gmail.com with ESMTPSA id n41sm3347488qtb.18.2020.11.26.10.41.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Nov 2020 10:31:11 -0800 (PST)
-Message-ID: <e3962839410ba396a21edf8a6c481ec42ada1bdc.camel@gmail.com>
-Subject: Re: [PATCH] mwifiex: pcie: add enable_device_dump module parameter
-From:   Tsuchiya Yuto <kitakar@gmail.com>
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>, verdre@v0yd.nl
-Date:   Fri, 27 Nov 2020 03:31:05 +0900
-In-Reply-To: <CA+ASDXNPcXtTWS8pOjfoxiYOAcRMmsqZwXe3mnxOw388MCEu9g@mail.gmail.com>
-References: <20201028142625.18642-1-kitakar@gmail.com>
-         <CA+ASDXPX+fadTKLnxNVZQ0CehsHNwvWHXEdLqZVDoQ6hf6Wp8Q@mail.gmail.com>
-         <7db5b6cba1548308a63855ec1dda836b6d6d9757.camel@gmail.com>
-         <CA+ASDXNPcXtTWS8pOjfoxiYOAcRMmsqZwXe3mnxOw388MCEu9g@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.2 
+        Thu, 26 Nov 2020 10:41:01 -0800 (PST)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id BCACBC3B6C; Thu, 26 Nov 2020 15:40:58 -0300 (-03)
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     wenxu@ucloud.cn, paulb@nvidia.com, ozsh@nvidia.com,
+        ahleihel@nvidia.com, Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH net-next] net/sched: act_ct: enable stats for HW offloaded entries
+Date:   Thu, 26 Nov 2020 15:40:49 -0300
+Message-Id: <481a65741261fd81b0a0813e698af163477467ec.1606415787.git.marcelo.leitner@gmail.com>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-11-20 at 12:53 -0800, Brian Norris wrote:
-> (Sorry if anything's a bit slow here. I don't really have time to
-> write out full proposals myself.)
+By setting NF_FLOWTABLE_COUNTER. Otherwise, the updates added by
+commit ef803b3cf96a ("netfilter: flowtable: add counter support in HW
+offload") are not effective when using act_ct.
 
-Don’t worry, I (and other owners) am already glad to hear from upstream
-devs, including you :)
+While at it, now that we have the flag set, protect the call to
+nf_ct_acct_update() by commit beb97d3a3192 ("net/sched: act_ct: update
+nf_conn_acct for act_ct SW offload in flowtable") with the check on
+NF_FLOWTABLE_COUNTER, as also done on other places.
 
-(and I'm also sorry for the late reply from me. It was difficult to find
-spare time these days.)
+Note that this shouldn't impact performance as these stats are only
+enabled when net.netfilter.nf_conntrack_acct is enabled.
 
-> On Fri, Oct 30, 2020 at 3:30 AM Tsuchiya Yuto <kitakar@gmail.com> wrote:
-> > Let me know if splitting this patch like this works. 1) The first patch
-> > is to add this module parameter but don't change the default behavior.
-> 
-> That *could* be OK with me, although it's already been said that there
-> are many people who dislike extra module parameters. I also don't see
-> why this needs to be a module parameter at all. If you do #2 right,
-> you don't really need this, as there are already several standard ways
-> of doing this (e.g., via Kconfig, or via nl80211 on a per-device
-> basis).
-> 
-> > 2) The second patch is to change the parameter value depending on the
-> > DMI matching or something so that it doesn't break the existing users.
-> 
-> Point 2 sounds good, and this is the key point. Note that you can do
-> point 2 without making it a module parameter. Just keep a flag in the
-> driver-private structures.
+Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+---
+ net/sched/act_ct.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-I chose to also provide the module parameter because I thought it would
-be a little bit complicated for users to re-enable this dump feature if
-I chose not to provide this parameter.
-
-If I don't provide the parameter but still want to allow users to
-re-enable this dump feature, we can provide a way to change the bit flags
-of quirks (via a new debugfs entry or another module parameter). That
-said, is there a way to easily change the quirk flags only for this dump
-feature?
-
-For example, assume that the following three quirks are enabled by default:
-
-/* quirks */
-#define QUIRK_FW_RST_D3COLD	BIT(0)
-#define QUIRK_NO_DEVICE_DUMP	BIT(1)
-#define QUIRK_FOO		BIT(2)
-
-.driver_data = (void *)(QUIRK_FW_RST_D3COLD |
-			QUIRK_NO_DEVICE_DUMP |
-			QUIRK_FOO),
-
-card->quirks = (uintptr_t)dmi_id->driver_data;
-
-/* and assume that card->quirks can be changed by users by a file named
- * "quirks" under debugfs.
- */
-
-So, the card->quirks will be "7" in decimal by default. Then, if users
-want to re-enable the dump feature, as far as I know, users need to know
-the default value "7", then need to know that device_dump is controlled
-by bit 1. Finally, users can set the new quirk flags "5" in decimal (101
-in binary).
-
-echo 5 > /sys/kernel/debug/mwifiex/mlan0/quirks
-
-I'm glad if there is another nice way to control only the device_dump
-quirk flag, if we only provide a way to change quirk flags.
-
-But at the same time I also think that if someone dare to want to
-re-enable this feature, maybe the person won't feel it's complicated haha.
-So, I'll drop the device_dump module parameter and switch to use the quirk
-framework, adding a way to change the quirk flags value by users.
-
-That said, we may even drop disabling the dump. Take a look at my comment
-I wrote below.
-
-> > But what I want to say here as well is that, if the firmware can be fixed,
-> > we don't need a patch like this.
-> 
-> Sure. That's also where we don't necessarily need more ways to control
-> this from user space (e.g., module parameters), but just better
-> detection of currently broken systems (in the driver). And if firmware
-> ever gets fixed, we can undo the "broken device" detection.
-
-There are two types of firmware crashes we observes:
-1) cmd_timedout (other than ps_mode-related)
-2) Firmware wakeup failed (ps_mode-related)
-
-The #2 is observed when we enabled ps_mode. The #1 is observed for the
-other causes. And hopefully, verdre (in Cc) found a "fix" [1] for the
-#1 fw crash. We are trying the fix now.
-
-The pull req (still WIP) basically addresses fw crashing by using
-"non-posted" register writes and uninterruptible wait queue for PCI
-operations in the kernel driver side.
-
-We still don't have any ideas to "fix" the #2 fw crash, but now we don't
-see the #1 crash anymore so far.
-
-I'd like to see where the attempt goes before I start working on this
-patch here again.
-
-Thank you, everyone.
-
-[1] https://github.com/linux-surface/kernel/pull/70
-    [WIP] Properly fix wifi firmware crashes by jonas2515 · Pull Request #70 · linux-surface/kernel
-
-> Brian
-
+diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+index aba3cd85f284f3e49add31fe65e3b791f2386fa1..bb1ef3b8e77fb6fd6a74b88a65322baea2dc1ed5 100644
+--- a/net/sched/act_ct.c
++++ b/net/sched/act_ct.c
+@@ -296,7 +296,8 @@ static int tcf_ct_flow_table_get(struct tcf_ct_params *params)
+ 		goto err_insert;
+ 
+ 	ct_ft->nf_ft.type = &flowtable_ct;
+-	ct_ft->nf_ft.flags |= NF_FLOWTABLE_HW_OFFLOAD;
++	ct_ft->nf_ft.flags |= NF_FLOWTABLE_HW_OFFLOAD |
++			      NF_FLOWTABLE_COUNTER;
+ 	err = nf_flow_table_init(&ct_ft->nf_ft);
+ 	if (err)
+ 		goto err_init;
+@@ -540,7 +541,8 @@ static bool tcf_ct_flow_table_lookup(struct tcf_ct_params *p,
+ 	flow_offload_refresh(nf_ft, flow);
+ 	nf_conntrack_get(&ct->ct_general);
+ 	nf_ct_set(skb, ct, ctinfo);
+-	nf_ct_acct_update(ct, dir, skb->len);
++	if (nf_ft->flags & NF_FLOWTABLE_COUNTER)
++		nf_ct_acct_update(ct, dir, skb->len);
+ 
+ 	return true;
+ }
+-- 
+2.25.4
 
