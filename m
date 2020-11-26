@@ -2,134 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18F742C57CB
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 16:05:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 715EA2C57E5
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 16:12:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391235AbgKZPDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Nov 2020 10:03:35 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:55721 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2391163AbgKZPDf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 10:03:35 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from yanjunz@mellanox.com)
-        with SMTP; 26 Nov 2020 17:03:31 +0200
-Received: from bc-vnc02.mtbc.labs.mlnx (bc-vnc02.mtbc.labs.mlnx [10.75.68.111])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0AQF3Vm0023036;
-        Thu, 26 Nov 2020 17:03:31 +0200
-Received: from bc-vnc02.mtbc.labs.mlnx (localhost [127.0.0.1])
-        by bc-vnc02.mtbc.labs.mlnx (8.14.4/8.14.4) with ESMTP id 0AQF3UFP012597;
-        Thu, 26 Nov 2020 23:03:30 +0800
-Received: (from yanjunz@localhost)
-        by bc-vnc02.mtbc.labs.mlnx (8.14.4/8.14.4/Submit) id 0AQF3N1o012591;
-        Thu, 26 Nov 2020 23:03:23 +0800
-From:   Zhu Yanjun <yanjunz@nvidia.com>
-To:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
-        davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: [PATCH v5 1/1] xdp: remove the functions xsk_map_inc and xsk_map_put
-Date:   Thu, 26 Nov 2020 23:03:18 +0800
-Message-Id: <1606402998-12562-1-git-send-email-yanjunz@nvidia.com>
-X-Mailer: git-send-email 1.7.1
+        id S2390020AbgKZPM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 10:12:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44598 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389316AbgKZPM0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 10:12:26 -0500
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E8BC0613D4
+        for <netdev@vger.kernel.org>; Thu, 26 Nov 2020 07:12:25 -0800 (PST)
+Received: by mail-qk1-x741.google.com with SMTP id v143so1808219qkb.2
+        for <netdev@vger.kernel.org>; Thu, 26 Nov 2020 07:12:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=s0mSLXkveRT/Z0N1TE7U+YTX79J1JxSJIuUnFkkISm4=;
+        b=ti8u/E8ub4+XRhB9jlOCi/l3Y+uJAIRvomaFQ56Sw8Gn+1JnQNFXKuWO0Aos66Fekt
+         DJzTpVJyajLtRup/e3vkBgHZb3HQZ/9ry56uE+bi37ZawpF+AVV2wT+9N2zaNnHmUajk
+         XS1sSk0O8ac/S6IYAlcdc8GigXfbAwXkhkttkPGOvottQnuw/DuoW/RC8ousyAO8biv0
+         a48O/KMuMB44AZDXkdhQcpq4e0IdmB/xl2GyBmd4miRemunkYuCd7tElF8wmcVSKJiqD
+         7vpPjnWC2/Oabbq1pOJNPIZMJHFW23crTlybqR3EFN40Cr1DmziMSOJ05WZ9tnGK1Qs5
+         0QnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=s0mSLXkveRT/Z0N1TE7U+YTX79J1JxSJIuUnFkkISm4=;
+        b=UJl7M8bAnIiaQRvBzMH+g6N5SZFtfQKTk4vXbDzWaHqhFWG8NUE4dQo09PSQtcEZIL
+         ykYdPKWliQl/blKfbyzlX5P1uh2NDFSMUYZEAnCthxnDJb4H/NY0DkGcybq9Mo51toJS
+         iDwLI8x4xDmdo8CoPUb2Zq6IW0uFP2KLsTtB4wYuF02TP9Th85S+u+Bdxr4Lebn6ZlvU
+         DXqg+/TnnaeuDclsdrLEZwITkdLakytnFAO7lAz7B0pCmOLa3iGy5ztf4KdSlZ7dcGOf
+         ecZtpUFSxn+haPmUaxXJmRbpAb0Apc+YOZbh0ijSTbqcRVZe9FrbZCK0+21vkouN9S6n
+         CoAA==
+X-Gm-Message-State: AOAM532p8j5sKDPzZlM70ef/DpP+DxVF6YXK/qXY7FCvhgsQV3mV6L/u
+        2eeX4QXdvZyNKU++ZjmoI3Z2IFKiZ/4=
+X-Google-Smtp-Source: ABdhPJwa/hP5A6MiXOxOoi3OBm2DAdWqgoeChA5ckFxzXhHI1hZY7n8XnvgItvrCWzqn8KkSHd0Paw==
+X-Received: by 2002:a37:9947:: with SMTP id b68mr3609201qke.70.1606403544500;
+        Thu, 26 Nov 2020 07:12:24 -0800 (PST)
+Received: from willemb.nyc.corp.google.com ([2620:0:1003:312:f693:9fff:fef4:3e8a])
+        by smtp.gmail.com with ESMTPSA id d48sm3181329qta.26.2020.11.26.07.12.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Nov 2020 07:12:22 -0800 (PST)
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, soheil@google.com,
+        Willem de Bruijn <willemb@google.com>,
+        Ayush Ranjan <ayushranjan@google.com>
+Subject: [PATCH net] sock: set sk_err to ee_errno on dequeue from errq
+Date:   Thu, 26 Nov 2020 10:12:20 -0500
+Message-Id: <20201126151220.2819322-1-willemdebruijn.kernel@gmail.com>
+X-Mailer: git-send-email 2.29.2.454.gaff20da3a2-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zhu Yanjun <zyjzyj2000@gmail.com>
+From: Willem de Bruijn <willemb@google.com>
 
-The functions xsk_map_put and xsk_map_inc are simple wrappers.
-As such, replacing these functions with the functions bpf_map_inc
-and bpf_map_put and removing some test codes.
+When setting sk_err, set it to ee_errno, not ee_origin.
 
-Fixes: d20a1676df7e ("xsk: Move xskmap.c to net/xdp/")
-Signed-off-by: Zhu Yanjun <zyjzyj2000@gmail.com>
+Commit f5f99309fa74 ("sock: do not set sk_err in
+sock_dequeue_err_skb") disabled updating sk_err on errq dequeue,
+which is correct for most error types (origins):
+
+  -       sk->sk_err = err;
+
+Commit 38b257938ac6 ("sock: reset sk_err when the error queue is
+empty") reenabled the behavior for IMCP origins, which do require it:
+
+  +       if (icmp_next)
+  +               sk->sk_err = SKB_EXT_ERR(skb_next)->ee.ee_origin;
+
+But read from ee_errno.
+
+Fixes: 38b257938ac6 ("sock: reset sk_err when the error queue is empty")
+Reported-by: Ayush Ranjan <ayushranjan@google.com>
+Signed-off-by: Willem de Bruijn <willemb@google.com>
 ---
- net/xdp/xsk.c    |  4 ++--
- net/xdp/xsk.h    |  2 --
- net/xdp/xskmap.c | 20 ++------------------
- 3 files changed, 4 insertions(+), 22 deletions(-)
+ net/core/skbuff.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index cfbec3989a76..4f0250f5d676 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -548,7 +548,7 @@ static struct xsk_map *xsk_get_map_list_entry(struct xdp_sock *xs,
- 	node = list_first_entry_or_null(&xs->map_list, struct xsk_map_node,
- 					node);
- 	if (node) {
--		WARN_ON(xsk_map_inc(node->map));
-+		bpf_map_inc(&node->map->map);
- 		map = node->map;
- 		*map_entry = node->map_entry;
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 1ba8f0163744..06c526e0d810 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -4549,7 +4549,7 @@ struct sk_buff *sock_dequeue_err_skb(struct sock *sk)
+ 	if (skb && (skb_next = skb_peek(q))) {
+ 		icmp_next = is_icmp_err_skb(skb_next);
+ 		if (icmp_next)
+-			sk->sk_err = SKB_EXT_ERR(skb_next)->ee.ee_origin;
++			sk->sk_err = SKB_EXT_ERR(skb_next)->ee.ee_errno;
  	}
-@@ -578,7 +578,7 @@ static void xsk_delete_from_maps(struct xdp_sock *xs)
- 
- 	while ((map = xsk_get_map_list_entry(xs, &map_entry))) {
- 		xsk_map_try_sock_delete(map, xs, map_entry);
--		xsk_map_put(map);
-+		bpf_map_put(&map->map);
- 	}
- }
- 
-diff --git a/net/xdp/xsk.h b/net/xdp/xsk.h
-index b9e896cee5bb..edcf249ad1f1 100644
---- a/net/xdp/xsk.h
-+++ b/net/xdp/xsk.h
-@@ -41,8 +41,6 @@ static inline struct xdp_sock *xdp_sk(struct sock *sk)
- 
- void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
- 			     struct xdp_sock **map_entry);
--int xsk_map_inc(struct xsk_map *map);
--void xsk_map_put(struct xsk_map *map);
- void xsk_clear_pool_at_qid(struct net_device *dev, u16 queue_id);
- int xsk_reg_pool_at_qid(struct net_device *dev, struct xsk_buff_pool *pool,
- 			u16 queue_id);
-diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
-index 49da2b8ace8b..66231ba6c348 100644
---- a/net/xdp/xskmap.c
-+++ b/net/xdp/xskmap.c
-@@ -11,32 +11,16 @@
- 
- #include "xsk.h"
- 
--int xsk_map_inc(struct xsk_map *map)
--{
--	bpf_map_inc(&map->map);
--	return 0;
--}
--
--void xsk_map_put(struct xsk_map *map)
--{
--	bpf_map_put(&map->map);
--}
--
- static struct xsk_map_node *xsk_map_node_alloc(struct xsk_map *map,
- 					       struct xdp_sock **map_entry)
- {
- 	struct xsk_map_node *node;
--	int err;
- 
- 	node = kzalloc(sizeof(*node), GFP_ATOMIC | __GFP_NOWARN);
- 	if (!node)
- 		return ERR_PTR(-ENOMEM);
- 
--	err = xsk_map_inc(map);
--	if (err) {
--		kfree(node);
--		return ERR_PTR(err);
--	}
-+	bpf_map_inc(&map->map);
- 
- 	node->map = map;
- 	node->map_entry = map_entry;
-@@ -45,7 +29,7 @@ static struct xsk_map_node *xsk_map_node_alloc(struct xsk_map *map,
- 
- static void xsk_map_node_free(struct xsk_map_node *node)
- {
--	xsk_map_put(node->map);
-+	bpf_map_put(&node->map->map);
- 	kfree(node);
- }
+ 	spin_unlock_irqrestore(&q->lock, flags);
  
 -- 
-2.25.1
+2.29.2.454.gaff20da3a2-goog
 
