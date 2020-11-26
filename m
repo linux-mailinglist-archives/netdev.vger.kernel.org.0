@@ -2,115 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C85BC2C4E9F
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 07:16:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 868CB2C4E9A
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 07:13:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387947AbgKZGOd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Nov 2020 01:14:33 -0500
-Received: from mxout70.expurgate.net ([194.37.255.70]:44423 "EHLO
-        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732176AbgKZGOc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 01:14:32 -0500
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1kiAXz-0006mg-Bn; Thu, 26 Nov 2020 07:14:27 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1kiAXy-0006qs-BY; Thu, 26 Nov 2020 07:14:26 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 5CBA7240041;
-        Thu, 26 Nov 2020 07:14:25 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id CD144240040;
-        Thu, 26 Nov 2020 07:14:24 +0100 (CET)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id 88FC4200F6;
-        Thu, 26 Nov 2020 07:14:24 +0100 (CET)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 26 Nov 2020 07:14:24 +0100
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     andrew.hendry@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-x25@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v6 2/5] net/lapb: support netdev events
-Organization: TDT AG
-In-Reply-To: <20201126000814.12108-1-xie.he.0141@gmail.com>
-References: <20201124093938.22012-3-ms@dev.tdt.de>
- <20201126000814.12108-1-xie.he.0141@gmail.com>
-Message-ID: <5c74d51e4cd3ee0aae47c84988dbbf91@dev.tdt.de>
-X-Sender: ms@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.15
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
-        autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
-X-purgate: clean
-X-purgate-ID: 151534::1606371267-00000FB8-A5135790/0/0
-X-purgate-type: clean
+        id S2387933AbgKZGMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 01:12:09 -0500
+Received: from mga18.intel.com ([134.134.136.126]:43186 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387921AbgKZGMJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Nov 2020 01:12:09 -0500
+IronPort-SDR: fReGsKEEuHKiiPv9eu2ei5CEoHAj8eahbXuQbhGcV9HewIgTUqU5bl4Iqffv6HQbG69OSZBdU1
+ 9Lx6qabts7Lw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9816"; a="160010658"
+X-IronPort-AV: E=Sophos;i="5.78,371,1599548400"; 
+   d="scan'208";a="160010658"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2020 22:12:04 -0800
+IronPort-SDR: +UnK+JjjNyByVDDkRQvBUCvNmmdAGHeJLubbB8rwamSXS3ojWKznC/ax9VNMwcVARjykIjuPL1
+ vfnainRWWMpA==
+X-IronPort-AV: E=Sophos;i="5.78,371,1599548400"; 
+   d="scan'208";a="313272646"
+Received: from chenyu-office.sh.intel.com ([10.239.158.173])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2020 22:12:01 -0800
+From:   Chen Yu <yu.c.chen@intel.com>
+To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <len.brown@intel.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        "Kai-Heng Feng" <kai.heng.feng@canonical.com>
+Cc:     linux-pm@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Sasha Neftin <sasha.neftin@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Chen Yu <yu.c.chen@intel.com>
+Subject: [PATCH 1/2][v2] e1000e: Assign DPM_FLAG_SMART_SUSPEND and DPM_FLAG_MAY_SKIP_RESUME to speed up s2ram
+Date:   Thu, 26 Nov 2020 14:14:40 +0800
+Message-Id: <ce83589757381a790153bd5947ea1f9346415102.1606370334.git.yu.c.chen@intel.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <cover.1606370334.git.yu.c.chen@intel.com>
+References: <cover.1606370334.git.yu.c.chen@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-11-26 01:08, Xie He wrote:
-> Hi Martin,
-> 
-> Since we are going to assume lapb->state would remain in LAPB_STATE_0 
-> when
-> the carrier is down (as understood by me. Right?), could we add a check 
-> in
-> lapb_connect_request to reject the upper layer's "connect" instruction 
-> when
-> the carrier is down? Like this:
+The NIC is put in runtime suspend status when there is no cable connected.
+As a result, it is safe to keep non-wakeup NIC in runtime suspended during
+s2ram because the system does not rely on the NIC plug event nor WoL to wake
+up the system. Besides that, unlike the s2idle, s2ram does not need to
+manipulate S0ix settings during suspend.
 
-No, because this will break the considered "on demand" calling feature.
+This patch assigns DPM_FLAG_SMART_SUSPEND and DPM_FLAG_MAY_SKIP_RESUME
+to the e1000e driver so that the s2ram could skip the .suspend_late(),
+.suspend_noirq() and .resume_noirq() .resume_early() when possible.
+Also skip .suspend() and .resume() if dev_pm_skip_suspend() and
+dev_pm_skip_resume() return true, so as to speed up the suspend and
+resume during s2ram.
 
-> 
-> diff --git a/include/linux/lapb.h b/include/linux/lapb.h
-> index eb56472f23b2..7923b1c6fc6a 100644
-> --- a/include/linux/lapb.h
-> +++ b/include/linux/lapb.h
-> @@ -14,6 +14,7 @@
->  #define	LAPB_REFUSED		5
->  #define	LAPB_TIMEDOUT		6
->  #define	LAPB_NOMEM		7
-> +#define	LAPB_NOCARRIER		8
-> 
->  #define	LAPB_STANDARD		0x00
->  #define	LAPB_EXTENDED		0x01
-> diff --git a/net/lapb/lapb_iface.c b/net/lapb/lapb_iface.c
-> index 3c03f6512c5f..c909d8db1bef 100644
-> --- a/net/lapb/lapb_iface.c
-> +++ b/net/lapb/lapb_iface.c
-> @@ -270,6 +270,10 @@ int lapb_connect_request(struct net_device *dev)
->  	if (!lapb)
->  		goto out;
-> 
-> +	rc = LAPB_NOCARRIER;
-> +	if (!netif_carrier_ok(dev))
-> +		goto out_put;
-> +
->  	rc = LAPB_OK;
->  	if (lapb->state == LAPB_STATE_1)
->  		goto out_put;
-> 
-> Also, since we are going to assume the lapb->state would remain in
-> LAPB_STATE_0 when the carrier is down, are the
-> "lapb->state == LAPB_STATE_0" checks in carrier-up/device-up event
-> handling necessary? If they are not necessary, it might be better to
-> remove them because it may confuse people reading the code.
+Test1:
+i5-8300H CPU with I219-LM NIC(with minor change to remove runtime
+suspend restriction on this NIC)
 
-They are still necessary, because if the link setup is initiated by
-upper layers, we've already entered the respective state by
-lapb_connect_request().
+Before:
+[  203.391465] e1000e 0000:00:1f.6: pci_pm_suspend+0x0/0x170 returned 0 after 323186 usecs
+[  203.598307] e1000e 0000:00:1f.6: pci_pm_suspend_late+0x0/0x40 returned 0 after 4 usecs
+[  203.654026] e1000e 0000:00:1f.6: pci_pm_suspend_noirq+0x0/0x290 returned 0 after 20915 usecs
+[  203.714464] e1000e 0000:00:1f.6: pci_pm_resume_noirq+0x0/0x120 returned 0 after 19952 usecs
+[  203.716208] e1000e 0000:00:1f.6: pci_pm_resume_early+0x0/0x30 returned 0 after 0 usecs
+[  203.934399] e1000e 0000:00:1f.6: pci_pm_resume+0x0/0x90 returned 0 after 211437 usecs
 
+After:
+[  150.455612] e1000e 0000:00:1f.6: pci_pm_suspend+0x0/0x170 returned 0 after 14 usecs
+[  150.987627] e1000e 0000:00:1f.6: pci_pm_suspend_late+0x0/0x40 returned 0 after 3 usecs
+[  151.021659] e1000e 0000:00:1f.6: pci_pm_suspend_noirq+0x0/0x290 returned 0 after 1 usecs
+[  151.087303] e1000e 0000:00:1f.6: pci_pm_resume_noirq+0x0/0x120 returned 0 after 0 usecs
+[  151.112056] e1000e 0000:00:1f.6: pci_pm_resume_early+0x0/0x30 returned 0 after 0 usecs
+[  151.136508] e1000e 0000:00:1f.6: pci_pm_resume+0x0/0x90 returned 0 after 3030 usecs
 
-Every suggestion for improvement is really welcome, but please let this
-patch set pass now, if you don't find any more gross errors.
+Test2:
+i7-2600K with 82579V NIC
+Before:
+[  336.668713] e1000e 0000:00:19.0: pci_pm_suspend+0x0/0x160 returned 0 after 16210 usecs
+[  336.738481] e1000e 0000:00:19.0: pci_pm_suspend_late+0x0/0x40 returned 0 after 4 usecs
+[  336.777849] e1000e 0000:00:19.0: pci_pm_suspend_noirq+0x0/0x280 returned 0 after 19058 usecs
+[  336.943800] e1000e 0000:00:19.0: pci_pm_resume_noirq+0x0/0x110 returned 0 after 19600 usecs
+[  336.963534] e1000e 0000:00:19.0: pci_pm_resume_early+0x0/0x30 returned 0 after 1 usecs
+[  337.112877] e1000e 0000:00:19.0: pci_pm_resume+0x0/0x90 returned 0 after 145463 usecs
 
-Martin
+After:
+[  494.657314] e1000e 0000:00:19.0: pci_pm_suspend+0x0/0x160 returned 0 after 5 usecs
+[  494.733140] e1000e 0000:00:19.0: pci_pm_suspend_late+0x0/0x40 returned 0 after 1 usecs
+[  494.751886] e1000e 0000:00:19.0: pci_pm_suspend_noirq+0x0/0x280 returned 0 after 0 usecs
+[  494.917475] e1000e 0000:00:19.0: pci_pm_resume_noirq+0x0/0x110 returned 0 after 1 usecs
+[  494.957043] e1000e 0000:00:19.0: pci_pm_resume_early+0x0/0x30 returned 0 after 1 usecs
+[  494.957615] e1000e 0000:00:19.0: pci_pm_resume+0x0/0x90 returned 0 after 177 usecs
+
+Signed-off-by: Chen Yu <yu.c.chen@intel.com>
+---
+v2: Added test data and some commit log revise(Paul Menzel)
+    Only skip the suspend/resume if the NIC is not a wake up device specified
+    by the user(Kai-Heng Feng)
+--
+ drivers/base/power/main.c                  |  2 ++
+ drivers/net/ethernet/intel/e1000e/netdev.c | 19 ++++++++++++++++++-
+ 2 files changed, 20 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/base/power/main.c b/drivers/base/power/main.c
+index c7ac49042cee..9cd8abba8612 100644
+--- a/drivers/base/power/main.c
++++ b/drivers/base/power/main.c
+@@ -580,6 +580,7 @@ bool dev_pm_skip_resume(struct device *dev)
+ 
+ 	return !dev->power.must_resume;
+ }
++EXPORT_SYMBOL_GPL(dev_pm_skip_resume);
+ 
+ /**
+  * device_resume_noirq - Execute a "noirq resume" callback for given device.
+@@ -2010,3 +2011,4 @@ bool dev_pm_skip_suspend(struct device *dev)
+ 	return dev_pm_test_driver_flags(dev, DPM_FLAG_SMART_SUSPEND) &&
+ 		pm_runtime_status_suspended(dev);
+ }
++EXPORT_SYMBOL_GPL(dev_pm_skip_suspend);
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index b30f00891c03..e32d443feb24 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -6965,6 +6965,19 @@ static __maybe_unused int e1000e_pm_suspend(struct device *dev)
+ 	struct e1000_hw *hw = &adapter->hw;
+ 	int rc;
+ 
++	/* If dev_pm_skip_suspend() returns true it means that the NIC
++	 * is already runtime suspended. The NIC is okay to be put in
++	 * runtime suspended during system suspend as long as the NIC
++	 * is not a wake up device, because:
++	 * 1. Runtime suspend status implies that there is no cable connected,
++	 *    so there is no need to adjust the WoL setting.
++	 * 2. In case the user might plug ethernet cable and use WoL after system
++	 *    is suspended, only non-wakeup NIC could remain runtime suspended(thus
++	 *    not having to adjust WoL settings ).
++	 */
++	if (dev_pm_skip_suspend(dev) && !device_may_wakeup(dev))
++		return 0;
++
+ 	e1000e_flush_lpic(pdev);
+ 
+ 	e1000e_pm_freeze(dev);
+@@ -6989,6 +7002,9 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
+ 	struct e1000_hw *hw = &adapter->hw;
+ 	int rc;
+ 
++	if (dev_pm_skip_resume(dev) && !device_may_wakeup(dev))
++		return 0;
++
+ 	/* Introduce S0ix implementation */
+ 	if (hw->mac.type >= e1000_pch_cnp &&
+ 	    !e1000e_check_me(hw->adapter->pdev->device))
+@@ -7665,7 +7681,8 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	e1000_print_device_info(adapter);
+ 
+-	dev_pm_set_driver_flags(&pdev->dev, DPM_FLAG_NO_DIRECT_COMPLETE);
++	dev_pm_set_driver_flags(&pdev->dev, DPM_FLAG_NO_DIRECT_COMPLETE |
++				DPM_FLAG_SMART_SUSPEND | DPM_FLAG_MAY_SKIP_RESUME);
+ 
+ 	if (pci_dev_run_wake(pdev) && hw->mac.type < e1000_pch_cnp)
+ 		pm_runtime_put_noidle(&pdev->dev);
+-- 
+2.17.1
+
