@@ -2,104 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 715EA2C57E5
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 16:12:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B46252C57FB
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 16:21:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390020AbgKZPM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Nov 2020 10:12:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44598 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389316AbgKZPM0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 10:12:26 -0500
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E8BC0613D4
-        for <netdev@vger.kernel.org>; Thu, 26 Nov 2020 07:12:25 -0800 (PST)
-Received: by mail-qk1-x741.google.com with SMTP id v143so1808219qkb.2
-        for <netdev@vger.kernel.org>; Thu, 26 Nov 2020 07:12:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=s0mSLXkveRT/Z0N1TE7U+YTX79J1JxSJIuUnFkkISm4=;
-        b=ti8u/E8ub4+XRhB9jlOCi/l3Y+uJAIRvomaFQ56Sw8Gn+1JnQNFXKuWO0Aos66Fekt
-         DJzTpVJyajLtRup/e3vkBgHZb3HQZ/9ry56uE+bi37ZawpF+AVV2wT+9N2zaNnHmUajk
-         XS1sSk0O8ac/S6IYAlcdc8GigXfbAwXkhkttkPGOvottQnuw/DuoW/RC8ousyAO8biv0
-         a48O/KMuMB44AZDXkdhQcpq4e0IdmB/xl2GyBmd4miRemunkYuCd7tElF8wmcVSKJiqD
-         7vpPjnWC2/Oabbq1pOJNPIZMJHFW23crTlybqR3EFN40Cr1DmziMSOJ05WZ9tnGK1Qs5
-         0QnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=s0mSLXkveRT/Z0N1TE7U+YTX79J1JxSJIuUnFkkISm4=;
-        b=UJl7M8bAnIiaQRvBzMH+g6N5SZFtfQKTk4vXbDzWaHqhFWG8NUE4dQo09PSQtcEZIL
-         ykYdPKWliQl/blKfbyzlX5P1uh2NDFSMUYZEAnCthxnDJb4H/NY0DkGcybq9Mo51toJS
-         iDwLI8x4xDmdo8CoPUb2Zq6IW0uFP2KLsTtB4wYuF02TP9Th85S+u+Bdxr4Lebn6ZlvU
-         DXqg+/TnnaeuDclsdrLEZwITkdLakytnFAO7lAz7B0pCmOLa3iGy5ztf4KdSlZ7dcGOf
-         ecZtpUFSxn+haPmUaxXJmRbpAb0Apc+YOZbh0ijSTbqcRVZe9FrbZCK0+21vkouN9S6n
-         CoAA==
-X-Gm-Message-State: AOAM532p8j5sKDPzZlM70ef/DpP+DxVF6YXK/qXY7FCvhgsQV3mV6L/u
-        2eeX4QXdvZyNKU++ZjmoI3Z2IFKiZ/4=
-X-Google-Smtp-Source: ABdhPJwa/hP5A6MiXOxOoi3OBm2DAdWqgoeChA5ckFxzXhHI1hZY7n8XnvgItvrCWzqn8KkSHd0Paw==
-X-Received: by 2002:a37:9947:: with SMTP id b68mr3609201qke.70.1606403544500;
-        Thu, 26 Nov 2020 07:12:24 -0800 (PST)
-Received: from willemb.nyc.corp.google.com ([2620:0:1003:312:f693:9fff:fef4:3e8a])
-        by smtp.gmail.com with ESMTPSA id d48sm3181329qta.26.2020.11.26.07.12.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Nov 2020 07:12:22 -0800 (PST)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, soheil@google.com,
-        Willem de Bruijn <willemb@google.com>,
-        Ayush Ranjan <ayushranjan@google.com>
-Subject: [PATCH net] sock: set sk_err to ee_errno on dequeue from errq
-Date:   Thu, 26 Nov 2020 10:12:20 -0500
-Message-Id: <20201126151220.2819322-1-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.29.2.454.gaff20da3a2-goog
+        id S2391273AbgKZPVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 10:21:24 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:51514 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2391261AbgKZPVX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Nov 2020 10:21:23 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kiJ57-008zZm-LH; Thu, 26 Nov 2020 16:21:13 +0100
+Date:   Thu, 26 Nov 2020 16:21:13 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Moshe Shemesh <moshe@nvidia.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Adrian Pop <pop.adrian61@gmail.com>,
+        Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org,
+        Vladyslav Tarasiuk <vladyslavt@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>
+Subject: Re: [PATCH net-next v2 0/2] Add support for DSFP transceiver type
+Message-ID: <20201126152113.GM2073444@lunn.ch>
+References: <1606123198-6230-1-git-send-email-moshe@mellanox.com>
+ <20201124011459.GD2031446@lunn.ch>
+ <20201124131608.1b884063@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <98319caa-de5f-6f5e-9c9e-ee680e5abdc0@nvidia.com>
+ <20201125141822.GI2075216@lunn.ch>
+ <a9835ab6-70a1-5a15-194e-977ff9c859ec@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a9835ab6-70a1-5a15-194e-977ff9c859ec@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+> > If i was implementing the ethtool side of it, i would probably do some
+> > sort of caching system. We know page 0 should always exist, so
+> > pre-load that into the cache. Try the netlink API first. If that
+> > fails, use the ioctl interface. If the ioctl is used, put everything
+> > returned into the cache.
+> I am not sure what you mean by cache here. Don't you want to read page 0
+> once you got the ethtool command to read from the module ? If not, then at
+> what stage ?
 
-When setting sk_err, set it to ee_errno, not ee_origin.
+At the beginning, you try the netlink API and ask for pager 0, bytes
+0-127. If you get a page, put it into the cache. If not, use the ioctl
+interface, which could return one page, or multiple pages. Put them
+all into the cache.
 
-Commit f5f99309fa74 ("sock: do not set sk_err in
-sock_dequeue_err_skb") disabled updating sk_err on errq dequeue,
-which is correct for most error types (origins):
+> >   The decoder can then start decoding, see what
+> > bits are set indicating other pages should be available. Ask for them
+> > from the cache. The netlink API can go fetch them and load them into
+> > the cache. If they cannot be loaded return ENODEV, and the decoder has
+> > to skip what it wanted to decode.
+> 
+> So the decoder should read page 0 and check according to page 0 and
+> specification which pages should be present, right ?
 
-  -       sk->sk_err = err;
+Yes. It ask the cache, give me a pointer to page 0, bytes 0-127. It
+then decodes that, looking at the enumeration data to indicate what
+other pages should be available. Maybe it decides, page 0, bytes
+128-255 should exist, so it asks the cache for a pointer to that. If
+using netlink, it would ask the kernel for that data, put it into the
+cache, and return a pointer. If using ioctl, it already knows if it
+has that data, so it just returns a pointer, so says sorry, not
+available.
 
-Commit 38b257938ac6 ("sock: reset sk_err when the error queue is
-empty") reenabled the behavior for IMCP origins, which do require it:
+> What about the global offset that we currently got when user doesn't specify
+> a page, do you mean that this global offset goes through the optional and
+> non optional pages that exist and skip the ones that are missing according
+> to the specific EEPROM ?
 
-  +       if (icmp_next)
-  +               sk->sk_err = SKB_EXT_ERR(skb_next)->ee.ee_origin;
+ethtool -m|--dump-module-eeprom|--module-info devname [raw on|off] [hex on|off] [offset N] [length N]
 
-But read from ee_errno.
+So you mean [offset N] [length N].
 
-Fixes: 38b257938ac6 ("sock: reset sk_err when the error queue is empty")
-Reported-by: Ayush Ranjan <ayushranjan@google.com>
-Signed-off-by: Willem de Bruijn <willemb@google.com>
----
- net/core/skbuff.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+That is going to be hard, but the API is broken for complex SFPs with
+optional pages. And it is not well defined exactly what offset means.
+You can keep backwards compatibility by identifying the SFP from page
+0, and then reading the pages in the order the ioctl would do. Let
+user space handle it, for those SFPs which the kernel already
+supports. For SFPs which the kernel does not support, i would just
+return not supported. You can do the same for raw. However, for new
+SFPs, for raw you can run the decoder but output to /dev/null. That
+loads into the cache all the pages which the decoder knows about. You
+can then dump the cache. You probably need a new format, to give an
+indication of what each page actually is.
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 1ba8f0163744..06c526e0d810 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -4549,7 +4549,7 @@ struct sk_buff *sock_dequeue_err_skb(struct sock *sk)
- 	if (skb && (skb_next = skb_peek(q))) {
- 		icmp_next = is_icmp_err_skb(skb_next);
- 		if (icmp_next)
--			sk->sk_err = SKB_EXT_ERR(skb_next)->ee.ee_origin;
-+			sk->sk_err = SKB_EXT_ERR(skb_next)->ee.ee_errno;
- 	}
- 	spin_unlock_irqrestore(&q->lock, flags);
- 
--- 
-2.29.2.454.gaff20da3a2-goog
+Maybe you want to add new options [page N] [ bank N] to allow
+arbitrary queries to be made? Again, you can answer these from the
+cache, so the old ioctl interface could work if asked for pages which
+the old API had.
 
+    Andrew
