@@ -2,149 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE90B2C5CAB
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 20:45:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66ED12C5CC5
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 21:01:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405265AbgKZToc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Nov 2020 14:44:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58392 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404817AbgKZToc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 14:44:32 -0500
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65EB5C0613D4;
-        Thu, 26 Nov 2020 11:44:32 -0800 (PST)
-Received: by mail-pl1-x642.google.com with SMTP id l1so1585890pld.5;
-        Thu, 26 Nov 2020 11:44:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=Q6+9AIQzu0mTDLScA3MxPbaf0ZqBfnQEsRT0YPfOhCI=;
-        b=qVRgH1mwe7J6UzYQ1wpjkCDsLdQB+YVsBhT3D8L4Q5icrtxvb15LScWNQVxf1OzDaV
-         X3UfMmXevUP3Dvqh6UXhaBg0WN3tAXbGgxJ/GjiupKzhzgG876TYg0s9w3obocRxlbOr
-         XTfRM397m+6wmd1Auky0T3GYJDBvHUei+G2gGyx0v0TVP++Tl4PKiSqYtw3+OEKCFv8U
-         ugr/JmEE3BvLYeub3BZjJqpwo0oCsfACLYaeqaw9TEU6/yzJTqzzCIgzWgazilFnOQly
-         TncW1IOLb81Il5/hSQ7HoLEhfgsr4keCzzfmHvoHVwQxNn5OfNqpXJ/ZuGFfd2pe+dhn
-         QSGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=Q6+9AIQzu0mTDLScA3MxPbaf0ZqBfnQEsRT0YPfOhCI=;
-        b=Ox8bxgxHnG84rQtXcaMgqBKyXLjuH/0YFIj36vbBltpzqTkPDRifgOYiFqodAtwMUk
-         yzbsCUrV1Cua0oW0qhPoA584FppcbbDuqjO5YZOp5NosqzWHmL5Iaj4cGuPy1nIwgeYa
-         0HsmrQyzWoo79kxngagW34T35L3U7uBxFiGfL+lCwg+X8NF33ngtP/GAFmmv+VvNFKwO
-         g8N4PBc662ElT71fI/L15n7VkoolxFqWUx2Lup1X/zE3EyMj2tHRs453YsynG1hqbusR
-         AAsMeKVWrh1A9PTLOoOBcOBWMZK29lM3ddlafo6fCKNlKEoExyvLymC21aHXO54kzWd9
-         L+Mg==
-X-Gm-Message-State: AOAM531FwYdNmVsArRPgCY4w0qb34vUWLwLHqjRb4/WuR4FmpY7OOWkp
-        M2JhjgtY/dOcpQF3HxFe0Wkj++WA4pL9pA==
-X-Google-Smtp-Source: ABdhPJyZcFztd27CIvTj/jb8ApeL8DTTbBv4qpHudzYYDnxlPBzORfbl0Rof+N0aAHK0TH5O5c5F8A==
-X-Received: by 2002:a17:902:b415:b029:d6:ec35:755b with SMTP id x21-20020a170902b415b02900d6ec35755bmr3887204plr.47.1606419871852;
-        Thu, 26 Nov 2020 11:44:31 -0800 (PST)
-Received: from [192.168.1.155] (i60-35-254-237.s41.a020.ap.plala.or.jp. [60.35.254.237])
-        by smtp.gmail.com with ESMTPSA id kb12sm7325265pjb.2.2020.11.26.11.44.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Nov 2020 11:44:30 -0800 (PST)
-Message-ID: <4f88f25c78d82e980f5fa7e686b00ad5b20031c5.camel@gmail.com>
-Subject: Re: [PATCH 1/3] mwifiex: disable ps_mode explicitly by default
- instead
-From:   Tsuchiya Yuto <kitakar@gmail.com>
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>, verdre@v0yd.nl
-Date:   Fri, 27 Nov 2020 04:44:24 +0900
-In-Reply-To: <CA+ASDXMUdYHTKphxFwcAim79N_DJiQFHFN0gDZsPB4rMHyxxXw@mail.gmail.com>
-References: <20201028142433.18501-1-kitakar@gmail.com>
-         <20201028142433.18501-2-kitakar@gmail.com>
-         <CA+ASDXMfuqy=kCECktP_mYm9cAapXukeLhe=1i3uPbTu9wS2Qw@mail.gmail.com>
-         <8fa12bfff1cc30b655934e303cad78ae75b0fcde.camel@gmail.com>
-         <CA+ASDXMUdYHTKphxFwcAim79N_DJiQFHFN0gDZsPB4rMHyxxXw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.2 
+        id S2404258AbgKZUAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 15:00:54 -0500
+Received: from mx04.lhost.no ([5.158.192.85]:51283 "EHLO mx04.lhost.no"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728118AbgKZUAx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Nov 2020 15:00:53 -0500
+X-ASG-Debug-ID: 1606420847-0ffc06424c740d0001-BZBGGp
+Received: from s103.paneda.no ([5.158.193.76]) by mx04.lhost.no with ESMTP id ZJfHbLK3bTw0eRff (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NO); Thu, 26 Nov 2020 21:00:49 +0100 (CET)
+X-Barracuda-Envelope-From: thomas.karlsson@paneda.se
+X-Barracuda-Effective-Source-IP: UNKNOWN[5.158.193.76]
+X-Barracuda-Apparent-Source-IP: 5.158.193.76
+X-ASG-Whitelist: Client
+Received: from [192.168.10.188] (83.140.179.234) by s103.paneda.no
+ (10.16.55.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id 15.1.1979.3; Thu, 26
+ Nov 2020 21:00:45 +0100
+Subject: Re: Hardcoded multicast queue length in macvlan.c driver causes poor
+ multicast receive performance
+To:     Jakub Kicinski <kuba@kernel.org>
+X-ASG-Orig-Subj: Re: Hardcoded multicast queue length in macvlan.c driver causes poor
+ multicast receive performance
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <485531aec7e243659ee4e3bb7fa2186d@paneda.se>
+ <147b704ac1d5426fbaa8617289dad648@paneda.se>
+ <20201123143052.1176407d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <b93a6031-f1b4-729d-784b-b1f465d27071@paneda.se>
+ <20201125085848.4f330dea@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <4e3c9f30-d43c-54b1-2796-86f38d316ef3@paneda.se>
+ <20201125100710.7e766d7e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <956c4fca-2a54-97cb-5b4c-3a286743884b@paneda.se>
+ <20201125150100.287ac72a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Thomas Karlsson <thomas.karlsson@paneda.se>
+Message-ID: <3a30c2f6-e400-7001-69ec-683245620f2d@paneda.se>
+Date:   Thu, 26 Nov 2020 21:00:46 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
+In-Reply-To: <20201125150100.287ac72a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [83.140.179.234]
+X-ClientProxiedBy: s103.paneda.no (10.16.55.12) To s103.paneda.no
+ (10.16.55.12)
+X-Barracuda-Connect: UNKNOWN[5.158.193.76]
+X-Barracuda-Start-Time: 1606420849
+X-Barracuda-Encrypted: ECDHE-RSA-AES256-SHA384
+X-Barracuda-URL: https://mx04.lhost.no:443/cgi-mod/mark.cgi
+X-Virus-Scanned: by bsmtpd at lhost.no
+X-Barracuda-Scan-Msg-Size: 2206
+X-Barracuda-BRTS-Status: 1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-11-20 at 13:04 -0800, Brian Norris wrote:
-> On Fri, Oct 30, 2020 at 1:04 AM Tsuchiya Yuto <kitakar@gmail.com> wrote:
-> > On Thu, 2020-10-29 at 11:25 -0700, Brian Norris wrote:
-> > > For the record, Chrome OS supports plenty of mwifiex systems with 8897
-> > > (SDIO only) and 8997 (PCIe), with PS enabled, and you're hurting
-> > > those. Your problem sounds to be exclusively a problem with the PCIe
-> > > 8897 firmware.
-> > 
-> > Actually, I already know that some Chromebooks use these mwifiex cards
-> > (but not out PCIe-88W8897) because I personally like chromiumos. I'm
-> > always wondering what is the difference. If the difference is firmware,
-> > our PCIe-88W8897 firmware should really be fixed instead of this stupid
-> > series.
+On 2020-11-26 00:01, Jakub Kicinski wrote:
+> On Wed, 25 Nov 2020 23:15:39 +0100 Thomas Karlsson wrote:
+>>>> This is my first time ever attemting a contribution to the kernel so
+>>>> I'm quite happy to keep it simple like that too :)  
+>>>
+>>> Module params are highly inflexible, we have a general policy not 
+>>> to accept them in the netdev world.
+>>
+>> I see, although the current define seems even less flexible :)
 > 
-> PCIe is a very different beast. (For one, it uses DMA and
-> memory-mapped registers, where SDIO has neither.) It was a very
-> difficult slog to get PCIe/8997 working reliably for the few
-> Chromebooks that shipped it, and lots of that work is in firmware. I
-> would not be surprised if the PCIe-related changes Marvell made for
-> 8997 never fed back into their PCIe-8897 firmware. Or maybe they only
-> ever launched PCIe-8897 for Windows, and the Windows driver included
-> workarounds that were never published to their Linux driver. But now
-> I'm just speculating.
+> Just to be clear - the module parameter is a no-go. 
+> No point discussing it.
 
-Thanks. Yeah, this is indeed hard work. Actually, I (and maybe also other
-users) am already thankful that there is wifi driver/firmware available
-on Linux :) and it'll be greater if we can fix ps_mode-related issues.
+Got it!
 
-> > Yes, I'm sorry that I know this series is just a stupid one but I have to
-> > send this anyway because this stability issue has not been fixed for a
-> > long time. I should have added this buglink to every commit as well:
-> > 
-> > BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=109681
-> > 
-> > If the firmware can't be fixed, I'm afraid I have to go this way. It makes
-> > no sense to keep enabling power_save for the affected devices if we know
-> > it's broken.
 > 
-> Condolences and sympathy, seriously. You likely have little chance of
-> getting the firmware fixed, so without new information (e.g,. other
-> workarounds?), this is the probably the right way to go.
+>> Although, I might not have fully understood the .changelink you suggest.
+>> Is it via the ip link set ... command? 
+> 
+> Yes.
+> 
+>> Or is there a way to set the parameters in a more "raw" form that
+>> does not require a patch to iproute2 with parameter parsing, error
+>> handing, man pages updates, etc. I feel that I'm getting in over my
+>> head here.
+> 
+> We're here to assist! Netlink takes a little bit of effort 
+> to comprehend but it's very simple once you get the mechanics!
+> 
 
-Thank you for the pointer!
+Thanks for the encouragement, I have been able to build iproute2 today and
+I am successfully communicating with the driver now being able to set and retrieve my queue len!
 
-There are two issues regarding ps_mode:
-1) fw crashes with "Firmware wakeup failed"
-   (I haven't mentioned in this series, but ps_mode also causes fw crashes)
-2) connection instability (like large ping delay or even ping not reaching)
+As I'm working on this I do got a question. I placed the bc_queue_len into the struct macvlan_port *port
+since that is where the bc_queue is located today. But when I change and retrieve the queue from userspace I realize
+that all macvlan interfaces that share the same physical lowerdev uses the same port structure and thus
+the same bc_queue_len.
 
-If anyone is ever interested in dmesg log with debug_mask=0xffffffff and
-device_dump, I posted them to the Bugzilla [1] before.
+It confused me at first and I'm not sure if that is how it should be. I expected the driver to have different
+bc_queues for all macvlan interfaces no matter which lowerdev they were using but obviously that is not the case.
 
-Regarding the #2, although this is even not a workaround but I found
-scanning APs will fix this. So, when I encounter this issue, I keep
-scanning APs like "watch -n10 sudo iw dev ${dev_name} scan". So, it
-seems that scanning APs will somehow wake wifi up? In other words, wifi
-is sleeping when it shouldn't? or wifi somehow failed to wake up when
-it should?
+It may be a bit confusing to change bc_queue_len on one macvlan and see that the change was applied to more than one.
 
-Regarding #1, we don't have any ideas yet. There is a guess that memory
-leak will occur in the fw every time wifi goes into sleep, but don't know.
+But I'm not sure if I should just move bc_queue_len to the struct macvlan_dev either. because then different macvlans will use different queue lengths while they still use the same queue. Which may also be considered a bit illogical
 
-We even don't have the exact reproducers for both #1 and #2. What we
-know so far is that, enabling ps_mode causes these issues.
+Let me know what you prefer here!
 
-[1] https://bugzilla.kernel.org/show_bug.cgi?id=109681#c130
+Thanks!
 
-> Brian
+
 
 
