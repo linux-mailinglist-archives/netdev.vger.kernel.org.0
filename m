@@ -2,100 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B46252C57FB
-	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 16:21:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 102B72C580A
+	for <lists+netdev@lfdr.de>; Thu, 26 Nov 2020 16:24:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391273AbgKZPVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Nov 2020 10:21:24 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:51514 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391261AbgKZPVX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Nov 2020 10:21:23 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kiJ57-008zZm-LH; Thu, 26 Nov 2020 16:21:13 +0100
-Date:   Thu, 26 Nov 2020 16:21:13 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Moshe Shemesh <moshe@nvidia.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Moshe Shemesh <moshe@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Adrian Pop <pop.adrian61@gmail.com>,
-        Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org,
-        Vladyslav Tarasiuk <vladyslavt@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: Re: [PATCH net-next v2 0/2] Add support for DSFP transceiver type
-Message-ID: <20201126152113.GM2073444@lunn.ch>
-References: <1606123198-6230-1-git-send-email-moshe@mellanox.com>
- <20201124011459.GD2031446@lunn.ch>
- <20201124131608.1b884063@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <98319caa-de5f-6f5e-9c9e-ee680e5abdc0@nvidia.com>
- <20201125141822.GI2075216@lunn.ch>
- <a9835ab6-70a1-5a15-194e-977ff9c859ec@nvidia.com>
+        id S2391318AbgKZPXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 10:23:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46262 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389756AbgKZPXL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 10:23:11 -0500
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17D85C0613D4
+        for <netdev@vger.kernel.org>; Thu, 26 Nov 2020 07:23:11 -0800 (PST)
+Received: by mail-ed1-x541.google.com with SMTP id y4so2671618edy.5
+        for <netdev@vger.kernel.org>; Thu, 26 Nov 2020 07:23:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=HPMdUQs0Nq36rRw+fqVZ+RZDMl8mtPAFez5LD7lxuf4=;
+        b=HIG/O79+p4LYMhFFjqBix4fe1DS8G17BbYzlfJPoaVebDKbDmo9Sdb0F1Kg0DqvH2M
+         bO4dyIe62ki3xiOwpSV1gkUDT3jFAIdGElMinATGFIyrpM0XAEzrs3HBNApoXeXl2xi6
+         nr7WZrhNarbKj3YxzRMeKEMMIiE4HpfR7UgI6Ey0jvnALBqiBqCggddPrdMrTwJEfuIx
+         /6SRBV7UXCM8Q3/XcXKV55f2abQrWBDAW7LSYFYgu4jQzIWHPF5MKbGoOpB4sUcOQl79
+         jPLlszW81PJkDbW1my46CJ4Qfmpw/BaG38Pbx0kHubPGPgWURZXdghqSabJ/Zf1gtWYd
+         aFHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=HPMdUQs0Nq36rRw+fqVZ+RZDMl8mtPAFez5LD7lxuf4=;
+        b=dinPnMd9M0JYlQgcrL78bfSbqB1+cQ6PRHV1pnbURax+bqoNiYwvTvgRDV0rI4dFNg
+         x1dm67hwOWdykQtYC6j7w9A7OdLuJpsX/RsttF+Tj2lbshb5ZJ6LfMZGhYe2z3do0Va4
+         Xj+DHschy3qEUlgnwkyc770BC7JcI3me+rtrzZO/BJmoSCfJqCTdBlq79vAuv1nL5fvy
+         11KcuVWJ1Ie7WjwScoJf61+q8H8PHx5kogoGgdyySIkIrwjTYVD5GkM1c1w2V01iRT6I
+         5nuGq8/U2KWKwV+Hg3eAXjqq836tPLaXKIZx+VvyKGuQXd28rNmpTX9wr1ZsN18Ztqd/
+         dwGQ==
+X-Gm-Message-State: AOAM5330N8MhvDVjr7g11j3hwK2/MUqaaOhFZYWurtHVhqk5b8dW/SVF
+        o6vfVTVR71P+wiABEyUHbApZ6Q==
+X-Google-Smtp-Source: ABdhPJy88Jyklg5zAVI1zteGxad1PToX2xfUJdcJFkalvM0JID9qrCNrML8XEzRgmNm/i7jGXvYWew==
+X-Received: by 2002:a50:f98b:: with SMTP id q11mr3053140edn.345.1606404189744;
+        Thu, 26 Nov 2020 07:23:09 -0800 (PST)
+Received: from tsr-lap-08.nix.tessares.net ([2a02:578:85b0:e00:9caf:688a:742d:c63f])
+        by smtp.gmail.com with ESMTPSA id r1sm3281024eje.51.2020.11.26.07.23.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 Nov 2020 07:23:09 -0800 (PST)
+Subject: Re: [PATCH net] mptcp: fix NULL ptr dereference on bad MPJ
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>, mptcp@lists.01.org
+References: <03b2cfa3ac80d8fc18272edc6442a9ddf0b1e34e.1606400227.git.pabeni@redhat.com>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+Message-ID: <2c3eecf9-c3b9-861a-cb8c-2f103496abfc@tessares.net>
+Date:   Thu, 26 Nov 2020 16:23:08 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a9835ab6-70a1-5a15-194e-977ff9c859ec@nvidia.com>
+In-Reply-To: <03b2cfa3ac80d8fc18272edc6442a9ddf0b1e34e.1606400227.git.pabeni@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > If i was implementing the ethtool side of it, i would probably do some
-> > sort of caching system. We know page 0 should always exist, so
-> > pre-load that into the cache. Try the netlink API first. If that
-> > fails, use the ioctl interface. If the ioctl is used, put everything
-> > returned into the cache.
-> I am not sure what you mean by cache here. Don't you want to read page 0
-> once you got the ethtool command to read from the module ? If not, then at
-> what stage ?
+Hi Paolo,
 
-At the beginning, you try the netlink API and ask for pager 0, bytes
-0-127. If you get a page, put it into the cache. If not, use the ioctl
-interface, which could return one page, or multiple pages. Put them
-all into the cache.
-
-> >   The decoder can then start decoding, see what
-> > bits are set indicating other pages should be available. Ask for them
-> > from the cache. The netlink API can go fetch them and load them into
-> > the cache. If they cannot be loaded return ENODEV, and the decoder has
-> > to skip what it wanted to decode.
+On 26/11/2020 15:17, Paolo Abeni wrote:
+> If an msk listener receives an MPJ carrying an invalid token, it
+> will zero the request socket msk entry. That should later
+> cause fallback and subflow reset - as per RFC - at
+> subflow_syn_recv_sock() time due to failing hmac validation.
 > 
-> So the decoder should read page 0 and check according to page 0 and
-> specification which pages should be present, right ?
+> Since commit 4cf8b7e48a09 ("subflow: introduce and use
+> mptcp_can_accept_new_subflow()"), we unconditionally dereference
+> - in mptcp_can_accept_new_subflow - the subflow request msk
+> before performing hmac validation. In the above scenario we
+> hit a NULL ptr dereference.
+> 
+> Address the issue doing the hmac validation earlier.
+> 
+> Fixes: 4cf8b7e48a09 ("subflow: introduce and use mptcp_can_accept_new_subflow()")
+> Tested-by: Davide Caratti <dcaratti@redhat.com>
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 
-Yes. It ask the cache, give me a pointer to page 0, bytes 0-127. It
-then decodes that, looking at the enumeration data to indicate what
-other pages should be available. Maybe it decides, page 0, bytes
-128-255 should exist, so it asks the cache for a pointer to that. If
-using netlink, it would ask the kernel for that data, put it into the
-cache, and return a pointer. If using ioctl, it already knows if it
-has that data, so it just returns a pointer, so says sorry, not
-available.
+Good catch! Thank you for the patch!
 
-> What about the global offset that we currently got when user doesn't specify
-> a page, do you mean that this global offset goes through the optional and
-> non optional pages that exist and skip the ones that are missing according
-> to the specific EEPROM ?
+Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 
-ethtool -m|--dump-module-eeprom|--module-info devname [raw on|off] [hex on|off] [offset N] [length N]
-
-So you mean [offset N] [length N].
-
-That is going to be hard, but the API is broken for complex SFPs with
-optional pages. And it is not well defined exactly what offset means.
-You can keep backwards compatibility by identifying the SFP from page
-0, and then reading the pages in the order the ioctl would do. Let
-user space handle it, for those SFPs which the kernel already
-supports. For SFPs which the kernel does not support, i would just
-return not supported. You can do the same for raw. However, for new
-SFPs, for raw you can run the decoder but output to /dev/null. That
-loads into the cache all the pages which the decoder knows about. You
-can then dump the cache. You probably need a new format, to give an
-indication of what each page actually is.
-
-Maybe you want to add new options [page N] [ bank N] to allow
-arbitrary queries to be made? Again, you can answer these from the
-cache, so the old ioctl interface could work if asked for pages which
-the old API had.
-
-    Andrew
+Cheers,
+Matt
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
