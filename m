@@ -2,152 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9A062C6B0D
-	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 18:56:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 052A72C6B10
+	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 18:56:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732820AbgK0Rya (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Nov 2020 12:54:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37186 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732804AbgK0Ry3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 12:54:29 -0500
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53502C0613D1;
-        Fri, 27 Nov 2020 09:54:29 -0800 (PST)
-Received: by mail-yb1-xb42.google.com with SMTP id x17so5211164ybr.8;
-        Fri, 27 Nov 2020 09:54:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=R2n5HJcIf1w46ZD7sB3rPDuDX4FS8DO4ZIZINc4xU6w=;
-        b=OiykdGxOzBE+EO44P+A5UjorUv8SkBOVtx1hSWToMdVhMS0EuHavtETJrMiQWh9n7b
-         PKX0vDTbZ8Y4/V96O83mKPL8X6+PSurzFeJ6YSqjwPlmXe3uvkKDkoXURuRNcBs014DT
-         UE5GhHA1I1n6Y0Mjc7IeEkYIfV/cSEboPkEbDthzfvAUfJ0tjtm2uMIfu3NMAU93khMo
-         c31auu3FkiZk5Ieuf+LZVr14jgB4JtMBFAls70b/4qSiUf7K9ot317rDmGNijNep4Hgg
-         8lgtYzL344rWo8FZdYfm+D0oFcIrx6QqB/kWNx4OldaS/hrSS03PVH6MF6lRM1XgKBe2
-         GGUg==
+        id S1732631AbgK0Rzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Nov 2020 12:55:41 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:31718 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732433AbgK0Rzl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 12:55:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606499739;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc; bh=Br/IPbdHx/OaYg6xCtsKtihEPu1TMwZ+6MkhSnyxsRs=;
+        b=TPcMkM6B4KGD79RmgCzj/Rs362J1b//NTjPucs9mDzJVh93ECmI7xzjcOTWKnK/IRMJe+e
+        pwKgumN7vNw30cr44bTEVuI88PpPH23Uy51uruYs9v/sLRDtBdjD4qXaqFoy0PQU2b5d6t
+        JX1sLt0J98W2ao3W/RUZX+3/cg2LBgo=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-101-PTymUoVANlSP0jnETSz_Rg-1; Fri, 27 Nov 2020 12:55:38 -0500
+X-MC-Unique: PTymUoVANlSP0jnETSz_Rg-1
+Received: by mail-qt1-f200.google.com with SMTP id r29so3632733qtu.21
+        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 09:55:38 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=R2n5HJcIf1w46ZD7sB3rPDuDX4FS8DO4ZIZINc4xU6w=;
-        b=Xhq+mzK7A6aEDeTH+XjahshFDq8NNk1t2lkppEGR6wGIm9HGGKNb2xBYblPjI0UrBy
-         DHd5r8r5nRs3Tx+wz/xAgnNXpWnEJd+aj361dgqtcFuQBi85jvTBoCluD5rCLdusdPC8
-         ShMOcxKoa3o7Wz5cUiJmcrW0ow6hgz45jE1o2cYIlv3nvczB3ueteQqE27W9REe66X71
-         jNue9Ng30QZotAGrXNf3vjd+/Gagv590roSsCFVlhew0SWXX7C5mzpb70bJTPXHji8qw
-         NKbULIWrHsbbZflgPrfPQIIcvbV5uEEwZoyyBQrLTFrWt3Y0xvBMAAaBqRaustcxpLQZ
-         z/yQ==
-X-Gm-Message-State: AOAM5319twE31ts9ldFN2/LCQyYsY/FR8PR8qPGAcD0wu5jjF+/c5UJq
-        DbJgalhKiFoiLMzNVTHrodbEvCGXkln8X6ZnvSk=
-X-Google-Smtp-Source: ABdhPJzR8o5uH/+EkUS6AGUpGVMVrM8tT5Dr3pIMPH4RFS7LU6IzqlyRYJnfwLtoWw8EsOEyyTowbsTMJwHyKYv/XLg=
-X-Received: by 2002:a25:a4a1:: with SMTP id g30mr13618769ybi.195.1606499668367;
- Fri, 27 Nov 2020 09:54:28 -0800 (PST)
-MIME-Version: 1.0
-References: <20201125183749.13797-1-weqaar.a.janjua@intel.com>
- <20201125183749.13797-2-weqaar.a.janjua@intel.com> <d8eedbad-7a8e-fd80-5fec-fc53b86e6038@fb.com>
- <1bcfb208-dfbd-7b49-e505-8ec17697239d@intel.com> <CAPLEeBYnYcWALN_JMBtZWt3uDnpYNtCA_HVLN6Gi7VbVk022xw@mail.gmail.com>
- <9c73643f-0fdc-d867-6fe0-b3b8031a6cf2@fb.com>
-In-Reply-To: <9c73643f-0fdc-d867-6fe0-b3b8031a6cf2@fb.com>
-From:   Weqaar Janjua <weqaar.janjua@gmail.com>
-Date:   Fri, 27 Nov 2020 17:54:02 +0000
-Message-ID: <CAPLEeBZh+BEJp_k0bDQ8nmprMPqQ29JSEXCxscm5wAZQH81bAQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 1/5] selftests/bpf: xsk selftests framework
-To:     Yonghong Song <yhs@fb.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Weqaar Janjua <weqaar.a.janjua@intel.com>, shuah@kernel.org,
-        skhan@linuxfoundation.org, linux-kselftest@vger.kernel.org,
-        Anders Roxell <anders.roxell@linaro.org>,
-        jonathan.lemon@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Br/IPbdHx/OaYg6xCtsKtihEPu1TMwZ+6MkhSnyxsRs=;
+        b=BzaX8g5YSuCnngaUyg6c6eJNcWm5SMDAB34HHLbuDK63CBfnGqoool+sm0DTALEJle
+         J7ukoXz7F/b9+45f+diew7Bf39Trrsrs2MwhkfD5+gF6/Ilu1qxYQ9gLTkpaq63+Dt/t
+         C4cl9tg4THvX4u9gma7PG3dZSa17xIM5oyC4wzYkp25QFcXJDbnLSUsGCsaoDmX6Gthz
+         asCzRJqHVwLa8vAakgNad6hZCHH7X3FSJAmWcpr+JoirPNsEiPmukvTDN7rh2GElvU63
+         eBSZtAZ/vVzuOIf9eYF43KOb3+7uGfzRmLwVxjFdgy3IHiHEqp/k8IRmJ1rQ0UuxV1Dg
+         384g==
+X-Gm-Message-State: AOAM533ZAHEestpfr2kAuyV6G5vQC2/0Qv1Umnkx4pcH+ZFWE8q+/9Ay
+        PKMp4K5WpJDXESkCRbhTyW+3qpFCZlW8SHqP6scJkQT7iIjA2Qz9u2FW5KMJHX7fEyUrIjMut8R
+        qWBPEkyOUUwEE5qau
+X-Received: by 2002:a05:620a:a9a:: with SMTP id v26mr9511052qkg.56.1606499737598;
+        Fri, 27 Nov 2020 09:55:37 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw2L15Xpt+pzKI2tQJ1Mja1bZVxZ9cJq3+yTQqjAUjwGC9JUF+NSrylLZnhZYHe6hp4SZgoPA==
+X-Received: by 2002:a05:620a:a9a:: with SMTP id v26mr9511031qkg.56.1606499737423;
+        Fri, 27 Nov 2020 09:55:37 -0800 (PST)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id r48sm6421675qtr.21.2020.11.27.09.55.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Nov 2020 09:55:36 -0800 (PST)
+From:   trix@redhat.com
+To:     chunkeey@googlemail.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
+Subject: [PATCH] net: carl9170: remove trailing semicolon in macro definition
+Date:   Fri, 27 Nov 2020 09:55:31 -0800
+Message-Id: <20201127175531.2754461-1-trix@redhat.com>
+X-Mailer: git-send-email 2.18.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 27 Nov 2020 at 04:19, Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 11/26/20 1:22 PM, Weqaar Janjua wrote:
-> > On Thu, 26 Nov 2020 at 09:01, Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.=
-com> wrote:
-> >>
-> >> On 2020-11-26 07:44, Yonghong Song wrote:
-> >>>
-> >> [...]
-> >>>
-> >>> What other configures I am missing?
-> >>>
-> >>> BTW, I cherry-picked the following pick from bpf tree in this experim=
-ent.
-> >>>     commit e7f4a5919bf66e530e08ff352d9b78ed89574e6b (HEAD -> xsk)
-> >>>     Author: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> >>>     Date:   Mon Nov 23 18:56:00 2020 +0100
-> >>>
-> >>>         net, xsk: Avoid taking multiple skbuff references
-> >>>
-> >>
-> >> Hmm, I'm getting an oops, unless I cherry-pick:
-> >>
-> >> 36ccdf85829a ("net, xsk: Avoid taking multiple skbuff references")
-> >>
-> >> *AND*
-> >>
-> >> 537cf4e3cc2f ("xsk: Fix umem cleanup bug at socket destruct")
-> >>
-> >> from bpf/master.
-> >>
-> >
-> > Same as Bjorn's findings ^^^, additionally applying the second patch
-> > 537cf4e3cc2f [PASS] all tests for me
-> >
-> > PREREQUISITES: [ PASS ]
-> > SKB NOPOLL: [ PASS ]
-> > SKB POLL: [ PASS ]
-> > DRV NOPOLL: [ PASS ]
-> > DRV POLL: [ PASS ]
-> > SKB SOCKET TEARDOWN: [ PASS ]
-> > DRV SOCKET TEARDOWN: [ PASS ]
-> > SKB BIDIRECTIONAL SOCKETS: [ PASS ]
-> > DRV BIDIRECTIONAL SOCKETS: [ PASS ]
-> >
-> > With the first patch alone, as soon as we enter DRV/Native NOPOLL mode
-> > kernel panics, whereas in your case NOPOLL tests were falling with
-> > packets being *lost* as per seqnum mismatch.
-> >
-> > Can you please test this out with both patches and let us know?
->
-> I applied both the above patches in bpf-next as well as this patch set,
-> I still see failures. I am attaching my config file. Maybe you can take
-> a look at what is the issue.
->
-Thanks for the config, can you please confirm the compiler version,
-and resource limits i.e. stack size, memory, etc.?
+From: Tom Rix <trix@redhat.com>
 
-Only NOPOLL tests are failing for you as I see it, do the same tests
-fail every time?
+The macro use will already have a semicolon.
 
-I will need to spend some time debugging this to have a fix.
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/net/wireless/ath/carl9170/debug.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Thanks,
-/Weqaar
+diff --git a/drivers/net/wireless/ath/carl9170/debug.c b/drivers/net/wireless/ath/carl9170/debug.c
+index 19009aafc4e1..bb40889d7c72 100644
+--- a/drivers/net/wireless/ath/carl9170/debug.c
++++ b/drivers/net/wireless/ath/carl9170/debug.c
+@@ -45,7 +45,7 @@
+ #include "cmd.h"
+ 
+ #define ADD(buf, off, max, fmt, args...)				\
+-	off += scnprintf(&buf[off], max - off, fmt, ##args);
++	off += scnprintf(&buf[off], max - off, fmt, ##args)
+ 
+ 
+ struct carl9170_debugfs_fops {
+@@ -818,7 +818,7 @@ void carl9170_debugfs_register(struct ar9170 *ar)
+ #define DEBUGFS_ADD(name)						\
+ 	debugfs_create_file(#name, carl_debugfs_##name ##_ops.attr,	\
+ 			    ar->debug_dir, ar,				\
+-			    &carl_debugfs_##name ## _ops.fops);
++			    &carl_debugfs_##name ## _ops.fops)
+ 
+ 	DEBUGFS_ADD(usb_tx_anch_urbs);
+ 	DEBUGFS_ADD(usb_rx_pool_urbs);
+-- 
+2.18.4
 
-> >
-> >> Can I just run test_xsk.sh at tools/testing/selftests/bpf/ directory?
-> >> This will be easier than the above for bpf developers. If it does not
-> >> work, I would like to recommend to make it work.
-> >>
-> > yes test_xsk.shis self contained, will update the instructions in there=
- with v4.
->
-> That will be great. Thanks!
->
-> >
-> > Thanks,
-> > /Weqaar
-> >>
-> >> Bj=C3=B6rn
