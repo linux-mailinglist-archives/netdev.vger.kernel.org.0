@@ -2,255 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C84C2C6841
-	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 15:54:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DB2A2C681D
+	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 15:46:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730935AbgK0Owb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Nov 2020 09:52:31 -0500
-Received: from mga17.intel.com ([192.55.52.151]:37520 "EHLO mga17.intel.com"
+        id S1730991AbgK0Opy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Nov 2020 09:45:54 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:52832 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727653AbgK0Owb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Nov 2020 09:52:31 -0500
-IronPort-SDR: GdcjyxdQeIIChj8WfejJZXsXDsdYMgCgN0U4HfeHTNo6NzBDnS1jjNN9WSxREJdxAMJPjqd5i4
- 3zsDtigZhF0A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9817"; a="152235153"
-X-IronPort-AV: E=Sophos;i="5.78,374,1599548400"; 
-   d="scan'208";a="152235153"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Nov 2020 06:52:30 -0800
-IronPort-SDR: 8dSF3SI/QzvtOn+ZnxAY+QWDWEGp8K6gCr26sCLk6zR+hKaHR8uBBz0OgAurAT9W4wEJSstQv4
- cld8ROSt6FCg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.78,374,1599548400"; 
-   d="scan'208";a="371596777"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by FMSMGA003.fm.intel.com with ESMTP; 27 Nov 2020 06:52:29 -0800
-Date:   Fri, 27 Nov 2020 15:44:11 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Camelia Alexandra Groza <camelia.groza@nxp.com>
-Cc:     "kuba@kernel.org" <kuba@kernel.org>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "saeed@kernel.org" <saeed@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v4 7/7] dpaa_eth: implement the A050385 erratum
- workaround for XDP
-Message-ID: <20201127144411.GC26825@ranger.igk.intel.com>
-References: <cover.1606150838.git.camelia.groza@nxp.com>
- <e53e361d320cb901b0d9b9b82e6c16a04fbe6f86.1606150838.git.camelia.groza@nxp.com>
- <20201124205040.GA19977@ranger.igk.intel.com>
- <VI1PR04MB5807F77BA161E9BB7729C2B6F2FA0@VI1PR04MB5807.eurprd04.prod.outlook.com>
+        id S1729913AbgK0Opy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Nov 2020 09:45:54 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kif0L-0098tu-U4; Fri, 27 Nov 2020 15:45:45 +0100
+Date:   Fri, 27 Nov 2020 15:45:45 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: Re: [PATCH v1] net: phy: micrel: fix interrupt handling
+Message-ID: <20201127144545.GO2073444@lunn.ch>
+References: <20201127123621.31234-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <VI1PR04MB5807F77BA161E9BB7729C2B6F2FA0@VI1PR04MB5807.eurprd04.prod.outlook.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20201127123621.31234-1-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 25, 2020 at 03:52:33PM +0000, Camelia Alexandra Groza wrote:
-> > -----Original Message-----
-> > From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > Sent: Tuesday, November 24, 2020 22:51
-> > To: Camelia Alexandra Groza <camelia.groza@nxp.com>
-> > Cc: kuba@kernel.org; brouer@redhat.com; saeed@kernel.org;
-> > davem@davemloft.net; Madalin Bucur (OSS)
-> > <madalin.bucur@oss.nxp.com>; Ioana Ciornei <ioana.ciornei@nxp.com>;
-> > netdev@vger.kernel.org
-> > Subject: Re: [PATCH net-next v4 7/7] dpaa_eth: implement the A050385
-> > erratum workaround for XDP
-> > 
-> > On Mon, Nov 23, 2020 at 07:36:25PM +0200, Camelia Groza wrote:
-> > > For XDP TX, even tough we start out with correctly aligned buffers, the
-> > > XDP program might change the data's alignment. For REDIRECT, we have no
-> > > control over the alignment either.
-> > >
-> > > Create a new workaround for xdp_frame structures to verify the erratum
-> > > conditions and move the data to a fresh buffer if necessary. Create a new
-> > > xdp_frame for managing the new buffer and free the old one using the
-> > XDP
-> > > API.
-> > >
-> > > Due to alignment constraints, all frames have a 256 byte headroom that
-> > > is offered fully to XDP under the erratum. If the XDP program uses all
-> > > of it, the data needs to be move to make room for the xdpf backpointer.
-> > 
-> > Out of curiosity, wouldn't it be easier to decrease the headroom that is
-> > given to xdp rather doing to full copy of a buffer in case you miss a few
-> > bytes on headroom?
+On Fri, Nov 27, 2020 at 01:36:21PM +0100, Oleksij Rempel wrote:
+> After migration to the shared interrupt support, the KSZ8031 PHY with
+> enabled interrupt support was not able to notify about link status
+> change.
 > 
-> First of all, I'm not sure if offering less than XDP_PACKET_HEADROOM to XDP programs is allowed. Second, we require the data to be strictly aligned under this erratum. This first condition would be broken even if we reduce the size of the offered headroom.
-> 
-> > >
-> > > Disable the metadata support since the information can be lost.
-> > >
-> > > Acked-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
-> > > Signed-off-by: Camelia Groza <camelia.groza@nxp.com>
-> > > ---
-> > >  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 82
-> > +++++++++++++++++++++++++-
-> > >  1 file changed, 79 insertions(+), 3 deletions(-)
-> > >
-> > > diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> > b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> > > index 149b549..d8fc19d 100644
-> > > --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> > > +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> > > @@ -2170,6 +2170,52 @@ static int dpaa_a050385_wa_skb(struct
-> > net_device *net_dev, struct sk_buff **s)
-> > >
-> > >  	return 0;
-> > >  }
-> > > +
-> > > +static int dpaa_a050385_wa_xdpf(struct dpaa_priv *priv,
-> > > +				struct xdp_frame **init_xdpf)
-> > > +{
-> > > +	struct xdp_frame *new_xdpf, *xdpf = *init_xdpf;
-> > > +	void *new_buff;
-> > > +	struct page *p;
-> > > +
-> > > +	/* Check the data alignment and make sure the headroom is large
-> > > +	 * enough to store the xdpf backpointer. Use an aligned headroom
-> > > +	 * value.
-> > > +	 *
-> > > +	 * Due to alignment constraints, we give XDP access to the full 256
-> > > +	 * byte frame headroom. If the XDP program uses all of it, copy the
-> > > +	 * data to a new buffer and make room for storing the backpointer.
-> > > +	 */
-> > > +	if (PTR_IS_ALIGNED(xdpf->data, DPAA_A050385_ALIGN) &&
-> > > +	    xdpf->headroom >= priv->tx_headroom) {
-> > > +		xdpf->headroom = priv->tx_headroom;
-> > > +		return 0;
-> > > +	}
-> > > +
-> > > +	p = dev_alloc_pages(0);
-> > > +	if (unlikely(!p))
-> > > +		return -ENOMEM;
-> > > +
-> > > +	/* Copy the data to the new buffer at a properly aligned offset */
-> > > +	new_buff = page_address(p);
-> > > +	memcpy(new_buff + priv->tx_headroom, xdpf->data, xdpf->len);
-> > > +
-> > > +	/* Create an XDP frame around the new buffer in a similar fashion
-> > > +	 * to xdp_convert_buff_to_frame.
-> > > +	 */
-> > > +	new_xdpf = new_buff;
-> > > +	new_xdpf->data = new_buff + priv->tx_headroom;
-> > > +	new_xdpf->len = xdpf->len;
-> > > +	new_xdpf->headroom = priv->tx_headroom;
-> > 
-> > What if ptr was not aligned so you got here but tx_headroom was less than
-> > xdpf->headroom? Shouldn't you choose the bigger one? Aren't you shrinking
-> > the headroom for this case.
-> 
-> Yes, I am shrinking the headroom. At this point, the headroom's content isn't relevant anymore (this path is executed when transmitting the frame after TX or REDIRECT). What is important is the data's alignment, and it is dictated by the headroom's (fd's offset) size.
+> Fixes: 59ca4e58b917 ("net: phy: micrel: implement generic .handle_interrupt() callback")
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-So would it be possible to do a memmove within the existing buffer under
-some circumstances and then have this current logic as a worst case
-scenario? Majority of XDP progs won't consume all of the XDP headroom so I
-think it's something worth pursuing.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Please also tell us the performance impact of that workaround. Grabbing
-new page followed by memcpy is expensive.
+I took a quick look at all the other patches like this. I did not spot
+any other missing the !
 
-> 
-> > > +	new_xdpf->frame_sz = DPAA_BP_RAW_SIZE;
-> > > +	new_xdpf->mem.type = MEM_TYPE_PAGE_ORDER0;
-> > > +
-> > > +	/* Release the initial buffer */
-> > > +	xdp_return_frame_rx_napi(xdpf);
-> > > +
-> > > +	*init_xdpf = new_xdpf;
-> > > +	return 0;
-> > > +}
-> > >  #endif
-> > >
-> > >  static netdev_tx_t
-> > > @@ -2406,6 +2452,15 @@ static int dpaa_xdp_xmit_frame(struct
-> > net_device *net_dev,
-> > >  	percpu_priv = this_cpu_ptr(priv->percpu_priv);
-> > >  	percpu_stats = &percpu_priv->stats;
-> > >
-> > > +#ifdef CONFIG_DPAA_ERRATUM_A050385
-> > > +	if (unlikely(fman_has_errata_a050385())) {
-> > > +		if (dpaa_a050385_wa_xdpf(priv, &xdpf)) {
-> > > +			err = -ENOMEM;
-> > > +			goto out_error;
-> > > +		}
-> > > +	}
-> > > +#endif
-> > > +
-> > >  	if (xdpf->headroom < DPAA_TX_PRIV_DATA_SIZE) {
-> > >  		err = -EINVAL;
-> > >  		goto out_error;
-> > > @@ -2479,6 +2534,20 @@ static u32 dpaa_run_xdp(struct dpaa_priv *priv,
-> > struct qm_fd *fd, void *vaddr,
-> > >  	xdp.frame_sz = DPAA_BP_RAW_SIZE - DPAA_TX_PRIV_DATA_SIZE;
-> > >  	xdp.rxq = &dpaa_fq->xdp_rxq;
-> > >
-> > > +	/* We reserve a fixed headroom of 256 bytes under the erratum and
-> > we
-> > > +	 * offer it all to XDP programs to use. If no room is left for the
-> > > +	 * xdpf backpointer on TX, we will need to copy the data.
-> > > +	 * Disable metadata support since data realignments might be
-> > required
-> > > +	 * and the information can be lost.
-> > > +	 */
-> > > +#ifdef CONFIG_DPAA_ERRATUM_A050385
-> > > +	if (unlikely(fman_has_errata_a050385())) {
-> > > +		xdp_set_data_meta_invalid(&xdp);
-> > > +		xdp.data_hard_start = vaddr;
-> > > +		xdp.frame_sz = DPAA_BP_RAW_SIZE;
-> > > +	}
-> > > +#endif
-> > > +
-> > >  	xdp_act = bpf_prog_run_xdp(xdp_prog, &xdp);
-> > >
-> > >  	/* Update the length and the offset of the FD */
-> > > @@ -2486,7 +2555,8 @@ static u32 dpaa_run_xdp(struct dpaa_priv *priv,
-> > struct qm_fd *fd, void *vaddr,
-> > >
-> > >  	switch (xdp_act) {
-> > >  	case XDP_PASS:
-> > > -		*xdp_meta_len = xdp.data - xdp.data_meta;
-> > > +		*xdp_meta_len = xdp_data_meta_unsupported(&xdp) ? 0 :
-> > > +				xdp.data - xdp.data_meta;
-> > 
-> > You could consider surrounding this with ifdef and keep the old version in
-> > the else branch so that old case is not hurt with that additional branch
-> > that you're introducing with that ternary operator.
-> 
-> Sure, I'll do that. Thanks.
-> 
-> > >  		break;
-> > >  	case XDP_TX:
-> > >  		/* We can access the full headroom when sending the frame
-> > > @@ -3188,10 +3258,16 @@ static u16 dpaa_get_headroom(struct
-> > dpaa_buffer_layout *bl,
-> > >  	 */
-> > >  	headroom = (u16)(bl[port].priv_data_size + DPAA_HWA_SIZE);
-> > >
-> > > -	if (port == RX)
-> > > +	if (port == RX) {
-> > > +#ifdef CONFIG_DPAA_ERRATUM_A050385
-> > > +		if (unlikely(fman_has_errata_a050385()))
-> > > +			headroom = XDP_PACKET_HEADROOM;
-> > > +#endif
-> > > +
-> > >  		return ALIGN(headroom,
-> > DPAA_FD_RX_DATA_ALIGNMENT);
-> > > -	else
-> > > +	} else {
-> > >  		return ALIGN(headroom, DPAA_FD_DATA_ALIGNMENT);
-> > > +	}
-> > >  }
-> > >
-> > >  static int dpaa_eth_probe(struct platform_device *pdev)
-> > > --
-> > > 1.9.1
-> > >
+    Andrew
