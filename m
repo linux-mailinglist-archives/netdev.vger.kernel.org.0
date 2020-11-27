@@ -2,99 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 747FD2C6B08
-	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 18:56:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9A062C6B0D
+	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 18:56:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732515AbgK0Rxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Nov 2020 12:53:46 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:23538 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732451AbgK0Rxq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 12:53:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606499624;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=qO38NSfxZWa4WAPrmeDJabPo497l111qJuCqqB4b5gM=;
-        b=FEMA5U+IHBrEWxieVLOkceABAS48PFNjMxXdvgBOnXvT9lRlhy3cDIlkFt9PAx09goZXjs
-        cOiLrTLJ28j9cAp61HaZgrf6CiobEFGcJTxqGjo6kjwI1vhi0Ey7ayKb8E8FXt7XVI0laB
-        Ga2LRg7YsXLVee8wKx77qeo6jb1eo2E=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-354-hY13fGojMvuu749gblIRfA-1; Fri, 27 Nov 2020 12:53:42 -0500
-X-MC-Unique: hY13fGojMvuu749gblIRfA-1
-Received: by mail-qt1-f197.google.com with SMTP id t22so3660058qtq.2
-        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 09:53:42 -0800 (PST)
+        id S1732820AbgK0Rya (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Nov 2020 12:54:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37186 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732804AbgK0Ry3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 12:54:29 -0500
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53502C0613D1;
+        Fri, 27 Nov 2020 09:54:29 -0800 (PST)
+Received: by mail-yb1-xb42.google.com with SMTP id x17so5211164ybr.8;
+        Fri, 27 Nov 2020 09:54:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=R2n5HJcIf1w46ZD7sB3rPDuDX4FS8DO4ZIZINc4xU6w=;
+        b=OiykdGxOzBE+EO44P+A5UjorUv8SkBOVtx1hSWToMdVhMS0EuHavtETJrMiQWh9n7b
+         PKX0vDTbZ8Y4/V96O83mKPL8X6+PSurzFeJ6YSqjwPlmXe3uvkKDkoXURuRNcBs014DT
+         UE5GhHA1I1n6Y0Mjc7IeEkYIfV/cSEboPkEbDthzfvAUfJ0tjtm2uMIfu3NMAU93khMo
+         c31auu3FkiZk5Ieuf+LZVr14jgB4JtMBFAls70b/4qSiUf7K9ot317rDmGNijNep4Hgg
+         8lgtYzL344rWo8FZdYfm+D0oFcIrx6QqB/kWNx4OldaS/hrSS03PVH6MF6lRM1XgKBe2
+         GGUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=qO38NSfxZWa4WAPrmeDJabPo497l111qJuCqqB4b5gM=;
-        b=DtvVGkyMQJ6CbTcmSyLa/JuPZpoqwuArGkaOwCo9uBZICqZ9dQnw1tW1mk9zk3BIqo
-         LO2JYnY3jOF4Y7RrizxZuC0tD7OoaV02rHz/LbETIan2dJPDsNGqodRGVQrqjYHqN9EI
-         qziumCRrji/cCpGl7KhjhW5aN+QVIFsbwZ23roFDXAOKDClnK9VFryM4hbWE2OY/FSo2
-         gy2yvSmAyRIbPkjVTsoxgbTkSTaBNIO70YYZMjfQ3BF5jpzepYuv353HdpXR1RxqHoNq
-         6qE/Src71Uv2M+RA+NK3JpB1x9tpARWONXAdLhCiwE0P/Dxq+YGAAOmeOIUNl0rzbT00
-         n90g==
-X-Gm-Message-State: AOAM5336+avBO9BcREZdehuX0M7A6ajOkUy+i+7hjkM2HqqTb8U2Nz//
-        S7EHz6BEDtWf+V70R2OAEzpeysKrkmy4yXiRTDJV1qM3l6aNr+PwVHj1Re54g9R+lVug53xt7P/
-        ZzQCKyyg4gL2jhtJs
-X-Received: by 2002:a05:6214:5cd:: with SMTP id t13mr9508303qvz.56.1606499622094;
-        Fri, 27 Nov 2020 09:53:42 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwfH2VXvTvUj9haJRf6OI04GWQ+Bz6Iu0NjOaH9CUGPlGii6j/onExY9XycfKuzXq4xhmDsZA==
-X-Received: by 2002:a05:6214:5cd:: with SMTP id t13mr9508283qvz.56.1606499621938;
-        Fri, 27 Nov 2020 09:53:41 -0800 (PST)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id t126sm6425935qkh.133.2020.11.27.09.53.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Nov 2020 09:53:41 -0800 (PST)
-From:   trix@redhat.com
-To:     ath9k-devel@qca.qualcomm.com, kvalo@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] net: ath9k: remove trailing semicolon in macro definition
-Date:   Fri, 27 Nov 2020 09:53:36 -0800
-Message-Id: <20201127175336.2752730-1-trix@redhat.com>
-X-Mailer: git-send-email 2.18.4
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=R2n5HJcIf1w46ZD7sB3rPDuDX4FS8DO4ZIZINc4xU6w=;
+        b=Xhq+mzK7A6aEDeTH+XjahshFDq8NNk1t2lkppEGR6wGIm9HGGKNb2xBYblPjI0UrBy
+         DHd5r8r5nRs3Tx+wz/xAgnNXpWnEJd+aj361dgqtcFuQBi85jvTBoCluD5rCLdusdPC8
+         ShMOcxKoa3o7Wz5cUiJmcrW0ow6hgz45jE1o2cYIlv3nvczB3ueteQqE27W9REe66X71
+         jNue9Ng30QZotAGrXNf3vjd+/Gagv590roSsCFVlhew0SWXX7C5mzpb70bJTPXHji8qw
+         NKbULIWrHsbbZflgPrfPQIIcvbV5uEEwZoyyBQrLTFrWt3Y0xvBMAAaBqRaustcxpLQZ
+         z/yQ==
+X-Gm-Message-State: AOAM5319twE31ts9ldFN2/LCQyYsY/FR8PR8qPGAcD0wu5jjF+/c5UJq
+        DbJgalhKiFoiLMzNVTHrodbEvCGXkln8X6ZnvSk=
+X-Google-Smtp-Source: ABdhPJzR8o5uH/+EkUS6AGUpGVMVrM8tT5Dr3pIMPH4RFS7LU6IzqlyRYJnfwLtoWw8EsOEyyTowbsTMJwHyKYv/XLg=
+X-Received: by 2002:a25:a4a1:: with SMTP id g30mr13618769ybi.195.1606499668367;
+ Fri, 27 Nov 2020 09:54:28 -0800 (PST)
+MIME-Version: 1.0
+References: <20201125183749.13797-1-weqaar.a.janjua@intel.com>
+ <20201125183749.13797-2-weqaar.a.janjua@intel.com> <d8eedbad-7a8e-fd80-5fec-fc53b86e6038@fb.com>
+ <1bcfb208-dfbd-7b49-e505-8ec17697239d@intel.com> <CAPLEeBYnYcWALN_JMBtZWt3uDnpYNtCA_HVLN6Gi7VbVk022xw@mail.gmail.com>
+ <9c73643f-0fdc-d867-6fe0-b3b8031a6cf2@fb.com>
+In-Reply-To: <9c73643f-0fdc-d867-6fe0-b3b8031a6cf2@fb.com>
+From:   Weqaar Janjua <weqaar.janjua@gmail.com>
+Date:   Fri, 27 Nov 2020 17:54:02 +0000
+Message-ID: <CAPLEeBZh+BEJp_k0bDQ8nmprMPqQ29JSEXCxscm5wAZQH81bAQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 1/5] selftests/bpf: xsk selftests framework
+To:     Yonghong Song <yhs@fb.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Weqaar Janjua <weqaar.a.janjua@intel.com>, shuah@kernel.org,
+        skhan@linuxfoundation.org, linux-kselftest@vger.kernel.org,
+        Anders Roxell <anders.roxell@linaro.org>,
+        jonathan.lemon@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+On Fri, 27 Nov 2020 at 04:19, Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 11/26/20 1:22 PM, Weqaar Janjua wrote:
+> > On Thu, 26 Nov 2020 at 09:01, Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.=
+com> wrote:
+> >>
+> >> On 2020-11-26 07:44, Yonghong Song wrote:
+> >>>
+> >> [...]
+> >>>
+> >>> What other configures I am missing?
+> >>>
+> >>> BTW, I cherry-picked the following pick from bpf tree in this experim=
+ent.
+> >>>     commit e7f4a5919bf66e530e08ff352d9b78ed89574e6b (HEAD -> xsk)
+> >>>     Author: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> >>>     Date:   Mon Nov 23 18:56:00 2020 +0100
+> >>>
+> >>>         net, xsk: Avoid taking multiple skbuff references
+> >>>
+> >>
+> >> Hmm, I'm getting an oops, unless I cherry-pick:
+> >>
+> >> 36ccdf85829a ("net, xsk: Avoid taking multiple skbuff references")
+> >>
+> >> *AND*
+> >>
+> >> 537cf4e3cc2f ("xsk: Fix umem cleanup bug at socket destruct")
+> >>
+> >> from bpf/master.
+> >>
+> >
+> > Same as Bjorn's findings ^^^, additionally applying the second patch
+> > 537cf4e3cc2f [PASS] all tests for me
+> >
+> > PREREQUISITES: [ PASS ]
+> > SKB NOPOLL: [ PASS ]
+> > SKB POLL: [ PASS ]
+> > DRV NOPOLL: [ PASS ]
+> > DRV POLL: [ PASS ]
+> > SKB SOCKET TEARDOWN: [ PASS ]
+> > DRV SOCKET TEARDOWN: [ PASS ]
+> > SKB BIDIRECTIONAL SOCKETS: [ PASS ]
+> > DRV BIDIRECTIONAL SOCKETS: [ PASS ]
+> >
+> > With the first patch alone, as soon as we enter DRV/Native NOPOLL mode
+> > kernel panics, whereas in your case NOPOLL tests were falling with
+> > packets being *lost* as per seqnum mismatch.
+> >
+> > Can you please test this out with both patches and let us know?
+>
+> I applied both the above patches in bpf-next as well as this patch set,
+> I still see failures. I am attaching my config file. Maybe you can take
+> a look at what is the issue.
+>
+Thanks for the config, can you please confirm the compiler version,
+and resource limits i.e. stack size, memory, etc.?
 
-The macro use will already have a semicolon.
+Only NOPOLL tests are failing for you as I see it, do the same tests
+fail every time?
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/net/wireless/ath/ath9k/common-debug.c | 2 +-
- drivers/net/wireless/ath/ath9k/dfs_debug.c    | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+I will need to spend some time debugging this to have a fix.
 
-diff --git a/drivers/net/wireless/ath/ath9k/common-debug.c b/drivers/net/wireless/ath/ath9k/common-debug.c
-index 53ca4b063eb9..7aefb79f6bed 100644
---- a/drivers/net/wireless/ath/ath9k/common-debug.c
-+++ b/drivers/net/wireless/ath/ath9k/common-debug.c
-@@ -189,7 +189,7 @@ static ssize_t read_file_phy_err(struct file *file, char __user *user_buf,
- {
- #define PHY_ERR(s, p) \
- 	len += scnprintf(buf + len, size - len, "%22s : %10u\n", s, \
--			 rxstats->phy_err_stats[p]);
-+			 rxstats->phy_err_stats[p])
- 
- 	struct ath_rx_stats *rxstats = file->private_data;
- 	char *buf;
-diff --git a/drivers/net/wireless/ath/ath9k/dfs_debug.c b/drivers/net/wireless/ath/ath9k/dfs_debug.c
-index 3251c9abe270..2a79c2fa8415 100644
---- a/drivers/net/wireless/ath/ath9k/dfs_debug.c
-+++ b/drivers/net/wireless/ath/ath9k/dfs_debug.c
-@@ -26,7 +26,7 @@ static struct ath_dfs_pool_stats dfs_pool_stats = { 0 };
- 
- #define ATH9K_DFS_STAT(s, p) \
- 	len += scnprintf(buf + len, size - len, "%28s : %10u\n", s, \
--			 sc->debug.stats.dfs_stats.p);
-+			 sc->debug.stats.dfs_stats.p)
- #define ATH9K_DFS_POOL_STAT(s, p) \
- 	len += scnprintf(buf + len, size - len, "%28s : %10u\n", s, \
- 			 dfs_pool_stats.p);
--- 
-2.18.4
+Thanks,
+/Weqaar
 
+> >
+> >> Can I just run test_xsk.sh at tools/testing/selftests/bpf/ directory?
+> >> This will be easier than the above for bpf developers. If it does not
+> >> work, I would like to recommend to make it work.
+> >>
+> > yes test_xsk.shis self contained, will update the instructions in there=
+ with v4.
+>
+> That will be great. Thanks!
+>
+> >
+> > Thanks,
+> > /Weqaar
+> >>
+> >> Bj=C3=B6rn
