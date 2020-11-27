@@ -2,100 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95F8D2C6111
-	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 09:42:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E186F2C6122
+	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 09:48:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729287AbgK0IkS convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 27 Nov 2020 03:40:18 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:46372 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728285AbgK0IkQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 03:40:16 -0500
-Received: by mail-ot1-f67.google.com with SMTP id z23so365706oti.13;
-        Fri, 27 Nov 2020 00:40:15 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=/D+lVsFpiig9p8Mfv+F/WnI4wKF69UpUHln9lDG06g4=;
-        b=OvGI2LLkQRzeWnjXwcv4a9BF3RX71atfnHf/Y5PY6fvbrzqqEX7jcrwCldbQv9GLpy
-         D8zvGJGvQkfVFIk5XZZL9N94Cp6BH74eATxdOFbkuFKEWK5MO2m1bbD8Bx/fA1oKbu0s
-         YxNyj4Nc0HH/UMiLlq+7Zb0jlNPKltRbw5EVUXX+KWwtvy7bX2HfLLUegeqtGhAy5BMB
-         uhMFch4Mt8DBUbE8QdRRnOqFJurxqXlEFvwNCleXo6mv+FoAv0R7tEppFQTRBrBAuu7Z
-         GrkK3JfGSBgSfVkYuWbCEag4jO9Lo3QQLVN9o4D/mEfP22YxAussd4m460Shl8n1PwqJ
-         qwYA==
-X-Gm-Message-State: AOAM530sxVPmbTv/r6BVfnK9waIhzZDBNLhgE8HwNbMHY41PfivqOp4e
-        m3r+YB4S/MLDqydQ9bbxBwEI8Qe59Y0sqHqM0Y4=
-X-Google-Smtp-Source: ABdhPJy2I/IdfAm6V2ydZbwLB9NPNLYo9PucEpxX/NL/qzuCx8bfpYwJU7BhpITpgvBGwlFRBVNr8EmnqamS0CIYUsg=
-X-Received: by 2002:a9d:686:: with SMTP id 6mr4709371otx.107.1606466415531;
- Fri, 27 Nov 2020 00:40:15 -0800 (PST)
+        id S1729426AbgK0Irq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Nov 2020 03:47:46 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:7741 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728682AbgK0Iro (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 03:47:44 -0500
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Cj7Xw3CnFzkh8s;
+        Fri, 27 Nov 2020 16:47:12 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.56) by
+ DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
+ 14.3.487.0; Fri, 27 Nov 2020 16:47:32 +0800
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linuxarm@huawei.com>, <kuba@kernel.org>,
+        Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH net-next 0/7] net: hns3: updates for -next
+Date:   Fri, 27 Nov 2020 16:47:15 +0800
+Message-ID: <1606466842-57749-1-git-send-email-tanhuazhong@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-References: <20201126165950.2554997-1-u.kleine-koenig@pengutronix.de> <20201126165950.2554997-2-u.kleine-koenig@pengutronix.de>
-In-Reply-To: <20201126165950.2554997-2-u.kleine-koenig@pengutronix.de>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 27 Nov 2020 09:40:04 +0100
-Message-ID: <CAMuHMdW4J0xA6T4AWqZdo1go1kxWqVSSo5JXQpUAM4yWEpDdOw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] powerpc/ps3: make system bus's remove and shutdown
- callbacks return void
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Geoff Levand <geoff@infradead.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Jens Axboe <axboe@kernel.dk>, Jim Paris <jim@jtan.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        linux-block@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        scsi <linux-scsi@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.56]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Uwe,
+This series includes some updates for the HNS3 ethernet driver.
 
-On Thu, Nov 26, 2020 at 6:03 PM Uwe Kleine-König
-<u.kleine-koenig@pengutronix.de> wrote:
-> The driver core ignores the return value of struct device_driver::remove
-> because there is only little that can be done. For the shutdown callback
-> it's ps3_system_bus_shutdown() which ignores the return value.
->
-> To simplify the quest to make struct device_driver::remove return void,
-> let struct ps3_system_bus_driver::remove return void, too. All users
-> already unconditionally return 0, this commit makes it obvious that
-> returning an error code is a bad idea and ensures future users behave
-> accordingly.
->
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+#1~#6: add some updates related to the checksum offload.
+#7: add support for multiple TCs' MAC pauce mode.
 
-Thanks for your patch!
+Huazhong Tan (6):
+  net: hns3: add support for RX completion checksum
+  net: hns3: add support for TX hardware checksum offload
+  net: hns3: remove unsupported NETIF_F_GSO_UDP_TUNNEL_CSUM
+  net: hns3: add udp tunnel checksum segmentation support
+  net: hns3: add more info to hns3_dbg_bd_info()
+  net: hns3: add a check for devcie's verion in hns3_tunnel_csum_bug()
 
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Yonglong Liu (1):
+  net: hns3: keep MAC pause mode when multiple TCs are enabled
 
-Note that the same can be done for ps3_vuart_port_driver.remove().
-
-Gr{oetje,eeting}s,
-
-                        Geert
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h        |   7 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c |  62 ++++++++--
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 131 ++++++++++++++++-----
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  21 +++-
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |   1 +
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c |   4 +
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |   3 +-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c  |  23 +++-
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c   |   4 +
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h   |   3 +-
+ 10 files changed, 207 insertions(+), 52 deletions(-)
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.7.4
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
