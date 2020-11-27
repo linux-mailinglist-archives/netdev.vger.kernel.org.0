@@ -2,72 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7B392C65CB
-	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 13:37:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D65862C6688
+	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 14:17:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729273AbgK0Mgc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Nov 2020 07:36:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44000 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728661AbgK0Mgc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 07:36:32 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE5D5C0613D1
-        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 04:36:31 -0800 (PST)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1kiczD-0000GK-IO; Fri, 27 Nov 2020 13:36:27 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1kiczA-00088f-Hn; Fri, 27 Nov 2020 13:36:24 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH v1] net: phy: micrel: fix interrupt handling
-Date:   Fri, 27 Nov 2020 13:36:21 +0100
-Message-Id: <20201127123621.31234-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.29.2
+        id S1730017AbgK0NQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Nov 2020 08:16:15 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.53]:30401 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729662AbgK0NQO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 08:16:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1606482973;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=Lr2h3k+8qZHmYvBo/cV6UBI8owJlWcA6q6SBttNBrGc=;
+        b=V0TUbQvhWaLbWzUfsEH1FAeS0APcD1PM4Dxk3OmBRZYQQ+OSeux1lSpv3Er/gwt12R
+        lNNhHzy6DE1M6m4uiy+lePqu67+jNDgvyK/q5Ax/Pyr7hz2K2j0hShPcxir0vT0J/C1O
+        dwBDrfN66rHwNtXmitrTLAfGn6KMnEqbXzRiEIbjeKdZfxcoCAfxNna81TjQ4JI7J7Qk
+        dhryHJpKLLQv4LbCKFPluAgNzdF3bUnM8fpntI3d38lOe2h0530WrXHDUuCHd8ZuNHsx
+        CTLlTM1no+8nuh4OygFfduT4mbZS+lEweupGyvf9nPXSCkWFXQOgmHjrgTIzqbfP7hDc
+        PoPQ==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMGX8h6lU5f"
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.50.177]
+        by smtp.strato.de (RZmta 47.3.4 DYNA|AUTH)
+        with ESMTPSA id n07f3bwARDG6xLr
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Fri, 27 Nov 2020 14:16:06 +0100 (CET)
+Subject: Re: [PATCH] can: remove WARN() statement from list operation sanity
+ check
+To:     Marc Kleine-Budde <mkl@pengutronix.de>, dvyukov@google.com,
+        netdev@vger.kernel.org, linux-can@vger.kernel.org
+Cc:     syzkaller-bugs@googlegroups.com,
+        syzbot+381d06e0c8eaacb8706f@syzkaller.appspotmail.com,
+        syzbot+d0ddd88c9a7432f041e6@syzkaller.appspotmail.com,
+        syzbot+76d62d3b8162883c7d11@syzkaller.appspotmail.com
+References: <20201126192140.14350-1-socketcan@hartkopp.net>
+ <73bec80c-fb97-0808-8ca5-6579d9ff5251@pengutronix.de>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <6ff82b35-4dd3-43e0-f1b2-5fe30c06d04a@hartkopp.net>
+Date:   Fri, 27 Nov 2020 14:16:01 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <73bec80c-fb97-0808-8ca5-6579d9ff5251@pengutronix.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After migration to the shared interrupt support, the KSZ8031 PHY with
-enabled interrupt support was not able to notify about link status
-change.
+On 27.11.20 10:48, Marc Kleine-Budde wrote:
 
-Fixes: 59ca4e58b917 ("net: phy: micrel: implement generic .handle_interrupt() callback")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/phy/micrel.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+>>   	/* Check for bugs in CAN protocol implementations using af_can.c:
+>>   	 * 'rcv' will be NULL if no matching list item was found for removal.
+>> +	 * As this case may potentially happen when closing a socket while
+>> +	 * the notifier for removing the CAN netdev is running we just print
+>> +	 * a warning here. Reported by syskaller (see commit message)
+> I've removed the "Reported by syskaller (see commit message)" while applying the
+> patch, to keep this comment short and to the point. Use tig/git blame (or any
+> other future tool) to figure out the commit message for details :D
+> 
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 97f08f20630b..54e0d75203da 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -207,7 +207,7 @@ static irqreturn_t kszphy_handle_interrupt(struct phy_device *phydev)
- 		return IRQ_NONE;
- 	}
- 
--	if ((irq_status & KSZPHY_INTCS_STATUS))
-+	if (!(irq_status & KSZPHY_INTCS_STATUS))
- 		return IRQ_NONE;
- 
- 	phy_trigger_machine(phydev);
--- 
-2.29.2
+Is fine for me ;-)
 
+Thanks Marc!
