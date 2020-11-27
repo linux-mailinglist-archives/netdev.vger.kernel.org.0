@@ -2,135 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC7922C5F0E
-	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 04:41:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E284A2C5F18
+	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 04:54:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392277AbgK0Dkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Nov 2020 22:40:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46496 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727037AbgK0Dkh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 22:40:37 -0500
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 856ACC0613D1;
-        Thu, 26 Nov 2020 19:40:37 -0800 (PST)
-Received: by mail-yb1-xb42.google.com with SMTP id s8so3298830yba.13;
-        Thu, 26 Nov 2020 19:40:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kD1Le3QJWXJqjnlpHF5DqUqQjm8CPmlbUAqsXxlecIM=;
-        b=fbDYnxgsTRbYk0E+2obbFZnlctUNUiShnxWc5rz/2XL8kO16qlKOv5Tj8kZ1LAfa7w
-         F4DRvKyE6Miclh9ELGJCqzahrndQPas5iQV3azcbP/NBWiv8ft9i0fGCNMWJHh3I55C1
-         6brJE/KKLFPk0TDLIFSg+sZco7y4X8/tTsTyYdwkPzXXhIz6iUNrRAuSVrbP8NpgtV60
-         DN3h0N35BIwZ4E6Z+6OMmnhp6oHyEHdKgI1khlP+4vKTDJQwGPIEXS5nVq93FGXEMyf8
-         lu5GtY7bdkzUMX6OVJswcwqZi5jTr50CIdYnPEkGJfennbct11xjuaSlN3a9SvaRylQc
-         EVOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kD1Le3QJWXJqjnlpHF5DqUqQjm8CPmlbUAqsXxlecIM=;
-        b=Eab1q7Vi3WORTcgvIF/D3Q9il4F5lxpQupNZ7Ub2hPFUlnhBnoRvQYIw/v3Oq0Qrlc
-         kUWdP9t6U4xZZGdyI7I6aC0jAgXOR/9A1ltaI99Enh6KwihmKSWPdZuDn9Su+BLOVt/Z
-         +C2evPixJZbBtNPzzhBKDw1RQ4Gl15cRv9XWlv2PV38Iq/OAnUAenAG2ggGoDv7iObBs
-         Pt8tPQtISQBMB8U1Pm/LZwzw/2FLEWSqHJzOj8PraS0mKJ6dOrVQjcKREnX/L6BC5+Wv
-         nNQA29R7i0cIhNiZR+GUN4pFRNm1AgQLHTN6QbiQfxWa4Ld+o7/r/PcJhpvrwQtN54rx
-         7q2w==
-X-Gm-Message-State: AOAM530flRTacG8XB95GNHuOZlNG0DQdYitfMpaXtjM4UYOoBkgBm44V
-        V2a3HN4EavxFdmTvI5UrPkGFekHU83VWgbJrRKA=
-X-Google-Smtp-Source: ABdhPJwjbVaqxohDbkXAKrhcutlfZXzG38k6+pPHJJkky3EINVWRkk+4LP4Qa5xfgvnKSqx7nSN+397qgQIeluyMRB0=
-X-Received: by 2002:a25:2845:: with SMTP id o66mr9369163ybo.260.1606448436834;
- Thu, 26 Nov 2020 19:40:36 -0800 (PST)
+        id S2388967AbgK0DxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 22:53:24 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51622 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726908AbgK0DxX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Nov 2020 22:53:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606449201;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SzWUasFbh+ss1wzTbk2nMb/2xT+F5CZGRE9hJTNxirg=;
+        b=RhitAHqFmXm6bbOEZqeoHmEX0QCigpS92aTaP+Ga7U+fUh3cKFQEEGZTS+KjrdYJzILs+A
+        rTmdL3L19ULDEBt7vjGyCDfYpLh6mG2JUSwlkdumZ71L56iPc4jUAdV7QYHhoHlU1KnB8V
+        i+dxCXb9Bf+bRDEw6mgI4BK7Z+riMck=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-95-5cU5D7mFP9apiwLKa8gFXA-1; Thu, 26 Nov 2020 22:53:17 -0500
+X-MC-Unique: 5cU5D7mFP9apiwLKa8gFXA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 166F01005D50;
+        Fri, 27 Nov 2020 03:53:16 +0000 (UTC)
+Received: from [10.72.13.168] (ovpn-13-168.pek2.redhat.com [10.72.13.168])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8D11D60BF1;
+        Fri, 27 Nov 2020 03:53:10 +0000 (UTC)
+Subject: Re: [PATCH 0/7] Introduce vdpa management tool
+To:     Parav Pandit <parav@nvidia.com>,
+        virtualization@lists.linux-foundation.org
+Cc:     mst@redhat.com, elic@nvidia.com, netdev@vger.kernel.org,
+        =?UTF-8?B?6LCi5rC45ZCJ?= <xieyongji@bytedance.com>
+References: <20201112064005.349268-1-parav@nvidia.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <5b2235f6-513b-dbc9-3670-e4c9589b4d1f@redhat.com>
+Date:   Fri, 27 Nov 2020 11:53:09 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20201124090310.24374-1-danieltimlee@gmail.com> <20201124090310.24374-2-danieltimlee@gmail.com>
-In-Reply-To: <20201124090310.24374-2-danieltimlee@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 26 Nov 2020 19:40:25 -0800
-Message-ID: <CAEf4Bzby0AwzKfKwd5ZKXaEg1a1hpEfoPsqVLwPQVr89nAAxEA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 1/7] samples: bpf: refactor hbm program with libbpf
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, brakmo <brakmo@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        David Ahern <dsa@cumulusnetworks.com>,
-        Yonghong Song <yhs@fb.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Ira Weiny <ira.weiny@intel.com>, Thomas Graf <tgraf@suug.ch>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Xdp <xdp-newbies@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201112064005.349268-1-parav@nvidia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 24, 2020 at 1:03 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
->
-> This commit refactors the existing cgroup programs with libbpf
-> bpf loader. Since bpf_program__attach doesn't support cgroup program
-> attachment, this explicitly attaches cgroup bpf program with
-> bpf_program__attach_cgroup(bpf_prog, cg1).
->
-> Also, to change attach_type of bpf program, this uses libbpf's
-> bpf_program__set_expected_attach_type helper to switch EGRESS to
-> INGRESS. To keep bpf program attached to the cgroup hierarchy even
-> after the exit, this commit uses the BPF_LINK_PINNING to pin the link
-> attachment even after it is closed.
->
-> Besides, this program was broken due to the typo of BPF MAP definition.
-> But this commit solves the problem by fixing this from 'queue_stats' map
-> struct hvm_queue_stats -> hbm_queue_stats.
->
-> Fixes: 36b5d471135c ("selftests/bpf: samples/bpf: Split off legacy stuff from bpf_helpers.h")
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> ---
-> Changes in v2:
->  - restore read_trace_pipe2
->  - remove unnecessary return code and cgroup fd compare
->  - add static at global variable and remove unused variable
->  - change cgroup path with unified controller (/unified/)
->  - add link pinning to prevent cleaning up on process exit
->
-> Changes in v3:
->  - cleanup bpf_link, bpf_object and cgroup fd both on success and error
->  - remove link NULL cleanup since __destroy() can handle
->  - fix cgroup test on cgroup fd cleanup
->
->  samples/bpf/.gitignore     |   3 +
->  samples/bpf/Makefile       |   2 +-
->  samples/bpf/do_hbm_test.sh |  32 +++++------
->  samples/bpf/hbm.c          | 111 ++++++++++++++++++++-----------------
->  samples/bpf/hbm_kern.h     |   2 +-
->  5 files changed, 78 insertions(+), 72 deletions(-)
->
 
-Thanks for the nice clean up! I've applied the series to bpf-next. If
-Martin finds any other problems, those can be fixed in a follow up
-patch(es). But see also below about find_program_by_title().
+On 2020/11/12 下午2:39, Parav Pandit wrote:
+> This patchset covers user requirements for managing existing vdpa devices,
+> using a tool and its internal design notes for kernel drivers.
+>
+> Background and user requirements:
+> ----------------------------------
+> (1) Currently VDPA device is created by driver when driver is loaded.
+> However, user should have a choice when to create or not create a vdpa device
+> for the underlying parent device.
+>
+> For example, mlx5 PCI VF and subfunction device supports multiple classes of
+> device such netdev, vdpa, rdma. Howevever it is not required to always created
+> vdpa device for such device.
+>
+> (2) In another use case, a device may support creating one or multiple vdpa
+> device of same or different class such as net and block.
+> Creating vdpa devices at driver load time further limits this use case.
+>
+> (3) A user should be able to monitor and query vdpa queue level or device level
+> statistics for a given vdpa device.
+>
+> (4) A user should be able to query what class of vdpa devices are supported
+> by its parent device.
+>
+> (5) A user should be able to view supported features and negotiated features
+> of the vdpa device.
+>
+> (6) A user should be able to create a vdpa device in vendor agnostic manner
+> using single tool.
+>
+> Hence, it is required to have a tool through which user can create one or more
+> vdpa devices from a parent device which addresses above user requirements.
+>
+> Example devices:
+> ----------------
+>   +-----------+ +-----------+ +---------+ +--------+ +-----------+
+>   |vdpa dev 0 | |vdpa dev 1 | |rdma dev | |netdev  | |vdpa dev 3 |
+>   |type=net   | |type=block | |mlx5_0   | |ens3f0  | |type=net   |
+>   +----+------+ +-----+-----+ +----+----+ +-----+--+ +----+------+
+>        |              |            |            |         |
+>        |              |            |            |         |
+>   +----+-----+        |       +----+----+       |    +----+----+
+>   |  mlx5    +--------+       |mlx5     +-------+    |mlx5     |
+>   |pci vf 2  |                |pci vf 4 |            |pci sf 8 |
+>   |03:00:2   |                |03:00.4  |            |mlx5_sf.8|
+>   +----+-----+                +----+----+            +----+----+
+>        |                           |                      |
+>        |                      +----+-----+                |
+>        +----------------------+mlx5      +----------------+
+>                               |pci pf 0  |
+>                               |03:00.0   |
+>                               +----------+
+>
+> vdpa tool:
+> ----------
+> vdpa tool is a tool to create, delete vdpa devices from a parent device. It is a
+> tool that enables user to query statistics, features and may be more attributes
+> in future.
+>
+> vdpa tool command draft:
+> ------------------------
+> (a) List parent devices which supports creating vdpa devices.
+> It also shows which class types supported by this parent device.
+> In below command example two parent devices support vdpa device creation.
+> First is PCI VF whose bdf is 03.00:2.
+> Second is PCI VF whose name is 03:00.4.
+> Third is PCI SF whose name is mlx5_core.sf.8
+>
+> $ vdpa parentdev list
+> vdpasim
+>    supported_classes
+>      net
+> pci/0000:03.00:3
+>    supported_classes
+>      net block
+> pci/0000:03.00:4
+>    supported_classes
+>      net block
+> auxiliary/mlx5_core.sf.8
+>    supported_classes
+>      net
+>
+> (b) Now add a vdpa device of networking class and show the device.
+> $ vdpa dev add parentdev pci/0000:03.00:2 type net name foo0 $ vdpa dev show foo0
+> foo0: parentdev pci/0000:03.00:2 type network parentdev vdpasim vendor_id 0 max_vqs 2 max_vq_size 256
+>
+> (c) Show features of a vdpa device
+> $ vdpa dev features show foo0
+> supported
+>    iommu platform
+>    version 1
+>
+> (d) Dump vdpa device statistics
+> $ vdpa dev stats show foo0
+> kickdoorbells 10
+> wqes 100
+>
+> (e) Now delete a vdpa device previously created.
+> $ vdpa dev del foo0
+>
+> vdpa tool support in this patchset:
+> -----------------------------------
+> vdpa tool is created to create, delete and query vdpa devices.
+> examples:
+> Show vdpa parent device that supports creating, deleting vdpa devices.
+>
+> $ vdpa parentdev show
+> vdpasim:
+>    supported_classes
+>      net
+>
+> $ vdpa parentdev show -jp
+> {
+>      "show": {
+>         "vdpasim": {
+>            "supported_classes": {
+>               "net"
+>          }
+>      }
+> }
+>
+> Create a vdpa device of type networking named as "foo2" from the parent device vdpasim:
+>
+> $ vdpa dev add parentdev vdpasim type net name foo2
+>
+> Show the newly created vdpa device by its name:
+> $ vdpa dev show foo2
+> foo2: type network parentdev vdpasim vendor_id 0 max_vqs 2 max_vq_size 256
+>
+> $ vdpa dev show foo2 -jp
+> {
+>      "dev": {
+>          "foo2": {
+>              "type": "network",
+>              "parentdev": "vdpasim",
+>              "vendor_id": 0,
+>              "max_vqs": 2,
+>              "max_vq_size": 256
+>          }
+>      }
+> }
+>
+> Delete the vdpa device after its use:
+> $ vdpa dev del foo2
+>
+> vdpa tool support by kernel:
+> ----------------------------
+> vdpa tool user interface will be supported by existing vdpa kernel framework,
+> i.e. drivers/vdpa/vdpa.c It services user command through a netlink interface.
+>
+> Each parent device registers supported callback operations with vdpa subsystem
+> through which vdpa device(s) can be managed.
+>
+> FAQs:
+> -----
+> 1. Where does userspace vdpa tool reside which users can use?
+> Ans: vdpa tool can possibly reside in iproute2 [1] as it enables user to
+> create vdpa net devices.
+>
+> 2. Why not create and delete vdpa device using sysfs/configfs?
+> Ans:
+> (a) A device creation may involve passing one or more attributes.
+> Passing multiple attributes and returning error code and more verbose
+> information for invalid attributes cannot be handled by sysfs/configfs.
+>
+> (b) netlink framework is rich that enables user space and kernel driver to
+> provide nested attributes.
+>
+> (c) Exposing device specific file under sysfs without net namespace
+> awareness exposes details to multiple containers. Instead exposing
+> attributes via a netlink socket secures the communication channel with kernel.
+>
+> (d) netlink socket interface enables to run syscaller kernel tests.
+>
+> 3. Why not use ioctl() interface?
+> Ans: ioctl() interface replicates the necessary plumbing which already
+> exists through netlink socket.
+>
+> 4. What happens when one or more user created vdpa devices exist for a
+> parent PCI VF or SF and such parent device is removed?
+> Ans: All user created vdpa devices are removed that belong to a parent.
+>
+> [1] git://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git
+>
+> Next steps:
+> -----------
+> (a) Post this patchset and iproute2/vdpa inclusion, remaining two drivers
+> will be coverted to support vdpa tool instead of creating unmanaged default
+> device on driver load.
+> (b) More net specific parameters such as mac, mtu will be added.
+> (c) Features bits get and set interface will be added.
 
-> -       if (ret) {
-> -               printf("ERROR: bpf_prog_load_xattr failed for: %s\n", prog);
-> -               printf("  Output from verifier:\n%s\n------\n", bpf_log_buf);
-> -               ret = -1;
-> -       } else {
-> -               ret = map_fd;
-> +       bpf_prog = bpf_object__find_program_by_title(obj, "cgroup_skb/egress");
 
-It would be good to avoid using find_program_by_title(), as it's going
-to get deprecated and eventually removed. Looking up by section name
-("title") is ambiguous now that libbpf supports many BPF programs per
-same section. There is find_program_by_name() which looks program by
-its C function name. I suggest using it.
+Adding Yong Ji for sharing some thoughts from the view of userspace vDPA 
+device.
+
+Thanks
 
 
-> +       if (!bpf_prog) {
-> +               printf("ERROR: finding a prog in obj file failed\n");
-> +               goto err;
-> +       }
-> +
