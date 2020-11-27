@@ -2,95 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 148E12C6DBB
-	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 00:42:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3C612C6DCC
+	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 00:52:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731144AbgK0Xl7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Nov 2020 18:41:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34054 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731652AbgK0XlC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 18:41:02 -0500
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41166C0613D2;
-        Fri, 27 Nov 2020 15:39:20 -0800 (PST)
-Received: by mail-ed1-x544.google.com with SMTP id k4so7324928edl.0;
-        Fri, 27 Nov 2020 15:39:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4PTcGXppTtgtL4n34jHd/JlKxnsgY9Zzpe2NAG5NV0Q=;
-        b=P+IO5jSKKJVk1WdJmTiBBvmYOb1uvbqo2hOoZvfT4eseFqXJqWT3a2kLu71iwo5Hzt
-         /ETJEM3iyw8/0PxLziEZp1VB8RDwKL8VwNCAt3mgYmXG6VES5CCWjag4fvDrRG1BOQEn
-         RgOTLZxjUpuo7sQ3FE3ci+iepsbQb6p/uzBF06BGpdG43mB7ZiHrHJVvJKfURZ8MFlE1
-         klZE94VF8I6UclZntgveT4AzvONtpiJU5/K+SlxAVikatmy4jO2SGBvgt4TewkKLuIYP
-         dEnir4etkznn5r0bmF2/TzJTeqAM3JJMWD9ODLRjXvQMJPwx6+XY4vJVAOFrCGdh86C0
-         wZhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4PTcGXppTtgtL4n34jHd/JlKxnsgY9Zzpe2NAG5NV0Q=;
-        b=gehe8yYpPuawBGt4OXF5ezciW1exHdToBCBwlc8c1hBjfTxfzy/E5JxELqeAMAjgqr
-         Q8XVgBFJHULPL1Iz3gOtWbth1jUpVp4fwHSRU+F0lQd2rogeJ/KPrydzKzYc2mujaXsa
-         d6SYBXK/iDCsDeAW0LwY99s5AKlYwVzO5PkBkMxcoCOjErWeuVzsu5qoIAHq/+hqMxwi
-         2RGhdcAsjxnea7dyAxIVGELKOemmg7gdqy4t9wnsp1jZ7vdzmELCUKnaWkNcE/LsIvKK
-         zss5NvSZHr3OfyXq20CLryzulOA94gg1sAdsCKcfzpJxihexpI58hgTquqQOTcwDbKtA
-         Xutg==
-X-Gm-Message-State: AOAM530/dcD7gf1TgkJMdkWCYjGDB8DxmA4wsOyJ6kfTsdAWxMUq3wk1
-        Z4AXKhsNou2qlyp1m3zPfH8=
-X-Google-Smtp-Source: ABdhPJyGeCt/tgXOV+m+A9KgftHEJUULof7/tNKWq9VwOzZNiO6tmiidTT7S0MmzE1T1trFDLIkYaA==
-X-Received: by 2002:a50:e0c9:: with SMTP id j9mr10525326edl.380.1606520358961;
-        Fri, 27 Nov 2020 15:39:18 -0800 (PST)
-Received: from skbuf ([188.25.2.120])
-        by smtp.gmail.com with ESMTPSA id d19sm5763035eds.31.2020.11.27.15.39.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Nov 2020 15:39:17 -0800 (PST)
-Date:   Sat, 28 Nov 2020 01:39:16 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        George McCollister <george.mccollister@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>
-Subject: Re: [PATCH net-next v2 2/3] net: dsa: add Arrow SpeedChips XRS700x
- driver
-Message-ID: <20201127233916.bmhvcep6sjs5so2e@skbuf>
-References: <20201126132418.zigx6c2iuc4kmlvy@skbuf>
- <20201126175607.bqmpwbdqbsahtjn2@skbuf>
- <CAFSKS=Ok1FZhKqourHh-ikaia6eNWtXh6VBOhOypsEJAhwu06g@mail.gmail.com>
- <20201126220500.av3clcxbbvogvde5@skbuf>
- <20201127103503.5cda7f24@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <CAFSKS=MAdnR2jzmkQfTnSQZ7GY5x5KJE=oeqPCQdbZdf5n=4ZQ@mail.gmail.com>
- <20201127195057.ac56bimc6z3kpygs@skbuf>
- <CAFSKS=Pf6zqQbNhaY=A_Da9iz9hcyxQ8E1FBp2o7a_KLBbopYw@mail.gmail.com>
- <20201127133753.4cf108cb@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <20201127233048.GB2073444@lunn.ch>
+        id S1732570AbgK0Xva (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Nov 2020 18:51:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41404 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730826AbgK0XuV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Nov 2020 18:50:21 -0500
+Content-Type: text/plain; charset="utf-8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606521021;
+        bh=SGdSUjoCHshGhPyoMyZ1cVTtgKUjSZoirFy8nd8rM7g=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=AYrmPen7HbdOaI2X3MtLRV2kX9d2FImMjAXkgDB5Oc7rkZpyDfQDtivUTKV4tLrJZ
+         tlJHmR+26PWkJGDf+qW6b/NH78M9J+1L25Ut6ffJJF5Injj19KqWnaeCV5tzU20Ezg
+         Qo2vNilGE/pwGpcyTKLuyHuwUAJFVN2ixJTIjbr4=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201127233048.GB2073444@lunn.ch>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [GIT PULL] Networking
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160652102130.12601.8586675332676762024.git-patchwork-notify@kernel.org>
+Date:   Fri, 27 Nov 2020 23:50:21 +0000
+References: <20201127200428.221620-1-kuba@kernel.org>
+In-Reply-To: <20201127200428.221620-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     torvalds@linux-foundation.org, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 28, 2020 at 12:30:48AM +0100, Andrew Lunn wrote:
-> > If there is a better alternative I'm all ears but having /proc and
-> > ifconfig return zeros for error counts while ip link doesn't will lead
-> > to too much confusion IMO. While delayed update of stats is a fact of
-> > life for _years_ now (hence it was backed into the ethtool -C API).
-> 
-> How about dev_seq_start() issues a netdev notifier chain event, asking
-> devices which care to update their cached rtnl_link_stats64 counters.
-> They can decide if their cache is too old, and do a blocking read for
-> new values.
-> 
-> Once the notifier has completed, dev_seq_start() can then
-> rcu_read_lock() and do the actual collection of stats from the drivers
-> non-blocking.
+Hello:
 
-That sounds smart. I can try to prototype that and see how well it
-works, or do you want to?
+This pull request was applied to netdev/net.git (refs/heads/master):
+
+On Fri, 27 Nov 2020 12:04:28 -0800 you wrote:
+> The following changes since commit 4d02da974ea85a62074efedf354e82778f910d82:
+> 
+>   Merge tag 'net-5.10-rc5' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2020-11-19 13:33:16 -0800)
+> 
+> are available in the Git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.10-rc6
+> 
+> [...]
+
+Here is the summary with links:
+  - [GIT,PULL] Networking
+    https://git.kernel.org/netdev/net/c/79c0c1f0389d
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
