@@ -2,125 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF8682C6182
-	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 10:20:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48D212C6196
+	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 10:22:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727397AbgK0JTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Nov 2020 04:19:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41746 "EHLO
+        id S1726479AbgK0JVw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Nov 2020 04:21:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726417AbgK0JTR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 04:19:17 -0500
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69AC1C0613D1
-        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 01:19:17 -0800 (PST)
-Received: by mail-lj1-x243.google.com with SMTP id r18so5190745ljc.2
-        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 01:19:17 -0800 (PST)
+        with ESMTP id S1726736AbgK0JVu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 04:21:50 -0500
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B697C0617A7
+        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 01:21:50 -0800 (PST)
+Received: by mail-wr1-x441.google.com with SMTP id 64so4789157wra.11
+        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 01:21:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=D8kpBdNOuri075Gpxasz1H3+KCpnUoRlaHCSVys4/nA=;
-        b=mtmJ9nniBYKkXEWP+xslP+q8gpef/qOeAIbGTysENxkiNBPCkhwzUA4e7ouov0+6e6
-         yNPnvoWMofP6WGYpCDv31irP7sAI/uc1HkG8/GYju24bi2pURVu4myD7jztsXW+h6sUb
-         j9124R6QNqKA23e/pXp0ZqBx7IuVbBour1fp0yvDl56PNZ1It3afd7A6kqrn/uY3SFqK
-         OFl+gsHvQR+Ker1W1WOAsXLyHaNOsjXcNCz5fV9Cav930cKee9wJ49V2E42IeC+WvQ6f
-         2NRRTncvqQfCtdNmfC0usPjGCEmYW000f4sdWAwfFpt1oRWioUdiVMZuQFr8yqE9C2ms
-         WdMQ==
+        d=chromium.org; s=google;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=4haAtXUHa8qd3ezJgcItd1OHQbgYPxsuO+gzkuxGWzA=;
+        b=MycJzaG7hTHxWNHLHRT7gLb1N4CWd4edFBx5g/7f2oTSaPmbzk/tc1/iqIIhvyDeWO
+         MuVBINQE+vBa4ymeSmrzOACpGRntflnD1ruPWTH3gHMTljUdlCxb41AdeWXCzy3VEHc4
+         T+dx8lWWcjRnmoFI1iOhctgKBT5HI0cqaDL+A=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=D8kpBdNOuri075Gpxasz1H3+KCpnUoRlaHCSVys4/nA=;
-        b=ZMUjrCn1998ro0dYa+8OKFh2EqA1xuWjwWQnbKRPFv2PIT/6T0owsAQinhE97/EMoD
-         //2TpQQj/XlZ1kZudOXmh73x1lcDT968n0VKetchtAGjBACpo9BQn7/Kg3WCVv5OWtPH
-         17PSfJCOvC8PMG8VpohHNqU9Xd/ejPo5xWgZ9rsV3R9usgjxY1ka4QpCTf730a1Gp+vW
-         0LcU4q+ijg3MTgc37AoDwDaYixnWIcg+pupQwzikUnFuE9nlFE31XGhxJXbHXP1YpvER
-         w3iIhcNCfZEJjR5yQOSnqRH6eQkQ+k00m50M5jLbc0mPtHu7wEG6d188wwZYeiWWCEvk
-         Bj6A==
-X-Gm-Message-State: AOAM5330traI7wz02E8oAf18xXeBToYi9TKB6QIq+nwrG5stHPIeTUsa
-        Iv/jtJFQmBOufu6uEJ7zMn39xouNm51gFW5m
-X-Google-Smtp-Source: ABdhPJywXrz0/4XQFVpL3NSOSe3CEd+o2ue78StTcG1NUM6kpZzvpLrvUjpW2Wah8YmUdw74UklqMg==
-X-Received: by 2002:a2e:6e06:: with SMTP id j6mr3012306ljc.282.1606468755603;
-        Fri, 27 Nov 2020 01:19:15 -0800 (PST)
-Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id d7sm620131lfn.34.2020.11.27.01.19.14
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=4haAtXUHa8qd3ezJgcItd1OHQbgYPxsuO+gzkuxGWzA=;
+        b=A66CCGWeHG360qFHURxDFusQlQ2lcbmyjqbY+sIKOs58IOoJrxu8r7Rc99oTyQQGCh
+         auh6rS4+rKMJ8GqvaMinamzTCmP2fN0G62T8piS0LBepjZLuekYtcRpDhu5oUCnfbCk+
+         7DdHDEV/GMmaIYi2ChQG2ZmL+TjgRqk+zgf5dTPI08xJWJGxKp/RR3tdPU6SDMmXOAAb
+         U6UQOo971NyPstDinQzBlujqP27sOhxp7bNFN0UcxP816S6OasLZ3c+8GNhAI2Nujoby
+         SD5Z0creTzLiUVWFTl/r6FODTENdJL25HeNKzsTChNiA+MF1l3Z+bMjPZ5U8IgIPKAos
+         psbA==
+X-Gm-Message-State: AOAM530NUHEWZYlnvy/pvQ6W2tgmeGpdBWAafhHrLSEaleR98fE6PEq7
+        EvRk6/IDHL8gYq75Hw6FXpq5YA==
+X-Google-Smtp-Source: ABdhPJxKn99M0WW71ImXjuufXD45kVFE54JjEEPi8DjQ8fwpuMovU1Kj5DqnCtQrCGWP+M0uR3DpEA==
+X-Received: by 2002:a5d:548b:: with SMTP id h11mr9228587wrv.306.1606468909049;
+        Fri, 27 Nov 2020 01:21:49 -0800 (PST)
+Received: from ?IPv6:2a04:ee41:4:1318:ea45:a00:4d43:48fc? ([2a04:ee41:4:1318:ea45:a00:4d43:48fc])
+        by smtp.gmail.com with ESMTPSA id a144sm13266512wmd.47.2020.11.27.01.21.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Nov 2020 01:19:15 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, vivien.didelot@gmail.com, olteanv@gmail.com,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 2/4] net: dsa: Link aggregation support
-In-Reply-To: <20201126225753.GP2075216@lunn.ch>
-References: <20201119144508.29468-1-tobias@waldekranz.com> <20201119144508.29468-3-tobias@waldekranz.com> <20201120003009.GW1804098@lunn.ch> <5e2d23da-7107-e45e-0ab3-72269d7b6b24@gmail.com> <20201120133050.GF1804098@lunn.ch> <87v9dr925a.fsf@waldekranz.com> <20201126225753.GP2075216@lunn.ch>
-Date:   Fri, 27 Nov 2020 10:19:14 +0100
-Message-ID: <87r1of88dp.fsf@waldekranz.com>
+        Fri, 27 Nov 2020 01:21:48 -0800 (PST)
+Message-ID: <492ad793692d03105f3ac2a2e1a3196dc01e5cef.camel@chromium.org>
+Subject: Re: [PATCH bpf-next v3 5/6] bpf: Add an iterator selftest for
+ bpf_sk_storage_get
+From:   Florent Revest <revest@chromium.org>
+To:     Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org
+Cc:     viro@zeniv.linux.org.uk, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        andrii@kernel.org, kpsingh@chromium.org, revest@google.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Date:   Fri, 27 Nov 2020 10:21:44 +0100
+In-Reply-To: <2c5a814a-7b69-3a8d-e4e0-e595d009cf82@fb.com>
+References: <20201126164449.1745292-1-revest@google.com>
+         <20201126164449.1745292-5-revest@google.com>
+         <2c5a814a-7b69-3a8d-e4e0-e595d009cf82@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.4-2 
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 26, 2020 at 23:57, Andrew Lunn <andrew@lunn.ch> wrote:
->> If you go with the static array, you theoretically can not get the
->> equivalent of an ENOMEM. Practically though you have to iterate through
->> the array and look for a free entry, but you still have to put a return
->> statement at the bottom of that function, right? Or panic I suppose. My
->> guess is you end up with:
->> 
->>     struct dsa_lag *dsa_lag_get(dst)
->>     {
->>         for (lag in dst->lag_array) {
->>             if (lag->dev == NULL)
->>                 return lag;
->>         }
->> 
->>         return NULL;
->>     }
->
-> I would put a WARN() in here, and return the NULL pointer. That will
-> then likely opps soon afterwards and kill of the user space tool
-> configuring the LAG, maybe leaving rtnl locked, and so all network
-> configuration dies. But that is all fine, since you cannot have more
+On Thu, 2020-11-26 at 23:00 -0800, Yonghong Song wrote:
+> On 11/26/20 8:44 AM, Florent Revest wrote:
+> > +SEC("iter/task_file")
+> > +int fill_socket_owner(struct bpf_iter__task_file *ctx)
+> > +{
+> > +	struct task_struct *task = ctx->task;
+> > +	struct file *file = ctx->file;
+> > +	struct socket *sock;
+> > +	int *sock_tgid;
+> > +
+> > +	if (!task || !file || task->tgid != task->pid)
+> 
+> task->tgid != task->pid is not needed here.
+> The task_file iterator already tries to skip task with task->pid
+> if its file table is the same as task->tgid.
 
-This is a digression, but I really do not get this shift from using
-BUG()s to WARN()s in the kernel when you detect a violated invariant. It
-smells of "On Error Resume Next" to me.
+Good to know!
 
-> LAGs than ports. This can never happen. If it does happen, something
-> is badly wrong and we want to know about it. And so a very obvious
-> explosion is good.
-
-Indeed. That is why I think it should be BUG(). Leaving the system to
-limp along can easily go undetected.
-
->> So now we have just traded dealing with an ENOMEM for a NULL pointer;
->> pretty much the same thing.
->
-> ENOMEM you have to handle correctly, unwind everything and leaving the
-> stack in the same state as before. Being out of memory is not a reason
-
-We have to handle EWHATEVER correctly, no? I do not get what is so
-special about ENOMEM. If we hit some other error after the allocation we
-have to remember to free the memory of course, but that is just normal
-cleanup. Is this what you mean by "unwind everything"? In that case we
-need to also "free" the element we allocated from the array. Again, it
-is fundamentally the same problem.
-
-How would a call to kmalloc have any impact on the stack? (Barring
-exotic bugs in the allocator that would allow the heap to intrude on
-stack memory) Or am I misunderstanding what you mean by "the stack"?
-
-> to explode. Have you tested this? It is the sort of thing which does
-> not happen very often, so i expect is broken.
-
-I have not run my system under memory pressure or done any error
-injection testing. Is that customary to do whenever using kmalloc?  If
-it would make a difference I could look into setting that up.
-
-I have certainly tried my best to audit all the possible error paths to
-make sure that no memory is ever leaked, and I feel confident in that
-analysis.
