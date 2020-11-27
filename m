@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80D612C5E7E
-	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 01:59:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51F8F2C5E85
+	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 02:09:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392092AbgK0AzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Nov 2020 19:55:11 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:52108 "EHLO vps0.lunn.ch"
+        id S2392114AbgK0BIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Nov 2020 20:08:17 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:52150 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392082AbgK0AzL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Nov 2020 19:55:11 -0500
+        id S2388130AbgK0BIR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Nov 2020 20:08:17 -0500
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1kiS2Q-00943w-S0; Fri, 27 Nov 2020 01:55:02 +0100
-Date:   Fri, 27 Nov 2020 01:55:02 +0100
+        id 1kiSF9-0094AB-RR; Fri, 27 Nov 2020 02:08:11 +0100
+Date:   Fri, 27 Nov 2020 02:08:11 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Lukasz Majewski <lukma@denx.de>
 Cc:     Vladimir Oltean <olteanv@gmail.com>,
@@ -30,7 +30,7 @@ Cc:     Vladimir Oltean <olteanv@gmail.com>,
         krzk@kernel.org, Shawn Guo <shawnguo@kernel.org>
 Subject: Re: [RFC 0/4] net: l2switch: Provide support for L2 switch on i.MX28
  SoC
-Message-ID: <20201127005502.GQ2075216@lunn.ch>
+Message-ID: <20201127010811.GR2075216@lunn.ch>
 References: <20201125232459.378-1-lukma@denx.de>
  <20201126123027.ocsykutucnhpmqbt@skbuf>
  <20201127003549.3753d64a@jawa>
@@ -42,26 +42,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> (A side question - DSA uses switchdev, so when one shall use switchdev
-> standalone?)
+> > I would push back and say that the switch offers bridge acceleration
+> > for the FEC. 
+> 
+> Am I correct, that the "bridge acceleration" means in-hardware support
+> for L2 packet bridging? 
 
-DSA gives you a framework for an Ethernet switch connected to a host
-via Ethernet for the data plane. Generally, that Ethernet link to the
-switch is a MAC to MAC connection. It can be PHY to PHY. But those are
-just details. The important thing is you use an Ethernet driver on the
-host.
+You should think of the hardware as an accelerator, not a switch. The
+hardware is there to accelerate what linux can already do. You setup a
+software bridge in linux, and then offload L2 switching to the
+accelerator. You setup vlans in linux, and then offload the filtering
+of them to the accelerator. If there is something linux can do, but
+the hardware cannot accelerate, you leave linux to do it in software.
 
-If you look at pure switchdev devices, they generally DMA frames
-directly into the switch. There is either one DMA queue per switch
-port, or there is a way to multiplex frames over one DMA queue,
-generally by additional fields in the buffer descriptor.
+> Do you propose to catch some kind of notification when user calls:
+> 
+> ip link add name br0 type bridge; ip link set br0 up;
+> ip link set lan1 up; ip link set lan2 up;
+> ip link set lan1 master br0; ip link set lan2 master br0;
+> bridge link
+> 
+> And then configure the FEC driver to use this L2 switch driver?
 
-For this device, at the moment, it is hard to say which is the best
-fit. A lot will depend on how the FEC driver works, if you can reuse
-it, while still having the degree of control you need over the DMA
-channel. If you can reuse the FEC driver, then a DSA driver might
-work. If the coupling it too loose, and you have to take control of
-the DMA, then a pure switchdev driver seems more appropriate.
+That is what switchdev does. There are various hooks in the network
+stack which call into switchdev to ask it to offload operations to the
+accelerator.
 
-    Andrew
+> The differences from "normal" DSA switches:
+> 
+> 1. It uses mapped memory (for its register space) for
+> configuration/statistics gathering (instead of e.g. SPI, I2C)
 
+That does not matter. And there are memory mapped DSA switches. The
+DSA framework puts no restrictions on how the control plane works.
+
+> (Of course the "Section 32.5.8.2" is not available)
+
+It is in the Vybrid datasheet :-)
+
+   Andrew
