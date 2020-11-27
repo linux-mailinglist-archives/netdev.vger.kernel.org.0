@@ -2,82 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CCC82C74FA
-	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:23:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F27B2C74DF
+	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:23:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388527AbgK1Vtk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Nov 2020 16:49:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55554 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730619AbgK0TwS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 14:52:18 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 902C7C08ED7E;
-        Fri, 27 Nov 2020 11:39:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=zh33VXt2kD9yseJRxvL3v4GkB6ZavkT8ap7D2dRM1n8=; b=Kxodjbz5/uSV3yCNi49zqnvc9d
-        3raTqFO3DiDczmMVk1/JjntTXeZ/X77jY563rcj7pjhEu1BJGTUKoPczByUNK/PIs51HKBFkx07ZX
-        9CTkD5y1ChxR2ODhz1KXEEeJQWSeUrD5ourjvkNfwGkX8dNq2AC94Qtp1eaBSfdM8+dJJ5QyXu9t0
-        HO1kFuDTP3fu+Swwwy3nCaiSC8J0IrbHiExcFLV2Vvdp3CYFs0c3WAfl8Tg6TdkNt0mfJwcUmYy0u
-        jKfb7/97qOSSdbg8dXfAD0KGuolv1NIuONfs7jvm5+ypn+Wq94EbneCCQgBNsNe85jUvdbRspjEpk
-        aZWL6cMw==;
-Received: from [2602:306:c5a2:a380:9e7b:efff:fe40:2b26]
-        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kijaQ-0005cI-6b; Fri, 27 Nov 2020 19:39:18 +0000
-Subject: Re: [PATCH 2/2] powerpc/ps3: make system bus's remove and shutdown
- callbacks return void
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Jens Axboe <axboe@kernel.dk>, Jim Paris <jim@jtan.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org, alsa-devel@alsa-project.org,
-        linux-block@vger.kernel.org, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
-References: <20201126165950.2554997-1-u.kleine-koenig@pengutronix.de>
- <20201126165950.2554997-2-u.kleine-koenig@pengutronix.de>
-From:   Geoff Levand <geoff@infradead.org>
-Message-ID: <d3705daf-f48c-20a8-e3a8-a2f121099a16@infradead.org>
-Date:   Fri, 27 Nov 2020 11:39:12 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <20201126165950.2554997-2-u.kleine-koenig@pengutronix.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        id S2388430AbgK1Vti (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Nov 2020 16:49:38 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:33355 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729722AbgK0TrO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 14:47:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606506421;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc; bh=V+fxQ+9ZE4mMvoPeeRpISpaVS5sv+7iMxFHbjI4wlvg=;
+        b=Qt8Boa+UprtWzusbLN9qGVZmjCcM0FhlVinjmLaM/yfzqVnWfJ8v0yjr3UmpoQ6gagORjN
+        JUH0V5mgHXZyS4ACORArIZM9u14JASQoDGOjZey1lhzDBsOOzXIXbQPA+gdg2U9bJH5IGM
+        x10e+2mmfyL8afqaVqp3z67XHDwYgo0=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-456-Fp72vBb1OIKU8VzBYqTxXg-1; Fri, 27 Nov 2020 14:43:37 -0500
+X-MC-Unique: Fp72vBb1OIKU8VzBYqTxXg-1
+Received: by mail-qv1-f71.google.com with SMTP id 12so1643341qvk.23
+        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 11:43:37 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=V+fxQ+9ZE4mMvoPeeRpISpaVS5sv+7iMxFHbjI4wlvg=;
+        b=a7g9vnn2DcCO1OQ1df2j0t4Ep8IYltpmEX4ZOjXXPR8MTP2kOhymYW+DMmiV5k334k
+         fil4HueiMKsTovdLsNF8nQq3cU1Qf29y4VhCiKn9Dj5chBwCcgSEx3vjZu50Tb0vOIvJ
+         aIH9YR9eoiEqT2vkV1xnuQEpJQJE78Gr15ODihAqdl9YBNmIosfTe4c4RlH9s7Av4baU
+         x2i4pUzXqXefYsB7ZMEKeK6/ulHjmYhQ2+4c2PUSvjq5rVLpYKeMjbBg9pp9lvmqTe1T
+         ar5PJCesM4KSEKHnV3gZsakh1C12PaYs1fscHKFNCV0J+AvPfR21va/OuerOXM8IU2gw
+         sNaQ==
+X-Gm-Message-State: AOAM530njp2XD1EK7piTLerhL5gIY3qoZhe5Rz7VnW6dj8Pt6H41w36p
+        yzM0dABEZAxoWoIC51WDAHQSq0g96xRzmGl/dTGOOzeMFM44U/Gx1hKwyNduplMxTc7QsWJBS5J
+        GPtwXOh9DUnVUCJ8E
+X-Received: by 2002:a05:620a:a90:: with SMTP id v16mr9957731qkg.479.1606506216871;
+        Fri, 27 Nov 2020 11:43:36 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw6lodK6voISGIkjg9/FPTLrFucmHCETDXMNpIo6ewNM+fOmDKlJ1dM4RCPu/VocOlLLHaAVg==
+X-Received: by 2002:a05:620a:a90:: with SMTP id v16mr9957714qkg.479.1606506216683;
+        Fri, 27 Nov 2020 11:43:36 -0800 (PST)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id l7sm6906770qtp.19.2020.11.27.11.43.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Nov 2020 11:43:36 -0800 (PST)
+From:   trix@redhat.com
+To:     bfields@fieldses.org, chuck.lever@oracle.com,
+        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
+Subject: [PATCH] NFS: remove trailing semicolon in macro definition
+Date:   Fri, 27 Nov 2020 11:43:25 -0800
+Message-Id: <20201127194325.2881566-1-trix@redhat.com>
+X-Mailer: git-send-email 2.18.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/26/20 8:59 AM, Uwe Kleine-König wrote:
-> The driver core ignores the return value of struct device_driver::remove
-> because there is only little that can be done. For the shutdown callback
-> it's ps3_system_bus_shutdown() which ignores the return value.
-> 
-> To simplify the quest to make struct device_driver::remove return void,
-> let struct ps3_system_bus_driver::remove return void, too. All users
-> already unconditionally return 0, this commit makes it obvious that
-> returning an error code is a bad idea and ensures future users behave
-> accordingly.
-> 
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Tom Rix <trix@redhat.com>
 
-Seems OK with v5.9 on PS3.
+The macro use will already have a semicolon.
 
-Tested by: Geoff Levand <geoff@infradead.org>
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ net/sunrpc/auth_gss/gss_generic_token.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/sunrpc/auth_gss/gss_generic_token.c b/net/sunrpc/auth_gss/gss_generic_token.c
+index fe97f3106536..9ae22d797390 100644
+--- a/net/sunrpc/auth_gss/gss_generic_token.c
++++ b/net/sunrpc/auth_gss/gss_generic_token.c
+@@ -46,7 +46,7 @@
+ /* TWRITE_STR from gssapiP_generic.h */
+ #define TWRITE_STR(ptr, str, len) \
+ 	memcpy((ptr), (char *) (str), (len)); \
+-	(ptr) += (len);
++	(ptr) += (len)
+ 
+ /* XXXX this code currently makes the assumption that a mech oid will
+    never be longer than 127 bytes.  This assumption is not inherent in
+-- 
+2.18.4
 
