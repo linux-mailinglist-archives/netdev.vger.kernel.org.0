@@ -2,60 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB1372C6B56
-	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 19:07:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F31B32C6B5D
+	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 19:10:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732740AbgK0SHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Nov 2020 13:07:19 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:28840 "EHLO
+        id S1732909AbgK0SIp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Nov 2020 13:08:45 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:23738 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731981AbgK0SHT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 13:07:19 -0500
+        by vger.kernel.org with ESMTP id S1732851AbgK0SIp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 13:08:45 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606500438;
+        s=mimecast20190719; t=1606500524;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=H7PcvPg+i5XoUPzJor4eQ+x6uH9OtzkraZC8rlH6KWc=;
-        b=Sd6qm5sVs0pBC29sQ05iQg33dlr7sop+KCab0CrMRg9A3TRRZ+LGgq1GO8DOFRgqJsYShn
-        0LPG7KY9KEfcAidQdlC7gdKXOhdmU8YEoCRyN+DO5aE/Hwf1tApRi7ghHoevKysYjz4lrL
-        gy3J27PzTpx7IW3pKEEsya//LG3zgMY=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-358-gun7KNNSPiu4bg4eQ4SsEQ-1; Fri, 27 Nov 2020 13:07:16 -0500
-X-MC-Unique: gun7KNNSPiu4bg4eQ4SsEQ-1
-Received: by mail-qt1-f197.google.com with SMTP id r29so3647227qtu.21
-        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 10:07:16 -0800 (PST)
+         to:to:cc:cc; bh=/DgUT5SNxJZkOmupt2XLqi4YOdrVCYEQCxi35Ihq2HE=;
+        b=CuUGinUeCOFPAhGEzVWELMLy7w9WiVClpndu+ydm8O+paS8uXdqQzLqTjPUXGQxF/F8uAz
+        VYOjzroM4UJg0n29Dg0Tod7fz2AcKURIWPXIHcm+enTUQRRfNWlW0fTBbBjZ2PuBOnVBM4
+        NS+5xTQnAFJ+7fpiq6pCqiYKjlvhCFw=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-565-g4H2J-D4Mu2v4pB14nOVZQ-1; Fri, 27 Nov 2020 13:08:42 -0500
+X-MC-Unique: g4H2J-D4Mu2v4pB14nOVZQ-1
+Received: by mail-qk1-f198.google.com with SMTP id c71so4121857qkg.21
+        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 10:08:41 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=H7PcvPg+i5XoUPzJor4eQ+x6uH9OtzkraZC8rlH6KWc=;
-        b=L0RsLIKjLtfk+R/n6YBQWsV6N8ci5zg6Pp5sKvwJGWy5M9AHHU8ezFCiJ4v2Op2g7O
-         oh6YT/YYc9E77VuuIj96tSnzLRKb9CBvU0WrZfeCidAYtfCvw0x/V/I9GfQvZ6uP1gGI
-         dWOomE9/76Of7N+vqufGRJC8kH9y0uLnroEP8wKV5SpG8d6MkNbY1AJY3sPDR8ViZcyp
-         1zNRKdN1IVIG42Z/zHI2DhuFavwGovdLqYi03E5o6SN7Ejy0j2ufWVT27fn/T7u2b1HJ
-         mgBMdlqZYeTAeRbbRRLfFc8etr9j35eAGwFd8O0MrK7qpJAVa51AJDN1H76NMWVLE6b8
-         mvag==
-X-Gm-Message-State: AOAM5306yiLs7JjQ1VW/QCjvBTG5dz1W/1zY7cSggZUNNwVdNgjmU3fL
-        fdsfqvFBcyKLuV2k1TfLEs7f548UoUj8ql1vKMVJe3R+7zPR7AgQe65uMpQuvywJi46amK1NkJJ
-        mp3YBzWj0+NWBiQBH
-X-Received: by 2002:ac8:5ccc:: with SMTP id s12mr9497615qta.364.1606500436291;
-        Fri, 27 Nov 2020 10:07:16 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzrczAlHXv6AxBn4va9GpnW6SljlzQRkczv7FkNfINZgV5uL21V1Nx739W7zcwEcXppYH5Pjg==
-X-Received: by 2002:ac8:5ccc:: with SMTP id s12mr9497583qta.364.1606500436056;
-        Fri, 27 Nov 2020 10:07:16 -0800 (PST)
+        bh=/DgUT5SNxJZkOmupt2XLqi4YOdrVCYEQCxi35Ihq2HE=;
+        b=LZF2PK9cuR6iEeDgeZISZ3YYG7b581Ssy3J5MEO48PYmtkh8g/qya9y8jxcipEFZqO
+         12hu6ufivaHkMjNhrpggZlffwHko8oIjrlQNndTvVAraMv5lMym2yCuALjfHjZKG+2qY
+         HsujBFB9t7nFS23IHtp2QYz1s2806zdQKAkETsmN6vUivl2ree/aAN3gk8dFJJcLRkEE
+         tBG9j8xwRNmQgxucFay2CVhSBoYJ4amMt5WOGB70sZz7f+kNejm/Vf/tGHt8iEYafVwG
+         5wtoKD/I7V1lSFKTKlTZgojBBhxRt9HlmigCOwevKs/N1aXryGAM7HFuCpASVG2FniMY
+         oYLQ==
+X-Gm-Message-State: AOAM533lik97vE2QCZ/rPwpTebx5wV5Rctb7y6VO2OBj51vh2jS7T9Mo
+        ffEPx1S28q/ayo/TJSk8eG4EjWNLFVzAiM53LfMGwumwQeN+nh60FgPH+kMayqvMHd8ao7TJkCK
+        yPAOVMFjTVrks+XVf
+X-Received: by 2002:a05:620a:790:: with SMTP id 16mr9817591qka.169.1606500521548;
+        Fri, 27 Nov 2020 10:08:41 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzTJQc/pmRL8xFzMk/FHDQG/ksd1sqzwIdRRI35jLBYQnKKpX3IG3hKq5RW1K8Qd/3Nnae4aw==
+X-Received: by 2002:a05:620a:790:: with SMTP id 16mr9817579qka.169.1606500521380;
+        Fri, 27 Nov 2020 10:08:41 -0800 (PST)
 Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id r127sm6740373qke.64.2020.11.27.10.07.13
+        by smtp.gmail.com with ESMTPSA id c128sm6276198qkg.66.2020.11.27.10.08.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Nov 2020 10:07:15 -0800 (PST)
+        Fri, 27 Nov 2020 10:08:40 -0800 (PST)
 From:   trix@redhat.com
-To:     johannes.berg@intel.com, emmanuel.grumbach@intel.com,
-        luciano.coelho@intel.com, linuxwifi@intel.com,
-        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        lee.jones@linaro.org
+To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
 Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] net: iwlwifi: remove trailing semicolon in macro definition
-Date:   Fri, 27 Nov 2020 10:07:09 -0800
-Message-Id: <20201127180709.2766925-1-trix@redhat.com>
+Subject: [PATCH] net: wl1251: remove trailing semicolon in macro definition
+Date:   Fri, 27 Nov 2020 10:08:35 -0800
+Message-Id: <20201127180835.2769297-1-trix@redhat.com>
 X-Mailer: git-send-email 2.18.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -67,36 +64,22 @@ The macro use will already have a semicolon.
 
 Signed-off-by: Tom Rix <trix@redhat.com>
 ---
- drivers/net/wireless/intel/iwlwifi/dvm/rx.c      | 2 +-
- drivers/net/wireless/intel/iwlwifi/fw/api/coex.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/ti/wl1251/debugfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/rx.c b/drivers/net/wireless/intel/iwlwifi/dvm/rx.c
-index 9d55ece05020..7b2f71e48c97 100644
---- a/drivers/net/wireless/intel/iwlwifi/dvm/rx.c
-+++ b/drivers/net/wireless/intel/iwlwifi/dvm/rx.c
-@@ -318,7 +318,7 @@ iwlagn_accumulative_statistics(struct iwl_priv *priv,
- 		    (__le32 *)&priv->delta_stats._name,		\
- 		    (__le32 *)&priv->max_delta_stats._name,	\
- 		    (__le32 *)&priv->accum_stats._name,		\
--		    sizeof(*_name));
-+		    sizeof(*_name))
+diff --git a/drivers/net/wireless/ti/wl1251/debugfs.c b/drivers/net/wireless/ti/wl1251/debugfs.c
+index d48746e640cc..a1b778a0fda0 100644
+--- a/drivers/net/wireless/ti/wl1251/debugfs.c
++++ b/drivers/net/wireless/ti/wl1251/debugfs.c
+@@ -39,7 +39,7 @@ static const struct file_operations name## _ops = {			\
  
- 	ACCUM(common);
- 	ACCUM(rx_non_phy);
-diff --git a/drivers/net/wireless/intel/iwlwifi/fw/api/coex.h b/drivers/net/wireless/intel/iwlwifi/fw/api/coex.h
-index 68060085010f..8f7c9b7eeeac 100644
---- a/drivers/net/wireless/intel/iwlwifi/fw/api/coex.h
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/api/coex.h
-@@ -199,7 +199,7 @@ enum iwl_bt_mxbox_dw3 {
- 					 "\t%s: %d%s",			    \
- 					 #_field,			    \
- 					 BT_MBOX_MSG(notif, _num, _field),  \
--					 true ? "\n" : ", ");
-+					 true ? "\n" : ", ")
- enum iwl_bt_activity_grading {
- 	BT_OFF			= 0,
- 	BT_ON_NO_CONNECTION	= 1,
+ #define DEBUGFS_ADD(name, parent)					\
+ 	wl->debugfs.name = debugfs_create_file(#name, 0400, parent,	\
+-					       wl, &name## _ops);	\
++					       wl, &name## _ops)	\
+ 
+ #define DEBUGFS_DEL(name)						\
+ 	do {								\
 -- 
 2.18.4
 
