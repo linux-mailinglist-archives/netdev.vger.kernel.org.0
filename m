@@ -2,70 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E8532C695C
-	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 17:27:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DB6E2C6963
+	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 17:29:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731386AbgK0Q1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Nov 2020 11:27:02 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47026 "EHLO mail.kernel.org"
+        id S1731443AbgK0Q2a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Nov 2020 11:28:30 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:52994 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731300AbgK0Q1C (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Nov 2020 11:27:02 -0500
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 509E521D7A;
-        Fri, 27 Nov 2020 16:27:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606494421;
-        bh=2RXBZ7l1i3OanimKbEWfF/F9FByKTdx4MivKfCLvYJ8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=p+69W7Ndi6d7uBkdXTFsN8h8sjZB/XaQdBbz75R3L6zqd76In1WaLvd0B4U4s0mQz
-         ty7cqgorPAveDSz5PqJmGLI+JSk/Id53KHnY1YCtRzmFfpSJnF2tkw54ZGpu6jfZIf
-         zmquQivOcWPsFg7MSu3HPaklzrqmJNiFWUe8/ApQ=
-Date:   Fri, 27 Nov 2020 08:27:00 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Krzysztof Kozlowski <krzk@kernel.org>, Dan Murphy <dmurphy@ti.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>
-Subject: Re: [RESEND PATCH v2] dt-bindings: net: correct interrupt flags in
- examples
-Message-ID: <20201127082700.4a218688@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <3fafb016-5d9e-5e0f-9e5a-2421fbde3eb1@pengutronix.de>
-References: <20201026153620.89268-1-krzk@kernel.org>
-        <3fafb016-5d9e-5e0f-9e5a-2421fbde3eb1@pengutronix.de>
+        id S1727904AbgK0Q2a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Nov 2020 11:28:30 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kigba-0099TY-TT; Fri, 27 Nov 2020 17:28:18 +0100
+Date:   Fri, 27 Nov 2020 17:28:18 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, vivien.didelot@gmail.com, olteanv@gmail.com,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 2/4] net: dsa: Link aggregation support
+Message-ID: <20201127162818.GT2073444@lunn.ch>
+References: <20201119144508.29468-1-tobias@waldekranz.com>
+ <20201119144508.29468-3-tobias@waldekranz.com>
+ <20201120003009.GW1804098@lunn.ch>
+ <5e2d23da-7107-e45e-0ab3-72269d7b6b24@gmail.com>
+ <20201120133050.GF1804098@lunn.ch>
+ <87v9dr925a.fsf@waldekranz.com>
+ <20201126225753.GP2075216@lunn.ch>
+ <87r1of88dp.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87r1of88dp.fsf@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 27 Nov 2020 10:13:01 +0100 Marc Kleine-Budde wrote:
-> On 10/26/20 4:36 PM, Krzysztof Kozlowski wrote:
-> > GPIO_ACTIVE_x flags are not correct in the context of interrupt flags.
-> > These are simple defines so they could be used in DTS but they will not
-> > have the same meaning:
-> > 1. GPIO_ACTIVE_HIGH = 0 = IRQ_TYPE_NONE
-> > 2. GPIO_ACTIVE_LOW  = 1 = IRQ_TYPE_EDGE_RISING
-> > 
-> > Correct the interrupt flags, assuming the author of the code wanted same
-> > logical behavior behind the name "ACTIVE_xxx", this is:
-> >   ACTIVE_LOW  => IRQ_TYPE_LEVEL_LOW
-> >   ACTIVE_HIGH => IRQ_TYPE_LEVEL_HIGH
-> > 
-> > Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-> > Acked-by: Rob Herring <robh@kernel.org>
-> > Acked-by: Marc Kleine-Budde <mkl@pengutronix.de> # for tcan4x5x.txt  
-> 
-> Jakub, can you queue this patch for net/master?
+> This is a digression, but I really do not get this shift from using
+> BUG()s to WARN()s in the kernel when you detect a violated invariant. It
+> smells of "On Error Resume Next" to me.
 
-Sure! Are these correct?
+A WARN() gives you a chance to actually use the machine to collect
+logs, the kernel dump, etc. You might be able to sync the filesystems,
+reducing the damage to the disks.  With BUG(), the machine is
+dead. You cannot interact with it, all you have to go on, is what you
+can see on the disk, or what you might have logged on the serial
+console.
 
-Fixes: a1a8b4594f8d ("NFC: pn544: i2c: Add DTS Documentation")
-Fixes: 6be88670fc59 ("NFC: nxp-nci_i2c: Add I2C support to NXP NCI driver")
-Fixes: e3b329221567 ("dt-bindings: can: tcan4x5x: Update binding to use interrupt property")
+> We have to handle EWHATEVER correctly, no? I do not get what is so
+> special about ENOMEM.
+
+Nothing is particularly special about it. But looking at the current
+code base the only other error we can get is probably ETIMEDOUT from
+an MDIO read/write. But if that happens, there is probably no real
+recovery. You have no idea what state the switch is in, and all other
+MDIO calls are likely to fail in the same way.
+
+> How would a call to kmalloc have any impact on the stack? (Barring
+> exotic bugs in the allocator that would allow the heap to intrude on
+> stack memory) Or am I misunderstanding what you mean by "the stack"?
+
+I mean the network stack, top to bottom. Say we have a few vlan
+interfaces, on top of the bridge, on top of a LAG, on top of DSA, on
+top of IP over avian carriers. When setting up a LAG, what else has
+happened by the time you get your ENOMEM? What notifications have
+already happened, which some other layer has acted upon? It is not
+just LAG inside DSA which needs to unwind, it is all the actions which
+have been triggered so far.
+
+The initial design of switchdev was transactions. First there was a
+prepare call, where you validated the requested action is possible,
+and allocate resources needed, but don't actually do it. This prepare
+call is allowed to fail. Then there is a second call to actually do
+it, and that call is not allowed to fail. This structure avoids most
+of the complexity of the unwind, just free up some resources. If you
+never had to allocate the resources in the first place, better still.
+
+      Andrew
