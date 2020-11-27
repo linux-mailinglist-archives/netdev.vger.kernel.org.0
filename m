@@ -2,58 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 052A72C6B10
-	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 18:56:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8F3B2C6B30
+	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 18:59:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732631AbgK0Rzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Nov 2020 12:55:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:31718 "EHLO
+        id S1733087AbgK0R6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Nov 2020 12:58:32 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27917 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732433AbgK0Rzl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 12:55:41 -0500
+        by vger.kernel.org with ESMTP id S1732832AbgK0R6b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 12:58:31 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606499739;
+        s=mimecast20190719; t=1606499909;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=Br/IPbdHx/OaYg6xCtsKtihEPu1TMwZ+6MkhSnyxsRs=;
-        b=TPcMkM6B4KGD79RmgCzj/Rs362J1b//NTjPucs9mDzJVh93ECmI7xzjcOTWKnK/IRMJe+e
-        pwKgumN7vNw30cr44bTEVuI88PpPH23Uy51uruYs9v/sLRDtBdjD4qXaqFoy0PQU2b5d6t
-        JX1sLt0J98W2ao3W/RUZX+3/cg2LBgo=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-101-PTymUoVANlSP0jnETSz_Rg-1; Fri, 27 Nov 2020 12:55:38 -0500
-X-MC-Unique: PTymUoVANlSP0jnETSz_Rg-1
-Received: by mail-qt1-f200.google.com with SMTP id r29so3632733qtu.21
-        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 09:55:38 -0800 (PST)
+         to:to:cc:cc; bh=4LunoHOSViYokVYuRCQyRja8YCLtsagi9dLGWhl23qk=;
+        b=J+X0KHhY3a9WUY2q47gY3A6Rv1Zgz2tYurLlO7wew49c7pBDzA9cky4OOzOPZobNhYG+f/
+        BLSDsqg1SRc125GAtHDNXGGqJB4lMivGZ8cCfLPwQqWiiAQXCVPRiayfrH4/++shc5/usu
+        UBGxaLrASix8iYIe6zZMdcS8Fb1NGtk=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-585-Pa7A6kViN9mRhU1isW-zgA-1; Fri, 27 Nov 2020 12:58:28 -0500
+X-MC-Unique: Pa7A6kViN9mRhU1isW-zgA-1
+Received: by mail-qt1-f198.google.com with SMTP id v9so3651038qtw.12
+        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 09:58:27 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Br/IPbdHx/OaYg6xCtsKtihEPu1TMwZ+6MkhSnyxsRs=;
-        b=BzaX8g5YSuCnngaUyg6c6eJNcWm5SMDAB34HHLbuDK63CBfnGqoool+sm0DTALEJle
-         J7ukoXz7F/b9+45f+diew7Bf39Trrsrs2MwhkfD5+gF6/Ilu1qxYQ9gLTkpaq63+Dt/t
-         C4cl9tg4THvX4u9gma7PG3dZSa17xIM5oyC4wzYkp25QFcXJDbnLSUsGCsaoDmX6Gthz
-         asCzRJqHVwLa8vAakgNad6hZCHH7X3FSJAmWcpr+JoirPNsEiPmukvTDN7rh2GElvU63
-         eBSZtAZ/vVzuOIf9eYF43KOb3+7uGfzRmLwVxjFdgy3IHiHEqp/k8IRmJ1rQ0UuxV1Dg
-         384g==
-X-Gm-Message-State: AOAM533ZAHEestpfr2kAuyV6G5vQC2/0Qv1Umnkx4pcH+ZFWE8q+/9Ay
-        PKMp4K5WpJDXESkCRbhTyW+3qpFCZlW8SHqP6scJkQT7iIjA2Qz9u2FW5KMJHX7fEyUrIjMut8R
-        qWBPEkyOUUwEE5qau
-X-Received: by 2002:a05:620a:a9a:: with SMTP id v26mr9511052qkg.56.1606499737598;
-        Fri, 27 Nov 2020 09:55:37 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw2L15Xpt+pzKI2tQJ1Mja1bZVxZ9cJq3+yTQqjAUjwGC9JUF+NSrylLZnhZYHe6hp4SZgoPA==
-X-Received: by 2002:a05:620a:a9a:: with SMTP id v26mr9511031qkg.56.1606499737423;
-        Fri, 27 Nov 2020 09:55:37 -0800 (PST)
+        bh=4LunoHOSViYokVYuRCQyRja8YCLtsagi9dLGWhl23qk=;
+        b=AEck9Wt571ysks8ovZr49j+CRoqtykB9ATsCHXJdpDetxZa8NSNB25v5PAtwOrpsbt
+         EAwO2JAjsGqJs5p+IV5MNw+MD0uaI1y4ZKDgqD7Nq/qXyUrw/pvtsckCG9XlL148j1Eo
+         fmplyQS22SgvD6UKyF39C409vVpUXE+XFdqnUIIps4WdZwEADumGTev9KRPOfd7DykUV
+         W2cZWbHv+JboGviztDiDgQF3bH82KSgOtnkY4AabQE6bgQW1zc/Fed+TgFbVo11A10IM
+         cOtFAQuz8h/PONRIQvhyXep+3Ik9NI/FNeeQmkW91W5ma2LtAhpDCtFhEiRglqwpanNe
+         rLWA==
+X-Gm-Message-State: AOAM532BYayGJciIKZ/Z+GbWA7RfxUsZ49XWD520M1dh6tGxURheDVN/
+        +nIFoSbbC4bDIQ92O3KZNUzuIDcdcvbjK3p4hlW0gfHFcfAEWYahku1NHwV4DaZCL9MdL9wLuFQ
+        85HTtbfLzUHF/PqX2
+X-Received: by 2002:ac8:6b11:: with SMTP id w17mr9671582qts.150.1606499907475;
+        Fri, 27 Nov 2020 09:58:27 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyqc/CVfNGFpfgITGO2zbYhtL/kIf2QRQ37Phb2eGz1BpPgYqPvhZRP+ayREWsyzYkbW84qZg==
+X-Received: by 2002:ac8:6b11:: with SMTP id w17mr9671560qts.150.1606499907295;
+        Fri, 27 Nov 2020 09:58:27 -0800 (PST)
 Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id r48sm6421675qtr.21.2020.11.27.09.55.35
+        by smtp.gmail.com with ESMTPSA id s68sm6416127qkc.43.2020.11.27.09.58.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Nov 2020 09:55:36 -0800 (PST)
+        Fri, 27 Nov 2020 09:58:26 -0800 (PST)
 From:   trix@redhat.com
-To:     chunkeey@googlemail.com, kvalo@codeaurora.org, davem@davemloft.net,
-        kuba@kernel.org
+To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
+        bigeasy@linutronix.de, mpe@ellerman.id.au, lee.jones@linaro.org,
+        kieran.bingham+renesas@ideasonboard.com, dan.carpenter@oracle.com,
+        adobriyan@gmail.com
 Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] net: carl9170: remove trailing semicolon in macro definition
-Date:   Fri, 27 Nov 2020 09:55:31 -0800
-Message-Id: <20201127175531.2754461-1-trix@redhat.com>
+Subject: [PATCH] net: cisco: remove trailing semicolon in macro definition
+Date:   Fri, 27 Nov 2020 09:58:21 -0800
+Message-Id: <20201127175821.2756988-1-trix@redhat.com>
 X-Mailer: git-send-email 2.18.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -65,31 +67,22 @@ The macro use will already have a semicolon.
 
 Signed-off-by: Tom Rix <trix@redhat.com>
 ---
- drivers/net/wireless/ath/carl9170/debug.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/cisco/airo.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/carl9170/debug.c b/drivers/net/wireless/ath/carl9170/debug.c
-index 19009aafc4e1..bb40889d7c72 100644
---- a/drivers/net/wireless/ath/carl9170/debug.c
-+++ b/drivers/net/wireless/ath/carl9170/debug.c
-@@ -45,7 +45,7 @@
- #include "cmd.h"
+diff --git a/drivers/net/wireless/cisco/airo.c b/drivers/net/wireless/cisco/airo.c
+index 74acf9af2adb..ba62bb2995d9 100644
+--- a/drivers/net/wireless/cisco/airo.c
++++ b/drivers/net/wireless/cisco/airo.c
+@@ -5785,7 +5785,7 @@ static int airo_get_quality (StatusRid *status_rid, CapabilityRid *cap_rid)
+ }
  
- #define ADD(buf, off, max, fmt, args...)				\
--	off += scnprintf(&buf[off], max - off, fmt, ##args);
-+	off += scnprintf(&buf[off], max - off, fmt, ##args)
+ #define airo_get_max_quality(cap_rid) (memcmp((cap_rid)->prodName, "350", 3) ? 0x20 : 0xa0)
+-#define airo_get_avg_quality(cap_rid) (memcmp((cap_rid)->prodName, "350", 3) ? 0x10 : 0x50);
++#define airo_get_avg_quality(cap_rid) (memcmp((cap_rid)->prodName, "350", 3) ? 0x10 : 0x50)
  
- 
- struct carl9170_debugfs_fops {
-@@ -818,7 +818,7 @@ void carl9170_debugfs_register(struct ar9170 *ar)
- #define DEBUGFS_ADD(name)						\
- 	debugfs_create_file(#name, carl_debugfs_##name ##_ops.attr,	\
- 			    ar->debug_dir, ar,				\
--			    &carl_debugfs_##name ## _ops.fops);
-+			    &carl_debugfs_##name ## _ops.fops)
- 
- 	DEBUGFS_ADD(usb_tx_anch_urbs);
- 	DEBUGFS_ADD(usb_rx_pool_urbs);
+ /*------------------------------------------------------------------*/
+ /*
 -- 
 2.18.4
 
