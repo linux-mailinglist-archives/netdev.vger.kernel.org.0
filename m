@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B81A42C60C8
-	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 09:23:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BD472C60CC
+	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 09:23:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727486AbgK0IXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Nov 2020 03:23:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33060 "EHLO
+        id S1727736AbgK0IXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Nov 2020 03:23:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725980AbgK0IXB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 03:23:01 -0500
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DFD3C0613D1;
-        Fri, 27 Nov 2020 00:23:01 -0800 (PST)
-Received: by mail-pg1-x544.google.com with SMTP id w4so3732464pgg.13;
-        Fri, 27 Nov 2020 00:23:01 -0800 (PST)
+        with ESMTP id S1725980AbgK0IXT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 03:23:19 -0500
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECA90C0613D1;
+        Fri, 27 Nov 2020 00:23:19 -0800 (PST)
+Received: by mail-pg1-x542.google.com with SMTP id l17so3774816pgk.1;
+        Fri, 27 Nov 2020 00:23:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Gc7eWnisDSwnflspZV/ylxsl1sx9kw3MIByDGHLLb8w=;
-        b=qhn8gpAomZ7r9dr1lS3P0cP4zSZT5JoJ4JRDBQpT94LsCTD0o8Qa4w0ppXdZiY3bIA
-         zHFhKJov7HDaBjiq40XUIGo8jQKGxhAn3lPSy+8/x/nlj7qt68S0cpnIEhmGcb0+YC8d
-         sXv3/uODwwWWT5BLEjoaklobwNBgJtS7HVlt+YsgK+SsI16+MY/k/QAY+/CCep/wWf88
-         gbF5TUVwh4+AijS4nkf1dxd5Y58QUdGKv1bPMGAFDN0QCk7ir1U6aWTjIAAZUpm4Gy5l
-         xprNDTh+guiF96qAVTHUUkK+r4v5CfX5hXA8hrBx/sZG+zMG9CF6I3VAZX7BTEbOL9ov
-         yScw==
+        bh=ofnRM1vPxs6Z1Dh5RlbJ6mIhU4Yv5EcitgSCPhDD/xo=;
+        b=NopATpg0UMa9XOyN/DeJE4gTE8VQKs/j7vUCHqEvkGgXQOanCReUUXtgW3QtEPyWse
+         EcY75QZDB1lu9PZFSJSSRGsOoIz+omuHjMerXQV5/qh84Hr/y/a93uX8hJaLkqesNrz6
+         X+XPlTF+mIWbQd+mswDebDzD4NIqe+USkOUaFgNVoq8BysnnYiXu90vfUjACjP7P0NhY
+         w68hj2koPDc6Ef58l1kGxk9DiXfeinSJ/1DvTEbbb7k9VUSH3ZIohSfPO8vNdDzEnri1
+         pkj3QklDikg6x9uL9r6fq1/yiSjS7RX6cNpvS8LH+agxb9ze8J+bOcQ7pksyz3woFHjW
+         ciLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Gc7eWnisDSwnflspZV/ylxsl1sx9kw3MIByDGHLLb8w=;
-        b=NgY7QIdjNnh4URjPeohgBUL1KjVoep/C6wjc5rF6HocaFwTbNQtwy/jyW0UD5nn8mw
-         EmR02As3w7n4Kh7E3QcFO1yZ/cPj2HzbDSpI9CIh7X5Df4/sFanwtmtOBG4Sc1BBimJn
-         fs/HAS59R4daAO5/eFo1eReINekxRMDSntOvIcjAoEanXSST0P6GM7zwopbJqWgXwUpQ
-         lCp1K9orv8RCZMXEOtCcRdAJqIbOQAhjjMl6o8A2cRMbU4TwzxrX6rr55Mpbjjwq+qTz
-         93VWt1060m45eRCz9Pu/7DBvhguz/ICCMdAn+b5m+LXYK+PKaep6+kHuQk4azZjjWBMw
-         OmuQ==
-X-Gm-Message-State: AOAM533Nv5xLSyVkfbSHFFNC/kzXis5ZnBEeYgVwXgJSo3u0jKIACi94
-        I7m5bLJ0Z7GDAm6m3z58EliZy9cYryAWWj2g5yU=
-X-Google-Smtp-Source: ABdhPJxOObj0B/zV4XyQZjqQVr0xXk4z8IVZygRSmX3hQPJ1fq9TlD8U14gdoYwJ8NBh1VdNmd95LoATY6p3bbBTM0k=
-X-Received: by 2002:a17:90a:eb90:: with SMTP id o16mr8306990pjy.204.1606465380670;
- Fri, 27 Nov 2020 00:23:00 -0800 (PST)
+        bh=ofnRM1vPxs6Z1Dh5RlbJ6mIhU4Yv5EcitgSCPhDD/xo=;
+        b=LtBwbhhhHQvw3Cnv9rAR0NzpqvFr++yo3FFmV9a1WCXeimMMrRRpKYy9ktf/8iWGR1
+         +e73doPpzFLYQkVE05Te+QITSnWxn6/OeHtFtUe4SJN7cTzVloPM7ECcoW/aPjvD3316
+         6UDDoqPA1pkO9lHN8c774XCZCCm06t8NNQqblJtp0qEPSiUX5FX9fsYsp9eNDhGX3Oon
+         ZIJvtCd57qOuNgQgsaaygORLqvikKjZfHlgeupTv2EKCHcfj7JvNMat3hsvlVYUcSA+D
+         bpw6TnuFI4iv1O1veM/bX+XC2wbSbSnypBYUDO65ROG63siraolTEt6/yLH6OjdsnwfB
+         t5pA==
+X-Gm-Message-State: AOAM532ihRJe12EACYAMC+ajnl1vuXdGuUj+Q/nXZeC8qXDyMashrv/g
+        3eE9E7rh3fIToTzB3kq4jvCCjgyP8wnJJ5pec+8=
+X-Google-Smtp-Source: ABdhPJxFJOBZnbN7FpTKABJ39x+G42tG+0PF+3rJJT+CJRju6ebRKrIKD0kjgWByPUd+0/J3tugX53HP846kNJ6YVYA=
+X-Received: by 2002:aa7:9521:0:b029:18b:b43:6cc with SMTP id
+ c1-20020aa795210000b029018b0b4306ccmr6126287pfp.73.1606465399522; Fri, 27 Nov
+ 2020 00:23:19 -0800 (PST)
 MIME-Version: 1.0
 References: <cover.1605686678.git.xuanzhuo@linux.alibaba.com>
- <cover.1606285978.git.xuanzhuo@linux.alibaba.com> <4fd58d473f4548dc6e9e24ea9876c802d5d584b4.1606285978.git.xuanzhuo@linux.alibaba.com>
-In-Reply-To: <4fd58d473f4548dc6e9e24ea9876c802d5d584b4.1606285978.git.xuanzhuo@linux.alibaba.com>
+ <cover.1606285978.git.xuanzhuo@linux.alibaba.com> <01f59423cad1b634fe704fe238a0038fd74df3ba.1606285978.git.xuanzhuo@linux.alibaba.com>
+In-Reply-To: <01f59423cad1b634fe704fe238a0038fd74df3ba.1606285978.git.xuanzhuo@linux.alibaba.com>
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Fri, 27 Nov 2020 09:22:49 +0100
-Message-ID: <CAJ8uoz3svrWUSuFvMLt9Ae7RR2qFuMzVhizqWGvpPP1F2HwhTA@mail.gmail.com>
-Subject: Re: [PATCH bpf v2 2/2] xsk: change the tx writeable condition
+Date:   Fri, 27 Nov 2020 09:23:08 +0100
+Message-ID: <CAJ8uoz2snP+nMMnDSZOMx2-xD9ZSfBCVuqvRZhoV5tRjR5r0Xg@mail.gmail.com>
+Subject: Re: [PATCH bpf v2 1/2] xsk: replace datagram_poll by sock_poll_wait
 To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
         Magnus Karlsson <magnus.karlsson@intel.com>,
@@ -75,88 +76,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Nov 25, 2020 at 7:49 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
 >
-> Modify the tx writeable condition from the queue is not full to the
-> number of present tx queues is less than the half of the total number
-> of queues. Because the tx queue not full is a very short time, this will
-> cause a large number of EPOLLOUT events, and cause a large number of
-> process wake up.
+> datagram_poll will judge the current socket status (EPOLLIN, EPOLLOUT)
+> based on the traditional socket information (eg: sk_wmem_alloc), but
+> this does not apply to xsk. So this patch uses sock_poll_wait instead of
+> datagram_poll, and the mask is calculated by xsk_poll.
 >
 > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-
-Thank you Xuan!
+> ---
+>  net/xdp/xsk.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 
 Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-> ---
->  net/xdp/xsk.c       | 16 +++++++++++++---
->  net/xdp/xsk_queue.h |  6 ++++++
->  2 files changed, 19 insertions(+), 3 deletions(-)
->
 > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index 0df8651..22e35e9 100644
+> index b014197..0df8651 100644
 > --- a/net/xdp/xsk.c
 > +++ b/net/xdp/xsk.c
-> @@ -211,6 +211,14 @@ static int __xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp, u32 len,
->         return 0;
->  }
->
-> +static bool xsk_tx_writeable(struct xdp_sock *xs)
-> +{
-> +       if (xskq_cons_present_entries(xs->tx) > xs->tx->nentries / 2)
-> +               return false;
-> +
-> +       return true;
-> +}
-> +
->  static bool xsk_is_bound(struct xdp_sock *xs)
+> @@ -534,11 +534,13 @@ static int xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
+>  static __poll_t xsk_poll(struct file *file, struct socket *sock,
+>                              struct poll_table_struct *wait)
 >  {
->         if (READ_ONCE(xs->state) == XSK_BOUND) {
-> @@ -296,7 +304,8 @@ void xsk_tx_release(struct xsk_buff_pool *pool)
->         rcu_read_lock();
->         list_for_each_entry_rcu(xs, &pool->xsk_tx_list, tx_list) {
->                 __xskq_cons_release(xs->tx);
-> -               xs->sk.sk_write_space(&xs->sk);
-> +               if (xsk_tx_writeable(xs))
-> +                       xs->sk.sk_write_space(&xs->sk);
->         }
->         rcu_read_unlock();
->  }
-> @@ -499,7 +508,8 @@ static int xsk_generic_xmit(struct sock *sk)
+> -       __poll_t mask = datagram_poll(file, sock, wait);
+> +       __poll_t mask = 0;
+>         struct sock *sk = sock->sk;
+>         struct xdp_sock *xs = xdp_sk(sk);
+>         struct xsk_buff_pool *pool;
 >
->  out:
->         if (sent_frame)
-> -               sk->sk_write_space(sk);
-> +               if (xsk_tx_writeable(xs))
-> +                       sk->sk_write_space(sk);
->
->         mutex_unlock(&xs->mutex);
->         return err;
-> @@ -556,7 +566,7 @@ static __poll_t xsk_poll(struct file *file, struct socket *sock,
->
->         if (xs->rx && !xskq_prod_is_empty(xs->rx))
->                 mask |= EPOLLIN | EPOLLRDNORM;
-> -       if (xs->tx && !xskq_cons_is_full(xs->tx))
-> +       if (xs->tx && xsk_tx_writeable(xs))
->                 mask |= EPOLLOUT | EPOLLWRNORM;
->
->         return mask;
-> diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
-> index b936c46..b655004 100644
-> --- a/net/xdp/xsk_queue.h
-> +++ b/net/xdp/xsk_queue.h
-> @@ -307,6 +307,12 @@ static inline bool xskq_cons_is_full(struct xsk_queue *q)
->                 q->nentries;
->  }
->
-> +static inline __u64 xskq_cons_present_entries(struct xsk_queue *q)
-> +{
-> +       /* No barriers needed since data is not accessed */
-> +       return READ_ONCE(q->ring->producer) - READ_ONCE(q->ring->consumer);
-> +}
+> +       sock_poll_wait(file, sock, wait);
 > +
->  /* Functions for producers */
+>         if (unlikely(!xsk_is_bound(xs)))
+>                 return mask;
 >
->  static inline u32 xskq_prod_nb_free(struct xsk_queue *q, u32 max)
 > --
 > 1.8.3.1
 >
