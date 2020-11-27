@@ -2,83 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1F372C6AB8
-	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 18:39:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4023C2C6ABE
+	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 18:39:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732342AbgK0RjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Nov 2020 12:39:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34764 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732209AbgK0RjB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 12:39:01 -0500
-Received: from simonwunderlich.de (packetmixer.de [IPv6:2001:4d88:2000:24::c0de])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9974C0617A7
-        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 09:39:00 -0800 (PST)
-Received: from kero.packetmixer.de (p200300c59712a4e04204e2f79fd8c031.dip0.t-ipconnect.de [IPv6:2003:c5:9712:a4e0:4204:e2f7:9fd8:c031])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        id S1732366AbgK0RjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Nov 2020 12:39:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37284 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731398AbgK0RjN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Nov 2020 12:39:13 -0500
+Received: from kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by simonwunderlich.de (Postfix) with ESMTPSA id 30C37174062;
-        Fri, 27 Nov 2020 18:38:59 +0100 (CET)
-From:   Simon Wunderlich <sw@simonwunderlich.de>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org,
-        Sven Eckelmann <sven@narfation.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>
-Subject: [PATCH 3/3] batman-adv: Don't always reallocate the fragmentation skb head
-Date:   Fri, 27 Nov 2020 18:38:49 +0100
-Message-Id: <20201127173849.19208-4-sw@simonwunderlich.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201127173849.19208-1-sw@simonwunderlich.de>
-References: <20201127173849.19208-1-sw@simonwunderlich.de>
+        by mail.kernel.org (Postfix) with ESMTPSA id 04B9621534;
+        Fri, 27 Nov 2020 17:39:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606498753;
+        bh=j1DgY7r0rMQwVPcBNG2W4pflvrkcsR7Nn0kZYvEb2Ss=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=0j8EzUjAKu+0z+mAQUkB3CXGNcEbFYIqENj9gKgasYED6nKNkPWzRrF0o9Zh8bFYY
+         ufUD4pf3x2fVB0Sf272JPD3mGvgRrWph+5enO8G3pD1njUJDyq7PPaKQC7JJXYshQ8
+         NXklXCJw7Tl57KnQy271JTtuX5+F9SUf5tUoe6PU=
+Date:   Fri, 27 Nov 2020 09:39:11 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        bpf@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
+        Dany Madden <drt@linux.ibm.com>,
+        Daris A Nevil <dnevil@snmc.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Erik Stahlman <erik@vt.edu>,
+        Geoff Levand <geoff@infradead.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Ishizaki Kou <kou.ishizaki@toshiba.co.jp>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Jens Osterkamp <Jens.Osterkamp@de.ibm.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Allen <jallen@linux.vnet.ibm.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Lijun Pan <ljp@linux.ibm.com>, linuxppc-dev@lists.ozlabs.org,
+        Michael Ellerman <mpe@ellerman.id.au>, netdev@vger.kernel.org,
+        Nicolas Pitre <nico@fluxnic.net>, Paul Durrant <paul@xen.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Peter Cammaert <pc@denkart.be>,
+        Russell King <rmk@arm.linux.org.uk>,
+        Rusty Russell <rusty@rustcorp.com.au>,
+        Santiago Leon <santi_leon@yahoo.com>,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        Thomas Falcon <tlfalcon@linux.vnet.ibm.com>,
+        Utz Bacher <utz.bacher@de.ibm.com>,
+        Wei Liu <wei.liu@kernel.org>, xen-devel@lists.xenproject.org
+Subject: Re: [PATCH 0/8] Rid W=1 warnings in Net
+Message-ID: <20201127093911.05d9122a@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201126133853.3213268-1-lee.jones@linaro.org>
+References: <20201126133853.3213268-1-lee.jones@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sven Eckelmann <sven@narfation.org>
+On Thu, 26 Nov 2020 13:38:45 +0000 Lee Jones wrote:
+> Resending the stragglers.
+> 
+> This set is part of a larger effort attempting to clean-up W=1
+> kernel builds, which are currently overwhelmingly riddled with
+> niggly little warnings.
 
-When a packet is fragmented by batman-adv, the original batman-adv header
-is not modified. Only a new fragmentation is inserted between the original
-one and the ethernet header. The code must therefore make sure that it has
-a writable region of this size in the skbuff head.
-
-But it is not useful to always reallocate the skbuff by this size even when
-there would be more than enough headroom still in the skb. The reallocation
-is just to costly during in this codepath.
-
-Fixes: ee75ed88879a ("batman-adv: Fragment and send skbs larger than mtu")
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
----
- net/batman-adv/fragmentation.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
-
-diff --git a/net/batman-adv/fragmentation.c b/net/batman-adv/fragmentation.c
-index 8de1fb567fd7..1f1f5b0873b2 100644
---- a/net/batman-adv/fragmentation.c
-+++ b/net/batman-adv/fragmentation.c
-@@ -527,13 +527,14 @@ int batadv_frag_send_packet(struct sk_buff *skb,
- 		frag_header.no++;
- 	}
- 
--	/* Make room for the fragment header. */
--	if (batadv_skb_head_push(skb, header_size) < 0 ||
--	    pskb_expand_head(skb, header_size + ETH_HLEN, 0, GFP_ATOMIC) < 0) {
--		ret = -ENOMEM;
-+	/* make sure that there is at least enough head for the fragmentation
-+	 * and ethernet headers
-+	 */
-+	ret = skb_cow_head(skb, ETH_HLEN + header_size);
-+	if (ret < 0)
- 		goto put_primary_if;
--	}
- 
-+	skb_push(skb, header_size);
- 	memcpy(skb->data, &frag_header, header_size);
- 
- 	/* Send the last fragment */
--- 
-2.20.1
-
+This set doesn't apply to net-next, please rebase.
