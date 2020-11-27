@@ -2,309 +2,351 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6C2C2C6C60
-	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 21:03:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F40BA2C6C69
+	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 21:07:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731258AbgK0UDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Nov 2020 15:03:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57140 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731233AbgK0UCS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 15:02:18 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F500C061A47;
-        Fri, 27 Nov 2020 11:29:35 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id lt17so9067060ejb.3;
-        Fri, 27 Nov 2020 11:29:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CQWS0KFOZGclrXsgAFamD/N59/wMiUy4GaVAQ/IVTQQ=;
-        b=bbEqHQ0SHpXzNZZ6lUDkdI7Zrv36B6q9wKcMZ6nWddqQyOMkms+7kMHhRyydqnP5lC
-         TzzNgYCGUQNK0mBu89B4aBen+5zU1JpabGW3YPz2iEeKJYR/Gqlix6qZql3Cj4LSajLC
-         8AVTQwPCu1ZRNkmiHgkOF0a382Qoi8CqVXcyIKsXnI8KOwlN6Z3kVXTWP45fQRxY7+WA
-         tEp5z+rsKx98XLpdjrB5QsXeAMVxKxkXPNuBpQDJni5sOn/Wz9Fnz/1WmUDGbKosbB54
-         SgOb/mD1nk3qxTE1epLJBmQgm1rYbMwFT1jxU2UU6TIy588adK86mD7EFd+ufVltJaJK
-         xw2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CQWS0KFOZGclrXsgAFamD/N59/wMiUy4GaVAQ/IVTQQ=;
-        b=kSzdrXQfeCEc0JWMg93KnPQehUKhaBjeiKGV9q96sXeJ2Gkwsw4z+y9f9vQiEdk6AU
-         2NxhsdKLUXBrcQr7A9Dx5FXCJordyPx0SwZNjkw8TJa+DC6/4Rx/X/3v7TthdXDugI4H
-         s+POaUnZ8U4Y3rg6VIpGfHECkI4iFWCF2occR/5m9249yBr9dOrP3tgHymkeIZwXJh0t
-         FN/0yp2yjbnOKeLv+/j8uafhK50IhOkZDZclBwFtl9nAcpUqYdXZrITij6H0ltF5tvae
-         SM2DqIO/mq39UGyuX0svblgQex8DiJ/xLO76bzPRzqDrTOWi027ld+dzuKJAhdFhIaWF
-         sB6A==
-X-Gm-Message-State: AOAM5313/AqFIekEA8DXh0JuL4e40uFv0BDJdkz8NrP1s1dSen9LBv90
-        vL6KtS24Iid8ksKmgvyVt7g=
-X-Google-Smtp-Source: ABdhPJys+iRhVhnlJ6hsEnSQgG7iAg+ZS41ltM5kbgn+YhatkkQ3k8lCYuWwu2NDfkgXQ/Q2wx81kA==
-X-Received: by 2002:a17:906:3bd6:: with SMTP id v22mr9564484ejf.160.1606505373831;
-        Fri, 27 Nov 2020 11:29:33 -0800 (PST)
-Received: from skbuf ([188.25.2.120])
-        by smtp.gmail.com with ESMTPSA id gl2sm5313191ejb.29.2020.11.27.11.29.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Nov 2020 11:29:33 -0800 (PST)
-Date:   Fri, 27 Nov 2020 21:29:31 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Lukasz Majewski <lukma@denx.de>
-Cc:     Fugang Duan <fugang.duan@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Fabio Estevam <festevam@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Peng Fan <peng.fan@nxp.com>, stefan.agner@toradex.com,
-        krzk@kernel.org, Shawn Guo <shawnguo@kernel.org>
-Subject: Re: [RFC 0/4] net: l2switch: Provide support for L2 switch on i.MX28
- SoC
-Message-ID: <20201127192931.4arbxkttmpfcqpz5@skbuf>
-References: <20201125232459.378-1-lukma@denx.de>
- <20201126123027.ocsykutucnhpmqbt@skbuf>
- <20201127003549.3753d64a@jawa>
+        id S1731143AbgK0UGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Nov 2020 15:06:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38968 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731432AbgK0UEb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Nov 2020 15:04:31 -0500
+Received: from cakuba.hsd1.ca.comcast.net (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5425620B80;
+        Fri, 27 Nov 2020 20:04:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606507469;
+        bh=QOWTUaSUDVIgxCF3JnfMjWg59bCQYAfSI9X22UZgDnM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=dLIB5NlcKj373i2ha+29gEXbU0K1mbWI4IsNxI+ovvNSqCUJ4DZ15Zanhaaj+8L8C
+         8bqeYOcdZIHKqTEGkK6BJtDe+fIRuiXr0qzbGu/31RPQUWHJcEneImE1zNFX8hUtaI
+         Nz3PL/kBM9L6FidjcHMqAvPz5a5btmz35M8Rx/j4=
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     torvalds@linux-foundation.org
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Networking
+Date:   Fri, 27 Nov 2020 12:04:28 -0800
+Message-Id: <20201127200428.221620-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201127003549.3753d64a@jawa>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 27, 2020 at 12:35:49AM +0100, Lukasz Majewski wrote:
-> > > - The question regarding power management - at least for my use
-> > > case there is no need for runtime power management. The L2 switch
-> > > shall work always at it connects other devices.
-> > >
-> > > - The FEC clock is also used for L2 switch management and
-> > > configuration (as the L2 switch is just in the same, large IP
-> > > block). For now I just keep it enabled so DSA code can use it. It
-> > > looks a bit problematic to export fec_enet_clk_enable() to be
-> > > reused on DSA code.
-> > >
-> > > Links:
-> > > [0] - "i.MX28 Applications Processor Reference Manual, Rev. 2,
-> > > 08/2013" [1] -
-> > > https://github.com/lmajewski/linux-imx28-l2switch/commit/e3c7a6eab73401e021aef0070e1935a0dba84fb5
-> > >
-> >
-> > Disclaimer: I don't know the details of imx28, it's just now that I
-> > downloaded the reference manual to see what it's about.
-> >
-> > I would push back and say that the switch offers bridge acceleration
-> > for the FEC.
->
-> Am I correct, that the "bridge acceleration" means in-hardware support
-> for L2 packet bridging?
->
-> And without the switch IP block enabled one shall be able to have
-> software bridging in Linux in those two interfaces?
+The following changes since commit 4d02da974ea85a62074efedf354e82778f910d82:
 
-So if the switch is bypassed through pin strapping of sx_ena, then the
-DMA0 would be connected to ENETC-MAC 0, DMA1 to ENET-MAC 1, and both
-these ports could be driven by the regular fec driver, am I right? This
-is how people use the imx28 with mainline linux right now, no?
+  Merge tag 'net-5.10-rc5' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2020-11-19 13:33:16 -0800)
 
-When the sx_ena signal enables the switch, a hardware accelerator
-appears between the DMA engine and the same MACs. But that DMA engine is
-still compatible with the expectations of the fec driver. And the MACs
-still belong to the FEC. So, at the end of the day, there are still 2
-FEC interfaces.
+are available in the Git repository at:
 
-Where I was going is that from a user's perspective, it would be natural
-to have the exact same view of the system in both cases, aka still two
-network interfaces for MAC 0 and MAC 1, they still function in the same
-way (i.e. you can still ping through them) but with the additional
-ability to do hardware-accelerating bridging, if the MAC 0 and MAC 1
-network interfaces are put under the same bridge.
+  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.10-rc6
 
-Currently, you do not offer that, at all.
-You split the MTIP switch configuration between DSA and the FEC driver.
-But you are still not exposing networking-capable net devices for MAC 0
-and MAC 1. You still do I/O through the DMA engine.
+for you to fetch changes up to d0742c49cab58ee6e2de40f1958b736aedf779b6:
 
-So why use DSA at all? What benefit does it bring you? Why not do the
-entire switch configuration from within FEC, or a separate driver very
-closely related to it?
+  Merge tag 'linux-can-fixes-for-5.10-20201127' of git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can (2020-11-27 11:13:39 -0800)
 
-> > The fact that the bridge acceleration is provided by a
-> > different vendor and requires access to an extra set of register
-> > blocks is immaterial.
->
-> Am I correct that you mean not important above (i.e. immaterial == not
-> important)?
+----------------------------------------------------------------
+Networking fixes for 5.10-rc6, including fixes from the WiFi driver,
+and can subtrees.
 
-Yes, sorry if that was not clear.
+Current release - regressions:
 
-> > To qualify as a DSA switch, you need to have
-> > indirect networking I/O through a different network interface. You do
-> > not have that.
->
-> I do have eth0 (DMA0) -> MoreThanIP switch port 0 input
-> 			 |
-> 			 |----> switch port1 -> ENET-MAC0
-> 			 |
-> 			 |----> switch port2 -> ENET-MAC1
+ - gro_cells: reduce number of synchronize_net() calls
 
-The whole point of DSA is to intercept traffic from a different and
-completely unaware network interface, parse a tag, and masquerade the
-packet as though it came on a different, virtual, network interface
-corresponding to the switch. DSA offers this service so that:
-- any switch works with any host Ethernet controller
-- all vendors use the same mechanism and do not reinvent the same wheel
-The last part is especially relevant. Just grep net/core/ for "dsa" and
-be amazed at the number of hacks there. DSA can justify that only by scale.
-Aka "we have hardware that works this way, and doesn't work any other way.
-And lots of it".
+ - ch_ktls: release a lock before jumping to an error path
 
-That being said, in your case, the network interface is not unaware of
-the switch at all. Come on, you need to put the (allegedly) switch's MAC
-in promiscuous mode, from the "DSA master" driver! Hardware resource
-ownership is very DSA-unlike in the imx28/vybrid model, it seems. This
-is a very big deal.
+Current release - always broken:
 
-And there is no tag to parse. You have a switch with a DMA engine which
-is a priori known to be register-compatible with the DMA engine used for
-plain FEC interfaces. It's not like you have a switch that can be
-connected via MII to anything and everything. Force forwarding is done
-via writing a register, again very much unlike DSA, and retrieving the
-source port on RX is up in the air.
+ - tcp: Allow full IP tos/IPv6 tclass to be reflected in L3 header
 
-> > What I would do is I would expand the fec driver into
-> > something that, on capable SoCs, detects bridging of the ENET_MAC0
-> > and ENETC_MAC1 ports and configures the switch accordingly to offload
-> > that in a seamless manner for the user.
->
-> Do you propose to catch some kind of notification when user calls:
->
-> ip link add name br0 type bridge; ip link set br0 up;
-> ip link set lan1 up; ip link set lan2 up;
-> ip link set lan1 master br0; ip link set lan2 master br0;
-> bridge link
->
-> And then configure the FEC driver to use this L2 switch driver?
+Previous release - regressions:
 
-Yes, that can be summarized as:
-One option to get this upstream would be to transform fec into a
-switchdev driver, or to create a mtip switchdev driver that shares a lot
-of code with the fec driver. The correct tool for code sharing is
-EXPORT_SYMBOL_GPL, not DSA.
+ - net/tls: fix missing received data after fast remote close
 
-> > This would also solve your
-> > power management issues, since the entire Ethernet block would be
-> > handled by a single driver. DSA is a complication you do not need.
-> > Convince me otherwise.
->
-> From what I see the MoreThanIP IP block looks like a "typical" L2 switch
-> (like lan9xxx), with VLAN tagging support, static and dynamic tables,
-> forcing the packet to be passed to port [*], congestion management,
-> switch input buffer, priority of packets/queues, broadcast, multicast,
-> port snooping, and even IEEE1588 timestamps.
->
-> Seems like a lot of useful features.
+ - vsock/virtio: discard packets only when socket is really closed
 
-I did not say that it is not a typical switch, or that it doesn't have
-useful features. I said that DSA does not help you. Adding a
-DSA_TAG_PROTO_NONE driver in 2020 is a no-go all around.
+ - sock: set sk_err to ee_errno on dequeue from errq
 
-> The differences from "normal" DSA switches:
->
-> 1. It uses mapped memory (for its register space) for
-> configuration/statistics gathering (instead of e.g. SPI, I2C)
+ - cxgb4: fix the panic caused by non smac rewrite
 
-Nope, that's not a difference.
+Previous release - always broken:
 
-> 2. The TAG is not appended to the frame outgoing from the "master" FEC
-> port - it can be setup when DMA transfers packet to MTIP switch internal
-> buffer.
+ - tcp: fix corner cases around setting ECN with BPF selection
+        of congestion control
 
-That is a difference indeed. Since DSA switches are isolated from their
-host interface, and there has been a traditional separation at the
-MAC-to-MAC layer (or MAC-to-PHY-to-PHY-to-MAC in weird cases), the
-routing information is passed in-band via a header in the packet. The
-host interface has no idea that this header exists, it is just traffic
-as usual. The whole DSA infrastructure is built around intercepting and
-decoding that.
+ - tcp: fix race condition when creating child sockets from
+        syncookies on loopback interface
 
-> Note:
->
-> [*] - The same situation is in the VF610 and IMX28:
-> The ESW_FFEN register - Bit 0 -> FEN
->
-> "When set, the next frame received from port 0 (the local DMA port) is
-> forwarded to the ports defined in FD. The bit resets to zero
-> automatically when one frame from port 0 has been processed by the
-> switch (i.e. has been read from the port 0 input buffer; see Figure
-> 32-1). Therefore, the bit must be set again as necessary. See also
-> Section 32.5.8.2, "Forced Forwarding" for a description."
->
-> (Of course the "Section 32.5.8.2" is not available)
->
->
-> According to above the "tag" (engress port) is set when DMA transfers
-> the packet to input MTIP buffer. This shall allow force forwarding as
-> we can setup this bit when we normally append tag in the network stack.
->
-> I will investigate this issue - and check the port separation. If it
-> works then DSA (or switchdev) shall be used?
+ - usbnet: ipheth: fix connectivity with iOS 14
 
-Source port identification and individual egress port addressing are
-things that should behave absolutely the same regardless of whether you
-have a DSA or a pure switchdev driver. I don't think that this is clear
-enough to you. DSA with DSA_TAG_PROTO_NONE is not the shortcut you're
-looking for. Please take a look at Documentation/networking/switchdev.rst,
-it explains pretty clearly that a switchdev port must still expose the
-same interface as any other net device.
+ - tun: honor IOCB_NOWAIT flag
 
-> (A side question - DSA uses switchdev, so when one shall use switchdev
-> standalone?)
+ - net/packet: fix packet receive on L3 devices without visible
+               hard header
 
-Short answer: if the system-side packet I/O interface is Ethernet and
-the hardware ownership is clearly delineated at the boundary of that
-Ethernet port, then it should be DSA, otherwise it shouldn't.
+ - devlink: Make sure devlink instance and port are in same net
+            namespace
 
-But nonetheless, this raises a fundamental question, and I'll indulge in
-attempting to answer it more comprehensively.
+ - net: openvswitch: fix TTL decrement action netlink message format
 
-You seem to be tapping into an idea which has been circulating for a
-while, and which can be also found in Documentation/networking/dsa/dsa.rst:
+ - bonding: wait for sysfs kobject destruction before freeing
+            struct slave
 
------------------------------[cut here]-----------------------------
+ - net: stmmac: fix upstream patch applied to the wrong context
 
-TODO
-====
+ - bnxt_en: fix return value and unwind in probe error paths
 
-Making SWITCHDEV and DSA converge towards an unified codebase
--------------------------------------------------------------
+Misc:
 
-SWITCHDEV properly takes care of abstracting the networking stack with offload
-capable hardware, but does not enforce a strict switch device driver model. On
-the other DSA enforces a fairly strict device driver model, and deals with most
-of the switch specific. At some point we should envision a merger between these
-two subsystems and get the best of both worlds.
+ - devlink: add extra layer of categorization to the reload stats
+            uAPI before it's released
 
------------------------------[cut here]-----------------------------
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-IMO this is never going to happen, nor should it.
-To unify DSA and switchdev would mean to force plain switchdev drivers
-to have a stricter separation between the control path and the data
-path, a la DSA. So, just like DSA has separate drivers for the switch,
-the tagging protocol and for the DSA master, plain switchdev would need
-a separate driver too for the DMA/rings/queues, or whatever, of the
-switch (the piece of code that implements the NAPI instance). That
-driver would need to:
-(a) expose a net device for the DMA interface
-(b) fake a DSA tag that gets added by the DMA net device, just to be
-    later removed by the switchdev net device.
-This is just for compatibility with what DSA _needs_ to do to drive
-hardware that was _designed_ to work that way, and where the _hardware_
-adds that tag. But non-DSA drivers don't need any of that, nor does it
-really help them in any way! So why should we model things this way?
-I don't think the lines between plain switchdev and DSA are blurry at all.
-And especially not in this case. You should not have a networking
-interface registered to the system for DMA-0 at all, just for MAC-0 and
-MAC-1.
+----------------------------------------------------------------
+Alexander Duyck (3):
+      tcp: Allow full IP tos/IPv6 tclass to be reflected in L3 header
+      tcp: Set INET_ECN_xmit configuration in tcp_reinit_congestion_control
+      tcp: Set ECT0 bit in tos/tclass for synack when BPF needs ECN
+
+Alexandra Winter (1):
+      s390/qeth: Remove pnso workaround
+
+Anmol Karn (1):
+      rose: Fix Null pointer dereference in rose_send_frame()
+
+Antonio Borneo (1):
+      net: stmmac: fix incorrect merge of patch upstream
+
+Avraham Stern (1):
+      iwlwifi: mvm: write queue_sync_state only for sync
+
+Chi-Hsien Lin (1):
+      MAINTAINERS: update maintainers list for Cypress
+
+Eelco Chaudron (1):
+      net: openvswitch: fix TTL decrement action netlink message format
+
+Emmanuel Grumbach (2):
+      iwlwifi: mvm: use the HOT_SPOT_CMD to cancel an AUX ROC
+      iwlwifi: mvm: properly cancel a session protection for P2P
+
+Eric Dumazet (1):
+      gro_cells: reduce number of synchronize_net() calls
+
+Eyal Birger (1):
+      net/packet: fix packet receive on L3 devices without visible hard header
+
+Ezequiel Garcia (1):
+      dpaa2-eth: Fix compile error due to missing devlink support
+
+Ioana Ciornei (1):
+      dpaa2-eth: select XGMAC_MDIO for MDIO bus support
+
+Jakub Kicinski (10):
+      Merge branch 'tcp-address-issues-with-ect0-not-being-set-in-dctcp-packets'
+      Merge branch 's390-qeth-fixes-2020-11-20'
+      Merge branch 'ibmvnic-fixes-in-reset-path'
+      Merge tag 'wireless-drivers-2020-11-23' of git://git.kernel.org/.../kvalo/wireless-drivers
+      Merge branch 'fixes-for-ena-driver'
+      Merge branch 'ibmvnic-null-pointer-dereference'
+      Merge tag 'batadv-net-pullrequest-20201124' of git://git.open-mesh.org/linux-merge
+      Documentation: netdev-FAQ: suggest how to post co-dependent series
+      Merge branch 'devlink-port-attribute-fixes'
+      Merge tag 'linux-can-fixes-for-5.10-20201127' of git://git.kernel.org/.../mkl/linux-can
+
+Jamie Iles (1):
+      bonding: wait for sysfs kobject destruction before freeing struct slave
+
+Jens Axboe (1):
+      tun: honor IOCB_NOWAIT flag
+
+Jesper Dangaard Brouer (1):
+      MAINTAINERS: Update page pool entry
+
+Johannes Berg (2):
+      iwlwifi: pcie: limit memory read spin time
+      iwlwifi: pcie: set LTR to avoid completion timeout
+
+Julian Wiedmann (4):
+      s390/qeth: make af_iucv TX notification call more robust
+      s390/qeth: fix af_iucv notification race
+      s390/qeth: fix tear down of async TX buffers
+      net/af_iucv: set correct sk_protocol for child sockets
+
+Krzysztof Kozlowski (1):
+      nfc: s3fwrn5: use signed integer for parsing GPIO numbers
+
+Lijun Pan (6):
+      ibmvnic: fix call_netdevice_notifiers in do_reset
+      ibmvnic: notify peers when failover and migration happen
+      ibmvnic: skip tx timeout reset while in resetting
+      ibmvnic: fix NULL pointer dereference in reset_sub_crq_queues
+      ibmvnic: fix NULL pointer dereference in ibmvic_reset_crq
+      ibmvnic: enhance resetting status check during module exit
+
+Lincoln Ramsay (1):
+      aquantia: Remove the build_skb path
+
+Marc Kleine-Budde (4):
+      can: gs_usb: fix endianess problem with candleLight firmware
+      can: mcp251xfd: mcp251xfd_probe(): bail out if no IRQ was given
+      can: m_can: m_can_open(): remove IRQF_TRIGGER_FALLING from request_threaded_irq()'s flags
+      can: m_can: fix nominal bitiming tseg2 min for version >= 3.1
+
+Martin Habets (1):
+      MAINTAINERS: Change Solarflare maintainers
+
+Maxim Mikityanskiy (1):
+      net/tls: Protect from calling tls_dev_del for TLS RX twice
+
+Michael Chan (1):
+      bnxt_en: Release PCI regions when DMA mask setup fails during probe.
+
+Min Li (1):
+      ptp: clockmatrix: bug fix for idtcm_strverscmp
+
+Mordechay Goodstein (1):
+      iwlwifi: sta: set max HE max A-MPDU according to HE capa
+
+Moshe Shemesh (1):
+      devlink: Fix reload stats structure
+
+Oliver Hartkopp (1):
+      can: af_can: can_rx_unregister(): remove WARN() statement from list operation sanity check
+
+Pankaj Sharma (1):
+      can: m_can: m_can_dev_setup(): add support for bosch mcan version 3.3.0
+
+Paolo Abeni (1):
+      mptcp: fix NULL ptr dereference on bad MPJ
+
+Parav Pandit (2):
+      devlink: Hold rtnl lock while reading netdev attributes
+      devlink: Make sure devlink instance and port are in same net namespace
+
+Raju Rangoju (1):
+      cxgb4: fix the panic caused by non smac rewrite
+
+Ricardo Dias (1):
+      tcp: fix race condition when creating child sockets from syncookies
+
+Rohit Maheshwari (1):
+      ch_ktls: lock is not freed
+
+Sara Sharon (1):
+      iwlwifi: mvm: fix kernel panic in case of assert during CSA
+
+Shay Agroskin (3):
+      net: ena: handle bad request id in ena_netdev
+      net: ena: set initial DMA width to avoid intel iommu issue
+      net: ena: fix packet's addresses for rx_offset feature
+
+Stefano Garzarella (1):
+      vsock/virtio: discard packets only when socket is really closed
+
+Sylwester Dziedziuch (1):
+      i40e: Fix removing driver while bare-metal VFs pass traffic
+
+Taehee Yoo (1):
+      batman-adv: set .owner to THIS_MODULE
+
+Tom Rix (1):
+      rtw88: fix fw_fifo_addr check
+
+Tom Seewald (1):
+      cxgb4: Fix build failure when CONFIG_TLS=m
+
+Vadim Fedorenko (1):
+      net/tls: missing received data after fast remote close
+
+Vladimir Oltean (1):
+      enetc: Let the hardware auto-advance the taprio base-time of 0
+
+Wang Hai (1):
+      ipv6: addrlabel: fix possible memory leak in ip6addrlbl_net_init
+
+Willem de Bruijn (1):
+      sock: set sk_err to ee_errno on dequeue from errq
+
+Yan-Hsuan Chuang (1):
+      MAINTAINERS: update Yan-Hsuan's email address
+
+Yves-Alexis Perez (1):
+      usbnet: ipheth: fix connectivity with iOS 14
+
+Zhang Changzhong (2):
+      bnxt_en: fix error return code in bnxt_init_one()
+      bnxt_en: fix error return code in bnxt_init_board()
+
+ Documentation/networking/netdev-FAQ.rst            |  26 ++++
+ MAINTAINERS                                        |  16 +--
+ drivers/net/bonding/bond_main.c                    |  61 +++++++---
+ drivers/net/bonding/bond_sysfs_slave.c             |  18 +--
+ drivers/net/can/m_can/m_can.c                      |   6 +-
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c     |   4 +
+ drivers/net/can/usb/gs_usb.c                       | 131 +++++++++++----------
+ drivers/net/ethernet/amazon/ena/ena_eth_com.c      |   3 +
+ drivers/net/ethernet/amazon/ena/ena_netdev.c       |  80 +++++--------
+ drivers/net/ethernet/aquantia/atlantic/aq_ring.c   | 126 ++++++++------------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c          |   4 +-
+ drivers/net/ethernet/chelsio/Kconfig               |   2 +-
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c  |   3 +-
+ .../chelsio/inline_crypto/ch_ktls/chcr_ktls.c      |   4 +-
+ drivers/net/ethernet/freescale/dpaa2/Kconfig       |   2 +
+ drivers/net/ethernet/freescale/enetc/enetc_qos.c   |  14 +--
+ drivers/net/ethernet/ibm/ibmvnic.c                 |  23 +++-
+ drivers/net/ethernet/ibm/ibmvnic.h                 |   3 +-
+ drivers/net/ethernet/intel/i40e/i40e.h             |   1 +
+ drivers/net/ethernet/intel/i40e/i40e_main.c        |  22 ++--
+ drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c |  26 ++--
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c  |   2 +-
+ drivers/net/tun.c                                  |  14 ++-
+ drivers/net/usb/ipheth.c                           |   2 +-
+ drivers/net/wireless/intel/iwlwifi/fw/api/sta.h    |  10 +-
+ .../net/wireless/intel/iwlwifi/fw/api/time-event.h |   8 +-
+ drivers/net/wireless/intel/iwlwifi/iwl-csr.h       |  10 ++
+ drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c  |   5 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/sta.c       |  18 +++
+ .../net/wireless/intel/iwlwifi/mvm/time-event.c    | 103 ++++++++++------
+ .../wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c   |  20 ++++
+ drivers/net/wireless/intel/iwlwifi/pcie/trans.c    |  36 ++++--
+ drivers/net/wireless/realtek/rtw88/fw.c            |   2 +-
+ drivers/nfc/s3fwrn5/i2c.c                          |   4 +-
+ drivers/ptp/ptp_clockmatrix.c                      |  49 +++-----
+ drivers/s390/net/qeth_core.h                       |   9 +-
+ drivers/s390/net/qeth_core_main.c                  |  82 ++++++++-----
+ drivers/s390/net/qeth_l2_main.c                    |  18 +--
+ include/linux/netdevice.h                          |   5 +
+ include/net/bonding.h                              |   8 ++
+ include/net/inet_hashtables.h                      |   5 +-
+ include/net/tls.h                                  |   6 +
+ include/uapi/linux/devlink.h                       |   2 +
+ include/uapi/linux/openvswitch.h                   |   2 +
+ net/batman-adv/log.c                               |   1 +
+ net/can/af_can.c                                   |   7 +-
+ net/core/devlink.c                                 |  56 ++++++---
+ net/core/gro_cells.c                               |   7 +-
+ net/core/skbuff.c                                  |   2 +-
+ net/dccp/ipv4.c                                    |   2 +-
+ net/dccp/ipv6.c                                    |   2 +-
+ net/ipv4/inet_connection_sock.c                    |   2 +-
+ net/ipv4/inet_hashtables.c                         |  68 +++++++++--
+ net/ipv4/tcp_cong.c                                |   5 +
+ net/ipv4/tcp_ipv4.c                                |  28 ++++-
+ net/ipv6/addrlabel.c                               |  26 ++--
+ net/ipv6/tcp_ipv6.c                                |  26 +++-
+ net/iucv/af_iucv.c                                 |   4 +-
+ net/mptcp/subflow.c                                |   5 +-
+ net/openvswitch/actions.c                          |   7 +-
+ net/openvswitch/flow_netlink.c                     |  74 +++++++++---
+ net/packet/af_packet.c                             |  18 +--
+ net/rose/rose_loopback.c                           |  17 ++-
+ net/tls/tls_device.c                               |   5 +-
+ net/tls/tls_sw.c                                   |   6 +
+ net/vmw_vsock/virtio_transport_common.c            |   8 +-
+ 66 files changed, 864 insertions(+), 507 deletions(-)
