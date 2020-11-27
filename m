@@ -2,108 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0DEB2C6399
-	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 12:11:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F4E22C639C
+	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 12:11:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728451AbgK0LJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Nov 2020 06:09:46 -0500
-Received: from correo.us.es ([193.147.175.20]:54804 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725980AbgK0LJp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Nov 2020 06:09:45 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 11D47191918
-        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 12:09:44 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 02711DA85E
-        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 12:09:44 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id EB356DA840; Fri, 27 Nov 2020 12:09:43 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 7D100DA84F;
-        Fri, 27 Nov 2020 12:09:41 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Fri, 27 Nov 2020 12:09:41 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 4D97142EF42C;
-        Fri, 27 Nov 2020 12:09:41 +0100 (CET)
-Date:   Fri, 27 Nov 2020 12:09:41 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Julian Anastasov <ja@ssi.bg>
-Cc:     Wang Hai <wanghai38@huawei.com>, horms@verge.net.au,
-        kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
-        kuba@kernel.org, christian@brauner.io,
-        hans.schillstrom@ericsson.com, lvs-devel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v3] ipvs: fix possible memory leak in
- ip_vs_control_net_init
-Message-ID: <20201127110941.GA11008@salvia>
-References: <20201124080749.69160-1-wanghai38@huawei.com>
- <3164a9e0-962a-c54-129e-9ad780c454c8@ssi.bg>
+        id S1729175AbgK0LKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Nov 2020 06:10:00 -0500
+Received: from mail-eopbgr140093.outbound.protection.outlook.com ([40.107.14.93]:8933
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725616AbgK0LJ7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Nov 2020 06:09:59 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=j6YYngwbCSp4jYyri/xxUKyAJjmgHNDfE07AHPEQYF4s6liwbnIjcF7Xl12apMBZuwGqjrCg2KY8SAumf5dIRaUif+gM3bXLj9KF7p1w07w6jumPklA0z8SxLO+H8w5j4BjWJJyn/uskr+aduE7+2KWuVZ/ZDgQaQHDVphfsKNARhyTGWVt06OBZK2UhCaUVm8Lx3l5VloXVgYzvirapMouqL3P97Re00jVbZbc8n3FpuY6CZJzLDgF72Te87NM2HSRZrWTWvXOBeU06Ydwy1jHROFCXwyp6BVGnnRosAV5MVvzIu/fwNaKdarN928ed8XTRq+eKhST4YSrwYYT+yw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pXGeRBcgw7GvXwmobby6IW97iuOSSZtIYDiOsulzLRM=;
+ b=BeBgue7RuzpMthpBs5EMk4DPpnERa7mKm/hmPBIYuVnJD3lvr6fr9NZNZIQEIauaGrLpQPshAOolIbD35wGEwX0GZUcGzGTGbTZZ68qdShrZNzFgQemIMDpA5cYYLmznjjsh8i3d6+QrxxlcZ9z+254FXlE4iFZTRxiPZ+Hm7C0trDklWgDPlh8nYlLFShsxjDvcCrHB9rU4anCQ0RM1Ej5R6rgnX4ZLQkvVFd+boMlFWUYCQAviu7eFaw9WSbdLr8A6mCjiAOOviBD/Jii4cIrgplVLYHVco9CAEYbPM+COG9FFTggSgBJWrRJ9kvkUXtk0brDTFPTj6Xtj030a7Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=victronenergy.com; dmarc=pass action=none
+ header.from=victronenergy.com; dkim=pass header.d=victronenergy.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=victronenergy.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pXGeRBcgw7GvXwmobby6IW97iuOSSZtIYDiOsulzLRM=;
+ b=ngX63rJDEPx1YA3TuENQ6bk57LuBYwsW+2f3lwW1LfDDOtsfaLq56n1jYUONRHS5EhYuTiHqWLaHgW2Z1ugPOF1XOxUai5FaEuAn2/h/fFPUOCnhsyDqcrqqoJKRN5+Ns1mUjsCOevVeJk2lS61vME/wAP6ApZCbxurrIqsY6Vg=
+Authentication-Results: lists.infradead.org; dkim=none (message not signed)
+ header.d=none;lists.infradead.org; dmarc=none action=none
+ header.from=victronenergy.com;
+Received: from DBAPR07MB6967.eurprd07.prod.outlook.com (2603:10a6:10:192::11)
+ by DBAPR07MB6583.eurprd07.prod.outlook.com (2603:10a6:10:184::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.9; Fri, 27 Nov
+ 2020 11:09:56 +0000
+Received: from DBAPR07MB6967.eurprd07.prod.outlook.com
+ ([fe80::ad22:24cb:3fd:617c]) by DBAPR07MB6967.eurprd07.prod.outlook.com
+ ([fe80::ad22:24cb:3fd:617c%3]) with mapi id 15.20.3632.009; Fri, 27 Nov 2020
+ 11:09:56 +0000
+Subject: Re: [PATCH] can: don't count arbitration lose as an error
+To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
+Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@siol.net>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        "moderated list:ARM/Allwinner sunXi SoC support" 
+        <linux-arm-kernel@lists.infradead.org>
+References: <20201127095941.21609-1-jhofstee@victronenergy.com>
+ <434167b4-c2df-02bf-8a9c-2d4716c5435f@pengutronix.de>
+From:   Jeroen Hofstee <jhofstee@victronenergy.com>
+Message-ID: <f5f93e72-c55f-cfd3-a686-3454e42c4371@victronenergy.com>
+Date:   Fri, 27 Nov 2020 12:09:54 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <434167b4-c2df-02bf-8a9c-2d4716c5435f@pengutronix.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Originating-IP: [2001:1c01:3bc5:4e00:e791:efe6:bf00:7133]
+X-ClientProxiedBy: AM4PR0302CA0004.eurprd03.prod.outlook.com
+ (2603:10a6:205:2::17) To DBAPR07MB6967.eurprd07.prod.outlook.com
+ (2603:10a6:10:192::11)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <3164a9e0-962a-c54-129e-9ad780c454c8@ssi.bg>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2001:1c01:3bc5:4e00:e791:efe6:bf00:7133] (2001:1c01:3bc5:4e00:e791:efe6:bf00:7133) by AM4PR0302CA0004.eurprd03.prod.outlook.com (2603:10a6:205:2::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.20 via Frontend Transport; Fri, 27 Nov 2020 11:09:55 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3aabbc4f-87a5-4bee-97ad-08d892c4f8c1
+X-MS-TrafficTypeDiagnostic: DBAPR07MB6583:
+X-Microsoft-Antispam-PRVS: <DBAPR07MB6583616352EFD4FC0E4ED103C0F80@DBAPR07MB6583.eurprd07.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ytndjLFrqAXkud6qRT0DImvbk3UiihcjuwB1AdJe3dmaLakLfaWBAKsJNxjIsvFo0C6pInSVsUQfqhdVYoqUMW1fy2Na6qNQgV+yJxiS274BWGvOsJ/CDy4FpYMRE8lK/xEW+AMCRz3V9b7EXad9eqvRAbKGACRj1uI+wy4OTV3NorFHRP0niPS8L8DIfi2w5GpEJdh5SPsFUfZQx3LPioL/PepXTuAKAnC0LDSdtaS4vRazwi9lCg46bKxmzrDyqmJC7fsGn1o4b0auyt0DSrvFnaahEcaXFJ08JQtaF+kJxRgNQcnteXrtVqS4TYuxe04IsNAE2Mz3a2um1lBc7nGASe3bAQrSw7P8CN5KmqlWu/feXaeu9uagMWPEnOqJ
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DBAPR07MB6967.eurprd07.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(396003)(376002)(39850400004)(136003)(5660300002)(8936002)(53546011)(52116002)(4326008)(66556008)(478600001)(86362001)(8676002)(2616005)(316002)(66946007)(83380400001)(186003)(31686004)(66476007)(16526019)(31696002)(2906002)(36756003)(6486002)(54906003)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?Tjh2NFU2SXYrdHZoYU4vOHZLUE5FNWVvaWdFV1ZYdU5ZRFVWN3hTYjhRMXJU?=
+ =?utf-8?B?ZVJYWGRsOU1hUjQvdTRuQjNvY1l1UElLSHI0cHZEM051M1NTODdWRGkwNFBt?=
+ =?utf-8?B?aEhvRmxodFJVVm54M0hqeCt3STE4cDNVdnlVVkFTcVNaVjVmb3JTRVRkcnNZ?=
+ =?utf-8?B?UmoycHBuU2dHM1phNEd3ejRwQTBhWFMyZ3lsL0NGY2xndFJmdFU5eWt6WHhE?=
+ =?utf-8?B?dGJxZGFnWllOcjU5WWZEbmRWZWd0alU1TGl2RVYyOWplTk9FVjVjdVBUUzZM?=
+ =?utf-8?B?TE5NRUtuaFMxU0hEbEdDYW9NZHo2L24zaEVHcU9hVmQwVlIzT2pwZ1lJdTM2?=
+ =?utf-8?B?N1EvUkgza0tiRzFPK1V3V1ArcjFxbVlTcG1Md1EyQjVKdkVLZ2t6VzVLM25q?=
+ =?utf-8?B?dnQrUTVMVWlic0NJQ3NpaGdXaTh6YVp1ZXd2TXgwUDgvUnJtc3JUZFo1Z0ky?=
+ =?utf-8?B?a3gza0N2bGxrOU5DZFNlM2FwdlZyR2gvOXhTTWNZbVhBUi9YNWFNZUt6R2th?=
+ =?utf-8?B?NUtrWUpFeUtGQUlURGpSNkJyNTNpNGNQYW9EVnVlQTJoTmI1WWtDUHJOL2ZM?=
+ =?utf-8?B?b1cyN3NlTlhZSm1NYXdHLzVXdVNYV2UxMnpnM3I2NWw0ZUNpWDNyWUN1SHFY?=
+ =?utf-8?B?ankxc0dXVkRVK2FySFJ5ODg4Mzc5YlloK1dOSUhnWXVmQkhlTndONHJESmhP?=
+ =?utf-8?B?amY3RG9FRjNlWXRRRklHN0l4dmJhQ1N6M2tCWno0dkI1L050cWdsdDk4TGZi?=
+ =?utf-8?B?Myt5eUNSam9jM096amM1bHplK09OOElvOE5YVXJHNVVGZy9Ya3hBanE1RXdM?=
+ =?utf-8?B?bVFhR0FSUGQ1SDdIZGJsZXpHakhQQWJlN3BMaDhKNUc0Y05wQ29xUXZ4Y0w4?=
+ =?utf-8?B?b1hPRHZtbkppS05YT2FwWFZXWS8zVDd5ZGxGRUJWK0grcTVpWTVSQWhyYU1U?=
+ =?utf-8?B?K0JoK1VVS3Y4WGphTXJFbnhzSUpyNEhXZUdhejdnclNGei8rb2dXN1hIRmFX?=
+ =?utf-8?B?bXA1ZXdjQlNuaEJXSjZnQ25UNlVYNCtNNStQSFBzZC9aNGtPVFNqWGVDZjRL?=
+ =?utf-8?B?K3NMMndETkVFaDViQTRhNXliRWtBNlJLQUt5KzhFMXVLeTFrNFRCeFlpejhk?=
+ =?utf-8?B?Z1F0d0tWUGJSQVNveC8yVkJjd0VQNjBjK0NTdm05TU9ySGNmcjlOT2QwWGJB?=
+ =?utf-8?B?YXg5SmpHb1VCam5DYlNMMVFlVEdVY0l1VlEzaVVOM0FSTUpqSFN4SmZXSVhs?=
+ =?utf-8?B?ZzFubFRPSVRZVEF1KzExNUZOa3RGY1ZRbitTempaR29ibmFDWkNvSXN6SjZJ?=
+ =?utf-8?B?L2VXZ2lBcjdMMnZweVhUWXhlT3piZnI3SGlUQ0FlWGQ0UjZyME9OOGVwM1FL?=
+ =?utf-8?B?VEVwVi9XN3RtVkc0SW5Objk3QUNPLzFtTnlSeW0xYzF0Q0RncFFjSzZOODhF?=
+ =?utf-8?Q?5/oXNBja?=
+X-OriginatorOrg: victronenergy.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3aabbc4f-87a5-4bee-97ad-08d892c4f8c1
+X-MS-Exchange-CrossTenant-AuthSource: DBAPR07MB6967.eurprd07.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Nov 2020 11:09:55.9528
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 60b95f08-3558-4e94-b0f8-d690c498e225
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wotaMTJoSUBI88QEuJ4EJiIP4HoPVCuj7eei3V8fuxycnbaipwFzomsr9msHc45LMNzG3RtlSPPYxOrJvvALhRoMntDFLyJL4haNqK8ilK8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR07MB6583
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 24, 2020 at 08:09:19PM +0200, Julian Anastasov wrote:
-> 
-> 	Hello,
-> 
-> On Tue, 24 Nov 2020, Wang Hai wrote:
-> 
-> > kmemleak report a memory leak as follows:
-> > 
-> > BUG: memory leak
-> > unreferenced object 0xffff8880759ea000 (size 256):
-> > backtrace:
-> > [<00000000c0bf2deb>] kmem_cache_zalloc include/linux/slab.h:656 [inline]
-> > [<00000000c0bf2deb>] __proc_create+0x23d/0x7d0 fs/proc/generic.c:421
-> > [<000000009d718d02>] proc_create_reg+0x8e/0x140 fs/proc/generic.c:535
-> > [<0000000097bbfc4f>] proc_create_net_data+0x8c/0x1b0 fs/proc/proc_net.c:126
-> > [<00000000652480fc>] ip_vs_control_net_init+0x308/0x13a0 net/netfilter/ipvs/ip_vs_ctl.c:4169
-> > [<000000004c927ebe>] __ip_vs_init+0x211/0x400 net/netfilter/ipvs/ip_vs_core.c:2429
-> > [<00000000aa6b72d9>] ops_init+0xa8/0x3c0 net/core/net_namespace.c:151
-> > [<00000000153fd114>] setup_net+0x2de/0x7e0 net/core/net_namespace.c:341
-> > [<00000000be4e4f07>] copy_net_ns+0x27d/0x530 net/core/net_namespace.c:482
-> > [<00000000f1c23ec9>] create_new_namespaces+0x382/0xa30 kernel/nsproxy.c:110
-> > [<00000000098a5757>] copy_namespaces+0x2e6/0x3b0 kernel/nsproxy.c:179
-> > [<0000000026ce39e9>] copy_process+0x220a/0x5f00 kernel/fork.c:2072
-> > [<00000000b71f4efe>] _do_fork+0xc7/0xda0 kernel/fork.c:2428
-> > [<000000002974ee96>] __do_sys_clone3+0x18a/0x280 kernel/fork.c:2703
-> > [<0000000062ac0a4d>] do_syscall_64+0x33/0x40 arch/x86/entry/common.c:46
-> > [<0000000093f1ce2c>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> > 
-> > In the error path of ip_vs_control_net_init(), remove_proc_entry() needs
-> > to be called to remove the added proc entry, otherwise a memory leak
-> > will occur.
-> > 
-> > Also, add some '#ifdef CONFIG_PROC_FS' because proc_create_net* return NULL
-> > when PROC is not used.
-> > 
-> > Fixes: b17fc9963f83 ("IPVS: netns, ip_vs_stats and its procfs")
-> > Fixes: 61b1ab4583e2 ("IPVS: netns, add basic init per netns.")
-> > Reported-by: Hulk Robot <hulkci@huawei.com>
-> > Signed-off-by: Wang Hai <wanghai38@huawei.com>
-> 
-> 	Looks good to me, thanks!
-> 
-> Acked-by: Julian Anastasov <ja@ssi.bg>
+Hi,
 
-Applied, thanks.
+On 11/27/20 11:30 AM, Marc Kleine-Budde wrote:
+> On 11/27/20 10:59 AM, Jeroen Hofstee wrote:
+>> Losing arbitration is normal in a CAN-bus network, it means that a
+>> higher priority frame is being send and the pending message will be
+>> retried later. Hence most driver only increment arbitration_lost, but
+>> the sja1000 and sun4i driver also incremeant tx_error, causing errors
+>> to be reported on a normal functioning CAN-bus. So stop counting them
+>> as errors.
+> Sounds plausible.
+>
+>> For completeness, the Kvaser USB hybra also increments the tx_error
+>> on arbitration lose, but it does so in single shot. Since in that
+>> case the message is not retried, that behaviour is kept.
+> You mean only in one shot mode?
+
+Yes, well at least the function is called kvaser_usb_hydra_one_shot_fail.
+
+
+>   What about one shot mode on the sja1000 cores?
+
+
+That is a good question. I guess it will be counted as error by:
+
+         if (isrc & IRQ_TI) {
+             /* transmission buffer released */
+             if (priv->can.ctrlmode & CAN_CTRLMODE_ONE_SHOT &&
+                 !(status & SR_TCS)) {
+                 stats->tx_errors++;
+                 can_free_echo_skb(dev, 0);
+             } else {
+                 /* transmission complete */
+                 stats->tx_bytes +=
+                     priv->read_reg(priv, SJA1000_FI) & 0xf;
+                 stats->tx_packets++;
+                 can_get_echo_skb(dev, 0);
+             }
+             netif_wake_queue(dev);
+             can_led_event(dev, CAN_LED_EVENT_TX);
+         }
+
+ From the datasheet, Transmit Interrupt:
+
+"set; this bit is set whenever the transmit bufferstatus
+changes from ‘0-to-1’ (released) and the TIE bit is set
+within the interrupt enable register".
+
+I cannot test it though, since I don't have a sja1000.
+
+>
+>> Signed-off-by: Jeroen Hofstee <jhofstee@victronenergy.com>
+> I've split this into two patches, and added Fixes: lines, and pushed this for
+> now to linux-can/sja1000.
+>
+Thanks, regards,
+
+Jeroen
+
+
