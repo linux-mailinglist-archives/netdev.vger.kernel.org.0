@@ -2,453 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F0CA2C63DD
-	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 12:23:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E83772C65B6
+	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 13:28:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729601AbgK0LWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Nov 2020 06:22:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60810 "EHLO
+        id S1727455AbgK0M0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Nov 2020 07:26:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727431AbgK0LW3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 06:22:29 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ACB5C0613D1;
-        Fri, 27 Nov 2020 03:22:29 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id b63so4283419pfg.12;
-        Fri, 27 Nov 2020 03:22:29 -0800 (PST)
+        with ESMTP id S1725985AbgK0M0s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 07:26:48 -0500
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E5F8C0617A7
+        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 04:26:48 -0800 (PST)
+Received: by mail-ot1-x342.google.com with SMTP id z23so858979oti.13
+        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 04:26:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=wB5T7Wp0ow9d0QwWjAdr6c4gTHpCK7FafPVR7HcGCF8=;
-        b=IpbJlPqVae3CmPPmlSJxt6YHHwtp2BqjLM/a8W8S7NWQtZ/q8XMRdDuQoaLlrwMZwJ
-         4/9jq2Y/YDd5CNrWUA2KtKe5Dkqydja+jtWkeXpHa/GVYbiKTJHf4yRH1H09hb0/7YQR
-         9Ny2ums6rfMXm2yWDOhUb6oIgrRJu6aOH3RKZVZtxbAbhb59HWYI4macd+BP8ISGB9pl
-         dgvxAnmhqWz4Bj6RtN31Pa1cU/YtViW1y/k59wcGhyW7qmg5lvRIHkkF1VWQAsOayUrW
-         XHf6yGftg87Q49MGTx7Jg1CT7AFSadgFhfNxCzzMYZlSpnOH9RsusZO0Kk/Bqz59wCCY
-         q5cQ==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=INnUE0sM05L2oreqITOkcAXoqFYcu3Qaos8NOOfhOTQ=;
+        b=RbEhXeDCcLG6KFDkofW6vC2lhXZqLixRKztRPhHHADZRxFmCHKdxew/X6buNWyeQPm
+         SYTCpiakjEpW+R8ggJqq0BhGj1sINRcXMaxNZK9Tk6K2uGLRZup8ZfiiYKo5zWSddhXs
+         ZkaMa3TBB4WEa3vG8H4QlHbg76bimbJQoWPGEYk33YfOdQ1tFIC0mZRG4eyAW1mh6P1T
+         kfYL+YsACuuilf3sSPfHlVGeAWtM+oyTeQkb3wiXYjHLho1D1p33cNvAaGnZapYl8OaB
+         X8jFOlYbYYiWOAx24QFMufWRlk5KCUEDVZhTzFQN0nL0KeuP9RNuurTu6UfQWwl0y9oc
+         hPdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=wB5T7Wp0ow9d0QwWjAdr6c4gTHpCK7FafPVR7HcGCF8=;
-        b=E6wYw12XdfJ42VQ+ykyYNniDROxGX+cXdq4z/OED0kkIxlxlJxdM1t1D1wm9f/0YKs
-         ku43YXjaLEcz/s4pO16KUOANLmouXtY/+hSKJyDgT86P5iL6hgwiBrI0AcaXgifoEYUF
-         lqX6D4et65yHL9HbxdYK60Jh3gwzucEqND6TbdY9/2bzAivKkCuYCClXroIAu47opJDa
-         I+zb/PLoAQu+b/ASUH3mnyViMVUU9Iagcgp+3Op/icPg5S2lUloW839MDZICOW/F1Fug
-         kSW5+qUGZ3xVXTb/fdtXBPV41YptpWPKFtOJyEOG6fKE46KUHQz7p+sfaDm4W4S7ma7h
-         U48g==
-X-Gm-Message-State: AOAM530yHX6IxjUS0OHZRiAh6FseqJP4svNqbkzbArsDKdU+SdH7J9fE
-        bnt5RRhKN5ZefSkkruXv7YcrVl7HFBs=
-X-Google-Smtp-Source: ABdhPJw5EmDqGJIdSBSir8q7juqWDVXq0VKVC2HR+HiJiC0TFm3TJDOAnczyz9O39u2Z1o1ck82atw==
-X-Received: by 2002:a62:8006:0:b029:196:33f2:4dd7 with SMTP id j6-20020a6280060000b029019633f24dd7mr6555715pfd.38.1606476148972;
-        Fri, 27 Nov 2020 03:22:28 -0800 (PST)
-Received: from localhost.localdomain ([182.226.226.37])
-        by smtp.googlemail.com with ESMTPSA id k9sm7193197pfi.188.2020.11.27.03.22.26
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 27 Nov 2020 03:22:28 -0800 (PST)
-From:   bongsu.jeon2@gmail.com
-To:     krzk@kernel.org, k.opasiak@samsung.com
-Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Bongsu Jeon <bongsu.jeon@samsung.com>
-Subject: [PATCH v2 net-next 3/3] nfc: s3fwrn5: extract the common phy blocks
-Date:   Fri, 27 Nov 2020 20:22:18 +0900
-Message-Id: <1606476138-31992-1-git-send-email-bongsu.jeon2@gmail.com>
-X-Mailer: git-send-email 1.9.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=INnUE0sM05L2oreqITOkcAXoqFYcu3Qaos8NOOfhOTQ=;
+        b=T2jxWQOKL1YuMChT87abF5JVjVi4l2FeoTGsl8IsnUSzncrfdoVQSScJ7rEHZ/oHsC
+         L1pXFI6WiuNr5/NJyxFJNHe445yb6UwfQG0M9Q76tH3K2I+B2/N5BCX5R8RYykGS7FUA
+         X6S1XhE0PIZc0Xa2QSaW1TH2vZ0tAe9fbzGh2hCe6qqCCgCNFiS2VY04VNOp8s5zP2/W
+         NZtLQG0+BMrT7tMH7vshW96KUf8Pzhh+/43R1yx9m5Bny+91iJGwNRYLmS9N7LdZ77SP
+         XGXimGC4X2o3jpeviZPyGpg6S04qrTnpST3NHojbTJMmJrvoxagtKNosB789bTXYvgV5
+         kt8A==
+X-Gm-Message-State: AOAM531UnBeIN1pE9dsWTvZ/v8p4QXBrIfj6kPlfUkQlh3dZ9jW/ndsi
+        dW0UK4JPKyGoV/Ci5IhoJAUxxpUXBlyVR5fqEP5Jtg==
+X-Google-Smtp-Source: ABdhPJwdkvpfZpec4AJHnHkvroUWUD22bNL8+btJPZre9LvmpggYaMzTkVMfQJdGNDxedL3NGUqUi0acSmkdra7e+ek=
+X-Received: by 2002:a9d:7d92:: with SMTP id j18mr5921417otn.17.1606480007166;
+ Fri, 27 Nov 2020 04:26:47 -0800 (PST)
+MIME-Version: 1.0
+References: <20201125173436.1894624-1-elver@google.com> <20201125124313.593fc2b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CANpmjNP_=Awx0-eZisMXzgXxKqf7hcrZYCYzFXuebPcwZtkoLw@mail.gmail.com> <CAF=yD-JtRUjmy+12kTL=YY8Cfi_c92GVbHZ647smWmasLYiNMg@mail.gmail.com>
+In-Reply-To: <CAF=yD-JtRUjmy+12kTL=YY8Cfi_c92GVbHZ647smWmasLYiNMg@mail.gmail.com>
+From:   Marco Elver <elver@google.com>
+Date:   Fri, 27 Nov 2020 13:26:35 +0100
+Message-ID: <CANpmjNO8H9OJDTcKhg4PRVEV04Gxnb56mJY2cB9j4cH+4nznhQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: switch to storing KCOV handle directly in sk_buff
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Aleksandr Nogikh <a.nogikh@gmail.com>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Ido Schimmel <idosch@idosch.org>,
+        Florian Westphal <fw@strlen.de>,
+        Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bongsu Jeon <bongsu.jeon@samsung.com>
+On Thu, 26 Nov 2020 at 17:35, Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+> On Thu, Nov 26, 2020 at 3:19 AM Marco Elver <elver@google.com> wrote:
+[...]
+> > Will send v2.
+>
+> Does it make more sense to revert the patch that added the extensions
+> and the follow-on fixes and add a separate new patch instead?
 
-Extract the common phy blocks to reuse it.
-The UART module will use the common blocks.
+That doesn't work, because then we'll end up with a build-broken
+commit in between the reverts and the new version, because mac80211
+uses skb_get_kcov_handle().
 
-Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
----
-Changes in v2:
- - remove the common function's definition in common header file.
- - make the common phy_common.c file to define the common function.
- - wrap the lines.
- - change the Header guard.
- - remove the unused common function.
+> If adding a new field to the skb, even if only in debug builds,
+> please check with pahole how it affects struct layout if you
+> haven't yet.
 
- drivers/nfc/s3fwrn5/Makefile     |   2 +-
- drivers/nfc/s3fwrn5/i2c.c        | 114 +++++++++++++--------------------------
- drivers/nfc/s3fwrn5/phy_common.c |  60 +++++++++++++++++++++
- drivers/nfc/s3fwrn5/phy_common.h |  31 +++++++++++
- 4 files changed, 129 insertions(+), 78 deletions(-)
- create mode 100644 drivers/nfc/s3fwrn5/phy_common.c
- create mode 100644 drivers/nfc/s3fwrn5/phy_common.h
+Without KCOV:
 
-diff --git a/drivers/nfc/s3fwrn5/Makefile b/drivers/nfc/s3fwrn5/Makefile
-index d0ffa35..a5279c6 100644
---- a/drivers/nfc/s3fwrn5/Makefile
-+++ b/drivers/nfc/s3fwrn5/Makefile
-@@ -4,7 +4,7 @@
- #
- 
- s3fwrn5-objs = core.o firmware.o nci.o
--s3fwrn5_i2c-objs = i2c.o
-+s3fwrn5_i2c-objs = i2c.o phy_common.o
- 
- obj-$(CONFIG_NFC_S3FWRN5) += s3fwrn5.o
- obj-$(CONFIG_NFC_S3FWRN5_I2C) += s3fwrn5_i2c.o
-diff --git a/drivers/nfc/s3fwrn5/i2c.c b/drivers/nfc/s3fwrn5/i2c.c
-index 9a64eea..207f970 100644
---- a/drivers/nfc/s3fwrn5/i2c.c
-+++ b/drivers/nfc/s3fwrn5/i2c.c
-@@ -16,74 +16,30 @@
- #include <net/nfc/nfc.h>
- 
- #include "s3fwrn5.h"
-+#include "phy_common.h"
- 
- #define S3FWRN5_I2C_DRIVER_NAME "s3fwrn5_i2c"
- 
--#define S3FWRN5_EN_WAIT_TIME 20
--
- struct s3fwrn5_i2c_phy {
-+	struct phy_common common;
- 	struct i2c_client *i2c_dev;
--	struct nci_dev *ndev;
--
--	int gpio_en;
--	int gpio_fw_wake;
--
--	struct mutex mutex;
- 
--	enum s3fwrn5_mode mode;
- 	unsigned int irq_skip:1;
- };
- 
--static void s3fwrn5_i2c_set_wake(void *phy_id, bool wake)
--{
--	struct s3fwrn5_i2c_phy *phy = phy_id;
--
--	mutex_lock(&phy->mutex);
--	gpio_set_value(phy->gpio_fw_wake, wake);
--	msleep(S3FWRN5_EN_WAIT_TIME);
--	mutex_unlock(&phy->mutex);
--}
--
- static void s3fwrn5_i2c_set_mode(void *phy_id, enum s3fwrn5_mode mode)
- {
- 	struct s3fwrn5_i2c_phy *phy = phy_id;
- 
--	mutex_lock(&phy->mutex);
-+	mutex_lock(&phy->common.mutex);
- 
--	if (phy->mode == mode)
-+	if (s3fwrn5_phy_power_ctrl(&phy->common, mode) == false)
- 		goto out;
- 
--	phy->mode = mode;
--
--	gpio_set_value(phy->gpio_en, 1);
--	gpio_set_value(phy->gpio_fw_wake, 0);
--	if (mode == S3FWRN5_MODE_FW)
--		gpio_set_value(phy->gpio_fw_wake, 1);
--
--	if (mode != S3FWRN5_MODE_COLD) {
--		msleep(S3FWRN5_EN_WAIT_TIME);
--		gpio_set_value(phy->gpio_en, 0);
--		msleep(S3FWRN5_EN_WAIT_TIME);
--	}
--
- 	phy->irq_skip = true;
- 
- out:
--	mutex_unlock(&phy->mutex);
--}
--
--static enum s3fwrn5_mode s3fwrn5_i2c_get_mode(void *phy_id)
--{
--	struct s3fwrn5_i2c_phy *phy = phy_id;
--	enum s3fwrn5_mode mode;
--
--	mutex_lock(&phy->mutex);
--
--	mode = phy->mode;
--
--	mutex_unlock(&phy->mutex);
--
--	return mode;
-+	mutex_unlock(&phy->common.mutex);
- }
- 
- static int s3fwrn5_i2c_write(void *phy_id, struct sk_buff *skb)
-@@ -91,7 +47,7 @@ static int s3fwrn5_i2c_write(void *phy_id, struct sk_buff *skb)
- 	struct s3fwrn5_i2c_phy *phy = phy_id;
- 	int ret;
- 
--	mutex_lock(&phy->mutex);
-+	mutex_lock(&phy->common.mutex);
- 
- 	phy->irq_skip = false;
- 
-@@ -102,7 +58,7 @@ static int s3fwrn5_i2c_write(void *phy_id, struct sk_buff *skb)
- 		ret  = i2c_master_send(phy->i2c_dev, skb->data, skb->len);
- 	}
- 
--	mutex_unlock(&phy->mutex);
-+	mutex_unlock(&phy->common.mutex);
- 
- 	if (ret < 0)
- 		return ret;
-@@ -114,9 +70,9 @@ static int s3fwrn5_i2c_write(void *phy_id, struct sk_buff *skb)
- }
- 
- static const struct s3fwrn5_phy_ops i2c_phy_ops = {
--	.set_wake = s3fwrn5_i2c_set_wake,
-+	.set_wake = s3fwrn5_phy_set_wake,
- 	.set_mode = s3fwrn5_i2c_set_mode,
--	.get_mode = s3fwrn5_i2c_get_mode,
-+	.get_mode = s3fwrn5_phy_get_mode,
- 	.write = s3fwrn5_i2c_write,
- };
- 
-@@ -128,7 +84,7 @@ static int s3fwrn5_i2c_read(struct s3fwrn5_i2c_phy *phy)
- 	char hdr[4];
- 	int ret;
- 
--	hdr_size = (phy->mode == S3FWRN5_MODE_NCI) ?
-+	hdr_size = (phy->common.mode == S3FWRN5_MODE_NCI) ?
- 		NCI_CTRL_HDR_SIZE : S3FWRN5_FW_HDR_SIZE;
- 	ret = i2c_master_recv(phy->i2c_dev, hdr, hdr_size);
- 	if (ret < 0)
-@@ -137,7 +93,7 @@ static int s3fwrn5_i2c_read(struct s3fwrn5_i2c_phy *phy)
- 	if (ret < hdr_size)
- 		return -EBADMSG;
- 
--	data_len = (phy->mode == S3FWRN5_MODE_NCI) ?
-+	data_len = (phy->common.mode == S3FWRN5_MODE_NCI) ?
- 		((struct nci_ctrl_hdr *)hdr)->plen :
- 		((struct s3fwrn5_fw_header *)hdr)->len;
- 
-@@ -157,24 +113,24 @@ static int s3fwrn5_i2c_read(struct s3fwrn5_i2c_phy *phy)
- 	}
- 
- out:
--	return s3fwrn5_recv_frame(phy->ndev, skb, phy->mode);
-+	return s3fwrn5_recv_frame(phy->common.ndev, skb, phy->common.mode);
- }
- 
- static irqreturn_t s3fwrn5_i2c_irq_thread_fn(int irq, void *phy_id)
- {
- 	struct s3fwrn5_i2c_phy *phy = phy_id;
- 
--	if (!phy || !phy->ndev) {
-+	if (!phy || !phy->common.ndev) {
- 		WARN_ON_ONCE(1);
- 		return IRQ_NONE;
- 	}
- 
--	mutex_lock(&phy->mutex);
-+	mutex_lock(&phy->common.mutex);
- 
- 	if (phy->irq_skip)
- 		goto out;
- 
--	switch (phy->mode) {
-+	switch (phy->common.mode) {
- 	case S3FWRN5_MODE_NCI:
- 	case S3FWRN5_MODE_FW:
- 		s3fwrn5_i2c_read(phy);
-@@ -184,7 +140,7 @@ static irqreturn_t s3fwrn5_i2c_irq_thread_fn(int irq, void *phy_id)
- 	}
- 
- out:
--	mutex_unlock(&phy->mutex);
-+	mutex_unlock(&phy->common.mutex);
- 
- 	return IRQ_HANDLED;
- }
-@@ -197,19 +153,21 @@ static int s3fwrn5_i2c_parse_dt(struct i2c_client *client)
- 	if (!np)
- 		return -ENODEV;
- 
--	phy->gpio_en = of_get_named_gpio(np, "en-gpios", 0);
--	if (!gpio_is_valid(phy->gpio_en)) {
-+	phy->common.gpio_en = of_get_named_gpio(np, "en-gpios", 0);
-+	if (!gpio_is_valid(phy->common.gpio_en)) {
- 		/* Support also deprecated property */
--		phy->gpio_en = of_get_named_gpio(np, "s3fwrn5,en-gpios", 0);
--		if (!gpio_is_valid(phy->gpio_en))
-+		phy->common.gpio_en =
-+				of_get_named_gpio(np, "s3fwrn5,en-gpios", 0);
-+		if (!gpio_is_valid(phy->common.gpio_en))
- 			return -ENODEV;
- 	}
- 
--	phy->gpio_fw_wake = of_get_named_gpio(np, "wake-gpios", 0);
--	if (!gpio_is_valid(phy->gpio_fw_wake)) {
-+	phy->common.gpio_fw_wake = of_get_named_gpio(np, "wake-gpios", 0);
-+	if (!gpio_is_valid(phy->common.gpio_fw_wake)) {
- 		/* Support also deprecated property */
--		phy->gpio_fw_wake = of_get_named_gpio(np, "s3fwrn5,fw-gpios", 0);
--		if (!gpio_is_valid(phy->gpio_fw_wake))
-+		phy->common.gpio_fw_wake =
-+				of_get_named_gpio(np, "s3fwrn5,fw-gpios", 0);
-+		if (!gpio_is_valid(phy->common.gpio_fw_wake))
- 			return -ENODEV;
- 	}
- 
-@@ -226,8 +184,8 @@ static int s3fwrn5_i2c_probe(struct i2c_client *client,
- 	if (!phy)
- 		return -ENOMEM;
- 
--	mutex_init(&phy->mutex);
--	phy->mode = S3FWRN5_MODE_COLD;
-+	mutex_init(&phy->common.mutex);
-+	phy->common.mode = S3FWRN5_MODE_COLD;
- 	phy->irq_skip = true;
- 
- 	phy->i2c_dev = client;
-@@ -237,17 +195,19 @@ static int s3fwrn5_i2c_probe(struct i2c_client *client,
- 	if (ret < 0)
- 		return ret;
- 
--	ret = devm_gpio_request_one(&phy->i2c_dev->dev, phy->gpio_en,
--		GPIOF_OUT_INIT_HIGH, "s3fwrn5_en");
-+	ret = devm_gpio_request_one(&phy->i2c_dev->dev, phy->common.gpio_en,
-+				    GPIOF_OUT_INIT_HIGH, "s3fwrn5_en");
- 	if (ret < 0)
- 		return ret;
- 
--	ret = devm_gpio_request_one(&phy->i2c_dev->dev, phy->gpio_fw_wake,
--		GPIOF_OUT_INIT_LOW, "s3fwrn5_fw_wake");
-+	ret = devm_gpio_request_one(&phy->i2c_dev->dev,
-+				    phy->common.gpio_fw_wake,
-+				    GPIOF_OUT_INIT_LOW, "s3fwrn5_fw_wake");
- 	if (ret < 0)
- 		return ret;
- 
--	ret = s3fwrn5_probe(&phy->ndev, phy, &phy->i2c_dev->dev, &i2c_phy_ops);
-+	ret = s3fwrn5_probe(&phy->common.ndev, phy, &phy->i2c_dev->dev,
-+			    &i2c_phy_ops);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -255,7 +215,7 @@ static int s3fwrn5_i2c_probe(struct i2c_client *client,
- 		s3fwrn5_i2c_irq_thread_fn, IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
- 		S3FWRN5_I2C_DRIVER_NAME, phy);
- 	if (ret)
--		s3fwrn5_remove(phy->ndev);
-+		s3fwrn5_remove(phy->common.ndev);
- 
- 	return ret;
- }
-@@ -264,7 +224,7 @@ static int s3fwrn5_i2c_remove(struct i2c_client *client)
- {
- 	struct s3fwrn5_i2c_phy *phy = i2c_get_clientdata(client);
- 
--	s3fwrn5_remove(phy->ndev);
-+	s3fwrn5_remove(phy->common.ndev);
- 
- 	return 0;
- }
-diff --git a/drivers/nfc/s3fwrn5/phy_common.c b/drivers/nfc/s3fwrn5/phy_common.c
-new file mode 100644
-index 0000000..e333764
---- /dev/null
-+++ b/drivers/nfc/s3fwrn5/phy_common.c
-@@ -0,0 +1,60 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Link Layer for Samsung S3FWRN5 NCI based Driver
-+ *
-+ * Copyright (C) 2015 Samsung Electrnoics
-+ * Robert Baldyga <r.baldyga@samsung.com>
-+ * Copyright (C) 2020 Samsung Electrnoics
-+ * Bongsu Jeon <bongsu.jeon@samsung.com>
-+ */
-+
-+#include <linux/gpio.h>
-+#include <linux/delay.h>
-+
-+#include "s3fwrn5.h"
-+#include "phy_common.h"
-+
-+void s3fwrn5_phy_set_wake(void *phy_id, bool wake)
-+{
-+	struct phy_common *phy = phy_id;
-+
-+	mutex_lock(&phy->mutex);
-+	gpio_set_value(phy->gpio_fw_wake, wake);
-+	msleep(S3FWRN5_EN_WAIT_TIME);
-+	mutex_unlock(&phy->mutex);
-+}
-+
-+bool s3fwrn5_phy_power_ctrl(struct phy_common *phy, enum s3fwrn5_mode mode)
-+{
-+	if (phy->mode == mode)
-+		return false;
-+
-+	phy->mode = mode;
-+
-+	gpio_set_value(phy->gpio_en, 1);
-+	gpio_set_value(phy->gpio_fw_wake, 0);
-+	if (mode == S3FWRN5_MODE_FW)
-+		gpio_set_value(phy->gpio_fw_wake, 1);
-+
-+	if (mode != S3FWRN5_MODE_COLD) {
-+		msleep(S3FWRN5_EN_WAIT_TIME);
-+		gpio_set_value(phy->gpio_en, 0);
-+		msleep(S3FWRN5_EN_WAIT_TIME);
-+	}
-+
-+	return true;
-+}
-+
-+enum s3fwrn5_mode s3fwrn5_phy_get_mode(void *phy_id)
-+{
-+	struct phy_common *phy = phy_id;
-+	enum s3fwrn5_mode mode;
-+
-+	mutex_lock(&phy->mutex);
-+
-+	mode = phy->mode;
-+
-+	mutex_unlock(&phy->mutex);
-+
-+	return mode;
-+}
-diff --git a/drivers/nfc/s3fwrn5/phy_common.h b/drivers/nfc/s3fwrn5/phy_common.h
-new file mode 100644
-index 0000000..b920f7f
---- /dev/null
-+++ b/drivers/nfc/s3fwrn5/phy_common.h
-@@ -0,0 +1,31 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later
-+ *
-+ * Link Layer for Samsung S3FWRN5 NCI based Driver
-+ *
-+ * Copyright (C) 2015 Samsung Electrnoics
-+ * Robert Baldyga <r.baldyga@samsung.com>
-+ * Copyright (C) 2020 Samsung Electrnoics
-+ * Bongsu Jeon <bongsu.jeon@samsung.com>
-+ */
-+
-+#ifndef __NFC_S3FWRN5_PHY_COMMON_H
-+#define __NFC_S3FWRN5_PHY_COMMON_H
-+
-+#define S3FWRN5_EN_WAIT_TIME 20
-+
-+struct phy_common {
-+	struct nci_dev *ndev;
-+
-+	int gpio_en;
-+	int gpio_fw_wake;
-+
-+	struct mutex mutex;
-+
-+	enum s3fwrn5_mode mode;
-+};
-+
-+void s3fwrn5_phy_set_wake(void *phy_id, bool wake);
-+bool s3fwrn5_phy_power_ctrl(struct phy_common *phy, enum s3fwrn5_mode mode);
-+enum s3fwrn5_mode s3fwrn5_phy_get_mode(void *phy_id);
-+
-+#endif /* __NFC_S3FWRN5_PHY_COMMON_H */
--- 
-1.9.1
+        /* size: 224, cachelines: 4, members: 72 */
+        /* sum members: 217, holes: 1, sum holes: 2 */
+        /* sum bitfield members: 36 bits, bit holes: 2, sum bit holes: 4 bits */
+        /* forced alignments: 2 */
+        /* last cacheline: 32 bytes */
 
+With KCOV:
+
+        /* size: 232, cachelines: 4, members: 73 */
+        /* sum members: 225, holes: 1, sum holes: 2 */
+        /* sum bitfield members: 36 bits, bit holes: 2, sum bit holes: 4 bits */
+        /* forced alignments: 2 */
+        /* last cacheline: 40 bytes */
+
+
+> The skb_extensions idea was mine. Apologies for steering
+> this into an apparently unsuccessful direction. Adding new fields
+> to skb is very rare because possibly problematic wrt allocation.
