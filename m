@@ -2,87 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8F3B2C6B30
-	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 18:59:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AAB92C6B42
+	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 19:07:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733087AbgK0R6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Nov 2020 12:58:32 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27917 "EHLO
+        id S1732469AbgK0SG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Nov 2020 13:06:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29617 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732832AbgK0R6b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 12:58:31 -0500
+        by vger.kernel.org with ESMTP id S1732453AbgK0SG2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 13:06:28 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606499909;
+        s=mimecast20190719; t=1606500387;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=4LunoHOSViYokVYuRCQyRja8YCLtsagi9dLGWhl23qk=;
-        b=J+X0KHhY3a9WUY2q47gY3A6Rv1Zgz2tYurLlO7wew49c7pBDzA9cky4OOzOPZobNhYG+f/
-        BLSDsqg1SRc125GAtHDNXGGqJB4lMivGZ8cCfLPwQqWiiAQXCVPRiayfrH4/++shc5/usu
-        UBGxaLrASix8iYIe6zZMdcS8Fb1NGtk=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-585-Pa7A6kViN9mRhU1isW-zgA-1; Fri, 27 Nov 2020 12:58:28 -0500
-X-MC-Unique: Pa7A6kViN9mRhU1isW-zgA-1
-Received: by mail-qt1-f198.google.com with SMTP id v9so3651038qtw.12
-        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 09:58:27 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=4LunoHOSViYokVYuRCQyRja8YCLtsagi9dLGWhl23qk=;
-        b=AEck9Wt571ysks8ovZr49j+CRoqtykB9ATsCHXJdpDetxZa8NSNB25v5PAtwOrpsbt
-         EAwO2JAjsGqJs5p+IV5MNw+MD0uaI1y4ZKDgqD7Nq/qXyUrw/pvtsckCG9XlL148j1Eo
-         fmplyQS22SgvD6UKyF39C409vVpUXE+XFdqnUIIps4WdZwEADumGTev9KRPOfd7DykUV
-         W2cZWbHv+JboGviztDiDgQF3bH82KSgOtnkY4AabQE6bgQW1zc/Fed+TgFbVo11A10IM
-         cOtFAQuz8h/PONRIQvhyXep+3Ik9NI/FNeeQmkW91W5ma2LtAhpDCtFhEiRglqwpanNe
-         rLWA==
-X-Gm-Message-State: AOAM532BYayGJciIKZ/Z+GbWA7RfxUsZ49XWD520M1dh6tGxURheDVN/
-        +nIFoSbbC4bDIQ92O3KZNUzuIDcdcvbjK3p4hlW0gfHFcfAEWYahku1NHwV4DaZCL9MdL9wLuFQ
-        85HTtbfLzUHF/PqX2
-X-Received: by 2002:ac8:6b11:: with SMTP id w17mr9671582qts.150.1606499907475;
-        Fri, 27 Nov 2020 09:58:27 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyqc/CVfNGFpfgITGO2zbYhtL/kIf2QRQ37Phb2eGz1BpPgYqPvhZRP+ayREWsyzYkbW84qZg==
-X-Received: by 2002:ac8:6b11:: with SMTP id w17mr9671560qts.150.1606499907295;
-        Fri, 27 Nov 2020 09:58:27 -0800 (PST)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id s68sm6416127qkc.43.2020.11.27.09.58.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Nov 2020 09:58:26 -0800 (PST)
-From:   trix@redhat.com
-To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        bigeasy@linutronix.de, mpe@ellerman.id.au, lee.jones@linaro.org,
-        kieran.bingham+renesas@ideasonboard.com, dan.carpenter@oracle.com,
-        adobriyan@gmail.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] net: cisco: remove trailing semicolon in macro definition
-Date:   Fri, 27 Nov 2020 09:58:21 -0800
-Message-Id: <20201127175821.2756988-1-trix@redhat.com>
-X-Mailer: git-send-email 2.18.4
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=/5rl1vKmU5BfrP5W4yGSe4C/fK750/Dlz037Ebxqyw8=;
+        b=JOkVLIbRVajJyWa/MS67jS4ZKJDaO+QE2PeQMmnFSlNPIIkNZRNvQMmQePMO6toWqy+D/e
+        G+zn/d7kHEfe8F5SMZtKVByZH3fO6Jn7rZO4yK9hOqKe67c1cZ3+XBTKiWPmIgYQe8ttZv
+        YZtra1VZ6RxbakKYcW4xnWnogVjt+NY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-487-I16DNoxpP2yYrcKIjcNYsg-1; Fri, 27 Nov 2020 13:06:24 -0500
+X-MC-Unique: I16DNoxpP2yYrcKIjcNYsg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5B399100C604;
+        Fri, 27 Nov 2020 18:06:22 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.40.208.7])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BDCC31001281;
+        Fri, 27 Nov 2020 18:06:18 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 9186132138453;
+        Fri, 27 Nov 2020 19:06:17 +0100 (CET)
+Subject: [PATCH bpf-next V8 0/8] bpf: New approach for BPF MTU handling
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        colrack@gmail.com
+Date:   Fri, 27 Nov 2020 19:06:17 +0100
+Message-ID: <160650034591.2890576.1092952641487480652.stgit@firesoul>
+User-Agent: StGit/0.19
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+This patchset drops all the MTU checks in TC BPF-helpers that limits
+growing the packet size. This is done because these BPF-helpers doesn't
+take redirect into account, which can result in their MTU check being done
+against the wrong netdev.
 
-The macro use will already have a semicolon.
+The new approach is to give BPF-programs knowledge about the MTU on a
+netdev (via ifindex) and fib route lookup level. Meaning some BPF-helpers
+are added and extended to make it possible to do MTU checks in the
+BPF-code.
 
-Signed-off-by: Tom Rix <trix@redhat.com>
+If BPF-prog doesn't comply with the MTU then the packet will eventually
+get dropped as some other layer. In some cases the existing kernel MTU
+checks will drop the packet, but there are also cases where BPF can bypass
+these checks. Specifically doing TC-redirect from ingress step
+(sch_handle_ingress) into egress code path (basically calling
+dev_queue_xmit()). It is left up to driver code to handle these kind of
+MTU violations.
+
+One advantage of this approach is that it ingress-to-egress BPF-prog can
+send information via packet data. With the MTU checks removed in the
+helpers, and also not done in skb_do_redirect() call, this allows for an
+ingress BPF-prog to communicate with an egress BPF-prog via packet data,
+as long as egress BPF-prog remove this prior to transmitting packet.
+
+This patchset is primarily focused on TC-BPF, but I've made sure that the
+MTU BPF-helpers also works for XDP BPF-programs.
+
+V2: Change BPF-helper API from lookup to check.
+V3: Drop enforcement of MTU in net-core, leave it to drivers.
+V4: Keep sanity limit + netdev "up" checks + rename BPF-helper.
+V5: Fix uninit variable + name struct output member mtu_result.
+V6: Use bpf_check_mtu() in selftest
+V7: Fix logic using tot_len and add another selftest
+V8: Add better selftests for BPF-helper bpf_check_mtu
+
 ---
- drivers/net/wireless/cisco/airo.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/cisco/airo.c b/drivers/net/wireless/cisco/airo.c
-index 74acf9af2adb..ba62bb2995d9 100644
---- a/drivers/net/wireless/cisco/airo.c
-+++ b/drivers/net/wireless/cisco/airo.c
-@@ -5785,7 +5785,7 @@ static int airo_get_quality (StatusRid *status_rid, CapabilityRid *cap_rid)
- }
- 
- #define airo_get_max_quality(cap_rid) (memcmp((cap_rid)->prodName, "350", 3) ? 0x20 : 0xa0)
--#define airo_get_avg_quality(cap_rid) (memcmp((cap_rid)->prodName, "350", 3) ? 0x10 : 0x50);
-+#define airo_get_avg_quality(cap_rid) (memcmp((cap_rid)->prodName, "350", 3) ? 0x10 : 0x50)
- 
- /*------------------------------------------------------------------*/
- /*
--- 
-2.18.4
+Jesper Dangaard Brouer (8):
+      bpf: Remove MTU check in __bpf_skb_max_len
+      bpf: fix bpf_fib_lookup helper MTU check for SKB ctx
+      bpf: bpf_fib_lookup return MTU value as output when looked up
+      bpf: add BPF-helper for MTU checking
+      bpf: drop MTU check when doing TC-BPF redirect to ingress
+      bpf: make it possible to identify BPF redirected SKBs
+      selftests/bpf: use bpf_check_mtu in selftest test_cls_redirect
+      bpf/selftests: tests using bpf_check_mtu BPF-helper
+
+
+ include/linux/netdevice.h                          |   31 +++
+ include/uapi/linux/bpf.h                           |   78 +++++++-
+ net/core/dev.c                                     |   21 --
+ net/core/filter.c                                  |  184 ++++++++++++++++--
+ net/sched/Kconfig                                  |    1 
+ tools/include/uapi/linux/bpf.h                     |   78 +++++++-
+ tools/testing/selftests/bpf/prog_tests/check_mtu.c |  204 ++++++++++++++++++++
+ tools/testing/selftests/bpf/progs/test_check_mtu.c |  196 +++++++++++++++++++
+ .../selftests/bpf/progs/test_cls_redirect.c        |    7 +
+ 9 files changed, 757 insertions(+), 43 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/check_mtu.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_check_mtu.c
+
+--
 
