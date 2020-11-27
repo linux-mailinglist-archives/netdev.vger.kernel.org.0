@@ -2,144 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E87A52C74CA
-	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:23:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CCC82C74FA
+	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:23:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388375AbgK1Vtg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Nov 2020 16:49:36 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34879 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726761AbgK0Tpr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 14:45:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606506301;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=31NOEUXtFUEIoIEb6DlkLDhejAmEOpd+ygD8P/D1wQM=;
-        b=Uih4f8lLdRqqPFfjpjGNRoe0L0WH4G3S3iNiu5WMf2ImlTkrPhSpFSu38Sq50NKIYWnEGc
-        8/5zAfpa3+1C6RFUj4Zt6EBqBXKQsU7btqHMuSNvZXyxUdDW+n/+jFrmfXMl422lWSANSY
-        Diw9NIDXgdWnvxWxA9ELm1OcnFVAL5o=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-306-SdjNm4ZuPdOPv6ae6XBojg-1; Fri, 27 Nov 2020 14:38:49 -0500
-X-MC-Unique: SdjNm4ZuPdOPv6ae6XBojg-1
-Received: by mail-qv1-f72.google.com with SMTP id i11so3574954qvo.11
-        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 11:38:49 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=31NOEUXtFUEIoIEb6DlkLDhejAmEOpd+ygD8P/D1wQM=;
-        b=UTRvyAeUuSkdAp3Tr3RfMpwaKy9UXafMbv4ACqO6OS/A4nMWraCdvHMaFLLuWI01xY
-         vkI5Lf/Tu6cxeUAKV1GS3iNNlalRZcjm3BPlBm4EN4LKv+pyI3H4W49fK8QqpNWsH/1+
-         lHz61noCLh1NdDerPJLGEL4XWJkDwv5ybp8uN7DZWghXDWXPRTlA4FG+wNVrzcxFD1Ri
-         58/8k2PNY+ff5ojrfH1rwTSm+LTSSKPc/dDS9R5AhOQNNzwsWjxDlJlv9MgRioI4V4Tt
-         o14TaHoLTO/aNsf3NCu/Ot74Ya2mOlKE06yoPUUkEBfT3ssIwzYJKnuNir2Rb4UAwl5C
-         SThQ==
-X-Gm-Message-State: AOAM530Xzaz0PiqRzrvO8NACxKAc6ClHpHoB6QorDDsG3g1j3FXKgb0p
-        8Cm9qYWtWmEZRVXs9doRF4YoovZVqc5ZYkXZRKeiZwdLY+7iwlpQIYeHpKKEfY3exVy7soLXpdM
-        xmX1/jpUYmLMN7hRb
-X-Received: by 2002:a37:951:: with SMTP id 78mr10345090qkj.47.1606505928153;
-        Fri, 27 Nov 2020 11:38:48 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyNdAzcStuIXMbmSP+HLLVyItdCLz8IAxD+7vIdJYPeS0NmSpe1Cx1gjQIUHKU6nd921G5yKw==
-X-Received: by 2002:a37:951:: with SMTP id 78mr10345076qkj.47.1606505927966;
-        Fri, 27 Nov 2020 11:38:47 -0800 (PST)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id v31sm3444876qtd.29.2020.11.27.11.38.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Nov 2020 11:38:47 -0800 (PST)
-From:   trix@redhat.com
-To:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] mac80211: remove trailing semicolon in macro definition
-Date:   Fri, 27 Nov 2020 11:38:42 -0800
-Message-Id: <20201127193842.2876355-1-trix@redhat.com>
-X-Mailer: git-send-email 2.18.4
+        id S2388527AbgK1Vtk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Nov 2020 16:49:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55554 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730619AbgK0TwS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 14:52:18 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 902C7C08ED7E;
+        Fri, 27 Nov 2020 11:39:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=zh33VXt2kD9yseJRxvL3v4GkB6ZavkT8ap7D2dRM1n8=; b=Kxodjbz5/uSV3yCNi49zqnvc9d
+        3raTqFO3DiDczmMVk1/JjntTXeZ/X77jY563rcj7pjhEu1BJGTUKoPczByUNK/PIs51HKBFkx07ZX
+        9CTkD5y1ChxR2ODhz1KXEEeJQWSeUrD5ourjvkNfwGkX8dNq2AC94Qtp1eaBSfdM8+dJJ5QyXu9t0
+        HO1kFuDTP3fu+Swwwy3nCaiSC8J0IrbHiExcFLV2Vvdp3CYFs0c3WAfl8Tg6TdkNt0mfJwcUmYy0u
+        jKfb7/97qOSSdbg8dXfAD0KGuolv1NIuONfs7jvm5+ypn+Wq94EbneCCQgBNsNe85jUvdbRspjEpk
+        aZWL6cMw==;
+Received: from [2602:306:c5a2:a380:9e7b:efff:fe40:2b26]
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kijaQ-0005cI-6b; Fri, 27 Nov 2020 19:39:18 +0000
+Subject: Re: [PATCH 2/2] powerpc/ps3: make system bus's remove and shutdown
+ callbacks return void
+To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Jens Axboe <axboe@kernel.dk>, Jim Paris <jim@jtan.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        linuxppc-dev@lists.ozlabs.org, alsa-devel@alsa-project.org,
+        linux-block@vger.kernel.org, netdev@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
+References: <20201126165950.2554997-1-u.kleine-koenig@pengutronix.de>
+ <20201126165950.2554997-2-u.kleine-koenig@pengutronix.de>
+From:   Geoff Levand <geoff@infradead.org>
+Message-ID: <d3705daf-f48c-20a8-e3a8-a2f121099a16@infradead.org>
+Date:   Fri, 27 Nov 2020 11:39:12 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <20201126165950.2554997-2-u.kleine-koenig@pengutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+On 11/26/20 8:59 AM, Uwe Kleine-König wrote:
+> The driver core ignores the return value of struct device_driver::remove
+> because there is only little that can be done. For the shutdown callback
+> it's ps3_system_bus_shutdown() which ignores the return value.
+> 
+> To simplify the quest to make struct device_driver::remove return void,
+> let struct ps3_system_bus_driver::remove return void, too. All users
+> already unconditionally return 0, this commit makes it obvious that
+> returning an error code is a bad idea and ensures future users behave
+> accordingly.
+> 
+> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-The macro use will already have a semicolon.
+Seems OK with v5.9 on PS3.
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- net/mac80211/debugfs.c        | 2 +-
- net/mac80211/debugfs_key.c    | 2 +-
- net/mac80211/debugfs_netdev.c | 6 +++---
- net/mac80211/debugfs_sta.c    | 2 +-
- 4 files changed, 6 insertions(+), 6 deletions(-)
-
-diff --git a/net/mac80211/debugfs.c b/net/mac80211/debugfs.c
-index 90470392fdaa..48f144f107d5 100644
---- a/net/mac80211/debugfs.c
-+++ b/net/mac80211/debugfs.c
-@@ -53,7 +53,7 @@ static const struct file_operations name## _ops = {			\
- 	DEBUGFS_READONLY_FILE_OPS(name)
- 
- #define DEBUGFS_ADD(name)						\
--	debugfs_create_file(#name, 0400, phyd, local, &name## _ops);
-+	debugfs_create_file(#name, 0400, phyd, local, &name## _ops)
- 
- #define DEBUGFS_ADD_MODE(name, mode)					\
- 	debugfs_create_file(#name, mode, phyd, local, &name## _ops);
-diff --git a/net/mac80211/debugfs_key.c b/net/mac80211/debugfs_key.c
-index 98a713475e0f..f53dec8a3d5c 100644
---- a/net/mac80211/debugfs_key.c
-+++ b/net/mac80211/debugfs_key.c
-@@ -319,7 +319,7 @@ KEY_OPS(key);
- 
- #define DEBUGFS_ADD(name) \
- 	debugfs_create_file(#name, 0400, key->debugfs.dir, \
--			    key, &key_##name##_ops);
-+			    key, &key_##name##_ops)
- #define DEBUGFS_ADD_W(name) \
- 	debugfs_create_file(#name, 0600, key->debugfs.dir, \
- 			    key, &key_##name##_ops);
-diff --git a/net/mac80211/debugfs_netdev.c b/net/mac80211/debugfs_netdev.c
-index 9fc8ce214322..0ad3860852ff 100644
---- a/net/mac80211/debugfs_netdev.c
-+++ b/net/mac80211/debugfs_netdev.c
-@@ -642,7 +642,7 @@ IEEE80211_IF_FILE(dot11MeshConnectedToAuthServer,
- 
- #define DEBUGFS_ADD_MODE(name, mode) \
- 	debugfs_create_file(#name, mode, sdata->vif.debugfs_dir, \
--			    sdata, &name##_ops);
-+			    sdata, &name##_ops)
- 
- #define DEBUGFS_ADD(name) DEBUGFS_ADD_MODE(name, 0400)
- 
-@@ -711,7 +711,7 @@ static void add_mesh_stats(struct ieee80211_sub_if_data *sdata)
- 	struct dentry *dir = debugfs_create_dir("mesh_stats",
- 						sdata->vif.debugfs_dir);
- #define MESHSTATS_ADD(name)\
--	debugfs_create_file(#name, 0400, dir, sdata, &name##_ops);
-+	debugfs_create_file(#name, 0400, dir, sdata, &name##_ops)
- 
- 	MESHSTATS_ADD(fwded_mcast);
- 	MESHSTATS_ADD(fwded_unicast);
-@@ -728,7 +728,7 @@ static void add_mesh_config(struct ieee80211_sub_if_data *sdata)
- 						sdata->vif.debugfs_dir);
- 
- #define MESHPARAMS_ADD(name) \
--	debugfs_create_file(#name, 0600, dir, sdata, &name##_ops);
-+	debugfs_create_file(#name, 0600, dir, sdata, &name##_ops)
- 
- 	MESHPARAMS_ADD(dot11MeshMaxRetries);
- 	MESHPARAMS_ADD(dot11MeshRetryTimeout);
-diff --git a/net/mac80211/debugfs_sta.c b/net/mac80211/debugfs_sta.c
-index 6a51b8b58f9e..eb4bb79d936a 100644
---- a/net/mac80211/debugfs_sta.c
-+++ b/net/mac80211/debugfs_sta.c
-@@ -985,7 +985,7 @@ STA_OPS(he_capa);
- 
- #define DEBUGFS_ADD(name) \
- 	debugfs_create_file(#name, 0400, \
--		sta->debugfs_dir, sta, &sta_ ##name## _ops);
-+		sta->debugfs_dir, sta, &sta_ ##name## _ops)
- 
- #define DEBUGFS_ADD_COUNTER(name, field)				\
- 	debugfs_create_ulong(#name, 0400, sta->debugfs_dir, &sta->field);
--- 
-2.18.4
+Tested by: Geoff Levand <geoff@infradead.org>
 
