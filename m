@@ -2,134 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADF532C6882
-	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 16:14:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28D182C6883
+	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 16:14:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730045AbgK0PMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Nov 2020 10:12:24 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:58189 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729113AbgK0PMY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 10:12:24 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@nvidia.com)
-        with SMTP; 27 Nov 2020 17:12:22 +0200
-Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0ARFCLbJ021792;
-        Fri, 27 Nov 2020 17:12:21 +0200
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, Vlad Buslov <vladbu@nvidia.com>
-Subject: [PATCH net-next] net: sched: remove redundant 'rtnl_held' argument
-Date:   Fri, 27 Nov 2020 17:12:05 +0200
-Message-Id: <20201127151205.23492-1-vladbu@nvidia.com>
-X-Mailer: git-send-email 2.21.0
+        id S1730171AbgK0PMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Nov 2020 10:12:50 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:9448 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729113AbgK0PMu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 10:12:50 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fc117790000>; Fri, 27 Nov 2020 07:12:57 -0800
+Received: from [10.26.72.188] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 27 Nov
+ 2020 15:12:40 +0000
+Subject: Re: [PATCH net-next v2 0/2] Add support for DSFP transceiver type
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Jakub Kicinski <kuba@kernel.org>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Adrian Pop <pop.adrian61@gmail.com>,
+        Michal Kubecek <mkubecek@suse.cz>, <netdev@vger.kernel.org>,
+        "Vladyslav Tarasiuk" <vladyslavt@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>
+References: <1606123198-6230-1-git-send-email-moshe@mellanox.com>
+ <20201124011459.GD2031446@lunn.ch>
+ <20201124131608.1b884063@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <98319caa-de5f-6f5e-9c9e-ee680e5abdc0@nvidia.com>
+ <20201125141822.GI2075216@lunn.ch>
+ <a9835ab6-70a1-5a15-194e-977ff9c859ec@nvidia.com>
+ <20201126152113.GM2073444@lunn.ch>
+From:   Moshe Shemesh <moshe@nvidia.com>
+Message-ID: <6a9bbcb0-c0c4-92fe-f3c1-581408d1e7da@nvidia.com>
+Date:   Fri, 27 Nov 2020 17:12:37 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.3
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201126152113.GM2073444@lunn.ch>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1606489977; bh=nyrag7UI10GlLO62JuhKOK4cE1sh877bV15uRrBZUWY=;
+        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
+         MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding:
+         Content-Language:X-Originating-IP:X-ClientProxiedBy;
+        b=N4Oo/++Z3TSA3N3+rYfX43seMWwZeiY5x8weOILERaTtHws/gCueUhVC3kbgesXVV
+         xAIuhcmKLELkJ14NRPcoDfEI2ujObLuAr9W2/MvhYaM4/aDSABiCAvl60e4kWyk0rs
+         yfvhaiHgrZV6c5I9UV1paO1OXLWG2qTKNV3hl3wJT6hdB9H2I+uCi43prfaogrEWaO
+         A7pHU74rUKroynmFK0N07ibv/RBfk8mPOzIXE8/HA9jsl5+mb5Hc3XOjFAAvc8OauE
+         FmgrdfWtzUNbwzlQUsN98AdMflFBELhCmqa3FP1zXzYCyMBcgaooCam66jEccHBYi6
+         wH3P1nG8rbFTQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Functions tfilter_notify_chain() and tcf_get_next_proto() are always called
-with rtnl lock held in current implementation. Moreover, attempting to call
-them without rtnl lock would cause a warning down the call chain in
-function __tcf_get_next_proto() that requires the lock to be held by
-callers. Remove the 'rtnl_held' argument in order to simplify the code and
-make rtnl lock requirement explicit.
 
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
----
- include/net/pkt_cls.h |  2 +-
- net/sched/cls_api.c   | 18 ++++++++----------
- net/sched/sch_api.c   |  4 ++--
- 3 files changed, 11 insertions(+), 13 deletions(-)
+On 11/26/2020 5:21 PM, Andrew Lunn wrote:
+>>> If i was implementing the ethtool side of it, i would probably do some
+>>> sort of caching system. We know page 0 should always exist, so
+>>> pre-load that into the cache. Try the netlink API first. If that
+>>> fails, use the ioctl interface. If the ioctl is used, put everything
+>>> returned into the cache.
+>> I am not sure what you mean by cache here. Don't you want to read page 0
+>> once you got the ethtool command to read from the module ? If not, then at
+>> what stage ?
+> At the beginning, you try the netlink API and ask for pager 0, bytes
+> 0-127. If you get a page, put it into the cache. If not, use the ioctl
+> interface, which could return one page, or multiple pages. Put them
+> all into the cache.
 
-diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-index 133f9ad4d4f9..0f2a9c44171c 100644
---- a/include/net/pkt_cls.h
-+++ b/include/net/pkt_cls.h
-@@ -48,7 +48,7 @@ void tcf_chain_put_by_act(struct tcf_chain *chain);
- struct tcf_chain *tcf_get_next_chain(struct tcf_block *block,
- 				     struct tcf_chain *chain);
- struct tcf_proto *tcf_get_next_proto(struct tcf_chain *chain,
--				     struct tcf_proto *tp, bool rtnl_held);
-+				     struct tcf_proto *tp);
- void tcf_block_netif_keep_dst(struct tcf_block *block);
- int tcf_block_get(struct tcf_block **p_block,
- 		  struct tcf_proto __rcu **p_filter_chain, struct Qdisc *q,
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index ff3e943febaa..37b77bd30974 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -991,13 +991,12 @@ __tcf_get_next_proto(struct tcf_chain *chain, struct tcf_proto *tp)
-  */
- 
- struct tcf_proto *
--tcf_get_next_proto(struct tcf_chain *chain, struct tcf_proto *tp,
--		   bool rtnl_held)
-+tcf_get_next_proto(struct tcf_chain *chain, struct tcf_proto *tp)
- {
- 	struct tcf_proto *tp_next = __tcf_get_next_proto(chain, tp);
- 
- 	if (tp)
--		tcf_proto_put(tp, rtnl_held, NULL);
-+		tcf_proto_put(tp, true, NULL);
- 
- 	return tp_next;
- }
-@@ -1924,15 +1923,14 @@ static int tfilter_del_notify(struct net *net, struct sk_buff *oskb,
- static void tfilter_notify_chain(struct net *net, struct sk_buff *oskb,
- 				 struct tcf_block *block, struct Qdisc *q,
- 				 u32 parent, struct nlmsghdr *n,
--				 struct tcf_chain *chain, int event,
--				 bool rtnl_held)
-+				 struct tcf_chain *chain, int event)
- {
- 	struct tcf_proto *tp;
- 
--	for (tp = tcf_get_next_proto(chain, NULL, rtnl_held);
--	     tp; tp = tcf_get_next_proto(chain, tp, rtnl_held))
-+	for (tp = tcf_get_next_proto(chain, NULL);
-+	     tp; tp = tcf_get_next_proto(chain, tp))
- 		tfilter_notify(net, oskb, n, tp, block,
--			       q, parent, NULL, event, false, rtnl_held);
-+			       q, parent, NULL, event, false, true);
- }
- 
- static void tfilter_put(struct tcf_proto *tp, void *fh)
-@@ -2262,7 +2260,7 @@ static int tc_del_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
- 
- 	if (prio == 0) {
- 		tfilter_notify_chain(net, skb, block, q, parent, n,
--				     chain, RTM_DELTFILTER, rtnl_held);
-+				     chain, RTM_DELTFILTER);
- 		tcf_chain_flush(chain, rtnl_held);
- 		err = 0;
- 		goto errout;
-@@ -2895,7 +2893,7 @@ static int tc_ctl_chain(struct sk_buff *skb, struct nlmsghdr *n,
- 		break;
- 	case RTM_DELCHAIN:
- 		tfilter_notify_chain(net, skb, block, q, parent, n,
--				     chain, RTM_DELTFILTER, true);
-+				     chain, RTM_DELTFILTER);
- 		/* Flush the chain first as the user requested chain removal. */
- 		tcf_chain_flush(chain, true);
- 		/* In case the chain was successfully deleted, put a reference
-diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-index 1a2d2471b078..51cb553e4317 100644
---- a/net/sched/sch_api.c
-+++ b/net/sched/sch_api.c
-@@ -1943,8 +1943,8 @@ static int tc_bind_class_walker(struct Qdisc *q, unsigned long cl,
- 	     chain = tcf_get_next_chain(block, chain)) {
- 		struct tcf_proto *tp;
- 
--		for (tp = tcf_get_next_proto(chain, NULL, true);
--		     tp; tp = tcf_get_next_proto(chain, tp, true)) {
-+		for (tp = tcf_get_next_proto(chain, NULL);
-+		     tp; tp = tcf_get_next_proto(chain, tp)) {
- 			struct tcf_bind_args arg = {};
- 
- 			arg.w.fn = tcf_node_bind;
--- 
-2.21.0
 
+OK, but if the caching system is checking one time netlink and one time 
+ioctl, it means this cache should be in user space, or did you mean to 
+have this cache in kernel ?
+
+>>>    The decoder can then start decoding, see what
+>>> bits are set indicating other pages should be available. Ask for them
+>>> from the cache. The netlink API can go fetch them and load them into
+>>> the cache. If they cannot be loaded return ENODEV, and the decoder has
+>>> to skip what it wanted to decode.
+>> So the decoder should read page 0 and check according to page 0 and
+>> specification which pages should be present, right ?
+> Yes. It ask the cache, give me a pointer to page 0, bytes 0-127. It
+> then decodes that, looking at the enumeration data to indicate what
+> other pages should be available. Maybe it decides, page 0, bytes
+> 128-255 should exist, so it asks the cache for a pointer to that. If
+> using netlink, it would ask the kernel for that data, put it into the
+> cache, and return a pointer. If using ioctl, it already knows if it
+> has that data, so it just returns a pointer, so says sorry, not
+> available.
+>
+>> What about the global offset that we currently got when user doesn't specify
+>> a page, do you mean that this global offset goes through the optional and
+>> non optional pages that exist and skip the ones that are missing according
+>> to the specific EEPROM ?
+> ethtool -m|--dump-module-eeprom|--module-info devname [raw on|off] [hex on|off] [offset N] [length N]
+>
+> So you mean [offset N] [length N].
+
+
+Yes, that's the current options and we can either try coding new 
+implementation for that or just call the current ioctl implementation. 
+The new code can be triggered once options [bank N] and [Page N] are used.
+
+>
+> That is going to be hard, but the API is broken for complex SFPs with
+> optional pages. And it is not well defined exactly what offset means.
+> You can keep backwards compatibility by identifying the SFP from page
+> 0, and then reading the pages in the order the ioctl would do. Let
+> user space handle it, for those SFPs which the kernel already
+> supports. For SFPs which the kernel does not support, i would just
+> return not supported. You can do the same for raw. However, for new
+> SFPs, for raw you can run the decoder but output to /dev/null. That
+> loads into the cache all the pages which the decoder knows about. You
+> can then dump the cache. You probably need a new format, to give an
+> indication of what each page actually is.
+OK, if I got it right on current API [offset N] [length N] just call 
+ioctl current implementation, while using the option [raw on] will call 
+new implementation for new SFPs (CMIS 4). Also using [bank N] and [page 
+N] will call new implementation for new SFPs.
+> Maybe you want to add new options [page N] [ bank N] to allow
+> arbitrary queries to be made?
+Exactly what I meant, I actually thought of letting the user ask for the 
+page he wants, he should know what he needs.
+> Again, you can answer these from the
+> cache, so the old ioctl interface could work if asked for pages which
+> the old API had.
+Yes, for the simple EEPROM types that have 1 or 4 pages, ioctl read 
+should be enough to get the data.
+>
+>      Andrew
