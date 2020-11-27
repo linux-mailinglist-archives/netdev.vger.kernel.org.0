@@ -2,107 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E83772C65B6
-	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 13:28:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B58A92C65C6
+	for <lists+netdev@lfdr.de>; Fri, 27 Nov 2020 13:34:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727455AbgK0M0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Nov 2020 07:26:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42520 "EHLO
+        id S1729206AbgK0Mc5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Nov 2020 07:32:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725985AbgK0M0s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 07:26:48 -0500
-Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E5F8C0617A7
-        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 04:26:48 -0800 (PST)
-Received: by mail-ot1-x342.google.com with SMTP id z23so858979oti.13
-        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 04:26:48 -0800 (PST)
+        with ESMTP id S1728558AbgK0Mc5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 07:32:57 -0500
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13F4C0613D1
+        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 04:32:56 -0800 (PST)
+Received: by mail-io1-xd43.google.com with SMTP id m9so4628568iox.10
+        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 04:32:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=INnUE0sM05L2oreqITOkcAXoqFYcu3Qaos8NOOfhOTQ=;
-        b=RbEhXeDCcLG6KFDkofW6vC2lhXZqLixRKztRPhHHADZRxFmCHKdxew/X6buNWyeQPm
-         SYTCpiakjEpW+R8ggJqq0BhGj1sINRcXMaxNZK9Tk6K2uGLRZup8ZfiiYKo5zWSddhXs
-         ZkaMa3TBB4WEa3vG8H4QlHbg76bimbJQoWPGEYk33YfOdQ1tFIC0mZRG4eyAW1mh6P1T
-         kfYL+YsACuuilf3sSPfHlVGeAWtM+oyTeQkb3wiXYjHLho1D1p33cNvAaGnZapYl8OaB
-         X8jFOlYbYYiWOAx24QFMufWRlk5KCUEDVZhTzFQN0nL0KeuP9RNuurTu6UfQWwl0y9oc
-         hPdA==
+        bh=HfEfbq/tYOUmc09OCCW/etavkSoEHDAAXUGPCUXY2tk=;
+        b=nm5VOTVaKguXfXlaIZk0Z6qtL6faOyIuBQuxP0Vwz/TMG0geiDGFTYm7WJQVtCPTTo
+         j5hvIIxZKrqN10do0/h6TmTBqMmWEshawTEgxoZ3UWc4mTvhsBqTiFloDQ6nnrajcGys
+         fRp5kXJ4YXIplgnhd2Q685tqAZkwRdgB9g0n1lvR+qCtfn4JCz967kqPrsB3NtjLRQvc
+         ssGSogT93AeZp6+NKlWtj6GIHUnB9P0lV7Xnl5bTI/UZtBZfuko9HCVOUPgtbD5kKtKr
+         D1fGqCATz4gbDMpS1lJX72Uo+BY7fYuOjSVh8b+l0B0r0nJFnGVz0/jg9CzIpxfunbk/
+         ROhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=INnUE0sM05L2oreqITOkcAXoqFYcu3Qaos8NOOfhOTQ=;
-        b=T2jxWQOKL1YuMChT87abF5JVjVi4l2FeoTGsl8IsnUSzncrfdoVQSScJ7rEHZ/oHsC
-         L1pXFI6WiuNr5/NJyxFJNHe445yb6UwfQG0M9Q76tH3K2I+B2/N5BCX5R8RYykGS7FUA
-         X6S1XhE0PIZc0Xa2QSaW1TH2vZ0tAe9fbzGh2hCe6qqCCgCNFiS2VY04VNOp8s5zP2/W
-         NZtLQG0+BMrT7tMH7vshW96KUf8Pzhh+/43R1yx9m5Bny+91iJGwNRYLmS9N7LdZ77SP
-         XGXimGC4X2o3jpeviZPyGpg6S04qrTnpST3NHojbTJMmJrvoxagtKNosB789bTXYvgV5
-         kt8A==
-X-Gm-Message-State: AOAM531UnBeIN1pE9dsWTvZ/v8p4QXBrIfj6kPlfUkQlh3dZ9jW/ndsi
-        dW0UK4JPKyGoV/Ci5IhoJAUxxpUXBlyVR5fqEP5Jtg==
-X-Google-Smtp-Source: ABdhPJwdkvpfZpec4AJHnHkvroUWUD22bNL8+btJPZre9LvmpggYaMzTkVMfQJdGNDxedL3NGUqUi0acSmkdra7e+ek=
-X-Received: by 2002:a9d:7d92:: with SMTP id j18mr5921417otn.17.1606480007166;
- Fri, 27 Nov 2020 04:26:47 -0800 (PST)
+        bh=HfEfbq/tYOUmc09OCCW/etavkSoEHDAAXUGPCUXY2tk=;
+        b=aPYkAnMHxlV9QQQhbCpXV+8j7j44Ue/GODdvN9OQ+xFOgBRA+3UthqLcgtK33IXAjO
+         8ONI06t+TwTgXj59M2/0IsjiF1MKaf3OtyHrcuPzLDOFdrERkRQa8CU/RinAtpQ18eXp
+         HQRhrAkwJ7yJKo/7u092/3n0y3esummeab62HP5DZ/W4ikKQatQAkFAWMIgW1MPYkbMX
+         qoDhKSYEXftHi/uBTEzrCi9UH9KbX6z28HEwgEBoJTn8Y9Pqfz1jWApBaqoxeE/neQcx
+         GNF5gDFlLe/nCq2IJxwMfxlIluexyAWBHTXCnrbUtQb9m33v9wbvkUtMwlIYnh8ab6rI
+         KPuw==
+X-Gm-Message-State: AOAM532Eij7u7qF7KPZfe7m+fU0TSkMiiP7TtAMOPl+B9oKs5SgOIM8u
+        sGMytMCfOpaw5vCPaWN/fOMeoxLttt3Ia1NfcWB5MQbBR7UVMQ==
+X-Google-Smtp-Source: ABdhPJw9Fb6w3+VNx4BpwarqFdQPhLxw4dwC7LTsexTmN/Pc6fiSA20qqe7JiWUgxp8T0EmjCTS/hd4xFkvOAAB1kfM=
+X-Received: by 2002:a05:6602:185a:: with SMTP id d26mr5808256ioi.198.1606480376087;
+ Fri, 27 Nov 2020 04:32:56 -0800 (PST)
 MIME-Version: 1.0
-References: <20201125173436.1894624-1-elver@google.com> <20201125124313.593fc2b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CANpmjNP_=Awx0-eZisMXzgXxKqf7hcrZYCYzFXuebPcwZtkoLw@mail.gmail.com> <CAF=yD-JtRUjmy+12kTL=YY8Cfi_c92GVbHZ647smWmasLYiNMg@mail.gmail.com>
-In-Reply-To: <CAF=yD-JtRUjmy+12kTL=YY8Cfi_c92GVbHZ647smWmasLYiNMg@mail.gmail.com>
-From:   Marco Elver <elver@google.com>
-Date:   Fri, 27 Nov 2020 13:26:35 +0100
-Message-ID: <CANpmjNO8H9OJDTcKhg4PRVEV04Gxnb56mJY2cB9j4cH+4nznhQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: switch to storing KCOV handle directly in sk_buff
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Aleksandr Nogikh <a.nogikh@gmail.com>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Ido Schimmel <idosch@idosch.org>,
-        Florian Westphal <fw@strlen.de>,
-        Willem de Bruijn <willemb@google.com>
+References: <20201121142823.3629805-1-eyal.birger@gmail.com> <20201127094414.GC9390@gauss3.secunet.de>
+In-Reply-To: <20201127094414.GC9390@gauss3.secunet.de>
+From:   Eyal Birger <eyal.birger@gmail.com>
+Date:   Fri, 27 Nov 2020 14:32:44 +0200
+Message-ID: <CAHsH6Gtgui7fbv1sPYUoOj_dZR5yajEd7+tLKwsv5FvQZCFOow@mail.gmail.com>
+Subject: Re: [PATCH ipsec-next] xfrm: interface: support collect metadata mode
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     herbert@gondor.apana.org.au, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 26 Nov 2020 at 17:35, Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
-> On Thu, Nov 26, 2020 at 3:19 AM Marco Elver <elver@google.com> wrote:
-[...]
-> > Will send v2.
+Hi Steffen,
+
+On Fri, Nov 27, 2020 at 11:44 AM Steffen Klassert
+<steffen.klassert@secunet.com> wrote:
 >
-> Does it make more sense to revert the patch that added the extensions
-> and the follow-on fixes and add a separate new patch instead?
+> On Sat, Nov 21, 2020 at 04:28:23PM +0200, Eyal Birger wrote:
+> > This commit adds support for 'collect_md' mode on xfrm interfaces.
+> >
+> > Each net can have one collect_md device, created by providing the
+> > IFLA_XFRM_COLLECT_METADATA flag at creation. This device cannot be
+> > altered and has no if_id or link device attributes.
+> >
+> > On transmit to this device, the if_id is fetched from the attached dst
+> > metadata on the skb. The dst metadata type used is METADATA_IP_TUNNEL
+> > since the only needed property is the if_id stored in the tun_id member
+> > of the ip_tunnel_info->key.
+>
+> Can we please have a separate metadata type for xfrm interfaces?
+>
+> Sharing such structures turned already out to be a bad idea
+> on vti interfaces, let's try to avoid that misstake with
+> xfrm interfaces.
 
-That doesn't work, because then we'll end up with a build-broken
-commit in between the reverts and the new version, because mac80211
-uses skb_get_kcov_handle().
+My initial thought was to do that, but it looks like most of the constructs
+surrounding this facility - tc, nft, ovs, ebpf, ip routing - are built around
+struct ip_tunnel_info and don't regard other possible metadata types.
 
-> If adding a new field to the skb, even if only in debug builds,
-> please check with pahole how it affects struct layout if you
-> haven't yet.
+For xfrm interfaces, the only metadata used is the if_id, which is stored
+in the metadata tun_id, so I think other than naming consideration, the use
+of struct ip_tunnel_info does not imply tunneling and does not limit the
+use of xfrmi to a specific mode of operation.
 
-Without KCOV:
+On the other hand, adding a new metadata type would require changing all
+other places to regard the new metadata type, with a large number of
+userspace visible changes.
 
-        /* size: 224, cachelines: 4, members: 72 */
-        /* sum members: 217, holes: 1, sum holes: 2 */
-        /* sum bitfield members: 36 bits, bit holes: 2, sum bit holes: 4 bits */
-        /* forced alignments: 2 */
-        /* last cacheline: 32 bytes */
+>
+> > On the receive side, xfrmi_rcv_cb() populates a dst metadata for each
+> > packet received and attaches it to the skb. The if_id used in this case is
+> > fetched from the xfrm state. This can later be used by upper layers such
+> > as tc, ebpf, and ip rules.
+> >
+> > Because the skb is scrubed in xfrmi_rcv_cb(), the attachment of the dst
+> > metadata is postponed until after scrubing. Similarly, xfrm_input() is
+> > adapted to avoid dropping metadata dsts by only dropping 'valid'
+> > (skb_valid_dst(skb) == true) dsts.
+> >
+> > Policy matching on packets arriving from collect_md xfrmi devices is
+> > done by using the xfrm state existing in the skb's sec_path.
+> > The xfrm_if_cb.decode_cb() interface implemented by xfrmi_decode_session()
+> > is changed to keep the details of the if_id extraction tucked away
+> > in xfrm_interface.c.
+> >
+> > Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
+>
+> The rest of the patch looks good.
 
-With KCOV:
-
-        /* size: 232, cachelines: 4, members: 73 */
-        /* sum members: 225, holes: 1, sum holes: 2 */
-        /* sum bitfield members: 36 bits, bit holes: 2, sum bit holes: 4 bits */
-        /* forced alignments: 2 */
-        /* last cacheline: 40 bytes */
-
-
-> The skb_extensions idea was mine. Apologies for steering
-> this into an apparently unsuccessful direction. Adding new fields
-> to skb is very rare because possibly problematic wrt allocation.
+Thanks for the review!
+Eyal.
