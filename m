@@ -2,79 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D6BB2C730D
-	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:13:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EEDE2C7315
+	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:13:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730273AbgK1Vt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Nov 2020 16:49:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39238 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387591AbgK1TpX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 28 Nov 2020 14:45:23 -0500
-Received: from kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B106821D40;
-        Sat, 28 Nov 2020 19:44:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606592682;
-        bh=vjEo6+1NJr1fhU60twyQ6fj6sEFRGZbdUzpwIu7j6VU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SZmfqg6AkOW8YagPITqTw/j76W7w0gWiC5dDx7lY8HLXM1eUdPX/k61F+rU4Oda0e
-         VEN8ZuP8sErc3FnsjCj2cELwAuWks8T0AM6s1Ad5PJZjIwoYjozfrRIueWEv0u0/RA
-         62XUNB3iGH5Czihh1vOh9oVen+wBSGQSye0yaUeA=
-Date:   Sat, 28 Nov 2020 11:44:41 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     netdev@vger.kernel.org, wenxu@ucloud.cn, paulb@nvidia.com,
-        ozsh@nvidia.com, ahleihel@nvidia.com,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: Re: [PATCH net-next] net/sched: act_ct: enable stats for HW
- offloaded entries
-Message-ID: <20201128114441.4e5b9afb@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201128023144.GC449907@localhost.localdomain>
-References: <481a65741261fd81b0a0813e698af163477467ec.1606415787.git.marcelo.leitner@gmail.com>
-        <20201127180032.52b320a5@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-        <20201128023144.GC449907@localhost.localdomain>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S2389422AbgK1VuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Nov 2020 16:50:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55544 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387670AbgK1USv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Nov 2020 15:18:51 -0500
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 428F2C0613D1
+        for <netdev@vger.kernel.org>; Sat, 28 Nov 2020 12:18:05 -0800 (PST)
+Received: by mail-lj1-x241.google.com with SMTP id j10so10269319lja.5
+        for <netdev@vger.kernel.org>; Sat, 28 Nov 2020 12:18:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=content-transfer-encoding:cc:subject:from:to:date:message-id
+         :in-reply-to;
+        bh=LQzNZ3tR8v49OlYP/cuskc0MHqi8TGhcA3E3U0cvtzQ=;
+        b=VwVaXHLyYUlhDyeQh1wP5lWtskbZlVKwQI3PzgbPuQ2B5rk0MBndvWxI5iSUi/u4b+
+         EDo6jU9YVT8agweJSWUlsd2TKWC93//UtuDQ4PX/zZgPbdjg+hR9ucSiTG5LfBEI+N3O
+         S7xeRH/i/gs451F08gi+JIA5GVNZPUbL9kOk/xO76Ci1gqMcjWuSnTnMYM1V4KTEAAz6
+         aUF+eqL61WidqVEQnek3mklRMDiDc7yImqqGBGXlwkP4KyA3bR6H82i9+GNyjFiZTIvO
+         tm7pd39xiEyS+aHMxOUwqu0oLHzsXBxsfp9HhsudqUXwjEpSoehby7Sf2HX1P5/6HJuj
+         E6Iw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:content-transfer-encoding:cc:subject:from:to
+         :date:message-id:in-reply-to;
+        bh=LQzNZ3tR8v49OlYP/cuskc0MHqi8TGhcA3E3U0cvtzQ=;
+        b=ekY8ONQoE6ohyhOC4RlD3OPNoNuBrwxYoeeE0po/1vHkQN1K588KsU8ZWK2ukvQtAU
+         BZkVkVtu5pgjZh37i7So/JayPblp4MNfYNCk7ZMpu9h+APn+hNVSf2v5COeov/zrvG1G
+         /AM75EFXNiYsgx+RAtv2PllUvYah7Gr0KFxVaiNAv++kUUpOXShMPeg42A6wFcDni1Hw
+         oAVkpfZ2gwpc93m4S+2d96j7DHrmAlcl6bo6kBx0tPLZA7SSTT+0anIcL5Mdzo5y5ALz
+         ZpAtPEerVJTTQC9zqLCyIc3nBPznjhgLWC6aA3lLisQpZqtv+QiY4ME8DdPU7FgYZDK9
+         qjrw==
+X-Gm-Message-State: AOAM5317h4TY7hytvJd2e88dA41EJcI+bvv4+8MnyvY+EULWvkcn9iXc
+        zyDE3qgbuKjJHNb2V/mHFxkM4fzlCAZsuU5r
+X-Google-Smtp-Source: ABdhPJyzYMNfFg3RhAAZoH2VOAmbcXUs/BCrpmwUyz0Rnh9pHZQI3z+QiY6jhes/aABvRv5YmPxkcw==
+X-Received: by 2002:a2e:a590:: with SMTP id m16mr5729034ljp.462.1606594682293;
+        Sat, 28 Nov 2020 12:18:02 -0800 (PST)
+Received: from localhost (h-79-28.A259.priv.bahnhof.se. [79.136.79.28])
+        by smtp.gmail.com with ESMTPSA id z20sm984965ljh.86.2020.11.28.12.18.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 28 Nov 2020 12:18:01 -0800 (PST)
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Cc:     "Tobias Waldekranz" <tobias@waldekranz.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <vivien.didelot@gmail.com>, <olteanv@gmail.com>,
+        <j.vosburgh@gmail.com>, <vfalico@gmail.com>, <andy@greyhouse.net>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 2/4] net: dsa: Link aggregation support
+From:   "Tobias Waldekranz" <tobias@waldekranz.com>
+To:     "Andrew Lunn" <andrew@lunn.ch>,
+        "Florian Fainelli" <f.fainelli@gmail.com>
+Date:   Sat, 28 Nov 2020 20:48:52 +0100
+Message-Id: <C7F5NW46RGKW.HWQYN850NOTL@wkz-x280>
+In-Reply-To: <20201128163805.GB2191767@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 27 Nov 2020 23:31:44 -0300 Marcelo Ricardo Leitner wrote:
-> On Fri, Nov 27, 2020 at 06:00:32PM -0800, Jakub Kicinski wrote:
-> > On Thu, 26 Nov 2020 15:40:49 -0300 Marcelo Ricardo Leitner wrote:  
-> > > By setting NF_FLOWTABLE_COUNTER. Otherwise, the updates added by
-> > > commit ef803b3cf96a ("netfilter: flowtable: add counter support in HW
-> > > offload") are not effective when using act_ct.
-> > > 
-> > > While at it, now that we have the flag set, protect the call to
-> > > nf_ct_acct_update() by commit beb97d3a3192 ("net/sched: act_ct: update
-> > > nf_conn_acct for act_ct SW offload in flowtable") with the check on
-> > > NF_FLOWTABLE_COUNTER, as also done on other places.
-> > > 
-> > > Note that this shouldn't impact performance as these stats are only
-> > > enabled when net.netfilter.nf_conntrack_acct is enabled.
-> > > 
-> > > Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>  
-> > 
-> > Why no Fixes tag and not targeting net here?  
-> 
-> Well, I don't know if it was left out on purpose or not/missed.
-> What I know is that act_ct initially had no support for stats of
-> offloaded entries. ef803b3cf96a wasn't specific to act_ct (and didn't
-> have to update it), while some support on act_ct was introduced with
-> beb97d3a3192, but only for sw offload. So it seems to me that it's
-> just a new piece(/incremental development) that nobody had cared so
-> far.
-> 
-> If you see it otherwise, I'm happy to change. I'll just need a hint on
-> which commit I should use for the Fixes tag (as it's not clear to me,
-> per above).
+On Sat Nov 28, 2020 at 6:38 PM CET, Andrew Lunn wrote:
+> > > OK I think I finally see what you are saying. Sorry it took me this
+> > > long. I do not mean to be difficult, I just want to understand.
+>
+> Not a problem. This is a bit different to normal, the complexity of
+> the stack means you need to handle this different to most drivers. If
+> you have done any deeply embedded stuff, RTOS, allocating everything
+> up front is normal, it eliminates a whole class of problems.
 
-I don't know the code well enough to override, so I'll trust your
-judgment :)
+Yeah I am well aware, Linux is pretty far from that kind of embedded
+though :)
 
-Applied to net-next, thanks!
+The problem here, IMHO, is not really the allocation. Rather we want
+to shift as much work as possible from CHANGEUPPER to PRECHANGEUPPER
+to signal errors early, this was the part that was not clicking for
+me.
+
+And you can not allocate anything in PRECHANGE, because there may
+never be a corresponding CHANGEUPPER if another subscriber on the
+chain throws an error. _That_ is what forces you to use the static
+array.
+
+> This is all reasonable. I just wonder what that number is for the
+> mv88e6xx case, especially for D in DSA. I guess LAGs are global in
+> scope across a set of switches. So it does not matter if there is one
+> switch or lots of switches, the lags_max stays the same.
+
+For everything up to Agate, the max is 16. Peridot (and I guess Topaz)
+can potentially do 32, but mv88e6xxx never sets the "5-bit port" mode
+AFAIK, so in practice the max is 16 across the board.
+
+Yes the LAG IDs are global, they must be configured on all switches,
+even those that have no local member ports. So the pool will hold 16
+entries on a mv88e6xxx tree.
