@@ -2,99 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EEDE2C7315
-	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:13:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5506E2C7309
+	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:13:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389422AbgK1VuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Nov 2020 16:50:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55544 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387670AbgK1USv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Nov 2020 15:18:51 -0500
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 428F2C0613D1
-        for <netdev@vger.kernel.org>; Sat, 28 Nov 2020 12:18:05 -0800 (PST)
-Received: by mail-lj1-x241.google.com with SMTP id j10so10269319lja.5
-        for <netdev@vger.kernel.org>; Sat, 28 Nov 2020 12:18:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=content-transfer-encoding:cc:subject:from:to:date:message-id
-         :in-reply-to;
-        bh=LQzNZ3tR8v49OlYP/cuskc0MHqi8TGhcA3E3U0cvtzQ=;
-        b=VwVaXHLyYUlhDyeQh1wP5lWtskbZlVKwQI3PzgbPuQ2B5rk0MBndvWxI5iSUi/u4b+
-         EDo6jU9YVT8agweJSWUlsd2TKWC93//UtuDQ4PX/zZgPbdjg+hR9ucSiTG5LfBEI+N3O
-         S7xeRH/i/gs451F08gi+JIA5GVNZPUbL9kOk/xO76Ci1gqMcjWuSnTnMYM1V4KTEAAz6
-         aUF+eqL61WidqVEQnek3mklRMDiDc7yImqqGBGXlwkP4KyA3bR6H82i9+GNyjFiZTIvO
-         tm7pd39xiEyS+aHMxOUwqu0oLHzsXBxsfp9HhsudqUXwjEpSoehby7Sf2HX1P5/6HJuj
-         E6Iw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:content-transfer-encoding:cc:subject:from:to
-         :date:message-id:in-reply-to;
-        bh=LQzNZ3tR8v49OlYP/cuskc0MHqi8TGhcA3E3U0cvtzQ=;
-        b=ekY8ONQoE6ohyhOC4RlD3OPNoNuBrwxYoeeE0po/1vHkQN1K588KsU8ZWK2ukvQtAU
-         BZkVkVtu5pgjZh37i7So/JayPblp4MNfYNCk7ZMpu9h+APn+hNVSf2v5COeov/zrvG1G
-         /AM75EFXNiYsgx+RAtv2PllUvYah7Gr0KFxVaiNAv++kUUpOXShMPeg42A6wFcDni1Hw
-         oAVkpfZ2gwpc93m4S+2d96j7DHrmAlcl6bo6kBx0tPLZA7SSTT+0anIcL5Mdzo5y5ALz
-         ZpAtPEerVJTTQC9zqLCyIc3nBPznjhgLWC6aA3lLisQpZqtv+QiY4ME8DdPU7FgYZDK9
-         qjrw==
-X-Gm-Message-State: AOAM5317h4TY7hytvJd2e88dA41EJcI+bvv4+8MnyvY+EULWvkcn9iXc
-        zyDE3qgbuKjJHNb2V/mHFxkM4fzlCAZsuU5r
-X-Google-Smtp-Source: ABdhPJyzYMNfFg3RhAAZoH2VOAmbcXUs/BCrpmwUyz0Rnh9pHZQI3z+QiY6jhes/aABvRv5YmPxkcw==
-X-Received: by 2002:a2e:a590:: with SMTP id m16mr5729034ljp.462.1606594682293;
-        Sat, 28 Nov 2020 12:18:02 -0800 (PST)
-Received: from localhost (h-79-28.A259.priv.bahnhof.se. [79.136.79.28])
-        by smtp.gmail.com with ESMTPSA id z20sm984965ljh.86.2020.11.28.12.18.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 28 Nov 2020 12:18:01 -0800 (PST)
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Cc:     "Tobias Waldekranz" <tobias@waldekranz.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <vivien.didelot@gmail.com>, <olteanv@gmail.com>,
-        <j.vosburgh@gmail.com>, <vfalico@gmail.com>, <andy@greyhouse.net>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 2/4] net: dsa: Link aggregation support
-From:   "Tobias Waldekranz" <tobias@waldekranz.com>
-To:     "Andrew Lunn" <andrew@lunn.ch>,
-        "Florian Fainelli" <f.fainelli@gmail.com>
-Date:   Sat, 28 Nov 2020 20:48:52 +0100
-Message-Id: <C7F5NW46RGKW.HWQYN850NOTL@wkz-x280>
-In-Reply-To: <20201128163805.GB2191767@lunn.ch>
+        id S2389380AbgK1Vt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Nov 2020 16:49:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43922 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387602AbgK1TuS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 28 Nov 2020 14:50:18 -0500
+Received: from kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4153721D40;
+        Sat, 28 Nov 2020 19:49:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606592978;
+        bh=UvzIRuOEnhxcRWvQWY2rH7i21CBVTaYaXaK8I49Jg8A=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=f4NW6wnCPGx60/u0ox2g2WF9RO1RrPk7O5NYxxR1Cv6YchviTYw5i7bM/mj6PchjP
+         3RDUbydlc3DLIZqKwJ/CLoHN3W8UhNDCDTFTJ6jA6mST3KCP4uyD7IEtbgTDqcJdqx
+         e3cKXnb7+OJiTWmQX7pI1TryydoHjDDl8Ri2W/hs=
+Date:   Sat, 28 Nov 2020 11:49:37 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     Antoine Tenart <atenart@kernel.org>, pablo@netfilter.org,
+        kadlec@netfilter.org, roopa@nvidia.com, nikolay@nvidia.com,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, sbrivio@redhat.com
+Subject: Re: [PATCH net-next] netfilter: bridge: reset skb->pkt_type after
+ NF_INET_POST_ROUTING traversal
+Message-ID: <20201128114937.55103f65@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201128095929.GI2730@breakpoint.cc>
+References: <20201123174902.622102-1-atenart@kernel.org>
+        <20201123183253.GA2730@breakpoint.cc>
+        <20201127160650.1f36b889@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+        <20201128095929.GI2730@breakpoint.cc>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat Nov 28, 2020 at 6:38 PM CET, Andrew Lunn wrote:
-> > > OK I think I finally see what you are saying. Sorry it took me this
-> > > long. I do not mean to be difficult, I just want to understand.
->
-> Not a problem. This is a bit different to normal, the complexity of
-> the stack means you need to handle this different to most drivers. If
-> you have done any deeply embedded stuff, RTOS, allocating everything
-> up front is normal, it eliminates a whole class of problems.
+On Sat, 28 Nov 2020 10:59:29 +0100 Florian Westphal wrote:
+> Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Mon, 23 Nov 2020 19:32:53 +0100 Florian Westphal wrote:  
+> > > That comment is 18 years old, safe bet noone thought of
+> > > ipv6-in-tunnel-interface-added-as-bridge-port back then.
+> > > 
+> > > Reviewed-by: Florian Westphal <fw@strlen.de>  
+> > 
+> > Sounds like a fix. Probably hard to pin point which commit to blame,
+> > but this should go to net, not net-next, right?  
+> 
+> The commit predates git history, so probably a good idea to add
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> 
+> ... and apply it to net tree.
 
-Yeah I am well aware, Linux is pretty far from that kind of embedded
-though :)
-
-The problem here, IMHO, is not really the allocation. Rather we want
-to shift as much work as possible from CHANGEUPPER to PRECHANGEUPPER
-to signal errors early, this was the part that was not clicking for
-me.
-
-And you can not allocate anything in PRECHANGE, because there may
-never be a corresponding CHANGEUPPER if another subscriber on the
-chain throws an error. _That_ is what forces you to use the static
-array.
-
-> This is all reasonable. I just wonder what that number is for the
-> mv88e6xx case, especially for D in DSA. I guess LAGs are global in
-> scope across a set of switches. So it does not matter if there is one
-> switch or lots of switches, the lags_max stays the same.
-
-For everything up to Agate, the max is 16. Peridot (and I guess Topaz)
-can potentially do 32, but mv88e6xxx never sets the "5-bit port" mode
-AFAIK, so in practice the max is 16 across the board.
-
-Yes the LAG IDs are global, they must be configured on all switches,
-even those that have no local member ports. So the pool will hold 16
-entries on a mv88e6xxx tree.
+Done, thanks!
