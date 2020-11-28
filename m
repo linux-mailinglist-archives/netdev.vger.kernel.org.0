@@ -2,71 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CC312C6E6E
-	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 03:27:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC7B42C6E70
+	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 03:28:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731216AbgK1CXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Nov 2020 21:23:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60662 "EHLO mail.kernel.org"
+        id S1730991AbgK1CZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Nov 2020 21:25:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60660 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729695AbgK1BgR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1729459AbgK1BgR (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 27 Nov 2020 20:36:17 -0500
-Received: from kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 48F462224C;
-        Sat, 28 Nov 2020 01:27:50 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606526870;
-        bh=E/3+tSH78Oi7cmPtL/PZF2uymXTd8zQjg8NtS/x/fgE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=y70oIjaEYrlm9EmKai368c2Aguaiq7Nnb6/g0NKHLp3hh9/DQ7GyZdmNunHT21DBt
-         pqbxhsVNBAbsIR59zwX1wA2EMnH7Uh5BRT4JLm9kRhPs8vKDsnQ83jH/UaMciwYhD2
-         1pFK1J+RHDlzgukD3PhUM0u9ZEqaaQ9uMKmYrMHQ=
-Date:   Fri, 27 Nov 2020 17:27:49 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Philippe Schenker <philippe.schenker@toradex.com>
-Subject: Re: [PATCH v1] net: phy: micrel: fix interrupt handling
-Message-ID: <20201127172746.330ad772@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201127151106.y34rmjc6xysbv2re@skbuf>
-References: <20201127123621.31234-1-o.rempel@pengutronix.de>
-        <20201127144545.GO2073444@lunn.ch>
-        <20201127151106.y34rmjc6xysbv2re@skbuf>
+        s=default; t=1606527008;
+        bh=/DaTCCeGBqemX9gPjwedotfwqzHhcd/AvhPNDC78PFE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=eXd3KKnRr3KcKbzeQ+vkOBbyv7MlKkgbwdEntjxmDI/JHoPuqzLlwrBz4UYlNeNy3
+         F27RBaKUYxDQ11Lgx0jMvH9SCdhEsEKCnLnqlK0ZeAzFIdJgYR/HWj3pJqaoCoZHvw
+         DBCh2xVDzlgjD4Bx4RebqVJJSlUuayB8Pi6PYOug=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/5] mlxsw: Update adjacency index more efficiently
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160652700842.25160.16344799025246510988.git-patchwork-notify@kernel.org>
+Date:   Sat, 28 Nov 2020 01:30:08 +0000
+References: <20201125193505.1052466-1-idosch@idosch.org>
+In-Reply-To: <20201125193505.1052466-1-idosch@idosch.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jiri@nvidia.com, dsahern@gmail.com, mlxsw@nvidia.com,
+        idosch@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 27 Nov 2020 15:11:08 +0000 Ioana Ciornei wrote:
-> On Fri, Nov 27, 2020 at 03:45:45PM +0100, Andrew Lunn wrote:
-> > On Fri, Nov 27, 2020 at 01:36:21PM +0100, Oleksij Rempel wrote:  
-> > > After migration to the shared interrupt support, the KSZ8031 PHY with
-> > > enabled interrupt support was not able to notify about link status
-> > > change.
-> > > 
-> > > Fixes: 59ca4e58b917 ("net: phy: micrel: implement generic .handle_interrupt() callback")
-> > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>  
-> > 
-> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> > 
-> > I took a quick look at all the other patches like this. I did not spot
-> > any other missing the !
-> > 
-> >     Andrew  
-> 
-> Uhh, really sorry for this!
-> 
-> Thanks for double checking.
+Hello:
 
-Applied, thanks!
+This series was applied to netdev/net-next.git (refs/heads/master):
+
+On Wed, 25 Nov 2020 21:35:00 +0200 you wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
+> 
+> The device supports an operation that allows the driver to issue one
+> request to update the adjacency index for all the routes in a given
+> virtual router (VR) from old index and size to new ones. This is useful
+> in case the configuration of a certain nexthop group is updated and its
+> adjacency index changes.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,1/5] mlxsw: spectrum_router: Fix error handling issue
+    https://git.kernel.org/netdev/net-next/c/1c2c5eb6e108
+  - [net-next,2/5] mlxsw: spectrum_router: Pass virtual router parameters directly instead of pointer
+    https://git.kernel.org/netdev/net-next/c/40e4413d5dde
+  - [net-next,3/5] mlxsw: spectrum_router: Rollback virtual router adjacency pointer update
+    https://git.kernel.org/netdev/net-next/c/9a4ab10c74a0
+  - [net-next,4/5] mlxsw: spectrum_router: Track nexthop group virtual router membership
+    https://git.kernel.org/netdev/net-next/c/d2141a42b96a
+  - [net-next,5/5] mlxsw: spectrum_router: Update adjacency index more efficiently
+    https://git.kernel.org/netdev/net-next/c/ff47fa13c991
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
