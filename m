@@ -2,132 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E7B52C6DF4
-	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 01:30:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE5842C6E00
+	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 01:55:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731398AbgK1A2k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Nov 2020 19:28:40 -0500
-Received: from mail-eopbgr150084.outbound.protection.outlook.com ([40.107.15.84]:24308
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730166AbgK1A10 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Nov 2020 19:27:26 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SPXMCX5xSk+nsfftw1fAoa9YDvPzGBW90nh1WtZaXVV3CGbQS09BbkEvH7mOnPZcoPL+Z1Dby2SYh9Qsz+KZt/mUN/XzGndrPNzsxhISZqsxPj8yNlWZTuRT1Y47jjLukgDXi7QHumj6qZmF3XG2oQ8krLyB+bDTMZbOyxXiIL7pk3afYV7HszJT09jIyWhdL+QSRCWb8D/iGcw2RNmLzS0e/1dqAXlmIuAc1R3atNU0lkV0W007JUbAsTS++zr0gfY6vbvaTRz788/VNLVxthRFuTtApx7dawiRf1EAkMdfMbjx8JBzDPUKL5s/F3Ogz2UWsU9sCYoAgj1uo0VWAQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6zd24bvB1OQO5KuimkeMWE5TTzR8L+JP6hAe1r4kj6A=;
- b=GroDIBBOnUe+grBkpP06xll0u8izXFLkscERla48aKeQmoRwRRuVLyh+qQMIYjmlczyNyzs5Sxd3yfGOjecY3tkCJzjX8AGMzKSllI0aYyy6w5M9LiW1Kiych6fu62g4vOSYEl/VUVff/EE1CKBDWo0znwsQL0Uv7o3hmRA6ugRHrzKTaE5kEihcgB7gIseMxxEVlTOokso9sjXBPRnT10xSvATVRS/fGSckLpisthauEgzvcSAOOPmBdoI5CgAuapiyRXHzVih7RR9rrakTllLRnbCOa2spnkioIjjADjgdGSxS4L6qCwChymOoaeWve8KLYo9aZ5GVET+WsdUBOg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6zd24bvB1OQO5KuimkeMWE5TTzR8L+JP6hAe1r4kj6A=;
- b=iGuzz+jv+Pk+IPeyMtRbSNjLzMfDxbk9F5vxEUyx52A3jjqQJbrP9TJCSWxlIArLXijkNKdmaf8hcqjCFWLhDhr5/OnPSigr69aShnUuBoAY0ojer9b3MBpybD0EkFXijdiAm3u8JoViS2+7dU6SzjiJKZbIiSwZmNr12gky4TI=
-Received: from AM6PR04MB5685.eurprd04.prod.outlook.com (2603:10a6:20b:a4::30)
- by AM6PR04MB6328.eurprd04.prod.outlook.com (2603:10a6:20b:b7::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.25; Sat, 28 Nov
- 2020 00:27:18 +0000
-Received: from AM6PR04MB5685.eurprd04.prod.outlook.com
- ([fe80::5a9:9a3e:fa04:8f66]) by AM6PR04MB5685.eurprd04.prod.outlook.com
- ([fe80::5a9:9a3e:fa04:8f66%3]) with mapi id 15.20.3611.024; Sat, 28 Nov 2020
- 00:27:18 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>
-Subject: Re: [PATCH net] net: dsa: reference count the host mdb addresses
-Thread-Topic: [PATCH net] net: dsa: reference count the host mdb addresses
-Thread-Index: AQHWozn45OsHCx59Jk67oCoKlCMeg6nc690AgAAIIoA=
-Date:   Sat, 28 Nov 2020 00:27:18 +0000
-Message-ID: <20201128002717.buvgy3unu6af5ejj@skbuf>
-References: <20201015212711.724678-1-vladimir.oltean@nxp.com>
- <87im9q8i99.fsf@waldekranz.com>
-In-Reply-To: <87im9q8i99.fsf@waldekranz.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: waldekranz.com; dkim=none (message not signed)
- header.d=none;waldekranz.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.25.2.120]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: e994c7c5-5e42-40c5-cd70-08d893345d24
-x-ms-traffictypediagnostic: AM6PR04MB6328:
-x-microsoft-antispam-prvs: <AM6PR04MB6328C316454943329581E1D9E0F70@AM6PR04MB6328.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1148;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7umV+UMQhAyi+jY9XXumnj6Pe/bM5uQhyv8fPZL0X0pvEhSOdlztVq95fBkL+aTNbviH5hjUXMBx/CIwrmTazcrYcoV/M7uzpRX4dON+Nb4O7Z3LadComE8/VsIoqDHm9W3nAX9+1svl4AaXNMlWA/TErlU8htT4YaFlBgNxRvtrypWFkNW41u9CwXE1/h+LWLVa2yHb90KMW198ouPvEKyXuPdeOEzE5oEnT0pfyWlC1hr4ImXjHigPz9JjArqMAUK4gaKFiKVOAzE7rPS1Ii3G2UnaCg1W5/3j6dDVoRPQlZGJyhopbj+fjVy85jEYNVY1P4wMvKeScg81jy8Lsg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB5685.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(136003)(346002)(396003)(39860400002)(366004)(376002)(186003)(66574015)(86362001)(1076003)(6916009)(5660300002)(478600001)(66556008)(71200400001)(91956017)(64756008)(66446008)(76116006)(66946007)(66476007)(2906002)(33716001)(44832011)(8936002)(6506007)(8676002)(6512007)(9686003)(6486002)(4326008)(54906003)(26005)(316002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?o5m59TsYpgZu1P+sNMUPXfi4HGAso+iVbh02lniebb4ulHytym/5+zqi8+PY?=
- =?us-ascii?Q?YE4XpY5o5dsQHTXLpDcQiQchiN25LD1RJi3FKv8OXR5QHhLlsitG4bB6UmEV?=
- =?us-ascii?Q?fzMXD3OHC79htW5qfMXrHMa7WW0xdeaObQ0gHWIf/YrSUoF6i0Eg5oWGP18F?=
- =?us-ascii?Q?M6NMMlGZ20D8lWpH/+ySHdohC+Yoy1+JaLCAyHmLlha88MSA/MvVTf6V6k/s?=
- =?us-ascii?Q?4i+Z8C65fQGWqz9sO2uNL1V7eP8vScQNSsDb08iWXqQVAapkqSDpINteR+xU?=
- =?us-ascii?Q?Yrror++ioX14cbeE4EU7ujhz3WuZEF3/qDlMfMkXhHwB4Ruh/x3GyGxsDmXV?=
- =?us-ascii?Q?crhF1REDd9GCIxaHRCGvqAXs9eiHA5UDox531VIniscqcQ7sPRxnP5RYeLFi?=
- =?us-ascii?Q?JnSYL6ZIXUy9wJQR3yXYaxA551k+/83HwvEkhrR67E/V2AifUQwzu3Ynqs7/?=
- =?us-ascii?Q?M51fKkNmVODVnSveKceqsl+khqbrC412gn67iE1CmkUE6B2DEo7BCdyvd9NR?=
- =?us-ascii?Q?BsBha0wboUM/dwLyRlZI9Le8hrQIkC8qpps/3WGdVxTUA9h/vVt+RK9nWp7x?=
- =?us-ascii?Q?MkYq5T4XDJgVQo2g7+VwK/cWG2yIFR5RYKVfBPsBQgVDBf0VAN5W/jX385+z?=
- =?us-ascii?Q?x14yPt9TCLQ/isHPHyH7vthn9NQTCqPCT+MLapk1OCqnZTCwdTOse8rONtKT?=
- =?us-ascii?Q?+mrdJ1QzvQ5KJ35fYUCvHdiq9y1nYmEte8nrO3Jpnura8emb2W0uXTXMmxoJ?=
- =?us-ascii?Q?XZhyJSuMejHffOEE1ysewFLy+hzr1bqLTMcW4umcQFnUI19HoVlQZKlBVxKa?=
- =?us-ascii?Q?lHQx/5pXdXTdu+wiwr41vUbocMGaTkKzNYqFywdkZJCirH89e8YeSze4MNzQ?=
- =?us-ascii?Q?z9DRcNlPluYlNaLUhHaKF/kmanQQvcrp/eO7NuC74bCC8dsOH1edCRSpxQPx?=
- =?us-ascii?Q?aaCw13+7rIqgEts1z67qOdzuXtUIpQ80knWgmvaz3J/OoFA2+cwCRhg95B/7?=
- =?us-ascii?Q?de0y?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1DC163D3990FCF498E8989BEFC379373@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1732106AbgK1AoE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Nov 2020 19:44:04 -0500
+Received: from www62.your-server.de ([213.133.104.62]:52848 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731981AbgK1Amh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 19:42:37 -0500
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kinul-00017Y-E5; Sat, 28 Nov 2020 01:16:35 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kinul-0003pI-8U; Sat, 28 Nov 2020 01:16:35 +0100
+Subject: Re: [PATCH] bpf, x64: add extra passes without size optimizations
+To:     Gary Lin <glin@suse.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>, andreas.taschner@suse.com
+References: <20201127072254.1061-1-glin@suse.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <28f86fa2-96dd-2fb5-db3f-38702bc6e72a@iogearbox.net>
+Date:   Sat, 28 Nov 2020 01:16:34 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB5685.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e994c7c5-5e42-40c5-cd70-08d893345d24
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Nov 2020 00:27:18.2011
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: KkEO5AukdGLy3XbuhtoAEUSwITKoXhOTiSwGppA1ZHmTcw8ZtKxUNbOFdavU0vuE/wOkdP9E0iFRMDo4AxgxWw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB6328
+In-Reply-To: <20201127072254.1061-1-glin@suse.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26001/Fri Nov 27 14:45:56 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 28, 2020 at 12:58:10AM +0100, Tobias Waldekranz wrote:
-> That sounds like a good idea. We have run into another issue with the
-> MDB that maybe could be worked into this changeset. This is what we have
-> observed on 4.19, but from looking at the source it does not look like
-> anything has changed with respect to this issue.
->
-> The DSA driver handles the addition/removal of router ports by
-> enabling/disabling multicast flooding to the port in question. On
-> mv88e6xxx at least, this is only part of the solution. It only takes
-> care of the unregistered multicast. You also have to iterate through all
-> _registered_ groups and add the port to the destination vector.
+On 11/27/20 8:22 AM, Gary Lin wrote:
+> The x64 bpf jit expects bpf images converge within the given passes, but
+> it could fail to do so with some corner cases. For example:
+> 
+>        l0:     ldh [4]
+>        l1:     jeq #0x537d, l2, l40
+>        l2:     ld [0]
+>        l3:     jeq #0xfa163e0d, l4, l40
+>        l4:     ldh [12]
+>        l5:     ldx #0xe
+>        l6:     jeq #0x86dd, l41, l7
+>        l7:     jeq #0x800, l8, l41
+>        l8:     ld [x+16]
+>        l9:     ja 41
+> 
+>          [... repeated ja 41 ]
+> 
+>        l40:    ja 41
+>        l41:    ret #0
+>        l42:    ld #len
+>        l43:    ret a
+> 
+> This bpf program contains 32 "ja 41" instructions which are effectively
+> NOPs and designed to be replaced with valid code dynamically. Ideally,
+> bpf jit should optimize those "ja 41" instructions out when translating
+> translating the bpf instructions into x86_64 machine code. However,
+> do_jit() can only remove one "ja 41" for offset==0 on each pass, so it
+> requires at least 32 runs to eliminate those JMPs and exceeds the
+> current limit of passes (20). In the end, the program got rejected when
+> BPF_JIT_ALWAYS_ON is set even though it's legit as a classic socket
+> filter.
+> 
+> Instead of pursuing the fully optimized image, this commit adds 5 extra
+> passes which only use imm32 JMPs and disable the NOP optimization. Since
+> all imm8 JMPs (2 bytes) are replaced with imm32 JMPs, the image size is
+> expected to grow, but it could reduce the size variance between passes
+> and make the images more likely to converge. The NOP optimization is
+> also disabled to avoid the further jump offset changes.
+> 
+> Due to the fact that the images are not optimized after the extra
+> passes, a warning is issued to notify the user, but at least the images
+> are allocated and ready to run.
+> 
+> Signed-off-by: Gary Lin <glin@suse.com>
+> ---
+>   arch/x86/net/bpf_jit_comp.c | 35 ++++++++++++++++++++++++++++-------
+>   1 file changed, 28 insertions(+), 7 deletions(-)
+> 
+> diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+> index 796506dcfc42..125f373d6e97 100644
+> --- a/arch/x86/net/bpf_jit_comp.c
+> +++ b/arch/x86/net/bpf_jit_comp.c
+> @@ -790,7 +790,8 @@ static void detect_reg_usage(struct bpf_insn *insn, int insn_cnt,
+>   }
+>   
+>   static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
+> -		  int oldproglen, struct jit_context *ctx)
+> +		  int oldproglen, struct jit_context *ctx, bool no_optz,
+> +		  bool allow_grow)
+>   {
+>   	bool tail_call_reachable = bpf_prog->aux->tail_call_reachable;
+>   	struct bpf_insn *insn = bpf_prog->insnsi;
+> @@ -1408,7 +1409,7 @@ xadd:			if (is_imm8(insn->off))
+>   				return -EFAULT;
+>   			}
+>   			jmp_offset = addrs[i + insn->off] - addrs[i];
+> -			if (is_imm8(jmp_offset)) {
+> +			if (is_imm8(jmp_offset) && !no_optz) {
+>   				EMIT2(jmp_cond, jmp_offset);
+>   			} else if (is_simm32(jmp_offset)) {
+>   				EMIT2_off32(0x0F, jmp_cond + 0x10, jmp_offset);
+> @@ -1431,11 +1432,11 @@ xadd:			if (is_imm8(insn->off))
+>   			else
+>   				jmp_offset = addrs[i + insn->off] - addrs[i];
+>   
+> -			if (!jmp_offset)
+> +			if (!jmp_offset && !no_optz)
+>   				/* Optimize out nop jumps */
+>   				break;
+>   emit_jmp:
+> -			if (is_imm8(jmp_offset)) {
+> +			if (is_imm8(jmp_offset) && !no_optz) {
+>   				EMIT2(0xEB, jmp_offset);
+>   			} else if (is_simm32(jmp_offset)) {
+>   				EMIT1_off32(0xE9, jmp_offset);
+> @@ -1476,7 +1477,7 @@ xadd:			if (is_imm8(insn->off))
+>   		}
+>   
+>   		if (image) {
+> -			if (unlikely(proglen + ilen > oldproglen)) {
+> +			if (unlikely(proglen + ilen > oldproglen) && !allow_grow) {
+>   				pr_err("bpf_jit: fatal error\n");
+>   				return -EFAULT;
+>   			}
+> @@ -1972,6 +1973,9 @@ struct x64_jit_data {
+>   	struct jit_context ctx;
+>   };
+>   
+> +#define MAX_JIT_PASSES 25
+> +#define NO_OPTZ_PASSES (MAX_JIT_PASSES - 5)
+> +
+>   struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>   {
+>   	struct bpf_binary_header *header = NULL;
+> @@ -1981,6 +1985,8 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>   	struct jit_context ctx = {};
+>   	bool tmp_blinded = false;
+>   	bool extra_pass = false;
+> +	bool no_optz = false;
+> +	bool allow_grow = false;
+>   	u8 *image = NULL;
+>   	int *addrs;
+>   	int pass;
+> @@ -2042,8 +2048,23 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>   	 * may converge on the last pass. In such case do one more
+>   	 * pass to emit the final image.
+>   	 */
+> -	for (pass = 0; pass < 20 || image; pass++) {
+> -		proglen = do_jit(prog, addrs, image, oldproglen, &ctx);
+> +	for (pass = 0; pass < MAX_JIT_PASSES || image; pass++) {
+> +		/*
+> +		 * On the 21th pass, if the image still doesn't converge,
+> +		 * then no_optz is set afterward to make do_jit() disable
+> +		 * some size optimizations to reduce the size variance.
+> +		 * The side effect is that the image size may grow, so
+> +		 * allow_grow is flipped to true only for this pass.
+> +		 */
+> +		if (pass == NO_OPTZ_PASSES && !image) {
+> +			pr_warn("bpf_jit: disable optimizations for further passes\n");
+> +			no_optz = true;
+> +			allow_grow = true;
+> +		} else {
+> +			allow_grow = false;
+> +		}
+> +
+> +		proglen = do_jit(prog, addrs, image, oldproglen, &ctx, no_optz, allow_grow);
 
-And this observation is based on what? Based on this paragraph from RFC4541=
-?
+Fwiw, this logic looks quite complex and fragile to me, for example, having the no_optz
+toggle can easily get missed when adding new instructions and then we run into subtle
+buggy JIT images that are tricky to debug & pinpoint the source of error when running
+into weird program behaviors. Also, I think this might break with BPF to BPF calls given
+this relies on the images to be converged in the initial JITing step, so that in the
+last extra step we're guaranteed that call offsets are fixed when filling in actual
+relative offsets. In the above case, we could stop shrinking in the initial phase when
+hitting the NO_OPTZ_PASSES pass and then in the extra step we continue to shrink again
+(though in that case we should hit the proglen != oldproglen safeguard and fail there)
+but this feels complex and not straight forward behavior and only addresses part of the
+problem (e.g. not covering mentioned case for BPF to BPF calls). So far with complex
+LLVM-compiled progs we haven't seen an issue of not converging within the 20 iterations,
+and the synthetic case you are solving is on cBPF [or hand-crafted eBPF]. Given we had
+the 1 mio insn / complexity limit more or less recently, maybe it's okay to just bump
+'pass < 64' heuristic which would better address such manual written corner cases but
+avoid adding fragile complexity into the JIT.. we do have the cond_resched() in the JIT
+passes loop, so should not cause additional issues. Yes, the bumping doesn't address
+all sort of weird corner cases, but given we haven't seen such issue at this point from
+LLVM code generation side, I think it's not worth the complexity trade-off, so I'd opt
+for just bumping the passes at this point.
 
-2.1.2.  Data Forwarding Rules
+Thanks,
+Daniel
 
-   1) Packets with a destination IP address outside 224.0.0.X which are
-      not IGMP should be forwarded according to group-based port
-      membership tables and must also be forwarded on router ports.
+>   		if (proglen <= 0) {
+>   out_image:
+>   			image = NULL;
+> 
 
-Let me ask you a different question. Why would DSA be in charge of
-updating the MDB records, and not the bridge? Or why DSA and not the end
-driver? Ignore my patch. I'm just trying to understand what you're
-saying. Why precisely DSA, the mid layer? I don't know, this is new
-information to me, I'm still digesting it.=
