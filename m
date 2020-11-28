@@ -2,182 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E396D2C73B0
-	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:15:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A9ED2C7425
+	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:18:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387739AbgK1Vtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Nov 2020 16:49:55 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:38692 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387494AbgK1TP0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Nov 2020 14:15:26 -0500
-Received: by mail-wm1-f66.google.com with SMTP id g185so2378139wmf.3
-        for <netdev@vger.kernel.org>; Sat, 28 Nov 2020 11:15:10 -0800 (PST)
+        id S2388992AbgK1Vts (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Nov 2020 16:49:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38880 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729819AbgK1Saj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Nov 2020 13:30:39 -0500
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 710A3C02A18C
+        for <netdev@vger.kernel.org>; Sat, 28 Nov 2020 04:30:54 -0800 (PST)
+Received: by mail-pl1-x643.google.com with SMTP id k5so3951268plt.6
+        for <netdev@vger.kernel.org>; Sat, 28 Nov 2020 04:30:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=dj3qfXJ4Iec3raMLz9uZPv/2iNP/sFcmUQrTQYmXPI4=;
+        b=CxnJG8wuCt185kvI88X7girxo7s+KdRL1BxFkr5fN8hnGZXyyiqnqwbx+jpS8NDYGd
+         dY71Mcz5NVYHhYeYRZyxApehgizsoJJhMYvSU9Tahg2PIxV8gzjxM6a/S06c+aH/eKcF
+         gXjKMAvyi+DJ1vwJVgAHQgSvNKy+2HDczgL4nM3lzyLTrQZ6SFAS+AJF6x/Y4E1Ijx+M
+         QYz6c+1VZJRyqEpt3imS5nNpxRgfFPwTN3NftRUbHZXEfQ6WVLxgro/RGgrLF0Gs6G61
+         OoSniKWBHedJvKnwLygRUOy0V9NIB5TFPD3y/KdXStMl42Y7/4neHpWwWUuSX6dDxTWn
+         +LaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=rsr49og+ZESDXNirKTEjxBe+wkS8D/EyhyHD+MGd43E=;
-        b=b9I+Zs49bCLyFhIaXWAqPmH2pb8RVNkqiZ+bGz93ZcBs7pLnl0dL3P9YN8Rcs80Jcp
-         28PauwS1E+bp9rhd+IkH7pbBcydtkW7ZKXKIoD22i/GaGSD6ITEWwoh2RCbGYs5KCpiT
-         KbnY+Ajkr/76jnJzcRKYJgEJJ4DM9BaSc9oQzPFLtOFXfba7Mu+IBhv2dntyoQmkCuUB
-         +BHNYEAlgj9JrG3T+AZj88Sf2QCKirinVLe16c6rwtRhAJRFa4lx+7dN/lmLAfGqfDEI
-         VRNNyCoMsnffojzu9mOxvzAxwOghHjBX9vRKX9wYOZNrHXEfiZtDcz2YJEVkoSlrPQ8A
-         wTig==
-X-Gm-Message-State: AOAM533rq/uV2iA9T1sljfRlNZ5D6e3b+QXCt+aiMURMqKJsGLj6c1u2
-        5Et90gpLj0g2pMDNb8Nrm5zePlhcuEiH/g==
-X-Google-Smtp-Source: ABdhPJyynfmehjJTpJ/g55ecDQRGQbNIBauOIddOQK/2BYvcq14q/kGphBPhOwDG7qK0K7Jb6lmOoA==
-X-Received: by 2002:a7b:cb41:: with SMTP id v1mr2229743wmj.36.1606566116309;
-        Sat, 28 Nov 2020 04:21:56 -0800 (PST)
-Received: from localhost ([2a01:4b00:f419:6f00:e2db:6a88:4676:d01b])
-        by smtp.gmail.com with ESMTPSA id j14sm19088394wrs.49.2020.11.28.04.21.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Nov 2020 04:21:55 -0800 (PST)
-From:   Luca Boccassi <bluca@debian.org>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org
-Subject: [PATCH iproute2 v2] tc/mqprio: json-ify output
-Date:   Sat, 28 Nov 2020 12:21:48 +0000
-Message-Id: <20201128122148.6904-1-bluca@debian.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20201127152625.61874-1-bluca@debian.org>
-References: <20201127152625.61874-1-bluca@debian.org>
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=dj3qfXJ4Iec3raMLz9uZPv/2iNP/sFcmUQrTQYmXPI4=;
+        b=CdousDhU+7Joj8djn/HDmnYJV8c8xigRIhpxntVPhEThKYaNLRjVPBs8fg4Wt1PKFt
+         ej2TvfaNqBJ1UEm3QzVbqsKdT8gQXAoaiStFXCzZXF1Vz3jJTFp3fAO16TASw1lBN5t/
+         vu2vtPo83lNWi+qEQD4cIo3aYyx0wB79QIAk0hfOPrEJeyP+iZCTAvxpyliD5pneV7uQ
+         DI3upXR/i+gLc3Ix9qaysHXtXDZKex7j+WjPeTAkU2+XVOst1HyO3FX8Rwac6kTzg6zY
+         Q0JwW9n8FFhv5kUmtiSfhNUphWXY3lprm6nOGTFyCruQVAW9xxEsc47c0V0BQSuLvod5
+         k8lg==
+X-Gm-Message-State: AOAM532RZNqrLtWFobPtEQiU+kN2kbhgqQ3d+5qbIOVJTKMa+woyBk0T
+        DD2eNUMPG1i3OMJ12m60f9TMYMpDp1YHQ/YbCe4=
+X-Google-Smtp-Source: ABdhPJyf5gzwWNuwAQKSU/cTJUlFx20BegE4cQ96TpRsAuWIo9Wsy2+7cgmz7TzatCxMaElLHkDmdx1uvfRoAgoLgC4=
+X-Received: by 2002:a17:902:24b:b029:d6:cd52:61e3 with SMTP id
+ 69-20020a170902024bb02900d6cd5261e3mr10792718plc.2.1606566653838; Sat, 28 Nov
+ 2020 04:30:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Sender: brianphilippe50@gmail.com
+Received: by 2002:a17:90a:d989:0:0:0:0 with HTTP; Sat, 28 Nov 2020 04:30:53
+ -0800 (PST)
+From:   "Mrs. Nadia Emaan" <mrsnadiaemaan50@gmail.com>
+Date:   Sat, 28 Nov 2020 12:30:53 +0000
+X-Google-Sender-Auth: ypFhl9pDH9MnU8rYy1TkdIEooYU
+Message-ID: <CAGvUTU8xCox8sSKme8n7GOH2bugs9w52ieA=1R9WTTa22tmt+Q@mail.gmail.com>
+Subject: May the Peace of God be with You!
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As reported by a Debian user, mqprio output in json mode is
-invalid:
+May God Bless you My beloved,
 
-{
-     "kind": "mqprio",
-     "handle": "8021:",
-     "dev": "enp1s0f0",
-     "root": true,
-     "options": { tc 2 map 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0
-          queues:(0:3) (4:7)
-          mode:channel
-          shaper:dcb}
-}
+I am contacting you through this means because I need your urgent
+assistance and also help me to carry a charity project in your
+country. I found your email address as a true child of God for past
+few days now that I have been praying to know if you are really the
+chosen one for this great charity project, according to God's
+direction, after all prayers I am convinced, and I have decided to
+contact you. Please, i want you use the funds for the Lord's work,
+with confidence, read and respond now.
 
-json-ify it, while trying to maintain the same formatting
-for standard output.
 
-https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=972784
+My name is Ms. Nadia Emaan , a widow, but currently based in West
+Africa since my life with my late husband, who was a businessman in
+this country before dying some years ago. We were married to many
+years without a child. He died after a brief illness that lasted only
+six days and I myself have been suffering from an ovarian cancer
+disease. At this moment I am about to finish the race in this way
+because the disease has reached a very bad stage, without any family
+member and without children. I hope you do not expose or betray this
+trust and I am sure that I am about to trust you for the mutual
+benefit of orphans and the less privileged. I have some funds that I
+inherited from my late husband, the total sum of ($ 12,500,000.00)
+deposited at a bank here in Burkina Faso. After knowing my current
+state of health, I decided to trust you with this fund, believing that
+you will use it in the way I will instruct here.
 
-Reported-by: Roméo GINON <romeo.ginon@ilexia.com>
-Signed-off-by: Luca Boccassi <bluca@debian.org>
----
-v1: I do not have hardware where I can configure mqprio, so I can't really
-test this apart from compiling it. Stephen and David, do you have machines
-where you can quickly check that this works as expected? Thanks!
 
-v2: the original reporter tested the patch and reported this is the new output:
+you will use this $12.5 Million for public benefit as follows;
 
-{
-    "kind": "mqprio",
-    "handle": "8001:",
-    "root": true,
-    "options": {
-        "tc": 2,
-        "map": [ 0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0 ],
-        "queues": [
-            "": [ 0,3 ],
-            "": [ 4,7 ] ],
-        "mode": "channel",
-        "shaper": "dcb"
-    }
-}
+1. Establish An Orphanage Home To Help The Orphanages Children.
+2. Build A Hospital To Help The Poor.
+3. Build A Nursing Home For Elderly People Need Care & Meal.
 
-Changed in v2 to make the inner queues arrays anonymous
-("" -> NULL for open/close_json_array)
+You will named them after my late husband.Therefore, I need you to
+help me and claim this money and use it for charities, for orphanages
+and provide justice and help to the poor, needy and to promote the
+words of God and the effort to maintain the house of God, according to
+the bible in the book of. Jeremiah 22: 15-16.
 
-Still would appreciate testing from someone else who has hardware
-that supports this feature and can enable this, as I am flying blind.
+It will be a pleasure to compensate with 40% percent of the total
+money for your effort in handling the transaction, while 60% of the
+money will go to charity project.
 
- tc/q_mqprio.c | 34 ++++++++++++++++++++--------------
- 1 file changed, 20 insertions(+), 14 deletions(-)
+All I need from you is sincerity and ability to complete the task of
+God without any failure. It will be my pleasure to see that the bank
+has finally released and transferred the fund to your bank account in
+the country, even before I die here in the hospital, due to my current
+state of health, everything must be processed as soon as possible.
 
-diff --git a/tc/q_mqprio.c b/tc/q_mqprio.c
-index f26ba8d7..a128fc11 100644
---- a/tc/q_mqprio.c
-+++ b/tc/q_mqprio.c
-@@ -243,13 +243,19 @@ static int mqprio_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 
- 	qopt = RTA_DATA(opt);
- 
--	fprintf(f, " tc %u map ", qopt->num_tc);
-+	print_uint(PRINT_ANY, "tc", "tc %u ", qopt->num_tc);
-+	open_json_array(PRINT_ANY, is_json_context() ? "map" : "map ");
- 	for (i = 0; i <= TC_PRIO_MAX; i++)
--		fprintf(f, "%u ", qopt->prio_tc_map[i]);
--	fprintf(f, "\n             queues:");
--	for (i = 0; i < qopt->num_tc; i++)
--		fprintf(f, "(%u:%u) ", qopt->offset[i],
--			qopt->offset[i] + qopt->count[i] - 1);
-+		print_uint(PRINT_ANY, NULL, "%u ", qopt->prio_tc_map[i]);
-+	close_json_array(PRINT_ANY, "");
-+	open_json_array(PRINT_ANY, is_json_context() ? "queues" : "\n             queues:");
-+	for (i = 0; i < qopt->num_tc; i++) {
-+		open_json_array(PRINT_JSON, NULL);
-+		print_uint(PRINT_ANY, NULL, "(%u:", qopt->offset[i]);
-+		print_uint(PRINT_ANY, NULL, "%u) ", qopt->offset[i] + qopt->count[i] - 1);
-+		close_json_array(PRINT_JSON, NULL);
-+	}
-+	close_json_array(PRINT_ANY, "");
- 
- 	if (len > 0) {
- 		struct rtattr *tb[TCA_MQPRIO_MAX + 1];
-@@ -262,18 +268,18 @@ static int mqprio_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 			__u16 *mode = RTA_DATA(tb[TCA_MQPRIO_MODE]);
- 
- 			if (*mode == TC_MQPRIO_MODE_CHANNEL)
--				fprintf(f, "\n             mode:channel");
-+				print_string(PRINT_ANY, "mode", "\n             mode:%s", "channel");
- 		} else {
--			fprintf(f, "\n             mode:dcb");
-+			print_string(PRINT_ANY, "mode", "\n             mode:%s", "dcb");
- 		}
- 
- 		if (tb[TCA_MQPRIO_SHAPER]) {
- 			__u16 *shaper = RTA_DATA(tb[TCA_MQPRIO_SHAPER]);
- 
- 			if (*shaper == TC_MQPRIO_SHAPER_BW_RATE)
--				fprintf(f, "\n             shaper:bw_rlimit");
-+				print_string(PRINT_ANY, "shaper", "\n             shaper:%s", "bw_rlimit");
- 		} else {
--			fprintf(f, "\n             shaper:dcb");
-+			print_string(PRINT_ANY, "shaper", "\n             shaper:%s", "dcb");
- 		}
- 
- 		if (tb[TCA_MQPRIO_MIN_RATE64]) {
-@@ -287,9 +293,9 @@ static int mqprio_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 					return -1;
- 				*(min++) = rta_getattr_u64(r);
- 			}
--			fprintf(f, "	min_rate:");
-+			open_json_array(PRINT_ANY, is_json_context() ? "min_rate" : "	min_rate:");
- 			for (i = 0; i < qopt->num_tc; i++)
--				fprintf(f, "%s ", sprint_rate(min_rate64[i], b1));
-+				print_string(PRINT_ANY, NULL, "%s ", sprint_rate(min_rate64[i], b1));
- 		}
- 
- 		if (tb[TCA_MQPRIO_MAX_RATE64]) {
-@@ -303,9 +309,9 @@ static int mqprio_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 					return -1;
- 				*(max++) = rta_getattr_u64(r);
- 			}
--			fprintf(f, "	max_rate:");
-+			open_json_array(PRINT_ANY, is_json_context() ? "max_rate" : "	max_rate:");
- 			for (i = 0; i < qopt->num_tc; i++)
--				fprintf(f, "%s ", sprint_rate(max_rate64[i], b1));
-+				print_string(PRINT_ANY, NULL, "%s ", sprint_rate(max_rate64[i], b1));
- 		}
- 	}
- 	return 0;
--- 
-2.29.2
+ I am waiting for your immediate response, if you are only interested
+in obtaining more details about the transaction and execution of this
+humanitarian project for the glory and honor of God.
 
+Sorry if you received this letter in your spam, is due to recent
+connection/network error here in the country.
+
+Please I am waiting for your urgent reply now.
+
+May God Bless you,
+Ms Nadia Emaan .
