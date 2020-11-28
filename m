@@ -2,103 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 304542C7359
-	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:14:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1C222C7618
+	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:30:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389726AbgK1VuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Nov 2020 16:50:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39656 "EHLO
+        id S2388372AbgK1W3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Nov 2020 17:29:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387814AbgK1VkC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Nov 2020 16:40:02 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17028C0613D1;
-        Sat, 28 Nov 2020 13:39:20 -0800 (PST)
+        with ESMTP id S2387738AbgK1W3V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Nov 2020 17:29:21 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1EC4C0613D1;
+        Sat, 28 Nov 2020 14:28:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=cLViv87Sd5/WI1F3sh0RUkFslM622GS1dHyu4cz2mHc=; b=RmXEmFKUkit0IQMFSSYtrynDQV
-        x0Kb0z1oiAxxbC7tWYH0UmZyPJlUUPrmg1ciyyWuHgVnxtDIe8hQuX1ArHBGOT1DQvgraRCLbZulU
-        ZNVmxJLVEyFCsFUB/l4aQF4HPHBcBZyACeMi0PsDo01RPMH7FVwofJtGZzWhlzTUMGutYz6YxV7ko
-        a6YUYBkcFBBv1IF2b2r+0b4rSYLCCwfWXHknuGSrliO9b2ZPJzpVw7AU9vbLe97TGaJBtwQl67X/Y
-        W/CoZbOyJwDDvoxyruHZkNrZP765HhUgQ3rBCcrYdhAfsIxttZgr1czN+GkD3KPmKqu7ggsqe75yx
-        rTmydCAQ==;
-Received: from [2601:1c0:6280:3f0::cc1f] (helo=smtpauth.infradead.org)
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kj7vz-0002PT-6P; Sat, 28 Nov 2020 21:39:11 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Eli Cohen <eli@mellanox.com>,
-        Parav Pandit <parav@mellanox.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>, netdev@vger.kernel.org
-Subject: [PATCH v4] vdpa: mlx5: fix vdpa/vhost dependencies
-Date:   Sat, 28 Nov 2020 13:39:05 -0800
-Message-Id: <20201128213905.27409-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.26.2
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=+IyqJ+rUt/FX0E5HF4XeeBNYiCT69b6WTf3nWSBnQxg=; b=oL5z9vjqnGGTy3UY+SKiwsW7j
+        uFxkbQtjUxKKB4Sm+bZ5QAu7JJRSLD6aojSaiB6PU+j5kVL251KKyMQoOfGzEcghgX57Sm5Qv6qMt
+        UTACGGCch2N2yT2weCF7g5EhcrGnabj86V+kpg1fzG6P8LkIsqdwTOeKJ0PgfCunw2O6pHuNdbyOl
+        7JGVh3dCwmTYQDn0pwoxZanQ4rwqmVLIKoYSKUArNfTEPra+lr+fdos3Cd9rXDHiQkTpS64BJoDeq
+        mMyXbRpjgRbKgPML91NpCdpFYYbT8p3MApDoGIOT9gnwQxP8jejHoWt0fknF9oPJiTW6Y+NWv7QVh
+        Lk3k0jaMw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:37322)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kj8hj-00054L-A3; Sat, 28 Nov 2020 22:28:31 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kj8hg-0003Lj-VS; Sat, 28 Nov 2020 22:28:28 +0000
+Date:   Sat, 28 Nov 2020 22:28:28 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Steen Hegelund <steen.hegelund@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microsemi List <microsemi@lists.bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 2/3] net: sparx5: Add Sparx5 switchdev driver
+Message-ID: <20201128222828.GQ1551@shell.armlinux.org.uk>
+References: <20201127133307.2969817-1-steen.hegelund@microchip.com>
+ <20201127133307.2969817-3-steen.hegelund@microchip.com>
+ <20201128190616.GF2191767@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201128190616.GF2191767@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-drivers/vdpa/mlx5/ uses vhost_iotlb*() interfaces, so select
-VHOST_IOTLB to make them be built.
+On Sat, Nov 28, 2020 at 08:06:16PM +0100, Andrew Lunn wrote:
+> > +static void sparx5_phylink_mac_config(struct phylink_config *config,
+> > +				      unsigned int mode,
+> > +				      const struct phylink_link_state *state)
+> > +{
+> > +	struct sparx5_port *port = netdev_priv(to_net_dev(config->dev));
+> > +	struct sparx5_port_config conf;
+> > +	int err = 0;
+> > +
+> > +	conf = port->conf;
+> > +	conf.autoneg = state->an_enabled;
+> > +	conf.pause = state->pause;
+> > +	conf.duplex = state->duplex;
+> > +	conf.power_down = false;
+> > +	conf.portmode = state->interface;
+> > +
+> > +	if (state->speed == SPEED_UNKNOWN) {
+> > +		/* When a SFP is plugged in we use capabilities to
+> > +		 * default to the highest supported speed
+> > +		 */
+> 
+> This looks suspicious.
 
-However, if VHOST_IOTLB is the only VHOST symbol that is
-set/enabled, the object file still won't be built because
-drivers/Makefile won't descend into drivers/vhost/ to build it,
-so make drivers/Makefile build the needed binary whenever
-VHOST_IOTLB is set, like it does for VHOST_RING.
+Yes, it looks highly suspicious. The fact that
+sparx5_phylink_mac_link_up() is empty, and sparx5_phylink_mac_config()
+does all the work suggests that this was developed before the phylink
+re-organisation, and this code hasn't been updated for it.
 
-Fixes these build errors:
-ERROR: modpost: "vhost_iotlb_itree_next" [drivers/vdpa/mlx5/mlx5_vdpa.ko] undefined!
-ERROR: modpost: "vhost_iotlb_itree_first" [drivers/vdpa/mlx5/mlx5_vdpa.ko] undefined!
+Any new code for the kernel really ought to be updated for the new
+phylink methodology before it is accepted.
 
-Fixes: 29064bfdabd5 ("vdpa/mlx5: Add support library for mlx5 VDPA implementation")
-Fixes: aff90770e54c ("vdpa/mlx5: Fix dependency on MLX5_CORE")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Eli Cohen <eli@mellanox.com>
-Cc: Parav Pandit <parav@mellanox.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: virtualization@lists.linux-foundation.org
-Cc: Saeed Mahameed <saeedm@nvidia.com>
-Cc: Leon Romanovsky <leonro@nvidia.com>
-Cc: netdev@vger.kernel.org
----
-v2: change from select to depends on VHOST (Saeed)
-v3: change to depends on VHOST_IOTLB (Jason)
-v4: use select VHOST_IOTLB (Michael); also add to drivers/Makefile
+Looking at sparx5_port_config(), it also seems to use
+PHY_INTERFACE_MODE_1000BASEX for both 1000BASE-X and 2500BASE-X. All
+very well for the driver to do that internally, but it's confusing
+when it comes to reviewing this stuff, especially when people outside
+of the driver (such as myself) reviewing it need to understand what's
+going on with the configuration.
 
- drivers/Makefile     |    1 +
- drivers/vdpa/Kconfig |    1 +
- 2 files changed, 2 insertions(+)
-
---- linux-next-20201127.orig/drivers/vdpa/Kconfig
-+++ linux-next-20201127/drivers/vdpa/Kconfig
-@@ -32,6 +32,7 @@ config IFCVF
- 
- config MLX5_VDPA
- 	bool
-+	select VHOST_IOTLB
- 	help
- 	  Support library for Mellanox VDPA drivers. Provides code that is
- 	  common for all types of VDPA drivers. The following drivers are planned:
---- linux-next-20201127.orig/drivers/Makefile
-+++ linux-next-20201127/drivers/Makefile
-@@ -143,6 +143,7 @@ obj-$(CONFIG_OF)		+= of/
- obj-$(CONFIG_SSB)		+= ssb/
- obj-$(CONFIG_BCMA)		+= bcma/
- obj-$(CONFIG_VHOST_RING)	+= vhost/
-+obj-$(CONFIG_VHOST_IOTLB)	+= vhost/
- obj-$(CONFIG_VHOST)		+= vhost/
- obj-$(CONFIG_VLYNQ)		+= vlynq/
- obj-$(CONFIG_GREYBUS)		+= greybus/
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
