@@ -2,50 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B5042C731C
-	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:13:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EE902C7322
+	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:13:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389398AbgK1VuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Nov 2020 16:50:00 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51192 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387626AbgK1T7C (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 28 Nov 2020 14:59:02 -0500
-Received: from kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AAF21221FF;
-        Sat, 28 Nov 2020 19:58:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606593501;
-        bh=3EmyCw5/ovjNwmz7PMcHck8AiiBEKqRovP4BafAmUz4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Up8/Atkoxtq0i1P2paK/Rsd6ZRU3kmg+OD7xSBb/nzwHw+963X2mTOWxbyLOdpSyg
-         Pm1mJesTvoB7z9kZwvTsn1X9zglmFkSLhTDEV72mFXveIpz/T5CWJeHu5qbZjvxYkq
-         +f0O1J4JgrpKB3w2Iao20I60Z8lBzH1hc9gOBplY=
-Date:   Sat, 28 Nov 2020 11:58:20 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Simon Wunderlich <sw@simonwunderlich.de>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        b.a.t.m.a.n@lists.open-mesh.org
-Subject: Re: [PATCH 0/3] pull request for net: batman-adv 2020-11-27
-Message-ID: <20201128115820.081b16d7@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201127173849.19208-1-sw@simonwunderlich.de>
-References: <20201127173849.19208-1-sw@simonwunderlich.de>
+        id S2389499AbgK1VuB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Nov 2020 16:50:01 -0500
+Received: from mslow2.mail.gandi.net ([217.70.178.242]:49838 "EHLO
+        mslow2.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387687AbgK1UWP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Nov 2020 15:22:15 -0500
+Received: from relay4-d.mail.gandi.net (unknown [217.70.183.196])
+        by mslow2.mail.gandi.net (Postfix) with ESMTP id D5B113A05FE
+        for <netdev@vger.kernel.org>; Sat, 28 Nov 2020 20:10:54 +0000 (UTC)
+X-Originating-IP: 86.194.74.19
+Received: from localhost (lfbn-lyo-1-997-19.w86-194.abo.wanadoo.fr [86.194.74.19])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 89999E0003;
+        Sat, 28 Nov 2020 20:07:51 +0000 (UTC)
+Date:   Sat, 28 Nov 2020 21:07:50 +0100
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Microsemi List <microsemi@lists.bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 2/3] net: sparx5: Add Sparx5 switchdev driver
+Message-ID: <20201128200750.GK1296649@piout.net>
+References: <20201127133307.2969817-1-steen.hegelund@microchip.com>
+ <20201127133307.2969817-3-steen.hegelund@microchip.com>
+ <20201128190616.GF2191767@lunn.ch>
+ <20201128193707.GP1551@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201128193707.GP1551@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 27 Nov 2020 18:38:46 +0100 Simon Wunderlich wrote:
-> here are some more bugfixes for batman-adv which we would like to have integrated into net.
-> 
-> Please pull or let me know of any problem!> 
-> ----------------------------------------------------------------
-> Here are some batman-adv bugfixes:
-> 
->  - Fix head/tailroom issues for fragments, by Sven Eckelmann (3 patches)
+Hi Russell,
 
-Pulled, thanks!
+On 28/11/2020 19:37:07+0000, Russell King - ARM Linux admin wrote:
+> On Sat, Nov 28, 2020 at 08:06:16PM +0100, Andrew Lunn wrote:
+> > > +static void sparx5_phylink_mac_config(struct phylink_config *config,
+> > > +				      unsigned int mode,
+> > > +				      const struct phylink_link_state *state)
+> > > +{
+> > > +	struct sparx5_port *port = netdev_priv(to_net_dev(config->dev));
+> > > +	struct sparx5_port_config conf;
+> > > +	int err = 0;
+> > > +
+> > > +	conf = port->conf;
+> > > +	conf.autoneg = state->an_enabled;
+> > > +	conf.pause = state->pause;
+> > > +	conf.duplex = state->duplex;
+> > > +	conf.power_down = false;
+> > > +	conf.portmode = state->interface;
+> > > +
+> > > +	if (state->speed == SPEED_UNKNOWN) {
+> > > +		/* When a SFP is plugged in we use capabilities to
+> > > +		 * default to the highest supported speed
+> > > +		 */
+> > 
+> > This looks suspicious.
+> > 
+> > Russell, please could you look through this?
+> 
+> Maybe if I was copied on the patch submission... I don't have the
+> patches, and searching google for them is a faff, especially
+> when
+> 
+> site:kernel.org 20201127133307.2969817-1-steen.hegelund@microchip.com
+> 
+> gives:
+> 
+>    Your search - site:kernel.org
+>    20201127133307.2969817-1-steen.hegelund@microchip.com - did not
+>    match any documents. Suggestions: Make sure that all words are
+>    spelled correctly. Try different keywords. Try more general
+>    keywords.
+> 
+
+http://lore.kernel.org/r/20201127133307.2969817-1-steen.hegelund@microchip.com
+does the right redirect.
+
+
+-- 
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
