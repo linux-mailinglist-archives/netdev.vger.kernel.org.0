@@ -2,98 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F2492C73E0
-	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:15:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D56A2C73F2
+	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:15:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728202AbgK1Vtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Nov 2020 16:49:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43168 "EHLO
+        id S2389150AbgK1Vtv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Nov 2020 16:49:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732088AbgK1S6A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Nov 2020 13:58:00 -0500
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE7EC08E863
-        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 22:29:56 -0800 (PST)
-Received: by mail-pl1-x643.google.com with SMTP id u2so3665795pls.10
-        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 22:29:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=fxLPby2ZZgodvkrXj4LnH57tvC3m1/hCBnaMrcy2erY=;
-        b=Maq0zLzAFKaZtJb5ziGaiU0K/c0512l0OMyhPTXo+1u+9ueY1GnF8wtjs5FQ0SWwV6
-         2xtGinrvIRXyEO3ajKZ8cAzRwDYWEO3ryz4wOapI0fPtt/kSP10105xv9GMyClpgfeIX
-         Dgz35YyDxSlutSCtE5K/KBFXA+WH0yrKAPqAi+Mvs/CZzbqQ5RVDf/G81zuBQ/HIR0za
-         zc7KzMIUEVKfAyALYj3jK3dTb+C/P33cp341XFlgZRfMvE53emP6OexeDAA5BsRxzN92
-         A4EnXGE+FGX/BzNTMkuhqCJTWL019vmRo9ilUuzOHqGkr1teINtK8k4lQE/bmjcpLOJI
-         il9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fxLPby2ZZgodvkrXj4LnH57tvC3m1/hCBnaMrcy2erY=;
-        b=PMDiea5WUeYQZOX8U7ts+fcQSPM+cz0zDj9zWuQIISSJ8l6jzNE0tv2JOs2/GxaC1A
-         /BItVVVbo9giVhku19McTcxWX1Rkv8G/iJqu6uDoiOZOQp+/3vMH+1LM647BUqL0x2lX
-         14gDK5Kk0Qf4BQtZZIVl1BlCiaWrqZ9PwbHQzvgN0sz4eXIpn6m9sdBMEr8TF+4sFsI9
-         lgS2QLJX2wKW57DfFQT7aFNS7I45mDawb4VgCftpplllCm546K+Y898Q1DRgibeB8bNN
-         ELC/OegJZozIcpP6v84HjOpYBn5ZWzB9XAGjrnVL0UFRDg5+rHO6tGMcZMyQezEKdtn1
-         M7Mw==
-X-Gm-Message-State: AOAM532E1JRyKOb7baJoNOU0aHEOUfEV3+KNZ656yGea7XhLsDV2yUoI
-        GWVpipPSkJ3PqM2zWjgMDhPQ
-X-Google-Smtp-Source: ABdhPJzL+9TYLmg5wLLh3tUlGf+9HH7pyl8RV8UiyqNjgLU2dLWcdjREM5ERAsARecGIt1q7+gp+6Q==
-X-Received: by 2002:a17:902:26a:b029:d6:caca:620a with SMTP id 97-20020a170902026ab02900d6caca620amr10394493plc.46.1606544995450;
-        Fri, 27 Nov 2020 22:29:55 -0800 (PST)
-Received: from thinkpad ([2409:4072:15:c612:48ab:f1cc:6b16:2820])
-        by smtp.gmail.com with ESMTPSA id m8sm9060249pgg.1.2020.11.27.22.29.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Nov 2020 22:29:54 -0800 (PST)
-Date:   Sat, 28 Nov 2020 11:59:46 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     Hemant Kumar <hemantk@codeaurora.org>,
-        Bhaumik Bhatt <bbhatt@codeaurora.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Jeffrey Hugo <jhugo@codeaurora.org>,
-        Network Development <netdev@vger.kernel.org>,
-        skhan@linuxfoundation.org
-Subject: Re: [PATCH v12 1/5] bus: mhi: core: Add helper API to return number
- of free TREs
-Message-ID: <20201128062946.GL3077@thinkpad>
-References: <1605566782-38013-1-git-send-email-hemantk@codeaurora.org>
- <1605566782-38013-2-git-send-email-hemantk@codeaurora.org>
- <CAMZdPi-qxKgs==kXXuSY3Y-GTfcGb7WjQuzn3tXMt2NZNuzriA@mail.gmail.com>
+        with ESMTP id S1731492AbgK1Sw6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Nov 2020 13:52:58 -0500
+X-Greylist: delayed 3156 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 27 Nov 2020 23:35:15 PST
+Received: from vmse01.mailcluster.com.au (vmse01.mailcluster.com.au [IPv6:2401:fc00:2:13f::6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6E3C094276
+        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 23:35:15 -0800 (PST)
+Received: from vmcp06.digitalpacific.com.au ([101.0.112.229])
+        by vmse01.mailcluster.com.au with esmtps (TLSv1.2:AES128-GCM-SHA256:128)
+        (Exim 4.92)
+        (envelope-from <eavicoma@vmcp06.digitalpacific.com.au>)
+        id 1kitwF-00063F-SV
+        for netdev@vger.kernel.org; Sat, 28 Nov 2020 17:42:35 +1100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=vmcp06.digitalpacific.com.au; s=default; h=Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Message-ID:From:Date:Subject:To:Sender
+        :Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:
+        List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:
+        List-Archive; bh=8nx9MFpIRDeGhhy5SZM2EHOqKeno45Yg8wrNTCcNWeU=; b=tEsyIahmRjwe
+        tIAXD2Ha2IXSMc1Y/N8Gb+3+wuVLHVlQ4qeh6J9vhikZSMCT+IJ8HqfiRms7h671JCSQ/1fOe3FYW
+        PkZXOWCzE1JZDNBel8H8NEf/1J0NmyWFhIGa/bS28VlOhG/CnK9gxTZPK8fk97S5+Fa+2iY1eVf0H
+        0XgTZxBowBOGV5VFhTb9+eGroqeQ5t2wgnINialAlsjEldESeTUZvp7FxODVBI81M09UTNxGaGvnd
+        diWqMSAQLwx5ax5ArOzPR4R4cZcpefX7E9jfGqbvlnh2ca6PdBvPVpjhmOZtTjdnj6kZEC8sMd3t3
+        Ed6jDX5VXknSft2sLBS19A==;
+Received: from eavicoma by vmcp06.digitalpacific.com.au with local (Exim 4.93)
+        (envelope-from <eavicoma@vmcp06.digitalpacific.com.au>)
+        id 1kitwF-003YC0-Da
+        for netdev@vger.kernel.org; Sat, 28 Nov 2020 17:42:31 +1100
+To:     netdev@vger.kernel.org
+Subject: [Shared Post] Home
+X-PHP-Script: eavi.com.au/index.php for 82.103.116.126
+X-PHP-Filename: /home/eavicoma/public_html/index.php REMOTE_ADDR: 82.103.116.126
+Date:   Sat, 28 Nov 2020 06:42:31 +0000
+From:   WordPress <wordpress@eavi.com.au>
+Message-ID: <a1104ccc7fc879f265474cc26a5338ff@eavi.com.au>
+X-Priority: 3
+X-Mailer: PHPMailer (phpmailer.sourceforge.net) [version 2.0.4]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMZdPi-qxKgs==kXXuSY3Y-GTfcGb7WjQuzn3tXMt2NZNuzriA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+X-Originating-User: eavicoma
+X-Originating-IP: 101.0.112.229
+X-SpamExperts-Domain: digipac-sh-outbound0.mailcluster.com.au
+X-SpamExperts-Username: 101.0.112.229
+Authentication-Results: mailcluster.com.au; auth=pass smtp.auth=101.0.112.229@digipac-sh-outbound0.mailcluster.com.au
+X-SpamExperts-Outgoing-Class: unsure
+X-SpamExperts-Outgoing-Evidence: Combined (0.69)
+X-Recommended-Action: accept
+X-Filter-ID: Mvzo4OR0dZXEDF/gcnlw0fJVsTFCFA1YlcTpjJcy6PSpSDasLI4SayDByyq9LIhV+Y0aAJ1ov1cq
+ rAKrHkMi2kTNWdUk1Ol2OGx3IfrIJKywOmJyM1qr8uRnWBrbSAGDesseJUSjHz/88doLK5oKLCh4
+ MK0k2uSGCYA7tfg2EIGE1rCW5JKrbuIOG+DdmlVHBMmyNbDn7R5kilAhwr3KtPRgtEKbbJiCf5yI
+ 2OixqpvpOGYDFnHfMfQ7HGf9HLkr6UTw0jTdDsh1dRVJBuLpYVNwYzVIo6KuHW8hVCQ7X76nPJMw
+ iMmGDIAGwZKDDgC5V285Rg4HPV7XsztaaZW8YBkhzVJFWn887ct0NFXnFWKxnGmiI3p9NEdyvIai
+ 1RA3FPo67MEDuAALBU22yFTfTrvatWWiSP0Jxll7g1bGZi2rTLMTNniiMz1OAmb0Fz3NgrbPA+uI
+ mOx9H2/gNYfuQNVCH58aHMOgJq49wVbzS8obDOdTMnvHqOmP4VxBW3PTCJuKmef1JCbmfgcv6zoJ
+ wP+UUGE9pQOAAWlE+d5fWPyh2Dwf8plwptnx2pP0zfML0nALJ/SZ21tCHNSdoVdATYlSPGIn6LIh
+ 6vfZt6Tuc+uVfVL7ygxIxIEhQBgsu7ia6J1fhOzjF0b4LXcjJZ5lojs9WothUdTRGM+OK01jR2FT
+ fj9Yy85rYwAPLNuau5MAUzRhidNRALGXuhKPQHGzKCTKelypEvEJvDCVKhdgOiEKmWM+8ftVwkKw
+ 27c7JqOyh1UcgPifqs9Z1959MOfpvMqtCru1poKZB7eNIruIcksmgo38I2WwKZqfJvB/ak2L0oqe
+ UC8lAaqwC32/9Vd70EK5NuprBzu3LLHsov485niRmv+9A6chZRtUAs48HmyAIbtf63VNbf0lrvss
+ Y+k7ACEuuc9n2iE8XDvKl8FdZy9JhWJQUPuZVFhkI9SEXS8+/vEZGKDVhQEd6lEOrnME+bakVnCS
+ c+Ypc/Pypso1H9ugcRBJ/ZgqLqeUwG0R12svmEDJ7jgeHcJTevWg8+R1jgFehep93Fnpexz1pshK
+ rgJ73n4rNOK4erw+M/WuBl/lU4k/ZfFdMgzqdIfIg9DUOOICUTIqG9GP/0y/T4/wTA+aCw5Hn2sA
+ 2GefVUqTY2dxMS+4ayUpOtEhdxekWDmK9g==
+X-Report-Abuse-To: spam@vmse01.mailcluster.com.au
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 18, 2020 at 10:32:45AM +0100, Loic Poulain wrote:
-> On Mon, 16 Nov 2020 at 23:46, Hemant Kumar <hemantk@codeaurora.org> wrote:
-> >
-> > Introduce mhi_get_free_desc_count() API to return number
-> > of TREs available to queue buffer. MHI clients can use this
-> > API to know before hand if ring is full without calling queue
-> > API.
-> >
-> > Signed-off-by: Hemant Kumar <hemantk@codeaurora.org>
-> > Reviewed-by: Jeffrey Hugo <jhugo@codeaurora.org>
-> > Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> 
-> In case this series get new comments to address, I would suggest
-> merging that patch in mhi-next separately so that other drivers can
-> start benefiting this function (I would like to use it in mhi-net).
-> 
+💖 Secret meetings and single girls are waiting for you. Answer me here: http://bit.do/fLrNf?oxlow 💖 (netdev@vger.kernel.org) thinks you may be interested in the following post:
 
-Greg doesn't like that. He asked me to pick APIs only when there an in-tree
-consumer available.
+Home
+http://eavi.com.au/
 
-Thanks,
-Mani
-
-> Regards,
-> Loic
