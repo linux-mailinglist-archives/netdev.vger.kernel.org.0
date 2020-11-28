@@ -2,135 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFCF22C744A
-	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:19:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 580CB2C7405
+	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:18:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729825AbgK1Vtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Nov 2020 16:49:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34628 "EHLO
+        id S1731463AbgK1Vtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Nov 2020 16:49:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730273AbgK1SDS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Nov 2020 13:03:18 -0500
-X-Greylist: delayed 168 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 28 Nov 2020 09:26:26 PST
-Received: from mo6-p01-ob.smtp.rzone.de (mo6-p01-ob.smtp.rzone.de [IPv6:2a01:238:20a:202:5301::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B8D5C025455;
-        Sat, 28 Nov 2020 09:26:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1606584383;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=5iPrgIy7xTZ+IpTz98wlm8W+JTsMsmFczF194/0sF/s=;
-        b=cz0e0RC+dXR/M8FVs3Tr6AqKV5Wb8MXQvl+VKZ6N+GTF+6yNas5SJr/TEK60RGxu+6
-        J4sGsFLwtUiGeRq8UOiugbTi+9bR768s2AQfeMXvt+Bk5xaX+z8HL6NpF/yZmG7iB4No
-        6q1IkIVgQJuh7DlS0dx2+J4DsPQ2yDQJZ4PiJVB09uWUqnj8hnJrVp+7JeHm1+D0M5IK
-        1w4AEbab/Huj02Mli4K1kcJaRKi/IQJfkl6lR6msAIkDEjUXYWWi0RnM14PichHvufqc
-        cglRSxVnWSkqQvIAm/S1Fnrx9WEOAukwp75kCCWE5jePA7ojlEG83HZvIhoufudTLxSG
-        SkGw==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3TMaFqTEVR+J8xuzl0="
-X-RZG-CLASS-ID: mo00
-Received: from [192.168.10.177]
-        by smtp.strato.de (RZmta 47.3.4 DYNA|AUTH)
-        with ESMTPSA id n07f3bwASHNKzj1
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Sat, 28 Nov 2020 18:23:20 +0100 (CET)
-Subject: Re: [PATCH] can: don't count arbitration lose as an error
-To:     Jeroen Hofstee <jhofstee@victronenergy.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org
-Cc:     Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        "moderated list:ARM/Allwinner sunXi SoC support" 
-        <linux-arm-kernel@lists.infradead.org>
-References: <20201127095941.21609-1-jhofstee@victronenergy.com>
- <434167b4-c2df-02bf-8a9c-2d4716c5435f@pengutronix.de>
- <f5f93e72-c55f-cfd3-a686-3454e42c4371@victronenergy.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <042ad21c-e238-511b-1282-2ea226e572ff@hartkopp.net>
-Date:   Sat, 28 Nov 2020 18:23:15 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        with ESMTP id S1733289AbgK1SPo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Nov 2020 13:15:44 -0500
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A43FEC0253C2
+        for <netdev@vger.kernel.org>; Sat, 28 Nov 2020 09:34:35 -0800 (PST)
+Received: by mail-pg1-x542.google.com with SMTP id k11so6867721pgq.2
+        for <netdev@vger.kernel.org>; Sat, 28 Nov 2020 09:34:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version;
+        bh=iVeRyPUEAP68LIhs81XmMLPJn7kP/wOQ4p1WmeyvyHk=;
+        b=dK9ynXKIsp5GVqhxDxpB8tW9IZFDxPCuCU3Vk97/dJVBZMB1WgLLaoIPTqwfRYP+Ek
+         u3rv227iUR34dPVOVp8afEx/uucauttGroHZbGsxuTFKLOMPGPqCD5GHwys9zWj8wrua
+         KG2g4lqaxLuYLQhHGYHVWPGV5bX9AqxMq3SBtGUPUArQrN9G6wFLrRHeIksvbiwBiNaZ
+         VzFqBaPMUW5uEzAUpwxfIZmOLw5CeSsPa6oLsSVuujCTF4/aepyJw6cP2p7/oU5Y1e3A
+         iXSQgpj9vrvCQtgb3VPF4RZqNb3G7WDFtnW6xMmicV79BkhEcXnqDHimtjhtwRo5kZrc
+         DPfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version;
+        bh=iVeRyPUEAP68LIhs81XmMLPJn7kP/wOQ4p1WmeyvyHk=;
+        b=eIkBrUFjOxDcBBDxXC0lSsr1VEJmeqrRlHB7Pd8OyVKROZJYyAUlZQXZHLJEU4sq5j
+         3g0kvSC/pG4wcNxQqf9EWXRaegUjjqxd7QspX897T3NQygnCvkunHQQD3ukE4S5qHEyU
+         jLcLEiQjwtETPncVcFjBYOM/nDUHh2WhV/LIpeQ1rG+Ot56rxa2f7IO4/G7AsYoW4/ht
+         Uo0vyc0x/Gvo+7/AnAOg93wvKGepmwS/JxFdiE3pC+KTp+XPpOLQw0DQT4KxVefOVqY6
+         z2bmmyvcid/+Bg+JSzRXgFfuVom0RxQ9/LPtE5H2rrfXjGyNY9Q0gNq90fDPSZRWLeWX
+         rXoA==
+X-Gm-Message-State: AOAM530enoCQdzLjqxX1/KDmTbrum0U9pRJsGEiY/0TCre8u4JPxaQ8D
+        mSLUBP4Qw15TOFZ1TsuT6zYfOg==
+X-Google-Smtp-Source: ABdhPJyeSEBObmR//7BrEMAKjDH9m4u08rSmeNnkd+g3xpjdDlu9e+ljtWlzOGsKQCjfPeMfstsWJw==
+X-Received: by 2002:a17:90a:aa0f:: with SMTP id k15mr17315232pjq.171.1606584875003;
+        Sat, 28 Nov 2020 09:34:35 -0800 (PST)
+Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id s18sm11578505pfc.5.2020.11.28.09.34.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 28 Nov 2020 09:34:34 -0800 (PST)
+Date:   Sat, 28 Nov 2020 09:34:20 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Luca Boccassi <bluca@debian.org>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [RFC iproute2] tc/mqprio: json-ify output
+Message-ID: <20201128093420.3d9f6aea@hermes.local>
+In-Reply-To: <66c38398895dd591ded53e0d1bf34a13f3e83a32.camel@debian.org>
+References: <20201127152625.61874-1-bluca@debian.org>
+        <20201127212151.4984075c@hermes.local>
+        <66c38398895dd591ded53e0d1bf34a13f3e83a32.camel@debian.org>
 MIME-Version: 1.0
-In-Reply-To: <f5f93e72-c55f-cfd3-a686-3454e42c4371@victronenergy.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/NZfmbu.tGUIC+EVrvAG/Qou";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--Sig_/NZfmbu.tGUIC+EVrvAG/Qou
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
+On Sat, 28 Nov 2020 12:17:00 +0000
+Luca Boccassi <bluca@debian.org> wrote:
 
-On 27.11.20 12:09, Jeroen Hofstee wrote:
-> Hi,
-> 
-> On 11/27/20 11:30 AM, Marc Kleine-Budde wrote:
->> On 11/27/20 10:59 AM, Jeroen Hofstee wrote:
->>> Losing arbitration is normal in a CAN-bus network, it means that a
->>> higher priority frame is being send and the pending message will be
->>> retried later. Hence most driver only increment arbitration_lost, but
->>> the sja1000 and sun4i driver also incremeant tx_error, causing errors
->>> to be reported on a normal functioning CAN-bus. So stop counting them
->>> as errors.
->> Sounds plausible.
->>
->>> For completeness, the Kvaser USB hybra also increments the tx_error
->>> on arbitration lose, but it does so in single shot. Since in that
->>> case the message is not retried, that behaviour is kept.
->> You mean only in one shot mode?
-> 
-> Yes, well at least the function is called kvaser_usb_hydra_one_shot_fail.
-> 
-> 
->>   What about one shot mode on the sja1000 cores?
-> 
-> 
-> That is a good question. I guess it will be counted as error by:
-> 
->          if (isrc & IRQ_TI) {
->              /* transmission buffer released */
->              if (priv->can.ctrlmode & CAN_CTRLMODE_ONE_SHOT &&
->                  !(status & SR_TCS)) {
->                  stats->tx_errors++;
->                  can_free_echo_skb(dev, 0);
->              } else {
->                  /* transmission complete */
->                  stats->tx_bytes +=
->                      priv->read_reg(priv, SJA1000_FI) & 0xf;
->                  stats->tx_packets++;
->                  can_get_echo_skb(dev, 0);
->              }
->              netif_wake_queue(dev);
->              can_led_event(dev, CAN_LED_EVENT_TX);
->          }
-> 
->  From the datasheet, Transmit Interrupt:
-> 
-> "set; this bit is set whenever the transmit bufferstatus
-> changes from ‘0-to-1’ (released) and the TIE bit is set
-> within the interrupt enable register".
-> 
-> I cannot test it though, since I don't have a sja1000.
+> On Fri, 2020-11-27 at 21:21 -0800, Stephen Hemminger wrote:
+> > On Fri, 27 Nov 2020 15:26:25 +0000
+> > Luca Boccassi <bluca@debian.org> wrote:
+> >  =20
+> > > As reported by a Debian user, mqprio output in json mode is
+> > > invalid:
+> > >=20
+> > > {
+> > > =C2=A0=C2=A0=C2=A0=C2=A0 "kind": "mqprio",
+> > > =C2=A0=C2=A0=C2=A0=C2=A0 "handle": "8021:",
+> > > =C2=A0=C2=A0=C2=A0=C2=A0 "dev": "enp1s0f0",
+> > > =C2=A0=C2=A0=C2=A0=C2=A0 "root": true,
+> > > =C2=A0=C2=A0=C2=A0=C2=A0 "options": { tc 2 map 0 0 0 1 0 1 0 0 0 0 0 =
+0 0 0 0 0
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 queues:(0:3) (=
+4:7)
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mode:channel
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 shaper:dcb}
+> > > }
+> > >=20
+> > > json-ify it, while trying to maintain the same formatting
+> > > for standard output.
+> > >=20
+> > > https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D972784
+> > >=20
+> > > Signed-off-by: Luca Boccassi <bluca@debian.org> =20
+> >=20
+> > Did you try feeding that into the python parser?
+> > What is before/after? =20
+>=20
+> Uh, which python parser?
+>=20
+> The reporter tested the patch, there's a small error. Before is above,
+> after is:
+>=20
+> {
+>     "kind": "mqprio",
+>     "handle": "8001:",
+>     "root": true,
+>     "options": {
+>         "tc": 2,
+>         "map": [ 0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0 ],
+>         "queues": [
+>             "": [ 0,3 ],
+>             "": [ 4,7 ] ],
+>         "mode": "channel",
+>         "shaper": "dcb"
+>     }
+> }
+>=20
+> Will fix the "queues" to remove the empty name in v2.
 
-I have a PCAN-ExpressCard 34 here, which should make it in a test setup 
-as it acts as a PCI attached SJA1000.
+Try:
+  $ tc -j qdisc | pythom -m json.tools
 
-Will take a look at that arbitration lost behaviour on Monday. A really 
-interesting detail!
+The empty tags are non-standard practice can it be done better?
 
-Best,
-Oliver
+--Sig_/NZfmbu.tGUIC+EVrvAG/Qou
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-> 
->>
->>> Signed-off-by: Jeroen Hofstee <jhofstee@victronenergy.com>
->> I've split this into two patches, and added Fixes: lines, and pushed 
->> this for
->> now to linux-can/sja1000.
->>
-> Thanks, regards,
-> 
-> Jeroen
-> 
-> 
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEn2/DRbBb5+dmuDyPgKd/YJXN5H4FAl/CihwACgkQgKd/YJXN
+5H4DPw/+LbSuqfynUHzSBwxmJX9wEGLfogg4D4/CAh8rJdGAVs+PLxm4vIzKKHCr
+Nn054QpKqS1LctjsgFEAOmZRnhmfaf09yu8xg7fVLmWYKV63o/yo5pzVMx4WpbOo
+qdLI9clqYW6iUQRlhhNJ4jgqpioaIEQ7LIWbqXb574jmx1wUWtk1SxvsotbB32n5
+qiL45rMDKvAHdLRKI36DbPOTxxJUjA0P/hlgyzAO7qImKNR+0tI5jBniMgmP7Yn9
+H7Xzvqsukr3pYwhPYlYYRxBddyu15gIT4FMGkzOdEi9y++12r0SC+Xq3dgRM+r//
+XV6RfxHxWOdYbch/vVSR824oDw52u2PrkuZds9elgpbhWwn0DZL3SOiq5l/kh2rs
+dc1dTtLl9xNIJIt6cX5rDAbmTBhfM1Rnk/XoA6gekvlIX+0LffZR08EFueN1YQ1z
+P8G69AwbmSF1xYvKivoQYrdhFd3JmGVhzz6VGdZgCH3aCB3K7IFbE65sR9qVez/X
+KL3/bc8E4DetVCNpnJJPuZT0EorTsg6/WKYCnLrdKo0a7ANdpzRwMItULDrHHeg2
+noOcPNZnswzH4aiX70Ux8GYxdcuQN+89cy4UppIwk6hjploR/iHTr2loc7/aaDku
+UBjEfydALvop1iZA6pUZEcM+S8V30Ki7/Ncqk2k0UU/7MU/FKHw=
+=Sw9y
+-----END PGP SIGNATURE-----
+
+--Sig_/NZfmbu.tGUIC+EVrvAG/Qou--
