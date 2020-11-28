@@ -2,94 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A12A2C7395
-	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:14:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DA762C7391
+	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:14:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389247AbgK1Vt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2389276AbgK1Vt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sat, 28 Nov 2020 16:49:56 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:54606 "EHLO vps0.lunn.ch"
+Received: from mx.der-flo.net ([193.160.39.236]:34924 "EHLO mx.der-flo.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387519AbgK1TY4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 28 Nov 2020 14:24:56 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kj5pK-009HRH-ID; Sat, 28 Nov 2020 20:24:10 +0100
-Date:   Sat, 28 Nov 2020 20:24:10 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microsemi List <microsemi@lists.bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 2/3] net: sparx5: Add Sparx5 switchdev driver
-Message-ID: <20201128192410.GG2191767@lunn.ch>
-References: <20201127133307.2969817-1-steen.hegelund@microchip.com>
- <20201127133307.2969817-3-steen.hegelund@microchip.com>
+        id S2387525AbgK1T2L (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 28 Nov 2020 14:28:11 -0500
+Received: by mx.der-flo.net (Postfix, from userid 110)
+        id 34E24444F9; Sat, 28 Nov 2020 20:26:58 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mx.der-flo.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=4.0 tests=ALL_TRUSTED
+        autolearn=unavailable autolearn_force=no version=3.4.2
+Received: from localhost (unknown [IPv6:2a02:1203:ecb0:3930:1751:4157:4d75:a5e2])
+        (using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx.der-flo.net (Postfix) with ESMTPSA id BD9C04435E;
+        Sat, 28 Nov 2020 20:25:47 +0100 (CET)
+From:   Florian Lehner <dev@der-flo.net>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, john.fastabend@gmail.com,
+        Florian Lehner <dev@der-flo.net>,
+        Krzesimir Nowak <krzesimir@kinvolk.io>
+Subject: [PATCH 0/2] Improve error handling of verifier tests
+Date:   Sat, 28 Nov 2020 20:25:00 +0100
+Message-Id: <20201128192502.88195-1-dev@der-flo.net>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201127133307.2969817-3-steen.hegelund@microchip.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static void sparx5_attr_stp_state_set(struct sparx5_port *port,
-> +				      struct switchdev_trans *trans,
-> +				      u8 state)
-> +{
-> +	struct sparx5 *sparx5 = port->sparx5;
-> +
-> +	if (!test_bit(port->portno, sparx5->bridge_mask)) {
-> +		netdev_err(port->ndev,
-> +			   "Controlling non-bridged port %d?\n", port->portno);
-> +		return;
-> +	}
-> +
-> +	switch (state) {
-> +	case BR_STATE_FORWARDING:
-> +		set_bit(port->portno, sparx5->bridge_fwd_mask);
-> +		break;
-> +	default:
-> +		clear_bit(port->portno, sparx5->bridge_fwd_mask);
-> +		break;
-> +	}
+These patches improve the error handling for verifier tests. With "Test
+the 32bit narrow read" Krzesimir Nowak provided these patches first, but
+they were never merged.
+The improved error handling helps to implement and test BPF program types
+that are not supported yet.
 
-That is pretty odd. What about listening, learning, blocking?
+Florian Lehner (2):
+  selftests/bpf: Avoid errno clobbering
+  selftests/bpf: Print reason when a tester could not run a program
 
-> +static int sparx5_port_bridge_join(struct sparx5_port *port,
-> +				   struct net_device *bridge)
-> +{
-> +	struct sparx5 *sparx5 = port->sparx5;
-> +
-> +	if (bitmap_empty(sparx5->bridge_mask, SPX5_PORTS))
-> +		/* First bridged port */
-> +		sparx5->hw_bridge_dev = bridge;
-> +	else
-> +		if (sparx5->hw_bridge_dev != bridge)
-> +			/* This is adding the port to a second bridge, this is
-> +			 * unsupported
-> +			 */
-> +			return -ENODEV;
-> +
-> +	set_bit(port->portno, sparx5->bridge_mask);
-> +
-> +	/* Port enters in bridge mode therefor don't need to copy to CPU
-> +	 * frames for multicast in case the bridge is not requesting them
-> +	 */
-> +	__dev_mc_unsync(port->ndev, sparx5_mc_unsync);
-> +
-> +	return 0;
-> +}
+ tools/testing/selftests/bpf/test_verifier.c | 28 ++++++++++++++++-----
+ 1 file changed, 22 insertions(+), 6 deletions(-)
 
-This looks suspiciously empty? Don't you need to tell the hardware
-which ports this port is bridges to? Normally you see some code which
-walks all the ports and finds those in the same bridge, and sets a bit
-which allows these ports to talk to each other. Is that code somewhere
-else?
+-- 
+2.28.0
 
-	Andrew
