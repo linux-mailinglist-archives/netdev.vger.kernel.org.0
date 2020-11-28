@@ -2,84 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D56A2C73F2
-	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:15:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64C912C7432
+	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:18:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389150AbgK1Vtv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Nov 2020 16:49:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42364 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731492AbgK1Sw6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Nov 2020 13:52:58 -0500
-X-Greylist: delayed 3156 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 27 Nov 2020 23:35:15 PST
-Received: from vmse01.mailcluster.com.au (vmse01.mailcluster.com.au [IPv6:2401:fc00:2:13f::6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6E3C094276
-        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 23:35:15 -0800 (PST)
-Received: from vmcp06.digitalpacific.com.au ([101.0.112.229])
-        by vmse01.mailcluster.com.au with esmtps (TLSv1.2:AES128-GCM-SHA256:128)
-        (Exim 4.92)
-        (envelope-from <eavicoma@vmcp06.digitalpacific.com.au>)
-        id 1kitwF-00063F-SV
-        for netdev@vger.kernel.org; Sat, 28 Nov 2020 17:42:35 +1100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=vmcp06.digitalpacific.com.au; s=default; h=Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Message-ID:From:Date:Subject:To:Sender
-        :Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:
-        List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:
-        List-Archive; bh=8nx9MFpIRDeGhhy5SZM2EHOqKeno45Yg8wrNTCcNWeU=; b=tEsyIahmRjwe
-        tIAXD2Ha2IXSMc1Y/N8Gb+3+wuVLHVlQ4qeh6J9vhikZSMCT+IJ8HqfiRms7h671JCSQ/1fOe3FYW
-        PkZXOWCzE1JZDNBel8H8NEf/1J0NmyWFhIGa/bS28VlOhG/CnK9gxTZPK8fk97S5+Fa+2iY1eVf0H
-        0XgTZxBowBOGV5VFhTb9+eGroqeQ5t2wgnINialAlsjEldESeTUZvp7FxODVBI81M09UTNxGaGvnd
-        diWqMSAQLwx5ax5ArOzPR4R4cZcpefX7E9jfGqbvlnh2ca6PdBvPVpjhmOZtTjdnj6kZEC8sMd3t3
-        Ed6jDX5VXknSft2sLBS19A==;
-Received: from eavicoma by vmcp06.digitalpacific.com.au with local (Exim 4.93)
-        (envelope-from <eavicoma@vmcp06.digitalpacific.com.au>)
-        id 1kitwF-003YC0-Da
-        for netdev@vger.kernel.org; Sat, 28 Nov 2020 17:42:31 +1100
-To:     netdev@vger.kernel.org
-Subject: [Shared Post] Home
-X-PHP-Script: eavi.com.au/index.php for 82.103.116.126
-X-PHP-Filename: /home/eavicoma/public_html/index.php REMOTE_ADDR: 82.103.116.126
-Date:   Sat, 28 Nov 2020 06:42:31 +0000
-From:   WordPress <wordpress@eavi.com.au>
-Message-ID: <a1104ccc7fc879f265474cc26a5338ff@eavi.com.au>
-X-Priority: 3
-X-Mailer: PHPMailer (phpmailer.sourceforge.net) [version 2.0.4]
+        id S2389044AbgK1Vtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Nov 2020 16:49:49 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:8470 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730098AbgK1Shz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Nov 2020 13:37:55 -0500
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4Cjht84KQXzhj0M;
+        Sat, 28 Nov 2020 14:49:04 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by DGGEMS407-HUB.china.huawei.com
+ (10.3.19.207) with Microsoft SMTP Server id 14.3.487.0; Sat, 28 Nov 2020
+ 14:49:18 +0800
+From:   Zhang Qilong <zhangqilong3@huawei.com>
+To:     <kuba@kernel.org>, <fugang.duan@nxp.com>, <davem@davemloft.net>,
+        <rjw@rjwysocki.net>, <geert@linux-m68k.org>
+CC:     <netdev@vger.kernel.org>, <linux-pm@vger.kernel.org>
+Subject: [PATCH v2] PM: runtime: replace pm_runtime_resume_and_get with pm_runtime_resume_and_get_sync
+Date:   Sat, 28 Nov 2020 14:52:43 +0800
+Message-ID: <20201128065243.2870987-1-zhangqilong3@huawei.com>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="UTF-8"
-X-Originating-User: eavicoma
-X-Originating-IP: 101.0.112.229
-X-SpamExperts-Domain: digipac-sh-outbound0.mailcluster.com.au
-X-SpamExperts-Username: 101.0.112.229
-Authentication-Results: mailcluster.com.au; auth=pass smtp.auth=101.0.112.229@digipac-sh-outbound0.mailcluster.com.au
-X-SpamExperts-Outgoing-Class: unsure
-X-SpamExperts-Outgoing-Evidence: Combined (0.69)
-X-Recommended-Action: accept
-X-Filter-ID: Mvzo4OR0dZXEDF/gcnlw0fJVsTFCFA1YlcTpjJcy6PSpSDasLI4SayDByyq9LIhV+Y0aAJ1ov1cq
- rAKrHkMi2kTNWdUk1Ol2OGx3IfrIJKywOmJyM1qr8uRnWBrbSAGDesseJUSjHz/88doLK5oKLCh4
- MK0k2uSGCYA7tfg2EIGE1rCW5JKrbuIOG+DdmlVHBMmyNbDn7R5kilAhwr3KtPRgtEKbbJiCf5yI
- 2OixqpvpOGYDFnHfMfQ7HGf9HLkr6UTw0jTdDsh1dRVJBuLpYVNwYzVIo6KuHW8hVCQ7X76nPJMw
- iMmGDIAGwZKDDgC5V285Rg4HPV7XsztaaZW8YBkhzVJFWn887ct0NFXnFWKxnGmiI3p9NEdyvIai
- 1RA3FPo67MEDuAALBU22yFTfTrvatWWiSP0Jxll7g1bGZi2rTLMTNniiMz1OAmb0Fz3NgrbPA+uI
- mOx9H2/gNYfuQNVCH58aHMOgJq49wVbzS8obDOdTMnvHqOmP4VxBW3PTCJuKmef1JCbmfgcv6zoJ
- wP+UUGE9pQOAAWlE+d5fWPyh2Dwf8plwptnx2pP0zfML0nALJ/SZ21tCHNSdoVdATYlSPGIn6LIh
- 6vfZt6Tuc+uVfVL7ygxIxIEhQBgsu7ia6J1fhOzjF0b4LXcjJZ5lojs9WothUdTRGM+OK01jR2FT
- fj9Yy85rYwAPLNuau5MAUzRhidNRALGXuhKPQHGzKCTKelypEvEJvDCVKhdgOiEKmWM+8ftVwkKw
- 27c7JqOyh1UcgPifqs9Z1959MOfpvMqtCru1poKZB7eNIruIcksmgo38I2WwKZqfJvB/ak2L0oqe
- UC8lAaqwC32/9Vd70EK5NuprBzu3LLHsov485niRmv+9A6chZRtUAs48HmyAIbtf63VNbf0lrvss
- Y+k7ACEuuc9n2iE8XDvKl8FdZy9JhWJQUPuZVFhkI9SEXS8+/vEZGKDVhQEd6lEOrnME+bakVnCS
- c+Ypc/Pypso1H9ugcRBJ/ZgqLqeUwG0R12svmEDJ7jgeHcJTevWg8+R1jgFehep93Fnpexz1pshK
- rgJ73n4rNOK4erw+M/WuBl/lU4k/ZfFdMgzqdIfIg9DUOOICUTIqG9GP/0y/T4/wTA+aCw5Hn2sA
- 2GefVUqTY2dxMS+4ayUpOtEhdxekWDmK9g==
-X-Report-Abuse-To: spam@vmse01.mailcluster.com.au
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-💖 Secret meetings and single girls are waiting for you. Answer me here: http://bit.do/fLrNf?oxlow 💖 (netdev@vger.kernel.org) thinks you may be interested in the following post:
+In the pm_runtime_resume_and_get, pm_runtime_resume() is
+synchronous. Caller had to look into the implementation
+to verify that a change for pm_runtime_resume_and_get [0].
+So we use pm_rauntime_resume_and_get_sync to replace it to
+avoid making the same mistake while fixing
+pm_runtime_get_sync.
 
-Home
-http://eavi.com.au/
+[0]https://lore.kernel.org/netdev/20201110092933.3342784-1-zhangqilong3@huawei.com/T/#t
+Fixes: dd8088d5a896 ("PM: runtime: Add pm_runtime_resume_and_get to deal with usage counter")
+Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
+---
+Changelog:
+v2
+- change the fixes tag.
+---
+ drivers/net/ethernet/freescale/fec_main.c | 10 +++++-----
+ include/linux/pm_runtime.h                |  4 ++--
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index 04f24c66cf36..6bfc46da2943 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -1808,7 +1808,7 @@ static int fec_enet_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
+ 	int ret = 0, frame_start, frame_addr, frame_op;
+ 	bool is_c45 = !!(regnum & MII_ADDR_C45);
+ 
+-	ret = pm_runtime_resume_and_get(dev);
++	ret = pm_runtime_resume_and_get_sync(dev);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -1867,7 +1867,7 @@ static int fec_enet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
+ 	int ret, frame_start, frame_addr;
+ 	bool is_c45 = !!(regnum & MII_ADDR_C45);
+ 
+-	ret = pm_runtime_resume_and_get(dev);
++	ret = pm_runtime_resume_and_get_sync(dev);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -2273,7 +2273,7 @@ static void fec_enet_get_regs(struct net_device *ndev,
+ 	u32 i, off;
+ 	int ret;
+ 
+-	ret = pm_runtime_resume_and_get(dev);
++	ret = pm_runtime_resume_and_get_sync(dev);
+ 	if (ret < 0)
+ 		return;
+ 
+@@ -2974,7 +2974,7 @@ fec_enet_open(struct net_device *ndev)
+ 	int ret;
+ 	bool reset_again;
+ 
+-	ret = pm_runtime_resume_and_get(&fep->pdev->dev);
++	ret = pm_runtime_resume_and_get_sync(&fep->pdev->dev);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -3768,7 +3768,7 @@ fec_drv_remove(struct platform_device *pdev)
+ 	struct device_node *np = pdev->dev.of_node;
+ 	int ret;
+ 
+-	ret = pm_runtime_resume_and_get(&pdev->dev);
++	ret = pm_runtime_resume_and_get_sync(&pdev->dev);
+ 	if (ret < 0)
+ 		return ret;
+ 
+diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
+index b492ae00cc90..c83edb7473fc 100644
+--- a/include/linux/pm_runtime.h
++++ b/include/linux/pm_runtime.h
+@@ -387,14 +387,14 @@ static inline int pm_runtime_get_sync(struct device *dev)
+ }
+ 
+ /**
+- * pm_runtime_resume_and_get - Bump up usage counter of a device and resume it.
++ * pm_runtime_resume_and_get_sync - Bump up usage counter of a device and resume it.
+  * @dev: Target device.
+  *
+  * Resume @dev synchronously and if that is successful, increment its runtime
+  * PM usage counter. Return 0 if the runtime PM usage counter of @dev has been
+  * incremented or a negative error code otherwise.
+  */
+-static inline int pm_runtime_resume_and_get(struct device *dev)
++static inline int pm_runtime_resume_and_get_sync(struct device *dev)
+ {
+ 	int ret;
+ 
+-- 
+2.25.4
 
