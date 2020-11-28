@@ -2,90 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 432FE2C704C
-	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 19:18:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F40F2C708D
+	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 19:18:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732720AbgK1Rzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Nov 2020 12:55:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58058 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726400AbgK1FWK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Nov 2020 00:22:10 -0500
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C69C0613D1
-        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 21:22:07 -0800 (PST)
-Received: by mail-pg1-x52c.google.com with SMTP id e23so1000122pgk.12
-        for <netdev@vger.kernel.org>; Fri, 27 Nov 2020 21:22:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0xb3TURKT8c7EWC09LqbBAbcuKonEnu9PoM6dSdstbg=;
-        b=Pl+pAI+x2nIH82TRI6EjqYGk5u9OMB6hiev7DZN/jaVQ5l2e8qX57VaMlDBPiwG+FK
-         aqn1e2kCHdemnyMhiQjjLCWxNOKkt8va53aZpoWPMaN0nWvsMJyGwzBHrZsuUXTxpNMh
-         DFOEK6nsRdR+JMR/BUCP/flJod2HnYQipsoVf7lNJi3RpXVKGdrKz6RVJVIaNTlrDEJo
-         y5HgN6j7sGhZiGqHjtG3R3GdfhSvAFBt/jy+7CKF2iq81pyXeOr0R8bWfTXOgs9mAfGC
-         +4jk6E2wzNo0ctiBZM9MPm4AjtgkDaTXvcfVHw30Ed/3OcB/yIT8fL4jxJBg+GW3NF7J
-         Xrvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0xb3TURKT8c7EWC09LqbBAbcuKonEnu9PoM6dSdstbg=;
-        b=X6Kp0687lbxWCuoJZSdVbiN1YxoRrrcwNjrB98F80PL+KsLzMZpKFN7/QBeGoy+t0p
-         47NKeKQJsnxzA8WXr6K9mxnl2l5vCJm84cT0Vpy5+Dp4FipB+hv3N8/NQuVjkhU2WB6r
-         I7DMEbYmOu0hPomaZ4Z0iD+HzmMyRQUy5z1+SoAbKW9t7oY29167fXMKTQ9GDGYrMNhg
-         03XfOhC+OG45FAWPj9dVzYGB/0kWY+S/RZkZ5z+bIN0mT6/cKw2MjYsBf9cYYIpUudd/
-         b0Ukiue6mVTx0gtUvTBg75gJKC6ZFfw/dZCtSF1BFLqeuF9/kGVr7w2QIYv9UID/vvnt
-         SgqQ==
-X-Gm-Message-State: AOAM5315pJzZTpkL8Jo8Jt/l8btO/nPFx6zThBUhFyvubgA3n8a+ghqs
-        MEuXi0MPX+GjIgVwU8l4ru3uiA==
-X-Google-Smtp-Source: ABdhPJzx9Oh+yPePjDYGnpx+pqj1KQ9j31z7BxgUzCfLyt3Yy9TZSpvcZAtaRKe+rJWZod/2HHo0YA==
-X-Received: by 2002:aa7:90d2:0:b029:198:39d8:e5b0 with SMTP id k18-20020aa790d20000b029019839d8e5b0mr10241901pfk.1.1606540927464;
-        Fri, 27 Nov 2020 21:22:07 -0800 (PST)
-Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id 10sm2062806pjt.35.2020.11.27.21.22.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Nov 2020 21:22:06 -0800 (PST)
-Date:   Fri, 27 Nov 2020 21:21:51 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Luca Boccassi <bluca@debian.org>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [RFC iproute2] tc/mqprio: json-ify output
-Message-ID: <20201127212151.4984075c@hermes.local>
-In-Reply-To: <20201127152625.61874-1-bluca@debian.org>
-References: <20201127152625.61874-1-bluca@debian.org>
+        id S1733219AbgK1SAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Nov 2020 13:00:25 -0500
+Received: from condef-03.nifty.com ([202.248.20.68]:63837 "EHLO
+        condef-03.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729846AbgK1R6R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Nov 2020 12:58:17 -0500
+Received: from conuserg-08.nifty.com ([10.126.8.71])by condef-03.nifty.com with ESMTP id 0AS8lwls020580;
+        Sat, 28 Nov 2020 17:48:24 +0900
+Received: from localhost.localdomain (softbank126090211135.bbtec.net [126.90.211.135]) (authenticated)
+        by conuserg-08.nifty.com with ESMTP id 0AS8klCf024281;
+        Sat, 28 Nov 2020 17:46:47 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 0AS8klCf024281
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1606553208;
+        bh=3ZxQhTM55h3T1rci5XqtW4G9136NvehcsYvGcG3kcgc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=SElIFciYjQNJuulProNcUJ6g9mjA6O9qq6ZNcU+lGQxM4xJ2H6GbcjQChrwQVdtMy
+         43+MEC/tZn52+NUzUIE+ZDL1Cw8daDnSbuD+PgRrWJADV7BHkydbLYUfzOWruBqV56
+         Vhf4Hes+x+8MiHQxt2sU5gyJMHCYXBwmEulcrBlxZaqCA61wi+yO7X9URuIez0xvwu
+         kdGZNqcJ8SGzfFt0E0i9BVkt1t+vMk/FuamGdUGmFlHBuC6fnWAGf7gS1t2qNTF0PH
+         pvten505D/ZiSdoqoEPIG4NNVRLMudKUr6O1qbSoZ4zLx2t8m2rp2X3Ktut9GMNRh3
+         7sqLNV4Grz0eA==
+X-Nifty-SrcIP: [126.90.211.135]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Shuah Khan <shuah@kernel.org>,
+        clang-built-linux@googlegroups.com, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        wireguard@lists.zx2c4.com
+Subject: [PATCH v2] Compiler Attributes: remove CONFIG_ENABLE_MUST_CHECK
+Date:   Sat, 28 Nov 2020 17:46:39 +0900
+Message-Id: <20201128084639.149153-1-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 27 Nov 2020 15:26:25 +0000
-Luca Boccassi <bluca@debian.org> wrote:
+Revert commit cebc04ba9aeb ("add CONFIG_ENABLE_MUST_CHECK").
 
-> As reported by a Debian user, mqprio output in json mode is
-> invalid:
-> 
-> {
->      "kind": "mqprio",
->      "handle": "8021:",
->      "dev": "enp1s0f0",
->      "root": true,
->      "options": { tc 2 map 0 0 0 1 0 1 0 0 0 0 0 0 0 0 0 0
->           queues:(0:3) (4:7)
->           mode:channel
->           shaper:dcb}
-> }
-> 
-> json-ify it, while trying to maintain the same formatting
-> for standard output.
-> 
-> https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=972784
-> 
-> Signed-off-by: Luca Boccassi <bluca@debian.org>
+A lot of warn_unused_result wearings existed in 2006, but until now
+they have been fixed thanks to people doing allmodconfig tests.
 
-Did you try feeding that into the python parser?
-What is before/after?
+Our goal is to always enable __must_check where appropriate, so this
+CONFIG option is no longer needed.
+
+I see a lot of defconfig (arch/*/configs/*_defconfig) files having:
+
+    # CONFIG_ENABLE_MUST_CHECK is not set
+
+I did not touch them for now since it would be a big churn. If arch
+maintainers want to clean them up, please go ahead.
+
+While I was here, I also moved __must_check to compiler_attributes.h
+from compiler_types.h
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
+
+Changes in v2:
+  - Move __must_check to compiler_attributes.h
+
+ include/linux/compiler_attributes.h                 | 7 +++++++
+ include/linux/compiler_types.h                      | 6 ------
+ lib/Kconfig.debug                                   | 8 --------
+ tools/testing/selftests/wireguard/qemu/debug.config | 1 -
+ 4 files changed, 7 insertions(+), 15 deletions(-)
+
+diff --git a/include/linux/compiler_attributes.h b/include/linux/compiler_attributes.h
+index b2a3f4f641a7..5f3b7edad1a7 100644
+--- a/include/linux/compiler_attributes.h
++++ b/include/linux/compiler_attributes.h
+@@ -171,6 +171,13 @@
+  */
+ #define __mode(x)                       __attribute__((__mode__(x)))
+ 
++/*
++ *   gcc: https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#index-warn_005funused_005fresult-function-attribute
++ * clang: https://clang.llvm.org/docs/AttributeReference.html#nodiscard-warn-unused-result
++ *
++ */
++#define __must_check                    __attribute__((__warn_unused_result__))
++
+ /*
+  * Optional: only supported since gcc >= 7
+  *
+diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
+index ac3fa37a84f9..7ef20d1a6c28 100644
+--- a/include/linux/compiler_types.h
++++ b/include/linux/compiler_types.h
+@@ -110,12 +110,6 @@ struct ftrace_likely_data {
+ 	unsigned long			constant;
+ };
+ 
+-#ifdef CONFIG_ENABLE_MUST_CHECK
+-#define __must_check		__attribute__((__warn_unused_result__))
+-#else
+-#define __must_check
+-#endif
+-
+ #if defined(CC_USING_HOTPATCH)
+ #define notrace			__attribute__((hotpatch(0, 0)))
+ #elif defined(CC_USING_PATCHABLE_FUNCTION_ENTRY)
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index c789b39ed527..cb8ef4fd0d02 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -286,14 +286,6 @@ config GDB_SCRIPTS
+ 
+ endif # DEBUG_INFO
+ 
+-config ENABLE_MUST_CHECK
+-	bool "Enable __must_check logic"
+-	default y
+-	help
+-	  Enable the __must_check logic in the kernel build.  Disable this to
+-	  suppress the "warning: ignoring return value of 'foo', declared with
+-	  attribute warn_unused_result" messages.
+-
+ config FRAME_WARN
+ 	int "Warn for stack frames larger than"
+ 	range 0 8192
+diff --git a/tools/testing/selftests/wireguard/qemu/debug.config b/tools/testing/selftests/wireguard/qemu/debug.config
+index b50c2085c1ac..fe07d97df9fa 100644
+--- a/tools/testing/selftests/wireguard/qemu/debug.config
++++ b/tools/testing/selftests/wireguard/qemu/debug.config
+@@ -1,5 +1,4 @@
+ CONFIG_LOCALVERSION="-debug"
+-CONFIG_ENABLE_MUST_CHECK=y
+ CONFIG_FRAME_POINTER=y
+ CONFIG_STACK_VALIDATION=y
+ CONFIG_DEBUG_KERNEL=y
+-- 
+2.27.0
 
