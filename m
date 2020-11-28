@@ -2,30 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6838D2C7056
+	by mail.lfdr.de (Postfix) with ESMTP id 30AC02C7045
 	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 19:18:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732838AbgK1Rzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Nov 2020 12:55:51 -0500
-Received: from szxga06-in.huawei.com ([45.249.212.32]:8454 "EHLO
+        id S1731486AbgK1Rzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Nov 2020 12:55:50 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:8451 "EHLO
         szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731398AbgK1ENA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 23:13:00 -0500
+        with ESMTP id S1731497AbgK1ENK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Nov 2020 23:13:10 -0500
 Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4CjcxS3X4rzhhcw;
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4CjcxS4JFTzhhhN;
         Sat, 28 Nov 2020 11:51:40 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS407-HUB.china.huawei.com (10.3.19.207) with Microsoft SMTP Server id
- 14.3.487.0; Sat, 28 Nov 2020 11:51:48 +0800
+ 14.3.487.0; Sat, 28 Nov 2020 11:51:49 +0800
 From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <kuba@kernel.org>,
+        Yonglong Liu <liuyonglong@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH V2 net-next 5/7] net: hns3: add more info to hns3_dbg_bd_info()
-Date:   Sat, 28 Nov 2020 11:51:48 +0800
-Message-ID: <1606535510-44346-6-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH V2 net-next 7/7] net: hns3: keep MAC pause mode when multiple TCs are enabled
+Date:   Sat, 28 Nov 2020 11:51:50 +0800
+Message-ID: <1606535510-44346-8-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1606535510-44346-1-git-send-email-tanhuazhong@huawei.com>
 References: <1606535510-44346-1-git-send-email-tanhuazhong@huawei.com>
@@ -37,94 +38,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since TX hardware checksum and RX completion checksum have been
-supported now, so add related information in hns3_dbg_bd_info().
+From: Yonglong Liu <liuyonglong@huawei.com>
 
+Bellow HNAE3_DEVICE_VERSION_V3, MAC pause mode just support one
+TC, when enabled multiple TCs, force enable PFC mode.
+
+HNAE3_DEVICE_VERSION_V3 can support MAC pause mode on multiple
+TCs, so when enable multiple TCs, just keep MAC pause mode,
+and enable PFC mode just according to the user settings.
+
+Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c | 50 +++++++++++++++++-----
- 1 file changed, 40 insertions(+), 10 deletions(-)
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c  | 23 +++++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-index cb0cc6d..cb26742 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-@@ -179,6 +179,7 @@ static int hns3_dbg_bd_info(struct hnae3_handle *h, const char *cmd_buf)
- 	u32 q_num, value;
- 	dma_addr_t addr;
- 	u16 mss_hw_csum;
-+	u32 l234info;
- 	int cnt;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+index 54767b0..b1026cd 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+@@ -715,7 +715,7 @@ static void hclge_tm_pg_info_init(struct hclge_dev *hdev)
+ 	}
+ }
  
- 	cnt = sscanf(&cmd_buf[8], "%u %u", &q_num, &tx_index);
-@@ -213,17 +214,35 @@ static int hns3_dbg_bd_info(struct hnae3_handle *h, const char *cmd_buf)
- 	dev_info(dev, "(TX)vlan_tag: %u\n", le16_to_cpu(tx_desc->tx.vlan_tag));
- 	dev_info(dev, "(TX)send_size: %u\n",
- 		 le16_to_cpu(tx_desc->tx.send_size));
--	dev_info(dev, "(TX)vlan_tso: %u\n", tx_desc->tx.type_cs_vlan_tso);
--	dev_info(dev, "(TX)l2_len: %u\n", tx_desc->tx.l2_len);
--	dev_info(dev, "(TX)l3_len: %u\n", tx_desc->tx.l3_len);
--	dev_info(dev, "(TX)l4_len: %u\n", tx_desc->tx.l4_len);
-+
-+	if (mss_hw_csum & BIT(HNS3_TXD_HW_CS_B)) {
-+		u32 offset = le32_to_cpu(tx_desc->tx.ol_type_vlan_len_msec);
-+		u32 start = le32_to_cpu(tx_desc->tx.type_cs_vlan_tso_len);
-+
-+		dev_info(dev, "(TX)csum start: %u\n",
-+			 hnae3_get_field(start,
-+					 HNS3_TXD_CSUM_START_M,
-+					 HNS3_TXD_CSUM_START_S));
-+		dev_info(dev, "(TX)csum offset: %u\n",
-+			 hnae3_get_field(offset,
-+					 HNS3_TXD_CSUM_OFFSET_M,
-+					 HNS3_TXD_CSUM_OFFSET_S));
-+	} else {
-+		dev_info(dev, "(TX)vlan_tso: %u\n",
-+			 tx_desc->tx.type_cs_vlan_tso);
-+		dev_info(dev, "(TX)l2_len: %u\n", tx_desc->tx.l2_len);
-+		dev_info(dev, "(TX)l3_len: %u\n", tx_desc->tx.l3_len);
-+		dev_info(dev, "(TX)l4_len: %u\n", tx_desc->tx.l4_len);
-+		dev_info(dev, "(TX)vlan_msec: %u\n",
-+			 tx_desc->tx.ol_type_vlan_msec);
-+		dev_info(dev, "(TX)ol2_len: %u\n", tx_desc->tx.ol2_len);
-+		dev_info(dev, "(TX)ol3_len: %u\n", tx_desc->tx.ol3_len);
-+		dev_info(dev, "(TX)ol4_len: %u\n", tx_desc->tx.ol4_len);
+-static void hclge_pfc_info_init(struct hclge_dev *hdev)
++static void hclge_update_fc_mode_by_dcb_flag(struct hclge_dev *hdev)
+ {
+ 	if (!(hdev->flag & HCLGE_FLAG_DCB_ENABLE)) {
+ 		if (hdev->fc_mode_last_time == HCLGE_FC_PFC)
+@@ -733,6 +733,27 @@ static void hclge_pfc_info_init(struct hclge_dev *hdev)
+ 	}
+ }
+ 
++static void hclge_update_fc_mode(struct hclge_dev *hdev)
++{
++	if (!hdev->tm_info.pfc_en) {
++		hdev->tm_info.fc_mode = hdev->fc_mode_last_time;
++		return;
 +	}
 +
- 	dev_info(dev, "(TX)vlan_tag: %u\n",
- 		 le16_to_cpu(tx_desc->tx.outer_vlan_tag));
- 	dev_info(dev, "(TX)tv: %u\n", le16_to_cpu(tx_desc->tx.tv));
--	dev_info(dev, "(TX)vlan_msec: %u\n", tx_desc->tx.ol_type_vlan_msec);
--	dev_info(dev, "(TX)ol2_len: %u\n", tx_desc->tx.ol2_len);
--	dev_info(dev, "(TX)ol3_len: %u\n", tx_desc->tx.ol3_len);
--	dev_info(dev, "(TX)ol4_len: %u\n", tx_desc->tx.ol4_len);
- 	dev_info(dev, "(TX)paylen_ol4cs: %u\n",
- 		 le32_to_cpu(tx_desc->tx.paylen_ol4cs));
- 	dev_info(dev, "(TX)vld_ra_ri: %u\n",
-@@ -236,10 +255,21 @@ static int hns3_dbg_bd_info(struct hnae3_handle *h, const char *cmd_buf)
- 	rx_desc = &ring->desc[rx_index];
- 
- 	addr = le64_to_cpu(rx_desc->addr);
-+	l234info = le32_to_cpu(rx_desc->rx.l234_info);
- 	dev_info(dev, "RX Queue Num: %u, BD Index: %u\n", q_num, rx_index);
- 	dev_info(dev, "(RX)addr: %pad\n", &addr);
--	dev_info(dev, "(RX)l234_info: %u\n",
--		 le32_to_cpu(rx_desc->rx.l234_info));
-+	dev_info(dev, "(RX)l234_info: %u\n", l234info);
-+
-+	if (l234info & BIT(HNS3_RXD_L2_CSUM_B)) {
-+		u32 lo, hi;
-+
-+		lo = hnae3_get_field(l234info, HNS3_RXD_L2_CSUM_L_M,
-+				     HNS3_RXD_L2_CSUM_L_S);
-+		hi = hnae3_get_field(l234info, HNS3_RXD_L2_CSUM_H_M,
-+				     HNS3_RXD_L2_CSUM_H_S);
-+		dev_info(dev, "(RX)csum: %u\n", lo | hi << 8);
++	if (hdev->tm_info.fc_mode != HCLGE_FC_PFC) {
++		hdev->fc_mode_last_time = hdev->tm_info.fc_mode;
++		hdev->tm_info.fc_mode = HCLGE_FC_PFC;
 +	}
++}
 +
- 	dev_info(dev, "(RX)pkt_len: %u\n", le16_to_cpu(rx_desc->rx.pkt_len));
- 	dev_info(dev, "(RX)size: %u\n", le16_to_cpu(rx_desc->rx.size));
- 	dev_info(dev, "(RX)rss_hash: %u\n", le32_to_cpu(rx_desc->rx.rss_hash));
++static void hclge_pfc_info_init(struct hclge_dev *hdev)
++{
++	if (hdev->ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V3)
++		hclge_update_fc_mode(hdev);
++	else
++		hclge_update_fc_mode_by_dcb_flag(hdev);
++}
++
+ static void hclge_tm_schd_info_init(struct hclge_dev *hdev)
+ {
+ 	hclge_tm_pg_info_init(hdev);
 -- 
 2.7.4
 
