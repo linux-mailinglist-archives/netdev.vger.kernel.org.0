@@ -2,126 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 084992C767F
-	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 23:56:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6D712C768B
+	for <lists+netdev@lfdr.de>; Sun, 29 Nov 2020 00:09:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732325AbgK1WzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Nov 2020 17:55:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51250 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727070AbgK1WzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Nov 2020 17:55:22 -0500
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B2E0C0617A7;
-        Sat, 28 Nov 2020 14:54:41 -0800 (PST)
-Received: by mail-wr1-x443.google.com with SMTP id e7so9790792wrv.6;
-        Sat, 28 Nov 2020 14:54:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=IRkMx7ynKm/yM0ch5pBsS12yNk9GRJdtum4GLiNHEJc=;
-        b=qm5mslSvMdUBojxedLrGXh1DWlvwNDRbalZDfnEgF6qgnev418PVBXJmKFVDXFPxqx
-         IPv3ddQ7g7/QV8tLpBVgV7O0f0IQlSWOcG9upCOk+PiOGM9L5azm6oMozbEgvwwdHk5F
-         WHE22H9/61e/g9JxY6dfUMpQkt3Yvi722RhMJtNwMTxe8m/zAVj/Z75gkeGIK7oUgsUu
-         UxmhdBkBRC9CFrivux/3tc3V8jy7FFwQaRjUmUbOuYYBeeWVYLK56PAhCPnFsGvLPvCL
-         T3I4FTaCt7OAp/UcS5qhqnPhgZpzVTyMy6pKSLvP332u3ms8jxJbR/C3q8zdQgLYv7rt
-         Cx8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=IRkMx7ynKm/yM0ch5pBsS12yNk9GRJdtum4GLiNHEJc=;
-        b=DIWE7lEPPWx3cxr2oaXT4GwEdPQuRAuNRbdLwxxO1Xxw+yS0Pvi8odGuBmsARjj2YE
-         gqv4FUCSjDwai9mzuV2N/urp1mYWlSaC1UibQ7kb7mVDbAgSXHAeAIEXwO9oznQGBFts
-         mr3vPjmzmjoxlzuymAfv/9J4qPLByu2wgt2RBzq5F86D8v2G+JAcDbYryLXexs/QdaUH
-         fH3K1jaQkNXGJRoBM5zkauj13/L2uiCTgVoFqCliQLtNivrX3hrS+1as/UoiWd2Z0qU9
-         bSzJsSJLPdMb5Ef7LimcLdBm8gDmcLdh0+C0eM3AY1EuZoyKFLTozbNNJbloNXE6h7oj
-         SYlA==
-X-Gm-Message-State: AOAM5319QqZwX+j3JGHisiM24JO/HSxVbPAS/Rn4AalRpCJsgQQ6Bl0U
-        fe9/G9DpKB0T0O4czjXSMnk=
-X-Google-Smtp-Source: ABdhPJw/PY5xI6P8Zh3sO6jtAXPj7BSsmSNtXjs694JDjXR4kYu9nvTS8Z9JkGtgax+0rK4NWt8pjg==
-X-Received: by 2002:adf:b64f:: with SMTP id i15mr20021633wre.125.1606604080437;
-        Sat, 28 Nov 2020 14:54:40 -0800 (PST)
-Received: from adgra-XPS-15-9570.home (lfbn-idf1-1-1007-144.w86-238.abo.wanadoo.fr. [86.238.83.144])
-        by smtp.gmail.com with ESMTPSA id d13sm24231506wrb.39.2020.11.28.14.54.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Nov 2020 14:54:40 -0800 (PST)
-From:   Adrien Grassein <adrien.grassein@gmail.com>
-Cc:     fugang.duan@nxp.com, davem@davemloft.net, kuba@kernel.org,
-        robh+dt@kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Adrien Grassein <adrien.grassein@gmail.com>
-Subject: [PATCH 3/3] net: fsl: fec: add imx8mq support.
-Date:   Sat, 28 Nov 2020 23:54:25 +0100
-Message-Id: <20201128225425.19300-3-adrien.grassein@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201128225425.19300-1-adrien.grassein@gmail.com>
-References: <20201128225425.19300-1-adrien.grassein@gmail.com>
+        id S1726607AbgK1XJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Nov 2020 18:09:09 -0500
+Received: from mga05.intel.com ([192.55.52.43]:15231 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725844AbgK1XJI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 28 Nov 2020 18:09:08 -0500
+IronPort-SDR: 4rcOzIbt/gET7ykJZWl6bYgdgdyz6nVqxIpjlZ3agNmILXhjvIceyLnt4v600e8rBMDLuPVMZc
+ WnBHvJ69in7Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9819"; a="257211976"
+X-IronPort-AV: E=Sophos;i="5.78,378,1599548400"; 
+   d="scan'208";a="257211976"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Nov 2020 15:08:28 -0800
+IronPort-SDR: GPK8y4h90HD0JQkZweoWEDCErSOpc98QCUwxuhx8eayXqRd2DyMWdUgrGUghbWbQqNFA5sHmHV
+ Ru5UNXrxSJYA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.78,378,1599548400"; 
+   d="scan'208";a="363622230"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by fmsmga004.fm.intel.com with ESMTP; 28 Nov 2020 15:08:26 -0800
+Date:   Sat, 28 Nov 2020 23:59:57 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Camelia Groza <camelia.groza@nxp.com>
+Cc:     kuba@kernel.org, brouer@redhat.com, saeed@kernel.org,
+        davem@davemloft.net, madalin.bucur@oss.nxp.com,
+        ioana.ciornei@nxp.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v5 0/7] dpaa_eth: add XDP support
+Message-ID: <20201128225957.GA45349@ranger.igk.intel.com>
+References: <cover.1606322126.git.camelia.groza@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1606322126.git.camelia.groza@nxp.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds the imx8mq support to the
-fsl fec driver.
-Quirks are extracted from the NXP driver (5.4).
+On Wed, Nov 25, 2020 at 06:53:29PM +0200, Camelia Groza wrote:
+> Enable XDP support for the QorIQ DPAA1 platforms.
+> 
+> Implement all the current actions (DROP, ABORTED, PASS, TX, REDIRECT). No
+> Tx batching is added at this time.
+> 
+> Additional XDP_PACKET_HEADROOM bytes are reserved in each frame's headroom.
+> 
+> After transmit, a reference to the xdp_frame is saved in the buffer for
+> clean-up on confirmation in a newly created structure for software
+> annotations. DPAA_TX_PRIV_DATA_SIZE bytes are reserved in the buffer for
+> storing this structure and the XDP program is restricted from accessing
+> them.
+> 
+> The driver shares the egress frame queues used for XDP with the network
+> stack. The DPAA driver is a LLTX driver so no explicit locking is required
+> on transmission.
+> 
+> Changes in v2:
+> - warn only once if extracting the timestamp from a received frame fails
+>   in 2/7
+> 
+> Changes in v3:
+> - drop received S/G frames when XDP is enabled in 2/7
+> 
+> Changes in v4:
+> - report a warning if the MTU is too hight for running XDP in 2/7
+> - report an error if opening the device fails in the XDP setup in 2/7
+> - call xdp_rxq_info_is_reg() before unregistering in 4/7
+> - minor cleanups (remove unneeded variable, print error code) in 4/7
+> - add more details in the commit message in 4/7
+> - did not call qman_destroy_fq() in case of xdp_rxq_info_reg() failure
+> since it would lead to a double free of the fq resources in 4/7
+> 
+> Changes in v5:
+> - report errors on XDP setup with extack in 2/7
+> - checkpath fix in 4/7
+> - add more details in the commit message in 4/7
+> - reduce the impact of the A050385 erratum workaround code on non-erratum
+> platforms in 7/7
 
-Signed-off-by: Adrien Grassein <adrien.grassein@gmail.com>
----
- drivers/net/ethernet/freescale/fec_main.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+For the series:
+Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index e5c0a5da9965..92ad5b86d31c 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -131,6 +131,14 @@ static const struct fec_devinfo fec_imx6ul_info = {
- 		  FEC_QUIRK_HAS_COALESCE | FEC_QUIRK_CLEAR_SETUP_MII,
- };
- 
-+static const struct fec_devinfo fec_imx8mq_info = {
-+	.quirks = FEC_QUIRK_ENET_MAC | FEC_QUIRK_HAS_GBIT |
-+		  FEC_QUIRK_HAS_BUFDESC_EX | FEC_QUIRK_HAS_CSUM |
-+		  FEC_QUIRK_HAS_VLAN | FEC_QUIRK_HAS_AVB |
-+		  FEC_QUIRK_ERR007885 | FEC_QUIRK_BUG_CAPTURE |
-+		  FEC_QUIRK_HAS_RACC | FEC_QUIRK_HAS_COALESCE
-+};
-+
- static struct platform_device_id fec_devtype[] = {
- 	{
- 		/* keep it for coldfire */
-@@ -158,6 +166,11 @@ static struct platform_device_id fec_devtype[] = {
- 		.name = "imx6ul-fec",
- 		.driver_data = (kernel_ulong_t)&fec_imx6ul_info,
- 	}, {
-+		.name = "imx8mq-fec",
-+		.driver_data = (kernel_ulong_t)&fec_imx8mq_info,
-+	},
-+
-+	{
- 		/* sentinel */
- 	}
- };
-@@ -171,6 +184,7 @@ enum imx_fec_type {
- 	MVF600_FEC,
- 	IMX6SX_FEC,
- 	IMX6UL_FEC,
-+	IMX8MQ_FEC,
- };
- 
- static const struct of_device_id fec_dt_ids[] = {
-@@ -181,6 +195,8 @@ static const struct of_device_id fec_dt_ids[] = {
- 	{ .compatible = "fsl,mvf600-fec", .data = &fec_devtype[MVF600_FEC], },
- 	{ .compatible = "fsl,imx6sx-fec", .data = &fec_devtype[IMX6SX_FEC], },
- 	{ .compatible = "fsl,imx6ul-fec", .data = &fec_devtype[IMX6UL_FEC], },
-+	{ .compatible = "fsl,imx8mq-fec", .data = &fec_devtype[IMX8MQ_FEC], },
-+
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, fec_dt_ids);
--- 
-2.20.1
-
+> 
+> Camelia Groza (7):
+>   dpaa_eth: add struct for software backpointers
+>   dpaa_eth: add basic XDP support
+>   dpaa_eth: limit the possible MTU range when XDP is enabled
+>   dpaa_eth: add XDP_TX support
+>   dpaa_eth: add XDP_REDIRECT support
+>   dpaa_eth: rename current skb A050385 erratum workaround
+>   dpaa_eth: implement the A050385 erratum workaround for XDP
+> 
+>  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 465 +++++++++++++++++++++++--
+>  drivers/net/ethernet/freescale/dpaa/dpaa_eth.h |  13 +
+>  2 files changed, 448 insertions(+), 30 deletions(-)
+> 
+> --
+> 1.9.1
+> 
