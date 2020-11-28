@@ -2,45 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F40F2C708D
-	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 19:18:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DAF22C70EF
+	for <lists+netdev@lfdr.de>; Sat, 28 Nov 2020 22:50:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733219AbgK1SAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Nov 2020 13:00:25 -0500
-Received: from condef-03.nifty.com ([202.248.20.68]:63837 "EHLO
-        condef-03.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729846AbgK1R6R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Nov 2020 12:58:17 -0500
-Received: from conuserg-08.nifty.com ([10.126.8.71])by condef-03.nifty.com with ESMTP id 0AS8lwls020580;
-        Sat, 28 Nov 2020 17:48:24 +0900
-Received: from localhost.localdomain (softbank126090211135.bbtec.net [126.90.211.135]) (authenticated)
-        by conuserg-08.nifty.com with ESMTP id 0AS8klCf024281;
-        Sat, 28 Nov 2020 17:46:47 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 0AS8klCf024281
+        id S2389318AbgK1Vt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Nov 2020 16:49:58 -0500
+Received: from conuserg-09.nifty.com ([210.131.2.76]:40107 "EHLO
+        conuserg-09.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387560AbgK1Tft (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Nov 2020 14:35:49 -0500
+Received: from grover.RMN.KIBA.LAB.jp (softbank126090211135.bbtec.net [126.90.211.135]) (authenticated)
+        by conuserg-09.nifty.com with ESMTP id 0ASJXeQS028710;
+        Sun, 29 Nov 2020 04:33:41 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 0ASJXeQS028710
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1606553208;
-        bh=3ZxQhTM55h3T1rci5XqtW4G9136NvehcsYvGcG3kcgc=;
+        s=dec2015msa; t=1606592021;
+        bh=jLumgvXrvZOXOwLum8VDFamzZ4g8hoOKUXqB+QzEoCA=;
         h=From:To:Cc:Subject:Date:From;
-        b=SElIFciYjQNJuulProNcUJ6g9mjA6O9qq6ZNcU+lGQxM4xJ2H6GbcjQChrwQVdtMy
-         43+MEC/tZn52+NUzUIE+ZDL1Cw8daDnSbuD+PgRrWJADV7BHkydbLYUfzOWruBqV56
-         Vhf4Hes+x+8MiHQxt2sU5gyJMHCYXBwmEulcrBlxZaqCA61wi+yO7X9URuIez0xvwu
-         kdGZNqcJ8SGzfFt0E0i9BVkt1t+vMk/FuamGdUGmFlHBuC6fnWAGf7gS1t2qNTF0PH
-         pvten505D/ZiSdoqoEPIG4NNVRLMudKUr6O1qbSoZ4zLx2t8m2rp2X3Ktut9GMNRh3
-         7sqLNV4Grz0eA==
+        b=a03Y7n9C7d/dHHXZ1jz3AFYINn0HlDsQm2lJGA0pKZQ4bJCsNX99LqpbVopvMAFlX
+         hc/QOVEnWUjS8P3yUr2mzZqP4mfIfnygFf3Jt1kzXNlYc4alRYYc6DytXa6RVU+CYj
+         RoMovrncDjfucSCfllR9iOAVFgueYxy2XAPSOcEzUINlCE85RFG8b2YkvBQXrP/PVc
+         kDhXulbieo7rN6tYorDFy0Kjj6BQ2cglNu+VYzP9nzvvACYCz/lWzaT9JgSSL9yOpL
+         ndCCWdHK+L/gDNAF2U+HPGomEfrPFb5GWWcP6f67RKlsUSYS6xWprBhQ/m3zCRMOrt
+         QVyN+POsrIXmA==
 X-Nifty-SrcIP: [126.90.211.135]
 From:   Masahiro Yamada <masahiroy@kernel.org>
 To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
 Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>,
         Nathan Chancellor <natechancellor@gmail.com>,
         Nick Desaulniers <ndesaulniers@google.com>,
         Shuah Khan <shuah@kernel.org>,
         clang-built-linux@googlegroups.com, linux-kernel@vger.kernel.org,
         linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
         wireguard@lists.zx2c4.com
-Subject: [PATCH v2] Compiler Attributes: remove CONFIG_ENABLE_MUST_CHECK
-Date:   Sat, 28 Nov 2020 17:46:39 +0900
-Message-Id: <20201128084639.149153-1-masahiroy@kernel.org>
+Subject: [PATCH v3] Compiler Attributes: remove CONFIG_ENABLE_MUST_CHECK
+Date:   Sun, 29 Nov 2020 04:33:35 +0900
+Message-Id: <20201128193335.219395-1-masahiroy@kernel.org>
 X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -50,7 +48,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Revert commit cebc04ba9aeb ("add CONFIG_ENABLE_MUST_CHECK").
 
-A lot of warn_unused_result wearings existed in 2006, but until now
+A lot of warn_unused_result warnings existed in 2006, but until now
 they have been fixed thanks to people doing allmodconfig tests.
 
 Our goal is to always enable __must_check where appropriate, so this
@@ -67,7 +65,11 @@ While I was here, I also moved __must_check to compiler_attributes.h
 from compiler_types.h
 
 Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Acked-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
+
+Changes in v3:
+  - Fix a typo
 
 Changes in v2:
   - Move __must_check to compiler_attributes.h
