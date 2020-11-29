@@ -2,88 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB44B2C7746
-	for <lists+netdev@lfdr.de>; Sun, 29 Nov 2020 03:00:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4F6B2C777B
+	for <lists+netdev@lfdr.de>; Sun, 29 Nov 2020 05:14:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727783AbgK2CAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Nov 2020 21:00:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51296 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726122AbgK2CAR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Nov 2020 21:00:17 -0500
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97B2CC0613D1;
-        Sat, 28 Nov 2020 17:59:37 -0800 (PST)
-Received: by mail-pl1-x642.google.com with SMTP id x4so2819829pln.8;
-        Sat, 28 Nov 2020 17:59:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8c+fsvrCwlFBUWgSVAmwkVHV4vrrSBlLSmzxZa41+ak=;
-        b=E1phdNbqgAbUpST6mS741TU/ksC7BK/2XDEzhT+nTaV/PG+BDOiGivBpzuIezuIZ4B
-         GV9Ex+PcGmKhaPq/bQainK0bSooWB7PjIzryh4qOUCN8BAZKBmi3IrGBPSBrfDef/YN6
-         95LMkKqSo0wvi9Qr2jG28S+L3Xkdk8iT9jiEJ2FZKFL6ehbMq2m8XOZf87x5zUnG+hSW
-         A+Lj+JxA83aoGk8PAa4Zi7p7IF/p2O8VyrXL24yd9a8dZkDSF2llB20+N1YhkDJcV+OX
-         DwXQMTn9NDpc3k87Nr27CuXtKtTCL0FH/p0VT2176bU2v4y6z2jaAfh0iY9mojA3fMd7
-         kDdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8c+fsvrCwlFBUWgSVAmwkVHV4vrrSBlLSmzxZa41+ak=;
-        b=QrRoONQLBsp3RQa3AdHKfpuOqz8w7DKZqUVtHbpl6/wRlwg5U/zVXGK0MVsk+LpBet
-         tX6SJTSB+uJIoC2D3uiUVcoiPX9yYeS1iDdShLd3gUuPItIPRlCJueHVvSYwF+EMkDTU
-         U3CcgKLY0CTs2HOQ43KYw7mR3obGSxi6dG/ppl25PuII33VqhhNr+JvmRXhKLJ+HNFPd
-         EoD3LLHqTp3FXpd8lKkFUtNXCcJlipDLc1bsgJ5/F46W9gDOa9CJM/k9eZDiFsJLIl9Y
-         lrX6/YNv7PW7HJyvhNVVRHPDQ1GSc9l8rN2RdNYPoaXwf3hLUTILNrr8VjBRxebmWiya
-         ySbg==
-X-Gm-Message-State: AOAM5304wNQlEoJXZX27wH41X4V2UxQN/dHNyhX6lvrqFi+2eJIrQMV6
-        N9oAqsTARm6298Sr5FxR414=
-X-Google-Smtp-Source: ABdhPJzXlJOjiJSBvleIWWe2R1eoOuuiXg1IfkFmJxZsQDsHAaohmZc1/LZOCJfa7JhbWelIVz2o+g==
-X-Received: by 2002:a17:902:6949:b029:da:17d0:d10f with SMTP id k9-20020a1709026949b02900da17d0d10fmr12760066plt.71.1606615177001;
-        Sat, 28 Nov 2020 17:59:37 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:400::5:5925])
-        by smtp.gmail.com with ESMTPSA id c20sm2878385pgc.25.2020.11.28.17.59.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Nov 2020 17:59:36 -0800 (PST)
-Date:   Sat, 28 Nov 2020 17:59:34 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 5/7] selftests/bpf: add tp_btf CO-RE reloc test
- for modules
-Message-ID: <20201129015934.qlikfg7czp4cc7sf@ast-mbp>
-References: <20201121024616.1588175-1-andrii@kernel.org>
- <20201121024616.1588175-6-andrii@kernel.org>
+        id S1726213AbgK2EN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Nov 2020 23:13:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54114 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725294AbgK2EN4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 28 Nov 2020 23:13:56 -0500
+Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 667BC20795;
+        Sun, 29 Nov 2020 04:13:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606623195;
+        bh=K5FoQFGvvNLIFxwgaGQuC5JCNn9fVGY3KnfGk0sDLXg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=2U04zY4JE+cbtkq5mlJ8om2ytJ1uTm+UYGdu7RKAeHETNZNSc9gjOeQoL2a2K5IP+
+         At+b2lF6KDCSuK4LDS8ZHnl8GzlEpSJWa07e00vFV6rl7G5e3EHGpYO2nBcInatl5V
+         SM9vZI+yfGaBkEcNN4c2Q1ZRZdspjxO/7nReLN2s=
+Date:   Sat, 28 Nov 2020 23:13:14 -0500
+From:   Sasha Levin <sashal@kernel.org>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Mike Christie <michael.christie@oracle.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.9 22/33] vhost scsi: add lun parser helper
+Message-ID: <20201129041314.GO643756@sasha-vm>
+References: <20201125153550.810101-1-sashal@kernel.org>
+ <20201125153550.810101-22-sashal@kernel.org>
+ <25cd0d64-bffc-9506-c148-11583fed897c@redhat.com>
+ <20201125180102.GL643756@sasha-vm>
+ <9670064e-793f-561e-b032-75b1ab5c9096@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20201121024616.1588175-6-andrii@kernel.org>
+In-Reply-To: <9670064e-793f-561e-b032-75b1ab5c9096@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 20, 2020 at 06:46:14PM -0800, Andrii Nakryiko wrote:
->  
->  SEC("raw_tp/bpf_sidecar_test_read")
-> -int BPF_PROG(test_core_module,
-> +int BPF_PROG(test_core_module_probed,
->  	     struct task_struct *task,
->  	     struct bpf_sidecar_test_read_ctx *read_ctx)
->  {
-> @@ -64,3 +64,33 @@ int BPF_PROG(test_core_module,
->  
->  	return 0;
->  }
-> +
-> +SEC("tp_btf/bpf_sidecar_test_read")
-> +int BPF_PROG(test_core_module_direct,
-> +	     struct task_struct *task,
-> +	     struct bpf_sidecar_test_read_ctx *read_ctx)
+On Wed, Nov 25, 2020 at 07:08:54PM +0100, Paolo Bonzini wrote:
+>On 25/11/20 19:01, Sasha Levin wrote:
+>>On Wed, Nov 25, 2020 at 06:48:21PM +0100, Paolo Bonzini wrote:
+>>>On 25/11/20 16:35, Sasha Levin wrote:
+>>>>From: Mike Christie <michael.christie@oracle.com>
+>>>>
+>>>>[ Upstream commit 18f1becb6948cd411fd01968a0a54af63732e73c ]
+>>>>
+>>>>Move code to parse lun from req's lun_buf to helper, so tmf code
+>>>>can use it in the next patch.
+>>>>
+>>>>Signed-off-by: Mike Christie <michael.christie@oracle.com>
+>>>>Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
+>>>>Acked-by: Jason Wang <jasowang@redhat.com>
+>>>>Link: https://lore.kernel.org/r/1604986403-4931-5-git-send-email-michael.christie@oracle.com
+>>>>
+>>>>Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+>>>>Acked-by: Stefan Hajnoczi <stefanha@redhat.com>
+>>>>Signed-off-by: Sasha Levin <sashal@kernel.org>
+>>>
+>>>This doesn't seem like stable material, does it?
+>>
+>>It went in as a dependency for efd838fec17b ("vhost scsi: Add support
+>>for LUN resets."), which is the next patch.
+>
+>Which doesn't seem to be suitable for stable either...  Patch 3/5 in 
 
-"sidecar" is such an overused name.
-I didn't like it earlier, but seeing that it here again and again I couldn't help it.
-Could you please pick a different name for kernel module?
-It's just a kernel module for testing. Just call it so. No need for fancy name.
+Why not? It was sent as a fix to Linus.
+
+>the series might be (vhost scsi: fix cmd completion race), so I can 
+>understand including 1/5 and 2/5 just in case, but not the rest.  Does 
+>the bot not understand diffstats?
+
+Not on their own, no. What's wrong with the diffstats?
+
+-- 
+Thanks,
+Sasha
