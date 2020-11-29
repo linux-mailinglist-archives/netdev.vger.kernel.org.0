@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A60842C7A32
-	for <lists+netdev@lfdr.de>; Sun, 29 Nov 2020 18:19:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 716832C7A38
+	for <lists+netdev@lfdr.de>; Sun, 29 Nov 2020 18:29:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727894AbgK2RR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Nov 2020 12:17:27 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:55510 "EHLO vps0.lunn.ch"
+        id S1726961AbgK2R0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Nov 2020 12:26:54 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:55532 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725830AbgK2RR0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 29 Nov 2020 12:17:26 -0500
+        id S1725468AbgK2R0y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 29 Nov 2020 12:26:54 -0500
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1kjQJO-009NNW-Vv; Sun, 29 Nov 2020 18:16:34 +0100
-Date:   Sun, 29 Nov 2020 18:16:34 +0100
+        id 1kjQSd-009NPi-6x; Sun, 29 Nov 2020 18:26:07 +0100
+Date:   Sun, 29 Nov 2020 18:26:07 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Steen Hegelund <steen.hegelund@microchip.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -27,7 +27,7 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Microsemi List <microsemi@lists.bootlin.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [RFC PATCH 2/3] net: sparx5: Add Sparx5 switchdev driver
-Message-ID: <20201129171634.GD2234159@lunn.ch>
+Message-ID: <20201129172607.GE2234159@lunn.ch>
 References: <20201127133307.2969817-1-steen.hegelund@microchip.com>
  <20201127133307.2969817-3-steen.hegelund@microchip.com>
 MIME-Version: 1.0
@@ -38,36 +38,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c b/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
-> new file mode 100644
-> index 000000000000..a91dd9532f1c
-> --- /dev/null
-> +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
-> @@ -0,0 +1,1027 @@
-> +// SPDX-License-Identifier: GPL-2.0+
-> +/* Microchip Sparx5 Switch driver
-> + *
-> + * Copyright (c) 2020 Microchip Technology Inc. and its subsidiaries.
-> + */
-> +
-> +#include <linux/ethtool.h>
-> +
-> +#include "sparx5_main.h"
-> +#include "sparx5_port.h"
-> +
-> +/* Add a potentially wrapping 32 bit value to a 64 bit counter */
-> +static inline void sparx5_update_counter(u64 *cnt, u32 val)
+> +static void sparx5_hw_lock(struct sparx5 *sparx5)
 > +{
-> +	if (val < (*cnt & U32_MAX))
-> +		*cnt += (u64)1 << 32; /* value has wrapped */
+> +	mutex_lock(&sparx5->lock);
+> +}
 > +
-> +	*cnt = (*cnt & ~(u64)U32_MAX) + val;
+> +static void sparx5_hw_unlock(struct sparx5 *sparx5)
+> +{
+> +	mutex_unlock(&sparx5->lock);
 > +}
 
-No inline functions in C files. Let the compiler decide.
+Why is this mutex special and gets a wrapper where as the other two
+don't? If there is no reason for the wrapper, please remove it.
 
-And i now think i get what this is doing. But i'm surprised at the
-hardware. Normally registers like this which are expected to wrap
-around, reset to 0 on read.
-
-	Andrew
+       Andrew
