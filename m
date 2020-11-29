@@ -2,190 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B27442C79C8
-	for <lists+netdev@lfdr.de>; Sun, 29 Nov 2020 16:54:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E78E52C7A0E
+	for <lists+netdev@lfdr.de>; Sun, 29 Nov 2020 17:47:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726470AbgK2PxL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Nov 2020 10:53:11 -0500
-Received: from mail-eopbgr60137.outbound.protection.outlook.com ([40.107.6.137]:51870
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        id S1728008AbgK2Qnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Nov 2020 11:43:41 -0500
+Received: from mail-bn7nam10on2136.outbound.protection.outlook.com ([40.107.92.136]:62496
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725468AbgK2PxK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 29 Nov 2020 10:53:10 -0500
+        id S1725468AbgK2Qnk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 29 Nov 2020 11:43:40 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YBv6UmbXMwZaHlJvgaqp0S/BhOsOlshxYxciLr4sWp3+7S0LHVk4PiXnHs0Q9Fxn8qD7KanQVZNflFMh37SK3WmBjvNU33WTgfNPJwTeLD1kr1zSKm1OJ4HcwURLTiQcZH25Mt5blmfHXXE7G/583MWSa/cuvmfWp7uNCS8dd9M9U0MkhjvuCki75LJ+y9K9UA/fTouIiVTA/kCJzlHPOt5CM7t6y7dVZfivg271OxIJ6HTYUpwQ71lIpWF7LdJpTt2NbyrwqoPWi72RdIg9KeSzSRAGHtHN0KqV9rBfQUdP6aCUazAWuEEMtU8+9+EDpcGs8x/uGBURTw7JLz5LFA==
+ b=GiuG6HbuulheH5VczQpQjosUU9N3JByHmyh+XgDLkKtZ+X65T27AaMnH7/d3miI8JanD3UzjN1KEjjVG2p4ummrIPvDOMTMkO64wI3jwTVo4yzS4Q2JK0kyjXAI5dBQ8snOFU/owNS8i/SZFl2hkWd95MXcbJ758OLW6ZCZaWO9BkTf/EfhHXhHG29HAHdznHEYk1tpEMJLi+4xTs9sq8qNof7f9CTVgnq15YGcwGIEBOa/wpObInaM4iQ7NqOFpPAdrsamX+GwDj380d8+/O6uus7MVl4blaGlxnQsWruGHOCtMhVywrW0GA92ntoNQVbREfhaBN0iJW9ltYwIPPw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SiNrO1PtLQwVcgHlATVTMIZiLIgLFJcjT7nFiazhl+A=;
- b=W/bzfsv0eQPrkumVph1T+rQRODju/XKJDAgIeSWaPooV7hgMmgcZDy9mXJqmU8rQ9/UH9ResgCW89PS35DVAiZRZO84JolQpAhKYPaiqapKZiYzlOcw6nOApL8OoyJtC/AU1fHFW5GIF3r914oirjP3DFu0wZEeRGFvBBFFm8WnCwJz1AMIE1UXhi8wolzNpZNv14hQaPwEjwugWcvxiVzLs/GVem3un+EDvRwfAwxhvfyc1abF6HJ6hHauRMq1n+b1M90ezuM1WlBdkqlh84Mmrl5kZea6fLXIouqiRH8OkSCsv0CFSEqsyBd+Ex1nCcBZTVRsVn05FekjWlsq6PA==
+ bh=NG0KVunj880vyPNf6ikZjL0GkwjPWI2jN7kI/OMG66M=;
+ b=FgoeblIA+xqVXD2dlwvpAH3DFlimDsn5/w+b4eAfX+Q4fifsHC9dn8cfUeWu1e+r1Oil9WMY5CuKSSf4ec0+Xon33jJo7JBHi/OVxxzEn+AIH2/lNirjrXLnUogeIrc2NIpYYnl0Nc82YuMDn7bJaLLB0j862Jc9l+mTbtV6RFI/uTBvF5jkLJfGdxc0wqMlTsDzZe8HZR/boTrvpML68KvvFVvRfZ3uW2fNPLurlErRHhLn2OQCap9kRqTNu2ri1kK33o5HXek2WvZrAliJ8U984udSRz12tlIGnF7gvvwrYLbReUzLruP4m2SqG48G/KCZRxgIKZHnXNPDKxU0LA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=victronenergy.com; dmarc=pass action=none
- header.from=victronenergy.com; dkim=pass header.d=victronenergy.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=victronenergy.com;
+ smtp.mailfrom=hammerspace.com; dmarc=pass action=none
+ header.from=hammerspace.com; dkim=pass header.d=hammerspace.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hammerspace.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SiNrO1PtLQwVcgHlATVTMIZiLIgLFJcjT7nFiazhl+A=;
- b=bc6PHUlowyxY820f27L0Z5Im4VFwOcTCX2ekVmjPoktLO7VEZe1pnraIaDp6GhJOcF/116nc+5y731ioYSSpeE/PgEjUfHFeW9583MPgcg0Y/jFF5/7nNkQgn//thyFx0DXEZgg4fwnUd18fs+pQTu41vclDSef0zoAg4GEjGsw=
-Authentication-Results: lists.infradead.org; dkim=none (message not signed)
- header.d=none;lists.infradead.org; dmarc=none action=none
- header.from=victronenergy.com;
-Received: from DBAPR07MB6967.eurprd07.prod.outlook.com (2603:10a6:10:192::11)
- by DB8PR07MB6473.eurprd07.prod.outlook.com (2603:10a6:10:133::13) with
+ bh=NG0KVunj880vyPNf6ikZjL0GkwjPWI2jN7kI/OMG66M=;
+ b=cMwv0hpbooRWGSFIj+pzJIYYnrHErmV2cNafDEqNOipyEl6goa5FGL6urxAqSYqnr/qooA7FfUTkOYQ6Q3V3d/M2cQxVCjO0pOc+oO8uf0D90w3roU6gZLVx0XIIOFLJvdZcYR7gAWZL8C3q896xlfCCMu6mPFLPOZ0JotQvcYs=
+Received: from MN2PR13MB3957.namprd13.prod.outlook.com (2603:10b6:208:263::11)
+ by MN2PR13MB2991.namprd13.prod.outlook.com (2603:10b6:208:154::28) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.6; Sun, 29 Nov
- 2020 15:52:19 +0000
-Received: from DBAPR07MB6967.eurprd07.prod.outlook.com
- ([fe80::ad22:24cb:3fd:617c]) by DBAPR07MB6967.eurprd07.prod.outlook.com
- ([fe80::ad22:24cb:3fd:617c%3]) with mapi id 15.20.3632.009; Sun, 29 Nov 2020
- 15:52:19 +0000
-Subject: Re: [PATCH] can: don't count arbitration lose as an error
-To:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org
-Cc:     Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        "moderated list:ARM/Allwinner sunXi SoC support" 
-        <linux-arm-kernel@lists.infradead.org>
-References: <20201127095941.21609-1-jhofstee@victronenergy.com>
- <434167b4-c2df-02bf-8a9c-2d4716c5435f@pengutronix.de>
- <f5f93e72-c55f-cfd3-a686-3454e42c4371@victronenergy.com>
- <042ad21c-e238-511b-1282-2ea226e572ff@hartkopp.net>
-From:   Jeroen Hofstee <jhofstee@victronenergy.com>
-Message-ID: <4319bb31-972c-78e1-ec20-11fdfd04d6bd@victronenergy.com>
-Date:   Sun, 29 Nov 2020 16:52:17 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <042ad21c-e238-511b-1282-2ea226e572ff@hartkopp.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.8; Sun, 29 Nov
+ 2020 16:42:46 +0000
+Received: from MN2PR13MB3957.namprd13.prod.outlook.com
+ ([fe80::e989:f666:131a:e210]) by MN2PR13MB3957.namprd13.prod.outlook.com
+ ([fe80::e989:f666:131a:e210%9]) with mapi id 15.20.3632.016; Sun, 29 Nov 2020
+ 16:42:46 +0000
+From:   Trond Myklebust <trondmy@hammerspace.com>
+To:     "bfields@fieldses.org" <bfields@fieldses.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>,
+        "trix@redhat.com" <trix@redhat.com>,
+        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] NFS: remove trailing semicolon in macro definition
+Thread-Topic: [PATCH] NFS: remove trailing semicolon in macro definition
+Thread-Index: AQHWxPWbldOlJ73hwU20MDIpyx86PanfU2iA
+Date:   Sun, 29 Nov 2020 16:42:46 +0000
+Message-ID: <96657eff83195fba1762cb046b3f15d337e5daad.camel@hammerspace.com>
+References: <20201127194325.2881566-1-trix@redhat.com>
+In-Reply-To: <20201127194325.2881566-1-trix@redhat.com>
+Accept-Language: en-US, en-GB
 Content-Language: en-US
-X-Originating-IP: [2001:1c01:3bc5:4e00:e791:efe6:bf00:7133]
-X-ClientProxiedBy: AM4PR0302CA0020.eurprd03.prod.outlook.com
- (2603:10a6:205:2::33) To DBAPR07MB6967.eurprd07.prod.outlook.com
- (2603:10a6:10:192::11)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: fieldses.org; dkim=none (message not signed)
+ header.d=none;fieldses.org; dmarc=none action=none
+ header.from=hammerspace.com;
+x-originating-ip: [68.36.133.222]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d571ca62-afdc-4819-6200-08d89485cd4a
+x-ms-traffictypediagnostic: MN2PR13MB2991:
+x-microsoft-antispam-prvs: <MN2PR13MB299178B6D846A0F3253E271CB8F60@MN2PR13MB2991.namprd13.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 9TM4tt8n/UK7sYYsOypyOI/kU4Sywucg3rbdLjLgSjSP9WPs2TECq4NtZc6JSAhdfY5E7FI0OATfvUBIMvOenrVPNolCq8U00vlvLe31G54OZQWBrNYpGPaB9UgGxxh5BfZ7sTeD+MvPnDk9McMWhpyPxG6BhUx211MRcrMQO/j8Uuw0V+0K/Zkp/5kKM49o/iSxXHnVsqmBB8HQ/65BspKptQNOg8OkFBlr79VPGL465v6/u87m6W+1GDBMEGFg6Nn1sV+rD1jfGxLvrlvG/l0P9hehorILlCAATe6GY+Ds42po2BoBWoCVecf0RasvLmlPhfRlN2OvsYcJg9u95A==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR13MB3957.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(346002)(396003)(366004)(136003)(39830400003)(64756008)(66946007)(66476007)(66556008)(76116006)(36756003)(6506007)(86362001)(83380400001)(66446008)(5660300002)(71200400001)(91956017)(2616005)(4326008)(316002)(54906003)(6486002)(6512007)(110136005)(186003)(478600001)(4001150100001)(2906002)(8936002)(26005)(8676002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?cm9Fd3g3Q1EwVkFGcElJdnB1cVQrMmcvRnozVjF6QkNpYVZqdFE5Q3BXV2NR?=
+ =?utf-8?B?c0E4aXV0V2ExU2lXbnJVTHFJcFhSVFpTczNFS1hKOTZPSXA1TlZFVlNZZnJL?=
+ =?utf-8?B?bHhScXhvdWYvZ28xNDlyNElyRm9BQlp2cGlHUjliYkEwMnJNcTI0NjN2d2tk?=
+ =?utf-8?B?S1RtS3NBaTBRWms5K3IxMFdBMUpYTitwaXNtMC9XOEJWQzdNQlUrbEtNcTE3?=
+ =?utf-8?B?OVhac1FDRmNNZ0VyZWtidGw0K0YxUTBZU2dUU0ZVbzh1bE5TclRoVjlWSXRs?=
+ =?utf-8?B?Y29VQlpOVHRTOEJaMWtpVWcrakt1M2pPcEMwK292T2VsKzZUQ3RMY2JjZzNF?=
+ =?utf-8?B?bVRwT05SbGdCNzJGRTd1OFIxQXdaUGxTSFhOUmRpdUNPQ0FUekRPOEEwdkN0?=
+ =?utf-8?B?VU5SU2QvQldzQ3F1NGJHNXA2NWRZMVVFbVBkK0ZhbG4wa1RzYUYyWm5MRk83?=
+ =?utf-8?B?U1VXWThkcmFIeVM1N0hvQVFTUjhLelV3QW1HRVU3akJVRC9XWGRRWTlOOENv?=
+ =?utf-8?B?Ynp5aVB6YWo3RE5wUDREaGdNSWtodTBhVzBYeVRBakdjR1ZOQjFubGFqODQv?=
+ =?utf-8?B?emZUclE2UkQ4SmxabXZIV2xsWEUya0swTGhzVThJSUxja3REZkdPbGthYzZ3?=
+ =?utf-8?B?R0tPd0c2cEg5OFMxWXJsSVgvNUtNTlBSaTJ4YWE2UmcycXQ1TWQrbmpqdC9E?=
+ =?utf-8?B?MDBFam5nRjRrYlpBL2dSTEVLNnVRdERHL0RzS0FEbG1lWHAxR25oZ09NM1lw?=
+ =?utf-8?B?MC9zOUp3Ukk3R3BkWmMzMzFjNG1SeHgwREJjVHZHdytJM1lQU0RlcUZFbkQy?=
+ =?utf-8?B?SVZnSUplWmR5R2o1M1pKOXFSMVE5NERNNVN1Q2ppQlhack43WW1nMDJ4a3pE?=
+ =?utf-8?B?aG0zYnVTZWxOL1NNOFZyR3NPdnVUY05maXcvSTIrcno4WllWR3dlN1BGRUVB?=
+ =?utf-8?B?LzU4YkR6SXJTUHZFQXNNQW90OXd6Y2FEQmlnblQwaldReXZhNjdoNjUvWHFP?=
+ =?utf-8?B?SlpIbnhQNlNveFBvZy9kZHV0MTkzTkZBWTljOXFkWGZpemFUQS9aVVhDR0NY?=
+ =?utf-8?B?REI4TWFqZVBrb1ZIZkxsRkNXenl6MUZtOVpmb1g0Z3FxVjA1Z2VQYzNIbkx1?=
+ =?utf-8?B?MTJUM0JtbGV3ellQM2lSTk4zUUVMRUFHSm9Cd3E3VjdhRTBnbHBvbWdDNDA0?=
+ =?utf-8?B?M3hLZzRlTlBiTzU5V3hmTlZubjlXZUp3TmJ3S0Q0YjNTNXVBTGdWQkMzNnF4?=
+ =?utf-8?B?TWpiMkU3aHJ0KzQyN0ZyVkU4NGdYbHpWRzd1cGVzNTNVYmVKcnc1aDBRbFBO?=
+ =?utf-8?Q?wlKj7x/nmayA8Kslobqhh84Q1mjaoxS9hX?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <CDBE5E000C87184182F7F0756B238CF1@namprd13.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2001:1c01:3bc5:4e00:e791:efe6:bf00:7133] (2001:1c01:3bc5:4e00:e791:efe6:bf00:7133) by AM4PR0302CA0020.eurprd03.prod.outlook.com (2603:10a6:205:2::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.20 via Frontend Transport; Sun, 29 Nov 2020 15:52:18 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 26467f38-e6f5-4e3b-79ff-08d8947ec0e4
-X-MS-TrafficTypeDiagnostic: DB8PR07MB6473:
-X-Microsoft-Antispam-PRVS: <DB8PR07MB6473CBDA2A45C5DD92BDAC98C0F60@DB8PR07MB6473.eurprd07.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xEKnWSYd96vbTE8jwvI9e6BDC5MJEEIJide7W3epzqwGmtZdyUJRA1YHt/vhAPtV2lO93PuEvPJ8OuXlZtk8oA0oCrVWOt04WvvlJxNPbyNejLZI9pQ7wRGfWqji0VOV5xduDFShIKauM+oG/lKUg3wq0Kt8er6VcIC7Lab7+o9dHfLqXoD+DbBu5pVnWTM8VUYoY2yDUHt2c0uW8DX8FcWEVdt/dXIFJsfB6ePabcj4kjylpv/uGuT8ce3mKX4J7lUY4/M/TxXq3UOOzkbytdG5gLvVlRp4aqXLTVHW05BobNh0XNFpr+YDj6Wk9/+cqIqXnboaAuxjg2jjKkBavvLQ3WwdAlEk92Ak9AnB7SjECwCpT3/fv0deU3qWA7Y8
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DBAPR07MB6967.eurprd07.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39830400003)(396003)(346002)(376002)(136003)(366004)(52116002)(31696002)(4326008)(2906002)(5660300002)(53546011)(478600001)(316002)(83380400001)(186003)(66946007)(16526019)(54906003)(110136005)(66556008)(31686004)(66476007)(8676002)(8936002)(6486002)(2616005)(36756003)(86362001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?NzNjVlBibUU5ZDI2NEV6bVk3OTVydFI1VXRlMXE3OHluNE5CWldwZVFBRldx?=
- =?utf-8?B?T2Jkb0lRK0hkOFJJWWRIeURUb3ZiREQ2bFczU1Z6Q2toanlOTXAxK2dUK3Fz?=
- =?utf-8?B?QlZNQVBQeVZIZnhBd05VNEtCQW9pZVc2eVVSTGYzanJ0N013YTBINERqL1Yy?=
- =?utf-8?B?UmVPbEpDa0FMYzVoUmYxSHlBT1drRWtteFJMcFFBbFpUOWJaakIzNEZwWWp5?=
- =?utf-8?B?VElPRFNJUHp2RXhJZVloQVF2SS9oQUdKbFluZExyVE0xVlBHbU5kdzUvejIr?=
- =?utf-8?B?dlVIKzdvalFjUTVyRkFqNzVMT2U2V25oY0s0MmxrT3d0cVB3NmE5YW13OHZn?=
- =?utf-8?B?aHQxYmpXenhKdHVaV2k2enRpampqRWtXOGJic3J4WEIrUlM1eHJQVTFGTDVO?=
- =?utf-8?B?U2J2ZTdMRkNEZC8rKzNRNjBYQk03TXV2VGx2WUZBaGlHWG15bHJkbldMVHZQ?=
- =?utf-8?B?OWEyVGZSVmdEWUQ2NnBRb09mb2RUUjM1LzNobFhlYUgrUFUzT0ZNSjlyRlln?=
- =?utf-8?B?TmM0SDNoZ2hnS1RlbWJ0Y2ZlY21tRkhCSitkS2JpK0pmZmw1dkxUMjAvQWpD?=
- =?utf-8?B?YmdFMzZnb0lnalBlTytsOCtHMHREY1gxQi9xS1d4dThMRmhNYW5rNWt1VHFI?=
- =?utf-8?B?RzRCWDVveVgwVThPdmlGWHM5aVMrd0dKblFSTXo4dWNhMFE4VHYrSEphbXhk?=
- =?utf-8?B?VzV6WkZYckxxRjRVcHVxSUhjdGM0cVo0eVBUODRZcld4YWdmRURGbFhXV05k?=
- =?utf-8?B?eFhIdVFqYU5mSUFDS2xYM0NDcEIvV0tWM1poMG8rR0I2Unp2SW9YaSs4YUhm?=
- =?utf-8?B?czBDYUdzaG1hY2ovbHpqUysyT2IrdER5d0wvVU1GamVlMUhOWkJTM2w2dzkx?=
- =?utf-8?B?TXZwWmM1cXQwZXVxMWNmQUZubjRKZDlMbHdmY0NzWEpzdlZzOXZIVGZLZmEv?=
- =?utf-8?B?VmQ2L2F4T1dNNFp6WnpGUXRVaUtpSnNYb0cwdlZuL1o3S1ltb2h2S01sSXZX?=
- =?utf-8?B?SEhpOVZJYWxvT1pQeklsMlB6UG9KeDNrMTFXSTBhKzNiM0Z6dW5GcVhZTFRv?=
- =?utf-8?B?VTlnaGJBM0lNb2kxM0MzSUV6UHd5Tms3cVJSNWJnNjd2dTVlWGpQMTFCd3Np?=
- =?utf-8?B?R3Q0Q3UrYVJmSVdmZW83bFd4MUZ6WnJPdkZKNE9CRDFnK2wwa1dIZW1mM08w?=
- =?utf-8?B?YWJiZGNjMU0xQnluclJhUG1ZSkZkL3BLRzZGREl1SVphSXEwSDlQT1IvS20v?=
- =?utf-8?B?UDFOZSszVlhUVTFsZzhHS3paMks3QzJFdUNHcS9xTlFRU1RiQzliSnhxRGVj?=
- =?utf-8?B?eU02RURKdEhtMm9Cek1Od2FicFJBK0NxMFE4dGVVRjNTRXUrRTFGL3lGZ3l1?=
- =?utf-8?B?ZkFxc1JlQ1A5bithVHMrclNmQk1mOElxYk50WnhRckg5VFBIZlFDWEJtS01O?=
- =?utf-8?Q?QsByZ0HJ?=
-X-OriginatorOrg: victronenergy.com
-X-MS-Exchange-CrossTenant-AuthSource: DBAPR07MB6967.eurprd07.prod.outlook.com
+X-OriginatorOrg: hammerspace.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Nov 2020 15:52:19.4380
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR13MB3957.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d571ca62-afdc-4819-6200-08d89485cd4a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Nov 2020 16:42:46.7615
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 60b95f08-3558-4e94-b0f8-d690c498e225
-X-MS-Exchange-CrossTenant-Network-Message-Id: 26467f38-e6f5-4e3b-79ff-08d8947ec0e4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OiowcSH0+28Gk2q9Bga8KFdMXVrYlzP5eUK32/wd3AoYY/rBdxy1KA2x+Uh+JQQ9Hd7E58oPitX6mjDLdkrCl1NsJXXMY+UETR3E9hg8qA4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR07MB6473
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 0d4fed5c-3a70-46fe-9430-ece41741f59e
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 2LTks/ZqNkzQdu3SIGJ3xn0rtFSb5KRp3tKllSzrS3h6F4myotFmor+lZnx2c86opkQZwPkSc3/BKRM9GhczIw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB2991
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Oliver,
-
-On 11/28/20 6:23 PM, Oliver Hartkopp wrote:
->
->
-> On 27.11.20 12:09, Jeroen Hofstee wrote:
->> Hi,
->>
->> On 11/27/20 11:30 AM, Marc Kleine-Budde wrote:
->>> On 11/27/20 10:59 AM, Jeroen Hofstee wrote:
->>>> Losing arbitration is normal in a CAN-bus network, it means that a
->>>> higher priority frame is being send and the pending message will be
->>>> retried later. Hence most driver only increment arbitration_lost, but
->>>> the sja1000 and sun4i driver also incremeant tx_error, causing errors
->>>> to be reported on a normal functioning CAN-bus. So stop counting them
->>>> as errors.
->>> Sounds plausible.
->>>
->>>> For completeness, the Kvaser USB hybra also increments the tx_error
->>>> on arbitration lose, but it does so in single shot. Since in that
->>>> case the message is not retried, that behaviour is kept.
->>> You mean only in one shot mode?
->>
->> Yes, well at least the function is called 
->> kvaser_usb_hydra_one_shot_fail.
->>
->>
->>>   What about one shot mode on the sja1000 cores?
->>
->>
->> That is a good question. I guess it will be counted as error by:
->>
->>          if (isrc & IRQ_TI) {
->>              /* transmission buffer released */
->>              if (priv->can.ctrlmode & CAN_CTRLMODE_ONE_SHOT &&
->>                  !(status & SR_TCS)) {
->>                  stats->tx_errors++;
->>                  can_free_echo_skb(dev, 0);
->>              } else {
->>                  /* transmission complete */
->>                  stats->tx_bytes +=
->>                      priv->read_reg(priv, SJA1000_FI) & 0xf;
->>                  stats->tx_packets++;
->>                  can_get_echo_skb(dev, 0);
->>              }
->>              netif_wake_queue(dev);
->>              can_led_event(dev, CAN_LED_EVENT_TX);
->>          }
->>
->>  From the datasheet, Transmit Interrupt:
->>
->> "set; this bit is set whenever the transmit bufferstatus
->> changes from ‘0-to-1’ (released) and the TIE bit is set
->> within the interrupt enable register".
->>
->> I cannot test it though, since I don't have a sja1000.
->
-> I have a PCAN-ExpressCard 34 here, which should make it in a test 
-> setup as it acts as a PCI attached SJA1000.
->
-> Will take a look at that arbitration lost behaviour on Monday. A 
-> really interesting detail!
->
->
-
-Thanks, appreciated. I would be surprised if this path is not taken though.
-
-With kind regards,
-
-Jeroen
-
-
+SGkgVG9tLA0KDQpPbiBGcmksIDIwMjAtMTEtMjcgYXQgMTE6NDMgLTA4MDAsIHRyaXhAcmVkaGF0
+LmNvbSB3cm90ZToNCj4gRnJvbTogVG9tIFJpeCA8dHJpeEByZWRoYXQuY29tPg0KPiANCj4gVGhl
+IG1hY3JvIHVzZSB3aWxsIGFscmVhZHkgaGF2ZSBhIHNlbWljb2xvbi4NCj4gDQo+IFNpZ25lZC1v
+ZmYtYnk6IFRvbSBSaXggPHRyaXhAcmVkaGF0LmNvbT4NCj4gLS0tDQo+IMKgbmV0L3N1bnJwYy9h
+dXRoX2dzcy9nc3NfZ2VuZXJpY190b2tlbi5jIHwgMiArLQ0KPiDCoDEgZmlsZSBjaGFuZ2VkLCAx
+IGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL25ldC9zdW5y
+cGMvYXV0aF9nc3MvZ3NzX2dlbmVyaWNfdG9rZW4uYw0KPiBiL25ldC9zdW5ycGMvYXV0aF9nc3Mv
+Z3NzX2dlbmVyaWNfdG9rZW4uYw0KPiBpbmRleCBmZTk3ZjMxMDY1MzYuLjlhZTIyZDc5NzM5MCAx
+MDA2NDQNCj4gLS0tIGEvbmV0L3N1bnJwYy9hdXRoX2dzcy9nc3NfZ2VuZXJpY190b2tlbi5jDQo+
+ICsrKyBiL25ldC9zdW5ycGMvYXV0aF9nc3MvZ3NzX2dlbmVyaWNfdG9rZW4uYw0KPiBAQCAtNDYs
+NyArNDYsNyBAQA0KPiDCoC8qIFRXUklURV9TVFIgZnJvbSBnc3NhcGlQX2dlbmVyaWMuaCAqLw0K
+PiDCoCNkZWZpbmUgVFdSSVRFX1NUUihwdHIsIHN0ciwgbGVuKSBcDQo+IMKgwqDCoMKgwqDCoMKg
+wqBtZW1jcHkoKHB0ciksIChjaGFyICopIChzdHIpLCAobGVuKSk7IFwNCj4gLcKgwqDCoMKgwqDC
+oMKgKHB0cikgKz0gKGxlbik7DQo+ICvCoMKgwqDCoMKgwqDCoChwdHIpICs9IChsZW4pDQo+IMKg
+DQo+IMKgLyogWFhYWCB0aGlzIGNvZGUgY3VycmVudGx5IG1ha2VzIHRoZSBhc3N1bXB0aW9uIHRo
+YXQgYSBtZWNoIG9pZA0KPiB3aWxsDQo+IMKgwqDCoCBuZXZlciBiZSBsb25nZXIgdGhhbiAxMjcg
+Ynl0ZXMuwqAgVGhpcyBhc3N1bXB0aW9uIGlzIG5vdCBpbmhlcmVudA0KPiBpbg0KDQpUaGVyZSBp
+cyBleGFjdGx5IDEgdXNlIG9mIHRoaXMgbWFjcm8gaW4gdGhlIGNvZGUgQUZBSUNTLiBDYW4gd2Ug
+cGxlYXNlDQpqdXN0IGdldCByaWQgb2YgaXQsIGFuZCBtYWtlIHRoZSBjb2RlIHRyaXZpYWxseSBl
+YXNpZXIgdG8gcmVhZD8NCg0KVGhhbmtzDQogIFRyb25kDQoNCi0tIA0KVHJvbmQgTXlrbGVidXN0
+DQpMaW51eCBORlMgY2xpZW50IG1haW50YWluZXIsIEhhbW1lcnNwYWNlDQp0cm9uZC5teWtsZWJ1
+c3RAaGFtbWVyc3BhY2UuY29tDQoNCg0K
