@@ -2,137 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8FBC2C7A56
-	for <lists+netdev@lfdr.de>; Sun, 29 Nov 2020 18:36:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 027DD2C7A69
+	for <lists+netdev@lfdr.de>; Sun, 29 Nov 2020 18:56:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728598AbgK2RgI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Nov 2020 12:36:08 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:55572 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728129AbgK2RgI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 29 Nov 2020 12:36:08 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kjQbY-009NT4-Ol; Sun, 29 Nov 2020 18:35:20 +0100
-Date:   Sun, 29 Nov 2020 18:35:20 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microsemi List <microsemi@lists.bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 2/3] net: sparx5: Add Sparx5 switchdev driver
-Message-ID: <20201129173520.GF2234159@lunn.ch>
-References: <20201127133307.2969817-1-steen.hegelund@microchip.com>
- <20201127133307.2969817-3-steen.hegelund@microchip.com>
+        id S1728173AbgK2Ryz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Nov 2020 12:54:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55626 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728114AbgK2Ryz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Nov 2020 12:54:55 -0500
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA8FC0613CF
+        for <netdev@vger.kernel.org>; Sun, 29 Nov 2020 09:54:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=xMAq2su5hFJTjz60h6IOlYmUxvcMp056ry/21etI4+I=; b=0H5N/TM6vNiDhPoJcpTiPGCPNd
+        1APApkj4yQBYp4Sm3UWdXsG+h7JElaH70GlUf+Jb6VNoTyL2luD++oRIO43oVVUYwOiGjkISebR86
+        UgE4PKjINGRiRFAva4bpX0xlml+TpjRM5Dmdv1RzCEERulU+A9JvMkn+gq/llmto1cm1QI83sRP2a
+        GqSX3qakKo7uvTaJ1xJ0tgMPuIx4Kk2QO1HayGUYoXAs81vd6Lop4HwLQpMFoF90pTJlyZOSyGt9o
+        biCt5ZX4OOjBVnoRFYu+uLRTATSrUEzGHk2kKvtXU69r/vLOgeqK+fzFgun+/T2swCxqvqEqhnY5f
+        8gt2PFcA==;
+Received: from [2601:1c0:6280:3f0::cc1f]
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kjQth-0005Gf-NJ; Sun, 29 Nov 2020 17:54:06 +0000
+Subject: Re: [PATCH 00/10 net-next] net/tipc: fix all kernel-doc and add TIPC
+ networking chapter
+To:     Ying Xue <ying.xue@windriver.com>
+Cc:     Jon Maloy <jmaloy@redhat.com>, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20201125042026.25374-1-rdunlap@infradead.org>
+ <bde23bb7-9c96-b107-cb06-64695726b21b@windriver.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <0d94930d-45c2-f5ef-202e-f3dc2f94c11d@infradead.org>
+Date:   Sun, 29 Nov 2020 09:54:01 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201127133307.2969817-3-steen.hegelund@microchip.com>
+In-Reply-To: <bde23bb7-9c96-b107-cb06-64695726b21b@windriver.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +#define SPX5_RD_(sparx5, id, tinst, tcnt,			\
-> +		 gbase, ginst, gcnt, gwidth,			\
-> +		 raddr, rinst, rcnt, rwidth)			\
-> +	readl(spx5_addr((sparx5)->regs, id, tinst, tcnt,	\
-> +			gbase, ginst, gcnt, gwidth,             \
-> +			raddr, rinst, rcnt, rwidth))
-> +
-> +#define SPX5_INST_RD_(iomem, id, tinst, tcnt,			\
-> +		      gbase, ginst, gcnt, gwidth,		\
-> +		      raddr, rinst, rcnt, rwidth)		\
-> +	readl(spx5_inst_addr(iomem,				\
-> +			     gbase, ginst, gcnt, gwidth,	\
-> +			     raddr, rinst, rcnt, rwidth))
-> +
-> +#define SPX5_WR_(val, sparx5, id, tinst, tcnt,			\
-> +		 gbase, ginst, gcnt, gwidth,			\
-> +		 raddr, rinst, rcnt, rwidth)			\
-> +	writel(val, spx5_addr((sparx5)->regs, id, tinst, tcnt,	\
-> +			      gbase, ginst, gcnt, gwidth,	\
-> +			      raddr, rinst, rcnt, rwidth))
-> +
-> +#define SPX5_INST_WR_(val, iomem, id, tinst, tcnt,		\
-> +		      gbase, ginst, gcnt, gwidth,		\
-> +		      raddr, rinst, rcnt, rwidth)		\
-> +	writel(val, spx5_inst_addr(iomem,			\
-> +				   gbase, ginst, gcnt, gwidth,	\
-> +				   raddr, rinst, rcnt, rwidth))
-> +
-> +#define SPX5_RMW_(val, mask, sparx5, id, tinst, tcnt,			\
-> +		  gbase, ginst, gcnt, gwidth,				\
-> +		  raddr, rinst, rcnt, rwidth)				\
-> +	do {								\
-> +		u32 _v_;						\
-> +		u32 _m_ = mask;						\
-> +		void __iomem *addr =					\
-> +			spx5_addr((sparx5)->regs, id, tinst, tcnt,	\
-> +				  gbase, ginst, gcnt, gwidth,		\
-> +				  raddr, rinst, rcnt, rwidth);		\
-> +		_v_ = readl(addr);					\
-> +		_v_ = ((_v_ & ~(_m_)) | ((val) & (_m_)));		\
-> +		writel(_v_, addr);					\
-> +	} while (0)
-> +
-> +#define SPX5_INST_RMW_(val, mask, iomem, id, tinst, tcnt,		\
-> +		       gbase, ginst, gcnt, gwidth,			\
-> +		       raddr, rinst, rcnt, rwidth)			\
-> +	do {								\
-> +		u32 _v_;						\
-> +		u32 _m_ = mask;						\
-> +		void __iomem *addr =					\
-> +			spx5_inst_addr(iomem,				\
-> +				       gbase, ginst, gcnt, gwidth,	\
-> +				       raddr, rinst, rcnt, rwidth);	\
-> +		_v_ = readl(addr);					\
-> +		_v_ = ((_v_ & ~(_m_)) | ((val) & (_m_)));		\
-> +		writel(_v_, addr);					\
-> +	} while (0)
-> +
-> +#define SPX5_REG_RD_(regaddr)			\
-> +	readl(regaddr)
-> +
-> +#define SPX5_REG_WR_(val, regaddr)		\
-> +	writel(val, regaddr)
-> +
-> +#define SPX5_REG_RMW_(val, mask, regaddr)		    \
-> +	do {						    \
-> +		u32 _v_;                                    \
-> +		u32 _m_ = mask;				    \
-> +		void __iomem *_r_ = regaddr;		    \
-> +		_v_ = readl(_r_);			    \
-> +		_v_ = ((_v_ & ~(_m_)) | ((val) & (_m_)));   \
-> +		writel(_v_, _r_);			    \
-> +	} while (0)
-> +
-> +#define SPX5_REG_GET_(sparx5, id, tinst, tcnt,			\
-> +		      gbase, ginst, gcnt, gwidth,		\
-> +		      raddr, rinst, rcnt, rwidth)		\
-> +	spx5_addr((sparx5)->regs, id, tinst, tcnt,		\
-> +		  gbase, ginst, gcnt, gwidth,			\
-> +		  raddr, rinst, rcnt, rwidth)
-> +
-> +#define SPX5_RD(...)  SPX5_RD_(__VA_ARGS__)
-> +#define SPX5_WR(...)  SPX5_WR_(__VA_ARGS__)
-> +#define SPX5_RMW(...) SPX5_RMW_(__VA_ARGS__)
-> +#define SPX5_INST_RD(...) SPX5_INST_RD_(__VA_ARGS__)
-> +#define SPX5_INST_WR(...) SPX5_INST_WR_(__VA_ARGS__)
-> +#define SPX5_INST_RMW(...) SPX5_INST_RMW_(__VA_ARGS__)
-> +#define SPX5_INST_GET(sparx5, id, tinst) ((sparx5)->regs[(id) + (tinst)])
-> +#define SPX5_REG_RMW(...) SPX5_REG_RMW_(__VA_ARGS__)
-> +#define SPX5_REG_WR(...) SPX5_REG_WR_(__VA_ARGS__)
-> +#define SPX5_REG_RD(...) SPX5_REG_RD_(__VA_ARGS__)
-> +#define SPX5_REG_GET(...) SPX5_REG_GET_(__VA_ARGS__)
+On 11/28/20 11:37 PM, Ying Xue wrote:
+> On 11/25/20 12:20 PM, Randy Dunlap wrote:
+>>
+>> Question: is net/tipc/discover.c, in tipc_disc_delete() kernel-doc,
+>> what is the word "duest"?  Should it be changed?
+> 
+> The "duest" is a typo, and it should be "dest" defined as below:
+> struct tipc_discoverer {
+>         u32 bearer_id;
+>         struct tipc_media_addr dest; ===> "dest"
+>         struct net *net;
+>         u32 domain;
+>         int num_nodes;
+>         spinlock_t lock;
+>         struct sk_buff *skb;
+>         struct timer_list timer;
+>         unsigned long timer_intv;
+> };
+> 
 
-I don't see any reason for macro magic here. If this just left over
-from HAL code? Please turn this all into functions.
+Thanks. I'll take care of this one and your comments
+on patch #1.
 
-     Andrew
+-- 
+~Randy
 
