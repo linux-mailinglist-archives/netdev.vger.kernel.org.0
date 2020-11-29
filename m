@@ -2,98 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 410032C7B42
-	for <lists+netdev@lfdr.de>; Sun, 29 Nov 2020 21:59:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1694D2C7B4A
+	for <lists+netdev@lfdr.de>; Sun, 29 Nov 2020 22:08:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727457AbgK2U7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Nov 2020 15:59:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55772 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726293AbgK2U7i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Nov 2020 15:59:38 -0500
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76FB4C0613D2;
-        Sun, 29 Nov 2020 12:58:58 -0800 (PST)
-Received: by mail-io1-xd43.google.com with SMTP id j23so9783693iog.6;
-        Sun, 29 Nov 2020 12:58:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JSHVC83f9zQxL2ofrrqfIzwQKPtC6+odZmbyX4hFo0Q=;
-        b=Aw2v6owuj3vvapFlLLv+r6JrXHf/uZvq6rsxgA25XH6VSNSj1BaIA9hg+9N1iWLUbm
-         OqkJEc7OVpmNMAAT83FNmceMbsTrYCj/S674rq37GQFrqz+n9XWlwAeWaUmYkMt4LMo3
-         0O+JBNVJFGnKvSsA6Myvux8hluxcCuCynKNO15dOyKWQA/TPY3LF3u+/8uA1ARqJ/nMP
-         K9Yp4I51Nt2gUmUf24Tgh1DxNCn72cke81Be7TiI4ucDlyXvWUMP/EeY/sCbDEt12jLT
-         Pqd1pklpVQCscPw1gXz2u6ziqU3W84pWkY1Cj6fZoLPE02oOjzNtU04mGNxuQSMcR5j6
-         7Ykg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JSHVC83f9zQxL2ofrrqfIzwQKPtC6+odZmbyX4hFo0Q=;
-        b=pDpdmOo6CIM9Uc3llHHkQCtDFg8V76/0RlSwZyeTfMpw37wG+KQwD75yOpyqxX1qgf
-         idY45i50lxh6DLMmgM9L5YOE5Q7qZsrjPhspwBU4GJsqtvn5UogBddAmPKDOFmmnbaKi
-         4Eb+fAUiMa7hA0FtSvWsi7dHbjVKMMyxDKLzBh9dXcdPz3dAbTGbXW6Wj7acJnyjRyfz
-         3atiZIJyJNohhBlNf8gel9rsWzMbVXKChXnOPTQHonWZpWs9G3Jf3v2Ca7esFwGw0QI3
-         JUGZDoRptBREBHLo+NGRW4mp9qUAlvQ6LZ+QQMS7qlpTL+RNePiIPzIGKLZ8RXuLiwUW
-         zD+g==
-X-Gm-Message-State: AOAM530Kd9zZqcnb+WlGm/I30ulQmp5DTQ0LBWgVm5AewxQheGOt7YBE
-        GZWfArQddGiZxhVb1sTWU5Y=
-X-Google-Smtp-Source: ABdhPJxyXAEYjokf9NPONgKHW9p9mIJEGrj0AzUfPYIZmDE/YiXq1KnzKtX6gpvnAVTZBiQK8MfIZA==
-X-Received: by 2002:a5d:939a:: with SMTP id c26mr334702iol.63.1606683537789;
-        Sun, 29 Nov 2020 12:58:57 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:4896:3e20:e1a7:6425])
-        by smtp.googlemail.com with ESMTPSA id x23sm7276273ioh.28.2020.11.29.12.58.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 29 Nov 2020 12:58:57 -0800 (PST)
-Subject: Re: [PATCH v3 iproute2] bridge: add support for L2 multicast groups
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>, andrew@lunn.ch,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com, jiri@resnulli.us,
-        idosch@idosch.org
-References: <20201125143639.3587854-1-vladimir.oltean@nxp.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <5b4172c8-33a2-49d8-fd9f-17174242a384@gmail.com>
-Date:   Sun, 29 Nov 2020 13:58:56 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.5.0
+        id S1726701AbgK2VHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Nov 2020 16:07:33 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38990 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725882AbgK2VHc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 29 Nov 2020 16:07:32 -0500
+Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D6F7220757;
+        Sun, 29 Nov 2020 21:06:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606684012;
+        bh=Hl+Yto9GomcGVi/UwqRwnPVmA6LiDPHsQ53LHLdabm8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hN3AY0vwAvQ+nCH0zXWRe2bBjvNgGLJ8mlzqYvlqwZJNIELR2VYnbkMaYS8q+7x+1
+         WSSaYJIWITRQuA+NHH/9ZEBPXOl0CB9aPs3W15SPwkZ9h8XXNygjwzTJw4N6g+r3du
+         /cAVWRYjBGVNWQhn5WOW6iEWf0NAhbgDIfVyzNGs=
+Date:   Sun, 29 Nov 2020 16:06:50 -0500
+From:   Sasha Levin <sashal@kernel.org>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Mike Christie <michael.christie@oracle.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.9 22/33] vhost scsi: add lun parser helper
+Message-ID: <20201129210650.GP643756@sasha-vm>
+References: <20201125153550.810101-1-sashal@kernel.org>
+ <20201125153550.810101-22-sashal@kernel.org>
+ <25cd0d64-bffc-9506-c148-11583fed897c@redhat.com>
+ <20201125180102.GL643756@sasha-vm>
+ <9670064e-793f-561e-b032-75b1ab5c9096@redhat.com>
+ <20201129041314.GO643756@sasha-vm>
+ <7a4c3d84-8ff7-abd9-7340-3a6d7c65cfa7@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20201125143639.3587854-1-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7a4c3d84-8ff7-abd9-7340-3a6d7c65cfa7@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/25/20 7:36 AM, Vladimir Oltean wrote:
-> Extend the 'bridge mdb' command for the following syntax:
-> bridge mdb add dev br0 port swp0 grp 01:02:03:04:05:06 permanent
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
-> Changes in v3:
-> - Using rt_addr_n2a_r instead of inet_ntop/ll_addr_n2a directly.
-> - Updated the bridge manpage.
-> 
-> Changes in v2:
-> - Removed the const void casts.
-> - Removed MDB_FLAGS_L2 from the UAPI to be in sync with the latest
->   kernel patch:
->   https://patchwork.ozlabs.org/project/netdev/patch/20201028233831.610076-1-vladimir.oltean@nxp.com/
-> 
->  bridge/mdb.c                   | 54 ++++++++++++++++++++++++++--------
->  include/uapi/linux/if_bridge.h |  1 +
->  man/man8/bridge.8              |  8 ++---
->  3 files changed, 46 insertions(+), 17 deletions(-)
-> 
+On Sun, Nov 29, 2020 at 06:34:01PM +0100, Paolo Bonzini wrote:
+>On 29/11/20 05:13, Sasha Levin wrote:
+>>>Which doesn't seem to be suitable for stable either...  Patch 3/5 
+>>>in
+>>
+>>Why not? It was sent as a fix to Linus.
+>
+>Dunno, 120 lines of new code?  Even if it's okay for an rc, I don't 
+>see why it is would be backported to stable releases and release it 
+>without any kind of testing.  Maybe for 5.9 the chances of breaking 
 
-applied to iproute2-next
+Lines of code is not everything. If you think that this needs additional
+testing then that's fine and we can drop it, but not picking up a fix
+just because it's 120 lines is not something we'd do.
 
+>things are low, but stuff like locking rules might have changed since 
+>older releases like 5.4 or 4.19.  The autoselection bot does not know 
+>that, it basically crosses fingers that these larger-scale changes 
+>cause the patches not to apply or compile anymore.
+
+Plus all the testing we have for the stable trees, yes. It goes beyond
+just compiling at this point.
+
+Your very own co-workers (https://cki-project.org/) are pushing hard on
+this effort around stable kernel testing, and statements like these
+aren't helping anyone.
+
+If on the other hand, you'd like to see specific KVM/virtio/etc tests as
+part of the stable release process, we should all work together to make
+sure they're included in the current test suite.
+
+>Maybe it's just me, but the whole "autoselect stable patches" and 
+>release them is very suspicious.  You are basically crossing fingers 
+
+Historically autoselected patches were later fixed/reverted at a lower
+ratio than patches tagged with a stable tag. I *think* that it's because
+they get a longer review cycle than some of the stable tagged patches.
+
+>and are ready to release any kind of untested crap, because you do not 
+>trust maintainers of marking stable patches right.  Only then, when a 
+
+It's not that I don't trust - some folks forget, or not realize that
+something should go in stable. We're all humans. This is to complement
+the work done by maintainers, not replace it.
+
+>backport is broken, it's maintainers who get the blame and have to fix 
+>it.
+
+What blame? Who's blaming who?
+
+>Personally I don't care because I have asked you to opt KVM out of 
+>autoselection, but this is the opposite of what Greg brags about when 
+>he touts the virtues of the upstream stable process over vendor 
+>kernels.
+
+What, that we try and include all fixes rather than the ones I'm paid to
+pick up?
+
+If you have a vendor you pay $$$ to, then yes - you're probably better
+off with a vendor kernel. This is actually in line (I think) with Greg's
+views on this
+(http://kroah.com/log/blog/2018/08/24/what-stable-kernel-should-i-use/).
+
+-- 
+Thanks,
+Sasha
