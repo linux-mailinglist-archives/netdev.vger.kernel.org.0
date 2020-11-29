@@ -2,111 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AC3F2C7A4B
-	for <lists+netdev@lfdr.de>; Sun, 29 Nov 2020 18:34:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73AA52C7A53
+	for <lists+netdev@lfdr.de>; Sun, 29 Nov 2020 18:36:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727879AbgK2Rd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Nov 2020 12:33:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52398 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725830AbgK2Rd5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Nov 2020 12:33:57 -0500
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3BA5C0613CF;
-        Sun, 29 Nov 2020 09:33:16 -0800 (PST)
-Received: by mail-lf1-x143.google.com with SMTP id d8so15969069lfa.1;
-        Sun, 29 Nov 2020 09:33:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Z9Ivd228KRGNiM4oNPEXV7qZkA2p1Ts+zhGyYk+f14Q=;
-        b=u2MYvRT0eQe0r0Wowe9wkWT+K7QQR+2NqAKvauTfrEaC1xlduUKrJmlDxadn82NKm2
-         59HoTTBShi0p9cqRwuYHOewT4WDJI/o5uv6hF8e6WSDhXv9c7Qq8NPmk4C9UBLTuHuyK
-         scXPFyo98AhNixof4TiTIAGgTS6I0pl3WgyH+gkj2IiZ3ygRY3r5NScWrug9frxqj6nz
-         +xiJ+HVn7+qIz2+oo+1uhZtR7gsMO/WhHuck/WkSnY0YtdxMOi5hIvJrzyoU1r2ILMtS
-         OJVYOkL4XFGLrM7nkeQvRpmemWT+IAole/af3QncqRfCe7tJjafohpH9HvgkfK8l3Fgj
-         f3BA==
+        id S1728511AbgK2Rfg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Nov 2020 12:35:36 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:36270 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728469AbgK2Rff (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Nov 2020 12:35:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606671248;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Baf2YabTsa2IfZZmu8SPbdZascUUB96+ibE6qUCU1Gc=;
+        b=OcFNQ8Q0Cd66CIJO+fd/hzSsFKTxj7yn/w3Ki3tEzQXczI7jT73cO1CXLE5JNvmZ6rIYTg
+        5xB1fMDsU+CaTUd1QWtapL2wFrZxQMyCHbDnZBumLxmXlKbuF2MNI1RdsfX2011faP474+
+        AivSLGSkSnZLMDee2sHzRNovMaRYFOs=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-438-rbg69PREOPSzTD5hi4jY7g-1; Sun, 29 Nov 2020 12:34:06 -0500
+X-MC-Unique: rbg69PREOPSzTD5hi4jY7g-1
+Received: by mail-wr1-f70.google.com with SMTP id w17so6976961wrl.8
+        for <netdev@vger.kernel.org>; Sun, 29 Nov 2020 09:34:06 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Z9Ivd228KRGNiM4oNPEXV7qZkA2p1Ts+zhGyYk+f14Q=;
-        b=G6TeQ6zMuzo+rn5y/vBfxMSP8gei+6UrDrdJVJoBj1yzc5I7yWL+BPbmBie7dcjc1P
-         cluaLMUG7G93VvK0LRjwy2TxUEo6gOYXh3dNFkX/V6PLbeJ+1VandF2gVLj961A18AV8
-         MqmQ9RmQENAwfeGtSH9o6p2Xg03/oRkAR38qy2wpRLjd+Hm4+jpKaw5dH/RErnc9nf1g
-         RjOecJ2aUa6jI8CtLM1L5Vj0yVQzhEVa7USOucvmZjT8Hw3pMBLSksn2FP0JB0kTx/TK
-         Uywm7ekui+jU/zhx0G8/W6Hv9gLDn7DmJt0IKg70QSIZc2EvhLmUjsJ5a5MDMyE3Yo9N
-         uJxQ==
-X-Gm-Message-State: AOAM532jCzXGRRQWBzH91ry5MqtMiq9ILVD/9Is2THD2VpBMQn124rP+
-        wEEA4663FU3STl6UjhGjbfHYCRMGcp0eVAMUJuU=
-X-Google-Smtp-Source: ABdhPJx3xjRMpnuQ78Qyi7pGaPhJWAnK7tU0l38c6yYDB/D1JMGCLLB2e63BF4sSIUjRipae8ui+mx0IZ7rTclbLcn8=
-X-Received: by 2002:a19:8048:: with SMTP id b69mr6868103lfd.263.1606671195181;
- Sun, 29 Nov 2020 09:33:15 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Baf2YabTsa2IfZZmu8SPbdZascUUB96+ibE6qUCU1Gc=;
+        b=V0D1u4t1fS8TYmW5zRMlpHtGI5eVSiZeGZEI/EKFWCeqDegoj5RLUC6NPURFyHOKDS
+         vrVwVvIpr9T2pTAilOJtQKNOFaeQdjTk9LQ8Hse2uPjehs/jjFHfUVCzdXKbDIQ6oOmB
+         /6g4/fiGtBdhMg327Ajvb1BIPBoSWUNEDC3ZPZv3x3XLF2CzkhTUaUjomXTytFr03OHj
+         p9OJHspiBM0VGpEgDhicKQKWKIFfAzIgjCZAXXBGZMUG/GfZJKZxgA/pTvlekEMY4N4E
+         NmDSdHgUExRUQupacjcKv8JJG5SLsQiYA15lHW2XoavcaEhXEqkeV74ZDeW0ZgFsppV+
+         BNGQ==
+X-Gm-Message-State: AOAM533G2miaY/lIAvlXX+nRnT/v9VsOrtV9eyuL5ROnkg/U4TuCmSeY
+        CQYLu82g+Fg/Zl3XIcrCkG7ex/BhWkeeiL7leRINbNnAyQ1I6szBdwp/z9yU1pUJjTbHL387EZt
+        EJwPjpPq7BhlJG0ad1RV0NZKNtY1+eE7nKP0JrMQVCbSEG1xtaCvhF31ESX5Q0ppY+wml
+X-Received: by 2002:a1c:4d0a:: with SMTP id o10mr19426275wmh.107.1606671245327;
+        Sun, 29 Nov 2020 09:34:05 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy21n5+1MquKPMw6OBo6U5LqUAw3wOmx072b/JbOC0N0bjRNE96mnvZ3UYX3LcDBBupYSjL2g==
+X-Received: by 2002:a1c:4d0a:: with SMTP id o10mr19426239wmh.107.1606671244962;
+        Sun, 29 Nov 2020 09:34:04 -0800 (PST)
+Received: from ?IPv6:2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e? ([2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e])
+        by smtp.gmail.com with ESMTPSA id m4sm4842595wmi.41.2020.11.29.09.34.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 29 Nov 2020 09:34:04 -0800 (PST)
+Subject: Re: [PATCH AUTOSEL 5.9 22/33] vhost scsi: add lun parser helper
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Mike Christie <michael.christie@oracle.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20201125153550.810101-1-sashal@kernel.org>
+ <20201125153550.810101-22-sashal@kernel.org>
+ <25cd0d64-bffc-9506-c148-11583fed897c@redhat.com>
+ <20201125180102.GL643756@sasha-vm>
+ <9670064e-793f-561e-b032-75b1ab5c9096@redhat.com>
+ <20201129041314.GO643756@sasha-vm>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+Message-ID: <7a4c3d84-8ff7-abd9-7340-3a6d7c65cfa7@redhat.com>
+Date:   Sun, 29 Nov 2020 18:34:01 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-References: <20201023033855.3894509-1-haliu@redhat.com> <20201128221635.63fdcf69@hermes.local>
-In-Reply-To: <20201128221635.63fdcf69@hermes.local>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sun, 29 Nov 2020 09:33:03 -0800
-Message-ID: <CAADnVQKgBudBhB2JSgd+5ZRFqLVrHiVRMMPyksL_Q9prouZ0ig@mail.gmail.com>
-Subject: Re: [PATCH iproute2-next 0/5] iproute2: add libbpf support
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Hangbin Liu <haliu@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Ahern <dsahern@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Jiri Benc <jbenc@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201129041314.GO643756@sasha-vm>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 28, 2020 at 10:16 PM Stephen Hemminger
-<stephen@networkplumber.org> wrote:
->
-> On Fri, 23 Oct 2020 11:38:50 +0800
-> Hangbin Liu <haliu@redhat.com> wrote:
->
-> > This series converts iproute2 to use libbpf for loading and attaching
-> > BPF programs when it is available. This means that iproute2 will
-> > correctly process BTF information and support the new-style BTF-defined
-> > maps, while keeping compatibility with the old internal map definition
-> > syntax.
-> >
-> > This is achieved by checking for libbpf at './configure' time, and using
-> > it if available. By default the system libbpf will be used, but static
-> > linking against a custom libbpf version can be achieved by passing
-> > LIBBPF_DIR to configure. FORCE_LIBBPF can be set to force configure to
-> > abort if no suitable libbpf is found (useful for automatic packaging
-> > that wants to enforce the dependency).
-> >
-> > The old iproute2 bpf code is kept and will be used if no suitable libbpf
-> > is available. When using libbpf, wrapper code ensures that iproute2 will
-> > still understand the old map definition format, including populating
-> > map-in-map and tail call maps before load.
-> >
-> > The examples in bpf/examples are kept, and a separate set of examples
-> > are added with BTF-based map definitions for those examples where this
-> > is possible (libbpf doesn't currently support declaratively populating
-> > tail call maps).
->
->
-> Luca wants to put this in Debian 11 (good idea), but that means:
->
-> 1. It has to work with 5.10 release and kernel.
-> 2. Someone has to test it.
-> 3. The 5.10 is a LTS kernel release which means BPF developers have
->    to agree to supporting LTS releases.
+On 29/11/20 05:13, Sasha Levin wrote:
+>> Which doesn't seem to be suitable for stable either...  Patch 3/5 in 
+> 
+> Why not? It was sent as a fix to Linus.
 
-That must be a bad joke.
-You did the opposite of what we asked.
-You folks are on your own.
-5.10, 5.11 whatever release. When angry users come with questions
-about random behavior you'll be answering them. Not us.
+Dunno, 120 lines of new code?  Even if it's okay for an rc, I don't see 
+why it is would be backported to stable releases and release it without 
+any kind of testing.  Maybe for 5.9 the chances of breaking things are 
+low, but stuff like locking rules might have changed since older 
+releases like 5.4 or 4.19.  The autoselection bot does not know that, it 
+basically crosses fingers that these larger-scale changes cause the 
+patches not to apply or compile anymore.
+
+Maybe it's just me, but the whole "autoselect stable patches" and 
+release them is very suspicious.  You are basically crossing fingers and 
+are ready to release any kind of untested crap, because you do not trust 
+maintainers of marking stable patches right.  Only then, when a backport 
+is broken, it's maintainers who get the blame and have to fix it.
+
+Personally I don't care because I have asked you to opt KVM out of 
+autoselection, but this is the opposite of what Greg brags about when he 
+touts the virtues of the upstream stable process over vendor kernels.
+
+Paolo
+
+>> the series might be (vhost scsi: fix cmd completion race), so I can 
+>> understand including 1/5 and 2/5 just in case, but not the rest.  Does 
+>> the bot not understand diffstats?
+> 
+> Not on their own, no. What's wrong with the diffstats?
+> 
+
