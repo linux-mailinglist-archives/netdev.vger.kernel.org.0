@@ -2,99 +2,317 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC9312C7B58
-	for <lists+netdev@lfdr.de>; Sun, 29 Nov 2020 22:17:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF7952C7B5C
+	for <lists+netdev@lfdr.de>; Sun, 29 Nov 2020 22:22:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727695AbgK2VQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Nov 2020 16:16:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726344AbgK2VQd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Nov 2020 16:16:33 -0500
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8698FC0613D2
-        for <netdev@vger.kernel.org>; Sun, 29 Nov 2020 13:15:53 -0800 (PST)
-Received: by mail-il1-x143.google.com with SMTP id f5so9432392ilj.9
-        for <netdev@vger.kernel.org>; Sun, 29 Nov 2020 13:15:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=Fa8gQLX4dGJGce7a+u4pwmf5Fr+zChMR4eyBDSsglaU=;
-        b=lIHGi/eBrmqDYaRauBPIF+sJ3gwdAmTpoRZ8dDZnBrYnMEp5w618+HOe/Kg+H1vj1r
-         FjetC1h/USELsIT571HZY9tOm7k2CA2iBYHkG1UQncTwdsknVpazFCwFukcPumT0aWK1
-         5VIVcaC/u5Kp1BDzg2xohFkGlZv/UHiH7I3OomfqzAA1ZkBJ/JELvHLTBAkdC1fMc78R
-         pVWFGtbEEdk5pGVY8FswEW17PiVDiG23FSUwjywz/r3Y5RvyuQUQo9M4PEna/crIktbp
-         u4hcq6B24X1AXOhCeKPWnudDaFySp5pcqhf7cEt6ielFQXkTStlzFfGUhD4J3rjIrZty
-         n+hw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Fa8gQLX4dGJGce7a+u4pwmf5Fr+zChMR4eyBDSsglaU=;
-        b=J1IUPrwvSZX5xOfCATdtX5hiyGC+vxpdVLmxVfeOaptjI1GW5/nUGtaxc/myYys9Cb
-         YgoQXWBcCA/MFnutGOqdwfQ77yQZ+kjEuSpGH6vsHFEKA3VGhvI91CS9T7gDkbEP34ld
-         t3US2Jmk76umuhbF601YxRRQg7MWHfrvcplrF1BMgldAAa7i5BKbDeTw6RhvVKH8WyeG
-         CkseGBmQlkVURCXHO5YQEB1c0QtKRKNqh8c4SK27RHxmN5TTNwl6u9xezsqZJf+5Zmvd
-         Q3abIS1Srjy4Vb2IsxRLKCfWMb3F67DsN+tfqeYXSPFaB0/pvTCu8U8tuFeVGdHjJ1cf
-         Kn/Q==
-X-Gm-Message-State: AOAM531p37dT9c1MKk1IU0HajV5wgGWwFq1tYhfyIb34eNcyLXle7GHQ
-        mdTk0Bx++ooWWqqUNFLQUZMj2fQIu0U=
-X-Google-Smtp-Source: ABdhPJwt1LCvSiCM1fVpCQR4ObsKPxoLxyKMEc96C7EUMxTCiHP0wVgxSHfrCZ5axW6j27zfQGrfew==
-X-Received: by 2002:a92:aacd:: with SMTP id p74mr15912360ill.273.1606684552903;
-        Sun, 29 Nov 2020 13:15:52 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:4896:3e20:e1a7:6425])
-        by smtp.googlemail.com with ESMTPSA id q11sm3217380iop.41.2020.11.29.13.15.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 29 Nov 2020 13:15:52 -0800 (PST)
-Subject: Re: [PATCH iproute2-net 2/3] devlink: Add pr_out_dev() helper
- function
-To:     Moshe Shemesh <moshe@mellanox.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
-        netdev@vger.kernel.org
-References: <1606389296-3906-1-git-send-email-moshe@mellanox.com>
- <1606389296-3906-3-git-send-email-moshe@mellanox.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <f44cc093-2199-7e94-561a-a9450511293a@gmail.com>
-Date:   Sun, 29 Nov 2020 14:15:51 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.5.0
+        id S1728462AbgK2VTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Nov 2020 16:19:23 -0500
+Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:25464 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728287AbgK2VTW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Nov 2020 16:19:22 -0500
+Received: from localhost.localdomain ([81.185.174.0])
+        by mwinf5d27 with ME
+        id yMHZ2300B00t0l503MHa4m; Sun, 29 Nov 2020 22:17:37 +0100
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sun, 29 Nov 2020 22:17:37 +0100
+X-ME-IP: 81.185.174.0
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     jiri@nvidia.com, idosch@nvidia.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] mlxsw: switch from 'pci_' to 'dma_' API
+Date:   Sun, 29 Nov 2020 22:17:33 +0100
+Message-Id: <20201129211733.2913-1-christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-In-Reply-To: <1606389296-3906-3-git-send-email-moshe@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/26/20 4:14 AM, Moshe Shemesh wrote:
-> diff --git a/devlink/devlink.c b/devlink/devlink.c
-> index a9ba0072..bd588869 100644
-> --- a/devlink/devlink.c
-> +++ b/devlink/devlink.c
-> @@ -2974,17 +2974,11 @@ static int cmd_dev_param(struct dl *dl)
->  	pr_err("Command \"%s\" not found\n", dl_argv(dl));
->  	return -ENOENT;
->  }
-> -static int cmd_dev_show_cb(const struct nlmsghdr *nlh, void *data)
-> +
-> +static void pr_out_dev(struct dl *dl, struct nlattr **tb)
+he wrappers in include/linux/pci-dma-compat.h should go away.
 
-why 'pr_out_dev'? there is no 'dev' argument.
+The patch has been generated with the coccinelle script below and has been
+hand modified to replace GFP_ with a correct flag.
+It has been compile tested.
 
->  {
-> -	struct dl *dl = data;
-> -	struct nlattr *tb[DEVLINK_ATTR_MAX + 1] = {};
-> -	struct genlmsghdr *genl = mnl_nlmsg_get_payload(nlh);
->  	uint8_t reload_failed = 0;
->  
-> -	mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
-> -	if (!tb[DEVLINK_ATTR_BUS_NAME] || !tb[DEVLINK_ATTR_DEV_NAME])
-> -		return MNL_CB_ERROR;
-> -
->  	if (tb[DEVLINK_ATTR_RELOAD_FAILED])
->  		reload_failed = mnl_attr_get_u8(tb[DEVLINK_ATTR_RELOAD_FAILED]);
->  
+When memory is allocated in 'mlxsw_pci_queue_init()' and
+'mlxsw_pci_fw_area_init()' GFP_KERNEL can be used because this flag is
+already used in the same function.
+
+When memory is allocated in 'mlxsw_pci_mbox_alloc()' GFP_KERNEL can be
+used because it is only called from a probe function. The call chain is:
+  --> mlxsw_pci_probe
+    --> mlxsw_pci_cmd_init
+      --> mlxsw_pci_mbox_alloc
+
+@@
+@@
+-    PCI_DMA_BIDIRECTIONAL
++    DMA_BIDIRECTIONAL
+
+@@
+@@
+-    PCI_DMA_TODEVICE
++    DMA_TO_DEVICE
+
+@@
+@@
+-    PCI_DMA_FROMDEVICE
++    DMA_FROM_DEVICE
+
+@@
+@@
+-    PCI_DMA_NONE
++    DMA_NONE
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_alloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_zalloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_free_consistent(e1, e2, e3, e4)
++    dma_free_coherent(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_single(e1, e2, e3, e4)
++    dma_map_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_single(e1, e2, e3, e4)
++    dma_unmap_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4, e5;
+@@
+-    pci_map_page(e1, e2, e3, e4, e5)
++    dma_map_page(&e1->dev, e2, e3, e4, e5)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_page(e1, e2, e3, e4)
++    dma_unmap_page(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_sg(e1, e2, e3, e4)
++    dma_map_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_sg(e1, e2, e3, e4)
++    dma_unmap_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
++    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_device(e1, e2, e3, e4)
++    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
++    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
++    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2;
+@@
+-    pci_dma_mapping_error(e1, e2)
++    dma_mapping_error(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_dma_mask(e1, e2)
++    dma_set_mask(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_consistent_dma_mask(e1, e2)
++    dma_set_coherent_mask(&e1->dev, e2)
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+---
+ drivers/net/ethernet/mellanox/mlxsw/pci.c | 52 +++++++++++------------
+ 1 file changed, 26 insertions(+), 26 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+index 641cdd81882b..7519d3b6934e 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+@@ -323,8 +323,8 @@ static int mlxsw_pci_wqe_frag_map(struct mlxsw_pci *mlxsw_pci, char *wqe,
+ 	struct pci_dev *pdev = mlxsw_pci->pdev;
+ 	dma_addr_t mapaddr;
+ 
+-	mapaddr = pci_map_single(pdev, frag_data, frag_len, direction);
+-	if (unlikely(pci_dma_mapping_error(pdev, mapaddr))) {
++	mapaddr = dma_map_single(&pdev->dev, frag_data, frag_len, direction);
++	if (unlikely(dma_mapping_error(&pdev->dev, mapaddr))) {
+ 		dev_err_ratelimited(&pdev->dev, "failed to dma map tx frag\n");
+ 		return -EIO;
+ 	}
+@@ -342,7 +342,7 @@ static void mlxsw_pci_wqe_frag_unmap(struct mlxsw_pci *mlxsw_pci, char *wqe,
+ 
+ 	if (!frag_len)
+ 		return;
+-	pci_unmap_single(pdev, mapaddr, frag_len, direction);
++	dma_unmap_single(&pdev->dev, mapaddr, frag_len, direction);
+ }
+ 
+ static int mlxsw_pci_rdq_skb_alloc(struct mlxsw_pci *mlxsw_pci,
+@@ -858,9 +858,9 @@ static int mlxsw_pci_queue_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
+ 		tasklet_setup(&q->tasklet, q_ops->tasklet);
+ 
+ 	mem_item->size = MLXSW_PCI_AQ_SIZE;
+-	mem_item->buf = pci_alloc_consistent(mlxsw_pci->pdev,
+-					     mem_item->size,
+-					     &mem_item->mapaddr);
++	mem_item->buf = dma_alloc_coherent(&mlxsw_pci->pdev->dev,
++					   mem_item->size, &mem_item->mapaddr,
++					   GFP_KERNEL);
+ 	if (!mem_item->buf)
+ 		return -ENOMEM;
+ 
+@@ -890,8 +890,8 @@ static int mlxsw_pci_queue_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
+ err_q_ops_init:
+ 	kfree(q->elem_info);
+ err_elem_info_alloc:
+-	pci_free_consistent(mlxsw_pci->pdev, mem_item->size,
+-			    mem_item->buf, mem_item->mapaddr);
++	dma_free_coherent(&mlxsw_pci->pdev->dev, mem_item->size,
++			  mem_item->buf, mem_item->mapaddr);
+ 	return err;
+ }
+ 
+@@ -903,8 +903,8 @@ static void mlxsw_pci_queue_fini(struct mlxsw_pci *mlxsw_pci,
+ 
+ 	q_ops->fini(mlxsw_pci, q);
+ 	kfree(q->elem_info);
+-	pci_free_consistent(mlxsw_pci->pdev, mem_item->size,
+-			    mem_item->buf, mem_item->mapaddr);
++	dma_free_coherent(&mlxsw_pci->pdev->dev, mem_item->size,
++			  mem_item->buf, mem_item->mapaddr);
+ }
+ 
+ static int mlxsw_pci_queue_group_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
+@@ -1242,9 +1242,9 @@ static int mlxsw_pci_fw_area_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
+ 		mem_item = &mlxsw_pci->fw_area.items[i];
+ 
+ 		mem_item->size = MLXSW_PCI_PAGE_SIZE;
+-		mem_item->buf = pci_alloc_consistent(mlxsw_pci->pdev,
+-						     mem_item->size,
+-						     &mem_item->mapaddr);
++		mem_item->buf = dma_alloc_coherent(&mlxsw_pci->pdev->dev,
++						   mem_item->size,
++						   &mem_item->mapaddr, GFP_KERNEL);
+ 		if (!mem_item->buf) {
+ 			err = -ENOMEM;
+ 			goto err_alloc;
+@@ -1273,8 +1273,8 @@ static int mlxsw_pci_fw_area_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
+ 	for (i--; i >= 0; i--) {
+ 		mem_item = &mlxsw_pci->fw_area.items[i];
+ 
+-		pci_free_consistent(mlxsw_pci->pdev, mem_item->size,
+-				    mem_item->buf, mem_item->mapaddr);
++		dma_free_coherent(&mlxsw_pci->pdev->dev, mem_item->size,
++				  mem_item->buf, mem_item->mapaddr);
+ 	}
+ 	kfree(mlxsw_pci->fw_area.items);
+ 	return err;
+@@ -1290,8 +1290,8 @@ static void mlxsw_pci_fw_area_fini(struct mlxsw_pci *mlxsw_pci)
+ 	for (i = 0; i < mlxsw_pci->fw_area.count; i++) {
+ 		mem_item = &mlxsw_pci->fw_area.items[i];
+ 
+-		pci_free_consistent(mlxsw_pci->pdev, mem_item->size,
+-				    mem_item->buf, mem_item->mapaddr);
++		dma_free_coherent(&mlxsw_pci->pdev->dev, mem_item->size,
++				  mem_item->buf, mem_item->mapaddr);
+ 	}
+ 	kfree(mlxsw_pci->fw_area.items);
+ }
+@@ -1316,8 +1316,8 @@ static int mlxsw_pci_mbox_alloc(struct mlxsw_pci *mlxsw_pci,
+ 	int err = 0;
+ 
+ 	mbox->size = MLXSW_CMD_MBOX_SIZE;
+-	mbox->buf = pci_alloc_consistent(pdev, MLXSW_CMD_MBOX_SIZE,
+-					 &mbox->mapaddr);
++	mbox->buf = dma_alloc_coherent(&pdev->dev, MLXSW_CMD_MBOX_SIZE,
++				       &mbox->mapaddr, GFP_KERNEL);
+ 	if (!mbox->buf) {
+ 		dev_err(&pdev->dev, "Failed allocating memory for mailbox\n");
+ 		err = -ENOMEM;
+@@ -1331,8 +1331,8 @@ static void mlxsw_pci_mbox_free(struct mlxsw_pci *mlxsw_pci,
+ {
+ 	struct pci_dev *pdev = mlxsw_pci->pdev;
+ 
+-	pci_free_consistent(pdev, MLXSW_CMD_MBOX_SIZE, mbox->buf,
+-			    mbox->mapaddr);
++	dma_free_coherent(&pdev->dev, MLXSW_CMD_MBOX_SIZE, mbox->buf,
++			  mbox->mapaddr);
+ }
+ 
+ static int mlxsw_pci_sys_ready_wait(struct mlxsw_pci *mlxsw_pci,
+@@ -1817,17 +1817,17 @@ static int mlxsw_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 		goto err_pci_request_regions;
+ 	}
+ 
+-	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
++	err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64));
+ 	if (!err) {
+-		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
++		err = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64));
+ 		if (err) {
+-			dev_err(&pdev->dev, "pci_set_consistent_dma_mask failed\n");
++			dev_err(&pdev->dev, "dma_set_coherent_mask failed\n");
+ 			goto err_pci_set_dma_mask;
+ 		}
+ 	} else {
+-		err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
++		err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+ 		if (err) {
+-			dev_err(&pdev->dev, "pci_set_dma_mask failed\n");
++			dev_err(&pdev->dev, "dma_set_mask failed\n");
+ 			goto err_pci_set_dma_mask;
+ 		}
+ 	}
+-- 
+2.27.0
+
