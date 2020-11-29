@@ -2,118 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3C4E2C7A47
-	for <lists+netdev@lfdr.de>; Sun, 29 Nov 2020 18:34:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AC3F2C7A4B
+	for <lists+netdev@lfdr.de>; Sun, 29 Nov 2020 18:34:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728015AbgK2ReI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Nov 2020 12:34:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52432 "EHLO
+        id S1727879AbgK2Rd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Nov 2020 12:33:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725830AbgK2ReH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Nov 2020 12:34:07 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB62C0613D3
-        for <netdev@vger.kernel.org>; Sun, 29 Nov 2020 09:33:27 -0800 (PST)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1kjQYS-0006zE-4U; Sun, 29 Nov 2020 18:32:08 +0100
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1kjQYH-0003Mg-0E; Sun, 29 Nov 2020 18:31:57 +0100
-Date:   Sun, 29 Nov 2020 18:31:53 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Takashi Iwai <tiwai@suse.de>, Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Geoff Levand <geoff@infradead.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, Jens Axboe <axboe@kernel.dk>,
-        Jim Paris <jim@jtan.com>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org, alsa-devel@alsa-project.org,
-        linux-block@vger.kernel.org, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
-Subject: Re: [PATCH 2/2] powerpc/ps3: make system bus's remove and shutdown
- callbacks return void
-Message-ID: <20201129173153.jbt3epcxnasbemir@pengutronix.de>
-References: <20201126165950.2554997-1-u.kleine-koenig@pengutronix.de>
- <20201126165950.2554997-2-u.kleine-koenig@pengutronix.de>
- <s5hv9dphnoh.wl-tiwai@suse.de>
+        with ESMTP id S1725830AbgK2Rd5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Nov 2020 12:33:57 -0500
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3BA5C0613CF;
+        Sun, 29 Nov 2020 09:33:16 -0800 (PST)
+Received: by mail-lf1-x143.google.com with SMTP id d8so15969069lfa.1;
+        Sun, 29 Nov 2020 09:33:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Z9Ivd228KRGNiM4oNPEXV7qZkA2p1Ts+zhGyYk+f14Q=;
+        b=u2MYvRT0eQe0r0Wowe9wkWT+K7QQR+2NqAKvauTfrEaC1xlduUKrJmlDxadn82NKm2
+         59HoTTBShi0p9cqRwuYHOewT4WDJI/o5uv6hF8e6WSDhXv9c7Qq8NPmk4C9UBLTuHuyK
+         scXPFyo98AhNixof4TiTIAGgTS6I0pl3WgyH+gkj2IiZ3ygRY3r5NScWrug9frxqj6nz
+         +xiJ+HVn7+qIz2+oo+1uhZtR7gsMO/WhHuck/WkSnY0YtdxMOi5hIvJrzyoU1r2ILMtS
+         OJVYOkL4XFGLrM7nkeQvRpmemWT+IAole/af3QncqRfCe7tJjafohpH9HvgkfK8l3Fgj
+         f3BA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Z9Ivd228KRGNiM4oNPEXV7qZkA2p1Ts+zhGyYk+f14Q=;
+        b=G6TeQ6zMuzo+rn5y/vBfxMSP8gei+6UrDrdJVJoBj1yzc5I7yWL+BPbmBie7dcjc1P
+         cluaLMUG7G93VvK0LRjwy2TxUEo6gOYXh3dNFkX/V6PLbeJ+1VandF2gVLj961A18AV8
+         MqmQ9RmQENAwfeGtSH9o6p2Xg03/oRkAR38qy2wpRLjd+Hm4+jpKaw5dH/RErnc9nf1g
+         RjOecJ2aUa6jI8CtLM1L5Vj0yVQzhEVa7USOucvmZjT8Hw3pMBLSksn2FP0JB0kTx/TK
+         Uywm7ekui+jU/zhx0G8/W6Hv9gLDn7DmJt0IKg70QSIZc2EvhLmUjsJ5a5MDMyE3Yo9N
+         uJxQ==
+X-Gm-Message-State: AOAM532jCzXGRRQWBzH91ry5MqtMiq9ILVD/9Is2THD2VpBMQn124rP+
+        wEEA4663FU3STl6UjhGjbfHYCRMGcp0eVAMUJuU=
+X-Google-Smtp-Source: ABdhPJx3xjRMpnuQ78Qyi7pGaPhJWAnK7tU0l38c6yYDB/D1JMGCLLB2e63BF4sSIUjRipae8ui+mx0IZ7rTclbLcn8=
+X-Received: by 2002:a19:8048:: with SMTP id b69mr6868103lfd.263.1606671195181;
+ Sun, 29 Nov 2020 09:33:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="q5fwi2prasbljs5f"
-Content-Disposition: inline
-In-Reply-To: <s5hv9dphnoh.wl-tiwai@suse.de>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20201023033855.3894509-1-haliu@redhat.com> <20201128221635.63fdcf69@hermes.local>
+In-Reply-To: <20201128221635.63fdcf69@hermes.local>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sun, 29 Nov 2020 09:33:03 -0800
+Message-ID: <CAADnVQKgBudBhB2JSgd+5ZRFqLVrHiVRMMPyksL_Q9prouZ0ig@mail.gmail.com>
+Subject: Re: [PATCH iproute2-next 0/5] iproute2: add libbpf support
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Hangbin Liu <haliu@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Ahern <dsahern@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Jiri Benc <jbenc@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Nov 28, 2020 at 10:16 PM Stephen Hemminger
+<stephen@networkplumber.org> wrote:
+>
+> On Fri, 23 Oct 2020 11:38:50 +0800
+> Hangbin Liu <haliu@redhat.com> wrote:
+>
+> > This series converts iproute2 to use libbpf for loading and attaching
+> > BPF programs when it is available. This means that iproute2 will
+> > correctly process BTF information and support the new-style BTF-defined
+> > maps, while keeping compatibility with the old internal map definition
+> > syntax.
+> >
+> > This is achieved by checking for libbpf at './configure' time, and using
+> > it if available. By default the system libbpf will be used, but static
+> > linking against a custom libbpf version can be achieved by passing
+> > LIBBPF_DIR to configure. FORCE_LIBBPF can be set to force configure to
+> > abort if no suitable libbpf is found (useful for automatic packaging
+> > that wants to enforce the dependency).
+> >
+> > The old iproute2 bpf code is kept and will be used if no suitable libbpf
+> > is available. When using libbpf, wrapper code ensures that iproute2 will
+> > still understand the old map definition format, including populating
+> > map-in-map and tail call maps before load.
+> >
+> > The examples in bpf/examples are kept, and a separate set of examples
+> > are added with BTF-based map definitions for those examples where this
+> > is possible (libbpf doesn't currently support declaratively populating
+> > tail call maps).
+>
+>
+> Luca wants to put this in Debian 11 (good idea), but that means:
+>
+> 1. It has to work with 5.10 release and kernel.
+> 2. Someone has to test it.
+> 3. The 5.10 is a LTS kernel release which means BPF developers have
+>    to agree to supporting LTS releases.
 
---q5fwi2prasbljs5f
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hello Michael,
-
-On Sat, Nov 28, 2020 at 09:48:30AM +0100, Takashi Iwai wrote:
-> On Thu, 26 Nov 2020 17:59:50 +0100,
-> Uwe Kleine-K=F6nig wrote:
-> >=20
-> > The driver core ignores the return value of struct device_driver::remove
-> > because there is only little that can be done. For the shutdown callback
-> > it's ps3_system_bus_shutdown() which ignores the return value.
-> >=20
-> > To simplify the quest to make struct device_driver::remove return void,
-> > let struct ps3_system_bus_driver::remove return void, too. All users
-> > already unconditionally return 0, this commit makes it obvious that
-> > returning an error code is a bad idea and ensures future users behave
-> > accordingly.
-> >=20
-> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
->=20
-> For the sound bit:
-> Acked-by: Takashi Iwai <tiwai@suse.de>
-
-assuming that you are the one who will apply this patch: Note that it
-depends on patch 1 that Takashi already applied to his tree. So you
-either have to wait untils patch 1 appears in some tree that you merge
-before applying, or you have to take patch 1, too. (With Takashi
-optinally dropping it then.)
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---q5fwi2prasbljs5f
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl/D2wYACgkQwfwUeK3K
-7AmmxQf+IiMtqhw/kONuYhwVAdprYhlgZyY9iZSe5xHA/6/1zNmBbfhPRm6PfStb
-RRMTewx97J4joVbCv7OhlZBsoA7lnpUKJD05Qt7eXIEMdnuscbTx8YZr/z94s9/Y
-/ElFT8e2Wx6crnEbjWeFcYVTLkGgf1pnUhpFmTq4LwQqqV5lQWUu6JMnS8THMhay
-RCwTJR+P84Nw4wv39uvWN4LFmuDeM5hjnPjoEFBbnAeUtQr62AAh7itX8pTNEyZp
-t6M09QdoxpJWDPe/vRxYZSZdsuE+vXsCuMWH5Kyo0hodOX9m6JpOhsPm/YiaCK5B
-IW1LSeEeHe9uPQSACw7mkNft9x6Zfg==
-=TO3P
------END PGP SIGNATURE-----
-
---q5fwi2prasbljs5f--
+That must be a bad joke.
+You did the opposite of what we asked.
+You folks are on your own.
+5.10, 5.11 whatever release. When angry users come with questions
+about random behavior you'll be answering them. Not us.
