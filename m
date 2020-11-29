@@ -2,206 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 296E22C78A2
-	for <lists+netdev@lfdr.de>; Sun, 29 Nov 2020 11:26:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 392B72C78A8
+	for <lists+netdev@lfdr.de>; Sun, 29 Nov 2020 11:54:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727240AbgK2KY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Nov 2020 05:24:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43570 "EHLO
+        id S1726669AbgK2Kx7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Nov 2020 05:53:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727175AbgK2KYx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Nov 2020 05:24:53 -0500
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2789C0617A7
-        for <netdev@vger.kernel.org>; Sun, 29 Nov 2020 02:24:12 -0800 (PST)
-Received: by mail-ed1-x543.google.com with SMTP id q16so11152914edv.10
-        for <netdev@vger.kernel.org>; Sun, 29 Nov 2020 02:24:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=newoldbits-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=sjOibnMN7nIxvbRaGccAflEou/+xl9Xs41ThDMc0fJs=;
-        b=Vnup04KsksW53rdTnSeQojyoymyd7l+1Bv/51ksm2/4zt6ukqHjH5Nb2SgamlcUVya
-         GvS40SX+B7wfjZ7sQ9B6R1bC6qTSecZLYfIZPgVP/kFgg2YBa0K4HVm9vuPYE4y9GzwE
-         phg+waSDyTOMpZdQHQp2JpqSnOWAbFarPJvaSwcK2BocvqENPoxyGFW+uP4Hmj3IneG3
-         MRyaDbW2kS3ob7D54gSwZzyaLM9a6WCzsDDsGUCi+JwPSzXMDqspIDz1ShO/TTQd4Wfi
-         O7MF1SdNLhie78+LUrlQGHQjWYhB50p0lfe47mRyOecta8WKE9vGdbefJ8Z6V1SY4QUZ
-         o7Mg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=sjOibnMN7nIxvbRaGccAflEou/+xl9Xs41ThDMc0fJs=;
-        b=F1oqXsvby6/HaN+tigIz1qbwTvh5awF2Ny9an4InBdpw7ugzs7mRJcEC4dt5jNPHZy
-         ftysRyTGF4v9XjgT4pDhkfXjsXkMZY1Ae1JAx6s3datBUyhuJUux7ZO3P7/TmCOO8r4Y
-         0srT37uiFahykGK47Zq8YTxSxzHe3FSM7bZlSByeIm/sUd1FDAWhItfGteSIPSIC3ky/
-         NId6GCgaVH6WGOEsFCuRqUMgXbChjTOP6ACoXqQT/oPC5djQXGb+B66DaYgAJRiikPpj
-         1F6XWxdvQXlyvC98W8h0V1KtI08OF0m4BzIgy3rgi1r1ZjjtTNyDvIL1Y8NnVde6YuGt
-         3pcg==
-X-Gm-Message-State: AOAM530L2qRzxTxV8+Zcb/WUfemgYHe+Qrq05Gbr777UM2VKJo4JLPRL
-        z+A1nOe8Il+gCsC+v0JZsC+WH22ZCoh2Eg==
-X-Google-Smtp-Source: ABdhPJz2GY+kSDm29q/e54qq74YSfl2a3BEk1+TPbKSrHTIZMHdWRCJL2cNB87Ij0ToCHJdXtffM5Q==
-X-Received: by 2002:a05:6402:170e:: with SMTP id y14mr17105906edu.115.1606645451268;
-        Sun, 29 Nov 2020 02:24:11 -0800 (PST)
-Received: from nuc1.lan (208.2-240-81.adsl-dyn.isp.belgacom.be. [81.240.2.208])
-        by smtp.gmail.com with ESMTPSA id gq19sm4605244ejb.10.2020.11.29.02.24.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 Nov 2020 02:24:10 -0800 (PST)
-From:   Jean Pihet <jean.pihet@newoldbits.com>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Ryan Barnett <ryan.barnett@rockwellcollins.com>,
-        Conrad Ratschan <conrad.ratschan@rockwellcollins.com>,
-        Hugo Cornelis <hugo.cornelis@essensium.com>,
-        Arnout Vandecappelle <arnout.vandecappelle@essensium.com>,
-        Jean Pihet <jean.pihet@newoldbits.com>
-Subject: [PATCH 2/2] net: dsa: ksz8795: adjust CPU link to host interface
-Date:   Sun, 29 Nov 2020 11:24:00 +0100
-Message-Id: <20201129102400.157786-2-jean.pihet@newoldbits.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201129102400.157786-1-jean.pihet@newoldbits.com>
-References: <20201129102400.157786-1-jean.pihet@newoldbits.com>
+        with ESMTP id S1725830AbgK2Kx6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Nov 2020 05:53:58 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87EA4C0613CF;
+        Sun, 29 Nov 2020 02:53:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=LIyiErhnykpwmaVs58ytYZjOhWWYc51dwvzfoWUeZxU=; b=OESP4ySIlKKCcDMBCO8OnGom1
+        Skq5Y5MloudybyAvwYZ3GkuRdkKtp88IciPT5VXgdBKqAiNlTsyd/1u1cEXA5sFgagY6eXxyawIyx
+        UA1MK5VLe5DWxJlQFoF7yV9t2sx0TMmCMc7lPyV95lifWFgWkS6gEdTor3GNPgovIDNh1lOt7LCGA
+        67Tntz4ewD7rjriM7xfV1e1Ubtfi0iv+yLf+v091D8yg4wTBLDgYjb113SWjpwx2y0dJY47kaIn9N
+        /IHzkaMfO8UCYXMz9OYHsFkooVMd2+iFF6QmvLGuW1J1uUPrHN2L4odhqQMPUH2ih62qfbJzfTOww
+        XyHf/6Qow==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:37534)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kjKJz-0005VX-66; Sun, 29 Nov 2020 10:52:47 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kjKJx-0003wW-I4; Sun, 29 Nov 2020 10:52:45 +0000
+Date:   Sun, 29 Nov 2020 10:52:45 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Steen Hegelund <steen.hegelund@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microsemi List <microsemi@lists.bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 2/3] net: sparx5: Add Sparx5 switchdev driver
+Message-ID: <20201129105245.GG1605@shell.armlinux.org.uk>
+References: <20201127133307.2969817-1-steen.hegelund@microchip.com>
+ <20201127133307.2969817-3-steen.hegelund@microchip.com>
+ <20201128190616.GF2191767@lunn.ch>
+ <20201128222828.GQ1551@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201128222828.GQ1551@shell.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for RGMII in 100 and 1000 Mbps.
+On Sat, Nov 28, 2020 at 10:28:28PM +0000, Russell King - ARM Linux admin wrote:
+> On Sat, Nov 28, 2020 at 08:06:16PM +0100, Andrew Lunn wrote:
+> > > +static void sparx5_phylink_mac_config(struct phylink_config *config,
+> > > +				      unsigned int mode,
+> > > +				      const struct phylink_link_state *state)
+> > > +{
+> > > +	struct sparx5_port *port = netdev_priv(to_net_dev(config->dev));
+> > > +	struct sparx5_port_config conf;
+> > > +	int err = 0;
+> > > +
+> > > +	conf = port->conf;
+> > > +	conf.autoneg = state->an_enabled;
+> > > +	conf.pause = state->pause;
+> > > +	conf.duplex = state->duplex;
+> > > +	conf.power_down = false;
+> > > +	conf.portmode = state->interface;
+> > > +
+> > > +	if (state->speed == SPEED_UNKNOWN) {
+> > > +		/* When a SFP is plugged in we use capabilities to
+> > > +		 * default to the highest supported speed
+> > > +		 */
+> > 
+> > This looks suspicious.
+> 
+> Yes, it looks highly suspicious. The fact that
+> sparx5_phylink_mac_link_up() is empty, and sparx5_phylink_mac_config()
+> does all the work suggests that this was developed before the phylink
+> re-organisation, and this code hasn't been updated for it.
+> 
+> Any new code for the kernel really ought to be updated for the new
+> phylink methodology before it is accepted.
+> 
+> Looking at sparx5_port_config(), it also seems to use
+> PHY_INTERFACE_MODE_1000BASEX for both 1000BASE-X and 2500BASE-X. All
+> very well for the driver to do that internally, but it's confusing
+> when it comes to reviewing this stuff, especially when people outside
+> of the driver (such as myself) reviewing it need to understand what's
+> going on with the configuration.
 
-Adjust the CPU port based on the host interface settings: interface
-MII type, speed, duplex.
+There are other issues too.
 
-Signed-off-by: Jean Pihet <jean.pihet@newoldbits.com>
----
- drivers/net/dsa/microchip/ksz8795.c | 93 ++++++++++++++++++-----------
- 1 file changed, 57 insertions(+), 36 deletions(-)
+Looking at sparx5_get_1000basex_status(), we have:
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 1e101ab56cea..09c1173cc607 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -916,10 +916,53 @@ static void ksz8795_port_mirror_del(struct dsa_switch *ds, int port,
- 			     PORT_MIRROR_SNIFFER, false);
- }
- 
-+static void ksz8795_mii_config(struct ksz_device *dev, struct ksz_port *p)
-+{
-+	u8 data8;
-+
-+	/* Configure MII interface for proper network communication. */
-+	ksz_read8(dev, REG_PORT_5_CTRL_6, &data8);
-+	data8 &= ~PORT_INTERFACE_TYPE;
-+	data8 &= ~PORT_GMII_1GPS_MODE;
-+	switch (p->interface) {
-+	case PHY_INTERFACE_MODE_MII:
-+		p->phydev.speed = SPEED_100;
-+		break;
-+	case PHY_INTERFACE_MODE_RMII:
-+		data8 |= PORT_INTERFACE_RMII;
-+		p->phydev.speed = SPEED_100;
-+		break;
-+	case PHY_INTERFACE_MODE_GMII:
-+		data8 |= PORT_GMII_1GPS_MODE;
-+		data8 |= PORT_INTERFACE_GMII;
-+		p->phydev.speed = SPEED_1000;
-+		break;
-+	default:
-+		data8 &= ~PORT_RGMII_ID_IN_ENABLE;
-+		data8 &= ~PORT_RGMII_ID_OUT_ENABLE;
-+		if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-+		    p->interface == PHY_INTERFACE_MODE_RGMII_RXID)
-+			data8 |= PORT_RGMII_ID_IN_ENABLE;
-+		if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-+		    p->interface == PHY_INTERFACE_MODE_RGMII_TXID)
-+			data8 |= PORT_RGMII_ID_OUT_ENABLE;
-+		/* Support RGMII in 100 and 1000 Mbps */
-+		if (p->phydev.speed == SPEED_1000) {
-+			data8 |= PORT_GMII_1GPS_MODE;
-+		} else {
-+			p->phydev.speed = SPEED_100;
-+		}
-+		data8 |= PORT_INTERFACE_RGMII;
-+		break;
-+	}
-+	ksz_write8(dev, REG_PORT_5_CTRL_6, data8);
-+	p->phydev.duplex = 1;
-+}
-+
- static void ksz8795_port_setup(struct ksz_device *dev, int port, bool cpu_port)
- {
- 	struct ksz_port *p = &dev->ports[port];
--	u8 data8, member;
-+	u8 member;
- 
- 	/* enable broadcast storm limit */
- 	ksz_port_cfg(dev, port, P_BCAST_STORM_CTRL, PORT_BROADCAST_STORM, true);
-@@ -943,41 +986,7 @@ static void ksz8795_port_setup(struct ksz_device *dev, int port, bool cpu_port)
- 				 port);
- 			p->interface = dev->compat_interface;
- 		}
--
--		/* Configure MII interface for proper network communication. */
--		ksz_read8(dev, REG_PORT_5_CTRL_6, &data8);
--		data8 &= ~PORT_INTERFACE_TYPE;
--		data8 &= ~PORT_GMII_1GPS_MODE;
--		switch (p->interface) {
--		case PHY_INTERFACE_MODE_MII:
--			p->phydev.speed = SPEED_100;
--			break;
--		case PHY_INTERFACE_MODE_RMII:
--			data8 |= PORT_INTERFACE_RMII;
--			p->phydev.speed = SPEED_100;
--			break;
--		case PHY_INTERFACE_MODE_GMII:
--			data8 |= PORT_GMII_1GPS_MODE;
--			data8 |= PORT_INTERFACE_GMII;
--			p->phydev.speed = SPEED_1000;
--			break;
--		default:
--			data8 &= ~PORT_RGMII_ID_IN_ENABLE;
--			data8 &= ~PORT_RGMII_ID_OUT_ENABLE;
--			if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
--			    p->interface == PHY_INTERFACE_MODE_RGMII_RXID)
--				data8 |= PORT_RGMII_ID_IN_ENABLE;
--			if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
--			    p->interface == PHY_INTERFACE_MODE_RGMII_TXID)
--				data8 |= PORT_RGMII_ID_OUT_ENABLE;
--			data8 |= PORT_GMII_1GPS_MODE;
--			data8 |= PORT_INTERFACE_RGMII;
--			p->phydev.speed = SPEED_1000;
--			break;
--		}
--		ksz_write8(dev, REG_PORT_5_CTRL_6, data8);
--		p->phydev.duplex = 1;
--
-+        ksz8795_mii_config(dev, p);
- 		member = dev->port_mask;
- 	} else {
- 		member = dev->host_mask | p->vid_member;
-@@ -1102,11 +1111,23 @@ static int ksz8795_setup(struct dsa_switch *ds)
- 	return 0;
- }
- 
-+void ksz8795_adjust_link(struct dsa_switch *ds, int port,
-+						 struct phy_device *phydev)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	struct ksz_port *p = &dev->ports[port];
-+
-+	/* Adjust the link interface mode and speed for the CPU port */
-+	if (port == dev->cpu_port)
-+		ksz8795_mii_config(dev, p);
-+}
-+
- static const struct dsa_switch_ops ksz8795_switch_ops = {
- 	.get_tag_protocol	= ksz8795_get_tag_protocol,
- 	.setup			= ksz8795_setup,
- 	.phy_read		= ksz_phy_read16,
- 	.phy_write		= ksz_phy_write16,
-+	.adjust_link		= ksz8795_adjust_link,
- 	.phylink_mac_link_down	= ksz_mac_link_down,
- 	.port_enable		= ksz_enable_port,
- 	.get_strings		= ksz8795_get_strings,
+ +       status->link = DEV2G5_PCS1G_LINK_STATUS_LINK_STATUS_GET(value) |
+ +                      DEV2G5_PCS1G_LINK_STATUS_SYNC_STATUS_GET(value);
+
+Why is the link status the logical OR of these?
+
+ +                       if ((lp_abil >> 8) & 1) /* symmetric pause */
+ +                               status->pause = MLO_PAUSE_RX | MLO_PAUSE_TX;
+ +                       if (lp_abil & (1 << 7)) /* asymmetric pause */
+ +                               status->pause |= MLO_PAUSE_RX;
+
+is actually wrong, and I see I need to improve the documentation for
+mac_pcs_get_state(). The intention in the documentation was concerning
+hardware that indicated the _resolved_ status of pause modes. It was
+not intended that drivers resolve the pause modes themselves.
+
+Even so, the above is still wrong; it takes no account of what is being
+advertised at the local end. If one looks at the implementation in
+phylink_decode_c37_word(), one will notice there is code to deal with
+this.
+
+I think we ought to make phylink_decode_c37_word() and
+phylink_decode_sgmii_word() public functions, and then this driver can
+use these helpers to decode the link partner advertisement to the
+phylink state.
+
+Does the driver need to provide an ethtool .get_link function? That
+seems to bypass phylink. Why can't ethtool_op_get_link() be used?
+
+I think if ethtool_op_get_link() is used, we then have just one caller
+for sparx5_get_port_status(), which means "struct sparx5_port_status"
+can be eliminated and the code cleaned up to use the phylink decoding
+helpers.
+
 -- 
-2.26.2
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
