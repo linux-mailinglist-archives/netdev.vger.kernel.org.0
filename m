@@ -2,77 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 027DD2C7A69
-	for <lists+netdev@lfdr.de>; Sun, 29 Nov 2020 18:56:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9DBE2C7A9B
+	for <lists+netdev@lfdr.de>; Sun, 29 Nov 2020 19:34:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728173AbgK2Ryz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Nov 2020 12:54:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55626 "EHLO
+        id S1728188AbgK2Sdj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Nov 2020 13:33:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728114AbgK2Ryz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Nov 2020 12:54:55 -0500
+        with ESMTP id S1725830AbgK2Sdj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Nov 2020 13:33:39 -0500
 Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA8FC0613CF
-        for <netdev@vger.kernel.org>; Sun, 29 Nov 2020 09:54:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48895C0613D2
+        for <netdev@vger.kernel.org>; Sun, 29 Nov 2020 10:32:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=xMAq2su5hFJTjz60h6IOlYmUxvcMp056ry/21etI4+I=; b=0H5N/TM6vNiDhPoJcpTiPGCPNd
-        1APApkj4yQBYp4Sm3UWdXsG+h7JElaH70GlUf+Jb6VNoTyL2luD++oRIO43oVVUYwOiGjkISebR86
-        UgE4PKjINGRiRFAva4bpX0xlml+TpjRM5Dmdv1RzCEERulU+A9JvMkn+gq/llmto1cm1QI83sRP2a
-        GqSX3qakKo7uvTaJ1xJ0tgMPuIx4Kk2QO1HayGUYoXAs81vd6Lop4HwLQpMFoF90pTJlyZOSyGt9o
-        biCt5ZX4OOjBVnoRFYu+uLRTATSrUEzGHk2kKvtXU69r/vLOgeqK+fzFgun+/T2swCxqvqEqhnY5f
-        8gt2PFcA==;
-Received: from [2601:1c0:6280:3f0::cc1f]
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=xD2ngAEq0AWMoW0hW5AsWaTLfCLG6WxvGtDvZWC+Xzo=; b=sqeHD4oYwUnidqLiG8TJe2vrZ+
+        Uq/IoLfDgZ50qc7AlB5+CUIZIrvH6LFtTtqJOJVoI5J22v3WasraFIeTgY32a7YNTdDYlCa41oLmi
+        ba3/bmMiupRgmFRF29a1yEvdRC5LOIsQVtpZ9RPWHvpw00OGWEWCWx8FxVUTy6HJt0XgShoZE0eV+
+        yEkGSlIe+pob6tRdO9LLX//u2hu/oOXlSFpbjMq7H+mb20M46q2H38wGxWo37ipnTHSwlBR3ze+qd
+        G8OFH+WMek6CUNWt1mn8V4dipf6gwlbeOdoIqYcQR9RbMHadnasVwbpWxSMJmXN9Vf9T0VMLJ5Rg3
+        iZD5tszw==;
+Received: from [2601:1c0:6280:3f0::cc1f] (helo=smtpauth.infradead.org)
         by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kjQth-0005Gf-NJ; Sun, 29 Nov 2020 17:54:06 +0000
-Subject: Re: [PATCH 00/10 net-next] net/tipc: fix all kernel-doc and add TIPC
- networking chapter
-To:     Ying Xue <ying.xue@windriver.com>
-Cc:     Jon Maloy <jmaloy@redhat.com>, netdev@vger.kernel.org,
+        id 1kjRVI-00011y-4n; Sun, 29 Nov 2020 18:32:56 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     netdev@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>,
         tipc-discussion@lists.sourceforge.net,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-References: <20201125042026.25374-1-rdunlap@infradead.org>
- <bde23bb7-9c96-b107-cb06-64695726b21b@windriver.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <0d94930d-45c2-f5ef-202e-f3dc2f94c11d@infradead.org>
-Date:   Sun, 29 Nov 2020 09:54:01 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+Subject: [PATCH 00/10 net-next v2] net/tipc: fix all kernel-doc and add TIPC networking chapter
+Date:   Sun, 29 Nov 2020 10:32:41 -0800
+Message-Id: <20201129183251.7049-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <bde23bb7-9c96-b107-cb06-64695726b21b@windriver.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/28/20 11:37 PM, Ying Xue wrote:
-> On 11/25/20 12:20 PM, Randy Dunlap wrote:
->>
->> Question: is net/tipc/discover.c, in tipc_disc_delete() kernel-doc,
->> what is the word "duest"?  Should it be changed?
-> 
-> The "duest" is a typo, and it should be "dest" defined as below:
-> struct tipc_discoverer {
->         u32 bearer_id;
->         struct tipc_media_addr dest; ===> "dest"
->         struct net *net;
->         u32 domain;
->         int num_nodes;
->         spinlock_t lock;
->         struct sk_buff *skb;
->         struct timer_list timer;
->         unsigned long timer_intv;
-> };
-> 
+Fix lots of net/tipc/ kernel-doc warnings. Add many struct field and
+function parameter descriptions.
 
-Thanks. I'll take care of this one and your comments
-on patch #1.
+Then add a TIPC chapter to the networking documentation book.
 
--- 
-~Randy
+All patches have been rebased to current net-next.
 
+
+Note: some of the struct members and function parameters are marked
+with "FIXME". They could use some additional descriptions if
+someone could help add to them. Thanks.
+
+
+Cc: Jon Maloy <jmaloy@redhat.com>
+Cc: Ying Xue <ying.xue@windriver.com>
+Cc: tipc-discussion@lists.sourceforge.net
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+
+[PATCH 01/10 net-next v2] net/tipc: fix tipc header files for kernel-doc
+[PATCH 02/10 net-next v2] net/tipc: fix various kernel-doc warnings
+[PATCH 03/10 net-next v2] net/tipc: fix bearer.c for kernel-doc
+[PATCH 04/10 net-next v2] net/tipc: fix link.c kernel-doc
+[PATCH 05/10 net-next v2] net/tipc: fix name_distr.c kernel-doc
+[PATCH 06/10 net-next v2] net/tipc: fix name_table.c kernel-doc
+[PATCH 07/10 net-next v2] net/tipc: fix node.c kernel-doc
+[PATCH 08/10 net-next v2] net/tipc: fix socket.c kernel-doc
+[PATCH 09/10 net-next v2] net/tipc: fix all function Return: notation
+[PATCH 10/10 net-next v2] net/tipc: add TIPC chapter to networking Documentation
+
+
+ Documentation/networking/index.rst |    1 
+ Documentation/networking/tipc.rst  |  101 +++++++++++++++++++++++++++
+ net/tipc/bearer.c                  |   22 +++++
+ net/tipc/bearer.h                  |   10 +-
+ net/tipc/crypto.c                  |   55 ++++++++------
+ net/tipc/crypto.h                  |    6 -
+ net/tipc/discover.c                |    5 -
+ net/tipc/link.c                    |   46 ++++++++++--
+ net/tipc/msg.c                     |   29 ++++---
+ net/tipc/name_distr.c              |   29 +++++++
+ net/tipc/name_distr.h              |    2 
+ net/tipc/name_table.c              |   46 +++++++++---
+ net/tipc/name_table.h              |    9 +-
+ net/tipc/node.c                    |   37 ++++++++-
+ net/tipc/socket.c                  |   92 +++++++++++++++---------
+ net/tipc/subscr.c                  |    8 +-
+ net/tipc/subscr.h                  |   11 +-
+ net/tipc/trace.c                   |    2 
+ net/tipc/udp_media.c               |    8 +-
+ 19 files changed, 405 insertions(+), 114 deletions(-)
