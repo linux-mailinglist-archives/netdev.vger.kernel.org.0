@@ -2,143 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8DEC2C8521
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 14:29:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E5232C8525
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 14:29:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725987AbgK3N2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 08:28:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37876 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725859AbgK3N2j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 08:28:39 -0500
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94241C0613CF
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 05:27:58 -0800 (PST)
-Received: by mail-wm1-x341.google.com with SMTP id f190so22130770wme.1
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 05:27:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=mH5uYMjJ1Qnu05+DOtOMOMfvviITz3XwXSBDGZs+pu4=;
-        b=KHMv1XOfJvVvbrc3KuV9K6jsSOJqzbPbKpGC3sHMXR9iEKWnXJdtoCtadtFr5adBM8
-         Q80W5c98t5bIVH13hPJ4DYpFhcadRnUOIfnEh4nx0wJINWp4XD2v1oi5jS6pue3QdWx2
-         eju3QmETSU7GLpao3lQQtlCkQKdNkO9ij0w7/QiVq3vBvfjn9/45U/DjcGjAmfHDFx78
-         s+DNvstmsu5ELVJokDKgaPkdbuH+yqyNGWQz51Yjo2PxucxEEdOr7aXGdAl/rQ2vB3uE
-         dVn3DXWiaZblXptfpFSxwC75UjKEY0QWr3VCDsQuQm4hpoW3nR/Kva927s8SgcNayN2N
-         C/uQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=mH5uYMjJ1Qnu05+DOtOMOMfvviITz3XwXSBDGZs+pu4=;
-        b=A+/QWkKiRRguGU5s/JZhFc3oeEyXdoZ8NyEZtCZ54X60GmkdNGJvaHt2fxdKfLvxQf
-         r4K846us6cxU+z0VRMEsIXygtngnp6Wrr604coeRuGAjyp5VMjbg7aavEK37xSK7RlPu
-         Oopg+yaahvwhCQ6TJSKBnC8WphsdF8EsLrpxJalV3rAl0gwBbpGCNhGEXIpLtiSbjsgS
-         CS3rdKXLxIY+3pkKF/T65LxbOdh5xRi+7mIL/doMXq+pCoMxB4RPNjJnYvANvcnvNd4K
-         +3Vb+W+9gNKDrZ8YevCxMxtL30j9Zb8q3L016X3ZEZmM56R49YknoTcFRVYKu1I7f06s
-         UOtA==
-X-Gm-Message-State: AOAM530tiezDr7s0j73ZXQOFMA/9aGO+JBRItar8+n+rIGGhO8um1L6P
-        pg/yJ/tAvbTfFoAK+pjJkMKUZWw4y14Q2h79tMY=
-X-Google-Smtp-Source: ABdhPJxYNJmN+4f/QM7YisMZha6INqQDfxcPJUrKPtkSpmXrymN5K6ICkTgwY5IckTxRGt3/tj8ozg==
-X-Received: by 2002:a1c:9cc9:: with SMTP id f192mr23754245wme.143.1606742877016;
-        Mon, 30 Nov 2020 05:27:57 -0800 (PST)
-Received: from localhost.localdomain ([5.35.99.104])
-        by smtp.gmail.com with ESMTPSA id t184sm13705837wmt.13.2020.11.30.05.27.55
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 30 Nov 2020 05:27:56 -0800 (PST)
-From:   Denis Kirjanov <kda@linux-powerpc.org>
-To:     netdev@vger.kernel.org
-Cc:     kuba@kernel.org, davem@davemloft.net
-Subject: [PATCH v2] net/af_unix: don't create a path for a binded socket
-Date:   Mon, 30 Nov 2020 16:27:47 +0300
-Message-Id: <20201130132747.29332-1-kda@linux-powerpc.org>
-X-Mailer: git-send-email 2.16.4
+        id S1726655AbgK3N3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 08:29:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56722 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725859AbgK3N3L (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Nov 2020 08:29:11 -0500
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B0B8120643;
+        Mon, 30 Nov 2020 13:28:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1606742910;
+        bh=DQ+wSsfzzJvTpM5c/TAOzAqu4JhPI6Qw2CdCl7s9bnI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iy6VsNPZIpqRMHbzHaZf4KAofuWIQmOzOyJdKPIJ3nmFXEOjDhBNETct6pTPa7KZa
+         349/iqZtmBD+ozP3DeMiZdmAICZq9sXO/WuEaHhDd3HI4GtlOgDKPZQmN7vCK/BjbU
+         GAUTn3NWGsgfMFU5RRd+CLK8/UccbsHngseKQN3M=
+Date:   Mon, 30 Nov 2020 14:28:26 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org,
+        Mike Christie <michael.christie@oracle.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.9 22/33] vhost scsi: add lun parser helper
+Message-ID: <X8TzeoIlR3G5awC6@kroah.com>
+References: <20201125153550.810101-1-sashal@kernel.org>
+ <20201125153550.810101-22-sashal@kernel.org>
+ <25cd0d64-bffc-9506-c148-11583fed897c@redhat.com>
+ <20201125180102.GL643756@sasha-vm>
+ <9670064e-793f-561e-b032-75b1ab5c9096@redhat.com>
+ <20201129041314.GO643756@sasha-vm>
+ <7a4c3d84-8ff7-abd9-7340-3a6d7c65cfa7@redhat.com>
+ <20201129210650.GP643756@sasha-vm>
+ <e499986d-ade5-23bd-7a04-fa5eb3f15a56@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <e499986d-ade5-23bd-7a04-fa5eb3f15a56@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-in the case of the socket which is bound to an adress
-there is no sense to create a path in the next attempts
+On Mon, Nov 30, 2020 at 09:33:46AM +0100, Paolo Bonzini wrote:
+> On 29/11/20 22:06, Sasha Levin wrote:
+> > On Sun, Nov 29, 2020 at 06:34:01PM +0100, Paolo Bonzini wrote:
+> > > On 29/11/20 05:13, Sasha Levin wrote:
+> > > > > Which doesn't seem to be suitable for stable either...  Patch 3/5 in
+> > > > 
+> > > > Why not? It was sent as a fix to Linus.
+> > > 
+> > > Dunno, 120 lines of new code?  Even if it's okay for an rc, I don't
+> > > see why it is would be backported to stable releases and release it
+> > > without any kind of testing.  Maybe for 5.9 the chances of breaking
+> > 
+> > Lines of code is not everything. If you think that this needs additional
+> > testing then that's fine and we can drop it, but not picking up a fix
+> > just because it's 120 lines is not something we'd do.
+> 
+> Starting with the first two steps in stable-kernel-rules.rst:
+> 
+> Rules on what kind of patches are accepted, and which ones are not, into the
+> "-stable" tree:
+> 
+>  - It must be obviously correct and tested.
+>  - It cannot be bigger than 100 lines, with context.
 
-here is a program that shows the issue:
+We do obviously take patches that are bigger than 100 lines, as there
+are always exceptions to the rules here.  Look at all of the
+spectre/meltdown patches as one such example.  Should we refuse a patch
+just because it fixes a real issue yet is 101 lines long?
 
-int main()
-{
-    int s;
-    struct sockaddr_un a;
+thanks,
 
-    s = socket(AF_UNIX, SOCK_STREAM, 0);
-    if (s<0)
-        perror("socket() failed\n");
-
-    printf("First bind()\n");
-
-    memset(&a, 0, sizeof(a));
-    a.sun_family = AF_UNIX;
-    strncpy(a.sun_path, "/tmp/.first_bind", sizeof(a.sun_path));
-
-    if ((bind(s, (const struct sockaddr*) &a, sizeof(a))) == -1)
-        perror("bind() failed\n");
-
-    printf("Second bind()\n");
-
-    memset(&a, 0, sizeof(a));
-    a.sun_family = AF_UNIX;
-    strncpy(a.sun_path, "/tmp/.first_bind_failed", sizeof(a.sun_path));
-
-    if ((bind(s, (const struct sockaddr*) &a, sizeof(a))) == -1)
-        perror("bind() failed\n");
-}
-
-kda@SLES15-SP2:~> ./test
-First bind()
-Second bind()
-bind() failed
-: Invalid argument
-
-kda@SLES15-SP2:~> ls -la /tmp/.first_bind
-.first_bind         .first_bind_failed
-
-Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
-
-v2: move a new patch creation after the address assignment check.
----
- net/unix/af_unix.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index 41c3303c3357..ff2dd1d3536b 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -1034,6 +1034,14 @@ static int unix_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
- 		goto out;
- 	addr_len = err;
- 
-+	err = mutex_lock_interruptible(&u->bindlock);
-+	if (err)
-+		goto out_put;
-+
-+	err = -EINVAL;
-+	if (u->addr)
-+		goto out_up;
-+
- 	if (sun_path[0]) {
- 		umode_t mode = S_IFSOCK |
- 		       (SOCK_INODE(sock)->i_mode & ~current_umask());
-@@ -1045,14 +1053,6 @@ static int unix_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
- 		}
- 	}
- 
--	err = mutex_lock_interruptible(&u->bindlock);
--	if (err)
--		goto out_put;
--
--	err = -EINVAL;
--	if (u->addr)
--		goto out_up;
--
- 	err = -ENOMEM;
- 	addr = kmalloc(sizeof(*addr)+addr_len, GFP_KERNEL);
- 	if (!addr)
--- 
-2.16.4
-
+greg k-h
