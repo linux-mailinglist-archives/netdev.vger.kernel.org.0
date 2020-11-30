@@ -2,195 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 460C02C8385
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 12:51:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BA792C83AB
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 13:01:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729181AbgK3Lu4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 06:50:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50964 "EHLO
+        id S1729042AbgK3MBP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 07:01:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728668AbgK3Luz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 06:50:55 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8665C0613CF
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 03:50:39 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1kjhhQ-0005Gz-Qb; Mon, 30 Nov 2020 12:50:32 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:325a:f94c:7792:9202] (unknown [IPv6:2a03:f580:87bc:d400:325a:f94c:7792:9202])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 5EA2359F845;
-        Mon, 30 Nov 2020 11:50:30 +0000 (UTC)
-Subject: Re: [PATCH] can: don't count arbitration lose as an error
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Jeroen Hofstee <jhofstee@victronenergy.com>,
-        linux-can@vger.kernel.org
-Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        "moderated list:ARM/Allwinner sunXi SoC support" 
-        <linux-arm-kernel@lists.infradead.org>
-References: <20201127095941.21609-1-jhofstee@victronenergy.com>
- <434167b4-c2df-02bf-8a9c-2d4716c5435f@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <ba9e04b1-1e92-92ef-e4fb-4ae003d78fdc@pengutronix.de>
-Date:   Mon, 30 Nov 2020 12:50:26 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
-MIME-Version: 1.0
-In-Reply-To: <434167b4-c2df-02bf-8a9c-2d4716c5435f@pengutronix.de>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="ShX0IExjGTkWzByPJXACXVI0dzXpxyz0V"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+        with ESMTP id S1725976AbgK3MBP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 07:01:15 -0500
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 076EDC0613CF;
+        Mon, 30 Nov 2020 04:00:50 -0800 (PST)
+Received: by mail-pf1-x442.google.com with SMTP id 131so10237352pfb.9;
+        Mon, 30 Nov 2020 04:00:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=lj9ZT1pXkce5/+KagnCXuquk6qct2qT6C8O4RgX4/Xg=;
+        b=IZ+kgCy7F2PIHzD82xdfzWESDTLBKVDit3oepMt6or94hwmauw9zsHoPuL0ec3B4AE
+         BiAfnxcDTQAzGXrHoFwTkx8xGQu1c25Lq48PslFQj1v6BzpjV6NdMjtsYggpLKEn2f7Q
+         HC78lhJ+6KD9CZ+39ufaMy8VTUP5Z9awImFifRP4Pcf+Hz3G9YFkGpG1iK1aIY1YP16L
+         9+dPpBP0wPwazWDrZ7+ZBHVwYxJzUi6UdGU22Eb3mfGbu3xtD1WwLp7tPfBd5NvLMIZG
+         s045nSacOV5F3DJ3oo1cBlD8UUjHAPlfjpH0wv9plcdeEXcpk76/jhcyoNA8jICUlo/w
+         eyAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=lj9ZT1pXkce5/+KagnCXuquk6qct2qT6C8O4RgX4/Xg=;
+        b=RBzvJDiVMgNxhrjq6e1zeTRpxwMMP5EHRHwCYcffDMMgLt8ft3SzeTcmjizkBhISVQ
+         QxNB0y+6Lbl94aq9jCqiCuIs/9WmyFwD4u23svBnr7CscFxu3yE8lg16SGDV3iRo9YQX
+         9oYx7zpYigbLdWuukDCzqu3hRT8jBV6Dx/YstbuVgPwk6Qh7NM9t6EVnVM+X49H+r/xX
+         VW2JWqCwWfnWGjR3a5X/h4ojSW2+Uem10jroMqCXLNWx/cH0tGqsYZygwGRoIu9VJqMZ
+         qpPr0dCNd8pnYxjKYLTpE2ZqxyVTOW0Ipjw7hAftQ8r9oL5PZxmAdIXiUJ0Y1u0xqwc9
+         quSw==
+X-Gm-Message-State: AOAM533CuoUpjiTmxxcoOu6zTdfj8k/GkkTewTIDUavUAH6i7WbagDpU
+        /8S8XvZAcO/bPw3O2q6Fw99PZwJR1tY=
+X-Google-Smtp-Source: ABdhPJx3saLPTWk9JX5niWrD8QDAOqBEjZC/gsHloavwuqIlpVFqtG26bcVWa0MjLpyJXoXddoalpQ==
+X-Received: by 2002:a05:6a00:13a3:b029:18b:d5d2:196 with SMTP id t35-20020a056a0013a3b029018bd5d20196mr18635748pfg.62.1606737649541;
+        Mon, 30 Nov 2020 04:00:49 -0800 (PST)
+Received: from localhost.localdomain ([182.226.226.37])
+        by smtp.googlemail.com with ESMTPSA id s17sm1802737pge.37.2020.11.30.04.00.46
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 30 Nov 2020 04:00:48 -0800 (PST)
+From:   Bongsu jeon <bongsu.jeon2@gmail.com>
+X-Google-Original-From: Bongsu jeon
+To:     krzk@kernel.org
+Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bongsu Jeon <bongsu.jeon@samsung.com>
+Subject: [PATCH v2 net-next 1/4] dt-bindings: net: nfc: s3fwrn5: Support a UART interface
+Date:   Mon, 30 Nov 2020 21:00:27 +0900
+Message-Id: <1606737627-29485-1-git-send-email-bongsu.jeon@samsung.com>
+X-Mailer: git-send-email 1.9.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---ShX0IExjGTkWzByPJXACXVI0dzXpxyz0V
-Content-Type: multipart/mixed; boundary="25SRjPuPUe9O0se5xVMcKFYJhsqusLWdJ";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Jeroen Hofstee <jhofstee@victronenergy.com>, linux-can@vger.kernel.org
-Cc: Oliver Hartkopp <socketcan@hartkopp.net>, Chen-Yu Tsai <wens@csie.org>,
- Jernej Skrabec <jernej.skrabec@siol.net>,
- "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
- "moderated list:ARM/Allwinner sunXi SoC support"
- <linux-arm-kernel@lists.infradead.org>
-Message-ID: <ba9e04b1-1e92-92ef-e4fb-4ae003d78fdc@pengutronix.de>
-Subject: Re: [PATCH] can: don't count arbitration lose as an error
-References: <20201127095941.21609-1-jhofstee@victronenergy.com>
- <434167b4-c2df-02bf-8a9c-2d4716c5435f@pengutronix.de>
-In-Reply-To: <434167b4-c2df-02bf-8a9c-2d4716c5435f@pengutronix.de>
+From: Bongsu Jeon <bongsu.jeon@samsung.com>
 
---25SRjPuPUe9O0se5xVMcKFYJhsqusLWdJ
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+Since S3FWRN82 NFC Chip, The UART interface can be used.
+S3FWRN82 supports I2C and UART interface.
 
-On 11/27/20 11:30 AM, Marc Kleine-Budde wrote:
-> On 11/27/20 10:59 AM, Jeroen Hofstee wrote:
->> Losing arbitration is normal in a CAN-bus network, it means that a
->> higher priority frame is being send and the pending message will be
->> retried later. Hence most driver only increment arbitration_lost, but
->> the sja1000 and sun4i driver also incremeant tx_error, causing errors
->> to be reported on a normal functioning CAN-bus. So stop counting them
->> as errors.
->=20
-> Sounds plausible.
->=20
->> For completeness, the Kvaser USB hybra also increments the tx_error
->> on arbitration lose, but it does so in single shot. Since in that
->> case the message is not retried, that behaviour is kept.
->=20
-> You mean only in one shot mode? What about one shot mode on the sja1000=
- cores?
->=20
->> Signed-off-by: Jeroen Hofstee <jhofstee@victronenergy.com>
->=20
-> I've split this into two patches, and added Fixes: lines, and pushed th=
-is for
-> now to linux-can/sja1000.
+Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
+---
 
-Added to linux-can/testing
+Changes in v2:
+ -change the compatible name.
+ -change the const to enum for compatible.
+ -change the node name to nfc.
 
-Tnx,
-Marc
+ .../bindings/net/nfc/samsung,s3fwrn5.yaml          | 32 ++++++++++++++++++++--
+ 1 file changed, 29 insertions(+), 3 deletions(-)
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+diff --git a/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml b/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+index cb0b8a5..481bbcc 100644
+--- a/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
++++ b/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+@@ -12,7 +12,10 @@ maintainers:
+ 
+ properties:
+   compatible:
+-    const: samsung,s3fwrn5-i2c
++    oneOf:
++      - enum:
++        - samsung,s3fwrn5-i2c
++        - samsung,s3fwrn82
+ 
+   en-gpios:
+     maxItems: 1
+@@ -47,10 +50,19 @@ additionalProperties: false
+ required:
+   - compatible
+   - en-gpios
+-  - interrupts
+-  - reg
+   - wake-gpios
+ 
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: samsung,s3fwrn5-i2c
++    then:
++      required:
++        - interrupts
++        - reg
++
+ examples:
+   - |
+     #include <dt-bindings/gpio/gpio.h>
+@@ -71,3 +83,17 @@ examples:
+             wake-gpios = <&gpj0 2 GPIO_ACTIVE_HIGH>;
+         };
+     };
++  # UART example on Raspberry Pi
++  - |
++    uart0 {
++        status = "okay";
++
++        nfc {
++            compatible = "samsung,s3fwrn82";
++
++            en-gpios = <&gpio 20 0>;
++            wake-gpios = <&gpio 16 0>;
++
++            status = "okay";
++        };
++    };
+-- 
+1.9.1
 
-
---25SRjPuPUe9O0se5xVMcKFYJhsqusLWdJ--
-
---ShX0IExjGTkWzByPJXACXVI0dzXpxyz0V
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl/E3IIACgkQqclaivrt
-76myfAf/YkmFQNFi5VGNqg/qOxvoDAvc+ONYLxCS6IWpWP+urGPUVsT/hhSdP9V5
-eJIb6XVtNyWvMfwMIhx/EWAVdb+axPM3u1OLBvSI2d5x+aQrNVPByhYSpC3NJNi2
-DOouyg8GOKnfF+FJDe6OojzG0IoaP94xDNca/Q2/dALwb3RG6dR4YxkSxcAL4rMA
-4K+JOZ8UjvcWpMJ96tGj/frVIdbF4bIVWtxHZGIXEB9JTQyoSdu4dvLgTxBBzaoN
-GJv4p59vfoJ6Bws8k5yj06sYoUgLKr1a3PmLRY8Ud5/k9ckSooUnDsp//NcUh7vs
-SURkDoVgBptfU8dKJswDavqfAI8/Wg==
-=6Q/t
------END PGP SIGNATURE-----
-
---ShX0IExjGTkWzByPJXACXVI0dzXpxyz0V--
