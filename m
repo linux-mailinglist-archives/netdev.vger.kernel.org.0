@@ -2,85 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91FCE2C9375
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 00:59:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B12392C9382
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 01:01:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730757AbgK3X7Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 18:59:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51780 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730746AbgK3X7Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 18:59:16 -0500
-Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57E9EC0613D3;
-        Mon, 30 Nov 2020 15:58:30 -0800 (PST)
-Received: by mail-ot1-x342.google.com with SMTP id f16so13107082otl.11;
-        Mon, 30 Nov 2020 15:58:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=19obYtiEoANDXfw8TQxHN8TKiK3RihhXUr7p4K37zSg=;
-        b=FdoUeC8tvJPllRTvtTebQuH9ZLBI72rvP6KlMjW1wtIezQuE1ydEnRHxiD/P7Ysv68
-         YWC8zOErlyOQfb6ISo4BkYGVxHhv2wB58UiY8WVmKEgRprsH1M7F4OF8QLNRXyCzLZdH
-         QkP0XUOOz2HEBTWW0c3YO/HnnaCTdZIegAzgf3XzPzhApMnfVFts27JcBbI5twC6gVej
-         oxNtqw0cQmQy32fFW/o0IqwJMbPrBacTbLHG4ipPtR/GyP5bMrQSLyEiXIH0/ktKhDmX
-         gE64UBMhS7oLC/6sT8FwtcivJ7M+z9nCAJPplixif+ox1tHVTyZMjTDZ1b2aGkB3lTPs
-         koYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=19obYtiEoANDXfw8TQxHN8TKiK3RihhXUr7p4K37zSg=;
-        b=ZqHzUdh4K5sn3CytIu45XogGtf1mCYf+3tQFAdA7kQRBTopFKBkQO/xPdadWZVF/X3
-         oPVXcQVzX3MwKAtHa6y8Og/8x8r8Y5T715HaOMAh8rGPb/zORCvZGRnnh2uI318kMy/e
-         LSNBLe0DLC5ztuxhSWfgDDCBZ0pwUt31WKZLZcr2T8tFuFAxK12YkaXiy/Mgc0Ch6R0h
-         sB1apC60V4VvbDkPyp1cDC/CRS75mTpC722yDQrVMKcMxb13029p4lYO1Aou2iixwdfc
-         2nrOQAsmXvBqYPR/bTNcBQ2TFm6LYYJpeE4WM97L/TPb1jJmlJ6ym/zPdySxBPFbucgZ
-         Z/kg==
-X-Gm-Message-State: AOAM530I9wI9AddEiXAqfo9JdSchX6xms4xqbq7GKKGvjhMB68cnZ+PI
-        302vuiPYsa/FMHnWDT6B/Six1VHJie/d3BMOEA==
-X-Google-Smtp-Source: ABdhPJybHi/oBmvGwIXe7HN9sskKwGocZqhQWGVCtALsHULjs+JLcJbRyZIfzUcbQpXCGOS5G9OG5DQWp+0+OyDZrA0=
-X-Received: by 2002:a05:6830:1f11:: with SMTP id u17mr19132850otg.287.1606780709746;
- Mon, 30 Nov 2020 15:58:29 -0800 (PST)
+        id S1730815AbgLAAAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 19:00:42 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48972 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727125AbgLAAAl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Nov 2020 19:00:41 -0500
+Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EAFC9206E9;
+        Tue,  1 Dec 2020 00:00:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606780801;
+        bh=ARbNMxYbl+0MjUA5JbZmKxOB1SM/D2f+eDOPe8frr3M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QtieARJ47keURK5f5xizfArqb5i2FnWDPf/DVJozSlnaBRgOqU51coDazBIpwvEJl
+         BgH8d7D80FB/t44qzSWeBu4HsgQ/lNcskRQ6hMARbXLpL4xfFxxSaWn3CZcs3Uhhwk
+         jnQAnphvrUXRQy9/l8ovXhAs9k3uj7+k8k1hswTQ=
+Date:   Mon, 30 Nov 2020 18:59:59 -0500
+From:   Sasha Levin <sashal@kernel.org>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Mike Christie <michael.christie@oracle.com>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.9 22/33] vhost scsi: add lun parser helper
+Message-ID: <20201130235959.GS643756@sasha-vm>
+References: <20201125180102.GL643756@sasha-vm>
+ <9670064e-793f-561e-b032-75b1ab5c9096@redhat.com>
+ <20201129041314.GO643756@sasha-vm>
+ <7a4c3d84-8ff7-abd9-7340-3a6d7c65cfa7@redhat.com>
+ <20201129210650.GP643756@sasha-vm>
+ <e499986d-ade5-23bd-7a04-fa5eb3f15a56@redhat.com>
+ <20201130173832.GR643756@sasha-vm>
+ <238cbdd1-dabc-d1c1-cff8-c9604a0c9b95@redhat.com>
+ <9ec7dff6-d679-ce19-5e77-f7bcb5a63442@oracle.com>
+ <4c1b2bc7-cf50-4dcd-bfd4-be07e515de2a@redhat.com>
 MIME-Version: 1.0
-References: <20201127195057.ac56bimc6z3kpygs@skbuf> <CAFSKS=Pf6zqQbNhaY=A_Da9iz9hcyxQ8E1FBp2o7a_KLBbopYw@mail.gmail.com>
- <20201127133753.4cf108cb@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <20201127233048.GB2073444@lunn.ch> <20201127233916.bmhvcep6sjs5so2e@skbuf>
- <20201128000234.hwd5zo2d4giiikjc@skbuf> <20201128003912.GA2191767@lunn.ch>
- <20201128014106.lcqi6btkudbnj3mc@skbuf> <20201127181525.2fe6205d@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <CAFSKS=O-TDPax1smCPq=b1w3SVqJokesWx02AUGUXD0hUwXbAg@mail.gmail.com> <20201130235031.cdxkp344ph7uob7o@skbuf>
-In-Reply-To: <20201130235031.cdxkp344ph7uob7o@skbuf>
-From:   George McCollister <george.mccollister@gmail.com>
-Date:   Mon, 30 Nov 2020 17:58:17 -0600
-Message-ID: <CAFSKS=NR6Toww7xj797Z09FNDXYawPFbbavv8hTzXJ2KFki=hg@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 2/3] net: dsa: add Arrow SpeedChips XRS700x driver
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <4c1b2bc7-cf50-4dcd-bfd4-be07e515de2a@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 30, 2020 at 5:50 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+On Mon, Nov 30, 2020 at 09:29:02PM +0100, Paolo Bonzini wrote:
+>On 30/11/20 20:44, Mike Christie wrote:
+>>I have never seen a public/open-source vhost-scsi testsuite.
+>>
+>>For patch 23 (the one that adds the lun reset support which is built on
+>>patch 22), we can't add it to stable right now if you wanted to, because
+>>it has a bug in it. Michael T, sent the fix:
+>>
+>>https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git/commit/?h=linux-next&id=b4fffc177fad3c99ee049611a508ca9561bb6871
+>>
+>>to Linus today.
 >
-> On Mon, Nov 30, 2020 at 10:52:35AM -0600, George McCollister wrote:
-> > Another possible option could be replacing for_each_netdev_rcu with
-> > for_each_netdev_srcu and using list_for_each_entry_srcu (though it's
-> > currently used nowhere else in the kernel). Has anyone considered
-> > using sleepable RCUs or thought of a reason they wouldn't work or
-> > wouldn't be desirable? For more info search for SRCU in
-> > Documentation/RCU/RTFP.txt
+>Ok, so at least it was only a close call and anyway not for something 
+>that most people would be running on their machines.  But it still 
+>seems to me that the state of CI in Linux is abysmal compared to what 
+>is needed to arbitrarily(*) pick up patches and commit them to 
+>"stable" trees.
 >
-> Want to take the lead?
+>Paolo
+>
+>(*) A ML bot is an arbitrary choice as far as we are concerned since 
+>we cannot know how it makes a decision.
 
-I certainly could take a stab at it. It would be nice to get a
-"doesn't sound like a terrible idea at first glance" from Jakub (and
-anyone else) before starting on it. Maybe someone has brought this up
-before and was shot down for $reason. If so that would be nice to
-know. Of course it's possible I could also find some reason it won't
-work after investigating/implementing/testing.
+The choice of patches is "arbitrary", but the decision is human. The
+patches are reviewed coming out of the AI, sent to public mailing
+list(s) for review, followed by 2 reminders asking for reviews.
+
+The process for AUTOSEL patches generally takes longer than most patches
+do for upstream.
+
+It's quite easy to NAK a patch too, just reply saying "no" and it'll be
+dropped (just like this patch was dropped right after your first reply)
+so the burden on maintainers is minimal.
+
+-- 
+Thanks,
+Sasha
