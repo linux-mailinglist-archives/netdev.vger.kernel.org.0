@@ -2,87 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E78812C8479
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 13:55:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22BA62C848C
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 13:59:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726343AbgK3Myn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 07:54:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60798 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726325AbgK3Myf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 07:54:35 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1117BC061A49
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 04:53:17 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1kjig7-00043O-L5
-        for netdev@vger.kernel.org; Mon, 30 Nov 2020 13:53:15 +0100
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id E98B359F911
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 12:53:12 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id DDFF259F8EF;
-        Mon, 30 Nov 2020 12:53:09 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 9083fcc3;
-        Mon, 30 Nov 2020 12:53:08 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Zhang Qilong <zhangqilong3@huawei.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [net 5/5] can: kvaser_pciefd: kvaser_pciefd_open(): fix error handling
-Date:   Mon, 30 Nov 2020 13:53:07 +0100
-Message-Id: <20201130125307.218258-6-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20201130125307.218258-1-mkl@pengutronix.de>
-References: <20201130125307.218258-1-mkl@pengutronix.de>
+        id S1726412AbgK3M6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 07:58:11 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:51294 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725955AbgK3M6J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 07:58:09 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AUCsqrj065582;
+        Mon, 30 Nov 2020 12:57:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=Z32HeZTxYmA2bg5YFp3JSD0ies4QNEPkMbhbYtB8dhg=;
+ b=A6zuZjx50193pqYusUq0vapLI3Rmgn/N5eJtrgSZoUgnCv2ZikcLLnglaCj+DvZgNkBS
+ buCLJDSxSkhiG6rDOn8OauFi83J9q0gYyQSc8ENMbrAinvh5Ym2Wc2BDd4yhpclLRDtc
+ iowN8I3vBGjquBk8JPxN3qaLvZqaWdGFMKS+ypgyRSFBZNZJJJ48Sz76SzCF0DVbAMoS
+ QK20bB5NCpYFy3pMIbipWFIjE/A2V01In6R0ZHeMubsbz37HDuMP+DI7WaM1Myp/WeVi
+ enYDU65QqDFyPhFiGdTP1MuCl6QHkzWeGCvVt/tPwQas0OdSax1yO5HbQ4P/msgwvZhz kg== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2120.oracle.com with ESMTP id 353egkcuwf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 30 Nov 2020 12:57:22 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AUCoKt9083188;
+        Mon, 30 Nov 2020 12:55:22 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3030.oracle.com with ESMTP id 35404kj7sf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 30 Nov 2020 12:55:22 +0000
+Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0AUCtKqI016127;
+        Mon, 30 Nov 2020 12:55:20 GMT
+Received: from kadam (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 30 Nov 2020 04:55:19 -0800
+Date:   Mon, 30 Nov 2020 15:55:10 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Benjamin Poirier <benjamin.poirier@gmail.com>
+Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        devel@driverdev.osuosl.org, GR-Linux-NIC-Dev@marvell.com,
+        Manish Chopra <manishc@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 127/141] staging: qlge: Fix fall-through warnings for
+ Clang
+Message-ID: <20201130125510.GF2767@kadam>
+References: <cover.1605896059.git.gustavoars@kernel.org>
+ <673bd9f27bcc2df8c9d12be94f54001d8066d4ab.1605896060.git.gustavoars@kernel.org>
+ <20201125044257.GA142382@f3>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201125044257.GA142382@f3>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9820 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 bulkscore=0
+ malwarescore=0 mlxscore=0 mlxlogscore=999 phishscore=0 spamscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011300082
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9820 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 bulkscore=0 suspectscore=0
+ phishscore=0 mlxlogscore=999 lowpriorityscore=0 malwarescore=0
+ priorityscore=1501 spamscore=0 impostorscore=0 clxscore=1011 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011300082
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zhang Qilong <zhangqilong3@huawei.com>
+On Wed, Nov 25, 2020 at 01:42:57PM +0900, Benjamin Poirier wrote:
+> On 2020-11-20 12:39 -0600, Gustavo A. R. Silva wrote:
+> > In preparation to enable -Wimplicit-fallthrough for Clang, fix a warning
+> > by explicitly adding a break statement instead of letting the code fall
+> > through to the next case.
+> > 
+> > Link: https://github.com/KSPP/linux/issues/115
+> > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> > ---
+> >  drivers/staging/qlge/qlge_main.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+> > index 27da386f9d87..c41b1373dcf8 100644
+> > --- a/drivers/staging/qlge/qlge_main.c
+> > +++ b/drivers/staging/qlge/qlge_main.c
+> > @@ -1385,6 +1385,7 @@ static void ql_categorize_rx_err(struct ql_adapter *qdev, u8 rx_err,
+> >  		break;
+> >  	case IB_MAC_IOCB_RSP_ERR_CRC:
+> >  		stats->rx_crc_err++;
+> > +		break;
+> >  	default:
+> >  		break;
+> >  	}
+> 
+> In this instance, it think it would be more appropriate to remove the
+> "default" case.
 
-If kvaser_pciefd_bus_on() failed, we should call close_candev() to avoid
-reference leak.
+There are checkers which complain about that.  (As a static checker
+developer myself, I think complaining about missing default cases is a
+waste of everyone's time).
 
-Fixes: 26ad340e582d3 ("can: kvaser_pciefd: Add driver for Kvaser PCIEcan devices")
-Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
-Link: https://lore.kernel.org/r/20201128133922.3276973-3-zhangqilong3@huawei.com
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- drivers/net/can/kvaser_pciefd.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/can/kvaser_pciefd.c b/drivers/net/can/kvaser_pciefd.c
-index 72acd1ba162d..43151dd6cb1c 100644
---- a/drivers/net/can/kvaser_pciefd.c
-+++ b/drivers/net/can/kvaser_pciefd.c
-@@ -692,8 +692,10 @@ static int kvaser_pciefd_open(struct net_device *netdev)
- 		return err;
- 
- 	err = kvaser_pciefd_bus_on(can);
--	if (err)
-+	if (err) {
-+		close_candev(netdev);
- 		return err;
-+	}
- 
- 	return 0;
- }
--- 
-2.29.2
-
-
+regards,
+dan carpenter
