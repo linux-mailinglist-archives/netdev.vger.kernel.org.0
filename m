@@ -2,123 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53E6F2C84B7
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 14:11:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5BF42C84BC
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 14:13:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726120AbgK3NKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 08:10:43 -0500
-Received: from esa3.microchip.iphmx.com ([68.232.153.233]:22454 "EHLO
-        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725298AbgK3NKm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 08:10:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1606741841; x=1638277841;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yU4RBZDIdf9/SfV6ulpzlpSrR2PxxdPt8Zp4NcqDETM=;
-  b=D75/is2V0072hcD2QOL5WrJz9opZw3RXuvbK9VHAO+pUuixCs3/TdnrQ
-   DG3c7tGT8+2GGxBFqsJRt/GqkS+32TKOC2sVWbGz4adxUSmqwcfgYtori
-   PUJzt3flT07GtxkZB+bxyzkpYQNDctPwkF5eUrnjxR0MlAIauJyY8jTYr
-   zaVmal2W0k9mueO9KGME7gWOOipCC2XuQOW8sIxKyKCKSjSy6Kklj6wyU
-   JfDgEcKRE5dv1vndxGHNdYiiXbDTrnnTIYLpMD1a4EDZB4qHz0TK+X8Tq
-   n2GgSTw/iFWWWP2MjS5NMH3ZQVi9nbkDKvD+6DFU9XRIWRUBMBk7Rkeld
-   g==;
-IronPort-SDR: 42TuJ3Tf4hd0dymHoAyHq7FSgqRqW2hoHbfuWJbrPNxfmFF2j15hS2JjJDRQG1AEQyC8/1KV4d
- UQGdpKsk9G0lxAmFnDnUen+lR2mxttxPV4GNz8mQGJLMRGVXEOAUQcofxdDVLGXH3t/UOJT8aG
- ETmxD5nuWbaGIc3Jd3O6PrmtJHK8WTgoqBelH1kNYmFFR9iD7QPnKGGosii1DdQ3rxe0UQeu5b
- 0FKqRJm0NX08SUpKn0MvfOHfwcAcNsnkoGmkNu3ThfIHMkm5wu9o+ax9hwMSOEha4VGzhBgr9O
- GOQ=
-X-IronPort-AV: E=Sophos;i="5.78,381,1599548400"; 
-   d="scan'208";a="100787599"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Nov 2020 06:09:35 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 30 Nov 2020 06:09:35 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Mon, 30 Nov 2020 06:09:35 -0700
-Date:   Mon, 30 Nov 2020 14:09:34 +0100
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microsemi List <microsemi@lists.bootlin.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [RFC PATCH 1/3] dt-bindings: net: sparx5: Add sparx5-switch
- bindings
-Message-ID: <20201130130934.o47mdjiqidtznm2t@mchp-dev-shegelun>
-References: <20201127133307.2969817-1-steen.hegelund@microchip.com>
- <20201127133307.2969817-2-steen.hegelund@microchip.com>
- <20201127170052.GV2073444@lunn.ch>
+        id S1726342AbgK3NLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 08:11:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35156 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725298AbgK3NLR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 08:11:17 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98E4EC0613D2;
+        Mon, 30 Nov 2020 05:10:31 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id r2so6463898pls.3;
+        Mon, 30 Nov 2020 05:10:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=KhSKNJyOdWzUFv/t2dlusew/QsNoUu7oOeZSlVYMWxI=;
+        b=bD39giwcjOnpDGptQOfJSaxCzRtqDIrg7++zAsmhh73jtMgFIfuR2kT56s/JROrlGY
+         kCKL/xFuXEGdlum5nyIrMhDGFU+CjRd94ASHeUhNBRLqL3bv+0qcCr2QMn+xdoYoD3Y6
+         cZAuTqDFp6u4hlIrjmv8MNwaQKy4YNpHloodd8fXgosiOrmw1c+Zan/DRRiJdvwx/Cqr
+         +TuOobOKNDGYQfqe3xaNNj61sgCmAvH1toUIN3aP3jPQQAkhsQzWnXQMX+WsbVaWrIDO
+         KeOThgRzdSu53lbfbDV/BkJM/ydTNSDlBhxEWqovMPb86L9SU0AV/VR22jcQoPbCk4Vm
+         qQAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KhSKNJyOdWzUFv/t2dlusew/QsNoUu7oOeZSlVYMWxI=;
+        b=mXQY9qSpZrAy1cIXSHCePzbIX363uqucVkiCD7vQyQv3YAwguwFK2GUvFGzIKVKrgy
+         8AxKGcFvkifUP616Uqj/uYi6b+/q8ZVtn8VFeQ0R9zHwZjHOlNMoitUx9h48IQVJNbVY
+         Q5IAl5zHoUGN3oFuA/ZqavhdhRo0Zn7QJeaz4fQAuAVdW6i8dqJIM6mSf6Wuw0dBlON0
+         h6amghMAxPIOPnPONUjQbDzLa1g++V2jZ0Q9itc7WApBVpsKLxrJa1bP7K3DmH6nin6Z
+         PdCFVyW5q7M1rKhMsU90BiF0Q6u0GRxnIK1P+xgnSVRUZeDblgk66WN/JHcyRoIrCY09
+         ZbPQ==
+X-Gm-Message-State: AOAM532qQ/6eSU5n73E7iQaDzsfS3mKghPtwtYj2AHk4Svxec0nfjh+K
+        mHnp1eEY/KQ7N74n2ptJYHE=
+X-Google-Smtp-Source: ABdhPJwPHzYjDimR9D/F2INfX5fzOoCsFnd1xqrAeh/l9VSLGzt2IrOrvBGVmPnJ3ZVArXMchvsBBA==
+X-Received: by 2002:a17:902:d692:b029:da:3b7d:5ec4 with SMTP id v18-20020a170902d692b02900da3b7d5ec4mr18561628ply.70.1606741831212;
+        Mon, 30 Nov 2020 05:10:31 -0800 (PST)
+Received: from localhost.localdomain ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id y15sm5669148pju.13.2020.11.30.05.10.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Nov 2020 05:10:30 -0800 (PST)
+Date:   Mon, 30 Nov 2020 21:10:20 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Subject: Re: [PATCHv2 bpf-next] samples/bpf: add xdp program on egress for
+ xdp_redirect_map
+Message-ID: <20201130131020.GC277949@localhost.localdomain>
+References: <20201110124639.1941654-1-liuhangbin@gmail.com>
+ <20201126084325.477470-1-liuhangbin@gmail.com>
+ <54642499-57d7-5f03-f51e-c0be72fb89de@fb.com>
+ <20201130075107.GB277949@localhost.localdomain>
+ <20201130103208.6d5305e2@carbon>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201127170052.GV2073444@lunn.ch>
+In-Reply-To: <20201130103208.6d5305e2@carbon>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27.11.2020 18:00, Andrew Lunn wrote:
->EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
->
->> +  reg-names:
->> +    minItems: 153
->> +    items:
->> +      - const: dev2g5_0
->> +      - const: dev5g_0
->> +      - const: pcs5g_br_0
->> +      - const: dev2g5_1
->> +      - const: dev5g_1
->...
->> +      - const: ana_ac
->> +      - const: vop
->
->> +    switch: switch@600000000 {
->> +      compatible = "microchip,sparx5-switch";
->> +      reg = <0x10004000 0x4000>, /* dev2g5_0 */
->> +        <0x10008000 0x4000>, /* dev5g_0 */
->> +        <0x1000c000 0x4000>, /* pcs5g_br_0 */
->> +        <0x10010000 0x4000>, /* dev2g5_1 */
->> +        <0x10014000 0x4000>, /* dev5g_1 */
->
->...
->
->> +        <0x11800000 0x100000>, /* ana_l2 */
->> +        <0x11900000 0x100000>, /* ana_ac */
->> +        <0x11a00000 0x100000>; /* vop */
->
->This is a pretty unusual binding.
->
->Why is it not
->
->reg = <0x10004000 0x1af8000>
->
->and the driver can then break up the memory into its sub ranges?
->
->    Andrew
-Hi Andrew,
+On Mon, Nov 30, 2020 at 10:32:08AM +0100, Jesper Dangaard Brouer wrote:
+> > I plan to write a example about vlan header modification based on egress
+> > index. I will post the patch later.
+> 
+> I did notice the internal thread you had with Toke.  I still think it
+> will be more simple to modify the Ethernet mac addresses.  Adding a
+> VLAN id tag is more work, and will confuse benchmarks.  You are
 
-Since the targets used by the driver is not always in the natural
-address order (e.g. the dev2g5_x targets), I thought it best to let the DT
-take care of this since this cannot be probed.  I am aware that this causes
-extra mappings compared to the one-range strategy, but this layout seems more
-transparent to me, also when mapped over PCIe.
+I plan to only modify the vlan id if there has. If you prefer to modify the
+mac address, which way you'd like? Set src mac to egress interface's MAC?
 
+> As Alexei already pointed out, you assignment is to modify the packet
+> in the 2nd devmap XDP-prog.  Why: because you need to realize that this
+> will break your approach to multicast in your previous patchset.
+> (Yes, the offlist patch I gave you, that move running 2nd devmap
+> XDP-prog to a later stage, solved this packet-modify issue).
 
-BR
-Steen
+BTW, it looks with your patch, the counter on egress would make more sense.
+Should I add the counter after your patch posted?
 
-
----------------------------------------
-Steen Hegelund
-steen.hegelund@microchip.com
+Thanks
+Hangbin
