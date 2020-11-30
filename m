@@ -2,112 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6AFB2C89F0
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 17:52:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB4262C89FB
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 17:56:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728808AbgK3QwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 11:52:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:32996 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726670AbgK3QwM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Nov 2020 11:52:12 -0500
-Received: from kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B1C982073C;
-        Mon, 30 Nov 2020 16:51:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606755092;
-        bh=v0BlTFEvoneGaKk6HVhjN8sdc7izbYsibGUaPrdoVrg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jtv5o57QQEkSa8cQ/tsCPxsztHKeqCyxT2sc1JRauCgv/wJRw7ox4sMI0cv3ut/LJ
-         eycSt5XvDBAZSxld3TJ/1MnGVruMB6mL8FQEOY3iN5W1qHcixIGJjVaer+wR9aXNHF
-         t2GflJBkK4VtpOP2PaEzda5IN5vULB0WWKSC4FH0=
-Date:   Mon, 30 Nov 2020 08:51:30 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     David Ahern <dsahern@gmail.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Russell Strong <russell@strong.id.au>
-Subject: Re: [PATCH net] ipv4: Fix tos mask in inet_rtm_getroute()
-Message-ID: <20201130085130.61498967@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201129125416.GA28479@linux.home>
-References: <b2d237d08317ca55926add9654a48409ac1b8f5b.1606412894.git.gnault@redhat.com>
-        <ace2daed-7d88-7364-5395-80b63f59ffc1@gmail.com>
-        <20201128131716.783ff3dd@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-        <20201129125416.GA28479@linux.home>
+        id S1728858AbgK3Qx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 11:53:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41818 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726769AbgK3Qx2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 11:53:28 -0500
+Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7E1FC0613D4;
+        Mon, 30 Nov 2020 08:52:48 -0800 (PST)
+Received: by mail-ot1-x344.google.com with SMTP id 11so11905842oty.9;
+        Mon, 30 Nov 2020 08:52:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3WA540gSHh8kQNe0lWG+yli/wrKJPqlogKyvN8EdAR0=;
+        b=KTWXa6hK5yeoleLSGEzoPfOiFalYXKt2bSNkbLFYPcRQIsZt+JdyjG++UWPySpxpQ+
+         5TXPQcRXjv0DvLrZ3gGwHRXLmmCSiKwCPvdqkc2n9jplKmEOfTrmkjCEzmeI/iGMhy3J
+         zDgxn0BZ4JBFyhAoPJOCFPieYnfIENezF/8PADY9HBAd6Vpo4jMhPzNPY/rZCuFXoLb2
+         n7rqFzSh8yJPu1amSqOwer9+jgV+1NMSe5VeOsVJxCFC90PtDiyGvJDgGd5Y5hgi9kaS
+         QW9ykI29mhYIdGY6yZ3WZWZKBGunxov1xkm2G1+GjDHMYGMlD5A5h/s7VKSAdyi1GicF
+         xp8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3WA540gSHh8kQNe0lWG+yli/wrKJPqlogKyvN8EdAR0=;
+        b=jkjXn4/2iZpTij1eEpwJcxoajTvjXZaCYcljQnzQ5jmlGfriNgqkDq3j8LcA41TI6P
+         1j9OFkFRU/4AnE/y8ChnR2+dpGR5Qww2WO16rOt5A+rM2fcs9ks8qg0Ox1F/1VZODfBA
+         eEWiFBoOwvPGc2GINs4wp/nAusd+DjwD5CxcydCJkmW/kIgeiXjLS3xntHP+Ak5y2lri
+         7mNSqUwgEOA7+HH3x+DHPIRc/h3do1cbTYZn8gXCX+WeM7ZdlI2YcX8N97nYF4RHF208
+         NYJh7Yh9ECX8lBXbinq4KM/p4i5nEV16kcn//feoA8Lm+0FaavmU3bGyx8Da/lQCRdg9
+         fM8w==
+X-Gm-Message-State: AOAM532H2+3SR1VyOoZY++d2CdR2942ecqYMc4YkPihKM2evJQJARfGG
+        1xyAkCYTOAF2BhMY+qeh/yoVEXK93MiG07/TyeE2KsfV2g==
+X-Google-Smtp-Source: ABdhPJy2y/TGo8SvnA68QX0kOXVSSywHbstLw2XAyMQNOLwB1TnHZb6CwaZo4HB3Jk1cbHjd/yhDtb+EXiWOIamw3JA=
+X-Received: by 2002:a9d:4713:: with SMTP id a19mr17913519otf.132.1606755168216;
+ Mon, 30 Nov 2020 08:52:48 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201126220500.av3clcxbbvogvde5@skbuf> <20201127103503.5cda7f24@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+ <CAFSKS=MAdnR2jzmkQfTnSQZ7GY5x5KJE=oeqPCQdbZdf5n=4ZQ@mail.gmail.com>
+ <20201127195057.ac56bimc6z3kpygs@skbuf> <CAFSKS=Pf6zqQbNhaY=A_Da9iz9hcyxQ8E1FBp2o7a_KLBbopYw@mail.gmail.com>
+ <20201127133753.4cf108cb@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+ <20201127233048.GB2073444@lunn.ch> <20201127233916.bmhvcep6sjs5so2e@skbuf>
+ <20201128000234.hwd5zo2d4giiikjc@skbuf> <20201128003912.GA2191767@lunn.ch>
+ <20201128014106.lcqi6btkudbnj3mc@skbuf> <20201127181525.2fe6205d@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201127181525.2fe6205d@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+From:   George McCollister <george.mccollister@gmail.com>
+Date:   Mon, 30 Nov 2020 10:52:35 -0600
+Message-ID: <CAFSKS=O-TDPax1smCPq=b1w3SVqJokesWx02AUGUXD0hUwXbAg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 2/3] net: dsa: add Arrow SpeedChips XRS700x driver
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 29 Nov 2020 13:54:16 +0100 Guillaume Nault wrote:
-> On Sat, Nov 28, 2020 at 01:17:16PM -0800, Jakub Kicinski wrote:
-> > On Sat, 28 Nov 2020 10:03:42 -0700 David Ahern wrote:  
-> > > On 11/26/20 11:09 AM, Guillaume Nault wrote:  
-> > > > When inet_rtm_getroute() was converted to use the RCU variants of
-> > > > ip_route_input() and ip_route_output_key(), the TOS parameters
-> > > > stopped being masked with IPTOS_RT_MASK before doing the route lookup.
-> > > > 
-> > > > As a result, "ip route get" can return a different route than what
-> > > > would be used when sending real packets.
-> > > > 
-> > > > For example:
-> > > > 
-> > > >     $ ip route add 192.0.2.11/32 dev eth0
-> > > >     $ ip route add unreachable 192.0.2.11/32 tos 2
-> > > >     $ ip route get 192.0.2.11 tos 2
-> > > >     RTNETLINK answers: No route to host
-> > > > 
-> > > > But, packets with TOS 2 (ECT(0) if interpreted as an ECN bit) would
-> > > > actually be routed using the first route:
-> > > > 
-> > > >     $ ping -c 1 -Q 2 192.0.2.11
-> > > >     PING 192.0.2.11 (192.0.2.11) 56(84) bytes of data.
-> > > >     64 bytes from 192.0.2.11: icmp_seq=1 ttl=64 time=0.173 ms
-> > > > 
-> > > >     --- 192.0.2.11 ping statistics ---
-> > > >     1 packets transmitted, 1 received, 0% packet loss, time 0ms
-> > > >     rtt min/avg/max/mdev = 0.173/0.173/0.173/0.000 ms
-> > > > 
-> > > > This patch re-applies IPTOS_RT_MASK in inet_rtm_getroute(), to
-> > > > return results consistent with real route lookups.
-> > > > 
-> > > > Fixes: 3765d35ed8b9 ("net: ipv4: Convert inet_rtm_getroute to rcu versions of route lookup")
-> > > > Signed-off-by: Guillaume Nault <gnault@redhat.com>  
-> > > 
-> > > Reviewed-by: David Ahern <dsahern@kernel.org>  
-> > 
-> > Applied, thanks!
-> > 
-> > Should the discrepancy between the behavior of ip_route_input_rcu() and
-> > ip_route_input() be addressed, possibly?  
-> 
-> Do you mean masking TOS with IPTOS_RT_MASK directly in
-> ip_route_input_rcu(), instead of in the callers?
-> 
-> After this patch, all callers apply IPTOS_RT_MASK before calling
-> ip_route_input_rcu(). So, yes, that could be easily consolidated there,
-> and I'll do that after net merges into net-next.
-> 
-> More generally, my long term plan is indeed to do mask the TOS in
-> central places, to get consistent behaviour across the networking
-> stack. However, generally speaking, I need to be careful not to break
-> any established behaviour.
-> 
-> I'm mostly worried about the ECN bits. I guess that any caller that
-> doesn't mask these bits has a bug (as that may break ECN, which is
-> there since a long time). However, there are many code paths to audit
-> before we can be sure.
-> 
-> The end goal is to fully support DSCP. Once we'll be sure that no
-> code path can possibly intreprete an ECN bit as TOS, we'll can safely
-> drop all those obsolete TOS* masks and macros from the kernel code and
-> simply mask out the ECN bits (thus preserving the whole DSCP space).
+On Fri, Nov 27, 2020 at 8:15 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Sat, 28 Nov 2020 03:41:06 +0200 Vladimir Oltean wrote:
+> > Jakub, I would like to hear more from you. I would still like to try
+> > this patch out. You clearly have a lot more background with the code.
+>
+> Well, I've seen people run into the problem of this NDO not being able
+> to sleep, but I don't have much background or knowledge of what impact
+> the locking will have on real systems.
+>
+> We will need to bring this up with Eric (probably best after the turkey
+> weekend is over).
+>
+> In the meantime if you feel like it you may want to add some tracing /
+> printing to check which processes are accessing /proc/net/dev on your
+> platforms of interest, see if there is anything surprising.
+>
+> > You said in an earlier reply that you should have also documented that
+> > ndo_get_stats64 is one of the few NDOs that does not take the RTNL. Is
+> > there a particular reason for that being so, and a reason why it can't
+> > change?
+>
+> I just meant that as a way of documenting the status quo. I'm not aware
+> of any other place reading stats under RCU (which doesn't mean it
+> doesn't exist :)).
+>
+> That said it is a little tempting to add a new per-netdev mutex here,
+> instead of congesting RTNL lock further, since today no correct driver
+> should depend on the RTNL lock.
 
-Sounds great!
-
-> Please note that this is background work for me. Expect slow (but
-> hopefully regular) progress from me.
+Another possible option could be replacing for_each_netdev_rcu with
+for_each_netdev_srcu and using list_for_each_entry_srcu (though it's
+currently used nowhere else in the kernel). Has anyone considered
+using sleepable RCUs or thought of a reason they wouldn't work or
+wouldn't be desirable? For more info search for SRCU in
+Documentation/RCU/RTFP.txt
