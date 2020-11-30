@@ -2,117 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32A332C8597
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 14:37:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 436AE2C85EE
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 14:54:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726618AbgK3Neg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 08:34:36 -0500
-Received: from esa5.microchip.iphmx.com ([216.71.150.166]:31379 "EHLO
-        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726653AbgK3Nef (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 08:34:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1606743276; x=1638279276;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BKNUgIHWG9qidpYWQM9NDa/UdTifWn8MPgHmmyfA1uA=;
-  b=YvOVDVq6PrPYNNKvsMBfoVVk79TGQpLplbnpuAMexN9GKPb6HxrvXLYP
-   bj4rmTH3fVYLekxqP/csQwo77gl0KKrMegBMBmPzntNLMR1ta9Xd57L1k
-   dioizX0w5pJ24qtXaFrnx8gb4FL8P8tzth7c+fXxUr2KCmBdptYUcA/E7
-   g8XXK6afQeTRrv94FcG1WDRx0BzTurtZ9sm/zejCp27qGc2mXerFB2YkH
-   /YDN/DvTBfNm2F5eCJjQAOJsQCGrpOPNWbOHn2I0FabE6iWKfzCRr4red
-   9uFZRg7iMqmrbTwXgv2Q81pDA+Mx7u2hBFGhGz0Rb57Ow+Si9h6CmqXj8
-   A==;
-IronPort-SDR: hogrOpsb1wrRmB0qcNYbM/TKDBg7utWwXa0m6vcOK0cs9El+mmtzEEerwMHiOBO/3AEm7VW7tz
- UlYvfVTvpoPkgh4IlIViadm4d7XTGLaV0kVeShOFgGPNhrlOutbaILbEjDsj2va931vr1QM4LO
- D2aEeZeuGbNYpF20q34HckJ+OMNJIokGr6YLGEF+OiOZtwcCUPjmyS/PMixntqsu0c2Uo+Wipt
- 5JQRYtEKa2wLShnfNJxHce2rngAAYCgjjo2Gav7kMQYUenprDekBQdkWEhzPxJWvIbjN1KCk+T
- PI0=
-X-IronPort-AV: E=Sophos;i="5.78,381,1599548400"; 
-   d="scan'208";a="100225499"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Nov 2020 06:33:30 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 30 Nov 2020 06:33:29 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Mon, 30 Nov 2020 06:33:29 -0700
-Date:   Mon, 30 Nov 2020 14:33:28 +0100
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microsemi List <microsemi@lists.bootlin.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH 2/3] net: sparx5: Add Sparx5 switchdev driver
-Message-ID: <20201130133328.u6gbcttmaeknadip@mchp-dev-shegelun>
-References: <20201127133307.2969817-1-steen.hegelund@microchip.com>
- <20201127133307.2969817-3-steen.hegelund@microchip.com>
- <20201129171634.GD2234159@lunn.ch>
+        id S1726038AbgK3Nxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 08:53:44 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:22582 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725859AbgK3Nxn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 08:53:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606744337;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dd7YyZx6S0r/k7Jv+t4IouJbGqiia4Gb0CDXIGTscz0=;
+        b=eIEP+F8F/CuP/KFr1Qfp3NsFB3p4wcZfUGgp1GHDI/PITFACoRoh7tvhzHQsIO2CKOEXOt
+        4pZL/qgGrp3TjHkmZjS5rA2E9fp619E54HxxWTyHDRCascOs7X9UhVxlk9LnCDhrHcZBbw
+        hD3XyuBL2CdzmD/l7aGCKTlpHwlSbOA=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-456-vsdPyOO9No-YQg15uakmLA-1; Mon, 30 Nov 2020 08:52:15 -0500
+X-MC-Unique: vsdPyOO9No-YQg15uakmLA-1
+Received: by mail-wr1-f70.google.com with SMTP id n13so8461728wrs.10
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 05:52:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dd7YyZx6S0r/k7Jv+t4IouJbGqiia4Gb0CDXIGTscz0=;
+        b=EGoEjB9oiNl39lDqVCSW2lyjqbkKuFVnZxmCgXbt69pgbfQWeIxtEI7FZ4u+kPmxpd
+         Jo/GrDRSdBzzN/WwKMVOsbStAe3pN9WgLwZkKA9nwnqQ4IT6wlJbPrFRIAHLQrY8O2Nd
+         Id1NxDnv/x3DUFesmhOS1wfRoxsJCPyQfb6ApJ62cAShtctKk26zPOqLeE6vpna9KFrm
+         hvqW0EirD6BqMwOqd3iaMkfmduVVPFHNr4gKf/r0XDoxVfnVtDJlK926bg4XvHuIT+rj
+         s7D18PBVYHgPyy5Gc1PvfNKlmQW9Ao+tS/j9H5Jkvju7vbot3Yv7YHFWxWhgSjp70Vvp
+         BU/w==
+X-Gm-Message-State: AOAM5316dlRs83Tw5yx4/4SlD3dJIcuF1jpqBlA6OViqLQweo8IKxU6h
+        8hdLNBk9NdfyaoUMA/ACSv5/nIJA08vBb+7ihr9g1vExeoBSw58bSTGDKJBEEeqg7WDQY5xIHPp
+        Yg+xuNx2Q9pxmhKGOeefXkXJ+b51nyC2QjAk51EmG1vBKRy/nB//K1eXIj0tvuL+CuDFo
+X-Received: by 2002:a7b:c308:: with SMTP id k8mr23439834wmj.76.1606744333603;
+        Mon, 30 Nov 2020 05:52:13 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxDRWnK6zyQVzBKPkyfXvW5Lg7IYkytWYIR8qzu9foUcwM4XjEiPARUAO4ll+Mb92v/wZ91Gw==
+X-Received: by 2002:a7b:c308:: with SMTP id k8mr23439788wmj.76.1606744333185;
+        Mon, 30 Nov 2020 05:52:13 -0800 (PST)
+Received: from ?IPv6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.gmail.com with ESMTPSA id i11sm29049398wro.85.2020.11.30.05.52.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 30 Nov 2020 05:52:12 -0800 (PST)
+Subject: Re: [PATCH AUTOSEL 5.9 22/33] vhost scsi: add lun parser helper
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org,
+        Mike Christie <michael.christie@oracle.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20201125153550.810101-1-sashal@kernel.org>
+ <20201125153550.810101-22-sashal@kernel.org>
+ <25cd0d64-bffc-9506-c148-11583fed897c@redhat.com>
+ <20201125180102.GL643756@sasha-vm>
+ <9670064e-793f-561e-b032-75b1ab5c9096@redhat.com>
+ <20201129041314.GO643756@sasha-vm>
+ <7a4c3d84-8ff7-abd9-7340-3a6d7c65cfa7@redhat.com>
+ <20201129210650.GP643756@sasha-vm>
+ <e499986d-ade5-23bd-7a04-fa5eb3f15a56@redhat.com>
+ <X8TzeoIlR3G5awC6@kroah.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+Message-ID: <17481d8c-c19d-69e3-653d-63a9efec2591@redhat.com>
+Date:   Mon, 30 Nov 2020 14:52:11 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20201129171634.GD2234159@lunn.ch>
+In-Reply-To: <X8TzeoIlR3G5awC6@kroah.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29.11.2020 18:16, Andrew Lunn wrote:
->EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
->
->> diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c b/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
->> new file mode 100644
->> index 000000000000..a91dd9532f1c
->> --- /dev/null
->> +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
->> @@ -0,0 +1,1027 @@
->> +// SPDX-License-Identifier: GPL-2.0+
->> +/* Microchip Sparx5 Switch driver
->> + *
->> + * Copyright (c) 2020 Microchip Technology Inc. and its subsidiaries.
->> + */
->> +
->> +#include <linux/ethtool.h>
->> +
->> +#include "sparx5_main.h"
->> +#include "sparx5_port.h"
->> +
->> +/* Add a potentially wrapping 32 bit value to a 64 bit counter */
->> +static inline void sparx5_update_counter(u64 *cnt, u32 val)
->> +{
->> +     if (val < (*cnt & U32_MAX))
->> +             *cnt += (u64)1 << 32; /* value has wrapped */
->> +
->> +     *cnt = (*cnt & ~(u64)U32_MAX) + val;
->> +}
->
->No inline functions in C files. Let the compiler decide.
->
->And i now think i get what this is doing. But i'm surprised at the
->hardware. Normally registers like this which are expected to wrap
->around, reset to 0 on read.
->
->        Andrew
+On 30/11/20 14:28, Greg KH wrote:
+>>> Lines of code is not everything. If you think that this needs additional
+>>> testing then that's fine and we can drop it, but not picking up a fix
+>>> just because it's 120 lines is not something we'd do.
+>> Starting with the first two steps in stable-kernel-rules.rst:
+>>
+>> Rules on what kind of patches are accepted, and which ones are not, into the
+>> "-stable" tree:
+>>
+>>   - It must be obviously correct and tested.
+>>   - It cannot be bigger than 100 lines, with context.
+> We do obviously take patches that are bigger than 100 lines, as there
+> are always exceptions to the rules here.  Look at all of the
+> spectre/meltdown patches as one such example.  Should we refuse a patch
+> just because it fixes a real issue yet is 101 lines long?
 
-Hi Andrew,
+Every patch should be "fixing a real issue"---even a new feature.  But 
+the larger the patch, the more the submitters and maintainers should be 
+trusted rather than a bot.  The line between feature and bugfix 
+_sometimes_ is blurry, I would say that in this case it's not, and it 
+makes me question how the bot decided that this patch would be 
+acceptable for stable (which AFAIK is not something that can be answered).
 
-I will remove the inline.
+Paolo
 
-In our case the counters just wraps around (at either 32 or 40 bit).
-
-Thanks for your comments
-
-BR
-Steen
-
----------------------------------------
-Steen Hegelund
-steen.hegelund@microchip.com
