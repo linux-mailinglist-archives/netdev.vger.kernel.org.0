@@ -2,85 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35AED2C8D24
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 19:45:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58A1F2C8D21
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 19:45:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388194AbgK3SnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 13:43:23 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:40130 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727626AbgK3SnV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 13:43:21 -0500
-Received: by mail-wr1-f66.google.com with SMTP id o1so3614064wrx.7;
-        Mon, 30 Nov 2020 10:42:58 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0z4kMZ/L26HA3bimUDjYY1jt90FsNiuc+VpOhte22TQ=;
-        b=NR0fCLUqP6hySFY9eXBKI69/FdYZTwtP0UXTMxKpAoXAcNZfvx5HD6xgyTvD+oaHjT
-         tdjW2aUuvb7pq3u9UFT9UTB6Ch0Hdf5jDxUNR1kGtG2IcqBLgy6Y51TqKGFmorxD0UwK
-         bqkjvWPLvty7/TcfCzL3OedcLAu6NLDaQ0SFHXdCt+l2beBx2fvR1cV3NUI8dE2pdDrV
-         2K18susVkFkvZL6SwHaKcUYB1BaCGoSruJ99enBlVBdFT/t0cDja/OII93tx+8XIeceI
-         5n3OCfeeNKDWcveOrIaB8gj5u54/tL4jjoET471PjPjFQZOi9Uzc0eLYO2GtwMZ44o1g
-         Srbw==
-X-Gm-Message-State: AOAM5317Cqs8gWjrA+SCDA1or3Er0kqHXK9BEWUPWbQZYgfI2kz8Huk/
-        u4QhCl9gL0YK7Wqm+IOjGk8=
-X-Google-Smtp-Source: ABdhPJzS5rKeyCdk7vXGyB027nSu2wXtFxZrWsRmSCyWSC+2I/zY4xZDJCEwxue7oPvvwvvIKto80Q==
-X-Received: by 2002:adf:e88a:: with SMTP id d10mr31071993wrm.29.1606761752819;
-        Mon, 30 Nov 2020 10:42:32 -0800 (PST)
-Received: from kozik-lap (adsl-84-226-167-205.adslplus.ch. [84.226.167.205])
-        by smtp.googlemail.com with ESMTPSA id y7sm10350445wrp.3.2020.11.30.10.42.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Nov 2020 10:42:31 -0800 (PST)
-Date:   Mon, 30 Nov 2020 20:42:30 +0200
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Bongsu Jeon <bongsu.jeon2@gmail.com>
-Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Bongsu Jeon <bongsu.jeon@samsung.com>
-Subject: Re: [PATCH v3 net-next 3/4] nfc: s3fwrn5: extract the common phy
- blocks
-Message-ID: <20201130184230.GC28735@kozik-lap>
-References: <1606737829-29586-1-git-send-email-bongsu.jeon@samsung.com>
+        id S1729807AbgK3SnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 13:43:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38236 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727626AbgK3SnS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Nov 2020 13:43:18 -0500
+Received: from sx1.lan (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 97BD220705;
+        Mon, 30 Nov 2020 18:42:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606761758;
+        bh=TSFFLJyXinr1+4oL2dcIJXHym4p28r2juv1sHPPLIwo=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=YzPHM4hXLLWgBs0KdWFe5DJogHlhjAD6C9G6AqeBUuFW+As85Kje1eKSsqA9bE0Xh
+         kGiN7jtQVghOKywheOCkKtX5Kqz+fgH1bsnRImu72r+R5+1JY8xjHX1WZrHQeRCPtv
+         hHbKF+EGIXZfYDn6o3e8+gB4QRdobfvzdq9vJs0g=
+Message-ID: <856d27ae16ecb22cbc8e6db7d22da6887c92cf3a.camel@kernel.org>
+Subject: Re: [PATCH mlx5-next 00/16] mlx5 next updates 2020-11-20
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Leon Romanovsky <leonro@mellanox.com>
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Date:   Mon, 30 Nov 2020 10:42:36 -0800
+In-Reply-To: <20201120230339.651609-1-saeedm@nvidia.com>
+References: <20201120230339.651609-1-saeedm@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1606737829-29586-1-git-send-email-bongsu.jeon@samsung.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 30, 2020 at 09:03:49PM +0900, Bongsu Jeon wrote:
-> From: Bongsu Jeon <bongsu.jeon@samsung.com>
+On Fri, 2020-11-20 at 15:03 -0800, Saeed Mahameed wrote:
+> Hi,
 > 
-> Extract the common phy blocks to reuse it.
-> The UART module will use the common blocks.
+> This series includes trivial updates to mlx5 next branch
+> 1) HW definition for upcoming features
+> 2) Include files and general Cleanups
+> 3) Add the upcoming BlueField-3 device ID
+> 4) Define flow steering priority for VDPA
+> 5) Export missing steering API for ULPs,
+>    will be used later in VDPA driver, to create flow steering domain
+> for
+>    VDPA queues.
+> 6) ECPF (Embedded CPU Physical function) minor improvements for
+> BlueField.
 > 
-> Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
-> ---
->  Changes in v3:
->    - move the phy_common object to s3fwrn.ko to avoid duplication.
->    - include the header files to include everything which is used inside.
->    - wrap the lines.
-> 
->  Changes in v2:
->    - remove the common function's definition in common header file.
->    - make the common phy_common.c file to define the common function.
->    - wrap the lines.
->    - change the Header guard.
->    - remove the unused common function.
-> 
->  drivers/nfc/s3fwrn5/Makefile     |   2 +-
->  drivers/nfc/s3fwrn5/i2c.c        | 117 +++++++++++++--------------------------
->  drivers/nfc/s3fwrn5/phy_common.c |  63 +++++++++++++++++++++
->  drivers/nfc/s3fwrn5/phy_common.h |  36 ++++++++++++
->  4 files changed, 139 insertions(+), 79 deletions(-)
->  create mode 100644 drivers/nfc/s3fwrn5/phy_common.c
->  create mode 100644 drivers/nfc/s3fwrn5/phy_common.h
 
-I am sorry, but I am not going to review this. Please send properly a
-next version - v4 of entire patchset - while fixing issues pointed out
-in my other email (so use proper workflow).
+Series applied to mlx5-next without the VDPA patch.
 
-Best regards,
-Krzysztof
+Jakub, please let me know if you still have concerns regarding that
+patch, i will eventually need to apply it, regardless of the outcome of
+the RDMA vs ETH discussion, it is just how we configure the HW :).
+
+Thanks,
+Saeed.
+
+
