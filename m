@@ -2,110 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22BA62C848C
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 13:59:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 816AA2C84B1
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 14:11:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726412AbgK3M6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 07:58:11 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:51294 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725955AbgK3M6J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 07:58:09 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AUCsqrj065582;
-        Mon, 30 Nov 2020 12:57:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=Z32HeZTxYmA2bg5YFp3JSD0ies4QNEPkMbhbYtB8dhg=;
- b=A6zuZjx50193pqYusUq0vapLI3Rmgn/N5eJtrgSZoUgnCv2ZikcLLnglaCj+DvZgNkBS
- buCLJDSxSkhiG6rDOn8OauFi83J9q0gYyQSc8ENMbrAinvh5Ym2Wc2BDd4yhpclLRDtc
- iowN8I3vBGjquBk8JPxN3qaLvZqaWdGFMKS+ypgyRSFBZNZJJJ48Sz76SzCF0DVbAMoS
- QK20bB5NCpYFy3pMIbipWFIjE/A2V01In6R0ZHeMubsbz37HDuMP+DI7WaM1Myp/WeVi
- enYDU65QqDFyPhFiGdTP1MuCl6QHkzWeGCvVt/tPwQas0OdSax1yO5HbQ4P/msgwvZhz kg== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by aserp2120.oracle.com with ESMTP id 353egkcuwf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 30 Nov 2020 12:57:22 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AUCoKt9083188;
-        Mon, 30 Nov 2020 12:55:22 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3030.oracle.com with ESMTP id 35404kj7sf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 30 Nov 2020 12:55:22 +0000
-Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0AUCtKqI016127;
-        Mon, 30 Nov 2020 12:55:20 GMT
-Received: from kadam (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 30 Nov 2020 04:55:19 -0800
-Date:   Mon, 30 Nov 2020 15:55:10 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Benjamin Poirier <benjamin.poirier@gmail.com>
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        devel@driverdev.osuosl.org, GR-Linux-NIC-Dev@marvell.com,
-        Manish Chopra <manishc@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 127/141] staging: qlge: Fix fall-through warnings for
- Clang
-Message-ID: <20201130125510.GF2767@kadam>
-References: <cover.1605896059.git.gustavoars@kernel.org>
- <673bd9f27bcc2df8c9d12be94f54001d8066d4ab.1605896060.git.gustavoars@kernel.org>
- <20201125044257.GA142382@f3>
+        id S1726076AbgK3NIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 08:08:55 -0500
+Received: from mail-io1-f72.google.com ([209.85.166.72]:41251 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725298AbgK3NIy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 08:08:54 -0500
+Received: by mail-io1-f72.google.com with SMTP id w28so7159459iox.8
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 05:08:39 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=rRssb1RG/kVfj9BXppmJh4PLBuJGRMgyZUW2mrbT0Iw=;
+        b=Nz6mJM51ZSk1gI2KY1dc20g0hl4lynEpvinNImU05niSDW2eHFeHFHPvcr1VDHghSh
+         2mTzmt58/vGddrlzQqh76TrsDHKgOVGaUBWgbT1YC7sEpPpKOW2xQRfFukbVZue+5nEi
+         y4lmmcFxfbcFNVfKyldTC4PZp4R4AJNCJTB5nPtbV7LuIlh5BbZkBfsTHLW2XUoR9VdA
+         JbRMjAfPpSa/Iq3Sn9Sk1CTiIK58g9VviAbT4jz1TpHqOd+R0Glg6R1K5bR+w8G/8Q8s
+         glqIGS9DD6oiYyxne7gaQUk8OFE//D3bX3JR70ogn5uRL+S8cueL/tNSyUt29n2xKD97
+         BPjQ==
+X-Gm-Message-State: AOAM530TiVSb+7o7peBnYArbR5TWO610W4dGxgPaK1CIOYXhBvmfcXUL
+        gdjmj4JB13qPyVkFPG4Y/LkAAwHvr9rXMWNL7NLXkhAyqlAO
+X-Google-Smtp-Source: ABdhPJxSLN0kD1nuaHczO+upJ1xtHcOKFyWTuZsa4dIoHVU2hsy50Y7Bd4ZokCuo5JbAIXbX7jV7haKv9+Np8H71t9simuiO+6wS
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201125044257.GA142382@f3>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9820 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 bulkscore=0
- malwarescore=0 mlxscore=0 mlxlogscore=999 phishscore=0 spamscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011300082
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9820 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 bulkscore=0 suspectscore=0
- phishscore=0 mlxlogscore=999 lowpriorityscore=0 malwarescore=0
- priorityscore=1501 spamscore=0 impostorscore=0 clxscore=1011 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011300082
+X-Received: by 2002:a02:cd87:: with SMTP id l7mr2834400jap.117.1606741692313;
+ Mon, 30 Nov 2020 05:08:12 -0800 (PST)
+Date:   Mon, 30 Nov 2020 05:08:12 -0800
+In-Reply-To: <000000000000b8a70905b54ef5ca@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d0f2fb05b552b3f3@google.com>
+Subject: Re: KASAN: use-after-free Write in kernfs_path_from_node_locked
+From:   syzbot <syzbot+19e6dd9943972fa1c58a@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, axelrasmussen@google.com,
+        davem@davemloft.net, dsahern@kernel.org,
+        gregkh@linuxfoundation.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, liuhangbin@gmail.com,
+        netdev@vger.kernel.org, sfr@canb.auug.org.au,
+        syzkaller-bugs@googlegroups.com, tj@kernel.org, vbabka@suse.cz
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 25, 2020 at 01:42:57PM +0900, Benjamin Poirier wrote:
-> On 2020-11-20 12:39 -0600, Gustavo A. R. Silva wrote:
-> > In preparation to enable -Wimplicit-fallthrough for Clang, fix a warning
-> > by explicitly adding a break statement instead of letting the code fall
-> > through to the next case.
-> > 
-> > Link: https://github.com/KSPP/linux/issues/115
-> > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> > ---
-> >  drivers/staging/qlge/qlge_main.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-> > index 27da386f9d87..c41b1373dcf8 100644
-> > --- a/drivers/staging/qlge/qlge_main.c
-> > +++ b/drivers/staging/qlge/qlge_main.c
-> > @@ -1385,6 +1385,7 @@ static void ql_categorize_rx_err(struct ql_adapter *qdev, u8 rx_err,
-> >  		break;
-> >  	case IB_MAC_IOCB_RSP_ERR_CRC:
-> >  		stats->rx_crc_err++;
-> > +		break;
-> >  	default:
-> >  		break;
-> >  	}
-> 
-> In this instance, it think it would be more appropriate to remove the
-> "default" case.
+syzbot has bisected this issue to:
 
-There are checkers which complain about that.  (As a static checker
-developer myself, I think complaining about missing default cases is a
-waste of everyone's time).
+commit 0f818c4bc1f3dc0d6d0ea916e0ab30cf5e75f4c0
+Author: Axel Rasmussen <axelrasmussen@google.com>
+Date:   Tue Nov 24 05:37:42 2020 +0000
 
-regards,
-dan carpenter
+    mm: mmap_lock: add tracepoints around lock acquisition
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1626291d500000
+start commit:   6174f052 Add linux-next specific files for 20201127
+git tree:       linux-next
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=1526291d500000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1126291d500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=79c69cf2521bef9c
+dashboard link: https://syzkaller.appspot.com/bug?extid=19e6dd9943972fa1c58a
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12c3351d500000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14c28809500000
+
+Reported-by: syzbot+19e6dd9943972fa1c58a@syzkaller.appspotmail.com
+Fixes: 0f818c4bc1f3 ("mm: mmap_lock: add tracepoints around lock acquisition")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
