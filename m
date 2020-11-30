@@ -2,156 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DE1A2C88EC
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 17:07:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B8A12C88FE
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 17:09:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727373AbgK3QFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 11:05:30 -0500
-Received: from mail-db8eur05on2043.outbound.protection.outlook.com ([40.107.20.43]:4960
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726860AbgK3QF3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Nov 2020 11:05:29 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=S9Sp+aGGvQ8Ep/SOrkw2TEDbfVTk/Skppot3aUhR6q5XAgseX6qnqpUjMvx2ApXzb+zg3p4Ivm2nLmrM/bL5EdKUAHvPWL4KlJYVKJbau23VJL9h4XbFIq+UhPc5x6rWVRz3wAJbjFOw6ILidgUNvQDjs39r7proaT2yW035NeCegZPEnGWb1crXRVCqlvPn4imKg/GrtxBXf8a9k84Sz0J4L7o7gELHfN/ZXG6B5QT7ZI1u3XxxuD0kdiUnupZOLNcdL/W51gs+aITEvGKU2DcztziJBU9+EfLwjhml2n3yezeOuP/d1HcFtpVBbdHp3vx41Zi6m33v2KOQDvNnaQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=t6yQLMmKHI1neRaHA1++2Uy2zdjzdnpwmBR/7vK5dw0=;
- b=V1EXBMFfPZ/QlFHrTclqQ8Jz5Sdr7nvQNdHxbTwHGypdzdeU5qUi+riEF3ImIXQA64+LTOn7R1pwl6sbTb+93eaflB9zb23vGOTtvC7o1j8LnEygJKoYRkl3PEH3IxMMIk1GRZW9TWtVZ/CpjHIZLs/vaGr5rxIptZ4Sa5e/8xz7CKRvAsK0GQWE8T6BAz1E5CWhtXKHp23CSsYrC56eB2i/EuxDtbsHEObOzfsRfM6IuNBZKAhxgv7W7hm0W+jBAX2i1q5Xkit9PT2gatkb/uuSuKaiONs8pCv40ZjABAN/JjLRk/9Ia+SXKKZnN+zBSe1Nn8R6yCrf2Wo43kM58w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=t6yQLMmKHI1neRaHA1++2Uy2zdjzdnpwmBR/7vK5dw0=;
- b=hpWXnQWBdKut/4ssNvt2H2RJzwqVx1r1ergzpTapY5tdIYTatNy/7CoXyhiJ3lkJ7GiWg/6fz2qm1MnN1xKu34thWNp1Z69pvLIMmagDcdzxwR8UHGXMDuXyyEHISez7fVuuPhxiA7jnFuoTibYAwkU7OatO1F8K0caYVJQ/BSs=
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VI1PR04MB5501.eurprd04.prod.outlook.com (2603:10a6:803:d3::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.20; Mon, 30 Nov
- 2020 16:04:39 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::2dd6:8dc:2da7:ad84]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::2dd6:8dc:2da7:ad84%5]) with mapi id 15.20.3611.031; Mon, 30 Nov 2020
- 16:04:39 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-CC:     Network Development <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: warnings from MTU setting on switch ports
-Thread-Topic: warnings from MTU setting on switch ports
-Thread-Index: AQHWxyVq1gSWQepkuUGwM5Q0zFNrPqng1riA
-Date:   Mon, 30 Nov 2020 16:04:39 +0000
-Message-ID: <20201130160439.a7kxzaptt5m3jfyn@skbuf>
-References: <b4adfc0b-cd48-b21d-c07f-ad35de036492@prevas.dk>
-In-Reply-To: <b4adfc0b-cd48-b21d-c07f-ad35de036492@prevas.dk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: prevas.dk; dkim=none (message not signed)
- header.d=none;prevas.dk; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.25.2.120]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: cd5d6745-bd11-4afd-30c2-08d89549a47b
-x-ms-traffictypediagnostic: VI1PR04MB5501:
-x-microsoft-antispam-prvs: <VI1PR04MB5501E54E27B50DE68A3F7B73E0F50@VI1PR04MB5501.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4303;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: PX9ZrH2k8UgxvJpgXV0dNY7rKbsapA0salyZV1PFDPadBnpokZpcSKn+RZj+M1ipFOjMsydhQYnpDBHmryC5zqPF5FBPYLZu3NKI00aJwEW7Rhsjag38ZC8bJNK3Fhj4+a6D8FqofdCkFhHi48Z6umxP7+wia3evVOC2ZNz9W456ADQ6d7rUDsrGN6IfjXIBGACyLgfSK471loQ257AVVrsKJU2IySnOovsKX0aCZIBpwAQVW4cAes1oT4yawtL6VyvihvYf9Z8L7amrMo3x4l4CT1jKbH+2t8QS9B2uHtbPTvvAywVMcFxMzWDEFBLWZcIWqyeUw2snOWH54ox//A==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(136003)(346002)(376002)(396003)(39860400002)(366004)(6506007)(26005)(6916009)(186003)(44832011)(83380400001)(33716001)(5660300002)(2906002)(71200400001)(86362001)(4326008)(1076003)(8676002)(316002)(6486002)(8936002)(54906003)(478600001)(66446008)(64756008)(66556008)(66476007)(66946007)(76116006)(9686003)(6512007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?KeqVxsTshUTqHtPNzvj768MeSMzpyexxlacO2OMqWaRVTVZ+JxlFufRih2he?=
- =?us-ascii?Q?QAJST5htg1QLmC+9XIIRiWu8t5SEzaRuK2Q8jhc0BQVVSXTSEJVbSyIaQHNm?=
- =?us-ascii?Q?2/16necLucaDS9yyvbLDX5OXTVSuSg4vaiPhH5OXUDfhnUkNc2gTVrZgDREV?=
- =?us-ascii?Q?HYZXnLSBpqzLNdePF/dg34sVcf4ywiHGIF13D0V9TJnzAKPLjSbknlZCvVar?=
- =?us-ascii?Q?jMaK5J33F3bbYlzli8lOPmG3aGd/dnXeIJMcDNSDY/Gv/Yf5uXw/jNxSig4w?=
- =?us-ascii?Q?DvxkI4elLS7LmxvQIb4LxUgTYn6/LdPoYcJc12Cc24/0YbHC24rC06hfjNTO?=
- =?us-ascii?Q?91p9Zjk791l9hf43wmmsiflPG/1ZQIvlKqm27JkhegsYASAcJS9Ivuygy0jd?=
- =?us-ascii?Q?s78ub+497awhopvNyFbafPhDto7RmETn5MOK3ocRHPDL28TvxA9fB+Tgdy2Q?=
- =?us-ascii?Q?6TnlFNe9t6rqRlkyLc6yPwyEpzS7QBGkSv/Nq54XAA2e6d5usH8NrxnFvm21?=
- =?us-ascii?Q?3S8MQeefgYQdM6q62mq+hnXXzOXulFdanMGOtwpPayPG+vfjfapJSTokOktl?=
- =?us-ascii?Q?3II4pi33Y+p/Luem0/NaZ+51jd0pRPIg9cDhz5osg6ywv82G4IQTCaHjWMF1?=
- =?us-ascii?Q?JhJDRkEjgH2rSNFUrA09MKSFYB3ehPg9rd4nFdCPJJWPVLPDAgEA1pPUrxAX?=
- =?us-ascii?Q?IOHZ5UHg427UOTpGNdmP20EasawkI593B+X5ugPPJCzT1JzAgoGGVB/JpNC5?=
- =?us-ascii?Q?QvMi9eoaWzapGljr8A5r7PmHayIpJbZ5UPpO5WCBSdiWhrLnIZsYXCmllu55?=
- =?us-ascii?Q?Wkvps+hUeW1Al3EVAphE9Vb1Y/KEHj6lWCkhyYNqk5VutN78V9UodytiWWsg?=
- =?us-ascii?Q?Kc/Q48ZGckxR5bnUH5J28tt1gjex4mEkc9FpWzQmo+xP7ENyFHc5ElIYjp03?=
- =?us-ascii?Q?4mOgPhDC0Sms0tIFZBUiMKI76XWSDPfHHAK4x4Bi9U9mH1d3jZdbxU7nwno/?=
- =?us-ascii?Q?jBz1?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <79A93939B9195E44BD1EC22F310BD8DE@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1728149AbgK3QJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 11:09:15 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:50137 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727719AbgK3QJO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 11:09:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606752468;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=z9I0c/dd5Q0R8BZ2NpwwypMm4g9XV24/FLTuN3n5dJk=;
+        b=ck3dNFs59duD+wLHY9wpTyBRL5/SIagmCpccYSWBdUmoFWrqEqthZU5dg4CLXDGB8bfF12
+        Gu/moeRYIZc7CDvuZs3kmf5cRGvKW5B/eceNv8TJhHosCvjdh+tY7F3jokXDGnbHmHzxSs
+        ElHClI9pY6a8LHkTYcGEu1XMsPvBPXU=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-251-sajidVbINuu4HxbjezLILg-1; Mon, 30 Nov 2020 11:07:45 -0500
+X-MC-Unique: sajidVbINuu4HxbjezLILg-1
+Received: by mail-qk1-f198.google.com with SMTP id u67so807903qkd.6
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 08:07:44 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=z9I0c/dd5Q0R8BZ2NpwwypMm4g9XV24/FLTuN3n5dJk=;
+        b=pLbFycQVY/0tk6yZawAkgTPiH4ztzUCsJGlFvvAm2BoHeBSZvCYo1U3CBxazmh3WAl
+         fka1k0KFXAfq0UTuTclpp+luqkydI1ZYngXNAJsQRKeVg8siFwEszCkxDGs4xNmGmFDZ
+         1rPV2puGaPUtbM/JSuM1sAEGjnaQT4W5BVAQ4xmir+knlHvjihWuPvyiMKyBOMmnnF0r
+         4QsRE2du+DDp46QPJ1NFp1U2FZ8LLcjFirZYL7lBve2TLvK8POSdEKE+vP7oH7sE4EU9
+         BexrGpKShfy13NbWftTGWhfFqsOwOBLoQ/z4grHFXcIVXhFHKVrd2dPcqE6XR4zlD4ps
+         gcgg==
+X-Gm-Message-State: AOAM5317kRwezStfaR6nWuC5kyJRyPTR83Z0Hze2TdQNYsL8+QcA6VY0
+        U4VGT3WWs1mJId0HgMfby4Trbq8Bt/ZteSTEA10wNq6qZe89eIdR38u3O4WLKu6IeBOewsz8lCa
+        GeTxhHYzBVzpF3Uhn
+X-Received: by 2002:a05:6214:481:: with SMTP id ay1mr22920283qvb.54.1606752463819;
+        Mon, 30 Nov 2020 08:07:43 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzym/zy6ISLRjexISKW/i4kC8v70fcW5z1pj1xNE6c1gNNOed5dqgeJieAHqXvvZ4TW/ELNfQ==
+X-Received: by 2002:a05:6214:481:: with SMTP id ay1mr22920234qvb.54.1606752463200;
+        Mon, 30 Nov 2020 08:07:43 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id 13sm12673607qkl.121.2020.11.30.08.07.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Nov 2020 08:07:42 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 47BE6181AD4; Mon, 30 Nov 2020 17:07:39 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        brouer@redhat.com
+Subject: Re: [PATCHv2 bpf-next] samples/bpf: add xdp program on egress for
+ xdp_redirect_map
+In-Reply-To: <20201130161249.18f7ca43@carbon>
+References: <20201110124639.1941654-1-liuhangbin@gmail.com>
+ <20201126084325.477470-1-liuhangbin@gmail.com>
+ <54642499-57d7-5f03-f51e-c0be72fb89de@fb.com>
+ <20201130075107.GB277949@localhost.localdomain>
+ <20201130103208.6d5305e2@carbon>
+ <20201130131020.GC277949@localhost.localdomain>
+ <20201130161249.18f7ca43@carbon>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 30 Nov 2020 17:07:39 +0100
+Message-ID: <87im9mygj8.fsf@toke.dk>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cd5d6745-bd11-4afd-30c2-08d89549a47b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Nov 2020 16:04:39.6593
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Iyj/CanV1XILBAoeV+HUbx2puoZU+PNawiBaKg4W/kJk5HSOZKjOp9ukzgpyPZ3LQat69D+QAilNrax/p7tOxw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5501
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rasmus,
+Jesper Dangaard Brouer <brouer@redhat.com> writes:
 
-On Mon, Nov 30, 2020 at 03:30:50PM +0100, Rasmus Villemoes wrote:
-> Hi,
+> On Mon, 30 Nov 2020 21:10:20 +0800
+> Hangbin Liu <liuhangbin@gmail.com> wrote:
 >
-> Updating our mpc8309 board to 5.9, we're starting to get
+>> On Mon, Nov 30, 2020 at 10:32:08AM +0100, Jesper Dangaard Brouer wrote:
+>> > > I plan to write a example about vlan header modification based on egress
+>> > > index. I will post the patch later.  
+>> > 
+>> > I did notice the internal thread you had with Toke.  I still think it
+>> > will be more simple to modify the Ethernet mac addresses.  Adding a
+>> > VLAN id tag is more work, and will confuse benchmarks.  You are  
+>> 
+>> I plan to only modify the vlan id if there has. 
 >
-> [    0.709832] mv88e6085 mdio@e0102120:10: nonfatal error -34 setting MTU=
- on port 0
-> [    0.720721] mv88e6085 mdio@e0102120:10: nonfatal error -34 setting MTU=
- on port 1
-> [    0.731002] mv88e6085 mdio@e0102120:10: nonfatal error -34 setting MTU=
- on port 2
-> [    0.741333] mv88e6085 mdio@e0102120:10: nonfatal error -34 setting MTU=
- on port 3
-> [    0.752220] mv88e6085 mdio@e0102120:10: nonfatal error -34 setting MTU=
- on port 4
-> [    0.764231] eth1: mtu greater than device maximum
-> [    0.769022] ucc_geth e0102000.ethernet eth1: error -22 setting MTU to =
-include DSA overhead
+> This sentence is not complete, but because of the internal thread I
+> know/assume that you mean, that you will only modify the vlan id if
+> there is already another VLAN tag in the packet. Let me express that
+> this is not good enough. This is not a feasible choice.
 >
-> So it does say "nonfatal", but do we have to live with those warnings on
-> every boot going forward, or is there something that we could do to
-> silence it?
+>> If you prefer to modify the mac address, which way you'd like? Set
+>> src mac to egress interface's MAC?
 >
-> It's a mv88e6250 switch with cpu port connected to a ucc_geth interface;
-> the ucc_geth driver indeed does not implement ndo_change_mtu and has
-> ->max_mtu set to the default of 1500.
+> Yes, that will be a good choice, to use the src mac from the egress
+> interface.  This would simulate part of what is needed for L3/routing.
+>
+> Can I request that the dst mac is will be the incoming src mac?
+> Or if you are user-friendly add option that allows to set dst mac.
 
-To suppress the warning:
+One issue with this is that I think it would be neat if we could output
+the egress ifindex as part of the packet data, to verify that different
+packets can get different content (in the multicast case). If we just
+modify the MAC address this is difficult. I guess we could just decide
+to step on one byte in the src MAC or something, but VLAN tags seemed
+like an obvious alternative :)
 
-commit 4349abdb409b04a5ed4ca4d2c1df7ef0cc16f6bd
-Author: Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue Sep 8 02:25:56 2020 +0300
+-Toke
 
-    net: dsa: don't print non-fatal MTU error if not supported
-
-    Commit 72579e14a1d3 ("net: dsa: don't fail to probe if we couldn't set
-    the MTU") changed, for some reason, the "err && err !=3D -EOPNOTSUPP"
-    check into a simple "err". This causes the MTU warning to be printed
-    even for drivers that don't have the MTU operations implemented.
-    Fix that.
-
-    Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-    Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-    Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-    Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-
-But you might also want to look into adding .ndo_change_mtu for
-ucc_geth. If you are able to pass MTU-sized traffic through your
-mv88e6085, then it is probably the case that the mpc8309 already
-supports larger packets than 1500 bytes, and it is simply a matter of
-letting the stack know about that. The warning is there to give people a
-clue for the reason why MTU-sized traffic might not work over DSA.=
