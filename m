@@ -2,238 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CF8B2C7FE8
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 09:31:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EEB62C8011
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 09:35:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727777AbgK3IaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 03:30:17 -0500
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:56970 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727662AbgK3IaP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 03:30:15 -0500
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0AU8SYRm008667;
-        Mon, 30 Nov 2020 02:28:34 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1606724914;
-        bh=h5CVmDm6zhA5LBmaGMR5Ram6bII69s04PXZ9eWvYC2Q=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=gE3dME+F5v5BSQ9TJFDpYn35iHZ5hcagwWJr7Yo3TUBKx5HLUKnOFOwiHG5r+MiBQ
-         +zDN7ijNLpdjxpCbhUvomS6vWiPWPupvJZgZj4ZaXAxm1CEwr1ZLvh/BHFuSAYv+34
-         e7cvyZyzlz5OL2Wyp7aKrn8ZGN30vRuOfIIQutS8=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0AU8SYSU039653
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 30 Nov 2020 02:28:34 -0600
-Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 30
- Nov 2020 02:28:34 -0600
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Mon, 30 Nov 2020 02:28:34 -0600
-Received: from ula0132425.ent.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0AU8S9Du057144;
-        Mon, 30 Nov 2020 02:28:30 -0600
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-CC:     Jonathan Corbet <corbet@lwn.net>, Jiri Pirko <jiri@nvidia.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        <netdev@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH 4/4] docs: networking: ti: Add driver doc for AM65 NUSS switch driver
-Date:   Mon, 30 Nov 2020 13:50:46 +0530
-Message-ID: <20201130082046.16292-5-vigneshr@ti.com>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20201130082046.16292-1-vigneshr@ti.com>
-References: <20201130082046.16292-1-vigneshr@ti.com>
+        id S1727680AbgK3IfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 03:35:19 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35951 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727028AbgK3IfS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 03:35:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606725233;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vOBw30VGGpYGUqtKjgp1D/xXFSKdq88sDVSnLLemHDo=;
+        b=FRb3fGdf6aLMG6xJeHSgATNF+5MeF8CsLcrSLmJgvy3tWcQKhs+x8n1PKDN30xWSabPxpt
+        CmxrZOqc6VAUEJDKbjpyg21zhrtTEb7PFhx3PYGLoFe7XuFsqRTEVI2FRF2E61wmZzUEUy
+        rRgZU3+c/Qu5Znvqo9UfzMIzUGxDz8c=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-11-R4D0pqhDMXGgl2Gw7OZL4g-1; Mon, 30 Nov 2020 03:33:50 -0500
+X-MC-Unique: R4D0pqhDMXGgl2Gw7OZL4g-1
+Received: by mail-wr1-f71.google.com with SMTP id v5so8050801wrr.0
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 00:33:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vOBw30VGGpYGUqtKjgp1D/xXFSKdq88sDVSnLLemHDo=;
+        b=qOrA8fZb6Ciuu6muCBr8f1RM10YiQg/OTLtk4d5OUqXZLwlInXdbWx19hDzv0+nDLV
+         zG2e5LiEHJZuEkRuexbSKxQLBEISnpefpl5mKtin3myDXziQmq2/19UaSkXGKHdWKXSv
+         StB2bK+f+9OWUDUD4/PmmP/Mq++RULPpDRtacna2QZr66CRXDkZMH6weS3NyvShDk2BB
+         suGdtQE/oskD4ub2BcgtJNgXTuDlcQfVO5fb5x3kaJkXpc2Thd7HoGOK+Pw7gGSYJztV
+         pItAmqIgRSDhclb/qU72hNKNinUIYOSB7MmQY47mimv6Y7iEGuFZhGuu8P6e2ZpS09mL
+         pheQ==
+X-Gm-Message-State: AOAM532RpWgdusedkPs9wdDEQW0KspF+aFm864FYAyKbAYIXfPPKZoOj
+        LcZDMiKmfDOgzs5FWEJBxN8uiteTELKRALDAdB7n2uNbn50njorGOoDXb5xAw6eUM/FNoR/H/ho
+        cESKf25AyL7ldfZYFhvdiM/W6tGBUxRjcvujZFTW0tn+sRGXmbSxJi5R19SZS+3XPdIl+
+X-Received: by 2002:adf:dd0e:: with SMTP id a14mr26727980wrm.36.1606725228991;
+        Mon, 30 Nov 2020 00:33:48 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxx/iQZGql5wZU5MomW2tQpacaKJDVUoRlyVnQsj6AxXWR1H+6D7EHUWZYX9I0NcbeUr12Ulw==
+X-Received: by 2002:adf:dd0e:: with SMTP id a14mr26727949wrm.36.1606725228783;
+        Mon, 30 Nov 2020 00:33:48 -0800 (PST)
+Received: from ?IPv6:2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e? ([2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e])
+        by smtp.gmail.com with ESMTPSA id a184sm24043265wmf.8.2020.11.30.00.33.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 30 Nov 2020 00:33:47 -0800 (PST)
+Subject: Re: [PATCH AUTOSEL 5.9 22/33] vhost scsi: add lun parser helper
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Mike Christie <michael.christie@oracle.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20201125153550.810101-1-sashal@kernel.org>
+ <20201125153550.810101-22-sashal@kernel.org>
+ <25cd0d64-bffc-9506-c148-11583fed897c@redhat.com>
+ <20201125180102.GL643756@sasha-vm>
+ <9670064e-793f-561e-b032-75b1ab5c9096@redhat.com>
+ <20201129041314.GO643756@sasha-vm>
+ <7a4c3d84-8ff7-abd9-7340-3a6d7c65cfa7@redhat.com>
+ <20201129210650.GP643756@sasha-vm>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+Message-ID: <e499986d-ade5-23bd-7a04-fa5eb3f15a56@redhat.com>
+Date:   Mon, 30 Nov 2020 09:33:46 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
+In-Reply-To: <20201129210650.GP643756@sasha-vm>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-J721e, J7200 and AM64 have multi port switches which can work in multi
-mac mode and in switch mode. Add documentation explaining how to use
-different modes.
+On 29/11/20 22:06, Sasha Levin wrote:
+> On Sun, Nov 29, 2020 at 06:34:01PM +0100, Paolo Bonzini wrote:
+>> On 29/11/20 05:13, Sasha Levin wrote:
+>>>> Which doesn't seem to be suitable for stable either...  Patch 3/5 in
+>>>
+>>> Why not? It was sent as a fix to Linus.
+>>
+>> Dunno, 120 lines of new code?  Even if it's okay for an rc, I don't 
+>> see why it is would be backported to stable releases and release it 
+>> without any kind of testing.  Maybe for 5.9 the chances of breaking 
+> 
+> Lines of code is not everything. If you think that this needs additional
+> testing then that's fine and we can drop it, but not picking up a fix
+> just because it's 120 lines is not something we'd do.
 
-Borrowed from:
-Documentation/networking/device_drivers/ethernet/ti/cpsw_switchdev.rst
+Starting with the first two steps in stable-kernel-rules.rst:
 
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
----
- .../device_drivers/ethernet/index.rst         |   1 +
- .../ethernet/ti/am65_nuss_cpsw_switchdev.rst  | 143 ++++++++++++++++++
- 2 files changed, 144 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/ethernet/ti/am65_nuss_cpsw_switchdev.rst
+Rules on what kind of patches are accepted, and which ones are not, into 
+the "-stable" tree:
 
-diff --git a/Documentation/networking/device_drivers/ethernet/index.rst b/Documentation/networking/device_drivers/ethernet/index.rst
-index cbb75a1818c0..6b5dc203da2b 100644
---- a/Documentation/networking/device_drivers/ethernet/index.rst
-+++ b/Documentation/networking/device_drivers/ethernet/index.rst
-@@ -49,6 +49,7 @@ Contents:
-    stmicro/stmmac
-    ti/cpsw
-    ti/cpsw_switchdev
-+   ti/am65_nuss_cpsw_switchdev
-    ti/tlan
-    toshiba/spider_net
- 
-diff --git a/Documentation/networking/device_drivers/ethernet/ti/am65_nuss_cpsw_switchdev.rst b/Documentation/networking/device_drivers/ethernet/ti/am65_nuss_cpsw_switchdev.rst
-new file mode 100644
-index 000000000000..f24adfab6a1b
---- /dev/null
-+++ b/Documentation/networking/device_drivers/ethernet/ti/am65_nuss_cpsw_switchdev.rst
-@@ -0,0 +1,143 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+===================================================================
-+Texas Instruments K3 AM65 CPSW NUSS switchdev based ethernet driver
-+===================================================================
-+
-+:Version: 1.0
-+
-+Port renaming
-+=============
-+
-+In order to rename via udev::
-+
-+    ip -d link show dev sw0p1 | grep switchid
-+
-+    SUBSYSTEM=="net", ACTION=="add", ATTR{phys_switch_id}==<switchid>, \
-+	    ATTR{phys_port_name}!="", NAME="sw0$attr{phys_port_name}"
-+
-+
-+Multi mac mode
-+==============
-+
-+- The driver is operating in multi-mac mode by default, thus
-+  working as N individual network interfaces.
-+
-+Devlink configuration parameters
-+================================
-+
-+See Documentation/networking/devlink/am65-nuss-cpsw-switch.rst
-+
-+Enabling "switch"
-+=================
-+
-+The Switch mode can be enabled by configuring devlink driver parameter
-+"switch_mode" to 1/true::
-+
-+        devlink dev param set platform/c000000.ethernet \
-+        name switch_mode value true cmode runtime
-+
-+This can be done regardless of the state of Port's netdev devices - UP/DOWN, but
-+Port's netdev devices have to be in UP before joining to the bridge to avoid
-+overwriting of bridge configuration as CPSW switch driver completely reloads its
-+configuration when first port changes its state to UP.
-+
-+When the both interfaces joined the bridge - CPSW switch driver will enable
-+marking packets with offload_fwd_mark flag.
-+
-+All configuration is implemented via switchdev API.
-+
-+Bridge setup
-+============
-+
-+::
-+
-+        devlink dev param set platform/c000000.ethernet \
-+        name switch_mode value true cmode runtime
-+
-+	ip link add name br0 type bridge
-+	ip link set dev br0 type bridge ageing_time 1000
-+	ip link set dev sw0p1 up
-+	ip link set dev sw0p2 up
-+	ip link set dev sw0p1 master br0
-+	ip link set dev sw0p2 master br0
-+
-+	[*] bridge vlan add dev br0 vid 1 pvid untagged self
-+
-+	[*] if vlan_filtering=1. where default_pvid=1
-+
-+	Note. Steps [*] are mandatory.
-+
-+
-+On/off STP
-+==========
-+
-+::
-+
-+	ip link set dev BRDEV type bridge stp_state 1/0
-+
-+VLAN configuration
-+==================
-+
-+::
-+
-+  bridge vlan add dev br0 vid 1 pvid untagged self <---- add cpu port to VLAN 1
-+
-+Note. This step is mandatory for bridge/default_pvid.
-+
-+Add extra VLANs
-+===============
-+
-+ 1. untagged::
-+
-+	bridge vlan add dev sw0p1 vid 100 pvid untagged master
-+	bridge vlan add dev sw0p2 vid 100 pvid untagged master
-+	bridge vlan add dev br0 vid 100 pvid untagged self <---- Add cpu port to VLAN100
-+
-+ 2. tagged::
-+
-+	bridge vlan add dev sw0p1 vid 100 master
-+	bridge vlan add dev sw0p2 vid 100 master
-+	bridge vlan add dev br0 vid 100 pvid tagged self <---- Add cpu port to VLAN100
-+
-+FDBs
-+----
-+
-+FDBs are automatically added on the appropriate switch port upon detection
-+
-+Manually adding FDBs::
-+
-+    bridge fdb add aa:bb:cc:dd:ee:ff dev sw0p1 master vlan 100
-+    bridge fdb add aa:bb:cc:dd:ee:fe dev sw0p2 master <---- Add on all VLANs
-+
-+MDBs
-+----
-+
-+MDBs are automatically added on the appropriate switch port upon detection
-+
-+Manually adding MDBs::
-+
-+  bridge mdb add dev br0 port sw0p1 grp 239.1.1.1 permanent vid 100
-+  bridge mdb add dev br0 port sw0p1 grp 239.1.1.1 permanent <---- Add on all VLANs
-+
-+Multicast flooding
-+==================
-+CPU port mcast_flooding is always on
-+
-+Turning flooding on/off on swithch ports:
-+bridge link set dev sw0p1 mcast_flood on/off
-+
-+Access and Trunk port
-+=====================
-+
-+::
-+
-+ bridge vlan add dev sw0p1 vid 100 pvid untagged master
-+ bridge vlan add dev sw0p2 vid 100 master
-+
-+
-+ bridge vlan add dev br0 vid 100 self
-+ ip link add link br0 name br0.100 type vlan id 100
-+
-+Note. Setting PVID on Bridge device itself works only for
-+default VLAN (default_pvid).
--- 
-2.29.2
+  - It must be obviously correct and tested.
+  - It cannot be bigger than 100 lines, with context.
+
+> Plus all the testing we have for the stable trees, yes. It goes beyond
+> just compiling at this point.
+> 
+> Your very own co-workers (https://cki-project.org/) are pushing hard on
+> this effort around stable kernel testing, and statements like these
+> aren't helping anyone.
+
+I am not aware of any public CI being done _at all_ done on vhost-scsi, 
+by CKI or everyone else.  So autoselection should be done only on 
+subsystems that have very high coverage in CI.
+
+Paolo
 
