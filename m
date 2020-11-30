@@ -2,90 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D26CC2C818C
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 11:00:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 893752C81B5
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 11:07:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727513AbgK3KAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 05:00:09 -0500
-Received: from mail.katalix.com ([3.9.82.81]:53302 "EHLO mail.katalix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726249AbgK3KAJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Nov 2020 05:00:09 -0500
-Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
-        (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id 8B0DC9700B;
-        Mon, 30 Nov 2020 09:59:27 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1606730367; bh=HkistHrtY52xD0bjfDJuMl28/4XdgawgJh9AqdU/5eQ=;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-         Content-Disposition:In-Reply-To:From;
-        z=Date:=20Mon,=2030=20Nov=202020=2009:59:27=20+0000|From:=20Tom=20P
-         arkin=20<tparkin@katalix.com>|To:=20Guillaume=20Nault=20<gnault@re
-         dhat.com>|Cc:=20netdev@vger.kernel.org,=20jchapman@katalix.com|Sub
-         ject:=20Re:=20[PATCH=20net-next=201/2]=20ppp:=20add=20PPPIOCBRIDGE
-         CHAN=20and=0D=0A=20PPPIOCUNBRIDGECHAN=20ioctls|Message-ID:=20<2020
-         1130095926.GA4543@katalix.com>|References:=20<20201126122426.25243
-         -1-tparkin@katalix.com>=0D=0A=20<20201126122426.25243-2-tparkin@ka
-         talix.com>=0D=0A=20<20201127193134.GA23450@linux.home>|MIME-Versio
-         n:=201.0|Content-Disposition:=20inline|In-Reply-To:=20<20201127193
-         134.GA23450@linux.home>;
-        b=zCIlY22OsvlPVfqmOd2QwuCQEvYpXG3pgwt+7+qKcsqoPBU1vWEKZ1+LhtqOAOBoR
-         DjRR/h86Fz3HcRBZ2UOhYjnWCeFxkdsBBfvHrEHiOpq/UzN4sL/L3I+qNCjsasCNmY
-         f2Qto+4awrspGE8N/IEnbyFqVC5isp/UVfOd+tOMQjgY+On0DGewS0g93/E8CjIqem
-         3FT1LhIHTEyWC2pLn7j8lWV11mzB6F8EyAvjeQRG5biZaqnfKIB8faAVFlJNdNsF3q
-         AG4wgloDd8+t1F+Pa1eSgS3sKQgGwGJZ8+XEUeee3/QS+vzpTFlnCxxSUyPDIJU9hB
-         0XKtfeO4PFFJg==
-Date:   Mon, 30 Nov 2020 09:59:27 +0000
-From:   Tom Parkin <tparkin@katalix.com>
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     netdev@vger.kernel.org, jchapman@katalix.com
-Subject: Re: [PATCH net-next 1/2] ppp: add PPPIOCBRIDGECHAN and
- PPPIOCUNBRIDGECHAN ioctls
-Message-ID: <20201130095926.GA4543@katalix.com>
-References: <20201126122426.25243-1-tparkin@katalix.com>
- <20201126122426.25243-2-tparkin@katalix.com>
- <20201127193134.GA23450@linux.home>
+        id S1728796AbgK3KGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 05:06:41 -0500
+Received: from userp2130.oracle.com ([156.151.31.86]:37450 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726579AbgK3KGl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 05:06:41 -0500
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AU9xBhm078632;
+        Mon, 30 Nov 2020 10:04:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type :
+ content-transfer-encoding : in-reply-to; s=corp-2020-01-29;
+ bh=89d0xM4SUH4a0fX74f4jEtNnPihawrq2u89AGEQ/K1I=;
+ b=v3Cb2GUa5tO1ck9uZJVgTSfz+Rqgf8BbP8CWZySuiRS1/MNhwFWwNMtwQlb6BS0HJNpX
+ ZojXTgzG2Fvtwb7uvXkg9ITVM0TglIFIXygOBQ1NyY1YoVigALg05yrXDCMyvbfG0wAG
+ jOqphwIZGcajIQ39bHzyLoIvcq8boyKIl3UUA/ouDVTu0y7192w5r74TANPHlVZnQ3AL
+ ET1ROYKM8FjYAvM9Kg2RmmZlLLYXmibim+fYLMlBx33AVDAJ91GP4Q0XdXRqqn0pyWzA
+ Cx5stsAD6qWNtAKI/54XICGwfGBrlFS817x6+GJnGSdhnNyJoM2SyqMh+rWv2pvCu3Q5 VA== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2130.oracle.com with ESMTP id 353dyqc9sh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 30 Nov 2020 10:04:42 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AUA1GcJ076901;
+        Mon, 30 Nov 2020 10:04:42 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userp3030.oracle.com with ESMTP id 3540fuucxc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 30 Nov 2020 10:04:42 +0000
+Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0AUA4b0q001002;
+        Mon, 30 Nov 2020 10:04:37 GMT
+Received: from kadam (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 30 Nov 2020 02:04:36 -0800
+Date:   Mon, 30 Nov 2020 13:04:25 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Andrew Hendry <andrew.hendry@gmail.com>,
+        =?utf-8?B?a2l5aW4o5bC55LquKQ==?= <kiyin@tencent.com>,
+        Martin Schiller <ms@dev.tdt.de>
+Cc:     "security@kernel.org" <security@kernel.org>,
+        "linux-distros@vs.openwall.org" <linux-distros@vs.openwall.org>,
+        =?utf-8?B?aHVudGNoZW4o6ZmI6ZizKQ==?= <huntchen@tencent.com>,
+        =?utf-8?B?ZGFubnl3YW5nKOeOi+Wuhyk=?= <dannywang@tencent.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH net] net/x25: prevent a couple of overflows
+Message-ID: <20201130100425.GB2789@kadam>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="Nq2Wo0NMKNjxTN9z"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20201127193134.GA23450@linux.home>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <61d3e7e75f704996bf312ef5d271bcea@tencent.com>
 User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9820 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 suspectscore=0
+ phishscore=0 mlxlogscore=999 adultscore=0 mlxscore=0 bulkscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011300063
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9820 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 bulkscore=0
+ clxscore=1011 mlxscore=0 spamscore=0 priorityscore=1501 mlxlogscore=999
+ suspectscore=0 lowpriorityscore=0 phishscore=0 adultscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011300063
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: "kiyin(尹亮)" <kiyin@tencent.com>
 
---Nq2Wo0NMKNjxTN9z
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The .x25_addr[] address comes from the user and is not necessarily
+NUL terminated.  This leads to a couple problems.  The first problem is
+that the strlen() in x25_bind() can read beyond the end of the buffer.
 
-On  Fri, Nov 27, 2020 at 20:31:34 +0100, Guillaume Nault wrote:
-> On Thu, Nov 26, 2020 at 12:24:25PM +0000, Tom Parkin wrote:
-> > This new ioctl pair allows two ppp channels to be bridged together:
-> > frames arriving in one channel are transmitted in the other channel
-> > and vice versa.
->=20
-> Thanks!
-> Some comments below (mostly about locking).
+The second problem is more subtle and could result in memory corruption.
+The call tree is:
+  x25_connect()
+  --> x25_write_internal()
+      --> x25_addr_aton()
 
-Thanks for your review Guillaume.  I'll work on integrating your
-comments (and a fix for the build test robot warning) into a v2 series.
+The .x25_addr[] buffers are copied to the "addresses" buffer from
+x25_write_internal() so it will lead to stack corruption.
 
---Nq2Wo0NMKNjxTN9z
-Content-Type: application/pgp-signature; name="signature.asc"
+The x25 protocol only allows 15 character addresses so putting a NUL
+terminator as the 16th character is safe and obviously preferable to
+reading out of bounds.
 
------BEGIN PGP SIGNATURE-----
+Signed-off-by: "kiyin(尹亮)" <kiyin@tencent.com>
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
 
-iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAl/EwnoACgkQlIwGZQq6
-i9CKTAf/ZSFEaHqRkMF3u/UxJavjMPWKGzIRn9kb9LtvXFB+LAS2po3faxvL6hre
-cuckzin4dB8C+U73oQoabGOgG4Kb8mhuynpE+PJV8V7lUQADEuJXu7LbU7/VEXJk
-A+OvWhe0Ak8VckA1IRGTTBLGcuwK8ekorPfljkg2plowGhmnh999hO2OZnIhRcfB
-bbWG9cn82N0JQN/DXnhkDJdU7rxKjzqrKTzcPegyAUFYs3zR0g++9I6VAI96qKTM
-Eemf6GtE/bsaGNiPa0aU/wGlmlM80OVnQskXsC/c1zaKxWe+a8KIiBAewi1WvX+3
-Lws/OTlSJyUagjer+HZtaRRK9qqNLg==
-=8kEf
------END PGP SIGNATURE-----
+ net/x25/af_x25.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---Nq2Wo0NMKNjxTN9z--
+diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
+index 0bbb283f23c9..3180f15942fe 100644
+--- a/net/x25/af_x25.c
++++ b/net/x25/af_x25.c
+@@ -686,6 +686,8 @@ static int x25_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
+ 		goto out;
+ 	}
+ 
++	addr->sx25_addr.x25_addr[X25_ADDR_LEN - 1] = '\0';
++
+ 	/* check for the null_x25_address */
+ 	if (strcmp(addr->sx25_addr.x25_addr, null_x25_address.x25_addr)) {
+ 
+@@ -779,6 +781,7 @@ static int x25_connect(struct socket *sock, struct sockaddr *uaddr,
+ 		goto out;
+ 
+ 	rc = -ENETUNREACH;
++	addr->sx25_addr.x25_addr[X25_ADDR_LEN - 1] = '\0';
+ 	rt = x25_get_route(&addr->sx25_addr);
+ 	if (!rt)
+ 		goto out;
+-- 
+2.28.0
