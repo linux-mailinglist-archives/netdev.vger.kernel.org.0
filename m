@@ -2,86 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 062062C9114
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 23:30:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0D942C9124
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 23:33:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730804AbgK3W3e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 17:29:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37756 "EHLO
+        id S1730700AbgK3WcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 17:32:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730795AbgK3W3d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 17:29:33 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 713A7C0613D2;
-        Mon, 30 Nov 2020 14:28:53 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id s21so11328201pfu.13;
-        Mon, 30 Nov 2020 14:28:53 -0800 (PST)
+        with ESMTP id S1730693AbgK3Wb6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 17:31:58 -0500
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D203C0613D3
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 14:31:17 -0800 (PST)
+Received: by mail-io1-xd2c.google.com with SMTP id y5so12477730iow.5
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 14:31:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=nAzMv+/mbuFFwiCCS8n8Lid+mXMaJezVpww5GEW5pks=;
-        b=Rh32vFtSY9kOOzSQwr/MEikm0hFOOuBIJRtIQtPsSTbcOcszdF0z19YKABUFn2fAp9
-         KWSKvWMZZpm2qlcEbhMEPVymnXlLNOzy4hP6gD7HrfhVmTxA2BUleON9EuePDlbGOd2R
-         TDSUG7BrzUcPYt1skK5dOh++5Ye65kNGtV4wYvpQXJla7uQN9MJ6fzMo+8IpcQZm5EPs
-         nCLqIkM7kNNJaNop4BWPSBieztKg6H+fQnxvrsWdD0WWVyUr5OwhoQJ8g5zuUC+WQoZZ
-         0dn6jA/0/py9d7iw5ObZCNgN+AWsBPLgqMSr2IQZJxMfJYpr8evUfesz61g/Mvcu0g6O
-         m1BQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RmdgNjvSaGBPcJxRH4EIIcBZZKTVT8n7HYAdIO9JgTk=;
+        b=aqZWtxGdk3HlmmEjYYb4S6gzRraex+WEGILi1UWbOkMljTDZbXRpJGxBCTDdaXS0ZT
+         oe8IxC2n9bv1yqKykBmX5QY9cXMIQWOKI/ctrP42ZPAAz/O/mhshZ43vjDOpc+zZlQzy
+         1Fkkf8DGpFQm+CwspeUpKXdmMSfbRA/fHm/afAjYoUWo0xMmsdkUd6nZ8vsUScCFXRqI
+         yB5T7QoIs5c1JuX63ZyLn7CXh5swDy3u1dQCwcI0P/XVu4rl+Mbf0FGjo47kRPLieGYL
+         1betPidQ+jIaE7dUwIlJsw99lVRRzzM1KJM1fxDOocP9QCpIR0+HB5XEz6BSNfHo7nWo
+         ZvFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=nAzMv+/mbuFFwiCCS8n8Lid+mXMaJezVpww5GEW5pks=;
-        b=GeXNvoHl8++zV6tAlsYxFRX/bJfFkeItLAi2yWLGdYcoR/c+2CD7uwtU48gQxiZajL
-         DCSe8x3Mqizu4P7tF95cKEEgosFn6f8DS6tq8cpn0oFTY3xsE/qar5dK/PBOR3xFnwMc
-         MjM46m0IBSm70Ta92bczwFRSQPRHB86qZpsidoxMgcpBIqQAV6Ar2HgVhFbVbc8h+u3u
-         Xh5LKREQN5OsmBCjB8RsQNT3UZJxt8iwBg2xFBEMKTCfJeGdyg/jP0IRC39bR324Ucmg
-         KR0TZ4Mn8a/EhJhS8+XTC8FjcS9fYxibf3cse3kve0VlrXaJ32OQoS0S1Q4hKSlaJD2O
-         Fk6g==
-X-Gm-Message-State: AOAM533B2y/dZogCutb5wPGhWpXwvsCw5nXeH158+zM9LMMhATVoH5T3
-        B6qqHGcdWQbQSPr+fBo12XU=
-X-Google-Smtp-Source: ABdhPJzzpe28kQxnUbOfIXqOIH22llwJqZR6vl/8YLOpl9d27sgWgHFaTKyh1Cj2B+RhQT1AK9LEiA==
-X-Received: by 2002:aa7:9597:0:b029:198:50a8:a6cf with SMTP id z23-20020aa795970000b029019850a8a6cfmr20899478pfj.40.1606775333056;
-        Mon, 30 Nov 2020 14:28:53 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id h16sm474871pjt.43.2020.11.30.14.28.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Nov 2020 14:28:52 -0800 (PST)
-Date:   Mon, 30 Nov 2020 14:28:48 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Tristram.Ha@microchip.com
-Cc:     ceggers@arri.de, olteanv@gmail.com, kuba@kernel.org,
-        andrew@lunn.ch, robh+dt@kernel.org, vivien.didelot@gmail.com,
-        davem@davemloft.net, kurt.kanzenbach@linutronix.de,
-        george.mccollister@gmail.com, marex@denx.de,
-        helmut.grohne@intenta.de, pbarker@konsulko.com,
-        Codrin.Ciubotariu@microchip.com, Woojung.Huh@microchip.com,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3 00/12] net: dsa: microchip: PTP support for
- KSZ956x
-Message-ID: <20201130222848.GA5215@hoboy.vegasvil.org>
-References: <20201118203013.5077-1-ceggers@arri.de>
- <BYAPR11MB35582F880B533EB2EE0CDD1DECE00@BYAPR11MB3558.namprd11.prod.outlook.com>
- <3569829.EPWo3g8d0Q@n95hx1g2>
- <12878838.xADNQ6XqJ4@n95hx1g2>
- <BYAPR11MB355857CFE8E9DA29BDAA900AECF50@BYAPR11MB3558.namprd11.prod.outlook.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RmdgNjvSaGBPcJxRH4EIIcBZZKTVT8n7HYAdIO9JgTk=;
+        b=D9C9gNWC5ExLNGqkDozWFAljCBwQcp2u67Kiqv/KEODW9aKQN6yslifeNIpNrLf56K
+         MujtcCIVn4QFgREJ3X+uE+3TAFmOUBQBmeQuM1poBWXuU478axFH3BacPYlfp17qQUAT
+         un4NulnwnpI5UkKc+3xPsovLHj6YepbfCEKM3ccth9gKoKbXgLrn7DHKRwwAyO2Bz+uS
+         fcqJjZ2432USmqoiXI0pAs+3rbwPN6UaHks0HAKpIn9kzxlq3551auHjo0Uan23o1/BA
+         zjoOQEDrHWjqGsC6k6eIhhh5tiJuiNPOCNRmsszbSnCrREVp2+CVBUAb9p62ZXPyrn+B
+         eXnA==
+X-Gm-Message-State: AOAM530VO78z8KzO2nc4+tKqXMrtJFw/3a7KZ0o9V5mhlbaAODWPZL0q
+        awsLVTiTovBy4mCiVbp92u3wsMSmXgdbVco2CQw=
+X-Google-Smtp-Source: ABdhPJwo7OQdOWSCNW4guUF1MZ/6Vb2XxGle1AqQgCCcVKdV3KuL8FWGwHqarX2Olp2++xADgyBnAIEXzub4e+lXf+0=
+X-Received: by 2002:a5d:81c1:: with SMTP id t1mr12652244iol.88.1606775476497;
+ Mon, 30 Nov 2020 14:31:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BYAPR11MB355857CFE8E9DA29BDAA900AECF50@BYAPR11MB3558.namprd11.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20201130212907.320677-1-anthony.l.nguyen@intel.com> <20201130212907.320677-3-anthony.l.nguyen@intel.com>
+In-Reply-To: <20201130212907.320677-3-anthony.l.nguyen@intel.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Mon, 30 Nov 2020 14:31:05 -0800
+Message-ID: <CAKgT0UfvF5yzpck5V-2QM_7RjFV_UKGEGmgM=xg9L5t5CG5PgQ@mail.gmail.com>
+Subject: Re: [net-next 2/4] e1000e: Add Dell's Comet Lake systems into s0ix heuristics
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mario Limonciello <mario.limonciello@dell.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Stefan Assmann <sassmann@redhat.com>,
+        "Neftin, Sasha" <sasha.neftin@intel.com>,
+        Yijun Shen <Yijun.shen@dell.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 30, 2020 at 09:01:25PM +0000, Tristram.Ha@microchip.com wrote:
-> The 1588 PTP engine in the KSZ switches was designed to be controlled closely by
-> a PTP stack, so it is a little difficult to use when there is a layer of kernel support
-> between the application and the driver.
+On Mon, Nov 30, 2020 at 1:32 PM Tony Nguyen <anthony.l.nguyen@intel.com> wrote:
+>
+> From: Mario Limonciello <mario.limonciello@dell.com>
+>
+> Dell's Comet Lake Latitude and Precision systems containing i219LM are
+> properly configured and should use the s0ix flows.
+>
+> Signed-off-by: Mario Limonciello <mario.limonciello@dell.com>
+> Tested-by: Yijun Shen <Yijun.shen@dell.com>
+> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> ---
+>  drivers/net/ethernet/intel/Kconfig        |  1 +
+>  drivers/net/ethernet/intel/e1000e/param.c | 80 ++++++++++++++++++++++-
+>  2 files changed, 80 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/intel/Kconfig b/drivers/net/ethernet/intel/Kconfig
+> index 5aa86318ed3e..280af47d74d2 100644
+> --- a/drivers/net/ethernet/intel/Kconfig
+> +++ b/drivers/net/ethernet/intel/Kconfig
+> @@ -58,6 +58,7 @@ config E1000
+>  config E1000E
+>         tristate "Intel(R) PRO/1000 PCI-Express Gigabit Ethernet support"
+>         depends on PCI && (!SPARC32 || BROKEN)
+> +       depends on DMI
+>         select CRC32
+>         imply PTP_1588_CLOCK
+>         help
 
-Are you saying that linuxptp is not a PTP stack?
+Is DMI the only way we can identify systems that want to enable S0ix
+states? I'm just wondering if we could identify these parts using a 4
+tuple device ID or if the DMI ID is the only way we can do this?
 
-Maybe it would be wiser to design your HW so that it can work under Linux?
+> diff --git a/drivers/net/ethernet/intel/e1000e/param.c b/drivers/net/ethernet/intel/e1000e/param.c
+> index 56316b797521..d05f55201541 100644
+> --- a/drivers/net/ethernet/intel/e1000e/param.c
+> +++ b/drivers/net/ethernet/intel/e1000e/param.c
+> @@ -1,6 +1,7 @@
+>  // SPDX-License-Identifier: GPL-2.0
+>  /* Copyright(c) 1999 - 2018 Intel Corporation. */
+>
+> +#include <linux/dmi.h>
+>  #include <linux/netdevice.h>
+>  #include <linux/module.h>
+>  #include <linux/pci.h>
+> @@ -201,6 +202,80 @@ static const struct e1000e_me_supported me_supported[] = {
+>         {0}
+>  };
+>
+> +static const struct dmi_system_id s0ix_supported_systems[] = {
+> +       {
+> +               /* Dell Latitude 5310 */
+> +               .matches = {
+> +                       DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+> +                       DMI_MATCH(DMI_PRODUCT_SKU, "099F"),
+> +               },
+> +       },
+> +       {
+> +               /* Dell Latitude 5410 */
+> +               .matches = {
+> +                       DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+> +                       DMI_MATCH(DMI_PRODUCT_SKU, "09A0"),
+> +               },
+> +       },
+> +       {
+> +               /* Dell Latitude 5410 */
+> +               .matches = {
+> +                       DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+> +                       DMI_MATCH(DMI_PRODUCT_SKU, "09C9"),
+> +               },
+> +       },
+> +       {
+> +               /* Dell Latitude 5510 */
+> +               .matches = {
+> +                       DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+> +                       DMI_MATCH(DMI_PRODUCT_SKU, "09A1"),
+> +               },
+> +       },
+> +       {
+> +               /* Dell Precision 3550 */
+> +               .matches = {
+> +                       DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+> +                       DMI_MATCH(DMI_PRODUCT_SKU, "09A2"),
+> +               },
+> +       },
+> +       {
+> +               /* Dell Latitude 5411 */
+> +               .matches = {
+> +                       DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+> +                       DMI_MATCH(DMI_PRODUCT_SKU, "09C0"),
+> +               },
+> +       },
+> +       {
+> +               /* Dell Latitude 5511 */
+> +               .matches = {
+> +                       DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+> +                       DMI_MATCH(DMI_PRODUCT_SKU, "09C1"),
+> +               },
+> +       },
+> +       {
+> +               /* Dell Precision 3551 */
+> +               .matches = {
+> +                       DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+> +                       DMI_MATCH(DMI_PRODUCT_SKU, "09C2"),
+> +               },
+> +       },
+> +       {
+> +               /* Dell Precision 7550 */
+> +               .matches = {
+> +                       DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+> +                       DMI_MATCH(DMI_PRODUCT_SKU, "09C3"),
+> +               },
+> +       },
+> +       {
+> +               /* Dell Precision 7750 */
+> +               .matches = {
+> +                       DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+> +                       DMI_MATCH(DMI_PRODUCT_SKU, "09C4"),
+> +               },
+> +       },
+> +       { }
+> +};
+> +
 
-Nah, nobody cares about Linux support these days.
+So which "product" are we verifying here? Are these SKU values for the
+platform or for the NIC? Just wondering if this is something we could
+retrieve via PCI as I mentioned or if this is something that can only
+be retrieved via DMI.
+
+>  static bool e1000e_check_me(u16 device_id)
+>  {
+>         struct e1000e_me_supported *id;
+> @@ -599,8 +674,11 @@ void e1000e_check_options(struct e1000_adapter *adapter)
+>                 }
+>
+>                 if (enabled == S0IX_HEURISTICS) {
+> +                       /* check for allowlist of systems */
+> +                       if (dmi_check_system(s0ix_supported_systems))
+> +                               enabled = S0IX_FORCE_ON;
+>                         /* default to off for ME configurations */
+> -                       if (e1000e_check_me(hw->adapter->pdev->device))
+> +                       else if (e1000e_check_me(hw->adapter->pdev->device))
+>                                 enabled = S0IX_FORCE_OFF;
+>                 }
+>
+
+Is there really a need to set it to SOIX_FORCE_ON when the if
+statement below this section will essentially treat it as though it is
+set that way anyway? Seems like we only really need to just do a
+(!dmi_check_system() && e1000e_check_me()) in the code block that is
+setting SOIX_FORCE_OFF rather than bothering to even set enabled to
+SOIX_FORCE_ON.
