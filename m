@@ -2,158 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 015EB2C8AE5
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 18:26:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B28F52C8B20
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 18:33:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387524AbgK3R0E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 12:26:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46870 "EHLO
+        id S2387603AbgK3RcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 12:32:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387520AbgK3R0E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 12:26:04 -0500
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107EAC0613CF
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 09:25:24 -0800 (PST)
-Received: by mail-io1-xd44.google.com with SMTP id k3so4708072ioq.4
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 09:25:24 -0800 (PST)
+        with ESMTP id S2387521AbgK3RcH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 12:32:07 -0500
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD31C0613CF
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 09:31:27 -0800 (PST)
+Received: by mail-pf1-x443.google.com with SMTP id t8so10843386pfg.8
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 09:31:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QHeX9XMfAhQejgr8sV/YZcZS6hSeF26K1lfoLRbRWsg=;
-        b=kuTT87qGYKNXQPSmMsRnhslGGISuZm0Ezme6NYWbGCpJO2Tn4WfuHBROJfHexnp8bw
-         jSwt8tqA9crSMtEPMypsomEw2h6rR2oiImHThrWZpigYeJbmmWT0dOSAWyEaKAY4P3L6
-         iDkdRjnDzW5EzC9U5LXF+rlk1tBgJQibg1IP7oRfapB5/yOOLRg6laMMmDO1hH90/xuW
-         ipM56IU+7Vn6GPvucOObHkaaLrBDZ66BnTC7f+/xV8neRaCnIjHc9q2KKP/fvYfO3Iqv
-         jSPHI0/VXju8nOaCUwg5zTYgoU797/wMqS8+chuX3MDOrpscXAHjo0TvwQUAHn115ShO
-         0iaA==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=JrZHBCSgO9uzCa4FiIu4F6rVrfCNjy8joFCsTC+NJ6c=;
+        b=zJfQgJPpdmL2tVK8oeypKvVI2EfbBc8oOAtMCvLj+kI3g5i5m1JN+BRR+dXVP18R1B
+         vqtTrPmf9gQcOXFk132nyvL2ozRN98+4+BOwzct4oocOTwEiZZEZyEUm5XSO6FTYS487
+         8+o+sD1msKy9cfcjCVH4n6oL8scmVwoU+h7tWkj5SNXlV8xPrN2zz5hk/RIeUyYzwNFH
+         9jwKyblwCrq73nuFW5JThMpClHC1p/nR87EHxoCDnnT3W3boBnfON6U9fRP8Y/EE1EUB
+         NbCIIwCSbIvRk7XXz8TxMCWNueskLTwN4rGPAYK1TyEF6EiZDSw9PYVJbfxQDLKVu5nf
+         6zFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QHeX9XMfAhQejgr8sV/YZcZS6hSeF26K1lfoLRbRWsg=;
-        b=TjF+9OGH8skC7Z3jUxs1Z8MMbiGfuyv1rZr1FTnjC8ck2x2hP0Y0JfEeQ6u8TXhGWA
-         KpnVL2sw1731ZQnvaysxGQaFjQ426sSGi/W4BuxPPL1XfYtPC/eNKlZYAHxc8ZQthHRJ
-         nkedjeEFQU3P2gnWees84hYndMGkL+gO0Kig4HgSF+GNb1crGqdWcbXCeb/k77yfTY8H
-         JsXyGr9Kt3iT/dqT5RSxT4sDSnD+ACyKtU8AvsRrqqV/QulGaO94wxVViHyWGKdY/0+M
-         /4sbF/GX27KZLKcXSh87JuRZTcorhLLXyxMKoP7XBtn0Gw2CKRLurSP8wIOxK93xeH4R
-         Tm1A==
-X-Gm-Message-State: AOAM532eVV6zScedUY7NL/ejAbkUfMkzGaIGvEA81kks1yB0bl1pIGBM
-        sv+r/3B/H7i/cmbcEqbwk6I=
-X-Google-Smtp-Source: ABdhPJwm9fcWnkaCd7/yMNtGucYWLHWwNdvemHoybwx0Do4O9YfsTh9p0qI0Vj7sg8KmxsMWtjojhw==
-X-Received: by 2002:a6b:5911:: with SMTP id n17mr7629374iob.34.1606757123469;
-        Mon, 30 Nov 2020 09:25:23 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:f4ef:fcd1:6421:a6de])
-        by smtp.googlemail.com with ESMTPSA id t26sm8201320ioi.11.2020.11.30.09.25.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 Nov 2020 09:25:22 -0800 (PST)
-Subject: Re: [PATCH iproute2-next] ip: add IP_LIB_DIR environment variable
-To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Cc:     netdev@vger.kernel.org,
-        Stephen Hemminger <stephen@networkplumber.org>
-References: <20201122173921.31473-1-ryazanov.s.a@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <0863b383-cd6a-1898-3556-bc519e2b0cf4@gmail.com>
-Date:   Mon, 30 Nov 2020 10:25:19 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.5.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=JrZHBCSgO9uzCa4FiIu4F6rVrfCNjy8joFCsTC+NJ6c=;
+        b=i68In4UZe5Xx7pxIl5ZBYmztq5QrODmFi925JSQiQoXO7XDTVyCSxDQkrXuzNpL8l6
+         iAzq1yCzaResw+NLaTfp7BiHBvCskd3EHYbdBMOgFrZkPR1zp1b57ODPNkYZtPlP3KUY
+         2FzQGXpNZxdb9W5774zVoycIDhecHOMWp+i8ESnnasGKCmra7gO1vcU4cblZw7/2ewk1
+         jyE7q7JYoKA+6nzeH2euoe8Ik7GngEheJ5D5al15dIK8eWIF1azyMm+/anqcgMf1EUHX
+         /XHuTTNkzC6zaa6BJrm4R1IpWjSdVgPTnW8N7oT7zwca9z8/VT6RUxeH8Ss4za4oGd+u
+         OMtw==
+X-Gm-Message-State: AOAM533yQy3i4l6VMBsZDZZ48vYhp8EfbAeMS/k16O5UFuFFd1mItE6I
+        qlOQNIRpQ4g5ALntEzqJguU6tk636P2PFHee
+X-Google-Smtp-Source: ABdhPJy78r/+NP8e4ermC7mViZ54d6dazRjCjBVWw3G5LIBVcW2rCUVvFKcz+/43DBm7zmtFJmH1xQ==
+X-Received: by 2002:aa7:973d:0:b029:18b:23db:7711 with SMTP id k29-20020aa7973d0000b029018b23db7711mr19634337pfg.13.1606757487329;
+        Mon, 30 Nov 2020 09:31:27 -0800 (PST)
+Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id r66sm17631363pfc.114.2020.11.30.09.31.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Nov 2020 09:31:27 -0800 (PST)
+Date:   Mon, 30 Nov 2020 09:31:13 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 4/5] misc: fix compiler warning in ifstat and nstat
+Message-ID: <20201130093113.125c0154@hermes.local>
+In-Reply-To: <efb6a29fef0e4ca1845956701f670b4b@AcuMS.aculab.com>
+References: <20201130002135.6537-1-stephen@networkplumber.org>
+        <20201130002135.6537-5-stephen@networkplumber.org>
+        <efb6a29fef0e4ca1845956701f670b4b@AcuMS.aculab.com>
 MIME-Version: 1.0
-In-Reply-To: <20201122173921.31473-1-ryazanov.s.a@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[ sorry, this got lost in the backlog ]
+On Mon, 30 Nov 2020 09:18:59 +0000
+David Laight <David.Laight@ACULAB.COM> wrote:
 
-On 11/22/20 10:39 AM, Sergey Ryazanov wrote:
-> Do not hardcode /usr/lib/ip as a path and allow libraries path
-> configuration in run-time.
+> From: Stephen Hemminger
+> > Sent: 30 November 2020 00:22
+> > 
+> > The code here was doing strncpy() in a way that causes gcc 10
+> > warning about possible string overflow. Just use strlcpy() which
+> > will null terminate and bound the string as expected.
+> > 
+> > This has existed since start of git era so no Fixes tag.
+> > 
+> > Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+> > ---
+> >  misc/ifstat.c | 2 +-
+> >  misc/nstat.c  | 3 +--
+> >  2 files changed, 2 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/misc/ifstat.c b/misc/ifstat.c
+> > index c05183d79a13..d4a33429dc50 100644
+> > --- a/misc/ifstat.c
+> > +++ b/misc/ifstat.c
+> > @@ -251,7 +251,7 @@ static void load_raw_table(FILE *fp)
+> >  			buf[strlen(buf)-1] = 0;
+> >  			if (info_source[0] && strcmp(info_source, buf+1))
+> >  				source_mismatch = 1;
+> > -			strncpy(info_source, buf+1, sizeof(info_source)-1);
+> > +			strlcpy(info_source, buf+1, sizeof(info_source));
+> >  			continue;  
 > 
-> Signed-off-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
-> ---
->  ip/ip.c        | 15 +++++++++++++++
->  ip/ip_common.h |  2 ++
->  ip/iplink.c    |  5 +----
->  3 files changed, 18 insertions(+), 4 deletions(-)
+> ISTM that once it has done a strlen() it ought to use the length
+> for the later copy.
 > 
-> diff --git a/ip/ip.c b/ip/ip.c
-> index 5e31957f..38600e51 100644
-> --- a/ip/ip.c
-> +++ b/ip/ip.c
-> @@ -25,6 +25,10 @@
->  #include "color.h"
->  #include "rt_names.h"
->  
-> +#ifndef LIBDIR
-> +#define LIBDIR "/usr/lib"
-> +#endif
-> +
->  int preferred_family = AF_UNSPEC;
->  int human_readable;
->  int use_iec;
-> @@ -41,6 +45,17 @@ bool do_all;
->  
->  struct rtnl_handle rth = { .fd = -1 };
->  
-> +const char *get_ip_lib_dir(void)
-> +{
-> +	const char *lib_dir;
-> +
-> +	lib_dir = getenv("IP_LIB_DIR");
-> +	if (!lib_dir)
-> +		lib_dir = LIBDIR "/ip";
-> +
-> +	return lib_dir;
-> +}
-> +
->  static void usage(void) __attribute__((noreturn));
->  
->  static void usage(void)
-> diff --git a/ip/ip_common.h b/ip/ip_common.h
-> index d604f755..227eddd3 100644
-> --- a/ip/ip_common.h
-> +++ b/ip/ip_common.h
-> @@ -27,6 +27,8 @@ struct link_filter {
->  	int target_nsid;
->  };
->  
-> +const char *get_ip_lib_dir(void);
-> +
->  int get_operstate(const char *name);
->  int print_linkinfo(struct nlmsghdr *n, void *arg);
->  int print_addrinfo(struct nlmsghdr *n, void *arg);
-> diff --git a/ip/iplink.c b/ip/iplink.c
-> index d6b766de..4250b2c3 100644
-> --- a/ip/iplink.c
-> +++ b/ip/iplink.c
-> @@ -34,9 +34,6 @@
->  #include "namespace.h"
->  
->  #define IPLINK_IOCTL_COMPAT	1
-> -#ifndef LIBDIR
-> -#define LIBDIR "/usr/lib"
-> -#endif
->  
->  #ifndef GSO_MAX_SIZE
->  #define GSO_MAX_SIZE		65536
-> @@ -157,7 +154,7 @@ struct link_util *get_link_kind(const char *id)
->  		if (strcmp(l->id, id) == 0)
->  			return l;
->  
-> -	snprintf(buf, sizeof(buf), LIBDIR "/ip/link_%s.so", id);
-> +	snprintf(buf, sizeof(buf), "%s/link_%s.so", get_ip_lib_dir(), id);
->  	dlh = dlopen(buf, RTLD_LAZY);
->  	if (dlh == NULL) {
->  		/* look in current binary, only open once */
+> I don't seem to have the source file (I'm guessing it isn't in the
+> normal repo), but is that initial strlen() guaranteed not to return
+> zero?
+> 
+> 	David
+> 
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
 > 
 
-What's the use case for needing this? AIUI this is a legacy feature from
-many years ago.
-
-All of the link files are builtin, so this is only useful for out of
-tree modules. iproute2 should not be supporting such an option, so
-really this code should be ripped out, not updated.
+All this is in the regular iproute2 repo
