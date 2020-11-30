@@ -2,61 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCC022C7D95
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 05:41:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1955F2C7D9F
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 06:14:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726560AbgK3Ekf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Nov 2020 23:40:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41208 "EHLO
+        id S1725920AbgK3FNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 00:13:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726188AbgK3Ekf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Nov 2020 23:40:35 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 066F9C0613CF
-        for <netdev@vger.kernel.org>; Sun, 29 Nov 2020 20:39:48 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id b6so9623236pfp.7
-        for <netdev@vger.kernel.org>; Sun, 29 Nov 2020 20:39:48 -0800 (PST)
+        with ESMTP id S1725894AbgK3FNV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 00:13:21 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3B7FC0613CF
+        for <netdev@vger.kernel.org>; Sun, 29 Nov 2020 21:12:34 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id x4so4106417pln.8
+        for <netdev@vger.kernel.org>; Sun, 29 Nov 2020 21:12:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=GGfZ9OhByWYJexksVlxnbGN4bWqLwIl/DVeCK7Bkns0=;
-        b=oovqn3eWT4UCpTkKFNJWAjRxG3LoAaTVqOKZnQWvFCpbTTWUU8wgrrAwXnkPfVgC4d
-         DNp1ivZfDl84rZM5Ti57ZaT15+RANGSznxYJt47O28ZaxQlDdzpOvmmAmAbspaC4dQD3
-         nu8+wWpOO69XC2HI6nG/V2TAJnmjSyrkrvPVvwNWrwIvrfmatWW31m2Zloxhrq5F4I04
-         paUgn/4C0z0L1O0Nyf85FVqt8+yZXydgrU8+X/X2HfsVmmeoz0SXdiFDmETAzDDUQ58f
-         IeGefEv9/S6CrJKN1Ugi3wcU5uxol+0vUoRzG+MsMU3ZxQHDI7wAWcG3QlUqjtSecYwM
-         KmSQ==
+        bh=TCIfA60uRRkGUN8lqiQ0JQbfujfGJj0UDLYJgT7MPNo=;
+        b=Y0ZuV0XjMb9jf9x4kgGSCWJp0fm7+rtyGKgfmxsaI49nmqoUlR6SOJ5o1ljNMKZolU
+         33z1JqkTzJcDgUfxwQEjeOFmV3xyfMN/wO7ZiwyIlS3klwQhV5gVn6X+rvQ3UBICS68K
+         DDBGL8ulrnNXIVAZYT1psnbRroCOjdanr5uGhPRGyhFzdWZVQWQQIlkcbe2mfhoSld2V
+         4JgoBJxGuwJjn2Ktpr5X31xkYTAiXJmq3+od46I8q1hsoo0K53Zdnbc9XdfrfKiY4Zix
+         2ffPWNG9ZEALWxyjQWnxbNqTfw2lLR3Syq4cxB5hprbCx8P/MxiDT7NQ8esrc5vcfzEI
+         2l6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=GGfZ9OhByWYJexksVlxnbGN4bWqLwIl/DVeCK7Bkns0=;
-        b=aE3YEWX5likFxodwe8/tI6sBtzZObyg9okCqCXzH4RX8LsJGTJTpRxBXhKr+Esadwn
-         URqSk5BDPxQBJXfp4ek5oc82yy7RGSM6uGlZB3vaefMBnp/2oOlaIMG1yzTp9PH1qIm9
-         OWL7xmlUh6TsO/CSYBVUIdOCbPN44V+4erqFKz80IXdzltbQmtI6788COeib98lQEdUd
-         fyrbd44FTzI19bW4zkzKRlPU+f3gsQssGOvMRA5hNZvMPXK8wr+LvoekxJTZt+v8zLkg
-         bBP4KE+nCQGd+V4LgM8QAg4SOaErgP+Cf4nBn2Y1l3esybFnSeHAlx8YkhcfDxDP7Ca3
-         vdxw==
-X-Gm-Message-State: AOAM531iBXkLtOvaYa09F6VeN3gFywMSaRT1o6EU0LzFD4chD8zZSC3l
-        zD3hj+fhmdniNZS5VQD7dy3eUg==
-X-Google-Smtp-Source: ABdhPJy0BgbaRF599C6c3+ryCyqkdirNuKOUlmGgWebuZzO5FBNIjKc3jAmKvYndr2Mt+JbBMqoooQ==
-X-Received: by 2002:a63:3e86:: with SMTP id l128mr16229713pga.114.1606711188433;
-        Sun, 29 Nov 2020 20:39:48 -0800 (PST)
+        bh=TCIfA60uRRkGUN8lqiQ0JQbfujfGJj0UDLYJgT7MPNo=;
+        b=lXvipH+YLZw7/8Fv8uTEfhANp7jpvmG42eydDNQdUPBGMMPKyd/8MZ/305DlxYkPGY
+         1EZ268F0aOxaa1+nRjAWcwdBFqQV+Zn80U08mqJiX6DpMnswA6GRs/86UIv8iMOmXN5i
+         CGfIPjFcZHZ1U60krUzx8sHWMi5l723/LgzFVcCwHYcD0bbROsm6oq9Sb0mf26CkpTIp
+         sCoxzRfcAcd8xpa5pKa/sW6ab+i65D8d8229IBExOnS7kwlABNQuBPFO88qfEsLqzTBd
+         cF0rsVUqX3jKqlf/wRYh/NhAkCSiVplDup1vtDS2yUx4IVuGbw/6kqrV5Lzjr9Nza2iC
+         yvQQ==
+X-Gm-Message-State: AOAM530jRosKh/oPRcQHGP0PEu0UII9en6vvCI8VqOGLpux3ALhpjz4I
+        12605bTDWXxQ86AoTNciPS7xig==
+X-Google-Smtp-Source: ABdhPJz8+g0VSQLjZLfA/t5CoxVhv3r8Yjx6pdzVRszjT/RB2kuv0MJ3XLgTiGiSOzqn8e3XJqNiSA==
+X-Received: by 2002:a17:90a:5d0e:: with SMTP id s14mr24513663pji.53.1606713154268;
+        Sun, 29 Nov 2020 21:12:34 -0800 (PST)
 Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id g8sm14552500pgn.47.2020.11.29.20.39.47
+        by smtp.gmail.com with ESMTPSA id f7sm14014634pfe.30.2020.11.29.21.12.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 Nov 2020 20:39:48 -0800 (PST)
-Date:   Sun, 29 Nov 2020 20:39:33 -0800
+        Sun, 29 Nov 2020 21:12:33 -0800 (PST)
+Date:   Sun, 29 Nov 2020 21:12:30 -0800
 From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <toshiaki.makita1@gmail.com>, <rkovhaev@gmail.com>
-Subject: Re: [PATCH net] net: fix memory leak in register_netdevice() on
- error path
-Message-ID: <20201129203933.623451fe@hermes.local>
-In-Reply-To: <20201126132312.3593725-1-yangyingliang@huawei.com>
-References: <20201126132312.3593725-1-yangyingliang@huawei.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Or Gerlitz <ogerlitz@mellanox.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: Correct usage of dev_base_lock in 2020
+Message-ID: <20201129211230.4d704931@hermes.local>
+In-Reply-To: <20201129205817.hti2l4hm2fbp2iwy@skbuf>
+References: <20201129182435.jgqfjbekqmmtaief@skbuf>
+        <20201129205817.hti2l4hm2fbp2iwy@skbuf>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -64,72 +71,137 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 26 Nov 2020 21:23:12 +0800
-Yang Yingliang <yangyingliang@huawei.com> wrote:
+On Sun, 29 Nov 2020 22:58:17 +0200
+Vladimir Oltean <olteanv@gmail.com> wrote:
 
-> I got a memleak report when doing fault-inject test:
+> [ resent, had forgot to copy the list ]
 > 
-> unreferenced object 0xffff88810ace9000 (size 1024):
->   comm "ip", pid 4622, jiffies 4295457037 (age 43.378s)
->   hex dump (first 32 bytes):
->     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->   backtrace:
->     [<00000000008abe41>] __kmalloc+0x10f/0x210
->     [<000000005d3533a6>] veth_dev_init+0x140/0x310
->     [<0000000088353c64>] register_netdevice+0x496/0x7a0
->     [<000000001324d322>] veth_newlink+0x40b/0x960
->     [<00000000d0799866>] __rtnl_newlink+0xd8c/0x1360
->     [<00000000d616040a>] rtnl_newlink+0x6b/0xa0
->     [<00000000e0a1600d>] rtnetlink_rcv_msg+0x3cc/0x9e0
->     [<000000009eeff98b>] netlink_rcv_skb+0x130/0x3a0
->     [<00000000500f8be1>] netlink_unicast+0x4da/0x700
->     [<00000000666c03b3>] netlink_sendmsg+0x7fe/0xcb0
->     [<0000000073b28103>] sock_sendmsg+0x143/0x180
->     [<00000000ad746a30>] ____sys_sendmsg+0x677/0x810
->     [<0000000087dd98e5>] ___sys_sendmsg+0x105/0x180
->     [<00000000028dd365>] __sys_sendmsg+0xf0/0x1c0
->     [<00000000a6bfbae6>] do_syscall_64+0x33/0x40
->     [<00000000e00521b4>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> Hi,
 > 
-> It seems ifb and loopback may also hit the leak, so I try to fix this in
-> register_netdevice().
+> net/core/dev.c has this to say about the locking rules around the network
+> interface lists (dev_base_head, and I can only assume that it also applies to
+> the per-ifindex hash table dev_index_head and the per-name hash table
+> dev_name_head):
 > 
-> In common case, priv_destructor() will be called in netdev_run_todo()
-> after calling ndo_uninit() in rollback_registered(), on other error
-> path in register_netdevice(), ndo_uninit() and priv_destructor() are
-> called before register_netdevice() return, but in this case,
-> priv_destructor() will never be called, then it causes memory leak,
-> so we should call priv_destructor() here.
+> /*
+>  * The @dev_base_head list is protected by @dev_base_lock and the rtnl
+>  * semaphore.
+>  *
+>  * Pure readers hold dev_base_lock for reading, or rcu_read_lock()
+>  *
+>  * Writers must hold the rtnl semaphore while they loop through the
+>  * dev_base_head list, and hold dev_base_lock for writing when they do the
+>  * actual updates.  This allows pure readers to access the list even
+>  * while a writer is preparing to update it.
+>  *
+>  * To put it another way, dev_base_lock is held for writing only to
+>  * protect against pure readers; the rtnl semaphore provides the
+>  * protection against other writers.
+>  *
+>  * See, for example usages, register_netdevice() and
+>  * unregister_netdevice(), which must be called with the rtnl
+>  * semaphore held.
+>  */
 > 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
->  net/core/dev.c | 11 +++++++++++
->  1 file changed, 11 insertions(+)
+> However, as of today, most if not all the read-side accessors of the network
+> interface lists have been converted to run under rcu_read_lock. As Eric explains,
 > 
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 82dc6b48e45f..907204395b64 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -10000,6 +10000,17 @@ int register_netdevice(struct net_device *dev)
->  	ret = notifier_to_errno(ret);
->  	if (ret) {
->  		rollback_registered(dev);
-> +		/*
-> +		 * In common case, priv_destructor() will be
-> +		 * called in netdev_run_todo() after calling
-> +		 * ndo_uninit() in rollback_registered().
-> +		 * But in this case, priv_destructor() will
-> +		 * never be called, then it causes memory
-> +		 * leak, so we should call priv_destructor()
-> +		 * here.
-> +		 */
-> +		if (dev->priv_destructor)
-> +			dev->priv_destructor(dev);
+> commit fb699dfd426a189fe33b91586c15176a75c8aed0
+> Author: Eric Dumazet <eric.dumazet@gmail.com>
+> Date:   Mon Oct 19 19:18:49 2009 +0000
+> 
+>     net: Introduce dev_get_by_index_rcu()
+> 
+>     Some workloads hit dev_base_lock rwlock pretty hard.
+>     We can use RCU lookups to avoid touching this rwlock.
+> 
+>     netdevices are already freed after a RCU grace period, so this patch
+>     adds no penalty at device dismantle time.
+> 
+>     dev_ifname() converted to dev_get_by_index_rcu()
+> 
+>     Signed-off-by: Eric Dumazet <eric.dumazet@gmail.com>
+>     Signed-off-by: David S. Miller <davem@davemloft.net>
+> 
+> A lot of work has been put into eliminating the dev_base_lock rwlock
+> completely, as Stephen explained here:
+> 
+> [PATCH 00/10] netdev: get rid of read_lock(&dev_base_lock) usages
+> https://www.spinics.net/lists/netdev/msg112264.html
+> 
+> However, its use has not been completely eliminated. It is still there, and
+> even more confusingly, that comment in net/core/dev.c is still there. What I
+> see the dev_base_lock being used for now are complete oddballs.
+> 
+> - The debugfs for mac80211, in net/mac80211/debugfs_netdev.c, holds the read
+>   side when printing some interface properties (good luck disentangling the
+>   code and figuring out which ones, though). What is that read-side actually
+>   protecting against?
+> 
+> - HSR, in net/hsr/hsr_device.c (called from hsr_netdev_notify on NETDEV_UP
+>   NETDEV_DOWN and NETDEV_CHANGE), takes the write-side of the lock when
+>   modifying the RFC 2863 operstate of the interface. Why?
+>   Actually the use of dev_base_lock is the most widespread in the kernel today
+>   when accessing the RFC 2863 operstate. I could only find this truncated
+>   discussion in the archives:
+>     Re: Issue 0 WAS (Re: Oustanding issues WAS(IRe: Consensus? WAS(RFC 2863)
+>     https://www.mail-archive.com/netdev@vger.kernel.org/msg03632.html
+>   and it said:
+> 
+>     > be transitioned to up/dormant etc. So an ethernet driver doesnt know it
+>     > needs to go from detecting peer link is up to next being authenticated
+>     > in the case of 802.1x. It just calls netif_carrier_on which checks
+>     > link_mode to decide on transition.  
+> 
+>     we could protect operstate with a spinlock_irqsave() and then change it either
+>     from netif_[carrier|dormant]_on/off() or userspace-supplicant. However, I'm
+>     not feeling good about it. Look at rtnetlink_fill_ifinfo(), it is able to
+>     query a consistent snapshot of all interface settings as long as locking with
+>     dev_base_lock and rtnl is obeyed. __LINK_STATE flags are already an
+>     exemption, and I don't want operstate to be another. That's why I chose
+>     setting it from linkwatch in process context, and I really think this is the
+>     correct approach.
+> 
+> - rfc2863_policy() in net/core/link_watch.c seems to be the major writer that
+>   holds this lock in 2020, together with do_setlink() and set_operstate() from
+>   net/core/rtnetlink.c. Has the lock been repurposed over the years and we
+>   should update its name appropriately?
+> 
+> - This usage from netdev_show() in net/core/net-sysfs.c just looks random to
+>   me, maybe somebody can explain:
+> 
+> 	read_lock(&dev_base_lock);
+> 	if (dev_isalive(ndev))
+> 		ret = (*format)(ndev, buf);
+> 	read_unlock(&dev_base_lock);
 
-Are you sure this is safe?
-Several devices have destructors that call free_netdev.
-Up until now a common pattern for those devices was to call
-free_netdev on error. After this change it would lead to double free.
+
+So dev_base_lock dates back to the Big Kernel Lock breakup back in Linux 2.4
+(ie before my time). The time has come to get rid of it.
+
+The use is sysfs is because could be changed to RCU. There have been issues
+in the past with sysfs causing lock inversions with the rtnl mutex, that
+is why you will see some trylock code there.
+
+My guess is that dev_base_lock readers exist only because no one bothered to do
+the RCU conversion.
+
+Complex locking rules lead to mistakes and often don't get much performance
+gain.  There are really two different domains being covered by locks here.
+
+The first area is change of state of network devices. This has traditionally
+been covered by RTNL because there are places that depend on coordinating
+state between multiple devices. RTNL is too big and held too long but getting
+rid of it is hard because there are corner cases (like state changes from userspace
+for VPN devices).
+
+The other area is code that wants to do read access to look at list of devices.
+These pure readers can/should be converted to RCU by now. Writers should hold RTNL.
+
+You could change the readers of operstate to use some form of RCU and atomic
+operation (seqlock?). The state of the device has several components flags, operstate
+etc, and there is no well defined way to read a consistent set of them.
+
+Good Luck on your quest.
+
 
