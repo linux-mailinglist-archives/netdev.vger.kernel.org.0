@@ -2,114 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03AE62C89B3
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 17:39:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EAFCC2C89B9
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 17:41:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728537AbgK3Qi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 11:38:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39556 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725987AbgK3Qiz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 11:38:55 -0500
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88FD9C0613D6
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 08:38:15 -0800 (PST)
-Received: by mail-pl1-x649.google.com with SMTP id t13so8047480plo.16
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 08:38:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=UX816yw8DAh1erZp5BAVsdx8QFf8rexiapeSutLKtDU=;
-        b=aWSKDPWCTob0IK1uVdpoZExn/2n8CYvY2YxJHGV7pOqCTh4+TONEsVWIUMaAUuguq2
-         dcBlye7LYlvaYBk4/yHBfa+BmQE3wZJBjzNhNEWXi4g4v2SMBKRi1T4yrZ2ffvOzi+mr
-         7nSJTU4YOQd+6xMVkTn9qrdzxKd6wNWjx7pFSnRt2RsKiw9fTCIr0JeHoguG6ifQfP3P
-         jNF7hh97DpSLS4NSF8AKpq0m00ZudomNZgURlpW8rPXmlSrjlQgSKBWlTEeOp6b5QDJ5
-         IWM7na3y74brpwholwgkLE8EAM89Z/ns7MxWq3V1W1JO19ULqNDYKVlIpTwHFm7sjdCv
-         xNjw==
+        id S1728854AbgK3QjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 11:39:21 -0500
+Received: from mail-io1-f68.google.com ([209.85.166.68]:33875 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728670AbgK3QjU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 11:39:20 -0500
+Received: by mail-io1-f68.google.com with SMTP id d7so3577383iok.1;
+        Mon, 30 Nov 2020 08:38:59 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=UX816yw8DAh1erZp5BAVsdx8QFf8rexiapeSutLKtDU=;
-        b=OJv5nJmhJVu7qlB69nh2mFGzNNAISHEOeyyRQmV+Yh6YFp+8l/SfE6Jp7c4/JKesqt
-         moYjGJmQl/Lmi35eoBPXps9o58hlV39bnVQZOj8UFr6S3W8p3bfTtaKnOOjPfcZqZhKW
-         hsEpr8tN+PN0vBToIBAG1K3yc9Fx737aedOAtOqYnFXAvSBQ2eW4rcPOdxi5985LXi6p
-         I4Z/g8gZgIst48ip/fHq5C2hYqk2VwJVX6qhupjlfUzgiM/KNZcAGzKOQxYdLyXUxvYH
-         zvk7UsgH90PKWpgzLIeORpE4+9vgVtyY661EUCWSA6FYUOYJZnvc2e9dJjGcptHRXpoj
-         FdiA==
-X-Gm-Message-State: AOAM533LJpK+zlSfOeg4sdrokO0VyNZR7E+/YuTBkVLbGthtZyxOIbY3
-        73byBJIoxBvCi1fgFclF+JUvekE=
-X-Google-Smtp-Source: ABdhPJxxRiSiL9TZBSG3e6fLHbVnNFg0unRsc3Mpp53zJ4Q+9PeSkn26dUkTkrBDuAqW0MgjKB3SlLo=
-Sender: "sdf via sendgmr" <sdf@sdf2.svl.corp.google.com>
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
- (user=sdf job=sendgmr) by 2002:a17:90a:f691:: with SMTP id
- cl17mr27419417pjb.206.1606754294970; Mon, 30 Nov 2020 08:38:14 -0800 (PST)
-Date:   Mon, 30 Nov 2020 08:38:13 -0800
-In-Reply-To: <20201130010559.GA1991@rdna-mbp>
-Message-Id: <20201130163813.GA553169@google.com>
-Mime-Version: 1.0
-References: <20201118001742.85005-1-sdf@google.com> <20201118001742.85005-3-sdf@google.com>
- <CAADnVQLxt11Zx8553fegoSWCtt0SQ_6uYViMtuhGxA7sv1YSxA@mail.gmail.com> <20201130010559.GA1991@rdna-mbp>
-Subject: Re: [PATCH bpf-next 2/3] bpf: allow bpf_{s,g}etsockopt from cgroup
- bind{4,6} hooks
-From:   sdf@google.com
-To:     Andrey Ignatov <rdna@fb.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tFYu+zcPVaijJyMJm5EUKsYsvWv061fpjh0clpgn5vA=;
+        b=a6yEhklVNxGdEvn697Qn0gETYsfkQuW3OomXwYGuRQCRUJgDtZ5liBqrbJRQTAyQLs
+         Mepj9siQMWhmSnKFEdFN+gYOYuJvZGpoWPe9l4EWkOyPAIz5Z/+fdEMqQoWMKQMCgEgo
+         xtoQQ1L1iVayaET8dgPOKEbS/zco3uboRlTtY4cGdEYUpyAoP4/BsSQRJPNHjMH6nhG2
+         8RbVJfP/d7iazXTOoxA32pvhFythtoZmljasjnuZqjnQViQk5ZlVDePq9oMP80pXHvkX
+         lWLEKtz6lvKMmBIfobVCuA8Egbdr5vpVkaM36SFhHUq3NTCOJrCKFsY6DDzU2Xjcc+G7
+         Rqeg==
+X-Gm-Message-State: AOAM533d0ycgkU7GDp/bv1VN4U4FrfiP8MKSD/8/JTvtYwFiQlB/jIER
+        bNhSFiragOeSLJfLrYNyO38exiLY9Q==
+X-Google-Smtp-Source: ABdhPJwO8/AKHHQtotzeksDXX1wp3u3t+G5jA46XRQZErHhLBCCcrUV6i188c/xtoojwacdGbzMMXA==
+X-Received: by 2002:a6b:b514:: with SMTP id e20mr17078716iof.105.1606754313679;
+        Mon, 30 Nov 2020 08:38:33 -0800 (PST)
+Received: from xps15 ([64.188.179.253])
+        by smtp.gmail.com with ESMTPSA id u11sm8273653iol.51.2020.11.30.08.38.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Nov 2020 08:38:32 -0800 (PST)
+Received: (nullmailer pid 2592217 invoked by uid 1000);
+        Mon, 30 Nov 2020 16:38:29 -0000
+Date:   Mon, 30 Nov 2020 09:38:29 -0700
+From:   Rob Herring <robh@kernel.org>
+To:     Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Cc:     linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        robh+dt@kernel.org, davem@davemloft.net, ioana.ciornei@nxp.com,
+        Ionut-robert Aron <ionut-robert.aron@nxp.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, corbet@lwn.net, leoyang.li@nxp.com,
+        linux-arm-kernel@lists.infradead.org, kuba@kernel.org
+Subject: Re: [PATCH v4] dt-bindings: misc: convert fsl,qoriq-mc from txt to
+ YAML
+Message-ID: <20201130163829.GA2590579@robh.at.kernel.org>
+References: <20201123090035.15734-1-laurentiu.tudor@nxp.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201123090035.15734-1-laurentiu.tudor@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/29, Andrey Ignatov wrote:
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> [Tue, 2020-11-17 20:05  
-> -0800]:
-> > On Tue, Nov 17, 2020 at 4:17 PM Stanislav Fomichev <sdf@google.com>  
-> wrote:
-[..]
-> >
-> > I think it is ok, but I need to go through the locking paths more.
-> > Andrey,
-> > please take a look as well.
+On Mon, 23 Nov 2020 11:00:35 +0200, Laurentiu Tudor wrote:
+> From: Ionut-robert Aron <ionut-robert.aron@nxp.com>
+> 
+> Convert fsl,qoriq-mc to YAML in order to automate the verification
+> process of dts files. In addition, update MAINTAINERS accordingly
+> and, while at it, add some missing files.
+> 
+> Signed-off-by: Ionut-robert Aron <ionut-robert.aron@nxp.com>
+> [laurentiu.tudor@nxp.com: update MINTAINERS, updates & fixes in schema]
+> Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> ---
+> Changes in v4:
+>  - use $ref to point to fsl,qoriq-mc-dpmac binding
+> 
+> Changes in v3:
+>  - dropped duplicated "fsl,qoriq-mc-dpmac" schema and replaced with
+>    reference to it
+>  - fixed a dt_binding_check warning
+> 
+> Changes in v2:
+>  - fixed errors reported by yamllint
+>  - dropped multiple unnecessary quotes
+>  - used schema instead of text in description
+>  - added constraints on dpmac reg property
+> 
+>  .../devicetree/bindings/misc/fsl,qoriq-mc.txt | 196 ------------------
+>  .../bindings/misc/fsl,qoriq-mc.yaml           | 186 +++++++++++++++++
+>  .../ethernet/freescale/dpaa2/overview.rst     |   5 +-
+>  MAINTAINERS                                   |   4 +-
+>  4 files changed, 193 insertions(+), 198 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+>  create mode 100644 Documentation/devicetree/bindings/misc/fsl,qoriq-mc.yaml
+> 
 
-> Sorry for delay, I was offline for the last two weeks.
-No worries, I was OOO myself last week, thanks for the feedback!
+As there's a dependency on fsl,qoriq-mc-dpmac, this needs to go via 
+netdev tree.
 
->  From the correctness perspective it looks fine to me.
-
->  From the performance perspective I can think of one relevant scenario.
-> Quite common use-case in applications is to use bind(2) not before
-> listen(2) but before connect(2) for client sockets so that connection
-> can be set up from specific source IP and, optionally, port.
-
-> Binding to both IP and port case is not interesting since it's already
-> slow due to get_port().
-
-> But some applications do care about connection setup performance and at
-> the same time need to set source IP only (no port). In this case they
-> use IP_BIND_ADDRESS_NO_PORT socket option, what makes bind(2) fast
-> (we've discussed it with Stanislav earlier in [0]).
-
-> I can imagine some pathological case when an application sets up tons of
-> connections with bind(2) before connect(2) for sockets with
-> IP_BIND_ADDRESS_NO_PORT enabled (that by itself requires setsockopt(2)
-> though, i.e. socket lock/unlock) and that another lock/unlock to run
-> bind hook may add some overhead. Though I do not know how critical that
-> overhead may be and whether it's worth to benchmark or not (maybe too
-> much paranoia).
-
-> [0] https://lore.kernel.org/bpf/20200505182010.GB55644@rdna-mbp/
-Even in case of IP_BIND_ADDRESS_NO_PORT, inet[6]_bind() does
-lock_sock down the line, so it's not like we are switching
-a lockless path to the one with the lock, right?
-
-And in this case, similar to listen, the socket is still uncontended and
-owned by the userspace. So that extra lock/unlock should be cheap
-enough to be ignored (spin_lock_bh on the warm cache line).
-
-Am I missing something?
+Reviewed-by: Rob Herring <robh@kernel.org>
