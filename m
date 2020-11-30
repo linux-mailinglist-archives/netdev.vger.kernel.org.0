@@ -2,517 +2,735 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF5352C91EA
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 00:03:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 288772C91EC
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 00:03:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730787AbgK3XDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 18:03:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43030 "EHLO
+        id S1730895AbgK3XDM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 18:03:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725980AbgK3XC7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 18:02:59 -0500
+        with ESMTP id S1730832AbgK3XDL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 18:03:11 -0500
 Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D868C0613D6
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 15:02:19 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5395C0617A6
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 15:02:21 -0800 (PST)
 Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4ClLMh420GzQlND;
-        Tue,  1 Dec 2020 00:01:52 +0100 (CET)
+        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4ClLMl01xCzQlNH;
+        Tue,  1 Dec 2020 00:01:55 +0100 (CET)
 X-Virus-Scanned: amavisd-new at heinlein-support.de
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-        s=MBO0001; t=1606777310;
+        s=MBO0001; t=1606777313;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=OwytWHVLFiRBoo8LzqQt5vaxmBblHvNz4t7hl4gnIiU=;
-        b=Nj6wBF3Sbq/YiDTjZyUjkrFWbOR/VxsuK9c6MGQos7XSO5ZyVCs4CnVp+GC5yAFw8K62Mm
-        Dqif9/Sw/3ADfsVmt5T3RwRTC4/nJtzhqg/vhxx8pnz24w9b9RVP5FryAyx96Jq8mK+nDQ
-        YotMflZZWKKl0lTuk9uaNaW3Pl2IfNHP6ciKkKoH43PH7czJkck/24rLcgNW/XtyEe5Etc
-        sVZF3eXIbP2vS4Z6ZW4QlbgevRBUvNAHmFCJKaBjSFbaZwt4mq7WdVdXGhgFC8vPzC8KLA
-        mxZqFZCFZRl+2aJmBfesF8fGnoWXxCA3iMCGILCuvdltnQ4BcGwUm5rnLaI6pA==
+        bh=chWU38kLcerTJjMXqQeMLEKaJM446jsKMfUYfmQRBq4=;
+        b=t99+hLXxPz1tNCgZKL0eVZygbjVUK3I4+8gGAwtjFrNjNdYlm2ITXuIqUMh4OdfHDjhxas
+        grFqCnRD9BCxGnE0zjM4ZTWcXASf+2+5o0cFsF0qTF4a+moCxTlSHhYiTBYb4c9Z7uaoQV
+        khDxkuZqmaSnw0amCHYSoGtMCLQ4k22h3rcT+sWMUE/foBS4dd5M1BwpBhXoBIS4kKfgvP
+        /p6E3x0e/5lxmmrW4MjQF5r85CKVsmGw89bnr+JLh2pSCE7/16NgZ4agWheMxdzss5MWzd
+        ViHon0RQyRX900CuhLz6EM9kgWSGgmkQzLLpBbZ6EQnWtodZl/EjDnIwX7z5ag==
 Received: from smtp1.mailbox.org ([80.241.60.240])
-        by spamfilter01.heinlein-hosting.de (spamfilter01.heinlein-hosting.de [80.241.56.115]) (amavisd-new, port 10030)
-        with ESMTP id Fh87pFaHGi0c; Tue,  1 Dec 2020 00:01:48 +0100 (CET)
+        by spamfilter03.heinlein-hosting.de (spamfilter03.heinlein-hosting.de [80.241.56.117]) (amavisd-new, port 10030)
+        with ESMTP id TQfRo8aUR4sv; Tue,  1 Dec 2020 00:01:50 +0100 (CET)
 From:   Petr Machata <me@pmachata.org>
 To:     netdev@vger.kernel.org, dsahern@gmail.com,
         stephen@networkplumber.org
 Cc:     Po.Liu@nxp.com, toke@toke.dk, dave.taht@gmail.com,
         edumazet@google.com, tahiliani@nitk.edu.in, vtlam@google.com,
         leon@kernel.org, Petr Machata <me@pmachata.org>
-Subject: [PATCH iproute2-next 2/6] lib: Move print_rate() from tc here; modernize
-Date:   Mon, 30 Nov 2020 23:59:38 +0100
-Message-Id: <f2dd583ef64b64b95571b317c94802ff155ebc5d.1606774951.git.me@pmachata.org>
+Subject: [PATCH iproute2-next 3/6] lib: Move sprint_size() from tc here, add print_size()
+Date:   Mon, 30 Nov 2020 23:59:39 +0100
+Message-Id: <96d90dc75f2c1676b03a119307f068d818b35798.1606774951.git.me@pmachata.org>
 In-Reply-To: <cover.1606774951.git.me@pmachata.org>
 References: <cover.1606774951.git.me@pmachata.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-MBO-SPAM-Probability: **
 X-Rspamd-Score: 1.64 / 15.00 / 15.00
-X-Rspamd-Queue-Id: 6FFA81863
-X-Rspamd-UID: 306684
+X-Rspamd-Queue-Id: C38F61833
+X-Rspamd-UID: 82eebd
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The functions print_rate() and sprint_rate() are useful for formatting
-rate-like values. The DCB tool would find these useful in the maxrate
-subtool. However, the current interface to these functions uses a global
-variable use_iec as a flag indicating whether 1024- or 1000-based powers
-should be used when formatting the rate value. For general use, a global
-variable is not a great way of passing arguments to a function. Besides, it
-is unlike most other printing functions in that it deals in buffers and
-ignores JSON.
+When displaying sizes of various sorts, tc commonly uses the function
+sprint_size() to format the size into a buffer as a human-readable string.
+This string is then displayed either using print_string(), or in some code
+even fprintf(). As a result, a typical sequence of code when formatting a
+size is something like the following:
 
-Therefore make the interface to print_rate() explicit by converting use_iec
-to an ordinary parameter. Since the interface changes anyway, convert it to
-follow the pattern of other json_print functions (except for the
-now-explicit use_iec parameter). Move to json_print.c.
+	SPRINT_BUF(b);
+	print_uint(PRINT_JSON, "foo", NULL, foo);
+	print_string(PRINT_FP, NULL, "foo %s ", sprint_size(foo, b));
 
-Add a wrapper to tc, so that all the call sites do not need to repeat the
-use_iec global variable argument, and convert all call sites.
+For a concept as broadly useful as size, it would be better to have a
+dedicated function in json_print.
 
-In q_cake.c, the conversion is not straightforward due to usage of a macro
-that is shared across numerous data types. Simply hand-roll the
-corresponding code, which seems better than making an extra helper for one
-call site.
+To that end, move sprint_size() from tc_util to json_print. Add helpers
+print_size() and print_color_size() that wrap arount sprint_size() and
+provide the JSON dispatch as appropriate.
 
-Drop sprint_rate() now that everybody just uses print_rate().
+Since print_size() should be the preferred interface, convert vast majority
+of uses of sprint_size() to print_size(). Two notable exceptions are:
+
+- q_tbf, which does not show the size as such, but uses the string
+  "$human_readable_size/$cell_size" even in JSON. There is simply no way to
+  have print_size() emit the same text, because print_size() in JSON mode
+  should of course just use the raw number, without human-readable frills.
+
+- q_cake, which relies on the existence of sprint_size() in its macro-based
+  formatting helpers. There might be ways to convert this particular case,
+  but given q_tbf simply cannot be converted, leave it as is.
 
 Signed-off-by: Petr Machata <me@pmachata.org>
 ---
- include/json_print.h | 10 ++++++++++
- lib/json_print.c     | 32 ++++++++++++++++++++++++++++++++
- tc/m_police.c        |  9 ++++-----
- tc/q_cake.c          | 28 ++++++++++++++++------------
- tc/q_cbq.c           | 14 ++++----------
- tc/q_fq.c            | 25 +++++++++----------------
- tc/q_hfsc.c          |  4 ++--
- tc/q_htb.c           |  4 ++--
- tc/q_mqprio.c        |  8 ++++----
- tc/q_netem.c         |  4 +---
- tc/q_tbf.c           |  7 ++-----
- tc/tc_util.c         | 37 +++++++------------------------------
- tc/tc_util.h         |  4 ++--
- 13 files changed, 95 insertions(+), 91 deletions(-)
+ include/json_print.h |  4 ++++
+ lib/json_print.c     | 28 ++++++++++++++++++++++++++++
+ tc/m_gate.c          |  6 ++----
+ tc/m_police.c        |  5 ++---
+ tc/q_cake.c          | 16 ++++++----------
+ tc/q_drr.c           | 10 +++-------
+ tc/q_fifo.c          | 10 +++-------
+ tc/q_fq.c            |  9 +++------
+ tc/q_fq_codel.c      |  5 ++---
+ tc/q_fq_pie.c        |  9 +++------
+ tc/q_gred.c          | 39 ++++++++-------------------------------
+ tc/q_hhf.c           |  9 +++------
+ tc/q_htb.c           | 19 ++++++++-----------
+ tc/q_red.c           | 13 +++----------
+ tc/q_sfq.c           | 15 +++------------
+ tc/q_tbf.c           | 25 +++++++------------------
+ tc/tc_util.c         | 29 +++--------------------------
+ tc/tc_util.h         |  1 -
+ 18 files changed, 91 insertions(+), 161 deletions(-)
 
 diff --git a/include/json_print.h b/include/json_print.h
-index 096a999a4de4..b6c4c0c80833 100644
+index b6c4c0c80833..1a1ad5ffa552 100644
 --- a/include/json_print.h
 +++ b/include/json_print.h
-@@ -86,4 +86,14 @@ _PRINT_NAME_VALUE_FUNC(uint, unsigned int, u);
- _PRINT_NAME_VALUE_FUNC(string, const char*, s);
- #undef _PRINT_NAME_VALUE_FUNC
+@@ -69,6 +69,7 @@ _PRINT_FUNC(on_off, bool)
+ _PRINT_FUNC(null, const char*)
+ _PRINT_FUNC(string, const char*)
+ _PRINT_FUNC(uint, unsigned int)
++_PRINT_FUNC(size, __u32)
+ _PRINT_FUNC(u64, uint64_t)
+ _PRINT_FUNC(hhu, unsigned char)
+ _PRINT_FUNC(hu, unsigned short)
+@@ -96,4 +97,7 @@ static inline int print_rate(bool use_iec, enum output_type t,
+ 	return print_color_rate(use_iec, t, COLOR_NONE, key, fmt, rate);
+ }
  
-+int print_color_rate(bool use_iec, enum output_type t, enum color_attr color,
-+		     const char *key, const char *fmt, unsigned long long rate);
-+
-+static inline int print_rate(bool use_iec, enum output_type t,
-+			     const char *key, const char *fmt,
-+			     unsigned long long rate)
-+{
-+	return print_color_rate(use_iec, t, COLOR_NONE, key, fmt, rate);
-+}
++/* A backdoor to the size formatter. Please use print_size() instead. */
++char *sprint_size(__u32 sz, char *buf);
 +
  #endif /* _JSON_PRINT_H_ */
 diff --git a/lib/json_print.c b/lib/json_print.c
-index 62eeb1f1fb31..9ab0f86b83df 100644
+index 9ab0f86b83df..c1df637642fd 100644
 --- a/lib/json_print.c
 +++ b/lib/json_print.c
-@@ -308,3 +308,35 @@ void print_nl(void)
- 	if (!_jw)
- 		printf("%s", _SL_);
+@@ -11,6 +11,7 @@
+ 
+ #include <stdarg.h>
+ #include <stdio.h>
++#include <math.h>
+ 
+ #include "utils.h"
+ #include "json_print.h"
+@@ -340,3 +341,30 @@ int print_color_rate(bool use_iec, enum output_type type, enum color_attr color,
+ 	free(buf);
+ 	return rc;
  }
 +
-+int print_color_rate(bool use_iec, enum output_type type, enum color_attr color,
-+		     const char *key, const char *fmt, unsigned long long rate)
++char *sprint_size(__u32 sz, char *buf)
 +{
-+	unsigned long kilo = use_iec ? 1024 : 1000;
-+	const char *str = use_iec ? "i" : "";
-+	static char *units[5] = {"", "K", "M", "G", "T"};
-+	char *buf;
-+	int rc;
-+	int i;
++	size_t len = SPRINT_BSIZE - 1;
++	double tmp = sz;
++
++	if (sz >= 1024*1024 && fabs(1024*1024*rint(tmp/(1024*1024)) - sz) < 1024)
++		snprintf(buf, len, "%gMb", rint(tmp/(1024*1024)));
++	else if (sz >= 1024 && fabs(1024*rint(tmp/1024) - sz) < 16)
++		snprintf(buf, len, "%gKb", rint(tmp/1024));
++	else
++		snprintf(buf, len, "%ub", sz);
++
++	return buf;
++}
++
++int print_color_size(enum output_type type, enum color_attr color,
++		     const char *key, const char *fmt, __u32 sz)
++{
++	SPRINT_BUF(buf);
 +
 +	if (_IS_JSON_CONTEXT(type))
-+		return print_color_lluint(type, color, key, "%llu", rate);
++		return print_color_uint(type, color, key, "%u", sz);
 +
-+	rate <<= 3; /* bytes/sec -> bits/sec */
-+
-+	for (i = 0; i < ARRAY_SIZE(units) - 1; i++)  {
-+		if (rate < kilo)
-+			break;
-+		if (((rate % kilo) != 0) && rate < 1000*kilo)
-+			break;
-+		rate /= kilo;
-+	}
-+
-+	rc = asprintf(&buf, "%.0f%s%sbit", (double)rate, units[i], str);
-+	if (rc < 0)
-+		return -1;
-+
-+	rc = print_color_string(type, color, key, fmt, buf);
-+	free(buf);
-+	return rc;
++	sprint_size(sz, buf);
++	return print_color_string(type, color, key, fmt, buf);
 +}
+diff --git a/tc/m_gate.c b/tc/m_gate.c
+index 4bae86edb58c..892775a35e28 100644
+--- a/tc/m_gate.c
++++ b/tc/m_gate.c
+@@ -465,10 +465,8 @@ static int print_gate_list(struct rtattr *list)
+ 		}
+ 
+ 		if (maxoctets != -1) {
+-			memset(buf, 0, sizeof(buf));
+-			print_uint(PRINT_JSON, "max_octets", NULL, maxoctets);
+-			print_string(PRINT_FP, NULL, "\t max-octets %s",
+-				     sprint_size(maxoctets, buf));
++			print_size(PRINT_ANY, "max_octets", "\t max-octets %s",
++				   maxoctets);
+ 		} else {
+ 			print_string(PRINT_FP, NULL,
+ 				     "\t max-octets %s", "wildcard");
 diff --git a/tc/m_police.c b/tc/m_police.c
-index 83b25db49f21..64068fcc4a42 100644
+index 64068fcc4a42..bb51df686288 100644
 --- a/tc/m_police.c
 +++ b/tc/m_police.c
-@@ -269,7 +269,7 @@ static int print_police(struct action_util *a, FILE *f, struct rtattr *arg)
- 		rate64 = rta_getattr_u64(tb[TCA_POLICE_RATE64]);
+@@ -238,7 +238,6 @@ int parse_police(int *argc_p, char ***argv_p, int tca_id, struct nlmsghdr *n)
  
+ static int print_police(struct action_util *a, FILE *f, struct rtattr *arg)
+ {
+-	SPRINT_BUF(b1);
+ 	SPRINT_BUF(b2);
+ 	struct tc_police *p;
+ 	struct rtattr *tb[TCA_POLICE_MAX+1];
+@@ -271,8 +270,8 @@ static int print_police(struct action_util *a, FILE *f, struct rtattr *arg)
  	fprintf(f, " police 0x%x ", p->index);
--	fprintf(f, "rate %s ", sprint_rate(rate64, b1));
-+	tc_print_rate(PRINT_FP, NULL, "rate %s ", rate64);
+ 	tc_print_rate(PRINT_FP, NULL, "rate %s ", rate64);
  	buffer = tc_calc_xmitsize(rate64, p->burst);
- 	fprintf(f, "burst %s ", sprint_size(buffer, b1));
- 	fprintf(f, "mtu %s ", sprint_size(p->mtu, b1));
-@@ -282,12 +282,11 @@ static int print_police(struct action_util *a, FILE *f, struct rtattr *arg)
- 		prate64 = rta_getattr_u64(tb[TCA_POLICE_PEAKRATE64]);
- 
- 	if (prate64)
--		fprintf(f, "peakrate %s ", sprint_rate(prate64, b1));
-+		tc_print_rate(PRINT_FP, NULL, "peakrate %s ", prate64);
- 
- 	if (tb[TCA_POLICE_AVRATE])
--		fprintf(f, "avrate %s ",
--			sprint_rate(rta_getattr_u32(tb[TCA_POLICE_AVRATE]),
--				    b1));
-+		tc_print_rate(PRINT_FP, NULL, "avrate %s ",
-+			      rta_getattr_u32(tb[TCA_POLICE_AVRATE]));
- 
- 	print_action_control(f, "action ", p->action, "");
+-	fprintf(f, "burst %s ", sprint_size(buffer, b1));
+-	fprintf(f, "mtu %s ", sprint_size(p->mtu, b1));
++	print_size(PRINT_FP, NULL, "burst %s ", buffer);
++	print_size(PRINT_FP, NULL, "mtu %s ", p->mtu);
+ 	if (show_raw)
+ 		fprintf(f, "[%08x] ", p->burst);
  
 diff --git a/tc/q_cake.c b/tc/q_cake.c
-index bf116e80316c..ab9233a04f39 100644
+index ab9233a04f39..b7da731b5510 100644
 --- a/tc/q_cake.c
 +++ b/tc/q_cake.c
-@@ -445,11 +445,10 @@ static int cake_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 	if (tb[TCA_CAKE_BASE_RATE64] &&
- 	    RTA_PAYLOAD(tb[TCA_CAKE_BASE_RATE64]) >= sizeof(bandwidth)) {
- 		bandwidth = rta_getattr_u64(tb[TCA_CAKE_BASE_RATE64]);
--		if (bandwidth) {
--			print_uint(PRINT_JSON, "bandwidth", NULL, bandwidth);
--			print_string(PRINT_FP, NULL, "bandwidth %s ",
--				     sprint_rate(bandwidth, b1));
--		} else
-+		if (bandwidth)
-+			tc_print_rate(PRINT_ANY, "bandwidth", "bandwidth %s ",
-+				      bandwidth);
-+		else
- 			print_string(PRINT_ANY, "bandwidth", "bandwidth %s ",
- 				     "unlimited");
- 	}
-@@ -650,12 +649,10 @@ static int cake_print_xstats(struct qdisc_util *qu, FILE *f,
- 			GET_STAT_U32(MEMORY_LIMIT));
- 	}
+@@ -434,7 +434,6 @@ static int cake_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 	int atm = 0;
+ 	int nat = 0;
  
--	if (st[TCA_CAKE_STATS_CAPACITY_ESTIMATE64]) {
--		print_string(PRINT_FP, NULL, " capacity estimate: %s\n",
--			sprint_rate(GET_STAT_U64(CAPACITY_ESTIMATE64), b1));
--		print_uint(PRINT_JSON, "capacity_estimate", NULL,
--			GET_STAT_U64(CAPACITY_ESTIMATE64));
+-	SPRINT_BUF(b1);
+ 	SPRINT_BUF(b2);
+ 
+ 	if (opt == NULL)
+@@ -573,11 +572,8 @@ static int cake_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 	if (mpu)
+ 		print_uint(PRINT_ANY, "mpu", "mpu %u ", mpu);
+ 
+-	if (memlimit) {
+-		print_uint(PRINT_JSON, "memlimit", NULL, memlimit);
+-		print_string(PRINT_FP, NULL, "memlimit %s ",
+-			     sprint_size(memlimit, b1));
 -	}
-+	if (st[TCA_CAKE_STATS_CAPACITY_ESTIMATE64])
-+		tc_print_rate(PRINT_ANY, "capacity_estimate",
-+			      " capacity estimate: %s\n",
-+			      GET_STAT_U64(CAPACITY_ESTIMATE64));
++	if (memlimit)
++		print_size(PRINT_ANY, "memlimit", "memlimit %s ", memlimit);
  
- 	if (st[TCA_CAKE_STATS_MIN_NETLEN] &&
- 	    st[TCA_CAKE_STATS_MAX_NETLEN]) {
-@@ -790,7 +787,14 @@ static int cake_print_xstats(struct qdisc_util *qu, FILE *f,
- #define PRINT_TSTAT_U64(name, attr)	PRINT_TSTAT(			\
- 			name, attr, "llu", rta_getattr_u64(GET_TSTAT(i, attr)))
+ 	if (fwmark)
+ 		print_uint(PRINT_FP, NULL, "fwmark 0x%x ", fwmark);
+@@ -637,11 +633,11 @@ static int cake_print_xstats(struct qdisc_util *qu, FILE *f,
  
--		SPRINT_TSTAT(rate, u64, "  thresh  ", THRESHOLD_RATE64);
-+		if (GET_TSTAT(0, THRESHOLD_RATE64)) {
-+			fprintf(f, "  thresh  ");
-+			for (i = 0; i < num_tins; i++)
-+				tc_print_rate(PRINT_FP, NULL, " %12s",
-+					      rta_getattr_u64(GET_TSTAT(i, THRESHOLD_RATE64)));
-+			fprintf(f, "%s", _SL_);
-+		}
-+
- 		SPRINT_TSTAT(time, u32, "  target  ", TARGET_US);
- 		SPRINT_TSTAT(time, u32, "  interval", INTERVAL_US);
- 		SPRINT_TSTAT(time, u32, "  pk_delay", PEAK_DELAY_US);
-diff --git a/tc/q_cbq.c b/tc/q_cbq.c
-index 6518ef46813b..4619a37b8160 100644
---- a/tc/q_cbq.c
-+++ b/tc/q_cbq.c
-@@ -497,10 +497,7 @@ static int cbq_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 	}
+ 	if (st[TCA_CAKE_STATS_MEMORY_USED] &&
+ 	    st[TCA_CAKE_STATS_MEMORY_LIMIT]) {
+-		print_string(PRINT_FP, NULL, " memory used: %s",
+-			sprint_size(GET_STAT_U32(MEMORY_USED), b1));
++		print_size(PRINT_FP, NULL, " memory used: %s",
++			   GET_STAT_U32(MEMORY_USED));
  
- 	if (r) {
--		char buf[64];
--
--		print_rate(buf, sizeof(buf), r->rate);
--		fprintf(f, "rate %s ", buf);
-+		tc_print_rate(PRINT_FP, NULL, "rate %s ", r->rate);
- 		linklayer = (r->linklayer & TC_LINKLAYER_MASK);
- 		if (linklayer > TC_LINKLAYER_ETHERNET || show_details)
- 			fprintf(f, "linklayer %s ", sprint_linklayer(linklayer, b2));
-@@ -533,13 +530,10 @@ static int cbq_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 		else
- 			fprintf(f, "prio no-transmit");
- 		if (show_details) {
--			char buf[64];
--
- 			fprintf(f, "/%u ", wrr->cpriority);
--			if (wrr->weight != 1) {
--				print_rate(buf, sizeof(buf), wrr->weight);
--				fprintf(f, "weight %s ", buf);
--			}
-+			if (wrr->weight != 1)
-+				tc_print_rate(PRINT_FP, NULL, "weight %s ",
-+					      wrr->weight);
- 			if (wrr->allot)
- 				fprintf(f, "allot %ub ", wrr->allot);
- 		}
-diff --git a/tc/q_fq.c b/tc/q_fq.c
-index b10d01e901d8..71a513fb3c72 100644
---- a/tc/q_fq.c
-+++ b/tc/q_fq.c
-@@ -330,32 +330,25 @@ static int fq_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 	    RTA_PAYLOAD(tb[TCA_FQ_FLOW_MAX_RATE]) >= sizeof(__u32)) {
- 		rate = rta_getattr_u32(tb[TCA_FQ_FLOW_MAX_RATE]);
+-		print_string(PRINT_FP, NULL, " of %s\n",
+-			sprint_size(GET_STAT_U32(MEMORY_LIMIT), b1));
++		print_size(PRINT_FP, NULL, " of %s\n",
++			   GET_STAT_U32(MEMORY_LIMIT));
  
--		if (rate != ~0U) {
--			print_uint(PRINT_JSON, "maxrate", NULL, rate);
--			print_string(PRINT_FP, NULL, "maxrate %s ",
--				     sprint_rate(rate, b1));
--		}
-+		if (rate != ~0U)
-+			tc_print_rate(PRINT_ANY,
-+				      "maxrate", "maxrate %s ", rate);
- 	}
- 	if (tb[TCA_FQ_FLOW_DEFAULT_RATE] &&
- 	    RTA_PAYLOAD(tb[TCA_FQ_FLOW_DEFAULT_RATE]) >= sizeof(__u32)) {
- 		rate = rta_getattr_u32(tb[TCA_FQ_FLOW_DEFAULT_RATE]);
- 
--		if (rate != 0) {
--			print_uint(PRINT_JSON, "defrate", NULL, rate);
--			print_string(PRINT_FP, NULL, "defrate %s ",
--				     sprint_rate(rate, b1));
--		}
-+		if (rate != 0)
-+			tc_print_rate(PRINT_ANY,
-+				      "defrate", "defrate %s ", rate);
- 	}
- 	if (tb[TCA_FQ_LOW_RATE_THRESHOLD] &&
- 	    RTA_PAYLOAD(tb[TCA_FQ_LOW_RATE_THRESHOLD]) >= sizeof(__u32)) {
- 		rate = rta_getattr_u32(tb[TCA_FQ_LOW_RATE_THRESHOLD]);
- 
--		if (rate != 0) {
--			print_uint(PRINT_JSON, "low_rate_threshold", NULL,
--				   rate);
--			print_string(PRINT_FP, NULL, "low_rate_threshold %s ",
--				     sprint_rate(rate, b1));
--		}
-+		if (rate != 0)
-+			tc_print_rate(PRINT_ANY, "low_rate_threshold",
-+				      "low_rate_threshold %s ", rate);
- 	}
- 	if (tb[TCA_FQ_FLOW_REFILL_DELAY] &&
- 	    RTA_PAYLOAD(tb[TCA_FQ_FLOW_REFILL_DELAY]) >= sizeof(__u32)) {
-diff --git a/tc/q_hfsc.c b/tc/q_hfsc.c
-index f34b1b2fe2a9..81c10210c884 100644
---- a/tc/q_hfsc.c
-+++ b/tc/q_hfsc.c
-@@ -219,9 +219,9 @@ hfsc_print_sc(FILE *f, char *name, struct tc_service_curve *sc)
- 	SPRINT_BUF(b1);
- 
- 	fprintf(f, "%s ", name);
--	fprintf(f, "m1 %s ", sprint_rate(sc->m1, b1));
-+	tc_print_rate(PRINT_FP, NULL, "m1 %s ", sc->m1);
- 	fprintf(f, "d %s ", sprint_time(tc_core_ktime2time(sc->d), b1));
--	fprintf(f, "m2 %s ", sprint_rate(sc->m2, b1));
-+	tc_print_rate(PRINT_FP, NULL, "m2 %s ", sc->m2);
- }
- 
- static int
-diff --git a/tc/q_htb.c b/tc/q_htb.c
-index 520522266e00..10030a8741fa 100644
---- a/tc/q_htb.c
-+++ b/tc/q_htb.c
-@@ -299,12 +299,12 @@ static int htb_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 		    RTA_PAYLOAD(tb[TCA_HTB_CEIL64]) >= sizeof(ceil64))
- 			ceil64 = rta_getattr_u64(tb[TCA_HTB_CEIL64]);
- 
--		fprintf(f, "rate %s ", sprint_rate(rate64, b1));
-+		tc_print_rate(PRINT_FP, NULL, "rate %s ", rate64);
- 		if (hopt->rate.overhead)
- 			fprintf(f, "overhead %u ", hopt->rate.overhead);
- 		buffer = tc_calc_xmitsize(rate64, hopt->buffer);
- 
--		fprintf(f, "ceil %s ", sprint_rate(ceil64, b1));
-+		tc_print_rate(PRINT_FP, NULL, "ceil %s ", ceil64);
- 		cbuffer = tc_calc_xmitsize(ceil64, hopt->cbuffer);
- 		linklayer = (hopt->rate.linklayer & TC_LINKLAYER_MASK);
- 		if (linklayer > TC_LINKLAYER_ETHERNET || show_details)
-diff --git a/tc/q_mqprio.c b/tc/q_mqprio.c
-index f26ba8d7b708..123487fdf240 100644
---- a/tc/q_mqprio.c
-+++ b/tc/q_mqprio.c
-@@ -230,8 +230,6 @@ static int mqprio_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 	__u64 max_rate64[TC_QOPT_MAX_QUEUE] = {0};
- 	int len;
+ 		print_uint(PRINT_JSON, "memory_used", NULL,
+ 			GET_STAT_U32(MEMORY_USED));
+diff --git a/tc/q_drr.c b/tc/q_drr.c
+index f9c90f3035f3..4e829ce3331d 100644
+--- a/tc/q_drr.c
++++ b/tc/q_drr.c
+@@ -84,16 +84,14 @@ static int drr_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ {
+ 	struct rtattr *tb[TCA_DRR_MAX + 1];
  
 -	SPRINT_BUF(b1);
 -
  	if (opt == NULL)
  		return 0;
  
-@@ -289,7 +287,8 @@ static int mqprio_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 			}
- 			fprintf(f, "	min_rate:");
- 			for (i = 0; i < qopt->num_tc; i++)
--				fprintf(f, "%s ", sprint_rate(min_rate64[i], b1));
-+				tc_print_rate(PRINT_FP, NULL, "%s ",
-+					      min_rate64[i]);
- 		}
+ 	parse_rtattr_nested(tb, TCA_DRR_MAX, opt);
  
- 		if (tb[TCA_MQPRIO_MAX_RATE64]) {
-@@ -305,7 +304,8 @@ static int mqprio_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 			}
- 			fprintf(f, "	max_rate:");
- 			for (i = 0; i < qopt->num_tc; i++)
--				fprintf(f, "%s ", sprint_rate(max_rate64[i], b1));
-+				tc_print_rate(PRINT_FP, NULL, "%s ",
-+					      max_rate64[i]);
- 		}
- 	}
+ 	if (tb[TCA_DRR_QUANTUM])
+-		fprintf(f, "quantum %s ",
+-			sprint_size(rta_getattr_u32(tb[TCA_DRR_QUANTUM]), b1));
++		print_size(PRINT_FP, NULL, "quantum %s ",
++			   rta_getattr_u32(tb[TCA_DRR_QUANTUM]));
  	return 0;
-diff --git a/tc/q_netem.c b/tc/q_netem.c
-index d01450fc59dc..d93e1c7315d2 100644
---- a/tc/q_netem.c
-+++ b/tc/q_netem.c
-@@ -800,9 +800,7 @@ static int netem_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 	if (rate && rate->rate) {
- 		open_json_object("rate");
- 		rate64 = rate64 ? : rate->rate;
--		print_string(PRINT_FP, NULL, " rate %s",
--			     sprint_rate(rate64, b1));
--		print_lluint(PRINT_JSON, "rate", NULL, rate64);
-+		tc_print_rate(PRINT_ANY, "rate", " rate %s", rate64);
- 		PRINT_INT_OPT("packetoverhead", rate->packet_overhead);
- 		print_uint(PRINT_ANY, "cellsize",
- 			   rate->cell_size ? " cellsize %u" : "",
+ }
+ 
+@@ -101,15 +99,13 @@ static int drr_print_xstats(struct qdisc_util *qu, FILE *f, struct rtattr *xstat
+ {
+ 	struct tc_drr_stats *x;
+ 
+-	SPRINT_BUF(b1);
+-
+ 	if (xstats == NULL)
+ 		return 0;
+ 	if (RTA_PAYLOAD(xstats) < sizeof(*x))
+ 		return -1;
+ 	x = RTA_DATA(xstats);
+ 
+-	fprintf(f, " deficit %s ", sprint_size(x->deficit, b1));
++	print_size(PRINT_FP, NULL, " deficit %s ", x->deficit);
+ 	return 0;
+ }
+ 
+diff --git a/tc/q_fifo.c b/tc/q_fifo.c
+index 61493fbbc5bc..ce82e74dcc5e 100644
+--- a/tc/q_fifo.c
++++ b/tc/q_fifo.c
+@@ -67,14 +67,10 @@ static int fifo_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 	if (RTA_PAYLOAD(opt)  < sizeof(*qopt))
+ 		return -1;
+ 	qopt = RTA_DATA(opt);
+-	if (strcmp(qu->id, "bfifo") == 0) {
+-		SPRINT_BUF(b1);
+-		print_uint(PRINT_JSON, "limit", NULL, qopt->limit);
+-		print_string(PRINT_FP, NULL, "limit %s",
+-			     sprint_size(qopt->limit, b1));
+-	} else {
++	if (strcmp(qu->id, "bfifo") == 0)
++		print_size(PRINT_ANY, "limit", "limit %s", qopt->limit);
++	else
+ 		print_uint(PRINT_ANY, "limit", "limit %up", qopt->limit);
+-	}
+ 	return 0;
+ }
+ 
+diff --git a/tc/q_fq.c b/tc/q_fq.c
+index 71a513fb3c72..cff21975b897 100644
+--- a/tc/q_fq.c
++++ b/tc/q_fq.c
+@@ -315,16 +315,13 @@ static int fq_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 	if (tb[TCA_FQ_QUANTUM] &&
+ 	    RTA_PAYLOAD(tb[TCA_FQ_QUANTUM]) >= sizeof(__u32)) {
+ 		quantum = rta_getattr_u32(tb[TCA_FQ_QUANTUM]);
+-		print_uint(PRINT_JSON, "quantum", NULL, quantum);
+-		print_string(PRINT_FP, NULL, "quantum %s ",
+-			     sprint_size(quantum, b1));
++		print_size(PRINT_ANY, "quantum", "quantum %s ", quantum);
+ 	}
+ 	if (tb[TCA_FQ_INITIAL_QUANTUM] &&
+ 	    RTA_PAYLOAD(tb[TCA_FQ_INITIAL_QUANTUM]) >= sizeof(__u32)) {
+ 		quantum = rta_getattr_u32(tb[TCA_FQ_INITIAL_QUANTUM]);
+-		print_uint(PRINT_JSON, "initial_quantum", NULL, quantum);
+-		print_string(PRINT_FP, NULL, "initial_quantum %s ",
+-			     sprint_size(quantum, b1));
++		print_size(PRINT_ANY, "initial_quantum", "initial_quantum %s ",
++			   quantum);
+ 	}
+ 	if (tb[TCA_FQ_FLOW_MAX_RATE] &&
+ 	    RTA_PAYLOAD(tb[TCA_FQ_FLOW_MAX_RATE]) >= sizeof(__u32)) {
+diff --git a/tc/q_fq_codel.c b/tc/q_fq_codel.c
+index 1a51302e0e2b..300980652243 100644
+--- a/tc/q_fq_codel.c
++++ b/tc/q_fq_codel.c
+@@ -221,9 +221,8 @@ static int fq_codel_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt
+ 	if (tb[TCA_FQ_CODEL_MEMORY_LIMIT] &&
+ 	    RTA_PAYLOAD(tb[TCA_FQ_CODEL_MEMORY_LIMIT]) >= sizeof(__u32)) {
+ 		memory_limit = rta_getattr_u32(tb[TCA_FQ_CODEL_MEMORY_LIMIT]);
+-		print_uint(PRINT_JSON, "memory_limit", NULL, memory_limit);
+-		print_string(PRINT_FP, NULL, "memory_limit %s ",
+-			     sprint_size(memory_limit, b1));
++		print_size(PRINT_ANY, "memory_limit", "memory_limit %s ",
++			   memory_limit);
+ 	}
+ 	if (tb[TCA_FQ_CODEL_ECN] &&
+ 	    RTA_PAYLOAD(tb[TCA_FQ_CODEL_ECN]) >= sizeof(__u32)) {
+diff --git a/tc/q_fq_pie.c b/tc/q_fq_pie.c
+index c136cd1af124..9cbef47eef88 100644
+--- a/tc/q_fq_pie.c
++++ b/tc/q_fq_pie.c
+@@ -232,16 +232,13 @@ static int fq_pie_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 	if (tb[TCA_FQ_PIE_QUANTUM] &&
+ 	    RTA_PAYLOAD(tb[TCA_FQ_PIE_QUANTUM]) >= sizeof(__u32)) {
+ 		quantum = rta_getattr_u32(tb[TCA_FQ_PIE_QUANTUM]);
+-		print_uint(PRINT_JSON, "quantum", NULL, quantum);
+-		print_string(PRINT_FP, NULL, "quantum %s ",
+-			     sprint_size(quantum, b1));
++		print_size(PRINT_ANY, "quantum", "quantum %s ", quantum);
+ 	}
+ 	if (tb[TCA_FQ_PIE_MEMORY_LIMIT] &&
+ 	    RTA_PAYLOAD(tb[TCA_FQ_PIE_MEMORY_LIMIT]) >= sizeof(__u32)) {
+ 		memory_limit = rta_getattr_u32(tb[TCA_FQ_PIE_MEMORY_LIMIT]);
+-		print_uint(PRINT_JSON, "memory_limit", NULL, memory_limit);
+-		print_string(PRINT_FP, NULL, "memory_limit %s ",
+-			     sprint_size(memory_limit, b1));
++		print_size(PRINT_ANY, "memory_limit", "memory_limit %s ",
++			   memory_limit);
+ 	}
+ 	if (tb[TCA_FQ_PIE_ECN_PROB] &&
+ 	    RTA_PAYLOAD(tb[TCA_FQ_PIE_ECN_PROB]) >= sizeof(__u32)) {
+diff --git a/tc/q_gred.c b/tc/q_gred.c
+index 8a1cecffc126..89aeb086038f 100644
+--- a/tc/q_gred.c
++++ b/tc/q_gred.c
+@@ -373,18 +373,11 @@ gred_print_stats(struct tc_gred_info *info, struct tc_gred_qopt *qopt)
+ {
+ 	__u64 bytes = info ? info->bytes : qopt->bytesin;
+ 
+-	SPRINT_BUF(b1);
+-
+ 	if (!is_json_context())
+ 		printf("\n  Queue size: ");
+ 
+-	print_uint(PRINT_JSON, "qave", NULL, qopt->qave);
+-	print_string(PRINT_FP, NULL, "average %s ",
+-		     sprint_size(qopt->qave, b1));
+-
+-	print_uint(PRINT_JSON, "backlog", NULL, qopt->backlog);
+-	print_string(PRINT_FP, NULL, "current %s ",
+-		     sprint_size(qopt->backlog, b1));
++	print_size(PRINT_ANY, "qave", "average %s ", qopt->qave);
++	print_size(PRINT_ANY, "backlog", "current %s ", qopt->backlog);
+ 
+ 	if (!is_json_context())
+ 		printf("\n  Dropped packets: ");
+@@ -415,9 +408,7 @@ gred_print_stats(struct tc_gred_info *info, struct tc_gred_qopt *qopt)
+ 		printf("\n  Total packets: ");
+ 
+ 	print_uint(PRINT_ANY, "packets", "%u ", qopt->packets);
+-
+-	print_uint(PRINT_JSON, "bytes", NULL, bytes);
+-	print_string(PRINT_FP, NULL, "(%s) ", sprint_size(bytes, b1));
++	print_size(PRINT_ANY, "bytes", "(%s) ", bytes);
+ }
+ 
+ static int gred_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+@@ -431,8 +422,6 @@ static int gred_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 	__u32 *limit = NULL;
+ 	unsigned int i;
+ 
+-	SPRINT_BUF(b1);
+-
+ 	if (opt == NULL)
+ 		return 0;
+ 
+@@ -470,11 +459,8 @@ static int gred_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 	else
+ 		print_bool(PRINT_ANY, "grio", NULL, false);
+ 
+-	if (limit) {
+-		print_uint(PRINT_JSON, "limit", NULL, *limit);
+-		print_string(PRINT_FP, NULL, "limit %s ",
+-			     sprint_size(*limit, b1));
+-	}
++	if (limit)
++		print_size(PRINT_ANY, "limit", "limit %s ", *limit);
+ 
+ 	tc_red_print_flags(sopt->flags);
+ 
+@@ -487,18 +473,9 @@ static int gred_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 
+ 		print_uint(PRINT_ANY, "vq", "\n vq %u ", qopt->DP);
+ 		print_hhu(PRINT_ANY, "prio", "prio %hhu ", qopt->prio);
+-
+-		print_uint(PRINT_JSON, "limit", NULL, qopt->limit);
+-		print_string(PRINT_FP, NULL, "limit %s ",
+-			     sprint_size(qopt->limit, b1));
+-
+-		print_uint(PRINT_JSON, "min", NULL, qopt->qth_min);
+-		print_string(PRINT_FP, NULL, "min %s ",
+-			     sprint_size(qopt->qth_min, b1));
+-
+-		print_uint(PRINT_JSON, "max", NULL, qopt->qth_max);
+-		print_string(PRINT_FP, NULL, "max %s ",
+-			     sprint_size(qopt->qth_max, b1));
++		print_size(PRINT_ANY, "limit", "limit %s ", qopt->limit);
++		print_size(PRINT_ANY, "min", "min %s ", qopt->qth_min);
++		print_size(PRINT_ANY, "max", "max %s ", qopt->qth_max);
+ 
+ 		if (infos[i].flags_present)
+ 			tc_red_print_flags(infos[i].flags);
+diff --git a/tc/q_hhf.c b/tc/q_hhf.c
+index f88880117bee..95e49f3dd720 100644
+--- a/tc/q_hhf.c
++++ b/tc/q_hhf.c
+@@ -143,9 +143,7 @@ static int hhf_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 	if (tb[TCA_HHF_QUANTUM] &&
+ 	    RTA_PAYLOAD(tb[TCA_HHF_QUANTUM]) >= sizeof(__u32)) {
+ 		quantum = rta_getattr_u32(tb[TCA_HHF_QUANTUM]);
+-		print_uint(PRINT_JSON, "quantum", NULL, quantum);
+-		print_string(PRINT_FP, NULL, "quantum %s ",
+-			     sprint_size(quantum, b1));
++		print_size(PRINT_ANY, "quantum", "quantum %s ", quantum);
+ 	}
+ 	if (tb[TCA_HHF_HH_FLOWS_LIMIT] &&
+ 	    RTA_PAYLOAD(tb[TCA_HHF_HH_FLOWS_LIMIT]) >= sizeof(__u32)) {
+@@ -162,9 +160,8 @@ static int hhf_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 	if (tb[TCA_HHF_ADMIT_BYTES] &&
+ 	    RTA_PAYLOAD(tb[TCA_HHF_ADMIT_BYTES]) >= sizeof(__u32)) {
+ 		admit_bytes = rta_getattr_u32(tb[TCA_HHF_ADMIT_BYTES]);
+-		print_uint(PRINT_JSON, "admit_bytes", NULL, admit_bytes);
+-		print_string(PRINT_FP, NULL, "admit_bytes %s ",
+-			     sprint_size(admit_bytes, b1));
++		print_size(PRINT_ANY, "admit_bytes", "admit_bytes %s ",
++			   admit_bytes);
+ 	}
+ 	if (tb[TCA_HHF_EVICT_TIMEOUT] &&
+ 	    RTA_PAYLOAD(tb[TCA_HHF_EVICT_TIMEOUT]) >= sizeof(__u32)) {
+diff --git a/tc/q_htb.c b/tc/q_htb.c
+index 10030a8741fa..c609e9749c2c 100644
+--- a/tc/q_htb.c
++++ b/tc/q_htb.c
+@@ -269,7 +269,6 @@ static int htb_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 	__u64 rate64, ceil64;
+ 
+ 	SPRINT_BUF(b1);
+-	SPRINT_BUF(b2);
+ 	SPRINT_BUF(b3);
+ 
+ 	if (opt == NULL)
+@@ -310,18 +309,16 @@ static int htb_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 		if (linklayer > TC_LINKLAYER_ETHERNET || show_details)
+ 			fprintf(f, "linklayer %s ", sprint_linklayer(linklayer, b3));
+ 		if (show_details) {
+-			fprintf(f, "burst %s/%u mpu %s ",
+-				sprint_size(buffer, b1),
+-				1<<hopt->rate.cell_log,
+-				sprint_size(hopt->rate.mpu, b2));
+-			fprintf(f, "cburst %s/%u mpu %s ",
+-				sprint_size(cbuffer, b1),
+-				1<<hopt->ceil.cell_log,
+-				sprint_size(hopt->ceil.mpu, b2));
++			print_size(PRINT_FP, NULL, "burst %s/", buffer);
++			fprintf(f, "%u ", 1<<hopt->rate.cell_log);
++			print_size(PRINT_FP, NULL, "mpu %s ", hopt->rate.mpu);
++			print_size(PRINT_FP, NULL, "cburst %s/", cbuffer);
++			fprintf(f, "%u ", 1<<hopt->ceil.cell_log);
++			print_size(PRINT_FP, NULL, "mpu %s ", hopt->ceil.mpu);
+ 			fprintf(f, "level %d ", (int)hopt->level);
+ 		} else {
+-			fprintf(f, "burst %s ", sprint_size(buffer, b1));
+-			fprintf(f, "cburst %s ", sprint_size(cbuffer, b1));
++			print_size(PRINT_FP, NULL, "burst %s ", buffer);
++			print_size(PRINT_FP, NULL, "cburst %s ", cbuffer);
+ 		}
+ 		if (show_raw)
+ 			fprintf(f, "buffer [%08x] cbuffer [%08x] ",
+diff --git a/tc/q_red.c b/tc/q_red.c
+index df788f8fc5da..fd50d37d31cb 100644
+--- a/tc/q_red.c
++++ b/tc/q_red.c
+@@ -192,10 +192,6 @@ static int red_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 	struct tc_red_qopt *qopt;
+ 	__u32 max_P = 0;
+ 
+-	SPRINT_BUF(b1);
+-	SPRINT_BUF(b2);
+-	SPRINT_BUF(b3);
+-
+ 	if (opt == NULL)
+ 		return 0;
+ 
+@@ -217,12 +213,9 @@ static int red_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 		qopt->flags = flags_bf->value;
+ 	}
+ 
+-	print_uint(PRINT_JSON, "limit", NULL, qopt->limit);
+-	print_string(PRINT_FP, NULL, "limit %s ", sprint_size(qopt->limit, b1));
+-	print_uint(PRINT_JSON, "min", NULL, qopt->qth_min);
+-	print_string(PRINT_FP, NULL, "min %s ", sprint_size(qopt->qth_min, b2));
+-	print_uint(PRINT_JSON, "max", NULL, qopt->qth_max);
+-	print_string(PRINT_FP, NULL, "max %s ", sprint_size(qopt->qth_max, b3));
++	print_size(PRINT_ANY, "limit", "limit %s ", qopt->limit);
++	print_size(PRINT_ANY, "min", "min %s ", qopt->qth_min);
++	print_size(PRINT_ANY, "max", "max %s ", qopt->qth_max);
+ 
+ 	tc_red_print_flags(qopt->flags);
+ 
+diff --git a/tc/q_sfq.c b/tc/q_sfq.c
+index 2b9bbcd230b9..d04a440cece7 100644
+--- a/tc/q_sfq.c
++++ b/tc/q_sfq.c
+@@ -206,9 +206,6 @@ static int sfq_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 	struct tc_sfq_qopt *qopt;
+ 	struct tc_sfq_qopt_v1 *qopt_ext = NULL;
+ 
+-	SPRINT_BUF(b1);
+-	SPRINT_BUF(b2);
+-	SPRINT_BUF(b3);
+ 	if (opt == NULL)
+ 		return 0;
+ 
+@@ -219,9 +216,7 @@ static int sfq_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 	qopt = RTA_DATA(opt);
+ 
+ 	print_uint(PRINT_ANY, "limit", "limit %up ", qopt->limit);
+-	print_uint(PRINT_JSON, "quantum", NULL, qopt->quantum);
+-	print_string(PRINT_FP, NULL, "quantum %s ",
+-		     sprint_size(qopt->quantum, b1));
++	print_size(PRINT_ANY, "quantum", "quantum %s ", qopt->quantum);
+ 
+ 	if (qopt_ext && qopt_ext->depth)
+ 		print_uint(PRINT_ANY, "depth", "depth %u ", qopt_ext->depth);
+@@ -237,12 +232,8 @@ static int sfq_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 			   qopt->perturb_period);
+ 	if (qopt_ext && qopt_ext->qth_min) {
+ 		print_uint(PRINT_ANY, "ewma", "ewma %u ", qopt_ext->Wlog);
+-		print_uint(PRINT_JSON, "min", NULL, qopt_ext->qth_min);
+-		print_string(PRINT_FP, NULL, "min %s ",
+-			     sprint_size(qopt_ext->qth_min, b2));
+-		print_uint(PRINT_JSON, "max", NULL, qopt_ext->qth_max);
+-		print_string(PRINT_FP, NULL, "max %s ",
+-			     sprint_size(qopt_ext->qth_max, b3));
++		print_size(PRINT_ANY, "min", "min %s ", qopt_ext->qth_min);
++		print_size(PRINT_ANY, "max", "max %s ", qopt_ext->qth_max);
+ 		print_float(PRINT_ANY, "probability", "probability %lg ",
+ 			    qopt_ext->max_P / pow(2, 32));
+ 		tc_red_print_flags(qopt_ext->flags);
 diff --git a/tc/q_tbf.c b/tc/q_tbf.c
-index 5135b1d670d6..9d4833385521 100644
+index 9d4833385521..4e5bf382fd03 100644
 --- a/tc/q_tbf.c
 +++ b/tc/q_tbf.c
-@@ -286,8 +286,7 @@ static int tbf_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 	if (tb[TCA_TBF_RATE64] &&
- 	    RTA_PAYLOAD(tb[TCA_TBF_RATE64]) >= sizeof(rate64))
- 		rate64 = rta_getattr_u64(tb[TCA_TBF_RATE64]);
--	print_u64(PRINT_JSON, "rate", NULL, rate64);
--	print_string(PRINT_FP, NULL, "rate %s ", sprint_rate(rate64, b1));
-+	tc_print_rate(PRINT_ANY, "rate", "rate %s ", rate64);
- 	buffer = tc_calc_xmitsize(rate64, qopt->buffer);
- 	if (show_details) {
+@@ -292,13 +292,9 @@ static int tbf_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
  		sprintf(b1, "%s/%u",  sprint_size(buffer, b2),
-@@ -308,9 +307,7 @@ static int tbf_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
- 	    RTA_PAYLOAD(tb[TCA_TBF_PRATE64]) >= sizeof(prate64))
- 		prate64 = rta_getattr_u64(tb[TCA_TBF_PRATE64]);
- 	if (prate64) {
--		print_u64(PRINT_JSON, "peakrate", NULL, prate64);
--		print_string(PRINT_FP, NULL, "peakrate %s ",
--			     sprint_rate(prate64, b1));
-+		tc_print_rate(PRINT_FP, "peakrate", "peakrate %s ", prate64);
- 		if (qopt->mtu || qopt->peakrate.mpu) {
- 			mtu = tc_calc_xmitsize(prate64, qopt->mtu);
- 			if (show_details) {
+ 			1 << qopt->rate.cell_log);
+ 		print_string(PRINT_ANY, "burst", "burst %s ", b1);
+-		print_uint(PRINT_JSON, "mpu", NULL, qopt->rate.mpu);
+-		print_string(PRINT_FP, NULL, "mpu %s ",
+-			     sprint_size(qopt->rate.mpu, b1));
++		print_size(PRINT_ANY, "mpu", "mpu %s ", qopt->rate.mpu);
+ 	} else {
+-		print_u64(PRINT_JSON, "burst", NULL, buffer);
+-		print_string(PRINT_FP, NULL, "burst %s ",
+-			     sprint_size(buffer, b1));
++		print_size(PRINT_ANY, "burst", "burst %s ", buffer);
+ 	}
+ 	if (show_raw)
+ 		print_hex(PRINT_ANY, "burst_raw", "[%08x] ", qopt->buffer);
+@@ -314,15 +310,11 @@ static int tbf_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 				sprintf(b1, "%s/%u",  sprint_size(mtu, b2),
+ 					1 << qopt->peakrate.cell_log);
+ 				print_string(PRINT_ANY, "mtu", "mtu %s ", b1);
+-				print_uint(PRINT_JSON, "mpu", NULL,
++				print_size(PRINT_ANY, "mpu", "mpu %s ",
+ 					   qopt->peakrate.mpu);
+-				print_string(PRINT_FP, NULL, "mpu %s ",
+-					     sprint_size(qopt->peakrate.mpu,
+-							 b1));
+ 			} else {
+-				print_u64(PRINT_JSON, "minburst", NULL, mtu);
+-				print_string(PRINT_FP, NULL, "minburst %s ",
+-					     sprint_size(mtu, b1));
++				print_size(PRINT_ANY, "minburst",
++					   "minburst %s ", mtu);
+ 			}
+ 			if (show_raw)
+ 				print_hex(PRINT_ANY, "mtu_raw", "[%08x] ",
+@@ -344,11 +336,8 @@ static int tbf_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 		print_string(PRINT_FP, NULL, "lat %s ",
+ 			     sprint_time(latency, b1));
+ 	}
+-	if (show_raw || latency < 0.0) {
+-		print_uint(PRINT_JSON, "limit", NULL, qopt->limit);
+-		print_string(PRINT_FP, NULL, "limit %s ",
+-			     sprint_size(qopt->limit, b1));
+-	}
++	if (show_raw || latency < 0.0)
++		print_size(PRINT_ANY, "limit", "limit %s ", qopt->limit);
+ 	if (qopt->rate.overhead)
+ 		print_int(PRINT_ANY, "overhead", "overhead %d ",
+ 			  qopt->rate.overhead);
 diff --git a/tc/tc_util.c b/tc/tc_util.c
-index b7ff911b63ed..40efaa9a4b8a 100644
+index 40efaa9a4b8a..ff979c617b9b 100644
 --- a/tc/tc_util.c
 +++ b/tc/tc_util.c
-@@ -326,31 +326,10 @@ int get_rate64(__u64 *rate, const char *str)
- 	return 0;
+@@ -412,24 +412,6 @@ void print_devname(enum output_type type, int ifindex)
+ 			   "dev", "%s ", ifname);
  }
  
--void print_rate(char *buf, int len, __u64 rate)
-+void tc_print_rate(enum output_type t, const char *key, const char *fmt,
-+		   unsigned long long rate)
- {
--	extern int use_iec;
--	unsigned long kilo = use_iec ? 1024 : 1000;
--	const char *str = use_iec ? "i" : "";
--	static char *units[5] = {"", "K", "M", "G", "T"};
--	int i;
+-static void print_size(char *buf, int len, __u32 sz)
+-{
+-	double tmp = sz;
 -
--	rate <<= 3; /* bytes/sec -> bits/sec */
--
--	for (i = 0; i < ARRAY_SIZE(units) - 1; i++)  {
--		if (rate < kilo)
--			break;
--		if (((rate % kilo) != 0) && rate < 1000*kilo)
--			break;
--		rate /= kilo;
--	}
--
--	snprintf(buf, len, "%.0f%s%sbit", (double)rate, units[i], str);
+-	if (sz >= 1024*1024 && fabs(1024*1024*rint(tmp/(1024*1024)) - sz) < 1024)
+-		snprintf(buf, len, "%gMb", rint(tmp/(1024*1024)));
+-	else if (sz >= 1024 && fabs(1024*rint(tmp/1024) - sz) < 16)
+-		snprintf(buf, len, "%gKb", rint(tmp/1024));
+-	else
+-		snprintf(buf, len, "%ub", sz);
 -}
 -
--char *sprint_rate(__u64 rate, char *buf)
+-char *sprint_size(__u32 size, char *buf)
 -{
--	print_rate(buf, SPRINT_BSIZE-1, rate);
+-	print_size(buf, SPRINT_BSIZE-1, size);
 -	return buf;
-+	print_rate(use_iec, t, key, fmt, rate);
- }
+-}
+-
+ static const char *action_n2a(int action)
+ {
+ 	static char buf[64];
+@@ -786,7 +768,6 @@ static void print_tcstats_basic_hw(struct rtattr **tbs, char *prefix)
  
- char *sprint_ticks(__u32 ticks, char *buf)
-@@ -853,8 +832,7 @@ void print_tcstats2_attr(FILE *fp, struct rtattr *rta, char *prefix, struct rtat
- 			   sizeof(re)));
- 		print_string(PRINT_FP, NULL, "\n%s", prefix);
- 		print_lluint(PRINT_JSON, "rate", NULL, re.bps);
--		print_string(PRINT_FP, NULL, "rate %s",
--			     sprint_rate(re.bps, b1));
-+		tc_print_rate(PRINT_FP, NULL, "rate %s", re.bps);
- 		print_lluint(PRINT_ANY, "pps", " %llupps", re.pps);
- 	} else if (tbs[TCA_STATS_RATE_EST]) {
- 		struct gnet_stats_rate_est re = {0};
-@@ -863,8 +841,7 @@ void print_tcstats2_attr(FILE *fp, struct rtattr *rta, char *prefix, struct rtat
- 		       MIN(RTA_PAYLOAD(tbs[TCA_STATS_RATE_EST]), sizeof(re)));
- 		print_string(PRINT_FP, NULL, "\n%s", prefix);
- 		print_uint(PRINT_JSON, "rate", NULL, re.bps);
--		print_string(PRINT_FP, NULL, "rate %s",
--			     sprint_rate(re.bps, b1));
-+		tc_print_rate(PRINT_FP, NULL, "rate %s", re.bps);
- 		print_uint(PRINT_ANY, "pps", " %upps", re.pps);
+ void print_tcstats2_attr(FILE *fp, struct rtattr *rta, char *prefix, struct rtattr **xstats)
+ {
+-	SPRINT_BUF(b1);
+ 	struct rtattr *tbs[TCA_STATS_MAX + 1];
+ 
+ 	parse_rtattr_nested(tbs, TCA_STATS_MAX, rta);
+@@ -852,10 +833,8 @@ void print_tcstats2_attr(FILE *fp, struct rtattr *rta, char *prefix, struct rtat
+ 		       MIN(RTA_PAYLOAD(tbs[TCA_STATS_QUEUE]), sizeof(q)));
+ 		if (!tbs[TCA_STATS_RATE_EST])
+ 			print_nl();
+-		print_uint(PRINT_JSON, "backlog", NULL, q.backlog);
+ 		print_string(PRINT_FP, NULL, "%s", prefix);
+-		print_string(PRINT_FP, NULL, "backlog %s",
+-			     sprint_size(q.backlog, b1));
++		print_size(PRINT_ANY, "backlog", "backlog %s", q.backlog);
+ 		print_uint(PRINT_ANY, "qlen", " %up", q.qlen);
+ 		print_uint(PRINT_FP, NULL, " requeues %u", q.requeues);
  	}
- 
-@@ -916,8 +893,8 @@ void print_tcstats_attr(FILE *fp, struct rtattr *tb[], char *prefix,
- 			if (st.bps || st.pps) {
- 				fprintf(fp, "rate ");
- 				if (st.bps)
+@@ -867,8 +846,6 @@ void print_tcstats2_attr(FILE *fp, struct rtattr *rta, char *prefix, struct rtat
+ void print_tcstats_attr(FILE *fp, struct rtattr *tb[], char *prefix,
+ 			struct rtattr **xstats)
+ {
+-	SPRINT_BUF(b1);
+-
+ 	if (tb[TCA_STATS2]) {
+ 		print_tcstats2_attr(fp, tb[TCA_STATS2], prefix, xstats);
+ 		if (xstats && !*xstats)
+@@ -901,8 +878,8 @@ void print_tcstats_attr(FILE *fp, struct rtattr *tb[], char *prefix,
+ 			if (st.qlen || st.backlog) {
+ 				fprintf(fp, "backlog ");
+ 				if (st.backlog)
 -					fprintf(fp, "%s ",
--						sprint_rate(st.bps, b1));
-+					tc_print_rate(PRINT_FP, NULL, "%s ",
-+						      st.bps);
- 				if (st.pps)
- 					fprintf(fp, "%upps ", st.pps);
+-						sprint_size(st.backlog, b1));
++					print_size(PRINT_FP, NULL, "%s ",
++						   st.backlog);
+ 				if (st.qlen)
+ 					fprintf(fp, "%up ", st.qlen);
  			}
 diff --git a/tc/tc_util.h b/tc/tc_util.h
-index c8af4e952109..e5d533a44e10 100644
+index e5d533a44e10..d3b38c69155d 100644
 --- a/tc/tc_util.h
 +++ b/tc/tc_util.h
-@@ -84,10 +84,10 @@ int get_size(unsigned int *size, const char *str);
- int get_size_and_cell(unsigned int *size, int *cell_log, char *str);
- int get_linklayer(unsigned int *val, const char *arg);
- 
--void print_rate(char *buf, int len, __u64 rate);
-+void tc_print_rate(enum output_type t, const char *key, const char *fmt,
-+		   unsigned long long rate);
+@@ -88,7 +88,6 @@ void tc_print_rate(enum output_type t, const char *key, const char *fmt,
+ 		   unsigned long long rate);
  void print_devname(enum output_type type, int ifindex);
  
--char *sprint_rate(__u64 rate, char *buf);
- char *sprint_size(__u32 size, char *buf);
+-char *sprint_size(__u32 size, char *buf);
  char *sprint_tc_classid(__u32 h, char *buf);
  char *sprint_ticks(__u32 ticks, char *buf);
+ char *sprint_linklayer(unsigned int linklayer, char *buf);
 -- 
 2.25.1
 
