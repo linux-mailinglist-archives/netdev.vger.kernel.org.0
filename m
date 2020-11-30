@@ -2,133 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13CE32C8B6D
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 18:40:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 487642C8BCD
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 18:54:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729470AbgK3Rjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 12:39:51 -0500
-Received: from mail-il1-f195.google.com ([209.85.166.195]:40687 "EHLO
-        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728451AbgK3Rju (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 12:39:50 -0500
-Received: by mail-il1-f195.google.com with SMTP id g1so12100063ilk.7;
-        Mon, 30 Nov 2020 09:39:35 -0800 (PST)
+        id S2387854AbgK3Ryg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 12:54:36 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35471 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726770AbgK3Ryb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 12:54:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606758785;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XZHdMrptq2/rYXjufX3+GIBx1xnGVoh3uBEQ7r4wKDM=;
+        b=E3ILZUTwwinvQZ7+YTUqQbAYEHuWm2OmnznwRmHQK8xQBBtupL5SNd+i9j9E+KamHGtkWn
+        CFRwsKxA+W3RHiqHzi31NEPjrFODObN0W1DXOdrRnRW3YaUtgThWkg5OqV3JRncBsPlUp0
+        tPfWjwF7uAlU9AW0YnHiaNrh5ZoaZOc=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-557-E0i_N9UvNVKd6revBs7twg-1; Mon, 30 Nov 2020 12:53:03 -0500
+X-MC-Unique: E0i_N9UvNVKd6revBs7twg-1
+Received: by mail-ej1-f72.google.com with SMTP id f12so6105498ejk.2
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 09:53:03 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=B4A0okbUHqv5B5dj/XPLmtnTNoOEsXTfn/5l90uEFoM=;
-        b=IWCMS3ZMZ90s757ED+4XguK+HL0TsWbt8n/WxBfOLIiV9/lCbDf3sPrIUDJEbb8RWx
-         fTkUKuGrwWnHQYZ0iEQVtTdspwFCXYDRMAtXAu+GNra4H3yZUpzAO2Nzh6GJ/axWpuV8
-         AUT7XX4r0rUVO+sc7AJkaTVcojE5yeiMMAaQUbt9eMOufwn8kCuSLxRVqgmDBf325we+
-         pGb/Cp6tZAa3TDWj4LGdNV4etv+VntS5FgNJPJxZVWdCPbInLnVVSzpS/3ZXIbLsim0W
-         Fu+SfCLwEHCACVkuxpD4dgikkyQIv0j7qCtProWFZQ3FAfsUGC3ypQvfB8Jd9Bn6HjCd
-         KLhA==
-X-Gm-Message-State: AOAM531GI6YivhkYWQNKDY3ZykCJEdOQRBew/47c9MEoX8Hg+DNBk9ps
-        WEKCjOnuI0rxN/2n9ZqoJg==
-X-Google-Smtp-Source: ABdhPJy1tBVfvlTKy8Ljdlf32Xy2YiZmMU6KG7fY9ZP9pCrPJVaDW4rUpvEHw3svnPb/szKFx5xlXw==
-X-Received: by 2002:a92:dd87:: with SMTP id g7mr21491077iln.102.1606757950052;
-        Mon, 30 Nov 2020 09:39:10 -0800 (PST)
-Received: from xps15 ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id a7sm3382492ioq.38.2020.11.30.09.39.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Nov 2020 09:39:09 -0800 (PST)
-Received: (nullmailer pid 2687938 invoked by uid 1000);
-        Mon, 30 Nov 2020 17:39:08 -0000
-Date:   Mon, 30 Nov 2020 10:39:08 -0700
-From:   Rob Herring <robh@kernel.org>
-To:     Bongsu jeon <bongsu.jeon2@gmail.com>
-Cc:     krzk@kernel.org, linux-nfc@lists.01.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Bongsu Jeon <bongsu.jeon@samsung.com>
-Subject: Re: [PATCH v2 net-next 1/4] dt-bindings: net: nfc: s3fwrn5: Support
- a UART interface
-Message-ID: <20201130173908.GC2684526@robh.at.kernel.org>
-References: <1606737627-29485-1-git-send-email-bongsu.jeon@samsung.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=XZHdMrptq2/rYXjufX3+GIBx1xnGVoh3uBEQ7r4wKDM=;
+        b=pwiRjfR20+SRJjD8gcRFJnegVPo9BFc/LgNhDnNw8LuLNTAyPgHW4YjS+bdgrxsCO1
+         S1YF9m7s5sce3HHOTCKNkiTPLuqgUkjB6Xli3RB+T5raov356OkNCbMU9MCL27UtHdvx
+         ri8bappNUn+2tyYF+CL87FTW4ntwc5D3e5jFzYB4pw2UmEO5GXmY+YFMVM7dEXYYyCa4
+         6yp0C8vDu1IL/NYkpZmk2yW1tVArDOUH5MZ3vjA3v5M3PDSJlzYmK0Ur6RZlyVub+rD8
+         s57ZvEPDRLlG9mGKeXclvNoUPA8o9V6WpF43J1jReC6/1ghAbRnxKhg+a+LoSbUhZg01
+         PnIw==
+X-Gm-Message-State: AOAM530j1oei6554RNwXGx9shJBg80HAvqQ5uOIMQJlmSXx+SN6iKDvc
+        VqWbjlDeYduxAmWR9gRvA8DFU86UONdmAhTmy2K33q/KX0KEcfoK8H+j+lWTf2jbqagNWPUsoJu
+        ZvtEUW3REO1JQ8pVXojg5gVprPiCNm04UJBH0eQozyh1AIvY0YekXTIKscYR21pLU+NmP
+X-Received: by 2002:aa7:d2c9:: with SMTP id k9mr18165161edr.74.1606758781796;
+        Mon, 30 Nov 2020 09:53:01 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzr0C3ztJydvyz+oFfxr6BS9zKoQLZ9ul0+KLwEWxb/tzWQGQh/4ALcMPa0sNYIu2m1iyoA+g==
+X-Received: by 2002:aa7:d2c9:: with SMTP id k9mr18165131edr.74.1606758781630;
+        Mon, 30 Nov 2020 09:53:01 -0800 (PST)
+Received: from ?IPv6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.gmail.com with ESMTPSA id k17sm8657435ejh.103.2020.11.30.09.53.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 30 Nov 2020 09:53:00 -0800 (PST)
+Subject: Re: [PATCH AUTOSEL 5.9 22/33] vhost scsi: add lun parser helper
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Mike Christie <michael.christie@oracle.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20201125153550.810101-1-sashal@kernel.org>
+ <20201125153550.810101-22-sashal@kernel.org>
+ <25cd0d64-bffc-9506-c148-11583fed897c@redhat.com>
+ <20201125180102.GL643756@sasha-vm>
+ <9670064e-793f-561e-b032-75b1ab5c9096@redhat.com>
+ <20201129041314.GO643756@sasha-vm>
+ <7a4c3d84-8ff7-abd9-7340-3a6d7c65cfa7@redhat.com>
+ <20201129210650.GP643756@sasha-vm>
+ <e499986d-ade5-23bd-7a04-fa5eb3f15a56@redhat.com>
+ <20201130173832.GR643756@sasha-vm>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+Message-ID: <238cbdd1-dabc-d1c1-cff8-c9604a0c9b95@redhat.com>
+Date:   Mon, 30 Nov 2020 18:52:59 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1606737627-29485-1-git-send-email-bongsu.jeon@samsung.com>
+In-Reply-To: <20201130173832.GR643756@sasha-vm>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 30, 2020 at 09:00:27PM +0900, Bongsu jeon wrote:
-> From: Bongsu Jeon <bongsu.jeon@samsung.com>
+On 30/11/20 18:38, Sasha Levin wrote:
+>> I am not aware of any public CI being done _at all_ done on 
+>> vhost-scsi, by CKI or everyone else.  So autoselection should be done 
+>> only on subsystems that have very high coverage in CI.
 > 
-> Since S3FWRN82 NFC Chip, The UART interface can be used.
-> S3FWRN82 supports I2C and UART interface.
-> 
-> Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
-> ---
-> 
-> Changes in v2:
->  -change the compatible name.
->  -change the const to enum for compatible.
->  -change the node name to nfc.
-> 
->  .../bindings/net/nfc/samsung,s3fwrn5.yaml          | 32 ++++++++++++++++++++--
->  1 file changed, 29 insertions(+), 3 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml b/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
-> index cb0b8a5..481bbcc 100644
-> --- a/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
-> +++ b/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
-> @@ -12,7 +12,10 @@ maintainers:
->  
->  properties:
->    compatible:
-> -    const: samsung,s3fwrn5-i2c
-> +    oneOf:
+> Where can I find a testsuite for virtio/vhost? I see one for KVM, but
+> where is the one that the maintainers of virtio/vhost run on patches
+> that come in?
 
-Don't need 'oneOf' here.
+I don't know of any, especially for vhost-scsi.  MikeC?
 
-> +      - enum:
-> +        - samsung,s3fwrn5-i2c
-> +        - samsung,s3fwrn82
->  
->    en-gpios:
->      maxItems: 1
-> @@ -47,10 +50,19 @@ additionalProperties: false
->  required:
->    - compatible
->    - en-gpios
-> -  - interrupts
-> -  - reg
->    - wake-gpios
->  
-> +allOf:
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: samsung,s3fwrn5-i2c
-> +    then:
-> +      required:
-> +        - interrupts
-> +        - reg
-> +
->  examples:
->    - |
->      #include <dt-bindings/gpio/gpio.h>
-> @@ -71,3 +83,17 @@ examples:
->              wake-gpios = <&gpj0 2 GPIO_ACTIVE_HIGH>;
->          };
->      };
-> +  # UART example on Raspberry Pi
-> +  - |
-> +    uart0 {
-> +        status = "okay";
-> +
-> +        nfc {
-> +            compatible = "samsung,s3fwrn82";
-> +
-> +            en-gpios = <&gpio 20 0>;
-> +            wake-gpios = <&gpio 16 0>;
-> +
-> +            status = "okay";
-> +        };
-> +    };
-> -- 
-> 1.9.1
-> 
+Paolo
+
