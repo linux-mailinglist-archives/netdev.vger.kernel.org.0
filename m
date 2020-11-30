@@ -2,121 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9B092C8076
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 10:00:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C8682C807C
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 10:02:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727868AbgK3JAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 04:00:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52600 "EHLO
+        id S1727970AbgK3JAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 04:00:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727721AbgK3JAN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 04:00:13 -0500
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9DD1C0613CF
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 00:59:30 -0800 (PST)
-Received: by mail-wm1-x342.google.com with SMTP id k10so11052771wmi.3
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 00:59:30 -0800 (PST)
+        with ESMTP id S1726390AbgK3JAm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 04:00:42 -0500
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B44CC0613D4
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 01:00:02 -0800 (PST)
+Received: by mail-wr1-x441.google.com with SMTP id z7so14983422wrn.3
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 01:00:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=3hM+phFbSccuPNXURtLkQPcsGT4rPyJ0on20dI+C1Qw=;
-        b=rJvWgeMPDJjEKJNRCC8yQz0N0Ut2wK5L+xQwBVUvMytQP/WgEdBTMzV4rvh9KIaYjP
-         E2NAJTqgwzKngo5FnKjNOv2x+y1F4WtHr0xEotVzgN2DGYPvprnM0xbdpJQ5PvzbY6R8
-         ejRORUmiHFPPrUWZgGXjPpwaS4rICehg3rp+YmaTEB7s4pchLKW91b3TgQK6CRHakjQb
-         XT+qkq4ijcGBvUbnNbgOcEHGvybYPYr0wmR1GdFoRWOmqKSTP3yxqRJ+cQ6wB5+PwDy9
-         CpfGwHnt8SQYDTyxk74Xsu6o4gjZcZFhUYSdBE1ZwkHZAl9PxnOG3edaGJct/cHpNXUT
-         BilA==
+        bh=UfG2bNla+H193S2roaGiiAOAkRdtKJ6N7UjdzcTnBWo=;
+        b=UeHEb5BhuoU0KmWLSE5a7oS+jC3wR+MNje6cxnqJ7NWF+gkq9i9BUlSteOkzUeWEn9
+         uMVcMGQQhL3Qx6OxwocPO9S5jI7eyRkaEYSCUgzSnwJM9GkMyEoAx6mKm9QLsuBKCAI0
+         q6PvvuiJYfNOCPYTKg8gmNM6K505n86uGyto1sjmR80C+6yQwjQzBft7co7noaufzQsn
+         +TD0HP1UYdAFBrrvVQhpFDiPB/y6FcqOY03XiD/6t85NizskJJWXUO5BYeXo8oFXOp80
+         adY0SJQcb1v3rlVVSrHDgvpYJAisUJ1SicyTB1S25ItN/SS3MCKPSuk/MirD/XdvvWJr
+         zguA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:content-transfer-encoding
          :in-reply-to;
-        bh=3hM+phFbSccuPNXURtLkQPcsGT4rPyJ0on20dI+C1Qw=;
-        b=B4+RZVH2xk3PrywONBIeWjTn/hQ8vSuHK53r+td9zxakI5ZZh83+/Yuv2x5sf0fa/y
-         +WCYpNUKrxItlzEcx0IVfgcXBbtWt9065STMDQnbPktDrrAr/X91eedtp7+uCq2YP3Ow
-         ga7ctd6nq3tKmnkIjConJHBP7Nm6QWzxC/PDe8e0dQl0V4hvYw9JQyD27wkw1L3uIdVZ
-         nLiJtVDC9BcbKtkPfa8uGPyl84j7U9jKYHAPq1cbndA7Cy/jwrE+//MaHbPZcgdkQ8Sf
-         kIZvc8KH/pP7hGEgKOXaMolU/cT4CugU20yWHaABczmlyqagNCkSm4oDQb+Suqljb1qH
-         8V5Q==
-X-Gm-Message-State: AOAM530Go9R0jzVyph0MgVVhf0/c+0snHOTT7UjFV4oKtxqPmexU1vkG
-        t9sNBHanyR2lsYiSpKa8bKZuzw==
-X-Google-Smtp-Source: ABdhPJw+Kc4lxyw2Sqwg6q/29/xhcLtgRtfpGiTtJszcuqv4nSBWi2fAXTXpo7wCEQsrS26cNR02Xw==
-X-Received: by 2002:a1c:f617:: with SMTP id w23mr22239554wmc.52.1606726769505;
-        Mon, 30 Nov 2020 00:59:29 -0800 (PST)
+        bh=UfG2bNla+H193S2roaGiiAOAkRdtKJ6N7UjdzcTnBWo=;
+        b=lnhqrqL4kllzn90hp5y1SI2xJvS4wjctJLQxD2YSiAFdpwGvOfulfz54rNYDG18jAh
+         gf0I+fwVU5y/hHpMNY7xwJZiwId45Y5Ula4VAauQMujppnVutiSPaIImrMfjxFNyentZ
+         Ew5pP5iJ2M03R08FSbudFPmAyhMn9W3Eyj+KTknt6URHBstFd7odN7Wtgy9046OFs6p6
+         NjFZsSM6E5PO6Y9D0itl9loQK/96H+lZPzBDzPPUAzyu09ts1BkcD75TdDfLlICJmIyG
+         fftxmeauaMVMy1KNgYp5hj+5zgmNvn+xaeFXKZadRvjy0ZAomLEjhHDNf+7NgX0DorQf
+         MrVA==
+X-Gm-Message-State: AOAM532ro2AGnPnoK4iDVDA9ZYL4Wvnx0xLE6zd5NSKyE+W//PsBbnbu
+        lchf3dX/7qfwD2lW+el9nXWWZg==
+X-Google-Smtp-Source: ABdhPJwjMD/K9L6q/u1v+6o0Xd7gQBKWZ31ZOPLI5GwYmNcIziyuHNZb8NaF/OUL90PKR/MIdqoYJg==
+X-Received: by 2002:a5d:6050:: with SMTP id j16mr27285736wrt.158.1606726801375;
+        Mon, 30 Nov 2020 01:00:01 -0800 (PST)
 Received: from dell ([91.110.221.235])
-        by smtp.gmail.com with ESMTPSA id f18sm26960482wru.42.2020.11.30.00.59.28
+        by smtp.gmail.com with ESMTPSA id c190sm18615729wme.19.2020.11.30.01.00.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Nov 2020 00:59:28 -0800 (PST)
-Date:   Mon, 30 Nov 2020 08:59:27 +0000
+        Mon, 30 Nov 2020 01:00:00 -0800 (PST)
+Date:   Mon, 30 Nov 2020 08:59:58 +0000
 From:   Lee Jones <lee.jones@linaro.org>
 To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     linux-kernel@vger.kernel.org, Nicolas Pitre <nico@fluxnic.net>,
+Cc:     linux-kernel@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Dany Madden <drt@linux.ibm.com>, Lijun Pan <ljp@linux.ibm.com>,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Erik Stahlman <erik@vt.edu>,
-        Peter Cammaert <pc@denkart.be>,
-        Daris A Nevil <dnevil@snmc.com>,
-        Russell King <rmk@arm.linux.org.uk>, netdev@vger.kernel.org
-Subject: Re: [PATCH 1/8] net: ethernet: smsc: smc91x: Demote non-conformant
- kernel function header
-Message-ID: <20201130085927.GB4801@dell>
+        Jakub Kicinski <kuba@kernel.org>,
+        Santiago Leon <santi_leon@yahoo.com>,
+        Thomas Falcon <tlfalcon@linux.vnet.ibm.com>,
+        John Allen <jallen@linux.vnet.ibm.com>,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 8/8] net: ethernet: ibm: ibmvnic: Fix some kernel-doc
+ issues
+Message-ID: <20201130085958.GC4801@dell>
 References: <20201126133853.3213268-1-lee.jones@linaro.org>
- <20201126133853.3213268-2-lee.jones@linaro.org>
- <20201129183309.GH2234159@lunn.ch>
+ <20201126133853.3213268-9-lee.jones@linaro.org>
+ <20201129191015.GO2234159@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201129183309.GH2234159@lunn.ch>
+In-Reply-To: <20201129191015.GO2234159@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Sun, 29 Nov 2020, Andrew Lunn wrote:
 
-> On Thu, Nov 26, 2020 at 01:38:46PM +0000, Lee Jones wrote:
+> On Thu, Nov 26, 2020 at 01:38:53PM +0000, Lee Jones wrote:
 > > Fixes the following W=1 kernel build warning(s):
 > > 
-> >  drivers/net/ethernet/smsc/smc91x.c:2200: warning: Function parameter or member 'dev' not described in 'try_toggle_control_gpio'
-> >  drivers/net/ethernet/smsc/smc91x.c:2200: warning: Function parameter or member 'desc' not described in 'try_toggle_control_gpio'
-> >  drivers/net/ethernet/smsc/smc91x.c:2200: warning: Function parameter or member 'name' not described in 'try_toggle_control_gpio'
-> >  drivers/net/ethernet/smsc/smc91x.c:2200: warning: Function parameter or member 'index' not described in 'try_toggle_control_gpio'
-> >  drivers/net/ethernet/smsc/smc91x.c:2200: warning: Function parameter or member 'value' not described in 'try_toggle_control_gpio'
-> >  drivers/net/ethernet/smsc/smc91x.c:2200: warning: Function parameter or member 'nsdelay' not described in 'try_toggle_control_gpio'
-> > 
-> > Cc: Nicolas Pitre <nico@fluxnic.net>
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: Erik Stahlman <erik@vt.edu>
-> > Cc: Peter Cammaert <pc@denkart.be>
-> > Cc: Daris A Nevil <dnevil@snmc.com>
-> > Cc: Russell King <rmk@arm.linux.org.uk>
-> > Cc: netdev@vger.kernel.org
-> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> > ---
-> >  drivers/net/ethernet/smsc/smc91x.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/net/ethernet/smsc/smc91x.c b/drivers/net/ethernet/smsc/smc91x.c
-> > index 56c36798cb111..3b90dc065ff2d 100644
-> > --- a/drivers/net/ethernet/smsc/smc91x.c
-> > +++ b/drivers/net/ethernet/smsc/smc91x.c
-> > @@ -2191,7 +2191,7 @@ static const struct of_device_id smc91x_match[] = {
-> >  MODULE_DEVICE_TABLE(of, smc91x_match);
-> >  
-> >  #if defined(CONFIG_GPIOLIB)
-> > -/**
-> > +/*
-> >   * of_try_set_control_gpio - configure a gpio if it exists
-> >   * @dev: net device
-> >   * @desc: where to store the GPIO descriptor, if it exists
+> >  from drivers/net/ethernet/ibm/ibmvnic.c:35:
+> >  inlined from ‘handle_vpd_rsp’ at drivers/net/ethernet/ibm/ibmvnic.c:4124:3:
+> >  drivers/net/ethernet/ibm/ibmvnic.c:1362: warning: Function parameter or member 'hdr_data' not described in 'build_hdr_data'
+> >  drivers/net/ethernet/ibm/ibmvnic.c:1362: warning: Excess function parameter 'tot_len' description in 'build_hdr_data'
+> >  drivers/net/ethernet/ibm/ibmvnic.c:1423: warning: Function parameter or member 'hdr_data' not described in 'create_hdr_descs'
+> >  drivers/net/ethernet/ibm/ibmvnic.c:1423: warning: Excess function parameter 'data' description in 'create_hdr_descs'
+> >  drivers/net/ethernet/ibm/ibmvnic.c:1474: warning: Function parameter or member 'txbuff' not described in 'build_hdr_descs_arr'
+> >  drivers/net/ethernet/ibm/ibmvnic.c:1474: warning: Excess function parameter 'skb' description in 'build_hdr_descs_arr'
+> >  drivers/net/ethernet/ibm/ibmvnic.c:1474: warning: Excess function parameter 'subcrq' description in 'build_hdr_descs_arr'
 > 
 > Hi Lee
 > 
-> This is the wrong fix. The name of the function in the documentation
-> should be corrected. The rest looks correct.
+> It looks like this should be squashed into the previous patch to this
+> file.
 
-Yes, you're right.  Will fix.
+It certainly looks that way.  Will fix.
 
 -- 
 Lee Jones [李琼斯]
