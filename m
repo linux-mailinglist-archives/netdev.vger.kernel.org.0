@@ -2,108 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CDBC2C894D
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 17:21:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D13D2C895D
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 17:24:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728803AbgK3QVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 11:21:00 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:55093 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728777AbgK3QU7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 11:20:59 -0500
-Received: by mail-il1-f197.google.com with SMTP id z8so10682665ilq.21
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 08:20:43 -0800 (PST)
+        id S1728151AbgK3QWQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 11:22:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36942 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725933AbgK3QWP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 11:22:15 -0500
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C740C0613CF
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 08:21:35 -0800 (PST)
+Received: by mail-wm1-x341.google.com with SMTP id x22so18993824wmc.5
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 08:21:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6o+tTuRWUftSik6GCGw8PaA9/bP4unYZlgapimV10cE=;
+        b=CHxhyjjtBrM1bZN2TVbDcL8qeErZNUNi+SafUYP7Kg7+NIqXNes+kEG8k64ix56b4N
+         ixyeYLmzpaZnPyuwDwYnEs/vBGQu5WCq58s24emZtL52HCgLd8OZLtEcy6gOoMHn/8bq
+         YwXW/Ldz+lY7ks7Ykz03gNe4Fx7jWA+8nEOEUF41eXwH+LHLMe4OIN3+oGsHuz3p13xC
+         2EOoSGXwJRQtHT9RVtK4RFsGVnIWJ8HwKey/GMt8GxScAzwuDko61/tgmaeOHyiittTN
+         65on2y2qJy/VNcLc9OAKEsYqkqWdiqymNA6+u/CgVEZJpZaHY5cZY/1lTZ/oJJTeTJRz
+         3eLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=C33L09Ngl8k3zC17DaXXjH/m/uESLHGh+7cRNci9HLE=;
-        b=SkleyYM95FHzb7VzBvEWEoD5nrwt7AKP/MguL6mZgxFNJ7WuKhJML5OiRTvce2kGrY
-         lhSAIHXJZOvVXDBxsrjbF0BUzJjdkGDsBOYvbg4asidWlNE6XosF4rda9Hy5Mud0HvQN
-         cyNQyB2DbUfCcdlU5V907cBNFBBh8P2xfjCyrtirAaj75Mrj94PP5H7S4UDYeqQhQK9i
-         hU9gTJ90TlkuUgteLy4pu5xcZcW0YQRGlmvIXK+NwlldbdVXXPMIQxzH4qAHJxGsJOa2
-         DYzOqX69Klg+trYK1H8tkkBlO2k/bnb7Xrrl/Zq4CvGX7T0Wi5Ylm3aZSuNrHwwGvRxN
-         9BSg==
-X-Gm-Message-State: AOAM530bFXIzOqxsYZNvVOHtkvhD+JwJoW+bY6cyB1ZqxzIFa/QnC8QX
-        VFX01RhfAmQEb5GlyajRtkY73uVbTuPazEa+6gf80JBr0Zsr
-X-Google-Smtp-Source: ABdhPJxzPxDTZp8ujfJttvjLHOZwW6U4zPHCbQi/fsE21qpMm6s6oTHMhcx2tsrsxUoVADxfENSzCf9PlyX8cpnVGAJFj6GX85DS
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6o+tTuRWUftSik6GCGw8PaA9/bP4unYZlgapimV10cE=;
+        b=gp4Sk4dMzcRYkUPgtiBZKMTzOaY+Xb78BYFGaV6iw9t3eBY35Xv/mq2zQIv3fQ+YMD
+         kBWQJ+yXYYI5sjoe5SbTJnjZnEUpNP1DJfNPyJ1SlqIT0uT0ZA0o+W6mhHAS4gv4xXjn
+         Oh2pi80yyZeCqk6QXBy4TNNtIwmB0r4rwnUXkuA+50jfgbwbpVZDq7ti3l2IcE3/77Pj
+         Z2HtEQYsdFKOs5fFHv9yLbqZt3PwPPJm1U+SGvmKnAo7w/CRUfNiwf1NfmfHCy5Za/He
+         b8wE327YD2Sf/lPxNov6RyDp0U1a2/TkS5iXhTZEOQkTIhP04x4nFwGYKCAtzkZXoPNI
+         NTEQ==
+X-Gm-Message-State: AOAM532wBXjtpbJ9fZ1T+bmP0UNitxfw+d1gMXmmFn8NhVvyVT0ChPSB
+        C1GExt8WNG7OC4BSZBaexvjO8gt1igxLxc1kuJW4fw==
+X-Google-Smtp-Source: ABdhPJwWHSeE36NOVxA+spSuXFIKBttCccBgfvUU3aPgrGSxETENnvC3eMIep1GgiEHsgEfrx+9QF6OQNlnFBNIaPiA=
+X-Received: by 2002:a7b:c8da:: with SMTP id f26mr2909267wml.50.1606753293781;
+ Mon, 30 Nov 2020 08:21:33 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a92:8707:: with SMTP id m7mr18457408ild.217.1606753218317;
- Mon, 30 Nov 2020 08:20:18 -0800 (PST)
-Date:   Mon, 30 Nov 2020 08:20:18 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000d1d6c605b55562ee@google.com>
-Subject: UBSAN: array-index-out-of-bounds in ieee80211_del_key (2)
-From:   syzbot <syzbot+49d4cab497c2142ee170@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <CAM1kxwi5m6i8hrtkw7nZYoziPTD-Wp03+fcsUwh3CuSc=81kUQ@mail.gmail.com>
+ <4bb2cb8a-c3ef-bfa9-7b04-cb2cca32d3ee@samba.org> <CAM1kxwhUcXLKU=2hCVaBngOKRL_kgMX4ONy9kpzKW+ZBZraEYw@mail.gmail.com>
+ <5d71d36c-0bfb-a313-07e8-0e22f7331a7a@samba.org> <CAM1kxwh1A3Fh6g7C=kxr67JLF325Cw5jY6CoL6voNhboV1wsVw@mail.gmail.com>
+ <12153e6a-37b1-872f-dd82-399e255eef5d@samba.org> <CACSApvZW-UN9_To0J-bO6SMYKJgF9oFvsKk14D-7Tx4zzc8JUw@mail.gmail.com>
+ <ebaa91f1-57c7-6c75-47a9-7e21360be2af@samba.org> <CACSApvboyVGOmFKdQLpJd+0fnOAfMvgUwpzRXqLbdSJWMQYmyg@mail.gmail.com>
+ <CAM1kxwgaWxhJ7RQT3rMaRow8yUQjM_5=rZkv88+-heaiB_2hjA@mail.gmail.com>
+In-Reply-To: <CAM1kxwgaWxhJ7RQT3rMaRow8yUQjM_5=rZkv88+-heaiB_2hjA@mail.gmail.com>
+From:   Soheil Hassas Yeganeh <soheil@google.com>
+Date:   Mon, 30 Nov 2020 11:20:57 -0500
+Message-ID: <CACSApvbqLnkZfHh-utMSDvwwjDMP9D2U9XLqUSsLuC6qS8-OSA@mail.gmail.com>
+Subject: Re: [RFC 0/1] whitelisting UDP GSO and GRO cmsgs
+To:     Victor Stewart <v@nametag.social>
+Cc:     Stefan Metzmacher <metze@samba.org>,
+        io-uring <io-uring@vger.kernel.org>,
+        Luke Hsiao <lukehsiao@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jann Horn <jannh@google.com>, Arjun Roy <arjunroy@google.com>,
+        netdev <netdev@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, Nov 30, 2020 at 11:17 AM Victor Stewart <v@nametag.social> wrote:
+>
+> this being the list of UDP options.. i think we're good here? I'll put
+> together a new patch.
+>
+> https://github.com/torvalds/linux/blob/b65054597872ce3aefbc6a666385eabdf9e288da/include/uapi/linux/udp.h#L30
+>
+> /* UDP socket options */
+> #define UDP_CORK 1 /* Never send partially complete segments */
+> #define UDP_ENCAP 100 /* Set the socket to accept encapsulated packets */
+> #define UDP_NO_CHECK6_TX 101 /* Disable sending checksum for UDP6X */
+> #define UDP_NO_CHECK6_RX 102 /* Disable accpeting checksum for UDP6 */
+> #define UDP_SEGMENT 103 /* Set GSO segmentation size */
+> #define UDP_GRO 104 /* This socket can receive UDP GRO packets */
 
-syzbot found the following issue on:
+That is not sufficient proof, because in udp_sendmsg() we also call
+ip_cmsg_send() in udp_sendmsg(), and  ip_cmsg_recv_offset() in
+udp_recvmsg().  That said, I have audited them and I think they are
+sane.
 
-HEAD commit:    aae5ab85 Merge tag 'riscv-for-linus-5.10-rc6' of git://git..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1496d353500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=cb8d1a3819ba4356
-dashboard link: https://syzkaller.appspot.com/bug?extid=49d4cab497c2142ee170
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1440c58d500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1743351d500000
+Jann, what do you think?
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+49d4cab497c2142ee170@syzkaller.appspotmail.com
-
-================================================================================
-UBSAN: array-index-out-of-bounds in net/mac80211/cfg.c:520:10
-index 5 is out of range for type 'ieee80211_key *[4]'
-CPU: 0 PID: 8535 Comm: syz-executor933 Not tainted 5.10.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:118
- ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
- __ubsan_handle_out_of_bounds.cold+0x62/0x6c lib/ubsan.c:356
- ieee80211_del_key+0x3f6/0x440 net/mac80211/cfg.c:520
- rdev_del_key net/wireless/rdev-ops.h:107 [inline]
- nl80211_del_key+0x4b0/0x910 net/wireless/nl80211.c:4292
- genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
- genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
- genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:671
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2353
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2407
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2440
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x441ff9
-Code: e8 ac 00 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b 07 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffdb026c968 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000441ff9
-RDX: 0000000000000000 RSI: 0000000020000300 RDI: 0000000000000003
-RBP: 0000000000000000 R08: 0000002100000000 R09: 0000002100000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000032
-R13: 0000000000000000 R14: 000000000000000c R15: 0000000000000004
-================================================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+> On Mon, Nov 30, 2020 at 3:15 PM Soheil Hassas Yeganeh <soheil@google.com> wrote:
+> >
+> > On Mon, Nov 30, 2020 at 10:05 AM Stefan Metzmacher <metze@samba.org> wrote:
+> > >
+> > > Hi Soheil,
+> > >
+> > > > Thank you for CCing us.
+> > > >
+> > > > The reason for PROTO_CMSG_DATA_ONLY is explained in the paragraph
+> > > > above in the commit message.  PROTO_CMSG_DATA_ONLY is basically to
+> > > > allow-list a protocol that is guaranteed not to have the privilege
+> > > > escalation in https://crbug.com/project-zero/1975.  TCP doesn't have
+> > > > that issue, and I believe UDP doesn't have that issue either (but
+> > > > please audit and confirm that with +Jann Horn).
+> > > >
+> > > > If you couldn't find any non-data CMSGs for UDP, you should just add
+> > > > PROTO_CMSG_DATA_ONLY to inet dgram sockets instead of introducing
+> > > > __sys_whitelisted_cmsghdrs as Stefan mentioned.
+> > >
+> > > Was there a specific reason why you only added the PROTO_CMSG_DATA_ONLY check
+> > > in __sys_recvmsg_sock(), but not in __sys_sendmsg_sock()?
+> >
+> > We only needed this for recvmsg(MSG_ERRQUEUE) to support transmit
+> > zerocopy.  So, we took a more conservative approach and didn't add it
+> > for sendmsg().
+> >
+> > I believe it should be fine to add it for TCP sendmsg, because for
+> > SO_MARK we check the user's capability:
+> >
+> > if (!ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
+> >           return -EPERM;
+> >
+> > I believe udp_sendmsg() is sane too and I cannot spot any issue there.
+> >
+> > > metze
+> > >
+> > >
+> > >
