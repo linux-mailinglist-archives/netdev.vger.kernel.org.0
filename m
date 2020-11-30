@@ -2,109 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B33262C90F6
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 23:26:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B79E22C9104
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 23:27:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730544AbgK3WZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 17:25:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37124 "EHLO
+        id S1730623AbgK3W0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 17:26:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725933AbgK3WZg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 17:25:36 -0500
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64FCFC0613D4;
-        Mon, 30 Nov 2020 14:24:50 -0800 (PST)
-Received: by mail-yb1-xb43.google.com with SMTP id v92so12927558ybi.4;
-        Mon, 30 Nov 2020 14:24:50 -0800 (PST)
+        with ESMTP id S1730612AbgK3W0o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 17:26:44 -0500
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D9D6C0613CF
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 14:26:04 -0800 (PST)
+Received: by mail-il1-x142.google.com with SMTP id z10so4490297ilu.3
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 14:26:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=n/7o1gvlCHtRpXxjEuEu8kN/84FyQb3WcQ0KJUmzymM=;
-        b=gCDU67Mtfc9Dmokbh/2FD1bCYnKAwh4xlfjdcHl6LLXjDmiDcxtERBNk/o3p1Fg4BL
-         OVvGBJ4+aeyQhcoC0ZqnQxIVYBkyLOwY+tbL4bCJO0KcMrkwUfA1hUi9DzWvv07WfQYK
-         AgXxmdhBkFHQncP57te/FCslMlQE/AnzSBxCiuto5ZId3emXSTj83tVskruN131Vnggu
-         IJnS3SZZt4kQ4bWALwbrforl8AREDHyaFTblGxnsqez2d3X4IreyoIZMoTYlA+8hyE48
-         J1PQaRGvA39oJDuRWRD8XEw0X4fuNAZLyQcOB0jLjt3fg7nO2nFA34TvQBfPK4C1EQKy
-         bt4Q==
+         :cc;
+        bh=0nqwqy2DjALPMDgNpJpApjzEY7RyuK2fjobHyr1NAVk=;
+        b=s9MXKiRzBoh2LuE4txOQple+sNs6PmMX5D0oQf+OC6ow07q+fvJ5VL7TlHIViuhwA5
+         eGcmgieGuPWTYsLkONJ9p4vnPvCkv9WmzY07BrvjV8cGtI++kqKg6NeLFEUKknl/bC6W
+         WGATRoH10InGRFCXBytOz+qPFf4jOJ1YVRc9HeTPm21e9U5b+iW1V2zDDiUqUpSVaIDe
+         tAwBol/wTHJcQGEvZIBuJPUBzcf6GqfNBAHmiy43DAfe0N6SB2aFbtYYUmimKSJTGSbe
+         OcLE96lP5mNsNffTsbuSMKcoHgyu4kqxjJ4tpoCpJezVj+pwyyFd31tQ3fsXYA24Nu+A
+         Chgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=n/7o1gvlCHtRpXxjEuEu8kN/84FyQb3WcQ0KJUmzymM=;
-        b=tysJrCY0LUlRQL2jlBoGLufMBKe8SnaSKyBBYaWq3g8f+aQgQmiDjvKhKhCthBgJ/U
-         r+3F/SepvuURY7foZNTTerklwz7XYO+Zfp6sOSg9O9mVYUWGLrKwb7ijlKp9Qoj8u2Qk
-         SgNaEmy5jJVRLtl/Mt2d8F+bBpWCGkUsdgzkKtuzgfifZj7SIq2WbhJvdc7iM/h76HYg
-         8Vue/cTv/hVH6QkzTc8EmLdgDfoX/mFuls+9UshDdEd8CqJ3ZU1k6u3pSOm7dPeZ+bN8
-         C4buVrNkXZgXR7mPxGN61vzWbEtWz4FtFStx68m6RQr+wXiu9e3PVidyVJwRbMAm3zHw
-         CM7Q==
-X-Gm-Message-State: AOAM531kuOsxWbg9zdVbl75i35uJx/2zxDq0nq6lh9Z7ewYvBUvJQBPu
-        9rLvTycRxOvHQ7ANX78Wk4mBPzTOqrN8RzAqeqA=
-X-Google-Smtp-Source: ABdhPJyj/8AjEkCFwSYujjpwBCxHoYwqMxZtgpOQNMHyw6PKrsA1FbZQN+dNMJN3adGrm+sRbD1yqn2NplTTanPghoc=
-X-Received: by 2002:a25:c7c6:: with SMTP id w189mr28808201ybe.403.1606775089584;
- Mon, 30 Nov 2020 14:24:49 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=0nqwqy2DjALPMDgNpJpApjzEY7RyuK2fjobHyr1NAVk=;
+        b=qTxu/kCkSt5f2PBLcgEJzcYiC4grvWvUIlPVwoFbjk9+9nHJOCD+yUaypfV/Ef2aHP
+         34Ujw4/+Gka0zvjNdNlLZUY5d9O5LRkeKUdgj5kQoC3r3OJLgE9+PAWOumv5Fo29M7KO
+         etzvly2Z9gkFgvjXH0L09D8J3mH7Sw2Ec24ItKQB7CoGXTvxNI2+qoMAMCgFnM8En7fC
+         PJNutma+Rl+kUDxucktXnxX7zbRaj5MtNDHRlLfSyIw7r3HgQmsCCpMNSPv47Cl0tARw
+         QPhOy0d+4UoeaCAYrXqRwec9wTgAAlPAOl93cR5lE+LcnwmBOg3DEi9XAh7DNXdXU9oy
+         vUwg==
+X-Gm-Message-State: AOAM530DUCnMbRDlSwmObfgMVD8MYUsGIJ+7xidA3JfK8hqEhIbXdrTQ
+        tesJnsExExUQKUUI3hWikrtPbJY/mD3AJdvrB+4=
+X-Google-Smtp-Source: ABdhPJyR7djbVrSqsyJq6DWGcXdR/CKLoS8rjVvTDPV4H/pL+0Vrt+yzvLN8yDtvaxQRYspWHid9hLd6eCKzsYO9QE0=
+X-Received: by 2002:a92:730d:: with SMTP id o13mr19777208ilc.95.1606775163749;
+ Mon, 30 Nov 2020 14:26:03 -0800 (PST)
 MIME-Version: 1.0
-References: <20201130154143.292882-1-toke@redhat.com>
-In-Reply-To: <20201130154143.292882-1-toke@redhat.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 30 Nov 2020 14:24:38 -0800
-Message-ID: <CAEf4BzZy0Y1hAwOpY=Azod3bSqUKfGNwycGS7s=-DQvTWd8ThA@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: reset errno after probing kernel features
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
+References: <20201130212907.320677-1-anthony.l.nguyen@intel.com>
+ <20201130212907.320677-2-anthony.l.nguyen@intel.com> <CAKgT0Uf7BoQ5DAWD8V7vhRZfRZCEBxc_X4Wn35mYEvMPSq-EaQ@mail.gmail.com>
+ <DM6PR19MB263628DAC7F032E575C5E5EAFAF50@DM6PR19MB2636.namprd19.prod.outlook.com>
+In-Reply-To: <DM6PR19MB263628DAC7F032E575C5E5EAFAF50@DM6PR19MB2636.namprd19.prod.outlook.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Mon, 30 Nov 2020 14:25:52 -0800
+Message-ID: <CAKgT0UedAJbhh5dA5V+otzXe2Hn3VZ44+=DGEtNWjA5R3sDBug@mail.gmail.com>
+Subject: Re: [net-next 1/4] e1000e: allow turning s0ix flows on for systems
+ with ME
+To:     "Limonciello, Mario" <Mario.Limonciello@dell.com>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Stefan Assmann <sassmann@redhat.com>,
+        "Neftin, Sasha" <sasha.neftin@intel.com>,
+        Aaron Brown <aaron.f.brown@intel.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 30, 2020 at 7:42 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
+On Mon, Nov 30, 2020 at 2:16 PM Limonciello, Mario
+<Mario.Limonciello@dell.com> wrote:
 >
-> The kernel feature probing results in 'errno' being set if the probing
-> fails (as is often the case). This can stick around and leak to the calle=
-r,
-> which can lead to confusion later. So let's make sure we always reset err=
-no
-> after calling a probe function.
+> >
+> > Generally the use of module parameters and sysfs usage are frowned
+> > upon.
+>
+> I was trying to build on the existing module parameters that existed
+> already for e1000e.  So I guess I would ask, why are those not done in
+> ethtool?  Should those parameters go away and they migrate to ethtool
+> for the same reasons as this?
 
-What specifically is the problem and what sort of confusion we are
-talking about here? You are not supposed to check errno, unless the
-function returned -1 or other error result.
+What it comes down to is that the existing module parameters are
+grandfathered in and we should not break things by removing them. New
+drivers aren't allowed to add them, and we are not supposed to add to
+them.
 
-In some cases, you have to reset errno manually just to avoid
-confusion (see how strtol() is used, as an example).
+> > Based on the configuration isn't this something that could just
+> > be controlled via an ethtool priv flag? Couldn't you just have this
+> > default to whatever the heuristics decide at probe on and then support
+> > enabling/disabling it via the priv flag? You could look at
+> > igb_get_priv_flags/igb_set_priv_flags for an example of how to do what
+> > I am proposing.
+>
+> I don't disagree this solution would work, but it adds a new dependency
+> on having ethtool and the kernel move together to enable it.
 
-I.e., I don't see the problem here, any printf() technically can set
-errno to <0, we don't reset errno after each printf call though,
-right?
+Actually ethtool wouldn't have to change. The priv-flags are passed as
+strings to ethtool from the driver and set as a u32 bit flag array if
+I recall correctly.
 
+> One advantage of the way this is done it allows shipping a system with an
+> older Linux kernel that isn't yet recognized in the kernel heuristics to
+> turn on by default with a small udev rule or kernel command line change.
 >
-> Fixes: 47b6cb4d0add ("libbpf: Make kernel feature probing lazy")
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> ---
->  tools/lib/bpf/libbpf.c | 2 ++
->  1 file changed, 2 insertions(+)
+> For example systems that aren't yet released could have this documented on
+> RHEL certification pages at release time for older RHEL releases before a
+> patch to add to the heuristics has been backported.
+
+I suggest taking a look at the priv-flags interface. I am not
+suggesting adding a new interface to ethtool. It is an existing
+interface designed to allow for one-off features to be
+enabled/disabled on a given port.
+
+> >
+> > I think it would simplify this quite a bit since you wouldn't have to
+> > implement sysfs show/store operations for the value and would instead
+> > be allowing for reading/setting via the get_priv_flags/set_priv_flags
+> > operations. In addition you could leave the code for checking what
+> > supports this in place and have it set a flag that can be read or
+> > overwritten.
 >
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 28baee7ba1ca..8d05132e1945 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -4021,6 +4021,8 @@ static bool kernel_supports(enum kern_feature_id fe=
-at_id)
->                         pr_warn("Detection of kernel %s support failed: %=
-d\n", feat->desc, ret);
->                         WRITE_ONCE(feat->res, FEAT_MISSING);
->                 }
-> +               /* reset errno after probing to prevent leaking it to cal=
-ler */
-> +               errno =3D 0;
->         }
->
->         return READ_ONCE(feat->res) =3D=3D FEAT_SUPPORTED;
-> --
-> 2.29.2
->
+> If the consensus is to move in this direction, yes I'll redo the patch
+> series and modify ethtool as well.
+
+No changes needed to ethtool. The flags are driver specific which is
+why this would work, or are you saying this change will be needed for
+other drivers? If so then yes I would recommend coming up with a
+standard interface we can use for those drivers as well.
