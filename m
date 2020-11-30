@@ -2,150 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08B122C8DC5
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 20:14:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16D292C8DE0
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 20:20:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388298AbgK3TNF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 14:13:05 -0500
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:39571 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388258AbgK3TNF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 14:13:05 -0500
-Received: by mail-oi1-f194.google.com with SMTP id f11so15370523oij.6;
-        Mon, 30 Nov 2020 11:12:49 -0800 (PST)
+        id S1729872AbgK3TTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 14:19:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36550 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729868AbgK3TTl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 14:19:41 -0500
+Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 456BAC0617A7
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 11:19:01 -0800 (PST)
+Received: by mail-vs1-xe2c.google.com with SMTP id m62so6946879vsd.3
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 11:19:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iMGjnal/Aq/KlLIqIqqw22222Z1xI0jO/CQiNQfVjOU=;
+        b=MVIWvWU2KEd1oVwr7wCYKt5eVbkImM44ifQyNFO6UawNRcaNv57nGaTuem9Gs4L023
+         gRwl98CmuhNEQJZ/VVF829iCXS4mFnBKkfgTh9GIkFtIvHJSta4dlEQ6HY7R6dga94ZF
+         hKJ1pvxqlbsVz4qW1W+Ml2DlmFeRaYGGfmvGM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Pmtf1a4HitphENukeG8SqVWu3Y/HvkXNeG2L2oSB6Qw=;
-        b=nMSznXSQd1qyNq0QkihhWaYxaGvUF3n47tcg7PPm4EEA/dsNkkaPz6fHM5qWV0BCHX
-         zIrwgOQHN+A69OnqPmp7ozHpwHvRxnbD6B4T/h+6nsPm1V5Utpy1KRK5AU8M4auDBfZx
-         7ncV347LNqE0Wkx6fH9p3lSeYrPN+441cwSD3zMr3P3dWWvQhgyfZdm245cOWdDadD4W
-         2YHGOBrxav3ff7olXHrmkl02hMhdu2WjDeOzRpNQeBkP2ftL7klCyu9URJ1z4fIFSEB/
-         17UuOnpPjcQjbu52WB7wOzw/umN9c9+ToYMj4xHsV2uUbAOfiBkhaB+QqdJ03J1gTl0f
-         g5/Q==
-X-Gm-Message-State: AOAM5300SEwJeIfN/HpAnKz+hx87HsBExeuR3/vtjMST20iaALp150RL
-        UHdiB84PxCIdMS/oaVqlLyrq/W4k97dHdN5jg8c=
-X-Google-Smtp-Source: ABdhPJytCrnnJx3U8JlCMd8DxOc553DmUH/ROIEcNJOOJQRN0dMwydE7GTi6LPyZgwAb7k5a+BArNOMdbE+guXUymWU=
-X-Received: by 2002:aca:f15:: with SMTP id 21mr261009oip.71.1606763543910;
- Mon, 30 Nov 2020 11:12:23 -0800 (PST)
+        bh=iMGjnal/Aq/KlLIqIqqw22222Z1xI0jO/CQiNQfVjOU=;
+        b=gNBYi3wP+dbZ+LioGTDLPeWklPAfWny7DZDu4yIGmFfw5B7qCMhRwtNuDW/dmwVtFV
+         mXdLlfXed7Qk+kd4fV2e+u0vXDjZBbHU1AF3w/BXPdl+nEW02VPWHvVSfYQ5OpuL18ea
+         kxFTVb3OEQ9F9h/2c0M5aRp2wtUTKqGCRC+ctLTiRhyzoWP7mWKnEnPIvkCW5e+9f10l
+         wT2GjYSDKJNtixlyXZi8+HGL3rFoWpNQwqus1oCkFgv5cdk0r3GyFI2mmWP/g0crkAhD
+         YD3ORYQ09Sk8TsjHlVKGlA4tGku2Q2z/vdvkfM7c86RXxBdNqYaZwVYhojDqyCoQyLCE
+         zUZw==
+X-Gm-Message-State: AOAM5332Nfzsln7waIcMPGVYmNnsYKvVIwh8B6Bn5Uhp+0HOy8d1cOFV
+        ltDSWatTzUEiMPqAsKRYJqiOnIC+PopDFg==
+X-Google-Smtp-Source: ABdhPJwEHtoZJkC6gLjovPpeYWdJxBfK9xCu1w3diLQGYCOFu9lqnhA1tf+I9HJz31ghB3hFKFLgRw==
+X-Received: by 2002:a67:f601:: with SMTP id k1mr12014985vso.46.1606763940105;
+        Mon, 30 Nov 2020 11:19:00 -0800 (PST)
+Received: from mail-ua1-f43.google.com (mail-ua1-f43.google.com. [209.85.222.43])
+        by smtp.gmail.com with ESMTPSA id l1sm4014522vke.4.2020.11.30.11.18.59
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 30 Nov 2020 11:18:59 -0800 (PST)
+Received: by mail-ua1-f43.google.com with SMTP id g3so4099486uae.7
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 11:18:59 -0800 (PST)
+X-Received: by 2002:a9f:3dcc:: with SMTP id e12mr19070983uaj.121.1606763937949;
+ Mon, 30 Nov 2020 11:18:57 -0800 (PST)
 MIME-Version: 1.0
-References: <20201110092933.3342784-1-zhangqilong3@huawei.com>
- <20201110092933.3342784-2-zhangqilong3@huawei.com> <CAMuHMdUH3xnAtQmmMqQDUY5O6H89uk12v6hiZXFThw9yuBAqGQ@mail.gmail.com>
- <CAJZ5v0hVXSgUm877iv3i=1vs1t2QFpGW=-4qTFf2WedTJBU8Zg@mail.gmail.com>
- <20201130173523.GT14465@pendragon.ideasonboard.com> <CAJZ5v0gx08RY+RjU90y222fLUq7YiO4x6PW3d9GNk4wYadzv_w@mail.gmail.com>
- <20201130185044.GZ4141@pendragon.ideasonboard.com>
-In-Reply-To: <20201130185044.GZ4141@pendragon.ideasonboard.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 30 Nov 2020 20:12:12 +0100
-Message-ID: <CAJZ5v0iALE+oSXmJ7mWGCEG7MwFptfMwa-_SS8BusMUx7C7urA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] PM: runtime: Add pm_runtime_resume_and_get to deal
- with usage counter
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Zhang Qilong <zhangqilong3@huawei.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Fugang Duan <fugang.duan@nxp.com>,
+References: <20201112200906.991086-1-kuabhs@chromium.org> <20201112200856.v2.1.Ia526132a366886e3b5cf72433d0d58bb7bb1be0f@changeid>
+ <CAD=FV=XKCLgL6Bt+3KfqKByyP5fpwXOh6TNHXAoXkaQJRzjKjQ@mail.gmail.com>
+ <002401d6c242$d78f2140$86ad63c0$@codeaurora.org> <CAD=FV=UnecON-M9eZVQePuNpdygN_E9OtLN495Xe1GL_PA94DQ@mail.gmail.com>
+ <002d01d6c2dd$4386d880$ca948980$@codeaurora.org>
+In-Reply-To: <002d01d6c2dd$4386d880$ca948980$@codeaurora.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 30 Nov 2020 11:18:46 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=WQPMnor3oTefDHd6JP6UmpyBo7UsOJ1Sg4Ly1otxr6hw@mail.gmail.com>
+Message-ID: <CAD=FV=WQPMnor3oTefDHd6JP6UmpyBo7UsOJ1Sg4Ly1otxr6hw@mail.gmail.com>
+Subject: Re: [PATCH v2 1/1] ath10k: add option for chip-id based BDF selection
+To:     Rakesh Pillai <pillair@codeaurora.org>
+Cc:     Abhishek Kumar <kuabhs@chromium.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        ath10k <ath10k@lists.infradead.org>,
+        Brian Norris <briannorris@chromium.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 30, 2020 at 7:50 PM Laurent Pinchart
-<laurent.pinchart@ideasonboard.com> wrote:
+Hi,
+
+On Tue, Nov 24, 2020 at 7:44 PM Rakesh Pillai <pillair@codeaurora.org> wrote:
 >
-> Hi Rafael,
->
-> On Mon, Nov 30, 2020 at 06:55:57PM +0100, Rafael J. Wysocki wrote:
-> > On Mon, Nov 30, 2020 at 6:35 PM Laurent Pinchart wrote:
-> > > On Mon, Nov 30, 2020 at 05:37:52PM +0100, Rafael J. Wysocki wrote:
-> > > > On Fri, Nov 27, 2020 at 11:16 AM Geert Uytterhoeven wrote:
-> > > > > On Tue, Nov 10, 2020 at 10:29 AM Zhang Qilong <zhangqilong3@huawei.com> wrote:
-> > > > > > In many case, we need to check return value of pm_runtime_get_sync, but
-> > > > > > it brings a trouble to the usage counter processing. Many callers forget
-> > > > > > to decrease the usage counter when it failed, which could resulted in
-> > > > > > reference leak. It has been discussed a lot[0][1]. So we add a function
-> > > > > > to deal with the usage counter for better coding.
-> > > > > >
-> > > > > > [0]https://lkml.org/lkml/2020/6/14/88
-> > > > > > [1]https://patchwork.ozlabs.org/project/linux-tegra/list/?series=178139
-> > > > > > Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
-> > > > >
-> > > > > Thanks for your patch, which is now commit dd8088d5a8969dc2 ("PM:
-> > > > > runtime: Add pm_runtime_resume_and_get to deal with usage counter") in
-> > > > > v5.10-rc5.
-> > > > >
-> > > > > > --- a/include/linux/pm_runtime.h
-> > > > > > +++ b/include/linux/pm_runtime.h
-> > > > > > @@ -386,6 +386,27 @@ static inline int pm_runtime_get_sync(struct device *dev)
-> > > > > >         return __pm_runtime_resume(dev, RPM_GET_PUT);
-> > > > > >  }
-> > > > > >
-> > > > > > +/**
-> > > > > > + * pm_runtime_resume_and_get - Bump up usage counter of a device and resume it.
-> > > > > > + * @dev: Target device.
-> > > > > > + *
-> > > > > > + * Resume @dev synchronously and if that is successful, increment its runtime
-> > > > > > + * PM usage counter. Return 0 if the runtime PM usage counter of @dev has been
-> > > > > > + * incremented or a negative error code otherwise.
-> > > > > > + */
-> > > > > > +static inline int pm_runtime_resume_and_get(struct device *dev)
-> > > > >
-> > > > > Perhaps this function should be called pm_runtime_resume_and_get_sync(),
-> > > >
-> > > > No, really.
-> > > >
-> > > > I might consider calling it pm_runtime_acquire(), and adding a
-> > > > matching _release() as a pm_runtime_get() synonym for that matter, but
-> > > > not the above.
+> > > I missed on reviewing this change. Also I agree with Doug that this is not
+> > the change I was looking for.
 > > >
-> > > pm_runtime_acquire() seems better to me too. Would pm_runtime_release()
-> > > would be an alias for pm_runtime_put() ?
+> > > The argument "with_variant" can be renamed to "with_extra_params".
+> > There is no need for any new argument to this function.
+> > > Case 1: with_extra_params=0,  ar->id.bdf_ext[0] = 0             ->   The default
+> > name will be used (bus=snoc,qmi_board_id=0xab)
+> > > Case 2: with_extra_params=1,  ar->id.bdf_ext[0] = 0             ->
+> > bus=snoc,qmi_board_id=0xab,qmi_chip_id=0xcd
+> > > Case 3: with_extra_params=1,  ar->id.bdf_ext[0] = "xyz"      ->
+> > bus=snoc,qmi_board_id=0xab,qmi_chip_id=0xcd,variant=xyz
+> > >
+> > > ar->id.bdf_ext[0] depends on the DT entry for variant field.
 > >
-> > Yes.  This covers all of the use cases relevant for drivers AFAICS.
+> > I'm confused about your suggestion.  Maybe you can help clarify.  Are
+> > you suggesting:
 > >
-> > > We would also likely need a pm_runtime_release_autosuspend() too then.
+> > a) Only two calls to ath10k_core_create_board_name()
 > >
-> > Why would we?
+> > I'm pretty sure this will fail in some cases.  Specifically consider
+> > the case where the device tree has a "variant" defined but the BRD
+> > file only has one entry for (board-id) and one for (board-id +
+> > chip-id) but no entry for (board-id + chip-id + variant).  If you are
+> > only making two calls then I don't think you'll pick the right one.
 > >
-> > > But on that topic, I was wondering, is there a reason we can't select
-> > > autosuspend behaviour automatically when autosuspend is enabled ?
+> > Said another way...
 > >
-> > That is the case already.
+> > If the device tree has a variant:
+> > 1. We should prefer a BRD entry that has board-id + chip-id + variant
+> > 2. If #1 isn't there, we should prefer a BRD entry that has board-id + chip-id
+> > 3. If #1 and #2 aren't there we fall back to a BRD entry that has board-id.
 > >
-> > pm_runtime_put() will autosuspend if enabled and the usage counter is
-> > 0, as long as ->runtime_idle() returns 0 (or is absent).
-> >
-> > pm_runtime_put_autosuspend() is an optimization allowing
-> > ->runtime_idle() to be skipped entirely, but I'm wondering how many
-> > users really need that.
+> > ...without 3 calls to ath10k_core_create_board_name() we can't handle
+> > all 3 cases.
 >
-> Ah, I didn't know that, that's good to know. We then don't need
-> pm_runtime_release_autosuspend() (unless the optimization really makes a
-> big difference).
+> This can be handled by two calls to ath10k_core_create_board_name
+> 1) ath10k_core_create_board_name(ar, boardname, sizeof(boardname), true)   :  As per my suggestions, this can result in two possible board names
+>     a) If DT have the "variant" node, it outputs the #1 from your suggestion  (1. We should prefer a BRD entry that has board-id + chip-id + variant)
+>     b) If DT does not have the "variant" node, it outputs the #2 from your suggestion (2. If #1 isn't there, we should prefer a BRD entry that has board-id + chip-id)
 >
-> Should I write new drievr code with pm_runtime_put() instead of
-> pm_runtime_put_autosuspend() ?
+> 2) ath10k_core_create_board_name(ar, boardname, sizeof(boardname), false)    :  This is the second call to this function and outputs the #3 from your suggestion (3. If #1 and #2 aren't there we fall back to a BRD entry that has board-id)
 
-If you don't have ->runtime_idle() in the driver (and in the bus type
-generally speaking, but none of them provide it IIRC),
-pm_runtime_put() is basically equivalent to
-pm_runtime_put_autosuspend() AFAICS, except for some extra checks done
-by the former.
+What I'm trying to say is this.  Imagine that:
 
-Otherwise it all depends on what the ->runtime_idle() callback does,
-but it is hard to imagine a practical use case when the difference
-would be really meaningful.
+a) the device tree has the "variant" property.
 
-> I haven't found clear guidelines on this in the documentation.
+b) the BRD file has two entries, one for "board-id" (1) and one for
+"board-id + chip-id" (2).  It doesn't have one for "board-id + chip-id
++ variant" (3).
 
-Yes, that's one of the items I need to take care of.
+With your suggestion we'll see the "variant" property in the device
+tree.  That means we'll search for (1) and (3).  (3) isn't there, so
+we'll pick (1).  ...but we really should have picked (2), right?
+
+-Doug
