@@ -2,114 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AA962C89B2
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 17:39:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03AE62C89B3
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 17:39:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728469AbgK3Qiv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 11:38:51 -0500
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:37075 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725987AbgK3Qiu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 11:38:50 -0500
-Received: by mail-ot1-f66.google.com with SMTP id l36so11889009ota.4;
-        Mon, 30 Nov 2020 08:38:29 -0800 (PST)
+        id S1728537AbgK3Qi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 11:38:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39556 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725987AbgK3Qiz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 11:38:55 -0500
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88FD9C0613D6
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 08:38:15 -0800 (PST)
+Received: by mail-pl1-x649.google.com with SMTP id t13so8047480plo.16
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 08:38:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:in-reply-to:message-id:mime-version:references:subject
+         :from:to:cc;
+        bh=UX816yw8DAh1erZp5BAVsdx8QFf8rexiapeSutLKtDU=;
+        b=aWSKDPWCTob0IK1uVdpoZExn/2n8CYvY2YxJHGV7pOqCTh4+TONEsVWIUMaAUuguq2
+         dcBlye7LYlvaYBk4/yHBfa+BmQE3wZJBjzNhNEWXi4g4v2SMBKRi1T4yrZ2ffvOzi+mr
+         7nSJTU4YOQd+6xMVkTn9qrdzxKd6wNWjx7pFSnRt2RsKiw9fTCIr0JeHoguG6ifQfP3P
+         jNF7hh97DpSLS4NSF8AKpq0m00ZudomNZgURlpW8rPXmlSrjlQgSKBWlTEeOp6b5QDJ5
+         IWM7na3y74brpwholwgkLE8EAM89Z/ns7MxWq3V1W1JO19ULqNDYKVlIpTwHFm7sjdCv
+         xNjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=j1tOA2QFb861fJIhjPhICzbVGAPhE/EoBqZiri0QzCg=;
-        b=E5ycOzYp4Pr8szTAEiY9nbLXnJWBXMgfRlQNOoD3ZQf/WFZ1OIR9X7h6+uQLreBf9B
-         rQRp+Rh71fVaffF66R4uHfJshsZBPNgM0bjhxZS1lhoQJdlTojw+UBxXrKaNgmJbjsvv
-         dGSpY8X+Xha4zLbNGo2Plv7oQ/n3wMIV9kRHN6sWODSDEZ0pkSt+ep9hDZjH1mlo5bIn
-         HKzN8ELooraUw48gw00+H08RHHgqeDHksfW+PZHHeYFgGdLiFs0uFuw4Mp5O50/idTTJ
-         4LTA/cSv350QEKIYDshz8PfMBSxoBtsWG5KeI2OLT0DJ+Kt325rECKlwT7lFhaGekTd4
-         6dnA==
-X-Gm-Message-State: AOAM5331O44IH+Os8hWS7EGP2Ce4e8BbzisZsVyvR3VivZr9elyGDJQx
-        1D4E16mF665QqSTCb0hVpDTuKuKYhdi+ec7bHtQ=
-X-Google-Smtp-Source: ABdhPJznLsbs+YsdRJTngNu4A/VigxgyG8IVgL6HbhqIGKuRCbfCRNuXZkBgpyedGvmqROJLGv6AfG+tViE+/nXNE2k=
-X-Received: by 2002:a05:6830:2385:: with SMTP id l5mr17132783ots.321.1606754283665;
- Mon, 30 Nov 2020 08:38:03 -0800 (PST)
-MIME-Version: 1.0
-References: <20201110092933.3342784-1-zhangqilong3@huawei.com>
- <20201110092933.3342784-2-zhangqilong3@huawei.com> <CAMuHMdUH3xnAtQmmMqQDUY5O6H89uk12v6hiZXFThw9yuBAqGQ@mail.gmail.com>
-In-Reply-To: <CAMuHMdUH3xnAtQmmMqQDUY5O6H89uk12v6hiZXFThw9yuBAqGQ@mail.gmail.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 30 Nov 2020 17:37:52 +0100
-Message-ID: <CAJZ5v0hVXSgUm877iv3i=1vs1t2QFpGW=-4qTFf2WedTJBU8Zg@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] PM: runtime: Add pm_runtime_resume_and_get to deal
- with usage counter
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Zhang Qilong <zhangqilong3@huawei.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Fugang Duan <fugang.duan@nxp.com>,
+        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=UX816yw8DAh1erZp5BAVsdx8QFf8rexiapeSutLKtDU=;
+        b=OJv5nJmhJVu7qlB69nh2mFGzNNAISHEOeyyRQmV+Yh6YFp+8l/SfE6Jp7c4/JKesqt
+         moYjGJmQl/Lmi35eoBPXps9o58hlV39bnVQZOj8UFr6S3W8p3bfTtaKnOOjPfcZqZhKW
+         hsEpr8tN+PN0vBToIBAG1K3yc9Fx737aedOAtOqYnFXAvSBQ2eW4rcPOdxi5985LXi6p
+         I4Z/g8gZgIst48ip/fHq5C2hYqk2VwJVX6qhupjlfUzgiM/KNZcAGzKOQxYdLyXUxvYH
+         zvk7UsgH90PKWpgzLIeORpE4+9vgVtyY661EUCWSA6FYUOYJZnvc2e9dJjGcptHRXpoj
+         FdiA==
+X-Gm-Message-State: AOAM533LJpK+zlSfOeg4sdrokO0VyNZR7E+/YuTBkVLbGthtZyxOIbY3
+        73byBJIoxBvCi1fgFclF+JUvekE=
+X-Google-Smtp-Source: ABdhPJxxRiSiL9TZBSG3e6fLHbVnNFg0unRsc3Mpp53zJ4Q+9PeSkn26dUkTkrBDuAqW0MgjKB3SlLo=
+Sender: "sdf via sendgmr" <sdf@sdf2.svl.corp.google.com>
+X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
+ (user=sdf job=sendgmr) by 2002:a17:90a:f691:: with SMTP id
+ cl17mr27419417pjb.206.1606754294970; Mon, 30 Nov 2020 08:38:14 -0800 (PST)
+Date:   Mon, 30 Nov 2020 08:38:13 -0800
+In-Reply-To: <20201130010559.GA1991@rdna-mbp>
+Message-Id: <20201130163813.GA553169@google.com>
+Mime-Version: 1.0
+References: <20201118001742.85005-1-sdf@google.com> <20201118001742.85005-3-sdf@google.com>
+ <CAADnVQLxt11Zx8553fegoSWCtt0SQ_6uYViMtuhGxA7sv1YSxA@mail.gmail.com> <20201130010559.GA1991@rdna-mbp>
+Subject: Re: [PATCH bpf-next 2/3] bpf: allow bpf_{s,g}etsockopt from cgroup
+ bind{4,6} hooks
+From:   sdf@google.com
+To:     Andrey Ignatov <rdna@fb.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 27, 2020 at 11:16 AM Geert Uytterhoeven
-<geert@linux-m68k.org> wrote:
->
-> Hi Zhang,
->
-> On Tue, Nov 10, 2020 at 10:29 AM Zhang Qilong <zhangqilong3@huawei.com> wrote:
-> > In many case, we need to check return value of pm_runtime_get_sync, but
-> > it brings a trouble to the usage counter processing. Many callers forget
-> > to decrease the usage counter when it failed, which could resulted in
-> > reference leak. It has been discussed a lot[0][1]. So we add a function
-> > to deal with the usage counter for better coding.
+On 11/29, Andrey Ignatov wrote:
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> [Tue, 2020-11-17 20:05  
+> -0800]:
+> > On Tue, Nov 17, 2020 at 4:17 PM Stanislav Fomichev <sdf@google.com>  
+> wrote:
+[..]
 > >
-> > [0]https://lkml.org/lkml/2020/6/14/88
-> > [1]https://patchwork.ozlabs.org/project/linux-tegra/list/?series=178139
-> > Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
->
-> Thanks for your patch, which is now commit dd8088d5a8969dc2 ("PM:
-> runtime: Add pm_runtime_resume_and_get to deal with usage counter") in
-> v5.10-rc5.
->
-> > --- a/include/linux/pm_runtime.h
-> > +++ b/include/linux/pm_runtime.h
-> > @@ -386,6 +386,27 @@ static inline int pm_runtime_get_sync(struct device *dev)
-> >         return __pm_runtime_resume(dev, RPM_GET_PUT);
-> >  }
-> >
-> > +/**
-> > + * pm_runtime_resume_and_get - Bump up usage counter of a device and resume it.
-> > + * @dev: Target device.
-> > + *
-> > + * Resume @dev synchronously and if that is successful, increment its runtime
-> > + * PM usage counter. Return 0 if the runtime PM usage counter of @dev has been
-> > + * incremented or a negative error code otherwise.
-> > + */
-> > +static inline int pm_runtime_resume_and_get(struct device *dev)
->
-> Perhaps this function should be called pm_runtime_resume_and_get_sync(),
+> > I think it is ok, but I need to go through the locking paths more.
+> > Andrey,
+> > please take a look as well.
 
-No, really.
+> Sorry for delay, I was offline for the last two weeks.
+No worries, I was OOO myself last week, thanks for the feedback!
 
-I might consider calling it pm_runtime_acquire(), and adding a
-matching _release() as a pm_runtime_get() synonym for that matter, but
-not the above.
+>  From the correctness perspective it looks fine to me.
 
-> to make it clear it does a synchronous get?
->
-> I had to look into the implementation to verify that a change like
+>  From the performance perspective I can think of one relevant scenario.
+> Quite common use-case in applications is to use bind(2) not before
+> listen(2) but before connect(2) for client sockets so that connection
+> can be set up from specific source IP and, optionally, port.
 
-I'm not sure why, because the kerneldoc is unambiguous AFAICS.
+> Binding to both IP and port case is not interesting since it's already
+> slow due to get_port().
 
->
-> -       ret = pm_runtime_get_sync(&pdev->dev);
-> +       ret = pm_runtime_resume_and_get(&pdev->dev);
->
-> in the follow-up patches is actually a valid change, maintaining
-> synchronous operation. Oh, pm_runtime_resume() is synchronous, too...
+> But some applications do care about connection setup performance and at
+> the same time need to set source IP only (no port). In this case they
+> use IP_BIND_ADDRESS_NO_PORT socket option, what makes bind(2) fast
+> (we've discussed it with Stanislav earlier in [0]).
 
-Yes, it is.
+> I can imagine some pathological case when an application sets up tons of
+> connections with bind(2) before connect(2) for sockets with
+> IP_BIND_ADDRESS_NO_PORT enabled (that by itself requires setsockopt(2)
+> though, i.e. socket lock/unlock) and that another lock/unlock to run
+> bind hook may add some overhead. Though I do not know how critical that
+> overhead may be and whether it's worth to benchmark or not (maybe too
+> much paranoia).
+
+> [0] https://lore.kernel.org/bpf/20200505182010.GB55644@rdna-mbp/
+Even in case of IP_BIND_ADDRESS_NO_PORT, inet[6]_bind() does
+lock_sock down the line, so it's not like we are switching
+a lockless path to the one with the lock, right?
+
+And in this case, similar to listen, the socket is still uncontended and
+owned by the userspace. So that extra lock/unlock should be cheap
+enough to be ignored (spin_lock_bh on the warm cache line).
+
+Am I missing something?
