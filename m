@@ -2,94 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F6492C82F4
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 12:14:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87A882C8351
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 12:35:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728345AbgK3LOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 06:14:05 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:8531 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725902AbgK3LOF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 06:14:05 -0500
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4Cl2dk5BxVzhY7b;
-        Mon, 30 Nov 2020 19:12:58 +0800 (CST)
-Received: from [10.174.178.174] (10.174.178.174) by
- DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
- 14.3.487.0; Mon, 30 Nov 2020 19:13:20 +0800
-Subject: Re: [PATCH net] net: fix memory leak in register_netdevice() on error
- path
-To:     Toshiaki Makita <toshiaki.makita1@gmail.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <rkovhaev@gmail.com>,
-        Netdev <netdev@vger.kernel.org>
-References: <20201126132312.3593725-1-yangyingliang@huawei.com>
- <3548dfef-da8f-0247-0af5-e612b540e397@gmail.com>
-From:   Yang Yingliang <yangyingliang@huawei.com>
-Message-ID: <00b0ef28-ebb4-c036-0082-093549251b16@huawei.com>
-Date:   Mon, 30 Nov 2020 19:13:18 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1729082AbgK3LeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 06:34:03 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:52534 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728345AbgK3LeD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 06:34:03 -0500
+Received: by mail-il1-f197.google.com with SMTP id o18so9812629ilg.19
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 03:33:41 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=ewN649bK8OrziTWH8kTOkc1EhxOOv+IAI2UMF8kYbW0=;
+        b=a7M42Vrg1HEyIaYiVJx4XG0nT71LEZl3kutj1fEaeIirjl6ogGdZTmrNo7MFiozVTP
+         LBLMUgMahA2D3jYEZ6+Z3RoJ+xwQ4PUvOsEWvnPOweKh0YZ5Rmg4uGqGrurTgdo61B07
+         RvYrn6wZDy8LIbqGuQImKRACIVzow7gPB2PLNcsNL6HxT13FR13uNwdCqkXY3F8O6JAJ
+         m7ci11OKkXkzP+AaYI2Ht5McxLfqHlf5yMfV8DSN/iZIubHb5wHYNfwNO9Y/tYQ00xuy
+         9GdtE+VP2KAdP67b2UGQCQObeAI+bzGihr5+VumbMnPHnr5Kf+lfPJ+Eva85zTfHcs+e
+         E2HA==
+X-Gm-Message-State: AOAM533j9Qa+rBQPg9fl3PNqwdPztd1J2G2MK7+5ypArRJTBXrpCyIKu
+        6wwrS62eqzJeAcHTMb5gD9RqKm4+CbMaO1v1iHF6w30+1vpK
+X-Google-Smtp-Source: ABdhPJzlBar7xbXAYdHpLk0KaWOnxBcu+8XuTYiylC36Z6SJrHiRFhnYIbB1LlsuOeNUzI2pRR3h//FbSmVOeUaPa6/i2evnOqC0
 MIME-Version: 1.0
-In-Reply-To: <3548dfef-da8f-0247-0af5-e612b540e397@gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [10.174.178.174]
-X-CFilter-Loop: Reflected
+X-Received: by 2002:a6b:f112:: with SMTP id e18mr863380iog.195.1606735996277;
+ Mon, 30 Nov 2020 03:33:16 -0800 (PST)
+Date:   Mon, 30 Nov 2020 03:33:16 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000004e5bdb05b5516009@google.com>
+Subject: BUG: rwlock bad magic on CPU, kworker/0:LINE/NUM, ADDR
+From:   syzbot <syzbot+cb987a9c796abc570b47@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jmaloy@redhat.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
-On 2020/11/29 21:56, Toshiaki Makita wrote:
-> On 2020/11/26 22:23, Yang Yingliang wrote:
-> ...
->> Reported-by: Hulk Robot <hulkci@huawei.com>
->> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
->> ---
->>   net/core/dev.c | 11 +++++++++++
->>   1 file changed, 11 insertions(+)
->>
->> diff --git a/net/core/dev.c b/net/core/dev.c
->> index 82dc6b48e45f..907204395b64 100644
->> --- a/net/core/dev.c
->> +++ b/net/core/dev.c
->> @@ -10000,6 +10000,17 @@ int register_netdevice(struct net_device *dev)
->>       ret = notifier_to_errno(ret);
->>       if (ret) {
->>           rollback_registered(dev);
->> +        /*
->> +         * In common case, priv_destructor() will be
->
-> As per netdev-faq, the comment style should be
->
-> /* foobar blah blah blah
->  * another line of text
->  */
->
-> rather than
->
-> /*
->  * foobar blah blah blah
->  * another line of text
->  */
->
->> +         * called in netdev_run_todo() after calling
->> +         * ndo_uninit() in rollback_registered().
->> +         * But in this case, priv_destructor() will
->> +         * never be called, then it causes memory
->> +         * leak, so we should call priv_destructor()
->> +         * here.
->> +         */
->> +        if (dev->priv_destructor)
->> +            dev->priv_destructor(dev);
->
-> To be in line with netdev_run_todo(), I think priv_destructor() should be
-> called after "dev->reg_state = NETREG_UNREGISTERED".
-OK,  I will send a v2 later.
->
-> Toshiaki Makita
->
->>           rcu_barrier();
->>             dev->reg_state = NETREG_UNREGISTERED;
->>
+syzbot found the following issue on:
+
+HEAD commit:    90cf87d1 enetc: Let the hardware auto-advance the taprio b..
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=135479b3500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5720c06118e6c4cc
+dashboard link: https://syzkaller.appspot.com/bug?extid=cb987a9c796abc570b47
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+cb987a9c796abc570b47@syzkaller.appspotmail.com
+
+tipc: 32-bit node address hash set to aa1414ac
+BUG: rwlock bad magic on CPU#0, kworker/0:18/18158, 00000000859f2a8d
+CPU: 0 PID: 18158 Comm: kworker/0:18 Not tainted 5.10.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events tipc_net_finalize_work
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:118
+ rwlock_bug kernel/locking/spinlock_debug.c:144 [inline]
+ debug_write_lock_before kernel/locking/spinlock_debug.c:182 [inline]
+ do_raw_write_lock+0x1ef/0x280 kernel/locking/spinlock_debug.c:206
+ tipc_mon_reinit_self+0x1f7/0x630 net/tipc/monitor.c:685
+ tipc_net_finalize net/tipc/net.c:134 [inline]
+ tipc_net_finalize+0x1df/0x310 net/tipc/net.c:125
+ process_one_work+0x933/0x15a0 kernel/workqueue.c:2272
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2418
+ kthread+0x3af/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
