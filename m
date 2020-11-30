@@ -2,82 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30A9E2C8CD3
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 19:31:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B19D2C8CD7
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 19:31:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388072AbgK3SaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 13:30:21 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:33842 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388026AbgK3SaU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 13:30:20 -0500
-Received: by mail-wr1-f68.google.com with SMTP id k14so17533834wrn.1;
-        Mon, 30 Nov 2020 10:30:03 -0800 (PST)
+        id S1729700AbgK3Sbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 13:31:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57268 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727055AbgK3Sba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 13:31:30 -0500
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78CADC0613D2
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 10:30:50 -0800 (PST)
+Received: by mail-io1-xd29.google.com with SMTP id k3so4943299ioq.4
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 10:30:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EcFh3eMKS38k+Nvsuveb2dE9BhdXp7nLLxWHuXbd2Ww=;
+        b=Mk/8lTxeeKHe8a1LFIlB3lkgRfP6pkZ64vsmiwipMZIgvpH//KB4OA+BJRv3Bbk3G0
+         4pNxReDixEHyM2p/Z1EGNjY9gZyRT/UZ4wYvIhzGVlsm5uJPHz7ZS9+G9gmJpzg5p9d/
+         vDjYXZXbIy7W0jAYqdCkIT8VaJmJN+sZDKMTIkNk5aJ8l8rGFp2jW6H8/bx4oeg6uqfP
+         jAsOcEwiX/opBUdeniYzGtluussVeaF4tgRcKgzRsCkgcwNTeAadl/HYmcr7zxt88nHG
+         a5Gvau3eNL2AZ/JoVVBqTJYEHbSzX0c/U7AiIqg8f3Om6yWAJx2FWs6cisil+gK7Sk36
+         SR0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BL7GgKlxyULO787aR2VhuF5srikfeJ8kPXa9y9+CzWY=;
-        b=X0AOD0U4uW7Zue0QXS+WOt6DllIhtqcJv3kIn8ECmIvm+rW95lsBEEG89APAZmiWDn
-         K7Vzl3SEVimEC3rC7C8wHGEVK/lSUGy1SXqN6RaQyTyyQLLeOa2vnmPqQ1Qhi2pffcvR
-         QASHdGQ7v5l6ByShPncIxQWJ6IlKu5qZsCcXxkOBp/mgLPJR9sqiIAf9ko0RsoGdxOOS
-         02/lG5VUzVdUoWtPM5xWTEOmLodSmUqIG2JNjlYAEsIGelPVOtZv+pDCTuUl7Afl67Xf
-         LKCUYeeapTDEfZTwq0JJHEHb0hF5SupYSTPtzHetcJdCI/WZFOQzTLHS4ySjwPRVgQ8N
-         a9tQ==
-X-Gm-Message-State: AOAM533zWlmzdrqbECc9MUqLnVJrGyJ9ET6m/AszVG31QtIxsdsSyA5q
-        wThPYgZHTKvwK8XmdUV3Zog=
-X-Google-Smtp-Source: ABdhPJy0qru9FG+0tWt9eOshF9nKj7ldKMBW7pMLd3yrYEw5pvskZP1IW/CKEzIrXt9WowIPsBTZeA==
-X-Received: by 2002:a5d:5689:: with SMTP id f9mr29965801wrv.181.1606760978169;
-        Mon, 30 Nov 2020 10:29:38 -0800 (PST)
-Received: from kozik-lap (adsl-84-226-167-205.adslplus.ch. [84.226.167.205])
-        by smtp.googlemail.com with ESMTPSA id b12sm924332wmj.2.2020.11.30.10.29.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Nov 2020 10:29:37 -0800 (PST)
-Date:   Mon, 30 Nov 2020 20:29:35 +0200
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Bongsu jeon <bongsu.jeon2@gmail.com>, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Bongsu Jeon <bongsu.jeon@samsung.com>
-Subject: Re: [PATCH v2 net-next 1/4] dt-bindings: net: nfc: s3fwrn5: Support
- a UART interface
-Message-ID: <20201130182935.GA28735@kozik-lap>
-References: <1606737627-29485-1-git-send-email-bongsu.jeon@samsung.com>
- <20201130085542.45184040@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EcFh3eMKS38k+Nvsuveb2dE9BhdXp7nLLxWHuXbd2Ww=;
+        b=cDt/pOiUtH48t8M/S7qKZTsR+jgn4gaALJBq23JlEYT/tQzot1jHavJPmh/zPwnQIm
+         7EaH7LUcosaloHJ36bfUJanIOrIAys6nyju4ERp/n5BffgSNCIMLUxYM2tXbrYtUqeLP
+         bkRDodx7EuxDSGYdDtV0mqZjNinjxOaeLfMpoq9KuQVUP2a2sXj6wYk1GPqIZ5WOp81q
+         yiENo/Rrs2BEgLgY9Jw7C9/LSRHRNfzIlfMr5N2fQhw8aGDAy3Zn5U4GCBwrKkw+5NhL
+         lYiaxqn6SU9PIkv7FkM8orJ/sseapruk4xMJLmA0sQw9wY6ETVKqlhZE9SGGBvg/9TQx
+         ZcWw==
+X-Gm-Message-State: AOAM5328U+xeQqxu45jK2Ha7Y0ezh1WwCiRTAM2n4wKEfz3D3anmZBS9
+        t73KSXwPdoPuAudrvgp06gFIV6Kb+2nkRQptpqQXUQ==
+X-Google-Smtp-Source: ABdhPJzga1/Ooik44wRQMeegMIH/QIZHtKzsPzDANyvcVRrNYvv/Nq4MGRGQg5BJb6+zN51VXDmlnfnjjn3xh1xpbnE=
+X-Received: by 2002:a5d:83d0:: with SMTP id u16mr16136450ior.157.1606761049564;
+ Mon, 30 Nov 2020 10:30:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20201130085542.45184040@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+References: <20201129182435.jgqfjbekqmmtaief@skbuf> <20201129205817.hti2l4hm2fbp2iwy@skbuf>
+ <20201129211230.4d704931@hermes.local> <CANn89iKyyCwiKHFvQMqmeAbaR9SzwsCsko49FP+4NBW6+ZXN4w@mail.gmail.com>
+ <20201130101405.73901b17@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201130101405.73901b17@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 30 Nov 2020 19:30:38 +0100
+Message-ID: <CANn89i+njuoeg7uAwWd08NKONXa4d2f47XpN4Kt83192mCZLwg@mail.gmail.com>
+Subject: Re: Correct usage of dev_base_lock in 2020
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Or Gerlitz <ogerlitz@mellanox.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 30, 2020 at 08:55:42AM -0800, Jakub Kicinski wrote:
-> On Mon, 30 Nov 2020 21:00:27 +0900 Bongsu jeon wrote:
-> > From: Bongsu Jeon <bongsu.jeon@samsung.com>
-> > 
-> > Since S3FWRN82 NFC Chip, The UART interface can be used.
-> > S3FWRN82 supports I2C and UART interface.
-> > 
-> > Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
-> 
-> All patches in the series should have the same version.
-> 
-> If the patch was not changes in the given repost you can add:
-> 
->  v3:
->   - no change
-> 
-> Or just not mention the version in the changelog.
-> 
-> It's also best to provide a cover letter describing what the series
-> does as a whole for series with more than 2 patches.
+On Mon, Nov 30, 2020 at 7:14 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Mon, 30 Nov 2020 11:41:10 +0100 Eric Dumazet wrote:
+> > > So dev_base_lock dates back to the Big Kernel Lock breakup back in Linux 2.4
+> > > (ie before my time). The time has come to get rid of it.
+> > >
+> > > The use is sysfs is because could be changed to RCU. There have been issues
+> > > in the past with sysfs causing lock inversions with the rtnl mutex, that
+> > > is why you will see some trylock code there.
+> > >
+> > > My guess is that dev_base_lock readers exist only because no one bothered to do
+> > > the RCU conversion.
+> >
+> > I think we did, a long time ago.
+> >
+> > We took care of all ' fast paths' already.
+> >
+> > Not sure what is needed, current situation does not bother me at all ;)
+>
+> Perhaps Vladimir has a plan to post separately about it (in that case
+> sorry for jumping ahead) but the initial problem was procfs which is
+> (hopefully mostly irrelevant by now, and) taking the RCU lock only
+> therefore forcing drivers to have re-entrant, non-sleeping
+> .ndo_get_stats64 implementations.
 
-Beside that I received just 1/4 of v2. LKML has one as well:
-https://lore.kernel.org/lkml/1606737627-29485-1-git-send-email-bongsu.jeon@samsung.com/
-
-Where are the others?
-
-Best regards,
-Krzysztof
-
+I think bonding also calls  ndo_get_stats64() while in non-sleeping context.
