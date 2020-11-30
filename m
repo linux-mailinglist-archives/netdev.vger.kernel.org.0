@@ -2,200 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2E4E2C8A79
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 18:10:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D48512C8A95
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 18:16:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729252AbgK3RJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 12:09:21 -0500
-Received: from mga07.intel.com ([134.134.136.100]:10587 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729190AbgK3RJU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Nov 2020 12:09:20 -0500
-IronPort-SDR: Kl/21Xf0wH+qIaDwbetMtwNIuuApHBpvvHLhnTmCDlv+aQ8Mb2Ir7/daeIcha0KSu6DQ8D1EPz
- 45G2ZAeJsU4A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9821"; a="236796477"
-X-IronPort-AV: E=Sophos;i="5.78,382,1599548400"; 
-   d="scan'208";a="236796477"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2020 09:08:39 -0800
-IronPort-SDR: z+19WSYRyCVS3YN602uKGC/foyljDkSiAOhz8SUYne73fPyoNf96Ygq0/tQfar/Y5hEm0roBX4
- KyWFXLy66SEA==
-X-IronPort-AV: E=Sophos;i="5.78,382,1599548400"; 
-   d="scan'208";a="549180107"
-Received: from ggudukba-mobl.amr.corp.intel.com (HELO [10.209.42.187]) ([10.209.42.187])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2020 09:08:38 -0800
-Subject: Re: [PATCH v7] lib: optimize cpumask_local_spread()
-To:     Shaokun Zhang <zhangshaokun@hisilicon.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Yuqi Jin <jinyuqi@huawei.com>,
-        Rusty Russell <rusty@rustcorp.com.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Juergen Gross <jgross@suse.com>,
-        Paul Burton <paul.burton@mips.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>
-References: <1605668072-44780-1-git-send-email-zhangshaokun@hisilicon.com>
- <6a6e6d37-a3dc-94ed-bc8c-62c50ea1dff5@intel.com>
- <a3b8ab12-604b-1efe-f091-de782c3c8ed5@hisilicon.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
- z5cecg==
-Message-ID: <b3122c82-e0fc-5bb8-82ec-43ae785f381f@intel.com>
-Date:   Mon, 30 Nov 2020 09:08:38 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1728094AbgK3RPN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 12:15:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45190 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725955AbgK3RPM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 12:15:12 -0500
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8764C0613CF
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 09:14:31 -0800 (PST)
+Received: by mail-wr1-x441.google.com with SMTP id l1so17178661wrb.9
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 09:14:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WvRF0VlGWbsw/DSFrU47JjHZExXHuzP7r+bYZQyvEF0=;
+        b=pSuntXo2Flev7uaT+/GfV6ZqUn5yBEXBCW2ZnWznXu/zQvxB163Xj2qeY3YKz4zy2A
+         /clpGOka2/zQCyd6xloba1KSY3IkAXoHVwgRkrCfMZQVv8OfxnbCoUxEiLsBsbez2j5Z
+         tvev11K/Chc9oEVVpsDLliwthoupV6VomETj51wmiyYZjv8cSWyXJXUI5+sMFRh6apQ8
+         oahCuj/PHgee6oAnvMTRVRZGkPpMDY2HjURAp5FunsSdGLsVz23gBD3axDxKv6hDSSfB
+         yLp2jCPfHVOx2Y+hV8rF9GJY8wY4jTRSKYa8NxTCcJKAuWvPEh9w12LzVTa0roR1OVsl
+         O/jA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WvRF0VlGWbsw/DSFrU47JjHZExXHuzP7r+bYZQyvEF0=;
+        b=odNFqib/gtmXdyMO4a/BhdpqSbfMZHE1LvpjX9TkKrnO3EWylxtFc2APA+let5tvNW
+         oKF8iH36iv5WjLJ1zhfe7JsHdV5e7eFFZ7TbUUdtF3lP8Y7MtPbplPzlbAg2mavPG43x
+         PGvR4LHeANBn57YtyC5iCicqiD88NEbKYXBzxWFFjw/JlFMbD1soeTV7yheFZjaXW2V5
+         UYAh2kXAlGM+Ll2prWCqH6cNvglZoJ+xakbgGyGehNErO83wm2RoNP1BkyFnnrFtifV+
+         x9qZb+ZYrZwqZ/wWFEKDxlP9RQBJVv9/KPmBHHiHyU1STk6Mpr69THFgeyyJrFtPpn8R
+         ejaQ==
+X-Gm-Message-State: AOAM533i1qrkS8gCE3VmSH+bdUFf0/BVOi6KW8BMXoNo6YVM1Ustw49f
+        n3AomEXb7+q9ToseSPLqxYQE5w==
+X-Google-Smtp-Source: ABdhPJwrY2GEzB4H/AlhznC40KFHmGXY2acY+d80KAH3jAya5raDyK1E8H3omtRR1HfFfbsReSFb9w==
+X-Received: by 2002:adf:e444:: with SMTP id t4mr29779843wrm.152.1606756470301;
+        Mon, 30 Nov 2020 09:14:30 -0800 (PST)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id n128sm26569060wmb.46.2020.11.30.09.14.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Nov 2020 09:14:29 -0800 (PST)
+Date:   Mon, 30 Nov 2020 18:14:28 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Edwin Peer <edwin.peer@broadcom.com>
+Cc:     Ido Schimmel <idosch@idosch.org>, netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, jiri@nvidia.com,
+        danieller@nvidia.com, andrew@lunn.ch, f.fainelli@gmail.com,
+        mkubecek@suse.cz, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next 1/6] ethtool: Extend link modes settings uAPI
+ with lanes
+Message-ID: <20201130171428.GJ3055@nanopsycho.orion>
+References: <20201010154119.3537085-1-idosch@idosch.org>
+ <20201010154119.3537085-2-idosch@idosch.org>
+ <CAKOOJTw1rRdS0+WRqeWY4Hc9gzwvPn7FGFdZuVd3hFYORcRz4g@mail.gmail.com>
+ <20201123094026.GF3055@nanopsycho.orion>
+ <CAKOOJTxEgR_E5YL2Y_wPUw_MFggLt8jbqyh5YOEKpH0=YHp7ug@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <a3b8ab12-604b-1efe-f091-de782c3c8ed5@hisilicon.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKOOJTxEgR_E5YL2Y_wPUw_MFggLt8jbqyh5YOEKpH0=YHp7ug@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->>>  {
->>> -	int cpu, hk_flags;
->>> +	static DEFINE_SPINLOCK(spread_lock);
->>> +	static bool used[MAX_NUMNODES];
+Mon, Nov 30, 2020 at 06:01:43PM CET, edwin.peer@broadcom.com wrote:
+>On Mon, Nov 23, 2020 at 1:40 AM Jiri Pirko <jiri@resnulli.us> wrote:
+>
+>> >Why can't this be implied by port break-out configuration? For higher
+>> >speed signalling modes like PAM4, what's the difference between a
+>> >port with unused lanes vs the same port split into multiple logical
+>> >ports? In essence, the driver could then always choose the slowest
 >>
->> I thought I mentioned this last time.  How large is this array?  How
->> large would it be if it were a nodemask_t?  Would this be less code if
-> 
-> Apologies that I forgot to do it.
-> 
->> you just dynamically allocated and freed the node mask instead of having
->> a spinlock and a memset?
-> 
-> Ok, but I think the spinlock is also needed, do I miss something?
+>> There is a crucial difference. Split port is configured alwasy by user.
+>> Each split port has a devlink instace, netdevice associated with it.
+>> It is one level above the lanes.
+>
+>Right, but the one still implies the other. Splitting the port implies fewer
+>lanes available.
+>
+>I understand the concern if the device cannot provide sufficient MAC
+>resources to provide for the additional ports, but leaving a net device
+>unused (with the option to utilize an additional, now spare, port) still
+>seems better to me than leaving lanes unused and always wasted.
 
-There was no spinlock there before your patch.  You just need it to
-protect the structures you declared static.  If you didn't have static
-structures, you wouldn't need a lock.
+I don't follow what exactly are you implying. Could you elaborate a bit
+more?
 
->>> +	unsigned long flags;
->>> +	int cpu, hk_flags, j, id;
->>>  	const struct cpumask *mask;
->>>  
->>>  	hk_flags = HK_FLAG_DOMAIN | HK_FLAG_MANAGED_IRQ;
->>> @@ -352,20 +379,27 @@ unsigned int cpumask_local_spread(unsigned int i, int node)
->>>  				return cpu;
->>>  		}
->>>  	} else {
->>> -		/* NUMA first. */
->>> -		for_each_cpu_and(cpu, cpumask_of_node(node), mask) {
->>> -			if (i-- == 0)
->>> -				return cpu;
->>> +		spin_lock_irqsave(&spread_lock, flags);
->>> +		memset(used, 0, nr_node_ids * sizeof(bool));
->>> +		/* select node according to the distance from local node */
->>> +		for (j = 0; j < nr_node_ids; j++) {
->>> +			id = find_nearest_node(node, used);
->>> +			if (id < 0)
->>> +				break;
->>
->> There's presumably an outer loop in a driver which is trying to bind a
->> bunch of interrupts to a bunch of CPUs.  We know there are on the order
->> of dozens of these interrupts.
->>
->> 	for_each_interrupt() // in the driver
->> 		for (j=0;j<nr_node_ids;j++) // cpumask_local_spread()
->> 			// find_nearest_node():
->> 			for (i = 0; i < nr_node_ids; i++) {
->> 			for (i = 0; i < nr_node_ids; i++) {
->>
->> Does this worry anybody else?  It thought our upper limits on the number
->> of NUMA nodes was 1024.  Doesn't that make our loop O(N^3) where the
->> worst case is hundreds of millions of loops?
-> 
-> If the NUMA nodes is 1024 in real system, it is more worthy to find the
-> earest node, rather than choose a random one, And it is only called in
-> I/O device initialization. Comments also are given to this interface.
+>
+>Otherwise, the earlier suggestion of fully specifying the forced link
+>mode (although I don't think Andrew articulated it quite that way)
+>instead of a forced speed and separate lane mode makes most
+>sense.
+>
+>Regards,
+>Edwin Peer
 
-This doesn't really make me feel better.  An end user booting this on a
-big system with a bunch of cards could see a minutes-long delay.  I can
-also see funky stuff happening like if we have a ton of NUMA nodes and
-few CPUs.
 
->> I don't want to prematurely optimize this, but that seems like something
->> that might just fall over on bigger systems.
->>
->> This also seems really wasteful if we have a bunch of memory-only nodes.
->>  Each of those will be found via find_nearest_node(), but then this loop:
-> 
-> Got it, all effort is used to choose the nearest node for performance. If
-> we don't it, I think some one will also debug this in future.
-
-If we're going to kick the can down the road for some poor sod to debug,
-can we at least help them out with a warning?
-
-Maybe we WARN_ONCE() after we fall back for more than 2 or 3 nodes.
-
-But, I still don't think you've addressed my main concern: This is
-horrifically inefficient searching for CPUs inside nodes that are known
-to have no CPUs.
-
->>> +			for_each_cpu_and(cpu, cpumask_of_node(id), mask)
->>> +				if (i-- == 0) {
->>> +					spin_unlock_irqrestore(&spread_lock,
->>> +							       flags);
->>> +					return cpu;
->>> +				}
->>> +			used[id] = true;
->>>  		}
->>
->> Will just exit immediately because cpumask_of_node() is empty.
-> 
-> Yes, and this node used[id] became true.
-> 
->>
->> 'used', for instance, should start by setting 'true' for all nodes which
->> are not in N_CPUS.
-> 
-> No, because I used 'nr_node_ids' which is possible node ids to check.
-
-I'm saying that it's wasteful to loop over and search in all the nodes.
