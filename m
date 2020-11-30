@@ -2,130 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D61A2C893C
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 17:21:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56FF62C8931
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 17:18:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728737AbgK3QS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 11:18:59 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:52877 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727243AbgK3QS7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 11:18:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606753052;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=1WGnk9TNl9hRGZTaPRBMI0GW5RawwawDmOTeaOs/1fE=;
-        b=YLBhpVdWhioDYYd9f1bU5XdkE6cAr4zUOK4cXfHyti8mOjtVi+2dK+9lo665SLMzF/jQ3+
-        3+2sBd1b7b7VxXlc8TZCef4k25V0j+4/OQ98zQjNa1hDYTEshBc3EpZs0xDIF8lXITPxFf
-        1H0Lb4479JBR28tWGlqB1cPvd7NU5Rk=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-184-IlCS2DrsM5Gdb-xUepJQBQ-1; Mon, 30 Nov 2020 11:17:28 -0500
-X-MC-Unique: IlCS2DrsM5Gdb-xUepJQBQ-1
-Received: by mail-qv1-f71.google.com with SMTP id o16so7847355qvq.4
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 08:17:28 -0800 (PST)
+        id S1728693AbgK3QSV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 11:18:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36306 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727243AbgK3QSV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 11:18:21 -0500
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97C7CC0613D6
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 08:17:35 -0800 (PST)
+Received: by mail-ej1-x643.google.com with SMTP id lt17so22908616ejb.3
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 08:17:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=nametag.social; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kYkPuL9GlnXGub5oypPWNVCVWSUH0M/T34e+O98VB4s=;
+        b=su5xjkeLP9kKNUx3nOasdTgwLq06Wsf29p4GXhzSORYciggHEz77TXkL4fNLuJqTcZ
+         9ciKLvPJvvk8Cz+zlbkVrC8jo4omcFcjyWQZIYSlwWjl7ICb4Aiq7Fri65Y8erbM4XBd
+         JUU3zaoyTPf3ECxOMiVcaOin3ByMDs4epeM5d5s9ukTus8T3IBK6lCn00H/sA0JJSwwl
+         sPTHLQmR58UUOhbDK1tfmcqJxWfQjMtSDBByOOC0tCQSkaReqBG0s1LJD9MJXJSa3kuE
+         OvpsiCPlFSwLqlJ7ZO0+o2QGjNOQu9eUI/o2rrRL69Lv7ATzgTO2C+YgFubHRoA6t+o+
+         LDAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1WGnk9TNl9hRGZTaPRBMI0GW5RawwawDmOTeaOs/1fE=;
-        b=lCx2iURf5lyRX0nVWKTh7CIByPhFcQKhgS9AqTBMvNPjifTr4gzx7I0r4CeIr2wdkP
-         YwefwKen0Y+D0whOHZzYbr/zYARbMs0Asr8u4zdCvXbN7Scg0CCohkUA0KI6bwzdD5r8
-         qB9jrQ52SUqZxF+54YYv5gLyWHFPFPgn7p2Q4BzhpGpa7HKL7euzKJq9/4eCgnegxEVB
-         pq1YH7nHcGTv74fevJ5a2YoBmT4yVTbQpimCB7lMyspUN5tl/MOVAIQbK+M1PPSgknrk
-         TbQx1zVwvNUrQVhTSDI0Iu0pMm0HQKsxnJsH9Poc53slDbbZ4iXZBoeJnUzS4DhwJjtF
-         XEpw==
-X-Gm-Message-State: AOAM533lsCAaus/lcKn2+xfPiw2mG3qFVa6Pj8lknlrPOsxLsSA8XGPp
-        eQ+QOK03Wp4x0u5iWW1B5IUWvFnQysXMEbD/8BMVMLcr8xB7Xo9daOVvwWRtFEZGlwJBaj/aEaO
-        CBdLrDM6ZBAtXLlmS
-X-Received: by 2002:a05:620a:15f7:: with SMTP id p23mr22454889qkm.98.1606753047923;
-        Mon, 30 Nov 2020 08:17:27 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwnsEcJmK+FERRj9g5fK0zGHU+Cfr4E6egU60uQNMvh2OoTO0vjyU5FpRzYgNxc7OCNct/49w==
-X-Received: by 2002:a05:620a:15f7:: with SMTP id p23mr22454818qkm.98.1606753047315;
-        Mon, 30 Nov 2020 08:17:27 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id h13sm17770477qtc.4.2020.11.30.08.17.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Nov 2020 08:17:26 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id D9570181AD4; Mon, 30 Nov 2020 17:17:24 +0100 (CET)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     daniel@iogearbox.net, ast@fb.com, andrii@kernel.org
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH bpf] libbpf: sanitise map names before pinning
-Date:   Mon, 30 Nov 2020 17:17:20 +0100
-Message-Id: <20201130161720.8688-1-toke@redhat.com>
-X-Mailer: git-send-email 2.29.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kYkPuL9GlnXGub5oypPWNVCVWSUH0M/T34e+O98VB4s=;
+        b=h3ZSBQZ3vHkcdcxKSLMHYGLVHBNhzIZmD40JrBv4qcgihXQwbaGxtNhXmxLkqCqt9Z
+         U/GoWBXUfZ6i93SQumjP5xiMWNhUmEW1QqO9W6Nn8rtNsLOMPI5+RDx42lv4sdfMmToU
+         rysWHAob7YznLroTshcgtPjzK/CssdH+whZ3sU7xemn4UzKui7zxo7YjYpXyvtpY/kf9
+         ZtqBzclvOuzRGRxZ4wlWZttwqUYrZnsaLQFKnjAlpwUQRO8JgYNoidhIUZV1DMkZ+pdh
+         rV16/QY8ZeifMRm6GTfQyGDTxF4INI8PFmDiOcvqDJhHWBQcFAF1Lemu+UpaZXkkGCA/
+         tWKA==
+X-Gm-Message-State: AOAM531JoP1pRcq2gvHUWfzJBMNwya+YGVRLAU6jhei+J0y6s6kh7DZw
+        isWDNENaQak+rETlXM6JhixHfX9YmPtRQOoeduaXVw==
+X-Google-Smtp-Source: ABdhPJzSGozq00C4XGuB0NdGHdeM8ADvnY2iASJbH8SFqybL5yAl7kkyvxnrcEwZkbhjs46UpHMVRHXDxfyH6Amx++c=
+X-Received: by 2002:a17:906:40d3:: with SMTP id a19mr10781898ejk.98.1606753053317;
+ Mon, 30 Nov 2020 08:17:33 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <CAM1kxwi5m6i8hrtkw7nZYoziPTD-Wp03+fcsUwh3CuSc=81kUQ@mail.gmail.com>
+ <4bb2cb8a-c3ef-bfa9-7b04-cb2cca32d3ee@samba.org> <CAM1kxwhUcXLKU=2hCVaBngOKRL_kgMX4ONy9kpzKW+ZBZraEYw@mail.gmail.com>
+ <5d71d36c-0bfb-a313-07e8-0e22f7331a7a@samba.org> <CAM1kxwh1A3Fh6g7C=kxr67JLF325Cw5jY6CoL6voNhboV1wsVw@mail.gmail.com>
+ <12153e6a-37b1-872f-dd82-399e255eef5d@samba.org> <CACSApvZW-UN9_To0J-bO6SMYKJgF9oFvsKk14D-7Tx4zzc8JUw@mail.gmail.com>
+ <ebaa91f1-57c7-6c75-47a9-7e21360be2af@samba.org> <CACSApvboyVGOmFKdQLpJd+0fnOAfMvgUwpzRXqLbdSJWMQYmyg@mail.gmail.com>
+In-Reply-To: <CACSApvboyVGOmFKdQLpJd+0fnOAfMvgUwpzRXqLbdSJWMQYmyg@mail.gmail.com>
+From:   Victor Stewart <v@nametag.social>
+Date:   Mon, 30 Nov 2020 16:17:22 +0000
+Message-ID: <CAM1kxwgaWxhJ7RQT3rMaRow8yUQjM_5=rZkv88+-heaiB_2hjA@mail.gmail.com>
+Subject: Re: [RFC 0/1] whitelisting UDP GSO and GRO cmsgs
+To:     Soheil Hassas Yeganeh <soheil@google.com>
+Cc:     Stefan Metzmacher <metze@samba.org>,
+        io-uring <io-uring@vger.kernel.org>,
+        Luke Hsiao <lukehsiao@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jann Horn <jannh@google.com>, Arjun Roy <arjunroy@google.com>,
+        netdev <netdev@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we added sanitising of map names before loading programs to libbpf, we
-still allowed periods in the name. While the kernel will accept these for
-the map names themselves, they are not allowed in file names when pinning
-maps. This means that bpf_object__pin_maps() will fail if called on an
-object that contains internal maps (such as sections .rodata).
+this being the list of UDP options.. i think we're good here? I'll put
+together a new patch.
 
-Fix this by replacing periods with underscores when constructing map pin
-paths. This only affects the paths generated by libbpf when
-bpf_object__ping_maps() is called with a path argument. Any pin paths set
-by bpf_map__set_pin_path() are unaffected, and it will still be up to the
-caller to avoid invalid characters in those.
+https://github.com/torvalds/linux/blob/b65054597872ce3aefbc6a666385eabdf9e288da/include/uapi/linux/udp.h#L30
 
-Fixes: 113e6b7e15e2 ("libbpf: Sanitise internal map names so they are not rejected by the kernel")
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- tools/lib/bpf/libbpf.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+/* UDP socket options */
+#define UDP_CORK 1 /* Never send partially complete segments */
+#define UDP_ENCAP 100 /* Set the socket to accept encapsulated packets */
+#define UDP_NO_CHECK6_TX 101 /* Disable sending checksum for UDP6X */
+#define UDP_NO_CHECK6_RX 102 /* Disable accpeting checksum for UDP6 */
+#define UDP_SEGMENT 103 /* Set GSO segmentation size */
+#define UDP_GRO 104 /* This socket can receive UDP GRO packets */
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 8d05132e1945..8a3b4713b356 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -7665,8 +7665,8 @@ int bpf_object__pin_maps(struct bpf_object *obj, const char *path)
- 	}
- 
- 	bpf_object__for_each_map(map, obj) {
-+		char buf[PATH_MAX], *s = buf;
- 		char *pin_path = NULL;
--		char buf[PATH_MAX];
- 
- 		if (path) {
- 			int len;
-@@ -7680,6 +7680,8 @@ int bpf_object__pin_maps(struct bpf_object *obj, const char *path)
- 				err = -ENAMETOOLONG;
- 				goto err_unpin_maps;
- 			}
-+			while ((s = strstr(s, ".")))
-+			    *s = '_';
- 			pin_path = buf;
- 		} else if (!map->pin_path) {
- 			continue;
-@@ -7712,8 +7714,8 @@ int bpf_object__unpin_maps(struct bpf_object *obj, const char *path)
- 		return -ENOENT;
- 
- 	bpf_object__for_each_map(map, obj) {
-+		char buf[PATH_MAX], *s = buf;
- 		char *pin_path = NULL;
--		char buf[PATH_MAX];
- 
- 		if (path) {
- 			int len;
-@@ -7724,6 +7726,8 @@ int bpf_object__unpin_maps(struct bpf_object *obj, const char *path)
- 				return -EINVAL;
- 			else if (len >= PATH_MAX)
- 				return -ENAMETOOLONG;
-+			while ((s = strstr(s, ".")))
-+			    *s = '_';
- 			pin_path = buf;
- 		} else if (!map->pin_path) {
- 			continue;
--- 
-2.29.2
-
+On Mon, Nov 30, 2020 at 3:15 PM Soheil Hassas Yeganeh <soheil@google.com> wrote:
+>
+> On Mon, Nov 30, 2020 at 10:05 AM Stefan Metzmacher <metze@samba.org> wrote:
+> >
+> > Hi Soheil,
+> >
+> > > Thank you for CCing us.
+> > >
+> > > The reason for PROTO_CMSG_DATA_ONLY is explained in the paragraph
+> > > above in the commit message.  PROTO_CMSG_DATA_ONLY is basically to
+> > > allow-list a protocol that is guaranteed not to have the privilege
+> > > escalation in https://crbug.com/project-zero/1975.  TCP doesn't have
+> > > that issue, and I believe UDP doesn't have that issue either (but
+> > > please audit and confirm that with +Jann Horn).
+> > >
+> > > If you couldn't find any non-data CMSGs for UDP, you should just add
+> > > PROTO_CMSG_DATA_ONLY to inet dgram sockets instead of introducing
+> > > __sys_whitelisted_cmsghdrs as Stefan mentioned.
+> >
+> > Was there a specific reason why you only added the PROTO_CMSG_DATA_ONLY check
+> > in __sys_recvmsg_sock(), but not in __sys_sendmsg_sock()?
+>
+> We only needed this for recvmsg(MSG_ERRQUEUE) to support transmit
+> zerocopy.  So, we took a more conservative approach and didn't add it
+> for sendmsg().
+>
+> I believe it should be fine to add it for TCP sendmsg, because for
+> SO_MARK we check the user's capability:
+>
+> if (!ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
+>           return -EPERM;
+>
+> I believe udp_sendmsg() is sane too and I cannot spot any issue there.
+>
+> > metze
+> >
+> >
+> >
