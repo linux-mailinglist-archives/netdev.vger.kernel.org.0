@@ -2,103 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AEA832C8787
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 16:18:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 318472C87A6
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 16:23:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726769AbgK3PQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 10:16:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54672 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725899AbgK3PQh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 10:16:37 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6B8CC0613D3
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 07:15:56 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id f190so22551648wme.1
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 07:15:56 -0800 (PST)
+        id S1727946AbgK3PUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 10:20:51 -0500
+Received: from mail-bn8nam11on2124.outbound.protection.outlook.com ([40.107.236.124]:4265
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727022AbgK3PUu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Nov 2020 10:20:50 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=no+/TGxXrMQ4Pi7QvuZqtmxWMoSFJsgvq/NTMB+lgAQYFS6Ige31/XetiS/Zv74fHI2ovVY1lrfTIPmDfcxcwk6767xivli+8jpV7em/ulB8MMTPgkHRtYmomtv6Aqzl8Ow66uFWSy2tBrkCRIBlJkPPwaGIUnds8BRKg8uEZL+nD2gBhW75yLsfJjz59G6VQWgRIvexyli0mF1YHYQPVDtcbJDbfCwB5dxWNjSDT0gMXF4mE5RAZsXiqs4w3MDiNpTXbhWQB6zMrvj39uLHKkp2IX5YojMbivLKlXT/MUNNeNRlxyOqZaIUIsa6NeizIO/KDp4Nkmv4mfU8RDD3kg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Q4buU+Ygb0yXf3ROkZn/YYRIJfqeOBlYJ50NsvZoToI=;
+ b=OyoT1d/T1mYcBo4mtBtBmbVTkjYZu3zsYnosxREAKQEeXPoBigGcx0A3a6vKdvr2+8km+PnMXKPHyhXVEWTFKbJHTAXXU0tp+TJnz39Nl5G3bGyctyHQFFRdi4KUmzQPJb6m0GkdQGx5wrxCrMuEtytCBuwpeCtbJoj5xgPoTw+EkD09ZmmQSItY4MaxqD3eeTenMVyrp1gvyFOeysype4Zm0jvcNLt0YaNCSMsGgWB8ZZRl7P+ClxJD6Ra1Xv5HxcMEyIW7j6EUdw9F+/5L8BJpRfyrrSgg5N9euvkCztTvK3zux24e3iElTprPImRzTaY8KTzTb4QGkXTTmlaVjw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=purdue.edu; dmarc=pass action=none header.from=purdue.edu;
+ dkim=pass header.d=purdue.edu; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NesG8pcsYSfQoY/slcY4d6T+07DJ7f3FoANgYGzQoKc=;
-        b=Kfrc/sLA475KYNnrjuw5pkeVf7Ij1Kfep3ag+tD2Pby0kKSV1ZCOesoodBqSdmosjh
-         kFGXP/RNXSeSYMuB6x3ZBqFaJVbNYFSuTlkehEkm1IDuCJKJ6WMKtMHSJj0om6qDN0CI
-         TSFsXMgH+PrrRO148Q7zuDRRDc9anlvb3A17wMRONtTqSVfyFA6KK+cDD54dN5a2S43L
-         HG2DeY3hc1ceTZMv313WDhO7/d610lAcTiE71HeqdvJOOyH/I4i4vpEjx5X03+TEGX1e
-         rRalO9uO1snwKC1PT4+2wkq8EhxMLUhUL/gN0bmo3c4J+Om923DZbmA+8qDU6pcVtLdw
-         S6Fw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NesG8pcsYSfQoY/slcY4d6T+07DJ7f3FoANgYGzQoKc=;
-        b=crQ9/L/B2ImMMOzoouZCWXMyWkxtiOkteMp0cLllsnwBUD6SercjF1o1PfyE/7+0ju
-         tQe8OBI96WH+VC4ze9O8OaQ4R8/aQ7aVZxn7wa4S7aAFAvR287mUZQo+o7tSJbxJTwlz
-         6wJW7bp9F18QHoXBc51aFO/YcWsaD1poLG1jzvBStEbNOKpJ8WGkK2nb8V2FHboNIgDp
-         MyvtBntx7slokM4qqMQUHtA7ia7qfj3yv62mK6vzkYnWHVjG7dBgAAK30chu5xcV3nyw
-         RUOKPYMtIaCJc3DPE8945rzs7EbIDaeTeCDn9aArZOhbGRbs0jlKPBBhb9sPDqCoeuZZ
-         vXVw==
-X-Gm-Message-State: AOAM531++IwR7gB386IGf/ynPp6sZel8SlQknqMZThwd2dvcb3PmSlPN
-        BX+8PNAazLWyceZcZun6GRUPqHIV04K+MLoAmj95QQ==
-X-Google-Smtp-Source: ABdhPJzs/DZ+fzz23J4RJ9c/ym5TsIHOzSYgN4LtJmT8ecjk4Lxu9If4SyD3IX8KHKdz5SLMGUY7LAM3WMyejkRzPRQ=
-X-Received: by 2002:a7b:cb09:: with SMTP id u9mr22204317wmj.25.1606749355171;
- Mon, 30 Nov 2020 07:15:55 -0800 (PST)
+ d=purdue0.onmicrosoft.com; s=selector2-purdue0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Q4buU+Ygb0yXf3ROkZn/YYRIJfqeOBlYJ50NsvZoToI=;
+ b=PW/iljetB8xZ8PQqhdt8KwggdLKy511MdFln3Yr+BjPfwGWIbNahdwMErApR8WaR3MqfxdhF23pROSHoIXM1KZhM+zkBm+9Rp6NUoG5IvynvxnUsxemSlFCxB2vhwt94MtBqWyyKCeXr0R1ot3cSAnjmWdumt6HD3TYGrFDSAzQ=
+Received: from CH2PR22MB2056.namprd22.prod.outlook.com (2603:10b6:610:5d::11)
+ by CH2PR22MB1975.namprd22.prod.outlook.com (2603:10b6:610:5d::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.25; Mon, 30 Nov
+ 2020 15:20:02 +0000
+Received: from CH2PR22MB2056.namprd22.prod.outlook.com
+ ([fe80::1922:c660:f2f4:50fa]) by CH2PR22MB2056.namprd22.prod.outlook.com
+ ([fe80::1922:c660:f2f4:50fa%7]) with mapi id 15.20.3611.031; Mon, 30 Nov 2020
+ 15:20:02 +0000
+From:   "Gong, Sishuai" <sishuai@purdue.edu>
+To:     "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: [Race] data race between dev_ifsioc_locked() and
+ eth_commit_mac_addr_change()
+Thread-Topic: [Race] data race between dev_ifsioc_locked() and
+ eth_commit_mac_addr_change()
+Thread-Index: AQHWxyxGUpgAFzgHykuA/k1UH6SdWQ==
+Date:   Mon, 30 Nov 2020 15:20:02 +0000
+Message-ID: <F35A5D81-F42C-49BC-9F0B-94563C5B7436@purdue.edu>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=purdue.edu;
+x-originating-ip: [66.253.158.157]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8c0a185d-0382-4ef6-98bc-08d8954368e9
+x-ms-traffictypediagnostic: CH2PR22MB1975:
+x-microsoft-antispam-prvs: <CH2PR22MB1975034F5B1A6850965EDED4DFF50@CH2PR22MB1975.namprd22.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:972;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: OMRRQkw3zDSf3rvd0aMPMvFCdByg/dIda4ftPRohZSvpDlZqr9d3aaibH/RKzOVN5CMd+rEdCK1kRjDQ72CJPGH+KLz67a64abxMgyXa+bP8Oattct8RXfcZ+RqN6/SbHdsvNIzqVgnaUd+2fhRhw9YUr0gYtkT1au5FjN/00g9pPqVbfPtjnS6Y7UPF+2xzb92Ec/ehchesWnlcBIjx0jBMfR9rvq2QQ60aijF1ALhbmuudJiQcWlANvXPf2U7b+nqalEcKa/JwsNWNPrDAMvusdEJ6gCO2MkQRIhwDKYASwYqOMfZe3UnFjQn4fTht
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR22MB2056.namprd22.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(136003)(366004)(39860400002)(376002)(396003)(186003)(2906002)(4326008)(26005)(8676002)(478600001)(2616005)(36756003)(8936002)(33656002)(75432002)(5660300002)(71200400001)(76116006)(64756008)(86362001)(6486002)(66946007)(786003)(66476007)(66446008)(6916009)(316002)(6506007)(6512007)(66556008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?JDNha3ghmVPmSAOZuabwKe/cfEDYz9pXHA2K/7vZQqMy3CECxdH0mn7BsBl6?=
+ =?us-ascii?Q?OEpczNceQWUge4IpRbbmAzpEuuXPwveV7shSCH858G0ssn2jkcdmvd5Wff4g?=
+ =?us-ascii?Q?8nsh9ChQpVTpqRtSi2O95j8KWai8A8Vxd2AsDk94J9e/h59A75OV+olq3dll?=
+ =?us-ascii?Q?QtLjRSGYTTh1DKoGKnjg5NG6xK67vCi6dLZP0+X1vxQzir4QHYGKtksYBCjU?=
+ =?us-ascii?Q?fbheGJQ8Cv/AovuaQkrYqCRhpP9VzaaEdElWgVhrtJ8tDhBshgxzHyfYeiCd?=
+ =?us-ascii?Q?cXGQKx6CKDLD4sebn1TRvVl4+M1uK/M5zAKzcQTgkMH0jKJEa8EZTdyE1KdE?=
+ =?us-ascii?Q?3uP/uCc+WwMhLC3w0/xVs8F+61cf2/p/svaVPVqaohplkbqLCpWZPOTAy+0g?=
+ =?us-ascii?Q?/EqskLWyfih195kEAPKyRFbQagW9OSYDREMDYNLxxi7us8m4onzlghK3ZrjG?=
+ =?us-ascii?Q?MVRkgiSk8ZdLeiIRhyA9dogUZ6SgVBIJdf2262utZ1iRc7RJ3Rh6mZzu7Efy?=
+ =?us-ascii?Q?ua27s2QSyRxHDPWuZdG80+M7h4xE1RtlkAEuQRYbf8ZaiJ+RSBnPr8YVyFCQ?=
+ =?us-ascii?Q?UAIhLgrlJadCxEb4AyeV/6z3zsFtAFAyxkMMLmh7jxUbGYaBVp0dxXixP+u6?=
+ =?us-ascii?Q?LTAvX5y7ZzUZ5P53QbjYL7uSJB4R0qX1vvWqAQSK4BbkzEyX3+Z1/DPwTnoO?=
+ =?us-ascii?Q?wTPyZ5bTF39yp2tJ5k3/UMZR/bADbR2IuPVkUyTF1/M4Muz/uIM0DQ1MP85r?=
+ =?us-ascii?Q?H5C3J0eW2VlFZqOdh7mdOxaNeHv8UuEmEfQWQfV231FfqwQZKovtugCVVXGx?=
+ =?us-ascii?Q?FFBK2UUo3IO/IAD9vJtJTcdmOvU+CnbqNZLG/m+sZWG7orX2WREaCMsueNE8?=
+ =?us-ascii?Q?0OLYgyjwHVIllMLWNNtsPdhRqlgo3Da0aXjgNRPWkPgL0a+ASQIIBPlHI91g?=
+ =?us-ascii?Q?bx3hsV4QrhlHAEZ0XmCqbyMB8aAIX1b6UlnJFQURgdtumew5Ar+QZVGU5+cC?=
+ =?us-ascii?Q?IxBr?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <75C0CBFDD5BBC74FA75C88A99406D959@namprd22.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <CAM1kxwi5m6i8hrtkw7nZYoziPTD-Wp03+fcsUwh3CuSc=81kUQ@mail.gmail.com>
- <4bb2cb8a-c3ef-bfa9-7b04-cb2cca32d3ee@samba.org> <CAM1kxwhUcXLKU=2hCVaBngOKRL_kgMX4ONy9kpzKW+ZBZraEYw@mail.gmail.com>
- <5d71d36c-0bfb-a313-07e8-0e22f7331a7a@samba.org> <CAM1kxwh1A3Fh6g7C=kxr67JLF325Cw5jY6CoL6voNhboV1wsVw@mail.gmail.com>
- <12153e6a-37b1-872f-dd82-399e255eef5d@samba.org> <CACSApvZW-UN9_To0J-bO6SMYKJgF9oFvsKk14D-7Tx4zzc8JUw@mail.gmail.com>
- <ebaa91f1-57c7-6c75-47a9-7e21360be2af@samba.org>
-In-Reply-To: <ebaa91f1-57c7-6c75-47a9-7e21360be2af@samba.org>
-From:   Soheil Hassas Yeganeh <soheil@google.com>
-Date:   Mon, 30 Nov 2020 10:15:19 -0500
-Message-ID: <CACSApvboyVGOmFKdQLpJd+0fnOAfMvgUwpzRXqLbdSJWMQYmyg@mail.gmail.com>
-Subject: Re: [RFC 0/1] whitelisting UDP GSO and GRO cmsgs
-To:     Stefan Metzmacher <metze@samba.org>
-Cc:     Victor Stewart <v@nametag.social>,
-        io-uring <io-uring@vger.kernel.org>,
-        Luke Hsiao <lukehsiao@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jann Horn <jannh@google.com>, Arjun Roy <arjunroy@google.com>,
-        netdev <netdev@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: purdue.edu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CH2PR22MB2056.namprd22.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8c0a185d-0382-4ef6-98bc-08d8954368e9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Nov 2020 15:20:02.6211
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4130bd39-7c53-419c-b1e5-8758d6d63f21
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Di/SuxbnfzpAQ1hfWGcDsm4oI2YuQ/2ADrMzyhy7bKQidhQjtkmXokOfsioe5qWPOesKbjjIRIRo7ZSZDOfZJw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR22MB1975
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 30, 2020 at 10:05 AM Stefan Metzmacher <metze@samba.org> wrote:
->
-> Hi Soheil,
->
-> > Thank you for CCing us.
-> >
-> > The reason for PROTO_CMSG_DATA_ONLY is explained in the paragraph
-> > above in the commit message.  PROTO_CMSG_DATA_ONLY is basically to
-> > allow-list a protocol that is guaranteed not to have the privilege
-> > escalation in https://crbug.com/project-zero/1975.  TCP doesn't have
-> > that issue, and I believe UDP doesn't have that issue either (but
-> > please audit and confirm that with +Jann Horn).
-> >
-> > If you couldn't find any non-data CMSGs for UDP, you should just add
-> > PROTO_CMSG_DATA_ONLY to inet dgram sockets instead of introducing
-> > __sys_whitelisted_cmsghdrs as Stefan mentioned.
->
-> Was there a specific reason why you only added the PROTO_CMSG_DATA_ONLY check
-> in __sys_recvmsg_sock(), but not in __sys_sendmsg_sock()?
+Hi,
 
-We only needed this for recvmsg(MSG_ERRQUEUE) to support transmit
-zerocopy.  So, we took a more conservative approach and didn't add it
-for sendmsg().
+We found a data race in linux kernel 5.3.11 that we are able to reproduce i=
+n x86 under specific interleavings. Currently, we are not sure about the co=
+nsequence of this race but it seems that the two memcpy can lead to some in=
+consistency.
 
-I believe it should be fine to add it for TCP sendmsg, because for
-SO_MARK we check the user's capability:
+------------------------------------------
+Writer site
 
-if (!ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
-          return -EPERM;
+ /tmp/tmp.B7zb7od2zE-5.3.11/extract/linux-5.3.11/net/ethernet/eth.c:307
+        298  /**
+        299   * eth_commit_mac_addr_change - commit mac change
+        300   * @dev: network device
+        301   * @p: socket address
+        302   */
+        303  void eth_commit_mac_addr_change(struct net_device *dev, void *=
+p)
+        304  {
+        305      struct sockaddr *addr =3D p;
+        306
+ =3D=3D>    307      memcpy(dev->dev_addr, addr->sa_data, ETH_ALEN);
+        308  }
 
-I believe udp_sendmsg() is sane too and I cannot spot any issue there.
+------------------------------------------
+Reader site
 
-> metze
->
->
->
+ /tmp/tmp.B7zb7od2zE-5.3.11/extract/linux-5.3.11/net/core/dev_ioctl.c:130
+        110
+        111      switch (cmd) {
+        112      case SIOCGIFFLAGS:  /* Get interface flags */
+        113          ifr->ifr_flags =3D (short) dev_get_flags(dev);
+        114          return 0;
+        115
+        116      case SIOCGIFMETRIC: /* Get the metric on the interface
+        117                     (currently unused) */
+        118          ifr->ifr_metric =3D 0;
+        119          return 0;
+        120
+        121      case SIOCGIFMTU:    /* Get the MTU of a device */
+        122          ifr->ifr_mtu =3D dev->mtu;
+        123          return 0;
+        124
+        125      case SIOCGIFHWADDR:
+        126          if (!dev->addr_len)
+        127              memset(ifr->ifr_hwaddr.sa_data, 0,
+        128                     sizeof(ifr->ifr_hwaddr.sa_data));
+        129          else
+ =3D=3D>    130              memcpy(ifr->ifr_hwaddr.sa_data, dev->dev_addr,
+        131                     min(sizeof(ifr->ifr_hwaddr.sa_data),
+        132                     (size_t)dev->addr_len));
+        133          ifr->ifr_hwaddr.sa_family =3D dev->type;
+        134          return 0;
+        135
+        136      case SIOCGIFSLAVE:
+        137          err =3D -EINVAL;
+        138          break;
+        139
+        140      case SIOCGIFMAP:
+        141          ifr->ifr_map.mem_start =3D dev->mem_start;
+        142          ifr->ifr_map.mem_end   =3D dev->mem_end;
+        143          ifr->ifr_map.base_addr =3D dev->base_addr;
+        144          ifr->ifr_map.irq       =3D dev->irq;
+        145          ifr->ifr_map.dma       =3D dev->dma;
+        146          ifr->ifr_map.port      =3D dev->if_port;
+        147          return 0;
+        148
+        149      case SIOCGIFINDEX:
+        150          ifr->ifr_ifindex =3D dev->ifindex;
+
+
+------------------------------------------
+Writer calling trace
+
+- __sys_sendmsg=20
+-- ___sys_sendmsg=20
+--- sock_sendmsg
+---- netlink_unicast
+----- netlink_rcv_skb
+------ __rtnl_newlink
+------- do_setlink
+-------- dev_set_mac_address
+--------- eth_commit_mac_addr_change
+
+------------------------------------------
+Reader calling trace
+
+- ksys_ioctl
+-- do_vfs_ioctl
+--- vfs_ioctl
+---- dev_ioctl
+
+
+
+Thanks,
+Sishuai
+
