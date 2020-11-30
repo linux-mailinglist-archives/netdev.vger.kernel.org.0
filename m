@@ -2,165 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05E6A2C90C8
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 23:15:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CF402C90CD
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 23:17:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388670AbgK3WOb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 17:14:31 -0500
-Received: from mail-eopbgr50099.outbound.protection.outlook.com ([40.107.5.99]:23713
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388659AbgK3WOb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Nov 2020 17:14:31 -0500
+        id S2387937AbgK3WQt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 17:16:49 -0500
+Received: from mx0a-00154904.pphosted.com ([148.163.133.20]:2106 "EHLO
+        mx0a-00154904.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727041AbgK3WQs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 17:16:48 -0500
+Received: from pps.filterd (m0170393.ppops.net [127.0.0.1])
+        by mx0a-00154904.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AUMCfvU024785;
+        Mon, 30 Nov 2020 17:16:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dell.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=smtpout1;
+ bh=OIoYYB4sm4dyMEsCFtweJtsjPvDWV7CS3DoYf2UGDC8=;
+ b=Qs0rpWoXZP5RtR+1wRKCXafQuwNPaV0FaGNYLdEeJ76auOkjjEg893BWQmO7S16Y6kS1
+ ghpQFbCIFrEAfwXZwRIB2YTp1i0Kim1Of8KU57zXbKTj+G0xOysJa9tu4oE6ImaVxY8U
+ Lr3zOPK2VPrK5Dgt4aDsA6RoM+dgYAVXEzlkCPAMRDeDhdYCinCIN5qCXANpqdCyHSpr
+ mrREOJOydFpWfrvbLj00aYNjbiZUygksAGysr6wKSu78ZkuItpGZTqSznZotrrt8GQgA
+ sPUZ5zwSQkHwY/q5MGWsfo/0gBu+1xXPtBfADSHP8qZ7YGCyQLwsxSv/t2p+g/jJA1Eg RA== 
+Received: from mx0b-00154901.pphosted.com (mx0b-00154901.pphosted.com [67.231.157.37])
+        by mx0a-00154904.pphosted.com with ESMTP id 353jrpqnpf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 30 Nov 2020 17:16:00 -0500
+Received: from pps.filterd (m0089483.ppops.net [127.0.0.1])
+        by mx0b-00154901.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AUM8Z2K156337;
+        Mon, 30 Nov 2020 17:15:59 -0500
+Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2109.outbound.protection.outlook.com [104.47.55.109])
+        by mx0b-00154901.pphosted.com with ESMTP id 3558xk0f0j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 30 Nov 2020 17:15:58 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MvnLEV7F44H77AMjej1kb1nVShhSfOqte02DwA0dkb2WAfGRYOfYSqknyztSVhQ2rjLz+o9ST0segQETrCEbjJgVY8oYWmzb43HCz5zMtvz0+S+g5YWSvy5XT34IXTvZ9B+X1DKJgOnrN+h0T4lY9blhQLXo7SSxt0vsngWEhvSTL/Q4/JUY4qsi7DOOEVbZHQxsZwXcMtVMQe6Fq0w2iGZ+7E/5M9Q5b9PlgSpiNDM6+IcdLG/wgGdKF+4CBejd2xiNdv5VY4F1W6gsn+uNqlaAZ6ACJft+ToWqplc0eKfuYROcev8WcKK4zx3WTrd5WgmDTy1L/xBDecOa5qOgIw==
+ b=Snkok1qPX/UpqXN3cseBLr609CfkW9kFZnMpi8j03iTR0eUr+M4eR4MuMIG2lDM8Vu4NBPxIQUOUG94bkGFrJUjzRpgMW/n0rKp3p6j0wTu/MyvB8G3CrXtRbqZjKrc4XYDZ4g1mDWUwS4RWGVO2uJQEpM++HnFShONNagRU7osQyRgAyXHTkDVj4mOUXf3OJLiR7hps04tWl0DMB3SspNryKHXqejNSXdsHl/a42ABj+ETlmqn5cW1Z2SY1TmQygDI2W3RAkm8UbRn1Pj+eVI26FAywbQk6pwQRdSXRee6CjjyoZn5lcudLSI2gqMEXza/GPlXEyEbnfh9xpRzlOw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L6Y1PkSIg4E1DscpTcQzZ22piqRMKH/n5C5J8DjPAFg=;
- b=Js7Q/X5+CnhfvmvPEYWB04tplj8SSLKjvg8b5znt4rud6iPQQ6Rm7lL4yAJeaEFaiRwRFXdqVq4fs3qm47jALK1zzOQx1i4FkGKq0RttadRMzV0PIAs43v0VdK8mITFLaJvN88NSqKkuGm/v9pLgXhys+6AxAKgSXWboQ2qdWNYVJ9wdycJaVmybZTVNdC1qq6QhS1aRFO8SPFilZ3rxF7wNBaDCXVWsnA7woIYMrk0ipekDoqPckQFqFlDmC+VKGcxtn0ohECYnlPqjjTm920UCEEffogmM/HoniXlTOPjKL3QQqrF/SdFoZBz89sTT2tYLaIP3rtqNurSgVmO/wg==
+ bh=OIoYYB4sm4dyMEsCFtweJtsjPvDWV7CS3DoYf2UGDC8=;
+ b=EodXJKPcU+TFApCajtwJeOyulgwvkeb+9iGNXdylKx9J9K7tNjvpdG6tU/W69I8cxguvSg+NRJcQjedQhTEKrE0RePhgvKses40xe0IL8t5tPCqCrpubzF9A3bpkhL6Ed8KRJ9daDmB8PyW2wH5xCySekmPLb01Md0hzI//vy+oE/sJ6bxPU+t2VWuikp35WMiG9k5/+faaW/013J6qVmM88isMFA/AgjDm9JsVnWwcGgw33pc4FWwarQ9/7tg7o/bTGhiAGrKFqUPaCqs2sxIGnCozUccoYB9ZGzl4DTQjqjYwH0TaFRfU1AeODg8AjU7ANPBn2AItmksepR6CIrw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=prevas.dk; dmarc=pass action=none header.from=prevas.dk;
- dkim=pass header.d=prevas.dk; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.dk;
- s=selector1;
+ smtp.mailfrom=dell.com; dmarc=pass action=none header.from=dell.com;
+ dkim=pass header.d=dell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Dell.onmicrosoft.com;
+ s=selector1-Dell-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L6Y1PkSIg4E1DscpTcQzZ22piqRMKH/n5C5J8DjPAFg=;
- b=G74GutVkVWTGpjNz78/dSUUn1kbHbZQaVOAZXp7MN9OUWM43dFPq9uKjAoNTY271SC1gNXdCpVR+btqQx05pWl9Ji/EQ0qK9kjXcUHDeJvDhDewOR5H+94NwVe8mvT69TT0JepBnDgH5uC7Is6mpU1lUqhvBW6aXDjTl76LyLJY=
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=prevas.dk;
-Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:3f::10)
- by AM9PR10MB4321.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:269::16) with
+ bh=OIoYYB4sm4dyMEsCFtweJtsjPvDWV7CS3DoYf2UGDC8=;
+ b=euZaGd660/IBCUmiWfKTsP9B25cwb1N0slnZMWXa3woYpFRPNO4x9MQOgXTl+SG4Diy8UqO3CDiijnCfq14LqdJa4OSbmPiAyfNS0BGqC0ephta169yolOLJf29bbVuzRiWql1SZer1lGbPeWmy8x8VkndIhpddIczHhDRIyUIc=
+Received: from DM6PR19MB2636.namprd19.prod.outlook.com (2603:10b6:5:15f::15)
+ by DM6PR19MB3209.namprd19.prod.outlook.com (2603:10b6:5:194::28) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.20; Mon, 30 Nov
- 2020 22:13:41 +0000
-Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::9068:c899:48f:a8e3]) by AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::9068:c899:48f:a8e3%6]) with mapi id 15.20.3611.025; Mon, 30 Nov 2020
- 22:13:41 +0000
-Subject: Re: warnings from MTU setting on switch ports
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>
-References: <b4adfc0b-cd48-b21d-c07f-ad35de036492@prevas.dk>
- <20201130160439.a7kxzaptt5m3jfyn@skbuf>
-From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Message-ID: <61a2e853-9d81-8c1a-80f0-200f5d8dc650@prevas.dk>
-Date:   Mon, 30 Nov 2020 23:13:39 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <20201130160439.a7kxzaptt5m3jfyn@skbuf>
-Content-Type: text/plain; charset=windows-1252
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.23; Mon, 30 Nov
+ 2020 22:15:55 +0000
+Received: from DM6PR19MB2636.namprd19.prod.outlook.com
+ ([fe80::8a8:3eb2:917f:3914]) by DM6PR19MB2636.namprd19.prod.outlook.com
+ ([fe80::8a8:3eb2:917f:3914%7]) with mapi id 15.20.3611.025; Mon, 30 Nov 2020
+ 22:15:55 +0000
+From:   "Limonciello, Mario" <Mario.Limonciello@dell.com>
+To:     Alexander Duyck <alexander.duyck@gmail.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+CC:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Stefan Assmann <sassmann@redhat.com>,
+        "Neftin, Sasha" <sasha.neftin@intel.com>,
+        Aaron Brown <aaron.f.brown@intel.com>
+Subject: RE: [net-next 1/4] e1000e: allow turning s0ix flows on for systems
+ with ME
+Thread-Topic: [net-next 1/4] e1000e: allow turning s0ix flows on for systems
+ with ME
+Thread-Index: AQHWx2BlnSBfbFNF7kaA8I5RcYCtH6nhOZsAgAAAO7A=
+Date:   Mon, 30 Nov 2020 22:15:55 +0000
+Message-ID: <DM6PR19MB263628DAC7F032E575C5E5EAFAF50@DM6PR19MB2636.namprd19.prod.outlook.com>
+References: <20201130212907.320677-1-anthony.l.nguyen@intel.com>
+ <20201130212907.320677-2-anthony.l.nguyen@intel.com>
+ <CAKgT0Uf7BoQ5DAWD8V7vhRZfRZCEBxc_X4Wn35mYEvMPSq-EaQ@mail.gmail.com>
+In-Reply-To: <CAKgT0Uf7BoQ5DAWD8V7vhRZfRZCEBxc_X4Wn35mYEvMPSq-EaQ@mail.gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [5.186.115.188]
-X-ClientProxiedBy: AS8PR04CA0014.eurprd04.prod.outlook.com
- (2603:10a6:20b:310::19) To AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:208:3f::10)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Enabled=True;
+ MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_SiteId=945c199a-83a2-4e80-9f8c-5a91be5752dd;
+ MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Owner=Mario_Limonciello@Dell.com;
+ MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_SetDate=2020-11-30T22:01:07.0709033Z;
+ MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Name=External Public;
+ MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Application=Microsoft Azure
+ Information Protection;
+ MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_ActionId=8b12a31e-c38e-4b87-a3cf-472208a79574;
+ MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Extended_MSFT_Method=Manual
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=Dell.com;
+x-originating-ip: [76.251.167.31]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 09b41144-e5cf-4ecc-e50b-08d8957d81cb
+x-ms-traffictypediagnostic: DM6PR19MB3209:
+x-microsoft-antispam-prvs: <DM6PR19MB32096FFA68BC36E3796C486FFAF50@DM6PR19MB3209.namprd19.prod.outlook.com>
+x-exotenant: 2khUwGVqB6N9v58KS13ncyUmMJd8q4
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: XQ5xHDBRSUjtHrsgLg8ON0Yyzz8pk4FmPM71rd2E3mvwfId2r4zppMGzqHF5/em+LfF4O1Pju++krA7gSSgZKlaAVBgVCNC2IGZjBIv4kaVG0Bl6qyKzRTtsyghp+GVNrZLhFfQ6vYqunazjeDT8M438dwdFJLvMziQpt72IoctLt7Y8aWDPXrEL9petT/eUm7FJ1uSbPSMPF/eiRDWjvU8ie84vuUj+tM28lxnXMegnQoeA/atIah5j2h8rMb6VNxf7IEok02wB3GZ0VeQPfCpUUW406qHP+oeR+4/WCU8MuJrtMvhqxbaia1mGz4xX02ybWwFaq//FC6P7qx3J8p3vGpFc2JrUW/5rVDXg6+8ycjJahm4uzbof2oCu9rh8
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR19MB2636.namprd19.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(366004)(396003)(376002)(346002)(39860400002)(33656002)(26005)(786003)(316002)(4326008)(52536014)(55016002)(110136005)(478600001)(71200400001)(54906003)(9686003)(186003)(66446008)(7696005)(66556008)(66476007)(64756008)(2906002)(8676002)(8936002)(5660300002)(6506007)(66946007)(76116006)(86362001)(32563001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?dVNJZ1dpRWUxa2FhbHowbkNuWHdieGIzd0YyUmdaSWhnNHVyRmFLRHI3Smc2?=
+ =?utf-8?B?eW9UZHNHeEwydkRvNVhmd1VOY1ZCY3lxcHhoTENnaGlJSGlsanhpcHZodjhv?=
+ =?utf-8?B?azI0NUZXM1hrYzJFUDlWTzl6UERleTBrTjBzY1gvZ3JPdHA5Wm9VZmsxMVEx?=
+ =?utf-8?B?MG1tM05VN28xSm9GYjZFc1ZoOWU3WnpEU25kc20rRVJ2Qm5ZVXJlbzFleFVm?=
+ =?utf-8?B?MTJxdXM3UkIvR2paaTk0a3YxY2trUC91RU8yeGM1WFk4enozZkQvSmwzWjh2?=
+ =?utf-8?B?N1E5NWFQVUVYRWJLYVN5SFdHNEJ2V2FFT0d2cjBGREIzZzhyMndjUGZ3c25J?=
+ =?utf-8?B?akk1K0NTSVZ4T3F3ek1PY2ZhOVFhMGdqdnUyV0NMMkVaMmdMNmZ4ZHBLSzF4?=
+ =?utf-8?B?VXR3azhEbHVyeHIwbGNLTk9QUzFZTmNUeTdtNmhTa0NucGxVbUYxVkZ5elA3?=
+ =?utf-8?B?bjZXWXhxVkFZV0lZYklzcW1zOTJMa0xvZTdmRk5sWG1XaG9Db01JZ2k1aXd4?=
+ =?utf-8?B?SVQyWHRnM3FYQkZJMXk4WjRqaUhvL0xpSmNSVkEyaVpHOGt4YTBXNFgwem5i?=
+ =?utf-8?B?cjRIN0I2dHJvTVhYLzZ0RnJFVVZwR1N1M0lqdHJJQjdQNlNOTVhGM3ZqenJl?=
+ =?utf-8?B?anc0dW9sN1A2TWRETkdmTlhVVitiK2xKUTVtcHhiTm1UTjRJMGdTdHNxNGYr?=
+ =?utf-8?B?RkpTWXNDYWpYT0JkUFF2TEQya1hsYzJTQ2xUZUFjRVk3RVJ0WkgvS3kvT2E2?=
+ =?utf-8?B?UjNYdHRWZE9IYlpPeEtRNGxpL05aK0VOVUNFaXRobFZBNTZGQjNTSGVRZklu?=
+ =?utf-8?B?Q3RBN1JKSldjOThMVy9kOURJblExQkNRbExhdWp0dGg2ckNGWFlBRFJRQkV3?=
+ =?utf-8?B?OEhwdlJTcW12SEtoRTF5SHJ0SUFwQjFnTGZSZGZCTkhCUFBMd2RvRHNjdHd3?=
+ =?utf-8?B?QlE5ZnZyNk9sKzF6ekkyclhaV04wK2orNnM2c2J5SFFtOXk4MHoxL3I4bm9P?=
+ =?utf-8?B?M2dyc1FHVTN1MkFSU09XMzN3aXVwMUhZVjlXVjRQdm5Kd29IL3V2V3h1SnZY?=
+ =?utf-8?B?SjdIMm9zZVBWbkVpSUovLzFCT3lYYzZrZFlRYkZDV3NjdEhhZHVwZ2pudWp0?=
+ =?utf-8?B?ajd1TXBGNXh3ME43OEpZdTFIV0tNK3V5Z0s5bTdHUjJRN1pRNDZ2NXdoV2hm?=
+ =?utf-8?B?bm42a3ZUak5JWUtsekxWcGtYeTZFTWFKNjdpcCtqSHR3cnhNK29IRUsxVm5H?=
+ =?utf-8?B?VlA5N3Nmck1MbTZtdHJxbDFaQlNueWRSeG5sR2xiZXJpZWllb1IzOUtlZEtv?=
+ =?utf-8?Q?jGrAlWQTje9IQ=3D?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.149] (5.186.115.188) by AS8PR04CA0014.eurprd04.prod.outlook.com (2603:10a6:20b:310::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.20 via Frontend Transport; Mon, 30 Nov 2020 22:13:40 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 43ec4baf-b017-4b7f-bcd7-08d8957d317d
-X-MS-TrafficTypeDiagnostic: AM9PR10MB4321:
-X-Microsoft-Antispam-PRVS: <AM9PR10MB4321E275B18B78BAE759864A93F50@AM9PR10MB4321.EURPRD10.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MTUxV6OfYxg5inMd9tvl6/+8iXfJGPeaP0oGBs8XaO8zgVj0vdpVs/HxaJALOfCGmxTN2zupws7yypV/t1syy5axYuyLfBA6RIKJcOHZSQ0ct8wpFvtt4ZI2d+todYXG94kP5jMjjFOpVG6FdMiBuA0qywCHrTcf7tYWyqWcpBAQNtRVqr+GwCUGwGuCKSRGH56y0tPcMRTOjNPNw+4DbMg9Wi3JOIr3O3V1OHb0RYOh4JxHNwCURYabthq0/XmsjdIrtNZPLewxd9pIpBiYQ17EVkEIfv6BaaTgrRo9rnsvhDOtrAqReUXehQBV/I04zaPfSJxXFlUxEY9QhMaXvrgX6FaSfRP6pvgYCilxMLVUmg/f2fZ1q2YJanXvOVeN
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(39850400004)(396003)(136003)(376002)(366004)(346002)(52116002)(31686004)(2616005)(66946007)(66556008)(956004)(66476007)(6486002)(8936002)(5660300002)(44832011)(8976002)(2906002)(8676002)(4326008)(316002)(478600001)(16576012)(86362001)(83380400001)(36756003)(26005)(54906003)(16526019)(31696002)(6916009)(186003)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?Windows-1252?Q?Mrw5Ifs1h1dXB4ZFYrifH6ZW/yjMBeMtUExl1mpFNG6Hp+0bpLaBXvXC?=
- =?Windows-1252?Q?+cirOXdz/fRUINfsQBIu0DbRzYQ58pS0uHUWSU4vKSOnVEjLtrpjD++X?=
- =?Windows-1252?Q?L9TOpdz+ExEDmfsInaXNV+PIcAUyWazufwV5mmFZ9zPzN+kcSa4+/prS?=
- =?Windows-1252?Q?uCNNbIR5vdPe6TIYqUYuqmooCd7XC61Tzlj3M7wNgkif/NGfeceq45f+?=
- =?Windows-1252?Q?pXlH394UZ5EANh4RdI+HVhhaVhAEyPGpel8s5hmGwtfx0lhot3vQn5Hr?=
- =?Windows-1252?Q?5OFjCHFPmkIutSaDhDHMYzRxkaqtMXjP69s409PVSvNtC85qtF5qegxz?=
- =?Windows-1252?Q?7/zuORdsTTHCwxewqgDSuGHv2ZM//LWKE9XfOx+3wJLZQ6nD+3/IMtEE?=
- =?Windows-1252?Q?GT/kK3wllxyvvI3wamlqt2kot0db1rPMk8Q/dDG7B5VhgMR2xFth0v67?=
- =?Windows-1252?Q?MF5zyQm8+2iZPHB/EqT5lq2vm04jfHqgKCs/GEtI/MKiarILzn7FSTpk?=
- =?Windows-1252?Q?Hz+Ne6C+pBo7lrDPaIXZ5fuGOgU3wqXrmG9ZeyUICfYRh/s8zWKkc27/?=
- =?Windows-1252?Q?qlMx6R8yQOVN516WBdAQ5bIv1zmEx8h8K/OIjJjxCd6rjhPQAqaP7D6v?=
- =?Windows-1252?Q?zAhu8Fg7n7TVzTFpRw34BM7dlAXUnLGXRZ1FQDaqxauAPMdHGZfDiP2h?=
- =?Windows-1252?Q?9v/ypjndxMOgbZ+x1cMgPkLZHyhALpjrbeqgezUdB0/1Szj1rCKiSbl5?=
- =?Windows-1252?Q?KGRfgmTkiMmg+iFdCEtyDl5DPKXJjOXstCJI8klHPwLUdiIIJtOEjJMW?=
- =?Windows-1252?Q?K7M2POIc2/mr66y8SDW2TZVv4Nz/puXdcJKbJO12vfpdgEyPENt02Tsl?=
- =?Windows-1252?Q?rz0CAeNm2PKk72/g5y4GHJfN8HjGpbltCbtKE16BlNcjth263F/SA7b1?=
- =?Windows-1252?Q?R54wtvmaaSvpkUnzMK875gJjAm+ePj9T79HljpsgcRNxFUF3fRqiNKka?=
- =?Windows-1252?Q?xOcSfLcZsgvgUNnvO74kQdo8JfGik14nl2qd3ecUVnyb72iSFGqIJWkn?=
- =?Windows-1252?Q?gyAUkAgvdHrM19gH?=
-X-OriginatorOrg: prevas.dk
-X-MS-Exchange-CrossTenant-Network-Message-Id: 43ec4baf-b017-4b7f-bcd7-08d8957d317d
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
+X-OriginatorOrg: Dell.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2020 22:13:41.1387
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR19MB2636.namprd19.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 09b41144-e5cf-4ecc-e50b-08d8957d81cb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Nov 2020 22:15:55.2809
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d350cf71-778d-4780-88f5-071a4cb1ed61
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fZMs7lZsxuZmWCIkNDmwOIclhdbS9GPeqK6FX5YTJLSZZQyUbbIH4a9TmuU8e7MKEkwpS3FPCndVv0fIDD5eF7kXzvRrpqfbokuHKG8wpno=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR10MB4321
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 945c199a-83a2-4e80-9f8c-5a91be5752dd
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: TY80asbs7PrywSeOZdOU01IoEoqpcrgGWsKTH1BmejuYlFJHhz7LXx8LYyo2LvAocECupnlnM2EUfa7GnaSEx6mY1QYIi/KZA0+rQO9+ig0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR19MB3209
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-30_11:2020-11-30,2020-11-30 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ mlxlogscore=999 spamscore=0 phishscore=0 priorityscore=1501 clxscore=1011
+ adultscore=0 lowpriorityscore=0 malwarescore=0 mlxscore=0 impostorscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011300137
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 spamscore=0 bulkscore=0
+ suspectscore=0 adultscore=0 malwarescore=0 mlxlogscore=999 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2011300137
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/11/2020 17.04, Vladimir Oltean wrote:
-> Hi Rasmus,
-> 
-> On Mon, Nov 30, 2020 at 03:30:50PM +0100, Rasmus Villemoes wrote:
->> Hi,
->>
->> Updating our mpc8309 board to 5.9, we're starting to get
->>
->> [    0.709832] mv88e6085 mdio@e0102120:10: nonfatal error -34 setting MTU on port 0
->> [    0.720721] mv88e6085 mdio@e0102120:10: nonfatal error -34 setting MTU on port 1
->> [    0.731002] mv88e6085 mdio@e0102120:10: nonfatal error -34 setting MTU on port 2
->> [    0.741333] mv88e6085 mdio@e0102120:10: nonfatal error -34 setting MTU on port 3
->> [    0.752220] mv88e6085 mdio@e0102120:10: nonfatal error -34 setting MTU on port 4
->> [    0.764231] eth1: mtu greater than device maximum
->> [    0.769022] ucc_geth e0102000.ethernet eth1: error -22 setting MTU to include DSA overhead
->>
->> So it does say "nonfatal", but do we have to live with those warnings on
->> every boot going forward, or is there something that we could do to
->> silence it?
->>
->> It's a mv88e6250 switch with cpu port connected to a ucc_geth interface;
->> the ucc_geth driver indeed does not implement ndo_change_mtu and has
->> ->max_mtu set to the default of 1500.
-> 
-> To suppress the warning:
-> 
-> commit 4349abdb409b04a5ed4ca4d2c1df7ef0cc16f6bd
-> Author: Vladimir Oltean <olteanv@gmail.com>
-> Date:   Tue Sep 8 02:25:56 2020 +0300
-> 
->     net: dsa: don't print non-fatal MTU error if not supported
->
-
-Thanks, but I don't think that will change anything. -34 is -ERANGE.
-> But you might also want to look into adding .ndo_change_mtu for
-> ucc_geth. 
-
-Well, that was what I first did, but I'm incapable of making sense of
-the QE reference manual. Perhaps, given the domain of your email
-address, you could poke someone that might know what would need to be done?
-
-In any case, something else seems to be broken with 5.9; no network
-traffic seems to be working (but the bridge creation etc. seems to work
-just the same, link status works, and "ip link show" shows the same
-things as in 4.19). So until I figure that out I can't play around with
-modifying ucc_geth.
-
-If you are able to pass MTU-sized traffic through your
-> mv88e6085, then it is probably the case that the mpc8309 already
-> supports larger packets than 1500 bytes, and it is simply a matter of
-> letting the stack know about that. 
-
-Perhaps, but I don't know how I should test that given that 1500
-give-or-take is hardcoded. FWIW, on a 4.19 kernel, I can do 'ping -s X
--M do' for X up to 1472 for IPv4 and 1452 for IPv6, but I don't think
-that tells me much about what the hardware could do.
-
-A thought: Shouldn't the initialization of slave_dev->max_mtu in
-dsa_slave_create() be capped by master->max_mtu minus tag overhead?
-
-Rasmus
+PiANCj4gR2VuZXJhbGx5IHRoZSB1c2Ugb2YgbW9kdWxlIHBhcmFtZXRlcnMgYW5kIHN5c2ZzIHVz
+YWdlIGFyZSBmcm93bmVkDQo+IHVwb24uIA0KDQpJIHdhcyB0cnlpbmcgdG8gYnVpbGQgb24gdGhl
+IGV4aXN0aW5nIG1vZHVsZSBwYXJhbWV0ZXJzIHRoYXQgZXhpc3RlZA0KYWxyZWFkeSBmb3IgZTEw
+MDBlLiAgU28gSSBndWVzcyBJIHdvdWxkIGFzaywgd2h5IGFyZSB0aG9zZSBub3QgZG9uZSBpbg0K
+ZXRodG9vbD8gIFNob3VsZCB0aG9zZSBwYXJhbWV0ZXJzIGdvIGF3YXkgYW5kIHRoZXkgbWlncmF0
+ZSB0byBldGh0b29sDQpmb3IgdGhlIHNhbWUgcmVhc29ucyBhcyB0aGlzPw0KDQo+IEJhc2VkIG9u
+IHRoZSBjb25maWd1cmF0aW9uIGlzbid0IHRoaXMgc29tZXRoaW5nIHRoYXQgY291bGQganVzdA0K
+PiBiZSBjb250cm9sbGVkIHZpYSBhbiBldGh0b29sIHByaXYgZmxhZz8gQ291bGRuJ3QgeW91IGp1
+c3QgaGF2ZSB0aGlzDQo+IGRlZmF1bHQgdG8gd2hhdGV2ZXIgdGhlIGhldXJpc3RpY3MgZGVjaWRl
+IGF0IHByb2JlIG9uIGFuZCB0aGVuIHN1cHBvcnQNCj4gZW5hYmxpbmcvZGlzYWJsaW5nIGl0IHZp
+YSB0aGUgcHJpdiBmbGFnPyBZb3UgY291bGQgbG9vayBhdA0KPiBpZ2JfZ2V0X3ByaXZfZmxhZ3Mv
+aWdiX3NldF9wcml2X2ZsYWdzIGZvciBhbiBleGFtcGxlIG9mIGhvdyB0byBkbyB3aGF0DQo+IEkg
+YW0gcHJvcG9zaW5nLg0KDQpJIGRvbid0IGRpc2FncmVlIHRoaXMgc29sdXRpb24gd291bGQgd29y
+aywgYnV0IGl0IGFkZHMgYSBuZXcgZGVwZW5kZW5jeQ0Kb24gaGF2aW5nIGV0aHRvb2wgYW5kIHRo
+ZSBrZXJuZWwgbW92ZSB0b2dldGhlciB0byBlbmFibGUgaXQuDQoNCk9uZSBhZHZhbnRhZ2Ugb2Yg
+dGhlIHdheSB0aGlzIGlzIGRvbmUgaXQgYWxsb3dzIHNoaXBwaW5nIGEgc3lzdGVtIHdpdGggYW4N
+Cm9sZGVyIExpbnV4IGtlcm5lbCB0aGF0IGlzbid0IHlldCByZWNvZ25pemVkIGluIHRoZSBrZXJu
+ZWwgaGV1cmlzdGljcyB0bw0KdHVybiBvbiBieSBkZWZhdWx0IHdpdGggYSBzbWFsbCB1ZGV2IHJ1
+bGUgb3Iga2VybmVsIGNvbW1hbmQgbGluZSBjaGFuZ2UuDQoNCkZvciBleGFtcGxlIHN5c3RlbXMg
+dGhhdCBhcmVuJ3QgeWV0IHJlbGVhc2VkIGNvdWxkIGhhdmUgdGhpcyBkb2N1bWVudGVkIG9uDQpS
+SEVMIGNlcnRpZmljYXRpb24gcGFnZXMgYXQgcmVsZWFzZSB0aW1lIGZvciBvbGRlciBSSEVMIHJl
+bGVhc2VzIGJlZm9yZSBhDQpwYXRjaCB0byBhZGQgdG8gdGhlIGhldXJpc3RpY3MgaGFzIGJlZW4g
+YmFja3BvcnRlZC4NCg0KPiANCj4gSSB0aGluayBpdCB3b3VsZCBzaW1wbGlmeSB0aGlzIHF1aXRl
+IGEgYml0IHNpbmNlIHlvdSB3b3VsZG4ndCBoYXZlIHRvDQo+IGltcGxlbWVudCBzeXNmcyBzaG93
+L3N0b3JlIG9wZXJhdGlvbnMgZm9yIHRoZSB2YWx1ZSBhbmQgd291bGQgaW5zdGVhZA0KPiBiZSBh
+bGxvd2luZyBmb3IgcmVhZGluZy9zZXR0aW5nIHZpYSB0aGUgZ2V0X3ByaXZfZmxhZ3Mvc2V0X3By
+aXZfZmxhZ3MNCj4gb3BlcmF0aW9ucy4gSW4gYWRkaXRpb24geW91IGNvdWxkIGxlYXZlIHRoZSBj
+b2RlIGZvciBjaGVja2luZyB3aGF0DQo+IHN1cHBvcnRzIHRoaXMgaW4gcGxhY2UgYW5kIGhhdmUg
+aXQgc2V0IGEgZmxhZyB0aGF0IGNhbiBiZSByZWFkIG9yDQo+IG92ZXJ3cml0dGVuLg0KDQpJZiB0
+aGUgY29uc2Vuc3VzIGlzIHRvIG1vdmUgaW4gdGhpcyBkaXJlY3Rpb24sIHllcyBJJ2xsIHJlZG8g
+dGhlIHBhdGNoDQpzZXJpZXMgYW5kIG1vZGlmeSBldGh0b29sIGFzIHdlbGwuDQoNCg==
