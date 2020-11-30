@@ -2,173 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA79D2C8833
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 16:37:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF6BC2C886A
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 16:42:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728178AbgK3Phj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 10:37:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57992 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728159AbgK3Phi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 10:37:38 -0500
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7B11C0613D4;
-        Mon, 30 Nov 2020 07:36:57 -0800 (PST)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1kjlEV-000205-K8; Mon, 30 Nov 2020 16:36:55 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     mptcp@lists.01.org, linux-security-module@vger.kernel.org,
-        Florian Westphal <fw@strlen.de>
-Subject: [PATCH net-next 3/3] mptcp: emit tcp reset when a join request fails
-Date:   Mon, 30 Nov 2020 16:36:31 +0100
-Message-Id: <20201130153631.21872-4-fw@strlen.de>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201130153631.21872-1-fw@strlen.de>
-References: <20201130153631.21872-1-fw@strlen.de>
+        id S1727558AbgK3Pku (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 10:40:50 -0500
+Received: from mail-mw2nam10on2091.outbound.protection.outlook.com ([40.107.94.91]:39008
+        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727309AbgK3Pkt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Nov 2020 10:40:49 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=h/XpOLSNIs2fMmNNUx16FmEgK2HGw+kI/w9W7ArFRfvuK0bziONA2wRqvtqP2MPy7Woz//uNGES6m9wedoGmCl1lPGWCeSc6T4Xgp+Z+osmNBevaIvdOXCbZi0e9whht/3svMsPDse5zz6VdjEh4UbYoBBvT2wB+O/KCr2iS+0eySj2FXBbJF2T0s57ay5gW8nn95YumC6vgvSnx6C6DS8csRDUytcxTl6ARx/QaCeh/t/keqMnPS+OnXKohs50fceKByDfDdu6yqb91URagyxtW4DtclyEplStN9skxIry80Wd1NMECl2ZUnYRbC9vuDSmsmy0LBDSht8xuYFB0tQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tvCegd9Jv+CBXTy7kn6s/TUcLbmj96iRvPxO4bU3tqs=;
+ b=kCd8RJXzSqvjecGK8UsWnxW8d4C7xVciAgvpQ4EhvAX+03gUT1vvXKGesuX7jYnAuyi6kKOQA+wcbAo7CD1zobsFwwOBFtNkOlpkcebkbnrDmrzFKoPqHDpCPd5UiZVNaaAxRHUg1RhupAfqC8XNLR2afzL10wDBQQSwXvcSjmLrYD71BROt+ZwQZd35VIE/iAHGNMwmBZFWhxrayKpxrcq6HRbMQ8OuZUFud596XZ2+5brxFovDAtM6ngfeB8EsDp0tY+1hGjPjaO9IDCedgwSESoZOqlvSqgEkxK8dF05KT+UNKBOz8CyI+ABnsP66ig6ip/DVxjCwxcbEVyA1eg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=purdue.edu; dmarc=pass action=none header.from=purdue.edu;
+ dkim=pass header.d=purdue.edu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=purdue0.onmicrosoft.com; s=selector2-purdue0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tvCegd9Jv+CBXTy7kn6s/TUcLbmj96iRvPxO4bU3tqs=;
+ b=eSTVAPIBn/IeshcOxSG5YOXl9YcP4u2tIS4qB8iMSJKzMimMmNdPEVzjeSeY4fonPBJZYhwwVWIa4xDw/RnS06l6++IyN4XMarkynW4WKl8SlOzWR36XWIZCip/5FMkLVqUhbf0BUsQ0IwUX9VOMo1lifBXTx3/nX8vhnlKia7w=
+Received: from CH2PR22MB2056.namprd22.prod.outlook.com (2603:10b6:610:5d::11)
+ by CH2PR22MB1846.namprd22.prod.outlook.com (2603:10b6:610:81::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.24; Mon, 30 Nov
+ 2020 15:40:02 +0000
+Received: from CH2PR22MB2056.namprd22.prod.outlook.com
+ ([fe80::1922:c660:f2f4:50fa]) by CH2PR22MB2056.namprd22.prod.outlook.com
+ ([fe80::1922:c660:f2f4:50fa%7]) with mapi id 15.20.3611.031; Mon, 30 Nov 2020
+ 15:40:02 +0000
+From:   "Gong, Sishuai" <sishuai@purdue.edu>
+To:     "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: [Race] data race between eth_heder_cache_update() and
+ neigh_hh_output()
+Thread-Topic: [Race] data race between eth_heder_cache_update() and
+ neigh_hh_output()
+Thread-Index: AQHWxy8Rr3hrHMLJgUW+yBBlGmJC6Q==
+Date:   Mon, 30 Nov 2020 15:40:02 +0000
+Message-ID: <8B318E86-EED9-4EFE-A921-678532F36BBD@purdue.edu>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=purdue.edu;
+x-originating-ip: [66.253.158.157]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 18b0730f-ebad-47a9-cc95-08d895463408
+x-ms-traffictypediagnostic: CH2PR22MB1846:
+x-microsoft-antispam-prvs: <CH2PR22MB184625913555184855381620DFF50@CH2PR22MB1846.namprd22.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: sf/1VsrJxEEkv9nc41XoYbMt6iblqXCEyqBkXYVu6RLnIMWVxGb7HV5R3CPZBtBcJ8wU3Eoj6KBB1ZTYfH1Jr996PSk1s/y2nC/xsbdpbl9fUJtlVwcoeB9mRGPDZ/kt9aPwwvrNYZIkdzWTDq8ava0Yqi265C79DGzApi7Yg4hisSsEqQNRpTZy7rXSZOEAoj7qFnsZF33o7TZ0raI6D38ATXhzV1clUPd91YolM9f/ePmyvmQLlMqFQRx4/zFaMqBEzFYfhv5qjYrvQrXZvwTQdD/MlrWN4h1QL/b++1wOwSkAzmj6Phd1F2yGAGFl
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR22MB2056.namprd22.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(346002)(366004)(376002)(39860400002)(136003)(2616005)(6506007)(6486002)(26005)(186003)(6916009)(6512007)(4326008)(33656002)(66446008)(478600001)(64756008)(71200400001)(66556008)(86362001)(5660300002)(66476007)(76116006)(316002)(83380400001)(786003)(66946007)(8936002)(8676002)(2906002)(75432002)(36756003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?497aj0tcIHh6T3KkRMlkB4CfezoNwIzCoPm6obDK7t2NGvF0O8jhM1X6C4ZR?=
+ =?us-ascii?Q?RYIi/kB2lqkvO1ff8yb12+kWe/f9rgRlN6BLSZHNkSZnjR3DJoPGc4BkeT/9?=
+ =?us-ascii?Q?aUEosPTiFDvvIBTGx/o6E/uS1ZgBNvsaUS96cXzHhQm4O+1ggBxRTPHG7ONE?=
+ =?us-ascii?Q?gli0LtbagtYbnbTuVsocMG5wTp3RDWmJmogoXz1yBgOQFekFK7+KwNE5pYR7?=
+ =?us-ascii?Q?XevMJ8rNLuvksT7GGKjIfd+EctcIqUzby2h3/ldBp31n5AxFIuYVKqa+IYOg?=
+ =?us-ascii?Q?kE3I6GRq9mOubqWW6tYYySpMzvzhuGwwvSu+cLz2WKccZA7QqX4G/NITtS3c?=
+ =?us-ascii?Q?rdoGo9RxYqFp0cQ6VchtHJhpoUZm5xaZdM7R2XoW/2wxEarfxzAIWqi9ImIK?=
+ =?us-ascii?Q?c5j81WvHl4nHjlKqCJ8idfSf5w+dvciArU2JgtQnDfWf4d1oumfDHw2KqgQn?=
+ =?us-ascii?Q?ubS9Uzi4cMDoDX0k0Oe4TJUybqC3Wqs1w2XeSR/phnuir5mNdZIMQ6R+APad?=
+ =?us-ascii?Q?GxCx2PFR75+K+4JsxvAIrWN/E+Y5mlWpgaldBah6wY2zYyJ7yzgJSDb+KROF?=
+ =?us-ascii?Q?PnRmJYpVr6L9IF8EFd5qPnOXwgWBbEW+QKs0TteduNIlsi4semQE69AffF7X?=
+ =?us-ascii?Q?Hnl9WFU0DupLwRZJFLC280saO1n6OgAvSThbtiuqLjYeZqA7s6NA4CQa6YcQ?=
+ =?us-ascii?Q?RgkDdueYa6yW8SblumGWvlLichCF9UAKrtIAI+dtdEn95YTjMyiNeQVjaRYL?=
+ =?us-ascii?Q?ZtWpfmTudUE8qMXVQZHb6dh11bZiS7VlLDF2Bxw9numGpL7ShyNMmx3cSpeJ?=
+ =?us-ascii?Q?IOwenYsrJ9lvHLgj9nGeyctvdNcjKrD2C0oQCBX46bP89iquCF1t/ZI/UVWq?=
+ =?us-ascii?Q?yIfbo/RpzJbsJQJvkzRHIe6zVqXsFWd+7GCA6AvIfhpmrrmSQF5Agbk68Pih?=
+ =?us-ascii?Q?IBiLTsVkVnG72eupHqBKVAkMZTVCFDGg3XOrRtwQlIG8pXnGG/mFnw1qoKZ+?=
+ =?us-ascii?Q?02sG?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2F2DD8414F705E46BC89FDD322C46873@namprd22.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: purdue.edu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CH2PR22MB2056.namprd22.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 18b0730f-ebad-47a9-cc95-08d895463408
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Nov 2020 15:40:02.5041
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4130bd39-7c53-419c-b1e5-8758d6d63f21
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: vfq2Z/Q5Yqt8Q1R3yhLQfFrUHiNj0RYLf/bog8MIxGek3ExaSV2d3Fvj9bm9/bA4d49CpYfWmZTx45BZeXK0jw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR22MB1846
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RFC 8684 says:
- If the token is unknown or the host wants to refuse subflow establishment
- (for example, due to a limit on the number of subflows it will permit),
- the receiver will send back a reset (RST) signal, analogous to an unknown
- port in TCP, containing an MP_TCPRST option (Section 3.6) with an
- "MPTCP specific error" reason code.
+Hi,
 
-mptcp-next doesn't support MP_TCPRST yet, this can be added in another
-change.
+We found a data race in linux kernel 5.3.11 that we are able to reproduce i=
+n x86 under specific interleavings. We are not sure about the consequence o=
+f this race now but it seems that the two memcpy() can lead to some inconsi=
+stency. We also noticed that both the writer and reader are protected by lo=
+cks, but the writer is protected using seqlock while the reader is protecte=
+d by rculock.
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- net/mptcp/subflow.c | 47 ++++++++++++++++++++++++++++++++++-----------
- 1 file changed, 36 insertions(+), 11 deletions(-)
+------------------------------------------
+Write site
 
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index c55b8f176746..5a8005746bc8 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -112,9 +112,14 @@ static int __subflow_init_req(struct request_sock *req, const struct sock *sk_li
- 	return 0;
- }
- 
--static void subflow_init_req(struct request_sock *req,
--			     const struct sock *sk_listener,
--			     struct sk_buff *skb)
-+/* Init mptcp request socket.
-+ *
-+ * Returns an error code if a JOIN has failed and a TCP reset
-+ * should be sent.
-+ */
-+static int subflow_init_req(struct request_sock *req,
-+			    const struct sock *sk_listener,
-+			    struct sk_buff *skb)
- {
- 	struct mptcp_subflow_context *listener = mptcp_subflow_ctx(sk_listener);
- 	struct mptcp_subflow_request_sock *subflow_req = mptcp_subflow_rsk(req);
-@@ -125,7 +130,7 @@ static void subflow_init_req(struct request_sock *req,
- 
- 	ret = __subflow_init_req(req, sk_listener);
- 	if (ret)
--		return;
-+		return 0;
- 
- 	mptcp_get_options(skb, &mp_opt);
- 
-@@ -133,7 +138,7 @@ static void subflow_init_req(struct request_sock *req,
- 		SUBFLOW_REQ_INC_STATS(req, MPTCP_MIB_MPCAPABLEPASSIVE);
- 
- 		if (mp_opt.mp_join)
--			return;
-+			return 0;
- 	} else if (mp_opt.mp_join) {
- 		SUBFLOW_REQ_INC_STATS(req, MPTCP_MIB_JOINSYNRX);
- 	}
-@@ -157,7 +162,7 @@ static void subflow_init_req(struct request_sock *req,
- 			} else {
- 				subflow_req->mp_capable = 1;
- 			}
--			return;
-+			return 0;
- 		}
- 
- 		err = mptcp_token_new_request(req);
-@@ -175,7 +180,11 @@ static void subflow_init_req(struct request_sock *req,
- 		subflow_req->remote_nonce = mp_opt.nonce;
- 		subflow_req->msk = subflow_token_join_request(req, skb);
- 
--		if (unlikely(req->syncookie) && subflow_req->msk) {
-+		/* Can't fall back to TCP in this case. */
-+		if (!subflow_req->msk)
-+			return -EPERM;
-+
-+		if (unlikely(req->syncookie)) {
- 			if (mptcp_can_accept_new_subflow(subflow_req->msk))
- 				subflow_init_req_cookie_join_save(subflow_req, skb);
- 		}
-@@ -183,6 +192,8 @@ static void subflow_init_req(struct request_sock *req,
- 		pr_debug("token=%u, remote_nonce=%u msk=%p", subflow_req->token,
- 			 subflow_req->remote_nonce, subflow_req->msk);
- 	}
-+
-+	return 0;
- }
- 
- int mptcp_subflow_init_cookie_req(struct request_sock *req,
-@@ -234,6 +245,7 @@ static struct dst_entry *subflow_v4_route_req(const struct sock *sk,
- 					      struct request_sock *req)
- {
- 	struct dst_entry *dst;
-+	int err;
- 
- 	tcp_rsk(req)->is_mptcp = 1;
- 
-@@ -241,8 +253,14 @@ static struct dst_entry *subflow_v4_route_req(const struct sock *sk,
- 	if (!dst)
- 		return NULL;
- 
--	subflow_init_req(req, sk, skb);
--	return dst;
-+	err = subflow_init_req(req, sk, skb);
-+	if (err == 0)
-+		return dst;
-+
-+	dst_release(dst);
-+	if (!req->syncookie)
-+		tcp_request_sock_ops.send_reset(sk, skb);
-+	return NULL;
- }
- 
- #if IS_ENABLED(CONFIG_MPTCP_IPV6)
-@@ -252,6 +270,7 @@ static struct dst_entry *subflow_v6_route_req(const struct sock *sk,
- 					      struct request_sock *req)
- {
- 	struct dst_entry *dst;
-+	int err;
- 
- 	tcp_rsk(req)->is_mptcp = 1;
- 
-@@ -259,8 +278,14 @@ static struct dst_entry *subflow_v6_route_req(const struct sock *sk,
- 	if (!dst)
- 		return NULL;
- 
--	subflow_init_req(req, sk, skb);
--	return dst;
-+	err = subflow_init_req(req, sk, skb);
-+	if (err == 0)
-+		return dst;
-+
-+	dst_release(dst);
-+	if (!req->syncookie)
-+		tcp6_request_sock_ops.send_reset(sk, skb);
-+	return NULL;
- }
- #endif
- 
--- 
-2.26.2
+ /tmp/tmp.B7zb7od2zE-5.3.11/extract/linux-5.3.11/net/ethernet/eth.c:264
+        252  /**
+        253   * eth_header_cache_update - update cache entry
+        254   * @hh: destination cache entry
+        255   * @dev: network device
+        256   * @haddr: new hardware address
+        257   *
+        258   * Called by Address Resolution module to notify changes in ad=
+dress.
+        259   */
+        260  void eth_header_cache_update(struct hh_cache *hh,
+        261                   const struct net_device *dev,
+        262                   const unsigned char *haddr)
+        263  {
+ =3D=3D>    264      memcpy(((u8 *) hh->hh_data) + HH_DATA_OFF(sizeof(struc=
+t ethhdr)),
+        265             haddr, ETH_ALEN);
+        266  }
+        267  EXPORT_SYMBOL(eth_header_cache_update);
+
+------------------------------------------
+Reader site
+
+/tmp/tmp.B7zb7od2zE-5.3.11/extract/linux-5.3.11/include/net/neighbour.h:481
+        463  static inline int neigh_hh_output(const struct hh_cache *hh, s=
+truct sk_buff *skb)
+        464  {
+        465      unsigned int hh_alen =3D 0;
+        466      unsigned int seq;
+        467      unsigned int hh_len;
+        468
+        469      do {
+        470          seq =3D read_seqbegin(&hh->hh_lock);
+        471          hh_len =3D hh->hh_len;
+        472          if (likely(hh_len <=3D HH_DATA_MOD)) {
+        473              hh_alen =3D HH_DATA_MOD;
+        474
+        475              /* skb_push() would proceed silently if we have ro=
+om for
+        476               * the unaligned size but not for the aligned size=
+:
+        477               * check headroom explicitly.
+        478               */
+        479              if (likely(skb_headroom(skb) >=3D HH_DATA_MOD)) {
+        480                  /* this is inlined by gcc */
+ =3D=3D>    481                  memcpy(skb->data - HH_DATA_MOD, hh->hh_dat=
+a,
+        482                         HH_DATA_MOD);
+        483              }
+        484          } else {
+        485              hh_alen =3D HH_DATA_ALIGN(hh_len);
+        486
+        487              if (likely(skb_headroom(skb) >=3D hh_alen)) {
+        488                  memcpy(skb->data - hh_alen, hh->hh_data,
+        489                         hh_alen);
+        490              }
+        491          }
+        492      } while (read_seqretry(&hh->hh_lock, seq));
+        493
+        494      if (WARN_ON_ONCE(skb_headroom(skb) < hh_alen)) {
+        495          kfree_skb(skb);
+        496          return NET_XMIT_DROP;
+        497      }
+        498
+        499      __skb_push(skb, hh_len);
+        500      return dev_queue_xmit(skb);
+        501  }
+
+------------------------------------------
+Writer calling trace
+
+- ksys_ioctl
+-- do_vfs_ioctl=20
+--- vfs_ioctl
+---- arp_ioctl
+----- arp_req_set
+------ neigh_update
+------- __neigh_update
+
+------------------------------------------
+Reader calling trace
+
+- __sys_sendto
+-- sock_sendmsg
+--- inet_sendmsg
+---- ip_push_pending_frames
+----- ip_send_skb
+------ ip_local_out
+------- ip_finish_output
+-------- __ip_finish_output
+--------- ip_finish_output2
+
+
+Thanks,
+Sishuai
 
