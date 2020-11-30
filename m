@@ -2,343 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03E222C8D3B
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 19:51:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 533612C8D40
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 19:53:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727345AbgK3StO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 13:49:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60034 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725870AbgK3StN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 13:49:13 -0500
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F21C0613D2
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 10:48:32 -0800 (PST)
-Received: by mail-ej1-x644.google.com with SMTP id 7so23823218ejm.0
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 10:48:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1+3yGKRv3VOXRevLBdEgEzXQh9xjB10emJgOU35KolY=;
-        b=fDuZo93xQfiasoo4MnpOoNdnjkoVukLyflNzji7w/ftQW+jG0moOJNlmniaM6bI0vG
-         hzRsUnq2H9pmTKyzm2C2sQ1k8xNfHVTiwqZN34NKkN3QRy9dOuZTWkH2uQDgpBvJIgDz
-         sayRR36YZfwNvzd9fpkG9sMe/6GKxjyOFfCXpgG0GONBUJ66teFJd79kJ88XNYDMz0zA
-         SchJxn7FCAwqy7hgZUuXwDc4F+jSE7dJ1wREIUkWM/N19cPu9Ubj5eeF2lvSAk05Gz3D
-         9kUQb5vtZ90iMLbFKEuPq82q2gFkTbO5FQZ+dieEP4EI0sg/4nPJQ8zbGZtGFHORd2Qi
-         y1FQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1+3yGKRv3VOXRevLBdEgEzXQh9xjB10emJgOU35KolY=;
-        b=oSWwSt402fMNe4Rc3PO6XjCN/Y68jRlZOXleBJ9yeAOVuJ2R0jhy9jZ5KsUEAGYzXW
-         QpFej8ieM+K8li4Q26DavNP0KAShzIEzZeFCFx4hnaRgwC6wKYF4LMrjlyJVcTXZOLUS
-         y8ZKUSQTw12PGIqaS5/YpG+26bwOv5JlQYtyD+/+Ui4N7KpX/cCtoEi1O3SEiSpTCGIn
-         korNQOfjuD5/jR4BfDkyVuVZcf0ts7jr6yxXTrQ5EM8aTrz4tVNypbVMYZLY9+KsBxc6
-         56HaAY/iU9jh/6JQ9LiMUpVXlxxsNf2hn6/t/4txV6mYiS8OjFHjik72wjyawZkmFaNp
-         i2NA==
-X-Gm-Message-State: AOAM532k60+/Lnm6us2yjZwvmynSHZUmw2U+GCln+xR5KmqwkpHHp2u+
-        U/dUedEPCjBoFbxjV+q0Ooc=
-X-Google-Smtp-Source: ABdhPJzBF8mU8rDy+j6eQ2lxQ0FJHAh9xFq4ATLTc/2FP5ZexrcHO9hRBs1KJ5dACwOgWkDsM5ulZA==
-X-Received: by 2002:a17:906:a982:: with SMTP id jr2mr12432014ejb.292.1606762110607;
-        Mon, 30 Nov 2020 10:48:30 -0800 (PST)
-Received: from skbuf ([188.25.2.120])
-        by smtp.gmail.com with ESMTPSA id k23sm8930117ejo.108.2020.11.30.10.48.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Nov 2020 10:48:29 -0800 (PST)
-Date:   Mon, 30 Nov 2020 20:48:28 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
+        id S2387879AbgK3Svh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 13:51:37 -0500
+Received: from perceval.ideasonboard.com ([213.167.242.64]:33080 "EHLO
+        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387735AbgK3Svf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 13:51:35 -0500
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 945EF2A4;
+        Mon, 30 Nov 2020 19:50:52 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1606762252;
+        bh=RYPSsiTosnAD+ZN+SZZDJFZnGttsHQTdpttar3k1Mnc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RWirhkVyj5MwMV72mfJGTP+V9L424pGhwBYgkTAoDzf9bBsyTAKhIt/fW4w3izSJs
+         CG35nJz1K990Qiv/ce6p4H5bq7BbfpJGWlryRLrKY8joLg62eufWLSJOan7pJ2bk/c
+         UKbZje++dTIHVvd6PiELeLPTegrDGDF+BtidtWoY=
+Date:   Mon, 30 Nov 2020 20:50:44 +0200
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Zhang Qilong <zhangqilong3@huawei.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Fugang Duan <fugang.duan@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
         netdev <netdev@vger.kernel.org>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: Correct usage of dev_base_lock in 2020
-Message-ID: <20201130184828.x56bwxxiwydsxt3k@skbuf>
-References: <20201129182435.jgqfjbekqmmtaief@skbuf>
- <20201129205817.hti2l4hm2fbp2iwy@skbuf>
- <20201129211230.4d704931@hermes.local>
- <CANn89iKyyCwiKHFvQMqmeAbaR9SzwsCsko49FP+4NBW6+ZXN4w@mail.gmail.com>
- <20201130101405.73901b17@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: [PATCH v3 1/2] PM: runtime: Add pm_runtime_resume_and_get to
+ deal with usage counter
+Message-ID: <20201130185044.GZ4141@pendragon.ideasonboard.com>
+References: <20201110092933.3342784-1-zhangqilong3@huawei.com>
+ <20201110092933.3342784-2-zhangqilong3@huawei.com>
+ <CAMuHMdUH3xnAtQmmMqQDUY5O6H89uk12v6hiZXFThw9yuBAqGQ@mail.gmail.com>
+ <CAJZ5v0hVXSgUm877iv3i=1vs1t2QFpGW=-4qTFf2WedTJBU8Zg@mail.gmail.com>
+ <20201130173523.GT14465@pendragon.ideasonboard.com>
+ <CAJZ5v0gx08RY+RjU90y222fLUq7YiO4x6PW3d9GNk4wYadzv_w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20201130101405.73901b17@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <CAJZ5v0gx08RY+RjU90y222fLUq7YiO4x6PW3d9GNk4wYadzv_w@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 30, 2020 at 10:14:05AM -0800, Jakub Kicinski wrote:
-> On Mon, 30 Nov 2020 11:41:10 +0100 Eric Dumazet wrote:
-> > > So dev_base_lock dates back to the Big Kernel Lock breakup back in Linux 2.4
-> > > (ie before my time). The time has come to get rid of it.
+Hi Rafael,
+
+On Mon, Nov 30, 2020 at 06:55:57PM +0100, Rafael J. Wysocki wrote:
+> On Mon, Nov 30, 2020 at 6:35 PM Laurent Pinchart wrote:
+> > On Mon, Nov 30, 2020 at 05:37:52PM +0100, Rafael J. Wysocki wrote:
+> > > On Fri, Nov 27, 2020 at 11:16 AM Geert Uytterhoeven wrote:
+> > > > On Tue, Nov 10, 2020 at 10:29 AM Zhang Qilong <zhangqilong3@huawei.com> wrote:
+> > > > > In many case, we need to check return value of pm_runtime_get_sync, but
+> > > > > it brings a trouble to the usage counter processing. Many callers forget
+> > > > > to decrease the usage counter when it failed, which could resulted in
+> > > > > reference leak. It has been discussed a lot[0][1]. So we add a function
+> > > > > to deal with the usage counter for better coding.
+> > > > >
+> > > > > [0]https://lkml.org/lkml/2020/6/14/88
+> > > > > [1]https://patchwork.ozlabs.org/project/linux-tegra/list/?series=178139
+> > > > > Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
+> > > >
+> > > > Thanks for your patch, which is now commit dd8088d5a8969dc2 ("PM:
+> > > > runtime: Add pm_runtime_resume_and_get to deal with usage counter") in
+> > > > v5.10-rc5.
+> > > >
+> > > > > --- a/include/linux/pm_runtime.h
+> > > > > +++ b/include/linux/pm_runtime.h
+> > > > > @@ -386,6 +386,27 @@ static inline int pm_runtime_get_sync(struct device *dev)
+> > > > >         return __pm_runtime_resume(dev, RPM_GET_PUT);
+> > > > >  }
+> > > > >
+> > > > > +/**
+> > > > > + * pm_runtime_resume_and_get - Bump up usage counter of a device and resume it.
+> > > > > + * @dev: Target device.
+> > > > > + *
+> > > > > + * Resume @dev synchronously and if that is successful, increment its runtime
+> > > > > + * PM usage counter. Return 0 if the runtime PM usage counter of @dev has been
+> > > > > + * incremented or a negative error code otherwise.
+> > > > > + */
+> > > > > +static inline int pm_runtime_resume_and_get(struct device *dev)
+> > > >
+> > > > Perhaps this function should be called pm_runtime_resume_and_get_sync(),
 > > >
-> > > The use is sysfs is because could be changed to RCU. There have been issues
-> > > in the past with sysfs causing lock inversions with the rtnl mutex, that
-> > > is why you will see some trylock code there.
+> > > No, really.
 > > >
-> > > My guess is that dev_base_lock readers exist only because no one bothered to do
-> > > the RCU conversion.
+> > > I might consider calling it pm_runtime_acquire(), and adding a
+> > > matching _release() as a pm_runtime_get() synonym for that matter, but
+> > > not the above.
 > >
-> > I think we did, a long time ago.
-> >
-> > We took care of all ' fast paths' already.
-> >
-> > Not sure what is needed, current situation does not bother me at all ;)
->
-> Perhaps Vladimir has a plan to post separately about it (in that case
-> sorry for jumping ahead) but the initial problem was procfs which is
-> (hopefully mostly irrelevant by now, and) taking the RCU lock only
-> therefore forcing drivers to have re-entrant, non-sleeping
-> .ndo_get_stats64 implementations.
+> > pm_runtime_acquire() seems better to me too. Would pm_runtime_release()
+> > would be an alias for pm_runtime_put() ?
+> 
+> Yes.  This covers all of the use cases relevant for drivers AFAICS.
+> 
+> > We would also likely need a pm_runtime_release_autosuspend() too then.
+> 
+> Why would we?
+> 
+> > But on that topic, I was wondering, is there a reason we can't select
+> > autosuspend behaviour automatically when autosuspend is enabled ?
+> 
+> That is the case already.
+> 
+> pm_runtime_put() will autosuspend if enabled and the usage counter is
+> 0, as long as ->runtime_idle() returns 0 (or is absent).
+> 
+> pm_runtime_put_autosuspend() is an optimization allowing
+> ->runtime_idle() to be skipped entirely, but I'm wondering how many
+> users really need that.
 
-Right, the end reason why I'm even looking at this is because I want to
-convert all callers of dev_get_stats to use sleepable context and not
-atomic. This makes it easier to gather statistics from devices that have
-a firmware, or off-chip devices behind a slow bus like SPI.
+Ah, I didn't know that, that's good to know. We then don't need
+pm_runtime_release_autosuspend() (unless the optimization really makes a
+big difference).
 
-Like Jakub pointed out, some places call dev_get_stats while iterating
-through the list of network interfaces - one would be procfs, but not
-only. These callers are pure readers, so they use RCU protection. But
-that gives us atomic context when calling dev_get_stats. The naive
-solution is to convert all those callers to hold the RTNL mutex, which
-is the writer-side protection for the network interface lists, and which
-is sleepable. In fact I do have a series of 8 patches where I get that
-done. But there are some weirder cases, such as the bonding driver,
-where I need to do this:
+Should I write new drievr code with pm_runtime_put() instead of
+pm_runtime_put_autosuspend() ? I haven't found clear guidelines on this
+in the documentation.
 
------------------------------[cut here]-----------------------------
-From 369a0e18a2446cda8ff52d72c02aa144ae6687ec Mon Sep 17 00:00:00 2001
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
-Date: Mon, 30 Nov 2020 02:39:46 +0200
-Subject: [PATCH] net: bonding: retrieve device statistics under RTNL, not RCU
+-- 
+Regards,
 
-In the effort of making .ndo_get_stats64 be able to sleep, we need to
-ensure the callers of dev_get_stats do not use atomic context.
-
-The bonding driver uses an RCU read-side critical section to ensure the
-integrity of the list of network interfaces, because the driver iterates
-through all net devices in the netns to find the ones which are its
-configured slaves. We still need some protection against an interface
-registering or deregistering, and the writer-side lock, the RTNL mutex,
-is fine for that, because it offers sleepable context.
-
-We are taking the RTNL this way (checking for rtnl_is_locked first)
-because the RTNL is not guaranteed to be held by all callers of
-ndo_get_stats64, in fact there will be work in the future that will
-avoid as much RTNL-holding as possible.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/bonding/bond_main.c | 18 +++++++-----------
- include/net/bonding.h           |  1 -
- 2 files changed, 7 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index e0880a3840d7..1d44534e95d2 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -3738,21 +3738,17 @@ static void bond_get_stats(struct net_device *bond_dev,
- 			   struct rtnl_link_stats64 *stats)
- {
- 	struct bonding *bond = netdev_priv(bond_dev);
-+	bool rtnl_locked = rtnl_is_locked();
- 	struct rtnl_link_stats64 temp;
- 	struct list_head *iter;
- 	struct slave *slave;
--	int nest_level = 0;
- 
-+	if (!rtnl_locked)
-+		rtnl_lock();
- 
--	rcu_read_lock();
--#ifdef CONFIG_LOCKDEP
--	nest_level = bond_get_lowest_level_rcu(bond_dev);
--#endif
--
--	spin_lock_nested(&bond->stats_lock, nest_level);
- 	memcpy(stats, &bond->bond_stats, sizeof(*stats));
- 
--	bond_for_each_slave_rcu(bond, slave, iter) {
-+	bond_for_each_slave(bond, slave, iter) {
- 		const struct rtnl_link_stats64 *new =
- 			dev_get_stats(slave->dev, &temp);
- 
-@@ -3763,8 +3759,9 @@ static void bond_get_stats(struct net_device *bond_dev,
- 	}
- 
- 	memcpy(&bond->bond_stats, stats, sizeof(*stats));
--	spin_unlock(&bond->stats_lock);
--	rcu_read_unlock();
-+
-+	if (!rtnl_locked)
-+		rtnl_unlock();
- }
- 
- static int bond_do_ioctl(struct net_device *bond_dev, struct ifreq *ifr, int cmd)
-@@ -5192,7 +5189,6 @@ static int bond_init(struct net_device *bond_dev)
- 	if (!bond->wq)
- 		return -ENOMEM;
- 
--	spin_lock_init(&bond->stats_lock);
- 	netdev_lockdep_set_classes(bond_dev);
- 
- 	list_add_tail(&bond->bond_list, &bn->dev_list);
-diff --git a/include/net/bonding.h b/include/net/bonding.h
-index d9d0ff3b0ad3..6fbde9713424 100644
---- a/include/net/bonding.h
-+++ b/include/net/bonding.h
-@@ -224,7 +224,6 @@ struct bonding {
- 	 * ALB mode (6) - to sync the use and modifications of its hash table
- 	 */
- 	spinlock_t mode_lock;
--	spinlock_t stats_lock;
- 	u8	 send_peer_notif;
- 	u8       igmp_retrans;
- #ifdef CONFIG_PROC_FS
------------------------------[cut here]-----------------------------
-
-Only that there's a problem with this. It's the lock ordering that
-Stephen talked about.
-
-cat /sys/class/net/bond0/statistics/*
-[   38.715829]
-[   38.717329] ======================================================
-[   38.723528] WARNING: possible circular locking dependency detected
-[   38.729730] 5.10.0-rc5-next-20201127-00016-gde02bf51f2fa #1481 Not tainted
-[   38.736628] ------------------------------------------------------
-[   38.742828] cat/602 is trying to acquire lock:
-[   38.747285] ffffcf4908119080 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_lock+0x20/0x28
-[   38.754555]
-[   38.754555] but task is already holding lock:
-[   38.760406] ffff53364222c168 (kn->active#123){++++}-{0:0}, at: kernfs_seq_start+0x38/0xb0
-[   38.768631]
-[   38.768631] which lock already depends on the new lock.
-[   38.768631]
-[   38.776835]
-[   38.776835] the existing dependency chain (in reverse order) is:
-[   38.784341]
-[   38.784341] -> #1 (kn->active#123){++++}-{0:0}:
-[   38.790387]        lock_acquire+0x238/0x468
-[   38.794583]        __kernfs_remove+0x26c/0x3e0
-[   38.799040]        kernfs_remove_by_name_ns+0x5c/0xb8
-[   38.804107]        remove_files.isra.1+0x40/0x80
-[   38.808739]        sysfs_remove_group+0x50/0xb0
-[   38.813282]        sysfs_remove_groups+0x3c/0x58
-[   38.817913]        device_remove_attrs+0x64/0x98
-[   38.822544]        device_del+0x16c/0x3f8
-[   38.826566]        netdev_unregister_kobject+0x80/0x90
-[   38.831722]        rollback_registered_many+0x444/0x688
-[   38.836964]        unregister_netdevice_many.part.163+0x20/0xa8
-[   38.842904]        unregister_netdevice_many+0x2c/0x38
-[   38.848059]        rtnl_delete_link+0x5c/0x90
-[   38.852428]        rtnl_dellink+0x158/0x310
-[   38.856622]        rtnetlink_rcv_msg+0x298/0x4d8
-[   38.861254]        netlink_rcv_skb+0x64/0x130
-[   38.865625]        rtnetlink_rcv+0x28/0x38
-[   38.869733]        netlink_unicast+0x1dc/0x288
-[   38.874190]        netlink_sendmsg+0x2b0/0x3e8
-[   38.878647]        ____sys_sendmsg+0x27c/0x2c0
-[   38.883105]        ___sys_sendmsg+0x90/0xd0
-[   38.887299]        __sys_sendmsg+0x7c/0xd0
-[   38.891407]        __arm64_sys_sendmsg+0x2c/0x38
-[   38.896040]        el0_svc_common.constprop.3+0x80/0x1b0
-[   38.901369]        do_el0_svc+0x34/0xa0
-[   38.905216]        el0_sync_handler+0x138/0x198
-[   38.909760]        el0_sync+0x140/0x180
-[   38.913604]
-[   38.913604] -> #0 (rtnl_mutex){+.+.}-{4:4}:
-[   38.919295]        check_noncircular+0x154/0x168
-[   38.923926]        __lock_acquire+0x1118/0x15e0
-[   38.928470]        lock_acquire+0x238/0x468
-[   38.932667]        __mutex_lock+0xa4/0x970
-[   38.936776]        mutex_lock_nested+0x54/0x70
-[   38.941233]        rtnl_lock+0x20/0x28
-[   38.944993]        bond_get_stats+0x140/0x1a8
-[   38.949363]        dev_get_stats+0xdc/0xf0
-[   38.953472]        netstat_show.isra.25+0x50/0xa0
-[   38.958190]        collisions_show+0x2c/0x38
-[   38.962472]        dev_attr_show+0x3c/0x78
-[   38.966580]        sysfs_kf_seq_show+0xbc/0x138
-[   38.971124]        kernfs_seq_show+0x44/0x50
-[   38.975407]        seq_read_iter+0xe4/0x450
-[   38.979601]        seq_read+0xf8/0x148
-[   38.983359]        kernfs_fop_read+0x1e0/0x280
-[   38.987817]        vfs_read+0xac/0x1c8
-[   38.991576]        ksys_read+0x74/0xf8
-[   38.995335]        __arm64_sys_read+0x24/0x30
-[   38.999706]        el0_svc_common.constprop.3+0x80/0x1b0
-[   39.005035]        do_el0_svc+0x34/0xa0
-[   39.008882]        el0_sync_handler+0x138/0x198
-[   39.013426]        el0_sync+0x140/0x180
-[   39.017270]
-[   39.017270] other info that might help us debug this:
-[   39.017270]
-[   39.025300]  Possible unsafe locking scenario:
-[   39.025300]
-[   39.031236]        CPU0                    CPU1
-[   39.035779]        ----                    ----
-[   39.040321]   lock(kn->active#123);
-[   39.043826]                                lock(rtnl_mutex);
-[   39.049507]                                lock(kn->active#123);
-[   39.055540]   lock(rtnl_mutex);
-[   39.058691]
-[   39.058691]  *** DEADLOCK ***
-[   39.058691]
-[   39.064630] 3 locks held by cat/602:
-[   39.068212]  #0: ffff533645926f70 (&p->lock){+.+.}-{4:4}, at: seq_read_iter+0x64/0x450
-[   39.076173]  #1: ffff533643bfa090 (&of->mutex){+.+.}-{4:4}, at: kernfs_seq_start+0x30/0xb0
-[   39.084482]  #2: ffff53364222c168 (kn->active#123){++++}-{0:0}, at: kernfs_seq_start+0x38/0xb0
-
-Ok, I admit I don't really understand the message, because struct
-kernfs_node::active is an atomic_t and not really a lock, but
-intuitively I think lockdep is unhappy that the RTNL mutex is not being
-used here as a top-level mutex.
-If somebody were to cat /sys/class/net/bond0/statistics/*, the kernfs
-node locking happens first, then the RTNL mutex is acquired by the
-bonding implementation of ndo_get_stats64.
-If somebody were to delete the bonding device via an "ip link del"
-rtnetlink message, the RTNL mutex would be held first, then the kernfs
-node lock corresponding to the interface's sysfs attributes second.
-I don't think there's really any potential deadlock, only an ordering
-issue between lockdep classes.
-
-How I think this could be solved is if we made the network interface
-lists use some other writer-side protection than the big RTNL mutex.
-So I went on exactly to see how knee-deep I would need to get into that.
-
-There are 2 separate classes of problems:
-- We already have two ways of protecting pure readers: via RCU and via
-  the rwlock. It doesn't help if we also add a second way of locking out
-  pure writers. We need to first clean up what we have. That's the
-  reason why I started the discussion about the rwlock.
-- Some callers appear to not use any sort of protection at all. Does
-  this code path look ok to you?
-
-nfnetlink_rcv_batch
--> NFT_MSG_NEWCHAIN
-   -> nf_tables_addchain
-      -> nft_chain_parse_hook
-         -> nft_chain_parse_netdev
-            -> nf_tables_parse_netdev_hooks
-               -> nft_netdev_hook_alloc
-                  -> __dev_get_by_name
-                     -> netdev_name_node_lookup: must be under RTNL mutex or dev_base_lock protection
-
-Unless I'm missing something, there are just tons, tons of callers of
-__dev_get_by_name which hold neither the RTNL mutex, nor the
-dev_base_lock rwlock, nor RCU read-side critical section.
-
-What I was thinking was that if we could add a separate mutex for the
-network interface lists (and this time make it per netns, and not global
-to the kernel), then we could take that lock a lot more locally. I.e. we
-could have __dev_get_by_name take that lock, and alleviate the need for
-callers to hold the RTNL mutex. That would solve some of these bugs too,
-and would also be more usable for the bonding case.
+Laurent Pinchart
