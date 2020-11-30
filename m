@@ -2,95 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53B782C80EC
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 10:25:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 771F72C811A
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 10:36:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727714AbgK3JYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 04:24:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56426 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726345AbgK3JYr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 04:24:47 -0500
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD21C0613CF;
-        Mon, 30 Nov 2020 01:24:07 -0800 (PST)
-Received: by mail-wr1-x444.google.com with SMTP id p8so15102674wrx.5;
-        Mon, 30 Nov 2020 01:24:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=gU8lO5LAldiFlnsZIdzpiU5H+CGrL6JqiRo0rf1tkEw=;
-        b=Xhq86EeD2GXNUQWMZxvdyxtQj4PSxR6QH1H0v8AowvRErg/TJo/h4gmRJvgwDZJCvX
-         k6fKXEOXzzXvxcliXBi3q2ejqom8ii03xtQN0EGZ5rf3kR3/n2Q6+AAbkOdoLbQt9SuL
-         3MwWE4Rqu3+aATNQmHS8z8lIQfiieypfCFK8MS0Q3oFEfj4ValuoqZowjgtbJv9jF9HN
-         ddskes1/Ke9HoiW3sFEC5PBkiZrsXhpkhXcAS/yyV43FPiLsJ1wJuvuqCLKMrr4Mig+p
-         q7P9EtOUCeyUIwRo/5tsqzXjas4k7TDF/ll6qDQ2feenH6cOazuTIg0D+ZWmqU4chYIW
-         K0Ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=gU8lO5LAldiFlnsZIdzpiU5H+CGrL6JqiRo0rf1tkEw=;
-        b=XTD+LaIzGWVCV2hFolwX1//EfYjsgj1JLCS6uqeLSaNng8zjnVtciwjXS4Rp3GKQSF
-         KZU6dx8ri7QnQp4sPfD6V0YDzbq4j55LmYDUVCAZ6gCOBkJ588QxZLd2rVceGMpIEnjw
-         UaCEN89QsDlXdCZCgiS5kpNBv2xMUiRVPv8tstwNQfhU293la+gU6Cp/pm3jwMQ+IY6L
-         GnAjB2IRgLrsvbzYvEdKaG7PGcSO/s9SJPsoYiLoMvNZI91IuIKhmTjWJ8tmKullg8KX
-         5le8Q7/+36MsWoZ8m3X/jrpchJsvRKh8GNcwb31w1WfpQW7W4dWqGfmOXJqSBtgUktTl
-         7EgA==
-X-Gm-Message-State: AOAM532G5F4Cfy0svtPMzgz6aWw27oXuhw3S59RVne0kaCiIof4T4bek
-        kNLWFY7bS5zLXxfseyNNkAVKjWTSrz4kV995
-X-Google-Smtp-Source: ABdhPJxO9bMA3cC05ceNaFl7oIxZ8m4GUA7h3yxz7UOuR8ovczMLjbg44ZkMv8v1OYALr0u3NGivzQ==
-X-Received: by 2002:a5d:6191:: with SMTP id j17mr26865704wru.299.1606728245767;
-        Mon, 30 Nov 2020 01:24:05 -0800 (PST)
-Received: from [192.168.1.122] (cpc92720-cmbg20-2-0-cust364.5-4.cable.virginm.net. [82.21.83.109])
-        by smtp.gmail.com with ESMTPSA id e1sm4842895wma.17.2020.11.30.01.24.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 Nov 2020 01:24:05 -0800 (PST)
-Subject: Re: [PATCH] net: flow_offload: remove trailing semicolon in macro
- definition
-To:     trix@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        wenxu@ucloud.cn, pablo@netfilter.org, jiri@mellanox.com,
-        herbert@gondor.apana.org.au, paulb@mellanox.com,
-        john.hurley@netronome.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20201127193727.2875003-1-trix@redhat.com>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <9d9536d9-b2ba-d3f9-5cf7-56c8dd67bb3e@gmail.com>
-Date:   Mon, 30 Nov 2020 09:24:03 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        id S1727873AbgK3Jdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 04:33:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:21728 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726158AbgK3Jds (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 04:33:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606728742;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7XnOfdREIt4Lxkgjic2xKmB+sb4GzQklc68BVQDEWvs=;
+        b=CLfl/LZ0FxaPgvT7C3esajUE9zLv9dM6qwRctYSZIzU3epRgYvJjvHa4E5D9WIVH/vajbL
+        rZPTrdN/fkYCJZufHttcCUGrQ5H5/qDp+Qd+RCZm7VkJvQiDrSfw3CanUxaQAlAaa28hUL
+        mUvtOhtPxvzaoAZK3I/UP8W0tbnlVxk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-342-74MbqdniMdmq5_A4fpal4Q-1; Mon, 30 Nov 2020 04:32:20 -0500
+X-MC-Unique: 74MbqdniMdmq5_A4fpal4Q-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8064B8030AB;
+        Mon, 30 Nov 2020 09:32:18 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.55])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 829A25D9D2;
+        Mon, 30 Nov 2020 09:32:09 +0000 (UTC)
+Date:   Mon, 30 Nov 2020 10:32:08 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        brouer@redhat.com
+Subject: Re: [PATCHv2 bpf-next] samples/bpf: add xdp program on egress for
+ xdp_redirect_map
+Message-ID: <20201130103208.6d5305e2@carbon>
+In-Reply-To: <20201130075107.GB277949@localhost.localdomain>
+References: <20201110124639.1941654-1-liuhangbin@gmail.com>
+        <20201126084325.477470-1-liuhangbin@gmail.com>
+        <54642499-57d7-5f03-f51e-c0be72fb89de@fb.com>
+        <20201130075107.GB277949@localhost.localdomain>
 MIME-Version: 1.0
-In-Reply-To: <20201127193727.2875003-1-trix@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27/11/2020 19:37, trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
-> 
-> The macro use will already have a semicolon.
-> 
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> ---
->  net/core/flow_offload.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
-> index d4474c812b64..59ddfd3f3876 100644
-> --- a/net/core/flow_offload.c
-> +++ b/net/core/flow_offload.c
-> @@ -32,7 +32,7 @@ EXPORT_SYMBOL(flow_rule_alloc);
->  	struct flow_dissector *__d = (__m)->dissector;				\
->  										\
->  	(__out)->key = skb_flow_dissector_target(__d, __type, (__m)->key);	\
-> -	(__out)->mask = skb_flow_dissector_target(__d, __type, (__m)->mask);	\
-> +	(__out)->mask = skb_flow_dissector_target(__d, __type, (__m)->mask)	\
->  Strictly speaking shouldn't this macro have a do {} while (0)
- around it anyway?
+On Mon, 30 Nov 2020 15:51:07 +0800
+Hangbin Liu <liuhangbin@gmail.com> wrote:
 
--ed
+> On Thu, Nov 26, 2020 at 10:31:56PM -0800, Yonghong Song wrote:
+> > > index 35e16dee613e..8bdec0865e1d 100644
+> > > --- a/samples/bpf/xdp_redirect_map_user.c
+> > > +++ b/samples/bpf/xdp_redirect_map_user.c
+> > > @@ -21,12 +21,13 @@
+> > >   static int ifindex_in;
+> > >   static int ifindex_out;
+> > > -static bool ifindex_out_xdp_dummy_attached = true;
+> > > +static bool ifindex_out_xdp_dummy_attached = false;
+> > > +static bool xdp_prog_attached = false;  
+> > 
+> > Maybe xdp_devmap_prog_attached? Feel xdp_prog_attached
+> > is too generic since actually it controls xdp_devmap program
+> > attachment.  
+> 
+> Hi Yonghong,
+> 
+> Thanks for your comments. As Jesper replied, The 2nd xdp_prog on egress
+> doesn't tell us if the redirect was successful. So the number is meaningless.
+
+Well, I would not say the counter is meaningless.  It true that 2nd
+devmap xdp_prog doesn't tell us if the redirect was successful, which
+means that your description/(understanding) of the counter was wrong.
+
+I still think it is relevant to have a counter for packets processed by
+this 2nd xdp_prog, just to make is visually clear that the 2nd xdp-prog
+attached (to devmap entry) is running.  The point is that QA is using
+these programs.
+
+The lack of good output from this specific sample have cause many
+bugzilla cases for me.  BZ cases that requires going back and forth a
+number of times, before figuring out how the prog was (mis)used.  This
+is why other samples like xdp_rxq_info and xdp_redirect_cpu have such a
+verbose output, which in-practice have helped many times on QA issues.
+
+
+> I plan to write a example about vlan header modification based on egress
+> index. I will post the patch later.
+
+I did notice the internal thread you had with Toke.  I still think it
+will be more simple to modify the Ethernet mac addresses.  Adding a
+VLAN id tag is more work, and will confuse benchmarks.  You are
+increasing the packet size, which means that you NIC need to spend
+slightly more time sending this packet (3.2 nanosec at 10Gbit/s), which
+could falsely be interpreted as cost of 2nd devmap XDP-program.
+
+(Details: these 3.2 ns will not be visible for smaller packets, because
+the minimum Ethernet frame size will hide this, but I've experience this
+problem with larger frames on real switch hardware (Juniper), where
+ingress didn't have VLAN-tag and egress we added VLAN-tag with XDP, and
+then switch buffer slowly increased until overflow).
+
+As Alexei already pointed out, you assignment is to modify the packet
+in the 2nd devmap XDP-prog.  Why: because you need to realize that this
+will break your approach to multicast in your previous patchset.
+(Yes, the offlist patch I gave you, that move running 2nd devmap
+XDP-prog to a later stage, solved this packet-modify issue).
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
