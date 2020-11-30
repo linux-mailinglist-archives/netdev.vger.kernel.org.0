@@ -2,90 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 923292C80CF
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 10:21:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53B782C80EC
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 10:25:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727099AbgK3JUj convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 30 Nov 2020 04:20:39 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:26708 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726498AbgK3JUj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 04:20:39 -0500
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-144-Q0MlZ52vP8mTVg-vKwyGSQ-1; Mon, 30 Nov 2020 09:19:00 +0000
-X-MC-Unique: Q0MlZ52vP8mTVg-vKwyGSQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Mon, 30 Nov 2020 09:18:59 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Mon, 30 Nov 2020 09:18:59 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Stephen Hemminger' <stephen@networkplumber.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH 4/5] misc: fix compiler warning in ifstat and nstat
-Thread-Topic: [PATCH 4/5] misc: fix compiler warning in ifstat and nstat
-Thread-Index: AQHWxq89V9V+Fa2vMUOjPZD4kiCxKKngZaNw
-Date:   Mon, 30 Nov 2020 09:18:59 +0000
-Message-ID: <efb6a29fef0e4ca1845956701f670b4b@AcuMS.aculab.com>
-References: <20201130002135.6537-1-stephen@networkplumber.org>
- <20201130002135.6537-5-stephen@networkplumber.org>
-In-Reply-To: <20201130002135.6537-5-stephen@networkplumber.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1727714AbgK3JYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 04:24:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56426 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726345AbgK3JYr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 04:24:47 -0500
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD21C0613CF;
+        Mon, 30 Nov 2020 01:24:07 -0800 (PST)
+Received: by mail-wr1-x444.google.com with SMTP id p8so15102674wrx.5;
+        Mon, 30 Nov 2020 01:24:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=gU8lO5LAldiFlnsZIdzpiU5H+CGrL6JqiRo0rf1tkEw=;
+        b=Xhq86EeD2GXNUQWMZxvdyxtQj4PSxR6QH1H0v8AowvRErg/TJo/h4gmRJvgwDZJCvX
+         k6fKXEOXzzXvxcliXBi3q2ejqom8ii03xtQN0EGZ5rf3kR3/n2Q6+AAbkOdoLbQt9SuL
+         3MwWE4Rqu3+aATNQmHS8z8lIQfiieypfCFK8MS0Q3oFEfj4ValuoqZowjgtbJv9jF9HN
+         ddskes1/Ke9HoiW3sFEC5PBkiZrsXhpkhXcAS/yyV43FPiLsJ1wJuvuqCLKMrr4Mig+p
+         q7P9EtOUCeyUIwRo/5tsqzXjas4k7TDF/ll6qDQ2feenH6cOazuTIg0D+ZWmqU4chYIW
+         K0Ig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=gU8lO5LAldiFlnsZIdzpiU5H+CGrL6JqiRo0rf1tkEw=;
+        b=XTD+LaIzGWVCV2hFolwX1//EfYjsgj1JLCS6uqeLSaNng8zjnVtciwjXS4Rp3GKQSF
+         KZU6dx8ri7QnQp4sPfD6V0YDzbq4j55LmYDUVCAZ6gCOBkJ588QxZLd2rVceGMpIEnjw
+         UaCEN89QsDlXdCZCgiS5kpNBv2xMUiRVPv8tstwNQfhU293la+gU6Cp/pm3jwMQ+IY6L
+         GnAjB2IRgLrsvbzYvEdKaG7PGcSO/s9SJPsoYiLoMvNZI91IuIKhmTjWJ8tmKullg8KX
+         5le8Q7/+36MsWoZ8m3X/jrpchJsvRKh8GNcwb31w1WfpQW7W4dWqGfmOXJqSBtgUktTl
+         7EgA==
+X-Gm-Message-State: AOAM532G5F4Cfy0svtPMzgz6aWw27oXuhw3S59RVne0kaCiIof4T4bek
+        kNLWFY7bS5zLXxfseyNNkAVKjWTSrz4kV995
+X-Google-Smtp-Source: ABdhPJxO9bMA3cC05ceNaFl7oIxZ8m4GUA7h3yxz7UOuR8ovczMLjbg44ZkMv8v1OYALr0u3NGivzQ==
+X-Received: by 2002:a5d:6191:: with SMTP id j17mr26865704wru.299.1606728245767;
+        Mon, 30 Nov 2020 01:24:05 -0800 (PST)
+Received: from [192.168.1.122] (cpc92720-cmbg20-2-0-cust364.5-4.cable.virginm.net. [82.21.83.109])
+        by smtp.gmail.com with ESMTPSA id e1sm4842895wma.17.2020.11.30.01.24.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 30 Nov 2020 01:24:05 -0800 (PST)
+Subject: Re: [PATCH] net: flow_offload: remove trailing semicolon in macro
+ definition
+To:     trix@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        wenxu@ucloud.cn, pablo@netfilter.org, jiri@mellanox.com,
+        herbert@gondor.apana.org.au, paulb@mellanox.com,
+        john.hurley@netronome.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20201127193727.2875003-1-trix@redhat.com>
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <9d9536d9-b2ba-d3f9-5cf7-56c8dd67bb3e@gmail.com>
+Date:   Mon, 30 Nov 2020 09:24:03 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20201127193727.2875003-1-trix@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stephen Hemminger
-> Sent: 30 November 2020 00:22
+On 27/11/2020 19:37, trix@redhat.com wrote:
+> From: Tom Rix <trix@redhat.com>
 > 
-> The code here was doing strncpy() in a way that causes gcc 10
-> warning about possible string overflow. Just use strlcpy() which
-> will null terminate and bound the string as expected.
+> The macro use will already have a semicolon.
 > 
-> This has existed since start of git era so no Fixes tag.
-> 
-> Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+> Signed-off-by: Tom Rix <trix@redhat.com>
 > ---
->  misc/ifstat.c | 2 +-
->  misc/nstat.c  | 3 +--
->  2 files changed, 2 insertions(+), 3 deletions(-)
+>  net/core/flow_offload.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/misc/ifstat.c b/misc/ifstat.c
-> index c05183d79a13..d4a33429dc50 100644
-> --- a/misc/ifstat.c
-> +++ b/misc/ifstat.c
-> @@ -251,7 +251,7 @@ static void load_raw_table(FILE *fp)
->  			buf[strlen(buf)-1] = 0;
->  			if (info_source[0] && strcmp(info_source, buf+1))
->  				source_mismatch = 1;
-> -			strncpy(info_source, buf+1, sizeof(info_source)-1);
-> +			strlcpy(info_source, buf+1, sizeof(info_source));
->  			continue;
+> diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
+> index d4474c812b64..59ddfd3f3876 100644
+> --- a/net/core/flow_offload.c
+> +++ b/net/core/flow_offload.c
+> @@ -32,7 +32,7 @@ EXPORT_SYMBOL(flow_rule_alloc);
+>  	struct flow_dissector *__d = (__m)->dissector;				\
+>  										\
+>  	(__out)->key = skb_flow_dissector_target(__d, __type, (__m)->key);	\
+> -	(__out)->mask = skb_flow_dissector_target(__d, __type, (__m)->mask);	\
+> +	(__out)->mask = skb_flow_dissector_target(__d, __type, (__m)->mask)	\
+>  Strictly speaking shouldn't this macro have a do {} while (0)
+ around it anyway?
 
-ISTM that once it has done a strlen() it ought to use the length
-for the later copy.
-
-I don't seem to have the source file (I'm guessing it isn't in the
-normal repo), but is that initial strlen() guaranteed not to return
-zero?
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+-ed
