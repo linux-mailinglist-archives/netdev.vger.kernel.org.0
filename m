@@ -2,149 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC8E72C8904
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 17:11:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D61A2C893C
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 17:21:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728602AbgK3QKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 11:10:07 -0500
-Received: from mail-io1-f70.google.com ([209.85.166.70]:38268 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726993AbgK3QKH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 11:10:07 -0500
-Received: by mail-io1-f70.google.com with SMTP id q140so3198997iod.5
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 08:09:51 -0800 (PST)
+        id S1728737AbgK3QS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 11:18:59 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:52877 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727243AbgK3QS7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 11:18:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606753052;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=1WGnk9TNl9hRGZTaPRBMI0GW5RawwawDmOTeaOs/1fE=;
+        b=YLBhpVdWhioDYYd9f1bU5XdkE6cAr4zUOK4cXfHyti8mOjtVi+2dK+9lo665SLMzF/jQ3+
+        3+2sBd1b7b7VxXlc8TZCef4k25V0j+4/OQ98zQjNa1hDYTEshBc3EpZs0xDIF8lXITPxFf
+        1H0Lb4479JBR28tWGlqB1cPvd7NU5Rk=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-184-IlCS2DrsM5Gdb-xUepJQBQ-1; Mon, 30 Nov 2020 11:17:28 -0500
+X-MC-Unique: IlCS2DrsM5Gdb-xUepJQBQ-1
+Received: by mail-qv1-f71.google.com with SMTP id o16so7847355qvq.4
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 08:17:28 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=JEM1Q+fPylejK956r/1g6x98BapLMz2U230V1cVbRYo=;
-        b=kRwLinqo+rZ02o6fkJ2FpRzxt7yXp5sXD7e0KUuS8ObtrD+z7I+a/AmQvzHqoLieiG
-         Bzp3BILmA5B3goo0dGJ3MX0sQFzNBPgMFXGiDYp10U1ihKCDX1bjsSOiZFzTUQC2Mwmo
-         6tlSTQHYGK6o32yHYLdOP1euGSJiVQamgS3jXAF+jA2bhuzCJj3Qa6WzMgUJhOhNfiS1
-         4RAlzBXdqUAKbAY8LeYh63t4GGGNGdt6xQCSOblrFnGcHa5mtEPEeM7m6jYfKradLoh+
-         zBc9UHRid5Fh3sDUyE9DqezuLWz+e+sVFIyn4CQ2CoBvHjw5eyxxrQFTY5LvS8K3n/BG
-         KT2A==
-X-Gm-Message-State: AOAM531/l7957N+R1y3YEWfqDRXTgewzWLLj2g50KplJzazX4LLqhNJn
-        M9IL5fVm64MRP5lgameQzOmHfWMFmQN8rczAgOJfGbx07W/m
-X-Google-Smtp-Source: ABdhPJyacoQ0MsNytyApl+uu7UDTpCTIIGXVwWqLth17j6D2wgl55EQNneJR7M/E9S8OOriKx7hHzD24rweoMtsZkDmO4auYF4O2
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1WGnk9TNl9hRGZTaPRBMI0GW5RawwawDmOTeaOs/1fE=;
+        b=lCx2iURf5lyRX0nVWKTh7CIByPhFcQKhgS9AqTBMvNPjifTr4gzx7I0r4CeIr2wdkP
+         YwefwKen0Y+D0whOHZzYbr/zYARbMs0Asr8u4zdCvXbN7Scg0CCohkUA0KI6bwzdD5r8
+         qB9jrQ52SUqZxF+54YYv5gLyWHFPFPgn7p2Q4BzhpGpa7HKL7euzKJq9/4eCgnegxEVB
+         pq1YH7nHcGTv74fevJ5a2YoBmT4yVTbQpimCB7lMyspUN5tl/MOVAIQbK+M1PPSgknrk
+         TbQx1zVwvNUrQVhTSDI0Iu0pMm0HQKsxnJsH9Poc53slDbbZ4iXZBoeJnUzS4DhwJjtF
+         XEpw==
+X-Gm-Message-State: AOAM533lsCAaus/lcKn2+xfPiw2mG3qFVa6Pj8lknlrPOsxLsSA8XGPp
+        eQ+QOK03Wp4x0u5iWW1B5IUWvFnQysXMEbD/8BMVMLcr8xB7Xo9daOVvwWRtFEZGlwJBaj/aEaO
+        CBdLrDM6ZBAtXLlmS
+X-Received: by 2002:a05:620a:15f7:: with SMTP id p23mr22454889qkm.98.1606753047923;
+        Mon, 30 Nov 2020 08:17:27 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwnsEcJmK+FERRj9g5fK0zGHU+Cfr4E6egU60uQNMvh2OoTO0vjyU5FpRzYgNxc7OCNct/49w==
+X-Received: by 2002:a05:620a:15f7:: with SMTP id p23mr22454818qkm.98.1606753047315;
+        Mon, 30 Nov 2020 08:17:27 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id h13sm17770477qtc.4.2020.11.30.08.17.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Nov 2020 08:17:26 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id D9570181AD4; Mon, 30 Nov 2020 17:17:24 +0100 (CET)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     daniel@iogearbox.net, ast@fb.com, andrii@kernel.org
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH bpf] libbpf: sanitise map names before pinning
+Date:   Mon, 30 Nov 2020 17:17:20 +0100
+Message-Id: <20201130161720.8688-1-toke@redhat.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-X-Received: by 2002:a92:6512:: with SMTP id z18mr18870577ilb.220.1606752565812;
- Mon, 30 Nov 2020 08:09:25 -0800 (PST)
-Date:   Mon, 30 Nov 2020 08:09:25 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ed639f05b5553b4a@google.com>
-Subject: KASAN: stack-out-of-bounds Write in bitmap_from_arr32
-From:   syzbot <syzbot+9d39fa49d4df294aab93@syzkaller.appspotmail.com>
-To:     andrew@lunn.ch, corbet@lwn.net, dan.carpenter@oracle.com,
-        davem@davemloft.net, f.fainelli@gmail.com, kuba@kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mkubecek@suse.cz, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+When we added sanitising of map names before loading programs to libbpf, we
+still allowed periods in the name. While the kernel will accept these for
+the map names themselves, they are not allowed in file names when pinning
+maps. This means that bpf_object__pin_maps() will fail if called on an
+object that contains internal maps (such as sections .rodata).
 
-syzbot found the following issue on:
+Fix this by replacing periods with underscores when constructing map pin
+paths. This only affects the paths generated by libbpf when
+bpf_object__ping_maps() is called with a path argument. Any pin paths set
+by bpf_map__set_pin_path() are unaffected, and it will still be up to the
+caller to avoid invalid characters in those.
 
-HEAD commit:    594e31bc Merge branch '40GbE' of git://git.kernel.org/pub/..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=179b8349500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=df65150a33f23d8c
-dashboard link: https://syzkaller.appspot.com/bug?extid=9d39fa49d4df294aab93
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11dc60c9500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17e130a5500000
-
-The issue was bisected to:
-
-commit 0980bfcd6954f124e40a000b85335c197764de14
-Author: Michal Kubecek <mkubecek@suse.cz>
-Date:   Thu Mar 12 20:07:58 2020 +0000
-
-    ethtool: set netdev features with FEATURES_SET request
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=116dec63500000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=136dec63500000
-console output: https://syzkaller.appspot.com/x/log.txt?x=156dec63500000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+9d39fa49d4df294aab93@syzkaller.appspotmail.com
-Fixes: 0980bfcd6954 ("ethtool: set netdev features with FEATURES_SET request")
-
-==================================================================
-BUG: KASAN: stack-out-of-bounds in bitmap_from_arr32+0x199/0x1f0 lib/bitmap.c:1278
-Write of size 8 at addr ffffc9000151f5b0 by task syz-executor624/8469
-
-CPU: 0 PID: 8469 Comm: syz-executor624 Not tainted 5.10.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0x5/0x4c8 mm/kasan/report.c:385
- __kasan_report mm/kasan/report.c:545 [inline]
- kasan_report.cold+0x1f/0x37 mm/kasan/report.c:562
- bitmap_from_arr32+0x199/0x1f0 lib/bitmap.c:1278
- ethnl_parse_bitset+0x448/0x7a0 net/ethtool/bitset.c:631
- ethnl_set_features+0x2ac/0xa70 net/ethtool/features.c:240
- genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
- genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
- genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:671
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2331
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2385
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2418
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x440899
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 5b 11 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffe5de83088 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 0000000000440899
-RDX: 0000000000000000 RSI: 0000000020000440 RDI: 0000000000000003
-RBP: 00000000006cb018 R08: 0000000000000000 R09: 00000000004002c8
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401e80
-R13: 0000000000401f10 R14: 0000000000000000 R15: 0000000000000000
-
-
-addr ffffc9000151f5b0 is located in stack of task syz-executor624/8469 at offset 264 in frame:
- ethnl_set_features+0x0/0xa70 net/ethtool/features.c:58
-
-this frame has 9 objects:
- [32, 40) 'reply_payload'
- [64, 80) 'req_info'
- [96, 104) 'wanted_diff_mask'
- [128, 136) 'active_diff_mask'
- [160, 168) 'old_active'
- [192, 200) 'old_wanted'
- [224, 232) 'new_active'
- [256, 264) 'req_wanted'
- [288, 296) 'req_mask'
-
-Memory state around the buggy address:
- ffffc9000151f480: 00 00 00 00 00 f1 f1 f1 f1 00 f2 f2 f2 00 00 f2
- ffffc9000151f500: f2 00 f2 f2 f2 00 f2 f2 f2 00 f2 f2 f2 00 f2 f2
->ffffc9000151f580: f2 00 f2 f2 f2 00 f2 f2 f2 00 f3 f3 f3 00 00 00
-                                     ^
- ffffc9000151f600: 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1 f1 f1
- ffffc9000151f680: 00 00 00 00 00 00 00 00 00 f3 f3 f3 f3 f3 00 00
-==================================================================
-
-
+Fixes: 113e6b7e15e2 ("libbpf: Sanitise internal map names so they are not rejected by the kernel")
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ tools/lib/bpf/libbpf.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 8d05132e1945..8a3b4713b356 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -7665,8 +7665,8 @@ int bpf_object__pin_maps(struct bpf_object *obj, const char *path)
+ 	}
+ 
+ 	bpf_object__for_each_map(map, obj) {
++		char buf[PATH_MAX], *s = buf;
+ 		char *pin_path = NULL;
+-		char buf[PATH_MAX];
+ 
+ 		if (path) {
+ 			int len;
+@@ -7680,6 +7680,8 @@ int bpf_object__pin_maps(struct bpf_object *obj, const char *path)
+ 				err = -ENAMETOOLONG;
+ 				goto err_unpin_maps;
+ 			}
++			while ((s = strstr(s, ".")))
++			    *s = '_';
+ 			pin_path = buf;
+ 		} else if (!map->pin_path) {
+ 			continue;
+@@ -7712,8 +7714,8 @@ int bpf_object__unpin_maps(struct bpf_object *obj, const char *path)
+ 		return -ENOENT;
+ 
+ 	bpf_object__for_each_map(map, obj) {
++		char buf[PATH_MAX], *s = buf;
+ 		char *pin_path = NULL;
+-		char buf[PATH_MAX];
+ 
+ 		if (path) {
+ 			int len;
+@@ -7724,6 +7726,8 @@ int bpf_object__unpin_maps(struct bpf_object *obj, const char *path)
+ 				return -EINVAL;
+ 			else if (len >= PATH_MAX)
+ 				return -ENAMETOOLONG;
++			while ((s = strstr(s, ".")))
++			    *s = '_';
+ 			pin_path = buf;
+ 		} else if (!map->pin_path) {
+ 			continue;
+-- 
+2.29.2
+
