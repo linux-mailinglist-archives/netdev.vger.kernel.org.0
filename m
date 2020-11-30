@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 303402C83CE
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 13:05:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A408B2C83DB
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 13:08:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729097AbgK3MEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 07:04:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53126 "EHLO
+        id S1728765AbgK3MGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 07:06:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727656AbgK3MEc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 07:04:32 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FEDBC0613CF;
-        Mon, 30 Nov 2020 04:04:07 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id w202so10244965pff.10;
-        Mon, 30 Nov 2020 04:04:07 -0800 (PST)
+        with ESMTP id S1726463AbgK3MGT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 07:06:19 -0500
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3D0C0613CF;
+        Mon, 30 Nov 2020 04:05:54 -0800 (PST)
+Received: by mail-pg1-x543.google.com with SMTP id k11so9972768pgq.2;
+        Mon, 30 Nov 2020 04:05:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=CZRCig9gKNaI6F8/9UxysIhjpVJYuHzZdqKvI2rIDn0=;
-        b=l0BCf23ne3/sVw9YGNO4SPgUhkNGHGlTTLXFjssaqvG4+PZsi1TrgMauwykobd5jxN
-         HTnwrSGZY4bXda/qp1AAevrsldjZRwH0Izy7vHDZiuWNgyUyQtX5i6rWbgCuZT0gjY3C
-         ilW6AVaNtTdOrYjjGSqyJMHM/Q+VMsR4Glm6KAaRgBoQYnRqET6/DvqK105L25RHf05I
-         ifscbC8i5UkHre5v06m/8DJXDMqFNmkSQlDucU1uBnWlqqKnXG6GXREgnsLBWUQwU83p
-         OH3bp46CZN/zHAu7oG42TP+ENhOzzaR/alZWI/bOiFi/YX5brDEOaDAlAGGVog1TGeEN
-         Iflw==
+        bh=v3o56DcFsCW9O7KVhbD4Qj5UbryI+gW1cbpULj0ks78=;
+        b=tWAx7+4JEREzREXD9bPc3BHO88DNdd2jCrEmh5w/bx0b/RfWZUfjDI4nMmn6Ll9S4a
+         Y8vlQzU4j9bzBuB6wjbOucv3L6aZMnGwH1jcXcGF+wtDzHxodjjzuOzA1bRp7V6ZKFMt
+         +p0/swzFfzAqkWRR+wMIp0xd+84UQvhMowF7cVMLYXUgp9o6+VMBkZ8MtdCvT8BJmgow
+         Hn/CrAQkCGijslsJWYNJiep03DMHrC6kp715kLuRR1Jtgb7dpytzRo0D14fPqF0trwH+
+         NTVrnBozLthSoEHmt4rR580HrTC7B0XxudpNZURF1u+kOcc296mnx1eekmVzIRiR7tij
+         qjhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=CZRCig9gKNaI6F8/9UxysIhjpVJYuHzZdqKvI2rIDn0=;
-        b=ReB8/c5uuQfNCQPZWTS2nEXKPSwhZBvBQicVFaCnYrehN+Bqx2b8fXOF5IduuZrOV1
-         iUwD93MOeBMfbmqdxgWiInaaYYEyhZJ4jMuGihDHQeUVg4WLpiZA243/JbOj7yN+e257
-         9avwyN+FWJARXKusDwvFvyexhm9v36K1HcfQ2N2VfVpkW1lZ1o0AVsCssBl6BG/IuyUy
-         8yQtRGpT/X4n0SDZJNm2g50GBPboERDdZzrz3Y/mgu1d632cAUeQCsMVRvV44mZI7/Py
-         RkjgCNm7BeZn1flcf+dueQUcEImCL57U1qgiXbvyM/3OoLVc4bgf/8NnIgVDdJVKDZbx
-         MLFw==
-X-Gm-Message-State: AOAM533+/y2vUvGHwF4LMM4wlXLLxX8DhcInh4lhCCZY5HOjx02FZJCv
-        DN7lMX5vc9LSeEuWA1yFtzMA8D7F5Ac=
-X-Google-Smtp-Source: ABdhPJzvfYT8breEnXkqfdKf42JyCVrmUuqbaQiSe6XtI15nSs7y30gfQLp7f7zszY62q65/rgqliw==
-X-Received: by 2002:a63:ba58:: with SMTP id l24mr8131882pgu.128.1606737846704;
-        Mon, 30 Nov 2020 04:04:06 -0800 (PST)
+        bh=v3o56DcFsCW9O7KVhbD4Qj5UbryI+gW1cbpULj0ks78=;
+        b=YKb1ZcPRxhj/h5a4HOl3UHyoxw/3fZSkvY8xZA8AmqyVqtG7tSh1fV2AAgrjvh/Zp8
+         6wRNazipVQ3D/JegOC1ocLqvlz+VTOslUeM6xz4kvlWeJ0roBnK93ctytw0Qm2qicgpR
+         q7jgUR76JQ7srKnHyXzDo/oGn+wHGjIW4rizuzml/repln/9NNhH6Yl43FWDO5vNNii4
+         1/e25xo+/whNJWkacRfEUF6NHihncLtllNhGQilmX+ww/X3AWQABrOCHFIuzQKaYofZn
+         KyCX3IO0PQJvZ0PfbZ/AQO3xJQer0ZQZbS4wUfDxTuEhKvrVrr8kjKIAVx4EvM5NGm6u
+         9+SQ==
+X-Gm-Message-State: AOAM533wl+R7qwgHvFp8UiHLVIgmXFIB/UUp/ZXpXK4V9VnZrLIbddyL
+        VcCTlsITWjo46o/BYeaBmg4=
+X-Google-Smtp-Source: ABdhPJwvio3yV/N441QSrcirNKzw4JMG/w5WJMU/LzT2lCZcy5yv9u94TrxLbnaPAC4H6L0NAXXnIA==
+X-Received: by 2002:a62:7596:0:b029:197:de7a:b7a7 with SMTP id q144-20020a6275960000b0290197de7ab7a7mr18657170pfc.74.1606737954046;
+        Mon, 30 Nov 2020 04:05:54 -0800 (PST)
 Received: from localhost.localdomain ([182.226.226.37])
-        by smtp.googlemail.com with ESMTPSA id i3sm23063014pjs.34.2020.11.30.04.04.04
+        by smtp.googlemail.com with ESMTPSA id s65sm16268967pgb.78.2020.11.30.04.05.51
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 30 Nov 2020 04:04:06 -0800 (PST)
+        Mon, 30 Nov 2020 04:05:53 -0800 (PST)
 From:   Bongsu Jeon <bongsu.jeon2@gmail.com>
 X-Google-Original-From: Bongsu Jeon
 To:     krzk@kernel.org
 Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Bongsu Jeon <bongsu.jeon@samsung.com>
-Subject: [PATCH v3 net-next 3/4] nfc: s3fwrn5: extract the common phy blocks
-Date:   Mon, 30 Nov 2020 21:03:49 +0900
-Message-Id: <1606737829-29586-1-git-send-email-bongsu.jeon@samsung.com>
+Subject: [PATCH v2 net-next 4/4] net: nfc: s3fwrn5: Support a UART interface
+Date:   Mon, 30 Nov 2020 21:05:45 +0900
+Message-Id: <1606737945-29634-1-git-send-email-bongsu.jeon@samsung.com>
 X-Mailer: git-send-email 1.9.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -60,412 +60,296 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Bongsu Jeon <bongsu.jeon@samsung.com>
 
-Extract the common phy blocks to reuse it.
-The UART module will use the common blocks.
+Since S3FWRN82 NFC Chip, The UART interface can be used.
+S3FWRN82 uses NCI protocol and supports I2C and UART interface.
 
 Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
 ---
- Changes in v3:
-   - move the phy_common object to s3fwrn.ko to avoid duplication.
-   - include the header files to include everything which is used inside.
-   - wrap the lines.
 
  Changes in v2:
-   - remove the common function's definition in common header file.
-   - make the common phy_common.c file to define the common function.
-   - wrap the lines.
-   - change the Header guard.
-   - remove the unused common function.
+   - remove the kfree(phy) because of duplicated free.
+   - use the phy_common blocks.
+   - wrap lines properly.
 
- drivers/nfc/s3fwrn5/Makefile     |   2 +-
- drivers/nfc/s3fwrn5/i2c.c        | 117 +++++++++++++--------------------------
- drivers/nfc/s3fwrn5/phy_common.c |  63 +++++++++++++++++++++
- drivers/nfc/s3fwrn5/phy_common.h |  36 ++++++++++++
- 4 files changed, 139 insertions(+), 79 deletions(-)
- create mode 100644 drivers/nfc/s3fwrn5/phy_common.c
- create mode 100644 drivers/nfc/s3fwrn5/phy_common.h
+ drivers/nfc/s3fwrn5/Kconfig      |  12 +++
+ drivers/nfc/s3fwrn5/Makefile     |   2 +
+ drivers/nfc/s3fwrn5/phy_common.c |  12 +++
+ drivers/nfc/s3fwrn5/phy_common.h |   1 +
+ drivers/nfc/s3fwrn5/uart.c       | 197 +++++++++++++++++++++++++++++++++++++++
+ 5 files changed, 224 insertions(+)
+ create mode 100644 drivers/nfc/s3fwrn5/uart.c
 
+diff --git a/drivers/nfc/s3fwrn5/Kconfig b/drivers/nfc/s3fwrn5/Kconfig
+index 3f8b6da..8a6b1a7 100644
+--- a/drivers/nfc/s3fwrn5/Kconfig
++++ b/drivers/nfc/s3fwrn5/Kconfig
+@@ -20,3 +20,15 @@ config NFC_S3FWRN5_I2C
+ 	  To compile this driver as a module, choose m here. The module will
+ 	  be called s3fwrn5_i2c.ko.
+ 	  Say N if unsure.
++
++config NFC_S3FWRN82_UART
++        tristate "Samsung S3FWRN82 UART support"
++        depends on NFC_NCI && SERIAL_DEV_BUS
++        select NFC_S3FWRN5
++        help
++          This module adds support for a UART interface to the S3FWRN82 chip.
++          Select this if your platform is using the UART bus.
++
++          To compile this driver as a module, choose m here. The module will
++          be called s3fwrn82_uart.ko.
++          Say N if unsure.
 diff --git a/drivers/nfc/s3fwrn5/Makefile b/drivers/nfc/s3fwrn5/Makefile
-index d0ffa35..6b6f52d 100644
+index 6b6f52d..7da827a 100644
 --- a/drivers/nfc/s3fwrn5/Makefile
 +++ b/drivers/nfc/s3fwrn5/Makefile
-@@ -3,7 +3,7 @@
- # Makefile for Samsung S3FWRN5 NFC driver
- #
+@@ -5,6 +5,8 @@
  
--s3fwrn5-objs = core.o firmware.o nci.o
-+s3fwrn5-objs = core.o firmware.o nci.o phy_common.o
+ s3fwrn5-objs = core.o firmware.o nci.o phy_common.o
  s3fwrn5_i2c-objs = i2c.o
++s3fwrn82_uart-objs = uart.o
  
  obj-$(CONFIG_NFC_S3FWRN5) += s3fwrn5.o
-diff --git a/drivers/nfc/s3fwrn5/i2c.c b/drivers/nfc/s3fwrn5/i2c.c
-index 9a64eea..e1bdde1 100644
---- a/drivers/nfc/s3fwrn5/i2c.c
-+++ b/drivers/nfc/s3fwrn5/i2c.c
-@@ -15,75 +15,30 @@
- 
- #include <net/nfc/nfc.h>
- 
--#include "s3fwrn5.h"
-+#include "phy_common.h"
- 
- #define S3FWRN5_I2C_DRIVER_NAME "s3fwrn5_i2c"
- 
--#define S3FWRN5_EN_WAIT_TIME 20
--
- struct s3fwrn5_i2c_phy {
-+	struct phy_common common;
- 	struct i2c_client *i2c_dev;
--	struct nci_dev *ndev;
--
--	int gpio_en;
--	int gpio_fw_wake;
--
--	struct mutex mutex;
- 
--	enum s3fwrn5_mode mode;
- 	unsigned int irq_skip:1;
- };
- 
--static void s3fwrn5_i2c_set_wake(void *phy_id, bool wake)
--{
--	struct s3fwrn5_i2c_phy *phy = phy_id;
--
--	mutex_lock(&phy->mutex);
--	gpio_set_value(phy->gpio_fw_wake, wake);
--	msleep(S3FWRN5_EN_WAIT_TIME);
--	mutex_unlock(&phy->mutex);
--}
--
- static void s3fwrn5_i2c_set_mode(void *phy_id, enum s3fwrn5_mode mode)
- {
- 	struct s3fwrn5_i2c_phy *phy = phy_id;
- 
--	mutex_lock(&phy->mutex);
-+	mutex_lock(&phy->common.mutex);
- 
--	if (phy->mode == mode)
-+	if (s3fwrn5_phy_power_ctrl(&phy->common, mode) == false)
- 		goto out;
- 
--	phy->mode = mode;
--
--	gpio_set_value(phy->gpio_en, 1);
--	gpio_set_value(phy->gpio_fw_wake, 0);
--	if (mode == S3FWRN5_MODE_FW)
--		gpio_set_value(phy->gpio_fw_wake, 1);
--
--	if (mode != S3FWRN5_MODE_COLD) {
--		msleep(S3FWRN5_EN_WAIT_TIME);
--		gpio_set_value(phy->gpio_en, 0);
--		msleep(S3FWRN5_EN_WAIT_TIME);
--	}
--
- 	phy->irq_skip = true;
- 
- out:
--	mutex_unlock(&phy->mutex);
--}
--
--static enum s3fwrn5_mode s3fwrn5_i2c_get_mode(void *phy_id)
--{
--	struct s3fwrn5_i2c_phy *phy = phy_id;
--	enum s3fwrn5_mode mode;
--
--	mutex_lock(&phy->mutex);
--
--	mode = phy->mode;
--
--	mutex_unlock(&phy->mutex);
--
--	return mode;
-+	mutex_unlock(&phy->common.mutex);
- }
- 
- static int s3fwrn5_i2c_write(void *phy_id, struct sk_buff *skb)
-@@ -91,7 +46,7 @@ static int s3fwrn5_i2c_write(void *phy_id, struct sk_buff *skb)
- 	struct s3fwrn5_i2c_phy *phy = phy_id;
- 	int ret;
- 
--	mutex_lock(&phy->mutex);
-+	mutex_lock(&phy->common.mutex);
- 
- 	phy->irq_skip = false;
- 
-@@ -102,7 +57,7 @@ static int s3fwrn5_i2c_write(void *phy_id, struct sk_buff *skb)
- 		ret  = i2c_master_send(phy->i2c_dev, skb->data, skb->len);
- 	}
- 
--	mutex_unlock(&phy->mutex);
-+	mutex_unlock(&phy->common.mutex);
- 
- 	if (ret < 0)
- 		return ret;
-@@ -114,9 +69,9 @@ static int s3fwrn5_i2c_write(void *phy_id, struct sk_buff *skb)
- }
- 
- static const struct s3fwrn5_phy_ops i2c_phy_ops = {
--	.set_wake = s3fwrn5_i2c_set_wake,
-+	.set_wake = s3fwrn5_phy_set_wake,
- 	.set_mode = s3fwrn5_i2c_set_mode,
--	.get_mode = s3fwrn5_i2c_get_mode,
-+	.get_mode = s3fwrn5_phy_get_mode,
- 	.write = s3fwrn5_i2c_write,
- };
- 
-@@ -128,7 +83,7 @@ static int s3fwrn5_i2c_read(struct s3fwrn5_i2c_phy *phy)
- 	char hdr[4];
- 	int ret;
- 
--	hdr_size = (phy->mode == S3FWRN5_MODE_NCI) ?
-+	hdr_size = (phy->common.mode == S3FWRN5_MODE_NCI) ?
- 		NCI_CTRL_HDR_SIZE : S3FWRN5_FW_HDR_SIZE;
- 	ret = i2c_master_recv(phy->i2c_dev, hdr, hdr_size);
- 	if (ret < 0)
-@@ -137,7 +92,7 @@ static int s3fwrn5_i2c_read(struct s3fwrn5_i2c_phy *phy)
- 	if (ret < hdr_size)
- 		return -EBADMSG;
- 
--	data_len = (phy->mode == S3FWRN5_MODE_NCI) ?
-+	data_len = (phy->common.mode == S3FWRN5_MODE_NCI) ?
- 		((struct nci_ctrl_hdr *)hdr)->plen :
- 		((struct s3fwrn5_fw_header *)hdr)->len;
- 
-@@ -157,24 +112,24 @@ static int s3fwrn5_i2c_read(struct s3fwrn5_i2c_phy *phy)
- 	}
- 
- out:
--	return s3fwrn5_recv_frame(phy->ndev, skb, phy->mode);
-+	return s3fwrn5_recv_frame(phy->common.ndev, skb, phy->common.mode);
- }
- 
- static irqreturn_t s3fwrn5_i2c_irq_thread_fn(int irq, void *phy_id)
- {
- 	struct s3fwrn5_i2c_phy *phy = phy_id;
- 
--	if (!phy || !phy->ndev) {
-+	if (!phy || !phy->common.ndev) {
- 		WARN_ON_ONCE(1);
- 		return IRQ_NONE;
- 	}
- 
--	mutex_lock(&phy->mutex);
-+	mutex_lock(&phy->common.mutex);
- 
- 	if (phy->irq_skip)
- 		goto out;
- 
--	switch (phy->mode) {
-+	switch (phy->common.mode) {
- 	case S3FWRN5_MODE_NCI:
- 	case S3FWRN5_MODE_FW:
- 		s3fwrn5_i2c_read(phy);
-@@ -184,7 +139,7 @@ static irqreturn_t s3fwrn5_i2c_irq_thread_fn(int irq, void *phy_id)
- 	}
- 
- out:
--	mutex_unlock(&phy->mutex);
-+	mutex_unlock(&phy->common.mutex);
- 
- 	return IRQ_HANDLED;
- }
-@@ -197,19 +152,23 @@ static int s3fwrn5_i2c_parse_dt(struct i2c_client *client)
- 	if (!np)
- 		return -ENODEV;
- 
--	phy->gpio_en = of_get_named_gpio(np, "en-gpios", 0);
--	if (!gpio_is_valid(phy->gpio_en)) {
-+	phy->common.gpio_en = of_get_named_gpio(np, "en-gpios", 0);
-+	if (!gpio_is_valid(phy->common.gpio_en)) {
- 		/* Support also deprecated property */
--		phy->gpio_en = of_get_named_gpio(np, "s3fwrn5,en-gpios", 0);
--		if (!gpio_is_valid(phy->gpio_en))
-+		phy->common.gpio_en = of_get_named_gpio(np,
-+							"s3fwrn5,en-gpios",
-+							0);
-+		if (!gpio_is_valid(phy->common.gpio_en))
- 			return -ENODEV;
- 	}
- 
--	phy->gpio_fw_wake = of_get_named_gpio(np, "wake-gpios", 0);
--	if (!gpio_is_valid(phy->gpio_fw_wake)) {
-+	phy->common.gpio_fw_wake = of_get_named_gpio(np, "wake-gpios", 0);
-+	if (!gpio_is_valid(phy->common.gpio_fw_wake)) {
- 		/* Support also deprecated property */
--		phy->gpio_fw_wake = of_get_named_gpio(np, "s3fwrn5,fw-gpios", 0);
--		if (!gpio_is_valid(phy->gpio_fw_wake))
-+		phy->common.gpio_fw_wake = of_get_named_gpio(np,
-+							     "s3fwrn5,fw-gpios",
-+							     0);
-+		if (!gpio_is_valid(phy->common.gpio_fw_wake))
- 			return -ENODEV;
- 	}
- 
-@@ -226,8 +185,8 @@ static int s3fwrn5_i2c_probe(struct i2c_client *client,
- 	if (!phy)
- 		return -ENOMEM;
- 
--	mutex_init(&phy->mutex);
--	phy->mode = S3FWRN5_MODE_COLD;
-+	mutex_init(&phy->common.mutex);
-+	phy->common.mode = S3FWRN5_MODE_COLD;
- 	phy->irq_skip = true;
- 
- 	phy->i2c_dev = client;
-@@ -237,17 +196,19 @@ static int s3fwrn5_i2c_probe(struct i2c_client *client,
- 	if (ret < 0)
- 		return ret;
- 
--	ret = devm_gpio_request_one(&phy->i2c_dev->dev, phy->gpio_en,
--		GPIOF_OUT_INIT_HIGH, "s3fwrn5_en");
-+	ret = devm_gpio_request_one(&phy->i2c_dev->dev, phy->common.gpio_en,
-+				    GPIOF_OUT_INIT_HIGH, "s3fwrn5_en");
- 	if (ret < 0)
- 		return ret;
- 
--	ret = devm_gpio_request_one(&phy->i2c_dev->dev, phy->gpio_fw_wake,
--		GPIOF_OUT_INIT_LOW, "s3fwrn5_fw_wake");
-+	ret = devm_gpio_request_one(&phy->i2c_dev->dev,
-+				    phy->common.gpio_fw_wake,
-+				    GPIOF_OUT_INIT_LOW, "s3fwrn5_fw_wake");
- 	if (ret < 0)
- 		return ret;
- 
--	ret = s3fwrn5_probe(&phy->ndev, phy, &phy->i2c_dev->dev, &i2c_phy_ops);
-+	ret = s3fwrn5_probe(&phy->common.ndev, phy, &phy->i2c_dev->dev,
-+			    &i2c_phy_ops);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -255,7 +216,7 @@ static int s3fwrn5_i2c_probe(struct i2c_client *client,
- 		s3fwrn5_i2c_irq_thread_fn, IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
- 		S3FWRN5_I2C_DRIVER_NAME, phy);
- 	if (ret)
--		s3fwrn5_remove(phy->ndev);
-+		s3fwrn5_remove(phy->common.ndev);
- 
- 	return ret;
- }
-@@ -264,7 +225,7 @@ static int s3fwrn5_i2c_remove(struct i2c_client *client)
- {
- 	struct s3fwrn5_i2c_phy *phy = i2c_get_clientdata(client);
- 
--	s3fwrn5_remove(phy->ndev);
-+	s3fwrn5_remove(phy->common.ndev);
- 
- 	return 0;
- }
+ obj-$(CONFIG_NFC_S3FWRN5_I2C) += s3fwrn5_i2c.o
++obj-$(CONFIG_NFC_S3FWRN82_UART) += s3fwrn82_uart.o
 diff --git a/drivers/nfc/s3fwrn5/phy_common.c b/drivers/nfc/s3fwrn5/phy_common.c
-new file mode 100644
-index 0000000..5cad1f4
---- /dev/null
+index 5cad1f4..497b02b 100644
+--- a/drivers/nfc/s3fwrn5/phy_common.c
 +++ b/drivers/nfc/s3fwrn5/phy_common.c
-@@ -0,0 +1,63 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
+@@ -47,6 +47,18 @@ bool s3fwrn5_phy_power_ctrl(struct phy_common *phy, enum s3fwrn5_mode mode)
+ }
+ EXPORT_SYMBOL(s3fwrn5_phy_power_ctrl);
+ 
++void s3fwrn5_phy_set_mode(void *phy_id, enum s3fwrn5_mode mode)
++{
++	struct phy_common *phy = phy_id;
++
++	mutex_lock(&phy->mutex);
++
++	s3fwrn5_phy_power_ctrl(phy, mode);
++
++	mutex_unlock(&phy->mutex);
++}
++EXPORT_SYMBOL(s3fwrn5_phy_set_mode);
++
+ enum s3fwrn5_mode s3fwrn5_phy_get_mode(void *phy_id)
+ {
+ 	struct phy_common *phy = phy_id;
+diff --git a/drivers/nfc/s3fwrn5/phy_common.h b/drivers/nfc/s3fwrn5/phy_common.h
+index b98531d..99749c9 100644
+--- a/drivers/nfc/s3fwrn5/phy_common.h
++++ b/drivers/nfc/s3fwrn5/phy_common.h
+@@ -31,6 +31,7 @@ struct phy_common {
+ 
+ void s3fwrn5_phy_set_wake(void *phy_id, bool wake);
+ bool s3fwrn5_phy_power_ctrl(struct phy_common *phy, enum s3fwrn5_mode mode);
++void s3fwrn5_phy_set_mode(void *phy_id, enum s3fwrn5_mode mode);
+ enum s3fwrn5_mode s3fwrn5_phy_get_mode(void *phy_id);
+ 
+ #endif /* __NFC_S3FWRN5_PHY_COMMON_H */
+diff --git a/drivers/nfc/s3fwrn5/uart.c b/drivers/nfc/s3fwrn5/uart.c
+new file mode 100644
+index 0000000..f5ac017
+--- /dev/null
++++ b/drivers/nfc/s3fwrn5/uart.c
+@@ -0,0 +1,197 @@
++// SPDX-License-Identifier: GPL-2.0+
 +/*
-+ * Link Layer for Samsung S3FWRN5 NCI based Driver
++ * UART Link Layer for S3FWRN82 NCI based Driver
 + *
-+ * Copyright (C) 2015 Samsung Electrnoics
++ * Copyright (C) 2015 Samsung Electronics
 + * Robert Baldyga <r.baldyga@samsung.com>
-+ * Copyright (C) 2020 Samsung Electrnoics
++ * Copyright (C) 2020 Samsung Electronics
 + * Bongsu Jeon <bongsu.jeon@samsung.com>
 + */
 +
-+#include <linux/gpio.h>
-+#include <linux/delay.h>
++#include <linux/device.h>
++#include <linux/kernel.h>
 +#include <linux/module.h>
++#include <linux/nfc.h>
++#include <linux/netdevice.h>
++#include <linux/of.h>
++#include <linux/serdev.h>
++#include <linux/gpio.h>
++#include <linux/of_gpio.h>
 +
 +#include "phy_common.h"
 +
-+void s3fwrn5_phy_set_wake(void *phy_id, bool wake)
-+{
-+	struct phy_common *phy = phy_id;
++#define S3FWRN82_NCI_HEADER 3
++#define S3FWRN82_NCI_IDX 2
++#define NCI_SKB_BUFF_LEN 258
 +
-+	mutex_lock(&phy->mutex);
-+	gpio_set_value(phy->gpio_fw_wake, wake);
-+	msleep(S3FWRN5_EN_WAIT_TIME);
-+	mutex_unlock(&phy->mutex);
-+}
-+EXPORT_SYMBOL(s3fwrn5_phy_set_wake);
-+
-+bool s3fwrn5_phy_power_ctrl(struct phy_common *phy, enum s3fwrn5_mode mode)
-+{
-+	if (phy->mode == mode)
-+		return false;
-+
-+	phy->mode = mode;
-+
-+	gpio_set_value(phy->gpio_en, 1);
-+	gpio_set_value(phy->gpio_fw_wake, 0);
-+	if (mode == S3FWRN5_MODE_FW)
-+		gpio_set_value(phy->gpio_fw_wake, 1);
-+
-+	if (mode != S3FWRN5_MODE_COLD) {
-+		msleep(S3FWRN5_EN_WAIT_TIME);
-+		gpio_set_value(phy->gpio_en, 0);
-+		msleep(S3FWRN5_EN_WAIT_TIME);
-+	}
-+
-+	return true;
-+}
-+EXPORT_SYMBOL(s3fwrn5_phy_power_ctrl);
-+
-+enum s3fwrn5_mode s3fwrn5_phy_get_mode(void *phy_id)
-+{
-+	struct phy_common *phy = phy_id;
-+	enum s3fwrn5_mode mode;
-+
-+	mutex_lock(&phy->mutex);
-+
-+	mode = phy->mode;
-+
-+	mutex_unlock(&phy->mutex);
-+
-+	return mode;
-+}
-+EXPORT_SYMBOL(s3fwrn5_phy_get_mode);
-diff --git a/drivers/nfc/s3fwrn5/phy_common.h b/drivers/nfc/s3fwrn5/phy_common.h
-new file mode 100644
-index 0000000..b98531d
---- /dev/null
-+++ b/drivers/nfc/s3fwrn5/phy_common.h
-@@ -0,0 +1,36 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later
-+ *
-+ * Link Layer for Samsung S3FWRN5 NCI based Driver
-+ *
-+ * Copyright (C) 2015 Samsung Electrnoics
-+ * Robert Baldyga <r.baldyga@samsung.com>
-+ * Copyright (C) 2020 Samsung Electrnoics
-+ * Bongsu Jeon <bongsu.jeon@samsung.com>
-+ */
-+
-+#ifndef __NFC_S3FWRN5_PHY_COMMON_H
-+#define __NFC_S3FWRN5_PHY_COMMON_H
-+
-+#include <linux/mutex.h>
-+#include <net/nfc/nci_core.h>
-+
-+#include "s3fwrn5.h"
-+
-+#define S3FWRN5_EN_WAIT_TIME 20
-+
-+struct phy_common {
-+	struct nci_dev *ndev;
-+
-+	int gpio_en;
-+	int gpio_fw_wake;
-+
-+	struct mutex mutex;
-+
-+	enum s3fwrn5_mode mode;
++struct s3fwrn82_uart_phy {
++	struct phy_common common;
++	struct serdev_device *ser_dev;
++	struct sk_buff *recv_skb;
 +};
 +
-+void s3fwrn5_phy_set_wake(void *phy_id, bool wake);
-+bool s3fwrn5_phy_power_ctrl(struct phy_common *phy, enum s3fwrn5_mode mode);
-+enum s3fwrn5_mode s3fwrn5_phy_get_mode(void *phy_id);
++static int s3fwrn82_uart_write(void *phy_id, struct sk_buff *out)
++{
++	struct s3fwrn82_uart_phy *phy = phy_id;
++	int err;
 +
-+#endif /* __NFC_S3FWRN5_PHY_COMMON_H */
++	err = serdev_device_write(phy->ser_dev,
++				  out->data, out->len,
++				  MAX_SCHEDULE_TIMEOUT);
++	if (err < 0)
++		return err;
++
++	return 0;
++}
++
++static const struct s3fwrn5_phy_ops uart_phy_ops = {
++	.set_wake = s3fwrn5_phy_set_wake,
++	.set_mode = s3fwrn5_phy_set_mode,
++	.get_mode = s3fwrn5_phy_get_mode,
++	.write = s3fwrn82_uart_write,
++};
++
++static int s3fwrn82_uart_read(struct serdev_device *serdev,
++			      const unsigned char *data,
++			      size_t count)
++{
++	struct s3fwrn82_uart_phy *phy = serdev_device_get_drvdata(serdev);
++	size_t i;
++
++	for (i = 0; i < count; i++) {
++		skb_put_u8(phy->recv_skb, *data++);
++
++		if (phy->recv_skb->len < S3FWRN82_NCI_HEADER)
++			continue;
++
++		if ((phy->recv_skb->len - S3FWRN82_NCI_HEADER)
++				< phy->recv_skb->data[S3FWRN82_NCI_IDX])
++			continue;
++
++		s3fwrn5_recv_frame(phy->common.ndev, phy->recv_skb,
++				   phy->common.mode);
++		phy->recv_skb = alloc_skb(NCI_SKB_BUFF_LEN, GFP_KERNEL);
++		if (!phy->recv_skb)
++			return 0;
++	}
++
++	return i;
++}
++
++static const struct serdev_device_ops s3fwrn82_serdev_ops = {
++	.receive_buf = s3fwrn82_uart_read,
++	.write_wakeup = serdev_device_write_wakeup,
++};
++
++static const struct of_device_id s3fwrn82_uart_of_match[] = {
++	{ .compatible = "samsung,s3fwrn82", },
++	{},
++};
++MODULE_DEVICE_TABLE(of, s3fwrn82_uart_of_match);
++
++static int s3fwrn82_uart_parse_dt(struct serdev_device *serdev)
++{
++	struct s3fwrn82_uart_phy *phy = serdev_device_get_drvdata(serdev);
++	struct device_node *np = serdev->dev.of_node;
++
++	if (!np)
++		return -ENODEV;
++
++	phy->common.gpio_en = of_get_named_gpio(np, "en-gpios", 0);
++	if (!gpio_is_valid(phy->common.gpio_en))
++		return -ENODEV;
++
++	phy->common.gpio_fw_wake = of_get_named_gpio(np, "wake-gpios", 0);
++	if (!gpio_is_valid(phy->common.gpio_fw_wake))
++		return -ENODEV;
++
++	return 0;
++}
++
++static int s3fwrn82_uart_probe(struct serdev_device *serdev)
++{
++	struct s3fwrn82_uart_phy *phy;
++	int ret = -ENOMEM;
++
++	phy = devm_kzalloc(&serdev->dev, sizeof(*phy), GFP_KERNEL);
++	if (!phy)
++		goto err_exit;
++
++	phy->recv_skb = alloc_skb(NCI_SKB_BUFF_LEN, GFP_KERNEL);
++	if (!phy->recv_skb)
++		goto err_free;
++
++	mutex_init(&phy->common.mutex);
++	phy->common.mode = S3FWRN5_MODE_COLD;
++
++	phy->ser_dev = serdev;
++	serdev_device_set_drvdata(serdev, phy);
++	serdev_device_set_client_ops(serdev, &s3fwrn82_serdev_ops);
++	ret = serdev_device_open(serdev);
++	if (ret) {
++		dev_err(&serdev->dev, "Unable to open device\n");
++		goto err_skb;
++	}
++
++	ret = serdev_device_set_baudrate(serdev, 115200);
++	if (ret != 115200) {
++		ret = -EINVAL;
++		goto err_serdev;
++	}
++
++	serdev_device_set_flow_control(serdev, false);
++
++	ret = s3fwrn82_uart_parse_dt(serdev);
++	if (ret < 0)
++		goto err_serdev;
++
++	ret = devm_gpio_request_one(&phy->ser_dev->dev, phy->common.gpio_en,
++				    GPIOF_OUT_INIT_HIGH, "s3fwrn82_en");
++	if (ret < 0)
++		goto err_serdev;
++
++	ret = devm_gpio_request_one(&phy->ser_dev->dev,
++				    phy->common.gpio_fw_wake,
++				    GPIOF_OUT_INIT_LOW, "s3fwrn82_fw_wake");
++	if (ret < 0)
++		goto err_serdev;
++
++	ret = s3fwrn5_probe(&phy->common.ndev, phy, &phy->ser_dev->dev,
++			    &uart_phy_ops);
++	if (ret < 0)
++		goto err_serdev;
++
++	return ret;
++
++err_serdev:
++	serdev_device_close(serdev);
++err_skb:
++	kfree_skb(phy->recv_skb);
++err_free:
++err_exit:
++	return ret;
++}
++
++static void s3fwrn82_uart_remove(struct serdev_device *serdev)
++{
++	struct s3fwrn82_uart_phy *phy = serdev_device_get_drvdata(serdev);
++
++	s3fwrn5_remove(phy->common.ndev);
++	serdev_device_close(serdev);
++	kfree_skb(phy->recv_skb);
++}
++
++static struct serdev_device_driver s3fwrn82_uart_driver = {
++	.probe = s3fwrn82_uart_probe,
++	.remove = s3fwrn82_uart_remove,
++	.driver = {
++		.name = "s3fwrn82_uart",
++		.of_match_table = of_match_ptr(s3fwrn82_uart_of_match),
++	},
++};
++
++module_serdev_device_driver(s3fwrn82_uart_driver);
++
++MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("UART driver for Samsung NFC");
++MODULE_AUTHOR("Bongsu Jeon <bongsu.jeon@samsung.com>");
 -- 
 1.9.1
 
