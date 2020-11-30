@@ -2,206 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1955F2C7D9F
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 06:14:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F9EC2C7E3B
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 07:32:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725920AbgK3FNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 00:13:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46186 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725894AbgK3FNV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 00:13:21 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3B7FC0613CF
-        for <netdev@vger.kernel.org>; Sun, 29 Nov 2020 21:12:34 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id x4so4106417pln.8
-        for <netdev@vger.kernel.org>; Sun, 29 Nov 2020 21:12:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TCIfA60uRRkGUN8lqiQ0JQbfujfGJj0UDLYJgT7MPNo=;
-        b=Y0ZuV0XjMb9jf9x4kgGSCWJp0fm7+rtyGKgfmxsaI49nmqoUlR6SOJ5o1ljNMKZolU
-         33z1JqkTzJcDgUfxwQEjeOFmV3xyfMN/wO7ZiwyIlS3klwQhV5gVn6X+rvQ3UBICS68K
-         DDBGL8ulrnNXIVAZYT1psnbRroCOjdanr5uGhPRGyhFzdWZVQWQQIlkcbe2mfhoSld2V
-         4JgoBJxGuwJjn2Ktpr5X31xkYTAiXJmq3+od46I8q1hsoo0K53Zdnbc9XdfrfKiY4Zix
-         2ffPWNG9ZEALWxyjQWnxbNqTfw2lLR3Syq4cxB5hprbCx8P/MxiDT7NQ8esrc5vcfzEI
-         2l6Q==
+        id S1726988AbgK3Ga6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 01:30:58 -0500
+Received: from mail-il1-f198.google.com ([209.85.166.198]:49929 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726670AbgK3Ga6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 01:30:58 -0500
+Received: by mail-il1-f198.google.com with SMTP id m14so9277059ila.16
+        for <netdev@vger.kernel.org>; Sun, 29 Nov 2020 22:30:42 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TCIfA60uRRkGUN8lqiQ0JQbfujfGJj0UDLYJgT7MPNo=;
-        b=lXvipH+YLZw7/8Fv8uTEfhANp7jpvmG42eydDNQdUPBGMMPKyd/8MZ/305DlxYkPGY
-         1EZ268F0aOxaa1+nRjAWcwdBFqQV+Zn80U08mqJiX6DpMnswA6GRs/86UIv8iMOmXN5i
-         CGfIPjFcZHZ1U60krUzx8sHWMi5l723/LgzFVcCwHYcD0bbROsm6oq9Sb0mf26CkpTIp
-         sCoxzRfcAcd8xpa5pKa/sW6ab+i65D8d8229IBExOnS7kwlABNQuBPFO88qfEsLqzTBd
-         cF0rsVUqX3jKqlf/wRYh/NhAkCSiVplDup1vtDS2yUx4IVuGbw/6kqrV5Lzjr9Nza2iC
-         yvQQ==
-X-Gm-Message-State: AOAM530jRosKh/oPRcQHGP0PEu0UII9en6vvCI8VqOGLpux3ALhpjz4I
-        12605bTDWXxQ86AoTNciPS7xig==
-X-Google-Smtp-Source: ABdhPJz8+g0VSQLjZLfA/t5CoxVhv3r8Yjx6pdzVRszjT/RB2kuv0MJ3XLgTiGiSOzqn8e3XJqNiSA==
-X-Received: by 2002:a17:90a:5d0e:: with SMTP id s14mr24513663pji.53.1606713154268;
-        Sun, 29 Nov 2020 21:12:34 -0800 (PST)
-Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id f7sm14014634pfe.30.2020.11.29.21.12.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 Nov 2020 21:12:33 -0800 (PST)
-Date:   Sun, 29 Nov 2020 21:12:30 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: Correct usage of dev_base_lock in 2020
-Message-ID: <20201129211230.4d704931@hermes.local>
-In-Reply-To: <20201129205817.hti2l4hm2fbp2iwy@skbuf>
-References: <20201129182435.jgqfjbekqmmtaief@skbuf>
-        <20201129205817.hti2l4hm2fbp2iwy@skbuf>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=SsdBbZBVHy6xJ9WVayx5nina7iNWnHndy2OV1R2nZ5U=;
+        b=UU+PCnpoZ55Y+/eA57/viEtNWcU5Px9w4EyiYXxmjZwST9mgsig5iQjTtX3cnDPiBm
+         lYBmEzWw8BK6Uesg4rNpTbY08hb5ENWhAcn1AyNPNOXIe62l7m4TI/XOxvNTIZdgsWSL
+         HjSaw00H1OV3S3qwbi1jNX0lT1R+rnIPgjGPY9Wn9ersWbG5Cqtmxf6/ucsO971CaU8Y
+         hdyQ2jZ2YmvFZzgYmLYa/rR8qgQbz1Jjs3sb7kdfutpXE74nwmY8Lua6R7AIzZ63eGjv
+         BKv4Ro7u/vmpgL8dCWgJPnpt1bxvCGDNYSXPc0PkgfrLOszcby+90Z02sNDh+MlzYPFg
+         N92A==
+X-Gm-Message-State: AOAM530AqMJBozZQQlr/Qghcfq9sEbaywRNTCcg+qrwgwFiyxnWgXIJq
+        TNey9z4CEBaYRrzxezjJNIQ0PeqjDVZTAx9WPMEFpBxQXgtq
+X-Google-Smtp-Source: ABdhPJwcn4tsvmDvq8LHtAHc1nbF04dn839mNQU6ZCzx3edV8QoxeguzHEyKM5IGA6WpXY+LQj4Eh0jzxhovR9FMTVIq+VYFnsq8
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6e02:1207:: with SMTP id a7mr17560369ilq.29.1606717817336;
+ Sun, 29 Nov 2020 22:30:17 -0800 (PST)
+Date:   Sun, 29 Nov 2020 22:30:17 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000c1b9d105b54d2429@google.com>
+Subject: general protection fault in l2cap_chan_timeout
+From:   syzbot <syzbot+e7edf1d784c283324076@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        marcel@holtmann.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 29 Nov 2020 22:58:17 +0200
-Vladimir Oltean <olteanv@gmail.com> wrote:
+Hello,
 
-> [ resent, had forgot to copy the list ]
-> 
-> Hi,
-> 
-> net/core/dev.c has this to say about the locking rules around the network
-> interface lists (dev_base_head, and I can only assume that it also applies to
-> the per-ifindex hash table dev_index_head and the per-name hash table
-> dev_name_head):
-> 
-> /*
->  * The @dev_base_head list is protected by @dev_base_lock and the rtnl
->  * semaphore.
->  *
->  * Pure readers hold dev_base_lock for reading, or rcu_read_lock()
->  *
->  * Writers must hold the rtnl semaphore while they loop through the
->  * dev_base_head list, and hold dev_base_lock for writing when they do the
->  * actual updates.  This allows pure readers to access the list even
->  * while a writer is preparing to update it.
->  *
->  * To put it another way, dev_base_lock is held for writing only to
->  * protect against pure readers; the rtnl semaphore provides the
->  * protection against other writers.
->  *
->  * See, for example usages, register_netdevice() and
->  * unregister_netdevice(), which must be called with the rtnl
->  * semaphore held.
->  */
-> 
-> However, as of today, most if not all the read-side accessors of the network
-> interface lists have been converted to run under rcu_read_lock. As Eric explains,
-> 
-> commit fb699dfd426a189fe33b91586c15176a75c8aed0
-> Author: Eric Dumazet <eric.dumazet@gmail.com>
-> Date:   Mon Oct 19 19:18:49 2009 +0000
-> 
->     net: Introduce dev_get_by_index_rcu()
-> 
->     Some workloads hit dev_base_lock rwlock pretty hard.
->     We can use RCU lookups to avoid touching this rwlock.
-> 
->     netdevices are already freed after a RCU grace period, so this patch
->     adds no penalty at device dismantle time.
-> 
->     dev_ifname() converted to dev_get_by_index_rcu()
-> 
->     Signed-off-by: Eric Dumazet <eric.dumazet@gmail.com>
->     Signed-off-by: David S. Miller <davem@davemloft.net>
-> 
-> A lot of work has been put into eliminating the dev_base_lock rwlock
-> completely, as Stephen explained here:
-> 
-> [PATCH 00/10] netdev: get rid of read_lock(&dev_base_lock) usages
-> https://www.spinics.net/lists/netdev/msg112264.html
-> 
-> However, its use has not been completely eliminated. It is still there, and
-> even more confusingly, that comment in net/core/dev.c is still there. What I
-> see the dev_base_lock being used for now are complete oddballs.
-> 
-> - The debugfs for mac80211, in net/mac80211/debugfs_netdev.c, holds the read
->   side when printing some interface properties (good luck disentangling the
->   code and figuring out which ones, though). What is that read-side actually
->   protecting against?
-> 
-> - HSR, in net/hsr/hsr_device.c (called from hsr_netdev_notify on NETDEV_UP
->   NETDEV_DOWN and NETDEV_CHANGE), takes the write-side of the lock when
->   modifying the RFC 2863 operstate of the interface. Why?
->   Actually the use of dev_base_lock is the most widespread in the kernel today
->   when accessing the RFC 2863 operstate. I could only find this truncated
->   discussion in the archives:
->     Re: Issue 0 WAS (Re: Oustanding issues WAS(IRe: Consensus? WAS(RFC 2863)
->     https://www.mail-archive.com/netdev@vger.kernel.org/msg03632.html
->   and it said:
-> 
->     > be transitioned to up/dormant etc. So an ethernet driver doesnt know it
->     > needs to go from detecting peer link is up to next being authenticated
->     > in the case of 802.1x. It just calls netif_carrier_on which checks
->     > link_mode to decide on transition.  
-> 
->     we could protect operstate with a spinlock_irqsave() and then change it either
->     from netif_[carrier|dormant]_on/off() or userspace-supplicant. However, I'm
->     not feeling good about it. Look at rtnetlink_fill_ifinfo(), it is able to
->     query a consistent snapshot of all interface settings as long as locking with
->     dev_base_lock and rtnl is obeyed. __LINK_STATE flags are already an
->     exemption, and I don't want operstate to be another. That's why I chose
->     setting it from linkwatch in process context, and I really think this is the
->     correct approach.
-> 
-> - rfc2863_policy() in net/core/link_watch.c seems to be the major writer that
->   holds this lock in 2020, together with do_setlink() and set_operstate() from
->   net/core/rtnetlink.c. Has the lock been repurposed over the years and we
->   should update its name appropriately?
-> 
-> - This usage from netdev_show() in net/core/net-sysfs.c just looks random to
->   me, maybe somebody can explain:
-> 
-> 	read_lock(&dev_base_lock);
-> 	if (dev_isalive(ndev))
-> 		ret = (*format)(ndev, buf);
-> 	read_unlock(&dev_base_lock);
+syzbot found the following issue on:
+
+HEAD commit:    fa02fcd9 Merge tag 'media/v5.10-2' of git://git.kernel.org..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=14a36fa5500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7be70951fca93701
+dashboard link: https://syzkaller.appspot.com/bug?extid=e7edf1d784c283324076
+compiler:       clang version 11.0.0 (https://github.com/llvm/llvm-project.git ca2dcbd030eadbf0aa9b660efe864ff08af6e18b)
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+e7edf1d784c283324076@syzkaller.appspotmail.com
+
+general protection fault, probably for non-canonical address 0xdffffc000000005a: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x00000000000002d0-0x00000000000002d7]
+CPU: 1 PID: 16756 Comm: kworker/1:8 Not tainted 5.10.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events l2cap_chan_timeout
+RIP: 0010:__mutex_lock_common+0x9b/0x2f20 kernel/locking/mutex.c:938
+Code: 8a bc 24 28 01 00 00 83 3d 01 69 0f 06 00 75 34 48 8b 44 24 08 48 8d 78 60 48 89 f8 48 c1 e8 03 48 b9 00 00 00 00 00 fc ff df <80> 3c 08 00 74 05 e8 ba 7f 77 f8 48 8b 44 24 08 48 39 40 60 0f 85
+RSP: 0018:ffffc9000245fb78 EFLAGS: 00010206
+RAX: 000000000000005a RBX: ffff8880708d8110 RCX: dffffc0000000000
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 00000000000002d0
+RBP: 0000000000000000 R08: ffffffff8876a063 R09: 0000000000000000
+R10: fffffbfff1a1c3ee R11: 0000000000000000 R12: 0000000000000000
+R13: dffffc0000000000 R14: 0000000000000000 R15: ffff8880b9d33c00
+FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007ffde459fd3c CR3: 00000000186a5000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ __mutex_lock kernel/locking/mutex.c:1103 [inline]
+ mutex_lock_nested+0x1a/0x20 kernel/locking/mutex.c:1118
+ l2cap_chan_timeout+0x53/0x280 net/bluetooth/l2cap_core.c:422
+ process_one_work+0x789/0xfc0 kernel/workqueue.c:2272
+ worker_thread+0xaa4/0x1460 kernel/workqueue.c:2418
+ kthread+0x39a/0x3c0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+Modules linked in:
+---[ end trace c01f537d4b85904a ]---
+RIP: 0010:__mutex_lock_common+0x9b/0x2f20 kernel/locking/mutex.c:938
+Code: 8a bc 24 28 01 00 00 83 3d 01 69 0f 06 00 75 34 48 8b 44 24 08 48 8d 78 60 48 89 f8 48 c1 e8 03 48 b9 00 00 00 00 00 fc ff df <80> 3c 08 00 74 05 e8 ba 7f 77 f8 48 8b 44 24 08 48 39 40 60 0f 85
+RSP: 0018:ffffc9000245fb78 EFLAGS: 00010206
+RAX: 000000000000005a RBX: ffff8880708d8110 RCX: dffffc0000000000
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 00000000000002d0
+RBP: 0000000000000000 R08: ffffffff8876a063 R09: 0000000000000000
+R10: fffffbfff1a1c3ee R11: 0000000000000000 R12: 0000000000000000
+R13: dffffc0000000000 R14: 0000000000000000 R15: ffff8880b9d33c00
+FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fbbcfa32740 CR3: 000000006d47f000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
 
-So dev_base_lock dates back to the Big Kernel Lock breakup back in Linux 2.4
-(ie before my time). The time has come to get rid of it.
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-The use is sysfs is because could be changed to RCU. There have been issues
-in the past with sysfs causing lock inversions with the rtnl mutex, that
-is why you will see some trylock code there.
-
-My guess is that dev_base_lock readers exist only because no one bothered to do
-the RCU conversion.
-
-Complex locking rules lead to mistakes and often don't get much performance
-gain.  There are really two different domains being covered by locks here.
-
-The first area is change of state of network devices. This has traditionally
-been covered by RTNL because there are places that depend on coordinating
-state between multiple devices. RTNL is too big and held too long but getting
-rid of it is hard because there are corner cases (like state changes from userspace
-for VPN devices).
-
-The other area is code that wants to do read access to look at list of devices.
-These pure readers can/should be converted to RCU by now. Writers should hold RTNL.
-
-You could change the readers of operstate to use some form of RCU and atomic
-operation (seqlock?). The state of the device has several components flags, operstate
-etc, and there is no well defined way to read a consistent set of them.
-
-Good Luck on your quest.
-
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
