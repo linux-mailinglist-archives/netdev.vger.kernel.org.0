@@ -2,86 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 396C52C836F
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 12:45:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 445392C837A
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 12:51:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728999AbgK3LoZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 06:44:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50000 "EHLO
+        id S1728472AbgK3Ltr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 06:49:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726385AbgK3LoZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 06:44:25 -0500
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E65C4C0613D2;
-        Mon, 30 Nov 2020 03:43:44 -0800 (PST)
-Received: by mail-pf1-x444.google.com with SMTP id w202so10213202pff.10;
-        Mon, 30 Nov 2020 03:43:44 -0800 (PST)
+        with ESMTP id S1725965AbgK3Ltq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 06:49:46 -0500
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB6DBC0613D2;
+        Mon, 30 Nov 2020 03:49:00 -0800 (PST)
+Received: by mail-pf1-x441.google.com with SMTP id w6so10255530pfu.1;
+        Mon, 30 Nov 2020 03:49:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RaHLzPE1eO6+iuatfZUUeCnsQ46TRXVJpL+R26wfEdY=;
-        b=aKWrdF06lEsEW2HA12ZYDwToDfjtKzwKfsn3xEgLdPads8DMM7oYf9sHu8LVKU+aJV
-         WFhtGqFv5wFHbxci48TJttdclzt0eVTRIBoTC2JFhhJELUoQpX+i075xf21FPK0GfPcJ
-         kEkfTh6zSq6bD/yAwtpte64nSM3ZBw2373RVn7GsZ9VAFGECSch00gOi3/XlcL1ywTC4
-         SI5QtPYG683+guJpxzR3J2RiWOQPgL+0hwYCZDkqC07BLV1mELepn5O0xwCzLsa3p2Gf
-         YMx5ePOJFHa6mH2/QbrkFxSHFBBv7bsuKajvzJZkObyaifoVmJoOXjgyx10dsk4m6eY4
-         PPRA==
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NCRdmUn/vEWPXajvNRm52WRgCvk1LJ5o574yy3r7HmY=;
+        b=D6i5DHVoSrhlot0bDJiAzrAI0sZrULz2hoq+hn4IdQ1AJD0CCfKd6Sn/lZ8mEyvJo9
+         CYCkZ75/e8ptfvPPQNa4I0gKGRolaQP7V+BVaOC18+YADCEN/NYVZ0xaFka5J0GVO8/X
+         oZZ/oneNdRBJzDg/tpTkCkEMeteQVcSQfDu+ELY/oyQGKo1BrlGKMBdXryNpRCCG078T
+         HGy9ULR7QDOrMgAIc4TQRe7DIGvHIFB2RvI11wx2fzz5nK9QISpqoNeFAiEP2wHK4XSi
+         SX9jfGZmna2YQ89+RkaF0NOEGQAWWlqglnjozdsqYhJgADkOSfFmFiil3whwJi5hwGcK
+         1Z5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RaHLzPE1eO6+iuatfZUUeCnsQ46TRXVJpL+R26wfEdY=;
-        b=rqMyM081I6tdJyXEB5y9eIHmvmZTTYWpZsWBz29oPlqkxAoSgLscjFIXNiPl6UjHUr
-         t8QGPCkiGb4Dy5uRXTauF0sXVPz0KIMnivKM/4rre2e6+VRRUTnOmQh7NqDv/LvDruce
-         RkF7YtnV1Bge5en761aAYtF52pe5dRPYm4wWyL+YsChTansAIOEfwktdH7ZRjOkZ0c+6
-         WFC7VmSdq90fD1YbzfAeRiEMtrMvAiYV852Xgkyq/AfnhxZ1ftsL5KQGHsTBxJ9fIsWw
-         lzG5UoTraEY8y0vywcsiq6QoS1U1ZG3keHtzd91egItYG5t9/eIgjeLM8ocBpNhWf4mH
-         ghYg==
-X-Gm-Message-State: AOAM533fGk4RRDogPYT6bUmv/MRDvewe8txyrdg7JibFvmP3i8LlOEGL
-        aPNFd1wC4V2qC0Ky7GH9IhRegjYDL64nV4zPBgFONNStnB8=
-X-Google-Smtp-Source: ABdhPJxj3qqhObDIhT/Qgil2+Y82CTNoTYfzObIRA4WioHjr5zb1sCgly0xBzgIFkN457BclywkrDDGnt+Xrmu4E+AM=
-X-Received: by 2002:a63:ff10:: with SMTP id k16mr6761379pgi.4.1606736624502;
- Mon, 30 Nov 2020 03:43:44 -0800 (PST)
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=NCRdmUn/vEWPXajvNRm52WRgCvk1LJ5o574yy3r7HmY=;
+        b=hS4Y4PlIESc3pAYnb950KcGLoa2EVxNOGI7KnG1nfe0gBmJheW0kImo75z/9LQJe6J
+         mO1tll8ttEsWv6hpQO5zNPWLDXN3E5GQDuU1XCHT9khieWZn0oshoPj+pOGevIpuhY6u
+         qXcj44f0cUz55loQkZ7Xd3s9cUFOdyFt8orKQTg2hbHOlav4K5UiTDYALX60ieeHmH4n
+         JVEh7wcEHfciM9KpZP3LXwjCbT71tgwOQOqZ4RP6B2Sh10cESr1vYLx7q8MpcSgsfR7Z
+         K+Gglg/6M5Hi2lDDvn7I4KLrMW05tEGXdBEvx5mJSnLE07kaFrvrakUdUsrDvg0oU3qF
+         nGBQ==
+X-Gm-Message-State: AOAM531/0xKLJi/kXelozyRXomP8wzJ7XMzcHgBJ1mlrxT6kWul99wdm
+        +Ner9p2u41wxHbMhG6uegfs=
+X-Google-Smtp-Source: ABdhPJxFr98QjZIGw6WnKEKyOh22wInQBJIQormgHY8T7BmpgiLsNvlmPyepjwUcsQ/pqwU0bxGWSA==
+X-Received: by 2002:a65:6219:: with SMTP id d25mr6600834pgv.154.1606736940421;
+        Mon, 30 Nov 2020 03:49:00 -0800 (PST)
+Received: from localhost.localdomain ([49.236.93.237])
+        by smtp.gmail.com with ESMTPSA id p1sm3781653pfb.208.2020.11.30.03.48.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Nov 2020 03:48:59 -0800 (PST)
+Sender: Leesoo Ahn <yisooan.dev@gmail.com>
+From:   Leesoo Ahn <dev@ooseel.net>
+X-Google-Original-From: Leesoo Ahn <lsahn@ooseel.net>
+To:     lsahn@ooseel.net
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: xdp: Give compiler __always_inline hint for xdp_rxq_info_init()
+Date:   Mon, 30 Nov 2020 20:48:25 +0900
+Message-Id: <20201130114825.10898-1-lsahn@ooseel.net>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20201130110447.16891-1-frieder.schrempf@kontron.de>
-In-Reply-To: <20201130110447.16891-1-frieder.schrempf@kontron.de>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 30 Nov 2020 13:44:33 +0200
-Message-ID: <CAHp75Vfwp_uvVW51FwwRWorDibJTu4zRpMhQ9iF3sTe1yrmsTw@mail.gmail.com>
-Subject: Re: [PATCH] NFC: nxp-nci: Make firmware GPIO pin optional
-To:     Schrempf Frieder <frieder.schrempf@kontron.de>
-Cc:     Charles Gorand <charles.gorand@effinnov.com>,
-        =?UTF-8?Q?Cl=C3=A9ment_Perrochaud?= 
-        <clement.perrochaud@effinnov.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-nfc@lists.01.org, netdev <netdev@vger.kernel.org>,
-        Stephan Gerhold <stephan@gerhold.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 30, 2020 at 1:06 PM Schrempf Frieder
-<frieder.schrempf@kontron.de> wrote:
->
-> From: Frieder Schrempf <frieder.schrempf@kontron.de>
->
-> There are other NXP NCI compatible NFC controllers such as the PN7150
-> that use an integrated firmware and therefore do not have a GPIO to
-> select firmware downloading mode. To support these kind of chips,
-> let's make the firmware GPIO optional.
+The function has only a statement of calling memset() to
+clear xdp_rxq object. Let it always be an inline function.
 
-...
+Signed-off-by: Leesoo Ahn <lsahn@ooseel.net>
+---
+ net/core/xdp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> -       gpiod_set_value(phy->gpiod_fw, (mode == NXP_NCI_MODE_FW) ? 1 : 0);
-> +       if (phy->gpiod_fw)
-> +               gpiod_set_value(phy->gpiod_fw, (mode == NXP_NCI_MODE_FW) ? 1 : 0);
-
-This change is not needed.
-
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index 48aba933a5a8..dab72b9a71a1 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -151,7 +151,7 @@ void xdp_rxq_info_unreg(struct xdp_rxq_info *xdp_rxq)
+ }
+ EXPORT_SYMBOL_GPL(xdp_rxq_info_unreg);
+ 
+-static void xdp_rxq_info_init(struct xdp_rxq_info *xdp_rxq)
++static __always_inline void xdp_rxq_info_init(struct xdp_rxq_info *xdp_rxq)
+ {
+ 	memset(xdp_rxq, 0, sizeof(*xdp_rxq));
+ }
 -- 
-With Best Regards,
-Andy Shevchenko
+2.26.2
+
