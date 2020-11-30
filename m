@@ -2,125 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B4C82C877C
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 16:15:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEA832C8787
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 16:18:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726851AbgK3POa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 10:14:30 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46178 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726826AbgK3PO3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 10:14:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606749183;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/MePX1ZszYuvuFQZo3H/Mi1gp+EM28WbYjn/W27p3a8=;
-        b=NZrIOZ9+MIReqxuzqDFyiLrxz4AA3IZCJ6fhkpkhY/NCdkzoRd1zIsVw1Ckq/zubLcO2iR
-        s0JssDEMAhTDxeeaemt5yPC+wwnKW7UsjesKOYVwvYp5BZn2QmOGkEs7NIKJaY6vxywUKe
-        bwcznPEMW1+KFoI94wZPDlV344NcRvc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-181-6rgHHd03OQ6nJDcejc31PA-1; Mon, 30 Nov 2020 10:13:01 -0500
-X-MC-Unique: 6rgHHd03OQ6nJDcejc31PA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E6BA6190A7BA;
-        Mon, 30 Nov 2020 15:12:58 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2A6AD19C44;
-        Mon, 30 Nov 2020 15:12:49 +0000 (UTC)
-Date:   Mon, 30 Nov 2020 16:12:49 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        brouer@redhat.com
-Subject: Re: [PATCHv2 bpf-next] samples/bpf: add xdp program on egress for
- xdp_redirect_map
-Message-ID: <20201130161249.18f7ca43@carbon>
-In-Reply-To: <20201130131020.GC277949@localhost.localdomain>
-References: <20201110124639.1941654-1-liuhangbin@gmail.com>
-        <20201126084325.477470-1-liuhangbin@gmail.com>
-        <54642499-57d7-5f03-f51e-c0be72fb89de@fb.com>
-        <20201130075107.GB277949@localhost.localdomain>
-        <20201130103208.6d5305e2@carbon>
-        <20201130131020.GC277949@localhost.localdomain>
+        id S1726769AbgK3PQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 10:16:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54672 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725899AbgK3PQh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 10:16:37 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6B8CC0613D3
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 07:15:56 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id f190so22551648wme.1
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 07:15:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NesG8pcsYSfQoY/slcY4d6T+07DJ7f3FoANgYGzQoKc=;
+        b=Kfrc/sLA475KYNnrjuw5pkeVf7Ij1Kfep3ag+tD2Pby0kKSV1ZCOesoodBqSdmosjh
+         kFGXP/RNXSeSYMuB6x3ZBqFaJVbNYFSuTlkehEkm1IDuCJKJ6WMKtMHSJj0om6qDN0CI
+         TSFsXMgH+PrrRO148Q7zuDRRDc9anlvb3A17wMRONtTqSVfyFA6KK+cDD54dN5a2S43L
+         HG2DeY3hc1ceTZMv313WDhO7/d610lAcTiE71HeqdvJOOyH/I4i4vpEjx5X03+TEGX1e
+         rRalO9uO1snwKC1PT4+2wkq8EhxMLUhUL/gN0bmo3c4J+Om923DZbmA+8qDU6pcVtLdw
+         S6Fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NesG8pcsYSfQoY/slcY4d6T+07DJ7f3FoANgYGzQoKc=;
+        b=crQ9/L/B2ImMMOzoouZCWXMyWkxtiOkteMp0cLllsnwBUD6SercjF1o1PfyE/7+0ju
+         tQe8OBI96WH+VC4ze9O8OaQ4R8/aQ7aVZxn7wa4S7aAFAvR287mUZQo+o7tSJbxJTwlz
+         6wJW7bp9F18QHoXBc51aFO/YcWsaD1poLG1jzvBStEbNOKpJ8WGkK2nb8V2FHboNIgDp
+         MyvtBntx7slokM4qqMQUHtA7ia7qfj3yv62mK6vzkYnWHVjG7dBgAAK30chu5xcV3nyw
+         RUOKPYMtIaCJc3DPE8945rzs7EbIDaeTeCDn9aArZOhbGRbs0jlKPBBhb9sPDqCoeuZZ
+         vXVw==
+X-Gm-Message-State: AOAM531++IwR7gB386IGf/ynPp6sZel8SlQknqMZThwd2dvcb3PmSlPN
+        BX+8PNAazLWyceZcZun6GRUPqHIV04K+MLoAmj95QQ==
+X-Google-Smtp-Source: ABdhPJzs/DZ+fzz23J4RJ9c/ym5TsIHOzSYgN4LtJmT8ecjk4Lxu9If4SyD3IX8KHKdz5SLMGUY7LAM3WMyejkRzPRQ=
+X-Received: by 2002:a7b:cb09:: with SMTP id u9mr22204317wmj.25.1606749355171;
+ Mon, 30 Nov 2020 07:15:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+References: <CAM1kxwi5m6i8hrtkw7nZYoziPTD-Wp03+fcsUwh3CuSc=81kUQ@mail.gmail.com>
+ <4bb2cb8a-c3ef-bfa9-7b04-cb2cca32d3ee@samba.org> <CAM1kxwhUcXLKU=2hCVaBngOKRL_kgMX4ONy9kpzKW+ZBZraEYw@mail.gmail.com>
+ <5d71d36c-0bfb-a313-07e8-0e22f7331a7a@samba.org> <CAM1kxwh1A3Fh6g7C=kxr67JLF325Cw5jY6CoL6voNhboV1wsVw@mail.gmail.com>
+ <12153e6a-37b1-872f-dd82-399e255eef5d@samba.org> <CACSApvZW-UN9_To0J-bO6SMYKJgF9oFvsKk14D-7Tx4zzc8JUw@mail.gmail.com>
+ <ebaa91f1-57c7-6c75-47a9-7e21360be2af@samba.org>
+In-Reply-To: <ebaa91f1-57c7-6c75-47a9-7e21360be2af@samba.org>
+From:   Soheil Hassas Yeganeh <soheil@google.com>
+Date:   Mon, 30 Nov 2020 10:15:19 -0500
+Message-ID: <CACSApvboyVGOmFKdQLpJd+0fnOAfMvgUwpzRXqLbdSJWMQYmyg@mail.gmail.com>
+Subject: Re: [RFC 0/1] whitelisting UDP GSO and GRO cmsgs
+To:     Stefan Metzmacher <metze@samba.org>
+Cc:     Victor Stewart <v@nametag.social>,
+        io-uring <io-uring@vger.kernel.org>,
+        Luke Hsiao <lukehsiao@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jann Horn <jannh@google.com>, Arjun Roy <arjunroy@google.com>,
+        netdev <netdev@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 30 Nov 2020 21:10:20 +0800
-Hangbin Liu <liuhangbin@gmail.com> wrote:
+On Mon, Nov 30, 2020 at 10:05 AM Stefan Metzmacher <metze@samba.org> wrote:
+>
+> Hi Soheil,
+>
+> > Thank you for CCing us.
+> >
+> > The reason for PROTO_CMSG_DATA_ONLY is explained in the paragraph
+> > above in the commit message.  PROTO_CMSG_DATA_ONLY is basically to
+> > allow-list a protocol that is guaranteed not to have the privilege
+> > escalation in https://crbug.com/project-zero/1975.  TCP doesn't have
+> > that issue, and I believe UDP doesn't have that issue either (but
+> > please audit and confirm that with +Jann Horn).
+> >
+> > If you couldn't find any non-data CMSGs for UDP, you should just add
+> > PROTO_CMSG_DATA_ONLY to inet dgram sockets instead of introducing
+> > __sys_whitelisted_cmsghdrs as Stefan mentioned.
+>
+> Was there a specific reason why you only added the PROTO_CMSG_DATA_ONLY check
+> in __sys_recvmsg_sock(), but not in __sys_sendmsg_sock()?
 
-> On Mon, Nov 30, 2020 at 10:32:08AM +0100, Jesper Dangaard Brouer wrote:
-> > > I plan to write a example about vlan header modification based on egress
-> > > index. I will post the patch later.  
-> > 
-> > I did notice the internal thread you had with Toke.  I still think it
-> > will be more simple to modify the Ethernet mac addresses.  Adding a
-> > VLAN id tag is more work, and will confuse benchmarks.  You are  
-> 
-> I plan to only modify the vlan id if there has. 
+We only needed this for recvmsg(MSG_ERRQUEUE) to support transmit
+zerocopy.  So, we took a more conservative approach and didn't add it
+for sendmsg().
 
-This sentence is not complete, but because of the internal thread I
-know/assume that you mean, that you will only modify the vlan id if
-there is already another VLAN tag in the packet. Let me express that
-this is not good enough. This is not a feasible choice.
+I believe it should be fine to add it for TCP sendmsg, because for
+SO_MARK we check the user's capability:
 
-> If you prefer to modify the mac address, which way you'd like? Set
-> src mac to egress interface's MAC?
+if (!ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
+          return -EPERM;
 
-Yes, that will be a good choice, to use the src mac from the egress
-interface.  This would simulate part of what is needed for L3/routing.
+I believe udp_sendmsg() is sane too and I cannot spot any issue there.
 
-Can I request that the dst mac is will be the incoming src mac?
-Or if you are user-friendly add option that allows to set dst mac.
-
-This is close to what swap-MAC (swap_src_dst_mac) is used for.  Let me
-explain in more details, why this is practical.  It is practical
-because then the Ethernet frame will be a valid frame that is received
-by the sending interface.  Thus, if you redirect back same interface
-(like XDP_TX, but testing xdp_do_redirect code) then you can check on
-traffic generator if all frames were actually forwarded.  This is
-exactly what the Red Hat performance team's Trex packet generator setup
-does to validate and find the zero-loss generator rate.
-
-
-> > As Alexei already pointed out, you assignment is to modify the packet
-> > in the 2nd devmap XDP-prog.  Why: because you need to realize that this
-> > will break your approach to multicast in your previous patchset.
-> > (Yes, the offlist patch I gave you, that move running 2nd devmap
-> > XDP-prog to a later stage, solved this packet-modify issue).  
-> 
-> BTW, it looks with your patch, the counter on egress would make more sense.
-> Should I add the counter after your patch posted?
-
-As I tried to explain.  Regardless, I want a counter that counts the
-times the 2nd devmap attached XDP-program runs.  This is not a counter
-that counts egress packets.  This is a counter that show that the 2nd
-devmap attached XDP-program is running.  I don't know how to make this
-more clear.
-
-We do need ANOTHER counter that report how many packets are transmitted
-on the egress device.  I'm thinking we can simply read:
-
- /sys/class/net/mlx5p1/statistics/tx_packets
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+> metze
+>
+>
+>
