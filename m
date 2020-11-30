@@ -2,104 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28A6F2C821C
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 11:27:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAE5C2C8268
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 11:42:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728214AbgK3K1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 05:27:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37888 "EHLO
+        id S1728732AbgK3KmE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 05:42:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726337AbgK3K1P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 05:27:15 -0500
-Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD36C0613D2;
-        Mon, 30 Nov 2020 02:26:35 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Cl1c4600Mz9sT6;
-        Mon, 30 Nov 2020 21:26:28 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1606731992;
-        bh=4DHMoxKJd9BFptsqCNzPXSnHv0vKTr1Q24eGJ7q15mQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XrQXDVO9OZaGgrCEqU64avYKUIZ7ENtiTQeFZ7NvIqFB0gfxc9WjmSXK3aOTIvWsN
-         PzhkaoM+4RgH17ugcofpZEVjw8t94UhEE2uSrown8NtUyTKr2dXHvV8L4Qs2g1nhcf
-         85B5UgShnT64fPtkpgpwSh6PuaFx+SQK9HwGRK2VbRd/h4RPq12O1foMqkc+m9pxeN
-         stVCLxCS3z793ox/Ycupmm72WDNbkh0yiTwk0kewvLOHGEv/ZguM1T2hwOzARLcg7x
-         1dKCFIfcXlLBnIXiVSOu5FBgUmgQgpXoKuszbFyUX6z8SJZbSxm6mGmuGE/RFlLnSc
-         TdHdiasU3FzBg==
-Date:   Mon, 30 Nov 2020 21:26:27 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        PowerPC <linuxppc-dev@lists.ozlabs.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Daniel Axtens <dja@axtens.net>, Joel Stanley <joel@jms.id.au>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH] powerpc: fix the allyesconfig build
-Message-ID: <20201130212627.3a20b558@canb.auug.org.au>
-In-Reply-To: <CAMuHMdVJKarCRRRJq_hmvvv0NcSpREdqDbH8L5NitZmFUEbqmw@mail.gmail.com>
-References: <20201128122819.32187696@canb.auug.org.au>
-        <CAMuHMdVJKarCRRRJq_hmvvv0NcSpREdqDbH8L5NitZmFUEbqmw@mail.gmail.com>
+        with ESMTP id S1728716AbgK3KmC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 05:42:02 -0500
+Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1AE0C0613CF
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 02:41:22 -0800 (PST)
+Received: by mail-il1-x12a.google.com with SMTP id q1so10781215ilt.6
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 02:41:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CojcVAQHrdL0/xK/9YS92lTdjeHYDfPOTgXtuXZRrqc=;
+        b=vIueusgKXBYNvKp8riqNKfOmsCASB6Ioqdr+E2QVp++tHfKh6m/PM6F6nh+fXtsLJn
+         1hKbDsV5One1NCF407xvPxWmp6wi3cA9d7p1OI73yTVCdcDQTAqgv2+7wKtlIibbwWEi
+         xsff/uSYBlNxwzNBaFNjLppUAS8vx9AKEA2PEjoyAmT9NG/5OSp94O/WkSLhyk/rhFnj
+         wG3saRLVs8sRGrysdOf+MfIYpZGHIfxHtj39VyPkqXoU6Ve8RiRaw54zcTsLr+wn20bp
+         FbvDvjoieXbTabAgJM7cKYd+/MBf6RsLsnrBIrRNRyBDHe84VBO0Bf0ojqDiXflvX3ey
+         Tolg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CojcVAQHrdL0/xK/9YS92lTdjeHYDfPOTgXtuXZRrqc=;
+        b=PzceV+a/Y5vdBjUAIBdmUjt8ZGFFnZTtCefa+xdq0oOb1fmZzYAy3uZru2lnpJQrrf
+         z0VDYV7d75ja5aDL9Pf4PYB9CmKwBmamo9PV1byj3kL8TOAi1fMNKlJcjUd3ci7/rJto
+         F554IFALGouFjIrdy0o+3wyNxwCqA0y9BTFDDog6mRmo4ws8hv50I8963LpAfeElhBUa
+         Ek5jIcWk0B5ZNp7t0H+Ir0n5+R7B8oOTEtOmS8WgGowC0bAsu1Y7pnFa4k69STTGdBYp
+         S6CtXZ4m7o022oK7LIvDST+ecsn0ibrvCTMwx7A3dC+/4hKAAMmUfxhZEdbAIYhLN0j+
+         RCTA==
+X-Gm-Message-State: AOAM532OMTY0KDTtefZM4ScGBko8K5NURMlDHJPKPa+gp0U20vWvyWiN
+        dw4okhqm4csJjvWbpwCzDPnNVz6GSMCPYEzi0voZQQ==
+X-Google-Smtp-Source: ABdhPJzRtsXsyho8/+Mv5kkeel/AMlGNdnsKvkp8iaVnrWiTJzfWjxFbmZUhIfNLwC8X/50nQlyOwHzwKeo/eGqGgc4=
+X-Received: by 2002:a92:da82:: with SMTP id u2mr18540074iln.137.1606732881629;
+ Mon, 30 Nov 2020 02:41:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/e3GNl5Sde7_nRpv_2Sg=je7";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <20201129182435.jgqfjbekqmmtaief@skbuf> <20201129205817.hti2l4hm2fbp2iwy@skbuf>
+ <20201129211230.4d704931@hermes.local>
+In-Reply-To: <20201129211230.4d704931@hermes.local>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 30 Nov 2020 11:41:10 +0100
+Message-ID: <CANn89iKyyCwiKHFvQMqmeAbaR9SzwsCsko49FP+4NBW6+ZXN4w@mail.gmail.com>
+Subject: Re: Correct usage of dev_base_lock in 2020
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Or Gerlitz <ogerlitz@mellanox.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/e3GNl5Sde7_nRpv_2Sg=je7
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-
-Hi Geert,
-
-On Mon, 30 Nov 2020 09:58:23 +0100 Geert Uytterhoeven <geert@linux-m68k.org=
-> wrote:
+On Mon, Nov 30, 2020 at 6:12 AM Stephen Hemminger
+<stephen@networkplumber.org> wrote:
 >
-> Thanks for your patch!
+> On Sun, 29 Nov 2020 22:58:17 +0200
+> Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> > [ resent, had forgot to copy the list ]
+> >
+> > Hi,
+> >
+> > net/core/dev.c has this to say about the locking rules around the network
+> > interface lists (dev_base_head, and I can only assume that it also applies to
+> > the per-ifindex hash table dev_index_head and the per-name hash table
+> > dev_name_head):
+> >
+> > /*
+> >  * The @dev_base_head list is protected by @dev_base_lock and the rtnl
+> >  * semaphore.
+> >  *
+> >  * Pure readers hold dev_base_lock for reading, or rcu_read_lock()
+> >  *
+> >  * Writers must hold the rtnl semaphore while they loop through the
+> >  * dev_base_head list, and hold dev_base_lock for writing when they do the
+> >  * actual updates.  This allows pure readers to access the list even
+> >  * while a writer is preparing to update it.
+> >  *
+> >  * To put it another way, dev_base_lock is held for writing only to
+> >  * protect against pure readers; the rtnl semaphore provides the
+> >  * protection against other writers.
+> >  *
+> >  * See, for example usages, register_netdevice() and
+> >  * unregister_netdevice(), which must be called with the rtnl
+> >  * semaphore held.
+> >  */
+> >
+> > However, as of today, most if not all the read-side accessors of the network
+> > interface lists have been converted to run under rcu_read_lock. As Eric explains,
+> >
+> > commit fb699dfd426a189fe33b91586c15176a75c8aed0
+> > Author: Eric Dumazet <eric.dumazet@gmail.com>
+> > Date:   Mon Oct 19 19:18:49 2009 +0000
+> >
+> >     net: Introduce dev_get_by_index_rcu()
+> >
+> >     Some workloads hit dev_base_lock rwlock pretty hard.
+> >     We can use RCU lookups to avoid touching this rwlock.
+> >
+> >     netdevices are already freed after a RCU grace period, so this patch
+> >     adds no penalty at device dismantle time.
+> >
+> >     dev_ifname() converted to dev_get_by_index_rcu()
+> >
+> >     Signed-off-by: Eric Dumazet <eric.dumazet@gmail.com>
+> >     Signed-off-by: David S. Miller <davem@davemloft.net>
+> >
+> > A lot of work has been put into eliminating the dev_base_lock rwlock
+> > completely, as Stephen explained here:
+> >
+> > [PATCH 00/10] netdev: get rid of read_lock(&dev_base_lock) usages
+> > https://www.spinics.net/lists/netdev/msg112264.html
+> >
+> > However, its use has not been completely eliminated. It is still there, and
+> > even more confusingly, that comment in net/core/dev.c is still there. What I
+> > see the dev_base_lock being used for now are complete oddballs.
+> >
+> > - The debugfs for mac80211, in net/mac80211/debugfs_netdev.c, holds the read
+> >   side when printing some interface properties (good luck disentangling the
+> >   code and figuring out which ones, though). What is that read-side actually
+> >   protecting against?
+> >
+> > - HSR, in net/hsr/hsr_device.c (called from hsr_netdev_notify on NETDEV_UP
+> >   NETDEV_DOWN and NETDEV_CHANGE), takes the write-side of the lock when
+> >   modifying the RFC 2863 operstate of the interface. Why?
+> >   Actually the use of dev_base_lock is the most widespread in the kernel today
+> >   when accessing the RFC 2863 operstate. I could only find this truncated
+> >   discussion in the archives:
+> >     Re: Issue 0 WAS (Re: Oustanding issues WAS(IRe: Consensus? WAS(RFC 2863)
+> >     https://www.mail-archive.com/netdev@vger.kernel.org/msg03632.html
+> >   and it said:
+> >
+> >     > be transitioned to up/dormant etc. So an ethernet driver doesnt know it
+> >     > needs to go from detecting peer link is up to next being authenticated
+> >     > in the case of 802.1x. It just calls netif_carrier_on which checks
+> >     > link_mode to decide on transition.
+> >
+> >     we could protect operstate with a spinlock_irqsave() and then change it either
+> >     from netif_[carrier|dormant]_on/off() or userspace-supplicant. However, I'm
+> >     not feeling good about it. Look at rtnetlink_fill_ifinfo(), it is able to
+> >     query a consistent snapshot of all interface settings as long as locking with
+> >     dev_base_lock and rtnl is obeyed. __LINK_STATE flags are already an
+> >     exemption, and I don't want operstate to be another. That's why I chose
+> >     setting it from linkwatch in process context, and I really think this is the
+> >     correct approach.
+> >
+> > - rfc2863_policy() in net/core/link_watch.c seems to be the major writer that
+> >   holds this lock in 2020, together with do_setlink() and set_operstate() from
+> >   net/core/rtnetlink.c. Has the lock been repurposed over the years and we
+> >   should update its name appropriately?
+> >
+> > - This usage from netdev_show() in net/core/net-sysfs.c just looks random to
+> >   me, maybe somebody can explain:
+> >
+> >       read_lock(&dev_base_lock);
+> >       if (dev_isalive(ndev))
+> >               ret = (*format)(ndev, buf);
+> >       read_unlock(&dev_base_lock);
+>
+>
+> So dev_base_lock dates back to the Big Kernel Lock breakup back in Linux 2.4
+> (ie before my time). The time has come to get rid of it.
+>
+> The use is sysfs is because could be changed to RCU. There have been issues
+> in the past with sysfs causing lock inversions with the rtnl mutex, that
+> is why you will see some trylock code there.
+>
+> My guess is that dev_base_lock readers exist only because no one bothered to do
+> the RCU conversion.
 
-No worries, it has been a small irritant to me for quite a while.
+I think we did, a long time ago.
 
-> I prefer to fix this in the driver instead.  The space saving by packing =
-the
-> structure is minimal.
-> I've sent a patch
-> https://lore.kernel.org/r/20201130085743.1656317-1-geert+renesas@glider.be
-> (when lore is back)
+We took care of all ' fast paths' already.
 
-Absolutely, thanks.
+Not sure what is needed, current situation does not bother me at all ;)
 
---=20
-Cheers,
-Stephen Rothwell
+>
+> Complex locking rules lead to mistakes and often don't get much performance
+> gain.  There are really two different domains being covered by locks here.
+>
+> The first area is change of state of network devices. This has traditionally
+> been covered by RTNL because there are places that depend on coordinating
+> state between multiple devices. RTNL is too big and held too long but getting
+> rid of it is hard because there are corner cases (like state changes from userspace
+> for VPN devices).
+>
+> The other area is code that wants to do read access to look at list of devices.
+> These pure readers can/should be converted to RCU by now. Writers should hold RTNL.
 
---Sig_/e3GNl5Sde7_nRpv_2Sg=je7
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+Yes, and sometimes this is unfortunate.
 
------BEGIN PGP SIGNATURE-----
+dev_change_name() for example is an issue, because of the
+synchronize_rcu() it contains.
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl/EyNQACgkQAVBC80lX
-0GylCwf+JP01sreFsxom9d0ts5QMDlH3pU35scrqkVS2jWpB25zrGhgdrrneKakT
-aF+kF4Mcu2ducPJwpWECkJAVvz6frXPTQ5wXZFyeWXeT37UF69LBtEQVDIATpBEe
-AC2F4VA9xxAQZOWo8uRJxgVgkTLuoyvFCrEfrtM4d9o8HIDmPLc2cc5QVqSXONYn
-T8fBtDqyh6+oe0DyLJuZfvmzxDX1+7jW/6XWPYyjs8fV6w/3787DvCzRhvTdOCrP
-BWsdr7zt822PvhMxh5OWN7EYgo/GZTM5Tw4E2EVbnyj4l2cFo4gI1vn9AuKMjtw5
-dYHmGSgw/TGtOHUd4EpGv72jecslhg==
-=7W56
------END PGP SIGNATURE-----
-
---Sig_/e3GNl5Sde7_nRpv_2Sg=je7--
+>
+> You could change the readers of operstate to use some form of RCU and atomic
+> operation (seqlock?). The state of the device has several components flags, operstate
+> etc, and there is no well defined way to read a consistent set of them.
+>
+> Good Luck on your quest.
+>
+>
