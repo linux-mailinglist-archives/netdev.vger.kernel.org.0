@@ -2,98 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 651912C91B5
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 23:57:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF1C22C91CD
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 00:01:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730880AbgK3Wzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 17:55:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41866 "EHLO
+        id S2388786AbgK3W65 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 17:58:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730868AbgK3Wzx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 17:55:53 -0500
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45276C0613D4;
-        Mon, 30 Nov 2020 14:55:13 -0800 (PST)
-Received: by mail-lf1-x141.google.com with SMTP id t6so25114915lfl.13;
-        Mon, 30 Nov 2020 14:55:13 -0800 (PST)
+        with ESMTP id S2388779AbgK3W64 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 17:58:56 -0500
+Received: from mail-qk1-x74a.google.com (mail-qk1-x74a.google.com [IPv6:2607:f8b0:4864:20::74a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6382FC061A4A
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 14:57:51 -0800 (PST)
+Received: by mail-qk1-x74a.google.com with SMTP id t141so10852732qke.22
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 14:57:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oHrYJR0Y0dJtQjn9b1Uu8e8y7F/jAGCGISIlJKPpGCI=;
-        b=rwTwlZYoFc/ODgkaIZUsLLp8J4WNtN9WP3FNgjIwrjtYm7RcUNhTbpuTGWX2x+I7nS
-         IsZ8KiGslYbkL06g3B6cHifhB76z45mDbtudMWQVUuevpNhcRMQCGHbWIAIgI2XgxyZP
-         +GWuFnd+mFkgv9T+SOgfcOFLbWUbQDZdAkIpVU2W0zU7BIfRQs5CfAcRaDnNlP+EpDQu
-         eKg1fqiMHO28dUYDp7o4a7uCzndKrRbHo9m1UPmMQ1mW8vKngjx4fsg5BSM7TyD0kGaa
-         i40ddQwtUiMBTDPrhd4c6AUPa57YaQvdBXp0TbVJx+epH5Zu6f+Rn0ypQZNgGHH5gRsA
-         H2tw==
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=Dy6XabYltzDFFz13ChKYqu9T0LvhtUKRAOX7IwyjQ7E=;
+        b=dEc5VvYi5t+NBouAT/ZIGYMPddy8e3Yra8lkPDcyvSZ55Ml9hS3zvkynvCqSstBTfM
+         Bbc8CoLSfd0I9i/UpAZ9T9xUIvMpnEgKUsJbkSjDkAMC87QVrPDQ3vmgdQJrOzGE5iJe
+         tIJXIiLdE6SL+tFD+GLUKW9lXLrCiHSR+cBHerY3jMbmQo06ynOSLzUJ83Lre4ni0DFx
+         4Dzh9c64K26+7KJmkmJmMWY92x2Gf9yJiFVynBYPXmAv+oresiLxFn4FVSjewzVW5kZN
+         O3XhQ/DokyrqDpeJ67Nf2z8hIWxPfdJ3hHSAXwzCOqlRfdkdHWtUoxLHduAwENnj1t39
+         HdSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oHrYJR0Y0dJtQjn9b1Uu8e8y7F/jAGCGISIlJKPpGCI=;
-        b=F1YAmh4QNmBaG+lylZKCkI7yIWCWet5GXMa3UCSLe7+/lT05bDpe1Cpke5ah8yd+Mh
-         oZZZ03uC7rWzUI+mTJ7HPMTQoG5fxS6gSBlii00ONfO18n20lEOB4/PLaUy4wrJpATKO
-         rY8gtzQsFvIvuk/m2s20wdqIVauL3oSFrK1+D6N4Owrn3s0h4jB5XXdOEu75vfI89PL3
-         Nmkl7jNXAFArWakoX0Mhl4EJ3RIRRr+m/8A5YTBZwiKaqkkxq+7XW+0FmkLIlHHqYw8d
-         WPuC7v28FYzdH8xgG7DBongWISyX7/06etn/bP0K08d2ujcSirzTrNwZaIa8GLhLYYnO
-         ph3A==
-X-Gm-Message-State: AOAM533WUH5Hs8oL3y6cGRn6PtqybYHdV/zE7k9yl048372joG7tqjN/
-        L3Hoa4WJDMSkcY6sDPNxTWi2dv9L8G8CVed0m58=
-X-Google-Smtp-Source: ABdhPJwfYbtq962kEoxl9l6H9Iify7j7vxOpaM/ss1j5RqJ7L9w6b4ZS2wiQswqEYb5ygwsJ4jcxS+ZDz5BK5H9blHw=
-X-Received: by 2002:a19:2390:: with SMTP id j138mr10718584lfj.390.1606776911738;
- Mon, 30 Nov 2020 14:55:11 -0800 (PST)
-MIME-Version: 1.0
-References: <20201121024616.1588175-1-andrii@kernel.org> <20201121024616.1588175-6-andrii@kernel.org>
- <20201129015934.qlikfg7czp4cc7sf@ast-mbp> <CAEf4BzbsN5GD62+nh7jMbdrWftATdJ57_3L_rgmG2-2=HXEV2w@mail.gmail.com>
-In-Reply-To: <CAEf4BzbsN5GD62+nh7jMbdrWftATdJ57_3L_rgmG2-2=HXEV2w@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 30 Nov 2020 14:55:00 -0800
-Message-ID: <CAADnVQKYda2YxU8O-41HWbRFek-9USOOUBAZr71GALe9kVTQ5g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 5/7] selftests/bpf: add tp_btf CO-RE reloc test
- for modules
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=Dy6XabYltzDFFz13ChKYqu9T0LvhtUKRAOX7IwyjQ7E=;
+        b=NO+99vz3L3vOTE56RYYMZTRq7Z393tpE3XM5wrOKqwkfVWyY8rcpojXUxqRrCYJywD
+         TCbnWrZ9077G97qUopNXPZWNDoI9xK3dz/LZ3iXl+RstrxofR5YFok6ChXwxxlQ/am7b
+         D42RixYpvPQrKuOvFFz6mGRJbXtDS+VVkZ8Vh9a73kpcDmzZszkaEGcXFWQvQCbCWPXi
+         tb8lxQPCAWWuqR6WVcKu88hhbLbdpFWdmNgUL5hnsduTvR8gmG9Pf2v4RMCassnlxEtQ
+         I5eVN+P4W1SzRBeo0WieGKEVMNdRlE9yjJLTTdrmPkz8aBc3dsKUjLe/DY28MifI+xsC
+         O8TA==
+X-Gm-Message-State: AOAM530ZMXzBGNHP1j42wmHAKjkVHEaMbZ301vLPy3njKCNXa3NHNpS7
+        bLgxGMTUnNnwlZttiFbWQyKaF6HCJQ1ZgffMuJzR
+X-Google-Smtp-Source: ABdhPJy2dRmE6ae2DjfLyY8TSQlOGUXwrHCtfVYT2ZRwseNezxmF6I88pISzuaNxMRG4fBOFOpban8s1hk02ftjKQxLV
+Sender: "danielwinkler via sendgmr" 
+        <danielwinkler@danielwinkler-linux.mtv.corp.google.com>
+X-Received: from danielwinkler-linux.mtv.corp.google.com ([2620:15c:202:201:f693:9fff:fef4:4e59])
+ (user=danielwinkler job=sendgmr) by 2002:a0c:be02:: with SMTP id
+ k2mr25630951qvg.49.1606777070464; Mon, 30 Nov 2020 14:57:50 -0800 (PST)
+Date:   Mon, 30 Nov 2020 14:57:39 -0800
+Message-Id: <20201130225744.3793244-1-danielwinkler@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.29.2.454.gaff20da3a2-goog
+Subject: [PATCH v6 0/5] Bluetooth: Add new MGMT interface for advertising add
+From:   Daniel Winkler <danielwinkler@google.com>
+To:     marcel@holtmann.org
+Cc:     linux-bluetooth@vger.kernel.org,
+        chromeos-bluetooth-upstreaming@chromium.org,
+        Daniel Winkler <danielwinkler@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 30, 2020 at 2:52 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Sat, Nov 28, 2020 at 5:59 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Fri, Nov 20, 2020 at 06:46:14PM -0800, Andrii Nakryiko wrote:
-> > >
-> > >  SEC("raw_tp/bpf_sidecar_test_read")
-> > > -int BPF_PROG(test_core_module,
-> > > +int BPF_PROG(test_core_module_probed,
-> > >            struct task_struct *task,
-> > >            struct bpf_sidecar_test_read_ctx *read_ctx)
-> > >  {
-> > > @@ -64,3 +64,33 @@ int BPF_PROG(test_core_module,
-> > >
-> > >       return 0;
-> > >  }
-> > > +
-> > > +SEC("tp_btf/bpf_sidecar_test_read")
-> > > +int BPF_PROG(test_core_module_direct,
-> > > +          struct task_struct *task,
-> > > +          struct bpf_sidecar_test_read_ctx *read_ctx)
-> >
-> > "sidecar" is such an overused name.
->
-> How about "sidekick"? :) Its definition matches quite closely for what
-> we are doing with it ("person's assistant or close associate,
-> especially one who has less authority than that person.")?
->
-> But if you still hate it, I can call it just "bpf_selftest" or
-> "bpf_test" or "bpf_testmod", however boring that is... ;)
+Hi Maintainers,
 
-bpf_testmod sounds the best to me :)
+This patch series defines the new two-call MGMT interface for adding
+new advertising instances. Similarly to the hci advertising commands, a
+mgmt call to set parameters is expected to be first, followed by a mgmt
+call to set advertising data/scan response. The members of the
+parameters request are optional; the caller defines a "params" bitfield
+in the structure that indicates which parameters were intentionally set,
+and others are set to defaults.
+
+The main feature here is the introduction of min/max parameters and tx
+power that can be requested by the client. Min/max parameters will be
+used both with and without extended advertising support, and tx power
+will be used with extended advertising support. After a call to set
+advertising parameters, the selected transmission power will be
+propagated in the reponse to alert userspace to the actual power used.
+
+Additionally, to inform userspace of the controller LE Tx power
+capabilities for the client's benefit, this series also changes the
+security info MGMT command to more flexibly contain other capabilities,
+such as LE min and max tx power.
+
+All changes have been tested on hatch (extended advertising) and kukui
+(no extended advertising) chromebooks with manual testing verifying
+correctness of parameters/data in btmon traces, and our automated test
+suite of 25 single- and multi-advertising usage scenarios.
+
+A separate patch series will add support in bluetoothd. Thanks in
+advance for your feedback!
+
+Daniel Winkler
+
+
+Changes in v6:
+- Only populate LE tx power range if controller reports it
+
+Changes in v5:
+- Ensure data/scan rsp length is returned for non-ext adv
+
+Changes in v4:
+- Add remaining data and scan response length to MGMT params response
+- Moving optional params into 'flags' field of MGMT command
+- Combine LE tx range into a single EIR field for MGMT capabilities cmd
+
+Changes in v3:
+- Adding selected tx power to adv params mgmt response, removing event
+- Re-using security info MGMT command to carry controller capabilities
+
+Changes in v2:
+- Fixed sparse error in Capabilities MGMT command
+
+Daniel Winkler (5):
+  Bluetooth: Add helper to set adv data
+  Bluetooth: Break add adv into two mgmt commands
+  Bluetooth: Use intervals and tx power from mgmt cmds
+  Bluetooth: Query LE tx power on startup
+  Bluetooth: Change MGMT security info CMD to be more generic
+
+ include/net/bluetooth/hci.h      |   7 +
+ include/net/bluetooth/hci_core.h |  12 +-
+ include/net/bluetooth/mgmt.h     |  49 +++-
+ net/bluetooth/hci_core.c         |  47 +++-
+ net/bluetooth/hci_event.c        |  19 ++
+ net/bluetooth/hci_request.c      |  29 ++-
+ net/bluetooth/mgmt.c             | 430 +++++++++++++++++++++++++++++--
+ 7 files changed, 548 insertions(+), 45 deletions(-)
+
+-- 
+2.29.2.454.gaff20da3a2-goog
+
