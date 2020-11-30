@@ -2,87 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E5232C8525
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 14:29:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 710082C8529
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 14:29:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726655AbgK3N3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 08:29:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56722 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725859AbgK3N3L (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Nov 2020 08:29:11 -0500
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B0B8120643;
-        Mon, 30 Nov 2020 13:28:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1606742910;
-        bh=DQ+wSsfzzJvTpM5c/TAOzAqu4JhPI6Qw2CdCl7s9bnI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iy6VsNPZIpqRMHbzHaZf4KAofuWIQmOzOyJdKPIJ3nmFXEOjDhBNETct6pTPa7KZa
-         349/iqZtmBD+ozP3DeMiZdmAICZq9sXO/WuEaHhDd3HI4GtlOgDKPZQmN7vCK/BjbU
-         GAUTn3NWGsgfMFU5RRd+CLK8/UccbsHngseKQN3M=
-Date:   Mon, 30 Nov 2020 14:28:26 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org,
-        Mike Christie <michael.christie@oracle.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.9 22/33] vhost scsi: add lun parser helper
-Message-ID: <X8TzeoIlR3G5awC6@kroah.com>
-References: <20201125153550.810101-1-sashal@kernel.org>
- <20201125153550.810101-22-sashal@kernel.org>
- <25cd0d64-bffc-9506-c148-11583fed897c@redhat.com>
- <20201125180102.GL643756@sasha-vm>
- <9670064e-793f-561e-b032-75b1ab5c9096@redhat.com>
- <20201129041314.GO643756@sasha-vm>
- <7a4c3d84-8ff7-abd9-7340-3a6d7c65cfa7@redhat.com>
- <20201129210650.GP643756@sasha-vm>
- <e499986d-ade5-23bd-7a04-fa5eb3f15a56@redhat.com>
+        id S1726540AbgK3N3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 08:29:45 -0500
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:54333 "EHLO
+        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726103AbgK3N3p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 08:29:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1606742984; x=1638278984;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Sk1vGpxLNcx4Sjlhcb2DMc4WhRUPc0M7/K3bL2IJhCY=;
+  b=fE10GCGy5MRy0HrpNNxHpjb4wGKG8PsBPEh3UGYfWCxime6WGGKCopWM
+   EU1Dj6rhkvImzHRSZ/fnkJIPiQ38CjS4A65ZZ8W9l0duVCuG5fKJEaEQl
+   2OrdZWySaZIxBXvvHDwnSUTmBWxxxftEU4/YfE/sYMhhGh0Ipi9tC4afD
+   UiA+RQFuZ+fdA9Y2ppIL53vtJx86FKba5/w6PCxcipBFNgqBSUH1liDfD
+   ixBEdIvc9b21oFudLvknHaSHa05o+BS5DPjpJqSg6wWcE1loWE6TG89on
+   URdsT3NUzhfqPo1oUuuEyJyDY2HoK6yWXDI6uU9uBCKKyuY1bfYqdzPim
+   g==;
+IronPort-SDR: Gs9KCZjI3i0w25BHVdKpBd15fdMmBdxq8K/eNXo2kVgaZ04WHuOGml2wwyOJXRwcFblG71oUZv
+ GQBaLfIUXf7queq0/ZnzD8m+6+q4lNP6UUi1vPzQhw1RPErF+WIsDiLY1MbLnjxUwjkiivhiUY
+ t0zUkEapj4eAmk2No9EEWMdMT50+KrP8u+TDZ712Yjg5uva8WvPwHB7cj6DosxUCA1QlLQ8KnZ
+ GE/ghOLetSkOFNl6juVAftBTHx/urwjeQ8+mh7u+yHk7k4btW/HRmbBBHAN9yAO/paVObLoibu
+ NLY=
+X-IronPort-AV: E=Sophos;i="5.78,381,1599548400"; 
+   d="scan'208";a="35429563"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Nov 2020 06:28:39 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 30 Nov 2020 06:28:36 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Mon, 30 Nov 2020 06:28:36 -0700
+Date:   Mon, 30 Nov 2020 14:28:35 +0100
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microsemi List <microsemi@lists.bootlin.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH 2/3] net: sparx5: Add Sparx5 switchdev driver
+Message-ID: <20201130132835.7ln72bbdr36spuwm@mchp-dev-shegelun>
+References: <20201127133307.2969817-1-steen.hegelund@microchip.com>
+ <20201127133307.2969817-3-steen.hegelund@microchip.com>
+ <20201128190334.GE2191767@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e499986d-ade5-23bd-7a04-fa5eb3f15a56@redhat.com>
+In-Reply-To: <20201128190334.GE2191767@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 30, 2020 at 09:33:46AM +0100, Paolo Bonzini wrote:
-> On 29/11/20 22:06, Sasha Levin wrote:
-> > On Sun, Nov 29, 2020 at 06:34:01PM +0100, Paolo Bonzini wrote:
-> > > On 29/11/20 05:13, Sasha Levin wrote:
-> > > > > Which doesn't seem to be suitable for stable either...  Patch 3/5 in
-> > > > 
-> > > > Why not? It was sent as a fix to Linus.
-> > > 
-> > > Dunno, 120 lines of new code?  Even if it's okay for an rc, I don't
-> > > see why it is would be backported to stable releases and release it
-> > > without any kind of testing.  Maybe for 5.9 the chances of breaking
-> > 
-> > Lines of code is not everything. If you think that this needs additional
-> > testing then that's fine and we can drop it, but not picking up a fix
-> > just because it's 120 lines is not something we'd do.
-> 
-> Starting with the first two steps in stable-kernel-rules.rst:
-> 
-> Rules on what kind of patches are accepted, and which ones are not, into the
-> "-stable" tree:
-> 
->  - It must be obviously correct and tested.
->  - It cannot be bigger than 100 lines, with context.
+On 28.11.2020 20:03, Andrew Lunn wrote:
+>EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>
+>> +static int sparx5_port_open(struct net_device *ndev)
+>> +{
+>> +     struct sparx5_port *port = netdev_priv(ndev);
+>> +     int err = 0;
+>> +
+>> +     sparx5_port_enable(port, true);
+>> +     if (port->conf.phy_mode != PHY_INTERFACE_MODE_NA) {
+>> +             err = phylink_of_phy_connect(port->phylink, port->of_node, 0);
+>> +             if (err) {
+>> +                     netdev_err(ndev, "Could not attach to PHY\n");
+>> +                     return err;
+>> +             }
+>> +     }
+>
+>This looks a bit odd. PHY_INTERFACE_MODE_NA means don't touch,
+>something else has already configured the MAC-PHY mode in the PHY.
+>You should not not connect the PHY because of this.
 
-We do obviously take patches that are bigger than 100 lines, as there
-are always exceptions to the rules here.  Look at all of the
-spectre/meltdown patches as one such example.  Should we refuse a patch
-just because it fixes a real issue yet is 101 lines long?
+Hmm.  I will have to revisit this again.  The intent was to be able to
+destinguish between regular PHYs and SFPs (as read from the DT).
+But maybe the phylink_of_phy_connect function handles this
+automatically...
+>
+>> +void sparx5_destroy_netdev(struct sparx5 *sparx5, struct sparx5_port *port)
+>> +{
+>> +     if (port->phylink) {
+>> +             /* Disconnect the phy */
+>> +             if (rtnl_trylock()) {
+>
+>Why do you use rtnl_trylock()?
 
-thanks,
+The sparx5_port_stop() in turn calls phylink_stop() that expects the lock
+to be taken.  Should I rather just call rtnl_lock()?
 
-greg k-h
+Thanks for your comments
+
+/Steen
+
+
+>
+>    Andrew
+
+BR
+Steen
+
+---------------------------------------
+Steen Hegelund
+steen.hegelund@microchip.com
