@@ -2,94 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 445392C837A
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 12:51:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB2EC2C837D
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 12:51:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728472AbgK3Ltr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 06:49:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50806 "EHLO
+        id S1728742AbgK3Lt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 06:49:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725965AbgK3Ltq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 06:49:46 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB6DBC0613D2;
-        Mon, 30 Nov 2020 03:49:00 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id w6so10255530pfu.1;
-        Mon, 30 Nov 2020 03:49:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NCRdmUn/vEWPXajvNRm52WRgCvk1LJ5o574yy3r7HmY=;
-        b=D6i5DHVoSrhlot0bDJiAzrAI0sZrULz2hoq+hn4IdQ1AJD0CCfKd6Sn/lZ8mEyvJo9
-         CYCkZ75/e8ptfvPPQNa4I0gKGRolaQP7V+BVaOC18+YADCEN/NYVZ0xaFka5J0GVO8/X
-         oZZ/oneNdRBJzDg/tpTkCkEMeteQVcSQfDu+ELY/oyQGKo1BrlGKMBdXryNpRCCG078T
-         HGy9ULR7QDOrMgAIc4TQRe7DIGvHIFB2RvI11wx2fzz5nK9QISpqoNeFAiEP2wHK4XSi
-         SX9jfGZmna2YQ89+RkaF0NOEGQAWWlqglnjozdsqYhJgADkOSfFmFiil3whwJi5hwGcK
-         1Z5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=NCRdmUn/vEWPXajvNRm52WRgCvk1LJ5o574yy3r7HmY=;
-        b=hS4Y4PlIESc3pAYnb950KcGLoa2EVxNOGI7KnG1nfe0gBmJheW0kImo75z/9LQJe6J
-         mO1tll8ttEsWv6hpQO5zNPWLDXN3E5GQDuU1XCHT9khieWZn0oshoPj+pOGevIpuhY6u
-         qXcj44f0cUz55loQkZ7Xd3s9cUFOdyFt8orKQTg2hbHOlav4K5UiTDYALX60ieeHmH4n
-         JVEh7wcEHfciM9KpZP3LXwjCbT71tgwOQOqZ4RP6B2Sh10cESr1vYLx7q8MpcSgsfR7Z
-         K+Gglg/6M5Hi2lDDvn7I4KLrMW05tEGXdBEvx5mJSnLE07kaFrvrakUdUsrDvg0oU3qF
-         nGBQ==
-X-Gm-Message-State: AOAM531/0xKLJi/kXelozyRXomP8wzJ7XMzcHgBJ1mlrxT6kWul99wdm
-        +Ner9p2u41wxHbMhG6uegfs=
-X-Google-Smtp-Source: ABdhPJxFr98QjZIGw6WnKEKyOh22wInQBJIQormgHY8T7BmpgiLsNvlmPyepjwUcsQ/pqwU0bxGWSA==
-X-Received: by 2002:a65:6219:: with SMTP id d25mr6600834pgv.154.1606736940421;
-        Mon, 30 Nov 2020 03:49:00 -0800 (PST)
-Received: from localhost.localdomain ([49.236.93.237])
-        by smtp.gmail.com with ESMTPSA id p1sm3781653pfb.208.2020.11.30.03.48.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Nov 2020 03:48:59 -0800 (PST)
-Sender: Leesoo Ahn <yisooan.dev@gmail.com>
-From:   Leesoo Ahn <dev@ooseel.net>
-X-Google-Original-From: Leesoo Ahn <lsahn@ooseel.net>
-To:     lsahn@ooseel.net
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: xdp: Give compiler __always_inline hint for xdp_rxq_info_init()
-Date:   Mon, 30 Nov 2020 20:48:25 +0900
-Message-Id: <20201130114825.10898-1-lsahn@ooseel.net>
-X-Mailer: git-send-email 2.26.2
+        with ESMTP id S1725965AbgK3Ltz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 06:49:55 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5128C0613D4
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 03:49:15 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kjhg3-00058w-5G; Mon, 30 Nov 2020 12:49:07 +0100
+Received: from [IPv6:2a03:f580:87bc:d400:325a:f94c:7792:9202] (unknown [IPv6:2a03:f580:87bc:d400:325a:f94c:7792:9202])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id AF06A59F83E;
+        Mon, 30 Nov 2020 11:49:04 +0000 (UTC)
+Subject: Re: [PATCH 0/2] can: Fix the error handling in c_can_power_up and
+ kvaser_pciefd_open
+To:     Zhang Qilong <zhangqilong3@huawei.com>, wg@grandegger.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-can@vger.kernel.org
+References: <20201128133922.3276973-1-zhangqilong3@huawei.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
+ zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
+ QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
+ 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
+ Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
+ XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
+ nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
+ Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
+ eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
+ kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
+ ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
+ CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJfEWX4BQkQo2czAAoJECte4hHF
+ iupUvfMP/iNtiysSr5yU4tbMBzRkGov1/FjurfH1kPweLVHDwiQJOGBz9HgM5+n8boduRv36
+ 0lU32g3PehN0UHZdHWhygUd6J09YUi2mJo1l2Fz1fQ8elUGUOXpT/xoxNQjslZjJGItCjza8
+ +D1DO+0cNFgElcNPa7DFBnglatOCZRiMjo4Wx0i8njEVRU+4ySRU7rCI36KPts+uVmZAMD7V
+ 3qiR1buYklJaPCJsnXURXYsilBIE9mZRmQjTDVqjLWAit++flqUVmDjaD/pj2AQe2Jcmd2gm
+ sYW5P1moz7ACA1GzMjLDmeFtpJOIB7lnDX0F/vvsG3V713/701aOzrXqBcEZ0E4aWeZJzaXw
+ n1zVIrl/F3RKrWDhMKTkjYy7HA8hQ9SJApFXsgP334Vo0ea82H3dOU755P89+Eoj0y44MbQX
+ 7xUy4UTRAFydPl4pJskveHfg4dO6Yf0PGIvVWOY1K04T1C5dpnHAEMvVNBrfTA8qcahRN82V
+ /iIGB+KSC2xR79q1kv1oYn0GOnWkvZmMhqGLhxIqHYitwH4Jn5uRfanKYWBk12LicsjRiTyW
+ Z9cJf2RgAtQgvMPvmaOL8vB3U4ava48qsRdgxhXMagU618EszVdYRNxGLCqsKVYIDySTrVzu
+ ZGs2ibcRhN4TiSZjztWBAe1MaaGk05Ce4h5IdDLbOOxhuQENBF8SDLABCADohJLQ5yffd8Sq
+ 8Lo9ymzgaLcWboyZ46pY4CCCcAFDRh++QNOJ8l4mEJMNdEa/yrW4lDQDhBWV75VdBuapYoal
+ LFrSzDzrqlHGG4Rt4/XOqMo6eSeSLipYBu4Xhg59S9wZOWbHVT/6vZNmiTa3d40+gBg68dQ8
+ iqWSU5NhBJCJeLYdG6xxeUEtsq/25N1erxmhs/9TD0sIeX36rFgWldMwKmZPe8pgZEv39Sdd
+ B+ykOlRuHag+ySJxwovfdVoWT0o0LrGlHzAYo6/ZSi/Iraa9R/7A1isWOBhw087BMNkRYx36
+ B77E4KbyBPx9h3wVyD/R6T0Q3ZNPu6SQLnsWojMzABEBAAGJAjwEGAEKACYWIQTBQAugs5ie
+ b7x9W1wrXuIRxYrqVAUCXxIMsAIbDAUJAucGAAAKCRArXuIRxYrqVOu0D/48xSLyVZ5NN2Bb
+ yqo3zxdv/PMGJSzM3JqSv7hnMZPQGy9XJaTc5Iz/hyXaNRwpH5X0UNKqhQhlztChuAKZ7iu+
+ 2VKzq4JJe9qmydRUwylluc4HmGwlIrDNvE0N66pRvC3h8tOVIsippAQlt5ciH74bJYXr0PYw
+ Aksw1jugRxMbNRzgGECg4O6EBNaHwDzsVPX1tDj0d9t/7ClzJUy20gg8r9Wm/I/0rcNkQOpV
+ RJLDtSbGSusKxor2XYmVtHGauag4YO6Vdq+2RjArB3oNLgSOGlYVpeqlut+YYHjWpaX/cTf8
+ /BHtIQuSAEu/WnycpM3Z9aaLocYhbp5lQKL6/bcWQ3udd0RfFR/Gv7eR7rn3evfqNTtQdo4/
+ YNmd7P8TS7ALQV/5bNRe+ROLquoAZvhaaa6SOvArcmFccnPeyluX8+o9K3BCdXPwONhsrxGO
+ wrPI+7XKMlwWI3O076NqNshh6mm8NIC0mDUr7zBUITa67P3Q2VoPoiPkCL9RtsXdQx5BI9iI
+ h/6QlzDxcBdw2TVWyGkVTCdeCBpuRndOMVmfjSWdCXXJCLXO6sYeculJyPkuNvumxgwUiK/H
+ AqqdUfy1HqtzP2FVhG5Ce0TeMJepagR2CHPXNg88Xw3PDjzdo+zNpqPHOZVKpLUkCvRv1p1q
+ m1qwQVWtAwMML/cuPga78rkBDQRfEXGWAQgAt0Cq8SRiLhWyTqkf16Zv/GLkUgN95RO5ntYM
+ fnc2Tr3UlRq2Cqt+TAvB928lN3WHBZx6DkuxRM/Y/iSyMuhzL5FfhsICuyiBs5f3QG70eZx+
+ Bdj4I7LpnIAzmBdNWxMHpt0m7UnkNVofA0yH6rcpCsPrdPRJNOLFI6ZqXDQk9VF+AB4HVAJY
+ BDU3NAHoyVGdMlcxev0+gEXfBQswEcysAyvzcPVTAqmrDsupnIB2f0SDMROQCLO6F+/cLG4L
+ Stbz+S6YFjESyXblhLckTiPURvDLTywyTOxJ7Mafz6ZCene9uEOqyd/h81nZOvRd1HrXjiTE
+ 1CBw+Dbvbch1ZwGOTQARAQABiQNyBBgBCgAmFiEEwUALoLOYnm+8fVtcK17iEcWK6lQFAl8R
+ cZYCGwIFCQLnoRoBQAkQK17iEcWK6lTAdCAEGQEKAB0WIQQreQhYm33JNgw/d6GpyVqK+u3v
+ qQUCXxFxlgAKCRCpyVqK+u3vqatQCAC3QIk2Y0g/07xNLJwhWcD7JhIqfe7Qc5Vz9kf8ZpWr
+ +6w4xwRfjUSmrXz3s6e/vrQsfdxjVMDFOkyG8c6DWJo0TVm6Ucrf9G06fsjjE/6cbE/gpBkk
+ /hOVz/a7UIELT+HUf0zxhhu+C9hTSl8Nb0bwtm6JuoY5AW0LP2KoQ6LHXF9KNeiJZrSzG6WE
+ h7nf3KRFS8cPKe+trbujXZRb36iIYUfXKiUqv5xamhohy1hw+7Sy8nLmw8rZPa40bDxX0/Gi
+ 98eVyT4/vi+nUy1gF1jXgNBSkbTpbVwNuldBsGJsMEa8lXnYuLzn9frLdtufUjjCymdcV/iT
+ sFKziU9AX7TLZ5AP/i1QMP9OlShRqERH34ufA8zTukNSBPIBfmSGUe6G2KEWjzzNPPgcPSZx
+ Do4jfQ/m/CiiibM6YCa51Io72oq43vMeBwG9/vLdyev47bhSfMLTpxdlDJ7oXU9e8J61iAF7
+ vBwerBZL94I3QuPLAHptgG8zPGVzNKoAzxjlaxI1MfqAD9XUM80MYBVjunIQlkU/AubdvmMY
+ X7hY1oMkTkC5hZNHLgIsDvWUG0g3sACfqF6gtMHY2lhQ0RxgxAEx+ULrk/svF6XGDe6iveyc
+ z5Mg5SUggw3rMotqgjMHHRtB3nct6XqgPXVDGYR7nAkXitG+nyG5zWhbhRDglVZ0mLlW9hij
+ z3Emwa94FaDhN2+1VqLFNZXhLwrNC5mlA6LUjCwOL+zb9a07HyjekLyVAdA6bZJ5BkSXJ1CO
+ 5YeYolFjr4YU7GXcSVfUR6fpxrb8N+yH+kJhY3LmS9vb2IXxneE/ESkXM6a2YAZWfW8sgwTm
+ 0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
+ HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
+ xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
+Message-ID: <19bf4a7b-4d07-c9d5-5c63-3f804a1b4f4a@pengutronix.de>
+Date:   Mon, 30 Nov 2020 12:49:00 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201128133922.3276973-1-zhangqilong3@huawei.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="hYMKzvTdh0rwMNkjVhhH9LfxqEehpNjrm"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The function has only a statement of calling memset() to
-clear xdp_rxq object. Let it always be an inline function.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--hYMKzvTdh0rwMNkjVhhH9LfxqEehpNjrm
+Content-Type: multipart/mixed; boundary="zS6XmMEY4aFvDWfd676C0ADnYDvXTJzlc";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Zhang Qilong <zhangqilong3@huawei.com>, wg@grandegger.com,
+ davem@davemloft.net, kuba@kernel.org
+Cc: netdev@vger.kernel.org, linux-can@vger.kernel.org
+Message-ID: <19bf4a7b-4d07-c9d5-5c63-3f804a1b4f4a@pengutronix.de>
+Subject: Re: [PATCH 0/2] can: Fix the error handling in c_can_power_up and
+ kvaser_pciefd_open
+References: <20201128133922.3276973-1-zhangqilong3@huawei.com>
+In-Reply-To: <20201128133922.3276973-1-zhangqilong3@huawei.com>
 
-Signed-off-by: Leesoo Ahn <lsahn@ooseel.net>
----
- net/core/xdp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--zS6XmMEY4aFvDWfd676C0ADnYDvXTJzlc
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/net/core/xdp.c b/net/core/xdp.c
-index 48aba933a5a8..dab72b9a71a1 100644
---- a/net/core/xdp.c
-+++ b/net/core/xdp.c
-@@ -151,7 +151,7 @@ void xdp_rxq_info_unreg(struct xdp_rxq_info *xdp_rxq)
- }
- EXPORT_SYMBOL_GPL(xdp_rxq_info_unreg);
- 
--static void xdp_rxq_info_init(struct xdp_rxq_info *xdp_rxq)
-+static __always_inline void xdp_rxq_info_init(struct xdp_rxq_info *xdp_rxq)
- {
- 	memset(xdp_rxq, 0, sizeof(*xdp_rxq));
- }
--- 
-2.26.2
+On 11/28/20 2:39 PM, Zhang Qilong wrote:
+> The patch series fix the error handling to avoid the reference
+> leak and wrong state for the net device.
+>=20
+> Zhang Qilong (2):
+>   can: c_can: Fix error handling in c_can_power_up
+>   can: kvaser_pciefd: Fix error handling in kvaser_pciefd_open
+>=20
+>  drivers/net/can/c_can/c_can.c   | 18 ++++++++++++++----
+>  drivers/net/can/kvaser_pciefd.c |  4 +++-
+>  2 files changed, 17 insertions(+), 5 deletions(-)
 
+Applied to linux-can/testing.
+
+Tnx,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+--zS6XmMEY4aFvDWfd676C0ADnYDvXTJzlc--
+
+--hYMKzvTdh0rwMNkjVhhH9LfxqEehpNjrm
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl/E3CwACgkQqclaivrt
+76lT/ggAjWBWkC1zBR9FLy/j+y+f57tAy9ugKUl4bwv0D+AWJ6VdLFc6YSzzG2ss
+O0Ct8uJu1yUYZe5YhxlGfcAdXPlDo4kJ88qsLvE26SPehOUl523JAzBdjFda9EAL
+xgLVq7jlQzXsNXmJDygczNYFGuvl7lQnJ8T2De3+3Ff0zl8VMfqlTMuQ8JQhgSC9
+Tr6OIABJmXJMEpcVMwcAvZ5nsvzecK+zTajCyxz3JEmR0P0zp1dRMEzifbkbUHW6
+ezQ7LTRo9k/c4ezm+Zbm3sYk1ZL5olw+ksYpkJO8wNRgV0t6jlFrEwDVsYsf4BjX
+0ssb8zxe6+EFUTWi+nRRDV5QIVIOrQ==
+=37UW
+-----END PGP SIGNATURE-----
+
+--hYMKzvTdh0rwMNkjVhhH9LfxqEehpNjrm--
