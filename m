@@ -2,70 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8906A2C812B
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 10:40:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D26CC2C818C
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 11:00:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727030AbgK3JkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 04:40:16 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:36090 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726137AbgK3JkQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 04:40:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606729130;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4yBhvR6zvsu5dSQHovsMYq8UNeU25HVpk173jv35ETo=;
-        b=Ave4JTGEVxkZbf8EwdqeWrW83nXJJNwfGZnIGmNnPUeOecbRFoM+MVovPd0+IM1LxsRm58
-        XSCiEsFlWwdiAWISPMHAP3ljNWy4fdjJW5foJinKeAKiSIKaW4g4oUj/t1xxAkKG3Qkjt2
-        eLTlaCJ4aOETfdZemhaLjPidSaEBwgQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-314-936JH9WOMsyj47I0Fdf0UQ-1; Mon, 30 Nov 2020 04:38:45 -0500
-X-MC-Unique: 936JH9WOMsyj47I0Fdf0UQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0F057100C600;
-        Mon, 30 Nov 2020 09:38:44 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-112-159.rdu2.redhat.com [10.10.112.159])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E247B5D720;
-        Mon, 30 Nov 2020 09:38:42 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20201129200550.2433401-1-vladimir.oltean@nxp.com>
-References: <20201129200550.2433401-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     dhowells@redhat.com, Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: Re: [PATCH net-next] net: delete __dev_getfirstbyhwtype
+        id S1727513AbgK3KAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 05:00:09 -0500
+Received: from mail.katalix.com ([3.9.82.81]:53302 "EHLO mail.katalix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726249AbgK3KAJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Nov 2020 05:00:09 -0500
+Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
+        (Authenticated sender: tom)
+        by mail.katalix.com (Postfix) with ESMTPSA id 8B0DC9700B;
+        Mon, 30 Nov 2020 09:59:27 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
+        t=1606730367; bh=HkistHrtY52xD0bjfDJuMl28/4XdgawgJh9AqdU/5eQ=;
+        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+         Content-Disposition:In-Reply-To:From;
+        z=Date:=20Mon,=2030=20Nov=202020=2009:59:27=20+0000|From:=20Tom=20P
+         arkin=20<tparkin@katalix.com>|To:=20Guillaume=20Nault=20<gnault@re
+         dhat.com>|Cc:=20netdev@vger.kernel.org,=20jchapman@katalix.com|Sub
+         ject:=20Re:=20[PATCH=20net-next=201/2]=20ppp:=20add=20PPPIOCBRIDGE
+         CHAN=20and=0D=0A=20PPPIOCUNBRIDGECHAN=20ioctls|Message-ID:=20<2020
+         1130095926.GA4543@katalix.com>|References:=20<20201126122426.25243
+         -1-tparkin@katalix.com>=0D=0A=20<20201126122426.25243-2-tparkin@ka
+         talix.com>=0D=0A=20<20201127193134.GA23450@linux.home>|MIME-Versio
+         n:=201.0|Content-Disposition:=20inline|In-Reply-To:=20<20201127193
+         134.GA23450@linux.home>;
+        b=zCIlY22OsvlPVfqmOd2QwuCQEvYpXG3pgwt+7+qKcsqoPBU1vWEKZ1+LhtqOAOBoR
+         DjRR/h86Fz3HcRBZ2UOhYjnWCeFxkdsBBfvHrEHiOpq/UzN4sL/L3I+qNCjsasCNmY
+         f2Qto+4awrspGE8N/IEnbyFqVC5isp/UVfOd+tOMQjgY+On0DGewS0g93/E8CjIqem
+         3FT1LhIHTEyWC2pLn7j8lWV11mzB6F8EyAvjeQRG5biZaqnfKIB8faAVFlJNdNsF3q
+         AG4wgloDd8+t1F+Pa1eSgS3sKQgGwGJZ8+XEUeee3/QS+vzpTFlnCxxSUyPDIJU9hB
+         0XKtfeO4PFFJg==
+Date:   Mon, 30 Nov 2020 09:59:27 +0000
+From:   Tom Parkin <tparkin@katalix.com>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     netdev@vger.kernel.org, jchapman@katalix.com
+Subject: Re: [PATCH net-next 1/2] ppp: add PPPIOCBRIDGECHAN and
+ PPPIOCUNBRIDGECHAN ioctls
+Message-ID: <20201130095926.GA4543@katalix.com>
+References: <20201126122426.25243-1-tparkin@katalix.com>
+ <20201126122426.25243-2-tparkin@katalix.com>
+ <20201127193134.GA23450@linux.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3095162.1606729122.1@warthog.procyon.org.uk>
-Date:   Mon, 30 Nov 2020 09:38:42 +0000
-Message-ID: <3095163.1606729122@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Nq2Wo0NMKNjxTN9z"
+Content-Disposition: inline
+In-Reply-To: <20201127193134.GA23450@linux.home>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
 
-> The last user of the RTNL brother of dev_getfirstbyhwtype (the latter
-> being synchronized under RCU) has been deleted in commit b4db2b35fc44
-> ("afs: Use core kernel UUID generation").
-> 
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: David Howells <dhowells@redhat.com>
-> Cc: Eric Dumazet <eric.dumazet@gmail.com>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+--Nq2Wo0NMKNjxTN9z
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Fine by me.  I thought it had already been removed.
+On  Fri, Nov 27, 2020 at 20:31:34 +0100, Guillaume Nault wrote:
+> On Thu, Nov 26, 2020 at 12:24:25PM +0000, Tom Parkin wrote:
+> > This new ioctl pair allows two ppp channels to be bridged together:
+> > frames arriving in one channel are transmitted in the other channel
+> > and vice versa.
+>=20
+> Thanks!
+> Some comments below (mostly about locking).
 
-David
+Thanks for your review Guillaume.  I'll work on integrating your
+comments (and a fix for the build test robot warning) into a v2 series.
 
+--Nq2Wo0NMKNjxTN9z
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAl/EwnoACgkQlIwGZQq6
+i9CKTAf/ZSFEaHqRkMF3u/UxJavjMPWKGzIRn9kb9LtvXFB+LAS2po3faxvL6hre
+cuckzin4dB8C+U73oQoabGOgG4Kb8mhuynpE+PJV8V7lUQADEuJXu7LbU7/VEXJk
+A+OvWhe0Ak8VckA1IRGTTBLGcuwK8ekorPfljkg2plowGhmnh999hO2OZnIhRcfB
+bbWG9cn82N0JQN/DXnhkDJdU7rxKjzqrKTzcPegyAUFYs3zR0g++9I6VAI96qKTM
+Eemf6GtE/bsaGNiPa0aU/wGlmlM80OVnQskXsC/c1zaKxWe+a8KIiBAewi1WvX+3
+Lws/OTlSJyUagjer+HZtaRRK9qqNLg==
+=8kEf
+-----END PGP SIGNATURE-----
+
+--Nq2Wo0NMKNjxTN9z--
