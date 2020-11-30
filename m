@@ -2,228 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E50A2C904F
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 22:55:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 620D62C906F
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 23:01:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730218AbgK3VyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 16:54:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60488 "EHLO
+        id S1727590AbgK3WBG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 17:01:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725893AbgK3VyF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 16:54:05 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26085C0613D2
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 13:53:25 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id s13so9559514ejr.1
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 13:53:25 -0800 (PST)
+        with ESMTP id S1725893AbgK3WBG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 17:01:06 -0500
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 446B6C0613D2
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 14:00:26 -0800 (PST)
+Received: by mail-il1-x141.google.com with SMTP id w8so12860109ilg.12
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 14:00:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=H7iUhNSix7GZpZhonIGILqFYgzHEexAyQxsud+nzpBI=;
-        b=l0RtI83hH2d00jqQjA7Clpvh58bN6DfwnHzSkPbCg16RzJkmgSf5/QzvBF9N4YL/HQ
-         VL6T6hvTL9G+giXHA7xQoO3sBi+2+5uCLZUOF4JCv9a/5wbNI4tPcj5sdDaM7YpNoQem
-         9YVRLkFXVB6CqfeSVsuPGQjVTqTgfYeGYesOV5A0085SmeJbY8lj5oXDLHfwDo+mlyrp
-         qUeybEOIW180xZlCnSIcJEyR6JqSMZxciEqA2e1cGcbNAX4HfgXki8arDxsTlAGMf3Jc
-         inQIZ2nf0fFvFqOh7bNBW/lEVNveZk9Q+rRcKsSGwosmYWx/mQHSTjcMCJWopRdM06te
-         Qnrg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LJ9SjJ/0B20ZhgHvkLEch2PuIF7bGKLEueO/TBLcBNo=;
+        b=tWMcoD8OcJA6WQfz7VRy+5b+7/YzAwShqglstVoZfC0lJF3nFdXP5Ye5CcDZhZCifg
+         oEjp86VhOiKr1/10iGNP3U54KqDYetEkGr4LrYJ+1oh30phkAV1hk10Ucs2PNElYcVWC
+         SkR1HQh4esDpgm9c74fLfCy/pYxF1rn3ECE48HjymAlh42s7cZB4W8t57bY0MwbzLagd
+         WRSgyH2UZWyIj2VIq/lKn3u6xckoLLxFnNTLO0gdP7IYhpRxCd+yk+norr2CkUqQi6se
+         nPpfSwMTsPcuc0RnLjhQKJ/XlSWdeZIA9xc/hwoJqSppmwAXxZyxOC1BeOAVbC+MWwjQ
+         Eo9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=H7iUhNSix7GZpZhonIGILqFYgzHEexAyQxsud+nzpBI=;
-        b=BAQHbVj4ZRdIaNJC/Swml+Atz/FqahFKzwmcxDpMFc/suajkmMg1eMeRUjnEF9BX6i
-         Kf/mwlHUnRaWQYajtqQDBZX0IVe983rCB48GcWeA6U/RvjNtm0Z0UqGximpd+chvROqG
-         OY6jFQLx9FcZXkKACcmK77IA/2wDk4j2g5mP/O1Fj2Ooa35fzSZUMVHVRD9gkdQFkoWH
-         u1f79OnYolJADMzI9Ibh6KuIrVXGj6td22zbhdv2Yra1O6v+PvQI4XVjDeabBXBpDBHa
-         x4ZeRqFZkMuDdRKesdcwi4xNzJmQwwrB+zYEcEBj6KojSp5M75HeGRmg4UTskIv4DBWf
-         sBmw==
-X-Gm-Message-State: AOAM530yAVOGClmsVWTKSEgKdLTyPbSHxldfc5oHiRmkmja3UCdYJ53G
-        fFr373RCqfmtejjANA23Tbw=
-X-Google-Smtp-Source: ABdhPJwD6g9bDJ/iUH5Ltzyg5JIaEMx+vwZfHIDtzTNfO0tizi9zSp+D7JNwQ46Nk1bP/xBkFNO2sw==
-X-Received: by 2002:a17:906:3c04:: with SMTP id h4mr4402002ejg.220.1606773203876;
-        Mon, 30 Nov 2020 13:53:23 -0800 (PST)
-Received: from skbuf ([188.25.2.120])
-        by smtp.gmail.com with ESMTPSA id pk19sm6800885ejb.32.2020.11.30.13.53.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Nov 2020 13:53:23 -0800 (PST)
-Date:   Mon, 30 Nov 2020 23:53:22 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: Correct usage of dev_base_lock in 2020
-Message-ID: <20201130215322.7arp3scumobdnvtz@skbuf>
-References: <20201130194617.kzfltaqccbbfq6jr@skbuf>
- <20201130122129.21f9a910@hermes.local>
- <20201130202626.cnwzvzc6yhd745si@skbuf>
- <CANn89i+H9dVgVE0NbucHizZX2une+bjscjcCT+ZvVNj5YFHYpg@mail.gmail.com>
- <20201130203640.3vspyoswd5r5n3es@skbuf>
- <CANn89iJ1+P_ihPwyHGwCpkeu1OAj=gf+MAnyWmZvyMg4uMfodw@mail.gmail.com>
- <20201130205053.mb6ouveu3nsts3np@skbuf>
- <CANn89i+D+7XyYi=x2UxCrMM72GeP3u5MB0-7xruOZJGrERJ5vQ@mail.gmail.com>
- <20201130211158.37ay2uvdwcnegw45@skbuf>
- <CANn89iJGA8qWBJ97nnNGNOuLNUYF5WPnL+qi722KYCD7kvKyCg@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LJ9SjJ/0B20ZhgHvkLEch2PuIF7bGKLEueO/TBLcBNo=;
+        b=W/zP+QTX7AO/a1gCFYjoN5We0LnsrPiQWwY3HPe5dOOktm8bDoiuKZxpftkTxwjr1s
+         X6fYMvCF7s8Tq9wpKe4s4EVzJ6ZgBOo9TVuXsjw9kaUouM5lnoZUswQdZ+dlSNKnikCJ
+         FsLI7hIMU+qtoT0FMdZyPUAdVELBIWtxnsANJY+oLVXhgWwhlyryydSdWVHPwQpcHeQa
+         WhywoI4Cqud4njwO9cOoGJFgwhtbadtP6DpWKzq6KoaNFUSlsQNQjxAVyknHr1uQITNI
+         9rIG/UaLFfL4gAmkoY2BdB1JCYrgrw8rqXpDnIiShhKB1fDSJnKigrMdjRXZuR4W23DT
+         +Ffw==
+X-Gm-Message-State: AOAM531IkfheU2bcMC8AqsJylHD9tjT5gY/C6RRF3txKQy7wm5vpBe9i
+        x497Xkw6MIF23Uc4iDrd2aFxJcDzV5nh/qPx8qs=
+X-Google-Smtp-Source: ABdhPJwqF+w2CSgBhdGV+TFE2dm8r4kYsra8znUTmV/jJf+Z4JmJm2VxoXntGgi5/DwihXFI1Cs0BJPzRDCBKJ2l9qU=
+X-Received: by 2002:a92:aacc:: with SMTP id p73mr20499921ill.64.1606773625369;
+ Mon, 30 Nov 2020 14:00:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89iJGA8qWBJ97nnNGNOuLNUYF5WPnL+qi722KYCD7kvKyCg@mail.gmail.com>
+References: <20201130212907.320677-1-anthony.l.nguyen@intel.com> <20201130212907.320677-2-anthony.l.nguyen@intel.com>
+In-Reply-To: <20201130212907.320677-2-anthony.l.nguyen@intel.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Mon, 30 Nov 2020 14:00:14 -0800
+Message-ID: <CAKgT0Uf7BoQ5DAWD8V7vhRZfRZCEBxc_X4Wn35mYEvMPSq-EaQ@mail.gmail.com>
+Subject: Re: [net-next 1/4] e1000e: allow turning s0ix flows on for systems
+ with ME
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mario Limonciello <mario.limonciello@dell.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Stefan Assmann <sassmann@redhat.com>,
+        "Neftin, Sasha" <sasha.neftin@intel.com>,
+        Aaron Brown <aaron.f.brown@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 30, 2020 at 10:46:00PM +0100, Eric Dumazet wrote:
-> You can not use dev_base_lock() or RCU and call an ndo_get_stats64()
-> that could sleep.
+On Mon, Nov 30, 2020 at 1:32 PM Tony Nguyen <anthony.l.nguyen@intel.com> wrote:
 >
-> You can not for example start changing bonding, since bond_get_stats()
-> could be called from non-sleepable context (net/core/net-procfs.c)
+> From: Mario Limonciello <mario.limonciello@dell.com>
 >
-> I am still referring to your patch adding :
+> S0ix for GBE flows are needed for allowing the system to get into deepest
+> power state, but these require coordination of components outside of
+> control of Linux kernel.  For systems that have confirmed to coordinate
+> this properly, allow turning on the s0ix flows at load time or runtime.
 >
-> +       if (!rtnl_locked)
-> +               rtnl_lock();
+> Fixes: e086ba2fccda ("e1000e: disable s0ix entry and exit flows for ME systems")
+> Signed-off-by: Mario Limonciello <mario.limonciello@dell.com>
+> Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> ---
+>  .../device_drivers/ethernet/intel/e1000e.rst  |  23 ++++
+>  drivers/net/ethernet/intel/e1000e/e1000.h     |   7 ++
+>  drivers/net/ethernet/intel/e1000e/netdev.c    |  64 +++++-----
+>  drivers/net/ethernet/intel/e1000e/param.c     | 110 ++++++++++++++++++
+>  4 files changed, 166 insertions(+), 38 deletions(-)
 >
-> This is all I said.
+> diff --git a/Documentation/networking/device_drivers/ethernet/intel/e1000e.rst b/Documentation/networking/device_drivers/ethernet/intel/e1000e.rst
+> index f49cd370e7bf..da029b703573 100644
+> --- a/Documentation/networking/device_drivers/ethernet/intel/e1000e.rst
+> +++ b/Documentation/networking/device_drivers/ethernet/intel/e1000e.rst
+> @@ -249,6 +249,29 @@ Debug
+>
+>  This parameter adjusts the level of debug messages displayed in the system logs.
+>
+> +EnableS0ix
+> +----------
+> +:Valid Range: 0, 1, 2
+> +:Default Value: 1 (Use Heuristics)
+> +
+> +   +-------+----------------+
+> +   | Value |    EnableS0ix  |
+> +   +=======+================+
+> +   |   0   |    Disabled    |
+> +   +-------+----------------+
+> +   |   1   | Use Heuristics |
+> +   +-------+----------------+
+> +   |   2   |    Enabled     |
+> +   +-------+----------------+
+> +
+> +Controls whether the e1000e driver will attempt s0ix flows.  S0ix flows require
+> +correct platform configuration. By default the e1000e driver will use some heuristics
+> +to decide whether to enable s0ix.  This parameter can be used to override heuristics.
+> +
+> +Additionally a sysfs file "enable_s0ix" will be present that can change the value at
+> +runtime.
+> +
+> +Note: This option is only effective on Cannon Point or later hardware.
+>
+>  Additional Features and Configurations
+>  ======================================
 
-Ah, ok, well I didn't show you all the patches, did I?
+Generally the use of module parameters and sysfs usage are frowned
+upon. Based on the configuration isn't this something that could just
+be controlled via an ethtool priv flag? Couldn't you just have this
+default to whatever the heuristics decide at probe on and then support
+enabling/disabling it via the priv flag? You could look at
+igb_get_priv_flags/igb_set_priv_flags for an example of how to do what
+I am proposing.
 
------------------------------[cut here]-----------------------------
-From d62c65ef6cb357e1b8c5a4ab189718e157a569ae Mon Sep 17 00:00:00 2001
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
-Date: Thu, 26 Nov 2020 23:08:57 +0200
-Subject: [PATCH] net: procfs: retrieve device statistics under RTNL, not RCU
-
-In the effort of making .ndo_get_stats64 be able to sleep, we need to
-ensure the callers of dev_get_stats do not use atomic context.
-
-The /proc/net/dev file uses an RCU read-side critical section to ensure
-the integrity of the list of network interfaces, because it iterates
-through all net devices in the netns to show their statistics.
-We still need some protection against an interface registering or
-deregistering, and the writer-side lock, the RTNL mutex, is fine for
-that, because it offers sleepable context.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- net/core/net-procfs.c                   | 11 ++++++-----
- 2 files changed, 11 insertions(+), 10 deletions(-)
-
-diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
-index c714e6a9dad4..1429e8c066d8 100644
---- a/net/core/net-procfs.c
-+++ b/net/core/net-procfs.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <linux/netdevice.h>
- #include <linux/proc_fs.h>
-+#include <linux/rtnetlink.h>
- #include <linux/seq_file.h>
- #include <net/wext.h>
- 
-@@ -21,7 +22,7 @@ static inline struct net_device *dev_from_same_bucket(struct seq_file *seq, loff
- 	unsigned int count = 0, offset = get_offset(*pos);
- 
- 	h = &net->dev_index_head[get_bucket(*pos)];
--	hlist_for_each_entry_rcu(dev, h, index_hlist) {
-+	hlist_for_each_entry(dev, h, index_hlist) {
- 		if (++count == offset)
- 			return dev;
- 	}
-@@ -51,9 +52,9 @@ static inline struct net_device *dev_from_bucket(struct seq_file *seq, loff_t *p
-  *	in detail.
-  */
- static void *dev_seq_start(struct seq_file *seq, loff_t *pos)
--	__acquires(RCU)
-+	__acquires(rtnl_mutex)
- {
--	rcu_read_lock();
-+	rtnl_lock();
- 	if (!*pos)
- 		return SEQ_START_TOKEN;
- 
-@@ -70,9 +71,9 @@ static void *dev_seq_next(struct seq_file *seq, void *v, loff_t *pos)
- }
- 
- static void dev_seq_stop(struct seq_file *seq, void *v)
--	__releases(RCU)
-+	__releases(rtnl_mutex)
- {
--	rcu_read_unlock();
-+	rtnl_unlock();
- }
- 
- static void dev_seq_printf_stats(struct seq_file *seq, struct net_device *dev)
------------------------------[cut here]-----------------------------
-
-and:
-
------------------------------[cut here]-----------------------------
-From 0c51569116b3844d0d99831697a8e4134814d50e Mon Sep 17 00:00:00 2001
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
-Date: Mon, 30 Nov 2020 02:51:01 +0200
-Subject: [PATCH] net: sysfs: retrieve device statistics unlocked
-
-In the effort of making .ndo_get_stats64 be able to sleep, we need to
-ensure the callers of dev_get_stats do not use atomic context.
-
-I need to preface this by saying that I have no idea why netstat_show
-takes the dev_base_lock rwlock. Two things are for certain:
-(a) it's not due to dev_isalive requiring it for some mystical reason,
-    because broadcast_show() also calls dev_isalive() and has had no
-    problem existing since the beginning of git.
-(b) the dev_get_stats function definitely does not need dev_base_lock
-    protection either. In fact, holding the dev_base_lock is the entire
-    problem here, because we want to make dev_get_stats sleepable, and
-    holding a rwlock gives us atomic context.
-
-So since no protection seems to be necessary, just run unlocked while
-retrieving the /sys/class/net/eth0/statistics/* values.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- net/core/net-sysfs.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index 999b70c59761..0782a476b424 100644
---- a/net/core/net-sysfs.c
-+++ b/net/core/net-sysfs.c
-@@ -585,14 +585,13 @@ static ssize_t netstat_show(const struct device *d,
- 	WARN_ON(offset > sizeof(struct rtnl_link_stats64) ||
- 		offset % sizeof(u64) != 0);
- 
--	read_lock(&dev_base_lock);
- 	if (dev_isalive(dev)) {
- 		struct rtnl_link_stats64 temp;
- 		const struct rtnl_link_stats64 *stats = dev_get_stats(dev, &temp);
- 
- 		ret = sprintf(buf, fmt_u64, *(u64 *)(((u8 *)stats) + offset));
- 	}
--	read_unlock(&dev_base_lock);
-+
- 	return ret;
- }
- 
------------------------------[cut here]-----------------------------
-
-In all fairness, I think there is precedent in the kernel for changing
-so much RCU-protected code to use RTNL. I can't recall the exact link
-now, except for this one:
-https://patchwork.ozlabs.org/project/netdev/patch/1410306738-18036-2-git-send-email-xiyou.wangcong@gmail.com/,
-but you and Cong have changed a lot of RCU-protected accesses in IPv6,
-because the read-side critical section was taking too much time and was
-not sleepable/preemptible.
-
-Now, I do agree that there's only so much we can keep adding to the RTNL
-mutex. I guess somebody needs to start the migration towards a different
-mutex. I'll prepare some patches then, and rework the ones that I have.
+I think it would simplify this quite a bit since you wouldn't have to
+implement sysfs show/store operations for the value and would instead
+be allowing for reading/setting via the get_priv_flags/set_priv_flags
+operations. In addition you could leave the code for checking what
+supports this in place and have it set a flag that can be read or
+overwritten.
