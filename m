@@ -2,126 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 598092C8463
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 13:53:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3C8B2C8468
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 13:55:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726069AbgK3Mwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 07:52:50 -0500
-Received: from userp2130.oracle.com ([156.151.31.86]:50934 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725900AbgK3Mwt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 07:52:49 -0500
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AUCT8MP161013;
-        Mon, 30 Nov 2020 12:51:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=iOSOzG9McZzuR7elPCodrNp8EvMHOEUV9ZwrGMMBHTc=;
- b=oQBOeWMrw8UceHrB/Wbw9Wdu1egQkl9bwNgFn489dVu4gBLcwMbNCxConO5X18gEzuSR
- En9Xgh3beCIufoft2mmjTEdXCkXG48K8iU6vZ6QhxQiru0S/wkwUW/kLvSRGCoZ1YDFi
- zXFMtfnFBZ+H3K7wizffM7KWjQjZRIO//LGVkprjZScpKS1XJw43dPPhI0U9jeOBaOpJ
- ihs/kNOvZmXaKeNCIStfv9bxQcD2UUBAFaQOSgv2BS8tokAeSLppr7/OHo9hGzLUjzDc
- PhtsjHl+TXP9CGsmDl1ZkNZlr44WsVNG9gHu8S1WhBjqJJpPUBzRtqSwcj3ZX4kV8gYi 1g== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2130.oracle.com with ESMTP id 353dyqcv4e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 30 Nov 2020 12:51:53 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0AUCo0BT054569;
-        Mon, 30 Nov 2020 12:51:52 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by aserp3020.oracle.com with ESMTP id 3540ewhm03-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 30 Nov 2020 12:51:52 +0000
-Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0AUCpmA1017759;
-        Mon, 30 Nov 2020 12:51:51 GMT
-Received: from kadam (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 30 Nov 2020 04:51:47 -0800
-Date:   Mon, 30 Nov 2020 15:51:37 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Ralf Baechle <ralf@linux-mips.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-hams@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH 109/141] net: netrom: Fix fall-through warnings for Clang
-Message-ID: <20201130125137.GE2767@kadam>
-References: <cover.1605896059.git.gustavoars@kernel.org>
- <c9a262ebaebd704e66c264fb68462bd8b9664d38.1605896060.git.gustavoars@kernel.org>
+        id S1726178AbgK3Mxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 07:53:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60676 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726063AbgK3Mxy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 07:53:54 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22681C0613D2
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 04:53:14 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kjig4-00040Z-PG
+        for netdev@vger.kernel.org; Mon, 30 Nov 2020 13:53:12 +0100
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id 3D18859F8F4
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 12:53:10 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 612AB59F8E6;
+        Mon, 30 Nov 2020 12:53:09 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 59e203ba;
+        Mon, 30 Nov 2020 12:53:08 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: pull-request: can 2020-11-30
+Date:   Mon, 30 Nov 2020 13:53:02 +0100
+Message-Id: <20201130125307.218258-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c9a262ebaebd704e66c264fb68462bd8b9664d38.1605896060.git.gustavoars@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9820 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 malwarescore=0 phishscore=0
- suspectscore=0 bulkscore=0 spamscore=0 adultscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011300082
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9820 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 bulkscore=0
- clxscore=1011 mlxscore=0 spamscore=0 priorityscore=1501 mlxlogscore=999
- suspectscore=0 lowpriorityscore=0 phishscore=0 adultscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011300081
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 20, 2020 at 12:38:15PM -0600, Gustavo A. R. Silva wrote:
-> In preparation to enable -Wimplicit-fallthrough for Clang, fix multiple
-> warnings by explicitly adding multiple break statements instead of
-> letting the code fall through to the next case.
-> 
-> Link: https://github.com/KSPP/linux/issues/115
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> ---
->  net/netrom/nr_route.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/net/netrom/nr_route.c b/net/netrom/nr_route.c
-> index 78da5eab252a..de0456073dc0 100644
-> --- a/net/netrom/nr_route.c
-> +++ b/net/netrom/nr_route.c
-> @@ -266,6 +266,7 @@ static int __must_check nr_add_node(ax25_address *nr, const char *mnemonic,
->  		fallthrough;
->  	case 2:
->  		re_sort_routes(nr_node, 0, 1);
-> +		break;
->  	case 1:
->  		break;
->  	}
-> @@ -359,6 +360,7 @@ static int nr_del_node(ax25_address *callsign, ax25_address *neighbour, struct n
->  					fallthrough;
->  				case 1:
->  					nr_node->routes[1] = nr_node->routes[2];
-> +					fallthrough;
+Hello Jakub, hello David,
 
-Make this one a break like the others.
+here's a pull request of 5 patches for net/master.
 
->  				case 2:
->  					break;
->  				}
-> @@ -482,6 +484,7 @@ static int nr_dec_obs(void)
->  					fallthrough;
->  				case 1:
->  					s->routes[1] = s->routes[2];
-> +					break;
->  				case 2:
->  					break;
->  				}
-> @@ -529,6 +532,7 @@ void nr_rt_device_down(struct net_device *dev)
->  							fallthrough;
->  						case 1:
->  							t->routes[1] = t->routes[2];
-> +							break;
->  						case 2:
->  							break;
->  						}
+The first patch is by me an target the tcan4x5x bindings for the m_can driver.
+It fixes the error path in the tcan4x5x_can_probe() function.
+
+The next two patches are by Jeroen Hofstee and makes the lost of arbitration
+error counters of sja1000 and the sun4i drivers consistent with the other
+drivers.
+
+Zhang Qilong contributes two patch that clean up the error path in the c_can
+and kvaser_pciefd drivers.
 
 regards,
-dan carpenter
+Marc
+
+---
+
+The following changes since commit 4d521943f76bd0d1e68ea5e02df7aadd30b2838a:
+
+  dt-bindings: net: correct interrupt flags in examples (2020-11-28 14:47:56 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-5.10-20201130
+
+for you to fetch changes up to 13a84cf37a4cf1155a41684236c2314eb40cd65c:
+
+  can: kvaser_pciefd: kvaser_pciefd_open(): fix error handling (2020-11-30 12:43:55 +0100)
+
+----------------------------------------------------------------
+linux-can-fixes-for-5.10-20201130
+
+----------------------------------------------------------------
+Jeroen Hofstee (2):
+      can: sja1000: sja1000_err(): don't count arbitration lose as an error
+      can: sun4i_can: sun4i_can_err(): don't count arbitration lose as an error
+
+Marc Kleine-Budde (1):
+      can: m_can: tcan4x5x_can_probe(): fix error path: remove erroneous clk_disable_unprepare()
+
+Zhang Qilong (2):
+      can: c_can: c_can_power_up(): fix error handling
+      can: kvaser_pciefd: kvaser_pciefd_open(): fix error handling
+
+ drivers/net/can/c_can/c_can.c     | 18 ++++++++++++++----
+ drivers/net/can/kvaser_pciefd.c   |  4 +++-
+ drivers/net/can/m_can/tcan4x5x.c  | 11 +++--------
+ drivers/net/can/sja1000/sja1000.c |  1 -
+ drivers/net/can/sun4i_can.c       |  1 -
+ 5 files changed, 20 insertions(+), 15 deletions(-)
+
+
