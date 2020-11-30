@@ -2,95 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B19D2C8CD7
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 19:31:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEB6B2C8CFA
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 19:40:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729700AbgK3Sbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 13:31:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57268 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727055AbgK3Sba (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 13:31:30 -0500
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78CADC0613D2
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 10:30:50 -0800 (PST)
-Received: by mail-io1-xd29.google.com with SMTP id k3so4943299ioq.4
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 10:30:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EcFh3eMKS38k+Nvsuveb2dE9BhdXp7nLLxWHuXbd2Ww=;
-        b=Mk/8lTxeeKHe8a1LFIlB3lkgRfP6pkZ64vsmiwipMZIgvpH//KB4OA+BJRv3Bbk3G0
-         4pNxReDixEHyM2p/Z1EGNjY9gZyRT/UZ4wYvIhzGVlsm5uJPHz7ZS9+G9gmJpzg5p9d/
-         vDjYXZXbIy7W0jAYqdCkIT8VaJmJN+sZDKMTIkNk5aJ8l8rGFp2jW6H8/bx4oeg6uqfP
-         jAsOcEwiX/opBUdeniYzGtluussVeaF4tgRcKgzRsCkgcwNTeAadl/HYmcr7zxt88nHG
-         a5Gvau3eNL2AZ/JoVVBqTJYEHbSzX0c/U7AiIqg8f3Om6yWAJx2FWs6cisil+gK7Sk36
-         SR0g==
+        id S2387746AbgK3SjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 13:39:04 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:28086 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727451AbgK3SjE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 13:39:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606761457;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=vti/hioQ1b48TeV8bk5Pw23Zejok0uePKJw0B2VVoEs=;
+        b=WT9YTZDYXK891A/zJlFgxilLaSbhvMf51TDX7+b729/xUm1TMraADCJVZeakB0ri9wc+EZ
+        tgnkqcywnzODzCD4JhD2+Nc2QqiXpN27lC/j/vDbP4O0WfRm5hHrcH3y3bPLu4U7O0mJaX
+        ZSO8QsJi91Aj4VHugGZLgThLSm4MJQ8=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-348-R99E2iUmOYG_FFkzua0gtA-1; Mon, 30 Nov 2020 13:37:35 -0500
+X-MC-Unique: R99E2iUmOYG_FFkzua0gtA-1
+Received: by mail-ed1-f69.google.com with SMTP id x71so3971856ede.9
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 10:37:35 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EcFh3eMKS38k+Nvsuveb2dE9BhdXp7nLLxWHuXbd2Ww=;
-        b=cDt/pOiUtH48t8M/S7qKZTsR+jgn4gaALJBq23JlEYT/tQzot1jHavJPmh/zPwnQIm
-         7EaH7LUcosaloHJ36bfUJanIOrIAys6nyju4ERp/n5BffgSNCIMLUxYM2tXbrYtUqeLP
-         bkRDodx7EuxDSGYdDtV0mqZjNinjxOaeLfMpoq9KuQVUP2a2sXj6wYk1GPqIZ5WOp81q
-         yiENo/Rrs2BEgLgY9Jw7C9/LSRHRNfzIlfMr5N2fQhw8aGDAy3Zn5U4GCBwrKkw+5NhL
-         lYiaxqn6SU9PIkv7FkM8orJ/sseapruk4xMJLmA0sQw9wY6ETVKqlhZE9SGGBvg/9TQx
-         ZcWw==
-X-Gm-Message-State: AOAM5328U+xeQqxu45jK2Ha7Y0ezh1WwCiRTAM2n4wKEfz3D3anmZBS9
-        t73KSXwPdoPuAudrvgp06gFIV6Kb+2nkRQptpqQXUQ==
-X-Google-Smtp-Source: ABdhPJzga1/Ooik44wRQMeegMIH/QIZHtKzsPzDANyvcVRrNYvv/Nq4MGRGQg5BJb6+zN51VXDmlnfnjjn3xh1xpbnE=
-X-Received: by 2002:a5d:83d0:: with SMTP id u16mr16136450ior.157.1606761049564;
- Mon, 30 Nov 2020 10:30:49 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vti/hioQ1b48TeV8bk5Pw23Zejok0uePKJw0B2VVoEs=;
+        b=e+dNYhQtJRCYWgSTBHs+kQ8Jv2+d+M8DTBULkPvI7PABvPPIH4gSvwebqRQ+H/R/nX
+         5JUb91dPWBkAoN/VCuhUsixEmqvfYmLgLutZ4Ec0X5zVJs+ibNKiu2D+wcp4RiMSe7pN
+         W4d/XHfAkAXWUF/a9K3GoqGTiqJ2pqmrTmC0PJagoJ9PA9YGz3KbCuB4LOk9fCGkuQDs
+         8sGSNVcndw+g4ttoiYPgqLg8/ua+NlKuUld3r3nLSDUUCmAn4HhjiYjWh/FdA69bTwRR
+         hZ3As82tbIKEaphM6AUPI/wRO1lpHeocct0UgN22ir4+7j8hTJnGgzCrdFUsYOgYgm99
+         rfNg==
+X-Gm-Message-State: AOAM530Lb/3fRSZBdshah8zG+0YBfGn9QMkezALkC8CNnrMtkgVy2EUz
+        Jw3uJVHbxcIjbseNz2va66fiOvVKI1qwVkIsru3aRqzYNVSmOpSRvcq1uINxYOI2v9pCsfLzbpH
+        JJ9dC1PBbZYstn/CO
+X-Received: by 2002:a17:906:391b:: with SMTP id f27mr20464979eje.195.1606761453969;
+        Mon, 30 Nov 2020 10:37:33 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyd9xfdyzfYJ2lw1X/IgAiuN3edERGd+ctA3CbqEVNPiUlUooI47U9taql0gTC41xZh3aPygA==
+X-Received: by 2002:a17:906:391b:: with SMTP id f27mr20464933eje.195.1606761453351;
+        Mon, 30 Nov 2020 10:37:33 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id a10sm507720ejk.92.2020.11.30.10.37.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Nov 2020 10:37:32 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id C5B8B181AD4; Mon, 30 Nov 2020 19:37:30 +0100 (CET)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org, Jonathan Morton <chromatix99@gmail.com>,
+        Pete Heist <pete@heistp.net>
+Subject: [PATCH net] inet_ecn: Fix endianness of checksum update when setting ECT(1)
+Date:   Mon, 30 Nov 2020 19:37:05 +0100
+Message-Id: <20201130183705.17540-1-toke@redhat.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-References: <20201129182435.jgqfjbekqmmtaief@skbuf> <20201129205817.hti2l4hm2fbp2iwy@skbuf>
- <20201129211230.4d704931@hermes.local> <CANn89iKyyCwiKHFvQMqmeAbaR9SzwsCsko49FP+4NBW6+ZXN4w@mail.gmail.com>
- <20201130101405.73901b17@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201130101405.73901b17@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 30 Nov 2020 19:30:38 +0100
-Message-ID: <CANn89i+njuoeg7uAwWd08NKONXa4d2f47XpN4Kt83192mCZLwg@mail.gmail.com>
-Subject: Re: Correct usage of dev_base_lock in 2020
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 30, 2020 at 7:14 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Mon, 30 Nov 2020 11:41:10 +0100 Eric Dumazet wrote:
-> > > So dev_base_lock dates back to the Big Kernel Lock breakup back in Linux 2.4
-> > > (ie before my time). The time has come to get rid of it.
-> > >
-> > > The use is sysfs is because could be changed to RCU. There have been issues
-> > > in the past with sysfs causing lock inversions with the rtnl mutex, that
-> > > is why you will see some trylock code there.
-> > >
-> > > My guess is that dev_base_lock readers exist only because no one bothered to do
-> > > the RCU conversion.
-> >
-> > I think we did, a long time ago.
-> >
-> > We took care of all ' fast paths' already.
-> >
-> > Not sure what is needed, current situation does not bother me at all ;)
->
-> Perhaps Vladimir has a plan to post separately about it (in that case
-> sorry for jumping ahead) but the initial problem was procfs which is
-> (hopefully mostly irrelevant by now, and) taking the RCU lock only
-> therefore forcing drivers to have re-entrant, non-sleeping
-> .ndo_get_stats64 implementations.
+When adding support for propagating ECT(1) marking in IP headers it seems I
+suffered from endianness-confusion in the checksum update calculation: In
+fact the ECN field is in the *lower* bits of the first 16-bit word of the
+IP header when calculating in network byte order. This means that the
+addition performed to update the checksum field was wrong; let's fix that.
 
-I think bonding also calls  ndo_get_stats64() while in non-sleeping context.
+Fixes: b723748750ec ("tunnel: Propagate ECT(1) when decapsulating as recommended by RFC6040")
+Reported-by: Jonathan Morton <chromatix99@gmail.com>
+Tested-by: Pete Heist <pete@heistp.net>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+---
+ include/net/inet_ecn.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/net/inet_ecn.h b/include/net/inet_ecn.h
+index e1eaf1780288..563457fec557 100644
+--- a/include/net/inet_ecn.h
++++ b/include/net/inet_ecn.h
+@@ -107,7 +107,7 @@ static inline int IP_ECN_set_ect1(struct iphdr *iph)
+ 	if ((iph->tos & INET_ECN_MASK) != INET_ECN_ECT_0)
+ 		return 0;
+ 
+-	check += (__force u16)htons(0x100);
++	check += (__force u16)htons(0x1);
+ 
+ 	iph->check = (__force __sum16)(check + (check>=0xFFFF));
+ 	iph->tos ^= INET_ECN_MASK;
+-- 
+2.29.2
+
