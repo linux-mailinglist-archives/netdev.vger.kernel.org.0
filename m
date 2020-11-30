@@ -2,133 +2,329 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67F7A2C7D0A
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 03:57:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 041C22C7D72
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 04:40:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726603AbgK3C4s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Nov 2020 21:56:48 -0500
-Received: from mail-vi1eur05on2104.outbound.protection.outlook.com ([40.107.21.104]:60897
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726085AbgK3C4r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 29 Nov 2020 21:56:47 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZcHe7XPcBbq5/Qlz0WtBrFxAEmlgkQ5TzwccrivO+admYrLP9yvWmt/FEi0cMVySZFINmkrK6QEWroVF4/Wz6LNLN5UbehzQkbLB+w12HLXqpoX2+qOpIVhJVF+QE050ZOfvTkDyGJY8DxS2TndQlUBznjjPhhhcZ6+1Poi1Y/AJ9fZ3yKhkvIyeUrDy75JcRd8Ps9vQGYpVj1QN10Yirzi6SDOuwsDYYHoVSJMU0RIyiIGxZITuqwpVubvNMG8mKTswwSiNgyodRw4+ktQxj+Eg63zOWJ7v25exwOjOm/vTCSf4X9W14B+WFuawHEdcw1VihR7vmhhW1xGo6kcvig==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=F0NUo50KoeglmPrzh/2eyRcAyJv9pzilWl3eKpFgUyY=;
- b=WahISOzuth9ayBCZPoM4Rz3Jlr1/AzPsRbuTHkXbcmxWOfgvtbKBIx0ISGRlWtJ5Um+9Iw1DQD92pMHinj0vgiD5asFvbn9k4/qldOvqyIlfy2y34Lk8ysjbbD0YZXXHYu0VAc2OfcQgmSM6ounOKf/fBLOKnfXf27qwNMNHZ15JpF9nnOQfxegjVP1PPA0ZE0EcYhNW6neNtX/erIGdjtIvAdikd0XBdFfTb/dm1VU8E45rGocywStRau+aFHzg8lEM3eSGZ5MsoXps9DeEr8uyZ3Mo1SLnGVhrDMbm21JTmyaZCia+dd1gv76Qex/cupprocGfQqMX+8gV9nDIIQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dektech.com.au; dmarc=pass action=none
- header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=F0NUo50KoeglmPrzh/2eyRcAyJv9pzilWl3eKpFgUyY=;
- b=jQOA+xcefYHtU+YEzh+dH/bDx/UcmEtVlCOATOjOnjegoP13yV4CRzwTwxHKh0bzIU383mibALQzLM97tZ+CGyPa0L9vx4ZiPRGK/l8eQrz+0fXLu1gJLJ+reUc/lOXKN37MkuEIl5kOwLKFP6+T/PdWYFBb50cmrpJbL5XeWus=
-Authentication-Results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=dektech.com.au;
-Received: from VI1PR05MB4605.eurprd05.prod.outlook.com (2603:10a6:802:61::21)
- by VI1PR0502MB3694.eurprd05.prod.outlook.com (2603:10a6:803:5::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.25; Mon, 30 Nov
- 2020 02:55:58 +0000
-Received: from VI1PR05MB4605.eurprd05.prod.outlook.com
- ([fe80::9854:ed43:372d:2883]) by VI1PR05MB4605.eurprd05.prod.outlook.com
- ([fe80::9854:ed43:372d:2883%6]) with mapi id 15.20.3611.024; Mon, 30 Nov 2020
- 02:55:58 +0000
-From:   Hoang Huu Le <hoang.h.le@dektech.com.au>
-To:     jmaloy@redhat.com, maloy@donjonn.com, ying.xue@windriver.com,
+        id S1726950AbgK3Dh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Nov 2020 22:37:57 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:51775 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726304AbgK3Dh4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Nov 2020 22:37:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606707388;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9dvBFyijkXomn/DdnU/wULW6sGAnhqEg3/Ff8ZEhTts=;
+        b=gFFs6fQcAp/r6IdkyvTk9HvhtMKtXbQoAc0qp/kRZv4+g/rbyKKusoThqF2iP9qMCyGDlV
+        aMTOHDnlY+x8tFNCfjo/GS3Hxykpj/WNA2oW8HJbVhTeMgFiwaFEzQ++atKNIbp2XqFx5L
+        Z2TgyIYnLSHqlWVbTMf7iym7BRQtsQU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-54-ixcwaHmpMDu-ztlWPLhU7Q-1; Sun, 29 Nov 2020 22:36:25 -0500
+X-MC-Unique: ixcwaHmpMDu-ztlWPLhU7Q-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A39168030A1;
+        Mon, 30 Nov 2020 03:36:24 +0000 (UTC)
+Received: from [10.72.13.173] (ovpn-13-173.pek2.redhat.com [10.72.13.173])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 725691A882;
+        Mon, 30 Nov 2020 03:36:19 +0000 (UTC)
+Subject: Re: [External] Re: [PATCH 0/7] Introduce vdpa management tool
+To:     Yongji Xie <xieyongji@bytedance.com>,
+        Parav Pandit <parav@nvidia.com>
+Cc:     virtualization@lists.linux-foundation.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, elic@nvidia.com,
         netdev@vger.kernel.org
-Cc:     Hoang Le <hoang.h.le@dektech.com.au>
-Subject: [net] tipc: fix incompatible mtu of transmission
-Date:   Mon, 30 Nov 2020 09:55:44 +0700
-Message-Id: <20201130025544.3602-1-hoang.h.le@dektech.com.au>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [14.161.14.188]
-X-ClientProxiedBy: SG2PR01CA0157.apcprd01.prod.exchangelabs.com
- (2603:1096:4:28::13) To VI1PR05MB4605.eurprd05.prod.outlook.com
- (2603:10a6:802:61::21)
+References: <20201112064005.349268-1-parav@nvidia.com>
+ <5b2235f6-513b-dbc9-3670-e4c9589b4d1f@redhat.com>
+ <CACycT3sYScObb9nN3g7L3cesjE7sCZWxZ5_5R1usGU9ePZEeqA@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <182708df-1082-0678-49b2-15d0199f20df@redhat.com>
+Date:   Mon, 30 Nov 2020 11:36:18 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dektech.com.au (14.161.14.188) by SG2PR01CA0157.apcprd01.prod.exchangelabs.com (2603:1096:4:28::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.20 via Frontend Transport; Mon, 30 Nov 2020 02:55:56 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 10cc3e6f-c5ef-4a3d-2d68-08d894db7680
-X-MS-TrafficTypeDiagnostic: VI1PR0502MB3694:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR0502MB3694E8E866A8B2B043961BD8F1F50@VI1PR0502MB3694.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:972;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: M0AxM4yDEbJk8o42Y7Tr0wsUmytxvr1EB0HwfkF9NJv7pbQ0voHGiB3JlwlAgR+zFYKpT1Mf3Bng2tGzOMyIxA322WiH+mU3+uiKbk0kYEnUThIjanc7Q7xKRYqge7biEeXwammSqvw355BeIp4P9MXFBzqwrUyN53m5JTty/cuS4ArZAUc1XaDo65YhlKYyvuCda5MgUdU6zuo9fSi77QzNu4zhMLXf4122xiS4tED3251s1DJCT7SBZVihyhrl6zKEEgmq7rb1kLQcnw9FOu79p9j0qkI7QtV+X/FA8OAxe1IB14N6y0dk/LTtcE7ohvb5xBY7McFW33A0CetHGg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB4605.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(376002)(39840400004)(136003)(396003)(366004)(2616005)(956004)(478600001)(1076003)(66476007)(5660300002)(86362001)(83380400001)(66556008)(6666004)(7696005)(316002)(52116002)(2906002)(66946007)(8676002)(107886003)(55016002)(186003)(8936002)(103116003)(16526019)(36756003)(26005)(4326008);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?qOox6aopz8DwSBKhUQ5ql6EmNtAlj1sUOkTnSohsoo1BS2xqrwYTdk6Ik8K/?=
- =?us-ascii?Q?fLVsuER9rfJO/2sADw7hNacxfsGSi9db5vc7+XyPlUa2wR2OyaAwjadhwJSf?=
- =?us-ascii?Q?ZYUHur/Cbr7uciDCu75P4IrOXD2D4wrUvlYS9Wi1YFnucWSLEU4Ywxzw569m?=
- =?us-ascii?Q?U0ld9gWyKxi9SwChkp2Fg210BukloSOJLCEu3VDonljMURZcsThSFZh22Z3b?=
- =?us-ascii?Q?tiefmChuBBQfH31o5L6t62Y1QwXeNiaI9mBMO8oOMJM5n7fglPy5UWj4YP/4?=
- =?us-ascii?Q?e4c/bE4LkEzWxv1Nnhzxx/yKa1qN5pmpyk3J7pPYNTxg3xJguwx7JmWzqu5y?=
- =?us-ascii?Q?vU6NuQ71QTNsgPc335OH1yFD6LLrxSl8cmzFPPC10L9duJmTAYZTOXXxO9NS?=
- =?us-ascii?Q?mVa9K+IUSYtNMc2db6zfM+Zew0wbNpvyTCkWjyZ3bWCexuHSvF+E+qTIGE/P?=
- =?us-ascii?Q?B2Gw5T4vQTNjU2BWf+LkPye6VJi7ammwp0Edatn5QYYkgezm4lXYmsFq812V?=
- =?us-ascii?Q?GmpymbuSUug/QkSYoS3CYgxR8IRQFDts3Ll9wmF/h9PF50Q76weN5MfeDDNA?=
- =?us-ascii?Q?DeHrfJrO4gzF2NyC4FDCFHXKVFeiq0PzkrmHszyksLepUN+KC94eDARrlWzQ?=
- =?us-ascii?Q?LBCHzf27my5oSyfGXzb68bafvBkO7GnoRQHJ6ktekdU9srUcCT/G04gcUeMz?=
- =?us-ascii?Q?o2+9qPXCKuqCTLI/ZIEzinUBFe95gOhFXeZgQ1Tai405H5kTbPIxBjAe//Ce?=
- =?us-ascii?Q?mH4Ajq12wgTAK/nynbKVymz3vpoPoEA/KMp8yGZatJ7faAWTF2uEX9MlXLlS?=
- =?us-ascii?Q?JZ9eOSj5ZTd6dpzZiAKdI6fLcFNv+ZcI7hSXj0PYZRNJAqz0sEJJUXusIu6G?=
- =?us-ascii?Q?JezqGXP9i9X8IYWXoApYb0IHabE8m22MFym9jMKOxybJOa0UopYouCmI4Pvk?=
- =?us-ascii?Q?E7UG7nlbZpC9/xrWy2dKwFc2Cqjblh5V5t7tn2uFAUxrVtojN+YVFAZDkuaS?=
- =?us-ascii?Q?M8IW?=
-X-OriginatorOrg: dektech.com.au
-X-MS-Exchange-CrossTenant-Network-Message-Id: 10cc3e6f-c5ef-4a3d-2d68-08d894db7680
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB4605.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Nov 2020 02:55:58.4912
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: RXOY9o+Gp0V51+Tugf1xZRMuEtamtb0UsohIMtRtYJ45J/VMU9QJLbGhRDpd2iNnHPCS8Xc0Uy9Zl5UdKR3aDfkUt3kzsfCMNh22gktDknQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0502MB3694
+In-Reply-To: <CACycT3sYScObb9nN3g7L3cesjE7sCZWxZ5_5R1usGU9ePZEeqA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hoang Le <hoang.h.le@dektech.com.au>
 
-In commit 682cd3cf946b6
-("tipc: confgiure and apply UDP bearer MTU on running links"), we
-introduced a function to change UDP bearer MTU and applied this new value
-across existing per-link. However, we did not apply this new MTU value at
-node level. This lead to packet dropped at link level if its size is
-greater than new MTU value.
+On 2020/11/27 下午1:52, Yongji Xie wrote:
+> On Fri, Nov 27, 2020 at 11:53 AM Jason Wang <jasowang@redhat.com 
+> <mailto:jasowang@redhat.com>> wrote:
+>
+>
+>     On 2020/11/12 下午2:39, Parav Pandit wrote:
+>     > This patchset covers user requirements for managing existing
+>     vdpa devices,
+>     > using a tool and its internal design notes for kernel drivers.
+>     >
+>     > Background and user requirements:
+>     > ----------------------------------
+>     > (1) Currently VDPA device is created by driver when driver is
+>     loaded.
+>     > However, user should have a choice when to create or not create
+>     a vdpa device
+>     > for the underlying parent device.
+>     >
+>     > For example, mlx5 PCI VF and subfunction device supports
+>     multiple classes of
+>     > device such netdev, vdpa, rdma. Howevever it is not required to
+>     always created
+>     > vdpa device for such device.
+>     >
+>     > (2) In another use case, a device may support creating one or
+>     multiple vdpa
+>     > device of same or different class such as net and block.
+>     > Creating vdpa devices at driver load time further limits this
+>     use case.
+>     >
+>     > (3) A user should be able to monitor and query vdpa queue level
+>     or device level
+>     > statistics for a given vdpa device.
+>     >
+>     > (4) A user should be able to query what class of vdpa devices
+>     are supported
+>     > by its parent device.
+>     >
+>     > (5) A user should be able to view supported features and
+>     negotiated features
+>     > of the vdpa device.
+>     >
+>     > (6) A user should be able to create a vdpa device in vendor
+>     agnostic manner
+>     > using single tool.
+>     >
+>     > Hence, it is required to have a tool through which user can
+>     create one or more
+>     > vdpa devices from a parent device which addresses above user
+>     requirements.
+>     >
+>     > Example devices:
+>     > ----------------
+>     >   +-----------+ +-----------+ +---------+ +--------+ +-----------+
+>     >   |vdpa dev 0 | |vdpa dev 1 | |rdma dev | |netdev  | |vdpa dev 3 |
+>     >   |type=net   | |type=block | |mlx5_0   | |ens3f0  | |type=net   |
+>     >   +----+------+ +-----+-----+ +----+----+ +-----+--+ +----+------+
+>     >        |              |            |            |    |
+>     >        |              |            |            |    |
+>     >   +----+-----+        |       +----+----+       | +----+----+
+>     >   |  mlx5    +--------+       |mlx5     +-------+ |mlx5     |
+>     >   |pci vf 2  |                |pci vf 4 | |pci sf 8 |
+>     >   |03:00:2   |                |03:00.4  | |mlx5_sf.8|
+>     >   +----+-----+                +----+----+ +----+----+
+>     >        |                           |   |
+>     >        |                      +----+-----+   |
+>     >        +----------------------+mlx5 +----------------+
+>     >                               |pci pf 0  |
+>     >                               |03:00.0   |
+>     >                               +----------+
+>     >
+>     > vdpa tool:
+>     > ----------
+>     > vdpa tool is a tool to create, delete vdpa devices from a parent
+>     device. It is a
+>     > tool that enables user to query statistics, features and may be
+>     more attributes
+>     > in future.
+>     >
+>     > vdpa tool command draft:
+>     > ------------------------
+>     > (a) List parent devices which supports creating vdpa devices.
+>     > It also shows which class types supported by this parent device.
+>     > In below command example two parent devices support vdpa device
+>     creation.
+>     > First is PCI VF whose bdf is 03.00:2.
+>     > Second is PCI VF whose name is 03:00.4.
+>     > Third is PCI SF whose name is mlx5_core.sf.8
+>     >
+>     > $ vdpa parentdev list
+>     > vdpasim
+>     >    supported_classes
+>     >      net
+>     > pci/0000:03.00:3
+>     >    supported_classes
+>     >      net block
+>     > pci/0000:03.00:4
+>     >    supported_classes
+>     >      net block
+>     > auxiliary/mlx5_core.sf.8
+>     >    supported_classes
+>     >      net
+>     >
+>     > (b) Now add a vdpa device of networking class and show the device.
+>     > $ vdpa dev add parentdev pci/0000:03.00:2 type net name foo0 $
+>     vdpa dev show foo0
+>     > foo0: parentdev pci/0000:03.00:2 type network parentdev vdpasim
+>     vendor_id 0 max_vqs 2 max_vq_size 256
+>     >
+>     > (c) Show features of a vdpa device
+>     > $ vdpa dev features show foo0
+>     > supported
+>     >    iommu platform
+>     >    version 1
+>     >
+>     > (d) Dump vdpa device statistics
+>     > $ vdpa dev stats show foo0
+>     > kickdoorbells 10
+>     > wqes 100
+>     >
+>     > (e) Now delete a vdpa device previously created.
+>     > $ vdpa dev del foo0
+>     >
+>     > vdpa tool support in this patchset:
+>     > -----------------------------------
+>     > vdpa tool is created to create, delete and query vdpa devices.
+>     > examples:
+>     > Show vdpa parent device that supports creating, deleting vdpa
+>     devices.
+>     >
+>     > $ vdpa parentdev show
+>     > vdpasim:
+>     >    supported_classes
+>     >      net
+>     >
+>     > $ vdpa parentdev show -jp
+>     > {
+>     >      "show": {
+>     >         "vdpasim": {
+>     >            "supported_classes": {
+>     >               "net"
+>     >          }
+>     >      }
+>     > }
+>     >
+>     > Create a vdpa device of type networking named as "foo2" from the
+>     parent device vdpasim:
+>     >
+>     > $ vdpa dev add parentdev vdpasim type net name foo2
+>     >
+>     > Show the newly created vdpa device by its name:
+>     > $ vdpa dev show foo2
+>     > foo2: type network parentdev vdpasim vendor_id 0 max_vqs 2
+>     max_vq_size 256
+>     >
+>     > $ vdpa dev show foo2 -jp
+>     > {
+>     >      "dev": {
+>     >          "foo2": {
+>     >              "type": "network",
+>     >              "parentdev": "vdpasim",
+>     >              "vendor_id": 0,
+>     >              "max_vqs": 2,
+>     >              "max_vq_size": 256
+>     >          }
+>     >      }
+>     > }
+>     >
+>     > Delete the vdpa device after its use:
+>     > $ vdpa dev del foo2
+>     >
+>     > vdpa tool support by kernel:
+>     > ----------------------------
+>     > vdpa tool user interface will be supported by existing vdpa
+>     kernel framework,
+>     > i.e. drivers/vdpa/vdpa.c It services user command through a
+>     netlink interface.
+>     >
+>     > Each parent device registers supported callback operations with
+>     vdpa subsystem
+>     > through which vdpa device(s) can be managed.
+>     >
+>     > FAQs:
+>     > -----
+>     > 1. Where does userspace vdpa tool reside which users can use?
+>     > Ans: vdpa tool can possibly reside in iproute2 [1] as it enables
+>     user to
+>     > create vdpa net devices.
+>     >
+>     > 2. Why not create and delete vdpa device using sysfs/configfs?
+>     > Ans:
+>     > (a) A device creation may involve passing one or more attributes.
+>     > Passing multiple attributes and returning error code and more
+>     verbose
+>     > information for invalid attributes cannot be handled by
+>     sysfs/configfs.
+>     >
+>     > (b) netlink framework is rich that enables user space and kernel
+>     driver to
+>     > provide nested attributes.
+>     >
+>     > (c) Exposing device specific file under sysfs without net namespace
+>     > awareness exposes details to multiple containers. Instead exposing
+>     > attributes via a netlink socket secures the communication
+>     channel with kernel.
+>     >
+>     > (d) netlink socket interface enables to run syscaller kernel tests.
+>     >
+>     > 3. Why not use ioctl() interface?
+>     > Ans: ioctl() interface replicates the necessary plumbing which
+>     already
+>     > exists through netlink socket.
+>     >
+>     > 4. What happens when one or more user created vdpa devices exist
+>     for a
+>     > parent PCI VF or SF and such parent device is removed?
+>     > Ans: All user created vdpa devices are removed that belong to a
+>     parent.
+>     >
+>     > [1]
+>     git://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git
+>     <http://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git>
+>     >
+>     > Next steps:
+>     > -----------
+>     > (a) Post this patchset and iproute2/vdpa inclusion, remaining
+>     two drivers
+>     > will be coverted to support vdpa tool instead of creating
+>     unmanaged default
+>     > device on driver load.
+>     > (b) More net specific parameters such as mac, mtu will be added.
+>     > (c) Features bits get and set interface will be added.
+>
+>
+>     Adding Yong Ji for sharing some thoughts from the view of
+>     userspace vDPA
+>     device.
+>
+>
+> Thanks for adding me, Jason!
+>
+> Now I'm working on a v2 patchset for VDUSE (vDPA Device in Userspace) 
+> [1]. This tool is very useful for the vduse device. So I'm considering 
+> integrating this into my v2 patchset. But there is one problem：
+>
+> In this tool, vdpa device config action and enable action are combined 
+> into one netlink msg: VDPA_CMD_DEV_NEW. But in vduse case, it needs to 
+> be splitted because a chardev should be created and opened by a 
+> userspace process before we enable the vdpa device (call 
+> vdpa_register_device()).
+>
+> So I'd like to know whether it's possible (or have some plans) to add 
+> two new netlink msgs something like: VDPA_CMD_DEV_ENABLE and 
+> VDPA_CMD_DEV_DISABLE to make the config path more flexible.
+>
 
-To fix this issue, we also apply this new MTU value for node level.
+Actually, we've discussed such intermediate step in some early 
+discussion. It looks to me VDUSE could be one of the users of this.
 
-Fixes: 682cd3cf946b6 ("tipc: confgiure and apply UDP bearer MTU on running links")
-Acked-by: Jon Maloy <jmaloy@redhat.com>
-Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
----
- net/tipc/node.c | 2 ++
- 1 file changed, 2 insertions(+)
+Or I wonder whether we can switch to use anonymous inode(fd) for VDUSE 
+then fetching it via an VDUSE_GET_DEVICE_FD ioctl?
 
-diff --git a/net/tipc/node.c b/net/tipc/node.c
-index cd67b7d5169f..9f6975dd7873 100644
---- a/net/tipc/node.c
-+++ b/net/tipc/node.c
-@@ -2182,6 +2182,8 @@ void tipc_node_apply_property(struct net *net, struct tipc_bearer *b,
- 			else if (prop == TIPC_NLA_PROP_MTU)
- 				tipc_link_set_mtu(e->link, b->mtu);
- 		}
-+		/* Update MTU for node link entry */
-+		e->mtu = tipc_link_mss(e->link);
- 		tipc_node_write_unlock(n);
- 		tipc_bearer_xmit(net, bearer_id, &xmitq, &e->maddr, NULL);
- 	}
--- 
-2.25.1
+Thanks
+
+
+> Thanks,
+> Yongji
+>
+> [1] https://www.spinics.net/lists/linux-mm/msg231576.html
 
