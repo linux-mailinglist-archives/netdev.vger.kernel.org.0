@@ -2,107 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8395A2C89E6
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 17:49:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B6AFB2C89F0
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 17:52:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728963AbgK3QsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 11:48:17 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:17817 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725859AbgK3QsR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 11:48:17 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fc522250002>; Mon, 30 Nov 2020 08:47:33 -0800
-Received: from sw-mtx-036.mtx.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 30 Nov
- 2020 16:47:36 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     <netdev@vger.kernel.org>, <stephen@networkplumber.org>,
-        <dsahern@kernel.org>
-CC:     Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
-Subject: [PATCH iproute2-next] devlink: Extend man page for port function set command
-Date:   Mon, 30 Nov 2020 18:47:12 +0200
-Message-ID: <20201130164712.571540-1-parav@nvidia.com>
-X-Mailer: git-send-email 2.26.2
+        id S1728808AbgK3QwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 11:52:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:32996 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726670AbgK3QwM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Nov 2020 11:52:12 -0500
+Received: from kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B1C982073C;
+        Mon, 30 Nov 2020 16:51:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606755092;
+        bh=v0BlTFEvoneGaKk6HVhjN8sdc7izbYsibGUaPrdoVrg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jtv5o57QQEkSa8cQ/tsCPxsztHKeqCyxT2sc1JRauCgv/wJRw7ox4sMI0cv3ut/LJ
+         eycSt5XvDBAZSxld3TJ/1MnGVruMB6mL8FQEOY3iN5W1qHcixIGJjVaer+wR9aXNHF
+         t2GflJBkK4VtpOP2PaEzda5IN5vULB0WWKSC4FH0=
+Date:   Mon, 30 Nov 2020 08:51:30 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     David Ahern <dsahern@gmail.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Russell Strong <russell@strong.id.au>
+Subject: Re: [PATCH net] ipv4: Fix tos mask in inet_rtm_getroute()
+Message-ID: <20201130085130.61498967@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201129125416.GA28479@linux.home>
+References: <b2d237d08317ca55926add9654a48409ac1b8f5b.1606412894.git.gnault@redhat.com>
+        <ace2daed-7d88-7364-5395-80b63f59ffc1@gmail.com>
+        <20201128131716.783ff3dd@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+        <20201129125416.GA28479@linux.home>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1606754853; bh=//MbXbg2hK+ciij/PwLU77XTyvmCuDFOMbfTwaNTbaE=;
-        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-         Content-Transfer-Encoding:Content-Type:X-Originating-IP:
-         X-ClientProxiedBy;
-        b=rbfuMN9DCyqrIUV7zc5akEwSq9RdlkcPW7b3Eu9FcbWw+ArO97BCTTETWNtv5mCsI
-         aE2UCpoOmyOwBVPS5wbUkbdLZJpY2BuCY03MAqqrS640wUEG7mOHnUnBJQIbgQSZKS
-         D1TiKYUzO2ioPyVvWMmmYEn67Hx98I8P3G5+48d2ayLE9QGeEXglLA+vME/f94WUxi
-         Kwcw7YsGKsab4ATNt5XzcpnRfwu8cV3/z3wZTnBOpj4BLMc9NGidtPFCr+8msLDorb
-         T9vMyDqT40SriKB0pp9Y+uxEnEg66Xil6gw7CYxeDwQKNq5kB2GM7gkXZeZO34K/be
-         R0rDuXMPxjVVg==
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extended devlink-port man page for synopsis, description and
-example for setting devlink port function attribute.
+On Sun, 29 Nov 2020 13:54:16 +0100 Guillaume Nault wrote:
+> On Sat, Nov 28, 2020 at 01:17:16PM -0800, Jakub Kicinski wrote:
+> > On Sat, 28 Nov 2020 10:03:42 -0700 David Ahern wrote:  
+> > > On 11/26/20 11:09 AM, Guillaume Nault wrote:  
+> > > > When inet_rtm_getroute() was converted to use the RCU variants of
+> > > > ip_route_input() and ip_route_output_key(), the TOS parameters
+> > > > stopped being masked with IPTOS_RT_MASK before doing the route lookup.
+> > > > 
+> > > > As a result, "ip route get" can return a different route than what
+> > > > would be used when sending real packets.
+> > > > 
+> > > > For example:
+> > > > 
+> > > >     $ ip route add 192.0.2.11/32 dev eth0
+> > > >     $ ip route add unreachable 192.0.2.11/32 tos 2
+> > > >     $ ip route get 192.0.2.11 tos 2
+> > > >     RTNETLINK answers: No route to host
+> > > > 
+> > > > But, packets with TOS 2 (ECT(0) if interpreted as an ECN bit) would
+> > > > actually be routed using the first route:
+> > > > 
+> > > >     $ ping -c 1 -Q 2 192.0.2.11
+> > > >     PING 192.0.2.11 (192.0.2.11) 56(84) bytes of data.
+> > > >     64 bytes from 192.0.2.11: icmp_seq=1 ttl=64 time=0.173 ms
+> > > > 
+> > > >     --- 192.0.2.11 ping statistics ---
+> > > >     1 packets transmitted, 1 received, 0% packet loss, time 0ms
+> > > >     rtt min/avg/max/mdev = 0.173/0.173/0.173/0.000 ms
+> > > > 
+> > > > This patch re-applies IPTOS_RT_MASK in inet_rtm_getroute(), to
+> > > > return results consistent with real route lookups.
+> > > > 
+> > > > Fixes: 3765d35ed8b9 ("net: ipv4: Convert inet_rtm_getroute to rcu versions of route lookup")
+> > > > Signed-off-by: Guillaume Nault <gnault@redhat.com>  
+> > > 
+> > > Reviewed-by: David Ahern <dsahern@kernel.org>  
+> > 
+> > Applied, thanks!
+> > 
+> > Should the discrepancy between the behavior of ip_route_input_rcu() and
+> > ip_route_input() be addressed, possibly?  
+> 
+> Do you mean masking TOS with IPTOS_RT_MASK directly in
+> ip_route_input_rcu(), instead of in the callers?
+> 
+> After this patch, all callers apply IPTOS_RT_MASK before calling
+> ip_route_input_rcu(). So, yes, that could be easily consolidated there,
+> and I'll do that after net merges into net-next.
+> 
+> More generally, my long term plan is indeed to do mask the TOS in
+> central places, to get consistent behaviour across the networking
+> stack. However, generally speaking, I need to be careful not to break
+> any established behaviour.
+> 
+> I'm mostly worried about the ECN bits. I guess that any caller that
+> doesn't mask these bits has a bug (as that may break ECN, which is
+> there since a long time). However, there are many code paths to audit
+> before we can be sure.
+> 
+> The end goal is to fully support DSCP. Once we'll be sure that no
+> code path can possibly intreprete an ECN bit as TOS, we'll can safely
+> drop all those obsolete TOS* masks and macros from the kernel code and
+> simply mask out the ECN bits (thus preserving the whole DSCP space).
 
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
----
- man/man8/devlink-port.8 | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+Sounds great!
 
-diff --git a/man/man8/devlink-port.8 b/man/man8/devlink-port.8
-index 966faae6..7e2dc110 100644
---- a/man/man8/devlink-port.8
-+++ b/man/man8/devlink-port.8
-@@ -46,6 +46,12 @@ devlink-port \- devlink port configuration
- .ti -8
- .B devlink port help
-=20
-+.ti -8
-+.BR "devlink port function set "
-+.RI "[ "
-+.BR "hw_addr "
-+.RI "ADDR ]"
-+
- .SH "DESCRIPTION"
- .SS devlink port set - change devlink port attributes
-=20
-@@ -99,6 +105,16 @@ If this argument is omitted all ports are listed.
- Is an alias for
- .BR devlink-health (8).
-=20
-+.SS devlink port function set - Set the port function attribute.
-+
-+.PP
-+.B "DEV/PORT_INDEX"
-+- specifies the devlink port to operate on.
-+
-+.PP
-+.BI hw_addr " ADDR"
-+- hardware address of the function to set.
-+
- .SH "EXAMPLES"
- .PP
- devlink port show
-@@ -135,6 +151,11 @@ devlink port health show pci/0000:01:00.0/1 reporter t=
-x
- .RS 4
- Shows status and configuration of tx reporter registered on pci/0000:01:00=
-.0/1 devlink port.
- .RE
-+.PP
-+devlink port function set pci/0000:01:00.0/1 hw_addr 00:00:00:11:22:33
-+.RS 4
-+Configure hardware address of the PCI function represented by devlink port=
-.
-+.RE
-=20
- .SH SEE ALSO
- .BR devlink (8),
---=20
-2.26.2
-
+> Please note that this is background work for me. Expect slow (but
+> hopefully regular) progress from me.
