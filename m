@@ -2,73 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47AA12C8B67
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 18:40:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13CE32C8B6D
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 18:40:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729418AbgK3RjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 12:39:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44898 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726897AbgK3RjO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Nov 2020 12:39:14 -0500
-Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5EB02206DF;
-        Mon, 30 Nov 2020 17:38:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606757913;
-        bh=HFFjE9XmgSSYVer9/aKugIZ6a6/sln2JoPbC+j0PUD8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=J8EVOor3Z/1QL0gF/GLTYCJqXzHEzoF/l+jyxZ9BfaFOAJoHzWvOOisIDGTcn3q/g
-         phDt6DHOyqNWDt4rpr4f04fx1qNrd8hOyEG2KO18yGM6hKJdN8u9vLkQ6yhfcStZWc
-         umau9hTezF1Hr/jTOaC0vv7PsApzQsyAKP7j1gEw=
-Date:   Mon, 30 Nov 2020 12:38:32 -0500
-From:   Sasha Levin <sashal@kernel.org>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Mike Christie <michael.christie@oracle.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.9 22/33] vhost scsi: add lun parser helper
-Message-ID: <20201130173832.GR643756@sasha-vm>
-References: <20201125153550.810101-1-sashal@kernel.org>
- <20201125153550.810101-22-sashal@kernel.org>
- <25cd0d64-bffc-9506-c148-11583fed897c@redhat.com>
- <20201125180102.GL643756@sasha-vm>
- <9670064e-793f-561e-b032-75b1ab5c9096@redhat.com>
- <20201129041314.GO643756@sasha-vm>
- <7a4c3d84-8ff7-abd9-7340-3a6d7c65cfa7@redhat.com>
- <20201129210650.GP643756@sasha-vm>
- <e499986d-ade5-23bd-7a04-fa5eb3f15a56@redhat.com>
+        id S1729470AbgK3Rjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 12:39:51 -0500
+Received: from mail-il1-f195.google.com ([209.85.166.195]:40687 "EHLO
+        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728451AbgK3Rju (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 12:39:50 -0500
+Received: by mail-il1-f195.google.com with SMTP id g1so12100063ilk.7;
+        Mon, 30 Nov 2020 09:39:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=B4A0okbUHqv5B5dj/XPLmtnTNoOEsXTfn/5l90uEFoM=;
+        b=IWCMS3ZMZ90s757ED+4XguK+HL0TsWbt8n/WxBfOLIiV9/lCbDf3sPrIUDJEbb8RWx
+         fTkUKuGrwWnHQYZ0iEQVtTdspwFCXYDRMAtXAu+GNra4H3yZUpzAO2Nzh6GJ/axWpuV8
+         AUT7XX4r0rUVO+sc7AJkaTVcojE5yeiMMAaQUbt9eMOufwn8kCuSLxRVqgmDBf325we+
+         pGb/Cp6tZAa3TDWj4LGdNV4etv+VntS5FgNJPJxZVWdCPbInLnVVSzpS/3ZXIbLsim0W
+         Fu+SfCLwEHCACVkuxpD4dgikkyQIv0j7qCtProWFZQ3FAfsUGC3ypQvfB8Jd9Bn6HjCd
+         KLhA==
+X-Gm-Message-State: AOAM531GI6YivhkYWQNKDY3ZykCJEdOQRBew/47c9MEoX8Hg+DNBk9ps
+        WEKCjOnuI0rxN/2n9ZqoJg==
+X-Google-Smtp-Source: ABdhPJy1tBVfvlTKy8Ljdlf32Xy2YiZmMU6KG7fY9ZP9pCrPJVaDW4rUpvEHw3svnPb/szKFx5xlXw==
+X-Received: by 2002:a92:dd87:: with SMTP id g7mr21491077iln.102.1606757950052;
+        Mon, 30 Nov 2020 09:39:10 -0800 (PST)
+Received: from xps15 ([64.188.179.253])
+        by smtp.gmail.com with ESMTPSA id a7sm3382492ioq.38.2020.11.30.09.39.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Nov 2020 09:39:09 -0800 (PST)
+Received: (nullmailer pid 2687938 invoked by uid 1000);
+        Mon, 30 Nov 2020 17:39:08 -0000
+Date:   Mon, 30 Nov 2020 10:39:08 -0700
+From:   Rob Herring <robh@kernel.org>
+To:     Bongsu jeon <bongsu.jeon2@gmail.com>
+Cc:     krzk@kernel.org, linux-nfc@lists.01.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bongsu Jeon <bongsu.jeon@samsung.com>
+Subject: Re: [PATCH v2 net-next 1/4] dt-bindings: net: nfc: s3fwrn5: Support
+ a UART interface
+Message-ID: <20201130173908.GC2684526@robh.at.kernel.org>
+References: <1606737627-29485-1-git-send-email-bongsu.jeon@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e499986d-ade5-23bd-7a04-fa5eb3f15a56@redhat.com>
+In-Reply-To: <1606737627-29485-1-git-send-email-bongsu.jeon@samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 30, 2020 at 09:33:46AM +0100, Paolo Bonzini wrote:
->On 29/11/20 22:06, Sasha Levin wrote:
->>Plus all the testing we have for the stable trees, yes. It goes beyond
->>just compiling at this point.
->>
->>Your very own co-workers (https://cki-project.org/) are pushing hard on
->>this effort around stable kernel testing, and statements like these
->>aren't helping anyone.
->
->I am not aware of any public CI being done _at all_ done on 
->vhost-scsi, by CKI or everyone else.  So autoselection should be done 
->only on subsystems that have very high coverage in CI.
+On Mon, Nov 30, 2020 at 09:00:27PM +0900, Bongsu jeon wrote:
+> From: Bongsu Jeon <bongsu.jeon@samsung.com>
+> 
+> Since S3FWRN82 NFC Chip, The UART interface can be used.
+> S3FWRN82 supports I2C and UART interface.
+> 
+> Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
+> ---
+> 
+> Changes in v2:
+>  -change the compatible name.
+>  -change the const to enum for compatible.
+>  -change the node name to nfc.
+> 
+>  .../bindings/net/nfc/samsung,s3fwrn5.yaml          | 32 ++++++++++++++++++++--
+>  1 file changed, 29 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml b/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+> index cb0b8a5..481bbcc 100644
+> --- a/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+> +++ b/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+> @@ -12,7 +12,10 @@ maintainers:
+>  
+>  properties:
+>    compatible:
+> -    const: samsung,s3fwrn5-i2c
+> +    oneOf:
 
-Where can I find a testsuite for virtio/vhost? I see one for KVM, but
-where is the one that the maintainers of virtio/vhost run on patches
-that come in?
+Don't need 'oneOf' here.
 
--- 
-Thanks,
-Sasha
+> +      - enum:
+> +        - samsung,s3fwrn5-i2c
+> +        - samsung,s3fwrn82
+>  
+>    en-gpios:
+>      maxItems: 1
+> @@ -47,10 +50,19 @@ additionalProperties: false
+>  required:
+>    - compatible
+>    - en-gpios
+> -  - interrupts
+> -  - reg
+>    - wake-gpios
+>  
+> +allOf:
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: samsung,s3fwrn5-i2c
+> +    then:
+> +      required:
+> +        - interrupts
+> +        - reg
+> +
+>  examples:
+>    - |
+>      #include <dt-bindings/gpio/gpio.h>
+> @@ -71,3 +83,17 @@ examples:
+>              wake-gpios = <&gpj0 2 GPIO_ACTIVE_HIGH>;
+>          };
+>      };
+> +  # UART example on Raspberry Pi
+> +  - |
+> +    uart0 {
+> +        status = "okay";
+> +
+> +        nfc {
+> +            compatible = "samsung,s3fwrn82";
+> +
+> +            en-gpios = <&gpio 20 0>;
+> +            wake-gpios = <&gpio 16 0>;
+> +
+> +            status = "okay";
+> +        };
+> +    };
+> -- 
+> 1.9.1
+> 
