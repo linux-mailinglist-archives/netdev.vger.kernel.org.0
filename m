@@ -2,97 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B4102C90E2
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 23:21:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B33262C90F6
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 23:26:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730595AbgK3WVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 17:21:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36458 "EHLO
+        id S1730544AbgK3WZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 17:25:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730592AbgK3WVW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 17:21:22 -0500
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F00D1C0613D2
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 14:20:35 -0800 (PST)
-Received: by mail-io1-xd2f.google.com with SMTP id d7so4673309iok.1
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 14:20:35 -0800 (PST)
+        with ESMTP id S1725933AbgK3WZg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 17:25:36 -0500
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64FCFC0613D4;
+        Mon, 30 Nov 2020 14:24:50 -0800 (PST)
+Received: by mail-yb1-xb43.google.com with SMTP id v92so12927558ybi.4;
+        Mon, 30 Nov 2020 14:24:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gEG1/n/RFGX1/XHZCnegNUGNFaspyjlWndkreZ2Xkak=;
-        b=bFV5RyxTgTdfm7fI9TJK3aBUTqiTrfE6k7gUA4fs4PEDe031BB+YXpsN1a5hkNaLss
-         Q8ZmWISuyHA33J+QK0Dd4O8170MwVOv7MHHpluX+o2htZHg8Foxr7vq3qxJQNIdH/wxc
-         /RfSwS7CJXW1xXkf6DUMfoWOncoDAolu9CIt7Vu8GViDUE50Qv3QzQO0Iq+vejgAWLm7
-         vv05yiz9eQ8gnEI5/fwOIQVJJvzuHXKBq751w8S8WfiOXqekytbqxC8DYOhxzAApGtoz
-         QdYAdQMxP1nd6iaH0jI/3fcY54RYnRnX3HEI+nN9rMZyVNt4GW2xmNaA7Y3MvCU9QIe5
-         e5Vw==
+         :cc:content-transfer-encoding;
+        bh=n/7o1gvlCHtRpXxjEuEu8kN/84FyQb3WcQ0KJUmzymM=;
+        b=gCDU67Mtfc9Dmokbh/2FD1bCYnKAwh4xlfjdcHl6LLXjDmiDcxtERBNk/o3p1Fg4BL
+         OVvGBJ4+aeyQhcoC0ZqnQxIVYBkyLOwY+tbL4bCJO0KcMrkwUfA1hUi9DzWvv07WfQYK
+         AgXxmdhBkFHQncP57te/FCslMlQE/AnzSBxCiuto5ZId3emXSTj83tVskruN131Vnggu
+         IJnS3SZZt4kQ4bWALwbrforl8AREDHyaFTblGxnsqez2d3X4IreyoIZMoTYlA+8hyE48
+         J1PQaRGvA39oJDuRWRD8XEw0X4fuNAZLyQcOB0jLjt3fg7nO2nFA34TvQBfPK4C1EQKy
+         bt4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gEG1/n/RFGX1/XHZCnegNUGNFaspyjlWndkreZ2Xkak=;
-        b=nXP7QZN4KqghNT+yFhL7G5H/z5VP/UWlEQUSSJ65wUDwr/OBSnBHVfTygpl0DuVGHX
-         Y7aOqqHHiVDJ1XJ0nw0YBiTMsWvrs+PC2nsVZBZJC/zq6VWTNrOQnHfsPGPERJ6r8wHO
-         Rczq7kmWw7RAfBQmicjtuxrvSbZg+PZOaPEbWia84HhCQEmoW5yrC5685Mp40dtNOdeW
-         l1lHF89jkSSGKGWsiVSkISnax8jz6CXm9QE6AP2P6bPnr5Tuy29na8ILhuUtRrxBM6ex
-         OSBOs7feKP0K/4sPOrTDYcrJnvS0GPgw1DAptk7X0lmesm4mg2NrPjLWZQOG+dBDo19a
-         3ErQ==
-X-Gm-Message-State: AOAM530puwt80gCAlt+vLfAJCsAB8cGLCoh1X9ezLHwucioKbdIICYoP
-        +LSlj81IrnP1BxM8CA1f65abdF8SseUjzap8u3jKbg==
-X-Google-Smtp-Source: ABdhPJxw2WFT0G0XeNZaxrZcJuzEjarbv9gud3JxM5MZw/onOTxAQJBpDsU3swKGra2vzH0LT3W1p/TrTVOFj161A5U=
-X-Received: by 2002:a02:7821:: with SMTP id p33mr20667818jac.53.1606774835178;
- Mon, 30 Nov 2020 14:20:35 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=n/7o1gvlCHtRpXxjEuEu8kN/84FyQb3WcQ0KJUmzymM=;
+        b=tysJrCY0LUlRQL2jlBoGLufMBKe8SnaSKyBBYaWq3g8f+aQgQmiDjvKhKhCthBgJ/U
+         r+3F/SepvuURY7foZNTTerklwz7XYO+Zfp6sOSg9O9mVYUWGLrKwb7ijlKp9Qoj8u2Qk
+         SgNaEmy5jJVRLtl/Mt2d8F+bBpWCGkUsdgzkKtuzgfifZj7SIq2WbhJvdc7iM/h76HYg
+         8Vue/cTv/hVH6QkzTc8EmLdgDfoX/mFuls+9UshDdEd8CqJ3ZU1k6u3pSOm7dPeZ+bN8
+         C4buVrNkXZgXR7mPxGN61vzWbEtWz4FtFStx68m6RQr+wXiu9e3PVidyVJwRbMAm3zHw
+         CM7Q==
+X-Gm-Message-State: AOAM531kuOsxWbg9zdVbl75i35uJx/2zxDq0nq6lh9Z7ewYvBUvJQBPu
+        9rLvTycRxOvHQ7ANX78Wk4mBPzTOqrN8RzAqeqA=
+X-Google-Smtp-Source: ABdhPJyj/8AjEkCFwSYujjpwBCxHoYwqMxZtgpOQNMHyw6PKrsA1FbZQN+dNMJN3adGrm+sRbD1yqn2NplTTanPghoc=
+X-Received: by 2002:a25:c7c6:: with SMTP id w189mr28808201ybe.403.1606775089584;
+ Mon, 30 Nov 2020 14:24:49 -0800 (PST)
 MIME-Version: 1.0
-References: <20201130194617.kzfltaqccbbfq6jr@skbuf> <20201130122129.21f9a910@hermes.local>
- <20201130202626.cnwzvzc6yhd745si@skbuf> <CANn89i+H9dVgVE0NbucHizZX2une+bjscjcCT+ZvVNj5YFHYpg@mail.gmail.com>
- <20201130203640.3vspyoswd5r5n3es@skbuf> <CANn89iJ1+P_ihPwyHGwCpkeu1OAj=gf+MAnyWmZvyMg4uMfodw@mail.gmail.com>
- <20201130205053.mb6ouveu3nsts3np@skbuf> <CANn89i+D+7XyYi=x2UxCrMM72GeP3u5MB0-7xruOZJGrERJ5vQ@mail.gmail.com>
- <20201130211158.37ay2uvdwcnegw45@skbuf> <CANn89iJGA8qWBJ97nnNGNOuLNUYF5WPnL+qi722KYCD7kvKyCg@mail.gmail.com>
- <20201130215322.7arp3scumobdnvtz@skbuf>
-In-Reply-To: <20201130215322.7arp3scumobdnvtz@skbuf>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 30 Nov 2020 23:20:23 +0100
-Message-ID: <CANn89i+rZx4vex5N1RQE=y3uzd9yCjHOu5_6phUpZGyVmfUPOg@mail.gmail.com>
-Subject: Re: Correct usage of dev_base_lock in 2020
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
+References: <20201130154143.292882-1-toke@redhat.com>
+In-Reply-To: <20201130154143.292882-1-toke@redhat.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 30 Nov 2020 14:24:38 -0800
+Message-ID: <CAEf4BzZy0Y1hAwOpY=Azod3bSqUKfGNwycGS7s=-DQvTWd8ThA@mail.gmail.com>
+Subject: Re: [PATCH bpf] libbpf: reset errno after probing kernel features
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 30, 2020 at 10:53 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+On Mon, Nov 30, 2020 at 7:42 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
 >
-> On Mon, Nov 30, 2020 at 10:46:00PM +0100, Eric Dumazet wrote:
-> > You can not use dev_base_lock() or RCU and call an ndo_get_stats64()
-> > that could sleep.
-> >
-> > You can not for example start changing bonding, since bond_get_stats()
-> > could be called from non-sleepable context (net/core/net-procfs.c)
-> >
-> > I am still referring to your patch adding :
-> >
-> > +       if (!rtnl_locked)
-> > +               rtnl_lock();
-> >
-> > This is all I said.
+> The kernel feature probing results in 'errno' being set if the probing
+> fails (as is often the case). This can stick around and leak to the calle=
+r,
+> which can lead to confusion later. So let's make sure we always reset err=
+no
+> after calling a probe function.
+
+What specifically is the problem and what sort of confusion we are
+talking about here? You are not supposed to check errno, unless the
+function returned -1 or other error result.
+
+In some cases, you have to reset errno manually just to avoid
+confusion (see how strtol() is used, as an example).
+
+I.e., I don't see the problem here, any printf() technically can set
+errno to <0, we don't reset errno after each printf call though,
+right?
+
 >
-> Ah, ok, well I didn't show you all the patches, did I?
-
-
-Have you sent them during Thanksgiving perhaps ?
-
-I suggest you follow normal submission process, sending patch series
-rather than inlining multiple patches in one email, this is becoming
-hard to follow.
+> Fixes: 47b6cb4d0add ("libbpf: Make kernel feature probing lazy")
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> ---
+>  tools/lib/bpf/libbpf.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 28baee7ba1ca..8d05132e1945 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -4021,6 +4021,8 @@ static bool kernel_supports(enum kern_feature_id fe=
+at_id)
+>                         pr_warn("Detection of kernel %s support failed: %=
+d\n", feat->desc, ret);
+>                         WRITE_ONCE(feat->res, FEAT_MISSING);
+>                 }
+> +               /* reset errno after probing to prevent leaking it to cal=
+ler */
+> +               errno =3D 0;
+>         }
+>
+>         return READ_ONCE(feat->res) =3D=3D FEAT_SUPPORTED;
+> --
+> 2.29.2
+>
