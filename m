@@ -2,28 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 136D22C882D
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 16:37:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 590CB2C8832
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 16:37:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728082AbgK3Ph3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 10:37:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57968 "EHLO
+        id S1728138AbgK3Phf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 10:37:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726483AbgK3Ph2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 10:37:28 -0500
+        with ESMTP id S1728106AbgK3Phe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 10:37:34 -0500
 Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8759BC0613D2;
-        Mon, 30 Nov 2020 07:36:48 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F4180C0613D3;
+        Mon, 30 Nov 2020 07:36:53 -0800 (PST)
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
         (envelope-from <fw@breakpoint.cc>)
-        id 1kjlEN-0001zi-7A; Mon, 30 Nov 2020 16:36:47 +0100
+        id 1kjlER-0001zr-Dm; Mon, 30 Nov 2020 16:36:51 +0100
 From:   Florian Westphal <fw@strlen.de>
 To:     <netdev@vger.kernel.org>
 Cc:     mptcp@lists.01.org, linux-security-module@vger.kernel.org,
-        Florian Westphal <fw@strlen.de>
-Subject: [PATCH net-next 1/3] security: add const qualifier to struct sock in various places
-Date:   Mon, 30 Nov 2020 16:36:29 +0100
-Message-Id: <20201130153631.21872-2-fw@strlen.de>
+        Florian Westphal <fw@strlen.de>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: [PATCH net-next 2/3] tcp: merge 'init_req' and 'route_req' functions
+Date:   Mon, 30 Nov 2020 16:36:30 +0100
+Message-Id: <20201130153631.21872-3-fw@strlen.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201130153631.21872-1-fw@strlen.de>
 References: <20201130153631.21872-1-fw@strlen.de>
@@ -33,205 +35,219 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A followup change to tcp_request_sock_op would have to drop the 'const'
-qualifier from the 'route_req' function as the
-'security_inet_conn_request' call is moved there - and that function
-expects a 'struct sock *'.
+The Multipath-TCP standard (RFC 8684) says that an MPTCP host should send
+a TCP reset if the token in a MP_JOIN request is unknown.
 
-However, it turns out its also possible to add a const qualifier to
-security_inet_conn_request instead.
+At this time we don't do this, the 3whs completes and the 'new subflow'
+is reset afterwards.  There are two ways to allow MPTCP to send the
+reset.
 
+1. override 'send_synack' callback and emit the rst from there.
+   The drawback is that the request socket gets inserted into the
+   listeners queue just to get removed again right away.
+
+2. Send the reset from the 'route_req' function instead.
+   This avoids the 'add&remove request socket', but route_req lacks the
+   skb that is required to send the TCP reset.
+
+Instead of just adding the skb to that function for MPTCP sake alone,
+Paolo suggested to merge init_req and route_req functions.
+
+This saves one indirection from syn processing path and provides the skb
+to the merged function at the same time.
+
+'send reset on unknown mptcp join token' is added in next patch.
+
+Suggested-by: Paolo Abeni <pabeni@redhat.com>
+Cc: Eric Dumazet <edumazet@google.com>
 Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- The code churn is unfortunate.  Alternative would be to change
- the function signature of ->route_req:
- struct dst_entry *(*route_req)(struct sock *sk, ...
- [ i.e., drop 'const' ].  Thoughts?
+ include/net/tcp.h    |  9 ++++-----
+ net/ipv4/tcp_input.c |  9 ++-------
+ net/ipv4/tcp_ipv4.c  |  9 +++++++--
+ net/ipv6/tcp_ipv6.c  |  9 +++++++--
+ net/mptcp/subflow.c  | 36 ++++++++++++++++++++++++------------
+ 5 files changed, 44 insertions(+), 28 deletions(-)
 
- include/linux/lsm_audit.h       | 2 +-
- include/linux/lsm_hook_defs.h   | 2 +-
- include/linux/security.h        | 4 ++--
- security/apparmor/include/net.h | 2 +-
- security/apparmor/lsm.c         | 2 +-
- security/apparmor/net.c         | 6 +++---
- security/lsm_audit.c            | 4 ++--
- security/security.c             | 2 +-
- security/selinux/hooks.c        | 2 +-
- security/smack/smack_lsm.c      | 4 ++--
- 10 files changed, 15 insertions(+), 15 deletions(-)
-
-diff --git a/include/linux/lsm_audit.h b/include/linux/lsm_audit.h
-index 28f23b341c1c..cd23355d2271 100644
---- a/include/linux/lsm_audit.h
-+++ b/include/linux/lsm_audit.h
-@@ -26,7 +26,7 @@
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index d5d22c411918..4525d6256321 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -2007,15 +2007,14 @@ struct tcp_request_sock_ops {
+ 					  const struct sock *sk,
+ 					  const struct sk_buff *skb);
+ #endif
+-	void (*init_req)(struct request_sock *req,
+-			 const struct sock *sk_listener,
+-			 struct sk_buff *skb);
+ #ifdef CONFIG_SYN_COOKIES
+ 	__u32 (*cookie_init_seq)(const struct sk_buff *skb,
+ 				 __u16 *mss);
+ #endif
+-	struct dst_entry *(*route_req)(const struct sock *sk, struct flowi *fl,
+-				       const struct request_sock *req);
++	struct dst_entry *(*route_req)(const struct sock *sk,
++				       struct sk_buff *skb,
++				       struct flowi *fl,
++				       struct request_sock *req);
+ 	u32 (*init_seq)(const struct sk_buff *skb);
+ 	u32 (*init_ts_off)(const struct net *net, const struct sk_buff *skb);
+ 	int (*send_synack)(const struct sock *sk, struct dst_entry *dst,
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index fb3a7750f623..9e8a6c1aa019 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -6799,18 +6799,13 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+ 	/* Note: tcp_v6_init_req() might override ir_iif for link locals */
+ 	inet_rsk(req)->ir_iif = inet_request_bound_dev_if(sk, skb);
  
- struct lsm_network_audit {
- 	int netif;
--	struct sock *sk;
-+	const struct sock *sk;
- 	u16 family;
- 	__be16 dport;
- 	__be16 sport;
-diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 32a940117e7a..acc0494cceba 100644
---- a/include/linux/lsm_hook_defs.h
-+++ b/include/linux/lsm_hook_defs.h
-@@ -301,7 +301,7 @@ LSM_HOOK(void, LSM_RET_VOID, sk_clone_security, const struct sock *sk,
- 	 struct sock *newsk)
- LSM_HOOK(void, LSM_RET_VOID, sk_getsecid, struct sock *sk, u32 *secid)
- LSM_HOOK(void, LSM_RET_VOID, sock_graft, struct sock *sk, struct socket *parent)
--LSM_HOOK(int, 0, inet_conn_request, struct sock *sk, struct sk_buff *skb,
-+LSM_HOOK(int, 0, inet_conn_request, const struct sock *sk, struct sk_buff *skb,
- 	 struct request_sock *req)
- LSM_HOOK(void, LSM_RET_VOID, inet_csk_clone, struct sock *newsk,
- 	 const struct request_sock *req)
-diff --git a/include/linux/security.h b/include/linux/security.h
-index bc2725491560..0df62735651b 100644
---- a/include/linux/security.h
-+++ b/include/linux/security.h
-@@ -1358,7 +1358,7 @@ void security_sk_clone(const struct sock *sk, struct sock *newsk);
- void security_sk_classify_flow(struct sock *sk, struct flowi *fl);
- void security_req_classify_flow(const struct request_sock *req, struct flowi *fl);
- void security_sock_graft(struct sock*sk, struct socket *parent);
--int security_inet_conn_request(struct sock *sk,
-+int security_inet_conn_request(const struct sock *sk,
- 			struct sk_buff *skb, struct request_sock *req);
- void security_inet_csk_clone(struct sock *newsk,
- 			const struct request_sock *req);
-@@ -1519,7 +1519,7 @@ static inline void security_sock_graft(struct sock *sk, struct socket *parent)
- {
+-	af_ops->init_req(req, sk, skb);
+-
+-	if (security_inet_conn_request(sk, skb, req))
++	dst = af_ops->route_req(sk, skb, &fl, req);
++	if (!dst)
+ 		goto drop_and_free;
+ 
+ 	if (tmp_opt.tstamp_ok)
+ 		tcp_rsk(req)->ts_off = af_ops->init_ts_off(net, skb);
+ 
+-	dst = af_ops->route_req(sk, &fl, req);
+-	if (!dst)
+-		goto drop_and_free;
+-
+ 	if (!want_cookie && !isn) {
+ 		/* Kill the following clause, if you dislike this way. */
+ 		if (!net->ipv4.sysctl_tcp_syncookies &&
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index e4b31e70bd30..af2338294598 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1444,9 +1444,15 @@ static void tcp_v4_init_req(struct request_sock *req,
  }
  
--static inline int security_inet_conn_request(struct sock *sk,
-+static inline int security_inet_conn_request(const struct sock *sk,
- 			struct sk_buff *skb, struct request_sock *req)
+ static struct dst_entry *tcp_v4_route_req(const struct sock *sk,
++					  struct sk_buff *skb,
+ 					  struct flowi *fl,
+-					  const struct request_sock *req)
++					  struct request_sock *req)
  {
- 	return 0;
-diff --git a/security/apparmor/include/net.h b/security/apparmor/include/net.h
-index 2431c011800d..aadb4b29fb66 100644
---- a/security/apparmor/include/net.h
-+++ b/security/apparmor/include/net.h
-@@ -107,6 +107,6 @@ int aa_sock_file_perm(struct aa_label *label, const char *op, u32 request,
- 		      struct socket *sock);
- 
- int apparmor_secmark_check(struct aa_label *label, char *op, u32 request,
--			   u32 secid, struct sock *sk);
-+			   u32 secid, const struct sock *sk);
- 
- #endif /* __AA_NET_H */
-diff --git a/security/apparmor/lsm.c b/security/apparmor/lsm.c
-index ffeaee5ed968..1b0aba8eb723 100644
---- a/security/apparmor/lsm.c
-+++ b/security/apparmor/lsm.c
-@@ -1147,7 +1147,7 @@ static void apparmor_sock_graft(struct sock *sk, struct socket *parent)
++	tcp_v4_init_req(req, sk, skb);
++
++	if (security_inet_conn_request(sk, skb, req))
++		return NULL;
++
+ 	return inet_csk_route_req(sk, &fl->u.ip4, req);
  }
  
- #ifdef CONFIG_NETWORK_SECMARK
--static int apparmor_inet_conn_request(struct sock *sk, struct sk_buff *skb,
-+static int apparmor_inet_conn_request(const struct sock *sk, struct sk_buff *skb,
- 				      struct request_sock *req)
- {
- 	struct aa_sk_ctx *ctx = SK_CTX(sk);
-diff --git a/security/apparmor/net.c b/security/apparmor/net.c
-index fa0e85568450..e0c1b50d6edd 100644
---- a/security/apparmor/net.c
-+++ b/security/apparmor/net.c
-@@ -211,7 +211,7 @@ static int apparmor_secmark_init(struct aa_secmark *secmark)
+@@ -1466,7 +1472,6 @@ const struct tcp_request_sock_ops tcp_request_sock_ipv4_ops = {
+ 	.req_md5_lookup	=	tcp_v4_md5_lookup,
+ 	.calc_md5_hash	=	tcp_v4_md5_hash_skb,
+ #endif
+-	.init_req	=	tcp_v4_init_req,
+ #ifdef CONFIG_SYN_COOKIES
+ 	.cookie_init_seq =	cookie_v4_init_sequence,
+ #endif
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index 992cbf3eb9e3..1a1510513739 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -828,9 +828,15 @@ static void tcp_v6_init_req(struct request_sock *req,
  }
  
- static int aa_secmark_perm(struct aa_profile *profile, u32 request, u32 secid,
--			   struct common_audit_data *sa, struct sock *sk)
-+			   struct common_audit_data *sa)
+ static struct dst_entry *tcp_v6_route_req(const struct sock *sk,
++					  struct sk_buff *skb,
+ 					  struct flowi *fl,
+-					  const struct request_sock *req)
++					  struct request_sock *req)
  {
- 	int i, ret;
- 	struct aa_perms perms = { };
-@@ -244,13 +244,13 @@ static int aa_secmark_perm(struct aa_profile *profile, u32 request, u32 secid,
++	tcp_v6_init_req(req, sk, skb);
++
++	if (security_inet_conn_request(sk, skb, req))
++		return NULL;
++
+ 	return inet6_csk_route_req(sk, &fl->u.ip6, req, IPPROTO_TCP);
  }
  
- int apparmor_secmark_check(struct aa_label *label, char *op, u32 request,
--			   u32 secid, struct sock *sk)
-+			   u32 secid, const struct sock *sk)
- {
- 	struct aa_profile *profile;
- 	DEFINE_AUDIT_SK(sa, op, sk);
+@@ -851,7 +857,6 @@ const struct tcp_request_sock_ops tcp_request_sock_ipv6_ops = {
+ 	.req_md5_lookup	=	tcp_v6_md5_lookup,
+ 	.calc_md5_hash	=	tcp_v6_md5_hash_skb,
+ #endif
+-	.init_req	=	tcp_v6_init_req,
+ #ifdef CONFIG_SYN_COOKIES
+ 	.cookie_init_seq =	cookie_v6_init_sequence,
+ #endif
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 2e5c3f4da3a4..c55b8f176746 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -228,27 +228,39 @@ int mptcp_subflow_init_cookie_req(struct request_sock *req,
+ }
+ EXPORT_SYMBOL_GPL(mptcp_subflow_init_cookie_req);
  
- 	return fn_for_each_confined(label, profile,
- 				    aa_secmark_perm(profile, request, secid,
--						    &sa, sk));
-+						    &sa));
+-static void subflow_v4_init_req(struct request_sock *req,
+-				const struct sock *sk_listener,
+-				struct sk_buff *skb)
++static struct dst_entry *subflow_v4_route_req(const struct sock *sk,
++					      struct sk_buff *skb,
++					      struct flowi *fl,
++					      struct request_sock *req)
+ {
++	struct dst_entry *dst;
++
+ 	tcp_rsk(req)->is_mptcp = 1;
+ 
+-	tcp_request_sock_ipv4_ops.init_req(req, sk_listener, skb);
++	dst = tcp_request_sock_ipv4_ops.route_req(sk, skb, fl, req);
++	if (!dst)
++		return NULL;
+ 
+-	subflow_init_req(req, sk_listener, skb);
++	subflow_init_req(req, sk, skb);
++	return dst;
+ }
+ 
+ #if IS_ENABLED(CONFIG_MPTCP_IPV6)
+-static void subflow_v6_init_req(struct request_sock *req,
+-				const struct sock *sk_listener,
+-				struct sk_buff *skb)
++static struct dst_entry *subflow_v6_route_req(const struct sock *sk,
++					      struct sk_buff *skb,
++					      struct flowi *fl,
++					      struct request_sock *req)
+ {
++	struct dst_entry *dst;
++
+ 	tcp_rsk(req)->is_mptcp = 1;
+ 
+-	tcp_request_sock_ipv6_ops.init_req(req, sk_listener, skb);
++	dst = tcp_request_sock_ipv6_ops.route_req(sk, skb, fl, req);
++	if (!dst)
++		return NULL;
+ 
+-	subflow_init_req(req, sk_listener, skb);
++	subflow_init_req(req, sk, skb);
++	return dst;
  }
  #endif
-diff --git a/security/lsm_audit.c b/security/lsm_audit.c
-index 53d0d183db8f..078f9cdcd7f5 100644
---- a/security/lsm_audit.c
-+++ b/security/lsm_audit.c
-@@ -183,7 +183,7 @@ int ipv6_skb_to_auditdata(struct sk_buff *skb,
  
+@@ -1398,7 +1410,7 @@ void __init mptcp_subflow_init(void)
+ 		panic("MPTCP: failed to init subflow request sock ops\n");
  
- static inline void print_ipv6_addr(struct audit_buffer *ab,
--				   struct in6_addr *addr, __be16 port,
-+				   const struct in6_addr *addr, __be16 port,
- 				   char *name1, char *name2)
- {
- 	if (!ipv6_addr_any(addr))
-@@ -322,7 +322,7 @@ static void dump_common_audit_data(struct audit_buffer *ab,
- 	}
- 	case LSM_AUDIT_DATA_NET:
- 		if (a->u.net->sk) {
--			struct sock *sk = a->u.net->sk;
-+			const struct sock *sk = a->u.net->sk;
- 			struct unix_sock *u;
- 			struct unix_address *addr;
- 			int len = 0;
-diff --git a/security/security.c b/security/security.c
-index a28045dc9e7f..6509f95d203f 100644
---- a/security/security.c
-+++ b/security/security.c
-@@ -2225,7 +2225,7 @@ void security_sock_graft(struct sock *sk, struct socket *parent)
- }
- EXPORT_SYMBOL(security_sock_graft);
+ 	subflow_request_sock_ipv4_ops = tcp_request_sock_ipv4_ops;
+-	subflow_request_sock_ipv4_ops.init_req = subflow_v4_init_req;
++	subflow_request_sock_ipv4_ops.route_req = subflow_v4_route_req;
  
--int security_inet_conn_request(struct sock *sk,
-+int security_inet_conn_request(const struct sock *sk,
- 			struct sk_buff *skb, struct request_sock *req)
- {
- 	return call_int_hook(inet_conn_request, 0, sk, skb, req);
-diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-index 6b1826fc3658..6fa593006802 100644
---- a/security/selinux/hooks.c
-+++ b/security/selinux/hooks.c
-@@ -5355,7 +5355,7 @@ static void selinux_sctp_sk_clone(struct sctp_endpoint *ep, struct sock *sk,
- 	selinux_netlbl_sctp_sk_clone(sk, newsk);
- }
+ 	subflow_specific = ipv4_specific;
+ 	subflow_specific.conn_request = subflow_v4_conn_request;
+@@ -1407,7 +1419,7 @@ void __init mptcp_subflow_init(void)
  
--static int selinux_inet_conn_request(struct sock *sk, struct sk_buff *skb,
-+static int selinux_inet_conn_request(const struct sock *sk, struct sk_buff *skb,
- 				     struct request_sock *req)
- {
- 	struct sk_security_struct *sksec = sk->sk_security;
-diff --git a/security/smack/smack_lsm.c b/security/smack/smack_lsm.c
-index 5c90b9fa4d40..3a62d6aa74a6 100644
---- a/security/smack/smack_lsm.c
-+++ b/security/smack/smack_lsm.c
-@@ -3864,7 +3864,7 @@ static inline struct smack_known *smack_from_skb(struct sk_buff *skb)
-  *
-  * Returns smack_known of the IP options or NULL if that won't work.
-  */
--static struct smack_known *smack_from_netlbl(struct sock *sk, u16 family,
-+static struct smack_known *smack_from_netlbl(const struct sock *sk, u16 family,
- 					     struct sk_buff *skb)
- {
- 	struct netlbl_lsm_secattr secattr;
-@@ -4114,7 +4114,7 @@ static void smack_sock_graft(struct sock *sk, struct socket *parent)
-  * Returns 0 if a task with the packet label could write to
-  * the socket, otherwise an error code
-  */
--static int smack_inet_conn_request(struct sock *sk, struct sk_buff *skb,
-+static int smack_inet_conn_request(const struct sock *sk, struct sk_buff *skb,
- 				   struct request_sock *req)
- {
- 	u16 family = sk->sk_family;
+ #if IS_ENABLED(CONFIG_MPTCP_IPV6)
+ 	subflow_request_sock_ipv6_ops = tcp_request_sock_ipv6_ops;
+-	subflow_request_sock_ipv6_ops.init_req = subflow_v6_init_req;
++	subflow_request_sock_ipv6_ops.route_req = subflow_v6_route_req;
+ 
+ 	subflow_v6_specific = ipv6_specific;
+ 	subflow_v6_specific.conn_request = subflow_v6_conn_request;
 -- 
 2.26.2
 
