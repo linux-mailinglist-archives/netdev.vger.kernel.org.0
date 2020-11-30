@@ -2,76 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 563552C92FB
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 00:47:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 780712C932A
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 00:51:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730633AbgK3Xql (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 18:46:41 -0500
-Received: from mga06.intel.com ([134.134.136.31]:46019 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726213AbgK3Xql (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Nov 2020 18:46:41 -0500
-IronPort-SDR: BUlcFs3f82gj6rFcf2AkiJLIYFFvb26fkoO0aIN5FUu3E7eg+yuhtm8rsYE1AGnV4400I+gwYS
- AbrpXrunQoTw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9821"; a="234336250"
-X-IronPort-AV: E=Sophos;i="5.78,382,1599548400"; 
-   d="scan'208";a="234336250"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2020 15:45:18 -0800
-IronPort-SDR: bNHkaEM+NJ6OP8PU92hE9GKRGnTg9ZbjcAYYLfDFy8LqPuPG7+ChLbRWVHkhSvPn8k405DATsQ
- S+hVu4YGQ5iA==
-X-IronPort-AV: E=Sophos;i="5.78,382,1599548400"; 
-   d="scan'208";a="480856181"
-Received: from cdhirema-mobl5.amr.corp.intel.com ([10.254.71.173])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2020 15:45:18 -0800
-Date:   Mon, 30 Nov 2020 15:45:18 -0800 (PST)
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        mptcp@lists.01.org, Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH net-next 6/6] mptcp: use mptcp release_cb for delayed
- tasks
-In-Reply-To: <b62cc1e06a7924ac60e9c320e6535e2ec9900065.1606413118.git.pabeni@redhat.com>
-Message-ID: <98a5b8cf-4c8a-bd28-111-9261d743a3bd@linux.intel.com>
-References: <cover.1606413118.git.pabeni@redhat.com> <b62cc1e06a7924ac60e9c320e6535e2ec9900065.1606413118.git.pabeni@redhat.com>
+        id S2388954AbgK3XvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 18:51:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50566 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388938AbgK3XvV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 18:51:21 -0500
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2EE4C0613CF;
+        Mon, 30 Nov 2020 15:50:34 -0800 (PST)
+Received: by mail-ej1-x643.google.com with SMTP id m19so7ejj.11;
+        Mon, 30 Nov 2020 15:50:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=7lMOOQvdqUOwbmtdKr6S/nixjPck0Pwdn/gtL9VI6pQ=;
+        b=d7hrqtIX+xD1eLtp3cpukvwZw7frT0tnMk2ESj3/te+5f+ZeX3TSOvvu2+d4XLulQr
+         HzLy37RAAF0jeF/ab8wC6QdQau9pl2lI4ClH9JcLEG+PuCNM9b8MpLdI1W/werBEUHBu
+         42GpgWLyQE4UA8gHcjn+bTWo6cn569iUd+EYi3VeCSxE754cHdA4NrzSO98iZBSXExSN
+         TuYNpuP3Ot0OaphuamPpbcylLgsKovGRORl3jV1oPegMcIIxfMmSX8bmnEEkTXLDcEeI
+         t3NBvf11yIuFlUPDJK2FM71zhLqMau5UnZJKaXYzhGE/T5lebLLeeSa4V3uuCJvnrf9a
+         gksg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7lMOOQvdqUOwbmtdKr6S/nixjPck0Pwdn/gtL9VI6pQ=;
+        b=kYRK+rlSAP3/AYg1LaviGTdoXAvG9BqoiQQPTiH0f+xczxxwoGg/LOZDBBhJLiGdO2
+         w2el47y6mGB0AlzEuuCC1VSuq01fnsF1sOPu6/BO7eNpASfLxpSauarC6F+YIkvc+Ail
+         xZL//LQrm5tJLkr7gaNsXS59WnDxdPpXmq1zR0MYplRGNZkDo/zXhqz3VumEFbw1z7zS
+         dvSYf8fyANmWJaEJ3F38JUeo/VoB9ikvmIkhkuMYZyxxUA5RuV2m0eXf3pi9b/ORLgQR
+         aJA5zaUtViy8o8CJZHXrqi2Rpa6NGIDy+30UVnt98ghILma1kyCwsLE0IOl9zuqq1nPD
+         rQQQ==
+X-Gm-Message-State: AOAM532jxIYdI1DToZ8RtlkMd+Tn9hLSMJl0s7PhMs5PHiWNs/bZuSps
+        /1obLeCVqvSHYoDJOTd6QHE=
+X-Google-Smtp-Source: ABdhPJyah5jSLWu0szzqBIn+FZ3jf4pFwB3v1WwO2+ktPNmZ/OSOh8vZZwZyaasnNS55iogpMHm3tg==
+X-Received: by 2002:a17:906:60d2:: with SMTP id f18mr261836ejk.528.1606780233136;
+        Mon, 30 Nov 2020 15:50:33 -0800 (PST)
+Received: from skbuf ([188.25.2.120])
+        by smtp.gmail.com with ESMTPSA id d14sm3000347edn.31.2020.11.30.15.50.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Nov 2020 15:50:32 -0800 (PST)
+Date:   Tue, 1 Dec 2020 01:50:31 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     George McCollister <george.mccollister@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 2/3] net: dsa: add Arrow SpeedChips XRS700x
+ driver
+Message-ID: <20201130235031.cdxkp344ph7uob7o@skbuf>
+References: <20201127195057.ac56bimc6z3kpygs@skbuf>
+ <CAFSKS=Pf6zqQbNhaY=A_Da9iz9hcyxQ8E1FBp2o7a_KLBbopYw@mail.gmail.com>
+ <20201127133753.4cf108cb@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+ <20201127233048.GB2073444@lunn.ch>
+ <20201127233916.bmhvcep6sjs5so2e@skbuf>
+ <20201128000234.hwd5zo2d4giiikjc@skbuf>
+ <20201128003912.GA2191767@lunn.ch>
+ <20201128014106.lcqi6btkudbnj3mc@skbuf>
+ <20201127181525.2fe6205d@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+ <CAFSKS=O-TDPax1smCPq=b1w3SVqJokesWx02AUGUXD0hUwXbAg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFSKS=O-TDPax1smCPq=b1w3SVqJokesWx02AUGUXD0hUwXbAg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 27 Nov 2020, Paolo Abeni wrote:
+On Mon, Nov 30, 2020 at 10:52:35AM -0600, George McCollister wrote:
+> Another possible option could be replacing for_each_netdev_rcu with
+> for_each_netdev_srcu and using list_for_each_entry_srcu (though it's
+> currently used nowhere else in the kernel). Has anyone considered
+> using sleepable RCUs or thought of a reason they wouldn't work or
+> wouldn't be desirable? For more info search for SRCU in
+> Documentation/RCU/RTFP.txt
 
-> We have some tasks triggered by the subflow receive path
-> which require to access the msk socket status, specifically:
-> mptcp_clean_una() and mptcp_push_pending()
->
-> We have almost everything in place to defer to the msk
-> release_cb such tasks when the msk sock is owned.
->
-> Since the worker is no more used to clean the acked data,
-> for fallback sockets we need to explicitly flush them.
->
-> As an added bonus we can move the wake-up code in __mptcp_clean_una(),
-> simplify a lot mptcp_poll() and move the timer update under
-> the data lock.
->
-> The worker is now used only to process and send DATA_FIN
-> packets and do the mptcp-level retransmissions.
->
-> Acked-by: Florian Westphal <fw@strlen.de>
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> ---
-> net/mptcp/options.c  |  18 +++-
-> net/mptcp/protocol.c | 250 ++++++++++++++++++++++++++-----------------
-> net/mptcp/protocol.h |   3 +
-> net/mptcp/subflow.c  |  14 +--
-> 4 files changed, 168 insertions(+), 117 deletions(-)
-
-Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-
---
-Mat Martineau
-Intel
+Want to take the lead?
