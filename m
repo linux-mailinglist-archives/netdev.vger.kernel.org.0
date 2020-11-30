@@ -2,61 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 530232C9240
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 00:12:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53E442C928A
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 00:30:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730668AbgK3XLN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 18:11:13 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:1510 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726213AbgK3XLN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 18:11:13 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fc57beb0001>; Mon, 30 Nov 2020 15:10:35 -0800
-Received: from yaviefel (10.124.1.5) by HQMAIL107.nvidia.com (172.20.187.13)
- with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 30 Nov 2020 23:10:22
- +0000
-References: <20201130002135.6537-1-stephen@networkplumber.org> <20201130002135.6537-4-stephen@networkplumber.org>
-User-agent: mu4e 1.3.3; emacs 26.3
-From:   Petr Machata <petrm@nvidia.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-CC:     <netdev@vger.kernel.org>, <petrm@mellanox.com>
-Subject: Re: [PATCH 3/5] tc: fix compiler warnings in ip6 pedit
-In-Reply-To: <20201130002135.6537-4-stephen@networkplumber.org>
-Date:   Tue, 1 Dec 2020 00:10:18 +0100
-Message-ID: <87zh2yo2zp.fsf@nvidia.com>
+        id S2388693AbgK3Xau (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 18:30:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39786 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388590AbgK3Xau (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Nov 2020 18:30:50 -0500
+Content-Type: text/plain; charset="utf-8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606779008;
+        bh=sc9AcIKcGWtRyOxkD+akZIHNfARM1pr2D943DF9LSK0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=zzIvINrLKGuLQ6/NX6qf2UGI1VXYl6ltCTYmNo3UBUU3NvWx87Hqf1FqgShUdzWrQ
+         w+x7hAJdsvQxGAnHcyS9tR3HuBYv2YmIQM1LgOHoXKFGh9xmr8iyg+yhXzIN2/f6QR
+         Z3pfh+gIijIUwvrgB43eOC0t7vK8y84qiFO0ybvA=
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1606777835; bh=C1ARq0Kc8+nQRA4M73PmoasHNbk37hEIWyookRRuyzw=;
-        h=References:User-agent:From:To:CC:Subject:In-Reply-To:Date:
-         Message-ID:MIME-Version:Content-Type:X-Originating-IP:
-         X-ClientProxiedBy;
-        b=M3FT+7CfM+0AxYIye25ohHPMrxoyGIbg3hfo95Hq7Bc+pDXk+WCPqGlxGfpBWoVRK
-         /MF3pFvPa5oZYNidcW36fsg1cCLHQHnK3XHcKJTjChz2QygmOBjfDDZZv3DztorTDC
-         gkA55tZyij9mzGx6c7oZoe/uYvaS2bJ5vvArxpjet1sVdAR9ucvjfZoYzf9M6/XiUM
-         o1gP3laEd4K3WYKAsBu+JoIS3zsss1KYcORiALoeM+mYth+IV8IJYjWCefM0TSuxKB
-         F8pLxkDe7EfKnYtDUkonQpdle8V9jiuGsho+CA9vRRSneDtSnk5N1667G2zAu2OJzs
-         CtqUZTKHU22Fw==
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next v4 00/10] Introduce preferred busy-polling
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160677900881.6839.6641263585447290878.git-patchwork-notify@kernel.org>
+Date:   Mon, 30 Nov 2020 23:30:08 +0000
+References: <20201130185205.196029-1-bjorn.topel@gmail.com>
+In-Reply-To: <20201130185205.196029-1-bjorn.topel@gmail.com>
+To:     =?utf-8?b?QmrDtnJuIFTDtnBlbCA8Ympvcm4udG9wZWxAZ21haWwuY29tPg==?=@ci.codeaurora.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, bjorn.topel@intel.com,
+        magnus.karlsson@intel.com, ast@kernel.org, daniel@iogearbox.net,
+        maciej.fijalkowski@intel.com, sridhar.samudrala@intel.com,
+        jesse.brandeburg@intel.com, qi.z.zhang@intel.com, kuba@kernel.org,
+        edumazet@google.com, jonathan.lemon@gmail.com, maximmi@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
-Stephen Hemminger <stephen@networkplumber.org> writes:
+This series was applied to bpf/bpf-next.git (refs/heads/master):
 
-> Gcc-10 complains about referencing a zero size array.
-> This occurs because the array of keys is actually in the following
-> structure which is part of the overall selector.
->
-> The original code was safe, but better to just use the key
-> array directly.
->
-> Fixes: 2d9a8dc439ee ("tc: p_ip6: Support pedit of IPv6 dsfield")
-> Cc: petrm@mellanox.com
-> Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+On Mon, 30 Nov 2020 19:51:55 +0100 you wrote:
+> This series introduces three new features:
+> 
+> 1. A new "heavy traffic" busy-polling variant that works in concert
+>    with the existing napi_defer_hard_irqs and gro_flush_timeout knobs.
+> 
+> 2. A new socket option that let a user change the busy-polling NAPI
+>    budget.
+> 
+> [...]
 
-Reviewed-by: Petr Machata <petrm@nvidia.com>
+Here is the summary with links:
+  - [bpf-next,v4,01/10] net: introduce preferred busy-polling
+    https://git.kernel.org/bpf/bpf-next/c/7fd3253a7de6
+  - [bpf-next,v4,02/10] net: add SO_BUSY_POLL_BUDGET socket option
+    https://git.kernel.org/bpf/bpf-next/c/7c951cafc0cb
+  - [bpf-next,v4,03/10] xsk: add support for recvmsg()
+    https://git.kernel.org/bpf/bpf-next/c/45a86681844e
+  - [bpf-next,v4,04/10] xsk: check need wakeup flag in sendmsg()
+    https://git.kernel.org/bpf/bpf-next/c/e39208183728
+  - [bpf-next,v4,05/10] xsk: add busy-poll support for {recv,send}msg()
+    https://git.kernel.org/bpf/bpf-next/c/a0731952d9cd
+  - [bpf-next,v4,06/10] xsk: propagate napi_id to XDP socket Rx path
+    https://git.kernel.org/bpf/bpf-next/c/b02e5a0ebb17
+  - [bpf-next,v4,07/10] samples/bpf: use recvfrom() in xdpsock/rxdrop
+    https://git.kernel.org/bpf/bpf-next/c/f2d2728220ac
+  - [bpf-next,v4,08/10] samples/bpf: use recvfrom() in xdpsock/l2fwd
+    https://git.kernel.org/bpf/bpf-next/c/284cbc61f851
+  - [bpf-next,v4,09/10] samples/bpf: add busy-poll support to xdpsock
+    https://git.kernel.org/bpf/bpf-next/c/b35fc1482ceb
+  - [bpf-next,v4,10/10] samples/bpf: add option to set the busy-poll budget
+    https://git.kernel.org/bpf/bpf-next/c/41bf900fe2a0
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
