@@ -2,85 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E33A12C7C2D
-	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 01:59:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81DC42C7C48
+	for <lists+netdev@lfdr.de>; Mon, 30 Nov 2020 02:05:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727433AbgK3A72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Nov 2020 19:59:28 -0500
-Received: from szxga06-in.huawei.com ([45.249.212.32]:8471 "EHLO
-        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726304AbgK3A71 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Nov 2020 19:59:27 -0500
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4Ckn0f6CFTzhkT4;
-        Mon, 30 Nov 2020 08:58:26 +0800 (CST)
-Received: from [10.74.191.121] (10.74.191.121) by
- DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
- 14.3.487.0; Mon, 30 Nov 2020 08:58:38 +0800
-Subject: Re: [PATCH] powerpc: fix the allyesconfig build
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-CC:     Michael Ellerman <mpe@ellerman.id.au>,
-        PowerPC <linuxppc-dev@lists.ozlabs.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        "Daniel Axtens" <dja@axtens.net>, Joel Stanley <joel@jms.id.au>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        <linux-renesas-soc@vger.kernel.org>, <linux-clk@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        Huazhong Tan <tanhuazhong@huawei.com>
-References: <20201128122819.32187696@canb.auug.org.au>
- <20201127175642.45502b20@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <20201128162054.575aea29@canb.auug.org.au>
- <20201128113654.4f2dcabe@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <cfdea690-9866-7eda-904c-c097ea89a0ed@huawei.com>
-Date:   Mon, 30 Nov 2020 08:58:37 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S1726915AbgK3BFM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Nov 2020 20:05:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36652 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726332AbgK3BFL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Nov 2020 20:05:11 -0500
+Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2A68C0613CF;
+        Sun, 29 Nov 2020 17:04:25 -0800 (PST)
+Received: by mail-qv1-xf44.google.com with SMTP id ek7so4890498qvb.6;
+        Sun, 29 Nov 2020 17:04:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9w+jIogOsKRBrpA0BOG2mGKZgZW7G/tIHqRWbeWWJW4=;
+        b=WU2glR0TsgL7F4/RiVfuwal0YDkOeqqQo1eMszLAWLO0V78Iff5/n64/V+Tel6qT40
+         0VZPZwJwnsbjpw844pzMgW2hYIqwz9mbmNNEs6O9eqV7TWRrdnQvvljYsI+oAgmSfU9d
+         JIxDowmXVsOG4M50gjV44mXjYipYLj/9fbmyh2K14okhPO2JuJkIbpuUnR81GPub6sfc
+         rlIoxazGL6HuV4KMjGROkoGEtAMmm7Vc+Pc82fuAAMqnezRvuWTfJB0nD/O/ozmK1le2
+         0iQc4nSTPnFUJ+egMZNoYLZ/ZHipkw5XcHC1btQ4QFt9SCnPc6sbU8WpdjVCohjcBAA6
+         sP4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9w+jIogOsKRBrpA0BOG2mGKZgZW7G/tIHqRWbeWWJW4=;
+        b=uBg+pLLcCaWLE0ZI5H6R84hlEEMKyD8wSPYQJju2zAQ5f4VO7CMaB9pgY9VLs87+6d
+         B4Axb0U8vFJ9yic/cG24srxEZfdMOLf0q0Asqgam2qVReSu0Jspe3+YHyQf8A1xCKvwQ
+         GcI88b0vEPBESsVbFfvlUnqtxQ5bfs78F0oENj9gCs1BibkB68lLqe6RUE4RTvm+BWd2
+         XYIbm9x2DLnHlvphaEzqtX+pdm1Gm9D4P0sHRvhffT7iBWkBCEnlENRiRWr6a4OoPt83
+         mUh7NHbOdoLLuwPrqVMGlMrZICayRKtVV2LVubJvr/z1b0mrQJ3iRGnZe+OwoRrDhOhA
+         3nrQ==
+X-Gm-Message-State: AOAM530zkGSD/jJNA7PQPrE+S2pbKxO1mE3N/giTnbtK0nfqshI4boSQ
+        GIFHR4pSLr3VfC114sEtFYk=
+X-Google-Smtp-Source: ABdhPJxNBQJpDe6Q+07RcfAa9BO9KXU9uK23WXodIbLjKY85NBzOpU1EHUFfTEHywAlwGfo76xkVUw==
+X-Received: by 2002:a0c:fe04:: with SMTP id x4mr17013047qvr.61.1606698264424;
+        Sun, 29 Nov 2020 17:04:24 -0800 (PST)
+Received: from ubuntu-m3-large-x86 ([2604:1380:45f1:1d00::1])
+        by smtp.gmail.com with ESMTPSA id e19sm14025778qtp.83.2020.11.29.17.04.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 29 Nov 2020 17:04:23 -0800 (PST)
+Date:   Sun, 29 Nov 2020 18:04:22 -0700
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Shuah Khan <shuah@kernel.org>,
+        clang-built-linux@googlegroups.com, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        wireguard@lists.zx2c4.com
+Subject: Re: [PATCH v3] Compiler Attributes: remove CONFIG_ENABLE_MUST_CHECK
+Message-ID: <20201130010422.GA1956616@ubuntu-m3-large-x86>
+References: <20201128193335.219395-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20201128113654.4f2dcabe@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201128193335.219395-1-masahiroy@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/11/29 3:36, Jakub Kicinski wrote:
-> On Sat, 28 Nov 2020 16:20:54 +1100 Stephen Rothwell wrote:
->> On Fri, 27 Nov 2020 17:56:42 -0800 Jakub Kicinski <kuba@kernel.org> wrote:
->>>
->>> What's the offending structure in hisilicon? I'd rather have a look
->>> packing structs with pointers in 'em sounds questionable.
->>>
->>> I only see these two:
->>>
->>> $ git grep packed drivers/net/ethernet/hisilicon/
->>> drivers/net/ethernet/hisilicon/hns/hnae.h:struct __packed hnae_desc {
->>> drivers/net/ethernet/hisilicon/hns3/hns3_enet.h:struct __packed hns3_desc {  
->>
->> struct hclge_dbg_reg_type_info which is 28 bytes long due to the
->> included struct struct hclge_dbg_reg_common_msg (which is 12 bytes
->> long).  They are surrounded by #pragma pack(1)/pack().
->>
->> This forces the 2 pointers in each second array element of
->> hclge_dbg_reg_info[] to be 4 byte aligned (where pointers are 8 bytes
->> long on PPC64).
+On Sun, Nov 29, 2020 at 04:33:35AM +0900, Masahiro Yamada wrote:
+> Revert commit cebc04ba9aeb ("add CONFIG_ENABLE_MUST_CHECK").
 > 
-> Ah! Thanks, I don't see a reason for these to be packed. 
-> Looks  like an accident, there is no reason to pack anything 
-> past struct hclge_dbg_reg_common_msg AFAICT.
+> A lot of warn_unused_result warnings existed in 2006, but until now
+> they have been fixed thanks to people doing allmodconfig tests.
 > 
-> Huawei folks, would you mind sending a fix if the analysis is correct?
+> Our goal is to always enable __must_check where appropriate, so this
+> CONFIG option is no longer needed.
+> 
+> I see a lot of defconfig (arch/*/configs/*_defconfig) files having:
+> 
+>     # CONFIG_ENABLE_MUST_CHECK is not set
+> 
+> I did not touch them for now since it would be a big churn. If arch
+> maintainers want to clean them up, please go ahead.
+> 
+> While I was here, I also moved __must_check to compiler_attributes.h
+> from compiler_types.h
+> 
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> Acked-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-Yes, will send a patch to fix that. Thanks for the analysis.
-
-> .
-> 
+Acked-by: Nathan Chancellor <natechancellor@gmail.com>
