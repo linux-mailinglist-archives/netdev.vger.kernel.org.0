@@ -2,82 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C97FD2C9B28
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 10:15:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B492D2C9C59
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 10:18:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729350AbgLAJFb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 04:05:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41038 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388191AbgLAJDz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Dec 2020 04:03:55 -0500
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S2389895AbgLAJR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 04:17:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52486 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389873AbgLAJLx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 04:11:53 -0500
+Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D173C0613D2;
+        Tue,  1 Dec 2020 01:11:13 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9E40A21D7F;
-        Tue,  1 Dec 2020 09:03:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1606813395;
-        bh=ZfyxbyXJNsR7Ox478lYb9kMLqF/gdHTamP66YJE3i8k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BMLSTeo/UY4hf6kWMcGnfEXNHPpFO6VLtAnY7M934w28oX+BdsadMly5EeyCOLq6j
-         65LyEH3LPPPfpTUo7STqhsox2xRVXA9OlPEMjdaam5FXYUC8mIkWtDEAhGJyiiN/lq
-         0hNc+UbyLbiESzINkxL/Z0/oRv9Ar6T+UtdAhhjg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, liuzx@knownsec.com,
-        Florian Westphal <fw@strlen.de>,
-        Edward Cree <ecree@solarflare.com>,
-        Cong Wang <cong.wang@bytedance.com>
-Subject: [PATCH 5.4 04/98] netfilter: clear skb->next in NF_HOOK_LIST()
-Date:   Tue,  1 Dec 2020 09:52:41 +0100
-Message-Id: <20201201084653.262544594@linuxfoundation.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20201201084652.827177826@linuxfoundation.org>
-References: <20201201084652.827177826@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Clbth4xPPz9sW4;
+        Tue,  1 Dec 2020 20:11:08 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1606813869;
+        bh=V2oVLU7Ya8T1FEbPhjvbw0g0LWUsablXABJKhT4Kzbk=;
+        h=Date:From:To:Cc:Subject:From;
+        b=LhIgp8E0q4gIucbZRK1uQkuvu/ua0oZ67pa67HWUINZN1VKu8aOkAWbBSEJl+8wO2
+         nVF8DiGxVOiy023Z014p0m3n8lZWK5louusNA3ulz8flG5sWVQEiCnpbv5X8D/THu1
+         fuPFPUreNUAlphbqYb7VATVPb55iOLKMoISa4T2FTm+7UHjK3MT6xc0r+3YI+g/m7n
+         Tf4RgohMlAAblqymqxoOcdagrk91xs13GJGanYbrmBN/0odVGCaBnu3CMrj/YccXCI
+         r8AD2qAkJdjfn6pDEZaQDy8U565rGWWTvavOO1inhAbIXUNvoZr8CSMOBXDwH+rqNf
+         XRYszY0qQuZkw==
+Date:   Tue, 1 Dec 2020 20:11:06 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Subject: linux-next: manual merge of the akpm tree with the bpf-next tree
+Message-ID: <20201201201106.3ab8fbce@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/Gaz1/bh1l39mvpyLfdfqLGw";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--Sig_/Gaz1/bh1l39mvpyLfdfqLGw
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-From: Cong Wang <cong.wang@bytedance.com>
+Hi all,
 
-NF_HOOK_LIST() uses list_del() to remove skb from the linked list,
-however, it is not sufficient as skb->next still points to other
-skb. We should just call skb_list_del_init() to clear skb->next,
-like the rest places which using skb list.
+Today's linux-next merge of the akpm tree got a conflict in:
 
-This has been fixed in upstream by commit ca58fbe06c54
-("netfilter: add and use nf_hook_slow_list()").
+  fs/eventpoll.c
 
-Fixes: 9f17dbf04ddf ("netfilter: fix use-after-free in NF_HOOK_LIST")
-Reported-by: liuzx@knownsec.com
-Tested-by: liuzx@knownsec.com
-Cc: Florian Westphal <fw@strlen.de>
-Cc: Edward Cree <ecree@solarflare.com>
-Cc: stable@vger.kernel.org # between 4.19 and 5.4
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+between commits:
 
----
- include/linux/netfilter.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+  7fd3253a7de6 ("net: Introduce preferred busy-polling")
+  7c951cafc0cb ("net: Add SO_BUSY_POLL_BUDGET socket option")
 
---- a/include/linux/netfilter.h
-+++ b/include/linux/netfilter.h
-@@ -316,7 +316,7 @@ NF_HOOK_LIST(uint8_t pf, unsigned int ho
- 
- 	INIT_LIST_HEAD(&sublist);
- 	list_for_each_entry_safe(skb, next, head, list) {
--		list_del(&skb->list);
-+		skb_list_del_init(skb);
- 		if (nf_hook(pf, hook, net, sk, skb, in, out, okfn) == 1)
- 			list_add_tail(&skb->list, &sublist);
- 	}
+from the bpf-next tree and commit:
 
+  cc2687004c9d ("epoll: simplify and optimize busy loop logic")
 
+from the akpm tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc fs/eventpoll.c
+index a80a290005c4,88f5b26806e5..000000000000
+--- a/fs/eventpoll.c
++++ b/fs/eventpoll.c
+@@@ -393,15 -395,19 +395,20 @@@ static bool ep_busy_loop(struct eventpo
+  {
+  	unsigned int napi_id =3D READ_ONCE(ep->napi_id);
+ =20
+- 	if ((napi_id >=3D MIN_NAPI_ID) && net_busy_loop_on())
++ 	if ((napi_id >=3D MIN_NAPI_ID) && net_busy_loop_on()) {
+ -		napi_busy_loop(napi_id, nonblock ? NULL : ep_busy_loop_end, ep);
+ +		napi_busy_loop(napi_id, nonblock ? NULL : ep_busy_loop_end, ep, false,
+ +			       BUSY_POLL_BUDGET);
+- }
+-=20
+- static inline void ep_reset_busy_poll_napi_id(struct eventpoll *ep)
+- {
+- 	if (ep->napi_id)
++ 		if (ep_events_available(ep))
++ 			return true;
++ 		/*
++ 		 * Busy poll timed out.  Drop NAPI ID for now, we can add
++ 		 * it back in when we have moved a socket with a valid NAPI
++ 		 * ID onto the ready list.
++ 		 */
+  		ep->napi_id =3D 0;
++ 		return false;
++ 	}
++ 	return false;
+  }
+ =20
+  /*
+
+--Sig_/Gaz1/bh1l39mvpyLfdfqLGw
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl/GCKoACgkQAVBC80lX
+0GzrkAf/XHydBRC0Cy49lYG5Rk9J0M4sT9MUOuRmLut4KQauDrIW3wh4gD9W2Lgg
+io+WtsselVsi7HSS0jXmOsq9DARsS4tF2y6Ec/t+FLRjBfTKDjBQPvrixIpzEmE1
+Ym6h48+62dDHzH2swol/sPRfmEU4LeH89y9uxwrE4LNH94KycQwL0otHfOnuuOdl
+14IkmIHdzW0G+DdxUlcm5eULpH+S45/0QHamcq9ni5+DPLAKvka0Gh37l+/qx+jJ
+5U5x6YaL89OpO7/ama7yr1dEYpk2GC2t3nKJ1wFDsaxOy91ykGJbNFARMU6iPvr1
+Au3m2DCIvqts708x6liO/igSoNtApg==
+=l2DX
+-----END PGP SIGNATURE-----
+
+--Sig_/Gaz1/bh1l39mvpyLfdfqLGw--
