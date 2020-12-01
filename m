@@ -2,75 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38A6E2CA3E3
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 14:32:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C5AE2CA443
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 14:50:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391135AbgLANaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 08:30:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36796 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387677AbgLANaR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 08:30:17 -0500
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19C5FC0613D4
-        for <netdev@vger.kernel.org>; Tue,  1 Dec 2020 05:29:37 -0800 (PST)
-Received: by mail-ej1-x641.google.com with SMTP id f23so4072300ejt.8
-        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 05:29:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jvsd2dZu7N5hadr8PL2isg2S0lQjRswgu8EieZqQVy8=;
-        b=s8TXRdEiYOEpECZ8PLv0n/k4IeNYk0m9DCodlmuvRfE+W4tzwkGfRltKIuktvDNPFX
-         fC1RBh80ItqGw0RG3v/nKSKzSwlP+rLq9r5+g9Ye9bmxYLWPSY7HRlwjG2cLUQyfRAyD
-         KVwuuidOgHNDhG2tjIa65qboySSxK0h8/12bLe2QDMdAoFCONYYOsLQScyIiTVsm7Df6
-         ocYPy566XQpyG9D8Ql1d3LJQBBja7zHrLQAAoX9lmZFEwl702ycWjkbSU6g0gMlcugyW
-         OSfHlt0gdhQoUJkO9M6mveUCAhQ4hPk/ZJYPwUvriJvHXLgQCPEE1/oCDmd5fjX111Ws
-         KU7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jvsd2dZu7N5hadr8PL2isg2S0lQjRswgu8EieZqQVy8=;
-        b=lhDp1TSw70ikdHjZRf2lbczFvD2c06eaKf2Iw+fgnd9yUMsEAl+/aBqT49OIg34ksc
-         S5yV8/IgEP8JI55xKLSrwZd2SlMXXhkO02h7fTWh2HWArvy7MYTUNrr9BILjpIZIRQla
-         +cGVWPHIkIWUCPtVtWmoiWHb5jDqZQLcq9y0A/I/4cmo1SRJLUmUu4RT3X/ob8wgQD6o
-         2+H96Km+c2JuEjWfEm76HqGeaZdSSgVxo+lngjXPYwC6jXK4hFKmRnyYvM6ZOoyhEszx
-         FIc4WAl6PiwaDvhzO6Y0hWl3mwy9E7c0sr1EoPzaUlhoQiZd45bvw0134a15PorExjPH
-         ucOQ==
-X-Gm-Message-State: AOAM530L/mjLNuVkOel/ZEem7cb1ay3v9kthXLYvl6ce0LqL7il/mJqy
-        NWPS4faJeirzhL6UDv2pSTE=
-X-Google-Smtp-Source: ABdhPJz6Ew2rs8tVpfeW5pR9TTU5DbJVM9t8lQ0tKl1FSNa1YMx8KGTCkfDzn/vyBQRVjgyxCww0sw==
-X-Received: by 2002:a17:906:68c4:: with SMTP id y4mr3113109ejr.332.1606829375776;
-        Tue, 01 Dec 2020 05:29:35 -0800 (PST)
-Received: from skbuf ([188.25.2.120])
-        by smtp.gmail.com with ESMTPSA id d14sm855541edu.63.2020.12.01.05.29.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Dec 2020 05:29:35 -0800 (PST)
-Date:   Tue, 1 Dec 2020 15:29:33 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 2/4] net: dsa: Link aggregation support
-Message-ID: <20201201132933.paof42x5del3yc2f@skbuf>
-References: <20201130140610.4018-1-tobias@waldekranz.com>
- <20201130140610.4018-3-tobias@waldekranz.com>
- <20201201013706.6clgrx2tnapywgxf@skbuf>
- <87czzu7xkq.fsf@waldekranz.com>
+        id S2391301AbgLANry (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 08:47:54 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:8547 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391297AbgLANrx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 08:47:53 -0500
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4Clk0j4WBrzhlDf;
+        Tue,  1 Dec 2020 21:46:45 +0800 (CST)
+Received: from [10.174.178.174] (10.174.178.174) by
+ DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
+ 14.3.487.0; Tue, 1 Dec 2020 21:47:05 +0800
+Subject: Re: [PATCH net v2 1/2] wireguard: device: don't call free_netdev() in
+ priv_destructor()
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+CC:     Netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>, <toshiaki.makita1@gmail.com>,
+        <rkovhaev@gmail.com>
+References: <20201201092903.3269202-1-yangyingliang@huawei.com>
+ <CAHmME9rH7iBZN3tMuWuRU_n_dZ1An0FMLpwXWgDJFWjoUFp0fQ@mail.gmail.com>
+From:   Yang Yingliang <yangyingliang@huawei.com>
+Message-ID: <8b49292d-6176-fc10-0a91-3a6d78558d7d@huawei.com>
+Date:   Tue, 1 Dec 2020 21:47:04 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87czzu7xkq.fsf@waldekranz.com>
+In-Reply-To: <CAHmME9rH7iBZN3tMuWuRU_n_dZ1An0FMLpwXWgDJFWjoUFp0fQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.174.178.174]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 01, 2020 at 09:13:57AM +0100, Tobias Waldekranz wrote:
-> I completely agree with your analysis. I will remove all the RCU
-> primitives in v3. Thank you.
 
-I expect that this also gives us a simple refcount_t instead of the
-struct kref?
+On 2020/12/1 17:46, Jason A. Donenfeld wrote:
+> Hi Yang,
+>
+> On Tue, Dec 1, 2020 at 10:31 AM Yang Yingliang <yangyingliang@huawei.com> wrote:
+>> After commit cf124db566e6 ("net: Fix inconsistent teardown and..."),
+>> priv_destruct() doesn't call free_netdev() in driver, we use
+>> dev->needs_free_netdev to indicate whether free_netdev() should be
+>> called on release path.
+>> This patch remove free_netdev() from priv_destructor() and set
+>> dev->needs_free_netdev to true.
+> For now, nack.
+>
+> I remember when cf124db566e6 came out and carefully looking at the
+> construction of device.c in WireGuard. priv_destructor is only
+> assigned after register_device, with the various error paths in
+> wg_newlink responsible for cleaning up other earlier failures, and
+> trying to move to needs_free_netdev would have introduced more
+> complexity in this particular case, if my memory serves. I do not
+> think there's a memory leak here, and I worry about too hastily
+> changing the state machine "just because".
+>
+> In other words, could you point out how to generate a memory leak? If
+> you're correct, then we can start dissecting and refactoring this. But
+> off the bat, I'm not sure I'm exactly seeing whatever you're seeing.
+
+Yes, I missed that priv_destructor is only assigned after 
+register_netdevice(),
+
+so, it will not lead a double free in my patch#2, so this patch can be 
+dropped and
+
+send v3.
+
+>
+> Jason
+> .
