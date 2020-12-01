@@ -2,76 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AA002CA218
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 13:07:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88A9A2CA2B5
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 13:31:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388028AbgLAMHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 07:07:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51998 "EHLO
+        id S1729047AbgLAMai (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 07:30:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726862AbgLAMHF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 07:07:05 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEAE9C0613D2;
-        Tue,  1 Dec 2020 04:06:24 -0800 (PST)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1kk4QB-000UkK-Gu; Tue, 01 Dec 2020 13:06:15 +0100
-Message-ID: <a6eb69000eb33ca8f59cbaff2afee205e0877eb8.camel@sipsolutions.net>
-Subject: Re: [PATCH] net: mac80211: cfg: enforce sanity checks for key_index
- in ieee80211_del_key()
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Anant Thazhemadam <anant.thazhemadam@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+49d4cab497c2142ee170@syzkaller.appspotmail.com
-Date:   Tue, 01 Dec 2020 13:06:01 +0100
-In-Reply-To: <1e5e4471-5cf4-6d23-6186-97f764f4d25f@gmail.com> (sfid-20201201_125644_293555_F8FBDA46)
-References: <20201201095639.63936-1-anant.thazhemadam@gmail.com>
-         <3025db173074d4dfbc323e91d3586f0e36426cf0.camel@sipsolutions.net>
-         <1e5e4471-5cf4-6d23-6186-97f764f4d25f@gmail.com>
-         (sfid-20201201_125644_293555_F8FBDA46)
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        with ESMTP id S1726619AbgLAMai (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 07:30:38 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1213C0613CF
+        for <netdev@vger.kernel.org>; Tue,  1 Dec 2020 04:29:57 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id s30so3772558lfc.4
+        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 04:29:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=Sc7Uc9XQ83b/IqWEkZ8PxPdhAjRmXdS2G/nogbUUZC0=;
+        b=EktwFGtxsLqFEuVg7txwjHhRzO/ZQDihlkZHE+/+HDjoBXFzT/cEngY5PBN0KCBsjH
+         f7l3YGNGknfhnQF4kHbfeyZEZF1hs4qAXxocIPrYbtRsiuYJeS+acmnPZJ1ejuIBD1Fa
+         xKiEwBX7fZUxH0Rxt0gELZ1KNW8fohAfZ/mGizmAn7RBCoe+wkeAk7LGlo4SXjhXxPk0
+         mxglis+lVeFOYlHjVDAonDM3hVSsQwkq1nuqCt6pxbvJ6hZxCNwn3Flc0Kaj1h3hvuwg
+         tCGfiLs0BbLTNB3B9kYkj25X6NNn2yw87Nn4HarRfoB9/5zSYwGpLZATk7a3ltvYOW23
+         srZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=Sc7Uc9XQ83b/IqWEkZ8PxPdhAjRmXdS2G/nogbUUZC0=;
+        b=UJMqWVYnPevfFeWAMV7geKSBKUhCCmkcvFOGFFK2oLYEo131XC5j6IL1m5TAkO8e34
+         6qAX7hZvtxsuIf5FN5YKiyYP2tPPVoafwW/NF3wwuTn1V3pqVSO57BNSenDdkhCgMLlf
+         7iWqkpl6Zf6N9NnLS6NWacpXyEpd1WX2Cy3TNObf+BgIhWWRyW4I/LntkvPKfDtjfrC4
+         VkgBv76KUV56DtfkRwbRpBPd5WsQF90/IlgC0GGI/xxYPD5XNMT+kRwqm8+1hEzWXzdE
+         6DH8SgGoZahtgWXjvLTmf6Imtxsd6CdOpbFUulN5P42kvkzAxu68rtUNeUaAcEi7s4or
+         w/Jg==
+X-Gm-Message-State: AOAM533wwTis/8hNVEGtgqIpbNBoE1Vi9mkifzhDWT7q5mXKKFc52P5r
+        WqClQAFPa6LESMx5J66VT6mwjQPPn1oYM+y2
+X-Google-Smtp-Source: ABdhPJztWW/doZU7DV/CIyig6zUcw4qKTJHvMrXu/9W2AKp2UzVwSRc53vKzQH3Hk02kgg3qm/BLTQ==
+X-Received: by 2002:a19:2242:: with SMTP id i63mr1033186lfi.451.1606825795999;
+        Tue, 01 Dec 2020 04:29:55 -0800 (PST)
+Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id g6sm185335lfb.291.2020.12.01.04.29.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Dec 2020 04:29:54 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Peter Vollmer <peter.vollmer@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: dsa/mv88e6xxx: leaking packets on MV88E6341 switch
+In-Reply-To: <20201201084916.GA6059@unassigned-hostname.unassigned-domain>
+References: <CAGwvh_MAQWuKuhu5VuYjibmyN-FRxCXXhrQBRm34GShZPSN6Aw@mail.gmail.com> <20200930191956.GV3996795@lunn.ch> <20201001062107.GA2592@fido.de.innominate.com> <CAGwvh_PDtAH9bMujfvupfiKTi4CVKEWtp6wqUouUoHtst6FW1A@mail.gmail.com> <87y2in94o7.fsf@waldekranz.com> <20201201084916.GA6059@unassigned-hostname.unassigned-domain>
+Date:   Tue, 01 Dec 2020 13:29:54 +0100
+Message-ID: <87a6ux90al.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-12-01 at 17:26 +0530, Anant Thazhemadam wrote:
-> On 01/12/20 3:30 pm, Johannes Berg wrote:
-> > On Tue, 2020-12-01 at 15:26 +0530, Anant Thazhemadam wrote:
-> > > Currently, it is assumed that key_idx values that are passed to
-> > > ieee80211_del_key() are all valid indexes as is, and no sanity checks
-> > > are performed for it.
-> > > However, syzbot was able to trigger an array-index-out-of-bounds bug
-> > > by passing a key_idx value of 5, when the maximum permissible index
-> > > value is (NUM_DEFAULT_KEYS - 1).
-> > > Enforcing sanity checks helps in preventing this bug, or a similar
-> > > instance in the context of ieee80211_del_key() from occurring.
-> > I think we should do this more generally in cfg80211, like in
-> > nl80211_new_key() we do it via cfg80211_validate_key_settings().
-> > 
-> > I suppose we cannot use the same function, but still, would be good to
-> > address this generally in nl80211 for all drivers.
-> 
-> Hello,
-> 
-> This gave me the idea of trying to use cfg80211_validate_key_settings()
-> directly in ieee80211_del_key(). I did try that out, tested it, and this bug
-> doesn't seem to be getting triggered anymore.
-> If this is okay, then I can send in a v2 soon. :)
-> 
-> If there is any reason that I'm missing as to why cfg80211_validate_key_settings()
-> cannot be used in this context, please let me know.
+On Tue, Dec 01, 2020 at 09:49, Peter Vollmer <peter.vollmer@gmail.com> wrote:
+> On Thu, Nov 26, 2020 at 10:41:44PM +0100, Tobias Waldekranz wrote:
+>> On Wed, Nov 25, 2020 at 15:09, Peter Vollmer <peter.vollmer@gmail.com> wrote:
+>> > - pinging from client0 (connected to lan0 ) to the bridge IP, the ping
+>> > requests (only the requests) are also seen on client1 connected to
+>> > lan1
+>> 
+>> This is the expected behavior of the current implementation I am
+>> afraid. It stems from the fact that the CPU responds to the echo request
+>> (or to any other request for that matter) with a FROM_CPU. This means
+>> that no learning takes place, and the SA of br0 will thus never reach
+>> the switch's FDB. So while client0 knows the MAC of br0, the switch
+>> (very counter-intuitively) does not.
+>> 
+>> The result is that the unicast echo request sent by client0 is flooded
+>> as unknown unicast by the switch. This way it reaches the CPU but also,
+>> as you have discovered, all other ports that allow unknown unicast to
+>> egress.
+>> 
+>
+> Thanks for this explanation. Would there be a way to inject the br0 MAC
+> into the switch FDB using 'bridge fdb' or some other tool as a
+> workaround ?
 
-If it works then I guess that's OK. I thought we didn't have all the
-right information, e.g. whether a key is pairwise or not?
+Unfortunately not. DSA will only attempt to offload FDB entries on user
+ports to the ATU at the moment. Vladimir has started work on a series
+that would also offload addresses from "foreign" ports:
 
-johannes
+https://lore.kernel.org/netdev/20201108131953.2462644-1-olteanv@gmail.com/
 
+His work could possibly be extended to include addresses added to the
+bridge itself.
+
+> And is this behaviour the same with all other DSA capable
+> switches (or at least the mv88e6xxx ones)?  Will this change eventually 
+
+For mv88e6xxx, yes. These devices will never perform learning on
+FROM_CPU frames.
+
+> after the implementation is complete ?
+
+I sure hope so. There are multiple ways forward here. Vladimirs approach
+with adding dynamically learned addresses as static entries is one way.
+
+I would like to do some work to optimize multicast forwarding
+performance that would also, as a side-effect, solve this
+problem. Because it would mean that we would start sending FORWARD
+frames from the CPU for bridged traffic, and thus the switch would be
+able to learn the location of the source address.
