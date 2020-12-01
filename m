@@ -2,151 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2FE82CA575
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 15:24:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03A442CA580
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 15:24:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730491AbgLAOTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 09:19:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44436 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726402AbgLAOTe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 09:19:34 -0500
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B57BC0613CF
-        for <netdev@vger.kernel.org>; Tue,  1 Dec 2020 06:18:48 -0800 (PST)
-Received: by mail-ed1-x542.google.com with SMTP id d18so3461705edt.7
-        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 06:18:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=fCXvBEwcMVtc8hy65Pn2ZYYH6fAo0MB7m9fPCxDsyC4=;
-        b=W+Z72+nCeKjIgW8wSuAhRLQinqBk1lvJSqsTz/cAHZFK5n1PzHcckZ34DDaQf+Q1lA
-         U+yEJ8fY/gfdeCYsWN+BZmMaaE/eiAK2mAPQcD82PKTch39mssy9vG7jfrQVmJo0FssH
-         H+1HfQQdRaOCrqrCExS3usLPplj2SR58F0ftmPcA5pTw1MTDOZ/e0Lui88G/ynO3A24e
-         rXy+vf25mZH+GKs04wXrgBQUi2MOj8Fl4/ZBbJhK8YVQ/+QJEAOrCfwSWPcC+igYu7h9
-         Sy5vLuihM6M5PotiXao7nNYsrfp9rJcn6ME+EqZTtqL+ye1mR33vvbUkAYJMF612bssM
-         Gucg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=fCXvBEwcMVtc8hy65Pn2ZYYH6fAo0MB7m9fPCxDsyC4=;
-        b=oamQbSd9uu7ySBeoPwI0qTJFRuDBZeSjYwA1BMEIOdv+/eo/HjbCDH52wqGxYiVNLN
-         guQlBBF7GoPxbD8I2gXO6NS+e5rt/6gRpEe0skgW2I7k4J16YRhWKh5ZJXibVH2QmPqe
-         t0j7rPy/EMO/DR4eb9egAaKyIUKsphmbhx6MZvcP3jThPXxsxNSfh8OBuRSqrHgKGhNL
-         oG8aRSJ4fEHKjglXxDxd7Eq0QoBTRxSdlIvhAAvPtZEM7q5o0RoOH2pFQBraJTUwRohf
-         h+gIuMnHtqOtrSfc65vtKXYIBBGJHYbpn1UC88cAgzBHvXAWO8MKGVDzods/WTtAWDTv
-         nTmA==
-X-Gm-Message-State: AOAM532rTJ12GGJ08kRe1bSAd6BIQcxXhmraw29V/1kES9bfQw5RPMvW
-        /LKRX0dKTYczCkFyKe3jpmCbod8eEHwsn5ZJXccr
-X-Google-Smtp-Source: ABdhPJzDLWpx2EyYcsmsQ4VKUvuCZD9ajLFsXWAq668o10RFtGhFqVtSkcD/viTejS+wR52Kc/9moegK4zoPcdh+mCc=
-X-Received: by 2002:aa7:c60c:: with SMTP id h12mr3253691edq.145.1606832326725;
- Tue, 01 Dec 2020 06:18:46 -0800 (PST)
+        id S1730509AbgLAOX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 09:23:58 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:30557 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729220AbgLAOX6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 09:23:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606832551;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ESjPrFn6/56RO9QASZ5fwdS/xXKYooC0i6rzr8ADqJ4=;
+        b=dB+kUfIRJlXz+Duf23Ed31aRD0GqtTSHH7McyZWoyxBFPacJBoDHDwVTkzqGJoMV6LMuwp
+        1O9zIv90SmNPf+hyM3C4YyuxeND3DLaGmpgF80JkNC4QLiP+g/hgVzSGdHMvaSTci90TyZ
+        NGyLVW/HH5z7F0icaHKFxn29Gz6JcWk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-428-q2JmaAgUP0q7mu_kcplpQw-1; Tue, 01 Dec 2020 09:22:27 -0500
+X-MC-Unique: q2JmaAgUP0q7mu_kcplpQw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 45E8880B71B;
+        Tue,  1 Dec 2020 14:22:25 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.55])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8CF5560BD8;
+        Tue,  1 Dec 2020 14:22:15 +0000 (UTC)
+Date:   Tue, 1 Dec 2020 15:22:14 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Hangbin Liu <haliu@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Jiri Benc <jbenc@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        brouer@redhat.com
+Subject: Re: [PATCH iproute2-next 0/5] iproute2: add libbpf support
+Message-ID: <20201201152214.1a3fb47b@carbon>
+In-Reply-To: <08071e1e-497f-f53e-916a-8b519fdd1e0f@gmail.com>
+References: <20201023033855.3894509-1-haliu@redhat.com>
+        <20201128221635.63fdcf69@hermes.local>
+        <08071e1e-497f-f53e-916a-8b519fdd1e0f@gmail.com>
 MIME-Version: 1.0
-References: <20201112064005.349268-1-parav@nvidia.com> <5b2235f6-513b-dbc9-3670-e4c9589b4d1f@redhat.com>
- <CACycT3sYScObb9nN3g7L3cesjE7sCZWxZ5_5R1usGU9ePZEeqA@mail.gmail.com>
- <182708df-1082-0678-49b2-15d0199f20df@redhat.com> <CACycT3votu2eyacKg+w12xZ_ujEOgTY0f8A7qcpbM-fwTpjqAw@mail.gmail.com>
- <7f80eeed-f5d3-8c6f-1b8c-87b7a449975c@redhat.com> <CACycT3uw6KJgTo+dBzSj07p2P_PziD+WBfX4yWVX-nDNUD2M3A@mail.gmail.com>
- <DM6PR12MB4330173AF4BA08FE12F68B5BDCF40@DM6PR12MB4330.namprd12.prod.outlook.com>
-In-Reply-To: <DM6PR12MB4330173AF4BA08FE12F68B5BDCF40@DM6PR12MB4330.namprd12.prod.outlook.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Tue, 1 Dec 2020 22:18:35 +0800
-Message-ID: <CACycT3tTCmEzY37E5196Q2mqME2v+KpAp7Snn8wK4XtRKHEqEw@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH 0/7] Introduce vdpa management tool
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>, Eli Cohen <elic@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 1, 2020 at 7:32 PM Parav Pandit <parav@nvidia.com> wrote:
->
->
->
-> > From: Yongji Xie <xieyongji@bytedance.com>
-> > Sent: Tuesday, December 1, 2020 3:26 PM
-> >
-> > On Tue, Dec 1, 2020 at 2:25 PM Jason Wang <jasowang@redhat.com> wrote:
-> > >
-> > >
-> > > On 2020/11/30 =E4=B8=8B=E5=8D=883:07, Yongji Xie wrote:
-> > > >>> Thanks for adding me, Jason!
-> > > >>>
-> > > >>> Now I'm working on a v2 patchset for VDUSE (vDPA Device in
-> > > >>> Userspace) [1]. This tool is very useful for the vduse device. So
-> > > >>> I'm considering integrating this into my v2 patchset. But there i=
-s
-> > > >>> one problem=EF=BC=9A
-> > > >>>
-> > > >>> In this tool, vdpa device config action and enable action are
-> > > >>> combined into one netlink msg: VDPA_CMD_DEV_NEW. But in vduse
-> > > >>> case, it needs to be splitted because a chardev should be created
-> > > >>> and opened by a userspace process before we enable the vdpa devic=
-e
-> > > >>> (call vdpa_register_device()).
-> > > >>>
-> > > >>> So I'd like to know whether it's possible (or have some plans) to
-> > > >>> add two new netlink msgs something like: VDPA_CMD_DEV_ENABLE
-> > and
-> > > >>> VDPA_CMD_DEV_DISABLE to make the config path more flexible.
-> > > >>>
-> > > >> Actually, we've discussed such intermediate step in some early
-> > > >> discussion. It looks to me VDUSE could be one of the users of this=
-.
-> > > >>
-> > > >> Or I wonder whether we can switch to use anonymous inode(fd) for
-> > > >> VDUSE then fetching it via an VDUSE_GET_DEVICE_FD ioctl?
-> > > >>
-> > > > Yes, we can. Actually the current implementation in VDUSE is like
-> > > > this.  But seems like this is still a intermediate step. The fd
-> > > > should be binded to a name or something else which need to be
-> > > > configured before.
-> > >
-> > >
-> > > The name could be specified via the netlink. It looks to me the real
-> > > issue is that until the device is connected with a userspace, it can'=
-t
-> > > be used. So we also need to fail the enabling if it doesn't opened.
-> > >
-> >
-> > Yes, that's true. So you mean we can firstly try to fetch the fd binded=
- to a
-> > name/vduse_id via an VDUSE_GET_DEVICE_FD, then use the
-> > name/vduse_id as a attribute to create vdpa device? It looks fine to me=
-.
->
-> I probably do not well understand. I tried reading patch [1] and few thin=
-gs do not look correct as below.
-> Creating the vdpa device on the bus device and destroying the device from=
- the workqueue seems unnecessary and racy.
->
-> It seems vduse driver needs
-> This is something should be done as part of the vdpa dev add command, ins=
-tead of connecting two sides separately and ensuring race free access to it=
-.
->
-> So VDUSE_DEV_START and VDUSE_DEV_STOP should possibly be avoided.
->
+On Sun, 29 Nov 2020 12:41:49 -0700
+David Ahern <dsahern@gmail.com> wrote:
 
-Yes, we can avoid these two ioctls with the help of the management tool.
+> On 11/28/20 11:16 PM, Stephen Hemminger wrote:
+> > Luca wants to put this in Debian 11 (good idea), but that means:
+> > 
+> > 1. It has to work with 5.10 release and kernel.
+> > 2. Someone has to test it.
+> > 3. The 5.10 is a LTS kernel release which means BPF developers have
+> >    to agree to supporting LTS releases.
+> > 
+> > If someone steps up to doing this then I would be happy to merge it now
+> > for 5.10. Otherwise it won't show up until 5.11.  
+> 
+> It would be good for Bullseye to have the option to use libbpf with
+> iproute2. If Debian uses the 5.10 kernel then it should use the 5.10
+> version of iproute2 and 5.10 version libbpf. All the components align
+> with consistent versioning.
+> 
+> I have some use cases I can move from bpftool loading to iproute2 as
+> additional testing to what Hangbin has already done. If that goes well,
+> I can re-send the patch series against iproute2-main branch by next weekend.
+> 
+> It would be good for others (Jesper, Toke, Jiri) to run their own
+> testing as well.
 
-> $ vdpa dev add parentdev vduse_mgmtdev type net name foo2
->
-> When above command is executed it creates necessary vdpa device foo2 on t=
-he bus.
-> When user binds foo2 device with the vduse driver, in the probe(), it cre=
-ates respective char device to access it from user space.
+I have tested this on a Ubuntu 20.04.1 LTS.
 
-But vduse driver is not a vdpa bus driver. It works like vdpasim
-driver, but offloads the data plane and control plane to a user space
-process.
+I had to compile tc my own "old" version (based it on iproute2 git
+tree), because Ubuntu vendor tc util version didn't even support loading
+BPF-ELF objects... weird!
 
-Thanks,
-Yongji
+Copy-pasted by compile instruction below signature (including one
+failure, that people can find via Google search).
+
+I tested difference combinations old vs. new loader with map pinning
+and reuse of maps (as instructed by Toke over IRC), all the cases
+worked.
+
+I took it one step further and implemented tc libbpf detection:
+ https://github.com/netoptimizer/bpf-examples/commit/048c960756eb65
+
+So, my EDT-pacing code[1] now support BTF-maps, via configure detection
+and code gets compiled with support, which allows me to inspect the
+content really easily (data from production system):
+
+$ bpftool map lookup id 1351 key 0x10 0x0 0x0 0x0
+{
+    "key": 16,
+    "value": {
+        "rate": 0,
+        "t_last": 3299496947649930,
+        "t_horizon_drop": 0,
+        "t_horizon_ecn": 0,
+        "codel": {
+            "first_above_time": 3299496641781522,
+            "drop_next": 3299497041788432,
+            "count": 9,
+            "dropping": 1
+        }
+    }
+}
+
+[1] https://github.com/netoptimizer/bpf-examples/tree/master/traffic-pacing-edt
+- - 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
+
+Very recently iproute2 got support for using libbpf as BPF-ELF loader.
+
+Testing this on Ubuntu 20.04.1 LTS.
+
+Currently avail is iproute2-next tree:
+- https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/
+- git clone git://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git
+
+
+First get libbpf:
+  git clone https://github.com/libbpf/libbpf.git
+  cd libbpf
+
+Build libbpf and install it locally:
+
+  cd ~/git/libbpf/
+  mkdir build
+  cd ~/git/libbpf/src
+  DESTDIR=../build make install
+  DESTDIR=../build make install_headers
+
+
+Attempt#1: Try to get iproute2 compiling against:
+
+  cd ~/git/iproute2-next
+  $ LIBBPF_DIR=../libbpf/build/ ./configure 
+  TC schedulers
+   ATM	no
+  
+  libc has setns: yes
+  SELinux support: no
+  libbpf support: yes
+  	libbpf version 0.3.0
+  ELF support: yes
+  libmnl support: yes
+  Berkeley DB: no
+  need for strlcpy: no
+  libcap support: no
+
+Make fails:
+  $ make
+
+  lib
+      CC       bpf_libbpf.o
+  bpf_libbpf.c:20:10: fatal error: bpf/libbpf.h: No such file or directory
+     20 | #include <bpf/libbpf.h>
+        |          ^~~~~~~~~~~~~~
+  compilation terminated.
+
+
+The problem is use of "relative path" in LIBBPF_DIR (../libbpf/build/), as
+the Makefile enter subdir 'lib' and have these include path CFLAGS:
+
+  CFLAGS += -DHAVE_LIBBPF  -I../libbpf/build//usr/include
+
+Attempt#2 works: Try to get iproute2 compiling against:
+
+  cd ~/git/iproute2-next
+  $ LIBBPF_DIR=~/git/libbpf/build/ ./configure
+  make
+
+
+Install as stow version:
+
+  export STOW=/usr/local/stow/iproute2-libbpf-next-git-c29f65db34
+  make
+  make PREFIX=$STOW SYSCONFDIR=$STOW CONFDIR=$STOW/etc/iproute2 SBINDIR=$STOW/sbin -n install
+  make PREFIX=$STOW SYSCONFDIR=$STOW CONFDIR=$STOW/etc/iproute2 SBINDIR=$STOW/sbin install
+
+Current state:
+  $ tc -V
+  tc utility, iproute2-5.9.0, libbpf 0.3.0
+
