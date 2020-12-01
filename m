@@ -2,185 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD0242C9394
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 01:05:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1364C2C93BC
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 01:15:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730983AbgLAAEY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 19:04:24 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:63806 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730969AbgLAAEY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 19:04:24 -0500
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 0B101Map013174
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 16:03:42 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=PfYV/v+uwNAdHgWlfUS6CxlpQgD2LLrJxGYYZg5n2O8=;
- b=POSOvlfTtWFS1OcUHOVVRu+iAHmDMqAiP4XOycFH8oGePocNy2fSpCl9GBKwkpPC8VXZ
- CeNkg9RreGeNHZSmkhCAaYqSdt/yp1Aalrw8SDibM+3FNUqKR/TayAjMKHBYWu0X2/p1
- 9nVbVEZL0b8aSGgwbHWxpVthbASQ4kSx7xY= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net with ESMTP id 3542bngvyg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 16:03:42 -0800
-Received: from intmgw005.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 30 Nov 2020 16:03:41 -0800
-Received: by devvm3178.ftw3.facebook.com (Postfix, from userid 201728)
-        id 19FF14752A009; Mon, 30 Nov 2020 16:03:41 -0800 (PST)
-From:   Prankur gupta <prankgup@fb.com>
-To:     <bpf@vger.kernel.org>
-CC:     <kernel-team@fb.com>, <netdev@vger.kernel.org>
-Subject: [PATCH bpf-next 2/2] selftests/bpf: Add Userspace tests for TCP_WINDOW_CLAMP
-Date:   Mon, 30 Nov 2020 16:03:39 -0800
-Message-ID: <20201201000339.3310760-3-prankgup@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20201201000339.3310760-1-prankgup@fb.com>
-References: <20201201000339.3310760-1-prankgup@fb.com>
+        id S1730271AbgLAAOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 19:14:36 -0500
+Received: from mail-io1-f68.google.com ([209.85.166.68]:43000 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725870AbgLAAOf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 19:14:35 -0500
+Received: by mail-io1-f68.google.com with SMTP id q137so10151085iod.9;
+        Mon, 30 Nov 2020 16:14:19 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=J2Bb/DGEU59ID0I1yu+Ty12fNud+2TMEJ9OnlDR+Pyk=;
+        b=my9z4rYOJF26IoCKKb76dA0VlQeLFcuyaH/HL9t/h06/yH3Na8ruWjvhx7tYSFAsko
+         MoLFLRsgk/omKHTerqweI8iS+E7AKnW7982w90Ka1RolzdjVBAh7Q6JQHhGES6h/Fnq0
+         4unD7W61cgJ+MlRXot6l1Bd7+R31B2oZ1f3N6rIJiEUXDkGS+0l/uHAKsNKLKYk4sFjG
+         4ZPOjknlZaItPZCDr/3ju0RirF82O67OHf8hegZuq4aEIHIpj2qwhhkOwF0U71qlmlru
+         CgS4q1oKC5Ah3xWY/t78w64+z8tVLZi7DRIuVivZgqC5QVfynIWpUfUqT36xIAS20leW
+         wOPQ==
+X-Gm-Message-State: AOAM532e/+xDXH0nOhQTnuYMxvRfoJlezESXUniKjLIp8trqSoqw3AoX
+        6T7e0P5iJxXeF2PCTXFq1A==
+X-Google-Smtp-Source: ABdhPJwaK7q88mv2geaFyacMh+hTtMxdNocxVnhcxhWh7u79E8m8YJseXiGOimQ1zC8gLTT6FTGPSg==
+X-Received: by 2002:a02:2e52:: with SMTP id u18mr306280jae.29.1606781634329;
+        Mon, 30 Nov 2020 16:13:54 -0800 (PST)
+Received: from xps15 ([64.188.179.253])
+        by smtp.gmail.com with ESMTPSA id o12sm103316ilj.55.2020.11.30.16.13.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Nov 2020 16:13:53 -0800 (PST)
+Received: (nullmailer pid 3315444 invoked by uid 1000);
+        Tue, 01 Dec 2020 00:13:51 -0000
+Date:   Mon, 30 Nov 2020 17:13:51 -0700
+From:   Rob Herring <robh@kernel.org>
+To:     Dan Murphy <dmurphy@ti.com>
+Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, ciorneiioana@gmail.com,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v4 3/4] dt-bindings: dp83td510: Add binding for
+ DP83TD510 Ethernet PHY
+Message-ID: <20201201001351.GA3297586@robh.at.kernel.org>
+References: <20201117201555.26723-1-dmurphy@ti.com>
+ <20201117201555.26723-4-dmurphy@ti.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-30_12:2020-11-30,2020-11-30 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- lowpriorityscore=0 priorityscore=1501 impostorscore=0 bulkscore=0
- mlxscore=0 spamscore=0 mlxlogscore=999 malwarescore=0 suspectscore=13
- clxscore=1011 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011300150
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201117201555.26723-4-dmurphy@ti.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding selftests for new added functionality to set TCP_WINDOW_CLAMP
-from bpf setsockopt.
+On Tue, Nov 17, 2020 at 02:15:54PM -0600, Dan Murphy wrote:
+> The DP83TD510 is a 10M single twisted pair Ethernet PHY
+> 
+> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+> ---
+>  .../devicetree/bindings/net/ti,dp83td510.yaml | 64 +++++++++++++++++++
+>  1 file changed, 64 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/ti,dp83td510.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/net/ti,dp83td510.yaml b/Documentation/devicetree/bindings/net/ti,dp83td510.yaml
+> new file mode 100644
+> index 000000000000..d3c97bb4d820
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/ti,dp83td510.yaml
+> @@ -0,0 +1,64 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +# Copyright (C) 2020 Texas Instruments Incorporated
+> +%YAML 1.2
+> +---
+> +$id: "http://devicetree.org/schemas/net/ti,dp83td510.yaml#"
+> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> +
+> +title: TI DP83TD510 ethernet PHY
+> +
+> +allOf:
+> +  - $ref: "ethernet-controller.yaml#"
+> +  - $ref: "ethernet-phy.yaml#"
+> +
+> +maintainers:
+> +  - Dan Murphy <dmurphy@ti.com>
+> +
+> +description: |
+> +  The PHY is an twisted pair 10Mbps Ethernet PHY that support MII, RMII and
+> +  RGMII interfaces.
+> +
+> +  Specifications about the Ethernet PHY can be found at:
+> +    http://www.ti.com/lit/ds/symlink/dp83td510e.pdf
+> +
+> +properties:
+> +  reg:
+> +    maxItems: 1
+> +
+> +  tx-fifo-depth:
+> +    description: |
+> +       Transmitt FIFO depth for RMII mode.  The PHY only exposes 4 nibble
+> +       depths. The valid nibble depths are 4, 5, 6 and 8.
+> +    enum: [ 4, 5, 6, 8 ]
+> +    default: 5
+> +
+> +  rx-internal-delay-ps:
+> +    description: |
+> +       Setting this property to a non-zero number sets the RX internal delay
+> +       for the PHY.  The internal delay for the PHY is fixed to 30ns relative
+> +       to receive data.
 
-Signed-off-by: Prankur gupta <prankgup@fb.com>
----
- tools/testing/selftests/bpf/bpf_tcp_helpers.h |  1 +
- .../selftests/bpf/prog_tests/tcpbpf_user.c    |  4 +++
- .../selftests/bpf/progs/test_tcpbpf_kern.c    | 33 +++++++++++++++++++
- tools/testing/selftests/bpf/test_tcpbpf.h     |  2 ++
- 4 files changed, 40 insertions(+)
+I'm confused. The delay is 30ns +/- whatever is set here?
 
-diff --git a/tools/testing/selftests/bpf/bpf_tcp_helpers.h b/tools/testin=
-g/selftests/bpf/bpf_tcp_helpers.h
-index 2915664c335d..6a9053162cf2 100644
---- a/tools/testing/selftests/bpf/bpf_tcp_helpers.h
-+++ b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
-@@ -56,6 +56,7 @@ struct tcp_sock {
- 	__u32	rcv_nxt;
- 	__u32	snd_nxt;
- 	__u32	snd_una;
-+	__u32	window_clamp;
- 	__u8	ecn_flags;
- 	__u32	delivered;
- 	__u32	delivered_ce;
-diff --git a/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c b/tools=
-/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-index ab5281475f44..87923d2865b7 100644
---- a/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-+++ b/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-@@ -42,6 +42,10 @@ static void verify_result(struct tcpbpf_globals *resul=
-t)
-=20
- 	/* check getsockopt for SAVED_SYN */
- 	ASSERT_EQ(result->tcp_saved_syn, 1, "tcp_saved_syn");
-+
-+	/* check getsockopt for window_clamp */
-+	ASSERT_EQ(result->window_clamp_client, 9216, "window_clamp_client");
-+	ASSERT_EQ(result->window_clamp_server, 9216, "window_clamp_server");
- }
-=20
- static void run_test(struct tcpbpf_globals *result)
-diff --git a/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c b/tools=
-/testing/selftests/bpf/progs/test_tcpbpf_kern.c
-index e85e49deba70..94f50f7e94d6 100644
---- a/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
-+++ b/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
-@@ -12,17 +12,41 @@
- #include <linux/tcp.h>
- #include <bpf/bpf_helpers.h>
- #include <bpf/bpf_endian.h>
-+#include "bpf_tcp_helpers.h"
- #include "test_tcpbpf.h"
-=20
- struct tcpbpf_globals global =3D {};
- int _version SEC("version") =3D 1;
-=20
-+/**
-+ * SOL_TCP is defined in <netinet/tcp.h> while
-+ * TCP_SAVED_SYN is defined in already included <linux/tcp.h>
-+ */
-+#ifndef SOL_TCP
-+#define SOL_TCP 6
-+#endif
-+
-+static __always_inline int get_tp_window_clamp(struct bpf_sock_ops *skop=
-s)
-+{
-+	struct bpf_sock *sk;
-+	struct tcp_sock *tp;
-+
-+	sk =3D skops->sk;
-+	if (!sk)
-+		return -1;
-+	tp =3D bpf_skc_to_tcp_sock(sk);
-+	if (!tp)
-+		return -1;
-+	return tp->window_clamp;
-+}
-+
- SEC("sockops")
- int bpf_testcb(struct bpf_sock_ops *skops)
- {
- 	char header[sizeof(struct ipv6hdr) + sizeof(struct tcphdr)];
- 	struct bpf_sock_ops *reuse =3D skops;
- 	struct tcphdr *thdr;
-+	int window_clamp =3D 9216;
- 	int good_call_rv =3D 0;
- 	int bad_call_rv =3D 0;
- 	int save_syn =3D 1;
-@@ -75,6 +99,11 @@ int bpf_testcb(struct bpf_sock_ops *skops)
- 	global.event_map |=3D (1 << op);
-=20
- 	switch (op) {
-+	case BPF_SOCK_OPS_TCP_CONNECT_CB:
-+		rv =3D bpf_setsockopt(skops, SOL_TCP, TCP_WINDOW_CLAMP,
-+				    &window_clamp, sizeof(window_clamp));
-+		global.window_clamp_client =3D get_tp_window_clamp(skops);
-+		break;
- 	case BPF_SOCK_OPS_ACTIVE_ESTABLISHED_CB:
- 		/* Test failure to set largest cb flag (assumes not defined) */
- 		global.bad_cb_test_rv =3D bpf_sock_ops_cb_flags_set(skops, 0x80);
-@@ -100,6 +129,10 @@ int bpf_testcb(struct bpf_sock_ops *skops)
- 				global.tcp_saved_syn =3D v;
- 			}
- 		}
-+		rv =3D bpf_setsockopt(skops, SOL_TCP, TCP_WINDOW_CLAMP,
-+				    &window_clamp, sizeof(window_clamp));
-+
-+		global.window_clamp_server =3D get_tp_window_clamp(skops);
- 		break;
- 	case BPF_SOCK_OPS_RTO_CB:
- 		break;
-diff --git a/tools/testing/selftests/bpf/test_tcpbpf.h b/tools/testing/se=
-lftests/bpf/test_tcpbpf.h
-index 0ed33521cbbb..9dd9b5590f9d 100644
---- a/tools/testing/selftests/bpf/test_tcpbpf.h
-+++ b/tools/testing/selftests/bpf/test_tcpbpf.h
-@@ -16,5 +16,7 @@ struct tcpbpf_globals {
- 	__u32 num_close_events;
- 	__u32 tcp_save_syn;
- 	__u32 tcp_saved_syn;
-+	__u32 window_clamp_client;
-+	__u32 window_clamp_server;
- };
- #endif
---=20
-2.24.1
+> +
+> +  tx-internal-delay-ps:
+> +    description: |
+> +       Setting this property to a non-zero number sets the TX internal delay
+> +       for the PHY.  The internal delay for the PHY has a range of -4 to 4ns
+> +       relative to transmit data.
 
+Sounds like constraints?
+
+We do have a problem handling negative values though. Addressing in dtc 
+was rejected, so we'll need to fixup the schema with unsigned values. 
+But here it should just be negative values.
+
+> +
+> +unevaluatedProperties: false
+> +
+> +required:
+> +  - reg
+> +
+> +examples:
+> +  - |
+> +    mdio0 {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +      ethphy0: ethernet-phy@0 {
+> +        reg = <0>;
+> +        tx-rx-output-high;
+> +        tx-fifo-depth = <5>;
+> +        rx-internal-delay-ps = <1>;
+> +        tx-internal-delay-ps = <1>;
+> +      };
+> +    };
+> -- 
+> 2.29.2
+> 
