@@ -2,89 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 874542CA49E
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 15:00:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C33212CA4E4
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 15:05:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391467AbgLAN4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 08:56:19 -0500
-Received: from szxga06-in.huawei.com ([45.249.212.32]:8487 "EHLO
-        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388215AbgLAN4S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 08:56:18 -0500
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4ClkBX1XnPzhlLV;
-        Tue,  1 Dec 2020 21:55:16 +0800 (CST)
-Received: from huawei.com (10.175.113.133) by DGGEMS404-HUB.china.huawei.com
- (10.3.19.204) with Microsoft SMTP Server id 14.3.487.0; Tue, 1 Dec 2020
- 21:55:31 +0800
-From:   Wang Hai <wanghai38@huawei.com>
-To:     <roopa@nvidia.com>, <nikolay@nvidia.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>
-CC:     <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net] net: bridge: Fix a warning when del bridge sysfs
-Date:   Tue, 1 Dec 2020 22:01:14 +0800
-Message-ID: <20201201140114.67455-1-wanghai38@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        id S2391552AbgLAOE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 09:04:27 -0500
+Received: from pegase1.c-s.fr ([93.17.236.30]:27830 "EHLO pegase1.c-s.fr"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2391301AbgLAOE1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Dec 2020 09:04:27 -0500
+Received: from localhost (mailhub1-int [192.168.12.234])
+        by localhost (Postfix) with ESMTP id 4ClkN85gRwz9v0N1;
+        Tue,  1 Dec 2020 15:03:36 +0100 (CET)
+X-Virus-Scanned: Debian amavisd-new at c-s.fr
+Received: from pegase1.c-s.fr ([192.168.12.234])
+        by localhost (pegase1.c-s.fr [192.168.12.234]) (amavisd-new, port 10024)
+        with ESMTP id gWMNvLud-c5q; Tue,  1 Dec 2020 15:03:36 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase1.c-s.fr (Postfix) with ESMTP id 4ClkN84n5dz9v0N0;
+        Tue,  1 Dec 2020 15:03:36 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 02B778B7B6;
+        Tue,  1 Dec 2020 15:03:38 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id fuT5u0mCRaZw; Tue,  1 Dec 2020 15:03:37 +0100 (CET)
+Received: from [192.168.4.90] (unknown [192.168.4.90])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 99C098B7B5;
+        Tue,  1 Dec 2020 15:03:37 +0100 (CET)
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        bpf@vger.kernel.org, "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Sandipan Das <sandipan@linux.ibm.com>
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+Subject: powerpc32: BUG: KASAN: use-after-free in test_bpf_init+0x6f8/0xde8
+ [test_bpf]
+Message-ID: <ccdc2bc3-ce71-1faa-c83f-cd3b0eaf963d@csgroup.eu>
+Date:   Tue, 1 Dec 2020 15:03:30 +0100
+User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.113.133]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: fr
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If adding bridge sysfs fails, br->ifobj will be NULL, there is no
-need to delete its non-existent sysfs when deleting the bridge device,
-otherwise, it will cause a warning. So, when br->ifobj == NULL,
-directly return can fix this bug.
+I've got the following KASAN error while running test_bpf module on a powerpc 8xx (32 bits).
 
-br_sysfs_addbr: can't create group bridge4/bridge
-------------[ cut here ]------------
-sysfs group 'bridge' not found for kobject 'bridge4'
-WARNING: CPU: 2 PID: 9004 at fs/sysfs/group.c:279 sysfs_remove_group fs/sysfs/group.c:279 [inline]
-WARNING: CPU: 2 PID: 9004 at fs/sysfs/group.c:279 sysfs_remove_group+0x153/0x1b0 fs/sysfs/group.c:270
-Modules linked in: iptable_nat
-...
-Call Trace:
-  br_dev_delete+0x112/0x190 net/bridge/br_if.c:384
-  br_dev_newlink net/bridge/br_netlink.c:1381 [inline]
-  br_dev_newlink+0xdb/0x100 net/bridge/br_netlink.c:1362
-  __rtnl_newlink+0xe11/0x13f0 net/core/rtnetlink.c:3441
-  rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3500
-  rtnetlink_rcv_msg+0x385/0x980 net/core/rtnetlink.c:5562
-  netlink_rcv_skb+0x134/0x3d0 net/netlink/af_netlink.c:2494
-  netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
-  netlink_unicast+0x4a0/0x6a0 net/netlink/af_netlink.c:1330
-  netlink_sendmsg+0x793/0xc80 net/netlink/af_netlink.c:1919
-  sock_sendmsg_nosec net/socket.c:651 [inline]
-  sock_sendmsg+0x139/0x170 net/socket.c:671
-  ____sys_sendmsg+0x658/0x7d0 net/socket.c:2353
-  ___sys_sendmsg+0xf8/0x170 net/socket.c:2407
-  __sys_sendmsg+0xd3/0x190 net/socket.c:2440
-  do_syscall_64+0x33/0x40 arch/x86/entry/common.c:46
-  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+That's reproductible, happens each time at the same test.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
----
- net/bridge/br_sysfs_br.c | 3 +++
- 1 file changed, 3 insertions(+)
+Can someone help me to investigate and fix that ?
 
-diff --git a/net/bridge/br_sysfs_br.c b/net/bridge/br_sysfs_br.c
-index 7db06e3f642a..1e9cbf31d904 100644
---- a/net/bridge/br_sysfs_br.c
-+++ b/net/bridge/br_sysfs_br.c
-@@ -991,6 +991,9 @@ void br_sysfs_delbr(struct net_device *dev)
- 	struct kobject *kobj = &dev->dev.kobj;
- 	struct net_bridge *br = netdev_priv(dev);
- 
-+	if (!br->ifobj)
-+		return;
-+
- 	kobject_put(br->ifobj);
- 	sysfs_remove_bin_file(kobj, &bridge_forward);
- 	sysfs_remove_group(kobj, &bridge_group);
--- 
-2.17.1
+[  209.381037] test_bpf: #298 LD_IND byte frag
+[  209.383041] Pass 1: shrink = 0, seen = 0x30000
+[  209.383284] Pass 2: shrink = 0, seen = 0x30000
+[  209.383562] flen=3 proglen=104 pass=3 image=8166dc91 from=modprobe pid=380
+[  209.383805] JIT code: 00000000: 7c 08 02 a6 90 01 00 04 91 c1 ff b8 91 e1 ff bc
+[  209.384044] JIT code: 00000010: 94 21 ff 70 80 e3 00 58 81 e3 00 54 7d e7 78 50
+[  209.384279] JIT code: 00000020: 81 c3 00 a0 38 a0 00 00 38 80 00 00 38 a0 00 40
+[  209.384516] JIT code: 00000030: 3c e0 c0 02 60 e7 62 14 7c e8 03 a6 38 c5 00 00
+[  209.384753] JIT code: 00000040: 4e 80 00 21 41 80 00 0c 60 00 00 00 7c 83 23 78
+[  209.384990] JIT code: 00000050: 38 21 00 90 80 01 00 04 7c 08 03 a6 81 c1 ff b8
+[  209.385207] JIT code: 00000060: 81 e1 ff bc 4e 80 00 20
+[  209.385442] jited:1
+[  209.385762] ==================================================================
+[  209.386272] BUG: KASAN: use-after-free in test_bpf_init+0x6f8/0xde8 [test_bpf]
+[  209.386503] Read of size 4 at addr c2de70c0 by task modprobe/380
+[  209.386622]
+[  209.386881] CPU: 0 PID: 380 Comm: modprobe Not tainted 5.10.0-rc5-s3k-dev-01341-g72d20eec3f8b #4178
+[  209.387032] Call Trace:
+[  209.387404] [cad6b878] [c020e0d4] print_address_description.constprop.0+0x70/0x4e0 (unreliable)
+[  209.387920] [cad6b8f8] [c020dc98] kasan_report+0x118/0x1c0
+[  209.388503] [cad6b938] [cb0e0c98] test_bpf_init+0x6f8/0xde8 [test_bpf]
+[  209.388918] [cad6ba58] [c0004084] do_one_initcall+0xa4/0x33c
+[  209.389377] [cad6bb28] [c00f9144] do_init_module+0x158/0x7f4
+[  209.389820] [cad6bbc8] [c00fccb0] load_module+0x3394/0x38d8
+[  209.390273] [cad6be38] [c00fd4e0] sys_finit_module+0x118/0x17c
+[  209.390700] [cad6bf38] [c00170d0] ret_from_syscall+0x0/0x34
+[  209.391020] --- interrupt: c01 at 0xfd5e7c0
+[  209.395301]
+[  209.395472] Allocated by task 276:
+[  209.395767]  __kasan_kmalloc.constprop.0+0xe8/0x134
+[  209.396029]  kmem_cache_alloc+0x150/0x290
+[  209.396281]  __alloc_skb+0x58/0x28c
+[  209.396563]  alloc_skb_with_frags+0x74/0x314
+[  209.396872]  sock_alloc_send_pskb+0x404/0x424
+[  209.397205]  unix_dgram_sendmsg+0x200/0xbf0
+[  209.397473]  __sys_sendto+0x17c/0x21c
+[  209.397754]  ret_from_syscall+0x0/0x34
+[  209.397877]
+[  209.398039] Freed by task 274:
+[  209.398308]  kasan_set_track+0x34/0x6c
+[  209.398608]  kasan_set_free_info+0x28/0x48
+[  209.398878]  __kasan_slab_free+0x10c/0x19c
+[  209.399141]  kmem_cache_free+0x68/0x390
+[  209.399433]  skb_free_datagram+0x20/0x8c
+[  209.399759]  unix_dgram_recvmsg+0x474/0x710
+[  209.400084]  sock_read_iter+0x17c/0x228
+[  209.400348]  vfs_read+0x3c8/0x4f4
+[  209.400603]  ksys_read+0x17c/0x1cc
+[  209.400878]  ret_from_syscall+0x0/0x34
+[  209.401001]
+[  209.401222] The buggy address belongs to the object at c2de70c0
+[  209.401222]  which belongs to the cache skbuff_head_cache of size 176
+[  209.401462] The buggy address is located 0 bytes inside of
+[  209.401462]  176-byte region [c2de70c0, c2de7170)
+[  209.401604] The buggy address belongs to the page:
+[  209.401867] page:464e6411 refcount:1 mapcount:0 mapping:00000000 index:0x0 pfn:0xb79
+[  209.402080] flags: 0x200(slab)
+[  209.402477] raw: 00000200 00000100 00000122 c2004a90 00000000 00440088 ffffffff 00000001
+[  209.402646] page dumped because: kasan: bad access detected
+[  209.402765]
+[  209.402897] Memory state around the buggy address:
+[  209.403142]  c2de6f80: fb fb fc fc fc fc fc fc fc fc fa fb fb fb fb fb
+[  209.403388]  c2de7000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  209.403639] >c2de7080: fc fc fc fc fc fc fc fc fa fb fb fb fb fb fb fb
+[  209.403798]                                    ^
+[  209.404048]  c2de7100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc
+[  209.404304]  c2de7180: fc fc fc fc fc fc fa fb fb fb fb fb fb fb fb fb
+[  209.404456] ==================================================================
+[  209.404591] Disabling lock debugging due to kernel taint
 
+
+Thanks
+Christophe
