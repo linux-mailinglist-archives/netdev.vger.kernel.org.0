@@ -2,131 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 074D52C946E
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 02:09:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A204E2C946B
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 02:09:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389225AbgLABJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 20:09:14 -0500
-Received: from m42-4.mailgun.net ([69.72.42.4]:38220 "EHLO m42-4.mailgun.net"
+        id S2389202AbgLABJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 20:09:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33724 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389214AbgLABJM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Nov 2020 20:09:12 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1606784931; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=pTKbiMBtrJ26sLvaoisUJXi2hC33groLwAZEMc865T4=; b=FoMrPqQnQn9fgOGkT2UkxTFLx080pe9S3P1MpRrLWGNPwIBG4V0RDR3bdF6iypWK4qcGQ9/4
- nvzH+r6Q3xROMTdY0FHbwmfqui+++/xSHCvL78wDpG85T4L329Rywwg9CHZlelZQvPNKfD+z
- oDc5lFgnTgtt+82MKIHg/5HXrno=
-X-Mailgun-Sending-Ip: 69.72.42.4
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
- 5fc59789f4482b01c461eeff (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 01 Dec 2020 01:08:25
- GMT
-Sender: hemantk=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 247ADC43464; Tue,  1 Dec 2020 01:08:25 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from [10.46.162.249] (i-global254.qualcomm.com [199.106.103.254])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S2389185AbgLABJJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Nov 2020 20:09:09 -0500
+Received: from kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: hemantk)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id EC7CFC43460;
-        Tue,  1 Dec 2020 01:08:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org EC7CFC43460
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=hemantk@codeaurora.org
-Subject: Re: [PATCH v13 4/4] bus: mhi: Add userspace client interface driver
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     gregkh@linuxfoundation.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jhugo@codeaurora.org,
-        bbhatt@codeaurora.org, loic.poulain@linaro.org,
-        netdev@vger.kernel.org
-References: <1606533966-22821-1-git-send-email-hemantk@codeaurora.org>
- <1606533966-22821-5-git-send-email-hemantk@codeaurora.org>
- <20201128061117.GJ3077@thinkpad>
-From:   Hemant Kumar <hemantk@codeaurora.org>
-Message-ID: <becbd9ac-09a1-1ce7-7fdb-333a302601cb@codeaurora.org>
-Date:   Mon, 30 Nov 2020 17:08:23 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        by mail.kernel.org (Postfix) with ESMTPSA id B6F542073C;
+        Tue,  1 Dec 2020 01:08:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606784909;
+        bh=m0VnsJSV0+4I4HjkB61YuddBBSfnEG7sdCtU4UkO/e8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=1aC1/W4GCNekv7vcAea1P9BOnSuPpMHz/Xj2TaIWy0uW9T71hPG4DFDCEKXNab3mH
+         0INy80fF1w4HYHKcdUGYrYSPJOsVSjd1AlkLnXs/mUlcnvXhW0Ulh6saumWA6O9+Yy
+         7mTAic3owp5nfFLNmm0pshq9Jn+bMEYa/cFGNtp8=
+Date:   Mon, 30 Nov 2020 17:08:27 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net,
+        Mario Limonciello <mario.limonciello@dell.com>,
+        netdev@vger.kernel.org, sassmann@redhat.com,
+        sasha.neftin@intel.com, Aaron Brown <aaron.f.brown@intel.com>
+Subject: Re: [net-next 1/4] e1000e: allow turning s0ix flows on for systems
+ with ME
+Message-ID: <20201130170827.14d5e84a@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201130212907.320677-2-anthony.l.nguyen@intel.com>
+References: <20201130212907.320677-1-anthony.l.nguyen@intel.com>
+        <20201130212907.320677-2-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20201128061117.GJ3077@thinkpad>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mani,
-
-On 11/27/20 10:11 PM, Manivannan Sadhasivam wrote:
-> Hi Hemant,
+On Mon, 30 Nov 2020 13:29:04 -0800 Tony Nguyen wrote:
+> From: Mario Limonciello <mario.limonciello@dell.com>
 > 
-> On Fri, Nov 27, 2020 at 07:26:06PM -0800, Hemant Kumar wrote:
->> This MHI client driver allows userspace clients to transfer
->> raw data between MHI device and host using standard file operations.
->> Driver instantiates UCI device object which is associated to device
->> file node. UCI device object instantiates UCI channel object when device
->> file node is opened. UCI channel object is used to manage MHI channels
->> by calling MHI core APIs for read and write operations. MHI channels
->> are started as part of device open(). MHI channels remain in start
->> state until last release() is called on UCI device file node. Device
->> file node is created with format
->>
->> /dev/mhi_<mhi_device_name>
->>
->> Currently it supports QMI channel.
->>
-> 
-> Thanks for the update. This patch looks good to me. But as I'm going to
-> apply Loic's "bus: mhi: core: Indexed MHI controller name" patch, you
-> need to update the documentation accordingly.
+> S0ix for GBE flows are needed for allowing the system to get into deepest
+> power state, but these require coordination of components outside of
+> control of Linux kernel.  For systems that have confirmed to coordinate
+> this properly, allow turning on the s0ix flows at load time or runtime.
 
-This is what i added in documentation on v13
+Please CC PCI, power management, (and ACPI?) people on the next version
+of this change.
 
-
-Device file node is created with format:-
-
-/dev/mhi_<mhi_device_name>
-
-mhi_device_name includes mhi controller name and the name of the MHI
-channel being used by MHI client in userspace to send or receive data
-using MHI protocol.
-
-​
-Loic's patch is going to update the controller name as indexed 
-controller name, which goes fine with or without his change going first.
-
-For example:   With Loic's change name of device node would be 
-/dev/mhi_mhi0_QMI
-
-Without Loic's change it would be
-
-/dev/mhi_0000:00:01.2_QMI
-
-Please let me know if i am missing something.
-
-Thanks,
-Hemant
-
-> 
->> Signed-off-by: Hemant Kumar <hemantk@codeaurora.org>
-> 
-> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> 
-> Thanks,
-> Mani
-> 
-[..]
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Alex's suggestion of ethtool flags is definitely an improvement, but
+it'd be even better if we didn't have to add PCI/PM specific knobs 
+to networking APIs.
