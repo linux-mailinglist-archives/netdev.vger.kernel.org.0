@@ -2,83 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 002052C9495
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 02:20:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F19EF2C94AD
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 02:31:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389234AbgLABUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 20:20:09 -0500
-Received: from mga04.intel.com ([192.55.52.120]:22830 "EHLO mga04.intel.com"
+        id S1728676AbgLABan (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 20:30:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37378 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728932AbgLABUJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Nov 2020 20:20:09 -0500
-IronPort-SDR: GC6mnQRZdXI+SwddVEKYduUN/aFSyKe3GbfPi/J27nGV4pLsUP+Bf3KMvcDSmBJT34qC8SSWcE
- 8t9PAtp8f++A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9821"; a="170177455"
-X-IronPort-AV: E=Sophos;i="5.78,382,1599548400"; 
-   d="scan'208";a="170177455"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2020 17:19:28 -0800
-IronPort-SDR: 0mj4k8xHOEc7kaYnDBIfwvuFreMJRA6EqTktv3jNhc8ZMeQ+ltM69Kba3vm4JjIj/2xahgAlIw
- XUKCNkJi/79Q==
-X-IronPort-AV: E=Sophos;i="5.78,382,1599548400"; 
-   d="scan'208";a="314771314"
-Received: from chenyu-office.sh.intel.com ([10.239.158.173])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2020 17:19:24 -0800
-From:   Chen Yu <yu.c.chen@intel.com>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <len.brown@intel.com>,
-        "Neftin, Sasha" <sasha.neftin@intel.com>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Brandt, Todd E" <todd.e.brandt@intel.com>,
-        Chen Yu <yu.c.chen@intel.com>
-Subject: [PATCH 2/2][v3] e1000e: Remove the runtime suspend restriction on CNP+
-Date:   Tue,  1 Dec 2020 09:22:09 +0800
-Message-Id: <aa62fe21ecafaff167f57e86192be70ee8914738.1606757180.git.yu.c.chen@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <cover.1606757180.git.yu.c.chen@intel.com>
-References: <cover.1606757180.git.yu.c.chen@intel.com>
+        id S1726400AbgLABan (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Nov 2020 20:30:43 -0500
+Received: from kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D9FF520857;
+        Tue,  1 Dec 2020 01:30:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606786202;
+        bh=gIV/qoU4A9F6UBLwHtqRz/xiO+o/o9Q7MGlKLyPG3xQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZfXgopZLyuoZqeHhaH5QfC3dZ8wx1RyHUUksFcJYiN04eX+hb7S70rgAe2qpPIYk2
+         1nY3g2C2QrwJze6W3oiuf5u5r6xCQu4LVB3ZRj2tAX1LN2EjSuFOEeZYMv+Swv/ecP
+         pyds6B9lACocUmD9emZ9sdId/eIWyjeI+p+GCpng=
+Date:   Mon, 30 Nov 2020 17:30:00 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Denis Kirjanov <kda@linux-powerpc.org>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v2] net/af_unix: don't create a path for a binded socket
+Message-ID: <20201130173000.60acd3cc@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201130132747.29332-1-kda@linux-powerpc.org>
+References: <20201130132747.29332-1-kda@linux-powerpc.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Although there is platform issue of runtime suspend support
-on CNP, it would be more flexible to let the user decide whether
-to disable runtime or not because:
-1. This can be done in userspace via
-   echo on > /sys/devices/pci0000\:00/0000\:00\:1f.d/power/control
-2. More and more NICs would support runtime suspend, disabling the
-   runtime suspend on them by default would impact the validation.
+On Mon, 30 Nov 2020 16:27:47 +0300 Denis Kirjanov wrote:
+> in the case of the socket which is bound to an adress
+> there is no sense to create a path in the next attempts
+> 
+> here is a program that shows the issue:
+> 
+> int main()
+> {
+>     int s;
+>     struct sockaddr_un a;
+> 
+>     s = socket(AF_UNIX, SOCK_STREAM, 0);
+>     if (s<0)
+>         perror("socket() failed\n");
+> 
+>     printf("First bind()\n");
+> 
+>     memset(&a, 0, sizeof(a));
+>     a.sun_family = AF_UNIX;
+>     strncpy(a.sun_path, "/tmp/.first_bind", sizeof(a.sun_path));
+> 
+>     if ((bind(s, (const struct sockaddr*) &a, sizeof(a))) == -1)
+>         perror("bind() failed\n");
+> 
+>     printf("Second bind()\n");
+> 
+>     memset(&a, 0, sizeof(a));
+>     a.sun_family = AF_UNIX;
+>     strncpy(a.sun_path, "/tmp/.first_bind_failed", sizeof(a.sun_path));
+> 
+>     if ((bind(s, (const struct sockaddr*) &a, sizeof(a))) == -1)
+>         perror("bind() failed\n");
+> }
+> 
+> kda@SLES15-SP2:~> ./test
+> First bind()
+> Second bind()
+> bind() failed
+> : Invalid argument
+> 
+> kda@SLES15-SP2:~> ls -la /tmp/.first_bind
+> .first_bind         .first_bind_failed
+> 
+> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+> 
+> v2: move a new patch creation after the address assignment check.
 
-Only disable runtime suspend on CNP in case of any user space regression.
+It is a behavior change, but IDK if anyone can reasonably depend on
+current behavior for anything useful. Otherwise LGTM.
 
-Signed-off-by: Chen Yu <yu.c.chen@intel.com>
----
- drivers/net/ethernet/intel/e1000e/netdev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Let's CC Al Viro, and maybe Christoph to get some more capable eyes 
+on this.
 
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index b210bba3f20a..d06435267dc8 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -7674,7 +7674,7 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	dev_pm_set_driver_flags(&pdev->dev, DPM_FLAG_SMART_PREPARE);
- 
--	if (pci_dev_run_wake(pdev) && hw->mac.type < e1000_pch_cnp)
-+	if (pci_dev_run_wake(pdev) && hw->mac.type != e1000_pch_cnp)
- 		pm_runtime_put_noidle(&pdev->dev);
- 
- 	return 0;
--- 
-2.17.1
+> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+> index 41c3303c3357..ff2dd1d3536b 100644
+> --- a/net/unix/af_unix.c
+> +++ b/net/unix/af_unix.c
+> @@ -1034,6 +1034,14 @@ static int unix_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
+>  		goto out;
+>  	addr_len = err;
+>  
+> +	err = mutex_lock_interruptible(&u->bindlock);
+> +	if (err)
+> +		goto out_put;
+> +
+> +	err = -EINVAL;
+> +	if (u->addr)
+> +		goto out_up;
+> +
+>  	if (sun_path[0]) {
+>  		umode_t mode = S_IFSOCK |
+>  		       (SOCK_INODE(sock)->i_mode & ~current_umask());
+> @@ -1045,14 +1053,6 @@ static int unix_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
+>  		}
+>  	}
+>  
+> -	err = mutex_lock_interruptible(&u->bindlock);
+> -	if (err)
+> -		goto out_put;
+> -
+> -	err = -EINVAL;
+> -	if (u->addr)
+> -		goto out_up;
+> -
+>  	err = -ENOMEM;
+>  	addr = kmalloc(sizeof(*addr)+addr_len, GFP_KERNEL);
+>  	if (!addr)
 
