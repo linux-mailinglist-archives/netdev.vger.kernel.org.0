@@ -2,97 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 729252C938A
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 01:03:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C78452C9398
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 01:05:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730650AbgLAACp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 19:02:45 -0500
-Received: from mail-il1-f194.google.com ([209.85.166.194]:46111 "EHLO
-        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725870AbgLAACp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 19:02:45 -0500
-Received: by mail-il1-f194.google.com with SMTP id b8so13099915ila.13;
-        Mon, 30 Nov 2020 16:02:29 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=x+vU33C5twxuQ+gl2xId1FzTRHdN1feLBu/jqhnvoKc=;
-        b=GHNAS2SqNpOt9h5ZbgM1kHwSipHtxGjN39oIWrBuVvTjMIgSJHJ9x1BsmCZylAOGC/
-         wOlG4srVT8bk/kU5mtMqxUhNz75SJ/EEkvAhMFhW7/266nbimjs0Hu32AWGN29Z/v99R
-         ckH1HS3i152z5GCUmjzgwADzNQEIsjMncAx49y+Ldwq7h6QqxHrunv0aroHxB40Nmeg3
-         V0Pk8A44hRI4aFl8twhjeSQXO0qRJ1UOG+K7CQG7OXOohsJIXS87CIsqamqvlq2KsWd8
-         nFU1laQbY35UfwSejOs0n2HhkJIxRwFnpGO3VZlqQrM27Pr5zkZywHYXqySNQsZ8WOEi
-         t8Og==
-X-Gm-Message-State: AOAM531kn2W0hFaRcsxpTuDJwYsEIt1Dg5LLCcxHv0H/jXhsJaO24D3m
-        V3jIwLI8vQ9inQErzHhsWw==
-X-Google-Smtp-Source: ABdhPJx0o/uvQUwF2q2l2tJUuBSKDHDM+OZ40hNwLRM8YThuYL1/8/EFpzli9WUmHvbkiWC9e0nM1g==
-X-Received: by 2002:a92:aa8b:: with SMTP id p11mr188890ill.5.1606780924118;
-        Mon, 30 Nov 2020 16:02:04 -0800 (PST)
-Received: from xps15 ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id w12sm81905ilo.63.2020.11.30.16.02.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Nov 2020 16:02:03 -0800 (PST)
-Received: (nullmailer pid 3297076 invoked by uid 1000);
-        Tue, 01 Dec 2020 00:02:01 -0000
-Date:   Mon, 30 Nov 2020 17:02:01 -0700
-From:   Rob Herring <robh@kernel.org>
-To:     Dan Murphy <dmurphy@ti.com>
-Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, ciorneiioana@gmail.com,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v4 2/4] dt-bindings: net: Add Rx/Tx output
- configuration for 10base T1L
-Message-ID: <20201201000201.GA3293113@robh.at.kernel.org>
-References: <20201117201555.26723-1-dmurphy@ti.com>
- <20201117201555.26723-3-dmurphy@ti.com>
+        id S1731004AbgLAAE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 19:04:29 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:40150 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730986AbgLAAE2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 19:04:28 -0500
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B101o80006920
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 16:03:48 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=w5sEoSNi/hOic74AF7SaCo6Z2BfWFRfKgWDRCUfDgzU=;
+ b=RFdk9rzxagSnHbPh9q9KIyZCG+KnxDfML/jy4Mp1bnDXEGiEyzW0r3UgEpxSY03Y+5yF
+ nDJXsbm9NZtk9xQT3g37F2OyHGXqyNf1hOl90jyMKVxGjELW9mtuB3NYMr2+RCuZIRf3
+ LOU34DKN3aTKQZIKoOqI6Iwlm1P9t44CoXU= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 354hsyep4c-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 16:03:48 -0800
+Received: from intmgw004.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 30 Nov 2020 16:03:44 -0800
+Received: by devvm3178.ftw3.facebook.com (Postfix, from userid 201728)
+        id 121BC4752A005; Mon, 30 Nov 2020 16:03:39 -0800 (PST)
+From:   Prankur gupta <prankgup@fb.com>
+To:     <bpf@vger.kernel.org>
+CC:     <kernel-team@fb.com>, <netdev@vger.kernel.org>
+Subject: [PATCH bpf-next 0/2] Add support to set window_clamp from bpf setsockops
+Date:   Mon, 30 Nov 2020 16:03:37 -0800
+Message-ID: <20201201000339.3310760-1-prankgup@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201117201555.26723-3-dmurphy@ti.com>
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-30_12:2020-11-30,2020-11-30 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
+ adultscore=0 priorityscore=1501 impostorscore=0 mlxscore=0 spamscore=0
+ bulkscore=0 lowpriorityscore=0 suspectscore=13 mlxlogscore=962
+ phishscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2009150000 definitions=main-2011300150
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 17, 2020 at 02:15:53PM -0600, Dan Murphy wrote:
-> Per the 802.3cg spec the 10base T1L can operate at 2 different
-> differential voltages 1v p2p and 2.4v p2p. The abiility of the PHY to
+This patch contains support to set tcp window_field field from bpf setsoc=
+kops.
 
-1.1V?
+Prankur gupta (2):
+  bpf: Adds support for setting window clamp
+  selftests/bpf: Add Userspace tests for TCP_WINDOW_CLAMP
 
-> drive that output is dependent on the PHY's on board power supply.
-> This common feature is applicable to all 10base T1L PHYs so this binding
-> property belongs in a top level ethernet document.
-> 
-> Signed-off-by: Dan Murphy <dmurphy@ti.com>
-> ---
->  Documentation/devicetree/bindings/net/ethernet-phy.yaml | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-> index 6dd72faebd89..bda1ce51836b 100644
-> --- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-> +++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-> @@ -174,6 +174,12 @@ properties:
->        PHY's that have configurable TX internal delays. If this property is
->        present then the PHY applies the TX delay.
->  
-> +  max-tx-rx-p2p-microvolt:
-> +    description: |
+ net/core/filter.c                             |  8 +++++
+ tools/testing/selftests/bpf/bpf_tcp_helpers.h |  1 +
+ .../selftests/bpf/prog_tests/tcpbpf_user.c    |  4 +++
+ .../selftests/bpf/progs/test_tcpbpf_kern.c    | 33 +++++++++++++++++++
+ tools/testing/selftests/bpf/test_tcpbpf.h     |  2 ++
+ 5 files changed, 48 insertions(+)
 
-Don't need '|' if no formatting.
+--=20
+2.24.1
 
-> +      Configures the Tx/Rx p2p differential output voltage for 10base-T1L PHYs.
-> +    enum: [ 1100, 2400 ]
-> +    default: 2400
-
-Aren't you off by 1000?
-
-> +
->  required:
->    - reg
->  
-> -- 
-> 2.29.2
-> 
