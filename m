@@ -2,122 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A4352C9E01
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 10:41:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B86FA2C9CC2
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 10:39:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391208AbgLAJaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 04:30:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50382 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387900AbgLAI6R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 03:58:17 -0500
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 456E2C0613D2
-        for <netdev@vger.kernel.org>; Tue,  1 Dec 2020 00:57:37 -0800 (PST)
-Received: by mail-wm1-x343.google.com with SMTP id a6so1630781wmc.2
-        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 00:57:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:subject:to:cc:message-id:date:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=pATMwjcygT9AkthrFzsMCRTD5iOTr1gj6Zd3ahL9hm4=;
-        b=iUlHxlQslTPsF4nGMHFQw76o5BDkFoZSgJeXaW7SqzH72vuCU9rQZJ+FDDyBuq+IQE
-         CW9cutAhnjIGCht3G3L+CGOooqr1WZ4pn09/hxpEyMdaFAhYpDScV5MeZwpdfP45FjnR
-         qriJSqFJpfOK0HmJwC0Ac1ulex+Z7VKFE7QMNdjJeyL8b5rZsiHCJYfKaFE8H97Ovr/0
-         Bo1JsuQpKlk+0q4AXtUyXzVa0WGim0vn0CG0Z9f/CqlT8Ax4zGDFDi4MHd8mii4R8xGS
-         bo9FcH3fXnMF4W9lhpGcWbj5/6x2UcEJenS0L9wGlH5lxNm/LOcYxyuCBAlmXcPVhnPA
-         DwNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=pATMwjcygT9AkthrFzsMCRTD5iOTr1gj6Zd3ahL9hm4=;
-        b=HIpt37awKKhQK7/hrL8CAvbiS5+iZB36SjXSxBrRVH3mh3XrGzlEkJWKcaXnsvtFly
-         0obKcYpSXuqRwHlFLlkxPb4D8VoX91DgVpCkBM4ZyhBGSrJVB6ym839AxtVwxNxGBDZV
-         DBC8amKgfXkbIEK609XvGfHlY0FnfMudDS9/R6ksqY92YA0JSasAuy0+NvJptIzkQa6L
-         o6tuB5srtP7YRVh9EVMgypD7iZAyA+E1D/JmxIdh5zqZw43x6/fuQdzVYR3KJw3Tjs/I
-         Ku90+tJnArB+hJXY0TVTnjkWXJZKRYDRMf0l48GjRkXQWzJCrO/8pHRL4OSsCboU4Pam
-         guJw==
-X-Gm-Message-State: AOAM5311h6kwLUPkbzhJTxPCvo7oOUoXNDcFMyBl+xoHn829BR3qoZcz
-        HZJ4cO8lX2dmHVIOo4K/Y1JdWbteWQ8+ZA==
-X-Google-Smtp-Source: ABdhPJySO6pTDr4L2FgdEC8MtJ22rf2qM7LdG33lBo2GKWifYTf0X+a3EeHQixr+p9TCakv9wOL1AA==
-X-Received: by 2002:a1c:e084:: with SMTP id x126mr1628881wmg.109.1606813055611;
-        Tue, 01 Dec 2020 00:57:35 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f23:2800:c8da:c2a2:5860:ab22? (p200300ea8f232800c8dac2a25860ab22.dip0.t-ipconnect.de. [2003:ea:8f23:2800:c8da:c2a2:5860:ab22])
-        by smtp.googlemail.com with ESMTPSA id a12sm1891602wrq.58.2020.12.01.00.57.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Dec 2020 00:57:35 -0800 (PST)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: set tc_offset only if tally counter reset
- isn't supported
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Message-ID: <526618b2-b1bf-1844-b82a-dab2df7bdc8f@gmail.com>
-Date:   Tue, 1 Dec 2020 09:57:29 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        id S2388361AbgLAJAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 04:00:36 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:31771 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388305AbgLAJAf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 04:00:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606813149;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NSsGRBUOWAETZ5Sd8nvg/sErSOqJ3PR8KtVDoY0Iy7E=;
+        b=P7Axfj+dbAZYyBINPb/L+4ZwmHvWNjB7CbIjC0GGCuRUXZIVi5A6Tyb2aHN8P0mf56CKYF
+        CFPRGpAKluG2OVz0WCDongZlbFUJmGupO4jrXjwIUFwtjJDdz4lD0jZ703XnedGd6O+uxQ
+        O+bNqZtKb8agDidAEmn5LzQt5r1+yYM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-24-XQC94cYxOpGWW0bpr6vFOQ-1; Tue, 01 Dec 2020 03:59:05 -0500
+X-MC-Unique: XQC94cYxOpGWW0bpr6vFOQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 91A15817B83;
+        Tue,  1 Dec 2020 08:59:02 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.55])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 517495D9DC;
+        Tue,  1 Dec 2020 08:58:53 +0000 (UTC)
+Date:   Tue, 1 Dec 2020 09:58:52 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     "Penigalapati, Sandeep" <sandeep.penigalapati@intel.com>
+Cc:     "sven.auhagen@voleatech.de" <sven.auhagen@voleatech.de>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "pmenzel@molgen.mpg.de" <pmenzel@molgen.mpg.de>, brouer@redhat.com
+Subject: Re: [PATCH v4 2/6] igb: take vlan double header into account
+Message-ID: <20201201095852.2dc1e8f8@carbon>
+In-Reply-To: <DM6PR11MB454615FDFC4E7B71D9B82FA29CF40@DM6PR11MB4546.namprd11.prod.outlook.com>
+References: <20201111170453.32693-1-sven.auhagen@voleatech.de>
+        <20201111170453.32693-3-sven.auhagen@voleatech.de>
+        <DM6PR11MB454615FDFC4E7B71D9B82FA29CF40@DM6PR11MB4546.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On chip versions supporting tally counter reset we currently update
-the counters after a reset although we know all counters are zero.
-Skip this unnecessary step.
+On Tue, 1 Dec 2020 08:23:23 +0000
+"Penigalapati, Sandeep" <sandeep.penigalapati@intel.com> wrote:
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 25 ++++++++---------------
- 1 file changed, 9 insertions(+), 16 deletions(-)
+> Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 32a4c8c0b..3ef1b31c9 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -1562,16 +1562,6 @@ static void rtl8169_do_counters(struct rtl8169_private *tp, u32 counter_cmd)
- 	rtl_loop_wait_low(tp, &rtl_counters_cond, 10, 1000);
- }
- 
--static void rtl8169_reset_counters(struct rtl8169_private *tp)
--{
--	/*
--	 * Versions prior to RTL_GIGA_MAC_VER_19 don't support resetting the
--	 * tally counters.
--	 */
--	if (tp->mac_version >= RTL_GIGA_MAC_VER_19)
--		rtl8169_do_counters(tp, CounterReset);
--}
--
- static void rtl8169_update_counters(struct rtl8169_private *tp)
- {
- 	u8 val = RTL_R8(tp, ChipCmd);
-@@ -1606,13 +1596,16 @@ static void rtl8169_init_counter_offsets(struct rtl8169_private *tp)
- 	if (tp->tc_offset.inited)
- 		return;
- 
--	rtl8169_reset_counters(tp);
--	rtl8169_update_counters(tp);
-+	if (tp->mac_version >= RTL_GIGA_MAC_VER_19) {
-+		rtl8169_do_counters(tp, CounterReset);
-+	} else {
-+		rtl8169_update_counters(tp);
-+		tp->tc_offset.tx_errors = counters->tx_errors;
-+		tp->tc_offset.tx_multi_collision = counters->tx_multi_collision;
-+		tp->tc_offset.tx_aborted = counters->tx_aborted;
-+		tp->tc_offset.rx_missed = counters->rx_missed;
-+	}
- 
--	tp->tc_offset.tx_errors = counters->tx_errors;
--	tp->tc_offset.tx_multi_collision = counters->tx_multi_collision;
--	tp->tc_offset.tx_aborted = counters->tx_aborted;
--	tp->tc_offset.rx_missed = counters->rx_missed;
- 	tp->tc_offset.inited = true;
- }
- 
+Very happy that you are testing this.
+
+Have you also tested that samples/bpf/ xdp_redirect_cpu program works?
+
 -- 
-2.29.2
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
