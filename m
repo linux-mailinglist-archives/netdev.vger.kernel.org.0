@@ -2,93 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A70EA2C93E6
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 01:27:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BE8A2C93F7
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 01:32:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389108AbgLAA0o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 19:26:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56062 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726316AbgLAA0n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 19:26:43 -0500
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95AEC0613D4
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 16:25:57 -0800 (PST)
-Received: by mail-pj1-x1042.google.com with SMTP id t12so127830pjq.5
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 16:25:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=dyAxNjo17ZUIGlsMvPKiZqDZ4nUH9vd0xfyYvJND1Zo=;
-        b=LGN6vQ7bkbR8ogcFrs0b8eFPUFYEz8wqVeIvMY3n7jJESPtegf2OT8H6Zn5obuMxzV
-         jFYP5p/QLPKToiv0PP9/KAf/4qxKRDsp5NTqGe4MHR7uXSRrL4K7jHg8C0Tat3KZPCAJ
-         xeaSyK3MOUU4GurhkqRCe365g/szbR9/zFjXoF20CVSTD78htVRv9ly4E7D8Qc8ueRdU
-         CxDpjzaMRj4L8IXIUt1bcsgojYnBlEH/uziEF1hB084a6MVFuc9lE+PUHn/L0QHhqm0E
-         DglLuTzNstWms5D4q2dgXujGmH/qsM9nVt/2wHFeoHYxW8Jvc68LvaStfHahXFFPRml8
-         itlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=dyAxNjo17ZUIGlsMvPKiZqDZ4nUH9vd0xfyYvJND1Zo=;
-        b=Do93kN93wRYqREMoobt1tcR477Qp6Ghp6xBPeyQ01jiiLsmB0DB7Y2G2m3nzaQvUtl
-         hEV4pvi9CgXHei0+WQCckvmEsOp7ZXJ1SbGENley6xrl2CGGKVoF5H4I8ha2Ujfu+JdI
-         YjF8x6Itm/DLvhHmlJtcM3tunntn2WedoZd9inw4vmLi3G762eTLZQRKXtfD/yoHzecb
-         7dRbVAit2e/cTtthZv9Mdvp8z/L4UVfdRz7/btov1mDnveQKPunYEdLMO+zmvo5Us0nq
-         u3pMYlfYDezYIvbLLXg/Y9/PF6AzaurZXKqha3xwPAg+HH80iImThN0SgSyUqx1QzNTR
-         tnJQ==
-X-Gm-Message-State: AOAM530fRwWghZiGpzv3DbiFAGXCP8ncakeHftWJTWHk6NqrfrMYQo8N
-        Cwd12sjyrBQVaLaLu6p7pf/jzXo+C99asw==
-X-Google-Smtp-Source: ABdhPJzazM6uJtXudQR5sOwyXp/N0nSxQ6bicSYAOSmUN6Us+uRZoTLXNwQIns2q6w9X+Z/JGCU8Hg==
-X-Received: by 2002:a17:902:6bc2:b029:d6:e0ba:f2ff with SMTP id m2-20020a1709026bc2b02900d6e0baf2ffmr186568plt.10.1606782357070;
-        Mon, 30 Nov 2020 16:25:57 -0800 (PST)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id q12sm172632pgv.91.2020.11.30.16.25.56
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 30 Nov 2020 16:25:56 -0800 (PST)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
-Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net-next 2/2] ionic: change mtu after queues are stopped
-Date:   Mon, 30 Nov 2020 16:25:46 -0800
-Message-Id: <20201201002546.4123-3-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201201002546.4123-1-snelson@pensando.io>
-References: <20201201002546.4123-1-snelson@pensando.io>
+        id S2389143AbgLAAc1 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 30 Nov 2020 19:32:27 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:22476 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387924AbgLAAc0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 19:32:26 -0500
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B10VCOw031487
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 16:31:46 -0800
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 354d4g7jha-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 16:31:46 -0800
+Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 30 Nov 2020 16:31:44 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 91AD62ECA5FC; Mon, 30 Nov 2020 16:31:41 -0800 (PST)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>
+Subject: [PATCH v2 bpf-next 0/7] libbpf: add support for kernel module BTF CO-RE relocations
+Date:   Mon, 30 Nov 2020 16:31:30 -0800
+Message-ID: <20201201003137.1692914-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.24.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-30_12:2020-11-30,2020-11-30 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ malwarescore=0 mlxscore=0 bulkscore=0 adultscore=0 suspectscore=8
+ mlxlogscore=890 phishscore=0 spamscore=0 clxscore=1034 impostorscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012010000
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Order of operations is slightly more correct in the driver
-to change the netdev->mtu after the queues have been stopped
-rather than before.
+Implement libbpf support for performing CO-RE relocations against types in
+kernel module BTFs, in addition to existing vmlinux BTF support.
 
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- drivers/net/ethernet/pensando/ionic/ionic_lif.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+This is a first step towards fully supporting kernel module BTFs. Subsequent
+patch sets will expand kernel and libbpf sides to allow using other
+BTF-powered capabilities (fentry/fexit, struct_ops, ksym externs, etc). For
+CO-RE relocations support, though, no extra kernel changes are necessary.
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 0b7f2def423c..11140915c2da 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -1465,12 +1465,14 @@ static int ionic_change_mtu(struct net_device *netdev, int new_mtu)
- 	if (err)
- 		return err;
- 
--	netdev->mtu = new_mtu;
- 	/* if we're not running, nothing more to do */
--	if (!netif_running(netdev))
-+	if (!netif_running(netdev)) {
-+		netdev->mtu = new_mtu;
- 		return 0;
-+	}
- 
- 	ionic_stop_queues_reconfig(lif);
-+	netdev->mtu = new_mtu;
- 	return ionic_start_queues_reconfig(lif);
- }
- 
+This patch set also sets up a convenient and fully-controlled custom kernel
+module (called "bpf_testmod"), that is a predictable playground for all the
+BPF selftests, that rely on module BTFs.
+
+v1->v2:
+  - module_put() inside preempt_disable() region (Alexei);
+  - bpf_sidecar -> bpf_testmod rename (Alexei);
+  - test_progs more relaxed handling of bpf_testmod;
+  - test_progs marks skipped sub-tests properly as SKIP now.
+
+Andrii Nakryiko (7):
+  bpf: fix bpf_put_raw_tracepoint()'s use of __module_address()
+  libbpf: add internal helper to load BTF data by FD
+  libbpf: refactor CO-RE relocs to not assume a single BTF object
+  libbpf: add kernel module BTF support for CO-RE relocations
+  selftests/bpf: add bpf_testmod kernel module for testing
+  selftests/bpf: add support for marking sub-tests as skipped
+  selftests/bpf: add CO-RE relocs selftest relying on kernel module BTF
+
+ kernel/trace/bpf_trace.c                      |   8 +-
+ tools/lib/bpf/btf.c                           |  61 ++--
+ tools/lib/bpf/libbpf.c                        | 345 ++++++++++++++----
+ tools/lib/bpf/libbpf_internal.h               |   1 +
+ tools/testing/selftests/bpf/.gitignore        |   1 +
+ tools/testing/selftests/bpf/Makefile          |  12 +-
+ .../selftests/bpf/bpf_testmod/.gitignore      |   6 +
+ .../selftests/bpf/bpf_testmod/Makefile        |  20 +
+ .../bpf/bpf_testmod/bpf_testmod-events.h      |  36 ++
+ .../selftests/bpf/bpf_testmod/bpf_testmod.c   |  51 +++
+ .../selftests/bpf/bpf_testmod/bpf_testmod.h   |  14 +
+ .../selftests/bpf/prog_tests/core_reloc.c     |  79 +++-
+ .../selftests/bpf/progs/core_reloc_types.h    |  17 +
+ .../bpf/progs/test_core_reloc_module.c        |  66 ++++
+ tools/testing/selftests/bpf/test_progs.c      |  65 +++-
+ tools/testing/selftests/bpf/test_progs.h      |   1 +
+ 16 files changed, 661 insertions(+), 122 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/bpf_testmod/.gitignore
+ create mode 100644 tools/testing/selftests/bpf/bpf_testmod/Makefile
+ create mode 100644 tools/testing/selftests/bpf/bpf_testmod/bpf_testmod-events.h
+ create mode 100644 tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+ create mode 100644 tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.h
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_module.c
+
 -- 
-2.17.1
+2.24.1
 
