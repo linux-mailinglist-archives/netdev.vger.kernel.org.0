@@ -2,105 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA5EB2C9CD6
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 10:39:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47B402C9D84
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 10:40:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729198AbgLAJBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 04:01:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50868 "EHLO
+        id S2390764AbgLAJY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 04:24:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729136AbgLAJBf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 04:01:35 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC27C0613CF
-        for <netdev@vger.kernel.org>; Tue,  1 Dec 2020 01:00:47 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id y4so2067670edy.5
-        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 01:00:47 -0800 (PST)
+        with ESMTP id S2388364AbgLAJF7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 04:05:59 -0500
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 783F5C0613CF
+        for <netdev@vger.kernel.org>; Tue,  1 Dec 2020 01:05:12 -0800 (PST)
+Received: by mail-pf1-x442.google.com with SMTP id q22so419806pfk.12
+        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 01:05:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=3XPhZz7W/nBqE3Z80H7vj5wd6acNnTKZUv5BKfRnjj8=;
-        b=Xl/wzP73Ws0as9TOVJ2NOB6hM7lC12jgzbNfr1AA/n1dhZT46hNiy3lgRpm0Nb1qbC
-         +zwCPT1c/n/mhMmMJ7AEm2o4VfP3Kf52ZlnK5ea2kHs//pg8Tq4I0DbxGwJUnAslh8HF
-         KaPSz3NkglFjfnzrP+ekAG8U2V8CCMueM/UvCrj/hNZGdqcei1Dt1LCeW59+KtY/uK34
-         J+UWatmX6lwpH8QV0xiannhH7HQ8oCURMaE75EBETnS9W73QefwLaeczzzqaxYt9Et+p
-         fS7Axxq3ubRDxo1+zvo8pcPji5lsrQ9M4VerJ31S3AXAz/Jv9xHl5gTl7DqjoK6PceKO
-         4IkA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mSqVg8bR87JikjFPYDz01J5hgIlBUC3pa9G/hQQx+P0=;
+        b=JXCtGHGL2cquj7dcaSdSOYudNyxlbtyQRsVwdsmaBdrZ5J+9VUUOiR7rJhBCbnD7oU
+         bik6gjRtMRoahjrKBHRPLM+fO76UZDP2yuMyJEB5l7lm/pds8eNy61I5gvXkdJ3a7NHz
+         nPQi26PAcaNrU3hmxLth8y/PUe/m7ThRspp42nT1R5nJHCnDJyKFz+19i8Jlwf/NIbYb
+         FiDl2uUTDotgME/kIcYamjTxf0yOgOqUH27EatVKQ2+qljhO+2chH5UjAIrtNEzFBSYr
+         T0hTzIwJM5nENx6bCu1msPwfStR6AJW+DQ70T0uCEb+vLbyLXL47eit6YfgFMdBOL0KN
+         cncg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=3XPhZz7W/nBqE3Z80H7vj5wd6acNnTKZUv5BKfRnjj8=;
-        b=EC01uughtaxfnovej+rAFfRes5xRN0ebACzo4o8ZrnndIJEcIPhwkp9zcxnIMKV+O0
-         n9P0WV9WiahAdEwf14JGt1EgnMs0SkL7vvLbk58tf9Gc+AF3jfRHFYKgotCH2WHYLYqW
-         EDzjq1H1GWuKV1z1GGfHH+j4ZkhicMpChAKYINjZX/RPl+X/WnbUQmcADeAzfcMYnoGg
-         eR//xcWJhv9ZfeozNCpTq1XRsBssQnMx8Jrf1DGgclxLtU87X9mb1P2vq1AfVCYPL7CW
-         4lzUSvsoM81LQbx7Po+li1G4Pc6g35g01K1yZcDVnciUPPX1vMqklYM/pQwVFqWL3iXF
-         dx+A==
-X-Gm-Message-State: AOAM533bYCxLM+awIKcLYil0mNHyXZglu635GBUDPlEV+eACfocGAUGz
-        KzkjwbsWOoi/8Z/jwXe6dbA=
-X-Google-Smtp-Source: ABdhPJzDtxFI+6SFGWDV68LmxfUCuIunEm4Aim/R48cR6yNWGqHvuBXXrXNOHk/eg6eBdbwywhlOIQ==
-X-Received: by 2002:a50:99cb:: with SMTP id n11mr1967449edb.362.1606813246190;
-        Tue, 01 Dec 2020 01:00:46 -0800 (PST)
-Received: from unassigned-hostname.unassigned-domain (x59cc8a5e.dyn.telefonica.de. [89.204.138.94])
-        by smtp.gmail.com with ESMTPSA id v9sm516266ejk.48.2020.12.01.01.00.45
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mSqVg8bR87JikjFPYDz01J5hgIlBUC3pa9G/hQQx+P0=;
+        b=Fw/V+bbgytpDXryIOT+pCF/Xzvxy6WCY7VycEcGQ+nKX96907coM8KKjMhzDNego4L
+         t03x99muAAKrBQK+W6Sm9LA3fzFPFe+SpHOpaAsWFpR6tih/8WHk/F5FVJy9OP+XbOjx
+         xmxLsyU9FX77epQoXSKEJNSaQAfxctb/f5Jo3gtFaVu9dghEGENP14diFY91Z4kvYRBY
+         flYXBDmH6sj1PpB4gInTTm283DW7oHLLHxFsXfY6u8h09wCs1ZaVIxUZymvGBv1vVezG
+         nBcHO+RNKKZdd4PM/jmd0BvW6ir9AZR4IHZ03uPo+T6W9aYPl7ULCgMVYjPuf44rk2QG
+         6pyg==
+X-Gm-Message-State: AOAM532oKan0pgrAM6xEv5OYt4+TvJGkS8bof1b6lAGmofcJHuwzxMg/
+        v/EDPKOR0N3palYaipYBZsw=
+X-Google-Smtp-Source: ABdhPJxrOCDIxO3QfJ3VldYXZ47uP4OYJ/HH4/9PRe2Z5EFMZg968N/FLNvkO6YGyw1gzUNslRXyqw==
+X-Received: by 2002:a62:1455:0:b029:18b:83a2:768b with SMTP id 82-20020a6214550000b029018b83a2768bmr1814022pfu.3.1606813512082;
+        Tue, 01 Dec 2020 01:05:12 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7220:84ff:fe09:1424])
+        by smtp.gmail.com with ESMTPSA id j10sm1734432pji.29.2020.12.01.01.05.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Dec 2020 01:00:45 -0800 (PST)
-Date:   Tue, 1 Dec 2020 10:00:42 +0100
-From:   Peter Vollmer <peter.vollmer@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Tobias Waldekranz <tobias@waldekranz.com>,
-        Network Development <netdev@vger.kernel.org>
-Subject: Re: dsa/mv88e6xxx: leaking packets on MV88E6341 switch
-Message-ID: <20201201090041.GB6059@unassigned-hostname.unassigned-domain>
-References: <CAGwvh_MAQWuKuhu5VuYjibmyN-FRxCXXhrQBRm34GShZPSN6Aw@mail.gmail.com>
- <20200930191956.GV3996795@lunn.ch>
- <20201001062107.GA2592@fido.de.innominate.com>
- <CAGwvh_PDtAH9bMujfvupfiKTi4CVKEWtp6wqUouUoHtst6FW1A@mail.gmail.com>
- <87y2in94o7.fsf@waldekranz.com>
- <20201126222359.GO2075216@lunn.ch>
+        Tue, 01 Dec 2020 01:05:11 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH net] geneve: pull IP header before ECN decapsulation
+Date:   Tue,  1 Dec 2020 01:05:07 -0800
+Message-Id: <20201201090507.4137906-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.29.2.454.gaff20da3a2-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201126222359.GO2075216@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 26, 2020 at 11:23:59PM +0100, Andrew Lunn wrote:
-> > > I tested setting .tag_protocol=DSA_TAG_PROTO_DSA for the 6341 switch
-> > > instead, resulting in a register setting of 04 Port control for port 5
-> > > = 0x053f (i.e. EgressMode=Unmodified mode, frames are transmitted
-> > > unmodified), which looks correct to me. It does not fix the above
-> > > problem, but the change seems to make sense anyhow. Should I send a
-> > > patch ?
-> > 
-> > This is not up to me, but my guess is that Andrew would like a patch,
-> > yes. On 6390X, I know for a fact that setting the EgressMode to 3 does
-> > indeed produce the behavior that was supported in older devices (like
-> > the 6352), but there is no reason not to change it to regular DSA.
-> 
-> I already said to Tobias, i had problems getting the 6390 working, and
-> this was one of the things i changed. I don't think i ever undid this
-> specific change, to see how critical it is. But relying on
-> undocumented behaviour is not nice.
-> 
-> EDSA used to have the advantages that tcpdump understood it. But
-> thanks to work Florian and Vivien did, tcpdump can now decode DSA just
-> as well as EDSA.
-> 
-> So please do submit a patch.
+From: Eric Dumazet <edumazet@google.com>
 
-I checked both cases (EDSA, DSA) with tcpdump on eth1 (SGMII to the switch),
-they both seem to work and tcpdump recognizes two different formats, MEDSA for
-DSA_TAG_PROTO_EDSA and "ethertype unknown (0x4018 (or 0xc018))" for
-DSA_TAG_PROTO_DSA (due to an older tcpdump version 4.9.3 I guess). Maybe I can
-get some information from our support if DSA_TAG_PROTO_EDSA is supported
-for the port config (0x4) register on the 6341 switch after all or if it should
-be omitted.
+IP_ECN_decapsulate() and IP6_ECN_decapsulate() assume
+IP header is already pulled.
 
-Thanks
+geneve does not ensure this yet.
 
-  Peter
+Fixing this generically in IP_ECN_decapsulate() and
+IP6_ECN_decapsulate() is not possible, since callers
+pass a pointer that might be freed by pskb_may_pull()
+
+syzbot reported :
+
+BUG: KMSAN: uninit-value in __INET_ECN_decapsulate include/net/inet_ecn.h:238 [inline]
+BUG: KMSAN: uninit-value in INET_ECN_decapsulate+0x345/0x1db0 include/net/inet_ecn.h:260
+CPU: 1 PID: 8941 Comm: syz-executor.0 Not tainted 5.10.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x21c/0x280 lib/dump_stack.c:118
+ kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:118
+ __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
+ __INET_ECN_decapsulate include/net/inet_ecn.h:238 [inline]
+ INET_ECN_decapsulate+0x345/0x1db0 include/net/inet_ecn.h:260
+ geneve_rx+0x2103/0x2980 include/net/inet_ecn.h:306
+ geneve_udp_encap_recv+0x105c/0x1340 drivers/net/geneve.c:377
+ udp_queue_rcv_one_skb+0x193a/0x1af0 net/ipv4/udp.c:2093
+ udp_queue_rcv_skb+0x282/0x1050 net/ipv4/udp.c:2167
+ udp_unicast_rcv_skb net/ipv4/udp.c:2325 [inline]
+ __udp4_lib_rcv+0x399d/0x5880 net/ipv4/udp.c:2394
+ udp_rcv+0x5c/0x70 net/ipv4/udp.c:2564
+ ip_protocol_deliver_rcu+0x572/0xc50 net/ipv4/ip_input.c:204
+ ip_local_deliver_finish net/ipv4/ip_input.c:231 [inline]
+ NF_HOOK include/linux/netfilter.h:301 [inline]
+ ip_local_deliver+0x583/0x8d0 net/ipv4/ip_input.c:252
+ dst_input include/net/dst.h:449 [inline]
+ ip_rcv_finish net/ipv4/ip_input.c:428 [inline]
+ NF_HOOK include/linux/netfilter.h:301 [inline]
+ ip_rcv+0x5c3/0x840 net/ipv4/ip_input.c:539
+ __netif_receive_skb_one_core net/core/dev.c:5315 [inline]
+ __netif_receive_skb+0x1ec/0x640 net/core/dev.c:5429
+ process_backlog+0x523/0xc10 net/core/dev.c:6319
+ napi_poll+0x420/0x1010 net/core/dev.c:6763
+ net_rx_action+0x35c/0xd40 net/core/dev.c:6833
+ __do_softirq+0x1a9/0x6fa kernel/softirq.c:298
+ asm_call_irq_on_stack+0xf/0x20
+ </IRQ>
+ __run_on_irqstack arch/x86/include/asm/irq_stack.h:26 [inline]
+ run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:77 [inline]
+ do_softirq_own_stack+0x6e/0x90 arch/x86/kernel/irq_64.c:77
+ do_softirq kernel/softirq.c:343 [inline]
+ __local_bh_enable_ip+0x184/0x1d0 kernel/softirq.c:195
+ local_bh_enable+0x36/0x40 include/linux/bottom_half.h:32
+ rcu_read_unlock_bh include/linux/rcupdate.h:730 [inline]
+ __dev_queue_xmit+0x3a9b/0x4520 net/core/dev.c:4167
+ dev_queue_xmit+0x4b/0x60 net/core/dev.c:4173
+ packet_snd net/packet/af_packet.c:2992 [inline]
+ packet_sendmsg+0x86f9/0x99d0 net/packet/af_packet.c:3017
+ sock_sendmsg_nosec net/socket.c:651 [inline]
+ sock_sendmsg net/socket.c:671 [inline]
+ __sys_sendto+0x9dc/0xc80 net/socket.c:1992
+ __do_sys_sendto net/socket.c:2004 [inline]
+ __se_sys_sendto+0x107/0x130 net/socket.c:2000
+ __x64_sys_sendto+0x6e/0x90 net/socket.c:2000
+ do_syscall_64+0x9f/0x140 arch/x86/entry/common.c:48
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Fixes: 2d07dc79fe04 ("geneve: add initial netdev driver for GENEVE tunnels")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ drivers/net/geneve.c | 20 ++++++++++++++++----
+ 1 file changed, 16 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+index 1426bfc009bc39a61e2cf039c57b56e48abc3fdc..8ae9ce2014a4a3ba7b962a209e28d1f65d4a83bd 100644
+--- a/drivers/net/geneve.c
++++ b/drivers/net/geneve.c
+@@ -257,11 +257,21 @@ static void geneve_rx(struct geneve_dev *geneve, struct geneve_sock *gs,
+ 		skb_dst_set(skb, &tun_dst->dst);
+ 
+ 	/* Ignore packet loops (and multicast echo) */
+-	if (ether_addr_equal(eth_hdr(skb)->h_source, geneve->dev->dev_addr)) {
+-		geneve->dev->stats.rx_errors++;
+-		goto drop;
+-	}
++	if (ether_addr_equal(eth_hdr(skb)->h_source, geneve->dev->dev_addr))
++		goto rx_error;
+ 
++	switch (skb_protocol(skb, true)) {
++	case htons(ETH_P_IP):
++		if (pskb_may_pull(skb, sizeof(struct iphdr)))
++			goto rx_error;
++		break;
++	case htons(ETH_P_IPV6):
++		if (pskb_may_pull(skb, sizeof(struct ipv6hdr)))
++			goto rx_error;
++		break;
++	default:
++		goto rx_error;
++	}
+ 	oiph = skb_network_header(skb);
+ 	skb_reset_network_header(skb);
+ 
+@@ -298,6 +308,8 @@ static void geneve_rx(struct geneve_dev *geneve, struct geneve_sock *gs,
+ 		dev_sw_netstats_rx_add(geneve->dev, len);
+ 
+ 	return;
++rx_error:
++	geneve->dev->stats.rx_errors++;
+ drop:
+ 	/* Consume bad packet */
+ 	kfree_skb(skb);
+-- 
+2.29.2.454.gaff20da3a2-goog
+
