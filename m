@@ -2,75 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADA1F2C985D
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 08:46:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B437B2C98B8
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 08:57:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728187AbgLAHpl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 02:45:41 -0500
-Received: from inva020.nxp.com ([92.121.34.13]:54706 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727727AbgLAHpl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Dec 2020 02:45:41 -0500
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 90AA81A0A19;
-        Tue,  1 Dec 2020 08:44:54 +0100 (CET)
-Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 963781A0A2A;
-        Tue,  1 Dec 2020 08:44:52 +0100 (CET)
-Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 806174027E;
-        Tue,  1 Dec 2020 08:44:49 +0100 (CET)
-From:   Yangbo Lu <yangbo.lu@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH] dpaa_eth: copy timestamp fields to new skb in A-050385 workaround
-Date:   Tue,  1 Dec 2020 15:52:58 +0800
-Message-Id: <20201201075258.1875-1-yangbo.lu@nxp.com>
-X-Mailer: git-send-email 2.17.1
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726598AbgLAH4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 02:56:23 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:11720 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726178AbgLAH4W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 02:56:22 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fc5f6fe0001>; Mon, 30 Nov 2020 23:55:42 -0800
+Received: from reg-r-vrt-018-180.nvidia.com (10.124.1.5) by
+ HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3; Tue, 1 Dec 2020 07:55:40 +0000
+References: <20201127151205.23492-1-vladbu@nvidia.com> <20201130185222.6b24ed42@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+User-agent: mu4e 1.4.12; emacs 26.2.90
+From:   Vlad Buslov <vladbu@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>
+Subject: Re: [PATCH net-next] net: sched: remove redundant 'rtnl_held' argument
+In-Reply-To: <20201130185222.6b24ed42@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+Date:   Tue, 1 Dec 2020 09:55:37 +0200
+Message-ID: <ygnh4kl6klja.fsf@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1606809342; bh=jKcGEjQYO+hVXe9L5WJkPJWfu2RWLCOoz7w3HH12x3Q=;
+        h=References:User-agent:From:To:CC:Subject:In-Reply-To:Date:
+         Message-ID:MIME-Version:Content-Type:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=fWIqhmvJjzq6VJfRybnLzBUYmq9VJ8EFNBsxw/vZKGRY1EcRZfodUlSetWOm43n8I
+         h0AzCiRrY+DECSYP9StO4MORmFjUjf/FrJaPQxOk3JnfXkEOSfWZCZY4oKbzdCq3B3
+         f0v3vk9OFIE4J0XMkvvPdXdHOna3swt7WLWey3lM+Qea0LBvjtRf+smZy1n/5xrDxF
+         I3iLgSyYmL9FfCCz5HtGQ82UdgSsufgKHq8jXs5oH6uIErMle3DokHvX8y5TTSYxIa
+         r4jMsPBFwCZu8B9FEQ39BoAz9SuXjZq2724I8NXzk0hAEVgzf4BHs0jmxW2h/bnJ3c
+         SlNa+MKoqBcIA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The timestamp fields should be copied to new skb too in
-A-050385 workaround for later TX timestamping handling.
+On Tue 01 Dec 2020 at 04:52, Jakub Kicinski <kuba@kernel.org> wrote:
+> On Fri, 27 Nov 2020 17:12:05 +0200 Vlad Buslov wrote:
+>> @@ -2262,7 +2260,7 @@ static int tc_del_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+>>  
+>>  	if (prio == 0) {
+>>  		tfilter_notify_chain(net, skb, block, q, parent, n,
+>> -				     chain, RTM_DELTFILTER, rtnl_held);
+>> +				     chain, RTM_DELTFILTER);
+>>  		tcf_chain_flush(chain, rtnl_held);
+>>  		err = 0;
+>>  		goto errout;
+>
+> Hum. This looks off.
 
-Fixes: 3c68b8fffb48 ("dpaa_eth: FMan erratum A050385 workaround")
-Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
----
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+Hi Jakub,
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index d9c2859..cb7c028 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -2120,6 +2120,15 @@ static int dpaa_a050385_wa(struct net_device *net_dev, struct sk_buff **s)
- 	skb_copy_header(new_skb, skb);
- 	new_skb->dev = skb->dev;
- 
-+	/* Copy relevant timestamp info from the old skb to the new */
-+	if (priv->tx_tstamp) {
-+		skb_shinfo(new_skb)->tx_flags = skb_shinfo(skb)->tx_flags;
-+		skb_shinfo(new_skb)->hwtstamps = skb_shinfo(skb)->hwtstamps;
-+		skb_shinfo(new_skb)->tskey = skb_shinfo(skb)->tskey;
-+		if (skb->sk)
-+			skb_set_owner_w(new_skb, skb->sk);
-+	}
-+
- 	/* We move the headroom when we align it so we have to reset the
- 	 * network and transport header offsets relative to the new data
- 	 * pointer. The checksum offload relies on these offsets.
-@@ -2127,7 +2136,6 @@ static int dpaa_a050385_wa(struct net_device *net_dev, struct sk_buff **s)
- 	skb_set_network_header(new_skb, skb_network_offset(skb));
- 	skb_set_transport_header(new_skb, skb_transport_offset(skb));
- 
--	/* TODO: does timestamping need the result in the old skb? */
- 	dev_kfree_skb(skb);
- 	*s = new_skb;
- 
--- 
-2.7.4
+Prio==0 means user requests to flush whole chain. In such case rtnl lock
+is obtained earlier in tc_del_tfilter():
+
+	/* Take rtnl mutex if flushing whole chain, block is shared (no qdisc
+	 * found), qdisc is not unlocked, classifier type is not specified,
+	 * classifier is not unlocked.
+	 */
+	if (!prio ||
+	    (q && !(q->ops->cl_ops->flags & QDISC_CLASS_OPS_DOIT_UNLOCKED)) ||
+	    !tcf_proto_is_unlocked(name)) {
+		rtnl_held = true;
+		rtnl_lock();
+	}
 
