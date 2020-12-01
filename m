@@ -2,52 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4CFF2CB0C6
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 00:29:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B16A2CB0C9
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 00:31:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726875AbgLAX3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 18:29:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49846 "EHLO mail.kernel.org"
+        id S1727060AbgLAXat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 18:30:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49966 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726066AbgLAX3l (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Dec 2020 18:29:41 -0500
-Date:   Tue, 1 Dec 2020 15:28:58 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606865340;
-        bh=blo93ZjCWj28XI7NruL8kZHVQl0f9ekNLlcAo04n8as=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rAdAmEp1qoufLSejL1OCxGfxZ7Fy1pLIHiqJRhbAJ8HoLsksazm51w0CYS0FFpKrT
-         m4YTEQO/7Y7JXfd8dj/Mk8NDlM5lWKUAEzty2GTlgb+gGFMpt1zyqZqOQGbGOgZzmF
-         uV9Kta8oy/05V8vQbWISXVYjkU461boSW9AJjUpg=
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hoang Huu Le <hoang.h.le@dektech.com.au>
-Cc:     jmaloy@redhat.com, maloy@donjonn.com, ying.xue@windriver.com,
-        netdev@vger.kernel.org
-Subject: Re: [net] tipc: fix incompatible mtu of transmission
-Message-ID: <20201201152858.4346db6f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201130025544.3602-1-hoang.h.le@dektech.com.au>
-References: <20201130025544.3602-1-hoang.h.le@dektech.com.au>
+        id S1726082AbgLAXas (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Dec 2020 18:30:48 -0500
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH V2 net-next 0/7] net: hns3: updates for -next
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160686540803.30098.7846327880207474986.git-patchwork-notify@kernel.org>
+Date:   Tue, 01 Dec 2020 23:30:08 +0000
+References: <1606535510-44346-1-git-send-email-tanhuazhong@huawei.com>
+In-Reply-To: <1606535510-44346-1-git-send-email-tanhuazhong@huawei.com>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, salil.mehta@huawei.com,
+        yisen.zhuang@huawei.com, linuxarm@huawei.com, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 30 Nov 2020 09:55:44 +0700 Hoang Huu Le wrote:
-> From: Hoang Le <hoang.h.le@dektech.com.au>
-> 
-> In commit 682cd3cf946b6
-> ("tipc: confgiure and apply UDP bearer MTU on running links"), we
-> introduced a function to change UDP bearer MTU and applied this new value
-> across existing per-link. However, we did not apply this new MTU value at
-> node level. This lead to packet dropped at link level if its size is
-> greater than new MTU value.
-> 
-> To fix this issue, we also apply this new MTU value for node level.
-> 
-> Fixes: 682cd3cf946b6 ("tipc: confgiure and apply UDP bearer MTU on running links")
-> Acked-by: Jon Maloy <jmaloy@redhat.com>
-> Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+Hello:
 
-Applied, thanks!
+This series was applied to netdev/net-next.git (refs/heads/master):
+
+On Sat, 28 Nov 2020 11:51:43 +0800 you wrote:
+> This series includes some updates for the HNS3 ethernet driver.
+> 
+> #1~#6: add some updates related to the checksum offload.
+> #7: add support for multiple TCs' MAC pauce mode.
+> 
+> change log:
+> V2: fixes some sparse errors in #1 & #5.
+> 
+> [...]
+
+Here is the summary with links:
+  - [V2,net-next,1/7] net: hns3: add support for RX completion checksum
+    https://git.kernel.org/netdev/net-next/c/4b2fe769aad9
+  - [V2,net-next,2/7] net: hns3: add support for TX hardware checksum offload
+    https://git.kernel.org/netdev/net-next/c/66d52f3bf385
+  - [V2,net-next,3/7] net: hns3: remove unsupported NETIF_F_GSO_UDP_TUNNEL_CSUM
+    https://git.kernel.org/netdev/net-next/c/57e72c121c7f
+  - [V2,net-next,4/7] net: hns3: add udp tunnel checksum segmentation support
+    https://git.kernel.org/netdev/net-next/c/3e2816219d7c
+  - [V2,net-next,5/7] net: hns3: add more info to hns3_dbg_bd_info()
+    https://git.kernel.org/netdev/net-next/c/b1533ada7480
+  - [V2,net-next,6/7] net: hns3: add a check for devcie's verion in hns3_tunnel_csum_bug()
+    https://git.kernel.org/netdev/net-next/c/ade36ccef1d7
+  - [V2,net-next,7/7] net: hns3: keep MAC pause mode when multiple TCs are enabled
+    https://git.kernel.org/netdev/net-next/c/d78e5b6a6764
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
