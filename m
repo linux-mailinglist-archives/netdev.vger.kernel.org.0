@@ -2,182 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA6DA2CAFE8
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 23:25:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DB8B2CB00E
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 23:32:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726713AbgLAWYb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 17:24:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35244 "EHLO
+        id S1727355AbgLAWby (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 17:31:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726664AbgLAWYa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 17:24:30 -0500
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3ACC0613CF
-        for <netdev@vger.kernel.org>; Tue,  1 Dec 2020 14:23:44 -0800 (PST)
-Received: by mail-ej1-x644.google.com with SMTP id a16so7766837ejj.5
-        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 14:23:44 -0800 (PST)
+        with ESMTP id S1727031AbgLAWbp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 17:31:45 -0500
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13E8BC0613CF
+        for <netdev@vger.kernel.org>; Tue,  1 Dec 2020 14:31:05 -0800 (PST)
+Received: by mail-lj1-x242.google.com with SMTP id f18so5918489ljg.9
+        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 14:31:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=K8WmZ3M06uWqy5r5OOjN+z0v2tjV/tGGlBiY/6cWnTE=;
-        b=UZ6fRywzMXtOOSTB1Cb0/zhmJscoCaUmq7cSj/jrKer++aJiazvK1fMdgUHTm2erwj
-         g61OsHVbiywHq6CPeUKZPoSZ/XXnxOYv9WHlg1Ym+ZF7iXFy2cBamrQ7X2ENINrM1JxI
-         jM4oEKHBUMW6hClpL1zZEWrXI46ndNpNbOCyw+9SX5WU2+2pPNjD0amYFtUppdFRQAfk
-         6pI3py2TAJvHoGrWhzEAVjRtLBHcZg+p3/nH0CpqQi/BJsVamPOw2HtIUcyHAw6kudTX
-         DgLt0Vpu8jK5+neoGux+sz3o3/4Cyq2yq8KOuSXLwjsCfMmVsfNQj1lxSv3Ibu/HXrt4
-         sYVQ==
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=6JE1FrxD03IKGkihuf9eOUF0HXfRQsJ1jr5f8JN0ceY=;
+        b=IEs+LKU6Dy8pONqi/ubJJO+ERuo1WU20pb3GnKoBvNwJaYN3/X2M01z9Qd+a8UHADi
+         r2OafWMrq+IK4sw56Z3/ZdG7dwYyPCHVZJDB+alXqO4NV4d+qlhsC9tiJ/uEXE54HPu4
+         oSfYr+QnZBgtp6frOBu4KRNBcFLqZ3Do9Qz9OxLn574xstjCoGAx52SAMHssP7KffTcz
+         a89UUTVgjTEsaZs4SrW8Rbp5fbVfYqDGO8h8GXSzjPhTCu3z3TQLCg23ZtYkxr7IvId4
+         c1s4WS6nGj+qaGLmyalEq4syll/GUzlUhrpNObrd9zuWYZJRg8tdtG/NiAFjrMqIpeMe
+         APqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=K8WmZ3M06uWqy5r5OOjN+z0v2tjV/tGGlBiY/6cWnTE=;
-        b=EnL2XrlOfx0mvx57Plqgh0nbIRaNsSdRNwJFuN8mNkpb62X4eFMzuxc2tH0lfCU54M
-         /pd3LcmteQxSF//EL1Cj6VSP08kRA5k7BbV3lOr1qlRlDHKB6c/YnrqnW4zC40FNw0zU
-         qVS7RT87fmprHxZoU7Ufzha7KteJwnSWUXlibMOEKwnf8/+OCQLx81MIy9dd1lS0Qflu
-         J1RpRKPJCete8Jmj3r9cNSTos8DPlveOWtWzJuLCX29B/oZCxZ95DoQZ6g9lE7hzaAPH
-         cMCtVGGSnJzlXZF+6fNeGZpLaW4z6XljjlM6hsUb/tn4SpXIU45O0mMMepA3vo06rn6l
-         qJuA==
-X-Gm-Message-State: AOAM531NmK0tqB7V31U2IhiLcZaNcqp4gLdSBLX8dWsA8U75iKi+0pR4
-        0DoQ+rS7Cri/oHXaYK0gOPA=
-X-Google-Smtp-Source: ABdhPJyz6IEREylzyKi/m2VzkHwDg9qKML7WZvkaHJ2u/DhCOv1XTzdd5VG0qrEGuzla5Kz/B1cUtA==
-X-Received: by 2002:a17:906:168f:: with SMTP id s15mr601525ejd.180.1606861422939;
-        Tue, 01 Dec 2020 14:23:42 -0800 (PST)
-Received: from skbuf ([188.25.2.120])
-        by smtp.gmail.com with ESMTPSA id a6sm534689edv.74.2020.12.01.14.23.41
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=6JE1FrxD03IKGkihuf9eOUF0HXfRQsJ1jr5f8JN0ceY=;
+        b=PsLWPH3kLjksQ0HYghrhqB1Q/H4V6VxiZKztijGJ/XAN4m4mV6bXiwmtnvQBAVedYt
+         mo3i/ZjDntTQnC4co39QdWKLTnwkZ7tREzA7ZsSj9B+xMP8IpW5xtJEGCohO97zW7rcv
+         WT/czBTywRhmPGAB7y7rw4HGpnZfU16h8FCuY50mQdZfL7JCleRKfQWrk6cH6b6ewVub
+         ishzxZy2CRxI4OjHOeXJBHxALJCJ1t6AtgMoR+NLkNZ3CPRB2dp1q8z/hTC8Yyvipipm
+         pokcE42O5bBYf+I3qlkO+9H0+7bVXwagRSh9+MiNoCHkoiHfCkjtSLp3cO7txT24fnRf
+         /04w==
+X-Gm-Message-State: AOAM5323RtG3pf0EHVE9SwZc3RJkKL8lXqhryFTfkE7HYy+3LO1Fsm8l
+        bGVasRXJ4ueJFPlNVX6HcoHV/DNnMXuUPOg7
+X-Google-Smtp-Source: ABdhPJzGnR1FO/FLUbWCG+oG1n31FpMZFDkQlFNUVWqS2oKU49kR87J5ol3Rz6p/IUzJFLRi6YDmUw==
+X-Received: by 2002:a05:651c:1032:: with SMTP id w18mr2191007ljm.359.1606861863325;
+        Tue, 01 Dec 2020 14:31:03 -0800 (PST)
+Received: from wkz-x280 (h-79-28.A259.priv.bahnhof.se. [79.136.79.28])
+        by smtp.gmail.com with ESMTPSA id i19sm127303lfj.212.2020.12.01.14.31.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Dec 2020 14:23:42 -0800 (PST)
-Date:   Wed, 2 Dec 2020 00:23:41 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
+        Tue, 01 Dec 2020 14:31:02 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
         vivien.didelot@gmail.com, f.fainelli@gmail.com,
         j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
         netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 2/4] net: dsa: Link aggregation support
-Message-ID: <20201201222341.6lywc5qmcpafmp4u@skbuf>
-References: <20201130140610.4018-1-tobias@waldekranz.com>
- <20201130140610.4018-3-tobias@waldekranz.com>
- <20201201140354.lnhwx3ix2ogtnngy@skbuf>
- <871rg98uqm.fsf@waldekranz.com>
- <20201201200423.mujxza7g7gsgntbg@skbuf>
- <87wny16vv1.fsf@waldekranz.com>
+Subject: Re: [PATCH v2 net-next 4/4] net: dsa: tag_dsa: Support reception of packets from LAG devices
+In-Reply-To: <20201201212427.sewnqf7muxwisbcm@skbuf>
+References: <20201130140610.4018-1-tobias@waldekranz.com> <20201130140610.4018-5-tobias@waldekranz.com> <20201201212427.sewnqf7muxwisbcm@skbuf>
+Date:   Tue, 01 Dec 2020 23:31:02 +0100
+Message-ID: <87sg8p6tw9.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87wny16vv1.fsf@waldekranz.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 01, 2020 at 10:48:34PM +0100, Tobias Waldekranz wrote:
-> On Tue, Dec 01, 2020 at 22:04, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > On Tue, Dec 01, 2020 at 03:29:53PM +0100, Tobias Waldekranz wrote:
-> >> On Tue, Dec 01, 2020 at 16:03, Vladimir Oltean <olteanv@gmail.com> wrote:
-> >> > On Mon, Nov 30, 2020 at 03:06:08PM +0100, Tobias Waldekranz wrote:
-> >> >> When a LAG joins a bridge, the DSA subsystem will treat that as each
-> >> >> individual port joining the bridge. The driver may look at the port's
-> >> >> LAG pointer to see if it is associated with any LAG, if that is
-> >> >> required. This is analogue to how switchdev events are replicated out
-> >> >> to all lower devices when reaching e.g. a LAG.
-> >> >
-> >> > Agree with the principle. But doesn't that mean that this code:
-> >> >
-> >> > static int dsa_slave_switchdev_blocking_event(struct notifier_block *unused,
-> >> > 					      unsigned long event, void *ptr)
-> >> > {
-> >> > 	struct net_device *dev = switchdev_notifier_info_to_dev(ptr);
-> >> > 	int err;
-> >> >
-> >> > 	switch (event) {
-> >> > 	case SWITCHDEV_PORT_OBJ_ADD:
-> >> > 		err = switchdev_handle_port_obj_add(dev, ptr,
-> >> > 						    dsa_slave_dev_check,
-> >> > 						    dsa_slave_port_obj_add);
-> >> > 		return notifier_from_errno(err);
-> >> > 	case SWITCHDEV_PORT_OBJ_DEL:
-> >> > 		err = switchdev_handle_port_obj_del(dev, ptr,
-> >> > 						    dsa_slave_dev_check,
-> >> > 						    dsa_slave_port_obj_del);
-> >> > 		return notifier_from_errno(err);
-> >> > 	case SWITCHDEV_PORT_ATTR_SET:
-> >> > 		err = switchdev_handle_port_attr_set(dev, ptr,
-> >> > 						     dsa_slave_dev_check,
-> >> > 						     dsa_slave_port_attr_set);
-> >> > 		return notifier_from_errno(err);
-> >> > 	}
-> >> >
-> >> > 	return NOTIFY_DONE;
-> >> > }
-> >> >
-> >> > should be replaced with something that also reacts to the case where
-> >> > "dev" is a LAG? Like, for example, I imagine that a VLAN installed on a
-> >> > bridge port that is a LAG should be propagated to the switch ports
-> >> > beneath that LAG. Similarly for all bridge attributes.
-> >>
-> >> That is exactly what switchdev_handle_* does, no? It is this exact
-> >> behavior that my statement about switchdev event replication references.
-> >
-> > I'm sorry, I don't mean to be overly obtuse, but _how_ does the current
-> > code propagate a VLAN to a physical port located below a bond? Through
-> > magic? The dsa_slave_dev_check is passed as a parameter to
-> > switchdev_handle_port_obj_add _exactly_ because the code has needed so
-> > far to match only on DSA interfaces and not on bonding interfaces. So
-> > the code does not react to VLANs added on a bonding interface. Hence my
-> > question.
+On Tue, Dec 01, 2020 at 23:24, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Mon, Nov 30, 2020 at 03:06:10PM +0100, Tobias Waldekranz wrote:
+>> Packets ingressing on a LAG that egress on the CPU port, which are not
+>> classified as management, will have a FORWARD tag that does not
+>> contain the normal source device/port tuple. Instead the trunk bit
+>> will be set, and the port field holds the LAG id.
+>> 
+>> Since the exact source port information is not available in the tag,
+>> frames are injected directly on the LAG interface and thus do never
+>> pass through any DSA port interface on ingress.
+>> 
+>> Management frames (TO_CPU) are not affected and will pass through the
+>> DSA port interface as usual.
+>> 
+>> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+>> ---
+>>  net/dsa/dsa.c     | 12 +++++++++++-
+>>  net/dsa/tag_dsa.c | 17 ++++++++++++++++-
+>>  2 files changed, 27 insertions(+), 2 deletions(-)
+>> 
+>> diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
+>> index a1b1dc8a4d87..7325bf4608e9 100644
+>> --- a/net/dsa/dsa.c
+>> +++ b/net/dsa/dsa.c
+>> @@ -219,11 +219,21 @@ static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
+>>  	}
+>>  
+>>  	skb = nskb;
+>> -	p = netdev_priv(skb->dev);
+>>  	skb_push(skb, ETH_HLEN);
+>>  	skb->pkt_type = PACKET_HOST;
+>>  	skb->protocol = eth_type_trans(skb, skb->dev);
+>>  
+>> +	if (unlikely(!dsa_slave_dev_check(skb->dev))) {
+>> +		/* Packet is to be injected directly on an upper
+>> +		 * device, e.g. a team/bond, so skip all DSA-port
+>> +		 * specific actions.
+>> +		 */
+>> +		netif_rx(skb);
+>> +		return 0;
 >
-> There is no magic involved, here is the relevant snippet from
-> __switchdev_handle_port_obj_add:
->
-> 	/* Switch ports might be stacked under e.g. a LAG. Ignore the
-> 	 * unsupported devices, another driver might be able to handle them. But
-> 	 * propagate to the callers any hard errors.
-> 	 *
-> 	 * If the driver does its own bookkeeping of stacked ports, it's not
-> 	 * necessary to go through this helper.
-> 	 */
-> 	netdev_for_each_lower_dev(dev, lower_dev, iter) {
-> 		if (netif_is_bridge_master(lower_dev))
-> 			continue;
->
-> 		err = __switchdev_handle_port_obj_add(lower_dev, port_obj_info,
-> 						      check_cb, add_cb);
-> 		if (err && err != -EOPNOTSUPP)
-> 			return err;
-> 	}
->
+> netif_rx returns an int code, it seems odd to ignore it.
 
-Oh wow, such an odd place to put that. Especially since the entire
-reason why switchdev uses notifiers is that you as a switchdev driver
-can now explicitly intercept and offload switchdev objects that the
-bridge emitted towards a driver that was "not you", such as a vxlan
-interface. I guess that's still what's happening now, just that it's
-completely non-obvious since it's hidden behind an opaque function.
+This is exactly the same treatment that the return code from
+gro_cells_receive gets just a few lines down. They return the same set
+of codes (NET_RX_{SUCCESS,DROP}).
 
-Very interesting, thanks, I didn't know that.
+Looking through the source base, there are a few callers that look at
+the return value (the overwhelming majority ignore it). Actions vary
+from printing warnings (without rate-limit, yikes), setting variables
+that are otherwise unused, or bumping a counter (the only reasonable
+thing I have seen).
 
-> > ip link del bond0
-> > ip link add bond0 type bond mode 802.3ad
-> > ip link set swp1 down && ip link set swp1 master bond0 && ip link set swp1 up
-> > ip link set swp2 down && ip link set swp2 master bond0 && ip link set swp2 up
-> > ip link del br0
-> > ip link add br0 type bridge
-> > ip link set bond0 master br0
-> > ip link set swp0 master br0
-> >
-> > This should propagate the VLANs to swp1 and swp2 but doesn't:
-> > bridge vlan add dev bond0 vid 100
->
-> I ran through this on my setup and it is indeed propagated to all ports.
->
-> Just a thought, when you rebased the ocelot specific stuff to v2, did
-> you add the number of supported LAGs to ds->num_lags? If not, DSA will
-> assume that the hardware does not support offloading.
+But looking through enqueue_to_backlog, it seems like there already is a
+counter for this that is accessible from /proc/net/softnet_data.
 
-Ah, yes, that makes sense and that's what was happening. So DSA does the
-right thing and does not offload bridge attributes to these ports,
-because bonding needs to be done in software, and therefore even
-bridging on swp1 and swp2 needs to be done in software. So as far as DSA
-is concerned, swp1 and swp2 are standalone ports. This reminds me that I
-need to do more testing for switches that can't offload bonding, to make
-sure that they do the right thing.
+>> +	}
+>> +
+>> +	p = netdev_priv(skb->dev);
+>> +
+>>  	if (unlikely(cpu_dp->ds->untag_bridge_pvid)) {
+>>  		nskb = dsa_untag_bridge_pvid(skb);
+>>  		if (!nskb) {
