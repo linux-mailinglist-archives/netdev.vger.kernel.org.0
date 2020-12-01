@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 460C12CA619
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 15:47:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 175B52CA61F
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 15:47:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391716AbgLAOpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 09:45:38 -0500
-Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:50785 "EHLO
-        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387462AbgLAOpi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 09:45:38 -0500
+        id S2403929AbgLAOp6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 09:45:58 -0500
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:64506 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391592AbgLAOpz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 09:45:55 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1606833937; x=1638369937;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=ZNe33Ka7aH3VQjyzTKNc4gbH6nne2/ZozUBDYkDr+yU=;
-  b=JrZUlqcedSBEN0v17KAFjs4dJDfUUedI3dvAn7tiODJ4K3t3Q8AyRVdQ
-   nDLge5g/PMOzKDuVzIx+0jdzMN7RnAVIc2P0xAORDi58yPqg0fNwa+svm
-   5Ka4bc4FJba1X9yjRkQweowq4AEK/pw5VVrnun2EfUaXXGbSl0/qLVFNB
-   Q=;
+  s=amazon201209; t=1606833954; x=1638369954;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=08Dy0Jbl2BG1YozdQOoj2MRFQHEUaiVq4zp0lSiWm0g=;
+  b=krr1JUgTAnpD3LKbKVJLLWdru64XitxJaKCipCIBgCUAgcZgzXAJK0Ga
+   2Tr3Umf2R+/7pJcbgGN9hzdMqaKSnxceZO8aUIx3qj4AlQc6cV79Irp9Q
+   l8qfw7lebxI8Pi+9sF4dUOAySXQQBYQm5As1LEmaqxcMtvGun8rTp1Y/B
+   8=;
 X-IronPort-AV: E=Sophos;i="5.78,384,1599523200"; 
-   d="scan'208";a="92541785"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2c-c6afef2e.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 01 Dec 2020 14:44:48 +0000
+   d="scan'208";a="99546809"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2c-4e7c8266.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 01 Dec 2020 14:45:13 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2c-c6afef2e.us-west-2.amazon.com (Postfix) with ESMTPS id CD9ADA1D7A;
-        Tue,  1 Dec 2020 14:44:47 +0000 (UTC)
+        by email-inbound-relay-2c-4e7c8266.us-west-2.amazon.com (Postfix) with ESMTPS id 663EBA1D1F;
+        Tue,  1 Dec 2020 14:45:12 +0000 (UTC)
 Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 1 Dec 2020 14:44:47 +0000
+ id 15.0.1497.2; Tue, 1 Dec 2020 14:45:11 +0000
 Received: from 38f9d3582de7.ant.amazon.com (10.43.162.146) by
  EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 1 Dec 2020 14:44:42 +0000
+ id 15.0.1497.2; Tue, 1 Dec 2020 14:45:07 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -45,10 +46,12 @@ CC:     Benjamin Herrenschmidt <benh@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
         <osa-contribution-log@amazon.com>, <bpf@vger.kernel.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v1 bpf-next 00/11] Socket migration for SO_REUSEPORT.
-Date:   Tue, 1 Dec 2020 23:44:07 +0900
-Message-ID: <20201201144418.35045-1-kuniyu@amazon.co.jp>
+Subject: [PATCH v1 bpf-next 01/11] tcp: Keep TCP_CLOSE sockets in the reuseport group.
+Date:   Tue, 1 Dec 2020 23:44:08 +0900
+Message-ID: <20201201144418.35045-2-kuniyu@amazon.co.jp>
 X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+In-Reply-To: <20201201144418.35045-1-kuniyu@amazon.co.jp>
+References: <20201201144418.35045-1-kuniyu@amazon.co.jp>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.43.162.146]
@@ -58,124 +61,235 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The SO_REUSEPORT option allows sockets to listen on the same port and to
-accept connections evenly. However, there is a defect in the current
-implementation[1]. When a SYN packet is received, the connection is tied to
-a listening socket. Accordingly, when the listener is closed, in-flight
-requests during the three-way handshake and child sockets in the accept
-queue are dropped even if other listeners on the same port could accept
-such connections.
+This patch is a preparation patch to migrate incoming connections in the
+later commits and adds a field (num_closed_socks) to the struct
+sock_reuseport to keep TCP_CLOSE sockets in the reuseport group.
 
-This situation can happen when various server management tools restart
-server (such as nginx) processes. For instance, when we change nginx
-configurations and restart it, it spins up new workers that respect the new
-configuration and closes all listeners on the old workers, resulting in the
-in-flight ACK of 3WHS is responded by RST.
+When we close a listening socket, to migrate its connections to another
+listener in the same reuseport group, we have to handle two kinds of child
+sockets. One is that a listening socket has a reference to, and the other
+is not.
 
-The SO_REUSEPORT option is excellent to improve scalability. On the other
-hand, as a trade-off, users have to know deeply how the kernel handles SYN
-packets and implement connection draining by eBPF[2]:
+The former is the TCP_ESTABLISHED/TCP_SYN_RECV sockets, and they are in the
+accept queue of their listening socket. So, we can pop them out and push
+them into another listener's queue at close() or shutdown() syscalls. On
+the other hand, the latter, the TCP_NEW_SYN_RECV socket is during the
+three-way handshake and not in the accept queue. Thus, we cannot access
+such sockets at close() or shutdown() syscalls. Accordingly, we have to
+migrate immature sockets after their listening socket has been closed.
 
-  1. Stop routing SYN packets to the listener by eBPF.
-  2. Wait for all timers to expire to complete requests
-  3. Accept connections until EAGAIN, then close the listener.
-  
-or
+Currently, if their listening socket has been closed, TCP_NEW_SYN_RECV
+sockets are freed at receiving the final ACK or retransmitting SYN+ACKs. At
+that time, if we could select a new listener from the same reuseport group,
+no connection would be aborted. However, it is impossible because
+reuseport_detach_sock() sets NULL to sk_reuseport_cb and forbids access to
+the reuseport group from closed sockets.
 
-  1. Start counting SYN packets and accept syscalls using eBPF map.
-  2. Stop routing SYN packets.
-  3. Accept connections up to the count, then close the listener.
+This patch allows TCP_CLOSE sockets to remain in the reuseport group and to
+have access to it while any child socket references to them. The point is
+that reuseport_detach_sock() is called twice from inet_unhash() and
+sk_destruct(). At first, it moves the socket backwards in socks[] and
+increments num_closed_socks. Later, when all migrated connections are
+accepted, it removes the socket from socks[], decrements num_closed_socks,
+and sets NULL to sk_reuseport_cb.
 
-In either way, we cannot close a listener immediately. However, ideally,
-the application need not drain the not yet accepted sockets because 3WHS
-and tying a connection to a listener are just the kernel behaviour. The
-root cause is within the kernel, so the issue should be addressed in kernel
-space and should not be visible to user space. This patchset fixes it so
-that users need not take care of kernel implementation and connection
-draining. With this patchset, the kernel redistributes requests and
-connections from a listener to others in the same reuseport group at/after
-close() or shutdown() syscalls.
+By this change, closed sockets can keep sk_reuseport_cb until all child
+requests have been freed or accepted. Consequently calling listen() after
+shutdown() can cause EADDRINUSE or EBUSY in reuseport_add_sock() or
+inet_csk_bind_conflict() which expect that such sockets should not have the
+reuseport group. Therefore, this patch also loosens such validation rules
+so that the socket can listen again if it has the same reuseport group with
+other listening sockets.
 
-Although some software does connection draining, there are still merits in
-migration. For some security reasons such as replacing TLS certificates, we
-may want to apply new settings as soon as possible and/or we may not be
-able to wait for connection draining. The sockets in the accept queue have
-not started application sessions yet. So, if we do not drain such sockets,
-they can be handled by the newer listeners and could have a longer
-lifetime. It is difficult to drain all connections in every case, but we
-can decrease such aborted connections by migration. In that sense,
-migration is always better than draining. 
+Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+---
+ include/net/sock_reuseport.h    |  5 ++-
+ net/core/sock_reuseport.c       | 79 +++++++++++++++++++++++++++------
+ net/ipv4/inet_connection_sock.c |  7 ++-
+ 3 files changed, 74 insertions(+), 17 deletions(-)
 
-Moreover, auto-migration simplifies userspace logic and also works well in
-a case where we cannot modify and build a server program to implement the
-workaround.
-
-Note that the source and destination listeners MUST have the same settings
-at the socket API level; otherwise, applications may face inconsistency and
-cause errors. In such a case, we have to use eBPF program to select a
-specific listener or to cancel migration.
-
-
-Link:
-
- [1] The SO_REUSEPORT socket option
- https://lwn.net/Articles/542629/
-
- [2] Re: [PATCH 1/1] net: Add SO_REUSEPORT_LISTEN_OFF socket option as drain mode
- https://lore.kernel.org/netdev/1458828813.10868.65.camel@edumazet-glaptop3.roam.corp.google.com/
-
-
-Changelog:
-
- v1:
-  * Remove the sysctl option
-  * Enable migration if eBPF progam is not attached
-  * Add expected_attach_type to check if eBPF program can migrate sockets
-  * Add a field to tell migration type to eBPF program
-  * Support BPF_FUNC_get_socket_cookie to get the cookie of sk
-  * Allocate an empty skb if skb is NULL
-  * Pass req_to_sk(req)->sk_hash because listener's hash is zero
-  * Update commit messages and coverletter
-
- RFC v0:
- https://lore.kernel.org/netdev/20201117094023.3685-1-kuniyu@amazon.co.jp/
-
-
-Kuniyuki Iwashima (11):
-  tcp: Keep TCP_CLOSE sockets in the reuseport group.
-  bpf: Define migration types for SO_REUSEPORT.
-  tcp: Migrate TCP_ESTABLISHED/TCP_SYN_RECV sockets in accept queues.
-  tcp: Migrate TFO requests causing RST during TCP_SYN_RECV.
-  tcp: Migrate TCP_NEW_SYN_RECV requests.
-  bpf: Introduce two attach types for BPF_PROG_TYPE_SK_REUSEPORT.
-  libbpf: Set expected_attach_type for BPF_PROG_TYPE_SK_REUSEPORT.
-  bpf: Add migration to sk_reuseport_(kern|md).
-  bpf: Support bpf_get_socket_cookie_sock() for
-    BPF_PROG_TYPE_SK_REUSEPORT.
-  bpf: Call bpf_run_sk_reuseport() for socket migration.
-  bpf: Test BPF_SK_REUSEPORT_SELECT_OR_MIGRATE.
-
- include/linux/bpf.h                           |   1 +
- include/linux/filter.h                        |   4 +-
- include/net/inet_connection_sock.h            |  13 ++
- include/net/request_sock.h                    |  13 ++
- include/net/sock_reuseport.h                  |  15 +-
- include/uapi/linux/bpf.h                      |  25 +++
- kernel/bpf/syscall.c                          |   8 +
- net/core/filter.c                             |  46 ++++-
- net/core/sock_reuseport.c                     | 128 +++++++++++---
- net/ipv4/inet_connection_sock.c               |  85 ++++++++-
- net/ipv4/inet_hashtables.c                    |   9 +-
- net/ipv4/tcp_ipv4.c                           |   9 +-
- net/ipv6/tcp_ipv6.c                           |   9 +-
- tools/include/uapi/linux/bpf.h                |  25 +++
- tools/lib/bpf/libbpf.c                        |   5 +-
- .../bpf/prog_tests/migrate_reuseport.c        | 164 ++++++++++++++++++
- .../bpf/progs/test_migrate_reuseport_kern.c   |  54 ++++++
- 17 files changed, 565 insertions(+), 48 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_migrate_reuseport_kern.c
-
+diff --git a/include/net/sock_reuseport.h b/include/net/sock_reuseport.h
+index 505f1e18e9bf..0e558ca7afbf 100644
+--- a/include/net/sock_reuseport.h
++++ b/include/net/sock_reuseport.h
+@@ -13,8 +13,9 @@ extern spinlock_t reuseport_lock;
+ struct sock_reuseport {
+ 	struct rcu_head		rcu;
+ 
+-	u16			max_socks;	/* length of socks */
+-	u16			num_socks;	/* elements in socks */
++	u16			max_socks;		/* length of socks */
++	u16			num_socks;		/* elements in socks */
++	u16			num_closed_socks;	/* closed elements in socks */
+ 	/* The last synq overflow event timestamp of this
+ 	 * reuse->socks[] group.
+ 	 */
+diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
+index bbdd3c7b6cb5..fd133516ac0e 100644
+--- a/net/core/sock_reuseport.c
++++ b/net/core/sock_reuseport.c
+@@ -98,16 +98,21 @@ static struct sock_reuseport *reuseport_grow(struct sock_reuseport *reuse)
+ 		return NULL;
+ 
+ 	more_reuse->num_socks = reuse->num_socks;
++	more_reuse->num_closed_socks = reuse->num_closed_socks;
+ 	more_reuse->prog = reuse->prog;
+ 	more_reuse->reuseport_id = reuse->reuseport_id;
+ 	more_reuse->bind_inany = reuse->bind_inany;
+ 	more_reuse->has_conns = reuse->has_conns;
++	more_reuse->synq_overflow_ts = READ_ONCE(reuse->synq_overflow_ts);
+ 
+ 	memcpy(more_reuse->socks, reuse->socks,
+ 	       reuse->num_socks * sizeof(struct sock *));
+-	more_reuse->synq_overflow_ts = READ_ONCE(reuse->synq_overflow_ts);
++	memcpy(more_reuse->socks +
++	       (more_reuse->max_socks - more_reuse->num_closed_socks),
++	       reuse->socks + reuse->num_socks,
++	       reuse->num_closed_socks * sizeof(struct sock *));
+ 
+-	for (i = 0; i < reuse->num_socks; ++i)
++	for (i = 0; i < reuse->max_socks; ++i)
+ 		rcu_assign_pointer(reuse->socks[i]->sk_reuseport_cb,
+ 				   more_reuse);
+ 
+@@ -129,6 +134,25 @@ static void reuseport_free_rcu(struct rcu_head *head)
+ 	kfree(reuse);
+ }
+ 
++static int reuseport_sock_index(struct sock_reuseport *reuse, struct sock *sk,
++				bool closed)
++{
++	int left, right;
++
++	if (!closed) {
++		left = 0;
++		right = reuse->num_socks;
++	} else {
++		left = reuse->max_socks - reuse->num_closed_socks;
++		right = reuse->max_socks;
++	}
++
++	for (; left < right; left++)
++		if (reuse->socks[left] == sk)
++			return left;
++	return -1;
++}
++
+ /**
+  *  reuseport_add_sock - Add a socket to the reuseport group of another.
+  *  @sk:  New socket to add to the group.
+@@ -153,12 +177,23 @@ int reuseport_add_sock(struct sock *sk, struct sock *sk2, bool bind_inany)
+ 					  lockdep_is_held(&reuseport_lock));
+ 	old_reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
+ 					     lockdep_is_held(&reuseport_lock));
+-	if (old_reuse && old_reuse->num_socks != 1) {
++
++	if (old_reuse == reuse) {
++		int i = reuseport_sock_index(reuse, sk, true);
++
++		if (i == -1) {
++			spin_unlock_bh(&reuseport_lock);
++			return -EBUSY;
++		}
++
++		reuse->socks[i] = reuse->socks[reuse->max_socks - reuse->num_closed_socks];
++		reuse->num_closed_socks--;
++	} else if (old_reuse && old_reuse->num_socks != 1) {
+ 		spin_unlock_bh(&reuseport_lock);
+ 		return -EBUSY;
+ 	}
+ 
+-	if (reuse->num_socks == reuse->max_socks) {
++	if (reuse->num_socks + reuse->num_closed_socks == reuse->max_socks) {
+ 		reuse = reuseport_grow(reuse);
+ 		if (!reuse) {
+ 			spin_unlock_bh(&reuseport_lock);
+@@ -174,8 +209,9 @@ int reuseport_add_sock(struct sock *sk, struct sock *sk2, bool bind_inany)
+ 
+ 	spin_unlock_bh(&reuseport_lock);
+ 
+-	if (old_reuse)
++	if (old_reuse && old_reuse != reuse)
+ 		call_rcu(&old_reuse->rcu, reuseport_free_rcu);
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL(reuseport_add_sock);
+@@ -199,17 +235,34 @@ void reuseport_detach_sock(struct sock *sk)
+ 	 */
+ 	bpf_sk_reuseport_detach(sk);
+ 
+-	rcu_assign_pointer(sk->sk_reuseport_cb, NULL);
++	if (sk->sk_protocol != IPPROTO_TCP || sk->sk_state == TCP_LISTEN) {
++		i = reuseport_sock_index(reuse, sk, false);
++		if (i == -1)
++			goto out;
++
++		reuse->num_socks--;
++		reuse->socks[i] = reuse->socks[reuse->num_socks];
+ 
+-	for (i = 0; i < reuse->num_socks; i++) {
+-		if (reuse->socks[i] == sk) {
+-			reuse->socks[i] = reuse->socks[reuse->num_socks - 1];
+-			reuse->num_socks--;
+-			if (reuse->num_socks == 0)
+-				call_rcu(&reuse->rcu, reuseport_free_rcu);
+-			break;
++		if (sk->sk_protocol == IPPROTO_TCP) {
++			reuse->num_closed_socks++;
++			reuse->socks[reuse->max_socks - reuse->num_closed_socks] = sk;
++		} else {
++			rcu_assign_pointer(sk->sk_reuseport_cb, NULL);
+ 		}
++	} else {
++		i = reuseport_sock_index(reuse, sk, true);
++		if (i == -1)
++			goto out;
++
++		reuse->socks[i] = reuse->socks[reuse->max_socks - reuse->num_closed_socks];
++		reuse->num_closed_socks--;
++
++		rcu_assign_pointer(sk->sk_reuseport_cb, NULL);
+ 	}
++
++	if (reuse->num_socks + reuse->num_closed_socks == 0)
++		call_rcu(&reuse->rcu, reuseport_free_rcu);
++out:
+ 	spin_unlock_bh(&reuseport_lock);
+ }
+ EXPORT_SYMBOL(reuseport_detach_sock);
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index f60869acbef0..1451aa9712b0 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -138,6 +138,7 @@ static int inet_csk_bind_conflict(const struct sock *sk,
+ 	bool reuse = sk->sk_reuse;
+ 	bool reuseport = !!sk->sk_reuseport;
+ 	kuid_t uid = sock_i_uid((struct sock *)sk);
++	struct sock_reuseport *reuseport_cb = rcu_access_pointer(sk->sk_reuseport_cb);
+ 
+ 	/*
+ 	 * Unlike other sk lookup places we do not check
+@@ -156,14 +157,16 @@ static int inet_csk_bind_conflict(const struct sock *sk,
+ 				if ((!relax ||
+ 				     (!reuseport_ok &&
+ 				      reuseport && sk2->sk_reuseport &&
+-				      !rcu_access_pointer(sk->sk_reuseport_cb) &&
++				      (!reuseport_cb ||
++				       reuseport_cb == rcu_access_pointer(sk2->sk_reuseport_cb)) &&
+ 				      (sk2->sk_state == TCP_TIME_WAIT ||
+ 				       uid_eq(uid, sock_i_uid(sk2))))) &&
+ 				    inet_rcv_saddr_equal(sk, sk2, true))
+ 					break;
+ 			} else if (!reuseport_ok ||
+ 				   !reuseport || !sk2->sk_reuseport ||
+-				   rcu_access_pointer(sk->sk_reuseport_cb) ||
++				   (reuseport_cb &&
++				    reuseport_cb != rcu_access_pointer(sk2->sk_reuseport_cb)) ||
+ 				   (sk2->sk_state != TCP_TIME_WAIT &&
+ 				    !uid_eq(uid, sock_i_uid(sk2)))) {
+ 				if (inet_rcv_saddr_equal(sk, sk2, true))
 -- 
 2.17.2 (Apple Git-113)
 
