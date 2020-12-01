@@ -2,127 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A03392CACB7
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 20:52:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C17D2CACE3
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 21:00:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730381AbgLATtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 14:49:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39436 "EHLO
+        id S2404411AbgLAT7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 14:59:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726148AbgLATtb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 14:49:31 -0500
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59062C061A04;
-        Tue,  1 Dec 2020 11:48:22 -0800 (PST)
-Received: by mail-ej1-x643.google.com with SMTP id 7so6789531ejm.0;
-        Tue, 01 Dec 2020 11:48:22 -0800 (PST)
+        with ESMTP id S2404393AbgLAT7t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 14:59:49 -0500
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B010C0613D4
+        for <netdev@vger.kernel.org>; Tue,  1 Dec 2020 11:59:03 -0800 (PST)
+Received: by mail-io1-xd43.google.com with SMTP id t8so2914290iov.8
+        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 11:59:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2kwiJbYURYRlDKL0Dl0F6lgZz50z35k9U64Ijz0yS0o=;
-        b=Opbrawig6mFmleXuY1P+B83LRZNj4sNJXs7oaAxpLmpo4wp4GXKE+U/R+1mxOXYXmX
-         GtlReRAiZURSf9Ngi9kVSjY4hDIDtzftPAZcaoqqEJ6s1wp3koCzAb/FlguMCCx0vQhW
-         buWev2urlkSVwpwPzdSaJdclTxh6V7V8ZD9UVERS3rHlvGmT6MSkdq7rE7M8UJiLP7Nk
-         dqHN3f4M5anxXvTsdD/thoUEr1sJb353mHa5QqbRovuEUXVWbg0vBI6MovQr+C8//UVG
-         uMNoviT+wxW2E6IEHH1uQ+ga3zxzbz8bZf8eQg/B8FpKPMNG/tZ0sNds6IcIbI5nwEdI
-         fMdQ==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=T/kUmZerIKMIo3G0Zg7dzOfj7yPRKwMEiqeAhWfpzbI=;
+        b=ZG11Ti5rGFFD7LKyI1SjbcVJ6b/VJCcMu6PebA6MhY3vvMIxuei1hAKszHkUMX36jo
+         d4OSmeSrI4A5o4Y34FKP5JBTmte4JXGYw2AuOlFVpkPOXj1FrnjA3/sQ+KrnyFd0MRLp
+         ZYUXK2zylpW6hodPknh1OGItya6H7zNTys4COZgfZnGExV1RjmzAwFJBSBUftgp04Vck
+         /6gTDazXjidKRDI6+yWSITEiNFyLrOi3q4byayB9q8vQhs2GnRVzPCGXnf5FjkxkuLXJ
+         2SCbDoo+qFQOJSc1qAbXcJ5oY9Ry165SeyJCI9HpgZgWFAzLD2nzlFer9+e9bL1JAklq
+         KeyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2kwiJbYURYRlDKL0Dl0F6lgZz50z35k9U64Ijz0yS0o=;
-        b=Cl0L7THhevcWg5Ci6UL/WrCJpvfYxgjG86irKEdH4xfzoA4AeO3NuI+TuLxGxHBWpq
-         brxfveoEZYmIntflZevLVeZsjrVUZflT4Z+SElrXUnRHvqT1LhAax9/6dvDJsgDWlZNd
-         LnYWZ/mv6IK3Lu89Zw/HPPlxK6dFO1GV+63Y1qcHilDLnWBRvuur3Lkfynk7XdsRF0kA
-         WgSt6XEsiyibn0rMYjxWikNE3li2//rzXpo1UxuWsw2cbS7RH/iyQIublx+GXFQ6b6+d
-         I7ppdTnXhMFJHJ/KWxhm9Uw0amspqmjIktfAeAmCEHI6Vf66lZ9weAdpQJIdUrkwLiQW
-         CIfA==
-X-Gm-Message-State: AOAM531ieZQHb06eca24jr0RjhY7L4gl3rnE6PRryxck+R9fr8Ou7HfW
-        05ylGkRFmXmyUWzdHF0GDNY=
-X-Google-Smtp-Source: ABdhPJxrBHDd/hb8dFbUdgmMJCueKYj3ZNtr4OeECL/Icf67UGtAwRDYRwBVs8KhMhgxxm3Q3q98rQ==
-X-Received: by 2002:a17:906:6b82:: with SMTP id l2mr4547576ejr.241.1606852100971;
-        Tue, 01 Dec 2020 11:48:20 -0800 (PST)
-Received: from skbuf ([188.25.2.120])
-        by smtp.gmail.com with ESMTPSA id oz19sm317711ejb.28.2020.12.01.11.48.19
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=T/kUmZerIKMIo3G0Zg7dzOfj7yPRKwMEiqeAhWfpzbI=;
+        b=T5omL30myqMYjs/Ukg37cTqYVH8gPp2AyHXka+Sj6MiTWattbaYeOBwQ86pQrSRDgJ
+         KSrlegAR12qBj5vUBCeHHXJpUbee3y63x4+jOAIjApEljGtiJnxiC9bI5Zh7OA4ohdA8
+         dEEAMQf3/zVj3q0N1MsYULmiQiBvIaWXQ9rrESq9T2r+g/6PTCAA8nYDRUyu7rPbI/R6
+         LuXAlUQcut7GWsYhWHzw/tIM4y4iea/sYhyXfAxs4+6B/QULA4qsntFVodzbbnFcYBuR
+         n3IjuO26OOTt1NHl4ZiPF4nIUuoRjGg3QxMYDl9zT4z7IEqyWC4j3brhgUzgq/+JEVfw
+         xDgQ==
+X-Gm-Message-State: AOAM531zpMZmO/t+AyeD+itQ3VHBKDfzgPaD0Wx9AlNrRHSdX+tuv4SH
+        MBtwfbrd1yzWlOM2M1t8quLq1g==
+X-Google-Smtp-Source: ABdhPJxJNVyMixOSMaBw7Zt7fdNHM/ZdKZha1GVdaRq/mZjsv/bB1QGQQMb29t1ve06fib9H/mY5qQ==
+X-Received: by 2002:a05:6602:6c9:: with SMTP id n9mr3731666iox.112.1606852742976;
+        Tue, 01 Dec 2020 11:59:02 -0800 (PST)
+Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id j12sm318041ioq.24.2020.12.01.11.59.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Dec 2020 11:48:20 -0800 (PST)
-Date:   Tue, 1 Dec 2020 21:48:19 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jean Pihet <jean.pihet@newoldbits.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ryan Barnett <ryan.barnett@rockwellcollins.com>,
-        Conrad Ratschan <conrad.ratschan@rockwellcollins.com>,
-        Hugo Cornelis <hugo.cornelis@essensium.com>,
-        Arnout Vandecappelle <arnout.vandecappelle@essensium.com>
-Subject: Re: [PATCH v2] net: dsa: ksz8795: adjust CPU link to host interface
-Message-ID: <20201201194819.ygmrdwcpvywkszat@skbuf>
-References: <20201201083408.51006-1-jean.pihet@newoldbits.com>
- <20201201184100.GN2073444@lunn.ch>
- <CAORVsuXv5Gw18EeHwP36EkzF4nN5PeGerBQQa-6ruWAQRX+GoQ@mail.gmail.com>
+        Tue, 01 Dec 2020 11:59:02 -0800 (PST)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     jonathanh@nvidia.com, evgreen@chromium.org,
+        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
+        subashab@codeaurora.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: ipa: fix build-time bug in ipa_hardware_config_qsb()
+Date:   Tue,  1 Dec 2020 13:58:55 -0600
+Message-Id: <20201201195855.30735-1-elder@linaro.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAORVsuXv5Gw18EeHwP36EkzF4nN5PeGerBQQa-6ruWAQRX+GoQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jean,
+Jon Hunter reported observing a build bug in the IPA driver:
+  https://lore.kernel.org/netdev/5b5d9d40-94d5-5dad-b861-fd9bef8260e2@nvidia.com
 
-On Tue, Dec 01, 2020 at 07:58:01PM +0100, Jean Pihet wrote:
-> Hi Andrew,
->
-> On Tue, Dec 1, 2020 at 7:41 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > On Tue, Dec 01, 2020 at 09:34:08AM +0100, Jean Pihet wrote:
-> > > Add support for RGMII in 100 and 1000 Mbps.
-> > >
-> > > Adjust the CPU port settings from the host interface settings: interface
-> > > MII type, speed, duplex.
-> >
-> > Hi Jean
-> >
-> > You have still not explained why this is needed. Why? is always the
-> > important question to answer in the commit message. The What? is
-> > obvious from reading the patch. Why does you board need this, when no
-> > over board does?
->
-> I reworked the commit description about the What and thought it was
-> enough. Do you need a cover letter to describe it more?
->
-> The Why is:
-> "
-> Configure the host port of the switch to match the host interface
-> settings. This is useful when the switch is directly connected to the
-> host MAC interface.
-> "
-> Thank you for reviewing the patch.
+The problem is that the QMB0 max read value set for IPA v4.5 (16) is
+too large to fit in the 4-bit field.
 
-First of all, I am not clear if you want the patch merged or not. If you
-do, then I don't understand why you did not use the ./scripts/get_maintainer.pl
-tool to get the email addresses of the people who can help you with
-that. No one from Microchip, not the DSA maintainers, not the networking
-maintainer.
+This is a quick fix to resolve the build bug; this might change
+again in the future if I learn there is a better value to use.
 
-Secondly, don't you get an annoying warning that you should not use
-.adjust_link and should migrate to .phylink_mac_link_up? Why do you
-ignore it? Did you even see it?
+Reported-by: Jon Hunter <jonathanh@nvidia.com>
+Tested-by: Jon Hunter <jonathanh@nvidia.com>
+Signed-off-by: Alex Elder <elder@linaro.org>
+---
+ drivers/net/ipa/ipa_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thirdly, your patch is opaque and has three changes folded into one. You
-refactor some code from ksz8795_port_setup into a separate function, you
-add logic for the speeds of 100 and 10 for RGMII, and you call this
-function from .adjust_link. You must justify why you need all of this,
-and cannot just add 3 lines to ksz8795_port_setup. You must explain that
-the ksz8795_port_setup function does not use information from device
-tree. Then you must explain why the patch is correct.
-The code refactored out of ksz8795_port_setup, plus the changes you've
-added to it, looks now super weird. Half of ksz8795_mii_config treats
-p->phydev.speed as an output variable, and half of it as an input
-variable. To the untrained eye this looks like a hack. I'm sure you can
-clarify. This is what Andrew wants to see.
+diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
+index f25bcfe51dd4b..192f9d6bccf19 100644
+--- a/drivers/net/ipa/ipa_main.c
++++ b/drivers/net/ipa/ipa_main.c
+@@ -280,7 +280,7 @@ static void ipa_hardware_config_qsb(struct ipa *ipa)
+ 		max1 = 0;		/* PCIe not present */
+ 		break;
+ 	case IPA_VERSION_4_5:
+-		max0 = 16;
++		max0 = 15;
+ 		break;
+ 	}
+ 	val = u32_encode_bits(max0, GEN_QMB_0_MAX_READS_FMASK);
+-- 
+2.20.1
 
-Fourth, seriously now, could you just copy Microchip people to your
-patches? The phylink conversion was done this summer, I'm sure they can
-help with some suggestions.
