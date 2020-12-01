@@ -2,99 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F16F2CAC99
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 20:42:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6B182CACA8
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 20:48:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730208AbgLATlu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 14:41:50 -0500
-Received: from m42-5.mailgun.net ([69.72.42.5]:13415 "EHLO m42-5.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729049AbgLATlu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Dec 2020 14:41:50 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1606851689; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=u0ASTfvQ8ODEFBCvRqnSAJ/D/bJXHlTvFNQagCu11Rw=; b=OjCjJ7vSzC/t5HW+xcq9AxRU+CL01mF1i/ibN7gxNa35YR8pI1+oVl8nZdHBLBZ19C99M4XH
- o9J5GdPj+4TzhQhOl4qXPttSDl5/R6NVhhRZa8A+5nkKnM8JAlpzPB08u85owcrfX5H/nxsi
- Jp529ArLwj8rOJW/RrrA79G6Ixw=
-X-Mailgun-Sending-Ip: 69.72.42.5
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n09.prod.us-east-1.postgun.com with SMTP id
- 5fc69c46f4482b01c4cc0b36 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 01 Dec 2020 19:40:54
- GMT
-Sender: jhugo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 49BF6C433C6; Tue,  1 Dec 2020 19:40:53 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A,SPF_FAIL autolearn=no autolearn_force=no version=3.4.0
-Received: from [10.226.59.216] (i-global254.qualcomm.com [199.106.103.254])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: jhugo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id AFD3AC433ED;
-        Tue,  1 Dec 2020 19:40:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org AFD3AC433ED
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=jhugo@codeaurora.org
-Subject: Re: [PATCH v13 0/4] userspace MHI client interface driver
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Hemant Kumar <hemantk@codeaurora.org>
-Cc:     manivannan.sadhasivam@linaro.org, gregkh@linuxfoundation.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bbhatt@codeaurora.org, loic.poulain@linaro.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        Kalle Valo <kvalo@codeaurora.org>
-References: <1606533966-22821-1-git-send-email-hemantk@codeaurora.org>
- <20201201112901.7f13e26c@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-From:   Jeffrey Hugo <jhugo@codeaurora.org>
-Message-ID: <c6359962-a378-ed03-0fab-c2f6c8a1b8eb@codeaurora.org>
-Date:   Tue, 1 Dec 2020 12:40:50 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        id S1730402AbgLATph (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 14:45:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38824 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726148AbgLATpg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 14:45:36 -0500
+Received: from mail-oo1-xc41.google.com (mail-oo1-xc41.google.com [IPv6:2607:f8b0:4864:20::c41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E3C2C0613D4;
+        Tue,  1 Dec 2020 11:44:56 -0800 (PST)
+Received: by mail-oo1-xc41.google.com with SMTP id i13so685480oou.11;
+        Tue, 01 Dec 2020 11:44:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yGDNcbcqlchKkDNxGYtB/yjqUUjJw+c/0TidcKqaoHA=;
+        b=ukOwb62vJKm3vAi/Mp32y0rN6l4uSjF7tr6I16g5lkDRJr9v+fG5tCfiWiEXOsTtYy
+         x/hqdkC6XLeyxGGXM0+v1Xz2dsUcoCg9rGJHT9oIn8fpkXkR9Y5g8wTSgZ9wcZib1ISe
+         h0WUO3AlF6xabIYJSKb7ItTRjhS6dkanlBMmMo0tmTyW/RMWDE5Ic08iCNZEXnE8Tv/C
+         z821k+gfnuK2vIe62hB5vHgtmmQ8BqMRJ5zGk0syV1uQ3p4OuqucQkRuxhV/5rOsaC/S
+         hZzKvdeNVdDCMF3m3VXKE7SNgdpld+RV1MSwAihOe6oGnQon4byyjyRlEkK5lSsRlSUN
+         Qz1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yGDNcbcqlchKkDNxGYtB/yjqUUjJw+c/0TidcKqaoHA=;
+        b=GJbxzgKKemdBsCRKYJ4Fh7LijQyKptI81E++KJSm14dhrIUqoQk/3KWfA/8jdUZIJR
+         c20vJSG7XXFkpQTXBsGM/5iDPmQM8eA9HQsgqjcXQiQ3SQ9b6GyNKf+VzApLdaLOXoFm
+         9NjoF6L+gvLZenPgHVPvFzqdZpv1UOaOpkaUuE0zRd2xbxH8LMS0WcvS3vYoO1oKZnYT
+         kssHZGgeajFOIJeyy3EsaFhRIqxWYL+c/ZPWNcVzeAMCw0vstCwPQ9y1z9rNf39tHhMA
+         W2HefDtsTvN/xM+M7W/WF2hY+rbEc5FpTfpqZKinXtuFgjUY+dsMtqtWwo2X+bYgBWUT
+         oSzQ==
+X-Gm-Message-State: AOAM53079Q1A+Tx3TM9FZZ+K0vaUw1gyWWDmNhiuYzx4m+tjUCErMixv
+        509jXvt9zA528gG+5mrhMvGV1ibLte2hbA==
+X-Google-Smtp-Source: ABdhPJzqj5MJhUuLB/6QDTCqnLSXynJQ0U+v2B7OEW3QbsqB0HOG76CmbLQ4XmWLyAbAaq35Sc0m0Q==
+X-Received: by 2002:a4a:b144:: with SMTP id e4mr3063095ooo.3.1606851895466;
+        Tue, 01 Dec 2020 11:44:55 -0800 (PST)
+Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:2482:49a9:7a40:f76b])
+        by smtp.gmail.com with ESMTPSA id n3sm120351oif.42.2020.12.01.11.44.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Dec 2020 11:44:54 -0800 (PST)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Dongdong Wang <wangdongdong@bytedance.com>,
+        Thomas Graf <tgraf@suug.ch>, bpf@vger.kernel.org,
+        Cong Wang <cong.wang@bytedance.com>
+Subject: [Patch net] lwt: disable BH too in run_lwt_bpf()
+Date:   Tue,  1 Dec 2020 11:44:38 -0800
+Message-Id: <20201201194438.37402-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20201201112901.7f13e26c@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/1/2020 12:29 PM, Jakub Kicinski wrote:
-> On Fri, 27 Nov 2020 19:26:02 -0800 Hemant Kumar wrote:
->> This patch series adds support for UCI driver. UCI driver enables userspace
->> clients to communicate to external MHI devices like modem and WLAN. UCI driver
->> probe creates standard character device file nodes for userspace clients to
->> perform open, read, write, poll and release file operations. These file
->> operations call MHI core layer APIs to perform data transfer using MHI bus
->> to communicate with MHI device. Patch is tested using arm64 based platform.
-> 
-> Wait, I thought this was for modems.
-> 
-> Why do WLAN devices need to communicate with user space?
-> 
+From: Dongdong Wang <wangdongdong@bytedance.com>
 
-Why does it matter what type of device it is?  Are modems somehow unique 
-in that they are the only type of device that userspace is allowed to 
-interact with?
+The per-cpu bpf_redirect_info is shared among all skb_do_redirect()
+and BPF redirect helpers. Callers on RX path are all in BH context,
+disabling preemption is not sufficient to prevent BH interruption.
 
-However, I'll bite.  Once such usecase would be QMI.  QMI is a generic 
-messaging protocol, and is not strictly limited to the unique operations 
-of a modem.
+In production, we observed strange packet drops because of the race
+condition between LWT xmit and TC ingress, and we verified this issue
+is fixed after we disable BH.
 
-Another usecase would be Sahara - a custom file transfer protocol used 
-for uploading firmware images, and downloading crashdumps.
+Although this bug was technically introduced from the beginning, that
+is commit 3a0af8fd61f9 ("bpf: BPF for lightweight tunnel infrastructure"),
+at that time call_rcu() had to be call_rcu_bh() to match the RCU context.
+So this patch may not work well before RCU flavor consolidation has been
+completed around v5.0.
 
-Off the top of my head, this driver is useful for modems, wlan, and AI 
-accelerators.
+Update the comments above the code too, as call_rcu() is now BH friendly.
 
+Cc: Thomas Graf <tgraf@suug.ch>
+Cc: bpf@vger.kernel.org
+Reviewed-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Dongdong Wang <wangdongdong@bytedance.com>
+---
+ net/core/lwt_bpf.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/net/core/lwt_bpf.c b/net/core/lwt_bpf.c
+index 7d3438215f32..4f3cb7c15ddf 100644
+--- a/net/core/lwt_bpf.c
++++ b/net/core/lwt_bpf.c
+@@ -39,12 +39,11 @@ static int run_lwt_bpf(struct sk_buff *skb, struct bpf_lwt_prog *lwt,
+ {
+ 	int ret;
+ 
+-	/* Preempt disable is needed to protect per-cpu redirect_info between
+-	 * BPF prog and skb_do_redirect(). The call_rcu in bpf_prog_put() and
+-	 * access to maps strictly require a rcu_read_lock() for protection,
+-	 * mixing with BH RCU lock doesn't work.
++	/* Preempt disable and BH disable are needed to protect per-cpu
++	 * redirect_info between BPF prog and skb_do_redirect().
+ 	 */
+ 	preempt_disable();
++	local_bh_disable();
+ 	bpf_compute_data_pointers(skb);
+ 	ret = bpf_prog_run_save_cb(lwt->prog, skb);
+ 
+@@ -78,6 +77,7 @@ static int run_lwt_bpf(struct sk_buff *skb, struct bpf_lwt_prog *lwt,
+ 		break;
+ 	}
+ 
++	local_bh_enable();
+ 	preempt_enable();
+ 
+ 	return ret;
 -- 
-Jeffrey Hugo
-Qualcomm Technologies, Inc. is a member of the
-Code Aurora Forum, a Linux Foundation Collaborative Project.
+2.25.1
+
