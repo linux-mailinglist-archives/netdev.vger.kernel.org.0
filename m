@@ -2,79 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC5E52C9E4E
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 10:50:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CFE22C9E6B
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 10:59:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728436AbgLAJrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 04:47:25 -0500
-Received: from mail.zx2c4.com ([192.95.5.64]:49939 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728350AbgLAJrZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Dec 2020 04:47:25 -0500
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id d9ff0212
-        for <netdev@vger.kernel.org>;
-        Tue, 1 Dec 2020 09:41:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=7/8vfumFiKFWEFGoluigIV+USFo=; b=AKxm+P
-        bSVWivfUhCuXfodg30FC+LJXZ8A+1w13r1dTahN1mLQDBODzGi2RQIHCiRif/Glq
-        wyW0zYh5L+8/kKfd5JxT4dv8dzatdAlxLwysJTia/jyx50h+sCCggnSXYdPk85Zp
-        TVKCXTe5h3nuyBtHqnhbbUAatiSMHojrRUSSngzjboGw2RR1hunYW3/pDTY8o3lB
-        qTEvbtF9/wycS6z0wjcpNL7yIlJZ7OdIlczT0dfLh0NXYEF5VFw9mfgXXkFAQZ11
-        n0bMQ9O2bKJ1Ji0G/4lRZqXDWVXdk3lhF1Cav+D3wzJDYOu3kJiW4Nur/sF7OJ4/
-        /VqsU5fRA44zKPfw==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id e8453981 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Tue, 1 Dec 2020 09:41:05 +0000 (UTC)
-Received: by mail-yb1-f176.google.com with SMTP id l14so1262785ybq.3
-        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 01:46:43 -0800 (PST)
-X-Gm-Message-State: AOAM530pkHQpEiCGiXUTtn9UDTPUbGxnoKxoroJSn6aNYWaHoz4tS4hX
-        h96aQ/+RVe+ynMq+9Jq+s6VIHiwhZRpyT/2agGE=
-X-Google-Smtp-Source: ABdhPJx3nrS7OkOcBUPfcHvT7gk54jKmP0Ba83TWRVYWGk0uId64o2IBm5R000g48uJiRz0H7Xj53xvhbEU4cJshx80=
-X-Received: by 2002:a25:bb81:: with SMTP id y1mr2259578ybg.456.1606816003001;
- Tue, 01 Dec 2020 01:46:43 -0800 (PST)
+        id S2387522AbgLAJ4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 04:56:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59344 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726099AbgLAJ4j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 04:56:39 -0500
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F93C0613CF
+        for <netdev@vger.kernel.org>; Tue,  1 Dec 2020 01:55:53 -0800 (PST)
+Received: by mail-ej1-x644.google.com with SMTP id lt17so2887276ejb.3
+        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 01:55:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=819QrdssQw5MkTAHaHDuj8B9nUjOk8+QO2N9CCT745Y=;
+        b=mj4gpktJBx+UODGzchcRjUpCnM5fozlzl7WoSiCepyudZhOgYJczq+E5d3n+LR0P8L
+         HkkcUEGgU8hJrYWMffWuw+X8471HJib9OCaU7AF1dmSVgyRJNz0fXxrKVROKQ8qb/zY2
+         WJw3v6bXx17zttSKdeylhWtje6eZ9GKrmUZySzO+QI+6vX9IAoN7QAYvKJzQxBOtDg9A
+         alyZQ0RZEpYRR3AFZq2SCtP61gqTMVNbEd3jLJEp3ppQvcVM4l+C8NwAD8exMQgzNchl
+         KloPo31IaspqZCVG73VCMCj2QBoehe3/Kn+OPo2JsxKOZAO2MPq71vW0P96tuvZC5SLK
+         xtfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=819QrdssQw5MkTAHaHDuj8B9nUjOk8+QO2N9CCT745Y=;
+        b=G/XmbVqSFce/TLeTfDviWu65yzQiFNMdc8lD5KdihjTvC8vcLblna9BcIw+GZg68xd
+         9qjmG9YWsixsZ+aHp/nYlBhl4TRbIjR18cEHiNSLilvtLDoJnndkj3zPrqI+qM+JSTaf
+         D+OZ3m1N92BDiT+evJWYiblfZrM8SPfsvDn5kiVwYYL+JSuUDV++BAqfNcWIhPcvu+do
+         LbXJfuWUe0kJCG0sCuGSF3T5j3Gpt7k4Kc3Si/+6DQV2euaLgGLvYXrS8tHHNtrqRd7e
+         ysN52U2fiBPTWDTODdUuyrijbOxeZwNpsr0G1GAP81ZxUUsJT60L0+x4f8/jJm0ymFak
+         9nmQ==
+X-Gm-Message-State: AOAM5308MIWmI03WwSAJcx7BsxyznsG8t/17DuU8UOkGnSTQO97XdIBf
+        ZO4dufb7VaDaTzhIhocaDeATbUEvaL9GLaiJPN/O
+X-Google-Smtp-Source: ABdhPJxuD4jU7Z/hfw66sqA/PGimE4xpJJ8Fr7/lUL+MS5PMeoJmh0SKrNIRFYVTEqjt8prpiCotgWVifu3pzCeuh9s=
+X-Received: by 2002:a17:906:a218:: with SMTP id r24mr2114829ejy.372.1606816552350;
+ Tue, 01 Dec 2020 01:55:52 -0800 (PST)
 MIME-Version: 1.0
-References: <20201201092903.3269202-1-yangyingliang@huawei.com>
-In-Reply-To: <20201201092903.3269202-1-yangyingliang@huawei.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Tue, 1 Dec 2020 10:46:32 +0100
-X-Gmail-Original-Message-ID: <CAHmME9rH7iBZN3tMuWuRU_n_dZ1An0FMLpwXWgDJFWjoUFp0fQ@mail.gmail.com>
-Message-ID: <CAHmME9rH7iBZN3tMuWuRU_n_dZ1An0FMLpwXWgDJFWjoUFp0fQ@mail.gmail.com>
-Subject: Re: [PATCH net v2 1/2] wireguard: device: don't call free_netdev() in priv_destructor()
-To:     yangyingliang@huawei.com
-Cc:     Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, toshiaki.makita1@gmail.com,
-        rkovhaev@gmail.com
+References: <20201112064005.349268-1-parav@nvidia.com> <5b2235f6-513b-dbc9-3670-e4c9589b4d1f@redhat.com>
+ <CACycT3sYScObb9nN3g7L3cesjE7sCZWxZ5_5R1usGU9ePZEeqA@mail.gmail.com>
+ <182708df-1082-0678-49b2-15d0199f20df@redhat.com> <CACycT3votu2eyacKg+w12xZ_ujEOgTY0f8A7qcpbM-fwTpjqAw@mail.gmail.com>
+ <7f80eeed-f5d3-8c6f-1b8c-87b7a449975c@redhat.com>
+In-Reply-To: <7f80eeed-f5d3-8c6f-1b8c-87b7a449975c@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Tue, 1 Dec 2020 17:55:41 +0800
+Message-ID: <CACycT3uw6KJgTo+dBzSj07p2P_PziD+WBfX4yWVX-nDNUD2M3A@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH 0/7] Introduce vdpa management tool
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Parav Pandit <parav@nvidia.com>,
+        virtualization@lists.linux-foundation.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, elic@nvidia.com,
+        netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yang,
-
-On Tue, Dec 1, 2020 at 10:31 AM Yang Yingliang <yangyingliang@huawei.com> wrote:
+On Tue, Dec 1, 2020 at 2:25 PM Jason Wang <jasowang@redhat.com> wrote:
 >
-> After commit cf124db566e6 ("net: Fix inconsistent teardown and..."),
-> priv_destruct() doesn't call free_netdev() in driver, we use
-> dev->needs_free_netdev to indicate whether free_netdev() should be
-> called on release path.
-> This patch remove free_netdev() from priv_destructor() and set
-> dev->needs_free_netdev to true.
+>
+> On 2020/11/30 =E4=B8=8B=E5=8D=883:07, Yongji Xie wrote:
+> >>> Thanks for adding me, Jason!
+> >>>
+> >>> Now I'm working on a v2 patchset for VDUSE (vDPA Device in Userspace)
+> >>> [1]. This tool is very useful for the vduse device. So I'm considerin=
+g
+> >>> integrating this into my v2 patchset. But there is one problem=EF=BC=
+=9A
+> >>>
+> >>> In this tool, vdpa device config action and enable action are combine=
+d
+> >>> into one netlink msg: VDPA_CMD_DEV_NEW. But in vduse case, it needs t=
+o
+> >>> be splitted because a chardev should be created and opened by a
+> >>> userspace process before we enable the vdpa device (call
+> >>> vdpa_register_device()).
+> >>>
+> >>> So I'd like to know whether it's possible (or have some plans) to add
+> >>> two new netlink msgs something like: VDPA_CMD_DEV_ENABLE and
+> >>> VDPA_CMD_DEV_DISABLE to make the config path more flexible.
+> >>>
+> >> Actually, we've discussed such intermediate step in some early
+> >> discussion. It looks to me VDUSE could be one of the users of this.
+> >>
+> >> Or I wonder whether we can switch to use anonymous inode(fd) for VDUSE
+> >> then fetching it via an VDUSE_GET_DEVICE_FD ioctl?
+> >>
+> > Yes, we can. Actually the current implementation in VDUSE is like
+> > this.  But seems like this is still a intermediate step. The fd should
+> > be binded to a name or something else which need to be configured
+> > before.
+>
+>
+> The name could be specified via the netlink. It looks to me the real
+> issue is that until the device is connected with a userspace, it can't
+> be used. So we also need to fail the enabling if it doesn't opened.
+>
 
-For now, nack.
+Yes, that's true. So you mean we can firstly try to fetch the fd
+binded to a name/vduse_id via an VDUSE_GET_DEVICE_FD, then use the
+name/vduse_id as a attribute to create vdpa device? It looks fine to
+me.
 
-I remember when cf124db566e6 came out and carefully looking at the
-construction of device.c in WireGuard. priv_destructor is only
-assigned after register_device, with the various error paths in
-wg_newlink responsible for cleaning up other earlier failures, and
-trying to move to needs_free_netdev would have introduced more
-complexity in this particular case, if my memory serves. I do not
-think there's a memory leak here, and I worry about too hastily
-changing the state machine "just because".
-
-In other words, could you point out how to generate a memory leak? If
-you're correct, then we can start dissecting and refactoring this. But
-off the bat, I'm not sure I'm exactly seeing whatever you're seeing.
-
-Jason
+Thanks,
+Yongji
