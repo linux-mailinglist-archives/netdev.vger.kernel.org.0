@@ -2,134 +2,372 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 578212CACB3
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 20:49:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CDC42CAC6A
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 20:34:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392449AbgLATtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 14:49:11 -0500
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:12182 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727866AbgLATtL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 14:49:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1606852151; x=1638388151;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=GzkO5rwPs8IlbxZJJrtJwOYn0DQoZfkgjuvYZZOBFQ8=;
-  b=WRExycdlv4/+qPnlc1ANdSJsnXdF3ymAYKzupBD0637AqTgc0euZMWQO
-   P4QhE+JWEMUaOA4g9ntMW1JqRfc+mqpo+/dlMvGn2vaq42GhHJz/rudkJ
-   PDh+MmwcfBqnJ0qnBWaZUSEA5fWE68eWOPGcP/Fdxv6bnLHco1aFcp3zB
-   s=;
-X-IronPort-AV: E=Sophos;i="5.78,385,1599523200"; 
-   d="scan'208";a="99646116"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2c-4e7c8266.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 01 Dec 2020 19:06:53 +0000
-Received: from EX13D16EUB003.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2c-4e7c8266.us-west-2.amazon.com (Postfix) with ESMTPS id 57947A0644;
-        Tue,  1 Dec 2020 19:06:51 +0000 (UTC)
-Received: from 38f9d34ed3b1.ant.amazon.com (10.43.162.146) by
- EX13D16EUB003.ant.amazon.com (10.43.166.99) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 1 Dec 2020 19:06:45 +0000
-Subject: Re: [PATCH net-next v1 3/3] af_vsock: Assign the vsock transport
- considering the vsock address flag
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        David Duncan <davdunc@amazon.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Alexander Graf <graf@amazon.de>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>
-References: <20201201152505.19445-1-andraprs@amazon.com>
- <20201201152505.19445-4-andraprs@amazon.com>
- <20201201162323.gwfzktkwtu6x4eef@steredhat>
-From:   "Paraschiv, Andra-Irina" <andraprs@amazon.com>
-Message-ID: <17abfe6d-88d2-4d86-911a-247bd4bd677e@amazon.com>
-Date:   Tue, 1 Dec 2020 21:06:39 +0200
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:78.0)
- Gecko/20100101 Thunderbird/78.5.0
-MIME-Version: 1.0
-In-Reply-To: <20201201162323.gwfzktkwtu6x4eef@steredhat>
-Content-Language: en-US
-X-Originating-IP: [10.43.162.146]
-X-ClientProxiedBy: EX13D36UWA002.ant.amazon.com (10.43.160.24) To
- EX13D16EUB003.ant.amazon.com (10.43.166.99)
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: base64
+        id S2392317AbgLATdF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 14:33:05 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:44550 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728704AbgLATdF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 14:33:05 -0500
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B1J3fbY030727;
+        Tue, 1 Dec 2020 14:32:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references; s=pp1;
+ bh=8KW0O8Sl1Bca4QwRMFLysS18jTtHvyRpWnv0PnJOvqM=;
+ b=YOlRBmCqb8HvrKNd7xQgNlUYIrw4jNBZ+A0Pxg42IVHNkU6UvbtNVCDg6kZixIYV4Ckq
+ vfAMI05TukibLBmC24SsePBXMtVr4HChRuykyG1cpATggRUaD4JDmshqw0gd26VhLwIe
+ TTNOZq/Lk6iC319OYtzb+9eWP9l3dEU+dKMUAnBEpu74Ba+pP1ZbKnJIRVQCHb29374w
+ X/kArQhBpTLHAW/OKV2Ob3AgU9sT8M1nf3fQeckPzQSH2phAbQvF6j4auj3RLBjw8Fg1
+ TpGx4Fs6aR+sik2tKqyBN+iBK2aRS0Jpe06zGRF+HbSrB03DINJkmOPCpC7DsVlyx5gp Cw== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 355jwva9xn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 01 Dec 2020 14:28:19 -0500
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0B1JIKi8018323;
+        Tue, 1 Dec 2020 19:21:02 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma04ams.nl.ibm.com with ESMTP id 353e683eu0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 01 Dec 2020 19:21:02 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0B1JKxgJ5767808
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 1 Dec 2020 19:20:59 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A2188AE04D;
+        Tue,  1 Dec 2020 19:20:59 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 631DBAE045;
+        Tue,  1 Dec 2020 19:20:59 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue,  1 Dec 2020 19:20:59 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Heiko Carstens <hca@linux.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org
+Subject: [PATCH net-next v7 14/14] net/smc: Add support for obtaining SMCR device list
+Date:   Tue,  1 Dec 2020 20:20:49 +0100
+Message-Id: <20201201192049.53517-15-kgraul@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20201201192049.53517-1-kgraul@linux.ibm.com>
+References: <20201201192049.53517-1-kgraul@linux.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-12-01_07:2020-11-30,2020-12-01 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 spamscore=0
+ suspectscore=2 impostorscore=0 priorityscore=1501 adultscore=0 bulkscore=0
+ malwarescore=0 mlxscore=0 phishscore=0 lowpriorityscore=0 clxscore=1015
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2012010112
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CgpPbiAwMS8xMi8yMDIwIDE4OjIzLCBTdGVmYW5vIEdhcnphcmVsbGEgd3JvdGU6Cj4KPiBPbiBU
-dWUsIERlYyAwMSwgMjAyMCBhdCAwNToyNTowNVBNICswMjAwLCBBbmRyYSBQYXJhc2NoaXYgd3Jv
-dGU6Cj4+IFRoZSB2c29jayBmbGFnIGhhcyBiZWVuIHNldCBpbiB0aGUgY29ubmVjdCBhbmQgKGxp
-c3RlbikgcmVjZWl2ZSBwYXRocy4KPj4KPj4gV2hlbiB0aGUgdnNvY2sgdHJhbnNwb3J0IGlzIGFz
-c2lnbmVkLCB0aGUgcmVtb3RlIENJRCBpcyB1c2VkIHRvCj4+IGRpc3Rpbmd1aXNoIGJldHdlZW4g
-dHlwZXMgb2YgY29ubmVjdGlvbi4KPj4KPj4gVXNlIHRoZSB2c29jayBmbGFnIChpbiBhZGRpdGlv
-biB0byB0aGUgQ0lEKSBmcm9tIHRoZSByZW1vdGUgYWRkcmVzcyB0bwo+PiBkZWNpZGUgd2hpY2gg
-dnNvY2sgdHJhbnNwb3J0IHRvIGFzc2lnbi4gRm9yIHRoZSBzaWJsaW5nIFZNcyB1c2UgY2FzZSwK
-Pj4gYWxsIHRoZSB2c29jayBwYWNrZXRzIG5lZWQgdG8gYmUgZm9yd2FyZGVkIHRvIHRoZSBob3N0
-LCBzbyBhbHdheXMgYXNzaWduCj4+IHRoZSBndWVzdC0+aG9zdCB0cmFuc3BvcnQgaWYgdGhlIHZz
-b2NrIGZsYWcgaXMgc2V0LiBGb3IgdGhlIG90aGVyIHVzZQo+PiBjYXNlcywgdGhlIHZzb2NrIHRy
-YW5zcG9ydCBhc3NpZ25tZW50IGxvZ2ljIGlzIG5vdCBjaGFuZ2VkLgo+Pgo+PiBTaWduZWQtb2Zm
-LWJ5OiBBbmRyYSBQYXJhc2NoaXYgPGFuZHJhcHJzQGFtYXpvbi5jb20+Cj4+IC0tLQo+PiBuZXQv
-dm13X3Zzb2NrL2FmX3Zzb2NrLmMgfCAxNSArKysrKysrKysrKy0tLS0KPj4gMSBmaWxlIGNoYW5n
-ZWQsIDExIGluc2VydGlvbnMoKyksIDQgZGVsZXRpb25zKC0pCj4+Cj4+IGRpZmYgLS1naXQgYS9u
-ZXQvdm13X3Zzb2NrL2FmX3Zzb2NrLmMgYi9uZXQvdm13X3Zzb2NrL2FmX3Zzb2NrLmMKPj4gaW5k
-ZXggZDEwOTE2YWI0NTI2Ny4uYmFmYzFjYjIwYWJkNCAxMDA2NDQKPj4gLS0tIGEvbmV0L3Ztd192
-c29jay9hZl92c29jay5jCj4+ICsrKyBiL25ldC92bXdfdnNvY2svYWZfdnNvY2suYwo+PiBAQCAt
-NDE5LDE2ICs0MTksMjEgQEAgc3RhdGljIHZvaWQgdnNvY2tfZGVhc3NpZ25fdHJhbnNwb3J0KHN0
-cnVjdCAKPj4gdnNvY2tfc29jayAqdnNrKQo+PiDCoCogKGUuZy4gZHVyaW5nIHRoZSBjb25uZWN0
-KCkgb3Igd2hlbiBhIGNvbm5lY3Rpb24gcmVxdWVzdCBvbiBhIGxpc3RlbmVyCj4+IMKgKiBzb2Nr
-ZXQgaXMgcmVjZWl2ZWQpLgo+PiDCoCogVGhlIHZzay0+cmVtb3RlX2FkZHIgaXMgdXNlZCB0byBk
-ZWNpZGUgd2hpY2ggdHJhbnNwb3J0IHRvIHVzZToKPj4gLSAqwqAgLSByZW1vdGUgQ0lEID09IFZN
-QUREUl9DSURfTE9DQUwgb3IgZzJoLT5sb2NhbF9jaWQgb3IgCj4+IFZNQUREUl9DSURfSE9TVCBp
-Zgo+PiAtICrCoMKgwqAgZzJoIGlzIG5vdCBsb2FkZWQsIHdpbGwgdXNlIGxvY2FsIHRyYW5zcG9y
-dDsKPj4gLSAqwqAgLSByZW1vdGUgQ0lEIDw9IFZNQUREUl9DSURfSE9TVCB3aWxsIHVzZSBndWVz
-dC0+aG9zdCB0cmFuc3BvcnQ7Cj4+IC0gKsKgIC0gcmVtb3RlIENJRCA+IFZNQUREUl9DSURfSE9T
-VCB3aWxsIHVzZSBob3N0LT5ndWVzdCB0cmFuc3BvcnQ7Cj4+ICsgKsKgIC0gcmVtb3RlIGZsYWcg
-PT0gVk1BRERSX0ZMQUdfU0lCTElOR19WTVNfQ09NTVVOSUNBVElPTiwgd2lsbCBhbHdheXMKPj4g
-KyAqwqDCoMKgIGZvcndhcmQgdGhlIHZzb2NrIHBhY2tldHMgdG8gdGhlIGhvc3QgYW5kIHVzZSBn
-dWVzdC0+aG9zdCAKPj4gdHJhbnNwb3J0Owo+PiArICrCoCAtIG90aGVyd2lzZSwgZ29pbmcgZm9y
-d2FyZCB3aXRoIHRoZSByZW1vdGUgZmxhZyBkZWZhdWx0IHZhbHVlOgo+PiArICrCoMKgwqAgLSBy
-ZW1vdGUgQ0lEID09IFZNQUREUl9DSURfTE9DQUwgb3IgZzJoLT5sb2NhbF9jaWQgb3IgCj4+IFZN
-QUREUl9DSURfSE9TVAo+PiArICrCoMKgwqDCoMKgIGlmIGcyaCBpcyBub3QgbG9hZGVkLCB3aWxs
-IHVzZSBsb2NhbCB0cmFuc3BvcnQ7Cj4+ICsgKsKgwqDCoCAtIHJlbW90ZSBDSUQgPD0gVk1BRERS
-X0NJRF9IT1NUIG9yIGgyZyBpcyBub3QgbG9hZGVkLCB3aWxsIHVzZQo+PiArICrCoMKgwqDCoMKg
-IGd1ZXN0LT5ob3N0IHRyYW5zcG9ydDsKPj4gKyAqwqDCoMKgIC0gcmVtb3RlIENJRCA+IFZNQURE
-Ul9DSURfSE9TVCB3aWxsIHVzZSBob3N0LT5ndWVzdCB0cmFuc3BvcnQ7Cj4+IMKgKi8KPj4gaW50
-IHZzb2NrX2Fzc2lnbl90cmFuc3BvcnQoc3RydWN0IHZzb2NrX3NvY2sgKnZzaywgc3RydWN0IHZz
-b2NrX3NvY2sgCj4+ICpwc2spCj4+IHsKPj4gwqDCoMKgwqDCoCBjb25zdCBzdHJ1Y3QgdnNvY2tf
-dHJhbnNwb3J0ICpuZXdfdHJhbnNwb3J0Owo+PiDCoMKgwqDCoMKgIHN0cnVjdCBzb2NrICpzayA9
-IHNrX3Zzb2NrKHZzayk7Cj4+IMKgwqDCoMKgwqAgdW5zaWduZWQgaW50IHJlbW90ZV9jaWQgPSB2
-c2stPnJlbW90ZV9hZGRyLnN2bV9jaWQ7Cj4+ICvCoMKgwqDCoMKgIHVuc2lnbmVkIHNob3J0IHJl
-bW90ZV9mbGFnID0gdnNrLT5yZW1vdGVfYWRkci5zdm1fZmxhZzsKPj4gwqDCoMKgwqDCoCBpbnQg
-cmV0Owo+Pgo+PiDCoMKgwqDCoMKgIHN3aXRjaCAoc2stPnNrX3R5cGUpIHsKPj4gQEAgLTQzOCw2
-ICs0NDMsOCBAQCBpbnQgdnNvY2tfYXNzaWduX3RyYW5zcG9ydChzdHJ1Y3QgdnNvY2tfc29jayAK
-Pj4gKnZzaywgc3RydWN0IHZzb2NrX3NvY2sgKnBzaykKPj4gwqDCoMKgwqDCoCBjYXNlIFNPQ0tf
-U1RSRUFNOgo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpZiAodnNvY2tfdXNlX2xvY2Fs
-X3RyYW5zcG9ydChyZW1vdGVfY2lkKSkKPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgIG5ld190cmFuc3BvcnQgPSB0cmFuc3BvcnRfbG9jYWw7Cj4+ICvCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoCBlbHNlIGlmIChyZW1vdGVfZmxhZyA9PSAKPj4gVk1BRERSX0ZM
-QUdfU0lCTElOR19WTVNfQ09NTVVOSUNBVElPTikKPgo+IE90aGVycyBmbGFncyBjYW4gYmUgYWRk
-ZWQsIHNvIGhlcmUgd2Ugc2hvdWxkIHVzZSB0aGUgYml0d2lzZSBBTkQKPiBvcGVyYXRvciB0byBj
-aGVjayBpZiB0aGlzIGZsYWcgaXMgc2V0Lgo+Cj4gQW5kIHdoYXQgYWJvdXQgbWVyZ2luZyB3aXRo
-IHRoZSBuZXh0IGlmIGNsYXVzZT8KPgoKSW5kZWVkLCBJJ2xsIHVwZGF0ZSB0aGUgY29kZWJhc2Ug
-dG8gdXNlIHRoZSBiaXR3aXNlIG9wZXJhdG9yLiBUaGVuIEkgY2FuIAphbHNvIG1lcmdlIGFsbCB0
-aGUgY2hlY2tzIGNvcnJlc3BvbmRpbmcgdG8gdGhlIGcyaCB0cmFuc3BvcnQgaW4gYSBzaW5nbGUg
-CmlmIGJsb2NrLgoKVGhhbmtzLApBbmRyYQoKPgo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgIG5ld190cmFuc3BvcnQgPSB0cmFuc3BvcnRfZzJoOwo+PiDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBlbHNlIGlmIChyZW1vdGVfY2lkIDw9IFZNQUREUl9DSURf
-SE9TVCB8fAo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAhdHJhbnNwb3J0X2gyZykKPj4g
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG5ld190cmFuc3BvcnQg
-PSB0cmFuc3BvcnRfZzJoOwo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBlbHNlCj4+IC0t
-IAo+PiAyLjIwLjEgKEFwcGxlIEdpdC0xMTcpCj4+Cj4KCgoKCkFtYXpvbiBEZXZlbG9wbWVudCBD
-ZW50ZXIgKFJvbWFuaWEpIFMuUi5MLiByZWdpc3RlcmVkIG9mZmljZTogMjdBIFNmLiBMYXphciBT
-dHJlZXQsIFVCQzUsIGZsb29yIDIsIElhc2ksIElhc2kgQ291bnR5LCA3MDAwNDUsIFJvbWFuaWEu
-IFJlZ2lzdGVyZWQgaW4gUm9tYW5pYS4gUmVnaXN0cmF0aW9uIG51bWJlciBKMjIvMjYyMS8yMDA1
-Lgo=
+From: Guvenc Gulce <guvenc@linux.ibm.com>
+
+Deliver SMCR device information via netlink based
+diagnostic interface.
+
+Signed-off-by: Guvenc Gulce <guvenc@linux.ibm.com>
+Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
+---
+ include/uapi/linux/smc.h |  13 +++-
+ net/smc/smc_core.c       |   2 +-
+ net/smc/smc_ib.c         | 156 +++++++++++++++++++++++++++++++++++++++
+ net/smc/smc_ib.h         |   2 +
+ net/smc/smc_netlink.c    |   6 ++
+ 5 files changed, 176 insertions(+), 3 deletions(-)
+
+diff --git a/include/uapi/linux/smc.h b/include/uapi/linux/smc.h
+index 3cb40ab049d9..3e68da07fba2 100644
+--- a/include/uapi/linux/smc.h
++++ b/include/uapi/linux/smc.h
+@@ -46,6 +46,7 @@ enum {
+ 	SMC_NETLINK_GET_LINK_SMCR,
+ 	SMC_NETLINK_GET_LGR_SMCD,
+ 	SMC_NETLINK_GET_DEV_SMCD,
++	SMC_NETLINK_GET_DEV_SMCR,
+ };
+ 
+ /* SMC_GENL_FAMILY top level attributes */
+@@ -56,6 +57,7 @@ enum {
+ 	SMC_GEN_LINK_SMCR,		/* nest */
+ 	SMC_GEN_LGR_SMCD,		/* nest */
+ 	SMC_GEN_DEV_SMCD,		/* nest */
++	SMC_GEN_DEV_SMCR,		/* nest */
+ 	__SMC_GEN_MAX,
+ 	SMC_GEN_MAX = __SMC_GEN_MAX - 1
+ };
+@@ -127,16 +129,20 @@ enum {
+ 	SMC_NLA_LGR_D_MAX = __SMC_NLA_LGR_D_MAX - 1
+ };
+ 
+-/* SMC_NLA_DEV_PORT attributes */
++/* SMC_NLA_DEV_PORT nested attributes */
+ enum {
+ 	SMC_NLA_DEV_PORT_UNSPEC,
+ 	SMC_NLA_DEV_PORT_PNET_USR,	/* u8 */
+ 	SMC_NLA_DEV_PORT_PNETID,	/* string */
++	SMC_NLA_DEV_PORT_NETDEV,	/* u32 */
++	SMC_NLA_DEV_PORT_STATE,		/* u8 */
++	SMC_NLA_DEV_PORT_VALID,		/* u8 */
++	SMC_NLA_DEV_PORT_LNK_CNT,	/* u32 */
+ 	__SMC_NLA_DEV_PORT_MAX,
+ 	SMC_NLA_DEV_PORT_MAX = __SMC_NLA_DEV_PORT_MAX - 1
+ };
+ 
+-/* SMC_GEN_DEV_SMCD attributes */
++/* SMC_GEN_DEV_SMCD and SMC_GEN_DEV_SMCR attributes */
+ enum {
+ 	SMC_NLA_DEV_UNSPEC,
+ 	SMC_NLA_DEV_USE_CNT,		/* u32 */
+@@ -147,7 +153,10 @@ enum {
+ 	SMC_NLA_DEV_PCI_DEVICE,		/* u16 */
+ 	SMC_NLA_DEV_PCI_ID,		/* string */
+ 	SMC_NLA_DEV_PORT,		/* nest */
++	SMC_NLA_DEV_PORT2,		/* nest */
++	SMC_NLA_DEV_IB_NAME,		/* string */
+ 	__SMC_NLA_DEV_MAX,
+ 	SMC_NLA_DEV_MAX = __SMC_NLA_DEV_MAX - 1
+ };
++
+ #endif /* _UAPI_LINUX_SMC_H */
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index ac2cc593f25f..59342b519e34 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -38,7 +38,7 @@
+ #define SMC_LGR_FREE_DELAY_SERV		(600 * HZ)
+ #define SMC_LGR_FREE_DELAY_CLNT		(SMC_LGR_FREE_DELAY_SERV + 10 * HZ)
+ 
+-static struct smc_lgr_list smc_lgr_list = {	/* established link groups */
++struct smc_lgr_list smc_lgr_list = {	/* established link groups */
+ 	.lock = __SPIN_LOCK_UNLOCKED(smc_lgr_list.lock),
+ 	.list = LIST_HEAD_INIT(smc_lgr_list.list),
+ 	.num = 0,
+diff --git a/net/smc/smc_ib.c b/net/smc/smc_ib.c
+index 61b025c912a9..89ea10675a7d 100644
+--- a/net/smc/smc_ib.c
++++ b/net/smc/smc_ib.c
+@@ -25,6 +25,7 @@
+ #include "smc_core.h"
+ #include "smc_wr.h"
+ #include "smc.h"
++#include "smc_netlink.h"
+ 
+ #define SMC_MAX_CQE 32766	/* max. # of completion queue elements */
+ 
+@@ -326,6 +327,161 @@ int smc_ib_create_protection_domain(struct smc_link *lnk)
+ 	return rc;
+ }
+ 
++static bool smcr_diag_is_dev_critical(struct smc_lgr_list *smc_lgr,
++				      struct smc_ib_device *smcibdev)
++{
++	struct smc_link_group *lgr;
++	bool rc = false;
++	int i;
++
++	spin_lock_bh(&smc_lgr->lock);
++	list_for_each_entry(lgr, &smc_lgr->list, list) {
++		if (lgr->is_smcd)
++			continue;
++		for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
++			if (lgr->lnk[i].state == SMC_LNK_UNUSED ||
++			    lgr->lnk[i].smcibdev != smcibdev)
++				continue;
++			if (lgr->type == SMC_LGR_SINGLE ||
++			    lgr->type == SMC_LGR_ASYMMETRIC_LOCAL) {
++				rc = true;
++				goto out;
++			}
++		}
++	}
++out:
++	spin_unlock_bh(&smc_lgr->lock);
++	return rc;
++}
++
++static int smc_nl_handle_dev_port(struct sk_buff *skb,
++				  struct ib_device *ibdev,
++				  struct smc_ib_device *smcibdev,
++				  int port)
++{
++	char smc_pnet[SMC_MAX_PNETID_LEN + 1];
++	struct nlattr *port_attrs;
++	unsigned char port_state;
++	int lnk_count = 0;
++
++	port_attrs = nla_nest_start(skb, SMC_NLA_DEV_PORT + port);
++	if (!port_attrs)
++		goto errout;
++
++	if (nla_put_u8(skb, SMC_NLA_DEV_PORT_PNET_USR,
++		       smcibdev->pnetid_by_user[port]))
++		goto errattr;
++	snprintf(smc_pnet, sizeof(smc_pnet), "%s",
++		 (char *)&smcibdev->pnetid[port]);
++	if (nla_put_string(skb, SMC_NLA_DEV_PORT_PNETID, smc_pnet))
++		goto errattr;
++	if (nla_put_u32(skb, SMC_NLA_DEV_PORT_NETDEV,
++			smcibdev->ndev_ifidx[port]))
++		goto errattr;
++	if (nla_put_u8(skb, SMC_NLA_DEV_PORT_VALID, 1))
++		goto errattr;
++	port_state = smc_ib_port_active(smcibdev, port + 1);
++	if (nla_put_u8(skb, SMC_NLA_DEV_PORT_STATE, port_state))
++		goto errattr;
++	lnk_count = atomic_read(&smcibdev->lnk_cnt_by_port[port]);
++	if (nla_put_u32(skb, SMC_NLA_DEV_PORT_LNK_CNT, lnk_count))
++		goto errattr;
++	nla_nest_end(skb, port_attrs);
++	return 0;
++errattr:
++	nla_nest_cancel(skb, port_attrs);
++errout:
++	return -EMSGSIZE;
++}
++
++static int smc_nl_handle_smcr_dev(struct smc_ib_device *smcibdev,
++				  struct sk_buff *skb,
++				  struct netlink_callback *cb)
++{
++	char smc_ibname[IB_DEVICE_NAME_MAX + 1];
++	struct smc_pci_dev smc_pci_dev;
++	struct pci_dev *pci_dev;
++	unsigned char is_crit;
++	struct nlattr *attrs;
++	void *nlh;
++	int i;
++
++	nlh = genlmsg_put(skb, NETLINK_CB(cb->skb).portid, cb->nlh->nlmsg_seq,
++			  &smc_gen_nl_family, NLM_F_MULTI,
++			  SMC_NETLINK_GET_DEV_SMCR);
++	if (!nlh)
++		goto errmsg;
++	attrs = nla_nest_start(skb, SMC_GEN_DEV_SMCR);
++	if (!attrs)
++		goto errout;
++	is_crit = smcr_diag_is_dev_critical(&smc_lgr_list, smcibdev);
++	if (nla_put_u8(skb, SMC_NLA_DEV_IS_CRIT, is_crit))
++		goto errattr;
++	memset(&smc_pci_dev, 0, sizeof(smc_pci_dev));
++	pci_dev = to_pci_dev(smcibdev->ibdev->dev.parent);
++	smc_set_pci_values(pci_dev, &smc_pci_dev);
++	if (nla_put_u32(skb, SMC_NLA_DEV_PCI_FID, smc_pci_dev.pci_fid))
++		goto errattr;
++	if (nla_put_u16(skb, SMC_NLA_DEV_PCI_CHID, smc_pci_dev.pci_pchid))
++		goto errattr;
++	if (nla_put_u16(skb, SMC_NLA_DEV_PCI_VENDOR, smc_pci_dev.pci_vendor))
++		goto errattr;
++	if (nla_put_u16(skb, SMC_NLA_DEV_PCI_DEVICE, smc_pci_dev.pci_device))
++		goto errattr;
++	if (nla_put_string(skb, SMC_NLA_DEV_PCI_ID, smc_pci_dev.pci_id))
++		goto errattr;
++	snprintf(smc_ibname, sizeof(smc_ibname), "%s", smcibdev->ibdev->name);
++	if (nla_put_string(skb, SMC_NLA_DEV_IB_NAME, smc_ibname))
++		goto errattr;
++	for (i = 1; i <= SMC_MAX_PORTS; i++) {
++		if (!rdma_is_port_valid(smcibdev->ibdev, i))
++			continue;
++		if (smc_nl_handle_dev_port(skb, smcibdev->ibdev,
++					   smcibdev, i - 1))
++			goto errattr;
++	}
++
++	nla_nest_end(skb, attrs);
++	genlmsg_end(skb, nlh);
++	return 0;
++
++errattr:
++	nla_nest_cancel(skb, attrs);
++errout:
++	genlmsg_cancel(skb, nlh);
++errmsg:
++	return -EMSGSIZE;
++}
++
++static void smc_nl_prep_smcr_dev(struct smc_ib_devices *dev_list,
++				 struct sk_buff *skb,
++				 struct netlink_callback *cb)
++{
++	struct smc_nl_dmp_ctx *cb_ctx = smc_nl_dmp_ctx(cb);
++	struct smc_ib_device *smcibdev;
++	int snum = cb_ctx->pos[0];
++	int num = 0;
++
++	mutex_lock(&dev_list->mutex);
++	list_for_each_entry(smcibdev, &dev_list->list, list) {
++		if (num < snum)
++			goto next;
++		if (smc_nl_handle_smcr_dev(smcibdev, skb, cb))
++			goto errout;
++next:
++		num++;
++	}
++errout:
++	mutex_unlock(&dev_list->mutex);
++	cb_ctx->pos[0] = num;
++}
++
++int smcr_nl_get_device(struct sk_buff *skb, struct netlink_callback *cb)
++{
++	smc_nl_prep_smcr_dev(&smc_ib_devices, skb, cb);
++	return skb->len;
++}
++
+ static void smc_ib_qp_event_handler(struct ib_event *ibevent, void *priv)
+ {
+ 	struct smc_link *lnk = (struct smc_link *)priv;
+diff --git a/net/smc/smc_ib.h b/net/smc/smc_ib.h
+index ab37da341fa8..3085f5180da7 100644
+--- a/net/smc/smc_ib.h
++++ b/net/smc/smc_ib.h
+@@ -30,6 +30,7 @@ struct smc_ib_devices {			/* list of smc ib devices definition */
+ };
+ 
+ extern struct smc_ib_devices	smc_ib_devices; /* list of smc ib devices */
++extern struct smc_lgr_list smc_lgr_list; /* list of linkgroups */
+ 
+ struct smc_ib_device {				/* ib-device infos for smc */
+ 	struct list_head	list;
+@@ -91,4 +92,5 @@ void smc_ib_sync_sg_for_device(struct smc_link *lnk,
+ int smc_ib_determine_gid(struct smc_ib_device *smcibdev, u8 ibport,
+ 			 unsigned short vlan_id, u8 gid[], u8 *sgid_index);
+ bool smc_ib_is_valid_local_systemid(void);
++int smcr_nl_get_device(struct sk_buff *skb, struct netlink_callback *cb);
+ #endif
+diff --git a/net/smc/smc_netlink.c b/net/smc/smc_netlink.c
+index debdeec53728..140419a19dbf 100644
+--- a/net/smc/smc_netlink.c
++++ b/net/smc/smc_netlink.c
+@@ -18,6 +18,7 @@
+ 
+ #include "smc_core.h"
+ #include "smc_ism.h"
++#include "smc_ib.h"
+ #include "smc_netlink.h"
+ 
+ #define SMC_CMD_MAX_ATTR 1
+@@ -49,6 +50,11 @@ static const struct genl_ops smc_gen_nl_ops[] = {
+ 		/* can be retrieved by unprivileged users */
+ 		.dumpit = smcd_nl_get_device,
+ 	},
++	{
++		.cmd = SMC_NETLINK_GET_DEV_SMCR,
++		/* can be retrieved by unprivileged users */
++		.dumpit = smcr_nl_get_device,
++	},
+ };
+ 
+ static const struct nla_policy smc_gen_nl_policy[2] = {
+-- 
+2.17.1
 
