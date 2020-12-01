@@ -2,195 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 505372CAA5C
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 19:00:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 495752CAA66
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 19:02:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404216AbgLAR7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 12:59:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50604 "EHLO
+        id S2404231AbgLASCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 13:02:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404207AbgLAR7i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 12:59:38 -0500
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06F55C0617A7
-        for <netdev@vger.kernel.org>; Tue,  1 Dec 2020 09:58:57 -0800 (PST)
-Received: by mail-ej1-x642.google.com with SMTP id lt17so6000161ejb.3
-        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 09:58:57 -0800 (PST)
+        with ESMTP id S2404222AbgLASCQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 13:02:16 -0500
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C09FC0613CF;
+        Tue,  1 Dec 2020 10:01:36 -0800 (PST)
+Received: by mail-yb1-xb42.google.com with SMTP id 10so2656713ybx.9;
+        Tue, 01 Dec 2020 10:01:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=DX6KIUwirfviM9/LU40Kf0QHk6cwddHzRaxk7qxr/0M=;
-        b=ZtFMGkps2lRkKC04MrOFY3muHoPuz0lmgVVDzwbTkOlXkBN5M1ATxujmQzIKb9Xphf
-         YllNc6DMSPgelA8BwxYMYsEW2eScJoyQqcP6lSbcyq997m7abOclWlPc/AhmbANGdHTo
-         mGaZscd7zZTyht8ZrGToJA3qB9mUw4/khTeksBu9+dDgcfggR4YhmlUg6Lfjy/adEqXW
-         RKMP9HZw9z2NVKb4vZ6B1zlt6j3ccp0vJfa/A4sh6pzTGGNysptNYv5tms8y36lUBhxn
-         ByETmlSgpw+SMVXwQKnZlqpxGLqymqxQx/C90hDoWG8G5aUfLzcloLTa2an+ZQMTG2De
-         joPw==
+        bh=immCNs4xDGr/yeWS3YmZEjkNg6wKQAW5VTX5f5Tpknc=;
+        b=YKpqwZaUUhKeLfxngmK3DDiAn38uJZke2a803KK+v6vKIVSjsSVhXpi4O/tjklH9Bd
+         jSD3es5jE2Q77uppB19U2/7n+gTL3gtgdwSZkyRiLtzOFUfAYwKA0Ao7ltRHVRKeDwHl
+         v4eexAmQBEF7cmApzW0O4NMaDbgigs49wnpbK4QdUskwbToKbGoOws459yZQtuR+xS6m
+         2RYNQ72NknLe5fMJSUIm4EjHfTQCdwuF19eZ8mAZRht1u4JBFGTL4td4mIiRaTnEp+/1
+         D7jSZJeX85be+WATzHnFDCYhl6hZtPpDlnT7lNpzL8r1JGH8JmCUL3MAjTvCQaVA1Eod
+         LABQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=DX6KIUwirfviM9/LU40Kf0QHk6cwddHzRaxk7qxr/0M=;
-        b=dvXnNm8XG3JxKy/lkw/FYirpCzFrP4BOQ7y/yvZWcu71O0TGP4mO9M4K4VNqTFRUm1
-         4WYojnyLWRl5kLDzwMyCk282gRUkO8/wRXyQ7gU7QcL41YGBygt+GQ027nk5hPvdbgOq
-         1GMAd8KSY8OL4vIvViB8RhOykwPL+hZdATJjGgcp61jpwA3LyL2ZiXwW2SQD27QB77wD
-         ss3HIZUDqGP/EpTUiBOireUmIZTFUhQhY2u9yH4tLlIVFpY7RHg9jqeohNqpfORxMpKn
-         MKMdTt5bOMltv/iIZBlC9osXl9vyo9CnyiVk73FMnLnyiScXw0QiNXuGDh1BMsC0XC9C
-         3uRg==
-X-Gm-Message-State: AOAM531byk/V/SDdbJTJQX5foI4eklTwAvioIWvB5GvhsjRuKQ5FI0b3
-        eUERRFNiBGQRSDKIFVtTPXB9VjVWcgiDyrJV91Mxuw==
-X-Google-Smtp-Source: ABdhPJwSOWPjSYUHtTW6dykZ1JlqhK3xRraEYUELd5WlAqcz1EvsKFReJLE7FutZWVJN3HEj2XDq19T0tWBBQtdGwyk=
-X-Received: by 2002:a17:906:e093:: with SMTP id gh19mr4143592ejb.510.1606845536436;
- Tue, 01 Dec 2020 09:58:56 -0800 (PST)
+        bh=immCNs4xDGr/yeWS3YmZEjkNg6wKQAW5VTX5f5Tpknc=;
+        b=EryM84V5Fw3Js8EtlxofBEQzrZkcZdnkhzG2E0Fjc7bHzYXK4dEkDbq/dCF1gf6s6U
+         AQzbyF/wZe5tN3VcCxixzWLxABDzTYJMZRPTm2EV89aGy5QqldX2fUf+ljjT0c5Lb4nY
+         EbcMdQ9jmeMnRVRTl5zUgP/VwH2srPfRphj6jeX+fUQY/Pv2ODifiXpZpuRhZ58Q3nNo
+         mm+ahUujDQgEefo+CraMxP2AqY/fxWoFRF5IWKNk6GDusYgdpALHGRZpevss3j3jKY7d
+         sV6l5QNKXNFy/vwyieF/qvw2PafqD/coWQNKsoeB1xLmXXrPaiCY0HbKgtEMMMoDgArG
+         /7PQ==
+X-Gm-Message-State: AOAM531Z7kK5F01426EYBARTPBva5m0/k3jHhaYw5G68oqfgNsiZfr6I
+        U2/UEir/Y636eiGLDWgWToBq8uJFlTBYabjivsE=
+X-Google-Smtp-Source: ABdhPJwc45X9pd+003CCkmjMxs4UKYvW0IGxNyfMvmG2kpS7bZXC0j4ppJ6woxJmpl+P7N2EeLYLvBxYe2soF7yElgE=
+X-Received: by 2002:a25:7717:: with SMTP id s23mr6890166ybc.459.1606845694868;
+ Tue, 01 Dec 2020 10:01:34 -0800 (PST)
 MIME-Version: 1.0
-References: <1606533966-22821-1-git-send-email-hemantk@codeaurora.org>
- <1606533966-22821-5-git-send-email-hemantk@codeaurora.org>
- <CAMZdPi8z+-qFqgZ7AFJcNAUMbDQtNN5Hz-geMBcp4azrUGm9iA@mail.gmail.com>
- <c47dcd57-7576-e03e-f70b-0c4d25f724b5@codeaurora.org> <CAMZdPi8mUV5cFs-76K3kg=hN8ht2SKjJwzbJH-+VH4Y8QabcHQ@mail.gmail.com>
- <1247e32e-ed67-de6b-81ec-3bde9ad93250@codeaurora.org> <CAMZdPi-tjmXWAFzZJAg_6U5h2ZJv478E88T-Lmk=YA-B6=MzRA@mail.gmail.com>
- <1a9f7ed5-7060-9146-47ff-087b9096ba3a@codeaurora.org>
-In-Reply-To: <1a9f7ed5-7060-9146-47ff-087b9096ba3a@codeaurora.org>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Tue, 1 Dec 2020 19:05:11 +0100
-Message-ID: <CAMZdPi_=k95C0TTJDvRfYcFtqm6kSLfWHZ6CKpksAD=1P5vtfA@mail.gmail.com>
-Subject: Re: [PATCH v13 4/4] bus: mhi: Add userspace client interface driver
-To:     Jeffrey Hugo <jhugo@codeaurora.org>
-Cc:     Hemant Kumar <hemantk@codeaurora.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+References: <20201201143700.719828-1-leon@kernel.org>
+In-Reply-To: <20201201143700.719828-1-leon@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 1 Dec 2020 10:01:23 -0800
+Message-ID: <CAEf4BzaSL+rmVYNipsfczsF2v684KOhZgFPtUG9opvk7d6zruA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] kbuild: Restore ability to build out-of-tree modules
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
         open list <linux-kernel@vger.kernel.org>,
-        Bhaumik Bhatt <bbhatt@codeaurora.org>,
-        Network Development <netdev@vger.kernel.org>
+        Edward Srouji <edwards@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 1 Dec 2020 at 18:51, Jeffrey Hugo <jhugo@codeaurora.org> wrote:
+On Tue, Dec 1, 2020 at 6:37 AM Leon Romanovsky <leon@kernel.org> wrote:
 >
-> On 12/1/2020 10:52 AM, Loic Poulain wrote:
-> > On Tue, 1 Dec 2020 at 18:37, Jeffrey Hugo <jhugo@codeaurora.org> wrote:
-> >>
-> >> On 12/1/2020 10:36 AM, Loic Poulain wrote:
-> >>> On Tue, 1 Dec 2020 at 02:16, Hemant Kumar <hemantk@codeaurora.org> wrote:
-> >>>>
-> >>>> Hi Loic,
-> >>>>
-> >>>> On 11/30/20 10:22 AM, Loic Poulain wrote:
-> >>>>> On Sat, 28 Nov 2020 at 04:26, Hemant Kumar <hemantk@codeaurora.org> wrote:
-> >>>>>>
-> >>>>>> This MHI client driver allows userspace clients to transfer
-> >>>>>> raw data between MHI device and host using standard file operations.
-> >>>>>> Driver instantiates UCI device object which is associated to device
-> >>>>>> file node. UCI device object instantiates UCI channel object when device
-> >>>>>> file node is opened. UCI channel object is used to manage MHI channels
-> >>>>>> by calling MHI core APIs for read and write operations. MHI channels
-> >>>>>> are started as part of device open(). MHI channels remain in start
-> >>>>>> state until last release() is called on UCI device file node. Device
-> >>>>>> file node is created with format
-> >>>>>
-> >>>>> [...]
-> >>>>>
-> >>>>>> +struct uci_chan {
-> >>>>>> +       struct uci_dev *udev;
-> >>>>>> +       wait_queue_head_t ul_wq;
-> >>>>>> +
-> >>>>>> +       /* ul channel lock to synchronize multiple writes */
-> >>>>>> +       struct mutex write_lock;
-> >>>>>> +
-> >>>>>> +       wait_queue_head_t dl_wq;
-> >>>>>> +
-> >>>>>> +       /* dl channel lock to synchronize multiple reads */
-> >>>>>> +       struct mutex read_lock;
-> >>>>>> +
-> >>>>>> +       /*
-> >>>>>> +        * protects pending list in bh context, channel release, read and
-> >>>>>> +        * poll
-> >>>>>> +        */
-> >>>>>> +       spinlock_t dl_pending_lock;
-> >>>>>> +
-> >>>>>> +       struct list_head dl_pending;
-> >>>>>> +       struct uci_buf *cur_buf;
-> >>>>>> +       size_t dl_size;
-> >>>>>> +       struct kref ref_count;
-> >>>>>> +};
-> >>>>>
-> >>>>> [...]
-> >>>>>
-> >>>>>> + * struct uci_dev - MHI UCI device
-> >>>>>> + * @minor: UCI device node minor number
-> >>>>>> + * @mhi_dev: associated mhi device object
-> >>>>>> + * @uchan: UCI uplink and downlink channel object
-> >>>>>> + * @mtu: max TRE buffer length
-> >>>>>> + * @enabled: Flag to track the state of the UCI device
-> >>>>>> + * @lock: mutex lock to manage uchan object
-> >>>>>> + * @ref_count: uci_dev reference count
-> >>>>>> + */
-> >>>>>> +struct uci_dev {
-> >>>>>> +       unsigned int minor;
-> >>>>>> +       struct mhi_device *mhi_dev;
-> >>>>>> +       struct uci_chan *uchan;
-> >>>>>
-> >>>>> Why a pointer to uci_chan and not just plainly integrating the
-> >>>>> structure here, AFAIU uci_chan describes the channels and is just a
-> >>>>> subpart of uci_dev. That would reduce the number of dynamic
-> >>>>> allocations you manage and the extra kref. do you even need a separate
-> >>>>> structure for this?
-> >>>>
-> >>>> This goes back to one of my patch versions i tried to address concern
-> >>>> from Greg. Since we need to ref count the channel as well as the uci
-> >>>> device i decoupled the two objects and used two reference counts for two
-> >>>> different objects.
-> >>>
-> >>> What Greg complained about is the two kref in the same structure and
-> >>> that you were using kref as an open() counter. But splitting your
-> >>> struct in two in order to keep the two kref does not make the much
-> >>> code better (and simpler). I'm still a bit puzzled about the driver
-> >>> complexity, it's supposed to be just a passthrough interface to MHI
-> >>> after all.
-> >>>
-> >>> I would suggest several changes, that IMHO would simplify reviewing:
-> >>> - Use only one structure representing the 'uci' context (uci_dev)
-> >>> - Keep the read path simple (mhi_uci_read), do no use an intermediate
-> >>> cur_buf pointer, only dequeue the buffer when it is fully consumed.
-> >>> - As I commented before, take care of the dl_pending list access
-> >>> concurrency, even in wait_event.
-> >>> - You don't need to count the number of open() calls, AFAIK,
-> >>> mhi_prepare_for_transfer() simply fails if channels are already
-> >>> started...
-> >>
-> >> Unless I missed something, you seem to have ignored the root issue that
-> >> Hemant needs to solve, which is when to call
-> >> mhi_unprepare_for_transfer().  You can't just call that when close() is
-> >> called because there might be multiple users, and each one is going to
-> >> trigger a close(), so you need to know how many close() instances to
-> >> expect, and only call mhi_unprepare_for_transfer() for the last one.
-> >
-> > That one part of his problem, yes, but if you unconditionally call
-> > mhi_prepare_for_transfer in open(), it should fail for subsequent
-> > users, and so only one user will successfully open the device.
+> From: Leon Romanovsky <leonro@nvidia.com>
 >
-> I'm pretty sure that falls under "trying to prevent users from opening a
-> device" which Greg gave a pretty strong NACK to.  So, that's not a solution.
+> The out-of-tree modules are built without vmlinux target and request
+> to recompile that target unconditionally causes to the following
+> compilation error.
+>
+> [root@server kernel]# make
+> <..>
+> make -f ./scripts/Makefile.modpost
+> make -f ./scripts/Makefile.modfinal
+> make[3]: *** No rule to make target 'vmlinux', needed by '/my_temp/out-of-tree-module/kernel/test.ko'.  Stop.
+> make[2]: *** [scripts/Makefile.modpost:117: __modpost] Error 2
+> make[1]: *** [Makefile:1703: modules] Error 2
+> make[1]: Leaving directory '/usr/src/kernels/5.10.0-rc5_for_upstream_base_2020_11_29_11_34'
+> make: *** [Makefile:80: modules] Error 2
+>
+> As a solution separate between build paths that has vmlinux target and paths without.
+>
+> Fixes: 5f9ae91f7c0d ("kbuild: Build kernel module BTFs if BTF is enabled and pahole supports it")
+> Reported-by: Edward Srouji <edwards@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
 
-That would deserve clarification since other drivers like
-virtio_console clearly prevent that (guest_connected).
+e732b538f455 ("kbuild: Skip module BTF generation for out-of-tree
+external modules") ([0]) was supposed to take care of this. Did you
+try it?
 
->
-> So, the complete problem is -
->
-> N users need to be able to use the device (and by proxy, the channel)
-> concurrently, but prepare needs to be called on the first user coming
-> into the picture, and unprepare needs to be called on the last user
-> exiting the picture.
->
-> Hemant has supported this usecase in every rev of this series I've
-> looked at, but apparently every solution he has proposed to handle this
-> has caused confusion.
+  [0] https://patchwork.kernel.org/project/netdevbpf/patch/20201121070829.2612884-1-andrii@kernel.org/
 
-Understood, but that can be done with a simple counter in that case.
 
-Regards,
-Loic
+> Not proficient enough in Makefile, but it fixes the issue.
+> ---
+>  scripts/Makefile.modfinal | 5 +++++
+>  scripts/Makefile.modpost  | 4 ++++
+>  2 files changed, 9 insertions(+)
+>
+> diff --git a/scripts/Makefile.modfinal b/scripts/Makefile.modfinal
+> index 02b892421f7a..8a7d0604e7d0 100644
+> --- a/scripts/Makefile.modfinal
+> +++ b/scripts/Makefile.modfinal
+> @@ -48,9 +48,14 @@ if_changed_except = $(if $(call newer_prereqs_except,$(2))$(cmd-check),      \
+>         $(cmd);                                                              \
+>         printf '%s\n' 'cmd_$@ := $(make-cmd)' > $(dot-target).cmd, @:)
+>
+> +ifdef MODPOST_VMLINUX
+>  # Re-generate module BTFs if either module's .ko or vmlinux changed
+>  $(modules): %.ko: %.o %.mod.o scripts/module.lds vmlinux FORCE
+>         +$(call if_changed_except,ld_ko_o,vmlinux)
+> +else
+> +$(modules): %.ko: %.o %.mod.o scripts/module.lds FORCE
+> +       +$(call if_changed_except,ld_ko_o)
+> +endif
+>  ifdef CONFIG_DEBUG_INFO_BTF_MODULES
+>         +$(if $(newer-prereqs),$(call cmd,btf_ko))
+>  endif
+> diff --git a/scripts/Makefile.modpost b/scripts/Makefile.modpost
+> index f54b6ac37ac2..f5aa5b422ad7 100644
+> --- a/scripts/Makefile.modpost
+> +++ b/scripts/Makefile.modpost
+> @@ -114,8 +114,12 @@ targets += $(output-symdump)
+>
+>  __modpost: $(output-symdump)
+>  ifneq ($(KBUILD_MODPOST_NOFINAL),1)
+> +ifdef MODPOST_VMLINUX
+> +       $(Q)$(MAKE) -f $(srctree)/scripts/Makefile.modfinal MODPOST_VMLINUX=1
+> +else
+>         $(Q)$(MAKE) -f $(srctree)/scripts/Makefile.modfinal
+>  endif
+> +endif
+>
+>  PHONY += FORCE
+>  FORCE:
+> --
+> 2.28.0
+>
