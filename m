@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4520F2CAF4B
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 23:02:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61E182CAF6A
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 23:02:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390668AbgLAV76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 16:59:58 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:5488 "EHLO
+        id S1730421AbgLAWAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 17:00:38 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:31944 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2390304AbgLAV75 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 16:59:57 -0500
+        by vger.kernel.org with ESMTP id S2390834AbgLAWAA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 17:00:00 -0500
 Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B1Lmm1P007480
-        for <netdev@vger.kernel.org>; Tue, 1 Dec 2020 13:59:16 -0800
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B1Lmm79007452
+        for <netdev@vger.kernel.org>; Tue, 1 Dec 2020 13:59:19 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=A/7JL5upcPb0ENghGdezgV2kpDP37JUJ4aa5/mTexwQ=;
- b=c6uX2ZzxduadLfYNOj0L+4pW9UNs6ZsaLTeAyZiwV54TsCZlJ2kmMGkMzFCZa6shcxaV
- KolAHGpxzYsBrOV5UBEWZYWdHBLZlUVExcII0H7ShbX9Mktpk5NtKGAY7o2gsTiPn+US
- OEQWM7j4GdYfodAJle59+0hf76L5GJlNTy0= 
+ bh=24D1A31iiLby+l3GEeR9u+37xYe3bhclp43RJZPc4/w=;
+ b=hNHHawKFKx8bUn0xU7+2x4bXLKGWfFLNgrtz8eSpiwK5HVO92lUboCAE6KYL99sIsUwe
+ 1Nq3bM4Um8TdTWucPjgyksWo+lOfdmXui1gSZXhRd5N1l2YJVu8T4IudgQ2VRexHmHDU
+ P1micM/je+fO3IUbkasP9ZHmDEJBDAWhSYI= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3547psq7s8-16
+        by mx0a-00082601.pphosted.com with ESMTP id 3547psq7tb-6
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 13:59:16 -0800
-Received: from intmgw001.06.prn3.facebook.com (2620:10d:c085:108::8) by
- mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 13:59:19 -0800
+Received: from intmgw001.41.prn1.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 1 Dec 2020 13:59:09 -0800
+ 15.1.1979.3; Tue, 1 Dec 2020 13:59:11 -0800
 Received: by devvm3388.prn0.facebook.com (Postfix, from userid 111017)
-        id D80F319702DE; Tue,  1 Dec 2020 13:59:06 -0800 (PST)
+        id DD29A19702E0; Tue,  1 Dec 2020 13:59:06 -0800 (PST)
 From:   Roman Gushchin <guro@fb.com>
 To:     <bpf@vger.kernel.org>
 CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
         <andrii@kernel.org>, <akpm@linux-foundation.org>,
         <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
         <kernel-team@fb.com>
-Subject: [PATCH bpf-next v9 32/34] bpf: eliminate rlimit-based memory accounting infra for bpf maps
-Date:   Tue, 1 Dec 2020 13:58:58 -0800
-Message-ID: <20201201215900.3569844-33-guro@fb.com>
+Subject: [PATCH bpf-next v9 33/34] bpf: eliminate rlimit-based memory accounting for bpf progs
+Date:   Tue, 1 Dec 2020 13:58:59 -0800
+Message-ID: <20201201215900.3569844-34-guro@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20201201215900.3569844-1-guro@fb.com>
 References: <20201201215900.3569844-1-guro@fb.com>
@@ -59,284 +59,218 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove rlimit-based accounting infrastructure code, which is not used
-anymore.
-
-To provide a backward compatibility, use an approximation of the
-bpf map memory footprint as a "memlock" value, available to a user
-via map info. The approximation is based on the maximal number of
-elements and key and value sizes.
+Do not use rlimit-based memory accounting for bpf progs. It has been
+replaced with memcg-based memory accounting.
 
 Signed-off-by: Roman Gushchin <guro@fb.com>
 Acked-by: Song Liu <songliubraving@fb.com>
 ---
- include/linux/bpf.h                           | 12 ---
- kernel/bpf/syscall.c                          | 96 ++++---------------
- .../selftests/bpf/progs/bpf_iter_bpf_map.c    |  2 +-
- .../selftests/bpf/progs/map_ptr_kern.c        |  7 --
- 4 files changed, 17 insertions(+), 100 deletions(-)
+ include/linux/bpf.h  | 11 -------
+ kernel/bpf/core.c    | 12 ++------
+ kernel/bpf/syscall.c | 69 +++++++-------------------------------------
+ 3 files changed, 12 insertions(+), 80 deletions(-)
 
 diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index e1f2c95c15ec..61331a148cde 100644
+index 61331a148cde..a9de5711b23f 100644
 --- a/include/linux/bpf.h
 +++ b/include/linux/bpf.h
-@@ -138,11 +138,6 @@ struct bpf_map_ops {
- 	const struct bpf_iter_seq_info *iter_seq_info;
- };
+@@ -1202,8 +1202,6 @@ void bpf_prog_sub(struct bpf_prog *prog, int i);
+ void bpf_prog_inc(struct bpf_prog *prog);
+ struct bpf_prog * __must_check bpf_prog_inc_not_zero(struct bpf_prog *pr=
+og);
+ void bpf_prog_put(struct bpf_prog *prog);
+-int __bpf_prog_charge(struct user_struct *user, u32 pages);
+-void __bpf_prog_uncharge(struct user_struct *user, u32 pages);
+ void __bpf_free_used_maps(struct bpf_prog_aux *aux,
+ 			  struct bpf_map **used_maps, u32 len);
 =20
--struct bpf_map_memory {
--	u32 pages;
--	struct user_struct *user;
--};
--
- struct bpf_map {
- 	/* The first two cachelines with read-mostly members of which some
- 	 * are also accessed in fast-path (e.g. ops, max_entries).
-@@ -163,7 +158,6 @@ struct bpf_map {
- 	u32 btf_key_type_id;
- 	u32 btf_value_type_id;
- 	struct btf *btf;
--	struct bpf_map_memory memory;
- #ifdef CONFIG_MEMCG_KMEM
- 	struct mem_cgroup *memcg;
- #endif
-@@ -1224,12 +1218,6 @@ void bpf_map_inc_with_uref(struct bpf_map *map);
- struct bpf_map * __must_check bpf_map_inc_not_zero(struct bpf_map *map);
- void bpf_map_put_with_uref(struct bpf_map *map);
- void bpf_map_put(struct bpf_map *map);
--int bpf_map_charge_memlock(struct bpf_map *map, u32 pages);
--void bpf_map_uncharge_memlock(struct bpf_map *map, u32 pages);
--int bpf_map_charge_init(struct bpf_map_memory *mem, u64 size);
--void bpf_map_charge_finish(struct bpf_map_memory *mem);
--void bpf_map_charge_move(struct bpf_map_memory *dst,
--			 struct bpf_map_memory *src);
- void *bpf_map_area_alloc(u64 size, int numa_node);
- void *bpf_map_area_mmapable_alloc(u64 size, int numa_node);
- void bpf_map_area_free(void *base);
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index dff3a5f62d7a..29096d96d989 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -128,7 +128,7 @@ static struct bpf_map *find_and_alloc_map(union bpf_a=
-ttr *attr)
- 	return map;
+@@ -1512,15 +1510,6 @@ bpf_prog_inc_not_zero(struct bpf_prog *prog)
+ 	return ERR_PTR(-EOPNOTSUPP);
  }
 =20
--static u32 bpf_map_value_size(struct bpf_map *map)
-+static u32 bpf_map_value_size(const struct bpf_map *map)
- {
- 	if (map->map_type =3D=3D BPF_MAP_TYPE_PERCPU_HASH ||
- 	    map->map_type =3D=3D BPF_MAP_TYPE_LRU_PERCPU_HASH ||
-@@ -346,77 +346,6 @@ void bpf_map_init_from_attr(struct bpf_map *map, uni=
-on bpf_attr *attr)
- 	map->numa_node =3D bpf_map_attr_numa_node(attr);
- }
-=20
--static int bpf_charge_memlock(struct user_struct *user, u32 pages)
+-static inline int __bpf_prog_charge(struct user_struct *user, u32 pages)
 -{
--	unsigned long memlock_limit =3D rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
--
--	if (atomic_long_add_return(pages, &user->locked_vm) > memlock_limit) {
--		atomic_long_sub(pages, &user->locked_vm);
--		return -EPERM;
--	}
 -	return 0;
 -}
 -
--static void bpf_uncharge_memlock(struct user_struct *user, u32 pages)
+-static inline void __bpf_prog_uncharge(struct user_struct *user, u32 pag=
+es)
+-{
+-}
+-
+ static inline void bpf_link_init(struct bpf_link *link, enum bpf_link_ty=
+pe type,
+ 				 const struct bpf_link_ops *ops,
+ 				 struct bpf_prog *prog)
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 2921f58c03a8..261f8692d0d2 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -221,23 +221,15 @@ struct bpf_prog *bpf_prog_realloc(struct bpf_prog *=
+fp_old, unsigned int size,
+ {
+ 	gfp_t gfp_flags =3D GFP_KERNEL_ACCOUNT | __GFP_ZERO | gfp_extra_flags;
+ 	struct bpf_prog *fp;
+-	u32 pages, delta;
+-	int ret;
++	u32 pages;
+=20
+ 	size =3D round_up(size, PAGE_SIZE);
+ 	pages =3D size / PAGE_SIZE;
+ 	if (pages <=3D fp_old->pages)
+ 		return fp_old;
+=20
+-	delta =3D pages - fp_old->pages;
+-	ret =3D __bpf_prog_charge(fp_old->aux->user, delta);
+-	if (ret)
+-		return NULL;
+-
+ 	fp =3D __vmalloc(size, gfp_flags);
+-	if (fp =3D=3D NULL) {
+-		__bpf_prog_uncharge(fp_old->aux->user, delta);
+-	} else {
++	if (fp) {
+ 		memcpy(fp, fp_old, fp_old->pages * PAGE_SIZE);
+ 		fp->pages =3D pages;
+ 		fp->aux->prog =3D fp;
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 29096d96d989..d16dd4945100 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -1632,51 +1632,6 @@ static void bpf_audit_prog(const struct bpf_prog *=
+prog, unsigned int op)
+ 	audit_log_end(ab);
+ }
+=20
+-int __bpf_prog_charge(struct user_struct *user, u32 pages)
+-{
+-	unsigned long memlock_limit =3D rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
+-	unsigned long user_bufs;
+-
+-	if (user) {
+-		user_bufs =3D atomic_long_add_return(pages, &user->locked_vm);
+-		if (user_bufs > memlock_limit) {
+-			atomic_long_sub(pages, &user->locked_vm);
+-			return -EPERM;
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+-void __bpf_prog_uncharge(struct user_struct *user, u32 pages)
 -{
 -	if (user)
 -		atomic_long_sub(pages, &user->locked_vm);
 -}
 -
--int bpf_map_charge_init(struct bpf_map_memory *mem, u64 size)
+-static int bpf_prog_charge_memlock(struct bpf_prog *prog)
 -{
--	u32 pages =3D round_up(size, PAGE_SIZE) >> PAGE_SHIFT;
--	struct user_struct *user;
+-	struct user_struct *user =3D get_current_user();
 -	int ret;
 -
--	if (size >=3D U32_MAX - PAGE_SIZE)
--		return -E2BIG;
--
--	user =3D get_current_user();
--	ret =3D bpf_charge_memlock(user, pages);
+-	ret =3D __bpf_prog_charge(user, prog->pages);
 -	if (ret) {
 -		free_uid(user);
 -		return ret;
 -	}
 -
--	mem->pages =3D pages;
--	mem->user =3D user;
--
+-	prog->aux->user =3D user;
 -	return 0;
 -}
 -
--void bpf_map_charge_finish(struct bpf_map_memory *mem)
+-static void bpf_prog_uncharge_memlock(struct bpf_prog *prog)
 -{
--	bpf_uncharge_memlock(mem->user, mem->pages);
--	free_uid(mem->user);
+-	struct user_struct *user =3D prog->aux->user;
+-
+-	__bpf_prog_uncharge(user, prog->pages);
+-	free_uid(user);
 -}
 -
--void bpf_map_charge_move(struct bpf_map_memory *dst,
--			 struct bpf_map_memory *src)
--{
--	*dst =3D *src;
--
--	/* Make sure src will not be used for the redundant uncharging. */
--	memset(src, 0, sizeof(struct bpf_map_memory));
--}
--
--int bpf_map_charge_memlock(struct bpf_map *map, u32 pages)
--{
--	int ret;
--
--	ret =3D bpf_charge_memlock(map->memory.user, pages);
--	if (ret)
--		return ret;
--	map->memory.pages +=3D pages;
--	return ret;
--}
--
--void bpf_map_uncharge_memlock(struct bpf_map *map, u32 pages)
--{
--	bpf_uncharge_memlock(map->memory.user, pages);
--	map->memory.pages -=3D pages;
--}
--
- static int bpf_map_alloc_id(struct bpf_map *map)
+ static int bpf_prog_alloc_id(struct bpf_prog *prog)
  {
  	int id;
-@@ -524,14 +453,11 @@ static void bpf_map_release_memcg(struct bpf_map *m=
-ap)
- static void bpf_map_free_deferred(struct work_struct *work)
- {
- 	struct bpf_map *map =3D container_of(work, struct bpf_map, work);
--	struct bpf_map_memory mem;
+@@ -1726,7 +1681,7 @@ static void __bpf_prog_put_rcu(struct rcu_head *rcu=
+)
 =20
--	bpf_map_charge_move(&mem, &map->memory);
- 	security_bpf_map_free(map);
- 	bpf_map_release_memcg(map);
- 	/* implementation dependent freeing */
- 	map->ops->map_free(map);
--	bpf_map_charge_finish(&mem);
+ 	kvfree(aux->func_info);
+ 	kfree(aux->func_info_aux);
+-	bpf_prog_uncharge_memlock(aux->prog);
++	free_uid(aux->user);
+ 	security_bpf_prog_free(aux);
+ 	bpf_prog_free(aux->prog);
  }
+@@ -2164,7 +2119,7 @@ static int bpf_prog_load(union bpf_attr *attr, unio=
+n bpf_attr __user *uattr)
+ 		dst_prog =3D bpf_prog_get(attr->attach_prog_fd);
+ 		if (IS_ERR(dst_prog)) {
+ 			err =3D PTR_ERR(dst_prog);
+-			goto free_prog_nouncharge;
++			goto free_prog;
+ 		}
+ 		prog->aux->dst_prog =3D dst_prog;
+ 	}
+@@ -2174,18 +2129,15 @@ static int bpf_prog_load(union bpf_attr *attr, un=
+ion bpf_attr __user *uattr)
 =20
- static void bpf_map_put_uref(struct bpf_map *map)
-@@ -592,6 +518,19 @@ static fmode_t map_get_sys_perms(struct bpf_map *map=
-, struct fd f)
- }
-=20
- #ifdef CONFIG_PROC_FS
-+/* Provides an approximation of the map's memory footprint.
-+ * Used only to provide a backward compatibility and display
-+ * a reasonable "memlock" info.
-+ */
-+static unsigned long bpf_map_memory_footprint(const struct bpf_map *map)
-+{
-+	unsigned long size;
-+
-+	size =3D round_up(map->key_size + bpf_map_value_size(map), 8);
-+
-+	return round_up(map->max_entries * size, PAGE_SIZE);
-+}
-+
- static void bpf_map_show_fdinfo(struct seq_file *m, struct file *filp)
- {
- 	const struct bpf_map *map =3D filp->private_data;
-@@ -610,7 +549,7 @@ static void bpf_map_show_fdinfo(struct seq_file *m, s=
-truct file *filp)
- 		   "value_size:\t%u\n"
- 		   "max_entries:\t%u\n"
- 		   "map_flags:\t%#x\n"
--		   "memlock:\t%llu\n"
-+		   "memlock:\t%lu\n"
- 		   "map_id:\t%u\n"
- 		   "frozen:\t%u\n",
- 		   map->map_type,
-@@ -618,7 +557,7 @@ static void bpf_map_show_fdinfo(struct seq_file *m, s=
-truct file *filp)
- 		   map->value_size,
- 		   map->max_entries,
- 		   map->map_flags,
--		   map->memory.pages * 1ULL << PAGE_SHIFT,
-+		   bpf_map_memory_footprint(map),
- 		   map->id,
- 		   READ_ONCE(map->frozen));
- 	if (type) {
-@@ -861,7 +800,6 @@ static int map_check_btf(struct bpf_map *map, const s=
-truct btf *btf,
- static int map_create(union bpf_attr *attr)
- {
- 	int numa_node =3D bpf_map_attr_numa_node(attr);
--	struct bpf_map_memory mem;
- 	struct bpf_map *map;
- 	int f_flags;
- 	int err;
-@@ -960,9 +898,7 @@ static int map_create(union bpf_attr *attr)
- 	security_bpf_map_free(map);
- free_map:
- 	btf_put(map->btf);
--	bpf_map_charge_move(&mem, &map->memory);
- 	map->ops->map_free(map);
--	bpf_map_charge_finish(&mem);
- 	return err;
- }
-=20
-diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_bpf_map.c b/tools=
-/testing/selftests/bpf/progs/bpf_iter_bpf_map.c
-index 08651b23edba..b83b5d2e17dc 100644
---- a/tools/testing/selftests/bpf/progs/bpf_iter_bpf_map.c
-+++ b/tools/testing/selftests/bpf/progs/bpf_iter_bpf_map.c
-@@ -23,6 +23,6 @@ int dump_bpf_map(struct bpf_iter__bpf_map *ctx)
-=20
- 	BPF_SEQ_PRINTF(seq, "%8u %8ld %8ld %10lu\n", map->id, map->refcnt.count=
-er,
- 		       map->usercnt.counter,
--		       map->memory.user->locked_vm.counter);
-+		       0LLU);
- 	return 0;
- }
-diff --git a/tools/testing/selftests/bpf/progs/map_ptr_kern.c b/tools/tes=
-ting/selftests/bpf/progs/map_ptr_kern.c
-index c325405751e2..d8850bc6a9f1 100644
---- a/tools/testing/selftests/bpf/progs/map_ptr_kern.c
-+++ b/tools/testing/selftests/bpf/progs/map_ptr_kern.c
-@@ -26,17 +26,12 @@ __u32 g_line =3D 0;
- 		return 0;	\
- })
-=20
--struct bpf_map_memory {
--	__u32 pages;
--} __attribute__((preserve_access_index));
+ 	err =3D security_bpf_prog_alloc(prog->aux);
+ 	if (err)
+-		goto free_prog_nouncharge;
 -
- struct bpf_map {
- 	enum bpf_map_type map_type;
- 	__u32 key_size;
- 	__u32 value_size;
- 	__u32 max_entries;
- 	__u32 id;
--	struct bpf_map_memory memory;
- } __attribute__((preserve_access_index));
+-	err =3D bpf_prog_charge_memlock(prog);
+-	if (err)
+-		goto free_prog_sec;
++		goto free_prog;
 =20
- static inline int check_bpf_map_fields(struct bpf_map *map, __u32 key_si=
-ze,
-@@ -47,7 +42,6 @@ static inline int check_bpf_map_fields(struct bpf_map *=
-map, __u32 key_size,
- 	VERIFY(map->value_size =3D=3D value_size);
- 	VERIFY(map->max_entries =3D=3D max_entries);
- 	VERIFY(map->id > 0);
--	VERIFY(map->memory.pages > 0);
++	prog->aux->user =3D get_current_user();
+ 	prog->len =3D attr->insn_cnt;
 =20
- 	return 1;
- }
-@@ -60,7 +54,6 @@ static inline int check_bpf_map_ptr(struct bpf_map *ind=
-irect,
- 	VERIFY(indirect->value_size =3D=3D direct->value_size);
- 	VERIFY(indirect->max_entries =3D=3D direct->max_entries);
- 	VERIFY(indirect->id =3D=3D direct->id);
--	VERIFY(indirect->memory.pages =3D=3D direct->memory.pages);
+ 	err =3D -EFAULT;
+ 	if (copy_from_user(prog->insns, u64_to_user_ptr(attr->insns),
+ 			   bpf_prog_insn_size(prog)) !=3D 0)
+-		goto free_prog;
++		goto free_prog_sec;
 =20
- 	return 1;
+ 	prog->orig_prog =3D NULL;
+ 	prog->jited =3D 0;
+@@ -2196,19 +2148,19 @@ static int bpf_prog_load(union bpf_attr *attr, un=
+ion bpf_attr __user *uattr)
+ 	if (bpf_prog_is_dev_bound(prog->aux)) {
+ 		err =3D bpf_prog_offload_init(prog, attr);
+ 		if (err)
+-			goto free_prog;
++			goto free_prog_sec;
+ 	}
+=20
+ 	/* find program type: socket_filter vs tracing_filter */
+ 	err =3D find_prog_type(type, prog);
+ 	if (err < 0)
+-		goto free_prog;
++		goto free_prog_sec;
+=20
+ 	prog->aux->load_time =3D ktime_get_boottime_ns();
+ 	err =3D bpf_obj_name_cpy(prog->aux->name, attr->prog_name,
+ 			       sizeof(attr->prog_name));
+ 	if (err < 0)
+-		goto free_prog;
++		goto free_prog_sec;
+=20
+ 	/* run eBPF verifier */
+ 	err =3D bpf_check(&prog, attr, uattr);
+@@ -2253,11 +2205,10 @@ static int bpf_prog_load(union bpf_attr *attr, un=
+ion bpf_attr __user *uattr)
+ 	 */
+ 	__bpf_prog_put_noref(prog, prog->aux->func_cnt);
+ 	return err;
+-free_prog:
+-	bpf_prog_uncharge_memlock(prog);
+ free_prog_sec:
++	free_uid(prog->aux->user);
+ 	security_bpf_prog_free(prog->aux);
+-free_prog_nouncharge:
++free_prog:
+ 	bpf_prog_free(prog);
+ 	return err;
  }
 --=20
 2.26.2
