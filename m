@@ -2,120 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6B182CACA8
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 20:48:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A03392CACB7
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 20:52:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730402AbgLATph (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 14:45:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38824 "EHLO
+        id S1730381AbgLATtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 14:49:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726148AbgLATpg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 14:45:36 -0500
-Received: from mail-oo1-xc41.google.com (mail-oo1-xc41.google.com [IPv6:2607:f8b0:4864:20::c41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E3C2C0613D4;
-        Tue,  1 Dec 2020 11:44:56 -0800 (PST)
-Received: by mail-oo1-xc41.google.com with SMTP id i13so685480oou.11;
-        Tue, 01 Dec 2020 11:44:56 -0800 (PST)
+        with ESMTP id S1726148AbgLATtb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 14:49:31 -0500
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59062C061A04;
+        Tue,  1 Dec 2020 11:48:22 -0800 (PST)
+Received: by mail-ej1-x643.google.com with SMTP id 7so6789531ejm.0;
+        Tue, 01 Dec 2020 11:48:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yGDNcbcqlchKkDNxGYtB/yjqUUjJw+c/0TidcKqaoHA=;
-        b=ukOwb62vJKm3vAi/Mp32y0rN6l4uSjF7tr6I16g5lkDRJr9v+fG5tCfiWiEXOsTtYy
-         x/hqdkC6XLeyxGGXM0+v1Xz2dsUcoCg9rGJHT9oIn8fpkXkR9Y5g8wTSgZ9wcZib1ISe
-         h0WUO3AlF6xabIYJSKb7ItTRjhS6dkanlBMmMo0tmTyW/RMWDE5Ic08iCNZEXnE8Tv/C
-         z821k+gfnuK2vIe62hB5vHgtmmQ8BqMRJ5zGk0syV1uQ3p4OuqucQkRuxhV/5rOsaC/S
-         hZzKvdeNVdDCMF3m3VXKE7SNgdpld+RV1MSwAihOe6oGnQon4byyjyRlEkK5lSsRlSUN
-         Qz1w==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2kwiJbYURYRlDKL0Dl0F6lgZz50z35k9U64Ijz0yS0o=;
+        b=Opbrawig6mFmleXuY1P+B83LRZNj4sNJXs7oaAxpLmpo4wp4GXKE+U/R+1mxOXYXmX
+         GtlReRAiZURSf9Ngi9kVSjY4hDIDtzftPAZcaoqqEJ6s1wp3koCzAb/FlguMCCx0vQhW
+         buWev2urlkSVwpwPzdSaJdclTxh6V7V8ZD9UVERS3rHlvGmT6MSkdq7rE7M8UJiLP7Nk
+         dqHN3f4M5anxXvTsdD/thoUEr1sJb353mHa5QqbRovuEUXVWbg0vBI6MovQr+C8//UVG
+         uMNoviT+wxW2E6IEHH1uQ+ga3zxzbz8bZf8eQg/B8FpKPMNG/tZ0sNds6IcIbI5nwEdI
+         fMdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yGDNcbcqlchKkDNxGYtB/yjqUUjJw+c/0TidcKqaoHA=;
-        b=GJbxzgKKemdBsCRKYJ4Fh7LijQyKptI81E++KJSm14dhrIUqoQk/3KWfA/8jdUZIJR
-         c20vJSG7XXFkpQTXBsGM/5iDPmQM8eA9HQsgqjcXQiQ3SQ9b6GyNKf+VzApLdaLOXoFm
-         9NjoF6L+gvLZenPgHVPvFzqdZpv1UOaOpkaUuE0zRd2xbxH8LMS0WcvS3vYoO1oKZnYT
-         kssHZGgeajFOIJeyy3EsaFhRIqxWYL+c/ZPWNcVzeAMCw0vstCwPQ9y1z9rNf39tHhMA
-         W2HefDtsTvN/xM+M7W/WF2hY+rbEc5FpTfpqZKinXtuFgjUY+dsMtqtWwo2X+bYgBWUT
-         oSzQ==
-X-Gm-Message-State: AOAM53079Q1A+Tx3TM9FZZ+K0vaUw1gyWWDmNhiuYzx4m+tjUCErMixv
-        509jXvt9zA528gG+5mrhMvGV1ibLte2hbA==
-X-Google-Smtp-Source: ABdhPJzqj5MJhUuLB/6QDTCqnLSXynJQ0U+v2B7OEW3QbsqB0HOG76CmbLQ4XmWLyAbAaq35Sc0m0Q==
-X-Received: by 2002:a4a:b144:: with SMTP id e4mr3063095ooo.3.1606851895466;
-        Tue, 01 Dec 2020 11:44:55 -0800 (PST)
-Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:2482:49a9:7a40:f76b])
-        by smtp.gmail.com with ESMTPSA id n3sm120351oif.42.2020.12.01.11.44.54
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2kwiJbYURYRlDKL0Dl0F6lgZz50z35k9U64Ijz0yS0o=;
+        b=Cl0L7THhevcWg5Ci6UL/WrCJpvfYxgjG86irKEdH4xfzoA4AeO3NuI+TuLxGxHBWpq
+         brxfveoEZYmIntflZevLVeZsjrVUZflT4Z+SElrXUnRHvqT1LhAax9/6dvDJsgDWlZNd
+         LnYWZ/mv6IK3Lu89Zw/HPPlxK6dFO1GV+63Y1qcHilDLnWBRvuur3Lkfynk7XdsRF0kA
+         WgSt6XEsiyibn0rMYjxWikNE3li2//rzXpo1UxuWsw2cbS7RH/iyQIublx+GXFQ6b6+d
+         I7ppdTnXhMFJHJ/KWxhm9Uw0amspqmjIktfAeAmCEHI6Vf66lZ9weAdpQJIdUrkwLiQW
+         CIfA==
+X-Gm-Message-State: AOAM531ieZQHb06eca24jr0RjhY7L4gl3rnE6PRryxck+R9fr8Ou7HfW
+        05ylGkRFmXmyUWzdHF0GDNY=
+X-Google-Smtp-Source: ABdhPJxrBHDd/hb8dFbUdgmMJCueKYj3ZNtr4OeECL/Icf67UGtAwRDYRwBVs8KhMhgxxm3Q3q98rQ==
+X-Received: by 2002:a17:906:6b82:: with SMTP id l2mr4547576ejr.241.1606852100971;
+        Tue, 01 Dec 2020 11:48:20 -0800 (PST)
+Received: from skbuf ([188.25.2.120])
+        by smtp.gmail.com with ESMTPSA id oz19sm317711ejb.28.2020.12.01.11.48.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Dec 2020 11:44:54 -0800 (PST)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Dongdong Wang <wangdongdong@bytedance.com>,
-        Thomas Graf <tgraf@suug.ch>, bpf@vger.kernel.org,
-        Cong Wang <cong.wang@bytedance.com>
-Subject: [Patch net] lwt: disable BH too in run_lwt_bpf()
-Date:   Tue,  1 Dec 2020 11:44:38 -0800
-Message-Id: <20201201194438.37402-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 01 Dec 2020 11:48:20 -0800 (PST)
+Date:   Tue, 1 Dec 2020 21:48:19 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jean Pihet <jean.pihet@newoldbits.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ryan Barnett <ryan.barnett@rockwellcollins.com>,
+        Conrad Ratschan <conrad.ratschan@rockwellcollins.com>,
+        Hugo Cornelis <hugo.cornelis@essensium.com>,
+        Arnout Vandecappelle <arnout.vandecappelle@essensium.com>
+Subject: Re: [PATCH v2] net: dsa: ksz8795: adjust CPU link to host interface
+Message-ID: <20201201194819.ygmrdwcpvywkszat@skbuf>
+References: <20201201083408.51006-1-jean.pihet@newoldbits.com>
+ <20201201184100.GN2073444@lunn.ch>
+ <CAORVsuXv5Gw18EeHwP36EkzF4nN5PeGerBQQa-6ruWAQRX+GoQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAORVsuXv5Gw18EeHwP36EkzF4nN5PeGerBQQa-6ruWAQRX+GoQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dongdong Wang <wangdongdong@bytedance.com>
+Hi Jean,
 
-The per-cpu bpf_redirect_info is shared among all skb_do_redirect()
-and BPF redirect helpers. Callers on RX path are all in BH context,
-disabling preemption is not sufficient to prevent BH interruption.
+On Tue, Dec 01, 2020 at 07:58:01PM +0100, Jean Pihet wrote:
+> Hi Andrew,
+>
+> On Tue, Dec 1, 2020 at 7:41 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> >
+> > On Tue, Dec 01, 2020 at 09:34:08AM +0100, Jean Pihet wrote:
+> > > Add support for RGMII in 100 and 1000 Mbps.
+> > >
+> > > Adjust the CPU port settings from the host interface settings: interface
+> > > MII type, speed, duplex.
+> >
+> > Hi Jean
+> >
+> > You have still not explained why this is needed. Why? is always the
+> > important question to answer in the commit message. The What? is
+> > obvious from reading the patch. Why does you board need this, when no
+> > over board does?
+>
+> I reworked the commit description about the What and thought it was
+> enough. Do you need a cover letter to describe it more?
+>
+> The Why is:
+> "
+> Configure the host port of the switch to match the host interface
+> settings. This is useful when the switch is directly connected to the
+> host MAC interface.
+> "
+> Thank you for reviewing the patch.
 
-In production, we observed strange packet drops because of the race
-condition between LWT xmit and TC ingress, and we verified this issue
-is fixed after we disable BH.
+First of all, I am not clear if you want the patch merged or not. If you
+do, then I don't understand why you did not use the ./scripts/get_maintainer.pl
+tool to get the email addresses of the people who can help you with
+that. No one from Microchip, not the DSA maintainers, not the networking
+maintainer.
 
-Although this bug was technically introduced from the beginning, that
-is commit 3a0af8fd61f9 ("bpf: BPF for lightweight tunnel infrastructure"),
-at that time call_rcu() had to be call_rcu_bh() to match the RCU context.
-So this patch may not work well before RCU flavor consolidation has been
-completed around v5.0.
+Secondly, don't you get an annoying warning that you should not use
+.adjust_link and should migrate to .phylink_mac_link_up? Why do you
+ignore it? Did you even see it?
 
-Update the comments above the code too, as call_rcu() is now BH friendly.
+Thirdly, your patch is opaque and has three changes folded into one. You
+refactor some code from ksz8795_port_setup into a separate function, you
+add logic for the speeds of 100 and 10 for RGMII, and you call this
+function from .adjust_link. You must justify why you need all of this,
+and cannot just add 3 lines to ksz8795_port_setup. You must explain that
+the ksz8795_port_setup function does not use information from device
+tree. Then you must explain why the patch is correct.
+The code refactored out of ksz8795_port_setup, plus the changes you've
+added to it, looks now super weird. Half of ksz8795_mii_config treats
+p->phydev.speed as an output variable, and half of it as an input
+variable. To the untrained eye this looks like a hack. I'm sure you can
+clarify. This is what Andrew wants to see.
 
-Cc: Thomas Graf <tgraf@suug.ch>
-Cc: bpf@vger.kernel.org
-Reviewed-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Dongdong Wang <wangdongdong@bytedance.com>
----
- net/core/lwt_bpf.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/net/core/lwt_bpf.c b/net/core/lwt_bpf.c
-index 7d3438215f32..4f3cb7c15ddf 100644
---- a/net/core/lwt_bpf.c
-+++ b/net/core/lwt_bpf.c
-@@ -39,12 +39,11 @@ static int run_lwt_bpf(struct sk_buff *skb, struct bpf_lwt_prog *lwt,
- {
- 	int ret;
- 
--	/* Preempt disable is needed to protect per-cpu redirect_info between
--	 * BPF prog and skb_do_redirect(). The call_rcu in bpf_prog_put() and
--	 * access to maps strictly require a rcu_read_lock() for protection,
--	 * mixing with BH RCU lock doesn't work.
-+	/* Preempt disable and BH disable are needed to protect per-cpu
-+	 * redirect_info between BPF prog and skb_do_redirect().
- 	 */
- 	preempt_disable();
-+	local_bh_disable();
- 	bpf_compute_data_pointers(skb);
- 	ret = bpf_prog_run_save_cb(lwt->prog, skb);
- 
-@@ -78,6 +77,7 @@ static int run_lwt_bpf(struct sk_buff *skb, struct bpf_lwt_prog *lwt,
- 		break;
- 	}
- 
-+	local_bh_enable();
- 	preempt_enable();
- 
- 	return ret;
--- 
-2.25.1
-
+Fourth, seriously now, could you just copy Microchip people to your
+patches? The phylink conversion was done this summer, I'm sure they can
+help with some suggestions.
