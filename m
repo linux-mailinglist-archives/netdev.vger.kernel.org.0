@@ -2,91 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F94C2C9419
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 01:40:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2164A2C9425
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 01:43:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729766AbgLAAjt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 19:39:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58102 "EHLO
+        id S1729938AbgLAAm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 19:42:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728609AbgLAAjs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 19:39:48 -0500
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4CA6C0613D3
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 16:39:08 -0800 (PST)
-Received: by mail-pl1-x644.google.com with SMTP id v3so89284plz.13
-        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 16:39:08 -0800 (PST)
+        with ESMTP id S1728564AbgLAAm1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 19:42:27 -0500
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60FC4C0613D2
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 16:41:47 -0800 (PST)
+Received: by mail-il1-x143.google.com with SMTP id q1so7358ilt.6
+        for <netdev@vger.kernel.org>; Mon, 30 Nov 2020 16:41:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=IMViAHppPt8SsjQP5Bea2uwYvXc0JkYE37wOjlL4OT8=;
-        b=Ya7BmhrK62z3vegpipnjpodioz3VRN7PiyhUp+XzgrHOJxmP0sVPSmqIq08TLa5W7Z
-         5hBiW+JDksSURduvaReh5DoMYwu9XVyJVO2U3EB5WvBXk5idpaKqxGSI6oprxrm7NX+E
-         mw4HbyLNSKNHteJj823zeTbNhB8L0Atk8ruy/TLE2nvfKSkqduHIZTQGFbM9yf5nitfR
-         4/kUQ0zaau3zwIJcqzN45nmoQt4iQ0+nHQng/5o8sWgY6OFHp58Sh6PFNvpfaT95H00V
-         7Xbb2zctXhrk7F5O2A7vO4S3vlkUHNAOm+ZOlETJ0GY2qUEMAQAFpqzn3HB7sZV2Neu7
-         I7mA==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mfRCDG1DfZk0mjNm0yF+dvADx4aswh9w4XOl0WSoS98=;
+        b=YNB6LrG4Z5CYoFDYin04fFtDEPl70OJ3GzPFIfG5KhjTqYCTqUYiWj+aDNsa39Nhmq
+         d3by2k02FfvxKupn3JJXmkLqtuRCS1b8+U92ecjqr8xJT12zwW1YuFsEbdt0liCd9QDA
+         WvTHXNBY9sB/2+7sXNdi0Mnhb0JuBaaLnPMoMGN++1kLWzBwVt3QJ1PZkpD6bmy4eiE+
+         60GCM8fcEfwF5Ts7MJKQdsqYzOs85O3qdsW0j5Sf7kds3UBwYHljCDQHDSf+9QEVF67b
+         4b4d53ZNFvNTEogc9SHBvK0NAfGPITs9skQm/rTCCPyaJ1m9dbyj1Kf/bzxrWXU4b2ag
+         DyLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=IMViAHppPt8SsjQP5Bea2uwYvXc0JkYE37wOjlL4OT8=;
-        b=MRMFpAv7JWfNnP2oWFJTtHxgO6Mmb4DA3B+c4kjE7WEC7dK9M5Ot05ADiBBsqFsNgQ
-         DRVbfd8gPqEZJaKeqDdyElso/YX3fGVzu2WyjPAsOhdDl4VlchmVEgtwu9TL3ZE5g9PO
-         koH7p3Ydx5VVueiIetDk0lIOY+4TKYo9if60sgrX2Uwmy9CR6Otrv1Fzd/guIOEHJg8Q
-         Ii9dFlsstP+2uLd3P6uKC0QXx3utgTtm/TwNmRcFA3lj/5emACyQbBHV7mn07ZyVowNN
-         8TMWvxITpAgXMFrYLiPDw8STvxKmUKzffyOWFXJSEQuKuQeCFSJIEFsMDjFzATAZ2etg
-         6Ifg==
-X-Gm-Message-State: AOAM530HTqQ6DsX7fMpd8i3X86B9lm0wPFaoD1yNlQCeURmXNxWdLTn0
-        UL37XMeV0aymD+5otbRAIzXzhA==
-X-Google-Smtp-Source: ABdhPJx5hLXbuV1okK5bAiekIJpRYVeDauA5JjX1TTE8fXHjuS++9qgUFdf2/+pz5UUv7kzhUqUFfw==
-X-Received: by 2002:a17:902:9894:b029:da:5698:7f7b with SMTP id s20-20020a1709029894b02900da56987f7bmr273355plp.78.1606783148279;
-        Mon, 30 Nov 2020 16:39:08 -0800 (PST)
-Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id q18sm145458pfs.150.2020.11.30.16.39.07
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mfRCDG1DfZk0mjNm0yF+dvADx4aswh9w4XOl0WSoS98=;
+        b=twHC8t9la/NlgBG9vjrK9R3FjGskcFlySzUBD2oCMqJ/Bs1T2UOcU7P0W9XPBvb0Cn
+         9o46QQw61NsQEV8joAo9XmDrOVl8tgM3I2VHSCuLM5ers6ERQKfrJE3Tk9ieLe49qgs/
+         nF/eJcKDkAxNAGJ8B1uD33Wo/9b0t6ilh4oBSj/76zE1WMh8f8uzkv2t5OXc+Adh9Idc
+         6CGj+4OWXysb93ISA2hPn8sBsnfAw4Gcsh/HpxqDUGE248FhdIR61A5GxptT8g2VsiH3
+         pOkzGRnfpmCtviWOWg09EufvItspT6X4JsgZx3MGCC+TGWX3rGUKNz5W2pAzJlf5VKJR
+         4r8Q==
+X-Gm-Message-State: AOAM530aXCLe/137WoQ+WHH6phdeaJXfWYzJOl3C7VPlIjgOy/jiIwWS
+        LesS/AYUtvKUFjpESBGKANB2lsHBJrJ2cA==
+X-Google-Smtp-Source: ABdhPJzLkOBwf05+96QUNHZdn5UgAMddI329mHbS8VAWuU9vin5os8cyhLbV/SdhIfDO2SbEyraiAg==
+X-Received: by 2002:a92:8b12:: with SMTP id i18mr325439ild.278.1606783306662;
+        Mon, 30 Nov 2020 16:41:46 -0800 (PST)
+Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id p7sm138561iln.11.2020.11.30.16.41.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Nov 2020 16:39:08 -0800 (PST)
-Date:   Mon, 30 Nov 2020 16:39:04 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Petr Machata <me@pmachata.org>
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com, Po.Liu@nxp.com,
-        toke@toke.dk, dave.taht@gmail.com, edumazet@google.com,
-        tahiliani@nitk.edu.in, vtlam@google.com, leon@kernel.org
-Subject: Re: [PATCH iproute2-next 3/6] lib: Move sprint_size() from tc here,
- add print_size()
-Message-ID: <20201130163904.14110c5c@hermes.local>
-In-Reply-To: <96d90dc75f2c1676b03a119307f068d818b35798.1606774951.git.me@pmachata.org>
-References: <cover.1606774951.git.me@pmachata.org>
-        <96d90dc75f2c1676b03a119307f068d818b35798.1606774951.git.me@pmachata.org>
+        Mon, 30 Nov 2020 16:41:45 -0800 (PST)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org, subashab@codeaurora.org
+Cc:     evgreen@chromium.org, cpratapa@codeaurora.org,
+        bjorn.andersson@linaro.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/2] net: ipa: IPA v4.5 inline checksum offload
+Date:   Mon, 30 Nov 2020 18:41:41 -0600
+Message-Id: <20201201004143.27569-1-elder@linaro.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 30 Nov 2020 23:59:39 +0100
-Petr Machata <me@pmachata.org> wrote:
+This series includes one changed destined for a central header file
+and a second (dependent on the first) that applies to the IPA driver.
+If these should be posted a different way, please let me know.
 
-> +char *sprint_size(__u32 sz, char *buf)
-> +{
-> +	size_t len = SPRINT_BSIZE - 1;
-> +	double tmp = sz;
-> +
-> +	if (sz >= 1024*1024 && fabs(1024*1024*rint(tmp/(1024*1024)) - sz) < 1024)
-> +		snprintf(buf, len, "%gMb", rint(tmp/(1024*1024)));
-> +	else if (sz >= 1024 && fabs(1024*rint(tmp/1024) - sz) < 16)
-> +		snprintf(buf, len, "%gKb", rint(tmp/1024));
-> +	else
-> +		snprintf(buf, len, "%ub", sz);
-> +
-> +	return buf;
-> +}
+The first patch introduces a new data structure defining the format
+of a header that's used for "inline" checksum offload.  Changes to
+the RMNet driver are required to fully support this feature, and
+those will be provided separately.
 
-Add some whitespace here and maybe some constants like mb and kb?
+The second patch implements changes to the IPA driver required to
+support inline checksum offload for IPA version 4.5.  It uses only
+the *size* of the new data structure.
 
-Also, instead of magic SPRINT_BSIZE, why not take a len param (and name it snprint_size)?
+					-Alex
 
-Yes when you copy/paste code it is good time to get it back to current style
-standards.
+Alex Elder (2):
+  if_rmnet.h: define struct rmnet_map_v5_csum_header
+  net: ipa: add support for inline checksum offload
+
+ drivers/net/ipa/ipa_endpoint.c | 50 ++++++++++++++++++++++++++--------
+ drivers/net/ipa/ipa_reg.h      |  1 +
+ include/linux/if_rmnet.h       | 30 ++++++++++++++++++++
+ 3 files changed, 70 insertions(+), 11 deletions(-)
+
+-- 
+2.20.1
+
