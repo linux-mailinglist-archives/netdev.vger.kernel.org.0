@@ -2,91 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B12392C9382
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 01:01:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 729252C938A
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 01:03:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730815AbgLAAAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 19:00:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48972 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727125AbgLAAAl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Nov 2020 19:00:41 -0500
-Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EAFC9206E9;
-        Tue,  1 Dec 2020 00:00:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606780801;
-        bh=ARbNMxYbl+0MjUA5JbZmKxOB1SM/D2f+eDOPe8frr3M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QtieARJ47keURK5f5xizfArqb5i2FnWDPf/DVJozSlnaBRgOqU51coDazBIpwvEJl
-         BgH8d7D80FB/t44qzSWeBu4HsgQ/lNcskRQ6hMARbXLpL4xfFxxSaWn3CZcs3Uhhwk
-         jnQAnphvrUXRQy9/l8ovXhAs9k3uj7+k8k1hswTQ=
-Date:   Mon, 30 Nov 2020 18:59:59 -0500
-From:   Sasha Levin <sashal@kernel.org>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Mike Christie <michael.christie@oracle.com>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.9 22/33] vhost scsi: add lun parser helper
-Message-ID: <20201130235959.GS643756@sasha-vm>
-References: <20201125180102.GL643756@sasha-vm>
- <9670064e-793f-561e-b032-75b1ab5c9096@redhat.com>
- <20201129041314.GO643756@sasha-vm>
- <7a4c3d84-8ff7-abd9-7340-3a6d7c65cfa7@redhat.com>
- <20201129210650.GP643756@sasha-vm>
- <e499986d-ade5-23bd-7a04-fa5eb3f15a56@redhat.com>
- <20201130173832.GR643756@sasha-vm>
- <238cbdd1-dabc-d1c1-cff8-c9604a0c9b95@redhat.com>
- <9ec7dff6-d679-ce19-5e77-f7bcb5a63442@oracle.com>
- <4c1b2bc7-cf50-4dcd-bfd4-be07e515de2a@redhat.com>
+        id S1730650AbgLAACp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 19:02:45 -0500
+Received: from mail-il1-f194.google.com ([209.85.166.194]:46111 "EHLO
+        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725870AbgLAACp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 19:02:45 -0500
+Received: by mail-il1-f194.google.com with SMTP id b8so13099915ila.13;
+        Mon, 30 Nov 2020 16:02:29 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=x+vU33C5twxuQ+gl2xId1FzTRHdN1feLBu/jqhnvoKc=;
+        b=GHNAS2SqNpOt9h5ZbgM1kHwSipHtxGjN39oIWrBuVvTjMIgSJHJ9x1BsmCZylAOGC/
+         wOlG4srVT8bk/kU5mtMqxUhNz75SJ/EEkvAhMFhW7/266nbimjs0Hu32AWGN29Z/v99R
+         ckH1HS3i152z5GCUmjzgwADzNQEIsjMncAx49y+Ldwq7h6QqxHrunv0aroHxB40Nmeg3
+         V0Pk8A44hRI4aFl8twhjeSQXO0qRJ1UOG+K7CQG7OXOohsJIXS87CIsqamqvlq2KsWd8
+         nFU1laQbY35UfwSejOs0n2HhkJIxRwFnpGO3VZlqQrM27Pr5zkZywHYXqySNQsZ8WOEi
+         t8Og==
+X-Gm-Message-State: AOAM531kn2W0hFaRcsxpTuDJwYsEIt1Dg5LLCcxHv0H/jXhsJaO24D3m
+        V3jIwLI8vQ9inQErzHhsWw==
+X-Google-Smtp-Source: ABdhPJx0o/uvQUwF2q2l2tJUuBSKDHDM+OZ40hNwLRM8YThuYL1/8/EFpzli9WUmHvbkiWC9e0nM1g==
+X-Received: by 2002:a92:aa8b:: with SMTP id p11mr188890ill.5.1606780924118;
+        Mon, 30 Nov 2020 16:02:04 -0800 (PST)
+Received: from xps15 ([64.188.179.253])
+        by smtp.gmail.com with ESMTPSA id w12sm81905ilo.63.2020.11.30.16.02.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Nov 2020 16:02:03 -0800 (PST)
+Received: (nullmailer pid 3297076 invoked by uid 1000);
+        Tue, 01 Dec 2020 00:02:01 -0000
+Date:   Mon, 30 Nov 2020 17:02:01 -0700
+From:   Rob Herring <robh@kernel.org>
+To:     Dan Murphy <dmurphy@ti.com>
+Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, ciorneiioana@gmail.com,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v4 2/4] dt-bindings: net: Add Rx/Tx output
+ configuration for 10base T1L
+Message-ID: <20201201000201.GA3293113@robh.at.kernel.org>
+References: <20201117201555.26723-1-dmurphy@ti.com>
+ <20201117201555.26723-3-dmurphy@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4c1b2bc7-cf50-4dcd-bfd4-be07e515de2a@redhat.com>
+In-Reply-To: <20201117201555.26723-3-dmurphy@ti.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 30, 2020 at 09:29:02PM +0100, Paolo Bonzini wrote:
->On 30/11/20 20:44, Mike Christie wrote:
->>I have never seen a public/open-source vhost-scsi testsuite.
->>
->>For patch 23 (the one that adds the lun reset support which is built on
->>patch 22), we can't add it to stable right now if you wanted to, because
->>it has a bug in it. Michael T, sent the fix:
->>
->>https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git/commit/?h=linux-next&id=b4fffc177fad3c99ee049611a508ca9561bb6871
->>
->>to Linus today.
->
->Ok, so at least it was only a close call and anyway not for something 
->that most people would be running on their machines.  But it still 
->seems to me that the state of CI in Linux is abysmal compared to what 
->is needed to arbitrarily(*) pick up patches and commit them to 
->"stable" trees.
->
->Paolo
->
->(*) A ML bot is an arbitrary choice as far as we are concerned since 
->we cannot know how it makes a decision.
+On Tue, Nov 17, 2020 at 02:15:53PM -0600, Dan Murphy wrote:
+> Per the 802.3cg spec the 10base T1L can operate at 2 different
+> differential voltages 1v p2p and 2.4v p2p. The abiility of the PHY to
 
-The choice of patches is "arbitrary", but the decision is human. The
-patches are reviewed coming out of the AI, sent to public mailing
-list(s) for review, followed by 2 reminders asking for reviews.
+1.1V?
 
-The process for AUTOSEL patches generally takes longer than most patches
-do for upstream.
+> drive that output is dependent on the PHY's on board power supply.
+> This common feature is applicable to all 10base T1L PHYs so this binding
+> property belongs in a top level ethernet document.
+> 
+> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+> ---
+>  Documentation/devicetree/bindings/net/ethernet-phy.yaml | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> index 6dd72faebd89..bda1ce51836b 100644
+> --- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> +++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> @@ -174,6 +174,12 @@ properties:
+>        PHY's that have configurable TX internal delays. If this property is
+>        present then the PHY applies the TX delay.
+>  
+> +  max-tx-rx-p2p-microvolt:
+> +    description: |
 
-It's quite easy to NAK a patch too, just reply saying "no" and it'll be
-dropped (just like this patch was dropped right after your first reply)
-so the burden on maintainers is minimal.
+Don't need '|' if no formatting.
 
--- 
-Thanks,
-Sasha
+> +      Configures the Tx/Rx p2p differential output voltage for 10base-T1L PHYs.
+> +    enum: [ 1100, 2400 ]
+> +    default: 2400
+
+Aren't you off by 1000?
+
+> +
+>  required:
+>    - reg
+>  
+> -- 
+> 2.29.2
+> 
