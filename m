@@ -2,511 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1854A2CADC4
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 21:52:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 619022CADF2
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 22:01:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728667AbgLAUwV convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 1 Dec 2020 15:52:21 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:34850 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727840AbgLAUwV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 15:52:21 -0500
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 0B1Kjl2E011511
-        for <netdev@vger.kernel.org>; Tue, 1 Dec 2020 12:51:38 -0800
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net with ESMTP id 355pr6k0bv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 12:51:38 -0800
-Received: from intmgw001.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 1 Dec 2020 12:51:37 -0800
-Received: by devvm2494.atn0.facebook.com (Postfix, from userid 172786)
-        id 5DA8B4B589E0; Tue,  1 Dec 2020 12:51:32 -0800 (PST)
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     <richardcochran@gmail.com>, <netdev@vger.kernel.org>,
-        <kuba@kernel.org>
-CC:     <kernel-team@fb.com>
-Subject: [PATCH] ptp: Add clock driver for the OpenCompute TimeCard.
-Date:   Tue, 1 Dec 2020 12:51:32 -0800
-Message-ID: <20201201205132.2871225-1-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.24.1
-X-FB-Internal: Safe
-Content-Type: text/plain
-Content-Transfer-Encoding: 8BIT
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        id S1730025AbgLAVAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 16:00:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41312 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725971AbgLAVAr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Dec 2020 16:00:47 -0500
+Content-Type: text/plain; charset="utf-8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606856406;
+        bh=JCNmLBukEQuTPP2zu3Hc10F1Mx2+RY0jq117k3+PGzo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=iIr8Ka4JWMJ2foudr5Xb+S1vO+O8RJdL9VRKXUO0y9PexDqUze9mThYug63l6X4V3
+         YqnPyT5+rL4acagaIbG9GMDtZip+oAVP1N5/n6RbG0hE6DHxb9kH4yVByJVebWLTbu
+         Z4/jeCrAqyD7R+UIt3LjKATCPnKNDuEeqqTOF1Go=
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-12-01_11:2020-11-30,2020-12-01 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- priorityscore=1501 suspectscore=2 spamscore=0 adultscore=0 clxscore=1034
- mlxlogscore=796 lowpriorityscore=0 mlxscore=0 phishscore=0 bulkscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012010126
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v2] net: switch to storing KCOV handle directly in
+ sk_buff
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160685640656.20133.13714799531747994094.git-patchwork-notify@kernel.org>
+Date:   Tue, 01 Dec 2020 21:00:06 +0000
+References: <20201125224840.2014773-1-elver@google.com>
+In-Reply-To: <20201125224840.2014773-1-elver@google.com>
+To:     Marco Elver <elver@google.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        a.nogikh@gmail.com, andreyknvl@google.com, dvyukov@google.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, idosch@idosch.org, fw@strlen.de,
+        willemb@google.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The OpenCompute time card is an atomic clock along with
-a GPS receiver that provides a Grandmaster clock source
-for a PTP enabled network.
+Hello:
 
-More information is available at http://www.timingcard.com/
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
----
- drivers/ptp/Kconfig   |  13 ++
- drivers/ptp/Makefile  |   1 +
- drivers/ptp/ptp_ocp.c | 407 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 421 insertions(+)
- create mode 100644 drivers/ptp/ptp_ocp.c
+On Wed, 25 Nov 2020 23:48:40 +0100 you wrote:
+> It turns out that usage of skb extensions can cause memory leaks. Ido
+> Schimmel reported: "[...] there are instances that blindly overwrite
+> 'skb->extensions' by invoking skb_copy_header() after __alloc_skb()."
+> 
+> Therefore, give up on using skb extensions for KCOV handle, and instead
+> directly store kcov_handle in sk_buff.
+> 
+> [...]
 
-diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
-index 942f72d8151d..125463068d70 100644
---- a/drivers/ptp/Kconfig
-+++ b/drivers/ptp/Kconfig
-@@ -151,4 +151,17 @@ config PTP_1588_CLOCK_VMW
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called ptp_vmw.
- 
-+config PTP_OCP
-+	tristate "OpenCompute TimeCard"
-+	depends on HAS_IOMEM
-+	default n
-+	help
-+	  This driver adds support for an OpenCompute time card.
-+
-+	  The OpenCompute time card is an atomic clock along with
-+	  a GPS receiver that provides a Grandmaster clock source
-+	  for a PTP enabled network.
-+
-+	  More information is available at http://www.timingcard.com/
-+
- endmenu
-diff --git a/drivers/ptp/Makefile b/drivers/ptp/Makefile
-index 7aff75f745dc..cd80eccb80c9 100644
---- a/drivers/ptp/Makefile
-+++ b/drivers/ptp/Makefile
-@@ -15,3 +15,4 @@ ptp-qoriq-$(CONFIG_DEBUG_FS)		+= ptp_qoriq_debugfs.o
- obj-$(CONFIG_PTP_1588_CLOCK_IDTCM)	+= ptp_clockmatrix.o
- obj-$(CONFIG_PTP_1588_CLOCK_IDT82P33)	+= ptp_idt82p33.o
- obj-$(CONFIG_PTP_1588_CLOCK_VMW)	+= ptp_vmw.o
-+obj-$(CONFIG_PTP_OCP)			+= ptp_ocp.o
-diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-new file mode 100644
-index 000000000000..f7457a78791d
---- /dev/null
-+++ b/drivers/ptp/ptp_ocp.c
-@@ -0,0 +1,407 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2020 Facebook */
-+
-+#include <linux/err.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/pci.h>
-+#include <linux/ptp_clock_kernel.h>
-+
-+static const struct pci_device_id ptp_ocp_pcidev_id[] = {
-+	{ PCI_DEVICE(0x1d9b, 0x0400) },
-+	{ 0 }
-+};
-+MODULE_DEVICE_TABLE(pci, ptp_ocp_pcidev_id);
-+
-+#define OCP_REGISTER_OFFSET	0x01000000
-+
-+struct ocp_reg {
-+	u32	ctrl;
-+	u32	status;
-+	u32	select;
-+	u32	version;
-+	u32	time_ns;
-+	u32	time_sec;
-+	u32	__pad0[2];
-+	u32	adjust_ns;
-+	u32	adjust_sec;
-+	u32	__pad1[2];
-+	u32	offset_ns;
-+	u32	offset_window_ns;
-+};
-+
-+#define OCP_CTRL_ENABLE		BIT(0)
-+#define OCP_CTRL_ADJUST_TIME	BIT(1)
-+#define OCP_CTRL_ADJUST_OFFSET	BIT(2)
-+#define OCP_CTRL_READ_TIME_REQ	BIT(30)
-+#define OCP_CTRL_READ_TIME_DONE	BIT(31)
-+
-+#define OCP_STATUS_IN_SYNC	BIT(0)
-+
-+#define OCP_SELECT_CLK_NONE	0
-+#define OCP_SELECT_CLK_REG	6
-+
-+struct tod_reg {
-+	u32	ctrl;
-+	u32	status;
-+	u32	uart_polarity;
-+	u32	version;
-+	u32	correction_sec;
-+	u32	__pad0[3];
-+	u32	uart_baud;
-+	u32	__pad1[3];
-+	u32	utc_status;
-+	u32	leap;
-+};
-+
-+#define TOD_REGISTER_OFFSET	0x01050000
-+
-+#define TOD_CTRL_PROTOCOL	BIT(28)
-+#define TOD_CTRL_DISABLE_FMT_A	BIT(17)
-+#define TOD_CTRL_DISABLE_FMT_B	BIT(16)
-+#define TOD_CTRL_ENABLE		BIT(0)
-+#define TOD_CTRL_GNSS_MASK	((1U << 4) - 1)
-+#define TOD_CTRL_GNSS_SHIFT	24
-+
-+#define TOD_STATUS_UTC_MASK	0xff
-+#define TOD_STATUS_UTC_VALID	BIT(8)
-+#define TOD_STATUS_LEAP_VALID	BIT(16)
-+
-+struct ptp_ocp {
-+	struct pci_dev		*pdev;
-+	spinlock_t		lock;
-+	void __iomem		*base;
-+	struct ocp_reg __iomem	*reg;
-+	struct tod_reg __iomem	*tod;
-+	struct ptp_clock	*ptp;
-+	struct ptp_clock_info	ptp_info;
-+};
-+
-+static int
-+__ptp_ocp_gettime_locked(struct ptp_ocp *bp, struct timespec64 *ts,
-+			 struct ptp_system_timestamp *sts)
-+{
-+	u32 ctrl, time_sec, time_ns;
-+	int i;
-+
-+	ctrl = ioread32(&bp->reg->ctrl);
-+	ctrl |= OCP_CTRL_READ_TIME_REQ;
-+
-+	ptp_read_system_prets(sts);
-+	iowrite32(ctrl, &bp->reg->ctrl);
-+
-+	for (i = 0; i < 100; i++) {
-+		ctrl = ioread32(&bp->reg->ctrl);
-+		if (ctrl & OCP_CTRL_READ_TIME_DONE)
-+			break;
-+	}
-+	ptp_read_system_postts(sts);
-+
-+	time_ns = ioread32(&bp->reg->time_ns);
-+	time_sec = ioread32(&bp->reg->time_sec);
-+
-+	ts->tv_sec = time_sec;
-+	ts->tv_nsec = time_ns;
-+
-+	return ctrl & OCP_CTRL_READ_TIME_DONE ? 0 : -ETIMEDOUT;
-+}
-+
-+static int
-+ptp_ocp_gettimex(struct ptp_clock_info *ptp_info, struct timespec64 *ts,
-+		 struct ptp_system_timestamp *sts)
-+{
-+	struct ptp_ocp *bp = container_of(ptp_info, struct ptp_ocp, ptp_info);
-+	unsigned long flags;
-+	int err;
-+
-+	spin_lock_irqsave(&bp->lock, flags);
-+	err = __ptp_ocp_gettime_locked(bp, ts, sts);
-+	spin_unlock_irqrestore(&bp->lock, flags);
-+
-+	return err;
-+}
-+
-+static void
-+__ptp_ocp_settime_locked(struct ptp_ocp *bp, const struct timespec64 *ts)
-+{
-+	u32 ctrl, time_sec, time_ns;
-+	u32 select;
-+
-+	time_ns = ts->tv_nsec;
-+	time_sec = ts->tv_sec;
-+
-+	select = ioread32(&bp->reg->select);
-+	iowrite32(OCP_SELECT_CLK_REG, &bp->reg->select);
-+
-+	iowrite32(time_ns, &bp->reg->adjust_ns);
-+	iowrite32(time_sec, &bp->reg->adjust_sec);
-+
-+	ctrl = ioread32(&bp->reg->ctrl);
-+	ctrl |= OCP_CTRL_ADJUST_TIME;
-+	iowrite32(ctrl, &bp->reg->ctrl);
-+
-+	/* restore clock selection */
-+	iowrite32(select >> 16, &bp->reg->select);
-+}
-+
-+static int
-+ptp_ocp_settime(struct ptp_clock_info *ptp_info, const struct timespec64 *ts)
-+{
-+	struct ptp_ocp *bp = container_of(ptp_info, struct ptp_ocp, ptp_info);
-+	unsigned long flags;
-+
-+	if (ioread32(&bp->reg->status) & OCP_STATUS_IN_SYNC)
-+		return 0;
-+
-+	dev_info(&bp->pdev->dev, "settime to: %lld.%ld\n",
-+		 ts->tv_sec, ts->tv_nsec);
-+
-+	spin_lock_irqsave(&bp->lock, flags);
-+	__ptp_ocp_settime_locked(bp, ts);
-+	spin_unlock_irqrestore(&bp->lock, flags);
-+
-+	return 0;
-+}
-+
-+static int
-+ptp_ocp_adjtime(struct ptp_clock_info *ptp_info, s64 delta_ns)
-+{
-+	struct ptp_ocp *bp = container_of(ptp_info, struct ptp_ocp, ptp_info);
-+	struct timespec64 ts;
-+	unsigned long flags;
-+	int err;
-+
-+	if (ioread32(&bp->reg->status) & OCP_STATUS_IN_SYNC)
-+		return 0;
-+
-+	dev_info(&bp->pdev->dev, "adjtime , adjust by: %lld\n", delta_ns);
-+
-+	spin_lock_irqsave(&bp->lock, flags);
-+	err = __ptp_ocp_gettime_locked(bp, &ts, NULL);
-+	if (likely(!err)) {
-+		timespec64_add_ns(&ts, delta_ns);
-+		__ptp_ocp_settime_locked(bp, &ts);
-+	}
-+	spin_unlock_irqrestore(&bp->lock, flags);
-+
-+	return err;
-+}
-+
-+static int
-+ptp_ocp_null_adjfine(struct ptp_clock_info *ptp_info, long scaled_ppm)
-+{
-+	struct ptp_ocp *bp = container_of(ptp_info, struct ptp_ocp, ptp_info);
-+
-+	if (scaled_ppm == 0)
-+		return 0;
-+
-+	dev_info(&bp->pdev->dev, "adjfine, scaled by: %ld\n", scaled_ppm);
-+
-+	return -EOPNOTSUPP;
-+}
-+
-+static const struct ptp_clock_info ptp_ocp_clock_info = {
-+	.owner		= THIS_MODULE,
-+	.name		= KBUILD_MODNAME,
-+	.max_adj	= 100000000,
-+	.gettimex64	= ptp_ocp_gettimex,
-+	.settime64	= ptp_ocp_settime,
-+	.adjtime	= ptp_ocp_adjtime,
-+	.adjfine	= ptp_ocp_null_adjfine,
-+};
-+
-+static int
-+ptp_ocp_check_clock(struct ptp_ocp *bp)
-+{
-+	struct timespec64 ts;
-+	bool sync;
-+	u32 ctrl;
-+
-+	/* make sure clock is enabled */
-+	ctrl = ioread32(&bp->reg->ctrl);
-+	ctrl |= OCP_CTRL_ENABLE;
-+	iowrite32(ctrl, &bp->reg->ctrl);
-+
-+	if ((ioread32(&bp->reg->ctrl) & OCP_CTRL_ENABLE) == 0) {
-+		dev_err(&bp->pdev->dev, "clock not enabled\n");
-+		return -ENODEV;
-+	}
-+
-+	sync = ioread32(&bp->reg->status) & OCP_STATUS_IN_SYNC;
-+	if (!sync) {
-+		ktime_get_real_ts64(&ts);
-+		ptp_ocp_settime(&bp->ptp_info, &ts);
-+	}
-+	if (!ptp_ocp_gettimex(&bp->ptp_info, &ts, NULL))
-+		dev_info(&bp->pdev->dev, "Time: %lld.%ld, %s\n",
-+			 ts.tv_sec, ts.tv_nsec,
-+			 sync ? "in-sync" : "UNSYNCED");
-+
-+	return 0;
-+}
-+
-+static void
-+ptp_ocp_tod_info(struct ptp_ocp *bp)
-+{
-+	static const char * const proto_name[] = {
-+		"NMEA", "NMEA_ZDA", "NMEA_RMC", "NMEA_none",
-+		"UBX", "UBX_UTC", "UBX_LS", "UBX_none"
-+	};
-+	static const char * const gnss_name[] = {
-+		"ALL", "COMBINED", "GPS", "GLONASS", "GALILEO", "BEIDOU",
-+	};
-+	u32 version, ctrl, reg;
-+	int idx;
-+
-+	version = ioread32(&bp->tod->version);
-+	dev_info(&bp->pdev->dev, "TOD Version %d.%d.%d\n",
-+		version >> 24, (version >> 16) & 0xff, version & 0xffff);
-+
-+	ctrl = ioread32(&bp->tod->ctrl);
-+	ctrl |= TOD_CTRL_PROTOCOL | TOD_CTRL_ENABLE;
-+	ctrl &= ~(TOD_CTRL_DISABLE_FMT_A | TOD_CTRL_DISABLE_FMT_B);
-+	iowrite32(ctrl, &bp->tod->ctrl);
-+
-+	ctrl = ioread32(&bp->tod->ctrl);
-+	idx = ctrl & TOD_CTRL_PROTOCOL ? 4 : 0;
-+	idx += (ctrl >> 16) & 3;
-+	dev_info(&bp->pdev->dev, "control: %x\n", ctrl);
-+	dev_info(&bp->pdev->dev, "TOD Protocol %s %s\n", proto_name[idx],
-+		ctrl & TOD_CTRL_ENABLE ? "enabled" : "");
-+
-+	idx = (ctrl >> TOD_CTRL_GNSS_SHIFT) & TOD_CTRL_GNSS_MASK;
-+	if (idx < ARRAY_SIZE(gnss_name))
-+		dev_info(&bp->pdev->dev, "GNSS %s\n", gnss_name[idx]);
-+
-+	reg = ioread32(&bp->tod->status);
-+	dev_info(&bp->pdev->dev, "status: %x\n", reg);
-+
-+	reg = ioread32(&bp->tod->correction_sec);
-+	dev_info(&bp->pdev->dev, "correction: %d\n", reg);
-+
-+	reg = ioread32(&bp->tod->utc_status);
-+	dev_info(&bp->pdev->dev, "utc_status: %x\n", reg);
-+	dev_info(&bp->pdev->dev, "utc_offset: %d  valid:%d  leap_valid:%d\n",
-+		reg & TOD_STATUS_UTC_MASK, reg & TOD_STATUS_UTC_VALID ? 1 : 0,
-+		reg & TOD_STATUS_LEAP_VALID ? 1 : 0);
-+}
-+
-+static void
-+ptp_ocp_info(struct ptp_ocp *bp)
-+{
-+	static const char * const clock_name[] = {
-+		"NO", "TOD", "IRIG", "PPS", "PTP", "RTC", "REGS", "EXT"
-+	};
-+	u32 version, select;
-+
-+	version = ioread32(&bp->reg->version);
-+	select = ioread32(&bp->reg->select);
-+	dev_info(&bp->pdev->dev, "Version %d.%d.%d, clock %s, device ptp%d\n",
-+		version >> 24, (version >> 16) & 0xff, version & 0xffff,
-+		clock_name[select & 7],
-+		ptp_clock_index(bp->ptp));
-+
-+	ptp_ocp_tod_info(bp);
-+}
-+
-+static int
-+ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-+{
-+	struct ptp_ocp *bp;
-+	int err;
-+
-+	bp = kzalloc(sizeof(*bp), GFP_KERNEL);
-+	if (!bp)
-+		return -ENOMEM;
-+	bp->pdev = pdev;
-+	pci_set_drvdata(pdev, bp);
-+
-+	err = pci_enable_device(pdev);
-+	if (err) {
-+		dev_err(&pdev->dev, "pci_enable_device\n");
-+		goto out_free;
-+	}
-+
-+	err = pci_request_regions(pdev, KBUILD_MODNAME);
-+	if (err) {
-+		dev_err(&pdev->dev, "pci_request_region\n");
-+		goto out_disable;
-+	}
-+
-+	bp->base = pci_ioremap_bar(pdev, 0);
-+	if (!bp->base) {
-+		dev_err(&pdev->dev, "io_remap bar0\n");
-+		err = -ENOMEM;
-+		goto out;
-+	}
-+	bp->reg = bp->base + OCP_REGISTER_OFFSET;
-+	bp->tod = bp->base + TOD_REGISTER_OFFSET;
-+	bp->ptp_info = ptp_ocp_clock_info;
-+	spin_lock_init(&bp->lock);
-+
-+	err = ptp_ocp_check_clock(bp);
-+	if (err)
-+		goto out;
-+
-+	bp->ptp = ptp_clock_register(&bp->ptp_info, &pdev->dev);
-+	if (IS_ERR(bp->ptp)) {
-+		dev_err(&pdev->dev, "ptp_clock_register\n");
-+		err = PTR_ERR(bp->ptp);
-+		goto out;
-+	}
-+
-+	ptp_ocp_info(bp);
-+
-+	return 0;
-+
-+out:
-+	pci_release_regions(pdev);
-+out_disable:
-+	pci_disable_device(pdev);
-+out_free:
-+	kfree(bp);
-+
-+	return err;
-+}
-+
-+static void
-+ptp_ocp_remove(struct pci_dev *pdev)
-+{
-+	struct ptp_ocp *bp = pci_get_drvdata(pdev);
-+
-+	ptp_clock_unregister(bp->ptp);
-+	pci_iounmap(pdev, bp->base);
-+	pci_release_regions(pdev);
-+	pci_disable_device(pdev);
-+	pci_set_drvdata(pdev, NULL);
-+	kfree(bp);
-+}
-+
-+static struct pci_driver ptp_ocp_driver = {
-+	.name		= KBUILD_MODNAME,
-+	.id_table	= ptp_ocp_pcidev_id,
-+	.probe		= ptp_ocp_probe,
-+	.remove		= ptp_ocp_remove,
-+};
-+
-+static int __init
-+ptp_ocp_init(void)
-+{
-+	int err;
-+
-+	err = pci_register_driver(&ptp_ocp_driver);
-+	return err;
-+}
-+
-+static void __exit
-+ptp_ocp_fini(void)
-+{
-+	pci_unregister_driver(&ptp_ocp_driver);
-+}
-+
-+module_init(ptp_ocp_init);
-+module_exit(ptp_ocp_fini);
-+
-+MODULE_DESCRIPTION("OpenCompute TimeCard driver");
-+MODULE_LICENSE("GPL v2");
--- 
-2.18.4
+Here is the summary with links:
+  - [net-next,v2] net: switch to storing KCOV handle directly in sk_buff
+    https://git.kernel.org/netdev/net-next/c/fa69ee5aa48b
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
