@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C1152CA7FB
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 17:18:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F0722CA80B
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 17:18:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392067AbgLAQQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 11:16:44 -0500
-Received: from mailout01.rmx.de ([94.199.90.91]:39434 "EHLO mailout01.rmx.de"
+        id S2392141AbgLAQSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 11:18:49 -0500
+Received: from mailout12.rmx.de ([94.199.88.78]:38162 "EHLO mailout12.rmx.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390881AbgLAQQo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Dec 2020 11:16:44 -0500
+        id S2390841AbgLAQSt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Dec 2020 11:18:49 -0500
 Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mailout01.rmx.de (Postfix) with ESMTPS id 4ClnJw0TWVz2SVyk;
-        Tue,  1 Dec 2020 17:16:00 +0100 (CET)
+        by mailout12.rmx.de (Postfix) with ESMTPS id 4ClnMH0NpfzRm4R;
+        Tue,  1 Dec 2020 17:18:03 +0100 (CET)
 Received: from mta.arri.de (unknown [217.111.95.66])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by kdin01.retarus.com (Postfix) with ESMTPS id 4ClnH80qt2z2xGC;
-        Tue,  1 Dec 2020 17:14:28 +0100 (CET)
+        by kdin01.retarus.com (Postfix) with ESMTPS id 4ClnKk0z7Yz2xbg;
+        Tue,  1 Dec 2020 17:16:42 +0100 (CET)
 Received: from N95HX1G2.wgnetz.xx (192.168.54.19) by mta.arri.de
  (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Tue, 1 Dec
- 2020 17:09:46 +0100
+ 2020 17:10:21 +0100
 From:   Christian Eggers <ceggers@arri.de>
 To:     Vladimir Oltean <olteanv@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
@@ -42,9 +42,9 @@ CC:     Vivien Didelot <vivien.didelot@gmail.com>,
         Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
         Christian Eggers <ceggers@arri.de>, <netdev@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next v4 6/9] net: ptp: add helper for one-step P2P clocks
-Date:   Tue, 1 Dec 2020 17:06:08 +0100
-Message-ID: <20201201160611.22129-7-ceggers@arri.de>
+Subject: [PATCH net-next v4 7/9] net: dsa: microchip: ksz9477: initial hardware time stamping support
+Date:   Tue, 1 Dec 2020 17:06:09 +0100
+Message-ID: <20201201160611.22129-8-ceggers@arri.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201201160611.22129-1-ceggers@arri.de>
 References: <20201201160611.22129-1-ceggers@arri.de>
@@ -52,139 +52,342 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [192.168.54.19]
-X-RMX-ID: 20201201-171436-4ClnH80qt2z2xGC-0@kdin01
+X-RMX-ID: 20201201-171650-4ClnKk0z7Yz2xbg-0@kdin01
 X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For P2P delay measurement, the ingress time stamp of the PDelay_Req is
-required for the correction field of the PDelay_Resp. The application
-echoes back the correction field of the PDelay_Req when sending the
-PDelay_Resp.
+Add control routines required for TX hardware time stamping.
 
-Some hardware (like the ZHAW InES PTP time stamping IP core) subtracts
-the ingress timestamp autonomously from the correction field, so that
-the hardware only needs to add the egress timestamp on tx. Other
-hardware (like the Microchip KSZ9563) reports the ingress time stamp via
-an interrupt and requires that the software provides this time stamp via
-tail-tag on tx.
+The KSZ9563 only supports one step time stamping
+(HWTSTAMP_TX_ONESTEP_P2P), which requires linuxptp-2.0 or later.
 
-In order to avoid introducing a further application interface for this,
-the driver can simply emulate the behavior of the InES device and
-subtract the ingress time stamp in software from the correction field.
-
-On egress, the correction field can either be kept as it is (and the
-time stamp field in the tail-tag is set to zero) or move the value from
-the correction field back to the tail-tag.
-
-Changing the correction field requires updating the UDP checksum (if UDP
-is used as transport).
+Currently, only P2P delay measurement is supported. See patchwork
+discussion and comments in ksz9477_ptp_init() for details:
+https://patchwork.ozlabs.org/project/netdev/patch/20201019172435.4416-8-ceggers@arri.de/
 
 Signed-off-by: Christian Eggers <ceggers@arri.de>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- include/linux/ptp_classify.h | 73 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 73 insertions(+)
+Changes in v4:
+--------------
+- Remove useless case statement
+- Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
-diff --git a/include/linux/ptp_classify.h b/include/linux/ptp_classify.h
-index cc0da0b134a4..f19f2f6a9475 100644
---- a/include/linux/ptp_classify.h
-+++ b/include/linux/ptp_classify.h
-@@ -10,8 +10,12 @@
- #ifndef _PTP_CLASSIFY_H_
- #define _PTP_CLASSIFY_H_
+ drivers/net/dsa/microchip/ksz9477_main.c |   6 +
+ drivers/net/dsa/microchip/ksz9477_ptp.c  | 186 +++++++++++++++++++++++
+ drivers/net/dsa/microchip/ksz9477_ptp.h  |  21 +++
+ drivers/net/dsa/microchip/ksz_common.h   |   4 +
+ 4 files changed, 217 insertions(+)
+
+diff --git a/drivers/net/dsa/microchip/ksz9477_main.c b/drivers/net/dsa/microchip/ksz9477_main.c
+index b13e6129322b..b164605d1563 100644
+--- a/drivers/net/dsa/microchip/ksz9477_main.c
++++ b/drivers/net/dsa/microchip/ksz9477_main.c
+@@ -1389,6 +1389,7 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
+ 	.phy_read		= ksz9477_phy_read16,
+ 	.phy_write		= ksz9477_phy_write16,
+ 	.phylink_mac_link_down	= ksz_mac_link_down,
++	.get_ts_info		= ksz9477_ptp_get_ts_info,
+ 	.port_enable		= ksz_enable_port,
+ 	.get_strings		= ksz9477_get_strings,
+ 	.get_ethtool_stats	= ksz_get_ethtool_stats,
+@@ -1409,6 +1410,11 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
+ 	.port_mdb_del           = ksz9477_port_mdb_del,
+ 	.port_mirror_add	= ksz9477_port_mirror_add,
+ 	.port_mirror_del	= ksz9477_port_mirror_del,
++	.port_hwtstamp_get      = ksz9477_ptp_port_hwtstamp_get,
++	.port_hwtstamp_set      = ksz9477_ptp_port_hwtstamp_set,
++	.port_txtstamp          = NULL,
++	/* never defer rx delivery, tstamping is done via tail tagging */
++	.port_rxtstamp          = NULL,
+ };
  
-+#include <asm/unaligned.h>
- #include <linux/ip.h>
-+#include <linux/ktime.h>
- #include <linux/skbuff.h>
-+#include <linux/udp.h>
-+#include <net/checksum.h>
- 
- #define PTP_CLASS_NONE  0x00 /* not a PTP event message */
- #define PTP_CLASS_V1    0x01 /* protocol version 1 */
-@@ -123,6 +127,67 @@ static inline u8 ptp_get_msgtype(const struct ptp_header *hdr,
- 	return msgtype;
+ static u32 ksz9477_get_port_addr(int port, int offset)
+diff --git a/drivers/net/dsa/microchip/ksz9477_ptp.c b/drivers/net/dsa/microchip/ksz9477_ptp.c
+index 0ffc4504a290..a1ca1923ec0c 100644
+--- a/drivers/net/dsa/microchip/ksz9477_ptp.c
++++ b/drivers/net/dsa/microchip/ksz9477_ptp.c
+@@ -218,6 +218,18 @@ static int ksz9477_ptp_enable(struct ptp_clock_info *ptp,
+ 	return -EOPNOTSUPP;
  }
  
-+/**
-+ * ptp_check_diff8 - Computes new checksum (when altering a 64-bit field)
-+ * @old: old field value
-+ * @new: new field value
-+ * @oldsum: previous checksum
-+ *
-+ * This function can be used to calculate a new checksum when only a single
-+ * field is changed. Similar as ip_vs_check_diff*() in ip_vs.h.
-+ *
-+ * Return: Updated checksum
-+ */
-+static inline __wsum ptp_check_diff8(__be64 old, __be64 new, __wsum oldsum)
++static long ksz9477_ptp_do_aux_work(struct ptp_clock_info *ptp)
 +{
-+	__be64 diff[2] = { ~old, new };
++	struct ksz_device *dev = container_of(ptp, struct ksz_device, ptp_caps);
++	struct timespec64 ts;
 +
-+	return csum_partial(diff, sizeof(diff), oldsum);
++	mutex_lock(&dev->ptp_mutex);
++	_ksz9477_ptp_gettime(dev, &ts);
++	mutex_unlock(&dev->ptp_mutex);
++
++	return HZ;  /* reschedule in 1 second */
 +}
 +
-+/**
-+ * ptp_header_update_correction - Update PTP header's correction field
-+ * @skb: packet buffer
-+ * @type: type of the packet (see ptp_classify_raw())
-+ * @hdr: ptp header
-+ * @correction: new correction value
-+ *
-+ * This updates the correction field of a PTP header and updates the UDP
-+ * checksum (if UDP is used as transport). It is needed for hardware capable of
-+ * one-step P2P that does not already modify the correction field of Pdelay_Req
-+ * event messages on ingress.
-+ */
-+static inline
-+void ptp_header_update_correction(struct sk_buff *skb, unsigned int type,
-+				  struct ptp_header *hdr, s64 correction)
+ static int ksz9477_ptp_start_clock(struct ksz_device *dev)
+ {
+ 	u16 data;
+@@ -257,6 +269,54 @@ static int ksz9477_ptp_stop_clock(struct ksz_device *dev)
+ 	return ksz_write16(dev, REG_PTP_CLK_CTRL, data);
+ }
+ 
++/* device attributes */
++
++enum ksz9477_ptp_tcmode {
++	KSZ9477_PTP_TCMODE_E2E,
++	KSZ9477_PTP_TCMODE_P2P,
++};
++
++static int ksz9477_ptp_tcmode_set(struct ksz_device *dev,
++				  enum ksz9477_ptp_tcmode tcmode)
 +{
-+	__be64 correction_old;
-+	struct udphdr *uhdr;
++	u16 data;
++	int ret;
 +
-+	/* previous correction value is required for checksum update. */
-+	memcpy(&correction_old,  &hdr->correction, sizeof(correction_old));
++	ret = ksz_read16(dev, REG_PTP_MSG_CONF1, &data);
++	if (ret)
++		return ret;
 +
-+	/* write new correction value */
-+	put_unaligned_be64((u64)correction, &hdr->correction);
++	if (tcmode == KSZ9477_PTP_TCMODE_P2P)
++		data |= PTP_TC_P2P;
++	else
++		data &= ~PTP_TC_P2P;
 +
-+	switch (type & PTP_CLASS_PMASK) {
-+	case PTP_CLASS_IPV4:
-+	case PTP_CLASS_IPV6:
-+		/* locate udp header */
-+		uhdr = (struct udphdr *)((char *)hdr - sizeof(struct udphdr));
++	return ksz_write16(dev, REG_PTP_MSG_CONF1, data);
++}
++
++enum ksz9477_ptp_ocmode {
++	KSZ9477_PTP_OCMODE_SLAVE,
++	KSZ9477_PTP_OCMODE_MASTER,
++};
++
++static int ksz9477_ptp_ocmode_set(struct ksz_device *dev,
++				  enum ksz9477_ptp_ocmode ocmode)
++{
++	u16 data;
++	int ret;
++
++	ret = ksz_read16(dev, REG_PTP_MSG_CONF1, &data);
++	if (ret)
++		return ret;
++
++	if (ocmode == KSZ9477_PTP_OCMODE_MASTER)
++		data |= PTP_MASTER;
++	else
++		data &= ~PTP_MASTER;
++
++	return ksz_write16(dev, REG_PTP_MSG_CONF1, data);
++}
++
+ int ksz9477_ptp_init(struct ksz_device *dev)
+ {
+ 	int ret;
+@@ -282,6 +342,7 @@ int ksz9477_ptp_init(struct ksz_device *dev)
+ 	dev->ptp_caps.gettime64   = ksz9477_ptp_gettime;
+ 	dev->ptp_caps.settime64   = ksz9477_ptp_settime;
+ 	dev->ptp_caps.enable      = ksz9477_ptp_enable;
++	dev->ptp_caps.do_aux_work = ksz9477_ptp_do_aux_work;
+ 
+ 	/* Start hardware counter (will overflow after 136 years) */
+ 	ret = ksz9477_ptp_start_clock(dev);
+@@ -294,8 +355,31 @@ int ksz9477_ptp_init(struct ksz_device *dev)
+ 		goto error_stop_clock;
+ 	}
+ 
++	/* Currently, only P2P delay measurement is supported.  Setting ocmode
++	 * to slave will work independently of actually being master or slave.
++	 * For E2E delay measurement, switching between master and slave would
++	 * be required, as the KSZ devices filters out PTP messages depending on
++	 * the ocmode setting:
++	 * - in slave mode, DelayReq messages are filtered out
++	 * - in master mode, Sync messages are filtered out
++	 * Currently (and probably also in future) there is no interface in the
++	 * kernel which allows switching between master and slave mode.  For
++	 * this reason, E2E cannot be supported. See patchwork for full
++	 * discussion:
++	 * https://patchwork.ozlabs.org/project/netdev/patch/20201019172435.4416-8-ceggers@arri.de/
++	 */
++	ksz9477_ptp_tcmode_set(dev, KSZ9477_PTP_TCMODE_P2P);
++	ksz9477_ptp_ocmode_set(dev, KSZ9477_PTP_OCMODE_SLAVE);
++
++	/* Schedule cyclic call of ksz_ptp_do_aux_work() */
++	ret = ptp_schedule_worker(dev->ptp_clock, 0);
++	if (ret)
++		goto error_unregister_clock;
++
+ 	return 0;
+ 
++error_unregister_clock:
++	ptp_clock_unregister(dev->ptp_clock);
+ error_stop_clock:
+ 	ksz9477_ptp_stop_clock(dev);
+ 	return ret;
+@@ -306,3 +390,105 @@ void ksz9477_ptp_deinit(struct ksz_device *dev)
+ 	ptp_clock_unregister(dev->ptp_clock);
+ 	ksz9477_ptp_stop_clock(dev);
+ }
++
++/* DSA PTP operations */
++
++int ksz9477_ptp_get_ts_info(struct dsa_switch *ds, int port,
++			    struct ethtool_ts_info *ts)
++{
++	struct ksz_device *dev = ds->priv;
++
++	ts->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
++			      SOF_TIMESTAMPING_RX_HARDWARE |
++			      SOF_TIMESTAMPING_RAW_HARDWARE;
++
++	ts->phc_index = ptp_clock_index(dev->ptp_clock);
++
++	ts->tx_types = BIT(HWTSTAMP_TX_OFF) |
++		       BIT(HWTSTAMP_TX_ONESTEP_P2P);
++
++	ts->rx_filters = BIT(HWTSTAMP_FILTER_NONE) |
++			 BIT(HWTSTAMP_FILTER_PTP_V2_L4_EVENT) |
++			 BIT(HWTSTAMP_FILTER_PTP_V2_L2_EVENT) |
++			 BIT(HWTSTAMP_FILTER_PTP_V2_EVENT);
++
++	return 0;
++}
++
++static int ksz9477_set_hwtstamp_config(struct ksz_device *dev, int port,
++				       struct hwtstamp_config *config)
++{
++	struct ksz_port *prt = &dev->ports[port];
++
++	/* reserved for future extensions */
++	if (config->flags)
++		return -EINVAL;
++
++	switch (config->tx_type) {
++	case HWTSTAMP_TX_OFF:
++		prt->hwts_tx_en = false;
++		break;
++	case HWTSTAMP_TX_ONESTEP_P2P:
++		prt->hwts_tx_en = true;
 +		break;
 +	default:
-+		return;
++		return -ERANGE;
 +	}
 +
-+	/* update checksum */
-+	uhdr->check = csum_fold(ptp_check_diff8(correction_old,
-+						hdr->correction,
-+						~csum_unfold(uhdr->check)));
-+	if (!uhdr->check)
-+		uhdr->check = CSUM_MANGLED_0;
++	switch (config->rx_filter) {
++	case HWTSTAMP_FILTER_NONE:
++		break;
++	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
++	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
++		config->rx_filter = HWTSTAMP_FILTER_PTP_V2_L4_EVENT;
++		break;
++	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
++	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
++		config->rx_filter = HWTSTAMP_FILTER_PTP_V2_L2_EVENT;
++		break;
++	case HWTSTAMP_FILTER_PTP_V2_EVENT:
++	case HWTSTAMP_FILTER_PTP_V2_SYNC:
++		config->rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
++		break;
++	default:
++		config->rx_filter = HWTSTAMP_FILTER_NONE;
++		return -ERANGE;
++	}
++
++	return 0;
 +}
 +
- void __init ptp_classifier_init(void);
- #else
- static inline void ptp_classifier_init(void)
-@@ -145,5 +210,13 @@ static inline u8 ptp_get_msgtype(const struct ptp_header *hdr,
- 	 */
- 	return PTP_MSGTYPE_SYNC;
- }
-+
-+static inline
-+void ptp_onestep_p2p_move_t2_to_correction(struct sk_buff *skb,
-+					   unsigned int type,
-+					   struct ptp_header *hdr,
-+					   ktime_t t2)
++int ksz9477_ptp_port_hwtstamp_get(struct dsa_switch *ds, int port,
++				  struct ifreq *ifr)
 +{
++	struct ksz_device *dev = ds->priv;
++	unsigned long bytes_copied;
++
++	bytes_copied = copy_to_user(ifr->ifr_data,
++				    &dev->ports[port].tstamp_config,
++				    sizeof(dev->ports[port].tstamp_config));
++
++	return bytes_copied ? -EFAULT : 0;
 +}
++
++int ksz9477_ptp_port_hwtstamp_set(struct dsa_switch *ds, int port,
++				  struct ifreq *ifr)
++{
++	struct ksz_device *dev = ds->priv;
++	struct hwtstamp_config config;
++	unsigned long bytes_copied;
++	int err;
++
++	if (copy_from_user(&config, ifr->ifr_data, sizeof(config)))
++		return -EFAULT;
++
++	err = ksz9477_set_hwtstamp_config(dev, port, &config);
++	if (err)
++		return err;
++
++	/* Save the chosen configuration to be returned later. */
++	memcpy(&dev->ports[port].tstamp_config, &config, sizeof(config));
++	bytes_copied = copy_to_user(ifr->ifr_data, &config, sizeof(config));
++
++	return bytes_copied ? -EFAULT : 0;
++}
+diff --git a/drivers/net/dsa/microchip/ksz9477_ptp.h b/drivers/net/dsa/microchip/ksz9477_ptp.h
+index 0076538419fa..b599401812ae 100644
+--- a/drivers/net/dsa/microchip/ksz9477_ptp.h
++++ b/drivers/net/dsa/microchip/ksz9477_ptp.h
+@@ -10,6 +10,8 @@
+ #ifndef DRIVERS_NET_DSA_MICROCHIP_KSZ9477_PTP_H_
+ #define DRIVERS_NET_DSA_MICROCHIP_KSZ9477_PTP_H_
+ 
++#include <linux/types.h>
++
+ #include "ksz_common.h"
+ 
+ #if IS_ENABLED(CONFIG_NET_DSA_MICROCHIP_KSZ9477_PTP)
+@@ -17,11 +19,30 @@
+ int ksz9477_ptp_init(struct ksz_device *dev);
+ void ksz9477_ptp_deinit(struct ksz_device *dev);
+ 
++int ksz9477_ptp_get_ts_info(struct dsa_switch *ds, int port,
++			    struct ethtool_ts_info *ts);
++int ksz9477_ptp_port_hwtstamp_get(struct dsa_switch *ds, int port,
++				  struct ifreq *ifr);
++int ksz9477_ptp_port_hwtstamp_set(struct dsa_switch *ds, int port,
++				  struct ifreq *ifr);
++
+ #else
+ 
+ static inline int ksz9477_ptp_init(struct ksz_device *dev) { return 0; }
+ static inline void ksz9477_ptp_deinit(struct ksz_device *dev) {}
+ 
++static inline int ksz9477_ptp_get_ts_info(struct dsa_switch *ds, int port,
++					  struct ethtool_ts_info *ts)
++{ return -EOPNOTSUPP; }
++
++static inline int ksz9477_ptp_port_hwtstamp_get(struct dsa_switch *ds, int port,
++						struct ifreq *ifr)
++{ return -EOPNOTSUPP; }
++
++static inline int ksz9477_ptp_port_hwtstamp_set(struct dsa_switch *ds, int port,
++						struct ifreq *ifr)
++{ return -EOPNOTSUPP; }
++
  #endif
- #endif /* _PTP_CLASSIFY_H_ */
+ 
+ #endif /* DRIVERS_NET_DSA_MICROCHIP_KSZ9477_PTP_H_ */
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 43dd66009482..139e9b84290b 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -41,6 +41,10 @@ struct ksz_port {
+ 
+ 	struct ksz_port_mib mib;
+ 	phy_interface_t interface;
++#if IS_ENABLED(CONFIG_NET_DSA_MICROCHIP_KSZ9477_PTP)
++	struct hwtstamp_config tstamp_config;
++	bool hwts_tx_en;
++#endif
+ };
+ 
+ struct ksz_device {
 -- 
 Christian Eggers
 Embedded software developer
