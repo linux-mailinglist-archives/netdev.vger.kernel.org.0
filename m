@@ -2,138 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 977572CACF9
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 21:05:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2145D2CAD04
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 21:09:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729410AbgLAUFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 15:05:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41848 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727684AbgLAUFH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 15:05:07 -0500
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD9F8C0613D4
-        for <netdev@vger.kernel.org>; Tue,  1 Dec 2020 12:04:26 -0800 (PST)
-Received: by mail-ed1-x543.google.com with SMTP id k4so5264734edl.0
-        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 12:04:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ye7YK5tMALm1/rqbmQSnFkawNMHZj2hGCtRHnPC2/34=;
-        b=fHXWY8imxNAPr6v9V1xrypQw17zQ2lui/gnpeqs/xxx+Wfrd/2uf17++qHlbwM24gB
-         zFfOWRDkDNPmElUc07EJRv5QPAJ70FpaUx+NjnaoE6lbqUqzfXK/72J15SxWJRr8yKjQ
-         5NiMbuIeHrAD4jrQxoPkJgjVEc3OOHyp3W4SJLSEIvrwuH6h/1eyhHEbgSfVnqh6fczT
-         L1gxUtKbxDhTIA/W9oKJxQ40eGpXAnMewoNktggoCg3rmO1s/kHqfxtIzJ1ZyJCfWZkk
-         QRzpSPhzCJm8reEgws953V0kjx0+du1SjgFNt4sNNuvuCBIfwtFf1mQbneXBNuwuC0vO
-         Qy6Q==
+        id S2404337AbgLAUIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 15:08:11 -0500
+Received: from mail-ej1-f67.google.com ([209.85.218.67]:38054 "EHLO
+        mail-ej1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727450AbgLAUIK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 15:08:10 -0500
+Received: by mail-ej1-f67.google.com with SMTP id a16so6882133ejj.5;
+        Tue, 01 Dec 2020 12:07:53 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=ye7YK5tMALm1/rqbmQSnFkawNMHZj2hGCtRHnPC2/34=;
-        b=FA+0DMgxp/8EhIFjeWZ4FU3ajcwla5cTYAc1P4E7xuTT8QUwnqid7RQt2kwpNisWOd
-         K174TZPuH4eS6pWZ+M7coVO5/KtVrDR7qzeznbgd1RkqgolY8AfZ39GESDaTpA+hdl1H
-         s3zje5mJPWfELyyi07zpmqHwZtsoh40l6tSYJbHYrCpp6JwMWFjhUpz9dZaRvzWWwU1l
-         FBRYKVbl0yR6Ht7u2Jiz0dR3JjAxy9i3PPlHAOR+XVivvFC6VmPaGX4vYJrzr/C40zZH
-         rxPkqy23jbxhtnk6v7MIP2KmpvDphPlMOxZJL81mdH+xF/zE+bz24SY5/vWJGaIqxl42
-         TRzQ==
-X-Gm-Message-State: AOAM53004VQS8qgq3MXZK9N5i0WcCH4WSZZlup4eaPO64q4hDRGdGs/E
-        j8Lr9lOlgr6NGXW7fbuUEuI=
-X-Google-Smtp-Source: ABdhPJyTLK7JPpkHYjBOxRib8BXHMVOtUDTKFGIfpj994yVb45wuAP2iVc/EdtERKwgngWqCdHmAYg==
-X-Received: by 2002:a50:cd0a:: with SMTP id z10mr4779568edi.223.1606853065336;
-        Tue, 01 Dec 2020 12:04:25 -0800 (PST)
-Received: from skbuf ([188.25.2.120])
-        by smtp.gmail.com with ESMTPSA id d1sm331289eje.82.2020.12.01.12.04.24
+        bh=o8OpMIpKsvTP+ao76T3f62qpT21Ac6Cs3TQoq3094Zc=;
+        b=P8mANsRRp6HF4fvCFXGvFUPxx9YpzxAqR7WouCMGIY7a94OPI1O2pJujIhfByHnm27
+         evu/tRmylhgi1HOghsJWiDfk4eUjpAph2N3SrfkP/nvW4KBq/AdAnugJ+Hsk4C/toxew
+         1qT8RTR7N5+7rPbvDtIyyvFe3VCcU64TL71yiCyjdrrhOx0myczCv0VtquBr1J2YWIFC
+         GczZLKR5pq/BBV3MESFdGx61J5P4yC1B/knGQUtS32UTSvPfl1ChjBacy+cb4lmnZIbU
+         Scy0M+mRpBRxMRFjmR1Y0kBZeW0PZ9bs5zt9Z3mz0dMrb7bOPz1BVhPdfVeRpMlrSyWB
+         AgZg==
+X-Gm-Message-State: AOAM533ffen631trtoL2j3NhljyQcs3ax9dVr3DB/tAQim15rmoD2jN/
+        Swp3qPYr0Lv70KF+oz0Nj2dFhkB0r0c=
+X-Google-Smtp-Source: ABdhPJza6eg+oPJXQ5ReF6xIUHNqwcfSXWPMj952gZlGgpNUU+Gspt9SH0D1dl7xx52uuqb0E4/0BQ==
+X-Received: by 2002:a17:906:c0d1:: with SMTP id bn17mr5003733ejb.114.1606853248214;
+        Tue, 01 Dec 2020 12:07:28 -0800 (PST)
+Received: from kozik-lap (adsl-84-226-167-205.adslplus.ch. [84.226.167.205])
+        by smtp.googlemail.com with ESMTPSA id s15sm391164edj.75.2020.12.01.12.07.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Dec 2020 12:04:24 -0800 (PST)
-Date:   Tue, 1 Dec 2020 22:04:23 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 2/4] net: dsa: Link aggregation support
-Message-ID: <20201201200423.mujxza7g7gsgntbg@skbuf>
-References: <20201130140610.4018-1-tobias@waldekranz.com>
- <20201130140610.4018-3-tobias@waldekranz.com>
- <20201201140354.lnhwx3ix2ogtnngy@skbuf>
- <871rg98uqm.fsf@waldekranz.com>
+        Tue, 01 Dec 2020 12:07:27 -0800 (PST)
+Date:   Tue, 1 Dec 2020 22:07:25 +0200
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Bongsu Jeon <bongsu.jeon2@gmail.com>
+Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bongsu Jeon <bongsu.jeon@samsung.com>
+Subject: Re: [PATCH v4 net-next 1/4] dt-bindings: net: nfc: s3fwrn5: Support
+ a UART interface
+Message-ID: <20201201200725.GB2435@kozik-lap>
+References: <1606830628-10236-1-git-send-email-bongsu.jeon@samsung.com>
+ <1606830628-10236-2-git-send-email-bongsu.jeon@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <871rg98uqm.fsf@waldekranz.com>
+In-Reply-To: <1606830628-10236-2-git-send-email-bongsu.jeon@samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 01, 2020 at 03:29:53PM +0100, Tobias Waldekranz wrote:
-> On Tue, Dec 01, 2020 at 16:03, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > On Mon, Nov 30, 2020 at 03:06:08PM +0100, Tobias Waldekranz wrote:
-> >> When a LAG joins a bridge, the DSA subsystem will treat that as each
-> >> individual port joining the bridge. The driver may look at the port's
-> >> LAG pointer to see if it is associated with any LAG, if that is
-> >> required. This is analogue to how switchdev events are replicated out
-> >> to all lower devices when reaching e.g. a LAG.
-> >
-> > Agree with the principle. But doesn't that mean that this code:
-> >
-> > static int dsa_slave_switchdev_blocking_event(struct notifier_block *unused,
-> > 					      unsigned long event, void *ptr)
-> > {
-> > 	struct net_device *dev = switchdev_notifier_info_to_dev(ptr);
-> > 	int err;
-> >
-> > 	switch (event) {
-> > 	case SWITCHDEV_PORT_OBJ_ADD:
-> > 		err = switchdev_handle_port_obj_add(dev, ptr,
-> > 						    dsa_slave_dev_check,
-> > 						    dsa_slave_port_obj_add);
-> > 		return notifier_from_errno(err);
-> > 	case SWITCHDEV_PORT_OBJ_DEL:
-> > 		err = switchdev_handle_port_obj_del(dev, ptr,
-> > 						    dsa_slave_dev_check,
-> > 						    dsa_slave_port_obj_del);
-> > 		return notifier_from_errno(err);
-> > 	case SWITCHDEV_PORT_ATTR_SET:
-> > 		err = switchdev_handle_port_attr_set(dev, ptr,
-> > 						     dsa_slave_dev_check,
-> > 						     dsa_slave_port_attr_set);
-> > 		return notifier_from_errno(err);
-> > 	}
-> >
-> > 	return NOTIFY_DONE;
-> > }
-> >
-> > should be replaced with something that also reacts to the case where
-> > "dev" is a LAG? Like, for example, I imagine that a VLAN installed on a
-> > bridge port that is a LAG should be propagated to the switch ports
-> > beneath that LAG. Similarly for all bridge attributes.
->
-> That is exactly what switchdev_handle_* does, no? It is this exact
-> behavior that my statement about switchdev event replication references.
+On Tue, Dec 01, 2020 at 10:50:25PM +0900, Bongsu Jeon wrote:
+> From: Bongsu Jeon <bongsu.jeon@samsung.com>
+> 
+> Since S3FWRN82 NFC Chip, The UART interface can be used.
+> S3FWRN82 supports I2C and UART interface.
+> 
+> Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
+> ---
+>  .../bindings/net/nfc/samsung,s3fwrn5.yaml          | 32 ++++++++++++++++++++--
+>  1 file changed, 29 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml b/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+> index cb0b8a5..cc5f9a1 100644
+> --- a/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+> +++ b/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+> @@ -12,7 +12,10 @@ maintainers:
+>  
+>  properties:
+>    compatible:
+> -    const: samsung,s3fwrn5-i2c
+> +    items:
 
-I'm sorry, I don't mean to be overly obtuse, but _how_ does the current
-code propagate a VLAN to a physical port located below a bond? Through
-magic? The dsa_slave_dev_check is passed as a parameter to
-switchdev_handle_port_obj_add _exactly_ because the code has needed so
-far to match only on DSA interfaces and not on bonding interfaces. So
-the code does not react to VLANs added on a bonding interface. Hence my
-question.
+This still has items but it should be a simple enum.
 
-ip link del bond0
-ip link add bond0 type bond mode 802.3ad
-ip link set swp1 down && ip link set swp1 master bond0 && ip link set swp1 up
-ip link set swp2 down && ip link set swp2 master bond0 && ip link set swp2 up
-ip link del br0
-ip link add br0 type bridge
-ip link set bond0 master br0
-ip link set swp0 master br0
+> +      - enum:
+> +          - samsung,s3fwrn5-i2c
+> +          - samsung,s3fwrn82
+>  
+>    en-gpios:
+>      maxItems: 1
+> @@ -47,10 +50,19 @@ additionalProperties: false
+>  required:
+>    - compatible
+>    - en-gpios
+> -  - interrupts
+> -  - reg
+>    - wake-gpios
+>  
+> +allOf:
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: samsung,s3fwrn5-i2c
+> +    then:
+> +      required:
+> +        - interrupts
+> +        - reg
+> +
+>  examples:
+>    - |
+>      #include <dt-bindings/gpio/gpio.h>
+> @@ -71,3 +83,17 @@ examples:
+>              wake-gpios = <&gpj0 2 GPIO_ACTIVE_HIGH>;
+>          };
+>      };
+> +  # UART example on Raspberry Pi
+> +  - |
+> +    uart0 {
+> +        status = "okay";
+> +
+> +        nfc {
+> +            compatible = "samsung,s3fwrn82";
+> +
+> +            en-gpios = <&gpio 20 0>;
+> +            wake-gpios = <&gpio 16 0>;
 
-This should propagate the VLANs to swp1 and swp2 but doesn't:
-bridge vlan add dev bond0 vid 100
+Use GPIO flags like in example above.
 
-It's perfectly acceptable to say that this patch set doesn't deal with
-that. But your commit message seems to suggest that it's me who's
-misunderstanding something.
+Best regards,
+Krzysztof
