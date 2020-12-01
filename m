@@ -2,129 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F19EF2C94AD
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 02:31:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04B6C2C94BA
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 02:34:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728676AbgLABan (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 20:30:43 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37378 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726400AbgLABan (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Nov 2020 20:30:43 -0500
-Received: from kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D9FF520857;
-        Tue,  1 Dec 2020 01:30:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606786202;
-        bh=gIV/qoU4A9F6UBLwHtqRz/xiO+o/o9Q7MGlKLyPG3xQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZfXgopZLyuoZqeHhaH5QfC3dZ8wx1RyHUUksFcJYiN04eX+hb7S70rgAe2qpPIYk2
-         1nY3g2C2QrwJze6W3oiuf5u5r6xCQu4LVB3ZRj2tAX1LN2EjSuFOEeZYMv+Swv/ecP
-         pyds6B9lACocUmD9emZ9sdId/eIWyjeI+p+GCpng=
-Date:   Mon, 30 Nov 2020 17:30:00 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Denis Kirjanov <kda@linux-powerpc.org>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v2] net/af_unix: don't create a path for a binded socket
-Message-ID: <20201130173000.60acd3cc@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201130132747.29332-1-kda@linux-powerpc.org>
-References: <20201130132747.29332-1-kda@linux-powerpc.org>
+        id S2389237AbgLABei (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 20:34:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38286 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731244AbgLABeh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 20:34:37 -0500
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C93BC0613D3;
+        Mon, 30 Nov 2020 17:34:16 -0800 (PST)
+Received: by mail-lj1-x243.google.com with SMTP id j10so21355110lja.5;
+        Mon, 30 Nov 2020 17:34:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Egg3a2e1qL7qHV5/zndxmywrtc1Vhd90TaMCylEAOPM=;
+        b=c4jNl/vOrbvPoVQZ7Xg6bXnn0aT1+uUk7cwgfX3heil7AAuamwXxV2VDzoPV6alTuL
+         G+5yE0/yZ1m8OCqA/j4p14R0FScZxIW+GLt6iWe6OtXC2h1tyxIJp3EWKhIHcutI8AhJ
+         PGijmPmSyN2sToWxpolbs2PiqG85lS6G2CpXk5n4cXrB9w1Hlpj24mUgWk6+pWShI3PO
+         JNd21m8jHLnRRIsQDJVQP6l6hYtLBBz5ViyoDfPNaeL8SyVJnBWjP0XTchKL/TzSp0be
+         ut/WVYR49oQ5Uj9YRBRjtG/X+v9Gn9DoRzde3h3tCzWEpN8V3S4Ws7SaHLGAal2TiNaE
+         kQiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Egg3a2e1qL7qHV5/zndxmywrtc1Vhd90TaMCylEAOPM=;
+        b=MAmV8PNzSmZlBtUeDUR5FsEQTwqQ4bBW8SjtOFhccnuXQJ5S2vOjQj2Fzjd31ynova
+         q0UdWECiPR4NulsEAqCYTfSA9DZh09vEWZ/qIkCdPTM61Gugdbex3bf7OQxCc2xc2Jgc
+         QsG1vuOgheE7dGz6FCtWt/klLUR4WcC6Osjbtx9BSzFlrxmeWB7BckD39HMwEz1RwXj3
+         wah81KT1cFGnkb8ZKptZKTGMux6aK6gFCG7OMUyywiEQFjLrAILH4/HJzhVbmmtFg0PM
+         hFaDu4VBXUpIeLLJFVnRaTxaeS21QhsAJSRTeUKF91LND6V8qW0T/cd4fmpbd+ynOM4w
+         LQsA==
+X-Gm-Message-State: AOAM533YPNrCOwQH6mYwcLTVBUoYFLzIRiIzmewtnIVCvmGUBEE8hnds
+        QPe4JZLda0EigpL1cPK6mfVve+J/Qpz4eGjCCifHO5BD5io=
+X-Google-Smtp-Source: ABdhPJxFyuboyheRu1v0trFV8xP1NmEzayfDb4MOT31NWlAFAwmoUCW+Bujmaa+I1oxzs45TOd7N2RiKbXCWA1waUNo=
+X-Received: by 2002:a2e:9681:: with SMTP id q1mr194239lji.2.1606786454761;
+ Mon, 30 Nov 2020 17:34:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201201000339.3310760-1-prankgup@fb.com> <20201201000339.3310760-2-prankgup@fb.com>
+In-Reply-To: <20201201000339.3310760-2-prankgup@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 30 Nov 2020 17:34:03 -0800
+Message-ID: <CAADnVQJK=s5aovsKoQT=qF1novjM4VMyZCGG_6BEenQQWPbTQw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] bpf: Adds support for setting window clamp
+To:     Prankur gupta <prankgup@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 30 Nov 2020 16:27:47 +0300 Denis Kirjanov wrote:
-> in the case of the socket which is bound to an adress
-> there is no sense to create a path in the next attempts
-> 
-> here is a program that shows the issue:
-> 
-> int main()
-> {
->     int s;
->     struct sockaddr_un a;
-> 
->     s = socket(AF_UNIX, SOCK_STREAM, 0);
->     if (s<0)
->         perror("socket() failed\n");
-> 
->     printf("First bind()\n");
-> 
->     memset(&a, 0, sizeof(a));
->     a.sun_family = AF_UNIX;
->     strncpy(a.sun_path, "/tmp/.first_bind", sizeof(a.sun_path));
-> 
->     if ((bind(s, (const struct sockaddr*) &a, sizeof(a))) == -1)
->         perror("bind() failed\n");
-> 
->     printf("Second bind()\n");
-> 
->     memset(&a, 0, sizeof(a));
->     a.sun_family = AF_UNIX;
->     strncpy(a.sun_path, "/tmp/.first_bind_failed", sizeof(a.sun_path));
-> 
->     if ((bind(s, (const struct sockaddr*) &a, sizeof(a))) == -1)
->         perror("bind() failed\n");
-> }
-> 
-> kda@SLES15-SP2:~> ./test
-> First bind()
-> Second bind()
-> bind() failed
-> : Invalid argument
-> 
-> kda@SLES15-SP2:~> ls -la /tmp/.first_bind
-> .first_bind         .first_bind_failed
-> 
-> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
-> 
-> v2: move a new patch creation after the address assignment check.
+On Mon, Nov 30, 2020 at 4:07 PM Prankur gupta <prankgup@fb.com> wrote:
+>
+> Adds a new bpf_setsockopt for TCP sockets, TCP_BPF_WINDOW_CLAMP,
+> which sets the maximum receiver window size. It will be useful for
+> limiting receiver window based on RTT.
+>
+> Signed-off-by: Prankur gupta <prankgup@fb.com>
+> ---
+>  net/core/filter.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+>
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 2ca5eecebacf..cb006962b677 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -4910,6 +4910,14 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
+>                                 tp->notsent_lowat = val;
+>                                 sk->sk_write_space(sk);
+>                                 break;
+> +                       case TCP_WINDOW_CLAMP:
+> +                               if (val <= 0)
+> +                                       ret = -EINVAL;
 
-It is a behavior change, but IDK if anyone can reasonably depend on
-current behavior for anything useful. Otherwise LGTM.
+Why zero is not allowed?
+Normal setsockopt() allows it.
 
-Let's CC Al Viro, and maybe Christoph to get some more capable eyes 
-on this.
-
-> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-> index 41c3303c3357..ff2dd1d3536b 100644
-> --- a/net/unix/af_unix.c
-> +++ b/net/unix/af_unix.c
-> @@ -1034,6 +1034,14 @@ static int unix_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
->  		goto out;
->  	addr_len = err;
->  
-> +	err = mutex_lock_interruptible(&u->bindlock);
-> +	if (err)
-> +		goto out_put;
-> +
-> +	err = -EINVAL;
-> +	if (u->addr)
-> +		goto out_up;
-> +
->  	if (sun_path[0]) {
->  		umode_t mode = S_IFSOCK |
->  		       (SOCK_INODE(sock)->i_mode & ~current_umask());
-> @@ -1045,14 +1053,6 @@ static int unix_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
->  		}
->  	}
->  
-> -	err = mutex_lock_interruptible(&u->bindlock);
-> -	if (err)
-> -		goto out_put;
-> -
-> -	err = -EINVAL;
-> -	if (u->addr)
-> -		goto out_up;
-> -
->  	err = -ENOMEM;
->  	addr = kmalloc(sizeof(*addr)+addr_len, GFP_KERNEL);
->  	if (!addr)
-
+> +                               else
+> +                                       tp->window_clamp =
+> +                                               max_t(int, val,
+> +                                                     SOCK_MIN_RCVBUF / 2);
+> +                               break;
+>                         default:
+>                                 ret = -EINVAL;
+>                         }
+> --
+> 2.24.1
+>
