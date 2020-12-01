@@ -2,148 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1364C2C93BC
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 01:15:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F67E2C93CA
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 01:20:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730271AbgLAAOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Nov 2020 19:14:36 -0500
-Received: from mail-io1-f68.google.com ([209.85.166.68]:43000 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725870AbgLAAOf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 19:14:35 -0500
-Received: by mail-io1-f68.google.com with SMTP id q137so10151085iod.9;
-        Mon, 30 Nov 2020 16:14:19 -0800 (PST)
+        id S1730920AbgLAATT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Nov 2020 19:19:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54902 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730866AbgLAATT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Nov 2020 19:19:19 -0500
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC3DC0613CF;
+        Mon, 30 Nov 2020 16:18:38 -0800 (PST)
+Received: by mail-yb1-xb43.google.com with SMTP id o71so214626ybc.2;
+        Mon, 30 Nov 2020 16:18:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=TVrEVqt/8ABsHBtv0Fp/W/KXpGc70umzdJ6FtxyY6EQ=;
+        b=bBDiPJYS+JPOZ4/6wQzzaFPhVd3ywta5QKS1jDowPE/cRtLznV6HC1K/50tlOZWZs1
+         RpNd0mxZ+tGs1xabduJi2FjnFcNNhgdZh7gFzl/I2z0bbxh5RvB196Y9FmWc0TK0R2P5
+         rb6FkLA3VBY0xYviBumFiemHRtQE9dTjxyK1O7/H3Wu0Pgf5sy6OsYcdo2GISacYaQnj
+         Wx7WgUgXcp59o1URHh708TgyWX/tPm0q3EXeKzSSO2Grh68ZR4Vn1MT7C0e6A407Fhy9
+         CwYlo18F6zrDl7Up35wzSyIC6bn9uahrX7dp/MVHK7BjG4mYvLgLkLzgjZIFtDJ8LGH6
+         qQEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=J2Bb/DGEU59ID0I1yu+Ty12fNud+2TMEJ9OnlDR+Pyk=;
-        b=my9z4rYOJF26IoCKKb76dA0VlQeLFcuyaH/HL9t/h06/yH3Na8ruWjvhx7tYSFAsko
-         MoLFLRsgk/omKHTerqweI8iS+E7AKnW7982w90Ka1RolzdjVBAh7Q6JQHhGES6h/Fnq0
-         4unD7W61cgJ+MlRXot6l1Bd7+R31B2oZ1f3N6rIJiEUXDkGS+0l/uHAKsNKLKYk4sFjG
-         4ZPOjknlZaItPZCDr/3ju0RirF82O67OHf8hegZuq4aEIHIpj2qwhhkOwF0U71qlmlru
-         CgS4q1oKC5Ah3xWY/t78w64+z8tVLZi7DRIuVivZgqC5QVfynIWpUfUqT36xIAS20leW
-         wOPQ==
-X-Gm-Message-State: AOAM532e/+xDXH0nOhQTnuYMxvRfoJlezESXUniKjLIp8trqSoqw3AoX
-        6T7e0P5iJxXeF2PCTXFq1A==
-X-Google-Smtp-Source: ABdhPJwaK7q88mv2geaFyacMh+hTtMxdNocxVnhcxhWh7u79E8m8YJseXiGOimQ1zC8gLTT6FTGPSg==
-X-Received: by 2002:a02:2e52:: with SMTP id u18mr306280jae.29.1606781634329;
-        Mon, 30 Nov 2020 16:13:54 -0800 (PST)
-Received: from xps15 ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id o12sm103316ilj.55.2020.11.30.16.13.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Nov 2020 16:13:53 -0800 (PST)
-Received: (nullmailer pid 3315444 invoked by uid 1000);
-        Tue, 01 Dec 2020 00:13:51 -0000
-Date:   Mon, 30 Nov 2020 17:13:51 -0700
-From:   Rob Herring <robh@kernel.org>
-To:     Dan Murphy <dmurphy@ti.com>
-Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, ciorneiioana@gmail.com,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v4 3/4] dt-bindings: dp83td510: Add binding for
- DP83TD510 Ethernet PHY
-Message-ID: <20201201001351.GA3297586@robh.at.kernel.org>
-References: <20201117201555.26723-1-dmurphy@ti.com>
- <20201117201555.26723-4-dmurphy@ti.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=TVrEVqt/8ABsHBtv0Fp/W/KXpGc70umzdJ6FtxyY6EQ=;
+        b=n9RvnqhmxLDgUzze4D+yCY8+QRKJEkQ4hKrwQCgHdPWLdbpd/QtWTw7IpXJeY5Owve
+         9R2fgmCWesEv9z3/z+fAFx2MNIiUgLgtG4uKAFJfsqs9J5MiClR9CvWD9ZimrXQtSXSH
+         eSeJtloeSlRnKg+a7+nL/qrAk5RWHGcsfwZ/RJ7aSdloM0SCJwYYgtUDaJhAI68rAx+S
+         KEiE3yWJbr8ZXjBg0eXu3QjVVHidiGapCg+ZA+3h5EEPUvNMiG+7XQhRtR06TnI7+gf+
+         nvnJSScIQ4CRBgLQoU1P9Kd6VFjevWT9ETECJIad6woNi/TLpLJn0kc5e6h79T28JyU+
+         1toA==
+X-Gm-Message-State: AOAM533E8J+Jx0i/sbdiktaRsCs0p+lhk0ehTpc4lLCVeaVKqRDJEAe8
+        fSx7+fk0I7mwf+B/D2oOlOWzA1IeBl+DY8DYkp4=
+X-Google-Smtp-Source: ABdhPJyiin5FC2vyv5AH20qeRrdSteNjE7sy9nMnEoy5XokXVvfJhpOCGWGfPX8+F4tsx2PyHffH+oKZY6D1WZq3prI=
+X-Received: by 2002:a25:3d7:: with SMTP id 206mr13028ybd.27.1606781918010;
+ Mon, 30 Nov 2020 16:18:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201117201555.26723-4-dmurphy@ti.com>
+References: <20201130154143.292882-1-toke@redhat.com> <CAEf4BzZy0Y1hAwOpY=Azod3bSqUKfGNwycGS7s=-DQvTWd8ThA@mail.gmail.com>
+ <87pn3uwjrd.fsf@toke.dk>
+In-Reply-To: <87pn3uwjrd.fsf@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 30 Nov 2020 16:18:27 -0800
+Message-ID: <CAEf4BzavUADiak9FboiThRC2W_agJXXh3dGm7zKqDNJ+dUFnHA@mail.gmail.com>
+Subject: Re: [PATCH bpf] libbpf: reset errno after probing kernel features
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 17, 2020 at 02:15:54PM -0600, Dan Murphy wrote:
-> The DP83TD510 is a 10M single twisted pair Ethernet PHY
-> 
-> Signed-off-by: Dan Murphy <dmurphy@ti.com>
-> ---
->  .../devicetree/bindings/net/ti,dp83td510.yaml | 64 +++++++++++++++++++
->  1 file changed, 64 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/ti,dp83td510.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/ti,dp83td510.yaml b/Documentation/devicetree/bindings/net/ti,dp83td510.yaml
-> new file mode 100644
-> index 000000000000..d3c97bb4d820
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/ti,dp83td510.yaml
-> @@ -0,0 +1,64 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +# Copyright (C) 2020 Texas Instruments Incorporated
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/net/ti,dp83td510.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: TI DP83TD510 ethernet PHY
-> +
-> +allOf:
-> +  - $ref: "ethernet-controller.yaml#"
-> +  - $ref: "ethernet-phy.yaml#"
-> +
-> +maintainers:
-> +  - Dan Murphy <dmurphy@ti.com>
-> +
-> +description: |
-> +  The PHY is an twisted pair 10Mbps Ethernet PHY that support MII, RMII and
-> +  RGMII interfaces.
-> +
-> +  Specifications about the Ethernet PHY can be found at:
-> +    http://www.ti.com/lit/ds/symlink/dp83td510e.pdf
-> +
-> +properties:
-> +  reg:
-> +    maxItems: 1
-> +
-> +  tx-fifo-depth:
-> +    description: |
-> +       Transmitt FIFO depth for RMII mode.  The PHY only exposes 4 nibble
-> +       depths. The valid nibble depths are 4, 5, 6 and 8.
-> +    enum: [ 4, 5, 6, 8 ]
-> +    default: 5
-> +
-> +  rx-internal-delay-ps:
-> +    description: |
-> +       Setting this property to a non-zero number sets the RX internal delay
-> +       for the PHY.  The internal delay for the PHY is fixed to 30ns relative
-> +       to receive data.
+On Mon, Nov 30, 2020 at 2:41 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>
+> > On Mon, Nov 30, 2020 at 7:42 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
+redhat.com> wrote:
+> >>
+> >> The kernel feature probing results in 'errno' being set if the probing
+> >> fails (as is often the case). This can stick around and leak to the ca=
+ller,
+> >> which can lead to confusion later. So let's make sure we always reset =
+errno
+> >> after calling a probe function.
+> >
+> > What specifically is the problem and what sort of confusion we are
+> > talking about here? You are not supposed to check errno, unless the
+> > function returned -1 or other error result.
+> >
+> > In some cases, you have to reset errno manually just to avoid
+> > confusion (see how strtol() is used, as an example).
+> >
+> > I.e., I don't see the problem here, any printf() technically can set
+> > errno to <0, we don't reset errno after each printf call though,
+> > right?
+>
+> Well yeah, technically things work fine in the common case. But this
 
-I'm confused. The delay is 30ns +/- whatever is set here?
+It works fine in all cases. Assuming "errno !=3D 0 means last
+libc/syscall failed" is just wrong.
 
-> +
-> +  tx-internal-delay-ps:
-> +    description: |
-> +       Setting this property to a non-zero number sets the TX internal delay
-> +       for the PHY.  The internal delay for the PHY has a range of -4 to 4ns
-> +       relative to transmit data.
+> errno thing sent me on quite the wild goose chase when trying to find
+> the root cause of the pinning issue I also sent a patch for...
+>
+> So since reseting errno doesn't hurt either I figured I'd save others
+> ending up in similar trouble. If it's not to your taste feel free to
+> just drop the patch :)
 
-Sounds like constraints?
+Yep, let's just drop it, no need to create a bad precedent.
 
-We do have a problem handling negative values though. Addressing in dtc 
-was rejected, so we'll need to fixup the schema with unsigned values. 
-But here it should just be negative values.
-
-> +
-> +unevaluatedProperties: false
-> +
-> +required:
-> +  - reg
-> +
-> +examples:
-> +  - |
-> +    mdio0 {
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +      ethphy0: ethernet-phy@0 {
-> +        reg = <0>;
-> +        tx-rx-output-high;
-> +        tx-fifo-depth = <5>;
-> +        rx-internal-delay-ps = <1>;
-> +        tx-internal-delay-ps = <1>;
-> +      };
-> +    };
-> -- 
-> 2.29.2
-> 
+>
+> -Toke
+>
