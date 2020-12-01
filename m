@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDAF12CA7D3
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 17:11:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25CF92CA82B
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 17:25:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392134AbgLAQLN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 11:11:13 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:26671 "EHLO
+        id S1726206AbgLAQXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 11:23:47 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:29399 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2392123AbgLAQLM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 11:11:12 -0500
+        by vger.kernel.org with ESMTP id S1725885AbgLAQXr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 11:23:47 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606838985;
+        s=mimecast20190719; t=1606839740;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=FmeUIl5gKiTi3zNwJ/hCxS5K2ryAZ0zswO+YxWmjOmo=;
-        b=Bu03HYNpBt9219IsMF9Iwf0/Wn+B6ELNSIFEqVwnT9GK847KgaK3zeDYpfCTOakumqH52j
-        op6bkzZw8J0aAQVZC9zrPufzK0znrlqs1S7oQ1+0GFaHz9+r7YsfkBbeITk6mL5H67mEVq
-        1hz7/YVttFXAXOa+DGgbO37oGzUX7ko=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-222-20XsHScJNpePRFzjZbLuqg-1; Tue, 01 Dec 2020 11:09:43 -0500
-X-MC-Unique: 20XsHScJNpePRFzjZbLuqg-1
-Received: by mail-wr1-f69.google.com with SMTP id c11so1206338wrt.12
-        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 08:09:42 -0800 (PST)
+        bh=uaNc1bG02ND+drTHBuHv0YOXrPi3zYs4BlR7gJGzseU=;
+        b=jOWUtgaMWW27CJfhds5ZWEN4x1PJvtz0lghyEVa+TkmNyZP/CFM5bmmvjCACcGJ9s808Al
+        aNn52C4b0ml1sR6GycbNwqxUeMdO4+eoWHlpKpNdgd3hvn2me1wAY+Fpij5CaY1ysWKaBH
+        O+W44vetvNw7ptQYoeEwOjIl68+K/tg=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-118-XYkEQt3wNYS_hxZki-R8Og-1; Tue, 01 Dec 2020 11:22:18 -0500
+X-MC-Unique: XYkEQt3wNYS_hxZki-R8Og-1
+Received: by mail-wr1-f72.google.com with SMTP id l5so1204105wrn.18
+        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 08:22:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=FmeUIl5gKiTi3zNwJ/hCxS5K2ryAZ0zswO+YxWmjOmo=;
-        b=QnyrLAby//FbPE6UJIBQK1pVJ5764OIF22MSwL+2IyYjCmdilE02SBZt16ndNfW+w2
-         4SCyxk1VQ/j0E+gmjNcT3S0Sr3trQPSxHI5Nfz75SHEZMgozaQVROBduqmqsK19xUKKR
-         6xIAiXjSvFy+/L/MJLhU6H3Zm/QsTWN7TZ2AWWie5GMHr1XavXODEZIk0KfxPW7tnh8F
-         HEWTX5KOgncW6pUC0T8jf91IvRWPp6NSh1UwnfMe9U+XM+gKOH4YQrK5WT+GQPBVw13F
-         cXvtM7e4HRE8mAQRcGO1CwzMpDVe37/arsVB0fH6q1RL2khUBosVu2Q0vAAgb98k3wf9
-         ubQA==
-X-Gm-Message-State: AOAM5317VZfmGmu8nW56vNHOT86qwc9oYimpWZp4zo7Eg2AzoYsWsZI/
-        MjTTtkl7zZ9UX7i4BjbMRlqfCSaw1poKWvS5pVGYiATl04nxTngP5q5o5APvhjLpQzPUp9svNR2
-        s+f3I3kIC33a2wYV5
-X-Received: by 2002:a7b:c015:: with SMTP id c21mr3377373wmb.79.1606838981799;
-        Tue, 01 Dec 2020 08:09:41 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwPVt1eahGleV7/m/61AodRx9ufD5CueGJuH+1j+yzVjP58dGrebIJ7Cg7HtKEs90D7L+R+lQ==
-X-Received: by 2002:a7b:c015:: with SMTP id c21mr3377336wmb.79.1606838981480;
-        Tue, 01 Dec 2020 08:09:41 -0800 (PST)
+        bh=uaNc1bG02ND+drTHBuHv0YOXrPi3zYs4BlR7gJGzseU=;
+        b=iL3S78lM4QbgWDHqaj/EM9rjNm4oy985llgDH5/HPc8dTP4hW21x0z488eV0cbZEf+
+         KDvl22h36ApMe0ZCpG4ndCMF0Jj8Pe/kabwDzdnx1nta3YPl0FCEKIpEj64IMha7jghP
+         8cXe6jdtdprnA1gxO1mX79P9ugqrjzxnZB/eYYTGPcEjGRW7GXpfN7dVHJOP2JVaYu4q
+         TWXaz9I43xAEQ8GlliM7TcUseMWtq4ialbzVW/nqpLy0q83tJdTzcCsOvr/rSvBe0+/n
+         Dqzp5FYC7MxhttAI4unjazYJVDAFC4PHI60U/Y5PZIgWHn2lCULNIGepeVZi0q8iwbpy
+         AA7g==
+X-Gm-Message-State: AOAM530Z7UtFu6XF3kOUXnUp6aKPck2GZo3haHp8dEIXF5E85YksXnC7
+        WSLFn537ji/zUEmMCUhOQb8Fuv2Zc3KwAXJVKR8fN94VdJgijzbCdDW+ShuvKILEbTaLOTf7EUS
+        PtrGg7aYpMtRCVpUb
+X-Received: by 2002:a1c:e084:: with SMTP id x126mr3496709wmg.109.1606839736563;
+        Tue, 01 Dec 2020 08:22:16 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxL+nBC5nM1oqnfl74075vP/XvG9KeD2bzHCX+2QK5ZsH1NiuYezbXRvPOoOc3keUvrKOCleg==
+X-Received: by 2002:a1c:e084:: with SMTP id x126mr3496684wmg.109.1606839736355;
+        Tue, 01 Dec 2020 08:22:16 -0800 (PST)
 Received: from steredhat (host-79-17-248-175.retail.telecomitalia.it. [79.17.248.175])
-        by smtp.gmail.com with ESMTPSA id g11sm38598wrq.7.2020.12.01.08.09.39
+        by smtp.gmail.com with ESMTPSA id o2sm66934wrq.37.2020.12.01.08.22.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Dec 2020 08:09:40 -0800 (PST)
-Date:   Tue, 1 Dec 2020 17:09:37 +0100
+        Tue, 01 Dec 2020 08:22:15 -0800 (PST)
+Date:   Tue, 1 Dec 2020 17:22:13 +0100
 From:   Stefano Garzarella <sgarzare@redhat.com>
 To:     Andra Paraschiv <andraprs@amazon.com>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -62,97 +62,76 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Stefan Hajnoczi <stefanha@redhat.com>,
         Vitaly Kuznetsov <vkuznets@redhat.com>
-Subject: Re: [PATCH net-next v1 1/3] vm_sockets: Include flag field in the
- vsock address data structure
-Message-ID: <20201201160937.sswd3prfn6r52ihc@steredhat>
+Subject: Re: [PATCH net-next v1 2/3] virtio_transport_common: Set sibling VMs
+ flag on the receive path
+Message-ID: <20201201162213.adcshbtspleosyod@steredhat>
 References: <20201201152505.19445-1-andraprs@amazon.com>
- <20201201152505.19445-2-andraprs@amazon.com>
+ <20201201152505.19445-3-andraprs@amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20201201152505.19445-2-andraprs@amazon.com>
+In-Reply-To: <20201201152505.19445-3-andraprs@amazon.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 01, 2020 at 05:25:03PM +0200, Andra Paraschiv wrote:
->vsock enables communication between virtual machines and the host they
->are running on. With the multi transport support (guest->host and
->host->guest), nested VMs can also use vsock channels for communication.
+On Tue, Dec 01, 2020 at 05:25:04PM +0200, Andra Paraschiv wrote:
+>The vsock flag can be set during the connect() setup logic, when
+>initializing the vsock address data structure variable. Then the vsock
+>transport is assigned, also considering this flag.
 >
->In addition to this, by default, all the vsock packets are forwarded to
->the host, if no host->guest transport is loaded. This behavior can be
->implicitly used for enabling vsock communication between sibling VMs.
+>The vsock transport is also assigned on the (listen) receive path. The
+>flag needs to be set considering the use case.
 >
->Add a flag field in the vsock address data structure that can be used to
->explicitly mark the vsock connection as being targeted for a certain
->type of communication. This way, can distinguish between nested VMs and
->sibling VMs use cases and can also setup them at the same time. Till
->now, could either have nested VMs or sibling VMs at a time using the
->vsock communication stack.
+>Set the vsock flag of the remote address to the one targeted for sibling
+>VMs communication if the following conditions are met:
 >
->Use the already available "svm_reserved1" field and mark it as a flag
->field instead. This flag can be set when initializing the vsock address
->variable used for the connect() call.
-
-Maybe we can split this patch in 2 patches, one to rename the svm_flag 
-and one to add the new flags.
-
+>* The source CID of the packet is higher than VMADDR_CID_HOST.
+>* The destination CID of the packet is higher than VMADDR_CID_HOST.
 >
 >Signed-off-by: Andra Paraschiv <andraprs@amazon.com>
 >---
-> include/uapi/linux/vm_sockets.h | 18 +++++++++++++++++-
-> 1 file changed, 17 insertions(+), 1 deletion(-)
+> net/vmw_vsock/virtio_transport_common.c | 8 ++++++++
+> 1 file changed, 8 insertions(+)
 >
->diff --git a/include/uapi/linux/vm_sockets.h b/include/uapi/linux/vm_sockets.h
->index fd0ed7221645d..58da5a91413ac 100644
->--- a/include/uapi/linux/vm_sockets.h
->+++ b/include/uapi/linux/vm_sockets.h
->@@ -114,6 +114,22 @@
+>diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>index 5956939eebb78..871c84e0916b1 100644
+>--- a/net/vmw_vsock/virtio_transport_common.c
+>+++ b/net/vmw_vsock/virtio_transport_common.c
+>@@ -1062,6 +1062,14 @@ virtio_transport_recv_listen(struct sock *sk, struct virtio_vsock_pkt *pkt,
+> 	vsock_addr_init(&vchild->remote_addr, le64_to_cpu(pkt->hdr.src_cid),
+> 			le32_to_cpu(pkt->hdr.src_port));
 >
-> #define VMADDR_CID_HOST 2
->
->+/* This sockaddr_vm flag value covers the current default use case:
->+ * local vsock communication between guest and host and nested VMs setup.
->+ * In addition to this, implicitly, the vsock packets are forwarded to the host
->+ * if no host->guest vsock transport is set.
->+ */
->+#define VMADDR_FLAG_DEFAULT_COMMUNICATION	0x0000
 
-I think we don't need this macro, since the next one can be used to 
-check if it a sibling communication (flag 0x1 set) or not (flag 0x1 
-not set).
+Maybe is better to create an helper function that other transports can 
+use for the same purpose or we can put this code in the 
+vsock_assign_transport() and set this flag only when the 'psk' argument 
+is not NULL (this is the case when it's called by the transports when we 
+receive a new connection request and 'psk' is the listener socket).
 
->+
->+/* Set this flag value in the sockaddr_vm corresponding field if the vsock
->+ * channel needs to be setup between two sibling VMs running on the same host.
->+ * This way can explicitly distinguish between vsock channels created for nested
->+ * VMs (or local communication between guest and host) and the ones created for
->+ * sibling VMs. And vsock channels for multiple use cases (nested / sibling VMs)
->+ * can be setup at the same time.
->+ */
->+#define VMADDR_FLAG_SIBLING_VMS_COMMUNICATION	0x0001
+The second way should allow us to support all the transports without 
+touching them.
 
-What do you think if we shorten in VMADDR_FLAG_SIBLING?
+>+	/* If the packet is coming with the source and destination CIDs higher
+>+	 * than VMADDR_CID_HOST, then a vsock channel should be established for
+>+	 * sibling VMs communication.
+>+	 */
+>+	if (vchild->local_addr.svm_cid > VMADDR_CID_HOST &&
+>+	    vchild->remote_addr.svm_cid > VMADDR_CID_HOST)
+>+		vchild->remote_addr.svm_flag = VMADDR_FLAG_SIBLING_VMS_COMMUNICATION;
+
+svm_flag is always initialized to 0 in vsock_addr_init(), so this 
+assignment is the first one and it's okay, but to avoid future issues 
+I'd use |= here to set the flag.
 
 Thanks,
 Stefano
 
 >+
-> /* Invalid vSockets version. */
->
-> #define VM_SOCKETS_INVALID_VERSION -1U
->@@ -145,7 +161,7 @@
->
-> struct sockaddr_vm {
-> 	__kernel_sa_family_t svm_family;
->-	unsigned short svm_reserved1;
->+	unsigned short svm_flag;
-> 	unsigned int svm_port;
-> 	unsigned int svm_cid;
-> 	unsigned char svm_zero[sizeof(struct sockaddr) -
->-- 
->2.20.1 (Apple Git-117)
+> 	ret = vsock_assign_transport(vchild, vsk);
+> 	/* Transport assigned (looking at remote_addr) must be the same
+> 	 * where we received the request.
+>-- 2.20.1 (Apple Git-117)
 >
 >
 >
