@@ -2,164 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 028802C9828
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 08:32:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E79C2C983C
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 08:37:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727900AbgLAHbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 02:31:46 -0500
-Received: from mga17.intel.com ([192.55.52.151]:60751 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727429AbgLAHbq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Dec 2020 02:31:46 -0500
-IronPort-SDR: KyhZtheU5S4NA59yZ7K0GJm/xPLDoZ2AZfGpEdeluZ0ourqUyWOMB0dsHS9lfrgLjjUmigtGbv
- Np9ll29Mcl0w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9821"; a="152613658"
-X-IronPort-AV: E=Sophos;i="5.78,383,1599548400"; 
-   d="scan'208";a="152613658"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2020 23:31:05 -0800
-IronPort-SDR: FXGL6qRXaonHgejbJ21EmkoO3uaGEaDdrgsEZzx0N2XzzxGbF+c1W78zZI8z/2Dbu2b/V2VHs+
- FZzGTATQey8g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.78,383,1599548400"; 
-   d="scan'208";a="537328545"
-Received: from fmsmsx605.amr.corp.intel.com ([10.18.126.85])
-  by fmsmga006.fm.intel.com with ESMTP; 30 Nov 2020 23:31:05 -0800
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 30 Nov 2020 23:31:05 -0800
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Mon, 30 Nov 2020 23:31:05 -0800
-Received: from NAM02-CY1-obe.outbound.protection.outlook.com (104.47.37.51) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.1713.5; Mon, 30 Nov 2020 23:31:05 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lyKzFhpg27qm1OWXLwFNP05YBYq9s6CsWX1VGsfWdfAxkeDKODiitIwE4y/1/KFibSCOaXUeCtkWB/f7QnGtuV/lKBo7ASQrO0QRVlc5XeW21Dt8URz6qwH+SvCgkguVXaVgA8gQ76VACidI7UVPPy998oZg5eXVJCSvxuVul8hwcqKDlqteWrqvB01Scr6gRBFVv4vM/YAqya3k6br8xJ1smFGvR+tGUBYR/qMHbSw3/9Idzxx35hSm+AghXEkXxDLVFG2u1+l4e+i1KmaI58RxUqD8Jy6g34c5FrlwwbjELKlIHxDCzQ6QWmhzK43M+vajRqOIQRFxA9yd/Xf6cw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=h8M1/UdKdSTIi8rIvHbhvmzUsPSk8PnIfF913rXGy2Q=;
- b=goyiimoj7Shlp5OUYkOuwxMNTJKKwpAOFECvc6jlSML+XzYUShfcnU6Oxico6g3k2layVXm6MeiJ9szDuT9A7ekIPQZUeOO7Zcp/EntmuVCOr7lA+CGcpdDTFNBffabzOs1yCHSd2Wy1wGXwznhsGMvB33+bGMs31lzpiz0CSOxvS8s8EFSN/n7pBBSc0i93FV0s5O2zzdmZ4KKGToLErX5qLkuadNNiGE0aeY56qVSfe5OLhz0Ztv05hm3iEfhkofkX6PaaqKHkBnwUjmPugJkqusrWhU9YwrCB4aVnfofWjxuRbRi1iWdvf3Q296ZBe9o92xW6GWFz/DS98F720g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=h8M1/UdKdSTIi8rIvHbhvmzUsPSk8PnIfF913rXGy2Q=;
- b=ujU4DiOB0ZZN0MCXCpWMonPbKJChjyDJgc023HJWE4xU6IEdYe/Vni0XtibuqJVJq09W7+UCGdPMRPuOqkbZSOpk7ix/T6/3gtiyPFjo2sXnMB4GFp1i45zaHi5YW3839fgbtMWkFaw2k/hZH9cs48f8dbdnqDlWUotwT0Mm1wI=
-Received: from MW3PR11MB4554.namprd11.prod.outlook.com (2603:10b6:303:5d::7)
- by MWHPR11MB1984.namprd11.prod.outlook.com (2603:10b6:300:110::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.23; Tue, 1 Dec
- 2020 07:30:33 +0000
-Received: from MW3PR11MB4554.namprd11.prod.outlook.com
- ([fe80::7dc3:6311:ac6:7393]) by MW3PR11MB4554.namprd11.prod.outlook.com
- ([fe80::7dc3:6311:ac6:7393%8]) with mapi id 15.20.3611.025; Tue, 1 Dec 2020
- 07:30:33 +0000
-From:   "Penigalapati, Sandeep" <sandeep.penigalapati@intel.com>
-To:     "sven.auhagen@voleatech.de" <sven.auhagen@voleatech.de>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        "kuba@kernel.org" <kuba@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "pmenzel@molgen.mpg.de" <pmenzel@molgen.mpg.de>
-Subject: RE: [PATCH v4 5/6] igb: use xdp_do_flush
-Thread-Topic: [PATCH v4 5/6] igb: use xdp_do_flush
-Thread-Index: AQHWuEzWRUNKferQhEmfzpoKnuF6zanh9o/g
-Date:   Tue, 1 Dec 2020 07:30:33 +0000
-Message-ID: <MW3PR11MB45544D6F549DAD89700D1CFA9CF40@MW3PR11MB4554.namprd11.prod.outlook.com>
-References: <20201111170453.32693-1-sven.auhagen@voleatech.de>
- <20201111170453.32693-6-sven.auhagen@voleatech.de>
-In-Reply-To: <20201111170453.32693-6-sven.auhagen@voleatech.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-authentication-results: voleatech.de; dkim=none (message not signed)
- header.d=none;voleatech.de; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [192.55.79.100]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c426d71d-bf99-4a6d-6fac-08d895cafce7
-x-ms-traffictypediagnostic: MWHPR11MB1984:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR11MB1984339D3D2A6E24B221901B9CF40@MWHPR11MB1984.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:551;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: AI4zNpAmfLGIFbe8TBe7D+TxLtOKfd4Yr8ayODfOwXnBnb5DrGG3VfXELt/TBSFOGZQvXo5futw0u12375NTlpgStmu6Hrv614ZcpBAr2SNfLcL1fupdglz5uw+I2Y97r9STc4Z8CWGpPjRdXhxRXWO4wPzYon3/1I9jfDHaUug/LlB8qof8Ms6YEzjijel/pUYUUnAr8avxhjLBMj0Pmxy9wuwhQLpBdaVxgj2asugRhotErVbWZEfIfynNubsx3dgkrEvFnCSVrsshdNj/y+oGXyaaeg6eoZPUVO1fYc2Odnhm52JaBMpmVT4Koaocztl0u+IemFrsfTZi4uXZRQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR11MB4554.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(366004)(39860400002)(136003)(376002)(66946007)(5660300002)(186003)(316002)(52536014)(4744005)(71200400001)(9686003)(55016002)(26005)(64756008)(76116006)(66476007)(54906003)(2906002)(110136005)(66556008)(66446008)(478600001)(33656002)(86362001)(6506007)(83380400001)(7696005)(53546011)(8936002)(8676002)(4326008);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?5UpWr1gsoW0wVY01kjcMfVO6Gf4sRYy6LxnExhNkw2fEHPtAt5uPXh2dpjXT?=
- =?us-ascii?Q?IaLaJu/fKSz64QhRxKIW9XvR+6PLSmoBnlERkknWe/J7HGQ7YNIcDNgasBQd?=
- =?us-ascii?Q?D3jB1CpRLtv83yKUySweOsGGYk/3GgH+td8Wk4QoOez0hwUZN84Q3+B4h8It?=
- =?us-ascii?Q?722J4DTkSxczYBYFxNM/2sNcxDdsgG41ZEVe3sMEOEGDKrviW8M+sclKBrno?=
- =?us-ascii?Q?GD/k//L+zqXZRLFjL1gxAxxo29NUpGvddmqUsKekqHGb0h1gVW3jP3pHYOBv?=
- =?us-ascii?Q?jCEUPIp708Qss1r4HAZDAPDwQHi4j5zEPE48GCp8j7gYLRsJfxWTlfVFc2TU?=
- =?us-ascii?Q?M+9XfgDFspPMd0Neun/n9JJ9NRanRyPg7r5ZJjPZ5uKaYj4URIP0vetPDOEh?=
- =?us-ascii?Q?ZZbQ0CX+ojGtwMXZwU4em8pTD1FJDrHd99rRjptRqYYIhlR+ibsHdQqbMSGR?=
- =?us-ascii?Q?nDZgkTeFy8PhkXWGRojTGdLNynhrj0kq6ZIbzJVtvGHoPNB8VTaZlsl96hj/?=
- =?us-ascii?Q?e3KrPezS6QNI8yp7ana6Fcr6ODlUQYOg6RPsxd6uo4mCju3/HXtHTPx1CSWx?=
- =?us-ascii?Q?0FhQ65TqtlFM3iNKgfL7G9niXJDTBUs18oEdakJmFf/ZPy8jOs85d0q6/W6j?=
- =?us-ascii?Q?jJKHnEfprjGu1zJnJFY4ldFpuohefmhRYOPTG6i1iBmnM34XbKcv91yw2ytL?=
- =?us-ascii?Q?eAoDuD9DuzjPmgRHqe/l3SNFmOVpdYhMfe26TY6x9rQkSf7LwKttBxrlVrjz?=
- =?us-ascii?Q?JfW9FILH2BNmi3P2Iof4u4Vsg2knMWgty7OPaDGpUuqnah4ouWkFkXRgwqnx?=
- =?us-ascii?Q?bnWxtLyXiXwIMc4hA2RwznRH3uhwJhdgDgiD8LuN3EWQPksBkmYpmjOm5QaK?=
- =?us-ascii?Q?WrkZZhYvmjnVjxVN1t2FwAB+Qh5zWiWvaW4hkbYVQksuGRSFsTHuO1zeW5ea?=
- =?us-ascii?Q?NYfiNhJPEXzJewTTw6pjiqPOmSQQZnhCNgPeGDa+ceI=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728079AbgLAHgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 02:36:40 -0500
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:45415 "EHLO
+        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727116AbgLAHgk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 02:36:40 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 2469E580702;
+        Tue,  1 Dec 2020 02:35:33 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Tue, 01 Dec 2020 02:35:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=3rvwiy
+        VdVZV5V8QGYNBeGX9oQIeF+iVozuxS7xV+TcM=; b=pSj9KZofQf5nMeLG/FT1tB
+        DJlWiva4FpadnXv7AeNrvN8MTHDQQdH7RvrhEUYmXfv1mlYMGHjFMb/c57Ogf4Gb
+        q04q74M0kUxVoVKUJNoQJVaBjjxoXgBRLKnmtLrTEniqSRMI+gqJOvR9dArABJZD
+        1swycH4rCcHq6U2WlinuQp7FOmnhGThvDVBtDmYirRrd52LIrOLUDeWkyvIPE6NB
+        yZx/2QSK/1p1Cv5zITPvFlxo/YSfVitonw8WoyTVgRRb1+jYpNMgZqN6cRhhxxso
+        OFUf0dLTCRuAZUqTlW4k+tGH0dcEWAMFI0dpmjW2XmSXRvwF85fDvG7bRPW85HUg
+        ==
+X-ME-Sender: <xms:RPLFX-u4cZyfZ9HaY-8ORBCHA2Ju3Ptv1NksxPJePw3T7jiUXmO0Fw>
+    <xme:RPLFXzf6KFPIC6kGHyYQ7CzlpZn1yuu_q9fdfjoo57P0N6XZhRyo3fEzwwmsTesLY
+    MAs_1Wzo2PzeNg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudeiuddguddtjecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
+    leetnecukfhppeekgedrvddvledrudehgedrudegjeenucevlhhushhtvghrufhiiigvpe
+    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:RPLFX5xLVI1MJAGTFCfRPZv9xH4PB1GRwD9ThsevMD7fKMJRrcKULQ>
+    <xmx:RPLFX5PFhSnqR5PQkuuTdTVdiQHoJE_coTvGDkHxqd3J5vRDcqCScw>
+    <xmx:RPLFX-_1PrfXi7lOwZ7RHq8TX6OtscvZc5AQJoLBLsS9_KvqVzfAXw>
+    <xmx:RfLFXxWPtZkKEReIhB_EG5CASv8xH0nkYlfrtsouSFNyihk1quilnw>
+Received: from localhost (igld-84-229-154-147.inter.net.il [84.229.154.147])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 33054328005D;
+        Tue,  1 Dec 2020 02:35:32 -0500 (EST)
+Date:   Tue, 1 Dec 2020 09:35:29 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Aleksandr Nogikh <aleksandrnogikh@gmail.com>, fw@strlen.de,
+        davem@davemloft.net, johannes@sipsolutions.net,
+        edumazet@google.com, andreyknvl@google.com, dvyukov@google.com,
+        elver@google.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        willemdebruijn.kernel@gmail.com,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Willem de Bruijn <willemb@google.com>
+Subject: Re: [PATCH v5 2/3] net: add kcov handle to skb extensions
+Message-ID: <20201201073529.GA1473056@shredder.lan>
+References: <20201029173620.2121359-1-aleksandrnogikh@gmail.com>
+ <20201029173620.2121359-3-aleksandrnogikh@gmail.com>
+ <20201121160941.GA485907@shredder.lan>
+ <20201130175248.7f0b5309@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW3PR11MB4554.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c426d71d-bf99-4a6d-6fac-08d895cafce7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Dec 2020 07:30:33.0648
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: n4Sl+mDovrDutRAMFEwISNZQcH+rFLSu9fqIyP9lYqpiYxRIUXDnAprIsGiH5HhL/GYpniTkyZEoCm8NxzDzM+EAXWjLAJ4hI1muJne2JXA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1984
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201130175248.7f0b5309@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: sven.auhagen@voleatech.de <sven.auhagen@voleatech.de>
-> Sent: Wednesday, November 11, 2020 10:35 PM
-> To: Nguyen, Anthony L <anthony.l.nguyen@intel.com>; Fijalkowski, Maciej
-> <maciej.fijalkowski@intel.com>; kuba@kernel.org
-> Cc: davem@davemloft.net; intel-wired-lan@lists.osuosl.org;
-> netdev@vger.kernel.org; nhorman@redhat.com; sassmann@redhat.com;
-> Penigalapati, Sandeep <sandeep.penigalapati@intel.com>;
-> brouer@redhat.com; pmenzel@molgen.mpg.de
-> Subject: [PATCH v4 5/6] igb: use xdp_do_flush
->=20
-> From: Sven Auhagen <sven.auhagen@voleatech.de>
->=20
-> Since it is a new XDP implementation change xdp_do_flush_map to
-> xdp_do_flush.
->=20
-> Suggested-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> Signed-off-by: Sven Auhagen <sven.auhagen@voleatech.de>
-> ---
->  drivers/net/ethernet/intel/igb/igb_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
+On Mon, Nov 30, 2020 at 05:52:48PM -0800, Jakub Kicinski wrote:
+> On Sat, 21 Nov 2020 18:09:41 +0200 Ido Schimmel wrote:
+> > + Florian
+> > 
+> > On Thu, Oct 29, 2020 at 05:36:19PM +0000, Aleksandr Nogikh wrote:
+> > > From: Aleksandr Nogikh <nogikh@google.com>
+> > > 
+> > > Remote KCOV coverage collection enables coverage-guided fuzzing of the
+> > > code that is not reachable during normal system call execution. It is
+> > > especially helpful for fuzzing networking subsystems, where it is
+> > > common to perform packet handling in separate work queues even for the
+> > > packets that originated directly from the user space.
+> > > 
+> > > Enable coverage-guided frame injection by adding kcov remote handle to
+> > > skb extensions. Default initialization in __alloc_skb and
+> > > __build_skb_around ensures that no socket buffer that was generated
+> > > during a system call will be missed.
+> > > 
+> > > Code that is of interest and that performs packet processing should be
+> > > annotated with kcov_remote_start()/kcov_remote_stop().
+> > > 
+> > > An alternative approach is to determine kcov_handle solely on the
+> > > basis of the device/interface that received the specific socket
+> > > buffer. However, in this case it would be impossible to distinguish
+> > > between packets that originated during normal background network
+> > > processes or were intentionally injected from the user space.
+> > > 
+> > > Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
+> > > Acked-by: Willem de Bruijn <willemb@google.com>  
+> > 
+> > [...]
+> > 
+> > > @@ -249,6 +249,9 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
+> > >  
+> > >  		fclones->skb2.fclone = SKB_FCLONE_CLONE;
+> > >  	}
+> > > +
+> > > +	skb_set_kcov_handle(skb, kcov_common_handle());  
+> > 
+> > Hi,
+> > 
+> > This causes skb extensions to be allocated for the allocated skb, but
+> > there are instances that blindly overwrite 'skb->extensions' by invoking
+> > skb_copy_header() after __alloc_skb(). For example, skb_copy(),
+> > __pskb_copy_fclone() and skb_copy_expand(). This results in the skb
+> > extensions being leaked [1].
+> > 
+> > One possible solution is to try to patch all these instances with
+> > skb_ext_put() before skb_copy_header().
+> > 
+> > Another possible solution is to convert skb_copy_header() to use
+> > skb_ext_copy() instead of __skb_ext_copy(). It will first drop the
+> > reference on the skb extensions of the new skb, but it assumes that
+> > 'skb->active_extensions' is valid. This is not the case in the
+> > skb_clone() path so we should probably zero this field in __skb_clone().
+> > 
+> > Other suggestions?
+> 
+> Looking at the patch from Marco to move back to a field now I'm
+> wondering how you run into this, Ido :D
+> 
+> AFAIU the extension is only added if process as a KCOV handle.
+> 
+> Are you using KCOV?
+
+Hi Jakub,
+
+Yes. We have an internal syzkaller instance where this is enabled. See
+"syz-executor.0" in the trace below.
+
+> 
+> > [1]
+> > BUG: memory leak
+> > unreferenced object 0xffff888027f9a490 (size 16):
+> >   comm "syz-executor.0", pid 1155, jiffies 4295996826 (age 66.927s)
+> >   hex dump (first 16 bytes):
+> >     01 00 00 00 01 02 6b 6b 01 00 00 00 00 00 00 00  ......kk........
+> >   backtrace:
+> >     [<0000000005a5f2c4>] kmemleak_alloc_recursive include/linux/kmemleak.h:43 [inline]
+> >     [<0000000005a5f2c4>] slab_post_alloc_hook mm/slab.h:528 [inline]
+> >     [<0000000005a5f2c4>] slab_alloc_node mm/slub.c:2891 [inline]
+> >     [<0000000005a5f2c4>] slab_alloc mm/slub.c:2899 [inline]
+> >     [<0000000005a5f2c4>] kmem_cache_alloc+0x173/0x800 mm/slub.c:2904
+> >     [<00000000c5e43ea9>] __skb_ext_alloc+0x22/0x90 net/core/skbuff.c:6173
+> >     [<000000000de35e81>] skb_ext_add+0x230/0x4a0 net/core/skbuff.c:6268
+> >     [<000000003b7efba4>] skb_set_kcov_handle include/linux/skbuff.h:4622 [inline]
+> >     [<000000003b7efba4>] skb_set_kcov_handle include/linux/skbuff.h:4612 [inline]
+> >     [<000000003b7efba4>] __alloc_skb+0x47f/0x6a0 net/core/skbuff.c:253
+> >     [<000000007f789b23>] skb_copy+0x151/0x310 net/core/skbuff.c:1512
+> >     [<000000001ce26864>] mlxsw_emad_transmit+0x4e/0x620 drivers/net/ethernet/mellanox/mlxsw/core.c:585
+> >     [<000000005c732123>] mlxsw_emad_reg_access drivers/net/ethernet/mellanox/mlxsw/core.c:829 [inline]
+> >     [<000000005c732123>] mlxsw_core_reg_access_emad+0xda8/0x1770 drivers/net/ethernet/mellanox/mlxsw/core.c:2408
+> >     [<00000000c07840b3>] mlxsw_core_reg_access+0x101/0x7f0 drivers/net/ethernet/mellanox/mlxsw/core.c:2583
+> >     [<000000007c47f30f>] mlxsw_reg_write+0x30/0x40 drivers/net/ethernet/mellanox/mlxsw/core.c:2603
+> >     [<00000000675e3fc7>] mlxsw_sp_port_admin_status_set+0x8a7/0x980 drivers/net/ethernet/mellanox/mlxsw/spectrum.c:300
+> >     [<00000000fefe35a4>] mlxsw_sp_port_stop+0x63/0x70 drivers/net/ethernet/mellanox/mlxsw/spectrum.c:537
+> >     [<00000000c41390e8>] __dev_close_many+0x1c7/0x300 net/core/dev.c:1607
+> >     [<00000000628c5987>] __dev_close net/core/dev.c:1619 [inline]
+> >     [<00000000628c5987>] __dev_change_flags+0x2b9/0x710 net/core/dev.c:8421
+> >     [<000000008cc810c6>] dev_change_flags+0x97/0x170 net/core/dev.c:8494
+> >     [<0000000053274a78>] do_setlink+0xa5b/0x3b80 net/core/rtnetlink.c:2706
+> >     [<00000000e4085785>] rtnl_group_changelink net/core/rtnetlink.c:3225 [inline]
+> >     [<00000000e4085785>] __rtnl_newlink+0xe06/0x17d0 net/core/rtnetlink.c:3379
+> 
