@@ -2,168 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A49102C9E1A
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 10:41:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC5E52C9E4E
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 10:50:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726530AbgLAJeI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 04:34:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55902 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725961AbgLAJeG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 04:34:06 -0500
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D9CC0613CF
-        for <netdev@vger.kernel.org>; Tue,  1 Dec 2020 01:33:20 -0800 (PST)
-Received: by mail-wr1-x444.google.com with SMTP id e7so1569114wrv.6
-        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 01:33:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=QMf3ciSb3p1TUM3ZMsjWC2X/r5GiQeftLUE54jIL4uA=;
-        b=DFuHkurtaSfBpT89lym/p//JGuSMFqM5mYL7cr8LUKfe3n/sNl7L0nLSNa5AKbRIDc
-         3ZM57iP+Ft9UZeEYopqIGwkJ8fjB+0eHglyeQ6w9p93jJfeNAq0chvWmv/tHzi6CzX6h
-         uSRDzJlBFNH1nESJv9It5YJrVaHE88PbWc7kKkVzE7aybEnxDiINd+IhS3MSF+hxLkSA
-         M3jZYvHQEg5dlnvHDb1WQhBDYSsCEjuSOTU22Vs2MmKHOh1SV6yZjy1FvV7vEH1jwWX1
-         Kdgx5FfkUYfRiMlBGSFtSPtjdxZJJ3aLy9XpfB2M174Y1SgETxz1HPJ6FVX/9Q1iCmDy
-         0auQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=QMf3ciSb3p1TUM3ZMsjWC2X/r5GiQeftLUE54jIL4uA=;
-        b=gwkNKR5XcdG4dpbzRydQgJNe5U48ce+JeeAij+0SdmzSio06l0cSy2VbgH/5B+bb2C
-         2oBp/Yk1yjDKgFTmz1b1dF7Q30UI4IpoMnD5fpAt9JEP3AWfSZmlhViF5SFCMwc1Q0Dy
-         +eF8JxT0RUx939TMOZBwUiuOtrwOcp8NXwEdh8r7ossm7AEOGRXl3yI2DPAHHIZM1aRm
-         uT26XyUeSJJW3h41nCErQC4Go4eG/nrqN42gkdSbwHkIVOfweopcQdCzrTwrwvgQRASv
-         4IDPDzYnctplfllldaMN6OsDtQU8bJHfT/ROWuF3ngySUnYrHIAwph9hp/UfPPwRT/Dq
-         bzaQ==
-X-Gm-Message-State: AOAM530oRm7uVfOJauG9hfT4O/7FEwIrTF4yAjRSNVA6HakMEtFMkax+
-        Co6u/mpDOnMjRfDv2r609OtFEMq0hKBt8GoUApM=
-X-Google-Smtp-Source: ABdhPJwwLA662/moo5q95ma9jglCld+deJxKoj5KM/dNJnhhsvaasRdHofW62YH07SYrtmoM6MtWZA==
-X-Received: by 2002:adf:e801:: with SMTP id o1mr2667599wrm.3.1606815198551;
-        Tue, 01 Dec 2020 01:33:18 -0800 (PST)
-Received: from localhost.localdomain ([5.35.99.104])
-        by smtp.gmail.com with ESMTPSA id u66sm1893793wmg.30.2020.12.01.01.33.17
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 01 Dec 2020 01:33:17 -0800 (PST)
-From:   Denis Kirjanov <kda@linux-powerpc.org>
-To:     netdev@vger.kernel.org
-Cc:     kuba@kernel.org, davem@davemloft.net
-Subject: [PATCH v3] net/af_unix: don't create a path for a binded socket
-Date:   Tue,  1 Dec 2020 12:33:06 +0300
-Message-Id: <20201201093306.32638-1-kda@linux-powerpc.org>
-X-Mailer: git-send-email 2.16.4
+        id S1728436AbgLAJrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 04:47:25 -0500
+Received: from mail.zx2c4.com ([192.95.5.64]:49939 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728350AbgLAJrZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Dec 2020 04:47:25 -0500
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id d9ff0212
+        for <netdev@vger.kernel.org>;
+        Tue, 1 Dec 2020 09:41:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=7/8vfumFiKFWEFGoluigIV+USFo=; b=AKxm+P
+        bSVWivfUhCuXfodg30FC+LJXZ8A+1w13r1dTahN1mLQDBODzGi2RQIHCiRif/Glq
+        wyW0zYh5L+8/kKfd5JxT4dv8dzatdAlxLwysJTia/jyx50h+sCCggnSXYdPk85Zp
+        TVKCXTe5h3nuyBtHqnhbbUAatiSMHojrRUSSngzjboGw2RR1hunYW3/pDTY8o3lB
+        qTEvbtF9/wycS6z0wjcpNL7yIlJZ7OdIlczT0dfLh0NXYEF5VFw9mfgXXkFAQZ11
+        n0bMQ9O2bKJ1Ji0G/4lRZqXDWVXdk3lhF1Cav+D3wzJDYOu3kJiW4Nur/sF7OJ4/
+        /VqsU5fRA44zKPfw==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id e8453981 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Tue, 1 Dec 2020 09:41:05 +0000 (UTC)
+Received: by mail-yb1-f176.google.com with SMTP id l14so1262785ybq.3
+        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 01:46:43 -0800 (PST)
+X-Gm-Message-State: AOAM530pkHQpEiCGiXUTtn9UDTPUbGxnoKxoroJSn6aNYWaHoz4tS4hX
+        h96aQ/+RVe+ynMq+9Jq+s6VIHiwhZRpyT/2agGE=
+X-Google-Smtp-Source: ABdhPJx3nrS7OkOcBUPfcHvT7gk54jKmP0Ba83TWRVYWGk0uId64o2IBm5R000g48uJiRz0H7Xj53xvhbEU4cJshx80=
+X-Received: by 2002:a25:bb81:: with SMTP id y1mr2259578ybg.456.1606816003001;
+ Tue, 01 Dec 2020 01:46:43 -0800 (PST)
+MIME-Version: 1.0
+References: <20201201092903.3269202-1-yangyingliang@huawei.com>
+In-Reply-To: <20201201092903.3269202-1-yangyingliang@huawei.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 1 Dec 2020 10:46:32 +0100
+X-Gmail-Original-Message-ID: <CAHmME9rH7iBZN3tMuWuRU_n_dZ1An0FMLpwXWgDJFWjoUFp0fQ@mail.gmail.com>
+Message-ID: <CAHmME9rH7iBZN3tMuWuRU_n_dZ1An0FMLpwXWgDJFWjoUFp0fQ@mail.gmail.com>
+Subject: Re: [PATCH net v2 1/2] wireguard: device: don't call free_netdev() in priv_destructor()
+To:     yangyingliang@huawei.com
+Cc:     Netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, toshiaki.makita1@gmail.com,
+        rkovhaev@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-in the case of the socket which is bound to an adress
-there is no sense to create a path in the next attempts
+Hi Yang,
 
-here is a program that shows the issue:
+On Tue, Dec 1, 2020 at 10:31 AM Yang Yingliang <yangyingliang@huawei.com> wrote:
+>
+> After commit cf124db566e6 ("net: Fix inconsistent teardown and..."),
+> priv_destruct() doesn't call free_netdev() in driver, we use
+> dev->needs_free_netdev to indicate whether free_netdev() should be
+> called on release path.
+> This patch remove free_netdev() from priv_destructor() and set
+> dev->needs_free_netdev to true.
 
-int main()
-{
-    int s;
-    struct sockaddr_un a;
+For now, nack.
 
-    s = socket(AF_UNIX, SOCK_STREAM, 0);
-    if (s<0)
-        perror("socket() failed\n");
+I remember when cf124db566e6 came out and carefully looking at the
+construction of device.c in WireGuard. priv_destructor is only
+assigned after register_device, with the various error paths in
+wg_newlink responsible for cleaning up other earlier failures, and
+trying to move to needs_free_netdev would have introduced more
+complexity in this particular case, if my memory serves. I do not
+think there's a memory leak here, and I worry about too hastily
+changing the state machine "just because".
 
-    printf("First bind()\n");
+In other words, could you point out how to generate a memory leak? If
+you're correct, then we can start dissecting and refactoring this. But
+off the bat, I'm not sure I'm exactly seeing whatever you're seeing.
 
-    memset(&a, 0, sizeof(a));
-    a.sun_family = AF_UNIX;
-    strncpy(a.sun_path, "/tmp/.first_bind", sizeof(a.sun_path));
-
-    if ((bind(s, (const struct sockaddr*) &a, sizeof(a))) == -1)
-        perror("bind() failed\n");
-
-    printf("Second bind()\n");
-
-    memset(&a, 0, sizeof(a));
-    a.sun_family = AF_UNIX;
-    strncpy(a.sun_path, "/tmp/.first_bind_failed", sizeof(a.sun_path));
-
-    if ((bind(s, (const struct sockaddr*) &a, sizeof(a))) == -1)
-        perror("bind() failed\n");
-}
-
-kda@SLES15-SP2:~> ./test
-First bind()
-Second bind()
-bind() failed
-: Invalid argument
-
-kda@SLES15-SP2:~> ls -la /tmp/.first_bind
-.first_bind         .first_bind_failed
-
-Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
-
-v2: move a new path creation after the address assignment check
-v3: fixed goto labels on the error path
----
- net/unix/af_unix.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
-
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index 41c3303c3357..70861e9bcfd9 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -1034,6 +1034,14 @@ static int unix_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
- 		goto out;
- 	addr_len = err;
- 
-+	err = mutex_lock_interruptible(&u->bindlock);
-+	if (err)
-+		goto out;
-+
-+	err = -EINVAL;
-+	if (u->addr)
-+		goto out_up;
-+
- 	if (sun_path[0]) {
- 		umode_t mode = S_IFSOCK |
- 		       (SOCK_INODE(sock)->i_mode & ~current_umask());
-@@ -1041,22 +1049,14 @@ static int unix_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
- 		if (err) {
- 			if (err == -EEXIST)
- 				err = -EADDRINUSE;
--			goto out;
-+			goto out_up;
- 		}
- 	}
- 
--	err = mutex_lock_interruptible(&u->bindlock);
--	if (err)
--		goto out_put;
--
--	err = -EINVAL;
--	if (u->addr)
--		goto out_up;
--
- 	err = -ENOMEM;
- 	addr = kmalloc(sizeof(*addr)+addr_len, GFP_KERNEL);
- 	if (!addr)
--		goto out_up;
-+		goto out_put;
- 
- 	memcpy(addr->name, sunaddr, addr_len);
- 	addr->len = addr_len;
-@@ -1088,11 +1088,11 @@ static int unix_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
- 
- out_unlock:
- 	spin_unlock(&unix_table_lock);
--out_up:
--	mutex_unlock(&u->bindlock);
- out_put:
- 	if (err)
- 		path_put(&path);
-+out_up:
-+	mutex_unlock(&u->bindlock);
- out:
- 	return err;
- }
--- 
-2.16.4
-
+Jason
