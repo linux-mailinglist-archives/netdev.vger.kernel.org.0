@@ -2,132 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B492D2C9C59
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 10:18:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 276052C9C3C
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 10:18:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389895AbgLAJR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 04:17:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52486 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389873AbgLAJLx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 04:11:53 -0500
-Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D173C0613D2;
-        Tue,  1 Dec 2020 01:11:13 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        id S2390309AbgLAJO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 04:14:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:39938 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2390218AbgLAJOP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 04:14:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606813969;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=eVUUIWic4nOa387L60cGysm2Laqcqcvtu32GbAKq69E=;
+        b=JZN1grQKU5vuHRVDWLM4eqzYX4FppLeeiarQ8H2lcQA4J/lBYIwrbir6XVRAt4oFL0T3DR
+        1G5KT+pCEgES+ERMCQhBQhKUlXNJXIwyiZadttVA6AYf/MLSsHagAaTkY7Q3j0w+LJ/L3B
+        jBkLHEAvF+6iL+1qGr50Sh6s7668G5s=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-566-Mk-s11hRO_68q1f7Vo2ONA-1; Tue, 01 Dec 2020 04:12:47 -0500
+X-MC-Unique: Mk-s11hRO_68q1f7Vo2ONA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Clbth4xPPz9sW4;
-        Tue,  1 Dec 2020 20:11:08 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1606813869;
-        bh=V2oVLU7Ya8T1FEbPhjvbw0g0LWUsablXABJKhT4Kzbk=;
-        h=Date:From:To:Cc:Subject:From;
-        b=LhIgp8E0q4gIucbZRK1uQkuvu/ua0oZ67pa67HWUINZN1VKu8aOkAWbBSEJl+8wO2
-         nVF8DiGxVOiy023Z014p0m3n8lZWK5louusNA3ulz8flG5sWVQEiCnpbv5X8D/THu1
-         fuPFPUreNUAlphbqYb7VATVPb55iOLKMoISa4T2FTm+7UHjK3MT6xc0r+3YI+g/m7n
-         Tf4RgohMlAAblqymqxoOcdagrk91xs13GJGanYbrmBN/0odVGCaBnu3CMrj/YccXCI
-         r8AD2qAkJdjfn6pDEZaQDy8U565rGWWTvavOO1inhAbIXUNvoZr8CSMOBXDwH+rqNf
-         XRYszY0qQuZkw==
-Date:   Tue, 1 Dec 2020 20:11:06 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Subject: linux-next: manual merge of the akpm tree with the bpf-next tree
-Message-ID: <20201201201106.3ab8fbce@canb.auug.org.au>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 04BD110151E3;
+        Tue,  1 Dec 2020 09:12:46 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-112-159.rdu2.redhat.com [10.10.112.159])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3C7B718996;
+        Tue,  1 Dec 2020 09:12:44 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20201201084638.GA27937@gondor.apana.org.au>
+References: <20201201084638.GA27937@gondor.apana.org.au> <20201127050701.GA22001@gondor.apana.org.au> <20201126063303.GA18366@gondor.apana.org.au> <160518586534.2277919.14475638653680231924.stgit@warthog.procyon.org.uk> <1976719.1606378781@warthog.procyon.org.uk> <4035245.1606812273@warthog.procyon.org.uk>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     dhowells@redhat.com, bfields@fieldses.org,
+        trond.myklebust@hammerspace.com, linux-crypto@vger.kernel.org,
+        linux-afs@lists.infradead.org, linux-cifs@vger.kernel.org,
+        linux-nfs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC][PATCH 00/18] crypto: Add generic Kerberos library
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Gaz1/bh1l39mvpyLfdfqLGw";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <4036796.1606813958.1@warthog.procyon.org.uk>
+Date:   Tue, 01 Dec 2020 09:12:38 +0000
+Message-ID: <4036797.1606813958@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/Gaz1/bh1l39mvpyLfdfqLGw
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Herbert Xu <herbert@gondor.apana.org.au> wrote:
 
-Hi all,
+> Couldn't you just change the output sg to include the offset?
 
-Today's linux-next merge of the akpm tree got a conflict in:
+That depends on whether the caller has passed it elsewhere for some other
+parallel purpose, but I think I'm going to have to go down that road and
+restore it afterwards.
 
-  fs/eventpoll.c
+David
 
-between commits:
-
-  7fd3253a7de6 ("net: Introduce preferred busy-polling")
-  7c951cafc0cb ("net: Add SO_BUSY_POLL_BUDGET socket option")
-
-from the bpf-next tree and commit:
-
-  cc2687004c9d ("epoll: simplify and optimize busy loop logic")
-
-from the akpm tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc fs/eventpoll.c
-index a80a290005c4,88f5b26806e5..000000000000
---- a/fs/eventpoll.c
-+++ b/fs/eventpoll.c
-@@@ -393,15 -395,19 +395,20 @@@ static bool ep_busy_loop(struct eventpo
-  {
-  	unsigned int napi_id =3D READ_ONCE(ep->napi_id);
- =20
-- 	if ((napi_id >=3D MIN_NAPI_ID) && net_busy_loop_on())
-+ 	if ((napi_id >=3D MIN_NAPI_ID) && net_busy_loop_on()) {
- -		napi_busy_loop(napi_id, nonblock ? NULL : ep_busy_loop_end, ep);
- +		napi_busy_loop(napi_id, nonblock ? NULL : ep_busy_loop_end, ep, false,
- +			       BUSY_POLL_BUDGET);
-- }
--=20
-- static inline void ep_reset_busy_poll_napi_id(struct eventpoll *ep)
-- {
-- 	if (ep->napi_id)
-+ 		if (ep_events_available(ep))
-+ 			return true;
-+ 		/*
-+ 		 * Busy poll timed out.  Drop NAPI ID for now, we can add
-+ 		 * it back in when we have moved a socket with a valid NAPI
-+ 		 * ID onto the ready list.
-+ 		 */
-  		ep->napi_id =3D 0;
-+ 		return false;
-+ 	}
-+ 	return false;
-  }
- =20
-  /*
-
---Sig_/Gaz1/bh1l39mvpyLfdfqLGw
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl/GCKoACgkQAVBC80lX
-0GzrkAf/XHydBRC0Cy49lYG5Rk9J0M4sT9MUOuRmLut4KQauDrIW3wh4gD9W2Lgg
-io+WtsselVsi7HSS0jXmOsq9DARsS4tF2y6Ec/t+FLRjBfTKDjBQPvrixIpzEmE1
-Ym6h48+62dDHzH2swol/sPRfmEU4LeH89y9uxwrE4LNH94KycQwL0otHfOnuuOdl
-14IkmIHdzW0G+DdxUlcm5eULpH+S45/0QHamcq9ni5+DPLAKvka0Gh37l+/qx+jJ
-5U5x6YaL89OpO7/ama7yr1dEYpk2GC2t3nKJ1wFDsaxOy91ykGJbNFARMU6iPvr1
-Au3m2DCIvqts708x6liO/igSoNtApg==
-=l2DX
------END PGP SIGNATURE-----
-
---Sig_/Gaz1/bh1l39mvpyLfdfqLGw--
