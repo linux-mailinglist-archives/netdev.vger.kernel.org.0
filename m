@@ -2,129 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C33212CA4E4
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 15:05:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8BD52CA4E6
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 15:05:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391552AbgLAOE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 09:04:27 -0500
-Received: from pegase1.c-s.fr ([93.17.236.30]:27830 "EHLO pegase1.c-s.fr"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391301AbgLAOE1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Dec 2020 09:04:27 -0500
-Received: from localhost (mailhub1-int [192.168.12.234])
-        by localhost (Postfix) with ESMTP id 4ClkN85gRwz9v0N1;
-        Tue,  1 Dec 2020 15:03:36 +0100 (CET)
-X-Virus-Scanned: Debian amavisd-new at c-s.fr
-Received: from pegase1.c-s.fr ([192.168.12.234])
-        by localhost (pegase1.c-s.fr [192.168.12.234]) (amavisd-new, port 10024)
-        with ESMTP id gWMNvLud-c5q; Tue,  1 Dec 2020 15:03:36 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase1.c-s.fr (Postfix) with ESMTP id 4ClkN84n5dz9v0N0;
-        Tue,  1 Dec 2020 15:03:36 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 02B778B7B6;
-        Tue,  1 Dec 2020 15:03:38 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id fuT5u0mCRaZw; Tue,  1 Dec 2020 15:03:37 +0100 (CET)
-Received: from [192.168.4.90] (unknown [192.168.4.90])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 99C098B7B5;
-        Tue,  1 Dec 2020 15:03:37 +0100 (CET)
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        bpf@vger.kernel.org, "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Sandipan Das <sandipan@linux.ibm.com>
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-Subject: powerpc32: BUG: KASAN: use-after-free in test_bpf_init+0x6f8/0xde8
- [test_bpf]
-Message-ID: <ccdc2bc3-ce71-1faa-c83f-cd3b0eaf963d@csgroup.eu>
-Date:   Tue, 1 Dec 2020 15:03:30 +0100
-User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        id S2388529AbgLAOEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 09:04:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42168 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388154AbgLAOEp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 09:04:45 -0500
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18A09C0613D4
+        for <netdev@vger.kernel.org>; Tue,  1 Dec 2020 06:03:59 -0800 (PST)
+Received: by mail-ej1-x641.google.com with SMTP id qw4so4262027ejb.12
+        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 06:03:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ww1jZFSmoMN0V30+nLf3dGp1lFwul5jr4mGyVa+aU4I=;
+        b=r256wXC0BpfsizDxi3OwyyQptmSF7HzQ9HDnabO9f3R3FMl2049tFh4TUhKI7mposq
+         0dZDSa8bIuUapkKgvXygY+Wg8+OqFse8V+KlKOIOccWqT4JUnxT4DMlTr4eZpU0klZHG
+         z+nsKCwvF5nrdd1dBZZre6pEpsaUUqb7VovFyDoeqwKTi+8pJwe6K3pODXEa2c94LlGG
+         MLUkru8jno5KfNmjpoLXdfeioHl4BOwDoKZlk5JdLLJQZDkS9sLNJSMr7uKfcjc5319s
+         UxndobCKYk07cl6mqcHS01JRc5mLt+C3NYl1khzZkYbFSkxmz1LdoRpZ9+gWPFMXZgaL
+         vaiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ww1jZFSmoMN0V30+nLf3dGp1lFwul5jr4mGyVa+aU4I=;
+        b=T4Cv9vBeU6o+/o5gbW2dL3sYezRKjYKD80ezYRtTB4RL3ZDETraTaV5NTZF8i1VZlY
+         yE3T2E4mAgHs6GIkMW7H/u5j4eKnU9yXh2nAk/xBbox8SVu6P4E7hzs0xcWwHkOCfNHA
+         fqAp6atSR6RYwzfQXf5bTZrTdTPfHg0kU9aMBGPcvXn9A2WDxcaxEQ9bBv0/zMCXIpl4
+         P7teIXTgyzDwt5xc94GE0bjUQjW4oYjzJ43Zr7QcyNOHgCHpVRyY317UUsiEwcM99qXW
+         GdpLYeLTdq6AjlBC+r1JdgOeV0iSFFoN+ANGMaOzSKXjHiONTLHdp6ljd1Z1DUcef3tJ
+         5Viw==
+X-Gm-Message-State: AOAM533O3zkP+LZCLAdZLH5NxACFwJbgUWqL4FcdIdRdIPm6fKRkV8oZ
+        XX6KYj5XvVDVDSk+BOsBBnk=
+X-Google-Smtp-Source: ABdhPJxnNPOVnx03K/r5iiLlcO9NliYmnqmHemaBC879sj4O1E3G2hYOqzPJgaLEASfT4AmcV+Dm9A==
+X-Received: by 2002:a17:906:7087:: with SMTP id b7mr3090414ejk.70.1606831436222;
+        Tue, 01 Dec 2020 06:03:56 -0800 (PST)
+Received: from skbuf ([188.25.2.120])
+        by smtp.gmail.com with ESMTPSA id t26sm893077eji.22.2020.12.01.06.03.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Dec 2020 06:03:55 -0800 (PST)
+Date:   Tue, 1 Dec 2020 16:03:54 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 2/4] net: dsa: Link aggregation support
+Message-ID: <20201201140354.lnhwx3ix2ogtnngy@skbuf>
+References: <20201130140610.4018-1-tobias@waldekranz.com>
+ <20201130140610.4018-3-tobias@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: fr
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201130140610.4018-3-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I've got the following KASAN error while running test_bpf module on a powerpc 8xx (32 bits).
+On Mon, Nov 30, 2020 at 03:06:08PM +0100, Tobias Waldekranz wrote:
+> When a LAG joins a bridge, the DSA subsystem will treat that as each
+> individual port joining the bridge. The driver may look at the port's
+> LAG pointer to see if it is associated with any LAG, if that is
+> required. This is analogue to how switchdev events are replicated out
+> to all lower devices when reaching e.g. a LAG.
 
-That's reproductible, happens each time at the same test.
+Agree with the principle. But doesn't that mean that this code:
 
-Can someone help me to investigate and fix that ?
+static int dsa_slave_switchdev_blocking_event(struct notifier_block *unused,
+					      unsigned long event, void *ptr)
+{
+	struct net_device *dev = switchdev_notifier_info_to_dev(ptr);
+	int err;
 
-[  209.381037] test_bpf: #298 LD_IND byte frag
-[  209.383041] Pass 1: shrink = 0, seen = 0x30000
-[  209.383284] Pass 2: shrink = 0, seen = 0x30000
-[  209.383562] flen=3 proglen=104 pass=3 image=8166dc91 from=modprobe pid=380
-[  209.383805] JIT code: 00000000: 7c 08 02 a6 90 01 00 04 91 c1 ff b8 91 e1 ff bc
-[  209.384044] JIT code: 00000010: 94 21 ff 70 80 e3 00 58 81 e3 00 54 7d e7 78 50
-[  209.384279] JIT code: 00000020: 81 c3 00 a0 38 a0 00 00 38 80 00 00 38 a0 00 40
-[  209.384516] JIT code: 00000030: 3c e0 c0 02 60 e7 62 14 7c e8 03 a6 38 c5 00 00
-[  209.384753] JIT code: 00000040: 4e 80 00 21 41 80 00 0c 60 00 00 00 7c 83 23 78
-[  209.384990] JIT code: 00000050: 38 21 00 90 80 01 00 04 7c 08 03 a6 81 c1 ff b8
-[  209.385207] JIT code: 00000060: 81 e1 ff bc 4e 80 00 20
-[  209.385442] jited:1
-[  209.385762] ==================================================================
-[  209.386272] BUG: KASAN: use-after-free in test_bpf_init+0x6f8/0xde8 [test_bpf]
-[  209.386503] Read of size 4 at addr c2de70c0 by task modprobe/380
-[  209.386622]
-[  209.386881] CPU: 0 PID: 380 Comm: modprobe Not tainted 5.10.0-rc5-s3k-dev-01341-g72d20eec3f8b #4178
-[  209.387032] Call Trace:
-[  209.387404] [cad6b878] [c020e0d4] print_address_description.constprop.0+0x70/0x4e0 (unreliable)
-[  209.387920] [cad6b8f8] [c020dc98] kasan_report+0x118/0x1c0
-[  209.388503] [cad6b938] [cb0e0c98] test_bpf_init+0x6f8/0xde8 [test_bpf]
-[  209.388918] [cad6ba58] [c0004084] do_one_initcall+0xa4/0x33c
-[  209.389377] [cad6bb28] [c00f9144] do_init_module+0x158/0x7f4
-[  209.389820] [cad6bbc8] [c00fccb0] load_module+0x3394/0x38d8
-[  209.390273] [cad6be38] [c00fd4e0] sys_finit_module+0x118/0x17c
-[  209.390700] [cad6bf38] [c00170d0] ret_from_syscall+0x0/0x34
-[  209.391020] --- interrupt: c01 at 0xfd5e7c0
-[  209.395301]
-[  209.395472] Allocated by task 276:
-[  209.395767]  __kasan_kmalloc.constprop.0+0xe8/0x134
-[  209.396029]  kmem_cache_alloc+0x150/0x290
-[  209.396281]  __alloc_skb+0x58/0x28c
-[  209.396563]  alloc_skb_with_frags+0x74/0x314
-[  209.396872]  sock_alloc_send_pskb+0x404/0x424
-[  209.397205]  unix_dgram_sendmsg+0x200/0xbf0
-[  209.397473]  __sys_sendto+0x17c/0x21c
-[  209.397754]  ret_from_syscall+0x0/0x34
-[  209.397877]
-[  209.398039] Freed by task 274:
-[  209.398308]  kasan_set_track+0x34/0x6c
-[  209.398608]  kasan_set_free_info+0x28/0x48
-[  209.398878]  __kasan_slab_free+0x10c/0x19c
-[  209.399141]  kmem_cache_free+0x68/0x390
-[  209.399433]  skb_free_datagram+0x20/0x8c
-[  209.399759]  unix_dgram_recvmsg+0x474/0x710
-[  209.400084]  sock_read_iter+0x17c/0x228
-[  209.400348]  vfs_read+0x3c8/0x4f4
-[  209.400603]  ksys_read+0x17c/0x1cc
-[  209.400878]  ret_from_syscall+0x0/0x34
-[  209.401001]
-[  209.401222] The buggy address belongs to the object at c2de70c0
-[  209.401222]  which belongs to the cache skbuff_head_cache of size 176
-[  209.401462] The buggy address is located 0 bytes inside of
-[  209.401462]  176-byte region [c2de70c0, c2de7170)
-[  209.401604] The buggy address belongs to the page:
-[  209.401867] page:464e6411 refcount:1 mapcount:0 mapping:00000000 index:0x0 pfn:0xb79
-[  209.402080] flags: 0x200(slab)
-[  209.402477] raw: 00000200 00000100 00000122 c2004a90 00000000 00440088 ffffffff 00000001
-[  209.402646] page dumped because: kasan: bad access detected
-[  209.402765]
-[  209.402897] Memory state around the buggy address:
-[  209.403142]  c2de6f80: fb fb fc fc fc fc fc fc fc fc fa fb fb fb fb fb
-[  209.403388]  c2de7000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  209.403639] >c2de7080: fc fc fc fc fc fc fc fc fa fb fb fb fb fb fb fb
-[  209.403798]                                    ^
-[  209.404048]  c2de7100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc
-[  209.404304]  c2de7180: fc fc fc fc fc fc fa fb fb fb fb fb fb fb fb fb
-[  209.404456] ==================================================================
-[  209.404591] Disabling lock debugging due to kernel taint
+	switch (event) {
+	case SWITCHDEV_PORT_OBJ_ADD:
+		err = switchdev_handle_port_obj_add(dev, ptr,
+						    dsa_slave_dev_check,
+						    dsa_slave_port_obj_add);
+		return notifier_from_errno(err);
+	case SWITCHDEV_PORT_OBJ_DEL:
+		err = switchdev_handle_port_obj_del(dev, ptr,
+						    dsa_slave_dev_check,
+						    dsa_slave_port_obj_del);
+		return notifier_from_errno(err);
+	case SWITCHDEV_PORT_ATTR_SET:
+		err = switchdev_handle_port_attr_set(dev, ptr,
+						     dsa_slave_dev_check,
+						     dsa_slave_port_attr_set);
+		return notifier_from_errno(err);
+	}
 
+	return NOTIFY_DONE;
+}
 
-Thanks
-Christophe
+should be replaced with something that also reacts to the case where
+"dev" is a LAG? Like, for example, I imagine that a VLAN installed on a
+bridge port that is a LAG should be propagated to the switch ports
+beneath that LAG. Similarly for all bridge attributes.
+
+As for FDB and MDB addresses, I think they should be propagated towards
+a "logical port" corresponding to the LAG upper. I don't know how the
+mv88e6xxx handles this.
