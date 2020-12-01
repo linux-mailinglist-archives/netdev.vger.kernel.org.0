@@ -2,92 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 514112CB059
+	by mail.lfdr.de (Postfix) with ESMTP id BEFB72CB05A
 	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 23:44:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726011AbgLAWmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 17:42:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38048 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725965AbgLAWmr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 17:42:47 -0500
-Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050::465:202])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE9CC0613CF
-        for <netdev@vger.kernel.org>; Tue,  1 Dec 2020 14:42:04 -0800 (PST)
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4Clxss1F3PzQlRs;
-        Tue,  1 Dec 2020 23:41:37 +0100 (CET)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-        s=MBO0001; t=1606862495;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lG2fNia44jX+Q4D4S4CrfDJhYn/N3E7WILFMvoDXUMc=;
-        b=TehRpV16mU4Rj6k3IJ4ubEY6uiBqIgWsxv4XafAxp+1Dcbt1g+0nSXI9P06YkwAWgLXqoa
-        T5Z94OPKL02VSKfN0drEYlS/pK5IBoRRN+iJ6KDmRnz4gjkQBd+o+0YjpNFr1smWYAvUud
-        IWI6uvp/IbJHTWV9Zm5g60wDdvxYlMQvIvBRtuNW7v9uNXacpTb5Q149NcNmtrKlHwbHzg
-        KSLa/CFxus2ZMSTP4vkKhOetlPdeRIsLgXI3sDQ1wHQzgLadKSYBN7H5bgvmSpmiJlviza
-        Snw5yTFPoq3dfloe++RmMDMGICmHMIFCE4XYTQhZzgFvDGM27utWJbvz5xGvwg==
-Received: from smtp2.mailbox.org ([80.241.60.241])
-        by spamfilter03.heinlein-hosting.de (spamfilter03.heinlein-hosting.de [80.241.56.117]) (amavisd-new, port 10030)
-        with ESMTP id HAIXImRp-Vmc; Tue,  1 Dec 2020 23:41:32 +0100 (CET)
-References: <cover.1606774951.git.me@pmachata.org> <96d90dc75f2c1676b03a119307f068d818b35798.1606774951.git.me@pmachata.org> <20201130163904.14110c5c@hermes.local>
-From:   Petr Machata <me@pmachata.org>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Petr Machata <me@pmachata.org>, netdev@vger.kernel.org,
-        dsahern@gmail.com, Po.Liu@nxp.com, toke@toke.dk,
-        dave.taht@gmail.com, edumazet@google.com, tahiliani@nitk.edu.in,
-        leon@kernel.org
-Subject: Re: [PATCH iproute2-next 3/6] lib: Move sprint_size() from tc here, add print_size()
-Message-ID: <87k0u1no8g.fsf@nvidia.com>
-In-reply-to: <20201130163904.14110c5c@hermes.local>
-Date:   Tue, 01 Dec 2020 23:41:29 +0100
+        id S1726091AbgLAWnA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 17:43:00 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:9866 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725965AbgLAWnA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 17:43:00 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fc6c6cc0000>; Tue, 01 Dec 2020 14:42:20 -0800
+Received: from sx1.mtl.com (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 1 Dec
+ 2020 22:42:19 +0000
+From:   Saeed Mahameed <saeedm@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        "Saeed Mahameed" <saeedm@nvidia.com>
+Subject: [pull request][net-next 00/15] mlx5 updates 2020-12-01
+Date:   Tue, 1 Dec 2020 14:41:53 -0800
+Message-ID: <20201201224208.73295-1-saeedm@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain
-X-MBO-SPAM-Probability: 
-X-Rspamd-Score: -2.74 / 15.00 / 15.00
-X-Rspamd-Queue-Id: 4BD83171A
-X-Rspamd-UID: 11440c
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1606862540; bh=mntawPTicpxNDSTomo2rYwZfRYE3+KyW87qmyPq1BCk=;
+        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+         Content-Transfer-Encoding:Content-Type:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=gB36V9WhdC9dHPa898Wxeh+xv7C4D6X0ECs+wGzkzrgHGtDL+Vf7JhK7nxjUrs5Qa
+         NGI8FRKB9qr0968xYUqfnChU/BETCQXNsnbcNd6pa1c04LlsKoXAIPw8GQgzYQRh50
+         6pzmNMPO8TYwezDoOTlJJNgWRiCZcUUzjaWeRCeQPKDs9BXFr0irCwE6eHVJt4wa+X
+         DUo1kAH9r50uuub7LHw7ib9ZJ3lkhObOsH0qsdvgTqkBWoMGHI5oC0Zfbh0DZRifcN
+         9dedUPdfQ9hzAI4YhSyrc+/DtNuG7kyvNBbddgbvLA4Tt4hstGU3dJxqQkpl/TNTl5
+         AI5QohSqmGHkQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Jakub,
 
-Stephen Hemminger <stephen@networkplumber.org> writes:
+This series adds port tx timestamping support and some misc updates.
+For more information please see tag log below.
 
-> On Mon, 30 Nov 2020 23:59:39 +0100
-> Petr Machata <me@pmachata.org> wrote:
->
->> +char *sprint_size(__u32 sz, char *buf)
->> +{
->> +	size_t len = SPRINT_BSIZE - 1;
->> +	double tmp = sz;
->> +
->> +	if (sz >= 1024*1024 && fabs(1024*1024*rint(tmp/(1024*1024)) - sz) < 1024)
->> +		snprintf(buf, len, "%gMb", rint(tmp/(1024*1024)));
->> +	else if (sz >= 1024 && fabs(1024*rint(tmp/1024) - sz) < 16)
->> +		snprintf(buf, len, "%gKb", rint(tmp/1024));
->> +	else
->> +		snprintf(buf, len, "%ub", sz);
->> +
->> +	return buf;
->> +}
->
-> Add some whitespace here and maybe some constants like mb and kb?
+Please pull and let me know if there is any problem.
 
-Sure.
+Please note that the series starts with a merge of mlx5-next branch,
+to resolve and avoid dependency with rdma tree.
 
-> Also, instead of magic SPRINT_BSIZE, why not take a len param (and
-> name it snprint_size)?
+Thanks,
+Saeed.
 
-Because keeping the interface like this makes it possible to reuse the
-macroized bits in q_cake. I feel like the three current users are
-auditable enough that the implied length is not a big deal. And no new
-users should pop up, as the comment at the function makes clear.
+---
+The following changes since commit e4518eed11ce8166d038d187a0234aa5dac4bdf4=
+:
 
-> Yes when you copy/paste code it is good time to get it back to current
-> style standards.
+  Merge branch 'mlx5-next' of git://git.kernel.org/pub/scm/linux/kernel/git=
+/mellanox/linux (2020-12-01 14:25:07 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-u=
+pdates-2020-12-01
+
+for you to fetch changes up to 6bf811819936059562d46f18bf9f908ccb0e4624:
+
+  net/mlx5e: Fill mlx5e_create_cq_param in a function (2020-12-01 14:25:16 =
+-0800)
+
+----------------------------------------------------------------
+mlx5-updates-2020-12-01
+
+mlx5e port TX timestamping support and MISC updates
+
+1) Add support for port TX timestamping, for better PTP accuracy.
+
+Currently in mlx5 HW TX timestamping is done on CQE (TX completion)
+generation, which much earlier than when the packet actually goes out to
+the wire, in this series Eran implements the option to do timestamping on
+the port using a special SQ (Send Queue), such Send Queue will generate 2
+CQEs (TX completions), the original one and a new one when the packet
+leaves the port, due to the nature of this special handling, such mechanism
+is an opt-in only and it is off by default to avoid any performance
+degradation on normal traffic flows.
+
+2) Misc updates and trivial improvements.
+
+----------------------------------------------------------------
+Aya Levin (3):
+      net/mlx5e: Allow CQ outside of channel context
+      net/mlx5e: Allow RQ outside of channel context
+      net/mlx5e: Split between RX/TX tunnel FW support indication
+
+Eran Ben Elisha (6):
+      net/mlx5e: Allow SQ outside of channel context
+      net/mlx5e: Change skb fifo push/pop API to be used without SQ
+      net/mlx5e: Split SW group counters update function
+      net/mlx5e: Move MLX5E_RX_ERR_CQE macro
+      net/mlx5e: Add TX PTP port object support
+      net/mlx5e: Add TX port timestamp support
+
+Maxim Mikityanskiy (1):
+      net/mlx5e: Fill mlx5e_create_cq_param in a function
+
+Shay Drory (1):
+      net/mlx5: Arm only EQs with EQEs
+
+Tariq Toukan (1):
+      net/mlx5e: Free drop RQ in a dedicated function
+
+YueHaibing (2):
+      net/mlx5e: Remove duplicated include
+      net/mlx5: Fix passing zero to 'PTR_ERR'
+
+Zhu Yanjun (1):
+      net/mlx5e: remove unnecessary memset
+
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |  63 ++-
+ drivers/net/ethernet/mellanox/mlx5/core/en/fs.h    |   3 +-
+ .../net/ethernet/mellanox/mlx5/core/en/health.c    |  16 +-
+ .../net/ethernet/mellanox/mlx5/core/en/health.h    |   7 +-
+ .../net/ethernet/mellanox/mlx5/core/en/params.h    |  10 +
+ drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c   | 529 +++++++++++++++++=
+++++
+ drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h   |  63 +++
+ .../ethernet/mellanox/mlx5/core/en/reporter_rx.c   |  52 +-
+ .../ethernet/mellanox/mlx5/core/en/reporter_tx.c   | 215 +++++++--
+ drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h  |  19 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.c |   9 +-
+ .../mellanox/mlx5/core/en_accel/tls_rxtx.c         |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  33 ++
+ drivers/net/ethernet/mellanox/mlx5/core/en_fs.c    |  20 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 252 ++++++----
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |  29 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.c | 403 +++++++++++-----
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.h |  11 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_tx.c    |  77 ++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c  |   5 +-
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c       |   6 +-
+ .../mellanox/mlx5/core/esw/acl/egress_lgcy.c       |   2 +-
+ .../mellanox/mlx5/core/esw/acl/egress_ofld.c       |   2 +-
+ .../mellanox/mlx5/core/esw/acl/ingress_lgcy.c      |   2 +-
+ .../mellanox/mlx5/core/esw/acl/ingress_ofld.c      |   2 +-
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |   1 -
+ 27 files changed, 1485 insertions(+), 350 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h
