@@ -2,66 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D9BF2C99CE
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 09:46:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 178E92C99E3
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 09:50:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728712AbgLAIqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 03:46:36 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:27530 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727466AbgLAIqf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 03:46:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606812309;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QSaVTW8Re5mr4mmiZruNg5eKqQXZkeeVuPsKPpTrCsM=;
-        b=AXyLl04IYl6xDHwM4IaqTrZkU/drereYCRfrgeiywtH19u2ZgM4NhHTt8+rinifPsAwLH3
-        lRA8tsBW/Lj6+jac9Qpwv7hUaycgpsMgVM0nGHR54NBROKagMGmV0XxxrhvSGZBnaIEwkY
-        gTgPAqADkRU6TT9NKk1fBuSI7np8npE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-94-LxOjIfJ_Nbe2RzyVYSkHDA-1; Tue, 01 Dec 2020 03:45:05 -0500
-X-MC-Unique: LxOjIfJ_Nbe2RzyVYSkHDA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A7B9D1012774;
-        Tue,  1 Dec 2020 08:44:36 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-112-159.rdu2.redhat.com [10.10.112.159])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 124FF19D9B;
-        Tue,  1 Dec 2020 08:44:33 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20201127050701.GA22001@gondor.apana.org.au>
-References: <20201127050701.GA22001@gondor.apana.org.au> <20201126063303.GA18366@gondor.apana.org.au> <160518586534.2277919.14475638653680231924.stgit@warthog.procyon.org.uk> <1976719.1606378781@warthog.procyon.org.uk>
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     dhowells@redhat.com, bfields@fieldses.org,
-        trond.myklebust@hammerspace.com, linux-crypto@vger.kernel.org,
-        linux-afs@lists.infradead.org, linux-cifs@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+        id S1728880AbgLAIri (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 03:47:38 -0500
+Received: from helcar.hmeau.com ([216.24.177.18]:48310 "EHLO fornost.hmeau.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727499AbgLAIri (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Dec 2020 03:47:38 -0500
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.0.7])
+        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
+        id 1kk1J0-0006Rz-J0; Tue, 01 Dec 2020 19:46:39 +1100
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Tue, 01 Dec 2020 19:46:38 +1100
+Date:   Tue, 1 Dec 2020 19:46:38 +1100
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     David Howells <dhowells@redhat.com>
+Cc:     bfields@fieldses.org, trond.myklebust@hammerspace.com,
+        linux-crypto@vger.kernel.org, linux-afs@lists.infradead.org,
+        linux-cifs@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Subject: Re: [RFC][PATCH 00/18] crypto: Add generic Kerberos library
+Message-ID: <20201201084638.GA27937@gondor.apana.org.au>
+References: <20201127050701.GA22001@gondor.apana.org.au>
+ <20201126063303.GA18366@gondor.apana.org.au>
+ <160518586534.2277919.14475638653680231924.stgit@warthog.procyon.org.uk>
+ <1976719.1606378781@warthog.procyon.org.uk>
+ <4035245.1606812273@warthog.procyon.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <4035244.1606812273.1@warthog.procyon.org.uk>
-Date:   Tue, 01 Dec 2020 08:44:33 +0000
-Message-ID: <4035245.1606812273@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4035245.1606812273@warthog.procyon.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Btw, would it be feasible to make it so that an extra parameter can be added
-to the cipher buffer-supplying functions, e.g.:
+On Tue, Dec 01, 2020 at 08:44:33AM +0000, David Howells wrote:
+> Btw, would it be feasible to make it so that an extra parameter can be added
+> to the cipher buffer-supplying functions, e.g.:
+> 
+> 	skcipher_request_set_crypt(req, input, ciphertext_sg, esize, iv);
+> 
+> such that we can pass in an offset into the output sg as well?
 
-	skcipher_request_set_crypt(req, input, ciphertext_sg, esize, iv);
+Couldn't you just change the output sg to include the offset?
 
-such that we can pass in an offset into the output sg as well?
-
-David
-
+Cheers,
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
