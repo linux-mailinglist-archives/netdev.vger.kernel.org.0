@@ -2,103 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5299B2C9E17
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 10:41:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A49102C9E1A
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 10:41:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728989AbgLAJcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 04:32:08 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:8227 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727729AbgLAJcH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 04:32:07 -0500
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4ClcKK1JBtzkjMb;
-        Tue,  1 Dec 2020 17:30:45 +0800 (CST)
-Received: from huawei.com (10.175.103.91) by DGGEMS408-HUB.china.huawei.com
- (10.3.19.208) with Microsoft SMTP Server id 14.3.487.0; Tue, 1 Dec 2020
- 17:31:11 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <toshiaki.makita1@gmail.com>, <rkovhaev@gmail.com>,
-        <Jason@zx2c4.com>, <yangyingliang@huawei.com>
-Subject: [PATCH net v2 2/2] net: fix memory leak in register_netdevice() on error path
-Date:   Tue, 1 Dec 2020 17:29:03 +0800
-Message-ID: <20201201092903.3269202-2-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201201092903.3269202-1-yangyingliang@huawei.com>
-References: <20201201092903.3269202-1-yangyingliang@huawei.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-CFilter-Loop: Reflected
+        id S1726530AbgLAJeI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 04:34:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55902 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725961AbgLAJeG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 04:34:06 -0500
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D9CC0613CF
+        for <netdev@vger.kernel.org>; Tue,  1 Dec 2020 01:33:20 -0800 (PST)
+Received: by mail-wr1-x444.google.com with SMTP id e7so1569114wrv.6
+        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 01:33:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=QMf3ciSb3p1TUM3ZMsjWC2X/r5GiQeftLUE54jIL4uA=;
+        b=DFuHkurtaSfBpT89lym/p//JGuSMFqM5mYL7cr8LUKfe3n/sNl7L0nLSNa5AKbRIDc
+         3ZM57iP+Ft9UZeEYopqIGwkJ8fjB+0eHglyeQ6w9p93jJfeNAq0chvWmv/tHzi6CzX6h
+         uSRDzJlBFNH1nESJv9It5YJrVaHE88PbWc7kKkVzE7aybEnxDiINd+IhS3MSF+hxLkSA
+         M3jZYvHQEg5dlnvHDb1WQhBDYSsCEjuSOTU22Vs2MmKHOh1SV6yZjy1FvV7vEH1jwWX1
+         Kdgx5FfkUYfRiMlBGSFtSPtjdxZJJ3aLy9XpfB2M174Y1SgETxz1HPJ6FVX/9Q1iCmDy
+         0auQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=QMf3ciSb3p1TUM3ZMsjWC2X/r5GiQeftLUE54jIL4uA=;
+        b=gwkNKR5XcdG4dpbzRydQgJNe5U48ce+JeeAij+0SdmzSio06l0cSy2VbgH/5B+bb2C
+         2oBp/Yk1yjDKgFTmz1b1dF7Q30UI4IpoMnD5fpAt9JEP3AWfSZmlhViF5SFCMwc1Q0Dy
+         +eF8JxT0RUx939TMOZBwUiuOtrwOcp8NXwEdh8r7ossm7AEOGRXl3yI2DPAHHIZM1aRm
+         uT26XyUeSJJW3h41nCErQC4Go4eG/nrqN42gkdSbwHkIVOfweopcQdCzrTwrwvgQRASv
+         4IDPDzYnctplfllldaMN6OsDtQU8bJHfT/ROWuF3ngySUnYrHIAwph9hp/UfPPwRT/Dq
+         bzaQ==
+X-Gm-Message-State: AOAM530oRm7uVfOJauG9hfT4O/7FEwIrTF4yAjRSNVA6HakMEtFMkax+
+        Co6u/mpDOnMjRfDv2r609OtFEMq0hKBt8GoUApM=
+X-Google-Smtp-Source: ABdhPJwwLA662/moo5q95ma9jglCld+deJxKoj5KM/dNJnhhsvaasRdHofW62YH07SYrtmoM6MtWZA==
+X-Received: by 2002:adf:e801:: with SMTP id o1mr2667599wrm.3.1606815198551;
+        Tue, 01 Dec 2020 01:33:18 -0800 (PST)
+Received: from localhost.localdomain ([5.35.99.104])
+        by smtp.gmail.com with ESMTPSA id u66sm1893793wmg.30.2020.12.01.01.33.17
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 01 Dec 2020 01:33:17 -0800 (PST)
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net
+Subject: [PATCH v3] net/af_unix: don't create a path for a binded socket
+Date:   Tue,  1 Dec 2020 12:33:06 +0300
+Message-Id: <20201201093306.32638-1-kda@linux-powerpc.org>
+X-Mailer: git-send-email 2.16.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I got a memleak report when doing fault-inject test:
+in the case of the socket which is bound to an adress
+there is no sense to create a path in the next attempts
 
-unreferenced object 0xffff88810ace9000 (size 1024):
-  comm "ip", pid 4622, jiffies 4295457037 (age 43.378s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<00000000008abe41>] __kmalloc+0x10f/0x210
-    [<000000005d3533a6>] veth_dev_init+0x140/0x310
-    [<0000000088353c64>] register_netdevice+0x496/0x7a0
-    [<000000001324d322>] veth_newlink+0x40b/0x960
-    [<00000000d0799866>] __rtnl_newlink+0xd8c/0x1360
-    [<00000000d616040a>] rtnl_newlink+0x6b/0xa0
-    [<00000000e0a1600d>] rtnetlink_rcv_msg+0x3cc/0x9e0
-    [<000000009eeff98b>] netlink_rcv_skb+0x130/0x3a0
-    [<00000000500f8be1>] netlink_unicast+0x4da/0x700
-    [<00000000666c03b3>] netlink_sendmsg+0x7fe/0xcb0
-    [<0000000073b28103>] sock_sendmsg+0x143/0x180
-    [<00000000ad746a30>] ____sys_sendmsg+0x677/0x810
-    [<0000000087dd98e5>] ___sys_sendmsg+0x105/0x180
-    [<00000000028dd365>] __sys_sendmsg+0xf0/0x1c0
-    [<00000000a6bfbae6>] do_syscall_64+0x33/0x40
-    [<00000000e00521b4>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+here is a program that shows the issue:
 
-It seems ifb and loopback may also hit the leak, so I try to fix this in
-register_netdevice().
+int main()
+{
+    int s;
+    struct sockaddr_un a;
 
-In common case, priv_destructor() will be called in netdev_run_todo()
-after calling ndo_uninit() in rollback_registered(), on other error
-path in register_netdevice(), ndo_uninit() and priv_destructor() are
-called before register_netdevice() return, but in this case,
-priv_destructor() will never be called, then it causes memory leak,
-so we should call priv_destructor() here.
+    s = socket(AF_UNIX, SOCK_STREAM, 0);
+    if (s<0)
+        perror("socket() failed\n");
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+    printf("First bind()\n");
+
+    memset(&a, 0, sizeof(a));
+    a.sun_family = AF_UNIX;
+    strncpy(a.sun_path, "/tmp/.first_bind", sizeof(a.sun_path));
+
+    if ((bind(s, (const struct sockaddr*) &a, sizeof(a))) == -1)
+        perror("bind() failed\n");
+
+    printf("Second bind()\n");
+
+    memset(&a, 0, sizeof(a));
+    a.sun_family = AF_UNIX;
+    strncpy(a.sun_path, "/tmp/.first_bind_failed", sizeof(a.sun_path));
+
+    if ((bind(s, (const struct sockaddr*) &a, sizeof(a))) == -1)
+        perror("bind() failed\n");
+}
+
+kda@SLES15-SP2:~> ./test
+First bind()
+Second bind()
+bind() failed
+: Invalid argument
+
+kda@SLES15-SP2:~> ls -la /tmp/.first_bind
+.first_bind         .first_bind_failed
+
+Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+
+v2: move a new path creation after the address assignment check
+v3: fixed goto labels on the error path
 ---
- net/core/dev.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ net/unix/af_unix.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 82dc6b48e45f..51b9cf1ff6a1 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -10003,6 +10003,16 @@ int register_netdevice(struct net_device *dev)
- 		rcu_barrier();
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 41c3303c3357..70861e9bcfd9 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -1034,6 +1034,14 @@ static int unix_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
+ 		goto out;
+ 	addr_len = err;
  
- 		dev->reg_state = NETREG_UNREGISTERED;
-+		/* In common case, priv_destructor() will be
-+		 * called in netdev_run_todo() after calling
-+		 * ndo_uninit() in rollback_registered().
-+		 * But in this case, priv_destructor() will
-+		 * never be called, then it causes memory
-+		 * leak, so we should call priv_destructor()
-+		 * here.
-+		 */
-+		if (dev->priv_destructor)
-+			dev->priv_destructor(dev);
- 		/* We should put the kobject that hold in
- 		 * netdev_unregister_kobject(), otherwise
- 		 * the net device cannot be freed when
++	err = mutex_lock_interruptible(&u->bindlock);
++	if (err)
++		goto out;
++
++	err = -EINVAL;
++	if (u->addr)
++		goto out_up;
++
+ 	if (sun_path[0]) {
+ 		umode_t mode = S_IFSOCK |
+ 		       (SOCK_INODE(sock)->i_mode & ~current_umask());
+@@ -1041,22 +1049,14 @@ static int unix_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
+ 		if (err) {
+ 			if (err == -EEXIST)
+ 				err = -EADDRINUSE;
+-			goto out;
++			goto out_up;
+ 		}
+ 	}
+ 
+-	err = mutex_lock_interruptible(&u->bindlock);
+-	if (err)
+-		goto out_put;
+-
+-	err = -EINVAL;
+-	if (u->addr)
+-		goto out_up;
+-
+ 	err = -ENOMEM;
+ 	addr = kmalloc(sizeof(*addr)+addr_len, GFP_KERNEL);
+ 	if (!addr)
+-		goto out_up;
++		goto out_put;
+ 
+ 	memcpy(addr->name, sunaddr, addr_len);
+ 	addr->len = addr_len;
+@@ -1088,11 +1088,11 @@ static int unix_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
+ 
+ out_unlock:
+ 	spin_unlock(&unix_table_lock);
+-out_up:
+-	mutex_unlock(&u->bindlock);
+ out_put:
+ 	if (err)
+ 		path_put(&path);
++out_up:
++	mutex_unlock(&u->bindlock);
+ out:
+ 	return err;
+ }
 -- 
-2.25.1
+2.16.4
 
