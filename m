@@ -2,206 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03A442CA580
-	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 15:24:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1334B2CA57E
+	for <lists+netdev@lfdr.de>; Tue,  1 Dec 2020 15:24:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730509AbgLAOX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 09:23:58 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:30557 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729220AbgLAOX6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 09:23:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606832551;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ESjPrFn6/56RO9QASZ5fwdS/xXKYooC0i6rzr8ADqJ4=;
-        b=dB+kUfIRJlXz+Duf23Ed31aRD0GqtTSHH7McyZWoyxBFPacJBoDHDwVTkzqGJoMV6LMuwp
-        1O9zIv90SmNPf+hyM3C4YyuxeND3DLaGmpgF80JkNC4QLiP+g/hgVzSGdHMvaSTci90TyZ
-        NGyLVW/HH5z7F0icaHKFxn29Gz6JcWk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-428-q2JmaAgUP0q7mu_kcplpQw-1; Tue, 01 Dec 2020 09:22:27 -0500
-X-MC-Unique: q2JmaAgUP0q7mu_kcplpQw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 45E8880B71B;
-        Tue,  1 Dec 2020 14:22:25 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8CF5560BD8;
-        Tue,  1 Dec 2020 14:22:15 +0000 (UTC)
-Date:   Tue, 1 Dec 2020 15:22:14 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Hangbin Liu <haliu@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Jiri Benc <jbenc@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        brouer@redhat.com
-Subject: Re: [PATCH iproute2-next 0/5] iproute2: add libbpf support
-Message-ID: <20201201152214.1a3fb47b@carbon>
-In-Reply-To: <08071e1e-497f-f53e-916a-8b519fdd1e0f@gmail.com>
-References: <20201023033855.3894509-1-haliu@redhat.com>
-        <20201128221635.63fdcf69@hermes.local>
-        <08071e1e-497f-f53e-916a-8b519fdd1e0f@gmail.com>
+        id S1729168AbgLAOXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 09:23:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45014 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728951AbgLAOXO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 09:23:14 -0500
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0995C0613CF
+        for <netdev@vger.kernel.org>; Tue,  1 Dec 2020 06:22:33 -0800 (PST)
+Received: by mail-lj1-x242.google.com with SMTP id j10so3178941lja.5
+        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 06:22:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=xYitzlRGiOFrphkGw4K1N3Po7l4fx/na5v8lcfzY4o8=;
+        b=TLvVFRa1Kc3u0ln6XjSob3MkhyvQ5aiZq5N/acvC3T5sE9rRwd6/ZUXKZFsb8l80Dp
+         7bgnSLKVNKd+fjzRtCersDz7oq5Em4N1XY0VBNA+dVQMdmUS0fSxHQej/EsWAYEX/c0e
+         vZXozVlUod2P+OVsnNGUvcatXe2IpUOHzgV0tciueBWDE376nXuSG6HSp0/UCmwZMX4V
+         pUVHEXdHnyZfB7ohAoC/FIZHD4801qVVZnrXf3mMZzQt5h3hcfvxANglV54lpNvRbzak
+         PH/1EhuYrrgpaE8t1Q3FyNyuvcP8LHtnAYJ561f6+SMq/HsSgTc5oKOs32oU+/GztLgP
+         cfrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=xYitzlRGiOFrphkGw4K1N3Po7l4fx/na5v8lcfzY4o8=;
+        b=EQgJ06yBp9WhgKZsKpQvunfc4qusxSp6Yph50y3LddO1KbKEzhp9X64XiZUkDZQSJY
+         bmHcv9EFcfHpbi0uijYfsuBLNEaC7e2Tx/ANuzohdgzos9bSx63YjlSV/1U5K2t2Z/Sk
+         lPZqzPLLvrZAgTIgq0/EXW5rfHqLUQqFIis+ImBCdPpearPs7Swuzbhiu+t1DblvtNSJ
+         v47EyGMVx//diesHDGlBq2f1nNdtyxGXRVoOJZ1v5p6ZCeestgrVhERnvl1JbPEzbuXP
+         Ai6RfpvIspQfO1h1dxY2kSh/JjA/CyllqJIQGIvxBLrOJb4dZkSu7Rax526sJ0sNZUAj
+         00Nw==
+X-Gm-Message-State: AOAM531r1kDlceWCG7clDu604KikX+hZ3M3StDMV0Kyw9WTK+P9K/TmH
+        cg9O+6hI6IeOxBogfqXhlB8c4zfLNYW/i/+m
+X-Google-Smtp-Source: ABdhPJxX1s+K+OVxiRnsYAn28wM+mwm48qIS5GfOBsLBjqSVpkhpgMEDsAA3k8O41nRv9hyrJycllw==
+X-Received: by 2002:a05:651c:211c:: with SMTP id a28mr1433870ljq.343.1606832551864;
+        Tue, 01 Dec 2020 06:22:31 -0800 (PST)
+Received: from wkz-x280 (h-79-28.A259.priv.bahnhof.se. [79.136.79.28])
+        by smtp.gmail.com with ESMTPSA id b145sm215220lfg.225.2020.12.01.06.22.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Dec 2020 06:22:31 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 2/4] net: dsa: Link aggregation support
+In-Reply-To: <20201201132933.paof42x5del3yc2f@skbuf>
+References: <20201130140610.4018-1-tobias@waldekranz.com> <20201130140610.4018-3-tobias@waldekranz.com> <20201201013706.6clgrx2tnapywgxf@skbuf> <87czzu7xkq.fsf@waldekranz.com> <20201201132933.paof42x5del3yc2f@skbuf>
+Date:   Tue, 01 Dec 2020 15:22:30 +0100
+Message-ID: <874kl58v2x.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 29 Nov 2020 12:41:49 -0700
-David Ahern <dsahern@gmail.com> wrote:
+On Tue, Dec 01, 2020 at 15:29, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Tue, Dec 01, 2020 at 09:13:57AM +0100, Tobias Waldekranz wrote:
+>> I completely agree with your analysis. I will remove all the RCU
+>> primitives in v3. Thank you.
+>
+> I expect that this also gives us a simple refcount_t instead of the
+> struct kref?
 
-> On 11/28/20 11:16 PM, Stephen Hemminger wrote:
-> > Luca wants to put this in Debian 11 (good idea), but that means:
-> > 
-> > 1. It has to work with 5.10 release and kernel.
-> > 2. Someone has to test it.
-> > 3. The 5.10 is a LTS kernel release which means BPF developers have
-> >    to agree to supporting LTS releases.
-> > 
-> > If someone steps up to doing this then I would be happy to merge it now
-> > for 5.10. Otherwise it won't show up until 5.11.  
-> 
-> It would be good for Bullseye to have the option to use libbpf with
-> iproute2. If Debian uses the 5.10 kernel then it should use the 5.10
-> version of iproute2 and 5.10 version libbpf. All the components align
-> with consistent versioning.
-> 
-> I have some use cases I can move from bpftool loading to iproute2 as
-> additional testing to what Hangbin has already done. If that goes well,
-> I can re-send the patch series against iproute2-main branch by next weekend.
-> 
-> It would be good for others (Jesper, Toke, Jiri) to run their own
-> testing as well.
-
-I have tested this on a Ubuntu 20.04.1 LTS.
-
-I had to compile tc my own "old" version (based it on iproute2 git
-tree), because Ubuntu vendor tc util version didn't even support loading
-BPF-ELF objects... weird!
-
-Copy-pasted by compile instruction below signature (including one
-failure, that people can find via Google search).
-
-I tested difference combinations old vs. new loader with map pinning
-and reuse of maps (as instructed by Toke over IRC), all the cases
-worked.
-
-I took it one step further and implemented tc libbpf detection:
- https://github.com/netoptimizer/bpf-examples/commit/048c960756eb65
-
-So, my EDT-pacing code[1] now support BTF-maps, via configure detection
-and code gets compiled with support, which allows me to inspect the
-content really easily (data from production system):
-
-$ bpftool map lookup id 1351 key 0x10 0x0 0x0 0x0
-{
-    "key": 16,
-    "value": {
-        "rate": 0,
-        "t_last": 3299496947649930,
-        "t_horizon_drop": 0,
-        "t_horizon_ecn": 0,
-        "codel": {
-            "first_above_time": 3299496641781522,
-            "drop_next": 3299497041788432,
-            "count": 9,
-            "dropping": 1
-        }
-    }
-}
-
-[1] https://github.com/netoptimizer/bpf-examples/tree/master/traffic-pacing-edt
-- - 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
-
-Very recently iproute2 got support for using libbpf as BPF-ELF loader.
-
-Testing this on Ubuntu 20.04.1 LTS.
-
-Currently avail is iproute2-next tree:
-- https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/
-- git clone git://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git
-
-
-First get libbpf:
-  git clone https://github.com/libbpf/libbpf.git
-  cd libbpf
-
-Build libbpf and install it locally:
-
-  cd ~/git/libbpf/
-  mkdir build
-  cd ~/git/libbpf/src
-  DESTDIR=../build make install
-  DESTDIR=../build make install_headers
-
-
-Attempt#1: Try to get iproute2 compiling against:
-
-  cd ~/git/iproute2-next
-  $ LIBBPF_DIR=../libbpf/build/ ./configure 
-  TC schedulers
-   ATM	no
-  
-  libc has setns: yes
-  SELinux support: no
-  libbpf support: yes
-  	libbpf version 0.3.0
-  ELF support: yes
-  libmnl support: yes
-  Berkeley DB: no
-  need for strlcpy: no
-  libcap support: no
-
-Make fails:
-  $ make
-
-  lib
-      CC       bpf_libbpf.o
-  bpf_libbpf.c:20:10: fatal error: bpf/libbpf.h: No such file or directory
-     20 | #include <bpf/libbpf.h>
-        |          ^~~~~~~~~~~~~~
-  compilation terminated.
-
-
-The problem is use of "relative path" in LIBBPF_DIR (../libbpf/build/), as
-the Makefile enter subdir 'lib' and have these include path CFLAGS:
-
-  CFLAGS += -DHAVE_LIBBPF  -I../libbpf/build//usr/include
-
-Attempt#2 works: Try to get iproute2 compiling against:
-
-  cd ~/git/iproute2-next
-  $ LIBBPF_DIR=~/git/libbpf/build/ ./configure
-  make
-
-
-Install as stow version:
-
-  export STOW=/usr/local/stow/iproute2-libbpf-next-git-c29f65db34
-  make
-  make PREFIX=$STOW SYSCONFDIR=$STOW CONFDIR=$STOW/etc/iproute2 SBINDIR=$STOW/sbin -n install
-  make PREFIX=$STOW SYSCONFDIR=$STOW CONFDIR=$STOW/etc/iproute2 SBINDIR=$STOW/sbin install
-
-Current state:
-  $ tc -V
-  tc utility, iproute2-5.9.0, libbpf 0.3.0
-
+Yeah sure, I was just trying to be consistent with what was being used
+in other dsa-related structs. I will change it.
