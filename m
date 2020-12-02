@@ -2,77 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C2D92CC354
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 18:20:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD1312CC358
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 18:20:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389095AbgLBRTf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 12:19:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38520 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389070AbgLBRTf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Dec 2020 12:19:35 -0500
-Date:   Wed, 2 Dec 2020 09:18:52 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606929534;
-        bh=gdrIoUwM4Jc/bJ/Co4EbSzcZQeThPm4Zexr4TFqA+CM=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oBN3nitMLZKbd6AWlOeY3V9jesJoJpzC+hiz6NaZY21ZoXjGC+0jhss9M1MNakmaw
-         K0jlcJAPBGJP5evgjM8/V6GCtJ4sAAzwUrsBQ8Fg5lE+nh+jK32xSWsT5ABnAJ2ggl
-         /TvUmkv9rnLcfbTgbcezyUFVU2ZWFxJ6b6z+KM7E=
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lukasz Stelmach <l.stelmach@samsung.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, jim.cromie@gmail.com,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        id S1730763AbgLBRUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 12:20:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40812 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730573AbgLBRUL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 12:20:11 -0500
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0221C0613CF;
+        Wed,  2 Dec 2020 09:19:31 -0800 (PST)
+Received: by mail-pg1-x544.google.com with SMTP id t37so1474849pga.7;
+        Wed, 02 Dec 2020 09:19:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=lb1TixJdDgHpz8VRboBx5x4l5NaR15Ck5CwsssBAGFk=;
+        b=qFyVfFIdKGzxlIXV8iBnn8r33OIZOD4LqVq++WA88m1MBaKJid7qKd25uHpsbypTyj
+         o95OOQqFYWwTaxjmhm49ZsemuZiG2zeEGSaggF4r2Ao6v3jIE4LGskn4ZxwdhmEbVuc7
+         +42h++TVAsSnfF3ntkrPjU6qP+bLZPdRutF26brfIXQZ21WyItU7czgMb9MA2jRTVP+/
+         otZOntbcwKOHVNoc/LbHq/ALhFDbVJE63JzDCSXAue5OStRaRetijDTMRZdy8nA1Px6T
+         lbZD5C7eVRyunV/zP1B+Fv8Ux1divEtSpt4C8kxnRASJorGFfCQJN9ltAecge8MomaB6
+         4yYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=lb1TixJdDgHpz8VRboBx5x4l5NaR15Ck5CwsssBAGFk=;
+        b=NvtiVs+fCunj/6i5Q5u6H8VWVYhPVgCW22A/9FmYr2XXYYVdR8zFJov4zuhNcbrYaw
+         J6WdVSetinO7ziNuGTtJFtpBizCtMJtmWXzng2WytgRez2C4eW79WH4KLcpFOy9dUaxh
+         bni4M0Pm/7eS3qpBxi+QPhh7sJW43/I2SkSPuFxkX9r8aSBI47mXq8ye+Cq5Um9XextU
+         N2CcgJR8bFSFJoM0NQQG2zDB+Cu03RRfKunXMWuUwOhuo5ThSz0esn9u0JRdokTI9Xdm
+         XAV9BDu26YlLP/UZTCmcV9b519hK4APx2035YOJB0fGuPbLL4HQaCAFq1Ckqc960fT01
+         FVMA==
+X-Gm-Message-State: AOAM531x+OvuiMXONrX01If5LXPQD5+Gsxj994Wdn8YPml5U+tTFRBO4
+        rrMwbjbz4beiCnXj3eJXXFNwtbytdGg=
+X-Google-Smtp-Source: ABdhPJzfr7hYqKg1Q7LET0QkF+1UOe12/eVTDyIwig8JByRQ5H+mEsvJe9HXsWuGOZp/qA/aPmDwkw==
+X-Received: by 2002:aa7:9387:0:b029:18b:42dd:41c with SMTP id t7-20020aa793870000b029018b42dd041cmr3554296pfe.60.1606929570781;
+        Wed, 02 Dec 2020 09:19:30 -0800 (PST)
+Received: from [10.230.28.242] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id u6sm359059pfb.197.2020.12.02.09.19.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Dec 2020 09:19:29 -0800 (PST)
+Subject: Re: [PATCH v3 net-next 1/2] net: dsa: add optional stats64 support
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Kukjin Kim <kgene@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org,
-        =?UTF-8?B?QmFydMWCb21pZWogxbtvbG5pZXJr?= =?UTF-8?B?aWV3aWN6?= 
-        <b.zolnierkie@samsung.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH v7 3/3] net: ax88796c: ASIX AX88796C SPI Ethernet
- Adapter Driver
-Message-ID: <20201202091852.69a02069@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <dleftj8sageb97.fsf%l.stelmach@samsung.com>
-References: <20201125132621.628ac98b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CGME20201202104645eucas1p25335c0b07b106f932006f2a5bce88b6e@eucas1p2.samsung.com>
-        <dleftj8sageb97.fsf%l.stelmach@samsung.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org
+References: <20201202140904.24748-1-o.rempel@pengutronix.de>
+ <20201202140904.24748-2-o.rempel@pengutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <222e8546-2bf2-fe0b-871d-7866ed87b54e@gmail.com>
+Date:   Wed, 2 Dec 2020 09:19:27 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20201202140904.24748-2-o.rempel@pengutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 02 Dec 2020 11:46:28 +0100 Lukasz Stelmach wrote:
-> >> +	status = netif_rx(skb);  
-> >
-> > If I'm reading things right this is in process context, so netif_rx_ni()
-> >  
-> 
-> Is it? The stack looks as follows
-> 
->     ax88796c_skb_return()
->     ax88796c_rx_fixup()
->     ax88796c_receive()
->     ax88796c_process_isr()
->     ax88796c_work()
-> 
-> and ax88796c_work() is a scheduled in the system_wq.
 
-Are you asking if work queue gets run in process context? It does.
 
-> >> +	if (status != NET_RX_SUCCESS)
-> >> +		netif_info(ax_local, rx_err, ndev,
-> >> +			   "netif_rx status %d\n", status);  
-> >
-> > Again, it's inadvisable to put per packet prints without any rate
-> > limiting in the data path.  
+On 12/2/2020 6:09 AM, Oleksij Rempel wrote:
+> Allow DSA drivers to export stats64
 > 
-> Even if limmited by the msglvl flag, which is off by default?
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
-I'd err on the side of caution, but up to you.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
