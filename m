@@ -2,79 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7E742CBD9D
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 14:01:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E0F82CBDAF
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 14:05:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729943AbgLBNAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 08:00:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57088 "EHLO
+        id S1726579AbgLBNEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 08:04:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727713AbgLBNAl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 08:00:41 -0500
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2064DC0613CF;
-        Wed,  2 Dec 2020 05:00:01 -0800 (PST)
-Received: by mail-ej1-x641.google.com with SMTP id jx16so4070136ejb.10;
-        Wed, 02 Dec 2020 05:00:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=QZTchEjCOZdcPKcqinGlzZCfx24eOr/wps07PHz4GN0=;
-        b=i6PXxQBvF8Np1s+1Iwtf73kM+xpl/Y8Udcr5fEbzm2HIpGifB9BIncJv2bR3fs4eVX
-         ITzDl35MibEjCEwLEzejmNF+ddS9BJ/Ym0QpmE0N0DOGJ1xDEh7OkvArGnWqBs0hOSlW
-         jzbd6fLOKAWZK0AYBHQdr23IFtl5Ysdg76bBCuYalMvElWzd8TiR6ube2UIoSrmNCpxl
-         LQw5FhxWLLtIOKVSiciFKmyyKolRc71nsB62aq6FM6oDm/ORmnHQC2lx6h5mCjkYWIWA
-         5zgZ/1PzosbxBwSKv7f4LQYNkVe2SmTUi3LMfj7xE+CYnpZIIcuc69IH3zV8kMGf4PZb
-         JHQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QZTchEjCOZdcPKcqinGlzZCfx24eOr/wps07PHz4GN0=;
-        b=QTUWFjCT1i9pSADOe3RmEkrF+/AARjPPu3SPK2XD6cV5KMEyIdeETQEYmV4PWHBOaH
-         9RByzFA0+A5611GueaprUegQiA7De4rcV9RiTlCNuysU2oGtRIo+86LiaDer5QUCvn2d
-         v2piztdJBbByYLu+t3HBeeDyevQYheAlL1I126H2HGpwnvKgsBjJoc5I5ny1EjnRfCHw
-         J2C/oDlWEL65Sm3p32zooOF0+purdZpuB3r9z4euR0gtx8lPb6Lxg6DyfMCeoJYhRScm
-         wEee7OON5yINLUWO+srJHuxU41bLC1drmR9JvEiSjFl6pXTMuirlleA3gS9YvwqhaGM/
-         o8wA==
-X-Gm-Message-State: AOAM533rOKp4Ly1rinDrehCgW7P759CYgPMsh0IEqAm/kfBGkAEeiiA5
-        PfQBOBKSK3Ms+A53Y5+0/NM=
-X-Google-Smtp-Source: ABdhPJx9DNaccyM2Zfm+YU4qzmWnlatBgrng5Y+FiZiVgfO3QjB5SoFMxh6bM3x0v65hV/+Fm/k7/A==
-X-Received: by 2002:a17:906:2932:: with SMTP id v18mr2159927ejd.144.1606913999841;
-        Wed, 02 Dec 2020 04:59:59 -0800 (PST)
-Received: from skbuf ([188.25.2.120])
-        by smtp.gmail.com with ESMTPSA id w3sm1156303edt.84.2020.12.02.04.59.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Dec 2020 04:59:59 -0800 (PST)
-Date:   Wed, 2 Dec 2020 14:59:58 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
+        with ESMTP id S1725893AbgLBNEG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 08:04:06 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FD2DC0613D4
+        for <netdev@vger.kernel.org>; Wed,  2 Dec 2020 05:03:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=eOZ7z5velyq5bdei6VCUp1fW8vdaBjNCQa7/5Sefxkw=; b=OyZ7gq3Nord0cyzxriWovXAwp
+        w1Vd/AgQXUXCSMgnpy0ML22Um1g2vUVZrp69hel61eadkD0D7q+tzdYSrexit8sw/foKRoinkNdGY
+        cEms4U6jcRjmlR4Mc9r3OBtNKw7f/6JeJwHV0wC2w9rTZGsqUU8yLKTWebLW9JXt/a4ycd55QiSg3
+        8hKrMuUmD29gMBdn8e0gjumpoqp51S+Yy09TUPlKP6IYMksx+lhXsF/S//At3nJDlSifoQJfXuXVc
+        8eR0Q7lEJUAQAlbjowU2C++acinBdD9HNUS+/GYbE7lcVpat0zHjlDegSY5jFM1mDn2R53aTH07w3
+        8OOl1NYmw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:38834)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kkRmx-0001VQ-JI; Wed, 02 Dec 2020 13:03:19 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kkRmw-000734-7N; Wed, 02 Dec 2020 13:03:18 +0000
+Date:   Wed, 2 Dec 2020 13:03:18 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] net: dsa: add optional stats64 support
-Message-ID: <20201202125958.ntgidhgsk4pdw5y3@skbuf>
-References: <20201202120712.6212-1-o.rempel@pengutronix.de>
- <20201202120712.6212-2-o.rempel@pengutronix.de>
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Ido Schimmel <idosch@idosch.org>
+Subject: Re: [PATCH net-next] net: sfp: add debugfs support
+Message-ID: <20201202130318.GD1551@shell.armlinux.org.uk>
+References: <E1khJyS-0003UU-9O@rmk-PC.armlinux.org.uk>
+ <20201124001431.GA2031446@lunn.ch>
+ <20201124084151.GA722671@shredder.lan>
+ <20201124094916.GD1551@shell.armlinux.org.uk>
+ <20201124104640.GA738122@shredder.lan>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201202120712.6212-2-o.rempel@pengutronix.de>
+In-Reply-To: <20201124104640.GA738122@shredder.lan>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 02, 2020 at 01:07:11PM +0100, Oleksij Rempel wrote:
-> Allow DSA drivers to export stats64
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
+Jakub,
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+What's your opinion on this patch? It seems to have stalled...
+
+Regards,
+Russell
+
+On Tue, Nov 24, 2020 at 12:46:40PM +0200, Ido Schimmel wrote:
+> On Tue, Nov 24, 2020 at 09:49:16AM +0000, Russell King - ARM Linux admin wrote:
+> > On Tue, Nov 24, 2020 at 10:41:51AM +0200, Ido Schimmel wrote:
+> > > On Tue, Nov 24, 2020 at 01:14:31AM +0100, Andrew Lunn wrote:
+> > > > On Mon, Nov 23, 2020 at 10:06:16PM +0000, Russell King wrote:
+> > > > > Add debugfs support to SFP so that the internal state of the SFP state
+> > > > > machines and hardware signal state can be viewed from userspace, rather
+> > > > > than having to compile a debug kernel to view state state transitions
+> > > > > in the kernel log.  The 'state' output looks like:
+> > > > > 
+> > > > > Module state: empty
+> > > > > Module probe attempts: 0 0
+> > > > > Device state: up
+> > > > > Main state: down
+> > > > > Fault recovery remaining retries: 5
+> > > > > PHY probe remaining retries: 12
+> > > > > moddef0: 0
+> > > > > rx_los: 1
+> > > > > tx_fault: 1
+> > > > > tx_disable: 1
+> > > > > 
+> > > > > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> > > > 
+> > > > Hi Russell
+> > > > 
+> > > > This looks useful. I always seem to end up recompiling the kernel,
+> > > > which as you said, this should avoid.
+> > > 
+> > > FWIW, another option is to use drgn [1]. Especially when the state is
+> > > queried from the kernel and not hardware. We are using that in mlxsw
+> > > [2][3].
+> > 
+> > Presumably that requires /proc/kcore support, which 32-bit ARM doesn't
+> > have.
+> 
+> Yes, it does seem to be required for live debugging. I mostly work with
+> x86 systems, I guess it's completely different for Andrew and you.
+> 
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
