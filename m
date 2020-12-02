@@ -2,146 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF2CD2CBA33
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 11:10:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 729B52CBADC
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 11:46:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388572AbgLBKKG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 05:10:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59000 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388330AbgLBKKG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 05:10:06 -0500
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5A2CC0613CF
-        for <netdev@vger.kernel.org>; Wed,  2 Dec 2020 02:09:25 -0800 (PST)
-Received: by mail-wr1-x444.google.com with SMTP id z7so3018943wrn.3
-        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 02:09:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=5bwtaOvtCSLyHCTCqmSwVa7XRaWT1NwajyhJl6tnuBg=;
-        b=JOIBqtd87TqsJSp3xaw65ifrT/pN5eXfoql8t8PR7+0czuKUucpRHrh1TiVrVjd5ky
-         RnAX08jxfLKUdYnLtXth3XDDt9+s7QlIpD8d5bWSRizpGMbpgW1UF1bFrUYHCSiIuFzD
-         VXVulyOIhJm4i83UYHmlWy6wQlj10Js6ohHBuRIa4FmUp1KQGvSJHSo5bCJdiC/uXAUv
-         3KD9f56JQA2cEnPUZhjonvIEf5K3GlavtjhAlxe6c4vdOGwQcMJhqHYJS38GOTBVRm2x
-         nSC9eVMK6VbvuucscJKgvghozgxbJjwVuuk0j04TMWDR8eS8bYC91o6p1LhK5kS00sLB
-         i3kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5bwtaOvtCSLyHCTCqmSwVa7XRaWT1NwajyhJl6tnuBg=;
-        b=n/uyLm7K0hWi0K4eg+yxe0AfvgyYHjyAF1moR80SLHPQpGXu/BCZitvhPIiBgGR8ME
-         SlXV4kQ1iC0COS/H3O66U9QqZv55NrJ/zFcP4lH2F9q6Z6mU4gEESZRo0BVZMI1TM5cX
-         Q1+f41U8wcs7SLQqyNxnm0ibVA/My2ieze52emZSjz/wuSKU2ZkFh4OgP004ThM99xUs
-         v23HGqyreJbtd/4J/91DYMuf3cZHz9vxiLltSgINUTQGw7ChihtjLbx1KtLODBLwxIpe
-         h4nFnV0U1HLZ7DZYOKSh3ZWaok4HzqKGaqJmqHePhM95TbYp6R/pFJipRZHX6/zg3UQE
-         HXLw==
-X-Gm-Message-State: AOAM530Eb7gOAmsVs4oAJC13jSDKsh2jzDQwsqFwyt8E2MctyMz43ZJj
-        fDZECacGqW9NT9ebKLC4foudIA==
-X-Google-Smtp-Source: ABdhPJx4ELv79IRASg+W+UqBkNppVU/OF/nCELXyZnKZQh5ej1Evaa7JngphBVWraDI0gCy3uBqNlQ==
-X-Received: by 2002:adf:f8d2:: with SMTP id f18mr2362315wrq.379.1606903764632;
-        Wed, 02 Dec 2020 02:09:24 -0800 (PST)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id u26sm1479633wmm.24.2020.12.02.02.09.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Dec 2020 02:09:24 -0800 (PST)
-Date:   Wed, 2 Dec 2020 11:09:22 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Edwin Peer <edwin.peer@broadcom.com>
-Cc:     Ido Schimmel <idosch@idosch.org>, netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, jiri@nvidia.com,
-        danieller@nvidia.com, andrew@lunn.ch, f.fainelli@gmail.com,
-        mkubecek@suse.cz, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net-next 1/6] ethtool: Extend link modes settings uAPI
- with lanes
-Message-ID: <20201202100922.GM3055@nanopsycho.orion>
-References: <20201010154119.3537085-1-idosch@idosch.org>
- <20201010154119.3537085-2-idosch@idosch.org>
- <CAKOOJTw1rRdS0+WRqeWY4Hc9gzwvPn7FGFdZuVd3hFYORcRz4g@mail.gmail.com>
- <20201123094026.GF3055@nanopsycho.orion>
- <CAKOOJTxEgR_E5YL2Y_wPUw_MFggLt8jbqyh5YOEKpH0=YHp7ug@mail.gmail.com>
- <20201130171428.GJ3055@nanopsycho.orion>
- <CAKOOJTw54DxitbYHW7vNVWRv9BbsdmW_ARTgpMu5HBVjkTeQ5w@mail.gmail.com>
- <20201201112250.GK3055@nanopsycho.orion>
- <CAKOOJTxS8Lssq_CxhorCk33Byj+mM-FQLp+zSiCZSQhJpTMQDg@mail.gmail.com>
+        id S2388463AbgLBKok (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 05:44:40 -0500
+Received: from mail.katalix.com ([3.9.82.81]:47344 "EHLO mail.katalix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725885AbgLBKoj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Dec 2020 05:44:39 -0500
+X-Greylist: delayed 553 seconds by postgrey-1.27 at vger.kernel.org; Wed, 02 Dec 2020 05:44:38 EST
+Received: from [IPv6:2a02:8010:6359:1:59c9:fe55:1b56:b0e1] (unknown [IPv6:2a02:8010:6359:1:59c9:fe55:1b56:b0e1])
+        (Authenticated sender: james)
+        by mail.katalix.com (Postfix) with ESMTPSA id 3E5699155F;
+        Wed,  2 Dec 2020 10:34:43 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
+        t=1606905283; bh=odupBSVqzPygWae6Rs1dQ2Rx3GDGpRjvxADr3aVnKsI=;
+        h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
+         In-Reply-To:From;
+        z=Subject:=20Re:=20[PATCH=20v2=20net-next=200/2]=20add=20ppp_generi
+         c=20ioctl(s)=20to=20bridge=0D=0A=20channels|To:=20Tom=20Parkin=20<
+         tparkin@katalix.com>,=20netdev@vger.kernel.org|Cc:=20gnault@redhat
+         .com|References:=20<20201201115250.6381-1-tparkin@katalix.com>|Fro
+         m:=20James=20Chapman=20<jchapman@katalix.com>|Message-ID:=20<389f9
+         a36-28ef-1bb6-e7bb-ea9f597e29f0@katalix.com>|Date:=20Wed,=202=20De
+         c=202020=2010:34:43=20+0000|MIME-Version:=201.0|In-Reply-To:=20<20
+         201201115250.6381-1-tparkin@katalix.com>;
+        b=LvuRGqA2zHxNAvpCl2x33j8OPFhr/Zfkef+wFMD0riwvRuUg4QPFlLviZmpyGASWH
+         2cYtb/xG478F0lBSRT35GzUesj4JSFVm+0EFH2AjmaFo9v2F8dm78I+DdcZJvmkJtt
+         SDdo9/OWB+m2B+cJG0m7N45m7iU78SXHNHGywsahidSFXYQ/6eouJk/UEEgXGlJX5b
+         M3p2bjdlQZbkyIqUkcVBBl+PqM0+E4OQV5m+cj9ublivU5jJmrOjN/rDm6YYrEp5N8
+         CgHtUO+ZJ1v0kIuUpoHzRAJgT7cs68D85c4z7nxIhOaF+crbsUsI16ANx/JBLt4Hia
+         cf4WMbVzRqcaA==
+Subject: Re: [PATCH v2 net-next 0/2] add ppp_generic ioctl(s) to bridge
+ channels
+To:     Tom Parkin <tparkin@katalix.com>, netdev@vger.kernel.org
+Cc:     gnault@redhat.com
+References: <20201201115250.6381-1-tparkin@katalix.com>
+From:   James Chapman <jchapman@katalix.com>
+Autocrypt: addr=jchapman@katalix.com; prefer-encrypt=mutual; keydata=
+ xsBNBFDmvq0BCACizu6XvQjeWZ1Mnal/oG9AkCs5Rl3GULpnH0mLvPZhU7oKbgx5MHaFDKVJ
+ rQTbNEchbLDN6e5+UD98qa4ebvNx1ZkoOoNxxiuMQGWaLojDKBc9x+baW1CPtX55ikq2LwGr
+ 0glmtUF6Aolpw6GzDrzZEqH+Nb+L3hNTLBfVP+D1scd4R7w2Nw+BSQXPQYjnOEBDDq4fSWoI
+ Cm2E18s3bOHDT9a4ZuB9xLS8ZuYGW6p2SMPFHQb09G82yidgxRIbKsJuOdRTIrQD/Z3mEuT/
+ 3iZsUFEcUN0T/YBN3a3i0P1uIad7XfdHy95oJTAMyrxnJlnAX3F7YGs80rnrKBLZ8rFfABEB
+ AAHNJEphbWVzIENoYXBtYW4gPGpjaGFwbWFuQGthdGFsaXguY29tPsLAeAQTAQIAIgUCUOa+
+ rQIbIwYLCQgHAwIGFQgCCQoLBBYCAwECHgECF4AACgkQINzVgFp/OkBr2gf7BA4jmtvUOGOO
+ JFsj1fDmbAzyE6Q79H6qnkgYm7QNEw7o+5r7EjaUwsh0w13lNtKNS8g7ZWkiBmSOguJueKph
+ GCdyY/KOHZ7NoJw39dTGVZrvJmyLDn/CQN0saRSJZXWtV31ccjfpJGQEn9Gb0Xci0KjrlH1A
+ cqxzjwTmBUr4S2EHIzCcini1KTtjbtsE+dKP4zqR/T52SXVoYvqMmJOhUhXh62C0mu8FoDM0
+ iFDEy4B0LcGAJt6zXy+YCqz7dOwhZBB4QX4F1N2BLF3Yd1pv8wBBZE7w70ds7rD7pnIaxXEK
+ D6yCGrsZrdqAJfAgYL1lqkNffZ6uOSQPFOPod9UiZM7ATQRQ5r6tAQgAyROh3s0PyPx2L2Fb
+ jC1mMi4cZSCpeX3zM9aM4aU8P16EDfzBgGv/Sme3JcrYSzIAJqxCvKpR+HoKhPk34HUR/AOk
+ 16pP3lU0rt6lKel2spD1gpMuCWjAaFs+dPyUAw13py4Y5Ej2ww38iKujHyT586U6skk9xixK
+ 1aHmGJx7IqqRXHgjb6ikUlx4PJdAUn2duqasQ8axjykIVK5xGwXnva/pnVprPSIKrydNmXUq
+ BIDtFQ4Qz1PQVvK93KeCVQpxxisYNFRQ5TL6PtgVtK8uunABFdsRqlsw1Ob0+mD5fidITCIJ
+ mYOL8K74RYU4LfhspS4JwT8nmKuJmJVZ5DjY2wARAQABwsBfBBgBAgAJBQJQ5r6tAhsMAAoJ
+ ECDc1YBafzpA9CEH/jJ8Ye73Vgm38iMsxNYJ9Do9JvVJzq7TEduqWzAFew8Ft0F9tZAiY0J3
+ U2i4vlVWK8Kbnh+44VAKXYzaddLXAxOcZ8YYy+sVfeVoJs3lAH+SuRwt0EplHWvCK5AkUhUN
+ jjIvsQoNBVUP3AcswIqNOrtSkbuUkevNMyPtd0GLS9HVOW0e+7nFce7Ow9ahKA3iGg5Re9rD
+ UlDluVylCCNnUD8Wxgve4K+thRL9T7kxkr7aX7WJ7A4a8ky+r3Daf7OhGN9S/Z/GMSs0E+1P
+ Qm7kZ2e0J6PSfzy9xDtoRXRNigtN2o8DHf/quwckT5T6Z6WiKEaIKdgaXZVhphENThl7lp8=
+Organization: Katalix Systems Ltd
+Message-ID: <389f9a36-28ef-1bb6-e7bb-ea9f597e29f0@katalix.com>
+Date:   Wed, 2 Dec 2020 10:34:43 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKOOJTxS8Lssq_CxhorCk33Byj+mM-FQLp+zSiCZSQhJpTMQDg@mail.gmail.com>
+In-Reply-To: <20201201115250.6381-1-tparkin@katalix.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Dec 02, 2020 at 01:32:46AM CET, edwin.peer@broadcom.com wrote:
->On Tue, Dec 1, 2020 at 3:22 AM Jiri Pirko <jiri@resnulli.us> wrote:
+On 01/12/2020 11:52, Tom Parkin wrote:
+> Following on from my previous RFC[1], this series adds two ioctl calls
+> to the ppp code to implement "channel bridging".
 >
->> >Consider a physical QSFP connector comprising 4 lanes. Today, if the
->> >speed is forced, we would achieve 100G speeds using all 4 lanes with
->> >NRZ encoding. If we configure the port for PAM4 encoding at the same
->> >speed, then we only require 2 of the available 4 lanes. The remaining 2
->> >lanes are wasted. If we only require 2 of the 4 lanes, why not split the
->> >port and request the same speed of one of the now split out ports? Now,
->> >this same speed is only achievable using PAM4 encoding (it is implied)
->> >and we have a spare, potentially usable, assuming an appropriate break-
->> >out cable, port instead of the 2 unused lanes.
->>
->> I don't see how this dynamic split port could work in real life to be
->> honest. The split is something admin needs to configure and can rely
->> that netdevice exists all the time and not comes and goes under
->> different circumstances. Multiple obvious reasons why.
+> When two ppp channels are bridged, frames presented to ppp_input() on
+> one channel are passed to the other channel's ->start_xmit function for
+> transmission.
 >
->I'm not suggesting the port split be dynamic at all. I'm suggesting that if
->the admin wants or needs to force PAM4 on a port that would otherwise
->be able to achieve the given speed using more lanes with NRZ, then the
->admin should split the port, so that it has fewer lanes, in order to make
->that intent clear (or otherwise configure the port to have fewer lanes
->attached, if you really don't want to or can't create the additional split
->port).
-
-Okay, I see your point now. The thing is, the port split/unsplit causes
-a great distubance. Meaning, the netdevs all of the port
-disappear/reappear. Now consider following example:
-
-You have a router you have configured routes on many netdevs
-On one of the netdevs (has routes on it), you for any reason
-need to force lane number.
-In your suggestion, the netdev disappears along with the routes, the
-routing is then broken. I don't see how this could be acceptable.
-
-We are talking here about netdev configuration, we have a tool for that,
-that is ethtool. What you suggest is to take it to different level,
-I don't believe it is correct/doable.
-
-
+> The primary use-case for this functionality is in an L2TP Access
+> Concentrator where PPP frames are typically presented in a PPPoE session
+> (e.g. from a home broadband user) and are forwarded to the ISP network in
+> a PPPoL2TP session.
 >
->Using this approach, the existing ethtool forced speed interface is
->sufficient to configure all possible lane encodings, because the
->encoding that the driver must select is now implicit (note, we don't
->need to care about media type here). That is, the driver can always
->select the encoding that maximizes utilization of the lanes available
->to the port (as defined by the admin).
+> The two new ioctls, PPPIOCBRIDGECHAN and PPPIOCUNBRIDGECHAN form a
+> symmetric pair.
 >
->> >So concretely, I'm suggesting that if we want to force PAM4 at the lower
->> >speeds, split the port and then we don't need an ethtool interface change
->> >at all to achieve the same goal. Having a spare (potentially usable) port
->> >is better than spare (unusable) lanes.
->>
->> The admin has to decide, define.
+> Userspace code testing and illustrating use of the ioctl calls is
+> available in the go-l2tp[2] and l2tp-ktest[3] repositories.
 >
->I'm not sure I understand. The admin would indeed decide. This paragraph
->merely served to motivate why a rational admin should prefer to have a
->spare port rather than unused lanes he can't use, because they would be
->attached to a port using an encoding that doesn't need them. If he wasn't
->planning on using the additional port, he loses nothing. Otherwise, he gains
->something he would not otherwise have had (it's win-win). From the
->perspective of the original port, two unused lanes is no different than two
->lanes allocated to another logical port.
+> [1]. Previous RFC series:
 >
->Regards,
->Edwin Peer
+> https://lore.kernel.org/netdev/20201106181647.16358-1-tparkin@katalix.com/
+>
+> [2]. go-l2tp: a Go library for building L2TP applications on Linux
+> systems. Support for the PPPIOCBRIDGECHAN ioctl is on a branch:
+>
+> https://github.com/katalix/go-l2tp/tree/tp_002_pppoe_2
+>
+> [3]. l2tp-ktest: a test suite for the Linux Kernel L2TP subsystem.
+> Support for the PPPIOCBRIDGECHAN ioctl is on a branch:
+>
+> https://github.com/katalix/l2tp-ktest/tree/tp_ac_pppoe_tests_2
+>
+> Changelog:
+>
+> v2:
+>     * Add missing __rcu annotation to struct channel 'bridge' field in
+>       order to squash a sparse warning from a C=1 build
+>     * Integrate review comments from gnault@redhat.com
+>     * Have ppp_unbridge_channels return -EINVAL if the channel isn't
+>       part of a bridge: this better aligns with the return code from
+>       ppp_disconnect_channel.
+>     * Improve docs update by including information on ioctl arguments
+>       and error return codes.
+>
+> Tom Parkin (2):
+>   ppp: add PPPIOCBRIDGECHAN and PPPIOCUNBRIDGECHAN ioctls
+>   docs: update ppp_generic.rst to document new ioctls
+>
+>  Documentation/networking/ppp_generic.rst |   9 ++
+>  drivers/net/ppp/ppp_generic.c            | 143 ++++++++++++++++++++++-
+>  include/uapi/linux/ppp-ioctl.h           |   2 +
+>  3 files changed, 152 insertions(+), 2 deletions(-)
+>
+Reviewed-by: James Chapman <jchapman@katalix.com>
 
 
