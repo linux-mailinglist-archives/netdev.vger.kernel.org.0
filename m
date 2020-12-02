@@ -2,179 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 799822CB42C
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 06:05:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6A5A2CB4B5
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 06:51:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726228AbgLBFAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 00:00:50 -0500
-Received: from a2.mail.mailgun.net ([198.61.254.61]:14169 "EHLO
-        a2.mail.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726061AbgLBFAu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 00:00:50 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1606885225; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=cOrj0U2V5xokVHCW6VO47cLLL1EXLUmFRN39hfQ29NE=; b=jXgMfZT7pC/MfOYBkZ2XLw8HO1Y5X1m8AKihr6Z9i0f1Y6b+la1DV0OPLxmxijURgo4x9Nyi
- qUbmCiQ4V1Maus/ftzWeybv2MVSGLiJITt761Hc+LS3OmZI8M9yQ8PD4rMM59F6mLlBjuudf
- S0YHpo+q0+z1vc+by+jhBv3WaZ8=
-X-Mailgun-Sending-Ip: 198.61.254.61
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n10.prod.us-west-2.postgun.com with SMTP id
- 5fc71f4cf653ea0cd852c9dd (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 02 Dec 2020 04:59:56
- GMT
-Sender: jhugo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 30D53C43463; Wed,  2 Dec 2020 04:59:56 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A,SPF_FAIL autolearn=no autolearn_force=no version=3.4.0
-Received: from [10.226.59.216] (i-global254.qualcomm.com [199.106.103.254])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1728594AbgLBFuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 00:50:08 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:21641 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726986AbgLBFuH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 00:50:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606888121;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mCYBZnVFwcJcfwEuD0pQ/djq4n14JKN2dFyCj8tmsog=;
+        b=F/K4mLZmS7VLK2r2pu8HGRsp6IknLjKaN17T6y/BiSfFinvCKMP982Y1fPHj/uUz3BVo/e
+        ywIWgYi1NbZnsV+oSngN+i/1cQEY+0SCrVTVzhVP/eJ5LHliec4XavFbHM9Sy2kbjOsIRf
+        9JbYAD+HumrV5OlQmwK3/j7IbKbnoMo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-532-JnDDeUHHMruWjKpDLQ1-8A-1; Wed, 02 Dec 2020 00:48:39 -0500
+X-MC-Unique: JnDDeUHHMruWjKpDLQ1-8A-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: jhugo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 46029C433C6;
-        Wed,  2 Dec 2020 04:59:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 46029C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=jhugo@codeaurora.org
-Subject: Re: [PATCH v13 0/4] userspace MHI client interface driver
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Hemant Kumar <hemantk@codeaurora.org>,
-        manivannan.sadhasivam@linaro.org, gregkh@linuxfoundation.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bbhatt@codeaurora.org, loic.poulain@linaro.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        Kalle Valo <kvalo@codeaurora.org>
-References: <1606533966-22821-1-git-send-email-hemantk@codeaurora.org>
- <20201201112901.7f13e26c@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <c6359962-a378-ed03-0fab-c2f6c8a1b8eb@codeaurora.org>
- <20201201120302.474d4c9b@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <817a4346-efb7-cfe5-0678-d1b60d06627d@codeaurora.org>
- <20201201185506.77c4b3df@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-From:   Jeffrey Hugo <jhugo@codeaurora.org>
-Message-ID: <f22eaead-fd25-8b20-7ca1-ae3f535347d4@codeaurora.org>
-Date:   Tue, 1 Dec 2020 21:59:53 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.3
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 225CE18C89DE;
+        Wed,  2 Dec 2020 05:48:38 +0000 (UTC)
+Received: from [10.72.13.145] (ovpn-13-145.pek2.redhat.com [10.72.13.145])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4611D5C1B4;
+        Wed,  2 Dec 2020 05:48:31 +0000 (UTC)
+Subject: Re: [External] Re: [PATCH 0/7] Introduce vdpa management tool
+To:     Yongji Xie <xieyongji@bytedance.com>
+Cc:     Parav Pandit <parav@nvidia.com>,
+        virtualization@lists.linux-foundation.org,
+        "Michael S. Tsirkin" <mst@redhat.com>, elic@nvidia.com,
+        netdev@vger.kernel.org
+References: <20201112064005.349268-1-parav@nvidia.com>
+ <5b2235f6-513b-dbc9-3670-e4c9589b4d1f@redhat.com>
+ <CACycT3sYScObb9nN3g7L3cesjE7sCZWxZ5_5R1usGU9ePZEeqA@mail.gmail.com>
+ <182708df-1082-0678-49b2-15d0199f20df@redhat.com>
+ <CACycT3votu2eyacKg+w12xZ_ujEOgTY0f8A7qcpbM-fwTpjqAw@mail.gmail.com>
+ <7f80eeed-f5d3-8c6f-1b8c-87b7a449975c@redhat.com>
+ <CACycT3uw6KJgTo+dBzSj07p2P_PziD+WBfX4yWVX-nDNUD2M3A@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <594b2086-802f-1053-2866-a25d4a327876@redhat.com>
+Date:   Wed, 2 Dec 2020 13:48:30 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20201201185506.77c4b3df@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <CACycT3uw6KJgTo+dBzSj07p2P_PziD+WBfX4yWVX-nDNUD2M3A@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/1/2020 7:55 PM, Jakub Kicinski wrote:
-> On Tue, 1 Dec 2020 13:48:36 -0700 Jeffrey Hugo wrote:
->> On 12/1/2020 1:03 PM, Jakub Kicinski wrote:
->>> On Tue, 1 Dec 2020 12:40:50 -0700 Jeffrey Hugo wrote:
->>>> On 12/1/2020 12:29 PM, Jakub Kicinski wrote:
->>>>> On Fri, 27 Nov 2020 19:26:02 -0800 Hemant Kumar wrote:
->>>>>> This patch series adds support for UCI driver. UCI driver enables userspace
->>>>>> clients to communicate to external MHI devices like modem and WLAN. UCI driver
->>>>>> probe creates standard character device file nodes for userspace clients to
->>>>>> perform open, read, write, poll and release file operations. These file
->>>>>> operations call MHI core layer APIs to perform data transfer using MHI bus
->>>>>> to communicate with MHI device. Patch is tested using arm64 based platform.
+
+On 2020/12/1 下午5:55, Yongji Xie wrote:
+> On Tue, Dec 1, 2020 at 2:25 PM Jason Wang <jasowang@redhat.com> wrote:
+>>
+>> On 2020/11/30 下午3:07, Yongji Xie wrote:
+>>>>> Thanks for adding me, Jason!
 >>>>>
->>>>> Wait, I thought this was for modems.
+>>>>> Now I'm working on a v2 patchset for VDUSE (vDPA Device in Userspace)
+>>>>> [1]. This tool is very useful for the vduse device. So I'm considering
+>>>>> integrating this into my v2 patchset. But there is one problem：
 >>>>>
->>>>> Why do WLAN devices need to communicate with user space?
->>>>>       
+>>>>> In this tool, vdpa device config action and enable action are combined
+>>>>> into one netlink msg: VDPA_CMD_DEV_NEW. But in vduse case, it needs to
+>>>>> be splitted because a chardev should be created and opened by a
+>>>>> userspace process before we enable the vdpa device (call
+>>>>> vdpa_register_device()).
+>>>>>
+>>>>> So I'd like to know whether it's possible (or have some plans) to add
+>>>>> two new netlink msgs something like: VDPA_CMD_DEV_ENABLE and
+>>>>> VDPA_CMD_DEV_DISABLE to make the config path more flexible.
+>>>>>
+>>>> Actually, we've discussed such intermediate step in some early
+>>>> discussion. It looks to me VDUSE could be one of the users of this.
 >>>>
->>>> Why does it matter what type of device it is?  Are modems somehow unique
->>>> in that they are the only type of device that userspace is allowed to
->>>> interact with?
->>>
->>> Yes modems are traditionally highly weird and require some serial
->>> device dance I don't even know about.
->>>
->>> We have proper interfaces in Linux for configuring WiFi which work
->>> across vendors. Having char device access to WiFi would be a step
->>> back.
->>
->> So a WLAN device is only ever allowed to do Wi-Fi?  It can't also have
->> GPS functionality for example?
-> 
-> No, but it's also not true that the only way to implement GPS is by
-> opening a full on command/packet interface between fat proprietary
-> firmware and custom user space (which may or may not be proprietary
-> as well).
-
-Funny, that exactly what the GPS "API" in the kernel is, although a bit 
-limited to the specifics on the standardized GPS "sentences" and not 
-covering implementation specific configuration.
-
-> 
->>>> However, I'll bite.  Once such usecase would be QMI.  QMI is a generic
->>>> messaging protocol, and is not strictly limited to the unique operations
->>>> of a modem.
+>>>> Or I wonder whether we can switch to use anonymous inode(fd) for VDUSE
+>>>> then fetching it via an VDUSE_GET_DEVICE_FD ioctl?
 >>>>
->>>> Another usecase would be Sahara - a custom file transfer protocol used
->>>> for uploading firmware images, and downloading crashdumps.
->>>
->>> Thanks, I was asking for use cases, not which proprietary vendor
->>> protocol you can implement over it.
->>>
->>> None of the use cases you mention here should require a direct FW -
->>> user space backdoor for WLAN.
+>>> Yes, we can. Actually the current implementation in VDUSE is like
+>>> this.  But seems like this is still a intermediate step. The fd should
+>>> be binded to a name or something else which need to be configured
+>>> before.
 >>
->> Uploading runtime firmware, with variations based on the runtime mode.
->> Flashing the onboard flash based on cryptographic keys.  Accessing
->> configuration data.  Accessing device logs.  Configuring device logs.
->> Synchronizing the device time reference to Linux local or remote time
->> sources.  Enabling debugging/performance hardware.  Getting software
->> diagnostic events.  Configuring redundancy hardware per workload.
->> Uploading new cryptographic keys.  Invalidating cryptographic keys.
->> Uploading factory test data and running factory tests.
+>> The name could be specified via the netlink. It looks to me the real
+>> issue is that until the device is connected with a userspace, it can't
+>> be used. So we also need to fail the enabling if it doesn't opened.
 >>
->> Need more?
-> 
-> This conversation is going nowhere. Are you trying to say that creating
-> a common Linux API for those features is impossible and each vendor
-> should be allowed to add their own proprietary way?
-> 
-> This has been proven incorrect again and again, and Wi-Fi is a good
-> example.
-> 
-> You can do whatever you want for GPS etc. but don't come nowhere near
-> networking with this attitude please.
-> 
+> Yes, that's true. So you mean we can firstly try to fetch the fd
+> binded to a name/vduse_id via an VDUSE_GET_DEVICE_FD, then use the
+> name/vduse_id as a attribute to create vdpa device? It looks fine to
+> me.
 
-No I'm saying (and Bjorn/Mani by the looks of things), that there is 
-commonality in the core features - IP traffic, Wi-Fi, etc but then there 
-are vendor specific things which are either things you don't actually 
-want in the kernel, don't want the kernel doing, or have little 
-commonality between vendors such that attempting to unify them gains you 
-little to nothing.
 
-Over in the networking space, I can see where standardization is plenty 
-useful.
+Yes, something like this. The anonymous fd will be created during 
+dev_add() and the fd will be carried in the msg to userspace.
 
-I can't speak for other vendors, but a "modem" or a "wlan" device from 
-Qualcomm is not something that just provides one service.  They tend to 
-provide dozens of different functionalities, some of those are 
-"standardized" like wi-fi where common wi-fi interfaces are used. 
-Others are unique to Qualcomm.
+Thanks
 
-The point is "wlan device" is a superset of "wi-fi".  You seem to be 
-equating them to be the same in a "shoot first, ask questions later" manner.
 
-This series provides a way for userspace to talk to remote MHI "widgets" 
-for usecases not covered elsewhere.  Those "widgets" just happen to 
-commonly provide modem/wlan services, but ones that don't are not excluded.
+>
+> Thanks,
+> Yongji
+>
 
-Regarding not coming near networking, I'd like to remind you it was you 
-that decided to come over here to the non-networking area and try to 
-make this about networking.
-
--- 
-Jeffrey Hugo
-Qualcomm Technologies, Inc. is a member of the
-Code Aurora Forum, a Linux Foundation Collaborative Project.
