@@ -2,89 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E7562CC663
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 20:17:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A398C2CC662
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 20:17:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387556AbgLBTRm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 14:17:42 -0500
-Received: from static.214.254.202.116.clients.your-server.de ([116.202.254.214]:51020
-        "EHLO ciao.gmane.io" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726082AbgLBTRm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 14:17:42 -0500
-Received: from list by ciao.gmane.io with local (Exim 4.92)
-        (envelope-from <gl-netdev-2@m.gmane-mx.org>)
-        id 1kkXcZ-0000st-8d
-        for netdev@vger.kernel.org; Wed, 02 Dec 2020 20:16:59 +0100
-X-Injected-Via-Gmane: http://gmane.org/
-To:     netdev@vger.kernel.org
-From:   Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Re: net: macb: fail when there's no PHY
-Date:   Wed, 2 Dec 2020 19:16:52 -0000 (UTC)
-Message-ID: <rq8p74$2l0$1@ciao.gmane.io>
-References: <20170921195905.GA29873@grante>
- <66c0a032-4d20-69f1-deb4-6c65af6ec740@gmail.com>
- <CAK=1mW6Gti0QpUjirB6PfMCiQvnDjkbb56pVKkQmpCSkRU6wtA@mail.gmail.com>
- <6a9c1d4a-ed73-3074-f9fa-158c697c7bfe@gmail.com> <X8fb4zGoxcS6gFsc@grante>
- <20201202183531.GJ2324545@lunn.ch>
-User-Agent: slrn/1.0.3 (Linux)
+        id S1729160AbgLBTRk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 14:17:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49672 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726082AbgLBTRj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Dec 2020 14:17:39 -0500
+Date:   Wed, 2 Dec 2020 11:16:57 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1606936619;
+        bh=p3qFvXorODELi7Dmo+QZgR27NcGlx3i74Mc7l0Lehvc=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=c2OzZxHVKrCQf4pgVndmWxQ/DwR6ib5R8B9rxDWpMJKnuYa+4JXzIlEQ5dgnSWEt2
+         rBpmA7ylEu1ijQeOFE0mNnwOPQZEnMrxM1uzz8DM0bKF4F+fLShWyBzxE3Ffc7fPhv
+         uXxeZuvxYZGOQmoQvAWt6QlzIqCGetbdT/y8coMKKWXOZKSlCWZMlxLvq/aUzvk3RS
+         JZBZTL523S/CJZdDjZoRxsx4qXy1e1AC6B2uNEjQgZfl2YnfbwhKlTpcSGLgVNULZn
+         7+l2NOZrsTXljW+77FKmK56lXic53I/+i8JtdYFeez1YA2E1UEoeZM7A7BSOAPHGl8
+         4aeVX55llIGrA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Antoine Tenart <atenart@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
+        yoshfuji@linux-ipv6.org, Maria Pasechnik <mariap@mellanox.com>
+Subject: Re: [PATCH net] net: ip6_gre: set dev->hard_header_len when using
+ header_ops
+Message-ID: <20201202111657.197327df@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201130161911.464106-1-atenart@kernel.org>
+References: <20201130161911.464106-1-atenart@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-12-02, Andrew Lunn <andrew@lunn.ch> wrote:
->> When using the SIOC[SG]MIIREG ioctl() call, how does one control
->> whether the fake fixed-link bus is accessed or the real macb-mdio bus
->> is accessed?
->
-> As far as i remember, that ioctl is based on the interface name.
+On Mon, 30 Nov 2020 17:19:11 +0100 Antoine Tenart wrote:
+> syzkaller managed to crash the kernel using an NBMA ip6gre interface. I
+> could reproduce it creating an NBMA ip6gre interface and forwarding
+> traffic to it:
+> 
+>   skbuff: skb_under_panic: text:ffffffff8250e927 len:148 put:44 head:ffff8c03c7a33
+>   ------------[ cut here ]------------
+>   kernel BUG at net/core/skbuff.c:109!
+>   Call Trace:
+>   skb_push+0x10/0x10
+>   ip6gre_header+0x47/0x1b0
+>   neigh_connected_output+0xae/0xf0
+> 
+> ip6gre tunnel provides its own header_ops->create, and sets it
+> conditionally when initializing the tunnel in NBMA mode. When
+> header_ops->create is used, dev->hard_header_len should reflect the
+> length of the header created. Otherwise, when not used,
+> dev->needed_headroom should be used.
+> 
+> Fixes: eb95f52fc72d ("net: ipv6_gre: Fix GRO to work on IPv6 over GRE tap")
+> Cc: Maria Pasechnik <mariap@mellanox.com>
+> Signed-off-by: Antoine Tenart <atenart@kernel.org>
 
-Right.
-
-> So it will access the MDIO bus of the PHY that is attached to the
-> MAC.
-
-If that's the case, wouldn't the ioctl() calls "just work" even when
-only the fixed-phy mdio bus and fake PHY are declared in the device
-tree?  There must have been something else going on that caused our
-user-space code to be unable to talk to the devices on the mdio
-bus. We assumed it was because there was only one mdio bus (the fake
-one) in the device tree. I'm beginning to suspect that's not the
-reason.
-
-> I guess you have user space drivers using the IOCTL to access
-> devices on the real bus?
-
-Yes.
-
-> A switch?
-
-There is a switch, but it's not on the mdio bus (on some models, the
-switch is access via memory-mapped registers, on others the switch is
-accessed via SPI). The PHYs that are attached to the "other" ports of
-the switch are on the macb mdio bus.
-
-> Can you swap to a DSA driver?
-
-Possibly. It looks like DSA uses frame tagging. We have two slightly
-different platforms. One doesn't have any tagging capabilities. The
-other does, but the tags are reserved for use by another chunk of
-custom code we've added to the macb.c driver to provide MAC-level
-access for a userspace protocol stack which operates in parallel with
-the kernel's network stack. It's almost, but not quite, as ugly as it
-sounds.
-
->> How does the macb driver decide which bus/id combination to use as
->> "the phy" that controls the link duplex/speed settting the the MAC?
->
-> phy-handle points to a PHY.
-
-OK, I think I've got a vague idea of how that would be done.
-
-[When it comes to device-tree stuff, I've learned that "a vague idea"
-is pretty much the best I can manage. Nothing ever works the way I
-think it's going to the first time, but with enough guesses I usually
-get there.]
-
---
-Grant
-
+Applied, thank you!
