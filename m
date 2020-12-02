@@ -2,71 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE5DA2CC684
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 20:23:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF4392CC686
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 20:24:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388131AbgLBTXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 14:23:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60284 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387909AbgLBTXL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 14:23:11 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 082CBC0617A7;
-        Wed,  2 Dec 2020 11:22:31 -0800 (PST)
-Received: from zn.tnic (p200300ec2f161b00329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ec:2f16:1b00:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id DDD991EC04DA;
-        Wed,  2 Dec 2020 20:22:27 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1606936948;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=rySJim3wBb+9W8dVG2J74HH0THuGsrX0bUYnHgpIWEU=;
-        b=JuFeCHturGfuW0en93LjGZ7Qdjt76u6ure4PvfBENNP73o/sIw2rZL2huQeOG5pYwDaQq6
-        0Z4j3BsdWrMQKuLTW9LBCrfVgYI2Aiw0fXFUf4WtCzhnRbjerjFmICRuUBgYqFRE0f+203
-        KFHl9HuaYVFCiBO/SXfF4Qduw1tLv3c=
-Date:   Wed, 2 Dec 2020 20:22:23 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     "Enrico Weigelt, metux IT consult" <lkml@metux.net>
-Cc:     "Enrico Weigelt, metux IT consult" <info@metux.net>,
-        linux-kernel@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com,
-        x86@kernel.org, hpa@zytor.com, dmitry.torokhov@gmail.com,
-        derek.kiernan@xilinx.com, dragan.cvetic@xilinx.com,
-        richardcochran@gmail.com, linux-hyperv@vger.kernel.org,
-        linux-input@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 1/2] x86: make vmware support optional
-Message-ID: <20201202192223.GK2951@zn.tnic>
-References: <20201117202308.7568-1-info@metux.net>
- <20201117203155.GO5719@zn.tnic>
- <0c0480af-bcf5-d7ba-9e76-d511e60f76ec@metux.net>
+        id S1731084AbgLBTXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 14:23:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51674 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726663AbgLBTXj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Dec 2020 14:23:39 -0500
+Date:   Wed, 2 Dec 2020 11:22:56 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1606936978;
+        bh=eE4wkwdnCkkKc5Q/e8KLbvCiySlz0HmT79nBF/ov03o=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BE7f4breaEQLDOj/BX8e54YZqVid5/salXCQ7rDaI7Z7pOtFRpSoqaFsyjCGlPCGA
+         UzcVvA62XzrngV6IFdKaJ4+Ik/mUjV64OTKyb//4NuEbaXk5MqBQIeICGkeh4RHP6b
+         5tD9UjpqnAQZUXcsKbObo9S8qVpuDX8KQ3J2Qdr9Nms0fsx/wUSfOEdQISWbuPzuDo
+         xlxgMroU5qD+uBaRLyH4IYxE7fe3ev//F97ekgpQAxdvUn7CJqIt458t16TipBbuvJ
+         5Z7zxbZvGc97MzHkkAfSKzU5gbnA7YYTGPcIGfWCDkE3rijH0f5q1cBpaLpNW35vf4
+         VWVbN5L0aGaAQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jarod Wilson <jarod@redhat.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Davis <tadavis@lbl.gov>, Netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net v2] bonding: fix feature flag setting at init time
+Message-ID: <20201202112256.59a97b9c@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <CAKfmpSeGEpjVxw5J=tNBYc2bZEY-z7DbQeb2TcekbqkiBe7O6g@mail.gmail.com>
+References: <20201123031716.6179-1-jarod@redhat.com>
+        <20201202173053.13800-1-jarod@redhat.com>
+        <20201202095320.7768b5b3@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+        <CAKfmpSeGEpjVxw5J=tNBYc2bZEY-z7DbQeb2TcekbqkiBe7O6g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <0c0480af-bcf5-d7ba-9e76-d511e60f76ec@metux.net>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 02, 2020 at 08:17:23PM +0100, Enrico Weigelt, metux IT consult wrote:
-> Reducing the kernel size. Think of very high density virtualization
-> (w/ specially stripped-down workloads) or embedded systems.
+On Wed, 2 Dec 2020 14:03:53 -0500 Jarod Wilson wrote:
+> On Wed, Dec 2, 2020 at 12:53 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Wed,  2 Dec 2020 12:30:53 -0500 Jarod Wilson wrote:  
+> > > +     if (bond->dev->reg_state != NETREG_REGISTERED)
+> > > +             goto noreg;
+> > > +
+> > >       if (newval->value == BOND_MODE_ACTIVEBACKUP)
+> > >               bond->dev->wanted_features |= BOND_XFRM_FEATURES;
+> > >       else
+> > >               bond->dev->wanted_features &= ~BOND_XFRM_FEATURES;
+> > > -     netdev_change_features(bond->dev);
+> > > +     netdev_update_features(bond->dev);
+> > > +noreg:  
+> >
+> > Why the goto?  
 > 
-> For example, I'm running bare minimum kernels w/ only kvm and virtio
-> (not even pci, etc) in such scenarios.
-> 
-> Of course, that's nothing for an average distro, therefore leaving
-> default y.
+> Seemed cleaner to prevent an extra level of indentation of the code
+> following the goto and before the label, but I'm not that attached to
+> it if it's not wanted for coding style reasons.
 
-Ok, pls put the reasoning for the change in the next revision's commit
-message along with how much KB savings we're talking about.
+Yes, please don't use gotos where a normal if statement is sufficient.
+If you must avoid the indentation move the code to a helper.
 
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Also - this patch did not apply to net, please make sure you're
+developing on the correct base.
