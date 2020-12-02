@@ -2,175 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D41472CB74D
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 09:36:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EDC92CB791
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 09:46:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729114AbgLBIdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 03:33:44 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27211 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728989AbgLBIdn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 03:33:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606897936;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EdS5Ozk3yDJPMYRuoyTOIqVIvgy0FiikSyg8r+DUlWg=;
-        b=hkHmA9nCuJOb/vtzD/jkQyfwkDe2HyDPlXzWMPxg37WuntSjus6VBI6wIy7tQowyRUzh6G
-        Jz1QcwSwofWXlzyQn42+G5yLRIkHl3T0+fh3uS50l5u2lA4VedbIMzpMIM8Z3G1U3Y/O/q
-        oqNys8kzZDXTGw+yxib1BCXrkyIBqqs=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-405-PGYtQ49-M6-W2Q65M-bf6Q-1; Wed, 02 Dec 2020 03:32:15 -0500
-X-MC-Unique: PGYtQ49-M6-W2Q65M-bf6Q-1
-Received: by mail-wr1-f69.google.com with SMTP id b12so2175620wru.15
-        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 00:32:15 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=EdS5Ozk3yDJPMYRuoyTOIqVIvgy0FiikSyg8r+DUlWg=;
-        b=sJVRiQejTBlJCr+OG1XS9i1qpHrr7OTcgdZcLDvxjU1N75+rJfJYXLI9A9gRrckZyj
-         yCOEo1RpUlatrInnmfq8JdojYEaWnFuLDNfaUUDEEtVe4wPRd26MLJNXtfYoRuSY0XS+
-         119xbE3mvYVdnzomVGlSSzHmlT+9aIMdBEK0DYXfcTMg3NzudKye2XZMam60PoIRzkxx
-         HVdjGAWNEVP1D2tlMgZNvnprgKXLY9UUTHnDDHNOWCd0CpbirGDdhGc/RA+PWAUOexf9
-         UBAbA01dSDiGR/Kh3F5y3mw+eZPwLr0t9tYKlien00S3I0W1yUmBICINAtTCtCEWppY7
-         wruw==
-X-Gm-Message-State: AOAM532MtQuXY90KMAvHuXGqVUCpPYTl7V8uaFKxWYoipaEqOop/o+Bt
-        AH4p5bk3lyxDOFhSd8w5gp+nsjRK+jix/nj7Q7jNlFhW1xe9wOh8mRWXTTlPfzppSUF54LC3OS7
-        rLjnNRPvh8Eo/NKg/
-X-Received: by 2002:a7b:c770:: with SMTP id x16mr1820571wmk.139.1606897932573;
-        Wed, 02 Dec 2020 00:32:12 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyEVrZqUYCHneGWRpBo4BPzO4zbn5YVkR2h8CaciENRh8epL6dSk21IVODbgmXJbqr9E+jhAw==
-X-Received: by 2002:a7b:c770:: with SMTP id x16mr1820554wmk.139.1606897932361;
-        Wed, 02 Dec 2020 00:32:12 -0800 (PST)
-Received: from steredhat (host-79-17-248-175.retail.telecomitalia.it. [79.17.248.175])
-        by smtp.gmail.com with ESMTPSA id j8sm1123684wrx.11.2020.12.02.00.32.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Dec 2020 00:32:11 -0800 (PST)
-Date:   Wed, 2 Dec 2020 09:32:09 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Paraschiv, Andra-Irina" <andraprs@amazon.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        David Duncan <davdunc@amazon.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Alexander Graf <graf@amazon.de>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>
-Subject: Re: [PATCH net-next v1 1/3] vm_sockets: Include flag field in the
- vsock address data structure
-Message-ID: <20201202083209.ex5do3dqekfkj5as@steredhat>
-References: <20201201152505.19445-1-andraprs@amazon.com>
- <20201201152505.19445-2-andraprs@amazon.com>
- <20201201160937.sswd3prfn6r52ihc@steredhat>
- <70d9868a-c883-d823-abf8-7e77ea4c933c@amazon.com>
+        id S2387911AbgLBIpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 03:45:05 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:7416 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726669AbgLBIpF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 03:45:05 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fc753e90000>; Wed, 02 Dec 2020 00:44:25 -0800
+Received: from [10.26.73.44] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 2 Dec
+ 2020 08:44:11 +0000
+Subject: Re: [PATCH iproute2-net 0/3] devlink: Add devlink reload action limit
+ and stats
+To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
+        Moshe Shemesh <moshe@mellanox.com>
+CC:     Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
+        Netdev <netdev@vger.kernel.org>
+References: <1606389296-3906-1-git-send-email-moshe@mellanox.com>
+ <CAACQVJr_cYUUO=Nys=MeOLUno4sXy0a1PTwUk59hzjJZQz3j+w@mail.gmail.com>
+From:   Moshe Shemesh <moshe@nvidia.com>
+Message-ID: <8ef56162-d720-b7e0-081b-df7bf970c88a@nvidia.com>
+Date:   Wed, 2 Dec 2020 10:44:07 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <70d9868a-c883-d823-abf8-7e77ea4c933c@amazon.com>
+In-Reply-To: <CAACQVJr_cYUUO=Nys=MeOLUno4sXy0a1PTwUk59hzjJZQz3j+w@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1606898665; bh=R0hkf3cbWepz7KDOtSLMkAlRjHJQqU3s1ERti9VgDyk=;
+        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
+         MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding:
+         Content-Language:X-Originating-IP:X-ClientProxiedBy;
+        b=ekAxzEhzfMdxSKhvRxaRbY3zmj8Gl/cl4CKn73j8aSjZ5pvXOUfhNbZfLt05FdzOR
+         1PPeRx+2qJP+p1kr+V5K8m4BqOersEymGd8J3b1FZLDEwC9DFVmFX0sIVo1XrYN9rw
+         fe+JXwI0GwTU2eqvf9dfs6p0+wvptGfOO7RKyXT7AtIdJAiu28wkxowQ1FxB9osA+i
+         XgZHOHZwLyCLy0T3DZZ1+FXu3tfZ4VE3EN4LjkhqvPcV+PbXSWXQ4fXO7TNPvNzehg
+         /mCimDlsBKEeQ58SDrJs2A4n0G7D7BDJOdhdGKcYRD/jgpGSFYDhj9Oh99zqbEs8Tk
+         HupxgqzoXFNnw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 01, 2020 at 08:15:04PM +0200, Paraschiv, Andra-Irina wrote:
->
->
->On 01/12/2020 18:09, Stefano Garzarella wrote:
->>
->>On Tue, Dec 01, 2020 at 05:25:03PM +0200, Andra Paraschiv wrote:
->>>vsock enables communication between virtual machines and the host they
->>>are running on. With the multi transport support (guest->host and
->>>host->guest), nested VMs can also use vsock channels for communication.
->>>
->>>In addition to this, by default, all the vsock packets are forwarded to
->>>the host, if no host->guest transport is loaded. This behavior can be
->>>implicitly used for enabling vsock communication between sibling VMs.
->>>
->>>Add a flag field in the vsock address data structure that can be used to
->>>explicitly mark the vsock connection as being targeted for a certain
->>>type of communication. This way, can distinguish between nested VMs and
->>>sibling VMs use cases and can also setup them at the same time. Till
->>>now, could either have nested VMs or sibling VMs at a time using the
->>>vsock communication stack.
->>>
->>>Use the already available "svm_reserved1" field and mark it as a flag
->>>field instead. This flag can be set when initializing the vsock address
->>>variable used for the connect() call.
->>
->>Maybe we can split this patch in 2 patches, one to rename the svm_flag
->>and one to add the new flags.
->
->Sure, I can split this in 2 patches, to have a bit more separation of 
->duties.
->
->>
->>>
->>>Signed-off-by: Andra Paraschiv <andraprs@amazon.com>
->>>---
->>>include/uapi/linux/vm_sockets.h | 18 +++++++++++++++++-
->>>1 file changed, 17 insertions(+), 1 deletion(-)
->>>
->>>diff --git a/include/uapi/linux/vm_sockets.h 
->>>b/include/uapi/linux/vm_sockets.h
->>>index fd0ed7221645d..58da5a91413ac 100644
->>>--- a/include/uapi/linux/vm_sockets.h
->>>+++ b/include/uapi/linux/vm_sockets.h
->>>@@ -114,6 +114,22 @@
->>>
->>>#define VMADDR_CID_HOST 2
->>>
->>>+/* This sockaddr_vm flag value covers the current default use case:
->>>+ * local vsock communication between guest and host and nested 
->>>VMs setup.
->>>+ * In addition to this, implicitly, the vsock packets are 
->>>forwarded to the host
->>>+ * if no host->guest vsock transport is set.
->>>+ */
->>>+#define VMADDR_FLAG_DEFAULT_COMMUNICATION     0x0000
->>
->>I think we don't need this macro, since the next one can be used to
->>check if it a sibling communication (flag 0x1 set) or not (flag 0x1
->>not set).
->
->Right, that's not particularly the use of the flag value, as by 
->default comes as 0. It was more for sharing the cases this covers. But 
->I can remove the define and keep this kind of info, with regard to the 
->default case, in the commit message / comments.
->
 
-Agree, you can add few lines in the comment block of VMADDR_FLAG_SIBLING 
-describing the default case when it is not set.
-
+On 12/1/2020 1:25 PM, Vasundhara Volam wrote:
+> On Thu, Nov 26, 2020 at 4:46 PM Moshe Shemesh <moshe@mellanox.com> wrote:
+>> Introduce new options on devlink reload API to enable the user to select
+>> the reload action required and constrains limits on these actions that he
+>> may want to ensure.
 >>
->>>+
->>>+/* Set this flag value in the sockaddr_vm corresponding field if 
->>>the vsock
->>>+ * channel needs to be setup between two sibling VMs running on 
->>>the same host.
->>>+ * This way can explicitly distinguish between vsock channels 
->>>created for nested
->>>+ * VMs (or local communication between guest and host) and the 
->>>ones created for
->>>+ * sibling VMs. And vsock channels for multiple use cases (nested 
->>>/ sibling VMs)
->>>+ * can be setup at the same time.
->>>+ */
->>>+#define VMADDR_FLAG_SIBLING_VMS_COMMUNICATION 0x0001
+>> Add reload stats to show the history per reload action per limit.
 >>
->>What do you think if we shorten in VMADDR_FLAG_SIBLING?
+>> Patch 1 adds the new API reload action and reload limit options to
+>>          devlink reload command.
+>> Patch 2 adds pr_out_dev() helper function and modify monitor function to
+>>          use it.
+>> Patch 3 adds reload stats and remote reload stats to devlink dev show.
 >>
->
->Yup, this seems ok as well for me. I'll update the naming.
->
-
-Thanks,
-Stefano
-
+>>
+>> Moshe Shemesh (3):
+>>    devlink: Add devlink reload action and limit options
+>>    devlink: Add pr_out_dev() helper function
+>>    devlink: Add reload stats to dev show
+>>
+>>   devlink/devlink.c            | 260 +++++++++++++++++++++++++++++++++--
+>>   include/uapi/linux/devlink.h |   2 +
+>>   2 files changed, 249 insertions(+), 13 deletions(-)
+> I see man pages are not updated accordingly in this series. Will it be
+> updated in the follow-up patch?
+Right, I will update man page. Thanks.
+>> --
+>> 2.18.2
+>>
