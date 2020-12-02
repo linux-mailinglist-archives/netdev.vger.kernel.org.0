@@ -2,100 +2,382 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 790912CC5DA
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 19:50:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80D2D2CC5E3
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 19:53:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730832AbgLBSuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 13:50:18 -0500
-Received: from a2.mail.mailgun.net ([198.61.254.61]:10081 "EHLO
-        a2.mail.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728649AbgLBSuS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 13:50:18 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1606934993; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=FGxsOL5le8HRJQR6tlEK29rA5Su+CsaXXEfwJS9SH4Q=;
- b=WKRviKiC9ibVnrhAgw4ro8QU5X4vZjfFYmMdCVyLSDWTT1Sobt4xinWrPhK1yqSF7HBw3b1H
- acgbijTghO5di9hlmsuDgYhZHF9tXbRit1XrRkbzUt5tf/UFzvRyoadDYnwaz+UXlyTIQ4Fm
- 4IgJIV/I0ikwFpOhUscvfDdeU5o=
-X-Mailgun-Sending-Ip: 198.61.254.61
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n10.prod.us-west-2.postgun.com with SMTP id
- 5fc7e1b64a918fcc078f5c49 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 02 Dec 2020 18:49:26
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 04078C433C6; Wed,  2 Dec 2020 18:49:26 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id ACC63C433ED;
-        Wed,  2 Dec 2020 18:49:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org ACC63C433ED
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S2387912AbgLBSux (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 13:50:53 -0500
+Received: from spam.lhost.no ([5.158.192.85]:39570 "EHLO mx04.lhost.no"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726283AbgLBSux (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Dec 2020 13:50:53 -0500
+X-ASG-Debug-ID: 1606934999-0ffc0607221072460001-BZBGGp
+Received: from s103.paneda.no ([5.158.193.76]) by mx04.lhost.no with ESMTP id 1hwXzwJglDqAVVFP (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NO); Wed, 02 Dec 2020 19:50:01 +0100 (CET)
+X-Barracuda-Envelope-From: thomas.karlsson@paneda.se
+X-Barracuda-Effective-Source-IP: UNKNOWN[5.158.193.76]
+X-Barracuda-Apparent-Source-IP: 5.158.193.76
+X-ASG-Whitelist: Client
+Received: from [192.168.10.188] (83.140.179.234) by s103.paneda.no
+ (10.16.55.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id 15.1.1979.3; Wed, 2 Dec
+ 2020 19:49:58 +0100
+Subject: [PATCH net-next v4] macvlan: Support for high multicast packet rate
+CC:     Thomas Karlsson <thomas.karlsson@paneda.se>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>, <jiri@resnulli.us>,
+        <kaber@trash.net>, <edumazet@google.com>, <vyasevic@redhat.com>,
+        <alexander.duyck@gmail.com>
+X-ASG-Orig-Subj: [PATCH net-next v4] macvlan: Support for high multicast packet rate
+References: <485531aec7e243659ee4e3bb7fa2186d@paneda.se>
+ <147b704ac1d5426fbaa8617289dad648@paneda.se>
+ <20201123143052.1176407d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Thomas Karlsson <thomas.karlsson@paneda.se>
+To:     Jakub Kicinski <kuba@kernel.org>
+Message-ID: <dd4673b2-7eab-edda-6815-85c67ce87f63@paneda.se>
+Date:   Wed, 2 Dec 2020 19:49:58 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 03/17] ath9k: ar9330_1p1_initvals: Remove unused const
- variable 'ar9331_common_tx_gain_offset1_1'
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20201126133152.3211309-4-lee.jones@linaro.org>
-References: <20201126133152.3211309-4-lee.jones@linaro.org>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     lee.jones@linaro.org, linux-kernel@vger.kernel.org,
-        QCA ath9k Development <ath9k-devel@qca.qualcomm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20201202184926.04078C433C6@smtp.codeaurora.org>
-Date:   Wed,  2 Dec 2020 18:49:26 +0000 (UTC)
+In-Reply-To: <20201123143052.1176407d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: sv
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [83.140.179.234]
+X-ClientProxiedBy: s103.paneda.no (10.16.55.12) To s103.paneda.no
+ (10.16.55.12)
+X-Barracuda-Connect: UNKNOWN[5.158.193.76]
+X-Barracuda-Start-Time: 1606935001
+X-Barracuda-Encrypted: ECDHE-RSA-AES256-SHA384
+X-Barracuda-URL: https://mx04.lhost.no:443/cgi-mod/mark.cgi
+X-Virus-Scanned: by bsmtpd at lhost.no
+X-Barracuda-Scan-Msg-Size: 12299
+X-Barracuda-BRTS-Status: 1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lee Jones <lee.jones@linaro.org> wrote:
+Background:
+Broadcast and multicast packages are enqueued for later processing.
+This queue was previously hardcoded to 1000.
 
-> Fixes the following W=1 kernel build warning(s):
-> 
->  drivers/net/wireless/ath/ath9k/ar9330_1p1_initvals.h:1013:18: warning: ‘ar9331_common_tx_gain_offset1_1’ defined but not used [-Wunused-const-variable=]
-> 
-> Cc: QCA ath9k Development <ath9k-devel@qca.qualcomm.com>
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+This proved insufficient for handling very high packet rates.
+This resulted in packet drops for multicast.
+While at the same time unicast worked fine.
 
-ath9k patches fail to apply:
+The change:
+This patch make the queue length adjustable to accommodate
+for environments with very high multicast packet rate.
+But still keeps the default value of 1000 unless specified.
 
-error: patch failed: drivers/net/wireless/ath/ath9k/ar9330_1p1_initvals.h:1010
-error: drivers/net/wireless/ath/ath9k/ar9330_1p1_initvals.h: patch does not apply
-stg import: Diff does not apply cleanly
+The queue length is specified as a request per macvlan
+using the IFLA_MACVLAN_BC_QUEUE_LEN parameter.
 
-6 patches set to Changes Requested.
+The actual used queue length will then be the maximum of
+any macvlan connected to the same port. The actual used
+queue length for the port can be retrieved (read only)
+by the IFLA_MACVLAN_BC_QUEUE_LEN_USED parameter for verification.
 
-11933887 [03/17] ath9k: ar9330_1p1_initvals: Remove unused const variable 'ar9331_common_tx_gain_offset1_1'
-11933889 [04/17] ath9k: ar9340_initvals: Remove unused const variable 'ar9340Modes_ub124_tx_gain_table_1p0'
-11933883 [05/17] ath9k: ar9485_initvals: Remove unused const variable 'ar9485_fast_clock_1_1_baseband_postamble'
-11933879 [06/17] ath9k: ar9003_2p2_initvals: Remove unused const variables
-11933861 [10/17] ath9k: ar5008_phy: Demote half completed function headers
-11933875 [15/17] ath9k: dynack: Demote non-compliant function header
+This will be followed up by a patch to iproute2
+in order to adjust the parameter from userspace.
 
+Signed-off-by: Thomas Karlsson <thomas.karlsson@paneda.se>
+---
+
+v4 Updated after review (see interdiff for full details):
+	- Initialize bc_queue_len_used to 0 when creating the port.
+	- only change bc_queue_len_used from update_port_bc_queue_len()
+	- Use NLA_REJECT for IFLA_MACVLAN_BC_QUEUE_LEN_USED and removed custom reject code
+	- Use list_for_each_entry instead of list_for_each_entry_rcu
+	- misc renaming/restructure to better match coding style
+v3 switched to using netlink attributes
+v1/2 used module_param
+
+Interdiff against v3:
+  diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+  index b8197761248e..fb51329f8964 100644
+  --- a/drivers/net/macvlan.c
+  +++ b/drivers/net/macvlan.c
+  @@ -1220,7 +1220,7 @@ static int macvlan_port_create(struct net_device *dev)
+   	for (i = 0; i < MACVLAN_HASH_SIZE; i++)
+   		INIT_HLIST_HEAD(&port->vlan_source_hash[i]);
+   
+  -	port->bc_queue_len_used = MACVLAN_DEFAULT_BC_QUEUE_LEN;
+  +	port->bc_queue_len_used = 0;
+   	skb_queue_head_init(&port->bc_queue);
+   	INIT_WORK(&port->bc_work, macvlan_process_broadcast);
+   
+  @@ -1489,11 +1489,9 @@ int macvlan_common_newlink(struct net *src_net, struct net_device *dev,
+   			goto destroy_macvlan_port;
+   	}
+   
+  -	vlan->bc_queue_len_requested = MACVLAN_DEFAULT_BC_QUEUE_LEN;
+  +	vlan->bc_queue_len_req = MACVLAN_DEFAULT_BC_QUEUE_LEN;
+   	if (data && data[IFLA_MACVLAN_BC_QUEUE_LEN])
+  -		vlan->bc_queue_len_requested = nla_get_u32(data[IFLA_MACVLAN_BC_QUEUE_LEN]);
+  -	if (vlan->bc_queue_len_requested > port->bc_queue_len_used)
+  -		port->bc_queue_len_used = vlan->bc_queue_len_requested;
+  +		vlan->bc_queue_len_req = nla_get_u32(data[IFLA_MACVLAN_BC_QUEUE_LEN]);
+   
+   	err = register_netdevice(dev);
+   	if (err < 0)
+  @@ -1505,6 +1503,7 @@ int macvlan_common_newlink(struct net *src_net, struct net_device *dev,
+   		goto unregister_netdev;
+   
+   	list_add_tail_rcu(&vlan->list, &port->vlans);
+  +	update_port_bc_queue_len(vlan->port);
+   	netif_stacked_transfer_operstate(lowerdev, dev);
+   	linkwatch_fire_event(dev);
+   
+  @@ -1583,11 +1582,8 @@ static int macvlan_changelink(struct net_device *dev,
+   		vlan->flags = flags;
+   	}
+   
+  -	if (data && data[IFLA_MACVLAN_BC_QUEUE_LEN_USED])
+  -		return -EINVAL; /* Trying to set a read only attribute */
+  -
+   	if (data && data[IFLA_MACVLAN_BC_QUEUE_LEN]) {
+  -		vlan->bc_queue_len_requested = nla_get_u32(data[IFLA_MACVLAN_BC_QUEUE_LEN]);
+  +		vlan->bc_queue_len_req = nla_get_u32(data[IFLA_MACVLAN_BC_QUEUE_LEN]);
+   		update_port_bc_queue_len(vlan->port);
+   	}
+   
+  @@ -1667,7 +1663,7 @@ static int macvlan_fill_info(struct sk_buff *skb,
+   		}
+   		nla_nest_end(skb, nest);
+   	}
+  -	if (nla_put_u32(skb, IFLA_MACVLAN_BC_QUEUE_LEN, vlan->bc_queue_len_requested))
+  +	if (nla_put_u32(skb, IFLA_MACVLAN_BC_QUEUE_LEN, vlan->bc_queue_len_req))
+   		goto nla_put_failure;
+   	if (nla_put_u32(skb, IFLA_MACVLAN_BC_QUEUE_LEN_USED, port->bc_queue_len_used))
+   		goto nla_put_failure;
+  @@ -1685,7 +1681,7 @@ static const struct nla_policy macvlan_policy[IFLA_MACVLAN_MAX + 1] = {
+   	[IFLA_MACVLAN_MACADDR_DATA] = { .type = NLA_NESTED },
+   	[IFLA_MACVLAN_MACADDR_COUNT] = { .type = NLA_U32 },
+   	[IFLA_MACVLAN_BC_QUEUE_LEN] = { .type = NLA_U32 },
+  -	[IFLA_MACVLAN_BC_QUEUE_LEN_USED] = { .type = NLA_U32 },
+  +	[IFLA_MACVLAN_BC_QUEUE_LEN_USED] = { .type = NLA_REJECT },
+   };
+   
+   int macvlan_link_register(struct rtnl_link_ops *ops)
+  @@ -1718,14 +1714,14 @@ static struct rtnl_link_ops macvlan_link_ops = {
+   
+   static void update_port_bc_queue_len(struct macvlan_port *port)
+   {
+  +	u32 max_bc_queue_len_req = 0;
+   	struct macvlan_dev *vlan;
+  -	u32 max_bc_queue_len_requested = 0;
+   
+  -	list_for_each_entry_rcu(vlan, &port->vlans, list) {
+  -		if (vlan->bc_queue_len_requested > max_bc_queue_len_requested)
+  -			max_bc_queue_len_requested = vlan->bc_queue_len_requested;
+  +	list_for_each_entry(vlan, &port->vlans, list) {
+  +		if (vlan->bc_queue_len_req > max_bc_queue_len_req)
+  +			max_bc_queue_len_req = vlan->bc_queue_len_req;
+   	}
+  -	port->bc_queue_len_used = max_bc_queue_len_requested;
+  +	port->bc_queue_len_used = max_bc_queue_len_req;
+   }
+   
+   static int macvlan_device_event(struct notifier_block *unused,
+  diff --git a/include/linux/if_macvlan.h b/include/linux/if_macvlan.h
+  index c3923fdbe1f0..96556c64c95d 100644
+  --- a/include/linux/if_macvlan.h
+  +++ b/include/linux/if_macvlan.h
+  @@ -30,7 +30,7 @@ struct macvlan_dev {
+   	enum macvlan_mode	mode;
+   	u16			flags;
+   	unsigned int		macaddr_count;
+  -	u32			bc_queue_len_requested;
+  +	u32			bc_queue_len_req;
+   #ifdef CONFIG_NET_POLL_CONTROLLER
+   	struct netpoll		*netpoll;
+   #endif
+
+ drivers/net/macvlan.c              | 40 ++++++++++++++++++++++++++++--
+ include/linux/if_macvlan.h         |  1 +
+ include/uapi/linux/if_link.h       |  2 ++
+ tools/include/uapi/linux/if_link.h |  2 ++
+ 4 files changed, 43 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+index d9b6c44a5911..fb51329f8964 100644
+--- a/drivers/net/macvlan.c
++++ b/drivers/net/macvlan.c
+@@ -35,7 +35,7 @@
+ 
+ #define MACVLAN_HASH_BITS	8
+ #define MACVLAN_HASH_SIZE	(1<<MACVLAN_HASH_BITS)
+-#define MACVLAN_BC_QUEUE_LEN	1000
++#define MACVLAN_DEFAULT_BC_QUEUE_LEN	1000
+ 
+ #define MACVLAN_F_PASSTHRU	1
+ #define MACVLAN_F_ADDRCHANGE	2
+@@ -46,6 +46,7 @@ struct macvlan_port {
+ 	struct list_head	vlans;
+ 	struct sk_buff_head	bc_queue;
+ 	struct work_struct	bc_work;
++	u32			bc_queue_len_used;
+ 	u32			flags;
+ 	int			count;
+ 	struct hlist_head	vlan_source_hash[MACVLAN_HASH_SIZE];
+@@ -67,6 +68,7 @@ struct macvlan_skb_cb {
+ #define MACVLAN_SKB_CB(__skb) ((struct macvlan_skb_cb *)&((__skb)->cb[0]))
+ 
+ static void macvlan_port_destroy(struct net_device *dev);
++static void update_port_bc_queue_len(struct macvlan_port *port);
+ 
+ static inline bool macvlan_passthru(const struct macvlan_port *port)
+ {
+@@ -354,7 +356,7 @@ static void macvlan_broadcast_enqueue(struct macvlan_port *port,
+ 	MACVLAN_SKB_CB(nskb)->src = src;
+ 
+ 	spin_lock(&port->bc_queue.lock);
+-	if (skb_queue_len(&port->bc_queue) < MACVLAN_BC_QUEUE_LEN) {
++	if (skb_queue_len(&port->bc_queue) < port->bc_queue_len_used) {
+ 		if (src)
+ 			dev_hold(src->dev);
+ 		__skb_queue_tail(&port->bc_queue, nskb);
+@@ -1218,6 +1220,7 @@ static int macvlan_port_create(struct net_device *dev)
+ 	for (i = 0; i < MACVLAN_HASH_SIZE; i++)
+ 		INIT_HLIST_HEAD(&port->vlan_source_hash[i]);
+ 
++	port->bc_queue_len_used = 0;
+ 	skb_queue_head_init(&port->bc_queue);
+ 	INIT_WORK(&port->bc_work, macvlan_process_broadcast);
+ 
+@@ -1486,6 +1489,10 @@ int macvlan_common_newlink(struct net *src_net, struct net_device *dev,
+ 			goto destroy_macvlan_port;
+ 	}
+ 
++	vlan->bc_queue_len_req = MACVLAN_DEFAULT_BC_QUEUE_LEN;
++	if (data && data[IFLA_MACVLAN_BC_QUEUE_LEN])
++		vlan->bc_queue_len_req = nla_get_u32(data[IFLA_MACVLAN_BC_QUEUE_LEN]);
++
+ 	err = register_netdevice(dev);
+ 	if (err < 0)
+ 		goto destroy_macvlan_port;
+@@ -1496,6 +1503,7 @@ int macvlan_common_newlink(struct net *src_net, struct net_device *dev,
+ 		goto unregister_netdev;
+ 
+ 	list_add_tail_rcu(&vlan->list, &port->vlans);
++	update_port_bc_queue_len(vlan->port);
+ 	netif_stacked_transfer_operstate(lowerdev, dev);
+ 	linkwatch_fire_event(dev);
+ 
+@@ -1529,6 +1537,7 @@ void macvlan_dellink(struct net_device *dev, struct list_head *head)
+ 	if (vlan->mode == MACVLAN_MODE_SOURCE)
+ 		macvlan_flush_sources(vlan->port, vlan);
+ 	list_del_rcu(&vlan->list);
++	update_port_bc_queue_len(vlan->port);
+ 	unregister_netdevice_queue(dev, head);
+ 	netdev_upper_dev_unlink(vlan->lowerdev, dev);
+ }
+@@ -1572,6 +1581,12 @@ static int macvlan_changelink(struct net_device *dev,
+ 		}
+ 		vlan->flags = flags;
+ 	}
++
++	if (data && data[IFLA_MACVLAN_BC_QUEUE_LEN]) {
++		vlan->bc_queue_len_req = nla_get_u32(data[IFLA_MACVLAN_BC_QUEUE_LEN]);
++		update_port_bc_queue_len(vlan->port);
++	}
++
+ 	if (set_mode)
+ 		vlan->mode = mode;
+ 	if (data && data[IFLA_MACVLAN_MACADDR_MODE]) {
+@@ -1602,6 +1617,8 @@ static size_t macvlan_get_size(const struct net_device *dev)
+ 		+ nla_total_size(2) /* IFLA_MACVLAN_FLAGS */
+ 		+ nla_total_size(4) /* IFLA_MACVLAN_MACADDR_COUNT */
+ 		+ macvlan_get_size_mac(vlan) /* IFLA_MACVLAN_MACADDR */
++		+ nla_total_size(4) /* IFLA_MACVLAN_BC_QUEUE_LEN */
++		+ nla_total_size(4) /* IFLA_MACVLAN_BC_QUEUE_LEN_USED */
+ 		);
+ }
+ 
+@@ -1625,6 +1642,7 @@ static int macvlan_fill_info(struct sk_buff *skb,
+ 				const struct net_device *dev)
+ {
+ 	struct macvlan_dev *vlan = netdev_priv(dev);
++	struct macvlan_port *port = vlan->port;
+ 	int i;
+ 	struct nlattr *nest;
+ 
+@@ -1645,6 +1663,10 @@ static int macvlan_fill_info(struct sk_buff *skb,
+ 		}
+ 		nla_nest_end(skb, nest);
+ 	}
++	if (nla_put_u32(skb, IFLA_MACVLAN_BC_QUEUE_LEN, vlan->bc_queue_len_req))
++		goto nla_put_failure;
++	if (nla_put_u32(skb, IFLA_MACVLAN_BC_QUEUE_LEN_USED, port->bc_queue_len_used))
++		goto nla_put_failure;
+ 	return 0;
+ 
+ nla_put_failure:
+@@ -1658,6 +1680,8 @@ static const struct nla_policy macvlan_policy[IFLA_MACVLAN_MAX + 1] = {
+ 	[IFLA_MACVLAN_MACADDR] = { .type = NLA_BINARY, .len = MAX_ADDR_LEN },
+ 	[IFLA_MACVLAN_MACADDR_DATA] = { .type = NLA_NESTED },
+ 	[IFLA_MACVLAN_MACADDR_COUNT] = { .type = NLA_U32 },
++	[IFLA_MACVLAN_BC_QUEUE_LEN] = { .type = NLA_U32 },
++	[IFLA_MACVLAN_BC_QUEUE_LEN_USED] = { .type = NLA_REJECT },
+ };
+ 
+ int macvlan_link_register(struct rtnl_link_ops *ops)
+@@ -1688,6 +1712,18 @@ static struct rtnl_link_ops macvlan_link_ops = {
+ 	.priv_size      = sizeof(struct macvlan_dev),
+ };
+ 
++static void update_port_bc_queue_len(struct macvlan_port *port)
++{
++	u32 max_bc_queue_len_req = 0;
++	struct macvlan_dev *vlan;
++
++	list_for_each_entry(vlan, &port->vlans, list) {
++		if (vlan->bc_queue_len_req > max_bc_queue_len_req)
++			max_bc_queue_len_req = vlan->bc_queue_len_req;
++	}
++	port->bc_queue_len_used = max_bc_queue_len_req;
++}
++
+ static int macvlan_device_event(struct notifier_block *unused,
+ 				unsigned long event, void *ptr)
+ {
+diff --git a/include/linux/if_macvlan.h b/include/linux/if_macvlan.h
+index a367ead4bf4b..96556c64c95d 100644
+--- a/include/linux/if_macvlan.h
++++ b/include/linux/if_macvlan.h
+@@ -30,6 +30,7 @@ struct macvlan_dev {
+ 	enum macvlan_mode	mode;
+ 	u16			flags;
+ 	unsigned int		macaddr_count;
++	u32			bc_queue_len_req;
+ #ifdef CONFIG_NET_POLL_CONTROLLER
+ 	struct netpoll		*netpoll;
+ #endif
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index c4b23f06f69e..874cc12a34d9 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -588,6 +588,8 @@ enum {
+ 	IFLA_MACVLAN_MACADDR,
+ 	IFLA_MACVLAN_MACADDR_DATA,
+ 	IFLA_MACVLAN_MACADDR_COUNT,
++	IFLA_MACVLAN_BC_QUEUE_LEN,
++	IFLA_MACVLAN_BC_QUEUE_LEN_USED,
+ 	__IFLA_MACVLAN_MAX,
+ };
+ 
+diff --git a/tools/include/uapi/linux/if_link.h b/tools/include/uapi/linux/if_link.h
+index 781e482dc499..d208b2af697f 100644
+--- a/tools/include/uapi/linux/if_link.h
++++ b/tools/include/uapi/linux/if_link.h
+@@ -409,6 +409,8 @@ enum {
+ 	IFLA_MACVLAN_MACADDR,
+ 	IFLA_MACVLAN_MACADDR_DATA,
+ 	IFLA_MACVLAN_MACADDR_COUNT,
++	IFLA_MACVLAN_BC_QUEUE_LEN,
++	IFLA_MACVLAN_BC_QUEUE_LEN_USED,
+ 	__IFLA_MACVLAN_MAX,
+ };
+ 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20201126133152.3211309-4-lee.jones@linaro.org/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+2.29.2
