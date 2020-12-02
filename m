@@ -2,141 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09BB92CB2AC
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 03:14:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7D262CB2B4
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 03:16:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728056AbgLBCOC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 21:14:02 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52168 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727353AbgLBCOB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Dec 2020 21:14:01 -0500
-Date:   Tue, 1 Dec 2020 18:13:19 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606875201;
-        bh=ie0BsMb3jjIKlAJ/vjltbOgdzImfWHE3oCw8CU6F4ek=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Z9iWUGmp06RyOi1Vc5GpmICkIoIfk/iTu+38PSABQxzl6iGDOGzmLvEGFpB0vPGNq
-         3CYxOoaBGolf+YNwXetNqRYt1243itVPYNA7OKUAlZ3H+aQ89eAqklxrN8QnyHMgoT
-         8R2b84K2t7NA0U8/A1Vw3NALSM44Y7/pn3Ijk4j0=
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, evgreen@chromium.org, cpratapa@codeaurora.org,
-        bjorn.andersson@linaro.org, subashab@codeaurora.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 2/2] net: ipa: add support for inline checksum
- offload
-Message-ID: <20201201181319.41091a37@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201201004143.27569-3-elder@linaro.org>
-References: <20201201004143.27569-1-elder@linaro.org>
-        <20201201004143.27569-3-elder@linaro.org>
+        id S1728142AbgLBCPV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 21:15:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42508 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727126AbgLBCPV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 21:15:21 -0500
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA24FC0613CF;
+        Tue,  1 Dec 2020 18:14:40 -0800 (PST)
+Received: by mail-pf1-x442.google.com with SMTP id d77so245737pfd.2;
+        Tue, 01 Dec 2020 18:14:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Obg14oVqT2hmGCEw6+gPnYmtm3d2f/qGhj1jJeiogDs=;
+        b=YGLVcjRY1hrgmQGXXr0uR+s3AUXHO26eQEvLxV4LNnmQaZ1IMQhpqbv/u8dYuVBY2F
+         /TPQBG5AQXTDwt6HRSWo6Vjjor+FdflUHF/dFb3QdYhihvGpDTYiuwrQmhmHt6PHbsdF
+         n5NyFeE7ATA9Lkyx+raN/FPmKHPrzYWjXBK3dtahfJzZ4UyAhfDij7iV2nyT8+bhBrAB
+         Hv2YAGo2nGbk7RI8nEFC4as6RzVPNWhoe9E+pmRQ/7C9TsfrdN1qrrMumN03YNYTIAmK
+         Se41X2vOvGCshhPYMGwIxwhk88qrfetu2H4tdiaMKNCljfw/MXAaA4bMVN17nsJXQXFu
+         29Pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Obg14oVqT2hmGCEw6+gPnYmtm3d2f/qGhj1jJeiogDs=;
+        b=JcZCkb5L5X5gMyo1BNyWx9HAsSWRGIVW5LJ8wUch7DQfVHKqgRwih582r9+VmHbYTX
+         31JEFNmTu28ThojCsD/DACfAyFPQvRK9O35t9LSR3hGjsd9U26pFuyAOvBKziQw41XGt
+         Mt0HGBUJmcGWacJArrm4oHdcIzkSxuowZzEK5xr7eW8yG08ICsSINes4iZIOTe1/m2Hk
+         yCJZl/xwtiEKwm4OvE8ciIfRLlLe6ncIm4U03GGWPx6eO7cmXW42PzCSoSLGOSi6wfdM
+         QgD5Vmqf8JM+VM7I2TNErd2oQcopHXuIgKO4rdhe1fIardIszLKVhdlhooQP8pz4wPa1
+         hAog==
+X-Gm-Message-State: AOAM532sTFfUF3Y053qBu97FWFaUfOP40eanzHidJh1DWdhPglerYOCg
+        X1O80xihklN/VXbKSnkPlktdirtjLO4=
+X-Google-Smtp-Source: ABdhPJzbUq3HaTK1QFsgIRcwNXMGF9HF3ZItS9gZNIhzpL0xZ5BquXliEngyS8KB763fxUmaymdYAg==
+X-Received: by 2002:a63:fb42:: with SMTP id w2mr552738pgj.354.1606875280387;
+        Tue, 01 Dec 2020 18:14:40 -0800 (PST)
+Received: from ast-mbp ([2620:10d:c090:400::5:edc0])
+        by smtp.gmail.com with ESMTPSA id z11sm68225pjn.5.2020.12.01.18.14.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Dec 2020 18:14:39 -0800 (PST)
+Date:   Tue, 1 Dec 2020 18:14:37 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Prankur gupta <prankgup@fb.com>
+Cc:     bpf@vger.kernel.org, kernel-team@fb.com, netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next 1/2] bpf: Adds support for setting window clamp
+Message-ID: <20201202021437.rbllajmj27u2ezyf@ast-mbp>
+References: <20201201164357.2623610-1-prankgup@fb.com>
+ <20201201164357.2623610-2-prankgup@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201201164357.2623610-2-prankgup@fb.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 30 Nov 2020 18:41:43 -0600 Alex Elder wrote:
-> Starting with IPA v4.5, IP payload checksum offload is implemented
-> differently.
+On Tue, Dec 01, 2020 at 08:43:56AM -0800, Prankur gupta wrote:
+> Adds a new bpf_setsockopt for TCP sockets, TCP_BPF_WINDOW_CLAMP,
+> which sets the maximum receiver window size. It will be useful for
+> limiting receiver window based on RTT.
 > 
-> Prior to v4.5, the IPA hardware appends an rmnet_map_dl_csum_trailer
-> structure to each packet if checksum offload is enabled in the
-> download direction (modem->AP).  In the upload direction (AP->modem)
-> a rmnet_map_ul_csum_header structure is prepended before each sent
-> packet.
+> Signed-off-by: Prankur gupta <prankgup@fb.com>
+> ---
+>  net/core/filter.c | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
 > 
-> Starting with IPA v4.5, checksum offload is implemented using a
-> single new rmnet_map_v5_csum_header structure which sits between
-> the QMAP header and the packet data.  The same header structure
-> is used in both directions.
-> 
-> The new header contains a header type (CSUM_OFFLOAD); a checksum
-> flag; and a flag indicating whether any other headers follow this
-> one.  The checksum flag indicates whether the hardware should
-> compute (and insert) the checksum on a sent packet.  On a received
-> packet the checksum flag indicates whether the hardware confirms the
-> checksum value in the payload is correct.
-> 
-> To function, the rmnet driver must also add support for this new
-> "inline" checksum offload.  The changes implementing this will be
-> submitted soon.
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 2ca5eecebacf..8c52ffae7b0c 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -4910,6 +4910,19 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
+>  				tp->notsent_lowat = val;
+>  				sk->sk_write_space(sk);
+>  				break;
+> +			case TCP_WINDOW_CLAMP:
+> +				if (!val) {
+> +					if (sk->sk_state != TCP_CLOSE) {
+> +						ret = -EINVAL;
+> +						break;
+> +					}
+> +					tp->window_clamp = 0;
+> +				} else {
+> +					tp->window_clamp =
+> +						val < SOCK_MIN_RCVBUF / 2 ?
+> +						SOCK_MIN_RCVBUF / 2 : val;
+> +				}
 
-We don't usually merge half of a feature. Why not wait until all
-support is in place?
-
-Do I understand right that it's rmnet that will push the csum header?
-This change seems to only reserve space for it and request the feature
-at init..
-
-> diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-> index 27f543b6780b1..1a4749f7f03e6 100644
-> --- a/drivers/net/ipa/ipa_endpoint.c
-> +++ b/drivers/net/ipa/ipa_endpoint.c
-> @@ -434,33 +434,63 @@ int ipa_endpoint_modem_exception_reset_all(struct ipa *ipa)
->  static void ipa_endpoint_init_cfg(struct ipa_endpoint *endpoint)
->  {
->  	u32 offset = IPA_REG_ENDP_INIT_CFG_N_OFFSET(endpoint->endpoint_id);
-> +	enum ipa_cs_offload_en enabled;
->  	u32 val = 0;
->  
->  	/* FRAG_OFFLOAD_EN is 0 */
->  	if (endpoint->data->checksum) {
-> +		enum ipa_version version = endpoint->ipa->version;
-> +
->  		if (endpoint->toward_ipa) {
->  			u32 checksum_offset;
->  
-> -			val |= u32_encode_bits(IPA_CS_OFFLOAD_UL,
-> -					       CS_OFFLOAD_EN_FMASK);
->  			/* Checksum header offset is in 4-byte units */
->  			checksum_offset = sizeof(struct rmnet_map_header);
->  			checksum_offset /= sizeof(u32);
->  			val |= u32_encode_bits(checksum_offset,
->  					       CS_METADATA_HDR_OFFSET_FMASK);
-> +
-> +			enabled = version < IPA_VERSION_4_5
-> +					? IPA_CS_OFFLOAD_UL
-> +					: IPA_CS_OFFLOAD_INLINE;
->  		} else {
-> -			val |= u32_encode_bits(IPA_CS_OFFLOAD_DL,
-> -					       CS_OFFLOAD_EN_FMASK);
-> +			enabled = version < IPA_VERSION_4_5
-> +					? IPA_CS_OFFLOAD_DL
-> +					: IPA_CS_OFFLOAD_INLINE;
->  		}
->  	} else {
-> -		val |= u32_encode_bits(IPA_CS_OFFLOAD_NONE,
-> -				       CS_OFFLOAD_EN_FMASK);
-> +		enabled = IPA_CS_OFFLOAD_NONE;
->  	}
-> +	val |= u32_encode_bits(enabled, CS_OFFLOAD_EN_FMASK);
->  	/* CS_GEN_QMB_MASTER_SEL is 0 */
->  
->  	iowrite32(val, endpoint->ipa->reg_virt + offset);
->  }
->  
-> +static u32
-> +ipa_qmap_header_size(enum ipa_version version, struct ipa_endpoint *endpoint)
-> +{
-> +	u32 header_size = sizeof(struct rmnet_map_header);
-> +
-> +	/* ipa_assert(endpoint->data->qmap); */
-> +
-> +	/* We might supply a checksum header after the QMAP header */
-> +	if (endpoint->data->checksum) {
-> +		if (version < IPA_VERSION_4_5) {
-> +			size_t size = sizeof(struct rmnet_map_ul_csum_header);
-> +
-> +			/* Checksum header inserted for AP TX endpoints */
-> +			if (endpoint->toward_ipa)
-> +				header_size += size;
-> +		} else {
-> +			/* Checksum header is used in both directions */
-> +			header_size += sizeof(struct rmnet_map_v5_csum_header);
-> +		}
-> +	}
-> +
-> +	return header_size;
-> +}
+May be extract this logic into a helper instead of copy-paste?
