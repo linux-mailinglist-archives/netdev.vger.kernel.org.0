@@ -2,200 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7342A2CCAAF
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 00:46:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C2902CCAB9
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 00:52:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729226AbgLBXoU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 18:44:20 -0500
-Received: from www62.your-server.de ([213.133.104.62]:57536 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728021AbgLBXoU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 18:44:20 -0500
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kkbmb-0006N9-Ba; Thu, 03 Dec 2020 00:43:37 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kkbmb-000GPi-10; Thu, 03 Dec 2020 00:43:37 +0100
-Subject: Re: [PATCH bpf-next V8 5/8] bpf: drop MTU check when doing TC-BPF
- redirect to ingress
-To:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
-        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
-        colrack@gmail.com
-References: <160650034591.2890576.1092952641487480652.stgit@firesoul>
- <160650040292.2890576.17040975200628427127.stgit@firesoul>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <af28e4e7-8089-b252-3927-a962b98ad7b8@iogearbox.net>
-Date:   Thu, 3 Dec 2020 00:43:36 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1728098AbgLBXvo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 18:51:44 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:6898 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727773AbgLBXvn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 18:51:43 -0500
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B2NX97R025507;
+        Wed, 2 Dec 2020 18:51:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=mime-version :
+ content-type : content-transfer-encoding : date : from : to : cc : subject
+ : in-reply-to : references : message-id; s=pp1;
+ bh=awwsz0WgE267gBHpNikIBP3apkg2y//HaIjvVRvItzo=;
+ b=G2SS1qSIAkfSK/PcWmg1sk6Zyxc2alS+eMI9m5YicJMhXM0AA9XpY3HB38T2/hN+RuNw
+ 5I/G5aW1cxNjRENuTB6Y30WxKrg2kk1T6bKEAoQKSo5etqsDT0OtIO+IJr+CvlMyDi8Q
+ SPASlCl+NGfgfdc/73MicwNjIfHb0uhAmEF1KVXOQZUW+S9TIwIHP6vyx8oAwzJbYtYB
+ wITUpPBzG+UiprltBVXY9H/qCzDOis+AZugI9XgK/rDuR1+0EkWTCqNKTBShALowV1m3
+ 7vz5zvCl4xWIP4R+dKeYkkTRQMxkq4IDi+ZcD/eigRM9KmkUHCORGquMlfheTsCm32qR gQ== 
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 356jfrun63-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 02 Dec 2020 18:51:00 -0500
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+        by ppma03dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0B2NgQWe028975;
+        Wed, 2 Dec 2020 23:51:00 GMT
+Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
+        by ppma03dal.us.ibm.com with ESMTP id 353e69n8yw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 02 Dec 2020 23:50:59 +0000
+Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
+        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0B2NoxWt3605110
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 2 Dec 2020 23:50:59 GMT
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 23EE8B2066;
+        Wed,  2 Dec 2020 23:50:59 +0000 (GMT)
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C9213B205F;
+        Wed,  2 Dec 2020 23:50:58 +0000 (GMT)
+Received: from ltc.linux.ibm.com (unknown [9.10.229.42])
+        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed,  2 Dec 2020 23:50:58 +0000 (GMT)
 MIME-Version: 1.0
-In-Reply-To: <160650040292.2890576.17040975200628427127.stgit@firesoul>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26006/Wed Dec  2 14:14:18 2020)
+Date:   Wed, 02 Dec 2020 15:50:58 -0800
+From:   Dany Madden <drt@linux.ibm.com>
+To:     drt@linux.ibm.com
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        sukadev@linux.ibm.com, ljp@linux.ibm.com
+Subject: Re: [PATCH net-next v2] ibmvnic: process HMC disable command
+In-Reply-To: <b4177b1aa6eaaab4a77f96fb272714cb@imap.linux.ibm.com>
+References: <20201123235841.6515-1-drt@linux.ibm.com>
+ <20201125130855.7eb08d0f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <a0d2426ed35a02e14882bd1ce51e4e8e@imap.linux.ibm.com>
+ <75f4529be5cfab14ec2b0decf47dcd86@imap.linux.ibm.com>
+ <b4177b1aa6eaaab4a77f96fb272714cb@imap.linux.ibm.com>
+Message-ID: <270f309212915ad2b4a0513222039f20@imap.linux.ibm.com>
+X-Sender: drt@linux.ibm.com
+User-Agent: Roundcube Webmail/1.1.12
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-12-02_14:2020-11-30,2020-12-02 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 malwarescore=0
+ spamscore=0 impostorscore=0 priorityscore=1501 mlxscore=0 bulkscore=0
+ lowpriorityscore=0 phishscore=0 clxscore=1011 mlxlogscore=771
+ suspectscore=1 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012020142
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/27/20 7:06 PM, Jesper Dangaard Brouer wrote:
-> The use-case for dropping the MTU check when TC-BPF does redirect to
-> ingress, is described by Eyal Birger in email[0]. The summary is the
-> ability to increase packet size (e.g. with IPv6 headers for NAT64) and
-> ingress redirect packet and let normal netstack fragment packet as needed.
+On 2020-12-02 12:02, drt wrote:
+> On 2020-11-30 10:19, drt wrote:
+>> On 2020-11-25 15:55, drt wrote:
+>>> On 2020-11-25 13:08, Jakub Kicinski wrote:
+>>>> On Mon, 23 Nov 2020 18:58:41 -0500 Dany Madden wrote:
+>>>>> Currently ibmvnic does not support the "Disable vNIC" command from
+>>>>> the Hardware Management Console. The HMC uses this command to 
+>>>>> disconnect
+>>>>> the adapter from the network if the adapter is misbehaving or 
+>>>>> sending
+>>>>> malicious traffic. The effect of this command is equivalent to 
+>>>>> setting
+>>>>> the link to the "down" state on the linux client.
+>>>>> 
+>>>>> Enable support in ibmvnic driver for the Disable vNIC command.
+>>>>> 
+>>>>> Signed-off-by: Dany Madden <drt@linux.ibm.com>
+>>>> 
+>>>> It seems that (a) user looking at the system where NIC was disabled 
+>>>> has
+>>>> no idea why netdev is not working even tho it's UP, and (b) AFAICT
+>>>> nothing prevents the user from bringing the device down and back up
+>>>> again.
+>>> 
+>>> User would see the interface as DOWN. ibmvnic_close() requests the
+>>> vnicserver to do a link down. The vnicserver responds with a link
+>>> state indication CRQ message with logical link down, client would 
+>>> then
+>>> do netif_carrier_off().
+>>> 
+>>> You are correct, nothing is preventing the user from bringing the
+>>> device back online.
+>>> 
+>>>> 
+>>>> You said this is to disable misbehaving and/or sending malicious 
+>>>> vnic,
+>>>> obviously the guest can ignore the command so it's not very 
+>>>> dependable,
+>>>> anyway.
+>>> 
+>>> Without this patch, ibmvnic would ignore the command. With this 
+>>> patch,
+>>> it will handle the disable command from the HMC. If the guest insists
+>>> on being bad, the HMC does have the ability to remove vnic adapter
+>>> from the guest.
+>>> 
+>>>> 
+>>>> Would it not be sufficient to mark the carrier state as down to cut 
+>>>> the
+>>>> vnic off?
+>>> Essentially, this is what ibmvnic_disable does.
+>> 
+>> Hello Jakub, did I address your concern? If not, please let me know.
 > 
-> [0] https://lore.kernel.org/netdev/CAHsH6Gug-hsLGHQ6N0wtixdOa85LDZ3HNRHVd0opR=19Qo4W4Q@mail.gmail.com/
+> Hello Jakub,
 > 
-> V4:
->   - Keep net_device "up" (IFF_UP) check.
->   - Adjustment to handle bpf_redirect_peer() helper
+> I am pulling this patch. Suka pointed out that rwi lock is not being
+> held when it walks the rwi_list, also the reset bit is incorrectly
+> checked. We will send a v3.
 > 
-> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> ---
->   include/linux/netdevice.h |   31 +++++++++++++++++++++++++++++--
->   net/core/dev.c            |   19 ++-----------------
->   net/core/filter.c         |   14 +++++++++++---
->   3 files changed, 42 insertions(+), 22 deletions(-)
+> Apologize for any inconvenient.
+
+It appears that my email is not showing up in the mailing archive 
+because of email aliases. I hope this is going thru.
+
+Please do not commit this patch.
+
 > 
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 7ce648a564f7..4a854e09e918 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -3917,11 +3917,38 @@ int dev_forward_skb(struct net_device *dev, struct sk_buff *skb);
->   bool is_skb_forwardable(const struct net_device *dev,
->   			const struct sk_buff *skb);
->   
-> +static __always_inline bool __is_skb_forwardable(const struct net_device *dev,
-> +						 const struct sk_buff *skb,
-> +						 const bool check_mtu)
-> +{
-> +	const u32 vlan_hdr_len = 4; /* VLAN_HLEN */
-> +	unsigned int len;
-> +
-> +	if (!(dev->flags & IFF_UP))
-> +		return false;
-> +
-> +	if (!check_mtu)
-> +		return true;
-> +
-> +	len = dev->mtu + dev->hard_header_len + vlan_hdr_len;
-> +	if (skb->len <= len)
-> +		return true;
-> +
-> +	/* if TSO is enabled, we don't care about the length as the packet
-> +	 * could be forwarded without being segmented before
-> +	 */
-> +	if (skb_is_gso(skb))
-> +		return true;
-> +
-> +	return false;
-> +}
-> +
->   static __always_inline int ____dev_forward_skb(struct net_device *dev,
-> -					       struct sk_buff *skb)
-> +					       struct sk_buff *skb,
-> +					       const bool check_mtu)
->   {
->   	if (skb_orphan_frags(skb, GFP_ATOMIC) ||
-> -	    unlikely(!is_skb_forwardable(dev, skb))) {
-> +	    unlikely(!__is_skb_forwardable(dev, skb, check_mtu))) {
->   		atomic_long_inc(&dev->rx_dropped);
->   		kfree_skb(skb);
->   		return NET_RX_DROP;
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 60d325bda0d7..6ceb6412ee97 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -2189,28 +2189,13 @@ static inline void net_timestamp_set(struct sk_buff *skb)
->   
->   bool is_skb_forwardable(const struct net_device *dev, const struct sk_buff *skb)
->   {
-> -	unsigned int len;
-> -
-> -	if (!(dev->flags & IFF_UP))
-> -		return false;
-> -
-> -	len = dev->mtu + dev->hard_header_len + VLAN_HLEN;
-> -	if (skb->len <= len)
-> -		return true;
-> -
-> -	/* if TSO is enabled, we don't care about the length as the packet
-> -	 * could be forwarded without being segmented before
-> -	 */
-> -	if (skb_is_gso(skb))
-> -		return true;
-> -
-> -	return false;
-> +	return __is_skb_forwardable(dev, skb, true);
->   }
->   EXPORT_SYMBOL_GPL(is_skb_forwardable);
-
-Only user of is_skb_forwardable() that is left after this patch is bridge, maybe
-the whole thing should be moved into the header?
-
->   int __dev_forward_skb(struct net_device *dev, struct sk_buff *skb)
->   {
-> -	int ret = ____dev_forward_skb(dev, skb);
-> +	int ret = ____dev_forward_skb(dev, skb, true);
->   
->   	if (likely(!ret)) {
->   		skb->protocol = eth_type_trans(skb, dev);
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index d6125cfc49c3..4673afe59533 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -2083,13 +2083,21 @@ static const struct bpf_func_proto bpf_csum_level_proto = {
->   
->   static inline int __bpf_rx_skb(struct net_device *dev, struct sk_buff *skb)
->   {
-> -	return dev_forward_skb(dev, skb);
-> +	int ret = ____dev_forward_skb(dev, skb, false);
-> +
-> +	if (likely(!ret)) {
-> +		skb->protocol = eth_type_trans(skb, dev);
-> +		skb_postpull_rcsum(skb, eth_hdr(skb), ETH_HLEN);
-> +		ret = netif_rx(skb);
-
-Why netif_rx() and not netif_rx_internal() as in dev_forward_skb() originally?
-One extra call otherwise.
-
-> +	}
-> +
-> +	return ret;
->   }
->   
->   static inline int __bpf_rx_skb_no_mac(struct net_device *dev,
->   				      struct sk_buff *skb)
->   {
-> -	int ret = ____dev_forward_skb(dev, skb);
-> +	int ret = ____dev_forward_skb(dev, skb, false);
->   
->   	if (likely(!ret)) {
->   		skb->dev = dev;
-> @@ -2480,7 +2488,7 @@ int skb_do_redirect(struct sk_buff *skb)
->   			goto out_drop;
->   		dev = ops->ndo_get_peer_dev(dev);
->   		if (unlikely(!dev ||
-> -			     !is_skb_forwardable(dev, skb) ||
-> +			     !__is_skb_forwardable(dev, skb, false) ||
-
-If we only use __is_skb_forwardable() with false directly here, maybe then
-lets just have the !(dev->flags & IFF_UP) test here instead..
-
->   			     net_eq(net, dev_net(dev))))
->   			goto out_drop;
->   		skb->dev = dev;
-> 
-> 
-
+> thanks you!
+> Dany
+>> 
+>> Thanks!
