@@ -2,602 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27B8D2CBAB8
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 11:43:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 825362CBAED
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 11:50:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729504AbgLBKkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 05:40:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35380 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725971AbgLBKkM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 05:40:12 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21A2BC0617A7;
-        Wed,  2 Dec 2020 02:39:32 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id l11so3835984lfg.0;
-        Wed, 02 Dec 2020 02:39:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=t0z8hFuN0CmWfy4MMYvH83rJGlqQzj1t5SRgUnGKKQM=;
-        b=XRWwgfy43TBuRJrvsdSS9mrArYU2qd42M22SrCTGgNUQ0XNUXbmIGoCiAxKvuOlyYG
-         b+mazWkQRpLHM2TlepqUOQaI+OeDCmw962CFHmv/BbXsdxMJgLWGi52fCxi/2AbdfnMl
-         KsrkpS85R8okLLaTmSz/W1pJyW8swn+zik5cbMahGGnKb/Y2JFXej0ksn0n9bZBKptHk
-         lDMW8QOqBSiu9hQt4OUJpGvUcE9EO7/Nj4I3+ZcU1ceGpOtLiP7muvYSkVzHlHlgXMdq
-         AT0xciqXORAoqdqCxVuA9YhI/O6X8hrQoBxhpcrA5jt8jE8xdBH3Xsc97ZPsy+Totk8o
-         0j8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=t0z8hFuN0CmWfy4MMYvH83rJGlqQzj1t5SRgUnGKKQM=;
-        b=al8k6aHZ91GVBGbBRTaI2OboNZh7cvdnNpRaCpe4q84171jmoZphYzC6ZEWSk017ov
-         ke1VhXV1qJMn9U0nQD50TxyQesrkuHlumSPnhfdlx8f0pXB2hTVCz0qd4SKGd5TxcNYm
-         XAfrkdKaiE4h//XJEAlChkzaK8fq2aYg1ocK9qhUnMt8ZG/VpbQ89rgzgANXkM9RN9+n
-         EfQppktuYl77bBqCFdCmDiXNeQ0KqoGqMvCMjdZv0Ws/SRxglfe9N4sNR1yE7S4eoI1M
-         aAs29PYnvGP+HqF/p87sv6VH/bDPhtN5ruIttIXwMQGjNCHryYok+0eCPi0n41kqd/Ql
-         xb0w==
-X-Gm-Message-State: AOAM5322uvXIgt56ZnqYpEaqSHK5hTkEUilMpOoZS7qV8QzmvmcIl8p3
-        ANnV5xywzykweshMZoGMgzYu+ZMOSf6MHIAi
-X-Google-Smtp-Source: ABdhPJyZeDmRtIoHrZer/zChXBCbwlxfGltwbTA1B6igtjh9W8AV/B9+Sho/wNwUpE74tuic5pg5sQ==
-X-Received: by 2002:ac2:5e8d:: with SMTP id b13mr929347lfq.246.1606905570565;
-        Wed, 02 Dec 2020 02:39:30 -0800 (PST)
-Received: from localhost.localdomain (host-89-229-233-64.dynamic.mm.pl. [89.229.233.64])
-        by smtp.gmail.com with ESMTPSA id q13sm354236lfp.2.2020.12.02.02.39.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Dec 2020 02:39:29 -0800 (PST)
-From:   mariusz.dudek@gmail.com
-X-Google-Original-From: mariuszx.dudek@intel.com
-To:     andrii.nakryiko@gmail.com, magnus.karlsson@intel.com,
-        bjorn.topel@intel.com, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, jonathan.lemon@gmail.com
-Cc:     bpf@vger.kernel.org, Mariusz Dudek <mariuszx.dudek@intel.com>
-Subject: [PATCH v6 bpf-next 2/2] samples/bpf: sample application for eBPF load and socket creation split
-Date:   Wed,  2 Dec 2020 11:39:23 +0100
-Message-Id: <20201202103923.12447-3-mariuszx.dudek@intel.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201202103923.12447-1-mariuszx.dudek@intel.com>
-References: <20201202103923.12447-1-mariuszx.dudek@intel.com>
+        id S1729538AbgLBKrk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 05:47:40 -0500
+Received: from mailout2.w1.samsung.com ([210.118.77.12]:38748 "EHLO
+        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729412AbgLBKrj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 05:47:39 -0500
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20201202104646euoutp02f16d7a136bd79de66091c4600c4b2201~M4H-iwpfB3095630956euoutp02R;
+        Wed,  2 Dec 2020 10:46:46 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20201202104646euoutp02f16d7a136bd79de66091c4600c4b2201~M4H-iwpfB3095630956euoutp02R
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1606906006;
+        bh=TeKWjQ2OAMOu2A59mJW7atRFhrOO69NwcJ90k863xGs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=i2gw6wcTGue5b+E/McXoSCMm9TsJGWaAY2P0cZVEOAafFZtm0wOZPeZymotXtdG1P
+         reRpgzjqcK5+A1V//Dos+vaCbX0IRmIMOam+eZTrjAqVn6uZoH62iy3WCYjQvZ/TzN
+         NQGUvg9NteF0QKciFZLh5jUi59IBZR2tELzFWYho=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20201202104646eucas1p1884aa5a33e80b7b52712e9e13bcd1517~M4H-FnQUn2629126291eucas1p13;
+        Wed,  2 Dec 2020 10:46:46 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id 66.7E.45488.69077CF5; Wed,  2
+        Dec 2020 10:46:46 +0000 (GMT)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20201202104645eucas1p25335c0b07b106f932006f2a5bce88b6e~M4H_gdJYy2857528575eucas1p22;
+        Wed,  2 Dec 2020 10:46:45 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20201202104645eusmtrp1592dde863c8588d91afba1c5915be88f~M4H_fh0KZ0723107231eusmtrp1u;
+        Wed,  2 Dec 2020 10:46:45 +0000 (GMT)
+X-AuditID: cbfec7f5-c5fff7000000b1b0-90-5fc770969b66
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+        eusmgms1.samsung.com (EUCPMTA) with SMTP id FF.1B.21957.59077CF5; Wed,  2
+        Dec 2020 10:46:45 +0000 (GMT)
+Received: from localhost (unknown [106.120.51.46]) by eusmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20201202104645eusmtip18ee36f7913c027a205fb6acbadd4d4ac~M4H_RaVgr2574125741eusmtip1L;
+        Wed,  2 Dec 2020 10:46:45 +0000 (GMT)
+From:   Lukasz Stelmach <l.stelmach@samsung.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, jim.cromie@gmail.com,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Kukjin Kim <kgene@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        =?utf-8?Q?Bart=C5=82omiej_=C5=BBolni?= =?utf-8?Q?erkiewicz?= 
+        <b.zolnierkie@samsung.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH v7 3/3] net: ax88796c: ASIX AX88796C SPI Ethernet
+ Adapter Driver
+Date:   Wed, 02 Dec 2020 11:46:28 +0100
+In-Reply-To: <20201125132621.628ac98b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        (Jakub Kicinski's message of "Wed, 25 Nov 2020 13:26:21 -0800")
+Message-ID: <dleftj8sageb97.fsf%l.stelmach@samsung.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="=-=-="; micalg="pgp-sha256";
+        protocol="application/pgp-signature"
+X-Brightmail-Tracker: H4sIAAAAAAAAA01Sf1CTdRjnu/fHXnZuvU7Ih0WcLeg0T4jDkxf7cXRhvpYWl4he14VL3hgn
+        jLWxYJ4X3EWoKGwym9skwTTC4X64ESdDPG8tFz9i/AhOO0jTOmlGCKuT6LKYL17+93mez+fz
+        PJ/ne18Kk84RMqpYVc5pVIoSOSnCO6/8FVpnVgcLnqs+LGVCk36MOW9xEUxTqAZnmgODBPP5
+        jIVgxqcnCMZw6w7GhEJuITPU2UAwnlvjBDPqayIZS+iSgPF/2oMYR2BSyFxpeZz5pCcgzKbZ
+        0fFhjO04e03AdtkmhazHfohkvWeq2K4LEQHb0GFHbMSTlEu9LXqhkCsp/pDTpL20W6Q0eI9i
+        6vmEymstfUQ1csbXoVgK6PUw5XWQdUhESek2BO0TLUK++APBebNZwBcRBGH3oOChxeqdQTzx
+        JYKBH9qW/LcRuK3WRRVFkXQqOBy7ooY4OhlqvFY8qsHoYRxchyN4lFhB50PjgoOIYpxOgdPd
+        f2NRUSxtRjDWasGihJjOhHt9YRTF8XQWdExdF/L95dBr/fnBIIwuBWvotweRgB6JhWaPl+Cz
+        5sCp+n8Rj1dAONgh5HEi9JuO4NGkQFeBqXED7z2CoLNpHuc1z8PE4ALJ45ch4uwmeL0Erk4v
+        5/dKoLHzOMa3xXCwVsqrk8FpuLg0RQb14balBCz4+r/+/+Xq/N8iI1ple+Qc2yPn2BbHYvQa
+        cPnS+PZaaD11B+Pxi+B0zuAtiLCjlZxOW1rEaTNUXEWqVlGq1amKUveUlXrQ4lfsvx/88wJq
+        C8+m+pGAQn6UvGi+6W4fQjJcVabi5HFi/H6gQCouVOj3cZqyAo2uhNP60RMULl8p9n11rkBK
+        FynKub0cp+Y0D1kBFSurFkCKU+qY3rzs5LFzrqt64+7ijLlLwzvf1HnfgTeeHDCdHCYzXX37
+        g/qAOqE+0vWTZofbH7lcWbE+uzBhY63cMpc7G2luLXt3dmSD6bOknLE81e3tyoWtMb8a0j9m
+        2+MSjR+9VXRRnXnAYzimP0TOP/bq8UxHxZBf8sV7NsOPa74bNOZ/H3Pj7lqdaHW2WPqBr7w3
+        I/fonom04N60mB2v3z3DdOv3x8uWQc2+9CzJbNYUs803smn1U5dvyJ75Z+CXxN7fnZvyfO+n
+        vLL9Hmmu2tKg/GbhQGH7nPn66YOvGc/ukqprsS2j6+ZzSEkcUbgq/+kTkxnFPTn2PLto58ab
+        28ZMyqRKOa5VKtKfxTRaxX+EMyoGBQQAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrJIsWRmVeSWpSXmKPExsVy+t/xu7pTC47HG/yYqWNx/u4hZouNM9az
+        Wsw538JiMf/IOVaLRe9nsFpce3uH1aL/8Wtmi/PnN7BbXNjWx2qx6fE1VovLu+awWcw4v4/J
+        4tDUvYwWa4/cZbc4tkDMonXvEXYHAY/L1y4ye2xZeZPJY+esu+wem1Z1snlsXlLvsXPHZyaP
+        vi2rGD0+b5IL4IjSsynKLy1JVcjILy6xVYo2tDDSM7S00DMysdQzNDaPtTIyVdK3s0lJzcks
+        Sy3St0vQy+jfPJG54Idkxc0Fp1gbGNeJdjFyckgImEjM3PyesYuRi0NIYCmjxIMJs4EcDqCE
+        lMTKuekQNcISf651sUHUPGWUeNTwnh2khk1AT2Lt2giQGhEBFYmWzTNZQGqYBa6wSKz62MIK
+        khAWCJHY0NjOCGILCQRLNO2YzQZiswioSize/ZsZpIFTYBqjxNVlM5hBErwC5hLfT70CaxAV
+        sJTY8uI+O0RcUOLkzCcsIDazQLbE19XPmScwCsxCkpqFJDUL6D5mAU2J9bv0IcLaEssWvmaG
+        sG0l1q17z7KAkXUVo0hqaXFuem6xoV5xYm5xaV66XnJ+7iZGYDxvO/Zz8w7Gea8+6h1iZOJg
+        PMSoAtT5aMPqC4xSLHn5ealKIrws/47EC/GmJFZWpRblxxeV5qQWH2I0BfptIrOUaHI+MNHk
+        lcQbmhmYGpqYWRqYWpoZK4nzbp27Jl5IID2xJDU7NbUgtQimj4mDU6qBKcPxSWjFZ2F5r20c
+        026cmMk19RjHkivupdovjjfsOL3/S/fZE/YhjxbrWPqcmhfzUK9XKK08YcXM1BD/yJK65O2H
+        zx7bePP5uWnZr6897Knf2dEWu0pj8crMLV5bly16dGLny5/7rzZbqKkvvqqbUavpna223X3x
+        /m/RJ/su7U3R3LbRtyTU+v9izsjGbA0ZE8ae0zedHl4JdDL7cvPR39m3n8YVbNbsPm69s1ZJ
+        IYz7w4uFPV+UPSTXmu2R7nnKvGatoNbKJSHGi/LaPguyiB+SaOjIa+h8autoVuyVc6Gi+wR7
+        bsk7n8AOuzSRF57LzdiP/PFsDdP5xx/eJ9LevnvdiRkLrVYH/uiRnuLwT4mlOCPRUIu5qDgR
+        AN7AxN18AwAA
+X-CMS-MailID: 20201202104645eucas1p25335c0b07b106f932006f2a5bce88b6e
+X-Msg-Generator: CA
+X-RootMTR: 20201202104645eucas1p25335c0b07b106f932006f2a5bce88b6e
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20201202104645eucas1p25335c0b07b106f932006f2a5bce88b6e
+References: <20201125132621.628ac98b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CGME20201202104645eucas1p25335c0b07b106f932006f2a5bce88b6e@eucas1p2.samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mariusz Dudek <mariuszx.dudek@intel.com>
+--=-=-=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-Introduce a sample program to demonstrate the control and data
-plane split. For the control plane part a new program called
-xdpsock_ctrl_proc is introduced. For the data plane part, some code
-was added to xdpsock_user.c to act as the data plane entity.
+It was <2020-11-25 =C5=9Bro 13:26>, when Jakub Kicinski wrote:
+> On Tue, 24 Nov 2020 13:03:30 +0100 =C5=81ukasz Stelmach wrote:
+>> +static int
+>> +ax88796c_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+>> +{
+>> +	struct ax88796c_device *ax_local =3D to_ax88796c_device(ndev);
+>> +
+>> +	skb_queue_tail(&ax_local->tx_wait_q, skb);
+>> +	if (skb_queue_len(&ax_local->tx_wait_q) > TX_QUEUE_HIGH_WATER) {
+>> +		netif_err(ax_local, tx_queued, ndev,
+>> +			  "Too many TX packets in queue %d\n",
+>> +			  skb_queue_len(&ax_local->tx_wait_q));
+>
+> This will probably happen under heavy traffic. No need to print errors,
+> it's normal to back pressure.
+>
 
-Application xdpsock_ctrl_proc works as control entity with sudo
-privileges (CAP_SYS_ADMIN and CAP_NET_ADMIN are sufficient) and the
-extended xdpsock as data plane entity with CAP_NET_RAW capability
-only.
+Removed.
 
-Usage example:
+>> +		netif_stop_queue(ndev);
+>> +	}
+>> +
+>> +	set_bit(EVENT_TX, &ax_local->flags);
+>> +	schedule_work(&ax_local->ax_work);
+>> +
+>> +	return NETDEV_TX_OK;
+>> +}
+>> +
+>> +static void
+>> +ax88796c_skb_return(struct ax88796c_device *ax_local, struct sk_buff *s=
+kb,
+>> +		    struct rx_header *rxhdr)
+>> +{
+>> +	struct net_device *ndev =3D ax_local->ndev;
+>> +	int status;
+>> +
+>> +	do {
+>> +		if (!(ndev->features & NETIF_F_RXCSUM))
+>> +			break;
+>> +
+>> +		/* checksum error bit is set */
+>> +		if ((rxhdr->flags & RX_HDR3_L3_ERR) ||
+>> +		    (rxhdr->flags & RX_HDR3_L4_ERR))
+>> +			break;
+>> +
+>> +		/* Other types may be indicated by more than one bit. */
+>> +		if ((rxhdr->flags & RX_HDR3_L4_TYPE_TCP) ||
+>> +		    (rxhdr->flags & RX_HDR3_L4_TYPE_UDP))
+>> +			skb->ip_summed =3D CHECKSUM_UNNECESSARY;
+>> +	} while (0);
+>> +
+>> +	ax_local->stats.rx_packets++;
+>> +	ax_local->stats.rx_bytes +=3D skb->len;
+>> +	skb->dev =3D ndev;
+>> +
+>> +	skb->truesize =3D skb->len + sizeof(struct sk_buff);
+>> +	skb->protocol =3D eth_type_trans(skb, ax_local->ndev);
+>> +
+>> +	netif_info(ax_local, rx_status, ndev, "< rx, len %zu, type 0x%x\n",
+>> +		   skb->len + sizeof(struct ethhdr), skb->protocol);
+>> +
+>> +	status =3D netif_rx(skb);
+>
+> If I'm reading things right this is in process context, so netif_rx_ni()
+>
 
-sudo ./samples/bpf/xdpsock_ctrl_proc -i <interface>
+Is it? The stack looks as follows
 
-sudo ./samples/bpf/xdpsock -i <interface> -q <queue_id>
-	-n <interval> -N -l -R
+    ax88796c_skb_return()
+    ax88796c_rx_fixup()
+    ax88796c_receive()
+    ax88796c_process_isr()
+    ax88796c_work()
 
-Signed-off-by: Mariusz Dudek <mariuszx.dudek@intel.com>
----
- samples/bpf/Makefile            |   4 +-
- samples/bpf/xdpsock.h           |   8 ++
- samples/bpf/xdpsock_ctrl_proc.c | 187 ++++++++++++++++++++++++++++++++
- samples/bpf/xdpsock_user.c      | 146 +++++++++++++++++++++++--
- 4 files changed, 335 insertions(+), 10 deletions(-)
- create mode 100644 samples/bpf/xdpsock_ctrl_proc.c
+and ax88796c_work() is a scheduled in the system_wq.
 
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 05db041f8b18..26fc96ca619e 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -48,6 +48,7 @@ tprogs-y += syscall_tp
- tprogs-y += cpustat
- tprogs-y += xdp_adjust_tail
- tprogs-y += xdpsock
-+tprogs-y += xdpsock_ctrl_proc
- tprogs-y += xsk_fwd
- tprogs-y += xdp_fwd
- tprogs-y += task_fd_query
-@@ -105,6 +106,7 @@ syscall_tp-objs := syscall_tp_user.o
- cpustat-objs := cpustat_user.o
- xdp_adjust_tail-objs := xdp_adjust_tail_user.o
- xdpsock-objs := xdpsock_user.o
-+xdpsock_ctrl_proc-objs := xdpsock_ctrl_proc.o
- xsk_fwd-objs := xsk_fwd.o
- xdp_fwd-objs := xdp_fwd_user.o
- task_fd_query-objs := task_fd_query_user.o $(TRACE_HELPERS)
-@@ -202,7 +204,7 @@ TPROGLDLIBS_tracex4		+= -lrt
- TPROGLDLIBS_trace_output	+= -lrt
- TPROGLDLIBS_map_perf_test	+= -lrt
- TPROGLDLIBS_test_overhead	+= -lrt
--TPROGLDLIBS_xdpsock		+= -pthread
-+TPROGLDLIBS_xdpsock		+= -pthread -lcap
- TPROGLDLIBS_xsk_fwd		+= -pthread
- 
- # Allows pointing LLC/CLANG to a LLVM backend with bpf support, redefine on cmdline:
-diff --git a/samples/bpf/xdpsock.h b/samples/bpf/xdpsock.h
-index b7eca15c78cc..fd70cce60712 100644
---- a/samples/bpf/xdpsock.h
-+++ b/samples/bpf/xdpsock.h
-@@ -8,4 +8,12 @@
- 
- #define MAX_SOCKS 4
- 
-+#define SOCKET_NAME "sock_cal_bpf_fd"
-+#define MAX_NUM_OF_CLIENTS 10
-+
-+#define CLOSE_CONN  1
-+
-+typedef __u64 u64;
-+typedef __u32 u32;
-+
- #endif /* XDPSOCK_H */
-diff --git a/samples/bpf/xdpsock_ctrl_proc.c b/samples/bpf/xdpsock_ctrl_proc.c
-new file mode 100644
-index 000000000000..384e62e3c6d6
---- /dev/null
-+++ b/samples/bpf/xdpsock_ctrl_proc.c
-@@ -0,0 +1,187 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright(c) 2017 - 2018 Intel Corporation. */
-+
-+#include <errno.h>
-+#include <getopt.h>
-+#include <libgen.h>
-+#include <net/if.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <sys/socket.h>
-+#include <sys/un.h>
-+#include <unistd.h>
-+
-+#include <bpf/bpf.h>
-+#include <bpf/xsk.h>
-+#include "xdpsock.h"
-+
-+static const char *opt_if = "";
-+
-+static struct option long_options[] = {
-+	{"interface", required_argument, 0, 'i'},
-+	{0, 0, 0, 0}
-+};
-+
-+static void usage(const char *prog)
-+{
-+	const char *str =
-+		"  Usage: %s [OPTIONS]\n"
-+		"  Options:\n"
-+		"  -i, --interface=n	Run on interface n\n"
-+		"\n";
-+	fprintf(stderr, "%s\n", str);
-+
-+	exit(0);
-+}
-+
-+static void parse_command_line(int argc, char **argv)
-+{
-+	int option_index, c;
-+
-+	opterr = 0;
-+
-+	for (;;) {
-+		c = getopt_long(argc, argv, "i:",
-+				long_options, &option_index);
-+		if (c == -1)
-+			break;
-+
-+		switch (c) {
-+		case 'i':
-+			opt_if = optarg;
-+			break;
-+		default:
-+			usage(basename(argv[0]));
-+		}
-+	}
-+}
-+
-+static int send_xsks_map_fd(int sock, int fd)
-+{
-+	char cmsgbuf[CMSG_SPACE(sizeof(int))];
-+	struct msghdr msg;
-+	struct iovec iov;
-+	int value = 0;
-+
-+	if (fd == -1) {
-+		fprintf(stderr, "Incorrect fd = %d\n", fd);
-+		return -1;
-+	}
-+	iov.iov_base = &value;
-+	iov.iov_len = sizeof(int);
-+
-+	msg.msg_name = NULL;
-+	msg.msg_namelen = 0;
-+	msg.msg_iov = &iov;
-+	msg.msg_iovlen = 1;
-+	msg.msg_flags = 0;
-+	msg.msg_control = cmsgbuf;
-+	msg.msg_controllen = CMSG_LEN(sizeof(int));
-+
-+	struct cmsghdr *cmsg = CMSG_FIRSTHDR(&msg);
-+
-+	cmsg->cmsg_level = SOL_SOCKET;
-+	cmsg->cmsg_type = SCM_RIGHTS;
-+	cmsg->cmsg_len = CMSG_LEN(sizeof(int));
-+
-+	*(int *)CMSG_DATA(cmsg) = fd;
-+	int ret = sendmsg(sock, &msg, 0);
-+
-+	if (ret == -1) {
-+		fprintf(stderr, "Sendmsg failed with %s", strerror(errno));
-+		return -errno;
-+	}
-+
-+	return ret;
-+}
-+
-+int
-+main(int argc, char **argv)
-+{
-+	struct sockaddr_un server;
-+	int listening = 1;
-+	int rval, msgsock;
-+	int ifindex = 0;
-+	int flag = 1;
-+	int cmd = 0;
-+	int sock;
-+	int err;
-+	int xsks_map_fd;
-+
-+	parse_command_line(argc, argv);
-+
-+	ifindex = if_nametoindex(opt_if);
-+	if (ifindex == 0) {
-+		fprintf(stderr, "Unable to get ifindex for Interface %s. Reason:%s",
-+			opt_if, strerror(errno));
-+		return -errno;
-+	}
-+
-+	sock = socket(AF_UNIX, SOCK_STREAM, 0);
-+	if (sock < 0) {
-+		fprintf(stderr, "Opening socket stream failed: %s", strerror(errno));
-+		return -errno;
-+	}
-+
-+	server.sun_family = AF_UNIX;
-+	strcpy(server.sun_path, SOCKET_NAME);
-+
-+	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(int));
-+
-+	if (bind(sock, (struct sockaddr *)&server, sizeof(struct sockaddr_un))) {
-+		fprintf(stderr, "Binding to socket stream failed: %s", strerror(errno));
-+		return -errno;
-+	}
-+
-+	listen(sock, MAX_NUM_OF_CLIENTS);
-+
-+	err = xsk_setup_xdp_prog(ifindex, &xsks_map_fd);
-+	if (err) {
-+		fprintf(stderr, "Setup of xdp program failed\n");
-+		goto close_sock;
-+	}
-+
-+	while (listening) {
-+		msgsock = accept(sock, 0, 0);
-+		if (msgsock == -1) {
-+			fprintf(stderr, "Error accepting connection: %s", strerror(errno));
-+			err = -errno;
-+			goto close_sock;
-+		}
-+		err = send_xsks_map_fd(msgsock, xsks_map_fd);
-+		if (err <= 0) {
-+			fprintf(stderr, "Error %d sending xsks_map_fd\n", err);
-+			goto cleanup;
-+		}
-+		do {
-+			rval = read(msgsock, &cmd, sizeof(int));
-+			if (rval < 0) {
-+				fprintf(stderr, "Error reading stream message");
-+			} else {
-+				if (cmd != CLOSE_CONN)
-+					fprintf(stderr, "Recv unknown cmd = %d\n", cmd);
-+				listening = 0;
-+				break;
-+			}
-+		} while (rval > 0);
-+	}
-+	close(msgsock);
-+	close(sock);
-+	unlink(SOCKET_NAME);
-+
-+	/* Unset fd for given ifindex */
-+	err = bpf_set_link_xdp_fd(ifindex, -1, 0);
-+	if (err) {
-+		fprintf(stderr, "Error when unsetting bpf prog_fd for ifindex(%d)\n", ifindex);
-+		return err;
-+	}
-+
-+	return 0;
-+
-+cleanup:
-+	close(msgsock);
-+close_sock:
-+	close(sock);
-+	unlink(SOCKET_NAME);
-+	return err;
-+}
-diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-index 036bd019e400..0fee7f3aef3c 100644
---- a/samples/bpf/xdpsock_user.c
-+++ b/samples/bpf/xdpsock_user.c
-@@ -24,10 +24,12 @@
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
-+#include <sys/capability.h>
- #include <sys/mman.h>
- #include <sys/resource.h>
- #include <sys/socket.h>
- #include <sys/types.h>
-+#include <sys/un.h>
- #include <time.h>
- #include <unistd.h>
- 
-@@ -96,6 +98,7 @@ static bool opt_need_wakeup = true;
- static u32 opt_num_xsks = 1;
- static u32 prog_id;
- static bool opt_busy_poll;
-+static bool opt_reduced_cap;
- 
- struct xsk_ring_stats {
- 	unsigned long rx_npkts;
-@@ -154,6 +157,7 @@ struct xsk_socket_info {
- 
- static int num_socks;
- struct xsk_socket_info *xsks[MAX_SOCKS];
-+int sock;
- 
- static unsigned long get_nsecs(void)
- {
-@@ -461,6 +465,7 @@ static void *poller(void *arg)
- static void remove_xdp_program(void)
- {
- 	u32 curr_prog_id = 0;
-+	int cmd = CLOSE_CONN;
- 
- 	if (bpf_get_link_xdp_id(opt_ifindex, &curr_prog_id, opt_xdp_flags)) {
- 		printf("bpf_get_link_xdp_id failed\n");
-@@ -472,6 +477,13 @@ static void remove_xdp_program(void)
- 		printf("couldn't find a prog id on a given interface\n");
- 	else
- 		printf("program on interface changed, not removing\n");
-+
-+	if (opt_reduced_cap) {
-+		if (write(sock, &cmd, sizeof(int)) < 0) {
-+			fprintf(stderr, "Error writing into stream socket: %s", strerror(errno));
-+			exit(EXIT_FAILURE);
-+		}
-+	}
- }
- 
- static void int_exit(int sig)
-@@ -854,7 +866,7 @@ static struct xsk_socket_info *xsk_configure_socket(struct xsk_umem_info *umem,
- 	xsk->umem = umem;
- 	cfg.rx_size = XSK_RING_CONS__DEFAULT_NUM_DESCS;
- 	cfg.tx_size = XSK_RING_PROD__DEFAULT_NUM_DESCS;
--	if (opt_num_xsks > 1)
-+	if (opt_num_xsks > 1 || opt_reduced_cap)
- 		cfg.libbpf_flags = XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD;
- 	else
- 		cfg.libbpf_flags = 0;
-@@ -913,6 +925,7 @@ static struct option long_options[] = {
- 	{"app-stats", no_argument, 0, 'a'},
- 	{"irq-string", no_argument, 0, 'I'},
- 	{"busy-poll", no_argument, 0, 'B'},
-+	{"reduce-cap", no_argument, 0, 'R'},
- 	{0, 0, 0, 0}
- };
- 
-@@ -935,7 +948,7 @@ static void usage(const char *prog)
- 		"  -m, --no-need-wakeup Turn off use of driver need wakeup flag.\n"
- 		"  -f, --frame-size=n   Set the frame size (must be a power of two in aligned mode, default is %d).\n"
- 		"  -u, --unaligned	Enable unaligned chunk placement\n"
--		"  -M, --shared-umem	Enable XDP_SHARED_UMEM\n"
-+		"  -M, --shared-umem	Enable XDP_SHARED_UMEM (cannot be used with -R)\n"
- 		"  -F, --force		Force loading the XDP prog\n"
- 		"  -d, --duration=n	Duration in secs to run command.\n"
- 		"			Default: forever.\n"
-@@ -952,6 +965,7 @@ static void usage(const char *prog)
- 		"  -a, --app-stats	Display application (syscall) statistics.\n"
- 		"  -I, --irq-string	Display driver interrupt statistics for interface associated with irq-string.\n"
- 		"  -B, --busy-poll      Busy poll.\n"
-+		"  -R, --reduce-cap	Use reduced capabilities (cannot be used with -M)\n"
- 		"\n";
- 	fprintf(stderr, str, prog, XSK_UMEM__DEFAULT_FRAME_SIZE,
- 		opt_batch_size, MIN_PKT_SIZE, MIN_PKT_SIZE,
-@@ -967,7 +981,7 @@ static void parse_command_line(int argc, char **argv)
- 	opterr = 0;
- 
- 	for (;;) {
--		c = getopt_long(argc, argv, "Frtli:q:pSNn:czf:muMd:b:C:s:P:xQaI:B",
-+		c = getopt_long(argc, argv, "Frtli:q:pSNn:czf:muMd:b:C:s:P:xQaI:BR",
- 				long_options, &option_index);
- 		if (c == -1)
- 			break;
-@@ -1069,6 +1083,9 @@ static void parse_command_line(int argc, char **argv)
- 		case 'B':
- 			opt_busy_poll = 1;
- 			break;
-+		case 'R':
-+			opt_reduced_cap = true;
-+			break;
- 		default:
- 			usage(basename(argv[0]));
- 		}
-@@ -1090,6 +1107,11 @@ static void parse_command_line(int argc, char **argv)
- 			opt_xsk_frame_size);
- 		usage(basename(argv[0]));
- 	}
-+
-+	if (opt_reduced_cap && opt_num_xsks > 1) {
-+		fprintf(stderr, "ERROR: -M and -R cannot be used together\n");
-+		usage(basename(argv[0]));
-+	}
- }
- 
- static void kick_tx(struct xsk_socket_info *xsk)
-@@ -1487,26 +1509,117 @@ static void apply_setsockopt(struct xsk_socket_info *xsk)
- 		exit_with_error(errno);
- }
- 
-+static int recv_xsks_map_fd_from_ctrl_node(int sock, int *_fd)
-+{
-+	char cms[CMSG_SPACE(sizeof(int))];
-+	struct cmsghdr *cmsg;
-+	struct msghdr msg;
-+	struct iovec iov;
-+	int value;
-+	int len;
-+
-+	iov.iov_base = &value;
-+	iov.iov_len = sizeof(int);
-+
-+	msg.msg_name = 0;
-+	msg.msg_namelen = 0;
-+	msg.msg_iov = &iov;
-+	msg.msg_iovlen = 1;
-+	msg.msg_flags = 0;
-+	msg.msg_control = (caddr_t)cms;
-+	msg.msg_controllen = sizeof(cms);
-+
-+	len = recvmsg(sock, &msg, 0);
-+
-+	if (len < 0) {
-+		fprintf(stderr, "Recvmsg failed length incorrect.\n");
-+		return -EINVAL;
-+	}
-+
-+	if (len == 0) {
-+		fprintf(stderr, "Recvmsg failed no data\n");
-+		return -EINVAL;
-+	}
-+
-+	cmsg = CMSG_FIRSTHDR(&msg);
-+	*_fd = *(int *)CMSG_DATA(cmsg);
-+
-+	return 0;
-+}
-+
-+static int
-+recv_xsks_map_fd(int *xsks_map_fd)
-+{
-+	struct sockaddr_un server;
-+	int err;
-+
-+	sock = socket(AF_UNIX, SOCK_STREAM, 0);
-+	if (sock < 0) {
-+		fprintf(stderr, "Error opening socket stream: %s", strerror(errno));
-+		return errno;
-+	}
-+
-+	server.sun_family = AF_UNIX;
-+	strcpy(server.sun_path, SOCKET_NAME);
-+
-+	if (connect(sock, (struct sockaddr *)&server, sizeof(struct sockaddr_un)) < 0) {
-+		close(sock);
-+		fprintf(stderr, "Error connecting stream socket: %s", strerror(errno));
-+		return errno;
-+	}
-+
-+	err = recv_xsks_map_fd_from_ctrl_node(sock, xsks_map_fd);
-+	if (err) {
-+		fprintf(stderr, "Error %d recieving fd\n", err);
-+		return err;
-+	}
-+	return 0;
-+}
-+
- int main(int argc, char **argv)
- {
-+	struct __user_cap_header_struct hdr = { _LINUX_CAPABILITY_VERSION_3, 0 };
-+	struct __user_cap_data_struct data[2] = { { 0 } };
- 	struct rlimit r = {RLIM_INFINITY, RLIM_INFINITY};
- 	bool rx = false, tx = false;
- 	struct xsk_umem_info *umem;
- 	struct bpf_object *obj;
-+	int xsks_map_fd = 0;
- 	pthread_t pt;
- 	int i, ret;
- 	void *bufs;
- 
- 	parse_command_line(argc, argv);
- 
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		fprintf(stderr, "ERROR: setrlimit(RLIMIT_MEMLOCK) \"%s\"\n",
--			strerror(errno));
--		exit(EXIT_FAILURE);
-+	if (opt_reduced_cap) {
-+		if (capget(&hdr, data)  < 0)
-+			fprintf(stderr, "Error getting capabilities\n");
-+
-+		data->effective &= CAP_TO_MASK(CAP_NET_RAW);
-+		data->permitted &= CAP_TO_MASK(CAP_NET_RAW);
-+
-+		if (capset(&hdr, data) < 0)
-+			fprintf(stderr, "Setting capabilities failed\n");
-+
-+		if (capget(&hdr, data)  < 0) {
-+			fprintf(stderr, "Error getting capabilities\n");
-+		} else {
-+			fprintf(stderr, "Capabilities EFF %x Caps INH %x Caps Per %x\n",
-+				data[0].effective, data[0].inheritable, data[0].permitted);
-+			fprintf(stderr, "Capabilities EFF %x Caps INH %x Caps Per %x\n",
-+				data[1].effective, data[1].inheritable, data[1].permitted);
-+		}
-+	} else {
-+		if (setrlimit(RLIMIT_MEMLOCK, &r)) {
-+			fprintf(stderr, "ERROR: setrlimit(RLIMIT_MEMLOCK) \"%s\"\n",
-+				strerror(errno));
-+			exit(EXIT_FAILURE);
-+		}
-+
-+		if (opt_num_xsks > 1)
-+			load_xdp_program(argv, &obj);
- 	}
- 
--	if (opt_num_xsks > 1)
--		load_xdp_program(argv, &obj);
- 
- 	/* Reserve memory for the umem. Use hugepages if unaligned chunk mode */
- 	bufs = mmap(NULL, NUM_FRAMES * opt_xsk_frame_size,
-@@ -1541,6 +1654,21 @@ int main(int argc, char **argv)
- 	if (opt_num_xsks > 1 && opt_bench != BENCH_TXONLY)
- 		enter_xsks_into_map(obj);
- 
-+	if (opt_reduced_cap) {
-+		ret = recv_xsks_map_fd(&xsks_map_fd);
-+		if (ret) {
-+			fprintf(stderr, "Error %d receiving xsks_map_fd\n", ret);
-+			exit_with_error(ret);
-+		}
-+		if (xsks[0]->xsk) {
-+			ret = xsk_socket__update_xskmap(xsks[0]->xsk, xsks_map_fd);
-+			if (ret) {
-+				fprintf(stderr, "Update of BPF map failed(%d)\n", ret);
-+				exit_with_error(ret);
-+			}
-+		}
-+	}
-+
- 	signal(SIGINT, int_exit);
- 	signal(SIGTERM, int_exit);
- 	signal(SIGABRT, int_exit);
--- 
-2.20.1
+>> +	if (status !=3D NET_RX_SUCCESS)
+>> +		netif_info(ax_local, rx_err, ndev,
+>> +			   "netif_rx status %d\n", status);
+>
+> Again, it's inadvisable to put per packet prints without any rate
+> limiting in the data path.
 
+Even if limmited by the msglvl flag, which is off by default?
+
+=2D-=20
+=C5=81ukasz Stelmach
+Samsung R&D Institute Poland
+Samsung Electronics
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEXpuyqjq9kGEVr9UQsK4enJilgBAFAl/HcIQACgkQsK4enJil
+gBBN7wgAlX2fLw6725RegHggjpDKRYFPk5jJKKk6hw+qlGwk1G3sIOQ+hInxHpb+
+zT49SxB8Br71+x7xK+kX3lwAMUORG3KglYPzR1zoYHsnBEW/wfBYpnvswn/eLzW6
+/xGA/p/J4ekcGlowceuxawfABxUbuhIMaoogZzRtibQ/NB0jW1fhpp1XwWYTDhHp
+0tWG0qbY+849vDJt35PphNbumIWMSBItRJwGJeH7+xQL3AzSLWO41OnyETV6aCFs
+yOB2NwBD2xX5jRhFty+Sxa1D13OWg1WVQ+TkzIijVTRm4Uzn8NQoqS37QLpepuJC
+R01E2mSsLBdYk4lgfVbH5Z/edpKjSw==
+=n65j
+-----END PGP SIGNATURE-----
+--=-=-=--
