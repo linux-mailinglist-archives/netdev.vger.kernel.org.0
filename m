@@ -2,160 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87D982CB18C
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 01:28:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBAFD2CB18F
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 01:30:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727530AbgLBA1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 19:27:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54138 "EHLO
+        id S1726556AbgLBA3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 19:29:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726229AbgLBA1g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 19:27:36 -0500
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A999C0613CF;
-        Tue,  1 Dec 2020 16:26:56 -0800 (PST)
-Received: by mail-yb1-xb42.google.com with SMTP id o71so38538ybc.2;
-        Tue, 01 Dec 2020 16:26:56 -0800 (PST)
+        with ESMTP id S1726229AbgLBA3e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 19:29:34 -0500
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80044C0613CF;
+        Tue,  1 Dec 2020 16:28:54 -0800 (PST)
+Received: by mail-ed1-x543.google.com with SMTP id l5so238359edq.11;
+        Tue, 01 Dec 2020 16:28:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vfCF2rrgBv4Qtm98WE1uwXxGb7ee+2ZYnfEmg2VySPE=;
-        b=Lx0ntsOgTlCheqLAQiMrZXM0n1USD7f5oQf/FsL3s87zOyYRGgvULQOIU8Nr+b032u
-         joW3d9jxBpb1YzfF3mTvKJKFK4/29DIJoP1IJgGRMrMxiivqFEnaQ1p4fee/tjijFbW6
-         bW4MWlx6kCAKvls4J1tF4BFRn+XxNl6DEzHKKng0OZaaH95VbV+PJiHxFNY+TrZkbj6q
-         9vNmwsfvgiw284pEGNAcBGjdPuAL1Y1LMQKmJwppm7CuhoYN+zwyvo0778koDxyFx6vN
-         2PecywuGaQYjNNjtK4+9nGA1NljxWLwsqeYuGnVINVO8Ewlc+comMPGI+Dv0MEx61N6m
-         n+pA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2dd0iBQsF6Mvl+LUZk4CXOfntTO4gjf84Fzh9kYKAFs=;
+        b=UcpudWfkuw2mJU3ShPJ44ebknO5BtDJAdCK13QTCGmMiGbOU75lM7XS29TIbWsmdKu
+         YmkdexSUuJG5lzjVTDUHyPaf89QAiP36eXW6gsRsSIy+fQGsHNfm0XHOETl3zX8ntL1q
+         r29IS9i8dC9vYKPqRN3bwX2SvBpIcDetH8Ctdg8vXVpsiO9rg/ptGZDZ67ewXjgZ4Gwb
+         wV9eKVH3vAnJNdSExI/7+CRc7gYi9uTRhL/Zc1u3vDsGgLiGZ0A9tLijccjuk2NfU2Fk
+         /kNqR5waBg6D9Kx9cdc5aH9bYqlCEAixtjkNuj2btJAFAZ1uqeXbNxRVU+53sxdmr4WC
+         qZ+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vfCF2rrgBv4Qtm98WE1uwXxGb7ee+2ZYnfEmg2VySPE=;
-        b=pha+CbRPgAFeKYLZ3oqPdA43EfRzSY9ZIIlweginton02lsppkCkDvHMVuZy3kD+ba
-         A/XsNeeXC7vwXtILtJGJnXeN5eTUH1cBjcDrSHxDgWBYCbJEHz6pZYu8zeRWm3E4p8B6
-         WrKa2ZVG/0Y3AoBNpLHZ/sxyyshu0GIoqikoOGPuvBYDhC4eMmmhGGQ01K+VQ/kEk5p6
-         GTuS/tIY48VL8Q3ISshzoEGaz5MdeXAMmTYKHsB/NevyA2cH/b3/ANWxoSzMhFVOChIH
-         HhVXuwh9ZJyVp6FrnrxiryqD0tHZAGehjVCYjf5bNg5z9+uouRPu/6S78dT7PTK+qzXT
-         mTcQ==
-X-Gm-Message-State: AOAM531Mk3xrWzF9D37KJvWFEtxXM6xraB8WyJCv+NMXmhG8b4Lvs+vc
-        tEJrOAeRJvMrCf74jgK01T8g+JmNTToUdA6oBJ4=
-X-Google-Smtp-Source: ABdhPJxog44/VOr67JY6HNC903NDUE8Kw2I1Wc4DYYxrc0gUlLwGgmecdPKIsoWt3kCMVpHarTWIDGsGmfHKigeMzyg=
-X-Received: by 2002:a25:3d7:: with SMTP id 206mr6691097ybd.27.1606868815940;
- Tue, 01 Dec 2020 16:26:55 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2dd0iBQsF6Mvl+LUZk4CXOfntTO4gjf84Fzh9kYKAFs=;
+        b=RmGZZ2NdNCnUHqwsCR43I4bz6/6+UZzC72Km54Pq+yopiL4rNglV1VbyrOXEjGeXKY
+         Xwzhr2DSGudPJURu93ZXcV0P1OHrx7ZDeRkRxg+pkchrz+Ri8a8nOjzsGYyZRe3q+Q5k
+         +75VkO7MFAPD4+ASDqiAQVqNGdfvRwL3w0eHOXuPYJu4j1+iNPu8Fo7J0YSyo1/sjMUk
+         E7kxMYRY1Hx9Uhmkyb2loE25O6BamJIDM5gEfa1YzdyRcMBOkUC5NiEWaNsSI73XGxRE
+         W4pluHhkcMSMUbjLf0yr9FKsA1e7JKpzhuyuP8rlqsbySWiEkitBBdELk/nwrN4aliuW
+         XCKw==
+X-Gm-Message-State: AOAM5305rDNbyQpyqs7adPK4Fnw+PoGeOtaJhemiyVFp9BCeA1OA6PcL
+        R95EJy4gS1HUPQnrH30xWKE=
+X-Google-Smtp-Source: ABdhPJz9otjMtF2sfm3ofGx6lV1f1gG1rMHDFimQzFI3Y8STzmpZrEVfc10sYE4TW61zEbh1dcBSfA==
+X-Received: by 2002:a05:6402:6:: with SMTP id d6mr162688edu.31.1606868933210;
+        Tue, 01 Dec 2020 16:28:53 -0800 (PST)
+Received: from skbuf ([188.25.2.120])
+        by smtp.gmail.com with ESMTPSA id f18sm50494edt.60.2020.12.01.16.28.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Dec 2020 16:28:52 -0800 (PST)
+Date:   Wed, 2 Dec 2020 02:28:51 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        George McCollister <george.mccollister@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 2/3] net: dsa: add Arrow SpeedChips XRS700x
+ driver
+Message-ID: <20201202002851.z63jdsfqxdkjb46k@skbuf>
+References: <CAFSKS=OY_-Agd6JPoFgm3MS5HE6soexHnDHfq8g9WVrCc82_sA@mail.gmail.com>
+ <20201126132418.zigx6c2iuc4kmlvy@skbuf>
+ <20201126175607.bqmpwbdqbsahtjn2@skbuf>
+ <CAFSKS=Ok1FZhKqourHh-ikaia6eNWtXh6VBOhOypsEJAhwu06g@mail.gmail.com>
+ <20201126220500.av3clcxbbvogvde5@skbuf>
+ <20201127103503.5cda7f24@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+ <20201127204714.GX2073444@lunn.ch>
+ <20201127131346.3d594c8e@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+ <20201127212342.qpyp6bcxd7mwgxf2@skbuf>
+ <20201127213642.GZ2073444@lunn.ch>
 MIME-Version: 1.0
-References: <20201118001742.85005-1-sdf@google.com> <20201118001742.85005-2-sdf@google.com>
-In-Reply-To: <20201118001742.85005-2-sdf@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 1 Dec 2020 16:26:45 -0800
-Message-ID: <CAEf4BzaQGJCAdbh3CYPK=z1XPBpqbWkXJLgHaEJc+O7R5dt9vw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/3] selftests/bpf: rewrite test_sock_addr bind
- bpf into C
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201127213642.GZ2073444@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 17, 2020 at 4:20 PM Stanislav Fomichev <sdf@google.com> wrote:
+Hi Jakub,
+
+On Fri, Nov 27, 2020 at 10:36:42PM +0100, Andrew Lunn wrote:
+> > Either way, can we conclude that ndo_get_stats64 is not a replacement
+> > for ethtool -S, since the latter is blocking and, if implemented correctly,
+> > can return the counters at the time of the call (therefore making sure
+> > that anything that happened before the syscall has been accounted into
+> > the retrieved values), and the former isn't?
 >
-> I'm planning to extend it in the next patches. It's much easier to
-> work with C than BPF assembly.
->
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
+> ethtool -S is the best source of consistent, up to date statistics we
+> have. It seems silly not to include everything the hardware offers
+> there.
 
-With nits below:
+To add to this, it would seem odd to me if we took the decision to not
+expose MAC-level counters any longer in ethtool. Say the MAC has a counter
+named rx_dropped. If we are only exposing this counter in ndo_get_stats64,
+then we could hit the scenario where this counter keeps incrementing,
+but it is the network stack who increments it, and not the MAC.
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
+dev_get_stats() currently does:
+	storage->rx_dropped += (unsigned long)atomic_long_read(&dev->rx_dropped);
+	storage->tx_dropped += (unsigned long)atomic_long_read(&dev->tx_dropped);
+	storage->rx_nohandler += (unsigned long)atomic_long_read(&dev->rx_nohandler);
 
-
->  .../testing/selftests/bpf/progs/bind4_prog.c  |  73 +++++++
->  .../testing/selftests/bpf/progs/bind6_prog.c  |  90 ++++++++
->  tools/testing/selftests/bpf/test_sock_addr.c  | 196 ++----------------
->  3 files changed, 175 insertions(+), 184 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/progs/bind4_prog.c
->  create mode 100644 tools/testing/selftests/bpf/progs/bind6_prog.c
->
-> diff --git a/tools/testing/selftests/bpf/progs/bind4_prog.c b/tools/testing/selftests/bpf/progs/bind4_prog.c
-> new file mode 100644
-> index 000000000000..ff3def2ee6f9
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/bind4_prog.c
-> @@ -0,0 +1,73 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +#include <string.h>
-> +
-> +#include <linux/stddef.h>
-> +#include <linux/bpf.h>
-> +#include <linux/in.h>
-> +#include <linux/in6.h>
-> +#include <sys/socket.h>
-> +#include <netinet/tcp.h>
-> +#include <linux/if.h>
-> +#include <errno.h>
-> +
-> +#include <bpf/bpf_helpers.h>
-> +#include <bpf/bpf_endian.h>
-> +
-> +#define SERV4_IP               0xc0a801feU /* 192.168.1.254 */
-> +#define SERV4_PORT             4040
-> +#define SERV4_REWRITE_IP       0x7f000001U /* 127.0.0.1 */
-> +#define SERV4_REWRITE_PORT     4444
-> +
-> +int _version SEC("version") = 1;
-
-not needed, let's not add it to a new test prog
-
-> +
-
-[...]
-
-> diff --git a/tools/testing/selftests/bpf/progs/bind6_prog.c b/tools/testing/selftests/bpf/progs/bind6_prog.c
-> new file mode 100644
-> index 000000000000..97686baaae65
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/bind6_prog.c
-> @@ -0,0 +1,90 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +#include <string.h>
-> +
-> +#include <linux/stddef.h>
-> +#include <linux/bpf.h>
-> +#include <linux/in.h>
-> +#include <linux/in6.h>
-> +#include <sys/socket.h>
-> +#include <netinet/tcp.h>
-> +#include <linux/if.h>
-> +#include <errno.h>
-> +
-> +#include <bpf/bpf_helpers.h>
-> +#include <bpf/bpf_endian.h>
-> +
-> +#define SERV6_IP_0             0xfaceb00c /* face:b00c:1234:5678::abcd */
-> +#define SERV6_IP_1             0x12345678
-> +#define SERV6_IP_2             0x00000000
-> +#define SERV6_IP_3             0x0000abcd
-> +#define SERV6_PORT             6060
-> +#define SERV6_REWRITE_IP_0     0x00000000
-> +#define SERV6_REWRITE_IP_1     0x00000000
-> +#define SERV6_REWRITE_IP_2     0x00000000
-> +#define SERV6_REWRITE_IP_3     0x00000001
-> +#define SERV6_REWRITE_PORT     6666
-> +
-> +int _version SEC("version") = 1;
-
-same
-
-> +
-> +SEC("cgroup/bind6")
-> +int bind_v6_prog(struct bpf_sock_addr *ctx)
-> +{
-
-[...]
+thereby clobbering the MAC-provided counter. We would not know if it is
+a MAC-level drop or not.
