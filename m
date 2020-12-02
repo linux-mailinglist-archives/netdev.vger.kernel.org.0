@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 592412CBD67
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 13:55:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B15CD2CBD73
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 13:55:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729948AbgLBMxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 07:53:16 -0500
-Received: from mout.kundenserver.de ([212.227.126.133]:34299 "EHLO
+        id S2388746AbgLBMxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 07:53:24 -0500
+Received: from mout.kundenserver.de ([212.227.126.131]:54711 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725859AbgLBMxP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 07:53:15 -0500
+        with ESMTP id S1728726AbgLBMxX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 07:53:23 -0500
 Received: from orion.localdomain ([77.7.48.174]) by mrelayeu.kundenserver.de
  (mreue009 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1N9dkD-1k5RtW0OAf-015e18; Wed, 02 Dec 2020 13:50:11 +0100
+ 1MGi6k-1kx9B018XS-00DoAz; Wed, 02 Dec 2020 13:50:12 +0100
 From:   "Enrico Weigelt, metux IT consult" <info@metux.net>
 To:     linux-kernel@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, mareklindner@neomailbox.ch,
@@ -26,24 +26,24 @@ Cc:     davem@davemloft.net, kuba@kernel.org, mareklindner@neomailbox.ch,
         netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org,
         tipc-discussion@lists.sourceforge.net,
         linux-hyperv@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH 4/7] net: bluetooth: remove unneeded MODULE_VERSION() usage
-Date:   Wed,  2 Dec 2020 13:49:56 +0100
-Message-Id: <20201202124959.29209-4-info@metux.net>
+Subject: [PATCH 5/7] net: bridge: remove unneeded MODULE_VERSION() usage
+Date:   Wed,  2 Dec 2020 13:49:57 +0100
+Message-Id: <20201202124959.29209-5-info@metux.net>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20201202124959.29209-1-info@metux.net>
 References: <20201202124959.29209-1-info@metux.net>
-X-Provags-ID: V03:K1:nCLBkwBPP1UoRJ0tO1iADI0GFYjOoRdZUFJs5Lp/rIbhkbOjZHA
- Gi3KyxrgSppVa3+ScKpcp1h9bFCbK9+6A3bAjPetKJnG9rInwq4SvCAyTShfPT2tzdYvX5u
- eYViQAVyzpgqxiGeSTAnW1DqEqvohAstRFH7DSMuo3driC3bf86dRbz8r93tIWBuuXy0CkJ
- axb+hPdAkmrVEQBuPiB0w==
+X-Provags-ID: V03:K1:cuYtv5vslL3mKfntL9+LNoV+R1fAkyY8wxUdUqYvgUNH+fklE5n
+ h9/W/Fkds8W/7VOKYoo5BIlVUv1XasthBQQJ/t8T8PS1lwTRtsL02fELoIEkxe4o0nWGLsy
+ CN8CI7r/M3lBFezWUZKYqq3jWd3IQOjCLhN+m0I4TSbdIW0y3IOUe5ZWQMcOBoYiAfGe/AD
+ 8RRrRDnLBfX6L/eiwjJbA==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:4E/jQnGMiyo=:qQydPqBDgHo4tYcFclcgA0
- Hhs9aDRnQcuILLLXWMsTWQaGKNdoqrWORAI7zAAc901vaVsa58Oxvcp7+sNEomNcM7NuvBhqH
- 0P9F+FvKIgDjOHw5yHHIkN5Aspappu0wSfuFszn+tReKtIMVJyXFkUBKHoCcl33YiZyF/aipR
- l1gwoB2RJp4p1bocg72SibDfyfwx0tC25BUnBsuLtMrjAlTxG2x8/JKKO2THZzI1tcad2THMx
- LRq5PjJZ7Ug5wBvSjI4qUwKJfm0PdbgPdOh4J2+OJXzrzxP4SjR/yFQkqifVHeCqmMGYnInAf
- gamcQLT4WpIbNSRPYuejoFj6WeMU9vw17wGStSq31xFR4EbXpCSxoozxXwWbg0ZV8o6Run4vp
- 1JWEHqasbBi9joGQQL+ktlriaenntMZs7+YETib1Yfq188iskUk0547IKMFHj
+X-UI-Out-Filterresults: notjunk:1;V03:K0:zxgM+5uXlUk=:pc3buvVoCR7nEPUYrJz5LF
+ EysIamjRgMmr6hc3N03YgY6dedUyF+M8I6TRBaWJ0lR3GakVl9fBQsfTSGeuBoog56Hez/9l3
+ etAr3MbgqVHs4R/0sJUuSX30nSgZax62lCL48USS4wl2ygFzzvnkB1oFNXISvbiLE0IELaeWt
+ pv4OMUirWWerHvtecu935TKY4aCrwyuife0QQnsA7sUJFHl2GgCLcOh2BH0Hr4oJDnCZQLllK
+ ojCoiVue3jDR/TaO+LBay4K0/H8L4dkw6qUVC92WGDQyv3lRoZ/TLy8U6heMh6Nngw77POB5J
+ k1qSxnmfpUpwP2Npc0vkQzulInM1Zl/C552fpTKKIzMZrDk45XbuykAWkD4e3nz7v3CZHesbW
+ 3OHtjxPl8xZX92P3E2f9NlrGy/i5Wapn+U9z59kySKZfh5JdB8pgqpVHKeM+A
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -53,88 +53,19 @@ making sense is the kernel version.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- net/bluetooth/6lowpan.c      | 3 ---
- net/bluetooth/af_bluetooth.c | 1 -
- net/bluetooth/bnep/core.c    | 1 -
- net/bluetooth/cmtp/core.c    | 1 -
- net/bluetooth/hidp/core.c    | 1 -
- net/bluetooth/rfcomm/core.c  | 1 -
- 6 files changed, 8 deletions(-)
+ net/bridge/br.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/net/bluetooth/6lowpan.c b/net/bluetooth/6lowpan.c
-index cff4944d5b66..9759515edc6e 100644
---- a/net/bluetooth/6lowpan.c
-+++ b/net/bluetooth/6lowpan.c
-@@ -21,8 +21,6 @@
- 
- #include <net/6lowpan.h> /* for the compression support */
- 
--#define VERSION "0.1"
--
- static struct dentry *lowpan_enable_debugfs;
- static struct dentry *lowpan_control_debugfs;
- 
-@@ -1316,5 +1314,4 @@ module_exit(bt_6lowpan_exit);
- 
- MODULE_AUTHOR("Jukka Rissanen <jukka.rissanen@linux.intel.com>");
- MODULE_DESCRIPTION("Bluetooth 6LoWPAN");
--MODULE_VERSION(VERSION);
+diff --git a/net/bridge/br.c b/net/bridge/br.c
+index 401eeb9142eb..2502fdcbb8b2 100644
+--- a/net/bridge/br.c
++++ b/net/bridge/br.c
+@@ -399,5 +399,4 @@ static void __exit br_deinit(void)
+ module_init(br_init)
+ module_exit(br_deinit)
  MODULE_LICENSE("GPL");
-diff --git a/net/bluetooth/af_bluetooth.c b/net/bluetooth/af_bluetooth.c
-index 4ef6a54403aa..6d587a3b3c56 100644
---- a/net/bluetooth/af_bluetooth.c
-+++ b/net/bluetooth/af_bluetooth.c
-@@ -799,6 +799,5 @@ module_exit(bt_exit);
- 
- MODULE_AUTHOR("Marcel Holtmann <marcel@holtmann.org>");
- MODULE_DESCRIPTION("Bluetooth Core ver " VERSION);
--MODULE_VERSION(VERSION);
- MODULE_LICENSE("GPL");
- MODULE_ALIAS_NETPROTO(PF_BLUETOOTH);
-diff --git a/net/bluetooth/bnep/core.c b/net/bluetooth/bnep/core.c
-index 43c284158f63..96f0eb60deb0 100644
---- a/net/bluetooth/bnep/core.c
-+++ b/net/bluetooth/bnep/core.c
-@@ -764,6 +764,5 @@ MODULE_PARM_DESC(compress_dst, "Compress destination headers");
- 
- MODULE_AUTHOR("Marcel Holtmann <marcel@holtmann.org>");
- MODULE_DESCRIPTION("Bluetooth BNEP ver " VERSION);
--MODULE_VERSION(VERSION);
- MODULE_LICENSE("GPL");
- MODULE_ALIAS("bt-proto-4");
-diff --git a/net/bluetooth/cmtp/core.c b/net/bluetooth/cmtp/core.c
-index 07cfa3249f83..9a6306d7f738 100644
---- a/net/bluetooth/cmtp/core.c
-+++ b/net/bluetooth/cmtp/core.c
-@@ -511,6 +511,5 @@ module_exit(cmtp_exit);
- 
- MODULE_AUTHOR("Marcel Holtmann <marcel@holtmann.org>");
- MODULE_DESCRIPTION("Bluetooth CMTP ver " VERSION);
--MODULE_VERSION(VERSION);
- MODULE_LICENSE("GPL");
- MODULE_ALIAS("bt-proto-5");
-diff --git a/net/bluetooth/hidp/core.c b/net/bluetooth/hidp/core.c
-index 3b4fa27a44e6..597f5dde434a 100644
---- a/net/bluetooth/hidp/core.c
-+++ b/net/bluetooth/hidp/core.c
-@@ -1475,6 +1475,5 @@ module_exit(hidp_exit);
- MODULE_AUTHOR("Marcel Holtmann <marcel@holtmann.org>");
- MODULE_AUTHOR("David Herrmann <dh.herrmann@gmail.com>");
- MODULE_DESCRIPTION("Bluetooth HIDP ver " VERSION);
--MODULE_VERSION(VERSION);
- MODULE_LICENSE("GPL");
- MODULE_ALIAS("bt-proto-6");
-diff --git a/net/bluetooth/rfcomm/core.c b/net/bluetooth/rfcomm/core.c
-index f2bacb464ccf..3384da308a9b 100644
---- a/net/bluetooth/rfcomm/core.c
-+++ b/net/bluetooth/rfcomm/core.c
-@@ -2240,6 +2240,5 @@ MODULE_PARM_DESC(l2cap_ertm, "Use L2CAP ERTM mode for connection");
- 
- MODULE_AUTHOR("Marcel Holtmann <marcel@holtmann.org>");
- MODULE_DESCRIPTION("Bluetooth RFCOMM ver " VERSION);
--MODULE_VERSION(VERSION);
- MODULE_LICENSE("GPL");
- MODULE_ALIAS("bt-proto-3");
+-MODULE_VERSION(BR_VERSION);
+ MODULE_ALIAS_RTNL_LINK("bridge");
 -- 
 2.11.0
 
