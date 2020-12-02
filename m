@@ -2,33 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77F0C2CB27F
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 02:50:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D9B62CB28A
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 02:54:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727988AbgLBBtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 20:49:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47000 "EHLO mail.kernel.org"
+        id S1728065AbgLBByI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 20:54:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47920 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727253AbgLBBtX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Dec 2020 20:49:23 -0500
-Date:   Tue, 1 Dec 2020 17:48:41 -0800
+        id S1728057AbgLBByI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Dec 2020 20:54:08 -0500
+Date:   Tue, 1 Dec 2020 17:53:26 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606873723;
-        bh=vegdt07ITOZXxmoKUy72H1JbUFvTeJ15thW3bajvP8s=;
+        s=default; t=1606874007;
+        bh=qACSHOYG6L11g+xxM5Y/HmiE4Is6TkTFn01icin7LnE=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KG0+OoZzj8jp1LQf78JbSBJAbP/BCP5HGXEZuKNqLRHA1WaLGeb3JrgbfYQ1b3Pqx
-         7+mk03e6anjhRr3nC9pSI91ZL85T0SLJ5y2xTeXs6HjZ+xccwSqlplk5azyoNjFmye
-         YHz5NnTVhwzOGXCMk+4DCLdO2SFeheEPo368Fi2Y=
+        b=dO7ULA43ALQCEoMY9neTAMWswD/Oo5XtBfsKCYNq15t8KRzKpJWUjVIrRlrg/3Dky
+         rSLky1RJsJWWTPcYNujhl3Y1+wPOG1mLe5zpcEIvlkICsjK4le1aTVEnjx12+xQ2Hs
+         JCoTUy2zxdTEb8pIXKHzj861JtsruJP6jvV1tCJI=
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: Re: [PATCH net] geneve: pull IP header before ECN decapsulation
-Message-ID: <20201201174841.73a89d70@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201201090507.4137906-1-eric.dumazet@gmail.com>
-References: <20201201090507.4137906-1-eric.dumazet@gmail.com>
+To:     Rohit Maheshwari <rohitm@chelsio.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, secdev@chelsio.com
+Subject: Re: [net] net/tls: tls offload is broken
+Message-ID: <20201201175326.1451e7ed@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201201090752.27355-1-rohitm@chelsio.com>
+References: <20201201090752.27355-1-rohitm@chelsio.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -36,26 +33,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  1 Dec 2020 01:05:07 -0800 Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Tue,  1 Dec 2020 14:37:52 +0530 Rohit Maheshwari wrote:
+> Recent changes made to remove AES constants started using protocol
+> aware salt_size. ctx->prot_info's salt_size is filled in tls sw case,
+> but not in tls offload mode, and was working so far because of the
+> hard coded value was used.
 > 
-> IP_ECN_decapsulate() and IP6_ECN_decapsulate() assume
-> IP header is already pulled.
-> 
-> geneve does not ensure this yet.
-> 
-> Fixing this generically in IP_ECN_decapsulate() and
-> IP6_ECN_decapsulate() is not possible, since callers
-> pass a pointer that might be freed by pskb_may_pull()
-> 
-> syzbot reported :
-> 
-> BUG: KMSAN: uninit-value in __INET_ECN_decapsulate include/net/inet_ecn.h:238 [inline]
-> BUG: KMSAN: uninit-value in INET_ECN_decapsulate+0x345/0x1db0 include/net/inet_ecn.h:260
+> Fixes: 6942a284fb3e ("net/tls: make inline helpers protocol-aware")
+> Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
 
-> 
-> Fixes: 2d07dc79fe04 ("geneve: add initial netdev driver for GENEVE tunnels")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-
-Applied, thanks!
+I updated the subject to something more meaningful and applied to
+net-next. The commit in question was just applied to net-next, it
+doesn't exist in net.
