@@ -2,125 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E5492CBBD8
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 12:51:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 313212CBBDF
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 12:51:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729713AbgLBLsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 06:48:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45886 "EHLO
+        id S1729759AbgLBLsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 06:48:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726539AbgLBLsW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 06:48:22 -0500
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE794C0613CF;
-        Wed,  2 Dec 2020 03:47:56 -0800 (PST)
-Received: by mail-pg1-x541.google.com with SMTP id w16so924082pga.9;
-        Wed, 02 Dec 2020 03:47:56 -0800 (PST)
+        with ESMTP id S1726539AbgLBLsf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 06:48:35 -0500
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25766C0613D4;
+        Wed,  2 Dec 2020 03:48:10 -0800 (PST)
+Received: by mail-pl1-x644.google.com with SMTP id p6so981920plr.7;
+        Wed, 02 Dec 2020 03:48:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=91aj9edY77hTt39KhpEZSPjKyf9MNh9XT2J/er9ipzg=;
-        b=EZR9E0bgDgWC0etCy8AykgZf4yg9d1q/QNSsUz52oU9csexLmcGiMLbnzBtG2pWJWF
-         +Q7h2qXwkUU79wxOwtoB4oeYOLkbrNmhVc9+/UyQKDDD59vZJMMZs8VFxgWRYYB1yCXN
-         j4iUS7fW+e3iCsSF3A1uBPY6QMSFhAS8nP8xJjWK1GJuYcusG8jIvKhSFyO0i+MP7LgG
-         /866WU6Tr+CDSNNbAj/pEjS4qGB0SPNEgaNdQlwAEeUyaLGvgEJvUNzP11sGidLIJ4AB
-         BKEmI5n0wgpBu939mN8jPHAea7ZqzEzyrsMRnOvGlwRjcAsPiNUh4/j1TU2DUdnf5SjO
-         ZfIw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=YgkXdxVYJGCqGi2vM/3GSDk0U6gyJJvLBMGDPOGgYCY=;
+        b=AALNwzOvnIe1ZF2NsDfwryuf9Sp52NKnm25C1gMCRZSUXqxZoYtHbxQR9kdRywBUOU
+         Sr1VfYVQ6CBJnglK/9f6yPCFKf3cvh28gVQlUTxeAFeQL6ZuPkBk41yiOrlm+Rw9WT4a
+         M8isyrmKOQDMZF+btGHh08AVywjkgfTWpq8e91c3x/VT42Xe4hbKdZODDKdCGWIoKuC6
+         og+AWw8y0j7yBdeGRHH5Cw8uIfzi0cxOSxRXbRu+MUDC/OXe0a+Kfbk8eVjoTYLtb6l6
+         zj/KQEK6YS68aZEQj/2cdmO280fwF5f+h+TmyxTovmm2fiYg+U06c9Tvufls+3J/QsjV
+         tTDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=91aj9edY77hTt39KhpEZSPjKyf9MNh9XT2J/er9ipzg=;
-        b=F7KX0m3vlGqAM/DBstqnOkwBk7MQguWafhVXwMzEWLn1VF3N7j+QsZzLnYa4oP2h7d
-         lrL4zRSKnf8WkQstnSbREwmRE833SeNfihSlw4PbenYbCv/Q7ULf3LbvFCnlJE/ZZfIH
-         GefYuOa7OabarGhDcc2+MftGoCi6+SYsHJvH3BCO1vnQqK+4/GRn+as2eQ31kAsIe60U
-         3mpQGIJkMrZtTWsPI6wjPdy/KtXQPdK2/I9PQjpWXL5kvBvhKWeKM7xZzmX2qopfaonn
-         giyo+77JLDeKpIsz16qibKLoBrQmrCxkOo0qDELp5E7bP7x+d4QCpEH4EpkIpkU6Dq8A
-         yWxA==
-X-Gm-Message-State: AOAM530vS7r9H/B/ycDvDw+c2Ayy9cKD1a+RPuIH2jvP3hwhLZhjli5V
-        bTAx+KBqSprh73lLlpY5Ip1KCmuoKsM=
-X-Google-Smtp-Source: ABdhPJw6SuIwNlvL71go4Pdz71/9jVaJMw3SD7ij3mF7r4stN98PhXQS7CXU//7s3ABIopmsvoX0vQ==
-X-Received: by 2002:a65:6891:: with SMTP id e17mr231710pgt.410.1606909676495;
-        Wed, 02 Dec 2020 03:47:56 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=YgkXdxVYJGCqGi2vM/3GSDk0U6gyJJvLBMGDPOGgYCY=;
+        b=jS2zWJDoqvb49btKhLPz9CGoNHhx6ywuCy2/sK2HYAidajU9/ivxSy07YrMNlw/ZAe
+         SHgmd6OvObJEwzWoYoajgQigo8vGIG1iCAdzJ3rRFbNXDG52mQYvj80VWVhw8y9BDk2E
+         bqXogil8L8KSGjZFGc6lkZ0RvlW5aGjLnQfUNljGg5dP313S0+056qXZoQnH7cK54lH2
+         Yt/QbV61myjqvHMHAHp8ddLo3G+aS7lVHgZeJnMzCo7XPx5/jMvj3/XMmZSjRjxVV3M1
+         ahhq5cgOeHZbydPCnqXlVSSTRS9mhWIPfYgjsk05L6BVEq6Xfa91aQ2TTsEBErODbazJ
+         15/g==
+X-Gm-Message-State: AOAM532xIzPfTdEB/eRDTyImY77aTkATYYYjIg048YCSrZnhFsHjPF8S
+        WzVqJg/yH2IhRM+1oQkEwg7v1S1hPCU=
+X-Google-Smtp-Source: ABdhPJw5QtTAHCtBGn/aDXDjDAtHSw+WDVNqOZy47uX3ijKPOkhFoo7ATeLwKyfJVzsSTe0U55A4xA==
+X-Received: by 2002:a17:90a:6fc7:: with SMTP id e65mr2091450pjk.116.1606909689747;
+        Wed, 02 Dec 2020 03:48:09 -0800 (PST)
 Received: from localhost.localdomain ([182.226.226.37])
-        by smtp.googlemail.com with ESMTPSA id q18sm2108806pfs.150.2020.12.02.03.47.53
+        by smtp.googlemail.com with ESMTPSA id q18sm2108806pfs.150.2020.12.02.03.48.07
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 02 Dec 2020 03:47:55 -0800 (PST)
+        Wed, 02 Dec 2020 03:48:09 -0800 (PST)
 From:   Bongsu Jeon <bongsu.jeon2@gmail.com>
 X-Google-Original-From: Bongsu Jeon
 To:     krzk@kernel.org
 Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Bongsu Jeon <bongsu.jeon@samsung.com>
-Subject: [PATCH v5 net-next 0/4] nfc: s3fwrn5: Support a UART interface
-Date:   Wed,  2 Dec 2020 20:47:37 +0900
-Message-Id: <1606909661-3814-1-git-send-email-bongsu.jeon@samsung.com>
+Subject: [PATCH v5 net-next 1/4] dt-bindings: net: nfc: s3fwrn5: Support a UART interface
+Date:   Wed,  2 Dec 2020 20:47:38 +0900
+Message-Id: <1606909661-3814-2-git-send-email-bongsu.jeon@samsung.com>
 X-Mailer: git-send-email 1.9.1
+In-Reply-To: <1606909661-3814-1-git-send-email-bongsu.jeon@samsung.com>
+References: <1606909661-3814-1-git-send-email-bongsu.jeon@samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Bongsu Jeon <bongsu.jeon@samsung.com>
 
-S3FWRN82 is the Samsung's NFC chip that supports the UART communication.
-Before adding the UART driver module, I did refactoring the s3fwrn5_i2c module 
-to reuse the common blocks.
+Since S3FWRN82 NFC Chip, The UART interface can be used.
+S3FWRN82 supports I2C and UART interface.
 
-1/4 is the dt bindings for the RN82 UART interface.
-2/4..3/4 are refactoring the s3fwrn5_i2c module.
-4/4 is the UART driver module implementation.
+Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
+---
+ .../bindings/net/nfc/samsung,s3fwrn5.yaml          | 31 +++++++++++++++++++---
+ 1 file changed, 28 insertions(+), 3 deletions(-)
 
-ChangeLog:
- v5:
-   1/4
-    - remove the 'items' of the compatible property.
-    - change the GPIO flags.
- v4:
-   1/4
-    - change 'oneOf' to 'items'.
-    - fix the indentation.
-   2/4
-    - add the ACK tag.
-   4/4
-    - remove the of_match_ptr macro.
- v3:
-   3/4
-    - move the phy_common object to s3fwrn.ko to avoid duplication.
-    - include the header files to include everything which is used inside.
-    - wrap the lines.
-   4/4
-    - remove the kfree(phy) because of duplicated free.
-    - use the phy_common blocks.
-    - wrap lines properly.
- v2:
-   1/4
-    - change the compatible name.
-    - change the const to enum for compatible.
-    - change the node name to nfc.
-   3/4
-    - remove the common function's definition in common header file.
-    - make the common phy_common.c file to define the common function.
-    - wrap the lines.
-    - change the Header guard.
-    - remove the unused common function.
-
-Bongsu Jeon (4):
-  dt-bindings: net: nfc: s3fwrn5: Support a UART interface
-  nfc: s3fwrn5: reduce the EN_WAIT_TIME
-  nfc: s3fwrn5: extract the common phy blocks
-  nfc: s3fwrn5: Support a UART interface
-
- .../bindings/net/nfc/samsung,s3fwrn5.yaml          |  31 +++-
- drivers/nfc/s3fwrn5/Kconfig                        |  12 ++
- drivers/nfc/s3fwrn5/Makefile                       |   4 +-
- drivers/nfc/s3fwrn5/i2c.c                          | 117 ++++--------
- drivers/nfc/s3fwrn5/phy_common.c                   |  75 ++++++++
- drivers/nfc/s3fwrn5/phy_common.h                   |  37 ++++
- drivers/nfc/s3fwrn5/uart.c                         | 196 +++++++++++++++++++++
- 7 files changed, 390 insertions(+), 82 deletions(-)
- create mode 100644 drivers/nfc/s3fwrn5/phy_common.c
- create mode 100644 drivers/nfc/s3fwrn5/phy_common.h
- create mode 100644 drivers/nfc/s3fwrn5/uart.c
-
+diff --git a/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml b/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+index cb0b8a5..ca3904b 100644
+--- a/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
++++ b/Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+@@ -12,7 +12,9 @@ maintainers:
+ 
+ properties:
+   compatible:
+-    const: samsung,s3fwrn5-i2c
++    enum:
++      - samsung,s3fwrn5-i2c
++      - samsung,s3fwrn82
+ 
+   en-gpios:
+     maxItems: 1
+@@ -47,10 +49,19 @@ additionalProperties: false
+ required:
+   - compatible
+   - en-gpios
+-  - interrupts
+-  - reg
+   - wake-gpios
+ 
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: samsung,s3fwrn5-i2c
++    then:
++      required:
++        - interrupts
++        - reg
++
+ examples:
+   - |
+     #include <dt-bindings/gpio/gpio.h>
+@@ -71,3 +82,17 @@ examples:
+             wake-gpios = <&gpj0 2 GPIO_ACTIVE_HIGH>;
+         };
+     };
++  # UART example on Raspberry Pi
++  - |
++    uart0 {
++        status = "okay";
++
++        nfc {
++            compatible = "samsung,s3fwrn82";
++
++            en-gpios = <&gpio 20 GPIO_ACTIVE_HIGH>;
++            wake-gpios = <&gpio 16 GPIO_ACTIVE_HIGH>;
++
++            status = "okay";
++        };
++    };
 -- 
 1.9.1
 
