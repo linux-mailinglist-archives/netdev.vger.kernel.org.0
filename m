@@ -2,97 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD3C42CB3FC
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 05:47:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D94252CB405
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 05:47:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728338AbgLBEmN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 23:42:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36710 "EHLO
+        id S1728347AbgLBErW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 23:47:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728288AbgLBEmM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 23:42:12 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F202C0613CF
-        for <netdev@vger.kernel.org>; Tue,  1 Dec 2020 20:41:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=3cggifz4mFXwWHg6c4q1EM6G0raIF5MaCc7PD/3Ay6w=; b=ESHiCXuEdWYjJ4VTztSuVTu9rw
-        vOgGSbKJL39ZHBdKuQOBpPzP30yrJAygjCn1eFAIx3zoMHdlaVN47LdBzRjZXyLEB4KYSDTaIbflg
-        XKHPBXAJUnM92QQnTe8ssTEroPKwxpJm21lK+0kQUnAsO1Xm+U0Pmh4bmX/8UayAM7yvKtv1AM2EP
-        GLVpI/z6GD+YASsAA20s/1FZzvRm9/IWi1x9iu3qXfdatTzYJW4Be/Z5+xY8R58wWXKXrm4ft5xBK
-        SOOKR8MDXUadymXFrNE1RAne40PHLYvEngVJ2y4gncD6tRR8jw0nwJsdvAa/ici143uyFDyBrWpl+
-        ZFl7Z1WA==;
-Received: from [2601:1c0:6280:3f0::1494]
-        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kkJxE-0001vr-TJ; Wed, 02 Dec 2020 04:41:26 +0000
-Subject: Re: [net:master 1/3] ERROR: modpost: "__uio_register_device"
- undefined!
-To:     kernel test robot <lkp@intel.com>
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-References: <202012021229.9PwxJvFJ-lkp@intel.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <8875896f-81a7-cbda-3b6e-97b5b22383c3@infradead.org>
-Date:   Tue, 1 Dec 2020 20:41:21 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        with ESMTP id S1725902AbgLBErW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 23:47:22 -0500
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFB0CC0613CF;
+        Tue,  1 Dec 2020 20:46:41 -0800 (PST)
+Received: by mail-pg1-x543.google.com with SMTP id t37so326251pga.7;
+        Tue, 01 Dec 2020 20:46:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=o3CORTg+9lKTe8fpIQY2Q7dwP00QXkDgkfzcppu9NAk=;
+        b=cAgDXszgF0oBtbfKVgDbWSQmT+5AOLkB73lU4O2Mu1un1Dpmu285luzhxnUbbhhVHn
+         /UNAd1IL01xBEVB5ewfEIcjLve847FyG1DCGCbbhVmHRC5brDqA2dyu7DhvB7Tklhc34
+         qJ1CueS1sFZO6Ei9DyoxboYICsQtWJt1ntOOTDYBvVVIqjprooIURzRokPGg8juk22ZF
+         L5i0ysnXIzLvzQf+6j3tHjNm3WrfAvMqNc7MXgn6/ymR2OTrHL8jfMjTRmQmKqvI9V1W
+         lzO/UEOgKMwEcTPGcnf2hT4+FJvuCF9ZQrywSCj1qK6PsSU8EglDZLJkg7OkxDzHLvtX
+         wSmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=o3CORTg+9lKTe8fpIQY2Q7dwP00QXkDgkfzcppu9NAk=;
+        b=klj+9BjwO78AcXpUC1gkDXnDjKXBxddyT32ZT9JInVWhAVjMsyO6oPa4HA1MRTNdGd
+         L7AbU3HS6BVnWQfItILbAQuuRwTtacSaL8C2sFUziYa45ArrzNw+VeCw6qykj8lV0v98
+         NLe/YFGYlwb5bTn1c6mLa/iuAr89igerRKrjFvP8ZblmqP2VSc8XRmpI5JLV5YLe8SNc
+         d1l3PX3ma8OVypBC6bSyO1EoyR8MqNIj5tZDvZTodc3Jkjq9RtChKjI2tauikmKhgeIq
+         KYIYxzSN9jiPxiIsv7wCz3AHdQSViid6drVfu/HIx9I6UjpMHR9ET24X8b2yRGSgOre9
+         cjAQ==
+X-Gm-Message-State: AOAM530QD2GiVbehinIznZZnPyWboy27EyYYoTtVgRkqRBtpTgVXNQ+O
+        8E22KapDJbXfDOMBJXk5EkM=
+X-Google-Smtp-Source: ABdhPJw0KNsRcvB82oD30qFCbJ0XZt51AL58/6Pop7B/VSyZIJ5QWKPBixlU/Ds/vB/fXW+5Iq4inw==
+X-Received: by 2002:a05:6a00:16c5:b029:19b:696:28a0 with SMTP id l5-20020a056a0016c5b029019b069628a0mr895102pfc.9.1606884401534;
+        Tue, 01 Dec 2020 20:46:41 -0800 (PST)
+Received: from ast-mbp ([2620:10d:c090:400::5:ab4a])
+        by smtp.gmail.com with ESMTPSA id a11sm562802pfc.31.2020.12.01.20.46.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Dec 2020 20:46:40 -0800 (PST)
+Date:   Tue, 1 Dec 2020 20:46:38 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andrii@kernel.org,
+        john.fastabend@gmail.com, hawk@kernel.org, kuba@kernel.org,
+        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com
+Subject: Re: [PATCH bpf-next] bpf, xdp: add bpf_redirect{,_map}() leaf node
+ detection and optimization
+Message-ID: <20201202044638.zqqlgabmx2xjsunf@ast-mbp>
+References: <20201201172345.264053-1-bjorn.topel@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <202012021229.9PwxJvFJ-lkp@intel.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201201172345.264053-1-bjorn.topel@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/1/20 8:01 PM, kernel test robot wrote:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git master
-> head:   2867e1eac61016f59b3d730e3f7aa488e186e917
-> commit: 14483cbf040fcb38113497161088a1ce8ce5d713 [1/3] net: broadcom CNIC: requires MMU
-> config: microblaze-randconfig-r011-20201201 (attached as .config)
-> compiler: microblaze-linux-gcc (GCC) 9.3.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git/commit/?id=14483cbf040fcb38113497161088a1ce8ce5d713
->         git remote add net https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git
->         git fetch --no-tags net master
->         git checkout 14483cbf040fcb38113497161088a1ce8ce5d713
->         # save the attached .config to linux build tree
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=microblaze 
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>, old ones prefixed by <<):
-> 
->>> ERROR: modpost: "__uio_register_device" [drivers/net/ethernet/broadcom/cnic.ko] undefined!
->>> ERROR: modpost: "uio_unregister_device" [drivers/net/ethernet/broadcom/cnic.ko] undefined!
->>> ERROR: modpost: "uio_event_notify" [drivers/net/ethernet/broadcom/cnic.ko] undefined!
-> 
-> ---
+On Tue, Dec 01, 2020 at 06:23:45PM +0100, Björn Töpel wrote:
+> +static void check_redirect_opt(struct bpf_verifier_env *env, int func_id, int insn_idx)
+> +{
+> +	struct bpf_insn *insns = env->prog->insnsi;
+> +	int insn_cnt = env->prog->len;
+> +	struct bpf_insn *insn;
+> +	bool is_leaf = false;
+> +
+> +	if (!(func_id == BPF_FUNC_redirect || func_id == BPF_FUNC_redirect_map))
+> +		return;
+> +
+> +	/* Naive peephole leaf node checking */
+> +	insn_idx++;
+> +	if (insn_idx >= insn_cnt)
+> +		return;
+> +
+> +	insn = &insns[insn_idx];
+> +	switch (insn->code) {
+> +	/* Is the instruction following the call, an exit? */
+> +	case BPF_JMP | BPF_EXIT:
+> +		is_leaf = true;
+> +		break;
+> +	/* Follow the true branch of "if return value (r/w0) is not
+> +	 * zero", and look for exit.
+> +	 */
+> +	case BPF_JMP | BPF_JSGT | BPF_K:
+> +	case BPF_JMP32 | BPF_JSGT | BPF_K:
+> +	case BPF_JMP | BPF_JGT | BPF_K:
+> +	case BPF_JMP32 | BPF_JGT | BPF_K:
+> +	case BPF_JMP | BPF_JNE | BPF_K:
+> +	case BPF_JMP32 | BPF_JNE | BPF_K:
+> +		if (insn->dst_reg == BPF_REG_0 && insn->imm == 0) {
+> +			insn_idx += insn->off + 1;
+> +			if (insn_idx >= insn_cnt)
+> +				break;
+> +
+> +			insn = &insns[insn_idx];
+> +			is_leaf = insn->code == (BPF_JMP | BPF_EXIT);
+> +		}
+> +		break;
+> +	default:
+> +		break;
+> +	}
 
-Jakub,
+Sorry I don't like this check at all. It's too fragile.
+It will work for one hard coded program.
+It may work for something more real, but will break with minimal
+changes to the prog or llvm changes.
+How are we going to explain that fragility to users?
 
-This happens due to CONFIG_SCSI_BNX2_ISCSI=m, which selects CNIC
-when it shouldn't.
+> +static u64 __bpf_xdp_redirect_map_opt(struct bpf_map *map, u32 index, u64 flags,
+> +				      struct bpf_redirect_info *ri)
+> +{
+> +	const struct bpf_prog *xdp_prog;
+> +	struct net_device *dev;
+> +	struct xdp_buff *xdp;
+> +	void *val;
+> +	int err;
+> +
+> +	xdp_prog = ri->xdp_prog_redirect_opt;
+> +	xdp = ri->xdp;
+> +	dev = xdp->rxq->dev;
+> +
+> +	ri->xdp_prog_redirect_opt = NULL;
+> +
+> +	switch (map->map_type) {
+> +	case BPF_MAP_TYPE_DEVMAP: {
+> +		val = __dev_map_lookup_elem(map, index);
+> +		if (unlikely(!val))
+> +			return flags;
+> +		err = dev_map_enqueue(val, xdp, dev);
+> +		break;
+> +	}
+> +	case BPF_MAP_TYPE_DEVMAP_HASH: {
+> +		val = __dev_map_hash_lookup_elem(map, index);
+> +		if (unlikely(!val))
+> +			return flags;
+> +		err = dev_map_enqueue(val, xdp, dev);
+> +		break;
+> +	}
+> +	case BPF_MAP_TYPE_CPUMAP: {
+> +		val = __cpu_map_lookup_elem(map, index);
+> +		if (unlikely(!val))
+> +			return flags;
+> +		err = cpu_map_enqueue(val, xdp, dev);
+> +		break;
+> +	}
+> +	case BPF_MAP_TYPE_XSKMAP: {
+> +		val = __xsk_map_lookup_elem(map, index);
+> +		if (unlikely(!val))
+> +			return flags;
+> +		err = __xsk_map_redirect(val, xdp);
+> +		break;
 
-Martin Petersen has already merged the SCSI patch for this (for 5.11,
-sadly):
+I haven't looked through all possible paths, but it feels very dangerous.
+The stack growth is big. Calling xsk_rcv from preempt_disabled
+and recursively calling into another bpf prog?
+That violates all stack checks we have in the verifier.
 
-https://lore.kernel.org/lkml/20201129070916.3919-1-rdunlap@infradead.org/
-
-
-Maybe I should have sent them to one or both of you as a 2-patch series (?).
-
-What should we do next?
-
-
-Sorry about this. Thanks.
-
--- 
-~Randy
-
+I see plenty of cons and not a single pro in this patch.
+5% improvement for micro benchmark? That's hardly a justification.
