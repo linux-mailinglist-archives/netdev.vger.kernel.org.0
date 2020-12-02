@@ -2,26 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60F5F2CCA7A
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 00:27:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7342A2CCAAF
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 00:46:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728035AbgLBXX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 18:23:57 -0500
-Received: from www62.your-server.de ([213.133.104.62]:55064 "EHLO
+        id S1729226AbgLBXoU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 18:44:20 -0500
+Received: from www62.your-server.de ([213.133.104.62]:57536 "EHLO
         www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726253AbgLBXX5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 18:23:57 -0500
+        with ESMTP id S1728021AbgLBXoU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 18:44:20 -0500
 Received: from sslproxy06.your-server.de ([78.46.172.3])
         by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92.3)
         (envelope-from <daniel@iogearbox.net>)
-        id 1kkbSt-0004Um-KL; Thu, 03 Dec 2020 00:23:15 +0100
+        id 1kkbmb-0006N9-Ba; Thu, 03 Dec 2020 00:43:37 +0100
 Received: from [85.7.101.30] (helo=pc-9.home)
         by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <daniel@iogearbox.net>)
-        id 1kkbSt-000VED-Ag; Thu, 03 Dec 2020 00:23:15 +0100
-Subject: Re: [PATCH bpf-next V8 4/8] bpf: add BPF-helper for MTU checking
+        id 1kkbmb-000GPi-10; Thu, 03 Dec 2020 00:43:37 +0100
+Subject: Re: [PATCH bpf-next V8 5/8] bpf: drop MTU check when doing TC-BPF
+ redirect to ingress
 To:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
         Alexei Starovoitov <alexei.starovoitov@gmail.com>,
@@ -31,14 +32,14 @@ Cc:     netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
         Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
         colrack@gmail.com
 References: <160650034591.2890576.1092952641487480652.stgit@firesoul>
- <160650039783.2890576.1174164236647947165.stgit@firesoul>
+ <160650040292.2890576.17040975200628427127.stgit@firesoul>
 From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <e5d7ade3-6648-5934-ede1-956e379834a2@iogearbox.net>
-Date:   Thu, 3 Dec 2020 00:23:14 +0100
+Message-ID: <af28e4e7-8089-b252-3927-a962b98ad7b8@iogearbox.net>
+Date:   Thu, 3 Dec 2020 00:43:36 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <160650039783.2890576.1174164236647947165.stgit@firesoul>
+In-Reply-To: <160650040292.2890576.17040975200628427127.stgit@firesoul>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -49,151 +50,152 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 11/27/20 7:06 PM, Jesper Dangaard Brouer wrote:
-[...]
-> +static struct net_device *__dev_via_ifindex(struct net_device *dev_curr,
-> +					    u32 ifindex)
+> The use-case for dropping the MTU check when TC-BPF does redirect to
+> ingress, is described by Eyal Birger in email[0]. The summary is the
+> ability to increase packet size (e.g. with IPv6 headers for NAT64) and
+> ingress redirect packet and let normal netstack fragment packet as needed.
+> 
+> [0] https://lore.kernel.org/netdev/CAHsH6Gug-hsLGHQ6N0wtixdOa85LDZ3HNRHVd0opR=19Qo4W4Q@mail.gmail.com/
+> 
+> V4:
+>   - Keep net_device "up" (IFF_UP) check.
+>   - Adjustment to handle bpf_redirect_peer() helper
+> 
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
+>   include/linux/netdevice.h |   31 +++++++++++++++++++++++++++++--
+>   net/core/dev.c            |   19 ++-----------------
+>   net/core/filter.c         |   14 +++++++++++---
+>   3 files changed, 42 insertions(+), 22 deletions(-)
+> 
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 7ce648a564f7..4a854e09e918 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -3917,11 +3917,38 @@ int dev_forward_skb(struct net_device *dev, struct sk_buff *skb);
+>   bool is_skb_forwardable(const struct net_device *dev,
+>   			const struct sk_buff *skb);
+>   
+> +static __always_inline bool __is_skb_forwardable(const struct net_device *dev,
+> +						 const struct sk_buff *skb,
+> +						 const bool check_mtu)
 > +{
-> +	struct net *netns = dev_net(dev_curr);
+> +	const u32 vlan_hdr_len = 4; /* VLAN_HLEN */
+> +	unsigned int len;
 > +
-> +	/* Non-redirect use-cases can use ifindex=0 and save ifindex lookup */
-> +	if (ifindex == 0)
-> +		return dev_curr;
+> +	if (!(dev->flags & IFF_UP))
+> +		return false;
 > +
-> +	return dev_get_by_index_rcu(netns, ifindex);
-> +}
+> +	if (!check_mtu)
+> +		return true;
 > +
-> +BPF_CALL_5(bpf_skb_check_mtu, struct sk_buff *, skb,
-> +	   u32, ifindex, u32 *, mtu_len, s32, len_diff, u64, flags)
-> +{
-> +	int ret = BPF_MTU_CHK_RET_FRAG_NEEDED;
-> +	struct net_device *dev = skb->dev;
-> +	int len;
-> +	int mtu;
+> +	len = dev->mtu + dev->hard_header_len + vlan_hdr_len;
+> +	if (skb->len <= len)
+> +		return true;
 > +
-> +	if (flags & ~(BPF_MTU_CHK_SEGS))
-
-nit: unlikely() (similar for XDP case)
-
-> +		return -EINVAL;
-> +
-> +	dev = __dev_via_ifindex(dev, ifindex);
-> +	if (!dev)
-
-nit: unlikely() (ditto XDP)
-
-> +		return -ENODEV;
-> +
-> +	mtu = READ_ONCE(dev->mtu);
-> +
-> +	/* TC len is L2, remove L2-header as dev MTU is L3 size */
-> +	len = skb->len - ETH_HLEN;
-
-s/ETH_HLEN/dev->hard_header_len/ ?
-
-> +	len += len_diff; /* len_diff can be negative, minus result pass check */
-> +	if (len <= mtu) {
-> +		ret = BPF_MTU_CHK_RET_SUCCESS;
-
-Wouldn't it be more intuitive to do ...
-
-    len_dev = READ_ONCE(dev->mtu) + dev->hard_header_len + VLAN_HLEN;
-    len_skb = skb->len + len_diff;
-    if (len_skb <= len_dev) {
-       ret = BPF_MTU_CHK_RET_SUCCESS;
-       got out;
-    }
-
-> +		goto out;
-> +	}
-> +	/* At this point, skb->len exceed MTU, but as it include length of all
-> +	 * segments, it can still be below MTU.  The SKB can possibly get
-> +	 * re-segmented in transmit path (see validate_xmit_skb).  Thus, user
-> +	 * must choose if segs are to be MTU checked.  Last SKB "headlen" is
-> +	 * checked against MTU.
+> +	/* if TSO is enabled, we don't care about the length as the packet
+> +	 * could be forwarded without being segmented before
 > +	 */
-> +	if (skb_is_gso(skb)) {
-> +		ret = BPF_MTU_CHK_RET_SUCCESS;
+> +	if (skb_is_gso(skb))
+> +		return true;
 > +
-> +		if (flags & BPF_MTU_CHK_SEGS &&
-> +		    skb_gso_validate_network_len(skb, mtu)) {
-> +			ret = BPF_MTU_CHK_RET_SEGS_TOOBIG;
-> +			goto out;
-
-Maybe my lack of coffe, but looking at ip_exceeds_mtu() for example, shouldn't
-the above test be on !skb_gso_validate_network_len() instead?
-
-skb_is_gso(skb) && skb_gso_validate_network_len(skb, mtu) would indicate that
-it does /not/ exceed mtu.
-
-> +		}
+> +	return false;
+> +}
 > +
-> +		len = skb_headlen(skb) - ETH_HLEN + len_diff;
+>   static __always_inline int ____dev_forward_skb(struct net_device *dev,
+> -					       struct sk_buff *skb)
+> +					       struct sk_buff *skb,
+> +					       const bool check_mtu)
+>   {
+>   	if (skb_orphan_frags(skb, GFP_ATOMIC) ||
+> -	    unlikely(!is_skb_forwardable(dev, skb))) {
+> +	    unlikely(!__is_skb_forwardable(dev, skb, check_mtu))) {
+>   		atomic_long_inc(&dev->rx_dropped);
+>   		kfree_skb(skb);
+>   		return NET_RX_DROP;
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 60d325bda0d7..6ceb6412ee97 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -2189,28 +2189,13 @@ static inline void net_timestamp_set(struct sk_buff *skb)
+>   
+>   bool is_skb_forwardable(const struct net_device *dev, const struct sk_buff *skb)
+>   {
+> -	unsigned int len;
+> -
+> -	if (!(dev->flags & IFF_UP))
+> -		return false;
+> -
+> -	len = dev->mtu + dev->hard_header_len + VLAN_HLEN;
+> -	if (skb->len <= len)
+> -		return true;
+> -
+> -	/* if TSO is enabled, we don't care about the length as the packet
+> -	 * could be forwarded without being segmented before
+> -	 */
+> -	if (skb_is_gso(skb))
+> -		return true;
+> -
+> -	return false;
+> +	return __is_skb_forwardable(dev, skb, true);
+>   }
+>   EXPORT_SYMBOL_GPL(is_skb_forwardable);
 
-How does this work with GRO when we invoke this helper at tc ingress, e.g. when
-there is still non-linear data in skb_shinfo(skb)->frags[]?
+Only user of is_skb_forwardable() that is left after this patch is bridge, maybe
+the whole thing should be moved into the header?
 
-> +		if (len > mtu) {
-> +			ret = BPF_MTU_CHK_RET_FRAG_NEEDED;
-> +			goto out;
-> +		}
+>   int __dev_forward_skb(struct net_device *dev, struct sk_buff *skb)
+>   {
+> -	int ret = ____dev_forward_skb(dev, skb);
+> +	int ret = ____dev_forward_skb(dev, skb, true);
+>   
+>   	if (likely(!ret)) {
+>   		skb->protocol = eth_type_trans(skb, dev);
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index d6125cfc49c3..4673afe59533 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -2083,13 +2083,21 @@ static const struct bpf_func_proto bpf_csum_level_proto = {
+>   
+>   static inline int __bpf_rx_skb(struct net_device *dev, struct sk_buff *skb)
+>   {
+> -	return dev_forward_skb(dev, skb);
+> +	int ret = ____dev_forward_skb(dev, skb, false);
+> +
+> +	if (likely(!ret)) {
+> +		skb->protocol = eth_type_trans(skb, dev);
+> +		skb_postpull_rcsum(skb, eth_hdr(skb), ETH_HLEN);
+> +		ret = netif_rx(skb);
+
+Why netif_rx() and not netif_rx_internal() as in dev_forward_skb() originally?
+One extra call otherwise.
+
 > +	}
-> +out:
-> +	/* BPF verifier guarantees valid pointer */
-> +	*mtu_len = mtu;
 > +
 > +	return ret;
-> +}
-> +
-> +BPF_CALL_5(bpf_xdp_check_mtu, struct xdp_buff *, xdp,
-> +	   u32, ifindex, u32 *, mtu_len, s32, len_diff, u64, flags)
-> +{
-> +	struct net_device *dev = xdp->rxq->dev;
-> +	int len = xdp->data_end - xdp->data;
-> +	int ret = BPF_MTU_CHK_RET_SUCCESS;
-> +	int mtu;
-> +
-> +	/* XDP variant doesn't support multi-buffer segment check (yet) */
-> +	if (flags)
-> +		return -EINVAL;
-> +
-> +	dev = __dev_via_ifindex(dev, ifindex);
-> +	if (!dev)
-> +		return -ENODEV;
-> +
-> +	mtu = READ_ONCE(dev->mtu);
-> +
-> +	/* XDP len is L2, remove L2-header as dev MTU is L3 size */
-> +	len -= ETH_HLEN;
-> +
-> +	len += len_diff; /* len_diff can be negative, minus result pass check */
-> +	if (len > mtu)
-> +		ret = BPF_MTU_CHK_RET_FRAG_NEEDED;
-> +
-> +	/* BPF verifier guarantees valid pointer */
-> +	*mtu_len = mtu;
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct bpf_func_proto bpf_skb_check_mtu_proto = {
-> +	.func		= bpf_skb_check_mtu,
-> +	.gpl_only	= true,
-> +	.ret_type	= RET_INTEGER,
-> +	.arg1_type      = ARG_PTR_TO_CTX,
-> +	.arg2_type      = ARG_ANYTHING,
-> +	.arg3_type      = ARG_PTR_TO_INT,
-> +	.arg4_type      = ARG_ANYTHING,
-> +	.arg5_type      = ARG_ANYTHING,
-> +};
-> +
-> +static const struct bpf_func_proto bpf_xdp_check_mtu_proto = {
-> +	.func		= bpf_xdp_check_mtu,
-> +	.gpl_only	= true,
-> +	.ret_type	= RET_INTEGER,
-> +	.arg1_type      = ARG_PTR_TO_CTX,
-> +	.arg2_type      = ARG_ANYTHING,
-> +	.arg3_type      = ARG_PTR_TO_INT,
-> +	.arg4_type      = ARG_ANYTHING,
-> +	.arg5_type      = ARG_ANYTHING,
-> +};
-[...]
+>   }
+>   
+>   static inline int __bpf_rx_skb_no_mac(struct net_device *dev,
+>   				      struct sk_buff *skb)
+>   {
+> -	int ret = ____dev_forward_skb(dev, skb);
+> +	int ret = ____dev_forward_skb(dev, skb, false);
+>   
+>   	if (likely(!ret)) {
+>   		skb->dev = dev;
+> @@ -2480,7 +2488,7 @@ int skb_do_redirect(struct sk_buff *skb)
+>   			goto out_drop;
+>   		dev = ops->ndo_get_peer_dev(dev);
+>   		if (unlikely(!dev ||
+> -			     !is_skb_forwardable(dev, skb) ||
+> +			     !__is_skb_forwardable(dev, skb, false) ||
+
+If we only use __is_skb_forwardable() with false directly here, maybe then
+lets just have the !(dev->flags & IFF_UP) test here instead..
+
+>   			     net_eq(net, dev_net(dev))))
+>   			goto out_drop;
+>   		skb->dev = dev;
+> 
+> 
+
