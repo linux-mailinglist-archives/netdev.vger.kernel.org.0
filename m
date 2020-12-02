@@ -2,85 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EDC92CB791
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 09:46:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2655F2CB7D6
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 09:56:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387911AbgLBIpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 03:45:05 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:7416 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726669AbgLBIpF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 03:45:05 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fc753e90000>; Wed, 02 Dec 2020 00:44:25 -0800
-Received: from [10.26.73.44] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 2 Dec
- 2020 08:44:11 +0000
-Subject: Re: [PATCH iproute2-net 0/3] devlink: Add devlink reload action limit
- and stats
-To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        Moshe Shemesh <moshe@mellanox.com>
-CC:     Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
-        Netdev <netdev@vger.kernel.org>
-References: <1606389296-3906-1-git-send-email-moshe@mellanox.com>
- <CAACQVJr_cYUUO=Nys=MeOLUno4sXy0a1PTwUk59hzjJZQz3j+w@mail.gmail.com>
-From:   Moshe Shemesh <moshe@nvidia.com>
-Message-ID: <8ef56162-d720-b7e0-081b-df7bf970c88a@nvidia.com>
-Date:   Wed, 2 Dec 2020 10:44:07 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.3
+        id S1729222AbgLBIzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 03:55:20 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:52115 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728806AbgLBIzT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 03:55:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606899233;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9w4m/sge0TuQGCR2gfcG6iYSJrjNihD2+bXvVGYUQ5s=;
+        b=PCXefezrKzJIxhLLCBbxj1Vt3Xpeo7jf/wFIJM9NP+w62SSeB2Qq/8KLINk4Jeiwv51IjR
+        VVRfdLmwxq0PLVYHbA8Zyi57C5kFdgssSkG6D+OwdGDpj0XBnHF/zjEkITJ/zjtbuB08oa
+        2GLPhKW4V3w5Uq2cye9Z342wY2FuQdA=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-122-XriJ3w4bMPuwXG4u26wctg-1; Wed, 02 Dec 2020 03:53:51 -0500
+X-MC-Unique: XriJ3w4bMPuwXG4u26wctg-1
+Received: by mail-wm1-f72.google.com with SMTP id v5so2100020wmj.0
+        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 00:53:51 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=9w4m/sge0TuQGCR2gfcG6iYSJrjNihD2+bXvVGYUQ5s=;
+        b=AC2c9Afp+qA85lzVuNeKgf5v8rdMcJ6AQDgyjVUcErDdIf66uc8mmrqfmcpGEkmzCf
+         YYjdC2YoxT8qY4DJulu7eP7AJPiKjbcctSK7knxphXxMCBxMnnpNodkn+iHaDLFod13U
+         JhvBEsB89iV2exvmxpqeLA6XfSp3GPP+P0P16f/wXPjKfK+hUzp2miM5HZ/OSjwh7Iwq
+         Y180BWOvFPRxZFZJ2huz0sgVk0st6/ryxTge/u14q5JiLTo5elXdBwaOClKG94Qot7Iy
+         vvAXrGkHcN/bzj4X01TMyV7DdcMAmsB97Expa07Xf1yFfOljA8uQr0yBJmc03ta7RigO
+         a0gQ==
+X-Gm-Message-State: AOAM53216rFJh3GQXBqrWgZGdYyXNhB6EMIknEy+AiGmEtiC//yjcbwH
+        oDq+TbZdhefZFUcmuQEC/WAQxQBDeP9IE/cH+lXeBTQElhnh4DMQG8iDWDE6nIsnx1LtJlN0iWL
+        9hgg/CU0yBGFqKnTP
+X-Received: by 2002:adf:e787:: with SMTP id n7mr2051718wrm.153.1606899229153;
+        Wed, 02 Dec 2020 00:53:49 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw2048Xx8/ayUKGwyTTcOiylk11X8e3WTcE5a5N28YO0bg7w+guMxBK8554ryoCCjBYE11PtA==
+X-Received: by 2002:adf:e787:: with SMTP id n7mr2051697wrm.153.1606899228929;
+        Wed, 02 Dec 2020 00:53:48 -0800 (PST)
+Received: from steredhat (host-79-17-248-175.retail.telecomitalia.it. [79.17.248.175])
+        by smtp.gmail.com with ESMTPSA id j13sm1202268wrp.70.2020.12.02.00.53.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Dec 2020 00:53:48 -0800 (PST)
+Date:   Wed, 2 Dec 2020 09:53:45 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Paraschiv, Andra-Irina" <andraprs@amazon.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        David Duncan <davdunc@amazon.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Alexander Graf <graf@amazon.de>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>
+Subject: Re: [PATCH net-next v1 2/3] virtio_transport_common: Set sibling VMs
+ flag on the receive path
+Message-ID: <20201202085345.jfzxuxbeoics6f2a@steredhat>
+References: <20201201152505.19445-1-andraprs@amazon.com>
+ <20201201152505.19445-3-andraprs@amazon.com>
+ <20201201162213.adcshbtspleosyod@steredhat>
+ <447c0557-68f7-54ae-88ac-ebe50c6f2f9b@amazon.com>
 MIME-Version: 1.0
-In-Reply-To: <CAACQVJr_cYUUO=Nys=MeOLUno4sXy0a1PTwUk59hzjJZQz3j+w@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1606898665; bh=R0hkf3cbWepz7KDOtSLMkAlRjHJQqU3s1ERti9VgDyk=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding:
-         Content-Language:X-Originating-IP:X-ClientProxiedBy;
-        b=ekAxzEhzfMdxSKhvRxaRbY3zmj8Gl/cl4CKn73j8aSjZ5pvXOUfhNbZfLt05FdzOR
-         1PPeRx+2qJP+p1kr+V5K8m4BqOersEymGd8J3b1FZLDEwC9DFVmFX0sIVo1XrYN9rw
-         fe+JXwI0GwTU2eqvf9dfs6p0+wvptGfOO7RKyXT7AtIdJAiu28wkxowQ1FxB9osA+i
-         XgZHOHZwLyCLy0T3DZZ1+FXu3tfZ4VE3EN4LjkhqvPcV+PbXSWXQ4fXO7TNPvNzehg
-         /mCimDlsBKEeQ58SDrJs2A4n0G7D7BDJOdhdGKcYRD/jgpGSFYDhj9Oh99zqbEs8Tk
-         HupxgqzoXFNnw==
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <447c0557-68f7-54ae-88ac-ebe50c6f2f9b@amazon.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Dec 01, 2020 at 09:01:05PM +0200, Paraschiv, Andra-Irina wrote:
+>
+>
+>On 01/12/2020 18:22, Stefano Garzarella wrote:
+>>
+>>On Tue, Dec 01, 2020 at 05:25:04PM +0200, Andra Paraschiv wrote:
+>>>The vsock flag can be set during the connect() setup logic, when
+>>>initializing the vsock address data structure variable. Then the vsock
+>>>transport is assigned, also considering this flag.
+>>>
+>>>The vsock transport is also assigned on the (listen) receive path. The
+>>>flag needs to be set considering the use case.
+>>>
+>>>Set the vsock flag of the remote address to the one targeted for sibling
+>>>VMs communication if the following conditions are met:
+>>>
+>>>* The source CID of the packet is higher than VMADDR_CID_HOST.
+>>>* The destination CID of the packet is higher than VMADDR_CID_HOST.
+>>>
+>>>Signed-off-by: Andra Paraschiv <andraprs@amazon.com>
+>>>---
+>>>net/vmw_vsock/virtio_transport_common.c | 8 ++++++++
+>>>1 file changed, 8 insertions(+)
+>>>
+>>>diff --git a/net/vmw_vsock/virtio_transport_common.c 
+>>>b/net/vmw_vsock/virtio_transport_common.c
+>>>index 5956939eebb78..871c84e0916b1 100644
+>>>--- a/net/vmw_vsock/virtio_transport_common.c
+>>>+++ b/net/vmw_vsock/virtio_transport_common.c
+>>>@@ -1062,6 +1062,14 @@ virtio_transport_recv_listen(struct sock 
+>>>*sk, struct virtio_vsock_pkt *pkt,
+>>>      vsock_addr_init(&vchild->remote_addr, 
+>>>le64_to_cpu(pkt->hdr.src_cid),
+>>>                      le32_to_cpu(pkt->hdr.src_port));
+>>>
+>>
+>>Maybe is better to create an helper function that other transports can
+>>use for the same purpose or we can put this code in the
+>>vsock_assign_transport() and set this flag only when the 'psk' argument
+>>is not NULL (this is the case when it's called by the transports when we
+>>receive a new connection request and 'psk' is the listener socket).
+>>
+>>The second way should allow us to support all the transports without
+>>touching them.
+>
+>Ack, I was wondering about the other transports such as vmci or hyperv.
+>
+>I can move the logic below in the codebase that assigns the transport, 
+>after checking 'psk'.
+>
+>>
+>>>+      /* If the packet is coming with the source and destination 
+>>>CIDs higher
+>>>+       * than VMADDR_CID_HOST, then a vsock channel should be 
+>>>established for
+>>>+       * sibling VMs communication.
+>>>+       */
+>>>+      if (vchild->local_addr.svm_cid > VMADDR_CID_HOST &&
+>>>+          vchild->remote_addr.svm_cid > VMADDR_CID_HOST)
+>>>+              vchild->remote_addr.svm_flag = 
+>>>VMADDR_FLAG_SIBLING_VMS_COMMUNICATION;
+>>
+>>svm_flag is always initialized to 0 in vsock_addr_init(), so this
+>>assignment is the first one and it's okay, but to avoid future issues
+>>I'd use |= here to set the flag.
+>
+>Fair point. I was thinking more towards exclusive flags values 
+>(purposes), but that's fine with the bitwise operator if we would get 
+>a set of flag values together. I will also update the field name to 
+>'svm_flags', let me know if we should keep the previous one or there 
+>is a better option.
 
-On 12/1/2020 1:25 PM, Vasundhara Volam wrote:
-> On Thu, Nov 26, 2020 at 4:46 PM Moshe Shemesh <moshe@mellanox.com> wrote:
->> Introduce new options on devlink reload API to enable the user to select
->> the reload action required and constrains limits on these actions that he
->> may want to ensure.
->>
->> Add reload stats to show the history per reload action per limit.
->>
->> Patch 1 adds the new API reload action and reload limit options to
->>          devlink reload command.
->> Patch 2 adds pr_out_dev() helper function and modify monitor function to
->>          use it.
->> Patch 3 adds reload stats and remote reload stats to devlink dev show.
->>
->>
->> Moshe Shemesh (3):
->>    devlink: Add devlink reload action and limit options
->>    devlink: Add pr_out_dev() helper function
->>    devlink: Add reload stats to dev show
->>
->>   devlink/devlink.c            | 260 +++++++++++++++++++++++++++++++++--
->>   include/uapi/linux/devlink.h |   2 +
->>   2 files changed, 249 insertions(+), 13 deletions(-)
-> I see man pages are not updated accordingly in this series. Will it be
-> updated in the follow-up patch?
-Right, I will update man page. Thanks.
->> --
->> 2.18.2
->>
+Yeah, maybe in the future we will add some new flags and we'll only need 
+to add them without touching this code.
+
+Agree with the new 'svm_flags' field name.
+
+Thanks,
+Stefano
+
