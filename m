@@ -2,38 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 128592CC750
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 21:01:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3E712CC75F
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 21:04:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731178AbgLBUAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 15:00:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57708 "EHLO mail.kernel.org"
+        id S1731193AbgLBUCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 15:02:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58300 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726082AbgLBUAS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Dec 2020 15:00:18 -0500
-Date:   Wed, 2 Dec 2020 11:59:35 -0800
+        id S1729165AbgLBUCL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Dec 2020 15:02:11 -0500
+Date:   Wed, 2 Dec 2020 12:01:27 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1606939177;
-        bh=hKKHmmiGqm9ELuo9236p13tJm7Or7hfnIr2YHNhBD0A=;
+        s=k20201202; t=1606939290;
+        bh=CR+EL2ZIg5zPuyiVUwgwAYmi7H5wK9yp7oqtDbYE/Ec=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pWPqLZvh+bIGIDSyauDMpL0mEviesjG+si6GOzyYJ5OYLr/kexYUSWyTYmMHUflQN
-         C7vqy/43p9OC450AQNNkj6DrJTd5vnFq25xBlfeSWAUzHjZVkwewT3mN7epQQqCX7N
-         nqPaWVFJXmVxhE90w9hnhgTLYiv4GHHVXrsHmxV6VuZDWPRCb3GcmAcfb3SYCbHMFj
-         Q0DSHWQKjmVbYKEK2P1hhk+mb8kd1lyrw1/i0aKUo14v5O8YPGpnixs0d0I6iRRbXI
-         Ar233axVm+9epxtaPDTUwGMGRdwAYgGTQ/8zGXz4g0qx0j2oi3t1mSSVu5Gx0DNAEw
-         e/oHUfZlhlibw==
+        b=VEmjDoMlah11tBUxdG2tdsnTW/vE4/1L6aQhlJWUs5p8rplWcR6Th09MESX/fRokT
+         inv2VRfXp6qeubM9mvoY2CZ8K3nXr9dBTnhtEamR5EqirUqrJ0brUgYN62gpbXiRQn
+         BAdn7V3cH6seTQOaVbDWUomINbZ1gnh/fqNc0YEbJlfiWsCQZP/q+qaYssu2PbuyrF
+         wL5z2Rvk4bci1BIGKUDpJBUVSsHFDoQ3gbHPz57NQD66Udy25v4MpjnbOxeC9ig+wV
+         wTUYjbQ5bqgfHznWsAip+kqtnwU8cSi6P0p+Q4LR91elwLHFBlHEdUSqhvix1cVPoO
+         laVSQxvmAdKbQ==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Schrempf Frieder <frieder.schrempf@kontron.de>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Charles Gorand <charles.gorand@effinnov.com>,
+To:     Sunil Kovvuri <sunil.kovvuri@gmail.com>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Jerin Jacob <jerinj@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-nfc@lists.01.org, netdev@vger.kernel.org,
-        Stephan Gerhold <stephan@gerhold.net>
-Subject: Re: [PATCH v3] NFC: nxp-nci: Make firmware GPIO pin optional
-Message-ID: <20201202115935.335788bc@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201201113921.6572-1-frieder.schrempf@kontron.de>
-References: <20201201113921.6572-1-frieder.schrempf@kontron.de>
+        Linux Netdev List <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net-next] octeontx2-af: debugfs: delete dead code
+Message-ID: <20201202120127.7cc7453f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <CA+sq2Ceo3z1KAuOfZYsmRMHw4dHcnrRLtkRmALNHvj3=tRJKtA@mail.gmail.com>
+References: <X8c6vpapJDYI2eWI@mwanda>
+        <CA+sq2Ceo3z1KAuOfZYsmRMHw4dHcnrRLtkRmALNHvj3=tRJKtA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -41,15 +45,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  1 Dec 2020 12:39:09 +0100 Schrempf Frieder wrote:
-> From: Frieder Schrempf <frieder.schrempf@kontron.de>
+On Wed, 2 Dec 2020 12:33:00 +0530 Sunil Kovvuri wrote:
+> On Wed, Dec 2, 2020 at 12:28 PM Dan Carpenter <dan.carpenter@oracle.com> wrote:
+> > These debugfs never return NULL so all this code will never be run.
+> >
+> > In the normal case, (and in this case particularly), the debugfs
+> > functions are not supposed to be checked for errors so all this error
+> > checking code can be safely deleted.
+> >
+> > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 > 
-> There are other NXP NCI compatible NFC controllers such as the PN7150
-> that use an integrated firmware and therefore do not have a GPIO to
-> select firmware downloading mode. To support this kind of controller,
-> let's make the firmware GPIO optional.
-> 
-> Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Thanks for the changes.
 
 Applied, thanks!
