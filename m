@@ -2,77 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 853412CB25B
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 02:31:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B0692CB260
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 02:35:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727833AbgLBBbf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 20:31:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35784 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727589AbgLBBbf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 20:31:35 -0500
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B6EC0613D4;
-        Tue,  1 Dec 2020 17:30:49 -0800 (PST)
-Received: by mail-yb1-xb42.google.com with SMTP id k65so142291ybk.5;
-        Tue, 01 Dec 2020 17:30:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xP44qHOp+ESajrSkrMGCR4T0dJKkIsBbHGrUioyMaSQ=;
-        b=BS0bAzbYz8iKqMxNaXP5WqKCPxmBj2lD2octArGCOhEXSSnWpuXvGmbBRYdmLS5IA0
-         VOuLW2qOSMFn5ixAkAEffS7s5ksMHeHVsM8NxdtQ5GpzIealRn1TW5SeshEeMmm87E1y
-         bkpAtH7K/AGpRsyY40szXj4EqbAxUh9cVn2ePwAEVj8mkvUPbzuVwAt0n66TN85Pyjob
-         ReVPYjOu2Ur9kMqn0tg4ElzxZ074VaVAPimZ/IS4pmxXX/Ke/e0DNtlAlB3sXoG6i0GS
-         PsgdpLzxQh8LB1xCutoQ6eMOGj2lQNOK59WtdMKVsQM5C2fmNoXK5AIWBShO1w0VlzzD
-         oM2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xP44qHOp+ESajrSkrMGCR4T0dJKkIsBbHGrUioyMaSQ=;
-        b=uGpHwJwIIrCTTuPp7IxhHEatWG4guH4TUrLTZtVdIlwATE2E7/rh+LeJpzkTCfwrjU
-         gOtTajoWk7zy42RqdhE44YSNH9Fjib3IQQtpJOLbUgnmc30HiCaS2k7enoVZ0WAW1Yts
-         vlBpvdo8TIdwSpg2HWbY0CDB1T0ORq98avLFvdYfrvAJypjlLyjGDCMFajok3KZ2EP0+
-         xB9NqzkX7CxjfBwalhwBKEHMBFFYNDq/eUlNx9sSkl86VRJgrLc1sAFcB99eUgYUhTId
-         iSPffiz1iNSp2vVxsx4P/toD5dCdtKFY5H/xZMtMYSNCxRW5ojKEVfnX/t3+zzFRuHt7
-         ZATw==
-X-Gm-Message-State: AOAM5305dGoU/WaY4afkXsluLvyBij8eZbnT7nDtMwiuyxWfhBIiOurn
-        KHPZcthahs4Uds4ZUOB3RqRUk1F6oYkgpb13qRY=
-X-Google-Smtp-Source: ABdhPJwz/6CG0fxQ4O0c2X2tG5W62oSGPMCM5RKcHTcb2Y3mdwMlFmuEz2z7eD6wvtFOMm8AhuHzSUQNZmi2EM7tCKQ=
-X-Received: by 2002:a25:df8e:: with SMTP id w136mr260284ybg.230.1606872648365;
- Tue, 01 Dec 2020 17:30:48 -0800 (PST)
+        id S1727660AbgLBBfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 20:35:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44036 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726812AbgLBBfX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Dec 2020 20:35:23 -0500
+Date:   Tue, 1 Dec 2020 17:34:41 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606872882;
+        bh=npzelDe+uJksIT4FYnid/IQ2tvp/OjzhLx6X7WJwIhw=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lIJzV/M8U8V0txwg4WlTL8nlgNOpk4724lVSiHp20ekondzVpVUqUzdJZSXBnGG01
+         vGw/7IUPKl8jNZuWXJvmNppOnpMgqaTsVQI4CN7F//eORtAO19gFMeaDlmjNFJWEWd
+         FBUPx5yWBBsfqZ/gUEjZItKQafjeV3r1Oy0ohypc=
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        <jacob.e.keller@intel.com>, Jiri Pirko <jiri@nvidia.com>
+Subject: Re: [PATCH net-next v2] devlink: Add devlink port documentation
+Message-ID: <20201201173441.229a94c7@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201130200025.573239-1-parav@nvidia.com>
+References: <20201130164119.571362-1-parav@nvidia.com>
+        <20201130200025.573239-1-parav@nvidia.com>
 MIME-Version: 1.0
-References: <CAADnVQJK=s5aovsKoQT=qF1novjM4VMyZCGG_6BEenQQWPbTQw@mail.gmail.com>
- <20201201202215.3376498-1-prankgup@fb.com>
-In-Reply-To: <20201201202215.3376498-1-prankgup@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 1 Dec 2020 17:30:37 -0800
-Message-ID: <CAEf4Bzb4CQTbxXQXnukVfV5T5dWDutvyL6n7Krfw+T0Gc_aGSA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/2] Add support to set window_clamp from bpf setsockops
-To:     Prankur gupta <prankgup@fb.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 1, 2020 at 12:24 PM Prankur gupta <prankgup@fb.com> wrote:
->
-> From: Prankur Gupta <prankgup@fb.com>
->
-> No reason in particular.
-> Updated the code (patch v2) to have logic as tcp setsockopt for tCP_WINDOW_CLAMP.
->
-> PS: First time trying git send-em,ail, pleas elet me know if this is not the right way to reply.
+On Mon, 30 Nov 2020 22:00:25 +0200 Parav Pandit wrote:
+> Added documentation for devlink port and port function related commands.
+> 
+> Signed-off-by: Parav Pandit <parav@nvidia.com>
+> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 
-I use send-email for sending patches only, I reply from Gmail or
-Thunderbird (from work account). The latter has a plain text mode,
-while Outlook doesn't.
+> +============
+> +Devlink Port
+> +============
+> +
+> +``devlink-port`` provides capability for a driver to expose various
+> +flavours of ports which exist on device. A devlink port can be of an
+> +embedded switch (eswitch) present on the device.
 
-But also, you need to add v2 to each patch, not just cover letter. You
-can do that when using `git format-patch --subject-prefix='PATCH v2
-bpf-next' ...`.
+The wording is a little awkward here.
+
+The first paragraph should clarify what object represents.
+
+This just says it exposes ports that exist.
+
+A better phrasing would be to say that these are ports of an eswitch,
+in trivial case the only ports will be the physical ports of the card.
+
+> +A devlink port can be of 3 diffferent types.
+
+"can be of" repeated from the previous line
+
+> +.. list-table:: List of devlink port types
+> +   :widths: 23 90
+> +
+> +   * - Type
+> +     - Description
+> +   * - ``DEVLINK_PORT_TYPE_ETH``
+> +     - This type is set for a devlink port when a physical link layer of the port
+
+Is "physical link layer" a thing? I the common names are physical layer
+and a (data) link layer. I don't think I've seen physical link layer,
+or would know what it is...
+
+> +       is Ethernet.
+> +   * - ``DEVLINK_PORT_TYPE_IB``
+> +     - This type is set for a devlink port when a physical link layer of the port
+> +       is InfiniBand.
+> +   * - ``DEVLINK_PORT_TYPE_AUTO``
+> +     - This type is indicated by the user when user prefers to set the port type
+> +       to be automatically detected by the device driver.
+
+IMO type should be after flavor. Flavor is a higher level attribute,
+only physical ports have a type.
+
+> +Devlink port can be of few different flavours described below.
+> +
+> +.. list-table:: List of devlink port flavours
+> +   :widths: 33 90
+> +
+> +   * - Flavour
+> +     - Description
+> +   * - ``DEVLINK_PORT_FLAVOUR_PHYSICAL``
+> +     - Any kind of port which is physically facing the user. This can be
+
+Hm. Not a great phrasing :(
+
+It faces a physical networking layer. To me PCIe faces the user.
+
+> +       a eswitch physical port or any other physical port on the device.
+> +   * - ``DEVLINK_PORT_FLAVOUR_CPU``
+> +     - This indicates a CPU port.
+
+You need to mention this is a DSA-only thing.
+
+> +   * - ``DEVLINK_PORT_FLAVOUR_DSA``
+> +     - This indicates a interconnect port in a distributed switch architecture.
+
+(DSA)
+
+> +   * - ``DEVLINK_PORT_FLAVOUR_PCI_PF``
+> +     - This indicates an eswitch port representing PCI physical function(PF).
+> +   * - ``DEVLINK_PORT_FLAVOUR_PCI_VF``
+> +     - This indicates an eswitch port representing PCI virtual function(VF).
+> +   * - ``DEVLINK_PORT_FLAVOUR_VIRTUAL``
+> +     - This indicates a virtual port facing the user.
+
+No idea what that means from the description. 
+
+> +A devlink port may be for a controller consisting one or more PCI device(s).
+
+Port can have multiple PCI devices?
+
+> +A devlink instance holds ports of two types of controllers.
+> +
+> +(1) controller discovered on same system where eswitch resides
+> +This is the case where PCI PF/VF of a controller and devlink eswitch
+> +instance both are located on a single system.
+> +
+> +(2) controller located on external host system.
+> +This is the case where a controller is located in one system and its
+> +devlink eswitch ports are located in a different system.
+> +
+> +An example view of two controller systems::
+> +
+> +                 ---------------------------------------------------------
+> +                 |                                                       |
+> +                 |           --------- ---------         ------- ------- |
+> +    -----------  |           | vf(s) | | sf(s) |         |vf(s)| |sf(s)| |
+> +    | server  |  | -------   ----/---- ---/----- ------- ---/--- ---/--- |
+> +    | pci rc  |=== | pf0 |______/________/       | pf1 |___/_______/     |
+> +    | connect |  | -------                       -------                 |
+> +    -----------  |     | controller_num=1 (no eswitch)                   |
+> +                 ------|--------------------------------------------------
+> +                 (internal wire)
+> +                       |
+> +                 ---------------------------------------------------------
+> +                 | devlink eswitch ports and reps                        |
+> +                 | ----------------------------------------------------- |
+> +                 | |ctrl-0 | ctrl-0 | ctrl-0 | ctrl-0 | ctrl-0 |ctrl-0 | |
+> +                 | |pf0    | pf0vfN | pf0sfN | pf1    | pf1vfN |pf1sfN | |
+> +                 | ----------------------------------------------------- |
+> +                 | |ctrl-1 | ctrl-1 | ctrl-1 | ctrl-1 | ctrl-1 |ctrl-1 | |
+> +                 | |pf0    | pf0vfN | pf0sfN | pf1    | pf1vfN |pf1sfN | |
+> +                 | ----------------------------------------------------- |
+> +                 |                                                       |
+> +                 |                                                       |
+> +                 |           --------- ---------         ------- ------- |
+> +                 |           | vf(s) | | sf(s) |         |vf(s)| |sf(s)| |
+> +                 | -------   ----/---- ---/----- ------- ---/--- ---/--- |
+> +                 | | pf0 |______/________/       | pf1 |___/_______/     |
+> +                 | -------                       -------                 |
+> +                 |                                                       |
+> +                 |  local controller_num=0 (eswitch)                     |
+> +                 ---------------------------------------------------------
+> +
+> +Port function configuration
+> +===========================
+> +
+> +When a port flavor is ``DEVLINK_PORT_FLAVOUR_PCI_PF`` or
+> +``DEVLINK_PORT_FLAVOUR_PCI_VF``, it represents the port of a PCI function.
+> +A user can configure the port function attributes before enumerating the
+> +function. For example user may set the hardware address of the function
+> +represented by the devlink port.
+> diff --git a/Documentation/networking/devlink/index.rst b/Documentation/networking/devlink/index.rst
+> index d82874760ae2..aab79667f97b 100644
+> --- a/Documentation/networking/devlink/index.rst
+> +++ b/Documentation/networking/devlink/index.rst
+> @@ -18,6 +18,7 @@ general.
+>     devlink-info
+>     devlink-flash
+>     devlink-params
+> +   devlink-port
+>     devlink-region
+>     devlink-resource
+>     devlink-reload
+
