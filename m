@@ -2,98 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F59E2CBD58
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 13:51:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7E742CBD9D
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 14:01:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387547AbgLBMvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 07:51:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55666 "EHLO
+        id S1729943AbgLBNAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 08:00:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727832AbgLBMvW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 07:51:22 -0500
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8A33C0613CF;
-        Wed,  2 Dec 2020 04:50:41 -0800 (PST)
-Received: by mail-yb1-xb42.google.com with SMTP id o71so1506403ybc.2;
-        Wed, 02 Dec 2020 04:50:41 -0800 (PST)
+        with ESMTP id S1727713AbgLBNAl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 08:00:41 -0500
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2064DC0613CF;
+        Wed,  2 Dec 2020 05:00:01 -0800 (PST)
+Received: by mail-ej1-x641.google.com with SMTP id jx16so4070136ejb.10;
+        Wed, 02 Dec 2020 05:00:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wZOsnLsRD15EE78n8bQEf+aUkvjzCWrGeOD2j6m7n7M=;
-        b=Pz5K1LSqrNHi9j26JaHRbiUG9fIgZ88xbsQOpQuqNaY6to0gMZKA3gZJQkUb0wH5DZ
-         m49l97B/Sqo285TY12ocrdpvuF1+g3C5wyRcsbz5oUmKsqn2e3S3KkpISid+6Jy9TPZJ
-         Yhi5380lJNF1O7HhBn1xvlehBO23pu1N+bhGYtju8XUuq3mjQtYO7rQGT3bt/wyhJYu2
-         nmqwt7PmuQulhc96znbjOdtX+q3UrUnUYeqP4ZRdx3XdbsSwYDKeQGZVsWKY8+j3ePUW
-         6FnR5bBGkAJxjBXXLZqpT5MNdDiJQM0xvHspl+LDp7RWfzuVkEt8IC16/vlbOKXzJ2tq
-         tkiA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=QZTchEjCOZdcPKcqinGlzZCfx24eOr/wps07PHz4GN0=;
+        b=i6PXxQBvF8Np1s+1Iwtf73kM+xpl/Y8Udcr5fEbzm2HIpGifB9BIncJv2bR3fs4eVX
+         ITzDl35MibEjCEwLEzejmNF+ddS9BJ/Ym0QpmE0N0DOGJ1xDEh7OkvArGnWqBs0hOSlW
+         jzbd6fLOKAWZK0AYBHQdr23IFtl5Ysdg76bBCuYalMvElWzd8TiR6ube2UIoSrmNCpxl
+         LQw5FhxWLLtIOKVSiciFKmyyKolRc71nsB62aq6FM6oDm/ORmnHQC2lx6h5mCjkYWIWA
+         5zgZ/1PzosbxBwSKv7f4LQYNkVe2SmTUi3LMfj7xE+CYnpZIIcuc69IH3zV8kMGf4PZb
+         JHQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wZOsnLsRD15EE78n8bQEf+aUkvjzCWrGeOD2j6m7n7M=;
-        b=CmnNCMK67ydFsLA9BbYpFkJWXZoCHcqteHJmXxia+CbPGuDS2zvdFQEn/hX9wCxOCH
-         bumwxa6Hh/jHeRw00dtgKM390Sq3yu4JhdJobYNit8kdoLZmVY2ck7oRpf5iuLF33Hnz
-         ZXUt97vkWxGzwvEmmqugNOBAeSQ+cBkzE2/gTT01f4hTqclQoQZIHxXtGusYWMeo9qUO
-         dS14rc6cU8FfkO6ytou2QlmCeYTKsprHENm0MtulM4LjADqcEls2Mh398WnHr9PMg+ud
-         d4+1J+6MQz643X3mu37CbBPRgSat9jGGTQMAtd640FRs9ueWx7KGAWXg2gvZj+hL6ucp
-         FH5g==
-X-Gm-Message-State: AOAM5303PgBxLJNP0G4Mgv/DpeBv/GmpWmkwiHFcLWzzqrtFbuXcQmb9
-        fxWr94Lfl+vrDcQUZXxLgSvLNMY+OPbFEl/yMZM=
-X-Google-Smtp-Source: ABdhPJz8aVFXdWixZUHiWQB00VKrKgXW70L2NcuTpGtmUg1BcqQkFiV8/vapf4IM/PFZ+z2SfEViZMUjxnQAlGcdtd8=
-X-Received: by 2002:a25:df55:: with SMTP id w82mr3065596ybg.135.1606913441319;
- Wed, 02 Dec 2020 04:50:41 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=QZTchEjCOZdcPKcqinGlzZCfx24eOr/wps07PHz4GN0=;
+        b=QTUWFjCT1i9pSADOe3RmEkrF+/AARjPPu3SPK2XD6cV5KMEyIdeETQEYmV4PWHBOaH
+         9RByzFA0+A5611GueaprUegQiA7De4rcV9RiTlCNuysU2oGtRIo+86LiaDer5QUCvn2d
+         v2piztdJBbByYLu+t3HBeeDyevQYheAlL1I126H2HGpwnvKgsBjJoc5I5ny1EjnRfCHw
+         J2C/oDlWEL65Sm3p32zooOF0+purdZpuB3r9z4euR0gtx8lPb6Lxg6DyfMCeoJYhRScm
+         wEee7OON5yINLUWO+srJHuxU41bLC1drmR9JvEiSjFl6pXTMuirlleA3gS9YvwqhaGM/
+         o8wA==
+X-Gm-Message-State: AOAM533rOKp4Ly1rinDrehCgW7P759CYgPMsh0IEqAm/kfBGkAEeiiA5
+        PfQBOBKSK3Ms+A53Y5+0/NM=
+X-Google-Smtp-Source: ABdhPJx9DNaccyM2Zfm+YU4qzmWnlatBgrng5Y+FiZiVgfO3QjB5SoFMxh6bM3x0v65hV/+Fm/k7/A==
+X-Received: by 2002:a17:906:2932:: with SMTP id v18mr2159927ejd.144.1606913999841;
+        Wed, 02 Dec 2020 04:59:59 -0800 (PST)
+Received: from skbuf ([188.25.2.120])
+        by smtp.gmail.com with ESMTPSA id w3sm1156303edt.84.2020.12.02.04.59.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Dec 2020 04:59:59 -0800 (PST)
+Date:   Wed, 2 Dec 2020 14:59:58 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] net: dsa: add optional stats64 support
+Message-ID: <20201202125958.ntgidhgsk4pdw5y3@skbuf>
+References: <20201202120712.6212-1-o.rempel@pengutronix.de>
+ <20201202120712.6212-2-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-References: <20201128193335.219395-1-masahiroy@kernel.org>
-In-Reply-To: <20201128193335.219395-1-masahiroy@kernel.org>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Wed, 2 Dec 2020 13:50:30 +0100
-Message-ID: <CANiq72=WanQ0sqL14D3Keu0hT3L5GXBSV-znU5C9hhC1gjs=wA@mail.gmail.com>
-Subject: Re: [PATCH v3] Compiler Attributes: remove CONFIG_ENABLE_MUST_CHECK
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     "Jason A . Donenfeld" <Jason@zx2c4.com>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Shuah Khan <shuah@kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        wireguard@lists.zx2c4.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201202120712.6212-2-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 28, 2020 at 8:34 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> Revert commit cebc04ba9aeb ("add CONFIG_ENABLE_MUST_CHECK").
->
-> A lot of warn_unused_result warnings existed in 2006, but until now
-> they have been fixed thanks to people doing allmodconfig tests.
->
-> Our goal is to always enable __must_check where appropriate, so this
-> CONFIG option is no longer needed.
->
-> I see a lot of defconfig (arch/*/configs/*_defconfig) files having:
->
->     # CONFIG_ENABLE_MUST_CHECK is not set
->
-> I did not touch them for now since it would be a big churn. If arch
-> maintainers want to clean them up, please go ahead.
->
-> While I was here, I also moved __must_check to compiler_attributes.h
-> from compiler_types.h
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> Acked-by: Jason A. Donenfeld <Jason@zx2c4.com>
+On Wed, Dec 02, 2020 at 01:07:11PM +0100, Oleksij Rempel wrote:
+> Allow DSA drivers to export stats64
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
 
-Picked this new version with the Acks etc., plus I moved it within
-compiler_attributes.h to keep it sorted (it's sorted by the second
-column, rather than the first).
-
-Thanks a lot!
-
-Cheers,
-Miguel
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
