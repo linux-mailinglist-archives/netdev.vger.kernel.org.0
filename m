@@ -2,223 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64DD42CC984
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 23:22:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B3572CC986
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 23:22:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728577AbgLBWU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 17:20:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59552 "EHLO
+        id S1727479AbgLBWWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 17:22:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726462AbgLBWU0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 17:20:26 -0500
-Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6CDCC061A47;
-        Wed,  2 Dec 2020 14:19:39 -0800 (PST)
-Received: by mail-lf1-x144.google.com with SMTP id s30so7236669lfc.4;
-        Wed, 02 Dec 2020 14:19:38 -0800 (PST)
+        with ESMTP id S1726603AbgLBWWa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 17:22:30 -0500
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17A04C0613D6;
+        Wed,  2 Dec 2020 14:21:44 -0800 (PST)
+Received: by mail-ej1-x641.google.com with SMTP id m19so398689ejj.11;
+        Wed, 02 Dec 2020 14:21:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EIruGRd4mugAkAFXMPG5djeoGY4ogM1hgJDgqpib//o=;
-        b=svXD3R/pbQ6J9th26y4lpPOmwEM9/0s/xp218p7FiAHnwYWWXxaEqeCEZE3QPcOD/P
-         gv3p0+td2N3+kOapYmKu1ryt053ELTkOvg+mlxe5l4k03T5A1pIHhQhnqfgJYzOcnIvm
-         mk8eme3KuOw3OSk9yNjihGfjaDahcM2Vnm3jeJqiQlkVdI8NWi7bHr9SXOk/bcqvjw71
-         GkC6G9LoTKtAc/MOy0oDEPJOKjGdhwOD2VwxOjIi1U0FjOUFRSPo/YfOpR5ehfG+QVfZ
-         V5BWLP+Iof+5B8nxIZvpxOx4C43W8YqY44RIogxIUkWExGKqPwnkilcqOf6Y569+/zRt
-         oiWw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kxoMo42hDjIYyv/FUmu+6jyKT744GP0kdnUpdiixu/g=;
+        b=dUhOuEgBor5X2YaveP8kGwNHZafKvNPiltPqjK+qYLsVechlZ02TOWJF+8RviUyFVB
+         9IIN0Q6uRVtf2QosEFjP9Q5WO+XXjNnk7JHJn7Zd+KQYeUAVxXzCvHaoCbTnNf7AfVMZ
+         1GJ9M3CrECJUUG7LpqDv01jlJLzxAl91rCRyvO1zk6ZnqgTl7m97mThs1VNJRKR4oG8d
+         fJxJ7xTqxFeO87bxmJdK3ixbynstjpGWgYREgGc5e2Y2nusUvBztoZlMpR3tW65ecn4s
+         RxEtNWxx0do1qgaaoeVtGTl7LJlfvT5+t3vMzbGnBi5p0bw1+3PR+A3bbPtdif/MxMnV
+         TK+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EIruGRd4mugAkAFXMPG5djeoGY4ogM1hgJDgqpib//o=;
-        b=cNyodGNSYgTVCq7JUnSNUaUQs6U8xwSa7b/dwdPki1Qcb4VYf/lRWNXGpodLCcrV6c
-         DPTO76hJu9x8tZDedl26IPasVczHFyjzo08kDEufK4hNat8SCeJtA8UkWzNi1A9EUkbr
-         8i5+w5Fsn/0I8N5MvWAtUQE5pjKZ/Q0DOHp0ISURZysbihHhyC47GOzkSgzo3Wts4dfE
-         JoRQroU4p22zEYLQd3GQbtUhzAacHKWSU9gkGZkDd9yzKlwiK2IQv+cfudzQS7pOP+5Z
-         7A7eJIb6t2D9UW8IsT7uKC5TtX+UiNTkOuAC+rwfCZZLpV8pWQUh+ISFPO4y4yNeUsIu
-         xeRA==
-X-Gm-Message-State: AOAM530/qfw2OvCzutNUiIwIfcPgcl2hovpEyL15Z7LV1lfT73czZYiw
-        OY75ZBlMqjczulAt7yXhu0efbtL0sI+RDYUAz4pVpC/K
-X-Google-Smtp-Source: ABdhPJwiIZjEuef9Wjfsp+m4vlUrAjDPdAzP3NvFPlL1p9wwwRbQmbUZEUu6Lxa6iSLes34IFLhCOeElmzUI2n2Zg4U=
-X-Received: by 2002:ac2:5e91:: with SMTP id b17mr84979lfq.442.1606947541002;
- Wed, 02 Dec 2020 14:19:01 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kxoMo42hDjIYyv/FUmu+6jyKT744GP0kdnUpdiixu/g=;
+        b=iTsU3tixV/FLvXOD5tfNuj182/sGiNhwcVqRGjYrECU9qPkrC/YOGjHIjJvORE6q6G
+         /AQ123EvFNKOJxtPt8fFSVChIXAW0aAjDeU7F7Y6SGpUmLLEGKAhH+1K5FA4tJ81aqn1
+         hDRbBUYhepgZPUJ+iFLFF0OrnqhQJS85vXkfxTguyLmX4Y5KBxhvOyQpQK40COZrgF1U
+         n/f+MBslBFCigBQ9p8egyzfXe7d/jrMGgCiiGM5jH+TxWzA5/WrgHM3VUepk406yhlYc
+         9xm+iWku6bZ21lCcE836GIWhEvolLs8A/aRzq54A4/X8fN6Tor+jePz67oN7LZ72xQW0
+         JlNQ==
+X-Gm-Message-State: AOAM530B+5zSrufUZC1N6CbwG/4qzYKDuco3JQhd3QvCaNAp0txvhabV
+        ARx9G1/0KDpmOyCymFnyjJA=
+X-Google-Smtp-Source: ABdhPJzDq8gwam0d0E4QGuJRbfepG+OORXSmqRDTTd2sPN7drKTw2ks1K7iTbay61n/gakVi9Ey1bw==
+X-Received: by 2002:a17:906:2e85:: with SMTP id o5mr1833932eji.521.1606947702760;
+        Wed, 02 Dec 2020 14:21:42 -0800 (PST)
+Received: from skbuf ([188.25.2.120])
+        by smtp.gmail.com with ESMTPSA id s24sm2448ejb.20.2020.12.02.14.21.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Dec 2020 14:21:42 -0800 (PST)
+Date:   Thu, 3 Dec 2020 00:21:40 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Steen Hegelund <steen.hegelund@microchip.com>,
+        netdev@vger.kernel.org
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 0/4] Adding the Sparx5 Serdes driver
+Message-ID: <20201202222140.wzdiypc2edviy57n@skbuf>
+References: <20201202130438.3330228-1-steen.hegelund@microchip.com>
 MIME-Version: 1.0
-References: <5fc100ec.1c69fb81.58b7b.2dee@mx.google.com> <20201130184845.304f54d3@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201130184845.304f54d3@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-From:   Bongsu Jeon <bongsu.jeon2@gmail.com>
-Date:   Thu, 3 Dec 2020 07:18:49 +0900
-Message-ID: <CACwDmQCvB0WSQ86igZXT9FAihqGbM4THXWXj-jRAzr6EhSDf7g@mail.gmail.com>
-Subject: Re: [PATCH net-next v3] net/nfc/nci: Support NCI 2.x initial sequence
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-nfc@lists.01.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Bongsu Jeon <bongsu.jeon@samsung.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201202130438.3330228-1-steen.hegelund@microchip.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 1, 2020 at 11:48 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Fri, 27 Nov 2020 22:36:31 +0900 bongsu.jeon2@gmail.com wrote:
-> > From: Bongsu Jeon <bongsu.jeon@samsung.com>
-> >
-> > implement the NCI 2.x initial sequence to support NCI 2.x NFCC.
-> > Since NCI 2.0, CORE_RESET and CORE_INIT sequence have been changed.
-> > If NFCEE supports NCI 2.x, then NCI 2.x initial sequence will work.
-> >
-> > In NCI 1.0, Initial sequence and payloads are as below:
-> > (DH)                     (NFCC)
-> >  |  -- CORE_RESET_CMD --> |
-> >  |  <-- CORE_RESET_RSP -- |
-> >  |  -- CORE_INIT_CMD -->  |
-> >  |  <-- CORE_INIT_RSP --  |
-> >  CORE_RESET_RSP payloads are Status, NCI version, Configuration Status.
-> >  CORE_INIT_CMD payloads are empty.
-> >  CORE_INIT_RSP payloads are Status, NFCC Features,
-> >     Number of Supported RF Interfaces, Supported RF Interface,
-> >     Max Logical Connections, Max Routing table Size,
-> >     Max Control Packet Payload Size, Max Size for Large Parameters,
-> >     Manufacturer ID, Manufacturer Specific Information.
-> >
-> > In NCI 2.0, Initial Sequence and Parameters are as below:
-> > (DH)                     (NFCC)
-> >  |  -- CORE_RESET_CMD --> |
-> >  |  <-- CORE_RESET_RSP -- |
-> >  |  <-- CORE_RESET_NTF -- |
-> >  |  -- CORE_INIT_CMD -->  |
-> >  |  <-- CORE_INIT_RSP --  |
-> >  CORE_RESET_RSP payloads are Status.
-> >  CORE_RESET_NTF payloads are Reset Trigger,
-> >     Configuration Status, NCI Version, Manufacturer ID,
-> >     Manufacturer Specific Information Length,
-> >     Manufacturer Specific Information.
-> >  CORE_INIT_CMD payloads are Feature1, Feature2.
-> >  CORE_INIT_RSP payloads are Status, NFCC Features,
-> >     Max Logical Connections, Max Routing Table Size,
-> >     Max Control Packet Payload Size,
-> >     Max Data Packet Payload Size of the Static HCI Connection,
-> >     Number of Credits of the Static HCI Connection,
-> >     Max NFC-V RF Frame Size, Number of Supported RF Interfaces,
-> >     Supported RF Interfaces.
-> >
-> > Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
->
-> >  static void nci_init_req(struct nci_dev *ndev, unsigned long opt)
-> >  {
-> > -     nci_send_cmd(ndev, NCI_OP_CORE_INIT_CMD, 0, NULL);
-> > +     struct nci_core_init_v2_cmd *cmd = (struct nci_core_init_v2_cmd *)opt;
-> > +
-> > +     if (!cmd)
-> > +             nci_send_cmd(ndev, NCI_OP_CORE_INIT_CMD, 0, NULL);
-> > +     else
-> > +             /* if nci version is 2.0, then use the feature parameters */
-> > +             nci_send_cmd(ndev, NCI_OP_CORE_INIT_CMD,
-> > +                          sizeof(struct nci_core_init_v2_cmd), cmd);
->
-> This would be better written as:
->
->         u8 plen = 0;
->
->         if (opt)
->                 plen = sizeof(struct nci_core_init_v2_cmd);
->
->         nci_send_cmd(ndev, NCI_OP_CORE_INIT_CMD, plen, (void *)opt);
->
-> > +
->
-> unnecessary empty line
->
-> >  }
-> >
-> >  static void nci_init_complete_req(struct nci_dev *ndev, unsigned long opt)
-> > @@ -497,8 +505,18 @@ static int nci_open_device(struct nci_dev *ndev)
-> >       }
-> >
-> >       if (!rc) {
-> > -             rc = __nci_request(ndev, nci_init_req, 0,
-> > -                                msecs_to_jiffies(NCI_INIT_TIMEOUT));
-> > +             if (!(ndev->nci_ver & NCI_VER_2_MASK)) {
-> > +                     rc = __nci_request(ndev, nci_init_req, 0,
-> > +                                        msecs_to_jiffies(NCI_INIT_TIMEOUT));
-> > +             } else {
-> > +                     struct nci_core_init_v2_cmd nci_init_v2_cmd;
-> > +
-> > +                     nci_init_v2_cmd.feature1 = NCI_FEATURE_DISABLE;
-> > +                     nci_init_v2_cmd.feature2 = NCI_FEATURE_DISABLE;
-> > +
-> > +                     rc = __nci_request(ndev, nci_init_req, (unsigned long)&nci_init_v2_cmd,
-> > +                                        msecs_to_jiffies(NCI_INIT_TIMEOUT));
-> > +             }
->
-> again please try to pull out the common code:
->
->         struct nci_core_init_v2_cmd nci_init_v2_cmd = {
->                 .feature1 = NCI_FEATURE_DISABLE;
->                 .feature2 = NCI_FEATURE_DISABLE;
->         };
->         unsigned long opt = 0;
->
->         if (ndev->nci_ver & NCI_VER_2_MASK)
->                 opt = (unsigned long)&nci_init_v2_cmd;
->
->         rc = __nci_request(ndev, nci_init_req, opt,
->                            msecs_to_jiffies(NCI_INIT_TIMEOUT));
->
->
-> >       }
->
-> > -static void nci_core_init_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
-> > +static unsigned char nci_core_init_rsp_packet_v1(struct nci_dev *ndev, struct sk_buff *skb)
-> >  {
-> >       struct nci_core_init_rsp_1 *rsp_1 = (void *) skb->data;
-> >       struct nci_core_init_rsp_2 *rsp_2;
-> > @@ -48,16 +51,14 @@ static void nci_core_init_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
-> >       pr_debug("status 0x%x\n", rsp_1->status);
-> >
-> >       if (rsp_1->status != NCI_STATUS_OK)
-> > -             goto exit;
-> > +             return rsp_1->status;
-> >
-> >       ndev->nfcc_features = __le32_to_cpu(rsp_1->nfcc_features);
-> >       ndev->num_supported_rf_interfaces = rsp_1->num_supported_rf_interfaces;
-> >
-> > -     if (ndev->num_supported_rf_interfaces >
-> > -         NCI_MAX_SUPPORTED_RF_INTERFACES) {
-> > -             ndev->num_supported_rf_interfaces =
-> > -                     NCI_MAX_SUPPORTED_RF_INTERFACES;
-> > -     }
-> > +     ndev->num_supported_rf_interfaces =
-> > +             min((int)ndev->num_supported_rf_interfaces,
-> > +                 NCI_MAX_SUPPORTED_RF_INTERFACES);
-> >
-> >       memcpy(ndev->supported_rf_interfaces,
-> >              rsp_1->supported_rf_interfaces,
-> > @@ -77,6 +78,58 @@ static void nci_core_init_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
-> >       ndev->manufact_specific_info =
-> >               __le32_to_cpu(rsp_2->manufact_specific_info);
-> >
-> > +     return NCI_STATUS_OK;
-> > +}
-> > +
-> > +static unsigned char nci_core_init_rsp_packet_v2(struct nci_dev *ndev, struct sk_buff *skb)
-> > +{
-> > +     struct nci_core_init_rsp_nci_ver2 *rsp = (void *)skb->data;
-> > +     unsigned char rf_interface_idx = 0;
->
-> Prefer the use of u8 type in the kernel
->
-> > +     unsigned char rf_extension_cnt = 0;
-> > +     unsigned char *supported_rf_interface = rsp->supported_rf_interfaces;
->
-> Please order the variable declarations longest to shortest.
-> Don't initialize them inline if that'd cause the order to break.
->
-> > +     pr_debug("status %x\n", rsp->status);
-> > +
-> > +     if (rsp->status != NCI_STATUS_OK)
-> > +             return rsp->status;
-> > +
+Hi Steen,
 
-Thank you for your advice.
-I will send a new version.
+On Wed, Dec 02, 2020 at 02:04:34PM +0100, Steen Hegelund wrote:
+> Adding the Sparx5 Serdes driver
+>
+> This series of patches provides the serdes driver for the Microchip Sparx5
+> ethernet switch.
+>
+> The serdes driver supports the 10G and 25G serdes instances available in the
+> Sparx5.
+>
+> The Sparx5 serdes support several interface modes with several speeds and also
+> allows the client to change the mode and the speed according to changing in the
+> environment such as changing cables from DAC to fiber.
+>
+> The serdes driver is to be used by the Sparx5 switchdev driver that
+> will follow in subsequent series.
+>
+> History:
+> --------
+> v6 -> v7:
+>     This series changes the way the IO targets are provided to the driver.
+>     Now only one IO range is available in the DT, and the driver has a table
+>     to map its targets (as their order is still not sequential), thus reducing
+>     the DT needed information and binding requirements.
+>     The register access macros have been converted to functions.
+>
+>     - Bindings:
+>       - reg prop: minItems set to 1
+>       - reg-names prop: removed
+>     - Driver
+>       - Use one IO range and map targets via this.
+>       - Change register access macros to use functions.
+>       - Provided a new header files with reg access functions.
+>     - Device tree
+>       - Provide only one IO range
+>
+> v5 -> v6:
+>      Series error: This had the same content as v5
+>
+> v4 -> v5:
+>     - Bindings:
+>       - Removed .yaml from compatible string
+>       - reg prop: removed description and added minItems
+>       - reg-names prop: removed description and added const name list and minItems
+>       - #phy-cells prop: removed description and added maxItems
+>     - Configuration interface
+>       - Removed include of linux/phy.h
+>       - Added include of linux/types.h
+>     - Driver
+>        - Added include of linux/phy.h
+>
+> v3 -> v4:
+>     - Add a reg-names item to the binding description
+>     - Add a clocks item to the binding description
+>     - Removed the clock parameter from the configuration interface
+>     - Use the clock dt node to get the coreclock, and using that when
+>       doing the actual serdes configuration
+>     - Added a clocks entry with a system clock reference to the serdes node in
+>       the device tree
+>
+> v2 -> v3:
+>     - Sorted the Kconfig sourced folders
+>     - Sorted the Makefile included folders
+>     - Changed the configuration interface documentation to use kernel style
+>
+> v1 -> v2: Fixed kernel test robot warnings
+>     - Made these structures static:
+>       - media_presets_25g
+>       - mode_presets_25g
+>       - media_presets_10g
+>       - mode_presets_10g
+>     - Removed these duplicate initializations:
+>       - sparx5_sd25g28_params.cfg_rx_reserve_15_8
+>       - sparx5_sd25g28_params.cfg_pi_en
+>       - sparx5_sd25g28_params.cfg_cdrck_en
+>       - sparx5_sd10g28_params.cfg_cdrck_en
+>
+> Lars Povlsen (2):
+>   dt-bindings: phy: Add sparx5-serdes bindings
+>   arm64: dts: sparx5: Add Sparx5 serdes driver node
+>
+> Steen Hegelund (2):
+>   phy: Add ethernet serdes configuration option
+>   phy: Add Sparx5 ethernet serdes PHY driver
+>
+>  .../bindings/phy/microchip,sparx5-serdes.yaml |  100 +
+>  arch/arm64/boot/dts/microchip/sparx5.dtsi     |    8 +
+>  drivers/phy/Kconfig                           |    3 +-
+>  drivers/phy/Makefile                          |    1 +
+>  drivers/phy/microchip/Kconfig                 |   12 +
+>  drivers/phy/microchip/Makefile                |    6 +
+>  drivers/phy/microchip/sparx5_serdes.c         | 2434 +++++++++++++++
+>  drivers/phy/microchip/sparx5_serdes.h         |  129 +
+>  drivers/phy/microchip/sparx5_serdes_regs.h    | 2695 +++++++++++++++++
+>  include/linux/phy/phy-ethernet-serdes.h       |   30 +
+>  include/linux/phy/phy.h                       |    4 +
+>  11 files changed, 5421 insertions(+), 1 deletion(-)
+>  create mode 100644 Documentation/devicetree/bindings/phy/microchip,sparx5-serdes.yaml
+>  create mode 100644 drivers/phy/microchip/Kconfig
+>  create mode 100644 drivers/phy/microchip/Makefile
+>  create mode 100644 drivers/phy/microchip/sparx5_serdes.c
+>  create mode 100644 drivers/phy/microchip/sparx5_serdes.h
+>  create mode 100644 drivers/phy/microchip/sparx5_serdes_regs.h
+>  create mode 100644 include/linux/phy/phy-ethernet-serdes.h
+>
+> --
+> 2.29.2
+
+I think this series is interesting enough that you can at least cc the
+networking mailing list when sending these? Did that for you now.
