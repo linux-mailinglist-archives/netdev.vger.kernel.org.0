@@ -2,184 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 766702CBC8A
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 13:13:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14E592CBCAE
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 13:18:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726539AbgLBML5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 07:11:57 -0500
-Received: from mail-io1-f69.google.com ([209.85.166.69]:49302 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726811AbgLBML4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 07:11:56 -0500
-Received: by mail-io1-f69.google.com with SMTP id v15so1051301ioq.16
-        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 04:11:41 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=QqPpHQA1fIJqu0PfLlY2cR0fVGR5zz5fFdnTFoGskKA=;
-        b=aTagdFfqKAbmiStt294gQpsOEKvIFr1ICuMs08dTclOexfr1+MrOxd2HwJvRla3Z3p
-         tP7HFr7rOLdW8gxELbYvl+/MJ3AYyRlHASKwhQzoCcCgJuljKCy/Dk62uy7nSosABYSB
-         kpPTN1mRc0IxAH4QhuLiKlK22ld0pfFXdjpw95pVlKEcVSl/xsCI7xWc3w3/qzQedsPF
-         NZEort9HK8nc4qCrrhEXI6iPnAOUz2pVQA/JPEegUkQR1TQedTLOL9w/zn4zK7a/20C6
-         2K9JJ5yTNW8fzOoJmV2UrXKqKnTZod2xYQtQnrB5e9e7+SxlwqzU3Hp9NW9S06CbgEEY
-         1odA==
-X-Gm-Message-State: AOAM530sCtwu0M2gA0eMozGao7Kkvv0w4Sg+5CAgAXj35qkY+i3v5m2/
-        /3y75dOlndODMqui3Unv53105+BrYsqxwJBekbxlN83H7RDi
-X-Google-Smtp-Source: ABdhPJwMtjOMoTWIbg5jcEX6WRpa7LmP3exVpQtgwSotWBQX0/eTE3eZI0eWrlVps9dkgqS4oIHkV1xf2fhoNgFVOpC8x7rz1URd
+        id S2388839AbgLBMOq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 07:14:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49940 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388813AbgLBMOo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 07:14:44 -0500
+Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF84C0617A6;
+        Wed,  2 Dec 2020 04:14:20 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4CmHvM13p4z9sW0;
+        Wed,  2 Dec 2020 23:14:07 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
+        s=201909; t=1606911257;
+        bh=dHdu5NS4Xw4IX9X/GFAxYuxXCqWGRcHQlDUnVy182gE=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=qtDh7IvvHnc1+eKidZ76vTxF/6g74s2Qv4NdJCP3ZbL1MvM7SMn0lhAVe5tKSzbZQ
+         HAZWdo85rrG0VGkeOEqwRUPOnvHmcNv66RNAVaUJFUprFf5SkMq27aOekm8dbPRCY5
+         gkzvsxHN3LwDnlCxInjPmxzTiDx21ibFqTqqu3eDy34Z8nkx1csBez+MJFFdL11gkd
+         f/LwaVwDLEtHeYQ1e4yz1BkCIl0n6WAAZmXjde8XppUxjXPuEllv155QVe9hK1naST
+         fh3/pL4XJyDtWcjIvBpmTiEV3p97PKO/mL+YIWoTYOapjBgcldMx3HEGaWB6OkoQ9g
+         G0I0mDDBKdB0w==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Takashi Iwai <tiwai@suse.de>
+Cc:     Geoff Levand <geoff@infradead.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, Jens Axboe <axboe@kernel.dk>,
+        Jim Paris <jim@jtan.com>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        linuxppc-dev@lists.ozlabs.org, alsa-devel@alsa-project.org,
+        linux-block@vger.kernel.org, netdev@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
+Subject: Re: [PATCH 2/2] powerpc/ps3: make system bus's remove and shutdown callbacks return void
+In-Reply-To: <20201129173153.jbt3epcxnasbemir@pengutronix.de>
+References: <20201126165950.2554997-1-u.kleine-koenig@pengutronix.de> <20201126165950.2554997-2-u.kleine-koenig@pengutronix.de> <s5hv9dphnoh.wl-tiwai@suse.de> <20201129173153.jbt3epcxnasbemir@pengutronix.de>
+Date:   Wed, 02 Dec 2020 23:14:06 +1100
+Message-ID: <875z5kwgkx.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:2dcf:: with SMTP id l15mr1581967iow.120.1606911075661;
- Wed, 02 Dec 2020 04:11:15 -0800 (PST)
-Date:   Wed, 02 Dec 2020 04:11:15 -0800
-In-Reply-To: <000000000000f3ffc205acd7cd06@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000d9bf1205b57a23f6@google.com>
-Subject: Re: KMSAN: uninit-value in __skb_checksum_complete (5)
-From:   syzbot <syzbot+b024befb3ca7990fea37@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        glider@google.com, kadlec@netfilter.org, kuba@kernel.org,
-        kuznet@ms2.inr.ac.ru, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, syzkaller-bugs@googlegroups.com,
-        yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de> writes:
+> Hello Michael,
+>
+> On Sat, Nov 28, 2020 at 09:48:30AM +0100, Takashi Iwai wrote:
+>> On Thu, 26 Nov 2020 17:59:50 +0100,
+>> Uwe Kleine-K=C3=B6nig wrote:
+>> >=20
+>> > The driver core ignores the return value of struct device_driver::remo=
+ve
+>> > because there is only little that can be done. For the shutdown callba=
+ck
+>> > it's ps3_system_bus_shutdown() which ignores the return value.
+>> >=20
+>> > To simplify the quest to make struct device_driver::remove return void,
+>> > let struct ps3_system_bus_driver::remove return void, too. All users
+>> > already unconditionally return 0, this commit makes it obvious that
+>> > returning an error code is a bad idea and ensures future users behave
+>> > accordingly.
+>> >=20
+>> > Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+>>=20
+>> For the sound bit:
+>> Acked-by: Takashi Iwai <tiwai@suse.de>
+>
+> assuming that you are the one who will apply this patch: Note that it
+> depends on patch 1 that Takashi already applied to his tree. So you
+> either have to wait untils patch 1 appears in some tree that you merge
+> before applying, or you have to take patch 1, too. (With Takashi
+> optinally dropping it then.)
 
-HEAD commit:    73d62e81 kmsan: random: prevent boot-time reports in _mix_..
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=13bd4607500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=eef728deea880383
-dashboard link: https://syzkaller.appspot.com/bug?extid=b024befb3ca7990fea37
-compiler:       clang version 11.0.0 (https://github.com/llvm/llvm-project.git ca2dcbd030eadbf0aa9b660efe864ff08af6e18b)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=126c8379500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17cdf7b5500000
+Thanks. I've picked up both patches.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+b024befb3ca7990fea37@syzkaller.appspotmail.com
+If Takashi doesn't want to rebase his tree to drop patch 1 that's OK, it
+will just arrive in mainline via two paths, but git should handle it.
 
-=====================================================
-BUG: KMSAN: uninit-value in __skb_checksum_complete+0x421/0x630 net/core/skbuff.c:2846
-CPU: 0 PID: 497 Comm: kworker/u4:11 Not tainted 5.10.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: bat_events batadv_iv_send_outstanding_bat_ogm_packet
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:118
- kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:118
- __msan_warning+0x5f/0xa0 mm/kmsan/kmsan_instr.c:197
- __skb_checksum_complete+0x421/0x630 net/core/skbuff.c:2846
- __skb_checksum_validate_complete include/linux/skbuff.h:4014 [inline]
- icmp_rcv+0x94b/0x1d70 net/ipv4/icmp.c:1081
- ip_protocol_deliver_rcu+0x572/0xc50 net/ipv4/ip_input.c:204
- ip_local_deliver_finish net/ipv4/ip_input.c:231 [inline]
- NF_HOOK include/linux/netfilter.h:301 [inline]
- ip_local_deliver+0x583/0x8d0 net/ipv4/ip_input.c:252
- dst_input include/net/dst.h:449 [inline]
- ip_rcv_finish net/ipv4/ip_input.c:428 [inline]
- NF_HOOK include/linux/netfilter.h:301 [inline]
- ip_rcv+0x5c3/0x840 net/ipv4/ip_input.c:539
- __netif_receive_skb_one_core net/core/dev.c:5315 [inline]
- __netif_receive_skb+0x1ec/0x640 net/core/dev.c:5429
- process_backlog+0x523/0xc10 net/core/dev.c:6319
- napi_poll+0x420/0x1010 net/core/dev.c:6763
- net_rx_action+0x35c/0xd40 net/core/dev.c:6833
- __do_softirq+0x1a9/0x6fa kernel/softirq.c:298
- asm_call_irq_on_stack+0xf/0x20
- </IRQ>
- __run_on_irqstack arch/x86/include/asm/irq_stack.h:26 [inline]
- run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:77 [inline]
- do_softirq_own_stack+0x6e/0x90 arch/x86/kernel/irq_64.c:77
- do_softirq kernel/softirq.c:343 [inline]
- __local_bh_enable_ip+0x184/0x1d0 kernel/softirq.c:195
- local_bh_enable+0x36/0x40 include/linux/bottom_half.h:32
- rcu_read_unlock_bh include/linux/rcupdate.h:730 [inline]
- __dev_queue_xmit+0x3a9b/0x4520 net/core/dev.c:4167
- dev_queue_xmit+0x4b/0x60 net/core/dev.c:4173
- batadv_send_skb_packet+0x622/0x970 net/batman-adv/send.c:108
- batadv_send_broadcast_skb+0x76/0x90 net/batman-adv/send.c:127
- batadv_iv_ogm_send_to_if net/batman-adv/bat_iv_ogm.c:394 [inline]
- batadv_iv_ogm_emit net/batman-adv/bat_iv_ogm.c:420 [inline]
- batadv_iv_send_outstanding_bat_ogm_packet+0xb3a/0xf00 net/batman-adv/bat_iv_ogm.c:1712
- process_one_work+0x121c/0x1fc0 kernel/workqueue.c:2272
- worker_thread+0x10cc/0x2740 kernel/workqueue.c:2418
- kthread+0x51c/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was stored to memory at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:289
- kmsan_memcpy_memmove_metadata+0x25e/0x2d0 mm/kmsan/kmsan.c:226
- kmsan_memcpy_metadata+0xb/0x10 mm/kmsan/kmsan.c:246
- __msan_memcpy+0x46/0x60 mm/kmsan/kmsan_instr.c:110
- csum_partial_copy_nocheck include/net/checksum.h:51 [inline]
- skb_copy_and_csum_bits+0x23e/0x13e0 net/core/skbuff.c:2733
- icmp_glue_bits+0x155/0x400 net/ipv4/icmp.c:356
- __ip_append_data+0x4f8e/0x6210 net/ipv4/ip_output.c:1139
- ip_append_data+0x326/0x490 net/ipv4/ip_output.c:1323
- icmp_push_reply+0x1f8/0x810 net/ipv4/icmp.c:374
- __icmp_send+0x2a98/0x3a90 net/ipv4/icmp.c:762
- icmp_send include/net/icmp.h:43 [inline]
- __udp4_lib_rcv+0x421f/0x5880 net/ipv4/udp.c:2405
- udp_rcv+0x5c/0x70 net/ipv4/udp.c:2564
- ip_protocol_deliver_rcu+0x572/0xc50 net/ipv4/ip_input.c:204
- ip_local_deliver_finish net/ipv4/ip_input.c:231 [inline]
- NF_HOOK include/linux/netfilter.h:301 [inline]
- ip_local_deliver+0x583/0x8d0 net/ipv4/ip_input.c:252
- dst_input include/net/dst.h:449 [inline]
- ip_rcv_finish net/ipv4/ip_input.c:428 [inline]
- NF_HOOK include/linux/netfilter.h:301 [inline]
- ip_rcv+0x5c3/0x840 net/ipv4/ip_input.c:539
- __netif_receive_skb_one_core net/core/dev.c:5315 [inline]
- __netif_receive_skb+0x1ec/0x640 net/core/dev.c:5429
- process_backlog+0x523/0xc10 net/core/dev.c:6319
- napi_poll+0x420/0x1010 net/core/dev.c:6763
- net_rx_action+0x35c/0xd40 net/core/dev.c:6833
- __do_softirq+0x1a9/0x6fa kernel/softirq.c:298
-
-Uninit was stored to memory at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:121 [inline]
- kmsan_internal_chain_origin+0xad/0x130 mm/kmsan/kmsan.c:289
- kmsan_memcpy_memmove_metadata+0x25e/0x2d0 mm/kmsan/kmsan.c:226
- kmsan_memcpy_metadata+0xb/0x10 mm/kmsan/kmsan.c:246
- __msan_memcpy+0x46/0x60 mm/kmsan/kmsan_instr.c:110
- pskb_expand_head+0x3eb/0x1df0 net/core/skbuff.c:1631
- __skb_cow include/linux/skbuff.h:3165 [inline]
- skb_cow_head include/linux/skbuff.h:3199 [inline]
- batadv_skb_head_push+0x2ce/0x410 net/batman-adv/soft-interface.c:75
- batadv_send_skb_packet+0x1ed/0x970 net/batman-adv/send.c:86
- batadv_send_broadcast_skb+0x76/0x90 net/batman-adv/send.c:127
- batadv_iv_ogm_send_to_if net/batman-adv/bat_iv_ogm.c:394 [inline]
- batadv_iv_ogm_emit net/batman-adv/bat_iv_ogm.c:420 [inline]
- batadv_iv_send_outstanding_bat_ogm_packet+0xb3a/0xf00 net/batman-adv/bat_iv_ogm.c:1712
- process_one_work+0x121c/0x1fc0 kernel/workqueue.c:2272
- worker_thread+0x10cc/0x2740 kernel/workqueue.c:2418
- kthread+0x51c/0x560 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Uninit was created at:
- kmsan_save_stack_with_flags+0x3c/0x90 mm/kmsan/kmsan.c:121
- kmsan_alloc_page+0xd3/0x1f0 mm/kmsan/kmsan_shadow.c:274
- __alloc_pages_nodemask+0x84e/0xfb0 mm/page_alloc.c:4989
- __alloc_pages include/linux/gfp.h:511 [inline]
- __alloc_pages_node include/linux/gfp.h:524 [inline]
- alloc_pages_node include/linux/gfp.h:538 [inline]
- __page_frag_cache_refill mm/page_alloc.c:5065 [inline]
- page_frag_alloc+0x35b/0x890 mm/page_alloc.c:5095
- __napi_alloc_skb+0x1c0/0xab0 net/core/skbuff.c:519
- napi_alloc_skb include/linux/skbuff.h:2870 [inline]
- page_to_skb+0x142/0x1640 drivers/net/virtio_net.c:389
- receive_mergeable+0xee6/0x5be0 drivers/net/virtio_net.c:949
- receive_buf+0x2db/0x2ba0 drivers/net/virtio_net.c:1059
- virtnet_receive drivers/net/virtio_net.c:1351 [inline]
- virtnet_poll+0xa51/0x1d10 drivers/net/virtio_net.c:1456
- napi_poll+0x420/0x1010 net/core/dev.c:6763
- net_rx_action+0x35c/0xd40 net/core/dev.c:6833
- __do_softirq+0x1a9/0x6fa kernel/softirq.c:298
-=====================================================
-
+cheers
