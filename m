@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02E482CBDF5
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 14:11:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17F0A2CBDED
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 14:11:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730228AbgLBNJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 08:09:13 -0500
-Received: from smtp.uniroma2.it ([160.80.6.22]:39980 "EHLO smtp.uniroma2.it"
+        id S1730183AbgLBNIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 08:08:55 -0500
+Received: from smtp.uniroma2.it ([160.80.6.22]:39948 "EHLO smtp.uniroma2.it"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727102AbgLBNJM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Dec 2020 08:09:12 -0500
+        id S1727657AbgLBNIn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Dec 2020 08:08:43 -0500
 Received: from localhost.localdomain ([160.80.103.126])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 0B2D6XmZ015624
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 0B2D6Xma015624
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
         Wed, 2 Dec 2020 14:06:36 +0100
 From:   Andrea Mayer <andrea.mayer@uniroma2.it>
@@ -36,9 +36,9 @@ Cc:     Nathan Chancellor <natechancellor@gmail.com>,
         Paolo Lungaroni <paolo.lungaroni@cnit.it>,
         Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
         Andrea Mayer <andrea.mayer@uniroma2.it>
-Subject: [net-next v4 7/8] selftests: add selftest for the SRv6 End.DT4 behavior
-Date:   Wed,  2 Dec 2020 14:05:16 +0100
-Message-Id: <20201202130517.4967-8-andrea.mayer@uniroma2.it>
+Subject: [net-next v4 8/8] selftests: add selftest for the SRv6 End.DT6 (VRF) behavior
+Date:   Wed,  2 Dec 2020 14:05:17 +0100
+Message-Id: <20201202130517.4967-9-andrea.mayer@uniroma2.it>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20201202130517.4967-1-andrea.mayer@uniroma2.it>
 References: <20201202130517.4967-1-andrea.mayer@uniroma2.it>
@@ -50,72 +50,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-this selftest is designed for evaluating the new SRv6 End.DT4 behavior
-used, in this example, for implementing IPv4 L3 VPN use cases.
+this selftest is designed for evaluating the new SRv6 End.DT6 (VRF) behavior
+used, in this example, for implementing IPv6 L3 VPN use cases.
 
 Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
-Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: Paolo Lungaroni <paolo.lungaroni@cnit.it>
 ---
- .../selftests/net/srv6_end_dt4_l3vpn_test.sh  | 494 ++++++++++++++++++
- 1 file changed, 494 insertions(+)
- create mode 100755 tools/testing/selftests/net/srv6_end_dt4_l3vpn_test.sh
+ .../selftests/net/srv6_end_dt6_l3vpn_test.sh  | 502 ++++++++++++++++++
+ 1 file changed, 502 insertions(+)
+ create mode 100755 tools/testing/selftests/net/srv6_end_dt6_l3vpn_test.sh
 
-diff --git a/tools/testing/selftests/net/srv6_end_dt4_l3vpn_test.sh b/tools/testing/selftests/net/srv6_end_dt4_l3vpn_test.sh
+diff --git a/tools/testing/selftests/net/srv6_end_dt6_l3vpn_test.sh b/tools/testing/selftests/net/srv6_end_dt6_l3vpn_test.sh
 new file mode 100755
-index 000000000000..ad7a9fc59934
+index 000000000000..68708f5e26a0
 --- /dev/null
-+++ b/tools/testing/selftests/net/srv6_end_dt4_l3vpn_test.sh
-@@ -0,0 +1,494 @@
++++ b/tools/testing/selftests/net/srv6_end_dt6_l3vpn_test.sh
+@@ -0,0 +1,502 @@
 +#!/bin/bash
 +# SPDX-License-Identifier: GPL-2.0
 +#
 +# author: Andrea Mayer <andrea.mayer@uniroma2.it>
++# author: Paolo Lungaroni <paolo.lungaroni@cnit.it>
 +
-+# This test is designed for evaluating the new SRv6 End.DT4 behavior used for
-+# implementing IPv4 L3 VPN use cases.
++# This test is designed for evaluating the new SRv6 End.DT6 behavior used for
++# implementing IPv6 L3 VPN use cases.
 +#
 +# Hereafter a network diagram is shown, where two different tenants (named 100
-+# and 200) offer IPv4 L3 VPN services allowing hosts to communicate with each
++# and 200) offer IPv6 L3 VPN services allowing hosts to communicate with each
 +# other across an IPv6 network.
 +#
 +# Only hosts belonging to the same tenant (and to the same VPN) can communicate
 +# with each other. Instead, the communication among hosts of different tenants
 +# is forbidden.
-+# In other words, hosts hs-t100-1 and hs-t100-2 are connected through the IPv4
++# In other words, hosts hs-t100-1 and hs-t100-2 are connected through the IPv6
 +# L3 VPN of tenant 100 while hs-t200-3 and hs-t200-4 are connected using the
-+# IPv4 L3 VPN of tenant 200. Cross connection between tenant 100 and tenant 200
++# IPv6 L3 VPN of tenant 200. Cross connection between tenant 100 and tenant 200
 +# is forbidden and thus, for example, hs-t100-1 cannot reach hs-t200-3 and vice
 +# versa.
 +#
-+# Routers rt-1 and rt-2 implement IPv4 L3 VPN services leveraging the SRv6
++# Routers rt-1 and rt-2 implement IPv6 L3 VPN services leveraging the SRv6
 +# architecture. The key components for such VPNs are: a) SRv6 Encap behavior,
-+# b) SRv6 End.DT4 behavior and c) VRF.
++# b) SRv6 End.DT6 behavior and c) VRF.
 +#
-+# To explain how an IPv4 L3 VPN based on SRv6 works, let us briefly consider an
++# To explain how an IPv6 L3 VPN based on SRv6 works, let us briefly consider an
 +# example where, within the same domain of tenant 100, the host hs-t100-1 pings
 +# the host hs-t100-2.
 +#
 +# First of all, L2 reachability of the host hs-t100-2 is taken into account by
-+# the router rt-1 which acts as an arp proxy.
++# the router rt-1 which acts as a ndp proxy.
 +#
-+# When the host hs-t100-1 sends an IPv4 packet destined to hs-t100-2, the
++# When the host hs-t100-1 sends an IPv6 packet destined to hs-t100-2, the
 +# router rt-1 receives the packet on the internal veth-t100 interface. Such
 +# interface is enslaved to the VRF vrf-100 whose associated table contains the
-+# SRv6 Encap route for encapsulating any IPv4 packet in a IPv6 plus the Segment
++# SRv6 Encap route for encapsulating any IPv6 packet in a IPv6 plus the Segment
 +# Routing Header (SRH) packet. This packet is sent through the (IPv6) core
 +# network up to the router rt-2 that receives it on veth0 interface.
 +#
 +# The rt-2 router uses the 'localsid' routing table to process incoming
 +# IPv6+SRH packets which belong to the VPN of the tenant 100. For each of these
-+# packets, the SRv6 End.DT4 behavior removes the outer IPv6+SRH headers and
++# packets, the SRv6 End.DT6 behavior removes the outer IPv6+SRH headers and
 +# performs the lookup on the vrf-100 table using the destination address of
-+# the decapsulated IPv4 packet. Afterwards, the packet is sent to the host
++# the decapsulated IPv6 packet. Afterwards, the packet is sent to the host
 +# hs-t100-2 through the veth-t100 interface.
 +#
 +# The ping response follows the same processing but this time the role of rt-1
 +# and rt-2 are swapped.
 +#
-+# Of course, the IPv4 L3 VPN for tenant 200 works exactly as the IPv4 L3 VPN
++# Of course, the IPv6 L3 VPN for tenant 200 works exactly as the IPv6 L3 VPN
 +# for tenant 100. In this case, only hosts hs-t200-3 and hs-t200-4 are able to
 +# connect with each other.
 +#
@@ -126,7 +127,7 @@ index 000000000000..ad7a9fc59934
 +# |                   |                                   |                   |
 +# |  +-------------+  |                                   |  +-------------+  |
 +# |  |    veth0    |  |                                   |  |    veth0    |  |
-+# |  | 10.0.0.1/24 |  |                                   |  | 10.0.0.2/24 |  |
++# |  |  cafe::1/64 |  |                                   |  |  cafe::2/64 |  |
 +# |  +-------------+  |                                   |  +-------------+  |
 +# |        .          |                                   |         .         |
 +# +-------------------+                                   +-------------------+
@@ -137,7 +138,7 @@ index 000000000000..ad7a9fc59934
 +# |        .                          |   |                         .         |
 +# | +---------------+                 |   |                 +---------------- |
 +# | |   veth-t100   |                 |   |                 |   veth-t100   | |
-+# | | 10.0.0.254/24 |    +----------+ |   | +----------+    | 10.0.0.254/24 | |
++# | |  cafe::254/64 |    +----------+ |   | +----------+    |  cafe::254/64 | |
 +# | +-------+-------+    | localsid | |   | | localsid |    +-------+-------- |
 +# |         |            |   table  | |   | |   table  |            |         |
 +# |    +----+----+       +----------+ |   | +----------+       +----+----+    |
@@ -151,7 +152,7 @@ index 000000000000..ad7a9fc59934
 +# |         |                         |   |                         |         |
 +# | +-------+-------+                 |   |                 +-------+-------- |
 +# | |   veth-t200   |                 |   |                 |   veth-t200   | |
-+# | | 10.0.0.254/24 |                 |   |                 | 10.0.0.254/24 | |
++# | |  cafe::254/64 |                 |   |                 |  cafe::254/64 | |
 +# | +---------------+      rt-1 netns |   | rt-2 netns      +---------------- |
 +# |        .                          |   |                          .        |
 +# +-----------------------------------+   +-----------------------------------+
@@ -163,7 +164,7 @@ index 000000000000..ad7a9fc59934
 +# |        .          |                                   |          .        |
 +# |  +-------------+  |                                   |  +-------------+  |
 +# |  |    veth0    |  |                                   |  |    veth0    |  |
-+# |  | 10.0.0.3/24 |  |                                   |  | 10.0.0.4/24 |  |
++# |  |  cafe::3/64 |  |                                   |  |  cafe::4/64 |  |
 +# |  +-------------+  |                                   |  +-------------+  |
 +# |                   |                                   |                   |
 +# |  hs-t200-3 netns  |                                   |  hs-t200-4 netns  |
@@ -179,27 +180,27 @@ index 000000000000..ad7a9fc59934
 +# +-------------------------------------------------+
 +# |SID              |Action                         |
 +# +-------------------------------------------------+
-+# |fc00:21:100::6004|apply SRv6 End.DT4 vrftable 100|
++# |fc00:21:100::6006|apply SRv6 End.DT6 vrftable 100|
 +# +-------------------------------------------------+
-+# |fc00:21:200::6004|apply SRv6 End.DT4 vrftable 200|
++# |fc00:21:200::6006|apply SRv6 End.DT6 vrftable 200|
 +# +-------------------------------------------------+
 +#
 +# rt-1: VRF tenant 100 (table 100)
 +# +---------------------------------------------------+
 +# |host       |Action                                 |
 +# +---------------------------------------------------+
-+# |10.0.0.2   |apply seg6 encap segs fc00:12:100::6004|
++# |cafe::2    |apply seg6 encap segs fc00:12:100::6006|
 +# +---------------------------------------------------+
-+# |10.0.0.0/24|forward to dev veth_t100               |
++# |cafe::/64  |forward to dev veth_t100               |
 +# +---------------------------------------------------+
 +#
 +# rt-1: VRF tenant 200 (table 200)
 +# +---------------------------------------------------+
 +# |host       |Action                                 |
 +# +---------------------------------------------------+
-+# |10.0.0.4   |apply seg6 encap segs fc00:12:200::6004|
++# |cafe::4    |apply seg6 encap segs fc00:12:200::6006|
 +# +---------------------------------------------------+
-+# |10.0.0.0/24|forward to dev veth_t200               |
++# |cafe::/64  |forward to dev veth_t200               |
 +# +---------------------------------------------------+
 +#
 +#
@@ -207,33 +208,33 @@ index 000000000000..ad7a9fc59934
 +# +-------------------------------------------------+
 +# |SID              |Action                         |
 +# +-------------------------------------------------+
-+# |fc00:12:100::6004|apply SRv6 End.DT4 vrftable 100|
++# |fc00:12:100::6006|apply SRv6 End.DT6 vrftable 100|
 +# +-------------------------------------------------+
-+# |fc00:12:200::6004|apply SRv6 End.DT4 vrftable 200|
++# |fc00:12:200::6006|apply SRv6 End.DT6 vrftable 200|
 +# +-------------------------------------------------+
 +#
 +# rt-2: VRF tenant 100 (table 100)
 +# +---------------------------------------------------+
 +# |host       |Action                                 |
 +# +---------------------------------------------------+
-+# |10.0.0.1   |apply seg6 encap segs fc00:21:100::6004|
++# |cafe::1    |apply seg6 encap segs fc00:21:100::6006|
 +# +---------------------------------------------------+
-+# |10.0.0.0/24|forward to dev veth_t100               |
++# |cafe::/64  |forward to dev veth_t100               |
 +# +---------------------------------------------------+
 +#
 +# rt-2: VRF tenant 200 (table 200)
 +# +---------------------------------------------------+
 +# |host       |Action                                 |
 +# +---------------------------------------------------+
-+# |10.0.0.3   |apply seg6 encap segs fc00:21:200::6004|
++# |cafe::3    |apply seg6 encap segs fc00:21:200::6006|
 +# +---------------------------------------------------+
-+# |10.0.0.0/24|forward to dev veth_t200               |
++# |cafe::/64  |forward to dev veth_t200               |
 +# +---------------------------------------------------+
 +#
 +
 +readonly LOCALSID_TABLE_ID=90
 +readonly IPv6_RT_NETWORK=fd00
-+readonly IPv4_HS_NETWORK=10.0.0
++readonly IPv6_HS_NETWORK=cafe
 +readonly VPN_LOCATOR_SERVICE=fc00
 +PING_TIMEOUT_SEC=4
 +
@@ -300,11 +301,13 @@ index 000000000000..ad7a9fc59934
 +	ip link set veth-rt-${rt} netns ${nsname}
 +	ip -netns ${nsname} link set veth-rt-${rt} name veth0
 +
-+	ip -netns ${nsname} addr add ${IPv6_RT_NETWORK}::${rt}/64 dev veth0
++	ip netns exec ${nsname} sysctl -wq net.ipv6.conf.all.accept_dad=0
++	ip netns exec ${nsname} sysctl -wq net.ipv6.conf.default.accept_dad=0
++
++	ip -netns ${nsname} addr add ${IPv6_RT_NETWORK}::${rt}/64 dev veth0 nodad
 +	ip -netns ${nsname} link set veth0 up
 +	ip -netns ${nsname} link set lo up
 +
-+	ip netns exec ${nsname} sysctl -wq net.ipv4.ip_forward=1
 +	ip netns exec ${nsname} sysctl -wq net.ipv6.conf.all.forwarding=1
 +}
 +
@@ -319,9 +322,13 @@ index 000000000000..ad7a9fc59934
 +
 +	# set the networking for the host
 +	ip netns add ${hsname}
++
++	ip netns exec ${hsname} sysctl -wq net.ipv6.conf.all.accept_dad=0
++	ip netns exec ${hsname} sysctl -wq net.ipv6.conf.default.accept_dad=0
++
 +	ip -netns ${hsname} link add veth0 type veth peer name ${rtveth}
 +	ip -netns ${hsname} link set ${rtveth} netns ${rtname}
-+	ip -netns ${hsname} addr add ${IPv4_HS_NETWORK}.${hs}/24 dev veth0
++	ip -netns ${hsname} addr add ${IPv6_HS_NETWORK}::${hs}/64 dev veth0 nodad
 +	ip -netns ${hsname} link set veth0 up
 +	ip -netns ${hsname} link set lo up
 +
@@ -330,17 +337,15 @@ index 000000000000..ad7a9fc59934
 +	ip -netns ${rtname} link add vrf-${tid} type vrf table ${tid}
 +	ip -netns ${rtname} link set vrf-${tid} up
 +
++	ip netns exec ${rtname} sysctl -wq net.ipv6.conf.all.accept_dad=0
++	ip netns exec ${rtname} sysctl -wq net.ipv6.conf.default.accept_dad=0
++
 +	# enslave the veth-tX interface to the vrf-X in the access router
 +	ip -netns ${rtname} link set ${rtveth} master vrf-${tid}
-+	ip -netns ${rtname} addr add ${IPv4_HS_NETWORK}.254/24 dev ${rtveth}
++	ip -netns ${rtname} addr add ${IPv6_HS_NETWORK}::254/64 dev ${rtveth} nodad
 +	ip -netns ${rtname} link set ${rtveth} up
 +
-+	ip netns exec ${rtname} sysctl -wq net.ipv4.conf.${rtveth}.proxy_arp=1
-+
-+	# disable the rp_filter otherwise the kernel gets confused about how
-+	# to route decap ipv4 packets.
-+	ip netns exec ${rtname} sysctl -wq net.ipv4.conf.all.rp_filter=0
-+	ip netns exec ${rtname} sysctl -wq net.ipv4.conf.${rtveth}.rp_filter=0
++	ip netns exec ${rtname} sysctl -wq net.ipv6.conf.${rtveth}.proxy_ndp=1
 +
 +	ip netns exec ${rtname} sh -c "echo 1 > /proc/sys/net/vrf/strict_mode"
 +}
@@ -357,11 +362,14 @@ index 000000000000..ad7a9fc59934
 +	local hsdst_name=hs-t${tid}-${hsdst}
 +	local rtsrc_name=rt-${rtsrc}
 +	local rtdst_name=rt-${rtdst}
-+	local vpn_sid=${VPN_LOCATOR_SERVICE}:${hssrc}${hsdst}:${tid}::6004
++	local rtveth=veth-t${tid}
++	local vpn_sid=${VPN_LOCATOR_SERVICE}:${hssrc}${hsdst}:${tid}::6006
++
++	ip -netns ${rtsrc_name} -6 neigh add proxy ${IPv6_HS_NETWORK}::${hsdst} dev ${rtveth}
 +
 +	# set the encap route for encapsulating packets which arrive from the
 +	# host hssrc and destined to the access router rtsrc.
-+	ip -netns ${rtsrc_name} -4 route add ${IPv4_HS_NETWORK}.${hsdst}/32 vrf vrf-${tid} \
++	ip -netns ${rtsrc_name} -6 route add ${IPv6_HS_NETWORK}::${hsdst}/128 vrf vrf-${tid} \
 +		encap seg6 mode encap segs ${vpn_sid} dev veth0
 +	ip -netns ${rtsrc_name} -6 route add ${vpn_sid}/128 vrf vrf-${tid} \
 +		via fd00::${rtdst} dev veth0
@@ -369,10 +377,10 @@ index 000000000000..ad7a9fc59934
 +	# set the decap route for decapsulating packets which arrive from
 +	# the rtdst router and destined to the hsdst host.
 +	ip -netns ${rtdst_name} -6 route add ${vpn_sid}/128 table ${LOCALSID_TABLE_ID} \
-+		encap seg6local action End.DT4 vrftable ${tid} dev vrf-${tid}
++		encap seg6local action End.DT6 vrftable ${tid} dev vrf-${tid}
 +
 +	# all sids for VPNs start with a common locator which is fc00::/16.
-+	# Routes for handling the SRv6 End.DT4 behavior instances are grouped
++	# Routes for handling the SRv6 End.DT6 behavior instances are grouped
 +	# together in the 'localsid' table.
 +	#
 +	# NOTE: added only once
@@ -403,12 +411,12 @@ index 000000000000..ad7a9fc59934
 +	setup_hs 3 1 200
 +	setup_hs 4 2 200
 +
-+	# setup the IPv4 L3 VPN which connects the host hs-t100-1 and host
++	# setup the IPv6 L3 VPN which connects the host hs-t100-1 and host
 +	# hs-t100-2 within the same tenant 100.
 +	setup_vpn_config 1 1 2 2 100  #args: src_host src_router dst_host dst_router tenant
 +	setup_vpn_config 2 2 1 1 100
 +
-+	# setup the IPv4 L3 VPN which connects the host hs-t200-3 and host
++	# setup the IPv6 L3 VPN which connects the host hs-t200-3 and host
 +	# hs-t200-4 within the same tenant 200.
 +	setup_vpn_config 3 1 4 2 200
 +	setup_vpn_config 4 2 3 1 200
@@ -439,7 +447,7 @@ index 000000000000..ad7a9fc59934
 +	local tid=$3
 +
 +	ip netns exec hs-t${tid}-${hssrc} ping -c 1 -W ${PING_TIMEOUT_SEC} \
-+		${IPv4_HS_NETWORK}.${hsdst} >/dev/null 2>&1
++		${IPv6_HS_NETWORK}::${hsdst} >/dev/null 2>&1
 +}
 +
 +check_and_log_hs_connectivity()
@@ -484,7 +492,7 @@ index 000000000000..ad7a9fc59934
 +
 +host2gateway_tests()
 +{
-+	log_section "IPv4 connectivity test among hosts and gateway"
++	log_section "IPv6 connectivity test among hosts and gateway"
 +
 +	check_and_log_hs2gw_connectivity 1 100
 +	check_and_log_hs2gw_connectivity 2 100
