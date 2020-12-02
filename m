@@ -2,102 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F10D82CBE23
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 14:26:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A84432CBE8A
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 14:40:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727461AbgLBNZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 08:25:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60872 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726567AbgLBNZJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 08:25:09 -0500
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9812BC0613CF
-        for <netdev@vger.kernel.org>; Wed,  2 Dec 2020 05:24:23 -0800 (PST)
-Received: by mail-il1-x143.google.com with SMTP id f5so1500988ilj.9
-        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 05:24:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Dv8ZiKgBcnrmHIpIdvmlabal0p64cd22xU1Edp1tW/Q=;
-        b=ScPpKJHfvj+cLFIbyJZHKhcxkLb1V/F1eF8VrmPqvgZNdU4PvfX5CHT2oAM+eYI9ou
-         Tnx43RsMsmqsy/5rAg6/XY38z9Zqf1AmvZ5MI9IPvw+D1mYPuX+h9J/14N9c4FtYBKe6
-         5UhoIjk/+0DWu/zVupOxZyxjVue3QTfKDohfRPwtVfmX8J9Bl2EQ0tBLvvN9+EPPQ/OC
-         IHKi3sw5Jn1KUXW0gF7wR5Bcbn8/7v9iVzrRAgGdLovSyP88Tp2+AcGJDa/XFRS0B4jH
-         o0s5eUyKjYW1fDjvm07vl+sfIopVjAZs+1fVmrrhYatfhInYC0mkfr7F6zjwwJo5uV/S
-         wLSw==
+        id S2388289AbgLBNj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 08:39:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58758 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729961AbgLBNj1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 08:39:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606916281;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=k892U81vm/7Lmbp8gT5mmMxos6ePhrModHip4KLxNhg=;
+        b=fnfdlGXdF6ohSqNoBOTEv0djuKLym1za3YDAMvDmOls/pPkUx2tYewFDG/wMMTYqPjwwcu
+        SGWcBnKtLQyLDtpk6YhWZ/gOjOCgKpkp/3pxO0Ao8HWYs8ODRozmHKyntGHOms9iWXJrKd
+        1ykc2t9V7k5a3KPkscmQFTEw7NhjRKA=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-267-ZA5jl8YtOMKPlB8kulDWpQ-1; Wed, 02 Dec 2020 08:37:59 -0500
+X-MC-Unique: ZA5jl8YtOMKPlB8kulDWpQ-1
+Received: by mail-wr1-f69.google.com with SMTP id x16so4187175wrm.20
+        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 05:37:59 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Dv8ZiKgBcnrmHIpIdvmlabal0p64cd22xU1Edp1tW/Q=;
-        b=Dn13FVJ119H0NFLcvbEWycCJHiMUQ3HDvgyFksIX8us8quSwtkSrvAhsCV0KvAPy3K
-         B5cWSnOH4RqxVKkNVlOpFFTRusQl8nPQl9OASfFgD1JkUghuNuHefthIfGs2xaUNp0jY
-         Yf7YVcWl38dFq6x7tbY4MrhE2I8ow4ivAGeTRidIvn9lZr9w4CVhDQ9+spgaAaR89vpo
-         sxusYuiGm9UZE5+1n6hBVIba8ErTpXa08hmfm9EibiSMnQ5e7oY5yni3Ah7/7LJwBk3i
-         qb5l7spdDVXd2P8fVZumw9EDg/KCwsuw/+ca05ghblaOiEhoeTcoBdi66QtM0nKcrhxK
-         MAPw==
-X-Gm-Message-State: AOAM5301cfr5o8xr5pKq84TSHLccW6rDYOx8ZdM16YnBoQtpa5TBQq+a
-        HilQqoAD7QFjqhzxr1SwG0gDyQ==
-X-Google-Smtp-Source: ABdhPJyA9HGXtcZqRuPGy5PU3kC1yKYFQgCr0Ya1Q48vab3miN+IIwUyIhQD8EqqZjwczpMEjL10Lw==
-X-Received: by 2002:a92:a154:: with SMTP id v81mr2398764ili.85.1606915462869;
-        Wed, 02 Dec 2020 05:24:22 -0800 (PST)
-Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id u11sm913650iol.51.2020.12.02.05.24.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Dec 2020 05:24:22 -0800 (PST)
-Subject: Re: [PATCH net-next 2/2] net: ipa: add support for inline checksum
- offload
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, evgreen@chromium.org, cpratapa@codeaurora.org,
-        bjorn.andersson@linaro.org, subashab@codeaurora.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20201201004143.27569-1-elder@linaro.org>
- <20201201004143.27569-3-elder@linaro.org>
- <20201201181319.41091a37@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <cea6a211-dea3-2eae-4f82-eb07c70115a4@linaro.org>
-Date:   Wed, 2 Dec 2020 07:24:21 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=k892U81vm/7Lmbp8gT5mmMxos6ePhrModHip4KLxNhg=;
+        b=EU/EZP3H+JBRNi1szIniH0Lq6l0Vlv+Sz865kBqwxWA9jF52lBCH/2/wDK1kE5YHV/
+         CvVmVDWXfA8T7yhs5oop2wpT5YKPonob/aUE6wQWMdfpIHAzfvu+Mp3z5IYnYQUelkn9
+         qcOgM4ay8IM0cE7xknJJja6CmaRie/21R2qJ6XHWNvpuNFe5VfQ7klK7VvbctTwtgO9S
+         tK1Ruf6BOeFJVEeJf6pvBgXY6FxHXFVXtsiJKO5TEH1gde0XZs/xI9weszAzNtiCReeF
+         0mw9rNNhwXxtde95GbIEZ2wW6qmJ0aOEogFqONFyFn/d2yQ2T1RH0D10HxUOyOQ4712s
+         PG9g==
+X-Gm-Message-State: AOAM530toii3/bPcDbTHQuybA8reTbdYVhrY47O7U4P524IEuPzsmDZW
+        PEskh3XCH9Gi5eUeZVOTjY+UER7sfydiVIyQidiuq41d4iNGWhp+j0bzjlK8NCfCS5iBF0hm4pd
+        VP5CAHiAi4vlZuzUb
+X-Received: by 2002:a1c:b402:: with SMTP id d2mr3149279wmf.38.1606916278581;
+        Wed, 02 Dec 2020 05:37:58 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxK+0W4eOojNfyxH8oMw5CnN0catIDj7yFdPtO7YiiunSFYmlGtxxV004j5OKFmH0OOVMjrYw==
+X-Received: by 2002:a1c:b402:: with SMTP id d2mr3149257wmf.38.1606916278365;
+        Wed, 02 Dec 2020 05:37:58 -0800 (PST)
+Received: from steredhat (host-79-17-248-175.retail.telecomitalia.it. [79.17.248.175])
+        by smtp.gmail.com with ESMTPSA id c81sm2150455wmd.6.2020.12.02.05.37.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Dec 2020 05:37:57 -0800 (PST)
+Date:   Wed, 2 Dec 2020 14:37:54 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Andra Paraschiv <andraprs@amazon.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        David Duncan <davdunc@amazon.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Alexander Graf <graf@amazon.de>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>
+Subject: Re: [PATCH net-next v1 0/3] vsock: Add flag field in the vsock
+ address
+Message-ID: <20201202133754.2ek2wgutkujkvxaf@steredhat>
+References: <20201201152505.19445-1-andraprs@amazon.com>
 MIME-Version: 1.0
-In-Reply-To: <20201201181319.41091a37@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20201201152505.19445-1-andraprs@amazon.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/1/20 8:13 PM, Jakub Kicinski wrote:
->> To function, the rmnet driver must also add support for this new
->> "inline" checksum offload.  The changes implementing this will be
->> submitted soon.
-> We don't usually merge half of a feature. Why not wait until all
-> support is in place?
-> 
-> Do I understand right that it's rmnet that will push the csum header?
-> This change seems to only reserve space for it and request the feature
-> at init..
+Hi Andra,
 
-You are correct.  The IPA hardware needs to be programmed to
-perform the computation and verify that the checksum in the
-header matches what it computes (for AP RX offload), or
-insert it into the header (for AP TX offload).  That's what
-this patch handles.
+On Tue, Dec 01, 2020 at 05:25:02PM +0200, Andra Paraschiv wrote:
+>vsock enables communication between virtual machines and the host they are
+>running on. Nested VMs can be setup to use vsock channels, as the multi
+>transport support has been available in the mainline since the v5.5 Linux kernel
+>has been released.
+>
+>Implicitly, if no host->guest vsock transport is loaded, all the vsock packets
+>are forwarded to the host. This behavior can be used to setup communication
+>channels between sibling VMs that are running on the same host. One example can
+>be the vsock channels that can be established within AWS Nitro Enclaves
+>(see Documentation/virt/ne_overview.rst).
+>
+>To be able to explicitly mark a connection as being used for a certain use case,
+>add a flag field in the vsock address data structure. The "svm_reserved1" field
+>has been repurposed to be the flag field. The value of the flag will then be
+>taken into consideration when the vsock transport is assigned.
+>
+>This way can distinguish between nested VMs / local communication and sibling
+>VMs use cases. And can also setup one or more types of communication at the same
+>time.
+>
 
-The RMNet driver is responsible for stripping the offload
-header off on RX, and acting on what it says (i.e., whether
-hardware is able to state the checksum is good).  And on TX
-it inserts an offload header that says what to checksum and
-where to put it in the packet.
+Another thing worth mentioning is that for now it is not supported in 
+vhost-vsock, since we are discarding every packet not addressed to the 
+host.
 
-It's totally fine not to merge this until we have the whole
-package ready, I understand.  I'll see what I can do to get
-that done quickly.
+What we should do would be:
+- add a new IOCTL to vhost-vsock to enable sibling communication, by 
+   default I'd like to leave it disabled
 
-Thanks Jakub.
+- allow sibling forwarding only if both guests have sibling 
+   communication enabled and we should implement some kind of filtering 
+   or network namespace support to allow the communication only between a 
+   subset of VMs
 
-					-Alex
+
+Do you have plans to work on it?
+
+Otherwise I put it in my to-do list and hope I have time to do it (maybe 
+next month).
+
+Thanks,
+Stefano
+
