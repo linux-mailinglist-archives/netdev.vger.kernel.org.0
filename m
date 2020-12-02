@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C5102CBD5C
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 13:55:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 906F72CBD63
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 13:55:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727639AbgLBMxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 07:53:12 -0500
-Received: from mout.kundenserver.de ([212.227.126.134]:54633 "EHLO
+        id S1729919AbgLBMxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 07:53:15 -0500
+Received: from mout.kundenserver.de ([212.227.126.130]:36467 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725859AbgLBMxM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 07:53:12 -0500
+        with ESMTP id S1726731AbgLBMxN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 07:53:13 -0500
 Received: from orion.localdomain ([77.7.48.174]) by mrelayeu.kundenserver.de
  (mreue009 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1N6srH-1k75n72UEp-018Nq0; Wed, 02 Dec 2020 13:50:06 +0100
+ 1N9dkD-1k5RtV2atZ-015e18; Wed, 02 Dec 2020 13:50:08 +0100
 From:   "Enrico Weigelt, metux IT consult" <info@metux.net>
 To:     linux-kernel@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, mareklindner@neomailbox.ch,
@@ -26,22 +26,24 @@ Cc:     davem@davemloft.net, kuba@kernel.org, mareklindner@neomailbox.ch,
         netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org,
         tipc-discussion@lists.sourceforge.net,
         linux-hyperv@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH 1/7] net: 8021q: remove unneeded MODULE_VERSION() usage
-Date:   Wed,  2 Dec 2020 13:49:53 +0100
-Message-Id: <20201202124959.29209-1-info@metux.net>
+Subject: [PATCH 2/7] net: batman-adv: remove unneeded MODULE_VERSION() usage
+Date:   Wed,  2 Dec 2020 13:49:54 +0100
+Message-Id: <20201202124959.29209-2-info@metux.net>
 X-Mailer: git-send-email 2.11.0
-X-Provags-ID: V03:K1:14LCbfn7CIm5dANaBLGKWLgN3xQE4jDUCMo9evmbx9Co8uVlQ6w
- AJFD6ZJ02fqB/4hkD8UvpR4MIY+/p78jpG5aWRjgTooqf+IEH1eqCBcShQ2vV0dQpZD0PsW
- 05u5MlL8i5N7ZlPrZ7WXbFUNvvFZsQXgZIGpcP3ZrL1oewC6MVHvqtu//f0C4Yd8k+NfXYW
- VmowlQvXdv7smIRHA6edw==
+In-Reply-To: <20201202124959.29209-1-info@metux.net>
+References: <20201202124959.29209-1-info@metux.net>
+X-Provags-ID: V03:K1:DUL4jKGzzr4GDRYpSOZvdg3+oBNavI4NZ3c+c7VoFlZr3QBVtI6
+ pCnnMOqrfI073hEGxYt3TAh/FtWaz+BcXw0fq50/DavncwJSlhPH/FAJM5195hsN383TZZd
+ yQxlERfADNkYsjlaIKnlUOe324cJbM7mNbE0/wRzWC0EWCvjvc9YYM8/hkSxv3AAGuYCfFc
+ /DIGG9V0tdkvTFP2OBVDg==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:UEMJ2Q5iJaA=:yleuAQn1i2Rjq/ui4VdE+g
- jyh2pVLY6s01oGU46RcJlPLxSSX8L2w/MBwEmg20CK/7Y310Z8JlnqRGDpqOM2nJS5End/sP4
- /9Y1onXdJEthEHAa9BhU58Pusym8OBWDtyGF2XsodDUOCLKO8Al2CEIPKNwkS7PYWLzUetR1u
- 6d1JaWAKKnYd0bQb4e/+Rn24Bv8Hwjp283Oc/mJZgpdGd1YNZapCGRlUHnDPGMvLvbAQ4suoX
- K+qAXCsVWaWIdCkwo5qNVHF2IP7XbGZ74/fYL0MRsOi+/PZ9Ibn6yD2QQuUvJzs0/dmQvKbzv
- sAqugRZrYpsuSsj3PnTQPdjGB8zs3Qs8ObLlivdv6bthFn3+TxlFxmTZJ66mNuyYS4u/hwzBI
- cHIUHiSeDY4ksdHCmLz6WWwusj+S5xSj2/yUf7nw695XokUprP0W5b5CKP7Zw
+X-UI-Out-Filterresults: notjunk:1;V03:K0:dc+pPFTZS7o=:tIKFv8a6BXOKHxV4rd5+Qv
+ CUc7k/gKVAw5aoSMk6Oe3RL4jQFqQuOTnAhD3nIrZlvldDBNlsdbbw68IDuHBVOX2JbSs2GH+
+ speZgRfK0R/CfQXDDIztrdAG2GxC8MHN0hDRSdi0OcvoBrtlVxSwjbuZ/fZPNhoSEz10GHnpU
+ SBQjdEx0zAo2J7Ynp4Q0GqHNCJfOWkFZSxreTyeLtdM3vXbNtmBjn1jpGnj8g3DYbKcHaFeKV
+ kr99Rz+kj5w46k30XtSpQjYIZrMNr8OMLZFBx/axINrufJcsm4upxXP85WRjAch038LDrbKx6
+ yt2S7zUhuExIliLDQ8/QBQsU/2VBKpXHmoozAW/CjuWBVJlk50oMjTBnDarETWL0n/a/k7qxX
+ yzRPAqHHVhv7+F+yyT8EaVWPPHTcm1bwRbuqY+OunuudHxUpcOiGwaX4XDgAe
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -51,43 +53,20 @@ making sense is the kernel version.
 
 Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
 ---
- net/8021q/vlan.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ net/batman-adv/main.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
-index f292e0267bb9..683e9e825b9e 100644
---- a/net/8021q/vlan.c
-+++ b/net/8021q/vlan.c
-@@ -36,15 +36,10 @@
- #include "vlan.h"
- #include "vlanproc.h"
- 
--#define DRV_VERSION "1.8"
--
- /* Global VLAN variables */
- 
- unsigned int vlan_net_id __read_mostly;
- 
--const char vlan_fullname[] = "802.1Q VLAN Support";
--const char vlan_version[] = DRV_VERSION;
--
- /* End of global variables definitions. */
- 
- static int vlan_group_prealloc_vid(struct vlan_group *vg,
-@@ -687,7 +682,7 @@ static int __init vlan_proto_init(void)
- {
- 	int err;
- 
--	pr_info("%s v%s\n", vlan_fullname, vlan_version);
-+	pr_info("802.1Q VLAN Support\n");
- 
- 	err = register_pernet_subsys(&vlan_net_ops);
- 	if (err < 0)
-@@ -743,4 +738,3 @@ module_init(vlan_proto_init);
- module_exit(vlan_cleanup_module);
- 
- MODULE_LICENSE("GPL");
--MODULE_VERSION(DRV_VERSION);
+diff --git a/net/batman-adv/main.c b/net/batman-adv/main.c
+index 70fee9b42e25..1c2ccad94bf8 100644
+--- a/net/batman-adv/main.c
++++ b/net/batman-adv/main.c
+@@ -747,6 +747,5 @@ MODULE_LICENSE("GPL");
+ MODULE_AUTHOR(BATADV_DRIVER_AUTHOR);
+ MODULE_DESCRIPTION(BATADV_DRIVER_DESC);
+ MODULE_SUPPORTED_DEVICE(BATADV_DRIVER_DEVICE);
+-MODULE_VERSION(BATADV_SOURCE_VERSION);
+ MODULE_ALIAS_RTNL_LINK("batadv");
+ MODULE_ALIAS_GENL_FAMILY(BATADV_NL_NAME);
 -- 
 2.11.0
 
