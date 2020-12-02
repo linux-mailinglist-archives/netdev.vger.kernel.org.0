@@ -2,99 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1F142CC942
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 23:00:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 520212CC94A
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 23:03:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727680AbgLBV7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 16:59:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56364 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726056AbgLBV7v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 16:59:51 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DDB6C0617A6;
-        Wed,  2 Dec 2020 13:59:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=6ePFlyNqgVUo+qmHPHjN7o9GPIjt1fzjnVUtW7yGRt4=; b=zW8E237WE9t9laQ5Dh8iqYCxyF
-        XodExrzAdTZcdTgxOJ9583RH7qW6nEvMKlH38mlRrNbBL/AqYbxFez9tkFWj6nKGr3cOI79B89/S5
-        I9B0Mt/baLpmiAwdnn61uG6zeZ5QlyeqbTzczsatuV+unfBW6k8PVFc1mGqmWxpbjT/mDj1miuATO
-        n+RGlimuDnkDGQjY0soxJyPSnpDNib+wLnYaWST30whGHaPVn+pt1VgR68kTWPRNvdx39hLUqSaSc
-        fuG7n1riavmuATf7OKheQ2cbc4ixEZAooiavbCcBzrVRYPvE8Rp3tWjqD5SJRscANV/b+bpa8q+hd
-        7to5ezxg==;
-Received: from [2601:1c0:6280:3f0::1494]
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kka9V-0002mf-9R; Wed, 02 Dec 2020 21:59:09 +0000
-Subject: Re: [PATCH v2 1/2] x86: make VMware support optional
-To:     "Enrico Weigelt, metux IT consult" <info@metux.net>,
-        linux-kernel@vger.kernel.org
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, x86@kernel.org,
-        hpa@zytor.com, dmitry.torokhov@gmail.com, derek.kiernan@xilinx.com,
-        dragan.cvetic@xilinx.com, richardcochran@gmail.com,
-        linux-hyperv@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20201202211949.17730-1-info@metux.net>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <caa568a2-cd96-d74b-b2f8-40c8e2981982@infradead.org>
-Date:   Wed, 2 Dec 2020 13:59:02 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        id S1726640AbgLBWAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 17:00:48 -0500
+Received: from www62.your-server.de ([213.133.104.62]:40598 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726056AbgLBWAr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 17:00:47 -0500
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kkaAP-0004cQ-CV; Wed, 02 Dec 2020 23:00:05 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kkaAP-0002Fq-3M; Wed, 02 Dec 2020 23:00:05 +0100
+Subject: Re: [PATCH bpf-next V7 2/8] bpf: fix bpf_fib_lookup helper MTU check
+ for SKB ctx
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        colrack@gmail.com
+References: <160588903254.2817268.4861837335793475314.stgit@firesoul>
+ <160588909693.2817268.17116187979657760922.stgit@firesoul>
+ <6f9cac4e-a231-ff8d-43a5-828995ca5ec7@iogearbox.net>
+Message-ID: <f959017b-5d3c-5cdb-a016-c467a3c9a2fc@iogearbox.net>
+Date:   Wed, 2 Dec 2020 23:00:04 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20201202211949.17730-1-info@metux.net>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <6f9cac4e-a231-ff8d-43a5-828995ca5ec7@iogearbox.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26006/Wed Dec  2 14:14:18 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/2/20 1:19 PM, Enrico Weigelt, metux IT consult wrote:
-> Make it possible to opt-out from VMware support, for minimized kernels
-> that never will be run under Vmware (eg. high-density virtualization
-> or embedded systems).
+On 12/2/20 10:44 PM, Daniel Borkmann wrote:
+> On 11/20/20 5:18 PM, Jesper Dangaard Brouer wrote:
+>> BPF end-user on Cilium slack-channel (Carlo Carraro) wants to use
+>> bpf_fib_lookup for doing MTU-check, but *prior* to extending packet size,
+>> by adjusting fib_params 'tot_len' with the packet length plus the
+>> expected encap size. (Just like the bpf_check_mtu helper supports). He
+>> discovered that for SKB ctx the param->tot_len was not used, instead
+>> skb->len was used (via MTU check in is_skb_forwardable()).
+>>
+>> Fix this by using fib_params 'tot_len' for MTU check.  If not provided
+>> (e.g. zero) then keep existing behaviour intact.
+>>
+>> Fixes: 4c79579b44b1 ("bpf: Change bpf_fib_lookup to return lookup status")
+>> Reported-by: Carlo Carraro <colrack@gmail.com>
+>> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+>> ---
+>>   net/core/filter.c |   14 ++++++++++++--
+>>   1 file changed, 12 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/net/core/filter.c b/net/core/filter.c
+>> index 1ee97fdeea64..84d77c425fbe 100644
+>> --- a/net/core/filter.c
+>> +++ b/net/core/filter.c
+>> @@ -5565,11 +5565,21 @@ BPF_CALL_4(bpf_skb_fib_lookup, struct sk_buff *, skb,
+>>   #endif
+>>       }
+>> -    if (!rc) {
+>> +    if (rc == BPF_FIB_LKUP_RET_SUCCESS) {
+>>           struct net_device *dev;
+>> +        u32 mtu;
+>>           dev = dev_get_by_index_rcu(net, params->ifindex);
+>> -        if (!is_skb_forwardable(dev, skb))
+>> +        mtu = READ_ONCE(dev->mtu);
+>> +
+>> +        /* Using tot_len for (L3) MTU check if provided by user */
+>> +        if (params->tot_len && params->tot_len > mtu)
+>> +            rc = BPF_FIB_LKUP_RET_FRAG_NEEDED;
 > 
-> Average distro kernel will leave it on, therefore default to y.
+> Is there a reason why we cannot reuse and at the same time optimize the built-in
+> bpf_ipv{4,6}_fib_lookup() check_mtu as we do in XDP when params->tot_len was
+> specified.. something as presented earlier [0]? My biggest concern for gso skbs
+> is that the above might be subject to breakage from one kernel version to another
+> if it was filled from the packet. So going back and building upon [0], to be on
+> safe side we could have a new flag like below to indicate wanted behavior:
+
+Also means that if params->tot_len from prog input was 0 we won't break either,
+and we would be closer to XDP semantics overall which is desirable. Yes, extra
+flag for skb case to force it which is not great, but I'm not sure how it would
+be compatible without it tbh.
+
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index c3458ec1f30a..d3cd2f47f011 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -4934,8 +4934,9 @@ struct bpf_raw_tracepoint_args {
+>    * OUTPUT:  Do lookup from egress perspective; default is ingress
+>    */
+>   enum {
+> -    BPF_FIB_LOOKUP_DIRECT  = (1U << 0),
+> -    BPF_FIB_LOOKUP_OUTPUT  = (1U << 1),
+> +    BPF_FIB_LOOKUP_DIRECT        = (1U << 0),
+> +    BPF_FIB_LOOKUP_OUTPUT        = (1U << 1),
+> +    BPF_FIB_LOOKUP_ALWAYS_MTU_CHECK    = (1U << 2),
+>   };
 > 
-> Signed-off-by: Enrico Weigelt <info@metux.net>
-> ---
->  arch/x86/Kconfig                 | 11 +++++++++++
->  arch/x86/kernel/cpu/Makefile     |  4 +++-
->  arch/x86/kernel/cpu/hypervisor.c |  2 ++
->  drivers/input/mouse/Kconfig      |  2 +-
->  drivers/misc/Kconfig             |  2 +-
->  drivers/ptp/Kconfig              |  2 +-
->  6 files changed, 19 insertions(+), 4 deletions(-)
+>   enum {
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 2ca5eecebacf..4fb876ebd6a0 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -5547,37 +5547,27 @@ static const struct bpf_func_proto bpf_xdp_fib_lookup_proto = {
+>   BPF_CALL_4(bpf_skb_fib_lookup, struct sk_buff *, skb,
+>          struct bpf_fib_lookup *, params, int, plen, u32, flags)
+>   {
+> -    struct net *net = dev_net(skb->dev);
+> -    int rc = -EAFNOSUPPORT;
+> +    bool check_mtu = !skb_is_gso(skb) ||
+> +             (flags & BPF_FIB_LOOKUP_ALWAYS_MTU_CHECK);
 > 
-> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-> index f6946b81f74a..eff12460cb3c 100644
-> --- a/arch/x86/Kconfig
-> +++ b/arch/x86/Kconfig
-> @@ -801,6 +801,17 @@ config X86_HV_CALLBACK_VECTOR
->  
->  source "arch/x86/xen/Kconfig"
->  
-> +config VMWARE_GUEST
-> +	bool "VMware Guest support"
-> +	default y
-> +	help
-> +	  This option enables several optimizations for running under the
-> +	  VMware hypervisor.
-> +
-> +	  Disabling it saves a few kb, for stripped down kernels eg. in high
-
-	                           kB or KiB or even KB, but not kb
-	                                                         e.g.
-
-> +	  density virtualization or embedded systems running (para)virtualized
-> +	  workloads.
-> +
->  config KVM_GUEST
->  	bool "KVM Guest support (including kvmclock)"
->  	depends on PARAVIRT
-
-
--- 
-~Randy
-
+>       if (plen < sizeof(*params))
+>           return -EINVAL;
+> 
+> -    if (flags & ~(BPF_FIB_LOOKUP_DIRECT | BPF_FIB_LOOKUP_OUTPUT))
+> +    if (flags & ~(BPF_FIB_LOOKUP_DIRECT | BPF_FIB_LOOKUP_OUTPUT |
+> +              BPF_FIB_LOOKUP_ALWAYS_MTU_CHECK))
+>           return -EINVAL;
+> 
+>       switch (params->family) {
+>   #if IS_ENABLED(CONFIG_INET)
+>       case AF_INET:
+> -        rc = bpf_ipv4_fib_lookup(net, params, flags, false);
+> -        break;
+> +        return bpf_ipv4_fib_lookup(net, params, flags, check_mtu);
+>   #endif
+>   #if IS_ENABLED(CONFIG_IPV6)
+>       case AF_INET6:
+> -        rc = bpf_ipv6_fib_lookup(net, params, flags, false);
+> -        break;
+> +        return bpf_ipv6_fib_lookup(net, params, flags, check_mtu);
+>   #endif
+>       }
+> -
+> -    if (!rc) {
+> -        struct net_device *dev;
+> -
+> -        dev = dev_get_by_index_rcu(net, params->ifindex);
+> -        if (!is_skb_forwardable(dev, skb))
+> -            rc = BPF_FIB_LKUP_RET_FRAG_NEEDED;
+> -    }
+> -
+> -    return rc;
+> +    return -EAFNOSUPPORT;
+>   }
+> 
+>   static const struct bpf_func_proto bpf_skb_fib_lookup_proto = {
+> 
+> 
+>    [0] https://lore.kernel.org/bpf/65d8f988-5b41-24c2-8501-7cbbddb1238e@iogearbox.net/
