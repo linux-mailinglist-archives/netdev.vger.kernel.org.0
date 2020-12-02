@@ -2,87 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18E652CC4EE
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 19:21:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E40182CC4FF
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 19:26:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730731AbgLBSVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 13:21:13 -0500
-Received: from a2.mail.mailgun.net ([198.61.254.61]:39447 "EHLO
-        a2.mail.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726283AbgLBSVL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 13:21:11 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1606933248; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=6hHiBut5tc4rK79Dvrfs9gsxeC4FD3wiqw/uG0yPHFQ=;
- b=qG5jE5DfgSFY0EJx/apiZeU50kGMcnXiPfloNa3ArYY9NTF7Hwx6Q2u37rBqMZhCsfL5rw5r
- c+1cVVe9e5XUpfRamPEpQx/nrtUpY3W9UH+47EcJ9G+1wzDEa2uJtwWFbIlSqRpHhD0Oqory
- aynm9xOk7DPOlMyfpFqD6Nc/9VA=
-X-Mailgun-Sending-Ip: 198.61.254.61
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 5fc7daf08d03b22a5a80656a (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 02 Dec 2020 18:20:32
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 6D184C43462; Wed,  2 Dec 2020 18:20:32 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id B55C5C433ED;
-        Wed,  2 Dec 2020 18:20:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B55C5C433ED
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath11k: Fix an error handling path
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20201122173943.1366167-1-christophe.jaillet@wanadoo.fr>
-References: <20201122173943.1366167-1-christophe.jaillet@wanadoo.fr>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     davem@davemloft.net, kuba@kernel.org, gseset@codeaurora.org,
-        mkenna@codeaurora.org, slakkavalli@datto.com,
-        gsamin@codeaurora.org, pradeepc@codeaurora.org,
-        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20201202182032.6D184C43462@smtp.codeaurora.org>
-Date:   Wed,  2 Dec 2020 18:20:32 +0000 (UTC)
+        id S2387795AbgLBSY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 13:24:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51134 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726283AbgLBSY6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 13:24:58 -0500
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F519C0613D4
+        for <netdev@vger.kernel.org>; Wed,  2 Dec 2020 10:24:18 -0800 (PST)
+Received: by mail-pg1-x54a.google.com with SMTP id q14so1490528pgq.9
+        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 10:24:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=omo1GTd+G9VMfPrYjDcrR0xsZwv8ge2aYhBIc0nvnLs=;
+        b=X1xu8dV5vbW6a7rBSY5E/M49NbqLa1tW9Rgn6TxFXDh1NGooG1mDlkYNvqp5Uk0DiT
+         7yDT6F83CTWcpMd1CySirt/wmgqRrVAwZa1BVemmt8tbHpFakMlnkyjwMZxwpaz7MdWr
+         908ZXI8x+DIiyWtejrSt5WK7rSjkROoydw463FnCZe/srtPNa+yzIBqkqeKhOXyPsKm3
+         3ARy6c1bFKYRvmoMs+B1PUv0NdgSzEpEqchxLk0AdUmrDszDvEvqTANigtx5T2de2eFF
+         EHoMUPvTJxdLFo8S2yp8BibvGY3lq9ygxDV1znkIPHzteyJodUEPqBXnxvzL9aEqZUrj
+         rrcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=omo1GTd+G9VMfPrYjDcrR0xsZwv8ge2aYhBIc0nvnLs=;
+        b=VqEJEOVE9TfLaO+1C9yCPeJnhDLuXn+p+DW9VQ26az/N5ZzgXzdm/jBfAoW0srapfe
+         Anod1wM1igQMivSY34bohfTv7XLnDSVrm06J7yHOZkBgtZSvM1YeoHyNs752SqAe1Ps4
+         BDxvoEOMMgIxk8A5WcbziiktHUmXjPMyLExEr4Catx8dSybSY+fKlnMiycAzRsJyQezk
+         ZMi9b3tcb4KELW5paK2gKya0+2BSSPSRFt7gfKAOYGw7cwk0uUwGUkxhalF/7lK1fmBn
+         e7bhJV3iiZnudUk3DvMEOf6F0UUHQLSCns6BsmxIpAfRCD10GbcLNRxlfsl6tKwOHFx1
+         TEgQ==
+X-Gm-Message-State: AOAM533x9eA5ZZ61AiwQl0zLVBXKrrhddlCOmL+nUPf2XFtMjVmI/QT4
+        XayIWahkk8rr4CruAmqglq6w/Fx71ErpGcHg4UBfeGcLD/7yEx9RlecanwXoQOz6Xs8a1jnFkwu
+        1o9d52+pplvWMvdLoe3cUpNt56ruEl7jBIluQ94il4f5l7Fon0z/TCMFAzFgiRiYLOGk5Yca9
+X-Google-Smtp-Source: ABdhPJx6uRGLlwkZeyDadbLHiUZH3Xt8ZvLMMnTWpTp/YX5fjj/o4A04WInuNsnQ4yZ17vjlyl6TBdE93LNjLD56
+Sender: "awogbemila via sendgmr" <awogbemila@awogbemila.sea.corp.google.com>
+X-Received: from awogbemila.sea.corp.google.com ([2620:15c:100:202:1ea0:b8ff:fe73:6cc0])
+ (user=awogbemila job=sendgmr) by 2002:a65:558a:: with SMTP id
+ j10mr1021866pgs.370.1606933457511; Wed, 02 Dec 2020 10:24:17 -0800 (PST)
+Date:   Wed,  2 Dec 2020 10:24:09 -0800
+Message-Id: <20201202182413.232510-1-awogbemila@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.29.2.576.ga3fc446d84-goog
+Subject: [PATCH net-next v9 0/4] GVE Raw Addressing
+From:   David Awogbemila <awogbemila@google.com>
+To:     netdev@vger.kernel.org
+Cc:     alexander.duyck@gmail.com, saeed@kernel.org,
+        eric.dumazet@gmail.com, David Awogbemila <awogbemila@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christophe JAILLET <christophe.jaillet@wanadoo.fr> wrote:
+Patchset description:
+This  patchset introduces "raw addressing" mode to the GVE driver.
+Previously (in "queue_page_list" or "qpl" mode), the driver would
+pre-allocate and dma_map buffers to be used on egress and ingress.
+On egress, it would copy data from the skb provided to the
+pre-allocated buffers - this was expensive.
+In raw addressing mode, the driver can avoid this copy and simply
+dma_map the skb's data so that the NIC can use it.
+On ingress, the driver passes buffers up to the networking stack and
+then frees and reallocates buffers when necessary instead of using
+skb_copy_to_linear_data.
+Patch 3 separates the page refcount tracking mechanism
+into a function gve_rx_can_recycle_buffer which uses get_page - this will
+be changed in a future patch to eliminate the use of get_page in tracking
+page refcounts.
 
-> If 'kzalloc' fails, we must return an error code.
-> 
-> While at it, remove a useless initialization of 'err' which could hide the
-> issue.
-> 
-> Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Changes from v8:
+Patch 4: Free skbs that are not sent in gve_tx().
 
-Patch applied to ath-next branch of ath.git, thanks.
+Catherine Sullivan (3):
+  gve: Add support for raw addressing device option
+  gve: Add support for raw addressing to the rx path
+  gve: Add support for raw addressing in the tx path
 
-e7bcc145bcd0 ath11k: Fix an error handling path
+David Awogbemila (1):
+  gve: Rx Buffer Recycling
+
+ drivers/net/ethernet/google/gve/gve.h         |  39 +-
+ drivers/net/ethernet/google/gve/gve_adminq.c  |  89 ++++-
+ drivers/net/ethernet/google/gve/gve_adminq.h  |  15 +-
+ drivers/net/ethernet/google/gve/gve_desc.h    |  19 +-
+ drivers/net/ethernet/google/gve/gve_ethtool.c |   2 +
+ drivers/net/ethernet/google/gve/gve_main.c    |  11 +-
+ drivers/net/ethernet/google/gve/gve_rx.c      | 364 +++++++++++++-----
+ drivers/net/ethernet/google/gve/gve_tx.c      | 202 ++++++++--
+ 8 files changed, 577 insertions(+), 164 deletions(-)
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20201122173943.1366167-1-christophe.jaillet@wanadoo.fr/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.29.2.576.ga3fc446d84-goog
 
