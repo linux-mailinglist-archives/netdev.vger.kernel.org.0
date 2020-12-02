@@ -2,163 +2,264 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69C452CB5EE
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 08:52:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8F682CB605
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 08:57:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387633AbgLBHvH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 02:51:07 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:60300 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726148AbgLBHvH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 02:51:07 -0500
-Received: from 1.general.khfeng.us.vpn ([10.172.68.174] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <kai.heng.feng@canonical.com>)
-        id 1kkMu6-0003KN-HJ; Wed, 02 Dec 2020 07:50:23 +0000
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        stable@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
-        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] igc: Report speed and duplex as unknown when device is runtime suspended
-Date:   Wed,  2 Dec 2020 15:50:17 +0800
-Message-Id: <20201202075018.1717093-1-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.29.2
+        id S2387671AbgLBH5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 02:57:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:22968 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726148AbgLBH5a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 02:57:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606895763;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8HBrsTkIw6oLpANM5sUvCMswDJ1TEwQMY1RdAELPPQM=;
+        b=GyXhumFzPL3S10K76Kb5QNXnHpfjxCs7iPeiJRjV1tIJs2xOJxH5HjBe8Ts2rKA8guz+k3
+        er4nAe15WS3VeNW2N4NK1Ll3YItV4UcJ91mgbh9x82Gqrv4/zRml3smQ8jn4ARVgDKZmZs
+        Jeip9OUxn4AyuvNBw0WsM4zEwV7il2A=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-123-3xTdCzRGPe-s9hxfgM1nrg-1; Wed, 02 Dec 2020 02:56:01 -0500
+X-MC-Unique: 3xTdCzRGPe-s9hxfgM1nrg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2FD40803F4C;
+        Wed,  2 Dec 2020 07:56:00 +0000 (UTC)
+Received: from [10.72.13.145] (ovpn-13-145.pek2.redhat.com [10.72.13.145])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 06A2060C6A;
+        Wed,  2 Dec 2020 07:55:53 +0000 (UTC)
+Subject: Re: [External] Re: [PATCH 0/7] Introduce vdpa management tool
+To:     Parav Pandit <parav@nvidia.com>,
+        Yongji Xie <xieyongji@bytedance.com>
+Cc:     "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>, Eli Cohen <elic@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20201112064005.349268-1-parav@nvidia.com>
+ <5b2235f6-513b-dbc9-3670-e4c9589b4d1f@redhat.com>
+ <CACycT3sYScObb9nN3g7L3cesjE7sCZWxZ5_5R1usGU9ePZEeqA@mail.gmail.com>
+ <182708df-1082-0678-49b2-15d0199f20df@redhat.com>
+ <CACycT3votu2eyacKg+w12xZ_ujEOgTY0f8A7qcpbM-fwTpjqAw@mail.gmail.com>
+ <7f80eeed-f5d3-8c6f-1b8c-87b7a449975c@redhat.com>
+ <CACycT3uw6KJgTo+dBzSj07p2P_PziD+WBfX4yWVX-nDNUD2M3A@mail.gmail.com>
+ <DM6PR12MB4330173AF4BA08FE12F68B5BDCF40@DM6PR12MB4330.namprd12.prod.outlook.com>
+ <CACycT3tTCmEzY37E5196Q2mqME2v+KpAp7Snn8wK4XtRKHEqEw@mail.gmail.com>
+ <BY5PR12MB4322C80FB3C76B85A2D095CCDCF40@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <CACycT3vNXvNVUP+oqzv-MMgtzneeeZUoMaDVtEws7VizH0V+mA@mail.gmail.com>
+ <BY5PR12MB4322446CDB07B3CC5603F7D1DCF30@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <3d91bf80-1a35-9f79-dbca-596358acc0a7@redhat.com>
+ <BY5PR12MB432217EEF5D58C1757BB620DDCF30@BY5PR12MB4322.namprd12.prod.outlook.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <8d9694aa-382b-0eeb-a8d1-e23d33fea650@redhat.com>
+Date:   Wed, 2 Dec 2020 15:55:51 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <BY5PR12MB432217EEF5D58C1757BB620DDCF30@BY5PR12MB4322.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to commit 165ae7a8feb5 ("igb: Report speed and duplex as unknown
-when device is runtime suspended"), if we try to read speed and duplex
-sysfs while the device is runtime suspeneded, igc will complain and
-stops working:
 
-[  123.449883] igc 0000:03:00.0 enp3s0: PCIe link lost, device now detached
-[  123.450052] BUG: kernel NULL pointer dereference, address: 0000000000000=
-008
-[  123.450056] #PF: supervisor read access in kernel mode
-[  123.450058] #PF: error_code(0x0000) - not-present page
-[  123.450059] PGD 0 P4D 0
-[  123.450064] Oops: 0000 [#1] SMP NOPTI
-[  123.450068] CPU: 0 PID: 2525 Comm: udevadm Tainted: G     U  W  OE     5=
-.10.0-1002-oem #2+rkl2-Ubuntu
-[  123.450078] RIP: 0010:igc_rd32+0x1c/0x90 [igc]
-[  123.450080] Code: c0 5d c3 b8 fd ff ff ff c3 0f 1f 44 00 00 0f 1f 44 00 =
-00 55 89 f0 48 89 e5 41 56 41 55 41 54 49 89 c4 53 48 8b 57 08 48 01 d0 <44=
-> 8b 28 41 83 fd ff 74 0c 5b 44 89 e8 41 5c 41 5d 4
+On 2020/12/2 下午2:24, Parav Pandit wrote:
+>
+>> From: Jason Wang <jasowang@redhat.com>
+>> Sent: Wednesday, December 2, 2020 11:21 AM
+>>
+>> On 2020/12/2 下午12:53, Parav Pandit wrote:
+>>>> From: Yongji Xie <xieyongji@bytedance.com>
+>>>> Sent: Wednesday, December 2, 2020 9:00 AM
+>>>>
+>>>> On Tue, Dec 1, 2020 at 11:59 PM Parav Pandit <parav@nvidia.com> wrote:
+>>>>>
+>>>>>> From: Yongji Xie <xieyongji@bytedance.com>
+>>>>>> Sent: Tuesday, December 1, 2020 7:49 PM
+>>>>>>
+>>>>>> On Tue, Dec 1, 2020 at 7:32 PM Parav Pandit <parav@nvidia.com>
+>> wrote:
+>>>>>>>
+>>>>>>>> From: Yongji Xie <xieyongji@bytedance.com>
+>>>>>>>> Sent: Tuesday, December 1, 2020 3:26 PM
+>>>>>>>>
+>>>>>>>> On Tue, Dec 1, 2020 at 2:25 PM Jason Wang
+>> <jasowang@redhat.com>
+>>>>>> wrote:
+>>>>>>>>> On 2020/11/30 下午3:07, Yongji Xie wrote:
+>>>>>>>>>>>> Thanks for adding me, Jason!
+>>>>>>>>>>>>
+>>>>>>>>>>>> Now I'm working on a v2 patchset for VDUSE (vDPA Device in
+>>>>>>>>>>>> Userspace) [1]. This tool is very useful for the vduse device.
+>>>>>>>>>>>> So I'm considering integrating this into my v2 patchset.
+>>>>>>>>>>>> But there is one problem：
+>>>>>>>>>>>>
+>>>>>>>>>>>> In this tool, vdpa device config action and enable action are
+>>>>>>>>>>>> combined into one netlink msg: VDPA_CMD_DEV_NEW. But in
+>>>>>> vduse
+>>>>>>>>>>>> case, it needs to be splitted because a chardev should be
+>>>>>>>>>>>> created and opened by a userspace process before we enable
+>>>>>>>>>>>> the vdpa device (call vdpa_register_device()).
+>>>>>>>>>>>>
+>>>>>>>>>>>> So I'd like to know whether it's possible (or have some
+>>>>>>>>>>>> plans) to add two new netlink msgs something like:
+>>>>>>>>>>>> VDPA_CMD_DEV_ENABLE
+>>>>>>>> and
+>>>>>>>>>>>> VDPA_CMD_DEV_DISABLE to make the config path more
+>> flexible.
+>>>>>>>>>>> Actually, we've discussed such intermediate step in some early
+>>>>>>>>>>> discussion. It looks to me VDUSE could be one of the users of
+>>>> this.
+>>>>>>>>>>> Or I wonder whether we can switch to use anonymous
+>>>>>>>>>>> inode(fd) for VDUSE then fetching it via an
+>>>>>>>>>>> VDUSE_GET_DEVICE_FD
+>>>> ioctl?
+>>>>>>>>>> Yes, we can. Actually the current implementation in VDUSE is
+>>>>>>>>>> like this.  But seems like this is still a intermediate step.
+>>>>>>>>>> The fd should be binded to a name or something else which need
+>>>>>>>>>> to be configured before.
+>>>>>>>>> The name could be specified via the netlink. It looks to me the
+>>>>>>>>> real issue is that until the device is connected with a
+>>>>>>>>> userspace, it can't be used. So we also need to fail the
+>>>>>>>>> enabling if it doesn't
+>>>>>> opened.
+>>>>>>>> Yes, that's true. So you mean we can firstly try to fetch the fd
+>>>>>>>> binded to a name/vduse_id via an VDUSE_GET_DEVICE_FD, then
+>> use
+>>>>>>>> the name/vduse_id as a attribute to create vdpa device? It looks
+>>>>>>>> fine to
+>>>> me.
+>>>>>>> I probably do not well understand. I tried reading patch [1] and
+>>>>>>> few things
+>>>>>> do not look correct as below.
+>>>>>>> Creating the vdpa device on the bus device and destroying the
+>>>>>>> device from
+>>>>>> the workqueue seems unnecessary and racy.
+>>>>>>> It seems vduse driver needs
+>>>>>>> This is something should be done as part of the vdpa dev add
+>>>>>>> command,
+>>>>>> instead of connecting two sides separately and ensuring race free
+>>>>>> access to it.
+>>>>>>> So VDUSE_DEV_START and VDUSE_DEV_STOP should possibly be
+>> avoided.
+>>>>>> Yes, we can avoid these two ioctls with the help of the management
+>> tool.
+>>>>>>> $ vdpa dev add parentdev vduse_mgmtdev type net name foo2
+>>>>>>>
+>>>>>>> When above command is executed it creates necessary vdpa device
+>>>>>>> foo2
+>>>>>> on the bus.
+>>>>>>> When user binds foo2 device with the vduse driver, in the probe(),
+>>>>>>> it
+>>>>>> creates respective char device to access it from user space.
+>>>>>>
+>>>>> I see. So vduse cannot work with any existing vdpa devices like ifc,
+>>>>> mlx5 or
+>>>> netdevsim.
+>>>>> It has its own implementation similar to fuse with its own backend of
+>> choice.
+>>>>> More below.
+>>>>>
+>>>>>> But vduse driver is not a vdpa bus driver. It works like vdpasim
+>>>>>> driver, but offloads the data plane and control plane to a user space
+>> process.
+>>>>> In that case to draw parallel lines,
+>>>>>
+>>>>> 1. netdevsim:
+>>>>> (a) create resources in kernel sw
+>>>>> (b) datapath simulates in kernel
+>>>>>
+>>>>> 2. ifc + mlx5 vdpa dev:
+>>>>> (a) creates resource in hw
+>>>>> (b) data path is in hw
+>>>>>
+>>>>> 3. vduse:
+>>>>> (a) creates resources in userspace sw
+>>>>> (b) data path is in user space.
+>>>>> hence creates data path resources for user space.
+>>>>> So char device is created, removed as result of vdpa device creation.
+>>>>>
+>>>>> For example,
+>>>>> $ vdpa dev add parentdev vduse_mgmtdev type net name foo2
+>>>>>
+>>>>> Above command will create char device for user space.
+>>>>>
+>>>>> Similar command for ifc/mlx5 would have created similar channel for
+>>>>> rest of
+>>>> the config commands in hw.
+>>>>> vduse channel = char device, eventfd etc.
+>>>>> ifc/mlx5 hw channel = bar, irq, command interface etc Netdev sim
+>>>>> channel = sw direct calls
+>>>>>
+>>>>> Does it make sense?
+>>>> In my understanding, to make vdpa work, we need a backend (datapath
+>>>> resources) and a frontend (a vdpa device attached to a vdpa bus). In
+>>>> the above example, it looks like we use the command "vdpa dev add ..."
+>>>>    to create a backend, so do we need another command to create a
+>> frontend?
+>>> For block device there is certainly some backend to process the IOs.
+>>> Sometimes backend to be setup first, before its front end is exposed.
+>>> "vdpa dev add" is the front end command who connects to the backend
+>> (implicitly) for network device.
+>>> vhost->vdpa_block_device->backend_io_processor (usr,hw,kernel).
+>>>
+>>> And it needs a way to connect to backend when explicitly specified during
+>> creation time.
+>>> Something like,
+>>> $ vdpa dev add parentdev vdpa_vduse type block name foo3 handle
+>> <uuid>
+>>> In above example some vendor device specific unique handle is passed
+>> based on backend setup in hardware/user space.
+>>> In below 3 examples, vdpa block simulator is connecting to backend block
+>> or file.
+>>> $ vdpa dev add parentdev vdpa_blocksim type block name foo4 blockdev
+>>> /dev/zero
+>>>
+>>> $ vdpa dev add parentdev vdpa_blocksim type block name foo5 blockdev
+>>> /dev/sda2 size=100M offset=10M
+>>>
+>>> $ vdpa dev add parentdev vdpa_block filebackend_sim type block name
+>>> foo6 file /root/file_backend.txt
+>>>
+>>> Or may be backend connects to the created vdpa device is bound to the
+>> driver.
+>>> Can vduse attach to the created vdpa block device through the char device
+>> and establish the channel to receive IOs, and to setup the block config space?
+>>
+>>
+>> I think it can work.
+>>
+>> Another thing I wonder it that, do we consider more than one VDUSE
+>> parentdev(or management dev)? This allows us to have separated devices
+>> implemented via different processes.
+> Multiple parentdev should be possible per one driver. for example mlx5_vdpa.ko will create multiple parent dev, one for each PCI VFs, SFs.
+> vdpa dev add can certainly use one parent/mgmt dev to create multiple vdpa devices.
+> Not sure why do we need to create multiple parent dev for that.
+> I guess there is just one parent/mgmt. dev for VDUSE. What will each mgmtdev do differently?
+> Demux of IOs, events will be per individual char dev level?
 
-[  123.450083] RSP: 0018:ffffb0d100d6fcc0 EFLAGS: 00010202
-[  123.450085] RAX: 0000000000000008 RBX: ffffb0d100d6fd30 RCX: 00000000000=
-00000
-[  123.450087] RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffff945a127=
-16c10
-[  123.450089] RBP: ffffb0d100d6fce0 R08: ffff945a12716550 R09: ffff945a098=
-74000
-[  123.450090] R10: 0000000000000000 R11: 0000000000000000 R12: 00000000000=
-00008
-[  123.450092] R13: ffff945a12716000 R14: ffff945a037da280 R15: ffff945a037=
-da290
-[  123.450094] FS:  00007f3b34c868c0(0000) GS:ffff945b89200000(0000) knlGS:=
-0000000000000000
-[  123.450096] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  123.450098] CR2: 0000000000000008 CR3: 00000001144de006 CR4: 00000000007=
-70ef0
-[  123.450100] PKRU: 55555554
-[  123.450101] Call Trace:
-[  123.450111]  igc_ethtool_get_link_ksettings+0xd6/0x1b0 [igc]
-[  123.450118]  __ethtool_get_link_ksettings+0x71/0xb0
-[  123.450123]  duplex_show+0x74/0xc0
-[  123.450129]  dev_attr_show+0x1d/0x40
-[  123.450134]  sysfs_kf_seq_show+0xa1/0x100
-[  123.450137]  kernfs_seq_show+0x27/0x30
-[  123.450142]  seq_read+0xb7/0x400
-[  123.450148]  ? common_file_perm+0x72/0x170
-[  123.450151]  kernfs_fop_read+0x35/0x1b0
-[  123.450155]  vfs_read+0xb5/0x1b0
-[  123.450157]  ksys_read+0x67/0xe0
-[  123.450160]  __x64_sys_read+0x1a/0x20
-[  123.450164]  do_syscall_64+0x38/0x90
-[  123.450168]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[  123.450170] RIP: 0033:0x7f3b351fe142
-[  123.450173] Code: c0 e9 c2 fe ff ff 50 48 8d 3d 3a ca 0a 00 e8 f5 19 02 =
-00 0f 1f 44 00 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 0f 05 <48=
-> 3d 00 f0 ff ff 77 56 c3 0f 1f 44 00 00 48 83 ec 28 48 89 54 24
-[  123.450174] RSP: 002b:00007fffef2ec138 EFLAGS: 00000246 ORIG_RAX: 000000=
-0000000000
-[  123.450177] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f3b351=
-fe142
-[  123.450179] RDX: 0000000000001001 RSI: 00005644c047f070 RDI: 00000000000=
-00003
-[  123.450180] RBP: 00007fffef2ec340 R08: 00005644c047f070 R09: 00007f3b352=
-d9320
-[  123.450182] R10: 00005644c047c010 R11: 0000000000000246 R12: 00005644c04=
-7cbf0
-[  123.450184] R13: 00005644c047e6d0 R14: 0000000000000003 R15: 00007fffef2=
-ec140
-[  123.450189] Modules linked in: rfcomm ccm cmac algif_hash algif_skcipher=
- af_alg bnep toshiba_acpi industrialio toshiba_haps hp_accel lis3lv02d btus=
-b btrtl btbcm btintel bluetooth ecdh_generic ecc joydev input_leds nls_iso8=
-859_1 snd_sof_pci snd_sof_intel_byt snd_sof_intel_ipc snd_sof_intel_hda_com=
-mon snd_soc_hdac_hda snd_hda_codec_hdmi snd_sof_xtensa_dsp snd_sof_intel_hd=
-a snd_sof snd_hda_ext_core snd_soc_acpi_intel_match snd_soc_acpi snd_hda_co=
-dec_realtek snd_hda_codec_generic ledtrig_audio snd_hda_intel snd_intel_dsp=
-cfg soundwire_intel soundwire_generic_allocation soundwire_cadence snd_hda_=
-codec snd_hda_core ath10k_pci snd_hwdep intel_rapl_msr intel_rapl_common at=
-h10k_core soundwire_bus snd_soc_core x86_pkg_temp_thermal ath intel_powercl=
-amp snd_compress ac97_bus snd_pcm_dmaengine mac80211 snd_pcm coretemp snd_s=
-eq_midi snd_seq_midi_event snd_rawmidi kvm_intel cfg80211 snd_seq snd_seq_d=
-evice snd_timer mei_hdcp kvm libarc4 snd crct10dif_pclmul ghash_clmulni_int=
-el aesni_intel mei_me dell_wmi
-[  123.450266]  dell_smbios soundcore sparse_keymap dcdbas crypto_simd cryp=
-td mei dell_uart_backlight glue_helper ee1004 wmi_bmof intel_wmi_thunderbol=
-t dell_wmi_descriptor mac_hid efi_pstore acpi_pad acpi_tad intel_cstate sch=
-_fq_codel parport_pc ppdev lp parport ip_tables x_tables autofs4 btrfs blak=
-e2b_generic raid10 raid456 async_raid6_recov async_memcpy async_pq async_xo=
-r async_tx xor raid6_pq libcrc32c raid1 raid0 multipath linear dm_mirror dm=
-_region_hash dm_log hid_generic usbhid hid i915 i2c_algo_bit drm_kms_helper=
- syscopyarea sysfillrect sysimgblt fb_sys_fops cec crc32_pclmul rc_core drm=
- intel_lpss_pci i2c_i801 ahci igc intel_lpss i2c_smbus idma64 xhci_pci liba=
-hci virt_dma xhci_pci_renesas wmi video pinctrl_tigerlake
-[  123.450335] CR2: 0000000000000008
-[  123.450338] ---[ end trace 9f731e38b53c35cc ]---
 
-The more generic approach will be wrap get_link_ksettings() with begin()
-and complete() callbacks, and calls runtime resume and runtime suspend
-routine respectively. However, igc is like igb, runtime resume routine
-uses rtnl_lock() which upper ethtool layer also uses.
+It could be something like how it works for different hardware vendors. 
+E.g IFCVF and mlx5 will register different parentdevs. For userspace, we 
+need to allow different software vendors to manage their instances 
+individually.
 
-So to prevent a deadlock on rtnl, take a different approach, use
-pm_runtime_suspended() to avoid reading register while device is runtime
-suspended.
+Thanks
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
- drivers/net/ethernet/intel/igc/igc_ethtool.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_ethtool.c b/drivers/net/eth=
-ernet/intel/igc/igc_ethtool.c
-index 61d331ce38cd..4b9eac9dc090 100644
---- a/drivers/net/ethernet/intel/igc/igc_ethtool.c
-+++ b/drivers/net/ethernet/intel/igc/igc_ethtool.c
-@@ -1708,7 +1708,8 @@ static int igc_ethtool_get_link_ksettings(struct net_=
-device *netdev,
- 						     Asym_Pause);
- 	}
-=20
--	status =3D rd32(IGC_STATUS);
-+	status =3D pm_runtime_suspended(&adapter->pdev->dev) ?
-+		 0 : rd32(IGC_STATUS);
-=20
- 	if (status & IGC_STATUS_LU) {
- 		if (status & IGC_STATUS_SPEED_1000) {
---=20
-2.29.2
+>
+>> If yes, VDUSE ioctl needs to be extended to register/unregister parentdev.
+>>
+>> Thanks
+>>
+>>
+>>>> Thanks,
+>>>> Yongji
 
