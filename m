@@ -2,572 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17F0A2CBDED
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 14:11:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 079F12CBDD5
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 14:08:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730183AbgLBNIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 08:08:55 -0500
-Received: from smtp.uniroma2.it ([160.80.6.22]:39948 "EHLO smtp.uniroma2.it"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727657AbgLBNIn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Dec 2020 08:08:43 -0500
-Received: from localhost.localdomain ([160.80.103.126])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 0B2D6Xma015624
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 2 Dec 2020 14:06:36 +0100
-From:   Andrea Mayer <andrea.mayer@uniroma2.it>
-To:     "David S. Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        id S2387480AbgLBNHM convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 2 Dec 2020 08:07:12 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:40972 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730112AbgLBNHL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 08:07:11 -0500
+Received: from mail-pj1-f70.google.com ([209.85.216.70])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <kai.heng.feng@canonical.com>)
+        id 1kkRpz-00048o-IV
+        for netdev@vger.kernel.org; Wed, 02 Dec 2020 13:06:27 +0000
+Received: by mail-pj1-f70.google.com with SMTP id gv14so1039054pjb.1
+        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 05:06:27 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=GrUGOpTpSp2pqBXebtTh/akmaDHoTwi3ZKp6lCKMafw=;
+        b=EcvBkFzEdLUMdEOel/oxe3M9TwNJSUj5PWlodLgknNyM5++XsYHhqsxBwnnNYukfAd
+         K3Kw/aXAvHX25U2ufdYWg+cmsffEJXnnORVD0ecxS0/9vznJcBaTJ8EAvPS0i4SQPdIW
+         PaaI9WF9fzF/XQ9YlWHPKCZVX+tSgR6g75A1s/NBxXlIayKUpfd9qUyXyi3Ag1+x5Gmm
+         nY1/0sHGvQyzU41iciC5CwC8NBpQJdf2we4+YLMyZviPETwlsgAyca4cPG++cCiLigWF
+         HBvwOr04cb0VA6casnt7LuE2rMCNSgnsPyr4kLCaXls8bxVcyhOsvgHC5GPVaUQ6F8Hy
+         4z1w==
+X-Gm-Message-State: AOAM531unLm0tHJ7x16IS0qQnJSZmxpUw2mrY6RzhxzyK5lEx0JGCiHu
+        bg5YTYdgqwzhFBdjOIJdiTQboUNmzYgJDf+0VdQGyz4obBzPouTgCVsqIzCuXkWa6oXLytYmgGu
+        gksZKp3UJZBag0EignAouP57pP0zlK9J0fg==
+X-Received: by 2002:a65:5302:: with SMTP id m2mr2524321pgq.231.1606914385332;
+        Wed, 02 Dec 2020 05:06:25 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwhMGBtC/6GcEajV0sdiVtaR4pXRdCldIz7ymjMzJ/3J4tFYYxsodX9NzuDcueBTUHz4tK24g==
+X-Received: by 2002:a65:5302:: with SMTP id m2mr2524290pgq.231.1606914384979;
+        Wed, 02 Dec 2020 05:06:24 -0800 (PST)
+Received: from [192.168.1.208] (220-133-187-190.HINET-IP.hinet.net. [220.133.187.190])
+        by smtp.gmail.com with ESMTPSA id b24sm2014203pjq.10.2020.12.02.05.06.21
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 02 Dec 2020 05:06:24 -0800 (PST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.20.0.2.21\))
+Subject: Re: [PATCH 1/2][v3] e1000e: Leverage direct_complete to speed up
+ s2ram
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+In-Reply-To: <b8896b7748e516e9c440ab22e582e30f1389776c.1606757180.git.yu.c.chen@intel.com>
+Date:   Wed, 2 Dec 2020 21:06:19 +0800
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Shrijeet Mukherjee <shrijeet@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Cc:     Nathan Chancellor <natechancellor@gmail.com>,
-        Stefano Salsano <stefano.salsano@uniroma2.it>,
-        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
-        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
-        Andrea Mayer <andrea.mayer@uniroma2.it>
-Subject: [net-next v4 8/8] selftests: add selftest for the SRv6 End.DT6 (VRF) behavior
-Date:   Wed,  2 Dec 2020 14:05:17 +0100
-Message-Id: <20201202130517.4967-9-andrea.mayer@uniroma2.it>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201202130517.4967-1-andrea.mayer@uniroma2.it>
-References: <20201202130517.4967-1-andrea.mayer@uniroma2.it>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
-X-Virus-Status: Clean
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <len.brown@intel.com>,
+        "Neftin, Sasha" <sasha.neftin@intel.com>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Brandt, Todd E" <todd.e.brandt@intel.com>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <DF79FD96-31E6-4D9A-BF0D-40B7FC563C0B@canonical.com>
+References: <cover.1606757180.git.yu.c.chen@intel.com>
+ <b8896b7748e516e9c440ab22e582e30f1389776c.1606757180.git.yu.c.chen@intel.com>
+To:     Chen Yu <yu.c.chen@intel.com>
+X-Mailer: Apple Mail (2.3654.20.0.2.21)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-this selftest is designed for evaluating the new SRv6 End.DT6 (VRF) behavior
-used, in this example, for implementing IPv6 L3 VPN use cases.
+Hi Yu,
 
-Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
-Signed-off-by: Paolo Lungaroni <paolo.lungaroni@cnit.it>
----
- .../selftests/net/srv6_end_dt6_l3vpn_test.sh  | 502 ++++++++++++++++++
- 1 file changed, 502 insertions(+)
- create mode 100755 tools/testing/selftests/net/srv6_end_dt6_l3vpn_test.sh
+> On Dec 1, 2020, at 09:21, Chen Yu <yu.c.chen@intel.com> wrote:
+> 
+> The NIC is put in runtime suspend status when there is no cable connected.
+> As a result, it is safe to keep non-wakeup NIC in runtime suspended during
+> s2ram because the system does not rely on the NIC plug event nor WoL to wake
+> up the system. Besides that, unlike the s2idle, s2ram does not need to
+> manipulate S0ix settings during suspend.
+> 
+> This patch introduces the .prepare() for e1000e so that if the NIC is runtime
+> suspended the subsequent suspend/resume hooks will be skipped so as to speed
+> up the s2ram. The pm core will check whether the NIC is a wake up device so
+> there's no need to check it again in .prepare(). DPM_FLAG_SMART_PREPARE flag
+> should be set during probe to ask the pci subsystem to honor the driver's
+> prepare() result. Besides, the NIC remains runtime suspended after resumed
+> from s2ram as there is no need to resume it.
+> 
+> Tested on i7-2600K with 82579V NIC
+> Before the patch:
+> e1000e 0000:00:19.0: pci_pm_suspend+0x0/0x160 returned 0 after 225146 usecs
+> e1000e 0000:00:19.0: pci_pm_resume+0x0/0x90 returned 0 after 140588 usecs
+> 
+> After the patch:
+> echo disabled > //sys/devices/pci0000\:00/0000\:00\:19.0/power/wakeup
+> becomes 0 usecs because the hooks will be skipped.
+> 
+> Suggested-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> Signed-off-by: Chen Yu <yu.c.chen@intel.com>
 
-diff --git a/tools/testing/selftests/net/srv6_end_dt6_l3vpn_test.sh b/tools/testing/selftests/net/srv6_end_dt6_l3vpn_test.sh
-new file mode 100755
-index 000000000000..68708f5e26a0
---- /dev/null
-+++ b/tools/testing/selftests/net/srv6_end_dt6_l3vpn_test.sh
-@@ -0,0 +1,502 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# author: Andrea Mayer <andrea.mayer@uniroma2.it>
-+# author: Paolo Lungaroni <paolo.lungaroni@cnit.it>
-+
-+# This test is designed for evaluating the new SRv6 End.DT6 behavior used for
-+# implementing IPv6 L3 VPN use cases.
-+#
-+# Hereafter a network diagram is shown, where two different tenants (named 100
-+# and 200) offer IPv6 L3 VPN services allowing hosts to communicate with each
-+# other across an IPv6 network.
-+#
-+# Only hosts belonging to the same tenant (and to the same VPN) can communicate
-+# with each other. Instead, the communication among hosts of different tenants
-+# is forbidden.
-+# In other words, hosts hs-t100-1 and hs-t100-2 are connected through the IPv6
-+# L3 VPN of tenant 100 while hs-t200-3 and hs-t200-4 are connected using the
-+# IPv6 L3 VPN of tenant 200. Cross connection between tenant 100 and tenant 200
-+# is forbidden and thus, for example, hs-t100-1 cannot reach hs-t200-3 and vice
-+# versa.
-+#
-+# Routers rt-1 and rt-2 implement IPv6 L3 VPN services leveraging the SRv6
-+# architecture. The key components for such VPNs are: a) SRv6 Encap behavior,
-+# b) SRv6 End.DT6 behavior and c) VRF.
-+#
-+# To explain how an IPv6 L3 VPN based on SRv6 works, let us briefly consider an
-+# example where, within the same domain of tenant 100, the host hs-t100-1 pings
-+# the host hs-t100-2.
-+#
-+# First of all, L2 reachability of the host hs-t100-2 is taken into account by
-+# the router rt-1 which acts as a ndp proxy.
-+#
-+# When the host hs-t100-1 sends an IPv6 packet destined to hs-t100-2, the
-+# router rt-1 receives the packet on the internal veth-t100 interface. Such
-+# interface is enslaved to the VRF vrf-100 whose associated table contains the
-+# SRv6 Encap route for encapsulating any IPv6 packet in a IPv6 plus the Segment
-+# Routing Header (SRH) packet. This packet is sent through the (IPv6) core
-+# network up to the router rt-2 that receives it on veth0 interface.
-+#
-+# The rt-2 router uses the 'localsid' routing table to process incoming
-+# IPv6+SRH packets which belong to the VPN of the tenant 100. For each of these
-+# packets, the SRv6 End.DT6 behavior removes the outer IPv6+SRH headers and
-+# performs the lookup on the vrf-100 table using the destination address of
-+# the decapsulated IPv6 packet. Afterwards, the packet is sent to the host
-+# hs-t100-2 through the veth-t100 interface.
-+#
-+# The ping response follows the same processing but this time the role of rt-1
-+# and rt-2 are swapped.
-+#
-+# Of course, the IPv6 L3 VPN for tenant 200 works exactly as the IPv6 L3 VPN
-+# for tenant 100. In this case, only hosts hs-t200-3 and hs-t200-4 are able to
-+# connect with each other.
-+#
-+#
-+# +-------------------+                                   +-------------------+
-+# |                   |                                   |                   |
-+# |  hs-t100-1 netns  |                                   |  hs-t100-2 netns  |
-+# |                   |                                   |                   |
-+# |  +-------------+  |                                   |  +-------------+  |
-+# |  |    veth0    |  |                                   |  |    veth0    |  |
-+# |  |  cafe::1/64 |  |                                   |  |  cafe::2/64 |  |
-+# |  +-------------+  |                                   |  +-------------+  |
-+# |        .          |                                   |         .         |
-+# +-------------------+                                   +-------------------+
-+#          .                                                        .
-+#          .                                                        .
-+#          .                                                        .
-+# +-----------------------------------+   +-----------------------------------+
-+# |        .                          |   |                         .         |
-+# | +---------------+                 |   |                 +---------------- |
-+# | |   veth-t100   |                 |   |                 |   veth-t100   | |
-+# | |  cafe::254/64 |    +----------+ |   | +----------+    |  cafe::254/64 | |
-+# | +-------+-------+    | localsid | |   | | localsid |    +-------+-------- |
-+# |         |            |   table  | |   | |   table  |            |         |
-+# |    +----+----+       +----------+ |   | +----------+       +----+----+    |
-+# |    | vrf-100 |                    |   |                    | vrf-100 |    |
-+# |    +---------+     +------------+ |   | +------------+     +---------+    |
-+# |                    |   veth0    | |   | |   veth0    |                    |
-+# |                    | fd00::1/64 |.|...|.| fd00::2/64 |                    |
-+# |    +---------+     +------------+ |   | +------------+     +---------+    |
-+# |    | vrf-200 |                    |   |                    | vrf-200 |    |
-+# |    +----+----+                    |   |                    +----+----+    |
-+# |         |                         |   |                         |         |
-+# | +-------+-------+                 |   |                 +-------+-------- |
-+# | |   veth-t200   |                 |   |                 |   veth-t200   | |
-+# | |  cafe::254/64 |                 |   |                 |  cafe::254/64 | |
-+# | +---------------+      rt-1 netns |   | rt-2 netns      +---------------- |
-+# |        .                          |   |                          .        |
-+# +-----------------------------------+   +-----------------------------------+
-+#          .                                                         .
-+#          .                                                         .
-+#          .                                                         .
-+#          .                                                         .
-+# +-------------------+                                   +-------------------+
-+# |        .          |                                   |          .        |
-+# |  +-------------+  |                                   |  +-------------+  |
-+# |  |    veth0    |  |                                   |  |    veth0    |  |
-+# |  |  cafe::3/64 |  |                                   |  |  cafe::4/64 |  |
-+# |  +-------------+  |                                   |  +-------------+  |
-+# |                   |                                   |                   |
-+# |  hs-t200-3 netns  |                                   |  hs-t200-4 netns  |
-+# |                   |                                   |                   |
-+# +-------------------+                                   +-------------------+
-+#
-+#
-+# ~~~~~~~~~~~~~~~~~~~~~~~~~
-+# | Network configuration |
-+# ~~~~~~~~~~~~~~~~~~~~~~~~~
-+#
-+# rt-1: localsid table (table 90)
-+# +-------------------------------------------------+
-+# |SID              |Action                         |
-+# +-------------------------------------------------+
-+# |fc00:21:100::6006|apply SRv6 End.DT6 vrftable 100|
-+# +-------------------------------------------------+
-+# |fc00:21:200::6006|apply SRv6 End.DT6 vrftable 200|
-+# +-------------------------------------------------+
-+#
-+# rt-1: VRF tenant 100 (table 100)
-+# +---------------------------------------------------+
-+# |host       |Action                                 |
-+# +---------------------------------------------------+
-+# |cafe::2    |apply seg6 encap segs fc00:12:100::6006|
-+# +---------------------------------------------------+
-+# |cafe::/64  |forward to dev veth_t100               |
-+# +---------------------------------------------------+
-+#
-+# rt-1: VRF tenant 200 (table 200)
-+# +---------------------------------------------------+
-+# |host       |Action                                 |
-+# +---------------------------------------------------+
-+# |cafe::4    |apply seg6 encap segs fc00:12:200::6006|
-+# +---------------------------------------------------+
-+# |cafe::/64  |forward to dev veth_t200               |
-+# +---------------------------------------------------+
-+#
-+#
-+# rt-2: localsid table (table 90)
-+# +-------------------------------------------------+
-+# |SID              |Action                         |
-+# +-------------------------------------------------+
-+# |fc00:12:100::6006|apply SRv6 End.DT6 vrftable 100|
-+# +-------------------------------------------------+
-+# |fc00:12:200::6006|apply SRv6 End.DT6 vrftable 200|
-+# +-------------------------------------------------+
-+#
-+# rt-2: VRF tenant 100 (table 100)
-+# +---------------------------------------------------+
-+# |host       |Action                                 |
-+# +---------------------------------------------------+
-+# |cafe::1    |apply seg6 encap segs fc00:21:100::6006|
-+# +---------------------------------------------------+
-+# |cafe::/64  |forward to dev veth_t100               |
-+# +---------------------------------------------------+
-+#
-+# rt-2: VRF tenant 200 (table 200)
-+# +---------------------------------------------------+
-+# |host       |Action                                 |
-+# +---------------------------------------------------+
-+# |cafe::3    |apply seg6 encap segs fc00:21:200::6006|
-+# +---------------------------------------------------+
-+# |cafe::/64  |forward to dev veth_t200               |
-+# +---------------------------------------------------+
-+#
-+
-+readonly LOCALSID_TABLE_ID=90
-+readonly IPv6_RT_NETWORK=fd00
-+readonly IPv6_HS_NETWORK=cafe
-+readonly VPN_LOCATOR_SERVICE=fc00
-+PING_TIMEOUT_SEC=4
-+
-+ret=0
-+
-+PAUSE_ON_FAIL=${PAUSE_ON_FAIL:=no}
-+
-+log_test()
-+{
-+	local rc=$1
-+	local expected=$2
-+	local msg="$3"
-+
-+	if [ ${rc} -eq ${expected} ]; then
-+		nsuccess=$((nsuccess+1))
-+		printf "\n    TEST: %-60s  [ OK ]\n" "${msg}"
-+	else
-+		ret=1
-+		nfail=$((nfail+1))
-+		printf "\n    TEST: %-60s  [FAIL]\n" "${msg}"
-+		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
-+			echo
-+			echo "hit enter to continue, 'q' to quit"
-+			read a
-+			[ "$a" = "q" ] && exit 1
-+		fi
-+	fi
-+}
-+
-+print_log_test_results()
-+{
-+	if [ "$TESTS" != "none" ]; then
-+		printf "\nTests passed: %3d\n" ${nsuccess}
-+		printf "Tests failed: %3d\n"   ${nfail}
-+	fi
-+}
-+
-+log_section()
-+{
-+	echo
-+	echo "################################################################################"
-+	echo "TEST SECTION: $*"
-+	echo "################################################################################"
-+}
-+
-+cleanup()
-+{
-+	ip link del veth-rt-1 2>/dev/null || true
-+	ip link del veth-rt-2 2>/dev/null || true
-+
-+	# destroy routers rt-* and hosts hs-*
-+	for ns in $(ip netns show | grep -E 'rt-*|hs-*'); do
-+		ip netns del ${ns} || true
-+	done
-+}
-+
-+# Setup the basic networking for the routers
-+setup_rt_networking()
-+{
-+	local rt=$1
-+	local nsname=rt-${rt}
-+
-+	ip netns add ${nsname}
-+	ip link set veth-rt-${rt} netns ${nsname}
-+	ip -netns ${nsname} link set veth-rt-${rt} name veth0
-+
-+	ip netns exec ${nsname} sysctl -wq net.ipv6.conf.all.accept_dad=0
-+	ip netns exec ${nsname} sysctl -wq net.ipv6.conf.default.accept_dad=0
-+
-+	ip -netns ${nsname} addr add ${IPv6_RT_NETWORK}::${rt}/64 dev veth0 nodad
-+	ip -netns ${nsname} link set veth0 up
-+	ip -netns ${nsname} link set lo up
-+
-+	ip netns exec ${nsname} sysctl -wq net.ipv6.conf.all.forwarding=1
-+}
-+
-+setup_hs()
-+{
-+	local hs=$1
-+	local rt=$2
-+	local tid=$3
-+	local hsname=hs-t${tid}-${hs}
-+	local rtname=rt-${rt}
-+	local rtveth=veth-t${tid}
-+
-+	# set the networking for the host
-+	ip netns add ${hsname}
-+
-+	ip netns exec ${hsname} sysctl -wq net.ipv6.conf.all.accept_dad=0
-+	ip netns exec ${hsname} sysctl -wq net.ipv6.conf.default.accept_dad=0
-+
-+	ip -netns ${hsname} link add veth0 type veth peer name ${rtveth}
-+	ip -netns ${hsname} link set ${rtveth} netns ${rtname}
-+	ip -netns ${hsname} addr add ${IPv6_HS_NETWORK}::${hs}/64 dev veth0 nodad
-+	ip -netns ${hsname} link set veth0 up
-+	ip -netns ${hsname} link set lo up
-+
-+	# configure the VRF for the tenant X on the router which is directly
-+	# connected to the source host.
-+	ip -netns ${rtname} link add vrf-${tid} type vrf table ${tid}
-+	ip -netns ${rtname} link set vrf-${tid} up
-+
-+	ip netns exec ${rtname} sysctl -wq net.ipv6.conf.all.accept_dad=0
-+	ip netns exec ${rtname} sysctl -wq net.ipv6.conf.default.accept_dad=0
-+
-+	# enslave the veth-tX interface to the vrf-X in the access router
-+	ip -netns ${rtname} link set ${rtveth} master vrf-${tid}
-+	ip -netns ${rtname} addr add ${IPv6_HS_NETWORK}::254/64 dev ${rtveth} nodad
-+	ip -netns ${rtname} link set ${rtveth} up
-+
-+	ip netns exec ${rtname} sysctl -wq net.ipv6.conf.${rtveth}.proxy_ndp=1
-+
-+	ip netns exec ${rtname} sh -c "echo 1 > /proc/sys/net/vrf/strict_mode"
-+}
-+
-+setup_vpn_config()
-+{
-+	local hssrc=$1
-+	local rtsrc=$2
-+	local hsdst=$3
-+	local rtdst=$4
-+	local tid=$5
-+
-+	local hssrc_name=hs-t${tid}-${hssrc}
-+	local hsdst_name=hs-t${tid}-${hsdst}
-+	local rtsrc_name=rt-${rtsrc}
-+	local rtdst_name=rt-${rtdst}
-+	local rtveth=veth-t${tid}
-+	local vpn_sid=${VPN_LOCATOR_SERVICE}:${hssrc}${hsdst}:${tid}::6006
-+
-+	ip -netns ${rtsrc_name} -6 neigh add proxy ${IPv6_HS_NETWORK}::${hsdst} dev ${rtveth}
-+
-+	# set the encap route for encapsulating packets which arrive from the
-+	# host hssrc and destined to the access router rtsrc.
-+	ip -netns ${rtsrc_name} -6 route add ${IPv6_HS_NETWORK}::${hsdst}/128 vrf vrf-${tid} \
-+		encap seg6 mode encap segs ${vpn_sid} dev veth0
-+	ip -netns ${rtsrc_name} -6 route add ${vpn_sid}/128 vrf vrf-${tid} \
-+		via fd00::${rtdst} dev veth0
-+
-+	# set the decap route for decapsulating packets which arrive from
-+	# the rtdst router and destined to the hsdst host.
-+	ip -netns ${rtdst_name} -6 route add ${vpn_sid}/128 table ${LOCALSID_TABLE_ID} \
-+		encap seg6local action End.DT6 vrftable ${tid} dev vrf-${tid}
-+
-+	# all sids for VPNs start with a common locator which is fc00::/16.
-+	# Routes for handling the SRv6 End.DT6 behavior instances are grouped
-+	# together in the 'localsid' table.
-+	#
-+	# NOTE: added only once
-+	if [ -z "$(ip -netns ${rtdst_name} -6 rule show | \
-+	    grep "to ${VPN_LOCATOR_SERVICE}::/16 lookup ${LOCALSID_TABLE_ID}")" ]; then
-+		ip -netns ${rtdst_name} -6 rule add \
-+			to ${VPN_LOCATOR_SERVICE}::/16 \
-+			lookup ${LOCALSID_TABLE_ID} prio 999
-+	fi
-+}
-+
-+setup()
-+{
-+	ip link add veth-rt-1 type veth peer name veth-rt-2
-+	# setup the networking for router rt-1 and router rt-2
-+	setup_rt_networking 1
-+	setup_rt_networking 2
-+
-+	# setup two hosts for the tenant 100.
-+	#  - host hs-1 is directly connected to the router rt-1;
-+	#  - host hs-2 is directly connected to the router rt-2.
-+	setup_hs 1 1 100  #args: host router tenant
-+	setup_hs 2 2 100
-+
-+	# setup two hosts for the tenant 200
-+	#  - host hs-3 is directly connected to the router rt-1;
-+	#  - host hs-4 is directly connected to the router rt-2.
-+	setup_hs 3 1 200
-+	setup_hs 4 2 200
-+
-+	# setup the IPv6 L3 VPN which connects the host hs-t100-1 and host
-+	# hs-t100-2 within the same tenant 100.
-+	setup_vpn_config 1 1 2 2 100  #args: src_host src_router dst_host dst_router tenant
-+	setup_vpn_config 2 2 1 1 100
-+
-+	# setup the IPv6 L3 VPN which connects the host hs-t200-3 and host
-+	# hs-t200-4 within the same tenant 200.
-+	setup_vpn_config 3 1 4 2 200
-+	setup_vpn_config 4 2 3 1 200
-+}
-+
-+check_rt_connectivity()
-+{
-+	local rtsrc=$1
-+	local rtdst=$2
-+
-+	ip netns exec rt-${rtsrc} ping -c 1 -W 1 ${IPv6_RT_NETWORK}::${rtdst} \
-+		>/dev/null 2>&1
-+}
-+
-+check_and_log_rt_connectivity()
-+{
-+	local rtsrc=$1
-+	local rtdst=$2
-+
-+	check_rt_connectivity ${rtsrc} ${rtdst}
-+	log_test $? 0 "Routers connectivity: rt-${rtsrc} -> rt-${rtdst}"
-+}
-+
-+check_hs_connectivity()
-+{
-+	local hssrc=$1
-+	local hsdst=$2
-+	local tid=$3
-+
-+	ip netns exec hs-t${tid}-${hssrc} ping -c 1 -W ${PING_TIMEOUT_SEC} \
-+		${IPv6_HS_NETWORK}::${hsdst} >/dev/null 2>&1
-+}
-+
-+check_and_log_hs_connectivity()
-+{
-+	local hssrc=$1
-+	local hsdst=$2
-+	local tid=$3
-+
-+	check_hs_connectivity ${hssrc} ${hsdst} ${tid}
-+	log_test $? 0 "Hosts connectivity: hs-t${tid}-${hssrc} -> hs-t${tid}-${hsdst} (tenant ${tid})"
-+}
-+
-+check_and_log_hs_isolation()
-+{
-+	local hssrc=$1
-+	local tidsrc=$2
-+	local hsdst=$3
-+	local tiddst=$4
-+
-+	check_hs_connectivity ${hssrc} ${hsdst} ${tidsrc}
-+	# NOTE: ping should fail
-+	log_test $? 1 "Hosts isolation: hs-t${tidsrc}-${hssrc} -X-> hs-t${tiddst}-${hsdst}"
-+}
-+
-+
-+check_and_log_hs2gw_connectivity()
-+{
-+	local hssrc=$1
-+	local tid=$2
-+
-+	check_hs_connectivity ${hssrc} 254 ${tid}
-+	log_test $? 0 "Hosts connectivity: hs-t${tid}-${hssrc} -> gw (tenant ${tid})"
-+}
-+
-+router_tests()
-+{
-+	log_section "IPv6 routers connectivity test"
-+
-+	check_and_log_rt_connectivity 1 2
-+	check_and_log_rt_connectivity 2 1
-+}
-+
-+host2gateway_tests()
-+{
-+	log_section "IPv6 connectivity test among hosts and gateway"
-+
-+	check_and_log_hs2gw_connectivity 1 100
-+	check_and_log_hs2gw_connectivity 2 100
-+
-+	check_and_log_hs2gw_connectivity 3 200
-+	check_and_log_hs2gw_connectivity 4 200
-+}
-+
-+host_vpn_tests()
-+{
-+	log_section "SRv6 VPN connectivity test among hosts in the same tenant"
-+
-+	check_and_log_hs_connectivity 1 2 100
-+	check_and_log_hs_connectivity 2 1 100
-+
-+	check_and_log_hs_connectivity 3 4 200
-+	check_and_log_hs_connectivity 4 3 200
-+}
-+
-+host_vpn_isolation_tests()
-+{
-+	local i
-+	local j
-+	local k
-+	local tmp
-+	local l1="1 2"
-+	local l2="3 4"
-+	local t1=100
-+	local t2=200
-+
-+	log_section "SRv6 VPN isolation test among hosts in different tentants"
-+
-+	for k in 0 1; do
-+		for i in ${l1}; do
-+			for j in ${l2}; do
-+				check_and_log_hs_isolation ${i} ${t1} ${j} ${t2}
-+			done
-+		done
-+
-+		# let us test the reverse path
-+		tmp="${l1}"; l1="${l2}"; l2="${tmp}"
-+		tmp=${t1}; t1=${t2}; t2=${tmp}
-+	done
-+}
-+
-+if [ "$(id -u)" -ne 0 ];then
-+	echo "SKIP: Need root privileges"
-+	exit 0
-+fi
-+
-+if [ ! -x "$(command -v ip)" ]; then
-+	echo "SKIP: Could not run test without ip tool"
-+	exit 0
-+fi
-+
-+modprobe vrf &>/dev/null
-+if [ ! -e /proc/sys/net/vrf/strict_mode ]; then
-+        echo "SKIP: vrf sysctl does not exist"
-+        exit 0
-+fi
-+
-+cleanup &>/dev/null
-+
-+setup
-+
-+router_tests
-+host2gateway_tests
-+host_vpn_tests
-+host_vpn_isolation_tests
-+
-+print_log_test_results
-+
-+cleanup &>/dev/null
-+
-+exit ${ret}
--- 
-2.20.1
+Well, I was intended to send it, but anyway :)
+
+> ---
+> v2: Added test data and some commit log revise(Paul Menzel)
+>    Only skip the suspend/resume if the NIC is not a wake up device specified
+>    by the user(Kai-Heng Feng)
+> v3: Leverage direct complete mechanism to skip all hooks(Kai-Heng Feng)
+> ---
+> drivers/net/ethernet/intel/e1000e/netdev.c | 10 +++++++++-
+> 1 file changed, 9 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+> index b30f00891c03..b210bba3f20a 100644
+> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
+> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+> @@ -25,6 +25,7 @@
+> #include <linux/pm_runtime.h>
+> #include <linux/aer.h>
+> #include <linux/prefetch.h>
+> +#include <linux/suspend.h>
+> 
+> #include "e1000.h"
+> 
+> @@ -6957,6 +6958,12 @@ static int __e1000_resume(struct pci_dev *pdev)
+> 	return 0;
+> }
+> 
+> +static int e1000e_pm_prepare(struct device *dev)
+> +{
+> +	return pm_runtime_suspended(dev) &&
+> +		pm_suspend_via_firmware();
+> +}
+> +
+> static __maybe_unused int e1000e_pm_suspend(struct device *dev)
+> {
+> 	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
+> @@ -7665,7 +7672,7 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+> 
+> 	e1000_print_device_info(adapter);
+> 
+> -	dev_pm_set_driver_flags(&pdev->dev, DPM_FLAG_NO_DIRECT_COMPLETE);
+> +	dev_pm_set_driver_flags(&pdev->dev, DPM_FLAG_SMART_PREPARE);
+
+This isn't required for pci_pm_prepare() to use driver's .prepare callback.
+
+> 
+> 	if (pci_dev_run_wake(pdev) && hw->mac.type < e1000_pch_cnp)
+> 		pm_runtime_put_noidle(&pdev->dev);
+> @@ -7890,6 +7897,7 @@ MODULE_DEVICE_TABLE(pci, e1000_pci_tbl);
+> 
+> static const struct dev_pm_ops e1000_pm_ops = {
+> #ifdef CONFIG_PM_SLEEP
+> +	.prepare	= e1000e_pm_prepare,
+
+How do we make sure a link change happened in S3 can be detect after resume, without a .complete callback which ask device to runtime resume?
+
+Kai-Heng
+
+> 	.suspend	= e1000e_pm_suspend,
+> 	.resume		= e1000e_pm_resume,
+> 	.freeze		= e1000e_pm_freeze,
+> -- 
+> 2.17.1
+> 
 
