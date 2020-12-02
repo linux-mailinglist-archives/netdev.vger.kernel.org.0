@@ -2,153 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24CC42CC254
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 17:31:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19F8A2CC266
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 17:36:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389091AbgLBQbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 11:31:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33228 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389127AbgLBQbO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 11:31:14 -0500
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A214C061A4D
-        for <netdev@vger.kernel.org>; Wed,  2 Dec 2020 08:30:18 -0800 (PST)
-Received: by mail-wr1-x441.google.com with SMTP id e7so4686745wrv.6
-        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 08:30:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=m/r9so68MBI7cvUvWbAgjEbzBUm3gJd7064Fn8T1sGI=;
-        b=YhNJxdhfwExxIIRphICeWtTHz0sguVZVsh3fF1GhScSOZqJdsmfYO59InDsB0Pe3oR
-         1ce+rKUGReeSPvpgkqIbLQmesyGbResHSlmgHY7iG9Oip+ygUv021CzndHAx4iNjTzNk
-         3i1qKhnqiykmnWTYMrw0XV5YGVfMQak3OhpEtD7Vo1rz2iVuwJehJZ2b8Vc+R/xmNsrT
-         KqDswVCXFqemib+4MfMTXRvtZH2AIuE0OVHGxe0RJLwDfya3VIAV8yDSv1toZbjXuArq
-         44SyUHyKZH3BQdA2fZYm7qSMLxfy6X9IVwW7w8QvS9897So9liiDVdC32hLVwVYdC7ap
-         QKjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=m/r9so68MBI7cvUvWbAgjEbzBUm3gJd7064Fn8T1sGI=;
-        b=HlbCcbmwZquhZRF/Edrk+/cLFYKuIPMKacOIbyhStEEMNW+QU/BbRkWcl+TauGK07t
-         +vJ9NRtwiaGdMiOS+meemydrfe8siFYzz8wrwV7mxCSATHEtKWae5vdFey73qzf0II/t
-         O9SJle2s4ly9sonJ5BvOGYCQRjWn35LLBCt28IE5QvivjdJI1spIduGB+akzZdcOa/Uz
-         p3zs9y4cszRnr/H1mP753ZIkM17fpig4ipz5ocWhuZHKV6tV5+0ufaEMiSeBXW8/GCJ2
-         iEjWwaudDNP8RQ0JvH7rXog5nPfPaPutU9GQlW/zsIER0O9omaEBwMvVJz2WQVOomvoW
-         9BmQ==
-X-Gm-Message-State: AOAM531rKZaB7SbKOYHQ7nD7KeV/SB44gW8pAfm5kz6SZWA/vEjfiwp1
-        q3NO/M10/XFnhkQy9ig+xHo=
-X-Google-Smtp-Source: ABdhPJwfbzUDm57QeqTCvPbOFRRE/v9Fx+uz10h4ka27LiGzK/ng9XsdjjNoq0b8BaBOSlim6mUGeg==
-X-Received: by 2002:a05:6000:347:: with SMTP id e7mr4403030wre.35.1606926617110;
-        Wed, 02 Dec 2020 08:30:17 -0800 (PST)
-Received: from [192.168.8.116] ([37.164.23.254])
-        by smtp.gmail.com with ESMTPSA id p4sm2781523wrm.51.2020.12.02.08.30.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Dec 2020 08:30:16 -0800 (PST)
-Subject: Re: [PATCH net-next v2] mptcp: be careful on MPTCP-level ack.
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>, mptcp@lists.01.org
-References: <5370c0ae03449239e3d1674ddcfb090cf6f20abe.1606253206.git.pabeni@redhat.com>
- <fdad2c0e-e84e-4a82-7855-fc5a083bb055@gmail.com>
- <665bb3a603afebdcc85878f6b45bcf0313607994.camel@redhat.com>
- <2ac90c38-c82a-8aeb-2c01-b44a6de1bf57@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <d05ac8b9-3522-e4fc-d3ce-4bea74a6dfbf@gmail.com>
-Date:   Wed, 2 Dec 2020 17:30:14 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
-MIME-Version: 1.0
-In-Reply-To: <2ac90c38-c82a-8aeb-2c01-b44a6de1bf57@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+        id S1730750AbgLBQcm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 11:32:42 -0500
+Received: from mail-eopbgr80103.outbound.protection.outlook.com ([40.107.8.103]:52847
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727942AbgLBQcl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Dec 2020 11:32:41 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YHJ9kk+lHaxRxZi1r1spJhu5kwbTgomMC+Y2MjWSOfYfSFw995vOuUovMTjVf1OIPdLN4z3r4ScjkWLIUw723wbDmPoIvHXloxcT+BhP0gc5Tb/sfzLxIvblgoGPRS1u7FBLamz0LaeEXDiz/4U6tLOOszGIzy+FprrAEocYu9HeryU6TFPkGvbJsM2ZP19UJC3rBD4wodaFYBwgQjKWmQ43prMya1dWM3Z+/+mliSwjSKU9Qur6a+EyiNYbScOJ1B6aHaXUpYmOVD7wGF5rH8cDZrVXmsLEN9LM9EKw9VnoXtRINQQE1tsqXcAvvYqXCmQ9qvVM/GEm8vsj2bSNXA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qI2NSi6o8wt5S7bpeiA0KfdkiFGLI3P5JqIMJz35U98=;
+ b=QDvgs8X07b2oz0D2DqO74jK8VA/gPcAPIJ1WQiZOn7x3trIL9FZZ7e/trWzemh75xdF5DGrprSlfJ1xgO0IGVygdumveyzCbRzhLpqAKJxcKi/a4Xuii9qvGDCLXf0sQ/hugj0pnRJUPdOxnl4gc5nfMGQlH8GOBWcuHLogf//ot+ifazlnKxRH7U4TC50dnBpiXM/gv2EjDJK3WIzeLESeqI4Cn67kvloECHjryeGb9CxZ8X6pvWh9L26J5Se+K08oTFZU2zsWC/qPd8yK2/RCwC/H0G3ntG8bMCboiDHj/gnlE4lPswL6bxwqQk3ed+cr43ejM22QJzAjLt3Cjnw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=victronenergy.com; dmarc=pass action=none
+ header.from=victronenergy.com; dkim=pass header.d=victronenergy.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=victronenergy.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qI2NSi6o8wt5S7bpeiA0KfdkiFGLI3P5JqIMJz35U98=;
+ b=GOFeASi1nZa95R46pLsf46AewECyKUmSVOGIL7sgjkxlklUaJ05OVkFLJWzyDZ4B1xL59DH3Vidk5RZd+iI+4rqYDWJMDw0l2eQhw/PjX4pJIp46proA+KOk3vjouMfh6Jy/Rjn5RB9ksWSwDqjXaN7Eq8rSAD0VbBcwWIYVT20=
+Authentication-Results: lists.infradead.org; dkim=none (message not signed)
+ header.d=none;lists.infradead.org; dmarc=none action=none
+ header.from=victronenergy.com;
+Received: from DBAPR07MB6967.eurprd07.prod.outlook.com (2603:10a6:10:192::11)
+ by DB7PR07MB5355.eurprd07.prod.outlook.com (2603:10a6:10:66::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.9; Wed, 2 Dec
+ 2020 16:31:53 +0000
+Received: from DBAPR07MB6967.eurprd07.prod.outlook.com
+ ([fe80::ad22:24cb:3fd:617c]) by DBAPR07MB6967.eurprd07.prod.outlook.com
+ ([fe80::ad22:24cb:3fd:617c%3]) with mapi id 15.20.3632.009; Wed, 2 Dec 2020
+ 16:31:53 +0000
+Subject: Re: [PATCH] can: don't count arbitration lose as an error
+To:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org
+Cc:     Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@siol.net>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        "moderated list:ARM/Allwinner sunXi SoC support" 
+        <linux-arm-kernel@lists.infradead.org>
+References: <20201127095941.21609-1-jhofstee@victronenergy.com>
+ <434167b4-c2df-02bf-8a9c-2d4716c5435f@pengutronix.de>
+ <f5f93e72-c55f-cfd3-a686-3454e42c4371@victronenergy.com>
+ <0988dd09-70d9-3ee8-9945-10c4dea49407@hartkopp.net>
+ <405f9e1a-e653-e82d-6d45-a1e5298b5c82@victronenergy.com>
+ <b08226a0-bd96-637f-954d-fb8dedc0017b@hartkopp.net>
+From:   Jeroen Hofstee <jhofstee@victronenergy.com>
+Message-ID: <defd8917-cdc6-3560-7b65-7b38980d3fa1@victronenergy.com>
+Date:   Wed, 2 Dec 2020 17:31:51 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <b08226a0-bd96-637f-954d-fb8dedc0017b@hartkopp.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [2001:1c01:3bc5:4e00:e791:efe6:bf00:7133]
+X-ClientProxiedBy: AM4PR0202CA0021.eurprd02.prod.outlook.com
+ (2603:10a6:200:89::31) To DBAPR07MB6967.eurprd07.prod.outlook.com
+ (2603:10a6:10:192::11)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2001:1c01:3bc5:4e00:e791:efe6:bf00:7133] (2001:1c01:3bc5:4e00:e791:efe6:bf00:7133) by AM4PR0202CA0021.eurprd02.prod.outlook.com (2603:10a6:200:89::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.17 via Frontend Transport; Wed, 2 Dec 2020 16:31:52 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: bd3b8015-69ef-454c-9e35-08d896dfc6f9
+X-MS-TrafficTypeDiagnostic: DB7PR07MB5355:
+X-Microsoft-Antispam-PRVS: <DB7PR07MB53555E94F17EADB6BCDD8005C0F30@DB7PR07MB5355.eurprd07.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: I97eC2DC9mwVOyZtZI+CMPFMk5y1z3donPgp68vsl8gxnqgYTeboD/rbicTHBzvHtWHJmp8CVqZGWjQoYat+o7DiG/SCF5PvOFscMIU1CgL7HTrNi97IRrAbjBxbM2nWPq3jKG0BuXA4L6xMc5amflt1RDlhnJpC/CUm6g2K4BDUUsEY3br8an5m1L6X7+y6M4UGc34HtuMPdD1MxbFSgESHKF5780n0eMS/izlhq2zZpqwwRUSe1rzFX2dVAG9RioSSafb6C0Q3ulkXMC9ah+pP6jcxib0Dc+Sy4TcX7YMVjyJLY9XSW/5jCmMuRebkZUnOKWyQNBI8oXactCRxH5lmbJ0Lr+tD8U1XaIixf3OzDHiWCi5X9cg5xiGeCoS58KoCjYg7gujuwWEN1Kru5gCNxbvsBhccgBgzmArafew=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DBAPR07MB6967.eurprd07.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(136003)(366004)(346002)(396003)(376002)(53546011)(478600001)(2906002)(186003)(2616005)(16526019)(110136005)(31686004)(52116002)(66946007)(316002)(54906003)(4744005)(66476007)(6486002)(86362001)(83380400001)(8936002)(4326008)(31696002)(66556008)(5660300002)(8676002)(36756003)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?R2FXdnpqbFFBR2hFZEx3b1lJWEsyTmtEM2cwbEcrTG5USlJvN082bm1jMUVK?=
+ =?utf-8?B?TlJlOW55dllORzVXTDRkL0xyT3BQc0xYL2V2M2g0aHFCKzdwcGJqTE1vMDk0?=
+ =?utf-8?B?NGZyWXBLeWg1akQ5ZTk4WE93Z0lzbG9NMHNOOVJTVGc1TUZyQkRuektHMjlq?=
+ =?utf-8?B?dTVDVkRBSFRYQWtnT2NlSFcvS1ZUYUF3TitLV2VKNGhsTVhHQ0ZXYkcyYmJN?=
+ =?utf-8?B?aXl5dGtSVGVESUtkTW5KbGh2TjMxZHdIdFpTd2MwYkVOSFZCTkordFlQakJP?=
+ =?utf-8?B?SmtVMnI0VGt6TmdFREtFc28vK1A5TVJxTVdxemNUSlg3QUw1THN0SG1QalMr?=
+ =?utf-8?B?cW16SFAyNVlFZDhvRmlUQWVjWWFwUUM0NXROakQyaVFuRS9UTmtTK0xRb0pX?=
+ =?utf-8?B?eGVhQitaWnRsbVFBR09oUDFmOFZUSS9WcDNjMU5GR3J1a2l1SE04TktjVzhQ?=
+ =?utf-8?B?b3g1STZrVUxkZWtrUWorMnBEbWsvN2hNRXc4cklYSDE3ZG9mWTNqV2hoNzVU?=
+ =?utf-8?B?L0ZvaCtiZFV2ZUpXV3lNRW9vbVdndXVjV0FSaDgzQlNlR2FSV3VaaUhCd0Vi?=
+ =?utf-8?B?Yks1QjZwTkxRKzlxUDlZUk9yMzR6U2lOSFltcElSR1M4bTZqWG5CSmpRSEhY?=
+ =?utf-8?B?bGdlUXIvTTlSOWZRbGRRTUMrN1ZxblFjeHNQSXpBaFFJbEhmd1RYZUs3RXVJ?=
+ =?utf-8?B?ZUgxRVFVNzN5YklFRXIraEFxTWl2TmVoemx4UzFlU1MwQkpMVmFISFNocE9S?=
+ =?utf-8?B?bjBhV2J0QktLbEdrSWpGdTlReDRSd1A0a2VPSjdpRWc1NnJHSTBvT2xQbmRz?=
+ =?utf-8?B?ZnVDR3RsWlUxWGJZWFZRMDgyd3N4QkNCckNPQ21rSWJwekZ6WTN4V1NCeHJY?=
+ =?utf-8?B?VVdvL1U1ODFwSlN2VDE4SkRYYlVrK3J6RDY5b3N4VHVwRDNHN3UxNlNnYU5t?=
+ =?utf-8?B?bUZjcnhLdjNuQmdsK1czL0pXUDg0Z05hQURKYW9BZlBhS2sxTmRORHFNWUxr?=
+ =?utf-8?B?K0lwc1FqRkJNZm1mdEhkNlhnZEZRT2g2YkZVaEhiTk9MMVdqcGxXZEZabi9H?=
+ =?utf-8?B?SVdUREtYZmErbUY0Q2tUVHVOUXdFc0plK2pnWG9pUUNTUVE1S0N2WXFXOGtv?=
+ =?utf-8?B?N1VZamUxaFRUNTdmS3FOendpR0ozTGRoeTlaQjg1V2RYdCtuT0dzRmJlV2kx?=
+ =?utf-8?B?YWt4bTVxSjVvQ0dXQUpoanpwTUtweEJlUnBTbDA2SnQ0Z2hDNGYvOUN0R0JB?=
+ =?utf-8?B?VGNMcXJKaS9XQ2syTFdwK0luWnlQOFpyWk16N0pPd0lPZUI2a1FWV2syZ2Vv?=
+ =?utf-8?B?Y21jeG80QitoZUp2ajJiNzZMVlZNQnNHUnBNcTRSL290dVNWQUlCbVN5dDVy?=
+ =?utf-8?B?SXFwQ01SeG9KN2FqRG5jT0xmdDIyMDhJKzhrTlNyWW1MV0VpNVFQbzFkUk9h?=
+ =?utf-8?Q?hMojUKK4?=
+X-OriginatorOrg: victronenergy.com
+X-MS-Exchange-CrossTenant-AuthSource: DBAPR07MB6967.eurprd07.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Dec 2020 16:31:53.2000
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 60b95f08-3558-4e94-b0f8-d690c498e225
+X-MS-Exchange-CrossTenant-Network-Message-Id: bd3b8015-69ef-454c-9e35-08d896dfc6f9
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: RoVbJ8+mBk7Tn9mJ710Dx3iMl4yX2wSAj9iuzr2xe/n+WNYIiVUXuZBcf/prYeKw5zkFJWjml/hTkBPcfl6Lc2aDYFNyfRJ7nbPdLMVjlUs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR07MB5355
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello Oliver,
 
+On 12/2/20 5:22 PM, Oliver Hartkopp wrote:
+> [...]
+>> Aborting the current transmission in non single shot mode
+>> will get you there and incorrectly report the message as
+>> transmitted, but that is not implemented afaik.
+>
+> Ahem, no. If you get there the echo_skb is deleted and the tx_errors 
+> counter is increased. Just as it should be.
+>
+>
+>
 
-On 12/2/20 5:10 PM, Eric Dumazet wrote:
-> 
-> 
-> On 12/2/20 4:37 PM, Paolo Abeni wrote:
->> On Wed, 2020-12-02 at 14:18 +0100, Eric Dumazet wrote:
->>>
->>> On 11/24/20 10:51 PM, Paolo Abeni wrote:
->>>> We can enter the main mptcp_recvmsg() loop even when
->>>> no subflows are connected. As note by Eric, that would
->>>> result in a divide by zero oops on ack generation.
->>>>
->>>> Address the issue by checking the subflow status before
->>>> sending the ack.
->>>>
->>>> Additionally protect mptcp_recvmsg() against invocation
->>>> with weird socket states.
->>>>
->>>> v1 -> v2:
->>>>  - removed unneeded inline keyword - Jakub
->>>>
->>>> Reported-and-suggested-by: Eric Dumazet <eric.dumazet@gmail.com>
->>>> Fixes: ea4ca586b16f ("mptcp: refine MPTCP-level ack scheduling")
->>>> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
->>>> ---
->>>>  net/mptcp/protocol.c | 67 ++++++++++++++++++++++++++++++++------------
->>>>  1 file changed, 49 insertions(+), 18 deletions(-)
->>>>
->>>
->>> Looking at mptcp recvmsg(), it seems that a read(fd, ..., 0) will
->>> trigger an infinite loop if there is available data in receive queue ?
->>
->> Thank you for looking into this!
->>
->> I can't reproduce the issue with the following packetdrill ?!?
->>
->> +0.0  connect(3, ..., ...) = -1 EINPROGRESS (Operation now in progress)
->> +0.1   > S 0:0(0) <mss 1460,sackOK,TS val 100 ecr 0,nop,wscale 8,mpcapable v1 fflags[flag_h] nokey>
->> +0.1   < S. 0:0(0) ack 1 win 65535 <mss 1460,sackOK,TS val 700 ecr 100,nop,wscaale 8,mpcapable v1 flags[flag_h] key[skey=2] >
->> +0.1  > . 1:1(0) ack 1 <nop, nop, TS val 100 ecr 700,mpcapable v1 flags[flag_h]] key[ckey,skey]>
->> +0.1 fcntl(3, F_SETFL, O_RDWR) = 0
->> +0.1   < .  1:201(200) ack 1 win 225 <dss dack8=1 dsn8=1 ssn=1 dll=200 nocs,  nop, nop>
->> +0.1   > .  1:1(0) ack 201 <nop, nop, TS val 100 ecr 700, dss dack8=201 dll=00 nocs>
->> +0.1 read(3, ..., 0) = 0
->>
->> The main recvmsg() loop is interrupted by the following check:
->>
->>                 if (copied >= target)
->>                         break;
-> 
-> @copied should be 0, and @target should be 1
-> 
-> Are you sure the above condition is triggering ?
-> 
-> Maybe read(fd, ..., 0) does not reach recvmsg() at all.
+Ahem, yes. I meant how it is, so it will take the else
+without CAN_CTRLMODE_ONE_SHOT being set.
+But since that is not implemented, it is not relevant.
 
-Yes, sock_read_iter() has a shortcut :
+Regards,
 
-if (!iov_iter_count(to))    /* Match SYS5 behaviour */
-     res = sock_recvmsg(sock, &msg, msg.msg_flags);
+Jeroen
 
-but recvmsg() does not have such check, or maybe I have not looked at the right place.
-
-> 
-> You could try recvmsg() or recvmmsg(), 
-> 
->>
->> I guess we could loop while the msk has available rcv space and some
->> subflow is feeding new data. If so, I think moving:
->>
->> 	if (skb_queue_empty(&msk->receive_queue) &&
->>                     __mptcp_move_skbs(msk, len - copied))
->>                         continue;
->>
->> after the above check should address the issue, and will make the
->> common case faster. Let me test the above - unless I underlooked
->> something relevant!
->>
->> Thanks,
->>
->> Paolo
->>
