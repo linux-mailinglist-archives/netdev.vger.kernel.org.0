@@ -2,169 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEA622CC1FB
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 17:21:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 674D82CC209
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 17:21:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389088AbgLBQSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 11:18:49 -0500
-Received: from mx0a-00154904.pphosted.com ([148.163.133.20]:55448 "EHLO
-        mx0a-00154904.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728614AbgLBQSs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 11:18:48 -0500
-Received: from pps.filterd (m0170393.ppops.net [127.0.0.1])
-        by mx0a-00154904.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B2G2og1020112;
-        Wed, 2 Dec 2020 11:18:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=smtpout1;
- bh=R9gWkkqT52ksh/nQaF9y9YOeO2DMvI4ZuetQduJ8x64=;
- b=ASewIRX1z+V2fTjs2x0QRXMOPnF2x57dVVkcmuaJKrzc/uxqqzdhuWFYsjjbb5u2hLuE
- TuO/Tp6GBcO/bWoZUPgyS2iPxjmm2+EKBSodhtGqgFMfVJAUtEUXiIZv5mGldpOuzKPn
- 5QgCGIMCGFCqRweoQ1UnorC9EeeE9gsE7yEmdI3C3C/4RYo0GiIcSm43IzCQaLNSSCAG
- Qgi/dMv9dGvDxq5CZJzxXXDjin6rd7S6yNHJvy1E/3eZOTE5+4m1ffrU0/Nget0eKJF0
- eDs/PmG9iYHqfNFgOH3Gssx4mBn0e4LOSMpCXFn8mRzGqTbs3p3H78y4oPBQMuIe2ZlF 0w== 
-Received: from mx0a-00154901.pphosted.com (mx0a-00154901.pphosted.com [67.231.149.39])
-        by mx0a-00154904.pphosted.com with ESMTP id 353jrq0n58-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 02 Dec 2020 11:18:07 -0500
-Received: from pps.filterd (m0134746.ppops.net [127.0.0.1])
-        by mx0a-00154901.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B2GEsXF044458;
-        Wed, 2 Dec 2020 11:18:06 -0500
-Received: from ausxippc110.us.dell.com (AUSXIPPC110.us.dell.com [143.166.85.200])
-        by mx0a-00154901.pphosted.com with ESMTP id 3569ejnfje-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 02 Dec 2020 11:18:06 -0500
-X-LoopCount0: from 10.173.37.130
-X-PREM-Routing: D-Outbound
-X-IronPort-AV: E=Sophos;i="5.78,387,1599541200"; 
-   d="scan'208";a="1013735384"
-From:   Mario Limonciello <mario.limonciello@dell.com>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        intel-wired-lan@lists.osuosl.org
-Cc:     linux-kernel@vger.kernel.org, Linux PM <linux-pm@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
+        id S1730698AbgLBQTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 11:19:21 -0500
+Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:49598 "EHLO
+        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730691AbgLBQTU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 11:19:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1606925960; x=1638461960;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=UA/GV23Ara3zyMQ0u3USDM/10j9wKCrlivLcATUot3U=;
+  b=EBygBne9uzSyp56C6UVsS1+Y7JQkMP83SyEnfaqu5mO9a0gJsgVnhJ1s
+   yZN+iIxZUtKZX1NK/OjvDY/7SwWmJvr2WF2b9UmXKVG2e07l2bOC0tTyZ
+   GVtuuT91LXYlykmDhq3X5Gkog7P90nnQcf/ipS+EsvzqhcxU/UPr2jb84
+   8=;
+X-IronPort-AV: E=Sophos;i="5.78,387,1599523200"; 
+   d="scan'208";a="67213731"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1e-42f764a0.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 02 Dec 2020 16:18:33 +0000
+Received: from EX13D16EUB003.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-1e-42f764a0.us-east-1.amazon.com (Postfix) with ESMTPS id AB120C1B3B;
+        Wed,  2 Dec 2020 16:18:29 +0000 (UTC)
+Received: from 38f9d34ed3b1.ant.amazon.com (10.43.162.252) by
+ EX13D16EUB003.ant.amazon.com (10.43.166.99) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 2 Dec 2020 16:18:24 +0000
+Subject: Re: [PATCH net-next v1 0/3] vsock: Add flag field in the vsock
+ address
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        David Duncan <davdunc@amazon.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Alexander Graf <graf@amazon.de>,
+        Jorgen Hansen <jhansen@vmware.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sasha Netfin <sasha.neftin@intel.com>,
-        Aaron Brown <aaron.f.brown@intel.com>,
-        Stefan Assmann <sassmann@redhat.com>,
-        David Miller <davem@davemloft.net>, darcari@redhat.com,
-        Yijun.Shen@dell.com, Perry.Yuan@dell.com,
-        Mario Limonciello <mario.limonciello@dell.com>,
-        Yijun Shen <yijun.shen@dell.com>
-Subject: [PATCH v2 5/5] e1000e: Export s0ix flags to ethtool
-Date:   Wed,  2 Dec 2020 10:17:48 -0600
-Message-Id: <20201202161748.128938-6-mario.limonciello@dell.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201202161748.128938-1-mario.limonciello@dell.com>
-References: <20201202161748.128938-1-mario.limonciello@dell.com>
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>
+References: <20201201152505.19445-1-andraprs@amazon.com>
+ <20201202133754.2ek2wgutkujkvxaf@steredhat>
+From:   "Paraschiv, Andra-Irina" <andraprs@amazon.com>
+Message-ID: <d5c55d2e-5dc3-96f2-2333-37e778c761ae@amazon.com>
+Date:   Wed, 2 Dec 2020 18:18:15 +0200
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:78.0)
+ Gecko/20100101 Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-12-02_08:2020-11-30,2020-12-02 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 malwarescore=0
- impostorscore=0 lowpriorityscore=0 mlxscore=0 spamscore=0 bulkscore=0
- clxscore=1015 suspectscore=0 priorityscore=1501 mlxlogscore=999
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012020096
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 spamscore=0 bulkscore=0
- suspectscore=0 adultscore=0 malwarescore=0 mlxlogscore=999 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2012020096
+In-Reply-To: <20201202133754.2ek2wgutkujkvxaf@steredhat>
+Content-Language: en-US
+X-Originating-IP: [10.43.162.252]
+X-ClientProxiedBy: EX13D04UWB004.ant.amazon.com (10.43.161.103) To
+ EX13D16EUB003.ant.amazon.com (10.43.166.99)
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This flag can be used for debugging and development purposes
-including determining if s0ix flows work properly for a system
-not currently recognized by heuristics.
-
-Tested-by: Yijun Shen <yijun.shen@dell.com>
-Signed-off-by: Mario Limonciello <mario.limonciello@dell.com>
----
- drivers/net/ethernet/intel/e1000e/ethtool.c | 40 +++++++++++++++++++++
- 1 file changed, 40 insertions(+)
-
-diff --git a/drivers/net/ethernet/intel/e1000e/ethtool.c b/drivers/net/ethernet/intel/e1000e/ethtool.c
-index 03215b0aee4b..eb683949ebfe 100644
---- a/drivers/net/ethernet/intel/e1000e/ethtool.c
-+++ b/drivers/net/ethernet/intel/e1000e/ethtool.c
-@@ -23,6 +23,13 @@ struct e1000_stats {
- 	int stat_offset;
- };
- 
-+static const char e1000e_priv_flags_strings[][ETH_GSTRING_LEN] = {
-+#define E1000E_PRIV_FLAGS_S0IX_ENABLED	BIT(0)
-+	"s0ix-enabled",
-+};
-+
-+#define E1000E_PRIV_FLAGS_STR_LEN ARRAY_SIZE(e1000e_priv_flags_strings)
-+
- #define E1000_STAT(str, m) { \
- 		.stat_string = str, \
- 		.type = E1000_STATS, \
-@@ -1776,6 +1783,8 @@ static int e1000e_get_sset_count(struct net_device __always_unused *netdev,
- 		return E1000_TEST_LEN;
- 	case ETH_SS_STATS:
- 		return E1000_STATS_LEN;
-+	case ETH_SS_PRIV_FLAGS:
-+		return E1000E_PRIV_FLAGS_STR_LEN;
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-@@ -2097,6 +2106,10 @@ static void e1000_get_strings(struct net_device __always_unused *netdev,
- 			p += ETH_GSTRING_LEN;
- 		}
- 		break;
-+	case ETH_SS_PRIV_FLAGS:
-+		memcpy(data, e1000e_priv_flags_strings,
-+		       E1000E_PRIV_FLAGS_STR_LEN * ETH_GSTRING_LEN);
-+		break;
- 	}
- }
- 
-@@ -2305,6 +2318,31 @@ static int e1000e_get_ts_info(struct net_device *netdev,
- 	return 0;
- }
- 
-+static u32 e1000e_get_priv_flags(struct net_device *netdev)
-+{
-+	struct e1000_adapter *adapter = netdev_priv(netdev);
-+	u32 priv_flags = 0;
-+
-+	if (adapter->flags2 & FLAG2_ENABLE_S0IX_FLOWS)
-+		priv_flags |= E1000E_PRIV_FLAGS_S0IX_ENABLED;
-+
-+	return priv_flags;
-+}
-+
-+static int e1000e_set_priv_flags(struct net_device *netdev, u32 priv_flags)
-+{
-+	struct e1000_adapter *adapter = netdev_priv(netdev);
-+	unsigned int flags2 = adapter->flags2;
-+
-+	flags2 &= ~FLAG2_ENABLE_S0IX_FLOWS;
-+	if (priv_flags & E1000E_PRIV_FLAGS_S0IX_ENABLED)
-+		flags2 |= FLAG2_ENABLE_S0IX_FLOWS;
-+	if (flags2 != adapter->flags2)
-+		adapter->flags2 = flags2;
-+
-+	return 0;
-+}
-+
- static const struct ethtool_ops e1000_ethtool_ops = {
- 	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS,
- 	.get_drvinfo		= e1000_get_drvinfo,
-@@ -2336,6 +2374,8 @@ static const struct ethtool_ops e1000_ethtool_ops = {
- 	.set_eee		= e1000e_set_eee,
- 	.get_link_ksettings	= e1000_get_link_ksettings,
- 	.set_link_ksettings	= e1000_set_link_ksettings,
-+	.get_priv_flags		= e1000e_get_priv_flags,
-+	.set_priv_flags		= e1000e_set_priv_flags,
- };
- 
- void e1000e_set_ethtool_ops(struct net_device *netdev)
--- 
-2.25.1
+CgpPbiAwMi8xMi8yMDIwIDE1OjM3LCBTdGVmYW5vIEdhcnphcmVsbGEgd3JvdGU6Cj4KPiBIaSBB
+bmRyYSwKPgo+IE9uIFR1ZSwgRGVjIDAxLCAyMDIwIGF0IDA1OjI1OjAyUE0gKzAyMDAsIEFuZHJh
+IFBhcmFzY2hpdiB3cm90ZToKPj4gdnNvY2sgZW5hYmxlcyBjb21tdW5pY2F0aW9uIGJldHdlZW4g
+dmlydHVhbCBtYWNoaW5lcyBhbmQgdGhlIGhvc3QgCj4+IHRoZXkgYXJlCj4+IHJ1bm5pbmcgb24u
+IE5lc3RlZCBWTXMgY2FuIGJlIHNldHVwIHRvIHVzZSB2c29jayBjaGFubmVscywgYXMgdGhlIG11
+bHRpCj4+IHRyYW5zcG9ydCBzdXBwb3J0IGhhcyBiZWVuIGF2YWlsYWJsZSBpbiB0aGUgbWFpbmxp
+bmUgc2luY2UgdGhlIHY1LjUgCj4+IExpbnV4IGtlcm5lbAo+PiBoYXMgYmVlbiByZWxlYXNlZC4K
+Pj4KPj4gSW1wbGljaXRseSwgaWYgbm8gaG9zdC0+Z3Vlc3QgdnNvY2sgdHJhbnNwb3J0IGlzIGxv
+YWRlZCwgYWxsIHRoZSAKPj4gdnNvY2sgcGFja2V0cwo+PiBhcmUgZm9yd2FyZGVkIHRvIHRoZSBo
+b3N0LiBUaGlzIGJlaGF2aW9yIGNhbiBiZSB1c2VkIHRvIHNldHVwIAo+PiBjb21tdW5pY2F0aW9u
+Cj4+IGNoYW5uZWxzIGJldHdlZW4gc2libGluZyBWTXMgdGhhdCBhcmUgcnVubmluZyBvbiB0aGUg
+c2FtZSBob3N0LiBPbmUgCj4+IGV4YW1wbGUgY2FuCj4+IGJlIHRoZSB2c29jayBjaGFubmVscyB0
+aGF0IGNhbiBiZSBlc3RhYmxpc2hlZCB3aXRoaW4gQVdTIE5pdHJvIEVuY2xhdmVzCj4+IChzZWUg
+RG9jdW1lbnRhdGlvbi92aXJ0L25lX292ZXJ2aWV3LnJzdCkuCj4+Cj4+IFRvIGJlIGFibGUgdG8g
+ZXhwbGljaXRseSBtYXJrIGEgY29ubmVjdGlvbiBhcyBiZWluZyB1c2VkIGZvciBhIAo+PiBjZXJ0
+YWluIHVzZSBjYXNlLAo+PiBhZGQgYSBmbGFnIGZpZWxkIGluIHRoZSB2c29jayBhZGRyZXNzIGRh
+dGEgc3RydWN0dXJlLiBUaGUgCj4+ICJzdm1fcmVzZXJ2ZWQxIiBmaWVsZAo+PiBoYXMgYmVlbiBy
+ZXB1cnBvc2VkIHRvIGJlIHRoZSBmbGFnIGZpZWxkLiBUaGUgdmFsdWUgb2YgdGhlIGZsYWcgd2ls
+bCAKPj4gdGhlbiBiZQo+PiB0YWtlbiBpbnRvIGNvbnNpZGVyYXRpb24gd2hlbiB0aGUgdnNvY2sg
+dHJhbnNwb3J0IGlzIGFzc2lnbmVkLgo+Pgo+PiBUaGlzIHdheSBjYW4gZGlzdGluZ3Vpc2ggYmV0
+d2VlbiBuZXN0ZWQgVk1zIC8gbG9jYWwgY29tbXVuaWNhdGlvbiBhbmQgCj4+IHNpYmxpbmcKPj4g
+Vk1zIHVzZSBjYXNlcy4gQW5kIGNhbiBhbHNvIHNldHVwIG9uZSBvciBtb3JlIHR5cGVzIG9mIGNv
+bW11bmljYXRpb24gCj4+IGF0IHRoZSBzYW1lCj4+IHRpbWUuCj4+Cj4KPiBBbm90aGVyIHRoaW5n
+IHdvcnRoIG1lbnRpb25pbmcgaXMgdGhhdCBmb3Igbm93IGl0IGlzIG5vdCBzdXBwb3J0ZWQgaW4K
+PiB2aG9zdC12c29jaywgc2luY2Ugd2UgYXJlIGRpc2NhcmRpbmcgZXZlcnkgcGFja2V0IG5vdCBh
+ZGRyZXNzZWQgdG8gdGhlCj4gaG9zdC4KClJpZ2h0LCB0aGFua3MgZm9yIHRoZSBmb2xsb3ctdXAu
+Cgo+Cj4gV2hhdCB3ZSBzaG91bGQgZG8gd291bGQgYmU6Cj4gLSBhZGQgYSBuZXcgSU9DVEwgdG8g
+dmhvc3QtdnNvY2sgdG8gZW5hYmxlIHNpYmxpbmcgY29tbXVuaWNhdGlvbiwgYnkKPiDCoCBkZWZh
+dWx0IEknZCBsaWtlIHRvIGxlYXZlIGl0IGRpc2FibGVkCj4KPiAtIGFsbG93IHNpYmxpbmcgZm9y
+d2FyZGluZyBvbmx5IGlmIGJvdGggZ3Vlc3RzIGhhdmUgc2libGluZwo+IMKgIGNvbW11bmljYXRp
+b24gZW5hYmxlZCBhbmQgd2Ugc2hvdWxkIGltcGxlbWVudCBzb21lIGtpbmQgb2YgZmlsdGVyaW5n
+Cj4gwqAgb3IgbmV0d29yayBuYW1lc3BhY2Ugc3VwcG9ydCB0byBhbGxvdyB0aGUgY29tbXVuaWNh
+dGlvbiBvbmx5IGJldHdlZW4gYQo+IMKgIHN1YnNldCBvZiBWTXMKPgo+Cj4gRG8geW91IGhhdmUg
+cGxhbnMgdG8gd29yayBvbiBpdD8KCk5vcGUsIG5vdCB5ZXQuIEJ1dCBJIGNhbiB0YWtlIHNvbWUg
+dGltZSBpbiB0aGUgc2Vjb25kIHBhcnQgb2YgRGVjZW1iZXIgLyAKYmVnaW5uaW5nIG9mIEphbnVh
+cnkgZm9yIHRoaXMuIEFuZCB3ZSBjYW4gY2F0Y2ggdXAgaW4gdGhlIG1lYW50aW1lIGlmIAp0aGVy
+ZSBpcyBzb21ldGhpbmcgYmxvY2tpbmcgb3IgbW9yZSBjbGFyaWZpY2F0aW9ucyBhcmUgbmVlZGVk
+IHRvIG1ha2UgaXQgCndvcmsuCgpUaGFua3MsCkFuZHJhCgo+Cj4KPiBPdGhlcndpc2UgSSBwdXQg
+aXQgaW4gbXkgdG8tZG8gbGlzdCBhbmQgaG9wZSBJIGhhdmUgdGltZSB0byBkbyBpdCAobWF5YmUK
+PiBuZXh0IG1vbnRoKS4KPgo+IFRoYW5rcywKPiBTdGVmYW5vCj4KCgoKCkFtYXpvbiBEZXZlbG9w
+bWVudCBDZW50ZXIgKFJvbWFuaWEpIFMuUi5MLiByZWdpc3RlcmVkIG9mZmljZTogMjdBIFNmLiBM
+YXphciBTdHJlZXQsIFVCQzUsIGZsb29yIDIsIElhc2ksIElhc2kgQ291bnR5LCA3MDAwNDUsIFJv
+bWFuaWEuIFJlZ2lzdGVyZWQgaW4gUm9tYW5pYS4gUmVnaXN0cmF0aW9uIG51bWJlciBKMjIvMjYy
+MS8yMDA1Lgo=
 
