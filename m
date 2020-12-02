@@ -2,120 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 156D92CC313
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 18:10:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F97C2CC327
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 18:14:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387604AbgLBRKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 12:10:00 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:33660 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387597AbgLBRJ7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 12:09:59 -0500
-Received: by mail-wr1-f65.google.com with SMTP id u12so4871646wrt.0
-        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 09:09:43 -0800 (PST)
+        id S2388954AbgLBRMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 12:12:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39694 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726514AbgLBRMw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 12:12:52 -0500
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA11C0613CF;
+        Wed,  2 Dec 2020 09:12:12 -0800 (PST)
+Received: by mail-pg1-x543.google.com with SMTP id m9so1471084pgb.4;
+        Wed, 02 Dec 2020 09:12:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=IZbEoIeyeTlkYBHp4MmdFhJwiumrYisD0E9oge56A+o=;
+        b=ZsnJTK9weEJnTRSQB6kXQvyj/MZ8J5Ol1VhaA6Lc0a3kkTXMVMJADc1f9w3wKEVvMq
+         obwjv63y8jcLqZZJPUCjKuz8ShN3wtoNfy1ly3gHLGDzIvvONF4KeOi7BOlzoLhkv/ir
+         O/7cGLt/yehkWObqor4mEIrgxiA8+r9A+a28AXWEKQLW2WiRej0ABKxkTTuXrLMduEgH
+         Ydhmgl8ko/18ro+Hb9NpGdNjppIe58Wit0bfh/2gzwidgP8jCAUz6VIY43PpkbB98iOX
+         kKg1NLt6BGnNyBBHyz+sRxl0Ir7UeUyJJQmsElWDzgyCH4iP274p1pbzid/BgL3aGJGm
+         bG+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version;
-        bh=GoUPntqhXFDjjdaeTnhfFJL5oEa4kYUd17b0TGS2u7k=;
-        b=VEXeRhLfzEQNhu+B6m2db+7dEZpQ1HamgFDS10lXKS0GEvmZVodq4aLZ/bGeHbXk/B
-         BrooN0IeLo4I2oSvR3XLbrGG42M+pfHZU5JO9H3tDmjFDZd9bhXZTE4xmYIRPrw2VveS
-         1+Ox6EflsKxbEDujpve1m0O1cGv67pFHWt9V/h4UnuCKMFuqeMa2stRJOAVQw+65L6hA
-         k1wsBEj4JZV7G4g49bm3W+w4NMDl/hAir8udh7s3LvcMD4LfmDEq+l/gOkIvrakAWxxn
-         0N170cqoRR6NhrLkI0LfU5LxKvc9tsdU75QBAnNPHpVB3N9ya8ak5QLyVZC+yJdywKnj
-         yhUg==
-X-Gm-Message-State: AOAM532mMmV83djwx/HL+0CAm1FIFFzgJiOwc81/p4TdjHCc2PG7E0x8
-        aqX7dQJJNoFPHslD7NR1IJo=
-X-Google-Smtp-Source: ABdhPJznKeckZhW9rWUW65mLhVivpzwyWAhTqLJVucXVn1UNTkHoxYP0FriL9A7PNtscpIYGn9cSwA==
-X-Received: by 2002:adf:8b8f:: with SMTP id o15mr4580549wra.311.1606928957805;
-        Wed, 02 Dec 2020 09:09:17 -0800 (PST)
-Received: from localhost ([88.98.246.218])
-        by smtp.gmail.com with ESMTPSA id d15sm3119071wrx.93.2020.12.02.09.09.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Dec 2020 09:09:15 -0800 (PST)
-Message-ID: <087c2fe7fd6d09fbafc8907940a0dfa829001958.camel@debian.org>
-Subject: Re: [PATCH iproute2 v2] tc/mqprio: json-ify output
-From:   Luca Boccassi <bluca@debian.org>
-To:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org
-Date:   Wed, 02 Dec 2020 17:09:11 +0000
-In-Reply-To: <77134dfe-8e5f-5bcc-25b4-dde91cf3492c@gmail.com>
-References: <20201127152625.61874-1-bluca@debian.org>
-         <20201128183015.15889-1-bluca@debian.org>
-         <77134dfe-8e5f-5bcc-25b4-dde91cf3492c@gmail.com>
-Content-Type: multipart/signed; micalg="pgp-sha512";
-        protocol="application/pgp-signature"; boundary="=-0uuWvC7MsFDOgsK3Lw94"
-User-Agent: Evolution 3.30.5-1.1 
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=IZbEoIeyeTlkYBHp4MmdFhJwiumrYisD0E9oge56A+o=;
+        b=lUN1U/MfTSLA5IQw3pWsHybFodS8cN4GXdOnMZlkuSxg129mb8ZOxz75SN+v61nDSy
+         rgstcAuAhvjGbhpnRWS9G58O3POuGRBiKr5WG9BVu7mQi5CoLUbUVGfkjMFSan1Tv8Zc
+         GIPWoePbrzmV2CFyq6SpuLzj89XbhSNECh8MeuAS26poHqu6uJQ3O5UxLZ7mb6zr457g
+         agVSB7WfkMWearumy77y6oLqYsuH4dPdJeHQQl4aLoX56OjXvMl13Hmbc2nigCnPCm+j
+         LlHqH7Z+0KhJ79dqpI+8deJkjMjX03Gk/iCTfSVJn7OW9Bo8dtZzc3RNfBVz29rhKcRs
+         HVQg==
+X-Gm-Message-State: AOAM532NGQ/JdE6lwf+l2tykoguwTZDDjUU549HTxRQq8N5ByMQX9skb
+        2QPo5uSGK/SAF2crx2jjos7OfllnvS4=
+X-Google-Smtp-Source: ABdhPJxnHIDsU4Yd9L9VnzzBhgdfKupbQhV0SN+mBgRGcDKFkMf8fIUfvrwu6oi3TAkfMtkTvxpr7Q==
+X-Received: by 2002:a63:f50f:: with SMTP id w15mr705616pgh.403.1606929131046;
+        Wed, 02 Dec 2020 09:12:11 -0800 (PST)
+Received: from [10.230.28.242] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id x21sm345923pfn.196.2020.12.02.09.12.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Dec 2020 09:12:07 -0800 (PST)
+Subject: Re: [PATCH v2 1/2] net: dsa: add optional stats64 support
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org
+References: <20201202120712.6212-1-o.rempel@pengutronix.de>
+ <20201202120712.6212-2-o.rempel@pengutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <f2f1623f-749e-ea97-a32c-61c49b7e0485@gmail.com>
+Date:   Wed, 2 Dec 2020 09:12:06 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.5.0
 MIME-Version: 1.0
+In-Reply-To: <20201202120712.6212-2-o.rempel@pengutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---=-0uuWvC7MsFDOgsK3Lw94
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Wed, 2020-12-02 at 09:42 -0700, David Ahern wrote:
-> On 11/28/20 11:30 AM, Luca Boccassi wrote:
-> > @@ -287,9 +293,9 @@ static int mqprio_print_opt(struct qdisc_util *qu, =
-FILE *f, struct rtattr *opt)
-> >  					return -1;
-> >  				*(min++) =3D rta_getattr_u64(r);
-> >  			}
-> > -			fprintf(f, "	min_rate:");
-> > +			open_json_array(PRINT_ANY, is_json_context() ? "min_rate" : "	min_r=
-ate:");
-> >  			for (i =3D 0; i < qopt->num_tc; i++)
-> > -				fprintf(f, "%s ", sprint_rate(min_rate64[i], b1));
-> > +				print_string(PRINT_ANY, NULL, "%s ", sprint_rate(min_rate64[i], b1=
-));
->=20
-> close_json_array?
->=20
-> >  		}
-> > =20
-> >  		if (tb[TCA_MQPRIO_MAX_RATE64]) {
-> > @@ -303,9 +309,9 @@ static int mqprio_print_opt(struct qdisc_util *qu, =
-FILE *f, struct rtattr *opt)
-> >  					return -1;
-> >  				*(max++) =3D rta_getattr_u64(r);
-> >  			}
-> > -			fprintf(f, "	max_rate:");
-> > +			open_json_array(PRINT_ANY, is_json_context() ? "max_rate" : "	max_r=
-ate:");
-> >  			for (i =3D 0; i < qopt->num_tc; i++)
-> > -				fprintf(f, "%s ", sprint_rate(max_rate64[i], b1));
-> > +				print_string(PRINT_ANY, NULL, "%s ", sprint_rate(max_rate64[i], b1=
-));
-> >  		}
->=20
-> close_json_array?
->=20
-> >  	}
-> >  	return 0;
-> >=20
+On 12/2/2020 4:07 AM, Oleksij Rempel wrote:
+> Allow DSA drivers to export stats64
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-Whops, fixed in v3, thanks.
-
---=20
-Kind regards,
-Luca Boccassi
-
---=-0uuWvC7MsFDOgsK3Lw94
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEE6g0RLAGYhL9yp9G8SylmgFB4UWIFAl/HyjcACgkQSylmgFB4
-UWIgSAf/dWJNZbNDvNz8UX9SuCjU7i8bwNc3TGHwKn7t/tyjEFB8lofr2WOr1/3L
-xpjxhewz1XZRNT6W6swB4laWcWikbLWiBW1cSEfIiSd7Xh0tKIzk2/atHtEyV9TT
-BrViptd1xLO2rjWeglz5daRHQLhw5+LoPV3Dwehh1bn35grTLaj7aDUXFjtiFHGk
-D6+QT24vMElbULeyz50HUViL7QXdgbxH7PG8UrfYKkBlDYiZS0uxw8VY1fb38d2N
-ecHcO+8LZRRbPC0rU5dMqrK/Vf1Sbg0Hq1PMew0/gl42x3Gtkc++Vt8/XLWlTuM8
-p59mIolzxoe+Nh4JP8XTdGb2donWpw==
-=q/Mq
------END PGP SIGNATURE-----
-
---=-0uuWvC7MsFDOgsK3Lw94--
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
