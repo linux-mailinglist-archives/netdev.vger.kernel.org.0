@@ -2,81 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B84A42CC79A
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 21:17:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E09D2CC79E
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 21:19:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387717AbgLBUP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 15:15:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60394 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729021AbgLBUP6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Dec 2020 15:15:58 -0500
-Message-ID: <5fde80a4326c45950615918e6e51b5d28d4b9e96.camel@kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1606940117;
-        bh=k3Rc1LyK4I28s1TR4FrEgSZ4kRyzyqjilrld2C4EUT8=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=E6CSekhNsJOC+HlG3Gj9nDpwolNvgiVvHRKL/LUMdOu8ph/QynMFf7WvwBtkderX0
-         186l95R1L7X3FZs9KD3MrdMNMWRHZGO7eNGhK2gTTWJ0Ewyp/a54JsnhoiBOWNkpFW
-         c4hiSe7bRiLQVXYvp3gDKw8yPTjXCrMZZumjm+QCuoeWOZ4qSWXcZY73kvafgOvSoh
-         PjHdpY7cKq9zuzyXmTOhU0x1fqEE+UpBJA4qiYkF1mDeTjVaTNJ8SHkZKpzEG5OfVV
-         ehC3ZLNunIZinRKaSWBRtdBKyLpLekTIbZAGmGC7jaEjI5r8d6uUydcANBBKj5RHqZ
-         EAWGRhtKEng0g==
-Subject: Re: [pull request][net-next 00/15] mlx5 updates 2020-12-01
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Date:   Wed, 02 Dec 2020 12:15:15 -0800
-In-Reply-To: <20201202112059.0f9f7475@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-References: <20201201224208.73295-1-saeedm@nvidia.com>
-         <20201202104859.71a35d1e@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-         <0d6433ee05290e5fe109ca9fd379f5d1c7f797c8.camel@kernel.org>
-         <20201202112059.0f9f7475@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S2388033AbgLBUSP convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 2 Dec 2020 15:18:15 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:54630 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387412AbgLBUSO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 15:18:14 -0500
+Received: from 1.general.jvosburgh.uk.vpn ([10.172.196.206] helo=famine.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1kkYZ6-0001rP-14; Wed, 02 Dec 2020 20:17:28 +0000
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 657595FEE8; Wed,  2 Dec 2020 12:17:26 -0800 (PST)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 5F9249FAB0;
+        Wed,  2 Dec 2020 12:17:26 -0800 (PST)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Jarod Wilson <jarod@redhat.com>
+cc:     LKML <linux-kernel@vger.kernel.org>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Davis <tadavis@lbl.gov>, Netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net v2] bonding: fix feature flag setting at init time
+In-reply-to: <CAKfmpSez1UYLG5nGYbMsRALGpEyXnwJcoFJV_7vALgpG3Xotcw@mail.gmail.com>
+References: <20201123031716.6179-1-jarod@redhat.com> <20201202173053.13800-1-jarod@redhat.com> <14711.1606931728@famine> <CAKfmpSez1UYLG5nGYbMsRALGpEyXnwJcoFJV_7vALgpG3Xotcw@mail.gmail.com>
+Comments: In-reply-to Jarod Wilson <jarod@redhat.com>
+   message dated "Wed, 02 Dec 2020 14:23:00 -0500."
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <21152.1606940246.1@famine>
+Content-Transfer-Encoding: 8BIT
+Date:   Wed, 02 Dec 2020 12:17:26 -0800
+Message-ID: <21153.1606940246@famine>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-12-02 at 11:20 -0800, Jakub Kicinski wrote:
-> On Wed, 02 Dec 2020 11:17:16 -0800 Saeed Mahameed wrote:
-> > On Wed, 2020-12-02 at 10:48 -0800, Jakub Kicinski wrote:
-> > > On Tue, 1 Dec 2020 14:41:53 -0800 Saeed Mahameed wrote:  
-> > > > Please note that the series starts with a merge of mlx5-next
-> > > > branch,
-> > > > to resolve and avoid dependency with rdma tree.  
-> > > 
-> > > Why is that not a separate posting prior to this one?  
-> > 
-> > you mean this ? 
-> > https://patchwork.kernel.org/project/linux-rdma/cover/20201120230339.651609-1-saeedm@nvidia.com/
-> > 
-> > it was posted and we discussed it.
-> 
-> Yeah but that's not a pull request, I can't pull that.
-> 
-> > > The patches as posted on the ML fail to build.  
-> > 
-> > Well, you need to pull the whole thing :/ .. 
-> > this is how i used to work with Dave on the mlx5-next branch.
-> 
-> To be clear - I'm asking you to send a PR for the pre-reqs and then
-> send the ethernet patches. So that the pre-reqs are in the tree
-> already
-> by the time the ethernet patches hit the ML. I thought that's what
-> you
-> did in the past, but either way it'd make my life easier.
+Jarod Wilson <jarod@redhat.com> wrote:
 
-Ok, Done, will submit two separate pull requests.
+>On Wed, Dec 2, 2020 at 12:55 PM Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
+>>
+>> Jarod Wilson <jarod@redhat.com> wrote:
+>>
+>> >Don't try to adjust XFRM support flags if the bond device isn't yet
+>> >registered. Bad things can currently happen when netdev_change_features()
+>> >is called without having wanted_features fully filled in yet. Basically,
+>> >this code was racing against register_netdevice() filling in
+>> >wanted_features, and when it got there first, the empty wanted_features
+>> >led to features also getting emptied out, which was definitely not the
+>> >intended behavior, so prevent that from happening.
+>>
+>>         Is this an actual race?  Reading Ivan's prior message, it sounds
+>> like it's an ordering problem (in that bond_newlink calls
+>> register_netdevice after bond_changelink).
+>
+>Sorry, yeah, this is not actually a race condition, just an ordering
+>issue, bond_check_params() gets called at init time, which leads to
+>bond_option_mode_set() being called, and does so prior to
+>bond_create() running, which is where we actually call
+>register_netdevice().
 
-But to avoid any wait and to create full visibility, is there a way to
-let the CI bot understand dependency between two separate pull requests
-? or the base-commit of a pull request ?
+	So this only happens if there's a "mode" module parameter?  That
+doesn't sound like the call path that Ivan described (coming in via
+bond_newlink).
 
-I would like to send everything in one shot for full visibility.
+	-J
 
-Thanks,
-Saeed.
+>>         The change to bond_option_mode_set tests against reg_state, so
+>> presumably it wants to skip the first(?) time through, before the
+>> register_netdevice call; is that right?
+>
+>Correct. Later on, when the bonding driver is already loaded, and
+>parameter changes are made, bond_option_mode_set() gets called and if
+>the mode changes to or from active-backup, we do need/want this code
+>to run to update wanted and features flags properly.
+>
+>
+>-- 
+>Jarod Wilson
+>jarod@redhat.com
 
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
