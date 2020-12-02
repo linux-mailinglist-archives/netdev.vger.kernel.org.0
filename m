@@ -2,109 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 674D82CC209
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 17:21:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0D432CC237
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 17:27:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730698AbgLBQTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 11:19:21 -0500
-Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:49598 "EHLO
-        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730691AbgLBQTU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 11:19:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1606925960; x=1638461960;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=UA/GV23Ara3zyMQ0u3USDM/10j9wKCrlivLcATUot3U=;
-  b=EBygBne9uzSyp56C6UVsS1+Y7JQkMP83SyEnfaqu5mO9a0gJsgVnhJ1s
-   yZN+iIxZUtKZX1NK/OjvDY/7SwWmJvr2WF2b9UmXKVG2e07l2bOC0tTyZ
-   GVtuuT91LXYlykmDhq3X5Gkog7P90nnQcf/ipS+EsvzqhcxU/UPr2jb84
-   8=;
-X-IronPort-AV: E=Sophos;i="5.78,387,1599523200"; 
-   d="scan'208";a="67213731"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1e-42f764a0.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 02 Dec 2020 16:18:33 +0000
-Received: from EX13D16EUB003.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-1e-42f764a0.us-east-1.amazon.com (Postfix) with ESMTPS id AB120C1B3B;
-        Wed,  2 Dec 2020 16:18:29 +0000 (UTC)
-Received: from 38f9d34ed3b1.ant.amazon.com (10.43.162.252) by
- EX13D16EUB003.ant.amazon.com (10.43.166.99) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 2 Dec 2020 16:18:24 +0000
-Subject: Re: [PATCH net-next v1 0/3] vsock: Add flag field in the vsock
- address
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        David Duncan <davdunc@amazon.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Alexander Graf <graf@amazon.de>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>
-References: <20201201152505.19445-1-andraprs@amazon.com>
- <20201202133754.2ek2wgutkujkvxaf@steredhat>
-From:   "Paraschiv, Andra-Irina" <andraprs@amazon.com>
-Message-ID: <d5c55d2e-5dc3-96f2-2333-37e778c761ae@amazon.com>
-Date:   Wed, 2 Dec 2020 18:18:15 +0200
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:78.0)
- Gecko/20100101 Thunderbird/78.5.0
+        id S2389044AbgLBQZ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 11:25:58 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.165]:35067 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387405AbgLBQZ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 11:25:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1606926186;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=EBATEHZeZJeRrIC3X7gmTVqFxYZ3iIi6qc5SjPGFl30=;
+        b=QJ8RpRZDxQVY91hhgqP1gRXE8x8xyToZlsPzpUtrUHDgFcl+X9PTgyaIB8pbK3VxqL
+        FBw0GZnpmqmK2Of8KQ8dMM6TCugYEL3fMi4S91CBI6J1oSHzolj/TDDfcJPQ518oLrLZ
+        gF/pw9a7Fz91QXM496TVaIT4pLvc06h1U8uYOkoK+3ofWinllJ2FhbVC0OdEoEYrVI2G
+        j6UiFQyx2Rk4u4wU6vEkRMX3ZkKUOmqA/TACekMqRVOMTKZUjMSpZCsezj4ooJb+a2KQ
+        hVRMjYMtmcHFD3hRH8+G71QocOw+TziaY4Jx/bSlJrhd1UP45XiiLrTO798qMnUZ+OOQ
+        0sgQ==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3TMaFqTGV1iO89vpw=="
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.10.177]
+        by smtp.strato.de (RZmta 47.3.4 DYNA|AUTH)
+        with ESMTPSA id n07f3bwB2GMvCYg
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Wed, 2 Dec 2020 17:22:57 +0100 (CET)
+Subject: Re: [PATCH] can: don't count arbitration lose as an error
+To:     Jeroen Hofstee <jhofstee@victronenergy.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org
+Cc:     Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@siol.net>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        "moderated list:ARM/Allwinner sunXi SoC support" 
+        <linux-arm-kernel@lists.infradead.org>
+References: <20201127095941.21609-1-jhofstee@victronenergy.com>
+ <434167b4-c2df-02bf-8a9c-2d4716c5435f@pengutronix.de>
+ <f5f93e72-c55f-cfd3-a686-3454e42c4371@victronenergy.com>
+ <0988dd09-70d9-3ee8-9945-10c4dea49407@hartkopp.net>
+ <405f9e1a-e653-e82d-6d45-a1e5298b5c82@victronenergy.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <b08226a0-bd96-637f-954d-fb8dedc0017b@hartkopp.net>
+Date:   Wed, 2 Dec 2020 17:22:56 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-In-Reply-To: <20201202133754.2ek2wgutkujkvxaf@steredhat>
+In-Reply-To: <405f9e1a-e653-e82d-6d45-a1e5298b5c82@victronenergy.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-X-Originating-IP: [10.43.162.252]
-X-ClientProxiedBy: EX13D04UWB004.ant.amazon.com (10.43.161.103) To
- EX13D16EUB003.ant.amazon.com (10.43.166.99)
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CgpPbiAwMi8xMi8yMDIwIDE1OjM3LCBTdGVmYW5vIEdhcnphcmVsbGEgd3JvdGU6Cj4KPiBIaSBB
-bmRyYSwKPgo+IE9uIFR1ZSwgRGVjIDAxLCAyMDIwIGF0IDA1OjI1OjAyUE0gKzAyMDAsIEFuZHJh
-IFBhcmFzY2hpdiB3cm90ZToKPj4gdnNvY2sgZW5hYmxlcyBjb21tdW5pY2F0aW9uIGJldHdlZW4g
-dmlydHVhbCBtYWNoaW5lcyBhbmQgdGhlIGhvc3QgCj4+IHRoZXkgYXJlCj4+IHJ1bm5pbmcgb24u
-IE5lc3RlZCBWTXMgY2FuIGJlIHNldHVwIHRvIHVzZSB2c29jayBjaGFubmVscywgYXMgdGhlIG11
-bHRpCj4+IHRyYW5zcG9ydCBzdXBwb3J0IGhhcyBiZWVuIGF2YWlsYWJsZSBpbiB0aGUgbWFpbmxp
-bmUgc2luY2UgdGhlIHY1LjUgCj4+IExpbnV4IGtlcm5lbAo+PiBoYXMgYmVlbiByZWxlYXNlZC4K
-Pj4KPj4gSW1wbGljaXRseSwgaWYgbm8gaG9zdC0+Z3Vlc3QgdnNvY2sgdHJhbnNwb3J0IGlzIGxv
-YWRlZCwgYWxsIHRoZSAKPj4gdnNvY2sgcGFja2V0cwo+PiBhcmUgZm9yd2FyZGVkIHRvIHRoZSBo
-b3N0LiBUaGlzIGJlaGF2aW9yIGNhbiBiZSB1c2VkIHRvIHNldHVwIAo+PiBjb21tdW5pY2F0aW9u
-Cj4+IGNoYW5uZWxzIGJldHdlZW4gc2libGluZyBWTXMgdGhhdCBhcmUgcnVubmluZyBvbiB0aGUg
-c2FtZSBob3N0LiBPbmUgCj4+IGV4YW1wbGUgY2FuCj4+IGJlIHRoZSB2c29jayBjaGFubmVscyB0
-aGF0IGNhbiBiZSBlc3RhYmxpc2hlZCB3aXRoaW4gQVdTIE5pdHJvIEVuY2xhdmVzCj4+IChzZWUg
-RG9jdW1lbnRhdGlvbi92aXJ0L25lX292ZXJ2aWV3LnJzdCkuCj4+Cj4+IFRvIGJlIGFibGUgdG8g
-ZXhwbGljaXRseSBtYXJrIGEgY29ubmVjdGlvbiBhcyBiZWluZyB1c2VkIGZvciBhIAo+PiBjZXJ0
-YWluIHVzZSBjYXNlLAo+PiBhZGQgYSBmbGFnIGZpZWxkIGluIHRoZSB2c29jayBhZGRyZXNzIGRh
-dGEgc3RydWN0dXJlLiBUaGUgCj4+ICJzdm1fcmVzZXJ2ZWQxIiBmaWVsZAo+PiBoYXMgYmVlbiBy
-ZXB1cnBvc2VkIHRvIGJlIHRoZSBmbGFnIGZpZWxkLiBUaGUgdmFsdWUgb2YgdGhlIGZsYWcgd2ls
-bCAKPj4gdGhlbiBiZQo+PiB0YWtlbiBpbnRvIGNvbnNpZGVyYXRpb24gd2hlbiB0aGUgdnNvY2sg
-dHJhbnNwb3J0IGlzIGFzc2lnbmVkLgo+Pgo+PiBUaGlzIHdheSBjYW4gZGlzdGluZ3Vpc2ggYmV0
-d2VlbiBuZXN0ZWQgVk1zIC8gbG9jYWwgY29tbXVuaWNhdGlvbiBhbmQgCj4+IHNpYmxpbmcKPj4g
-Vk1zIHVzZSBjYXNlcy4gQW5kIGNhbiBhbHNvIHNldHVwIG9uZSBvciBtb3JlIHR5cGVzIG9mIGNv
-bW11bmljYXRpb24gCj4+IGF0IHRoZSBzYW1lCj4+IHRpbWUuCj4+Cj4KPiBBbm90aGVyIHRoaW5n
-IHdvcnRoIG1lbnRpb25pbmcgaXMgdGhhdCBmb3Igbm93IGl0IGlzIG5vdCBzdXBwb3J0ZWQgaW4K
-PiB2aG9zdC12c29jaywgc2luY2Ugd2UgYXJlIGRpc2NhcmRpbmcgZXZlcnkgcGFja2V0IG5vdCBh
-ZGRyZXNzZWQgdG8gdGhlCj4gaG9zdC4KClJpZ2h0LCB0aGFua3MgZm9yIHRoZSBmb2xsb3ctdXAu
-Cgo+Cj4gV2hhdCB3ZSBzaG91bGQgZG8gd291bGQgYmU6Cj4gLSBhZGQgYSBuZXcgSU9DVEwgdG8g
-dmhvc3QtdnNvY2sgdG8gZW5hYmxlIHNpYmxpbmcgY29tbXVuaWNhdGlvbiwgYnkKPiDCoCBkZWZh
-dWx0IEknZCBsaWtlIHRvIGxlYXZlIGl0IGRpc2FibGVkCj4KPiAtIGFsbG93IHNpYmxpbmcgZm9y
-d2FyZGluZyBvbmx5IGlmIGJvdGggZ3Vlc3RzIGhhdmUgc2libGluZwo+IMKgIGNvbW11bmljYXRp
-b24gZW5hYmxlZCBhbmQgd2Ugc2hvdWxkIGltcGxlbWVudCBzb21lIGtpbmQgb2YgZmlsdGVyaW5n
-Cj4gwqAgb3IgbmV0d29yayBuYW1lc3BhY2Ugc3VwcG9ydCB0byBhbGxvdyB0aGUgY29tbXVuaWNh
-dGlvbiBvbmx5IGJldHdlZW4gYQo+IMKgIHN1YnNldCBvZiBWTXMKPgo+Cj4gRG8geW91IGhhdmUg
-cGxhbnMgdG8gd29yayBvbiBpdD8KCk5vcGUsIG5vdCB5ZXQuIEJ1dCBJIGNhbiB0YWtlIHNvbWUg
-dGltZSBpbiB0aGUgc2Vjb25kIHBhcnQgb2YgRGVjZW1iZXIgLyAKYmVnaW5uaW5nIG9mIEphbnVh
-cnkgZm9yIHRoaXMuIEFuZCB3ZSBjYW4gY2F0Y2ggdXAgaW4gdGhlIG1lYW50aW1lIGlmIAp0aGVy
-ZSBpcyBzb21ldGhpbmcgYmxvY2tpbmcgb3IgbW9yZSBjbGFyaWZpY2F0aW9ucyBhcmUgbmVlZGVk
-IHRvIG1ha2UgaXQgCndvcmsuCgpUaGFua3MsCkFuZHJhCgo+Cj4KPiBPdGhlcndpc2UgSSBwdXQg
-aXQgaW4gbXkgdG8tZG8gbGlzdCBhbmQgaG9wZSBJIGhhdmUgdGltZSB0byBkbyBpdCAobWF5YmUK
-PiBuZXh0IG1vbnRoKS4KPgo+IFRoYW5rcywKPiBTdGVmYW5vCj4KCgoKCkFtYXpvbiBEZXZlbG9w
-bWVudCBDZW50ZXIgKFJvbWFuaWEpIFMuUi5MLiByZWdpc3RlcmVkIG9mZmljZTogMjdBIFNmLiBM
-YXphciBTdHJlZXQsIFVCQzUsIGZsb29yIDIsIElhc2ksIElhc2kgQ291bnR5LCA3MDAwNDUsIFJv
-bWFuaWEuIFJlZ2lzdGVyZWQgaW4gUm9tYW5pYS4gUmVnaXN0cmF0aW9uIG51bWJlciBKMjIvMjYy
-MS8yMDA1Lgo=
+Hello Jeroen,
 
+On 02.12.20 16:37, Jeroen Hofstee wrote:
+> On 12/2/20 3:35 PM, Oliver Hartkopp wrote:
+
+>> Do we agree that in one-shot mode both the tx_errors and the 
+>> arbitration_lost counters are increased in the arbitration-lost case?
+>>
+>> At least this would fit to the Kvaser USB behaviour.
+> 
+> 
+> I have no opinion about that. I just kept existing behavior.
+
+That's ok for me either.
+
+>> And btw. I wondered if we should remove the check for 
+>> CAN_CTRLMODE_ONE_SHOT here, as we ALWAYS should count a tx_error and 
+>> drop the echo_skb when we have a TX-interrupt and TX-complete flag is 
+>> zero.
+>>
+>> So replace:
+>>
+>> if (priv->can.ctrlmode & CAN_CTRLMODE_ONE_SHOT &&
+>>                   !(status & SR_TCS)) {
+>>
+>> with:
+>>
+>> if (!(status & SR_TCS)) {
+>>
+>> Any suggestions?
+>>
+> 
+> In theory, yes. But I can't think of a reason you would end
+> up there without CAN_CTRLMODE_ONE_SHOT being set.
+
+Right. Me too. But for that reason I would remove that extra check to 
+catch this error even if CAN_CTRLMODE_ONE_SHOT is not enabled.
+
+> Aborting the current transmission in non single shot mode
+> will get you there and incorrectly report the message as
+> transmitted, but that is not implemented afaik.
+
+Ahem, no. If you get there the echo_skb is deleted and the tx_errors 
+counter is increased. Just as it should be.
+
+Regards,
+Oliver
