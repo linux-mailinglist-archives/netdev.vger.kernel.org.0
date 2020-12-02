@@ -2,64 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB1772CC67A
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 20:23:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE5DA2CC684
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 20:23:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731051AbgLBTVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 14:21:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51380 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726157AbgLBTVl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Dec 2020 14:21:41 -0500
-Date:   Wed, 2 Dec 2020 11:20:59 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1606936860;
-        bh=1CAt+4+rYEgG5BNHHPiLyMBHLbgFSOa76xmasEMn1WA=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hcvMzKU7gV70c6SMkzwfayZa9AV19tW54Zb6Z7TZzy7czPOqbP/1DHKdUkNvozFe3
-         ymmd3/cAQ3hBv+Yx1WPvumFw2TuY4kVQXGG8OBn2iz9m3nyHp84sZ9nCb4oXzEQVBk
-         l/axJTiXPZjcrYDrAYte0H3buuP0tj7KQ31k2DoMDuXX9zvSIx7HNn9T0Sl5m5vcjx
-         sht2gBszJmlVdBdys6AbaRA6n2YQd2tDG/l6TQXTyFwdF5QKn1VQ5KSZtZGWIfREHC
-         8F1AaYf/bsmQz7AGIzloxurRgMnNKvCIFKKBTgv4KeT57Cc9kGePztrw4p5YXWHkPn
-         ioU5QPv/LnjkA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [pull request][net-next 00/15] mlx5 updates 2020-12-01
-Message-ID: <20201202112059.0f9f7475@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <0d6433ee05290e5fe109ca9fd379f5d1c7f797c8.camel@kernel.org>
-References: <20201201224208.73295-1-saeedm@nvidia.com>
-        <20201202104859.71a35d1e@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-        <0d6433ee05290e5fe109ca9fd379f5d1c7f797c8.camel@kernel.org>
+        id S2388131AbgLBTXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 14:23:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60284 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387909AbgLBTXL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 14:23:11 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 082CBC0617A7;
+        Wed,  2 Dec 2020 11:22:31 -0800 (PST)
+Received: from zn.tnic (p200300ec2f161b00329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ec:2f16:1b00:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id DDD991EC04DA;
+        Wed,  2 Dec 2020 20:22:27 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1606936948;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=rySJim3wBb+9W8dVG2J74HH0THuGsrX0bUYnHgpIWEU=;
+        b=JuFeCHturGfuW0en93LjGZ7Qdjt76u6ure4PvfBENNP73o/sIw2rZL2huQeOG5pYwDaQq6
+        0Z4j3BsdWrMQKuLTW9LBCrfVgYI2Aiw0fXFUf4WtCzhnRbjerjFmICRuUBgYqFRE0f+203
+        KFHl9HuaYVFCiBO/SXfF4Qduw1tLv3c=
+Date:   Wed, 2 Dec 2020 20:22:23 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Enrico Weigelt, metux IT consult" <lkml@metux.net>
+Cc:     "Enrico Weigelt, metux IT consult" <info@metux.net>,
+        linux-kernel@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        x86@kernel.org, hpa@zytor.com, dmitry.torokhov@gmail.com,
+        derek.kiernan@xilinx.com, dragan.cvetic@xilinx.com,
+        richardcochran@gmail.com, linux-hyperv@vger.kernel.org,
+        linux-input@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 1/2] x86: make vmware support optional
+Message-ID: <20201202192223.GK2951@zn.tnic>
+References: <20201117202308.7568-1-info@metux.net>
+ <20201117203155.GO5719@zn.tnic>
+ <0c0480af-bcf5-d7ba-9e76-d511e60f76ec@metux.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <0c0480af-bcf5-d7ba-9e76-d511e60f76ec@metux.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 02 Dec 2020 11:17:16 -0800 Saeed Mahameed wrote:
-> On Wed, 2020-12-02 at 10:48 -0800, Jakub Kicinski wrote:
-> > On Tue, 1 Dec 2020 14:41:53 -0800 Saeed Mahameed wrote:  
-> > > Please note that the series starts with a merge of mlx5-next
-> > > branch,
-> > > to resolve and avoid dependency with rdma tree.  
-> > 
-> > Why is that not a separate posting prior to this one?  
+On Wed, Dec 02, 2020 at 08:17:23PM +0100, Enrico Weigelt, metux IT consult wrote:
+> Reducing the kernel size. Think of very high density virtualization
+> (w/ specially stripped-down workloads) or embedded systems.
 > 
-> you mean this ? 
-> https://patchwork.kernel.org/project/linux-rdma/cover/20201120230339.651609-1-saeedm@nvidia.com/
+> For example, I'm running bare minimum kernels w/ only kvm and virtio
+> (not even pci, etc) in such scenarios.
 > 
-> it was posted and we discussed it.
+> Of course, that's nothing for an average distro, therefore leaving
+> default y.
 
-Yeah but that's not a pull request, I can't pull that.
+Ok, pls put the reasoning for the change in the next revision's commit
+message along with how much KB savings we're talking about.
 
-> > The patches as posted on the ML fail to build.  
-> 
-> Well, you need to pull the whole thing :/ .. 
-> this is how i used to work with Dave on the mlx5-next branch.
+Thx.
 
-To be clear - I'm asking you to send a PR for the pre-reqs and then
-send the ethernet patches. So that the pre-reqs are in the tree already
-by the time the ethernet patches hit the ML. I thought that's what you
-did in the past, but either way it'd make my life easier.
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
