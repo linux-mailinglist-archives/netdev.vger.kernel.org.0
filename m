@@ -2,58 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FB4A2CC668
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 20:21:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE2482CC670
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 20:21:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387728AbgLBTR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 14:17:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49826 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387672AbgLBTR6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Dec 2020 14:17:58 -0500
-Message-ID: <0d6433ee05290e5fe109ca9fd379f5d1c7f797c8.camel@kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1606936637;
-        bh=zCh8bGMCanwq6B2BV7dtNTk69ZWgTghXTqapHJdznb8=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=HoyRBOcMj26iVmCaxg4es5yhPJuzpmKE6Db+WqJyXJnncg+yUucw3xB4eRwA0SUNd
-         uDtDOQQmC0mSNwHAW4psbHfFnUhGHg3Pfrtb/56fqoSikvPzH1M6h/OreyfhsBHIYB
-         idaXGIllPIwhq44OmbI4AB8u+q5C7DRcIIYg72vrq84asm3TJmoiJfGidD61VwCJVl
-         2Zigpdk6D5UDDuP9qZ0UYjQuDoHNPEiRLWvaOagLrlxqpqO/pb/QLTlTJGYlfIPQ8c
-         2/A5n8uF6DiDLIhdmPmnv77wU7bdnvuxL6YHk0w6hrz8eKfyXbHhGtZuIDpxjjiQ/W
-         zOSTqD2O0QXBQ==
-Subject: Re: [pull request][net-next 00/15] mlx5 updates 2020-12-01
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Date:   Wed, 02 Dec 2020 11:17:16 -0800
-In-Reply-To: <20201202104859.71a35d1e@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-References: <20201201224208.73295-1-saeedm@nvidia.com>
-         <20201202104859.71a35d1e@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1726733AbgLBTUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 14:20:33 -0500
+Received: from mout.kundenserver.de ([212.227.126.135]:45595 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728837AbgLBTUd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 14:20:33 -0500
+Received: from [192.168.1.155] ([77.7.48.174]) by mrelayeu.kundenserver.de
+ (mreue011 [212.227.15.167]) with ESMTPSA (Nemesis) id
+ 1MmlGg-1kIKQL2oGE-00jsn4; Wed, 02 Dec 2020 20:17:27 +0100
+Subject: Re: [PATCH 1/2] x86: make vmware support optional
+To:     Borislav Petkov <bp@alien8.de>,
+        "Enrico Weigelt, metux IT consult" <info@metux.net>
+Cc:     linux-kernel@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        x86@kernel.org, hpa@zytor.com, dmitry.torokhov@gmail.com,
+        derek.kiernan@xilinx.com, dragan.cvetic@xilinx.com,
+        richardcochran@gmail.com, linux-hyperv@vger.kernel.org,
+        linux-input@vger.kernel.org, netdev@vger.kernel.org
+References: <20201117202308.7568-1-info@metux.net>
+ <20201117203155.GO5719@zn.tnic>
+From:   "Enrico Weigelt, metux IT consult" <lkml@metux.net>
+Message-ID: <0c0480af-bcf5-d7ba-9e76-d511e60f76ec@metux.net>
+Date:   Wed, 2 Dec 2020 20:17:23 +0100
+User-Agent: Mozilla/5.0 (X11; Linux i686 on x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20201117203155.GO5719@zn.tnic>
+Content-Type: text/plain; charset=utf-8
+Content-Language: tl
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:FP2CYEq15R80dQ6d6l9Zeukb8qsW02XwbWcM7FTCUJ8N+wkBHN0
+ sVeoBh7Gnt/ZU7cQZLYDkwMUzPKGAElGYu4M3oZ/jNQePe8BRSR3qqYISPbWlAoazq8aC8c
+ FcOGUM8zdRTqhe0fI6e+PfOa9Gyb4avrDwLJo3MmgNiRmpx5ru3P7WjHXmssc+Uxb2dOVCI
+ rWRWyKfa2kuthRj//6NHw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:2HkvspBsxR8=:gaZWtRyrjr7D/OFxL4NKCm
+ /ouXkkPhyblj0piWqhd2Rg20ajU17FMi7vLb2KbGhLQCDAaWh+DtitqHcNbsqB6Yh8gBQvM34
+ Pj4+HOXfoaD26Czve6SXOH2eE93HM18Wqrs7+1u5Zpm9+Wsqv4TxGpqEu2Fg72rU4BTkJuBKZ
+ M4mIEKCvRCiY8+IncEXVifFv8r/mUOKPEObURZI/biQ4JhLfg31A5LnrSxX9gu40FRvHXEdPB
+ mcvNrsPg032JJ4Fn6qvp53pw/2JuwuO3blwr5OQMghpOkokxf/FRLiDxtpLxQEWvUVBCHvk8D
+ 0D3xC+Dq+6wH1Z5FpKw+oIkmt/mpMVGkgv7mFT++sw3Nbpm4t46/MovaaRqcA4u/isCUo7Tzt
+ lFm7aMfk14l0YQkJZfgeaWpcrfJdGwoXu3TWqEDyn7MOj9MOzpbz9HMR0axkD
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-12-02 at 10:48 -0800, Jakub Kicinski wrote:
-> On Tue, 1 Dec 2020 14:41:53 -0800 Saeed Mahameed wrote:
-> > Please note that the series starts with a merge of mlx5-next
-> > branch,
-> > to resolve and avoid dependency with rdma tree.
+On 17.11.20 21:31, Borislav Petkov wrote:
+> On Tue, Nov 17, 2020 at 09:23:07PM +0100, Enrico Weigelt, metux IT consult wrote:
+>> Make it possible to opt-out from vmware support
 > 
-> Why is that not a separate posting prior to this one?
+> Why?
 
-you mean this ? 
-https://patchwork.kernel.org/project/linux-rdma/cover/20201120230339.651609-1-saeedm@nvidia.com/
+Reducing the kernel size. Think of very high density virtualization
+(w/ specially stripped-down workloads) or embedded systems.
 
-it was posted and we discussed it.
+For example, I'm running bare minimum kernels w/ only kvm and virtio
+(not even pci, etc) in such scenarios.
+
+Of course, that's nothing for an average distro, therefore leaving
+default y.
+
+
+--mtx
+
 
 > 
-> The patches as posted on the ML fail to build.
+> I can think of a couple of reasons but maybe yours might not be the one
+> I'm thinking of.
+> 
+>> Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
+>> ---
+>>  arch/x86/Kconfig                 | 7 +++++++
+>>  arch/x86/kernel/cpu/Makefile     | 4 +++-
+>>  arch/x86/kernel/cpu/hypervisor.c | 2 ++
+>>  drivers/input/mouse/Kconfig      | 2 +-
+>>  drivers/misc/Kconfig             | 2 +-
+>>  drivers/ptp/Kconfig              | 2 +-
+>>  6 files changed, 15 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+>> index f6946b81f74a..c227c1fa0091 100644
+>> --- a/arch/x86/Kconfig
+>> +++ b/arch/x86/Kconfig
+>> @@ -801,6 +801,13 @@ config X86_HV_CALLBACK_VECTOR
+>>  
+>>  source "arch/x86/xen/Kconfig"
+>>  
+>> +config VMWARE_GUEST
+>> +	bool "Vmware Guest support"
+>> +	default y
+> 
+> depends on HYPERVISOR_GUEST. The hyperv one too.
+> 
 
-Well, you need to pull the whole thing :/ .. 
-this is how i used to work with Dave on the mlx5-next branch.
-
+-- 
+---
+Hinweis: unverschlüsselte E-Mails können leicht abgehört und manipuliert
+werden ! Für eine vertrauliche Kommunikation senden Sie bitte ihren
+GPG/PGP-Schlüssel zu.
+---
+Enrico Weigelt, metux IT consult
+Free software and Linux embedded engineering
+info@metux.net -- +49-151-27565287
