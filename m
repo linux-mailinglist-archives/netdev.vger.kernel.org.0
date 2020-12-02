@@ -2,114 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A227F2CC9CD
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 23:45:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3FF72CC9E6
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 23:48:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387632AbgLBWo1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 17:44:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35036 "EHLO
+        id S2387674AbgLBWrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 17:47:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728965AbgLBWo1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 17:44:27 -0500
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC57C061A04;
-        Wed,  2 Dec 2020 14:43:40 -0800 (PST)
-Received: by mail-yb1-xb43.google.com with SMTP id l14so220014ybq.3;
-        Wed, 02 Dec 2020 14:43:40 -0800 (PST)
+        with ESMTP id S1725985AbgLBWrY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 17:47:24 -0500
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3710BC0617A7;
+        Wed,  2 Dec 2020 14:46:38 -0800 (PST)
+Received: by mail-yb1-xb44.google.com with SMTP id k65so214545ybk.5;
+        Wed, 02 Dec 2020 14:46:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=jo7AwbbsKyjCl+f8N9cedM1gHIy9+JL60ER0OVHkV7w=;
-        b=d/zL1nK6wHh2iEdb4YZOrjh7UJx0Pz7CyW8wcSWq6Oml0mn4C5s1x8r3gPA2a+nzRH
-         G969hYZtONyv0/Ns7mRr0AqIUCu7jfApYZorApPif4keNDSpBtJW6CNlhfom4ucfCABD
-         8BishkNL74LPbbTYfbhygteeurTbfz5C7bwEhRPyam4OpRensyBZoozQHIiMGaSL8JKj
-         CP9wAHkdkeG51qmwzpr7czGU8q4nuvQIWDkYQZsLPJ/svw0q6ItAsVkSb0zdEShT3fyN
-         M/hOryfsHeEeOldQnGMPNPDV7aSUUf+IEn2aYV04v0+oAAvriuOoq0csb0KVky2JXkBm
-         TyNg==
+        bh=pwUrm+QxZOyCRgJeV0KGuo8maVGL8VcTOqbtjUVUc4M=;
+        b=DW3osq6sdBMOn22Q8+G8ESf1ZwIpr7BvB0oNcR0zR8ymcDatlCiA66snZNCdTt+T7O
+         OP+ymdctYzM5dPSBU6g0871k1lJxryB4KnRroRuTe54UU4s0M5aDmIdYobjBNillD+6L
+         WbHqy3Z1KpA1writWrTXgxgHjQ+3rK97gAWGQAqBBvqEinsP+IB/tUOxBgNiqHcWt/zN
+         h0HDP2zmN9iBKCDw23NRTEiDsDBsVRmilq1htY5nN0tUhEfqptLOhxZaRlVESw1cWetC
+         Ftkass+hJXu/p25UM5RKqkg4X/z/DoFtKP7HvxqQ2NXljCZY9amBgzHHKQgUWshe7TWy
+         KjOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=jo7AwbbsKyjCl+f8N9cedM1gHIy9+JL60ER0OVHkV7w=;
-        b=MtUWn1yrndOr3MxJxcCQvAu9uE06i+8ejK/rN6L+RvC52bHAIaBaX9zU93Tm3kfH/P
-         WRgg4g38/3uOX0FasdkiOED0fJqHbaznaYhWGoGDxzJNN3+I0HUJi2OrDY01ABjDIVbG
-         5QjIyyT2tTvZAXyW98BvdGdju+SByxPg8PRdQwfAGDik8Psitw8RQTedKnuZVzbQA4mJ
-         Cs5yGjG/sAvkaZfgIvCksEfeqOIdeR+C3sIChi3a7d49sEEfFnlRdni4AM6w0soEiAt7
-         3sGO4myEpAg7Rrw9PR3jq6ob8pAftEix43djfu7v8jx8xnL5bI9wDCvqrLqTHn2dq8o+
-         nu6Q==
-X-Gm-Message-State: AOAM5314xCWItTwe3O8YzgF6p+WOVViXc7BM5QZqI/nFo2ahsG2vtmHU
-        ezYBRcosbLFKR50ljTcd35tD+RKgrCDV7omOxWQ=
-X-Google-Smtp-Source: ABdhPJzDIz3LYg2RKM5/Oa1JLr66IeH1OPC7PVLai7cefC7V4bi2S2CDjkHdE40HOL7UhO0linAOKWUyOKygEYPHYwM=
-X-Received: by 2002:a25:2845:: with SMTP id o66mr596610ybo.260.1606949020287;
- Wed, 02 Dec 2020 14:43:40 -0800 (PST)
+        bh=pwUrm+QxZOyCRgJeV0KGuo8maVGL8VcTOqbtjUVUc4M=;
+        b=SpRIZqGR3SlABAWJWoIByNlXC4rLT2bcJwNqbK5wuPTrwO9bCb0V9p3IgG4Jh7z52H
+         lsgDz/+k3By9b9EffzJ9w0N5JXgZ3QT9V9bq9bl0U5UIi7B40fXCDeBKfBSwJ1aR3EKv
+         RuUU7kAb6w9oe6o1I5OU/3USwchJ69mjRyBlZsPhXmLcWAHEqHXIMZxPgHgUpbPH7SLH
+         ++s1WGKYCvQ49rNZStKIG4UvK98prnm+OQ1hTpTpEaLdSIJZ/r68op+GLnDMSdQh43+E
+         GdM/zzXLkPuXJQzc/j5xcFrBalnQyo8vf4sB0jNvZ7DAaqn4b67TUmZje1fkuGS0aCSz
+         y2Fg==
+X-Gm-Message-State: AOAM531NRUyDU0DzQrre+BlRAKT1dXweKmjrDFktRUjs0KlcC+On8Viz
+        lHWyVe0CsBON2KtbbWOfuUIi3LvddGuTOm1xI9qyrpllAseyJA==
+X-Google-Smtp-Source: ABdhPJyyw0EE7Mm36RoxgKGrpVn2B6cdckJ8/NFZzhS3AIJG6/UvXGNKM/FbI3J+3aDiZT6umhsKhHNSDll7qyjNte0=
+X-Received: by 2002:a25:c089:: with SMTP id c131mr550780ybf.510.1606949197557;
+ Wed, 02 Dec 2020 14:46:37 -0800 (PST)
 MIME-Version: 1.0
-References: <20201202001616.3378929-1-andrii@kernel.org> <20201202001616.3378929-11-andrii@kernel.org>
- <20201202205809.qwbismdmmtrcsar7@ast-mbp>
-In-Reply-To: <20201202205809.qwbismdmmtrcsar7@ast-mbp>
+References: <20201202175039.3625166-1-sdf@google.com>
+In-Reply-To: <20201202175039.3625166-1-sdf@google.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 2 Dec 2020 14:43:29 -0800
-Message-ID: <CAEf4BzbeUu78v63UmDCzQ5jDhBqzaX-85GHdqc1aMuiy7ZMn3w@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 10/14] bpf: allow to specify kernel module
- BTFs when attaching BPF programs
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
+Date:   Wed, 2 Dec 2020 14:46:26 -0800
+Message-ID: <CAEf4BzZKPvO+b-_WARYcs1Y3mckgT_OJKh7K7LSh2orSL5AG8g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: add retries in sys_bpf_prog_load
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 2, 2020 at 12:58 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+On Wed, Dec 2, 2020 at 9:52 AM Stanislav Fomichev <sdf@google.com> wrote:
 >
-> On Tue, Dec 01, 2020 at 04:16:12PM -0800, Andrii Nakryiko wrote:
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index c3458ec1f30a..60b95b51ccb8 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -558,6 +558,7 @@ union bpf_attr {
-> >               __u32           line_info_cnt;  /* number of bpf_line_info records */
-> >               __u32           attach_btf_id;  /* in-kernel BTF type id to attach to */
-> >               __u32           attach_prog_fd; /* 0 to attach to vmlinux */
-> > +             __u32           attach_btf_obj_id; /* vmlinux/module BTF object ID for BTF type */
+> I've seen a situation, where a process that's under pprof constantly
+> generates SIGPROF which prevents program loading indefinitely.
+> The right thing to do probably is to disable signals in the upper
+> layers while loading, but it still would be nice to get some error from
+> libbpf instead of an endless loop.
 >
-> I think the uapi should use attach_btf_obj_fd here.
-> Everywhere else uapi is using FDs to point to maps, progs, BTFs of progs.
-> BTF of a module isn't different from BTF of a program.
-> Looking at libbpf implementation... it has the FD of a module anyway,
-> since it needs to fetch it to search for the function btf_id in there.
-> So there won't be any inconvenience for libbpf to pass FD in here.
-> From the uapi perspective attach_btf_obj_fd will remove potential
-> race condition. It's very unlikely race, of course.
-
-Yes, I actually contemplated that, but my preference went the ID way,
-because it made libbpf implementation simpler and there was a nice
-duality of using ID for types and BTF instances themselves.
-
-The problem with FD is that when I load all module BTF objects, I open
-their FD one at a time, and close it as soon as I read BTF raw data
-back. If I don't do that on systems with many modules, I'll be keeping
-potentially hundreds of FDs open, so I figured I don't want to do
-that.
-
-But I do see the FD instead of ID consistency as well, so I can go
-with a simple and inefficient implementation of separate FD for each
-BTF object for now, and if someone complains, we can teach libbpf to
-lazily open FDs of module BTFs that are actually used (later, it will
-complicate code unnecessarily). Not really worried about racing with
-kernel modules being unloaded.
-
-Also, if we use FD, we might not need a new attach_bpf_obj_id field at
-all, we can re-use attach_prog_fd field (put it in union and have
-attach_prog_fd/attach_btf_fd). On the kernel side, it would be easy to
-check whether provided FD is for bpf_prog or btf. What do you think?
-Too mysterious? Or good?
-
+> Let's add some small retry limit to the program loading:
+> try loading the program 10 (arbitrary) times and give up.
 >
-> The rest of the series look good to me.
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
 
-Cool, thanks.
+The subject is misleading as hell. You are not adding retries, you are
+limiting the number of retries.
+
+Otherwise, LGTM. I'd probably go with an even smaller number, can't
+imagine any normal use case having more than once EAGAIN. So I'd say
+feel free to reduce it to 5 even.
+
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+
+>  tools/lib/bpf/bpf.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+> index d27e34133973..31ebd6b3ec7c 100644
+> --- a/tools/lib/bpf/bpf.c
+> +++ b/tools/lib/bpf/bpf.c
+> @@ -67,11 +67,12 @@ static inline int sys_bpf(enum bpf_cmd cmd, union bpf_attr *attr,
+>
+>  static inline int sys_bpf_prog_load(union bpf_attr *attr, unsigned int size)
+>  {
+> +       int retries = 10;
+>         int fd;
+>
+>         do {
+>                 fd = sys_bpf(BPF_PROG_LOAD, attr, size);
+> -       } while (fd < 0 && errno == EAGAIN);
+> +       } while (fd < 0 && errno == EAGAIN && retries-- > 0);
+>
+>         return fd;
+>  }
+> --
+> 2.29.2.454.gaff20da3a2-goog
+>
