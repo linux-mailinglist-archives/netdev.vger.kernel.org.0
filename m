@@ -2,92 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FBA92CC9AD
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 23:36:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A227F2CC9CD
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 23:45:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728745AbgLBWfj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 17:35:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33654 "EHLO
+        id S2387632AbgLBWo1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 17:44:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726518AbgLBWfj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 17:35:39 -0500
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0469AC0613D6
-        for <netdev@vger.kernel.org>; Wed,  2 Dec 2020 14:34:53 -0800 (PST)
-Received: by mail-pg1-x542.google.com with SMTP id t37so157478pga.7
-        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 14:34:52 -0800 (PST)
+        with ESMTP id S1728965AbgLBWo1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 17:44:27 -0500
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC57C061A04;
+        Wed,  2 Dec 2020 14:43:40 -0800 (PST)
+Received: by mail-yb1-xb43.google.com with SMTP id l14so220014ybq.3;
+        Wed, 02 Dec 2020 14:43:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Yj9uJKclERcz+3dgssLnxEsO561b5XP4e0V1kaqzzHU=;
-        b=DeLWj512JCeqOATOifyLs3tV6W2ShtE1ozKCsCMSU6b/dQCrePNDDDeloHg6HKDTOn
-         1tXXfhZpOM/qfpu/4uKGDZMdpt5+G1ACRIweOcs/IRUi1XkMbPofQLszlPUQOXU20LIa
-         Mx+8bJ0ThXdxQoCDmjayo7oGrdsQBjuo4jxBM5pE5LAc9xLqX+4aelFrlcETUey4cPYf
-         hmyloKX82XTEqwlYl+6VSFyn/0LCFwvTILiXeQeA3DO6PpzpRTalSglVTGDaojWaoh6w
-         +nrj9HgM0DemgHvCXLIJZAWbPpx3SFiT199P0bSAaXdge0N4Jj5mWI0x97sLV553ptbE
-         h3zw==
+        bh=jo7AwbbsKyjCl+f8N9cedM1gHIy9+JL60ER0OVHkV7w=;
+        b=d/zL1nK6wHh2iEdb4YZOrjh7UJx0Pz7CyW8wcSWq6Oml0mn4C5s1x8r3gPA2a+nzRH
+         G969hYZtONyv0/Ns7mRr0AqIUCu7jfApYZorApPif4keNDSpBtJW6CNlhfom4ucfCABD
+         8BishkNL74LPbbTYfbhygteeurTbfz5C7bwEhRPyam4OpRensyBZoozQHIiMGaSL8JKj
+         CP9wAHkdkeG51qmwzpr7czGU8q4nuvQIWDkYQZsLPJ/svw0q6ItAsVkSb0zdEShT3fyN
+         M/hOryfsHeEeOldQnGMPNPDV7aSUUf+IEn2aYV04v0+oAAvriuOoq0csb0KVky2JXkBm
+         TyNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Yj9uJKclERcz+3dgssLnxEsO561b5XP4e0V1kaqzzHU=;
-        b=TwT1agyE06/nSAc15PnFcGUWraeUOXsRxKrd0/zZRgxW8m2JRI9krt3yCmq3p0hSQ2
-         ZI2f45Bf+KJKp8mQNHoG8V+xENVGcxo1PYlEhVxOtO+IIXHLoriYgmLBIE9QcQleZdJZ
-         xPy1NgDNmcki5/iH3GhbsUJIXBr2DHcpJfHHhOiohnnl+JaSoOLQELzPwF3qBPsJxZPp
-         zfJTNl/zfwGWOm7R/4kXFhyBezJ4T9JnCZqjY553WXX8g3g+wwAS/gBjXw2M8yVztsxT
-         +PS1M7gF8pR3Cnbt42csApA5XBaGMcz90VLlCVzAawjmFdctccWwMFfUneh80nrNaQOU
-         Lvxg==
-X-Gm-Message-State: AOAM530g67f2Qs2Srgm/LR0A4nqLOjViBULmKEORVFUhd+2McheLOiDf
-        xuJgAu6HQp+KO1S8iiw0/4QwBzs+/uklGra952yowg==
-X-Google-Smtp-Source: ABdhPJwk9EgW3Fj29T0FZY+jliaMst7k9i/OfQ+jUCLl2350gsCT+2SSH1KV/nTldfxvpeHL5TQcjXv3gozBbabP5u4=
-X-Received: by 2002:a63:3247:: with SMTP id y68mr437000pgy.10.1606948492350;
- Wed, 02 Dec 2020 14:34:52 -0800 (PST)
+        bh=jo7AwbbsKyjCl+f8N9cedM1gHIy9+JL60ER0OVHkV7w=;
+        b=MtUWn1yrndOr3MxJxcCQvAu9uE06i+8ejK/rN6L+RvC52bHAIaBaX9zU93Tm3kfH/P
+         WRgg4g38/3uOX0FasdkiOED0fJqHbaznaYhWGoGDxzJNN3+I0HUJi2OrDY01ABjDIVbG
+         5QjIyyT2tTvZAXyW98BvdGdju+SByxPg8PRdQwfAGDik8Psitw8RQTedKnuZVzbQA4mJ
+         Cs5yGjG/sAvkaZfgIvCksEfeqOIdeR+C3sIChi3a7d49sEEfFnlRdni4AM6w0soEiAt7
+         3sGO4myEpAg7Rrw9PR3jq6ob8pAftEix43djfu7v8jx8xnL5bI9wDCvqrLqTHn2dq8o+
+         nu6Q==
+X-Gm-Message-State: AOAM5314xCWItTwe3O8YzgF6p+WOVViXc7BM5QZqI/nFo2ahsG2vtmHU
+        ezYBRcosbLFKR50ljTcd35tD+RKgrCDV7omOxWQ=
+X-Google-Smtp-Source: ABdhPJzDIz3LYg2RKM5/Oa1JLr66IeH1OPC7PVLai7cefC7V4bi2S2CDjkHdE40HOL7UhO0linAOKWUyOKygEYPHYwM=
+X-Received: by 2002:a25:2845:: with SMTP id o66mr596610ybo.260.1606949020287;
+ Wed, 02 Dec 2020 14:43:40 -0800 (PST)
 MIME-Version: 1.0
-References: <20201107075550.2244055-1-ndesaulniers@google.com>
- <4910042649a4f3ab22fac93191b8c1fa0a2e17c3.camel@perches.com>
- <CAKwvOdn50VP4h7tidMnnFeMA1M-FevykP+Y0ozieisS7Nn4yoQ@mail.gmail.com> <26052c5a0a098aa7d9c0c8a1d39cc4a8f7915dd2.camel@perches.com>
-In-Reply-To: <26052c5a0a098aa7d9c0c8a1d39cc4a8f7915dd2.camel@perches.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Wed, 2 Dec 2020 14:34:40 -0800
-Message-ID: <CAKwvOdkv6W_dTLVowEBu0uV6oSxwW8F+U__qAsmk7vop6U8tpw@mail.gmail.com>
-Subject: Re: [PATCH] netfilter: conntrack: fix -Wformat
-To:     Joe Perches <joe@perches.com>, Tom Rix <trix@redhat.com>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>
+References: <20201202001616.3378929-1-andrii@kernel.org> <20201202001616.3378929-11-andrii@kernel.org>
+ <20201202205809.qwbismdmmtrcsar7@ast-mbp>
+In-Reply-To: <20201202205809.qwbismdmmtrcsar7@ast-mbp>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 2 Dec 2020 14:43:29 -0800
+Message-ID: <CAEf4BzbeUu78v63UmDCzQ5jDhBqzaX-85GHdqc1aMuiy7ZMn3w@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 10/14] bpf: allow to specify kernel module
+ BTFs when attaching BPF programs
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 10, 2020 at 2:04 PM Joe Perches <joe@perches.com> wrote:
+On Wed, Dec 2, 2020 at 12:58 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> On Tue, 2020-11-10 at 14:00 -0800, Nick Desaulniers wrote:
+> On Tue, Dec 01, 2020 at 04:16:12PM -0800, Andrii Nakryiko wrote:
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index c3458ec1f30a..60b95b51ccb8 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -558,6 +558,7 @@ union bpf_attr {
+> >               __u32           line_info_cnt;  /* number of bpf_line_info records */
+> >               __u32           attach_btf_id;  /* in-kernel BTF type id to attach to */
+> >               __u32           attach_prog_fd; /* 0 to attach to vmlinux */
+> > +             __u32           attach_btf_obj_id; /* vmlinux/module BTF object ID for BTF type */
 >
-> > Yeah, we could go through and remove %h and %hh to solve this, too, right?
->
-> Yup.
->
-> I think one of the checkpatch improvement mentees is adding
-> some suggestion and I hope an automated fix mechanism for that.
->
-> https://lore.kernel.org/lkml/5e3265c241602bb54286fbaae9222070daa4768e.camel@perches.com/
+> I think the uapi should use attach_btf_obj_fd here.
+> Everywhere else uapi is using FDs to point to maps, progs, BTFs of progs.
+> BTF of a module isn't different from BTF of a program.
+> Looking at libbpf implementation... it has the FD of a module anyway,
+> since it needs to fetch it to search for the function btf_id in there.
+> So there won't be any inconvenience for libbpf to pass FD in here.
+> From the uapi perspective attach_btf_obj_fd will remove potential
+> race condition. It's very unlikely race, of course.
 
-+ Tom, who's been looking at leveraging clang-tidy to automate such
-treewide mechanical changes.
-ex. https://reviews.llvm.org/D91789
+Yes, I actually contemplated that, but my preference went the ID way,
+because it made libbpf implementation simpler and there was a nice
+duality of using ID for types and BTF instances themselves.
 
-See also commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging
-use of unnecessary %h[xudi] and %hh[xudi]") for a concise summary of
-related context.
--- 
-Thanks,
-~Nick Desaulniers
+The problem with FD is that when I load all module BTF objects, I open
+their FD one at a time, and close it as soon as I read BTF raw data
+back. If I don't do that on systems with many modules, I'll be keeping
+potentially hundreds of FDs open, so I figured I don't want to do
+that.
+
+But I do see the FD instead of ID consistency as well, so I can go
+with a simple and inefficient implementation of separate FD for each
+BTF object for now, and if someone complains, we can teach libbpf to
+lazily open FDs of module BTFs that are actually used (later, it will
+complicate code unnecessarily). Not really worried about racing with
+kernel modules being unloaded.
+
+Also, if we use FD, we might not need a new attach_bpf_obj_id field at
+all, we can re-use attach_prog_fd field (put it in union and have
+attach_prog_fd/attach_btf_fd). On the kernel side, it would be easy to
+check whether provided FD is for bpf_prog or btf. What do you think?
+Too mysterious? Or good?
+
+>
+> The rest of the series look good to me.
+
+Cool, thanks.
