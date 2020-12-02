@@ -2,71 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D620E2CC635
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 20:08:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25E082CC647
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 20:11:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731084AbgLBTHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 14:07:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48034 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729205AbgLBTHW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Dec 2020 14:07:22 -0500
-Date:   Wed, 2 Dec 2020 11:06:40 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1606936002;
-        bh=gQFVrdJVQ56bQPhxt6k8c/Mna8CvNDfQ+aEYrWOOSkA=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XiOfdJCEzNFPZv5+ztVK6a0v1G9kfN4XAn2ggntFK7OD3HzzlfW0ru9hr9shGDyNh
-         sUkWGUXEwOoHyRU8xgMNaYkWr25DM/0eAkQeDLpA/20DM63U5SorgRX+xnOqJY3mFR
-         Ziutb5mI7pcUJNYF/7ocXDvwYHi5pq/r79M2HMW+Vsqc0/T4NK9R3GQky+tWx8ZO1C
-         jf7ysQj0VoZBv7gTLaqvMgnb+Wd1pK92oto72yKP8oShfsRY0Wa6U4qXTHeZLx7Owo
-         Xe5AOsR1SLRfG5douB6jScqD2gomPIez0j4fIVIrD38GFYM/malFjGxbDPBLm6rc5V
-         egEIEZfjn0aDg==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Mario Limonciello <mario.limonciello@dell.com>
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>,
-        intel-wired-lan@lists.osuosl.org,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Sasha Netfin <sasha.neftin@intel.com>,
-        Aaron Brown <aaron.f.brown@intel.com>,
-        Stefan Assmann <sassmann@redhat.com>,
-        David Miller <davem@davemloft.net>, darcari@redhat.com,
-        Yijun.Shen@dell.com, Perry.Yuan@dell.com
-Subject: Re: [PATCH v2 0/5] Improve s0ix flows for systems i219LM
-Message-ID: <20201202110640.27269583@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201202161748.128938-1-mario.limonciello@dell.com>
-References: <20201202161748.128938-1-mario.limonciello@dell.com>
+        id S2389704AbgLBTK1 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 2 Dec 2020 14:10:27 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:52727 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387967AbgLBTK0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 14:10:26 -0500
+Received: from 1.general.jvosburgh.uk.vpn ([10.172.196.206] helo=famine.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1kkXVU-00028c-Gv; Wed, 02 Dec 2020 19:09:40 +0000
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 15B995FEE8; Wed,  2 Dec 2020 11:09:39 -0800 (PST)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 0FF229FAB0;
+        Wed,  2 Dec 2020 11:09:39 -0800 (PST)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 1/4] net: bonding: Notify ports about their initial state
+In-reply-to: <20201202091356.24075-2-tobias@waldekranz.com>
+References: <20201202091356.24075-1-tobias@waldekranz.com> <20201202091356.24075-2-tobias@waldekranz.com>
+Comments: In-reply-to Tobias Waldekranz <tobias@waldekranz.com>
+   message dated "Wed, 02 Dec 2020 10:13:53 +0100."
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <17901.1606936179.1@famine>
+Content-Transfer-Encoding: 8BIT
+Date:   Wed, 02 Dec 2020 11:09:39 -0800
+Message-ID: <17902.1606936179@famine>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  2 Dec 2020 10:17:43 -0600 Mario Limonciello wrote:
-> commit e086ba2fccda ("e1000e: disable s0ix entry and exit flows for ME systems")
-> disabled s0ix flows for systems that have various incarnations of the
-> i219-LM ethernet controller.  This was done because of some regressions
-> caused by an earlier
-> commit 632fbd5eb5b0e ("e1000e: fix S0ix flows for cable connected case")
-> with i219-LM controller.
-> 
-> Performing suspend to idle with these ethernet controllers requires a properly
-> configured system.  To make enabling such systems easier, this patch
-> series allows turning on using ethtool.
-> 
-> The flows have also been confirmed to be configured correctly on Dell's Latitude
-> and Precision CML systems containing the i219-LM controller, when the kernel also
-> contains the fix for s0i3.2 entry previously submitted here:
-> https://marc.info/?l=linux-netdev&m=160677194809564&w=2
-> 
-> Patches 3 and 4 will turn the behavior on by default for Dell's CML systems.
-> Patch 5 allows accessing the value of the flags via ethtool to tell if the
-> heuristics have turned on s0ix flows, as well as for development purposes
-> to determine if a system should be added to the heuristics list.
+Tobias Waldekranz <tobias@waldekranz.com> wrote:
 
-I don't see PCI or Bjorn Helgaas CCed.
+>When creating a static bond (e.g. balance-xor), all ports will always
+>be enabled. This is set, and the corresponding notification is sent
+>out, before the port is linked to the bond upper.
+>
+>In the offloaded case, this ordering is hard to deal with.
+>
+>The lower will first see a notification that it can not associate with
+>any bond. Then the bond is joined. After that point no more
+>notifications are sent, so all ports remain disabled.
+>
+>This change simply sends an extra notification once the port has been
+>linked to the upper to synchronize the initial state.
 
-You can drop linux-kernel tho.
+	I'm not objecting to this per se, but looking at team and
+net_failover (failover_slave_register), those drivers do not send the
+same first notification that bonding does (the "can not associate" one),
+but only send a notification after netdev_master_upper_dev_link is
+complete.
+
+	Does it therefore make more sense to move the existing
+notification within bonding to take place after the upper_dev_link
+(where you're adding this new call to bond_lower_state_changed)?  If the
+existing notification is effectively useless, this would make the
+sequence of notifications consistent across drivers.
+
+	-J
+
+>Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+>---
+> drivers/net/bonding/bond_main.c | 2 ++
+> 1 file changed, 2 insertions(+)
+>
+>diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+>index e0880a3840d7..d6e1f9cf28d5 100644
+>--- a/drivers/net/bonding/bond_main.c
+>+++ b/drivers/net/bonding/bond_main.c
+>@@ -1922,6 +1922,8 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
+> 		goto err_unregister;
+> 	}
+> 
+>+	bond_lower_state_changed(new_slave);
+>+
+> 	res = bond_sysfs_slave_add(new_slave);
+> 	if (res) {
+> 		slave_dbg(bond_dev, slave_dev, "Error %d calling bond_sysfs_slave_add\n", res);
+>-- 
+>2.17.1
+>
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
