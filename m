@@ -2,117 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 951F52CBA30
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 11:10:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47B892CBA2C
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 11:10:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388487AbgLBKIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 05:08:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:56141 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388089AbgLBKIq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 05:08:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606903639;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Sw7rKU2HDnQ1C3PKcK1bk+44GtKi7PTJ/Na9GIe7Z/g=;
-        b=CI0KW0V30ZvY+UCTlFAfOzyysV2bmPRDN9weim2TN81K8vgnRKjWPt9C9KcV64AbhMpHUZ
-        +su2GUxlFy7086lJ7rUUkh/CgUmSoGu466iFAVQETMmIAG18rKGKKt5sGr8LS3ffrbY8l/
-        AtO8R8mk1svftyFNUaSQ6qg/OaCw5co=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-43-pDAlYnSJMZ-KMVTSTBiPOg-1; Wed, 02 Dec 2020 05:07:18 -0500
-X-MC-Unique: pDAlYnSJMZ-KMVTSTBiPOg-1
-Received: by mail-qv1-f71.google.com with SMTP id e13so809416qvl.19
-        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 02:07:18 -0800 (PST)
+        id S2388290AbgLBKIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 05:08:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58728 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387847AbgLBKIU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 05:08:20 -0500
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC8ECC0613CF
+        for <netdev@vger.kernel.org>; Wed,  2 Dec 2020 02:07:39 -0800 (PST)
+Received: by mail-ed1-x541.google.com with SMTP id j14so3049401edy.3
+        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 02:07:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wGHJMbaMgaAU2ATKs3Nd4ux4bYzZZ+g3X83hZajJsRQ=;
+        b=kJrv90035Kuy4k7X8uF6eIe/hUXoy2VHfmKvotEIvUWxUJbALuLQPzURmwHPqle0PL
+         SfqnGNbHMUe8MONRODzsGhEsM9blnE3EYXEmrkz6IMYg6ZRsFmHJSnc1V4WwHYPdKHJt
+         y2EfhWviAsiI0RQCBTU4UtgwUz1Nos7CVy6Ls0Nj05xkH5Ol7o7h/8HU4dige8uRhrcq
+         Wq4dTbA24NsIPdc6hXQAtlFvy7ztrU8dObR4gdb4CpMK493lXEx/o4PXq0Ak5kJqIcba
+         SqstAlr8civsp+gh4Zg7MWxezV1Mzc+BKaoOnK9EK2a7IaQsCy/ZlqFNRrtFc2oAVhzJ
+         30gw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=Sw7rKU2HDnQ1C3PKcK1bk+44GtKi7PTJ/Na9GIe7Z/g=;
-        b=JdvKRI591cYWW3ELUwLjAMl+7ml4vwTKijvrOYw3jFZN9FS0T1CDHRWewiZteMVVue
-         b9CtdSTIqWPkFHFPpgU3pVexD6od26SQ4SBvPdK20t32ZIfjqa7RoBxdhxuTD9po6eVl
-         434mLr3uinTyPKcp3V4w2FFRnwdFEMqzrAgJ0tQhpWc4hVOZGylWtQqKtqrROiyZ/bt8
-         veqnvNBn5sdpy6cmkbR59AywHXy9gE8+aFcHXMgbhGdEfBh+Eu0fPj9dsPgWh84JmgO3
-         Gl67VbKMf6NaOh1WoQuFRZYkY6yJibUz3unYc1+TUg81bInPtMrjC7Kwk6M+BSdtIXIn
-         L2bw==
-X-Gm-Message-State: AOAM532/SvJ50u9mpcKHYu84JvL+W/sRPUwnPTHJKxj5SwGPCj9j9Wod
-        J+DP0ajak638r7JGoCAhBnz/PqFPjEV/Z8ChDX0JgvtOIqixkqJQf+iUjby1pX1nmEcM40iwPBY
-        LW7jOj6t55PYPoXDp
-X-Received: by 2002:a37:66d4:: with SMTP id a203mr1669630qkc.362.1606903637772;
-        Wed, 02 Dec 2020 02:07:17 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwLSaeZiy2Da5/sHYL8+nLGe8hDvmE04TLrl5NfKr3q1rVUtRNFJ8s+4EAv50uGsv5AUcv5gg==
-X-Received: by 2002:a37:66d4:: with SMTP id a203mr1669608qkc.362.1606903637525;
-        Wed, 02 Dec 2020 02:07:17 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id g70sm1186598qke.8.2020.12.02.02.07.16
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wGHJMbaMgaAU2ATKs3Nd4ux4bYzZZ+g3X83hZajJsRQ=;
+        b=pSG8N1m43gBWBM9ECnjiskgVMQ027ydSMn1ZuQ+HUu5m4YOUW9+KEYXpWHoCy6ufz3
+         L9ftb40wbv6Hh9zC2yYWa/Ol1TfkAT9UvjZTCvlQCl/cQIFRmBh3oDObGo5/wtt6E5PD
+         FvG0PB/6Q356+/01yrwec4Ehmf9Bd2lTujQieAQV8uNmiqVEHZULKGH8EqmpNasP2shN
+         /3aGBelPmb3l5vDurpv8WbBt9Z1CvY3Qw9+hj87rTLuUtvD7BEANqv4dhWEkfEi4pYdz
+         YRDR4k8UAMxKSmfT7GIRbNtvmihEVlaM8wnwkMSz5tTEn/yOKVhr2uVBBFLAqY1/DW2S
+         Xe/Q==
+X-Gm-Message-State: AOAM532719tPhwYqLYvcVqZqdtl9zfka2DePegxvKOecaFozeQJYfxZp
+        oMX4F8AORF95/aBm4bljKvs=
+X-Google-Smtp-Source: ABdhPJzhjq65Ttw8+RR2DCBiainjfcrtp0fVrK4v3wCNcQQpRl2X8m3eQCcapMudA1vWHlpaKIKCgA==
+X-Received: by 2002:a50:9eae:: with SMTP id a43mr1777474edf.109.1606903658552;
+        Wed, 02 Dec 2020 02:07:38 -0800 (PST)
+Received: from skbuf ([188.25.2.120])
+        by smtp.gmail.com with ESMTPSA id mb15sm801253ejb.9.2020.12.02.02.07.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Dec 2020 02:07:16 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 7E08E182EE9; Wed,  2 Dec 2020 11:07:15 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jonathan Morton <chromatix99@gmail.com>,
-        Pete Heist <pete@heistp.net>
-Subject: Re: [PATCH net] inet_ecn: Fix endianness of checksum update when
- setting ECT(1)
-In-Reply-To: <20201201172442.2d8dca75@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-References: <20201130183705.17540-1-toke@redhat.com>
- <20201201172442.2d8dca75@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 02 Dec 2020 11:07:15 +0100
-Message-ID: <87o8jccyi4.fsf@toke.dk>
+        Wed, 02 Dec 2020 02:07:38 -0800 (PST)
+Date:   Wed, 2 Dec 2020 12:07:36 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 2/4] net: dsa: Link aggregation support
+Message-ID: <20201202100736.gdvi754tdcxrqb5b@skbuf>
+References: <20201202091356.24075-1-tobias@waldekranz.com>
+ <20201202091356.24075-3-tobias@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201202091356.24075-3-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> writes:
+On Wed, Dec 02, 2020 at 10:13:54AM +0100, Tobias Waldekranz wrote:
+> Monitor the following events and notify the driver when:
+> 
+> - A DSA port joins/leaves a LAG.
+> - A LAG, made up of DSA ports, joins/leaves a bridge.
+> - A DSA port in a LAG is enabled/disabled (enabled meaning
+>   "distributing" in 802.3ad LACP terms).
+> 
+> Each LAG interface to which a DSA port is attached is represented by a
+> `struct dsa_lag` which is globally reachable from the switch tree and
+> from each associated port.
+> 
+> When a LAG joins a bridge, the DSA subsystem will treat that as each
+> individual port joining the bridge. The driver may look at the port's
+> LAG pointer to see if it is associated with any LAG, if that is
+> required. This is analogue to how switchdev events are replicated out
+> to all lower devices when reaching e.g. a LAG.
+> 
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> ---
+>  include/net/dsa.h  |  97 +++++++++++++++++++++++++++++++++
+>  net/dsa/dsa2.c     |  51 ++++++++++++++++++
+>  net/dsa/dsa_priv.h |  31 +++++++++++
+>  net/dsa/port.c     | 132 +++++++++++++++++++++++++++++++++++++++++++++
+>  net/dsa/slave.c    |  83 +++++++++++++++++++++++++---
+>  net/dsa/switch.c   |  49 +++++++++++++++++
+>  6 files changed, 437 insertions(+), 6 deletions(-)
+> 
+> diff --git a/include/net/dsa.h b/include/net/dsa.h
+> index 4e60d2610f20..aaa350b78c55 100644
+> --- a/include/net/dsa.h
+> +++ b/include/net/dsa.h
+> @@ -7,6 +7,7 @@
+>  #ifndef __LINUX_NET_DSA_H
+>  #define __LINUX_NET_DSA_H
+>  
+> +#include <linux/bitmap.h>
+>  #include <linux/if.h>
+>  #include <linux/if_ether.h>
+>  #include <linux/list.h>
+> @@ -71,6 +72,7 @@ enum dsa_tag_protocol {
+>  
+>  struct packet_type;
+>  struct dsa_switch;
+> +struct dsa_lag;
+>  
+>  struct dsa_device_ops {
+>  	struct sk_buff *(*xmit)(struct sk_buff *skb, struct net_device *dev);
+> @@ -149,6 +151,13 @@ struct dsa_switch_tree {
+>  
+>  	/* List of DSA links composing the routing table */
+>  	struct list_head rtable;
+> +
+> +	/* Link aggregates */
+> +	struct {
+> +		struct dsa_lag *pool;
+> +		unsigned long *busy;
+> +		unsigned int num;
 
-> On Mon, 30 Nov 2020 19:37:05 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> When adding support for propagating ECT(1) marking in IP headers it seem=
-s I
->> suffered from endianness-confusion in the checksum update calculation: In
->> fact the ECN field is in the *lower* bits of the first 16-bit word of the
->> IP header when calculating in network byte order. This means that the
->> addition performed to update the checksum field was wrong; let's fix tha=
-t.
->>=20
->> Fixes: b723748750ec ("tunnel: Propagate ECT(1) when decapsulating as rec=
-ommended by RFC6040")
->> Reported-by: Jonathan Morton <chromatix99@gmail.com>
->> Tested-by: Pete Heist <pete@heistp.net>
->> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->
-> Applied and queued, thanks!
->
->> diff --git a/include/net/inet_ecn.h b/include/net/inet_ecn.h
->> index e1eaf1780288..563457fec557 100644
->> --- a/include/net/inet_ecn.h
->> +++ b/include/net/inet_ecn.h
->> @@ -107,7 +107,7 @@ static inline int IP_ECN_set_ect1(struct iphdr *iph)
->>  	if ((iph->tos & INET_ECN_MASK) !=3D INET_ECN_ECT_0)
->>  		return 0;
->>=20=20
->> -	check +=3D (__force u16)htons(0x100);
->> +	check +=3D (__force u16)htons(0x1);
->>=20=20
->>  	iph->check =3D (__force __sum16)(check + (check>=3D0xFFFF));
->>  	iph->tos ^=3D INET_ECN_MASK;
->
-> This seems to be open coding csum16_add() - is there a reason and if
-> not perhaps worth following up in net-next?
+Can we get rid of the busy array and just look at the refcounts?
+Can we also get rid of the "num" variable?
 
-Hmm, good point. I think I originally just copied this from
-IP_ECN_set_ce(), which comes all the way back from the initial
-Linux-2.6.12-rc2 commit in git. So I suppose it may just predate the
-csum helpers? I'll wait for this patch to get propagated to net-next,
-then follow up with a fix there :)
-
--Toke
-
+> +	} lags;
+>  };
