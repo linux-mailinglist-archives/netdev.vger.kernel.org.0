@@ -2,134 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0181D2CB740
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 09:33:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D41472CB74D
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 09:36:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387724AbgLBIct (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 03:32:49 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:15832 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726961AbgLBIcs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 03:32:48 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fc751080001>; Wed, 02 Dec 2020 00:32:08 -0800
-Received: from reg-r-vrt-018-180.nvidia.com (10.124.1.5) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3; Wed, 2 Dec 2020 08:32:06 +0000
-References: <20201127151205.23492-1-vladbu@nvidia.com> <20201130185222.6b24ed42@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com> <ygnh4kl6klja.fsf@nvidia.com> <20201201090331.469dd407@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com> <ygnh1rg9l6az.fsf@nvidia.com> <20201201112444.1d25d9c6@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-User-agent: mu4e 1.4.12; emacs 26.2.90
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>
-Subject: Re: [PATCH net-next] net: sched: remove redundant 'rtnl_held' argument
-In-Reply-To: <20201201112444.1d25d9c6@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-Date:   Wed, 2 Dec 2020 10:32:03 +0200
-Message-ID: <ygnhy2igk3r0.fsf@nvidia.com>
+        id S1729114AbgLBIdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 03:33:44 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27211 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728989AbgLBIdn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 03:33:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606897936;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=EdS5Ozk3yDJPMYRuoyTOIqVIvgy0FiikSyg8r+DUlWg=;
+        b=hkHmA9nCuJOb/vtzD/jkQyfwkDe2HyDPlXzWMPxg37WuntSjus6VBI6wIy7tQowyRUzh6G
+        Jz1QcwSwofWXlzyQn42+G5yLRIkHl3T0+fh3uS50l5u2lA4VedbIMzpMIM8Z3G1U3Y/O/q
+        oqNys8kzZDXTGw+yxib1BCXrkyIBqqs=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-405-PGYtQ49-M6-W2Q65M-bf6Q-1; Wed, 02 Dec 2020 03:32:15 -0500
+X-MC-Unique: PGYtQ49-M6-W2Q65M-bf6Q-1
+Received: by mail-wr1-f69.google.com with SMTP id b12so2175620wru.15
+        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 00:32:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=EdS5Ozk3yDJPMYRuoyTOIqVIvgy0FiikSyg8r+DUlWg=;
+        b=sJVRiQejTBlJCr+OG1XS9i1qpHrr7OTcgdZcLDvxjU1N75+rJfJYXLI9A9gRrckZyj
+         yCOEo1RpUlatrInnmfq8JdojYEaWnFuLDNfaUUDEEtVe4wPRd26MLJNXtfYoRuSY0XS+
+         119xbE3mvYVdnzomVGlSSzHmlT+9aIMdBEK0DYXfcTMg3NzudKye2XZMam60PoIRzkxx
+         HVdjGAWNEVP1D2tlMgZNvnprgKXLY9UUTHnDDHNOWCd0CpbirGDdhGc/RA+PWAUOexf9
+         UBAbA01dSDiGR/Kh3F5y3mw+eZPwLr0t9tYKlien00S3I0W1yUmBICINAtTCtCEWppY7
+         wruw==
+X-Gm-Message-State: AOAM532MtQuXY90KMAvHuXGqVUCpPYTl7V8uaFKxWYoipaEqOop/o+Bt
+        AH4p5bk3lyxDOFhSd8w5gp+nsjRK+jix/nj7Q7jNlFhW1xe9wOh8mRWXTTlPfzppSUF54LC3OS7
+        rLjnNRPvh8Eo/NKg/
+X-Received: by 2002:a7b:c770:: with SMTP id x16mr1820571wmk.139.1606897932573;
+        Wed, 02 Dec 2020 00:32:12 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyEVrZqUYCHneGWRpBo4BPzO4zbn5YVkR2h8CaciENRh8epL6dSk21IVODbgmXJbqr9E+jhAw==
+X-Received: by 2002:a7b:c770:: with SMTP id x16mr1820554wmk.139.1606897932361;
+        Wed, 02 Dec 2020 00:32:12 -0800 (PST)
+Received: from steredhat (host-79-17-248-175.retail.telecomitalia.it. [79.17.248.175])
+        by smtp.gmail.com with ESMTPSA id j8sm1123684wrx.11.2020.12.02.00.32.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Dec 2020 00:32:11 -0800 (PST)
+Date:   Wed, 2 Dec 2020 09:32:09 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Paraschiv, Andra-Irina" <andraprs@amazon.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        David Duncan <davdunc@amazon.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Alexander Graf <graf@amazon.de>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>
+Subject: Re: [PATCH net-next v1 1/3] vm_sockets: Include flag field in the
+ vsock address data structure
+Message-ID: <20201202083209.ex5do3dqekfkj5as@steredhat>
+References: <20201201152505.19445-1-andraprs@amazon.com>
+ <20201201152505.19445-2-andraprs@amazon.com>
+ <20201201160937.sswd3prfn6r52ihc@steredhat>
+ <70d9868a-c883-d823-abf8-7e77ea4c933c@amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1606897928; bh=p1OUljy39pPqG+iXbveBnch+ivIraXSNoqFfEUql3Nw=;
-        h=References:User-agent:From:To:CC:Subject:In-Reply-To:Date:
-         Message-ID:MIME-Version:Content-Type:X-Originating-IP:
-         X-ClientProxiedBy;
-        b=K3+XbPHP7JRn5HR+QglxWfDgG1SYy3OtQaatvZ1FS7VePZ/D3j+6/pfYDPYejYJZz
-         /QbUsuTIoTMhM+p6D5yAmtESJ6bdwNo3MPxOw/ZhinA7JAa2PrXoIHQlRYfAnrt4el
-         9PRfkiNDvMZX8I7uGfa144FZAlVSKckJZO5f4nJk67TJTlHrRexfrwepN8Xi1QVIcD
-         8Pd4gevCfApGGydn0gZQa11ICvCylMX7ClGwQKHdGh/tzCOkkhO0ZEphIupFOnlCd6
-         qHwC5O/QmXChJy95395dhctJSNlWgsG501UqAtTjEbLLnQwGMlkiJwQMqeie42Dqaz
-         PgacTKnCEr8sA==
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <70d9868a-c883-d823-abf8-7e77ea4c933c@amazon.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Tue 01 Dec 2020 at 21:24, Jakub Kicinski <kuba@kernel.org> wrote:
-> On Tue, 1 Dec 2020 20:39:16 +0200 Vlad Buslov wrote:
->> On Tue 01 Dec 2020 at 19:03, Jakub Kicinski <kuba@kernel.org> wrote:
->> > On Tue, 1 Dec 2020 09:55:37 +0200 Vlad Buslov wrote:  
->> >> On Tue 01 Dec 2020 at 04:52, Jakub Kicinski <kuba@kernel.org> wrote:  
->> >> > On Fri, 27 Nov 2020 17:12:05 +0200 Vlad Buslov wrote:    
->> >> >> @@ -2262,7 +2260,7 @@ static int tc_del_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
->> >> >>  
->> >> >>  	if (prio == 0) {
->> >> >>  		tfilter_notify_chain(net, skb, block, q, parent, n,
->> >> >> -				     chain, RTM_DELTFILTER, rtnl_held);
->> >> >> +				     chain, RTM_DELTFILTER);
->> >> >>  		tcf_chain_flush(chain, rtnl_held);
->> >> >>  		err = 0;
->> >> >>  		goto errout;    
->> >> >
->> >> > Hum. This looks off.    
->> >> 
->> >> Hi Jakub,
->> >> 
->> >> Prio==0 means user requests to flush whole chain. In such case rtnl lock
->> >> is obtained earlier in tc_del_tfilter():
->> >> 
->> >> 	/* Take rtnl mutex if flushing whole chain, block is shared (no qdisc
->> >> 	 * found), qdisc is not unlocked, classifier type is not specified,
->> >> 	 * classifier is not unlocked.
->> >> 	 */
->> >> 	if (!prio ||
->> >> 	    (q && !(q->ops->cl_ops->flags & QDISC_CLASS_OPS_DOIT_UNLOCKED)) ||
->> >> 	    !tcf_proto_is_unlocked(name)) {
->> >> 		rtnl_held = true;
->> >> 		rtnl_lock();
->> >> 	}
->> >>   
->> >
->> > Makes sense, although seems a little fragile. Why not put a true in
->> > there, in that case?  
->> 
->> Because, as I described in commit message, the function will trigger an
->> assertion if called without rtnl lock, so passing rtnl_held==false
->> argument makes no sense and is confusing for the reader.
+On Tue, Dec 01, 2020 at 08:15:04PM +0200, Paraschiv, Andra-Irina wrote:
 >
-> The assumption being that tcf_ functions without the arg must hold the
-> lock?
-
-Yes.
-
 >
->> > Do you have a larger plan here? The motivation seems a little unclear
->> > if I'm completely honest. Are you dropping the rtnl_held from all callers 
->> > of __tcf_get_next_proto() just to save the extra argument / typing?  
->> 
->> The plan is to have 'rtnl_held' arg for functions that can be called
->> without rtnl lock and not have such argument for functions that require
->> caller to hold rtnl :)
->> 
->> To elaborate further regarding motivation for this patch: some time ago
->> I received an email asking why I have rtnl_held arg in function that has
->> ASSERT_RTNL() in one of its dependencies. I re-read the code and
->> determined that it was a leftover from earlier version and is not needed
->> in code that was eventually upstreamed. Removing the argument was an
->> easy decision since Jiri hates those and repeatedly asked me to minimize
->> usage of such function arguments, so I didn't expect it to be
->> controversial.
->> 
->> > That's nice but there's also value in the API being consistent.  
->> 
->> Cls_api has multiple functions that don't have 'rtnl_held' argument.
->> Only functions that can work without rtnl lock have it. Why do you
->> suggest it is inconsistent to remove it here?
+>On 01/12/2020 18:09, Stefano Garzarella wrote:
+>>
+>>On Tue, Dec 01, 2020 at 05:25:03PM +0200, Andra Paraschiv wrote:
+>>>vsock enables communication between virtual machines and the host they
+>>>are running on. With the multi transport support (guest->host and
+>>>host->guest), nested VMs can also use vsock channels for communication.
+>>>
+>>>In addition to this, by default, all the vsock packets are forwarded to
+>>>the host, if no host->guest transport is loaded. This behavior can be
+>>>implicitly used for enabling vsock communication between sibling VMs.
+>>>
+>>>Add a flag field in the vsock address data structure that can be used to
+>>>explicitly mark the vsock connection as being targeted for a certain
+>>>type of communication. This way, can distinguish between nested VMs and
+>>>sibling VMs use cases and can also setup them at the same time. Till
+>>>now, could either have nested VMs or sibling VMs at a time using the
+>>>vsock communication stack.
+>>>
+>>>Use the already available "svm_reserved1" field and mark it as a flag
+>>>field instead. This flag can be set when initializing the vsock address
+>>>variable used for the connect() call.
+>>
+>>Maybe we can split this patch in 2 patches, one to rename the svm_flag
+>>and one to add the new flags.
 >
-> I see. I was just trying to figure out if you have a plan for larger
-> restructuring to improve the situation. I also dislike to arguments
-> being passed around in a seemingly random fashion. Removing or adding
-> them to a single function does not move the needle much, IMO.
-
-No, this is not part of larger effort. I would like to stop passing
-'rtnl_held' everywhere, but for that I need other drivers that implement
-TC offload to stop requiring rtnl lock, which would allow removing
-rtnl_held from tcf_proto_ops callbacks.
-
+>Sure, I can split this in 2 patches, to have a bit more separation of 
+>duties.
 >
-> But since the patch is correct I'll apply it now, thanks!
+>>
+>>>
+>>>Signed-off-by: Andra Paraschiv <andraprs@amazon.com>
+>>>---
+>>>include/uapi/linux/vm_sockets.h | 18 +++++++++++++++++-
+>>>1 file changed, 17 insertions(+), 1 deletion(-)
+>>>
+>>>diff --git a/include/uapi/linux/vm_sockets.h 
+>>>b/include/uapi/linux/vm_sockets.h
+>>>index fd0ed7221645d..58da5a91413ac 100644
+>>>--- a/include/uapi/linux/vm_sockets.h
+>>>+++ b/include/uapi/linux/vm_sockets.h
+>>>@@ -114,6 +114,22 @@
+>>>
+>>>#define VMADDR_CID_HOST 2
+>>>
+>>>+/* This sockaddr_vm flag value covers the current default use case:
+>>>+ * local vsock communication between guest and host and nested 
+>>>VMs setup.
+>>>+ * In addition to this, implicitly, the vsock packets are 
+>>>forwarded to the host
+>>>+ * if no host->guest vsock transport is set.
+>>>+ */
+>>>+#define VMADDR_FLAG_DEFAULT_COMMUNICATION     0x0000
+>>
+>>I think we don't need this macro, since the next one can be used to
+>>check if it a sibling communication (flag 0x1 set) or not (flag 0x1
+>>not set).
+>
+>Right, that's not particularly the use of the flag value, as by 
+>default comes as 0. It was more for sharing the cases this covers. But 
+>I can remove the define and keep this kind of info, with regard to the 
+>default case, in the commit message / comments.
+>
 
-Thank you!
+Agree, you can add few lines in the comment block of VMADDR_FLAG_SIBLING 
+describing the default case when it is not set.
+
+>>
+>>>+
+>>>+/* Set this flag value in the sockaddr_vm corresponding field if 
+>>>the vsock
+>>>+ * channel needs to be setup between two sibling VMs running on 
+>>>the same host.
+>>>+ * This way can explicitly distinguish between vsock channels 
+>>>created for nested
+>>>+ * VMs (or local communication between guest and host) and the 
+>>>ones created for
+>>>+ * sibling VMs. And vsock channels for multiple use cases (nested 
+>>>/ sibling VMs)
+>>>+ * can be setup at the same time.
+>>>+ */
+>>>+#define VMADDR_FLAG_SIBLING_VMS_COMMUNICATION 0x0001
+>>
+>>What do you think if we shorten in VMADDR_FLAG_SIBLING?
+>>
+>
+>Yup, this seems ok as well for me. I'll update the naming.
+>
+
+Thanks,
+Stefano
 
