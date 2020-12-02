@@ -2,106 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0D432CC237
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 17:27:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24CC42CC254
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 17:31:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389044AbgLBQZ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 11:25:58 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.165]:35067 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387405AbgLBQZ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 11:25:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1606926186;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=EBATEHZeZJeRrIC3X7gmTVqFxYZ3iIi6qc5SjPGFl30=;
-        b=QJ8RpRZDxQVY91hhgqP1gRXE8x8xyToZlsPzpUtrUHDgFcl+X9PTgyaIB8pbK3VxqL
-        FBw0GZnpmqmK2Of8KQ8dMM6TCugYEL3fMi4S91CBI6J1oSHzolj/TDDfcJPQ518oLrLZ
-        gF/pw9a7Fz91QXM496TVaIT4pLvc06h1U8uYOkoK+3ofWinllJ2FhbVC0OdEoEYrVI2G
-        j6UiFQyx2Rk4u4wU6vEkRMX3ZkKUOmqA/TACekMqRVOMTKZUjMSpZCsezj4ooJb+a2KQ
-        hVRMjYMtmcHFD3hRH8+G71QocOw+TziaY4Jx/bSlJrhd1UP45XiiLrTO798qMnUZ+OOQ
-        0sgQ==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3TMaFqTGV1iO89vpw=="
-X-RZG-CLASS-ID: mo00
-Received: from [192.168.10.177]
-        by smtp.strato.de (RZmta 47.3.4 DYNA|AUTH)
-        with ESMTPSA id n07f3bwB2GMvCYg
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Wed, 2 Dec 2020 17:22:57 +0100 (CET)
-Subject: Re: [PATCH] can: don't count arbitration lose as an error
-To:     Jeroen Hofstee <jhofstee@victronenergy.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org
-Cc:     Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        "moderated list:ARM/Allwinner sunXi SoC support" 
-        <linux-arm-kernel@lists.infradead.org>
-References: <20201127095941.21609-1-jhofstee@victronenergy.com>
- <434167b4-c2df-02bf-8a9c-2d4716c5435f@pengutronix.de>
- <f5f93e72-c55f-cfd3-a686-3454e42c4371@victronenergy.com>
- <0988dd09-70d9-3ee8-9945-10c4dea49407@hartkopp.net>
- <405f9e1a-e653-e82d-6d45-a1e5298b5c82@victronenergy.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <b08226a0-bd96-637f-954d-fb8dedc0017b@hartkopp.net>
-Date:   Wed, 2 Dec 2020 17:22:56 +0100
+        id S2389091AbgLBQbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 11:31:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33228 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389127AbgLBQbO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 11:31:14 -0500
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A214C061A4D
+        for <netdev@vger.kernel.org>; Wed,  2 Dec 2020 08:30:18 -0800 (PST)
+Received: by mail-wr1-x441.google.com with SMTP id e7so4686745wrv.6
+        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 08:30:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=m/r9so68MBI7cvUvWbAgjEbzBUm3gJd7064Fn8T1sGI=;
+        b=YhNJxdhfwExxIIRphICeWtTHz0sguVZVsh3fF1GhScSOZqJdsmfYO59InDsB0Pe3oR
+         1ce+rKUGReeSPvpgkqIbLQmesyGbResHSlmgHY7iG9Oip+ygUv021CzndHAx4iNjTzNk
+         3i1qKhnqiykmnWTYMrw0XV5YGVfMQak3OhpEtD7Vo1rz2iVuwJehJZ2b8Vc+R/xmNsrT
+         KqDswVCXFqemib+4MfMTXRvtZH2AIuE0OVHGxe0RJLwDfya3VIAV8yDSv1toZbjXuArq
+         44SyUHyKZH3BQdA2fZYm7qSMLxfy6X9IVwW7w8QvS9897So9liiDVdC32hLVwVYdC7ap
+         QKjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=m/r9so68MBI7cvUvWbAgjEbzBUm3gJd7064Fn8T1sGI=;
+        b=HlbCcbmwZquhZRF/Edrk+/cLFYKuIPMKacOIbyhStEEMNW+QU/BbRkWcl+TauGK07t
+         +vJ9NRtwiaGdMiOS+meemydrfe8siFYzz8wrwV7mxCSATHEtKWae5vdFey73qzf0II/t
+         O9SJle2s4ly9sonJ5BvOGYCQRjWn35LLBCt28IE5QvivjdJI1spIduGB+akzZdcOa/Uz
+         p3zs9y4cszRnr/H1mP753ZIkM17fpig4ipz5ocWhuZHKV6tV5+0ufaEMiSeBXW8/GCJ2
+         iEjWwaudDNP8RQ0JvH7rXog5nPfPaPutU9GQlW/zsIER0O9omaEBwMvVJz2WQVOomvoW
+         9BmQ==
+X-Gm-Message-State: AOAM531rKZaB7SbKOYHQ7nD7KeV/SB44gW8pAfm5kz6SZWA/vEjfiwp1
+        q3NO/M10/XFnhkQy9ig+xHo=
+X-Google-Smtp-Source: ABdhPJwfbzUDm57QeqTCvPbOFRRE/v9Fx+uz10h4ka27LiGzK/ng9XsdjjNoq0b8BaBOSlim6mUGeg==
+X-Received: by 2002:a05:6000:347:: with SMTP id e7mr4403030wre.35.1606926617110;
+        Wed, 02 Dec 2020 08:30:17 -0800 (PST)
+Received: from [192.168.8.116] ([37.164.23.254])
+        by smtp.gmail.com with ESMTPSA id p4sm2781523wrm.51.2020.12.02.08.30.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Dec 2020 08:30:16 -0800 (PST)
+Subject: Re: [PATCH net-next v2] mptcp: be careful on MPTCP-level ack.
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>, mptcp@lists.01.org
+References: <5370c0ae03449239e3d1674ddcfb090cf6f20abe.1606253206.git.pabeni@redhat.com>
+ <fdad2c0e-e84e-4a82-7855-fc5a083bb055@gmail.com>
+ <665bb3a603afebdcc85878f6b45bcf0313607994.camel@redhat.com>
+ <2ac90c38-c82a-8aeb-2c01-b44a6de1bf57@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <d05ac8b9-3522-e4fc-d3ce-4bea74a6dfbf@gmail.com>
+Date:   Wed, 2 Dec 2020 17:30:14 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-In-Reply-To: <405f9e1a-e653-e82d-6d45-a1e5298b5c82@victronenergy.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <2ac90c38-c82a-8aeb-2c01-b44a6de1bf57@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Jeroen,
 
-On 02.12.20 16:37, Jeroen Hofstee wrote:
-> On 12/2/20 3:35 PM, Oliver Hartkopp wrote:
 
->> Do we agree that in one-shot mode both the tx_errors and the 
->> arbitration_lost counters are increased in the arbitration-lost case?
->>
->> At least this would fit to the Kvaser USB behaviour.
+On 12/2/20 5:10 PM, Eric Dumazet wrote:
 > 
 > 
-> I have no opinion about that. I just kept existing behavior.
-
-That's ok for me either.
-
->> And btw. I wondered if we should remove the check for 
->> CAN_CTRLMODE_ONE_SHOT here, as we ALWAYS should count a tx_error and 
->> drop the echo_skb when we have a TX-interrupt and TX-complete flag is 
->> zero.
+> On 12/2/20 4:37 PM, Paolo Abeni wrote:
+>> On Wed, 2020-12-02 at 14:18 +0100, Eric Dumazet wrote:
+>>>
+>>> On 11/24/20 10:51 PM, Paolo Abeni wrote:
+>>>> We can enter the main mptcp_recvmsg() loop even when
+>>>> no subflows are connected. As note by Eric, that would
+>>>> result in a divide by zero oops on ack generation.
+>>>>
+>>>> Address the issue by checking the subflow status before
+>>>> sending the ack.
+>>>>
+>>>> Additionally protect mptcp_recvmsg() against invocation
+>>>> with weird socket states.
+>>>>
+>>>> v1 -> v2:
+>>>>  - removed unneeded inline keyword - Jakub
+>>>>
+>>>> Reported-and-suggested-by: Eric Dumazet <eric.dumazet@gmail.com>
+>>>> Fixes: ea4ca586b16f ("mptcp: refine MPTCP-level ack scheduling")
+>>>> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+>>>> ---
+>>>>  net/mptcp/protocol.c | 67 ++++++++++++++++++++++++++++++++------------
+>>>>  1 file changed, 49 insertions(+), 18 deletions(-)
+>>>>
+>>>
+>>> Looking at mptcp recvmsg(), it seems that a read(fd, ..., 0) will
+>>> trigger an infinite loop if there is available data in receive queue ?
 >>
->> So replace:
+>> Thank you for looking into this!
 >>
->> if (priv->can.ctrlmode & CAN_CTRLMODE_ONE_SHOT &&
->>                   !(status & SR_TCS)) {
+>> I can't reproduce the issue with the following packetdrill ?!?
 >>
->> with:
+>> +0.0  connect(3, ..., ...) = -1 EINPROGRESS (Operation now in progress)
+>> +0.1   > S 0:0(0) <mss 1460,sackOK,TS val 100 ecr 0,nop,wscale 8,mpcapable v1 fflags[flag_h] nokey>
+>> +0.1   < S. 0:0(0) ack 1 win 65535 <mss 1460,sackOK,TS val 700 ecr 100,nop,wscaale 8,mpcapable v1 flags[flag_h] key[skey=2] >
+>> +0.1  > . 1:1(0) ack 1 <nop, nop, TS val 100 ecr 700,mpcapable v1 flags[flag_h]] key[ckey,skey]>
+>> +0.1 fcntl(3, F_SETFL, O_RDWR) = 0
+>> +0.1   < .  1:201(200) ack 1 win 225 <dss dack8=1 dsn8=1 ssn=1 dll=200 nocs,  nop, nop>
+>> +0.1   > .  1:1(0) ack 201 <nop, nop, TS val 100 ecr 700, dss dack8=201 dll=00 nocs>
+>> +0.1 read(3, ..., 0) = 0
 >>
->> if (!(status & SR_TCS)) {
+>> The main recvmsg() loop is interrupted by the following check:
 >>
->> Any suggestions?
->>
+>>                 if (copied >= target)
+>>                         break;
 > 
-> In theory, yes. But I can't think of a reason you would end
-> up there without CAN_CTRLMODE_ONE_SHOT being set.
+> @copied should be 0, and @target should be 1
+> 
+> Are you sure the above condition is triggering ?
+> 
+> Maybe read(fd, ..., 0) does not reach recvmsg() at all.
 
-Right. Me too. But for that reason I would remove that extra check to 
-catch this error even if CAN_CTRLMODE_ONE_SHOT is not enabled.
+Yes, sock_read_iter() has a shortcut :
 
-> Aborting the current transmission in non single shot mode
-> will get you there and incorrectly report the message as
-> transmitted, but that is not implemented afaik.
+if (!iov_iter_count(to))    /* Match SYS5 behaviour */
+     res = sock_recvmsg(sock, &msg, msg.msg_flags);
 
-Ahem, no. If you get there the echo_skb is deleted and the tx_errors 
-counter is increased. Just as it should be.
+but recvmsg() does not have such check, or maybe I have not looked at the right place.
 
-Regards,
-Oliver
+> 
+> You could try recvmsg() or recvmmsg(), 
+> 
+>>
+>> I guess we could loop while the msk has available rcv space and some
+>> subflow is feeding new data. If so, I think moving:
+>>
+>> 	if (skb_queue_empty(&msk->receive_queue) &&
+>>                     __mptcp_move_skbs(msk, len - copied))
+>>                         continue;
+>>
+>> after the above check should address the issue, and will make the
+>> common case faster. Let me test the above - unless I underlooked
+>> something relevant!
+>>
+>> Thanks,
+>>
+>> Paolo
+>>
