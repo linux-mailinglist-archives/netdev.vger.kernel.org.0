@@ -2,142 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D85A72CB1A2
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 01:41:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8032F2CB1B2
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 01:50:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726908AbgLBAkl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Dec 2020 19:40:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56240 "EHLO
+        id S1727235AbgLBAti (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Dec 2020 19:49:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726166AbgLBAkk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 19:40:40 -0500
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EA89C0613D4;
-        Tue,  1 Dec 2020 16:40:00 -0800 (PST)
-Received: by mail-yb1-xb43.google.com with SMTP id l14so58783ybq.3;
-        Tue, 01 Dec 2020 16:40:00 -0800 (PST)
+        with ESMTP id S1726489AbgLBAti (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Dec 2020 19:49:38 -0500
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A30EC0613CF
+        for <netdev@vger.kernel.org>; Tue,  1 Dec 2020 16:48:58 -0800 (PST)
+Received: by mail-pf1-x441.google.com with SMTP id d77so116250pfd.2
+        for <netdev@vger.kernel.org>; Tue, 01 Dec 2020 16:48:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=7IgGP7aV6Y93O2jr4hz7Ro1XSzZ05b6NeWqgiqqHIrI=;
-        b=Sbtxhy8tDANT+4u/57CIhzLr+EpvDT9d9ywEsHQAXVv5UkMM/SFlMZKiOthEUiNf0g
-         z6U1/+jYACPKrmxuoOvOscL8tZYPZt4NOc0QXf05qIRs/UWS8hQi7aY/zK5/SEM04i+h
-         QNPS3OpW4EgPmG6jIkOmCJ1zv4HaKtwMUd++oa6pg9tHbYOEIwOfo37tXqstUymXzyfG
-         Qkgy1WxQn7ZB/8Ehq+gw5dEJghDtZtewLgRBjj2orKVJm48iDYI0Xj3BqtA2YSXX5tTv
-         ZWdB3GN/l/Jc5e5M7TMZT/SxoU0HNAbkqbo7zw2ngOeAamhb5+SZvfs383tiowCA7ckh
-         FcNg==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/fKv5F3ku6dAz8MDwjdtM8xp8kuRZkZb5KHj4LO7twk=;
+        b=JjxyvsIhCZGCexZjHjW3/q4SZm2S1po42f5rWBYNZpknOcEv/4ukHAd7dYoOcLbu08
+         v9lir0vGgCrDfr3g4PJPmBdnSX9AtilLwAKcoLMpetkmp8Bhe+z4QXdSRWLcWS0Tqf70
+         Xl3eKVOJ2k93ikHIJdW1ZLWQ5nevzaKciUV1A=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=7IgGP7aV6Y93O2jr4hz7Ro1XSzZ05b6NeWqgiqqHIrI=;
-        b=e1sfS5L1WApBKTMESLr+3AAv2Hg7O2IgzjFJ5O6525qfYyL6bDWOOpuKId6v8tMZy/
-         ADZASp4HMwcAGpkMW53ls1nwBvr7r2pR+Ag+Z93PISnYJFv4z8p2tl0l0RzxhS3or32h
-         o7PIdSl5f/CSwjhrdcChyhtSfEaspWMhT5vY4Av478GQcGlj+5EY+wwho2p75gYiBl1D
-         MSdE6NTsB0inxO0Jhk02bgmt7NVo+wU5RIl3ZnOQp+stfiI5H+F06hK92FNKGftsTpR7
-         NPVaYRPweQQqdl+TluFBGqlsKD+MLSYE/RU1swSCKF033S04uJ9i7bfYHJGjgVxFgdaI
-         jckQ==
-X-Gm-Message-State: AOAM530SkBiGcDc/7h9Ke/aSuMdRmTkwF+uR4pSBuTE5Rj8Tr1WoBKSS
-        2HLIAynXKSbJQpZY69aMb+vAw2md/til5RmuFcU=
-X-Google-Smtp-Source: ABdhPJwYnARzBzXOG68YuCMOIBrmeAPQrGmH4OHC/F00lSJ4wOiauRLFkxR+/xzr2bCJWqENaiM+mfTQZQ84g5Vh+d4=
-X-Received: by 2002:a25:7717:: with SMTP id s23mr4729ybc.459.1606869598962;
- Tue, 01 Dec 2020 16:39:58 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/fKv5F3ku6dAz8MDwjdtM8xp8kuRZkZb5KHj4LO7twk=;
+        b=hDQV/xyMWPCwhIIeZ0T9r2CsXQvynOXRhioG7R8mml+LXG+jdYRRIN/Scze4oB/N3D
+         E73Ud1JUdt5anCNJna0vRsdcw2gkhXBiKYpovSvdjo4HBRvQ9Og+ZQAaKOnCG9s+EUqZ
+         /7QaPyuwejmYT2SK/urHBUulhzhawAVoeo0Oe2ez8Jtr0hIGi+V0cv6vAdGb2ofHRBV9
+         e4k25Gx8vZ5PLMIM2JVrLmBdF6BuWMnx8tE8g5HbJmTFgA//Ztn+a9fG7aJsB4x1W514
+         yB9QjK8zpAgKVP1ZVAaSVjXbvK5XZ1hIf8RR4l06hkCbKAosBxCcHYVdkfZ0lwby3KUX
+         6KoA==
+X-Gm-Message-State: AOAM530YP2IKHbnMGjoJ7BIOOeElcuIOz68JfZ86PI7Joz86Ms73YCbF
+        NO9j/gjR5FPTGYiaoFtqVhznJw==
+X-Google-Smtp-Source: ABdhPJxPo4FcPctt9GYJiUhuxfJKkE2jzZbWtQgZ4zmCr6jeE52ztB/bGQ6fwSzhNexVjYTI2+X2Vw==
+X-Received: by 2002:a62:78d3:0:b029:198:ad8:7d05 with SMTP id t202-20020a6278d30000b02901980ad87d05mr90210pfc.18.1606870137646;
+        Tue, 01 Dec 2020 16:48:57 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id f5sm83328pgg.74.2020.12.01.16.48.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Dec 2020 16:48:56 -0800 (PST)
+Date:   Tue, 1 Dec 2020 16:48:55 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
+        Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+Cc:     akpm@linux-foundation.org, bp@alien8.de, coreteam@netfilter.org,
+        syzbot <syzbot+9b64b619f10f19d19a7c@syzkaller.appspotmail.com>,
+        davem@davemloft.net, gustavoars@kernel.org, hpa@zytor.com,
+        john.stultz@linaro.org, kaber@trash.net, kadlec@blackhole.kfki.hu,
+        linux-kernel@vger.kernel.org, mingo@redhat.com,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        pablo@netfilter.org, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de, torvalds@linux-foundation.org,
+        wang.yi59@zte.com.cn, x86@kernel.org
+Subject: Re: UBSAN: array-index-out-of-bounds in arch_uprobe_analyze_insn
+Message-ID: <202012011616.DFBE3FC5BC@keescook>
+References: <00000000000082559e05afc6b97a@google.com>
+ <0000000000002cd54805afdf483f@google.com>
 MIME-Version: 1.0
-References: <20201130161720.8688-1-toke@redhat.com>
-In-Reply-To: <20201130161720.8688-1-toke@redhat.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 1 Dec 2020 16:39:48 -0800
-Message-ID: <CAEf4BzYKWnNQqLOxgUaj=qOP15wpMY8axYxfRDukvw8Wypbjgw@mail.gmail.com>
-Subject: Re: [PATCH bpf] libbpf: sanitise map names before pinning
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0000000000002cd54805afdf483f@google.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 30, 2020 at 8:17 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> When we added sanitising of map names before loading programs to libbpf, =
-we
-> still allowed periods in the name. While the kernel will accept these for
-> the map names themselves, they are not allowed in file names when pinning
+Hi,
 
-That sounds like an unnecessary difference in kernel behavior. If the
-kernel allows maps with '.' in the name, why not allow to pin it?
-Should we fix that in the kernel?
+There appears to be a problem with prefix counting for the instruction
+decoder. It looks like insn_get_prefixes() isn't keeping "nb" and "nbytes"
+in sync correctly:
 
-> maps. This means that bpf_object__pin_maps() will fail if called on an
-> object that contains internal maps (such as sections .rodata).
->
-> Fix this by replacing periods with underscores when constructing map pin
-> paths. This only affects the paths generated by libbpf when
-> bpf_object__ping_maps() is called with a path argument. Any pin paths set
-> by bpf_map__set_pin_path() are unaffected, and it will still be up to the
-> caller to avoid invalid characters in those.
->
-> Fixes: 113e6b7e15e2 ("libbpf: Sanitise internal map names so they are not=
- rejected by the kernel")
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> ---
->  tools/lib/bpf/libbpf.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 8d05132e1945..8a3b4713b356 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -7665,8 +7665,8 @@ int bpf_object__pin_maps(struct bpf_object *obj, co=
-nst char *path)
->         }
->
->         bpf_object__for_each_map(map, obj) {
-> +               char buf[PATH_MAX], *s =3D buf;
->                 char *pin_path =3D NULL;
-> -               char buf[PATH_MAX];
->
->                 if (path) {
->                         int len;
-> @@ -7680,6 +7680,8 @@ int bpf_object__pin_maps(struct bpf_object *obj, co=
-nst char *path)
->                                 err =3D -ENAMETOOLONG;
->                                 goto err_unpin_maps;
->                         }
-> +                       while ((s =3D strstr(s, ".")))
-> +                           *s =3D '_';
+        while (inat_is_legacy_prefix(attr)) {
+                /* Skip if same prefix */
+                for (i = 0; i < nb; i++)
+                        if (prefixes->bytes[i] == b)
+                                goto found;
+                if (nb == 4)
+                        /* Invalid instruction */
+                        break;
+                prefixes->bytes[nb++] = b;
+		...
+found:
+                prefixes->nbytes++;
+                insn->next_byte++;
+                lb = b;
+                b = peek_next(insn_byte_t, insn);
+                attr = inat_get_opcode_attribute(b);
+        }
 
-Let's extract this into a helper method?
+(nbytes is incremented on repeated prefixes, but "nb" isn't)
 
->                         pin_path =3D buf;
->                 } else if (!map->pin_path) {
->                         continue;
-> @@ -7712,8 +7714,8 @@ int bpf_object__unpin_maps(struct bpf_object *obj, =
-const char *path)
->                 return -ENOENT;
->
->         bpf_object__for_each_map(map, obj) {
-> +               char buf[PATH_MAX], *s =3D buf;
->                 char *pin_path =3D NULL;
-> -               char buf[PATH_MAX];
->
->                 if (path) {
->                         int len;
-> @@ -7724,6 +7726,8 @@ int bpf_object__unpin_maps(struct bpf_object *obj, =
-const char *path)
->                                 return -EINVAL;
->                         else if (len >=3D PATH_MAX)
->                                 return -ENAMETOOLONG;
-> +                       while ((s =3D strstr(s, ".")))
-> +                           *s =3D '_';
->                         pin_path =3D buf;
->                 } else if (!map->pin_path) {
->                         continue;
-> --
-> 2.29.2
->
+However, it looks like nbytes is used as an offset:
+
+static inline int insn_offset_rex_prefix(struct insn *insn)
+{
+        return insn->prefixes.nbytes;
+}
+static inline int insn_offset_vex_prefix(struct insn *insn)
+{
+        return insn_offset_rex_prefix(insn) + insn->rex_prefix.nbytes;
+}
+
+Which means everything that iterates over prefixes.bytes[] is buggy,
+since they may be trying to read past the end of the array:
+
+$ git grep -A3 -E '< .*prefixes(\.|->)nbytes'
+boot/compressed/sev-es.c:       for (i = 0; i < insn->prefixes.nbytes; i++) {
+boot/compressed/sev-es.c-               insn_byte_t p =
+insn->prefixes.bytes[i];
+boot/compressed/sev-es.c-
+boot/compressed/sev-es.c-               if (p == 0xf2 || p == 0xf3)
+--
+kernel/uprobes.c:       for (i = 0; i < insn->prefixes.nbytes; i++) {
+kernel/uprobes.c-               insn_attr_t attr;
+kernel/uprobes.c-
+kernel/uprobes.c-               attr = inat_get_opcode_attribute(insn->prefixes.bytes[i]);
+--
+kernel/uprobes.c:       for (i = 0; i < insn->prefixes.nbytes; i++) {
+kernel/uprobes.c-               if (insn->prefixes.bytes[i] == 0x66)
+kernel/uprobes.c-                       return -ENOTSUPP;
+kernel/uprobes.c-       }
+--
+lib/insn-eval.c:        for (i = 0; i < insn->prefixes.nbytes; i++) {
+lib/insn-eval.c-                insn_byte_t p = insn->prefixes.bytes[i];
+lib/insn-eval.c-
+lib/insn-eval.c-                if (p == 0xf2 || p == 0xf3)
+--
+lib/insn-eval.c:        for (i = 0; i < insn->prefixes.nbytes; i++) {
+lib/insn-eval.c-                insn_attr_t attr;
+lib/insn-eval.c-
+lib/insn-eval.c-                attr = inat_get_opcode_attribute(insn->prefixes.bytes[i]);
+
+I don't see a clear way to fix this.
+
+-Kees
+
+On Mon, Sep 21, 2020 at 09:20:07PM -0700, syzbot wrote:
+> syzbot has bisected this issue to:
+> 
+> commit 4b2bd5fec007a4fd3fc82474b9199af25013de4c
+> Author: John Stultz <john.stultz@linaro.org>
+> Date:   Sat Oct 8 00:02:33 2016 +0000
+> 
+>     proc: fix timerslack_ns CAP_SYS_NICE check when adjusting self
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1697348d900000
+> start commit:   325d0eab Merge branch 'akpm' (patches from Andrew)
+> git tree:       upstream
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=1597348d900000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1197348d900000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=b12e84189082991c
+> dashboard link: https://syzkaller.appspot.com/bug?extid=9b64b619f10f19d19a7c
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1573a8ad900000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=164ee6c5900000
+> 
+> Reported-by: syzbot+9b64b619f10f19d19a7c@syzkaller.appspotmail.com
+> Fixes: 4b2bd5fec007 ("proc: fix timerslack_ns CAP_SYS_NICE check when adjusting self")
+> 
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+
+-- 
+Kees Cook
