@@ -2,42 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 712512CC58D
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 19:44:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6885A2CC5D6
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 19:50:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731025AbgLBSmz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 13:42:55 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39962 "EHLO mail.kernel.org"
+        id S1729212AbgLBStm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 13:49:42 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44670 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730984AbgLBSmu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Dec 2020 13:42:50 -0500
-Date:   Wed, 2 Dec 2020 10:42:07 -0800
+        id S1726283AbgLBStl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Dec 2020 13:49:41 -0500
+Date:   Wed, 2 Dec 2020 10:48:59 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1606934529;
-        bh=TUhxmjNvPAHZb7ZkOEBJWUIjDFgH0P8rv9sT0BwbcyU=;
+        s=k20201202; t=1606934941;
+        bh=lsJ4iUPMCRSY94or+f4dLwn07OhZA5+yXBf/umZfmEQ=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=N0RwhivJOvhcmcWMr0ee+jK9gSGV0JhVGh4nRTZmardGcVBmAP7wqDKmGeqnIroYf
-         pgfEuSv2iQAY2jkzNuSXODN6SmdqIpwAPP0Za6WAYIY5SpgVBcKVcUof9DTXmUCjHV
-         S9C/MXRc/lpGbjqbDf5fqoIvl8O87V4gvYRXahShF2oqHy3mpRULqpul0aluAjuGyp
-         zov4zHYl0rt3FiR6Wj8EZCRlFjNCqrvU2QyClm4Q1Q6apmKJfD/TnInTv4rffik2IV
-         pnjrUrZllX5vJKaqxQohpI2JRFIZnSW0s0eggKB8ZocAehhMEBT9oju0Fkx6LIqdSE
-         9DOLjF7uZkt+Q==
+        b=uqqu1bsVyBmcn0x5b++FhXu4cNp0myM41YSd2iN5by0BHLoV3OEPNAKAmkjI4Z3ey
+         6RdrjmUjer3n2CF8v2zYGEmbJ9Jh2+jP8+PZjuk6IzgXQRSzdM3otSHgpmQO2NZKjt
+         3TV43TMwC5LFT+EQZA7vrod4lK+EKRdNYcBX80hmg9lZuYblYxP4Ct6EXDtsJUSljs
+         qoHksY9L6N5dlHlGgU2Q5HChnStNdkug0X3KU4BFo9Lzlwe02IbQHcuxPK7Q4gRb89
+         /ZRNXsVdAWYkLfpf8CvD/suiszdkGhAjrC8YkkX1Oh4FzvYTX14yyxbw67xliniNHF
+         OAZAUuwYSe7cg==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 2/2] net: dsa: qca: ar9331: export stats64
-Message-ID: <20201202104207.697cfdbb@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201202140904.24748-3-o.rempel@pengutronix.de>
-References: <20201202140904.24748-1-o.rempel@pengutronix.de>
-        <20201202140904.24748-3-o.rempel@pengutronix.de>
+To:     Saeed Mahameed <saeedm@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>
+Subject: Re: [pull request][net-next 00/15] mlx5 updates 2020-12-01
+Message-ID: <20201202104859.71a35d1e@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201201224208.73295-1-saeedm@nvidia.com>
+References: <20201201224208.73295-1-saeedm@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -45,10 +36,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  2 Dec 2020 15:09:04 +0100 Oleksij Rempel wrote:
-> Add stats support for the ar9331 switch.
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+On Tue, 1 Dec 2020 14:41:53 -0800 Saeed Mahameed wrote:
+> Please note that the series starts with a merge of mlx5-next branch,
+> to resolve and avoid dependency with rdma tree.
 
-Ah, I missed the v3 (like most reviewers it seems :)).
-The sleeping in ndo_get_stats64 question applies.
+Why is that not a separate posting prior to this one?
+
+The patches as posted on the ML fail to build.
