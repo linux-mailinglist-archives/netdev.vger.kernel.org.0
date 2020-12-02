@@ -2,134 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83D872CBB77
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 12:22:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8410F2CBB8A
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 12:29:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726811AbgLBLU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 06:20:26 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55886 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726024AbgLBLUZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 06:20:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606907939;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=QCo/hwnFP7F9NRp+Ix7w3KjLN/Z5aQvlRSVmwPx1dTQ=;
-        b=BXigPZQ+bFiBUq6xidHm9anfyg4xeJ4/UmqV1Ij9IQ3QD/9MsZTc9vSE3imC0uv0QW+2da
-        +mSqrnAuip0Vmku/lZb312EVmA7+HW+agDNP+P3ZkpaCSYvWkCQg+7etEjnJpf3ruBmnPO
-        ON6Qz3PfoJSbgoQT7KzV8ANBCKenqRs=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-219-wxnqPgIlNCCZw-w7Q0eXjw-1; Wed, 02 Dec 2020 06:18:57 -0500
-X-MC-Unique: wxnqPgIlNCCZw-w7Q0eXjw-1
-Received: by mail-qv1-f70.google.com with SMTP id i2so968491qvb.2
-        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 03:18:57 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QCo/hwnFP7F9NRp+Ix7w3KjLN/Z5aQvlRSVmwPx1dTQ=;
-        b=hYdP5s+v0jNzUD08lN3oAkyyc0mwkZOSCBxmYr0Fk/I54wX2jbxSFxpq9OWGH0NRWq
-         9klSOFyQWFgxLu91/4YVahP2ILTQ6GEaAdd4+RUtp8fplGSyyA2LbGJC340W4vrX2xIs
-         TdIeazgStd7Qhe4wTHM1owhJ1PPA6K9tzv1OEymVU2IQAYsRT1ZPa+VgyOL+Mm7MH0q0
-         UQw6AccIxJRrLfwEDqY9QYDpls2fM296LGkepUEA+QKyb70rGdu/cxZhV15Fk3oqwu4+
-         v38QGgsBFyJM3Ltyv7LXqWECDlcgASPaRGHHv/IbL/c5ytR4m8w5nCfWE3f6+cKG0i3P
-         8arw==
-X-Gm-Message-State: AOAM53341S8zeARwb3peX8PmRxvjT8WXoo1cOr8DhrcBQHLw5kNY5/+g
-        Nn8Of+iC2697OgtBKKMhphc+AB8wbuceJUhh0wlOggenHqrfJ4Z5w8699rL1LSvu+yB+pvhm7I+
-        QiCvevAGgaYfb2joR
-X-Received: by 2002:aed:38c8:: with SMTP id k66mr1988930qte.385.1606907936923;
-        Wed, 02 Dec 2020 03:18:56 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzm8QvUSOY4z2LoSiHRtdlh4qfm/paFhlzdK975CsdHLH8f1GpJeutLM6U+2UmEZMz7HCiCWQ==
-X-Received: by 2002:aed:38c8:: with SMTP id k66mr1988886qte.385.1606907936455;
-        Wed, 02 Dec 2020 03:18:56 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id u72sm1392306qka.15.2020.12.02.03.18.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Dec 2020 03:18:55 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 21BBE182EE9; Wed,  2 Dec 2020 12:18:54 +0100 (CET)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     daniel@iogearbox.net, ast@fb.com, andrii@kernel.org
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCH bpf v2] libbpf: sanitise map names before pinning
-Date:   Wed,  2 Dec 2020 12:18:16 +0100
-Message-Id: <20201202111816.92279-1-toke@redhat.com>
-X-Mailer: git-send-email 2.29.2
+        id S1729407AbgLBL3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 06:29:35 -0500
+Received: from mx04.lhost.no ([5.158.192.85]:45071 "EHLO mx04.lhost.no"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726055AbgLBL3e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Dec 2020 06:29:34 -0500
+X-ASG-Debug-ID: 1606908529-0ffc0612ed3a4f50001-BZBGGp
+Received: from s103.paneda.no ([5.158.193.76]) by mx04.lhost.no with ESMTP id SzoUS7V14HFkJtd1 (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NO); Wed, 02 Dec 2020 12:28:49 +0100 (CET)
+X-Barracuda-Envelope-From: thomas.karlsson@paneda.se
+X-Barracuda-Effective-Source-IP: UNKNOWN[5.158.193.76]
+X-Barracuda-Apparent-Source-IP: 5.158.193.76
+X-ASG-Whitelist: Client
+Received: from [192.168.10.188] (83.140.179.234) by s103.paneda.no
+ (10.16.55.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id 15.1.1979.3; Wed, 2 Dec
+ 2020 12:28:46 +0100
+Subject: Re: [PATCH net-next v3] macvlan: Support for high multicast packet
+ rate
+To:     Jakub Kicinski <kuba@kernel.org>
+X-ASG-Orig-Subj: Re: [PATCH net-next v3] macvlan: Support for high multicast packet
+ rate
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        <jiri@resnulli.us>, <kaber@trash.net>, <edumazet@google.com>,
+        <vyasevic@redhat.com>, <alexander.duyck@gmail.com>
+References: <485531aec7e243659ee4e3bb7fa2186d@paneda.se>
+ <147b704ac1d5426fbaa8617289dad648@paneda.se>
+ <20201123143052.1176407d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <0c88607c-1b63-e8b5-8a84-14b63e55e8e2@paneda.se>
+ <20201201111143.2a82d744@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+From:   Thomas Karlsson <thomas.karlsson@paneda.se>
+Message-ID: <333d17ee-b01c-3286-bc7c-30d100b223ae@paneda.se>
+Date:   Wed, 2 Dec 2020 12:28:47 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201201111143.2a82d744@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [83.140.179.234]
+X-ClientProxiedBy: s103.paneda.no (10.16.55.12) To s103.paneda.no
+ (10.16.55.12)
+X-Barracuda-Connect: UNKNOWN[5.158.193.76]
+X-Barracuda-Start-Time: 1606908529
+X-Barracuda-Encrypted: ECDHE-RSA-AES256-SHA384
+X-Barracuda-URL: https://mx04.lhost.no:443/cgi-mod/mark.cgi
+X-Virus-Scanned: by bsmtpd at lhost.no
+X-Barracuda-Scan-Msg-Size: 5790
+X-Barracuda-BRTS-Status: 1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we added sanitising of map names before loading programs to libbpf, we
-still allowed periods in the name. While the kernel will accept these for
-the map names themselves, they are not allowed in file names when pinning
-maps. This means that bpf_object__pin_maps() will fail if called on an
-object that contains internal maps (such as sections .rodata).
+On 2020-12-01 20:11, Jakub Kicinski wrote:
+> On Mon, 30 Nov 2020 15:00:43 +0100 Thomas Karlsson wrote:
+>> Background:
+>> Broadcast and multicast packages are enqueued for later processing.
+>> This queue was previously hardcoded to 1000.
+>>
+>> This proved insufficient for handling very high packet rates.
+>> This resulted in packet drops for multicast.
+>> While at the same time unicast worked fine.
+>>
+>> The change:
+>> This patch make the queue length adjustable to accommodate
+>> for environments with very high multicast packet rate.
+>> But still keeps the default value of 1000 unless specified.
+>>
+>> The queue length is specified as a request per macvlan
+>> using the IFLA_MACVLAN_BC_QUEUE_LEN parameter.
+>>
+>> The actual used queue length will then be the maximum of
+>> any macvlan connected to the same port. The actual used
+>> queue length for the port can be retrieved (read only)
+>> by the IFLA_MACVLAN_BC_QUEUE_LEN_USED parameter for verification.
+>>
+>> This will be followed up by a patch to iproute2
+>> in order to adjust the parameter from userspace.
+>>
+>> Signed-off-by: Thomas Karlsson <thomas.karlsson@paneda.se>
+> 
+> Looks good! Minor nits below:
 
-Fix this by replacing periods with underscores when constructing map pin
-paths. This only affects the paths generated by libbpf when
-bpf_object__ping_maps() is called with a path argument. Any pin paths set
-by bpf_map__set_pin_path() are unaffected, and it will still be up to the
-caller to avoid invalid characters in those.
+:)
 
-Fixes: 113e6b7e15e2 ("libbpf: Sanitise internal map names so they are not rejected by the kernel")
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
-v2:
-  - Move string munging to helper function
+> 
+>> @@ -1218,6 +1220,7 @@ static int macvlan_port_create(struct net_device *dev)
+>>  	for (i = 0; i < MACVLAN_HASH_SIZE; i++)
+>>  		INIT_HLIST_HEAD(&port->vlan_source_hash[i]);
+>>  
+>> +	port->bc_queue_len_used = MACVLAN_DEFAULT_BC_QUEUE_LEN;
+> 
+> Should this be inited to 0? Otherwise if the first link asks for lower
+> queue len than the default it will not get set, right?
 
- tools/lib/bpf/libbpf.c | 18 ++++++++++++++++--
- 1 file changed, 16 insertions(+), 2 deletions(-)
+Indeed, looks you are right, see also below
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 8d05132e1945..08ff7783fb93 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -7651,6 +7651,20 @@ bool bpf_map__is_pinned(const struct bpf_map *map)
- 	return map->pinned;
- }
  
-+static char *sanitize_pin_path(char *str)
-+{
-+	char *s = str;
-+
-+	/* bpffs disallows periods in path names */
-+	while (*s) {
-+		if (*s == '.')
-+			*s = '_';
-+		s++;
-+	}
-+
-+	return str;
-+}
-+
- int bpf_object__pin_maps(struct bpf_object *obj, const char *path)
- {
- 	struct bpf_map *map;
-@@ -7680,7 +7694,7 @@ int bpf_object__pin_maps(struct bpf_object *obj, const char *path)
- 				err = -ENAMETOOLONG;
- 				goto err_unpin_maps;
- 			}
--			pin_path = buf;
-+			pin_path = sanitize_pin_path(buf);
- 		} else if (!map->pin_path) {
- 			continue;
- 		}
-@@ -7724,7 +7738,7 @@ int bpf_object__unpin_maps(struct bpf_object *obj, const char *path)
- 				return -EINVAL;
- 			else if (len >= PATH_MAX)
- 				return -ENAMETOOLONG;
--			pin_path = buf;
-+			pin_path = sanitize_pin_path(buf);
- 		} else if (!map->pin_path) {
- 			continue;
- 		}
--- 
-2.29.2
+>>  	skb_queue_head_init(&port->bc_queue);
+>>  	INIT_WORK(&port->bc_work, macvlan_process_broadcast);
+>>  
+>> @@ -1486,6 +1489,12 @@ int macvlan_common_newlink(struct net *src_net, struct net_device *dev,
+>>  			goto destroy_macvlan_port;
+>>  	}
+>>  
+>> +	vlan->bc_queue_len_requested = MACVLAN_DEFAULT_BC_QUEUE_LEN;
+>> +	if (data && data[IFLA_MACVLAN_BC_QUEUE_LEN])
+>> +		vlan->bc_queue_len_requested = nla_get_u32(data[IFLA_MACVLAN_BC_QUEUE_LEN]);
+>> +	if (vlan->bc_queue_len_requested > port->bc_queue_len_used)
+>> +		port->bc_queue_len_used = vlan->bc_queue_len_requested;
+> 
+> Or perhaps we should just call update_port_bc_queue_len() here?
 
+That would also have prevented the above bug... So yes, I think that is better
+to keep the logic only in one place. I'll change to that.
+
+ 
+>>  	err = register_netdevice(dev);
+>>  	if (err < 0)
+>>  		goto destroy_macvlan_port;
+> 
+>> @@ -1658,6 +1684,8 @@ static const struct nla_policy macvlan_policy[IFLA_MACVLAN_MAX + 1] = {
+>>  	[IFLA_MACVLAN_MACADDR] = { .type = NLA_BINARY, .len = MAX_ADDR_LEN },
+>>  	[IFLA_MACVLAN_MACADDR_DATA] = { .type = NLA_NESTED },
+>>  	[IFLA_MACVLAN_MACADDR_COUNT] = { .type = NLA_U32 },
+>> +	[IFLA_MACVLAN_BC_QUEUE_LEN] = { .type = NLA_U32 },
+>> +	[IFLA_MACVLAN_BC_QUEUE_LEN_USED] = { .type = NLA_U32 },
+> 
+> This is an input policy, so you can set type to NLA_REJECT and you
+> won't have to check if it's set on input.
+> 
+
+Great!
+
+>>  };
+>>  
+>>  int macvlan_link_register(struct rtnl_link_ops *ops)
+>> @@ -1688,6 +1716,18 @@ static struct rtnl_link_ops macvlan_link_ops = {
+>>  	.priv_size      = sizeof(struct macvlan_dev),
+>>  };
+>>  
+>> +static void update_port_bc_queue_len(struct macvlan_port *port)
+>> +{
+>> +	struct macvlan_dev *vlan;
+>> +	u32 max_bc_queue_len_requested = 0;
+> 
+> Please reorder so that the vars are longest line to shortest.
+> 
+got it
+
+>> +	list_for_each_entry_rcu(vlan, &port->vlans, list) {
+> 
+> I don't think you need the _rcu() flavor here, this is always called
+> from the configuration paths holding RTNL lock, right?
+> 
+
+To be honest, what to use/not to use when traversing the list was what caused me the most
+doubt/trouble of the patch :)
+
+I sort of assumed that there must be some outer synchronisation that prevented
+two or more concurrent calls to new/delte/change link. but wasn't sure how
+and where that synchonisation took place. Now that I have googled RTLN lock I understand
+that part much better.
+
+The main reason I went with _rcu was because the existing code is using list_del_rcu and
+list_add_tail_rcu when modifying the list as well as _rcu when accessing/traversing (in some places).
+So I figured if they needed the _rcu variants I too would need that.
+
+But from a closer inspection I think in that situation it is only needed because the list is accessed
+from for example macvlan_handle_frame (obviously not protected by the RTLN lock) using _rcu version
+and under the rcu_read_lock as protection. So then it must also be updated with _rcu 
+in all places of course. Even if all the updates are done under the RTNL lock.
+
+This was a long ramble :)
+But thanks, I think I understand the synchronisation mechanism in the kernel a bit better now!
+
+As I'm only calling my function from the netlink configuration functions under RTLN lock
+It should be safe to drop the _rcu version as you say, because the list is only
+modified in those functions too. Great!
+
+
+>> +		if (vlan->bc_queue_len_requested > max_bc_queue_len_requested)
+>> +			max_bc_queue_len_requested = vlan->bc_queue_len_requested;
+>> +	}
+>> +	port->bc_queue_len_used = max_bc_queue_len_requested;
+>> +}
+>> +
+>>  static int macvlan_device_event(struct notifier_block *unused,
+>>  				unsigned long event, void *ptr)
+>>  {
+
+
+I also noticed I got a few line length warnings in patchworks but none when I ran the ./scrips/checkpatch.pl
+locally. So is the net tree using strict 80 chars? I would prefer not to introduce extra line breaks
+on those lines as I think it will hurt readability but of course I will if needed.
+
+I will publish a v4 later today.
+
+/Thomas
