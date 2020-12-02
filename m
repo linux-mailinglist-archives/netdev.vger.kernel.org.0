@@ -2,76 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DD172CC8FD
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 22:34:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC22F2CC90B
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 22:46:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387947AbgLBVdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 16:33:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52312 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387821AbgLBVdg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 16:33:36 -0500
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8B86C0613D6
-        for <netdev@vger.kernel.org>; Wed,  2 Dec 2020 13:32:55 -0800 (PST)
-Received: by mail-ed1-x541.google.com with SMTP id l5so5578053edq.11
-        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 13:32:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=daez4vAizbC4hQl5r0kAqfih/BXhmh9GDGQgEEjoTy0=;
-        b=Iu/xN/FBT/Z8pxA5JBjd2Nlxj/x1gvJXLBJn9y5vbw/46aiBHqntSRyhGjy3cceX56
-         TBrXP4L342X2NYSkO9MDumH4eBp0HCV6VQwdP7N7yIwQHOhn9o8QETOgpgudhEUJ6UrF
-         6BXlU1pHjvBu5C1eXDH5Hq4SpDw0Qi6e9dFcTqZkqkjD1q5VSDkKEzp/nbgqvvY8QQKt
-         ScHeZ/0JqNLWOYSpyY07rOiA1OX8Lrsw9cLqSjMGtgUwflTn9ozfu5GX1rbJoxhyibTO
-         6eQPRnvDOLM+j+F+qYvmbA5uqRViuyhAGOXArzEe/vowpoJUyluSdgyWNdl72rtnFRBy
-         dycA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=daez4vAizbC4hQl5r0kAqfih/BXhmh9GDGQgEEjoTy0=;
-        b=BV89NR9jSjC5xztvhRt10quOJ+TpbRMCzkzcCd8vK+Nq3wBYDZ3fVC+gbnOIdhsHz7
-         l39WxTp8/CIt+wXcHicLtqov8yHw+bItuGjTkoCXPgg+7imYeV2B5YmhajT2PLcGVT4M
-         VGuV6amlUBzwwpD2SzSsVMOjpUcrgnMd44NYHZigLwFf12g9zYZJCv+dnhRRarzjSU0b
-         d4Ko1UoZ3qxFymKVS6YxnbJMNl+ElSWEsJa078nB77Z5m1icTbcAfsKWNpUpMN1ODNdl
-         HU6+mGAej3LocB+GFh+Jtm0qP36ylkwridFf1RvMDhl6NwOUOKbyOYAAn+Qm7Mee+Xas
-         4dtA==
-X-Gm-Message-State: AOAM532NnlisvXRN8EXcNDDdGBBwJHI7SAAcekY/P2w7/WkqVlKneWKd
-        OAMTiFa++4ybA0YVpCXXX6w=
-X-Google-Smtp-Source: ABdhPJyHWEvpHlnPbhkNh1dmweoCNQRy0h+yj4DW5IEy3Lf5Qg1Qm/4w/sRRJ8Ux71z9Jeydyo47Tg==
-X-Received: by 2002:a05:6402:1692:: with SMTP id a18mr601edv.321.1606944774334;
-        Wed, 02 Dec 2020 13:32:54 -0800 (PST)
-Received: from skbuf ([188.25.2.120])
-        by smtp.gmail.com with ESMTPSA id k23sm671086ejs.100.2020.12.02.13.32.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Dec 2020 13:32:53 -0800 (PST)
-Date:   Wed, 2 Dec 2020 23:32:52 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 2/4] net: dsa: Link aggregation support
-Message-ID: <20201202213252.57yx5slwk6ru3npz@skbuf>
-References: <20201202091356.24075-1-tobias@waldekranz.com>
- <20201202091356.24075-3-tobias@waldekranz.com>
- <20201202105820.4de653a2@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <87k0tz7v7h.fsf@waldekranz.com>
+        id S1727892AbgLBVpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 16:45:20 -0500
+Received: from www62.your-server.de ([213.133.104.62]:37960 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726880AbgLBVpU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 16:45:20 -0500
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kkZvS-0003YO-17; Wed, 02 Dec 2020 22:44:38 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kkZvR-00036D-NS; Wed, 02 Dec 2020 22:44:37 +0100
+Subject: Re: [PATCH bpf-next V7 2/8] bpf: fix bpf_fib_lookup helper MTU check
+ for SKB ctx
+To:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        colrack@gmail.com
+References: <160588903254.2817268.4861837335793475314.stgit@firesoul>
+ <160588909693.2817268.17116187979657760922.stgit@firesoul>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <6f9cac4e-a231-ff8d-43a5-828995ca5ec7@iogearbox.net>
+Date:   Wed, 2 Dec 2020 22:44:36 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87k0tz7v7h.fsf@waldekranz.com>
+In-Reply-To: <160588909693.2817268.17116187979657760922.stgit@firesoul>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26006/Wed Dec  2 14:14:18 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 02, 2020 at 10:29:38PM +0100, Tobias Waldekranz wrote:
-> Sorry about this. I missed an rtnl_dereference in the refactor between
-> v2->v3. I have now integrated sparse into my workflow so at least this
-> should not happen again.
+On 11/20/20 5:18 PM, Jesper Dangaard Brouer wrote:
+> BPF end-user on Cilium slack-channel (Carlo Carraro) wants to use
+> bpf_fib_lookup for doing MTU-check, but *prior* to extending packet size,
+> by adjusting fib_params 'tot_len' with the packet length plus the
+> expected encap size. (Just like the bpf_check_mtu helper supports). He
+> discovered that for SKB ctx the param->tot_len was not used, instead
+> skb->len was used (via MTU check in is_skb_forwardable()).
+> 
+> Fix this by using fib_params 'tot_len' for MTU check.  If not provided
+> (e.g. zero) then keep existing behaviour intact.
+> 
+> Fixes: 4c79579b44b1 ("bpf: Change bpf_fib_lookup to return lookup status")
+> Reported-by: Carlo Carraro <colrack@gmail.com>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
+>   net/core/filter.c |   14 ++++++++++++--
+>   1 file changed, 12 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 1ee97fdeea64..84d77c425fbe 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -5565,11 +5565,21 @@ BPF_CALL_4(bpf_skb_fib_lookup, struct sk_buff *, skb,
+>   #endif
+>   	}
+>   
+> -	if (!rc) {
+> +	if (rc == BPF_FIB_LKUP_RET_SUCCESS) {
+>   		struct net_device *dev;
+> +		u32 mtu;
+>   
+>   		dev = dev_get_by_index_rcu(net, params->ifindex);
+> -		if (!is_skb_forwardable(dev, skb))
+> +		mtu = READ_ONCE(dev->mtu);
+> +
+> +		/* Using tot_len for (L3) MTU check if provided by user */
+> +		if (params->tot_len && params->tot_len > mtu)
+> +			rc = BPF_FIB_LKUP_RET_FRAG_NEEDED;
 
-Please do not resend right away. Give me one more day or so with the
-current series to really digest it.
+Is there a reason why we cannot reuse and at the same time optimize the built-in
+bpf_ipv{4,6}_fib_lookup() check_mtu as we do in XDP when params->tot_len was
+specified.. something as presented earlier [0]? My biggest concern for gso skbs
+is that the above might be subject to breakage from one kernel version to another
+if it was filled from the packet. So going back and building upon [0], to be on
+safe side we could have a new flag like below to indicate wanted behavior:
+
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index c3458ec1f30a..d3cd2f47f011 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -4934,8 +4934,9 @@ struct bpf_raw_tracepoint_args {
+   * OUTPUT:  Do lookup from egress perspective; default is ingress
+   */
+  enum {
+-	BPF_FIB_LOOKUP_DIRECT  = (1U << 0),
+-	BPF_FIB_LOOKUP_OUTPUT  = (1U << 1),
++	BPF_FIB_LOOKUP_DIRECT		= (1U << 0),
++	BPF_FIB_LOOKUP_OUTPUT		= (1U << 1),
++	BPF_FIB_LOOKUP_ALWAYS_MTU_CHECK	= (1U << 2),
+  };
+
+  enum {
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 2ca5eecebacf..4fb876ebd6a0 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -5547,37 +5547,27 @@ static const struct bpf_func_proto bpf_xdp_fib_lookup_proto = {
+  BPF_CALL_4(bpf_skb_fib_lookup, struct sk_buff *, skb,
+  	   struct bpf_fib_lookup *, params, int, plen, u32, flags)
+  {
+-	struct net *net = dev_net(skb->dev);
+-	int rc = -EAFNOSUPPORT;
++	bool check_mtu = !skb_is_gso(skb) ||
++			 (flags & BPF_FIB_LOOKUP_ALWAYS_MTU_CHECK);
+
+  	if (plen < sizeof(*params))
+  		return -EINVAL;
+
+-	if (flags & ~(BPF_FIB_LOOKUP_DIRECT | BPF_FIB_LOOKUP_OUTPUT))
++	if (flags & ~(BPF_FIB_LOOKUP_DIRECT | BPF_FIB_LOOKUP_OUTPUT |
++		      BPF_FIB_LOOKUP_ALWAYS_MTU_CHECK))
+  		return -EINVAL;
+
+  	switch (params->family) {
+  #if IS_ENABLED(CONFIG_INET)
+  	case AF_INET:
+-		rc = bpf_ipv4_fib_lookup(net, params, flags, false);
+-		break;
++		return bpf_ipv4_fib_lookup(net, params, flags, check_mtu);
+  #endif
+  #if IS_ENABLED(CONFIG_IPV6)
+  	case AF_INET6:
+-		rc = bpf_ipv6_fib_lookup(net, params, flags, false);
+-		break;
++		return bpf_ipv6_fib_lookup(net, params, flags, check_mtu);
+  #endif
+  	}
+-
+-	if (!rc) {
+-		struct net_device *dev;
+-
+-		dev = dev_get_by_index_rcu(net, params->ifindex);
+-		if (!is_skb_forwardable(dev, skb))
+-			rc = BPF_FIB_LKUP_RET_FRAG_NEEDED;
+-	}
+-
+-	return rc;
++	return -EAFNOSUPPORT;
+  }
+
+  static const struct bpf_func_proto bpf_skb_fib_lookup_proto = {
+
+
+   [0] https://lore.kernel.org/bpf/65d8f988-5b41-24c2-8501-7cbbddb1238e@iogearbox.net/
+
+
+> +		/* Notice at this TC cls_bpf level skb->len contains L2 size,
+> +		 * but is_skb_forwardable takes that into account
+> +		 */
+> +		if (params->tot_len == 0 && !is_skb_forwardable(dev, skb))
+>   			rc = BPF_FIB_LKUP_RET_FRAG_NEEDED;
+>   	}
+>   
+> 
+> 
+
