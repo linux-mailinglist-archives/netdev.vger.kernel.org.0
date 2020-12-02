@@ -2,60 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 399382CC2F1
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 18:03:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8ACC2CC303
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 18:08:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387462AbgLBRC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 12:02:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33392 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727126AbgLBRC3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Dec 2020 12:02:29 -0500
-Date:   Wed, 2 Dec 2020 09:01:47 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606928509;
-        bh=kX2DaUOysx3Z1mz+SBekV3S5VhZNddgamT7eKKsCxQ4=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LSjlEGMn+8QhdXFjgRDZc7Wj6GsicEnZS2U2bEFcf3zDer+otsyBGlDl21zKfzN/H
-         Ke/KN1dY48HrZ2aPg47pHS+qPulkK13XPkUzZ9nWhBErO9HfCK06iVA1vyOmfr7lYf
-         suB/LubeeRO7EXJzrxxuJsiPQSrs4H5ZKZlpsvDI=
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Ido Schimmel <idosch@idosch.org>,
-        Michal Kubecek <mkubecek@suse.cz>
-Subject: Re: [PATCH net-next] net: sfp: add debugfs support
-Message-ID: <20201202090147.48af58fd@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201202085913.1eda0bba@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-References: <E1khJyS-0003UU-9O@rmk-PC.armlinux.org.uk>
-        <20201124001431.GA2031446@lunn.ch>
-        <20201124084151.GA722671@shredder.lan>
-        <20201124094916.GD1551@shell.armlinux.org.uk>
-        <20201124104640.GA738122@shredder.lan>
-        <20201202130318.GD1551@shell.armlinux.org.uk>
-        <20201202085913.1eda0bba@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1730744AbgLBRFY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 12:05:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38560 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728257AbgLBRFY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 12:05:24 -0500
+Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2182CC0617A7
+        for <netdev@vger.kernel.org>; Wed,  2 Dec 2020 09:04:44 -0800 (PST)
+Received: by mail-qt1-x84a.google.com with SMTP id f11so1872154qth.23
+        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 09:04:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:in-reply-to:message-id:mime-version:references:subject
+         :from:to:cc;
+        bh=fhMyhnnNKEJ49XIgzEQBRBGObFetYBnzrC8zuUBillQ=;
+        b=mCFGoaqy0YtGQpgCyBFLhVshQDjMsEZyqbtMmywjZSDzevQhZaSBiE54QbOBPcUDE5
+         tcnirweVwezwz1SrbeoMHQd63MJpmOBkTN2WZFU9rvxHM5C40XZi+tS/ThYzdm2Vx24A
+         TQKh3X8wSg49sNhc/MGwpCu1B3EmotJcbBgTrjoLgfi5QwX1OMYD82Ua9pbbsNoL+Rbr
+         36myGDRRugLmX2MU8PedLDKjTBMrawWGKEx2tGkemiNBOkhKA/lkRI1JNxthUS8AaATE
+         4xA0CMymFQwldECukh4Lyh0bgebOoQg4GNVmiYip7tA1ugZfwu3KAfUANqPOOhRHWs2i
+         cNOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=fhMyhnnNKEJ49XIgzEQBRBGObFetYBnzrC8zuUBillQ=;
+        b=lj0pnt1hPVDTELuWGhDmiXYx0J8YSb8vS/hvBqsIXFpHWfT+WG+o8rxCQifsqbuj9E
+         E7JbOYS52n1sDKSMfuILvrG2EaWo6s2IDkXFvkOrIjxBqLt5+b90L3ZXUGZeXroZKt7D
+         VW9XH9IUgNitqeSxbdEwLqGR4lMt0OXtVUHrgb71IY0CojfxwmS+aq0jpUQ8BjEWgHqG
+         W2tS22mKICMUWNOCQpjQ42OaueV5VycZLCn07DvSfukiZ6IoXxTSYiRXy2ENoMdnC0mK
+         xbtiAfleIQ881LwvO4EJmRgqCf6IEyo4hEaxCA6MfoKZEfvEPkU2+qXCNJ1Xl114q7PV
+         k0mA==
+X-Gm-Message-State: AOAM532Ibt/ORNj5YekwwSsAPbJufFA1IWM2l9SK4mzYMkA5JcyJRYK8
+        9nNudNTr4plOtSzuY5v8/SCK9mY=
+X-Google-Smtp-Source: ABdhPJzLSsJa6w2KaEmRmS7vrSTVfu0Jl+EREPxUfXxG22VNZzQJpjIAt0yioLN4UIhKTt5W8ipuh3U=
+Sender: "sdf via sendgmr" <sdf@sdf2.svl.corp.google.com>
+X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
+ (user=sdf job=sendgmr) by 2002:a05:6214:29:: with SMTP id b9mr3748555qvr.18.1606928683263;
+ Wed, 02 Dec 2020 09:04:43 -0800 (PST)
+Date:   Wed, 2 Dec 2020 09:04:41 -0800
+In-Reply-To: <CAEf4BzaQGJCAdbh3CYPK=z1XPBpqbWkXJLgHaEJc+O7R5dt9vw@mail.gmail.com>
+Message-Id: <20201202170441.GC553169@google.com>
+Mime-Version: 1.0
+References: <20201118001742.85005-1-sdf@google.com> <20201118001742.85005-2-sdf@google.com>
+ <CAEf4BzaQGJCAdbh3CYPK=z1XPBpqbWkXJLgHaEJc+O7R5dt9vw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/3] selftests/bpf: rewrite test_sock_addr bind
+ bpf into C
+From:   sdf@google.com
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2 Dec 2020 08:59:13 -0800 Jakub Kicinski wrote:
-> On Wed, 2 Dec 2020 13:03:18 +0000 Russell King - ARM Linux admin wrote:
-> > Jakub,
-> > 
-> > What's your opinion on this patch? It seems to have stalled...  
-> 
-> Sorry, I think I expected someone to do the obvious questioning..
+On 12/01, Andrii Nakryiko wrote:
+> On Tue, Nov 17, 2020 at 4:20 PM Stanislav Fomichev <sdf@google.com> wrote:
+> >
+> > I'm planning to extend it in the next patches. It's much easier to
+> > work with C than BPF assembly.
+> >
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > ---
 
-Ah, no! I know what happened... Check out patchwork:
+> With nits below:
 
-https://patchwork.kernel.org/project/netdevbpf/patch/E1khJyS-0003UU-9O@rmk-PC.armlinux.org.uk/
-
-It says the patch did not apply cleanly to net-next ;)
-
-Regardless let's hear what people thing about using ext_link (or
-similar) for the SFP signals.
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Thank you for the review! Will respin shortly with the nits addressed.
