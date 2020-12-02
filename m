@@ -2,98 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 479B92CBF58
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 15:16:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E1CF2CBF6A
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 15:20:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730244AbgLBOPx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 09:15:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40508 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728065AbgLBOPw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 09:15:52 -0500
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA390C0617A7
-        for <netdev@vger.kernel.org>; Wed,  2 Dec 2020 06:15:05 -0800 (PST)
-Received: by mail-il1-x144.google.com with SMTP id w8so1630196ilg.12
-        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 06:15:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Z4tstK0yqPb2/7JG4Zvyh0/BHtCKh0NvGTuUjF86KO8=;
-        b=hi0ZCu9a/qhdCc/pSu+owQ9WlAOD9fALklksTCXzjDJta5mR5asDZqsMf4LYrp1xhk
-         NQVP4eFXo7nt5IOjz5bMVcOMzrgzUKbME0kK4NoTr5itiCUCe3elSS4DjeP1p1pTfYDN
-         sjYXyXVo9JEd49AegFuR50gvoZiYdClbcPKKnEQZaPuOfWwn80kDHS0P/aSbbO5N+Brl
-         i7cfu/14F0wXK1W4oQj33c+ow+rXmmHJSqSgq1wiTYpw4rAa1lX8C7YFxZwCHtbULIV6
-         2rfvpLhd+okSPKxLXZgfe4qyn0iToCc/TuTZ0MtTdt+utL1M3HVkdr6aNBw/Yfc4Fu7M
-         Bd+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Z4tstK0yqPb2/7JG4Zvyh0/BHtCKh0NvGTuUjF86KO8=;
-        b=phIjQKxY4/Xf3iW8MuivQ5TPweUdqVR4Es+4IanOG1QowyLxdwbp7WbbsnqdwQe+lT
-         nBm/CLZAx8ZG9PLsbgwSBzhYAoytszSEon+v/eNjozsryU2TiC7EwlsJ8zupFBu2dL2O
-         6+vgw5woZHNCqbEG7wn3e0AwnRqj/GRQhirpvjE3ITrgNZZHlUiGtocu1+YCbjFtF8XN
-         ylZP6kPQ/Qkn7oK2VkteBX2o50rS/2ncGTbprw+LcQaKrLl/y7MqD6V7GpfrpKR67f+C
-         //YvhBHj4MCWQMLboCI8HAfYWzoeOFjFPMcw5W1D6KzGgQ/aILzj0NNDe37nfpm/cHe9
-         xtLg==
-X-Gm-Message-State: AOAM532qszvIA0rGBVFq+MZ/tqKpBAHeP+xndhVtTl6ZIaMs0m1FtIIN
-        c6aILUUvUbmcdN0RsYon9asJvw==
-X-Google-Smtp-Source: ABdhPJyqpvXdZVu3cyMSHDhHV4Q0ygSPRGs9U4eTo0CySNT0sdCtks1N5D9pZJ1GkPbNPd2JzxOXfQ==
-X-Received: by 2002:a92:ab02:: with SMTP id v2mr2507769ilh.184.1606918504945;
-        Wed, 02 Dec 2020 06:15:04 -0800 (PST)
-Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id e18sm1209151ilc.52.2020.12.02.06.15.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Dec 2020 06:15:04 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     jonathanh@nvidia.com, evgreen@chromium.org,
-        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
-        subashab@codeaurora.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net-next] net: ipa: fix build-time bug in ipa_hardware_config_qsb()
-Date:   Wed,  2 Dec 2020 08:15:02 -0600
-Message-Id: <20201202141502.21265-1-elder@linaro.org>
-X-Mailer: git-send-email 2.20.1
+        id S1728549AbgLBOTP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 09:19:15 -0500
+Received: from foss.arm.com ([217.140.110.172]:41346 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727245AbgLBOTP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Dec 2020 09:19:15 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 279A430E;
+        Wed,  2 Dec 2020 06:18:29 -0800 (PST)
+Received: from C02TD0UTHF1T.local (unknown [10.57.23.201])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9FE403F718;
+        Wed,  2 Dec 2020 06:18:24 -0800 (PST)
+Date:   Wed, 2 Dec 2020 14:18:21 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Alex Belits <abelits@marvell.com>
+Cc:     "nitesh@redhat.com" <nitesh@redhat.com>,
+        "frederic@kernel.org" <frederic@kernel.org>,
+        Prasun Kapoor <pkapoor@marvell.com>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "trix@redhat.com" <trix@redhat.com>,
+        "mingo@kernel.org" <mingo@kernel.org>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "peterx@redhat.com" <peterx@redhat.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "mtosatti@redhat.com" <mtosatti@redhat.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "leon@sidebranch.com" <leon@sidebranch.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "pauld@redhat.com" <pauld@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v5 5/9] task_isolation: Add driver-specific hooks
+Message-ID: <20201202141821.GC66958@C02TD0UTHF1T.local>
+References: <8d887e59ca713726f4fcb25a316e1e932b02823e.camel@marvell.com>
+ <6e15fde56203f89ebab0565dc22177f42063ae7c.camel@marvell.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6e15fde56203f89ebab0565dc22177f42063ae7c.camel@marvell.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jon Hunter reported observing a build bug in the IPA driver:
-  https://lore.kernel.org/netdev/5b5d9d40-94d5-5dad-b861-fd9bef8260e2@nvidia.com
+On Mon, Nov 23, 2020 at 05:57:42PM +0000, Alex Belits wrote:
+> Some drivers don't call functions that call
+> task_isolation_kernel_enter() in interrupt handlers. Call it
+> directly.
 
-The problem is that the QMB0 max read value set for IPA v4.5 (16) is
-too large to fit in the 4-bit field.
+I don't think putting this in drivers is the right approach. IIUC we
+only need to track user<->kernel transitions, and we can do that within
+the architectural entry code before we ever reach irqchip code. I
+suspect the current approacch is an artifact of that being difficult in
+the old structure of the arch code; recent rework should address that,
+and we can restruecture things further in future.
 
-The actual value we want is 0, which requests that the hardware use
-the maximum it is capable of.
+Thanks,
+Mark.
 
-Reported-by: Jon Hunter <jonathanh@nvidia.com>
-Tested-by: Jon Hunter <jonathanh@nvidia.com>
-Signed-off-by: Alex Elder <elder@linaro.org>
----
-v2: Got confirmation that 0 is the desired value to use (with comment).
-
- drivers/net/ipa/ipa_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
-index d0768452c15cf..84bb8ae927252 100644
---- a/drivers/net/ipa/ipa_main.c
-+++ b/drivers/net/ipa/ipa_main.c
-@@ -288,7 +288,7 @@ static void ipa_hardware_config_qsb(struct ipa *ipa)
- 		max1 = 0;		/* PCIe not present */
- 		break;
- 	case IPA_VERSION_4_5:
--		max0 = 16;
-+		max0 = 0;		/* No limit (hardware maximum) */
- 		break;
- 	}
- 	val = u32_encode_bits(max0, GEN_QMB_0_MAX_READS_FMASK);
--- 
-2.20.1
-
+> Signed-off-by: Alex Belits <abelits@marvell.com>
+> ---
+>  drivers/irqchip/irq-armada-370-xp.c | 6 ++++++
+>  drivers/irqchip/irq-gic-v3.c        | 3 +++
+>  drivers/irqchip/irq-gic.c           | 3 +++
+>  drivers/s390/cio/cio.c              | 3 +++
+>  4 files changed, 15 insertions(+)
+> 
+> diff --git a/drivers/irqchip/irq-armada-370-xp.c b/drivers/irqchip/irq-armada-370-xp.c
+> index d7eb2e93db8f..4ac7babe1abe 100644
+> --- a/drivers/irqchip/irq-armada-370-xp.c
+> +++ b/drivers/irqchip/irq-armada-370-xp.c
+> @@ -29,6 +29,7 @@
+>  #include <linux/slab.h>
+>  #include <linux/syscore_ops.h>
+>  #include <linux/msi.h>
+> +#include <linux/isolation.h>
+>  #include <asm/mach/arch.h>
+>  #include <asm/exception.h>
+>  #include <asm/smp_plat.h>
+> @@ -572,6 +573,7 @@ static const struct irq_domain_ops armada_370_xp_mpic_irq_ops = {
+>  static void armada_370_xp_handle_msi_irq(struct pt_regs *regs, bool is_chained)
+>  {
+>  	u32 msimask, msinr;
+> +	int isol_entered = 0;
+>  
+>  	msimask = readl_relaxed(per_cpu_int_base +
+>  				ARMADA_370_XP_IN_DRBEL_CAUSE_OFFS)
+> @@ -588,6 +590,10 @@ static void armada_370_xp_handle_msi_irq(struct pt_regs *regs, bool is_chained)
+>  			continue;
+>  
+>  		if (is_chained) {
+> +			if (!isol_entered) {
+> +				task_isolation_kernel_enter();
+> +				isol_entered = 1;
+> +			}
+>  			irq = irq_find_mapping(armada_370_xp_msi_inner_domain,
+>  					       msinr - PCI_MSI_DOORBELL_START);
+>  			generic_handle_irq(irq);
+> diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+> index 16fecc0febe8..ded26dd4da0f 100644
+> --- a/drivers/irqchip/irq-gic-v3.c
+> +++ b/drivers/irqchip/irq-gic-v3.c
+> @@ -18,6 +18,7 @@
+>  #include <linux/percpu.h>
+>  #include <linux/refcount.h>
+>  #include <linux/slab.h>
+> +#include <linux/isolation.h>
+>  
+>  #include <linux/irqchip.h>
+>  #include <linux/irqchip/arm-gic-common.h>
+> @@ -646,6 +647,8 @@ static asmlinkage void __exception_irq_entry gic_handle_irq(struct pt_regs *regs
+>  {
+>  	u32 irqnr;
+>  
+> +	task_isolation_kernel_enter();
+> +
+>  	irqnr = gic_read_iar();
+>  
+>  	if (gic_supports_nmi() &&
+> diff --git a/drivers/irqchip/irq-gic.c b/drivers/irqchip/irq-gic.c
+> index 6053245a4754..bb482b4ae218 100644
+> --- a/drivers/irqchip/irq-gic.c
+> +++ b/drivers/irqchip/irq-gic.c
+> @@ -35,6 +35,7 @@
+>  #include <linux/interrupt.h>
+>  #include <linux/percpu.h>
+>  #include <linux/slab.h>
+> +#include <linux/isolation.h>
+>  #include <linux/irqchip.h>
+>  #include <linux/irqchip/chained_irq.h>
+>  #include <linux/irqchip/arm-gic.h>
+> @@ -337,6 +338,8 @@ static void __exception_irq_entry gic_handle_irq(struct pt_regs *regs)
+>  	struct gic_chip_data *gic = &gic_data[0];
+>  	void __iomem *cpu_base = gic_data_cpu_base(gic);
+>  
+> +	task_isolation_kernel_enter();
+> +
+>  	do {
+>  		irqstat = readl_relaxed(cpu_base + GIC_CPU_INTACK);
+>  		irqnr = irqstat & GICC_IAR_INT_ID_MASK;
+> diff --git a/drivers/s390/cio/cio.c b/drivers/s390/cio/cio.c
+> index 6d716db2a46a..beab88881b6d 100644
+> --- a/drivers/s390/cio/cio.c
+> +++ b/drivers/s390/cio/cio.c
+> @@ -20,6 +20,7 @@
+>  #include <linux/kernel_stat.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/irq.h>
+> +#include <linux/isolation.h>
+>  #include <asm/cio.h>
+>  #include <asm/delay.h>
+>  #include <asm/irq.h>
+> @@ -584,6 +585,8 @@ void cio_tsch(struct subchannel *sch)
+>  	struct irb *irb;
+>  	int irq_context;
+>  
+> +	task_isolation_kernel_enter();
+> +
+>  	irb = this_cpu_ptr(&cio_irb);
+>  	/* Store interrupt response block to lowcore. */
+>  	if (tsch(sch->schid, irb) != 0)
+> -- 
+> 2.20.1
+> 
