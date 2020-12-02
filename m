@@ -2,85 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B04102CBE02
-	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 14:15:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5A5D2CBE25
+	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 14:26:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727530AbgLBNM7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 08:12:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58980 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726556AbgLBNM7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 08:12:59 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C40C0613CF
-        for <netdev@vger.kernel.org>; Wed,  2 Dec 2020 05:12:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=iRdwwfnwPYLtwQxo0tflk8Yk3nC1LmQSdbS2ugVDHHo=; b=trGWmUo4wlKpTfC8SDaPvia96
-        +vKKAx2vzlWhFnd6PT4DyXjEidhZf/4KuMrMIX7j3HKhKkYgQTLqUKsaYH5Q7D6/yHwSQ1waKkHmK
-        /mIIUzqP71A7k5tCx9fwh2UxwgDCyGUheVih37BnOWJRyO9CiwNjWoAd8HrsNrJd1SWj0THk1+T7F
-        KhDIG5kW+cIxkxpVBs6WNe6drdeRXKdEH2IAghavzbyPx+kwEA4hayniVI1omHTOeBK4vleOuPvf2
-        ussnPEH6KOZCkRBNLE5y3RhFoYeWpoZ4CkHBj38gqfXU9YWtaESXkPknm7zuR58m6dBl4VJOw/3G4
-        QzZHnNRuw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:38836)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kkRvM-0001WA-78; Wed, 02 Dec 2020 13:12:00 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kkRvK-000746-Ou; Wed, 02 Dec 2020 13:11:58 +0000
-Date:   Wed, 2 Dec 2020 13:11:58 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     kernel test robot <lkp@intel.com>,
-        Thomas Schreiber <tschreibe@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net-next] net: sfp: VSOL V2801F / CarlitoxxPro
- CPGOS03-0490 v2.0 workaround
-Message-ID: <20201202131158.GK1605@shell.armlinux.org.uk>
-References: <E1khJlv-0003Jq-ET@rmk-PC.armlinux.org.uk>
- <202011240816.ClA61wej-lkp@intel.com>
- <20201125140020.GJ1551@shell.armlinux.org.uk>
+        id S1727785AbgLBNZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 08:25:15 -0500
+Received: from smtp.uniroma2.it ([160.80.6.22]:40528 "EHLO smtp.uniroma2.it"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727274AbgLBNZP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Dec 2020 08:25:15 -0500
+X-Greylist: delayed 486 seconds by postgrey-1.27 at vger.kernel.org; Wed, 02 Dec 2020 08:25:14 EST
+Received: from localhost.localdomain ([160.80.103.126])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 0B2DG0ID016134
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 2 Dec 2020 14:16:01 +0100
+From:   Paolo Lungaroni <paolo.lungaroni@cnit.it>
+To:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@cnit.it>
+Subject: [iproute2-next v2] seg6: add support for vrftable attribute in SRv6 End.DT4/DT6 behaviors
+Date:   Wed,  2 Dec 2020 14:15:51 +0100
+Message-Id: <20201202131551.19628-1-paolo.lungaroni@cnit.it>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201125140020.GJ1551@shell.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 25, 2020 at 02:00:20PM +0000, Russell King - ARM Linux admin wrote:
-> On Tue, Nov 24, 2020 at 08:18:56AM +0800, kernel test robot wrote:
-> > All warnings (new ones prefixed by >>):
-> > 
-> >    drivers/net/phy/sfp.c: In function 'sfp_i2c_read':
-> > >> drivers/net/phy/sfp.c:339:9: warning: variable 'block_size' set but not used [-Wunused-but-set-variable]
-> >      339 |  size_t block_size;
-> >          |         ^~~~~~~~~~
-> 
-> I'm waiting for Thomas to re-test the fixed patch I sent, but Thomas
-> seems to be of the opinion that there's no need to re-test, despite
-> the fixed patch having the intended effect of changing the behaviour
-> on the I2C bus.
-> 
-> If nothing is forthcoming, I'm intending to drop the patch; we don't
-> need to waste time supporting untested workarounds for what are
-> essentially broken SFPs by vendors twisting the SFP MSA in the
-> kernel.
+We introduce the "vrftable" attribute for supporting the SRv6 End.DT4 and
+End.DT6 behaviors in iproute2.
+The "vrftable" attribute indicates the routing table associated with
+the VRF device used by SRv6 End.DT4/DT6 for routing IPv4/IPv6 packets.
 
-I have had no further co-operation from Thomas so far. If I don't hear
-from someone who is able to test this module by this weekend, I will be
-dropping this patch from my repository.
+The SRv6 End.DT4/DT6 is used to implement IPv4/IPv6 L3 VPNs based on Segment
+Routing over IPv6 networks in multi-tenants environments.
+It decapsulates the received packets and it performs the IPv4/IPv6 routing
+lookup in the routing table of the tenant.
 
+The SRv6 End.DT4/DT6 leverages a VRF device in order to force the routing
+lookup into the associated routing table using the "vrftable" attribute.
+
+Some examples:
+ $ ip -6 route add 2001:db8::1 encap seg6local action End.DT4 vrftable 100 dev eth0
+ $ ip -6 route add 2001:db8::2 encap seg6local action End.DT6 vrftable 200 dev eth0
+
+Standard Output:
+ $ ip -6 route show 2001:db8::1
+ 2001:db8::1  encap seg6local action End.DT4 vrftable 100 dev eth0 metric 1024 pref medium
+
+JSON Output:
+$ ip -6 -j -p route show 2001:db8::2
+[ {
+        "dst": "2001:db8::2",
+        "encap": "seg6local",
+        "action": "End.DT6",
+        "vrftable": 200,
+        "dev": "eth0",
+        "metric": 1024,
+        "flags": [ ],
+        "pref": "medium"
+} ]
+
+v2:
+ - no changes made: resubmit after pulling out this patch from the kernel
+   patchset.
+
+v1:
+ - mixing this patch with the kernel patchset confused patckwork.
+
+Signed-off-by: Paolo Lungaroni <paolo.lungaroni@cnit.it>
+Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
+---
+ include/uapi/linux/seg6_local.h |  1 +
+ ip/iproute_lwtunnel.c           | 19 ++++++++++++++++---
+ 2 files changed, 17 insertions(+), 3 deletions(-)
+
+diff --git a/include/uapi/linux/seg6_local.h b/include/uapi/linux/seg6_local.h
+index 5312de80..bb5c8ddf 100644
+--- a/include/uapi/linux/seg6_local.h
++++ b/include/uapi/linux/seg6_local.h
+@@ -26,6 +26,7 @@ enum {
+ 	SEG6_LOCAL_IIF,
+ 	SEG6_LOCAL_OIF,
+ 	SEG6_LOCAL_BPF,
++	SEG6_LOCAL_VRFTABLE,
+ 	__SEG6_LOCAL_MAX,
+ };
+ #define SEG6_LOCAL_MAX (__SEG6_LOCAL_MAX - 1)
+diff --git a/ip/iproute_lwtunnel.c b/ip/iproute_lwtunnel.c
+index 9b4f0885..1ab95cd2 100644
+--- a/ip/iproute_lwtunnel.c
++++ b/ip/iproute_lwtunnel.c
+@@ -294,6 +294,11 @@ static void print_encap_seg6local(FILE *fp, struct rtattr *encap)
+ 			     rtnl_rttable_n2a(rta_getattr_u32(tb[SEG6_LOCAL_TABLE]),
+ 			     b1, sizeof(b1)));
+ 
++	if (tb[SEG6_LOCAL_VRFTABLE])
++		print_string(PRINT_ANY, "vrftable", "vrftable %s ",
++			     rtnl_rttable_n2a(rta_getattr_u32(tb[SEG6_LOCAL_VRFTABLE]),
++			     b1, sizeof(b1)));
++
+ 	if (tb[SEG6_LOCAL_NH4]) {
+ 		print_string(PRINT_ANY, "nh4",
+ 			     "nh4 %s ", rt_addr_n2a_rta(AF_INET, tb[SEG6_LOCAL_NH4]));
+@@ -860,9 +865,10 @@ static int lwt_parse_bpf(struct rtattr *rta, size_t len,
+ static int parse_encap_seg6local(struct rtattr *rta, size_t len, int *argcp,
+ 				 char ***argvp)
+ {
+-	int segs_ok = 0, hmac_ok = 0, table_ok = 0, nh4_ok = 0, nh6_ok = 0;
+-	int iif_ok = 0, oif_ok = 0, action_ok = 0, srh_ok = 0, bpf_ok = 0;
+-	__u32 action = 0, table, iif, oif;
++	int segs_ok = 0, hmac_ok = 0, table_ok = 0, vrftable_ok = 0;
++	int nh4_ok = 0, nh6_ok = 0, iif_ok = 0, oif_ok = 0;
++	__u32 action = 0, table, vrftable, iif, oif;
++	int action_ok = 0, srh_ok = 0, bpf_ok = 0;
+ 	struct ipv6_sr_hdr *srh;
+ 	char **argv = *argvp;
+ 	int argc = *argcp;
+@@ -887,6 +893,13 @@ static int parse_encap_seg6local(struct rtattr *rta, size_t len, int *argcp,
+ 				duparg2("table", *argv);
+ 			rtnl_rttable_a2n(&table, *argv);
+ 			ret = rta_addattr32(rta, len, SEG6_LOCAL_TABLE, table);
++		} else if (strcmp(*argv, "vrftable") == 0) {
++			NEXT_ARG();
++			if (vrftable_ok++)
++				duparg2("vrftable", *argv);
++			rtnl_rttable_a2n(&vrftable, *argv);
++			ret = rta_addattr32(rta, len, SEG6_LOCAL_VRFTABLE,
++					    vrftable);
+ 		} else if (strcmp(*argv, "nh4") == 0) {
+ 			NEXT_ARG();
+ 			if (nh4_ok++)
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.20.1
+
