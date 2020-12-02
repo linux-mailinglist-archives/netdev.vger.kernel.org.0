@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1496F2CC1F2
+	by mail.lfdr.de (Postfix) with ESMTP id 869552CC1F3
 	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 17:18:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389075AbgLBQRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 11:17:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59270 "EHLO
+        id S1728668AbgLBQRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 11:17:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389070AbgLBQRU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 11:17:20 -0500
+        with ESMTP id S1728586AbgLBQRi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 11:17:38 -0500
 Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6314C061A47
-        for <netdev@vger.kernel.org>; Wed,  2 Dec 2020 08:16:19 -0800 (PST)
-Received: by mail-wr1-x443.google.com with SMTP id 64so4585767wra.11
-        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 08:16:19 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9AAC061A48
+        for <netdev@vger.kernel.org>; Wed,  2 Dec 2020 08:16:20 -0800 (PST)
+Received: by mail-wr1-x443.google.com with SMTP id i2so4634127wrs.4
+        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 08:16:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=essensium.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=7cVseWE6MIn0vIOshUQxsts71GrP62tJMM0vJ2mEO6M=;
-        b=JPMZDn1Q25wUvfxd5NHJUlgs/Y8PdFBXa/MVT0UhCfSDQfXICkj59GPnUm3wuozxG4
-         UZ+ZjahG2yZHm8StlaVRYK+lgGj/uTSVF8EBVRoTLCOHYONUqktFbinfdcfvMPQXiXQB
-         Fs/eqX57ZpU+WU2wHITndg3sXuIWc4YBUenchkoNPvGD2AAsu1/8l/FCFYUm9odgVGLB
-         1AfmO8klAYMdu9+BdSrjmcI3CIVaAAT8apQZTdlJLyYB01vOUnvKTTP+/L78HE6DkqK5
-         VI7i96lWnrmSvyHdZXoSxtRgLstxqO9zW0eXwVVgC98IXrcdCdAPPnBjWDYATo89qwDL
-         4WbA==
+        bh=n6zxn0ciPWvecDtaO/9pXlIMYf7CJlzucbFrKBsiNoc=;
+        b=PFKmsM+rz5pWrC4hyjIRpp8wEsGNnX/2pKUjgW2vAioOJIULwPqBNsJOCGOmPppTpw
+         PCUogDdRtoz2bhUWAoS8n6d1pxSLzYy2WWT3Lgc5QNAWItCq9vHBPVWrAlW9G9zlS6bp
+         mbMcibpUMzJu3rgchGXRqYuzLOGZr4hHGloqAkCGh5M3QzhK5rhilYPIK0gj4N4Ttmnj
+         kOlH80A0HaC4MPv8FZhxVY62hePGvx3m/hwNVAZTsw2Vminw3/mFF3LDNDz8GbFZM+FC
+         DatoYsLK0ReGk/6GPxUsFSGJ7NTYneBJcAtAWDpydPcqVlSU9rJN/+Tw2jwY/a12R9Ts
+         4TVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=7cVseWE6MIn0vIOshUQxsts71GrP62tJMM0vJ2mEO6M=;
-        b=REI42lGmyeOfqT6RUe85wMaAZ6p1pmNF/e82wWId13HOiC14rp4A5Eo42PnBHNhusC
-         7OMti+sBeSmEu55tnERJ3S7mkTF9soWDjTktF33A+AcbeXC1gw3o7sCXAQK5VfUSWv3A
-         N6dEYoNmQe9skOpYANDrVpN6rmOX8Qsws+9MWGCFZT6QFheuvaKIuZMwKiWok9kvczg3
-         w30Oc+649K5Ubg0GUww53Sai4sUrW8KwvJ0NstB5PCcbIqsrwj8/gWUe3mSic2eHChGt
-         TOr87szsT7g2t/QU5UBVrdxhv3X4ohZ6QvTElXRIbMgEldpNUHktrR4ASasWuzQnevI4
-         qjkw==
-X-Gm-Message-State: AOAM531Y0jSoF9gHoaaDqpfCwDtPf/WOzm8cWNWNO9YUpRhSlZ6PoLCo
-        bzMEOTNsueUgHNdeKZgfcJUgLpkAq41V+Q==
-X-Google-Smtp-Source: ABdhPJwSjZL1OPGRCTWiQOlBQXtYSorpd0ICSpOhAQ4VJl5WT02dgUIr5pavqow6fS4l9GahL/u1/Q==
-X-Received: by 2002:adf:e44d:: with SMTP id t13mr4422657wrm.144.1606925778652;
-        Wed, 02 Dec 2020 08:16:18 -0800 (PST)
+        bh=n6zxn0ciPWvecDtaO/9pXlIMYf7CJlzucbFrKBsiNoc=;
+        b=UZFmku6QOW35NxqzN3N0TmWQcsuK7GBYBHYOe4AinTrH4xr4BL6O6dRRDwvgRgpNco
+         TBbN3+7BDeg/K8OqwoaLGQ0Tpz17JJn3cXm/8e+BMCGuYLzvio/R/MaLgsB/990HJA1D
+         NuE/ocPxCWKSIolle5F73K3wvXaRD1LM9WRs3N3HJrGZLS+tq/I70pCSfTV+iYeJz9eq
+         S3ap4VUy5HUiPZ5o7J2zIyfrh2NFKSsdVvsYJspMXLMIRpEVgrNSGmhByGleIL4qMFHO
+         mvz3HDiq2nvUtv6c+42q/TRZAEgY7bdqg1BoUpT/yUZpbwiR4qbC0N7iHfI5pu4OHg8d
+         N+MQ==
+X-Gm-Message-State: AOAM531t4yUkDEsmmv/3IFtYLy2kwVhYqlbOSaYYWylLgdS3I3tbqHB7
+        LJzqaI7uNslcTBiWq5d13UkIwg==
+X-Google-Smtp-Source: ABdhPJxLVNrN068k/FAiywPaBvuF1gJQ5HzHKm2PZFAwrFFYiA4prYxgNUk7lacSuz099v1rYPAy0A==
+X-Received: by 2002:adf:f181:: with SMTP id h1mr4305130wro.267.1606925779573;
+        Wed, 02 Dec 2020 08:16:19 -0800 (PST)
 Received: from belels006.local.ess-mail.com (ip-188-118-3-185.reverse.destiny.be. [188.118.3.185])
-        by smtp.gmail.com with ESMTPSA id s4sm2644505wru.56.2020.12.02.08.16.17
+        by smtp.gmail.com with ESMTPSA id s4sm2644505wru.56.2020.12.02.08.16.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Dec 2020 08:16:17 -0800 (PST)
+        Wed, 02 Dec 2020 08:16:19 -0800 (PST)
 From:   Patrick Havelange <patrick.havelange@essensium.com>
 To:     Madalin Bucur <madalin.bucur@nxp.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Patrick Havelange <patrick.havelange@essensium.com>
-Subject: [PATCH 3/4] net: freescale/fman-mac: remove direct use of __devm_request_region
-Date:   Wed,  2 Dec 2020 17:15:59 +0100
-Message-Id: <20201202161600.23738-3-patrick.havelange@essensium.com>
+Subject: [PATCH 4/4] net: freescale/fman: remove fman_get_mem_region
+Date:   Wed,  2 Dec 2020 17:16:00 +0100
+Message-Id: <20201202161600.23738-4-patrick.havelange@essensium.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201202161600.23738-1-patrick.havelange@essensium.com>
 References: <20201202161600.23738-1-patrick.havelange@essensium.com>
@@ -62,35 +62,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since the main fman driver is no longer reserving the complete fman
-memory region, it is no longer needed to use a custom call to
-__devm_request_region, so replace it with devm_request_mem_region
+This function is no longer used, so we can remove it.
+The pointer to the resource that was kept inside
+struct fman_state_struct can also be removed for the same reason.
 
 Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
 ---
- drivers/net/ethernet/freescale/fman/mac.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/freescale/fman/fman.c | 17 -----------------
+ drivers/net/ethernet/freescale/fman/fman.h |  2 --
+ 2 files changed, 19 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
-index 901749a7a318..35ca33335aed 100644
---- a/drivers/net/ethernet/freescale/fman/mac.c
-+++ b/drivers/net/ethernet/freescale/fman/mac.c
-@@ -690,12 +690,10 @@ static int mac_probe(struct platform_device *_of_dev)
- 		goto _return_of_get_parent;
- 	}
+diff --git a/drivers/net/ethernet/freescale/fman/fman.c b/drivers/net/ethernet/freescale/fman/fman.c
+index 2e85209d560d..bf78e12a1683 100644
+--- a/drivers/net/ethernet/freescale/fman/fman.c
++++ b/drivers/net/ethernet/freescale/fman/fman.c
+@@ -531,8 +531,6 @@ struct fman_state_struct {
  
--	mac_dev->res = __devm_request_region(dev,
--					     fman_get_mem_region(priv->fman),
--					     res.start, resource_size(&res),
--					     "mac");
-+	mac_dev->res = devm_request_mem_region(dev, res.start,
-+					       resource_size(&res), "mac");
- 	if (!mac_dev->res) {
--		dev_err(dev, "__devm_request_mem_region(mac) failed\n");
-+		dev_err(dev, "devm_request_mem_region(mac) failed\n");
- 		err = -EBUSY;
- 		goto _return_of_get_parent;
- 	}
+ 	u32 qman_channel_base;
+ 	u32 num_of_qman_channels;
+-
+-	struct resource *res;
+ };
+ 
+ /* Structure that holds FMan initial configuration */
+@@ -1737,7 +1735,6 @@ static int fman_config(struct fman *fman)
+ 	fman->state->qman_channel_base = fman->dts_params.qman_channel_base;
+ 	fman->state->num_of_qman_channels =
+ 		fman->dts_params.num_of_qman_channels;
+-	fman->state->res = fman->dts_params.res;
+ 	fman->exception_cb = fman_exceptions;
+ 	fman->bus_error_cb = fman_bus_error;
+ 	fman->fpm_regs = fman->dts_params.base_addr_pol + FPM_OFFSET_FROM_POL;
+@@ -2405,20 +2402,6 @@ u32 fman_get_qman_channel_id(struct fman *fman, u32 port_id)
+ }
+ EXPORT_SYMBOL(fman_get_qman_channel_id);
+ 
+-/**
+- * fman_get_mem_region
+- * @fman:	A Pointer to FMan device
+- *
+- * Get FMan memory region
+- *
+- * Return: A structure with FMan memory region information
+- */
+-struct resource *fman_get_mem_region(struct fman *fman)
+-{
+-	return fman->state->res;
+-}
+-EXPORT_SYMBOL(fman_get_mem_region);
+-
+ /* Bootargs defines */
+ /* Extra headroom for RX buffers - Default, min and max */
+ #define FSL_FM_RX_EXTRA_HEADROOM	64
+diff --git a/drivers/net/ethernet/freescale/fman/fman.h b/drivers/net/ethernet/freescale/fman/fman.h
+index e6b339c57230..e326aa37b8b2 100644
+--- a/drivers/net/ethernet/freescale/fman/fman.h
++++ b/drivers/net/ethernet/freescale/fman/fman.h
+@@ -398,8 +398,6 @@ int fman_set_mac_max_frame(struct fman *fman, u8 mac_id, u16 mfl);
+ 
+ u32 fman_get_qman_channel_id(struct fman *fman, u32 port_id);
+ 
+-struct resource *fman_get_mem_region(struct fman *fman);
+-
+ u16 fman_get_max_frm(void);
+ 
+ int fman_get_rx_extra_headroom(void);
 -- 
 2.17.1
 
