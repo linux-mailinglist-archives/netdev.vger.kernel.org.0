@@ -2,159 +2,332 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46A8E2CBE16
+	by mail.lfdr.de (Postfix) with ESMTP id D7B362CBE17
 	for <lists+netdev@lfdr.de>; Wed,  2 Dec 2020 14:19:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730033AbgLBNSh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 08:18:37 -0500
-Received: from mail-eopbgr130083.outbound.protection.outlook.com ([40.107.13.83]:62958
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727531AbgLBNSh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Dec 2020 08:18:37 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UvbZa1FEdn0VyXjGwyy/BSQCXjKq5LmJA8aF7bptWaxTIihvD5cNwyoEynXTj6vNE3GXttQ8ySX5EfHa4+/0Ox9a78NRIJnIZrrawFMq4CNAElxOMU7Ycg5LwLHnN4wH8AWmgGQy9DJj9BnS35Rcr12o/GkeSj+fzwvNtZ7vsgccYZaHLbdN/fUwPzxwuPTWtCNNa2sRlRzPr281d+mTME14hBkY+J9G1BpSmf99xOrIjA78Ze8kKIEZBJkaNAIA6v+aTz08r+7XNyzXxpUHH+Jvv/nCZ++/EvGQq/EBsDdp1f0eOVZLfspfAWdP3ICs2R/KFm2O6VhkI557oxoTMQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/0N1Jxji+R03GcCJ5FAyD27rGb6Y48oO9SyuJM/NtOw=;
- b=QEFwL9mcCP/0wTWNCjIg2b1RdkoEgxjEIc9FMm4SCmw0CkasOLLLs76z+WwOyMll1W+jUIk0ygQavU8wXLNaal1JCth8B7TNGLlX5eC0QePv/xYkyfV0ymmCKczdjOshblJawROYXBT+nWF8et1vd1t3QOYOOPAo/dczKV48vm+u/LU87rvXu8PJevlCBkwrE0RuLDs8S5CUwiL1Y62b717aUmF+bujqPfAVroM6xNZ1KWdDL8kupWPmbKxKycEuT/rbzK1up8rCkWo8hbSUhD5J4Uw7tLmB5hzhrvinXVNVC5ZQwXm6cbvgJvSZj7XB+5/7ghSwrQGYI1rCuDO20g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/0N1Jxji+R03GcCJ5FAyD27rGb6Y48oO9SyuJM/NtOw=;
- b=XPDmMVvt1NwsMkyu606Nmr0oI8y91LYVxqKyKR4DKxuU0NXEFKV/LtNugRiQAC1xwndd2gpMLjEHHnv/YjYyPxm2jNfmJLWYShPgDV0aUzbbg0X40Zh0PQj1UO9zuTQMc2PTA/HJrc6EE0J7riV3miGQ2LaMYIv+EOlWxTEIgo0=
-Received: from VI1PR04MB5807.eurprd04.prod.outlook.com (2603:10a6:803:ec::21)
- by VI1PR04MB4111.eurprd04.prod.outlook.com (2603:10a6:803:48::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.20; Wed, 2 Dec
- 2020 13:17:47 +0000
-Received: from VI1PR04MB5807.eurprd04.prod.outlook.com
- ([fe80::45b9:4:f092:6cb6]) by VI1PR04MB5807.eurprd04.prod.outlook.com
- ([fe80::45b9:4:f092:6cb6%3]) with mapi id 15.20.3611.033; Wed, 2 Dec 2020
- 13:17:47 +0000
-From:   Camelia Alexandra Groza <camelia.groza@nxp.com>
-To:     "Y.b. Lu" <yangbo.lu@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: RE: [PATCH] dpaa_eth: copy timestamp fields to new skb in A-050385
- workaround
-Thread-Topic: [PATCH] dpaa_eth: copy timestamp fields to new skb in A-050385
- workaround
-Thread-Index: AQHWx7Y075no7Yljkk6GvqWZOspnzKnjx44g
-Date:   Wed, 2 Dec 2020 13:17:46 +0000
-Message-ID: <VI1PR04MB5807833DEB5F5C25D19DFD18F2F30@VI1PR04MB5807.eurprd04.prod.outlook.com>
-References: <20201201075258.1875-1-yangbo.lu@nxp.com>
-In-Reply-To: <20201201075258.1875-1-yangbo.lu@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: nxp.com; dkim=none (message not signed)
- header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [82.78.148.61]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 7ee800ca-b6f5-4247-4d2f-08d896c4a953
-x-ms-traffictypediagnostic: VI1PR04MB4111:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR04MB4111643D78FCDD4BF3746DC4F2F30@VI1PR04MB4111.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2043;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Qb9tXrkVEan2lm1xzpmB7mBlhxLWlViFIe+IMXl1li6EVzV6eJT+5WQibPhcKimtJ0NtpyM1egBeBmMSip98xik9/A6XwYKnst5BVXVspdtGY60Zmiul5GFEK/A5eaWaFAAbd4GMbv2tmQFZIt5oxmnjgzH4H9gVC77daR2hJ1Pp0Fwl5qM9iZPUjgJ5WI9hXzGWyxDOTI9DJFsyB5WhQG5bh93wPPX4vOwRnwf4VKW5mITIMqDcLDM4BIt92pnKRPmNm1uNOohQO1lIquOvpjXWxWEKGsMS0yj8GXt5VukZpMkqlfdaeGUhOIA7txmJGvtlhggmDex2XnX3d41cnw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(136003)(346002)(376002)(39850400004)(396003)(52536014)(33656002)(71200400001)(7696005)(6506007)(5660300002)(53546011)(83380400001)(2906002)(76116006)(66476007)(66946007)(66446008)(186003)(66556008)(26005)(64756008)(478600001)(316002)(8676002)(9686003)(8936002)(4326008)(55016002)(110136005)(86362001)(54906003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?SK49yKLc3Xe0Pgzwd8Ve/OiTJOs3LrktS/0c9/SPyE/b3eidT2qKP/0xRS/x?=
- =?us-ascii?Q?O8VSchmufhm70VTg4erNksWkGtGpKUCtFDgLAJPHHwapCwxWqdqrTaqQTZH+?=
- =?us-ascii?Q?uXjyyxAp9gyAmJaNLJw3Y9F0YFBxRQg/rJFw96gsplzY61gXjKGOK4NvliwT?=
- =?us-ascii?Q?HwPf2izjjgWsWqerkDJTuuTIJ98TVo57IYa2QFmSObaIUcvZ1Q6MQxyZkioh?=
- =?us-ascii?Q?nJwQiVKNzeWFZIHHsJG0ibtF2PPet9xqRUq47kQnkeK1mXNDhmgp21mJj2aY?=
- =?us-ascii?Q?S685AbhmlT+oJ7lh/+N/dyg1yCrEsSZoncthxW2nv1LUnEaUg1+iJnQv2uc9?=
- =?us-ascii?Q?hzrteCoLXbd9f5ZwvB01lZ6X9izQ/ZNvs/nHZz9Ghi3wn433ozAvlJLDsjgs?=
- =?us-ascii?Q?bZyBzpy+DRTvBHUIofV5Uwm9mqJZmDahszK99dQ35BwJzJt3TkSdHbdLMf21?=
- =?us-ascii?Q?5IdHKSJyesWPRPP7iTEvNRVniAF4H6m0vSpdIynhfaZ4jV6D9ZYOGFoLWxDr?=
- =?us-ascii?Q?UNW1ZO7h+J6cLfF3oKWG+BhPqeykSto34rOSa/htBzYDquD92MY7su6IPkYv?=
- =?us-ascii?Q?ynNs4j+0Xt2swRbxqqjFymWD2LrL7KJqeQNtR/I9oo4bqm3CmuzSdQnu+Lek?=
- =?us-ascii?Q?iaSoIVxik0WX/Z1OTSyzh4yTECqp78yvg4oGO/xU96yS+zAZ8tKtjFxvrP2k?=
- =?us-ascii?Q?jnhdwU3J/umVS8sY8MViHSYKf97VY/kOPr+d0JHMX/VaOGomWWe0LZft07rT?=
- =?us-ascii?Q?l9/M8Xd3vkVuPvXc53FRC0W/3FMdgnUZRne5u+//MupBMo8F6VFUEQiI+0an?=
- =?us-ascii?Q?wAzZrM0nRMc0TlyXiGIyq23iz/HSGlRElTodwD05jTqLa8i00SyD3YKGSceu?=
- =?us-ascii?Q?xDoSpOohOjMHstIMumI841+N4YEjEQgesJchubdg+3Z8DD5YIELuhUbcNql5?=
- =?us-ascii?Q?cThplDXQArwz7nyz5a9BAzSRvzF3AdrjorJVemSNYas=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1730071AbgLBNTP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 08:19:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59960 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727531AbgLBNTO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 08:19:14 -0500
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C56C0613CF
+        for <netdev@vger.kernel.org>; Wed,  2 Dec 2020 05:18:28 -0800 (PST)
+Received: by mail-ej1-x643.google.com with SMTP id 7so4270532ejm.0
+        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 05:18:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=UIKTs0s2q5YEPcaivKknIvt+mFQ9QlENqVBETcRPjLg=;
+        b=qu7sw3q0n6xtfSzumO4Ow8DcbGK1gqE+Z8E50g/rKBjB4L8ke/GqBZDo9zrfwxbliA
+         RqJDkGBlDC0AJP0GK37fCpx7SvxEmkgdraVXOrApXnUvMuQbC+WC14iMtGs0sGpDUiav
+         ncD7P5B0Yxf0cGnAHH2EFcPontotDNtBT8kox3/sH0bNAKGp/+fk6vTgHfposZVq3P8k
+         GnMKmrYmWLhAB5mEo1UK6i5RGP8jEE4RACkqjF29kPLHKB+gyxEOvOhUFf6uzS7fUzJZ
+         gqlQiWYg6B0J1EajbmrgnmsKN6s5mJJFO4z57bMbB2VYpmxc7o7D82E7nEjdBU9I6kIE
+         +sRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=UIKTs0s2q5YEPcaivKknIvt+mFQ9QlENqVBETcRPjLg=;
+        b=LtRw5rx6EMl0K6kWq3VUzFZ3NTIt4J40Vz7zJchTtGMplTXK3CUO0A9C8+4RvFUR8J
+         KYc8BNT89F9HajdyHFvHrWUxlmBXykrdgRSW4Fn4jGlNfUFJV10IqhTqF1S6/wcqjYd5
+         PA5nCExLkO1YG8jSyWuQ7yvcPY8/7LJyg9ZrFdKBOlJ34mWNK7iYAts5R1XdU5qFq665
+         SPAojLsujSbnr8/fNqRgh/IbS3MdYZEBSF8LHLRPDZdCuLn2rsa2R7nX5JzH3YHkeUBu
+         oilibuLTvAt3S6fO5+RLV8C4hvqvnJf9isoEsgx0ZCra0zf5NSzLk8ObjV1nNe3/fTDu
+         Fl1Q==
+X-Gm-Message-State: AOAM5315jVpGzJPKTs6AwON+iY5uIqfmT4ITbciNuq+Aro6QcdCc6ro4
+        3+E3cscq0n7MoW89MjO4YokSKbd/s729G7GYLfH7
+X-Google-Smtp-Source: ABdhPJyzudcnjKM5T5boqRLmQdJSRKVOwWz4R4FcGaKpL2zAb0hqPM5loR2HRdsf4QR9JIDKuJ3WqgJjPVov2q3OUFw=
+X-Received: by 2002:a17:906:a43:: with SMTP id x3mr2162621ejf.197.1606915107200;
+ Wed, 02 Dec 2020 05:18:27 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5807.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7ee800ca-b6f5-4247-4d2f-08d896c4a953
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Dec 2020 13:17:46.9931
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: yp2uoUD7qsnN3TPAEZaEIPRnWT557AyWih8KiJcY3NJl2kJU+Ucri4ILKmXlwpgpsBWTjLuj5DXGT5mwcks1lw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4111
+References: <20201112064005.349268-1-parav@nvidia.com> <5b2235f6-513b-dbc9-3670-e4c9589b4d1f@redhat.com>
+ <CACycT3sYScObb9nN3g7L3cesjE7sCZWxZ5_5R1usGU9ePZEeqA@mail.gmail.com>
+ <182708df-1082-0678-49b2-15d0199f20df@redhat.com> <CACycT3votu2eyacKg+w12xZ_ujEOgTY0f8A7qcpbM-fwTpjqAw@mail.gmail.com>
+ <7f80eeed-f5d3-8c6f-1b8c-87b7a449975c@redhat.com> <CACycT3uw6KJgTo+dBzSj07p2P_PziD+WBfX4yWVX-nDNUD2M3A@mail.gmail.com>
+ <DM6PR12MB4330173AF4BA08FE12F68B5BDCF40@DM6PR12MB4330.namprd12.prod.outlook.com>
+ <CACycT3tTCmEzY37E5196Q2mqME2v+KpAp7Snn8wK4XtRKHEqEw@mail.gmail.com>
+ <BY5PR12MB4322C80FB3C76B85A2D095CCDCF40@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <CACycT3vNXvNVUP+oqzv-MMgtzneeeZUoMaDVtEws7VizH0V+mA@mail.gmail.com>
+ <BY5PR12MB4322446CDB07B3CC5603F7D1DCF30@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <CACycT3uV8e61kVF6Q8zE5VVK_Okp03e=WNRcUffdkFeeFpfKDQ@mail.gmail.com> <BY5PR12MB43226BFFC334789D799F66D5DCF30@BY5PR12MB4322.namprd12.prod.outlook.com>
+In-Reply-To: <BY5PR12MB43226BFFC334789D799F66D5DCF30@BY5PR12MB4322.namprd12.prod.outlook.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Wed, 2 Dec 2020 21:18:16 +0800
+Message-ID: <CACycT3sdz+eoeE38z-5_HSB60ZzCsOwu+gYm1FyF9CC94OjL_A@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH 0/7] Introduce vdpa management tool
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>, Eli Cohen <elic@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Yangbo Lu <yangbo.lu@nxp.com>
-> Sent: Tuesday, December 1, 2020 09:53
-> To: netdev@vger.kernel.org
-> Cc: Y.b. Lu <yangbo.lu@nxp.com>; Madalin Bucur
-> <madalin.bucur@nxp.com>; David S . Miller <davem@davemloft.net>
-> Subject: [PATCH] dpaa_eth: copy timestamp fields to new skb in A-050385
-> workaround
->=20
-> The timestamp fields should be copied to new skb too in
-> A-050385 workaround for later TX timestamping handling.
->=20
-> Fixes: 3c68b8fffb48 ("dpaa_eth: FMan erratum A050385 workaround")
-> Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
-> ---
+On Wed, Dec 2, 2020 at 7:13 PM Parav Pandit <parav@nvidia.com> wrote:
+>
+>
+>
+> > From: Yongji Xie <xieyongji@bytedance.com>
+> > Sent: Wednesday, December 2, 2020 2:52 PM
+> >
+> > On Wed, Dec 2, 2020 at 12:53 PM Parav Pandit <parav@nvidia.com> wrote:
+> > >
+> > >
+> > >
+> > > > From: Yongji Xie <xieyongji@bytedance.com>
+> > > > Sent: Wednesday, December 2, 2020 9:00 AM
+> > > >
+> > > > On Tue, Dec 1, 2020 at 11:59 PM Parav Pandit <parav@nvidia.com> wro=
+te:
+> > > > >
+> > > > >
+> > > > >
+> > > > > > From: Yongji Xie <xieyongji@bytedance.com>
+> > > > > > Sent: Tuesday, December 1, 2020 7:49 PM
+> > > > > >
+> > > > > > On Tue, Dec 1, 2020 at 7:32 PM Parav Pandit <parav@nvidia.com>
+> > wrote:
+> > > > > > >
+> > > > > > >
+> > > > > > >
+> > > > > > > > From: Yongji Xie <xieyongji@bytedance.com>
+> > > > > > > > Sent: Tuesday, December 1, 2020 3:26 PM
+> > > > > > > >
+> > > > > > > > On Tue, Dec 1, 2020 at 2:25 PM Jason Wang
+> > > > > > > > <jasowang@redhat.com>
+> > > > > > wrote:
+> > > > > > > > >
+> > > > > > > > >
+> > > > > > > > > On 2020/11/30 =E4=B8=8B=E5=8D=883:07, Yongji Xie wrote:
+> > > > > > > > > >>> Thanks for adding me, Jason!
+> > > > > > > > > >>>
+> > > > > > > > > >>> Now I'm working on a v2 patchset for VDUSE (vDPA
+> > > > > > > > > >>> Device in
+> > > > > > > > > >>> Userspace) [1]. This tool is very useful for the vdus=
+e device.
+> > > > > > > > > >>> So I'm considering integrating this into my v2 patchs=
+et.
+> > > > > > > > > >>> But there is one problem=EF=BC=9A
+> > > > > > > > > >>>
+> > > > > > > > > >>> In this tool, vdpa device config action and enable
+> > > > > > > > > >>> action are combined into one netlink msg:
+> > > > > > > > > >>> VDPA_CMD_DEV_NEW. But in
+> > > > > > vduse
+> > > > > > > > > >>> case, it needs to be splitted because a chardev shoul=
+d
+> > > > > > > > > >>> be created and opened by a userspace process before w=
+e
+> > > > > > > > > >>> enable the vdpa device (call vdpa_register_device()).
+> > > > > > > > > >>>
+> > > > > > > > > >>> So I'd like to know whether it's possible (or have
+> > > > > > > > > >>> some
+> > > > > > > > > >>> plans) to add two new netlink msgs something like:
+> > > > > > > > > >>> VDPA_CMD_DEV_ENABLE
+> > > > > > > > and
+> > > > > > > > > >>> VDPA_CMD_DEV_DISABLE to make the config path more
+> > flexible.
+> > > > > > > > > >>>
+> > > > > > > > > >> Actually, we've discussed such intermediate step in
+> > > > > > > > > >> some early discussion. It looks to me VDUSE could be
+> > > > > > > > > >> one of the users of
+> > > > this.
+> > > > > > > > > >>
+> > > > > > > > > >> Or I wonder whether we can switch to use anonymous
+> > > > > > > > > >> inode(fd) for VDUSE then fetching it via an
+> > > > > > > > > >> VDUSE_GET_DEVICE_FD
+> > > > ioctl?
+> > > > > > > > > >>
+> > > > > > > > > > Yes, we can. Actually the current implementation in
+> > > > > > > > > > VDUSE is like this.  But seems like this is still a int=
+ermediate
+> > step.
+> > > > > > > > > > The fd should be binded to a name or something else
+> > > > > > > > > > which need to be configured before.
+> > > > > > > > >
+> > > > > > > > >
+> > > > > > > > > The name could be specified via the netlink. It looks to
+> > > > > > > > > me the real issue is that until the device is connected
+> > > > > > > > > with a userspace, it can't be used. So we also need to
+> > > > > > > > > fail the enabling if it doesn't
+> > > > > > opened.
+> > > > > > > > >
+> > > > > > > >
+> > > > > > > > Yes, that's true. So you mean we can firstly try to fetch
+> > > > > > > > the fd binded to a name/vduse_id via an VDUSE_GET_DEVICE_FD=
+,
+> > > > > > > > then use the name/vduse_id as a attribute to create vdpa
+> > > > > > > > device? It looks fine to
+> > > > me.
+> > > > > > >
+> > > > > > > I probably do not well understand. I tried reading patch [1]
+> > > > > > > and few things
+> > > > > > do not look correct as below.
+> > > > > > > Creating the vdpa device on the bus device and destroying the
+> > > > > > > device from
+> > > > > > the workqueue seems unnecessary and racy.
+> > > > > > >
+> > > > > > > It seems vduse driver needs
+> > > > > > > This is something should be done as part of the vdpa dev add
+> > > > > > > command,
+> > > > > > instead of connecting two sides separately and ensuring race
+> > > > > > free access to it.
+> > > > > > >
+> > > > > > > So VDUSE_DEV_START and VDUSE_DEV_STOP should possibly be
+> > avoided.
+> > > > > > >
+> > > > > >
+> > > > > > Yes, we can avoid these two ioctls with the help of the managem=
+ent
+> > tool.
+> > > > > >
+> > > > > > > $ vdpa dev add parentdev vduse_mgmtdev type net name foo2
+> > > > > > >
+> > > > > > > When above command is executed it creates necessary vdpa
+> > > > > > > device
+> > > > > > > foo2
+> > > > > > on the bus.
+> > > > > > > When user binds foo2 device with the vduse driver, in the
+> > > > > > > probe(), it
+> > > > > > creates respective char device to access it from user space.
+> > > > > >
+> > > > > I see. So vduse cannot work with any existing vdpa devices like
+> > > > > ifc, mlx5 or
+> > > > netdevsim.
+> > > > > It has its own implementation similar to fuse with its own backen=
+d of
+> > choice.
+> > > > > More below.
+> > > > >
+> > > > > > But vduse driver is not a vdpa bus driver. It works like vdpasi=
+m
+> > > > > > driver, but offloads the data plane and control plane to a user=
+ space
+> > process.
+> > > > >
+> > > > > In that case to draw parallel lines,
+> > > > >
+> > > > > 1. netdevsim:
+> > > > > (a) create resources in kernel sw
+> > > > > (b) datapath simulates in kernel
+> > > > >
+> > > > > 2. ifc + mlx5 vdpa dev:
+> > > > > (a) creates resource in hw
+> > > > > (b) data path is in hw
+> > > > >
+> > > > > 3. vduse:
+> > > > > (a) creates resources in userspace sw
+> > > > > (b) data path is in user space.
+> > > > > hence creates data path resources for user space.
+> > > > > So char device is created, removed as result of vdpa device creat=
+ion.
+> > > > >
+> > > > > For example,
+> > > > > $ vdpa dev add parentdev vduse_mgmtdev type net name foo2
+> > > > >
+> > > > > Above command will create char device for user space.
+> > > > >
+> > > > > Similar command for ifc/mlx5 would have created similar channel
+> > > > > for rest of
+> > > > the config commands in hw.
+> > > > > vduse channel =3D char device, eventfd etc.
+> > > > > ifc/mlx5 hw channel =3D bar, irq, command interface etc Netdev si=
+m
+> > > > > channel =3D sw direct calls
+> > > > >
+> > > > > Does it make sense?
+> > > >
+> > > > In my understanding, to make vdpa work, we need a backend (datapath
+> > > > resources) and a frontend (a vdpa device attached to a vdpa bus). I=
+n
+> > > > the above example, it looks like we use the command "vdpa dev add .=
+.."
+> > > >  to create a backend, so do we need another command to create a
+> > frontend?
+> > > >
+> > > For block device there is certainly some backend to process the IOs.
+> > > Sometimes backend to be setup first, before its front end is exposed.
+> >
+> > Yes, the backend need to be setup firstly, this is vendor device specif=
+ic, not
+> > vdpa specific.
+> >
+> > > "vdpa dev add" is the front end command who connects to the backend
+> > (implicitly) for network device.
+> > >
+> > > vhost->vdpa_block_device->backend_io_processor (usr,hw,kernel).
+> > >
+> > > And it needs a way to connect to backend when explicitly specified du=
+ring
+> > creation time.
+> > > Something like,
+> > > $ vdpa dev add parentdev vdpa_vduse type block name foo3 handle
+> > <uuid>
+> > > In above example some vendor device specific unique handle is passed
+> > based on backend setup in hardware/user space.
+> > >
+> >
+> > Yes, we can work like this. After we setup a backend through an anonymo=
+us
+> > inode(fd) from /dev/vduse, we can get a unique handle. Then use it to
+> > create a frontend which will connect to the specific backend.
+>
+> I do not fully understand the inode. But I assume this is some unique han=
+dle say uuid or something that both sides backend and vdpa device understan=
+d.
+> It cannot be some kernel internal handle expose to user space.
+>
 
-Acked-by: Camelia Groza <camelia.groza@nxp.com>
+Yes, the unique handle should be a user-defined stuff.
 
->  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 10 +++++++++-
->  1 file changed, 9 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> index d9c2859..cb7c028 100644
-> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> @@ -2120,6 +2120,15 @@ static int dpaa_a050385_wa(struct net_device
-> *net_dev, struct sk_buff **s)
->  	skb_copy_header(new_skb, skb);
->  	new_skb->dev =3D skb->dev;
->=20
-> +	/* Copy relevant timestamp info from the old skb to the new */
-> +	if (priv->tx_tstamp) {
-> +		skb_shinfo(new_skb)->tx_flags =3D skb_shinfo(skb)->tx_flags;
-> +		skb_shinfo(new_skb)->hwtstamps =3D skb_shinfo(skb)-
-> >hwtstamps;
-> +		skb_shinfo(new_skb)->tskey =3D skb_shinfo(skb)->tskey;
-> +		if (skb->sk)
-> +			skb_set_owner_w(new_skb, skb->sk);
-> +	}
-> +
->  	/* We move the headroom when we align it so we have to reset the
->  	 * network and transport header offsets relative to the new data
->  	 * pointer. The checksum offload relies on these offsets.
-> @@ -2127,7 +2136,6 @@ static int dpaa_a050385_wa(struct net_device
-> *net_dev, struct sk_buff **s)
->  	skb_set_network_header(new_skb, skb_network_offset(skb));
->  	skb_set_transport_header(new_skb, skb_transport_offset(skb));
->=20
-> -	/* TODO: does timestamping need the result in the old skb? */
->  	dev_kfree_skb(skb);
->  	*s =3D new_skb;
->=20
-> --
-> 2.7.4
+> >
+> > > In below 3 examples, vdpa block simulator is connecting to backend bl=
+ock
+> > or file.
+> > >
+> > > $ vdpa dev add parentdev vdpa_blocksim type block name foo4 blockdev
+> > > /dev/zero
+> > >
+> > > $ vdpa dev add parentdev vdpa_blocksim type block name foo5 blockdev
+> > > /dev/sda2 size=3D100M offset=3D10M
+> > >
+> > > $ vdpa dev add parentdev vdpa_block filebackend_sim type block name
+> > > foo6 file /root/file_backend.txt
+> > >
+> > > Or may be backend connects to the created vdpa device is bound to the
+> > driver.
+> > > Can vduse attach to the created vdpa block device through the char de=
+vice
+> > and establish the channel to receive IOs, and to setup the block config=
+ space?
+> > >
+> >
+> > How to create the vdpa block device? If we use the command "vdpa dev
+> > add..", the command will hang there until a vduse process attaches to t=
+he
+> > vdpa block device.
+> I was suggesting that vdpa device is created, but it doesn=E2=80=99t have=
+ backend attached to it.
+> It is attached to the backend when ioctl() side does enough setup. This s=
+tate is handled internally the vduse driver.
+>
+> But the above method of preparing backend looks more sane.
+>
+> Regardless of which method is preferred, vduse driver must need a state t=
+o detach the vdpa bus device queues etc from the user space.
+> This is needed because user space process can terminate anytime resulting=
+ in detaching dpa bus device in_use by the vhost side.
 
+I think the vdpa device should only be detached by the command "vdpa
+dev del...". The vduse driver can support reconnecting when user space
+process is terminated.
+
+Thanks,
+Yongji
