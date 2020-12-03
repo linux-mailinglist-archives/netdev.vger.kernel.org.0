@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A80B2CD60D
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 13:52:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C5402CD5FA
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 13:51:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730558AbgLCMvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 07:51:16 -0500
-Received: from mout.kundenserver.de ([212.227.126.135]:58389 "EHLO
+        id S2389018AbgLCMuu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 07:50:50 -0500
+Received: from mout.kundenserver.de ([212.227.126.130]:37063 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389062AbgLCMuz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 07:50:55 -0500
+        with ESMTP id S1730527AbgLCMut (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 07:50:49 -0500
 Received: from orion.localdomain ([95.118.71.13]) by mrelayeu.kundenserver.de
  (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1MC0HF-1ksnqw3rED-00CUou; Thu, 03 Dec 2020 13:48:12 +0100
+ 1MsaeR-1jsPzT2mwF-00tyos; Thu, 03 Dec 2020 13:48:12 +0100
 From:   "Enrico Weigelt, metux IT consult" <info@metux.net>
 To:     linux-kernel@vger.kernel.org
 Cc:     rspringer@google.com, toddpoynor@google.com, benchan@chromium.org,
@@ -23,51 +23,49 @@ Cc:     rspringer@google.com, toddpoynor@google.com, benchan@chromium.org,
         nsaenzjulienne@suse.de, speakup@linux-speakup.org,
         devel@driverdev.osuosl.org, linux-media@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH 10/11] drivers: staging: rtl8723bs: remove unneeded MODULE_VERSION() call
-Date:   Thu,  3 Dec 2020 13:48:02 +0100
-Message-Id: <20201203124803.23390-10-info@metux.net>
+Subject: [PATCH 11/11] drivers: staging: rtl8723bs: remove unneeded MODULE_VERSION() call
+Date:   Thu,  3 Dec 2020 13:48:03 +0100
+Message-Id: <20201203124803.23390-11-info@metux.net>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20201203124803.23390-1-info@metux.net>
 References: <20201203124803.23390-1-info@metux.net>
-X-Provags-ID: V03:K1:hQGIBq/BUgPqVCEvTnHhF20SdK3ePaui9xmOcpQzW4CBNAeGWxQ
- 6dlSkT/baOy2QIyYpoUTMDbZ2qRYy4QjbRiOimlX7nHiu4rtmkCbU1n8XpdkUUpsT0mbrRL
- WBjJEIOolFjHbZbrlYh0Zk0i6Fx0S5oT7x3/eVUw+uDgdZQatf8trTDNYxSRVqcNyslMLb2
- XU8R0s82TL/NGrQRwrvFQ==
+X-Provags-ID: V03:K1:K37+eyIhv0Jb/MzK3jnMGWBmLWepPJuiKdD1EOq0NyyZs+7YC10
+ jE5E0O/ntftFAhWSpM6FBNp32u3g80+Y4PIwebTKvt5maocGGGDlttLPphBTnwemY9iA8P0
+ Ea4YxF/NhpPtBLgkJnp+yOkmLcdgXZZYuMsiL86C1siiIxDdT7ySmroAcuRa8yKj912uvsa
+ qTDf9K/Ihh8mumSlgcyiQ==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:6RGQO+J5kMs=:v3LsgrUhYwB/y2iFa9vQb0
- e9xMagAtqCzJZABxOcvKblZxcYBWxuUc24caTFsDorn7uMCod/SwqUO2GGuwV6TBgQkXbPO02
- D/JHB4OqicEPtdfEuyFV61vR/qSYC0VXf1xbLCMI5NgG/0uNcRw0Q2Xt8r0bI/Ddsh4dFnMF/
- urhCr2E9ERtkx29wO/7oRLcYIwvMJEuVAUoxZx1MnuXMGKnNmtX+jmn1olRVtuUNZ+B5dyblv
- fxVK8Run2oS5tkGetn/m/47SbXm4O55qofzlt88pIZ2jGmWEXM7GtghDJiyNnu6QkA8Vy5x3z
- g7FysiqrU9ZGLIEchhQubxA+p5Tgga9IvKv13o91HqKJn4vMEfWO1UIo7Q9497g5dmL45LILn
- BiOwG/cgPZos9Iz+uH3ci9MhBU1afUIuEH2Ov1SoqH098lBEXHRVhK4Zw2NcR
+X-UI-Out-Filterresults: notjunk:1;V03:K0:qfkFQp5hoTE=:VCgOPZqPOsCzjVT2ig9+gx
+ 7c88PXwrJDy9bnQNZJel1Drz5LJfxrl+YLIyLCB8nQVheLEW+gNWDMcmEQwWXw3ORRnqU5Hq9
+ sxLclY3Xas4uzGXxVbmNpsobNlDji0ie5fwBeZUeOUlIUWp6KHkpjwF/O96nj63n2iboEOxHB
+ yoco/hULUQ7NYOaBzmh79eg58EFKG9ijM2U8cvlOuy2ka96guUAbtEH/PhksJB42t5yjlk2+0
+ h9wzj7QMUnhvOt8yeRz0YoNUZf20XdOt43sKan/UTZ3uYMadWV5Bk+zOlwHNspxKsC1jPQCxZ
+ c1ApsrHuA4tWHmbvquJz4EVxZ6y0EOZ5XBQ/oOqqYTEbdgiJjLXeYe6Vd2YpEOG7JfmLamlFA
+ /7v8kDK1B2CRtvUIOY3nbiuHFwtwoBjCi9yJiiu19qWJnu4UieoAmFLxiKLUg
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove MODULE_VERSION(), as it doesn't seem to have any pratical purpose.
-The code received lots of huge changes, but module version remained constant,
-since it landed in mainline tree, back 11 years go. Unmaintained version
-numbers aren't actually useful. For in-tree drivers, the kernel version
-really matters.
+Remove MODULE_VERSION(), as it doesn't seem to serve any practical purpose.
+The driver received lots of changes, but module remained constant since
+it landed in mainline, several years ago.
 
 Signed-off-by: Enrico Weigelt <info@metux.net>
 ---
- drivers/staging/rtl8192u/r8192U_core.c | 1 -
+ drivers/staging/rtl8723bs/os_dep/os_intfs.c | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/drivers/staging/rtl8192u/r8192U_core.c b/drivers/staging/rtl8192u/r8192U_core.c
-index 27dc181c4c9b..da871f45042a 100644
---- a/drivers/staging/rtl8192u/r8192U_core.c
-+++ b/drivers/staging/rtl8192u/r8192U_core.c
-@@ -90,7 +90,6 @@ static const struct usb_device_id rtl8192_usb_id_tbl[] = {
- };
- 
+diff --git a/drivers/staging/rtl8723bs/os_dep/os_intfs.c b/drivers/staging/rtl8723bs/os_dep/os_intfs.c
+index 27f990a01a23..0a94bab4fdcb 100644
+--- a/drivers/staging/rtl8723bs/os_dep/os_intfs.c
++++ b/drivers/staging/rtl8723bs/os_dep/os_intfs.c
+@@ -13,7 +13,6 @@
  MODULE_LICENSE("GPL");
--MODULE_VERSION("V 1.1");
- MODULE_DEVICE_TABLE(usb, rtl8192_usb_id_tbl);
- MODULE_DESCRIPTION("Linux driver for Realtek RTL8192 USB WiFi cards");
+ MODULE_DESCRIPTION("Realtek Wireless Lan Driver");
+ MODULE_AUTHOR("Realtek Semiconductor Corp.");
+-MODULE_VERSION(DRIVERVERSION);
  
+ /* module param defaults */
+ static int rtw_chip_version;
 -- 
 2.11.0
 
