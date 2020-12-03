@@ -2,196 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F4642CCD9A
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 04:55:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB72B2CCDA9
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 04:56:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729765AbgLCDx1 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 2 Dec 2020 22:53:27 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:49170 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729743AbgLCDxY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 22:53:24 -0500
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B33kJqM028456
-        for <netdev@vger.kernel.org>; Wed, 2 Dec 2020 19:52:44 -0800
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 355wgw9y57-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 19:52:43 -0800
-Received: from intmgw002.03.ash8.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 2 Dec 2020 19:52:43 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 08C642ECA822; Wed,  2 Dec 2020 19:52:37 -0800 (PST)
-From:   Andrii Nakryiko <andrii@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH v5 bpf-next 14/14] selftests/bpf: add fentry/fexit/fmod_ret selftest for kernel module
-Date:   Wed, 2 Dec 2020 19:52:04 -0800
-Message-ID: <20201203035204.1411380-15-andrii@kernel.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20201203035204.1411380-1-andrii@kernel.org>
-References: <20201203035204.1411380-1-andrii@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-12-03_01:2020-11-30,2020-12-03 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- clxscore=1015 impostorscore=0 mlxlogscore=999 bulkscore=0 phishscore=0
- adultscore=0 suspectscore=8 priorityscore=1501 mlxscore=0 spamscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012030020
-X-FB-Internal: deliver
+        id S1729043AbgLCDzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 22:55:44 -0500
+Received: from static.214.254.202.116.clients.your-server.de ([116.202.254.214]:34598
+        "EHLO ciao.gmane.io" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727838AbgLCDzn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 22:55:43 -0500
+Received: from list by ciao.gmane.io with local (Exim 4.92)
+        (envelope-from <gl-netdev-2@m.gmane-mx.org>)
+        id 1kkfht-0003ym-Vk
+        for netdev@vger.kernel.org; Thu, 03 Dec 2020 04:55:01 +0100
+X-Injected-Via-Gmane: http://gmane.org/
+To:     netdev@vger.kernel.org
+From:   Grant Edwards <grant.b.edwards@gmail.com>
+Subject: Re: net: macb: fail when there's no PHY
+Date:   Thu, 3 Dec 2020 03:54:57 -0000 (UTC)
+Message-ID: <rq9nih$egv$1@ciao.gmane.io>
+References: <20170921195905.GA29873@grante>
+ <66c0a032-4d20-69f1-deb4-6c65af6ec740@gmail.com>
+ <CAK=1mW6Gti0QpUjirB6PfMCiQvnDjkbb56pVKkQmpCSkRU6wtA@mail.gmail.com>
+ <6a9c1d4a-ed73-3074-f9fa-158c697c7bfe@gmail.com> <X8fb4zGoxcS6gFsc@grante>
+ <20201202183531.GJ2324545@lunn.ch> <rq8p74$2l0$1@ciao.gmane.io>
+ <20201202211134.GM2324545@lunn.ch> <rq9ki2$uqk$1@ciao.gmane.io>
+ <57728908-1ae3-cbe9-8721-81f06ab688b8@gmail.com>
+User-Agent: slrn/1.0.3 (Linux)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add new selftest checking attachment of fentry/fexit/fmod_ret (and raw
-tracepoint ones for completeness) BPF programs to kernel module function.
+On 2020-12-03, Florian Fainelli <f.fainelli@gmail.com> wrote:
 
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
----
- .../selftests/bpf/prog_tests/module_attach.c  | 53 +++++++++++++++
- .../selftests/bpf/progs/test_module_attach.c  | 66 +++++++++++++++++++
- 2 files changed, 119 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/module_attach.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_module_attach.c
+> You would have to have a local hack that intercepts the macb_ioctl()
+> and instead of calling phylink_mii_ioctl() it would have to
+> implement a custom ioctl() that does what
+> drivers/net/phy/phy.c::phy_mii_ioctl does except the mdiobus should
+> be pointed to the MACB MDIO bus instance and not be derived from the
+> phy_device instance (because that one points to the fixed PHY).
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/module_attach.c b/tools/testing/selftests/bpf/prog_tests/module_attach.c
-new file mode 100644
-index 000000000000..4b65e9918764
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/module_attach.c
-@@ -0,0 +1,53 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 Facebook */
-+
-+#include <test_progs.h>
-+#include "test_module_attach.skel.h"
-+
-+static int duration;
-+
-+static int trigger_module_test_read(int read_sz)
-+{
-+	int fd, err;
-+
-+	fd = open("/sys/kernel/bpf_testmod", O_RDONLY);
-+	err = -errno;
-+	if (CHECK(fd < 0, "testmod_file_open", "failed: %d\n", err))
-+		return err;
-+
-+	read(fd, NULL, read_sz);
-+	close(fd);
-+
-+	return 0;
-+}
-+
-+void test_module_attach(void)
-+{
-+	const int READ_SZ = 456;
-+	struct test_module_attach* skel;
-+	struct test_module_attach__bss *bss;
-+	int err;
-+
-+	skel = test_module_attach__open_and_load();
-+	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
-+		return;
-+
-+	bss = skel->bss;
-+
-+	err = test_module_attach__attach(skel);
-+	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
-+		goto cleanup;
-+
-+	/* trigger tracepoint */
-+	ASSERT_OK(trigger_module_test_read(READ_SZ), "trigger_read");
-+
-+	ASSERT_EQ(bss->raw_tp_read_sz, READ_SZ, "raw_tp");
-+	ASSERT_EQ(bss->tp_btf_read_sz, READ_SZ, "tp_btf");
-+	ASSERT_EQ(bss->fentry_read_sz, READ_SZ, "fentry");
-+	ASSERT_EQ(bss->fexit_read_sz, READ_SZ, "fexit");
-+	ASSERT_EQ(bss->fexit_ret, -EIO, "fexit_tet");
-+	ASSERT_EQ(bss->fmod_ret_read_sz, READ_SZ, "fmod_ret");
-+
-+cleanup:
-+	test_module_attach__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_module_attach.c b/tools/testing/selftests/bpf/progs/test_module_attach.c
-new file mode 100644
-index 000000000000..b563563df172
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_module_attach.c
-@@ -0,0 +1,66 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 Facebook */
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+#include <bpf/bpf_core_read.h>
-+#include "../bpf_testmod/bpf_testmod.h"
-+
-+__u32 raw_tp_read_sz = 0;
-+
-+SEC("raw_tp/bpf_testmod_test_read")
-+int BPF_PROG(handle_raw_tp,
-+	     struct task_struct *task, struct bpf_testmod_test_read_ctx *read_ctx)
-+{
-+	raw_tp_read_sz = BPF_CORE_READ(read_ctx, len);
-+	return 0;
-+}
-+
-+__u32 tp_btf_read_sz = 0;
-+
-+SEC("tp_btf/bpf_testmod_test_read")
-+int BPF_PROG(handle_tp_btf,
-+	     struct task_struct *task, struct bpf_testmod_test_read_ctx *read_ctx)
-+{
-+	tp_btf_read_sz = read_ctx->len;
-+	return 0;
-+}
-+
-+__u32 fentry_read_sz = 0;
-+
-+SEC("fentry/bpf_testmod_test_read")
-+int BPF_PROG(handle_fentry,
-+	     struct file *file, struct kobject *kobj,
-+	     struct bin_attribute *bin_attr, char *buf, loff_t off, size_t len)
-+{
-+	fentry_read_sz = len;
-+	return 0;
-+}
-+
-+__u32 fexit_read_sz = 0;
-+int fexit_ret = 0;
-+
-+SEC("fexit/bpf_testmod_test_read")
-+int BPF_PROG(handle_fexit,
-+	     struct file *file, struct kobject *kobj,
-+	     struct bin_attribute *bin_attr, char *buf, loff_t off, size_t len,
-+	     int ret)
-+{
-+	fexit_read_sz = len;
-+	fexit_ret = ret;
-+	return 0;
-+}
-+
-+__u32 fmod_ret_read_sz = 0;
-+
-+SEC("fmod_ret/bpf_testmod_test_read")
-+int BPF_PROG(handle_fmod_ret,
-+	     struct file *file, struct kobject *kobj,
-+	     struct bin_attribute *bin_attr, char *buf, loff_t off, size_t len)
-+{
-+	fmod_ret_read_sz = len;
-+	return 0; /* don't override the exit code */
-+}
-+
-+char _license[] SEC("license") = "GPL";
--- 
-2.24.1
+So I can avoid my local hack to macb_main.c by doing a doing a local
+hack to macb_main.c?
+
+--
+Grant
+
+
+
+
 
