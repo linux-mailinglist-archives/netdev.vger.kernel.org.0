@@ -2,117 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EC0E2CD830
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 14:51:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA6492CD835
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 14:55:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727930AbgLCNu4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 08:50:56 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:55388 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726366AbgLCNu4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 08:50:56 -0500
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0B3Dnqdr070125;
-        Thu, 3 Dec 2020 07:49:52 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1607003393;
-        bh=heQpcHf6Hj5/Jowm9lAGLrqIo4IcPttU+vpaQxrvHsY=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=f7Cg6d1tPUtilSaAddetBpqCrhecrHzcoCdFosdrxW1FqVaM0FiOg0g04zUS8lL9t
-         WB7Ev3dMp6Vzl/DqhX+M0lT0eAZaKXAtgJeu+eVJmVZuY4A6SsI10fVBmIjeI3uehg
-         8Rxa1MD5RiM0Svg4p02XK0TjYjsDZpx+Nc7cO28k=
-Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0B3Dnqao114126
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 3 Dec 2020 07:49:52 -0600
-Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 3 Dec
- 2020 07:49:52 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE108.ent.ti.com
- (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 3 Dec 2020 07:49:52 -0600
-Received: from [10.250.233.179] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0B3DnnJI076106;
-        Thu, 3 Dec 2020 07:49:49 -0600
-Subject: Re: [PATCH 3/4] net: ti: am65-cpsw-nuss: Add switchdev support
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Jonathan Corbet <corbet@lwn.net>, Jiri Pirko <jiri@nvidia.com>,
-        <netdev@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>
-References: <20201130082046.16292-1-vigneshr@ti.com>
- <20201130082046.16292-4-vigneshr@ti.com> <20201130172034.GF2073444@lunn.ch>
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-Message-ID: <fc6ddc40-5277-09e5-0a7a-feb1ea4087ef@ti.com>
-Date:   Thu, 3 Dec 2020 19:19:48 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1730384AbgLCNve (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 08:51:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34174 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726366AbgLCNvd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 08:51:33 -0500
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C6CDC061A4F
+        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 05:50:53 -0800 (PST)
+Received: by mail-ed1-x543.google.com with SMTP id c7so2147716edv.6
+        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 05:50:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=essensium.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=plP/bTLAduxXDkk4ZNIIU74yKiIZjrQEty9nrRdjKWU=;
+        b=Cn80YsmTfKXqKV5nw/bJ93ttZUqwPSzgJ+mA18itw5EqvqyggNTFuTiyYJ/PUzW47Q
+         Zg13S05NIisOUOgglu0Dx24cHNK9MOdo0zo8S1iloUICcklCNcZhTfO6pfsNI49B0Uxk
+         DQoE//xMS0d6Ro4TnRTBkXer+FMByanXWJqeuUavsoFunzz5Ls8/4gr2+aYA8ikxsLW6
+         EDLiH/Mu4mqUGRJKfKgXOPxgc9GyJXkhbpkh77HejswuDgAQ8UoU1zO892qMIaE5MVdW
+         TYBkw6H2E7fkJFjRaZ0xZZCq6Nz8K2CquaaGAPmW2p2eKTHMWst5FlI1CSXFFwa+sw8F
+         NROQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=plP/bTLAduxXDkk4ZNIIU74yKiIZjrQEty9nrRdjKWU=;
+        b=cXfNYW2ViK36OatY1Au36XUh3Rh035ziBFMMHMs2iEUoSowEegWRDW0cgwouU0gkTl
+         5lilBfgn0nhegHd3PqOx9K3krzvUnnke2qu/fKofEl5y/3Cc4t5E/nPhelaYFkxEdTR7
+         7wBvA711nkXbA6cTgQWTTjV7/pLdSGMHaH7GWOR9xhxpgdswMEa9RuZ5tW1VNI5CF8lV
+         bl1ZS+Xd7C5WxrGgA5ppkezpiumnfJUgruLNbwcscUAW1iRBy0OzcM7xyh5yzWdQGnSb
+         4FndEOHLiZg8eLA0KETxnoiQCN+zoI4yhxIsiEyAkQzaAWgOjkgJP1EYyyYQI97JIpPT
+         imng==
+X-Gm-Message-State: AOAM5318zVNnzXc6ILgJ4du2VAfSGzjl6XxRJd0Ob9E0ajsis4jpVC8H
+        BM6nK9H8OBsOcVFr/eyhXIEQYw==
+X-Google-Smtp-Source: ABdhPJxBSSFRQjdp7yxP1yhW8LJSG88giWm0idIOkTcotdfCQzXmqsbzD6VGV3YP0fmv0c+sK1qsNw==
+X-Received: by 2002:a50:ab47:: with SMTP id t7mr2943580edc.289.1607003452090;
+        Thu, 03 Dec 2020 05:50:52 -0800 (PST)
+Received: from belels006.local.ess-mail.com (ip-188-118-3-185.reverse.destiny.be. [188.118.3.185])
+        by smtp.gmail.com with ESMTPSA id t19sm903192eje.86.2020.12.03.05.50.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Dec 2020 05:50:51 -0800 (PST)
+From:   Patrick Havelange <patrick.havelange@essensium.com>
+To:     Madalin Bucur <madalin.bucur@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Patrick Havelange <patrick.havelange@essensium.com>
+Subject: [PATCH net 0/4] freescale/fman: remove usage of __devm_request_region
+Date:   Thu,  3 Dec 2020 14:50:35 +0100
+Message-Id: <20201203135039.31474-1-patrick.havelange@essensium.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <20201130172034.GF2073444@lunn.ch>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello, 
+
+This patch series is solving a bug inside 
+ethernet/freescale/fman/fman_port.c caused by an incorrect usage of
+__devm_request_region.
+The bug came from the fact that the resource given as parameter to the
+function __devm_request_region is on the stack, leading to an invalid
+pointer being stored inside the devres structure, and the new resource
+pointer being lost.
+In order to solve this, it is first necessary to make the regular call
+devm_request_mem_region work.
+This call cannot work as is, because the main fman driver has already
+reserved the memory region used by the fman_port driver.
+
+Thus the first action is to split the memory region reservation done in
+the main fman driver in two, so that the regions used by fman_port will
+not be reserved. The main memory regions have also been reduced to not
+request the memory regions used by fman_mac.
+
+Once this first step is done, regular usage of devm_request_mem_region
+can be done.
+This also leads to a bit of code removal done in the last patch.
+
+1. fman: split the memory region of the main fman driver, so the memory that
+will be used by fman_port & fman_mac will not be already reserved.
+
+2. fman_port: replace call of __devm_request_region to devm_request_mem_region
+
+3. fman_mac: replace call of __devm_request_region to devm_request_mem_region
+
+4. the code is now simplified a bit, there is no need to store the main region
+anymore
+
+The whole point of this series is to be able to apply the patch N°2.
+Since N°3 is a similar change, let's do it at the same time.
+
+I think they all should be part of the same series.
+
+Patrick Havelange (4):
+  net: freescale/fman: Split the main resource region reservation
+  net: freescale/fman-port: remove direct use of __devm_request_region
+  net: freescale/fman-mac: remove direct use of __devm_request_region
+  net: freescale/fman: remove fman_get_mem_region
+
+ drivers/net/ethernet/freescale/fman/fman.c    | 120 +++++++++---------
+ drivers/net/ethernet/freescale/fman/fman.h    |  11 +-
+ .../net/ethernet/freescale/fman/fman_port.c   |   6 +-
+ drivers/net/ethernet/freescale/fman/mac.c     |   8 +-
+ 4 files changed, 75 insertions(+), 70 deletions(-)
 
 
-On 11/30/20 10:50 PM, Andrew Lunn wrote:
->> +static int am65_cpsw_port_stp_state_set(struct am65_cpsw_port *port,
->> +					struct switchdev_trans *trans, u8 state)
->> +{
->> +	struct am65_cpsw_common *cpsw = port->common;
->> +	u8 cpsw_state;
->> +	int ret = 0;
->> +
->> +	if (switchdev_trans_ph_prepare(trans))
->> +		return 0;
->> +
->> +	switch (state) {
->> +	case BR_STATE_FORWARDING:
->> +		cpsw_state = ALE_PORT_STATE_FORWARD;
->> +		break;
->> +	case BR_STATE_LEARNING:
->> +		cpsw_state = ALE_PORT_STATE_LEARN;
->> +		break;
->> +	case BR_STATE_DISABLED:
->> +		cpsw_state = ALE_PORT_STATE_DISABLE;
->> +		break;
->> +	case BR_STATE_LISTENING:
->> +	case BR_STATE_BLOCKING:
->> +		cpsw_state = ALE_PORT_STATE_BLOCK;
->> +		break;
->> +	default:
->> +		return -EOPNOTSUPP;
->> +	}
-> 
-> Strictly speaking, the:
-> 
->> +	if (switchdev_trans_ph_prepare(trans))
->> +		return 0;
-> 
-> should be here. In the prepare phase, you are suppose to validate you
-> can do the requested action, and return an error is not. In second
-> phase, actually carrying out the action, you then never return an
-> error.
-> 
-> But in this case, you are handling all the bridge states, so it should
-> not matter.
-> 
+base-commit: 832e09798c261cf58de3a68cfcc6556408c16a5a
+-- 
+2.17.1
 
-Yeah, since driver is interested in all STP states, I preferred to
-terminate the function early for prepare phase. Adding switch statement
-with just "return 0" for all states during prepare phase looked
-redundant to me.
-
-Thanks for the review!
-
-Regards
-Vignesh
