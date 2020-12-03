@@ -2,88 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B9072CCB0D
+	by mail.lfdr.de (Postfix) with ESMTP id D32562CCB0E
 	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 01:41:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726498AbgLCAie (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 19:38:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55652 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725885AbgLCAie (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Dec 2020 19:38:34 -0500
-Date:   Wed, 2 Dec 2020 16:37:51 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1606955873;
-        bh=+qdNWiIz1NQg7EMckAaTaz9++Gi00k3qkM5yvanGuHw=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Jfgs181wMKgjLy+0WwjaL8hp16ko2J/nCCEZJgAmZfAqZO6B79BVM1U/ZoA00DF8c
-         9dbSY+BZAHnr8k2LpwEQAuvfcFctvJf1TWeHzhUGlIcsswXukY/f4UMIIHsRNucD7J
-         keDp0CZSksq0VPSY4bDq7G+ZZkji5Hc4SXUJvPlUy4tBihGZoi9gllj/5Pt5RUoQr7
-         UCKcbXrAavvXJwbmNy0GJo12Hdp5uE1OW2OJ61j7+pXHWYk/BHNxInR5BJImQgeTIX
-         hSxw4FEjSaqcLkazVNmD++rxmPXNP/0rNbxArOa3SpAhED+ti8BwefVQFTRNNEgQcb
-         n6N94QHUv6aLA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <toshiaki.makita1@gmail.com>, <rkovhaev@gmail.com>,
-        <stephen@networkplumber.org>, <Jason@zx2c4.com>
-Subject: Re: [PATCH net v3] net: fix memory leak in register_netdevice() on
- error path
-Message-ID: <20201202163751.17b6fba2@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201201135457.3549435-1-yangyingliang@huawei.com>
-References: <20201201135457.3549435-1-yangyingliang@huawei.com>
+        id S1726851AbgLCAkE convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 2 Dec 2020 19:40:04 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:60192 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726589AbgLCAkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 19:40:04 -0500
+Received: from 1.general.jvosburgh.uk.vpn ([10.172.196.206] helo=famine.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1kkceR-0006TK-L3; Thu, 03 Dec 2020 00:39:16 +0000
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 2F9365FEE8; Wed,  2 Dec 2020 16:39:14 -0800 (PST)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 27C7B9FAB0;
+        Wed,  2 Dec 2020 16:39:14 -0800 (PST)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 1/4] net: bonding: Notify ports about their initial state
+In-reply-to: <87h7p37u4t.fsf@waldekranz.com>
+References: <20201202091356.24075-1-tobias@waldekranz.com> <20201202091356.24075-2-tobias@waldekranz.com> <17902.1606936179@famine> <87h7p37u4t.fsf@waldekranz.com>
+Comments: In-reply-to Tobias Waldekranz <tobias@waldekranz.com>
+   message dated "Wed, 02 Dec 2020 22:52:50 +0100."
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <458.1606955954.1@famine>
+Content-Transfer-Encoding: 8BIT
+Date:   Wed, 02 Dec 2020 16:39:14 -0800
+Message-ID: <459.1606955954@famine>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 1 Dec 2020 21:54:57 +0800 Yang Yingliang wrote:
-> I got a memleak report when doing fault-inject test:
-> 
-> unreferenced object 0xffff88810ace9000 (size 1024):
->   comm "ip", pid 4622, jiffies 4295457037 (age 43.378s)
->   hex dump (first 32 bytes):
->     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->   backtrace:
->     [<00000000008abe41>] __kmalloc+0x10f/0x210
->     [<000000005d3533a6>] veth_dev_init+0x140/0x310
->     [<0000000088353c64>] register_netdevice+0x496/0x7a0
->     [<000000001324d322>] veth_newlink+0x40b/0x960
->     [<00000000d0799866>] __rtnl_newlink+0xd8c/0x1360
->     [<00000000d616040a>] rtnl_newlink+0x6b/0xa0
->     [<00000000e0a1600d>] rtnetlink_rcv_msg+0x3cc/0x9e0
->     [<000000009eeff98b>] netlink_rcv_skb+0x130/0x3a0
->     [<00000000500f8be1>] netlink_unicast+0x4da/0x700
->     [<00000000666c03b3>] netlink_sendmsg+0x7fe/0xcb0
->     [<0000000073b28103>] sock_sendmsg+0x143/0x180
->     [<00000000ad746a30>] ____sys_sendmsg+0x677/0x810
->     [<0000000087dd98e5>] ___sys_sendmsg+0x105/0x180
->     [<00000000028dd365>] __sys_sendmsg+0xf0/0x1c0
->     [<00000000a6bfbae6>] do_syscall_64+0x33/0x40
->     [<00000000e00521b4>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> It seems ifb and loopback may also hit the leak, so I try to fix this in
-> register_netdevice().
-> 
-> In common case, priv_destructor() will be called in netdev_run_todo()
-> after calling ndo_uninit() in rollback_registered(), on other error
-> path in register_netdevice(), ndo_uninit() and priv_destructor() are
-> called before register_netdevice() return, but in this case,
-> priv_destructor() will never be called, then it causes memory leak,
-> so we should call priv_destructor() here.
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
-> v2 -> v3: In wireguard driver, priv_destructor() will call
-> free_netdev(), but it is assigned after register_netdevice(),
-> so it will not lead a double free, drop patch#1. Also I've
-> test wireguard device, it's no memory leak on this error path.
+Tobias Waldekranz <tobias@waldekranz.com> wrote:
 
-Sorry I don't want to apply yet another wobbly workaround to this path.
-I started hacking on a rework of the registration / free which will
-solve this and all the other corner cases which are broken around here.
-Stay tuned.
+>On Wed, Dec 02, 2020 at 11:09, Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
+>> Tobias Waldekranz <tobias@waldekranz.com> wrote:
+>>
+>>>When creating a static bond (e.g. balance-xor), all ports will always
+>>>be enabled. This is set, and the corresponding notification is sent
+>>>out, before the port is linked to the bond upper.
+>>>
+>>>In the offloaded case, this ordering is hard to deal with.
+>>>
+>>>The lower will first see a notification that it can not associate with
+>>>any bond. Then the bond is joined. After that point no more
+>>>notifications are sent, so all ports remain disabled.
+>>>
+>>>This change simply sends an extra notification once the port has been
+>>>linked to the upper to synchronize the initial state.
+>>
+>> 	I'm not objecting to this per se, but looking at team and
+>> net_failover (failover_slave_register), those drivers do not send the
+>> same first notification that bonding does (the "can not associate" one),
+>> but only send a notification after netdev_master_upper_dev_link is
+>> complete.
+>>
+>> 	Does it therefore make more sense to move the existing
+>> notification within bonding to take place after the upper_dev_link
+>> (where you're adding this new call to bond_lower_state_changed)?  If the
+>> existing notification is effectively useless, this would make the
+>> sequence of notifications consistent across drivers.
+>
+>From my point of view that makes more sense. I just assumed that the
+>current implementation was done this way for a reason. Therefore I opted
+>for a simple extension instead.
+
+	I suspect the current implementation's ordering is more a side
+effect of how the function was structured initially, and the
+notifications were added later without giving thought to the ordering of
+those events.
+
+>I could look at hoisting up the linking op before the first
+>notification. My main concern is that this is a new subsystem to me, so
+>I am not sure how to determine the adequate test coverage for a change
+>like this.
+>
+>Another option would be to drop this change from this series and do it
+>separately. It would be nice to have both team and bond working though.
+>
+>Not sure why I am the first to run into this. Presumably the mlxsw LAG
+>offloading would be affected in the same way. Maybe their main use-case
+>is LACP.
+
+	I'm not sure about mlxsw specifically, but in the configurations
+I see, LACP is by far the most commonly used mode, with active-backup a
+distant second.  I can't recall the last time I saw a production
+environment using balance-xor.
+
+	I think that in the perfect world there should be exactly one
+such notification, and occurring in the proper sequence.  A quick look
+at the kernel consumers of the NETDEV_CHANGELOWERSTATE event (mlx5,
+mlxsw, and nfp, looks like) suggests that those shouldn't have an issue.
+
+	In user space, however, there are daemons that watch the events,
+and may rely on the current ordering.  Some poking around reveals odd
+bugs in user space when events are rearranged, so I think the prudent
+thing is to not mess with what's there now, and just add the one event
+here (i.e., apply your patch as-is).
+
+	So, for this bonding change:
+
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+
+	-J
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
