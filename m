@@ -2,23 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE98B2CD7DB
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 14:44:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FA312CD6E8
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 14:34:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436515AbgLCNaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 08:30:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47782 "EHLO mail.kernel.org"
+        id S2436665AbgLCNak (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 08:30:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48816 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2436486AbgLCNaO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Dec 2020 08:30:14 -0500
+        id S2436623AbgLCNaj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 08:30:39 -0500
 From:   Sasha Levin <sashal@kernel.org>
 Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jens Axboe <axboe@kernel.dk>, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.9 17/39] tun: honor IOCB_NOWAIT flag
-Date:   Thu,  3 Dec 2020 08:28:11 -0500
-Message-Id: <20201203132834.930999-17-sashal@kernel.org>
+Cc:     Lijun Pan <ljp@linux.ibm.com>,
+        Brian King <brking@linux.vnet.ibm.com>,
+        Dany Madden <drt@linux.ibm.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.9 18/39] ibmvnic: skip tx timeout reset while in resetting
+Date:   Thu,  3 Dec 2020 08:28:12 -0500
+Message-Id: <20201203132834.930999-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201203132834.930999-1-sashal@kernel.org>
 References: <20201203132834.930999-1-sashal@kernel.org>
@@ -30,62 +34,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Lijun Pan <ljp@linux.ibm.com>
 
-[ Upstream commit 5aac0390a63b8718237a61dd0d24a29201d1c94a ]
+[ Upstream commit 855a631a4c11458a9cef1ab79c1530436aa95fae ]
 
-tun only checks the file O_NONBLOCK flag, but it should also be checking
-the iocb IOCB_NOWAIT flag. Any fops using ->read/write_iter() should check
-both, otherwise it breaks users that correctly expect O_NONBLOCK semantics
-if IOCB_NOWAIT is set.
+Sometimes it takes longer than 5 seconds (watchdog timeout) to complete
+failover, migration, and other resets. In stead of scheduling another
+timeout reset, we wait for the current one to complete.
 
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Link: https://lore.kernel.org/r/e9451860-96cc-c7c7-47b8-fe42cadd5f4c@kernel.dk
+Suggested-by: Brian King <brking@linux.vnet.ibm.com>
+Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
+Reviewed-by: Dany Madden <drt@linux.ibm.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/tun.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 7959b5c2d11f1..b5f47d37ea1be 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -1979,12 +1979,15 @@ static ssize_t tun_chr_write_iter(struct kiocb *iocb, struct iov_iter *from)
- 	struct tun_file *tfile = file->private_data;
- 	struct tun_struct *tun = tun_get(tfile);
- 	ssize_t result;
-+	int noblock = 0;
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 81ec233926acb..37012aa594f41 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -2368,6 +2368,12 @@ static void ibmvnic_tx_timeout(struct net_device *dev, unsigned int txqueue)
+ {
+ 	struct ibmvnic_adapter *adapter = netdev_priv(dev);
  
- 	if (!tun)
- 		return -EBADFD;
- 
--	result = tun_get_user(tun, tfile, NULL, from,
--			      file->f_flags & O_NONBLOCK, false);
-+	if ((file->f_flags & O_NONBLOCK) || (iocb->ki_flags & IOCB_NOWAIT))
-+		noblock = 1;
++	if (test_bit(0, &adapter->resetting)) {
++		netdev_err(adapter->netdev,
++			   "Adapter is resetting, skip timeout reset\n");
++		return;
++	}
 +
-+	result = tun_get_user(tun, tfile, NULL, from, noblock, false);
+ 	ibmvnic_reset(adapter, VNIC_RESET_TIMEOUT);
+ }
  
- 	tun_put(tun);
- 	return result;
-@@ -2203,10 +2206,15 @@ static ssize_t tun_chr_read_iter(struct kiocb *iocb, struct iov_iter *to)
- 	struct tun_file *tfile = file->private_data;
- 	struct tun_struct *tun = tun_get(tfile);
- 	ssize_t len = iov_iter_count(to), ret;
-+	int noblock = 0;
- 
- 	if (!tun)
- 		return -EBADFD;
--	ret = tun_do_read(tun, tfile, to, file->f_flags & O_NONBLOCK, NULL);
-+
-+	if ((file->f_flags & O_NONBLOCK) || (iocb->ki_flags & IOCB_NOWAIT))
-+		noblock = 1;
-+
-+	ret = tun_do_read(tun, tfile, to, noblock, NULL);
- 	ret = min_t(ssize_t, ret, len);
- 	if (ret > 0)
- 		iocb->ki_pos = ret;
 -- 
 2.27.0
 
