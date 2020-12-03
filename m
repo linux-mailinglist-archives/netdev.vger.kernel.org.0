@@ -2,104 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC5912CE128
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 22:52:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9E002CE12D
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 22:55:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729470AbgLCVvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 16:51:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52402 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726917AbgLCVvu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 16:51:50 -0500
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CDCCC061A51
-        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 13:51:10 -0800 (PST)
-Received: by mail-il1-x143.google.com with SMTP id k8so3372731ilr.4
-        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 13:51:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wd769s62G4gN8UdQaMhWbJtu3s9snxdDxsxVfUgyu6s=;
-        b=Tl57wZyFQ35JV9ULnHb7ud0z1dC4PwN4Ffs0qNqi20/WkvHpIW4i+xlGeJiS9DsmQ1
-         QiTyp8cNV3WcqLOKMv5Ph1evKGbalcBFzSgGHb2UjvgaJUlnDQAmzC9jyNBzmLSJ3reu
-         k8oF4pDht/TDZ/A232LflxUiSfCp3agyJXMTmb/AYGn1V0fjYOpFTatU703JLYx8yNfe
-         RHI6ACsyy30qpVvFN0wusJKkMjPXdlDMWHcnpSfg6jYOP0baMo0zHZGb2QjInUf8K5rt
-         FJRwEsL0HP39F6Ei1vci+NxLs7D8huhORkiCb3zE6pYG5Exxe8TYA7QhG1HrausQSFBh
-         ejbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wd769s62G4gN8UdQaMhWbJtu3s9snxdDxsxVfUgyu6s=;
-        b=q1FJdJsjAHUVd9hLOYBA27Co8xFEZaUlTgJ0VaczK3C9CiUl7MTm5oQ5sBktiBcQgQ
-         +OOQfivUCUooSb/ytZPOa6c2RbLajMW1bucaEpZYIQuYnKO3TJzZk3r4Z1SqxREpZOzk
-         AAr8x49R9EFeMfE16woSMfok8LPVw1voXoVxN+0wiBO/HZ+yY0IEmHFLatnX6ftO9+nw
-         hFn7E8n5AmIHW91iepFosopHV7FxLhb+UOsFt8IXkPnc+wiWHDUlxyuLQ7zebjrPN1yD
-         yKM1r+UonLprj6aTcx/rmf+dj2UaYOsG3RgI5igNOeX+Lvoydl5opsS0DkQu/5RzQgbg
-         bfew==
-X-Gm-Message-State: AOAM532U0+jxtPD6qPbJyqt5Pf3T/YIga4lUuXvQk+DwGwISNUHYEWUg
-        /LPyK1/jN6B1u++Bez9RCdUhWQ==
-X-Google-Smtp-Source: ABdhPJz35J/k8DIk5BA4cjlVStmKukUYkv8EkfEWEu90gmew247VJrA0EMb6fiJE7vR7akMu5Jbmdg==
-X-Received: by 2002:a92:6410:: with SMTP id y16mr1615807ilb.126.1607032269579;
-        Thu, 03 Dec 2020 13:51:09 -0800 (PST)
-Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id r10sm300035ilo.34.2020.12.03.13.51.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Dec 2020 13:51:09 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     swboyd@chromium.org, sujitka@chromium.org, evgreen@chromium.org,
-        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
-        subashab@codeaurora.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net 1/1] net: ipa: pass the correct size when freeing DMA memory
-Date:   Thu,  3 Dec 2020 15:51:06 -0600
-Message-Id: <20201203215106.17450-1-elder@linaro.org>
-X-Mailer: git-send-email 2.20.1
+        id S1729767AbgLCVxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 16:53:49 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:37362 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727700AbgLCVxt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 16:53:49 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kkwWz-00A71N-MD; Thu, 03 Dec 2020 22:52:53 +0100
+Date:   Thu, 3 Dec 2020 22:52:53 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Steen Hegelund <steen.hegelund@microchip.com>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Subject: Re: [PATCH v8 3/4] phy: Add Sparx5 ethernet serdes PHY driver
+Message-ID: <20201203215253.GL2333853@lunn.ch>
+References: <20201203103015.3735373-1-steen.hegelund@microchip.com>
+ <20201203103015.3735373-4-steen.hegelund@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201203103015.3735373-4-steen.hegelund@microchip.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the coherent memory is freed in gsi_trans_pool_exit_dma(), we
-are mistakenly passing the size of a single element in the pool
-rather than the actual allocated size.  Fix this bug.
+> +/* map from SD25G28 interface width to configuration value */
+> +static u8 sd25g28_get_iw_setting(const u8 interface_width)
+> +{
+> +	switch (interface_width) {
+> +	case 10: return 0;
+> +	case 16: return 1;
+> +	case 32: return 3;
+> +	case 40: return 4;
+> +	case 64: return 5;
+> +	default:
+> +		pr_err("%s: Illegal value %d for interface width\n",
+> +		       __func__, interface_width);
 
-Fixes: 9dd441e4ed575 ("soc: qcom: ipa: GSI transactions")
-Reported-by: Stephen Boyd <swboyd@chromium.org>
-Tested-by: Sujit Kautkar <sujitka@chromium.org>
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/gsi_trans.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+Please make use of dev_err(phy->dev, so we know which PHY has
+configuration problems.
 
-diff --git a/drivers/net/ipa/gsi_trans.c b/drivers/net/ipa/gsi_trans.c
-index e8599bb948c08..6c3ed5b17b80c 100644
---- a/drivers/net/ipa/gsi_trans.c
-+++ b/drivers/net/ipa/gsi_trans.c
-@@ -156,6 +156,9 @@ int gsi_trans_pool_init_dma(struct device *dev, struct gsi_trans_pool *pool,
- 	/* The allocator will give us a power-of-2 number of pages.  But we
- 	 * can't guarantee that, so request it.  That way we won't waste any
- 	 * memory that would be available beyond the required space.
-+	 *
-+	 * Note that gsi_trans_pool_exit_dma() assumes the total allocated
-+	 * size is exactly (count * size).
- 	 */
- 	total_size = get_order(total_size) << PAGE_SHIFT;
- 
-@@ -175,7 +178,9 @@ int gsi_trans_pool_init_dma(struct device *dev, struct gsi_trans_pool *pool,
- 
- void gsi_trans_pool_exit_dma(struct device *dev, struct gsi_trans_pool *pool)
- {
--	dma_free_coherent(dev, pool->size, pool->base, pool->addr);
-+	size_t total_size = pool->count * pool->size;
-+
-+	dma_free_coherent(dev, total_size, pool->base, pool->addr);
- 	memset(pool, 0, sizeof(*pool));
- }
- 
--- 
-2.20.1
+> +static int sparx5_serdes_validate(struct phy *phy, enum phy_mode mode,
+> +					int submode,
+> +					union phy_configure_opts *opts)
+> +{
+> +	struct sparx5_serdes_macro *macro = phy_get_drvdata(phy);
+> +	struct sparx5_serdes_private *priv = macro->priv;
+> +	u32 value, analog_sd;
+> +
+> +	if (mode != PHY_MODE_ETHERNET)
+> +		return -EINVAL;
+> +
+> +	switch (submode) {
+> +	case PHY_INTERFACE_MODE_1000BASEX:
+> +	case PHY_INTERFACE_MODE_SGMII:
+> +	case PHY_INTERFACE_MODE_QSGMII:
+> +	case PHY_INTERFACE_MODE_10GBASER:
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +	if (macro->serdestype == SPX5_SDT_6G) {
+> +		value = sdx5_rd(priv, SD6G_LANE_LANE_DF(macro->stpidx));
+> +		analog_sd = SD6G_LANE_LANE_DF_PMA2PCS_RXEI_FILTERED_GET(value);
+> +	} else if (macro->serdestype == SPX5_SDT_10G) {
+> +		value = sdx5_rd(priv, SD10G_LANE_LANE_DF(macro->stpidx));
+> +		analog_sd = SD10G_LANE_LANE_DF_PMA2PCS_RXEI_FILTERED_GET(value);
+> +	} else {
+> +		value = sdx5_rd(priv, SD25G_LANE_LANE_DE(macro->stpidx));
+> +		analog_sd = SD25G_LANE_LANE_DE_LN_PMA_RXEI_GET(value);
+> +	}
+> +	/* Link up is when analog_sd == 0 */
+> +	return analog_sd;
+> +}
 
+What i have not yet seen is how this code plugs together with
+phylink_pcs_ops?
+
+Can this hardware also be used for SATA, USB? As far as i understand,
+the Marvell Comphy is multi-purpose, it is used for networking, USB,
+and SATA, etc. Making it a generic PHY then makes sense, because
+different subsystems need to use it.
+
+But it looks like this is for networking only? So i'm wondering if it
+belongs in driver/net/pcs and it should be accessed using
+phylink_pcs_ops?
+
+	Andrew
