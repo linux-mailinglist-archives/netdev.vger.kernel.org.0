@@ -2,69 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EF5E2CD8CC
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 15:18:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1DAA2CD8B1
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 15:13:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436515AbgLCORK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 09:17:10 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:36452 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726651AbgLCORC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Dec 2020 09:17:02 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kkpP8-00A2wB-MX; Thu, 03 Dec 2020 15:16:18 +0100
-Date:   Thu, 3 Dec 2020 15:16:18 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, catherine.redmond@analog.com,
-        brian.murray@analog.com, danail.baylov@analog.com,
-        maurice.obrien@analog.com
-Subject: Re: [PATCH] net: phy: adin: add signal mean square error registers
- to phy-stats
-Message-ID: <20201203141618.GD2333853@lunn.ch>
-References: <20201203080719.30040-1-alexandru.ardelean@analog.com>
+        id S1730847AbgLCONL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 09:13:11 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:8998 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726318AbgLCONL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 09:13:11 -0500
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CmySv4CLQzhm12;
+        Thu,  3 Dec 2020 22:11:59 +0800 (CST)
+Received: from huawei.com (10.175.113.133) by DGGEMS401-HUB.china.huawei.com
+ (10.3.19.201) with Microsoft SMTP Server id 14.3.487.0; Thu, 3 Dec 2020
+ 22:12:25 +0800
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <rmk+kernel@armlinux.org.uk>, <mcroce@microsoft.com>,
+        <sven.auhagen@voleatech.de>, <andrew@lunn.ch>, <atenart@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net] net: mvpp2: Fix error return code in mvpp2_open()
+Date:   Thu, 3 Dec 2020 22:18:06 +0800
+Message-ID: <20201203141806.37966-1-wanghai38@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201203080719.30040-1-alexandru.ardelean@analog.com>
+Content-Type: text/plain
+X-Originating-IP: [10.175.113.133]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 03, 2020 at 10:07:19AM +0200, Alexandru Ardelean wrote:
-> When the link is up on the ADIN1300/ADIN1200, the signal quality on each
-> pair is indicated in the mean square error register for each pair (MSE_A,
-> MSE_B, MSE_C, and MSE_D registers, Address 0x8402 to Address 0x8405,
-> Bits[7:0]).
-> 
-> These values can be useful for some industrial applications.
-> 
-> This change implements support for these registers using the PHY
-> statistics mechanism.
+Fix to return negative error code -ENOENT from invalid configuration
+error handling case instead of 0, as done elsewhere in this function.
 
-There was a discussion about values like these before. If i remember
-correctly, it was for a BroadReach PHY. I thought we decided to add
-them to the link state information?
+Fixes: 4bb043262878 ("net: mvpp2: phylink support")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+---
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Ah, found it.
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index f6616c8933ca..cea886c5bcb5 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -4426,6 +4426,7 @@ static int mvpp2_open(struct net_device *dev)
+ 	if (!valid) {
+ 		netdev_err(port->dev,
+ 			   "invalid configuration: no dt or link IRQ");
++		err = -ENOENT;
+ 		goto err_free_irq;
+ 	}
+ 
+-- 
+2.17.1
 
-commit 68ff5e14759e7ac1aac7bc75ac5b935e390fa2b3
-Author: Oleksij Rempel <linux@rempel-privat.de>
-Date:   Wed May 20 08:29:15 2020 +0200
-
-    net: phy: tja11xx: add SQI support
-
-and
-
-ommit 8066021915924f58ed338bf38208215f5a7355f6
-Author: Oleksij Rempel <linux@rempel-privat.de>
-Date:   Wed May 20 08:29:14 2020 +0200
-
-    ethtool: provide UAPI for PHY Signal Quality Index (SQI)
-
-Can you convert your MSE into SQI?
-
-    Andrew
