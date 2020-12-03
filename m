@@ -2,71 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1527A2CCBA0
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 02:28:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F4E72CCBAE
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 02:31:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728548AbgLCB2L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 20:28:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37286 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726681AbgLCB2L (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Dec 2020 20:28:11 -0500
-Date:   Wed, 2 Dec 2020 17:27:28 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1606958850;
-        bh=NWkqSZZ3ZS7bYCRKGHHjz3mlOO7zls+THqz0Y/Q51Q0=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MNtOcI6WV8EHJGBU7QUuJXEWVoVTyE2klWVjhX2Q5oABIV+cYxP3hsL8l2UuThLxR
-         iaIY6ZMhn2cRjZkUPUPPa6CuBgONYKwyBro5FORhXJiTMoe2wSzocfRlTXBDVYdGB0
-         erWjz5cJSNmNHvbSaX6XJP/hO15aK8FBK1kXajq4RRMwOrRzOYsHq7yE/NWRYLkpHk
-         3ICSzx3ZzUSkTRhpC8HOmA9o1csI23PZegqZxwRl2GAJRmU9XAqZflCibCudH2mZQl
-         sIvJuuBMSMKU2fC/ZQuQYbOJ6xvxHdqNpg3AomjhWilmPFIOpx3P6KkhkKK+HCZscf
-         o7jkVk5OsQt0A==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Martin Schiller <ms@dev.tdt.de>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org, Andrew Hendry <andrew.hendry@gmail.com>,
-        "=?UTF-8?B?a2l5aW4=?=( =?UTF-8?B?5bC55Lqu?=) " <kiyin@tencent.com>,
-        security@kernel.org, linux-distros@vs.openwall.org,
-        "=?UTF-8?B?aHVudGNoZW4=?=(=?UTF-8?B?6ZmI?= =?UTF-8?B?6Ziz?=) " 
-        <huntchen@tencent.com>,
-        "=?UTF-8?B?ZGFubnl3?= =?UTF-8?B?YW5n?=(=?UTF-8?B?546L5a6H?=) " 
-        <dannywang@tencent.com>, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net v2] net/x25: prevent a couple of overflows
-Message-ID: <20201202172728.43f387a3@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <41de2a35016a1eb9a188a71d11709f16@dev.tdt.de>
-References: <X8ZeAKm8FnFpN//B@mwanda>
-        <41de2a35016a1eb9a188a71d11709f16@dev.tdt.de>
+        id S1729321AbgLCBaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 20:30:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60836 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726294AbgLCBaq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 20:30:46 -0500
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFD00C061A4E;
+        Wed,  2 Dec 2020 17:30:05 -0800 (PST)
+Received: by mail-pg1-x542.google.com with SMTP id w16so378821pga.9;
+        Wed, 02 Dec 2020 17:30:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HPKk+tPFsmMdDN5iQ46kW2RL6ZSfQqNJbnPD/mPsMrc=;
+        b=HfU+zhOx69d7iK5vVRPOojleW7qvDg4p/gB8P5r9YntAAdV6R7P7mLwyn0HrqvTDDs
+         Xh8+U+PkpgQFEaS9oEEKSAeirEokFS8xUIoyL2TitFsQj2N8TMFjYT2tGzMlm8My6YUB
+         tRWFI9ZQOBjkpZrm0jqz6woxxUBL77m1s7IDVoPyU1E8UXBwDBFD648AIXE52/KRojW8
+         ZUVV31zQZze3hXGGQFbv0gD9456C2Uo4wQmujBOTd0VvhdqK7lXy5AW4dlPxKmEbowR8
+         9+6Z5scS8SggCnJLiu8QFMdNkHYnJFr1PiHxKS1wCt8n/iA+YGjh1h+By0PSQazoS+m6
+         +wMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HPKk+tPFsmMdDN5iQ46kW2RL6ZSfQqNJbnPD/mPsMrc=;
+        b=XaDAFw/+4PSyzz/Kw1csmMDBQeYY7xXI49XlA2JoU3LTCRj0N5EpQUUEH2TgsuLzeV
+         T4bUHT8ILAwDYawe4NuxgNwcE5TX92WGGXRy2UYbQXTBnc3IfVoT7pbCeyx0b6wkNo2o
+         BNwt+HvUJGDhay8ZXqRGoxA7tPJPgJhCiNLgxlNXGINgjyhv6LFLrewcjNzyYqMYRVxC
+         G887xLEF5fD4gogh0YlrYaAID5M3IpSP54LEOyaNNSxxJ+qrSJIt6PJSgK1DMUwq9eB/
+         7CkL0efKRtqIKU/WxRqw70U8zNUFpe1fdklw5Bm2ZkXJfqQmqO/3oecsfy7FhWd3pzs+
+         KpYw==
+X-Gm-Message-State: AOAM530gXWl1NNuWZvr7kXyIdpG0exnxdluxXVszz1VB+L0Jhz/593Zu
+        RpjpQfERwsSQGItmT+IdteCu4/kWSlCRBb/RHUE=
+X-Google-Smtp-Source: ABdhPJwhEye5IiIlQv+57VN2i/IUZSiNO4b16O1LrMDjos7RmAKLZlw9hMAIhAF+MGqBe9i9Bx/0klOJyfn2rMRtrjQ=
+X-Received: by 2002:a63:4956:: with SMTP id y22mr937093pgk.266.1606959005381;
+ Wed, 02 Dec 2020 17:30:05 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20201201194438.37402-1-xiyou.wangcong@gmail.com> <20201202171032.029b1cd8@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201202171032.029b1cd8@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 2 Dec 2020 17:29:53 -0800
+Message-ID: <CAM_iQpWfv59MoEJES1O=FhA4YsrB2nNGGaKzDmqcmXQXzc8gow@mail.gmail.com>
+Subject: Re: [Patch net] lwt: disable BH too in run_lwt_bpf()
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Dongdong Wang <wangdongdong@bytedance.com>,
+        Thomas Graf <tgraf@suug.ch>, bpf@vger.kernel.org,
+        Cong Wang <cong.wang@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 02 Dec 2020 10:27:18 +0100 Martin Schiller wrote:
-> On 2020-12-01 16:15, Dan Carpenter wrote:
-> > The .x25_addr[] address comes from the user and is not necessarily
-> > NUL terminated.  This leads to a couple problems.  The first problem is
-> > that the strlen() in x25_bind() can read beyond the end of the buffer.
-> >=20
-> > The second problem is more subtle and could result in memory=20
-> > corruption.
-> > The call tree is:
-> >   x25_connect() =20
-> >   --> x25_write_internal()
-> >       --> x25_addr_aton() =20
-> >=20
-> > The .x25_addr[] buffers are copied to the "addresses" buffer from
-> > x25_write_internal() so it will lead to stack corruption.
-> >=20
-> > Verify that the strings are NUL terminated and return -EINVAL if they
-> > are not.
-> >=20
-> > Reported-by: "kiyin(=E5=B0=B9=E4=BA=AE)" <kiyin@tencent.com>
-> > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
->=20
-> Acked-by: Martin Schiller <ms@dev.tdt.de>
+On Wed, Dec 2, 2020 at 5:10 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Tue,  1 Dec 2020 11:44:38 -0800 Cong Wang wrote:
+> > From: Dongdong Wang <wangdongdong@bytedance.com>
+> >
+> > The per-cpu bpf_redirect_info is shared among all skb_do_redirect()
+> > and BPF redirect helpers. Callers on RX path are all in BH context,
+> > disabling preemption is not sufficient to prevent BH interruption.
+> >
+> > In production, we observed strange packet drops because of the race
+> > condition between LWT xmit and TC ingress, and we verified this issue
+> > is fixed after we disable BH.
+> >
+> > Although this bug was technically introduced from the beginning, that
+> > is commit 3a0af8fd61f9 ("bpf: BPF for lightweight tunnel infrastructure"),
+> > at that time call_rcu() had to be call_rcu_bh() to match the RCU context.
+> > So this patch may not work well before RCU flavor consolidation has been
+> > completed around v5.0.
+> >
+> > Update the comments above the code too, as call_rcu() is now BH friendly.
+> >
+> > Cc: Thomas Graf <tgraf@suug.ch>
+> > Cc: bpf@vger.kernel.org
+> > Reviewed-by: Cong Wang <cong.wang@bytedance.com>
+> > Signed-off-by: Dongdong Wang <wangdongdong@bytedance.com>
+> > ---
+> >  net/core/lwt_bpf.c | 8 ++++----
+> >  1 file changed, 4 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/net/core/lwt_bpf.c b/net/core/lwt_bpf.c
+> > index 7d3438215f32..4f3cb7c15ddf 100644
+> > --- a/net/core/lwt_bpf.c
+> > +++ b/net/core/lwt_bpf.c
+> > @@ -39,12 +39,11 @@ static int run_lwt_bpf(struct sk_buff *skb, struct bpf_lwt_prog *lwt,
+> >  {
+> >       int ret;
+> >
+> > -     /* Preempt disable is needed to protect per-cpu redirect_info between
+> > -      * BPF prog and skb_do_redirect(). The call_rcu in bpf_prog_put() and
+> > -      * access to maps strictly require a rcu_read_lock() for protection,
+> > -      * mixing with BH RCU lock doesn't work.
+> > +     /* Preempt disable and BH disable are needed to protect per-cpu
+> > +      * redirect_info between BPF prog and skb_do_redirect().
+> >        */
+> >       preempt_disable();
+> > +     local_bh_disable();
+>
+> Why not remove the preempt_disable()? Disabling BH must also disable
+> preemption AFAIK.
 
-Applied, thanks!
+It seems RT kernel still needs preempt disable:
+https://www.spinics.net/lists/kernel/msg3710124.html
+but my RT knowledge is not sufficient to tell. So I just follow the
+same pattern
+in x86 FPU (as of today):
+
+static inline void fpregs_lock(void)
+{
+        preempt_disable();
+        local_bh_disable();
+}
+
+static inline void fpregs_unlock(void)
+{
+        local_bh_enable();
+        preempt_enable();
+}
+
+There are other similar patterns in the current code base, so if this
+needs a clean up, RT people can clean up them all together.
+
+Thanks.
