@@ -2,27 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E99592CD6BB
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 14:29:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 250452CD7CA
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 14:44:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730770AbgLCN3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 08:29:21 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46882 "EHLO mail.kernel.org"
+        id S2403752AbgLCN37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 08:29:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47780 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728067AbgLCN3V (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Dec 2020 08:29:21 -0500
+        id S2388928AbgLCN36 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 08:29:58 -0500
 From:   Sasha Levin <sashal@kernel.org>
 Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Mordechay Goodstein <mordechay.goodstein@intel.com>,
+Cc:     Mordechay Goodstein <mordechay.goodstein@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.9 03/39] iwlwifi: pcie: limit memory read spin time
-Date:   Thu,  3 Dec 2020 08:27:57 -0500
-Message-Id: <20201203132834.930999-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.9 06/39] iwlwifi: sta: set max HE max A-MPDU according to HE capa
+Date:   Thu,  3 Dec 2020 08:28:00 -0500
+Message-Id: <20201203132834.930999-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201203132834.930999-1-sashal@kernel.org>
 References: <20201203132834.930999-1-sashal@kernel.org>
@@ -34,92 +33,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Mordechay Goodstein <mordechay.goodstein@intel.com>
 
-[ Upstream commit 04516706bb99889986ddfa3a769ed50d2dc7ac13 ]
+[ Upstream commit c8a2e7a29702fe4626b7aa81149b7b7164e20606 ]
 
-When we read device memory, we lock a spinlock, write the address we
-want to read from the device and then spin in a loop reading the data
-in 32-bit quantities from another register.
+Currently, our max tpt is limited to max HT A-MPDU for LB,
+and max VHT A-MPDU for HB. Configure HE exponent value correctly to
+achieve HE max A-MPDU, both on LB and HB.
 
-As the description makes clear, this is rather inefficient, incurring
-a PCIe bus transaction for every read. In a typical device today, we
-want to read 786k SMEM if it crashes, leading to 192k register reads.
-Occasionally, we've seen the whole loop take over 20 seconds and then
-triggering the soft lockup detector.
-
-Clearly, it is unreasonable to spin here for such extended periods of
-time.
-
-To fix this, break the loop down into an outer and an inner loop, and
-break out of the inner loop if more than half a second elapsed. To
-avoid too much overhead, check for that only every 128 reads, though
-there's no particular reason for that number. Then, unlock and relock
-to obtain NIC access again, reprogram the start address and continue.
-
-This will keep (interrupt) latencies on the CPU down to a reasonable
-time.
-
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Mordechay Goodstein <mordechay.goodstein@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/iwlwifi.20201022165103.45878a7e49aa.I3b9b9c5a10002915072312ce75b68ed5b3dc6e14@changeid
+Link: https://lore.kernel.org/r/iwlwifi.20201107104557.4486852ebb56.I9eb0d028e31f183597fb90120e7d4ca87e0dd6cb@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/intel/iwlwifi/pcie/trans.c   | 36 ++++++++++++++-----
- 1 file changed, 27 insertions(+), 9 deletions(-)
+ .../net/wireless/intel/iwlwifi/fw/api/sta.h    | 10 +++++-----
+ drivers/net/wireless/intel/iwlwifi/mvm/sta.c   | 18 ++++++++++++++++++
+ 2 files changed, 23 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-index e5160d6208688..6393e895f95c6 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-@@ -2155,18 +2155,36 @@ static int iwl_trans_pcie_read_mem(struct iwl_trans *trans, u32 addr,
- 				   void *buf, int dwords)
- {
- 	unsigned long flags;
--	int offs, ret = 0;
-+	int offs = 0;
- 	u32 *vals = buf;
+diff --git a/drivers/net/wireless/intel/iwlwifi/fw/api/sta.h b/drivers/net/wireless/intel/iwlwifi/fw/api/sta.h
+index c010e6febbf47..6a071b3c8118c 100644
+--- a/drivers/net/wireless/intel/iwlwifi/fw/api/sta.h
++++ b/drivers/net/wireless/intel/iwlwifi/fw/api/sta.h
+@@ -5,10 +5,9 @@
+  *
+  * GPL LICENSE SUMMARY
+  *
+- * Copyright(c) 2012 - 2014 Intel Corporation. All rights reserved.
+  * Copyright(c) 2013 - 2014 Intel Mobile Communications GmbH
+  * Copyright(c) 2016 - 2017 Intel Deutschland GmbH
+- * Copyright(c) 2018 - 2019 Intel Corporation
++ * Copyright(c) 2012-2014, 2018 - 2020 Intel Corporation
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of version 2 of the GNU General Public License as
+@@ -28,10 +27,9 @@
+  *
+  * BSD LICENSE
+  *
+- * Copyright(c) 2012 - 2014 Intel Corporation. All rights reserved.
+  * Copyright(c) 2013 - 2014 Intel Mobile Communications GmbH
+  * Copyright(c) 2016 - 2017 Intel Deutschland GmbH
+- * Copyright(c) 2018 - 2019 Intel Corporation
++ * Copyright(c) 2012-2014, 2018 - 2020 Intel Corporation
+  * All rights reserved.
+  *
+  * Redistribution and use in source and binary forms, with or without
+@@ -128,7 +126,9 @@ enum iwl_sta_flags {
+ 	STA_FLG_MAX_AGG_SIZE_256K	= (5 << STA_FLG_MAX_AGG_SIZE_SHIFT),
+ 	STA_FLG_MAX_AGG_SIZE_512K	= (6 << STA_FLG_MAX_AGG_SIZE_SHIFT),
+ 	STA_FLG_MAX_AGG_SIZE_1024K	= (7 << STA_FLG_MAX_AGG_SIZE_SHIFT),
+-	STA_FLG_MAX_AGG_SIZE_MSK	= (7 << STA_FLG_MAX_AGG_SIZE_SHIFT),
++	STA_FLG_MAX_AGG_SIZE_2M		= (8 << STA_FLG_MAX_AGG_SIZE_SHIFT),
++	STA_FLG_MAX_AGG_SIZE_4M		= (9 << STA_FLG_MAX_AGG_SIZE_SHIFT),
++	STA_FLG_MAX_AGG_SIZE_MSK	= (0xf << STA_FLG_MAX_AGG_SIZE_SHIFT),
  
--	if (iwl_trans_grab_nic_access(trans, &flags)) {
--		iwl_write32(trans, HBUS_TARG_MEM_RADDR, addr);
--		for (offs = 0; offs < dwords; offs++)
--			vals[offs] = iwl_read32(trans, HBUS_TARG_MEM_RDAT);
--		iwl_trans_release_nic_access(trans, &flags);
--	} else {
--		ret = -EBUSY;
-+	while (offs < dwords) {
-+		/* limit the time we spin here under lock to 1/2s */
-+		ktime_t timeout = ktime_add_us(ktime_get(), 500 * USEC_PER_MSEC);
-+
-+		if (iwl_trans_grab_nic_access(trans, &flags)) {
-+			iwl_write32(trans, HBUS_TARG_MEM_RADDR,
-+				    addr + 4 * offs);
-+
-+			while (offs < dwords) {
-+				vals[offs] = iwl_read32(trans,
-+							HBUS_TARG_MEM_RDAT);
-+				offs++;
-+
-+				/* calling ktime_get is expensive so
-+				 * do it once in 128 reads
-+				 */
-+				if (offs % 128 == 0 && ktime_after(ktime_get(),
-+								   timeout))
-+					break;
-+			}
-+			iwl_trans_release_nic_access(trans, &flags);
-+		} else {
-+			return -EBUSY;
-+		}
+ 	STA_FLG_AGG_MPDU_DENS_SHIFT	= 23,
+ 	STA_FLG_AGG_MPDU_DENS_2US	= (4 << STA_FLG_AGG_MPDU_DENS_SHIFT),
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/sta.c b/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
+index 9e124755a3cee..2158fd2eff736 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
+@@ -196,6 +196,7 @@ int iwl_mvm_sta_send_to_fw(struct iwl_mvm *mvm, struct ieee80211_sta *sta,
+ 		mpdu_dens = sta->ht_cap.ampdu_density;
  	}
--	return ret;
-+
-+	return 0;
- }
  
- static int iwl_trans_pcie_write_mem(struct iwl_trans *trans, u32 addr,
++
+ 	if (sta->vht_cap.vht_supported) {
+ 		agg_size = sta->vht_cap.cap &
+ 			IEEE80211_VHT_CAP_MAX_A_MPDU_LENGTH_EXPONENT_MASK;
+@@ -205,6 +206,23 @@ int iwl_mvm_sta_send_to_fw(struct iwl_mvm *mvm, struct ieee80211_sta *sta,
+ 		agg_size = sta->ht_cap.ampdu_factor;
+ 	}
+ 
++	/* D6.0 10.12.2 A-MPDU length limit rules
++	 * A STA indicates the maximum length of the A-MPDU preEOF padding
++	 * that it can receive in an HE PPDU in the Maximum A-MPDU Length
++	 * Exponent field in its HT Capabilities, VHT Capabilities,
++	 * and HE 6 GHz Band Capabilities elements (if present) and the
++	 * Maximum AMPDU Length Exponent Extension field in its HE
++	 * Capabilities element
++	 */
++	if (sta->he_cap.has_he)
++		agg_size += u8_get_bits(sta->he_cap.he_cap_elem.mac_cap_info[3],
++					IEEE80211_HE_MAC_CAP3_MAX_AMPDU_LEN_EXP_MASK);
++
++	/* Limit to max A-MPDU supported by FW */
++	if (agg_size > (STA_FLG_MAX_AGG_SIZE_4M >> STA_FLG_MAX_AGG_SIZE_SHIFT))
++		agg_size = (STA_FLG_MAX_AGG_SIZE_4M >>
++			    STA_FLG_MAX_AGG_SIZE_SHIFT);
++
+ 	add_sta_cmd.station_flags |=
+ 		cpu_to_le32(agg_size << STA_FLG_MAX_AGG_SIZE_SHIFT);
+ 	add_sta_cmd.station_flags |=
 -- 
 2.27.0
 
