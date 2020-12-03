@@ -2,92 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 025662CDF16
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 20:36:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 304592CDF2E
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 20:52:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729542AbgLCTf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 14:35:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59544 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726885AbgLCTf7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 14:35:59 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4507C061A4E
-        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 11:35:18 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id s8so3059314wrw.10
-        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 11:35:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=364X1iRafzKSHYilhh8/unvIwWlspFKBQ97fdvZJXtM=;
-        b=i06QRsrqhQ9s2/QtPwDwSa/irenZR5NAHqu+qe4EyePSLs56gEidWLwgQIDEtYMa7E
-         1n5h7Ibf4aBEl8mscxL+muevsoWkLKCmVomPgf9hO77+Fw4DhCu4BVeNNDuNhmsr+vCQ
-         hMTSUhp8mTcg5j9sa8XU+/lTcKOw3L4I2nLic1GyCt2tLVnsrMrzvMQ+YkiuaCy5mgR6
-         HN6rvboCWPxkce/9bQCXbo/GNiVLNDgUsejbrwmdV68HN3Po3U10hqTRZhNO6Te7XSGF
-         iSTUars+EKig6nDZKybiKjawbo/T7lrssFBsIWw9jRqTWf/NrXFz5Ls1IJc261U0Kwox
-         a22w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=364X1iRafzKSHYilhh8/unvIwWlspFKBQ97fdvZJXtM=;
-        b=HO4zaiCwWu7PH1u8I/c3h+X5RC6LXy9nJTBH1tATXc5tJiOfh1+Gj2FE4WIAilgEbh
-         lPxAQaPt0Jsa6qw+1sB7erFeBycCjY49aP2Ti5oONyFotfQzvXGq3yEgEMgu3KGGlfZS
-         EVTgtua377qnW4HO+2C3uOyyBzUS7YRoB85GhJssT5ESis+TFgZtECBvFm/AVdjiTp5z
-         bDUdySSVApRGMlHAuYySH12Ol+xB8etvSr2pgNvrW+tbyAvFFnulsBucJ1h/++F9OCw6
-         Rb248acb7RRnNKEHoJSjzkD0i1rc2i6HMl8LrtJmEGlSkbeydgPcqM7lT+4GANzlTfuO
-         XQRQ==
-X-Gm-Message-State: AOAM531PekAxTefrFpd+PLtfCEt+V4073y/iZYmN+zsY+K0gEcOW+Yki
-        nTyEcBw9CjnskaAVeyGFuvHPYs77nK0=
-X-Google-Smtp-Source: ABdhPJyT88bFZ8RHluTveMr/1fDQw/Ws7rMTFGMoX1rDiWSGLOfzVtAgjsP2sQF9AdUIItz4dnbV0w==
-X-Received: by 2002:a5d:6886:: with SMTP id h6mr796542wru.173.1607024116122;
-        Thu, 03 Dec 2020 11:35:16 -0800 (PST)
-Received: from [192.168.8.116] ([37.165.75.126])
-        by smtp.gmail.com with ESMTPSA id a144sm356157wmd.47.2020.12.03.11.35.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Dec 2020 11:35:15 -0800 (PST)
-Subject: Re: GRO: can't force packet up stack immediately?
-To:     John Ousterhout <ouster@cs.stanford.edu>, netdev@vger.kernel.org
-References: <CAGXJAmx_xQr56oiak8k8MC+JPBNi+tQBtTvBRqYVsimmKtW4MA@mail.gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <72f3ea21-b4bd-b5bd-f72f-be415598591f@gmail.com>
-Date:   Thu, 3 Dec 2020 20:35:14 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        id S1727154AbgLCTvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 14:51:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:32950 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726048AbgLCTvF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 14:51:05 -0500
+Message-ID: <5d8c1f432431bddf03e5e2579b59c9d02f60b647.camel@kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607025024;
+        bh=jWVZsBrWjnUcqOueOa28pRWAcnf6lcmixXnD8QyjMqM=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=S8n7HXZ/5nX29OK9J+DfSQDvylhMnazOwAlHu7VbOb6iFBHiXQgvTaN2TVR/AR4ZX
+         SyIY3+r5OpE1GMv+kAYbaPArYwAnXy5viKh6wobfAsbbQwZye38sbd1dyw6gEzPCUR
+         f9i3pLnnx8RageRBEKd5SEllO4jlGFmpP7u8LF13UxIBj76yRKqgT/fO1d7s0ZcI+l
+         OL29u9q4fZXWsP4Mdx2Pe2FjCvs1rfdpNrBmcXuNVP2EM1euPnPlB9qNHfKqBN0QGG
+         UkBgY5AFvCJQH4H9FU90fVKps4u0uc93mhMRUmgaEyVh0D8pM83BuYSGDGx0RPcRtt
+         a7DZ6nrdul8UQ==
+Subject: Re: [pull request][net 0/4] mlx5 fixes 2020-12-01
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Date:   Thu, 03 Dec 2020 11:50:22 -0800
+In-Reply-To: <20201203111648.5bbf1d1d@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+References: <20201203043946.235385-1-saeedm@nvidia.com>
+         <20201203105239.3e189565@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+         <20201203111648.5bbf1d1d@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-In-Reply-To: <CAGXJAmx_xQr56oiak8k8MC+JPBNi+tQBtTvBRqYVsimmKtW4MA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 12/3/20 8:03 PM, John Ousterhout wrote:
-> I recently upgraded my kernel module implementing the Homa transport
-> protocol from 4.15.18 to 5.4.80, and a GRO feature available in the
-> older version seems to have gone away in the newer version. In
-> particular, it used to be possible for a protocol's xxx_gro_receive
-> function to force a packet up the stack immediately by returning that
-> skb as the result of xxx_gro_receive. However, in the newer kernel
-> version, these packets simply get queued on napi->rx_list; the queue
-> doesn't get flushed up-stack until napi_complete_done is called or
-> gro_normal_batch packets accumulate. For Homa, this extra level of
-> queuing gets in the way.
-
-
-Could you describe what the issue is ?
-
+On Thu, 2020-12-03 at 11:16 -0800, Jakub Kicinski wrote:
+> On Thu, 3 Dec 2020 10:52:39 -0800 Jakub Kicinski wrote:
+> > On Wed, 2 Dec 2020 20:39:42 -0800 Saeed Mahameed wrote:
+> > > Hi Jakub,
+> > > 
+> > > This series introduces some fixes to mlx5 driver.
+> > > Please pull and let me know if there is any problem.
+> > > 
+> > > For the DR steering patch I will need it in net-next as well, I
+> > > would
+> > > appreciate it if you will take this small series before your pr
+> > > to linus.
+> > > 
+> > > For -stable v5.4:
+> > >  ('net/mlx5: DR, Proper handling of unsupported Connect-X6DX SW
+> > > steering')
+> > > 
+> > > For -stable v5.8
+> > >  ('net/mlx5: Fix wrong address reclaim when command interface is
+> > > down')
+> > > 
+> > > For -stable v5.9
+> > >  ('net: mlx5e: fix fs_tcp.c build when IPV6 is not enabled')  
+> > 
+> > Your tree is missing your signoff on:
+> > 
+> > Commit 3041429da89b ("net/mlx5e: kTLS, Enforce HW TX csum offload
+> > with kTLS")
+> > 	committer Signed-off-by missing
+> > 	author email:    tariqt@nvidia.com
+> > 	committer email: saeedm@nvidia.com
+> > 	Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+> > 
+> > You can fix it or I'll just apply the patches from the ML.
 > 
-> Is there any way for a xxx_gro_receive function to force a packet (in
-> particular, one of those in the list passed as first argument to
-> xxx_gro_receive) up the protocol stack immediately? I suppose I could
-> set gro_normal_batch to 1, but that might interfere with other
-> protocols that really want the batching.
+> Well, it's the last thing I got in the queue before I prep the PR so
+> let me just apply from the ML.
 > 
-> -John-
-> 
+> Thanks!
+
+That works too, Sorry for the inconvenience !
+Tariq did the maintainer review on this patch, so this patch didn't go
+through my normal submission queue and i forgot to explicitly sign it
+off :/ .. I will fix my patch flow.
+
+Thanks!
+
+
