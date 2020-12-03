@@ -2,73 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE3602CE186
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 23:25:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DFAA2CE193
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 23:28:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728081AbgLCWYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 17:24:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52854 "EHLO mail.kernel.org"
+        id S2387551AbgLCW11 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 17:27:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53454 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727415AbgLCWYw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Dec 2020 17:24:52 -0500
-Date:   Thu, 3 Dec 2020 14:24:09 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607034251;
-        bh=Zr/89+pOI8j1IPxXkFjH3sfC7DYmfGTlISIa4l3iDJU=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=k6aAaQ2F8HG/9l7LJRh2LxHEilEIDFaWG+vrtFBn17k9Xm9i2wrVR82qD1Eg4ZOQW
-         ON5or1pYihYHwck1jKXuuJUYHXvZgHUQhLPziZSWVX0bzMegSTojj4eEk0DMBr45Wq
-         rEGchPm96UFSaRU8J9mmgurb+8DTOUFKnzVh3ZmrhSw0boGhYD28VAxUyXw4a5QLQD
-         jwAQy3ZCpeG1ptITO4hyhK6frf7NqeoSjGuraDAyiBNOV96ldVJwJSIebw8/AVLvbk
-         nVsscK5II+oN0uEpQkDbGKBaBGaTGvn17T4d9OL1GN0yafy+HN6lAkbEjXx2paH638
-         AiNioJyWg0SvQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     James Morris <jmorris@namei.org>
-Cc:     Florian Westphal <fw@strlen.de>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        netdev@vger.kernel.org, mptcp@lists.01.org,
-        linux-security-module@vger.kernel.org
-Subject: Re: [PATCH net-next 1/3] security: add const qualifier to struct
- sock in various places
-Message-ID: <20201203142409.3bbc068f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <alpine.LRH.2.21.2012040407080.9312@namei.org>
-References: <20201130153631.21872-1-fw@strlen.de>
-        <20201130153631.21872-2-fw@strlen.de>
-        <20201202112848.46bf4ea6@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-        <alpine.LRH.2.21.2012040407080.9312@namei.org>
+        id S1726931AbgLCW11 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 17:27:27 -0500
+From:   Arnd Bergmann <arnd@kernel.org>
+Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
+To:     Ayush Sawal <ayush.sawal@chelsio.com>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        YueHaibing <yuehaibing@huawei.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: [PATCH] ch_ktls: fix build warning for ipv4-only config
+Date:   Thu,  3 Dec 2020 23:26:16 +0100
+Message-Id: <20201203222641.964234-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 4 Dec 2020 04:07:16 +1100 (AEDT) James Morris wrote:
-> On Wed, 2 Dec 2020, Jakub Kicinski wrote:
-> > On Mon, 30 Nov 2020 16:36:29 +0100 Florian Westphal wrote:  
-> > > A followup change to tcp_request_sock_op would have to drop the 'const'
-> > > qualifier from the 'route_req' function as the
-> > > 'security_inet_conn_request' call is moved there - and that function
-> > > expects a 'struct sock *'.
-> > > 
-> > > However, it turns out its also possible to add a const qualifier to
-> > > security_inet_conn_request instead.
-> > > 
-> > > Signed-off-by: Florian Westphal <fw@strlen.de>
-> > > ---
-> > >  The code churn is unfortunate.  Alternative would be to change
-> > >  the function signature of ->route_req:
-> > >  struct dst_entry *(*route_req)(struct sock *sk, ...
-> > >  [ i.e., drop 'const' ].  Thoughts?  
-> > 
-> > Security folks - is this okay to merge into net-next?
-> > 
-> > We can put it on a branch and pull into both trees if the risk 
-> > of conflicts is high.  
-> 
-> Acked-by: James Morris <jamorris@linux.microsoft.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-Thank you!
+When CONFIG_IPV6 is disabled, clang complains that a variable
+is uninitialized for non-IPv4 data:
 
-Into net-next it goes..
+drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c:1046:6: error: variable 'cntrl1' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
+        if (tx_info->ip_family == AF_INET) {
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c:1059:2: note: uninitialized use occurs here
+        cntrl1 |= T6_TXPKT_ETHHDR_LEN_V(maclen - ETH_HLEN) |
+        ^~~~~~
+
+Replace the preprocessor conditional with the corresponding C version,
+and make the ipv4 case unconditional in this configuration to improve
+readability and avoid the warning.
+
+Fixes: 86716b51d14f ("ch_ktls: Update cheksum information")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ .../net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c  | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
+index 7f90b828d159..1b7e8c91b541 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
++++ b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
+@@ -987,9 +987,7 @@ chcr_ktls_write_tcp_options(struct chcr_ktls_info *tx_info, struct sk_buff *skb,
+ 	struct fw_eth_tx_pkt_wr *wr;
+ 	struct cpl_tx_pkt_core *cpl;
+ 	u32 ctrl, iplen, maclen;
+-#if IS_ENABLED(CONFIG_IPV6)
+ 	struct ipv6hdr *ip6;
+-#endif
+ 	unsigned int ndesc;
+ 	struct tcphdr *tcp;
+ 	int len16, pktlen;
+@@ -1043,17 +1041,15 @@ chcr_ktls_write_tcp_options(struct chcr_ktls_info *tx_info, struct sk_buff *skb,
+ 	cpl->len = htons(pktlen);
+ 
+ 	memcpy(buf, skb->data, pktlen);
+-	if (tx_info->ip_family == AF_INET) {
++	if (!IS_ENABLED(CONFIG_IPV6) || tx_info->ip_family == AF_INET) {
+ 		/* we need to correct ip header len */
+ 		ip = (struct iphdr *)(buf + maclen);
+ 		ip->tot_len = htons(pktlen - maclen);
+ 		cntrl1 = TXPKT_CSUM_TYPE_V(TX_CSUM_TCPIP);
+-#if IS_ENABLED(CONFIG_IPV6)
+ 	} else {
+ 		ip6 = (struct ipv6hdr *)(buf + maclen);
+ 		ip6->payload_len = htons(pktlen - maclen - iplen);
+ 		cntrl1 = TXPKT_CSUM_TYPE_V(TX_CSUM_TCPIP6);
+-#endif
+ 	}
+ 
+ 	cntrl1 |= T6_TXPKT_ETHHDR_LEN_V(maclen - ETH_HLEN) |
+-- 
+2.27.0
+
