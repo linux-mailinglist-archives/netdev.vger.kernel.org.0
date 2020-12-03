@@ -2,26 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAE202CD757
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 14:35:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84BFD2CD706
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 14:35:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436899AbgLCNd0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 08:33:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49134 "EHLO mail.kernel.org"
+        id S2436907AbgLCNbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 08:31:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48816 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2436862AbgLCNbG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Dec 2020 08:31:06 -0500
+        id S2436888AbgLCNbL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 08:31:11 -0500
 From:   Sasha Levin <sashal@kernel.org>
 Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yves-Alexis Perez <corsac@corsac.net>,
-        Matti Vuorela <matti.vuorela@bitfactor.fi>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 07/14] usbnet: ipheth: fix connectivity with iOS 14
-Date:   Thu,  3 Dec 2020 08:30:03 -0500
-Message-Id: <20201203133010.931600-7-sashal@kernel.org>
+Cc:     Jens Axboe <axboe@kernel.dk>, Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 08/14] tun: honor IOCB_NOWAIT flag
+Date:   Thu,  3 Dec 2020 08:30:04 -0500
+Message-Id: <20201203133010.931600-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201203133010.931600-1-sashal@kernel.org>
 References: <20201203133010.931600-1-sashal@kernel.org>
@@ -33,52 +30,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yves-Alexis Perez <corsac@corsac.net>
+From: Jens Axboe <axboe@kernel.dk>
 
-[ Upstream commit f33d9e2b48a34e1558b67a473a1fc1d6e793f93c ]
+[ Upstream commit 5aac0390a63b8718237a61dd0d24a29201d1c94a ]
 
-Starting with iOS 14 released in September 2020, connectivity using the
-personal hotspot USB tethering function of iOS devices is broken.
+tun only checks the file O_NONBLOCK flag, but it should also be checking
+the iocb IOCB_NOWAIT flag. Any fops using ->read/write_iter() should check
+both, otherwise it breaks users that correctly expect O_NONBLOCK semantics
+if IOCB_NOWAIT is set.
 
-Communication between the host and the device (for example ICMP traffic
-or DNS resolution using the DNS service running in the device itself)
-works fine, but communication to endpoints further away doesn't work.
-
-Investigation on the matter shows that no UDP and ICMP traffic from the
-tethered host is reaching the Internet at all. For TCP traffic there are
-exchanges between tethered host and server but packets are modified in
-transit leading to impossible communication.
-
-After some trials Matti Vuorela discovered that reducing the URB buffer
-size by two bytes restored the previous behavior. While a better
-solution might exist to fix the issue, since the protocol is not
-publicly documented and considering the small size of the fix, let's do
-that.
-
-Tested-by: Matti Vuorela <matti.vuorela@bitfactor.fi>
-Signed-off-by: Yves-Alexis Perez <corsac@corsac.net>
-Link: https://lore.kernel.org/linux-usb/CAAn0qaXmysJ9vx3ZEMkViv_B19ju-_ExN8Yn_uSefxpjS6g4Lw@mail.gmail.com/
-Link: https://github.com/libimobiledevice/libimobiledevice/issues/1038
-Link: https://lore.kernel.org/r/20201119172439.94988-1-corsac@corsac.net
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Link: https://lore.kernel.org/r/e9451860-96cc-c7c7-47b8-fe42cadd5f4c@kernel.dk
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/ipheth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/tun.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/usb/ipheth.c b/drivers/net/usb/ipheth.c
-index 3d71f17163902..8e2eb20613548 100644
---- a/drivers/net/usb/ipheth.c
-+++ b/drivers/net/usb/ipheth.c
-@@ -70,7 +70,7 @@
- #define IPHETH_USBINTF_SUBCLASS 253
- #define IPHETH_USBINTF_PROTO    1
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index d84a09172ddbf..fe0e02e11f294 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -1988,12 +1988,15 @@ static ssize_t tun_chr_write_iter(struct kiocb *iocb, struct iov_iter *from)
+ 	struct tun_file *tfile = file->private_data;
+ 	struct tun_struct *tun = tun_get(tfile);
+ 	ssize_t result;
++	int noblock = 0;
  
--#define IPHETH_BUF_SIZE         1516
-+#define IPHETH_BUF_SIZE         1514
- #define IPHETH_IP_ALIGN		2	/* padding at front of URB */
- #define IPHETH_TX_TIMEOUT       (5 * HZ)
+ 	if (!tun)
+ 		return -EBADFD;
  
+-	result = tun_get_user(tun, tfile, NULL, from,
+-			      file->f_flags & O_NONBLOCK, false);
++	if ((file->f_flags & O_NONBLOCK) || (iocb->ki_flags & IOCB_NOWAIT))
++		noblock = 1;
++
++	result = tun_get_user(tun, tfile, NULL, from, noblock, false);
+ 
+ 	tun_put(tun);
+ 	return result;
+@@ -2214,10 +2217,15 @@ static ssize_t tun_chr_read_iter(struct kiocb *iocb, struct iov_iter *to)
+ 	struct tun_file *tfile = file->private_data;
+ 	struct tun_struct *tun = tun_get(tfile);
+ 	ssize_t len = iov_iter_count(to), ret;
++	int noblock = 0;
+ 
+ 	if (!tun)
+ 		return -EBADFD;
+-	ret = tun_do_read(tun, tfile, to, file->f_flags & O_NONBLOCK, NULL);
++
++	if ((file->f_flags & O_NONBLOCK) || (iocb->ki_flags & IOCB_NOWAIT))
++		noblock = 1;
++
++	ret = tun_do_read(tun, tfile, to, noblock, NULL);
+ 	ret = min_t(ssize_t, ret, len);
+ 	if (ret > 0)
+ 		iocb->ki_pos = ret;
 -- 
 2.27.0
 
