@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C93C92CD72E
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 14:35:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B9702CD71B
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 14:35:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437039AbgLCNb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 08:31:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49134 "EHLO mail.kernel.org"
+        id S2436987AbgLCNba (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 08:31:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48860 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2436951AbgLCNbW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Dec 2020 08:31:22 -0500
+        id S2436926AbgLCNb3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 08:31:29 -0500
 From:   Sasha Levin <sashal@kernel.org>
 Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
@@ -19,12 +19,12 @@ Cc:     Yves-Alexis Perez <corsac@corsac.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 4/5] usbnet: ipheth: fix connectivity with iOS 14
-Date:   Thu,  3 Dec 2020 08:30:46 -0500
-Message-Id: <20201203133047.931886-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 2/3] usbnet: ipheth: fix connectivity with iOS 14
+Date:   Thu,  3 Dec 2020 08:30:55 -0500
+Message-Id: <20201203133057.931977-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20201203133047.931886-1-sashal@kernel.org>
-References: <20201203133047.931886-1-sashal@kernel.org>
+In-Reply-To: <20201203133057.931977-1-sashal@kernel.org>
+References: <20201203133057.931977-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
