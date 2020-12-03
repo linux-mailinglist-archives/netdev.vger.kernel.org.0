@@ -2,117 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A84402CDDD3
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 19:37:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 175A62CDDE5
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 19:42:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731773AbgLCSei (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 13:34:38 -0500
-Received: from so254-31.mailgun.net ([198.61.254.31]:18002 "EHLO
-        so254-31.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731764AbgLCSeh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 13:34:37 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1607020458; h=Date: Message-Id: Cc: To: Subject: From:
- Content-Transfer-Encoding: MIME-Version: Content-Type: Sender;
- bh=oAKlBd7IimUZGI4W3KTW/dXfsjGBw+XjMlocJlC3viI=; b=pPRO0uACNh01uUVFIwurcp07AqRJqmrV1Fg9VsxEwssw1jc2rNOvoKsblAPEMssoBS/vYVhw
- eitLH55QUcVTTszVySaq4rhNlIVPbMbOx6mkRoK/CwjzCa+eaCF6Srz43KVclH5PTJpi9IxK
- T7v+wAZIUlkqa7TtMS+c85OQFR0=
-X-Mailgun-Sending-Ip: 198.61.254.31
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
- 5fc92fa2fc7bcec118e8cfa8 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 03 Dec 2020 18:34:10
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id EE88AC43461; Thu,  3 Dec 2020 18:34:08 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id E3C4EC433C6;
-        Thu,  3 Dec 2020 18:34:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E3C4EC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1729380AbgLCSlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 13:41:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50990 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728186AbgLCSlE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 13:41:04 -0500
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE40C061A4F;
+        Thu,  3 Dec 2020 10:40:18 -0800 (PST)
+Received: by mail-pg1-x541.google.com with SMTP id t37so1934741pga.7;
+        Thu, 03 Dec 2020 10:40:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=W5vDV9iOP31Wm581raHT9lC6nNCaICsVygVFILGkqlU=;
+        b=ZNiThM9wtUopnYYeU5vnsAwWOLKHFITA1p6OBSrZwNxYK9e9SzRLsHviwxQBun0lsg
+         STNe4DervsrNNJw1dlg+y7MzaytFXajBZoMSDWTkH5AX5mUkTzHqeyLsRd5VacJYn+vy
+         4ijFBCiXoLnrBAIg7pSOAfwgeVYnbDASZU5rzqNIgyn+TiU2io8nqfMigrsRjVweRuBk
+         tCkDv3bNcnbl4DtpNusrVoBTpFBmmAfc4Jqbv1xf+YMWhUQJ1/86/6gYyc0yQxF++JtS
+         cCUoKElUuZdgVCMhjLlYpobxXx/K/ute0tHcuv2veBlWCbOXoptwXeeay9d1+PSrVWVX
+         mNnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=W5vDV9iOP31Wm581raHT9lC6nNCaICsVygVFILGkqlU=;
+        b=JL3WcqSmXTJBJ8FyMmWQWQavIXcoxwbibSaVS/D2/9JWmMzzWNWVkiyMBsPAPBRdQ/
+         tF04V6qEMyeu0JOAIUOdRepE1xlwW7oqxnfoEjhkkgQWlYNI7oTZo7xSXvGHZLAvl72J
+         B03hNzu3WBDrQZc/njkHcLFyY4rUmmm7t+MPSPVHo3N2JOV69SbvqmCU18hSAbnxqc3F
+         VfJ4tn1q8na182k6zO5x8V7Z9Nh2kiTrocH0vZDZ00Bm6Xc/ggwxobZPtTEnyboDhS3v
+         5nEtpi1d/w7cpzgdexKix78mW+cZJeKmAkr/EBgjuf2oF/AEFmVDUKIW5jmKR+9yb1M0
+         kFxw==
+X-Gm-Message-State: AOAM5333bgsVpggTlItWxLtO4oJVLthQVudduQRMw/TqoPjk7RHGO5+y
+        7+dQYHeLmNbXgJI7uJUiqvk=
+X-Google-Smtp-Source: ABdhPJwhBqVIOPfAG1Z9q3dYb0G1X+vzjOYL5a98hLGTsMKYRA+PjHEVCeDbtR8Fdsoj2pNMpLRKeQ==
+X-Received: by 2002:a63:181b:: with SMTP id y27mr4191123pgl.408.1607020818122;
+        Thu, 03 Dec 2020 10:40:18 -0800 (PST)
+Received: from ast-mbp ([2620:10d:c090:400::5:a629])
+        by smtp.gmail.com with ESMTPSA id m9sm2469683pfh.94.2020.12.03.10.40.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Dec 2020 10:40:17 -0800 (PST)
+Date:   Thu, 3 Dec 2020 10:40:14 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     mariusz.dudek@gmail.com
+Cc:     andrii.nakryiko@gmail.com, magnus.karlsson@intel.com,
+        bjorn.topel@intel.com, ast@kernel.org, daniel@iogearbox.net,
+        netdev@vger.kernel.org, jonathan.lemon@gmail.com,
+        bpf@vger.kernel.org, Mariusz Dudek <mariuszx.dudek@intel.com>
+Subject: Re: [PATCH v7 bpf-next 0/2] libbpf: add support for
+ privileged/unprivileged control separation
+Message-ID: <20201203184014.fcayxrqusi6aptje@ast-mbp>
+References: <20201203090546.11976-1-mariuszx.dudek@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-From:   Kalle Valo <kvalo@codeaurora.org>
-Subject: pull-request: wireless-drivers-2020-12-03
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Message-Id: <20201203183408.EE88AC43461@smtp.codeaurora.org>
-Date:   Thu,  3 Dec 2020 18:34:08 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201203090546.11976-1-mariuszx.dudek@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, Dec 03, 2020 at 10:05:44AM +0100, mariusz.dudek@gmail.com wrote:
+> From: Mariusz Dudek <mariuszx.dudek@intel.com>
+> 
+> This patch series adds support for separation of eBPF program
+> load and xsk socket creation. In for example a Kubernetes
+> environment you can have an AF_XDP CNI or daemonset that is 
+> responsible for launching pods that execute an application 
+> using AF_XDP sockets. It is desirable that the pod runs with
+> as low privileges as possible, CAP_NET_RAW in this case, 
+> and that all operations that require privileges are contained
+> in the CNI or daemonset.
+> 	
+> In this case, you have to be able separate ePBF program load from
+> xsk socket creation.
+> 
+> Currently, this will not work with the xsk_socket__create APIs
+> because you need to have CAP_NET_ADMIN privileges to load eBPF
+> program and CAP_SYS_ADMIN privileges to create update xsk_bpf_maps.
+> To be exact xsk_set_bpf_maps does not need those privileges but
+> it takes the prog_fd and xsks_map_fd and those are known only to
+> process that was loading eBPF program. The api bpf_prog_get_fd_by_id
+> that looks up the fd of the prog using an prog_id and
+> bpf_map_get_fd_by_id that looks for xsks_map_fd usinb map_id both
+> requires CAP_SYS_ADMIN.
+> 
+> With this patch, the pod can be run with CAP_NET_RAW capability
+> only. In case your umem is larger or equal process limit for
+> MEMLOCK you need either increase the limit or CAP_IPC_LOCK capability. 
+> Without this patch in case of insufficient rights ENOPERM is
+> returned by xsk_socket__create.
+> 
+> To resolve this privileges issue two new APIs are introduced:
+> - xsk_setup_xdp_prog - loads the built in XDP program. It can
+> also return xsks_map_fd which is needed by unprivileged
+> process to update xsks_map with AF_XDP socket "fd"
+> - xsk_sokcet__update_xskmap - inserts an AF_XDP socket into an
+> xskmap for a particular xsk_socket
+> 
+> Usage example:
+> int xsk_setup_xdp_prog(int ifindex, int *xsks_map_fd)
+> 
+> int xsk_socket__update_xskmap(struct xsk_socket *xsk, int xsks_map_fd);
+> 
+> Inserts AF_XDP socket "fd" into the xskmap.
+> 
+> The first patch introduces the new APIs. The second patch provides
+> a new sample applications working as control and modification to
+> existing xdpsock application to work with less privileges.
+> 
+> This patch set is based on bpf-next commit 97306be45fbe
+> (Merge branch 'switch to memcg-based memory accounting')
+> 
+> Since v6
+> - rebase on 97306be45fbe to resolve RLIMIT conflicts
 
-here's a pull request to net tree, more info below. Please let me know if there
-are any problems.
-
-Kalle
-
-The following changes since commit fe56d05ee6c87f6a1a8c7267affd92c9438249cc:
-
-  iwlwifi: mvm: fix kernel panic in case of assert during CSA (2020-11-10 20:45:36 +0200)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers.git tags/wireless-drivers-2020-12-03
-
-for you to fetch changes up to 74a8c816fa8fa7862df870660e9821abb56649fe:
-
-  rtw88: debug: Fix uninitialized memory in debugfs code (2020-12-03 18:00:45 +0200)
-
-----------------------------------------------------------------
-wireless-drivers fixes for v5.10
-
-Second, and most likely final, set of fixes for v5.10. Small fixes and
-PCI id addtions.
-
-iwlwifi
-
-* PCI id additions
-
-mt76
-
-* fix a kernel crash during device removal
-
-rtw88
-
-* fix uninitialized memory in debugfs code
-
-----------------------------------------------------------------
-Dan Carpenter (1):
-      rtw88: debug: Fix uninitialized memory in debugfs code
-
-Golan Ben Ami (1):
-      iwlwifi: pcie: add some missing entries for AX210
-
-Johannes Berg (1):
-      iwlwifi: update MAINTAINERS entry
-
-Luca Coelho (2):
-      iwlwifi: pcie: add one missing entry for AX210
-      iwlwifi: pcie: invert values of NO_160 device config entries
-
-Stanislaw Gruszka (1):
-      mt76: usb: fix crash on device removal
-
- MAINTAINERS                                     |  3 ---
- drivers/net/wireless/intel/iwlwifi/iwl-config.h |  4 ++--
- drivers/net/wireless/intel/iwlwifi/pcie/drv.c   |  6 ++++++
- drivers/net/wireless/mediatek/mt76/usb.c        | 17 +++++++++--------
- drivers/net/wireless/realtek/rtw88/debug.c      |  2 ++
- 5 files changed, 19 insertions(+), 13 deletions(-)
+Applied, Thanks
