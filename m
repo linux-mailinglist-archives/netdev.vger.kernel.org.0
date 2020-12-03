@@ -2,99 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 187F02CE07B
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 22:20:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 059692CE092
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 22:25:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729763AbgLCVTT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 16:19:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47306 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729666AbgLCVTT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 16:19:19 -0500
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 006EEC061A4F
-        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 13:18:32 -0800 (PST)
-Received: by mail-lf1-x141.google.com with SMTP id s27so4828283lfp.5
-        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 13:18:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DJRKnqjCgWHhm3DXxiGPglLb7n4zSVyCYpnqLdcdiZo=;
-        b=TBvZ8cT+n+pese6T9ygSu73P9cc8jXepQ+bP4M1qPKZTgVR/VxJCes/IPiqB3zVaRZ
-         dm9AAoxOgzmzlj6bvdGb4sfWZ+FhCyhNrL80+Spt99mgn9W4suTyGjHaCg8x4l/sbZlQ
-         zVFKModYzVc0g2ZULXQBME729MQtdKXVNqm4k=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DJRKnqjCgWHhm3DXxiGPglLb7n4zSVyCYpnqLdcdiZo=;
-        b=PGXdXlfpYqqHtkva9d7aT+AtlAdQ5D4qLC/3jShs+nIi91sD+p6kQj0QEkR5gTEh3C
-         Y08hKJf0tB5B3GEKQRmxhnT/eQ9Unh96e5LdYtZxP50Saggwq3RXyBFl8AJK/X4C793Z
-         H2wS+8g59AgMUFtQpe6pqIGd5i8qWLlw0j6kCzvZsh2NeLto4qe0YG/c8mvNDFMGYo+u
-         L0r+arQmDEEjyBcOCpjUA9pnWDgOzrEVtEsKUlFgL85vNRnCoy97mJWGsdTK64l4EpEc
-         DqNCHAulkem3UQ1EHI37IdeVyOlxCPv8A8AfiiwLrhfZq9WN39+LFazzfBw0aVVovkc+
-         iZZg==
-X-Gm-Message-State: AOAM533myTpI04+T0d7N+2CX3Va3rRjawKLS9CWakoVX8glmYPzAdKlM
-        LUhT3eamqrGx1tssn5VKPTfs0oAZrGGGzg==
-X-Google-Smtp-Source: ABdhPJzZjg36d2VEzhDu2rQEoauZrLIeR1dXEU/pjdMQyif4WJ411bCU7uzfVbBfLQjUt4IlFGfphA==
-X-Received: by 2002:a19:ca19:: with SMTP id a25mr2162530lfg.89.1607030311209;
-        Thu, 03 Dec 2020 13:18:31 -0800 (PST)
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com. [209.85.167.41])
-        by smtp.gmail.com with ESMTPSA id r8sm911537lff.238.2020.12.03.13.18.30
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Dec 2020 13:18:30 -0800 (PST)
-Received: by mail-lf1-f41.google.com with SMTP id d8so4852151lfa.1
-        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 13:18:30 -0800 (PST)
-X-Received: by 2002:a19:ed0f:: with SMTP id y15mr1977548lfy.352.1607030309965;
- Thu, 03 Dec 2020 13:18:29 -0800 (PST)
+        id S2387475AbgLCVWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 16:22:46 -0500
+Received: from so254-31.mailgun.net ([198.61.254.31]:33052 "EHLO
+        so254-31.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728460AbgLCVWq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 16:22:46 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1607030546; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=PmWmE242zmunsvyjXXu1U6gP0kOZKXBQzfAIj2P874g=; b=HVQmVmNEUzA0gQX67frSoibCc6C9Ipy6XaMD/dnU+rPWg3e1u0k64F2Ik/NiJYtyUw9/126/
+ Pk75GwX6DrLaed8vbPl5YMHe9FBPVBZPhc27DwL3IzipLCma4vmDARt2/vhCUrGjaVxvlNGV
+ LKyL2fQTJy/MzHNNtZwlQi0i1Dc=
+X-Mailgun-Sending-Ip: 198.61.254.31
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n10.prod.us-west-2.postgun.com with SMTP id
+ 5fc95711f06acf11abc8b498 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 03 Dec 2020 21:22:25
+ GMT
+Sender: jhugo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id C887CC43464; Thu,  3 Dec 2020 21:22:25 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        NICE_REPLY_A,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from [10.226.59.216] (i-global254.qualcomm.com [199.106.103.254])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: jhugo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 59DE0C433ED;
+        Thu,  3 Dec 2020 21:22:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 59DE0C433ED
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=jhugo@codeaurora.org
+Subject: Re: [PATCH v14 4/4] bus: mhi: Add userspace client interface driver
+To:     Hemant Kumar <hemantk@codeaurora.org>,
+        manivannan.sadhasivam@linaro.org, gregkh@linuxfoundation.org
+Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bbhatt@codeaurora.org, loic.poulain@linaro.org,
+        netdev@vger.kernel.org
+References: <1606877991-26368-1-git-send-email-hemantk@codeaurora.org>
+ <1606877991-26368-5-git-send-email-hemantk@codeaurora.org>
+From:   Jeffrey Hugo <jhugo@codeaurora.org>
+Message-ID: <07e6e443-6df6-bbbb-0992-c6f0e44f7139@codeaurora.org>
+Date:   Thu, 3 Dec 2020 14:22:23 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.3
 MIME-Version: 1.0
-References: <20201203204459.3963776-1-kuba@kernel.org>
-In-Reply-To: <20201203204459.3963776-1-kuba@kernel.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 3 Dec 2020 13:18:13 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wgBDP8WwpO-yyv0fvdc0w9qoQwugywvwsARp4HMfUkD1g@mail.gmail.com>
-Message-ID: <CAHk-=wgBDP8WwpO-yyv0fvdc0w9qoQwugywvwsARp4HMfUkD1g@mail.gmail.com>
-Subject: Re: [GIT PULL] Networking for 5.10-rc7
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1606877991-26368-5-git-send-email-hemantk@codeaurora.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 3, 2020 at 12:45 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> Networking fixes for 5.10-rc7, including fixes from bpf, netfilter,
-> wireless drivers, wireless mesh and can.
+On 12/1/2020 7:59 PM, Hemant Kumar wrote:
+> This MHI client driver allows userspace clients to transfer
+> raw data between MHI device and host using standard file operations.
+> Driver instantiates UCI device object which is associated to device
+> file node. UCI device object instantiates UCI channel object when device
+> file node is opened. UCI channel object is used to manage MHI channels
+> by calling MHI core APIs for read and write operations. MHI channels
+> are started as part of device open(). MHI channels remain in start
+> state until last release() is called on UCI device file node. Device
+> file node is created with format
+> 
+> /dev/<mhi_device_name>
+> 
+> Currently it supports QMI channel.
+> 
+> Signed-off-by: Hemant Kumar <hemantk@codeaurora.org>
+> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> Tested-by: Loic Poulain <loic.poulain@linaro.org>
 
-Thanks, pulled.
+Reviewed-by: Jeffrey Hugo <jhugo@codeaurora.org>
 
-And btw - maybe I've already talked about this, but since next week is
-(hopefully) going to be the last week of rc release: since the
-networking pulls tend to be some of the bigger ones, one thing I've
-asked David to do in the past is to (a) not send a big networking pull
-request right before the final release and (b) let me know whether
-there is anything worrisome going on in networking.
-
-So if you send it on a Thursday (like this one), then that's all good
-- it's the "Oh, it's Sunday noon, I was planning on a final release in
-the afternoon, and I have a big networking fix pull request in my
-mailbox" that I'd prefer to not see.
-
-A heads up on the "Uhhuh - we have something bad going in the
-networking tree" kind of situation you can obviously send at any time.
-If there are known issues, I'll just make an rc8 - I prefer not to
-_have_ to, of course, but I'd always much rather be safe than release
-the final kernel just because I didn't know of some pending issue.
-
-(And the reverse - just a note saying "everything looks fine, none of
-this is scary and there's nothing pending that looks at all worrisome
-either" - for the last rc pull is obviously also always appreciated,
-but generally I'll assume that unless something else is said, we're in
-good shape).
-
-            Linus
+-- 
+Jeffrey Hugo
+Qualcomm Technologies, Inc. is a member of the
+Code Aurora Forum, a Linux Foundation Collaborative Project.
