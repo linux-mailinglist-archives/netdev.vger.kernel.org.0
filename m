@@ -2,98 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADE732CD6AA
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 14:26:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E99592CD6BB
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 14:29:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730730AbgLCNY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 08:24:56 -0500
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:57107 "EHLO
-        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730533AbgLCNYz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 08:24:55 -0500
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 3A7215803EB;
-        Thu,  3 Dec 2020 08:24:09 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Thu, 03 Dec 2020 08:24:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm2; bh=TIrQvB3UrbufB/GyXub/EtdF/K7
-        1e6rUtngpjAms+UI=; b=ZLIDlDHeAU1tKCcbMe3fBkWwIMdX26uYk8+UPkJ94sd
-        KxxedTHTYUr+G6ogpB2nnSgV6Vbi2j5HemALBtFNWlR/n1NQrOGre4P9rUP62FwW
-        yBZ9j79D7jR1dGk42sYYYY74x0KN3CitVkwn08gqF9Zc09GoY7cYKa/bI5tfgQLR
-        ICEjLxgiY/O0ahT5MV6ogK1Xq1T7EkdSgiPMnggw+lFt7CeBO5A9RphsiZTRl9KS
-        HaIF22EVLDtCI0+mZi14FZme8606SpCsGdRASnepRlkvFXOTmYnaarJYxMAPiwu4
-        bSl1jaBk0Ajn3tCI03AP8lSsurfhloRXeG3ODhhUrGQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=TIrQvB
-        3UrbufB/GyXub/EtdF/K71e6rUtngpjAms+UI=; b=kj8Vw1pYu5t4qjQqPe8A8Z
-        iTxnV0PjwrJ+wrKDn5gK6uhFfZmPaJ6Ox6ttwKzH/iOt3OQsZeP3Ji9yn8vZjr2f
-        e/D/dA9fAVhXXSJYe0nFBMP8b6tWM3/Q8wouRJkmrmgba7i/VLo8oTaOTMovxPN9
-        mGdvOglQfuVTvqkEy3/alSXZH1TtU/rWmcwndMb/NrCtKqb6zA9rlBEg7ua32x4z
-        Z/fH8OMpHHMKr+xnhoeLQf2rlmsQuF4pxrWB/F7aelwlLzcghzK5U7cz7afzQUXW
-        NH6EU6CekucaxD6rpZx7CgrU60V4xVpdmAoXheNIgxe1PPMtwBCMOfoJOzyU/ljQ
-        ==
-X-ME-Sender: <xms:9-bIX2JkrJc_idGOXw7CJ0Efs1Xrw2Glr-GZAlv7mOU_1Qsq6VZZyg>
-    <xme:9-bIX7ulMuhkk1uvbX4CL9t_Y3KezJP4t-UP2UozEuT6JsRO43nl1JV7DT-ZWDL3c
-    iJbIb5mpfIVUQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudeiiedghedvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujgesthdtre
-    dttddtvdenucfhrhhomhepifhrvghgucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheq
-    necuggftrfgrthhtvghrnhepveeuheejgfffgfeivddukedvkedtleelleeghfeljeeiue
-    eggeevueduudekvdetnecukfhppeekfedrkeeirdejgedrieegnecuvehluhhsthgvrhfu
-    ihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepghhrvghgsehkrhhorghhrdgtoh
-    hm
-X-ME-Proxy: <xmx:9-bIX9IAit820Ldv33Vx9Ua7TvUDsr2s0yP72w8tNHoQB3wNZRyfgw>
-    <xmx:9-bIX8_Zy08d821_6TB9NYEmrE08EnnPc5yxHln1xQysJJ3H07SDVA>
-    <xmx:9-bIX-wWnb7BJW7CkZUOFN2TWGVPRj6MOef8KPlBhelkLEnARbsBWA>
-    <xmx:-ebIXz61tF8SSagFmVsGikb66R3ACi6YeXeDoVMjFaRN9ddN1wellQ>
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 2B38124005B;
-        Thu,  3 Dec 2020 08:24:07 -0500 (EST)
-Date:   Thu, 3 Dec 2020 14:25:15 +0100
-From:   Greg KH <greg@kroah.com>
-To:     "Enrico Weigelt, metux IT consult" <info@metux.net>
-Cc:     linux-kernel@vger.kernel.org, devel@driverdev.osuosl.org,
-        toddpoynor@google.com, sbranden@broadcom.com, rjui@broadcom.com,
-        speakup@linux-speakup.org, rcy@google.com, f.fainelli@gmail.com,
-        rspringer@google.com, laurent.pinchart@ideasonboard.com,
-        netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        mchehab@kernel.org, nsaenzjulienne@suse.de,
-        linux-media@vger.kernel.org
-Subject: Re: [PATCH 01/11] drivers: staging: speakup: remove unneeded
- MODULE_VERSION() call
-Message-ID: <X8jnO5cPUQGEK9cr@kroah.com>
-References: <20201203124803.23390-1-info@metux.net>
+        id S1730770AbgLCN3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 08:29:21 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46882 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728067AbgLCN3V (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 08:29:21 -0500
+From:   Sasha Levin <sashal@kernel.org>
+Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Mordechay Goodstein <mordechay.goodstein@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.9 03/39] iwlwifi: pcie: limit memory read spin time
+Date:   Thu,  3 Dec 2020 08:27:57 -0500
+Message-Id: <20201203132834.930999-3-sashal@kernel.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20201203132834.930999-1-sashal@kernel.org>
+References: <20201203132834.930999-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201203124803.23390-1-info@metux.net>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 03, 2020 at 01:47:53PM +0100, Enrico Weigelt, metux IT consult wrote:
-> Remove MODULE_VERSION(), as it doesn't seem to serve any practical
-> purpose. For in-tree drivers, the kernel version matters.
-> 
-> The drivers have received lots of changes, without the module version
-> (or the underlying DRV_VERSION macro) ever changed, since the code
-> landed in the kernel tree. So, it doesn't seem to have any practical
-> meaning anymore.
-> 
-> Signed-off-by: Enrico Weigelt <info@metux.net>
-> ---
->  drivers/accessibility/speakup/main.c           | 1 -
+From: Johannes Berg <johannes.berg@intel.com>
 
-<snip>
+[ Upstream commit 04516706bb99889986ddfa3a769ed50d2dc7ac13 ]
 
-Yous subject line is odd, these are not "staging" drivers anymore, so
-why do you say they are there?
+When we read device memory, we lock a spinlock, write the address we
+want to read from the device and then spin in a loop reading the data
+in 32-bit quantities from another register.
 
-thanks,
+As the description makes clear, this is rather inefficient, incurring
+a PCIe bus transaction for every read. In a typical device today, we
+want to read 786k SMEM if it crashes, leading to 192k register reads.
+Occasionally, we've seen the whole loop take over 20 seconds and then
+triggering the soft lockup detector.
 
-greg k-h
+Clearly, it is unreasonable to spin here for such extended periods of
+time.
+
+To fix this, break the loop down into an outer and an inner loop, and
+break out of the inner loop if more than half a second elapsed. To
+avoid too much overhead, check for that only every 128 reads, though
+there's no particular reason for that number. Then, unlock and relock
+to obtain NIC access again, reprogram the start address and continue.
+
+This will keep (interrupt) latencies on the CPU down to a reasonable
+time.
+
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Mordechay Goodstein <mordechay.goodstein@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/iwlwifi.20201022165103.45878a7e49aa.I3b9b9c5a10002915072312ce75b68ed5b3dc6e14@changeid
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ .../net/wireless/intel/iwlwifi/pcie/trans.c   | 36 ++++++++++++++-----
+ 1 file changed, 27 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+index e5160d6208688..6393e895f95c6 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+@@ -2155,18 +2155,36 @@ static int iwl_trans_pcie_read_mem(struct iwl_trans *trans, u32 addr,
+ 				   void *buf, int dwords)
+ {
+ 	unsigned long flags;
+-	int offs, ret = 0;
++	int offs = 0;
+ 	u32 *vals = buf;
+ 
+-	if (iwl_trans_grab_nic_access(trans, &flags)) {
+-		iwl_write32(trans, HBUS_TARG_MEM_RADDR, addr);
+-		for (offs = 0; offs < dwords; offs++)
+-			vals[offs] = iwl_read32(trans, HBUS_TARG_MEM_RDAT);
+-		iwl_trans_release_nic_access(trans, &flags);
+-	} else {
+-		ret = -EBUSY;
++	while (offs < dwords) {
++		/* limit the time we spin here under lock to 1/2s */
++		ktime_t timeout = ktime_add_us(ktime_get(), 500 * USEC_PER_MSEC);
++
++		if (iwl_trans_grab_nic_access(trans, &flags)) {
++			iwl_write32(trans, HBUS_TARG_MEM_RADDR,
++				    addr + 4 * offs);
++
++			while (offs < dwords) {
++				vals[offs] = iwl_read32(trans,
++							HBUS_TARG_MEM_RDAT);
++				offs++;
++
++				/* calling ktime_get is expensive so
++				 * do it once in 128 reads
++				 */
++				if (offs % 128 == 0 && ktime_after(ktime_get(),
++								   timeout))
++					break;
++			}
++			iwl_trans_release_nic_access(trans, &flags);
++		} else {
++			return -EBUSY;
++		}
+ 	}
+-	return ret;
++
++	return 0;
+ }
+ 
+ static int iwl_trans_pcie_write_mem(struct iwl_trans *trans, u32 addr,
+-- 
+2.27.0
+
