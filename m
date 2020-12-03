@@ -2,45 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8B2C2CDA26
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 16:31:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E5512CDA0A
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 16:23:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730984AbgLCP36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 10:29:58 -0500
-Received: from pbmsgap01.intersil.com ([192.157.179.201]:59028 "EHLO
-        pbmsgap01.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726610AbgLCP36 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 10:29:58 -0500
-Received: from pps.filterd (pbmsgap01.intersil.com [127.0.0.1])
-        by pbmsgap01.intersil.com (8.16.0.42/8.16.0.42) with SMTP id 0B3FDW5Q026356;
-        Thu, 3 Dec 2020 10:20:54 -0500
-Received: from pbmxdp03.intersil.corp (pbmxdp03.pb.intersil.com [132.158.200.224])
-        by pbmsgap01.intersil.com with ESMTP id 356fu30gfc-1
+        id S1730520AbgLCPVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 10:21:41 -0500
+Received: from pbmsgap02.intersil.com ([192.157.179.202]:59584 "EHLO
+        pbmsgap02.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726344AbgLCPVk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 10:21:40 -0500
+Received: from pps.filterd (pbmsgap02.intersil.com [127.0.0.1])
+        by pbmsgap02.intersil.com (8.16.0.42/8.16.0.42) with SMTP id 0B3FDuUr007702;
+        Thu, 3 Dec 2020 10:20:53 -0500
+Received: from pbmxdp02.intersil.corp (pbmxdp02.pb.intersil.com [132.158.200.223])
+        by pbmsgap02.intersil.com with ESMTP id 356fuh8e5x-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 03 Dec 2020 10:20:54 -0500
+        Thu, 03 Dec 2020 10:20:53 -0500
 Received: from pbmxdp03.intersil.corp (132.158.200.224) by
- pbmxdp03.intersil.corp (132.158.200.224) with Microsoft SMTP Server
+ pbmxdp02.intersil.corp (132.158.200.223) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.1979.3; Thu, 3 Dec 2020 10:20:53 -0500
+ 15.1.1979.3; Thu, 3 Dec 2020 10:20:51 -0500
 Received: from localhost (132.158.202.109) by pbmxdp03.intersil.corp
  (132.158.200.224) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Thu, 3 Dec 2020 10:20:53 -0500
+ Transport; Thu, 3 Dec 2020 10:20:51 -0500
 From:   <min.li.xe@renesas.com>
 To:     <richardcochran@gmail.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Min Li <min.li.xe@renesas.com>
-Subject: [PATCH net-next 1/4] ptp: clockmatrix: reset device and check BOOT_STATUS
-Date:   Thu, 3 Dec 2020 10:20:16 -0500
-Message-ID: <1607008819-29158-1-git-send-email-min.li.xe@renesas.com>
+Subject: [PATCH net-next 2/4] ptp: clockmatrix: remove 5 second delay before entering write phase mode
+Date:   Thu, 3 Dec 2020 10:20:17 -0500
+Message-ID: <1607008819-29158-2-git-send-email-min.li.xe@renesas.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1607008819-29158-1-git-send-email-min.li.xe@renesas.com>
+References: <1607008819-29158-1-git-send-email-min.li.xe@renesas.com>
 X-TM-AS-MML: disable
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
  definitions=2020-12-03_08:2020-12-03,2020-12-03 signatures=0
-X-Proofpoint-Spam-Details: rule=junk_notspam policy=junk score=0 bulkscore=0 malwarescore=0
- suspectscore=4 mlxscore=0 spamscore=0 adultscore=0 mlxlogscore=999
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=junk_notspam policy=junk score=0 mlxscore=0 phishscore=0
+ malwarescore=0 spamscore=0 adultscore=0 bulkscore=0 mlxlogscore=999
+ suspectscore=4 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2009150000 definitions=main-2012030092
 X-Proofpoint-Spam-Reason: mlx
 Precedence: bulk
@@ -49,287 +51,89 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Min Li <min.li.xe@renesas.com>
 
-SM_RESET device only when loading full configuration and check
-for BOOT_STATUS. Also remove polling for write trigger done in
-_idtcm_settime().
+Remove write phase mode 5 second setup delay, not needed.
 
 Signed-off-by: Min Li <min.li.xe@renesas.com>
 ---
- drivers/ptp/idt8a340_reg.h    |   1 +
- drivers/ptp/ptp_clockmatrix.c | 152 ++++++++++++++++++++++++++++++++----------
- drivers/ptp/ptp_clockmatrix.h |   9 ++-
- 3 files changed, 126 insertions(+), 36 deletions(-)
+ drivers/ptp/ptp_clockmatrix.c | 22 ----------------------
+ drivers/ptp/ptp_clockmatrix.h |  1 -
+ 2 files changed, 23 deletions(-)
 
-diff --git a/drivers/ptp/idt8a340_reg.h b/drivers/ptp/idt8a340_reg.h
-index b297c4a..a664dfe 100644
---- a/drivers/ptp/idt8a340_reg.h
-+++ b/drivers/ptp/idt8a340_reg.h
-@@ -103,6 +103,7 @@
- #define SM_RESET_CMD                      0x5A
- 
- #define GENERAL_STATUS                    0xc014
-+#define BOOT_STATUS                       0x0000
- #define HW_REV_ID                         0x000A
- #define BOND_ID                           0x000B
- #define HW_CSR_ID                         0x000C
 diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
-index 6632557..7d42c3b 100644
+index 7d42c3b..0398c3d 100644
 --- a/drivers/ptp/ptp_clockmatrix.c
 +++ b/drivers/ptp/ptp_clockmatrix.c
-@@ -33,6 +33,45 @@ module_param(firmware, charp, 0);
- 
- #define SETTIME_CORRECTION (0)
- 
-+static int contains_full_configuration(const struct firmware *fw)
-+{
-+	s32 full_count = FULL_FW_CFG_BYTES - FULL_FW_CFG_SKIPPED_BYTES;
-+	struct idtcm_fwrc *rec = (struct idtcm_fwrc *) fw->data;
-+	s32 count = 0;
-+	u16 regaddr;
-+	u8 loaddr;
-+	s32 len;
-+
-+	/* If the firmware contains 'full configuration' SM_RESET can be used
-+	 * to ensure proper configuration.
-+	 *
-+	 * Full configuration is defined as the number of programmable
-+	 * bytes within the configuration range minus page offset addr range.
-+	 */
-+	for (len = fw->size; len > 0; len -= sizeof(*rec)) {
-+		regaddr = rec->hiaddr << 8;
-+		regaddr |= rec->loaddr;
-+
-+		loaddr = rec->loaddr;
-+
-+		rec++;
-+
-+		/* Top (status registers) and bottom are read-only */
-+		if ((regaddr < GPIO_USER_CONTROL)
-+		    || (regaddr >= SCRATCH))
-+			continue;
-+
-+		/* Page size 128, last 4 bytes of page skipped */
-+		if (((loaddr > 0x7b) && (loaddr <= 0x7f))
-+		     || loaddr > 0xfb)
-+			continue;
-+
-+		count++;
-+	}
-+
-+	return (count >= full_count);
-+}
-+
- static long set_write_phase_ready(struct ptp_clock_info *ptp)
- {
- 	struct idtcm_channel *channel =
-@@ -261,6 +300,53 @@ static int idtcm_write(struct idtcm *idtcm,
- 	return _idtcm_rdwr(idtcm, module + regaddr, buf, count, true);
+@@ -72,16 +72,6 @@ static int contains_full_configuration(const struct firmware *fw)
+ 	return (count >= full_count);
  }
  
-+static int clear_boot_status(struct idtcm *idtcm)
-+{
-+	int err;
-+	u8 buf[4] = {0};
-+
-+	err = idtcm_write(idtcm, GENERAL_STATUS, BOOT_STATUS, buf, sizeof(buf));
-+
-+	return err;
-+}
-+
-+static int read_boot_status(struct idtcm *idtcm, u32 *status)
-+{
-+	int err;
-+	u8 buf[4] = {0};
-+
-+	err = idtcm_read(idtcm, GENERAL_STATUS, BOOT_STATUS, buf, sizeof(buf));
-+
-+	*status = (buf[3] << 24) | (buf[2] << 16) | (buf[1] << 8) | buf[0];
-+
-+	return err;
-+}
-+
-+static int wait_for_boot_status_ready(struct idtcm *idtcm)
-+{
-+	u32 status = 0;
-+	u8 i = 30;	/* 30 * 100ms = 3s */
-+	int err;
-+
-+	do {
-+		err = read_boot_status(idtcm, &status);
-+
-+		if (err)
-+			return err;
-+
-+		if (status == 0xA0)
-+			return 0;
-+
-+		msleep(100);
-+		i--;
-+
-+	} while (i);
-+
-+	dev_warn(&idtcm->client->dev, "%s timed out\n", __func__);
-+
-+	return -EBUSY;
-+}
-+
- static int _idtcm_gettime(struct idtcm_channel *channel,
- 			  struct timespec64 *ts)
- {
-@@ -670,7 +756,7 @@ static int _idtcm_set_dpll_scsr_tod(struct idtcm_channel *channel,
+-static long set_write_phase_ready(struct ptp_clock_info *ptp)
+-{
+-	struct idtcm_channel *channel =
+-		container_of(ptp, struct idtcm_channel, caps);
+-
+-	channel->write_phase_ready = 1;
+-
+-	return 0;
+-}
+-
+ static int char_array_to_timespec(u8 *buf,
+ 				  u8 count,
+ 				  struct timespec64 *ts)
+@@ -1341,16 +1331,8 @@ static int _idtcm_adjphase(struct idtcm_channel *channel, s32 delta_ns)
+ 
  		if (err)
  			return err;
- 
--		if (cmd == 0)
-+		if ((cmd & TOD_WRITE_SELECTION_MASK) == 0)
- 			break;
- 
- 		if (++count > 20) {
-@@ -684,39 +770,16 @@ static int _idtcm_set_dpll_scsr_tod(struct idtcm_channel *channel,
- }
- 
- static int _idtcm_settime(struct idtcm_channel *channel,
--			  struct timespec64 const *ts,
--			  enum hw_tod_write_trig_sel wr_trig)
-+			  struct timespec64 const *ts)
- {
- 	struct idtcm *idtcm = channel->idtcm;
- 	int err;
--	int i;
--	u8 trig_sel;
 -
--	err = _idtcm_set_dpll_hw_tod(channel, ts, wr_trig);
+-		channel->write_phase_ready = 0;
 -
--	if (err)
--		return err;
--
--	/* Wait for the operation to complete. */
--	for (i = 0; i < 10000; i++) {
--		err = idtcm_read(idtcm, channel->hw_dpll_n,
--				 HW_DPLL_TOD_CTRL_1, &trig_sel,
--				 sizeof(trig_sel));
--
--		if (err)
--			return err;
- 
--		if (trig_sel == 0x4a)
--			break;
--
--		err = 1;
--	}
-+	err = _idtcm_set_dpll_hw_tod(channel, ts, HW_TOD_WR_TRIG_SEL_MSB);
- 
- 	if (err) {
- 		dev_err(&idtcm->client->dev,
--			"Failed at line %d in func %s!\n",
--			__LINE__,
--			__func__);
-+			"%s: Set HW ToD failed\n", __func__);
- 		return err;
+-		ptp_schedule_worker(channel->ptp_clock,
+-				    msecs_to_jiffies(WR_PHASE_SETUP_MS));
  	}
  
-@@ -891,7 +954,7 @@ static int _idtcm_adjtime(struct idtcm_channel *channel, s64 delta)
+-	if (!channel->write_phase_ready)
+-		delta_ns = 0;
+-
+ 	offset_ps = (s64)delta_ns * 1000;
  
- 		ts = ns_to_timespec64(now);
+ 	/*
+@@ -1930,7 +1912,6 @@ static const struct ptp_clock_info idtcm_caps_v487 = {
+ 	.gettime64	= &idtcm_gettime,
+ 	.settime64	= &idtcm_settime_v487,
+ 	.enable		= &idtcm_enable,
+-	.do_aux_work	= &set_write_phase_ready,
+ };
  
--		err = _idtcm_settime(channel, &ts, HW_TOD_WR_TRIG_SEL_MSB);
-+		err = _idtcm_settime(channel, &ts);
- 	}
+ static const struct ptp_clock_info idtcm_caps = {
+@@ -1943,7 +1924,6 @@ static const struct ptp_clock_info idtcm_caps = {
+ 	.gettime64	= &idtcm_gettime,
+ 	.settime64	= &idtcm_settime,
+ 	.enable		= &idtcm_enable,
+-	.do_aux_work	= &set_write_phase_ready,
+ };
  
- 	return err;
-@@ -899,13 +962,31 @@ static int _idtcm_adjtime(struct idtcm_channel *channel, s64 delta)
+ static int configure_channel_pll(struct idtcm_channel *channel)
+@@ -2113,8 +2093,6 @@ static int idtcm_enable_channel(struct idtcm *idtcm, u32 index)
+ 	if (!channel->ptp_clock)
+ 		return -ENOTSUPP;
  
- static int idtcm_state_machine_reset(struct idtcm *idtcm)
- {
--	int err;
- 	u8 byte = SM_RESET_CMD;
-+	u32 status = 0;
-+	int err;
-+	u8 i;
-+
-+	clear_boot_status(idtcm);
+-	channel->write_phase_ready = 0;
+-
+ 	dev_info(&idtcm->client->dev, "PLL%d registered as ptp%d\n",
+ 		 index, channel->ptp_clock->index);
  
- 	err = idtcm_write(idtcm, RESET_CTRL, SM_RESET, &byte, sizeof(byte));
- 
--	if (!err)
--		msleep_interruptible(POST_SM_RESET_DELAY_MS);
-+	if (!err) {
-+		for (i = 0; i < 30; i++) {
-+			msleep_interruptible(100);
-+			read_boot_status(idtcm, &status);
-+
-+			if (status == 0xA0) {
-+				dev_dbg(&idtcm->client->dev,
-+					"SM_RESET completed in %d ms\n",
-+					i * 100);
-+				break;
-+			}
-+		}
-+
-+		if (!status)
-+			dev_err(&idtcm->client->dev, "Timed out waiting for CM_RESET to complete\n");
-+	}
- 
- 	return err;
- }
-@@ -1099,7 +1180,7 @@ static int idtcm_load_firmware(struct idtcm *idtcm,
- 
- 	rec = (struct idtcm_fwrc *) fw->data;
- 
--	if (fw->size > 0)
-+	if (contains_full_configuration(fw))
- 		idtcm_state_machine_reset(idtcm);
- 
- 	for (len = fw->size; len > 0; len -= sizeof(*rec)) {
-@@ -1379,7 +1460,7 @@ static int idtcm_settime(struct ptp_clock_info *ptp,
- 
- 	mutex_lock(&idtcm->reg_lock);
- 
--	err = _idtcm_settime(channel, ts, HW_TOD_WR_TRIG_SEL_MSB);
-+	err = _idtcm_settime(channel, ts);
- 
- 	if (err)
- 		dev_err(&idtcm->client->dev,
-@@ -1810,7 +1891,7 @@ static int idtcm_enable_tod(struct idtcm_channel *channel)
- 	if (err)
- 		return err;
- 
--	return _idtcm_settime(channel, &ts, HW_TOD_WR_TRIG_SEL_MSB);
-+	return _idtcm_settime(channel, &ts);
- }
- 
- static void idtcm_display_version_info(struct idtcm *idtcm)
-@@ -2102,6 +2183,9 @@ static int idtcm_probe(struct i2c_client *client,
- 		dev_warn(&idtcm->client->dev,
- 			 "loading firmware failed with %d\n", err);
- 
-+	if (wait_for_boot_status_ready(idtcm))
-+		dev_warn(&idtcm->client->dev, "BOOT_STATUS != 0xA0\n");
-+
- 	if (idtcm->tod_mask) {
- 		for (i = 0; i < MAX_TOD; i++) {
- 			if (idtcm->tod_mask & (1 << i)) {
 diff --git a/drivers/ptp/ptp_clockmatrix.h b/drivers/ptp/ptp_clockmatrix.h
-index 82840d7..713e41a 100644
+index 713e41a..dd3436e 100644
 --- a/drivers/ptp/ptp_clockmatrix.h
 +++ b/drivers/ptp/ptp_clockmatrix.h
-@@ -53,9 +53,14 @@
+@@ -125,7 +125,6 @@ struct idtcm_channel {
+ 	enum pll_mode		pll_mode;
+ 	u8			pll;
+ 	u16			output_mask;
+-	int			write_phase_ready;
+ };
  
- #define OUTPUT_MODULE_FROM_INDEX(index)	(OUTPUT_0 + (index) * 0x10)
- 
--#define PEROUT_ENABLE_OUTPUT_MASK		(0xdeadbeef)
-+#define PEROUT_ENABLE_OUTPUT_MASK	(0xdeadbeef)
- 
--#define IDTCM_MAX_WRITE_COUNT			(512)
-+#define IDTCM_MAX_WRITE_COUNT		(512)
-+
-+#define FULL_FW_CFG_BYTES		(SCRATCH - GPIO_USER_CONTROL)
-+#define FULL_FW_CFG_SKIPPED_BYTES	(((SCRATCH >> 7) \
-+					  - (GPIO_USER_CONTROL >> 7)) \
-+					 * 4) /* 4 bytes skipped every 0x80 */
- 
- /* Values of DPLL_N.DPLL_MODE.PLL_MODE */
- enum pll_mode {
+ struct idtcm {
 -- 
 2.7.4
 
