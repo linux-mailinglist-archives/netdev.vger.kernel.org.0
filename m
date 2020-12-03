@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E2052CE0E7
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 22:37:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 655472CE0E2
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 22:37:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389369AbgLCVgz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 16:36:55 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:49979 "EHLO
+        id S2389414AbgLCVhA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 16:37:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57509 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388162AbgLCVgz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 16:36:55 -0500
+        by vger.kernel.org with ESMTP id S2389408AbgLCVg7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 16:36:59 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607031328;
+        s=mimecast20190719; t=1607031333;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=XeW+PrSGPFwf4qXKThBzV62+oNUX7du8v4rO75iY9HM=;
-        b=BKkrKtAkmrQ/1UpvQyArUWeYe1PBzlE+Eqo+5btBdz5yvKtu/hWiQv/lCYNghy9yjmvl74
-        AxSmblaD3jQnDrU59liZxgbGjDEm71SS6AmdqiNefJKq9e/AEndOrgN14akgeqsgB5MHdQ
-        C+XF4moZCu9zjPd4HX6oa4tLxkCPn/o=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-345-TZy5klGbMNuSkKzKB3TyKw-1; Thu, 03 Dec 2020 16:35:26 -0500
-X-MC-Unique: TZy5klGbMNuSkKzKB3TyKw-1
-Received: by mail-qk1-f198.google.com with SMTP id q21so3175518qkq.11
-        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 13:35:26 -0800 (PST)
+        bh=OspxR8nxroXzKoAByQKtvrhTzOZb9bKKpD2rIyWg0Bw=;
+        b=BByMk8AfHOInUmpC98evpOS21m1Gm5sIyTkYlpO2ufHhNeHWwvsN+QKrOTZ5wfzUfHmgR8
+        +XpCQoDv2AtSoNJx+QG3WsOJMJZOjDPBNy9tallrCB6GnM0giqlUBM6/pvc4JcwPAVTxNL
+        vKihrvGZHLzKVgSAg6XFvdU3gVkRgss=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-169-JNpeVbGrOf-aAmMi0mzD1g-1; Thu, 03 Dec 2020 16:35:29 -0500
+X-MC-Unique: JNpeVbGrOf-aAmMi0mzD1g-1
+Received: by mail-qv1-f72.google.com with SMTP id b15so2817471qvm.10
+        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 13:35:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=XeW+PrSGPFwf4qXKThBzV62+oNUX7du8v4rO75iY9HM=;
-        b=iLhxrASwXoO60LE9JuAMo9vng31xzcunJcyx+gVVSAwGo7b8F8rvX6kzFwE3C7hCWE
-         buE9Nd/Phi8OrOo6Ttkct4dfZqazkzohvRzb1HZGwhn7+TrkRL5LZBRsddDrIXFr3Yy4
-         QWNOapuR32k3I1w0w14tl9UPkTZcb5Pxki2B0wKT1rGTJsWeK+L3nSa1ILGvoPorXzvP
-         fztruFf+G9lBDqnEr7rtKO0uWRNHXI9cBcozHEfGTe0SVWbb9kzzsX0GBDnc0ycwy7/P
-         XXj+QNX35lpRgFdQCW8GVKG6yv0wzJlx0SozS/xaWqOdPwMV6YU68XL8pwDdIutsSn5k
-         MQHQ==
-X-Gm-Message-State: AOAM531neM4OAk48KzDsh3cpkNdp3DgDTu2Y2nYUUppbwXa6oWrG9m7V
-        Lce/a7k6FQpEjCDxSCXJn/l7ZuyGFWpjU4CnRtSyB33/qvqhrbKW382x4+2qOthUhgpA9HkK/+P
-        UijJvKUDxpe4pL6gC
-X-Received: by 2002:aed:3051:: with SMTP id 75mr5555394qte.64.1607031325028;
-        Thu, 03 Dec 2020 13:35:25 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzLduMaDaXPxJJZ7ytN1sVff2d9qoJUfQZ3hechVdcfKxQXqe9hByEvz/Mk4RWvgPMwMl8Z1g==
-X-Received: by 2002:aed:3051:: with SMTP id 75mr5555379qte.64.1607031324842;
-        Thu, 03 Dec 2020 13:35:24 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id z73sm2822101qkb.112.2020.12.03.13.35.21
+        bh=OspxR8nxroXzKoAByQKtvrhTzOZb9bKKpD2rIyWg0Bw=;
+        b=YWsbPogBhli+3gqNJjHuL07sfgqYIkWkAIScmvcfbSqLRXNYnAPClc4yzkYEyJFITR
+         z/TLHKF4B86o5cG3eLvM6lfhmiXWFsDTE6rxRjwmrHvIUYt8EuRWUy0XAayoDgm4Sg17
+         /zBX5MeAruHe2mfWI+Ixz9fxmBaFXr+LpQPpAsyEhPzvDSzqjWifwVwrgHDYKy4MRb6i
+         XsA9DkQfyWM4w6RwhVFZIeraR+E+AqQelZZnWeRIGKblUPZ1e40xAiVfh2GyO058TIVw
+         I5pj/ayVeKFiJ6mdw4nzrmM4y7DKrLahAnYvPnl9WEqqVSS0a5e61PAuk39GACG7uZuA
+         yfhw==
+X-Gm-Message-State: AOAM531nryuqgmy7tDt/TC+z75uJOzz0vILuOvIfV1drWHsH3jdWH2SM
+        PSD07WeJcg+MaTlADtUVUqgBrV3ko7mHoWqVYpOVKdeYPi1Ei/iKcmQ8NEsfRnzb8BgMqR8Ti+E
+        sqprEUOAnsRlF8XHI
+X-Received: by 2002:a37:4854:: with SMTP id v81mr5204183qka.20.1607031328686;
+        Thu, 03 Dec 2020 13:35:28 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw/SJA9fM5UcB2THmOJfZjkHU1sPRMmEkRZN3cfIodhNnsPMKTfttELv6baAorjBowVQySTyw==
+X-Received: by 2002:a37:4854:: with SMTP id v81mr5204152qka.20.1607031328232;
+        Thu, 03 Dec 2020 13:35:28 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id i3sm2468015qtv.23.2020.12.03.13.35.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Dec 2020 13:35:23 -0800 (PST)
+        Thu, 03 Dec 2020 13:35:24 -0800 (PST)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 711DC181CF8; Thu,  3 Dec 2020 22:35:20 +0100 (CET)
-Subject: [PATCH bpf 3/7] netdevsim: Add debugfs toggle to reject BPF programs
- in verifier
+        id 8744B1843EB; Thu,  3 Dec 2020 22:35:21 +0100 (CET)
+Subject: [PATCH bpf 4/7] selftests/bpf/test_offload.py: only check verifier
+ log on verification fails
 From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -76,8 +76,8 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Jiri Benc <jbenc@redhat.com>, oss-drivers@netronome.com,
         linux-omap@vger.kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Date:   Thu, 03 Dec 2020 22:35:20 +0100
-Message-ID: <160703132036.162669.7719186299991611592.stgit@toke.dk>
+Date:   Thu, 03 Dec 2020 22:35:21 +0100
+Message-ID: <160703132146.162669.15903502405321937636.stgit@toke.dk>
 In-Reply-To: <160703131710.162669.9632344967082582016.stgit@toke.dk>
 References: <160703131710.162669.9632344967082582016.stgit@toke.dk>
 User-Agent: StGit/0.23
@@ -90,69 +90,63 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-This adds a new debugfs toggle ('bpf_bind_verifier_accept') that can be
-used to make netdevsim reject BPF programs from being accepted by the
-verifier. If this toggle (which defaults to true) is set to false,
-nsim_bpf_verify_insn() will return EOPNOTSUPP on the last
-instruction (after outputting the 'Hello from netdevsim' verifier message).
-
-This makes it possible to check the verification callback in the driver
-from test_offload.py in selftests, since the verifier now clears the
-verifier log on a successful load, hiding the message from the driver.
+Since 6f8a57ccf85 ("bpf: Make verifier log more relevant by default"), the
+verifier discards log messages for successfully-verified programs. This
+broke test_offload.py which is looking for a verification message from the
+driver callback. Change test_offload.py to use the toggle in netdevsim to
+make the verification fail before looking for the verification message.
 
 Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- drivers/net/netdevsim/bpf.c       |   12 ++++++++++--
- drivers/net/netdevsim/netdevsim.h |    1 +
- 2 files changed, 11 insertions(+), 2 deletions(-)
+ tools/testing/selftests/bpf/test_offload.py |   19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/netdevsim/bpf.c b/drivers/net/netdevsim/bpf.c
-index 85546664bdd5..90aafb56f140 100644
---- a/drivers/net/netdevsim/bpf.c
-+++ b/drivers/net/netdevsim/bpf.c
-@@ -63,15 +63,20 @@ static int
- nsim_bpf_verify_insn(struct bpf_verifier_env *env, int insn_idx, int prev_insn)
- {
- 	struct nsim_bpf_bound_prog *state;
-+	int ret = 0;
+diff --git a/tools/testing/selftests/bpf/test_offload.py b/tools/testing/selftests/bpf/test_offload.py
+index 7afe259c785f..6f8ff2f27027 100755
+--- a/tools/testing/selftests/bpf/test_offload.py
++++ b/tools/testing/selftests/bpf/test_offload.py
+@@ -905,11 +905,18 @@ try:
  
- 	state = env->prog->aux->offload->dev_priv;
- 	if (state->nsim_dev->bpf_bind_verifier_delay && !insn_idx)
- 		msleep(state->nsim_dev->bpf_bind_verifier_delay);
+     sim.tc_flush_filters()
  
--	if (insn_idx == env->prog->len - 1)
-+	if (insn_idx == env->prog->len - 1) {
- 		pr_vlog(env, "Hello from netdevsim!\n");
- 
--	return 0;
-+		if (!state->nsim_dev->bpf_bind_verifier_accept)
-+			ret = -EOPNOTSUPP;
-+	}
++    start_test("Test TC offloads failure...")
++    sim.dfs["dev/bpf_bind_verifier_accept"] = 0
++    ret, _, err = sim.cls_bpf_add_filter(obj, verbose=True, skip_sw=True,
++                                         fail=False, include_stderr=True)
++    fail(ret == 0, "TC filter did not reject with TC offloads enabled")
++    check_verifier_log(err, "[netdevsim] Hello from netdevsim!")
++    sim.dfs["dev/bpf_bind_verifier_accept"] = 1
 +
-+	return ret;
- }
+     start_test("Test TC offloads work...")
+     ret, _, err = sim.cls_bpf_add_filter(obj, verbose=True, skip_sw=True,
+                                          fail=False, include_stderr=True)
+     fail(ret != 0, "TC filter did not load with TC offloads enabled")
+-    check_verifier_log(err, "[netdevsim] Hello from netdevsim!")
  
- static int nsim_bpf_finalize(struct bpf_verifier_env *env)
-@@ -595,6 +600,9 @@ int nsim_bpf_dev_init(struct nsim_dev *nsim_dev)
- 			    &nsim_dev->bpf_bind_accept);
- 	debugfs_create_u32("bpf_bind_verifier_delay", 0600, nsim_dev->ddir,
- 			   &nsim_dev->bpf_bind_verifier_delay);
-+	nsim_dev->bpf_bind_verifier_accept = true;
-+	debugfs_create_bool("bpf_bind_verifier_accept", 0600, nsim_dev->ddir,
-+			    &nsim_dev->bpf_bind_verifier_accept);
- 	return 0;
- }
+     start_test("Test TC offload basics...")
+     dfs = simdev.dfs_get_bound_progs(expected=1)
+@@ -1026,6 +1033,15 @@ try:
+     rm("/sys/fs/bpf/offload")
+     sim.wait_for_flush()
  
-diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
-index 827fc80f50a0..d1d329af3e61 100644
---- a/drivers/net/netdevsim/netdevsim.h
-+++ b/drivers/net/netdevsim/netdevsim.h
-@@ -190,6 +190,7 @@ struct nsim_dev {
- 	struct bpf_offload_dev *bpf_dev;
- 	bool bpf_bind_accept;
- 	u32 bpf_bind_verifier_delay;
-+	bool bpf_bind_verifier_accept;
- 	struct dentry *ddir_bpf_bound_progs;
- 	u32 prog_id_gen;
- 	struct list_head bpf_bound_progs;
++    start_test("Test XDP load failure...")
++    sim.dfs["dev/bpf_bind_verifier_accept"] = 0
++    ret, _, err = bpftool_prog_load("sample_ret0.o", "/sys/fs/bpf/offload",
++                                 dev=sim['ifname'], fail=False, include_stderr=True)
++    fail(ret == 0, "verifier should fail on load")
++    check_verifier_log(err, "[netdevsim] Hello from netdevsim!")
++    sim.dfs["dev/bpf_bind_verifier_accept"] = 1
++    sim.wait_for_flush()
++
+     start_test("Test XDP offload...")
+     _, _, err = sim.set_xdp(obj, "offload", verbose=True, include_stderr=True)
+     ipl = sim.ip_link_show(xdp=True)
+@@ -1033,7 +1049,6 @@ try:
+     progs = bpftool_prog_list(expected=1)
+     prog = progs[0]
+     fail(link_xdp["id"] != prog["id"], "Loaded program has wrong ID")
+-    check_verifier_log(err, "[netdevsim] Hello from netdevsim!")
+ 
+     start_test("Test XDP offload is device bound...")
+     dfs = simdev.dfs_get_bound_progs(expected=1)
 
