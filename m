@@ -2,130 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 803802CD29E
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 10:36:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 009F02CD2B7
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 10:40:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729896AbgLCJep (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 04:34:45 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:33937 "EHLO
+        id S2388625AbgLCJjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 04:39:36 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:39681 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726070AbgLCJeo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 04:34:44 -0500
+        by vger.kernel.org with ESMTP id S2388476AbgLCJjf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 04:39:35 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606987998;
+        s=mimecast20190719; t=1606988289;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding;
-        bh=uBzMWsgGtbXcdYHHTMh1lOFsxe85/SSnatB0cA3Z1Ew=;
-        b=BY7T6kbUyPiYJBsTRI7edAJ/mtaBWIrFITBr200MZpb6IKt/0vDmgIF88XllzEDMD/LB1V
-        mhFc4hbt5w1oyJlu2dx0aMoyHsVZxr61qC/I7qDTCw2c8Wz6EX537rjrtMv6WGDZgUlMeL
-        WDKgf1fvPNePImIYZ+3eSyKJD4riSVg=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-311-DGOu9iIkNLCyN3IaBWzRgQ-1; Thu, 03 Dec 2020 04:33:17 -0500
-X-MC-Unique: DGOu9iIkNLCyN3IaBWzRgQ-1
-Received: by mail-ej1-f72.google.com with SMTP id a8so538302ejc.19
-        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 01:33:16 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uBzMWsgGtbXcdYHHTMh1lOFsxe85/SSnatB0cA3Z1Ew=;
-        b=VRKumVx2T0Nl2IdCneut/xXeemD3zeJWh5lsOaM1rCloxgc5H+iTOYa1iP4ffouAil
-         Bs9IRZ2+wjf/YsY1iHgBs1atKINxwsqYv59PQbbXGflpKo+rxwKmT+yOBXl6fGisddYl
-         HB6L1mFr7AW/2AzimGwLwD3cWrcsoidPkttB7sFYaKd7gcswDimZthvh+dKhtxbrQ2vT
-         WSH+SvG7D3SaTKjwH7+jQFaBcYo1qtkJIXzJx0Zp3myRSypmxGn5u7Z20Tj8zBl/IKRb
-         Bzjg2u4EaKHAEdri2uht8OdVrhsj2HrYTpfIF1Pr9rW0plNivUxqgYid9U4ZAXSuwiAk
-         /VhQ==
-X-Gm-Message-State: AOAM532L8AeH1kbxicsECDsir1OOYcu4+eGH98iLxtrVjKfhatV8kfIW
-        tVQOZ/t4Zlb3VzT1Kwepc1T9I7HEmh/qvCOCnEKHCskohPkb/GPegNsFKLxATVwu/fEeaBo9MMU
-        hSsP/DTKRXZp1kXXH
-X-Received: by 2002:a50:c091:: with SMTP id k17mr1974348edf.137.1606987995696;
-        Thu, 03 Dec 2020 01:33:15 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxpcjscdDLv61o6nvrf4IeUgMNWts9rglY+4xclEtDM+Dqefb97EEaPbuarL1HUhxKKoEp1YQ==
-X-Received: by 2002:a50:c091:: with SMTP id k17mr1974343edf.137.1606987995554;
-        Thu, 03 Dec 2020 01:33:15 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id gt11sm423487ejb.67.2020.12.03.01.33.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Dec 2020 01:33:15 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 83630181CF8; Thu,  3 Dec 2020 10:33:14 +0100 (CET)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     daniel@iogearbox.net, ast@fb.com, andrii@kernel.org
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCH bpf v3] libbpf: sanitise map names before pinning
-Date:   Thu,  3 Dec 2020 10:33:06 +0100
-Message-Id: <20201203093306.107676-1-toke@redhat.com>
-X-Mailer: git-send-email 2.29.2
+        bh=/3jh12a+xSRpARJC/nS5WOWCLl4y1O6aSkghqwaUJ/Y=;
+        b=INyf4K6r1YMyWDOIGY7xCC1EfcZyTIysxHCwwO4uTO6GSh6dmkVPZ47ASJE3eC9VQHZ932
+        cw6fFS8OP3tD7z7eCu6tc2YpNOBQknAfGsEOhtmMmDbqIKXTTFE2vXfcDQE3bRgd60O7LX
+        niuuipERelf5Bb2iHpV6yf0u/WwF2xU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-489-GZ-d5bBQP-CBFbvbmIAD7w-1; Thu, 03 Dec 2020 04:38:05 -0500
+X-MC-Unique: GZ-d5bBQP-CBFbvbmIAD7w-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B77C1185E497;
+        Thu,  3 Dec 2020 09:38:03 +0000 (UTC)
+Received: from new-host-6.station (unknown [10.40.192.131])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5CDD960854;
+        Thu,  3 Dec 2020 09:38:01 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     jhs@mojatatu.com, jiri@resnulli.us,
+        Cong Wang <xiyou.wangcong@gmail.com>, kuba@kernel.org,
+        netdev@vger.kernel.org
+Cc:     gnault@redhat.com, marcelo.leitner@gmail.com,
+        John Hurley <john.hurley@netronome.com>
+Subject: [PATCH net v2] net/sched: act_mpls: ensure LSE is pullable before reading it
+Date:   Thu,  3 Dec 2020 10:37:52 +0100
+Message-Id: <3243506cba43d14858f3bd21ee0994160e44d64a.1606987058.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we added sanitising of map names before loading programs to libbpf, we
-still allowed periods in the name. While the kernel will accept these for
-the map names themselves, they are not allowed in file names when pinning
-maps. This means that bpf_object__pin_maps() will fail if called on an
-object that contains internal maps (such as sections .rodata).
+when 'act_mpls' is used to mangle the LSE, the current value is read from
+the packet dereferencing 4 bytes at mpls_hdr(): ensure that the label is
+contained in the skb "linear" area.
 
-Fix this by replacing periods with underscores when constructing map pin
-paths. This only affects the paths generated by libbpf when
-bpf_object__ping_maps() is called with a path argument. Any pin paths set
-by bpf_map__set_pin_path() are unaffected, and it will still be up to the
-caller to avoid invalid characters in those.
+Found by code inspection.
 
-Fixes: 113e6b7e15e2 ("libbpf: Sanitise internal map names so they are not rejected by the kernel")
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
-v3:
-  - void return for helper function
 v2:
-  - Move string munging to helper function
+ - use MPLS_HLEN instead of sizeof(new_lse), thanks to Jakub Kicinski
 
- tools/lib/bpf/libbpf.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+Fixes: 2a2ea50870ba ("net: sched: add mpls manipulation actions to TC")
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+---
+ net/sched/act_mpls.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 8d05132e1945..4a933ae64297 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -7651,6 +7651,16 @@ bool bpf_map__is_pinned(const struct bpf_map *map)
- 	return map->pinned;
- }
- 
-+static void sanitize_pin_path(char *s)
-+{
-+	/* bpffs disallows periods in path names */
-+	while (*s) {
-+		if (*s == '.')
-+			*s = '_';
-+		s++;
-+	}
-+}
-+
- int bpf_object__pin_maps(struct bpf_object *obj, const char *path)
- {
- 	struct bpf_map *map;
-@@ -7680,6 +7690,7 @@ int bpf_object__pin_maps(struct bpf_object *obj, const char *path)
- 				err = -ENAMETOOLONG;
- 				goto err_unpin_maps;
- 			}
-+			sanitize_pin_path(buf);
- 			pin_path = buf;
- 		} else if (!map->pin_path) {
- 			continue;
-@@ -7724,6 +7735,7 @@ int bpf_object__unpin_maps(struct bpf_object *obj, const char *path)
- 				return -EINVAL;
- 			else if (len >= PATH_MAX)
- 				return -ENAMETOOLONG;
-+			sanitize_pin_path(buf);
- 			pin_path = buf;
- 		} else if (!map->pin_path) {
- 			continue;
+diff --git a/net/sched/act_mpls.c b/net/sched/act_mpls.c
+index 5c7456e5b5cf..d1486ea496a2 100644
+--- a/net/sched/act_mpls.c
++++ b/net/sched/act_mpls.c
+@@ -105,6 +105,9 @@ static int tcf_mpls_act(struct sk_buff *skb, const struct tc_action *a,
+ 			goto drop;
+ 		break;
+ 	case TCA_MPLS_ACT_MODIFY:
++		if (!pskb_may_pull(skb,
++				   skb_network_offset(skb) + MPLS_HLEN))
++			goto drop;
+ 		new_lse = tcf_mpls_get_lse(mpls_hdr(skb), p, false);
+ 		if (skb_mpls_update_lse(skb, new_lse))
+ 			goto drop;
 -- 
-2.29.2
+2.28.0
 
