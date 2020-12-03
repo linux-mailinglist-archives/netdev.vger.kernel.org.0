@@ -2,74 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E98A92CDDB1
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 19:34:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15FCB2CDDBE
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 19:34:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727855AbgLCScg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 13:32:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49702 "EHLO
+        id S1731668AbgLCSd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 13:33:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726012AbgLCScf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 13:32:35 -0500
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 826EDC061A4E;
-        Thu,  3 Dec 2020 10:31:55 -0800 (PST)
-Received: by mail-pj1-x1043.google.com with SMTP id h7so2465796pjk.1;
-        Thu, 03 Dec 2020 10:31:55 -0800 (PST)
+        with ESMTP id S1731626AbgLCSd1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 13:33:27 -0500
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 420AFC061A4F;
+        Thu,  3 Dec 2020 10:32:47 -0800 (PST)
+Received: by mail-pf1-x442.google.com with SMTP id b10so1871735pfo.4;
+        Thu, 03 Dec 2020 10:32:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=+tzV8UtTzNnOOEopInN4rCKTSSxJMVPmFjV1HZa30S4=;
-        b=HBKSkdK48QtSJwqsilNsz4Pn6dUZ2VssLcMWW3zmYTUxtIAN3hR478Q6j9pSZ73c2c
-         angjvNwZKHUSfNbSIRWEEJgTRtrwey0yzlFgyB0n9rojgRuH4D72KZVrZ5POxhNaw007
-         94BvijAV7enqHb/0Yv6IOqII7ry8mdG9fmjE2efwFBgRd/Td82CTdEenx9wgxCIeXEou
-         cF45/sOswbGfxe1QxSC3TgIM0gThDCgeZBkNu+WOs1WdBgBMzpM8BuXG2Xn7q5keBO3t
-         QpAfsa/Q5ZOt6OfgvYEpxCDJzX9/imtTRmlUYJsDYJ6bqvDwP8zkaQdWieenXSYutM0a
-         zoXg==
+        bh=2TfCXyDchUz9TycwEcuS6cS7AaZIiVS2ius4r0dHDq8=;
+        b=P35N3lCWaogrMVCaXzqMi5DKbjvhZI7qj+hyS6w/kuoXpbo4voiFZzaKiRhiaOh7iV
+         Wig2NSjEhkPBzCYMuQ33rEnNs3wnhBWy+rCVf3b1NBWFRfg++yZXcLk56SMtySkjxEkS
+         OcdfS07jdssMsB5BW2UYpZJ51lfjttAALPRoxbV24i/8BjsQCGhiMFelGXSgCqFjpuKK
+         D64fMSo/k5M3TSBTPldqIQVNhvF2Xo3GEqqRmowyQbPYDZ0LG5LpKWbVFUp6knjp6aYf
+         J+w2od0ugotnyr2b3tuiFyBHdPpBJ4Isw6M2RSideFVcKyWrsuQcTSqBe2cn9L7Z3GKM
+         pwPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=+tzV8UtTzNnOOEopInN4rCKTSSxJMVPmFjV1HZa30S4=;
-        b=QqgfT4L92vAFoVvRpJJTVVW19krTYNIACb912Henuh97kZpl4V3X7pPJp2pWzw62VY
-         eRCS0W78daXPxPxdG8xu/Hd3LaLrq6/xLLH6Eiui+gcY0GDJnWmtTWPcth72eYEYuQWf
-         fsgr7QJ8SHL2cyq3Y3luWiHvm9G6lgXknJz1irVTn4eFlrROK9QzPprbxQTdlbjY37O7
-         E5HlMHx+7c4KYsij0O6nz87CFZayEDH627dsjI58GAu9oE5YB/54jS+rmdPlpNnjafWY
-         B256V8aIs8Ft6ihstV+s/1edQqQmIVXAs+grgJdvc6x9PEz9h4bItzPTiMdCQssdb06H
-         Z+Hw==
-X-Gm-Message-State: AOAM53216JiRU3pYrA77uZPj2lKgxiIA0hfL12Xj5AAlJIz5iRrVQSGj
-        slPQeFGNBTV4j7RzSYIXIRc=
-X-Google-Smtp-Source: ABdhPJz9VAExBWizk9YFbLui4xj0gU97WXlN4X92U1vQIYm1Vn/C5JftazTDB2ATQ18jjidmm1ajlw==
-X-Received: by 2002:a17:90b:3594:: with SMTP id mm20mr380615pjb.121.1607020314920;
-        Thu, 03 Dec 2020 10:31:54 -0800 (PST)
+        bh=2TfCXyDchUz9TycwEcuS6cS7AaZIiVS2ius4r0dHDq8=;
+        b=suePgUO/rPAUxXzBRzxobE6EcWjKALsE3CHEGYcja7HIiLAcxwV865uYMuPU/3/FbG
+         xbZUa7M+4VpSOnhIKkMhUhT//tDHxlwDDCZHwXMi5sp4FGNVfcn/EY8PfDN/L91qTMC8
+         qEd6JppfZnX2tCI7L9UMNGNQCTUABhig6bwBJENMI/wJ742NoAEpJhR+r+SMBUB6U3FO
+         fWz9/9bQ3qcdz7m5ZQu0MikWcveKxVqzw9jT11wndKgLI4+uNt8QAFxkKkVXAmectYZD
+         hVMBNW8vTqM6sASS4LIooH2eYmFhDxhFSe9f4p7Ob7WoatZSR+vev/rpSsfXVbqhLWB/
+         Ipmg==
+X-Gm-Message-State: AOAM532c8YzzTFx3CPS4sKYYWK2FDJct5xZk6vHUIkwLTLsziZMQfwsn
+        9d+qy8p2c8G+mFc3Ak5aRAw=
+X-Google-Smtp-Source: ABdhPJw7wx5/+grSMsWIBs01kXAfJtJGNVjneeBfKb1YxePqGwDQK/yt5avOS6aJRMmrerbbjT+WRg==
+X-Received: by 2002:a63:2026:: with SMTP id g38mr4131553pgg.30.1607020366874;
+        Thu, 03 Dec 2020 10:32:46 -0800 (PST)
 Received: from ast-mbp ([2620:10d:c090:400::5:a629])
-        by smtp.gmail.com with ESMTPSA id j10sm1786175pgc.85.2020.12.03.10.31.53
+        by smtp.gmail.com with ESMTPSA id x16sm117362pjh.39.2020.12.03.10.32.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Dec 2020 10:31:54 -0800 (PST)
-Date:   Thu, 3 Dec 2020 10:31:52 -0800
+        Thu, 03 Dec 2020 10:32:45 -0800 (PST)
+Date:   Thu, 3 Dec 2020 10:32:44 -0800
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 0/3] bpftool: improve split BTF support
-Message-ID: <20201203183152.eywr26oezaljvovv@ast-mbp>
-References: <20201202065244.530571-1-andrii@kernel.org>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        ast@kernel.org, daniel@iogearbox.net
+Subject: Re: [PATCH bpf-next 0/3] bpf: expose bpf_{s,g}etsockopt helpers to
+ bind{4,6} hooks
+Message-ID: <20201203183244.5ws5dorn34q3gbtl@ast-mbp>
+References: <20201202172516.3483656-1-sdf@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201202065244.530571-1-andrii@kernel.org>
+In-Reply-To: <20201202172516.3483656-1-sdf@google.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 01, 2020 at 10:52:40PM -0800, Andrii Nakryiko wrote:
-> Few follow up improvements to bpftool for split BTF support:
->   - emit "name <anon>" for non-named BTFs in `bpftool btf show` command;
->   - when dumping /sys/kernel/btf/<module> use /sys/kernel/btf/vmlinux as the
->     base BTF, unless base BTF is explicitly specified with -B flag.
+On Wed, Dec 02, 2020 at 09:25:13AM -0800, Stanislav Fomichev wrote:
+> This might be useful for the listener sockets to pre-populate
+> some options. Since those helpers require locked sockets,
+> I'm changing bind hooks to lock/unlock the sockets. This
+> should not cause any performance overhead because at this
+> point there shouldn't be any socket lock contention and the
+> locking/unlocking should be cheap.
 > 
-> This patch set also adds btf__base_btf() getter to access base BTF of the
-> struct btf.
+> Also, as part of the series, I convert test_sock_addr bpf
+> assembly into C (and preserve the narrow load tests) to
+> make it easier to extend with th bpf_setsockopt later on.
+> 
+> v2:
+> * remove version from bpf programs (Andrii Nakryiko)
 
 Applied, Thanks
