@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 001E12CD6EA
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 14:34:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E10502CD79A
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 14:36:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436731AbgLCNas (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 08:30:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47922 "EHLO mail.kernel.org"
+        id S2436697AbgLCNap (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 08:30:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47918 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2436671AbgLCNal (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S2436675AbgLCNal (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 3 Dec 2020 08:30:41 -0500
 From:   Sasha Levin <sashal@kernel.org>
 Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
+Cc:     Sara Sharon <sara.sharon@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 03/23] iwlwifi: pcie: set LTR to avoid completion timeout
-Date:   Thu,  3 Dec 2020 08:29:15 -0500
-Message-Id: <20201203132935.931362-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 04/23] iwlwifi: mvm: fix kernel panic in case of assert during CSA
+Date:   Thu,  3 Dec 2020 08:29:16 -0500
+Message-Id: <20201203132935.931362-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201203132935.931362-1-sashal@kernel.org>
 References: <20201203132935.931362-1-sashal@kernel.org>
@@ -33,77 +33,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Sara Sharon <sara.sharon@intel.com>
 
-[ Upstream commit edb625208d84aef179e3f16590c1c582fc5fdae6 ]
+[ Upstream commit fe56d05ee6c87f6a1a8c7267affd92c9438249cc ]
 
-On some platforms, the preset values aren't correct and then we may
-get a completion timeout in the firmware. Change the LTR configuration
-to avoid that. The firmware will do some more complex reinit of this
-later, but for the boot process we use ~250usec.
+During CSA, we briefly nullify the phy context, in __iwl_mvm_unassign_vif_chanctx.
+In case we have a FW assert right after it, it remains NULL though.
+We end up running into endless loop due to mac80211 trying repeatedly to
+move us to ASSOC state, and we keep returning -EINVAL. Later down the road
+we hit a kernel panic.
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Detect and avoid this endless loop.
+
+Signed-off-by: Sara Sharon <sara.sharon@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/iwlwifi.20201107104557.d83d591c05ba.I42885c9fb500bc08b9a4c07c4ff3d436cc7a3c84@changeid
+Link: https://lore.kernel.org/r/iwlwifi.20201107104557.d64de2c17bff.Iedd0d2afa20a2aacba5259a5cae31cb3a119a4eb@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/iwl-csr.h  | 10 ++++++++++
- .../intel/iwlwifi/pcie/ctxt-info-gen3.c       | 20 +++++++++++++++++++
- 2 files changed, 30 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-csr.h b/drivers/net/wireless/intel/iwlwifi/iwl-csr.h
-index 695bbaa86273d..12ef3a0420515 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-csr.h
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-csr.h
-@@ -147,6 +147,16 @@
- #define CSR_MAC_SHADOW_REG_CTL2		(CSR_BASE + 0x0AC)
- #define CSR_MAC_SHADOW_REG_CTL2_RX_WAKE	0xFFFF
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+index 73b8bf0fbf16f..daae86cd61140 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+@@ -3022,7 +3022,7 @@ static int iwl_mvm_mac_sta_state(struct ieee80211_hw *hw,
  
-+/* LTR control (since IWL_DEVICE_FAMILY_22000) */
-+#define CSR_LTR_LONG_VAL_AD			(CSR_BASE + 0x0D4)
-+#define CSR_LTR_LONG_VAL_AD_NO_SNOOP_REQ	0x80000000
-+#define CSR_LTR_LONG_VAL_AD_NO_SNOOP_SCALE	0x1c000000
-+#define CSR_LTR_LONG_VAL_AD_NO_SNOOP_VAL	0x03ff0000
-+#define CSR_LTR_LONG_VAL_AD_SNOOP_REQ		0x00008000
-+#define CSR_LTR_LONG_VAL_AD_SNOOP_SCALE		0x00001c00
-+#define CSR_LTR_LONG_VAL_AD_SNOOP_VAL		0x000003ff
-+#define CSR_LTR_LONG_VAL_AD_SCALE_USEC		2
-+
- /* GIO Chicken Bits (PCI Express bus link power management) */
- #define CSR_GIO_CHICKEN_BITS    (CSR_BASE+0x100)
+ 	/* this would be a mac80211 bug ... but don't crash */
+ 	if (WARN_ON_ONCE(!mvmvif->phy_ctxt))
+-		return -EINVAL;
++		return test_bit(IWL_MVM_STATUS_HW_RESTART_REQUESTED, &mvm->status) ? 0 : -EINVAL;
  
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c b/drivers/net/wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c
-index 74980382e64c8..7a5b024a6d384 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c
-@@ -180,6 +180,26 @@ int iwl_pcie_ctxt_info_gen3_init(struct iwl_trans *trans,
- 
- 	iwl_set_bit(trans, CSR_CTXT_INFO_BOOT_CTRL,
- 		    CSR_AUTO_FUNC_BOOT_ENA);
-+
-+	if (trans->trans_cfg->device_family == IWL_DEVICE_FAMILY_AX210) {
-+		/*
-+		 * The firmware initializes this again later (to a smaller
-+		 * value), but for the boot process initialize the LTR to
-+		 * ~250 usec.
-+		 */
-+		u32 val = CSR_LTR_LONG_VAL_AD_NO_SNOOP_REQ |
-+			  u32_encode_bits(CSR_LTR_LONG_VAL_AD_SCALE_USEC,
-+					  CSR_LTR_LONG_VAL_AD_NO_SNOOP_SCALE) |
-+			  u32_encode_bits(250,
-+					  CSR_LTR_LONG_VAL_AD_NO_SNOOP_VAL) |
-+			  CSR_LTR_LONG_VAL_AD_SNOOP_REQ |
-+			  u32_encode_bits(CSR_LTR_LONG_VAL_AD_SCALE_USEC,
-+					  CSR_LTR_LONG_VAL_AD_SNOOP_SCALE) |
-+			  u32_encode_bits(250, CSR_LTR_LONG_VAL_AD_SNOOP_VAL);
-+
-+		iwl_write32(trans, CSR_LTR_LONG_VAL_AD, val);
-+	}
-+
- 	if (trans->trans_cfg->device_family >= IWL_DEVICE_FAMILY_AX210)
- 		iwl_write_umac_prph(trans, UREG_CPU_INIT_RUN, 1);
- 	else
+ 	/*
+ 	 * If we are in a STA removal flow and in DQA mode:
 -- 
 2.27.0
 
