@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03FBA2CD35C
+	by mail.lfdr.de (Postfix) with ESMTP id DD6892CD35E
 	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 11:26:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730240AbgLCKYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 05:24:46 -0500
-Received: from mailout12.rmx.de ([94.199.88.78]:51363 "EHLO mailout12.rmx.de"
+        id S1730260AbgLCKZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 05:25:55 -0500
+Received: from mailout01.rmx.de ([94.199.90.91]:34572 "EHLO mailout01.rmx.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726080AbgLCKYq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Dec 2020 05:24:46 -0500
+        id S1730192AbgLCKZy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 05:25:54 -0500
 Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mailout12.rmx.de (Postfix) with ESMTPS id 4CmsPr5Qh6zRlCw;
-        Thu,  3 Dec 2020 11:24:00 +0100 (CET)
+        by mailout01.rmx.de (Postfix) with ESMTPS id 4CmsR81v57z2SX3Q;
+        Thu,  3 Dec 2020 11:25:08 +0100 (CET)
 Received: from mta.arri.de (unknown [217.111.95.66])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by kdin02.retarus.com (Postfix) with ESMTPS id 4CmsP34qD9z2TTMK;
-        Thu,  3 Dec 2020 11:23:19 +0100 (CET)
+        by kdin02.retarus.com (Postfix) with ESMTPS id 4CmsQJ1jTZz2TTL5;
+        Thu,  3 Dec 2020 11:24:24 +0100 (CET)
 Received: from N95HX1G2.wgnetz.xx (192.168.54.174) by mta.arri.de
  (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 3 Dec
- 2020 11:23:09 +0100
+ 2020 11:23:44 +0100
 From:   Christian Eggers <ceggers@arri.de>
 To:     Vladimir Oltean <olteanv@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
@@ -42,9 +42,9 @@ CC:     Vivien Didelot <vivien.didelot@gmail.com>,
         Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
         Christian Eggers <ceggers@arri.de>, <netdev@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next v5 3/9] net: dsa: microchip: ksz9477: move chip reset to ksz9477_switch_init()
-Date:   Thu, 3 Dec 2020 11:21:11 +0100
-Message-ID: <20201203102117.8995-4-ceggers@arri.de>
+Subject: [PATCH net-next v5 4/9] net: dsa: microchip: ksz9477: basic interrupt support
+Date:   Thu, 3 Dec 2020 11:21:12 +0100
+Message-ID: <20201203102117.8995-5-ceggers@arri.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201203102117.8995-1-ceggers@arri.de>
 References: <20201203102117.8995-1-ceggers@arri.de>
@@ -52,63 +52,171 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [192.168.54.174]
-X-RMX-ID: 20201203-112319-pWfkCHtyNVld-0@out02.hq
+X-RMX-ID: 20201203-112424-NLSCxzcZDpWs-0@out02.hq
 X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The next patch will add basic interrupt support. Chip reset must be
-performed before requesting the IRQ, so move this from ksz9477_setup()
-to ksz9477_init().
+Interrupts are required for TX time stamping. Probably they could also
+be used for PHY connection status.
+
+This patch only adds the basic infrastructure for interrupts, no
+interrupts are finally enabled nor handled.
 
 Signed-off-by: Christian Eggers <ceggers@arri.de>
 Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- drivers/net/dsa/microchip/ksz9477_main.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+Changes in v4:
+--------------
+- s/low active/active low/
+- Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
+ drivers/net/dsa/microchip/ksz9477_i2c.c  |  2 +
+ drivers/net/dsa/microchip/ksz9477_main.c | 68 ++++++++++++++++++++++++
+ drivers/net/dsa/microchip/ksz9477_spi.c  |  2 +
+ drivers/net/dsa/microchip/ksz_common.h   |  1 +
+ 4 files changed, 73 insertions(+)
+
+diff --git a/drivers/net/dsa/microchip/ksz9477_i2c.c b/drivers/net/dsa/microchip/ksz9477_i2c.c
+index 4e053a25d077..4ed1f503044a 100644
+--- a/drivers/net/dsa/microchip/ksz9477_i2c.c
++++ b/drivers/net/dsa/microchip/ksz9477_i2c.c
+@@ -41,6 +41,8 @@ static int ksz9477_i2c_probe(struct i2c_client *i2c,
+ 	if (i2c->dev.platform_data)
+ 		dev->pdata = i2c->dev.platform_data;
+ 
++	dev->irq = i2c->irq;
++
+ 	ret = ksz9477_switch_register(dev);
+ 
+ 	/* Main DSA driver may not be started yet. */
 diff --git a/drivers/net/dsa/microchip/ksz9477_main.c b/drivers/net/dsa/microchip/ksz9477_main.c
-index 42e647b67abd..681e752919ac 100644
+index 681e752919ac..f869041e3be0 100644
 --- a/drivers/net/dsa/microchip/ksz9477_main.c
 +++ b/drivers/net/dsa/microchip/ksz9477_main.c
-@@ -1343,19 +1343,12 @@ static void ksz9477_config_cpu_port(struct dsa_switch *ds)
- static int ksz9477_setup(struct dsa_switch *ds)
- {
- 	struct ksz_device *dev = ds->priv;
--	int ret = 0;
+@@ -5,9 +5,12 @@
+  * Copyright (C) 2017-2019 Microchip Technology Inc.
+  */
  
- 	dev->vlan_cache = devm_kcalloc(dev->dev, sizeof(struct vlan_table),
- 				       dev->num_vlans, GFP_KERNEL);
- 	if (!dev->vlan_cache)
- 		return -ENOMEM;
++#include <linux/bits.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
++#include <linux/interrupt.h>
+ #include <linux/iopoll.h>
++#include <linux/irq.h>
+ #include <linux/platform_data/microchip-ksz.h>
+ #include <linux/phy.h>
+ #include <linux/if_bridge.h>
+@@ -1524,6 +1527,54 @@ static const struct ksz_chip_data ksz9477_switch_chips[] = {
+ 	},
+ };
  
--	ret = ksz9477_reset_switch(dev);
--	if (ret) {
--		dev_err(ds->dev, "failed to reset switch\n");
--		return ret;
--	}
--
- 	/* Required for port partitioning. */
- 	ksz9477_cfg32(dev, REG_SW_QM_CTRL__4, UNICAST_VLAN_BOUNDARY,
- 		      true);
-@@ -1533,10 +1526,16 @@ static const struct ksz_chip_data ksz9477_switch_chips[] = {
- 
- static int ksz9477_switch_init(struct ksz_device *dev)
- {
--	int i;
-+	int i, ret;
- 
- 	dev->ds->ops = &ksz9477_switch_ops;
- 
-+	ret = ksz9477_reset_switch(dev);
-+	if (ret) {
-+		dev_err(dev->dev, "failed to reset switch\n");
-+		return ret;
++static irqreturn_t ksz9477_switch_irq_thread(int irq, void *dev_id)
++{
++	struct ksz_device *dev = dev_id;
++	u32 data;
++	int port;
++	int ret;
++
++	/* Read global port interrupt status register */
++	ret = ksz_read32(dev, REG_SW_PORT_INT_STATUS__4, &data);
++	if (ret)
++		return IRQ_NONE;
++
++	for (port = 0; port < dev->port_cnt; port++) {
++		u8 data8;
++
++		if (!(data & BIT(port)))
++			continue;
++
++		/* Read port interrupt status register */
++		ret = ksz_read8(dev, PORT_CTRL_ADDR(port, REG_PORT_INT_STATUS),
++				&data8);
++		if (ret)
++			return IRQ_NONE;
++
++		/* ToDo: Add specific handling of port interrupts */
 +	}
 +
- 	for (i = 0; i < ARRAY_SIZE(ksz9477_switch_chips); i++) {
- 		const struct ksz_chip_data *chip = &ksz9477_switch_chips[i];
++	return IRQ_NONE;
++}
++
++static int ksz9477_enable_port_interrupts(struct ksz_device *dev, bool enable)
++{
++	u32 data, mask = GENMASK(dev->port_cnt - 1, 0);
++	int ret;
++
++	ret = ksz_read32(dev, REG_SW_PORT_INT_MASK__4, &data);
++	if (ret)
++		return ret;
++
++	/* bits in REG_SW_PORT_INT_MASK__4 are active low */
++	if (enable)
++		data &= ~mask;
++	else
++		data |= mask;
++
++	return ksz_write32(dev, REG_SW_PORT_INT_MASK__4, data);
++}
++
+ static int ksz9477_switch_init(struct ksz_device *dev)
+ {
+ 	int i, ret;
+@@ -1579,12 +1630,29 @@ static int ksz9477_switch_init(struct ksz_device *dev)
+ 
+ 	/* set the real number of ports */
+ 	dev->ds->num_ports = dev->port_cnt;
++	if (dev->irq > 0) {
++		ret = devm_request_threaded_irq(dev->dev, dev->irq, NULL,
++						ksz9477_switch_irq_thread,
++						IRQF_ONESHOT | IRQF_SHARED,
++						dev_name(dev->dev),
++						dev);
++		if (ret) {
++			dev_err(dev->dev, "failed to request IRQ.\n");
++			return ret;
++		}
++
++		ret = ksz9477_enable_port_interrupts(dev, true);
++		if (ret)
++			return ret;
++	}
+ 
+ 	return 0;
+ }
+ 
+ static void ksz9477_switch_exit(struct ksz_device *dev)
+ {
++	if (dev->irq > 0)
++		ksz9477_enable_port_interrupts(dev, false);
+ 	ksz9477_reset_switch(dev);
+ }
+ 
+diff --git a/drivers/net/dsa/microchip/ksz9477_spi.c b/drivers/net/dsa/microchip/ksz9477_spi.c
+index 15bc11b3cda4..fc0ac9e2c56d 100644
+--- a/drivers/net/dsa/microchip/ksz9477_spi.c
++++ b/drivers/net/dsa/microchip/ksz9477_spi.c
+@@ -48,6 +48,8 @@ static int ksz9477_spi_probe(struct spi_device *spi)
+ 	if (spi->dev.platform_data)
+ 		dev->pdata = spi->dev.platform_data;
+ 
++	dev->irq = spi->irq;
++
+ 	/* setup spi */
+ 	spi->mode = SPI_MODE_3;
+ 	ret = spi_setup(spi);
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 720f22275c84..ac6914d361c8 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -55,6 +55,7 @@ struct ksz_device {
+ 
+ 	struct device *dev;
+ 	struct regmap *regmap[3];
++	int irq;
+ 
+ 	void *priv;
  
 -- 
 Christian Eggers
