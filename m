@@ -2,105 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 798E22CDCFE
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 19:03:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93F4A2CDCFC
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 19:03:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731556AbgLCSCJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 13:02:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44938 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727427AbgLCSCG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 13:02:06 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90E80C061A4E;
-        Thu,  3 Dec 2020 10:01:25 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id f190so4861413wme.1;
-        Thu, 03 Dec 2020 10:01:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=uuffdwLR2hZJFHYYMgq3J065S+Cnd9UrLlfcWQHHRhU=;
-        b=o0vdXh7ZI9OrkzmMfVdo98vW7TalOsoE09k43V1Cpz/0HXOIT/OSTWHqMOnlGH0X69
-         QVa10Gqk1Fw2MVx+xdOxH/Myg5pyNReAAImIwLc1k4/vAbL+bquEpO0SWlAwjzt3M4Eg
-         tSMWJPgrcN5x1J14oF2zjqUC7vMWlUvBSzKjowzJfi4ZlGPwhGlgVJe+xAJoVN0GjyRr
-         cLAJ1rDZZd62WOAOSyTp1+tQxLTC/r5u+oYrS8oWagjL9QV3ewhKIOENa3/KlND5PNnE
-         DVgqfFTFUMEvZk60FaBF/BmG6iEG9mPdQceQAGzvXUVfnLPlfocZ+y35+cTODHI3QNhS
-         1XOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=uuffdwLR2hZJFHYYMgq3J065S+Cnd9UrLlfcWQHHRhU=;
-        b=R8C527/D0dKOnpu0pWNaRmYjmLQETQ726yeCeypbF/zQSY0VHtmiYMO1/L1YOGEVIr
-         NfcYL1JA/LROx2KrCuJTtvR7K9capTZwWdfmuw0O6X6EDwMglhIJ+2HfEM3II4S6Utp+
-         W4KaKwrBrdw1cpuoPsIKZWG1XiVyVbBgbtXi2WQnvRkomkGra7zjj85CgBiq6Pd8uZg7
-         5z5pe2F1Rh7spUYg41FuJnfhertgarC64x4VhG9eeD8YNYkDVyCqE8iy1PsY6KfXOVKj
-         2lLDrD/DSXFQDeTgq7B2G6ecfRiNCh4uUcCmuwcsLAxaV+0tZK+Kx1A6A039zA99I8LK
-         K2GA==
-X-Gm-Message-State: AOAM530n59Agy+zrzXtgdBKfKX6+Dp9qTZw0FQ94DMi0SoLexagqoEd0
-        MFSfKmPgUn+i//NvpuR5h3s=
-X-Google-Smtp-Source: ABdhPJzKYm/Tc7VYPzNBAzdvQ0VlSfpqcD7vnwrCTRP8CvVSHVjoLR2d2rQ/I7tPXyOaPq3FwI33Tw==
-X-Received: by 2002:a1c:1f54:: with SMTP id f81mr52035wmf.44.1607018484390;
-        Thu, 03 Dec 2020 10:01:24 -0800 (PST)
-Received: from [192.168.8.116] ([37.165.75.126])
-        by smtp.gmail.com with ESMTPSA id c81sm186654wmd.6.2020.12.03.10.01.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Dec 2020 10:01:23 -0800 (PST)
-Subject: Re: WARNING in sk_stream_kill_queues (5)
-To:     Marco Elver <elver@google.com>, Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Miller <davem@davemloft.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Jann Horn <jannh@google.com>, Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Willem de Bruijn <willemb@google.com>,
-        syzbot <syzbot+7b99aafdcc2eedea6178@syzkaller.appspotmail.com>
-References: <000000000000b4862805b54ef573@google.com>
- <X8kLG5D+j4rT6L7A@elver.google.com>
- <CANn89iJWD5oXPLgtY47umTgo3gCGBaoy+XJfXnw1ecES_EXkCw@mail.gmail.com>
- <CANpmjNOaWbGJQ5Y=qC3cA31-R-Jy4Fbe+p=OBG5O2Amz8dLtLA@mail.gmail.com>
- <CANn89iKWf1EVZUuAHup+5ndhxvOqGopq53=vZ9yeok=DnRjggg@mail.gmail.com>
- <X8kjPIrLJUd8uQIX@elver.google.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <af884a0e-5d4d-f71b-4821-b430ac196240@gmail.com>
-Date:   Thu, 3 Dec 2020 19:01:21 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        id S1731506AbgLCSCF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 13:02:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48902 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727427AbgLCSCE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 13:02:04 -0500
+Date:   Thu, 3 Dec 2020 10:01:21 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607018483;
+        bh=4nwXgQeJ3FL/51sfkz1+8OIrwWTS7/aSglxTmsBTa7Q=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pb1TZJr3u7ZnNO0Ckg0JmHuAEdW5yudxJGD8OMW7otFKw+daw6j/MiP86ArZ3GgXa
+         6YlLSyzQ5ofWiNNep8UzWWIFTJRuXUjQXbnlhHqmDbs3QUwbDUo0+i+2mgj8Zltiih
+         RqlD3MwG4NYfQEbpUoHrinYmbAJZS/olTRyPZfwZcBDSvgZzShzcsv1IaTQsNIgxjW
+         aN8WjwdTXcmV9HLkcM74gW2FE0H0UM8jloMrw+wBPIyo0qWsvZrdnxzcWJeBDlEvcC
+         FSIMCNgSiafyVNbk0usgGIaW4LkF2Kf0fK0qJipGcxeTk8WL+5JFrFO+pQgz05CQre
+         t/d2sGdvueAdQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 2/2] net: dsa: qca: ar9331: export stats64
+Message-ID: <20201203100121.64bb2774@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201203175320.f3fmyaqoxifydwzv@pengutronix.de>
+References: <20201202140904.24748-1-o.rempel@pengutronix.de>
+        <20201202140904.24748-3-o.rempel@pengutronix.de>
+        <20201202104207.697cfdbb@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+        <20201203085011.GA3606@pengutronix.de>
+        <20201203083517.3b616782@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+        <20201203175320.f3fmyaqoxifydwzv@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <X8kjPIrLJUd8uQIX@elver.google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 12/3/20 6:41 PM, Marco Elver wrote:
-
-> One more experiment -- simply adding
+On Thu, 3 Dec 2020 18:53:20 +0100 Oleksij Rempel wrote:
+> On Thu, Dec 03, 2020 at 08:35:17AM -0800, Jakub Kicinski wrote:
+> > On Thu, 3 Dec 2020 09:50:11 +0100 Oleksij Rempel wrote:  
+> > > @Jakub,
+> > >   
+> > > > You can't take sleeping locks from .ndo_get_stats64.
+> > > > 
+> > > > Also regmap may sleep?
+> > > > 
+> > > > +	ret = regmap_read(priv->regmap, reg, &val);    
+> > > 
+> > > Yes. And underling layer is mdio bus which is by default sleeping as
+> > > well.
+> > >   
+> > > > Am I missing something?    
+> > > 
+> > > In this log, the  ar9331_get_stats64() was never called from atomic or
+> > > irq context. Why it should not be sleeping?  
+> > 
+> > You missed some long discussions about this within last week on netdev.
+> > Also Documentation/networking/statistics.rst.
+> > 
+> > To answer your direct question - try:
+> > 
+> > # cat /proc/net/dev
+> > 
+> > procfs iterates over devices while holding only an RCU read lock.  
 > 
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -207,7 +207,21 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
->  	 */
->  	size = SKB_DATA_ALIGN(size);
->  	size += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-> +	size = 1 << kmalloc_index(size); /* HACK */
->  	data = kmalloc_reserve(size, gfp_mask, node, &pfmemalloc);
+> Now i can reproduce it :)
 > 
+> [33683.199864] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:935
+> [33683.210737] in_atomic(): 0, irqs_disabled(): 0, non_block: 0, pid: 593, name: cat
+> [33683.216796] INFO: lockdep is turned off.
+> [33683.222972] CPU: 0 PID: 593 Comm: cat Not tainted 5.10.0-rc3-ar9331-00733-gff7090915bb7-dirty #28
+> [33683.231743] Stack : 808f0000 80885ffc 820eba5c 00000000 00000000 d4a19200 80980000 819a93c8
+> [33683.240093]         80980ca7 80d43358 804ee1f4 80980000 00000002 800afe08 820eba08 d4a19200
+> [33683.247181]         00000000 00000000 8089ffb0 00000000 820ebfe0 00000000 00000000 00000000
+> [33683.257767]         820ebab4 77bbfdc0 00fae587 77e859a0 80980000 80000000 00000000 80990000
+> [33683.266107]         804ee1f4 80980000 00000002 8200f750 8097ca9c d4a19200 000859df 00000001
+> [33683.274529]         ...
+> [33683.275626] Call Trace:
+> [33683.280156] [<80069ce0>] show_stack+0x9c/0x140
+> [33683.283200] [<800afe08>] ___might_sleep+0x220/0x244
+> [33683.290441] [<8073c030>] __mutex_lock+0x70/0x374
+> [33683.293651] [<8073c360>] mutex_lock_nested+0x2c/0x38
+> [33683.300793] [<804ee1f4>] ar9331_read_stats+0x34/0x834
+> [33683.304441] [<804eea34>] ar9331_get_stats64+0x40/0x394
+> [33683.311797] [<80526584>] dev_get_stats+0x58/0xfc
+> [33683.315013] [<805657bc>] dev_seq_printf_stats+0x44/0x228
+> [33683.322476] [<805659e8>] dev_seq_show+0x48/0x50
+> [33683.325601] [<8021dd28>] seq_read_iter+0x3d8/0x4d0
+> [33683.332585] [<8021df60>] seq_read+0x140/0x198
+> [33683.335532] [<8026f950>] proc_reg_read+0xe4/0xf8
+> [33683.342397] [<801f0840>] vfs_read+0xc8/0x1a8
+> [33683.345260] [<801f0b7c>] ksys_read+0x9c/0xfc
+> [33683.352056] [<80071aa4>] syscall_common+0x34/0x58
 > 
-> also got rid of the warnings. Something must be off with some value that
-> is computed in terms of ksize(). If not, I don't have any explanation
-> for why the above hides the problem.
+> Hm.. There is no way i can guarantee that underlying mdio system is
+> not using mutexes. So, i can't read stats directly from HW within
+> ar9331_get_stats64(), only driver internal storage can be used. It is possible
+> to poll it more frequently, but  it make no reals sense on this low power
+> devices.
+> 
+> What kind of options do we have?
 
-Maybe the implementations of various macros (SKB_DATA_ALIGN and friends)
-hae some kind of assumptions, I will double check this.
-
+Vladimir has been looking at solving this, I'll let him answer with his
+latest thoughts.
