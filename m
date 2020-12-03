@@ -2,118 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D32562CCB0E
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 01:41:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F6CF2CCB28
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 01:47:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726851AbgLCAkE convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 2 Dec 2020 19:40:04 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:60192 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726589AbgLCAkE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 19:40:04 -0500
-Received: from 1.general.jvosburgh.uk.vpn ([10.172.196.206] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1kkceR-0006TK-L3; Thu, 03 Dec 2020 00:39:16 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 2F9365FEE8; Wed,  2 Dec 2020 16:39:14 -0800 (PST)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 27C7B9FAB0;
-        Wed,  2 Dec 2020 16:39:14 -0800 (PST)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 1/4] net: bonding: Notify ports about their initial state
-In-reply-to: <87h7p37u4t.fsf@waldekranz.com>
-References: <20201202091356.24075-1-tobias@waldekranz.com> <20201202091356.24075-2-tobias@waldekranz.com> <17902.1606936179@famine> <87h7p37u4t.fsf@waldekranz.com>
-Comments: In-reply-to Tobias Waldekranz <tobias@waldekranz.com>
-   message dated "Wed, 02 Dec 2020 22:52:50 +0100."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S1727521AbgLCApi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 19:45:38 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46863 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726962AbgLCApi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 19:45:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1606956251;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8EDCn101SFARHTTM1x2YExb2aB0Hg6FLAdBXqacqkCk=;
+        b=RBvEf7s/PrSRXt2ZI4gThx59rigaUBPcT5DEaTAjGcu9h2Re/kD0c99GYk+bybxbq2gAlo
+        URPeQL02MLJfjVUuvQPm5e4OkSKyq6cOa8Xzg5RnT2kRVtPHXQwQg5h40e9SA11kr0J8bo
+        3drx5FWlwdWQR9meURS0f4Jb2svn7Uo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-453-v018RCeoPrS-9pv7ITQBjQ-1; Wed, 02 Dec 2020 19:44:07 -0500
+X-MC-Unique: v018RCeoPrS-9pv7ITQBjQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AA6751007463;
+        Thu,  3 Dec 2020 00:44:05 +0000 (UTC)
+Received: from f33vm.wilsonet.com.wilsonet.com (dhcp-17-185.bos.redhat.com [10.18.17.185])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A36F810013C0;
+        Thu,  3 Dec 2020 00:44:00 +0000 (UTC)
+From:   Jarod Wilson <jarod@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jarod Wilson <jarod@redhat.com>, Ivan Vecera <ivecera@redhat.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org
+Subject: [PATCH net v3] bonding: fix feature flag setting at init time
+Date:   Wed,  2 Dec 2020 19:43:57 -0500
+Message-Id: <20201203004357.3125-1-jarod@redhat.com>
+In-Reply-To: <20201202173053.13800-1-jarod@redhat.com>
+References: <20201202173053.13800-1-jarod@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <458.1606955954.1@famine>
-Content-Transfer-Encoding: 8BIT
-Date:   Wed, 02 Dec 2020 16:39:14 -0800
-Message-ID: <459.1606955954@famine>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tobias Waldekranz <tobias@waldekranz.com> wrote:
+Don't try to adjust XFRM support flags if the bond device isn't yet
+registered. Bad things can currently happen when netdev_change_features()
+is called without having wanted_features fully filled in yet. This code
+runs on post-module-load mode changes, as well as at module init time
+and new bond creation time, and in the latter two scenarios, it is
+running prior to register_netdevice() having been called and
+subsequently filling in wanted_features. The empty wanted_features led
+to features also getting emptied out, which was definitely not the
+intended behavior, so prevent that from happening.
 
->On Wed, Dec 02, 2020 at 11:09, Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
->> Tobias Waldekranz <tobias@waldekranz.com> wrote:
->>
->>>When creating a static bond (e.g. balance-xor), all ports will always
->>>be enabled. This is set, and the corresponding notification is sent
->>>out, before the port is linked to the bond upper.
->>>
->>>In the offloaded case, this ordering is hard to deal with.
->>>
->>>The lower will first see a notification that it can not associate with
->>>any bond. Then the bond is joined. After that point no more
->>>notifications are sent, so all ports remain disabled.
->>>
->>>This change simply sends an extra notification once the port has been
->>>linked to the upper to synchronize the initial state.
->>
->> 	I'm not objecting to this per se, but looking at team and
->> net_failover (failover_slave_register), those drivers do not send the
->> same first notification that bonding does (the "can not associate" one),
->> but only send a notification after netdev_master_upper_dev_link is
->> complete.
->>
->> 	Does it therefore make more sense to move the existing
->> notification within bonding to take place after the upper_dev_link
->> (where you're adding this new call to bond_lower_state_changed)?  If the
->> existing notification is effectively useless, this would make the
->> sequence of notifications consistent across drivers.
->
->From my point of view that makes more sense. I just assumed that the
->current implementation was done this way for a reason. Therefore I opted
->for a simple extension instead.
+Originally, I'd hoped to stop adjusting wanted_features at all in the
+bonding driver, as it's documented as being something only the network
+core should touch, but we actually do need to do this to properly update
+both the features and wanted_features fields when changing the bond type,
+or we get to a situation where ethtool sees:
 
-	I suspect the current implementation's ordering is more a side
-effect of how the function was structured initially, and the
-notifications were added later without giving thought to the ordering of
-those events.
+    esp-hw-offload: off [requested on]
 
->I could look at hoisting up the linking op before the first
->notification. My main concern is that this is a new subsystem to me, so
->I am not sure how to determine the adequate test coverage for a change
->like this.
->
->Another option would be to drop this change from this series and do it
->separately. It would be nice to have both team and bond working though.
->
->Not sure why I am the first to run into this. Presumably the mlxsw LAG
->offloading would be affected in the same way. Maybe their main use-case
->is LACP.
+I do think we should be using netdev_update_features instead of
+netdev_change_features here though, so we only send notifiers when the
+features actually changed.
 
-	I'm not sure about mlxsw specifically, but in the configurations
-I see, LACP is by far the most commonly used mode, with active-backup a
-distant second.  I can't recall the last time I saw a production
-environment using balance-xor.
+v2: rework based on further testing and suggestions from ivecera
+v3: add helper function, remove goto, fix problem description
 
-	I think that in the perfect world there should be exactly one
-such notification, and occurring in the proper sequence.  A quick look
-at the kernel consumers of the NETDEV_CHANGELOWERSTATE event (mlx5,
-mlxsw, and nfp, looks like) suggests that those shouldn't have an issue.
-
-	In user space, however, there are daemons that watch the events,
-and may rely on the current ordering.  Some poking around reveals odd
-bugs in user space when events are rearranged, so I think the prudent
-thing is to not mess with what's there now, and just add the one event
-here (i.e., apply your patch as-is).
-
-	So, for this bonding change:
-
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-
-	-J
-
+Fixes: a3b658cfb664 ("bonding: allow xfrm offload setup post-module-load")
+Reported-by: Ivan Vecera <ivecera@redhat.com>
+Suggested-by: Ivan Vecera <ivecera@redhat.com>
+Cc: Jay Vosburgh <j.vosburgh@gmail.com>
+Cc: Veaceslav Falico <vfalico@gmail.com>
+Cc: Andy Gospodarek <andy@greyhouse.net>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Thomas Davis <tadavis@lbl.gov>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Jarod Wilson <jarod@redhat.com>
 ---
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+ drivers/net/bonding/bond_main.c    | 10 ++++------
+ drivers/net/bonding/bond_options.c | 19 ++++++++++++++-----
+ 2 files changed, 18 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 47afc5938c26..7905534a763b 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -4747,15 +4747,13 @@ void bond_setup(struct net_device *bond_dev)
+ 				NETIF_F_HW_VLAN_CTAG_FILTER;
+ 
+ 	bond_dev->hw_features |= NETIF_F_GSO_ENCAP_ALL | NETIF_F_GSO_UDP_L4;
+-#ifdef CONFIG_XFRM_OFFLOAD
+-	bond_dev->hw_features |= BOND_XFRM_FEATURES;
+-#endif /* CONFIG_XFRM_OFFLOAD */
+ 	bond_dev->features |= bond_dev->hw_features;
+ 	bond_dev->features |= NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_STAG_TX;
+ #ifdef CONFIG_XFRM_OFFLOAD
+-	/* Disable XFRM features if this isn't an active-backup config */
+-	if (BOND_MODE(bond) != BOND_MODE_ACTIVEBACKUP)
+-		bond_dev->features &= ~BOND_XFRM_FEATURES;
++	bond_dev->hw_features |= BOND_XFRM_FEATURES;
++	/* Only enable XFRM features if this is an active-backup config */
++	if (BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP)
++		bond_dev->features |= BOND_XFRM_FEATURES;
+ #endif /* CONFIG_XFRM_OFFLOAD */
+ }
+ 
+diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
+index 9abfaae1c6f7..1ae0e5ab8c67 100644
+--- a/drivers/net/bonding/bond_options.c
++++ b/drivers/net/bonding/bond_options.c
+@@ -745,6 +745,18 @@ const struct bond_option *bond_opt_get(unsigned int option)
+ 	return &bond_opts[option];
+ }
+ 
++#ifdef CONFIG_XFRM_OFFLOAD
++static void bond_set_xfrm_features(struct net_device *bond_dev, u64 mode)
++{
++	if (mode == BOND_MODE_ACTIVEBACKUP)
++		bond_dev->wanted_features |= BOND_XFRM_FEATURES;
++	else
++		bond_dev->wanted_features &= ~BOND_XFRM_FEATURES;
++
++	netdev_update_features(bond_dev);
++}
++#endif /* CONFIG_XFRM_OFFLOAD */
++
+ static int bond_option_mode_set(struct bonding *bond,
+ 				const struct bond_opt_value *newval)
+ {
+@@ -768,11 +780,8 @@ static int bond_option_mode_set(struct bonding *bond,
+ 		bond->params.tlb_dynamic_lb = 1;
+ 
+ #ifdef CONFIG_XFRM_OFFLOAD
+-	if (newval->value == BOND_MODE_ACTIVEBACKUP)
+-		bond->dev->wanted_features |= BOND_XFRM_FEATURES;
+-	else
+-		bond->dev->wanted_features &= ~BOND_XFRM_FEATURES;
+-	netdev_change_features(bond->dev);
++	if (bond->dev->reg_state == NETREG_REGISTERED)
++		bond_set_xfrm_features(bond->dev, newval->value);
+ #endif /* CONFIG_XFRM_OFFLOAD */
+ 
+ 	/* don't cache arp_validate between modes */
+-- 
+2.28.0
+
