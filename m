@@ -2,31 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FF1D2CD6E6
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 14:34:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9215C2CD795
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 14:36:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436634AbgLCNad (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 08:30:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47840 "EHLO mail.kernel.org"
+        id S2436715AbgLCNar (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 08:30:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47984 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2436562AbgLCNac (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Dec 2020 08:30:32 -0500
+        id S2436672AbgLCNal (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 08:30:41 -0500
 From:   Sasha Levin <sashal@kernel.org>
 Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        syzbot+381d06e0c8eaacb8706f@syzkaller.appspotmail.com,
-        syzbot+d0ddd88c9a7432f041e6@syzkaller.appspotmail.com,
-        syzbot+76d62d3b8162883c7d11@syzkaller.appspotmail.com,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.9 39/39] can: af_can: can_rx_unregister(): remove WARN() statement from list operation sanity check
-Date:   Thu,  3 Dec 2020 08:28:33 -0500
-Message-Id: <20201203132834.930999-39-sashal@kernel.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Mordechay Goodstein <mordechay.goodstein@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 01/23] iwlwifi: pcie: limit memory read spin time
+Date:   Thu,  3 Dec 2020 08:29:13 -0500
+Message-Id: <20201203132935.931362-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20201203132834.930999-1-sashal@kernel.org>
-References: <20201203132834.930999-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -35,53 +32,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit d73ff9b7c4eacaba0fd956d14882bcae970f8307 ]
+[ Upstream commit 04516706bb99889986ddfa3a769ed50d2dc7ac13 ]
 
-To detect potential bugs in CAN protocol implementations (double removal of
-receiver entries) a WARN() statement has been used if no matching list item was
-found for removal.
+When we read device memory, we lock a spinlock, write the address we
+want to read from the device and then spin in a loop reading the data
+in 32-bit quantities from another register.
 
-The fault injection issued by syzkaller was able to create a situation where
-the closing of a socket runs simultaneously to the notifier call chain for
-removing the CAN network device in use.
+As the description makes clear, this is rather inefficient, incurring
+a PCIe bus transaction for every read. In a typical device today, we
+want to read 786k SMEM if it crashes, leading to 192k register reads.
+Occasionally, we've seen the whole loop take over 20 seconds and then
+triggering the soft lockup detector.
 
-This case is very unlikely in real life but it doesn't break anything.
-Therefore we just replace the WARN() statement with pr_warn() to preserve the
-notification for the CAN protocol development.
+Clearly, it is unreasonable to spin here for such extended periods of
+time.
 
-Reported-by: syzbot+381d06e0c8eaacb8706f@syzkaller.appspotmail.com
-Reported-by: syzbot+d0ddd88c9a7432f041e6@syzkaller.appspotmail.com
-Reported-by: syzbot+76d62d3b8162883c7d11@syzkaller.appspotmail.com
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Link: https://lore.kernel.org/r/20201126192140.14350-1-socketcan@hartkopp.net
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+To fix this, break the loop down into an outer and an inner loop, and
+break out of the inner loop if more than half a second elapsed. To
+avoid too much overhead, check for that only every 128 reads, though
+there's no particular reason for that number. Then, unlock and relock
+to obtain NIC access again, reprogram the start address and continue.
+
+This will keep (interrupt) latencies on the CPU down to a reasonable
+time.
+
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Mordechay Goodstein <mordechay.goodstein@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/iwlwifi.20201022165103.45878a7e49aa.I3b9b9c5a10002915072312ce75b68ed5b3dc6e14@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/can/af_can.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ .../net/wireless/intel/iwlwifi/pcie/trans.c   | 36 ++++++++++++++-----
+ 1 file changed, 27 insertions(+), 9 deletions(-)
 
-diff --git a/net/can/af_can.c b/net/can/af_can.c
-index 0e71e0164ab3b..086a595caa5a7 100644
---- a/net/can/af_can.c
-+++ b/net/can/af_can.c
-@@ -541,10 +541,13 @@ void can_rx_unregister(struct net *net, struct net_device *dev, canid_t can_id,
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+index c76d26708e659..ef5a8ecabc60a 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
+@@ -2178,18 +2178,36 @@ static int iwl_trans_pcie_read_mem(struct iwl_trans *trans, u32 addr,
+ 				   void *buf, int dwords)
+ {
+ 	unsigned long flags;
+-	int offs, ret = 0;
++	int offs = 0;
+ 	u32 *vals = buf;
  
- 	/* Check for bugs in CAN protocol implementations using af_can.c:
- 	 * 'rcv' will be NULL if no matching list item was found for removal.
-+	 * As this case may potentially happen when closing a socket while
-+	 * the notifier for removing the CAN netdev is running we just print
-+	 * a warning here.
- 	 */
- 	if (!rcv) {
--		WARN(1, "BUG: receive list entry not found for dev %s, id %03X, mask %03X\n",
--		     DNAME(dev), can_id, mask);
-+		pr_warn("can: receive list entry not found for dev %s, id %03X, mask %03X\n",
-+			DNAME(dev), can_id, mask);
- 		goto out;
+-	if (iwl_trans_grab_nic_access(trans, &flags)) {
+-		iwl_write32(trans, HBUS_TARG_MEM_RADDR, addr);
+-		for (offs = 0; offs < dwords; offs++)
+-			vals[offs] = iwl_read32(trans, HBUS_TARG_MEM_RDAT);
+-		iwl_trans_release_nic_access(trans, &flags);
+-	} else {
+-		ret = -EBUSY;
++	while (offs < dwords) {
++		/* limit the time we spin here under lock to 1/2s */
++		ktime_t timeout = ktime_add_us(ktime_get(), 500 * USEC_PER_MSEC);
++
++		if (iwl_trans_grab_nic_access(trans, &flags)) {
++			iwl_write32(trans, HBUS_TARG_MEM_RADDR,
++				    addr + 4 * offs);
++
++			while (offs < dwords) {
++				vals[offs] = iwl_read32(trans,
++							HBUS_TARG_MEM_RDAT);
++				offs++;
++
++				/* calling ktime_get is expensive so
++				 * do it once in 128 reads
++				 */
++				if (offs % 128 == 0 && ktime_after(ktime_get(),
++								   timeout))
++					break;
++			}
++			iwl_trans_release_nic_access(trans, &flags);
++		} else {
++			return -EBUSY;
++		}
  	}
+-	return ret;
++
++	return 0;
+ }
  
+ static int iwl_trans_pcie_write_mem(struct iwl_trans *trans, u32 addr,
 -- 
 2.27.0
 
