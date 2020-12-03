@@ -2,124 +2,267 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94CA62CE034
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 21:56:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 237C52CE03C
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 21:57:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726761AbgLCUxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 15:53:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43420 "EHLO
+        id S2387446AbgLCU4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 15:56:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726147AbgLCUxw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 15:53:52 -0500
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66803C061A4F
-        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 12:53:11 -0800 (PST)
-Received: by mail-lj1-x241.google.com with SMTP id f24so4046894ljk.13
-        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 12:53:11 -0800 (PST)
+        with ESMTP id S1727352AbgLCU4z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 15:56:55 -0500
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D635C061A4F
+        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 12:56:09 -0800 (PST)
+Received: by mail-wr1-x442.google.com with SMTP id p8so3273320wrx.5
+        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 12:56:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=1t9ThwFEeVMqsB1jbcJXlNgFIIDafOfDkm0rxAIWQRo=;
-        b=2MdHMYfTzsLdPbLgwDyWeaCq6b0heBa7DROzs+5pTgAtk4sszWD9kiv6CqDyDl2JTJ
-         e55UiAX5RmhBez4hixpgWh0MyNkAa9bNDSMRCFiSuBjfyQUB22g1fFJzkn4pyGMNMXwU
-         MBx2AGlJYg62rgepwiA31I0ByHc8YJFGLd+r1PXlfeaqmuu7E94mR0eYbjjuMMtBCYFe
-         ISB1KyxRMi5kvi1Z2hDC8iDSgiTNnQJCMbRsGleXWZHdTAsZWrvIWcfN8bhfI5f3e4ej
-         Bi7OPSWlW4V01Z8WqjR5KXPyqcqwEY3LUPohGyp/Eh97q4o1Q5pcirs6vj6pZHcWnFTz
-         hHLw==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding;
+        bh=quJoSkrf9r+uBGgZk5HzBcJLLWJ7Nef137ioRwykshg=;
+        b=OQzYhcSPgEKO4m/g6nmIRJBFWsQowA6Qbq1jhBfDyAa6B29dr8iz1o1W6wThSKR/91
+         sfnBlYkxbH7ewedap0WLqAWptPgeHUKId5N7UEKUKFvjFmHpK1QZqoIE1sPHECoHq0qj
+         my/D+cuynaq/eAARDJJP3dwRiczxOe/xEGy/oL18eYuykX+TkRIOsURK3mTKfQO7cjR2
+         l1kZew9wjTCI3bPwcV9no+2ho9+ROyL5rynI09ypjPzlxifzzhprXO/i8lkm6fvkm2bO
+         FxBycypt02G6dsZyaFDtlBZDpEdl5cMD/jbMYIIjG3jWE2cbawrqksMUCyooT5sAW1a+
+         ZdCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=1t9ThwFEeVMqsB1jbcJXlNgFIIDafOfDkm0rxAIWQRo=;
-        b=bU2KsYuAhvokulBbZ3SvcQWt8KthKlyiDA2TtqmwVLH1xGTKgFYDl7w9ko4gFT+/qu
-         VPUFPJKVCLjGGUUvueMfmgl49vSNSzMuTlh/afN0NdhKeFxX1mgTSp7ZQMlvUkPhQzBb
-         nZDIs8/U5Sk/Dnci8IZ6E1IN3cKwG/brQPMs8kzKqO59AC/yoJdvlTfaWdSjEFCa6svj
-         yR4mxE8mjvwwpVobELiJZ+LanQwHdAwtzh/YpwJ1NR0QXxH07Q27meKu777LNcq3WCjF
-         Bapwk4QY7LZ3+33b2bvyZcXl1KngK1UZx7mKCO6y4/TlTg9b+6WJOYH9ln12mCeDtjUE
-         hSbw==
-X-Gm-Message-State: AOAM5300tFQLbUFCEs95NBVpcwbrfnHXHM7B5u+oYGV0maXacqOpFPyK
-        Mj1ktV1IRXMZbyF2ZFoYWQZ42rpjB4m8v3c9
-X-Google-Smtp-Source: ABdhPJytYhRPldW/M+O97RVS+e1SqvpA761VAHDxfEfLgowrAhgfVGHiOq9iHvWT7zIQWepEHSacgQ==
-X-Received: by 2002:a2e:808e:: with SMTP id i14mr1863780ljg.276.1607028789607;
-        Thu, 03 Dec 2020 12:53:09 -0800 (PST)
-Received: from wkz-x280 (h-236-82.A259.priv.bahnhof.se. [98.128.236.82])
-        by smtp.gmail.com with ESMTPSA id n22sm906637lfe.130.2020.12.03.12.53.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Dec 2020 12:53:09 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 2/4] net: dsa: Link aggregation support
-In-Reply-To: <20201203162428.ffdj7gdyudndphmn@skbuf>
-References: <20201202091356.24075-1-tobias@waldekranz.com> <20201202091356.24075-3-tobias@waldekranz.com> <20201203162428.ffdj7gdyudndphmn@skbuf>
-Date:   Thu, 03 Dec 2020 21:53:08 +0100
-Message-ID: <87a6uu7gsr.fsf@waldekranz.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
+        bh=quJoSkrf9r+uBGgZk5HzBcJLLWJ7Nef137ioRwykshg=;
+        b=Gd5hv6/7rfygfGFqjm+n1p/v3HHW+bQI70bZyjt/wDsNv6zplnpT0xP+eyld1Na6sv
+         plTl7axn0DC2hjUw9sK86cxpYQVH9PAP/DQb5+U8MyWaChCKCa7d25UCPn6tMw8E7I4f
+         ZWGDLhhaAtber2ooCo72q4+v5elabPbqtTvCTmXXgcvxHE14gxTkDmhjHStIIhQJhe7X
+         XgUzquUO9zEvI8Gk+Su4V1DIGgoMuXeK7/ttO5R9mb18KQuUjT/UzZJTK1FC/qUIq41+
+         lPnL0BUvF7Qeid5K7VlAwq/AuPm3xRf0zx2dg2/X6egkT9zQo4jH2Im9NmosQiZw4/r+
+         6sZg==
+X-Gm-Message-State: AOAM532/vdXnIas10TTsQr3bn9gVf8PchLMqvmrb7/P0+J+KMK00LFvY
+        dXPB5N6xyXCYYkRyE6IBi7I=
+X-Google-Smtp-Source: ABdhPJxSPGHZ2uq0xgyLCA3JoM9qV9g2BsSMVkAywqou8GP909ztWXWJmJAiekVBJRREP1Y+EMvYHA==
+X-Received: by 2002:adf:a3d1:: with SMTP id m17mr1093723wrb.289.1607028967593;
+        Thu, 03 Dec 2020 12:56:07 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f2f:8a00:10c1:68a8:fe25:16bd? (p200300ea8f2f8a0010c168a8fe2516bd.dip0.t-ipconnect.de. [2003:ea:8f2f:8a00:10c1:68a8:fe25:16bd])
+        by smtp.googlemail.com with ESMTPSA id i16sm767253wru.92.2020.12.03.12.56.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Dec 2020 12:56:06 -0800 (PST)
+Subject: Re: [PATCH V3 net-next 1/9] net: ena: use constant value for
+ net_device allocation
+To:     "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Cc:     "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Agroskin, Shay" <shayagr@amazon.com>,
+        "Jubran, Samih" <sameehj@amazon.com>
+References: <1606939410-26718-1-git-send-email-akiyano@amazon.com>
+ <1606939410-26718-2-git-send-email-akiyano@amazon.com>
+ <10a1c719-1408-5305-38fd-254213f8a42b@gmail.com>
+ <fa4653d9d4d54f9d8ffc982fb809b618@EX13D22EUA004.ant.amazon.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <8297c879-49d3-9c38-6b74-aa9118ddfdee@gmail.com>
+Date:   Thu, 3 Dec 2020 21:56:01 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <fa4653d9d4d54f9d8ffc982fb809b618@EX13D22EUA004.ant.amazon.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 03, 2020 at 18:24, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Wed, Dec 02, 2020 at 10:13:54AM +0100, Tobias Waldekranz wrote:
->> +static inline bool dsa_lag_offloading(struct dsa_switch_tree *dst)
->> +{
->> +	return dst->lags.num > 0;
->> +}
->
-> You assume that the DSA switch, when it sets a non-zero number of LAGs,
-> can offload any type of LAG TX type, when in fact the switch might be
-> able to offload just NETDEV_LAG_TX_TYPE_HASH.
+Am 03.12.2020 um 15:38 schrieb Kiyanovski, Arthur:
+> 
+> 
+>> -----Original Message-----
+>> From: Heiner Kallweit <hkallweit1@gmail.com>
+>> Sent: Wednesday, December 2, 2020 11:55 PM
+>> To: Kiyanovski, Arthur <akiyano@amazon.com>; kuba@kernel.org;
+>> netdev@vger.kernel.org
+>> Cc: Woodhouse, David <dwmw@amazon.co.uk>; Machulsky, Zorik
+>> <zorik@amazon.com>; Matushevsky, Alexander <matua@amazon.com>;
+>> Bshara, Saeed <saeedb@amazon.com>; Wilson, Matt <msw@amazon.com>;
+>> Liguori, Anthony <aliguori@amazon.com>; Bshara, Nafea
+>> <nafea@amazon.com>; Tzalik, Guy <gtzalik@amazon.com>; Belgazal,
+>> Netanel <netanel@amazon.com>; Saidi, Ali <alisaidi@amazon.com>;
+>> Herrenschmidt, Benjamin <benh@amazon.com>; Dagan, Noam
+>> <ndagan@amazon.com>; Agroskin, Shay <shayagr@amazon.com>; Jubran,
+>> Samih <sameehj@amazon.com>
+>> Subject: RE: [EXTERNAL] [PATCH V3 net-next 1/9] net: ena: use constant
+>> value for net_device allocation
+>>
+>> CAUTION: This email originated from outside of the organization. Do not click
+>> links or open attachments unless you can confirm the sender and know the
+>> content is safe.
+>>
+>>
+>>
+>> Am 02.12.2020 um 21:03 schrieb akiyano@amazon.com:
+>>> From: Arthur Kiyanovski <akiyano@amazon.com>
+>>>
+>>> The patch changes the maximum number of RX/TX queues it advertises to
+>>> the kernel (via alloc_etherdev_mq()) from a value received from the
+>>> device to a constant value which is the minimum between 128 and the
+>>> number of CPUs in the system.
+>>>
+>>> By allocating the net_device struct with a constant number of queues,
+>>> the driver is able to allocate it at a much earlier stage, before
+>>> calling any ena_com functions. This would allow to make all log prints
+>>> in ena_com to use netdev_* log functions instead or current pr_* ones.
+>>>
+>>
+>> Did you test this? Usually using netdev_* before the net_device is registered
+>> results in quite ugly messages. Therefore there's a number of patches doing
+>> the opposite, replacing netdev_* with dev_* before register_netdev(). See
+>> e.g.
+>> 22148df0d0bd ("r8169: don't use netif_info et al before net_device has been
+>> registered")
+> 
+> Thanks for your comment.
+> Yes we did test it.
+> Please see the discussion which led to this patch in a previous thread here:
+> https://www.mail-archive.com/netdev@vger.kernel.org/msg353590.html
+>  
 
-Right you are, I had this on my TODO but I most have lost track of
-it. Good catch!
+Ah, I see. After reading the mail thread your motivation is clear.
+You accept ugly messages when ena_com functions are called from probe()
+for the sake of better messages when the same ena_com functions are
+called later from other parts of the driver. Maybe an explanation of
+this tradeoff would have been good in the commit message (or a link
+to the mail thread).
 
-> I like the fact that we revert to a software-based implementation for
-> features the hardware can't offload. So rejecting other TX types is out
-> of the question.
+>>> Signed-off-by: Shay Agroskin <shayagr@amazon.com>
+>>> Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
+>>> ---
+>>>  drivers/net/ethernet/amazon/ena/ena_netdev.c | 46
+>>> ++++++++++----------
+>>>  1 file changed, 23 insertions(+), 23 deletions(-)
+>>>
+>>> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c
+>>> b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+>>> index df1884d57d1a..985dea1870b5 100644
+>>> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
+>>> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+>>> @@ -29,6 +29,8 @@ MODULE_LICENSE("GPL");
+>>>  /* Time in jiffies before concluding the transmitter is hung. */
+>>> #define TX_TIMEOUT  (5 * HZ)
+>>>
+>>> +#define ENA_MAX_RINGS min_t(unsigned int,
+>> ENA_MAX_NUM_IO_QUEUES,
+>>> +num_possible_cpus())
+>>> +
+>>>  #define ENA_NAPI_BUDGET 64
+>>>
+>>>  #define DEFAULT_MSG_ENABLE (NETIF_MSG_DRV | NETIF_MSG_PROBE
+>> |
+>>> NETIF_MSG_IFUP | \ @@ -4176,18 +4178,34 @@ static int
+>> ena_probe(struct
+>>> pci_dev *pdev, const struct pci_device_id *ent)
+>>>
+>>>       ena_dev->dmadev = &pdev->dev;
+>>>
+>>> +     netdev = alloc_etherdev_mq(sizeof(struct ena_adapter),
+>> ENA_MAX_RINGS);
+>>> +     if (!netdev) {
+>>> +             dev_err(&pdev->dev, "alloc_etherdev_mq failed\n");
+>>> +             rc = -ENOMEM;
+>>> +             goto err_free_region;
+>>> +     }
+>>> +
+>>> +     SET_NETDEV_DEV(netdev, &pdev->dev);
+>>> +     adapter = netdev_priv(netdev);
+>>> +     adapter->ena_dev = ena_dev;
+>>> +     adapter->netdev = netdev;
+>>> +     adapter->pdev = pdev;
+>>> +     adapter->msg_enable = netif_msg_init(debug,
+>> DEFAULT_MSG_ENABLE);
+>>> +
+>>> +     pci_set_drvdata(pdev, adapter);
+>>> +
+>>>       rc = ena_device_init(ena_dev, pdev, &get_feat_ctx, &wd_state);
+>>>       if (rc) {
+>>>               dev_err(&pdev->dev, "ENA device init failed\n");
+>>>               if (rc == -ETIME)
+>>>                       rc = -EPROBE_DEFER;
+>>> -             goto err_free_region;
+>>> +             goto err_netdev_destroy;
+>>>       }
+>>>
+>>>       rc = ena_map_llq_mem_bar(pdev, ena_dev, bars);
+>>>       if (rc) {
+>>>               dev_err(&pdev->dev, "ENA llq bar mapping failed\n");
+>>> -             goto err_free_ena_dev;
+>>> +             goto err_device_destroy;
+>>>       }
+>>>
+>>>       calc_queue_ctx.ena_dev = ena_dev; @@ -4207,26 +4225,8 @@ static
+>>> int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>>>               goto err_device_destroy;
+>>>       }
+>>>
+>>> -     /* dev zeroed in init_etherdev */
+>>> -     netdev = alloc_etherdev_mq(sizeof(struct ena_adapter),
+>> max_num_io_queues);
+>>> -     if (!netdev) {
+>>> -             dev_err(&pdev->dev, "alloc_etherdev_mq failed\n");
+>>> -             rc = -ENOMEM;
+>>> -             goto err_device_destroy;
+>>> -     }
+>>> -
+>>> -     SET_NETDEV_DEV(netdev, &pdev->dev);
+>>> -
+>>> -     adapter = netdev_priv(netdev);
+>>> -     pci_set_drvdata(pdev, adapter);
+>>> -
+>>> -     adapter->ena_dev = ena_dev;
+>>> -     adapter->netdev = netdev;
+>>> -     adapter->pdev = pdev;
+>>> -
+>>>       ena_set_conf_feat_params(adapter, &get_feat_ctx);
+>>>
+>>> -     adapter->msg_enable = netif_msg_init(debug,
+>> DEFAULT_MSG_ENABLE);
+>>>       adapter->reset_reason = ENA_REGS_RESET_NORMAL;
+>>>
+>>>       adapter->requested_tx_ring_size = calc_queue_ctx.tx_queue_size;
+>>> @@ -4257,7 +4257,7 @@ static int ena_probe(struct pci_dev *pdev, const
+>> struct pci_device_id *ent)
+>>>       if (rc) {
+>>>               dev_err(&pdev->dev,
+>>>                       "Failed to query interrupt moderation feature\n");
+>>> -             goto err_netdev_destroy;
+>>> +             goto err_device_destroy;
+>>>       }
+>>>       ena_init_io_rings(adapter,
+>>>                         0,
+>>> @@ -4335,11 +4335,11 @@ static int ena_probe(struct pci_dev *pdev,
+>> const struct pci_device_id *ent)
+>>>       ena_disable_msix(adapter);
+>>>  err_worker_destroy:
+>>>       del_timer(&adapter->timer_service);
+>>> -err_netdev_destroy:
+>>> -     free_netdev(netdev);
+>>>  err_device_destroy:
+>>>       ena_com_delete_host_info(ena_dev);
+>>>       ena_com_admin_destroy(ena_dev);
+>>> +err_netdev_destroy:
+>>> +     free_netdev(netdev);
+>>>  err_free_region:
+>>>       ena_release_bars(ena_dev, pdev);
+>>>  err_free_ena_dev:
+>>>
+> 
 
-Well if we really want to be precise, we must also ensure that the exact
-hash type is supported by the hardware. mv88e6xxx only supports
-NETDEV_LAG_HASH_L2 for example. There is a needle to thread here I
-think. Story time ('tis the season after all):
-
-    A user, Linus, has just installed OpenWRT on his gateway. Finally,
-    he can unlock the full potential of his 802.11 AP by setting up a
-    LAG to it.
-
-    He carefully studies teamd.conf(5) and rightfully comes to the
-    conclusion that he should set up the tx_hash to include the full
-    monty of available keys. Teamd gets nothing but praise from the
-    kernel when applying the configuration.
-
-    And yet, Linus is not happy - the throughput between his NAS and his
-    smart TV is now lower than before. It is enough for Linus to start
-    working on his OS. It won't be big and professional like Linux of
-    course, but it will at least get this bit right.
-
-One could argue that if Linus had received an error instead, adapted his
-teamd config and tried again, he would be a happier user and we might
-not have to compete with his OS.
-
-I am not sure which way is the correct one, but I do not think that it
-necessarily _always_ correct to silently fallback to a non-offloaded
-mode.
-
-> However we still have to prevent hardware bridging.
-
-The idea behind checking for dsa_lag_offloading in
-dsa_slave_lag_changeupper was exactly this. If the LAG itself is not
-offloaded, we should never call dsa_port_bridge_join on the lowers.
-
-> Should we add an array of supported TX types that the switch port can
-> offload, and that should be checked by DSA in dsa_lag_offloading?
-
-That would work. We could also create a new DSA op that we would call
-for each chip from PRECHANGEUPPER to verify that it is supported. One
-advantage with this approach is that we can just pass along the `struct
-netdev_lag_upper_info` so drivers always have access to all information,
-in the event that new fields are added to it for example.
