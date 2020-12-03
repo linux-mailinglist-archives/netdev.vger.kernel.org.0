@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E8CC2CCD8F
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 04:55:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5030F2CCD93
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 04:55:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388015AbgLCDxN convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 2 Dec 2020 22:53:13 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:56260 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387928AbgLCDxM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 22:53:12 -0500
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B33kb4I015305
-        for <netdev@vger.kernel.org>; Wed, 2 Dec 2020 19:52:30 -0800
+        id S1729717AbgLCDxR convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 2 Dec 2020 22:53:17 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:8592 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388024AbgLCDxR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 22:53:17 -0500
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B33kI6U028446
+        for <netdev@vger.kernel.org>; Wed, 2 Dec 2020 19:52:34 -0800
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 355t7ybft4-2
+        by mx0a-00082601.pphosted.com with ESMTP id 355wgw9y4a-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 19:52:30 -0800
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 19:52:34 -0800
+Received: from intmgw001.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
  mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 2 Dec 2020 19:52:29 -0800
+ 15.1.1979.3; Wed, 2 Dec 2020 19:52:30 -0800
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id C40702ECA822; Wed,  2 Dec 2020 19:52:23 -0800 (PST)
+        id 03E712ECA822; Wed,  2 Dec 2020 19:52:25 -0800 (PST)
 From:   Andrii Nakryiko <andrii@kernel.org>
 To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
         <daniel@iogearbox.net>
 CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH v5 bpf-next 08/14] selftests/bpf: add CO-RE relocs selftest relying on kernel module BTF
-Date:   Wed, 2 Dec 2020 19:51:58 -0800
-Message-ID: <20201203035204.1411380-9-andrii@kernel.org>
+Subject: [PATCH v5 bpf-next 09/14] bpf: remove hard-coded btf_vmlinux assumption from BPF verifier
+Date:   Wed, 2 Dec 2020 19:51:59 -0800
+Message-ID: <20201203035204.1411380-10-andrii@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20201203035204.1411380-1-andrii@kernel.org>
 References: <20201203035204.1411380-1-andrii@kernel.org>
@@ -41,290 +41,778 @@ Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
  definitions=2020-12-03_01:2020-11-30,2020-12-03 signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- adultscore=0 priorityscore=1501 bulkscore=0 mlxlogscore=999 phishscore=0
- mlxscore=0 suspectscore=8 impostorscore=0 spamscore=0 lowpriorityscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ clxscore=1015 impostorscore=0 mlxlogscore=999 bulkscore=0 phishscore=0
+ adultscore=0 suspectscore=29 priorityscore=1501 mlxscore=0 spamscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2009150000 definitions=main-2012030020
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a self-tests validating libbpf is able to perform CO-RE relocations
-against the type defined in kernel module BTF. if bpf_testmod.o is not
-supported by the kernel (e.g., due to version mismatch), skip tests, instead
-of failing.
+Remove a permeating assumption thoughout BPF verifier of vmlinux BTF. Instead,
+wherever BTF type IDs are involved, also track the instance of struct btf that
+goes along with the type ID. This allows to gradually add support for kernel
+module BTFs and using/tracking module types across BPF helper calls and
+registers.
+
+This patch also renames btf_id() function to btf_obj_id() to minimize naming
+clash with using btf_id to denote BTF *type* ID, rather than BTF *object*'s ID.
+
+Also, altough btf_vmlinux can't get destructed and thus doesn't need
+refcounting, module BTFs need that, so apply BTF refcounting universally when
+BPF program is using BTF-powered attachment (tp_btf, fentry/fexit, etc). This
+makes for simpler clean up code.
+
+Now that BTF type ID is not enough to uniquely identify a BTF type, extend BPF
+trampoline key to include BTF object ID. To differentiate that from target
+program BPF ID, set 31st bit of type ID. BTF type IDs (at least currently) are
+not allowed to take full 32 bits, so there is no danger of confusing that bit
+with a valid BTF type ID.
 
 Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 ---
- .../selftests/bpf/prog_tests/core_reloc.c     | 79 ++++++++++++++++---
- .../selftests/bpf/progs/core_reloc_types.h    | 17 ++++
- .../bpf/progs/test_core_reloc_module.c        | 66 ++++++++++++++++
- 3 files changed, 151 insertions(+), 11 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_module.c
+ include/linux/bpf.h          | 13 ++++--
+ include/linux/bpf_verifier.h | 28 +++++++++----
+ include/linux/btf.h          |  5 ++-
+ kernel/bpf/btf.c             | 65 ++++++++++++++++++++----------
+ kernel/bpf/core.c            |  2 +
+ kernel/bpf/syscall.c         | 20 ++++++++--
+ kernel/bpf/verifier.c        | 77 ++++++++++++++++++++++--------------
+ net/ipv4/bpf_tcp_ca.c        |  3 +-
+ 8 files changed, 146 insertions(+), 67 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/core_reloc.c b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-index 30e40ff4b0d8..bb980848cd77 100644
---- a/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-+++ b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
- #include "progs/core_reloc_types.h"
-+#include "bpf_testmod/bpf_testmod.h"
- #include <sys/mman.h>
- #include <sys/syscall.h>
- #include <bpf/btf.h>
-@@ -9,6 +10,30 @@ static int duration = 0;
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index a9de5711b23f..d05e75ed8c1b 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -421,7 +421,10 @@ struct bpf_insn_access_aux {
+ 	enum bpf_reg_type reg_type;
+ 	union {
+ 		int ctx_field_size;
+-		u32 btf_id;
++		struct {
++			struct btf *btf;
++			u32 btf_id;
++		};
+ 	};
+ 	struct bpf_verifier_log *log; /* for verbose logs */
+ };
+@@ -458,6 +461,7 @@ struct bpf_verifier_ops {
+ 				  struct bpf_insn *dst,
+ 				  struct bpf_prog *prog, u32 *target_size);
+ 	int (*btf_struct_access)(struct bpf_verifier_log *log,
++				 const struct btf *btf,
+ 				 const struct btf_type *t, int off, int size,
+ 				 enum bpf_access_type atype,
+ 				 u32 *next_btf_id);
+@@ -771,6 +775,7 @@ struct bpf_prog_aux {
+ 	u32 ctx_arg_info_size;
+ 	u32 max_rdonly_access;
+ 	u32 max_rdwr_access;
++	struct btf *attach_btf;
+ 	const struct bpf_ctx_arg_aux *ctx_arg_info;
+ 	struct mutex dst_mutex; /* protects dst_* pointers below, *after* prog becomes visible */
+ 	struct bpf_prog *dst_prog;
+@@ -1005,7 +1010,6 @@ struct bpf_event_entry {
  
- #define STRUCT_TO_CHAR_PTR(struct_name) (const char *)&(struct struct_name)
+ bool bpf_prog_array_compatible(struct bpf_array *array, const struct bpf_prog *fp);
+ int bpf_prog_calc_tag(struct bpf_prog *fp);
+-const char *kernel_type_name(u32 btf_type_id);
  
-+#define MODULES_CASE(name, sec_name, tp_name) {				\
-+	.case_name = name,						\
-+	.bpf_obj_file = "test_core_reloc_module.o",			\
-+	.btf_src_file = NULL, /* find in kernel module BTFs */		\
-+	.input = "",							\
-+	.input_len = 0,							\
-+	.output = STRUCT_TO_CHAR_PTR(core_reloc_module_output) {	\
-+		.read_ctx_sz = sizeof(struct bpf_testmod_test_read_ctx),\
-+		.read_ctx_exists = true,				\
-+		.buf_exists = true,					\
-+		.len_exists = true,					\
-+		.off_exists = true,					\
-+		.len = 123,						\
-+		.off = 0,						\
-+		.comm = "test_progs",					\
-+		.comm_len = sizeof("test_progs"),			\
-+	},								\
-+	.output_len = sizeof(struct core_reloc_module_output),		\
-+	.prog_sec_name = sec_name,					\
-+	.raw_tp_name = tp_name,						\
-+	.trigger = trigger_module_test_read,				\
-+	.needs_testmod = true,						\
+ const struct bpf_func_proto *bpf_get_trace_printk_proto(void);
+ 
+@@ -1450,12 +1454,13 @@ int bpf_prog_test_run_raw_tp(struct bpf_prog *prog,
+ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+ 		    const struct bpf_prog *prog,
+ 		    struct bpf_insn_access_aux *info);
+-int btf_struct_access(struct bpf_verifier_log *log,
++int btf_struct_access(struct bpf_verifier_log *log, const struct btf *btf,
+ 		      const struct btf_type *t, int off, int size,
+ 		      enum bpf_access_type atype,
+ 		      u32 *next_btf_id);
+ bool btf_struct_ids_match(struct bpf_verifier_log *log,
+-			  int off, u32 id, u32 need_type_id);
++			  const struct btf *btf, u32 id, int off,
++			  const struct btf *need_btf, u32 need_type_id);
+ 
+ int btf_distill_func_proto(struct bpf_verifier_log *log,
+ 			   struct btf *btf,
+diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
+index 306869d4743b..e941fe1484e5 100644
+--- a/include/linux/bpf_verifier.h
++++ b/include/linux/bpf_verifier.h
+@@ -5,6 +5,7 @@
+ #define _LINUX_BPF_VERIFIER_H 1
+ 
+ #include <linux/bpf.h> /* for enum bpf_reg_type */
++#include <linux/btf.h> /* for struct btf and btf_id() */
+ #include <linux/filter.h> /* for MAX_BPF_STACK */
+ #include <linux/tnum.h>
+ 
+@@ -43,6 +44,8 @@ enum bpf_reg_liveness {
+ struct bpf_reg_state {
+ 	/* Ordering of fields matters.  See states_equal() */
+ 	enum bpf_reg_type type;
++	/* Fixed part of pointer offset, pointer types only */
++	s32 off;
+ 	union {
+ 		/* valid when type == PTR_TO_PACKET */
+ 		int range;
+@@ -52,15 +55,20 @@ struct bpf_reg_state {
+ 		 */
+ 		struct bpf_map *map_ptr;
+ 
+-		u32 btf_id; /* for PTR_TO_BTF_ID */
++		/* for PTR_TO_BTF_ID */
++		struct {
++			struct btf *btf;
++			u32 btf_id;
++		};
+ 
+ 		u32 mem_size; /* for PTR_TO_MEM | PTR_TO_MEM_OR_NULL */
+ 
+ 		/* Max size from any of the above. */
+-		unsigned long raw;
++		struct {
++			unsigned long raw1;
++			unsigned long raw2;
++		} raw;
+ 	};
+-	/* Fixed part of pointer offset, pointer types only */
+-	s32 off;
+ 	/* For PTR_TO_PACKET, used to find other pointers with the same variable
+ 	 * offset, so they can share range knowledge.
+ 	 * For PTR_TO_MAP_VALUE_OR_NULL this is used to share which map value we
+@@ -311,7 +319,10 @@ struct bpf_insn_aux_data {
+ 		struct {
+ 			enum bpf_reg_type reg_type;	/* type of pseudo_btf_id */
+ 			union {
+-				u32 btf_id;	/* btf_id for struct typed var */
++				struct {
++					struct btf *btf;
++					u32 btf_id;	/* btf_id for struct typed var */
++				};
+ 				u32 mem_size;	/* mem_size for non-struct typed var */
+ 			};
+ 		} btf_var;
+@@ -459,9 +470,12 @@ int check_ctx_reg(struct bpf_verifier_env *env,
+ 
+ /* this lives here instead of in bpf.h because it needs to dereference tgt_prog */
+ static inline u64 bpf_trampoline_compute_key(const struct bpf_prog *tgt_prog,
+-					     u32 btf_id)
++					     struct btf *btf, u32 btf_id)
+ {
+-        return tgt_prog ? (((u64)tgt_prog->aux->id) << 32 | btf_id) : btf_id;
++	if (tgt_prog)
++		return ((u64)tgt_prog->aux->id << 32) | btf_id;
++	else
++		return ((u64)btf_obj_id(btf) << 32) | 0x80000000 | btf_id;
+ }
+ 
+ int bpf_check_attach_target(struct bpf_verifier_log *log,
+diff --git a/include/linux/btf.h b/include/linux/btf.h
+index 2bf641829664..fb608e4de076 100644
+--- a/include/linux/btf.h
++++ b/include/linux/btf.h
+@@ -18,6 +18,7 @@ struct btf_show;
+ 
+ extern const struct file_operations btf_fops;
+ 
++void btf_get(struct btf *btf);
+ void btf_put(struct btf *btf);
+ int btf_new_fd(const union bpf_attr *attr);
+ struct btf *btf_get_by_fd(int fd);
+@@ -88,7 +89,7 @@ int btf_type_snprintf_show(const struct btf *btf, u32 type_id, void *obj,
+ 			   char *buf, int len, u64 flags);
+ 
+ int btf_get_fd_by_id(u32 id);
+-u32 btf_id(const struct btf *btf);
++u32 btf_obj_id(const struct btf *btf);
+ bool btf_member_is_reg_int(const struct btf *btf, const struct btf_type *s,
+ 			   const struct btf_member *m,
+ 			   u32 expected_offset, u32 expected_size);
+@@ -206,6 +207,8 @@ static inline const struct btf_var_secinfo *btf_type_var_secinfo(
+ }
+ 
+ #ifdef CONFIG_BPF_SYSCALL
++struct bpf_prog;
++
+ const struct btf_type *btf_type_by_id(const struct btf *btf, u32 type_id);
+ const char *btf_name_by_offset(const struct btf *btf, u32 offset);
+ struct btf *btf_parse_vmlinux(void);
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 6b2d508b33d4..7a19bf5bfe97 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -1524,6 +1524,11 @@ static void btf_free_rcu(struct rcu_head *rcu)
+ 	btf_free(btf);
+ }
+ 
++void btf_get(struct btf *btf)
++{
++	refcount_inc(&btf->refcnt);
 +}
 +
- #define FLAVORS_DATA(struct_name) STRUCT_TO_CHAR_PTR(struct_name) {	\
- 	.a = 42,							\
- 	.b = 0xc001,							\
-@@ -211,7 +236,7 @@ static int duration = 0;
- 	.output = STRUCT_TO_CHAR_PTR(core_reloc_bitfields_output)	\
- 		__VA_ARGS__,						\
- 	.output_len = sizeof(struct core_reloc_bitfields_output),	\
--	.direct_raw_tp = true,						\
-+	.prog_sec_name = "tp_btf/sys_enter",				\
+ void btf_put(struct btf *btf)
+ {
+ 	if (btf && refcount_dec_and_test(&btf->refcnt)) {
+@@ -4555,11 +4560,10 @@ struct btf *bpf_prog_get_target_btf(const struct bpf_prog *prog)
+ {
+ 	struct bpf_prog *tgt_prog = prog->aux->dst_prog;
+ 
+-	if (tgt_prog) {
++	if (tgt_prog)
+ 		return tgt_prog->aux->btf;
+-	} else {
+-		return btf_vmlinux;
+-	}
++	else
++		return prog->aux->attach_btf;
  }
  
+ static bool is_string_ptr(struct btf *btf, const struct btf_type *t)
+@@ -4700,6 +4704,7 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
  
-@@ -222,7 +247,7 @@ static int duration = 0;
- }, {									\
- 	BITFIELDS_CASE_COMMON("test_core_reloc_bitfields_direct.o",	\
- 			      "direct:", name),				\
--	.direct_raw_tp = true,						\
-+	.prog_sec_name = "tp_btf/sys_enter",				\
- 	.fails = true,							\
- }
+ 		if (ctx_arg_info->offset == off) {
+ 			info->reg_type = ctx_arg_info->reg_type;
++			info->btf = btf_vmlinux;
+ 			info->btf_id = ctx_arg_info->btf_id;
+ 			return true;
+ 		}
+@@ -4716,6 +4721,7 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
  
-@@ -309,6 +334,7 @@ static int duration = 0;
- struct core_reloc_test_case;
+ 		ret = btf_translate_to_vmlinux(log, btf, t, tgt_type, arg);
+ 		if (ret > 0) {
++			info->btf = btf_vmlinux;
+ 			info->btf_id = ret;
+ 			return true;
+ 		} else {
+@@ -4723,6 +4729,7 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+ 		}
+ 	}
  
- typedef int (*setup_test_fn)(struct core_reloc_test_case *test);
-+typedef int (*trigger_test_fn)(const struct core_reloc_test_case *test);
- 
- struct core_reloc_test_case {
- 	const char *case_name;
-@@ -319,9 +345,12 @@ struct core_reloc_test_case {
- 	const char *output;
- 	int output_len;
- 	bool fails;
-+	bool needs_testmod;
- 	bool relaxed_core_relocs;
--	bool direct_raw_tp;
-+	const char *prog_sec_name;
-+	const char *raw_tp_name;
- 	setup_test_fn setup;
-+	trigger_test_fn trigger;
++	info->btf = btf;
+ 	info->btf_id = t->type;
+ 	t = btf_type_by_id(btf, t->type);
+ 	/* skip modifiers */
+@@ -4749,7 +4756,7 @@ enum bpf_struct_walk_result {
+ 	WALK_STRUCT,
  };
  
- static int find_btf_type(const struct btf *btf, const char *name, __u32 kind)
-@@ -451,6 +480,23 @@ static int setup_type_id_case_failure(struct core_reloc_test_case *test)
- 	return 0;
+-static int btf_struct_walk(struct bpf_verifier_log *log,
++static int btf_struct_walk(struct bpf_verifier_log *log, const struct btf *btf,
+ 			   const struct btf_type *t, int off, int size,
+ 			   u32 *next_btf_id)
+ {
+@@ -4760,7 +4767,7 @@ static int btf_struct_walk(struct bpf_verifier_log *log,
+ 	u32 vlen, elem_id, mid;
+ 
+ again:
+-	tname = __btf_name_by_offset(btf_vmlinux, t->name_off);
++	tname = __btf_name_by_offset(btf, t->name_off);
+ 	if (!btf_type_is_struct(t)) {
+ 		bpf_log(log, "Type '%s' is not a struct\n", tname);
+ 		return -EINVAL;
+@@ -4777,7 +4784,7 @@ static int btf_struct_walk(struct bpf_verifier_log *log,
+ 			goto error;
+ 
+ 		member = btf_type_member(t) + vlen - 1;
+-		mtype = btf_type_skip_modifiers(btf_vmlinux, member->type,
++		mtype = btf_type_skip_modifiers(btf, member->type,
+ 						NULL);
+ 		if (!btf_type_is_array(mtype))
+ 			goto error;
+@@ -4793,7 +4800,7 @@ static int btf_struct_walk(struct bpf_verifier_log *log,
+ 		/* Only allow structure for now, can be relaxed for
+ 		 * other types later.
+ 		 */
+-		t = btf_type_skip_modifiers(btf_vmlinux, array_elem->type,
++		t = btf_type_skip_modifiers(btf, array_elem->type,
+ 					    NULL);
+ 		if (!btf_type_is_struct(t))
+ 			goto error;
+@@ -4851,10 +4858,10 @@ static int btf_struct_walk(struct bpf_verifier_log *log,
+ 
+ 		/* type of the field */
+ 		mid = member->type;
+-		mtype = btf_type_by_id(btf_vmlinux, member->type);
+-		mname = __btf_name_by_offset(btf_vmlinux, member->name_off);
++		mtype = btf_type_by_id(btf, member->type);
++		mname = __btf_name_by_offset(btf, member->name_off);
+ 
+-		mtype = __btf_resolve_size(btf_vmlinux, mtype, &msize,
++		mtype = __btf_resolve_size(btf, mtype, &msize,
+ 					   &elem_type, &elem_id, &total_nelems,
+ 					   &mid);
+ 		if (IS_ERR(mtype)) {
+@@ -4949,7 +4956,7 @@ static int btf_struct_walk(struct bpf_verifier_log *log,
+ 					mname, moff, tname, off, size);
+ 				return -EACCES;
+ 			}
+-			stype = btf_type_skip_modifiers(btf_vmlinux, mtype->type, &id);
++			stype = btf_type_skip_modifiers(btf, mtype->type, &id);
+ 			if (btf_type_is_struct(stype)) {
+ 				*next_btf_id = id;
+ 				return WALK_PTR;
+@@ -4975,7 +4982,7 @@ static int btf_struct_walk(struct bpf_verifier_log *log,
+ 	return -EINVAL;
  }
  
-+static int trigger_module_test_read(const struct core_reloc_test_case *test)
+-int btf_struct_access(struct bpf_verifier_log *log,
++int btf_struct_access(struct bpf_verifier_log *log, const struct btf *btf,
+ 		      const struct btf_type *t, int off, int size,
+ 		      enum bpf_access_type atype __maybe_unused,
+ 		      u32 *next_btf_id)
+@@ -4984,7 +4991,7 @@ int btf_struct_access(struct bpf_verifier_log *log,
+ 	u32 id;
+ 
+ 	do {
+-		err = btf_struct_walk(log, t, off, size, &id);
++		err = btf_struct_walk(log, btf, t, off, size, &id);
+ 
+ 		switch (err) {
+ 		case WALK_PTR:
+@@ -5000,7 +5007,7 @@ int btf_struct_access(struct bpf_verifier_log *log,
+ 			 * by diving in it. At this point the offset is
+ 			 * aligned with the new type, so set it to 0.
+ 			 */
+-			t = btf_type_by_id(btf_vmlinux, id);
++			t = btf_type_by_id(btf, id);
+ 			off = 0;
+ 			break;
+ 		default:
+@@ -5016,21 +5023,37 @@ int btf_struct_access(struct bpf_verifier_log *log,
+ 	return -EINVAL;
+ }
+ 
++/* Check that two BTF types, each specified as an BTF object + id, are exactly
++ * the same. Trivial ID check is not enough due to module BTFs, because we can
++ * end up with two different module BTFs, but IDs point to the common type in
++ * vmlinux BTF.
++ */
++static bool btf_types_are_same(const struct btf *btf1, u32 id1,
++			       const struct btf *btf2, u32 id2)
 +{
-+	struct core_reloc_module_output *exp = (void *)test->output;
-+	int fd, err;
-+
-+	fd = open("/sys/kernel/bpf_testmod", O_RDONLY);
-+	err = -errno;
-+	if (CHECK(fd < 0, "testmod_file_open", "failed: %d\n", err))
-+		return err;
-+
-+	read(fd, NULL, exp->len); /* request expected number of bytes */
-+	close(fd);
-+
-+	return 0;
++	if (id1 != id2)
++		return false;
++	if (btf1 == btf2)
++		return true;
++	return btf_type_by_id(btf1, id1) == btf_type_by_id(btf2, id2);
 +}
 +
-+
- static struct core_reloc_test_case test_cases[] = {
- 	/* validate we can find kernel image and use its BTF for relocs */
- 	{
-@@ -467,6 +513,9 @@ static struct core_reloc_test_case test_cases[] = {
- 		.output_len = sizeof(struct core_reloc_kernel_output),
- 	},
+ bool btf_struct_ids_match(struct bpf_verifier_log *log,
+-			  int off, u32 id, u32 need_type_id)
++			  const struct btf *btf, u32 id, int off,
++			  const struct btf *need_btf, u32 need_type_id)
+ {
+ 	const struct btf_type *type;
+ 	int err;
  
-+	/* validate we can find kernel module BTF types for relocs/attach */
-+	MODULES_CASE("module", "raw_tp/bpf_testmod_test_read", "bpf_testmod_test_read"),
-+
- 	/* validate BPF program can use multiple flavors to match against
- 	 * single target BTF type
+ 	/* Are we already done? */
+-	if (need_type_id == id && off == 0)
++	if (off == 0 && btf_types_are_same(btf, id, need_btf, need_type_id))
+ 		return true;
+ 
+ again:
+-	type = btf_type_by_id(btf_vmlinux, id);
++	type = btf_type_by_id(btf, id);
+ 	if (!type)
+ 		return false;
+-	err = btf_struct_walk(log, type, off, 1, &id);
++	err = btf_struct_walk(log, btf, type, off, 1, &id);
+ 	if (err != WALK_STRUCT)
+ 		return false;
+ 
+@@ -5039,7 +5062,7 @@ bool btf_struct_ids_match(struct bpf_verifier_log *log,
+ 	 * continue the search with offset 0 in the new
+ 	 * type.
  	 */
-@@ -779,6 +828,11 @@ void test_core_reloc(void)
- 		if (!test__start_subtest(test_case->case_name))
- 			continue;
+-	if (need_type_id != id) {
++	if (!btf_types_are_same(btf, id, need_btf, need_type_id)) {
+ 		off = 0;
+ 		goto again;
+ 	}
+@@ -5710,7 +5733,7 @@ int btf_get_fd_by_id(u32 id)
+ 	return fd;
+ }
  
-+		if (test_case->needs_testmod && !env.has_testmod) {
-+			test__skip();
-+			continue;
-+		}
+-u32 btf_id(const struct btf *btf)
++u32 btf_obj_id(const struct btf *btf)
+ {
+ 	return btf->id;
+ }
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 261f8692d0d2..00af9ea4adb1 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -2151,6 +2151,8 @@ void bpf_prog_free(struct bpf_prog *fp)
+ 
+ 	if (aux->dst_prog)
+ 		bpf_prog_put(aux->dst_prog);
++	if (aux->attach_btf)
++		btf_put(aux->attach_btf);
+ 	INIT_WORK(&aux->work, bpf_prog_free_deferred);
+ 	schedule_work(&aux->work);
+ }
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index d16dd4945100..4fd7d9269008 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -2113,6 +2113,20 @@ static int bpf_prog_load(union bpf_attr *attr, union bpf_attr __user *uattr)
+ 
+ 	prog->expected_attach_type = attr->expected_attach_type;
+ 	prog->aux->attach_btf_id = attr->attach_btf_id;
 +
- 		if (test_case->setup) {
- 			err = test_case->setup(test_case);
- 			if (CHECK(err, "test_setup", "test #%d setup failed: %d\n", i, err))
-@@ -790,13 +844,11 @@ void test_core_reloc(void)
- 			  test_case->bpf_obj_file, PTR_ERR(obj)))
- 			continue;
++	if (attr->attach_btf_id && !attr->attach_prog_fd) {
++		struct btf *btf;
++
++		btf = bpf_get_btf_vmlinux();
++		if (IS_ERR(btf))
++			return PTR_ERR(btf);
++		if (!btf)
++			return -EINVAL;
++
++		btf_get(btf);
++		prog->aux->attach_btf = btf;
++	}
++
+ 	if (attr->attach_prog_fd) {
+ 		struct bpf_prog *dst_prog;
  
--		/* for typed raw tracepoints, NULL should be specified */
--		if (test_case->direct_raw_tp) {
--			probe_name = "tp_btf/sys_enter";
--			tp_name = NULL;
--		} else {
--			probe_name = "raw_tracepoint/sys_enter";
--			tp_name = "sys_enter";
-+		probe_name = "raw_tracepoint/sys_enter";
-+		tp_name = "sys_enter";
-+		if (test_case->prog_sec_name) {
-+			probe_name = test_case->prog_sec_name;
-+			tp_name = test_case->raw_tp_name; /* NULL for tp_btf */
+@@ -2566,7 +2580,7 @@ static int bpf_tracing_prog_attach(struct bpf_prog *prog,
+ 			goto out_put_prog;
  		}
  
- 		prog = bpf_object__find_program_by_title(obj, probe_name);
-@@ -837,7 +889,12 @@ void test_core_reloc(void)
- 			goto cleanup;
+-		key = bpf_trampoline_compute_key(tgt_prog, btf_id);
++		key = bpf_trampoline_compute_key(tgt_prog, NULL, btf_id);
+ 	}
  
- 		/* trigger test run */
--		usleep(1);
-+		if (test_case->trigger) {
-+			if (!ASSERT_OK(test_case->trigger(test_case), "test_trigger"))
-+				goto cleanup;
-+		} else {
-+			usleep(1);
-+		}
+ 	link = kzalloc(sizeof(*link), GFP_USER);
+@@ -3543,7 +3557,7 @@ static int bpf_prog_get_info_by_fd(struct file *file,
+ 	}
  
- 		if (data->skip) {
- 			test__skip();
-diff --git a/tools/testing/selftests/bpf/progs/core_reloc_types.h b/tools/testing/selftests/bpf/progs/core_reloc_types.h
-index e6e616cb7bc9..9a2850850121 100644
---- a/tools/testing/selftests/bpf/progs/core_reloc_types.h
-+++ b/tools/testing/selftests/bpf/progs/core_reloc_types.h
-@@ -15,6 +15,23 @@ struct core_reloc_kernel_output {
- 	int comm_len;
+ 	if (prog->aux->btf)
+-		info.btf_id = btf_id(prog->aux->btf);
++		info.btf_id = btf_obj_id(prog->aux->btf);
+ 
+ 	ulen = info.nr_func_info;
+ 	info.nr_func_info = prog->aux->func_info_cnt;
+@@ -3646,7 +3660,7 @@ static int bpf_map_get_info_by_fd(struct file *file,
+ 	memcpy(info.name, map->name, sizeof(map->name));
+ 
+ 	if (map->btf) {
+-		info.btf_id = btf_id(map->btf);
++		info.btf_id = btf_obj_id(map->btf);
+ 		info.btf_key_type_id = map->btf_key_type_id;
+ 		info.btf_value_type_id = map->btf_value_type_id;
+ 	}
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index e333ce43f281..2f3950839b85 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -238,7 +238,9 @@ struct bpf_call_arg_meta {
+ 	u64 msize_max_value;
+ 	int ref_obj_id;
+ 	int func_id;
++	struct btf *btf;
+ 	u32 btf_id;
++	struct btf *ret_btf;
+ 	u32 ret_btf_id;
  };
  
-+/*
-+ * MODULE
-+ */
-+
-+struct core_reloc_module_output {
-+	long long len;
-+	long long off;
-+	int read_ctx_sz;
-+	bool read_ctx_exists;
-+	bool buf_exists;
-+	bool len_exists;
-+	bool off_exists;
-+	/* we have test_progs[-flavor], so cut flavor part */
-+	char comm[sizeof("test_progs")];
-+	int comm_len;
-+};
-+
- /*
-  * FLAVORS
-  */
-diff --git a/tools/testing/selftests/bpf/progs/test_core_reloc_module.c b/tools/testing/selftests/bpf/progs/test_core_reloc_module.c
-new file mode 100644
-index 000000000000..d1840c1a9d36
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_core_reloc_module.c
-@@ -0,0 +1,66 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 Facebook */
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_core_read.h>
-+#include <bpf/bpf_tracing.h>
-+
-+char _license[] SEC("license") = "GPL";
-+
-+struct bpf_testmod_test_read_ctx {
-+	/* field order is mixed up */
-+	size_t len;
-+	char *buf;
-+	loff_t off;
-+} __attribute__((preserve_access_index));
-+
-+struct {
-+	char in[256];
-+	char out[256];
-+	bool skip;
-+	uint64_t my_pid_tgid;
-+} data = {};
-+
-+struct core_reloc_module_output {
-+	long long len;
-+	long long off;
-+	int read_ctx_sz;
-+	bool read_ctx_exists;
-+	bool buf_exists;
-+	bool len_exists;
-+	bool off_exists;
-+	/* we have test_progs[-flavor], so cut flavor part */
-+	char comm[sizeof("test_progs")];
-+	int comm_len;
-+};
-+
-+SEC("raw_tp/bpf_testmod_test_read")
-+int BPF_PROG(test_core_module,
-+	     struct task_struct *task,
-+	     struct bpf_testmod_test_read_ctx *read_ctx)
-+{
-+	struct core_reloc_module_output *out = (void *)&data.out;
-+	__u64 pid_tgid = bpf_get_current_pid_tgid();
-+	__u32 real_tgid = (__u32)(pid_tgid >> 32);
-+	__u32 real_pid = (__u32)pid_tgid;
-+
-+	if (data.my_pid_tgid != pid_tgid)
-+		return 0;
-+
-+	if (BPF_CORE_READ(task, pid) != real_pid || BPF_CORE_READ(task, tgid) != real_tgid)
-+		return 0;
-+
-+	out->len = BPF_CORE_READ(read_ctx, len);
-+	out->off = BPF_CORE_READ(read_ctx, off);
-+
-+	out->read_ctx_sz = bpf_core_type_size(struct bpf_testmod_test_read_ctx);
-+	out->read_ctx_exists = bpf_core_type_exists(struct bpf_testmod_test_read_ctx);
-+	out->buf_exists = bpf_core_field_exists(read_ctx->buf);
-+	out->off_exists = bpf_core_field_exists(read_ctx->off);
-+	out->len_exists = bpf_core_field_exists(read_ctx->len);
-+
-+	out->comm_len = BPF_CORE_READ_STR_INTO(&out->comm, task, comm);
-+
-+	return 0;
-+}
+@@ -556,10 +558,9 @@ static struct bpf_func_state *func(struct bpf_verifier_env *env,
+ 	return cur->frame[reg->frameno];
+ }
+ 
+-const char *kernel_type_name(u32 id)
++static const char *kernel_type_name(const struct btf* btf, u32 id)
+ {
+-	return btf_name_by_offset(btf_vmlinux,
+-				  btf_type_by_id(btf_vmlinux, id)->name_off);
++	return btf_name_by_offset(btf, btf_type_by_id(btf, id)->name_off);
+ }
+ 
+ static void print_verifier_state(struct bpf_verifier_env *env,
+@@ -589,7 +590,7 @@ static void print_verifier_state(struct bpf_verifier_env *env,
+ 			if (t == PTR_TO_BTF_ID ||
+ 			    t == PTR_TO_BTF_ID_OR_NULL ||
+ 			    t == PTR_TO_PERCPU_BTF_ID)
+-				verbose(env, "%s", kernel_type_name(reg->btf_id));
++				verbose(env, "%s", kernel_type_name(reg->btf, reg->btf_id));
+ 			verbose(env, "(id=%d", reg->id);
+ 			if (reg_type_may_be_refcounted_or_null(t))
+ 				verbose(env, ",ref_obj_id=%d", reg->ref_obj_id);
+@@ -1383,7 +1384,8 @@ static void mark_reg_not_init(struct bpf_verifier_env *env,
+ 
+ static void mark_btf_ld_reg(struct bpf_verifier_env *env,
+ 			    struct bpf_reg_state *regs, u32 regno,
+-			    enum bpf_reg_type reg_type, u32 btf_id)
++			    enum bpf_reg_type reg_type,
++			    struct btf *btf, u32 btf_id)
+ {
+ 	if (reg_type == SCALAR_VALUE) {
+ 		mark_reg_unknown(env, regs, regno);
+@@ -1391,6 +1393,7 @@ static void mark_btf_ld_reg(struct bpf_verifier_env *env,
+ 	}
+ 	mark_reg_known_zero(env, regs, regno);
+ 	regs[regno].type = PTR_TO_BTF_ID;
++	regs[regno].btf = btf;
+ 	regs[regno].btf_id = btf_id;
+ }
+ 
+@@ -2764,7 +2767,7 @@ static int check_packet_access(struct bpf_verifier_env *env, u32 regno, int off,
+ /* check access to 'struct bpf_context' fields.  Supports fixed offsets only */
+ static int check_ctx_access(struct bpf_verifier_env *env, int insn_idx, int off, int size,
+ 			    enum bpf_access_type t, enum bpf_reg_type *reg_type,
+-			    u32 *btf_id)
++			    struct btf **btf, u32 *btf_id)
+ {
+ 	struct bpf_insn_access_aux info = {
+ 		.reg_type = *reg_type,
+@@ -2782,10 +2785,12 @@ static int check_ctx_access(struct bpf_verifier_env *env, int insn_idx, int off,
+ 		 */
+ 		*reg_type = info.reg_type;
+ 
+-		if (*reg_type == PTR_TO_BTF_ID || *reg_type == PTR_TO_BTF_ID_OR_NULL)
++		if (*reg_type == PTR_TO_BTF_ID || *reg_type == PTR_TO_BTF_ID_OR_NULL) {
++			*btf = info.btf;
+ 			*btf_id = info.btf_id;
+-		else
++		} else {
+ 			env->insn_aux_data[insn_idx].ctx_field_size = info.ctx_field_size;
++		}
+ 		/* remember the offset of last byte accessed in ctx */
+ 		if (env->prog->aux->max_ctx_offset < off + size)
+ 			env->prog->aux->max_ctx_offset = off + size;
+@@ -3297,8 +3302,8 @@ static int check_ptr_to_btf_access(struct bpf_verifier_env *env,
+ 				   int value_regno)
+ {
+ 	struct bpf_reg_state *reg = regs + regno;
+-	const struct btf_type *t = btf_type_by_id(btf_vmlinux, reg->btf_id);
+-	const char *tname = btf_name_by_offset(btf_vmlinux, t->name_off);
++	const struct btf_type *t = btf_type_by_id(reg->btf, reg->btf_id);
++	const char *tname = btf_name_by_offset(reg->btf, t->name_off);
+ 	u32 btf_id;
+ 	int ret;
+ 
+@@ -3319,23 +3324,23 @@ static int check_ptr_to_btf_access(struct bpf_verifier_env *env,
+ 	}
+ 
+ 	if (env->ops->btf_struct_access) {
+-		ret = env->ops->btf_struct_access(&env->log, t, off, size,
+-						  atype, &btf_id);
++		ret = env->ops->btf_struct_access(&env->log, reg->btf, t,
++						  off, size, atype, &btf_id);
+ 	} else {
+ 		if (atype != BPF_READ) {
+ 			verbose(env, "only read is supported\n");
+ 			return -EACCES;
+ 		}
+ 
+-		ret = btf_struct_access(&env->log, t, off, size, atype,
+-					&btf_id);
++		ret = btf_struct_access(&env->log, reg->btf, t, off, size,
++					atype, &btf_id);
+ 	}
+ 
+ 	if (ret < 0)
+ 		return ret;
+ 
+ 	if (atype == BPF_READ && value_regno >= 0)
+-		mark_btf_ld_reg(env, regs, value_regno, ret, btf_id);
++		mark_btf_ld_reg(env, regs, value_regno, ret, reg->btf, btf_id);
+ 
+ 	return 0;
+ }
+@@ -3385,12 +3390,12 @@ static int check_ptr_to_map_access(struct bpf_verifier_env *env,
+ 		return -EACCES;
+ 	}
+ 
+-	ret = btf_struct_access(&env->log, t, off, size, atype, &btf_id);
++	ret = btf_struct_access(&env->log, btf_vmlinux, t, off, size, atype, &btf_id);
+ 	if (ret < 0)
+ 		return ret;
+ 
+ 	if (value_regno >= 0)
+-		mark_btf_ld_reg(env, regs, value_regno, ret, btf_id);
++		mark_btf_ld_reg(env, regs, value_regno, ret, btf_vmlinux, btf_id);
+ 
+ 	return 0;
+ }
+@@ -3466,6 +3471,7 @@ static int check_mem_access(struct bpf_verifier_env *env, int insn_idx, u32 regn
+ 			mark_reg_unknown(env, regs, value_regno);
+ 	} else if (reg->type == PTR_TO_CTX) {
+ 		enum bpf_reg_type reg_type = SCALAR_VALUE;
++		struct btf *btf = NULL;
+ 		u32 btf_id = 0;
+ 
+ 		if (t == BPF_WRITE && value_regno >= 0 &&
+@@ -3478,7 +3484,7 @@ static int check_mem_access(struct bpf_verifier_env *env, int insn_idx, u32 regn
+ 		if (err < 0)
+ 			return err;
+ 
+-		err = check_ctx_access(env, insn_idx, off, size, t, &reg_type, &btf_id);
++		err = check_ctx_access(env, insn_idx, off, size, t, &reg_type, &btf, &btf_id);
+ 		if (err)
+ 			verbose_linfo(env, insn_idx, "; ");
+ 		if (!err && t == BPF_READ && value_regno >= 0) {
+@@ -3500,8 +3506,10 @@ static int check_mem_access(struct bpf_verifier_env *env, int insn_idx, u32 regn
+ 				 */
+ 				regs[value_regno].subreg_def = DEF_NOT_SUBREG;
+ 				if (reg_type == PTR_TO_BTF_ID ||
+-				    reg_type == PTR_TO_BTF_ID_OR_NULL)
++				    reg_type == PTR_TO_BTF_ID_OR_NULL) {
++					regs[value_regno].btf = btf;
+ 					regs[value_regno].btf_id = btf_id;
++				}
+ 			}
+ 			regs[value_regno].type = reg_type;
+ 		}
+@@ -4118,11 +4126,11 @@ static int check_reg_type(struct bpf_verifier_env *env, u32 regno,
+ 			arg_btf_id = compatible->btf_id;
+ 		}
+ 
+-		if (!btf_struct_ids_match(&env->log, reg->off, reg->btf_id,
+-					  *arg_btf_id)) {
++		if (!btf_struct_ids_match(&env->log, reg->btf, reg->btf_id, reg->off,
++					  btf_vmlinux, *arg_btf_id)) {
+ 			verbose(env, "R%d is of type %s but %s is expected\n",
+-				regno, kernel_type_name(reg->btf_id),
+-				kernel_type_name(*arg_btf_id));
++				regno, kernel_type_name(reg->btf, reg->btf_id),
++				kernel_type_name(btf_vmlinux, *arg_btf_id));
+ 			return -EACCES;
+ 		}
+ 
+@@ -4244,6 +4252,7 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+ 			verbose(env, "Helper has invalid btf_id in R%d\n", regno);
+ 			return -EACCES;
+ 		}
++		meta->ret_btf = reg->btf;
+ 		meta->ret_btf_id = reg->btf_id;
+ 	} else if (arg_type == ARG_PTR_TO_SPIN_LOCK) {
+ 		if (meta->func_id == BPF_FUNC_spin_lock) {
+@@ -5190,16 +5199,16 @@ static int check_helper_call(struct bpf_verifier_env *env, int func_id, int insn
+ 		const struct btf_type *t;
+ 
+ 		mark_reg_known_zero(env, regs, BPF_REG_0);
+-		t = btf_type_skip_modifiers(btf_vmlinux, meta.ret_btf_id, NULL);
++		t = btf_type_skip_modifiers(meta.ret_btf, meta.ret_btf_id, NULL);
+ 		if (!btf_type_is_struct(t)) {
+ 			u32 tsize;
+ 			const struct btf_type *ret;
+ 			const char *tname;
+ 
+ 			/* resolve the type size of ksym. */
+-			ret = btf_resolve_size(btf_vmlinux, t, &tsize);
++			ret = btf_resolve_size(meta.ret_btf, t, &tsize);
+ 			if (IS_ERR(ret)) {
+-				tname = btf_name_by_offset(btf_vmlinux, t->name_off);
++				tname = btf_name_by_offset(meta.ret_btf, t->name_off);
+ 				verbose(env, "unable to resolve the size of type '%s': %ld\n",
+ 					tname, PTR_ERR(ret));
+ 				return -EINVAL;
+@@ -5212,6 +5221,7 @@ static int check_helper_call(struct bpf_verifier_env *env, int func_id, int insn
+ 			regs[BPF_REG_0].type =
+ 				fn->ret_type == RET_PTR_TO_MEM_OR_BTF_ID ?
+ 				PTR_TO_BTF_ID : PTR_TO_BTF_ID_OR_NULL;
++			regs[BPF_REG_0].btf = meta.ret_btf;
+ 			regs[BPF_REG_0].btf_id = meta.ret_btf_id;
+ 		}
+ 	} else if (fn->ret_type == RET_PTR_TO_BTF_ID_OR_NULL ||
+@@ -5228,6 +5238,10 @@ static int check_helper_call(struct bpf_verifier_env *env, int func_id, int insn
+ 				fn->ret_type, func_id_name(func_id), func_id);
+ 			return -EINVAL;
+ 		}
++		/* current BPF helper definitions are only coming from
++		 * built-in code with type IDs from  vmlinux BTF
++		 */
++		regs[BPF_REG_0].btf = btf_vmlinux;
+ 		regs[BPF_REG_0].btf_id = ret_btf_id;
+ 	} else {
+ 		verbose(env, "unknown return type %d of func %s#%d\n",
+@@ -5627,7 +5641,7 @@ static int adjust_ptr_min_max_vals(struct bpf_verifier_env *env,
+ 		if (reg_is_pkt_pointer(ptr_reg)) {
+ 			dst_reg->id = ++env->id_gen;
+ 			/* something was added to pkt_ptr, set range to zero */
+-			dst_reg->raw = 0;
++			memset(&dst_reg->raw, 0, sizeof(dst_reg->raw));
+ 		}
+ 		break;
+ 	case BPF_SUB:
+@@ -5692,7 +5706,7 @@ static int adjust_ptr_min_max_vals(struct bpf_verifier_env *env,
+ 			dst_reg->id = ++env->id_gen;
+ 			/* something was added to pkt_ptr, set range to zero */
+ 			if (smin_val < 0)
+-				dst_reg->raw = 0;
++				memset(&dst_reg->raw, 0, sizeof(dst_reg->raw));
+ 		}
+ 		break;
+ 	case BPF_AND:
+@@ -7744,6 +7758,7 @@ static int check_ld_imm(struct bpf_verifier_env *env, struct bpf_insn *insn)
+ 			break;
+ 		case PTR_TO_BTF_ID:
+ 		case PTR_TO_PERCPU_BTF_ID:
++			dst_reg->btf = aux->btf_var.btf;
+ 			dst_reg->btf_id = aux->btf_var.btf_id;
+ 			break;
+ 		default:
+@@ -9739,6 +9754,7 @@ static int check_pseudo_btf_id(struct bpf_verifier_env *env,
+ 	t = btf_type_skip_modifiers(btf_vmlinux, type, NULL);
+ 	if (percpu) {
+ 		aux->btf_var.reg_type = PTR_TO_PERCPU_BTF_ID;
++		aux->btf_var.btf = btf_vmlinux;
+ 		aux->btf_var.btf_id = type;
+ 	} else if (!btf_type_is_struct(t)) {
+ 		const struct btf_type *ret;
+@@ -9757,6 +9773,7 @@ static int check_pseudo_btf_id(struct bpf_verifier_env *env,
+ 		aux->btf_var.mem_size = tsize;
+ 	} else {
+ 		aux->btf_var.reg_type = PTR_TO_BTF_ID;
++		aux->btf_var.btf = btf_vmlinux;
+ 		aux->btf_var.btf_id = type;
+ 	}
+ 	return 0;
+@@ -11609,7 +11626,7 @@ int bpf_check_attach_target(struct bpf_verifier_log *log,
+ 		bpf_log(log, "Tracing programs must provide btf_id\n");
+ 		return -EINVAL;
+ 	}
+-	btf = tgt_prog ? tgt_prog->aux->btf : btf_vmlinux;
++	btf = tgt_prog ? tgt_prog->aux->btf : prog->aux->attach_btf;
+ 	if (!btf) {
+ 		bpf_log(log,
+ 			"FENTRY/FEXIT program can only be attached to another program annotated with BTF\n");
+@@ -11885,7 +11902,7 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+ 			return ret;
+ 	}
+ 
+-	key = bpf_trampoline_compute_key(tgt_prog, btf_id);
++	key = bpf_trampoline_compute_key(tgt_prog, prog->aux->attach_btf, btf_id);
+ 	tr = bpf_trampoline_get(key, &tgt_info);
+ 	if (!tr)
+ 		return -ENOMEM;
+diff --git a/net/ipv4/bpf_tcp_ca.c b/net/ipv4/bpf_tcp_ca.c
+index 618954f82764..d520e61649c8 100644
+--- a/net/ipv4/bpf_tcp_ca.c
++++ b/net/ipv4/bpf_tcp_ca.c
+@@ -95,6 +95,7 @@ static bool bpf_tcp_ca_is_valid_access(int off, int size,
+ }
+ 
+ static int bpf_tcp_ca_btf_struct_access(struct bpf_verifier_log *log,
++					const struct btf *btf,
+ 					const struct btf_type *t, int off,
+ 					int size, enum bpf_access_type atype,
+ 					u32 *next_btf_id)
+@@ -102,7 +103,7 @@ static int bpf_tcp_ca_btf_struct_access(struct bpf_verifier_log *log,
+ 	size_t end;
+ 
+ 	if (atype == BPF_READ)
+-		return btf_struct_access(log, t, off, size, atype, next_btf_id);
++		return btf_struct_access(log, btf, t, off, size, atype, next_btf_id);
+ 
+ 	if (t != tcp_sock_type) {
+ 		bpf_log(log, "only read is supported\n");
 -- 
 2.24.1
 
