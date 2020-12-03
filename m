@@ -2,39 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 367DA2CCBE4
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 02:55:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00B162CCBEE
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 03:00:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727599AbgLCBya (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 20:54:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43520 "EHLO mail.kernel.org"
+        id S1727803AbgLCB7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 20:59:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43880 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726602AbgLCBya (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Dec 2020 20:54:30 -0500
-Date:   Wed, 2 Dec 2020 17:53:47 -0800
+        id S1726920AbgLCB7P (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Dec 2020 20:59:15 -0500
+Date:   Wed, 2 Dec 2020 17:58:02 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1606960429;
-        bh=qGJylSv/S3dB8ZwknctI8ONNkBho9UNAM1cSlTbraFk=;
+        s=k20201202; t=1606960684;
+        bh=XQZoLAN3s38jpF9PN2JGqByStnM6cmr+jF9FRNUrCSk=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=r0PrjEMmvjTygwJAhSZ1UNBWefP90ioF8uVuRo9ZUWDolvUopiH05DF/ET5UtpBjP
-         WCYO1zxnZiQplLk+U4RavO5l7OS10B8kP6Gc8rXKVGPBDKnE9LmIbZrVWdJlM560d7
-         7TVbemcTFIjIY8eldzhRGgyM1HcGayiuYucPVffIEHlEQRHP+ehsLWgdU84oev2jv+
-         RpJTdKZYrfC4ICzUOdmfcjO65C35je81SbFCPwel0DxElZKqs2kZ4hhdQDSfzjNPN3
-         XS7XXgNUOPm/SdUGO6buE9RjdpTac5+CN2D8zqDmqe79FBE8GS74RX8wStMEFaQPz7
-         2LdEUBc18YtKA==
+        b=B2JTJOWCE1oMPtqNr80UDQyQz5dvdwPUHxBVmPmuTd9uT6jEfMexuV3a1nobTV/V3
+         NcjTVepD3ptzjp4HzPVVgmSCcrPWW8uVGzquuEz+URccE+om2kaIJTnrFV9eoxzeq5
+         H8OeHvEVy5DeLo9vogAd2LWeKu5BbOl4GzVl0YbxsqwYY5jzPqyCNX5g3RM+gB22fX
+         jxl9x5EkrJ1LONsHOdImnGx+p1nqenpusQTVMyr/VBKEcv9zFmsRhPGXoEUYfdh7SV
+         CwvaIgsRxGnrj97/GJru/0EhZN1+rTex74aQhHFbGp4MUOaKTecOqNBFzYb67eAPMd
+         Nrfc9clTbqPnQ==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, m-karicheri2@ti.com, vladimir.oltean@nxp.com,
-        Jose.Abreu@synopsys.com, po.liu@nxp.com,
-        intel-wired-lan@lists.osuosl.org, anthony.l.nguyen@intel.com,
-        Michal Kubecek <mkubecek@suse.cz>
-Subject: Re: [PATCH net-next v1 1/9] ethtool: Add support for configuring
- frame preemption
-Message-ID: <20201202175347.3ee19c51@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201202045325.3254757-2-vinicius.gomes@intel.com>
-References: <20201202045325.3254757-1-vinicius.gomes@intel.com>
-        <20201202045325.3254757-2-vinicius.gomes@intel.com>
+To:     Bongsu Jeon <bongsu.jeon2@gmail.com>
+Cc:     krzk@kernel.org, linux-nfc@lists.01.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bongsu Jeon <bongsu.jeon@samsung.com>
+Subject: Re: [PATCH v5 net-next 0/4] nfc: s3fwrn5: Support a UART interface
+Message-ID: <20201202175802.1dd9fb1e@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <1606909661-3814-1-git-send-email-bongsu.jeon@samsung.com>
+References: <1606909661-3814-1-git-send-email-bongsu.jeon@samsung.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,20 +38,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  1 Dec 2020 20:53:17 -0800 Vinicius Costa Gomes wrote:
-> Frame preemption (described in IEEE 802.3br-2016) defines the concept
-> of preemptible and express queues. It allows traffic from express
-> queues to "interrupt" traffic from preemptible queues, which are
-> "resumed" after the express traffic has finished transmitting.
-> 
-> Frame preemption can only be used when both the local device and the
-> link partner support it.
-> 
-> Only parameters for enabling/disabling frame preemption and
-> configuring the minimum fragment size are included here. Expressing
-> which queues are marked as preemptible is left to mqprio/taprio, as
-> having that information there should be easier on the user.
-> 
-> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+On Wed,  2 Dec 2020 20:47:37 +0900 Bongsu Jeon wrote:
+> S3FWRN82 is the Samsung's NFC chip that supports the UART communication.
+> Before adding the UART driver module, I did refactoring the s3fwrn5_i2c module 
+> to reuse the common blocks.
 
-CC: Michal
+Applied, thanks!
