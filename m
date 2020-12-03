@@ -2,73 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC1492CDB5E
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 17:39:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 515EA2CDB6E
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 17:42:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731299AbgLCQgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 11:36:00 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50498 "EHLO mail.kernel.org"
+        id S2436526AbgLCQkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 11:40:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51752 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726869AbgLCQgA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Dec 2020 11:36:00 -0500
-Date:   Thu, 3 Dec 2020 08:35:17 -0800
+        id S1731194AbgLCQkr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 11:40:47 -0500
+Content-Type: text/plain; charset="utf-8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607013319;
-        bh=Fps3SuFCOQ6ghSUTftMolRWfThLdxBOE/j906OfJAPA=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=l/e9EM2iljfAx/fhFW/4BS0wQY9yeLGH8GXneLQjfi1siRkSdNGeSyxDuKntJyDFc
-         7eijts63OTryZMw5OtyfE/11H9sK14HRrt5kdbT3Kb2fKyNzZg9bY/9cRC3swXqcaU
-         alHvN9xSrJwXScXKLqbLTgRi86zaFSRTAOFOaaRjcBVkuYo/ZsvmBm2pfY2UWe+O+r
-         IGSjIxsddcAgBP8gbgqXQW+50g2km4ZX33USsicUqY9xgRnykyDQQNBYO1qoyLPRwf
-         zWM2e0aBFD50onMGycQEBR7S/oTRsiO2B3/HpNefwbOjGYhmjAOxf0NNSdp5mHa21H
-         +S4AfgVUMG1oA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 2/2] net: dsa: qca: ar9331: export stats64
-Message-ID: <20201203083517.3b616782@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201203085011.GA3606@pengutronix.de>
-References: <20201202140904.24748-1-o.rempel@pengutronix.de>
-        <20201202140904.24748-3-o.rempel@pengutronix.de>
-        <20201202104207.697cfdbb@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-        <20201203085011.GA3606@pengutronix.de>
+        s=k20201202; t=1607013606;
+        bh=iqEm+8B/op2ft2VRxSVqoIGs4zO2nKB7wtK1DPG8jaM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=CB8WmQi3IUi65Qe6uiP/mxm/H9U5NPle4pcWGY9Ivp5yP3Jjc3DBWmvyXID98OaJK
+         bGsqgRCxP6v1xSSCPRtiQvPvaGAhuBL9kdtPJYVjZsast2irrSW2C9W9y0VuyAAdI2
+         rdWEu9RPeRI4A2oHaXXRhO9cAHTC0J5qTR/1+kr2EFEy0QOmKqtODYek0hpD2kv2vh
+         KmqpxCF0qx5jXI5TNcf8ujs/4GC+PpxaOLruos9RRBQHilxSz5GSHyJNL/5sQM6+Lk
+         K9lg+EzxN3Opah9CTjgYF9mOGPQZHff9bZDAwvCLfOgkj3CfDiL6mDaSQzanv4nN00
+         BMNqgfIu4rnMg==
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 0/5] Fix compiler warnings from GCC-10
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160701360644.5193.13492866178323803210.git-patchwork-notify@kernel.org>
+Date:   Thu, 03 Dec 2020 16:40:06 +0000
+References: <20201130002135.6537-1-stephen@networkplumber.org>
+In-Reply-To: <20201130002135.6537-1-stephen@networkplumber.org>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 3 Dec 2020 09:50:11 +0100 Oleksij Rempel wrote:
-> @Jakub,
-> 
-> > You can't take sleeping locks from .ndo_get_stats64.
-> > 
-> > Also regmap may sleep?
-> > 
-> > +	ret = regmap_read(priv->regmap, reg, &val);  
-> 
-> Yes. And underling layer is mdio bus which is by default sleeping as
-> well.
-> 
-> > Am I missing something?  
-> 
-> In this log, the  ar9331_get_stats64() was never called from atomic or
-> irq context. Why it should not be sleeping?
+Hello:
 
-You missed some long discussions about this within last week on netdev.
-Also Documentation/networking/statistics.rst.
+This series was applied to iproute2/iproute2.git (refs/heads/main):
 
-To answer your direct question - try:
+On Sun, 29 Nov 2020 16:21:30 -0800 you wrote:
+> Update to GCC-10 and it starts warning about some new things.
+> 
+> Stephen Hemminger (5):
+>   devlink: fix uninitialized warning
+>   bridge: fix string length warning
+>   tc: fix compiler warnings in ip6 pedit
+>   misc: fix compiler warning in ifstat and nstat
+>   f_u32: fix compiler gcc-10 compiler warning
+> 
+> [...]
 
-# cat /proc/net/dev
+Here is the summary with links:
+  - [1/5] devlink: fix uninitialized warning
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=f8176999390f
+  - [2/5] bridge: fix string length warning
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=5bdc4e9151a1
+  - [3/5] tc: fix compiler warnings in ip6 pedit
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=2319db905295
+  - [4/5] misc: fix compiler warning in ifstat and nstat
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=c01498392138
+  - [5/5] f_u32: fix compiler gcc-10 compiler warning
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=cae2e9291adf
 
-procfs iterates over devices while holding only an RCU read lock.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
