@@ -2,30 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB2AA2CCE08
+	by mail.lfdr.de (Postfix) with ESMTP id 5D3842CCE07
 	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 05:43:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728121AbgLCElV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 23:41:21 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:18158 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727077AbgLCElV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 23:41:21 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fc86c480000>; Wed, 02 Dec 2020 20:40:40 -0800
+        id S1728036AbgLCElP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 23:41:15 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:18720 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727077AbgLCElP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 23:41:15 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fc86c420000>; Wed, 02 Dec 2020 20:40:34 -0800
 Received: from sx1.vdiclient.nvidia.com (10.124.1.5) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 3 Dec
- 2020 04:40:33 +0000
+ 2020 04:40:34 +0000
 From:   Saeed Mahameed <saeedm@nvidia.com>
 To:     Jakub Kicinski <kuba@kernel.org>
 CC:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        "Tariq Toukan" <tariqt@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        "Boris Pismenny" <borisp@nvidia.com>,
+        "Yevgeny Kliteynik" <kliteyn@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 3/4] net/mlx5e: kTLS, Enforce HW TX csum offload with kTLS
-Date:   Wed, 2 Dec 2020 20:39:45 -0800
-Message-ID: <20201203043946.235385-4-saeedm@nvidia.com>
+Subject: [net 4/4] net/mlx5: DR, Proper handling of unsupported Connect-X6DX SW steering
+Date:   Wed, 2 Dec 2020 20:39:46 -0800
+Message-ID: <20201203043946.235385-5-saeedm@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201203043946.235385-1-saeedm@nvidia.com>
 References: <20201203043946.235385-1-saeedm@nvidia.com>
@@ -36,127 +34,112 @@ X-Originating-IP: [10.124.1.5]
 X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1606970440; bh=kPBOYXriEvmQZGk6qIM+VjxGgCTYl+4PiNUkIxCnawA=;
+        t=1606970434; bh=PAvGolED6alVuyhCdaElAfzXQxtsCRZQk5SaikbaWhE=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Transfer-Encoding:Content-Type:
          X-Originating-IP:X-ClientProxiedBy;
-        b=Z7l24Efc0XGrL3xpERQTKDyAjv7t54zIuHuLUydTHGKmUHpN8iZkohszcIdWyV7eW
-         0rPUa2e993aiPac5BK8RyJOBd2dJp9DMPZAqXzxD7trhMvOy+SBiZw8OmjPHLDNrC5
-         6mtFCQA1TzwJccZkQk6Fxgy9Mc3Y1b0VNoUKoxvFb0a8Fakzx+uLx6W6h2KOeUZszd
-         PYMdsa5MrpqU3IGBvzKpXmzocwmUmUeJ4lnSDBVa8HKJAzeu6vl0OoEj+krxLyl0CK
-         AC7v0PJ+dX9YM0V2Oj4EawhkFl3jMSuejVDHcXjnoKl1I7bengAT1vjMRC9ce1jz68
-         6L3xYDtZmyuLA==
+        b=kdGQSKiMAGVi8KxLAcDoXRBEzZWMQOnbGuJJ5uM9yo6jJyQU0NKijgRTdq3+AZcJL
+         76Br3Neu8DAw7mjP7aF5gaBFMYxFqqG2MkCHp7O0nipDE5pVhJNfgGNjGOQBR7TG3g
+         VUtsK25DN7s6q9C+P5pg2FJ43JMcpxJLAwUZviGchlWqtB9/9WFfaQxM9+TEnJByXb
+         Wwy5kZeKw3iM2Fo74LlqGNyYAJuOJ7tQjyrFHl9Gij+11Ngfj1h6Gjx247MHkUJcLn
+         Gcj2IG8g265CBqnd/8NamxYBXhBxV6zEbcV61zXPFTwiJIMl/4MsOa+u79nbeDR/jr
+         mR3lkwr+nj0xA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tariq Toukan <tariqt@nvidia.com>
+From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-Checksum calculation cannot be done in SW for TX kTLS HW offloaded
-packets.
-Offload it to the device, disregard the declared state of the TX
-csum offload feature.
+STEs format for Connect-X5 and Connect-X6DX different. Currently, on
+Connext-X6DX the SW steering would break at some point when building STEs
+w/o giving a proper error message. Fix this by checking the STE format of
+the current device when initializing domain: add mlx5_ifc definitions for
+Connect-X6DX SW steering, read FW capability to get the current format
+version, and check this version when domain is being created.
 
-Fixes: d2ead1f360e8 ("net/mlx5e: Add kTLS TX HW offload support")
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Reviewed-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-Reviewed-by: Boris Pismenny <borisp@nvidia.com>
+Fixes: 26d688e33f88 ("net/mlx5: DR, Add Steering entry (STE) utilities")
+Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en_tx.c   | 22 +++++++++++++------
- 1 file changed, 15 insertions(+), 7 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c    | 1 +
+ .../net/ethernet/mellanox/mlx5/core/steering/dr_domain.c | 5 +++++
+ .../net/ethernet/mellanox/mlx5/core/steering/dr_types.h  | 1 +
+ include/linux/mlx5/mlx5_ifc.h                            | 9 ++++++++-
+ 4 files changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/=
-ethernet/mellanox/mlx5/core/en_tx.c
-index 6dd3ea3cbbed..d97203cf6a00 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-@@ -161,7 +161,9 @@ ipsec_txwqe_build_eseg_csum(struct mlx5e_txqsq *sq, str=
-uct sk_buff *skb,
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c b/dr=
+ivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
+index 6bd34b293007..51bbd88ff021 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
+@@ -92,6 +92,7 @@ int mlx5dr_cmd_query_device(struct mlx5_core_dev *mdev,
+ 	caps->eswitch_manager	=3D MLX5_CAP_GEN(mdev, eswitch_manager);
+ 	caps->gvmi		=3D MLX5_CAP_GEN(mdev, vhca_id);
+ 	caps->flex_protocols	=3D MLX5_CAP_GEN(mdev, flex_parser_protocols);
++	caps->sw_format_ver	=3D MLX5_CAP_GEN(mdev, steering_format_version);
 =20
- static inline void
--mlx5e_txwqe_build_eseg_csum(struct mlx5e_txqsq *sq, struct sk_buff *skb, s=
-truct mlx5_wqe_eth_seg *eseg)
-+mlx5e_txwqe_build_eseg_csum(struct mlx5e_txqsq *sq, struct sk_buff *skb,
-+			    struct mlx5e_accel_tx_state *accel,
-+			    struct mlx5_wqe_eth_seg *eseg)
- {
- 	if (likely(skb->ip_summed =3D=3D CHECKSUM_PARTIAL)) {
- 		eseg->cs_flags =3D MLX5_ETH_WQE_L3_CSUM;
-@@ -173,6 +175,11 @@ mlx5e_txwqe_build_eseg_csum(struct mlx5e_txqsq *sq, st=
-ruct sk_buff *skb, struct
- 			eseg->cs_flags |=3D MLX5_ETH_WQE_L4_CSUM;
- 			sq->stats->csum_partial++;
- 		}
-+#ifdef CONFIG_MLX5_EN_TLS
-+	} else if (unlikely(accel && accel->tls.tls_tisn)) {
-+		eseg->cs_flags =3D MLX5_ETH_WQE_L3_CSUM | MLX5_ETH_WQE_L4_CSUM;
-+		sq->stats->csum_partial++;
-+#endif
- 	} else if (unlikely(eseg->flow_table_metadata & cpu_to_be32(MLX5_ETH_WQE_=
-FT_META_IPSEC))) {
- 		ipsec_txwqe_build_eseg_csum(sq, skb, eseg);
+ 	if (mlx5dr_matcher_supp_flex_parser_icmp_v4(caps)) {
+ 		caps->flex_parser_id_icmp_dw0 =3D MLX5_CAP_GEN(mdev, flex_parser_id_icmp=
+_dw0);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c b=
+/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
+index 890767a2a7cb..aa2c2d6c44e6 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
+@@ -223,6 +223,11 @@ static int dr_domain_caps_init(struct mlx5_core_dev *m=
+dev,
+ 	if (ret)
+ 		return ret;
 =20
-@@ -607,12 +614,13 @@ void mlx5e_tx_mpwqe_ensure_complete(struct mlx5e_txqs=
-q *sq)
- }
++	if (dmn->info.caps.sw_format_ver !=3D MLX5_STEERING_FORMAT_CONNECTX_5) {
++		mlx5dr_err(dmn, "SW steering is not supported on this device\n");
++		return -EOPNOTSUPP;
++	}
++
+ 	ret =3D dr_domain_query_fdb_caps(mdev, dmn);
+ 	if (ret)
+ 		return ret;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/=
+drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
+index f50f3b107aa3..cf62ea4f882e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
+@@ -625,6 +625,7 @@ struct mlx5dr_cmd_caps {
+ 	u8 max_ft_level;
+ 	u16 roce_min_src_udp;
+ 	u8 num_esw_ports;
++	u8 sw_format_ver;
+ 	bool eswitch_manager;
+ 	bool rx_sw_owner;
+ 	bool tx_sw_owner;
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index a092346c7b2d..233352447b1a 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -1223,6 +1223,11 @@ enum mlx5_fc_bulk_alloc_bitmask {
 =20
- static bool mlx5e_txwqe_build_eseg(struct mlx5e_priv *priv, struct mlx5e_t=
-xqsq *sq,
--				   struct sk_buff *skb, struct mlx5_wqe_eth_seg *eseg)
-+				   struct sk_buff *skb, struct mlx5e_accel_tx_state *accel,
-+				   struct mlx5_wqe_eth_seg *eseg)
- {
- 	if (unlikely(!mlx5e_accel_tx_eseg(priv, skb, eseg)))
- 		return false;
+ #define MLX5_FC_BULK_NUM_FCS(fc_enum) (MLX5_FC_BULK_SIZE_FACTOR * (fc_enum=
+))
 =20
--	mlx5e_txwqe_build_eseg_csum(sq, skb, eseg);
-+	mlx5e_txwqe_build_eseg_csum(sq, skb, accel, eseg);
++enum {
++	MLX5_STEERING_FORMAT_CONNECTX_5   =3D 0,
++	MLX5_STEERING_FORMAT_CONNECTX_6DX =3D 1,
++};
++
+ struct mlx5_ifc_cmd_hca_cap_bits {
+ 	u8         reserved_at_0[0x30];
+ 	u8         vhca_id[0x10];
+@@ -1521,7 +1526,9 @@ struct mlx5_ifc_cmd_hca_cap_bits {
 =20
- 	return true;
- }
-@@ -639,7 +647,7 @@ netdev_tx_t mlx5e_xmit(struct sk_buff *skb, struct net_=
-device *dev)
- 		if (mlx5e_tx_skb_supports_mpwqe(skb, &attr)) {
- 			struct mlx5_wqe_eth_seg eseg =3D {};
+ 	u8         general_obj_types[0x40];
 =20
--			if (unlikely(!mlx5e_txwqe_build_eseg(priv, sq, skb, &eseg)))
-+			if (unlikely(!mlx5e_txwqe_build_eseg(priv, sq, skb, &accel, &eseg)))
- 				return NETDEV_TX_OK;
+-	u8         reserved_at_440[0x20];
++	u8         reserved_at_440[0x4];
++	u8         steering_format_version[0x4];
++	u8         create_qp_start_hint[0x18];
 =20
- 			mlx5e_sq_xmit_mpwqe(sq, skb, &eseg, netdev_xmit_more());
-@@ -656,7 +664,7 @@ netdev_tx_t mlx5e_xmit(struct sk_buff *skb, struct net_=
-device *dev)
- 	/* May update the WQE, but may not post other WQEs. */
- 	mlx5e_accel_tx_finish(sq, wqe, &accel,
- 			      (struct mlx5_wqe_inline_seg *)(wqe->data + wqe_attr.ds_cnt_inl));
--	if (unlikely(!mlx5e_txwqe_build_eseg(priv, sq, skb, &wqe->eth)))
-+	if (unlikely(!mlx5e_txwqe_build_eseg(priv, sq, skb, &accel, &wqe->eth)))
- 		return NETDEV_TX_OK;
-=20
- 	mlx5e_sq_xmit_wqe(sq, skb, &attr, &wqe_attr, wqe, pi, netdev_xmit_more())=
-;
-@@ -675,7 +683,7 @@ void mlx5e_sq_xmit_simple(struct mlx5e_txqsq *sq, struc=
-t sk_buff *skb, bool xmit
- 	mlx5e_sq_calc_wqe_attr(skb, &attr, &wqe_attr);
- 	pi =3D mlx5e_txqsq_get_next_pi(sq, wqe_attr.num_wqebbs);
- 	wqe =3D MLX5E_TX_FETCH_WQE(sq, pi);
--	mlx5e_txwqe_build_eseg_csum(sq, skb, &wqe->eth);
-+	mlx5e_txwqe_build_eseg_csum(sq, skb, NULL, &wqe->eth);
- 	mlx5e_sq_xmit_wqe(sq, skb, &attr, &wqe_attr, wqe, pi, xmit_more);
- }
-=20
-@@ -944,7 +952,7 @@ void mlx5i_sq_xmit(struct mlx5e_txqsq *sq, struct sk_bu=
-ff *skb,
-=20
- 	mlx5i_txwqe_build_datagram(av, dqpn, dqkey, datagram);
-=20
--	mlx5e_txwqe_build_eseg_csum(sq, skb, eseg);
-+	mlx5e_txwqe_build_eseg_csum(sq, skb, NULL, eseg);
-=20
- 	eseg->mss =3D attr.mss;
-=20
+ 	u8         reserved_at_460[0x3];
+ 	u8         log_max_uctx[0x5];
 --=20
 2.26.2
 
