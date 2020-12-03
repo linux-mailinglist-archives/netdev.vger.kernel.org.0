@@ -2,65 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 596322CCD6A
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 04:43:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB0112CCD6B
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 04:43:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727838AbgLCDmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 22:42:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52960 "EHLO
+        id S1728828AbgLCDnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 22:43:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726938AbgLCDmp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 22:42:45 -0500
-Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 162CCC061A4D
-        for <netdev@vger.kernel.org>; Wed,  2 Dec 2020 19:41:59 -0800 (PST)
-Received: by mail-oi1-x244.google.com with SMTP id f11so792543oij.6
-        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 19:41:59 -0800 (PST)
+        with ESMTP id S1726938AbgLCDnX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 22:43:23 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73EB8C061A4E
+        for <netdev@vger.kernel.org>; Wed,  2 Dec 2020 19:42:43 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id q22so381594pfk.12
+        for <netdev@vger.kernel.org>; Wed, 02 Dec 2020 19:42:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=i/eobEHX219bnaFxWAsmav+2uvT51fnL/qvUipy6+Y4=;
-        b=F2F3cidYL0JM3VoisCSqQUMY8bdtLm00RMk9k8MRPNfikQZBQc7DuGeYC3pWZwpNd0
-         rlG4/0o2U3NeI460ksPambBh5mEp0CpRzfKg8Y4trnJJypw6ijNi87darmw1s2ZmMQhd
-         WnlrbJ+a2I34ejCb/FUq3DoM/eieNKpI9cdKi49x/v46WB6Ci/k4lXJhv1BV8Rwj9rpv
-         kY4RpsR9DAjZ++cQ8MIEQhCxIKOSGba1sxonKyNzfxHTDc3C8vtKQRqX5WVhRdR35FRw
-         4fCIW7wEdgwXWV60k9t00Yv0+OAgvBeHk0QSbsA7pOj65aFvuj1M08XC9KloQ7q5TfPh
-         e9wg==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=5yONYZNRF5XoJh3n6zu119emm5To6PBp7rJCOs0a2MI=;
+        b=PiiLc3e5PbBRSr+Xjl1bCjkWF94R2DNWBUH1id+tQSEe5G6ANOF0KcAKSCQApAl1p9
+         LinNnbKQwcEfyPfs1HFxJdiwhuCf1D1bcwlQl54nY2OuPSwP3HOLW6AyiJpOs0qUXig5
+         r+r/VU8SofJLFALsWleNJXtIaESghHzDDfTY7ktX3HR9GEc22HA0GrE42OBQHo3vdbrj
+         6yOEiFxm6vV9/WP6APU5ZBUBrC0qTdlueuACnIN4v6U+W8/Sh+d3y5KVGptf2KFJz9W/
+         UlPjL4MQO40W6plyFYGkR2egY20KBv1kzS6NrLqsifHnBhPBXlNIo91EHwiBHUsCYZF8
+         dyrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=i/eobEHX219bnaFxWAsmav+2uvT51fnL/qvUipy6+Y4=;
-        b=Rw38lzkOw74sMfnVVFBUc/tbapsSwgTN0GNTst60Pfa5kX3x/jreILIaqJ8+aPwQm5
-         juIz1xbbyce53XC18E8gjA/LpV0O+JMFuUX0rWEZk2pRlo9Nj9Xjnq4/j3jE97I8EB5h
-         ZuQfy6x6Mr6IN7OOan7h7H8gCRpYuUxc7Qa0apGpzMuSbSDzfH58fIqGcrHax8kmYd/E
-         eV6haAAiqIWZBB8ryEIkRyFC3u9pbqXk2Cc63hu2JxeVVyl28/WfvZoLQQhtMg7E4yR+
-         GpyKEwV7/t99Br0xP97fQxU3WPS708sYg6oba72Tylfm/rMJZOm+62o9ZkCCjpqFoH5z
-         XAGg==
-X-Gm-Message-State: AOAM530MoEcthllhfTJVIXqRpqySGfimNBg8iVJdmmYyoJLESZV61Pi2
-        jU7NbfIxgJwfTYiXYZ6J9YQ=
-X-Google-Smtp-Source: ABdhPJxag7aCLUMCusSkG7uOd1hc6iT0kuX5y6gFOo3Q6a66lDkKxbEG/k6NQksdD2Zhcy6yxDD1uQ==
-X-Received: by 2002:aca:61c5:: with SMTP id v188mr696880oib.66.1606966918515;
-        Wed, 02 Dec 2020 19:41:58 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.51])
-        by smtp.googlemail.com with ESMTPSA id i6sm36054oik.36.2020.12.02.19.41.57
+        bh=5yONYZNRF5XoJh3n6zu119emm5To6PBp7rJCOs0a2MI=;
+        b=pCsiUgiPGVCP93zueCZCDj0OCfu2uUjOMaxw3rrfiApb/lgF4rR2vuH8YgkZrh555r
+         2TJIqhDSM4KvOWrJnHRS85gLeq9saUV7a1kU4ugvUC4SnTK9GPgUI09FXLZS52nlBzDZ
+         o6XF/e0km3ufpurm2P0ncCmu9xUcimZEA/yaidJLFq9MOdBu8byFGPdGeaSrosTC+aGl
+         L7if76uKFshJtFIMjy77nFHLo/qm6TwCpe5rxrBZzr2040jD2D8LdmkaKUyxH+udQ4P+
+         rT4ctqvcRdo5DtLYNPL0dM6YYl6XIpV0OvBr6SsPeIbvnYS12ERJ54ViT9xfcgqHoskm
+         DFoQ==
+X-Gm-Message-State: AOAM531QYx1xSF4OaKZ330UbQklvcPk729+HPBDqwmJbKG2H4oggwlrz
+        2vJCxx1b2vJmsJ1RUrb58W8oPOcsX1w=
+X-Google-Smtp-Source: ABdhPJyFcfU44Gbb/kQYd/ztL8xdYpDElCcIQEIfqxrcy4j564o9a+U7Fxbe4o0oEsjdt8MHM8L3Ig==
+X-Received: by 2002:aa7:9387:0:b029:18b:42dd:41c with SMTP id t7-20020aa793870000b029018b42dd041cmr1345986pfe.60.1606966962550;
+        Wed, 02 Dec 2020 19:42:42 -0800 (PST)
+Received: from [10.230.28.242] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id 6sm487057pfb.22.2020.12.02.19.42.41
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Dec 2020 19:41:57 -0800 (PST)
-Subject: Re: [PATCH iproute2-next] devlink: Extend man page for port function
- set command
-To:     Parav Pandit <parav@nvidia.com>, netdev@vger.kernel.org,
-        stephen@networkplumber.org, dsahern@kernel.org
-Cc:     Jiri Pirko <jiri@nvidia.com>
-References: <20201130164712.571540-1-parav@nvidia.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <dcabfc2d-d376-ca0f-55e9-983380636298@gmail.com>
-Date:   Wed, 2 Dec 2020 20:41:56 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.5.0
+        Wed, 02 Dec 2020 19:42:41 -0800 (PST)
+Subject: Re: net: macb: fail when there's no PHY
+To:     Grant Edwards <grant.b.edwards@gmail.com>, netdev@vger.kernel.org
+References: <20170921195905.GA29873@grante>
+ <66c0a032-4d20-69f1-deb4-6c65af6ec740@gmail.com>
+ <CAK=1mW6Gti0QpUjirB6PfMCiQvnDjkbb56pVKkQmpCSkRU6wtA@mail.gmail.com>
+ <6a9c1d4a-ed73-3074-f9fa-158c697c7bfe@gmail.com> <X8fb4zGoxcS6gFsc@grante>
+ <20201202183531.GJ2324545@lunn.ch> <rq8p74$2l0$1@ciao.gmane.io>
+ <20201202211134.GM2324545@lunn.ch> <rq9ki2$uqk$1@ciao.gmane.io>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <57728908-1ae3-cbe9-8721-81f06ab688b8@gmail.com>
+Date:   Wed, 2 Dec 2020 19:42:40 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.5.0
 MIME-Version: 1.0
-In-Reply-To: <20201130164712.571540-1-parav@nvidia.com>
+In-Reply-To: <rq9ki2$uqk$1@ciao.gmane.io>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -68,26 +70,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/30/20 9:47 AM, Parav Pandit wrote:
-> Extended devlink-port man page for synopsis, description and
-> example for setting devlink port function attribute.
-> 
-> Signed-off-by: Parav Pandit <parav@nvidia.com>
-> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-> ---
->  man/man8/devlink-port.8 | 21 +++++++++++++++++++++
->  1 file changed, 21 insertions(+)
-> 
-> diff --git a/man/man8/devlink-port.8 b/man/man8/devlink-port.8
-> index 966faae6..7e2dc110 100644
-> --- a/man/man8/devlink-port.8
-> +++ b/man/man8/devlink-port.8
-> @@ -46,6 +46,12 @@ devlink-port \- devlink port configuration
->  .ti -8
->  .B devlink port help
->  
-> +.ti -8
-> +.BR "devlink port function set "
 
-The command exists in iproute2 main branch correct?
 
+On 12/2/2020 7:03 PM, Grant Edwards wrote:
+> On 2020-12-02, Andrew Lunn <andrew@lunn.ch> wrote:
+> 
+>>>> So it will access the MDIO bus of the PHY that is attached to the
+>>>> MAC.
+>>>
+>>> If that's the case, wouldn't the ioctl() calls "just work" even when
+>>> only the fixed-phy mdio bus and fake PHY are declared in the device
+>>> tree?
+>>
+>> The fixed-link PHY is connected to the MAC. So the IOCTL calls will be
+>> made to the fixed-link fake MDIO bus.
+> 
+> Ah! When you said "the PHY that is attached to the MAC" above, I
+> thought you meant electrically attached to the MAC via the mdio bus.
+> 
+> Then how does Forian Fainelli's solution below work? Won't the first
+> phy found be the fixed one, and then the ioctl() calls will use the
+> fixed-link bus?
+
+You would have to have a local hack that intercepts the macb_ioctl() and
+instead of calling phylink_mii_ioctl() it would have to implement a
+custom ioctl() that does what drivers/net/phy/phy.c::phy_mii_ioctl does
+except the mdiobus should be pointed to the MACB MDIO bus instance and
+not be derived from the phy_device instance (because that one points to
+the fixed PHY).
+-- 
+Florian
