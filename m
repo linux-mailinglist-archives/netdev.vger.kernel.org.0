@@ -2,99 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F03442CD117
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 09:18:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC1982CD122
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 09:21:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388270AbgLCIQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 03:16:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38494 "EHLO
+        id S2388325AbgLCITK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 03:19:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728193AbgLCIQw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 03:16:52 -0500
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 779A0C061A4D
-        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 00:16:06 -0800 (PST)
-Received: by mail-lf1-x142.google.com with SMTP id u18so1426653lfd.9
-        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 00:16:06 -0800 (PST)
+        with ESMTP id S2387629AbgLCITJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 03:19:09 -0500
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 838EDC061A4D
+        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 00:18:23 -0800 (PST)
+Received: by mail-ej1-x641.google.com with SMTP id bo9so2072314ejb.13
+        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 00:18:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=fDjNv73jm1eQxmunh1Z221n3g9DQVnaTy9ei7bjoXzA=;
-        b=jm0dQPkLJqqDGpX8YxtlOw5qFLJaqCjS6wyYeCvnpWvdIoddM7GH+WQZ70SLtwGzw+
-         oUKKieqoKKRtTTM7hRS3Nsr3rbn3/YykAov4IwVdfVo+NCvSAKxxWG+tFO27dP6roHBr
-         TS/apkDePSQRPW/MjBR7vggU3nexbstSSfVEn+kMOv2astcUPH4kXRf8fELhpG39HDE/
-         p91QENJLQeYW1yxorGljwNVmmouaHfxtOsz/g+3toVSatZHeZmJ8dvUQ5cpkLjQ3j/8K
-         3R3SGH8SAD8I0JUcaDuqssnwNciG6WdXdL8mOwQsZlfWFxl39kpc4mkEYFljIEGunhuv
-         xXvg==
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc;
+        bh=BHE7BUY2JKkG89Max7ctelLbeq4mWkjZxzugrG1DHko=;
+        b=t2G5Zebthc4UF6qA7IBfx6fBIGsQe8JlHC1OkuAaLmWvruQjt4CqylwgGbrvWqDNpr
+         vweabUktPeeg4bINNnNTg6RpEUN9HbXmoh2aTVYNikrc4zzlPBHjVVIhmxSGa4EKJnX3
+         ZPKvAT1sDBFQQ7SH6ksi/7/Xy+W5/BBbT3clnkUqTz38nZPnSyEHPALJLpqdVKQD8Q9c
+         1WIZ22EpJF+IabaLv0RuvR9mI0Dy7wvjzY5/95cG9wktHATMTtJes2Lqo/4QeQKaDnLU
+         1lRPFjgD3LYCr9qQP+hcpENvPkhIAaVG5AnZWNWE24xupMTJscMHAhTn/rL0bBXW5g2p
+         g+Nw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=fDjNv73jm1eQxmunh1Z221n3g9DQVnaTy9ei7bjoXzA=;
-        b=FkrfYfP/YlAjf7YQfuMYQXp6fgP0swElsxz10cZP39UZbHF6JvA/I1MTpnS2aUCB/X
-         BZP4P3zpF9XctNALxn7RgG4rP7X9H+ECE9YkmK5u/PSfQj4syBeGcNa8I5Rv7IGCQkQZ
-         /WcL4i6pd0/vvMBB532OY7jPl4X8/T0UWIx0n5MJSAA3fx+b7lfaHemrEX/7aLc/evrn
-         p2X/KKcYh+kz1hA60RL58y9Llp8n2Quf9CKQtlJGgbPAK0Ka7A7eGw+JGzKL2RkUECgi
-         2aAoBJHia6kIWvctVXtdKLu679wKsIx7X2m+8+zbvSQaPLS1ICUrW/C9/WYObPlFLAcI
-         M9xw==
-X-Gm-Message-State: AOAM533PvTiBCOjVsi+dl17eohv0n1YntWyyStafqRJeohUjlr/LI+Sq
-        b18+HD+tQCD52Sn90MkA5f15sSYsjaXwYSpk
-X-Google-Smtp-Source: ABdhPJxoyzrjbKRTmWApcWx7/rtFcj3Pn4uKMXamACpJ9Bsd+SS1CsCCfgxkiayz0EM+vMrcAx3odQ==
-X-Received: by 2002:a05:6512:1102:: with SMTP id l2mr859501lfg.500.1606983364573;
-        Thu, 03 Dec 2020 00:16:04 -0800 (PST)
-Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id u24sm244152lfo.194.2020.12.03.00.16.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Dec 2020 00:16:03 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 1/4] net: bonding: Notify ports about their initial state
-In-Reply-To: <459.1606955954@famine>
-References: <20201202091356.24075-1-tobias@waldekranz.com> <20201202091356.24075-2-tobias@waldekranz.com> <17902.1606936179@famine> <87h7p37u4t.fsf@waldekranz.com> <459.1606955954@famine>
-Date:   Thu, 03 Dec 2020 09:16:03 +0100
-Message-ID: <87czzr71a4.fsf@waldekranz.com>
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc;
+        bh=BHE7BUY2JKkG89Max7ctelLbeq4mWkjZxzugrG1DHko=;
+        b=kgDw2FekXNOr6HBDrNqv2E0ZTYNoB79IA0OQSG29CAHPWinIYHi+MatXJS94SaNgbH
+         vaIhuz7TfOiS5t6K8uYL2WHSol8vOKaJQrwHUAigL0aZl3IMaVB6sNxAwV6Pq1h+qfCk
+         AmAxb7ZDTFGX3OnqJ6julGOArQuziQoy0hBlVAgub3rSvZLMJ5zdmG3ZCikREi2n7nXY
+         ZJcX5rUEjdF1IlVYHVCiAhSeHHqb5M8EJrt9hCMqm8aZqAFESIPgrvwhhbYiMk4g5bLM
+         w1vfdQ7YyWIk4M97TASIJkl/jZ9Zp9430zNGLXzr9UMDCQxktIevEypAfxhwVWeT7Xqb
+         CP1g==
+X-Gm-Message-State: AOAM531TuftN0PI6YBbcyBuxMMT0cCbnSl3u3i6DnzZO5XHubNdcVGME
+        m6uFEuEYwvCKJ2Fq8ydoG8E1hWlHXf2MoRy8Jmcijg==
+X-Google-Smtp-Source: ABdhPJzskyGm/TJjhqxQ0WIqWi8o9WQL8penwwoMneV6Vlm+G01IHotwP7477J1Y2O/EgDAVXg2yPuu2zeakn7FkN6E=
+X-Received: by 2002:a17:906:8042:: with SMTP id x2mr1585563ejw.79.1606983502114;
+ Thu, 03 Dec 2020 00:18:22 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+Received: by 2002:a54:3cc7:0:0:0:0:0 with HTTP; Thu, 3 Dec 2020 00:18:21 -0800 (PST)
+X-Originating-IP: [5.35.99.104]
+In-Reply-To: <20201201104734.2620a127@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+References: <20201201093306.32638-1-kda@linux-powerpc.org> <20201201104734.2620a127@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+Date:   Thu, 3 Dec 2020 11:18:21 +0300
+Message-ID: <CAOJe8K1FPGr-2OgqaWOEz4ZHUONJ-p2yW6Uw-dVjXVurGmDwxA@mail.gmail.com>
+Subject: Re: [PATCH v3] net/af_unix: don't create a path for a binded socket
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        Michal Kubecek <mkubecek@suse.cz>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 02, 2020 at 16:39, Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
-> Tobias Waldekranz <tobias@waldekranz.com> wrote:
->>I could look at hoisting up the linking op before the first
->>notification. My main concern is that this is a new subsystem to me, so
->>I am not sure how to determine the adequate test coverage for a change
->>like this.
+On 12/1/20, Jakub Kicinski <kuba@kernel.org> wrote:
+> On Tue,  1 Dec 2020 12:33:06 +0300 Denis Kirjanov wrote:
+>> in the case of the socket which is bound to an adress
+>> there is no sense to create a path in the next attempts
 >>
->>Another option would be to drop this change from this series and do it
->>separately. It would be nice to have both team and bond working though.
+>> here is a program that shows the issue:
 >>
->>Not sure why I am the first to run into this. Presumably the mlxsw LAG
->>offloading would be affected in the same way. Maybe their main use-case
->>is LACP.
+>> int main()
+>> {
+>>     int s;
+>>     struct sockaddr_un a;
+>>
+>>     s = socket(AF_UNIX, SOCK_STREAM, 0);
+>>     if (s<0)
+>>         perror("socket() failed\n");
+>>
+>>     printf("First bind()\n");
+>>
+>>     memset(&a, 0, sizeof(a));
+>>     a.sun_family = AF_UNIX;
+>>     strncpy(a.sun_path, "/tmp/.first_bind", sizeof(a.sun_path));
+>>
+>>     if ((bind(s, (const struct sockaddr*) &a, sizeof(a))) == -1)
+>>         perror("bind() failed\n");
+>>
+>>     printf("Second bind()\n");
+>>
+>>     memset(&a, 0, sizeof(a));
+>>     a.sun_family = AF_UNIX;
+>>     strncpy(a.sun_path, "/tmp/.first_bind_failed", sizeof(a.sun_path));
+>>
+>>     if ((bind(s, (const struct sockaddr*) &a, sizeof(a))) == -1)
+>>         perror("bind() failed\n");
+>> }
+>>
+>> kda@SLES15-SP2:~> ./test
+>> First bind()
+>> Second bind()
+>> bind() failed
+>> : Invalid argument
+>>
+>> kda@SLES15-SP2:~> ls -la /tmp/.first_bind
+>> .first_bind         .first_bind_failed
+>>
+>> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
 >
-> 	I'm not sure about mlxsw specifically, but in the configurations
-> I see, LACP is by far the most commonly used mode, with active-backup a
-> distant second.  I can't recall the last time I saw a production
-> environment using balance-xor.
+> Is the deadlock fixed by the patch Michal pointed out no longer present?
+The thing that I'm not satisfied is that we're holding bindlock during
+unix_mknod().
+I'll send a next version
 
-Makes sense. We (Westermo) have a few customers using static LAGs, so it
-does happen. That said, LACP is way more common for us as well.
-
-> 	I think that in the perfect world there should be exactly one
-> such notification, and occurring in the proper sequence.  A quick look
-> at the kernel consumers of the NETDEV_CHANGELOWERSTATE event (mlx5,
-> mlxsw, and nfp, looks like) suggests that those shouldn't have an issue.
 >
-> 	In user space, however, there are daemons that watch the events,
-> and may rely on the current ordering.  Some poking around reveals odd
-> bugs in user space when events are rearranged, so I think the prudent
-> thing is to not mess with what's there now, and just add the one event
-> here (i.e., apply your patch as-is).
-
-This is exactly the sort of thing I was worried about. Thank you so much
-for testing it!
