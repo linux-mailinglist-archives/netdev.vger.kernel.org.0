@@ -2,93 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 596672CD17C
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 09:42:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 424962CD199
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 09:47:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388337AbgLCIl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 03:41:58 -0500
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:42764 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388270AbgLCIlz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 03:41:55 -0500
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 0B38eq0B114050;
-        Thu, 3 Dec 2020 02:40:52 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1606984852;
-        bh=pz6uUoqgOBRCAt9fEefTV7fWl8JCGohZTi6KZaMZyxo=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=ImxfHlwn86cBcLHD9fwuH+nNsLweSCh+LdiadVYVK9Ix4l9HXlhj1GtDRkuBQcFF1
-         OQmlJRCILUwW2iwctM6MCyJgdNmylSGRyVdLvP6h8agbO/Uwrms0KdD3iwW3dq3wms
-         1ukKtJ1PpBYjA1dcGQvZ6mVQsZG+vhJMRadkS1hA=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 0B38eqsQ059694
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 3 Dec 2020 02:40:52 -0600
-Received: from DFLE108.ent.ti.com (10.64.6.29) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 3 Dec
- 2020 02:40:52 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 3 Dec 2020 02:40:52 -0600
-Received: from [10.250.233.179] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 0B38emBI063771;
-        Thu, 3 Dec 2020 02:40:49 -0600
-Subject: Re: [PATCH 1/4] net: ti: am65-cpsw-nuss: Add devlink support
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "David S . Miller" <davem@davemloft.net>,
+        id S1729871AbgLCIpc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 03:45:32 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:53744 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728872AbgLCIpb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 03:45:31 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0B38ZDrt109270;
+        Thu, 3 Dec 2020 08:44:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=5xM+W6iVfraIXHMKNLkXszMJwouu1bVLZDAXHcAkFeY=;
+ b=oBa6b3B3yUTVnWaV+kmyL/6o0nnvnYcG1LSDV75y345tZjy/HSvf33CHtNtrV/GW+2tx
+ bjcJ9VRgNOD1h3qA0f2hBs+3vIfi3hMji3/PboBL27i/saVLG0arDvUR2W0mAsAgPW0n
+ vVTGrXHzHNgd+2zDA/2qcwztdt3xudAsM72yUSzLXvFrRsHAVhx7EHFgaOJokzPWxLI9
+ KbeEYM4rcv4OEoJOiGs0cA/XRqZ5F214SWBKXka3+It6o7upOe5B0TOEZ2qQjys2sKnq
+ 0VJkRSuBHgWC9OnPRSd3uvNoHIc7Hjb6XjPElgKDhfWDG6ObIO6l5L5D/FDtLuciqJx5 bQ== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2120.oracle.com with ESMTP id 353egkvhqn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 03 Dec 2020 08:44:40 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0B38eDF6194491;
+        Thu, 3 Dec 2020 08:44:40 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3020.oracle.com with ESMTP id 3540f1hu3p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 03 Dec 2020 08:44:40 +0000
+Received: from abhmp0020.oracle.com (abhmp0020.oracle.com [141.146.116.26])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0B38idDF022475;
+        Thu, 3 Dec 2020 08:44:39 GMT
+Received: from mwanda (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 03 Dec 2020 08:44:38 +0000
+Date:   Thu, 3 Dec 2020 11:44:31 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Ayush Sawal <ayush.sawal@chelsio.com>,
+        Atul Gupta <atul.gupta@chelsio.com>
+Cc:     Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Jonathan Corbet <corbet@lwn.net>, Jiri Pirko <jiri@nvidia.com>,
-        <netdev@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>
-References: <20201130082046.16292-1-vigneshr@ti.com>
- <20201130082046.16292-2-vigneshr@ti.com> <20201130155044.GE2073444@lunn.ch>
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-Message-ID: <cc7fe740-1002-f1b9-8136-e1ba60cf2541@ti.com>
-Date:   Thu, 3 Dec 2020 14:10:48 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH net] chelsio/chtls: fix a double free in chtls_setkey()
+Message-ID: <X8ilb6PtBRLWiSHp@mwanda>
 MIME-Version: 1.0
-In-Reply-To: <20201130155044.GE2073444@lunn.ch>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9823 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 malwarescore=0 phishscore=0
+ suspectscore=2 bulkscore=0 spamscore=0 adultscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2012030053
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9823 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 bulkscore=0 suspectscore=2
+ phishscore=0 mlxlogscore=999 lowpriorityscore=0 malwarescore=0
+ priorityscore=1501 spamscore=0 impostorscore=0 clxscore=1011 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2012030052
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+The "skb" is freed by the transmit code in cxgb4_ofld_send() and we
+shouldn't use it again.  But in the current code, if we hit an error
+later on in the function then the clean up code will call kfree_skb(skb)
+and so it causes a double free.
 
-On 11/30/20 9:20 PM, Andrew Lunn wrote:
-> On Mon, Nov 30, 2020 at 01:50:43PM +0530, Vignesh Raghavendra wrote:
->> AM65 NUSS ethernet switch on K3 devices can be configured to work either
->> in independent mac mode where each port acts as independent network
->> interface (multi mac) or switch mode.
->>
->> Add devlink hooks to provide a way to switch b/w these modes.
-> 
-> Hi Vignesh
-> 
-> What is not clear is why you need this? Ports are independent anyway
-> until you add them to a bridge when using switchdev.
-> 
+Set the "skb" to NULL and that makes the kfree_skb() a no-op.
 
-Default use case is to support multiple independent ports with no
-switching. Users can either use software bridge with multi-mac
-configuration or HW bridge for switch functionality. devlink hook
-enables users to select Hw supported switch functionality. We don't want
-to enable HW based switch support unless explicitly asked by user.
-This also matches previous generation of devices (DRA7xx and AM57xx)
-supported under drivers/net/ethernet/ti/cpsw_new.c
+Fixes: d25f2f71f653 ("crypto: chtls - Program the TLS session Key")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-In general, devlink will also be used to configure few more parameters
-(in addition to switch mode) such as host port in ALE_BYPASS mode (to
-allow all packets to be routed to host) etc.
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c
+index 62c829023da5..a4fb463af22a 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c
++++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c
+@@ -391,6 +391,7 @@ int chtls_setkey(struct chtls_sock *csk, u32 keylen,
+ 	csk->wr_unacked += DIV_ROUND_UP(len, 16);
+ 	enqueue_wr(csk, skb);
+ 	cxgb4_ofld_send(csk->egress_dev, skb);
++	skb = NULL;
+ 
+ 	chtls_set_scmd(csk);
+ 	/* Clear quiesce for Rx key */
+-- 
+2.29.2
 
-Regards
-Vignesh
