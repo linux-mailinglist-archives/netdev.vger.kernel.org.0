@@ -2,84 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53DA22CD330
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 11:08:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95DF52CD352
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 11:23:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388585AbgLCKIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 05:08:04 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:5334 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726082AbgLCKIE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 05:08:04 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0B3A6kuw014252;
-        Thu, 3 Dec 2020 02:07:19 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=pfpt0220; bh=YyR69L4hu/oRHcKWIfHtQbXQeGzFY2FBPwiZ5EB419k=;
- b=XE7CTYU1j3sNxRkS5Uj7xS7+KjgGpaECtKM5ePwhHdUCnnFdQNJsY14nXpPi/iS6e4IT
- +nTwB+hgeR4MDUdCart8aFLqEnf/FMaRDBeEsjrttUtm4vAcksk4aIUqONA7G7R0vuwG
- 5w26W+Cw401190sW9FWP0dGr+tJqyZ7MgYpxWZupP37jbv/IRMux78U2nZAkCBVFFphM
- SjR5qiXpIAJqvdYg3EVikk8Cgs+t+MajYUawZIglUQbcRr+gxYS5/NIvtoZ8ra+eHhNH
- DKk6TuAZPckW+ut80cxtN1/F6sdQuIoUaJyZRr/TTsuZS/ExiZjiwp6OkmiHViA1pLTj KQ== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0b-0016f401.pphosted.com with ESMTP id 355w50d9gj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 03 Dec 2020 02:07:19 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 3 Dec
- 2020 02:07:18 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 3 Dec 2020 02:07:18 -0800
-Received: from jupiter064.il.marvell.com (unknown [10.5.116.100])
-        by maili.marvell.com (Postfix) with ESMTP id 071BC3F703F;
-        Thu,  3 Dec 2020 02:07:16 -0800 (PST)
-From:   Mickey Rachamim <mickeyr@marvell.com>
-To:     "David S . Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Mickey Rachamim <mickeyr@marvell.com>
-Subject: [PATCH] MAINTAINERS: Add entry for Marvell Prestera Ethernet Switch driver
-Date:   Thu, 3 Dec 2020 12:04:36 +0200
-Message-ID: <20201203100436.25630-1-mickeyr@marvell.com>
-X-Mailer: git-send-email 2.29.2
+        id S1729095AbgLCKWv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 05:22:51 -0500
+Received: from mailout05.rmx.de ([94.199.90.90]:57306 "EHLO mailout05.rmx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726080AbgLCKWu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 05:22:50 -0500
+Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mailout05.rmx.de (Postfix) with ESMTPS id 4CmsMf186Sz9v7j;
+        Thu,  3 Dec 2020 11:22:06 +0100 (CET)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin02.retarus.com (Postfix) with ESMTPS id 4CmsMP5Bthz2TTKc;
+        Thu,  3 Dec 2020 11:21:53 +0100 (CET)
+Received: from N95HX1G2.wgnetz.xx (192.168.54.174) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 3 Dec
+ 2020 11:21:28 +0100
+From:   Christian Eggers <ceggers@arri.de>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "Rob Herring" <robh+dt@kernel.org>
+CC:     Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
+        George McCollister <george.mccollister@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Christian Eggers <ceggers@arri.de>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next v5 0/9] net: dsa: microchip: PTP support for KSZ956x
+Date:   Thu, 3 Dec 2020 11:21:08 +0100
+Message-ID: <20201203102117.8995-1-ceggers@arri.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-12-03_06:2020-12-03,2020-12-03 signatures=0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.54.174]
+X-RMX-ID: 20201203-112153-YQrxQwYcQmRW-0@out02.hq
+X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add maintainers info for new Marvell Prestera Ethernet switch driver.
+[1]
+http://ww1.microchip.com/downloads/en/DeviceDoc/KSZ9563R-Data-Sheet-DS00002419D.pdf
 
-Signed-off-by: Mickey Rachamim <mickeyr@marvell.com>
----
- MAINTAINERS | 9 +++++++++
- 1 file changed, 9 insertions(+)
+Changes from v4  --> v5
+------------------------
+[8/9]            -  Fix compile error reported by kernel test robot
+                    (NET_DSA_TAG_KSZ must select NET_PTP_CLASSIFY)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index a7bdebf955bb..04a27eb89428 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -10540,6 +10540,15 @@ S:	Supported
- F:	Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
- F:	drivers/net/ethernet/marvell/octeontx2/af/
- 
-+MARVELL PRESTERA ETHERNET SWITCH DRIVER
-+M:	Vadym Kochan <vkochan@marvell.com>
-+M:	Taras Chornyi <tchornyi@marvell.com>
-+M:	Mickey Rachamim <mickeyr@marvell.com>
-+L:	netdev@vger.kernel.org
-+S:	Supported
-+W:	http://www.marvell.com
-+F:	drivers/net/ethernet/marvell/prestera/
-+
- MARVELL SOC MMC/SD/SDIO CONTROLLER DRIVER
- M:	Nicolas Pitre <nico@fluxnic.net>
- S:	Odd Fixes
--- 
-2.17.1
+Changes from v3  --> v4
+------------------------
+The first 2 patches of v3 have been applied.
+
+[ 5/12]-->[ 3/9] - Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+[ 6/12]-->[ 4/9] - s/low active/active low/
+                 - Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+[ 7/12]-->[ 5/9] - Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+[ 9/12]-->[ 7/9] - Remove useless case statement
+                 - Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+[10/12]-->[ 8/9] - s/low active/active low/
+                 - 80 chars per line
+                 - Use IEEE 802.1AS mode (to suppress forwarding of PDelay messages)
+                 - Enable/disable hardware timestaping at runtime (port_hwtstamp_set)
+                 - Use mutex in port_hwtstamp_set
+                 - Don't use port specific struct hwtstamp_config
+                 - removed #ifdefs from tag_ksz.c
+                 - Set port's tx_latency and rx_latency to 0
+                 - added include/linux/dsa/ksz_common.h to MAINTAINERS
+[11/12]          - removed Patch 11/12 (PPS support)
+[12/12]-->[ 9/9] - 80 chars per line
+                 - reverse christmas tree
+                 - Set default pulse width for perout pulse to 50% (max. 125ms)
+                 - reject unsupported flags for perout_request
+
+
+Changes from v2  --> v3
+------------------------
+Applied all changes requested by Vladimir Oltean. v3 depends on my other
+netdev patches from 2020-11-18:
+- net: ptp: introduce common defines for PTP message types
+- net: dsa: avoid potential use-after-free error
+
+[1/11]-->[1/12]  - dts: remove " OR BSD-2-Clause" from SPDX-License-Identifier
+                 - dts: add "additionalProperties"
+                 - dts: remove quotes
+[2/11]-->[2/12]  - Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+[3/11]           - [Patch removed] (split ksz_common.h)
+[4/11]-->[3/12]  - Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+                 - fixed summary
+[5/11]-->[4/12]  - Use "interrupts-extended" syntax
+[6/11]-->[5+6/12] - Split up patch
+                 - style fixes
+                 - use GENMASK()
+                 - IRQF_ONESHOT|IRQF_SHARED
+[7/11]-->[7/12]  - Remove "default n" from Kconfig
+                 - use mutex in adjfine()
+                 - style fixes
+[8/11]-->[8/12]  - Be more verbose in commit message
+                 - Rename helper
+                 - provide correction instead of t2
+                 - simplify location of UDP header
+[9/11]-->[9+10/12] - Split up patch
+                 - Update commmit messages
+                 - don't use OR operator on irqreturn_t
+                 - spin_lock_irqsave() --> spin_lock_bh()
+                 - style fixes
+                 - remove rx_filter cases for DELAY_REQ
+                 - use new PTP_MSGTYPE_* defines
+                 - inline ksz9477_ptp_should_tstamp()
+                 - ksz9477_tstamp_to_clock() --> ksz9477_tstamp_reconstruct()
+                 - use shared data in include/linux/net/dsa/ksz_common.h
+                 - wait for tx time stamp (within sleepable context)
+                 - use boolean for tx time stamp enable
+                 - move t2 from correction to tail tag (again)
+                 - ...
+
+Changes from RFC --> v2
+------------------------
+I think that all open questions regarding the RFC version could be solved.
+dts: referenced to dsa.yaml
+dts: changed node name to "switch" in example
+dts: changed "ports" subnode to "ethernet-ports"
+ksz_common: support "ethernet-ports" subnode
+tag_ksz: fix usage of correction field (32 bit ns + 16 bit sub-ns)
+tag_ksz: use cached PTP header from device's .port_txtstamp function
+tag_ksz: refactored ksz9477_tstamp_to_clock()
+tag_ksz: pdelay_req: only subtract 2 bit seconds from the correction field
+tag_ksz: pdelay_resp: don't move (negative) correction to the egress tail tag
+ptp_classify: add ptp_onestep_p2p_move_t2_to_correction helper
+ksz9477_ptp: removed E2E support (as suggested by Vladimir)
+ksz9477_ptp: removed master/slave sysfs attributes (nacked by Richard)
+ksz9477_ptp: refactored ksz9477_ptp_port_txtstamp
+ksz9477_ptp: removed "pulse" attribute
+kconfig: depend on PTP_1588_CLOCK (instead of "imply")
+
 
