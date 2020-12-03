@@ -2,92 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD0D22CE2E2
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 00:46:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B05BF2CE331
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 00:56:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729631AbgLCXqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 18:46:18 -0500
-Received: from m43-15.mailgun.net ([69.72.43.15]:55332 "EHLO
-        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726063AbgLCXqR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 18:46:17 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1607039157; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=JlX36sKBivxDBM8LHGzMecxeZx7IR6GkR5hJ7tvId/Y=; b=sNM+etn7InrU8KLe7n2gneiHazgJO9jaTZ7URuBR1LmnWd9HRHAB6beGS6iecgcgCnTKsbZB
- QDmi1PZ7KWrp8mTMRxVAstrRZpEYVJ/oaoPhyHQmAAqUMbWNL6eALhWlgaZj6nCeKCkVHqHZ
- duNgIIfPdFWkK4QzE6doajMfNSo=
-X-Mailgun-Sending-Ip: 69.72.43.15
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n10.prod.us-east-1.postgun.com with SMTP id
- 5fc97897aac9455097317382 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 03 Dec 2020 23:45:27
- GMT
-Sender: jhugo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 6FB55C433ED; Thu,  3 Dec 2020 23:45:26 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from [10.226.59.216] (i-global254.qualcomm.com [199.106.103.254])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: jhugo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id EBD82C433CA;
-        Thu,  3 Dec 2020 23:45:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org EBD82C433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=jhugo@codeaurora.org
-Subject: Re: [PATCH v15 4/4] bus: mhi: Add userspace client interface driver
-To:     Hemant Kumar <hemantk@codeaurora.org>,
-        manivannan.sadhasivam@linaro.org, gregkh@linuxfoundation.org
-Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bbhatt@codeaurora.org, loic.poulain@linaro.org,
-        netdev@vger.kernel.org
-References: <1607035516-3093-1-git-send-email-hemantk@codeaurora.org>
- <1607035516-3093-5-git-send-email-hemantk@codeaurora.org>
-From:   Jeffrey Hugo <jhugo@codeaurora.org>
-Message-ID: <1bcddc1c-e489-c867-77fb-f6893a101900@codeaurora.org>
-Date:   Thu, 3 Dec 2020 16:45:24 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.3
+        id S1728173AbgLCXzg convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 3 Dec 2020 18:55:36 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:31564 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729534AbgLCXzg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 18:55:36 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B3NlBut006148
+        for <netdev@vger.kernel.org>; Thu, 3 Dec 2020 15:54:55 -0800
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 356xfqw6x5-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 15:54:55 -0800
+Received: from intmgw005.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 3 Dec 2020 15:54:53 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id AE1C42ECA8F6; Thu,  3 Dec 2020 15:54:48 -0800 (PST)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>
+Subject: [PATCH bpf-next 1/2] libbpf: use memcpy instead of strncpy to please GCC
+Date:   Thu, 3 Dec 2020 15:54:39 -0800
+Message-ID: <20201203235440.2302137-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <1607035516-3093-5-git-send-email-hemantk@codeaurora.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-12-03_15:2020-12-03,2020-12-03 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 adultscore=0
+ priorityscore=1501 spamscore=0 mlxlogscore=999 mlxscore=0 clxscore=1034
+ impostorscore=0 lowpriorityscore=0 malwarescore=0 phishscore=0
+ suspectscore=8 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012030131
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/3/2020 3:45 PM, Hemant Kumar wrote:
-> This MHI client driver allows userspace clients to transfer
-> raw data between MHI device and host using standard file operations.
-> Driver instantiates UCI device object which is associated to device
-> file node. UCI device object instantiates UCI channel object when device
-> file node is opened. UCI channel object is used to manage MHI channels
-> by calling MHI core APIs for read and write operations. MHI channels
-> are started as part of device open(). MHI channels remain in start
-> state until last release() is called on UCI device file node. Device
-> file node is created with format
-> 
-> /dev/<mhi_device_name>
-> 
-> Currently it supports QMI channel.
-> 
-> Signed-off-by: Hemant Kumar <hemantk@codeaurora.org>
-> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> Reviewed-by: Jeffrey Hugo <jhugo@codeaurora.org>
+Some versions of GCC are really nit-picky about strncpy() use. Use memcpy(),
+as they are pretty much equivalent for the case of fixed length strings.
 
-You dropped Loic's tested by.  Was that a mistake, or did something 
-actually change which would invalidate his testing?
+Fixes: e459f49b4394 ("libbpf: Separate XDP program load with xsk socket creation")
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+---
+ tools/lib/bpf/xsk.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index 4b051ec7cfbb..e3e41ceeb1bc 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -583,7 +583,7 @@ static int xsk_create_xsk_struct(int ifindex, struct xsk_socket *xsk)
+ 	}
+ 
+ 	ctx->ifindex = ifindex;
+-	strncpy(ctx->ifname, ifname, IFNAMSIZ - 1);
++	memcpy(ctx->ifname, ifname, IFNAMSIZ -1);
+ 	ctx->ifname[IFNAMSIZ - 1] = 0;
+ 
+ 	xsk->ctx = ctx;
 -- 
-Jeffrey Hugo
-Qualcomm Technologies, Inc. is a member of the
-Code Aurora Forum, a Linux Foundation Collaborative Project.
+2.24.1
+
