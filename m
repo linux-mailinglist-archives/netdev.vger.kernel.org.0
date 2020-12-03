@@ -2,63 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 352D82CE1A5
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 23:31:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 347172CE1EF
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 23:39:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387570AbgLCWaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 17:30:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54938 "EHLO mail.kernel.org"
+        id S1731832AbgLCWid (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 17:38:33 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57304 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725885AbgLCWaw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Dec 2020 17:30:52 -0500
-Content-Type: text/plain; charset="utf-8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607034611;
-        bh=xgkQfJ8gQ9Skcnghiv+SrJhxLx0T+KKog7UBJw/CiUI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=HJN3t9uvTnjDfb5YNxoly21/Md8gYiJ9PUluS0FvOX++fYafkRmLUwiKnciU3+qqt
-         25T1g5wcBFFGgdJI9dHvaYDhML930P/+C+6QOcjXJz7/YM1AQMuKmg8R44CmcwKu9F
-         8SRQ7klYnpt2x/iFtlQ6QUG+P8Rf7+Isv0oPUv+HeCt0ZPVb/vKSD1F5xg+4k9UKfP
-         Z3RsDr/rIyYII7AJRp2Xo+/4vEs9UoHkO5I07Dbewcy3DB74TinywmYYMWqNqDdXNz
-         KDdSJwlMsDc+K3sMQzvFLDPZLEneDvbnIOqsilLw3CnTfWOKYx9AA5ZmAMMMccXKRM
-         v7iNTYeRWuWxA==
+        id S1728295AbgLCWid (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 17:38:33 -0500
+From:   Arnd Bergmann <arnd@kernel.org>
+Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
+To:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Ioana Ciornei <ioana.cionei@nxp.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Michael Walle <michael@walle.cc>,
+        Po Liu <Po.Liu@nxp.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] enetc: fix build warning
+Date:   Thu,  3 Dec 2020 23:37:21 +0100
+Message-Id: <20201203223747.1337389-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [GIT PULL] Networking for 5.10-rc7
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160703461137.774.1632248569911721691.git-patchwork-notify@kernel.org>
-Date:   Thu, 03 Dec 2020 22:30:11 +0000
-References: <20201203204459.3963776-1-kuba@kernel.org>
-In-Reply-To: <20201203204459.3963776-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Arnd Bergmann <arnd@arndb.de>
 
-This pull request was applied to netdev/net.git (refs/heads/master):
+When CONFIG_OF is disabled, there is a harmless warning about
+an unused variable:
 
-On Thu,  3 Dec 2020 12:44:59 -0800 you wrote:
-> The following changes since commit c84e1efae022071a4fcf9f1899bf71777c49943a:
-> 
->   Merge tag 'asm-generic-fixes-5.10-2' of git://git.kernel.org/pub/scm/linux/kernel/git/arnd/asm-generic (2020-11-27 15:00:35 -0800)
-> 
-> are available in the Git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.10-rc7
-> 
-> [...]
+enetc_pf.c: In function 'enetc_phylink_create':
+enetc_pf.c:981:17: error: unused variable 'dev' [-Werror=unused-variable]
 
-Here is the summary with links:
-  - [GIT,PULL] Networking for 5.10-rc7
-    https://git.kernel.org/netdev/net/c/bbe2ba04c5a9
+Slightly rearrange the code to pass around the of_node as a
+function argument, which avoids the problem without hurting
+readability.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Fixes: 71b77a7a27a3 ("enetc: Migrate to PHYLINK and PCS_LYNX")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ .../net/ethernet/freescale/enetc/enetc_pf.c   | 21 +++++++++----------
+ 1 file changed, 10 insertions(+), 11 deletions(-)
 
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+index ecdc2af8c292..e1269ab4f2e4 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+@@ -851,13 +851,12 @@ static bool enetc_port_has_pcs(struct enetc_pf *pf)
+ 		pf->if_mode == PHY_INTERFACE_MODE_USXGMII);
+ }
+ 
+-static int enetc_mdiobus_create(struct enetc_pf *pf)
++static int enetc_mdiobus_create(struct enetc_pf *pf, struct device_node *node)
+ {
+-	struct device *dev = &pf->si->pdev->dev;
+ 	struct device_node *mdio_np;
+ 	int err;
+ 
+-	mdio_np = of_get_child_by_name(dev->of_node, "mdio");
++	mdio_np = of_get_child_by_name(node, "mdio");
+ 	if (mdio_np) {
+ 		err = enetc_mdio_probe(pf, mdio_np);
+ 
+@@ -969,18 +968,17 @@ static const struct phylink_mac_ops enetc_mac_phylink_ops = {
+ 	.mac_link_down = enetc_pl_mac_link_down,
+ };
+ 
+-static int enetc_phylink_create(struct enetc_ndev_priv *priv)
++static int enetc_phylink_create(struct enetc_ndev_priv *priv,
++				struct device_node *node)
+ {
+ 	struct enetc_pf *pf = enetc_si_priv(priv->si);
+-	struct device *dev = &pf->si->pdev->dev;
+ 	struct phylink *phylink;
+ 	int err;
+ 
+ 	pf->phylink_config.dev = &priv->ndev->dev;
+ 	pf->phylink_config.type = PHYLINK_NETDEV;
+ 
+-	phylink = phylink_create(&pf->phylink_config,
+-				 of_fwnode_handle(dev->of_node),
++	phylink = phylink_create(&pf->phylink_config, of_fwnode_handle(node),
+ 				 pf->if_mode, &enetc_mac_phylink_ops);
+ 	if (IS_ERR(phylink)) {
+ 		err = PTR_ERR(phylink);
+@@ -1005,9 +1003,10 @@ static int enetc_pf_probe(struct pci_dev *pdev,
+ 	struct net_device *ndev;
+ 	struct enetc_si *si;
+ 	struct enetc_pf *pf;
++	struct device_node *node = pdev->dev.of_node;
+ 	int err;
+ 
+-	if (pdev->dev.of_node && !of_device_is_available(pdev->dev.of_node)) {
++	if (node && !of_device_is_available(node)) {
+ 		dev_info(&pdev->dev, "device is disabled, skipping\n");
+ 		return -ENODEV;
+ 	}
+@@ -1058,12 +1057,12 @@ static int enetc_pf_probe(struct pci_dev *pdev,
+ 		goto err_alloc_msix;
+ 	}
+ 
+-	if (!of_get_phy_mode(pdev->dev.of_node, &pf->if_mode)) {
+-		err = enetc_mdiobus_create(pf);
++	if (!of_get_phy_mode(node, &pf->if_mode)) {
++		err = enetc_mdiobus_create(pf, node);
+ 		if (err)
+ 			goto err_mdiobus_create;
+ 
+-		err = enetc_phylink_create(priv);
++		err = enetc_phylink_create(priv, node);
+ 		if (err)
+ 			goto err_phylink_create;
+ 	}
+-- 
+2.27.0
 
