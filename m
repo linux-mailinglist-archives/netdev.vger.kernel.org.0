@@ -2,63 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 136C22CCE59
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 06:13:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C50F22CCEA9
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 06:31:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726230AbgLCFMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 00:12:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38418 "EHLO
+        id S1726438AbgLCFbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 00:31:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725872AbgLCFMS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 00:12:18 -0500
-Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17923C061A4D;
-        Wed,  2 Dec 2020 21:11:32 -0800 (PST)
-Received: by mail-oi1-x244.google.com with SMTP id k26so996816oiw.0;
-        Wed, 02 Dec 2020 21:11:32 -0800 (PST)
+        with ESMTP id S1725793AbgLCFbK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 00:31:10 -0500
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861C1C061A4D;
+        Wed,  2 Dec 2020 21:30:30 -0800 (PST)
+Received: by mail-oi1-x236.google.com with SMTP id p126so995972oif.7;
+        Wed, 02 Dec 2020 21:30:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=mStopwWOz0xIkkpl/15MvqpRuIjXn/ImyaZMizzR1G4=;
-        b=NtvPoPeK28VfmXBWFIAumDi3dvlGUik5EDInliq87yqIkkVoVgLF+OqL4Wz3j+9kUq
-         KKzu2G9VALOVGsWB+B6RaQfOa7ooPqa45PWz0VIdgcZjStaFmtNMzNHhrS8OxaixCc1P
-         lvE6OwqYjF0Ayl81fZS87hpKoUPWeYSnMgVoDrSDFUHU9IIlcWliizKGWZY+ZB5KMbmT
-         JBBLnaslLz/tJeVi9HVQQR4Ft+6WmWB1jfefn3JkwfuWXCz0WVEkiwU8FkRpSxTTfri7
-         7dxE9Oon2fLu0o1oojVMd4FjjzfN6P23byOMUF+JYs404hPOs+X6i1gGWLFI/t66+hLf
-         CPAA==
+        bh=BmptJS06lNpu8qey0gK9dFfMnSj6DIBS6cGI5nswIDU=;
+        b=JuEZGPfohztwK+qaD0ci+9pnfBMfLBTKD5BrYkef5KYHQFE4UMJCfN3al8QiDoEXvU
+         zGnr+H4JPts9BAxOB/ou9WI+1KwfSwWdoGAtBdlURZkBMvw3jRDpdp16kIYG45qI9B/k
+         unhCMwjthumaV4CDFsyXM8v2KBLJexgyK6CWeZCo2PRDKlZpWBvpmcWq3hhCO9GtWIMT
+         lhHo/IMq0MaXtadhn+vBfIPxvwp0/muxnkG/4jUU26VSa/DJR68AdlSVU68rIr+luI1l
+         gXVge5WX4VvZ5VrxE36YModRXaFAyxU1HUi3PavVNXfq5gYvHNA0JtOASL3LDIvCUAXH
+         Ctog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=mStopwWOz0xIkkpl/15MvqpRuIjXn/ImyaZMizzR1G4=;
-        b=UzirvC/jhVx66FEfsI0/wU3EqsjHWu0+JxAFJ8t8ua7S6451CCsivUH5bSSaHb6PZv
-         z2LsgBe690BJfqRvnEFaUr66nncpwilA23bZum2HXQIsjE16mPBRlTI40USCPgInLzga
-         Yv7XBPs1MSSVIJQ1SDkh4+gEAYfhmF3y0axtw/RoXRvTpSzt4gsMnO6l9jRlMwxjS01F
-         r6s9MuQmDHbvNkHE9+SIW5hagmTLmk7w37V8xD1aPgYJf0a+NhQjNPdatVP19GofuiV4
-         kT7rh4Iq3bz1hfT8wuRiKs1HLEEB9CpS2KwalU8/SGSbNL4kAug2xsP/hh4xKhVhgsJM
-         mSVg==
-X-Gm-Message-State: AOAM530i0OKw2WeLpoN5O57cnUPV0LYAhqwL/IWlyGn/9DilYawv5Umv
-        4CbzJvQIkTeq/YXLuqp8qwU=
-X-Google-Smtp-Source: ABdhPJzRVvujUEPtUAa6HqZaftP+coqFmiMHhvAd/BLNXQk6BDnmHsFKUqGpXbSPvq/qSbAftAvgzw==
-X-Received: by 2002:aca:6287:: with SMTP id w129mr830660oib.82.1606972291597;
-        Wed, 02 Dec 2020 21:11:31 -0800 (PST)
+        bh=BmptJS06lNpu8qey0gK9dFfMnSj6DIBS6cGI5nswIDU=;
+        b=XFacMQZQLWyAhwNNGcb7Cbap3j4pH6MMZTirtJLeQ1RA4/a9i7ltMNzokHd8KQnV+l
+         TLjAYUjr+Px8fqflWQe6lJu24/x9Pgz7kDuNgBGOZmr8kK0sJwKYCHEqK3tpd8U+kXg9
+         zurc6kdpNVTk+ksNNMJnouovIVxRtYglA+K2wREjq6yBnvz/5UWEVVJG6W6WtmBKgGxq
+         yIzN4gmA5+bKOUWxPBtFHFKYEoEzP4pZAz0YT2YZc3blVzH2ox4lRZ2q1Htm+2zXo8Oi
+         0pgwincvp5Vltl9MhSxkXyeyvL+x0Opa3uwm3lSKYjqA9hwFXOHc7kcUhTHaBCwrHo59
+         4FMg==
+X-Gm-Message-State: AOAM533nSVMspWBjG7hB8Igkfp9VmnpMCj+wiDFwdqvQe87BNeouKAdQ
+        /+ogPL7v03ltCn3HI77RqtI=
+X-Google-Smtp-Source: ABdhPJx4etYuZyes1gOvpKEDnU+sezZa7L16SvTquT3GQ+MoTVdt25eQIM1ZadBqm6ID8sTm2fYHug==
+X-Received: by 2002:a05:6808:563:: with SMTP id j3mr909554oig.48.1606973429759;
+        Wed, 02 Dec 2020 21:30:29 -0800 (PST)
 Received: from localhost ([184.21.204.5])
-        by smtp.gmail.com with ESMTPSA id w66sm90067oib.0.2020.12.02.21.11.29
+        by smtp.gmail.com with ESMTPSA id j126sm97871oib.13.2020.12.02.21.30.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Dec 2020 21:11:30 -0800 (PST)
-Date:   Wed, 02 Dec 2020 21:11:21 -0800
+        Wed, 02 Dec 2020 21:30:29 -0800 (PST)
+Date:   Wed, 02 Dec 2020 21:30:20 -0800
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
         netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
-Cc:     andrii@kernel.org, kernel-team@fb.com,
-        Martin KaFai Lau <kafai@fb.com>
-Message-ID: <5fc873794acba_1123e20836@john-XPS-13-9370.notmuch>
-In-Reply-To: <20201203035204.1411380-5-andrii@kernel.org>
+Cc:     andrii@kernel.org, kernel-team@fb.com
+Message-ID: <5fc877ec37f7d_1123e208e8@john-XPS-13-9370.notmuch>
+In-Reply-To: <20201203035204.1411380-6-andrii@kernel.org>
 References: <20201203035204.1411380-1-andrii@kernel.org>
- <20201203035204.1411380-5-andrii@kernel.org>
-Subject: RE: [PATCH v5 bpf-next 04/14] libbpf: refactor CO-RE relocs to not
- assume a single BTF object
+ <20201203035204.1411380-6-andrii@kernel.org>
+Subject: RE: [PATCH v5 bpf-next 05/14] libbpf: add kernel module BTF support
+ for CO-RE relocations
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -68,16 +67,168 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Andrii Nakryiko wrote:
-> Refactor CO-RE relocation candidate search to not expect a single BTF, rather
-> return all candidate types with their corresponding BTF objects. This will
-> allow to extend CO-RE relocations to accommodate kernel module BTFs.
+> Teach libbpf to search for candidate types for CO-RE relocations across kernel
+> modules BTFs, in addition to vmlinux BTF. If at least one candidate type is
+> found in vmlinux BTF, kernel module BTFs are not iterated. If vmlinux BTF has
+> no matching candidates, then find all kernel module BTFs and search for all
+> matching candidates across all of them.
 > 
-> Acked-by: Martin KaFai Lau <kafai@fb.com>
+> Kernel's support for module BTFs are inferred from the support for BTF name
+> pointer in BPF UAPI.
+> 
 > Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 > ---
->  tools/lib/bpf/libbpf.c | 187 ++++++++++++++++++++++++-----------------
->  1 file changed, 111 insertions(+), 76 deletions(-)
-
-LGTM.
+  
+small typo and missing close maybe? Otherwise,
 
 Acked-by: John Fastabend <john.fastabend@gmail.com>
+
+> +static int load_module_btfs(struct bpf_object *obj)
+> +{
+> +	struct bpf_btf_info info;
+> +	struct module_btf *mod_btf;
+> +	struct btf *btf;
+> +	char name[64];
+> +	__u32 id = 0, len;
+> +	int err, fd;
+> +
+> +	if (obj->btf_modules_loaded)
+> +		return 0;
+> +
+> +	/* don't do this again, even if we find no module BTFs */
+
+I wonder a bit if we might load modules at some point and want
+to then run this, but I wouldn't worry about it. Its likely
+easy enough to just reload or delay load until module is in place.
+
+> +	obj->btf_modules_loaded = true;
+> +
+> +	/* kernel too old to support module BTFs */
+> +	if (!kernel_supports(FEAT_MODULE_BTF))
+> +		return 0;
+> +
+> +	while (true) {
+> +		err = bpf_btf_get_next_id(id, &id);
+> +		if (err && errno == ENOENT)
+> +			return 0;
+> +		if (err) {
+> +			err = -errno;
+> +			pr_warn("failed to iterate BTF objects: %d\n", err);
+> +			return err;
+> +		}
+> +
+> +		fd = bpf_btf_get_fd_by_id(id);
+> +		if (fd < 0) {
+> +			if (errno == ENOENT)
+> +				continue; /* expected race: BTF was unloaded */
+> +			err = -errno;
+> +			pr_warn("failed to get BTF object #%d FD: %d\n", id, err);
+> +			return err;
+> +		}
+> +
+> +		len = sizeof(info);
+> +		memset(&info, 0, sizeof(info));
+> +		info.name = ptr_to_u64(name);
+> +		info.name_len = sizeof(name);
+> +
+> +		err = bpf_obj_get_info_by_fd(fd, &info, &len);
+> +		if (err) {
+
+do we also need to close(fd) here? If not then we don't need the close in xsk.c
+I guess.
+
+> +			err = -errno;
+> +			pr_warn("failed to get BTF object #%d info: %d\n", id, err);
+> +			return err;
+> +		}
+> +
+> +		/* ignore non-module BTFs */
+> +		if (!info.kernel_btf || strcmp(name, "vmlinux") == 0) {
+> +			close(fd);
+> +			continue;
+> +		}
+> +
+> +		btf = btf_get_from_fd(fd, obj->btf_vmlinux);
+> +		close(fd);
+> +		if (IS_ERR(btf)) {
+> +			pr_warn("failed to load module [%s]'s BTF object #%d: %ld\n",
+> +				name, id, PTR_ERR(btf));
+> +			return PTR_ERR(btf);
+> +		}
+> +
+> +		err = btf_ensure_mem((void **)&obj->btf_modules, &obj->btf_module_cap,
+> +				     sizeof(*obj->btf_modules), obj->btf_module_cnt + 1);
+> +		if (err)
+> +			return err;
+> +
+> +		mod_btf = &obj->btf_modules[obj->btf_module_cnt++];
+> +
+> +		mod_btf->btf = btf;
+> +		mod_btf->id = id;
+> +		mod_btf->name = strdup(name);
+> +		if (!mod_btf->name)
+> +			return -ENOMEM;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  static struct core_cand_list *
+>  bpf_core_find_cands(struct bpf_object *obj, const struct btf *local_btf, __u32 local_type_id)
+>  {
+>  	struct core_cand local_cand = {};
+>  	struct core_cand_list *cands;
+> +	const struct btf *main_btf;
+>  	size_t local_essent_len;
+> -	int err;
+> +	int err, i;
+>  
+>  	local_cand.btf = local_btf;
+>  	local_cand.t = btf__type_by_id(local_btf, local_type_id);
+> @@ -4697,15 +4824,38 @@ bpf_core_find_cands(struct bpf_object *obj, const struct btf *local_btf, __u32 l
+>  		return ERR_PTR(-ENOMEM);
+>  
+>  	/* Attempt to find target candidates in vmlinux BTF first */
+> -	err = bpf_core_add_cands(&local_cand, local_essent_len,
+> -				 obj->btf_vmlinux_override ?: obj->btf_vmlinux,
+> -				 "vmlinux", 1, cands);
+> -	if (err) {
+> -		bpf_core_free_cands(cands);
+> -		return ERR_PTR(err);
+> +	main_btf = obj->btf_vmlinux_override ?: obj->btf_vmlinux;
+> +	err = bpf_core_add_cands(&local_cand, local_essent_len, main_btf, "vmlinux", 1, cands);
+> +	if (err)
+> +		goto err_out;
+> +
+> +	/* if vmlinux BTF has any candidate, don't got for module BTFs */
+
+small typo: don't got for -> don't go for
+
+> +	if (cands->len)
+> +		return cands;
+> +
+> +	/* if vmlinux BTF was overridden, don't attempt to load module BTFs */
+> +	if (obj->btf_vmlinux_override)
+> +		return cands;
+> +
+> +	/* now look through module BTFs, trying to still find candidates */
+> +	err = load_module_btfs(obj);
+> +	if (err)
+> +		goto err_out;
+> +
+> +	for (i = 0; i < obj->btf_module_cnt; i++) {
+> +		err = bpf_core_add_cands(&local_cand, local_essent_len,
+> +					 obj->btf_modules[i].btf,
+> +					 obj->btf_modules[i].name,
+> +					 btf__get_nr_types(obj->btf_vmlinux) + 1,
+> +					 cands);
+> +		if (err)
+> +			goto err_out;
+>  	}
+>  
+>  	return cands;
+> +err_out:
+> +	bpf_core_free_cands(cands);
+> +	return ERR_PTR(err);
+>  }
+>  
