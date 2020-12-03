@@ -2,108 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E282B2CDA2A
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 16:36:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 125AB2CDA31
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 16:38:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730328AbgLCPev (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 10:34:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50172 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726610AbgLCPet (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 10:34:49 -0500
-Received: from mail-vk1-xa44.google.com (mail-vk1-xa44.google.com [IPv6:2607:f8b0:4864:20::a44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D88BC061A52
-        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 07:34:09 -0800 (PST)
-Received: by mail-vk1-xa44.google.com with SMTP id r9so482023vkf.10
-        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 07:34:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=h6bUmmhNs5Vo0iuri/gifDqZRZWxy1kGAo1J9lB1K5k=;
-        b=D0ie8/h3FBLr6GsJocONE1JbQgocKTLMtMzcvLZ4m0y7cnANQLWYb2PicTVkU3CHWU
-         0xhY3CUtX4DW0z+8e0aqlOnA0qQynUINmANChrlAvRpPTKilDW7S8pl1Ya7o5kR9BFVg
-         gJdorF74HsyAZkpPn12nGzaqdkO24ic6ate64=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=h6bUmmhNs5Vo0iuri/gifDqZRZWxy1kGAo1J9lB1K5k=;
-        b=W57UOWndRkQZwdaxW0ExxbU8ZOEnuxeEG033Oxsb5ln+NKfPgmVfUP0Lv26t0WCkBM
-         6195AmYqYE0+fNZTjV1pEiN4wm2rYKzjD7knc6NccRgufmgZtKQouI0CEKetu1/DF8rg
-         przPPu/0my3obbUclO9AQGzvjMKsI0QOM1VHar15IPiFSvtqvnuCj9Y2TgSMpauhfzv5
-         Elyak0fxB/Y/ux0VZLAfkSvu5dVA5T+KzEOibalAOrdsZwYq+dTQ2wt5pwnYUa23dsU+
-         4MQc8jUwWjGXEUt1/hiQmMnRGPGEh6p22ZER7gjaXPfty5Jp/X80Z9JD86UVX4l5RnsP
-         dmOw==
-X-Gm-Message-State: AOAM533SAKRfAgj0xNz1Lu0LtvjTncGYY0aSGVkJ3WRD27J68x36uFEI
-        49cXPfegkrMrEeX6Jjt/GEYjv86iJoqfJw==
-X-Google-Smtp-Source: ABdhPJzD6Igpj8s4xmL6kVWJrw5o2jmPzWnRmem8bL3dtG5tHNaXp1JdzmVlNBgufMa9uqSmV0r/bA==
-X-Received: by 2002:a1f:2c01:: with SMTP id s1mr2404337vks.11.1607009647619;
-        Thu, 03 Dec 2020 07:34:07 -0800 (PST)
-Received: from mail-vs1-f53.google.com (mail-vs1-f53.google.com. [209.85.217.53])
-        by smtp.gmail.com with ESMTPSA id u1sm127676uap.6.2020.12.03.07.34.05
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Dec 2020 07:34:05 -0800 (PST)
-Received: by mail-vs1-f53.google.com with SMTP id u7so1436571vsq.11
-        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 07:34:05 -0800 (PST)
-X-Received: by 2002:a67:8c41:: with SMTP id o62mr2741810vsd.49.1607009645158;
- Thu, 03 Dec 2020 07:34:05 -0800 (PST)
+        id S1731006AbgLCPhs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 10:37:48 -0500
+Received: from mailout10.rmx.de ([94.199.88.75]:39212 "EHLO mailout10.rmx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726111AbgLCPhs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 10:37:48 -0500
+Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mailout10.rmx.de (Postfix) with ESMTPS id 4Cn0M45Zrwz36Dj;
+        Thu,  3 Dec 2020 16:37:04 +0100 (CET)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin02.retarus.com (Postfix) with ESMTPS id 4Cn0Lr2Y4cz2TTL1;
+        Thu,  3 Dec 2020 16:36:52 +0100 (CET)
+Received: from n95hx1g2.localnet (192.168.54.174) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 3 Dec
+ 2020 16:36:32 +0100
+From:   Christian Eggers <ceggers@arri.de>
+To:     Richard Cochran <richardcochran@gmail.com>
+CC:     Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Vivien Didelot" <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
+        George McCollister <george.mccollister@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        "Codrin Ciubotariu" <codrin.ciubotariu@microchip.com>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v5 9/9] net: dsa: microchip: ksz9477: add periodic output support
+Date:   Thu, 3 Dec 2020 16:36:26 +0100
+Message-ID: <11406377.LS7tM95F4J@n95hx1g2>
+Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+In-Reply-To: <20201203141255.GF4734@hoboy.vegasvil.org>
+References: <20201203102117.8995-1-ceggers@arri.de> <20201203102117.8995-10-ceggers@arri.de> <20201203141255.GF4734@hoboy.vegasvil.org>
 MIME-Version: 1.0
-References: <20201112200906.991086-1-kuabhs@chromium.org> <20201112200856.v2.1.Ia526132a366886e3b5cf72433d0d58bb7bb1be0f@changeid>
- <CAD=FV=XKCLgL6Bt+3KfqKByyP5fpwXOh6TNHXAoXkaQJRzjKjQ@mail.gmail.com>
- <002401d6c242$d78f2140$86ad63c0$@codeaurora.org> <CAD=FV=UnecON-M9eZVQePuNpdygN_E9OtLN495Xe1GL_PA94DQ@mail.gmail.com>
- <002d01d6c2dd$4386d880$ca948980$@codeaurora.org> <CAD=FV=WQPMnor3oTefDHd6JP6UmpyBo7UsOJ1Sg4Ly1otxr6hw@mail.gmail.com>
- <004301d6c968$12ef1b10$38cd5130$@codeaurora.org>
-In-Reply-To: <004301d6c968$12ef1b10$38cd5130$@codeaurora.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 3 Dec 2020 07:33:52 -0800
-X-Gmail-Original-Message-ID: <CAD=FV=VCbjRUxUsmyk=64FLDGU=W41EXh5tdfQr1Lg83T8jiEA@mail.gmail.com>
-Message-ID: <CAD=FV=VCbjRUxUsmyk=64FLDGU=W41EXh5tdfQr1Lg83T8jiEA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/1] ath10k: add option for chip-id based BDF selection
-To:     Rakesh Pillai <pillair@codeaurora.org>
-Cc:     Abhishek Kumar <kuabhs@chromium.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        ath10k <ath10k@lists.infradead.org>,
-        Brian Norris <briannorris@chromium.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Originating-IP: [192.168.54.174]
+X-RMX-ID: 20201203-163652-xZDbsPjsymKS-0@out02.hq
+X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thursday, 3 December 2020, 15:12:55 CET, Richard Cochran wrote:
+> On Thu, Dec 03, 2020 at 11:21:17AM +0100, Christian Eggers wrote:
+> > The KSZ9563 has a Trigger Output Unit (TOU) which can be used to
+> > generate periodic signals.
+> > 
+> > The pulse length can be altered via a device attribute.
+> 
+> Device tree is the wrong place for that.
+I meant a device specfic sysfs attribute.
+/sys/class/ptp/ptp2/device/pulse
 
-On Thu, Dec 3, 2020 at 3:33 AM Rakesh Pillai <pillair@codeaurora.org> wrote:
->
-> > What I'm trying to say is this.  Imagine that:
-> >
-> > a) the device tree has the "variant" property.
-> >
-> > b) the BRD file has two entries, one for "board-id" (1) and one for
-> > "board-id + chip-id" (2).  It doesn't have one for "board-id + chip-id
-> > + variant" (3).
-> >
-> > With your suggestion we'll see the "variant" property in the device
-> > tree.  That means we'll search for (1) and (3).  (3) isn't there, so
-> > we'll pick (1).  ...but we really should have picked (2), right?
->
-> Do we expect board-2.bin to not be populated with the bdf with variant field (if its necessary ?)
+But this is not true anymore, as I moved the sysfs attribute to a later 
+patch (not submitted yet).
 
-The whole fact that there is a fallback to begin with implies that
-there can be a mismatch between the board-2.bin and the device tree
-file.  Once we accept that there can be a mismatch, it seems good to
-try all 3 fallbacks in order.
+> Aren't you using PTP_PEROUT_DUTY_CYCLE anyhow?
+I also use PTP_PEROUT_DUTY_CYCLE. But this cannot be set via a shell
+script. The existing "period" sysfs attribute doesn't allow to set
+the pulse length, so I added a device specific attribute for this.
+
+Should ptp_sysfs be extended with a "pulse" attribute with calls
+enable() with only PTP_PEROUT_DUTY_CYCLE set?
+
+> 
+> Thanks,
+> Richard
+> 
+> 
+regards
+Christian
 
 
-> Seems fine for me, if we have 2 fallback names if that is needed.
 
-OK, sounds good.  So hopefully Abhishek can post a v3 based on what's
-in <https://crrev.com/c/2556437> and you can confirm you're good with
-it there?
 
--Doug
