@@ -2,142 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39C402CE29D
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 00:26:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EA662CE2AB
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 00:30:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729599AbgLCXZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 18:25:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38704 "EHLO
+        id S1728104AbgLCX3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 18:29:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725912AbgLCXZu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 18:25:50 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BD21C061A4F
-        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 15:25:04 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id 4so2050349plk.5
-        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 15:25:04 -0800 (PST)
+        with ESMTP id S1726392AbgLCX27 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 18:28:59 -0500
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACFC7C061A4F
+        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 15:28:19 -0800 (PST)
+Received: by mail-ot1-x342.google.com with SMTP id b18so3530173ots.0
+        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 15:28:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kXx+Lih2scuYckE4hy+8J0ICMfHxNRyw+S8h7E+Hq9U=;
-        b=XhbOxZiQF+cRKPHUV71+DqeiRGv8hBcqHje+KfoKbtBDYLtebu5g1xaP4yutFzkonv
-         ZSdo1bBpD282Jz7D1cQu3bes8yV8q7IV8Vjfu5p4h+z+moOot5stYTTJvPFWxFj5lFX7
-         3fE7OhtZv3OADEBGv/Lo4zD/ubMAhuOS+JZ8KO1aBdLd5sETjRlvqGhEL7Cp6mbuZV/F
-         P4yJF8P4fPeVoFOgqzzPo9/i56NNrG3fMELRRzuUe2hO/k4XISwwCXWUJVbV9CEYeuN0
-         +g/vapokbAA4qsX5lmmM2ootwWvn86WtcJJA0oGkrw4ugcseLKgXcL3EyJfPT7anBBsv
-         hVmw==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=19kM80HD8C/ry8leq9oAcgd7dznTHbfusHUaV72L7yc=;
+        b=R5qQq40V3xSTF0yj4dk7I2AYHeA0bSzM/adQ6OHcPo3lXhJa3g+cIkejDZDIz4OBL8
+         ytNCw2hjPhYy4Z6Y3L15YR4at7iOD45Zj+UragKQArgegWQ9Qcfqr7WtFIScwSkdpjN8
+         j97MRjE2JnQ8mncc6MxcxeMZEcLGy2bfL9EU/xhJ1ijH6OneXeYIkoXNA41rnvm8C/tv
+         RDZHrxjccz2MSVxi48cbfwABgVEy6ckJ1vKtiKXSvSnHguv7jupuZEXGUgIrg9JFgtiZ
+         0mAx8fI3cbPlcqdD7Lgx5N1iZYDnqjwk1toiJphbi7FqbiUNMOHWAZH/kp8utjB9lSOW
+         xx8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kXx+Lih2scuYckE4hy+8J0ICMfHxNRyw+S8h7E+Hq9U=;
-        b=ftZ/UXoigjbv93OVKgkFdE4nig9VOVvvxPJo3P9NSYPNU2hOWdYvYlauzewT+RWEYa
-         kM+R7oqOvKhYVBb6uLvbtw3D31lZopDiRmkiKgW3qxu+Fw5zpfGKUic9Rk8vtQBgRFSV
-         41BHIBfaLq1F/PoHZU3qne3cC6NrGBmiT7fcT2G1RjBMuUkfYm5jxwN889dXpBK+UXMr
-         3I4/Fg0LhGIMKFfwJZZbDs0YVdx7XddGfwP99e0XnY4ADlQS/P4dOYQAkur4ri0tJOeU
-         Crm9kvCJ4XUaFDvFbXHD0NcJnQ2OE9e2CUm2o/qBhwB8dujoyZWLKkDLgmB+mvvSLTaV
-         dPpA==
-X-Gm-Message-State: AOAM531Uoxi8QG1m8o3JLo2GvqMbzOIddb75CrXhj4cax1ggc2gg+hRy
-        xE9lJCpsJLq+HI9NsIkVYgJnSF/ElCrIQkADarBgJQ==
-X-Google-Smtp-Source: ABdhPJxf08aE5Y0xDzY/iPzo8ygFVlTNXZa6q4QdEiEbigEyQNLgg6MLkTvyYDWbLkZMTqh1jK0IY8P2VkRlZLCPc2c=
-X-Received: by 2002:a17:90b:338d:: with SMTP id ke13mr1365642pjb.48.1607037903949;
- Thu, 03 Dec 2020 15:25:03 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=19kM80HD8C/ry8leq9oAcgd7dznTHbfusHUaV72L7yc=;
+        b=QaQT7tZ6Rag1LyFCh6t5TABtdhY2FhMkHcyJ1SJyCU1+bJFhMSh+ZO158B8npDp3y9
+         Xp6FQc/GB+5bCo70Fh2Iu6LcoUDPGNWRQElivCoMUDN8ppGkZkl+hWWsiRX/eqpPDqDX
+         tGSbm7Ome9AooQAJ5G4BeLjbXj/PTTcA38nEZZ5u702TZweJGeyTTbO+Xa+v5gORQNvs
+         KOhjYCNz8W0at8gg8DAVE6tiwU0RcB0dthbpOiukcS49/ciV0f0kHOio/kmBQK0I4q80
+         d67ury5LRZWjZirJB2dB6eDOy7is0WJivMtHyi4X0TpxGFCctp/LnSwoWrpBpUUVKqDD
+         Uihw==
+X-Gm-Message-State: AOAM530yMRL5uSmYlX/eqrXvRvDShp+7Zn4ywMPn4xR87Ud+X+JPioqy
+        NhTrTB3rGC89xzhrn4ghKxSslrvLrb68/w==
+X-Google-Smtp-Source: ABdhPJwDp5dMa72NvqwQsNj4Lo4e8SGwIHy1kOCb5htuMwlIoQKq0Ez5JBFAM1EwRDnLJbKivYe4dw==
+X-Received: by 2002:a05:6830:114e:: with SMTP id x14mr1366088otq.253.1607038098944;
+        Thu, 03 Dec 2020 15:28:18 -0800 (PST)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id 94sm220427otw.41.2020.12.03.15.28.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Dec 2020 15:28:18 -0800 (PST)
+Date:   Thu, 3 Dec 2020 17:28:16 -0600
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, swboyd@chromium.org,
+        sujitka@chromium.org, evgreen@chromium.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 1/1] net: ipa: pass the correct size when freeing DMA
+ memory
+Message-ID: <X8l0kGv2uvo4ueOn@builder.lan>
+References: <20201203215106.17450-1-elder@linaro.org>
 MIME-Version: 1.0
-References: <20201202220945.911116-1-arjunroy.kdev@gmail.com>
- <20201202220945.911116-2-arjunroy.kdev@gmail.com> <20201202161527.51fcdcd7@hermes.local>
- <384c6be35cc044eeb1bbcf5dcc6d819f@AcuMS.aculab.com> <CAOFY-A07C=TEfob3S3-Dqm8tFTavFfEGqQwbisnNd+yKgDEGFA@mail.gmail.com>
-In-Reply-To: <CAOFY-A07C=TEfob3S3-Dqm8tFTavFfEGqQwbisnNd+yKgDEGFA@mail.gmail.com>
-From:   Arjun Roy <arjunroy@google.com>
-Date:   Thu, 3 Dec 2020 15:24:53 -0800
-Message-ID: <CAOFY-A2vTwyA_45oUQR-91CMZya5i1y-4yzDboL+CnKceLzXPw@mail.gmail.com>
-Subject: Re: [net-next v2 1/8] net-zerocopy: Copy straggler unaligned data for
- TCP Rx. zerocopy.
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Arjun Roy <arjunroy.kdev@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "soheil@google.com" <soheil@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201203215106.17450-1-elder@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 3, 2020 at 3:19 PM Arjun Roy <arjunroy@google.com> wrote:
->
-> On Thu, Dec 3, 2020 at 3:01 PM David Laight <David.Laight@aculab.com> wrote:
-> >
-> > From: Stephen Hemminger
-> > > Sent: 03 December 2020 00:15
-> > >
-> > > On Wed,  2 Dec 2020 14:09:38 -0800
-> > > Arjun Roy <arjunroy.kdev@gmail.com> wrote:
-> > >
-> > > > diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
-> > > > index cfcb10b75483..62db78b9c1a0 100644
-> > > > --- a/include/uapi/linux/tcp.h
-> > > > +++ b/include/uapi/linux/tcp.h
-> > > > @@ -349,5 +349,7 @@ struct tcp_zerocopy_receive {
-> > > >     __u32 recv_skip_hint;   /* out: amount of bytes to skip */
-> > > >     __u32 inq; /* out: amount of bytes in read queue */
-> > > >     __s32 err; /* out: socket error */
-> > > > +   __u64 copybuf_address;  /* in: copybuf address (small reads) */
-> > > > +   __s32 copybuf_len; /* in/out: copybuf bytes avail/used or error */
-> >
-> > You need to swap the order of the above fields to avoid padding
-> > and differing alignments for 32bit and 64bit apps.
-> >
->
-> Just to double check, are you referring to the order of
-> copybuf_address and copybuf_len?
-> If so, it seems that the current ordering is not creating any
-> alignment holes, but flipping it would: https://godbolt.org/z/bdxP6b
->
->
-> > > >  };
-> > > >  #endif /* _UAPI_LINUX_TCP_H */
-> > >
-> > > You can't safely grow the size of a userspace API without handling the
-> > > case of older applications.  Logic in setsockopt() would have to handle
-> > > both old and new sizes of the structure.
-> >
-> > You also have to allow for old (working) applications being recompiled
-> > with the new headers.
-> > So you cannot rely on the fields being zero even if you are passed
-> > the size of the structure.
-> >
->
-> I think this should already be taken care of in the current code; the
-> full-sized struct with new fields is being zero-initialized, then
-> we're getting the user-provided optlen, then copying from userspace
-> only that much data. So the newer fields would be zero in that case,
-> so this should handle the case of new kernels but old applications.
-> Does this address the concern, or am I misunderstanding?
->
+On Thu 03 Dec 15:51 CST 2020, Alex Elder wrote:
 
-Actually, on closer read, perhaps the following is what you have in
-mind for the old application?
+> When the coherent memory is freed in gsi_trans_pool_exit_dma(), we
+> are mistakenly passing the size of a single element in the pool
+> rather than the actual allocated size.  Fix this bug.
+> 
+> Fixes: 9dd441e4ed575 ("soc: qcom: ipa: GSI transactions")
+> Reported-by: Stephen Boyd <swboyd@chromium.org>
+> Tested-by: Sujit Kautkar <sujitka@chromium.org>
+> Signed-off-by: Alex Elder <elder@linaro.org>
 
-struct zerocopy_args args;
-args.address = ...;
-args.length = ...;
-args.recv_skip_hint = ...;
-args.inq = ...;
-args.err = ...;
-getsockopt(fd, IPPROTO_TCP, TCP_ZEROCOPY_RECEIVE, &args, sizeof(args));
-// sizeof(args) is now bigger when recompiled with new headers, but we
-did not explicitly set the new fields to 0, therefore issues
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
--Arjun
+Regards,
+Bjorn
 
-> Thanks,
-> -Arjun
->
-> >         David
-> >
-> > -
-> > Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> > Registration No: 1397386 (Wales)
-> >
+> ---
+>  drivers/net/ipa/gsi_trans.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ipa/gsi_trans.c b/drivers/net/ipa/gsi_trans.c
+> index e8599bb948c08..6c3ed5b17b80c 100644
+> --- a/drivers/net/ipa/gsi_trans.c
+> +++ b/drivers/net/ipa/gsi_trans.c
+> @@ -156,6 +156,9 @@ int gsi_trans_pool_init_dma(struct device *dev, struct gsi_trans_pool *pool,
+>  	/* The allocator will give us a power-of-2 number of pages.  But we
+>  	 * can't guarantee that, so request it.  That way we won't waste any
+>  	 * memory that would be available beyond the required space.
+> +	 *
+> +	 * Note that gsi_trans_pool_exit_dma() assumes the total allocated
+> +	 * size is exactly (count * size).
+>  	 */
+>  	total_size = get_order(total_size) << PAGE_SHIFT;
+>  
+> @@ -175,7 +178,9 @@ int gsi_trans_pool_init_dma(struct device *dev, struct gsi_trans_pool *pool,
+>  
+>  void gsi_trans_pool_exit_dma(struct device *dev, struct gsi_trans_pool *pool)
+>  {
+> -	dma_free_coherent(dev, pool->size, pool->base, pool->addr);
+> +	size_t total_size = pool->count * pool->size;
+> +
+> +	dma_free_coherent(dev, total_size, pool->base, pool->addr);
+>  	memset(pool, 0, sizeof(*pool));
+>  }
+>  
+> -- 
+> 2.20.1
+> 
