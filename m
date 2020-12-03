@@ -2,240 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C3072CDBE3
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 18:09:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9898C2CDC47
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 18:22:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731449AbgLCRIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 12:08:18 -0500
-Received: from namei.org ([65.99.196.166]:57570 "EHLO namei.org"
+        id S1727364AbgLCRWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 12:22:05 -0500
+Received: from mga05.intel.com ([192.55.52.43]:30785 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731445AbgLCRIR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Dec 2020 12:08:17 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by namei.org (8.14.4/8.14.4) with ESMTP id 0B3H7GDa009376;
-        Thu, 3 Dec 2020 17:07:16 GMT
-Date:   Fri, 4 Dec 2020 04:07:16 +1100 (AEDT)
-From:   James Morris <jmorris@namei.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-cc:     Florian Westphal <fw@strlen.de>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        netdev@vger.kernel.org, mptcp@lists.01.org,
-        linux-security-module@vger.kernel.org
-Subject: Re: [PATCH net-next 1/3] security: add const qualifier to struct
- sock in various places
-In-Reply-To: <20201202112848.46bf4ea6@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-Message-ID: <alpine.LRH.2.21.2012040407080.9312@namei.org>
-References: <20201130153631.21872-1-fw@strlen.de> <20201130153631.21872-2-fw@strlen.de> <20201202112848.46bf4ea6@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-User-Agent: Alpine 2.21 (LRH 202 2017-01-01)
+        id S1726066AbgLCRWD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 12:22:03 -0500
+IronPort-SDR: p4whA1FncvnZx+ZBwfcVQzJWJ4yoR1c73itJAJmVOyZKx5OAjsHbQzwtNrNveYaZTx6lwcXSTn
+ pPRPw3qYdq9g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9824"; a="257945537"
+X-IronPort-AV: E=Sophos;i="5.78,390,1599548400"; 
+   d="scan'208";a="257945537"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2020 09:21:22 -0800
+IronPort-SDR: yWAVNd6bkH0EjtU2mOQVVjH42zXMV/nbzJyttlvQKzYx3QAv4p0h/ds0ZDo7P8SHXgzs45K9in
+ Y2fLQTpksshQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.78,390,1599548400"; 
+   d="scan'208";a="538465477"
+Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
+  by fmsmga006.fm.intel.com with ESMTP; 03 Dec 2020 09:21:22 -0800
+Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
+ ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 3 Dec 2020 09:21:21 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Thu, 3 Dec 2020 09:21:21 -0800
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.46) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.1713.5; Thu, 3 Dec 2020 09:21:20 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jwSLU+iYUry/rbX90+jJW5SxvDCqN0M1o05algithSMdJ1wdc9MoRWdPYTVoDQ1+9FKXURYM2xTJgMS3E0qLo1yhmDC93Gl2xlUAajB3Hl4tpECh3MGJVlpSQYgj0aP0qI/zwKpzw9YCq8kaLCQ4Ceq77zf2U9vlxtv4+rlr2B7ueUhadOkTa1w2ASOSD4y65yLw58g92mf9Vp/S6yzjirMDpUpSLDoD9ThUT2G/gptEqPxF/6bDrWSVop0LOIBeOknpbl4qlcNJNK2TQ2SC2ZcDpkUZe386hGIBfejVcGkMA2GC418YmjMqucVgiRT9dGPOo/TYWNH9UDjvrpTnig==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3i8mva3xGhYoAgC51wnIWoksMIqVUw+Ebh4HZMtWTHo=;
+ b=TZeko58Cqvb9K/EKceLYpgaH8327isCiPy+pKZfFjB1XUfz8mjIMuT33ACJLtoCT1id8c5ypLzz5gmFnn0uVEizpptp+zLwbzawTCaDzL1FWYgPfBdZIaO/3f+DmOyf5R968m53Qu9uAJnHD8gFUqLVAt1u7gb5BDjSUHB20gcyf7c/lgfsQ/OzcMOSPrQ9TEKtVNvsL+5JSwj7xXRCOrZXgXBWTooUrcLYBn9gdbuMyUbZwuGAepHiy/iayAQb76t1vhfiXfSGlIBRX5cvf758tgoclYMq1+uJ6flzLNH7NlL3zy3t1bKfZ6EPSRuXv+Ahm9fMI7lmsRgi10zMoEQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3i8mva3xGhYoAgC51wnIWoksMIqVUw+Ebh4HZMtWTHo=;
+ b=SrMhbUgs7vW7peaTwv2JOlfxqioPgKmzvO/sf0JujHECLcuZ2uXVb50LpESoec10xZuUCjaRC4jL2N84npiLZmeHzqFTTXYkJ7hSfp5hVtP2Dqx/2M9uYrE5u6L3BtSLLP9T6tGhYzoBaYSZUUIb72huoOBWIV7h7dBhH0sDH70=
+Received: from SN6PR11MB3229.namprd11.prod.outlook.com (2603:10b6:805:ba::28)
+ by SN6PR11MB2797.namprd11.prod.outlook.com (2603:10b6:805:5a::32) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.18; Thu, 3 Dec
+ 2020 17:21:17 +0000
+Received: from SN6PR11MB3229.namprd11.prod.outlook.com
+ ([fe80::5c92:dd20:ec58:76da]) by SN6PR11MB3229.namprd11.prod.outlook.com
+ ([fe80::5c92:dd20:ec58:76da%6]) with mapi id 15.20.3632.017; Thu, 3 Dec 2020
+ 17:21:17 +0000
+From:   "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+To:     "magnus.karlsson@gmail.com" <magnus.karlsson@gmail.com>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>
+CC:     "Topel, Bjorn" <bjorn.topel@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "maciejromanfijalkowski@gmail.com" <maciejromanfijalkowski@gmail.com>
+Subject: Re: [PATCH net-next 0/3] i40e, ice, ixgbe: optimize for XDP_REDIRECT
+ in xsk path
+Thread-Topic: [PATCH net-next 0/3] i40e, ice, ixgbe: optimize for XDP_REDIRECT
+ in xsk path
+Thread-Index: AQHWyLzrda8gF+4oGEyhe0/rpVFUX6nkRVKAgACsgQCAAK4cAA==
+Date:   Thu, 3 Dec 2020 17:21:17 +0000
+Message-ID: <618e35ec5aa31b92990a9224181a9011119fc98c.camel@intel.com>
+References: <20201202150724.31439-1-magnus.karlsson@gmail.com>
+         <20201202204041.GA30907@ranger.igk.intel.com>
+         <CAJ8uoz04dFruNnDDyvgbPBZBbMqZxHS6xQJ66dnoPLFtWXv0Uw@mail.gmail.com>
+In-Reply-To: <CAJ8uoz04dFruNnDDyvgbPBZBbMqZxHS6xQJ66dnoPLFtWXv0Uw@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Evolution 3.28.5 (3.28.5-3.fc28) 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [134.134.136.204]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2e3e0ef9-2148-40c7-749f-08d897afd847
+x-ms-traffictypediagnostic: SN6PR11MB2797:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <SN6PR11MB27974A7801D8BE7C289B180AC6F20@SN6PR11MB2797.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 7Up1KurITX2qm4k8jhasipgpulzuWRN7zKYEUj5Ir2+o0lqxkLFLKzjHrlOqd4fVRQ2qoxRgOGDL9JklWIaG3LHBA+gnHGz+QFIaL8UommeXFqb4gCdGhO8D8VVu4GjWUnaqiU/pRJ/UM2WUPHPjrJzVRbTcCTc8Gsb6nLAY/kTDnqKzw7OQcnizYw22F2DvYZwOZwJcBpvbpFUupCVDI5TDfFWEEwApQXrzvREjWwcS+7CKUiMcjCAMApo9w1f/lsjNxSc3iQs9/l6WkQ5BR7CKvUO1BlFbOdirfwWm38V/HOMCU1Yahr8lId0QSYgoc9CKgHNAtia0Z0IfPxkeI65Mwoyfiafn/fbKnn3ZkbfO1wxmZXZA9+SqVkxknUp+
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3229.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(396003)(136003)(376002)(39860400002)(346002)(2616005)(66476007)(66946007)(71200400001)(64756008)(66446008)(66556008)(36756003)(110136005)(83380400001)(5660300002)(6486002)(54906003)(26005)(316002)(76116006)(91956017)(186003)(478600001)(6512007)(4326008)(8936002)(2906002)(8676002)(6636002)(6506007)(86362001)(53546011)(99106002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?WEZSZEFGc0prWjFYU3NVTVRKNXI0RDhjczNqT29EV1BkOFc0akVQVnhvdVJX?=
+ =?utf-8?B?SDA0akhxRnRJZzF5NzJQSnNLelpBa0tNSElxVVp3N0M0MC9YQldIUnp6V09n?=
+ =?utf-8?B?NWNpQndqTXkvdDNBTXJkQ1ZGT080clNWem9nUDFCb1dXei8xWDJBUHFKOE50?=
+ =?utf-8?B?bkwvOTA1dGN1RWpGRnN6bTRaaVhRSDRqd2VPY3R5Z3NSOGU3UnlzTzdzd0xu?=
+ =?utf-8?B?b3luRnJVUmtsTWpRR0VhYVMyeWhpVVVLdkY4SUhRZG9mTk1DQncrMUdwREdX?=
+ =?utf-8?B?Z0FCUmlKVW4wWkd0UWM4T095b0thRTBKaURuRkJseXZrS2lGN2NjWmg1Mmdj?=
+ =?utf-8?B?U3RDNDdlRVFYclpDODUxZlArdTAxY1B1RmRVVDNiQ0NKRGRkTld4QnllcG56?=
+ =?utf-8?B?aDk0V3YzdndMTVdXb2U4eWQxV015c2s1T2pOL1hGdXRkRisweDFnU1RZZnFH?=
+ =?utf-8?B?d2lvWXQzM3B3R2ZGRDJDVFA4OGVOMTBxNndERGdNOElIUjNxTk9JU1FQK0Rt?=
+ =?utf-8?B?N1diTVpjc1pzRG95djgwd2d4a2JjZUorWVRuUHU2dFVQeTAzN1dQR0pnbVoz?=
+ =?utf-8?B?YkZYaE93bWRFMFU5d1J6RGI1RXlJdktjak11Y2xldnpxbENxK3VMdjlPdnU4?=
+ =?utf-8?B?WEtTTkIzOG42anlqRS9WYmhjUGk2YUZWTnFucS9qZ1RzM3o2QkxyUzIxRGVE?=
+ =?utf-8?B?cjF2bjdPS2FFcE1oRDRTbGZyNkphdkJtRUtjaHFGSENLeHlzbURVS1lPODZX?=
+ =?utf-8?B?VGNKSnFwMU9ra1EzREFmbHN1K0hKRjBMVXhVMG8yODltb2NXOGV6b1kzVGUy?=
+ =?utf-8?B?aUNnc3dVZzM3QVM1bVFITHBkWWRHTnVnd2lYcm5jRVJleVdOeGZEcUJzb1Jm?=
+ =?utf-8?B?eldZbzJ6NVFnaXEzOUd4MThhSVpYZ0dDYVN6WTRJY2hRN3NvOVVweGxnakJz?=
+ =?utf-8?B?dkJEOGhZN0JacHlYaUdLYUpqMS9pTmprNnJPejRFV0N2ZEZGRnVGalFqM202?=
+ =?utf-8?B?Q0JsVVNSTDJxNzhvc1BoYUlxckxtSEM1U0phcnFqTXVNVTJlYlh0VlFRMTRk?=
+ =?utf-8?B?bGNDTHRCU3QyWkx0QXdSRE5UbXUrcU5zdU93QWxteGc2L1JHMmZmcGp0QWpu?=
+ =?utf-8?B?eEJUL1kyQkQ5YTRvZE5LVStUV3FjWDRTRElsMmxtVWRDK2lSMFJQMXkrOXha?=
+ =?utf-8?B?NDE1NHM1R0xleEs3cDJFZWJwVTdqKzM3b25FRTd5Znc1MnNnWXFxaXlxSzhJ?=
+ =?utf-8?B?bExzQzVFTzd1SkZmZ2VsdXZNN1Y0dGtRK1FuZ1dueldmUEwyTFVHcldJNTdJ?=
+ =?utf-8?Q?j9/kjDZB84TkrcQHUZU6hKLEclUOpNw3if?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <EF669FC06D55C14F9F352A90D6356F2A@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3229.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2e3e0ef9-2148-40c7-749f-08d897afd847
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Dec 2020 17:21:17.5898
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7R7pkkOV0nyW58xGIWoZ3rgoWe9cTu3vY6fiAhIel4ot6JPODrrFTZm+PDo3SiDdMvIzNggapXTusaH5Rc2gH6bXsPPuKlT1iopC0rBaMvQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB2797
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2 Dec 2020, Jakub Kicinski wrote:
-
-> On Mon, 30 Nov 2020 16:36:29 +0100 Florian Westphal wrote:
-> > A followup change to tcp_request_sock_op would have to drop the 'const'
-> > qualifier from the 'route_req' function as the
-> > 'security_inet_conn_request' call is moved there - and that function
-> > expects a 'struct sock *'.
-> > 
-> > However, it turns out its also possible to add a const qualifier to
-> > security_inet_conn_request instead.
-> > 
-> > Signed-off-by: Florian Westphal <fw@strlen.de>
-> > ---
-> >  The code churn is unfortunate.  Alternative would be to change
-> >  the function signature of ->route_req:
-> >  struct dst_entry *(*route_req)(struct sock *sk, ...
-> >  [ i.e., drop 'const' ].  Thoughts?
-> 
-> Security folks - is this okay to merge into net-next?
-> 
-> We can put it on a branch and pull into both trees if the risk 
-> of conflicts is high.
-
-
-Acked-by: James Morris <jamorris@linux.microsoft.com>
-
-> 
-> > diff --git a/include/linux/lsm_audit.h b/include/linux/lsm_audit.h
-> > index 28f23b341c1c..cd23355d2271 100644
-> > --- a/include/linux/lsm_audit.h
-> > +++ b/include/linux/lsm_audit.h
-> > @@ -26,7 +26,7 @@
-> >  
-> >  struct lsm_network_audit {
-> >  	int netif;
-> > -	struct sock *sk;
-> > +	const struct sock *sk;
-> >  	u16 family;
-> >  	__be16 dport;
-> >  	__be16 sport;
-> > diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-> > index 32a940117e7a..acc0494cceba 100644
-> > --- a/include/linux/lsm_hook_defs.h
-> > +++ b/include/linux/lsm_hook_defs.h
-> > @@ -301,7 +301,7 @@ LSM_HOOK(void, LSM_RET_VOID, sk_clone_security, const struct sock *sk,
-> >  	 struct sock *newsk)
-> >  LSM_HOOK(void, LSM_RET_VOID, sk_getsecid, struct sock *sk, u32 *secid)
-> >  LSM_HOOK(void, LSM_RET_VOID, sock_graft, struct sock *sk, struct socket *parent)
-> > -LSM_HOOK(int, 0, inet_conn_request, struct sock *sk, struct sk_buff *skb,
-> > +LSM_HOOK(int, 0, inet_conn_request, const struct sock *sk, struct sk_buff *skb,
-> >  	 struct request_sock *req)
-> >  LSM_HOOK(void, LSM_RET_VOID, inet_csk_clone, struct sock *newsk,
-> >  	 const struct request_sock *req)
-> > diff --git a/include/linux/security.h b/include/linux/security.h
-> > index bc2725491560..0df62735651b 100644
-> > --- a/include/linux/security.h
-> > +++ b/include/linux/security.h
-> > @@ -1358,7 +1358,7 @@ void security_sk_clone(const struct sock *sk, struct sock *newsk);
-> >  void security_sk_classify_flow(struct sock *sk, struct flowi *fl);
-> >  void security_req_classify_flow(const struct request_sock *req, struct flowi *fl);
-> >  void security_sock_graft(struct sock*sk, struct socket *parent);
-> > -int security_inet_conn_request(struct sock *sk,
-> > +int security_inet_conn_request(const struct sock *sk,
-> >  			struct sk_buff *skb, struct request_sock *req);
-> >  void security_inet_csk_clone(struct sock *newsk,
-> >  			const struct request_sock *req);
-> > @@ -1519,7 +1519,7 @@ static inline void security_sock_graft(struct sock *sk, struct socket *parent)
-> >  {
-> >  }
-> >  
-> > -static inline int security_inet_conn_request(struct sock *sk,
-> > +static inline int security_inet_conn_request(const struct sock *sk,
-> >  			struct sk_buff *skb, struct request_sock *req)
-> >  {
-> >  	return 0;
-> > diff --git a/security/apparmor/include/net.h b/security/apparmor/include/net.h
-> > index 2431c011800d..aadb4b29fb66 100644
-> > --- a/security/apparmor/include/net.h
-> > +++ b/security/apparmor/include/net.h
-> > @@ -107,6 +107,6 @@ int aa_sock_file_perm(struct aa_label *label, const char *op, u32 request,
-> >  		      struct socket *sock);
-> >  
-> >  int apparmor_secmark_check(struct aa_label *label, char *op, u32 request,
-> > -			   u32 secid, struct sock *sk);
-> > +			   u32 secid, const struct sock *sk);
-> >  
-> >  #endif /* __AA_NET_H */
-> > diff --git a/security/apparmor/lsm.c b/security/apparmor/lsm.c
-> > index ffeaee5ed968..1b0aba8eb723 100644
-> > --- a/security/apparmor/lsm.c
-> > +++ b/security/apparmor/lsm.c
-> > @@ -1147,7 +1147,7 @@ static void apparmor_sock_graft(struct sock *sk, struct socket *parent)
-> >  }
-> >  
-> >  #ifdef CONFIG_NETWORK_SECMARK
-> > -static int apparmor_inet_conn_request(struct sock *sk, struct sk_buff *skb,
-> > +static int apparmor_inet_conn_request(const struct sock *sk, struct sk_buff *skb,
-> >  				      struct request_sock *req)
-> >  {
-> >  	struct aa_sk_ctx *ctx = SK_CTX(sk);
-> > diff --git a/security/apparmor/net.c b/security/apparmor/net.c
-> > index fa0e85568450..e0c1b50d6edd 100644
-> > --- a/security/apparmor/net.c
-> > +++ b/security/apparmor/net.c
-> > @@ -211,7 +211,7 @@ static int apparmor_secmark_init(struct aa_secmark *secmark)
-> >  }
-> >  
-> >  static int aa_secmark_perm(struct aa_profile *profile, u32 request, u32 secid,
-> > -			   struct common_audit_data *sa, struct sock *sk)
-> > +			   struct common_audit_data *sa)
-> >  {
-> >  	int i, ret;
-> >  	struct aa_perms perms = { };
-> > @@ -244,13 +244,13 @@ static int aa_secmark_perm(struct aa_profile *profile, u32 request, u32 secid,
-> >  }
-> >  
-> >  int apparmor_secmark_check(struct aa_label *label, char *op, u32 request,
-> > -			   u32 secid, struct sock *sk)
-> > +			   u32 secid, const struct sock *sk)
-> >  {
-> >  	struct aa_profile *profile;
-> >  	DEFINE_AUDIT_SK(sa, op, sk);
-> >  
-> >  	return fn_for_each_confined(label, profile,
-> >  				    aa_secmark_perm(profile, request, secid,
-> > -						    &sa, sk));
-> > +						    &sa));
-> >  }
-> >  #endif
-> > diff --git a/security/lsm_audit.c b/security/lsm_audit.c
-> > index 53d0d183db8f..078f9cdcd7f5 100644
-> > --- a/security/lsm_audit.c
-> > +++ b/security/lsm_audit.c
-> > @@ -183,7 +183,7 @@ int ipv6_skb_to_auditdata(struct sk_buff *skb,
-> >  
-> >  
-> >  static inline void print_ipv6_addr(struct audit_buffer *ab,
-> > -				   struct in6_addr *addr, __be16 port,
-> > +				   const struct in6_addr *addr, __be16 port,
-> >  				   char *name1, char *name2)
-> >  {
-> >  	if (!ipv6_addr_any(addr))
-> > @@ -322,7 +322,7 @@ static void dump_common_audit_data(struct audit_buffer *ab,
-> >  	}
-> >  	case LSM_AUDIT_DATA_NET:
-> >  		if (a->u.net->sk) {
-> > -			struct sock *sk = a->u.net->sk;
-> > +			const struct sock *sk = a->u.net->sk;
-> >  			struct unix_sock *u;
-> >  			struct unix_address *addr;
-> >  			int len = 0;
-> > diff --git a/security/security.c b/security/security.c
-> > index a28045dc9e7f..6509f95d203f 100644
-> > --- a/security/security.c
-> > +++ b/security/security.c
-> > @@ -2225,7 +2225,7 @@ void security_sock_graft(struct sock *sk, struct socket *parent)
-> >  }
-> >  EXPORT_SYMBOL(security_sock_graft);
-> >  
-> > -int security_inet_conn_request(struct sock *sk,
-> > +int security_inet_conn_request(const struct sock *sk,
-> >  			struct sk_buff *skb, struct request_sock *req)
-> >  {
-> >  	return call_int_hook(inet_conn_request, 0, sk, skb, req);
-> > diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-> > index 6b1826fc3658..6fa593006802 100644
-> > --- a/security/selinux/hooks.c
-> > +++ b/security/selinux/hooks.c
-> > @@ -5355,7 +5355,7 @@ static void selinux_sctp_sk_clone(struct sctp_endpoint *ep, struct sock *sk,
-> >  	selinux_netlbl_sctp_sk_clone(sk, newsk);
-> >  }
-> >  
-> > -static int selinux_inet_conn_request(struct sock *sk, struct sk_buff *skb,
-> > +static int selinux_inet_conn_request(const struct sock *sk, struct sk_buff *skb,
-> >  				     struct request_sock *req)
-> >  {
-> >  	struct sk_security_struct *sksec = sk->sk_security;
-> > diff --git a/security/smack/smack_lsm.c b/security/smack/smack_lsm.c
-> > index 5c90b9fa4d40..3a62d6aa74a6 100644
-> > --- a/security/smack/smack_lsm.c
-> > +++ b/security/smack/smack_lsm.c
-> > @@ -3864,7 +3864,7 @@ static inline struct smack_known *smack_from_skb(struct sk_buff *skb)
-> >   *
-> >   * Returns smack_known of the IP options or NULL if that won't work.
-> >   */
-> > -static struct smack_known *smack_from_netlbl(struct sock *sk, u16 family,
-> > +static struct smack_known *smack_from_netlbl(const struct sock *sk, u16 family,
-> >  					     struct sk_buff *skb)
-> >  {
-> >  	struct netlbl_lsm_secattr secattr;
-> > @@ -4114,7 +4114,7 @@ static void smack_sock_graft(struct sock *sk, struct socket *parent)
-> >   * Returns 0 if a task with the packet label could write to
-> >   * the socket, otherwise an error code
-> >   */
-> > -static int smack_inet_conn_request(struct sock *sk, struct sk_buff *skb,
-> > +static int smack_inet_conn_request(const struct sock *sk, struct sk_buff *skb,
-> >  				   struct request_sock *req)
-> >  {
-> >  	u16 family = sk->sk_family;
-> 
-
--- 
-James Morris
-<jmorris@namei.org>
-
+T24gVGh1LCAyMDIwLTEyLTAzIGF0IDA3OjU4ICswMTAwLCBNYWdudXMgS2FybHNzb24gd3JvdGU6
+DQo+IE9uIFdlZCwgRGVjIDIsIDIwMjAgYXQgOTo0OSBQTSBNYWNpZWogRmlqYWxrb3dza2kNCj4g
+PG1hY2llai5maWphbGtvd3NraUBpbnRlbC5jb20+IHdyb3RlOg0KPiA+IA0KPiA+IE9uIFdlZCwg
+RGVjIDAyLCAyMDIwIGF0IDA0OjA3OjIxUE0gKzAxMDAsIE1hZ251cyBLYXJsc3NvbiB3cm90ZToN
+Cj4gPiA+IE9wdGltaXplIHJ1bl94ZHBfemMoKSBmb3IgdGhlIFhEUCBwcm9ncmFtIHZlcmRpY3Qg
+YmVpbmcNCj4gPiA+IFhEUF9SRURJUkVDVA0KPiA+ID4gaW4gdGhlIHpzayB6ZXJvLWNvcHkgcGF0
+aC4gVGhpcyBwYXRoIGlzIG9ubHkgdXNlZCB3aGVuIGhhdmluZw0KPiA+ID4gQUZfWERQDQo+ID4g
+PiB6ZXJvLWNvcHkgb24gYW5kIGluIHRoYXQgY2FzZSBtb3N0IHBhY2tldHMgd2lsbCBiZSBkaXJl
+Y3RlZCB0bw0KPiA+ID4gdXNlcg0KPiA+ID4gc3BhY2UuIFRoaXMgcHJvdmlkZXMgYXJvdW5kIDEw
+MGsgZXh0cmEgcGFja2V0cyBpbiB0aHJvdWdocHV0IG9uDQo+ID4gPiBteQ0KPiA+ID4gc2VydmVy
+IHdoZW4gcnVubmluZyBsMmZ3ZCBpbiB4ZHBzb2NrLg0KPiA+ID4gDQo+ID4gPiBUaGFua3M6IE1h
+Z251cw0KPiA+IA0KPiA+IEZvciBzZXJpZXM6DQo+ID4gQWNrZWQtYnk6IE1hY2llaiBGaWphbGtv
+d3NraSA8bWFjaWVqLmZpamFsa293c2tpQGludGVsLmNvbT4NCj4gPiANCj4gPiBZb3Ugb25seSBh
+dGUgJ2UnIGZyb20gaTQwZSBzdWJqZWN0IGxpbmUuDQo+IA0KPiBTb3JyeSwgeW91IGFyZSByaWdo
+dC4gVG9ueSwgd291bGQgeW91IHBsZWFzZSBiZSBzbyBraW5kIHRvIGFkZCB0aGlzDQo+IG1pc3Np
+bmcgImUiIGluIHRoZSBjb21taXQgbWVzc2FnZSBiZWZvcmUgeW91IHNlbmQgdGhlIHB1bGwgcmVx
+dWVzdD8NCj4gDQo+IFRoYW5rczogTWFnbnVzDQoNCkkgY2FuIGRvIHRoYXQuDQoNClRoYW5rcywN
+ClRvbnkNCg0KPiA+ID4gDQo+ID4gPiBNYWdudXMgS2FybHNzb24gKDMpOg0KPiA+ID4gICBpNDA6
+IG9wdGltaXplIGZvciBYRFBfUkVESVJFQ1QgaW4geHNrIHBhdGgNCj4gPiA+ICAgaXhnYmU6IG9w
+dGltaXplIGZvciBYRFBfUkVESVJFQ1QgaW4geHNrIHBhdGgNCj4gPiA+ICAgaWNlOiBvcHRpbWl6
+ZSBmb3IgWERQX1JFRElSRUNUIGluIHhzayBwYXRoDQo+ID4gPiANCj4gPiA+ICBkcml2ZXJzL25l
+dC9ldGhlcm5ldC9pbnRlbC9pNDBlL2k0MGVfeHNrLmMgICB8IDExICsrKysrKystLS0tDQo+ID4g
+PiAgZHJpdmVycy9uZXQvZXRoZXJuZXQvaW50ZWwvaWNlL2ljZV94c2suYyAgICAgfCAxMiArKysr
+KysrKy0tLS0NCj4gPiA+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9pbnRlbC9peGdiZS9peGdiZV94
+c2suYyB8IDExICsrKysrKystLS0tDQo+ID4gPiAgMyBmaWxlcyBjaGFuZ2VkLCAyMiBpbnNlcnRp
+b25zKCspLCAxMiBkZWxldGlvbnMoLSkNCj4gPiA+IA0KPiA+ID4gDQo+ID4gPiBiYXNlLWNvbW1p
+dDogNmI0ZjUwMzE4NmI3M2UzZGEyNGM2NzE2YzhjN2VhOTAzZTZiNzRkNA0KPiA+ID4gLS0NCj4g
+PiA+IDIuMjkuMA0K
