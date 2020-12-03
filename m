@@ -2,60 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D39162CDD2E
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 19:18:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B8F92CDD31
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 19:18:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726885AbgLCSRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 13:17:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47270 "EHLO
+        id S1728221AbgLCSSG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 13:18:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726312AbgLCSRD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 13:17:03 -0500
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2C2FC061A4E
-        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 10:16:22 -0800 (PST)
-Received: by mail-il1-x143.google.com with SMTP id y9so2820968ilb.0
-        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 10:16:22 -0800 (PST)
+        with ESMTP id S1727004AbgLCSSF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 13:18:05 -0500
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8E03C061A4F
+        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 10:17:25 -0800 (PST)
+Received: by mail-io1-xd43.google.com with SMTP id y5so3053530iow.5
+        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 10:17:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=1ollTmGs+xqYHc2d9X1saJcnFCATzvfVN4Oo5/QShWA=;
-        b=WJs0wSJxsEHvJ7ENJgtR2Iv6d2i9LkdmDpQpDhFaHi0RCcQ09l7EyUE/fVSEa3HUK+
-         EfU9yDZa5Zgkp8NcaN+2Acq7ro+7MXRBKwzKkSHV7qH3ROCL9OSwtj/Zt121PByv0F7J
-         ueAHBPpKkjzpsRMl78407BROIpchNvvrNiewqDFdNl9GzJwIaTBN2qqelMKK8JG69gAF
-         9PkJRgXYIN9ubxZ2aNcOphZCAaTcGAQNeEKP9Y0pjWyBFRlRgFv7PKYp/gBoRWRYmTnq
-         6Zb3+0QqA8EAeeeBKIAurKbFhkD+a8lyJRqcw5ZmrQwpvWLV1vhBUjYHKsU+nzb0e1rN
-         OB4Q==
+        bh=pSh2mdC7u3jYyuadkXEKxhnw2EdBMqG74YREkWtGxzs=;
+        b=pH5KLWJOYLAYoMpUZBNfHMaZ5E2mGJcez938N7fELV0yceC8u+BNwqR7KSgii3lU+z
+         EUWF118GMrbQo/MbiQ7arjsoMXJiDqn+eHgnALl3putfca4BgyAhZqt7BqfEoQpexKrH
+         Y+nUBHeaCZOkBcvtQmA3gD8IiJ1f1qdt52paVWsZ/d5MYMW4LZEj90ljQeHABpmsQbF0
+         d/BTSRMfauF6XXNec03vsqrJR/POOfYFWFqpwFsrCj4jA3a+Tc5SMHW1sFpFklBDElWG
+         4Fd12OXzSnrahS/tICth1iwzKYhnlWY6xW1KVC5D0FgSBmERwEUS0vxbR9HVnorgldSA
+         692A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=1ollTmGs+xqYHc2d9X1saJcnFCATzvfVN4Oo5/QShWA=;
-        b=JqhZ1VpSvvkQxvU8jMhWc4WGOoNXap/8OSfi5eQlnLzQoEHdqV1av+f/0uP6RGySAb
-         62HS7PnKHvHTn1gJTx+eU4MmFOnkFNYaqs1bZUTLKwMLIMuQ/LsFonewIy3N8xgbW132
-         uszLxG7s81HqQWRZubz/fVL59vTzW2vPxRNCRaezFzgGfpW0Ng85ancaahFjuLHNkZbn
-         BXusKfFhNYwnnbLZyVVBIsjUW33cHwoaCG1TUv+sHY1JE9UO3HgD/kXVaEcCU1fC092p
-         0DznMboTulCo0NudW+Ps2sa0nFWlNER+WhPP+iLTlxCXo1hR84JRfubTOU6Hvc7z6Fi9
-         Hh6w==
-X-Gm-Message-State: AOAM530Yu5dMaYCNXR9I0SZuw9tvjX6hDBvZ9MH2g42iSf17lsKqV5lN
-        ugQ4Rx6JsYLZBBzEHxJLUq/Ccz2Y35y6s6PyryQ=
-X-Google-Smtp-Source: ABdhPJwpIkcNFzV5ojHUH2SiEeE8oM8kvgcogimFFfVcpb5uRESDHqhoFXOHn3/QNXsltcRW12ymw4CuasxJtBJX0FQ=
-X-Received: by 2002:a92:730d:: with SMTP id o13mr406052ilc.95.1607019382006;
- Thu, 03 Dec 2020 10:16:22 -0800 (PST)
+        bh=pSh2mdC7u3jYyuadkXEKxhnw2EdBMqG74YREkWtGxzs=;
+        b=oFcRwLDPoaeZpfZqqCgeTjhYuVfjjjXcRSFJuqA5bgAqDejfyOMxgnTaDqbvcD9hCI
+         cDzfgQLJxssI4wGVRaWsj7BKesJTC1sbLCC/VjEnJsCXKfUcul1ElUncZ7I3KYLCnLnN
+         Bo7Whou/35CIPO3Ftvv7yxAEaPSIK/6YcuKY0CoXEAmAqEag5vnzwV2Ki4uhhySSPyqm
+         eQkHq+YnE/ceWhkmDNejZPqnUsvLGdoJ5cgl+6H5qmrWTh1pOGIo/q91I29lomyMm9bh
+         BEO9ikkHpaVjmYKWeoAPNVqDTYJ24HkIAwyIFNzVMVkoXk36qy3y1IgppaXj9JXODUo9
+         vBiw==
+X-Gm-Message-State: AOAM533M/ynia/BNqHjXlbBDqEm1wKzuUd+2CHznOOB72L5L1jJDvdS/
+        3P+VDNkTfTeuoqf+3RiIn83nEx1JpyBSzq7BqKc=
+X-Google-Smtp-Source: ABdhPJyg/h0QFwwgOB+1ZRPRQC6BIM5BtZbrbcjKV3BOlb9QFX08SmcT8oKyWiopJzSjFpalytaB/ORjp1CAq6DlKL8=
+X-Received: by 2002:a5d:964a:: with SMTP id d10mr507706ios.5.1607019444940;
+ Thu, 03 Dec 2020 10:17:24 -0800 (PST)
 MIME-Version: 1.0
-References: <20201202182413.232510-1-awogbemila@google.com> <20201202182413.232510-5-awogbemila@google.com>
-In-Reply-To: <20201202182413.232510-5-awogbemila@google.com>
+References: <20201202182413.232510-1-awogbemila@google.com>
+In-Reply-To: <20201202182413.232510-1-awogbemila@google.com>
 From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Thu, 3 Dec 2020 10:16:11 -0800
-Message-ID: <CAKgT0Uc66PS67HvrT8jzW0tCnzjRqaD1Hnm9-1YZ0XncTh_3BA@mail.gmail.com>
-Subject: Re: [PATCH net-next v9 4/4] gve: Add support for raw addressing in
- the tx path
+Date:   Thu, 3 Dec 2020 10:17:14 -0800
+Message-ID: <CAKgT0UcOWkxAEqa+_T-QQiF_jgyozGe=U_vx_L3kzc1LsQ-Q5Q@mail.gmail.com>
+Subject: Re: [PATCH net-next v9 0/4] GVE Raw Addressing
 To:     David Awogbemila <awogbemila@google.com>
 Cc:     Netdev <netdev@vger.kernel.org>, Saeed Mahameed <saeed@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Catherine Sullivan <csully@google.com>,
-        Yangchun Fu <yangchun@google.com>
+        Eric Dumazet <eric.dumazet@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -63,79 +60,48 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Dec 2, 2020 at 10:24 AM David Awogbemila <awogbemila@google.com> wrote:
 >
-> From: Catherine Sullivan <csully@google.com>
+> Patchset description:
+> This  patchset introduces "raw addressing" mode to the GVE driver.
+> Previously (in "queue_page_list" or "qpl" mode), the driver would
+> pre-allocate and dma_map buffers to be used on egress and ingress.
+> On egress, it would copy data from the skb provided to the
+> pre-allocated buffers - this was expensive.
+> In raw addressing mode, the driver can avoid this copy and simply
+> dma_map the skb's data so that the NIC can use it.
+> On ingress, the driver passes buffers up to the networking stack and
+> then frees and reallocates buffers when necessary instead of using
+> skb_copy_to_linear_data.
+> Patch 3 separates the page refcount tracking mechanism
+> into a function gve_rx_can_recycle_buffer which uses get_page - this will
+> be changed in a future patch to eliminate the use of get_page in tracking
+> page refcounts.
 >
-> During TX, skbs' data addresses are dma_map'ed and passed to the NIC.
-> This means that the device can perform DMA directly from these addresses
-> and the driver does not have to copy the buffer content into
-> pre-allocated buffers/qpls (as in qpl mode).
+> Changes from v8:
+> Patch 4: Free skbs that are not sent in gve_tx().
 >
-> Reviewed-by: Yangchun Fu <yangchun@google.com>
-> Signed-off-by: Catherine Sullivan <csully@google.com>
-> Signed-off-by: David Awogbemila <awogbemila@google.com>
-> ---
->  drivers/net/ethernet/google/gve/gve.h         |  16 +-
->  drivers/net/ethernet/google/gve/gve_adminq.c  |   4 +-
->  drivers/net/ethernet/google/gve/gve_desc.h    |   8 +-
+> Catherine Sullivan (3):
+>   gve: Add support for raw addressing device option
+>   gve: Add support for raw addressing to the rx path
+>   gve: Add support for raw addressing in the tx path
+>
+> David Awogbemila (1):
+>   gve: Rx Buffer Recycling
+>
+>  drivers/net/ethernet/google/gve/gve.h         |  39 +-
+>  drivers/net/ethernet/google/gve/gve_adminq.c  |  89 ++++-
+>  drivers/net/ethernet/google/gve/gve_adminq.h  |  15 +-
+>  drivers/net/ethernet/google/gve/gve_desc.h    |  19 +-
 >  drivers/net/ethernet/google/gve/gve_ethtool.c |   2 +
->  drivers/net/ethernet/google/gve/gve_tx.c      | 197 ++++++++++++++----
->  5 files changed, 185 insertions(+), 42 deletions(-)
+>  drivers/net/ethernet/google/gve/gve_main.c    |  11 +-
+>  drivers/net/ethernet/google/gve/gve_rx.c      | 364 +++++++++++++-----
+>  drivers/net/ethernet/google/gve/gve_tx.c      | 202 ++++++++--
+>  8 files changed, 577 insertions(+), 164 deletions(-)
 >
-> diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
-> index 8aad4af2aa2b..9888fa92be86 100644
-> --- a/drivers/net/ethernet/google/gve/gve.h
-> +++ b/drivers/net/ethernet/google/gve/gve.h
-> @@ -112,12 +112,20 @@ struct gve_tx_iovec {
->         u32 iov_padding; /* padding associated with this segment */
->  };
+> --
+> 2.29.2.576.ga3fc446d84-goog
 >
-> +struct gve_tx_dma_buf {
-> +       DEFINE_DMA_UNMAP_ADDR(dma);
-> +       DEFINE_DMA_UNMAP_LEN(len);
-> +};
-> +
->  /* Tracks the memory in the fifo occupied by the skb. Mapped 1:1 to a desc
->   * ring entry but only used for a pkt_desc not a seg_desc
->   */
->  struct gve_tx_buffer_state {
->         struct sk_buff *skb; /* skb for this pkt */
-> -       struct gve_tx_iovec iov[GVE_TX_MAX_IOVEC]; /* segments of this pkt */
-> +       union {
-> +               struct gve_tx_iovec iov[GVE_TX_MAX_IOVEC]; /* segments of this pkt */
-> +               struct gve_tx_dma_buf buf;
-> +       };
->  };
->
->  /* A TX buffer - each queue has one */
-> @@ -140,19 +148,23 @@ struct gve_tx_ring {
->         __be32 last_nic_done ____cacheline_aligned; /* NIC tail pointer */
->         u64 pkt_done; /* free-running - total packets completed */
->         u64 bytes_done; /* free-running - total bytes completed */
-> +       u32 dropped_pkt; /* free-running - total packets dropped */
 
-Generally I would probably use a u64 for any count values. I'm not
-sure what rate you will be moving packets at but if something goes
-wrong you are better off with the counter not rolling over every few
-minutes.
+Other than the few nits with counters being u32 values I didn't really
+see much else.
 
->         /* Cacheline 2 -- Read-mostly fields */
->         union gve_tx_desc *desc ____cacheline_aligned;
->         struct gve_tx_buffer_state *info; /* Maps 1:1 to a desc */
->         struct netdev_queue *netdev_txq;
->         struct gve_queue_resources *q_resources; /* head and tail pointer idx */
-> +       struct device *dev;
->         u32 mask; /* masks req and done down to queue size */
-> +       u8 raw_addressing; /* use raw_addressing? */
->
->         /* Slow-path fields */
->         u32 q_num ____cacheline_aligned; /* queue idx */
->         u32 stop_queue; /* count of queue stops */
->         u32 wake_queue; /* count of queue wakes */
->         u32 ntfy_id; /* notification block index */
-> +       u32 dma_mapping_error; /* count of dma mapping errors */
-
-Since this is a counter wouldn't it make more sense to place it up
-with the other counters?
-
-Looking over the rest of the patch it seems fine to me. The counters
-were the only thing that had me a bit concerned.
+Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
