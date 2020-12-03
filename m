@@ -2,170 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 946FD2CD90D
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 15:26:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56B0D2CD93A
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 15:33:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729063AbgLCOZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 09:25:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39514 "EHLO
+        id S2387844AbgLCOcw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 09:32:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726237AbgLCOZ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 09:25:58 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DEC8C061A4F
-        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 06:25:18 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1kkpXk-0002P0-CI; Thu, 03 Dec 2020 15:25:12 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:9081:9b12:b54:e184] (2a03-f580-87bc-d400-9081-9b12-0b54-e184.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:9081:9b12:b54:e184])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id D974A5A2AA6;
-        Thu,  3 Dec 2020 14:25:07 +0000 (UTC)
-Subject: Re: [PATCH 0/2] can-isotp fix and functional addressing
-To:     Oliver Hartkopp <socketcan@hartkopp.net>, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-can@vger.kernel.org
-References: <20201203140604.25488-1-socketcan@hartkopp.net>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <184c943e-513a-4679-692a-bb3b1133ad8f@pengutronix.de>
-Date:   Thu, 3 Dec 2020 15:25:04 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        with ESMTP id S1729355AbgLCOcw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 09:32:52 -0500
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5330C061A51
+        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 06:32:05 -0800 (PST)
+Received: by mail-io1-xd43.google.com with SMTP id z136so2250726iof.3
+        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 06:32:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=agN1RaZrd0FXtXBU6s1nO4sdXrde3LkvPXyOS/toRsM=;
+        b=vwX3S8gcSMLVPhTCtankaNblMFB6rPSXILMm1NvxSzc2ROLrcAAO+0O0a/tt9KD0Ej
+         LBcqakQueKNpW3QumsbmzlrZawNFqFE/PG3nnmjBrqPbJclkha+L02A4/XeV1xks+jTE
+         2EAP3vEHsiHVXK2Vk3glD6OiqVhKfiSH+icCXqMZ7OytLu20Msbn9dLoTs0Vgbov5A3x
+         qnILrlHkvj1pOauW6JW7A4BVLftvX7fxBsUl+PPKgkr43Fj2MZcWej6DVOGUiR8f4KQT
+         v4HzWkdMxa7/DvGXCjoFfgbOLKAaMnJz/f/wSkCYqAQL2d9lyy4yxu0n8JA6OlSV0y9A
+         f1wg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=agN1RaZrd0FXtXBU6s1nO4sdXrde3LkvPXyOS/toRsM=;
+        b=dwlbA0qlSyVYU9tWaYgzOT6/1LZZFxfcaCqnCZwNe9ypS0yY1CiKonVGWC88d9vnuK
+         fUUjvMeUTDpRtEx6PqF7dmffPmM1eTPic8Npqhev4jHwSmyaHVvvIzx0mPdHscXsmQsU
+         r+NxCAprTD6CfbaLZJfyU/E70trtlMEspxACRbjQtt6x5QGCAgCxeCwkZT18F5fnES2L
+         o0qfvgr99Donf4aDemw8qTkIq7a7lHR5O88SYt3hgyDWrrWhwJ9GslgXNJrPBCIxGGHq
+         KV8bux9HvBYwyY0TSIgT/L7GNqaXlldgNrs+shM8BbWybVfedQoB4Nv48EA6LtODFKpo
+         L/kQ==
+X-Gm-Message-State: AOAM532X6ikPQnA02KYQ7lnTVZVl0mQJGKwTaIbhHRUAbEy6XQMt5Fll
+        8KENIvGn2mmgmXjLmEgfviHTPN039Yx9BAK+qnxEgA==
+X-Google-Smtp-Source: ABdhPJxZkA81Vqm2HhBWoBIqII8fpV0dQcTHqsYoUvx8W3kbmF01AxaFlR6c4N776uQFs7LFhdZrnikHnCWr1ylxzfk=
+X-Received: by 2002:a02:95ab:: with SMTP id b40mr3571775jai.99.1607005924633;
+ Thu, 03 Dec 2020 06:32:04 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20201203140604.25488-1-socketcan@hartkopp.net>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="nfSeNhug66A1MuZNNP6dgibeBcwXYWs0G"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <e47b903d-6e7c-a2a7-ccdf-d2c701986d4f@gmail.com> <20201203141424.52912-1-kuniyu@amazon.co.jp>
+In-Reply-To: <20201203141424.52912-1-kuniyu@amazon.co.jp>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 3 Dec 2020 15:31:53 +0100
+Message-ID: <CANn89i+MtOWryWzeDXnG-waOnqY8SxVxb_Q2Y4C=FdPGsKXivA@mail.gmail.com>
+Subject: Re: [PATCH v1 bpf-next 03/11] tcp: Migrate TCP_ESTABLISHED/TCP_SYN_RECV
+ sockets in accept queues.
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Benjamin Herrenschmidt <benh@amazon.com>,
+        bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---nfSeNhug66A1MuZNNP6dgibeBcwXYWs0G
-Content-Type: multipart/mixed; boundary="beeMNOFi1xVCOCpfU7izKh1DrU6Z1nxKG";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Oliver Hartkopp <socketcan@hartkopp.net>, kuba@kernel.org,
- davem@davemloft.net, netdev@vger.kernel.org, linux-can@vger.kernel.org
-Message-ID: <184c943e-513a-4679-692a-bb3b1133ad8f@pengutronix.de>
-Subject: Re: [PATCH 0/2] can-isotp fix and functional addressing
-References: <20201203140604.25488-1-socketcan@hartkopp.net>
-In-Reply-To: <20201203140604.25488-1-socketcan@hartkopp.net>
+On Thu, Dec 3, 2020 at 3:14 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
+>
+> From:   Eric Dumazet <eric.dumazet@gmail.com>
+> Date:   Tue, 1 Dec 2020 16:25:51 +0100
+> > On 12/1/20 3:44 PM, Kuniyuki Iwashima wrote:
+> > > This patch lets reuseport_detach_sock() return a pointer of struct sock,
+> > > which is used only by inet_unhash(). If it is not NULL,
+> > > inet_csk_reqsk_queue_migrate() migrates TCP_ESTABLISHED/TCP_SYN_RECV
+> > > sockets from the closing listener to the selected one.
+> > >
+> > > Listening sockets hold incoming connections as a linked list of struct
+> > > request_sock in the accept queue, and each request has reference to a full
+> > > socket and its listener. In inet_csk_reqsk_queue_migrate(), we only unlink
+> > > the requests from the closing listener's queue and relink them to the head
+> > > of the new listener's queue. We do not process each request and its
+> > > reference to the listener, so the migration completes in O(1) time
+> > > complexity. However, in the case of TCP_SYN_RECV sockets, we take special
+> > > care in the next commit.
+> > >
+> > > By default, the kernel selects a new listener randomly. In order to pick
+> > > out a different socket every time, we select the last element of socks[] as
+> > > the new listener. This behaviour is based on how the kernel moves sockets
+> > > in socks[]. (See also [1])
+> > >
+> > > Basically, in order to redistribute sockets evenly, we have to use an eBPF
+> > > program called in the later commit, but as the side effect of such default
+> > > selection, the kernel can redistribute old requests evenly to new listeners
+> > > for a specific case where the application replaces listeners by
+> > > generations.
+> > >
+> > > For example, we call listen() for four sockets (A, B, C, D), and close the
+> > > first two by turns. The sockets move in socks[] like below.
+> > >
+> > >   socks[0] : A <-.      socks[0] : D          socks[0] : D
+> > >   socks[1] : B   |  =>  socks[1] : B <-.  =>  socks[1] : C
+> > >   socks[2] : C   |      socks[2] : C --'
+> > >   socks[3] : D --'
+> > >
+> > > Then, if C and D have newer settings than A and B, and each socket has a
+> > > request (a, b, c, d) in their accept queue, we can redistribute old
+> > > requests evenly to new listeners.
+> > >
+> > >   socks[0] : A (a) <-.      socks[0] : D (a + d)      socks[0] : D (a + d)
+> > >   socks[1] : B (b)   |  =>  socks[1] : B (b) <-.  =>  socks[1] : C (b + c)
+> > >   socks[2] : C (c)   |      socks[2] : C (c) --'
+> > >   socks[3] : D (d) --'
+> > >
+> > > Here, (A, D) or (B, C) can have different application settings, but they
+> > > MUST have the same settings at the socket API level; otherwise, unexpected
+> > > error may happen. For instance, if only the new listeners have
+> > > TCP_SAVE_SYN, old requests do not have SYN data, so the application will
+> > > face inconsistency and cause an error.
+> > >
+> > > Therefore, if there are different kinds of sockets, we must attach an eBPF
+> > > program described in later commits.
+> > >
+> > > Link: https://lore.kernel.org/netdev/CAEfhGiyG8Y_amDZ2C8dQoQqjZJMHjTY76b=KBkTKcBtA=dhdGQ@mail.gmail.com/
+> > > Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
+> > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> > > ---
+> > >  include/net/inet_connection_sock.h |  1 +
+> > >  include/net/sock_reuseport.h       |  2 +-
+> > >  net/core/sock_reuseport.c          | 10 +++++++++-
+> > >  net/ipv4/inet_connection_sock.c    | 30 ++++++++++++++++++++++++++++++
+> > >  net/ipv4/inet_hashtables.c         |  9 +++++++--
+> > >  5 files changed, 48 insertions(+), 4 deletions(-)
+> > >
+> > > diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
+> > > index 7338b3865a2a..2ea2d743f8fc 100644
+> > > --- a/include/net/inet_connection_sock.h
+> > > +++ b/include/net/inet_connection_sock.h
+> > > @@ -260,6 +260,7 @@ struct dst_entry *inet_csk_route_child_sock(const struct sock *sk,
+> > >  struct sock *inet_csk_reqsk_queue_add(struct sock *sk,
+> > >                                   struct request_sock *req,
+> > >                                   struct sock *child);
+> > > +void inet_csk_reqsk_queue_migrate(struct sock *sk, struct sock *nsk);
+> > >  void inet_csk_reqsk_queue_hash_add(struct sock *sk, struct request_sock *req,
+> > >                                unsigned long timeout);
+> > >  struct sock *inet_csk_complete_hashdance(struct sock *sk, struct sock *child,
+> > > diff --git a/include/net/sock_reuseport.h b/include/net/sock_reuseport.h
+> > > index 0e558ca7afbf..09a1b1539d4c 100644
+> > > --- a/include/net/sock_reuseport.h
+> > > +++ b/include/net/sock_reuseport.h
+> > > @@ -31,7 +31,7 @@ struct sock_reuseport {
+> > >  extern int reuseport_alloc(struct sock *sk, bool bind_inany);
+> > >  extern int reuseport_add_sock(struct sock *sk, struct sock *sk2,
+> > >                           bool bind_inany);
+> > > -extern void reuseport_detach_sock(struct sock *sk);
+> > > +extern struct sock *reuseport_detach_sock(struct sock *sk);
+> > >  extern struct sock *reuseport_select_sock(struct sock *sk,
+> > >                                       u32 hash,
+> > >                                       struct sk_buff *skb,
+> > > diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
+> > > index fd133516ac0e..60d7c1f28809 100644
+> > > --- a/net/core/sock_reuseport.c
+> > > +++ b/net/core/sock_reuseport.c
+> > > @@ -216,9 +216,11 @@ int reuseport_add_sock(struct sock *sk, struct sock *sk2, bool bind_inany)
+> > >  }
+> > >  EXPORT_SYMBOL(reuseport_add_sock);
+> > >
+> > > -void reuseport_detach_sock(struct sock *sk)
+> > > +struct sock *reuseport_detach_sock(struct sock *sk)
+> > >  {
+> > >     struct sock_reuseport *reuse;
+> > > +   struct bpf_prog *prog;
+> > > +   struct sock *nsk = NULL;
+> > >     int i;
+> > >
+> > >     spin_lock_bh(&reuseport_lock);
+> > > @@ -242,8 +244,12 @@ void reuseport_detach_sock(struct sock *sk)
+> > >
+> > >             reuse->num_socks--;
+> > >             reuse->socks[i] = reuse->socks[reuse->num_socks];
+> > > +           prog = rcu_dereference(reuse->prog);
+> > >
+> > >             if (sk->sk_protocol == IPPROTO_TCP) {
+> > > +                   if (reuse->num_socks && !prog)
+> > > +                           nsk = i == reuse->num_socks ? reuse->socks[i - 1] : reuse->socks[i];
+> > > +
+> > >                     reuse->num_closed_socks++;
+> > >                     reuse->socks[reuse->max_socks - reuse->num_closed_socks] = sk;
+> > >             } else {
+> > > @@ -264,6 +270,8 @@ void reuseport_detach_sock(struct sock *sk)
+> > >             call_rcu(&reuse->rcu, reuseport_free_rcu);
+> > >  out:
+> > >     spin_unlock_bh(&reuseport_lock);
+> > > +
+> > > +   return nsk;
+> > >  }
+> > >  EXPORT_SYMBOL(reuseport_detach_sock);
+> > >
+> > > diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+> > > index 1451aa9712b0..b27241ea96bd 100644
+> > > --- a/net/ipv4/inet_connection_sock.c
+> > > +++ b/net/ipv4/inet_connection_sock.c
+> > > @@ -992,6 +992,36 @@ struct sock *inet_csk_reqsk_queue_add(struct sock *sk,
+> > >  }
+> > >  EXPORT_SYMBOL(inet_csk_reqsk_queue_add);
+> > >
+> > > +void inet_csk_reqsk_queue_migrate(struct sock *sk, struct sock *nsk)
+> > > +{
+> > > +   struct request_sock_queue *old_accept_queue, *new_accept_queue;
+> > > +
+> > > +   old_accept_queue = &inet_csk(sk)->icsk_accept_queue;
+> > > +   new_accept_queue = &inet_csk(nsk)->icsk_accept_queue;
+> > > +
+> > > +   spin_lock(&old_accept_queue->rskq_lock);
+> > > +   spin_lock(&new_accept_queue->rskq_lock);
+> >
+> > Are you sure lockdep is happy with this ?
+> >
+> > I would guess it should complain, because :
+> >
+> > lock(A);
+> > lock(B);
+> > ...
+> > unlock(B);
+> > unlock(A);
+> >
+> > will fail when the opposite action happens eventually
+> >
+> > lock(B);
+> > lock(A);
+> > ...
+> > unlock(A);
+> > unlock(B);
+>
+> I enabled lockdep and did not see warnings of lockdep.
+>
+> Also, the inversion deadlock does not happen in this case.
+> In reuseport_detach_sock(), sk is moved backward in socks[] and poped out
+> from the eBPF map, so the old listener will not be selected as the new
+> listener.
 
---beeMNOFi1xVCOCpfU7izKh1DrU6Z1nxKG
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+Until the socket is closed, reallocated and used again. LOCKDEP has no
+idea about soreuseport logic.
 
-On 12/3/20 3:06 PM, Oliver Hartkopp wrote:
-> This patch set contains a fix that showed up while implementing the
-> functional addressing switch suggested by Thomas Wagner.
->=20
-> Unfortunately the functional addressing switch came in very late but
-> it is really very simple and already tested.
->=20
-> I would like to leave it to the maintainers whether the second patch
-> can still go into the 5.10-rc tree, which is intended for long-term.
+If you run your tests long enough, lockdep should complain at some point.
 
-Added to linux-can/testing.
-
-Tnx,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---beeMNOFi1xVCOCpfU7izKh1DrU6Z1nxKG--
-
---nfSeNhug66A1MuZNNP6dgibeBcwXYWs0G
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl/I9UAACgkQqclaivrt
-76kkKAf/e8mZE7xW2lFw4gXinrntEllatfNk34RNgCaNu7/UAg3uPVhqbGL2AQzF
-NAqtSUtWv9GNgwcdyxN7HnoY+69AVHZ2mRzJn5qHOG+B2kQOdZQ6dww5xwipGjHa
-HhLeSVS9jtvm61xONq6K4VPdMkNkEX5e1uWUpI4xGRUZzbNw6PD3TljKIUi7hxBi
-rk/mBYiALq3xVlR4y+20E/0dY8yTNouX/LVENbyQH8Wig/as/aS4xgZLFS8bh8FR
-1g2d3jAUfND7Gy/E/106OAqI7wxC6YmuIsE2So2x5AefsmnMLOnFFXof2AVLA/q8
-4Q6HZNs6lZf17DnEkIHWAwqC0rcQzA==
-=S2Rs
------END PGP SIGNATURE-----
-
---nfSeNhug66A1MuZNNP6dgibeBcwXYWs0G--
+git grep -n double_lock
