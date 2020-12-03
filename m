@@ -2,131 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 300282CCCDA
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 03:51:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D661D2CCCDE
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 03:53:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728071AbgLCCuz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Dec 2020 21:50:55 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57734 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725893AbgLCCuz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Dec 2020 21:50:55 -0500
-Content-Type: text/plain; charset="utf-8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1606963814;
-        bh=fcc2vMF7JXpGEwhIXJlwVsC7GeZ8+GUJEPNkGILoQVM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=KLQZoRJ8JhMIa0OJN5QLbLHx0VEGBpAAI3EVevwhowf6xUPqPVOwSlFxsipRefkwc
-         MeoM38HYGxotWdY7oirNd0dXoDWGvVzzb8Q2M0Q6we9g157VW1ZuV38SSS8OKBBkBo
-         UbzHXBqaHBSFNK7beDXSSHlkdFemU+HHAb3SgTI7pGgdvH4k4R/PV5PSFZNiVgmgk2
-         ZU35vprMCpTVxxm1d+G4jAt3NF0IQyzYXHDrxASgKTPy+5YM38akgdzTcyzLyBO6nZ
-         kgG0Kh7aFJU3ujVYzF1Az9q7tztqTWERlvSyzZOIA55Wbiw58napPH0uj32aSIjSbz
-         +bHX1265WQuMw==
+        id S1729521AbgLCCva (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Dec 2020 21:51:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44968 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725893AbgLCCv3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 21:51:29 -0500
+Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FBE1C061A4D;
+        Wed,  2 Dec 2020 18:50:49 -0800 (PST)
+Received: by mail-lf1-x141.google.com with SMTP id v14so557333lfo.3;
+        Wed, 02 Dec 2020 18:50:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GMy68q9C7d+3KAE7LrIlWLnkERUxqm2R0QWsWVT69Ww=;
+        b=DPeGZPTBWkJZdL9SzFtLhiqIX2JLnwNkNYiGvRDjwrpjVBUHLq88ZV3csYxHDd2esz
+         DwY6BojRaWs2/EasoytbECNGYdX2+PT5p7XQ29GpyWOQ4PUxEDHRTrO0uv5kAh34pM1/
+         TFv2SYzzCisykUtq0FqGSWuHz0W3E5lP/ygWYxEkmzBiYgIz1JiR5s90uTp2zQl9EZDj
+         5OOIUPByYBvZq4n2dn/sHYTh3tNG5Inxxms+rEr34Zow4tSNxQdtmfWQIMK7kGPDHiLf
+         ejwLk78sdl9GBaou3xS2MYXIYewbdhyIqxaebFREamE5L4+4cgfiey3efHdPHZHhtDqb
+         L9wA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GMy68q9C7d+3KAE7LrIlWLnkERUxqm2R0QWsWVT69Ww=;
+        b=m7Uly4QpitB8uqRojUjr+2t5nS7ecB8uo8ELCpVWn47cxA53Rp+iHgaZDJd0ABJV83
+         5daB1m5MSPzqzdk6PWBsh5ya/SIa20VqTsteUMKdXOPNt8Rme3Q4b0/7oac25UkKPsr+
+         NFiAZuOxxNQjeOfOMsRPBSO0PCSUAC+gN/AeW6BkaPx2++qb7V41pd3eTQW8Is7WWYW/
+         KtZdqpqDm4wDSGuP4rUuOkIGdc+e8DJ+9LzNy0z5dmftV9+jEz1Vis4PFek5aPLYT2nx
+         87dC3TesKkXYkv7uZ+vyZLdFsZMv1U+hbdTONR1e+Gs6ijVD29ExSTwgqkvjA76l01nk
+         8QHA==
+X-Gm-Message-State: AOAM530KYDNW/uftMJZYmrpSQaggmxwNJTwipHkPd5azFKnIeqoFf+cS
+        jTlffSjsphv+Oiern/p5bJ75Yc63Hxn8yFC5554=
+X-Google-Smtp-Source: ABdhPJyiIawTnpeiuWgZSTXo83O6jgNCSlnkbmUg41w6LXwofC3bgYQQ+doG36BI/J9+kx4fbKWC/PZbetOunC/zH6w=
+X-Received: by 2002:a05:6512:3227:: with SMTP id f7mr448191lfe.119.1606963847604;
+ Wed, 02 Dec 2020 18:50:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next v9 00/34] bpf: switch to memcg-based memory
- accounting
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160696381396.20026.12605091950733901404.git-patchwork-notify@kernel.org>
-Date:   Thu, 03 Dec 2020 02:50:13 +0000
-References: <20201201215900.3569844-1-guro@fb.com>
-In-Reply-To: <20201201215900.3569844-1-guro@fb.com>
-To:     Roman Gushchin <guro@fb.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, andrii@kernel.org,
-        akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com
+References: <20201202103923.12447-1-mariuszx.dudek@intel.com> <20201202103923.12447-3-mariuszx.dudek@intel.com>
+In-Reply-To: <20201202103923.12447-3-mariuszx.dudek@intel.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 2 Dec 2020 18:50:36 -0800
+Message-ID: <CAADnVQKorj773WzJLKvLxAXiKNdqr3dTL_A5GLns9FBrZQ5rxQ@mail.gmail.com>
+Subject: Re: [PATCH v6 bpf-next 2/2] samples/bpf: sample application for eBPF
+ load and socket creation split
+To:     mariusz.dudek@gmail.com
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>,
+        Mariusz Dudek <mariuszx.dudek@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, Dec 2, 2020 at 2:39 AM <mariusz.dudek@gmail.com> wrote:
+>  int main(int argc, char **argv)
+>  {
+> +       struct __user_cap_header_struct hdr = { _LINUX_CAPABILITY_VERSION_3, 0 };
+> +       struct __user_cap_data_struct data[2] = { { 0 } };
+>         struct rlimit r = {RLIM_INFINITY, RLIM_INFINITY};
+>         bool rx = false, tx = false;
+>         struct xsk_umem_info *umem;
+>         struct bpf_object *obj;
+> +       int xsks_map_fd = 0;
+>         pthread_t pt;
+>         int i, ret;
+>         void *bufs;
+>
+>         parse_command_line(argc, argv);
+>
+> -       if (setrlimit(RLIMIT_MEMLOCK, &r)) {
+> -               fprintf(stderr, "ERROR: setrlimit(RLIMIT_MEMLOCK) \"%s\"\n",
+> -                       strerror(errno));
+> -               exit(EXIT_FAILURE);
+> +       if (opt_reduced_cap) {
+> +               if (capget(&hdr, data)  < 0)
+> +                       fprintf(stderr, "Error getting capabilities\n");
+> +
+> +               data->effective &= CAP_TO_MASK(CAP_NET_RAW);
+> +               data->permitted &= CAP_TO_MASK(CAP_NET_RAW);
+> +
+> +               if (capset(&hdr, data) < 0)
+> +                       fprintf(stderr, "Setting capabilities failed\n");
+> +
+> +               if (capget(&hdr, data)  < 0) {
+> +                       fprintf(stderr, "Error getting capabilities\n");
+> +               } else {
+> +                       fprintf(stderr, "Capabilities EFF %x Caps INH %x Caps Per %x\n",
+> +                               data[0].effective, data[0].inheritable, data[0].permitted);
+> +                       fprintf(stderr, "Capabilities EFF %x Caps INH %x Caps Per %x\n",
+> +                               data[1].effective, data[1].inheritable, data[1].permitted);
+> +               }
+> +       } else {
+> +               if (setrlimit(RLIMIT_MEMLOCK, &r)) {
+> +                       fprintf(stderr, "ERROR: setrlimit(RLIMIT_MEMLOCK) \"%s\"\n",
+> +                               strerror(errno));
+> +                       exit(EXIT_FAILURE);
+> +               }
 
-This series was applied to bpf/bpf-next.git (refs/heads/master):
+Due to this hunk the patch had an unpleasant conflict with Roman's set
+and I had to drop this set from bpf-next.
+Please rebase and resend.
 
-On Tue, 1 Dec 2020 13:58:26 -0800 you wrote:
-> Currently bpf is using the memlock rlimit for the memory accounting.
-> This approach has its downsides and over time has created a significant
-> amount of problems:
-> 
-> 1) The limit is per-user, but because most bpf operations are performed
->    as root, the limit has a little value.
-> 
-> [...]
-
-Here is the summary with links:
-  - [bpf-next,v9,01/34] mm: memcontrol: use helpers to read page's memcg data
-    https://git.kernel.org/bpf/bpf-next/c/bcfe06bf2622
-  - [bpf-next,v9,02/34] mm: memcontrol/slab: use helpers to access slab page's memcg_data
-    https://git.kernel.org/bpf/bpf-next/c/270c6a71460e
-  - [bpf-next,v9,03/34] mm: introduce page memcg flags
-    https://git.kernel.org/bpf/bpf-next/c/87944e2992bd
-  - [bpf-next,v9,04/34] mm: convert page kmemcg type to a page memcg flag
-    https://git.kernel.org/bpf/bpf-next/c/18b2db3b0385
-  - [bpf-next,v9,05/34] bpf: memcg-based memory accounting for bpf progs
-    https://git.kernel.org/bpf/bpf-next/c/ddf8503c7c43
-  - [bpf-next,v9,06/34] bpf: prepare for memcg-based memory accounting for bpf maps
-    https://git.kernel.org/bpf/bpf-next/c/48edc1f78aab
-  - [bpf-next,v9,07/34] bpf: memcg-based memory accounting for bpf maps
-    https://git.kernel.org/bpf/bpf-next/c/d5299b67dd59
-  - [bpf-next,v9,08/34] bpf: refine memcg-based memory accounting for arraymap maps
-    https://git.kernel.org/bpf/bpf-next/c/6d192c7938b7
-  - [bpf-next,v9,09/34] bpf: refine memcg-based memory accounting for cpumap maps
-    https://git.kernel.org/bpf/bpf-next/c/e88cc05b61f3
-  - [bpf-next,v9,10/34] bpf: memcg-based memory accounting for cgroup storage maps
-    https://git.kernel.org/bpf/bpf-next/c/3a61c7c58b30
-  - [bpf-next,v9,11/34] bpf: refine memcg-based memory accounting for devmap maps
-    https://git.kernel.org/bpf/bpf-next/c/1440290adf7b
-  - [bpf-next,v9,12/34] bpf: refine memcg-based memory accounting for hashtab maps
-    https://git.kernel.org/bpf/bpf-next/c/881456811a33
-  - [bpf-next,v9,13/34] bpf: memcg-based memory accounting for lpm_trie maps
-    https://git.kernel.org/bpf/bpf-next/c/353e7af4bf5e
-  - [bpf-next,v9,14/34] bpf: memcg-based memory accounting for bpf ringbuffer
-    https://git.kernel.org/bpf/bpf-next/c/be4035c734d1
-  - [bpf-next,v9,15/34] bpf: memcg-based memory accounting for bpf local storage maps
-    https://git.kernel.org/bpf/bpf-next/c/e9aae8beba82
-  - [bpf-next,v9,16/34] bpf: refine memcg-based memory accounting for sockmap and sockhash maps
-    https://git.kernel.org/bpf/bpf-next/c/7846dd9f835e
-  - [bpf-next,v9,17/34] bpf: refine memcg-based memory accounting for xskmap maps
-    https://git.kernel.org/bpf/bpf-next/c/28e1dcdef0cb
-  - [bpf-next,v9,18/34] bpf: eliminate rlimit-based memory accounting for arraymap maps
-    https://git.kernel.org/bpf/bpf-next/c/1bc5975613ed
-  - [bpf-next,v9,19/34] bpf: eliminate rlimit-based memory accounting for bpf_struct_ops maps
-    https://git.kernel.org/bpf/bpf-next/c/f043733f31e5
-  - [bpf-next,v9,20/34] bpf: eliminate rlimit-based memory accounting for cpumap maps
-    https://git.kernel.org/bpf/bpf-next/c/711cabaf1432
-  - [bpf-next,v9,21/34] bpf: eliminate rlimit-based memory accounting for cgroup storage maps
-    https://git.kernel.org/bpf/bpf-next/c/087b0d39fe22
-  - [bpf-next,v9,22/34] bpf: eliminate rlimit-based memory accounting for devmap maps
-    https://git.kernel.org/bpf/bpf-next/c/844f157f6c0a
-  - [bpf-next,v9,23/34] bpf: eliminate rlimit-based memory accounting for hashtab maps
-    https://git.kernel.org/bpf/bpf-next/c/755e5d55367a
-  - [bpf-next,v9,24/34] bpf: eliminate rlimit-based memory accounting for lpm_trie maps
-    https://git.kernel.org/bpf/bpf-next/c/cbddcb574d41
-  - [bpf-next,v9,25/34] bpf: eliminate rlimit-based memory accounting for queue_stack_maps maps
-    https://git.kernel.org/bpf/bpf-next/c/a37fb7ef24a4
-  - [bpf-next,v9,26/34] bpf: eliminate rlimit-based memory accounting for reuseport_array maps
-    https://git.kernel.org/bpf/bpf-next/c/db54330d3e13
-  - [bpf-next,v9,27/34] bpf: eliminate rlimit-based memory accounting for bpf ringbuffer
-    https://git.kernel.org/bpf/bpf-next/c/abbdd0813f34
-  - [bpf-next,v9,28/34] bpf: eliminate rlimit-based memory accounting for sockmap and sockhash maps
-    https://git.kernel.org/bpf/bpf-next/c/0d2c4f964050
-  - [bpf-next,v9,29/34] bpf: eliminate rlimit-based memory accounting for stackmap maps
-    https://git.kernel.org/bpf/bpf-next/c/370868107bf6
-  - [bpf-next,v9,30/34] bpf: eliminate rlimit-based memory accounting for xskmap maps
-    https://git.kernel.org/bpf/bpf-next/c/819a4f323579
-  - [bpf-next,v9,31/34] bpf: eliminate rlimit-based memory accounting for bpf local storage maps
-    https://git.kernel.org/bpf/bpf-next/c/ab31be378a63
-  - [bpf-next,v9,32/34] bpf: eliminate rlimit-based memory accounting infra for bpf maps
-    https://git.kernel.org/bpf/bpf-next/c/80ee81e0403c
-  - [bpf-next,v9,33/34] bpf: eliminate rlimit-based memory accounting for bpf progs
-    https://git.kernel.org/bpf/bpf-next/c/3ac1f01b43b6
-  - [bpf-next,v9,34/34] bpf: samples: do not touch RLIMIT_MEMLOCK
-    https://git.kernel.org/bpf/bpf-next/c/5b0764b2d345
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+But it made me look into this change...why did you make rlimit conditional here?
+That doesn't look right.
