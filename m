@@ -2,196 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD8442CE00A
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 21:50:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B59D52CDFEC
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 21:48:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387905AbgLCUtJ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 3 Dec 2020 15:49:09 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:20428 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387853AbgLCUtJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 15:49:09 -0500
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B3KeT6E011537
-        for <netdev@vger.kernel.org>; Thu, 3 Dec 2020 12:48:28 -0800
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 357159u2xv-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 12:48:28 -0800
-Received: from intmgw005.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 3 Dec 2020 12:48:26 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id E38F02ECA8BF; Thu,  3 Dec 2020 12:48:25 -0800 (PST)
-From:   Andrii Nakryiko <andrii@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH v6 bpf-next 14/14] selftests/bpf: add fentry/fexit/fmod_ret selftest for kernel module
-Date:   Thu, 3 Dec 2020 12:46:34 -0800
-Message-ID: <20201203204634.1325171-15-andrii@kernel.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20201203204634.1325171-1-andrii@kernel.org>
-References: <20201203204634.1325171-1-andrii@kernel.org>
+        id S1727425AbgLCUrw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 15:47:52 -0500
+Received: from nat-hk.nvidia.com ([203.18.50.4]:45739 "EHLO nat-hk.nvidia.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726761AbgLCUrv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 15:47:51 -0500
+Received: from HKMAIL101.nvidia.com (Not Verified[10.18.92.77]) by nat-hk.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fc94ecc0001>; Fri, 04 Dec 2020 04:47:08 +0800
+Received: from HKMAIL104.nvidia.com (10.18.16.13) by HKMAIL101.nvidia.com
+ (10.18.16.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 3 Dec
+ 2020 20:47:08 +0000
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.170)
+ by HKMAIL104.nvidia.com (10.18.16.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Thu, 3 Dec 2020 20:47:08 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RAPu2qmWtwsZzLqQdN67UsDtmCmOEKd55L4qSKxmjkVFDH18Pz/k9uhHLDlEpr2+4Qmi5aZWB7QYL55ZKvJKioL7BbwucIi1dp3dhi5KJvTVg2l/C7fCsWiqESrM24vPPH4f41Z7trFrqHzskFaeT3QAuAWhgzy3XmhSLdBEmIzJ1mwT9PUPnb6BrPT9l1men07yTS8Pl4xkvJ+3wCx2SUKQaPgS356vvNzxrlCABZbCdJesXOsHiq/s/bKItXz/ZJr5qG0F01ysTTLuBcbncs4zOEuJteegWLFMgE5tPW/vzdoPQIz2mp5kTlnE+ZU+bVZghr72dZZ1vQBlK3VVZA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bzc7tc2zewgI6SWogj6d3NxIJGvvB66309VQ8/Hva1k=;
+ b=HfqtYcPBYN7xvb4BhQWno4a5rM+26EP7qXm6W1VqMXypK/yEGcRTzCDuIiNfK4nrLBChlE+xcTRxs057y8S62ncA+MWp6F2jLVjFM7G1zHKIFeN3tMWqZbzWjXrYNQ0fNgqdaeGCk6FEcVRTPKlGyUtp8Z9NF6nq1BMo3NNPAzVEEk/n+yqmbEy9YhJ/eMbFhjbc31/LzlDe6w9iIXgIzw5fowd1SOX/Pdfeu007LtTmfCMK7AU/hIqg6DDfrWBiNfpT7xn0LrwNyfop8IgquYdaT9u06W/1H0OzqF21ono+VhDSNQyciS9GHv9GG0+KsZDHztaMA4u94vqJxHiVgw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Authentication-Results: c0d3.blue; dkim=none (message not signed)
+ header.d=none;c0d3.blue; dmarc=none action=none header.from=nvidia.com;
+Received: from DM5PR12MB1356.namprd12.prod.outlook.com (2603:10b6:3:74::18) by
+ DM5PR12MB1707.namprd12.prod.outlook.com (2603:10b6:3:108::21) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3611.20; Thu, 3 Dec 2020 20:47:05 +0000
+Received: from DM5PR12MB1356.namprd12.prod.outlook.com
+ ([fe80::3cc2:a2d6:2919:6a5a]) by DM5PR12MB1356.namprd12.prod.outlook.com
+ ([fe80::3cc2:a2d6:2919:6a5a%6]) with mapi id 15.20.3632.017; Thu, 3 Dec 2020
+ 20:47:05 +0000
+Subject: Re: [PATCH] bridge: Fix a deadlock when enabling multicast snooping
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Joseph Huang <Joseph.Huang@garmin.com>
+CC:     Roopa Prabhu <roopa@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Linus_L=c3=bcssing?= <linus.luessing@c0d3.blue>
+References: <20201201214047.128948-1-Joseph.Huang@garmin.com>
+ <20201203102802.62bc86ba@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+Message-ID: <bd84ca4c-c694-6fd2-81ef-08e9253c18a4@nvidia.com>
+Date:   Thu, 3 Dec 2020 22:46:57 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
+In-Reply-To: <20201203102802.62bc86ba@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [213.179.129.39]
+X-ClientProxiedBy: ZR0P278CA0020.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:1c::7) To DM5PR12MB1356.namprd12.prod.outlook.com
+ (2603:10b6:3:74::18)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-12-03_12:2020-12-03,2020-12-03 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- mlxlogscore=999 clxscore=1034 lowpriorityscore=0 suspectscore=8
- bulkscore=0 spamscore=0 impostorscore=0 mlxscore=0 priorityscore=1501
- adultscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2009150000 definitions=main-2012030121
-X-FB-Internal: deliver
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.21.241.129] (213.179.129.39) by ZR0P278CA0020.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:1c::7) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.17 via Frontend Transport; Thu, 3 Dec 2020 20:47:02 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f5a3be81-db59-45b5-0534-08d897cc97f5
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1707:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM5PR12MB170701961678D3F00E2636EADFF20@DM5PR12MB1707.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 52FM/Jev4NnMk22j52Bn4nANSqiBMNn5XhcSrV0X8C1kVUtqL+/A/nR3NtIpRO1NTfh4D/CyEJifEjEigPRM1D4jTm3UrK+BNZV99pk2GftKsEaZbM9aJKFd9+yHc4AyeNTeeYSM9LsnTb3Vmg2UbeEI4EGgoe/zP+EMfAEJcX64/sLidE6K6SCZ2DIWSKBjUjrhz/dJy8E5LNFGk8rTeOUjBcMwQf/vAp6FpoxT6e/ClNHJroSaogw852W5eMBoFAN5OMgwEP7lL2OIgYub2obQzFLLzedGpZL2NLyNiv67Vbv863ZR476cjZqDtqSNzYMzsavXpJHM8GmAPXeWGkAPFF+uzQPH7kWUktVHbY2pu3HiPjPRnNlL6rTR8oj2MltMtnGpTfGmAiUe4Mr9ldzMZtIDoZEeMeV50k6QWSc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB1356.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(396003)(376002)(346002)(136003)(366004)(66946007)(956004)(4326008)(6486002)(316002)(2906002)(8936002)(16576012)(36756003)(8676002)(66476007)(54906003)(478600001)(31696002)(66556008)(31686004)(5660300002)(2616005)(26005)(110136005)(83380400001)(53546011)(186003)(86362001)(16526019)(6666004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?MDB4TDhzNGJ3TmdWalhwWWRub3p3SmlVRlBVazM0bGZESk9QbnlOODA2MlBX?=
+ =?utf-8?B?Q1pJbG9Rb2hKR0tGenBmazRKYmFPeGJRNDZzU2hzRXUxOGpLVFZEY21ieU5N?=
+ =?utf-8?B?VTg4c0VQeTlEeXBlSm9VY21aNWFYanpva0k0STQ5Nml6dE5vRlI5UXViNnpx?=
+ =?utf-8?B?TmJOYkRVcUl0VUljSktxOWl5cU9uMVd4U3QxYjlISHFER2I2UFZqSTF1ZU1v?=
+ =?utf-8?B?d09xVG9uVE4rcmNydHR6TlVIdnJPaG1EMlRWaGRPeUxHUUdNNFMrajUySzlZ?=
+ =?utf-8?B?Q2RHeWtRTHFGemRjSlJya0dGbnZyUnpEWE13K1ZnaVc2Q3UwbFNsVzJQb0xj?=
+ =?utf-8?B?RmkwbFVwYkZqM3BuVUdsRGY3elZyNWdqUVlEdUxOODJPVmZjMjNZbjZJS1dS?=
+ =?utf-8?B?dmVHWDZ2TGdXcmFhQkFXSGR6c0FoMGxDQjJYWTZLSG9yYnJWbUxJeHpHblJF?=
+ =?utf-8?B?aXAxNjhrNXI1UGZpQU9BTERuRGNVRWtzTlBhcmNvd2U0b0dCWjg0VVpsVkcw?=
+ =?utf-8?B?QmZlNjFKSTBPVVZBTWVBVVIvbkVVSkNJTTRGMDhWbHU5Nnd4Nk5QVjlKWE9j?=
+ =?utf-8?B?dTMyaTdjcnFWMkEySlNlMFVpN3BnSXpqb3NqTVY0aXJ4RG5pN2dlbWNsZnE0?=
+ =?utf-8?B?cjlQc25VN2lnQjlpZzBZNEJnRlQ4UlR2UmZoQ1QwZXNVNERkT2dtc1pHTHNS?=
+ =?utf-8?B?YlgrR1U3eTJWOGtkbTNzN29zdWJBRnlKU1AxZ1doZ0VTd2pEM29rZmR5WkNQ?=
+ =?utf-8?B?NWlielVDMzFVOEpYcWZFMGRBVXB6VkhqY3ZFTlBFc2pqYk5FbmdxLzZWb0ZX?=
+ =?utf-8?B?T0xlb285TjE4dWc4aEtWSDJqUDM1YU5tUXZYWGFqemFETjU0TWZyeG9SWVFU?=
+ =?utf-8?B?cEQ5OTY0c1BUTFB6M0c2ZlQxUzVPOGoyRzA3aENUNG1EMFJITUtJVkJtWUtX?=
+ =?utf-8?B?SFYzVUVhRmZzekxuZE9XY2ZiMlJJZUplMkNpZFJQcGpTcWpaYVhDYTJqSHJk?=
+ =?utf-8?B?NERKbEFZMWVLK1U0U2owWCtuMGxwQ2J2Sld1M1cvQVdNRU5yRkdXejN4M1R5?=
+ =?utf-8?B?QnhzN3pLNTd6V2lER2t3MXV3bnVmdVlMbVg2OHdiTk80cHcxT0tmbFYxc3BU?=
+ =?utf-8?B?dHJiYkFzRWwrSVN3OUJpcWVaaU9CNDZ3SGgyU2xmWXpaUVhsM2RIeE45TC91?=
+ =?utf-8?B?VjJYQW5iRFYzak9ZNjFJdk9Bb0hDbThwcTFIV3daRXhUZjhEamZFSjVERkMz?=
+ =?utf-8?B?R1B2REpkK2xYRStmNlN0bnpIUlhZNk04bExzbXExSkhUUVNHTWVIcTlKNUU1?=
+ =?utf-8?Q?BJ6+VoES7QStP+NDMxxJVs2U6rNxFjSSCJ?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: f5a3be81-db59-45b5-0534-08d897cc97f5
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1356.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Dec 2020 20:47:05.3444
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: XHHi/Cd4g821nPNrngAuZmBOj0cDW2dxoGCX8Oo11vAH02JMgLZnbDr3Ausmj35vFkCtCnrr4weAhI0BpKk/ew==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1707
+X-OriginatorOrg: Nvidia.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1607028428; bh=bzc7tc2zewgI6SWogj6d3NxIJGvvB66309VQ8/Hva1k=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:
+         Authentication-Results:Subject:To:CC:References:From:Message-ID:
+         Date:User-Agent:In-Reply-To:Content-Type:Content-Language:
+         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy:
+         MIME-Version:X-MS-Exchange-MessageSentRepresentingType:
+         X-MS-PublicTrafficType:X-MS-Office365-Filtering-Correlation-Id:
+         X-MS-TrafficTypeDiagnostic:X-MS-Exchange-Transport-Forked:
+         X-Microsoft-Antispam-PRVS:X-MS-Oob-TLC-OOBClassifiers:
+         X-MS-Exchange-SenderADCheck:X-Microsoft-Antispam:
+         X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+         X-MS-Exchange-AntiSpam-MessageData:
+         X-MS-Exchange-CrossTenant-Network-Message-Id:
+         X-MS-Exchange-CrossTenant-AuthSource:
+         X-MS-Exchange-CrossTenant-AuthAs:
+         X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+         X-MS-Exchange-CrossTenant-FromEntityHeader:
+         X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+         X-MS-Exchange-CrossTenant-UserPrincipalName:
+         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+        b=D74LeTiQlmejx7WKTvtyVU9XzsQAp87BDlR2RsYehxAv3UzDtWSbki/nKqAds/+sm
+         aj+lKAb1Kj+5U16QL/RZHaIKMuhXoPznZT5baBe2mfz9pNwzxsxavlYfATAP+BWpQv
+         GjtIi+ffi6om1jJ/kQLJ9B4qJGGQRElM9t9idSpXS491xHeV35QR44bHsfltT+1Mkt
+         XSfB7df6kCL47P3qcrFfdr1IXzsNCi5wQUyPS1RKl45vIjb+DLywjOj5ryvFw0nJyS
+         joIvfmbg7+GYpojw718R/J4GerOfpodpyw0gYZoeEW2pxjCdrLwl7AfGTl1HgFmMU+
+         B2F0fDUOwk9cQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add new selftest checking attachment of fentry/fexit/fmod_ret (and raw
-tracepoint ones for completeness) BPF programs to kernel module function.
+On 03/12/2020 20:28, Jakub Kicinski wrote:
+> On Tue, 1 Dec 2020 16:40:47 -0500 Joseph Huang wrote:
+>> When enabling multicast snooping, bridge module deadlocks on multicast_lock
+>> if 1) IPv6 is enabled, and 2) there is an existing querier on the same L2
+>> network.
+>>
+>> The deadlock was caused by the following sequence: While holding the lock,
+>> br_multicast_open calls br_multicast_join_snoopers, which eventually causes
+>> IP stack to (attempt to) send out a Listener Report (in igmp6_join_group).
+>> Since the destination Ethernet address is a multicast address, br_dev_xmit
+>> feeds the packet back to the bridge via br_multicast_rcv, which in turn
+>> calls br_multicast_add_group, which then deadlocks on multicast_lock.
+>>
+>> The fix is to move the call br_multicast_join_snoopers outside of the
+>> critical section. This works since br_multicast_join_snoopers only deals
+>> with IP and does not modify any multicast data structures of the bridge,
+>> so there's no need to hold the lock.
+>>
+>> Fixes: 4effd28c1245 ("bridge: join all-snoopers multicast address")
+>>
+>> Signed-off-by: Joseph Huang <Joseph.Huang@garmin.com>
+> 
+> Nik, Linus - how does this one look?
+> 
 
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
----
- .../selftests/bpf/prog_tests/module_attach.c  | 53 +++++++++++++++
- .../selftests/bpf/progs/test_module_attach.c  | 66 +++++++++++++++++++
- 2 files changed, 119 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/module_attach.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_module_attach.c
+Hi,
+Thanks, somehow I missed this one too. Need to check my email config. :)
+I believe I see how it can happen, although it's not straight-forward to follow.
+A selftest for this case would be great, and any traces (e.g. hung task) would
+help a lot as well.
+Correct me if I'm wrong but the sequence is something like:
+br_multicast_join_snoopers -> ipv6_dev_mc_inc -> __ipv6_dev_mc_inc -> igmp6_group_added
+-> MLDv1 (mode) igmp6_join_group() -> Again MLDv1 mode igmp6_join_group() -> igmp6_join_group
+-> igmp6_send() on the bridge device -> br_dev_xmit and onto the bridge mcast processing code
+which uses the multicast_lock spinlock. Right?
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/module_attach.c b/tools/testing/selftests/bpf/prog_tests/module_attach.c
-new file mode 100644
-index 000000000000..4b65e9918764
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/module_attach.c
-@@ -0,0 +1,53 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 Facebook */
-+
-+#include <test_progs.h>
-+#include "test_module_attach.skel.h"
-+
-+static int duration;
-+
-+static int trigger_module_test_read(int read_sz)
-+{
-+	int fd, err;
-+
-+	fd = open("/sys/kernel/bpf_testmod", O_RDONLY);
-+	err = -errno;
-+	if (CHECK(fd < 0, "testmod_file_open", "failed: %d\n", err))
-+		return err;
-+
-+	read(fd, NULL, read_sz);
-+	close(fd);
-+
-+	return 0;
-+}
-+
-+void test_module_attach(void)
-+{
-+	const int READ_SZ = 456;
-+	struct test_module_attach* skel;
-+	struct test_module_attach__bss *bss;
-+	int err;
-+
-+	skel = test_module_attach__open_and_load();
-+	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
-+		return;
-+
-+	bss = skel->bss;
-+
-+	err = test_module_attach__attach(skel);
-+	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
-+		goto cleanup;
-+
-+	/* trigger tracepoint */
-+	ASSERT_OK(trigger_module_test_read(READ_SZ), "trigger_read");
-+
-+	ASSERT_EQ(bss->raw_tp_read_sz, READ_SZ, "raw_tp");
-+	ASSERT_EQ(bss->tp_btf_read_sz, READ_SZ, "tp_btf");
-+	ASSERT_EQ(bss->fentry_read_sz, READ_SZ, "fentry");
-+	ASSERT_EQ(bss->fexit_read_sz, READ_SZ, "fexit");
-+	ASSERT_EQ(bss->fexit_ret, -EIO, "fexit_tet");
-+	ASSERT_EQ(bss->fmod_ret_read_sz, READ_SZ, "fmod_ret");
-+
-+cleanup:
-+	test_module_attach__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_module_attach.c b/tools/testing/selftests/bpf/progs/test_module_attach.c
-new file mode 100644
-index 000000000000..b563563df172
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_module_attach.c
-@@ -0,0 +1,66 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 Facebook */
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+#include <bpf/bpf_core_read.h>
-+#include "../bpf_testmod/bpf_testmod.h"
-+
-+__u32 raw_tp_read_sz = 0;
-+
-+SEC("raw_tp/bpf_testmod_test_read")
-+int BPF_PROG(handle_raw_tp,
-+	     struct task_struct *task, struct bpf_testmod_test_read_ctx *read_ctx)
-+{
-+	raw_tp_read_sz = BPF_CORE_READ(read_ctx, len);
-+	return 0;
-+}
-+
-+__u32 tp_btf_read_sz = 0;
-+
-+SEC("tp_btf/bpf_testmod_test_read")
-+int BPF_PROG(handle_tp_btf,
-+	     struct task_struct *task, struct bpf_testmod_test_read_ctx *read_ctx)
-+{
-+	tp_btf_read_sz = read_ctx->len;
-+	return 0;
-+}
-+
-+__u32 fentry_read_sz = 0;
-+
-+SEC("fentry/bpf_testmod_test_read")
-+int BPF_PROG(handle_fentry,
-+	     struct file *file, struct kobject *kobj,
-+	     struct bin_attribute *bin_attr, char *buf, loff_t off, size_t len)
-+{
-+	fentry_read_sz = len;
-+	return 0;
-+}
-+
-+__u32 fexit_read_sz = 0;
-+int fexit_ret = 0;
-+
-+SEC("fexit/bpf_testmod_test_read")
-+int BPF_PROG(handle_fexit,
-+	     struct file *file, struct kobject *kobj,
-+	     struct bin_attribute *bin_attr, char *buf, loff_t off, size_t len,
-+	     int ret)
-+{
-+	fexit_read_sz = len;
-+	fexit_ret = ret;
-+	return 0;
-+}
-+
-+__u32 fmod_ret_read_sz = 0;
-+
-+SEC("fmod_ret/bpf_testmod_test_read")
-+int BPF_PROG(handle_fmod_ret,
-+	     struct file *file, struct kobject *kobj,
-+	     struct bin_attribute *bin_attr, char *buf, loff_t off, size_t len)
-+{
-+	fmod_ret_read_sz = len;
-+	return 0; /* don't override the exit code */
-+}
-+
-+char _license[] SEC("license") = "GPL";
--- 
-2.24.1
+One question - shouldn't leaving have the same problem? I.e. br_multicast_toggle -> br_multicast_leave_snoopers
+-> br_ip6_multicast_leave_snoopers -> ipv6_dev_mc_dec -> igmp6_group_dropped -> igmp6_leave_group ->
+MLDv1 mode && last reporter -> igmp6_send() ?
+
+I think it was saved by the fact that !br_opt_get(br, BROPT_MULTICAST_ENABLED) would be true and the
+multicast lock won't be acquired in the br_dev_xmit path? If so, I'd appreciate a comment about that
+because it's not really trivial to find out. :)
+
+Anyhow, the patch is fine as-is too:
+Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+
+Thanks,
+ Nik
 
