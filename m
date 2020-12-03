@@ -2,200 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68FAF2CD895
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 15:11:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20C5E2CD8B7
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 15:16:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436557AbgLCOJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 09:09:10 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.52]:36219 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728727AbgLCOJI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 09:09:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1607004375;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=zGU4oUwJBFPegTJv0CVGLiubRmmiYKrA+6JGbAEjAq8=;
-        b=NK57UQnjca9InHTNbLwKI6eY6Is7jTT+UpdBNtsoXpCtu+NYofLfgn+XSqjEY3txux
-        voJq/LuAe9QvSaAoKZdupz/Z3XWokdjFviVGQASbq8k5Lc4iYujq/WqGaYJ+wjIhIRKf
-        SwxkF8O9iitYsCDcd7t0Hz70xpNV1U4ChxSDPrPBXxUTxSb8VmCc5ZjLxMjdeSkpU8wD
-        g49LNkw9UZqwKNIJEtnDDCGS6QmiWBBttzSIRnLAa1WTET9bFR0tj+Vo10Hrk1ypGE0r
-        WNO2G6Sv4987L7mZIUZCsc5VHNmIQiaU5cTav2QVlGq36prnHasJzwQMP7ty2tzHs950
-        Khtw==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjGrp7owjzFK3JbFk1mS/xvEBL7X5sbo3UIh9dyKNLCWJaRrQ0pDCeGtVbNHMQ98lI/DcPKMT"
-X-RZG-CLASS-ID: mo00
-Received: from localhost.localdomain
-        by smtp.strato.de (RZmta 47.3.4 AUTH)
-        with ESMTPSA id n07f3bwB3E6EFos
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Thu, 3 Dec 2020 15:06:14 +0100 (CET)
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-To:     mkl@pengutronix.de, kuba@kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org
-Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        Thomas Wagner <thwa1@web.de>
-Subject: [PATCH 2/2] can-isotp: add SF_BROADCAST support for functional addressing
-Date:   Thu,  3 Dec 2020 15:06:04 +0100
-Message-Id: <20201203140604.25488-3-socketcan@hartkopp.net>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20201203140604.25488-1-socketcan@hartkopp.net>
-References: <20201203140604.25488-1-socketcan@hartkopp.net>
+        id S2436682AbgLCONi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 09:13:38 -0500
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:34877 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726318AbgLCONh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 09:13:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1607004816; x=1638540816;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=5f0Fhu2AO04sPld9LC1LXYDFAHfWrn4XzNzhlsTgPH8=;
+  b=ZIX/eAPdl8mYcQ2gw8LekgX+zSnojAynIFCS7lUh+jwN80p4kmbU/97S
+   Z6ggSqXJRfuW5hE1RWyRsIyp3XGmezL2pGHIy1j6r8GUA/j9rpeOMVwu5
+   kZ5Szui+gld9LRX8FW582+YJHSjVmrOm8luiMwWr4ESUTG2Uihuvxd3c9
+   Y=;
+X-IronPort-AV: E=Sophos;i="5.78,389,1599523200"; 
+   d="scan'208";a="68903082"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2a-1c1b5cdd.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 03 Dec 2020 14:12:54 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-2a-1c1b5cdd.us-west-2.amazon.com (Postfix) with ESMTPS id 9ACC3A1E42;
+        Thu,  3 Dec 2020 14:12:51 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 3 Dec 2020 14:12:50 +0000
+Received: from 38f9d3582de7.ant.amazon.com (10.43.160.139) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 3 Dec 2020 14:12:45 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <eric.dumazet@gmail.com>
+CC:     <ast@kernel.org>, <benh@amazon.com>, <bpf@vger.kernel.org>,
+        <daniel@iogearbox.net>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kafai@fb.com>, <kuba@kernel.org>,
+        <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH v1 bpf-next 05/11] tcp: Migrate TCP_NEW_SYN_RECV requests.
+Date:   Thu, 3 Dec 2020 23:12:40 +0900
+Message-ID: <20201203141240.52810-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+In-Reply-To: <6b34c251-05af-06c0-8003-858b6ae8d1fd@gmail.com>
+References: <6b34c251-05af-06c0-8003-858b6ae8d1fd@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.139]
+X-ClientProxiedBy: EX13D29UWA002.ant.amazon.com (10.43.160.63) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When CAN_ISOTP_SF_BROADCAST is set in the CAN_ISOTP_OPTS flags the
-CAN_ISOTP socket is switched into functional addressing mode, where
-only single frame (SF) protocol data units can be send on the specified
-CAN interface and the given tp.tx_id after bind().
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Date:   Tue, 1 Dec 2020 16:13:39 +0100
+> On 12/1/20 3:44 PM, Kuniyuki Iwashima wrote:
+> > This patch renames reuseport_select_sock() to __reuseport_select_sock() and
+> > adds two wrapper function of it to pass the migration type defined in the
+> > previous commit.
+> > 
+> >   reuseport_select_sock          : BPF_SK_REUSEPORT_MIGRATE_NO
+> >   reuseport_select_migrated_sock : BPF_SK_REUSEPORT_MIGRATE_REQUEST
+> > 
+> > As mentioned before, we have to select a new listener for TCP_NEW_SYN_RECV
+> > requests at receiving the final ACK or sending a SYN+ACK. Therefore, this
+> > patch also changes the code to call reuseport_select_migrated_sock() even
+> > if the listening socket is TCP_CLOSE. If we can pick out a listening socket
+> > from the reuseport group, we rewrite request_sock.rsk_listener and resume
+> > processing the request.
+> > 
+> > Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
+> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> > ---
+> >  include/net/inet_connection_sock.h | 12 +++++++++++
+> >  include/net/request_sock.h         | 13 ++++++++++++
+> >  include/net/sock_reuseport.h       |  8 +++----
+> >  net/core/sock_reuseport.c          | 34 ++++++++++++++++++++++++------
+> >  net/ipv4/inet_connection_sock.c    | 13 ++++++++++--
+> >  net/ipv4/tcp_ipv4.c                |  9 ++++++--
+> >  net/ipv6/tcp_ipv6.c                |  9 ++++++--
+> >  7 files changed, 81 insertions(+), 17 deletions(-)
+> > 
+> > diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
+> > index 2ea2d743f8fc..1e0958f5eb21 100644
+> > --- a/include/net/inet_connection_sock.h
+> > +++ b/include/net/inet_connection_sock.h
+> > @@ -272,6 +272,18 @@ static inline void inet_csk_reqsk_queue_added(struct sock *sk)
+> >  	reqsk_queue_added(&inet_csk(sk)->icsk_accept_queue);
+> >  }
+> >  
+> > +static inline void inet_csk_reqsk_queue_migrated(struct sock *sk,
+> > +						 struct sock *nsk,
+> > +						 struct request_sock *req)
+> > +{
+> > +	reqsk_queue_migrated(&inet_csk(sk)->icsk_accept_queue,
+> > +			     &inet_csk(nsk)->icsk_accept_queue,
+> > +			     req);
+> > +	sock_put(sk);
+> > +	sock_hold(nsk);
+> 
+> This looks racy to me. nsk refcount might be zero at this point.
+> 
+> If you think it can _not_ be zero, please add a big comment here,
+> because this would mean something has been done before reaching this function,
+> and this sock_hold() would be not needed in the first place.
+> 
+> There is a good reason reqsk_alloc() is using refcount_inc_not_zero().
 
-In opposite to normal and extended addressing this socket does not
-register a CAN-ID for reception which would be needed for a 1-to-1
-ISOTP connection with a segmented bi-directional data transfer.
+Exactly, I will fix this in the next spin like below.
+Thank you.
 
-Sending SFs on this socket is therefore a TX-only 'broadcast' operation.
-
-Suggested-by: Thomas Wagner <thwa1@web.de>
-Tested-by: Thomas Wagner <thwa1@web.de>
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
----
- include/uapi/linux/can/isotp.h |  2 +-
- net/can/isotp.c                | 29 ++++++++++++++++++++---------
- 2 files changed, 21 insertions(+), 10 deletions(-)
-
-diff --git a/include/uapi/linux/can/isotp.h b/include/uapi/linux/can/isotp.h
-index 7793b26aa154..c55935b64ccc 100644
---- a/include/uapi/linux/can/isotp.h
-+++ b/include/uapi/linux/can/isotp.h
-@@ -133,11 +133,11 @@ struct can_isotp_ll_options {
- #define CAN_ISOTP_HALF_DUPLEX	0x040	/* half duplex error state handling */
- #define CAN_ISOTP_FORCE_TXSTMIN	0x080	/* ignore stmin from received FC */
- #define CAN_ISOTP_FORCE_RXSTMIN	0x100	/* ignore CFs depending on rx stmin */
- #define CAN_ISOTP_RX_EXT_ADDR	0x200	/* different rx extended addressing */
- #define CAN_ISOTP_WAIT_TX_DONE	0x400	/* wait for tx completion */
--
-+#define CAN_ISOTP_SF_BROADCAST	0x800	/* 1-to-N functional addressing */
+---8<---
+diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
+index 1e0958f5eb21..d8c3be31e987 100644
+--- a/include/net/inet_connection_sock.h
++++ b/include/net/inet_connection_sock.h
+@@ -280,7 +280,6 @@ static inline void inet_csk_reqsk_queue_migrated(struct sock *sk,
+                             &inet_csk(nsk)->icsk_accept_queue,
+                             req);
+        sock_put(sk);
+-       sock_hold(nsk);
+        req->rsk_listener = nsk;
+ }
  
- /* default values */
- 
- #define CAN_ISOTP_DEFAULT_FLAGS		0
- #define CAN_ISOTP_DEFAULT_EXT_ADDRESS	0x00
-diff --git a/net/can/isotp.c b/net/can/isotp.c
-index 26bdc3c20b7e..5ce26e568f16 100644
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -863,10 +863,18 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
- 	}
- 
- 	if (!size || size > MAX_MSG_LENGTH)
- 		return -EINVAL;
- 
-+	/* take care of a potential SF_DL ESC offset for TX_DL > 8 */
-+	off = (so->tx.ll_dl > CAN_MAX_DLEN) ? 1 : 0;
+diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
+index 6b475897b496..4d07bddcf678 100644
+--- a/net/core/sock_reuseport.c
++++ b/net/core/sock_reuseport.c
+@@ -386,7 +386,14 @@ EXPORT_SYMBOL(reuseport_select_sock);
+ struct sock *reuseport_select_migrated_sock(struct sock *sk, u32 hash,
+                                            struct sk_buff *skb)
+ {
+-       return __reuseport_select_sock(sk, hash, skb, 0, BPF_SK_REUSEPORT_MIGRATE_REQUEST);
++       struct sock *nsk;
 +
-+	/* does the given data fit into a single frame for SF_BROADCAST? */
-+	if ((so->opt.flags & CAN_ISOTP_SF_BROADCAST) &&
-+	    (size > so->tx.ll_dl - SF_PCI_SZ4 - ae - off))
-+		return -EINVAL;
++       nsk = __reuseport_select_sock(sk, hash, skb, 0, BPF_SK_REUSEPORT_MIGRATE_REQUEST);
++       if (IS_ERR_OR_NULL(nsk) ||
++           unlikely(!refcount_inc_not_zero(&nsk->sk_refcnt)))
++               return NULL;
 +
- 	err = memcpy_from_msg(so->tx.buf, msg, size);
- 	if (err < 0)
- 		return err;
++       return nsk;
+ }
+ EXPORT_SYMBOL(reuseport_select_migrated_sock);
  
- 	dev = dev_get_by_index(sock_net(sk), so->ifindex);
-@@ -889,13 +897,10 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
- 	so->tx.idx = 0;
- 
- 	cf = (struct canfd_frame *)skb->data;
- 	skb_put(skb, so->ll.mtu);
- 
--	/* take care of a potential SF_DL ESC offset for TX_DL > 8 */
--	off = (so->tx.ll_dl > CAN_MAX_DLEN) ? 1 : 0;
--
- 	/* check for single frame transmission depending on TX_DL */
- 	if (size <= so->tx.ll_dl - SF_PCI_SZ4 - ae - off) {
- 		/* The message size generally fits into a SingleFrame - good.
- 		 *
- 		 * SF_DL ESC offset optimization:
-@@ -1014,11 +1019,11 @@ static int isotp_release(struct socket *sock)
- 
- 	hrtimer_cancel(&so->txtimer);
- 	hrtimer_cancel(&so->rxtimer);
- 
- 	/* remove current filters & unregister */
--	if (so->bound) {
-+	if (so->bound && (!(so->opt.flags & CAN_ISOTP_SF_BROADCAST))) {
- 		if (so->ifindex) {
- 			struct net_device *dev;
- 
- 			dev = dev_get_by_index(net, so->ifindex);
- 			if (dev) {
-@@ -1050,10 +1055,11 @@ static int isotp_bind(struct socket *sock, struct sockaddr *uaddr, int len)
- 	struct net *net = sock_net(sk);
- 	int ifindex;
- 	struct net_device *dev;
- 	int err = 0;
- 	int notify_enetdown = 0;
-+	int do_rx_reg = 1;
- 
- 	if (len < CAN_REQUIRED_SIZE(struct sockaddr_can, can_addr.tp))
- 		return -EINVAL;
- 
- 	if (addr->can_addr.tp.rx_id == addr->can_addr.tp.tx_id)
-@@ -1064,10 +1070,14 @@ static int isotp_bind(struct socket *sock, struct sockaddr *uaddr, int len)
- 		return -EADDRNOTAVAIL;
- 
- 	if (!addr->can_ifindex)
- 		return -ENODEV;
- 
-+	/* do not register frame reception for functional addressing */
-+	if (so->opt.flags & CAN_ISOTP_SF_BROADCAST)
-+		do_rx_reg = 0;
-+
- 	lock_sock(sk);
- 
- 	if (so->bound && addr->can_ifindex == so->ifindex &&
- 	    addr->can_addr.tp.rx_id == so->rxid &&
- 	    addr->can_addr.tp.tx_id == so->txid)
-@@ -1091,17 +1101,18 @@ static int isotp_bind(struct socket *sock, struct sockaddr *uaddr, int len)
- 	if (!(dev->flags & IFF_UP))
- 		notify_enetdown = 1;
- 
- 	ifindex = dev->ifindex;
- 
--	can_rx_register(net, dev, addr->can_addr.tp.rx_id,
--			SINGLE_MASK(addr->can_addr.tp.rx_id), isotp_rcv, sk,
--			"isotp", sk);
-+	if (do_rx_reg)
-+		can_rx_register(net, dev, addr->can_addr.tp.rx_id,
-+				SINGLE_MASK(addr->can_addr.tp.rx_id),
-+				isotp_rcv, sk, "isotp", sk);
- 
- 	dev_put(dev);
- 
--	if (so->bound) {
-+	if (so->bound && do_rx_reg) {
- 		/* unregister old filter */
- 		if (so->ifindex) {
- 			dev = dev_get_by_index(net, so->ifindex);
- 			if (dev) {
- 				can_rx_unregister(net, dev, so->rxid,
-@@ -1300,11 +1311,11 @@ static int isotp_notifier(struct notifier_block *nb, unsigned long msg,
- 
- 	switch (msg) {
- 	case NETDEV_UNREGISTER:
- 		lock_sock(sk);
- 		/* remove current filters & unregister */
--		if (so->bound)
-+		if (so->bound && (!(so->opt.flags & CAN_ISOTP_SF_BROADCAST)))
- 			can_rx_unregister(dev_net(dev), dev, so->rxid,
- 					  SINGLE_MASK(so->rxid),
- 					  isotp_rcv, sk);
- 
- 		so->ifindex = 0;
--- 
-2.29.2
+---8<---
 
+
+> > +	req->rsk_listener = nsk;
+> > +}
+> > +
+> 
+> Honestly, this patch series looks quite complex, and finding a bug in the
+> very first function I am looking at is not really a good sign...
+
+I also think this issue is quite complex, but it might be easier to fix
+than it was disscussed in 2015 [1] thanks to your some refactoring.
+
+https://lore.kernel.org/netdev/1443313848-751-1-git-send-email-tolga.ceylan@gmail.com/
