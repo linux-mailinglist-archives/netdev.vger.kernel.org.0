@@ -2,117 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93F4A2CDCFC
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 19:03:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 370352CDD04
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 19:03:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731506AbgLCSCF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 13:02:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48902 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727427AbgLCSCE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Dec 2020 13:02:04 -0500
-Date:   Thu, 3 Dec 2020 10:01:21 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607018483;
-        bh=4nwXgQeJ3FL/51sfkz1+8OIrwWTS7/aSglxTmsBTa7Q=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pb1TZJr3u7ZnNO0Ckg0JmHuAEdW5yudxJGD8OMW7otFKw+daw6j/MiP86ArZ3GgXa
-         6YlLSyzQ5ofWiNNep8UzWWIFTJRuXUjQXbnlhHqmDbs3QUwbDUo0+i+2mgj8Zltiih
-         RqlD3MwG4NYfQEbpUoHrinYmbAJZS/olTRyPZfwZcBDSvgZzShzcsv1IaTQsNIgxjW
-         aN8WjwdTXcmV9HLkcM74gW2FE0H0UM8jloMrw+wBPIyo0qWsvZrdnxzcWJeBDlEvcC
-         FSIMCNgSiafyVNbk0usgGIaW4LkF2Kf0fK0qJipGcxeTk8WL+5JFrFO+pQgz05CQre
-         t/d2sGdvueAdQ==
-From:   Jakub Kicinski <kuba@kernel.org>
+        id S1731579AbgLCSCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 13:02:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44986 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728123AbgLCSCX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 13:02:23 -0500
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C64C061A4F;
+        Thu,  3 Dec 2020 10:01:43 -0800 (PST)
+Received: by mail-ej1-x643.google.com with SMTP id jx16so4769623ejb.10;
+        Thu, 03 Dec 2020 10:01:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=vrkRmpOJdYsv1OTsol1WiI+G5mphp85mQMrcLwt5llw=;
+        b=PJ9U4t7gwpf3L9BXUTtYedcItrGStWV5xXJs2ODQYkKRGmyTk/ommC7rOFYpCnm5iV
+         22e59hG4fPPPjgQFEZ7KPcQOH01jbStQy7JBOgtdUzPLbkyyolx+gggIHehh6+g6RnJ6
+         G0oizsYDh3NTH/wEGp6C+qdgo7sLrKyk6UZZ8jkjEBZ39Rl6qAzU2MSH43pkQVeK2Sfw
+         JSu7LnCNuJBg34p1x7efcBB4qkKYt8IqZ9luWBxl4e5o3fLlqHjjkAuXQO43O+IQuD/R
+         yutk8DTwZ7MPI6P88XSoZI0j8UA4jjbjPUkm06awuloS3PwotYbpkOWYXLsHcSV+ESjE
+         z8Ow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vrkRmpOJdYsv1OTsol1WiI+G5mphp85mQMrcLwt5llw=;
+        b=OUtawnNGE1410rBtqNWHmdumFQ3l4NCusrWKcSdplHZZ7Wj423fTU/umga8Acpin8o
+         7VyXghYfVH2npMhgVB4HDuK6IDvvpOWQQnbK+jE+p3BpP6z608hR6Ec43fdM8KtzXJMf
+         PeO+EJZptRL3eoiNSya3jbVrw60rkdZPyqWl+DpaPIjrc4ElKwtf9new1GPFr2Q9piQr
+         oiH5D2mIpJZWGw6SwYS74Lef9x7pOvVS0rUJzv4aGp59GjA/C+Rj6eucj2PW3GQsbQ6J
+         gspivDy/Lxq8bhrmzNdQgEtHuNLpU2t0aqPD8aUcHFd9CmQqdEzbq9wqy2UF21EgvF3T
+         m8QA==
+X-Gm-Message-State: AOAM530QT67O37+MDL4pum3Y2n2D3Won0bqFDAfjmzMPwtbnhVE1ObVi
+        BmX6f/3s6vpDxG033g979JCu6nBvzB8=
+X-Google-Smtp-Source: ABdhPJy5BnXOdnLykRHtRKij+0KNQueTx2wcwvxCL9WRMm6a5Yok5Y6dV7Lth9S16iCzuoUv/zclew==
+X-Received: by 2002:a17:906:60c8:: with SMTP id f8mr3552635ejk.14.1607018501762;
+        Thu, 03 Dec 2020 10:01:41 -0800 (PST)
+Received: from skbuf ([188.25.2.120])
+        by smtp.gmail.com with ESMTPSA id y17sm1284342ejq.88.2020.12.03.10.01.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Dec 2020 10:01:41 -0800 (PST)
+Date:   Thu, 3 Dec 2020 20:01:40 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Russell King <linux@armlinux.org.uk>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-mips@vger.kernel.org
 Subject: Re: [PATCH v3 net-next 2/2] net: dsa: qca: ar9331: export stats64
-Message-ID: <20201203100121.64bb2774@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201203175320.f3fmyaqoxifydwzv@pengutronix.de>
+Message-ID: <20201203180140.4puwxgailw2iysxz@skbuf>
 References: <20201202140904.24748-1-o.rempel@pengutronix.de>
-        <20201202140904.24748-3-o.rempel@pengutronix.de>
-        <20201202104207.697cfdbb@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-        <20201203085011.GA3606@pengutronix.de>
-        <20201203083517.3b616782@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-        <20201203175320.f3fmyaqoxifydwzv@pengutronix.de>
+ <20201202140904.24748-3-o.rempel@pengutronix.de>
+ <20201202104207.697cfdbb@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+ <20201203085011.GA3606@pengutronix.de>
+ <20201203083517.3b616782@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+ <20201203175320.f3fmyaqoxifydwzv@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201203175320.f3fmyaqoxifydwzv@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 3 Dec 2020 18:53:20 +0100 Oleksij Rempel wrote:
-> On Thu, Dec 03, 2020 at 08:35:17AM -0800, Jakub Kicinski wrote:
-> > On Thu, 3 Dec 2020 09:50:11 +0100 Oleksij Rempel wrote:  
-> > > @Jakub,
-> > >   
-> > > > You can't take sleeping locks from .ndo_get_stats64.
-> > > > 
-> > > > Also regmap may sleep?
-> > > > 
-> > > > +	ret = regmap_read(priv->regmap, reg, &val);    
-> > > 
-> > > Yes. And underling layer is mdio bus which is by default sleeping as
-> > > well.
-> > >   
-> > > > Am I missing something?    
-> > > 
-> > > In this log, the  ar9331_get_stats64() was never called from atomic or
-> > > irq context. Why it should not be sleeping?  
-> > 
-> > You missed some long discussions about this within last week on netdev.
-> > Also Documentation/networking/statistics.rst.
-> > 
-> > To answer your direct question - try:
-> > 
-> > # cat /proc/net/dev
-> > 
-> > procfs iterates over devices while holding only an RCU read lock.  
-> 
-> Now i can reproduce it :)
-> 
-> [33683.199864] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:935
-> [33683.210737] in_atomic(): 0, irqs_disabled(): 0, non_block: 0, pid: 593, name: cat
-> [33683.216796] INFO: lockdep is turned off.
-> [33683.222972] CPU: 0 PID: 593 Comm: cat Not tainted 5.10.0-rc3-ar9331-00733-gff7090915bb7-dirty #28
-> [33683.231743] Stack : 808f0000 80885ffc 820eba5c 00000000 00000000 d4a19200 80980000 819a93c8
-> [33683.240093]         80980ca7 80d43358 804ee1f4 80980000 00000002 800afe08 820eba08 d4a19200
-> [33683.247181]         00000000 00000000 8089ffb0 00000000 820ebfe0 00000000 00000000 00000000
-> [33683.257767]         820ebab4 77bbfdc0 00fae587 77e859a0 80980000 80000000 00000000 80990000
-> [33683.266107]         804ee1f4 80980000 00000002 8200f750 8097ca9c d4a19200 000859df 00000001
-> [33683.274529]         ...
-> [33683.275626] Call Trace:
-> [33683.280156] [<80069ce0>] show_stack+0x9c/0x140
-> [33683.283200] [<800afe08>] ___might_sleep+0x220/0x244
-> [33683.290441] [<8073c030>] __mutex_lock+0x70/0x374
-> [33683.293651] [<8073c360>] mutex_lock_nested+0x2c/0x38
-> [33683.300793] [<804ee1f4>] ar9331_read_stats+0x34/0x834
-> [33683.304441] [<804eea34>] ar9331_get_stats64+0x40/0x394
-> [33683.311797] [<80526584>] dev_get_stats+0x58/0xfc
-> [33683.315013] [<805657bc>] dev_seq_printf_stats+0x44/0x228
-> [33683.322476] [<805659e8>] dev_seq_show+0x48/0x50
-> [33683.325601] [<8021dd28>] seq_read_iter+0x3d8/0x4d0
-> [33683.332585] [<8021df60>] seq_read+0x140/0x198
-> [33683.335532] [<8026f950>] proc_reg_read+0xe4/0xf8
-> [33683.342397] [<801f0840>] vfs_read+0xc8/0x1a8
-> [33683.345260] [<801f0b7c>] ksys_read+0x9c/0xfc
-> [33683.352056] [<80071aa4>] syscall_common+0x34/0x58
-> 
-> Hm.. There is no way i can guarantee that underlying mdio system is
-> not using mutexes. So, i can't read stats directly from HW within
-> ar9331_get_stats64(), only driver internal storage can be used. It is possible
-> to poll it more frequently, but  it make no reals sense on this low power
-> devices.
-> 
+On Thu, Dec 03, 2020 at 06:53:20PM +0100, Oleksij Rempel wrote:
+> It is possible to poll it more frequently, but  it make no reals sense
+> on this low power devices.
+
+Frankly I thought you understood the implications of periodic polling
+and you're ok with them, just wanting to have _something_. But fine,
+welcome to my world, happy to have you onboard...
+
 > What kind of options do we have?
 
-Vladimir has been looking at solving this, I'll let him answer with his
-latest thoughts.
+https://www.spinics.net/lists/netdev/msg703774.html
+https://www.spinics.net/lists/netdev/msg704370.html
+
+Unfortunately I've been absolutely snowed under with work lately. I hope
+to be able to come back to that during the weekend or something like that.
