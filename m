@@ -2,28 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76BD32CCE05
+	by mail.lfdr.de (Postfix) with ESMTP id E430E2CCE06
 	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 05:43:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727902AbgLCElM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727943AbgLCElM (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 2 Dec 2020 23:41:12 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:18712 "EHLO
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:18715 "EHLO
         hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727397AbgLCElL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 23:41:11 -0500
+        with ESMTP id S1727397AbgLCElM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Dec 2020 23:41:12 -0500
 Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fc86c3f0000>; Wed, 02 Dec 2020 20:40:31 -0800
+        id <B5fc86c400000>; Wed, 02 Dec 2020 20:40:32 -0800
 Received: from sx1.vdiclient.nvidia.com (10.124.1.5) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 3 Dec
  2020 04:40:31 +0000
 From:   Saeed Mahameed <saeedm@nvidia.com>
 To:     Jakub Kicinski <kuba@kernel.org>
 CC:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        "Saeed Mahameed" <saeedm@nvidia.com>
-Subject: [pull request][net 0/4] mlx5 fixes 2020-12-01
-Date:   Wed, 2 Dec 2020 20:39:42 -0800
-Message-ID: <20201203043946.235385-1-saeedm@nvidia.com>
+        "Eran Ben Elisha" <eranbe@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net 1/4] net/mlx5: Fix wrong address reclaim when command interface is down
+Date:   Wed, 2 Dec 2020 20:39:43 -0800
+Message-ID: <20201203043946.235385-2-saeedm@nvidia.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20201203043946.235385-1-saeedm@nvidia.com>
+References: <20201203043946.235385-1-saeedm@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain
@@ -31,79 +34,79 @@ X-Originating-IP: [10.124.1.5]
 X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1606970431; bh=1/eroiqB/x+MqmRzqfs1xNK2lTOikLpd3qPHq0gtrrg=;
-        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-         Content-Transfer-Encoding:Content-Type:X-Originating-IP:
-         X-ClientProxiedBy;
-        b=WyVMlYhbG6SSpR0XZB8lsd/SKkGA0JoW3FcFSv8N5uBItAYDeL9Hfj0YKf2ztSAf2
-         4rAxdiEBFfco/plMB1sIiRnDID6kFjZVV5mzvO3+qJqDBPhqOdiiXZIrzSnR3kbBKN
-         /PGsCDXfZRo4bzRafeHNVIgBCEQZKaRwaWmQRMML1sG3fIoKe1naHa5c/vXEzrogHD
-         waokNlv1YzQzQkQTjDFGwu9TAH3UD0rPSkao38Zb8gglu+yVmtrUGFDEnXxeXKZ5Cj
-         6QnM5j8ZNJXeix5L8lTXRsuaKr7xBDauYHK8fYpvLUV/dTbmqpZ28YCganlCs0CUIP
-         UnJUMZbp+kGGg==
+        t=1606970432; bh=g9S1EJlXxrJbl1vEpb1R/ThKLSkNAa4+6A4fYIWpmc4=;
+        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
+         References:MIME-Version:Content-Transfer-Encoding:Content-Type:
+         X-Originating-IP:X-ClientProxiedBy;
+        b=YOXFjf4p0pD8ZxbiySJmX8uF0fI9e/0eIsXLvNA7qTYPNbPyfYYVjwul5f3XWqefU
+         lccjK63wSJ1K7X3pmMPPkiF0CmZz863Pwc0lhPIBUERV4AQvsGX6NjHYUnD3cz50IW
+         hz7DtT1q9PLNX81ECma1FWTyOd+vzzuxCGLX4Crg7BHe+cVlxF9j1paZLogVXn60cz
+         scRCoPqAsuXc+OcMfN+Iv98AJSTy8x7VAKuY2HoAuaoHv/ssYXOygPT2VnCPaLYBC6
+         cEAkayThbGAb0kI/x1tcXlxM4hvpHTLV3+jT+oSk0FgK9y/XzDFp9rKMGVnYwKegfa
+         V6W48A5f86Rcw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+From: Eran Ben Elisha <eranbe@nvidia.com>
 
-This series introduces some fixes to mlx5 driver.
-Please pull and let me know if there is any problem.
+When command interface is down, driver to reclaim all 4K page chucks that
+were hold by the Firmeware. Fix a bug for 64K page size systems, where
+driver repeatedly released only the first chunk of the page.
 
-For the DR steering patch I will need it in net-next as well, I would
-appreciate it if you will take this small series before your pr to linus.
+Define helper function to fill 4K chunks for a given Firmware pages.
+Iterate over all unreleased Firmware pages and call the hepler per each.
 
-For -stable v5.4:
- ('net/mlx5: DR, Proper handling of unsupported Connect-X6DX SW steering')
-
-For -stable v5.8
- ('net/mlx5: Fix wrong address reclaim when command interface is down')
-
-For -stable v5.9
- ('net: mlx5e: fix fs_tcp.c build when IPV6 is not enabled')
-
-Thanks,
-Saeed.
-
+Fixes: 5adff6a08862 ("net/mlx5: Fix incorrect page count when in internal e=
+rror")
+Signed-off-by: Eran Ben Elisha <eranbe@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
-The following changes since commit 14483cbf040fcb38113497161088a1ce8ce5d713=
-:
+ .../ethernet/mellanox/mlx5/core/pagealloc.c   | 21 +++++++++++++++++--
+ 1 file changed, 19 insertions(+), 2 deletions(-)
 
-  net: broadcom CNIC: requires MMU (2020-12-01 11:44:02 -0800)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pagealloc.c b/drivers/=
+net/ethernet/mellanox/mlx5/core/pagealloc.c
+index 150638814517..4d7f8a357df7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/pagealloc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/pagealloc.c
+@@ -422,6 +422,24 @@ static void release_all_pages(struct mlx5_core_dev *de=
+v, u32 func_id,
+ 		      npages, ec_function, func_id);
+ }
+=20
++static u32 fwp_fill_manage_pages_out(struct fw_page *fwp, u32 *out, u32 in=
+dex,
++				     u32 npages)
++{
++	u32 pages_set =3D 0;
++	unsigned int n;
++
++	for_each_clear_bit(n, &fwp->bitmask, MLX5_NUM_4K_IN_PAGE) {
++		MLX5_ARRAY_SET64(manage_pages_out, out, pas, index + pages_set,
++				 fwp->addr + (n * MLX5_ADAPTER_PAGE_SIZE));
++		pages_set++;
++
++		if (!--npages)
++			break;
++	}
++
++	return pages_set;
++}
++
+ static int reclaim_pages_cmd(struct mlx5_core_dev *dev,
+ 			     u32 *in, int in_size, u32 *out, int out_size)
+ {
+@@ -448,8 +466,7 @@ static int reclaim_pages_cmd(struct mlx5_core_dev *dev,
+ 		fwp =3D rb_entry(p, struct fw_page, rb_node);
+ 		p =3D rb_next(p);
+=20
+-		MLX5_ARRAY_SET64(manage_pages_out, out, pas, i, fwp->addr);
+-		i++;
++		i +=3D fwp_fill_manage_pages_out(fwp, out, i, npages - i);
+ 	}
+=20
+ 	MLX5_SET(manage_pages_out, out, output_num_entries, i);
+--=20
+2.26.2
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-f=
-ixes-2020-12-01
-
-for you to fetch changes up to c20289e64bfc0fc4bca0242d60839b9ca2e28e64:
-
-  net/mlx5: DR, Proper handling of unsupported Connect-X6DX SW steering (20=
-20-12-01 15:02:59 -0800)
-
-----------------------------------------------------------------
-mlx5-fixes-2020-12-01
-
-----------------------------------------------------------------
-Eran Ben Elisha (1):
-      net/mlx5: Fix wrong address reclaim when command interface is down
-
-Randy Dunlap (1):
-      net: mlx5e: fix fs_tcp.c build when IPV6 is not enabled
-
-Tariq Toukan (1):
-      net/mlx5e: kTLS, Enforce HW TX csum offload with kTLS
-
-Yevgeny Kliteynik (1):
-      net/mlx5: DR, Proper handling of unsupported Connect-X6DX SW steering
-
- .../ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c  |  2 ++
- drivers/net/ethernet/mellanox/mlx5/core/en_tx.c    | 22 +++++++++++++++---=
-----
- .../net/ethernet/mellanox/mlx5/core/pagealloc.c    | 21 ++++++++++++++++++=
-+--
- .../ethernet/mellanox/mlx5/core/steering/dr_cmd.c  |  1 +
- .../mellanox/mlx5/core/steering/dr_domain.c        |  5 +++++
- .../mellanox/mlx5/core/steering/dr_types.h         |  1 +
- include/linux/mlx5/mlx5_ifc.h                      |  9 ++++++++-
- 7 files changed, 51 insertions(+), 10 deletions(-)
