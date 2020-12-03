@@ -2,67 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B533B2CD698
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 14:24:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADE732CD6AA
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 14:26:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730714AbgLCNVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 08:21:47 -0500
-Received: from coyote.holtmann.net ([212.227.132.17]:48043 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726220AbgLCNVr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 08:21:47 -0500
-Received: from marcel-macbook.holtmann.net (unknown [37.83.193.87])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 8D253CECFE;
-        Thu,  3 Dec 2020 14:28:18 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.20.0.2.21\))
-Subject: Re: [PATCH v11 2/5] Bluetooth: Handle system suspend resume case
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20201126122109.v11.2.I3774a8f0d748c7c6ec3402c4adcead32810c9164@changeid>
-Date:   Thu, 3 Dec 2020 14:21:04 +0100
-Cc:     BlueZ development <linux-bluetooth@vger.kernel.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        alainm@chromium.org, mcchou@chromium.org, mmandlik@chromium.org,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Transfer-Encoding: 7bit
-Message-Id: <1152BFFD-976E-412F-9CF8-762D30FAE961@holtmann.org>
-References: <20201126122109.v11.1.Ib75f58e90c477f9b82c5598f00c59f0e95a1a352@changeid>
- <20201126122109.v11.2.I3774a8f0d748c7c6ec3402c4adcead32810c9164@changeid>
-To:     Howard Chung <howardchung@google.com>
-X-Mailer: Apple Mail (2.3654.20.0.2.21)
+        id S1730730AbgLCNY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 08:24:56 -0500
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:57107 "EHLO
+        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730533AbgLCNYz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 08:24:55 -0500
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 3A7215803EB;
+        Thu,  3 Dec 2020 08:24:09 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Thu, 03 Dec 2020 08:24:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm2; bh=TIrQvB3UrbufB/GyXub/EtdF/K7
+        1e6rUtngpjAms+UI=; b=ZLIDlDHeAU1tKCcbMe3fBkWwIMdX26uYk8+UPkJ94sd
+        KxxedTHTYUr+G6ogpB2nnSgV6Vbi2j5HemALBtFNWlR/n1NQrOGre4P9rUP62FwW
+        yBZ9j79D7jR1dGk42sYYYY74x0KN3CitVkwn08gqF9Zc09GoY7cYKa/bI5tfgQLR
+        ICEjLxgiY/O0ahT5MV6ogK1Xq1T7EkdSgiPMnggw+lFt7CeBO5A9RphsiZTRl9KS
+        HaIF22EVLDtCI0+mZi14FZme8606SpCsGdRASnepRlkvFXOTmYnaarJYxMAPiwu4
+        bSl1jaBk0Ajn3tCI03AP8lSsurfhloRXeG3ODhhUrGQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=TIrQvB
+        3UrbufB/GyXub/EtdF/K71e6rUtngpjAms+UI=; b=kj8Vw1pYu5t4qjQqPe8A8Z
+        iTxnV0PjwrJ+wrKDn5gK6uhFfZmPaJ6Ox6ttwKzH/iOt3OQsZeP3Ji9yn8vZjr2f
+        e/D/dA9fAVhXXSJYe0nFBMP8b6tWM3/Q8wouRJkmrmgba7i/VLo8oTaOTMovxPN9
+        mGdvOglQfuVTvqkEy3/alSXZH1TtU/rWmcwndMb/NrCtKqb6zA9rlBEg7ua32x4z
+        Z/fH8OMpHHMKr+xnhoeLQf2rlmsQuF4pxrWB/F7aelwlLzcghzK5U7cz7afzQUXW
+        NH6EU6CekucaxD6rpZx7CgrU60V4xVpdmAoXheNIgxe1PPMtwBCMOfoJOzyU/ljQ
+        ==
+X-ME-Sender: <xms:9-bIX2JkrJc_idGOXw7CJ0Efs1Xrw2Glr-GZAlv7mOU_1Qsq6VZZyg>
+    <xme:9-bIX7ulMuhkk1uvbX4CL9t_Y3KezJP4t-UP2UozEuT6JsRO43nl1JV7DT-ZWDL3c
+    iJbIb5mpfIVUQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudeiiedghedvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujgesthdtre
+    dttddtvdenucfhrhhomhepifhrvghgucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheq
+    necuggftrfgrthhtvghrnhepveeuheejgfffgfeivddukedvkedtleelleeghfeljeeiue
+    eggeevueduudekvdetnecukfhppeekfedrkeeirdejgedrieegnecuvehluhhsthgvrhfu
+    ihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepghhrvghgsehkrhhorghhrdgtoh
+    hm
+X-ME-Proxy: <xmx:9-bIX9IAit820Ldv33Vx9Ua7TvUDsr2s0yP72w8tNHoQB3wNZRyfgw>
+    <xmx:9-bIX8_Zy08d821_6TB9NYEmrE08EnnPc5yxHln1xQysJJ3H07SDVA>
+    <xmx:9-bIX-wWnb7BJW7CkZUOFN2TWGVPRj6MOef8KPlBhelkLEnARbsBWA>
+    <xmx:-ebIXz61tF8SSagFmVsGikb66R3ACi6YeXeDoVMjFaRN9ddN1wellQ>
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 2B38124005B;
+        Thu,  3 Dec 2020 08:24:07 -0500 (EST)
+Date:   Thu, 3 Dec 2020 14:25:15 +0100
+From:   Greg KH <greg@kroah.com>
+To:     "Enrico Weigelt, metux IT consult" <info@metux.net>
+Cc:     linux-kernel@vger.kernel.org, devel@driverdev.osuosl.org,
+        toddpoynor@google.com, sbranden@broadcom.com, rjui@broadcom.com,
+        speakup@linux-speakup.org, rcy@google.com, f.fainelli@gmail.com,
+        rspringer@google.com, laurent.pinchart@ideasonboard.com,
+        netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        mchehab@kernel.org, nsaenzjulienne@suse.de,
+        linux-media@vger.kernel.org
+Subject: Re: [PATCH 01/11] drivers: staging: speakup: remove unneeded
+ MODULE_VERSION() call
+Message-ID: <X8jnO5cPUQGEK9cr@kroah.com>
+References: <20201203124803.23390-1-info@metux.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201203124803.23390-1-info@metux.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Howard,
-
-> This patch adds code to handle the system suspension during interleave
-> scan. The interleave scan will be canceled when the system is going to
-> sleep, and will be restarted after waking up.
+On Thu, Dec 03, 2020 at 01:47:53PM +0100, Enrico Weigelt, metux IT consult wrote:
+> Remove MODULE_VERSION(), as it doesn't seem to serve any practical
+> purpose. For in-tree drivers, the kernel version matters.
 > 
-> Signed-off-by: Howard Chung <howardchung@google.com>
-> Reviewed-by: Alain Michaud <alainm@chromium.org>
-> Reviewed-by: Manish Mandlik <mmandlik@chromium.org>
-> Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
+> The drivers have received lots of changes, without the module version
+> (or the underlying DRV_VERSION macro) ever changed, since the code
+> landed in the kernel tree. So, it doesn't seem to have any practical
+> meaning anymore.
+> 
+> Signed-off-by: Enrico Weigelt <info@metux.net>
 > ---
-> 
-> (no changes since v5)
-> 
-> Changes in v5:
-> - Remove the change in hci_req_config_le_suspend_scan
-> 
-> net/bluetooth/hci_request.c | 4 +++-
-> 1 file changed, 3 insertions(+), 1 deletion(-)
+>  drivers/accessibility/speakup/main.c           | 1 -
 
-patch has been applied to bluetooth-next tree.
+<snip>
 
-Regards
+Yous subject line is odd, these are not "staging" drivers anymore, so
+why do you say they are there?
 
-Marcel
+thanks,
 
+greg k-h
