@@ -2,294 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A93AA2CDFE8
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 21:47:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21EE52CDFF9
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 21:50:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729675AbgLCUpn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 15:45:43 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50556 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729313AbgLCUpm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Dec 2020 15:45:42 -0500
-From:   Jakub Kicinski <kuba@kernel.org>
-Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
-To:     torvalds@linux-foundation.org
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT PULL] Networking for 5.10-rc7
-Date:   Thu,  3 Dec 2020 12:44:59 -0800
-Message-Id: <20201203204459.3963776-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.26.2
+        id S1726761AbgLCUst convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 3 Dec 2020 15:48:49 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:31540 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729313AbgLCUst (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 15:48:49 -0500
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 0B3KdsGa008235
+        for <netdev@vger.kernel.org>; Thu, 3 Dec 2020 12:48:07 -0800
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0089730.ppops.net with ESMTP id 3576828hde-16
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 12:48:07 -0800
+Received: from intmgw004.03.ash8.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 3 Dec 2020 12:48:06 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 94B742ECA8BF; Thu,  3 Dec 2020 12:47:53 -0800 (PST)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>
+Subject: [PATCH v6 bpf-next 00/14] Support BTF-powered BPF tracing programs for kernel modules
+Date:   Thu, 3 Dec 2020 12:46:20 -0800
+Message-ID: <20201203204634.1325171-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.24.1
+X-FB-Internal: Safe
+Content-Type: text/plain
+Content-Transfer-Encoding: 8BIT
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-12-03_12:2020-12-03,2020-12-03 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 spamscore=0
+ bulkscore=0 malwarescore=0 priorityscore=1501 clxscore=1015 adultscore=0
+ mlxlogscore=999 suspectscore=2 lowpriorityscore=0 phishscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012030121
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit c84e1efae022071a4fcf9f1899bf71777c49943a:
+This patch sets extends kernel and libbpf with support for attaching
+BTF-powered raw tracepoint (tp_btf) and tracing (fentry/fexit/fmod_ret/lsm)
+BPF programs to BPF hooks defined in kernel modules. As part of that, libbpf
+now supports performing CO-RE relocations against types in kernel module BTFs,
+in addition to existing vmlinux BTF support.
+
+Kernel UAPI for BPF_PROG_LOAD now allows to specify kernel module (or vmlinux)
+BTF object FD in attach_btf_obj_fd field, aliased to attach_prog_fd. This is
+used to identify which BTF object needs to be used for finding BTF type by
+provided attach_btf_id.
+
+This patch set also sets up a convenient and fully-controlled custom kernel
+module (called "bpf_testmod"), that is a predictable playground for all the
+BPF selftests, that rely on module BTFs. Currently pahole doesn't generate
+BTF_KIND_FUNC info for ftrace-able static functions in kernel modules, so
+expose traced function in bpf_sidecar.ko. Once pahole is enhanced, we can go
+back to static function.
+
+From end user perspective there are no extra actions that need to happen.
+Libbpf will continue searching across all kernel module BTFs, if desired
+attach BTF type is not found in vmlinux. That way it doesn't matter if BPF
+hook that user is trying to attach to is built into vmlinux image or is
+loaded in kernel module.
+
+v5->v6:
+  - move btf_put() back to syscall.c (kernel test robot);
+  - added close(fd) in patch #5 (John);
+v4->v5:
+  - use FD to specify BTF object (Alexei);
+  - move prog->aux->attach_btf putting into bpf_prog_free() for consistency
+    with putting prog->aux->dst_prog;
+  - fix BTF FD leak(s) in libbpf;
+v3->v4:
+  - merge together patch sets [0] and [1];
+  - avoid increasing bpf_reg_state by reordering fields (Alexei);
+  - preserve btf_data_size in struct module;
+v2->v3:
+  - fix subtle uninitialized variable use in BTF ID iteration code;
+v1->v2:
+  - module_put() inside preempt_disable() region (Alexei);
+  - bpf_sidecar -> bpf_testmod rename (Alexei);
+  - test_progs more relaxed handling of bpf_testmod;
+  - test_progs marks skipped sub-tests properly as SKIP now.
+
+  [0] https://patchwork.kernel.org/project/netdevbpf/list/?series=393677&state=*
+  [1] https://patchwork.kernel.org/project/netdevbpf/list/?series=393679&state=*
+
+Andrii Nakryiko (14):
+  bpf: fix bpf_put_raw_tracepoint()'s use of __module_address()
+  bpf: keep module's btf_data_size intact after load
+  libbpf: add internal helper to load BTF data by FD
+  libbpf: refactor CO-RE relocs to not assume a single BTF object
+  libbpf: add kernel module BTF support for CO-RE relocations
+  selftests/bpf: add bpf_testmod kernel module for testing
+  selftests/bpf: add support for marking sub-tests as skipped
+  selftests/bpf: add CO-RE relocs selftest relying on kernel module BTF
+  bpf: remove hard-coded btf_vmlinux assumption from BPF verifier
+  bpf: allow to specify kernel module BTFs when attaching BPF programs
+  libbpf: factor out low-level BPF program loading helper
+  libbpf: support attachment of BPF tracing programs to kernel modules
+  selftests/bpf: add tp_btf CO-RE reloc test for modules
+  selftests/bpf: add fentry/fexit/fmod_ret selftest for kernel module
+
+ include/linux/bpf.h                           |  13 +-
+ include/linux/bpf_verifier.h                  |  28 +-
+ include/linux/btf.h                           |   6 +-
+ include/uapi/linux/bpf.h                      |   7 +-
+ kernel/bpf/btf.c                              |  70 ++-
+ kernel/bpf/syscall.c                          |  78 ++-
+ kernel/bpf/verifier.c                         |  77 +--
+ kernel/module.c                               |   1 -
+ kernel/trace/bpf_trace.c                      |   8 +-
+ net/ipv4/bpf_tcp_ca.c                         |   3 +-
+ tools/include/uapi/linux/bpf.h                |   7 +-
+ tools/lib/bpf/bpf.c                           | 101 ++--
+ tools/lib/bpf/btf.c                           |  61 ++-
+ tools/lib/bpf/libbpf.c                        | 500 ++++++++++++++----
+ tools/lib/bpf/libbpf_internal.h               |  31 ++
+ tools/testing/selftests/bpf/.gitignore        |   1 +
+ tools/testing/selftests/bpf/Makefile          |  12 +-
+ .../selftests/bpf/bpf_testmod/.gitignore      |   6 +
+ .../selftests/bpf/bpf_testmod/Makefile        |  20 +
+ .../bpf/bpf_testmod/bpf_testmod-events.h      |  36 ++
+ .../selftests/bpf/bpf_testmod/bpf_testmod.c   |  52 ++
+ .../selftests/bpf/bpf_testmod/bpf_testmod.h   |  14 +
+ .../selftests/bpf/prog_tests/core_reloc.c     |  80 ++-
+ .../selftests/bpf/prog_tests/module_attach.c  |  53 ++
+ .../selftests/bpf/progs/core_reloc_types.h    |  17 +
+ .../bpf/progs/test_core_reloc_module.c        |  96 ++++
+ .../selftests/bpf/progs/test_module_attach.c  |  66 +++
+ tools/testing/selftests/bpf/test_progs.c      |  65 ++-
+ tools/testing/selftests/bpf/test_progs.h      |   1 +
+ 29 files changed, 1230 insertions(+), 280 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/bpf_testmod/.gitignore
+ create mode 100644 tools/testing/selftests/bpf/bpf_testmod/Makefile
+ create mode 100644 tools/testing/selftests/bpf/bpf_testmod/bpf_testmod-events.h
+ create mode 100644 tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+ create mode 100644 tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.h
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/module_attach.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_module.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_module_attach.c
 
-  Merge tag 'asm-generic-fixes-5.10-2' of git://git.kernel.org/pub/scm/linux/kernel/git/arnd/asm-generic (2020-11-27 15:00:35 -0800)
+-- 
+2.24.1
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.10-rc7
-
-for you to fetch changes up to 6f076ce6ab1631abf566a6fb830c02fe5797be9a:
-
-  Merge branch 'mlx5-fixes-2020-12-01' (2020-12-03 11:18:38 -0800)
-
-----------------------------------------------------------------
-Networking fixes for 5.10-rc7, including fixes from bpf, netfilter,
-wireless drivers, wireless mesh and can.
-
-Current release - regressions:
-
- - mt76: usb: fix crash on device removal
-
-Current release - always broken:
-
- - xsk: Fix umem cleanup from wrong context in socket destruct
-
-Previous release - regressions:
-
- - net: ip6_gre: set dev->hard_header_len when using header_ops
-
- - ipv4: Fix TOS mask in inet_rtm_getroute()
-
- - net, xsk: Avoid taking multiple skbuff references
-
-Previous release - always broken:
-
- - net/x25: prevent a couple of overflows
-
- - netfilter: ipset: prevent uninit-value in hash_ip6_add
-
- - geneve: pull IP header before ECN decapsulation
-
- - mpls: ensure LSE is pullable in TC and openvswitch paths
-
- - vxlan: respect needed_headroom of lower device
-
- - batman-adv: Consider fragmentation for needed packet headroom
-
- - can: drivers: don't count arbitration loss as an error
-
- - netfilter: bridge: reset skb->pkt_type after POST_ROUTING
-              traversal
-
- - inet_ecn: Fix endianness of checksum update when setting ECT(1)
-
- - ibmvnic: fix various corner cases around reset handling
-
- - net/mlx5: fix rejecting unsupported Connect-X6DX SW steering
-
- - net/mlx5: Enforce HW TX csum offload with kTLS
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-
-----------------------------------------------------------------
-Antoine Tenart (2):
-      netfilter: bridge: reset skb->pkt_type after NF_INET_POST_ROUTING traversal
-      net: ip6_gre: set dev->hard_header_len when using header_ops
-
-Björn Töpel (1):
-      net, xsk: Avoid taking multiple skbuff references
-
-Dan Carpenter (3):
-      net/x25: prevent a couple of overflows
-      rtw88: debug: Fix uninitialized memory in debugfs code
-      chelsio/chtls: fix a double free in chtls_setkey()
-
-Dany Madden (7):
-      ibmvnic: handle inconsistent login with reset
-      ibmvnic: stop free_all_rwi on failed reset
-      ibmvnic: avoid memset null scrq msgs
-      ibmvnic: restore adapter state on failed reset
-      ibmvnic: send_login should check for crq errors
-      ibmvnic: no reset timeout for 5 seconds after reset
-      ibmvnic: reduce wait for completion time
-
-David S. Miller (1):
-      Merge branch 'ibmvnic-Bug-fixes-for-queue-descriptor-processing'
-
-Davide Caratti (4):
-      selftests: tc-testing: enable CONFIG_NET_SCH_RED as a module
-      net: skbuff: ensure LSE is pullable before decrementing the MPLS ttl
-      net: openvswitch: ensure LSE is pullable before reading it
-      net/sched: act_mpls: ensure LSE is pullable before reading it
-
-Eran Ben Elisha (1):
-      net/mlx5: Fix wrong address reclaim when command interface is down
-
-Eric Dumazet (2):
-      netfilter: ipset: prevent uninit-value in hash_ip6_add
-      geneve: pull IP header before ECN decapsulation
-
-Florian Westphal (1):
-      netfilter: nf_tables: avoid false-postive lockdep splat
-
-Golan Ben Ami (1):
-      iwlwifi: pcie: add some missing entries for AX210
-
-Guillaume Nault (1):
-      ipv4: Fix tos mask in inet_rtm_getroute()
-
-Hoang Le (1):
-      tipc: fix incompatible mtu of transmission
-
-Jakub Kicinski (7):
-      Merge tag 'batadv-net-pullrequest-20201127' of git://git.open-mesh.org/linux-merge
-      Merge https://git.kernel.org/.../bpf/bpf
-      Merge git://git.kernel.org/.../pablo/nf
-      Merge branch 'ibmvnic-assorted-bug-fixes'
-      Merge tag 'linux-can-fixes-for-5.10-20201130' of git://git.kernel.org/.../mkl/linux-can
-      Merge tag 'wireless-drivers-2020-12-03' of git://git.kernel.org/.../kvalo/wireless-drivers
-      Merge branch 'mlx5-fixes-2020-12-01'
-
-Jeroen Hofstee (2):
-      can: sja1000: sja1000_err(): don't count arbitration lose as an error
-      can: sun4i_can: sun4i_can_err(): don't count arbitration lose as an error
-
-Jesper Dangaard Brouer (1):
-      MAINTAINERS: Update XDP and AF_XDP entries
-
-Johannes Berg (1):
-      iwlwifi: update MAINTAINERS entry
-
-KP Singh (1):
-      bpf: Add MAINTAINERS entry for BPF LSM
-
-Krzysztof Kozlowski (1):
-      dt-bindings: net: correct interrupt flags in examples
-
-Luca Coelho (2):
-      iwlwifi: pcie: add one missing entry for AX210
-      iwlwifi: pcie: invert values of NO_160 device config entries
-
-Magnus Karlsson (1):
-      xsk: Fix umem cleanup bug at socket destruct
-
-Marc Kleine-Budde (1):
-      can: m_can: tcan4x5x_can_probe(): fix error path: remove erroneous clk_disable_unprepare()
-
-Marek Majtyka (1):
-      xsk: Fix incorrect netdev reference count
-
-Pablo Neira Ayuso (2):
-      netfilter: nftables_offload: set address type in control dissector
-      netfilter: nftables_offload: build mask based from the matching bytes
-
-Randy Dunlap (2):
-      net: broadcom CNIC: requires MMU
-      net: mlx5e: fix fs_tcp.c build when IPV6 is not enabled
-
-Stanislaw Gruszka (1):
-      mt76: usb: fix crash on device removal
-
-Sukadev Bhattiprolu (2):
-      ibmvnic: delay next reset if hard reset fails
-      ibmvnic: track pending login
-
-Sven Eckelmann (5):
-      batman-adv: Consider fragmentation for needed_headroom
-      batman-adv: Reserve needed_*room for fragments
-      batman-adv: Don't always reallocate the fragmentation skb head
-      vxlan: Add needed_headroom for lower device
-      vxlan: Copy needed_tailroom from lowerdev
-
-Tariq Toukan (1):
-      net/mlx5e: kTLS, Enforce HW TX csum offload with kTLS
-
-Thomas Falcon (2):
-      ibmvnic: Ensure that SCRQ entry reads are correctly ordered
-      ibmvnic: Fix TX completion error handling
-
-Toke Høiland-Jørgensen (1):
-      inet_ecn: Fix endianness of checksum update when setting ECT(1)
-
-Vinay Kumar Yadav (1):
-      chelsio/chtls: fix panic during unload reload chtls
-
-Wang Hai (2):
-      ipvs: fix possible memory leak in ip_vs_control_net_init
-      net: mvpp2: Fix error return code in mvpp2_open()
-
-Yangbo Lu (1):
-      dpaa_eth: copy timestamp fields to new skb in A-050385 workaround
-
-Yevgeny Kliteynik (1):
-      net/mlx5: DR, Proper handling of unsupported Connect-X6DX SW steering
-
-Zhang Changzhong (3):
-      cxgb3: fix error return code in t3_sge_alloc_qset()
-      net: pasemi: fix error return code in pasemi_mac_open()
-      vxlan: fix error return code in __vxlan_dev_create()
-
-Zhang Qilong (2):
-      can: c_can: c_can_power_up(): fix error handling
-      can: kvaser_pciefd: kvaser_pciefd_open(): fix error handling
-
-Zhen Lei (1):
-      bpftool: Fix error return value in build_btf_type_table
-
- .../devicetree/bindings/net/can/tcan4x5x.txt       |   2 +-
- .../devicetree/bindings/net/nfc/nxp-nci.txt        |   2 +-
- .../devicetree/bindings/net/nfc/pn544.txt          |   2 +-
- MAINTAINERS                                        |  26 ++-
- drivers/net/can/c_can/c_can.c                      |  18 +-
- drivers/net/can/kvaser_pciefd.c                    |   4 +-
- drivers/net/can/m_can/tcan4x5x.c                   |  11 +-
- drivers/net/can/sja1000/sja1000.c                  |   1 -
- drivers/net/can/sun4i_can.c                        |   1 -
- drivers/net/ethernet/broadcom/Kconfig              |   1 +
- drivers/net/ethernet/chelsio/cxgb3/sge.c           |   1 +
- .../chelsio/inline_crypto/chtls/chtls_cm.c         |   1 +
- .../chelsio/inline_crypto/chtls/chtls_hw.c         |   1 +
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c     |  10 +-
- drivers/net/ethernet/ibm/ibmvnic.c                 | 190 +++++++++++++--------
- drivers/net/ethernet/ibm/ibmvnic.h                 |   3 +
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c    |   1 +
- .../ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c  |   2 +
- drivers/net/ethernet/mellanox/mlx5/core/en_tx.c    |  22 ++-
- .../net/ethernet/mellanox/mlx5/core/pagealloc.c    |  21 ++-
- .../ethernet/mellanox/mlx5/core/steering/dr_cmd.c  |   1 +
- .../mellanox/mlx5/core/steering/dr_domain.c        |   5 +
- .../mellanox/mlx5/core/steering/dr_types.h         |   1 +
- drivers/net/ethernet/pasemi/pasemi_mac.c           |   8 +-
- drivers/net/geneve.c                               |  20 ++-
- drivers/net/vxlan.c                                |   7 +-
- drivers/net/wireless/intel/iwlwifi/iwl-config.h    |   4 +-
- drivers/net/wireless/intel/iwlwifi/pcie/drv.c      |   6 +
- drivers/net/wireless/mediatek/mt76/usb.c           |  17 +-
- drivers/net/wireless/realtek/rtw88/debug.c         |   2 +
- include/linux/mlx5/mlx5_ifc.h                      |   9 +-
- include/linux/netdevice.h                          |  14 +-
- include/net/inet_ecn.h                             |   2 +-
- include/net/netfilter/nf_tables_offload.h          |   7 +
- include/net/xdp_sock.h                             |   1 +
- net/batman-adv/fragmentation.c                     |  26 +--
- net/batman-adv/hard-interface.c                    |   3 +
- net/bridge/br_netfilter_hooks.c                    |   7 +-
- net/core/dev.c                                     |   8 +-
- net/core/skbuff.c                                  |   3 +
- net/ipv4/route.c                                   |   7 +-
- net/ipv6/ip6_gre.c                                 |  16 +-
- net/netfilter/ipset/ip_set_core.c                  |   3 +-
- net/netfilter/ipvs/ip_vs_ctl.c                     |  31 +++-
- net/netfilter/nf_tables_api.c                      |   3 +-
- net/netfilter/nf_tables_offload.c                  |  17 ++
- net/netfilter/nft_cmp.c                            |   8 +-
- net/netfilter/nft_meta.c                           |  16 +-
- net/netfilter/nft_payload.c                        |  70 ++++++--
- net/openvswitch/actions.c                          |   3 +
- net/sched/act_mpls.c                               |   3 +
- net/tipc/node.c                                    |   2 +
- net/x25/af_x25.c                                   |   6 +-
- net/xdp/xdp_umem.c                                 |  19 ++-
- net/xdp/xdp_umem.h                                 |   2 +-
- net/xdp/xsk.c                                      |  10 +-
- net/xdp/xsk_buff_pool.c                            |   6 +-
- tools/bpf/bpftool/btf.c                            |   1 +
- tools/testing/selftests/tc-testing/config          |   1 +
- 59 files changed, 496 insertions(+), 199 deletions(-)
