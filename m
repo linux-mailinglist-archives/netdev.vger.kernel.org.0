@@ -2,88 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 304592CDF2E
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 20:52:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CFBC2CDF35
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 20:55:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727154AbgLCTvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 14:51:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:32950 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726048AbgLCTvF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Dec 2020 14:51:05 -0500
-Message-ID: <5d8c1f432431bddf03e5e2579b59c9d02f60b647.camel@kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607025024;
-        bh=jWVZsBrWjnUcqOueOa28pRWAcnf6lcmixXnD8QyjMqM=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=S8n7HXZ/5nX29OK9J+DfSQDvylhMnazOwAlHu7VbOb6iFBHiXQgvTaN2TVR/AR4ZX
-         SyIY3+r5OpE1GMv+kAYbaPArYwAnXy5viKh6wobfAsbbQwZye38sbd1dyw6gEzPCUR
-         f9i3pLnnx8RageRBEKd5SEllO4jlGFmpP7u8LF13UxIBj76yRKqgT/fO1d7s0ZcI+l
-         OL29u9q4fZXWsP4Mdx2Pe2FjCvs1rfdpNrBmcXuNVP2EM1euPnPlB9qNHfKqBN0QGG
-         UkBgY5AFvCJQH4H9FU90fVKps4u0uc93mhMRUmgaEyVh0D8pM83BuYSGDGx0RPcRtt
-         a7DZ6nrdul8UQ==
-Subject: Re: [pull request][net 0/4] mlx5 fixes 2020-12-01
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Date:   Thu, 03 Dec 2020 11:50:22 -0800
-In-Reply-To: <20201203111648.5bbf1d1d@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-References: <20201203043946.235385-1-saeedm@nvidia.com>
-         <20201203105239.3e189565@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-         <20201203111648.5bbf1d1d@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1727844AbgLCTxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 14:53:50 -0500
+Received: from smtp2.cs.stanford.edu ([171.64.64.26]:60434 "EHLO
+        smtp2.cs.Stanford.EDU" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725885AbgLCTxu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 14:53:50 -0500
+Received: from mail-lf1-f42.google.com ([209.85.167.42]:37691)
+        by smtp2.cs.Stanford.EDU with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.92.3)
+        (envelope-from <ouster@cs.stanford.edu>)
+        id 1kkuf6-0006xL-ON
+        for netdev@vger.kernel.org; Thu, 03 Dec 2020 11:53:09 -0800
+Received: by mail-lf1-f42.google.com with SMTP id s30so4503562lfc.4
+        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 11:53:08 -0800 (PST)
+X-Gm-Message-State: AOAM530jSOTBQB5RdLUa8/5UdMMu17wczabiUK/NeTrSkCpONpwZ8Qmy
+        ntLKQ0as4JHQkCumSdHLtIa6QvY7q3xrkeNvNR0=
+X-Google-Smtp-Source: ABdhPJygrff0lafCRhctFEzvVg4kizLQGV9Or8JbS0Icov8W6ZgN+hLx8jAKeYvn5V71rJlGOO4qhMVS6LNVcRCMBwM=
+X-Received: by 2002:a19:c6d3:: with SMTP id w202mr2030869lff.8.1607025187563;
+ Thu, 03 Dec 2020 11:53:07 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <CAGXJAmx_xQr56oiak8k8MC+JPBNi+tQBtTvBRqYVsimmKtW4MA@mail.gmail.com>
+ <72f3ea21-b4bd-b5bd-f72f-be415598591f@gmail.com>
+In-Reply-To: <72f3ea21-b4bd-b5bd-f72f-be415598591f@gmail.com>
+From:   John Ousterhout <ouster@cs.stanford.edu>
+Date:   Thu, 3 Dec 2020 11:52:30 -0800
+X-Gmail-Original-Message-ID: <CAGXJAmwEEnhX5KBvPZmwOKF_0hhVuGfvbXsoGR=+vB8bGge1sQ@mail.gmail.com>
+Message-ID: <CAGXJAmwEEnhX5KBvPZmwOKF_0hhVuGfvbXsoGR=+vB8bGge1sQ@mail.gmail.com>
+Subject: Re: GRO: can't force packet up stack immediately?
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Score: -1.0
+X-Spam-Level: 
+X-Spam-Checker-Version: SpamAssassin on smtp2.cs.Stanford.EDU
+X-Scan-Signature: 127ff6e1eac6b45a32dc112250ed777d
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-12-03 at 11:16 -0800, Jakub Kicinski wrote:
-> On Thu, 3 Dec 2020 10:52:39 -0800 Jakub Kicinski wrote:
-> > On Wed, 2 Dec 2020 20:39:42 -0800 Saeed Mahameed wrote:
-> > > Hi Jakub,
-> > > 
-> > > This series introduces some fixes to mlx5 driver.
-> > > Please pull and let me know if there is any problem.
-> > > 
-> > > For the DR steering patch I will need it in net-next as well, I
-> > > would
-> > > appreciate it if you will take this small series before your pr
-> > > to linus.
-> > > 
-> > > For -stable v5.4:
-> > >  ('net/mlx5: DR, Proper handling of unsupported Connect-X6DX SW
-> > > steering')
-> > > 
-> > > For -stable v5.8
-> > >  ('net/mlx5: Fix wrong address reclaim when command interface is
-> > > down')
-> > > 
-> > > For -stable v5.9
-> > >  ('net: mlx5e: fix fs_tcp.c build when IPV6 is not enabled')  
-> > 
-> > Your tree is missing your signoff on:
-> > 
-> > Commit 3041429da89b ("net/mlx5e: kTLS, Enforce HW TX csum offload
-> > with kTLS")
-> > 	committer Signed-off-by missing
-> > 	author email:    tariqt@nvidia.com
-> > 	committer email: saeedm@nvidia.com
-> > 	Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-> > 
-> > You can fix it or I'll just apply the patches from the ML.
-> 
-> Well, it's the last thing I got in the queue before I prep the PR so
-> let me just apply from the ML.
-> 
-> Thanks!
+Homa uses GRO to collect batches of packets for protocol processing,
+but there are times when it wants to push a batch of packet up through
+the stack immediately (it doesn't want any more packets to be
+processed at NAPI level before pushing the batch up). However, I can't
+see a way to achieve this goal. I can return a packet pointer as the
+result of homa_gro_receive (and this used to be sufficient to push the
+packet up the stack). What happens now is:
+* dev_gro_receive calls napi_gro_complete (same as before)
+* napi_gro_complete calls gro_normal_one, whereas it used to call
+netif_receive_skb_internal
+* gro_normal_one just adds the packet to napi->rx_list.
 
-That works too, Sorry for the inconvenience !
-Tariq did the maintainer review on this patch, so this patch didn't go
-through my normal submission queue and i forgot to explicitly sign it
-off :/ .. I will fix my patch flow.
+Then NAPI-level packet processing continues, until eventually
+napi_complete_done is called; it invokes gro_normal_list, which calls
+netif_receive_skb_list_internal.
 
-Thanks!
+Because of this, packets can be delayed several microseconds before
+they are pushed up the stack. Homa is trying to squeeze out latency,
+so the extra delay is undesirable.
 
+-John-
 
+On Thu, Dec 3, 2020 at 11:35 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+>
+>
+> On 12/3/20 8:03 PM, John Ousterhout wrote:
+> > I recently upgraded my kernel module implementing the Homa transport
+> > protocol from 4.15.18 to 5.4.80, and a GRO feature available in the
+> > older version seems to have gone away in the newer version. In
+> > particular, it used to be possible for a protocol's xxx_gro_receive
+> > function to force a packet up the stack immediately by returning that
+> > skb as the result of xxx_gro_receive. However, in the newer kernel
+> > version, these packets simply get queued on napi->rx_list; the queue
+> > doesn't get flushed up-stack until napi_complete_done is called or
+> > gro_normal_batch packets accumulate. For Homa, this extra level of
+> > queuing gets in the way.
+>
+>
+> Could you describe what the issue is ?
+>
+> >
+> > Is there any way for a xxx_gro_receive function to force a packet (in
+> > particular, one of those in the list passed as first argument to
+> > xxx_gro_receive) up the protocol stack immediately? I suppose I could
+> > set gro_normal_batch to 1, but that might interfere with other
+> > protocols that really want the batching.
+> >
+> > -John-
+> >
