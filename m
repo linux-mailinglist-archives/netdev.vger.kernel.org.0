@@ -2,153 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D06AA2CDB76
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 17:44:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CBD42CDB80
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 17:48:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728922AbgLCQnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 11:43:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32774 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726915AbgLCQnr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 11:43:47 -0500
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0A7C061A4F
-        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 08:43:07 -0800 (PST)
-Received: by mail-io1-xd41.google.com with SMTP id o8so2737725ioh.0
-        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 08:43:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SNo5GJuMpFLQs7AHm08/krS1qXhCMvpmFpsQ8ALd4rI=;
-        b=Q9A1pAvrtcTQgfC5VsLb86iMlI1OW74d+Orz9VfLqThry56eyqc5UBlSpETr26IbZk
-         jft5kO7jFMcaMiuITL1CH5CRgftBs8sG4v9MnHhpNNFuToTkSyGcDevrSEPnwDDpilta
-         NqfVrQLLUyZbk/9wlZSj6lUsDIo7TYlJNkvGXifer567svocaecqgxlk0MPSt1dKG8Dz
-         ZW1r8SOaSvrkQeskx1HnHjRHRN6smspaepvd/bFAhzFUXc9I1a5Rn7F099SVTuDTLsd1
-         huXwHfX7hAs55Mmd53DWD+DCh5vu/cCeurbDkl/aky7a5N92DFLg/h55RPf0RBq0inyX
-         z8iQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SNo5GJuMpFLQs7AHm08/krS1qXhCMvpmFpsQ8ALd4rI=;
-        b=Nj+X89pjAR69i9KaB9tWpRpZDaV8xAHtdlVS1/NMNFWhDhBL3A5Hr7GfGrM+MH7I+o
-         4DskUodHqNLuvYDc4oWPHYXa8Y1sIIQuPW1b3YGG43WyLYOhAK8+FgU4uOiV20oEDOjZ
-         sOA3WvIUvstaEqJYxoQsp1RkL9Nal8pxlVaSOIH5mSlOUk63rH/iCnldusQRD3ouhB6v
-         aa6IgYPpCx3l0Mqjm7HeAjYgqyJHGsreIpkWanUkpdYnc+8skajkVmBc7h3iS92R0l3h
-         utYHD+b+L8EvHbNqGMAcWtkrdPvl5xZrf3XrJ/MigywFyyLLgWGDfhwSNjKhfjcISxRv
-         qM4w==
-X-Gm-Message-State: AOAM531VAIlxbymH9Sq5Gc3rHJm7+qaqrMcaGPouUXM+1TVspbPgoPVy
-        KU0eas1CmGEEv1VdF6XXqvdiCy22oHFzOLf4l7NhfnXSIsjAXHgc
-X-Google-Smtp-Source: ABdhPJxY9wwty7iOybffshV/Jnh9deiZ98su7ihtxzLAJduk6yyn9Ip7JSB47ZAZ/4+WaKWBrYtIfKJGQPGYGeEhkWU=
-X-Received: by 2002:a6b:6418:: with SMTP id t24mr3814893iog.145.1607013786217;
- Thu, 03 Dec 2020 08:43:06 -0800 (PST)
+        id S2501878AbgLCQqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 11:46:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54258 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387522AbgLCQqJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 11:46:09 -0500
+Date:   Thu, 3 Dec 2020 08:45:25 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607013927;
+        bh=Y0iV1RunWskn9BD9xD2fPJamNpVv9vN+8r7Rej431Wk=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=eS9DCfhixf8+N+bVQkL3bbc4rAFr2WbeYJjr+fbtutmySfM6HeSd/t74XWNBSqbQB
+         2tVNi0m6K59OStLSF+cDI0qwOBkqD8bXc2c0yEbpSKIp8NjJ72pj+7O0RvSlflLmGq
+         Km73pSsU9qhnllyAzpCHQthgXGSw2u2wx1YUNwzZyJJiJTb5faOKwQdn+Tw5mqTtEt
+         Bkh+nofgkT55bGSmb2jgwcS82d292MKjq5gCXuwn8QMSz1D9qemmlPVSYDWpHVl1j4
+         P0xPw41ekoPZuEVAd+yUT1+lp0RrQS7azEnuZ0GDDGAQsMqcEffeuvFvvN9f5XaDQW
+         ImA0ez0R91OLg==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jarod Wilson <jarod@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Ivan Vecera <ivecera@redhat.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org
+Subject: Re: [PATCH net v3] bonding: fix feature flag setting at init time
+Message-ID: <20201203084525.7f1a8e93@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201203004357.3125-1-jarod@redhat.com>
+References: <20201202173053.13800-1-jarod@redhat.com>
+        <20201203004357.3125-1-jarod@redhat.com>
 MIME-Version: 1.0
-References: <000000000000b4862805b54ef573@google.com> <X8kLG5D+j4rT6L7A@elver.google.com>
- <CANn89iJWD5oXPLgtY47umTgo3gCGBaoy+XJfXnw1ecES_EXkCw@mail.gmail.com> <CANpmjNOaWbGJQ5Y=qC3cA31-R-Jy4Fbe+p=OBG5O2Amz8dLtLA@mail.gmail.com>
-In-Reply-To: <CANpmjNOaWbGJQ5Y=qC3cA31-R-Jy4Fbe+p=OBG5O2Amz8dLtLA@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 3 Dec 2020 17:42:54 +0100
-Message-ID: <CANn89iKWf1EVZUuAHup+5ndhxvOqGopq53=vZ9yeok=DnRjggg@mail.gmail.com>
-Subject: Re: WARNING in sk_stream_kill_queues (5)
-To:     Marco Elver <elver@google.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Miller <davem@davemloft.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Jann Horn <jannh@google.com>, Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Willem de Bruijn <willemb@google.com>,
-        syzbot <syzbot+7b99aafdcc2eedea6178@syzkaller.appspotmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 3, 2020 at 5:34 PM Marco Elver <elver@google.com> wrote:
->
-> On Thu, 3 Dec 2020 at 17:27, Eric Dumazet <edumazet@google.com> wrote:
-> > On Thu, Dec 3, 2020 at 4:58 PM Marco Elver <elver@google.com> wrote:
-> > >
-> > > On Mon, Nov 30, 2020 at 12:40AM -0800, syzbot wrote:
-> > > > Hello,
-> > > >
-> > > > syzbot found the following issue on:
-> > > >
-> > > > HEAD commit:    6147c83f Add linux-next specific files for 20201126
-> > > > git tree:       linux-next
-> > > > console output: https://syzkaller.appspot.com/x/log.txt?x=117c9679500000
-> > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=9b91566da897c24f
-> > > > dashboard link: https://syzkaller.appspot.com/bug?extid=7b99aafdcc2eedea6178
-> > > > compiler:       gcc (GCC) 10.1.0-syz 20200507
-> > > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=103bf743500000
-> > > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=167c60c9500000
-> > > >
-> > > > The issue was bisected to:
-> > > >
-> > > > commit 145cd60fb481328faafba76842aa0fd242e2b163
-> > > > Author: Alexander Potapenko <glider@google.com>
-> > > > Date:   Tue Nov 24 05:38:44 2020 +0000
-> > > >
-> > > >     mm, kfence: insert KFENCE hooks for SLUB
-> > > >
-> > > > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13abe5b3500000
-> > > > final oops:     https://syzkaller.appspot.com/x/report.txt?x=106be5b3500000
-> > > > console output: https://syzkaller.appspot.com/x/log.txt?x=17abe5b3500000
-> > > >
-> > > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > > > Reported-by: syzbot+7b99aafdcc2eedea6178@syzkaller.appspotmail.com
-> > > > Fixes: 145cd60fb481 ("mm, kfence: insert KFENCE hooks for SLUB")
-> > > >
-> > > > ------------[ cut here ]------------
-> > > > WARNING: CPU: 0 PID: 11307 at net/core/stream.c:207 sk_stream_kill_queues+0x3c3/0x530 net/core/stream.c:207
-> > > [...]
-> > > > Call Trace:
-> > > >  inet_csk_destroy_sock+0x1a5/0x490 net/ipv4/inet_connection_sock.c:885
-> > > >  __tcp_close+0xd3e/0x1170 net/ipv4/tcp.c:2585
-> > > >  tcp_close+0x29/0xc0 net/ipv4/tcp.c:2597
-> > > >  inet_release+0x12e/0x280 net/ipv4/af_inet.c:431
-> > > >  __sock_release+0xcd/0x280 net/socket.c:596
-> > > >  sock_close+0x18/0x20 net/socket.c:1255
-> > > >  __fput+0x283/0x920 fs/file_table.c:280
-> > > >  task_work_run+0xdd/0x190 kernel/task_work.c:140
-> > > >  exit_task_work include/linux/task_work.h:30 [inline]
-> > > >  do_exit+0xb89/0x29e0 kernel/exit.c:823
-> > > >  do_group_exit+0x125/0x310 kernel/exit.c:920
-> > > >  get_signal+0x3ec/0x2010 kernel/signal.c:2770
-> > > >  arch_do_signal_or_restart+0x2a8/0x1eb0 arch/x86/kernel/signal.c:811
-> > > >  handle_signal_work kernel/entry/common.c:144 [inline]
-> > > >  exit_to_user_mode_loop kernel/entry/common.c:168 [inline]
-> > > >  exit_to_user_mode_prepare+0x124/0x200 kernel/entry/common.c:198
-> > > >  syscall_exit_to_user_mode+0x36/0x260 kernel/entry/common.c:275
-> > > >  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> > >
-> > > I've been debugging this and I think enabling KFENCE uncovered that some
-> > > code is assuming that the following is always true:
-> > >
-> > >         ksize(kmalloc(S)) == ksize(kmalloc(S))
-> > >
-> >
-> >
-> > I do not think we make this assumption.
-> >
-> > Each skb tracks the 'truesize' which is populated from __alloc_skb()
-> > using ksize(allocated head) .
-> >
-> > So if ksize() decides to give us random data, it should be still fine,
-> > because we use ksize(buff) only once at alloc skb time, and record the
-> > value in skb->truesize
-> >  (only the socket buffer accounting would be off)
->
-> Good, thanks for clarifying. So something else must be off then.
+On Wed,  2 Dec 2020 19:43:57 -0500 Jarod Wilson wrote:
+> Don't try to adjust XFRM support flags if the bond device isn't yet
+> registered. Bad things can currently happen when netdev_change_features()
+> is called without having wanted_features fully filled in yet. This code
+> runs on post-module-load mode changes, as well as at module init time
+> and new bond creation time, and in the latter two scenarios, it is
+> running prior to register_netdevice() having been called and
+> subsequently filling in wanted_features. The empty wanted_features led
+> to features also getting emptied out, which was definitely not the
+> intended behavior, so prevent that from happening.
+> 
+> Originally, I'd hoped to stop adjusting wanted_features at all in the
+> bonding driver, as it's documented as being something only the network
+> core should touch, but we actually do need to do this to properly update
+> both the features and wanted_features fields when changing the bond type,
+> or we get to a situation where ethtool sees:
+> 
+>     esp-hw-offload: off [requested on]
+> 
+> I do think we should be using netdev_update_features instead of
+> netdev_change_features here though, so we only send notifiers when the
+> features actually changed.
+> 
+> v2: rework based on further testing and suggestions from ivecera
+> v3: add helper function, remove goto, fix problem description
+> 
+> Fixes: a3b658cfb664 ("bonding: allow xfrm offload setup post-module-load")
+> Reported-by: Ivan Vecera <ivecera@redhat.com>
+> Suggested-by: Ivan Vecera <ivecera@redhat.com>
+> Cc: Jay Vosburgh <j.vosburgh@gmail.com>
+> Cc: Veaceslav Falico <vfalico@gmail.com>
+> Cc: Andy Gospodarek <andy@greyhouse.net>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Thomas Davis <tadavis@lbl.gov>
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Jarod Wilson <jarod@redhat.com>
+> ---
+>  drivers/net/bonding/bond_main.c    | 10 ++++------
+>  drivers/net/bonding/bond_options.c | 19 ++++++++++++++-----
+>  2 files changed, 18 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+> index 47afc5938c26..7905534a763b 100644
+> --- a/drivers/net/bonding/bond_main.c
+> +++ b/drivers/net/bonding/bond_main.c
+> @@ -4747,15 +4747,13 @@ void bond_setup(struct net_device *bond_dev)
+>  				NETIF_F_HW_VLAN_CTAG_FILTER;
+>  
+>  	bond_dev->hw_features |= NETIF_F_GSO_ENCAP_ALL | NETIF_F_GSO_UDP_L4;
+> -#ifdef CONFIG_XFRM_OFFLOAD
+> -	bond_dev->hw_features |= BOND_XFRM_FEATURES;
+> -#endif /* CONFIG_XFRM_OFFLOAD */
+>  	bond_dev->features |= bond_dev->hw_features;
+>  	bond_dev->features |= NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_STAG_TX;
+>  #ifdef CONFIG_XFRM_OFFLOAD
+> -	/* Disable XFRM features if this isn't an active-backup config */
+> -	if (BOND_MODE(bond) != BOND_MODE_ACTIVEBACKUP)
+> -		bond_dev->features &= ~BOND_XFRM_FEATURES;
+> +	bond_dev->hw_features |= BOND_XFRM_FEATURES;
+> +	/* Only enable XFRM features if this is an active-backup config */
+> +	if (BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP)
+> +		bond_dev->features |= BOND_XFRM_FEATURES;
+>  #endif /* CONFIG_XFRM_OFFLOAD */
+>  }
+>  
+> diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
+> index 9abfaae1c6f7..1ae0e5ab8c67 100644
+> --- a/drivers/net/bonding/bond_options.c
+> +++ b/drivers/net/bonding/bond_options.c
+> @@ -745,6 +745,18 @@ const struct bond_option *bond_opt_get(unsigned int option)
+>  	return &bond_opts[option];
+>  }
+>  
+> +#ifdef CONFIG_XFRM_OFFLOAD
+> +static void bond_set_xfrm_features(struct net_device *bond_dev, u64 mode)
+> +{
+> +	if (mode == BOND_MODE_ACTIVEBACKUP)
+> +		bond_dev->wanted_features |= BOND_XFRM_FEATURES;
+> +	else
+> +		bond_dev->wanted_features &= ~BOND_XFRM_FEATURES;
+> +
+> +	netdev_update_features(bond_dev);
+> +}
+> +#endif /* CONFIG_XFRM_OFFLOAD */
+> +
+>  static int bond_option_mode_set(struct bonding *bond,
+>  				const struct bond_opt_value *newval)
+>  {
+> @@ -768,11 +780,8 @@ static int bond_option_mode_set(struct bonding *bond,
+>  		bond->params.tlb_dynamic_lb = 1;
+>  
+>  #ifdef CONFIG_XFRM_OFFLOAD
+> -	if (newval->value == BOND_MODE_ACTIVEBACKUP)
+> -		bond->dev->wanted_features |= BOND_XFRM_FEATURES;
+> -	else
+> -		bond->dev->wanted_features &= ~BOND_XFRM_FEATURES;
+> -	netdev_change_features(bond->dev);
+> +	if (bond->dev->reg_state == NETREG_REGISTERED)
+> +		bond_set_xfrm_features(bond->dev, newval->value);
+>  #endif /* CONFIG_XFRM_OFFLOAD */
 
-Actually we might have the following assumption :
+nit: let's narrow down the ifdef-enery
 
-buff = kmalloc(size, GFP...)
-if (buff)
-   ASSERT(ksize(buff) >= size)
+no need for the ifdef here, if the helper looks like this:
 
-So obviously ksize() should not be completely random ;)
++static void bond_set_xfrm_features(struct net_device *bond_dev, u64 mode)
++{
++#ifdef CONFIG_XFRM_OFFLOAD
++	if (mode == BOND_MODE_ACTIVEBACKUP)
++		bond_dev->wanted_features |= BOND_XFRM_FEATURES;
++	else
++		bond_dev->wanted_features &= ~BOND_XFRM_FEATURES;
++
++	netdev_update_features(bond_dev);
++#endif /* CONFIG_XFRM_OFFLOAD */
++}
+
+Even better:
+
++static void bond_set_xfrm_features(struct net_device *bond_dev, u64 mode)
++{
++	if (!IS_ENABLED(CONFIG_XFRM_OFFLOAD))
++		return;
++
++	if (mode == BOND_MODE_ACTIVEBACKUP)
++		bond_dev->wanted_features |= BOND_XFRM_FEATURES;
++	else
++		bond_dev->wanted_features &= ~BOND_XFRM_FEATURES;
++
++	netdev_update_features(bond_dev);
++}
+
+(Assuming BOND_XFRM_FEATURES doesn't itself hide under an ifdef.)
+
+>  
+>  	/* don't cache arp_validate between modes */
+
