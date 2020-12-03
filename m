@@ -2,76 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7F692CE0F8
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 22:40:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 978DD2CE10D
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 22:49:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730182AbgLCVkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 16:40:18 -0500
-Received: from static.214.254.202.116.clients.your-server.de ([116.202.254.214]:44174
-        "EHLO ciao.gmane.io" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726173AbgLCVkS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 16:40:18 -0500
-Received: from list by ciao.gmane.io with local (Exim 4.92)
-        (envelope-from <gl-netdev-2@m.gmane-mx.org>)
-        id 1kkwK7-0005kI-Nl
-        for netdev@vger.kernel.org; Thu, 03 Dec 2020 22:39:35 +0100
-X-Injected-Via-Gmane: http://gmane.org/
-To:     netdev@vger.kernel.org
-From:   Grant Edwards <grant.b.edwards@gmail.com>
-Subject: Re: net: macb: fail when there's no PHY
-Date:   Thu, 3 Dec 2020 21:39:31 -0000 (UTC)
-Message-ID: <rqbluj$l72$1@ciao.gmane.io>
-References: <6a9c1d4a-ed73-3074-f9fa-158c697c7bfe@gmail.com>
- <X8fb4zGoxcS6gFsc@grante> <20201202183531.GJ2324545@lunn.ch>
- <rq8p74$2l0$1@ciao.gmane.io> <20201202211134.GM2324545@lunn.ch>
- <rq9ki2$uqk$1@ciao.gmane.io>
- <57728908-1ae3-cbe9-8721-81f06ab688b8@gmail.com>
- <rq9nih$egv$1@ciao.gmane.io> <20201203040758.GC2333853@lunn.ch>
- <rqav0e$4m3$1@ciao.gmane.io> <20201203211702.GK2333853@lunn.ch>
-User-Agent: slrn/1.0.3 (Linux)
+        id S2388388AbgLCVqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 16:46:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51626 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388162AbgLCVqv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 16:46:51 -0500
+Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050::465:202])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E664C061A53
+        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 13:46:11 -0800 (PST)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4Cn8XR1ybBzQlRP;
+        Thu,  3 Dec 2020 22:45:43 +0100 (CET)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
+        s=MBO0001; t=1607031941;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=L8ImIdvypi5sFXOVf0RGSKS25PG4zFNE+jSFp0Npd9A=;
+        b=L3mPGtUl0kwF/6vb0PRPCboBYoqwZgaHsJhxVC9KZ5p9yqw4t208uSuRREs9n5lmIVr3fv
+        weKFFAZ/ZrfsX7G8k02YIVzexAg4ku2bm/HxQvBsvf1yNyhEOztumfEdtxXSyjIxWM2NW1
+        J1JwfvcGnLCwhgJpeFfu+laAJZUZPuodNN6zTbxXgDLhtQlyKxQ7RF/FMLtqd/RUYHB2cI
+        /LXCm+MOJ21Kx0UL017f9yEtkhmQWTvdOwsSThQA3rETHU8e2R8fYvdMdnDqeBYDZYokzk
+        9DB2126e4Xvh0pnQg2VY8CSTEhME6/TW648dFr+xNYuUHeekyud9A/zgHdqIcw==
+Received: from smtp1.mailbox.org ([80.241.60.240])
+        by spamfilter04.heinlein-hosting.de (spamfilter04.heinlein-hosting.de [80.241.56.122]) (amavisd-new, port 10030)
+        with ESMTP id gLjrdGvgIB5v; Thu,  3 Dec 2020 22:45:40 +0100 (CET)
+References: <20201203041101.11116-1-dsahern@kernel.org>
+From:   Petr Machata <me@pmachata.org>
+To:     David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, me@pmachata.org,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH iproute2-next] Only compile mnl_utils when HAVE_LIBMNL is defined
+In-reply-to: <20201203041101.11116-1-dsahern@kernel.org>
+Date:   Thu, 03 Dec 2020 22:45:38 +0100
+Message-ID: <87o8jamum5.fsf@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-MBO-SPAM-Probability: 
+X-Rspamd-Score: -4.90 / 15.00 / 15.00
+X-Rspamd-Queue-Id: 49E6F1478
+X-Rspamd-UID: da0229
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-12-03, Andrew Lunn <andrew@lunn.ch> wrote:
-> On Thu, Dec 03, 2020 at 03:07:58PM -0000, Grant Edwards wrote:
->
->> I don't think I can justify the additional effort to devlope and
->> maintain a custom kern-space driver.
->
-> Why custom? You should contribute it.
 
-I can't imagine that it would be useful to anybody else. My attempts
-to donate drivers in the past were unproductive wastes of time, so I'm
-not doing that again.
+David Ahern <dsahern@kernel.org> writes:
 
->>>> Was there some other way I should have done this with a 5.4 kernel
->>>> that I was unable to discover?
->
-> Ah, i missed you are using 5.4. You should probably jump to
-> 5.10. There have been quite a few changes in this area in the macb
-> driver.
+> diff --git a/lib/Makefile b/lib/Makefile
+> index e37585c6..603ea83e 100644
+> --- a/lib/Makefile
+> +++ b/lib/Makefile
+> @@ -13,7 +13,10 @@ UTILOBJ += bpf_libbpf.o
+>  endif
+>  endif
+>  
+> -NLOBJ=libgenl.o libnetlink.o mnl_utils.o
+> +NLOBJ=libgenl.o libnetlink.o
+> +ifeq ($(HAVE_LIBMNL),y)
 
-I don't think there's any way I could justify using a kernel that
-doesn't have long-term support.
-
-[It looks like we're going to have to abandon the effort to use
-5.4. The performance is so bad compared to 2.6.33.7 that our product
-just plain won't work. We've already had remove features to the get
-5.4 kernel down to a usable size, but we were prepared to live with
-that.]
-
->> BTW Andrew, we're still shipping plenty of product that running
->> eCos. :)
->
-> Cool. There is still a space for such an RTOS, linux has not yet taken
-> over the world everywhere.
-
-I keep thinking that one of these days something is going to happen
-that will force us to switch to a different RTOS, but it hasn't
-happened yet...
-
---
-Grant
-
-
+This should test HAVE_MNL, not HAVE_LIBMNL.
