@@ -2,129 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE9322CE22B
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 23:55:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D31382CE229
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 23:55:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387437AbgLCWxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 17:53:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33748 "EHLO
+        id S1731889AbgLCWxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 17:53:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731865AbgLCWxl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 17:53:41 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7821C061A51;
-        Thu,  3 Dec 2020 14:52:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=O7SE73yvQEcPcDDjzMoCt43L3cMIZXlKFOb3iR2LqBw=; b=RuaaWUqte3o2aWFrf+UKhj7zq
-        0H/ui1VV7iksLg4dAmU2HOdL7iDoPKPd1CTRqwC5hKuIjWHJxXNbfOvQTiS3c4utdeg2HkjIRBb6D
-        LddP1k+xiUmBFaEF4RbIGudqVOvuq/Y6DfIkA9CNkFNJGELVMJq02O9pPKUhLG70QjJrGHCz3JKhj
-        IZMEx12vNxcZC8WOU+qNR8IIYeUnaVVI7STbCjhjbBTzAC6y1ujF1NQrwuadXNKwIUeVJBOTueXuI
-        /NfCfDTLSfCIAYCkuqp+W7Rp20jWczNw+zwGoyZOHz4Nvx41wQabuXdcz1fQzb6ZFCOrLdFRaPYlV
-        GrbCZ5aDA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:39418)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kkxSk-0003bk-4t; Thu, 03 Dec 2020 22:52:34 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kkxSj-0008Sm-3b; Thu, 03 Dec 2020 22:52:33 +0000
-Date:   Thu, 3 Dec 2020 22:52:33 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v8 3/4] phy: Add Sparx5 ethernet serdes PHY driver
-Message-ID: <20201203225232.GI1551@shell.armlinux.org.uk>
-References: <20201203103015.3735373-1-steen.hegelund@microchip.com>
- <20201203103015.3735373-4-steen.hegelund@microchip.com>
- <20201203215253.GL2333853@lunn.ch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201203215253.GL2333853@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+        with ESMTP id S1728717AbgLCWxd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 17:53:33 -0500
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E88AC061A52;
+        Thu,  3 Dec 2020 14:53:08 -0800 (PST)
+Received: by mail-pg1-x542.google.com with SMTP id t37so2324707pga.7;
+        Thu, 03 Dec 2020 14:53:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=oIe++tU4EfyyFjCAKxrRYoNaW31kt/FbR7e6ygRmz6M=;
+        b=F/B89NUmX31NRfpfXzveJauQrM6R2uGHZdVvsWTndOjPvzhv7M/WfLe9pNqfz4DxeM
+         JNCZUy7EarFo3a2uy0BYVIaIZxoOk/z+wfF8jEyTav7LsgwowyacXd00J0UrMt4rkOjX
+         wYKQ9qBei9dXSZKVIjIafnID77vSLmA4OQ4k24nAF0c6TMqgOCCqQPZnpLAZImEqcx+t
+         AmuW/7ggQljS60bYaEfU/HEBL7kq/j+ENX02EiM7mSJbwnd5UioNqiIrf1LwOrIKOEfe
+         OZfB1YWXNyy67hdV7quOTQNrj5bX1l3I4UGhB2SzZTNWqbigeYiKabezqtJzxHSdy5OV
+         GglA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=oIe++tU4EfyyFjCAKxrRYoNaW31kt/FbR7e6ygRmz6M=;
+        b=tSQp+SnNlf1TqpYRNue0KV37u0o68AQy4BMullnRxDKDXXSDOwSbWqlQ2yQag8e0L3
+         ULEx4cRa2AjNWV4qQC55wDWkW653IAbk6Zpd1bwc+cP/AHbdyDyHqPPKZFXcc9TqWNxp
+         5ZwjxkQj3BkvmIwoR06fn0e9TW9Vl/WafSamkcd7zRBtZ4en+RbS4tH5I3IpzRi5fFIM
+         oGHFO03ej7DOvgORQKYBPbnJK0FRBcNatC6ufEnrG5FcUpoUtr4jBKxBuxI+J56zYG9K
+         vtnU3VyEOEOE0fP+UdEpKaNTkuzyqrf/L3I3EAQYrcc/Nb+TNQX7aaqJO4dJNSRvXHRZ
+         kprQ==
+X-Gm-Message-State: AOAM532qLJYn5WbhFcREGrNPssKxjD4UTNKuwHGqOzw36mRXczdmruwv
+        YRYVaWw8L1C0l9j33KnUHlqYxXv7DPY=
+X-Google-Smtp-Source: ABdhPJxkGeX9HWhvAG6TJAJJ375yO43bKeia/oXO5VAoa3lovUZV/GtDGabtDHcB6Gk3DmTIyIQBgA==
+X-Received: by 2002:a63:db18:: with SMTP id e24mr4958276pgg.155.1607035988012;
+        Thu, 03 Dec 2020 14:53:08 -0800 (PST)
+Received: from localhost.localdomain ([182.226.226.37])
+        by smtp.googlemail.com with ESMTPSA id y21sm3078232pfr.90.2020.12.03.14.53.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Dec 2020 14:53:07 -0800 (PST)
+From:   Bongsu Jeon <bongsu.jeon2@gmail.com>
+X-Google-Original-From: Bongsu Jeon
+To:     krzk@kernel.org
+Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Bongsu Jeon <bongsu.jeon@samsung.com>
+Subject: [PATCH v2 net-next] nfc: s3fwrn5: skip the NFC bootloader mode
+Date:   Fri,  4 Dec 2020 07:52:57 +0900
+Message-Id: <20201203225257.2446-1-bongsu.jeon@samsung.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 03, 2020 at 10:52:53PM +0100, Andrew Lunn wrote:
-> > +/* map from SD25G28 interface width to configuration value */
-> > +static u8 sd25g28_get_iw_setting(const u8 interface_width)
-> > +{
-> > +	switch (interface_width) {
-> > +	case 10: return 0;
-> > +	case 16: return 1;
-> > +	case 32: return 3;
-> > +	case 40: return 4;
-> > +	case 64: return 5;
-> > +	default:
-> > +		pr_err("%s: Illegal value %d for interface width\n",
-> > +		       __func__, interface_width);
-> 
-> Please make use of dev_err(phy->dev, so we know which PHY has
-> configuration problems.
-> 
-> > +static int sparx5_serdes_validate(struct phy *phy, enum phy_mode mode,
-> > +					int submode,
-> > +					union phy_configure_opts *opts)
-> > +{
-> > +	struct sparx5_serdes_macro *macro = phy_get_drvdata(phy);
-> > +	struct sparx5_serdes_private *priv = macro->priv;
-> > +	u32 value, analog_sd;
-> > +
-> > +	if (mode != PHY_MODE_ETHERNET)
-> > +		return -EINVAL;
-> > +
-> > +	switch (submode) {
-> > +	case PHY_INTERFACE_MODE_1000BASEX:
-> > +	case PHY_INTERFACE_MODE_SGMII:
-> > +	case PHY_INTERFACE_MODE_QSGMII:
-> > +	case PHY_INTERFACE_MODE_10GBASER:
-> > +		break;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +	if (macro->serdestype == SPX5_SDT_6G) {
-> > +		value = sdx5_rd(priv, SD6G_LANE_LANE_DF(macro->stpidx));
-> > +		analog_sd = SD6G_LANE_LANE_DF_PMA2PCS_RXEI_FILTERED_GET(value);
-> > +	} else if (macro->serdestype == SPX5_SDT_10G) {
-> > +		value = sdx5_rd(priv, SD10G_LANE_LANE_DF(macro->stpidx));
-> > +		analog_sd = SD10G_LANE_LANE_DF_PMA2PCS_RXEI_FILTERED_GET(value);
-> > +	} else {
-> > +		value = sdx5_rd(priv, SD25G_LANE_LANE_DE(macro->stpidx));
-> > +		analog_sd = SD25G_LANE_LANE_DE_LN_PMA_RXEI_GET(value);
-> > +	}
-> > +	/* Link up is when analog_sd == 0 */
-> > +	return analog_sd;
-> > +}
+From: Bongsu Jeon <bongsu.jeon@samsung.com>
 
-You still have not Cc'd me on your patches. Please can you either:
+If there isn't a proper NFC firmware image, Bootloader mode will be
+skipped.
 
-1) use get_maintainer.pl to find out whom you should be sending
-   your patches to
-or
-2) include me in your cc for this patch set as phylink maintainer in
-   your patch set so I can review your use of phylink.
+Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
+---
 
-Consider your patches NAK'd until you send them to me so that I can
-review them.
+ ChangeLog:
+  v2:
+   - change the commit message.
+   - change the skip handling code.
 
-Thanks.
+ drivers/nfc/s3fwrn5/core.c     | 23 +++++++++++++++++++++--
+ drivers/nfc/s3fwrn5/firmware.c | 11 +----------
+ drivers/nfc/s3fwrn5/firmware.h |  1 +
+ 3 files changed, 23 insertions(+), 12 deletions(-)
 
+diff --git a/drivers/nfc/s3fwrn5/core.c b/drivers/nfc/s3fwrn5/core.c
+index f8e5d78d9078..c00b7a07c3ee 100644
+--- a/drivers/nfc/s3fwrn5/core.c
++++ b/drivers/nfc/s3fwrn5/core.c
+@@ -20,13 +20,26 @@
+ 				NFC_PROTO_ISO14443_B_MASK | \
+ 				NFC_PROTO_ISO15693_MASK)
+ 
++static int s3fwrn5_firmware_init(struct s3fwrn5_info *info)
++{
++	struct s3fwrn5_fw_info *fw_info = &info->fw_info;
++	int ret;
++
++	s3fwrn5_fw_init(fw_info, "sec_s3fwrn5_firmware.bin");
++
++	/* Get firmware data */
++	ret = s3fwrn5_fw_request_firmware(fw_info);
++	if (ret < 0)
++		dev_err(&fw_info->ndev->nfc_dev->dev,
++			"Failed to get fw file, ret=%02x\n", ret);
++	return ret;
++}
++
+ static int s3fwrn5_firmware_update(struct s3fwrn5_info *info)
+ {
+ 	bool need_update;
+ 	int ret;
+ 
+-	s3fwrn5_fw_init(&info->fw_info, "sec_s3fwrn5_firmware.bin");
+-
+ 	/* Update firmware */
+ 
+ 	s3fwrn5_set_wake(info, false);
+@@ -109,6 +122,12 @@ static int s3fwrn5_nci_post_setup(struct nci_dev *ndev)
+ 	struct s3fwrn5_info *info = nci_get_drvdata(ndev);
+ 	int ret;
+ 
++	if (s3fwrn5_firmware_init(info)) {
++		//skip bootloader mode
++		ret = 0;
++		goto out;
++	}
++
+ 	ret = s3fwrn5_firmware_update(info);
+ 	if (ret < 0)
+ 		goto out;
+diff --git a/drivers/nfc/s3fwrn5/firmware.c b/drivers/nfc/s3fwrn5/firmware.c
+index 4cde6dd5c019..4b5352e2b915 100644
+--- a/drivers/nfc/s3fwrn5/firmware.c
++++ b/drivers/nfc/s3fwrn5/firmware.c
+@@ -280,7 +280,7 @@ static int s3fwrn5_fw_complete_update_mode(struct s3fwrn5_fw_info *fw_info)
+ 
+ #define S3FWRN5_FW_IMAGE_HEADER_SIZE 44
+ 
+-static int s3fwrn5_fw_request_firmware(struct s3fwrn5_fw_info *fw_info)
++int s3fwrn5_fw_request_firmware(struct s3fwrn5_fw_info *fw_info)
+ {
+ 	struct s3fwrn5_fw_image *fw = &fw_info->fw;
+ 	u32 sig_off;
+@@ -358,15 +358,6 @@ int s3fwrn5_fw_setup(struct s3fwrn5_fw_info *fw_info)
+ 	struct s3fwrn5_fw_cmd_get_bootinfo_rsp bootinfo;
+ 	int ret;
+ 
+-	/* Get firmware data */
+-
+-	ret = s3fwrn5_fw_request_firmware(fw_info);
+-	if (ret < 0) {
+-		dev_err(&fw_info->ndev->nfc_dev->dev,
+-			"Failed to get fw file, ret=%02x\n", ret);
+-		return ret;
+-	}
+-
+ 	/* Get bootloader info */
+ 
+ 	ret = s3fwrn5_fw_get_bootinfo(fw_info, &bootinfo);
+diff --git a/drivers/nfc/s3fwrn5/firmware.h b/drivers/nfc/s3fwrn5/firmware.h
+index 3c83e6730d30..3a82ce5837fb 100644
+--- a/drivers/nfc/s3fwrn5/firmware.h
++++ b/drivers/nfc/s3fwrn5/firmware.h
+@@ -89,6 +89,7 @@ struct s3fwrn5_fw_info {
+ 	char parity;
+ };
+ 
++int s3fwrn5_fw_request_firmware(struct s3fwrn5_fw_info *fw_info);
+ void s3fwrn5_fw_init(struct s3fwrn5_fw_info *fw_info, const char *fw_name);
+ int s3fwrn5_fw_setup(struct s3fwrn5_fw_info *fw_info);
+ bool s3fwrn5_fw_check_version(const struct s3fwrn5_fw_info *fw_info, u32 version);
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.17.1
+
