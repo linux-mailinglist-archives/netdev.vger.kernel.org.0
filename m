@@ -2,78 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC3542CDDA5
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 19:29:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5C0E2CDDA3
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 19:29:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731641AbgLCS2v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 13:28:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49114 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728893AbgLCS2u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 13:28:50 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6663C061A4E;
-        Thu,  3 Dec 2020 10:28:04 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id s21so1835767pfu.13;
-        Thu, 03 Dec 2020 10:28:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SePawBc92qjZrhhuqEGXpjzYBRM23iXEFSpAUGOVHFw=;
-        b=THpnI2SehSyLp53MHiiUv28kK7Xk+w4pwJZKYx1XceULvW/bVtAMRRpOPj/ltqv+CW
-         YriEUMakGBcLB/E7B6abZM0ckKlprIqm1FPJHiPBN64DK4kwnO8FVY3rByhEvpF20Euz
-         Osf87po7s/ui13IvKl6TV/dyUOJfVYNjFF+CBLmRis2Ii/UyoaGDVK0lxnsHMp8luk42
-         I9Eey69rWYlfyk4rYdfguESF3zDfZGvYhL4rkr4wM3jxbUWVY733foCMqrBcQMEpmwVr
-         5FtLwu55tWFlDzhmCfrDRN3abjlwDwTRDUpLkTg5jy3Ur2VHSIuujRupc2+Mf/4neY7g
-         nwAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SePawBc92qjZrhhuqEGXpjzYBRM23iXEFSpAUGOVHFw=;
-        b=lvqpw5uzXDB8mdqK/Zvjj+V3vmQ1rmZMfHBA0gf+KJn0Ig3Su8OmwKqMp+6WFoOTKq
-         O7mEEv29kGTUHoyK6GDJFETbXI93rkm4FiFJcYKhY+DHYwyPinDZAVNswM3xK/V3lhQu
-         cDbSN8+oKug3knw7ZTeBoGXqqpPOL6z1FoG+3J5cuh/No4Iuxu/aJI5i46Voq6OylE6e
-         VuNELZTguk4lr8vKmJF2r5kItllNvbRwYyvC3g80lX5iZ5wck5eVjFfqCy8KgKv3k9Ec
-         541Yb9H3RJa7oEXV+31GcQyc7p7v7DaNRgfWAgJ1kzcgT35GULbNVEMbuNGhRZFe59Aj
-         dR+g==
-X-Gm-Message-State: AOAM533fu+zxDMMnYbFQpf30mMfxPozykM6428AuQPruy+/NMq3pPPid
-        frkx9KSCVleHNuL87jTQnKWWQrrsipmsvhzOPJMy5nFJIzA7ng==
-X-Google-Smtp-Source: ABdhPJzmQ/gQ9leIvSLr4xXLgDINcplXNAFS21D559/T2GLR6mUab0sTLuc+f3BrAey4fdVknkUEQRTdX/wt8sCBJMg=
-X-Received: by 2002:a63:2d86:: with SMTP id t128mr4205743pgt.5.1607020084137;
- Thu, 03 Dec 2020 10:28:04 -0800 (PST)
+        id S1731293AbgLCS2p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 13:28:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55734 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728893AbgLCS2o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 13:28:44 -0500
+Date:   Thu, 3 Dec 2020 10:28:02 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607020083;
+        bh=79pVmEiGY09uStaLdHgvpv8VoidOztdyQWlxY1kgCwA=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=A06Bm35mVRT0NBoRGsjIZQoIWX4hX325fHqCGBaEwR25QoJ9Q2UtEamABN2nliHl4
+         ump2zDNxgagmbC3XrzMg2+xW3zNMSX75zQKoh0Fv4bOKLa01gNNCKuhjzO2kBelZfa
+         uTxqeLVYTmaLL2IVLjL0frhVg/q0RKSzC6V7yKcdLwf8eqTfrPDPEn2Xg1V6DHQdat
+         lez353KoHeaKE4+6Kud9rQ4ugNwA7KGd8gQSHO0Rd+FKHCuByIeR3aUgxvyX05E3ep
+         tnxZNBsK8ogPXwRGPIFDWL074hiivScxOP5RsJ7xx0R8SjCTXr4c7ioF6ra9t9Kgqu
+         UxeWEJoOC4amQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Joseph Huang <Joseph.Huang@garmin.com>
+Cc:     Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Linus =?UTF-8?B?TMO8c3Npbmc=?= <linus.luessing@c0d3.blue>
+Subject: Re: [PATCH] bridge: Fix a deadlock when enabling multicast snooping
+Message-ID: <20201203102802.62bc86ba@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201201214047.128948-1-Joseph.Huang@garmin.com>
+References: <20201201214047.128948-1-Joseph.Huang@garmin.com>
 MIME-Version: 1.0
-References: <20201201194438.37402-1-xiyou.wangcong@gmail.com>
- <20201202171032.029b1cd8@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <CAM_iQpWfv59MoEJES1O=FhA4YsrB2nNGGaKzDmqcmXQXzc8gow@mail.gmail.com>
- <CAADnVQK74XFuK6ybYeqdw1qNt2ZDi-HbrgMxeem46Uh-76sX7Q@mail.gmail.com> <CAADnVQ+tRAKn4KR_k9eU-fG3iQhivzwn6d2BDGnX_44MTBrkJg@mail.gmail.com>
-In-Reply-To: <CAADnVQ+tRAKn4KR_k9eU-fG3iQhivzwn6d2BDGnX_44MTBrkJg@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 3 Dec 2020 10:27:53 -0800
-Message-ID: <CAM_iQpUUnsRuFs=uRA2uc8RZVakBXCA7efbs702Pj54p8Q==ig@mail.gmail.com>
-Subject: Re: [Patch net] lwt: disable BH too in run_lwt_bpf()
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Dongdong Wang <wangdongdong@bytedance.com>,
-        Thomas Graf <tgraf@suug.ch>, bpf <bpf@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 3, 2020 at 10:22 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> I guess my previous comment could be misinterpreted.
-> Cong,
-> please respin with changing preempt_disable to migrate_disable
-> and adding local_bh_disable.
+On Tue, 1 Dec 2020 16:40:47 -0500 Joseph Huang wrote:
+> When enabling multicast snooping, bridge module deadlocks on multicast_lock
+> if 1) IPv6 is enabled, and 2) there is an existing querier on the same L2
+> network.
+> 
+> The deadlock was caused by the following sequence: While holding the lock,
+> br_multicast_open calls br_multicast_join_snoopers, which eventually causes
+> IP stack to (attempt to) send out a Listener Report (in igmp6_join_group).
+> Since the destination Ethernet address is a multicast address, br_dev_xmit
+> feeds the packet back to the bridge via br_multicast_rcv, which in turn
+> calls br_multicast_add_group, which then deadlocks on multicast_lock.
+> 
+> The fix is to move the call br_multicast_join_snoopers outside of the
+> critical section. This works since br_multicast_join_snoopers only deals
+> with IP and does not modify any multicast data structures of the bridge,
+> so there's no need to hold the lock.
+> 
+> Fixes: 4effd28c1245 ("bridge: join all-snoopers multicast address")
+> 
+> Signed-off-by: Joseph Huang <Joseph.Huang@garmin.com>
 
-I have no objection, just want to point out migrate_disable() may
-not exist if we backport this further to -stable, this helper was
-introduced in Feb 2020.
-
-Thanks.
+Nik, Linus - how does this one look?
