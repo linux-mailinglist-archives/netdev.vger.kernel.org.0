@@ -2,159 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 413122CDA4A
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 16:45:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF53D2CDA59
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 16:49:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388407AbgLCPpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 10:45:17 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:46660 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387680AbgLCPpQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 10:45:16 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0B3FOogQ030868;
-        Thu, 3 Dec 2020 07:44:26 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0220;
- bh=yFn1nLkIJ5C0xbgMGlJS1cDAcSLtWDDhb/E/c5g/1eU=;
- b=TV21MkVQeVmGeH+u8SQiWJBiBZkz2rEiopkf9R9yUkVAZUA4E9VGtn2BQj+/QlQ+yyve
- ZnaXXINod3L8cQMtZ7w+E+jXr+1GDCxBdFHuyJrVcIUAXrYciOCp54jVa3+gveAXRKCW
- sD95QdRqM6BrpfKqLVWpY5M1zPbLtTOS0UbFTzlvko1/WNmoA/vHXaahjkeyupj0+vW6
- XxFzNjPwgJyuORa5cPxK2mrdx3ZsovfbV+pKsFN30ZUMxORAZtONkvEQQvEbKq1xAf1p
- MZaWkuqHoH4BhDhE0nHhz0g1gH/DYi20ZwQZFBkqRb6zVxDMfUb+wOxhOgLoQ6HwVpT9 AA== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 355w50e53s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 03 Dec 2020 07:44:26 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 3 Dec
- 2020 07:44:25 -0800
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 3 Dec
- 2020 07:44:24 -0800
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.109)
- by SC-EXCH03.marvell.com (10.93.176.83) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Thu, 3 Dec 2020 07:44:23 -0800
+        id S2387634AbgLCPsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 10:48:07 -0500
+Received: from mail-db8eur05on2083.outbound.protection.outlook.com ([40.107.20.83]:37502
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726841AbgLCPsG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 10:48:06 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NEFpNmFO3dukG0GdhjwUgrImYWHQm5qzHm+Xk2lA7ghkrEvFyIEJC4iRDCwjvKoXlzFpiNXq5NQxiuQupkmHz5pSVoQWR+eX6JuJM/yLESWVcFVCPlRO4d9aRQL2DrQUdev1wWyrTkQtdmNcfSfTVyUWMnNw1abo3AF6aywQb6piNXx1xizrinZZm1Mn4qzIerf/oWFl1hEATH603Kxp6WedvnHuBZh4bG7BksEUGcxMMWMCITtWH6tn2yiuyyco8uSi9wFrYv7upAhvkJn6/Sr7iPBOBLm5ZHI9boxThMlNaLcxT2PFk7OvGO1pgTAXUH8TZ0khzGUXCllR+Tjp8w==
+ b=EkU6LOFcln0D/VyiCdqO9aU3edlycEy7gDfvjCAeaieJ1AFp5L2HDxTLQi3r+9myK0wwlbipZIgJ3B9rtfu6uUgQ4QmpuVHiI0bC7XrDx7evG625a5OQgj42LrIOI2rKz256vCn0pRcg1Ne9uOmgQeEtFM+igE4vUWzNjnKrraqb+WMOW584C3KzCiRn9UReyorYBRLr/sTYXsfuHnqBq1ye/crRSOAJLDI/0U3T50fUdUb+59bYYXpki58q9YM+SPGtvUb3UdZFCfuWLKXxqPorlReNQsk6U/WaDUJ+/L02LgFzUn4+MVd4zxH/MHR7r6jg4B0aGYyyiuQdg5rQhA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yFn1nLkIJ5C0xbgMGlJS1cDAcSLtWDDhb/E/c5g/1eU=;
- b=lQxYYiUr01nDoLUYrP/QNwjHRLZ87KcxGYunW7IVYeGRPY6w5nYzYHAB47Jy8/MpwVyij6ktE75UG/jwpmmcEmOsA/Pdl2PqL2HPDbhn2F2MC3wP66B0uCYT+HbhsavI9in7O3ED2TLQfSuYyyKCy1t/RNs88O67Q1jr0WvsSBatNM1KWiVbRFrkRF2GFQIzTNtmULO9k0FxL1tsxEqHPAOn66u7Aaih3aNHelGdPyDs/IGsXLXAAYLNmK3uZ/O+OOMetnQ4PM13rewh9+A0ajVIHYN/RY5u0V/yk3WktTv3Lkvy97+jbJ2yhxQRzupyoai4tvPd9BJyBbAUv01Hxg==
+ bh=C2Yxi/+8tLzNc0Bn70z3865IFdTnptgLYKuAmuNnGHM=;
+ b=KPVLuxT91YjThHvuFeXbBAA8O1pzAKhecST7SCz1G9uMxLiro8PuatOqV2UGASv9VtsleoXSCPhgJC8vQ7EMPf+PGhKZ5SaTl/R+kp+KNYpCuZQ5aM9GSMFtBTkQBTpfTKFz/S129zCebGVyjRiCcO47iGfpl/5hEe05nQRRa9mQlH+kQjYCUfpMfwyBoMlf/1uzibGSc7TtisMbIvlExDbtgei3FPiCyM1hMzh94+F/WtLD6fUgH4YDR5e1C7gdy0D0o2L/Mo/XgIObuydgsC1tkp0iOSOgoapvLaJedFVntBqGMTQcm/nWUHSDJn7dA4pC5S/ronwCinAPh6g2HA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yFn1nLkIJ5C0xbgMGlJS1cDAcSLtWDDhb/E/c5g/1eU=;
- b=ThFf+ePq6ZyHYg7lqAzyGeiHIGdq8Id0QGLgj2vPB/v2HtOKtREEo5BvNQOkUM8A4i5a3o5fNT8BN9Ai+ImG8Cf8GWpYepMV1ITqBUyniQppT/iixPClDqagfrr8YZ0AZG+HMIDWw0MjEl8q9DVrZ9HPuYka9u2j9+3E/G9WGWw=
-Received: from MWHPR18MB1598.namprd18.prod.outlook.com (2603:10b6:300:ce::21)
- by MW3PR18MB3594.namprd18.prod.outlook.com (2603:10b6:303:5f::14) with
+ bh=C2Yxi/+8tLzNc0Bn70z3865IFdTnptgLYKuAmuNnGHM=;
+ b=YiHvUxY8qanZIaTKW5MywKWGRqnGEZgi8sPBKzKoqwGJ3WYcLjSFpAWz/K6SjFV0MAR0YSf3r5N1ZGdbruXYs5tpuJX9T1pGBdnDbDdygED7ZN/7wj7//mxAh6QiR2gAgcgxUjOVP//OVjPek8K9Y8svn6Ynr8gWBt1U1+J6ecI=
+Received: from AM6PR04MB3976.eurprd04.prod.outlook.com (2603:10a6:209:3f::17)
+ by AM6PR0402MB3559.eurprd04.prod.outlook.com (2603:10a6:209:12::24) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.18; Thu, 3 Dec
- 2020 15:44:22 +0000
-Received: from MWHPR18MB1598.namprd18.prod.outlook.com
- ([fe80::102b:6c9e:1bb4:7295]) by MWHPR18MB1598.namprd18.prod.outlook.com
- ([fe80::102b:6c9e:1bb4:7295%11]) with mapi id 15.20.3611.025; Thu, 3 Dec 2020
- 15:44:22 +0000
-From:   Mickey Rachamim <mickeyr@marvell.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "David S . Miller" <davem@davemloft.net>,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.25; Thu, 3 Dec
+ 2020 15:47:18 +0000
+Received: from AM6PR04MB3976.eurprd04.prod.outlook.com
+ ([fe80::6c54:8278:771a:fc21]) by AM6PR04MB3976.eurprd04.prod.outlook.com
+ ([fe80::6c54:8278:771a:fc21%4]) with mapi id 15.20.3611.032; Thu, 3 Dec 2020
+ 15:47:18 +0000
+From:   Madalin Bucur <madalin.bucur@nxp.com>
+To:     Patrick Havelange <patrick.havelange@essensium.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Vadym Kochan [C]" <vkochan@marvell.com>,
-        "Taras Chornyi [C]" <tchornyi@marvell.com>
-Subject: RE: [EXT] Re: [PATCH] MAINTAINERS: Add entry for Marvell Prestera
- Ethernet Switch driver
-Thread-Topic: [EXT] Re: [PATCH] MAINTAINERS: Add entry for Marvell Prestera
- Ethernet Switch driver
-Thread-Index: AQHWyVwX9p+TCf2pwEWbloXbKFzXAKnlcGAAgAAPsCA=
-Date:   Thu, 3 Dec 2020 15:44:22 +0000
-Message-ID: <MWHPR18MB15980930483CA2F0BB657E95BAF20@MWHPR18MB1598.namprd18.prod.outlook.com>
-References: <20201203100436.25630-1-mickeyr@marvell.com>
- <20201203143530.GH2333853@lunn.ch>
-In-Reply-To: <20201203143530.GH2333853@lunn.ch>
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net 1/4] net: freescale/fman: Split the main resource
+ region reservation
+Thread-Topic: [PATCH net 1/4] net: freescale/fman: Split the main resource
+ region reservation
+Thread-Index: AQHWyXtSU15lz2QhZ0iXI1B/qYMSiKnlgUwA
+Date:   Thu, 3 Dec 2020 15:47:18 +0000
+Message-ID: <AM6PR04MB39764190C3CC885EAA84E8B3ECF20@AM6PR04MB3976.eurprd04.prod.outlook.com>
+References: <20201203135039.31474-1-patrick.havelange@essensium.com>
+ <20201203135039.31474-2-patrick.havelange@essensium.com>
+In-Reply-To: <20201203135039.31474-2-patrick.havelange@essensium.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=marvell.com;
-x-originating-ip: [93.173.69.161]
+authentication-results: essensium.com; dkim=none (message not signed)
+ header.d=none;essensium.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [82.76.227.226]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b0727983-3a35-4fd1-dec2-08d897a24e3a
-x-ms-traffictypediagnostic: MW3PR18MB3594:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MW3PR18MB3594C0E7B47FDBDF27FD34EFBAF20@MW3PR18MB3594.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 0523c1e6-568e-42c0-1a32-08d897a2b72a
+x-ms-traffictypediagnostic: AM6PR0402MB3559:
+x-microsoft-antispam-prvs: <AM6PR0402MB3559F019C0329AEBA68E2776ECF20@AM6PR0402MB3559.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: X7PwmA0AFnkhQsybbz/TW44qyShqwQADmUsug1ymdwEFaHv/uAkQ9CtvVp19ynERHh2ZaBCK2vPBh39ZjwvD9oIS0y6Xy7fMrZ0T3dLV/NY7NWM4kuXgsrZozWVOTZp3Zq80DB0cQErbfO1bhiSOzxyIkozkBByjG+q7rw7SsYh07XNkjCq90MoVKd9XUP0MGVcTkE9ErF3Ya2zLklJy4Xg1NlX6CKyYSoJzlKtOWqvKraTt4pLaX7hqKufW0TE6DZ/6z8aMteQ5jZ0YIDE7OP6mthxm/uIstzOO9rGgW9JZhVM5Qs39RSrSQ8al2T2kyhsyb42Irj8IK95BWC00AA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR18MB1598.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(376002)(366004)(396003)(136003)(316002)(9686003)(4326008)(6916009)(8676002)(107886003)(52536014)(4744005)(66946007)(5660300002)(2906002)(55016002)(64756008)(76116006)(66446008)(66476007)(66556008)(8936002)(26005)(71200400001)(186003)(86362001)(54906003)(7696005)(33656002)(478600001)(6506007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?ENnqeS1CNIHpuGuI2zOtfOFV7+sUhytCz8xWoqmaihQ7C/dGdm0ZOqlyMSIm?=
- =?us-ascii?Q?PJEP71GafOjpOPEKSYrbrwK/bj9BQ5WKcP7GihnqgljfrPdPsGtIwkKjTY6Z?=
- =?us-ascii?Q?dEoK70pC1PRmIQBq/ArncsvG/0vaZD5Z4KFcLamdooTsdfpCNxEwAfTYbIiE?=
- =?us-ascii?Q?vYilDQbiX6iOoghSu48A3lQpgqCkzOzdMGXAFOM6KhdwqXTsBKS6ofW5eCWu?=
- =?us-ascii?Q?bjHfYjIE094hDeh6PDBB5FFINGgPydaTC860CfWGcOz3cISEd0WO56L9WFmd?=
- =?us-ascii?Q?RYGBWgBK01QemzoHDi+RdAZx2nUoazDGjeoeiCSfz23/8FVkhPEjfS0+ZInU?=
- =?us-ascii?Q?wo1p7yAaq+TaYFuAjQcKmyrT7rH3U3XanAE/sZYxjC7tDp7LuOVA5gCBR7N8?=
- =?us-ascii?Q?o57qi2n5+O6trQl+ZV0FiV0SwcBIC/p9cSGh4nYRThfJzt3HYVf+gqg4zxsN?=
- =?us-ascii?Q?mIUCgNNb6xx9jxoQpmDuEAaGDelWCWEo00DAETyOae5DMICMmHuwPrTjuRQc?=
- =?us-ascii?Q?Fk8rEkV/7SaiJlZhJusl13tEDH03FtKLRciP77uMFZ5rOIePAXu7a8CVV0JF?=
- =?us-ascii?Q?fAavQ4/rKpDd7SG84LwK3uz/955FrxrGHSYEr3ZT+wtuDM+Ztvsym8CjJX56?=
- =?us-ascii?Q?tTodgrTjzGXYQBgIdgGs2APyGnWGn3eyctYh4hPIRr9xn7IsfD75SneEggrl?=
- =?us-ascii?Q?8OYBvg9qzbt5cp9LdLgO9fC2TciZqzKWW6a7RnT+OJoverPPCPdpF6wEtHd4?=
- =?us-ascii?Q?Vk1dW4XluHbRYAIBAnmOgpR+UmKEUlsiWFxbemh/G+uRP284o8ZVWT1oykgR?=
- =?us-ascii?Q?rxLfQkS1PCEVnzKZKq0Ki9c50m+0ysR5w71/4tlduR5bRgN33q8dhnNOiCqB?=
- =?us-ascii?Q?SzCtzJ7OrFr+fqKGgQlYK1DhlDI68z0JiMuWfZ1kdFZOkimq2JABgpBOQzSP?=
- =?us-ascii?Q?serI1wJ4MvV1UFb6xbchemhKUzmByCVnQXItbeiJgbM=3D?=
+x-microsoft-antispam-message-info: 2/voFYBq2d1DfcfAzGd3Q4SGajxqRPzqyWSidkTrkcP5fp37XUb0QfKx6JHtajp6Jh3aY15PGr5HRRu6jRjbvGIp+UBcQXftAUHuJGQyOnGhmWjMbk73Wv23PnpxYc3bchZr5hkE+FkseZIM3MFgo00W1O7+VYkgv5WhVP5aKUoiax0lhAwQoois1L5Tw5RhDid3/lxhKPr87W1OdYOZTAK9PMC18Wmf3VTEIuZLoU0XvFIrGs9QqRlQez/uBmZ0zOer1sXP8ixIh4HneBRbLdjixC2hGv5th2CWS1VeES2Wp3YfgUH4wchLq05W5a+i+a23BqgnWsk/JtKeiZSyvw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB3976.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(396003)(39860400002)(376002)(366004)(346002)(6506007)(9686003)(83380400001)(86362001)(66476007)(110136005)(8936002)(76116006)(8676002)(64756008)(478600001)(66946007)(66446008)(66556008)(33656002)(52536014)(71200400001)(316002)(7696005)(53546011)(55016002)(26005)(44832011)(2906002)(186003)(5660300002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?OO8ti1tMSmEZGAB6eUgG/Xuvpi8sa+PoW40oY8bCP/jvzkv/LzJ7aNeJ04/K?=
+ =?us-ascii?Q?Dw4q4HVaWpkJQ4XKoAaWDXo7pVip0xcLrrSKt6IbqegZQwv+MVAJE9RsWpfH?=
+ =?us-ascii?Q?yx0sswP2lSLNSRHDWJ7MbQeXrLmrUDVM5eRQzLrjxP3L8WAUDV3SyI9L4CEa?=
+ =?us-ascii?Q?7+Te5yIZXLJ7j3YAvScNfTd2i9GlXYiRKglvogmQXwnYwLVsP7ouOFSyz3yZ?=
+ =?us-ascii?Q?lZu2UJVf1/n4zXKI2Y/y2ETq7dAOJq4gHYEErsMnz7FV9NPQm/o6CtHpJuD3?=
+ =?us-ascii?Q?qea/YJyzqAWxKLOSpAfL8o08Xiw0Rm4nTyKMaJZqbMxfFmSTU9tEop2uXFV+?=
+ =?us-ascii?Q?3NO5UEOFP4FW+88wf5fyRyfXHZGxxCUjjk0vv+/n0A8J2QmTfNm6JihaLf1P?=
+ =?us-ascii?Q?zbkszTru6xt0X0YP//YHDsIfpAkNTubE4meMelGi7Z0m50HqB0IWycdh9haQ?=
+ =?us-ascii?Q?hoW+DAekDtidjvfMdhNCZzC4opiR+2M5bYCeifiXmyBRQYeGTTQBOnW+yUS2?=
+ =?us-ascii?Q?5pVVLO8lQvv/NVcQZoiqgUCmN79iPYsz3kstrPfqlfMc+kRtABLsbIadKHfM?=
+ =?us-ascii?Q?adhCUIzlMosb77YwkG5eUewSIL89mXbB1f9IAXBy5uKxOrXd20R2OEGG3Dxy?=
+ =?us-ascii?Q?UiWYvXeU/ihfaaxzz6XBaI8Jammbk+YmrGJVyxLMJCWCD/NB0/u1vIb1iB2P?=
+ =?us-ascii?Q?EEOvxwR6KjlMFHUbQdApVDNWexSpVifIlLShjhe69sVr+ruTXAc7kabxh30a?=
+ =?us-ascii?Q?ua5HXsli5rqK3iWHWGkkc0udHcWZFKxKu1YvyKTH0870Ypa3WXUc9KCQRtXf?=
+ =?us-ascii?Q?X+qpEIWYNsgk6ITD8kseox5o0SZznQRO+jTKXXYAp7aowpBOlUY+kAvT7wIU?=
+ =?us-ascii?Q?IViyPe7MB07CjF+YvsoMrtsfxkWU9/8rVP/KY0u/p34NPhSsnRjtVykJ2Uyu?=
+ =?us-ascii?Q?gkdG9SPVUKiDTtXimwQeacsr775+2F06w8GbxzIR/hM=3D?=
+x-ms-exchange-transport-forked: True
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR18MB1598.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b0727983-3a35-4fd1-dec2-08d897a24e3a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Dec 2020 15:44:22.3643
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB3976.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0523c1e6-568e-42c0-1a32-08d897a2b72a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Dec 2020 15:47:18.5111
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9c9y+VtNBmmyeDVlBYHVbEf0zWC9BgahLto9IVeYSj/9CYhA+PGBkbTK95jd5vRtufShzsejWI8dWOV1Cg/xBw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR18MB3594
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-12-03_08:2020-12-03,2020-12-03 signatures=0
+X-MS-Exchange-CrossTenant-userprincipalname: pqlRK6FzAMhs/IFZF/rB1skdX5ZljOsgTmyC1BoVItGFGS42EgDvAiGbvm7YSHkasY3GjH9ZoPwqnyjKV/3rYQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3559
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 03, 2020 at 04:36:00PM +0200, Andrew Lunn wrote:
->> Add maintainers info for new Marvell Prestera Ethernet switch driver.
->>=20
->> Signed-off-by: Mickey Rachamim <mickeyr@marvell.com>
->> ---
->>  MAINTAINERS | 9 +++++++++
->>  1 file changed, 9 insertions(+)
-
-> Hi Mickey
+> -----Original Message-----
+> From: Patrick Havelange <patrick.havelange@essensium.com>
+> Sent: 03 December 2020 15:51
+> To: Madalin Bucur <madalin.bucur@nxp.com>; David S. Miller
+> <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>;
+> netdev@vger.kernel.org; linux-kernel@vger.kernel.org
+> Cc: Patrick Havelange <patrick.havelange@essensium.com>
+> Subject: [PATCH net 1/4] net: freescale/fman: Split the main resource
+> region reservation
 >=20
-> All the commits came from
+> The main fman driver is only using some parts of the fman memory
+> region.
+> Split the reservation of the main region in 2, so that the other
+> regions that will be used by fman-port and fman-mac drivers can
+> be reserved properly and not be in conflict with the main fman
+> reservation.
 >=20
-> Vadym Kochan <vadym.kochan@plvision.eu>
->=20
-> Has Marvell purchased PL Vision?
->=20
->     Andrew
+> Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
 
-Hi Andrew,=20
+I think the problem you are trying to work on here is that the device
+tree entry that describes the FMan IP allots to the parent FMan device the
+whole memory-mapped registers area, as described in the device datasheet.
+The smaller FMan building blocks (ports, MDIO controllers, etc.) are
+each using a nested subset of this memory-mapped registers area.
+While this hierarchical depiction of the hardware has not posed a problem
+to date, it is possible to cause issues if both the FMan driver and any
+of the sub-blocks drivers are trying to exclusively reserve the registers
+area. I'm assuming this is the problem you are trying to address here,
+besides the stack corruption issue. While for the latter I think we can
+put together a quick fix, for the former I'd like to take a bit of time
+to select the best fix, if one is really needed. So, please, let's split
+the two problems and first address the incorrect stack memory use.
 
-No, Marvell didn't purchase PLVision and I can understand the reason for th=
-inking it.
-PLVision and Marvell teams are keep working together as partners on support=
-ing this program.
-Vadym Kochan is and will remain an important contributor on this program.
-
-Regards, Mickey.
-
+Regards,
+Madalin
