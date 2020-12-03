@@ -2,167 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D31382CE229
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 23:55:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 991F22CE246
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 00:03:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731889AbgLCWxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 17:53:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33806 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728717AbgLCWxd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 17:53:33 -0500
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E88AC061A52;
-        Thu,  3 Dec 2020 14:53:08 -0800 (PST)
-Received: by mail-pg1-x542.google.com with SMTP id t37so2324707pga.7;
-        Thu, 03 Dec 2020 14:53:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=oIe++tU4EfyyFjCAKxrRYoNaW31kt/FbR7e6ygRmz6M=;
-        b=F/B89NUmX31NRfpfXzveJauQrM6R2uGHZdVvsWTndOjPvzhv7M/WfLe9pNqfz4DxeM
-         JNCZUy7EarFo3a2uy0BYVIaIZxoOk/z+wfF8jEyTav7LsgwowyacXd00J0UrMt4rkOjX
-         wYKQ9qBei9dXSZKVIjIafnID77vSLmA4OQ4k24nAF0c6TMqgOCCqQPZnpLAZImEqcx+t
-         AmuW/7ggQljS60bYaEfU/HEBL7kq/j+ENX02EiM7mSJbwnd5UioNqiIrf1LwOrIKOEfe
-         OZfB1YWXNyy67hdV7quOTQNrj5bX1l3I4UGhB2SzZTNWqbigeYiKabezqtJzxHSdy5OV
-         GglA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=oIe++tU4EfyyFjCAKxrRYoNaW31kt/FbR7e6ygRmz6M=;
-        b=tSQp+SnNlf1TqpYRNue0KV37u0o68AQy4BMullnRxDKDXXSDOwSbWqlQ2yQag8e0L3
-         ULEx4cRa2AjNWV4qQC55wDWkW653IAbk6Zpd1bwc+cP/AHbdyDyHqPPKZFXcc9TqWNxp
-         5ZwjxkQj3BkvmIwoR06fn0e9TW9Vl/WafSamkcd7zRBtZ4en+RbS4tH5I3IpzRi5fFIM
-         oGHFO03ej7DOvgORQKYBPbnJK0FRBcNatC6ufEnrG5FcUpoUtr4jBKxBuxI+J56zYG9K
-         vtnU3VyEOEOE0fP+UdEpKaNTkuzyqrf/L3I3EAQYrcc/Nb+TNQX7aaqJO4dJNSRvXHRZ
-         kprQ==
-X-Gm-Message-State: AOAM532qLJYn5WbhFcREGrNPssKxjD4UTNKuwHGqOzw36mRXczdmruwv
-        YRYVaWw8L1C0l9j33KnUHlqYxXv7DPY=
-X-Google-Smtp-Source: ABdhPJxkGeX9HWhvAG6TJAJJ375yO43bKeia/oXO5VAoa3lovUZV/GtDGabtDHcB6Gk3DmTIyIQBgA==
-X-Received: by 2002:a63:db18:: with SMTP id e24mr4958276pgg.155.1607035988012;
-        Thu, 03 Dec 2020 14:53:08 -0800 (PST)
-Received: from localhost.localdomain ([182.226.226.37])
-        by smtp.googlemail.com with ESMTPSA id y21sm3078232pfr.90.2020.12.03.14.53.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Dec 2020 14:53:07 -0800 (PST)
-From:   Bongsu Jeon <bongsu.jeon2@gmail.com>
-X-Google-Original-From: Bongsu Jeon
-To:     krzk@kernel.org
-Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Bongsu Jeon <bongsu.jeon@samsung.com>
-Subject: [PATCH v2 net-next] nfc: s3fwrn5: skip the NFC bootloader mode
-Date:   Fri,  4 Dec 2020 07:52:57 +0900
-Message-Id: <20201203225257.2446-1-bongsu.jeon@samsung.com>
-X-Mailer: git-send-email 2.17.1
+        id S1727278AbgLCXCw convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 3 Dec 2020 18:02:52 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:49427 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725912AbgLCXCw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 18:02:52 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-213-lMlV4Ow3NduhgVn87rEWKA-1; Thu, 03 Dec 2020 23:01:11 +0000
+X-MC-Unique: lMlV4Ow3NduhgVn87rEWKA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Thu, 3 Dec 2020 23:01:11 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Thu, 3 Dec 2020 23:01:11 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Stephen Hemminger' <stephen@networkplumber.org>,
+        Arjun Roy <arjunroy.kdev@gmail.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "arjunroy@google.com" <arjunroy@google.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "soheil@google.com" <soheil@google.com>
+Subject: RE: [net-next v2 1/8] net-zerocopy: Copy straggler unaligned data for
+ TCP Rx. zerocopy.
+Thread-Topic: [net-next v2 1/8] net-zerocopy: Copy straggler unaligned data
+ for TCP Rx. zerocopy.
+Thread-Index: AQHWyQnnIy5Nhf4BLE+JcVO2pr+xUKnl/WUA
+Date:   Thu, 3 Dec 2020 23:01:11 +0000
+Message-ID: <384c6be35cc044eeb1bbcf5dcc6d819f@AcuMS.aculab.com>
+References: <20201202220945.911116-1-arjunroy.kdev@gmail.com>
+        <20201202220945.911116-2-arjunroy.kdev@gmail.com>
+ <20201202161527.51fcdcd7@hermes.local>
+In-Reply-To: <20201202161527.51fcdcd7@hermes.local>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bongsu Jeon <bongsu.jeon@samsung.com>
+From: Stephen Hemminger
+> Sent: 03 December 2020 00:15
+> 
+> On Wed,  2 Dec 2020 14:09:38 -0800
+> Arjun Roy <arjunroy.kdev@gmail.com> wrote:
+> 
+> > diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
+> > index cfcb10b75483..62db78b9c1a0 100644
+> > --- a/include/uapi/linux/tcp.h
+> > +++ b/include/uapi/linux/tcp.h
+> > @@ -349,5 +349,7 @@ struct tcp_zerocopy_receive {
+> >  	__u32 recv_skip_hint;	/* out: amount of bytes to skip */
+> >  	__u32 inq; /* out: amount of bytes in read queue */
+> >  	__s32 err; /* out: socket error */
+> > +	__u64 copybuf_address;	/* in: copybuf address (small reads) */
+> > +	__s32 copybuf_len; /* in/out: copybuf bytes avail/used or error */
 
-If there isn't a proper NFC firmware image, Bootloader mode will be
-skipped.
+You need to swap the order of the above fields to avoid padding
+and differing alignments for 32bit and 64bit apps.
 
-Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
----
+> >  };
+> >  #endif /* _UAPI_LINUX_TCP_H */
+> 
+> You can't safely grow the size of a userspace API without handling the
+> case of older applications.  Logic in setsockopt() would have to handle
+> both old and new sizes of the structure.
 
- ChangeLog:
-  v2:
-   - change the commit message.
-   - change the skip handling code.
+You also have to allow for old (working) applications being recompiled
+with the new headers.
+So you cannot rely on the fields being zero even if you are passed
+the size of the structure.
 
- drivers/nfc/s3fwrn5/core.c     | 23 +++++++++++++++++++++--
- drivers/nfc/s3fwrn5/firmware.c | 11 +----------
- drivers/nfc/s3fwrn5/firmware.h |  1 +
- 3 files changed, 23 insertions(+), 12 deletions(-)
+	David
 
-diff --git a/drivers/nfc/s3fwrn5/core.c b/drivers/nfc/s3fwrn5/core.c
-index f8e5d78d9078..c00b7a07c3ee 100644
---- a/drivers/nfc/s3fwrn5/core.c
-+++ b/drivers/nfc/s3fwrn5/core.c
-@@ -20,13 +20,26 @@
- 				NFC_PROTO_ISO14443_B_MASK | \
- 				NFC_PROTO_ISO15693_MASK)
- 
-+static int s3fwrn5_firmware_init(struct s3fwrn5_info *info)
-+{
-+	struct s3fwrn5_fw_info *fw_info = &info->fw_info;
-+	int ret;
-+
-+	s3fwrn5_fw_init(fw_info, "sec_s3fwrn5_firmware.bin");
-+
-+	/* Get firmware data */
-+	ret = s3fwrn5_fw_request_firmware(fw_info);
-+	if (ret < 0)
-+		dev_err(&fw_info->ndev->nfc_dev->dev,
-+			"Failed to get fw file, ret=%02x\n", ret);
-+	return ret;
-+}
-+
- static int s3fwrn5_firmware_update(struct s3fwrn5_info *info)
- {
- 	bool need_update;
- 	int ret;
- 
--	s3fwrn5_fw_init(&info->fw_info, "sec_s3fwrn5_firmware.bin");
 -
- 	/* Update firmware */
- 
- 	s3fwrn5_set_wake(info, false);
-@@ -109,6 +122,12 @@ static int s3fwrn5_nci_post_setup(struct nci_dev *ndev)
- 	struct s3fwrn5_info *info = nci_get_drvdata(ndev);
- 	int ret;
- 
-+	if (s3fwrn5_firmware_init(info)) {
-+		//skip bootloader mode
-+		ret = 0;
-+		goto out;
-+	}
-+
- 	ret = s3fwrn5_firmware_update(info);
- 	if (ret < 0)
- 		goto out;
-diff --git a/drivers/nfc/s3fwrn5/firmware.c b/drivers/nfc/s3fwrn5/firmware.c
-index 4cde6dd5c019..4b5352e2b915 100644
---- a/drivers/nfc/s3fwrn5/firmware.c
-+++ b/drivers/nfc/s3fwrn5/firmware.c
-@@ -280,7 +280,7 @@ static int s3fwrn5_fw_complete_update_mode(struct s3fwrn5_fw_info *fw_info)
- 
- #define S3FWRN5_FW_IMAGE_HEADER_SIZE 44
- 
--static int s3fwrn5_fw_request_firmware(struct s3fwrn5_fw_info *fw_info)
-+int s3fwrn5_fw_request_firmware(struct s3fwrn5_fw_info *fw_info)
- {
- 	struct s3fwrn5_fw_image *fw = &fw_info->fw;
- 	u32 sig_off;
-@@ -358,15 +358,6 @@ int s3fwrn5_fw_setup(struct s3fwrn5_fw_info *fw_info)
- 	struct s3fwrn5_fw_cmd_get_bootinfo_rsp bootinfo;
- 	int ret;
- 
--	/* Get firmware data */
--
--	ret = s3fwrn5_fw_request_firmware(fw_info);
--	if (ret < 0) {
--		dev_err(&fw_info->ndev->nfc_dev->dev,
--			"Failed to get fw file, ret=%02x\n", ret);
--		return ret;
--	}
--
- 	/* Get bootloader info */
- 
- 	ret = s3fwrn5_fw_get_bootinfo(fw_info, &bootinfo);
-diff --git a/drivers/nfc/s3fwrn5/firmware.h b/drivers/nfc/s3fwrn5/firmware.h
-index 3c83e6730d30..3a82ce5837fb 100644
---- a/drivers/nfc/s3fwrn5/firmware.h
-+++ b/drivers/nfc/s3fwrn5/firmware.h
-@@ -89,6 +89,7 @@ struct s3fwrn5_fw_info {
- 	char parity;
- };
- 
-+int s3fwrn5_fw_request_firmware(struct s3fwrn5_fw_info *fw_info);
- void s3fwrn5_fw_init(struct s3fwrn5_fw_info *fw_info, const char *fw_name);
- int s3fwrn5_fw_setup(struct s3fwrn5_fw_info *fw_info);
- bool s3fwrn5_fw_check_version(const struct s3fwrn5_fw_info *fw_info, u32 version);
--- 
-2.17.1
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
