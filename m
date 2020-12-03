@@ -2,99 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3545A2CE0D2
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 22:36:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C924A2CE0DA
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 22:37:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727513AbgLCVgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 16:36:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49912 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725885AbgLCVgB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 16:36:01 -0500
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70C44C061A4F
-        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 13:35:15 -0800 (PST)
-Received: by mail-lj1-x242.google.com with SMTP id z1so4215904ljn.4
-        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 13:35:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=dtycNcYPPC2hp7PqLbGXpuy7zc9dQtMhlYyIu2c12oA=;
-        b=hgGAduhh7x6yws4KUC3/h+aZsXHkFEDzCaRlGE/IXqxy1De5qPLGpipDS+snaa1AKS
-         NdVyF2EB9vxInacrv9sxaft+SpgINAD3V3fU6N5FfdmIH0Qg/0J6gyx+mYFDEsiiYjGy
-         v89GxJFE8a+yJyrHf45DIicvnxS/HaI/VmuE9B8EnSmTpUmh78JonfP1CnebG3Kr5DsC
-         eNiK57Qcr/waJG0ez44JdZp+L/ysbhEx05QxbrwjfeT4cdmIMPSVrcy3cNXLoAmOT9qv
-         qN9o5jLhFR//fyg0vOCUbs573jqXhOs3Cm5PuY3sqBDLgsPZLjZhJshH7sEDKq+jCXNl
-         I1tw==
+        id S2387893AbgLCVgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 16:36:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:25199 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728034AbgLCVgu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 16:36:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607031324;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=2hjENq5PBqAj5ZyDy1YdPKW4hQcF6Bo4mZqU9xYjYxs=;
+        b=YBUbAyYyCnBqeT0+ujfI2WEM+jX8P684kCclbNH4UfuCp4cN27J4iRmFG6ogylg78R2ipy
+        MnaWpNzLPnDUVTyh4Vy7PsL90jEANcjyVvRU+sZ+AxY/Nk89MqctVRaefaa5c1alrie0vx
+        vm2Td8avl4CgoLga3ExZ4WeB/FTp0Gw=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-585-gbRUMJnkPbWitGR4812TRA-1; Thu, 03 Dec 2020 16:35:20 -0500
+X-MC-Unique: gbRUMJnkPbWitGR4812TRA-1
+Received: by mail-qv1-f69.google.com with SMTP id v8so2821889qvq.12
+        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 13:35:20 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=dtycNcYPPC2hp7PqLbGXpuy7zc9dQtMhlYyIu2c12oA=;
-        b=X94j/tB80lGyCkwm+IRAzMRDbZWwsauJoQSvefHbTTwyL0oY5LIJnw5kppMguZVaQq
-         O5cFV1tCmJjtNSaPTVRQyqKaeikPiVS/m705V3wiTBbLdrOC0+v7Mm5cFnmkEDyC7ZtW
-         U6Qk/jvKABVTa43u04BY3IqWfPjLX4g1y/Vvc9M9/8VrA7Nw6QpwnRfeo7Yfk5t1nv4W
-         hZ1gLxbSLKMxiPOPfZQxEs/97SfVzz2HEveQiqtdgDz1hWnZDO/eI+Ou0jlx7SVOyVk2
-         1vAMgJm55hve6YxKKXNBnGfpABGIQMr5oju24Xsg37CiEqPIgwxTsL/cNRm4hjvw+ssT
-         5tYA==
-X-Gm-Message-State: AOAM532KoJGqUy6kW3FzoOt34F2ZgC3EVnMAPvcpFOxJAq7jM7TEak53
-        2Z6qvXuz846t6DFiP6qdtxC97A+VShaKD7PU
-X-Google-Smtp-Source: ABdhPJwZ9CAtt631kN0NN6by37H7QlhpakejzPgBc618CXg7QrItppSsmU8nESBXOA8uD9jOGfiz/w==
-X-Received: by 2002:a2e:b5d9:: with SMTP id g25mr2095591ljn.234.1607031313685;
-        Thu, 03 Dec 2020 13:35:13 -0800 (PST)
-Received: from wkz-x280 (h-236-82.A259.priv.bahnhof.se. [98.128.236.82])
-        by smtp.gmail.com with ESMTPSA id 136sm928951lfb.62.2020.12.03.13.35.12
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=2hjENq5PBqAj5ZyDy1YdPKW4hQcF6Bo4mZqU9xYjYxs=;
+        b=prm2PPjk9znyN0LX/Q3WBTFioOZ/8Uvglz8YLOzJTu51XhwVkaHsBoSBLDdu6QMufL
+         te81MqRSWAN7qxBLg9AJ3v5I+S3GoXm8C5rig1L3uiCdKimOPyD3nV1MUP+EFpU2RjM7
+         FYvKZUC2l8kIFWGAX4NwaTTgKcMTyWBh8KM+Eo+W6hieuPFcLd68ffRFgtZm/61X1R4K
+         FrAdsPUtUFWZXo5wu1TobO5Z8YFvWmboCE+2tioMYv0oa1siUEzJfmSUteyVav3Xabgb
+         qKvcwTQbYoFTG00yE4KgGJvnk0pedQiC1kfyOg2Whdy8UCm8ozYeCXJl/E1iHL6rsO52
+         6LdA==
+X-Gm-Message-State: AOAM533rJRs3PPPrD4eNmRCfYElgtNobQ+6AnHnH240FSuG7c/9ld1+B
+        1rSzr7blTGZDpK4I1XAf6MHpJeYk0+DV/d9LO9MIIuvATeYpZsMygH4YwEmajPdnf31SqsOlEqp
+        NpTPGaN1ATjynCAj8
+X-Received: by 2002:a05:620a:990:: with SMTP id x16mr5154607qkx.316.1607031320136;
+        Thu, 03 Dec 2020 13:35:20 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw2l9NcgawV3L4H9UBAIhZxeD2lOOgRBccfU64KRJt4/85GYNO8Fo05jgzrW/YvPq6hpfuiqw==
+X-Received: by 2002:a05:620a:990:: with SMTP id x16mr5154584qkx.316.1607031319859;
+        Thu, 03 Dec 2020 13:35:19 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id y189sm3019686qka.30.2020.12.03.13.35.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Dec 2020 13:35:12 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 2/4] net: dsa: Link aggregation support
-In-Reply-To: <20201203210941.GJ2333853@lunn.ch>
-References: <20201202091356.24075-1-tobias@waldekranz.com> <20201202091356.24075-3-tobias@waldekranz.com> <20201203162428.ffdj7gdyudndphmn@skbuf> <87a6uu7gsr.fsf@waldekranz.com> <20201203210941.GJ2333853@lunn.ch>
-Date:   Thu, 03 Dec 2020 22:35:12 +0100
-Message-ID: <877dpy7eun.fsf@waldekranz.com>
+        Thu, 03 Dec 2020 13:35:19 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 2D1C3181CF8; Thu,  3 Dec 2020 22:35:17 +0100 (CET)
+Subject: [PATCH bpf 0/7] selftests/bpf: Restore test_offload.py to working
+ order
+From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Romain Perier <romain.perier@gmail.com>,
+        Allen Pais <apais@linux.microsoft.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
+        Jiri Benc <jbenc@redhat.com>, oss-drivers@netronome.com,
+        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Date:   Thu, 03 Dec 2020 22:35:17 +0100
+Message-ID: <160703131710.162669.9632344967082582016.stgit@toke.dk>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 03, 2020 at 22:09, Andrew Lunn <andrew@lunn.ch> wrote:
->> One could argue that if Linus had received an error instead, adapted his
->> teamd config and tried again, he would be a happier user and we might
->> not have to compete with his OS.
->> 
->> I am not sure which way is the correct one, but I do not think that it
->> necessarily _always_ correct to silently fallback to a non-offloaded
->> mode.
->
-> This is an argument Mellanox makes, where falling back to software
-> would be a bad idea given the huge bandwidth of their hardware
-> accelerator, and the slow bandwidth of their CPU.
+This series restores the test_offload.py selftest to working order. It seems a
+number of subtle behavioural changes have crept into various subsystems which
+broke test_offload.py in a number of ways. Most of these are fairly benign
+changes where small adjustments to the test script seems to be the best fix, but
+one is an actual kernel bug that I've observed in the wild caused by a bad
+interaction between xdp_attachment_flags_ok() and the rework of XDP program
+handling in the core netdev code.
 
-Yeah when you have 100G interfaces the choice becomes easier :)
+Patch 1 fixes the bug by removing xdp_attachment_flags_ok(), and the reminder of
+the patches are adjustments to test_offload.py, including a new feature for
+netdevsim to force a BPF verification fail. Please see the individual patches
+for details.
 
-> If the switch has no hardware support for LAG at all, then falling
-> back to software is reasonable. It is less clear when there is some
-> support in the switch. If we do reject it, we should try to make use
-> of extack to give the user a useful error messages: Not supported, try
-> configuration XYZ. But i guess that needs some plumbing, getting
-> extack available in the place we make the decision.
+---
 
-I do not think we need to add anything. Looking at mlxsw, the extack is
-available in the `struct netdev_notifier_changeupper_info`.
+Toke Høiland-Jørgensen (7):
+      xdp: remove the xdp_attachment_flags_ok() callback
+      selftests/bpf/test_offload.py: Remove check for program load flags match
+      netdevsim: Add debugfs toggle to reject BPF programs in verifier
+      selftests/bpf/test_offload.py: only check verifier log on verification fails
+      selftests/bpf/test_offload.py: fix expected case of extack messages
+      selftests/bpf/test_offload.py: reset ethtool features after failed setting
+      selftests/bpf/test_offload.py: filter bpftool internal map when counting maps
 
-I am leaning towards the behavior you just described:
 
-- If there is no offloading available, accept anything and let the
-  software take care of it. The user wants a LAG and that is the best we
-  can do.
+ .../ethernet/netronome/nfp/nfp_net_common.c   |  6 ---
+ drivers/net/ethernet/ti/cpsw_priv.c           |  3 --
+ drivers/net/netdevsim/bpf.c                   | 15 ++++--
+ drivers/net/netdevsim/netdevsim.h             |  1 +
+ include/net/xdp.h                             |  2 -
+ net/core/xdp.c                                | 12 -----
+ tools/testing/selftests/bpf/test_offload.py   | 49 +++++++++----------
+ 7 files changed, 35 insertions(+), 53 deletions(-)
 
-- If offloading is available, reject anything that can not be
-  offloaded. My guess is that _any_ hardware offloaded setup will almost
-  always yield a better solution for the user than a software fallback.
