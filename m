@@ -2,84 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 125D12CD0B4
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 09:03:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E61A2CD0CE
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 09:09:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729906AbgLCIC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 03:02:29 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:8926 "EHLO
-        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726539AbgLCIC3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 03:02:29 -0500
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CmpFC5J89z782w;
-        Thu,  3 Dec 2020 16:01:19 +0800 (CST)
-Received: from localhost (10.174.187.156) by DGGEMS414-HUB.china.huawei.com
- (10.3.19.214) with Microsoft SMTP Server id 14.3.487.0; Thu, 3 Dec 2020
- 16:01:39 +0800
-From:   wangyunjian <wangyunjian@huawei.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>
-CC:     <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <jerry.lilijun@huawei.com>,
-        <xudingke@huawei.com>, Yunjian Wang <wangyunjian@huawei.com>
-Subject: [PATCH net-next] tun: fix ubuf refcount incorrectly on error path
-Date:   Thu, 3 Dec 2020 16:00:59 +0800
-Message-ID: <1606982459-41752-1-git-send-email-wangyunjian@huawei.com>
-X-Mailer: git-send-email 1.9.5.msysgit.1
+        id S2388135AbgLCIH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 03:07:56 -0500
+Received: from esa3.microchip.iphmx.com ([68.232.153.233]:23652 "EHLO
+        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728731AbgLCIH4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 03:07:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1606982876; x=1638518876;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LSN0KUT7yJTZZ9i4OeFR4JBEwWeneDUsBs1/dwXw104=;
+  b=zuYPQ6zh8iUkX9umDmaVjOju/2IQGzJ0+ier0910eXsbpn7TH2K5egb1
+   WSz46LZ4yNx3kDrBgl7nYaxBs8V3nft7VJ2NMvMkGOap1V4ux+smV53ou
+   SUftXS7m+hkknNtiYeWdD5C/EpuB+n3OvBOl6DRBKrrhc4U755ruWZfpY
+   K9/ZDf7DLHjrX3i/Q1onCVcnPbPAsvyhpKdKxebeETrGXiZdk5AYyVuK3
+   a9qay/VGgeBEkOAD7VerufYSSHW38BC7NRTfV1j5IJMkw9fQn2E9GinPM
+   OTEJnFAfdQhPLTByAjUbfF9C3G02YcDT995DQ7YttO42iKKMP2mqAs+YS
+   Q==;
+IronPort-SDR: naS8rlCpLZ2/86cEDa526JaAXCfAtdZFkj7ZeVG6Pl+OgQhZiMrglK/DYL2uKkA0N+7e7YmLKs
+ yt6Jjj1sAEaBEUBn5M3IxDrZGdbvsOWDhTF76mqj3RhMdMzfXNIBD3wpcYUSyeYF0WzleCx2Fd
+ 2qRZfMhFwNxnmhWna4KdERVEnqwqyu39nTI3zDXav+eyJ3+OPKkm7fFSYCmw6PceyNDb+jBcRL
+ y+xUv2bRc8/NT8SWhWktoJEOG+1iVkqO2L8UIHfFPsmvhHr8qD+yafMFykJ662ITTGUmun9NuP
+ Ruc=
+X-IronPort-AV: E=Sophos;i="5.78,389,1599548400"; 
+   d="scan'208";a="101237131"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 03 Dec 2020 01:06:49 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 3 Dec 2020 01:06:49 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Thu, 3 Dec 2020 01:06:49 -0700
+Date:   Thu, 3 Dec 2020 09:06:48 +0100
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     <netdev@vger.kernel.org>, Kishon Vijay Abraham I <kishon@ti.com>,
+        "Vinod Koul" <vkoul@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v7 0/4] Adding the Sparx5 Serdes driver
+Message-ID: <20201203080648.24o7oyw5h6qp4coa@mchp-dev-shegelun>
+References: <20201202130438.3330228-1-steen.hegelund@microchip.com>
+ <20201202222140.wzdiypc2edviy57n@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.174.187.156]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20201202222140.wzdiypc2edviy57n@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunjian Wang <wangyunjian@huawei.com>
+On 03.12.2020 00:21, Vladimir Oltean wrote:
+>EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>
+>Hi Steen,
+>
+>On Wed, Dec 02, 2020 at 02:04:34PM +0100, Steen Hegelund wrote:
+>> Adding the Sparx5 Serdes driver
+>>
+...
 
-After setting callback for ubuf_info of skb, the callback
-(vhost_net_zerocopy_callback) will be called to decrease
-the refcount when freeing skb. But when an exception occurs
-afterwards, the error handling in vhost handle_tx() will
-try to decrease the same refcount again. This is wrong and
-fix this by clearing ubuf_info when meeting errors.
+>> --
+>> 2.29.2
+>
+>I think this series is interesting enough that you can at least cc the
+>networking mailing list when sending these? Did that for you now.
 
-Fixes: 4477138fa0ae ("tun: properly test for IFF_UP")
-Fixes: 90e33d459407 ("tun: enable napi_gro_frags() for TUN/TAP driver")
+Thanks Vladimir.  I will do that going forward.
 
-Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
----
- drivers/net/tun.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+BR
+Steen
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 2dc1988a8973..3614bb1b6d35 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -1861,6 +1861,12 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 	if (unlikely(!(tun->dev->flags & IFF_UP))) {
- 		err = -EIO;
- 		rcu_read_unlock();
-+		if (zerocopy) {
-+			skb_shinfo(skb)->destructor_arg = NULL;
-+			skb_shinfo(skb)->tx_flags &= ~SKBTX_DEV_ZEROCOPY;
-+			skb_shinfo(skb)->tx_flags &= ~SKBTX_SHARED_FRAG;
-+		}
-+
- 		goto drop;
- 	}
- 
-@@ -1874,6 +1880,11 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
- 
- 		if (unlikely(headlen > skb_headlen(skb))) {
- 			atomic_long_inc(&tun->dev->rx_dropped);
-+			if (zerocopy) {
-+				skb_shinfo(skb)->destructor_arg = NULL;
-+				skb_shinfo(skb)->tx_flags &= ~SKBTX_DEV_ZEROCOPY;
-+				skb_shinfo(skb)->tx_flags &= ~SKBTX_SHARED_FRAG;
-+			}
- 			napi_free_frags(&tfile->napi);
- 			rcu_read_unlock();
- 			mutex_unlock(&tfile->napi_mutex);
--- 
-2.18.1
-
+---------------------------------------
+Steen Hegelund
+steen.hegelund@microchip.com
