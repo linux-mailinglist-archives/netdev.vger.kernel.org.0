@@ -2,106 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B8F92CDD31
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 19:18:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 658602CDD49
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 19:24:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728221AbgLCSSG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 13:18:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47432 "EHLO
+        id S1729423AbgLCSXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 13:23:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727004AbgLCSSF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 13:18:05 -0500
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8E03C061A4F
-        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 10:17:25 -0800 (PST)
-Received: by mail-io1-xd43.google.com with SMTP id y5so3053530iow.5
-        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 10:17:25 -0800 (PST)
+        with ESMTP id S1726142AbgLCSXB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 13:23:01 -0500
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227ECC061A4E;
+        Thu,  3 Dec 2020 10:22:21 -0800 (PST)
+Received: by mail-lf1-x144.google.com with SMTP id j205so4122876lfj.6;
+        Thu, 03 Dec 2020 10:22:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=pSh2mdC7u3jYyuadkXEKxhnw2EdBMqG74YREkWtGxzs=;
-        b=pH5KLWJOYLAYoMpUZBNfHMaZ5E2mGJcez938N7fELV0yceC8u+BNwqR7KSgii3lU+z
-         EUWF118GMrbQo/MbiQ7arjsoMXJiDqn+eHgnALl3putfca4BgyAhZqt7BqfEoQpexKrH
-         Y+nUBHeaCZOkBcvtQmA3gD8IiJ1f1qdt52paVWsZ/d5MYMW4LZEj90ljQeHABpmsQbF0
-         d/BTSRMfauF6XXNec03vsqrJR/POOfYFWFqpwFsrCj4jA3a+Tc5SMHW1sFpFklBDElWG
-         4Fd12OXzSnrahS/tICth1iwzKYhnlWY6xW1KVC5D0FgSBmERwEUS0vxbR9HVnorgldSA
-         692A==
+        bh=oK4UspCxPt4rZenc9BNNj8jOpIMjTnwtWvokvuaxYP4=;
+        b=VegaAbCIDmhi0fTfzZ0zRU8+o3iHuLVT9V/ajgHTwldE+BP3nGp1lcWU6npJs02Btl
+         VxXjkVrotEt3cJrsJO8yICmngy4FSHh3pu/7kH2eqHkgS3UILTw7fy9wtxXvapHW8VGB
+         SxgMIZAUCJwzIzjuhDSCDie6GdPDc0GKUKMRs+cgSDzUkWoMlK/uG5hE+DSCdBd91Ne0
+         aVvTpZa1LBariJUuZGxfBe3tcQlgvyQbLzkoY8eD5d7ffeZYhCRqAFAE5rmLmlSvs4gi
+         XsFdDKjqulT20DukaK0PG9ZruFUmmV+NM/XqzlvDLbENMlXt2kbefwD4e7AaPO8vqW8n
+         G+aA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=pSh2mdC7u3jYyuadkXEKxhnw2EdBMqG74YREkWtGxzs=;
-        b=oFcRwLDPoaeZpfZqqCgeTjhYuVfjjjXcRSFJuqA5bgAqDejfyOMxgnTaDqbvcD9hCI
-         cDzfgQLJxssI4wGVRaWsj7BKesJTC1sbLCC/VjEnJsCXKfUcul1ElUncZ7I3KYLCnLnN
-         Bo7Whou/35CIPO3Ftvv7yxAEaPSIK/6YcuKY0CoXEAmAqEag5vnzwV2Ki4uhhySSPyqm
-         eQkHq+YnE/ceWhkmDNejZPqnUsvLGdoJ5cgl+6H5qmrWTh1pOGIo/q91I29lomyMm9bh
-         BEO9ikkHpaVjmYKWeoAPNVqDTYJ24HkIAwyIFNzVMVkoXk36qy3y1IgppaXj9JXODUo9
-         vBiw==
-X-Gm-Message-State: AOAM533M/ynia/BNqHjXlbBDqEm1wKzuUd+2CHznOOB72L5L1jJDvdS/
-        3P+VDNkTfTeuoqf+3RiIn83nEx1JpyBSzq7BqKc=
-X-Google-Smtp-Source: ABdhPJyg/h0QFwwgOB+1ZRPRQC6BIM5BtZbrbcjKV3BOlb9QFX08SmcT8oKyWiopJzSjFpalytaB/ORjp1CAq6DlKL8=
-X-Received: by 2002:a5d:964a:: with SMTP id d10mr507706ios.5.1607019444940;
- Thu, 03 Dec 2020 10:17:24 -0800 (PST)
+        bh=oK4UspCxPt4rZenc9BNNj8jOpIMjTnwtWvokvuaxYP4=;
+        b=Xga6RssRGJqo1KHUn7cIgzXbKfEFYQJUVXK8iCa6s8p5gBNWBWEavjZ0zykN4Rxfwn
+         FOYgKFdKrbL2vsvisj0k5yO+2T/Gc6glLCA6TowXGmxHrTaIee/I51BhvZt4IRygzi7z
+         jQyi0ADHMdyFNd4LZ37sS77XHIIqIyXvP8sAbdehXR/EUeWLjMPO/xK8/E17zRUJ96yR
+         i6yd54lKwdgih1GeRAyuTrB9pyA6+qYJi3mOa9rfE8EtXINM6oOWRB+eOcCdktQZhlw1
+         lzQWxOKiEx6ECWM5MQLrXn6yrdY6eCbHyWrQxvlKJ5bz1xhZdSTmOIjAi4hqwysSUai3
+         c7qQ==
+X-Gm-Message-State: AOAM532MvJnm5n3E82Rd4d4FyLq6o/MpoXhp+HilKP8K3xjrgHVhF94p
+        qjY8ftZLFbHHGeb2PGrhKJ+qhS0giqTLpJzhCmu2s20O
+X-Google-Smtp-Source: ABdhPJxFh4ZK/tzg6Y33zHSo2fG+08nIkpOn8YG84VRfna7M9R14MkJ27DLQYOyv3/hnFS1RyrdJV/znGQUtKCjJLoQ=
+X-Received: by 2002:a19:8048:: with SMTP id b69mr1744736lfd.263.1607019739583;
+ Thu, 03 Dec 2020 10:22:19 -0800 (PST)
 MIME-Version: 1.0
-References: <20201202182413.232510-1-awogbemila@google.com>
-In-Reply-To: <20201202182413.232510-1-awogbemila@google.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Thu, 3 Dec 2020 10:17:14 -0800
-Message-ID: <CAKgT0UcOWkxAEqa+_T-QQiF_jgyozGe=U_vx_L3kzc1LsQ-Q5Q@mail.gmail.com>
-Subject: Re: [PATCH net-next v9 0/4] GVE Raw Addressing
-To:     David Awogbemila <awogbemila@google.com>
-Cc:     Netdev <netdev@vger.kernel.org>, Saeed Mahameed <saeed@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
+References: <20201201194438.37402-1-xiyou.wangcong@gmail.com>
+ <20201202171032.029b1cd8@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+ <CAM_iQpWfv59MoEJES1O=FhA4YsrB2nNGGaKzDmqcmXQXzc8gow@mail.gmail.com> <CAADnVQK74XFuK6ybYeqdw1qNt2ZDi-HbrgMxeem46Uh-76sX7Q@mail.gmail.com>
+In-Reply-To: <CAADnVQK74XFuK6ybYeqdw1qNt2ZDi-HbrgMxeem46Uh-76sX7Q@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 3 Dec 2020 10:22:07 -0800
+Message-ID: <CAADnVQ+tRAKn4KR_k9eU-fG3iQhivzwn6d2BDGnX_44MTBrkJg@mail.gmail.com>
+Subject: Re: [Patch net] lwt: disable BH too in run_lwt_bpf()
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Dongdong Wang <wangdongdong@bytedance.com>,
+        Thomas Graf <tgraf@suug.ch>, bpf <bpf@vger.kernel.org>,
+        Cong Wang <cong.wang@bytedance.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 2, 2020 at 10:24 AM David Awogbemila <awogbemila@google.com> wrote:
+On Wed, Dec 2, 2020 at 5:50 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> Patchset description:
-> This  patchset introduces "raw addressing" mode to the GVE driver.
-> Previously (in "queue_page_list" or "qpl" mode), the driver would
-> pre-allocate and dma_map buffers to be used on egress and ingress.
-> On egress, it would copy data from the skb provided to the
-> pre-allocated buffers - this was expensive.
-> In raw addressing mode, the driver can avoid this copy and simply
-> dma_map the skb's data so that the NIC can use it.
-> On ingress, the driver passes buffers up to the networking stack and
-> then frees and reallocates buffers when necessary instead of using
-> skb_copy_to_linear_data.
-> Patch 3 separates the page refcount tracking mechanism
-> into a function gve_rx_can_recycle_buffer which uses get_page - this will
-> be changed in a future patch to eliminate the use of get_page in tracking
-> page refcounts.
+> On Wed, Dec 2, 2020 at 5:32 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >
+> > On Wed, Dec 2, 2020 at 5:10 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > >
+> > > On Tue,  1 Dec 2020 11:44:38 -0800 Cong Wang wrote:
+> > > > From: Dongdong Wang <wangdongdong@bytedance.com>
+> > > >
+> > > > The per-cpu bpf_redirect_info is shared among all skb_do_redirect()
+> > > > and BPF redirect helpers. Callers on RX path are all in BH context,
+> > > > disabling preemption is not sufficient to prevent BH interruption.
+> > > >
+> > > > In production, we observed strange packet drops because of the race
+> > > > condition between LWT xmit and TC ingress, and we verified this issue
+> > > > is fixed after we disable BH.
+> > > >
+> > > > Although this bug was technically introduced from the beginning, that
+> > > > is commit 3a0af8fd61f9 ("bpf: BPF for lightweight tunnel infrastructure"),
+> > > > at that time call_rcu() had to be call_rcu_bh() to match the RCU context.
+> > > > So this patch may not work well before RCU flavor consolidation has been
+> > > > completed around v5.0.
+> > > >
+> > > > Update the comments above the code too, as call_rcu() is now BH friendly.
+> > > >
+> > > > Cc: Thomas Graf <tgraf@suug.ch>
+> > > > Cc: bpf@vger.kernel.org
+> > > > Reviewed-by: Cong Wang <cong.wang@bytedance.com>
+> > > > Signed-off-by: Dongdong Wang <wangdongdong@bytedance.com>
+> > > > ---
+> > > >  net/core/lwt_bpf.c | 8 ++++----
+> > > >  1 file changed, 4 insertions(+), 4 deletions(-)
+> > > >
+> > > > diff --git a/net/core/lwt_bpf.c b/net/core/lwt_bpf.c
+> > > > index 7d3438215f32..4f3cb7c15ddf 100644
+> > > > --- a/net/core/lwt_bpf.c
+> > > > +++ b/net/core/lwt_bpf.c
+> > > > @@ -39,12 +39,11 @@ static int run_lwt_bpf(struct sk_buff *skb, struct bpf_lwt_prog *lwt,
+> > > >  {
+> > > >       int ret;
+> > > >
+> > > > -     /* Preempt disable is needed to protect per-cpu redirect_info between
+> > > > -      * BPF prog and skb_do_redirect(). The call_rcu in bpf_prog_put() and
+> > > > -      * access to maps strictly require a rcu_read_lock() for protection,
+> > > > -      * mixing with BH RCU lock doesn't work.
+> > > > +     /* Preempt disable and BH disable are needed to protect per-cpu
+> > > > +      * redirect_info between BPF prog and skb_do_redirect().
+> > > >        */
+> > > >       preempt_disable();
+> > > > +     local_bh_disable();
+> > >
+> > > Why not remove the preempt_disable()? Disabling BH must also disable
+> > > preemption AFAIK.
+> >
+> > It seems RT kernel still needs preempt disable:
 >
-> Changes from v8:
-> Patch 4: Free skbs that are not sent in gve_tx().
->
-> Catherine Sullivan (3):
->   gve: Add support for raw addressing device option
->   gve: Add support for raw addressing to the rx path
->   gve: Add support for raw addressing in the tx path
->
-> David Awogbemila (1):
->   gve: Rx Buffer Recycling
->
->  drivers/net/ethernet/google/gve/gve.h         |  39 +-
->  drivers/net/ethernet/google/gve/gve_adminq.c  |  89 ++++-
->  drivers/net/ethernet/google/gve/gve_adminq.h  |  15 +-
->  drivers/net/ethernet/google/gve/gve_desc.h    |  19 +-
->  drivers/net/ethernet/google/gve/gve_ethtool.c |   2 +
->  drivers/net/ethernet/google/gve/gve_main.c    |  11 +-
->  drivers/net/ethernet/google/gve/gve_rx.c      | 364 +++++++++++++-----
->  drivers/net/ethernet/google/gve/gve_tx.c      | 202 ++++++++--
->  8 files changed, 577 insertions(+), 164 deletions(-)
->
-> --
-> 2.29.2.576.ga3fc446d84-goog
->
+> No. It's the opposite. When we did RT+bpf changes we missed this function.
+> It should be migrate_disable here instead of preempt_disable.
+> I don't know what local_bh_disable() maps to in RT.
+> Since it's used in many other places it's fine to use it here to
+> prevent this race.
 
-Other than the few nits with counters being u32 values I didn't really
-see much else.
-
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+I guess my previous comment could be misinterpreted.
+Cong,
+please respin with changing preempt_disable to migrate_disable
+and adding local_bh_disable.
