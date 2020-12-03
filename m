@@ -2,71 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54BA32CDEA3
-	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 20:17:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D750C2CDEAF
+	for <lists+netdev@lfdr.de>; Thu,  3 Dec 2020 20:20:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728558AbgLCTRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 14:17:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46132 "EHLO mail.kernel.org"
+        id S1729703AbgLCTUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 14:20:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49302 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725793AbgLCTRb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Dec 2020 14:17:31 -0500
-Date:   Thu, 3 Dec 2020 11:16:48 -0800
+        id S1728745AbgLCTUr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 14:20:47 -0500
+Content-Type: text/plain; charset="utf-8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607023010;
-        bh=jVfAtjxjwYd/n0n+h+d+9a0J+3UHrSy09PN7PdewrQM=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IMEim52G73YWynot00GSGFI7w9F7U8sD0SxfquAqCj1Fkb6yrAr4v7VZ46nkD2cdA
-         ZV2l9vCk18kI5xPY7sr9uouEGD7BgFtgoIqf6MgFFbd+2NGwaC7/6ulUxM2ICRMYas
-         xFfVqnHU5CaEjyOetTnhefgwNcv11dBx3h3Y9nVVjJoVl/S4Og+zccZRJ8v527S8g4
-         gSohW/Jgv1/ZXpmQnke8jq3MmE3q3f8GFQV3ar1NP9Fxpk2wcXHjD8Kfy2cc+QVbfA
-         Fi4pl13gBuB+8o8M5dX6RxQyMdLwjrp4yXG7TTkt8ySs/JZ6Uv3sH/8oiI4AYMuIy0
-         2bAxoACC0juFQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeedm@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>
-Subject: Re: [pull request][net 0/4] mlx5 fixes 2020-12-01
-Message-ID: <20201203111648.5bbf1d1d@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201203105239.3e189565@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-References: <20201203043946.235385-1-saeedm@nvidia.com>
-        <20201203105239.3e189565@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+        s=k20201202; t=1607023206;
+        bh=sWFFODPd40zBnNhZr/NzmUgo3XAp3HPfNsDpEkPKUs0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=jKvfwRKoGTjgsKdJbEPHbuyAe0oPu2IaQ01SZTqPPFOS+755bsnrWAzqs9T6kdIYT
+         xqvjp8S0wMtNzpxn0tmHeRN+zNYNJrZP8kIQ40fovCntKM6SEo065BkH+PH24Fe9Pr
+         eqC9tEmlT9EN0vp0H8cdqAXvco9E9p1cyBAjrJ5A+jffvjdKO/zE93QcsQYivkEakU
+         D++VgyMnhABlvCxFE8PNhFxeYXloH8WUaxzgUixcuZjXlhed8MVcJE6aYwSBql11CC
+         AtWJ/ICocX9+DZRgHErZ2hu1Kh70F5lxDtXsTdmEfkQ2kovWHD8ySV2WwAvGPGw/m2
+         Wou6lmXV9KtrA==
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2] net/sched: act_mpls: ensure LSE is pullable before
+ reading it
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160702320644.13599.7452057402463120880.git-patchwork-notify@kernel.org>
+Date:   Thu, 03 Dec 2020 19:20:06 +0000
+References: <3243506cba43d14858f3bd21ee0994160e44d64a.1606987058.git.dcaratti@redhat.com>
+In-Reply-To: <3243506cba43d14858f3bd21ee0994160e44d64a.1606987058.git.dcaratti@redhat.com>
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     jhs@mojatatu.com, jiri@resnulli.us, xiyou.wangcong@gmail.com,
+        kuba@kernel.org, netdev@vger.kernel.org, gnault@redhat.com,
+        marcelo.leitner@gmail.com, john.hurley@netronome.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 3 Dec 2020 10:52:39 -0800 Jakub Kicinski wrote:
-> On Wed, 2 Dec 2020 20:39:42 -0800 Saeed Mahameed wrote:
-> > Hi Jakub,
-> > 
-> > This series introduces some fixes to mlx5 driver.
-> > Please pull and let me know if there is any problem.
-> > 
-> > For the DR steering patch I will need it in net-next as well, I would
-> > appreciate it if you will take this small series before your pr to linus.
-> > 
-> > For -stable v5.4:
-> >  ('net/mlx5: DR, Proper handling of unsupported Connect-X6DX SW steering')
-> > 
-> > For -stable v5.8
-> >  ('net/mlx5: Fix wrong address reclaim when command interface is down')
-> > 
-> > For -stable v5.9
-> >  ('net: mlx5e: fix fs_tcp.c build when IPV6 is not enabled')  
-> 
-> Your tree is missing your signoff on:
-> 
-> Commit 3041429da89b ("net/mlx5e: kTLS, Enforce HW TX csum offload with kTLS")
-> 	committer Signed-off-by missing
-> 	author email:    tariqt@nvidia.com
-> 	committer email: saeedm@nvidia.com
-> 	Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-> 
-> You can fix it or I'll just apply the patches from the ML.
+Hello:
 
-Well, it's the last thing I got in the queue before I prep the PR so
-let me just apply from the ML.
+This patch was applied to netdev/net.git (refs/heads/master):
 
-Thanks!
+On Thu,  3 Dec 2020 10:37:52 +0100 you wrote:
+> when 'act_mpls' is used to mangle the LSE, the current value is read from
+> the packet dereferencing 4 bytes at mpls_hdr(): ensure that the label is
+> contained in the skb "linear" area.
+> 
+> Found by code inspection.
+> 
+> v2:
+>  - use MPLS_HLEN instead of sizeof(new_lse), thanks to Jakub Kicinski
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,v2] net/sched: act_mpls: ensure LSE is pullable before reading it
+    https://git.kernel.org/netdev/net/c/9608fa653059
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
