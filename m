@@ -2,236 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07C342CEDE0
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 13:13:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49D3F2CEDE4
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 13:16:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388138AbgLDMNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 07:13:21 -0500
-Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:11813 "EHLO
-        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388120AbgLDMNV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 07:13:21 -0500
+        id S1728773AbgLDMQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 07:16:09 -0500
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:55376 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728110AbgLDMQJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 07:16:09 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1607083999; x=1638619999;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=02Bi8MBd1rNlKdikT93tk9POZ/gfefstn5txf86tMKs=;
-  b=K96hszvEyso2w6k2GhB2JpGRyYXRfMOwN1fK1A/ljb30ZzlzxlyLRI4P
-   vHgVXGDncS5O6g5woqjI15vGYv5IzvCpdrH+c/zZwZW+1YsbyOpi70Hd7
-   MUL0M0Zcb6tgA7dYyrXPHCpxDCGxQwY8aTov1HGvxF+VHFjOJeV0bNRFy
-   s=;
+  t=1607084167; x=1638620167;
+  h=from:to:cc:date:message-id:references:in-reply-to:
+   content-transfer-encoding:mime-version:subject;
+  bh=rFwLVeJixE/Y9uSxuGLaY3sPVIZJkuHGaGHld2ltbIY=;
+  b=repeSfODhcHoq9w+g1qqeNU97EbmyvoP0S5UZoCEs2t/b1m5MQY1VikS
+   ubqQN9lv6Wqy+Or731+NTmjg/C7FhagcmwR5KTSNFGLbitJf6WLbCw4vo
+   B4a7eI62OqGwyC7IYs5loN0PV7CFEXTqQPxFcjAPWC3+7eaofnkx1qK+P
+   g=;
 X-IronPort-AV: E=Sophos;i="5.78,392,1599523200"; 
-   d="scan'208";a="70566205"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2c-76e0922c.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 04 Dec 2020 12:12:13 +0000
-Received: from EX13MTAUWC002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2c-76e0922c.us-west-2.amazon.com (Postfix) with ESMTPS id BA007A64A3;
-        Fri,  4 Dec 2020 12:12:12 +0000 (UTC)
-Received: from EX13D02UWC003.ant.amazon.com (10.43.162.199) by
- EX13MTAUWC002.ant.amazon.com (10.43.162.240) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Fri, 4 Dec 2020 12:12:06 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
- EX13D02UWC003.ant.amazon.com (10.43.162.199) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Fri, 4 Dec 2020 12:12:05 +0000
-Received: from HFA15-G63729NC.amazon.com (10.1.212.14) by
- mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Fri, 4 Dec 2020 12:12:01 +0000
-From:   <akiyano@amazon.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <ndagan@amazon.com>, <shayagr@amazon.com>,
-        <sameehj@amazon.com>
-Subject: [PATCH V4 net-next 9/9] net: ena: introduce ndo_xdp_xmit() function for XDP_REDIRECT
-Date:   Fri, 4 Dec 2020 14:11:15 +0200
-Message-ID: <1607083875-32134-10-git-send-email-akiyano@amazon.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1607083875-32134-1-git-send-email-akiyano@amazon.com>
-References: <1607083875-32134-1-git-send-email-akiyano@amazon.com>
+   d="scan'208";a="93480100"
+Subject: RE: [PATCH V3 net-next 1/9] net: ena: use constant value for net_device
+ allocation
+Thread-Topic: [PATCH V3 net-next 1/9] net: ena: use constant value for net_device
+ allocation
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1d-37fd6b3d.us-east-1.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 04 Dec 2020 12:15:20 +0000
+Received: from EX13D04EUA001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-1d-37fd6b3d.us-east-1.amazon.com (Postfix) with ESMTPS id 32CCF2823AB;
+        Fri,  4 Dec 2020 12:15:19 +0000 (UTC)
+Received: from EX13D22EUA004.ant.amazon.com (10.43.165.129) by
+ EX13D04EUA001.ant.amazon.com (10.43.165.136) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Fri, 4 Dec 2020 12:15:18 +0000
+Received: from EX13D22EUA004.ant.amazon.com ([10.43.165.129]) by
+ EX13D22EUA004.ant.amazon.com ([10.43.165.129]) with mapi id 15.00.1497.006;
+ Fri, 4 Dec 2020 12:15:18 +0000
+From:   "Kiyanovski, Arthur" <akiyano@amazon.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "Matushevsky, Alexander" <matua@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Wilson, Matt" <msw@amazon.com>,
+        "Liguori, Anthony" <aliguori@amazon.com>,
+        "Bshara, Nafea" <nafea@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Saidi, Ali" <alisaidi@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>,
+        "Dagan, Noam" <ndagan@amazon.com>,
+        "Agroskin, Shay" <shayagr@amazon.com>,
+        "Jubran, Samih" <sameehj@amazon.com>
+Thread-Index: AQHWyOY7W5up3AKuN0yNOHumslDLmKnkWc6AgAEWr1CAAGsggIAA/9Dg
+Date:   Fri, 4 Dec 2020 12:15:03 +0000
+Deferred-Delivery: Fri, 4 Dec 2020 12:14:15 +0000
+Message-ID: <dce9a1a7bf3f47c8ac0b726ee430fc33@EX13D22EUA004.ant.amazon.com>
+References: <1606939410-26718-1-git-send-email-akiyano@amazon.com>
+ <1606939410-26718-2-git-send-email-akiyano@amazon.com>
+ <10a1c719-1408-5305-38fd-254213f8a42b@gmail.com>
+ <fa4653d9d4d54f9d8ffc982fb809b618@EX13D22EUA004.ant.amazon.com>
+ <8297c879-49d3-9c38-6b74-aa9118ddfdee@gmail.com>
+In-Reply-To: <8297c879-49d3-9c38-6b74-aa9118ddfdee@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.166.196]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arthur Kiyanovski <akiyano@amazon.com>
-
-This patch implements the ndo_xdp_xmit() net_device function which is
-called when a packet is redirected to this driver using an
-XDP_REDIRECT directive.
-
-The function receives an array of xdp frames that it needs to xmit.
-The TX queues that are used to xmit these frames are the XDP
-queues used by the XDP_TX flow. Therefore a lock is added to synchronize
-both flows (XDP_TX and XDP_REDIRECT).
-
-Signed-off-by: Shay Agroskin <shayagr@amazon.com>
-Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
----
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 83 +++++++++++++++++---
- drivers/net/ethernet/amazon/ena/ena_netdev.h |  1 +
- 2 files changed, 72 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 0d077a626604..6c5d8b8c4d13 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -281,20 +281,18 @@ static int ena_xdp_tx_map_frame(struct ena_ring *xdp_ring,
- 	return -EINVAL;
- }
- 
--static int ena_xdp_xmit_frame(struct net_device *dev,
-+static int ena_xdp_xmit_frame(struct ena_ring *xdp_ring,
-+			      struct net_device *dev,
- 			      struct xdp_frame *xdpf,
--			      int qid)
-+			      int flags)
- {
--	struct ena_adapter *adapter = netdev_priv(dev);
- 	struct ena_com_tx_ctx ena_tx_ctx = {};
- 	struct ena_tx_buffer *tx_info;
--	struct ena_ring *xdp_ring;
- 	u16 next_to_use, req_id;
--	int rc;
- 	void *push_hdr;
- 	u32 push_len;
-+	int rc;
- 
--	xdp_ring = &adapter->tx_ring[qid];
- 	next_to_use = xdp_ring->next_to_use;
- 	req_id = xdp_ring->free_ids[next_to_use];
- 	tx_info = &xdp_ring->tx_buffer_info[req_id];
-@@ -321,25 +319,76 @@ static int ena_xdp_xmit_frame(struct net_device *dev,
- 	/* trigger the dma engine. ena_com_write_sq_doorbell()
- 	 * has a mb
- 	 */
--	ena_com_write_sq_doorbell(xdp_ring->ena_com_io_sq);
--	ena_increase_stat(&xdp_ring->tx_stats.doorbells, 1, &xdp_ring->syncp);
-+	if (flags & XDP_XMIT_FLUSH) {
-+		ena_com_write_sq_doorbell(xdp_ring->ena_com_io_sq);
-+		ena_increase_stat(&xdp_ring->tx_stats.doorbells, 1,
-+				  &xdp_ring->syncp);
-+	}
- 
--	return NETDEV_TX_OK;
-+	return rc;
- 
- error_unmap_dma:
- 	ena_unmap_tx_buff(xdp_ring, tx_info);
- 	tx_info->xdpf = NULL;
- error_drop_packet:
- 	xdp_return_frame(xdpf);
--	return NETDEV_TX_OK;
-+	return rc;
-+}
-+
-+static int ena_xdp_xmit(struct net_device *dev, int n,
-+			struct xdp_frame **frames, u32 flags)
-+{
-+	struct ena_adapter *adapter = netdev_priv(dev);
-+	int qid, i, err, drops = 0;
-+	struct ena_ring *xdp_ring;
-+
-+	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK))
-+		return -EINVAL;
-+
-+	if (!test_bit(ENA_FLAG_DEV_UP, &adapter->flags))
-+		return -ENETDOWN;
-+
-+	/* We assume that all rings have the same XDP program */
-+	if (!READ_ONCE(adapter->rx_ring->xdp_bpf_prog))
-+		return -ENXIO;
-+
-+	qid = smp_processor_id() % adapter->xdp_num_queues;
-+	qid += adapter->xdp_first_ring;
-+	xdp_ring = &adapter->tx_ring[qid];
-+
-+	/* Other CPU ids might try to send thorugh this queue */
-+	spin_lock(&xdp_ring->xdp_tx_lock);
-+
-+	for (i = 0; i < n; i++) {
-+		err = ena_xdp_xmit_frame(xdp_ring, dev, frames[i], 0);
-+		/* The descriptor is freed by ena_xdp_xmit_frame in case
-+		 * of an error.
-+		 */
-+		if (err)
-+			drops++;
-+	}
-+
-+	/* Ring doorbell to make device aware of the packets */
-+	if (flags & XDP_XMIT_FLUSH) {
-+		ena_com_write_sq_doorbell(xdp_ring->ena_com_io_sq);
-+		ena_increase_stat(&xdp_ring->tx_stats.doorbells, 1,
-+				  &xdp_ring->syncp);
-+	}
-+
-+	spin_unlock(&xdp_ring->xdp_tx_lock);
-+
-+	/* Return number of packets sent */
-+	return n - drops;
- }
- 
- static int ena_xdp_execute(struct ena_ring *rx_ring, struct xdp_buff *xdp)
- {
- 	struct bpf_prog *xdp_prog;
-+	struct ena_ring *xdp_ring;
- 	u32 verdict = XDP_PASS;
- 	struct xdp_frame *xdpf;
- 	u64 *xdp_stat;
-+	int qid;
- 
- 	rcu_read_lock();
- 	xdp_prog = READ_ONCE(rx_ring->xdp_bpf_prog);
-@@ -352,8 +401,16 @@ static int ena_xdp_execute(struct ena_ring *rx_ring, struct xdp_buff *xdp)
- 	switch (verdict) {
- 	case XDP_TX:
- 		xdpf = xdp_convert_buff_to_frame(xdp);
--		ena_xdp_xmit_frame(rx_ring->netdev, xdpf,
--				   rx_ring->qid + rx_ring->adapter->num_io_queues);
-+		/* Find xmit queue */
-+		qid = rx_ring->qid + rx_ring->adapter->num_io_queues;
-+		xdp_ring = &rx_ring->adapter->tx_ring[qid];
-+
-+		/* The XDP queues are shared between XDP_TX and XDP_REDIRECT */
-+		spin_lock(&xdp_ring->xdp_tx_lock);
-+
-+		ena_xdp_xmit_frame(xdp_ring, rx_ring->netdev, xdpf, XDP_XMIT_FLUSH);
-+
-+		spin_unlock(&xdp_ring->xdp_tx_lock);
- 		xdp_stat = &rx_ring->rx_stats.xdp_tx;
- 		break;
- 	case XDP_REDIRECT:
-@@ -644,6 +701,7 @@ static void ena_init_io_rings(struct ena_adapter *adapter,
- 		txr->smoothed_interval =
- 			ena_com_get_nonadaptive_moderation_interval_tx(ena_dev);
- 		txr->disable_meta_caching = adapter->disable_meta_caching;
-+		spin_lock_init(&txr->xdp_tx_lock);
- 
- 		/* Don't init RX queues for xdp queues */
- 		if (!ENA_IS_XDP_INDEX(adapter, i)) {
-@@ -3236,6 +3294,7 @@ static const struct net_device_ops ena_netdev_ops = {
- 	.ndo_set_mac_address	= NULL,
- 	.ndo_validate_addr	= eth_validate_addr,
- 	.ndo_bpf		= ena_xdp,
-+	.ndo_xdp_xmit		= ena_xdp_xmit,
- };
- 
- static int ena_device_validate_params(struct ena_adapter *adapter,
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.h b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-index fed79c50a870..74af15d62ee1 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-@@ -258,6 +258,7 @@ struct ena_ring {
- 	struct ena_com_io_sq *ena_com_io_sq;
- 	struct bpf_prog *xdp_bpf_prog;
- 	struct xdp_rxq_info xdp_rxq;
-+	spinlock_t xdp_tx_lock;	/* synchronize XDP TX/Redirect traffic */
- 
- 	u16 next_to_use;
- 	u16 next_to_clean;
--- 
-2.23.3
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSGVpbmVyIEthbGx3ZWl0
+IDxoa2FsbHdlaXQxQGdtYWlsLmNvbT4NCj4gU2VudDogVGh1cnNkYXksIERlY2VtYmVyIDMsIDIw
+MjAgMTA6NTYgUE0NCj4gVG86IEtpeWFub3Zza2ksIEFydGh1ciA8YWtpeWFub0BhbWF6b24uY29t
+Pjsga3ViYUBrZXJuZWwub3JnOw0KPiBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBkYXZlbUBkYXZl
+bWxvZnQubmV0DQo+IENjOiBXb29kaG91c2UsIERhdmlkIDxkd213QGFtYXpvbi5jby51az47IE1h
+Y2h1bHNreSwgWm9yaWsNCj4gPHpvcmlrQGFtYXpvbi5jb20+OyBNYXR1c2hldnNreSwgQWxleGFu
+ZGVyIDxtYXR1YUBhbWF6b24uY29tPjsNCj4gQnNoYXJhLCBTYWVlZCA8c2FlZWRiQGFtYXpvbi5j
+b20+OyBXaWxzb24sIE1hdHQgPG1zd0BhbWF6b24uY29tPjsNCj4gTGlndW9yaSwgQW50aG9ueSA8
+YWxpZ3VvcmlAYW1hem9uLmNvbT47IEJzaGFyYSwgTmFmZWENCj4gPG5hZmVhQGFtYXpvbi5jb20+
+OyBUemFsaWssIEd1eSA8Z3R6YWxpa0BhbWF6b24uY29tPjsgQmVsZ2F6YWwsDQo+IE5ldGFuZWwg
+PG5ldGFuZWxAYW1hem9uLmNvbT47IFNhaWRpLCBBbGkgPGFsaXNhaWRpQGFtYXpvbi5jb20+Ow0K
+PiBIZXJyZW5zY2htaWR0LCBCZW5qYW1pbiA8YmVuaEBhbWF6b24uY29tPjsgRGFnYW4sIE5vYW0N
+Cj4gPG5kYWdhbkBhbWF6b24uY29tPjsgQWdyb3NraW4sIFNoYXkgPHNoYXlhZ3JAYW1hem9uLmNv
+bT47IEp1YnJhbiwNCj4gU2FtaWggPHNhbWVlaGpAYW1hem9uLmNvbT4NCj4gU3ViamVjdDogUkU6
+IFtFWFRFUk5BTF0gW1BBVENIIFYzIG5ldC1uZXh0IDEvOV0gbmV0OiBlbmE6IHVzZSBjb25zdGFu
+dA0KPiB2YWx1ZSBmb3IgbmV0X2RldmljZSBhbGxvY2F0aW9uDQo+IA0KPiBDQVVUSU9OOiBUaGlz
+IGVtYWlsIG9yaWdpbmF0ZWQgZnJvbSBvdXRzaWRlIG9mIHRoZSBvcmdhbml6YXRpb24uIERvIG5v
+dCBjbGljaw0KPiBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRzIHVubGVzcyB5b3UgY2FuIGNvbmZp
+cm0gdGhlIHNlbmRlciBhbmQga25vdyB0aGUNCj4gY29udGVudCBpcyBzYWZlLg0KPiANCj4gDQo+
+IA0KPiBBbSAwMy4xMi4yMDIwIHVtIDE1OjM4IHNjaHJpZWIgS2l5YW5vdnNraSwgQXJ0aHVyOg0K
+PiA+DQo+ID4NCj4gPj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPj4gRnJvbTogSGVp
+bmVyIEthbGx3ZWl0IDxoa2FsbHdlaXQxQGdtYWlsLmNvbT4NCj4gPj4gU2VudDogV2VkbmVzZGF5
+LCBEZWNlbWJlciAyLCAyMDIwIDExOjU1IFBNDQo+ID4+IFRvOiBLaXlhbm92c2tpLCBBcnRodXIg
+PGFraXlhbm9AYW1hem9uLmNvbT47IGt1YmFAa2VybmVsLm9yZzsNCj4gPj4gbmV0ZGV2QHZnZXIu
+a2VybmVsLm9yZw0KPiA+PiBDYzogV29vZGhvdXNlLCBEYXZpZCA8ZHdtd0BhbWF6b24uY28udWs+
+OyBNYWNodWxza3ksIFpvcmlrDQo+ID4+IDx6b3Jpa0BhbWF6b24uY29tPjsgTWF0dXNoZXZza3ks
+IEFsZXhhbmRlciA8bWF0dWFAYW1hem9uLmNvbT47DQo+ID4+IEJzaGFyYSwgU2FlZWQgPHNhZWVk
+YkBhbWF6b24uY29tPjsgV2lsc29uLCBNYXR0DQo+IDxtc3dAYW1hem9uLmNvbT47DQo+ID4+IExp
+Z3VvcmksIEFudGhvbnkgPGFsaWd1b3JpQGFtYXpvbi5jb20+OyBCc2hhcmEsIE5hZmVhDQo+ID4+
+IDxuYWZlYUBhbWF6b24uY29tPjsgVHphbGlrLCBHdXkgPGd0emFsaWtAYW1hem9uLmNvbT47IEJl
+bGdhemFsLA0KPiA+PiBOZXRhbmVsIDxuZXRhbmVsQGFtYXpvbi5jb20+OyBTYWlkaSwgQWxpIDxh
+bGlzYWlkaUBhbWF6b24uY29tPjsNCj4gPj4gSGVycmVuc2NobWlkdCwgQmVuamFtaW4gPGJlbmhA
+YW1hem9uLmNvbT47IERhZ2FuLCBOb2FtDQo+ID4+IDxuZGFnYW5AYW1hem9uLmNvbT47IEFncm9z
+a2luLCBTaGF5IDxzaGF5YWdyQGFtYXpvbi5jb20+Ow0KPiBKdWJyYW4sDQo+ID4+IFNhbWloIDxz
+YW1lZWhqQGFtYXpvbi5jb20+DQo+ID4+IFN1YmplY3Q6IFJFOiBbRVhURVJOQUxdIFtQQVRDSCBW
+MyBuZXQtbmV4dCAxLzldIG5ldDogZW5hOiB1c2UNCj4gPj4gY29uc3RhbnQgdmFsdWUgZm9yIG5l
+dF9kZXZpY2UgYWxsb2NhdGlvbg0KPiA+Pg0KPiA+PiBDQVVUSU9OOiBUaGlzIGVtYWlsIG9yaWdp
+bmF0ZWQgZnJvbSBvdXRzaWRlIG9mIHRoZSBvcmdhbml6YXRpb24uIERvDQo+ID4+IG5vdCBjbGlj
+ayBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRzIHVubGVzcyB5b3UgY2FuIGNvbmZpcm0gdGhlIHNl
+bmRlcg0KPiA+PiBhbmQga25vdyB0aGUgY29udGVudCBpcyBzYWZlLg0KPiA+Pg0KPiA+Pg0KPiA+
+Pg0KPiA+PiBBbSAwMi4xMi4yMDIwIHVtIDIxOjAzIHNjaHJpZWIgYWtpeWFub0BhbWF6b24uY29t
+Og0KPiA+Pj4gRnJvbTogQXJ0aHVyIEtpeWFub3Zza2kgPGFraXlhbm9AYW1hem9uLmNvbT4NCj4g
+Pj4+DQo+ID4+PiBUaGUgcGF0Y2ggY2hhbmdlcyB0aGUgbWF4aW11bSBudW1iZXIgb2YgUlgvVFgg
+cXVldWVzIGl0IGFkdmVydGlzZXMNCj4gPj4+IHRvIHRoZSBrZXJuZWwgKHZpYSBhbGxvY19ldGhl
+cmRldl9tcSgpKSBmcm9tIGEgdmFsdWUgcmVjZWl2ZWQgZnJvbQ0KPiA+Pj4gdGhlIGRldmljZSB0
+byBhIGNvbnN0YW50IHZhbHVlIHdoaWNoIGlzIHRoZSBtaW5pbXVtIGJldHdlZW4gMTI4IGFuZA0K
+PiA+Pj4gdGhlIG51bWJlciBvZiBDUFVzIGluIHRoZSBzeXN0ZW0uDQo+ID4+Pg0KPiA+Pj4gQnkg
+YWxsb2NhdGluZyB0aGUgbmV0X2RldmljZSBzdHJ1Y3Qgd2l0aCBhIGNvbnN0YW50IG51bWJlciBv
+Zg0KPiA+Pj4gcXVldWVzLCB0aGUgZHJpdmVyIGlzIGFibGUgdG8gYWxsb2NhdGUgaXQgYXQgYSBt
+dWNoIGVhcmxpZXIgc3RhZ2UsDQo+ID4+PiBiZWZvcmUgY2FsbGluZyBhbnkgZW5hX2NvbSBmdW5j
+dGlvbnMuIFRoaXMgd291bGQgYWxsb3cgdG8gbWFrZSBhbGwNCj4gPj4+IGxvZyBwcmludHMgaW4g
+ZW5hX2NvbSB0byB1c2UgbmV0ZGV2XyogbG9nIGZ1bmN0aW9ucyBpbnN0ZWFkIG9yIGN1cnJlbnQN
+Cj4gcHJfKiBvbmVzLg0KPiA+Pj4NCj4gPj4NCj4gPj4gRGlkIHlvdSB0ZXN0IHRoaXM/IFVzdWFs
+bHkgdXNpbmcgbmV0ZGV2XyogYmVmb3JlIHRoZSBuZXRfZGV2aWNlIGlzDQo+ID4+IHJlZ2lzdGVy
+ZWQgcmVzdWx0cyBpbiBxdWl0ZSB1Z2x5IG1lc3NhZ2VzLiBUaGVyZWZvcmUgdGhlcmUncyBhIG51
+bWJlcg0KPiA+PiBvZiBwYXRjaGVzIGRvaW5nIHRoZSBvcHBvc2l0ZSwgcmVwbGFjaW5nIG5ldGRl
+dl8qIHdpdGggZGV2XyogYmVmb3JlDQo+ID4+IHJlZ2lzdGVyX25ldGRldigpLiBTZWUgZS5nLg0K
+PiA+PiAyMjE0OGRmMGQwYmQgKCJyODE2OTogZG9uJ3QgdXNlIG5ldGlmX2luZm8gZXQgYWwgYmVm
+b3JlIG5ldF9kZXZpY2UNCj4gPj4gaGFzIGJlZW4NCj4gPj4gcmVnaXN0ZXJlZCIpDQo+ID4NCj4g
+PiBUaGFua3MgZm9yIHlvdXIgY29tbWVudC4NCj4gPiBZZXMgd2UgZGlkIHRlc3QgaXQuDQo+ID4g
+UGxlYXNlIHNlZSB0aGUgZGlzY3Vzc2lvbiB3aGljaCBsZWQgdG8gdGhpcyBwYXRjaCBpbiBhIHBy
+ZXZpb3VzIHRocmVhZCBoZXJlOg0KPiA+IGh0dHBzOi8vd3d3Lm1haWwtYXJjaGl2ZS5jb20vbmV0
+ZGV2QHZnZXIua2VybmVsLm9yZy9tc2czNTM1OTAuaHRtbA0KPiA+DQo+IA0KPiBBaCwgSSBzZWUu
+IEFmdGVyIHJlYWRpbmcgdGhlIG1haWwgdGhyZWFkIHlvdXIgbW90aXZhdGlvbiBpcyBjbGVhci4N
+Cj4gWW91IGFjY2VwdCB1Z2x5IG1lc3NhZ2VzIHdoZW4gZW5hX2NvbSBmdW5jdGlvbnMgYXJlIGNh
+bGxlZCBmcm9tIHByb2JlKCkNCj4gZm9yIHRoZSBzYWtlIG9mIGJldHRlciBtZXNzYWdlcyB3aGVu
+IHRoZSBzYW1lIGVuYV9jb20gZnVuY3Rpb25zIGFyZQ0KPiBjYWxsZWQgbGF0ZXIgZnJvbSBvdGhl
+ciBwYXJ0cyBvZiB0aGUgZHJpdmVyLiBNYXliZSBhbiBleHBsYW5hdGlvbiBvZiB0aGlzDQo+IHRy
+YWRlb2ZmIHdvdWxkIGhhdmUgYmVlbiBnb29kIGluIHRoZSBjb21taXQgbWVzc2FnZSAob3IgYSBs
+aW5rIHRvIHRoZSBtYWlsDQo+IHRocmVhZCkuDQoNCkdvb2QgaWRlYS4NCkFkZGVkIHRoaXMgZXhw
+bGFuYXRpb24gdG8gdGhlIG5leHQgdmVyc2lvbiBvZiB0aGlzIHBhdGNoc2V0Lg0KVGhhbmtzIQ0K
+DQo+ID4+PiBTaWduZWQtb2ZmLWJ5OiBTaGF5IEFncm9za2luIDxzaGF5YWdyQGFtYXpvbi5jb20+
+DQo+ID4+PiBTaWduZWQtb2ZmLWJ5OiBBcnRodXIgS2l5YW5vdnNraSA8YWtpeWFub0BhbWF6b24u
+Y29tPg0KPiA+Pj4gLS0tDQo+ID4+PiAgZHJpdmVycy9uZXQvZXRoZXJuZXQvYW1hem9uL2VuYS9l
+bmFfbmV0ZGV2LmMgfCA0Ng0KPiA+Pj4gKysrKysrKysrKy0tLS0tLS0tLS0NCj4gPj4+ICAxIGZp
+bGUgY2hhbmdlZCwgMjMgaW5zZXJ0aW9ucygrKSwgMjMgZGVsZXRpb25zKC0pDQo+ID4+Pg0KPiA+
+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2FtYXpvbi9lbmEvZW5hX25ldGRl
+di5jDQo+ID4+PiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2FtYXpvbi9lbmEvZW5hX25ldGRldi5j
+DQo+ID4+PiBpbmRleCBkZjE4ODRkNTdkMWEuLjk4NWRlYTE4NzBiNSAxMDA2NDQNCj4gPj4+IC0t
+LSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2FtYXpvbi9lbmEvZW5hX25ldGRldi5jDQo+ID4+PiAr
+KysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9hbWF6b24vZW5hL2VuYV9uZXRkZXYuYw0KPiA+Pj4g
+QEAgLTI5LDYgKzI5LDggQEAgTU9EVUxFX0xJQ0VOU0UoIkdQTCIpOw0KPiA+Pj4gIC8qIFRpbWUg
+aW4gamlmZmllcyBiZWZvcmUgY29uY2x1ZGluZyB0aGUgdHJhbnNtaXR0ZXIgaXMgaHVuZy4gKi8N
+Cj4gPj4+ICNkZWZpbmUgVFhfVElNRU9VVCAgKDUgKiBIWikNCj4gPj4+DQo+ID4+PiArI2RlZmlu
+ZSBFTkFfTUFYX1JJTkdTIG1pbl90KHVuc2lnbmVkIGludCwNCj4gPj4gRU5BX01BWF9OVU1fSU9f
+UVVFVUVTLA0KPiA+Pj4gK251bV9wb3NzaWJsZV9jcHVzKCkpDQo+ID4+PiArDQo+ID4+PiAgI2Rl
+ZmluZSBFTkFfTkFQSV9CVURHRVQgNjQNCj4gPj4+DQo+ID4+PiAgI2RlZmluZSBERUZBVUxUX01T
+R19FTkFCTEUgKE5FVElGX01TR19EUlYgfA0KPiBORVRJRl9NU0dfUFJPQkUNCj4gPj4gfA0KPiA+
+Pj4gTkVUSUZfTVNHX0lGVVAgfCBcIEBAIC00MTc2LDE4ICs0MTc4LDM0IEBAIHN0YXRpYyBpbnQN
+Cj4gPj4gZW5hX3Byb2JlKHN0cnVjdA0KPiA+Pj4gcGNpX2RldiAqcGRldiwgY29uc3Qgc3RydWN0
+IHBjaV9kZXZpY2VfaWQgKmVudCkNCj4gPj4+DQo+ID4+PiAgICAgICBlbmFfZGV2LT5kbWFkZXYg
+PSAmcGRldi0+ZGV2Ow0KPiA+Pj4NCj4gPj4+ICsgICAgIG5ldGRldiA9IGFsbG9jX2V0aGVyZGV2
+X21xKHNpemVvZihzdHJ1Y3QgZW5hX2FkYXB0ZXIpLA0KPiA+PiBFTkFfTUFYX1JJTkdTKTsNCj4g
+Pj4+ICsgICAgIGlmICghbmV0ZGV2KSB7DQo+ID4+PiArICAgICAgICAgICAgIGRldl9lcnIoJnBk
+ZXYtPmRldiwgImFsbG9jX2V0aGVyZGV2X21xIGZhaWxlZFxuIik7DQo+ID4+PiArICAgICAgICAg
+ICAgIHJjID0gLUVOT01FTTsNCj4gPj4+ICsgICAgICAgICAgICAgZ290byBlcnJfZnJlZV9yZWdp
+b247DQo+ID4+PiArICAgICB9DQo+ID4+PiArDQo+ID4+PiArICAgICBTRVRfTkVUREVWX0RFVihu
+ZXRkZXYsICZwZGV2LT5kZXYpOw0KPiA+Pj4gKyAgICAgYWRhcHRlciA9IG5ldGRldl9wcml2KG5l
+dGRldik7DQo+ID4+PiArICAgICBhZGFwdGVyLT5lbmFfZGV2ID0gZW5hX2RldjsNCj4gPj4+ICsg
+ICAgIGFkYXB0ZXItPm5ldGRldiA9IG5ldGRldjsNCj4gPj4+ICsgICAgIGFkYXB0ZXItPnBkZXYg
+PSBwZGV2Ow0KPiA+Pj4gKyAgICAgYWRhcHRlci0+bXNnX2VuYWJsZSA9IG5ldGlmX21zZ19pbml0
+KGRlYnVnLA0KPiA+PiBERUZBVUxUX01TR19FTkFCTEUpOw0KPiA+Pj4gKw0KPiA+Pj4gKyAgICAg
+cGNpX3NldF9kcnZkYXRhKHBkZXYsIGFkYXB0ZXIpOw0KPiA+Pj4gKw0KPiA+Pj4gICAgICAgcmMg
+PSBlbmFfZGV2aWNlX2luaXQoZW5hX2RldiwgcGRldiwgJmdldF9mZWF0X2N0eCwgJndkX3N0YXRl
+KTsNCj4gPj4+ICAgICAgIGlmIChyYykgew0KPiA+Pj4gICAgICAgICAgICAgICBkZXZfZXJyKCZw
+ZGV2LT5kZXYsICJFTkEgZGV2aWNlIGluaXQgZmFpbGVkXG4iKTsNCj4gPj4+ICAgICAgICAgICAg
+ICAgaWYgKHJjID09IC1FVElNRSkNCj4gPj4+ICAgICAgICAgICAgICAgICAgICAgICByYyA9IC1F
+UFJPQkVfREVGRVI7DQo+ID4+PiAtICAgICAgICAgICAgIGdvdG8gZXJyX2ZyZWVfcmVnaW9uOw0K
+PiA+Pj4gKyAgICAgICAgICAgICBnb3RvIGVycl9uZXRkZXZfZGVzdHJveTsNCj4gPj4+ICAgICAg
+IH0NCj4gPj4+DQo+ID4+PiAgICAgICByYyA9IGVuYV9tYXBfbGxxX21lbV9iYXIocGRldiwgZW5h
+X2RldiwgYmFycyk7DQo+ID4+PiAgICAgICBpZiAocmMpIHsNCj4gPj4+ICAgICAgICAgICAgICAg
+ZGV2X2VycigmcGRldi0+ZGV2LCAiRU5BIGxscSBiYXIgbWFwcGluZyBmYWlsZWRcbiIpOw0KPiA+
+Pj4gLSAgICAgICAgICAgICBnb3RvIGVycl9mcmVlX2VuYV9kZXY7DQo+ID4+PiArICAgICAgICAg
+ICAgIGdvdG8gZXJyX2RldmljZV9kZXN0cm95Ow0KPiA+Pj4gICAgICAgfQ0KPiA+Pj4NCj4gPj4+
+ICAgICAgIGNhbGNfcXVldWVfY3R4LmVuYV9kZXYgPSBlbmFfZGV2OyBAQCAtNDIwNywyNiArNDIy
+NSw4IEBADQo+ID4+PiBzdGF0aWMgaW50IGVuYV9wcm9iZShzdHJ1Y3QgcGNpX2RldiAqcGRldiwg
+Y29uc3Qgc3RydWN0IHBjaV9kZXZpY2VfaWQNCj4gKmVudCkNCj4gPj4+ICAgICAgICAgICAgICAg
+Z290byBlcnJfZGV2aWNlX2Rlc3Ryb3k7DQo+ID4+PiAgICAgICB9DQo+ID4+Pg0KPiA+Pj4gLSAg
+ICAgLyogZGV2IHplcm9lZCBpbiBpbml0X2V0aGVyZGV2ICovDQo+ID4+PiAtICAgICBuZXRkZXYg
+PSBhbGxvY19ldGhlcmRldl9tcShzaXplb2Yoc3RydWN0IGVuYV9hZGFwdGVyKSwNCj4gPj4gbWF4
+X251bV9pb19xdWV1ZXMpOw0KPiA+Pj4gLSAgICAgaWYgKCFuZXRkZXYpIHsNCj4gPj4+IC0gICAg
+ICAgICAgICAgZGV2X2VycigmcGRldi0+ZGV2LCAiYWxsb2NfZXRoZXJkZXZfbXEgZmFpbGVkXG4i
+KTsNCj4gPj4+IC0gICAgICAgICAgICAgcmMgPSAtRU5PTUVNOw0KPiA+Pj4gLSAgICAgICAgICAg
+ICBnb3RvIGVycl9kZXZpY2VfZGVzdHJveTsNCj4gPj4+IC0gICAgIH0NCj4gPj4+IC0NCj4gPj4+
+IC0gICAgIFNFVF9ORVRERVZfREVWKG5ldGRldiwgJnBkZXYtPmRldik7DQo+ID4+PiAtDQo+ID4+
+PiAtICAgICBhZGFwdGVyID0gbmV0ZGV2X3ByaXYobmV0ZGV2KTsNCj4gPj4+IC0gICAgIHBjaV9z
+ZXRfZHJ2ZGF0YShwZGV2LCBhZGFwdGVyKTsNCj4gPj4+IC0NCj4gPj4+IC0gICAgIGFkYXB0ZXIt
+PmVuYV9kZXYgPSBlbmFfZGV2Ow0KPiA+Pj4gLSAgICAgYWRhcHRlci0+bmV0ZGV2ID0gbmV0ZGV2
+Ow0KPiA+Pj4gLSAgICAgYWRhcHRlci0+cGRldiA9IHBkZXY7DQo+ID4+PiAtDQo+ID4+PiAgICAg
+ICBlbmFfc2V0X2NvbmZfZmVhdF9wYXJhbXMoYWRhcHRlciwgJmdldF9mZWF0X2N0eCk7DQo+ID4+
+Pg0KPiA+Pj4gLSAgICAgYWRhcHRlci0+bXNnX2VuYWJsZSA9IG5ldGlmX21zZ19pbml0KGRlYnVn
+LA0KPiA+PiBERUZBVUxUX01TR19FTkFCTEUpOw0KPiA+Pj4gICAgICAgYWRhcHRlci0+cmVzZXRf
+cmVhc29uID0gRU5BX1JFR1NfUkVTRVRfTk9STUFMOw0KPiA+Pj4NCj4gPj4+ICAgICAgIGFkYXB0
+ZXItPnJlcXVlc3RlZF90eF9yaW5nX3NpemUgPQ0KPiA+Pj4gY2FsY19xdWV1ZV9jdHgudHhfcXVl
+dWVfc2l6ZTsgQEAgLTQyNTcsNyArNDI1Nyw3IEBAIHN0YXRpYyBpbnQNCj4gPj4+IGVuYV9wcm9i
+ZShzdHJ1Y3QgcGNpX2RldiAqcGRldiwgY29uc3QNCj4gPj4gc3RydWN0IHBjaV9kZXZpY2VfaWQg
+KmVudCkNCj4gPj4+ICAgICAgIGlmIChyYykgew0KPiA+Pj4gICAgICAgICAgICAgICBkZXZfZXJy
+KCZwZGV2LT5kZXYsDQo+ID4+PiAgICAgICAgICAgICAgICAgICAgICAgIkZhaWxlZCB0byBxdWVy
+eSBpbnRlcnJ1cHQgbW9kZXJhdGlvbiBmZWF0dXJlXG4iKTsNCj4gPj4+IC0gICAgICAgICAgICAg
+Z290byBlcnJfbmV0ZGV2X2Rlc3Ryb3k7DQo+ID4+PiArICAgICAgICAgICAgIGdvdG8gZXJyX2Rl
+dmljZV9kZXN0cm95Ow0KPiA+Pj4gICAgICAgfQ0KPiA+Pj4gICAgICAgZW5hX2luaXRfaW9fcmlu
+Z3MoYWRhcHRlciwNCj4gPj4+ICAgICAgICAgICAgICAgICAgICAgICAgIDAsDQo+ID4+PiBAQCAt
+NDMzNSwxMSArNDMzNSwxMSBAQCBzdGF0aWMgaW50IGVuYV9wcm9iZShzdHJ1Y3QgcGNpX2RldiAq
+cGRldiwNCj4gPj4gY29uc3Qgc3RydWN0IHBjaV9kZXZpY2VfaWQgKmVudCkNCj4gPj4+ICAgICAg
+IGVuYV9kaXNhYmxlX21zaXgoYWRhcHRlcik7DQo+ID4+PiAgZXJyX3dvcmtlcl9kZXN0cm95Og0K
+PiA+Pj4gICAgICAgZGVsX3RpbWVyKCZhZGFwdGVyLT50aW1lcl9zZXJ2aWNlKTsNCj4gPj4+IC1l
+cnJfbmV0ZGV2X2Rlc3Ryb3k6DQo+ID4+PiAtICAgICBmcmVlX25ldGRldihuZXRkZXYpOw0KPiA+
+Pj4gIGVycl9kZXZpY2VfZGVzdHJveToNCj4gPj4+ICAgICAgIGVuYV9jb21fZGVsZXRlX2hvc3Rf
+aW5mbyhlbmFfZGV2KTsNCj4gPj4+ICAgICAgIGVuYV9jb21fYWRtaW5fZGVzdHJveShlbmFfZGV2
+KTsNCj4gPj4+ICtlcnJfbmV0ZGV2X2Rlc3Ryb3k6DQo+ID4+PiArICAgICBmcmVlX25ldGRldihu
+ZXRkZXYpOw0KPiA+Pj4gIGVycl9mcmVlX3JlZ2lvbjoNCj4gPj4+ICAgICAgIGVuYV9yZWxlYXNl
+X2JhcnMoZW5hX2RldiwgcGRldik7DQo+ID4+PiAgZXJyX2ZyZWVfZW5hX2RldjoNCj4gPj4+DQo+
+ID4NCg0K
