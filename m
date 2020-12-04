@@ -2,210 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CF1D2CF038
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 16:01:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A23CA2CF041
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 16:01:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388092AbgLDPBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 10:01:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42230 "EHLO
+        id S1730427AbgLDPB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 10:01:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730406AbgLDPBF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 10:01:05 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E992EC0613D1
-        for <netdev@vger.kernel.org>; Fri,  4 Dec 2020 07:00:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=DVIhj9fBfJ5hSkwZSC7WdsQ+Ob+qNLjHh/BCJzFhUo8=; b=gXTk2sR4pWj3x9BKXoHh0T22I
-        fBbGB570w7gXT9TuHi16YH0O8kDbP6D3OxkDzKjHQy/FxwOwbzcHp0rUUIIxZ39sslK9lwV1XcgjD
-        lptHZBxLdWflC7BF09rUtwktXsJNPktQXmNn4D0IuHym4ReayPqpR1WUtwUfr7ATdy4iPZCmE5Wfg
-        9r8W7fzLYQsvA3Zs6lpYbQQ3t9uSfuzOvU8LnKlYAxtI45L2Pzu1Eb4dKIrOvCsLNXLAQZWmEUG1L
-        p7F5J3mdOtXta/1ZBsMaEnScQ0BWutJsM+6blc0rjFzzy/qXwbJZti9YIAkuCwFDu1A/Xg+RpqU0F
-        g+SnjQFdQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:39712)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        with ESMTP id S1730420AbgLDPB2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 10:01:28 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A98AAC061A52
+        for <netdev@vger.kernel.org>; Fri,  4 Dec 2020 07:00:47 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1klCZ4-0004Uq-7u; Fri, 04 Dec 2020 15:00:06 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1klCZ3-0000kq-L3; Fri, 04 Dec 2020 15:00:05 +0000
-Date:   Fri, 4 Dec 2020 15:00:05 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        (envelope-from <mkl@pengutronix.de>)
+        id 1klCZd-0005mQ-Ja; Fri, 04 Dec 2020 16:00:41 +0100
+Received: from [IPv6:2a03:f580:87bc:d400:d04d:da62:6647:1ba1] (unknown [IPv6:2a03:f580:87bc:d400:d04d:da62:6647:1ba1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 13D545A44B8;
+        Fri,  4 Dec 2020 15:00:40 +0000 (UTC)
+Subject: Re: [PATCH net v1] net: dsa: qca: ar9331: fix sleeping function
+ called from invalid context bug
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 1/2] net: sfp: VSOL V2801F / CarlitoxxPro
- CPGOS03-0490 v2.0 workaround
-Message-ID: <20201204150005.GM1551@shell.armlinux.org.uk>
-References: <20201204143451.GL1551@shell.armlinux.org.uk>
- <E1klCB8-0001sW-Ma@rmk-PC.armlinux.org.uk>
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org
+References: <20201204145751.13166-1-o.rempel@pengutronix.de>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <8f44d5cb-fa99-b004-078e-078241f265a0@pengutronix.de>
+Date:   Fri, 4 Dec 2020 16:00:35 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <E1klCB8-0001sW-Ma@rmk-PC.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+In-Reply-To: <20201204145751.13166-1-o.rempel@pengutronix.de>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="7xIOcFXnSUaapRvAm9jitpJoXO4YARPAR"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-... and I just got another email from Pali Rohár about an hour after
-giving me a Tested-by for this patch, saying...
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--7xIOcFXnSUaapRvAm9jitpJoXO4YARPAR
+Content-Type: multipart/mixed; boundary="3T8dMXB10ehI6kqlGxt5MILvCLIRFU7ub";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Oleksij Rempel <o.rempel@pengutronix.de>, Andrew Lunn <andrew@lunn.ch>,
+ Vivien Didelot <vivien.didelot@gmail.com>,
+ Florian Fainelli <f.fainelli@gmail.com>, Vladimir Oltean
+ <olteanv@gmail.com>, "David S. Miller" <davem@davemloft.net>,
+ Jakub Kicinski <kuba@kernel.org>, Russell King <linux@armlinux.org.uk>
+Cc: linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Pengutronix Kernel Team <kernel@pengutronix.de>, netdev@vger.kernel.org
+Message-ID: <8f44d5cb-fa99-b004-078e-078241f265a0@pengutronix.de>
+Subject: Re: [PATCH net v1] net: dsa: qca: ar9331: fix sleeping function
+ called from invalid context bug
+References: <20201204145751.13166-1-o.rempel@pengutronix.de>
+In-Reply-To: <20201204145751.13166-1-o.rempel@pengutronix.de>
 
-Just to note I applied following fixup change to your patches for
-fixing compile errors, there is missing "struct" keyword...
+--3T8dMXB10ehI6kqlGxt5MILvCLIRFU7ub
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-So, v2 on its way.
+On 12/4/20 3:57 PM, Oleksij Rempel wrote:
+[...]
 
-On Fri, Dec 04, 2020 at 02:35:22PM +0000, Russell King wrote:
-> Add a workaround for the detection of VSOL V2801F / CarlitoxxPro
-> CPGOS03-0490 v2.0 GPON module which CarlitoxxPro states needs single
-> byte I2C reads to the EEPROM.
-> 
-> Pali Rohár reports that he also has a CarlitoxxPro-based V2801F module,
-> which reports a manufacturer of "OEM". This manufacturer can't be
-> matched as it appears in many different modules, so also match the part
-> number too.
-> 
-> Reported-by: Thomas Schreiber <tschreibe@gmail.com>
-> Reported-by: Pali Rohár <pali@kernel.org>
-> Tested-by: Pali Rohár <pali@kernel.org>
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> ---
->  drivers/net/phy/sfp.c | 63 +++++++++++++++++++++++++++++++++++++++----
->  1 file changed, 58 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-> index 34aa196b7465..0b26495973ff 100644
-> --- a/drivers/net/phy/sfp.c
-> +++ b/drivers/net/phy/sfp.c
-> @@ -219,6 +219,7 @@ struct sfp {
->  	struct sfp_bus *sfp_bus;
->  	struct phy_device *mod_phy;
->  	const struct sff_data *type;
-> +	size_t i2c_block_size;
->  	u32 max_power_mW;
->  
->  	unsigned int (*get_state)(struct sfp *);
-> @@ -335,10 +336,19 @@ static int sfp_i2c_read(struct sfp *sfp, bool a2, u8 dev_addr, void *buf,
->  			size_t len)
+
+> +static void ar9331_sw_irq_bus_sync_unlock(struct irq_data *d)
 >  {
->  	struct i2c_msg msgs[2];
-> -	u8 bus_addr = a2 ? 0x51 : 0x50;
-> +	size_t block_size;
->  	size_t this_len;
-> +	u8 bus_addr;
+>  	struct ar9331_sw_priv *priv =3D irq_data_get_irq_chip_data(d);
+>  	struct regmap *regmap =3D priv->regmap;
 >  	int ret;
->  
-> +	if (a2) {
-> +		block_size = 16;
-> +		bus_addr = 0x51;
-> +	} else {
-> +		block_size = sfp->i2c_block_size;
-> +		bus_addr = 0x50;
-> +	}
-> +
->  	msgs[0].addr = bus_addr;
->  	msgs[0].flags = 0;
->  	msgs[0].len = 1;
-> @@ -350,8 +360,8 @@ static int sfp_i2c_read(struct sfp *sfp, bool a2, u8 dev_addr, void *buf,
->  
->  	while (len) {
->  		this_len = len;
-> -		if (this_len > 16)
-> -			this_len = 16;
-> +		if (this_len > block_size)
-> +			this_len = block_size;
->  
->  		msgs[1].len = this_len;
->  
-> @@ -1632,6 +1642,28 @@ static int sfp_sm_mod_hpower(struct sfp *sfp, bool enable)
->  	return 0;
->  }
->  
-> +/* Some modules (Nokia 3FE46541AA) lock up if byte 0x51 is read as a
-> + * single read. Switch back to reading 16 byte blocks unless we have
-> + * a CarlitoxxPro module (rebranded VSOL V2801F). Even more annoyingly,
-> + * some VSOL V2801F have the vendor name changed to OEM.
-> + */
-> +static int sfp_quirk_i2c_block_size(const sfp_eeprom_base *base)
-> +{
-> +	if (!memcmp(base->vendor_name, "VSOL            ", 16))
-> +		return 1;
-> +	if (!memcmp(base->vendor_name, "OEM             ", 16) &&
-> +	    !memcmp(base->vendor_pn,   "V2801F          ", 16))
-> +		return 1;
-> +
-> +	/* Some modules can't cope with long reads */
-> +	return 16;
-> +}
-> +
-> +static void sfp_quirks_base(struct sfp *sfp, const sfp_eeprom_base *base)
-> +{
-> +	sfp->i2c_block_size = sfp_quirk_i2c_block_size(base);
-> +}
-> +
->  static int sfp_cotsworks_fixup_check(struct sfp *sfp, struct sfp_eeprom_id *id)
->  {
->  	u8 check;
-> @@ -1673,14 +1705,20 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
->  	u8 check;
->  	int ret;
->  
-> -	ret = sfp_read(sfp, false, 0, &id, sizeof(id));
-> +	/* Some modules (CarlitoxxPro CPGOS03-0490) do not support multibyte
-> +	 * reads from the EEPROM, so start by reading the base identifying
-> +	 * information one byte at a time.
-> +	 */
-> +	sfp->i2c_block_size = 1;
-> +
-> +	ret = sfp_read(sfp, false, 0, &id.base, sizeof(id.base));
->  	if (ret < 0) {
->  		if (report)
->  			dev_err(sfp->dev, "failed to read EEPROM: %d\n", ret);
->  		return -EAGAIN;
->  	}
->  
-> -	if (ret != sizeof(id)) {
-> +	if (ret != sizeof(id.base)) {
->  		dev_err(sfp->dev, "EEPROM short read: %d\n", ret);
->  		return -EAGAIN;
->  	}
-> @@ -1719,6 +1757,21 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
->  		}
->  	}
->  
-> +	/* Apply any early module-specific quirks */
-> +	sfp_quirks_base(sfp, &id.base);
-> +
-> +	ret = sfp_read(sfp, false, SFP_CC_BASE + 1, &id.ext, sizeof(id.ext));
-> +	if (ret < 0) {
-> +		if (report)
-> +			dev_err(sfp->dev, "failed to read EEPROM: %d\n", ret);
-> +		return -EAGAIN;
-> +	}
-> +
-> +	if (ret != sizeof(id.ext)) {
-> +		dev_err(sfp->dev, "EEPROM short read: %d\n", ret);
-> +		return -EAGAIN;
-> +	}
-> +
->  	check = sfp_check(&id.ext, sizeof(id.ext) - 1);
->  	if (check != id.ext.cc_ext) {
->  		if (cotsworks) {
-> -- 
-> 2.20.1
-> 
-> 
+> =20
+>  	ret =3D regmap_update_bits(regmap, AR9331_SW_REG_GINT_MASK,
+> -				 AR9331_SW_GINT_PHY_INT,
+> -				 AR9331_SW_GINT_PHY_INT);
+> +				 AR9331_SW_GINT_PHY_INT, priv->irq_mask);
+>  	if (ret)
+> -		dev_err(priv->dev, "could not unmask IRQ\n");
+> +		dev_err(priv->dev, "could not mask IRQ\n");
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Technically this could be a mask or unmask operation. What about changing=
+ the
+error message to: "faild to change IRQ mask"?
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+--3T8dMXB10ehI6kqlGxt5MILvCLIRFU7ub--
+
+--7xIOcFXnSUaapRvAm9jitpJoXO4YARPAR
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl/KTxQACgkQqclaivrt
+76m1jwf/TjHGc09vzZEgP3L7G1PiPTFgoJB1IWqhSMAtPXMUSOfQ1RMgsJo8AdDB
+wZ3iQc3ozQzpS+Pbhz+/G1kibgFETpHsoPTm+rlTwuoIeV3Ss5TKsAXZqUUa1+2O
+QwKqtk0VBEXLbinDOU8JhhvkMyD0hK++Pk33vQBo+k0x4HyQChifPVgt5B89U+Cv
+MaQF1sSQEQQ1SndAWsNplNhp3auJn6/aBjWt35tuUMfyZGYH7Ti5eZBgMFxx8OTa
+caOcHVDRSEZJbwgUy0GgBXIVgVZlu0pChmSNP8Ona/JIyjs6bmRvTzBKTyF97a3f
+qYLL6MIsUQfMTvt/xJdEfFJQvLYAAA==
+=/J/L
+-----END PGP SIGNATURE-----
+
+--7xIOcFXnSUaapRvAm9jitpJoXO4YARPAR--
