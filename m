@@ -2,101 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E95F2CE797
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 06:44:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 467612CE7CC
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 06:49:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726270AbgLDFns (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 00:43:48 -0500
-Received: from mg.ssi.bg ([178.16.128.9]:51322 "EHLO mg.ssi.bg"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725550AbgLDFns (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Dec 2020 00:43:48 -0500
-Received: from mg.ssi.bg (localhost [127.0.0.1])
-        by mg.ssi.bg (Proxmox) with ESMTP id 4DBA32CFC1
-        for <netdev@vger.kernel.org>; Fri,  4 Dec 2020 07:43:06 +0200 (EET)
-Received: from ink.ssi.bg (ink.ssi.bg [178.16.128.7])
-        by mg.ssi.bg (Proxmox) with ESMTP id A01142CFB8
-        for <netdev@vger.kernel.org>; Fri,  4 Dec 2020 07:43:05 +0200 (EET)
-Received: from ja.ssi.bg (unknown [178.16.129.10])
-        by ink.ssi.bg (Postfix) with ESMTPS id C41633C09BA;
-        Fri,  4 Dec 2020 07:43:01 +0200 (EET)
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id 0B45gvsL004018;
-        Fri, 4 Dec 2020 07:43:01 +0200
-Date:   Fri, 4 Dec 2020 07:42:56 +0200 (EET)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     "dust.li" <dust.li@linux.alibaba.com>
-cc:     yunhong-cgl jiang <xintian1976@gmail.com>, horms@verge.net.au,
-        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
-        Yunhong Jiang <yunhjiang@ebay.com>
-Subject: Re: Long delay on estimation_timer causes packet latency
-In-Reply-To: <81aff736-70f0-9e14-de24-ba943f244bd2@linux.alibaba.com>
-Message-ID: <47e05b8-a4fc-24a1-e796-2a44cf7bbd77@ssi.bg>
-References: <D25792C1-1B89-45DE-9F10-EC350DC04ADC@gmail.com> <alpine.LFD.2.21.2004171029240.3962@ja.home.ssi.bg> <F48099A3-ECB3-46AF-8330-B829ED2ADA3F@gmail.com> <d89672f8-a028-8690-0e6a-517631134ef6@linux.alibaba.com> <2cf7e20-89c0-2a40-d27e-3d663e7080cb@ssi.bg>
- <81aff736-70f0-9e14-de24-ba943f244bd2@linux.alibaba.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1727920AbgLDFs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 00:48:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41564 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725372AbgLDFs4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 00:48:56 -0500
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07E5AC061A52
+        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 21:48:15 -0800 (PST)
+Received: by mail-pf1-x443.google.com with SMTP id s21so2933969pfu.13
+        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 21:48:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=1jYNLvaZPXWnnMKmqFijAtk3wCJypCnIEErPxeILOoQ=;
+        b=sIi27tgXDmYKeF/ZT5dn9XiqPIm04UB3gN/owMLmxQ9Y+FDQfv+TSUVdAWbF8gypXG
+         4QGMQ4Zl87D1BH/1UqDTONk8lBHMmeVfsOnH588H0NNRT4eO/IHxIMmJ/yG5M5WAkIoY
+         UzYJB1IE31yRgt/Lj7LSwCD3ANvF0fJRG0FwuvdrptshcDiHIruI6FO5q4iVZMWKTBiO
+         Mxe0HQAitt8Ooxcrjt4xG4GT93JNXT1I2V/w0qZBWUvH4xuTTH2Cl09crFmiVWuBCuXh
+         T6eAwujsBs9QGTTkCOgeQW8rOba93yaA2x+js9zDY+15wzTixKJBde1F5+cdvoST4/X7
+         gGGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=1jYNLvaZPXWnnMKmqFijAtk3wCJypCnIEErPxeILOoQ=;
+        b=Qdqqz+OlFkCmWdvc1EK9HDFeMDdwNOkPF1fbNYld6xhu5nARtvpf+2IHz6+s8DO7kK
+         3JHbT+9gaHj4za3fgrX+x37bMRfFCZ2RqmMEcoUO1vJaQUy2ADc1MPHS1dBsiyAcGbgj
+         IhP4nf7opssGhRTJpQPhCt5Zw9ZYxmKcdCqr5SnXBfwudTZ38uZPRdl4JMjpseeEtAQg
+         nX7M+IdaTYYerQ1ikbnuIsORzHtVo8ZBhr2LJj3/GiXb6E4760jYkJonClYrTRAL+KwH
+         VrqhybPvboG9LvEzkmtf4+I5sFPca2p2/FguJzVst6zfAD27WWUTb/kmDO0LwoPtNOqt
+         tTiQ==
+X-Gm-Message-State: AOAM533wxdvZo5vTGOvaGHtoOiaBrNemumOrZKD/wXlcFkNBW3kDoA3G
+        t2c/p6fjMv2b/b9meSmOYbM=
+X-Google-Smtp-Source: ABdhPJxQOr/Pnder1nHDw+on8KWEGcIGKYR9EiBqZf+cBa8v5mCTiDeL2Te4XWsYX8ezZly83TM0nA==
+X-Received: by 2002:a62:8388:0:b029:19b:816e:9cca with SMTP id h130-20020a6283880000b029019b816e9ccamr2522504pfe.31.1607060894536;
+        Thu, 03 Dec 2020 21:48:14 -0800 (PST)
+Received: from DESKTOP-8REGVGF.localdomain ([211.25.125.254])
+        by smtp.gmail.com with ESMTPSA id u205sm3542134pfc.146.2020.12.03.21.48.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Dec 2020 21:48:14 -0800 (PST)
+From:   Sieng Piaw Liew <liew.s.piaw@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     bcm-kernel-feedback-list@broadcom.com,
+        Sieng Piaw Liew <liew.s.piaw@gmail.com>,
+        netdev@vger.kernel.org
+Subject: [PATCH net-next] bcm63xx_enet: batch process rx path
+Date:   Fri,  4 Dec 2020 13:46:13 +0800
+Message-Id: <20201204054616.26876-1-liew.s.piaw@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Use netif_receive_skb_list to batch process rx skb.
+Tested on BCM6328 320 MHz using iperf3 -M 512, increasing performance
+by 12.5%.
 
-	Hello,
+Before:
+[ ID] Interval           Transfer     Bandwidth       Retr
+[  4]   0.00-30.00  sec   120 MBytes  33.7 Mbits/sec  277         sender
+[  4]   0.00-30.00  sec   120 MBytes  33.5 Mbits/sec            receiver
 
-On Fri, 4 Dec 2020, dust.li wrote:
+After:
+[ ID] Interval           Transfer     Bandwidth       Retr
+[  4]   0.00-30.00  sec   136 MBytes  37.9 Mbits/sec  203         sender
+[  4]   0.00-30.00  sec   135 MBytes  37.7 Mbits/sec            receiver
 
-> 
-> On 12/3/20 4:48 PM, Julian Anastasov wrote:
-> >
-> > - work will use spin_lock_bh(&s->lock) to protect the
-> > entries, we do not want delays between /proc readers and
-> > the work if using mutex. But _bh locks stop timers and
-> > networking for short time :( Not sure yet if just spin_lock
-> > is safe for both /proc and estimator's work.
+Signed-off-by: Sieng Piaw Liew <liew.s.piaw@gmail.com>
+---
+ drivers/net/ethernet/broadcom/bcm63xx_enet.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-	Here stopping BH is may be not so fatal if some
-CPUs are used for networking and others for workqueues.
-
-> Thanks for sharing your thoughts !
-> 
-> 
-> I think it's a good idea to split the est_list into different
-> 
-> slots, I believe it will dramatically reduce the delay brought
-> 
-> by estimation.
-
-	268ms/64 => 4ms average. As the estimation with single
-work does not utilize many CPUs simultaneously, this can be a
-problem for 300000-400000 services but this looks crazy.
-
-> My only concern is the cost of the estimation when the number of
-> 
-> services is large. Splitting the est_list won't reduce the real
-> 
-> work to do.
-> 
-> In our case, each estimation cost at most 268ms/2000ms, which is
-> 
-> about 13% of one CPU hyper-thread, and this should be a common case
-> 
-> in a large K8S cluster with lots of services.
-> 
-> Since the estimation is not needed in our environment at all, it's
-> 
-> just a waste of CPU resource. Have you ever consider add a switch to
-> 
-> let the user turn the estimator off ?
-
-	No problem to add sysctl var for this, we usually add function
-to check which can be used in ip_vs_in_stats, ip_vs_out_stats,
-ip_vs_conn_stats. If switch can be changed at any time, what should
-we do? Add/Del est entries as normally but do not start the
-delayed work if flag disables stats. When flag is enabled counters
-will increase and we will start delayed work.
-
-Regards
-
---
-Julian Anastasov <ja@ssi.bg>
+diff --git a/drivers/net/ethernet/broadcom/bcm63xx_enet.c b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
+index 916824cca3fd..b82b7805c36a 100644
+--- a/drivers/net/ethernet/broadcom/bcm63xx_enet.c
++++ b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
+@@ -297,10 +297,12 @@ static void bcm_enet_refill_rx_timer(struct timer_list *t)
+ static int bcm_enet_receive_queue(struct net_device *dev, int budget)
+ {
+ 	struct bcm_enet_priv *priv;
++	struct list_head rx_list;
+ 	struct device *kdev;
+ 	int processed;
+ 
+ 	priv = netdev_priv(dev);
++	INIT_LIST_HEAD(&rx_list);
+ 	kdev = &priv->pdev->dev;
+ 	processed = 0;
+ 
+@@ -391,10 +393,12 @@ static int bcm_enet_receive_queue(struct net_device *dev, int budget)
+ 		skb->protocol = eth_type_trans(skb, dev);
+ 		dev->stats.rx_packets++;
+ 		dev->stats.rx_bytes += len;
+-		netif_receive_skb(skb);
++		list_add_tail(&skb->list, &rx_list);
+ 
+ 	} while (--budget > 0);
+ 
++	netif_receive_skb_list(&rx_list);
++
+ 	if (processed || !priv->rx_desc_count) {
+ 		bcm_enet_refill_rx(dev);
+ 
+-- 
+2.17.1
 
