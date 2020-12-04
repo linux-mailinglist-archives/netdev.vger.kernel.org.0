@@ -2,124 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 602692CF5CB
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 21:44:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5761A2CF601
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 22:10:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728197AbgLDUnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 15:43:51 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:50517 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726021AbgLDUnu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 15:43:50 -0500
-Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1klHv1-0004Hw-Lx; Fri, 04 Dec 2020 20:43:08 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id AFD2A5FEE8; Fri,  4 Dec 2020 12:43:05 -0800 (PST)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id A68849FAB0;
-        Fri,  4 Dec 2020 12:43:05 -0800 (PST)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     "Finer, Howard" <hfiner@rbbn.com>
-cc:     "andy@greyhouse.net" <andy@greyhouse.net>,
-        "vfalico@gmail.com" <vfalico@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: bonding driver issue when configured for active/backup and using ARP monitoring
-In-reply-to: <MN2PR03MB47526B686EF6E0F8D81A9397B7F50@MN2PR03MB4752.namprd03.prod.outlook.com>
-References: <MN2PR03MB47526B686EF6E0F8D81A9397B7F50@MN2PR03MB4752.namprd03.prod.outlook.com>
-Comments: In-reply-to "Finer, Howard" <hfiner@rbbn.com>
-   message dated "Mon, 30 Nov 2020 18:05:23 +0000."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S1730479AbgLDVJ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 16:09:57 -0500
+Received: from helcar.hmeau.com ([216.24.177.18]:33832 "EHLO fornost.hmeau.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726021AbgLDVJ4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Dec 2020 16:09:56 -0500
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.0.7])
+        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
+        id 1klIJz-0006K8-Lg; Sat, 05 Dec 2020 08:08:56 +1100
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Sat, 05 Dec 2020 08:08:55 +1100
+Date:   Sat, 5 Dec 2020 08:08:55 +1100
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     David Howells <dhowells@redhat.com>,
+        Bruce Fields <bfields@fieldses.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, linux-afs@lists.infradead.org
+Subject: Re: Why the auxiliary cipher in gss_krb5_crypto.c?
+Message-ID: <20201204210855.GA3412@gondor.apana.org.au>
+References: <20201204154626.GA26255@fieldses.org>
+ <2F96670A-58DC-43A6-A20E-696803F0BFBA@oracle.com>
+ <160518586534.2277919.14475638653680231924.stgit@warthog.procyon.org.uk>
+ <118876.1607093975@warthog.procyon.org.uk>
+ <122997.1607097713@warthog.procyon.org.uk>
+ <20201204160347.GA26933@fieldses.org>
+ <125709.1607100601@warthog.procyon.org.uk>
+ <CAMj1kXEOm_yh478i+dqPiz0eoBxp4eag3j2qHm5eBLe+2kihoQ@mail.gmail.com>
+ <127458.1607102368@warthog.procyon.org.uk>
+ <CAMj1kXFe50HvZLxG6Kh-oYBCf5uu51hhuh7mW5UQ62ZSqmu_xA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <14768.1607114585.1@famine>
-Date:   Fri, 04 Dec 2020 12:43:05 -0800
-Message-ID: <14769.1607114585@famine>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMj1kXFe50HvZLxG6Kh-oYBCf5uu51hhuh7mW5UQ62ZSqmu_xA@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Finer, Howard <hfiner@rbbn.com> wrote:
-
->We use the bonding driver in an active-backup configuration with ARP
->monitoring. We also use the TIPC protocol which we run over the bond
->device. We are consistently seeing an issue in both the 3.16 and 4.19
->kernels whereby when the bond slave is switched TIPC is being notified of
->the change rather than it happening silently. The problem that we see is
->that when the active slave fails, a NETDEV_CHANGE event is being sent to
->the TIPC driver to notify it that the link is down. This causes the TIPC
->driver to reset its bearers and therefore break communication between the
->nodes that are clustered.
->With some additional instrumentation in thee driver, I see this in
->/var/log/syslog:
-><6> 1 2020-11-20T18:14:19.159524+01:00 LABNBS5B kernel - - -
->[65818.378287] bond0: link status definitely down for interface eth0,
->disabling it
-><6> 1 2020-11-20T18:14:19.159536+01:00 LABNBS5B kernel - - -
->[65818.378296] bond0: now running without any active interface!
-><6> 1 2020-11-20T18:14:19.159537+01:00 LABNBS5B kernel - - -
->[65818.378304] bond0: bond_activebackup_arp_mon: notify_rtnl, slave state
->notify/slave link notify
-><6> 1 2020-11-20T18:14:19.159538+01:00 LABNBS5B kernel - - -
->[65818.378835] netdev change bearer <eth:bond0>
-><6> 1 2020-11-20T18:14:19.263523+01:00 LABNBS5B kernel - - -
->[65818.482384] bond0: link status definitely up for interface eth1
-><6> 1 2020-11-20T18:14:19.263534+01:00 LABNBS5B kernel - - -
->[65818.482387] bond0: making interface eth1 the new active one
-><6> 1 2020-11-20T18:14:19.263536+01:00 LABNBS5B kernel - - -
->[65818.482633] bond0: first active interface up!
-><6> 1 2020-11-20T18:14:19.263537+01:00 LABNBS5B kernel - - -
->[65818.482671] netdev change bearer <eth:bond0>
-><6> 1 2020-11-20T18:14:19.367523+01:00 LABNBS5B kernel - - -
->[65818.586228] bond0: bond_activebackup_arp_mon: call_netdevice_notifiers
->NETDEV_NOTIFY_PEERS
+On Fri, Dec 04, 2020 at 06:35:48PM +0100, Ard Biesheuvel wrote:
 >
->There is no issue when using MII monitoring instead of ARP monitoring
->since when the slave is detected as down, it immediately switches to the
->backup as it sees that slave as being up and ready. But when using ARP
->monitoring, only one of the slaves is 'up'. So when the active slave goes
->down, the bonding driver will see no active slaves until it brings up the
->backup slave on the next call to bond_activebackup_arp_mon. Bringing up
->that backup slave has to be attempted prior to notifying any peers of a
->change or else they will see the outage. In this case it seems the
->should_notify_rtnl flag has to be set to false. However, I also question
->if the switch to the backup slave should actually occur immediately like
->it does for MII and that the backup should be immediately 'brought
->up/switched to' without having to wait for the next iteration.
+> Herbert recently made some changes for MSG_MORE support in the AF_ALG
+> code, which permits a skcipher encryption to be split into several
+> invocations of the skcipher layer without the need for this complexity
+> on the side of the caller. Maybe there is a way to reuse that here.
+> Herbert?
 
-	I see what you're describing; I'm watching "ip monitor" while
-doing failovers and comparing the behavior of the miimon vs the ARP
-monitor.  The bond device itself goes down during the course of an ARP
-failover, which doesn't happen during the miimon failover.
+Yes this was one of the reasons I was persuing the continuation
+work.  It should allow us to kill the special case for CTS in the
+krb5 code.
 
-	This does cause some churn of even the IPv4 multicast addresses
-and such, so it would be ideal if the backup interfaces could be kept
-track of and switched to immediately as you suggest.
+Hopefully I can get some time to restart work on this soon.
 
-	I don't think it's simply a matter of not doing a notification,
-however.  I haven't instrumented it completely yet to see the complete
-behavior, but the backup interface has to be in a bonding-internal down
-state, otherwise the bond_ab_arp_commit call to bond_select_active_slave
-would select a new active slave, and the bond itself would not go
-NO-CARRIER (which is likely where the NETDEV_CHANGE event comes from,
-via linkwatch doing netdev_state_change).
-
-[...]
-
->As it currently behaves there is no way to run TIPC over an active-backup
->ARP-monitored bond device. I suspect there are other situations/uses that
->would likewise have an issue with the 'erroneous' NETDEV_CHANGE being
->issued. Since TIPC (and others) have no idea what the dev is, it is not
->possible to ignore the event nor should it be ignored. It therefore seems
->the event shouldn't be sent for this situation. Please confirm the
->analysis above and provide a path forward since as currently implemented
->the functionality is broken.
-
-	As I said above, I don't think it's just about notifications.
-
-	-J
-
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+Cheers,
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
