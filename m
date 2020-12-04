@@ -2,151 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A74F2CEC20
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 11:26:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20A272CEC3D
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 11:30:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729824AbgLDKZW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 05:25:22 -0500
-Received: from szxga03-in.huawei.com ([45.249.212.189]:2395 "EHLO
-        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726999AbgLDKZV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 05:25:21 -0500
-Received: from DGGEMM401-HUB.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4CnTMQ56yyz51LF;
-        Fri,  4 Dec 2020 18:24:02 +0800 (CST)
-Received: from DGGEMM423-HUB.china.huawei.com (10.1.198.40) by
- DGGEMM401-HUB.china.huawei.com (10.3.20.209) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Fri, 4 Dec 2020 18:22:47 +0800
-Received: from DGGEMM513-MBX.china.huawei.com ([169.254.1.169]) by
- dggemm423-hub.china.huawei.com ([10.1.198.40]) with mapi id 14.03.0487.000;
- Fri, 4 Dec 2020 18:22:37 +0800
-From:   wangyunjian <wangyunjian@huawei.com>
-To:     Jason Wang <jasowang@redhat.com>, "mst@redhat.com" <mst@redhat.com>
-CC:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Lilijun (Jerry)" <jerry.lilijun@huawei.com>,
-        xudingke <xudingke@huawei.com>
-Subject: RE: [PATCH net-next] tun: fix ubuf refcount incorrectly on error
- path
-Thread-Topic: [PATCH net-next] tun: fix ubuf refcount incorrectly on error
- path
-Thread-Index: AQHWyUqLZoQlE8d/xU2MJtVcCf2EEanl77iAgADJFmA=
-Date:   Fri, 4 Dec 2020 10:22:36 +0000
-Message-ID: <34EFBCA9F01B0748BEB6B629CE643AE60DB4E07B@dggemm513-mbx.china.huawei.com>
-References: <1606982459-41752-1-git-send-email-wangyunjian@huawei.com>
- <094f1828-9a73-033e-b1ca-43b73588d22b@redhat.com>
-In-Reply-To: <094f1828-9a73-033e-b1ca-43b73588d22b@redhat.com>
-Accept-Language: en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.187.156]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1728997AbgLDKaj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 05:30:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56958 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726014AbgLDKaj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 05:30:39 -0500
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C5E8C0613D1;
+        Fri,  4 Dec 2020 02:29:59 -0800 (PST)
+Received: by mail-lj1-x242.google.com with SMTP id s9so5985930ljo.11;
+        Fri, 04 Dec 2020 02:29:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=So8nR/+TGOHKI8YuGPoCpAuJbgXY1+7Z6aKdtfAcFRs=;
+        b=aJR/VMmcsWYVZOQD4ndCpzEUaMvKQnZGCRIe/JmGPbpOmT3hVOVYoy8Kp4NLuwG1/X
+         oYIM8zSHpYPvyRC3n9QJFIbxj74IrvZACRHpIs65+ms63Ce6UJVvgZee45AB1ybyTFFC
+         puD3GSKvXm1+UcZ+e5TL9AwmPMpJz8Cwz0/jOL3cbmeEU4choM1EEl041tJs/i2/TjJW
+         3Qcn+zTid6JC0bEz7LRa62Jt2EnlX4aekHk/ntoFLGd1hYGWAi1iks2nXJUWMxewtAmA
+         o5LDAjOYjZn2HK3IsUn4p1nYiVIAx5aNvPeVlZgClge2Z2aa0laim+B/QlXZDtJodvsS
+         Ms4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=So8nR/+TGOHKI8YuGPoCpAuJbgXY1+7Z6aKdtfAcFRs=;
+        b=rPFDboyi2121x81fpqaoulgmuIcfvDqrckuSXGTSh1h59Riezr82GgAs0CQh+mp458
+         IFmypOt+lPGnA3HEEzBVEKY7MDUVDyt+LOFn8MYKhVFJwlBc17bLcDIHichAEdf3fK9+
+         2PX/qchpjvhx8Zq5/ef9tTTLkN5QrCCMcqyB6S05NvFVGtiLtKhKyj6useyMERFQCYXW
+         zBF8LJXatPmsiVzwAv8jogKj5nyfv93PXotPEUYK6Ak0QYX6tNxvF4OwSP3PJis2ZjGO
+         S/3XUoMxTuHrgvelPFrz3pRY9izhWEzrgC3LBHEAncW4030Mf5XurDjvtYfr6gXtBVx3
+         R+4A==
+X-Gm-Message-State: AOAM5308oNbIAE3tWwvDQ0H7VWGmltT0WphmnEBCbtQ+hAxemB56v9eT
+        VimCdr2CKQht59z9T0r1TRc=
+X-Google-Smtp-Source: ABdhPJwCkpGmh1eFASP0RSM302qX2ny3ITLPlqR8xshLeF7KBQx5UWSO2wPReK01NvP9zJCD4pYJwQ==
+X-Received: by 2002:a2e:9718:: with SMTP id r24mr3253682lji.20.1607077797549;
+        Fri, 04 Dec 2020 02:29:57 -0800 (PST)
+Received: from localhost.localdomain (87-205-71-93.adsl.inetia.pl. [87.205.71.93])
+        by smtp.gmail.com with ESMTPSA id d9sm62738lfj.228.2020.12.04.02.29.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Dec 2020 02:29:56 -0800 (PST)
+From:   alardam@gmail.com
+X-Google-Original-From: marekx.majtyka@intel.com
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
+        andrii.nakryiko@gmail.com, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org, davem@davemloft.net,
+        john.fastabend@gmail.com, hawk@kernel.org, toke@redhat.com
+Cc:     maciej.fijalkowski@intel.com, jonathan.lemon@gmail.com,
+        bpf@vger.kernel.org, jeffrey.t.kirsher@intel.com,
+        maciejromanfijalkowski@gmail.com, intel-wired-lan@lists.osuosl.org,
+        Marek Majtyka <marekx.majtyka@intel.com>
+Subject: [PATCH v2 bpf 0/5] New netdev feature flags for XDP
+Date:   Fri,  4 Dec 2020 11:28:56 +0100
+Message-Id: <20201204102901.109709-1-marekx.majtyka@intel.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKYXNvbiBXYW5nIFttYWlsdG86
-amFzb3dhbmdAcmVkaGF0LmNvbV0NCj4gU2VudDogRnJpZGF5LCBEZWNlbWJlciA0LCAyMDIwIDI6
-MTEgUE0NCj4gVG86IHdhbmd5dW5qaWFuIDx3YW5neXVuamlhbkBodWF3ZWkuY29tPjsgbXN0QHJl
-ZGhhdC5jb20NCj4gQ2M6IHZpcnR1YWxpemF0aW9uQGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3Jn
-OyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBMaWxpanVuDQo+IChKZXJyeSkgPGplcnJ5LmxpbGlq
-dW5AaHVhd2VpLmNvbT47IHh1ZGluZ2tlIDx4dWRpbmdrZUBodWF3ZWkuY29tPg0KPiBTdWJqZWN0
-OiBSZTogW1BBVENIIG5ldC1uZXh0XSB0dW46IGZpeCB1YnVmIHJlZmNvdW50IGluY29ycmVjdGx5
-IG9uIGVycm9yIHBhdGgNCj4gDQo+IA0KPiBPbiAyMDIwLzEyLzMg5LiL5Y2INDowMCwgd2FuZ3l1
-bmppYW4gd3JvdGU6DQo+ID4gRnJvbTogWXVuamlhbiBXYW5nIDx3YW5neXVuamlhbkBodWF3ZWku
-Y29tPg0KPiA+DQo+ID4gQWZ0ZXIgc2V0dGluZyBjYWxsYmFjayBmb3IgdWJ1Zl9pbmZvIG9mIHNr
-YiwgdGhlIGNhbGxiYWNrDQo+ID4gKHZob3N0X25ldF96ZXJvY29weV9jYWxsYmFjaykgd2lsbCBi
-ZSBjYWxsZWQgdG8gZGVjcmVhc2UgdGhlIHJlZmNvdW50DQo+ID4gd2hlbiBmcmVlaW5nIHNrYi4g
-QnV0IHdoZW4gYW4gZXhjZXB0aW9uIG9jY3VycyBhZnRlcndhcmRzLCB0aGUgZXJyb3INCj4gPiBo
-YW5kbGluZyBpbiB2aG9zdCBoYW5kbGVfdHgoKSB3aWxsIHRyeSB0byBkZWNyZWFzZSB0aGUgc2Ft
-ZSByZWZjb3VudA0KPiA+IGFnYWluLiBUaGlzIGlzIHdyb25nIGFuZCBmaXggdGhpcyBieSBjbGVh
-cmluZyB1YnVmX2luZm8gd2hlbiBtZWV0aW5nDQo+ID4gZXJyb3JzLg0KPiA+DQo+ID4gRml4ZXM6
-IDQ0NzcxMzhmYTBhZSAoInR1bjogcHJvcGVybHkgdGVzdCBmb3IgSUZGX1VQIikNCj4gPiBGaXhl
-czogOTBlMzNkNDU5NDA3ICgidHVuOiBlbmFibGUgbmFwaV9ncm9fZnJhZ3MoKSBmb3IgVFVOL1RB
-UA0KPiA+IGRyaXZlciIpDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBZdW5qaWFuIFdhbmcgPHdh
-bmd5dW5qaWFuQGh1YXdlaS5jb20+DQo+ID4gLS0tDQo+ID4gICBkcml2ZXJzL25ldC90dW4uYyB8
-IDExICsrKysrKysrKysrDQo+ID4gICAxIGZpbGUgY2hhbmdlZCwgMTEgaW5zZXJ0aW9ucygrKQ0K
-PiA+DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3R1bi5jIGIvZHJpdmVycy9uZXQvdHVu
-LmMgaW5kZXgNCj4gPiAyZGMxOTg4YTg5NzMuLjM2MTRiYjFiNmQzNSAxMDA2NDQNCj4gPiAtLS0g
-YS9kcml2ZXJzL25ldC90dW4uYw0KPiA+ICsrKyBiL2RyaXZlcnMvbmV0L3R1bi5jDQo+ID4gQEAg
-LTE4NjEsNiArMTg2MSwxMiBAQCBzdGF0aWMgc3NpemVfdCB0dW5fZ2V0X3VzZXIoc3RydWN0IHR1
-bl9zdHJ1Y3QNCj4gKnR1biwgc3RydWN0IHR1bl9maWxlICp0ZmlsZSwNCj4gPiAgIAlpZiAodW5s
-aWtlbHkoISh0dW4tPmRldi0+ZmxhZ3MgJiBJRkZfVVApKSkgew0KPiA+ICAgCQllcnIgPSAtRUlP
-Ow0KPiA+ICAgCQlyY3VfcmVhZF91bmxvY2soKTsNCj4gPiArCQlpZiAoemVyb2NvcHkpIHsNCj4g
-PiArCQkJc2tiX3NoaW5mbyhza2IpLT5kZXN0cnVjdG9yX2FyZyA9IE5VTEw7DQo+ID4gKwkJCXNr
-Yl9zaGluZm8oc2tiKS0+dHhfZmxhZ3MgJj0gflNLQlRYX0RFVl9aRVJPQ09QWTsNCj4gPiArCQkJ
-c2tiX3NoaW5mbyhza2IpLT50eF9mbGFncyAmPSB+U0tCVFhfU0hBUkVEX0ZSQUc7DQo+ID4gKwkJ
-fQ0KPiA+ICsNCj4gPiAgIAkJZ290byBkcm9wOw0KPiA+ICAgCX0NCj4gPg0KPiA+IEBAIC0xODc0
-LDYgKzE4ODAsMTEgQEAgc3RhdGljIHNzaXplX3QgdHVuX2dldF91c2VyKHN0cnVjdCB0dW5fc3Ry
-dWN0DQo+ID4gKnR1biwgc3RydWN0IHR1bl9maWxlICp0ZmlsZSwNCj4gPg0KPiA+ICAgCQlpZiAo
-dW5saWtlbHkoaGVhZGxlbiA+IHNrYl9oZWFkbGVuKHNrYikpKSB7DQo+ID4gICAJCQlhdG9taWNf
-bG9uZ19pbmMoJnR1bi0+ZGV2LT5yeF9kcm9wcGVkKTsNCj4gPiArCQkJaWYgKHplcm9jb3B5KSB7
-DQo+ID4gKwkJCQlza2Jfc2hpbmZvKHNrYiktPmRlc3RydWN0b3JfYXJnID0gTlVMTDsNCj4gPiAr
-CQkJCXNrYl9zaGluZm8oc2tiKS0+dHhfZmxhZ3MgJj0gflNLQlRYX0RFVl9aRVJPQ09QWTsNCj4g
-PiArCQkJCXNrYl9zaGluZm8oc2tiKS0+dHhfZmxhZ3MgJj0gflNLQlRYX1NIQVJFRF9GUkFHOw0K
-PiA+ICsJCQl9DQo+ID4gICAJCQluYXBpX2ZyZWVfZnJhZ3MoJnRmaWxlLT5uYXBpKTsNCj4gPiAg
-IAkJCXJjdV9yZWFkX3VubG9jaygpOw0KPiA+ICAgCQkJbXV0ZXhfdW5sb2NrKCZ0ZmlsZS0+bmFw
-aV9tdXRleCk7DQo+IA0KPiANCj4gSXQgbG9va3MgdG8gbWUgdGhlbiB3ZSBtaXNzIHRoZSBmYWls
-dXJlIGZlZWRiYWNrLg0KPiANCj4gVGhlIGlzc3VlcyBjb21lcyBmcm9tIHRoZSBpbmNvbnNpc3Rl
-bnQgZXJyb3IgaGFuZGxpbmcgaW4gdHVuLg0KPiANCj4gSSB3b25kZXIgd2hldGhlciB3ZSBjYW4g
-c2ltcGx5IGRvIHVhcmctPmNhbGxiYWNrKHVhcmcsIGZhbHNlKSBpZiBuZWNlc3Nhcnkgb24NCj4g
-ZXZlcnkgZmFpbHR1cmUgcGF0aCBvbiB0dW5fZ2V0X3VzZXIoKS4NCg0KSG93IGFib3V0IHRoaXM/
-DQoNCi0tLQ0KIGRyaXZlcnMvbmV0L3R1bi5jIHwgMjkgKysrKysrKysrKysrKysrKysrLS0tLS0t
-LS0tLS0NCiAxIGZpbGUgY2hhbmdlZCwgMTggaW5zZXJ0aW9ucygrKSwgMTEgZGVsZXRpb25zKC0p
-DQoNCmRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC90dW4uYyBiL2RyaXZlcnMvbmV0L3R1bi5jDQpp
-bmRleCAyZGMxOTg4YTg5NzMuLjM2YThkOGVhY2Q3YiAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvbmV0
-L3R1bi5jDQorKysgYi9kcml2ZXJzL25ldC90dW4uYw0KQEAgLTE2MzcsNiArMTYzNywxOSBAQCBz
-dGF0aWMgc3RydWN0IHNrX2J1ZmYgKnR1bl9idWlsZF9za2Ioc3RydWN0IHR1bl9zdHJ1Y3QgKnR1
-biwNCiAJcmV0dXJuIE5VTEw7DQogfQ0KIA0KKy8qIGNvcHkgdWJ1Zl9pbmZvIGZvciBjYWxsYmFj
-ayB3aGVuIHNrYiBoYXMgbm8gZXJyb3IgKi8NCitpbmxpbmUgc3RhdGljIHR1bl9jb3B5X3VidWZf
-aW5mbyhzdHJ1Y3Qgc2tfYnVmZiAqc2tiLCBib29sIHplcm9jb3B5LCB2b2lkICptc2dfY29udHJv
-bCkNCit7DQorCWlmICh6ZXJvY29weSkgew0KKwkJc2tiX3NoaW5mbyhza2IpLT5kZXN0cnVjdG9y
-X2FyZyA9IG1zZ19jb250cm9sOw0KKwkJc2tiX3NoaW5mbyhza2IpLT50eF9mbGFncyB8PSBTS0JU
-WF9ERVZfWkVST0NPUFk7DQorCQlza2Jfc2hpbmZvKHNrYiktPnR4X2ZsYWdzIHw9IFNLQlRYX1NI
-QVJFRF9GUkFHOw0KKwl9IGVsc2UgaWYgKG1zZ19jb250cm9sKSB7DQorCQlzdHJ1Y3QgdWJ1Zl9p
-bmZvICp1YXJnID0gbXNnX2NvbnRyb2w7DQorCQl1YXJnLT5jYWxsYmFjayh1YXJnLCBmYWxzZSk7
-DQorCX0NCit9DQorDQogLyogR2V0IHBhY2tldCBmcm9tIHVzZXIgc3BhY2UgYnVmZmVyICovDQog
-c3RhdGljIHNzaXplX3QgdHVuX2dldF91c2VyKHN0cnVjdCB0dW5fc3RydWN0ICp0dW4sIHN0cnVj
-dCB0dW5fZmlsZSAqdGZpbGUsDQogCQkJICAgIHZvaWQgKm1zZ19jb250cm9sLCBzdHJ1Y3QgaW92
-X2l0ZXIgKmZyb20sDQpAQCAtMTgxMiwxNiArMTgyNSw2IEBAIHN0YXRpYyBzc2l6ZV90IHR1bl9n
-ZXRfdXNlcihzdHJ1Y3QgdHVuX3N0cnVjdCAqdHVuLCBzdHJ1Y3QgdHVuX2ZpbGUgKnRmaWxlLA0K
-IAkJYnJlYWs7DQogCX0NCiANCi0JLyogY29weSBza2JfdWJ1Zl9pbmZvIGZvciBjYWxsYmFjayB3
-aGVuIHNrYiBoYXMgbm8gZXJyb3IgKi8NCi0JaWYgKHplcm9jb3B5KSB7DQotCQlza2Jfc2hpbmZv
-KHNrYiktPmRlc3RydWN0b3JfYXJnID0gbXNnX2NvbnRyb2w7DQotCQlza2Jfc2hpbmZvKHNrYikt
-PnR4X2ZsYWdzIHw9IFNLQlRYX0RFVl9aRVJPQ09QWTsNCi0JCXNrYl9zaGluZm8oc2tiKS0+dHhf
-ZmxhZ3MgfD0gU0tCVFhfU0hBUkVEX0ZSQUc7DQotCX0gZWxzZSBpZiAobXNnX2NvbnRyb2wpIHsN
-Ci0JCXN0cnVjdCB1YnVmX2luZm8gKnVhcmcgPSBtc2dfY29udHJvbDsNCi0JCXVhcmctPmNhbGxi
-YWNrKHVhcmcsIGZhbHNlKTsNCi0JfQ0KLQ0KIAlza2JfcmVzZXRfbmV0d29ya19oZWFkZXIoc2ti
-KTsNCiAJc2tiX3Byb2JlX3RyYW5zcG9ydF9oZWFkZXIoc2tiKTsNCiAJc2tiX3JlY29yZF9yeF9x
-dWV1ZShza2IsIHRmaWxlLT5xdWV1ZV9pbmRleCk7DQpAQCAtMTgzMCw2ICsxODMzLDcgQEAgc3Rh
-dGljIHNzaXplX3QgdHVuX2dldF91c2VyKHN0cnVjdCB0dW5fc3RydWN0ICp0dW4sIHN0cnVjdCB0
-dW5fZmlsZSAqdGZpbGUsDQogCQlzdHJ1Y3QgYnBmX3Byb2cgKnhkcF9wcm9nOw0KIAkJaW50IHJl
-dDsNCiANCisJCXR1bl9jb3B5X3VidWZfaW5mbyhza2IsIHplcm9jb3B5LCBtc2dfY29udHJvbCk7
-DQogCQlsb2NhbF9iaF9kaXNhYmxlKCk7DQogCQlyY3VfcmVhZF9sb2NrKCk7DQogCQl4ZHBfcHJv
-ZyA9IHJjdV9kZXJlZmVyZW5jZSh0dW4tPnhkcF9wcm9nKTsNCkBAIC0xODgwLDcgKzE4ODQsNyBA
-QCBzdGF0aWMgc3NpemVfdCB0dW5fZ2V0X3VzZXIoc3RydWN0IHR1bl9zdHJ1Y3QgKnR1biwgc3Ry
-dWN0IHR1bl9maWxlICp0ZmlsZSwNCiAJCQlXQVJOX09OKDEpOw0KIAkJCXJldHVybiAtRU5PTUVN
-Ow0KIAkJfQ0KLQ0KKwkJdHVuX2NvcHlfdWJ1Zl9pbmZvKHNrYiwgemVyb2NvcHksIG1zZ19jb250
-cm9sKTsNCiAJCWxvY2FsX2JoX2Rpc2FibGUoKTsNCiAJCW5hcGlfZ3JvX2ZyYWdzKCZ0ZmlsZS0+
-bmFwaSk7DQogCQlsb2NhbF9iaF9lbmFibGUoKTsNCkBAIC0xODg5LDYgKzE4OTMsNyBAQCBzdGF0
-aWMgc3NpemVfdCB0dW5fZ2V0X3VzZXIoc3RydWN0IHR1bl9zdHJ1Y3QgKnR1biwgc3RydWN0IHR1
-bl9maWxlICp0ZmlsZSwNCiAJCXN0cnVjdCBza19idWZmX2hlYWQgKnF1ZXVlID0gJnRmaWxlLT5z
-ay5za193cml0ZV9xdWV1ZTsNCiAJCWludCBxdWV1ZV9sZW47DQogDQorCQl0dW5fY29weV91YnVm
-X2luZm8oc2tiLCB6ZXJvY29weSwgbXNnX2NvbnRyb2wpOw0KIAkJc3Bpbl9sb2NrX2JoKCZxdWV1
-ZS0+bG9jayk7DQogCQlfX3NrYl9xdWV1ZV90YWlsKHF1ZXVlLCBza2IpOw0KIAkJcXVldWVfbGVu
-ID0gc2tiX3F1ZXVlX2xlbihxdWV1ZSk7DQpAQCAtMTg5OSw4ICsxOTA0LDEwIEBAIHN0YXRpYyBz
-c2l6ZV90IHR1bl9nZXRfdXNlcihzdHJ1Y3QgdHVuX3N0cnVjdCAqdHVuLCBzdHJ1Y3QgdHVuX2Zp
-bGUgKnRmaWxlLA0KIA0KIAkJbG9jYWxfYmhfZW5hYmxlKCk7DQogCX0gZWxzZSBpZiAoIUlTX0VO
-QUJMRUQoQ09ORklHXzRLU1RBQ0tTKSkgew0KKwkJdHVuX2NvcHlfdWJ1Zl9pbmZvKHNrYiwgemVy
-b2NvcHksIG1zZ19jb250cm9sKTsNCiAJCXR1bl9yeF9iYXRjaGVkKHR1biwgdGZpbGUsIHNrYiwg
-bW9yZSk7DQogCX0gZWxzZSB7DQorCQl0dW5fY29weV91YnVmX2luZm8oc2tiLCB6ZXJvY29weSwg
-bXNnX2NvbnRyb2wpOw0KIAkJbmV0aWZfcnhfbmkoc2tiKTsNCiAJfQ0KIAlyY3VfcmVhZF91bmxv
-Y2soKTsNCi0tIA0KDQo+IA0KPiBOb3RlIHRoYXQsIHplcm9jb3B5IGhhcyBhIGxvdCBvZiBpc3N1
-ZXMgd2hpY2ggbWFrZXMgaXQgbm90IGdvb2QgZm9yIHByb2R1Y3Rpb24NCj4gZW52aXJvbm1lbnQu
-DQoNCk9LLCB0aGFua3MuIEkgZm91bmQgaXQgd2hlbiByZXZpZXdpbmcgdGhlIGNvZGUgYW5kIHRo
-aW5rIGl0IG5lZWQgdG8gYmUgZml4ZWQuDQoNCg0KPiANCj4gVGhhbmtzDQoNCg==
+From: Marek Majtyka <marekx.majtyka@intel.com>
+
+Implement support for checking if a netdev has native XDP and AF_XDP zero
+copy support. Previously, there was no way to do this other than to try
+to create an AF_XDP socket on the interface or load an XDP program and
+see if it worked. This commit changes this by extending existing
+netdev_features in the following way:
+ * xdp        - full XDP support (XDP_{TX, PASS, DROP, ABORT, REDIRECT})
+ * af-xdp-zc  - AF_XDP zero copy support
+NICs supporting these features are updated by turning the corresponding
+netdev feature flags on.
+
+NOTE:
+ Only the compilation check was performed for:
+  - ice, 
+  - igb,
+  - mlx5, 
+  - mlx4.
+  - bnxt, 
+  - dpaa2, 
+  - mvmeta, 
+  - mvpp2, 
+  - qede,
+  - sfc, 
+  - netsec, 
+  - cpsw, 
+  - xen, 
+  - netronome
+  - ena
+  - virtio_net.
+
+Libbpf library is extended in order to provide a simple API for gathering
+information about XDP supported capabilities of a netdev. This API
+utilizes netlink interface towards kernel. With this function it is
+possible to get xsk supported options for netdev beforehand.
+The new API is used in core xsk code as well as in the xdpsock sample.
+
+These new flags also solve the problem with strict recognition of zero
+copy support. The problem is that there are drivers out there that only
+support XDP partially, so it is possible to successfully load the XDP
+program in native mode, but it will still not be able to support zero-copy
+as it does not have XDP_REDIRECT support. With af-xdp-zc flag the check
+is possible and trivial.
+
+Changes since v1:
+ * Replace netdev_feature flags variable with a bitmap of XDP-specific
+   properties. New kernel and uapi interfaces are added to handle access
+   to the XDP netdev properties bitmap. [Toke]
+
+ * Set more fine grained XPD properties for netdevs when necessary. [Toke]
+
+ * Extend ethtool netlink interface in order to get access to the XDP
+   bitmap (XDP_PROPERTIES_GET). [Toke]
+
+ * Removed the libbpf patches for now.
+---
+Marek Majtyka (5):
+  net: ethtool: add xdp properties flag set
+  drivers/net: turn XDP properties on
+  xsk: add usage of xdp properties flags
+  xsk: add check for full support of XDP in bind
+  ethtool: provide xdp info with XDP_PROPERTIES_GET
+
+ .../networking/netdev-xdp-properties.rst      | 42 ++++++++
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  |  2 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  1 +
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |  1 +
+ drivers/net/ethernet/intel/i40e/i40e_main.c   |  3 +
+ drivers/net/ethernet/intel/ice/ice_main.c     |  4 +
+ drivers/net/ethernet/intel/igb/igb_main.c     |  2 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  3 +
+ drivers/net/ethernet/marvell/mvneta.c         |  3 +
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  3 +
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    |  2 +
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |  3 +
+ .../ethernet/netronome/nfp/nfp_net_common.c   |  5 +
+ drivers/net/ethernet/qlogic/qede/qede_main.c  |  2 +
+ drivers/net/ethernet/sfc/efx.c                |  2 +
+ drivers/net/ethernet/socionext/netsec.c       |  2 +
+ drivers/net/ethernet/ti/cpsw.c                |  3 +
+ drivers/net/ethernet/ti/cpsw_new.c            |  2 +
+ drivers/net/tun.c                             |  4 +
+ drivers/net/veth.c                            |  2 +
+ drivers/net/virtio_net.c                      |  2 +
+ drivers/net/xen-netfront.c                    |  2 +
+ include/linux/netdevice.h                     |  2 +
+ include/linux/xdp_properties.h                | 53 +++++++++++
+ include/net/xdp.h                             | 95 +++++++++++++++++++
+ include/net/xdp_sock_drv.h                    | 10 ++
+ include/uapi/linux/ethtool.h                  |  1 +
+ include/uapi/linux/ethtool_netlink.h          | 14 +++
+ include/uapi/linux/if_xdp.h                   |  1 +
+ include/uapi/linux/xdp_properties.h           | 32 +++++++
+ net/ethtool/Makefile                          |  2 +-
+ net/ethtool/common.c                          | 11 +++
+ net/ethtool/common.h                          |  4 +
+ net/ethtool/netlink.c                         | 38 +++++---
+ net/ethtool/netlink.h                         |  2 +
+ net/ethtool/strset.c                          |  5 +
+ net/ethtool/xdp.c                             | 76 +++++++++++++++
+ net/xdp/xsk.c                                 |  4 +-
+ net/xdp/xsk_buff_pool.c                       | 20 +++-
+ tools/include/uapi/linux/if_xdp.h             |  1 +
+ tools/lib/bpf/xsk.c                           |  3 +
+ 41 files changed, 449 insertions(+), 20 deletions(-)
+ create mode 100644 Documentation/networking/netdev-xdp-properties.rst
+ create mode 100644 include/linux/xdp_properties.h
+ create mode 100644 include/uapi/linux/xdp_properties.h
+ create mode 100644 net/ethtool/xdp.c
+
+
+base-commit: eceae70bdeaeb6b8ceb662983cf663ff352fbc96
+-- 
+2.27.0
+
