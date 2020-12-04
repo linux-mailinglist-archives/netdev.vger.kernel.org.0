@@ -2,104 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7583A2CF592
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 21:22:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72E442CF5A5
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 21:27:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388254AbgLDUVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 15:21:13 -0500
-Received: from mx0b-00154904.pphosted.com ([148.163.137.20]:53368 "EHLO
-        mx0b-00154904.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730480AbgLDUVM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 15:21:12 -0500
-Received: from pps.filterd (m0170396.ppops.net [127.0.0.1])
-        by mx0b-00154904.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B4KEHET027750;
-        Fri, 4 Dec 2020 15:20:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=smtpout1;
- bh=AHnb657ZVkd3rGKeu3xGSOupjj5816VejdnfGan8hNg=;
- b=Z8O/Px1CkKM+v1MyLm/Dn8zln6nYo5D8n+xY26BzkpDHQDcCPUtruNIzv0b4QUSz9OGK
- oshN5D/5jy34i6Nz/xBNrXfBrgUlWXfYWUm0jTVBm0wNzfXS0eZJhngYzgL1wDCruE1n
- FpJbOO0CJMCYz5UH4QI46Hsq4pM0FWApHuSJnMZBJURI2YryC2ox3bQg3SlV9ub4uvh2
- n/IqNsr0i4a1xt1Z/Oe8D99N+CycNkO5ZtL9yhSFimNpbrm/sJwzTvWN0GXbFgE8f2oU
- ZJgbzqviqQyK7/d1N1lQMWxCeiUF5FjioicY1HWOTSft2jc3cErjAyvP2EIxUS3cqiAV jA== 
-Received: from mx0a-00154901.pphosted.com (mx0a-00154901.pphosted.com [67.231.149.39])
-        by mx0b-00154904.pphosted.com with ESMTP id 354fjthj5g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 04 Dec 2020 15:20:31 -0500
-Received: from pps.filterd (m0134746.ppops.net [127.0.0.1])
-        by mx0a-00154901.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B4KJEbM143512;
-        Fri, 4 Dec 2020 15:20:30 -0500
-Received: from ausxipps310.us.dell.com (AUSXIPPS310.us.dell.com [143.166.148.211])
-        by mx0a-00154901.pphosted.com with ESMTP id 357ua80kun-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 04 Dec 2020 15:20:30 -0500
-X-LoopCount0: from 10.173.37.130
-X-PREM-Routing: D-Outbound
-X-IronPort-AV: E=Sophos;i="5.78,393,1599541200"; 
-   d="scan'208";a="573039895"
-From:   Mario Limonciello <mario.limonciello@dell.com>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        intel-wired-lan@lists.osuosl.org
-Cc:     linux-kernel@vger.kernel.org, Linux PM <linux-pm@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Netfin <sasha.neftin@intel.com>,
-        Aaron Brown <aaron.f.brown@intel.com>,
-        Stefan Assmann <sassmann@redhat.com>,
-        David Miller <davem@davemloft.net>, darcari@redhat.com,
-        Yijun.Shen@dell.com, Perry.Yuan@dell.com,
-        anthony.wong@canonical.com,
-        Mario Limonciello <mario.limonciello@dell.com>
-Subject: [PATCH v3 7/7] e1000e: Add another Dell TGL notebook system into S0ix heuristics
-Date:   Fri,  4 Dec 2020 14:09:20 -0600
-Message-Id: <20201204200920.133780-8-mario.limonciello@dell.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201204200920.133780-1-mario.limonciello@dell.com>
-References: <20201204200920.133780-1-mario.limonciello@dell.com>
+        id S1727927AbgLDU04 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 15:26:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48046 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727343AbgLDU04 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Dec 2020 15:26:56 -0500
+Date:   Fri, 4 Dec 2020 12:26:13 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607113575;
+        bh=FxzKSgn3Y4gNA3z+CLkKfSoZIXGyZ+CcY9nj++rEHys=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=flqqn8/RnxCS9Hm5YMCMSzXpPWHVd6dniEhXqQRBihHYMU86vcXPcfufDqge/kRRh
+         mdcaymOXpVYVKFZvLNSacxJktJ2bOBAjCeDtmc0KGK1GR+yvPkCgf708jyWojSsev6
+         A5o00vSFr4cj/UHC/tzADIqrw3ozWwTpUab1P8mO/2hDSwmaQDr59NiPgJZ40803Wl
+         yUKysxsV2SXMcY39g/dwBBVbhH9h62U+hN/PQu1f2H2HV/u9VfFspWuKBo5vudsapF
+         O9tXLI62qOQkXlQoUEjXfJikbti5wc5tn0ge5flppjxE6vKdhFYQQBKAp+LKGq3sri
+         FWEl23JEEpTCw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Eran Ben Elisha <eranbe@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Subject: Re: [net-next V2 08/15] net/mlx5e: Add TX PTP port object support
+Message-ID: <20201204122613.542c2362@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <b761c676af87a4a82e3ea4f6f5aff3d1159c63e7.camel@kernel.org>
+References: <20201203042108.232706-1-saeedm@nvidia.com>
+        <20201203042108.232706-9-saeedm@nvidia.com>
+        <20201203182908.1d25ea3f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+        <b761c676af87a4a82e3ea4f6f5aff3d1159c63e7.camel@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-12-04_09:2020-12-04,2020-12-04 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
- lowpriorityscore=0 impostorscore=0 adultscore=0 priorityscore=1501
- phishscore=0 clxscore=1015 mlxscore=0 malwarescore=0 bulkscore=0
- mlxlogscore=999 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2009150000 definitions=main-2012040115
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 malwarescore=0 spamscore=0
- adultscore=0 mlxscore=0 suspectscore=0 mlxlogscore=999 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2012040115
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This Tiger Lake system is not yet released, but has been validated
-on pre-release hardware.
+On Fri, 04 Dec 2020 11:33:26 -0800 Saeed Mahameed wrote:
+> On Thu, 2020-12-03 at 18:29 -0800, Jakub Kicinski wrote:
+> > On Wed, 2 Dec 2020 20:21:01 -0800 Saeed Mahameed wrote:  
+> > > Add TX PTP port object support for better TX timestamping accuracy.
+> > > Currently, driver supports CQE based TX port timestamp. Device
+> > > also offers TX port timestamp, which has less jitter and better
+> > > reflects the actual time of a packet's transmit.  
+> > 
+> > How much better is it?
+> > 
+> > Is the new implementation is standard compliant or just a "better
+> > guess"?
+> 
+> It is not a guess for sure, the closer to the output port you take the
+> stamp the more accurate you get, this is why we need the HW timestamp
+> in first place, i don't have the exact number though, but we target to
+> be compliant with G.8273.2 class C, (30 nsec), and this code allow
+> Linux systems to be deployed in the 5G telco edge. Where this standard
+> is needed.
 
-This is being submitted separately from released hardware in case of
-a regression between pre-release and release hardware so this commit
-can be reverted alone.
+I see. IIRC there was also an IEEE standard which specified the exact
+time stamping point (i.e. SFD crosses layer X). If it's class C that
+answers the question, I think.
 
-Signed-off-by: Mario Limonciello <mario.limonciello@dell.com>
----
- drivers/net/ethernet/intel/e1000e/s0ix.c | 1 +
- 1 file changed, 1 insertion(+)
+> > > Define new driver layout called ptpsq, on which driver will create
+> > > SQs that will support TX port timestamp for their transmitted
+> > > packets.
+> > > Driver to identify PTP TX skbs and steer them to these dedicated
+> > > SQs
+> > > as part of the select queue ndo.
+> > > 
+> > > Driver to hold ptpsq per TC and report them at
+> > > netif_set_real_num_tx_queues().
+> > > 
+> > > Add support for all needed functionality in order to xmit and poll
+> > > completions received via ptpsq.
+> > > 
+> > > Add ptpsq to the TX reporter recover, diagnose and dump methods.
+> > > 
+> > > Creation of ptpsqs is disabled by default, and can be enabled via
+> > > tx_port_ts private flag.  
+> > 
+> > This flag is pretty bad user experience.
+> 
+> Yeah, nothing i  could do about this, there is a large memory foot
+> print i want to avoid, and we don't want to complicate PTP ctrl API of
+> the HW operating mode, so until we improve the HW, we prefer to keep
+> this feature as a private flag.
+> 
+> > > This patch steer all timestamp related packets to a ptpsq, but it
+> > > does not open the port timestamp support for it. The support will
+> > > be added in the following patch.  
+> > 
+> > Overall I'm a little shocked by this, let me sleep on it :)
+> > 
+> > More info on the trade offs and considerations which led to the
+> > implementation would be useful.  
+> 
+> To get the Improved accuracy we need a special type of SQs attached to
+> special HW objects that will provide more accurate stamping.
+> 
+> Trade-offs are :
+> 
+> options 1) convert ALL regular txqs (SQs) to work in this port stamping
+> mode.
+> 
+> Pros: no need for any special mode in driver, no additional memory,
+> other than the new HW objects we create for the special stamping.
+> 
+> Cons: significant performance hit for non PTP traffic, (the hw stamps
+> all packets in the slow but more accurate mode)
 
-diff --git a/drivers/net/ethernet/intel/e1000e/s0ix.c b/drivers/net/ethernet/intel/e1000e/s0ix.c
-index cc04aeaa2292..3f2985fac67c 100644
---- a/drivers/net/ethernet/intel/e1000e/s0ix.c
-+++ b/drivers/net/ethernet/intel/e1000e/s0ix.c
-@@ -63,6 +63,7 @@ static bool e1000e_check_subsystem_allowlist(struct pci_dev *dev)
- 		case 0x0a40: /* Notebook 0x0a40 */
- 		case 0x0a41: /* Notebook 0x0a41 */
- 		case 0x0a42: /* Notebook 0x0a42 */
-+		case 0x0a22: /* Notebook 0x0a22 */
- 		case 0x0a2e: /* Desktop  0x0a2e */
- 		case 0x0a30: /* Desktop  0x0a30 */
- 			return true;
--- 
-2.25.1
+Just to be clear (Alexei brought this up when I mentioned these
+patches) - the requirement for the separate queues is because the time
+stamp enable is a queue property, not a per WQE / frame thing? I
+couldn't find this in the code - could you point me to where it's set?
 
+> option 2) route PTP traffic to a special SQs per ring, this SQ will be
+> PTP port accurate, Normal traffic will continue through regular SQs
+> 
+> Pros: Regular non PTP traffic not affected.
+> Cons: High memory footprint for creating special SQs
+> 
+> 
+> So we prefer (2) + private flag to avoid the performance hit and the
+> redundant memory usage out of the box.
+
+Option 3 - have only one special PTP queue in the system. PTP traffic
+is rather low rate, queue per core doesn't seem necessary.
+
+
+Since you said the PTP queues are slower / higher overhead - are you not
+concerned that QUIC traffic will get mis-directed to them? People like
+hardware time stamps for all sort of measurements these days. Plus,
+since UDP doesn't itself set ooo those applications may be surprised to
+see increased out-of-order rate.
+
+Why not use the PTP classification helpers we already have?
