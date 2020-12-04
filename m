@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08F042CE663
+	by mail.lfdr.de (Postfix) with ESMTP id 75D222CE664
 	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 04:19:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727722AbgLDDRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 22:17:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46616 "EHLO
+        id S1727736AbgLDDRi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 22:17:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727669AbgLDDRa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 22:17:30 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC43C061A53
-        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 19:16:50 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id m5so2350021pjv.5
-        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 19:16:50 -0800 (PST)
+        with ESMTP id S1727474AbgLDDRh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 22:17:37 -0500
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9055BC061A54
+        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 19:16:57 -0800 (PST)
+Received: by mail-pl1-x642.google.com with SMTP id bj5so2342287plb.4
+        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 19:16:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=rM4t2eXx/FS2J7CAO2fnC8vXaIERWWcRjKh6bkZ0osI=;
-        b=R92+5YE9KqzDR26hmGKe9GIYFv2HJatvt41NZv8VoCVJ/KJe9aQmdyIV2lAsVhRf8q
-         jM17sqo3QmQ+mVjqdXczPtf66ENIAZVD0wf4NIQsAT6skU1Y2FHvjWoU1B//BqhJAXmH
-         mOpzd/8VkBpepK35UUtIg88dG6fmVYMLWgsxAwBAnb0eO+VGkB8aCFYWJj6FfuFuiPiJ
-         +/gjE6wo8GtRMq1IMmywVNsB5uiVQY9JAqGkfbiG5q8kUcfMt1U/jfgV1hszyzyWfe8z
-         sQQzsbvcjhRj33hXHPGXxAx1lWOVWuV6KlJM+rBvzUWDVRibJB9S7O3w2QkpL45ikAR/
-         TXpw==
+        bh=unBJBYdJa7K6GwvokZQDCPmEMeNN5XNEhIq5Z4evB24=;
+        b=iVnbkn3uEffoGNwzXjPRLE3qHej5rA0Ovf2JvVtGmJq5eeUW55rLXAJ+WsffJLHa29
+         3DbIOTV2G8zBhwF9QPlnrLaltkkrcmoR6aGsvKaix33jRRFTP6/RthqeM73DywhfZ7HI
+         RyV9H8CpQloZQFZvFvdaA6PlDuHnKqKRJELzQ7UIVkfAdVKGjb5L1Lpfr4W6pZhY3j27
+         VBNv58zSSivLas6Utv2P6UqB3ivj6RU9WvrycLqyvs/Axwu5PyGK3zzl6RU7BjoT5Xuv
+         hASV72yc88LzRKEdm42lVMiC8HyquFdZLTTeEFMSWWWSQ298Tix6rLKijFy0hatvl7Uz
+         4ByQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rM4t2eXx/FS2J7CAO2fnC8vXaIERWWcRjKh6bkZ0osI=;
-        b=N4YlChpegDhWqK0cmMx+vWQxY37Vyenb/X2FyFEvVYi3T4nnZdNlS3qIMYBXTIedZQ
-         ZLDMt+wpMz+4yUBkJumr2SuOw4MQzmwi6PG1E0l0iDQjmHEW+yQ3R4KgdTriZXS8Zstl
-         Gugk/8HpX3iLzOy7fVvZojW5J02JLePPh3np/YeTwk9G3GT8qitOXOf1bSuqlN9Pk0Ym
-         edMy8RfcJBu/BOjPX5E6XY3mq9aq++wotHeApL+EvVPhGhApYY8fe0rcSjHx5ei5SjUe
-         9FgE6SOpIz5AGpKucwRn8SwS2eRITF/1arnvawLHvYvOsXmGRdil7JldFcQCWt5sa1CZ
-         nOxw==
-X-Gm-Message-State: AOAM533HUfXwMHYNPoXQD/CAHZTRhX68XVhxmbORdDgMqF88caE3Xtt3
-        DDbaQZlmtgH1B8vu7gZmXqE=
-X-Google-Smtp-Source: ABdhPJyr/lbnckGafVC9J+5/GH2Fuu/6f67pXnGtu/LSpv/ldxpRqc162flhkhyj5w6YmZ16MkFtxQ==
-X-Received: by 2002:a17:90b:f8f:: with SMTP id ft15mr2215576pjb.210.1607051810359;
-        Thu, 03 Dec 2020 19:16:50 -0800 (PST)
+        bh=unBJBYdJa7K6GwvokZQDCPmEMeNN5XNEhIq5Z4evB24=;
+        b=ujvPdgPjtepOtECva/6ZbzZ9GL3E4dRjra2p0Rd8v6mm753vP9HW5Xmh6KTy5M4/w2
+         KPOEhyX7m8K7LftPoucpbCnf3FV6qczE6skHed1nQujC4982CyK7JXuRwH5QiaH/tk6i
+         UxUQgrdzxTtR2J301gvQgQKhBPo1/SaLS5oLJTi3Hvfj/B3H1qSM63hKvYXI05fhufHg
+         U2PJIZtPZll9LAvoMFSgtEpKYPUrCU9vipBpgQfOcY9MxneY1pBfSHil/2EtgaiGWbZs
+         7GbnfG+CKrNUjYVuXeameno8RPGhLYvlnBMCIl/mPsbPJk2AK7i+3lN21bMFzVDdx74b
+         XIdw==
+X-Gm-Message-State: AOAM530aAGFgo5b9eUxZyE2MTqBaf2Sg8PAMEBTOC8JoxiZEAkJmE1qK
+        +TRKoFYC+nItuVfQdtJ4KsE=
+X-Google-Smtp-Source: ABdhPJwD8+nR8gFw8O220s1mDziWkfvT0ZynZYBPY6DHaqFRa45r0vQHb3NC3JZTZAPLetmkpeeObw==
+X-Received: by 2002:a17:90a:6588:: with SMTP id k8mr2177650pjj.197.1607051816765;
+        Thu, 03 Dec 2020 19:16:56 -0800 (PST)
 Received: from clinic20-Precision-T3610.hsd1.ca.comcast.net ([2601:648:8400:9ef4:bf20:728e:4c43:a644])
-        by smtp.gmail.com with ESMTPSA id s11sm3089696pfh.128.2020.12.03.19.16.49
+        by smtp.gmail.com with ESMTPSA id q19sm3042251pff.101.2020.12.03.19.16.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Dec 2020 19:16:49 -0800 (PST)
+        Thu, 03 Dec 2020 19:16:56 -0800 (PST)
 From:   Andreas Roeseler <andreas.a.roeseler@gmail.com>
 To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
         kuba@kernel.org
 Cc:     netdev@vger.kernel.org
-Subject: [PATCH net-next 3/6] net: add sysctl for enabling RFC 8335 PROBE messages
-Date:   Thu,  3 Dec 2020 19:16:49 -0800
-Message-Id: <1de8170c1b7dec795f8ca257fbd56c61c36ad5a2.1607050389.git.andreas.a.roeseler@gmail.com>
+Subject: [PATCH net-next 4/6] net: add sysctl for enabling RFC 8335 PROBE messages
+Date:   Thu,  3 Dec 2020 19:16:55 -0800
+Message-Id: <a7fc58bf02c18df714c19d68b788f670cb8597a9.1607050389.git.andreas.a.roeseler@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1607050388.git.andreas.a.roeseler@gmail.com>
 References: <cover.1607050388.git.andreas.a.roeseler@gmail.com>
@@ -72,21 +72,27 @@ Add sysctl to enable responses to PROBE messages.
 
 Signed-off-by: Andreas Roeseler <andreas.a.roeseler@gmail.com>
 ---
- include/net/netns/ipv4.h | 1 +
- 1 file changed, 1 insertion(+)
+ net/ipv4/sysctl_net_ipv4.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-index 8e4fcac4df72..1d9b74228f3e 100644
---- a/include/net/netns/ipv4.h
-+++ b/include/net/netns/ipv4.h
-@@ -85,6 +85,7 @@ struct netns_ipv4 {
- #endif
- 
- 	int sysctl_icmp_echo_ignore_all;
-+	int sysctl_icmp_echo_enable_probe;
- 	int sysctl_icmp_echo_ignore_broadcasts;
- 	int sysctl_icmp_ignore_bogus_error_responses;
- 	int sysctl_icmp_ratelimit;
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 3e5f4f2e705e..f9f0e9d7394f 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -599,6 +599,13 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec
+ 	},
++	{
++		.procname	= "icmp_echo_enable_probe",
++		.data		= &init_net.ipv4.sysctl_icmp_echo_enable_probe,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec
++	},
+ 	{
+ 		.procname	= "icmp_echo_ignore_broadcasts",
+ 		.data		= &init_net.ipv4.sysctl_icmp_echo_ignore_broadcasts,
 -- 
 2.25.1
 
