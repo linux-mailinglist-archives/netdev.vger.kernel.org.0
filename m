@@ -2,98 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 767582CE991
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 09:29:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59D592CE9FF
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 09:39:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729110AbgLDI3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 03:29:01 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:54018 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728807AbgLDI3B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 03:29:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607070454;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=e9Y6WzFRcgbtIi5LBno88YZfeKK7F+ba+sYdLaKYH9w=;
-        b=Gg62bac1lWY9C3nvr1LFQkHRGjzBAKmpYjCuFkyRrbjzmO3uFwoH59bMyTpo4oWUwr+dSi
-        WxsaxdpEeJhJDagllXhg4XIEm+M/Lyl9Gjr9sAszWEHm0rf6NFDvspz6YrNy3Gmz4AJY9o
-        jVEG81aLGyknba9tOFPv4vnyheAcYAc=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-564-aSgIxR4VP6-Vpl7RIoP10A-1; Fri, 04 Dec 2020 03:27:33 -0500
-X-MC-Unique: aSgIxR4VP6-Vpl7RIoP10A-1
-Received: by mail-ed1-f72.google.com with SMTP id bc27so2061990edb.18
-        for <netdev@vger.kernel.org>; Fri, 04 Dec 2020 00:27:32 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=e9Y6WzFRcgbtIi5LBno88YZfeKK7F+ba+sYdLaKYH9w=;
-        b=DWbU9Lpt772EhWvD8D3qQiiKah7TUV4/Rl0MEZN/rEf+o/STlSmmSt9VYlWEPGSZIn
-         pBoG9rw+ZyX/5jTX5i4G/PMkPD8YmW8D8u49NwTbMMZO5M2pOUtCkwvR7iUJAZz2sCLC
-         YcgJm0S13I2U1d4jQp9kq6puAWPmuX1yvEAuZIl6xy9AdJU2KblQkeVe+uWspz5B6rmL
-         r9OKGAxs1EnS/PZPy+bjevMfUfDl1VnBa6CvDYE/jrakBmdhIxnKKCVIPmqLsrXBE/WS
-         FcU9l2SDoK2IDsGpeXWnib8w06v+w00a2dBzCWPay4npimRt32ZBNVf6eKvTVGoLkD7H
-         ti8g==
-X-Gm-Message-State: AOAM533TlifRaI/mDmkun417WFiAtfJ4XpdiQl9j7tGTDZHE7cZAK8RM
-        cEQ1Wt+k3vTrIQtm2c7jLaWS9DUqun711TkYBqS/8CjyDb+yeuYQ96Z1vTW7AmeOHXpVUaUJEgu
-        GWLU1odhOr2uT9t3/slZHUUcsfZq7hGBZbuMV9QajR1e8RY0R4WjtORoou48KRjemc58n
-X-Received: by 2002:a50:e0ce:: with SMTP id j14mr6573311edl.18.1607070451507;
-        Fri, 04 Dec 2020 00:27:31 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwMIyz5LS2iwvNf1iWyhuXSvOdoCaeoLpxIQO9KF7bm/bHa+j5UQfAthZzEj17BWx0cIuFxUQ==
-X-Received: by 2002:a50:e0ce:: with SMTP id j14mr6573281edl.18.1607070451200;
-        Fri, 04 Dec 2020 00:27:31 -0800 (PST)
-Received: from ?IPv6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.gmail.com with ESMTPSA id dh23sm1155140edb.15.2020.12.04.00.27.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Dec 2020 00:27:30 -0800 (PST)
-Subject: Re: [PATCH AUTOSEL 5.9 22/33] vhost scsi: add lun parser helper
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     Mike Christie <michael.christie@oracle.com>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20201125180102.GL643756@sasha-vm>
- <9670064e-793f-561e-b032-75b1ab5c9096@redhat.com>
- <20201129041314.GO643756@sasha-vm>
- <7a4c3d84-8ff7-abd9-7340-3a6d7c65cfa7@redhat.com>
- <20201129210650.GP643756@sasha-vm>
- <e499986d-ade5-23bd-7a04-fa5eb3f15a56@redhat.com>
- <20201130173832.GR643756@sasha-vm>
- <238cbdd1-dabc-d1c1-cff8-c9604a0c9b95@redhat.com>
- <9ec7dff6-d679-ce19-5e77-f7bcb5a63442@oracle.com>
- <4c1b2bc7-cf50-4dcd-bfd4-be07e515de2a@redhat.com>
- <20201130235959.GS643756@sasha-vm>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-Message-ID: <6c49ded5-bd8f-f219-0c51-3500fd751633@redhat.com>
-Date:   Fri, 4 Dec 2020 09:27:28 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
-MIME-Version: 1.0
-In-Reply-To: <20201130235959.GS643756@sasha-vm>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1729099AbgLDIjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 03:39:00 -0500
+Received: from mail.thorsis.com ([92.198.35.195]:33048 "EHLO mail.thorsis.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725969AbgLDIjA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Dec 2020 03:39:00 -0500
+X-Greylist: delayed 557 seconds by postgrey-1.27 at vger.kernel.org; Fri, 04 Dec 2020 03:38:59 EST
+Received: from localhost (localhost [127.0.0.1])
+        by mail.thorsis.com (Postfix) with ESMTP id 09052324B
+        for <netdev@vger.kernel.org>; Fri,  4 Dec 2020 09:29:02 +0100 (CET)
+X-Virus-Scanned: Debian amavisd-new at mail.thorsis.com
+Received: from mail.thorsis.com ([127.0.0.1])
+        by localhost (mail.thorsis.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Wq92vdWT0pJY for <netdev@vger.kernel.org>;
+        Fri,  4 Dec 2020 09:29:01 +0100 (CET)
+Received: by mail.thorsis.com (Postfix, from userid 109)
+        id D84BE1FBD; Fri,  4 Dec 2020 09:28:59 +0100 (CET)
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NO_RECEIVED,
+        NO_RELAYS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+        version=3.4.2
+From:   Alexander Dahl <ada@thorsis.com>
+To:     netdev@vger.kernel.org
+Cc:     Grant Edwards <grant.b.edwards@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-mtd@lists.infradead.org
+Subject: Re: net: macb: fail when there's no PHY
+Date:   Fri, 04 Dec 2020 09:28:53 +0100
+Message-ID: <3542036.FvJvBFsO4O@ada>
+In-Reply-To: <rqbobm$5qk$1@ciao.gmane.io>
+References: <20201202183531.GJ2324545@lunn.ch> <20201203214941.GA2409950@lunn.ch> <rqbobm$5qk$1@ciao.gmane.io>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01/12/20 00:59, Sasha Levin wrote:
-> 
-> It's quite easy to NAK a patch too, just reply saying "no" and it'll be
-> dropped (just like this patch was dropped right after your first reply)
-> so the burden on maintainers is minimal.
+Hello Grant,
 
-The maintainers are _already_ marking patches with "Cc: stable".  That 
-(plus backports) is where the burden on maintainers should start and 
-end.  I don't see the need to second guess them.
+sorry if I just hijack your conversation, but I'm curious, because we are=20
+using the same SoC.  Adding linux-arm-kernel to Cc for the general performa=
+nce=20
+issues and linux-mtd for the ECC questions. O:-)
 
-Paolo
+Am Donnerstag, 3. Dezember 2020, 23:20:38 CET schrieb Grant Edwards:
+> On 2020-12-03, Andrew Lunn <andrew@lunn.ch> wrote:
+> >> I don't think there's any way I could justify using a kernel that
+> >> doesn't have long-term support.
+> >=20
+> > 5.10 is LTS. Well, it will be, once it is actually released!
+>=20
+> Convincing people to ship an unreleased kernel would be a whole
+> 'nother bucket of worms.
+
++1
+
+Judging just from the release dates of the last LTS kernels, I would have=20
+guessed v5.11 will get LTS.  But there has been no announcement yet and I=20
+suppose there will be none before release?  For ordinary users it's just li=
+ke=20
+staring in a crystal ball, so we aim at v5.4 for our more recent hardware=20
+platforms. =C2=AF\_(=E3=83=84)_/=C2=AF
+
+>=20
+> It's all moot now. The decision was just made to shelve the 5.4 kernel
+> "upgrade" and stick with 2.6.33 for now.
+>=20
+> >> [It looks like we're going to have to abandon the effort to use
+> >> 5.4. The performance is so bad compared to 2.6.33.7 that our product
+> >> just plain won't work. We've already had remove features to the get
+> >> 5.4 kernel down to a usable size, but we were prepared to live with
+> >> that.]
+> >=20
+> > Ah. Small caches?
+>=20
+> Yep. It's An old Atmel ARM926T part (at91sam9g20) with 32KB I-cache
+> and 32KB D-cache.
+>=20
+> A simple user-space multi-threaded TCP echo server benchmark showed a
+> 30-50% (depending on number of parallel connections) drop in max
+> throughput. Our typical applications also show a 15-25% increase in
+> CPU usage for an equivalent workload.  Another problem is high
+> latencies with 5.4. A thread that is supposed to wake up every 1ms
+> works reliably on 2.6.33, but is a long ways from working on 5.4.
+
+We use the exact same SoC with kernel 4.9.220-rt143 (PREEMPT RT) currently,=
+=20
+after being stuck on 2.6.36.4 for quite a while.  I did not notice signific=
+ant=20
+performance issues, but I have to admit, we never did extensive benchmarks =
+on=20
+network or CPU performance, because the workload also changed for that targ=
+et.
+
+However what gave us a lot less dropped packages was using the internal SRA=
+M=20
+as DMA buffer for RX packages received by macb.  That did not make it in=20
+mainline however, I did not put enough effort in polishing that patch back=
+=20
+when we migrated from 2.6 to 4.x.  If you're curious, it's on GitHub:=20
+https://github.com/LeSpocky/linux/tree/net-macb-sram-rx
+
+> I asked on the arm kernel mailing list if this was typical/expected,
+> but the post never made it past the moderator.
+>=20
+> > The OpenWRT guys make valid complaints that the code
+> > hot path of the network stack is getting too big to fit in the cache
+> > of small systems. So there is a lot of cache misses and performance is
+> > not good. If i remember correctly, just having netfilter in the build
+> > is bad, even if it is not used.
+>=20
+> We've already disabled absoltely everything we can and still have a
+> working system. With the same features enabled, the 5.4 kernel was
+> about 75% larger than a 2.6.33 kernel, so we had to trim quite a bit
+> of meat to get it to boot on existing units.
+
+Same here.  v4.9 kernel image still fits, v4.14 is already too big for some=
+=20
+devices we delivered in the early days.
+
+> We also can't get on-die ECC support for Micron NAND flash working
+> with 5.4. Even it did work, we'd still have to add the ability to
+> fall-back to SW ECC on read operations for the sake of backwards
+> compatibility on units that were initially shipped without on-die ECC
+> support enabled.
+
+IIRC the SoC itself has issues with its ECC engine? See mainline=20
+at91sam9g20ek_common.dtsi for example which sets nand-ecc-mode to "soft".
+
+The SAM9G20 Errata chapter in the complete datasheet from 2015 (Atmel-6384F=
+)=20
+says two times in Section 44.1.3: "Perform the ECC computation by software."
+
+Greets
+Alex
+
+
 
