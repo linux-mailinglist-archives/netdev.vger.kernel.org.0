@@ -2,228 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F4182CE643
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 04:07:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C0E82CE650
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 04:17:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726844AbgLDDHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 22:07:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45006 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726158AbgLDDHH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 22:07:07 -0500
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B59FC061A4F
-        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 19:06:27 -0800 (PST)
-Received: by mail-qt1-x843.google.com with SMTP id k4so3041388qtj.10
-        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 19:06:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CEXSCdKkhduQSvEEfToLCAKnQvvjAj0QIHUrQBw0BUc=;
-        b=LoZvpFCj0DrNYPzr5o/AA4l04RERpgRMihQ9yixBVroXfmvFh/F0SOYpJ5YoAtYFr3
-         T88vdWcwXq5JmFDEBCcQ1khNlz7cyof7L69oF10/tbgDjB2wuX9WrB9As6zE+auo8fRY
-         185b8nC3MLZWrEfutiq7gwvboqjkgxfRXwXyodzVIsWMtR9pdeXQ4Dmkbn7kxxCsYyva
-         SkVWU+jbiMrVlw77G5thX5kNj4ziudnbXEZ5LkKy6P79/4IuTiFAlkNnG+1o4W0DwSfK
-         B3bMutI/uOa9XnG4K5PbweR6DNRIfMkTRpn2ZoKli8AbdCTzT5ot9z2/PvAWPdvNzCyb
-         0AbQ==
+        id S1727417AbgLDDPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 22:15:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:26437 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726316AbgLDDPw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 22:15:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607051665;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1ZZBwHUlkAo2mQlf/omWRQ3U/VftHPedEX4GpVFBakM=;
+        b=Adl2DmBruljD8/IcVOV0N46HT/F9H/U3qSGSpzhy2Cf/Py19dSYggw12MV6wVlw/a/o0+m
+        dmdOv3hwLZbKiNHe3C4bYugYdNC/dazGkSgEa9h2L4ns7mQecmiWClsh4hX6veTLLNZS5/
+        r+r+Ct7T0b+lApUZQ0D1Bw6Gi5dNXdA=
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
+ [209.85.161.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-106-cyuCk2P6Po6k9MIKKZHUYw-1; Thu, 03 Dec 2020 22:14:24 -0500
+X-MC-Unique: cyuCk2P6Po6k9MIKKZHUYw-1
+Received: by mail-oo1-f70.google.com with SMTP id 4so1996173ooc.21
+        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 19:14:23 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CEXSCdKkhduQSvEEfToLCAKnQvvjAj0QIHUrQBw0BUc=;
-        b=LTxCYfyyzjurqKRgeofEoJQqLam5WM7HyrxUK8wzOorplmbqwlkGIGxjz+2TId+Col
-         ln8/hFKthWnzAYGy9YhKiTDvbKFNAKrr9NhpNX5dFc1lgnVHOyzh3uaaSgXK9+EN7DsI
-         p9+xgvxXMvgsrefgRbyysUMqOBaDC08KacPC38GxTAWeBLWIxIb/lTb/AW4u8FzRb3Kr
-         IH5RXGRFoZ24yl2FI0y/rUsHLJvSin99iMk0MlJoc5yReelwnqXWP6xaXUFwcZ8MtvVT
-         bCuDaSqL2SNNaU3pRXwuF3XT6ZDu/Z8dbblh2Qq3jwSZpbg4eTmToXjhjWA4foOr8gRK
-         Ixuw==
-X-Gm-Message-State: AOAM533QeCz/XrUaLGhPjNs9/SSTUibQqVqzDDmrJt8gajscigwnysrT
-        0qYK8j8jgd6Y63JZRYB7+bhpPfnRMcwO
-X-Google-Smtp-Source: ABdhPJwvNqQUXEq1jr+RJRywb8Rab7IyU3LXvSnigLA6VYfPt+VhMlfALddrXShKmPpqcvgMZP0K6Q==
-X-Received: by 2002:ac8:4998:: with SMTP id f24mr6993403qtq.30.1607051185823;
-        Thu, 03 Dec 2020 19:06:25 -0800 (PST)
-Received: from localhost.localdomain ([136.56.89.69])
-        by smtp.gmail.com with ESMTPSA id 76sm3621679qkg.134.2020.12.03.19.06.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Dec 2020 19:06:25 -0800 (PST)
-From:   Stephen Suryaputra <ssuryaextr@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, Stephen Suryaputra <ssuryaextr@gmail.com>
-Subject: [PATCH net] vrf: packets with lladdr src needs dst at input with orig_iif when needs strict
-Date:   Thu,  3 Dec 2020 22:06:04 -0500
-Message-Id: <20201204030604.18828-1-ssuryaextr@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1ZZBwHUlkAo2mQlf/omWRQ3U/VftHPedEX4GpVFBakM=;
+        b=bSQmgQKTSCj2/MTaPl0FPFTa3AV1rpjyx8uqItwEAuH1D16OloBc4BnyfT7cciitJd
+         tGYvJvWdvJZUn5utodnKn+rxcZTwie1QPJKa/j+r1YX7sr62i1EAOmzapsjHqADtXErw
+         h3OQauOX6U8KaYHanoJ00w2jD/mPqbCmvnLx4yqETWDO6yGdQJsvwOJ5hCHE9lLrIJJe
+         /564aoOGtKbvxnx3F8Eq4JeqSkQoFyb8Ovcpj57wlah1KXhycUFZpwgoUfaXTz4KhgwX
+         4Hyt/cZS2KEdCi15KrzSk3uQ/rOE+oUG1MHyn36zNXeqOVQd2TXUalL1hrG1fP2k2hoj
+         bRww==
+X-Gm-Message-State: AOAM533jah4oIw9uAoUa+2PIFSu3uv0pFLILkAnXboOmwbf3qL/KO8tM
+        9v0fwtsn7kNt2RZctdxxdM1IizPTx9v+KDD6B9j9S1ueAxaluIYkEJthh7SQWYA5PX4R6s5rdQp
+        SuBTOywAbNDENRCHc/3GSd1FNaTvoMdRL
+X-Received: by 2002:aca:6255:: with SMTP id w82mr1659240oib.5.1607051663226;
+        Thu, 03 Dec 2020 19:14:23 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzN78hUw/JrQhIanA7/trcLFQiN483Vjgq0gjfKP4OUu5Z+B+wiDa39AEa3lTF8AmmP9mJgTqDbGW6a6i4SCMM=
+X-Received: by 2002:aca:6255:: with SMTP id w82mr1659227oib.5.1607051663014;
+ Thu, 03 Dec 2020 19:14:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201202173053.13800-1-jarod@redhat.com> <20201203004357.3125-1-jarod@redhat.com>
+ <20201203085001.4901c97f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201203085001.4901c97f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+From:   Jarod Wilson <jarod@redhat.com>
+Date:   Thu, 3 Dec 2020 22:14:12 -0500
+Message-ID: <CAKfmpSd7JH4Y--z=8iPxekzSeAr0AVmQFPHaOYX71dcRoJouXQ@mail.gmail.com>
+Subject: Re: [PATCH net v3] bonding: fix feature flag setting at init time
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Davis <tadavis@lbl.gov>, Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Depending on the order of the routes to fe80::/64 are installed on the
-VRF table, the NS for the source link-local address of the originator
-might be sent to the wrong interface.
+On Thu, Dec 3, 2020 at 11:50 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Wed,  2 Dec 2020 19:43:57 -0500 Jarod Wilson wrote:
+> >       bond_dev->hw_features |= NETIF_F_GSO_ENCAP_ALL | NETIF_F_GSO_UDP_L4;
+> > -#ifdef CONFIG_XFRM_OFFLOAD
+> > -     bond_dev->hw_features |= BOND_XFRM_FEATURES;
+> > -#endif /* CONFIG_XFRM_OFFLOAD */
+> >       bond_dev->features |= bond_dev->hw_features;
+> >       bond_dev->features |= NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_STAG_TX;
+> >  #ifdef CONFIG_XFRM_OFFLOAD
+> > -     /* Disable XFRM features if this isn't an active-backup config */
+> > -     if (BOND_MODE(bond) != BOND_MODE_ACTIVEBACKUP)
+> > -             bond_dev->features &= ~BOND_XFRM_FEATURES;
+> > +     bond_dev->hw_features |= BOND_XFRM_FEATURES;
+> > +     /* Only enable XFRM features if this is an active-backup config */
+> > +     if (BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP)
+> > +             bond_dev->features |= BOND_XFRM_FEATURES;
+> >  #endif /* CONFIG_XFRM_OFFLOAD */
+>
+> This makes no functional change, or am I reading it wrong?
 
-This patch ensures that packets with link-local addr source is doing a
-lookup with the orig_iif when the destination addr indicates that it
-is strict.
+You are correct, there's ultimately no functional change there, it
+primarily just condenses the code down to a single #ifdef block, and
+doesn't add and then remove BOND_XFRM_FEATURES from
+bond_dev->features, instead omitting it initially and only adding it
+when in AB mode. I'd poked at the code in that area while trying to
+get to the bottom of this, thought it made it more understandable, so
+I left it in, but ultimately, it's not necessary to fix the problem
+here.
 
-Add the reproducer as a use case in self test script fcnal-test.sh.
-
-Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
----
- drivers/net/vrf.c                         | 10 ++-
- tools/testing/selftests/net/fcnal-test.sh | 95 +++++++++++++++++++++++
- 2 files changed, 103 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
-index f2793ffde191..b9b7e00b72a8 100644
---- a/drivers/net/vrf.c
-+++ b/drivers/net/vrf.c
-@@ -1315,11 +1315,17 @@ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
- 	int orig_iif = skb->skb_iif;
- 	bool need_strict = rt6_need_strict(&ipv6_hdr(skb)->daddr);
- 	bool is_ndisc = ipv6_ndisc_frame(skb);
-+	bool is_ll_src;
- 
- 	/* loopback, multicast & non-ND link-local traffic; do not push through
--	 * packet taps again. Reset pkt_type for upper layers to process skb
-+	 * packet taps again. Reset pkt_type for upper layers to process skb.
-+	 * for packets with lladdr src, however, skip so that the dst can be
-+	 * determine at input using original ifindex in the case that daddr
-+	 * needs strict
- 	 */
--	if (skb->pkt_type == PACKET_LOOPBACK || (need_strict && !is_ndisc)) {
-+	is_ll_src = ipv6_addr_type(&ipv6_hdr(skb)->saddr) & IPV6_ADDR_LINKLOCAL;
-+	if (skb->pkt_type == PACKET_LOOPBACK ||
-+	    (need_strict && !is_ndisc && !is_ll_src)) {
- 		skb->dev = vrf_dev;
- 		skb->skb_iif = vrf_dev->ifindex;
- 		IP6CB(skb)->flags |= IP6SKB_L3SLAVE;
-diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-index fb5c55dd6df8..02b0b9ead40b 100755
---- a/tools/testing/selftests/net/fcnal-test.sh
-+++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -256,6 +256,28 @@ setup_cmd_nsb()
- 	fi
- }
- 
-+setup_cmd_nsc()
-+{
-+	local cmd="$*"
-+	local rc
-+
-+	run_cmd_nsc ${cmd}
-+	rc=$?
-+	if [ $rc -ne 0 ]; then
-+		# show user the command if not done so already
-+		if [ "$VERBOSE" = "0" ]; then
-+			echo "setup command: $cmd"
-+		fi
-+		echo "failed. stopping tests"
-+		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
-+			echo
-+			echo "hit enter to continue"
-+			read a
-+		fi
-+		exit $rc
-+	fi
-+}
-+
- # set sysctl values in NS-A
- set_sysctl()
- {
-@@ -471,6 +493,36 @@ setup()
- 	sleep 1
- }
- 
-+setup_lla_only()
-+{
-+	# make sure we are starting with a clean slate
-+	kill_procs
-+	cleanup 2>/dev/null
-+
-+	log_debug "Configuring network namespaces"
-+	set -e
-+
-+	create_ns ${NSA} "-" "-"
-+	create_ns ${NSB} "-" "-"
-+	create_ns ${NSC} "-" "-"
-+	connect_ns ${NSA} ${NSA_DEV} "-" "-" \
-+		   ${NSB} ${NSB_DEV} "-" "-"
-+	connect_ns ${NSA} ${NSA_DEV2} "-" "-" \
-+		   ${NSC} ${NSC_DEV}  "-" "-"
-+
-+	NSA_LINKIP6=$(get_linklocal ${NSA} ${NSA_DEV})
-+	NSB_LINKIP6=$(get_linklocal ${NSB} ${NSB_DEV})
-+	NSC_LINKIP6=$(get_linklocal ${NSC} ${NSC_DEV})
-+
-+	create_vrf ${NSA} ${VRF} ${VRF_TABLE} "-" "-"
-+	ip -netns ${NSA} link set dev ${NSA_DEV} vrf ${VRF}
-+	ip -netns ${NSA} link set dev ${NSA_DEV2} vrf ${VRF}
-+
-+	set +e
-+
-+	sleep 1
-+}
-+
- ################################################################################
- # IPv4
- 
-@@ -3787,10 +3839,53 @@ use_case_br()
- 	setup_cmd_nsb ip li del vlan100 2>/dev/null
- }
- 
-+# VRF only.
-+# ns-A device is connected to both ns-B and ns-C on a single VRF but only has
-+# LLA on the interfaces
-+use_case_ping_lla_multi()
-+{
-+	setup_lla_only
-+	# only want reply from ns-A
-+	setup_cmd_nsb sysctl -qw net.ipv6.icmp.echo_ignore_multicast=1
-+	setup_cmd_nsc sysctl -qw net.ipv6.icmp.echo_ignore_multicast=1
-+
-+	log_start
-+	run_cmd_nsb ping -c1 -w1 ${MCAST}%${NSB_DEV}
-+	log_test_addr ${MCAST}%${NSB_DEV} $? 0 "Pre cycle, ping out ns-B"
-+
-+	run_cmd_nsc ping -c1 -w1 ${MCAST}%${NSC_DEV}
-+	log_test_addr ${MCAST}%${NSC_DEV} $? 0 "Pre cycle, ping out ns-C"
-+
-+	# cycle/flap the first ns-A interface
-+	setup_cmd ip link set ${NSA_DEV} down
-+	setup_cmd ip link set ${NSA_DEV} up
-+	sleep 1
-+
-+	log_start
-+	run_cmd_nsb ping -c1 -w1 ${MCAST}%${NSB_DEV}
-+	log_test_addr ${MCAST}%${NSB_DEV} $? 0 "Post cycle ${NSA} ${NSA_DEV}, ping out ns-B"
-+	run_cmd_nsc ping -c1 -w1 ${MCAST}%${NSC_DEV}
-+	log_test_addr ${MCAST}%${NSC_DEV} $? 0 "Post cycle ${NSA} ${NSA_DEV}, ping out ns-C"
-+
-+	# cycle/flap the second ns-A interface
-+	setup_cmd ip link set ${NSA_DEV2} down
-+	setup_cmd ip link set ${NSA_DEV2} up
-+	sleep 1
-+
-+	log_start
-+	run_cmd_nsb ping -c1 -w1 ${MCAST}%${NSB_DEV}
-+	log_test_addr ${MCAST}%${NSB_DEV} $? 0 "Post cycle ${NSA} ${NSA_DEV2}, ping out ns-B"
-+	run_cmd_nsc ping -c1 -w1 ${MCAST}%${NSC_DEV}
-+	log_test_addr ${MCAST}%${NSC_DEV} $? 0 "Post cycle ${NSA} ${NSA_DEV2}, ping out ns-C"
-+}
-+
- use_cases()
- {
- 	log_section "Use cases"
-+	log_subsection "Device enslaved to bridge"
- 	use_case_br
-+	log_subsection "Ping LLA with multiple interfaces"
-+	use_case_ping_lla_multi
- }
- 
- ################################################################################
 -- 
-2.20.1
+Jarod Wilson
+jarod@redhat.com
 
