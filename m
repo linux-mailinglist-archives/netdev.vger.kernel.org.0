@@ -2,100 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A628A2CEF69
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 15:09:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6A012CEF9F
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 15:18:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387639AbgLDOIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 09:08:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34102 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726312AbgLDOIi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 09:08:38 -0500
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF80C0613D1
-        for <netdev@vger.kernel.org>; Fri,  4 Dec 2020 06:07:58 -0800 (PST)
-Received: by mail-ed1-x543.google.com with SMTP id v22so5939314edt.9
-        for <netdev@vger.kernel.org>; Fri, 04 Dec 2020 06:07:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZjmOUJaojXoxrkgPeECn64Xfm01YWTmJVuzwTBDa7u4=;
-        b=s7zyqrWzBJSbPJcuTriuM1TvC7mz3CtPuZw2eWGluy/sSLZBaJ/lGopSga7EI+Ufga
-         xkwVZcl5cIfw7YIcJ2l9qB3PhkX5AJcdQPgSUBPDMx5iXMcy+GD+J68YDHz0uhsaoXPh
-         iD1LDJAqYbDTDjm/mKMwRLSWt3UVYHI8coFFDmLGYtGhf8FtwinTUKAuIjO5LBbvbB7I
-         xEdBt49hS2QnXgkCf4OxL2QyRbBPV8sCOXSgS2oTyUtrFZFYdk9LDLZn6BWEvaN98zin
-         6Yq6wcdRJQT4OpZ7feqqGUxjBOuKhDrDX3L2TzdZu888wIUN0bbF3RlQrZtvwVtR97k3
-         nxrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZjmOUJaojXoxrkgPeECn64Xfm01YWTmJVuzwTBDa7u4=;
-        b=T5buFAXwpaJWAlN08XkEI+jyr8Flkr0qSQ9ehtO2iiGAnVuZ90WWkktOg68ekgZRtw
-         2/xW/aQV8l0HGT3SksaR4NVSZgkH/YVgkOnAs3o+iuX/UmziBX+snMQycv6pcQOXj9PP
-         5dhRgYef/Xoq6TjLt2v1D/RzjzBTyP9YGHlNl9F/6QPXX9ArbwszXA39LUvfo78ojQfb
-         7D0297OvvUq8VsWAn7iiGRE207nHLKqngjNLV4/XbWByF47xsvq+WBvG+TF6gV19mYKJ
-         +ch9sWAbKWRIW0rgPQF4uxmRH/+/khco6IWEbjPJxmzRRyr/Cps1PC5s2qMUkAiXUt+C
-         FTJA==
-X-Gm-Message-State: AOAM533nKMvdkcOEn1VZbvZMIOhu8YeAWHT4cXmODFnRrDfnZH/MQIN0
-        t6E2TSfQxsKDICYW/ChbcQHEabTDUVN+Rw==
-X-Google-Smtp-Source: ABdhPJxn0/fbAOgVt/vHq2HVHpBezn7XfX3eXe0o5WoXbjhmZi8cuNY9B5u05/zqw1gye0Fj4skwPQ==
-X-Received: by 2002:a05:6402:1ac4:: with SMTP id ba4mr7580758edb.383.1607090877021;
-        Fri, 04 Dec 2020 06:07:57 -0800 (PST)
-Received: from apalos.home (athedsl-4484548.home.otenet.gr. [94.71.57.204])
-        by smtp.gmail.com with ESMTPSA id c25sm3152588ejx.39.2020.12.04.06.07.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Dec 2020 06:07:56 -0800 (PST)
-Date:   Fri, 4 Dec 2020 16:07:54 +0200
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, davem@davemloft.net, brouer@redhat.com
-Subject: Re: [PATCH net-next] net: netsec: add xdp tx return bulking support
-Message-ID: <X8pCuq9gewShGGUL@apalos.home>
-References: <01487b8f5167d62649339469cdd0c6d8df885902.1605605531.git.lorenzo@kernel.org>
- <20201120100007.5b138d24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201120180713.GA801643@apalos.home>
- <20201120101434.3f91005a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S2388120AbgLDOQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 09:16:50 -0500
+Received: from relay11.mail.gandi.net ([217.70.178.231]:54783 "EHLO
+        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727918AbgLDOQu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 09:16:50 -0500
+Received: from localhost (lfbn-lyo-1-997-19.w86-194.abo.wanadoo.fr [86.194.74.19])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay11.mail.gandi.net (Postfix) with ESMTPSA id AEE95100003;
+        Fri,  4 Dec 2020 14:16:06 +0000 (UTC)
+Date:   Fri, 4 Dec 2020 15:16:06 +0100
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Steen Hegelund <steen.hegelund@microchip.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Subject: Re: [PATCH v8 3/4] phy: Add Sparx5 ethernet serdes PHY driver
+Message-ID: <20201204141606.GH74177@piout.net>
+References: <20201203103015.3735373-1-steen.hegelund@microchip.com>
+ <20201203103015.3735373-4-steen.hegelund@microchip.com>
+ <20201203215253.GL2333853@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201120101434.3f91005a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201203215253.GL2333853@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub, 
-
-On Fri, Nov 20, 2020 at 10:14:34AM -0800, Jakub Kicinski wrote:
-> On Fri, 20 Nov 2020 20:07:13 +0200 Ilias Apalodimas wrote:
-> > On Fri, Nov 20, 2020 at 10:00:07AM -0800, Jakub Kicinski wrote:
-> > > On Tue, 17 Nov 2020 10:35:28 +0100 Lorenzo Bianconi wrote:  
-> > > > Convert netsec driver to xdp_return_frame_bulk APIs.
-> > > > Rely on xdp_return_frame_rx_napi for XDP_TX in order to try to recycle
-> > > > the page in the "in-irq" page_pool cache.
-> > > > 
-> > > > Co-developed-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> > > > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > > > ---
-> > > > This patch is just compile tested, I have not carried out any run test  
-> > > 
-> > > Doesn't look like anyone will test this so applied, thanks!  
-> > 
-> > I had everything applied trying to test, but there was an issue with the PHY the
-> > socionext board uses [1].
+On 03/12/2020 22:52:53+0100, Andrew Lunn wrote:
+> > +	if (macro->serdestype == SPX5_SDT_6G) {
+> > +		value = sdx5_rd(priv, SD6G_LANE_LANE_DF(macro->stpidx));
+> > +		analog_sd = SD6G_LANE_LANE_DF_PMA2PCS_RXEI_FILTERED_GET(value);
+> > +	} else if (macro->serdestype == SPX5_SDT_10G) {
+> > +		value = sdx5_rd(priv, SD10G_LANE_LANE_DF(macro->stpidx));
+> > +		analog_sd = SD10G_LANE_LANE_DF_PMA2PCS_RXEI_FILTERED_GET(value);
+> > +	} else {
+> > +		value = sdx5_rd(priv, SD25G_LANE_LANE_DE(macro->stpidx));
+> > +		analog_sd = SD25G_LANE_LANE_DE_LN_PMA_RXEI_GET(value);
+> > +	}
+> > +	/* Link up is when analog_sd == 0 */
+> > +	return analog_sd;
+> > +}
 > 
-> FWIW feel free to send a note saying you need more time.
+> What i have not yet seen is how this code plugs together with
+> phylink_pcs_ops?
 > 
-> > In any case the patch looks correct, so you can keep it and I'll report any 
-> > problems once I short the box out.
+> Can this hardware also be used for SATA, USB? As far as i understand,
+> the Marvell Comphy is multi-purpose, it is used for networking, USB,
+> and SATA, etc. Making it a generic PHY then makes sense, because
+> different subsystems need to use it.
 > 
-> Cool, fingers crossed :)
+> But it looks like this is for networking only? So i'm wondering if it
+> belongs in driver/net/pcs and it should be accessed using
+> phylink_pcs_ops?
+> 
 
-FWIW I did eventually test this. 
-I can't see anything wrong with it.
+Ocelot had PCie on the phys, doesn't Sparx5 have it?
 
-Cheers
-/Ilias
+-- 
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
