@@ -2,118 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C2692CEA6D
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 10:02:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA0872CEA70
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 10:05:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729404AbgLDJCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 04:02:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43370 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725866AbgLDJCj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 04:02:39 -0500
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0996C061A52;
-        Fri,  4 Dec 2020 01:01:58 -0800 (PST)
-Received: by mail-pl1-x642.google.com with SMTP id y10so1286121plr.10;
-        Fri, 04 Dec 2020 01:01:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qJuEMpFeakpm8CLh9OTsyBj5JDMbjjrQXYjCXTp57Ts=;
-        b=V8zGIoeRaecT0z8WXoS/TBaUMP88C+DOu5ESr7bKkfQEhzRVWSfK2b8B85E48On5pa
-         fLOl/C321OUEutrCAJnhqrEAKeARejAc91B2Hw/Vd24ZS+qkgkhvvmM2myZWiY4xMjUY
-         pqr+a5aGBzUD+ClMdT6LoDwPahXOYEBr8uQCxewxgbP+4A1S1IRvi0RQybwNoQRRMtke
-         OiObrtnoZ1cU3A7sMhFqyO2XxMt6ITOekgaQUsrM8uE8fhQaK1BLW7GaaTknjDknlX3i
-         +yBzH07SEYL6LR+bFhy4+fAWLCt6ldF6S7bwoMAbDMr/U/okzOKtFxoxNb2uS2yU54R/
-         hkHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qJuEMpFeakpm8CLh9OTsyBj5JDMbjjrQXYjCXTp57Ts=;
-        b=h8Ta2llakgJoUT6Wabr4zBxZgqo3kFRbrziFTks8r8SNw5fO0peLkUwtBfllxPfRK9
-         HkCm/2ZgVu2fHKWj1DdG+HEgBx6/BBu5HpAKvz1gyfko6Ca9y4P8O1ksFDKiAAgXaRAF
-         jSqSS/RUDeAu9EtD8uJXBtVu/+wnloBXEzdzBPnnVQg49SlGZyHxhDZiztni7NMM5BG8
-         ROdNJ5g6voC7W04u8QsoTFf6ScxTlG8BGyEqYzPDFtxX9NRNAgl38vqcym51uK0adt0s
-         dr8+bPsatozElHmOlAocuklH3aCqcScZfum5hsFldT9MUmCTq6cb1dbxQ8ZBaX6jgFFp
-         F/Kg==
-X-Gm-Message-State: AOAM533LHhlvha20hHImkQpoD1K6djVPjAT5XuJb5XTRecEF1iw3soWp
-        t4IWqeFfeWBV9sXo5IuhHCGqZTW9e3l/8Z1QkLs=
-X-Google-Smtp-Source: ABdhPJymOI5g3U7qVxiizeZ5s8Vuq6qmqImYaTJGpA2MTNfQYf28aMcDLxSUFzSz87Vaystx535lX9o40oX0jQbWC84=
-X-Received: by 2002:a17:90a:8b8b:: with SMTP id z11mr3202614pjn.117.1607072518441;
- Fri, 04 Dec 2020 01:01:58 -0800 (PST)
+        id S1727682AbgLDJEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 04:04:22 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:20900 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726614AbgLDJEV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 04:04:21 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-272-foInBB0XPqCkeKQcwqosjg-1; Fri, 04 Dec 2020 09:02:41 +0000
+X-MC-Unique: foInBB0XPqCkeKQcwqosjg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Fri, 4 Dec 2020 09:02:41 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Fri, 4 Dec 2020 09:02:41 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Eric Dumazet' <edumazet@google.com>
+CC:     Stephen Hemminger <stephen@networkplumber.org>,
+        Arjun Roy <arjunroy.kdev@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "arjunroy@google.com" <arjunroy@google.com>,
+        "soheil@google.com" <soheil@google.com>
+Subject: RE: [net-next v2 1/8] net-zerocopy: Copy straggler unaligned data for
+ TCP Rx. zerocopy.
+Thread-Topic: [net-next v2 1/8] net-zerocopy: Copy straggler unaligned data
+ for TCP Rx. zerocopy.
+Thread-Index: AQHWyQnnIy5Nhf4BLE+JcVO2pr+xUKnl/WUAgAAEsACAAKQNIA==
+Date:   Fri, 4 Dec 2020 09:02:40 +0000
+Message-ID: <1aabb09d81d24480ab2cf99e30138a3e@AcuMS.aculab.com>
+References: <20201202220945.911116-1-arjunroy.kdev@gmail.com>
+ <20201202220945.911116-2-arjunroy.kdev@gmail.com>
+ <20201202161527.51fcdcd7@hermes.local>
+ <384c6be35cc044eeb1bbcf5dcc6d819f@AcuMS.aculab.com>
+ <CANn89iKfUdRygt_k2Axf1MZ2FzkOQ9R6S2oJAvKuLqRp-wZvsQ@mail.gmail.com>
+In-Reply-To: <CANn89iKfUdRygt_k2Axf1MZ2FzkOQ9R6S2oJAvKuLqRp-wZvsQ@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-References: <1607071819-34127-1-git-send-email-zhangchangzhong@huawei.com>
-In-Reply-To: <1607071819-34127-1-git-send-email-zhangchangzhong@huawei.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Fri, 4 Dec 2020 10:01:47 +0100
-Message-ID: <CAJ8uoz0LCkR+zHKSto9JyTqeybRXqF1SbH_B6cBHu9n5r-UXKA@mail.gmail.com>
-Subject: Re: [PATCH net] xsk: Fix error return code in __xp_assign_dev()
-To:     Zhang Changzhong <zhangchangzhong@huawei.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 4, 2020 at 9:49 AM Zhang Changzhong
-<zhangchangzhong@huawei.com> wrote:
->
-> Fix to return a negative error code from the error handling
-> case instead of 0, as done elsewhere in this function.
->
-> Fixes: 921b68692abb ("xsk: Enable sharing of dma mappings")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-> ---
->  net/xdp/xsk_buff_pool.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
-> index 9287edd..d5adeee 100644
-> --- a/net/xdp/xsk_buff_pool.c
-> +++ b/net/xdp/xsk_buff_pool.c
-> @@ -175,6 +175,7 @@ static int __xp_assign_dev(struct xsk_buff_pool *pool,
->
->         if (!pool->dma_pages) {
->                 WARN(1, "Driver did not DMA map zero-copy buffers");
-> +               err = -EINVAL;
+RnJvbTogRXJpYw0KPiBTZW50OiAwMyBEZWNlbWJlciAyMDIwIDIzOjE1DQo+IA0KPiBPbiBGcmks
+IERlYyA0LCAyMDIwIGF0IDEyOjAxIEFNIERhdmlkIExhaWdodCA8RGF2aWQuTGFpZ2h0QGFjdWxh
+Yi5jb20+IHdyb3RlOg0KPiA+DQo+ID4gRnJvbTogU3RlcGhlbiBIZW1taW5nZXINCj4gPiA+IFNl
+bnQ6IDAzIERlY2VtYmVyIDIwMjAgMDA6MTUNCj4gPiA+DQo+ID4gPiBPbiBXZWQsICAyIERlYyAy
+MDIwIDE0OjA5OjM4IC0wODAwDQo+ID4gPiBBcmp1biBSb3kgPGFyanVucm95LmtkZXZAZ21haWwu
+Y29tPiB3cm90ZToNCj4gPiA+DQo+ID4gPiA+IGRpZmYgLS1naXQgYS9pbmNsdWRlL3VhcGkvbGlu
+dXgvdGNwLmggYi9pbmNsdWRlL3VhcGkvbGludXgvdGNwLmgNCj4gPiA+ID4gaW5kZXggY2ZjYjEw
+Yjc1NDgzLi42MmRiNzhiOWMxYTAgMTAwNjQ0DQo+ID4gPiA+IC0tLSBhL2luY2x1ZGUvdWFwaS9s
+aW51eC90Y3AuaA0KPiA+ID4gPiArKysgYi9pbmNsdWRlL3VhcGkvbGludXgvdGNwLmgNCj4gPiA+
+ID4gQEAgLTM0OSw1ICszNDksNyBAQCBzdHJ1Y3QgdGNwX3plcm9jb3B5X3JlY2VpdmUgew0KPiA+
+ID4gPiAgICAgX191MzIgcmVjdl9za2lwX2hpbnQ7ICAgLyogb3V0OiBhbW91bnQgb2YgYnl0ZXMg
+dG8gc2tpcCAqLw0KPiA+ID4gPiAgICAgX191MzIgaW5xOyAvKiBvdXQ6IGFtb3VudCBvZiBieXRl
+cyBpbiByZWFkIHF1ZXVlICovDQo+ID4gPiA+ICAgICBfX3MzMiBlcnI7IC8qIG91dDogc29ja2V0
+IGVycm9yICovDQo+ID4gPiA+ICsgICBfX3U2NCBjb3B5YnVmX2FkZHJlc3M7ICAvKiBpbjogY29w
+eWJ1ZiBhZGRyZXNzIChzbWFsbCByZWFkcykgKi8NCj4gPiA+ID4gKyAgIF9fczMyIGNvcHlidWZf
+bGVuOyAvKiBpbi9vdXQ6IGNvcHlidWYgYnl0ZXMgYXZhaWwvdXNlZCBvciBlcnJvciAqLw0KPiA+
+DQo+ID4gWW91IG5lZWQgdG8gc3dhcCB0aGUgb3JkZXIgb2YgdGhlIGFib3ZlIGZpZWxkcyB0byBh
+dm9pZCBwYWRkaW5nDQo+ID4gYW5kIGRpZmZlcmluZyBhbGlnbm1lbnRzIGZvciAzMmJpdCBhbmQg
+NjRiaXQgYXBwcy4NCj4gDQo+IEkgZG8gbm90IHRoaW5rIHNvLiBQbGVhc2UgcmV2aWV3IHRoaXMg
+cGF0Y2ggc2VyaWVzIGNhcmVmdWxseS4NCg0KTGF0ZSBhdCBuaWdodC4NClRoZSBhY3R1YWwgcHJv
+YmxlbSBpcyAndGFpbCBwYWRkaW5nJy4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVz
+cyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEg
+MVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
 
-Good catch! My intention here by not setting err is that it should
-fall back to copy mode, which it does. The problem is that the
-force_zc flag is disregarded when err is not set (see exit code below)
-and your patch fixes that. If force_zc is set, we should exit out with
-an error, not fall back. Could you please write about this in your
-cover letter and send a v2?
-
-BTW, what is the "Hulk Robot" that is in your Reported-by tag?
-
-Thank you: Magnus
-
-err_unreg_xsk:
-        xp_disable_drv_zc(pool);
-err_unreg_pool:
-        if (!force_zc)
-                err = 0; /* fallback to copy mode */
-        if (err)
-                xsk_clear_pool_at_qid(netdev, queue_id);
-        return err;
-
->                 goto err_unreg_xsk;
->         }
->         pool->umem->zc = true;
-> --
-> 2.9.5
->
