@@ -2,85 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 174D52CEC07
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 11:21:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1F5C2CEC16
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 11:23:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729798AbgLDKTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 05:19:55 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:9014 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729514AbgLDKTy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 05:19:54 -0500
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CnTFD1s3hzhk8n;
-        Fri,  4 Dec 2020 18:18:40 +0800 (CST)
-Received: from [10.174.177.230] (10.174.177.230) by
- DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
- 14.3.487.0; Fri, 4 Dec 2020 18:19:03 +0800
-Subject: Re: [PATCH net] xsk: Fix error return code in __xp_assign_dev()
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-CC:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <1607071819-34127-1-git-send-email-zhangchangzhong@huawei.com>
- <CAJ8uoz0LCkR+zHKSto9JyTqeybRXqF1SbH_B6cBHu9n5r-UXKA@mail.gmail.com>
-From:   Zhang Changzhong <zhangchangzhong@huawei.com>
-Message-ID: <fcb6b23a-4ecc-465e-6716-0725c9610da7@huawei.com>
-Date:   Fri, 4 Dec 2020 18:18:59 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S2387924AbgLDKVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 05:21:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55486 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726330AbgLDKVU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 05:21:20 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55E00C0613D1;
+        Fri,  4 Dec 2020 02:20:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=CyALSvgNYXpCyLGL7J4jQD4Lj1WdhcYdlQtfqx1dD3k=; b=t2RDh01T6jqfyvJKY96GON17K
+        FvZM0e/TcQs1S1Bq78kiwPfU7r4OvLI14cil0OW1CNoPSIrWZhSx/R0L2eCbc/qGqXbGkgYeqsZU+
+        8raeqyfE02XS4m3+YrxkAfHCERSTAPVqpJDN5WgwH0rRI4H475l0Kf71cTyUSRSjw1JiE+7cTzt95
+        +UpQ5gUvAss3Lkt0jaYJldCorTlsp9cdv7xt3YLlZTGPTZijomlyHENo2e23ppm0k0jtMmJwsCjUC
+        KeFJ2TpOPMKbjfS80U6MRT4qA1MsVGTnio+EVDUMRNT9rAgDDuFGJua/lC/JG2Px74OIFDA6v+jaJ
+        PwdMKLiEQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:39620)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kl8C4-0004BU-H8; Fri, 04 Dec 2020 10:20:04 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kl8C3-0000a7-JL; Fri, 04 Dec 2020 10:20:03 +0000
+Date:   Fri, 4 Dec 2020 10:20:03 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     Steen Hegelund <steen.hegelund@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v8 3/4] phy: Add Sparx5 ethernet serdes PHY driver
+Message-ID: <20201204102003.GJ1551@shell.armlinux.org.uk>
+References: <20201203103015.3735373-1-steen.hegelund@microchip.com>
+ <20201203103015.3735373-4-steen.hegelund@microchip.com>
+ <20201203215253.GL2333853@lunn.ch>
+ <20201203225232.GI1551@shell.armlinux.org.uk>
+ <20201204075633.GC74177@piout.net>
 MIME-Version: 1.0
-In-Reply-To: <CAJ8uoz0LCkR+zHKSto9JyTqeybRXqF1SbH_B6cBHu9n5r-UXKA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.230]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201204075633.GC74177@piout.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Dec 04, 2020 at 08:56:33AM +0100, Alexandre Belloni wrote:
+> Hi Russell,
 > 
-> Good catch! My intention here by not setting err is that it should
-> fall back to copy mode, which it does. The problem is that the
-> force_zc flag is disregarded when err is not set (see exit code below)
-> and your patch fixes that. If force_zc is set, we should exit out with
-> an error, not fall back. Could you please write about this in your
-> cover letter and send a v2?
+> On 03/12/2020 22:52:33+0000, Russell King - ARM Linux admin wrote:
+> > You still have not Cc'd me on your patches. Please can you either:
+> > 
+> > 1) use get_maintainer.pl to find out whom you should be sending
+> >    your patches to
+> > or
+> > 2) include me in your cc for this patch set as phylink maintainer in
+> >    your patch set so I can review your use of phylink.
+> > 
 > 
+> Note that this series is different from the network (switchdev) driver
+> series and doesn't make use of phylink.
 
-Thanks for the suggestion, I have sent the v2 patch, please take another look.
+Oh, didn't realise that; it's difficult to tell when you don't get the
+original messages, and only end up being Cc'd on a very trimmed down
+reply.
 
-> BTW, what is the "Hulk Robot" that is in your Reported-by tag?
+Email is a broken form of communication...
 
-It's an auto tester, here is some information: https://lwn.net/Articles/804119/
-
-> 
-> Thank you: Magnus
-> 
-> err_unreg_xsk:
->         xp_disable_drv_zc(pool);
-> err_unreg_pool:
->         if (!force_zc)
->                 err = 0; /* fallback to copy mode */
->         if (err)
->                 xsk_clear_pool_at_qid(netdev, queue_id);
->         return err;
-> 
->>                 goto err_unreg_xsk;
->>         }
->>         pool->umem->zc = true;
->> --
->> 2.9.5
->>
-> .
-> 
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
