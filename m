@@ -2,62 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE35A2CF1DD
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 17:27:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C49502CF1DF
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 17:27:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729619AbgLDQ0l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 11:26:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48254 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725923AbgLDQ0k (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Dec 2020 11:26:40 -0500
-Date:   Fri, 4 Dec 2020 08:25:58 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607099160;
-        bh=MHHKkmoKjWu0cQa0MJSAx0XzbIRrcNJEsWUXYjQipb8=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MLvlA35HN4ohV3iZow6D9YHeAHxFSJ3uPa6MbZFLdDwWj7Zyr58H/PSnExYJOqODJ
-         EfJWAWip59iY29pTqqNIqPGFXN10Iia11P11c9xb/Ln6SHa9G+Slpdy60vJ2bligCR
-         LW7Jh9uEV4sjc0I6m+IJY8uYG4cCeDZrLDhRVK65CeT/lLo3Yq3WouzIdZ25VmIhpK
-         63d75Jb50lFlvPYXyXAfZ2Wdgh9YuYPRZM7gr+at0ocFyndIuSyVe6yz+X4ABBG3y7
-         gJ+Z27Ur7XalOsKughxN9oyVa4LJLeGZdNlTKCS33IZ1vWueF3VN+GCIir5zUDkw9I
-         j6zMFjspjvd3w==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leonro@nvidia.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, jgg@nvidia.com,
-        Dan Williams <dan.j.williams@intel.com>, broonie@kernel.org,
-        lgirdwood@gmail.com, davem@davemloft.net,
-        Kiran Patil <kiran.patil@intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Fred Oh <fred.oh@linux.intel.com>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Parav Pandit <parav@mellanox.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
-Message-ID: <20201204082558.4eb8c8c2@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201204125455.GI16543@unreal>
-References: <160695681289.505290.8978295443574440604.stgit@dwillia2-desk3.amr.corp.intel.com>
-        <X8os+X515fxeqefg@kroah.com>
-        <20201204125455.GI16543@unreal>
+        id S1730562AbgLDQ1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 11:27:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55654 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726928AbgLDQ1Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 11:27:16 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 370F9C0613D1;
+        Fri,  4 Dec 2020 08:26:36 -0800 (PST)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1klDue-002Wk7-0s; Fri, 04 Dec 2020 17:26:28 +0100
+Message-ID: <cac552ce70a747f078738a7167f0a75bc52fac7c.camel@sipsolutions.net>
+Subject: Re: [PATCH net] mac80211: mesh: fix mesh_pathtbl_init() error path
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        linux-wireless@vger.kernel.org
+Date:   Fri, 04 Dec 2020 17:26:27 +0100
+In-Reply-To: <20201204162428.2583119-1-eric.dumazet@gmail.com> (sfid-20201204_172435_837291_23D69393)
+References: <20201204162428.2583119-1-eric.dumazet@gmail.com>
+         (sfid-20201204_172435_837291_23D69393)
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 4 Dec 2020 14:54:55 +0200 Leon Romanovsky wrote:
-> Thanks, pulled to mlx5-next
+On Fri, 2020-12-04 at 08:24 -0800, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
 > 
-> Jason, Jakob,
+> If tbl_mpp can not be allocated, we call mesh_table_free(tbl_path)
+> while tbl_path rhashtable has not yet been initialized, which causes
+> panics.
+
+Thanks Eric!
+
+I was going to ask how you ran into this ...
+
+> Reported-by: syzbot <syzkaller@googlegroups.com>
+
+Until I saw this - but doesn't syzbot normally want a
+"syzbot+somehashid@..." as the reported-by?
+
+
+> --- a/net/mac80211/mesh_pathtbl.c
+> +++ b/net/mac80211/mesh_pathtbl.c
+> @@ -60,6 +60,7 @@ static struct mesh_table *mesh_table_alloc(void)
+>  	atomic_set(&newtbl->entries,  0);
+>  	spin_lock_init(&newtbl->gates_lock);
+>  	spin_lock_init(&newtbl->walk_lock);
+> +	rhashtable_init(&newtbl->rhead, &mesh_rht_params);
+>  
+>  	return newtbl;
+>  }
+> @@ -773,9 +774,6 @@ int mesh_pathtbl_init(struct ieee80211_sub_if_data *sdata)
+>  		goto free_path;
+>  	}
+>  
+> -	rhashtable_init(&tbl_path->rhead, &mesh_rht_params);
+> -	rhashtable_init(&tbl_mpp->rhead, &mesh_rht_params);
 > 
-> Can you please pull that mlx5-next branch to your trees?
-> git://git.kernel.org/pub/scm/linux/kernel/git/mellanox/linux.git
 
-Could you post a PR with a proper description and so on?
+Hmm. There were two calls, now there's only one? Is that a bug, or am I
+missing something?
 
-Thanks!
+johannes
+
