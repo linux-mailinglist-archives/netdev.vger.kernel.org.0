@@ -2,120 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8B6F2CF18E
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 17:07:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B4AE2CF196
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 17:09:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730820AbgLDQGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 11:06:33 -0500
-Received: from aserp2130.oracle.com ([141.146.126.79]:53342 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725923AbgLDQGc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 11:06:32 -0500
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0B4G5CN8112042;
-        Fri, 4 Dec 2020 16:05:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
- mime-version : subject : from : in-reply-to : date : cc :
- content-transfer-encoding : message-id : references : to;
- s=corp-2020-01-29; bh=CRX1tP16qfHm063q0BwyiJW0vFhRxuLVcLDuPnepxIg=;
- b=vA8k+PM3ti0G331WaZNnP3waAlbxuyQzZVJruhhoqy7gD0BRO+5v2YbQtTimrYXYiNra
- zs5dcxeuuz4poY4Yg4RkHF4fuf3gz0yJJB5RCW5JpdrDVwGkUlqVetyXvuEzvVIWCdEj
- upJk2eGoLwXu4DTffzMAenbByoXgMaogpOP61PkjSBFkuB9EW+a2idJ1jHorZp2piqyH
- 1f8Gp+qLTZVc1HyRu1BeoRUbopQGs5QBimWq/H24Ji9nMKZBlxbCiRzGeaBRn5PWs6A9
- ImarIVMfKEivvyD27wrtQYnWTkDcZN9mPYpXjrl6kGgCBbhsv1PyrFH5l8ZIfSeoJ0Jv Cg== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2130.oracle.com with ESMTP id 353c2bbxmu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 04 Dec 2020 16:05:35 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0B4G5WYb085385;
-        Fri, 4 Dec 2020 16:05:34 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 3540g3utxh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 04 Dec 2020 16:05:34 +0000
-Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0B4G5Pf6031359;
-        Fri, 4 Dec 2020 16:05:25 GMT
-Received: from anon-dhcp-152.1015granger.net (/68.61.232.219)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 04 Dec 2020 08:05:25 -0800
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.4\))
-Subject: Re: Why the auxiliary cipher in gss_krb5_crypto.c?
-From:   Chuck Lever <chuck.lever@oracle.com>
-In-Reply-To: <20201204154626.GA26255@fieldses.org>
-Date:   Fri, 4 Dec 2020 11:05:24 -0500
-Cc:     David Howells <dhowells@redhat.com>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        linux-crypto@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-afs@lists.infradead.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <76331A46-235E-4A35-BA07-F4811FA29EB5@oracle.com>
-References: <2F96670A-58DC-43A6-A20E-696803F0BFBA@oracle.com>
- <160518586534.2277919.14475638653680231924.stgit@warthog.procyon.org.uk>
- <118876.1607093975@warthog.procyon.org.uk>
- <20201204154626.GA26255@fieldses.org>
-To:     Bruce Fields <bfields@fieldses.org>
-X-Mailer: Apple Mail (2.3608.120.23.2.4)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9824 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 suspectscore=0
- phishscore=0 mlxlogscore=999 adultscore=0 mlxscore=0 bulkscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012040092
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9824 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 lowpriorityscore=0
- clxscore=1015 bulkscore=0 mlxlogscore=999 phishscore=0 malwarescore=0
- spamscore=0 adultscore=0 mlxscore=0 priorityscore=1501 impostorscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2012040092
+        id S1730686AbgLDQJA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 11:09:00 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45906 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727425AbgLDQJA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Dec 2020 11:09:00 -0500
+Date:   Fri, 4 Dec 2020 08:08:18 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607098100;
+        bh=qaDlz2vEh/zZ7nxnn5fo0Fwy/Y3K5EUTw9odTo2U0Qc=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LpUkf69BsgmYnFJ6Ufj1mxcpeT+0+wVc6AzpVNESrZd6gG3vkB6GDzhbkT5PyShd1
+         zzK9gnMvPts5WZywyJ5edVWkCdnbZYX+R74maPsZxM0hRSOxFzfyJ0iltExqdIXuB2
+         RMr5q0AxVQCN0Dwhwj/win8mgFJ+/M4Lr5OdrKgjRYS3M2VQZegaUW+6Sn2rKJ74fS
+         qd3XM01eFKbGTW/C0TURtCq3X6gSCRif/xEem1k+5LlT2Gua7syBYEwaffMTboM7Fa
+         sa04R9p7jrjriRkGMLo7fZkGA/0M/T9c0f39VE4KCUpzsuUBg3OE5+ZFFs1rP7akJr
+         esl1xyn3rgahg==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, davem@davemloft.net, brouer@redhat.com
+Subject: Re: [PATCH net-next] net: netsec: add xdp tx return bulking support
+Message-ID: <20201204080818.33a321e2@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <X8pCuq9gewShGGUL@apalos.home>
+References: <01487b8f5167d62649339469cdd0c6d8df885902.1605605531.git.lorenzo@kernel.org>
+        <20201120100007.5b138d24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20201120180713.GA801643@apalos.home>
+        <20201120101434.3f91005a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <X8pCuq9gewShGGUL@apalos.home>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, 4 Dec 2020 16:07:54 +0200 Ilias Apalodimas wrote:
+> > > I had everything applied trying to test, but there was an issue with the PHY the
+> > > socionext board uses [1].  
+> > 
+> > FWIW feel free to send a note saying you need more time.
+> >   
+> > > In any case the patch looks correct, so you can keep it and I'll report any 
+> > > problems once I short the box out.  
+> > 
+> > Cool, fingers crossed :)  
+> 
+> FWIW I did eventually test this. 
+> I can't see anything wrong with it.
 
-
-> On Dec 4, 2020, at 10:46 AM, Bruce Fields <bfields@fieldses.org> =
-wrote:
->=20
-> On Fri, Dec 04, 2020 at 02:59:35PM +0000, David Howells wrote:
->> Hi Chuck, Bruce,
->>=20
->> Why is gss_krb5_crypto.c using an auxiliary cipher?  For reference, =
-the
->> gss_krb5_aes_encrypt() code looks like the attached.
->>=20
->>> =46rom what I can tell, in AES mode, the difference between the main =
-cipher and
->> the auxiliary cipher is that the latter is "cbc(aes)" whereas the =
-former is
->> "cts(cbc(aes))" - but they have the same key.
->>=20
->> Reading up on CTS, I'm guessing the reason it's like this is that CTS =
-is the
->> same as the non-CTS, except for the last two blocks, but the non-CTS =
-one is
->> more efficient.
->=20
-> CTS is cipher-text stealing, isn't it?  I think it was Kevin Coffman
-> that did that, and I don't remember the history.  I thought it was
-> required by some spec or peer implementation (maybe Windows?) but I
-> really don't remember.  It may predate git.  I'll dig around and see
-> what I can find.
-
-I can't add more here, this design comes from well before I started
-working on this body of code (though, I worked near Kevin when he
-implemented it).
-
-
---
-Chuck Lever
-
-
-
+Good to know, thank you!
