@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BD752CEC39
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 11:30:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 538AA2CEC37
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 11:30:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729795AbgLDKar (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 05:30:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56964 "EHLO
+        id S1729646AbgLDKao (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 05:30:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726014AbgLDKaq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 05:30:46 -0500
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18023C061A4F;
-        Fri,  4 Dec 2020 02:30:01 -0800 (PST)
-Received: by mail-lj1-x241.google.com with SMTP id r18so6044576ljc.2;
-        Fri, 04 Dec 2020 02:30:01 -0800 (PST)
+        with ESMTP id S1726014AbgLDKan (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 05:30:43 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12758C061A51;
+        Fri,  4 Dec 2020 02:30:03 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id s27so6974217lfp.5;
+        Fri, 04 Dec 2020 02:30:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ntPyan2LMBW4YRlwZpm6QDwFqX2hAHbAcyK6DVkpbtY=;
-        b=VImxvOU5OT46FYPftU8rCcEoZ7SnblVXIkJJEu1KiCOo+BSHuF43pD94Ym23tDk7B6
-         6EvZ770shWSdVlfyEH40jcaP9pQSThrGMATnknJ6o7bkThs05uYyYMRN/6ssGfXHVGlO
-         KOqawCtcalwVw5AKImOtBdFgNWMvqpaZvBgF6gygfl/krQ/JQPt8GEw7e1JrE7Ma/Evi
-         VjvKGazy1JAZ7O295nxLdiPkghLLPnSnJ6W8NZApofndjDHJ1wMOVyJSWEahg7SOShrf
-         A50Jg3rzK/ZL7xxCgUWJv7CQ3OnIXLa25iBru+dGPgfac5KcJPIEqcTH0RJqMN0R1gTD
-         OllA==
+        bh=1aFRlI4fXaEVeSmIkxNMWXJSVPFP7SIfGNqf3YjlK88=;
+        b=odb/3GuHRfPSJGUYct9gfeG6YBCEcxqSDfKh1Eicm7rho/UZGfsh4QeqB+EJfguW6Y
+         R+3QVPTYwayKVu0so9T336C9PBBDl+PWdIj3Prfh5LGUZqcFe+JVE25sX0ZSAz/3lbSr
+         C+r8NXCUO4yLk5D27hWmHZgjpnxIEb1L/W/rvwll9TqsnAT+ZK9BT40493trBRG5nJBx
+         7a0zQHFaPWASFMX6xQALTWAP1A2QYdUd46xpekTFITs4httbaHgX9W7Y9vdfSq8HGE9B
+         di7GYRkYESSo14K1WMecU+Icniv8NPoP8TvpWTxD2yVUEJ8r/CbTT/Yxx2w6svjuME9l
+         KmVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ntPyan2LMBW4YRlwZpm6QDwFqX2hAHbAcyK6DVkpbtY=;
-        b=Jvopl8lYCh5AFw2r5ppBPnjBXJSmmBwyhtJxiwYj4tb63BeDQt1OJCdkid+3CHNWVQ
-         FnNUrXakaQGnUe+STl8x3n2wQxMHIA2RXHjpeyPCQb5EsdM6xcpfsg0m7sMCYkhe8bUo
-         s/oMZMNJCT6A8s4dfrPSr/GM2e6hPYgZ3Wxe7Z2rlCUcfTS8MfzZqxZbn1+c74NT8rP6
-         mZnBQTARvcgG+pfr0FpCZ6b6y4tyzuGTo/184BWLwzNNbR3mdmqaM/xiyBf2csFFgbd0
-         1YoXsNVRDmy5diwGerqLZF3c8LAmJfxsRv26QvNHHa0b867Fy0T8sUjvIm7gx2w3EcSl
-         x3SQ==
-X-Gm-Message-State: AOAM530zh75D3MNj7TOlcLwj1dpmiDq0U6xntPvbkRifXXRHrsapnjhC
-        8VspzVjVm1yalbZJAp0R667F7Rh6O1o5lA==
-X-Google-Smtp-Source: ABdhPJwn1SV8gLhMfD+I0aFoQMed0TIb8GcL96twWjvp59TCO2/hyQvdWh2lcNc0uydjtZ2GPtyzKA==
-X-Received: by 2002:a2e:b0e6:: with SMTP id h6mr3080466ljl.196.1607077799596;
-        Fri, 04 Dec 2020 02:29:59 -0800 (PST)
+        bh=1aFRlI4fXaEVeSmIkxNMWXJSVPFP7SIfGNqf3YjlK88=;
+        b=R2voED/+CtYgqPJXK5HYCrHEKe3iuIVClCJ55ipENbIeu9efbZoaTWtJ8UCufKRk4E
+         ctOoC7OG6L89bS1tUbKfRP1G1mW1cMpJf2YR8t0p/SwT03J4sxmkvExKrKU50w2eWxj0
+         ty+mb1MYOEpwnjRiyRvdnre4dEvdZ2rhadq2o99sowXrA3/dnlXfq2npB4/AlRuzG3/W
+         e4/B1hULgJf4+jyczWnukVX/Zfzgn1Vl5t9ygPNGRe8BtxCzBw04x7sqzvHbDPy4Yg92
+         7Pp+s1QQWyW2ovH01IZcBQbc+WTG4dA8fCZeffHxxh/9jhRykQ+pkcvWocHBh8UfcGZv
+         NqpA==
+X-Gm-Message-State: AOAM533T3vRkL/0fYJ+Sbixew/nEe+i+BAVsawaYZkrVB1RLcBDi7BB6
+        6ur//um0CFPXOfJDt+DO/mg=
+X-Google-Smtp-Source: ABdhPJyQfEehQIdMVx05bZCQHV2oYzq3h7hwmh3DbMe5tSIo62sTBok+wgnK6kFhQcQfRzXAVOM5Gw==
+X-Received: by 2002:a19:5205:: with SMTP id m5mr2902610lfb.310.1607077801535;
+        Fri, 04 Dec 2020 02:30:01 -0800 (PST)
 Received: from localhost.localdomain (87-205-71-93.adsl.inetia.pl. [87.205.71.93])
-        by smtp.gmail.com with ESMTPSA id d9sm62738lfj.228.2020.12.04.02.29.57
+        by smtp.gmail.com with ESMTPSA id d9sm62738lfj.228.2020.12.04.02.29.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Dec 2020 02:29:58 -0800 (PST)
+        Fri, 04 Dec 2020 02:30:00 -0800 (PST)
 From:   alardam@gmail.com
 X-Google-Original-From: marekx.majtyka@intel.com
 To:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
@@ -57,9 +57,9 @@ Cc:     maciej.fijalkowski@intel.com, jonathan.lemon@gmail.com,
         bpf@vger.kernel.org, jeffrey.t.kirsher@intel.com,
         maciejromanfijalkowski@gmail.com, intel-wired-lan@lists.osuosl.org,
         Marek Majtyka <marekx.majtyka@intel.com>
-Subject: [PATCH v2 bpf 1/5] net: ethtool: add xdp properties flag set
-Date:   Fri,  4 Dec 2020 11:28:57 +0100
-Message-Id: <20201204102901.109709-2-marekx.majtyka@intel.com>
+Subject: [PATCH v2 bpf 2/5] drivers/net: turn XDP properties on
+Date:   Fri,  4 Dec 2020 11:28:58 +0100
+Message-Id: <20201204102901.109709-3-marekx.majtyka@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201204102901.109709-1-marekx.majtyka@intel.com>
 References: <20201204102901.109709-1-marekx.majtyka@intel.com>
@@ -71,437 +71,359 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Marek Majtyka <marekx.majtyka@intel.com>
 
-Implement support for checking what kind of xdp functionality a netdev
-supports. Previously, there was no way to do this other than to try
-to create an AF_XDP socket on the interface or load an XDP program and see
-if it worked. This commit changes this by adding a new variable which
-describes all xdp supported functions on pretty detailed level:
- - aborted
- - drop
- - pass
- - tx
- - redirect
- - zero copy
- - hardware offload.
+Turn 'hw-offload' property flag on for:
+ - netronome.
 
-Zerocopy mode requires that redirect xdp operation is implemented
-in a driver and the driver supports also zero copy mode.
-Full mode requires that all xdp operation are implemented in the driver.
-Basic mode is just full mode without redirect operation.
+Turn 'native' and 'zerocopy' properties flags on for:
+ - i40e
+ - ice
+ - ixgbe
+ - mlx5.
 
-Initially, these new flags are disabled for all drivers by default.
+Turn 'native' properties flags on for:
+ - igb
+ - tun
+ - veth
+ - dpaa2
+ - mvneta
+ - mvpp2
+ - qede
+ - sfc
+ - netsec
+ - cpsw
+ - xen
+ - virtio_net.
+
+Turn 'basic' (tx, pass, aborted and drop) properties flags on for:
+ - netronome
+ - ena
+ - mlx4.
 
 Signed-off-by: Marek Majtyka <marekx.majtyka@intel.com>
 ---
- .../networking/netdev-xdp-properties.rst      | 42 ++++++++
- include/linux/netdevice.h                     |  2 +
- include/linux/xdp_properties.h                | 53 +++++++++++
- include/net/xdp.h                             | 95 +++++++++++++++++++
- include/net/xdp_sock_drv.h                    | 10 ++
- include/uapi/linux/ethtool.h                  |  1 +
- include/uapi/linux/xdp_properties.h           | 32 +++++++
- net/ethtool/common.c                          | 11 +++
- net/ethtool/common.h                          |  4 +
- net/ethtool/strset.c                          |  5 +
- 10 files changed, 255 insertions(+)
- create mode 100644 Documentation/networking/netdev-xdp-properties.rst
- create mode 100644 include/linux/xdp_properties.h
- create mode 100644 include/uapi/linux/xdp_properties.h
+ drivers/net/ethernet/amazon/ena/ena_netdev.c        | 2 ++
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c           | 1 +
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c    | 1 +
+ drivers/net/ethernet/intel/i40e/i40e_main.c         | 3 +++
+ drivers/net/ethernet/intel/ice/ice_main.c           | 4 ++++
+ drivers/net/ethernet/intel/igb/igb_main.c           | 2 ++
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c       | 3 +++
+ drivers/net/ethernet/marvell/mvneta.c               | 3 +++
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c     | 3 +++
+ drivers/net/ethernet/mellanox/mlx4/en_netdev.c      | 2 ++
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c   | 3 +++
+ drivers/net/ethernet/netronome/nfp/nfp_net_common.c | 5 +++++
+ drivers/net/ethernet/qlogic/qede/qede_main.c        | 2 ++
+ drivers/net/ethernet/sfc/efx.c                      | 2 ++
+ drivers/net/ethernet/socionext/netsec.c             | 2 ++
+ drivers/net/ethernet/ti/cpsw.c                      | 3 +++
+ drivers/net/ethernet/ti/cpsw_new.c                  | 2 ++
+ drivers/net/tun.c                                   | 4 ++++
+ drivers/net/veth.c                                  | 2 ++
+ drivers/net/virtio_net.c                            | 2 ++
+ drivers/net/xen-netfront.c                          | 2 ++
+ 21 files changed, 53 insertions(+)
 
-diff --git a/Documentation/networking/netdev-xdp-properties.rst b/Documentation/networking/netdev-xdp-properties.rst
-new file mode 100644
-index 000000000000..4a434a1c512b
---- /dev/null
-+++ b/Documentation/networking/netdev-xdp-properties.rst
-@@ -0,0 +1,42 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+=====================
-+Netdev XDP properties
-+=====================
-+
-+ * XDP PROPERTIES FLAGS
-+
-+Following netdev xdp properties flags can be retrieve over netlink ethtool
-+interface the same way as netdev feature flags. These properties flags are
-+read only and cannot be change in the runtime.
-+
-+
-+*  XDP_ABORTED
-+
-+This property informs if netdev supports xdp aborted action.
-+
-+*  XDP_DROP
-+
-+This property informs if netdev supports xdp drop action.
-+
-+*  XDP_PASS
-+
-+This property informs if netdev supports xdp pass action.
-+
-+*  XDP_TX
-+
-+This property informs if netdev supports xdp tx action.
-+
-+*  XDP_REDIRECT
-+
-+This property informs if netdev supports xdp redirect action.
-+It assumes the all beforehand mentioned flags are enabled.
-+
-+*  XDP_ZEROCOPY
-+
-+This property informs if netdev driver supports xdp zero copy.
-+It assumes the all beforehand mentioned flags are enabled.
-+
-+*  XDP_HW_OFFLOAD
-+
-+This property informs if netdev driver supports xdp hw oflloading.
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 52d1cc2bd8a7..2544c7f0e1b7 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -43,6 +43,7 @@
- #include <net/xdp.h>
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index 6ad59f0068f6..a0a7558d733b 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -4290,6 +4290,8 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
  
- #include <linux/netdev_features.h>
-+#include <linux/xdp_properties.h>
- #include <linux/neighbour.h>
- #include <uapi/linux/netdevice.h>
- #include <uapi/linux/if_bonding.h>
-@@ -2171,6 +2172,7 @@ struct net_device {
+ 	netdev->priv_flags |= IFF_UNICAST_FLT;
  
- 	/* protected by rtnl_lock */
- 	struct bpf_xdp_entity	xdp_state[__MAX_XDP_MODE];
-+	xdp_properties_t	xdp_properties;
- };
- #define to_net_dev(d) container_of(d, struct net_device, dev)
++	xdp_set_basic_properties(&netdev->xdp_properties);
++
+ 	u64_stats_init(&adapter->syncp);
  
-diff --git a/include/linux/xdp_properties.h b/include/linux/xdp_properties.h
-new file mode 100644
-index 000000000000..c72c9bcc50de
---- /dev/null
-+++ b/include/linux/xdp_properties.h
-@@ -0,0 +1,53 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+/*
-+ * Network device xdp properties.
-+ */
-+#ifndef _LINUX_XDP_PROPERTIES_H
-+#define _LINUX_XDP_PROPERTIES_H
-+
-+#include <linux/types.h>
-+#include <linux/bitops.h>
-+#include <asm/byteorder.h>
-+
-+typedef u64 xdp_properties_t;
-+
-+enum {
-+	XDP_F_ABORTED_BIT,
-+	XDP_F_DROP_BIT,
-+	XDP_F_PASS_BIT,
-+	XDP_F_TX_BIT,
-+	XDP_F_REDIRECT_BIT,
-+	XDP_F_ZEROCOPY_BIT,
-+	XDP_F_HW_OFFLOAD_BIT,
-+
-+	/*
-+	 * Add your fresh new property above and remember to update
-+	 * xdp_properties_strings [] in net/core/ethtool.c and maybe
-+	 * some xdp_properties mask #defines below. Please also describe it
-+	 * in Documentation/networking/xdp_properties.rst.
-+	 */
-+
-+	/**/XDP_PROPERTIES_COUNT
-+};
-+
-+#define __XDP_F_BIT(bit)	((xdp_properties_t)1 << (bit))
-+#define __XDP_F(name)		__XDP_F_BIT(XDP_F_##name##_BIT)
-+
-+#define XDP_F_ABORTED		__XDP_F(ABORTED)
-+#define XDP_F_DROP		__XDP_F(DROP)
-+#define XDP_F_PASS		__XDP_F(PASS)
-+#define XDP_F_TX		__XDP_F(TX)
-+#define XDP_F_REDIRECT		__XDP_F(REDIRECT)
-+#define XDP_F_ZEROCOPY		__XDP_F(ZEROCOPY)
-+#define XDP_F_HW_OFFLOAD	__XDP_F(HW_OFFLOAD)
-+
-+#define XDP_F_BASIC		(XDP_F_ABORTED |	\
-+				 XDP_F_DROP |		\
-+				 XDP_F_PASS |		\
-+				 XDP_F_TX)
-+
-+#define XDP_F_FULL		(XDP_F_BASIC | XDP_F_REDIRECT)
-+
-+#define XDP_F_FULL_ZC		(XDP_F_FULL | XDP_F_ZEROCOPY)
-+
-+#endif /* _LINUX_XDP_PROPERTIES_H */
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index 700ad5db7f5d..a9fabc1282cf 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -7,6 +7,7 @@
- #define __LINUX_NET_XDP_H__
+ 	rc = ena_enable_msix_and_set_admin_interrupts(adapter);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 725d929eddb1..5a153102d73b 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -12604,6 +12604,7 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	dev->features |= dev->hw_features | NETIF_F_HIGHDMA;
+ 	if (dev->features & NETIF_F_GRO_HW)
+ 		dev->features &= ~NETIF_F_LRO;
++	xdp_set_full_properties(&dev->xdp_properties);
+ 	dev->priv_flags |= IFF_UNICAST_FLT;
  
- #include <linux/skbuff.h> /* skb_shared_info */
-+#include <linux/xdp_properties.h>
+ #ifdef CONFIG_BNXT_SRIOV
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index 40953980e846..abdd4ceed6f2 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -4014,6 +4014,7 @@ static int dpaa2_eth_netdev_init(struct net_device *net_dev)
+ 			    NETIF_F_SG | NETIF_F_HIGHDMA |
+ 			    NETIF_F_LLTX | NETIF_F_HW_TC;
+ 	net_dev->hw_features = net_dev->features;
++	xdp_set_full_properties(&net_dev->xdp_properties);
  
- /**
-  * DOC: XDP RX-queue information
-@@ -255,6 +256,100 @@ struct xdp_attachment_info {
- 	u32 flags;
- };
+ 	return 0;
+ }
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 4f8a2154b93f..6e5dae9b871f 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -12875,6 +12875,9 @@ static int i40e_config_netdev(struct i40e_vsi *vsi)
+ 	netdev->features |= hw_features | NETIF_F_HW_VLAN_CTAG_FILTER;
+ 	netdev->hw_enc_features |= NETIF_F_TSO_MANGLEID;
  
-+#if defined(CONFIG_NET) && defined(CONFIG_BPF_SYSCALL)
++	xdp_set_full_properties(&netdev->xdp_properties);
++	xsk_set_zc_property(&netdev->xdp_properties);
 +
-+static __always_inline void
-+xdp_set_aborted_property(xdp_properties_t *properties)
-+{
-+	*properties |= XDP_F_ABORTED;
-+}
-+
-+static __always_inline void
-+xdp_set_pass_property(xdp_properties_t *properties)
-+{
-+	*properties |= XDP_F_PASS;
-+}
-+
-+static __always_inline void
-+xdp_set_drop_property(xdp_properties_t *properties)
-+{
-+	*properties |= XDP_F_DROP;
-+}
-+
-+static __always_inline void
-+xdp_set_tx_property(xdp_properties_t *properties)
-+{
-+	*properties |= XDP_F_TX;
-+}
-+
-+static __always_inline void
-+xdp_set_redirect_property(xdp_properties_t *properties)
-+{
-+	*properties |= XDP_F_REDIRECT;
-+}
-+
-+static __always_inline void
-+xdp_set_hw_offload_property(xdp_properties_t *properties)
-+{
-+	*properties |= XDP_F_HW_OFFLOAD;
-+}
-+
-+static __always_inline void
-+xdp_set_basic_properties(xdp_properties_t *properties)
-+{
-+	*properties |= XDP_F_BASIC;
-+}
-+
-+static __always_inline void
-+xdp_set_full_properties(xdp_properties_t *properties)
-+{
-+	*properties |= XDP_F_FULL;
-+}
-+
-+#else
-+
-+static __always_inline void
-+xdp_set_aborted_property(xdp_properties_t *properties)
-+{
-+}
-+
-+static __always_inline void
-+xdp_set_pass_property(xdp_properties_t *properties)
-+{
-+}
-+
-+static __always_inline void
-+xdp_set_drop_property(xdp_properties_t *properties)
-+{
-+}
-+
-+static __always_inline void
-+xdp_set_tx_property(xdp_properties_t *properties)
-+{
-+}
-+
-+static __always_inline void
-+xdp_set_redirect_property(xdp_properties_t *properties)
-+{
-+}
-+
-+static __always_inline void
-+xdp_set_hw_offload_property(xdp_properties_t *properties)
-+{
-+}
-+
-+static __always_inline void
-+xdp_set_basic_properties(xdp_properties_t *properties)
-+{
-+}
-+
-+static __always_inline void
-+xdp_set_full_properties(xdp_properties_t *properties)
-+{
-+}
-+
-+#endif
-+
- struct netdev_bpf;
- bool xdp_attachment_flags_ok(struct xdp_attachment_info *info,
- 			     struct netdev_bpf *bpf);
-diff --git a/include/net/xdp_sock_drv.h b/include/net/xdp_sock_drv.h
-index 4e295541e396..48a3b6d165c7 100644
---- a/include/net/xdp_sock_drv.h
-+++ b/include/net/xdp_sock_drv.h
-@@ -8,6 +8,7 @@
+ 	if (vsi->type == I40E_VSI_MAIN) {
+ 		SET_NETDEV_DEV(netdev, &pf->pdev->dev);
+ 		ether_addr_copy(mac_addr, hw->mac.perm_addr);
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 2dea4d0e9415..638942df136b 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -13,6 +13,7 @@
+ #include "ice_dcb_lib.h"
+ #include "ice_dcb_nl.h"
+ #include "ice_devlink.h"
++#include <net/xdp_sock_drv.h>
  
- #include <net/xdp_sock.h>
- #include <net/xsk_buff_pool.h>
-+#include <linux/xdp_properties.h>
+ #define DRV_SUMMARY	"Intel(R) Ethernet Connection E800 Series Linux Driver"
+ static const char ice_driver_string[] = DRV_SUMMARY;
+@@ -2979,6 +2980,9 @@ static int ice_cfg_netdev(struct ice_vsi *vsi)
  
- #ifdef CONFIG_XDP_SOCKETS
+ 	ice_set_netdev_features(netdev);
  
-@@ -117,6 +118,11 @@ static inline void xsk_buff_raw_dma_sync_for_device(struct xsk_buff_pool *pool,
- 	xp_dma_sync_for_device(pool, dma, size);
++	xdp_set_full_properties(&netdev->xdp_properties);
++	xsk_set_zc_properties(&netdev->xdp_properties);
++
+ 	ice_set_ops(netdev);
+ 
+ 	if (vsi->type == ICE_VSI_PF) {
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 6a4ef4934fcf..ed7e0a2efe1a 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -3297,6 +3297,8 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	netdev->priv_flags |= IFF_UNICAST_FLT;
+ 
++	xdp_set_full_properties(&netdev->xdp_properties);
++
+ 	/* MTU range: 68 - 9216 */
+ 	netdev->min_mtu = ETH_MIN_MTU;
+ 	netdev->max_mtu = MAX_STD_JUMBO_FRAME_SIZE;
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index 50e6b8b6ba7b..6fa98bf48e21 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -10844,6 +10844,9 @@ static int ixgbe_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	netdev->priv_flags |= IFF_UNICAST_FLT;
+ 	netdev->priv_flags |= IFF_SUPP_NOFCS;
+ 
++	xdp_set_full_properties(&netdev->xdp_properties);
++	xsk_set_zc_property(&netdev->xdp_properties);
++
+ 	/* MTU range: 68 - 9710 */
+ 	netdev->min_mtu = ETH_MIN_MTU;
+ 	netdev->max_mtu = IXGBE_MAX_JUMBO_FRAME_SIZE - (ETH_HLEN + ETH_FCS_LEN);
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index ba6dcb19bb1d..6431772b4706 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -5262,6 +5262,9 @@ static int mvneta_probe(struct platform_device *pdev)
+ 			NETIF_F_TSO | NETIF_F_RXCSUM;
+ 	dev->hw_features |= dev->features;
+ 	dev->vlan_features |= dev->features;
++
++	xdp_set_full_properties(&dev->xdp_properties);
++
+ 	dev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
+ 	dev->gso_max_segs = MVNETA_MAX_TSO_SEGS;
+ 
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index 5504cbc24970..4d6a86b40403 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -6475,6 +6475,9 @@ static int mvpp2_port_probe(struct platform_device *pdev,
+ 		mvpp2_set_hw_csum(port, port->pool_long->id);
+ 
+ 	dev->vlan_features |= features;
++
++	xdp_set_full_properties(&dev->xdp_properties);
++
+ 	dev->gso_max_segs = MVPP2_MAX_TSO_SEGS;
+ 	dev->priv_flags |= IFF_UNICAST_FLT;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
+index 106513f772c3..3b81c98b85a0 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
+@@ -3395,6 +3395,8 @@ int mlx4_en_init_netdev(struct mlx4_en_dev *mdev, int port,
+ 		priv->rss_hash_fn = ETH_RSS_HASH_TOP;
+ 	}
+ 
++	xdp_set_basic_properties(&dev->xdp_properties);
++
+ 	/* MTU range: 68 - hw-specific max */
+ 	dev->min_mtu = ETH_MIN_MTU;
+ 	dev->max_mtu = priv->max_mtu;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 427fc376fe1a..0f6055528a32 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -4981,6 +4981,9 @@ static void mlx5e_build_nic_netdev(struct net_device *netdev)
+ 	netdev->features         |= NETIF_F_HIGHDMA;
+ 	netdev->features         |= NETIF_F_HW_VLAN_STAG_FILTER;
+ 
++	xdp_set_full_properties(&netdev->xdp_properties);
++	xsk_set_zc_property(&netdev->xdp_properties);
++
+ 	netdev->priv_flags       |= IFF_UNICAST_FLT;
+ 
+ 	mlx5e_set_netdev_dev_addr(netdev);
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+index b4acf2f41e84..37280465326c 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+@@ -4099,8 +4099,13 @@ int nfp_net_init(struct nfp_net *nn)
+ 		return err;
+ 
+ 	if (nn->dp.netdev) {
++		struct net_device *dev = nn->dp.netdev;
++
+ 		nfp_net_netdev_init(nn);
+ 
++		xdp_set_hw_offload_property(&dev->xdp_properties);
++		xdp_set_basic_properties(&dev->xdp_properties);
++
+ 		err = nfp_ccm_mbox_init(nn);
+ 		if (err)
+ 			return err;
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
+index 9cf960a6d007..fc11fae05857 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_main.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
+@@ -842,6 +842,8 @@ static void qede_init_ndev(struct qede_dev *edev)
+ 
+ 	ndev->hw_features = hw_features;
+ 
++	xdp_set_full_properties(&ndev->xdp_properties);
++
+ 	/* MTU range: 46 - 9600 */
+ 	ndev->min_mtu = ETH_ZLEN - ETH_HLEN;
+ 	ndev->max_mtu = QEDE_MAX_JUMBO_PACKET_SIZE;
+diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
+index 718308076341..bbf6d3255040 100644
+--- a/drivers/net/ethernet/sfc/efx.c
++++ b/drivers/net/ethernet/sfc/efx.c
+@@ -1111,6 +1111,8 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
+ 	netif_info(efx, probe, efx->net_dev,
+ 		   "Solarflare NIC detected\n");
+ 
++	xdp_set_full_properties(&efx->net_dev->xdp_properties);
++
+ 	if (!efx->type->is_vf)
+ 		efx_probe_vpd_strings(efx);
+ 
+diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+index 27d3c9d9210e..df1f952f678a 100644
+--- a/drivers/net/ethernet/socionext/netsec.c
++++ b/drivers/net/ethernet/socionext/netsec.c
+@@ -2100,6 +2100,8 @@ static int netsec_probe(struct platform_device *pdev)
+ 				NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
+ 	ndev->hw_features = ndev->features;
+ 
++	xdp_set_full_properties(&ndev->xdp_properties);
++
+ 	priv->rx_cksum_offload_flag = true;
+ 
+ 	ret = netsec_register_mdio(priv, phy_addr);
+diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
+index 9fd1f77190ad..02fd7275e477 100644
+--- a/drivers/net/ethernet/ti/cpsw.c
++++ b/drivers/net/ethernet/ti/cpsw.c
+@@ -1476,6 +1476,8 @@ static int cpsw_probe_dual_emac(struct cpsw_priv *priv)
+ 	cpsw->slaves[1].ndev = ndev;
+ 	ndev->features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_VLAN_CTAG_RX;
+ 
++	xdp_set_full_properties(&ndev->xdp_properties);
++
+ 	ndev->netdev_ops = &cpsw_netdev_ops;
+ 	ndev->ethtool_ops = &cpsw_ethtool_ops;
+ 
+@@ -1654,6 +1656,7 @@ static int cpsw_probe(struct platform_device *pdev)
+ 	cpsw->slaves[0].ndev = ndev;
+ 
+ 	ndev->features |= NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_VLAN_CTAG_RX;
++	xdp_set_full_properties(&ndev->xdp_properties);
+ 
+ 	ndev->netdev_ops = &cpsw_netdev_ops;
+ 	ndev->ethtool_ops = &cpsw_ethtool_ops;
+diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
+index f779d2e1b5c5..22bf1b0d4d48 100644
+--- a/drivers/net/ethernet/ti/cpsw_new.c
++++ b/drivers/net/ethernet/ti/cpsw_new.c
+@@ -1416,6 +1416,8 @@ static int cpsw_create_ports(struct cpsw_common *cpsw)
+ 		ndev->features |= NETIF_F_HW_VLAN_CTAG_FILTER |
+ 				  NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_NETNS_LOCAL;
+ 
++		xdp_set_full_properties(&ndev->xdp_properties);
++
+ 		ndev->netdev_ops = &cpsw_netdev_ops;
+ 		ndev->ethtool_ops = &cpsw_ethtool_ops;
+ 		SET_NETDEV_DEV(ndev, dev);
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index 8867d39db6ac..6d16e878b1bd 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -2721,6 +2721,10 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
+ 				     ~(NETIF_F_HW_VLAN_CTAG_TX |
+ 				       NETIF_F_HW_VLAN_STAG_TX);
+ 
++		/* Currently tap does not support XDP, only tun does. */
++		if (tun->flags == IFF_TUN)
++			xdp_set_full_properties(&dev->xdp_properties);
++
+ 		tun->flags = (tun->flags & ~TUN_FEATURES) |
+ 			      (ifr->ifr_flags & TUN_FEATURES);
+ 
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index 9bd37c7151f8..5a48823a0377 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -1270,6 +1270,8 @@ static void veth_setup(struct net_device *dev)
+ 	dev->hw_features = VETH_FEATURES;
+ 	dev->hw_enc_features = VETH_FEATURES;
+ 	dev->mpls_features = NETIF_F_HW_CSUM | NETIF_F_GSO_SOFTWARE;
++
++	xdp_set_full_properties(&dev->xdp_properties);
  }
  
-+static inline void xsk_set_zc_property(xdp_properties_t *properties)
-+{
-+	*properties |= XDP_F_ZEROCOPY;
-+}
+ /*
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 052975ea0af4..f05a45942d37 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -3018,6 +3018,8 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 
+ 	dev->vlan_features = dev->features;
+ 
++	xdp_set_full_properties(&dev->xdp_properties);
 +
- #else
+ 	/* MTU range: 68 - 65535 */
+ 	dev->min_mtu = MIN_MTU;
+ 	dev->max_mtu = MAX_MTU;
+diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
+index b01848ef4649..e2c3c668abae 100644
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -1556,6 +1556,8 @@ static struct net_device *xennet_create_dev(struct xenbus_device *dev)
+          */
+ 	netdev->features |= netdev->hw_features;
  
- static inline void xsk_tx_completed(struct xsk_buff_pool *pool, u32 nb_entries)
-@@ -242,6 +248,10 @@ static inline void xsk_buff_raw_dma_sync_for_device(struct xsk_buff_pool *pool,
- {
- }
- 
-+static inline void xsk_set_zc_property(xdp_properties_t *properties)
-+{
-+}
++	xdp_set_full_properties(&netdev->xdp_properties);
 +
- #endif /* CONFIG_XDP_SOCKETS */
- 
- #endif /* _LINUX_XDP_SOCK_DRV_H */
-diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-index 9ca87bc73c44..dfcb0e2c98b2 100644
---- a/include/uapi/linux/ethtool.h
-+++ b/include/uapi/linux/ethtool.h
-@@ -688,6 +688,7 @@ enum ethtool_stringset {
- 	ETH_SS_TS_TX_TYPES,
- 	ETH_SS_TS_RX_FILTERS,
- 	ETH_SS_UDP_TUNNEL_TYPES,
-+	ETH_SS_XDP_PROPERTIES,
- 
- 	/* add new constants above here */
- 	ETH_SS_COUNT
-diff --git a/include/uapi/linux/xdp_properties.h b/include/uapi/linux/xdp_properties.h
-new file mode 100644
-index 000000000000..e85be03eb707
---- /dev/null
-+++ b/include/uapi/linux/xdp_properties.h
-@@ -0,0 +1,32 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+
-+/*
-+ * Copyright (c) 2020 Intel
-+ */
-+
-+#ifndef __UAPI_LINUX_XDP_PROPERTIES__
-+#define __UAPI_LINUX_XDP_PROPERTIES__
-+
-+/* ETH_GSTRING_LEN define is needed. */
-+#include <linux/ethtool.h>
-+
-+#define XDP_PROPERTIES_ABORTED_STR	"xdp-aborted"
-+#define XDP_PROPERTIES_DROP_STR		"xdp-drop"
-+#define XDP_PROPERTIES_PASS_STR		"xdp-pass"
-+#define XDP_PROPERTIES_TX_STR		"xdp-tx"
-+#define XDP_PROPERTIES_REDIRECT_STR	"xdp-redirect"
-+#define XDP_PROPERTIES_ZEROCOPY_STR	"xdp-zerocopy"
-+#define XDP_PROPERTIES_HW_OFFLOAD_STR	"xdp-hw-offload"
-+
-+#define	DECLARE_XDP_PROPERTIES_TABLE(name)		\
-+	const char name[][ETH_GSTRING_LEN] = {		\
-+		XDP_PROPERTIES_ABORTED_STR,		\
-+		XDP_PROPERTIES_DROP_STR,		\
-+		XDP_PROPERTIES_PASS_STR,		\
-+		XDP_PROPERTIES_TX_STR,			\
-+		XDP_PROPERTIES_REDIRECT_STR,		\
-+		XDP_PROPERTIES_ZEROCOPY_STR,		\
-+		XDP_PROPERTIES_HW_OFFLOAD_STR,		\
-+	}
-+
-+#endif  /* __UAPI_LINUX_XDP_PROPERTIES__ */
-diff --git a/net/ethtool/common.c b/net/ethtool/common.c
-index 24036e3055a1..8f15f96b8922 100644
---- a/net/ethtool/common.c
-+++ b/net/ethtool/common.c
-@@ -4,6 +4,7 @@
- #include <linux/net_tstamp.h>
- #include <linux/phy.h>
- #include <linux/rtnetlink.h>
-+#include <uapi/linux/xdp_properties.h>
- 
- #include "common.h"
- 
-@@ -283,6 +284,16 @@ const char udp_tunnel_type_names[][ETH_GSTRING_LEN] = {
- static_assert(ARRAY_SIZE(udp_tunnel_type_names) ==
- 	      __ETHTOOL_UDP_TUNNEL_TYPE_CNT);
- 
-+const char xdp_properties_strings[XDP_PROPERTIES_COUNT][ETH_GSTRING_LEN] = {
-+	[XDP_F_ABORTED_BIT] =		XDP_PROPERTIES_ABORTED_STR,
-+	[XDP_F_DROP_BIT] =		XDP_PROPERTIES_DROP_STR,
-+	[XDP_F_PASS_BIT] =		XDP_PROPERTIES_PASS_STR,
-+	[XDP_F_TX_BIT] =		XDP_PROPERTIES_TX_STR,
-+	[XDP_F_REDIRECT_BIT] =		XDP_PROPERTIES_REDIRECT_STR,
-+	[XDP_F_ZEROCOPY_BIT] =		XDP_PROPERTIES_ZEROCOPY_STR,
-+	[XDP_F_HW_OFFLOAD_BIT] =	XDP_PROPERTIES_HW_OFFLOAD_STR,
-+};
-+
- /* return false if legacy contained non-0 deprecated fields
-  * maxtxpkt/maxrxpkt. rest of ksettings always updated
-  */
-diff --git a/net/ethtool/common.h b/net/ethtool/common.h
-index 3d9251c95a8b..85a35f8781eb 100644
---- a/net/ethtool/common.h
-+++ b/net/ethtool/common.h
-@@ -5,8 +5,10 @@
- 
- #include <linux/netdevice.h>
- #include <linux/ethtool.h>
-+#include <linux/xdp_properties.h>
- 
- #define ETHTOOL_DEV_FEATURE_WORDS	DIV_ROUND_UP(NETDEV_FEATURE_COUNT, 32)
-+#define ETHTOOL_XDP_PROPERTIES_WORDS	DIV_ROUND_UP(XDP_PROPERTIES_COUNT, 32)
- 
- /* compose link mode index from speed, type and duplex */
- #define ETHTOOL_LINK_MODE(speed, type, duplex) \
-@@ -22,6 +24,8 @@ extern const char
- tunable_strings[__ETHTOOL_TUNABLE_COUNT][ETH_GSTRING_LEN];
- extern const char
- phy_tunable_strings[__ETHTOOL_PHY_TUNABLE_COUNT][ETH_GSTRING_LEN];
-+extern const char
-+xdp_properties_strings[XDP_PROPERTIES_COUNT][ETH_GSTRING_LEN];
- extern const char link_mode_names[][ETH_GSTRING_LEN];
- extern const char netif_msg_class_names[][ETH_GSTRING_LEN];
- extern const char wol_mode_names[][ETH_GSTRING_LEN];
-diff --git a/net/ethtool/strset.c b/net/ethtool/strset.c
-index 0baad0ce1832..684e751b31a9 100644
---- a/net/ethtool/strset.c
-+++ b/net/ethtool/strset.c
-@@ -80,6 +80,11 @@ static const struct strset_info info_template[] = {
- 		.count		= __ETHTOOL_UDP_TUNNEL_TYPE_CNT,
- 		.strings	= udp_tunnel_type_names,
- 	},
-+	[ETH_SS_XDP_PROPERTIES] = {
-+		.per_dev	= false,
-+		.count		= ARRAY_SIZE(xdp_properties_strings),
-+		.strings	= xdp_properties_strings,
-+	},
- };
- 
- struct strset_req_info {
+ 	netdev->ethtool_ops = &xennet_ethtool_ops;
+ 	netdev->min_mtu = ETH_MIN_MTU;
+ 	netdev->max_mtu = XEN_NETIF_MAX_TX_SIZE;
 -- 
 2.27.0
 
