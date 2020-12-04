@@ -2,262 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B2902CE666
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 04:19:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0FE22CE677
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 04:26:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727776AbgLDDRx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 22:17:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46682 "EHLO
+        id S1727589AbgLDD0X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 22:26:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727066AbgLDDRx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 22:17:53 -0500
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CA9DC061A4F
-        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 19:17:13 -0800 (PST)
-Received: by mail-pg1-x544.google.com with SMTP id t37so2676225pga.7
-        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 19:17:13 -0800 (PST)
+        with ESMTP id S1726885AbgLDD0W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 22:26:22 -0500
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 160FBC061A4F
+        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 19:25:42 -0800 (PST)
+Received: by mail-lf1-x142.google.com with SMTP id u19so5783032lfr.7
+        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 19:25:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=KhdUb7dyDzVdEjqGLBmV/wGAVdtT552zc8ri2UMvozM=;
-        b=Cads377RA/jnwd/YITfFD3QmsMifej4eDF6K+sYpjbXnK8gglkNvscSwVMpyIMc/St
-         2j9dvvAZdxa5xrpIl+D0OorAQ9chUhGcerhuyU5c8x9qFGb8ekICGZOKdl0ZrsbgYqg+
-         W3hDPMKZqnHxKlc8Hx2q8bwbOibl+mtjQfRh4lnzYdcf7g20ccVu/Rt6sLT6DGNASDc7
-         Y6fZVkLmSRe2vmUFd64wPh4599YkW/Z866wn3CQ4zcMCsJs5e3UBCAgfB3kgQleLY0Ka
-         RhG5en0OHPM4Cr+qGDyCoYCklOESVf1glITjL38bdUqsEb1uqNt/VPuk5z2ILmjvXLG+
-         mlQg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=mA1Wv1n0Daq3I8BlilK/8KwVWbxbDL4vk61Ftxly1uc=;
+        b=gRNwNNlw1U8QA2hmClwF+qjbC7oMNWBG1xNWtNAOYvIibzJ7OYQBJuykBpxfEeYLK6
+         QtudSIUg4vOTJ2JWxxKtR7Usjlq603GFH4qvSd994pr/xvSkrcIIn1x4XuGFIQQz69kj
+         qXDfUy4W1cOHXHBaILB5bfY0CxclHj+uoApkgJq2Egs2RFtWeaiKw72CreJobkwWMTUf
+         bC3Y7UKy68ccuf7V9BFbyPo0Zza47K+dhR1UYGvr1B2J8VlAx0Bm/QkXMBIRa+0D592l
+         SEIYbV99QIE943PmG+Osaq3okD/IQmoqa5oQOX8FxTVKfczqgXcXCrFuu4/GgvrUJPYC
+         LyCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=KhdUb7dyDzVdEjqGLBmV/wGAVdtT552zc8ri2UMvozM=;
-        b=WGfOh6k4VzFnYsKhw1GC/LhkinECCoCKcbUfSeFIgH+QczjdT9+SMnT2ZJ01EumvcI
-         jzICd3/J8LDKKbi6ZgG9njWFB9SMTVCx/Cc2v3NWNmCZidxOpi2I5NaXFxcVJtOf6fas
-         Tq+UhDl0zi8l/ctzBK5sZeLtRyc8aZ0SwUuNUsI7ninpqV26Rsl6hKevTPZOGR+3DlPZ
-         56CENuolqHAIetxOsXTjwpTAQjIzeNqUmW3OKYTWce2yhq0xXSWZs+/dpSYRF0I1knin
-         vTDIhwm6vhlGevv1FaakCCYbzPwGMaqcF4R27kbeFcl4isWDKg+oHHGaQZXj9mGu3NDT
-         3Bgg==
-X-Gm-Message-State: AOAM533aF2h/xuLJ24qHXv2yVDKnk29UAhQmrg4BM/F4iSJxU8BA0iKC
-        Nl2Zzdl2v0KqJEmxH9y5Tmw=
-X-Google-Smtp-Source: ABdhPJy1WtJuXhpNESK/fwjiD6T6c3g2rwtisrKBwwmv8URurGp6cVUq6fA0Rn2yKuXYXl1uzWmqOw==
-X-Received: by 2002:a63:d312:: with SMTP id b18mr5736848pgg.233.1607051832879;
-        Thu, 03 Dec 2020 19:17:12 -0800 (PST)
-Received: from clinic20-Precision-T3610.hsd1.ca.comcast.net ([2601:648:8400:9ef4:bf20:728e:4c43:a644])
-        by smtp.gmail.com with ESMTPSA id h7sm3072153pfr.210.2020.12.03.19.17.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Dec 2020 19:17:12 -0800 (PST)
-From:   Andreas Roeseler <andreas.a.roeseler@gmail.com>
-To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net-next 6/6] icmp: add response to RFC 8335 PROBE messages
-Date:   Thu,  3 Dec 2020 19:17:11 -0800
-Message-Id: <403b12364707f6e579b91927799c505867336bb3.1607050389.git.andreas.a.roeseler@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1607050388.git.andreas.a.roeseler@gmail.com>
-References: <cover.1607050388.git.andreas.a.roeseler@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=mA1Wv1n0Daq3I8BlilK/8KwVWbxbDL4vk61Ftxly1uc=;
+        b=Bqzjze/tBbe9yO9yQs3V4qnbwiNRTp/YIPc/1Y84fTuQVvrI4Gk9E/wtkgM3b+owTl
+         ArCdaT0muJQUzI0MBvsiiHAqUWx2oVgRtSoffszIzgw2DmW9JdWMhdWBugBy3qxeyNlg
+         cMzZwJ7ozYpBq3XUvzIWr1hRH45POGzSxt/OzjF2p6JU6wMQC2yD7hWM7pUrvW42/QUQ
+         nJ3wMnM3btvlP2xrQap80qj7AjYfZG4bW20G3SEmbpnOqLFHxFK1pnkiadLFAs+melPN
+         GLGg/JI3HjkWmIrx/Llr+E00qkxhBrrCS/MKqtVBFa7tV4/kPyt7rb/YH6KPoQlbdzJt
+         Lbrg==
+X-Gm-Message-State: AOAM532O7LYTua/zaSes93ZDqJ/5v2phOE6jgfdW/CWbUBdF+XbnZ5So
+        hUtjY2CNkAu+MJfgpGTRJBeLRCVfFG36obfBiuFl6Q==
+X-Google-Smtp-Source: ABdhPJyQn7zdhlYenIte2Cy4pidG0EtQXYrXdRBjQoj/p0aEQBmtulIwC9KYNy7Au8oZ47MyTXsBuo+dbvagHaT006E=
+X-Received: by 2002:a05:6512:338f:: with SMTP id h15mr2502528lfg.40.1607052340341;
+ Thu, 03 Dec 2020 19:25:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201203102936.4049556-1-apusaka@google.com> <20201203182903.v1.1.I92d2e2a87419730d60136680cbe27636baf94b15@changeid>
+ <20B6F2AD-1A60-4E3C-84C2-E3CB7294FABC@holtmann.org>
+In-Reply-To: <20B6F2AD-1A60-4E3C-84C2-E3CB7294FABC@holtmann.org>
+From:   Archie Pusaka <apusaka@google.com>
+Date:   Fri, 4 Dec 2020 11:25:29 +0800
+Message-ID: <CAJQfnxHDThaJ58iFSpyq4bLopeuATvd+4fOR2AAgbNaabNSMuQ@mail.gmail.com>
+Subject: Re: [PATCH v1 1/5] Bluetooth: advmon offload MSFT add rssi support
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        Miao-chen Chou <mcchou@chromium.org>,
+        Yun-Hao Chung <howardchung@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Modify the icmp_rcv function to check for PROBE messages and call
-icmp_echo if a PROBE request is detected.
+Hi Marcel,
 
-Modify the existing icmp_echo function to respond to both ping and PROBE
-requests.
+On Thu, 3 Dec 2020 at 22:03, Marcel Holtmann <marcel@holtmann.org> wrote:
+>
+> Hi Archie,
+>
+> > MSFT needs rssi parameter for monitoring advertisement packet,
+> > therefore we should supply them from mgmt.
+> >
+> > Signed-off-by: Archie Pusaka <apusaka@chromium.org>
+> > Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
+> > Reviewed-by: Yun-Hao Chung <howardchung@google.com>
+>
+> I don=E2=80=99t need any Reviewed-by if they are not catching an obvious =
+user API breakage.
+>
+> > ---
+> >
+> > include/net/bluetooth/hci_core.h | 9 +++++++++
+> > include/net/bluetooth/mgmt.h     | 9 +++++++++
+> > net/bluetooth/mgmt.c             | 8 ++++++++
+> > 3 files changed, 26 insertions(+)
+> >
+> > diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/h=
+ci_core.h
+> > index 9873e1c8cd16..42d446417817 100644
+> > --- a/include/net/bluetooth/hci_core.h
+> > +++ b/include/net/bluetooth/hci_core.h
+> > @@ -246,8 +246,17 @@ struct adv_pattern {
+> >       __u8 value[HCI_MAX_AD_LENGTH];
+> > };
+> >
+> > +struct adv_rssi_thresholds {
+> > +     __s8 low_threshold;
+> > +     __s8 high_threshold;
+> > +     __u16 low_threshold_timeout;
+> > +     __u16 high_threshold_timeout;
+> > +     __u8 sampling_period;
+> > +};
+> > +
+> > struct adv_monitor {
+> >       struct list_head patterns;
+> > +     struct adv_rssi_thresholds rssi;
+> >       bool            active;
+> >       __u16           handle;
+> > };
+> > diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.=
+h
+> > index d8367850e8cd..dc534837be0e 100644
+> > --- a/include/net/bluetooth/mgmt.h
+> > +++ b/include/net/bluetooth/mgmt.h
+> > @@ -763,9 +763,18 @@ struct mgmt_adv_pattern {
+> >       __u8 value[31];
+> > } __packed;
+> >
+> > +struct mgmt_adv_rssi_thresholds {
+> > +     __s8 high_threshold;
+> > +     __le16 high_threshold_timeout;
+> > +     __s8 low_threshold;
+> > +     __le16 low_threshold_timeout;
+> > +     __u8 sampling_period;
+> > +} __packed;
+> > +
+> > #define MGMT_OP_ADD_ADV_PATTERNS_MONITOR      0x0052
+> > struct mgmt_cp_add_adv_patterns_monitor {
+> >       __u8 pattern_count;
+> > +     struct mgmt_adv_rssi_thresholds rssi;
+> >       struct mgmt_adv_pattern patterns[];
+> > } __packed;
+>
+> This is something we can not do. It breaks an userspace facing API. Is th=
+e mgmt opcode 0x0052 in an already released kernel?
 
-This was tested using a custom modification of the iputils package and
-wireshark. It supports IPV4 probing by name, ifindex, and probing by both IPV4 and IPV6
-addresses. It currently does not support responding to probes off the proxy node
-(See RFC 8335 Section 2). 
+Yes, the opcode does exist in an already released kernel.
 
-Signed-off-by: Andreas Roeseler <andreas.a.roeseler@gmail.com>
----
- net/ipv4/icmp.c | 135 ++++++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 125 insertions(+), 10 deletions(-)
+The DBus method which accesses this API is put behind the experimental
+flag, therefore we expect they are flexible enough to support changes.
+Previously, we already had a discussion in an email thread with the
+title "Offload RSSI tracking to controller", and the outcome supports
+this change.
 
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index 005faea415a4..313061b60387 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -984,20 +984,121 @@ static bool icmp_redirect(struct sk_buff *skb)
- static bool icmp_echo(struct sk_buff *skb)
- {
- 	struct net *net;
-+	struct icmp_bxm icmp_param;
-+	struct net_device *dev;
-+	struct net_device *target_dev;
-+	struct in_ifaddr *ifaddr;
-+	struct inet6_ifaddr *inet6_ifaddr;
-+	struct list_head *position;
-+	struct icmp_extobj_hdr *extobj_hdr;
-+	struct icmp_ext_ctype3_hdr *ctype3_hdr;
-+	__u8 status;
- 
- 	net = dev_net(skb_dst(skb)->dev);
--	if (!net->ipv4.sysctl_icmp_echo_ignore_all) {
--		struct icmp_bxm icmp_param;
-+	/* should there be an ICMP stat for ignored echos? */
-+	if (net->ipv4.sysctl_icmp_echo_ignore_all)
-+		return true;
-+
-+	icmp_param.data.icmph		= *icmp_hdr(skb);
-+	icmp_param.skb			= skb;
-+	icmp_param.offset		= 0;
-+	icmp_param.data_len		= skb->len;
-+	icmp_param.head_len		= sizeof(struct icmphdr);
- 
--		icmp_param.data.icmph	   = *icmp_hdr(skb);
-+	if (icmp_param.data.icmph.type == ICMP_ECHO) {
- 		icmp_param.data.icmph.type = ICMP_ECHOREPLY;
--		icmp_param.skb		   = skb;
--		icmp_param.offset	   = 0;
--		icmp_param.data_len	   = skb->len;
--		icmp_param.head_len	   = sizeof(struct icmphdr);
--		icmp_reply(&icmp_param, skb);
-+		goto send_reply;
- 	}
--	/* should there be an ICMP stat for ignored echos? */
-+	if (!net->ipv4.sysctl_icmp_echo_enable_probe)
-+		return true;
-+	/* We currently do not support probing off the proxy node */
-+	if ((ntohs(icmp_param.data.icmph.un.echo.sequence) & 1) == 0)
-+		return true;
-+
-+	icmp_param.data.icmph.type = ICMP_EXT_ECHOREPLY;
-+	icmp_param.data.icmph.un.echo.sequence &= htons(0xFF00);
-+	extobj_hdr = (struct icmp_extobj_hdr *)(skb->data + sizeof(struct icmp_ext_hdr));
-+	ctype3_hdr = (struct icmp_ext_ctype3_hdr *)(extobj_hdr + 1);
-+	status = 0;
-+	target_dev = NULL;
-+	read_lock(&dev_base_lock);
-+	for_each_netdev(net, dev) {
-+		switch (extobj_hdr->class_type) {
-+		case CTYPE_NAME:
-+			if (strcmp(dev->name, (char *)(extobj_hdr + 1)) == 0)
-+				goto found_matching_interface;
-+			break;
-+		case CTYPE_INDEX:
-+			if (ntohl(*((uint32_t *)(extobj_hdr + 1))) ==
-+				dev->ifindex)
-+				goto found_matching_interface;
-+			break;
-+		case CTYPE_ADDR:
-+			switch (ntohs(ctype3_hdr->afi)) {
-+			/* IPV4 address */
-+			case 1:
-+				ifaddr = dev->ip_ptr->ifa_list;
-+				while (ifaddr) {
-+					if (memcmp(&ifaddr->ifa_address,
-+						   (ctype3_hdr + 1),
-+						   sizeof(ifaddr->ifa_address)) == 0)
-+						goto found_matching_interface;
-+					ifaddr = ifaddr->ifa_next;
-+				}
-+				break;
-+			/* IPV6 address */
-+			case 2:
-+				list_for_each(position,
-+					      &dev->ip6_ptr->addr_list) {
-+					inet6_ifaddr = list_entry(position,
-+								  struct inet6_ifaddr,
-+								  if_list);
-+					if (memcmp(&inet6_ifaddr->addr.in6_u,
-+						   (ctype3_hdr + 1),
-+						   sizeof(inet6_ifaddr->addr.in6_u)) == 0)
-+						goto found_matching_interface;
-+				}
-+				break;
-+			default:
-+				icmp_param.data.icmph.code = ICMP_EXT_MAL_QUERY;
-+				goto unlock_dev;
-+			}
-+			break;
-+		default:
-+			icmp_param.data.icmph.code = ICMP_EXT_MAL_QUERY;
-+			goto unlock_dev;
-+		}
-+		continue;
-+found_matching_interface:
-+		if (target_dev) {
-+			icmp_param.data.icmph.code = ICMP_EXT_MULT_IFS;
-+			goto unlock_dev;
-+		}
-+		target_dev = dev;
-+	}
-+	if (!target_dev) {
-+		icmp_param.data.icmph.code = ICMP_EXT_NO_IF;
-+		goto unlock_dev;
-+	}
-+
-+	/* RFC 8335: 3 the last 8 bits of the Extended Echo Reply Message
-+	 *  are laid out as follows:
-+	 *	+-+-+-+-+-+-+-+-+
-+	 *	|State|Res|A|4|6|
-+	 *	+-+-+-+-+-+-+-+-+
-+	 */
-+	if (target_dev->flags & IFF_UP)
-+		status |= EXT_ECHOREPLY_ACTIVE;
-+	if (target_dev->ip_ptr->ifa_list)
-+		status |= EXT_ECHOREPLY_IPV4;
-+	if (!list_empty(&target_dev->ip6_ptr->addr_list))
-+		status |= EXT_ECHOREPLY_IPV6;
-+
-+	icmp_param.data.icmph.un.echo.sequence |= htons(status);
-+unlock_dev:
-+	read_unlock(&dev_base_lock);
-+send_reply:
-+	icmp_reply(&icmp_param, skb);
- 	return true;
- }
- 
-@@ -1087,6 +1188,13 @@ int icmp_rcv(struct sk_buff *skb)
- 	icmph = icmp_hdr(skb);
- 
- 	ICMPMSGIN_INC_STATS(net, icmph->type);
-+
-+	/*
-+	 *	Check for ICMP Extended Echo (PROBE) messages
-+	 */
-+	if (icmph->type == ICMP_EXT_ECHO || icmph->type == ICMPV6_EXT_ECHO_REQUEST)
-+		goto probe;
-+
- 	/*
- 	 *	18 is the highest 'known' ICMP type. Anything else is a mystery
- 	 *
-@@ -1096,7 +1204,6 @@ int icmp_rcv(struct sk_buff *skb)
- 	if (icmph->type > NR_ICMP_TYPES)
- 		goto error;
- 
--
- 	/*
- 	 *	Parse the ICMP message
- 	 */
-@@ -1123,6 +1230,7 @@ int icmp_rcv(struct sk_buff *skb)
- 
- 	success = icmp_pointers[icmph->type].handler(skb);
- 
-+success_check:
- 	if (success)  {
- 		consume_skb(skb);
- 		return NET_RX_SUCCESS;
-@@ -1136,6 +1244,13 @@ int icmp_rcv(struct sk_buff *skb)
- error:
- 	__ICMP_INC_STATS(net, ICMP_MIB_INERRORS);
- 	goto drop;
-+probe:
-+	/*
-+	 * We can't use icmp_pointers[].handler() because the codes for PROBE
-+	 *   messages are 42 or 160
-+	 */
-+	success = icmp_echo(skb);
-+	goto success_check;
- }
- 
- static bool ip_icmp_error_rfc4884_validate(const struct sk_buff *skb, int off)
--- 
-2.25.1
+Here is an excerpt of the discussion.
+On Thu, 1 Oct 2020 at 05:58, Miao-chen Chou <mcchou@google.com> wrote:
+>
+> Hi Luiz,
+>
+> Yes, the RSSI is included as a part of the Adv monitor API, and the RSSI =
+tracking is currently implemented (the patch series is still under review) =
+in bluetoothd and used by bluetoothctl (submenu advmon). As mentioned, we a=
+re planning to offload the RSSI tracking to the controller as well, so ther=
+e will be changes to the corresponding MGMT commands.
+> Thanks for your quick feedback!
+>
+> Regards,
+> Miao
+>
+> On Wed, Sep 30, 2020 at 2:00 PM Von Dentz, Luiz <luiz.von.dentz@intel.com=
+> wrote:
+>>
+>> Hi Miao,
+>>
+>> I do recall seeing these at D-Bus level, or perhaps it was in use by blu=
+etoothctl commands? Anyway since these are still experimental it should be =
+fine to change them.
+>> ________________________________
+>> From: Miao-chen Chou <mcchou@google.com>
+>> Sent: Wednesday, September 30, 2020 12:51 PM
+>> To: Holtmann, Marcel <marcel.holtmann@intel.com>; Von Dentz, Luiz <luiz.=
+von.dentz@intel.com>
+>> Cc: Alain Michaud <alainmichaud@google.com>; Yun-hao Chung <howardchung@=
+google.com>; Manish Mandlik <mmandlik@google.com>; Archie Pusaka <apusaka@g=
+oogle.com>
+>> Subject: Offload RSSI tracking to controller.
+>>
+>> Hi Luiz and Marcel,
+>>
+>> Going forward to 2020 Q4, we will be working on offloading the content f=
+iltering to the controllers based on controll's support of MSFT HCI extensi=
+on. In the meantime, we are planning to change the existing MGMT commands o=
+f Adv monitoring to allow the offloading of RSSI tracking shortly. Here is =
+a snippet of potential changes.
+>>
+>> +struct mgmt_adv_rssi_thresholds {
+>> +       __s8 high_rssi_threshold;
+>> +       u16 high_rssi_threshold_timeout;
+>> +       __s8 low_rssi_threshold;
+>> +       u16 high_rssi_threshold_timeout;
+>> +} __packed;
+>>
+>> struct mgmt_cp_add_adv_patterns_monitor {
+>>         u8 pattern_count;
+>> +        struct mgmt_adv_rssi_thresholds rssi_thresholds;
+>>         struct mgmt_adv_pattern patterns[];
+>> } __packed;
+>>
+>> Note that as suggested by you, the D-Bus Adv monitor API which accesses =
+these MGMT commands is currently hidden behind the experimental flag, so th=
+ey are still mutable. We'd like to hear your early feedback on changing the=
+ corresponding MGMT commands.
+>>
+>> Thanks,
+>> Miao
 
+Thanks,
+Archie
