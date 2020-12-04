@@ -2,80 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D1F22CF761
-	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 00:24:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3599C2CF76D
+	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 00:28:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727349AbgLDXU6 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 4 Dec 2020 18:20:58 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:10538 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725885AbgLDXU6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 18:20:58 -0500
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B4NJkE2005754
-        for <netdev@vger.kernel.org>; Fri, 4 Dec 2020 15:20:16 -0800
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 357quetp02-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 04 Dec 2020 15:20:16 -0800
-Received: from intmgw002.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 4 Dec 2020 15:20:10 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 8CB582ECAB80; Fri,  4 Dec 2020 15:20:03 -0800 (PST)
-From:   Andrii Nakryiko <andrii@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii@kernel.org>, <kernel-team@fb.com>
-Subject: [PATCH bpf] tools/bpftool: fix PID fetching with a lot of results
-Date:   Fri, 4 Dec 2020 15:20:01 -0800
-Message-ID: <20201204232002.3589803-1-andrii@kernel.org>
-X-Mailer: git-send-email 2.24.1
+        id S1727102AbgLDXZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 18:25:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37276 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725885AbgLDXZi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Dec 2020 18:25:38 -0500
+Date:   Fri, 4 Dec 2020 15:24:56 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607124297;
+        bh=W4DgIKA8fUXuOQ3qFucixeZIaJgsASGHjFYuF59z0f0=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Gj3xCSqe7FEkfA6gw+ltNvvw3vhaGTYDOj2WF4LHgwVxdUlFnJJoZPZo/YWwFcS3s
+         AfV8Ckd5okxcHymBg6TnHbsIS01HAs75SiHa0psxnrFWxtPxJrt5nMs4C8DAau4qCX
+         TzBrYiZndwoqmV9s0OnTGUa4QaM1WMqTSKsd3okZpRiCJeCb50DLOtSH595BOhBG1u
+         hrUk+jKiOKQWJHYhMyTpJP3RObiQQc7sF/ILLtVcGVqd6E4C+RnUKUIWu50GFGsDBy
+         hyzt2yOpDzKCs/3MX8d1AjBCln+R65hab8LYKfujcSRc9IE5FnhZSxztUIx9CPcmpR
+         d1G+M4+1uDIug==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Sven Van Asbroeck <thesven73@gmail.com>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        David S Miller <davem@davemloft.net>,
+        Marek Vasut <marex@denx.de>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v1] net: dsa: ksz8795: use correct number of
+ physical ports
+Message-ID: <20201204152456.247769b1@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201203214645.31217-1-TheSven73@gmail.com>
+References: <20201203214645.31217-1-TheSven73@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-12-04_13:2020-12-04,2020-12-04 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 spamscore=0
- suspectscore=0 impostorscore=0 clxscore=1015 lowpriorityscore=0
- priorityscore=1501 phishscore=0 malwarescore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012040133
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In case of having so many PID results that they don't fit into a singe page
-(4096) bytes, bpftool will erroneously conclude that it got corrupted data due
-to 4096 not being a multiple of struct pid_iter_entry, so the last entry will
-be partially truncated. Fix this by sizing the buffer to fit exactly N entries
-with no truncation in the middle of record.
+On Thu,  3 Dec 2020 16:46:45 -0500 Sven Van Asbroeck wrote:
+> From: Sven Van Asbroeck <thesven73@gmail.com>
+> 
+> The ksz8795 has five physical ports, but the driver assumes
+> it has only four. This prevents the driver from working correctly.
+> 
+> Fix by indicating the correct number of physical ports.
+> 
+> Fixes: e66f840c08a23 ("net: dsa: ksz: Add Microchip KSZ8795 DSA driver")
+> Tested-by: Sven Van Asbroeck <thesven73@gmail.com> # ksz8795
+> Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
 
-Fixes: d53dee3fe013 ("tools/bpftool: Show info for processes holding BPF map/prog/link/btf FDs")
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
----
- tools/bpf/bpftool/pids.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+All the port counts here are -1 compared to datasheets, so I'm assuming
+the are not supposed to include the host facing port or something?
 
-diff --git a/tools/bpf/bpftool/pids.c b/tools/bpf/bpftool/pids.c
-index df7d8ec76036..477e55d59c34 100644
---- a/tools/bpf/bpftool/pids.c
-+++ b/tools/bpf/bpftool/pids.c
-@@ -89,9 +89,9 @@ libbpf_print_none(__maybe_unused enum libbpf_print_level level,
- 
- int build_obj_refs_table(struct obj_refs_table *table, enum bpf_obj_type type)
- {
--	char buf[4096];
--	struct pid_iter_bpf *skel;
- 	struct pid_iter_entry *e;
-+	char buf[4096 / sizeof(*e) * sizeof(*e)];
-+	struct pid_iter_bpf *skel;
- 	int err, ret, fd = -1, i;
- 	libbpf_print_fn_t default_print;
- 
--- 
-2.24.1
+Can you describe the exact problem you're trying to solve?
+
+DSA devices are not supposed to have a netdev for the host facing port
+on the switch (sorry for stating the obvious).
+
+> diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+> index 1e101ab56cea..367cebe37ae6 100644
+> --- a/drivers/net/dsa/microchip/ksz8795.c
+> +++ b/drivers/net/dsa/microchip/ksz8795.c
+> @@ -1194,7 +1194,7 @@ static const struct ksz_chip_data ksz8795_switch_chips[] = {
+>  		.num_alus = 0,
+>  		.num_statics = 8,
+>  		.cpu_ports = 0x10,	/* can be configured as cpu port */
+> -		.port_cnt = 4,		/* total physical port count */
+> +		.port_cnt = 5,		/* total physical port count */
+>  	},
+>  	{
+>  		.chip_id = 0x8794,
 
