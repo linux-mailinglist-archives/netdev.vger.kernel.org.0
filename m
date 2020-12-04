@@ -2,68 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EEFE2CEEE4
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 14:41:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D0D42CEEE6
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 14:41:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729249AbgLDNkl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 08:40:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35392 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728773AbgLDNkk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Dec 2020 08:40:40 -0500
-X-Gm-Message-State: AOAM532wejPURLcvXkvFysRBQ9/M1w90Ob9xwy4bKeVVGI79AQ7N/eDO
-        6ldqvCj012Rd6Jh692+04YLeFzoPzWq4T/xDwXI=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607089200;
-        bh=by+WemB1peGkDQCzG6Dx4fJiZpkp8EyT9CK+EgBPFBY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=P9fqTJYnovZ7CqWKNLPqp3JDvu8xXsPnj8jn7pH6Ug+r6FzupbvR7zlfXpYzya5ML
-         7KZYDSndDV+ef+CoikM2o2unFtRjbLfdufK9+/KzZxjYljiz4wWL/IjWEHAk/jys8l
-         aRSHgr8Uh8xIhFkeeyYYN27zubt95Eo8486/2WJfqU/82Sgk/0tJnHPhx0DznvKKi4
-         MGRAAOeXXyQAzrg45t7PuZdJKIcAFCxgz9MHi6PKEHznUVSyAaedtuVtkUzDuMGAnP
-         qxoGHLfxboturzy9mux7mUlcKbEouhPhHp4AbW+Nz/+UnfHgIcgzTe/Q8DwQRqjW8h
-         FuyUpmicxAUEg==
-X-Google-Smtp-Source: ABdhPJyVvyTGM7IAyI/w7/Qek6izIlhZgoKlo/DKiQITg//JIDtXfBeRI4Dxv4lRMr11iPKdROVTob8oGvClJSg0LxU=
-X-Received: by 2002:a05:6830:22d2:: with SMTP id q18mr3651139otc.305.1607089199092;
- Fri, 04 Dec 2020 05:39:59 -0800 (PST)
-MIME-Version: 1.0
-References: <20201203232114.1485603-1-arnd@kernel.org> <20201204110331.GA21587@netronome.com>
-In-Reply-To: <20201204110331.GA21587@netronome.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Fri, 4 Dec 2020 14:39:42 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a0Ncuo6yq2rPpB6wV_r8B87qZ3Ba7to1zdM_BL++j0ksg@mail.gmail.com>
-Message-ID: <CAK8P3a0Ncuo6yq2rPpB6wV_r8B87qZ3Ba7to1zdM_BL++j0ksg@mail.gmail.com>
-Subject: Re: [PATCH] ethernet: select CONFIG_CRC32 as needed
-To:     Simon Horman <simon.horman@netronome.com>
-Cc:     Mark Einon <mark.einon@gmail.com>,
+        id S1730256AbgLDNk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 08:40:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58026 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729606AbgLDNk4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 08:40:56 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74E42C061A51
+        for <netdev@vger.kernel.org>; Fri,  4 Dec 2020 05:40:16 -0800 (PST)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1klBJi-0005IX-If; Fri, 04 Dec 2020 14:40:10 +0100
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1klBJh-0004az-2O; Fri, 04 Dec 2020 14:40:09 +0100
+Date:   Fri, 4 Dec 2020 14:40:09 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>, Arnd Bergmann <arnd@arndb.de>,
-        Networking <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        oss-drivers@netronome.com
-Content-Type: text/plain; charset="UTF-8"
+        Russell King <linux@armlinux.org.uk>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 2/2] net: dsa: qca: ar9331: export stats64
+Message-ID: <20201204134009.q6alw6t2pk22saak@pengutronix.de>
+References: <20201202140904.24748-1-o.rempel@pengutronix.de>
+ <20201202140904.24748-3-o.rempel@pengutronix.de>
+ <20201202104207.697cfdbb@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+ <20201203085011.GA3606@pengutronix.de>
+ <20201203083517.3b616782@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+ <20201203175320.f3fmyaqoxifydwzv@pengutronix.de>
+ <20201203180140.4puwxgailw2iysxz@skbuf>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20201203180140.4puwxgailw2iysxz@skbuf>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 14:32:17 up 2 days,  3:38, 24 users,  load average: 0.01, 0.02, 0.00
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 4, 2020 at 12:03 PM Simon Horman <simon.horman@netronome.com> wrote:
->
-> I'm slightly curious to know how you configured the kernel to build
-> the Netronome NFP driver but not CRC32 but nonetheless I have no
-> objection to this change.
+On Thu, Dec 03, 2020 at 08:01:40PM +0200, Vladimir Oltean wrote:
+> On Thu, Dec 03, 2020 at 06:53:20PM +0100, Oleksij Rempel wrote:
+> > It is possible to poll it more frequently, but  it make no reals sense
+> > on this low power devices.
+> 
+> Frankly I thought you understood the implications of periodic polling
+> and you're ok with them,
 
-I ran into one link error on a randconfig build and then tried an 'allyesconfig'
-configuration, turning everything off manually that selects CRC32.
+I added polling to read out small counters to avoid overflow.
 
-Working through the resulting link errors ended up being more work than I was
-planning for though, so I don't recommend reproducing this. I have another 25
-patches for other subsystems.
+> just wanting to have _something_.
 
-       Arnd
+Having something is good, but making it good is better :D
+
+> But fine,
+> welcome to my world, happy to have you onboard...
+> 
+> > What kind of options do we have?
+> 
+> https://www.spinics.net/lists/netdev/msg703774.html
+> https://www.spinics.net/lists/netdev/msg704370.html
+> 
+> Unfortunately I've been absolutely snowed under with work lately. I hope
+> to be able to come back to that during the weekend or something like that.
+
+Ok, so the strategy is to fix the original issue. Sound good.
+
+For now I'll resend this patches without accessing mdio regs from the
+stats64 callback. It will give initial play ground, so we can see what
+else should be done for DSA specific use case.
+
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
