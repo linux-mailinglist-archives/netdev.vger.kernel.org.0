@@ -2,134 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA8D42CECB2
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 12:05:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B13FD2CECF3
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 12:21:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388068AbgLDLEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 06:04:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33930 "EHLO
+        id S1728018AbgLDLVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 06:21:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726841AbgLDLEX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 06:04:23 -0500
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87DFC061A4F
-        for <netdev@vger.kernel.org>; Fri,  4 Dec 2020 03:03:42 -0800 (PST)
-Received: by mail-io1-xd41.google.com with SMTP id 81so5300210ioc.13
-        for <netdev@vger.kernel.org>; Fri, 04 Dec 2020 03:03:42 -0800 (PST)
+        with ESMTP id S1726014AbgLDLVR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 06:21:17 -0500
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AEE5C0613D1
+        for <netdev@vger.kernel.org>; Fri,  4 Dec 2020 03:20:37 -0800 (PST)
+Received: by mail-wm1-x331.google.com with SMTP id g185so6688041wmf.3
+        for <netdev@vger.kernel.org>; Fri, 04 Dec 2020 03:20:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=6Jv+nYTl5ucMhc3yA6kiS/0QAXOSLESFYDG8UMjys/k=;
-        b=sLB3YmNMRt3awTg7ukKbVbdpZyMROx24h6agCLHNLgCMHx1z9CV5+1j1ie4wdKy4Dm
-         nUQrqdxR+Ui9ecQ8J6mG7Eh1gPak5lyFkk/CprpTqaM0OGphhY+3C7sD6ak1633s0+LF
-         2W2/yWRTGNWJ9reYjAfwEDhl+BofuW8P4fDpKfOtC2jDW0saZWfxuHK7F9EEwiH9esq2
-         JzIHIU93bKHRIIDw2bILPfLKrf8Ca3Nx2f7AEGN+2Nk89+bs4W/ZZy1peBALpO0OIHWk
-         0CFtu6IRMIBq8thyIhC+JDWibZLlRPi1g0Q3z3Y3zGHPEeEr+t4D06WPFSqiZ281PUM0
-         76CA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=g8YR0hRxIujjnFQkpIHB/e9UPjChJMy2MX/WJ8vQFvU=;
+        b=uSj5UqdvwLTcduz1/AqMrA+g56oyCTcvWg++wDM9vYnYaepmTiZKgWTy9I0AqOB1oB
+         X6mIKYXc1WcTgaPxHC3gILsavNw4Ceg2t80auo5KD7EbClOqTNpJKidwwJSkr0lW5rv3
+         /xzFek3q8J3LAV9VV8NXr9wTYLezprVlnoJxnPs/sNC4oqaJqXHlJGkDuJZujFtKzOl0
+         AuhaFCPBOmMJGPdP2xPyX1pxtM7hDehLu96DT3ROzXAhWU6T1kOKwOLC7n66FRF1DSar
+         aLmYdmTGvdWOIfn1UFFW0fwtjxef86kdPmDiYI3S53EGXI6NIC27VK29+jMUbvu6NTsQ
+         XYFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=6Jv+nYTl5ucMhc3yA6kiS/0QAXOSLESFYDG8UMjys/k=;
-        b=j/9TYoyoNnd6M7X4EJfXBumd1QAoc4G87W7C7d82cp+M4kRNEHR4nBcNSNq/GllAWd
-         mt6HN/GdfId3156nxlBcuxetfZKSt9AmONCO4S7yvl74E/X9dzkGxfPc4wgvcRYUNRGo
-         8JEsi6bSPGYwJBwnpCDa64FaAbK81v1Byz5sReZADOSqGOSngLdCNahO+Wji/cj/22HJ
-         PBbCTwzh6pPETqMJZhh1VxQu4VO6tc/wPH8+Kk335xoOLcBzA9EZ7YVENaE6wWIUlzgp
-         8WgnwU1qzqoR36stdT8tdn+F6B9rZYbFb9UwR+QgwWoifv9qPnrojICjE85NyZCONprA
-         XBZA==
-X-Gm-Message-State: AOAM5317z05ikUSObqUwRRQDc/05IDzIrmdKkfM8lKTbZYuaIlj4bw4c
-        MSTWqcliU9S3VwjkrDO2qP6W7Q==
-X-Google-Smtp-Source: ABdhPJxFzHB0Xqk/E6O4AEodvWZzmDBjxeT4tcuhxMAMKl9TKWt2uyxgf2393QWwOJ3cZv7SLvfmVA==
-X-Received: by 2002:a02:7650:: with SMTP id z77mr5628861jab.134.1607079822008;
-        Fri, 04 Dec 2020 03:03:42 -0800 (PST)
-Received: from netronome.com ([2001:982:756:703:d63d:7eff:fe99:ac9d])
-        by smtp.gmail.com with ESMTPSA id x5sm1447299ilm.22.2020.12.04.03.03.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Dec 2020 03:03:41 -0800 (PST)
-Date:   Fri, 4 Dec 2020 12:03:32 +0100
-From:   Simon Horman <simon.horman@netronome.com>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Mark Einon <mark.einon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>, Arnd Bergmann <arnd@arndb.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, oss-drivers@netronome.com
-Subject: Re: [PATCH] ethernet: select CONFIG_CRC32 as needed
-Message-ID: <20201204110331.GA21587@netronome.com>
-References: <20201203232114.1485603-1-arnd@kernel.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=g8YR0hRxIujjnFQkpIHB/e9UPjChJMy2MX/WJ8vQFvU=;
+        b=ZgBJajuYSIPyUCcn/gRZ49/3MHre/SHrrLhcII7txh9ChVjacs50fQHk6SeVfCdWzC
+         lefaG9dWicJTz6vW4v/eSFQN0HFYayXNGZft3KJqwWaHTbSGmEm9ptL7oTQka2HegYao
+         qfTxV63Hu8guhAcUehu7nlvgzJiRgM3/BJ9M1pAXD2Tzj5N7U7E/fzIMgZ9bLWManxbP
+         RorRan7GRW4vDIn814Nv1bN9Mfzhh8AUcGbjKU32DNqK2/I4VQJAGU3RgZFOAoe0RSoP
+         XIBNqrdJ8ldWivFwuGWu43wKB1vvMAYTC2PVwlJpvf0h+jBwtkMl3VjBbCytyn9+cdNJ
+         xmXw==
+X-Gm-Message-State: AOAM5327C4oIB1bDmLUx5DjGCrVqtQ2aYn7H3UKrMQtkZmPLrTyRDNFB
+        tSkZZoVs4tCd8opCiDI1A3tiOXPEejkq0Q==
+X-Google-Smtp-Source: ABdhPJzCf2WbbLDbq8j4WrhrqJC0x8iYKAEsAxHZfLaYhGHuoVfjF4iv9aD93vf8TB12jn4qOrEVuA==
+X-Received: by 2002:a1c:c902:: with SMTP id f2mr3711915wmb.130.1607080834625;
+        Fri, 04 Dec 2020 03:20:34 -0800 (PST)
+Received: from [80.5.128.40] (cpc108961-cmbg20-2-0-cust39.5-4.cable.virginm.net. [80.5.128.40])
+        by smtp.gmail.com with ESMTPSA id v20sm2590989wmh.44.2020.12.04.03.20.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Dec 2020 03:20:33 -0800 (PST)
+Subject: Re: GRO: can't force packet up stack immediately?
+To:     John Ousterhout <ouster@cs.stanford.edu>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     netdev@vger.kernel.org
+References: <CAGXJAmx_xQr56oiak8k8MC+JPBNi+tQBtTvBRqYVsimmKtW4MA@mail.gmail.com>
+ <72f3ea21-b4bd-b5bd-f72f-be415598591f@gmail.com>
+ <CAGXJAmwEEnhX5KBvPZmwOKF_0hhVuGfvbXsoGR=+vB8bGge1sQ@mail.gmail.com>
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <4d5b237b-3439-8242-4d2c-b27f9fcb49ca@gmail.com>
+Date:   Fri, 4 Dec 2020 11:20:33 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201203232114.1485603-1-arnd@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAGXJAmwEEnhX5KBvPZmwOKF_0hhVuGfvbXsoGR=+vB8bGge1sQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 04, 2020 at 12:20:37AM +0100, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> A number of ethernet drivers require crc32 functionality to be
-> avaialable in the kernel, causing a link error otherwise:
-> 
-> arm-linux-gnueabi-ld: drivers/net/ethernet/agere/et131x.o: in function `et1310_setup_device_for_multicast':
-> et131x.c:(.text+0x5918): undefined reference to `crc32_le'
-> arm-linux-gnueabi-ld: drivers/net/ethernet/cadence/macb_main.o: in function `macb_start_xmit':
-> macb_main.c:(.text+0x4b88): undefined reference to `crc32_le'
-> arm-linux-gnueabi-ld: drivers/net/ethernet/faraday/ftgmac100.o: in function `ftgmac100_set_rx_mode':
-> ftgmac100.c:(.text+0x2b38): undefined reference to `crc32_le'
-> arm-linux-gnueabi-ld: drivers/net/ethernet/freescale/fec_main.o: in function `set_multicast_list':
-> fec_main.c:(.text+0x6120): undefined reference to `crc32_le'
-> arm-linux-gnueabi-ld: drivers/net/ethernet/freescale/fman/fman_dtsec.o: in function `dtsec_add_hash_mac_address':
-> fman_dtsec.c:(.text+0x830): undefined reference to `crc32_le'
-> arm-linux-gnueabi-ld: drivers/net/ethernet/freescale/fman/fman_dtsec.o:fman_dtsec.c:(.text+0xb68): more undefined references to `crc32_le' follow
-> arm-linux-gnueabi-ld: drivers/net/ethernet/netronome/nfp/nfpcore/nfp_hwinfo.o: in function `nfp_hwinfo_read':
-> nfp_hwinfo.c:(.text+0x250): undefined reference to `crc32_be'
-> arm-linux-gnueabi-ld: nfp_hwinfo.c:(.text+0x288): undefined reference to `crc32_be'
-> arm-linux-gnueabi-ld: drivers/net/ethernet/netronome/nfp/nfpcore/nfp_resource.o: in function `nfp_resource_acquire':
-> nfp_resource.c:(.text+0x144): undefined reference to `crc32_be'
-> arm-linux-gnueabi-ld: nfp_resource.c:(.text+0x158): undefined reference to `crc32_be'
-> arm-linux-gnueabi-ld: drivers/net/ethernet/nxp/lpc_eth.o: in function `lpc_eth_set_multicast_list':
-> lpc_eth.c:(.text+0x1934): undefined reference to `crc32_le'
-> arm-linux-gnueabi-ld: drivers/net/ethernet/rocker/rocker_ofdpa.o: in function `ofdpa_flow_tbl_do':
-> rocker_ofdpa.c:(.text+0x2e08): undefined reference to `crc32_le'
-> arm-linux-gnueabi-ld: drivers/net/ethernet/rocker/rocker_ofdpa.o: in function `ofdpa_flow_tbl_del':
-> rocker_ofdpa.c:(.text+0x3074): undefined reference to `crc32_le'
-> arm-linux-gnueabi-ld: drivers/net/ethernet/rocker/rocker_ofdpa.o: in function `ofdpa_port_fdb':
-> arm-linux-gnueabi-ld: drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.o: in function `mlx5dr_ste_calc_hash_index':
-> dr_ste.c:(.text+0x354): undefined reference to `crc32_le'
-> arm-linux-gnueabi-ld: drivers/net/ethernet/microchip/lan743x_main.o: in function `lan743x_netdev_set_multicast':
-> lan743x_main.c:(.text+0x5dc4): undefined reference to `crc32_le'
-> 
-> Add the missing 'select CRC32' entries in Kconfig for each of them.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  drivers/net/ethernet/agere/Kconfig              | 1 +
->  drivers/net/ethernet/cadence/Kconfig            | 1 +
->  drivers/net/ethernet/faraday/Kconfig            | 1 +
->  drivers/net/ethernet/freescale/Kconfig          | 1 +
->  drivers/net/ethernet/freescale/fman/Kconfig     | 1 +
->  drivers/net/ethernet/mellanox/mlx5/core/Kconfig | 1 +
->  drivers/net/ethernet/microchip/Kconfig          | 1 +
->  drivers/net/ethernet/netronome/Kconfig          | 1 +
->  drivers/net/ethernet/nxp/Kconfig                | 1 +
->  drivers/net/ethernet/rocker/Kconfig             | 1 +
->  10 files changed, 10 insertions(+)
+On 03/12/2020 19:52, John Ousterhout wrote:
+> Homa uses GRO to collect batches of packets for protocol processing,
+> but there are times when it wants to push a batch of packet up through
+> the stack immediately (it doesn't want any more packets to be
+> processed at NAPI level before pushing the batch up). However, I can't
+> see a way to achieve this goal.
+It's kinda hacky, but you might be able to call netif_receive_skb_internal()
+ yourself, and then return ERR_PTR(-EINPROGRESS), so that dev_gro_receive()
+ returns GRO_CONSUMED.
+Of course, you'd need to be careful about out-of-order issues in case
+ any earlier homa packets were still sitting in the rx_list.
 
-Hi Arnd,
+Other than that, I don't think there's currently a way for a protocol
+ to tell GRO to flush out the whole rx_list (which could be argued to
+ be a layering violation, anyway).  You might potentially be able to
+ add a flag to struct napi_gro_cb and teach napi_gro_complete() or
+ gro_normal_one() to check for it, but — we'd only consider adding
+ something like that with an in-tree user, which your protocol doesn't
+ appear to be AFAICT.
 
-I'm slightly curious to know how you configured the kernel to build
-the Netronome NFP driver but not CRC32 but nonetheless I have no
-objection to this change.
-
-For the Netronome portion:
-
-Acked-by: Simon Horman <simon.horman@netronome.com>
+-ed
