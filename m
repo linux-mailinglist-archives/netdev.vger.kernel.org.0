@@ -2,132 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 267122CF4C9
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 20:32:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15D5E2CF4D1
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 20:33:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728240AbgLDT34 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 14:29:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57964 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725923AbgLDT34 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Dec 2020 14:29:56 -0500
-From:   Arnd Bergmann <arnd@kernel.org>
-Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
-To:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Ioana Ciornei <ioana.cionei@nxp.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Po Liu <Po.Liu@nxp.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Alex Marginean <alexandru.marginean@nxp.com>,
-        Michael Walle <michael@walle.cc>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] [v2] enetc: fix build warning
-Date:   Fri,  4 Dec 2020 20:28:59 +0100
-Message-Id: <20201204192910.2306023-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.27.0
+        id S1730545AbgLDTca (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 14:32:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56312 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730182AbgLDTc3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 14:32:29 -0500
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 722B8C0613D1;
+        Fri,  4 Dec 2020 11:31:49 -0800 (PST)
+Received: by mail-yb1-xb42.google.com with SMTP id e81so6472580ybc.1;
+        Fri, 04 Dec 2020 11:31:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=voQ5lfDVMzOYam6sMYIWBPLKZkkRpZtoYUdHJkVXnyo=;
+        b=MgpaSnyZbEuVQ1tq48gkH3nTUILv5dbh+fQiN7sWvrAX68uet1w9mnhMN9cz6C50kr
+         9B+IgSJey1l97joP0fSN4mxjNgmrbp5FWvsfhQlKveVkGX+0cAdxVnsgwStgix5ZNrej
+         r7NV16O/bHOu7yCaJ7RuJPFDMCtNGV8V3RNDuBBm5K7YFOrmywpNCD7d3T/NNsUxmY3u
+         Q101YMgwA5Fs2KohhE4+T0tKNriGkSL3TvqGPVnA09l5PBLBnI2/3CKvBhyz6Oj0/OuW
+         SJhzjlWvzpWyUkPDs4YJ8AqiCA/xbPKCZv+3/SNKjj1Ix21C/+Q4XMg/m8ePXEP8W+KV
+         RuWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=voQ5lfDVMzOYam6sMYIWBPLKZkkRpZtoYUdHJkVXnyo=;
+        b=qRP+rczwuRIxFn9kkamqpd6WfEWf7vPEDiXl/ev+17ImY+X1XEj2zY0QsG3XkaToAl
+         XZdhCFyT/wd4A+DGlxzDbqZ8Pd/C/1Ki3B7qrfQw9yknTPOD0+WpyJVPmTLYCbeWdykX
+         NiVG+2wINGi6c/lqJvYp8y3b7bpyK9AoRA4OTG+OqeT8oZYR2gONnVQi6CDRkwC1pzCq
+         BT/Tde+kBvPXQRPlkpDDmvwgrbKAkNzTNA6hJEaL5q7NSyunHu8+JZg0q5imZdVV698X
+         WfvnZQ+YCBD6N/Z1mB4eUQpB0dP02Du5GvtmbUet+lksOmeF9Tf+CDga7mliVR+E9f/h
+         twNQ==
+X-Gm-Message-State: AOAM533edABcJ7vZHCHms8RuED4+ae0iHzEt4uA99qCUaBdh94a40M2X
+        JNPE40Y3JK8CAa/2Fpgeq6DgKv9OYcupOJco1hMmdvDSgMU=
+X-Google-Smtp-Source: ABdhPJzfGL7HBGF2Eg+F+OK3y9ToHuBFF2CJytCQWCAM+So+BOR8xjeYlQSdcaqAnVom2SPnni0muXJlyLjALy3Dtjk=
+X-Received: by 2002:a25:6a05:: with SMTP id f5mr4486304ybc.459.1607110308781;
+ Fri, 04 Dec 2020 11:31:48 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201203204634.1325171-1-andrii@kernel.org> <20201203204634.1325171-11-andrii@kernel.org>
+ <20201204015358.sk5zl5l73zmcu7t2@ast-mbp>
+In-Reply-To: <20201204015358.sk5zl5l73zmcu7t2@ast-mbp>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 4 Dec 2020 11:31:37 -0800
+Message-ID: <CAEf4BzbqneM9bXn646EpNAnaZr=sStqf6guBvWvf9qtyDYO9mg@mail.gmail.com>
+Subject: Re: [PATCH v6 bpf-next 10/14] bpf: allow to specify kernel module
+ BTFs when attaching BPF programs
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Thu, Dec 3, 2020 at 5:54 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Thu, Dec 03, 2020 at 12:46:30PM -0800, Andrii Nakryiko wrote:
+> > +     if (attr->attach_prog_fd) {
+> > +             dst_prog = bpf_prog_get(attr->attach_prog_fd);
+> > +             if (IS_ERR(dst_prog)) {
+> > +                     dst_prog = NULL;
+> > +                     attach_btf = btf_get_by_fd(attr->attach_btf_obj_fd);
+> > +                     if (IS_ERR(attach_btf))
+> > +                             return -EINVAL;
+> > +                     if (!btf_is_kernel(attach_btf)) {
+> > +                             btf_put(attach_btf);
+> > +                             return -EINVAL;
+>
+> Applied, but please consider follow up with different err code here.
+> I think we might support this case in the future.
+> Specifying prog's BTF as a base and attach_btf_id within it might make
+> user space simpler in some cases. prog's btf covers the whole elf file.
 
-When CONFIG_OF is disabled, there is a harmless warning about
-an unused variable:
+The problem is that there is no link from BTF to bpf_prog. And
+multiple instances of bpf_progs can re-use the same BTF object and the
+same BTF type ID. That would need to be resolved somehow.
 
-enetc_pf.c: In function 'enetc_phylink_create':
-enetc_pf.c:981:17: error: unused variable 'dev' [-Werror=unused-variable]
+But keeping our options open is a good idea either way. So I'll send a
+patch to switch this to -EOPNOTSUPP (I think that's the one we need to
+use for user-space).
 
-Slightly rearrange the code to pass around the of_node as a
-function argument, which avoids the problem without hurting
-readability.
-
-Fixes: 71b77a7a27a3 ("enetc: Migrate to PHYLINK and PCS_LYNX")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
-v2: move added variable declaration up
----
- .../net/ethernet/freescale/enetc/enetc_pf.c   | 21 +++++++++----------
- 1 file changed, 10 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-index ecdc2af8c292..ed8fcb8b486e 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-@@ -851,13 +851,12 @@ static bool enetc_port_has_pcs(struct enetc_pf *pf)
- 		pf->if_mode == PHY_INTERFACE_MODE_USXGMII);
- }
- 
--static int enetc_mdiobus_create(struct enetc_pf *pf)
-+static int enetc_mdiobus_create(struct enetc_pf *pf, struct device_node *node)
- {
--	struct device *dev = &pf->si->pdev->dev;
- 	struct device_node *mdio_np;
- 	int err;
- 
--	mdio_np = of_get_child_by_name(dev->of_node, "mdio");
-+	mdio_np = of_get_child_by_name(node, "mdio");
- 	if (mdio_np) {
- 		err = enetc_mdio_probe(pf, mdio_np);
- 
-@@ -969,18 +968,17 @@ static const struct phylink_mac_ops enetc_mac_phylink_ops = {
- 	.mac_link_down = enetc_pl_mac_link_down,
- };
- 
--static int enetc_phylink_create(struct enetc_ndev_priv *priv)
-+static int enetc_phylink_create(struct enetc_ndev_priv *priv,
-+				struct device_node *node)
- {
- 	struct enetc_pf *pf = enetc_si_priv(priv->si);
--	struct device *dev = &pf->si->pdev->dev;
- 	struct phylink *phylink;
- 	int err;
- 
- 	pf->phylink_config.dev = &priv->ndev->dev;
- 	pf->phylink_config.type = PHYLINK_NETDEV;
- 
--	phylink = phylink_create(&pf->phylink_config,
--				 of_fwnode_handle(dev->of_node),
-+	phylink = phylink_create(&pf->phylink_config, of_fwnode_handle(node),
- 				 pf->if_mode, &enetc_mac_phylink_ops);
- 	if (IS_ERR(phylink)) {
- 		err = PTR_ERR(phylink);
-@@ -1001,13 +999,14 @@ static void enetc_phylink_destroy(struct enetc_ndev_priv *priv)
- static int enetc_pf_probe(struct pci_dev *pdev,
- 			  const struct pci_device_id *ent)
- {
-+	struct device_node *node = pdev->dev.of_node;
- 	struct enetc_ndev_priv *priv;
- 	struct net_device *ndev;
- 	struct enetc_si *si;
- 	struct enetc_pf *pf;
- 	int err;
- 
--	if (pdev->dev.of_node && !of_device_is_available(pdev->dev.of_node)) {
-+	if (node && !of_device_is_available(node)) {
- 		dev_info(&pdev->dev, "device is disabled, skipping\n");
- 		return -ENODEV;
- 	}
-@@ -1058,12 +1057,12 @@ static int enetc_pf_probe(struct pci_dev *pdev,
- 		goto err_alloc_msix;
- 	}
- 
--	if (!of_get_phy_mode(pdev->dev.of_node, &pf->if_mode)) {
--		err = enetc_mdiobus_create(pf);
-+	if (!of_get_phy_mode(node, &pf->if_mode)) {
-+		err = enetc_mdiobus_create(pf, node);
- 		if (err)
- 			goto err_mdiobus_create;
- 
--		err = enetc_phylink_create(priv);
-+		err = enetc_phylink_create(priv, node);
- 		if (err)
- 			goto err_phylink_create;
- 	}
--- 
-2.27.0
-
+> Where prog_fd is a specific prog. That narrow scope isn't really necessary.
+> So may be return ENOTSUPP here for now? With a hint that this might
+> work in the future?
