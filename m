@@ -2,86 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 250952CEA77
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 10:07:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBDAA2CEABF
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 10:22:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729191AbgLDJFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 04:05:18 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:37884 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728279AbgLDJFR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 04:05:17 -0500
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-288-Em2-OAYzMgCuFHGmlXnaDQ-1; Fri, 04 Dec 2020 09:03:38 +0000
-X-MC-Unique: Em2-OAYzMgCuFHGmlXnaDQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Fri, 4 Dec 2020 09:03:37 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Fri, 4 Dec 2020 09:03:37 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Arjun Roy' <arjunroy@google.com>
-CC:     Stephen Hemminger <stephen@networkplumber.org>,
-        Arjun Roy <arjunroy.kdev@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "soheil@google.com" <soheil@google.com>
-Subject: RE: [net-next v2 1/8] net-zerocopy: Copy straggler unaligned data for
- TCP Rx. zerocopy.
-Thread-Topic: [net-next v2 1/8] net-zerocopy: Copy straggler unaligned data
- for TCP Rx. zerocopy.
-Thread-Index: AQHWyQnnIy5Nhf4BLE+JcVO2pr+xUKnl/WUAgAAHm0eAAKF2IA==
-Date:   Fri, 4 Dec 2020 09:03:37 +0000
-Message-ID: <99eb2611ce8a47289a6c6360f29acdd7@AcuMS.aculab.com>
-References: <20201202220945.911116-1-arjunroy.kdev@gmail.com>
- <20201202220945.911116-2-arjunroy.kdev@gmail.com>
- <20201202161527.51fcdcd7@hermes.local>
- <384c6be35cc044eeb1bbcf5dcc6d819f@AcuMS.aculab.com>
- <CAOFY-A07C=TEfob3S3-Dqm8tFTavFfEGqQwbisnNd+yKgDEGFA@mail.gmail.com>
- <CAOFY-A2vTwyA_45oUQR-91CMZya5i1y-4yzDboL+CnKceLzXPw@mail.gmail.com>
-In-Reply-To: <CAOFY-A2vTwyA_45oUQR-91CMZya5i1y-4yzDboL+CnKceLzXPw@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1729556AbgLDJUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 04:20:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46174 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727518AbgLDJUv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 04:20:51 -0500
+Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB474C061A4F;
+        Fri,  4 Dec 2020 01:20:10 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4CnRxf2ZMXz9sWt;
+        Fri,  4 Dec 2020 20:20:06 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1607073607;
+        bh=bAsk8n7gqFwKjHWwsHSOXYDy5wkPoQQyApSqZbNhf4E=;
+        h=Date:From:To:Cc:Subject:From;
+        b=COBC7McCpEGqFC/wJt6Ji1ZUxqSBbcsgMDiH0OSauzjbuvowuzHXDpraMKu0hK4vo
+         O7oTfw65+pxvnA2eT5Qa3+Y9Lijmwh52qTME9LTd1w40IfgIwnA7S6hZ2tD9Dez3E4
+         fAEigSI2laov23FS/NMJYNdM+nLBx2sTJFXlNdSpHCJJIUtLDu4yenyNtBCW0k8M7l
+         vFUqArdK1JxBKBJvRW+RSGjJYoQzLbhbqz8tEzOKrsRYFY8IhhVjhPBUo1zuG5TTl2
+         gypIgfpy9vd78mZbvxThAwnqPxMtI0nasSwYOBeqbKAhwiBI0vn8OypJV9k24Gm9Yf
+         DsI/GZ4c5blEA==
+Date:   Fri, 4 Dec 2020 20:20:05 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Alex Shi <alex.shi@linux.alibaba.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Roman Gushchin <guro@fb.com>,
+        Shakeel Butt <shakeelb@google.com>
+Subject: linux-next: manual merge of the akpm-current tree with the bpf-next
+ tree
+Message-ID: <20201204202005.3fb1304f@canb.auug.org.au>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Type: multipart/signed; boundary="Sig_/+K=st_HCMWn3JpH6IhaFwtk";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogQXJqdW4gUm95DQo+IFNlbnQ6IDAzIERlY2VtYmVyIDIwMjAgMjM6MjUNCi4uLg0KPiA+
-ID4gWW91IGFsc28gaGF2ZSB0byBhbGxvdyBmb3Igb2xkICh3b3JraW5nKSBhcHBsaWNhdGlvbnMg
-YmVpbmcgcmVjb21waWxlZA0KPiA+ID4gd2l0aCB0aGUgbmV3IGhlYWRlcnMuDQo+ID4gPiBTbyB5
-b3UgY2Fubm90IHJlbHkgb24gdGhlIGZpZWxkcyBiZWluZyB6ZXJvIGV2ZW4gaWYgeW91IGFyZSBw
-YXNzZWQNCj4gPiA+IHRoZSBzaXplIG9mIHRoZSBzdHJ1Y3R1cmUuDQo+ID4gPg0KPiA+DQo+ID4g
-SSB0aGluayB0aGlzIHNob3VsZCBhbHJlYWR5IGJlIHRha2VuIGNhcmUgb2YgaW4gdGhlIGN1cnJl
-bnQgY29kZTsgdGhlDQo+ID4gZnVsbC1zaXplZCBzdHJ1Y3Qgd2l0aCBuZXcgZmllbGRzIGlzIGJl
-aW5nIHplcm8taW5pdGlhbGl6ZWQsIHRoZW4NCj4gPiB3ZSdyZSBnZXR0aW5nIHRoZSB1c2VyLXBy
-b3ZpZGVkIG9wdGxlbiwgdGhlbiBjb3B5aW5nIGZyb20gdXNlcnNwYWNlDQo+ID4gb25seSB0aGF0
-IG11Y2ggZGF0YS4gU28gdGhlIG5ld2VyIGZpZWxkcyB3b3VsZCBiZSB6ZXJvIGluIHRoYXQgY2Fz
-ZSwNCj4gPiBzbyB0aGlzIHNob3VsZCBoYW5kbGUgdGhlIGNhc2Ugb2YgbmV3IGtlcm5lbHMgYnV0
-IG9sZCBhcHBsaWNhdGlvbnMuDQo+ID4gRG9lcyB0aGlzIGFkZHJlc3MgdGhlIGNvbmNlcm4sIG9y
-IGFtIEkgbWlzdW5kZXJzdGFuZGluZz8NCj4gPg0KPiANCj4gQWN0dWFsbHksIG9uIGNsb3NlciBy
-ZWFkLCBwZXJoYXBzIHRoZSBmb2xsb3dpbmcgaXMgd2hhdCB5b3UgaGF2ZSBpbg0KPiBtaW5kIGZv
-ciB0aGUgb2xkIGFwcGxpY2F0aW9uPw0KPiANCj4gc3RydWN0IHplcm9jb3B5X2FyZ3MgYXJnczsN
-Cj4gYXJncy5hZGRyZXNzID0gLi4uOw0KPiBhcmdzLmxlbmd0aCA9IC4uLjsNCj4gYXJncy5yZWN2
-X3NraXBfaGludCA9IC4uLjsNCj4gYXJncy5pbnEgPSAuLi47DQo+IGFyZ3MuZXJyID0gLi4uOw0K
-PiBnZXRzb2Nrb3B0KGZkLCBJUFBST1RPX1RDUCwgVENQX1pFUk9DT1BZX1JFQ0VJVkUsICZhcmdz
-LCBzaXplb2YoYXJncykpOw0KPiAvLyBzaXplb2YoYXJncykgaXMgbm93IGJpZ2dlciB3aGVuIHJl
-Y29tcGlsZWQgd2l0aCBuZXcgaGVhZGVycywgYnV0IHdlDQo+IGRpZCBub3QgZXhwbGljaXRseSBz
-ZXQgdGhlIG5ldyBmaWVsZHMgdG8gMCwgdGhlcmVmb3JlIGlzc3Vlcw0KDQpUaGF0J3MgdGhlIG9u
-ZS4uLg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5
-IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRp
-b24gTm86IDEzOTczODYgKFdhbGVzKQ0K
+--Sig_/+K=st_HCMWn3JpH6IhaFwtk
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
+Hi all,
+
+Today's linux-next merge of the akpm-current tree got conflicts in:
+
+  include/linux/memcontrol.h
+  mm/memcontrol.c
+
+between commit:
+
+  bcfe06bf2622 ("mm: memcontrol: Use helpers to read page's memcg data")
+
+from the bpf-next tree and commits:
+
+  6771a349b8c3 ("mm/memcg: remove incorrect comment")
+  c3970fcb1f21 ("mm: move lruvec stats update functions to vmstat.h")
+
+from the akpm-current tree.
+
+I fixed it up (see below - I used the latter version of memcontrol.h)
+and can carry the fix as necessary. This is now fixed as far as
+linux-next is concerned, but any non trivial conflicts should be
+mentioned to your upstream maintainer when your tree is submitted for
+merging.  You may also want to consider cooperating with the maintainer
+of the conflicting tree to minimise any particularly complex conflicts.
+
+I also added this merge fix patch:
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Fri, 4 Dec 2020 19:53:40 +1100
+Subject: [PATCH] fixup for "mm: move lruvec stats update functions to vmsta=
+t.h"
+
+conflict against "mm: memcontrol: Use helpers to read page's memcg data"
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+---
+ mm/memcontrol.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index 6f5733779927..3b6db4e906b5 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -851,16 +851,17 @@ void __mod_lruvec_page_state(struct page *page, enum =
+node_stat_item idx,
+ 			     int val)
+ {
+ 	struct page *head =3D compound_head(page); /* rmap on tail pages */
++	struct mem_cgroup *memcg =3D page_memcg(head);
+ 	pg_data_t *pgdat =3D page_pgdat(page);
+ 	struct lruvec *lruvec;
+=20
+ 	/* Untracked pages have no memcg, no lruvec. Update only the node */
+-	if (!head->mem_cgroup) {
++	if (!memcg) {
+ 		__mod_node_page_state(pgdat, idx, val);
+ 		return;
+ 	}
+=20
+-	lruvec =3D mem_cgroup_lruvec(head->mem_cgroup, pgdat);
++	lruvec =3D mem_cgroup_lruvec(memcg, pgdat);
+ 	__mod_lruvec_state(lruvec, idx, val);
+ }
+=20
+--=20
+2.29.2
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc include/linux/memcontrol.h
+index 320369c841f5,ff02f831e7e1..000000000000
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+diff --cc mm/memcontrol.c
+index 7535042ac1ec,c9a5dce4343d..000000000000
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@@ -2880,9 -2984,9 +2975,9 @@@ static void cancel_charge(struct mem_cg
+ =20
+  static void commit_charge(struct page *page, struct mem_cgroup *memcg)
+  {
+ -	VM_BUG_ON_PAGE(page->mem_cgroup, page);
+ +	VM_BUG_ON_PAGE(page_memcg(page), page);
+  	/*
+- 	 * Any of the following ensures page->mem_cgroup stability:
++ 	 * Any of the following ensures page's memcg stability:
+  	 *
+  	 * - the page lock
+  	 * - LRU isolation
+@@@ -6977,11 -7012,10 +6997,10 @@@ void mem_cgroup_migrate(struct page *ol
+  		return;
+ =20
+  	/* Page cache replacement: new page already charged? */
+ -	if (newpage->mem_cgroup)
+ +	if (page_memcg(newpage))
+  		return;
+ =20
+- 	/* Swapcache readahead pages can get replaced before being charged */
+ -	memcg =3D oldpage->mem_cgroup;
+ +	memcg =3D page_memcg(oldpage);
+  	if (!memcg)
+  		return;
+ =20
+
+--Sig_/+K=st_HCMWn3JpH6IhaFwtk
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl/J/0UACgkQAVBC80lX
+0GykHAf9ENaQyGwvRrQbXCkHZza/eM9habEfZViXxqugniIt/xpHxIioPAu5LIyi
+zBMYr+/rGhg8EOtuDFNGoRmjP9YUU6Q6714o9arCHE1uO7edQVK20jCthVF1MwTR
+IfJ3hCAj9h/hj5VS5U5TACTMAoCXYcdbQW/PzCVf65Uz29XVnOwQDR2BkjiGZ/g3
+7nao9ycs8AR3C8yFkoyXQ7V4p1c8KKafgbYSGQ/tVPmWQg47pAkL0WZK+9+6sgcK
+yhhoW88ZE3bcn3tFmYXsAf2XIGiIesoLfNyIvygPkso8YIXtVBtzfZjLAkG2mQHS
+lv9G2Hc03BoO7ey4wydgqJyvl/339g==
+=QOWV
+-----END PGP SIGNATURE-----
+
+--Sig_/+K=st_HCMWn3JpH6IhaFwtk--
