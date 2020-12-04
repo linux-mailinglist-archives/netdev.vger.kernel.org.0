@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 362E52CF45C
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 19:53:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3FCE2CF452
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 19:51:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730436AbgLDSw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 13:52:26 -0500
-Received: from userp2130.oracle.com ([156.151.31.86]:55930 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727997AbgLDSw0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 13:52:26 -0500
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0B4Ie35p085149;
-        Fri, 4 Dec 2020 18:50:57 GMT
+        id S1730292AbgLDSuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 13:50:32 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:59844 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726152AbgLDSu3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 13:50:29 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0B4Id5qq099390;
+        Fri, 4 Dec 2020 18:49:02 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references; s=corp-2020-01-29;
- bh=qKvf4lzEo5tNiBSD+ta9N0URRH+/apH1S2WO9655a9k=;
- b=mhrID1qX18m6dww1exE6wPNTGZ74zSHcGO0t/+YT+rn9U/dRLYsOsXsJhtC53PztlUk1
- YPM3WZVMFIHWGMRzLgb77YnvtF1uaViSucME3JudNON5lvgd850Kb4rReWCAdilSjm4h
- es/SygkHshlhUkGLMSgL2JAM5VA0z5U7PTBEoFfANPSVK/Op/+gqa8DQbb1hEDQucidG
- +hTNRe2QTy5Hkd31LEkrKGg+UND/cy+VHEjtkWtCPiSMUUaZK2SB3Ce9Bx0p1udD/tmY
- Jwdd7WmTiGSdqIN5eNg+eO4K9laOSEmTTrykweFq4sqQrRy70J/lNBovmuhqM1xzyk4o ug== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2130.oracle.com with ESMTP id 353dyr4pry-1
+ bh=/93N649h23mFPKdE9O8nGlSxlC3KmuSOrZrM93ncRgk=;
+ b=lTLbUAcn004c7Aw/JvIbnaKTaJKaimdgYMxppp2j7O9jEILmNcgGS/ZI/W8ZbPsscpo7
+ +kXa1ZtjDKh+NW9vYwV89Jt8SxFTHO/wafKti0AUKiuK+PaWEMkqF8BeubI1b4wgwMKo
+ lrvda/I1NTCXf+roG96Df38F7gdlMgL55d7PHRLAK1lXsUFfJQRktJ4Z6esC6sCeWgSx
+ QTX3zAs1G10bXZS5DsSghQqdv6T6qkAfXviSgBKeydmO1Dn75f6WcvS8+gx3O9IHxwn7
+ rlpWo4ViGdAkIz1AHiGRoq2/vzKs0sH4HD30bsZCg5SYC60loF8UeAbXekIHiI1Et9Am Cg== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2120.oracle.com with ESMTP id 353egm4ktq-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 04 Dec 2020 18:50:57 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0B4IaIgY044683;
-        Fri, 4 Dec 2020 18:48:56 GMT
+        Fri, 04 Dec 2020 18:49:02 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0B4IYROo082082;
+        Fri, 4 Dec 2020 18:49:01 GMT
 Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3020.oracle.com with ESMTP id 3540f3pntt-1
+        by userp3020.oracle.com with ESMTP id 3540ayfr5x-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 04 Dec 2020 18:48:56 +0000
+        Fri, 04 Dec 2020 18:49:01 +0000
 Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0B4ImtZC006809;
-        Fri, 4 Dec 2020 18:48:55 GMT
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0B4In02C006822;
+        Fri, 4 Dec 2020 18:49:00 GMT
 Received: from localhost.uk.oracle.com (/10.175.205.186)
         by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 04 Dec 2020 10:48:55 -0800
+        with ESMTP ; Fri, 04 Dec 2020 10:49:00 -0800
 From:   Alan Maguire <alan.maguire@oracle.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
 Cc:     kafai@fb.com, yhs@fb.com, songliubraving@fb.com,
@@ -49,120 +49,268 @@ Cc:     kafai@fb.com, yhs@fb.com, songliubraving@fb.com,
         bpf@vger.kernel.org, shuah@kernel.org, lmb@cloudflare.com,
         linux-kselftest@vger.kernel.org,
         Alan Maguire <alan.maguire@oracle.com>
-Subject: [PATCH v2 bpf-next 1/3] bpf: eliminate btf_module_mutex as RCU synchronization can be used
-Date:   Fri,  4 Dec 2020 18:48:34 +0000
-Message-Id: <1607107716-14135-2-git-send-email-alan.maguire@oracle.com>
+Subject: [PATCH v2 bpf-next 2/3] bpf: add module support to btf display helpers
+Date:   Fri,  4 Dec 2020 18:48:35 +0000
+Message-Id: <1607107716-14135-3-git-send-email-alan.maguire@oracle.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1607107716-14135-1-git-send-email-alan.maguire@oracle.com>
 References: <1607107716-14135-1-git-send-email-alan.maguire@oracle.com>
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9825 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 malwarescore=0 phishscore=0
- suspectscore=2 bulkscore=0 spamscore=0 adultscore=0 mlxlogscore=999
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 bulkscore=0
+ phishscore=0 mlxscore=0 adultscore=0 malwarescore=0 suspectscore=2
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012040106
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9825 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 bulkscore=0 suspectscore=2
+ phishscore=0 mlxlogscore=999 lowpriorityscore=0 malwarescore=0
+ priorityscore=1501 spamscore=0 impostorscore=0 clxscore=1015 adultscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
  definitions=main-2012040106
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9825 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 bulkscore=0
- clxscore=1015 mlxscore=0 spamscore=0 priorityscore=1501 mlxlogscore=999
- suspectscore=2 lowpriorityscore=0 phishscore=0 adultscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012040106
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-btf_module_mutex is used when manipulating the BTF module list.
-However we will wish to look up this list from BPF program context,
-and such contexts can include interrupt state where we cannot sleep
-due to a mutex_lock().  RCU usage here conforms quite closely
-to the example in the system call auditing example in
-Documentation/RCU/listRCU.rst ; and as such we can eliminate
-the lock and use list_del_rcu()/call_rcu() on module removal,
-and list_add_rcu() for module addition.
+bpf_snprintf_btf and bpf_seq_printf_btf use a "struct btf_ptr *"
+argument that specifies type information about the type to
+be displayed.  Augment this information to include an object
+id.  If this id is 0, the assumption is that it refers
+to a core kernel type from vmlinux; otherwise the object id
+specifies the module the type is in, or if no such id is
+found in the module list, we fall back to vmlinux.
 
 Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
 ---
- kernel/bpf/btf.c | 31 +++++++++++++++++--------------
- 1 file changed, 17 insertions(+), 14 deletions(-)
+ include/linux/btf.h            | 12 ++++++++++++
+ include/uapi/linux/bpf.h       | 13 +++++++------
+ kernel/bpf/btf.c               | 18 +++++++++++++++++
+ kernel/trace/bpf_trace.c       | 44 +++++++++++++++++++++++++++++++-----------
+ tools/include/uapi/linux/bpf.h | 13 +++++++------
+ 5 files changed, 77 insertions(+), 23 deletions(-)
 
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 8d6bdb4..333f41c 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -5758,13 +5758,13 @@ bool btf_id_set_contains(const struct btf_id_set *set, u32 id)
- #ifdef CONFIG_DEBUG_INFO_BTF_MODULES
- struct btf_module {
- 	struct list_head list;
-+	struct rcu_head	rcu;
- 	struct module *module;
- 	struct btf *btf;
- 	struct bin_attribute *sysfs_attr;
+diff --git a/include/linux/btf.h b/include/linux/btf.h
+index 4c200f5..688786a 100644
+--- a/include/linux/btf.h
++++ b/include/linux/btf.h
+@@ -214,6 +214,14 @@ static inline const struct btf_var_secinfo *btf_type_var_secinfo(
+ const char *btf_name_by_offset(const struct btf *btf, u32 offset);
+ struct btf *btf_parse_vmlinux(void);
+ struct btf *bpf_prog_get_target_btf(const struct bpf_prog *prog);
++#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
++struct btf *bpf_get_btf_module(__u32 obj_id);
++#else
++static inline struct btf *bpf_get_btf_module(__u32 obj_id)
++{
++	return ERR_PTR(-ENOTSUPP);
++}
++#endif
+ #else
+ static inline const struct btf_type *btf_type_by_id(const struct btf *btf,
+ 						    u32 type_id)
+@@ -225,6 +233,10 @@ static inline const char *btf_name_by_offset(const struct btf *btf,
+ {
+ 	return NULL;
+ }
++static inline struct btf *bpf_get_btf_module(__u32 obj_id)
++{
++	return ERR_PTR(-ENOTSUPP);
++}
+ #endif
+ 
+ #endif
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 1233f14..ccb75299 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -3641,7 +3641,9 @@ struct bpf_stack_build_id {
+  *		the pointer data is carried out to avoid kernel crashes during
+  *		operation.  Smaller types can use string space on the stack;
+  *		larger programs can use map data to store the string
+- *		representation.
++ *		representation.  Module-specific data structures can be
++ *		displayed if the module BTF object id is supplied in the
++ *		*ptr*->obj_id field.
+  *
+  *		The string can be subsequently shared with userspace via
+  *		bpf_perf_event_output() or ring buffer interfaces.
+@@ -5115,15 +5117,14 @@ struct bpf_sk_lookup {
+ /*
+  * struct btf_ptr is used for typed pointer representation; the
+  * type id is used to render the pointer data as the appropriate type
+- * via the bpf_snprintf_btf() helper described above.  A flags field -
+- * potentially to specify additional details about the BTF pointer
+- * (rather than its mode of display) - is included for future use.
+- * Display flags - BTF_F_* - are passed to bpf_snprintf_btf separately.
++ * via the bpf_snprintf_btf() helper described above.  The obj_id
++ * is used to specify an object id (such as a module); if unset
++ * a core vmlinux type id is assumed.
+  */
+ struct btf_ptr {
+ 	void *ptr;
+ 	__u32 type_id;
+-	__u32 flags;		/* BTF ptr flags; unused at present. */
++	__u32 obj_id;		/* BTF object; vmlinux if 0 */
  };
  
- static LIST_HEAD(btf_modules);
--static DEFINE_MUTEX(btf_module_mutex);
- 
- static ssize_t
- btf_module_read(struct file *file, struct kobject *kobj,
-@@ -5777,10 +5777,21 @@ struct btf_module {
+ /*
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 333f41c..8ee691e 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -5777,6 +5777,24 @@ struct btf_module {
  	return len;
  }
  
-+static void btf_module_free(struct rcu_head *rcu)
++struct btf *bpf_get_btf_module(__u32 obj_id)
 +{
-+	struct btf_module *btf_mod = container_of(rcu, struct btf_module, rcu);
++	struct btf *btf = ERR_PTR(-ENOENT);
++	struct btf_module *btf_mod;
 +
-+	if (btf_mod->sysfs_attr)
-+		sysfs_remove_bin_file(btf_kobj, btf_mod->sysfs_attr);
-+	btf_put(btf_mod->btf);
-+	kfree(btf_mod->sysfs_attr);
-+	kfree(btf_mod);
++	rcu_read_lock();
++	list_for_each_entry_rcu(btf_mod, &btf_modules, list) {
++		if (!btf_mod->btf || obj_id != btf_mod->btf->id)
++			continue;
++
++		refcount_inc(&btf_mod->btf->refcnt);
++		btf = btf_mod->btf;
++		break;
++	}
++	rcu_read_unlock();
++	return btf;
 +}
 +
- static int btf_module_notify(struct notifier_block *nb, unsigned long op,
- 			     void *module)
+ static void btf_module_free(struct rcu_head *rcu)
  {
--	struct btf_module *btf_mod, *tmp;
-+	struct btf_module *btf_mod;
- 	struct module *mod = module;
- 	struct btf *btf;
- 	int err = 0;
-@@ -5811,11 +5822,9 @@ static int btf_module_notify(struct notifier_block *nb, unsigned long op,
- 			goto out;
- 		}
+ 	struct btf_module *btf_mod = container_of(rcu, struct btf_module, rcu);
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index 23a390a..66d4120 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -75,8 +75,8 @@ static struct bpf_raw_event_map *bpf_get_raw_tracepoint_module(const char *name)
+ u64 bpf_get_stack(u64 r1, u64 r2, u64 r3, u64 r4, u64 r5);
  
--		mutex_lock(&btf_module_mutex);
- 		btf_mod->module = module;
- 		btf_mod->btf = btf;
--		list_add(&btf_mod->list, &btf_modules);
--		mutex_unlock(&btf_module_mutex);
-+		list_add_rcu(&btf_mod->list, &btf_modules);
+ static int bpf_btf_printf_prepare(struct btf_ptr *ptr, u32 btf_ptr_size,
+-				  u64 flags, const struct btf **btf,
+-				  s32 *btf_id);
++				  u64 flags, struct btf **btf,
++				  bool *btf_is_vmlinux, s32 *btf_id);
  
- 		if (IS_ENABLED(CONFIG_SYSFS)) {
- 			struct bin_attribute *attr;
-@@ -5845,20 +5854,14 @@ static int btf_module_notify(struct notifier_block *nb, unsigned long op,
+ /**
+  * trace_call_bpf - invoke BPF program
+@@ -786,15 +786,22 @@ struct bpf_seq_printf_buf {
+ BPF_CALL_4(bpf_seq_printf_btf, struct seq_file *, m, struct btf_ptr *, ptr,
+ 	   u32, btf_ptr_size, u64, flags)
+ {
+-	const struct btf *btf;
++	bool btf_is_vmlinux;
++	struct btf *btf;
+ 	s32 btf_id;
+ 	int ret;
  
- 		break;
- 	case MODULE_STATE_GOING:
--		mutex_lock(&btf_module_mutex);
--		list_for_each_entry_safe(btf_mod, tmp, &btf_modules, list) {
-+		list_for_each_entry(btf_mod, &btf_modules, list) {
- 			if (btf_mod->module != module)
- 				continue;
+-	ret = bpf_btf_printf_prepare(ptr, btf_ptr_size, flags, &btf, &btf_id);
++	ret = bpf_btf_printf_prepare(ptr, btf_ptr_size, flags, &btf,
++				     &btf_is_vmlinux, &btf_id);
+ 	if (ret)
+ 		return ret;
  
--			list_del(&btf_mod->list);
--			if (btf_mod->sysfs_attr)
--				sysfs_remove_bin_file(btf_kobj, btf_mod->sysfs_attr);
--			btf_put(btf_mod->btf);
--			kfree(btf_mod->sysfs_attr);
--			kfree(btf_mod);
-+			list_del_rcu(&btf_mod->list);
-+			call_rcu(&btf_mod->rcu, btf_module_free);
- 			break;
- 		}
--		mutex_unlock(&btf_module_mutex);
- 		break;
- 	}
- out:
+-	return btf_type_seq_show_flags(btf, btf_id, ptr->ptr, m, flags);
++	ret = btf_type_seq_show_flags(btf, btf_id, ptr->ptr, m, flags);
++	/* modules refcount their BTF */
++	if (!btf_is_vmlinux)
++		btf_put(btf);
++
++	return ret;
+ }
+ 
+ static const struct bpf_func_proto bpf_seq_printf_btf_proto = {
+@@ -1205,7 +1212,8 @@ static bool bpf_d_path_allowed(const struct bpf_prog *prog)
+ 			 BTF_F_PTR_RAW | BTF_F_ZERO)
+ 
+ static int bpf_btf_printf_prepare(struct btf_ptr *ptr, u32 btf_ptr_size,
+-				  u64 flags, const struct btf **btf,
++				  u64 flags, struct btf **btf,
++				  bool *btf_is_vmlinux,
+ 				  s32 *btf_id)
+ {
+ 	const struct btf_type *t;
+@@ -1216,7 +1224,14 @@ static int bpf_btf_printf_prepare(struct btf_ptr *ptr, u32 btf_ptr_size,
+ 	if (btf_ptr_size != sizeof(struct btf_ptr))
+ 		return -EINVAL;
+ 
+-	*btf = bpf_get_btf_vmlinux();
++	*btf_is_vmlinux = false;
++
++	if (ptr->obj_id > 0)
++		*btf = bpf_get_btf_module(ptr->obj_id);
++	if (ptr->obj_id == 0 || IS_ERR(*btf)) {
++		*btf = bpf_get_btf_vmlinux();
++		*btf_is_vmlinux = true;
++	}
+ 
+ 	if (IS_ERR_OR_NULL(*btf))
+ 		return PTR_ERR(*btf);
+@@ -1237,16 +1252,23 @@ static int bpf_btf_printf_prepare(struct btf_ptr *ptr, u32 btf_ptr_size,
+ BPF_CALL_5(bpf_snprintf_btf, char *, str, u32, str_size, struct btf_ptr *, ptr,
+ 	   u32, btf_ptr_size, u64, flags)
+ {
+-	const struct btf *btf;
++	bool btf_is_vmlinux;
++	struct btf *btf;
+ 	s32 btf_id;
+ 	int ret;
+ 
+-	ret = bpf_btf_printf_prepare(ptr, btf_ptr_size, flags, &btf, &btf_id);
++	ret = bpf_btf_printf_prepare(ptr, btf_ptr_size, flags, &btf,
++				     &btf_is_vmlinux, &btf_id);
+ 	if (ret)
+ 		return ret;
+ 
+-	return btf_type_snprintf_show(btf, btf_id, ptr->ptr, str, str_size,
+-				      flags);
++	ret = btf_type_snprintf_show(btf, btf_id, ptr->ptr, str, str_size,
++				     flags);
++	/* modules refcount their BTF */
++	if (!btf_is_vmlinux)
++		btf_put(btf);
++
++	return ret;
+ }
+ 
+ const struct bpf_func_proto bpf_snprintf_btf_proto = {
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 1233f14..ccb75299 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -3641,7 +3641,9 @@ struct bpf_stack_build_id {
+  *		the pointer data is carried out to avoid kernel crashes during
+  *		operation.  Smaller types can use string space on the stack;
+  *		larger programs can use map data to store the string
+- *		representation.
++ *		representation.  Module-specific data structures can be
++ *		displayed if the module BTF object id is supplied in the
++ *		*ptr*->obj_id field.
+  *
+  *		The string can be subsequently shared with userspace via
+  *		bpf_perf_event_output() or ring buffer interfaces.
+@@ -5115,15 +5117,14 @@ struct bpf_sk_lookup {
+ /*
+  * struct btf_ptr is used for typed pointer representation; the
+  * type id is used to render the pointer data as the appropriate type
+- * via the bpf_snprintf_btf() helper described above.  A flags field -
+- * potentially to specify additional details about the BTF pointer
+- * (rather than its mode of display) - is included for future use.
+- * Display flags - BTF_F_* - are passed to bpf_snprintf_btf separately.
++ * via the bpf_snprintf_btf() helper described above.  The obj_id
++ * is used to specify an object id (such as a module); if unset
++ * a core vmlinux type id is assumed.
+  */
+ struct btf_ptr {
+ 	void *ptr;
+ 	__u32 type_id;
+-	__u32 flags;		/* BTF ptr flags; unused at present. */
++	__u32 obj_id;		/* BTF object; vmlinux if 0 */
+ };
+ 
+ /*
 -- 
 1.8.3.1
 
