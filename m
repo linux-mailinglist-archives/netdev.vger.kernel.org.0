@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF5962CED32
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 12:40:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C5282CED36
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 12:40:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388109AbgLDLhy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 06:37:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39062 "EHLO
+        id S1730007AbgLDLiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 06:38:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388093AbgLDLhw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 06:37:52 -0500
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21A1C08E862
-        for <netdev@vger.kernel.org>; Fri,  4 Dec 2020 03:36:23 -0800 (PST)
-Received: by mail-wr1-x442.google.com with SMTP id u12so5029515wrt.0
-        for <netdev@vger.kernel.org>; Fri, 04 Dec 2020 03:36:23 -0800 (PST)
+        with ESMTP id S1728523AbgLDLiU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 06:38:20 -0500
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBBBCC08E9AA
+        for <netdev@vger.kernel.org>; Fri,  4 Dec 2020 03:36:24 -0800 (PST)
+Received: by mail-wm1-x341.google.com with SMTP id g185so6728435wmf.3
+        for <netdev@vger.kernel.org>; Fri, 04 Dec 2020 03:36:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=fXpQWRWHbOSLcuiT66TfavvJzdpZxX+kQ2onWRpZPLs=;
-        b=fSH7qd/o/iD7J59zfLTAyuMUqIr5Uq1gqP7zmJUuogp/9wEc6Fb1kScLGwgUVfpOkj
-         VztdXhJh3/xz+8GBQuLWr5QSU8LMaBf3f+MdyjR86gmOnL5ShKtaioQyrxVv6Wm4O6ap
-         IZOkBS2ERiXmBoHaintWdS6Hv9zidL9UB25FM=
+        bh=kyRQtwUVPchseVZD4yOUMEQ+9v0rbAcMPCLy6LkBBi4=;
+        b=R4iT+bIdHdbh7tMQOgwRv7QFGFII1EnEAImngVOC0Q6JhCVjtZfrWeny5oVnQWvFua
+         6QMhniYAz7CGis6YLEayxrXKmtoAIlTeZKC8Mpi+4wvAlvFMO2KxRkwT+Y9tTIU6J/y3
+         ftW1DEVbT4ZV/uTfl77S9F5Y+9IXUvArxWSGw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fXpQWRWHbOSLcuiT66TfavvJzdpZxX+kQ2onWRpZPLs=;
-        b=FSxt5ymDuVPTgh2GcJGu9Gx84zCORGCPDuF1rS1v7fNqbqfvIoNu2wDyEJJkYPEwfR
-         fG+YWZa9mB+6RBkfjbZAChz1+vQHhL0N5+DNRrm+XH4+8WJOpuWqadqsLRxpYMHINRvT
-         foLEObgq4f+LUuBVz+kQw2aK3Nxti6SwnToHD2NaQHQ2I2ktefonHnHQe8O0jkwJ1iLa
-         7ZEjLBgfHGW7krVM7/9apLOvMD2Q1lx2WAlcjUPgPiKfiww4M3Mpey0YGSiublKQEpv4
-         ID9rr3Sv061AYQ4iZl6fqPSxOOS7x1hAp9SPeJJ/HrrPzfIq7mvYOHjoI8MuzwTBvdmi
-         oJhQ==
-X-Gm-Message-State: AOAM533PwX+cz6OV/LTjyPMZy21lUXwTwV66WYkRzFrNdvG8Sm3qJ0GX
-        n2A7WI4A6P0p7QhHHLQjkC4OSw==
-X-Google-Smtp-Source: ABdhPJyeAQ6dMQHyLzw7wHLSE+f5lcq2eruAyS653LBDoUaeBqR53E4yrzHJU94Powxizg9UrM9znQ==
-X-Received: by 2002:adf:f304:: with SMTP id i4mr4499284wro.268.1607081782663;
-        Fri, 04 Dec 2020 03:36:22 -0800 (PST)
+        bh=kyRQtwUVPchseVZD4yOUMEQ+9v0rbAcMPCLy6LkBBi4=;
+        b=gH73Aiv6rRqz8tGVuxkv7UYU33xnFVjivhQ+a86A2ftFjqC8bMJX4k4QyUdwWIR/1v
+         T1S+PA4dbykBzJ/Cc4mijwGYrIIjJBI3J7NoPgGYYbUNcChzbEdUxou3U+qydBE0luNL
+         4N3ecz//j2SqeXjdndYygh/kzVTGPkbTT5vEB8Ab5HgvpdgJYCnZ+8rkrM5pJQhlFIjA
+         mzq58oQBTLTgsKO2VOVnhUgL1mE0+CDQhgMB7Nvl8GIqkm1nn8xaH6IaSD3HkBc4USkj
+         T2GIonFPGarBDDeAPo3bJE+O5fllqMxlCjiy09HZdYgxeKcjTNCMaUfkpSTipOGRNN9n
+         m+/Q==
+X-Gm-Message-State: AOAM530uWU19zm7Qjg7/uKuWRDgJ8Rn3ts9Y17umcqElpKheFhJUszvb
+        kRWwRhEdlTXCW5yYPQXIqQ0myg==
+X-Google-Smtp-Source: ABdhPJxBHDiSFpvIwBZ3LLjsOLJAR5gRmNeAmLao09rLtZBdZ4kuV10hwlCDTkzz3vRgp9eZtQZb9A==
+X-Received: by 2002:a1c:810c:: with SMTP id c12mr3786940wmd.96.1607081783713;
+        Fri, 04 Dec 2020 03:36:23 -0800 (PST)
 Received: from revest.zrh.corp.google.com ([2a00:79e0:42:204:f693:9fff:fef4:a569])
-        by smtp.gmail.com with ESMTPSA id j6sm3202750wrq.38.2020.12.04.03.36.21
+        by smtp.gmail.com with ESMTPSA id j6sm3202750wrq.38.2020.12.04.03.36.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Dec 2020 03:36:22 -0800 (PST)
+        Fri, 04 Dec 2020 03:36:23 -0800 (PST)
 From:   Florent Revest <revest@chromium.org>
 X-Google-Original-From: Florent Revest <revest@google.com>
 To:     bpf@vger.kernel.org
@@ -51,9 +51,9 @@ Cc:     viro@zeniv.linux.org.uk, davem@davemloft.net, kuba@kernel.org,
         ast@kernel.org, daniel@iogearbox.net, kafai@fb.com, yhs@fb.com,
         andrii@kernel.org, kpsingh@chromium.org, revest@google.com,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH bpf-next v5 5/6] selftests/bpf: Add an iterator selftest for bpf_sk_storage_get
-Date:   Fri,  4 Dec 2020 12:36:08 +0100
-Message-Id: <20201204113609.1850150-5-revest@google.com>
+Subject: [PATCH bpf-next v5 6/6] selftests/bpf: Test bpf_sk_storage_get in tcp iterators
+Date:   Fri,  4 Dec 2020 12:36:09 +0100
+Message-Id: <20201204113609.1850150-6-revest@google.com>
 X-Mailer: git-send-email 2.29.2.576.ga3fc446d84-goog
 In-Reply-To: <20201204113609.1850150-1-revest@google.com>
 References: <20201204113609.1850150-1-revest@google.com>
@@ -63,111 +63,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The eBPF program iterates over all files and tasks. For all socket
-files, it stores the tgid of the last task it encountered with a handle
-to that socket. This is a heuristic for finding the "owner" of a socket
-similar to what's done by lsof, ss, netstat or fuser. Potentially, this
-information could be used from a cgroup_skb/*gress hook to try to
-associate network traffic with processes.
+This extends the existing bpf_sk_storage_get test where a socket is
+created and tagged with its creator's pid by a task_file iterator.
 
-The test makes sure that a socket it created is tagged with prog_tests's
-pid.
+A TCP iterator is now also used at the end of the test to negate the
+values already stored in the local storage. The test therefore expects
+-getpid() to be stored in the local storage.
 
 Signed-off-by: Florent Revest <revest@google.com>
 Acked-by: Yonghong Song <yhs@fb.com>
 Acked-by: Martin KaFai Lau <kafai@fb.com>
 ---
- .../selftests/bpf/prog_tests/bpf_iter.c       | 40 +++++++++++++++++++
- .../progs/bpf_iter_bpf_sk_storage_helpers.c   | 24 +++++++++++
- 2 files changed, 64 insertions(+)
+ .../selftests/bpf/prog_tests/bpf_iter.c        | 18 ++++++++++++++++--
+ .../progs/bpf_iter_bpf_sk_storage_helpers.c    | 18 ++++++++++++++++++
+ 2 files changed, 34 insertions(+), 2 deletions(-)
 
 diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
-index bb4a638f2e6f..9336d0f18331 100644
+index 9336d0f18331..0e586368948d 100644
 --- a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
 +++ b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
-@@ -975,6 +975,44 @@ static void test_bpf_sk_storage_delete(void)
- 	bpf_iter_bpf_sk_storage_helpers__destroy(skel);
- }
+@@ -978,6 +978,8 @@ static void test_bpf_sk_storage_delete(void)
+ /* This creates a socket and its local storage. It then runs a task_iter BPF
+  * program that replaces the existing socket local storage with the tgid of the
+  * only task owning a file descriptor to this socket, this process, prog_tests.
++ * It then runs a tcp socket iterator that negates the value in the existing
++ * socket local storage, the test verifies that the resulting value is -pid.
+  */
+ static void test_bpf_sk_storage_get(void)
+ {
+@@ -994,6 +996,10 @@ static void test_bpf_sk_storage_get(void)
+ 	if (CHECK(sock_fd < 0, "socket", "errno: %d\n", errno))
+ 		goto out;
  
-+/* This creates a socket and its local storage. It then runs a task_iter BPF
-+ * program that replaces the existing socket local storage with the tgid of the
-+ * only task owning a file descriptor to this socket, this process, prog_tests.
-+ */
-+static void test_bpf_sk_storage_get(void)
-+{
-+	struct bpf_iter_bpf_sk_storage_helpers *skel;
-+	int err, map_fd, val = -1;
-+	int sock_fd = -1;
-+
-+	skel = bpf_iter_bpf_sk_storage_helpers__open_and_load();
-+	if (CHECK(!skel, "bpf_iter_bpf_sk_storage_helpers__open_and_load",
-+		  "skeleton open_and_load failed\n"))
-+		return;
-+
-+	sock_fd = socket(AF_INET6, SOCK_STREAM, 0);
-+	if (CHECK(sock_fd < 0, "socket", "errno: %d\n", errno))
-+		goto out;
-+
-+	map_fd = bpf_map__fd(skel->maps.sk_stg_map);
-+
-+	err = bpf_map_update_elem(map_fd, &sock_fd, &val, BPF_NOEXIST);
-+	if (CHECK(err, "bpf_map_update_elem", "map_update_failed\n"))
++	err = listen(sock_fd, 1);
++	if (CHECK(err != 0, "listen", "errno: %d\n", errno))
 +		goto close_socket;
 +
-+	do_dummy_read(skel->progs.fill_socket_owner);
+ 	map_fd = bpf_map__fd(skel->maps.sk_stg_map);
+ 
+ 	err = bpf_map_update_elem(map_fd, &sock_fd, &val, BPF_NOEXIST);
+@@ -1003,9 +1009,17 @@ static void test_bpf_sk_storage_get(void)
+ 	do_dummy_read(skel->progs.fill_socket_owner);
+ 
+ 	err = bpf_map_lookup_elem(map_fd, &sock_fd, &val);
+-	CHECK(err || val != getpid(), "bpf_map_lookup_elem",
++	if (CHECK(err || val != getpid(), "bpf_map_lookup_elem",
++	    "map value wasn't set correctly (expected %d, got %d, err=%d)\n",
++	    getpid(), val, err))
++		goto close_socket;
++
++	do_dummy_read(skel->progs.negate_socket_local_storage);
 +
 +	err = bpf_map_lookup_elem(map_fd, &sock_fd, &val);
-+	CHECK(err || val != getpid(), "bpf_map_lookup_elem",
-+	      "map value wasn't set correctly (expected %d, got %d, err=%d)\n",
-+	      getpid(), val, err);
-+
-+close_socket:
-+	close(sock_fd);
-+out:
-+	bpf_iter_bpf_sk_storage_helpers__destroy(skel);
-+}
-+
- static void test_bpf_sk_storage_map(void)
- {
- 	DECLARE_LIBBPF_OPTS(bpf_iter_attach_opts, opts);
-@@ -1131,6 +1169,8 @@ void test_bpf_iter(void)
- 		test_bpf_sk_storage_map();
- 	if (test__start_subtest("bpf_sk_storage_delete"))
- 		test_bpf_sk_storage_delete();
-+	if (test__start_subtest("bpf_sk_storage_get"))
-+		test_bpf_sk_storage_get();
- 	if (test__start_subtest("rdonly-buf-out-of-bound"))
- 		test_rdonly_buf_out_of_bound();
- 	if (test__start_subtest("buf-neg-offset"))
++	CHECK(err || val != -getpid(), "bpf_map_lookup_elem",
+ 	      "map value wasn't set correctly (expected %d, got %d, err=%d)\n",
+-	      getpid(), val, err);
++	      -getpid(), val, err);
+ 
+ close_socket:
+ 	close(sock_fd);
 diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_bpf_sk_storage_helpers.c b/tools/testing/selftests/bpf/progs/bpf_iter_bpf_sk_storage_helpers.c
-index 01ff3235e413..dde53df37de8 100644
+index dde53df37de8..6cecab2b32ba 100644
 --- a/tools/testing/selftests/bpf/progs/bpf_iter_bpf_sk_storage_helpers.c
 +++ b/tools/testing/selftests/bpf/progs/bpf_iter_bpf_sk_storage_helpers.c
-@@ -21,3 +21,27 @@ int delete_bpf_sk_storage_map(struct bpf_iter__bpf_sk_storage_map *ctx)
+@@ -45,3 +45,21 @@ int fill_socket_owner(struct bpf_iter__task_file *ctx)
  
  	return 0;
  }
 +
-+SEC("iter/task_file")
-+int fill_socket_owner(struct bpf_iter__task_file *ctx)
++SEC("iter/tcp")
++int negate_socket_local_storage(struct bpf_iter__tcp *ctx)
 +{
-+	struct task_struct *task = ctx->task;
-+	struct file *file = ctx->file;
-+	struct socket *sock;
++	struct sock_common *sk_common = ctx->sk_common;
 +	int *sock_tgid;
 +
-+	if (!task || !file)
++	if (!sk_common)
 +		return 0;
 +
-+	sock = bpf_sock_from_file(file);
-+	if (!sock)
-+		return 0;
-+
-+	sock_tgid = bpf_sk_storage_get(&sk_stg_map, sock->sk, 0, 0);
++	sock_tgid = bpf_sk_storage_get(&sk_stg_map, sk_common, 0, 0);
 +	if (!sock_tgid)
 +		return 0;
 +
-+	*sock_tgid = task->tgid;
++	*sock_tgid = -*sock_tgid;
 +
 +	return 0;
 +}
