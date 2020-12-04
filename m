@@ -2,143 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72E442CF5A5
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 21:27:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51AA22CF5AC
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 21:31:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727927AbgLDU04 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 15:26:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48046 "EHLO mail.kernel.org"
+        id S1728773AbgLDUar (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 15:30:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48960 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727343AbgLDU04 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Dec 2020 15:26:56 -0500
-Date:   Fri, 4 Dec 2020 12:26:13 -0800
+        id S1726441AbgLDUaq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Dec 2020 15:30:46 -0500
+Content-Type: text/plain; charset="utf-8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607113575;
-        bh=FxzKSgn3Y4gNA3z+CLkKfSoZIXGyZ+CcY9nj++rEHys=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=flqqn8/RnxCS9Hm5YMCMSzXpPWHVd6dniEhXqQRBihHYMU86vcXPcfufDqge/kRRh
-         mdcaymOXpVYVKFZvLNSacxJktJ2bOBAjCeDtmc0KGK1GR+yvPkCgf708jyWojSsev6
-         A5o00vSFr4cj/UHC/tzADIqrw3ozWwTpUab1P8mO/2hDSwmaQDr59NiPgJZ40803Wl
-         yUKysxsV2SXMcY39g/dwBBVbhH9h62U+hN/PQu1f2H2HV/u9VfFspWuKBo5vudsapF
-         O9tXLI62qOQkXlQoUEjXfJikbti5wc5tn0ge5flppjxE6vKdhFYQQBKAp+LKGq3sri
-         FWEl23JEEpTCw==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Eran Ben Elisha <eranbe@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Subject: Re: [net-next V2 08/15] net/mlx5e: Add TX PTP port object support
-Message-ID: <20201204122613.542c2362@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <b761c676af87a4a82e3ea4f6f5aff3d1159c63e7.camel@kernel.org>
-References: <20201203042108.232706-1-saeedm@nvidia.com>
-        <20201203042108.232706-9-saeedm@nvidia.com>
-        <20201203182908.1d25ea3f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-        <b761c676af87a4a82e3ea4f6f5aff3d1159c63e7.camel@kernel.org>
+        s=k20201202; t=1607113806;
+        bh=AUCS15uf0JYnRffSh3WYFb1hvqGziNQGH8XV3fjYO30=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=fZjU02QbbY4yUUV77xdQzY+QsybDx13kLbToJ3D4aj9rvEswWw2tozmGiCAWxsWuo
+         0ajo7KRL+GauX7dZEI3xeujt/4ycZzPWNoRu0fwZUJTX8QDaa+Lep5pLCzWM5vpH0H
+         9v4x9jy3uzhRYNTVcQ4UQUoWRjYs7/+4Y3V5wopA+pMfYuaQa4R79kiGpMBlTliUEd
+         zxxU89mW2A0t5yigiAKSTQTGfLIeYfMf2yUnNI+4eXNKvpNZNw4HsIfRSFihxjy/x7
+         GO974DjKK8imn4ZDvponBvdLI1aDYZp8dH63vl1ZvcVAXWIiKy8LZUb5CUKeQEwKER
+         8Evk1NSYCIaoQ==
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 0/2 v3] Improve error handling of verifier tests
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160711380631.17303.9145064627875444770.git-patchwork-notify@kernel.org>
+Date:   Fri, 04 Dec 2020 20:30:06 +0000
+References: <20201204181828.11974-1-dev@der-flo.net>
+In-Reply-To: <20201204181828.11974-1-dev@der-flo.net>
+To:     Florian Lehner <dev@der-flo.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, john.fastabend@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 04 Dec 2020 11:33:26 -0800 Saeed Mahameed wrote:
-> On Thu, 2020-12-03 at 18:29 -0800, Jakub Kicinski wrote:
-> > On Wed, 2 Dec 2020 20:21:01 -0800 Saeed Mahameed wrote:  
-> > > Add TX PTP port object support for better TX timestamping accuracy.
-> > > Currently, driver supports CQE based TX port timestamp. Device
-> > > also offers TX port timestamp, which has less jitter and better
-> > > reflects the actual time of a packet's transmit.  
-> > 
-> > How much better is it?
-> > 
-> > Is the new implementation is standard compliant or just a "better
-> > guess"?
-> 
-> It is not a guess for sure, the closer to the output port you take the
-> stamp the more accurate you get, this is why we need the HW timestamp
-> in first place, i don't have the exact number though, but we target to
-> be compliant with G.8273.2 class C, (30 nsec), and this code allow
-> Linux systems to be deployed in the 5G telco edge. Where this standard
-> is needed.
+Hello:
 
-I see. IIRC there was also an IEEE standard which specified the exact
-time stamping point (i.e. SFD crosses layer X). If it's class C that
-answers the question, I think.
+This series was applied to bpf/bpf-next.git (refs/heads/master):
 
-> > > Define new driver layout called ptpsq, on which driver will create
-> > > SQs that will support TX port timestamp for their transmitted
-> > > packets.
-> > > Driver to identify PTP TX skbs and steer them to these dedicated
-> > > SQs
-> > > as part of the select queue ndo.
-> > > 
-> > > Driver to hold ptpsq per TC and report them at
-> > > netif_set_real_num_tx_queues().
-> > > 
-> > > Add support for all needed functionality in order to xmit and poll
-> > > completions received via ptpsq.
-> > > 
-> > > Add ptpsq to the TX reporter recover, diagnose and dump methods.
-> > > 
-> > > Creation of ptpsqs is disabled by default, and can be enabled via
-> > > tx_port_ts private flag.  
-> > 
-> > This flag is pretty bad user experience.
+On Fri,  4 Dec 2020 19:18:26 +0100 you wrote:
+> These patches improve the error handling for verifier tests. With "Test
+> the 32bit narrow read" Krzesimir Nowak provided these patches first, but
+> they were never merged.
+> The improved error handling helps to implement and test BPF program types
+> that are not supported yet.
 > 
-> Yeah, nothing i  could do about this, there is a large memory foot
-> print i want to avoid, and we don't want to complicate PTP ctrl API of
-> the HW operating mode, so until we improve the HW, we prefer to keep
-> this feature as a private flag.
+> v3:
+>   - Add explicit fallthrough
 > 
-> > > This patch steer all timestamp related packets to a ptpsq, but it
-> > > does not open the port timestamp support for it. The support will
-> > > be added in the following patch.  
-> > 
-> > Overall I'm a little shocked by this, let me sleep on it :)
-> > 
-> > More info on the trade offs and considerations which led to the
-> > implementation would be useful.  
-> 
-> To get the Improved accuracy we need a special type of SQs attached to
-> special HW objects that will provide more accurate stamping.
-> 
-> Trade-offs are :
-> 
-> options 1) convert ALL regular txqs (SQs) to work in this port stamping
-> mode.
-> 
-> Pros: no need for any special mode in driver, no additional memory,
-> other than the new HW objects we create for the special stamping.
-> 
-> Cons: significant performance hit for non PTP traffic, (the hw stamps
-> all packets in the slow but more accurate mode)
+> [...]
 
-Just to be clear (Alexei brought this up when I mentioned these
-patches) - the requirement for the separate queues is because the time
-stamp enable is a queue property, not a per WQE / frame thing? I
-couldn't find this in the code - could you point me to where it's set?
+Here is the summary with links:
+  - [1/2] selftests/bpf: Print reason when a tester could not run a program
+    https://git.kernel.org/bpf/bpf-next/c/7d17167244f5
+  - [2/2] selftests/bpf: Avoid errno clobbering
+    https://git.kernel.org/bpf/bpf-next/c/5f61b7c6975b
 
-> option 2) route PTP traffic to a special SQs per ring, this SQ will be
-> PTP port accurate, Normal traffic will continue through regular SQs
-> 
-> Pros: Regular non PTP traffic not affected.
-> Cons: High memory footprint for creating special SQs
-> 
-> 
-> So we prefer (2) + private flag to avoid the performance hit and the
-> redundant memory usage out of the box.
-
-Option 3 - have only one special PTP queue in the system. PTP traffic
-is rather low rate, queue per core doesn't seem necessary.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-Since you said the PTP queues are slower / higher overhead - are you not
-concerned that QUIC traffic will get mis-directed to them? People like
-hardware time stamps for all sort of measurements these days. Plus,
-since UDP doesn't itself set ooo those applications may be surprised to
-see increased out-of-order rate.
-
-Why not use the PTP classification helpers we already have?
