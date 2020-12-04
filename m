@@ -2,131 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A49CA2CE4A4
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 01:58:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83FFF2CE4AD
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 02:02:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729008AbgLDA5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 19:57:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52992 "EHLO
+        id S1727954AbgLDBBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 20:01:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727042AbgLDA5g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 19:57:36 -0500
+        with ESMTP id S1726075AbgLDBBj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 20:01:39 -0500
 Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4193CC061A51
-        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 16:56:56 -0800 (PST)
-Received: by mail-ej1-x642.google.com with SMTP id qw4so6240822ejb.12
-        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 16:56:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE6ACC061A51;
+        Thu,  3 Dec 2020 17:00:58 -0800 (PST)
+Received: by mail-ej1-x642.google.com with SMTP id jx16so6261884ejb.10;
+        Thu, 03 Dec 2020 17:00:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=M8rdejdL6sQpmXJbypKF099zt9YPWmaMgGDVaUV8+5U=;
-        b=uMUZ+5F7EKaVxt+EaEQQLRCs3IbSck6Uxf08wmCRlKjbmrxvPFnhIs1lVo5jMHdVep
-         IJh0upm1dq/OVqqji8KVVOuWUUDQTP9O5QYWmetH5I28gitU4KBz/OVdTMgAU9YtNmF7
-         mcy0EM4ykbePJ2D8Il2Pu4dBZFxwElDSBP7mnfLYBiyglicoYzNt6tS38zVBXHt8FNiA
-         Imwea6YTO5Y0PSwi5ZO8v70G5OWimy81hMU7Fj8Bv4iYO84sEv+LORaTrJVJ9DxFZdEQ
-         xj8uQdBdyM2kXBQS1S7wORz8nUNgw1tMbMcYuDbT7smLPYdrixDvDesfrI4I297fuC9N
-         8TXA==
+        bh=8n6wwjYgChlAVqfmH483TiY/2xa2k7YWDunQ91Fs8HQ=;
+        b=k+egXQz0y+luTnzzFHeF7ngy0eK3UueIg9YxEdNSERA+uo8POU/JeCb22f0xILB+tc
+         GPDQG/5jQBW6uA2pDVLiWPGo55Y2c7iJ7OcIdhaSBT9gocKE++p0XvYhxQnbB29Go8Pr
+         GL/iLmeIe1n43MC5RcBGFsE4hLErEldpok+mO1cMQfK3LHj9XC5ejBnkEcQyVLa7Qgci
+         GFS9rTq+dhqix0xTH+KxkcqpyVXMb+QNCWLgrJnmHnny9ZlsRZ62l+X8eVWcAIBtsmvp
+         VB0/k7sAydXU08xXfe9Pn/rtNbwj4nt08Zkjq7wRgFRlpbO9CTWWK8QkkJlxx1De0iqP
+         0+jA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=M8rdejdL6sQpmXJbypKF099zt9YPWmaMgGDVaUV8+5U=;
-        b=pk1+GXrWSzzEvkx2K6QcSpNNWZCJn0rrgymXGf02rh9Wmsefx8Nczym3HqW7yK9Kuf
-         bxmn7ptkA/sNv5SKf2SSGf7uHvOeAKeKhcd7lqsj2dIsj4zlfHQlhrwJmO+EBsAm7+uM
-         DKZVJ6GXuVTu/jBNzmQbrfiEBg+1UkCH/8bU8cA/DaQY5ZfUljs+3yXq27N9s1s+c/bX
-         tlr5Gmp9C5M014FWk/lq7MNbELkspQtpS2wEzYZBRwNuBCTVm+SOs19aIN2hnI+ko+ur
-         Rnx5FiE14CAYoDRCHGlOf2L+JwaFKy1Md350z9iXT5UGmOiKOxstWkMWQJBqwue6WR5w
-         tYBQ==
-X-Gm-Message-State: AOAM532kJFAS4pBZedYPaSWzRwdfwc391UNYy0+A0I1p2Xr61Ky4D4Ol
-        m/dXzsDheXHU5hJPOye9OWs=
-X-Google-Smtp-Source: ABdhPJwW2aleXQWtze78B4sxGNL/DouaT/bPjs1ORK1Pl5ILSaUK6XVGk7VZdz9hcSQYuEwszmTUlQ==
-X-Received: by 2002:a17:906:60d2:: with SMTP id f18mr4739644ejk.528.1607043414981;
-        Thu, 03 Dec 2020 16:56:54 -0800 (PST)
+        bh=8n6wwjYgChlAVqfmH483TiY/2xa2k7YWDunQ91Fs8HQ=;
+        b=jUhYZJzd2i9tn1m4LkU7G7zxTh1rsIrBR9KvqD1w9C2VLYlvfSrJc1hJo/vg1UdlcK
+         DoIlNTznljrryAdfHN0IRQQadpXFaBQAzvgIfktDetb8+YuYJugibacTttuqlqZhtc3v
+         wLcXMDx0RVAlb+vrGq68lg6bEXu0LJ6eFHc2dwHxbUxdqGfz8iqfARDqytfAeVPJZYTq
+         kMrH2FvVT6qIGoKOMKJsQ2qDZ7b3yYodeRLmjsXM3Wse9QkISrvBaGrj/jV54DVsj4MK
+         t0v1ylQTHATB90w1PCaNtAuok1AAAbhipwVxhqL2Y6FBt2R4QHsSAY8sXn6MltsKeWGz
+         qcWg==
+X-Gm-Message-State: AOAM531Cl2a/2XupLlDtwjjydK4b2SRsO/HBwSnMpVDK60ZiqzYnehG4
+        u6b0OKgLpTwehWlBfNswfIBssGqLkeU=
+X-Google-Smtp-Source: ABdhPJzGf4h/EtobVqYCGg7XXprLO3dPpHol0SyIoQRgJTUotQVWlYjOjhNJdOtyx60n1h7IPUlH+Q==
+X-Received: by 2002:a17:906:2708:: with SMTP id z8mr4747104ejc.428.1607043652735;
+        Thu, 03 Dec 2020 17:00:52 -0800 (PST)
 Received: from skbuf ([188.25.2.120])
-        by smtp.gmail.com with ESMTPSA id q5sm1918934ejr.89.2020.12.03.16.56.53
+        by smtp.gmail.com with ESMTPSA id k3sm1936776ejd.36.2020.12.03.17.00.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Dec 2020 16:56:54 -0800 (PST)
-Date:   Fri, 4 Dec 2020 02:56:53 +0200
+        Thu, 03 Dec 2020 17:00:52 -0800 (PST)
+Date:   Fri, 4 Dec 2020 03:00:50 +0200
 From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 2/4] net: dsa: Link aggregation support
-Message-ID: <20201204005653.uep7nvtg4ish5xct@skbuf>
-References: <20201202091356.24075-1-tobias@waldekranz.com>
- <20201202091356.24075-3-tobias@waldekranz.com>
- <20201203162428.ffdj7gdyudndphmn@skbuf>
- <87a6uu7gsr.fsf@waldekranz.com>
- <20201203215725.uuptum4qhcwvhb6l@skbuf>
- <87360m7acf.fsf@waldekranz.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Christian Eggers <ceggers@arri.de>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
+        George McCollister <george.mccollister@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v5 9/9] net: dsa: microchip: ksz9477: add
+ periodic output support
+Message-ID: <20201204010050.xbu23yynlwt7jskg@skbuf>
+References: <20201203102117.8995-1-ceggers@arri.de>
+ <20201203102117.8995-10-ceggers@arri.de>
+ <20201203141255.GF4734@hoboy.vegasvil.org>
+ <11406377.LS7tM95F4J@n95hx1g2>
+ <20201204004556.GB18560@hoboy.vegasvil.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87360m7acf.fsf@waldekranz.com>
+In-Reply-To: <20201204004556.GB18560@hoboy.vegasvil.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 04, 2020 at 12:12:32AM +0100, Tobias Waldekranz wrote:
-> You make a lot of good points. I think it might be better to force the
-> user to be explicit about their choice though. Imagine something like
-> this:
+On Thu, Dec 03, 2020 at 04:45:56PM -0800, Richard Cochran wrote:
+> On Thu, Dec 03, 2020 at 04:36:26PM +0100, Christian Eggers wrote:
+> > Should ptp_sysfs be extended with a "pulse" attribute with calls
+> > enable() with only PTP_PEROUT_DUTY_CYCLE set?
 >
-> - We add NETIF_F_SWITCHDEV_OFFLOAD, which is set on switchdev ports by
->   default. This flag is only allowed to be toggled when the port has no
->   uppers - we do not want to deal with a port in a LAG in a bridge all
->   of a sudden changing mode.
->
-> - If it is set, we only allow uppers/tc-rules/etc that we can
->   offload. If the user tries to configure something outside of that, we
->   can suggest disabling offloading in the error we emit.
->
-> - If it is not set, we just sit back and let the kernel do its thing.
->
-> This would work well both for exotic LAG modes and for advanced
-> netfilter(ebtables)/tc setups I think. Example session:
->
-> $ ip link add dev bond0 type bond mode balance-rr
-> $ ip link set dev swp0 master bond0
-> Error: swp0: balance-rr not supported when using switchdev offloading
-> $ ethtool -K swp0 switchdev off
-> $ ip link set dev swp0 master bond0
-> $ echo $?
-> 0
+> Yes, that would make sense.  It would bring sysfs back to feature
+> parity with the ioctls.
 
-And you want the default to be what, on or off? I believe on?
-I'd say the default should be off. The idea being that you could have
-"write once, run everywhere" types of scripts. You can only get that
-behavior with "off", otherwise you'd get random errors on some equipment
-and it wouldn't be portable. And "ethtool -K swp0 switchdev off" is a
-bit of a strange incantation to add to every script just to avoid
-errors.. But if the default switchdev mode is off, then what's the
-point in even having the knob, your poor Linus will still be confused
-and frustrated, and it won't help him any bit if he can flip the switch
-- it's too late, he already knows what the problem is by the time he
-finds the switch.
+Which is a good thing?
 
-> > I would even go out on a limb and say hardcode the TX_TYPE_HASH in DSA
-> > for now. I would be completely surprised to see hardware that can
-> > offload anything else in the near future.
->
-> If you tilt your head a little, I think active backup is really just a
-> trivial case of a hashed LAG wherein only a single member is ever
-> active. I.e. all buckets are always allocated to one port (effectivly
-> negating the hashing). The active member is controlled by software, so I
-> think we should be able to support that.
-
-Yup, my head is tilted and I see it now. If I understand this mode
-(never used it), then any hardware switch that can offload bridging can
-also offload the active-backup LAG.
-
-> mv88e6xxx could also theoretically be made to support broadcast. You can
-> enable any given bucket on multiple ports, but that seems silly.
-
-Yeah, the broadcast bonding mode looks like an oddball. It sounds to me
-almost like HSR/PRP/FRER but without the sequence numbering, which is a
-surefire way to make a mess out of everything. I have no idea how it is
-used (how duplicate elimination is achieved).
+Anyway, Christian, if you do decide to do that, here's some context why
+I didn't do it when I added the additional knobs for periodic output:
+https://www.mail-archive.com/linuxptp-devel@lists.sourceforge.net/msg04150.html
