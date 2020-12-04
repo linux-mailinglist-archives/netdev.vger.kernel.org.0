@@ -2,138 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 534042CF2E5
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 18:16:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC3162CF2E8
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 18:16:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731137AbgLDRNw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 12:13:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:47851 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730972AbgLDRNv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 12:13:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607101944;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yWYHyCKIbQ5CqOTj7P8m/dCESQn9iEeIL5I/52HtXjE=;
-        b=D32zd4l1suU6szrcOyFp3Cv+jqvX90aasnhOoFKI9xB9UYK2HnL2SY57kbnnlp/cbVcEta
-        QLHSzelkEMU/n+HjYIRxLeDHqTB74LqUqqbiTcnlttoAajlV/o0PgDj+LB665HOVIzEkhD
-        jGa8aBBQIc6uq3xsUg2pYOiHKS0Klyk=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-576-WNrbSmtqMveuNqwhBEetRg-1; Fri, 04 Dec 2020 12:12:22 -0500
-X-MC-Unique: WNrbSmtqMveuNqwhBEetRg-1
-Received: by mail-ej1-f70.google.com with SMTP id f12so2306212ejk.2
-        for <netdev@vger.kernel.org>; Fri, 04 Dec 2020 09:12:21 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=yWYHyCKIbQ5CqOTj7P8m/dCESQn9iEeIL5I/52HtXjE=;
-        b=h6M6vG6ThaJMmOW6OdJLlRh21HPRQwdnEoXBXyrSRHZXGhuXGo9vxmTf1VP9MTAL7v
-         m3oVxriQDL/8kZ7iPuiDi9YKvBydoOCAH51qPRn/3HZiweiPiCj2wwz1de6bxAIvAX2b
-         i+f9JiMGPL4jzZmUZe2B+JyL08sV/AYCjJExzOle1WycFOhZQFYv8Wkiq9E+uEnRGyB1
-         bcQuGpVyflhR9UsK4AE9rfgZRG4JVRnThHyi7nSWIqzmdPGtv7gtqUsVLRnwnh3goxQh
-         TtxwAgn7CkgyaGGbjlLNXzt3dbZqOH3BYssbEZOWgJYpF1Kns8W4QKcl1H7q5gvlxDb4
-         1yfA==
-X-Gm-Message-State: AOAM530kMYuaYMteRlA/a25STAYw4lC2kQ2wwf6+CR0y16LLxPnvVXN+
-        6s+ZP3uMwj5+QSDvMp6btk9yEawz0/i30CqfIeenGbHlyqodzUiUk8krYZGNJ0jCm8EP0hMPcir
-        f228ciG0BdkpkCByg
-X-Received: by 2002:a17:906:c45a:: with SMTP id ck26mr8034654ejb.200.1607101940858;
-        Fri, 04 Dec 2020 09:12:20 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxFwm7R66i5Di6W14LTLp3SYQct39lRrmjBD2WngBk8bbybokaL2QxsnzSxWJcIqkdTuqannw==
-X-Received: by 2002:a17:906:c45a:: with SMTP id ck26mr8034610ejb.200.1607101940594;
-        Fri, 04 Dec 2020 09:12:20 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id g3sm3653185edd.42.2020.12.04.09.12.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Dec 2020 09:12:19 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 85FBA182EEA; Fri,  4 Dec 2020 18:12:18 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Romain Perier <romain.perier@gmail.com>,
-        Allen Pais <apais@linux.microsoft.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Wei Yongjun <weiyongjun1@huawei.com>,
-        Jiri Benc <jbenc@redhat.com>, oss-drivers@netronome.com,
-        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH bpf 1/7] xdp: remove the xdp_attachment_flags_ok() callback
-In-Reply-To: <20201204084847.04d9dc46@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-References: <160703131710.162669.9632344967082582016.stgit@toke.dk>
- <160703131819.162669.2776807312730670823.stgit@toke.dk>
- <20201203174217.7717ea84@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <87o8j99aip.fsf@toke.dk>
- <20201204084847.04d9dc46@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 04 Dec 2020 18:12:18 +0100
-Message-ID: <87sg8l7ax9.fsf@toke.dk>
+        id S1730904AbgLDRPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 12:15:37 -0500
+Received: from smtp7.emailarray.com ([65.39.216.66]:26796 "EHLO
+        smtp7.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728129AbgLDRPg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 12:15:36 -0500
+Received: (qmail 62282 invoked by uid 89); 4 Dec 2020 17:14:54 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuNQ==) (POLARISLOCAL)  
+  by smtp7.emailarray.com with SMTP; 4 Dec 2020 17:14:54 -0000
+Date:   Fri, 4 Dec 2020 09:14:52 -0800
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        kernel-team@fb.com
+Subject: Re: [PATCH v2 bpf-next] bpf: increment and use correct thread
+ iterator
+Message-ID: <20201204171452.bl4foim6x7nf3vvn@bsd-mbp.dhcp.thefacebook.com>
+References: <20201204034302.2123841-1-jonathan.lemon@gmail.com>
+ <2b90f131-5cb0-3c67-ea2e-f2c66ad918a7@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2b90f131-5cb0-3c67-ea2e-f2c66ad918a7@fb.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> writes:
+On Fri, Dec 04, 2020 at 12:01:53AM -0800, Yonghong Song wrote:
+> 
+> 
+> On 12/3/20 7:43 PM, Jonathan Lemon wrote:
+> > From: Jonathan Lemon <bsd@fb.com>
+> 
+> Could you explain in the commit log what problem this patch
+> tries to solve? What bad things could happen without this patch?
 
-> On Fri, 04 Dec 2020 10:38:06 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> Jakub Kicinski <kuba@kernel.org> writes:
->> > On Thu, 03 Dec 2020 22:35:18 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wr=
-ote:=20=20
->> >> Since we offloaded and non-offloaded programs can co-exist there does=
-n't
->> >> really seem to be any reason for the check anyway, and it's only used=
- in
->> >> three drivers so let's just get rid of the callback entirely.=20=20
->> >
->> > I don't remember exactly now, but I think the concern was that using=20
->> > the unspecified mode is pretty ambiguous when interface has multiple
->> > programs attached.=20=20
->>=20
->> Right. I did scratch my head a bit for why the check was there in the
->> first place, but that makes sense, actually :)
->>=20
->> So how about we disallow unload without specifying a mode, but only if
->> more than one program is loaded?
->
-> Are you including replacing as a form of unload? :)
+Without the patch, on a particular set of systems, RCU will repeatedly
+generate stall warnings similar to the trace below.  The common factor
+for all the traces seems to be using task_file_seq_next().  With the
+patch, all the warnings go away.
 
-Yeah, that's what I ended up with (in v2): Any time there are multiple
-programs loaded, callers have to specify a mode flag to avoid ambiguity.
+ rcu: INFO: rcu_sched self-detected stall on CPU
+ rcu: \x0910-....: (20666 ticks this GP) idle=4b6/1/0x4000000000000002 softirq=14346773/14346773 fqs=5064
+ \x09(t=21013 jiffies g=25395133 q=154147)
+ NMI backtrace for cpu 10
+ #1
+ Hardware name: Quanta Leopard ORv2-DDR4/Leopard ORv2-DDR4, BIOS F06_3B17 03/16/2018
+ Call Trace:
+  <IRQ>
+  dump_stack+0x50/0x70
+  nmi_cpu_backtrace.cold.6+0x13/0x50
+  ? lapic_can_unplug_cpu.cold.30+0x40/0x40
+  nmi_trigger_cpumask_backtrace+0xba/0xca
+  rcu_dump_cpu_stacks+0x99/0xc7
+  rcu_sched_clock_irq.cold.90+0x1b4/0x3aa
+  ? tick_sched_do_timer+0x60/0x60
+  update_process_times+0x24/0x50
+  tick_sched_timer+0x37/0x70
+  __hrtimer_run_queues+0xfe/0x270
+  hrtimer_interrupt+0xf4/0x210
+  smp_apic_timer_interrupt+0x5e/0x120
+  apic_timer_interrupt+0xf/0x20
+  </IRQ>
+ RIP: 0010:find_ge_pid_upd+0x5/0x20
+ Code: 80 00 00 00 00 0f 1f 44 00 00 48 83 ec 08 89 7c 24 04 48 8d 7e 08 48 8d 74 24 04 e8 d5 d3 9a 00 48 83 c4 08 c3 0f 1f 44 00 00 <48> 89 f8 48 8d 7e 08 48 89 c6 e9 bc d3 9a 00 cc cc cc cc cc cc cc
+ RSP: 0018:ffffc9002b7abdb8 EFLAGS: 00000297 ORIG_RAX: ffffffffffffff13
+ RAX: 00000000002ca5cd RBX: ffff889c44c0ba00 RCX: 0000000000000000
+ RDX: 0000000000000002 RSI: ffffffff8284eb80 RDI: ffffc9002b7abdc4
+ RBP: ffffc9002b7abe0c R08: ffff8895afe93a00 R09: ffff8891388abb50
+ R10: 000000000000000c R11: 00000000002ca600 R12: 000000000000003f
+ R13: ffffffff8284eb80 R14: 0000000000000001 R15: 00000000ffffffff
+  task_seq_get_next+0x53/0x180
+  task_file_seq_get_next+0x159/0x220
+  task_file_seq_next+0x4f/0xa0
+  bpf_seq_read+0x159/0x390
+  vfs_read+0x8a/0x140
+  ksys_read+0x59/0xd0
+  do_syscall_64+0x42/0x110
+  entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-> IMHO the simpler the definition of the API / constraint the better.
-> "You must specify the same flags" is pretty simple, as is copying the
-> old behavior rather than trying to come up with new rules.
->
-> But up to you, I don't mind either way, really..
 
-Well that old behaviour was what led me to investigate this in the first
-place: If you just look at a program that's loaded, see it's in driver
-mode, and then try to unload it with flags set to XDP_MODE_DRV, it will
-sometimes work and sometimes not depending on what flags that program
-happened to have been loaded with. In libxdp this is exactly what we do
-(look at the loaded program and set the corresponding mode flag), so I
-ended up getting some really odd bug reports...
+> > If unable to obtain the file structure for the current task,
+> > proceed to the next task number after the one returned from
+> > task_seq_get_next(), instead of the next task number from the
+> > original iterator.
+> This seems a correct change. The current code should still work
+> but it may do some redundant/unnecessary work in kernel.
+> This only happens when a task does not have any file,
+> no sure whether this is the culprit for the problem this
+> patch tries to address.
+> 
+> > 
+> > Use thread_group_leader() instead of comparing tgid vs pid, which
+> > might may be racy.
+> 
+> I see
+> 
+> static inline bool thread_group_leader(struct task_struct *p)
+> {
+>         return p->exit_signal >= 0;
+> }
+> 
+> I am not sure whether thread_group_leader(task) is equivalent
+> to task->tgid == task->pid or not. Any documentation or explanation?
+> 
+> Could you explain why task->tgid != task->pid in the original
+> code could be racy?
 
-So I really don't want to keep the current behaviour; if what I propose
-in v2 is OK with you I think we should just go with that :)
+My understanding is that anything which uses pid_t for comparision
+in the kernel is incorrect.  Looking at de_thread(), there is a 
+section which swaps the pid and tids around, but doesn't seem to 
+change tgid directly.
 
--Toke
+There's also this comment in linux/pid.h:
+        /*
+         * Both old and new leaders may be attached to
+         * the same pid in the middle of de_thread().
+         */
 
+So the safest thing to do is use the explicit thread_group_leader()
+macro rather than trying to open code things.
+
+
+> > Only obtain the task reference count at the end of the RCU section
+> > instead of repeatedly obtaining/releasing it when iterathing though
+> > a thread group.
+> 
+> I think this is an optimization and not about the correctness.
+
+Yes, but the loop in question can be executed thousands of times, and 
+there isn't much point in doing this needless work.  It's unclear 
+whether this is a significant time contribution to the RCU stall,
+but reducing the amount of refcounting isn't a bad thing.
+-- 
+Jonathan
