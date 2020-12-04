@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40E042CF28D
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 18:06:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F1E62CF28F
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 18:06:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387546AbgLDRDx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 12:03:53 -0500
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:51686 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731030AbgLDRDx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 12:03:53 -0500
+        id S2387869AbgLDRD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 12:03:56 -0500
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:55482 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387709AbgLDRD4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 12:03:56 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1607101433; x=1638637433;
+  t=1607101435; x=1638637435;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=tZCq/DRAE1zJFmshKyLfUPPWc93kSnzv8L7Gn/h9u+Q=;
-  b=N+vxj0T/5XAuJONCyCZDgtKgThDbOaqEbsGkyB1AcOMj2hjEY29SkVV6
-   iX8eG+9VN/nJgC3RP4VBBQSmb/bNAcAxsq24dh1kvZt6r19F7hpNdvQ7d
-   e/uEpKXobjerk/GpVmWA5K6owHFJ/MreRJ8e6eVBqOtqO4eN/1ZZ2jmLI
-   4=;
+  bh=2vAKgOMbsKsobaYQSS//EkxVjYpdgHLlqgbHgLmfgWg=;
+  b=Ewg9xnyiWxFK5TX7iiH74X98xt/vkz3OP/g3u+dQDTnDU+D4OAQUxjUu
+   CnAWA+MoB29jMiqRBoGZ1Zdj8TnH9BOQd3/oGwOMQ4q//kSpd3TkMtPor
+   1rBwSJwxQNaJLgOan35dlAGzJaTL3LfVJHF5bCqkaeWiYxt/FiUHYVYOE
+   E=;
 X-IronPort-AV: E=Sophos;i="5.78,393,1599523200"; 
-   d="scan'208";a="67389223"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1d-474bcd9f.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 04 Dec 2020 17:03:05 +0000
+   d="scan'208";a="70635442"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1d-37fd6b3d.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 04 Dec 2020 17:03:09 +0000
 Received: from EX13D16EUB003.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-1d-474bcd9f.us-east-1.amazon.com (Postfix) with ESMTPS id 7DEAAA1F92;
-        Fri,  4 Dec 2020 17:03:02 +0000 (UTC)
+        by email-inbound-relay-1d-37fd6b3d.us-east-1.amazon.com (Postfix) with ESMTPS id 6AF2A2833C2;
+        Fri,  4 Dec 2020 17:03:07 +0000 (UTC)
 Received: from 38f9d34ed3b1.ant.amazon.com (10.43.162.53) by
  EX13D16EUB003.ant.amazon.com (10.43.166.99) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Fri, 4 Dec 2020 17:02:56 +0000
+ id 15.0.1497.2; Fri, 4 Dec 2020 17:03:02 +0000
 From:   Andra Paraschiv <andraprs@amazon.com>
 To:     netdev <netdev@vger.kernel.org>
 CC:     linux-kernel <linux-kernel@vger.kernel.org>,
@@ -44,9 +44,9 @@ CC:     linux-kernel <linux-kernel@vger.kernel.org>,
         Stefan Hajnoczi <stefanha@redhat.com>,
         Vitaly Kuznetsov <vkuznets@redhat.com>,
         Andra Paraschiv <andraprs@amazon.com>
-Subject: [PATCH net-next v2 3/4] af_vsock: Set VMADDR_FLAG_TO_HOST flag on the receive path
-Date:   Fri, 4 Dec 2020 19:02:34 +0200
-Message-ID: <20201204170235.84387-4-andraprs@amazon.com>
+Subject: [PATCH net-next v2 4/4] af_vsock: Assign the vsock transport considering the vsock address flags
+Date:   Fri, 4 Dec 2020 19:02:35 +0200
+Message-ID: <20201204170235.84387-5-andraprs@amazon.com>
 X-Mailer: git-send-email 2.20.1 (Apple Git-117)
 In-Reply-To: <20201204170235.84387-1-andraprs@amazon.com>
 References: <20201204170235.84387-1-andraprs@amazon.com>
@@ -60,57 +60,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The vsock flags can be set during the connect() setup logic, when
-initializing the vsock address data structure variable. Then the vsock
-transport is assigned, also considering this flags field.
+The vsock flags field can be set in the connect and (listen) receive
+paths.
 
-The vsock transport is also assigned on the (listen) receive path. The
-flags field needs to be set considering the use case.
+When the vsock transport is assigned, the remote CID is used to
+distinguish between types of connection.
 
-Set the value of the vsock flags of the remote address to the one
-targeted for packets forwarding to the host, if the following conditions
-are met:
-
-* The source CID of the packet is higher than VMADDR_CID_HOST.
-* The destination CID of the packet is higher than VMADDR_CID_HOST.
+Use the vsock flags value (in addition to the CID) from the remote
+address to decide which vsock transport to assign. For the sibling VMs
+use case, all the vsock packets need to be forwarded to the host, so
+always assign the guest->host transport if the VMADDR_FLAG_TO_HOST flag
+is set. For the other use cases, the vsock transport assignment logic is
+not changed.
 
 Changelog
 
 v1 -> v2
 
-* Set the vsock flag on the receive path in the vsock transport
-  assignment logic.
-* Use bitwise operator for the vsock flag setup.
+* Use bitwise operator to check the vsock flag.
 * Use the updated "VMADDR_FLAG_TO_HOST" flag naming.
+* Merge the checks for the g2h transport assignment in one "if" block.
 
 Signed-off-by: Andra Paraschiv <andraprs@amazon.com>
 ---
- net/vmw_vsock/af_vsock.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ net/vmw_vsock/af_vsock.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
 diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index d10916ab45267..83d035eab0b05 100644
+index 83d035eab0b05..66e643c3b5f85 100644
 --- a/net/vmw_vsock/af_vsock.c
 +++ b/net/vmw_vsock/af_vsock.c
-@@ -431,6 +431,18 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
+@@ -421,7 +421,8 @@ static void vsock_deassign_transport(struct vsock_sock *vsk)
+  * The vsk->remote_addr is used to decide which transport to use:
+  *  - remote CID == VMADDR_CID_LOCAL or g2h->local_cid or VMADDR_CID_HOST if
+  *    g2h is not loaded, will use local transport;
+- *  - remote CID <= VMADDR_CID_HOST will use guest->host transport;
++ *  - remote CID <= VMADDR_CID_HOST or h2g is not loaded or remote flags field
++ *    includes VMADDR_FLAG_TO_HOST flag value, will use guest->host transport;
+  *  - remote CID > VMADDR_CID_HOST will use host->guest transport;
+  */
+ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
+@@ -429,6 +430,7 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
+ 	const struct vsock_transport *new_transport;
+ 	struct sock *sk = sk_vsock(vsk);
  	unsigned int remote_cid = vsk->remote_addr.svm_cid;
++	unsigned short remote_flags;
  	int ret;
  
-+	/* If the packet is coming with the source and destination CIDs higher
-+	 * than VMADDR_CID_HOST, then a vsock channel where all the packets are
-+	 * forwarded to the host should be established. Then the host will
-+	 * need to forward the packets to the guest.
-+	 *
-+	 * The flag is set on the (listen) receive path (psk is not NULL). On
-+	 * the connect path the flag can be set by the user space application.
-+	 */
-+	if (psk && vsk->local_addr.svm_cid > VMADDR_CID_HOST &&
-+	    vsk->remote_addr.svm_cid > VMADDR_CID_HOST)
-+		vsk->remote_addr.svm_flags |= VMADDR_FLAG_TO_HOST;
+ 	/* If the packet is coming with the source and destination CIDs higher
+@@ -443,6 +445,8 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
+ 	    vsk->remote_addr.svm_cid > VMADDR_CID_HOST)
+ 		vsk->remote_addr.svm_flags |= VMADDR_FLAG_TO_HOST;
+ 
++	remote_flags = vsk->remote_addr.svm_flags;
 +
  	switch (sk->sk_type) {
  	case SOCK_DGRAM:
  		new_transport = transport_dgram;
+@@ -450,7 +454,8 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
+ 	case SOCK_STREAM:
+ 		if (vsock_use_local_transport(remote_cid))
+ 			new_transport = transport_local;
+-		else if (remote_cid <= VMADDR_CID_HOST || !transport_h2g)
++		else if (remote_cid <= VMADDR_CID_HOST || !transport_h2g ||
++			 (remote_flags & VMADDR_FLAG_TO_HOST) == VMADDR_FLAG_TO_HOST)
+ 			new_transport = transport_g2h;
+ 		else
+ 			new_transport = transport_h2g;
 -- 
 2.20.1 (Apple Git-117)
 
