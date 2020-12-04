@@ -2,96 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFF6F2CF412
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 19:30:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B95062CF416
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 19:32:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387790AbgLDS3e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 13:29:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46516 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726116AbgLDS3e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 13:29:34 -0500
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0868EC0613D1
-        for <netdev@vger.kernel.org>; Fri,  4 Dec 2020 10:28:54 -0800 (PST)
-Received: by mail-pf1-x443.google.com with SMTP id 131so4301689pfb.9
-        for <netdev@vger.kernel.org>; Fri, 04 Dec 2020 10:28:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Uo2S/pzZkMYLk7oMgFf8RVIYenb5tiumKMbBcyGd4Qw=;
-        b=eCzeIp/6oDkjtUdjHoWCt527dnvsnlGCngITZQOcaD7Kw26+tHfAXsL6yyprqSku9w
-         9CPQ1WR/QfnTnZ7f0GAWmBbaTsZmu/Mrvixb0sCx/QbBrJ8//vYShY1raHZV57gIIZRH
-         jqt+KWeBtATFiyOZEUed8Ilb7jRn2xqjoxL3uDzpKjWEQqe4MMWXz14ZnO4MpkrbzKtp
-         vsjrZQThaMhnI+lU+Qcxh1NgFUWq47Vz08cakQxvqeeZ6F1aCsJjY08b3oqgLBNeplyF
-         BtXC9FqZEbi7Bs5lYbN6kCA6iH7csJVaua1bvL53s0OEOySFVPl+gcF+OlAnMHaxF4fd
-         NGrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Uo2S/pzZkMYLk7oMgFf8RVIYenb5tiumKMbBcyGd4Qw=;
-        b=Kr5tntNun9eCInynDUqVqASraXstV3FhZEOSCp13Y1LHylwePuLVlSVbrshmSBuj9S
-         HCKiQFCS9SjabmvojHSysoheoPnP7u8g91EkwPMdkWEWks8OQppjAp0Gmuk4hW79Rrvh
-         tPc4LOk5bRC0SuSA/apMmII/OLqOKJvtRsubH7fpuMxOecUPQqAw4ci4yj7AYyMdlD2b
-         rcpqQxeKEG9QMJr8qrmtCaOdpuuN64RlgkdqVJ81Pu8/Df7b9xNZAJUSkhdivxC57ILw
-         oZOWUo/TgbfzfOcR5UUZDCVsKl7biKqFMD2ZVFtTGW8Iwmsc3lh2tnXFvZ0w12hIrHtJ
-         Hi8w==
-X-Gm-Message-State: AOAM530HYwYtD1ZsNBPoHP+t79grhE5BXC0ftSW7m0sqO3giL5btMYaJ
-        7bAY7oi1PHkPuegxKN4JEiRk3UhHqvU=
-X-Google-Smtp-Source: ABdhPJyS6oJUcDsDAXGWk0A0a0znIwtKzEhEDP1TJD92v03VAxSF6uW0r6Gwb2D/fIIW3bzGdUTd4w==
-X-Received: by 2002:a63:b1c:: with SMTP id 28mr8604144pgl.206.1607106533049;
-        Fri, 04 Dec 2020 10:28:53 -0800 (PST)
-Received: from [10.230.29.29] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id nm6sm2686821pjb.25.2020.12.04.10.28.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Dec 2020 10:28:52 -0800 (PST)
-Subject: Re: [PATCH net-next] bcm63xx_enet: alloc rx skb with NET_IP_ALIGN
-To:     Sieng Piaw Liew <liew.s.piaw@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
-References: <20201204054616.26876-1-liew.s.piaw@gmail.com>
- <20201204054616.26876-3-liew.s.piaw@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <eb1285d6-d08b-2746-71be-83fb4660fda7@gmail.com>
-Date:   Fri, 4 Dec 2020 10:28:46 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.5.1
+        id S1730231AbgLDSa5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 13:30:57 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:8651 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728129AbgLDSa5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 13:30:57 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fca80390001>; Fri, 04 Dec 2020 10:30:17 -0800
+Received: from sx1.mtl.com (172.20.13.39) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 4 Dec
+ 2020 18:30:10 +0000
+From:   Saeed Mahameed <saeedm@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
+CC:     <netdev@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>
+Subject: [pull request][for-next] mlx5-next auxbus support
+Date:   Fri, 4 Dec 2020 10:29:52 -0800
+Message-ID: <20201204182952.72263-1-saeedm@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <20201204054616.26876-3-liew.s.piaw@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Originating-IP: [172.20.13.39]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1607106617; bh=w5n7Wtnj+4PvD2QvWMeg7FYapvk8hnjZsIPpT1vswAI=;
+        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+         Content-Transfer-Encoding:Content-Type:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=LvIPTzcRQ39Ik7vwBCOzZ7znwVbbvws0ApsNlZgAe91VbYMTDyO0cykwvuao5c5Br
+         aHeLvigFr44YOefDRculSwXv+6KIaoDGvzSCVAQgKsK3AXXx+a/BlYJfZazL+ceMqd
+         2VLA77vyNIoh5A+DMBQfHlukLK45ZDhLaL7N5Ry5gxHqLxm7HoRU+9NOqYdMGu1Ltv
+         DCpKfu9mcq+Wu9zr+TUnUD8wvVT8+zJoO65HhbUIqn/6lSuWPIN3Zfk4Nblh8/IlVm
+         f/gAlgeU6FDeiLmBOIir5SMleHoTU16qlmpq5grSzU8fB+hHTJkX+xFDhT3y4Fkegh
+         XyorBYfSsufJw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Jakub, Jason
 
+This pull request is targeting net-next and rdma-next branches.
 
-On 12/3/2020 9:46 PM, Sieng Piaw Liew wrote:
-> Use netdev_alloc_skb_ip_align on newer SoCs with integrated switch
-> (enetsw) when refilling RX. Increases packet processing performance
-> by 30% (with netif_receive_skb_list).
-> 
-> Non-enetsw SoCs cannot function with the extra pad so continue to use
-> the regular netdev_alloc_skb.
-> 
-> Tested on BCM6328 320 MHz and iperf3 -M 512 to measure packet/sec
-> performance.
-> 
-> Before:
-> [ ID] Interval Transfer Bandwidth Retr
-> [ 4] 0.00-30.00 sec 120 MBytes 33.7 Mbits/sec 277 sender
-> [ 4] 0.00-30.00 sec 120 MBytes 33.5 Mbits/sec receiver
-> 
-> After (+netif_receive_skb_list):
-> [ 4] 0.00-30.00 sec 155 MBytes 43.3 Mbits/sec 354 sender
-> [ 4] 0.00-30.00 sec 154 MBytes 43.1 Mbits/sec receiver
-> 
-> Signed-off-by: Sieng Piaw Liew <liew.s.piaw@gmail.com>
+This series provides mlx5 support for auxiliary bus devices.
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+It starts with a merge commit of tag 'auxbus-5.11-rc1' from
+gregkh/driver-core into mlx5-next, then the mlx5 patches that will convert
+mlx5 ulp devices (netdev, rdma, vdpa) to use the proper auxbus
+infrastructure instead of the internal mlx5 device and interface management
+implementation, which Leon is deleting at the end of this patchset.
+
+Link: https://lore.kernel.org/alsa-devel/20201026111849.1035786-1-leon@kern=
+el.org/
+
+Thanks to everyone for the joint effort !
+
+Please pull and let me know if there's any problem.
+
+Thanks,
+Saeed.
+
+---
+
+The following changes since commit b65054597872ce3aefbc6a666385eabdf9e288da=
+:
+
+  Linux 5.10-rc6 (2020-11-29 15:50:50 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mellanox/linux.git mlx5-nex=
+t
+
+for you to fetch changes up to 940d816e44b83c62eec0bf8a5dcd087eec6532cb:
+
+  RDMA/mlx5: Remove IB representors dead code (2020-12-04 14:46:56 +0200)
+
+----------------------------------------------------------------
+Dave Ertman (1):
+      Add auxiliary bus support
+
+Greg Kroah-Hartman (3):
+      driver core: auxiliary bus: move slab.h from include file
+      driver core: auxiliary bus: make remove function return void
+      driver core: auxiliary bus: minor coding style tweaks
+
+Leon Romanovsky (11):
+      Merge tag 'auxbus-5.11-rc1' of https://git.kernel.org/.../gregkh/driv=
+er-core into mlx5-next
+      net/mlx5: Properly convey driver version to firmware
+      net/mlx5_core: Clean driver version and name
+      vdpa/mlx5: Make hardware definitions visible to all mlx5 devices
+      net/mlx5: Register mlx5 devices to auxiliary virtual bus
+      vdpa/mlx5: Connect mlx5_vdpa to auxiliary bus
+      net/mlx5e: Connect ethernet part to auxiliary bus
+      RDMA/mlx5: Convert mlx5_ib to use auxiliary bus
+      net/mlx5: Delete custom device management logic
+      net/mlx5: Simplify eswitch mode check
+      RDMA/mlx5: Remove IB representors dead code
+
+ Documentation/driver-api/auxiliary_bus.rst         | 234 +++++++++
+ Documentation/driver-api/index.rst                 |   1 +
+ drivers/base/Kconfig                               |   3 +
+ drivers/base/Makefile                              |   1 +
+ drivers/base/auxiliary.c                           | 274 ++++++++++
+ drivers/infiniband/hw/mlx5/counters.c              |   7 -
+ drivers/infiniband/hw/mlx5/ib_rep.c                | 113 ++--
+ drivers/infiniband/hw/mlx5/ib_rep.h                |  45 +-
+ drivers/infiniband/hw/mlx5/main.c                  | 155 ++++--
+ drivers/infiniband/hw/mlx5/mlx5_ib.h               |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/Kconfig    |   1 +
+ drivers/net/ethernet/mellanox/mlx5/core/dev.c      | 567 ++++++++++++++---=
+----
+ drivers/net/ethernet/mellanox/mlx5/core/devlink.c  |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 135 ++---
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  42 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |   6 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |   8 +-
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  |  21 +-
+ .../ethernet/mellanox/mlx5/core/ipoib/ethtool.c    |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/lag.c      |  58 +--
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |  49 +-
+ .../net/ethernet/mellanox/mlx5/core/mlx5_core.h    |  33 +-
+ drivers/vdpa/mlx5/Makefile                         |   2 +-
+ drivers/vdpa/mlx5/net/main.c                       |  76 ---
+ drivers/vdpa/mlx5/net/mlx5_vnet.c                  |  53 +-
+ drivers/vdpa/mlx5/net/mlx5_vnet.h                  |  24 -
+ include/linux/auxiliary_bus.h                      |  77 +++
+ include/linux/mlx5/driver.h                        |  34 +-
+ include/linux/mlx5/eswitch.h                       |   8 +-
+ .../linux/mlx5/mlx5_ifc_vdpa.h                     |   8 +-
+ include/linux/mod_devicetable.h                    |   8 +
+ scripts/mod/devicetable-offsets.c                  |   3 +
+ scripts/mod/file2alias.c                           |   8 +
+ 34 files changed, 1418 insertions(+), 650 deletions(-)
+ create mode 100644 Documentation/driver-api/auxiliary_bus.rst
+ create mode 100644 drivers/base/auxiliary.c
+ delete mode 100644 drivers/vdpa/mlx5/net/main.c
+ delete mode 100644 drivers/vdpa/mlx5/net/mlx5_vnet.h
+ create mode 100644 include/linux/auxiliary_bus.h
+ rename drivers/vdpa/mlx5/core/mlx5_vdpa_ifc.h =3D> include/linux/mlx5/mlx5=
+_ifc_vdpa.h (96%)
