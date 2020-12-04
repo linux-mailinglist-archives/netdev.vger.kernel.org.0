@@ -2,249 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 593C02CF366
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 18:55:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D66442CF37A
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 18:58:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726851AbgLDRzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 12:55:18 -0500
-Received: from mail-db8eur05on2080.outbound.protection.outlook.com ([40.107.20.80]:41024
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726021AbgLDRzR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Dec 2020 12:55:17 -0500
+        id S1728712AbgLDR55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 12:57:57 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:8287 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726021AbgLDR54 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 12:57:56 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fca787c0001>; Fri, 04 Dec 2020 09:57:16 -0800
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 4 Dec
+ 2020 17:57:13 +0000
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.174)
+ by HQMAIL101.nvidia.com (172.20.187.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Fri, 4 Dec 2020 17:57:13 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Up1+TuDBUXzibL5W+xKc3qgbm7iofD35fqlhAoA/J4Xo2cw8jPkMyUbZA156GZFnMANsd4g6DtZpHhk90IOwx52FEeuEO1Efb42aeZkj1+Apb42SexmUYf7J0c3TvGUqBA+SM3FR112HSHAt5vHLqkCPFpUUofImnEKD06HABE1UPs4WC45CbDXvuoXHQJTP75W90+ZLER8WAFQYRnUPtP1yK33F2fY0167lDDH+MPua8raT1HcSXnlXcq2TVWc6SWSKBXa9jVBYX6eVbI9bOWQxcVI/FSt69l7iwRB57VS0vG0uYtx/x/5lmBC9mlxfZYDKKwb2hZyXGnXYGHn7DQ==
+ b=Zpo5ovJ1GBw9JqdAIOtwbq6d2qOdR4izP0VZbLK4MiL5x8ue5CEgDmlvLxfJAUUiK9kUhPjOm3FkgcI8W3SUm9faypzJe2KhHPg+sRD8ILIF31ecBLxiBBtDpAD1Bir/mrX0Zpbq03y25Fe7oWJSqpGzlpRTJuqTAe9kCsTG6n02PiL/vXJLpO/8nD86t5qSTY5i8pvKu0ChDgDHMQayfQWK0vnC+VRT5w/FYhzhDdEAJtiDcWm5q67ezlE/NPfvIm5vbzWe/vlKvOclDSnPZtyarBXXpw4J4QmUMUy7rHQyxTRv89Au74zQJfdwjIjO8Q94o9i6ao0VfAzSDZdutQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ejZx00TmhPmoq72zfS+zsJtFaYpEtk10oYkkjM6HFTc=;
- b=L7zg7dFXWu8Cfqf8RtMgGOEcfvJg4I4MZ5iAIQRzQ55HhuT2oRtez7BYPXYz+6wBqSRU9ClqUc+IyDH7axTYB0A1wTYybWQzMEMkZ0jLoyzBFEIcYemCILnylxhnsX1O8tdPh8VvgsSO1E+xKHmvkEVDO5gRXDaL4DMw/JskU4IVYHg9dovKQTh1FYCDKuZPwXBYo2VrfYpCjfzGKxWrKyKM1vvsg/QRpQJjD5VD6aZRpFxyzejePpiTcI2+GFOYxGpZiOIdHyqC/q+SAlPIEKZ6VtZG1W4HiU+eOJobpwq89ggBOJOQqy3MBQGf1nYtbIT3PaR5Hue4PWn9FMldJQ==
+ bh=GHTsqUbpQObKePLVykPF4YMGN5jRRXULypEl/bZkO04=;
+ b=bR5HkxCgBlfsa7Rbbt/+TXjM6x8qEw+73c2BPjhgnF9+B2woTos6j/NpkgB6t+0sfbSLbvdtz/ms0761PkJengsfMttfndsVFHGv/DzjKt3LDktz1t77+ABea6i8P34Lknydsd7d9CpulbgnISKIU67ezm/V6WRWhLBwP1GA82Ff7WkjlOcqnkGWEHnGeM5DCMthNZI50h27WsuEd62lgLoXL8SvRyzSRrAU1Fxy1uLH95xN0iHIFA14iQzYN5xrheWhVTHP632K5QU4UI7hb1egtfp4YdfiBQtJIC8D6lS/TIP5n/+62oq+CJ/AdMu2OsTum9QOKNxc/FxKZ1Soug==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ejZx00TmhPmoq72zfS+zsJtFaYpEtk10oYkkjM6HFTc=;
- b=YEKOVAY0dFx+cGTCcOkR40n1qGnPVxDqo3xkJuJZK4iE/L7668XhSryeabIE/PT+gxCxe7eoC8L3Q1MHq0E5zQpBDZmry65qaQqyfTAIsUYENU8MzKHfn+l9LrC6pcpmfXB7rHzGqqjK78PFPZVQrMQnqK/z06hIBLekltj7nek=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VI1PR04MB6941.eurprd04.prod.outlook.com (2603:10a6:803:12e::23) with
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from CH2PR12MB4213.namprd12.prod.outlook.com (2603:10b6:610:a4::24)
+ by CH2PR12MB4261.namprd12.prod.outlook.com (2603:10b6:610:a9::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.19; Fri, 4 Dec
- 2020 17:54:26 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::2dd6:8dc:2da7:ad84]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::2dd6:8dc:2da7:ad84%5]) with mapi id 15.20.3632.021; Fri, 4 Dec 2020
- 17:54:26 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        "Allan W . Nielsen" <allan.nielsen@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Eldar Gasanov <eldargasanov2@gmail.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>
-Subject: [PATCH net] net: mscc: ocelot: fix dropping of unknown IPv4 multicast on Seville
-Date:   Fri,  4 Dec 2020 19:54:16 +0200
-Message-Id: <20201204175416.1445937-1-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [188.25.2.120]
-X-ClientProxiedBy: AM0PR06CA0113.eurprd06.prod.outlook.com
- (2603:10a6:208:ab::18) To VI1PR04MB5696.eurprd04.prod.outlook.com
- (2603:10a6:803:e7::13)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.25; Fri, 4 Dec
+ 2020 17:57:11 +0000
+Received: from CH2PR12MB4213.namprd12.prod.outlook.com
+ ([fe80::98:4658:724f:a941]) by CH2PR12MB4213.namprd12.prod.outlook.com
+ ([fe80::98:4658:724f:a941%2]) with mapi id 15.20.3611.025; Fri, 4 Dec 2020
+ 17:57:11 +0000
+From:   Saeed Mahameed <saeedm@nvidia.com>
+To:     Leon Romanovsky <leonro@nvidia.com>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     "david.m.ertman@intel.com" <david.m.ertman@intel.com>,
+        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
+        "ranjani.sridharan@linux.intel.com" 
+        <ranjani.sridharan@linux.intel.com>,
+        "mhabets@solarflare.com" <mhabets@solarflare.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "fred.oh@linux.intel.com" <fred.oh@linux.intel.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
+        "kiran.patil@intel.com" <kiran.patil@intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        "parav@mellanox.com" <parav@mellanox.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "pierre-louis.bossart@linux.intel.com" 
+        <pierre-louis.bossart@linux.intel.com>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "dan.j.williams@intel.com" <dan.j.williams@intel.com>
+Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
+Thread-Topic: [resend/standalone PATCH v4] Add auxiliary bus support
+Thread-Index: AQHWyQ8TNP1v8NEBekWsm06ohs7ZG6nm4aqAgAAFi4CAADr3AIAAGXwA
+Date:   Fri, 4 Dec 2020 17:57:11 +0000
+Message-ID: <3b80200ec25958308d46b643c8434f9a5ce67346.camel@nvidia.com>
+References: <160695681289.505290.8978295443574440604.stgit@dwillia2-desk3.amr.corp.intel.com>
+         <X8os+X515fxeqefg@kroah.com>        <20201204125455.GI16543@unreal>
+         <20201204082558.4eb8c8c2@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201204082558.4eb8c8c2@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+authentication-results: nvidia.com; dkim=none (message not signed)
+ header.d=none;nvidia.com; dmarc=none action=none header.from=nvidia.com;
+x-originating-ip: [24.6.56.119]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5b59e8cc-b3b3-4b48-86b1-08d8987e06b8
+x-ms-traffictypediagnostic: CH2PR12MB4261:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CH2PR12MB426163768F9C54C6D38D2C03B3F10@CH2PR12MB4261.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4714;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: B3rgaU6ztWj/ldH/vDjaEdzgwQaATccc0p98KS5humOrYvM1foDntZNSnhIVvPEM9bkSgo97C8STglbnaFvunxqxepgKPIxmsE0EQNN4N/DpsJgHYlWDzW85BXHZ5guf1+BOqZemlZeHCxqTYXHGdP1+/BizIOaltP+aClBtY8Q66UFpVeVuxnanJfN6VkbQgbYsTHLm5lfSuMiJo370hEyxTPt7Jd8HBHT/lPWnlSPGrrNXD3qXqTn5ni/e+dTQ7dfrIya/4HjwzmkytcOOJohOgjeMVPljtHRBYmEGN6DuU+UDERH2zk/ukpY63HXBkmQ886D56qKUMTSvajYVhQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR12MB4213.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(39860400002)(366004)(346002)(136003)(396003)(91956017)(8676002)(66556008)(6512007)(4326008)(8936002)(86362001)(6506007)(36756003)(5660300002)(2616005)(2906002)(186003)(110136005)(66476007)(7416002)(4744005)(76116006)(6486002)(66946007)(71200400001)(64756008)(54906003)(316002)(26005)(478600001)(66446008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?cDc4SXBtbjVCOVAwb0tRemZmTjE2OGMrQlBTVWRNUDdwYWIyN2UzSVB5Z1VH?=
+ =?utf-8?B?YkFtczZRQ2huZXVsaUhTY2FOZkpwME83QktpUzJjTEVjUkdRUHlmYi9QNnUw?=
+ =?utf-8?B?SmpkK0pHNzFBNVZOdVJXSDh1UDZWZFJpV0JMSm5MNGQ0WGxSQkZPeCtYU20w?=
+ =?utf-8?B?d3I2SjJ1SWowaWlSb3loRkRvS1Q5SFpFc2Q5bjF4a1FzOFJ0enNmZ2JsTENX?=
+ =?utf-8?B?TmxBdGdoMlBjR216WDRtNEdFVk5OZWhTSmJWdGhPa0FkSFh4WEpSMjBQQXdF?=
+ =?utf-8?B?blJUdXVvRllIMjBuV2xhVEFrcXE5MG5TbDgrWU9PbUpXRzhXNnJSWmtuWjhL?=
+ =?utf-8?B?a1NrV3BvYTZ0c2ZBejdGdWRzOEVYRU5PZnlubGdZcEtSSngxVllLZ3JueUdX?=
+ =?utf-8?B?RDZ1MHlNeXJtRVpDUHErR25iMm1WVlg0d05hekJNVUJORzZkYjJ4bXZlcHRq?=
+ =?utf-8?B?VXBJQjBYRDB3S1o5ZTI4VjFTMDA2M2tBY0lkRm5XbUVtSFV6WDhlMjhsVHNS?=
+ =?utf-8?B?WnlMMzJtMjVFNTFGTm1oM2pWZS83Zkdzd1JqQzJ2ckhNekZxcXR1Q2VHanFn?=
+ =?utf-8?B?ek9LeTJybzhPNTRpYW8zZld0WXVrMzNRTkFjK1d0R1pNZVhVRTIxM1RKTis3?=
+ =?utf-8?B?dTl6cGIzWG0xZDZIZnJyRzBoREtzR2ZxWUZnN1d2Y0JoNmYxdVNwSDhjSHZo?=
+ =?utf-8?B?V1FTZVVFSnpYai9SbjRkM09MejE5V0tRaXJlNFJQbDhreFVxVVdpOXlCWG1X?=
+ =?utf-8?B?WjN2SCtZNTJ6R0VBeUQvbS9hTzNVYTNsR2ZxRFpjUnFyUE1WeUZZZ1ZpVmNw?=
+ =?utf-8?B?RSt1MFQzV3VSaVF1R1VHOUJuMUVHUldlMXdQNDNiaXF0U3libkZMczR6VkJL?=
+ =?utf-8?B?RVhvbFp1RXluOTEzTkdYNGpQWWJ3V1ZaRzJNZ1M1cFpwcVBySzcreThaaUw1?=
+ =?utf-8?B?Uk1SR1BxSElWRTlVUk5Wb0pZdDlEUEdwOFZPUjZqc0NmNC9qbXBhZWxWV2lv?=
+ =?utf-8?B?czhFMFd0UUk3cHhIenQrK2pic1g4TENhcTl3K2NjUGp4cGhIWHZpZ2lPSXJl?=
+ =?utf-8?B?N2xwRVFXYTdLb0JlcnFuSWVpQi8ybmo0RFdpeUhqeWRONG1KU1JmQU5YMDJr?=
+ =?utf-8?B?dHFkVDNzUW9jTlNBbEVERFp5MHZTdEFJeXZrRU9QbmtuajZDd2taNGQ0bFpT?=
+ =?utf-8?B?NGJHYzd5eEZUU2h6RUR5OE15dG1qakkyT0Y5UDcrRUxzc1F5MEpuYi9vb25W?=
+ =?utf-8?B?aktKNmhHVG0wd0M4RTlOOFpBVjdobVZHdGdvSmJCajJJb2JqemlHM3ZTRXR3?=
+ =?utf-8?Q?Mk2GifThJVqN0eQcEW/nN/QK0Rj4IyyaTb?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <F398E237A43BDF48A3613E53FDCD24DA@namprd12.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.2.120) by AM0PR06CA0113.eurprd06.prod.outlook.com (2603:10a6:208:ab::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.17 via Frontend Transport; Fri, 4 Dec 2020 17:54:25 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: ebb64eb4-541a-4bcc-6ce6-08d8987da438
-X-MS-TrafficTypeDiagnostic: VI1PR04MB6941:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB6941CED38F24D823AE82A6C0E0F10@VI1PR04MB6941.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: IimZPFZd7GMH8TxgO9PnrX087CJJi0It6Pgw/yDYPYNHaVOj3oFlMUtY6wuaQRcwtBPiO/acmk5agVUTEhYfI1fufDFrHxMxUVNBNiGtYJly5DydtKSMFLkP4fBPHkIdB+Y60dYrhAbkrEdTCFxhZcviv5cAQyk7AKjeannjMFv/h/bbHGFldvH0zINxD3bd6fiv/RxyiUx1aarFqLlELE0xku/uW5mwyrWiVE6wTTZEVfC8OrUBsFLz3IDcMB3k6pxDpo8AgC2mdEOYZHTBSJceMnQGXxpvqDZH8rEZWAJVMra+qfheGCeyZiMiBBMUWhJnwKfbMl1l6s4EXPZ5aYSMbPIrKHKZ8YY7jYCV7v5NQKBVEPkuBd4/HXE9NZFU
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(376002)(366004)(346002)(136003)(396003)(6666004)(36756003)(6506007)(7416002)(2906002)(86362001)(66476007)(66946007)(1076003)(69590400008)(5660300002)(83380400001)(44832011)(478600001)(54906003)(956004)(110136005)(52116002)(316002)(4326008)(8936002)(66556008)(26005)(8676002)(16526019)(6512007)(6486002)(186003)(2616005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?HLqH7E9EWU3l9P18X2oiFwtUGEddYJgm+dojKKz3jjNrkJ4F385DTtDPUlfH?=
- =?us-ascii?Q?GFKoU5+VfdrL8HSXuicSHkremawkoShDdXfJvkWdUpKymAmDothU2YrZAHEc?=
- =?us-ascii?Q?kpYEm2MK514xPlSQq8m+JdM1bcLb5eEyIzKI2GDzSsLuVdXsCEbOjZ5919bB?=
- =?us-ascii?Q?GSQkIv4Vz0vQNbMYFp/qC8rJB1CZDl4GAySJag4kPLrt5Ir9Mo3XISPQ8Au3?=
- =?us-ascii?Q?a1VQPCokR1F4VfHngcuIuhtMlwsH8fthA2F2g1AKdDA7lgKTf54xrhtr3GNP?=
- =?us-ascii?Q?H+GSMfz58KkuViz8rgYvOapVd/3D+znkq2EBmKnQx/X5v9q83owQipMMfH/s?=
- =?us-ascii?Q?nXN9pE4s5v0vKvEA0mIFjB0joZTRcX0GSON2NYX+YKtVBX0fGZQ5leUMHP+A?=
- =?us-ascii?Q?8zGSO0z5lYYG0VwrnLxXcod3x+UzdwVK+BRa57TX0IKxkw8bbVwGvIfRkVCa?=
- =?us-ascii?Q?0BeUDCxZgDG9czQgEetkiOtsasmhkLdErGdGIGNNHYdzO9qPkRD7ScS1ZMjW?=
- =?us-ascii?Q?XAHY24HAmCNwsd2MavxM4dd5lZM/LREP95KAy/UE3CQLTsj5l+AtHEXdGs/j?=
- =?us-ascii?Q?d0h7zQt6eSySkZTATSvgbZaIZRsYChCcPxvxZEyoO0gLzogMToGbI5AhuXIB?=
- =?us-ascii?Q?r0snqRK8UHLlBK7aFjA0Byki2rcX3lWI/0t4jiOO9zofIKPXYgR62GL0VxJw?=
- =?us-ascii?Q?Cxz66yPCPRkYF2QDCaEUegV5Njtfcxmtp73Dtw87yYBwGnDxqsNhfUWTaY+3?=
- =?us-ascii?Q?kIJQgiaR8MWPwe0OKyxB3XobJuGRgn+Lzsb71PmOROBD2jfPD+Khsj8AioZU?=
- =?us-ascii?Q?7mJo9XCpxH3dcoNJA9GNAlv3FiACRg0jrgr0TljqjA1LjJP8A0Iqudajit6c?=
- =?us-ascii?Q?cmhCsLnh4J05g7OWFUh3Er3Bxffk4i1dXsEi2UUQW66zVktSdxgniiZazlxR?=
- =?us-ascii?Q?XgYrXOCwco4gWBqEq2/IATf6agDx6QBbxgAEeA2i16Hwkh5FI6hFfoPY5vow?=
- =?us-ascii?Q?ak6G?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ebb64eb4-541a-4bcc-6ce6-08d8987da438
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Dec 2020 17:54:26.7999
+X-MS-Exchange-CrossTenant-AuthSource: CH2PR12MB4213.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5b59e8cc-b3b3-4b48-86b1-08d8987e06b8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Dec 2020 17:57:11.7957
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: BcNoFCZ3AHRSzbPqRH1EiDBrJVYPyr/wgkDwJrM3XqgXHDxYdfB27InJzspektuuZLZWYm6cnnTzCTwOJDlRhA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6941
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: uakeNj1BPHIQBGbGLHVohJpLpBXZgHdurw5+otEKc9TP8r7EPxKUi5HkEuG0OzR5ofQvNV33WaRERdule3s6nw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4261
+X-OriginatorOrg: Nvidia.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1607104636; bh=GHTsqUbpQObKePLVykPF4YMGN5jRRXULypEl/bZkO04=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:From:To:
+         CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
+         In-Reply-To:Accept-Language:Content-Language:X-MS-Has-Attach:
+         X-MS-TNEF-Correlator:user-agent:authentication-results:
+         x-originating-ip:x-ms-publictraffictype:
+         x-ms-office365-filtering-correlation-id:x-ms-traffictypediagnostic:
+         x-ms-exchange-transport-forked:x-microsoft-antispam-prvs:
+         x-ms-oob-tlc-oobclassifiers:x-ms-exchange-senderadcheck:
+         x-microsoft-antispam:x-microsoft-antispam-message-info:
+         x-forefront-antispam-report:x-ms-exchange-antispam-messagedata:
+         Content-Type:Content-ID:Content-Transfer-Encoding:MIME-Version:
+         X-MS-Exchange-CrossTenant-AuthAs:
+         X-MS-Exchange-CrossTenant-AuthSource:
+         X-MS-Exchange-CrossTenant-Network-Message-Id:
+         X-MS-Exchange-CrossTenant-originalarrivaltime:
+         X-MS-Exchange-CrossTenant-fromentityheader:
+         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+         X-MS-Exchange-CrossTenant-userprincipalname:
+         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+        b=UW1JWU32v92IcTlinqDy5ld3en3sdM5JLfxrkFLstbRppcNmQX3fI17tQYUX7zZui
+         yXuYTmJuSwL/EaQ2c0GYUgggNh93Cln49YOlX9mMCDd9k67MBtzR1LoG1WaouAyIzm
+         lGIoCe4tTLC/s9MZ9/jWsY6tu8b4IM1Kh1HVN8dAmCtcDBJHXlmNQggcvbs6oAwxti
+         svCbyi4xMuDaOwJgFgwo1aqUFFJUJsrkA6fua5JGt3BhfoujqeLClzwcm4sgDw7KQn
+         /yCpF0OXV3odTwHiuvw4uvuuCYdAb5sPvNzhfydD6N/y8ZMbevfHRZS5IIR0fPvfXi
+         96ZVeor1yRiVg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current assumption is that the felix DSA driver has flooding knobs
-per traffic class, while ocelot switchdev has a single flooding knob.
-This was correct for felix VSC9959 and ocelot VSC7514, but with the
-introduction of seville VSC9953, we see a switch driven by felix.c which
-has a single flooding knob.
-
-So it is clear that we must do what should have been done from the
-beginning, which is not to overwrite the configuration done by ocelot.c
-in felix, but instead to teach the common ocelot library about the
-differences in our switches, and set up the flooding PGIDs centrally.
-
-The effect that the bogus iteration through FELIX_NUM_TC has upon
-seville is quite dramatic. ANA_FLOODING is located at 0x00b548, and
-ANA_FLOODING_IPMC is located at 0x00b54c. So the bogus iteration will
-actually overwrite ANA_FLOODING_IPMC when attempting to write
-ANA_FLOODING[1]. There is no ANA_FLOODING[1] in sevile, just ANA_FLOODING.
-
-And when ANA_FLOODING_IPMC is overwritten with a bogus value, the effect
-is that ANA_FLOODING_IPMC gets the value of 0x0003CF7D:
-	MC6_DATA = 61,
-	MC6_CTRL = 61,
-	MC4_DATA = 60,
-	MC4_CTRL = 0.
-Because MC4_CTRL is zero, this means that IPv4 multicast control packets
-are not flooded, but dropped. An invalid configuration, and this is how
-the issue was actually spotted.
-
-Reported-by: Eldar Gasanov <eldargasanov2@gmail.com>
-Reported-by: Maxim Kochetkov <fido_max@inbox.ru>
-Tested-by: Eldar Gasanov <eldargasanov2@gmail.com>
-Fixes: 84705fc16552 ("net: dsa: felix: introduce support for Seville VSC9953 switch")
-Fixes: 3c7b51bd39b2 ("net: dsa: felix: allow flooding for all traffic classes")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/ocelot/felix.c             | 7 -------
- drivers/net/dsa/ocelot/felix_vsc9959.c     | 1 +
- drivers/net/dsa/ocelot/seville_vsc9953.c   | 1 +
- drivers/net/ethernet/mscc/ocelot.c         | 9 +++++----
- drivers/net/ethernet/mscc/ocelot_vsc7514.c | 1 +
- include/soc/mscc/ocelot.h                  | 3 +++
- 6 files changed, 11 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index ada75fa15861..7dc230677b78 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -588,7 +588,6 @@ static int felix_setup(struct dsa_switch *ds)
- 	struct ocelot *ocelot = ds->priv;
- 	struct felix *felix = ocelot_to_felix(ocelot);
- 	int port, err;
--	int tc;
- 
- 	err = felix_init_structs(felix, ds->num_ports);
- 	if (err)
-@@ -627,12 +626,6 @@ static int felix_setup(struct dsa_switch *ds)
- 	ocelot_write_rix(ocelot,
- 			 ANA_PGID_PGID_PGID(GENMASK(ocelot->num_phys_ports, 0)),
- 			 ANA_PGID_PGID, PGID_UC);
--	/* Setup the per-traffic class flooding PGIDs */
--	for (tc = 0; tc < FELIX_NUM_TC; tc++)
--		ocelot_write_rix(ocelot, ANA_FLOODING_FLD_MULTICAST(PGID_MC) |
--				 ANA_FLOODING_FLD_BROADCAST(PGID_MC) |
--				 ANA_FLOODING_FLD_UNICAST(PGID_UC),
--				 ANA_FLOODING, tc);
- 
- 	ds->mtu_enforcement_ingress = true;
- 	ds->configure_vlan_while_not_filtering = true;
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 3e925b8d5306..2e5bbdca5ea4 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -1429,6 +1429,7 @@ static int felix_pci_probe(struct pci_dev *pdev,
- 	pci_set_drvdata(pdev, felix);
- 	ocelot = &felix->ocelot;
- 	ocelot->dev = &pdev->dev;
-+	ocelot->num_flooding_pgids = FELIX_NUM_TC;
- 	felix->info = &felix_info_vsc9959;
- 	felix->switch_base = pci_resource_start(pdev,
- 						felix->info->switch_pci_bar);
-diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-index 1d420c4a2f0f..ebbaf6817ec8 100644
---- a/drivers/net/dsa/ocelot/seville_vsc9953.c
-+++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-@@ -1210,6 +1210,7 @@ static int seville_probe(struct platform_device *pdev)
- 
- 	ocelot = &felix->ocelot;
- 	ocelot->dev = &pdev->dev;
-+	ocelot->num_flooding_pgids = 1;
- 	felix->info = &seville_info_vsc9953;
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 2632fe2d2448..abea8dd2b0cb 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1551,10 +1551,11 @@ int ocelot_init(struct ocelot *ocelot)
- 		     SYS_FRM_AGING_MAX_AGE(307692), SYS_FRM_AGING);
- 
- 	/* Setup flooding PGIDs */
--	ocelot_write_rix(ocelot, ANA_FLOODING_FLD_MULTICAST(PGID_MC) |
--			 ANA_FLOODING_FLD_BROADCAST(PGID_MC) |
--			 ANA_FLOODING_FLD_UNICAST(PGID_UC),
--			 ANA_FLOODING, 0);
-+	for (i = 0; i < ocelot->num_flooding_pgids; i++)
-+		ocelot_write_rix(ocelot, ANA_FLOODING_FLD_MULTICAST(PGID_MC) |
-+				 ANA_FLOODING_FLD_BROADCAST(PGID_MC) |
-+				 ANA_FLOODING_FLD_UNICAST(PGID_UC),
-+				 ANA_FLOODING, i);
- 	ocelot_write(ocelot, ANA_FLOODING_IPMC_FLD_MC6_DATA(PGID_MCIPV6) |
- 		     ANA_FLOODING_IPMC_FLD_MC6_CTRL(PGID_MC) |
- 		     ANA_FLOODING_IPMC_FLD_MC4_DATA(PGID_MCIPV4) |
-diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-index dc00772950e5..1e7729421a82 100644
---- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-+++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-@@ -1254,6 +1254,7 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
- 	}
- 
- 	ocelot->num_phys_ports = of_get_child_count(ports);
-+	ocelot->num_flooding_pgids = 1;
- 
- 	ocelot->vcap = vsc7514_vcap_props;
- 	ocelot->inj_prefix = OCELOT_TAG_PREFIX_NONE;
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index ea1de185f2e4..731116611390 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -621,6 +621,9 @@ struct ocelot {
- 	/* Keep track of the vlan port masks */
- 	u32				vlan_mask[VLAN_N_VID];
- 
-+	/* Switches like VSC9959 have flooding per traffic class */
-+	int				num_flooding_pgids;
-+
- 	/* In tables like ANA:PORT and the ANA:PGID:PGID mask,
- 	 * the CPU is located after the physical ports (at the
- 	 * num_phys_ports index).
--- 
-2.25.1
-
+T24gRnJpLCAyMDIwLTEyLTA0IGF0IDA4OjI1IC0wODAwLCBKYWt1YiBLaWNpbnNraSB3cm90ZToN
+Cj4gT24gRnJpLCA0IERlYyAyMDIwIDE0OjU0OjU1ICswMjAwIExlb24gUm9tYW5vdnNreSB3cm90
+ZToNCj4gPiBUaGFua3MsIHB1bGxlZCB0byBtbHg1LW5leHQNCj4gPiANCj4gPiBKYXNvbiwgSmFr
+b2IsDQo+ID4gDQo+ID4gQ2FuIHlvdSBwbGVhc2UgcHVsbCB0aGF0IG1seDUtbmV4dCBicmFuY2gg
+dG8geW91ciB0cmVlcz8NCj4gPiBnaXQ6Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tl
+cm5lbC9naXQvbWVsbGFub3gvbGludXguZ2l0DQo+IA0KPiBDb3VsZCB5b3UgcG9zdCBhIFBSIHdp
+dGggYSBwcm9wZXIgZGVzY3JpcHRpb24gYW5kIHNvIG9uPw0KPiANCj4gVGhhbmtzIQ0KDQpJIHdp
+bGwgZG8gdGhhdC4NCg0KVGhhbmtzIQ0K
