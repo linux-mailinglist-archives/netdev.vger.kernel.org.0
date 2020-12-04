@@ -2,201 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 411962CED76
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 12:49:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADF712CED84
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 12:54:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729953AbgLDLs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 06:48:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40480 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726618AbgLDLs7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Dec 2020 06:48:59 -0500
-Date:   Fri, 4 Dec 2020 12:49:28 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1607082492;
-        bh=8riUQT9bCbW54dDW4SqSDmsIYyllOic9IBnpv2jP8RY=;
-        h=From:To:Cc:Subject:References:In-Reply-To:From;
-        b=A46brJwjdIa872dTM+2vM7n7K9F806vWyhU5xH27mw1GwGZ5jCWn615wnRuCk0ifP
-         aQ3U7L5uYHJDQ36n16uxjcx5LSjr50uszqUtlt8YBWaxj1oAUopkNCgdr3I3mQZTPu
-         q0LaHDbMkjd5a4WnQiS1tSIRdE4kyw7f8vikc8Ck=
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     broonie@kernel.org, lgirdwood@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, jgg@nvidia.com,
-        Kiran Patil <kiran.patil@intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Fred Oh <fred.oh@linux.intel.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Parav Pandit <parav@mellanox.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/3] driver core: auxiliary bus: minor coding style tweaks
-Message-ID: <X8oiSFTpYHw1xE/o@kroah.com>
-References: <160695681289.505290.8978295443574440604.stgit@dwillia2-desk3.amr.corp.intel.com>
- <X8ogtmrm7tOzZo+N@kroah.com>
- <X8og8xi3WkoYXet9@kroah.com>
- <X8ohB1ks1NK7kPop@kroah.com>
+        id S1729971AbgLDLxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 06:53:33 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:51650 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725999AbgLDLxc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 06:53:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607082726;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=S28IWYpmMbvljShisgwF1Sds0GijR5zbQJ0B1oiVu4I=;
+        b=AOH1ik1QFQphqfMc6ia2lKapqQYT/U64er3z+pnTYf2cq2bWSzfLY3Q+X5JMDLfxrOsTPJ
+        n4fz9EWd0T/Iyf6xgnvI4iV5kv48bhyvM71TrPVl8KN5VUX+S/khwF1E/89tAh4/1gVdqD
+        H2BRZlQZrCdOC3/rF7vlhOPVtSfbiOI=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-226-7EA_iF2mOgq7AGba0W9O8Q-1; Fri, 04 Dec 2020 06:52:04 -0500
+X-MC-Unique: 7EA_iF2mOgq7AGba0W9O8Q-1
+Received: by mail-ej1-f72.google.com with SMTP id f2so1969501ejx.22
+        for <netdev@vger.kernel.org>; Fri, 04 Dec 2020 03:52:04 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=S28IWYpmMbvljShisgwF1Sds0GijR5zbQJ0B1oiVu4I=;
+        b=mCfbQ7yvMqRA1SBaUKagO2b7heUAf5C9AZTGQpz10aAGgHfS3v2Unsfxe5+Jv8oW2v
+         37uN7yEcWKW6pnjy2qCj9T4Gkwg0TmKALBtmuXyVGPWScIzjve/YDjC7h+ye4OAMwO3o
+         2iZipJI2VY0rj5IIyNon189eVtn6J3iIwgo5dSHmZ2mIWyxGxQm/HMKheS+Xu3yNzJmk
+         AHuNYhKupKTvevMD6v+4DV/t1K3C8VhCBOWb4ZX6L16wDvcWAbdSy8UQJJv5wSzSGjT7
+         7gHVZ/HXuadCxLLC3QQNoxR8CVDhZ2RHfXDBaYO4dGcRmyqCj7hnieizCOsmGi/aiVu3
+         /Q8Q==
+X-Gm-Message-State: AOAM533X9zDOREhHKy8436bRlVSa4whADQMVkBd9F+HK3wVvgNL1OjUF
+        KBthz7e1vzgnJecByL9eMIXRVL6uyjxQqPNb+4icZFxOfaLoqm4F6F1WVZQn0M6v5FO3c4Fopc5
+        YrWGMWUSxvIrJ0xJg
+X-Received: by 2002:aa7:db01:: with SMTP id t1mr7136310eds.185.1607082723561;
+        Fri, 04 Dec 2020 03:52:03 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJydWNhM9OGBmoWFurBAWqUsCG+7QPy6zB87nj6ko9cEAEqVbwTS+2jTkztJCQPYTHSUbN60pw==
+X-Received: by 2002:aa7:db01:: with SMTP id t1mr7136286eds.185.1607082723326;
+        Fri, 04 Dec 2020 03:52:03 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id q24sm3299903edw.66.2020.12.04.03.52.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Dec 2020 03:52:02 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 42343182EEA; Fri,  4 Dec 2020 12:52:02 +0100 (CET)
+Subject: [PATCH bpf v2 0/7] selftests/bpf: Restore test_offload.py to working
+ order
+From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Romain Perier <romain.perier@gmail.com>,
+        Allen Pais <apais@linux.microsoft.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
+        Jiri Benc <jbenc@redhat.com>, oss-drivers@netronome.com,
+        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Date:   Fri, 04 Dec 2020 12:52:02 +0100
+Message-ID: <160708272217.192754.14019805999368221369.stgit@toke.dk>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <X8ohB1ks1NK7kPop@kroah.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This series restores the test_offload.py selftest to working order. It seems a
+number of subtle behavioural changes have crept into various subsystems which
+broke test_offload.py in a number of ways. Most of these are fairly benign
+changes where small adjustments to the test script seems to be the best fix, but
+one is an actual kernel bug that I've observed in the wild caused by a bad
+interaction between xdp_attachment_flags_ok() and the rework of XDP program
+handling in the core netdev code.
 
-For some reason, the original aux bus patch had some really long lines
-in a few places, probably due to it being a very long-lived patch in
-development by many different people.  Fix that up so that the two files
-all have the same length lines and function formatting styles.
+Patch 1 fixes the bug by removing xdp_attachment_flags_ok(), and the reminder of
+the patches are adjustments to test_offload.py, including a new feature for
+netdevsim to force a BPF verification fail. Please see the individual patches
+for details.
 
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Changelog:
+
+v2:
+- Replace xdp_attachment_flags_ok() with a check in dev_xdp_attach()
+- Better packing of struct nsim_dev
+
 ---
-v2: include the right files in the patch...
 
- drivers/base/auxiliary.c      | 58 +++++++++++++++++++----------------
- include/linux/auxiliary_bus.h |  6 ++--
- 2 files changed, 35 insertions(+), 29 deletions(-)
+Toke Høiland-Jørgensen (7):
+      xdp: remove the xdp_attachment_flags_ok() callback
+      selftests/bpf/test_offload.py: Remove check for program load flags match
+      netdevsim: Add debugfs toggle to reject BPF programs in verifier
+      selftests/bpf/test_offload.py: only check verifier log on verification fails
+      selftests/bpf/test_offload.py: fix expected case of extack messages
+      selftests/bpf/test_offload.py: reset ethtool features after failed setting
+      selftests/bpf/test_offload.py: filter bpftool internal map when counting maps
 
-diff --git a/drivers/base/auxiliary.c b/drivers/base/auxiliary.c
-index c44e85802b43..f303daadf843 100644
---- a/drivers/base/auxiliary.c
-+++ b/drivers/base/auxiliary.c
-@@ -50,8 +50,8 @@ static int auxiliary_uevent(struct device *dev, struct kobj_uevent_env *env)
- 	name = dev_name(dev);
- 	p = strrchr(name, '.');
- 
--	return add_uevent_var(env, "MODALIAS=%s%.*s", AUXILIARY_MODULE_PREFIX, (int)(p - name),
--			      name);
-+	return add_uevent_var(env, "MODALIAS=%s%.*s", AUXILIARY_MODULE_PREFIX,
-+			      (int)(p - name), name);
- }
- 
- static const struct dev_pm_ops auxiliary_dev_pm_ops = {
-@@ -113,16 +113,18 @@ static struct bus_type auxiliary_bus_type = {
-  * auxiliary_device_init - check auxiliary_device and initialize
-  * @auxdev: auxiliary device struct
-  *
-- * This is the first step in the two-step process to register an auxiliary_device.
-+ * This is the first step in the two-step process to register an
-+ * auxiliary_device.
-  *
-- * When this function returns an error code, then the device_initialize will *not* have
-- * been performed, and the caller will be responsible to free any memory allocated for the
-- * auxiliary_device in the error path directly.
-+ * When this function returns an error code, then the device_initialize will
-+ * *not* have been performed, and the caller will be responsible to free any
-+ * memory allocated for the auxiliary_device in the error path directly.
-  *
-- * It returns 0 on success.  On success, the device_initialize has been performed.  After this
-- * point any error unwinding will need to include a call to auxiliary_device_uninit().
-- * In this post-initialize error scenario, a call to the device's .release callback will be
-- * triggered, and all memory clean-up is expected to be handled there.
-+ * It returns 0 on success.  On success, the device_initialize has been
-+ * performed.  After this point any error unwinding will need to include a call
-+ * to auxiliary_device_uninit().  In this post-initialize error scenario, a call
-+ * to the device's .release callback will be triggered, and all memory clean-up
-+ * is expected to be handled there.
-  */
- int auxiliary_device_init(struct auxiliary_device *auxdev)
- {
-@@ -149,16 +151,19 @@ EXPORT_SYMBOL_GPL(auxiliary_device_init);
-  * @auxdev: auxiliary bus device to add to the bus
-  * @modname: name of the parent device's driver module
-  *
-- * This is the second step in the two-step process to register an auxiliary_device.
-+ * This is the second step in the two-step process to register an
-+ * auxiliary_device.
-  *
-- * This function must be called after a successful call to auxiliary_device_init(), which
-- * will perform the device_initialize.  This means that if this returns an error code, then a
-- * call to auxiliary_device_uninit() must be performed so that the .release callback will
-- * be triggered to free the memory associated with the auxiliary_device.
-+ * This function must be called after a successful call to
-+ * auxiliary_device_init(), which will perform the device_initialize.  This
-+ * means that if this returns an error code, then a call to
-+ * auxiliary_device_uninit() must be performed so that the .release callback
-+ * will be triggered to free the memory associated with the auxiliary_device.
-  *
-- * The expectation is that users will call the "auxiliary_device_add" macro so that the caller's
-- * KBUILD_MODNAME is automatically inserted for the modname parameter.  Only if a user requires
-- * a custom name would this version be called directly.
-+ * The expectation is that users will call the "auxiliary_device_add" macro so
-+ * that the caller's KBUILD_MODNAME is automatically inserted for the modname
-+ * parameter.  Only if a user requires a custom name would this version be
-+ * called directly.
-  */
- int __auxiliary_device_add(struct auxiliary_device *auxdev, const char *modname)
- {
-@@ -166,13 +171,13 @@ int __auxiliary_device_add(struct auxiliary_device *auxdev, const char *modname)
- 	int ret;
- 
- 	if (!modname) {
--		pr_err("auxiliary device modname is NULL\n");
-+		dev_err(dev, "auxiliary device modname is NULL\n");
- 		return -EINVAL;
- 	}
- 
- 	ret = dev_set_name(dev, "%s.%s.%d", modname, auxdev->name, auxdev->id);
- 	if (ret) {
--		pr_err("auxiliary device dev_set_name failed: %d\n", ret);
-+		dev_err(dev, "auxiliary device dev_set_name failed: %d\n", ret);
- 		return ret;
- 	}
- 
-@@ -197,9 +202,9 @@ EXPORT_SYMBOL_GPL(__auxiliary_device_add);
-  * if it does.  If the callback returns non-zero, this function will
-  * return to the caller and not iterate over any more devices.
-  */
--struct auxiliary_device *
--auxiliary_find_device(struct device *start, const void *data,
--		      int (*match)(struct device *dev, const void *data))
-+struct auxiliary_device *auxiliary_find_device(struct device *start,
-+					       const void *data,
-+					       int (*match)(struct device *dev, const void *data))
- {
- 	struct device *dev;
- 
-@@ -217,14 +222,15 @@ EXPORT_SYMBOL_GPL(auxiliary_find_device);
-  * @owner: owning module/driver
-  * @modname: KBUILD_MODNAME for parent driver
-  */
--int __auxiliary_driver_register(struct auxiliary_driver *auxdrv, struct module *owner,
--				const char *modname)
-+int __auxiliary_driver_register(struct auxiliary_driver *auxdrv,
-+				struct module *owner, const char *modname)
- {
- 	if (WARN_ON(!auxdrv->probe) || WARN_ON(!auxdrv->id_table))
- 		return -EINVAL;
- 
- 	if (auxdrv->name)
--		auxdrv->driver.name = kasprintf(GFP_KERNEL, "%s.%s", modname, auxdrv->name);
-+		auxdrv->driver.name = kasprintf(GFP_KERNEL, "%s.%s", modname,
-+						auxdrv->name);
- 	else
- 		auxdrv->driver.name = kasprintf(GFP_KERNEL, "%s", modname);
- 	if (!auxdrv->driver.name)
-diff --git a/include/linux/auxiliary_bus.h b/include/linux/auxiliary_bus.h
-index d67b17606210..fc51d45f106b 100644
---- a/include/linux/auxiliary_bus.h
-+++ b/include/linux/auxiliary_bus.h
-@@ -70,8 +70,8 @@ void auxiliary_driver_unregister(struct auxiliary_driver *auxdrv);
- #define module_auxiliary_driver(__auxiliary_driver) \
- 	module_driver(__auxiliary_driver, auxiliary_driver_register, auxiliary_driver_unregister)
- 
--struct auxiliary_device *
--auxiliary_find_device(struct device *start, const void *data,
--		      int (*match)(struct device *dev, const void *data));
-+struct auxiliary_device *auxiliary_find_device(struct device *start,
-+					       const void *data,
-+					       int (*match)(struct device *dev, const void *data));
- 
- #endif /* _AUXILIARY_BUS_H_ */
--- 
-2.29.2
+
+ .../ethernet/netronome/nfp/nfp_net_common.c   |  6 ---
+ drivers/net/ethernet/ti/cpsw_priv.c           |  3 --
+ drivers/net/netdevsim/bpf.c                   | 15 ++++--
+ drivers/net/netdevsim/netdevsim.h             |  1 +
+ include/net/xdp.h                             |  2 -
+ net/core/dev.c                                | 22 +++++++-
+ net/core/xdp.c                                | 12 -----
+ tools/testing/selftests/bpf/test_offload.py   | 53 ++++++++++---------
+ 8 files changed, 60 insertions(+), 54 deletions(-)
 
