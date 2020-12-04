@@ -2,68 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1401C2CEBFF
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 11:18:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A74F2CEC20
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 11:26:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729750AbgLDKS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 05:18:26 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:9105 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726330AbgLDKS0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 05:18:26 -0500
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4CnTCR4gN4zM0BR;
-        Fri,  4 Dec 2020 18:17:07 +0800 (CST)
-Received: from compute.localdomain (10.175.112.70) by
- DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Fri, 4 Dec 2020 18:17:36 +0800
-From:   Zhang Changzhong <zhangchangzhong@huawei.com>
-To:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        "Magnus Karlsson" <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-CC:     Zhang Changzhong <zhangchangzhong@huawei.com>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net v2] xsk: Return error code if force_zc is set
-Date:   Fri, 4 Dec 2020 18:21:16 +0800
-Message-ID: <1607077277-41995-1-git-send-email-zhangchangzhong@huawei.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1729824AbgLDKZW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 05:25:22 -0500
+Received: from szxga03-in.huawei.com ([45.249.212.189]:2395 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726999AbgLDKZV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 05:25:21 -0500
+Received: from DGGEMM401-HUB.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4CnTMQ56yyz51LF;
+        Fri,  4 Dec 2020 18:24:02 +0800 (CST)
+Received: from DGGEMM423-HUB.china.huawei.com (10.1.198.40) by
+ DGGEMM401-HUB.china.huawei.com (10.3.20.209) with Microsoft SMTP Server (TLS)
+ id 14.3.487.0; Fri, 4 Dec 2020 18:22:47 +0800
+Received: from DGGEMM513-MBX.china.huawei.com ([169.254.1.169]) by
+ dggemm423-hub.china.huawei.com ([10.1.198.40]) with mapi id 14.03.0487.000;
+ Fri, 4 Dec 2020 18:22:37 +0800
+From:   wangyunjian <wangyunjian@huawei.com>
+To:     Jason Wang <jasowang@redhat.com>, "mst@redhat.com" <mst@redhat.com>
+CC:     "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Lilijun (Jerry)" <jerry.lilijun@huawei.com>,
+        xudingke <xudingke@huawei.com>
+Subject: RE: [PATCH net-next] tun: fix ubuf refcount incorrectly on error
+ path
+Thread-Topic: [PATCH net-next] tun: fix ubuf refcount incorrectly on error
+ path
+Thread-Index: AQHWyUqLZoQlE8d/xU2MJtVcCf2EEanl77iAgADJFmA=
+Date:   Fri, 4 Dec 2020 10:22:36 +0000
+Message-ID: <34EFBCA9F01B0748BEB6B629CE643AE60DB4E07B@dggemm513-mbx.china.huawei.com>
+References: <1606982459-41752-1-git-send-email-wangyunjian@huawei.com>
+ <094f1828-9a73-033e-b1ca-43b73588d22b@redhat.com>
+In-Reply-To: <094f1828-9a73-033e-b1ca-43b73588d22b@redhat.com>
+Accept-Language: en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.187.156]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.70]
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If force_zc is set, we should exit out with an error, not fall back to
-copy mode.
-
-Fixes: 921b68692abb ("xsk: Enable sharing of dma mappings")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
----
- net/xdp/xsk_buff_pool.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
-index 9287edd..d5adeee 100644
---- a/net/xdp/xsk_buff_pool.c
-+++ b/net/xdp/xsk_buff_pool.c
-@@ -175,6 +175,7 @@ static int __xp_assign_dev(struct xsk_buff_pool *pool,
- 
- 	if (!pool->dma_pages) {
- 		WARN(1, "Driver did not DMA map zero-copy buffers");
-+		err = -EINVAL;
- 		goto err_unreg_xsk;
- 	}
- 	pool->umem->zc = true;
--- 
-2.9.5
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKYXNvbiBXYW5nIFttYWlsdG86
+amFzb3dhbmdAcmVkaGF0LmNvbV0NCj4gU2VudDogRnJpZGF5LCBEZWNlbWJlciA0LCAyMDIwIDI6
+MTEgUE0NCj4gVG86IHdhbmd5dW5qaWFuIDx3YW5neXVuamlhbkBodWF3ZWkuY29tPjsgbXN0QHJl
+ZGhhdC5jb20NCj4gQ2M6IHZpcnR1YWxpemF0aW9uQGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3Jn
+OyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBMaWxpanVuDQo+IChKZXJyeSkgPGplcnJ5LmxpbGlq
+dW5AaHVhd2VpLmNvbT47IHh1ZGluZ2tlIDx4dWRpbmdrZUBodWF3ZWkuY29tPg0KPiBTdWJqZWN0
+OiBSZTogW1BBVENIIG5ldC1uZXh0XSB0dW46IGZpeCB1YnVmIHJlZmNvdW50IGluY29ycmVjdGx5
+IG9uIGVycm9yIHBhdGgNCj4gDQo+IA0KPiBPbiAyMDIwLzEyLzMg5LiL5Y2INDowMCwgd2FuZ3l1
+bmppYW4gd3JvdGU6DQo+ID4gRnJvbTogWXVuamlhbiBXYW5nIDx3YW5neXVuamlhbkBodWF3ZWku
+Y29tPg0KPiA+DQo+ID4gQWZ0ZXIgc2V0dGluZyBjYWxsYmFjayBmb3IgdWJ1Zl9pbmZvIG9mIHNr
+YiwgdGhlIGNhbGxiYWNrDQo+ID4gKHZob3N0X25ldF96ZXJvY29weV9jYWxsYmFjaykgd2lsbCBi
+ZSBjYWxsZWQgdG8gZGVjcmVhc2UgdGhlIHJlZmNvdW50DQo+ID4gd2hlbiBmcmVlaW5nIHNrYi4g
+QnV0IHdoZW4gYW4gZXhjZXB0aW9uIG9jY3VycyBhZnRlcndhcmRzLCB0aGUgZXJyb3INCj4gPiBo
+YW5kbGluZyBpbiB2aG9zdCBoYW5kbGVfdHgoKSB3aWxsIHRyeSB0byBkZWNyZWFzZSB0aGUgc2Ft
+ZSByZWZjb3VudA0KPiA+IGFnYWluLiBUaGlzIGlzIHdyb25nIGFuZCBmaXggdGhpcyBieSBjbGVh
+cmluZyB1YnVmX2luZm8gd2hlbiBtZWV0aW5nDQo+ID4gZXJyb3JzLg0KPiA+DQo+ID4gRml4ZXM6
+IDQ0NzcxMzhmYTBhZSAoInR1bjogcHJvcGVybHkgdGVzdCBmb3IgSUZGX1VQIikNCj4gPiBGaXhl
+czogOTBlMzNkNDU5NDA3ICgidHVuOiBlbmFibGUgbmFwaV9ncm9fZnJhZ3MoKSBmb3IgVFVOL1RB
+UA0KPiA+IGRyaXZlciIpDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBZdW5qaWFuIFdhbmcgPHdh
+bmd5dW5qaWFuQGh1YXdlaS5jb20+DQo+ID4gLS0tDQo+ID4gICBkcml2ZXJzL25ldC90dW4uYyB8
+IDExICsrKysrKysrKysrDQo+ID4gICAxIGZpbGUgY2hhbmdlZCwgMTEgaW5zZXJ0aW9ucygrKQ0K
+PiA+DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3R1bi5jIGIvZHJpdmVycy9uZXQvdHVu
+LmMgaW5kZXgNCj4gPiAyZGMxOTg4YTg5NzMuLjM2MTRiYjFiNmQzNSAxMDA2NDQNCj4gPiAtLS0g
+YS9kcml2ZXJzL25ldC90dW4uYw0KPiA+ICsrKyBiL2RyaXZlcnMvbmV0L3R1bi5jDQo+ID4gQEAg
+LTE4NjEsNiArMTg2MSwxMiBAQCBzdGF0aWMgc3NpemVfdCB0dW5fZ2V0X3VzZXIoc3RydWN0IHR1
+bl9zdHJ1Y3QNCj4gKnR1biwgc3RydWN0IHR1bl9maWxlICp0ZmlsZSwNCj4gPiAgIAlpZiAodW5s
+aWtlbHkoISh0dW4tPmRldi0+ZmxhZ3MgJiBJRkZfVVApKSkgew0KPiA+ICAgCQllcnIgPSAtRUlP
+Ow0KPiA+ICAgCQlyY3VfcmVhZF91bmxvY2soKTsNCj4gPiArCQlpZiAoemVyb2NvcHkpIHsNCj4g
+PiArCQkJc2tiX3NoaW5mbyhza2IpLT5kZXN0cnVjdG9yX2FyZyA9IE5VTEw7DQo+ID4gKwkJCXNr
+Yl9zaGluZm8oc2tiKS0+dHhfZmxhZ3MgJj0gflNLQlRYX0RFVl9aRVJPQ09QWTsNCj4gPiArCQkJ
+c2tiX3NoaW5mbyhza2IpLT50eF9mbGFncyAmPSB+U0tCVFhfU0hBUkVEX0ZSQUc7DQo+ID4gKwkJ
+fQ0KPiA+ICsNCj4gPiAgIAkJZ290byBkcm9wOw0KPiA+ICAgCX0NCj4gPg0KPiA+IEBAIC0xODc0
+LDYgKzE4ODAsMTEgQEAgc3RhdGljIHNzaXplX3QgdHVuX2dldF91c2VyKHN0cnVjdCB0dW5fc3Ry
+dWN0DQo+ID4gKnR1biwgc3RydWN0IHR1bl9maWxlICp0ZmlsZSwNCj4gPg0KPiA+ICAgCQlpZiAo
+dW5saWtlbHkoaGVhZGxlbiA+IHNrYl9oZWFkbGVuKHNrYikpKSB7DQo+ID4gICAJCQlhdG9taWNf
+bG9uZ19pbmMoJnR1bi0+ZGV2LT5yeF9kcm9wcGVkKTsNCj4gPiArCQkJaWYgKHplcm9jb3B5KSB7
+DQo+ID4gKwkJCQlza2Jfc2hpbmZvKHNrYiktPmRlc3RydWN0b3JfYXJnID0gTlVMTDsNCj4gPiAr
+CQkJCXNrYl9zaGluZm8oc2tiKS0+dHhfZmxhZ3MgJj0gflNLQlRYX0RFVl9aRVJPQ09QWTsNCj4g
+PiArCQkJCXNrYl9zaGluZm8oc2tiKS0+dHhfZmxhZ3MgJj0gflNLQlRYX1NIQVJFRF9GUkFHOw0K
+PiA+ICsJCQl9DQo+ID4gICAJCQluYXBpX2ZyZWVfZnJhZ3MoJnRmaWxlLT5uYXBpKTsNCj4gPiAg
+IAkJCXJjdV9yZWFkX3VubG9jaygpOw0KPiA+ICAgCQkJbXV0ZXhfdW5sb2NrKCZ0ZmlsZS0+bmFw
+aV9tdXRleCk7DQo+IA0KPiANCj4gSXQgbG9va3MgdG8gbWUgdGhlbiB3ZSBtaXNzIHRoZSBmYWls
+dXJlIGZlZWRiYWNrLg0KPiANCj4gVGhlIGlzc3VlcyBjb21lcyBmcm9tIHRoZSBpbmNvbnNpc3Rl
+bnQgZXJyb3IgaGFuZGxpbmcgaW4gdHVuLg0KPiANCj4gSSB3b25kZXIgd2hldGhlciB3ZSBjYW4g
+c2ltcGx5IGRvIHVhcmctPmNhbGxiYWNrKHVhcmcsIGZhbHNlKSBpZiBuZWNlc3Nhcnkgb24NCj4g
+ZXZlcnkgZmFpbHR1cmUgcGF0aCBvbiB0dW5fZ2V0X3VzZXIoKS4NCg0KSG93IGFib3V0IHRoaXM/
+DQoNCi0tLQ0KIGRyaXZlcnMvbmV0L3R1bi5jIHwgMjkgKysrKysrKysrKysrKysrKysrLS0tLS0t
+LS0tLS0NCiAxIGZpbGUgY2hhbmdlZCwgMTggaW5zZXJ0aW9ucygrKSwgMTEgZGVsZXRpb25zKC0p
+DQoNCmRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC90dW4uYyBiL2RyaXZlcnMvbmV0L3R1bi5jDQpp
+bmRleCAyZGMxOTg4YTg5NzMuLjM2YThkOGVhY2Q3YiAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvbmV0
+L3R1bi5jDQorKysgYi9kcml2ZXJzL25ldC90dW4uYw0KQEAgLTE2MzcsNiArMTYzNywxOSBAQCBz
+dGF0aWMgc3RydWN0IHNrX2J1ZmYgKnR1bl9idWlsZF9za2Ioc3RydWN0IHR1bl9zdHJ1Y3QgKnR1
+biwNCiAJcmV0dXJuIE5VTEw7DQogfQ0KIA0KKy8qIGNvcHkgdWJ1Zl9pbmZvIGZvciBjYWxsYmFj
+ayB3aGVuIHNrYiBoYXMgbm8gZXJyb3IgKi8NCitpbmxpbmUgc3RhdGljIHR1bl9jb3B5X3VidWZf
+aW5mbyhzdHJ1Y3Qgc2tfYnVmZiAqc2tiLCBib29sIHplcm9jb3B5LCB2b2lkICptc2dfY29udHJv
+bCkNCit7DQorCWlmICh6ZXJvY29weSkgew0KKwkJc2tiX3NoaW5mbyhza2IpLT5kZXN0cnVjdG9y
+X2FyZyA9IG1zZ19jb250cm9sOw0KKwkJc2tiX3NoaW5mbyhza2IpLT50eF9mbGFncyB8PSBTS0JU
+WF9ERVZfWkVST0NPUFk7DQorCQlza2Jfc2hpbmZvKHNrYiktPnR4X2ZsYWdzIHw9IFNLQlRYX1NI
+QVJFRF9GUkFHOw0KKwl9IGVsc2UgaWYgKG1zZ19jb250cm9sKSB7DQorCQlzdHJ1Y3QgdWJ1Zl9p
+bmZvICp1YXJnID0gbXNnX2NvbnRyb2w7DQorCQl1YXJnLT5jYWxsYmFjayh1YXJnLCBmYWxzZSk7
+DQorCX0NCit9DQorDQogLyogR2V0IHBhY2tldCBmcm9tIHVzZXIgc3BhY2UgYnVmZmVyICovDQog
+c3RhdGljIHNzaXplX3QgdHVuX2dldF91c2VyKHN0cnVjdCB0dW5fc3RydWN0ICp0dW4sIHN0cnVj
+dCB0dW5fZmlsZSAqdGZpbGUsDQogCQkJICAgIHZvaWQgKm1zZ19jb250cm9sLCBzdHJ1Y3QgaW92
+X2l0ZXIgKmZyb20sDQpAQCAtMTgxMiwxNiArMTgyNSw2IEBAIHN0YXRpYyBzc2l6ZV90IHR1bl9n
+ZXRfdXNlcihzdHJ1Y3QgdHVuX3N0cnVjdCAqdHVuLCBzdHJ1Y3QgdHVuX2ZpbGUgKnRmaWxlLA0K
+IAkJYnJlYWs7DQogCX0NCiANCi0JLyogY29weSBza2JfdWJ1Zl9pbmZvIGZvciBjYWxsYmFjayB3
+aGVuIHNrYiBoYXMgbm8gZXJyb3IgKi8NCi0JaWYgKHplcm9jb3B5KSB7DQotCQlza2Jfc2hpbmZv
+KHNrYiktPmRlc3RydWN0b3JfYXJnID0gbXNnX2NvbnRyb2w7DQotCQlza2Jfc2hpbmZvKHNrYikt
+PnR4X2ZsYWdzIHw9IFNLQlRYX0RFVl9aRVJPQ09QWTsNCi0JCXNrYl9zaGluZm8oc2tiKS0+dHhf
+ZmxhZ3MgfD0gU0tCVFhfU0hBUkVEX0ZSQUc7DQotCX0gZWxzZSBpZiAobXNnX2NvbnRyb2wpIHsN
+Ci0JCXN0cnVjdCB1YnVmX2luZm8gKnVhcmcgPSBtc2dfY29udHJvbDsNCi0JCXVhcmctPmNhbGxi
+YWNrKHVhcmcsIGZhbHNlKTsNCi0JfQ0KLQ0KIAlza2JfcmVzZXRfbmV0d29ya19oZWFkZXIoc2ti
+KTsNCiAJc2tiX3Byb2JlX3RyYW5zcG9ydF9oZWFkZXIoc2tiKTsNCiAJc2tiX3JlY29yZF9yeF9x
+dWV1ZShza2IsIHRmaWxlLT5xdWV1ZV9pbmRleCk7DQpAQCAtMTgzMCw2ICsxODMzLDcgQEAgc3Rh
+dGljIHNzaXplX3QgdHVuX2dldF91c2VyKHN0cnVjdCB0dW5fc3RydWN0ICp0dW4sIHN0cnVjdCB0
+dW5fZmlsZSAqdGZpbGUsDQogCQlzdHJ1Y3QgYnBmX3Byb2cgKnhkcF9wcm9nOw0KIAkJaW50IHJl
+dDsNCiANCisJCXR1bl9jb3B5X3VidWZfaW5mbyhza2IsIHplcm9jb3B5LCBtc2dfY29udHJvbCk7
+DQogCQlsb2NhbF9iaF9kaXNhYmxlKCk7DQogCQlyY3VfcmVhZF9sb2NrKCk7DQogCQl4ZHBfcHJv
+ZyA9IHJjdV9kZXJlZmVyZW5jZSh0dW4tPnhkcF9wcm9nKTsNCkBAIC0xODgwLDcgKzE4ODQsNyBA
+QCBzdGF0aWMgc3NpemVfdCB0dW5fZ2V0X3VzZXIoc3RydWN0IHR1bl9zdHJ1Y3QgKnR1biwgc3Ry
+dWN0IHR1bl9maWxlICp0ZmlsZSwNCiAJCQlXQVJOX09OKDEpOw0KIAkJCXJldHVybiAtRU5PTUVN
+Ow0KIAkJfQ0KLQ0KKwkJdHVuX2NvcHlfdWJ1Zl9pbmZvKHNrYiwgemVyb2NvcHksIG1zZ19jb250
+cm9sKTsNCiAJCWxvY2FsX2JoX2Rpc2FibGUoKTsNCiAJCW5hcGlfZ3JvX2ZyYWdzKCZ0ZmlsZS0+
+bmFwaSk7DQogCQlsb2NhbF9iaF9lbmFibGUoKTsNCkBAIC0xODg5LDYgKzE4OTMsNyBAQCBzdGF0
+aWMgc3NpemVfdCB0dW5fZ2V0X3VzZXIoc3RydWN0IHR1bl9zdHJ1Y3QgKnR1biwgc3RydWN0IHR1
+bl9maWxlICp0ZmlsZSwNCiAJCXN0cnVjdCBza19idWZmX2hlYWQgKnF1ZXVlID0gJnRmaWxlLT5z
+ay5za193cml0ZV9xdWV1ZTsNCiAJCWludCBxdWV1ZV9sZW47DQogDQorCQl0dW5fY29weV91YnVm
+X2luZm8oc2tiLCB6ZXJvY29weSwgbXNnX2NvbnRyb2wpOw0KIAkJc3Bpbl9sb2NrX2JoKCZxdWV1
+ZS0+bG9jayk7DQogCQlfX3NrYl9xdWV1ZV90YWlsKHF1ZXVlLCBza2IpOw0KIAkJcXVldWVfbGVu
+ID0gc2tiX3F1ZXVlX2xlbihxdWV1ZSk7DQpAQCAtMTg5OSw4ICsxOTA0LDEwIEBAIHN0YXRpYyBz
+c2l6ZV90IHR1bl9nZXRfdXNlcihzdHJ1Y3QgdHVuX3N0cnVjdCAqdHVuLCBzdHJ1Y3QgdHVuX2Zp
+bGUgKnRmaWxlLA0KIA0KIAkJbG9jYWxfYmhfZW5hYmxlKCk7DQogCX0gZWxzZSBpZiAoIUlTX0VO
+QUJMRUQoQ09ORklHXzRLU1RBQ0tTKSkgew0KKwkJdHVuX2NvcHlfdWJ1Zl9pbmZvKHNrYiwgemVy
+b2NvcHksIG1zZ19jb250cm9sKTsNCiAJCXR1bl9yeF9iYXRjaGVkKHR1biwgdGZpbGUsIHNrYiwg
+bW9yZSk7DQogCX0gZWxzZSB7DQorCQl0dW5fY29weV91YnVmX2luZm8oc2tiLCB6ZXJvY29weSwg
+bXNnX2NvbnRyb2wpOw0KIAkJbmV0aWZfcnhfbmkoc2tiKTsNCiAJfQ0KIAlyY3VfcmVhZF91bmxv
+Y2soKTsNCi0tIA0KDQo+IA0KPiBOb3RlIHRoYXQsIHplcm9jb3B5IGhhcyBhIGxvdCBvZiBpc3N1
+ZXMgd2hpY2ggbWFrZXMgaXQgbm90IGdvb2QgZm9yIHByb2R1Y3Rpb24NCj4gZW52aXJvbm1lbnQu
+DQoNCk9LLCB0aGFua3MuIEkgZm91bmQgaXQgd2hlbiByZXZpZXdpbmcgdGhlIGNvZGUgYW5kIHRo
+aW5rIGl0IG5lZWQgdG8gYmUgZml4ZWQuDQoNCg0KPiANCj4gVGhhbmtzDQoNCg==
