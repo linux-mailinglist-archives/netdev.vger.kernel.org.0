@@ -2,111 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DC142CF104
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 16:47:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9405D2CF137
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 16:52:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730655AbgLDPrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 10:47:20 -0500
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:57543 "EHLO
-        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725987AbgLDPrS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 10:47:18 -0500
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 9982A580144;
-        Fri,  4 Dec 2020 10:46:32 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Fri, 04 Dec 2020 10:46:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm2; bh=0e7pP2gtmRQ29hprbKu2oy4kdew
-        zAhRmyRinSUbFXGI=; b=ZqOkCU/Elo9/DT91sFqoy4VDx/hJNiSyNsU2qc8PyT2
-        l16vgpTu3T+wSQ1hQzcH9FtxzkLK9LXd2DzAFjC1PXrkCB8xaq0zX6exxxmqT9Cf
-        TEmd4yVvVjSrgeO7mxOxPwlaCu0Lyc1quCfbWtaAqsy5u9D4a5EHeP2ps9iY8Hvj
-        EksqeAmlET0KyrUTbCXVT1IPJHJWHkukpmPS9f/FTQIY60fqzoDfZd0gcBy3dzWh
-        9Xb7/Xz9HsIClfQCtD+ibO0CrnQjcrP5q48qzmhFAh4HbPD3th9qX1mfbWGDT0pB
-        YNhiDdx2CiQwAByCXTGzir900BEeUNJoJh26a1xp50w==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=0e7pP2
-        gtmRQ29hprbKu2oy4kdewzAhRmyRinSUbFXGI=; b=k6H8oTSs6ROTEyzgDLjEKi
-        2lAZr2+iu5gtcm3wQSwiHZKUBW80StyHcmzxfkOmBay+hU0qjmoqGOf2YLZE8LbR
-        jYODpeYwaG/brVh0Jvqqj6DHZrxAcLk2s5qvZm3uN6BURRrBqtapu4C/693rHkmO
-        c68oCvTLIf2pBoLWj19FW8tNisTVrfyFGE+I57LsEfPI5Fc84EC1FMknBRV8OQuZ
-        uAE4gcfdRQ4d0NzorJQbGoKlyyaNdiCEnuMPw/Z8QWUf51nDCpTnKjBTcVXlMazR
-        tRAotxJBpxHYLftkoFGXCGQDT3EymOJYmidDiNSNv7ssd0g87ntgzMacdEYyg45w
-        ==
-X-ME-Sender: <xms:11nKXx5EFci9Q17YW9szG0v0H8Z-OSzOqUI2Qj-8LV00u7odRUSaKg>
-    <xme:11nKXyvJnWMTX-1UFfAPDhySw4RAITDEa03fUQSthB4gwbyGmi22GCexd7rhlgSw_
-    h_L0mSppfLFcQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudeikedgkeduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujgesthdtre
-    dttddtvdenucfhrhhomhepifhrvghgucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheq
-    necuggftrfgrthhtvghrnhepveeuheejgfffgfeivddukedvkedtleelleeghfeljeeiue
-    eggeevueduudekvdetnecukfhppeekfedrkeeirdejgedrieegnecuvehluhhsthgvrhfu
-    ihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepghhrvghgsehkrhhorghhrdgtoh
-    hm
-X-ME-Proxy: <xmx:11nKXxip3DyQYkY2WZKFwWZU2JejKDs6RREPa9XpmB5LHscX2OpScQ>
-    <xmx:11nKX9rq2U8zSxgENDMmoi5XXFOlHAfQQRa8j7ny06kac5cIRGkdzg>
-    <xmx:11nKX-vVKeR2uvsEI9RSvKLLdy5SupdUDp8hJ8ch-jgaGWBcKc9Qzw>
-    <xmx:2FnKX9wqPWg4zTQCCL6d_pNIsIS_Y-RGvrNQDjVEFooGMRmPEl-7Cg>
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        by mail.messagingengine.com (Postfix) with ESMTPA id DD5E124005E;
-        Fri,  4 Dec 2020 10:46:30 -0500 (EST)
-Date:   Fri, 4 Dec 2020 16:47:48 +0100
-From:   Greg KH <greg@kroah.com>
-To:     "Enrico Weigelt, metux IT consult" <info@metux.net>
-Cc:     linux-kernel@vger.kernel.org, devel@driverdev.osuosl.org,
-        toddpoynor@google.com, sbranden@broadcom.com, rjui@broadcom.com,
-        speakup@linux-speakup.org, rcy@google.com, f.fainelli@gmail.com,
-        rspringer@google.com, laurent.pinchart@ideasonboard.com,
-        netdev@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        mchehab@kernel.org, nsaenzjulienne@suse.de,
-        linux-media@vger.kernel.org
-Subject: Re: [PATCH 04/11] drivers: staging: goldfish: remove unneeded
- MODULE_VERSION() call
-Message-ID: <X8paJN2bDNFZppr1@kroah.com>
-References: <20201203124803.23390-1-info@metux.net>
- <20201203124803.23390-4-info@metux.net>
+        id S1730942AbgLDPt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 10:49:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43368 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727347AbgLDPtx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Dec 2020 10:49:53 -0500
+Date:   Fri, 4 Dec 2020 10:49:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607096952;
+        bh=Ow4G56Wm/9Nfwmkt+etIYtnevqjnp+bk9nlnFoU8UQk=;
+        h=From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RQjC41VglvvhGwAWU6XRMSSSMnzpp3JOxd1JNCylOQy/kEvUZ/ewOpyE/wOqQW/7j
+         878hxCTLNSyKUEwvhP2o5iMZhV6F/W385j25+TYB/QZlSyrDcFDoYe0rgky3hMcZ/P
+         Nspyf5ZojFO6emRkgFk9EeTs/eGl6Km4CtSDUo55DCdJh1xlIRobP9bnqaHpnGlsvQ
+         4TMZgz2q7uNKvG3exf/XFGcNg+7tXIby71tbnOypYg4j4+erSHdVGjPaDmkBXDFxXN
+         ICWQyjSwysK+pQXANGOHy6hLAsiPnYnR3u4UiD59Fj+QIoSr52SNzsJ+5WH4vYhD2/
+         XjdW17iIoYZ9Q==
+From:   Sasha Levin <sashal@kernel.org>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Mike Christie <michael.christie@oracle.com>,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.9 22/33] vhost scsi: add lun parser helper
+Message-ID: <20201204154911.GZ643756@sasha-vm>
+References: <20201129041314.GO643756@sasha-vm>
+ <7a4c3d84-8ff7-abd9-7340-3a6d7c65cfa7@redhat.com>
+ <20201129210650.GP643756@sasha-vm>
+ <e499986d-ade5-23bd-7a04-fa5eb3f15a56@redhat.com>
+ <20201130173832.GR643756@sasha-vm>
+ <238cbdd1-dabc-d1c1-cff8-c9604a0c9b95@redhat.com>
+ <9ec7dff6-d679-ce19-5e77-f7bcb5a63442@oracle.com>
+ <4c1b2bc7-cf50-4dcd-bfd4-be07e515de2a@redhat.com>
+ <20201130235959.GS643756@sasha-vm>
+ <6c49ded5-bd8f-f219-0c51-3500fd751633@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20201203124803.23390-4-info@metux.net>
+In-Reply-To: <6c49ded5-bd8f-f219-0c51-3500fd751633@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 03, 2020 at 01:47:56PM +0100, Enrico Weigelt, metux IT consult wrote:
-> Remove MODULE_VERSION(), as it doesn't seem to have much practical purpose.
-> For in-kernel drivers, the kernel version matters. The driver received lots
-> of changes, but version number has remained the same since it's introducing
-> into mainline, seven years ago. So, it doesn't seem to have much practical
-> meaning anymore.
-> 
-> Signed-off-by: Enrico Weigelt <info@metux.net>
-> ---
->  drivers/staging/goldfish/goldfish_audio.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/staging/goldfish/goldfish_audio.c b/drivers/staging/goldfish/goldfish_audio.c
-> index 0c65a0121dde..4a23f40e549a 100644
-> --- a/drivers/staging/goldfish/goldfish_audio.c
-> +++ b/drivers/staging/goldfish/goldfish_audio.c
-> @@ -24,7 +24,6 @@
->  MODULE_AUTHOR("Google, Inc.");
->  MODULE_DESCRIPTION("Android QEMU Audio Driver");
->  MODULE_LICENSE("GPL");
-> -MODULE_VERSION("1.0");
->  
->  struct goldfish_audio {
->  	char __iomem *reg_base;
+On Fri, Dec 04, 2020 at 09:27:28AM +0100, Paolo Bonzini wrote:
+>On 01/12/20 00:59, Sasha Levin wrote:
+>>
+>>It's quite easy to NAK a patch too, just reply saying "no" and it'll be
+>>dropped (just like this patch was dropped right after your first reply)
+>>so the burden on maintainers is minimal.
+>
+>The maintainers are _already_ marking patches with "Cc: stable".  That 
 
-This file isn't even in my tree, are you sure you made this patch series
-against the correct branch/tree?
+They're not, though. Some forget, some subsystems don't mark anything,
+some don't mark it as it's not stable material when it lands in their
+tree but then it turns out to be one if it sits there for too long.
 
-Please fix this series up and resend.
+>(plus backports) is where the burden on maintainers should start and 
+>end.  I don't see the need to second guess them.
 
-thanks,
+This is similar to describing our CI infrastructure as "second
+guessing": why are we second guessing authors and maintainers who are
+obviously doing the right thing by testing their patches and reporting
+issues to them?
 
-greg k-h
+Are you saying that you have always gotten stable tags right? never
+missed a stable tag where one should go?
+
+-- 
+Thanks,
+Sasha
