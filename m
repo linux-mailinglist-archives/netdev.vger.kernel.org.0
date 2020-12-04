@@ -2,200 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D6F92CF672
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 22:59:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 665592CF675
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 23:00:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727517AbgLDV6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 16:58:32 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56506 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726263AbgLDV6c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Dec 2020 16:58:32 -0500
-Message-ID: <999c9328747d4edbfc8d2720b886aaa269e16df8.camel@kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607119071;
-        bh=ultBWZkYr8AL8YDaGGjF9fL3uS7cqH79NjI0A6ylQK4=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=j5S33rWLdQ9itK/L6lp7wG2tGn4s0q3bKle51XTPXPNtFJzaXkNP5nYQlFLD84LgS
-         RlrVJOlOftaGSOwOxVkVGFvAQgDMXpDjQLuv3fXOAziYbOg5NUs6xcGfRwiX9F+mkV
-         KiJc+BvmrFlwUkwOQFas0NRwGdnh1FuCUHnvrK185I02bfd0/6mshTZi9tADmmjlFe
-         ZxSSvfdwbX0k2UBGXspPu11F8t4jDUMQfTNChkIzGcnt78qan4DcVL+AjwdotAHdp7
-         QI2yRWoQ7ZopD34nm5Cu8UABm1ncBto8cEFxE1AV+QOvFTbnSjFudvfpjCD+g6DYey
-         n20JOCRomGWmw==
-Subject: Re: [net-next V2 08/15] net/mlx5e: Add TX PTP port object support
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Eran Ben Elisha <eranbe@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 04 Dec 2020 13:57:49 -0800
-In-Reply-To: <20201204122613.542c2362@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-References: <20201203042108.232706-1-saeedm@nvidia.com>
-         <20201203042108.232706-9-saeedm@nvidia.com>
-         <20201203182908.1d25ea3f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-         <b761c676af87a4a82e3ea4f6f5aff3d1159c63e7.camel@kernel.org>
-         <20201204122613.542c2362@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1728252AbgLDV7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 16:59:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50804 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725903AbgLDV7o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 16:59:44 -0500
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59ACCC0613D1;
+        Fri,  4 Dec 2020 13:59:04 -0800 (PST)
+Received: by mail-pg1-x541.google.com with SMTP id n10so4352387pgv.8;
+        Fri, 04 Dec 2020 13:59:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bOYSy1/W+IvqY8VNMWbqot9NddWFzlzpEDfybh9Rd5c=;
+        b=b2vEQeoXBtlIel+He++NoP+ym6WgZmlCXqhipUZQDrxaUKcn1aRJaKyA13lmTPgdY+
+         NIZbE6Wrla+D4fgayTHMmef2G9qSWr0ku6EbwofDp7w54P2Q7uvGpJDhKrySfjvKdUqa
+         jfWJssdr8Q5Gjw/Qms4ebI/SmIweC5lqiNGblxN+s3Vlu5rxrRPeSFO46TUoVXUBwRTs
+         l8PxheIhtfHZ9ZNK2DZIGYqR9BGVPEdqSWoFTewbRX79j4OvemBZTifRgCROD7BXM75R
+         RjElmoZzHEUvvJV2OxPeA4gw65QlDI1E/g9FzLQhO3PgeV+RVcGOdfQWFEoQSdMf/SXi
+         MfZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bOYSy1/W+IvqY8VNMWbqot9NddWFzlzpEDfybh9Rd5c=;
+        b=X//MM4sYHHMf9h8mVVE6PTVbfBjXmcux1X9rb7351ooAyfg0nh53hYf8/DD9Ile821
+         waO3aUWYBww5jQRVsn1yKzN8mAVfe0Rd6J2oYjYdp1altGeb9ar82XK1mO7V5XjGXeCl
+         dFf0dlDJv339KGk4iG7Ql02q+t9X5JZ/z9yKcOu+NeVTCJ3KjNOZpiei5QANWuV1tGo2
+         bRI+GC+VAiiuFBMSpCxFjN921zvC48blHPtkkL232rc3rdm7mPvD8OJduNg3ZBstmK82
+         t5Igt5EBKHfqicR1g9MKqff69RZ6x797qdCkLcKuGoMkjpERY9GwiRkeKnm1/5YuJ1Aw
+         OjMA==
+X-Gm-Message-State: AOAM532uqWC/axmLIjlgl3RItgEIQD/1kC7TO1uXJejj8PAUTLHUYoFC
+        joPP4HnFjk4Sb5EezGDnidK4HbRilQxpT4TX
+X-Google-Smtp-Source: ABdhPJxWZkwKOMw5wsvhYFHPjNU09TJegdW4joQRoUqOVAx1CiDNQolr7Dx7r+0KyjWzdasJM90s+g==
+X-Received: by 2002:a63:4716:: with SMTP id u22mr9281667pga.407.1607119143128;
+        Fri, 04 Dec 2020 13:59:03 -0800 (PST)
+Received: from localhost.localdomain ([49.207.200.112])
+        by smtp.gmail.com with ESMTPSA id s17sm5016246pge.37.2020.12.04.13.58.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Dec 2020 13:59:02 -0800 (PST)
+From:   Anant Thazhemadam <anant.thazhemadam@gmail.com>
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Anant Thazhemadam <anant.thazhemadam@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+49d4cab497c2142ee170@syzkaller.appspotmail.com
+Subject: [PATCH] net: wireless: validate key indexes for cfg80211_registered_device
+Date:   Sat,  5 Dec 2020 03:28:25 +0530
+Message-Id: <20201204215825.129879-1-anant.thazhemadam@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-12-04 at 12:26 -0800, Jakub Kicinski wrote:
-> On Fri, 04 Dec 2020 11:33:26 -0800 Saeed Mahameed wrote:
-> > On Thu, 2020-12-03 at 18:29 -0800, Jakub Kicinski wrote:
-> > > On Wed, 2 Dec 2020 20:21:01 -0800 Saeed Mahameed wrote:  
-> > > > Add TX PTP port object support for better TX timestamping
-> > > > accuracy.
-> > > > Currently, driver supports CQE based TX port timestamp. Device
-> > > > also offers TX port timestamp, which has less jitter and better
-> > > > reflects the actual time of a packet's transmit.  
-> > > 
-> > > How much better is it?
-> > > 
-> > > Is the new implementation is standard compliant or just a "better
-> > > guess"?
-> > 
-> > It is not a guess for sure, the closer to the output port you take
-> > the
-> > stamp the more accurate you get, this is why we need the HW
-> > timestamp
-> > in first place, i don't have the exact number though, but we target
-> > to
-> > be compliant with G.8273.2 class C, (30 nsec), and this code allow
-> > Linux systems to be deployed in the 5G telco edge. Where this
-> > standard
-> > is needed.
-> 
-> I see. IIRC there was also an IEEE standard which specified the exact
-> time stamping point (i.e. SFD crosses layer X). If it's class C that
-> answers the question, I think.
-> 
-> > > > Define new driver layout called ptpsq, on which driver will
-> > > > create
-> > > > SQs that will support TX port timestamp for their transmitted
-> > > > packets.
-> > > > Driver to identify PTP TX skbs and steer them to these
-> > > > dedicated
-> > > > SQs
-> > > > as part of the select queue ndo.
-> > > > 
-> > > > Driver to hold ptpsq per TC and report them at
-> > > > netif_set_real_num_tx_queues().
-> > > > 
-> > > > Add support for all needed functionality in order to xmit and
-> > > > poll
-> > > > completions received via ptpsq.
-> > > > 
-> > > > Add ptpsq to the TX reporter recover, diagnose and dump
-> > > > methods.
-> > > > 
-> > > > Creation of ptpsqs is disabled by default, and can be enabled
-> > > > via
-> > > > tx_port_ts private flag.  
-> > > 
-> > > This flag is pretty bad user experience.
-> > 
-> > Yeah, nothing i  could do about this, there is a large memory foot
-> > print i want to avoid, and we don't want to complicate PTP ctrl API
-> > of
-> > the HW operating mode, so until we improve the HW, we prefer to
-> > keep
-> > this feature as a private flag.
-> > 
-> > > > This patch steer all timestamp related packets to a ptpsq, but
-> > > > it
-> > > > does not open the port timestamp support for it. The support
-> > > > will
-> > > > be added in the following patch.  
-> > > 
-> > > Overall I'm a little shocked by this, let me sleep on it :)
-> > > 
-> > > More info on the trade offs and considerations which led to the
-> > > implementation would be useful.  
-> > 
-> > To get the Improved accuracy we need a special type of SQs attached
-> > to
-> > special HW objects that will provide more accurate stamping.
-> > 
-> > Trade-offs are :
-> > 
-> > options 1) convert ALL regular txqs (SQs) to work in this port
-> > stamping
-> > mode.
-> > 
-> > Pros: no need for any special mode in driver, no additional memory,
-> > other than the new HW objects we create for the special stamping.
-> > 
-> > Cons: significant performance hit for non PTP traffic, (the hw
-> > stamps
-> > all packets in the slow but more accurate mode)
-> 
-> Just to be clear (Alexei brought this up when I mentioned these
-> patches) - the requirement for the separate queues is because the
-> time
-> stamp enable is a queue property, not a per WQE / frame thing? I
-> couldn't find this in the code - could you point me to where it's
-> set?
-> 
+syzbot discovered a bug in which an OOB access was being made because
+an unsuitable key_idx value was wrongly considered to be acceptable
+while deleting a key in nl80211_del_key().
 
-Yes, it is not per WQE, a new SQ property and we set it on:
-mlx5e_ptp_open_txqsq() and then pass it to mlx5e_create_sq()
+Since we don't know the cipher at the time of deletion, if
+cfg80211_validate_key_settings() were to be called directly in
+nl80211_del_key(), even valid keys would be wrongly determined invalid,
+and deletion wouldn't occur correctly.
+For this reason, a new function - cfg80211_valid_key_idx(), has been
+created, to determine if the key_idx value provided is valid or not.
+cfg80211_valid_key_idx() is directly called in 2 places -
+nl80211_del_key(), and cfg80211_validate_key_settings().
 
-where we set it in the hw context like so:
+Reported-by: syzbot+49d4cab497c2142ee170@syzkaller.appspotmail.com
+Tested-by: syzbot+49d4cab497c2142ee170@syzkaller.appspotmail.com
+Suggested-by: Johannes Berg <johannes@sipsolutions.net>
+Signed-off-by: Anant Thazhemadam <anant.thazhemadam@gmail.com>
+---
+For the bug that was getting triggered, pairwise was true, and 
+the NL80211_EXT_FEATURE_BEACON_PROTECTION feature was set too.
+The control logic for cfg80211_validate_key_settings() has been
+designed keeping this also in mind.
 
-MLX5_SET(sqc,  sqc, ts_cqe_to_dest_cqn, csp->ts_cqe_to_dest_cqn);
+ net/wireless/core.h    |  2 ++
+ net/wireless/nl80211.c |  7 ++++---
+ net/wireless/util.c    | 27 ++++++++++++++++++++-------
+ 3 files changed, 26 insertions(+), 10 deletions(-)
 
-A nice quirk ! this will be Line #1234 in mlx5/core/en_main.c :)
-
-
-> > option 2) route PTP traffic to a special SQs per ring, this SQ will
-> > be
-> > PTP port accurate, Normal traffic will continue through regular SQs
-> > 
-> > Pros: Regular non PTP traffic not affected.
-> > Cons: High memory footprint for creating special SQs
-> > 
-> > 
-> > So we prefer (2) + private flag to avoid the performance hit and
-> > the
-> > redundant memory usage out of the box.
-> 
-> Option 3 - have only one special PTP queue in the system. PTP traffic
-> is rather low rate, queue per core doesn't seem necessary.
-> 
-
-We only forward ptp traffic to the new special queue but we create more
-than one to avoid internal locking as we will utilize the tx softirq
-percpu.
-
-After double checking the code it seems Eran and Tariq have decided to
-forward all UDP traffic, let me double check with them what happened
-here.
-
-
-> 
-> Since you said the PTP queues are slower / higher overhead - are you
-> not
-> concerned that QUIC traffic will get mis-directed to them? People
-> like
-> hardware time stamps for all sort of measurements these days. Plus,
-> since UDP doesn't itself set ooo those applications may be surprised
-> to
-> see increased out-of-order rate.
-> 
-
-Right, i thought Eran was looking for the ptp udp port as well.
-Let me verify what happened here.
-
-> Why not use the PTP classification helpers we already have?
-
-do you mean ptp_parse_header() or the ebpf prog ?
-We use skb_flow_dissect() which should be simple enough.
-
+diff --git a/net/wireless/core.h b/net/wireless/core.h
+index e3e9686859d4..7df91f940212 100644
+--- a/net/wireless/core.h
++++ b/net/wireless/core.h
+@@ -433,6 +433,8 @@ void cfg80211_sme_abandon_assoc(struct wireless_dev *wdev);
+ 
+ /* internal helpers */
+ bool cfg80211_supported_cipher_suite(struct wiphy *wiphy, u32 cipher);
++bool cfg80211_valid_key_idx(struct cfg80211_registered_device *rdev,
++			    int key_idx, bool pairwise);
+ int cfg80211_validate_key_settings(struct cfg80211_registered_device *rdev,
+ 				   struct key_params *params, int key_idx,
+ 				   bool pairwise, const u8 *mac_addr);
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index a77174b99b07..db36158911ae 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -4260,9 +4260,6 @@ static int nl80211_del_key(struct sk_buff *skb, struct genl_info *info)
+ 	if (err)
+ 		return err;
+ 
+-	if (key.idx < 0)
+-		return -EINVAL;
+-
+ 	if (info->attrs[NL80211_ATTR_MAC])
+ 		mac_addr = nla_data(info->attrs[NL80211_ATTR_MAC]);
+ 
+@@ -4278,6 +4275,10 @@ static int nl80211_del_key(struct sk_buff *skb, struct genl_info *info)
+ 	    key.type != NL80211_KEYTYPE_GROUP)
+ 		return -EINVAL;
+ 
++	if (!cfg80211_valid_key_idx(rdev, key.idx,
++				    key.type == NL80211_KEYTYPE_PAIRWISE))
++		return -EINVAL;
++
+ 	if (!rdev->ops->del_key)
+ 		return -EOPNOTSUPP;
+ 
+diff --git a/net/wireless/util.c b/net/wireless/util.c
+index f01746894a4e..07b17feb9b1e 100644
+--- a/net/wireless/util.c
++++ b/net/wireless/util.c
+@@ -272,18 +272,31 @@ bool cfg80211_supported_cipher_suite(struct wiphy *wiphy, u32 cipher)
+ 	return false;
+ }
+ 
+-int cfg80211_validate_key_settings(struct cfg80211_registered_device *rdev,
+-				   struct key_params *params, int key_idx,
+-				   bool pairwise, const u8 *mac_addr)
++bool cfg80211_valid_key_idx(struct cfg80211_registered_device *rdev,
++			    int key_idx, bool pairwise)
+ {
+ 	int max_key_idx = 5;
+ 
+-	if (wiphy_ext_feature_isset(&rdev->wiphy,
+-				    NL80211_EXT_FEATURE_BEACON_PROTECTION) ||
+-	    wiphy_ext_feature_isset(&rdev->wiphy,
+-				    NL80211_EXT_FEATURE_BEACON_PROTECTION_CLIENT))
++	if (pairwise)
++		max_key_idx = 3;
++
++	else if (wiphy_ext_feature_isset(&rdev->wiphy,
++					 NL80211_EXT_FEATURE_BEACON_PROTECTION) ||
++		 wiphy_ext_feature_isset(&rdev->wiphy,
++					 NL80211_EXT_FEATURE_BEACON_PROTECTION_CLIENT))
+ 		max_key_idx = 7;
++
+ 	if (key_idx < 0 || key_idx > max_key_idx)
++		return false;
++
++	return true;
++}
++
++int cfg80211_validate_key_settings(struct cfg80211_registered_device *rdev,
++				   struct key_params *params, int key_idx,
++				   bool pairwise, const u8 *mac_addr)
++{
++	if (!cfg80211_valid_key_idx(rdev, key_idx, pairwise))
+ 		return -EINVAL;
+ 
+ 	if (!pairwise && mac_addr && !(rdev->wiphy.flags & WIPHY_FLAG_IBSS_RSN))
+-- 
+2.25.1
 
