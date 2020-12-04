@@ -2,178 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 087392CF62E
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 22:30:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EBAB2CF649
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 22:37:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387603AbgLDV3d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 16:29:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46128 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387552AbgLDV3d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 16:29:33 -0500
-Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B15F2C061A4F
-        for <netdev@vger.kernel.org>; Fri,  4 Dec 2020 13:28:52 -0800 (PST)
-Received: by mail-vs1-xe41.google.com with SMTP id x26so4088247vsq.1
-        for <netdev@vger.kernel.org>; Fri, 04 Dec 2020 13:28:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=69QduSGKkmK3S33PWxCrlgyCS/xRcCGtlar3bFhP0OA=;
-        b=kVUkG5lfbkJ/E/oWPpTq/kBw0J6ayDJZYbH1xHWU1Wq9cFMWGQYJpy0fUvh6qiU6Uz
-         2YZY+78nNKXAR2oHlhx0j91I0f5xYit7Gs6rfbYLcD98+QWqasDgSdUEvA93KUFV+Wh1
-         v2fKQakrGrrNCLjken7setay+qr9Joy69B+qi1BesqFyg5Xswf49zf0B2ZeATtgWoD7w
-         nkh/NrM/IlFS0hwewFY1TSrjrMGjCObNNuKKa3wyaMx+MPP0RnmYuNlOT0qewKOh+6wI
-         DkhUHDwp9SuqRGSCM1xgNcT4tNMzRYMmzPiCuUVjdgyJIx1TqZsX8TktGpdGPtJw7NKu
-         74jQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=69QduSGKkmK3S33PWxCrlgyCS/xRcCGtlar3bFhP0OA=;
-        b=Wq4qGRWARgor2Y+C70zKJo54+MYBhNlDGPGM/vDA0Wg2tF+hE0Fclv/jgQFueNYyzl
-         2VpKdQsga+hZXigMjVICvEYkZE3gR56pGQRZq1WRnPoudXA2oGplqI6JFplmpxAapUwP
-         RaLuxeDkTkz1HAJDfVidVK4CzgZdsb8sBo3JeCGDRi9AlqPVmz5gL9wAWdzNXcRxXmNU
-         /5PdbCaSaDL0m2v7n/4kIqgpGxUYFyWeY5mQNcv176MdTc6bGvKVtrLMsfcjWhCp5aMQ
-         kpaBHp4D7Lf1tk9IIApAGiEcSwpqrW6Ae4vFWmnBMepUh7RG8hSJn9SmYzCflqkF1Fx5
-         3pkA==
-X-Gm-Message-State: AOAM530kCu155IkelueNSwsJwuFaPauAMKM3iCZ0C8TxInKAQyZkow7t
-        zDqJ/rXnp7gN0goXz3ZR/bPQOjVKrrhxPKXYWUApdg==
-X-Google-Smtp-Source: ABdhPJxViztqWxn2pmE4i2+mdpvFzqyAPltkMjhCeT624GE/7Nl2CxPAMVxzLnGuJ/i/fzjvd0Nx8y8llCHBn1qWjcU=
-X-Received: by 2002:a67:cd9a:: with SMTP id r26mr6191702vsl.52.1607117331636;
- Fri, 04 Dec 2020 13:28:51 -0800 (PST)
+        id S1730241AbgLDVhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 16:37:16 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54596 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729268AbgLDVhQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Dec 2020 16:37:16 -0500
+Date:   Fri, 4 Dec 2020 13:36:29 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607117791;
+        bh=U04B3pDX8jFTZKxagPn+lmF/MY9A/p0Uvp3pJNgnx8s=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kohVDdvJOBJoL7UDt5bjD8I/yfGVRi8rYwIcC4E3D4wc82HuMQjS6sW7jNOxKPdFW
+         KVEmFXx/wKk4BRbtlALz66BY3ZRsCwm6LCkuGbX0QCZERzp913WfV6WkRA1s71JYrs
+         xuJjFd8mj2HQFux64nB1BEwdxb9W71AcloEMWFTc/NAFAUe4NIeWGKwxCbVL9a1fj7
+         hbqBivV0EBhywARFiQMl3u6vHWmQ2bPOQ2u+o4HRyE8tdgo2BFjOY3py1eF9x/jAco
+         B6xZZepnuaundzpZ+MZKSF8/1GLIZCqNfqyt7J8S8BxEU6BGPQTAmF8iceo8vADeZi
+         5kPJAm2GR3JVA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andrea Mayer <andrea.mayer@uniroma2.it>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Shrijeet Mukherjee <shrijeet@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>
+Subject: Re: [net-next v4 0/8] seg6: add support for SRv6 End.DT4/DT6
+ behavior
+Message-ID: <20201204133629.19549345@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201202130517.4967-1-andrea.mayer@uniroma2.it>
+References: <20201202130517.4967-1-andrea.mayer@uniroma2.it>
 MIME-Version: 1.0
-References: <20201204180622.14285-1-abuehaze@amazon.com>
-In-Reply-To: <20201204180622.14285-1-abuehaze@amazon.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Fri, 4 Dec 2020 16:28:35 -0500
-Message-ID: <CADVnQymC1fLFhb=0_rXNSp2NsNncMMRv77aY=5pYxgmicwowgA@mail.gmail.com>
-Subject: Re: [PATCH net-next] tcp: optimise receiver buffer autotuning
- initialisation for high latency connections
-To:     Hazem Mohamed Abuelfotoh <abuehaze@amazon.com>
-Cc:     Netdev <netdev@vger.kernel.org>, stable@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Wei Wang <weiwan@google.com>, astroh@amazon.com,
-        benh@amazon.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 4, 2020 at 1:08 PM Hazem Mohamed Abuelfotoh
-<abuehaze@amazon.com> wrote:
->
->     Previously receiver buffer auto-tuning starts after receiving
->     one advertised window amount of data.After the initial
->     receiver buffer was raised by
->     commit a337531b942b ("tcp: up initial rmem to 128KB
->     and SYN rwin to around 64KB"),the receiver buffer may
->     take too long for TCP autotuning to start raising
->     the receiver buffer size.
->     commit 041a14d26715 ("tcp: start receiver buffer autotuning sooner")
->     tried to decrease the threshold at which TCP auto-tuning starts
->     but it's doesn't work well in some environments
->     where the receiver has large MTU (9001) configured
->     specially within environments where RTT is high.
->     To address this issue this patch is relying on RCV_MSS
->     so auto-tuning can start early regardless
->     the receiver configured MTU.
->
->     Fixes: a337531b942b ("tcp: up initial rmem to 128KB and SYN rwin to around 64KB")
->     Fixes: 041a14d26715 ("tcp: start receiver buffer autotuning sooner")
->
-> Signed-off-by: Hazem Mohamed Abuelfotoh <abuehaze@amazon.com>
-> ---
->  net/ipv4/tcp_input.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> index 389d1b340248..f0ffac9e937b 100644
-> --- a/net/ipv4/tcp_input.c
-> +++ b/net/ipv4/tcp_input.c
-> @@ -504,13 +504,14 @@ static void tcp_grow_window(struct sock *sk, const struct sk_buff *skb)
->  static void tcp_init_buffer_space(struct sock *sk)
->  {
->         int tcp_app_win = sock_net(sk)->ipv4.sysctl_tcp_app_win;
-> +       struct inet_connection_sock *icsk = inet_csk(sk);
->         struct tcp_sock *tp = tcp_sk(sk);
->         int maxwin;
->
->         if (!(sk->sk_userlocks & SOCK_SNDBUF_LOCK))
->                 tcp_sndbuf_expand(sk);
->
-> -       tp->rcvq_space.space = min_t(u32, tp->rcv_wnd, TCP_INIT_CWND * tp->advmss);
-> +       tp->rcvq_space.space = min_t(u32, tp->rcv_wnd, TCP_INIT_CWND * icsk->icsk_ack.rcv_mss);
+On Wed,  2 Dec 2020 14:05:09 +0100 Andrea Mayer wrote:
+> This patchset provides support for the SRv6 End.DT4 and End.DT6 (VRF mode)
+> behaviors.
+> 
+> The SRv6 End.DT4 behavior is used to implement multi-tenant IPv4 L3 VPNs. It
+> decapsulates the received packets and performs IPv4 routing lookup in the
+> routing table of the tenant. The SRv6 End.DT4 Linux implementation leverages a
+> VRF device in order to force the routing lookup into the associated routing
+> table.
+> The SRv6 End.DT4 behavior is defined in the SRv6 Network Programming [1].
+> 
+> The Linux kernel already offers an implementation of the SRv6 End.DT6 behavior
+> which allows us to set up IPv6 L3 VPNs over SRv6 networks. This new
+> implementation of DT6 is based on the same VRF infrastructure already exploited
+> for implementing the SRv6 End.DT4 behavior. The aim of the new SRv6 End.DT6 in
+> VRF mode consists in simplifying the construction of IPv6 L3 VPN services in
+> the multi-tenant environment.
+> Currently, the two SRv6 End.DT6 implementations (legacy and VRF mode)
+> coexist seamlessly and can be chosen according to the context and the user
+> preferences.
+> 
+> - Patch 1 is needed to solve a pre-existing issue with tunneled packets
+>   when a sniffer is attached;
+> 
+> - Patch 2 improves the management of the seg6local attributes used by the
+>   SRv6 behaviors;
+> 
+> - Patch 3 adds support for optional attributes in SRv6 behaviors;
+> 
+> - Patch 4 introduces two callbacks used for customizing the
+>   creation/destruction of a SRv6 behavior;
+> 
+> - Patch 5 is the core patch that adds support for the SRv6 End.DT4
+>   behavior;
+> 
+> - Patch 6 introduces the VRF support for SRv6 End.DT6 behavior;
+> 
+> - Patch 7 adds the selftest for SRv6 End.DT4 behavior;
+> 
+> - Patch 8 adds the selftest for SRv6 End.DT6 (VRF mode) behavior.
+> 
+> Regarding iproute2, the support for the new "vrftable" attribute, required by
+> both SRv6 End.DT4 and End.DT6 (VRF mode) behaviors, is provided in a different
+> patchset that will follow shortly.
+> 
+> I would like to thank David Ahern for his support during the development of
+> this patchset.
 
-Thanks for the detailed report and the proposed fix.
-
-AFAICT the core of the bug is related to this part of your follow-up email:
-
-> 10)It looks like when the issue happen we have a  kind of deadlock here
-> so advertised receive window has to exceed rcvq_space for the tcp auto
-> tuning to kickoff at the same time with the initial default  configuration the
-> receive window is not going to exceed rcvq_space
-
-The existing code is:
-
-> -       tp->rcvq_space.space = min_t(u32, tp->rcv_wnd, TCP_INIT_CWND * tp->advmss);
-
-(1) With a typical case where both sides have an advmss based on an
-MTU of 1500 bytes, the governing limit here is around 10*1460 or so,
-or around 15Kbytes. With a tp->rcvq_space.space of that size, it is
-common for the data sender to send that amount of data in one round
-trip, which will trigger the receive buffer autotuning code in
-tcp_rcv_space_adjust(), so autotuning works well.
-
-(2) With a case where the sender has a 1500B NIC and the receiver has
-an advmss based on an MTU of 9KB, then the  expression becomes
-governed by the receive window of 64KBytes:
-
-  tp->rcvq_space.space
-    ~=  min(rcv_wnd, 10*9KBytes)
-    ~= min(64KByte,90KByte) = 65536 bytes
-
-But because tp->rcvq_space.space is set to the rcv_wnd, and
-the sender is not allowed to send more than the receive
-window, this check in tcp_rcv_space_adjust() will always fail,
-and the receiver will take the new_measure path:
-
-        /* Number of bytes copied to user in last RTT */
-        copied = tp->copied_seq - tp->rcvq_space.seq;
-        if (copied <= tp->rcvq_space.space)
-                goto new_measure;
-
-This seems to be why receive buffer autotuning is never triggered.
-
-Furthermore, if we try to fix it with:
-
--        if (copied <= tp->rcvq_space.space)
-+        if (copied < tp->rcvq_space.space)
-
-The buggy behavior will still remain, because 65536 is not a multiple
-of the MSS, so the number of bytes copied to the user in the last RTT
-will never, in practice, exactly match the tp->rcvq_space.space.
-
-AFAICT the proposed patch fixes this bug by setting the
-tp->rcvq_space.space to 10*536 = 5360. This is a number of bytes that
-*can* actually be delivered in a round trip in a mixed 1500B/9KB
-scenario, so this allows receive window auto-tuning to actually be
-triggered.
-
-It seems like a reasonable approach to fix this issue, but I agree
-with Eric that it would be good to improve the commit message a bit.
-
-Also, since this is a bug fix, it seems it should be directed to the
-"net" branch rather than the "net-next" branch.
-
-Also, FWIW, I think the "for high latency connections" can be dropped
-from the commit summary/first-line, since the bug can be hit at any
-RTT, and is simply easier to notice at high RTTs. You might consider
-something like:
-
-  tcp: fix receive buffer autotuning to trigger for any valid advertised MSS
-
-best,
-neal
+Applied, thank you!
