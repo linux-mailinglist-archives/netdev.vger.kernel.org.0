@@ -2,68 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4992E2CE4F7
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 02:22:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 784D82CE52D
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 02:36:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731967AbgLDBU4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 20:20:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53986 "EHLO mail.kernel.org"
+        id S1726080AbgLDBeR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 20:34:17 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:37652 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728404AbgLDBU4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Dec 2020 20:20:56 -0500
-Content-Type: text/plain; charset="utf-8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607044816;
-        bh=NrM2b2fa9q1KZ4FNw4yAH1tlKNOWkBTa+qMCGztsvVI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=P84HmlTQRDGhZy0eS/32aqtbPqcF3nOpBI74pgHHBSaBWg3kQkl97TBgBx/AcDplT
-         X2ea9NSbCd6XZBz+gdMri7Gn6k0EY21m3PrgAso8W2Ip0J2m6kQpCbnmmexrX+UUWm
-         gX6dp++PeVDNcDvhycDafuvQqs4DnN5HrlYPeKIZQw5Huuh76LxW9Hyete+ejuzFQe
-         /INkIZ7kbdvUUhPlV/+Asgehw1qRJAI8yZGnQCJwidoyUzbYGINyZtafET1amqSHTK
-         BNsDVcV637eO0GLOEU2P7sVopJFH75PnDD5KBEGy4tHeICUYS34tJbxnTpAf0naiSe
-         KPK0sai2oryMA==
+        id S1725933AbgLDBeR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 20:34:17 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kkzyK-00A8KN-Ue; Fri, 04 Dec 2020 02:33:20 +0100
+Date:   Fri, 4 Dec 2020 02:33:20 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
+        kuba@kernel.org, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 2/4] net: dsa: Link aggregation support
+Message-ID: <20201204013320.GA2414548@lunn.ch>
+References: <20201202091356.24075-1-tobias@waldekranz.com>
+ <20201202091356.24075-3-tobias@waldekranz.com>
+ <20201203162428.ffdj7gdyudndphmn@skbuf>
+ <87a6uu7gsr.fsf@waldekranz.com>
+ <20201203215725.uuptum4qhcwvhb6l@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net/mlx5e: fix non-IPV6 build
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160704481592.10454.9610234423431543181.git-patchwork-notify@kernel.org>
-Date:   Fri, 04 Dec 2020 01:20:15 +0000
-References: <20201203231314.1483198-1-arnd@kernel.org>
-In-Reply-To: <20201203231314.1483198-1-arnd@kernel.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     saeedm@nvidia.com, leon@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, tariqt@mellanox.com, maximmi@mellanox.com,
-        arnd@arndb.de, borisp@nvidia.com, efremov@linux.com,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201203215725.uuptum4qhcwvhb6l@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+> Of course, neither is fully correct. There is always more to improve on
+> the communication side of things.
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+I wonder if switchdev needs to gain an enumeration API? A way to ask
+the underlying driver, what can you offload? The user can then get an
+idea what is likely to be offloaded, and what not. If that API is fine
+grain enough, it can list the different LAG algorithms supported.
 
-On Fri,  4 Dec 2020 00:12:59 +0100 you wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> When IPv6 is disabled, the flow steering code causes a build failure:
-> 
-> drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c:55:14: error: no member named 'skc_v6_daddr' in 'struct sock_common'; did you mean 'skc_daddr'?
->                &sk->sk_v6_daddr, 16);
->                     ^
-> include/net/sock.h:380:34: note: expanded from macro 'sk_v6_daddr'
->  #define sk_v6_daddr             __sk_common.skc_v6_daddr
-> 
-> [...]
-
-Here is the summary with links:
-  - net/mlx5e: fix non-IPV6 build
-    https://git.kernel.org/netdev/net-next/c/8a78a440108e
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+      Andrew
