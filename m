@@ -2,136 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F1E62CF28F
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 18:06:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E29862CF2B6
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 18:09:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387869AbgLDRD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 12:03:56 -0500
-Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:55482 "EHLO
-        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387709AbgLDRD4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 12:03:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1607101435; x=1638637435;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2vAKgOMbsKsobaYQSS//EkxVjYpdgHLlqgbHgLmfgWg=;
-  b=Ewg9xnyiWxFK5TX7iiH74X98xt/vkz3OP/g3u+dQDTnDU+D4OAQUxjUu
-   CnAWA+MoB29jMiqRBoGZ1Zdj8TnH9BOQd3/oGwOMQ4q//kSpd3TkMtPor
-   1rBwSJwxQNaJLgOan35dlAGzJaTL3LfVJHF5bCqkaeWiYxt/FiUHYVYOE
-   E=;
-X-IronPort-AV: E=Sophos;i="5.78,393,1599523200"; 
-   d="scan'208";a="70635442"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1d-37fd6b3d.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 04 Dec 2020 17:03:09 +0000
-Received: from EX13D16EUB003.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-1d-37fd6b3d.us-east-1.amazon.com (Postfix) with ESMTPS id 6AF2A2833C2;
-        Fri,  4 Dec 2020 17:03:07 +0000 (UTC)
-Received: from 38f9d34ed3b1.ant.amazon.com (10.43.162.53) by
- EX13D16EUB003.ant.amazon.com (10.43.166.99) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Fri, 4 Dec 2020 17:03:02 +0000
-From:   Andra Paraschiv <andraprs@amazon.com>
-To:     netdev <netdev@vger.kernel.org>
-CC:     linux-kernel <linux-kernel@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        David Duncan <davdunc@amazon.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Alexander Graf <graf@amazon.de>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Andra Paraschiv <andraprs@amazon.com>
-Subject: [PATCH net-next v2 4/4] af_vsock: Assign the vsock transport considering the vsock address flags
-Date:   Fri, 4 Dec 2020 19:02:35 +0200
-Message-ID: <20201204170235.84387-5-andraprs@amazon.com>
-X-Mailer: git-send-email 2.20.1 (Apple Git-117)
-In-Reply-To: <20201204170235.84387-1-andraprs@amazon.com>
-References: <20201204170235.84387-1-andraprs@amazon.com>
+        id S1731121AbgLDRGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 12:06:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:32868 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728924AbgLDRGx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Dec 2020 12:06:53 -0500
+X-Gm-Message-State: AOAM531GBwtP9wjZfv/hNZtM1rTTpbf9KeJ2fwzfSJk33h6T+D+GBdDZ
+        S6sgI1+0Xi7X5Rn3JLr2HfuFkHnvU1G8Ci+llgI=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607101572;
+        bh=vec0ymMx+wnF0gfcJ8Hu7mkpp7jIjtysTw6fFvmzqeM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=I0HtVWnVer1z+5BBs3cxv/CYkp67TvlLIWfjFM2peNcQ5Y2tFvbMsRMvkyU5uvHnG
+         IRSqNJnC0kSv8Gw5eQIAvaWMM5zD6Qex8VOekMk/cGhY3xGdoruQxh7AEouXyyQKML
+         sggXuz87OM/xpHw1AHlolAxSDpG933dg1ekV8AFdjny4zhW7CLhx6hewPXNnCX6383
+         ISThDIqZ0dek2KCxo6vMGTX7VG/jDNZvBqZfUXApmfUR9bPxaBJwjyoINa4IgWrmrp
+         f4N6NXy/fPMKyYTAKcewuLwJjzguSZ7fNd+gkQBykqTmCftFbIXb0k63aZyZ4EfoER
+         65TrA7vHUfDkQ==
+X-Google-Smtp-Source: ABdhPJz/xmXkEkku+Emo5ZLaxzMbQOcBAvTQmo8aS4l/1QBG9FXpc/dvkPoniOT2Szt2kX6d2vyhuiwEmMoRZ9AImvI=
+X-Received: by 2002:a4a:45c3:: with SMTP id y186mr4202016ooa.13.1607101571557;
+ Fri, 04 Dec 2020 09:06:11 -0800 (PST)
 MIME-Version: 1.0
-X-Originating-IP: [10.43.162.53]
-X-ClientProxiedBy: EX13D23UWC003.ant.amazon.com (10.43.162.81) To
- EX13D16EUB003.ant.amazon.com (10.43.166.99)
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+References: <20201204154626.GA26255@fieldses.org> <2F96670A-58DC-43A6-A20E-696803F0BFBA@oracle.com>
+ <160518586534.2277919.14475638653680231924.stgit@warthog.procyon.org.uk>
+ <118876.1607093975@warthog.procyon.org.uk> <122997.1607097713@warthog.procyon.org.uk>
+ <20201204160347.GA26933@fieldses.org> <125709.1607100601@warthog.procyon.org.uk>
+In-Reply-To: <125709.1607100601@warthog.procyon.org.uk>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Fri, 4 Dec 2020 18:06:00 +0100
+X-Gmail-Original-Message-ID: <CAMj1kXEOm_yh478i+dqPiz0eoBxp4eag3j2qHm5eBLe+2kihoQ@mail.gmail.com>
+Message-ID: <CAMj1kXEOm_yh478i+dqPiz0eoBxp4eag3j2qHm5eBLe+2kihoQ@mail.gmail.com>
+Subject: Re: Why the auxiliary cipher in gss_krb5_crypto.c?
+To:     David Howells <dhowells@redhat.com>
+Cc:     Bruce Fields <bfields@fieldses.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, linux-afs@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The vsock flags field can be set in the connect and (listen) receive
-paths.
+On Fri, 4 Dec 2020 at 17:52, David Howells <dhowells@redhat.com> wrote:
+>
+> Bruce Fields <bfields@fieldses.org> wrote:
+>
+> > OK, I guess I don't understand the question.  I haven't thought about
+> > this code in at least a decade.  What's an auxilary cipher?  Is this a
+> > question about why we're implementing something, or how we're
+> > implementing it?
+>
+> That's what the Linux sunrpc implementation calls them:
+>
+>         struct crypto_sync_skcipher *acceptor_enc;
+>         struct crypto_sync_skcipher *initiator_enc;
+>         struct crypto_sync_skcipher *acceptor_enc_aux;
+>         struct crypto_sync_skcipher *initiator_enc_aux;
+>
+> Auxiliary ciphers aren't mentioned in rfc396{1,2} so it appears to be
+> something peculiar to that implementation.
+>
+> So acceptor_enc and acceptor_enc_aux, for instance, are both based on the same
+> key, and the implementation seems to pass the IV from one to the other.  The
+> only difference is that the 'aux' cipher lacks the CTS wrapping - which only
+> makes a difference for the final two blocks[*] of the encryption (or
+> decryption) - and only if the data doesn't fully fill out the last block
+> (ie. it needs padding in some way so that the encryption algorithm can handle
+> it).
+>
+> [*] Encryption cipher blocks, that is.
+>
+> So I think it's purpose is twofold:
+>
+>  (1) It's a way to be a bit more efficient, cutting out the CTS layer's
+>      indirection and additional buffering.
+>
+>  (2) crypto_skcipher_encrypt() assumes that it's doing the entire crypto
+>      operation in one go and will always impose the final CTS bit, so you
+>      can't call it repeatedly to progress through a buffer (as
+>      xdr_process_buf() would like to do) as that would corrupt the data being
+>      encrypted - unless you made sure that the data was always block-size
+>      aligned (in which case, there's no point using CTS).
+>
+> I wonder how much going through three layers of crypto modules costs.  Looking
+> at how AES can be implemented using, say, Intel AES intructions, it looks like
+> AES+CBC should be easy to do in a single module.  I wonder if we could have
+> optimised kerberos crypto that do the AES and the SHA together in a single
+> loop.
+>
 
-When the vsock transport is assigned, the remote CID is used to
-distinguish between types of connection.
+The tricky thing with CTS is that you have to ensure that the final
+full and partial blocks are presented to the crypto driver as one
+chunk, or it won't be able to perform the ciphertext stealing. This
+might be the reason for the current approach. If the sunrpc code has
+multiple disjoint chunks of data to encrypto, it is always better to
+wrap it in a single scatterlist and call into the skcipher only once.
 
-Use the vsock flags value (in addition to the CID) from the remote
-address to decide which vsock transport to assign. For the sibling VMs
-use case, all the vsock packets need to be forwarded to the host, so
-always assign the guest->host transport if the VMADDR_FLAG_TO_HOST flag
-is set. For the other use cases, the vsock transport assignment logic is
-not changed.
-
-Changelog
-
-v1 -> v2
-
-* Use bitwise operator to check the vsock flag.
-* Use the updated "VMADDR_FLAG_TO_HOST" flag naming.
-* Merge the checks for the g2h transport assignment in one "if" block.
-
-Signed-off-by: Andra Paraschiv <andraprs@amazon.com>
----
- net/vmw_vsock/af_vsock.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
-
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 83d035eab0b05..66e643c3b5f85 100644
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -421,7 +421,8 @@ static void vsock_deassign_transport(struct vsock_sock *vsk)
-  * The vsk->remote_addr is used to decide which transport to use:
-  *  - remote CID == VMADDR_CID_LOCAL or g2h->local_cid or VMADDR_CID_HOST if
-  *    g2h is not loaded, will use local transport;
-- *  - remote CID <= VMADDR_CID_HOST will use guest->host transport;
-+ *  - remote CID <= VMADDR_CID_HOST or h2g is not loaded or remote flags field
-+ *    includes VMADDR_FLAG_TO_HOST flag value, will use guest->host transport;
-  *  - remote CID > VMADDR_CID_HOST will use host->guest transport;
-  */
- int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
-@@ -429,6 +430,7 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
- 	const struct vsock_transport *new_transport;
- 	struct sock *sk = sk_vsock(vsk);
- 	unsigned int remote_cid = vsk->remote_addr.svm_cid;
-+	unsigned short remote_flags;
- 	int ret;
- 
- 	/* If the packet is coming with the source and destination CIDs higher
-@@ -443,6 +445,8 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
- 	    vsk->remote_addr.svm_cid > VMADDR_CID_HOST)
- 		vsk->remote_addr.svm_flags |= VMADDR_FLAG_TO_HOST;
- 
-+	remote_flags = vsk->remote_addr.svm_flags;
-+
- 	switch (sk->sk_type) {
- 	case SOCK_DGRAM:
- 		new_transport = transport_dgram;
-@@ -450,7 +454,8 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
- 	case SOCK_STREAM:
- 		if (vsock_use_local_transport(remote_cid))
- 			new_transport = transport_local;
--		else if (remote_cid <= VMADDR_CID_HOST || !transport_h2g)
-+		else if (remote_cid <= VMADDR_CID_HOST || !transport_h2g ||
-+			 (remote_flags & VMADDR_FLAG_TO_HOST) == VMADDR_FLAG_TO_HOST)
- 			new_transport = transport_g2h;
- 		else
- 			new_transport = transport_h2g;
--- 
-2.20.1 (Apple Git-117)
-
-
-
-
-Amazon Development Center (Romania) S.R.L. registered office: 27A Sf. Lazar Street, UBC5, floor 2, Iasi, Iasi County, 700045, Romania. Registered in Romania. Registration number J22/2621/2005.
-
+However, I would recommend against it: at least for ARM and arm64, I
+have already contributed SIMD based implementations that use SIMD
+permutation instructions and overlapping loads and stores to perform
+the ciphertext stealing, which means that there is only a single layer
+which implements CTS+CBC+AES, and this layer can consume the entire
+scatterlist in one go. We could easily do something similar in the
+AES-NI driver as well.
