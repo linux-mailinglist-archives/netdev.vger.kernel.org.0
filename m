@@ -2,173 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 804F02CEE74
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 13:55:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D100B2CEE6C
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 13:55:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388063AbgLDMzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 07:55:10 -0500
-Received: from mga07.intel.com ([134.134.136.100]:5393 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387724AbgLDMzK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Dec 2020 07:55:10 -0500
-IronPort-SDR: K0Rg07pJQXg+GopSlPBr78Hbq1h0MIZlf9vnxuI07H1KuEE0bCQu9caIgZCkakzG0jxTX17h3g
- ipY8S6qTcF+g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9824"; a="237486249"
-X-IronPort-AV: E=Sophos;i="5.78,392,1599548400"; 
-   d="scan'208";a="237486249"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Dec 2020 04:54:29 -0800
-IronPort-SDR: 62N7mcUJssHEBrSPA3Fs2vP6Pc7CKJOokY/FOW3TTe0ytuNKV960hbP63jmJk9MlzrdPa84uQK
- 2xrT1fPzWKHw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.78,392,1599548400"; 
-   d="scan'208";a="482381436"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga004.jf.intel.com with ESMTP; 04 Dec 2020 04:54:25 -0800
-Date:   Fri, 4 Dec 2020 13:46:18 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     alardam@gmail.com, magnus.karlsson@intel.com,
-        bjorn.topel@intel.com, andrii.nakryiko@gmail.com, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        davem@davemloft.net, john.fastabend@gmail.com, hawk@kernel.org,
-        jonathan.lemon@gmail.com, bpf@vger.kernel.org,
-        jeffrey.t.kirsher@intel.com, maciejromanfijalkowski@gmail.com,
-        intel-wired-lan@lists.osuosl.org,
-        Marek Majtyka <marekx.majtyka@intel.com>
-Subject: Re: [PATCH v2 bpf 1/5] net: ethtool: add xdp properties flag set
-Message-ID: <20201204124618.GA23696@ranger.igk.intel.com>
-References: <20201204102901.109709-1-marekx.majtyka@intel.com>
- <20201204102901.109709-2-marekx.majtyka@intel.com>
- <878sad933c.fsf@toke.dk>
+        id S1730189AbgLDMyH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 07:54:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50762 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726441AbgLDMyG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 07:54:06 -0500
+Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [IPv6:2001:67c:2050::465:103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96369C0613D1;
+        Fri,  4 Dec 2020 04:53:26 -0800 (PST)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4CnXgm0gFjzQlKv;
+        Fri,  4 Dec 2020 13:53:24 +0100 (CET)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hauke-m.de; s=MBO0001;
+        t=1607086402;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=BO7VfKCWGW08gqptjnC2mLYopzbWJ6BdgIeLCZkkrXQ=;
+        b=CvJiKwR+NQcgFuHQxKETwOZLsHoOhksik7CcVo/B0yHIKKrlQ2ieCzmDWPiwDZiBWI1XU1
+        EJpS/IluU29f2fxvE1wG9R1DTYqw7Gv8RiYW0TN8yK+y0WTJqiYqvcOO9OlTaX+VTj96j6
+        XYUqkjofRhim7qElEcZew/dBb/oB+EyrU+SOOfkwDbYJOoCaw44QMWKwsURNS0N0Jua3sI
+        vnVbeWPEtKuxy1pB5ynXKeXIZZvbv9pSPBqsLCxRmAeOVKLMIgiuyHTGuKFGsMJEI0C9UL
+        y1R64PwDGvUX5Fu6QUqWvc2O4oHVy7uHTmBQzrlRUANaQO21lgLlRj0GFLhPCg==
+Received: from smtp1.mailbox.org ([80.241.60.240])
+        by spamfilter03.heinlein-hosting.de (spamfilter03.heinlein-hosting.de [80.241.56.117]) (amavisd-new, port 10030)
+        with ESMTP id Zi8zTU8vcc6q; Fri,  4 Dec 2020 13:53:20 +0100 (CET)
+Subject: Re: [PATCH 1/2] net: dsa: lantiq: allow to use all GPHYs on xRX300
+ and xRX330
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Aleksander Jan Bajkowski <olek2@wp.pl>
+Cc:     vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Aleksander Jan Bajkowski <A.Bajkowski@stud.elka.pw.edu.pl>
+References: <20201203220347.13691-1-olek2@wp.pl>
+ <20201204014957.GB2414548@lunn.ch>
+From:   Hauke Mehrtens <hauke@hauke-m.de>
+Message-ID: <905ee9b3-f84e-8af0-d50e-822166c0969e@hauke-m.de>
+Date:   Fri, 4 Dec 2020 13:53:07 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <878sad933c.fsf@toke.dk>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20201204014957.GB2414548@lunn.ch>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="FqehhgEyt89ukMK1WBwN6pwbGJ9eg19SY"
+X-MBO-SPAM-Probability: 
+X-Rspamd-Score: -4.37 / 15.00 / 15.00
+X-Rspamd-Queue-Id: F3EEC91E
+X-Rspamd-UID: 6229a3
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 04, 2020 at 01:18:31PM +0100, Toke Høiland-Jørgensen wrote:
-> alardam@gmail.com writes:
-> 
-> > From: Marek Majtyka <marekx.majtyka@intel.com>
-> >
-> > Implement support for checking what kind of xdp functionality a netdev
-> > supports. Previously, there was no way to do this other than to try
-> > to create an AF_XDP socket on the interface or load an XDP program and see
-> > if it worked. This commit changes this by adding a new variable which
-> > describes all xdp supported functions on pretty detailed level:
-> 
-> I like the direction this is going! :)
-> 
-> >  - aborted
-> >  - drop
-> >  - pass
-> >  - tx
-> >  - redirect
-> 
-> Drivers can in principle implement support for the XDP_REDIRECT return
-> code (and calling xdp_do_redirect()) without implementing ndo_xdp_xmit()
-> for being the *target* of a redirect. While my quick grepping doesn't
-> turn up any drivers that do only one of these right now, I think we've
-> had examples of it in the past, so it would probably be better to split
-> the redirect feature flag in two.
-> 
-> This would also make it trivial to replace the check in __xdp_enqueue()
-> (in devmap.c) from looking at whether the ndo is defined, and just
-> checking the flag. It would be great if you could do this as part of
-> this series.
-> 
-> Maybe we could even make the 'redirect target' flag be set automatically
-> if a driver implements ndo_xdp_xmit?
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--FqehhgEyt89ukMK1WBwN6pwbGJ9eg19SY
+Content-Type: multipart/mixed; boundary="1NTyCNIrVpbpDNdzPKP5hDcI8CYC18zEC";
+ protected-headers="v1"
+From: Hauke Mehrtens <hauke@hauke-m.de>
+To: Andrew Lunn <andrew@lunn.ch>, Aleksander Jan Bajkowski <olek2@wp.pl>
+Cc: vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+ davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+ netdev@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ Aleksander Jan Bajkowski <A.Bajkowski@stud.elka.pw.edu.pl>
+Message-ID: <905ee9b3-f84e-8af0-d50e-822166c0969e@hauke-m.de>
+Subject: Re: [PATCH 1/2] net: dsa: lantiq: allow to use all GPHYs on xRX300
+ and xRX330
+References: <20201203220347.13691-1-olek2@wp.pl>
+ <20201204014957.GB2414548@lunn.ch>
+In-Reply-To: <20201204014957.GB2414548@lunn.ch>
 
-+1
+--1NTyCNIrVpbpDNdzPKP5hDcI8CYC18zEC
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
 
-> 
-> >  - zero copy
-> >  - hardware offload.
-> >
-> > Zerocopy mode requires that redirect xdp operation is implemented
-> > in a driver and the driver supports also zero copy mode.
-> > Full mode requires that all xdp operation are implemented in the driver.
-> > Basic mode is just full mode without redirect operation.
-> >
-> > Initially, these new flags are disabled for all drivers by default.
-> >
-> > Signed-off-by: Marek Majtyka <marekx.majtyka@intel.com>
-> > ---
-> >  .../networking/netdev-xdp-properties.rst      | 42 ++++++++
-> >  include/linux/netdevice.h                     |  2 +
-> >  include/linux/xdp_properties.h                | 53 +++++++++++
-> >  include/net/xdp.h                             | 95 +++++++++++++++++++
-> >  include/net/xdp_sock_drv.h                    | 10 ++
-> >  include/uapi/linux/ethtool.h                  |  1 +
-> >  include/uapi/linux/xdp_properties.h           | 32 +++++++
-> >  net/ethtool/common.c                          | 11 +++
-> >  net/ethtool/common.h                          |  4 +
-> >  net/ethtool/strset.c                          |  5 +
-> >  10 files changed, 255 insertions(+)
-> >  create mode 100644 Documentation/networking/netdev-xdp-properties.rst
-> >  create mode 100644 include/linux/xdp_properties.h
-> >  create mode 100644 include/uapi/linux/xdp_properties.h
-> >
-> > diff --git a/Documentation/networking/netdev-xdp-properties.rst b/Documentation/networking/netdev-xdp-properties.rst
-> > new file mode 100644
-> > index 000000000000..4a434a1c512b
-> > --- /dev/null
-> > +++ b/Documentation/networking/netdev-xdp-properties.rst
-> > @@ -0,0 +1,42 @@
-> > +.. SPDX-License-Identifier: GPL-2.0
-> > +
-> > +=====================
-> > +Netdev XDP properties
-> > +=====================
-> > +
-> > + * XDP PROPERTIES FLAGS
-> > +
-> > +Following netdev xdp properties flags can be retrieve over netlink ethtool
-> > +interface the same way as netdev feature flags. These properties flags are
-> > +read only and cannot be change in the runtime.
-> > +
-> > +
-> > +*  XDP_ABORTED
-> > +
-> > +This property informs if netdev supports xdp aborted action.
-> > +
-> > +*  XDP_DROP
-> > +
-> > +This property informs if netdev supports xdp drop action.
-> > +
-> > +*  XDP_PASS
-> > +
-> > +This property informs if netdev supports xdp pass action.
-> > +
-> > +*  XDP_TX
-> > +
-> > +This property informs if netdev supports xdp tx action.
-> > +
-> > +*  XDP_REDIRECT
-> > +
-> > +This property informs if netdev supports xdp redirect action.
-> > +It assumes the all beforehand mentioned flags are enabled.
-> > +
-> > +*  XDP_ZEROCOPY
-> > +
-> > +This property informs if netdev driver supports xdp zero copy.
-> > +It assumes the all beforehand mentioned flags are enabled.
-> 
-> Nit: I think 'XDP_ZEROCOPY' can lead people to think that this is
-> zero-copy support for all XDP operations, which is obviously not the
-> case. So maybe 'XDP_SOCK_ZEROCOPY' (and update the description to
-> mention AF_XDP sockets explicitly)?
+On 12/4/20 2:49 AM, Andrew Lunn wrote:
+>>   static const struct of_device_id gswip_of_match[] =3D {
+>>   	{ .compatible =3D "lantiq,xrx200-gswip", .data =3D &gswip_xrx200 },=
 
-AF_XDP_ZEROCOPY?
+>> +	{ .compatible =3D "lantiq,xrx300-gswip", .data =3D &gswip_xrx300 },
+>> +	{ .compatible =3D "lantiq,xrx330-gswip", .data =3D &gswip_xrx300 },
+>>   	{},
+>=20
+> Is there an ID register which allows you to ask the silicon what it
+> is?
 
-> 
-> -Toke
-> 
+Yes there is, see GSWIP_VERSION.
+
+> It would be good to verify the compatible string against the hardware,
+> if that is possible.
+>=20
+>     Andrew
+>=20
+
+
+
+--1NTyCNIrVpbpDNdzPKP5hDcI8CYC18zEC--
+
+--FqehhgEyt89ukMK1WBwN6pwbGJ9eg19SY
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEyz0/uAcd+JwXmwtD8bdnhZyy68cFAl/KMTQACgkQ8bdnhZyy
+68cQQQf+IiyFcabIdJO7RApnpRD46grc0ooClszZ+P8aSQcI6El7F7DRIqrI5/xE
+dUdkYxO33VNiHfR1K2xXTGn9/lR58HL8eiA4MpJ9nKgmOgyTksUZkHcBYVj+WK5P
++YEpEmt3cH7eI8Iq+/9IhYIrzRXs4kGSvuGEYUNGxnEKJlDDc+DOHjg9MRFjUvBr
+tE54v6m7dq6SM9hNZuRo5eyyRGs20bfVfMv4Qx9aWahRP2wNXY6DGQ5XJxBQvfKc
+vsUI7yT3YUOS8hPswm77oQ5vUsiti1i2qcw3LcbInJa1oo5EROiVfj/8F1iHyO3N
++1isSxnvOOhKhpgl4plqPu/iSTb9Uw==
+=2x8/
+-----END PGP SIGNATURE-----
+
+--FqehhgEyt89ukMK1WBwN6pwbGJ9eg19SY--
