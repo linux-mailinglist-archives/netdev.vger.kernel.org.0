@@ -2,130 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F6442CF2BF
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 18:09:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 299662CF2D2
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 18:13:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388297AbgLDRJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 12:09:46 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:36497 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730972AbgLDRJp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 12:09:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607101698;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bJC4mvE44d2tsq5NOZBG+niQorIGdoMkDibEH0VVAX0=;
-        b=hVhbwZW0VyTMwDH69pirJ1+trt/H+ddkCeOGd86wD+lLkBC8zYAknFaqdl/ngnnPzpdR0M
-        4nrl8x/BHOpEYB7LktXJqlcp8skTt/HhW3XKTe7fdAZ4CjO8ZO8pEMIhR3dH+xsLCtbkcg
-        zLvqzM4fkK+KwT3rYd+BaE8LExfbgEk=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-254-Lupja5zZOi2JVzPJGXP-WA-1; Fri, 04 Dec 2020 12:08:17 -0500
-X-MC-Unique: Lupja5zZOi2JVzPJGXP-WA-1
-Received: by mail-ed1-f71.google.com with SMTP id s7so2596792eds.17
-        for <netdev@vger.kernel.org>; Fri, 04 Dec 2020 09:08:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=bJC4mvE44d2tsq5NOZBG+niQorIGdoMkDibEH0VVAX0=;
-        b=YqChRKKCqdcAWsxBjA7u76/8iEbU9uQQAn7LB2s/XgK+P106M+FO0LifTJaYQBFk5Y
-         wEzd6rjlUUOTXnS47E/wX/cH5yzA7RblBahw5Prx3ZI5wymBCGZjedFR118HZW2IzLc0
-         WD66bTC8i+6O5RWdXZWE2Ez1tELX0Ere7PmgwmRRzej3aw8nAWRPoIZIeyukBv+cLTCq
-         /GYQnnipR8pL4fPM2IRnVZu+lJG4zM3RiPoEYtRyf6EYqM9Zb24Mc/3sNWBe8BiZ2m/M
-         gnohqpjHVxRAUJIguj5GNmkGjSmTZytCChBwOA17OeTMZxZOYGNFUVbK0pSKnLpoQwXr
-         9yGg==
-X-Gm-Message-State: AOAM5311cppl42EImFWEOhcOwngokwWBdZTl9Ozz2rNo4kqP8A15VqNJ
-        A+i+jfyhEBM9X+bQUt0WfSCrXgmb5OPXMddJAVW5ahTfPR2DsyNFV+6agAhoHQkwY6+ZDJwrvxG
-        UVsz4x1FPJe7Lalywum/Q4SiwREBhAjjcNVgkTf9MaB0pyUbD/E0HYTJoxNJN5Vif7tQE
-X-Received: by 2002:a50:fc8b:: with SMTP id f11mr8619725edq.11.1607101695831;
-        Fri, 04 Dec 2020 09:08:15 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxlThmZUI57vW3KxIu7u8q5x2MUMq+MpfrShE4TQuVtlbHO9ZY1dP69sAeG/4NiTeBY0Zgf4A==
-X-Received: by 2002:a50:fc8b:: with SMTP id f11mr8619692edq.11.1607101695613;
-        Fri, 04 Dec 2020 09:08:15 -0800 (PST)
-Received: from ?IPv6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.gmail.com with ESMTPSA id t8sm3642431eju.69.2020.12.04.09.08.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Dec 2020 09:08:14 -0800 (PST)
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     Mike Christie <michael.christie@oracle.com>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20201129041314.GO643756@sasha-vm>
- <7a4c3d84-8ff7-abd9-7340-3a6d7c65cfa7@redhat.com>
- <20201129210650.GP643756@sasha-vm>
- <e499986d-ade5-23bd-7a04-fa5eb3f15a56@redhat.com>
- <20201130173832.GR643756@sasha-vm>
- <238cbdd1-dabc-d1c1-cff8-c9604a0c9b95@redhat.com>
- <9ec7dff6-d679-ce19-5e77-f7bcb5a63442@oracle.com>
- <4c1b2bc7-cf50-4dcd-bfd4-be07e515de2a@redhat.com>
- <20201130235959.GS643756@sasha-vm>
- <6c49ded5-bd8f-f219-0c51-3500fd751633@redhat.com>
- <20201204154911.GZ643756@sasha-vm>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [PATCH AUTOSEL 5.9 22/33] vhost scsi: add lun parser helper
-Message-ID: <d071d714-3ebd-6929-3f3b-c941cce109f8@redhat.com>
-Date:   Fri, 4 Dec 2020 18:08:13 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
-MIME-Version: 1.0
-In-Reply-To: <20201204154911.GZ643756@sasha-vm>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+        id S2388572AbgLDRKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 12:10:49 -0500
+Received: from mail-eopbgr50069.outbound.protection.outlook.com ([40.107.5.69]:7598
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2388544AbgLDRKs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Dec 2020 12:10:48 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SxLtHfSBRrJSGPcjmFq9LuXe4evGFF/jHhl9cG70tTpoywS8rO0LidWsAMOTCIfiiNopCUo2uVJUMUTiunWWmUDdfDcvOGW7+MIYJPwRe9pDGzczk0yweQ54xhLiRDFpnoX0KZIcwWeXKvFl21Uzw+XQAAvRKz7XXJGweyA8oGCOqiIRb9+p7vroVrHa9u5dS1OT/W5KZLWr0JUEhraPJcRRjv8BL5bKY5gb9XZbWIIKqFX4Oe/hYlTMfJxz5uasaxqw8z5ofUmvxPqBWTD81XZEfNFr9qnD75wEcP8ZVjSj/CLJjs3ewlAe8d/FvAGjn0JtrVxnphG3uRFE/6gRoQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FzsADw+6e0jMmgnY/Wtvd6fWnRodbQeeOAml8RW+DNg=;
+ b=fDRnfHBIDihb71TeHCEYSXAhE3C+v+DZyq6eWzJDeUHAhyzkzt0jJp4GbHipSrCOG+sjiLNUYkP2PAZAY+xkj5L7M7S7zmRAOdAQki3HHiJdrAgvmc/Wu9s4FgcJjFdNjxHXiwMdeV5K4Amn86BSR3F00SDZ7tKqC89NLv/3QIMicj73SuD2vI2HCL6V1SvSAwozC6V1daHD58cvDLUx0d//kML+1M1RvbxRn8cVqDcpfpdTg+lXqkiQgDyXaOiI2L/4u5A0oUaEBYJ7WJhxled306uMwZ2nxuDPCuYtssem5EXNN1BMqBTe2uQuJUdRfIrRWktFR5wiYcZMhDZbIg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FzsADw+6e0jMmgnY/Wtvd6fWnRodbQeeOAml8RW+DNg=;
+ b=WMuYMKlK21gkuVqpar5di3+YnmwRW6FmUmmAPgERGddcIRcZS4um4hhIwxk0LWQfbz8Tn0a/MErXxtQ0uQEonLDB+4ufbxgiGbTOA+gA2AIF7uJdQz6jR0B2JVlzToFHOuoVhZTMJJdznguScB5DLiM6LFg17Q8BVPfaxSKwVro=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
+ by VI1PR0402MB3616.eurprd04.prod.outlook.com (2603:10a6:803:8::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.25; Fri, 4 Dec
+ 2020 17:09:56 +0000
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::2dd6:8dc:2da7:ad84]) by VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::2dd6:8dc:2da7:ad84%5]) with mapi id 15.20.3632.021; Fri, 4 Dec 2020
+ 17:09:56 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        "Allan W . Nielsen" <allan.nielsen@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Steen Hegelund <steen.hegelund@microchip.com>
+Subject: [PATCH net] net: mscc: ocelot: install MAC addresses in .ndo_set_rx_mode from process context
+Date:   Fri,  4 Dec 2020 19:09:38 +0200
+Message-Id: <20201204170938.1415582-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [188.25.2.120]
+X-ClientProxiedBy: AM3PR05CA0123.eurprd05.prod.outlook.com
+ (2603:10a6:207:2::25) To VI1PR04MB5696.eurprd04.prod.outlook.com
+ (2603:10a6:803:e7::13)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (188.25.2.120) by AM3PR05CA0123.eurprd05.prod.outlook.com (2603:10a6:207:2::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.18 via Frontend Transport; Fri, 4 Dec 2020 17:09:55 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 4b05626e-9aa3-422f-d807-08d898776c94
+X-MS-TrafficTypeDiagnostic: VI1PR0402MB3616:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB36161E0EE8ECF43BC4A50140E0F10@VI1PR0402MB3616.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3276;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: th6mBM5FwOqpq8xn83A1cLA+Va4pOt43JDXCmzEmip4CNWJxz77m6HhZG3+ooa0ZM36IMkPdCguPpvYnve1qQR/jo5yy0iWrtendI0f0LmSkZJ1gsVnOqSZi7wsHX6z7VxjUzP5uo6ozD3fSHuYxII/cFSQCvloTnurjbOPamIcSEeYUKuf6DcQrB90vP80leK2u679/4FyuLJhcwtVyrMfIOCWDoRDrhv2dPQiL4FiJgGWYbUJtuEM9rZ27wETr1YhfNSFC+SukHCad0e+leZgbN+X1qRViXE6decX3BcbRQJ3chJ2gma0YPXDjvanvYpOFXNJ5BbwclVkI5vU+MtJOEVT2kIxRlKFo22Hqlqg4sf77Zf+jhLzINY/EiBJVvALF2fITI3pJ3S6SiqDXqHetxQMtbxwp5KQaenl3jgY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(366004)(376002)(39860400002)(346002)(396003)(26005)(478600001)(6506007)(6512007)(6666004)(186003)(16526019)(4326008)(52116002)(44832011)(36756003)(8936002)(2616005)(956004)(8676002)(1076003)(5660300002)(54906003)(110136005)(7416002)(69590400008)(83380400001)(316002)(66556008)(66476007)(66946007)(6486002)(86362001)(2906002)(142923001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?2RqNnNkeOD4+KuCxIU+0S4NCtlqQp0cDYACpWS9hQs44jt3jZeHTVqW+hSxi?=
+ =?us-ascii?Q?HEPK05ooK3f8jQP+6Yy7KtMP98UietBAZ11QXLFJHQxW6wfMfF/5Mq+WPGh4?=
+ =?us-ascii?Q?HF9xSodlxuyreChn4WJnAC1Gvj+FWWyfbCIOwPVF2l06oJbD7ZrnLmP82A12?=
+ =?us-ascii?Q?VIr9Xiz8jpGRRyF4XMaDgJzuk4dKGGFMUsNL4+2bnoNcOhJ0I9to3H9pNNb+?=
+ =?us-ascii?Q?yeovm53fiIXzDWlzEjvuwgjYRMn2Jms3ABhhM8p6BLzCZuts0icR35vlxB63?=
+ =?us-ascii?Q?gYd5vyuzVXODMT9EO9i9nYYHN24tGTYXkX4Sj8OeJBQ6YL5V7w6cpNY7e4G0?=
+ =?us-ascii?Q?OlWX34QWtu/bVFYnQ+kYdcF1D6ctKql6+TsV67Yk4hwBUuyDWdjDlTISTv+L?=
+ =?us-ascii?Q?uC1da6k5CPjCHiBOB0Qy6pyioY7l37poa+4iyWVdW3VeQnVobxzPEAkoJKic?=
+ =?us-ascii?Q?a6Hb8yN+NFiHQREtDPFK0r54fxww/T1iTeLx7WcgCjZyE1/EwfbXN2C3kdH4?=
+ =?us-ascii?Q?xEfhGWy6txe4NofXSBSo/HmVHV+9oTvT3xjluH1aSvwcpKqzmey+SKK7KyHQ?=
+ =?us-ascii?Q?+C50YRkp26Q20UEnTHJ5FbjVMic6zMmhaQQOUqnaWzlg7RVjaeUDCHbQGavf?=
+ =?us-ascii?Q?DnpERxCk10ZorSR9Q2oQ0gcuhH053yH9znXfHSoL7npoKSlY1LuGU21+/qut?=
+ =?us-ascii?Q?y8o+ifbwfgDqcx2xmiM7XCOyT+WtepvVZdjDc2wK/iQ1nPqEiXCNYHUAwwEw?=
+ =?us-ascii?Q?MLkAs7+0YD2Q5fGrixD2CHLEFrDNLr/seLpswyWAoII1ceECtxxQdbJaTkCx?=
+ =?us-ascii?Q?T1NT9bCx/MS7AH1q6TBl4IhoHjmpqn42Cd+YoEvYSFLiHa8Uqn7Y1C1ydeTO?=
+ =?us-ascii?Q?+WkFpFPYkNyn7vFGWWNSUVAo3WwWJaw9Y0MrLRkp4xbqR9lj7EXYmyvO4p7W?=
+ =?us-ascii?Q?fFYIjxSsP3hAXSC7hEqYFh/H+NhF4FHqzrhjTAU43wr90lCZ6zl/qEpP4xtw?=
+ =?us-ascii?Q?bt5P?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4b05626e-9aa3-422f-d807-08d898776c94
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Dec 2020 17:09:56.6407
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: LTbu/6g0fZYQTEDDHV3rztSNg7A0wwNuSwTUBG2bEaahJJWsZQWn6/1cTQtEuUtMfcl5cDc4I2TEXRbQlRqt4g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3616
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 04/12/20 16:49, Sasha Levin wrote:
-> On Fri, Dec 04, 2020 at 09:27:28AM +0100, Paolo Bonzini wrote:
->> On 01/12/20 00:59, Sasha Levin wrote:
->>>
->>> It's quite easy to NAK a patch too, just reply saying "no" and it'll be
->>> dropped (just like this patch was dropped right after your first reply)
->>> so the burden on maintainers is minimal.
->>
->> The maintainers are _already_ marking patches with "Cc: stable".  That 
-> 
-> They're not, though. Some forget, some subsystems don't mark anything,
-> some don't mark it as it's not stable material when it lands in their
-> tree but then it turns out to be one if it sits there for too long.
+Currently ocelot_set_rx_mode calls ocelot_mact_learn directly, which has
+a very nice ocelot_mact_wait_for_completion at the end. Introduced in
+commit 639c1b2625af ("net: mscc: ocelot: Register poll timeout should be
+wall time not attempts"), this function uses readx_poll_timeout which
+triggers a lot of lockdep warnings and is also dangerous to use from
+atomic context, leading to lockups and panics.
 
-That means some subsystems will be worse as far as stable release 
-support goes.  That's not a problem:
+Steen Hegelund added a poll timeout of 100 ms for checking the MAC
+table, a duration which is clearly absurd to poll in atomic context.
+So we need to defer the MAC table access to process context, which we do
+via a dynamically allocated workqueue which contains all there is to
+know about the MAC table operation it has to do.
 
-- some subsystems have people paid to do backports to LTS releases when 
-patches don't apply; others don't, if the patch doesn't apply the bug is 
-simply not fixed in LTS releases
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/ethernet/mscc/ocelot_net.c | 81 +++++++++++++++++++++++++-
+ 1 file changed, 78 insertions(+), 3 deletions(-)
 
-- some subsystems are worse than others even in "normal" releases :)
-
->> (plus backports) is where the burden on maintainers should start and 
->> end.  I don't see the need to second guess them.
-> 
-> This is similar to describing our CI infrastructure as "second
-> guessing": why are we second guessing authors and maintainers who are
-> obviously doing the right thing by testing their patches and reporting
-> issues to them?
-
-No, it's not the same.  CI helps finding bugs before you have to waste 
-time spending bisecting regressions across thousands of commits.  The 
-lack of stable tags _can_ certainly be a problem, but it solves itself 
-sooner or later when people upgrade their kernel.
-
-> Are you saying that you have always gotten stable tags right? never
-> missed a stable tag where one should go?
-
-Of course I did, just like I have introduced bugs.  But at least I try 
-to do my best both at adding stable tags and at not introducing bugs.
-
-Paolo
+diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
+index c65ae6f75a16..2f536692d61e 100644
+--- a/drivers/net/ethernet/mscc/ocelot_net.c
++++ b/drivers/net/ethernet/mscc/ocelot_net.c
+@@ -414,13 +414,82 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	return NETDEV_TX_OK;
+ }
+ 
++enum ocelot_action_type {
++	OCELOT_MACT_LEARN,
++	OCELOT_MACT_FORGET,
++};
++
++struct ocelot_mact_work_ctx {
++	struct work_struct work;
++	struct ocelot *ocelot;
++	enum ocelot_action_type type;
++	union {
++		/* OCELOT_MACT_LEARN */
++		struct {
++			int pgid;
++			enum macaccess_entry_type entry_type;
++			unsigned char addr[ETH_ALEN];
++			u16 vid;
++		} learn;
++		/* OCELOT_MACT_FORGET */
++		struct {
++			unsigned char addr[ETH_ALEN];
++			u16 vid;
++		} forget;
++	};
++};
++
++#define ocelot_work_to_ctx(x) \
++	container_of((x), struct ocelot_mact_work_ctx, work)
++
++static void ocelot_mact_work(struct work_struct *work)
++{
++	struct ocelot_mact_work_ctx *w = ocelot_work_to_ctx(work);
++	struct ocelot *ocelot = w->ocelot;
++
++	switch (w->type) {
++	case OCELOT_MACT_LEARN:
++		ocelot_mact_learn(ocelot, w->learn.pgid, w->learn.addr,
++				  w->learn.vid, w->learn.entry_type);
++		break;
++	case OCELOT_MACT_FORGET:
++		ocelot_mact_forget(ocelot, w->forget.addr, w->forget.vid);
++		break;
++	default:
++		break;
++	};
++
++	kfree(w);
++}
++
++static int ocelot_enqueue_mact_action(struct ocelot *ocelot,
++				      const struct ocelot_mact_work_ctx *ctx)
++{
++	struct ocelot_mact_work_ctx *w = kmalloc(sizeof(*w), GFP_ATOMIC);
++
++	if (!w)
++		return -ENOMEM;
++
++	memcpy(w, ctx, sizeof(*w));
++	w->ocelot = ocelot;
++	INIT_WORK(&w->work, ocelot_mact_work);
++	schedule_work(&w->work);
++
++	return 0;
++}
++
+ static int ocelot_mc_unsync(struct net_device *dev, const unsigned char *addr)
+ {
+ 	struct ocelot_port_private *priv = netdev_priv(dev);
+ 	struct ocelot_port *ocelot_port = &priv->port;
+ 	struct ocelot *ocelot = ocelot_port->ocelot;
++	struct ocelot_mact_work_ctx w;
++
++	ether_addr_copy(w.forget.addr, addr);
++	w.forget.vid = ocelot_port->pvid_vlan.vid;
++	w.type = OCELOT_MACT_FORGET;
+ 
+-	return ocelot_mact_forget(ocelot, addr, ocelot_port->pvid_vlan.vid);
++	return ocelot_enqueue_mact_action(ocelot, &w);
+ }
+ 
+ static int ocelot_mc_sync(struct net_device *dev, const unsigned char *addr)
+@@ -428,9 +497,15 @@ static int ocelot_mc_sync(struct net_device *dev, const unsigned char *addr)
+ 	struct ocelot_port_private *priv = netdev_priv(dev);
+ 	struct ocelot_port *ocelot_port = &priv->port;
+ 	struct ocelot *ocelot = ocelot_port->ocelot;
++	struct ocelot_mact_work_ctx w;
++
++	ether_addr_copy(w.learn.addr, addr);
++	w.learn.vid = ocelot_port->pvid_vlan.vid;
++	w.learn.pgid = PGID_CPU;
++	w.learn.entry_type = ENTRYTYPE_LOCKED;
++	w.type = OCELOT_MACT_LEARN;
+ 
+-	return ocelot_mact_learn(ocelot, PGID_CPU, addr,
+-				 ocelot_port->pvid_vlan.vid, ENTRYTYPE_LOCKED);
++	return ocelot_enqueue_mact_action(ocelot, &w);
+ }
+ 
+ static void ocelot_set_rx_mode(struct net_device *dev)
+-- 
+2.25.1
 
