@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8D4B2CF61D
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 22:27:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE6412CF623
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 22:29:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729179AbgLDV0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 16:26:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45674 "EHLO
+        id S1730589AbgLDV17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 16:27:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726534AbgLDV0m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 16:26:42 -0500
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D237C061A4F;
-        Fri,  4 Dec 2020 13:26:02 -0800 (PST)
-Received: by mail-io1-xd43.google.com with SMTP id i9so7254435ioo.2;
-        Fri, 04 Dec 2020 13:26:02 -0800 (PST)
+        with ESMTP id S1730279AbgLDV17 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 16:27:59 -0500
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24C01C061A51;
+        Fri,  4 Dec 2020 13:27:19 -0800 (PST)
+Received: by mail-io1-xd42.google.com with SMTP id i9so7257654ioo.2;
+        Fri, 04 Dec 2020 13:27:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=dcobOCg4elJ1lBIJnbdqI7sJMeQVb3HqQ2OWJay91KA=;
-        b=KrtuBt5MXQtj9zWIsKhfga5hBQGSBID2664sPjRwL0rOihm6EPbkABs+Av6MkIjVjn
-         TBPHWrpwNtWgF9I8br+bubAJv3JAmgoMVp3LsbwaXchyw6SNLlL3yeVIl1bWu2+JbzHq
-         9AZFKzvEsjkgCvBLOA9LA3e0RKcLhXFg/29w/NoPzWFfX3UKTJMdbepL1xKlcnRyypBo
-         643+hIgkR8PNRbifZcMEQGO/A7JByE0BjJTAlItgEowUH3wUCYMoE2IwO1cT+wb4Ipyr
-         E7hDtUUF3ceyao47yCQXPYB6MtXLcAWnpfQbCPr2e7sAiNDKzj4jy5ME1NFEvREvV70U
-         JXKA==
+        bh=VqW5xuV/1lTxGcHmiBHYwvfv9PS2BZOwQspVUNm6Gmk=;
+        b=GjGyHwMC38/OQ/ofgcFBN2zOLpxvl8SZ/3FV1TRE1dZu/X5yHNG1V2qUruyFFcK6F1
+         qcMPYVeyov/gm9K0GZPgx0ouS8gZFYopuu9Frs+wSfINvNtlmnQv5Vc8FyLPD01RKgHg
+         EpOFk4FJneu7Ko/sYtfFpkcb1/8T6VHKMGl46rUpAh0CQqNLAANqb6dFlLLUv+JGChC7
+         YuQAhJz/qZK9W78y2Rb7daxZY3w3l/LxZw5Rlffq0qKfguJKoY3JT4Q8uEAmwkDiK0Yk
+         RozQcbWSqFp/ME1xxYgvan2CZA4kYQRi2Q58dhMDprZfvV0G5RZIFkbt7OxSdQUg4SrD
+         Takw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=dcobOCg4elJ1lBIJnbdqI7sJMeQVb3HqQ2OWJay91KA=;
-        b=OZdDGB/ZnrsS9D+m9HEYtisFUbpqE6457Vi1Ldg3eDwPyoJBkNAOINJJVYOheEh+bZ
-         pJboFGYqXI53CR+GFoY9wBMo9xvZlvXIssdi4GVIie36hol+sYN7mZLSPGf4U9fL59Kp
-         VSmDD+fOLeMQrZ1DKohKo+GcarBKtoKjUohkzJxWqfHnb5vxyEif3cmjUPyDPvYWlO6s
-         Vo+c8tXD4w+v4LDESVfzZndCxkr1OlKdoEmHkBAV4dBxu02B0B+IdqvLbcbxMVXu+h3n
-         CSrTHBKVj4SIpd+AniOTXQ6/b93dv7cCK9OSiFmTNJVuWDLHMBst0/V5Kta2uRnIQU5V
-         Bxog==
-X-Gm-Message-State: AOAM531ywDffW1y/7urqI9kkd8YTW31oCPLGGUGAyQCrm9X8Logcu0R0
-        ljHOYdMYoVIj9WF8ZYs0A4fofRn6oS/V7FiR8FA=
-X-Google-Smtp-Source: ABdhPJx86Powa4ZnC6gzQpBuytC8EmVW3lKN6t9bFbw4cSl/I0aTSHWtuY+5ZF97rQ6aFHJHwlv9tMGf0x4ij9I4aRQ=
-X-Received: by 2002:a02:4:: with SMTP id 4mr8851115jaa.121.1607117161437; Fri,
- 04 Dec 2020 13:26:01 -0800 (PST)
+        bh=VqW5xuV/1lTxGcHmiBHYwvfv9PS2BZOwQspVUNm6Gmk=;
+        b=gdxjMWObZpXOFvT1anI3bi8HhrUvrQyaAZyVtGt1nMJBWf2leBlCjzX6Z0qv4AfINL
+         RNb3M0HTulMPmkdMKTcGryMID3xGa8r98+PCcABZYj6sNLJI5dIRDXr5LghwWJDAY4it
+         hfbYT43epjlj7n4VuWhQoG5TQaq1VmXtdvATTpEvO6F7PQJQuxMXjeBgnwG73Fq3NVzo
+         Xs6Jr9wGeYWIAsOBtIQcXvTR3M7i/1svgsKf8FvIkOWxCGIGGltx+KJgELEpdmSwOS5P
+         XMRKy0cNv1kjoDnCCdLrCD3OPPNjKpzVQz4wZ4HBMHStR7wh8EsjiLPyITmly2imKGFK
+         2Yxw==
+X-Gm-Message-State: AOAM531+/Qodv5Nb418+cQCofOci+venMNJHYOW6pL8F/b2dXD2Rk7QZ
+        LWkZ41EfFbx7WKwIBsTVSve2MT1U+PtfK/pcQSU=
+X-Google-Smtp-Source: ABdhPJxIMC1a82H6iLiyCFqEN0vjxjwh8XlAwFQGCRVIUw7bOduA99DaSEZLqbBT0opev2aRmHTxlyRn4kB3zOeMqcM=
+X-Received: by 2002:a5e:9812:: with SMTP id s18mr1553635ioj.138.1607117238450;
+ Fri, 04 Dec 2020 13:27:18 -0800 (PST)
 MIME-Version: 1.0
-References: <20201204200920.133780-1-mario.limonciello@dell.com> <20201204200920.133780-3-mario.limonciello@dell.com>
-In-Reply-To: <20201204200920.133780-3-mario.limonciello@dell.com>
+References: <20201204200920.133780-1-mario.limonciello@dell.com>
+In-Reply-To: <20201204200920.133780-1-mario.limonciello@dell.com>
 From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 4 Dec 2020 13:25:50 -0800
-Message-ID: <CAKgT0Ucz5zDp3fEJFpt1x1e+OcLCxOZVyo5KK5sM_LktbLQH3Q@mail.gmail.com>
-Subject: Re: [PATCH v3 2/7] e1000e: Move all S0ix related code into its own
- source file
+Date:   Fri, 4 Dec 2020 13:27:07 -0800
+Message-ID: <CAKgT0Uc=OxcuHbZihY3zxsxzPprJ_8vGHr=reBJFMrf=V9A5kg@mail.gmail.com>
+Subject: Re: [PATCH v3 0/7] Improve s0ix flows for systems i219LM
 To:     Mario Limonciello <mario.limonciello@dell.com>
 Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
@@ -74,116 +73,28 @@ X-Mailing-List: netdev@vger.kernel.org
 On Fri, Dec 4, 2020 at 12:09 PM Mario Limonciello
 <mario.limonciello@dell.com> wrote:
 >
-> Introduce a flag to indicate the device should be using the S0ix
-> flows and use this flag to run those functions.
+> commit e086ba2fccda ("e1000e: disable s0ix entry and exit flows for ME systems")
+> disabled s0ix flows for systems that have various incarnations of the
+> i219-LM ethernet controller.  This was done because of some regressions
+> caused by an earlier
+> commit 632fbd5eb5b0e ("e1000e: fix S0ix flows for cable connected case")
+> with i219-LM controller.
 >
-> Splitting the code to it's own file will make future heuristics
-> more self contained.
+> Performing suspend to idle with these ethernet controllers requires a properly
+> configured system.  To make enabling such systems easier, this patch
+> series allows determining if enabled and turning on using ethtool.
 >
-> Tested-by: Yijun Shen <yijun.shen@dell.com>
-> Signed-off-by: Mario Limonciello <mario.limonciello@dell.com>
+> The flows have also been confirmed to be configured correctly on Dell's Latitude
+> and Precision CML systems containing the i219-LM controller, when the kernel also
+> contains the fix for s0i3.2 entry previously submitted here and now part of this
+> series.
+> https://marc.info/?l=linux-netdev&m=160677194809564&w=2
+>
+> Patches 4 through 7 will turn the behavior on by default for some of Dell's
+> CML and TGL systems.
 
-One minor issue pointed out below.
+The patches look good to me. Just need to address the minor issue that
+seems to have been present prior to the introduction of this patch
+set.
 
-> ---
->  drivers/net/ethernet/intel/e1000e/Makefile |   2 +-
->  drivers/net/ethernet/intel/e1000e/e1000.h  |   4 +
->  drivers/net/ethernet/intel/e1000e/netdev.c | 272 +-------------------
->  drivers/net/ethernet/intel/e1000e/s0ix.c   | 280 +++++++++++++++++++++
->  4 files changed, 290 insertions(+), 268 deletions(-)
->  create mode 100644 drivers/net/ethernet/intel/e1000e/s0ix.c
->
-> diff --git a/drivers/net/ethernet/intel/e1000e/Makefile b/drivers/net/ethernet/intel/e1000e/Makefile
-> index 44e58b6e7660..f2332c01f86c 100644
-> --- a/drivers/net/ethernet/intel/e1000e/Makefile
-> +++ b/drivers/net/ethernet/intel/e1000e/Makefile
-> @@ -9,5 +9,5 @@ obj-$(CONFIG_E1000E) += e1000e.o
->
->  e1000e-objs := 82571.o ich8lan.o 80003es2lan.o \
->                mac.o manage.o nvm.o phy.o \
-> -              param.o ethtool.o netdev.o ptp.o
-> +              param.o ethtool.o netdev.o s0ix.o ptp.o
->
-> diff --git a/drivers/net/ethernet/intel/e1000e/e1000.h b/drivers/net/ethernet/intel/e1000e/e1000.h
-> index ba7a0f8f6937..b13f956285ae 100644
-> --- a/drivers/net/ethernet/intel/e1000e/e1000.h
-> +++ b/drivers/net/ethernet/intel/e1000e/e1000.h
-> @@ -436,6 +436,7 @@ s32 e1000e_get_base_timinca(struct e1000_adapter *adapter, u32 *timinca);
->  #define FLAG2_DFLT_CRC_STRIPPING          BIT(12)
->  #define FLAG2_CHECK_RX_HWTSTAMP           BIT(13)
->  #define FLAG2_CHECK_SYSTIM_OVERFLOW       BIT(14)
-> +#define FLAG2_ENABLE_S0IX_FLOWS           BIT(15)
->
->  #define E1000_RX_DESC_PS(R, i)     \
->         (&(((union e1000_rx_desc_packet_split *)((R).desc))[i]))
-> @@ -462,6 +463,9 @@ enum latency_range {
->  extern char e1000e_driver_name[];
->
->  void e1000e_check_options(struct e1000_adapter *adapter);
-> +void e1000e_s0ix_entry_flow(struct e1000_adapter *adapter);
-> +void e1000e_s0ix_exit_flow(struct e1000_adapter *adapter);
-> +void e1000e_maybe_enable_s0ix(struct e1000_adapter *adapter);
->  void e1000e_set_ethtool_ops(struct net_device *netdev);
->
->  int e1000e_open(struct net_device *netdev);
-> diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-> index 128ab6898070..cd9839e86615 100644
-> --- a/drivers/net/ethernet/intel/e1000e/netdev.c
-> +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-
-<snip>
-
->  static int e1000e_pm_freeze(struct device *dev)
->  {
->         struct net_device *netdev = dev_get_drvdata(dev);
-> @@ -6962,7 +6701,6 @@ static __maybe_unused int e1000e_pm_suspend(struct device *dev)
->         struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
->         struct e1000_adapter *adapter = netdev_priv(netdev);
->         struct pci_dev *pdev = to_pci_dev(dev);
-> -       struct e1000_hw *hw = &adapter->hw;
->         int rc;
->
->         e1000e_flush_lpic(pdev);
-> @@ -6974,8 +6712,7 @@ static __maybe_unused int e1000e_pm_suspend(struct device *dev)
->                 e1000e_pm_thaw(dev);
->
->         /* Introduce S0ix implementation */
-> -       if (hw->mac.type >= e1000_pch_cnp &&
-> -           !e1000e_check_me(hw->adapter->pdev->device))
-> +       if (adapter->flags2 & FLAG2_ENABLE_S0IX_FLOWS)
->                 e1000e_s0ix_entry_flow(adapter);
-
-So the placement of this code raises some issues. It isn't a problem
-with your patch but a bug in the driver that needs to be addressed. I
-am assuming you only need to perform this flow if you successfully
-froze the part. However this is doing it in all cases, which is why
-the e1000e_pm_thaw is being called before you call this code. This is
-something that should probably be an "else if" rather than a seperate
-if statement.
-
->
->         return rc;
-> @@ -6986,12 +6723,10 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
->         struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
->         struct e1000_adapter *adapter = netdev_priv(netdev);
->         struct pci_dev *pdev = to_pci_dev(dev);
-> -       struct e1000_hw *hw = &adapter->hw;
->         int rc;
->
->         /* Introduce S0ix implementation */
-> -       if (hw->mac.type >= e1000_pch_cnp &&
-> -           !e1000e_check_me(hw->adapter->pdev->device))
-> +       if (adapter->flags2 & FLAG2_ENABLE_S0IX_FLOWS)
->                 e1000e_s0ix_exit_flow(adapter);
->
->         rc = __e1000_resume(pdev);
-> @@ -7655,6 +7390,9 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->         if (!(adapter->flags & FLAG_HAS_AMT))
->                 e1000e_get_hw_control(adapter);
->
-> +       /* use heuristics to decide whether to enable s0ix flows */
-> +       e1000e_maybe_enable_s0ix(adapter);
-> +
->         strlcpy(netdev->name, "eth%d", sizeof(netdev->name));
->         err = register_netdev(netdev);
->         if (err)
+Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
