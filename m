@@ -2,75 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B94E22CF6A3
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 23:15:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A60C2CF6AA
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 23:18:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727517AbgLDWNr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 17:13:47 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:39450 "EHLO vps0.lunn.ch"
+        id S1725995AbgLDWSO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 17:18:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58208 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725885AbgLDWNr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Dec 2020 17:13:47 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1klJJx-00AGxT-JU; Fri, 04 Dec 2020 23:12:57 +0100
-Date:   Fri, 4 Dec 2020 23:12:57 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     George McCollister <george.mccollister@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        netdev@vger.kernel.org, open list <linux-kernel@vger.kernel.org>,
-        linux-mips@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 2/2] net: dsa: qca: ar9331: export stats64
-Message-ID: <20201204221257.GH2400258@lunn.ch>
-References: <20201204145624.11713-1-o.rempel@pengutronix.de>
- <20201204145624.11713-3-o.rempel@pengutronix.de>
- <CAFSKS=Pq9=mNXGeTbcTOL-=rp8wWCS2qtHF38eD1HiN=EK0DOQ@mail.gmail.com>
+        id S1725903AbgLDWSO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Dec 2020 17:18:14 -0500
+Date:   Fri, 4 Dec 2020 14:17:32 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607120254;
+        bh=npLMxHcpEYQyvrwoDxGhmwr6Zw8n/fCkGcnf2Yes66g=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=E0wZLJNg8o9hl+YP2xWWOGEYH+dXakQjldVMSRpIrlKsEGdr6UL+v/HXgxK2edAvh
+         6VM9a5Sn0B81EJ1RF7QXLwbEKpTb0jCV7ad7c9bRxBQIX7WFB87WSlooddH+BSLbRP
+         EjieKzFHcfONb/uuo7/VT16nhCqAEMsdASC6019T0653X5DCNYYLe+jqpVZVN0ow0S
+         DPbQb/nDgY6DvwkdEGORFQW4BWfz0D6ai3ZxA5khp560WrP/xLNyD1fjijNgNH6LYS
+         Mbgmu2DkzXE0+HDt/u7RvjO7NocqD2o+TPGtNd7beRuqk0/jG5UYNLqwhtT33QJGKp
+         EPCkYgsHR/1ZQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Davide Caratti <dcaratti@redhat.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Mohit Bhasi <mohitbhasi1998@gmail.com>,
+        Leslie Monis <lesliemonis@gmail.com>
+Subject: Re: [PATCH net] net/sched: fq_pie: initialize timer earlier in
+ fq_pie_init()
+Message-ID: <20201204141732.6bd0bdca@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <CAM_iQpWf4CS_fR69JQfa2pEV9Yd26p=neZ+nu_1rOLvbbn=TiA@mail.gmail.com>
+References: <2e78e01c504c633ebdff18d041833cf2e079a3a4.1607020450.git.dcaratti@redhat.com>
+        <CAM_iQpWf4CS_fR69JQfa2pEV9Yd26p=neZ+nu_1rOLvbbn=TiA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFSKS=Pq9=mNXGeTbcTOL-=rp8wWCS2qtHF38eD1HiN=EK0DOQ@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > +struct ar9331_sw_stats {
-> > +       u64 rxbroad;
-> > +       u64 rxpause;
-> > +       u64 rxmulti;
-> > +};
-
-7> > +struct ar9331_sw_port {
-> > +       int idx;
-> > +       struct ar9331_sw_priv *priv;
-> > +       struct delayed_work mib_read;
-> > +       struct ar9331_sw_stats stats;
-
-
-> > +static void ar9331_stats_update(struct ar9331_sw_port *port,
-> > +                               struct rtnl_link_stats64 *stats)
-> > +{
-> > +       struct ar9331_sw_stats *s = &port->stats;
-> > +
-> > +       stats->rx_packets = s->rxbroad + s->rxmulti + s->rx64byte +
-> > +               s->rx128byte + s->rx256byte + s->rx512byte + s->rx1024byte +
-> > +               s->rx1518byte + s->rxmaxbyte;
+On Fri, 4 Dec 2020 10:35:07 -0800 Cong Wang wrote:
+> On Thu, Dec 3, 2020 at 10:41 AM Davide Caratti <dcaratti@redhat.com> wrote:
+> >
+> > with the following tdc testcase:
+> >
+> >  83be: (qdisc, fq_pie) Create FQ-PIE with invalid number of flows
+> >
+> > as fq_pie_init() fails, fq_pie_destroy() is called to clean up. Since the
+> > timer is not yet initialized, it's possible to observe a splat like this:  
+> ...
+> > fix it moving timer_setup() before any failure, like it was done on 'red'
+> > with former commit 608b4adab178 ("net_sched: initialize timer earlier in
+> > red_init()").
+> >
+> > Fixes: ec97ecf1ebe4 ("net: sched: add Flow Queue PIE packet scheduler")
+> > Signed-off-by: Davide Caratti <dcaratti@redhat.com>  
 > 
-> Are all of these port->stats accesses always atomic? I'll need to do
-> something similar in my xrs700x driver and want to make sure there
-> doesn't need to be a lock between here and where they're updated in
-> the delayed work.
+> Reviewed-by: Cong Wang <cong.wang@bytedance.com>
 
-Since these are u64, they are not atomic on 32 bit systems.
-
-Take a look at
-
-include/linux/u64_stats_sync.h
-
-	Andrewu
+Applied, thanks!
