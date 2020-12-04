@@ -2,109 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEB7A2CF670
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 22:57:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D6F92CF672
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 22:59:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729456AbgLDV4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 16:56:50 -0500
-Received: from m43-15.mailgun.net ([69.72.43.15]:43825 "EHLO
-        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729268AbgLDV4u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 16:56:50 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1607118985; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=I5SlKBv0SkNfskI9GrrnMZNG4079rgC/Hn+iDRemQhI=;
- b=d6cu0LVJMx6YgVSApQYgvtpXinUvWXmZhBWYr5DB1RWJeFNpEt7wQF0d5k3RSruQOAMOBEr8
- LUWE2YxEfW1HRbAMUdzR4IQqlGvndrcj+B94BZq/HYuBQNJuFLuxbh9BmISVoEKneh27EZst
- E5bt0ls4y156F/hyynuFjxTp560=
-X-Mailgun-Sending-Ip: 69.72.43.15
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
- 5fcab08708086a3dc7e9f268 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 04 Dec 2020 21:56:23
- GMT
-Sender: subashab=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 27BEAC43462; Fri,  4 Dec 2020 21:56:23 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: subashab)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 6C33CC433CA;
-        Fri,  4 Dec 2020 21:56:22 +0000 (UTC)
+        id S1727517AbgLDV6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 16:58:32 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56506 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726263AbgLDV6c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Dec 2020 16:58:32 -0500
+Message-ID: <999c9328747d4edbfc8d2720b886aaa269e16df8.camel@kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607119071;
+        bh=ultBWZkYr8AL8YDaGGjF9fL3uS7cqH79NjI0A6ylQK4=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=j5S33rWLdQ9itK/L6lp7wG2tGn4s0q3bKle51XTPXPNtFJzaXkNP5nYQlFLD84LgS
+         RlrVJOlOftaGSOwOxVkVGFvAQgDMXpDjQLuv3fXOAziYbOg5NUs6xcGfRwiX9F+mkV
+         KiJc+BvmrFlwUkwOQFas0NRwGdnh1FuCUHnvrK185I02bfd0/6mshTZi9tADmmjlFe
+         ZxSSvfdwbX0k2UBGXspPu11F8t4jDUMQfTNChkIzGcnt78qan4DcVL+AjwdotAHdp7
+         QI2yRWoQ7ZopD34nm5Cu8UABm1ncBto8cEFxE1AV+QOvFTbnSjFudvfpjCD+g6DYey
+         n20JOCRomGWmw==
+Subject: Re: [net-next V2 08/15] net/mlx5e: Add TX PTP port object support
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Eran Ben Elisha <eranbe@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 04 Dec 2020 13:57:49 -0800
+In-Reply-To: <20201204122613.542c2362@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+References: <20201203042108.232706-1-saeedm@nvidia.com>
+         <20201203042108.232706-9-saeedm@nvidia.com>
+         <20201203182908.1d25ea3f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+         <b761c676af87a4a82e3ea4f6f5aff3d1159c63e7.camel@kernel.org>
+         <20201204122613.542c2362@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
 Content-Transfer-Encoding: 7bit
-Date:   Fri, 04 Dec 2020 14:56:22 -0700
-From:   subashab@codeaurora.org
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     stranche@codeaurora.org, netdev@vger.kernel.org, kuba@kernel.org
-Subject: Re: [PATCH] net: rmnet: Adjust virtual device MTU on real device
- capability
-In-Reply-To: <1607017240-10582-1-git-send-email-loic.poulain@linaro.org>
-References: <1607017240-10582-1-git-send-email-loic.poulain@linaro.org>
-Message-ID: <3a2ca2c269911de71df6dca2e981f7fe@codeaurora.org>
-X-Sender: subashab@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-12-03 10:40, Loic Poulain wrote:
-> A submitted qmap/rmnet packet size can not be larger than the linked
-> interface (real_dev) MTU. This patch ensures that the rmnet virtual
-> iface MTU is configured according real device capability.
+On Fri, 2020-12-04 at 12:26 -0800, Jakub Kicinski wrote:
+> On Fri, 04 Dec 2020 11:33:26 -0800 Saeed Mahameed wrote:
+> > On Thu, 2020-12-03 at 18:29 -0800, Jakub Kicinski wrote:
+> > > On Wed, 2 Dec 2020 20:21:01 -0800 Saeed Mahameed wrote:  
+> > > > Add TX PTP port object support for better TX timestamping
+> > > > accuracy.
+> > > > Currently, driver supports CQE based TX port timestamp. Device
+> > > > also offers TX port timestamp, which has less jitter and better
+> > > > reflects the actual time of a packet's transmit.  
+> > > 
+> > > How much better is it?
+> > > 
+> > > Is the new implementation is standard compliant or just a "better
+> > > guess"?
+> > 
+> > It is not a guess for sure, the closer to the output port you take
+> > the
+> > stamp the more accurate you get, this is why we need the HW
+> > timestamp
+> > in first place, i don't have the exact number though, but we target
+> > to
+> > be compliant with G.8273.2 class C, (30 nsec), and this code allow
+> > Linux systems to be deployed in the 5G telco edge. Where this
+> > standard
+> > is needed.
 > 
-> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-> ---
->  drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
+> I see. IIRC there was also an IEEE standard which specified the exact
+> time stamping point (i.e. SFD crosses layer X). If it's class C that
+> answers the question, I think.
 > 
-> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-> b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-> index d58b51d..d1d7328 100644
-> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-> @@ -60,9 +60,14 @@ static netdev_tx_t rmnet_vnd_start_xmit(struct 
-> sk_buff
-> *skb,
+> > > > Define new driver layout called ptpsq, on which driver will
+> > > > create
+> > > > SQs that will support TX port timestamp for their transmitted
+> > > > packets.
+> > > > Driver to identify PTP TX skbs and steer them to these
+> > > > dedicated
+> > > > SQs
+> > > > as part of the select queue ndo.
+> > > > 
+> > > > Driver to hold ptpsq per TC and report them at
+> > > > netif_set_real_num_tx_queues().
+> > > > 
+> > > > Add support for all needed functionality in order to xmit and
+> > > > poll
+> > > > completions received via ptpsq.
+> > > > 
+> > > > Add ptpsq to the TX reporter recover, diagnose and dump
+> > > > methods.
+> > > > 
+> > > > Creation of ptpsqs is disabled by default, and can be enabled
+> > > > via
+> > > > tx_port_ts private flag.  
+> > > 
+> > > This flag is pretty bad user experience.
+> > 
+> > Yeah, nothing i  could do about this, there is a large memory foot
+> > print i want to avoid, and we don't want to complicate PTP ctrl API
+> > of
+> > the HW operating mode, so until we improve the HW, we prefer to
+> > keep
+> > this feature as a private flag.
+> > 
+> > > > This patch steer all timestamp related packets to a ptpsq, but
+> > > > it
+> > > > does not open the port timestamp support for it. The support
+> > > > will
+> > > > be added in the following patch.  
+> > > 
+> > > Overall I'm a little shocked by this, let me sleep on it :)
+> > > 
+> > > More info on the trade offs and considerations which led to the
+> > > implementation would be useful.  
+> > 
+> > To get the Improved accuracy we need a special type of SQs attached
+> > to
+> > special HW objects that will provide more accurate stamping.
+> > 
+> > Trade-offs are :
+> > 
+> > options 1) convert ALL regular txqs (SQs) to work in this port
+> > stamping
+> > mode.
+> > 
+> > Pros: no need for any special mode in driver, no additional memory,
+> > other than the new HW objects we create for the special stamping.
+> > 
+> > Cons: significant performance hit for non PTP traffic, (the hw
+> > stamps
+> > all packets in the slow but more accurate mode)
 > 
->  static int rmnet_vnd_change_mtu(struct net_device *rmnet_dev, int
-> new_mtu)
->  {
-> +	struct rmnet_priv *priv = netdev_priv(rmnet_dev);
-> +
->  	if (new_mtu < 0 || new_mtu > RMNET_MAX_PACKET_SIZE)
->  		return -EINVAL;
+> Just to be clear (Alexei brought this up when I mentioned these
+> patches) - the requirement for the separate queues is because the
+> time
+> stamp enable is a queue property, not a per WQE / frame thing? I
+> couldn't find this in the code - could you point me to where it's
+> set?
 > 
-> +	if (priv->real_dev && (new_mtu + RMNET_NEEDED_HEADROOM) >
-> priv->real_dev->mtu)
-> +		return -EINVAL;
-> +
->  	rmnet_dev->mtu = new_mtu;
->  	return 0;
->  }
-> @@ -242,6 +247,9 @@ int rmnet_vnd_newlink(u8 id, struct net_device
-> *rmnet_dev,
-> 
->  	priv->real_dev = real_dev;
-> 
-> +	/* Align default MTU with real_dev MTU */
-> +	rmnet_vnd_change_mtu(rmnet_dev, real_dev->mtu -
-> RMNET_NEEDED_HEADROOM);
-> +
->  	rc = register_netdevice(rmnet_dev);
->  	if (!rc) {
->  		ep->egress_dev = rmnet_dev;
 
-This would need similar checks in the NETDEV_PRECHANGEMTU
-netdev notifier.
+Yes, it is not per WQE, a new SQ property and we set it on:
+mlx5e_ptp_open_txqsq() and then pass it to mlx5e_create_sq()
+
+where we set it in the hw context like so:
+
+MLX5_SET(sqc,  sqc, ts_cqe_to_dest_cqn, csp->ts_cqe_to_dest_cqn);
+
+A nice quirk ! this will be Line #1234 in mlx5/core/en_main.c :)
+
+
+> > option 2) route PTP traffic to a special SQs per ring, this SQ will
+> > be
+> > PTP port accurate, Normal traffic will continue through regular SQs
+> > 
+> > Pros: Regular non PTP traffic not affected.
+> > Cons: High memory footprint for creating special SQs
+> > 
+> > 
+> > So we prefer (2) + private flag to avoid the performance hit and
+> > the
+> > redundant memory usage out of the box.
+> 
+> Option 3 - have only one special PTP queue in the system. PTP traffic
+> is rather low rate, queue per core doesn't seem necessary.
+> 
+
+We only forward ptp traffic to the new special queue but we create more
+than one to avoid internal locking as we will utilize the tx softirq
+percpu.
+
+After double checking the code it seems Eran and Tariq have decided to
+forward all UDP traffic, let me double check with them what happened
+here.
+
+
+> 
+> Since you said the PTP queues are slower / higher overhead - are you
+> not
+> concerned that QUIC traffic will get mis-directed to them? People
+> like
+> hardware time stamps for all sort of measurements these days. Plus,
+> since UDP doesn't itself set ooo those applications may be surprised
+> to
+> see increased out-of-order rate.
+> 
+
+Right, i thought Eran was looking for the ptp udp port as well.
+Let me verify what happened here.
+
+> Why not use the PTP classification helpers we already have?
+
+do you mean ptp_parse_header() or the ebpf prog ?
+We use skb_flow_dissect() which should be simple enough.
+
+
