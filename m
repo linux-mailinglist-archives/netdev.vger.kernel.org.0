@@ -2,129 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70BFE2CEECC
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 14:34:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E1C12CEED6
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 14:38:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728066AbgLDNd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 08:33:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56924 "EHLO
+        id S1730232AbgLDNf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 08:35:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726257AbgLDNd6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 08:33:58 -0500
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0440C0613D1
-        for <netdev@vger.kernel.org>; Fri,  4 Dec 2020 05:33:17 -0800 (PST)
-Received: by mail-pj1-x1044.google.com with SMTP id e5so3084415pjt.0
-        for <netdev@vger.kernel.org>; Fri, 04 Dec 2020 05:33:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=zsUtn/BN7RGWNRiP0GOeAP0ayPcDZClOFUtCVxGLjao=;
-        b=tGJ81PQSHvRuz8azi/uu2gthptS+VUi3dOUfv/ZkWfF3Bb0K/nmjNnYfRuMP4m6Fea
-         21U7mBmJ+BLWcpxi5oHZpTYuHvIBMuigQeiJhr0VIbccJvA2b655cWeZdKyDJIXCjIQ+
-         7XF6TRPQcnYW3zzshjTXqfhHd0Kh7oDEvlgKtyoBD36WxQQ/FnntfEAxBdJtS2xkiQmp
-         fEN1HAbea/jR7dUBmZ0u4krKHtcW99mSkQIAaNDRKznqZ1Cx4O9uAJsqGOTz6ixDuRDB
-         vHpp5wjhYygOHoVH/2W2D8TxpuOJFKBTlmVqP3Uww6LLwd1QqSW9l+ylUoXtdGcT05MQ
-         /H7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=zsUtn/BN7RGWNRiP0GOeAP0ayPcDZClOFUtCVxGLjao=;
-        b=S03AozieSprcFDOdgC2t3lqYLQCmW3FLQfMSZd+fxW1nfj1mWQi4PNV2cFdSPC6C/9
-         HHaz02N0mn3L5QnjSOjAC/gQCQfyjmqT2DP8+NKv541caon7Xc8+/tDHHLXHTCn/N3o1
-         4kevw076mbRzJXllQ5iPiO11VLiKz1TPf6yjZoDlSuGQqXL/0K5IQMeomOkOuJj7Q1uK
-         Cj2y7Ro9xEznBoIO615bMJDNDKpNP9OU+flG9cz2y4LauUpgporR45U/4na8C+/bPFpd
-         Cxp0Jrl1FHKDBwXw5Pg4aiKe3Xc5Zs/GQVCwVOFf4Vgv0SF+kbnKKfNfRXSrlQ/Jb1XX
-         nbFw==
-X-Gm-Message-State: AOAM531S335YPlsc4a2j60m8Rpgoi+PnZzzcilksl66A0tnbJZV9YYTh
-        uARSKlHk2aqCICiTlmhO6Ow=
-X-Google-Smtp-Source: ABdhPJxkRiysxI4RQlnS45rnvcpAqhHE/kAJfvq/L/JLxA2KUfURLaXBrs+tkZDW2t/Uv4Qe/OVqiQ==
-X-Received: by 2002:a17:902:8d82:b029:d8:c5e8:9785 with SMTP id v2-20020a1709028d82b02900d8c5e89785mr3937626plo.5.1607088797446;
-        Fri, 04 Dec 2020 05:33:17 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id v63sm4817401pfb.217.2020.12.04.05.33.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Dec 2020 05:33:16 -0800 (PST)
-Date:   Fri, 4 Dec 2020 05:33:14 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH v2 net-next] ptp: Add clock driver for the OpenCompute
- TimeCard.
-Message-ID: <20201204133314.GA26030@hoboy.vegasvil.org>
-References: <20201203182925.4059875-1-jonathan.lemon@gmail.com>
- <20201204005624.GC18560@hoboy.vegasvil.org>
- <20201204020037.jeyzulaqp4kd4pnv@bsd-mbp.dhcp.thefacebook.com>
+        with ESMTP id S1729891AbgLDNf4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 08:35:56 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CCC3C061A51
+        for <netdev@vger.kernel.org>; Fri,  4 Dec 2020 05:35:16 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1klBEw-0004dc-9Z
+        for netdev@vger.kernel.org; Fri, 04 Dec 2020 14:35:14 +0100
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id 721165A43A7
+        for <netdev@vger.kernel.org>; Fri,  4 Dec 2020 13:35:11 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 6CC265A4398;
+        Fri,  4 Dec 2020 13:35:10 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 03b56eae;
+        Fri, 4 Dec 2020 13:35:09 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: pull-request: can 2020-12-04
+Date:   Fri,  4 Dec 2020 14:35:05 +0100
+Message-Id: <20201204133508.742120-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201204020037.jeyzulaqp4kd4pnv@bsd-mbp.dhcp.thefacebook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 03, 2020 at 06:00:37PM -0800, Jonathan Lemon wrote:
-> On Thu, Dec 03, 2020 at 04:56:24PM -0800, Richard Cochran wrote:
+Hello Jakub, hello David,
 
-> > The name here is a bit confusing since "timex" has a special meaning
-> > in the NTP/PTP API.
-> 
-> The .gettimex64 call is used here so the time returned from the
-> clock can be correlated to the system time.
+here's a pull request of 3 patches for net/master.
 
-[facepalm] man, its in the interface naming.  Oh well.
+Zhang Qilong contributes a patch for the softing driver, which fixes the error
+handling in the softing_netdev_open() function.
 
-> > This driver looks fine, but I'm curious how you will use it.  Can it
-> > provide time stamping for network frames or other IO?
-> 
-> The card does have a PPS pulse output, so it can be wired to a network
-> card which takes an external PPS signal.
+Oliver Hartkopp has two patches for the ISOTP CAN protocol and says:
 
-Cool.  So the new ts2phc program can synchronize the NICs for you.
-All that is missing here is ptp_clock_info.enable().  With that in
-place, it will work out of the box.
+| This patch set contains a fix that showed up while implementing the
+| functional addressing switch suggested by Thomas Wagner.
+|
+| Unfortunately the functional addressing switch came in very late but
+| it is really very simple and already tested.
+|
+| I would like to leave it to the maintainers whether the second patch
+| can still go into the 5.10-rc tree, which is intended for long-term.
 
-> Right now, the current model (which certainly can be improved on) is using
-> phc2sys to discipline the system and NIC clocks.
+regards,
+Marc
 
-Yeah, ts2phc will fill in the gap.
- 
-> I'll send a v3.  I also need to open a discussion on how this should
-> return the leap second changes to the user - there doesn't seem to be
-> anything in the current API for this.
+---
 
-There is the clock_adjtime() system call, analogue of adjtimex.
+The following changes since commit bbe2ba04c5a92a49db8a42c850a5a2f6481e47eb:
 
-Right now there is no PHC driver access to the timex.status field
-(which carries the leap flags), but that can be changed...
+  Merge tag 'net-5.10-rc7' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2020-12-03 13:10:11 -0800)
 
-kernel/time/posix-timers.c	do_clock_adjtime()  calls
-kernel/time/posix-clock.c	pc_clock_adjtime()  calls
-drivers/ptp/ptp_clock.c		ptp_clock_adjtime()
+are available in the Git repository at:
 
-At this point the PHC layer could invoke a new, optional driver
-callback that returns the leap second status flags, and then the PHC
-layer could set timex.status appropriately.
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-5.10-20201204
+
+for you to fetch changes up to 2e15980d931afa2e51a067ff6adebf5d5b3929b1:
+
+  can: isotp: add SF_BROADCAST support for functional addressing (2020-12-04 12:49:12 +0100)
+
+----------------------------------------------------------------
+linux-can-fixes-for-5.10-20201204
+
+----------------------------------------------------------------
+Oliver Hartkopp (2):
+      can: isotp: isotp_setsockopt(): block setsockopt on bound sockets
+      can: isotp: add SF_BROADCAST support for functional addressing
+
+Zhang Qilong (1):
+      can: softing: softing_netdev_open(): fix error handling
+
+ drivers/net/can/softing/softing_main.c |  9 +++++++--
+ include/uapi/linux/can/isotp.h         |  2 +-
+ net/can/isotp.c                        | 32 +++++++++++++++++++++++---------
+ 3 files changed, 31 insertions(+), 12 deletions(-)
 
 
-Having said all that, the ts2phc program takes the approach of getting
-the leap second information from the leap seconds file.  Of course,
-this requires administratively updating the file at least once every
-six months.
-
-I considered and rejected the idea of trying to get the current leap
-second status from GPS for two reasons.  First, there is no
-standardized and universally implemented way of querying this from a
-GPS.  Second, and more importantly, the leap second information is
-only broadcast every 12.5 minutes, and that it is *way* too long to
-wait after cold boot for applications I am interested in.
-
-So the choice boiled down to either having to keep a file up to date,
-say every month or so, or waiting 15 minutes in the worst case.  I
-chose the lesser of two evils.
-
-Thanks,
-Richard
