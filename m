@@ -2,66 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5F612CF75F
-	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 00:20:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D1F22CF761
+	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 00:24:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727224AbgLDXSZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 18:18:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35490 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725885AbgLDXSY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Dec 2020 18:18:24 -0500
-Date:   Fri, 4 Dec 2020 15:17:43 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607123864;
-        bh=sSno5OIYAoA4jFBIgv/0XbtyYExZFQCFfOrnwExkA0Y=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oM+et4++2s8yOLSIetLTrzQF22+IAkBbfMOnkg6WLy5IJ/QOEg8Rx0ygAqVMvBJgM
-         KPfRgeS+l8RVVCW+hH6/lm34yB558Jy15lRxT5Bg9d/UR97IhM/vBcWrS87rCMDwk3
-         zZQD/0YKRFJ6SkPzeTMBYsEZCN4iHfFdlvxBha4Qfmk6uf10+hLhQLwKxlzI8l0+E4
-         qQOx1h0qCuvHKz4AiRoSVZaBCh1tZaWZtuKbskpEwR0wWt1bo3Z6SqGud1nqdcKX+9
-         vTsMHvyJnsOj0SsL1eTPQQkMIL7mP0SfOWpfzfVC6UzZEVlKSAH5cA7fwmNevFPBW1
-         JmvCPW2LIWI4g==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Eran Ben Elisha <eranbe@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [net-next V2 08/15] net/mlx5e: Add TX PTP port object support
-Message-ID: <20201204151743.4b55da5c@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <999c9328747d4edbfc8d2720b886aaa269e16df8.camel@kernel.org>
-References: <20201203042108.232706-1-saeedm@nvidia.com>
-        <20201203042108.232706-9-saeedm@nvidia.com>
-        <20201203182908.1d25ea3f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-        <b761c676af87a4a82e3ea4f6f5aff3d1159c63e7.camel@kernel.org>
-        <20201204122613.542c2362@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-        <999c9328747d4edbfc8d2720b886aaa269e16df8.camel@kernel.org>
+        id S1727349AbgLDXU6 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 4 Dec 2020 18:20:58 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:10538 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725885AbgLDXU6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 18:20:58 -0500
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B4NJkE2005754
+        for <netdev@vger.kernel.org>; Fri, 4 Dec 2020 15:20:16 -0800
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 357quetp02-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 04 Dec 2020 15:20:16 -0800
+Received: from intmgw002.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 4 Dec 2020 15:20:10 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 8CB582ECAB80; Fri,  4 Dec 2020 15:20:03 -0800 (PST)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>
+Subject: [PATCH bpf] tools/bpftool: fix PID fetching with a lot of results
+Date:   Fri, 4 Dec 2020 15:20:01 -0800
+Message-ID: <20201204232002.3589803-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-12-04_13:2020-12-04,2020-12-04 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 spamscore=0
+ suspectscore=0 impostorscore=0 clxscore=1015 lowpriorityscore=0
+ priorityscore=1501 phishscore=0 malwarescore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012040133
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 04 Dec 2020 13:57:49 -0800 Saeed Mahameed wrote:
-> > > option 2) route PTP traffic to a special SQs per ring, this SQ will
-> > > be
-> > > PTP port accurate, Normal traffic will continue through regular SQs
-> > > 
-> > > Pros: Regular non PTP traffic not affected.
-> > > Cons: High memory footprint for creating special SQs
-> > > 
-> > > So we prefer (2) + private flag to avoid the performance hit and
-> > > the
-> > > redundant memory usage out of the box.  
-> > 
-> > Option 3 - have only one special PTP queue in the system. PTP traffic
-> > is rather low rate, queue per core doesn't seem necessary.
-> 
-> We only forward ptp traffic to the new special queue but we create more
-> than one to avoid internal locking as we will utilize the tx softirq
-> percpu.
+In case of having so many PID results that they don't fit into a singe page
+(4096) bytes, bpftool will erroneously conclude that it got corrupted data due
+to 4096 not being a multiple of struct pid_iter_entry, so the last entry will
+be partially truncated. Fix this by sizing the buffer to fit exactly N entries
+with no truncation in the middle of record.
 
-In other words to make the driver implementation simpler we'll have
-a pretty basic feature hidden behind a ethtool priv knob and a number
-of queues which doesn't match reality reported to user space. Hm.
+Fixes: d53dee3fe013 ("tools/bpftool: Show info for processes holding BPF map/prog/link/btf FDs")
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+---
+ tools/bpf/bpftool/pids.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/bpf/bpftool/pids.c b/tools/bpf/bpftool/pids.c
+index df7d8ec76036..477e55d59c34 100644
+--- a/tools/bpf/bpftool/pids.c
++++ b/tools/bpf/bpftool/pids.c
+@@ -89,9 +89,9 @@ libbpf_print_none(__maybe_unused enum libbpf_print_level level,
+ 
+ int build_obj_refs_table(struct obj_refs_table *table, enum bpf_obj_type type)
+ {
+-	char buf[4096];
+-	struct pid_iter_bpf *skel;
+ 	struct pid_iter_entry *e;
++	char buf[4096 / sizeof(*e) * sizeof(*e)];
++	struct pid_iter_bpf *skel;
+ 	int err, ret, fd = -1, i;
+ 	libbpf_print_fn_t default_print;
+ 
+-- 
+2.24.1
+
