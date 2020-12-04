@@ -2,142 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BEBD2CF39F
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 19:08:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B6DA2CF3A6
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 19:10:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729617AbgLDSHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 13:07:10 -0500
-Received: from mga04.intel.com ([192.55.52.120]:7222 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726330AbgLDSHJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Dec 2020 13:07:09 -0500
-IronPort-SDR: Iqae64z9AkZ0vQrBnvGDsyBMX4s40q3ADaV04lhYsfHMsB2qrIZzsXp9LiB81O9BEfgf9PbBD8
- Q8MpTIk8vKBg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9825"; a="170848754"
-X-IronPort-AV: E=Sophos;i="5.78,393,1599548400"; 
-   d="scan'208";a="170848754"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Dec 2020 10:05:26 -0800
-IronPort-SDR: dB024BUUc2ReToxwwk3+yKJCSCqnipy75nu4pzMRAIE5pt6J+sn7ZQBbU7PN+58EiiSEtvtyS2
- 1zERCTqPYUXQ==
-X-IronPort-AV: E=Sophos;i="5.78,393,1599548400"; 
-   d="scan'208";a="482476089"
-Received: from mwalsh7-mobl1.amr.corp.intel.com ([10.212.248.252])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Dec 2020 10:05:25 -0800
-Message-ID: <2b6a928aadc8c49070aa184e6f41cf2377a22721.camel@linux.intel.com>
-Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
-From:   Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Dan Williams <dan.j.williams@intel.com>, broonie@kernel.org
-Cc:     lgirdwood@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        jgg@nvidia.com, Kiran Patil <kiran.patil@intel.com>,
-        Fred Oh <fred.oh@linux.intel.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Parav Pandit <parav@mellanox.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Date:   Fri, 04 Dec 2020 10:05:24 -0800
-In-Reply-To: <X8os+X515fxeqefg@kroah.com>
-References: <160695681289.505290.8978295443574440604.stgit@dwillia2-desk3.amr.corp.intel.com>
-         <X8os+X515fxeqefg@kroah.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.3-0ubuntu1 
+        id S1729823AbgLDSJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 13:09:06 -0500
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:52661 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729794AbgLDSJF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 13:09:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1607105346; x=1638641346;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=H2KlUOOlV6oaZh6r5D5fOhkr5QZB3/YPixXbdbQ+S2o=;
+  b=c59pwaPVetAYFZYcjpNAcAo8/FBX2CwyqDyS8w7tu+bYs+D3GU6aoM/j
+   dFFsLxgRn1QSL+Nh0v5eUDI0Bz6FRgEQaMrKth+P7Q1N7vpMJDRGV285M
+   lATj+rVY0T12P+cruyWCcyJBM1gsf03Bu7Mfw4o32lUOyR7uvils0u2F/
+   A=;
+X-IronPort-AV: E=Sophos;i="5.78,393,1599523200"; 
+   d="scan'208";a="93582187"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2c-87a10be6.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 04 Dec 2020 18:08:20 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-2c-87a10be6.us-west-2.amazon.com (Postfix) with ESMTPS id BA78CA183A;
+        Fri,  4 Dec 2020 18:08:18 +0000 (UTC)
+Received: from EX13D21UWB003.ant.amazon.com (10.43.161.212) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Fri, 4 Dec 2020 18:08:18 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (10.43.61.77) by
+ EX13D21UWB003.ant.amazon.com (10.43.161.212) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Fri, 4 Dec 2020 18:08:18 +0000
+Received: from dev-dsk-abuehaze-1c-926c8132.eu-west-1.amazon.com
+ (10.15.10.116) by mail-relay.amazon.com (10.43.61.169) with Microsoft SMTP
+ Server id 15.0.1497.2 via Frontend Transport; Fri, 4 Dec 2020 18:08:17 +0000
+Received: by dev-dsk-abuehaze-1c-926c8132.eu-west-1.amazon.com (Postfix, from userid 5005603)
+        id 1EF9B88232; Fri,  4 Dec 2020 18:08:16 +0000 (UTC)
+From:   Hazem Mohamed Abuelfotoh <abuehaze@amazon.com>
+To:     <netdev@vger.kernel.org>
+CC:     <stable@vger.kernel.org>, <edumazet@google.com>,
+        <ycheng@google.com>, <ncardwell@google.com>, <weiwan@google.com>,
+        <astroh@amazon.com>, <benh@amazon.com>,
+        Hazem Mohamed Abuelfotoh <abuehaze@amazon.com>
+Subject: [PATCH net-next] tcp: optimise  receiver buffer autotuning initialisation for high latency connections
+Date:   Fri, 4 Dec 2020 18:06:22 +0000
+Message-ID: <20201204180622.14285-1-abuehaze@amazon.com>
+X-Mailer: git-send-email 2.16.6
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-12-04 at 13:35 +0100, Greg KH wrote:
-> On Wed, Dec 02, 2020 at 04:54:24PM -0800, Dan Williams wrote:
-> > From: Dave Ertman <david.m.ertman@intel.com>
-> > 
-> > Add support for the Auxiliary Bus, auxiliary_device and
-> > auxiliary_driver.
-> > It enables drivers to create an auxiliary_device and bind an
-> > auxiliary_driver to it.
-> > 
-> > The bus supports probe/remove shutdown and suspend/resume
-> > callbacks.
-> > Each auxiliary_device has a unique string based id; driver binds to
-> > an auxiliary_device based on this id through the bus.
-> > 
-> > Co-developed-by: Kiran Patil <kiran.patil@intel.com>
-> > Co-developed-by: Ranjani Sridharan <
-> > ranjani.sridharan@linux.intel.com>
-> > Co-developed-by: Fred Oh <fred.oh@linux.intel.com>
-> > Co-developed-by: Leon Romanovsky <leonro@nvidia.com>
-> > Signed-off-by: Kiran Patil <kiran.patil@intel.com>
-> > Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com
-> > >
-> > Signed-off-by: Fred Oh <fred.oh@linux.intel.com>
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
-> > Reviewed-by: Pierre-Louis Bossart <
-> > pierre-louis.bossart@linux.intel.com>
-> > Reviewed-by: Shiraz Saleem <shiraz.saleem@intel.com>
-> > Reviewed-by: Parav Pandit <parav@mellanox.com>
-> > Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-> > Reviewed-by: Martin Habets <mhabets@solarflare.com>
-> > Link: 
-> > https://lore.kernel.org/r/20201113161859.1775473-2-david.m.ertman@intel.com
-> > Signed-off-by: Dan Williams <dan.j.williams@intel.com>
-> > ---
-> > This patch is "To:" the maintainers that have a pending backlog of
-> > driver updates dependent on this facility, and "Cc:" Greg. Greg, I
-> > understand you have asked for more time to fully review this and
-> > apply
-> > it to driver-core.git, likely for v5.12, but please consider Acking
-> > it
-> > for v5.11 instead. It looks good to me and several other
-> > stakeholders.
-> > Namely, stakeholders that have pressure building up behind this
-> > facility
-> > in particular Mellanox RDMA, but also SOF, Intel Ethernet, and
-> > later on
-> > Compute Express Link.
-> > 
-> > I will take the blame for the 2 months of silence that made this
-> > awkward
-> > to take through driver-core.git, but at the same time I do not want
-> > to
-> > see that communication mistake inconvenience other parties that
-> > reasonably thought this was shaping up to land in v5.11.
-> > 
-> > I am willing to host this version at:
-> > 
-> > git://git.kernel.org/pub/scm/linux/kernel/git/djbw/linux
-> > tags/auxiliary-bus-for-5.11
-> > 
-> > ...for all the independent drivers to have a common commit
-> > baseline. It
-> > is not there yet pending Greg's Ack.
-> 
-> Here is now a signed tag for everyone else to pull from and build on
-> top
-> of, for 5.11-rc1, that includes this patch, and the 3 others I sent
-> in
-> this series.
-> 
-> Please let me know if anyone has any problems with this tag.  I'll
-> keep
-> it around until 5.11-rc1 is released, after which it doesn't make any
-> sense to be there.
-> thanks,
-> 
-> greg k-h
+    Previously receiver buffer auto-tuning starts after receiving
+    one advertised window amount of data.After the initial
+    receiver buffer was raised by
+    commit a337531b942b ("tcp: up initial rmem to 128KB
+    and SYN rwin to around 64KB"),the receiver buffer may
+    take too long for TCP autotuning to start raising
+    the receiver buffer size.
+    commit 041a14d26715 ("tcp: start receiver buffer autotuning sooner")
+    tried to decrease the threshold at which TCP auto-tuning starts
+    but it's doesn't work well in some environments
+    where the receiver has large MTU (9001) configured
+    specially within environments where RTT is high.
+    To address this issue this patch is relying on RCV_MSS
+    so auto-tuning can start early regardless
+    the receiver configured MTU.
 
-Hi Mark,
+    Fixes: a337531b942b ("tcp: up initial rmem to 128KB and SYN rwin to around 64KB")
+    Fixes: 041a14d26715 ("tcp: start receiver buffer autotuning sooner")
 
-Could I request you to please pull from this tag and will we re-submit
-the SOF changes soon after.
+Signed-off-by: Hazem Mohamed Abuelfotoh <abuehaze@amazon.com>
+---
+ net/ipv4/tcp_input.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Thanks,
-Ranjani
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 389d1b340248..f0ffac9e937b 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -504,13 +504,14 @@ static void tcp_grow_window(struct sock *sk, const struct sk_buff *skb)
+ static void tcp_init_buffer_space(struct sock *sk)
+ {
+ 	int tcp_app_win = sock_net(sk)->ipv4.sysctl_tcp_app_win;
++	struct inet_connection_sock *icsk = inet_csk(sk);
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	int maxwin;
+ 
+ 	if (!(sk->sk_userlocks & SOCK_SNDBUF_LOCK))
+ 		tcp_sndbuf_expand(sk);
+ 
+-	tp->rcvq_space.space = min_t(u32, tp->rcv_wnd, TCP_INIT_CWND * tp->advmss);
++	tp->rcvq_space.space = min_t(u32, tp->rcv_wnd, TCP_INIT_CWND * icsk->icsk_ack.rcv_mss);
+ 	tcp_mstamp_refresh(tp);
+ 	tp->rcvq_space.time = tp->tcp_mstamp;
+ 	tp->rcvq_space.seq = tp->copied_seq;
+-- 
+2.16.6
+
+
+
+
+Amazon Web Services EMEA SARL, 38 avenue John F. Kennedy, L-1855 Luxembourg, R.C.S. Luxembourg B186284
+
+Amazon Web Services EMEA SARL, Irish Branch, One Burlington Plaza, Burlington Road, Dublin 4, Ireland, branch registration number 908705
+
+
 
