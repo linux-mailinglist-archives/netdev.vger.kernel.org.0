@@ -2,64 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A60C2CF6AA
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 23:18:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD9112CF6B3
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 23:21:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725995AbgLDWSO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 17:18:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58208 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725903AbgLDWSO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Dec 2020 17:18:14 -0500
-Date:   Fri, 4 Dec 2020 14:17:32 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607120254;
-        bh=npLMxHcpEYQyvrwoDxGhmwr6Zw8n/fCkGcnf2Yes66g=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=E0wZLJNg8o9hl+YP2xWWOGEYH+dXakQjldVMSRpIrlKsEGdr6UL+v/HXgxK2edAvh
-         6VM9a5Sn0B81EJ1RF7QXLwbEKpTb0jCV7ad7c9bRxBQIX7WFB87WSlooddH+BSLbRP
-         EjieKzFHcfONb/uuo7/VT16nhCqAEMsdASC6019T0653X5DCNYYLe+jqpVZVN0ow0S
-         DPbQb/nDgY6DvwkdEGORFQW4BWfz0D6ai3ZxA5khp560WrP/xLNyD1fjijNgNH6LYS
-         Mbgmu2DkzXE0+HDt/u7RvjO7NocqD2o+TPGtNd7beRuqk0/jG5UYNLqwhtT33QJGKp
-         EPCkYgsHR/1ZQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Davide Caratti <dcaratti@redhat.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Mohit Bhasi <mohitbhasi1998@gmail.com>,
-        Leslie Monis <lesliemonis@gmail.com>
-Subject: Re: [PATCH net] net/sched: fq_pie: initialize timer earlier in
- fq_pie_init()
-Message-ID: <20201204141732.6bd0bdca@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <CAM_iQpWf4CS_fR69JQfa2pEV9Yd26p=neZ+nu_1rOLvbbn=TiA@mail.gmail.com>
-References: <2e78e01c504c633ebdff18d041833cf2e079a3a4.1607020450.git.dcaratti@redhat.com>
-        <CAM_iQpWf4CS_fR69JQfa2pEV9Yd26p=neZ+nu_1rOLvbbn=TiA@mail.gmail.com>
+        id S1726589AbgLDWUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 17:20:49 -0500
+Received: from www62.your-server.de ([213.133.104.62]:36586 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725885AbgLDWUt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 17:20:49 -0500
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1klJQi-0000Ap-GR; Fri, 04 Dec 2020 23:19:56 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1klJQi-000WQ1-4q; Fri, 04 Dec 2020 23:19:56 +0100
+Subject: Re: [PATCH v2 bpf 1/5] net: ethtool: add xdp properties flag set
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     alardam@gmail.com, magnus.karlsson@intel.com,
+        bjorn.topel@intel.com, andrii.nakryiko@gmail.com, kuba@kernel.org,
+        ast@kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
+        john.fastabend@gmail.com, hawk@kernel.org,
+        jonathan.lemon@gmail.com, bpf@vger.kernel.org,
+        jeffrey.t.kirsher@intel.com, maciejromanfijalkowski@gmail.com,
+        intel-wired-lan@lists.osuosl.org,
+        Marek Majtyka <marekx.majtyka@intel.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+References: <20201204102901.109709-1-marekx.majtyka@intel.com>
+ <20201204102901.109709-2-marekx.majtyka@intel.com> <878sad933c.fsf@toke.dk>
+ <20201204124618.GA23696@ranger.igk.intel.com>
+ <048bd986-2e05-ee5b-2c03-cd8c473f6636@iogearbox.net> <87pn3p7aiv.fsf@toke.dk>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <eb305a4f-c189-6b32-f718-6e709ef0fa55@iogearbox.net>
+Date:   Fri, 4 Dec 2020 23:19:55 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <87pn3p7aiv.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26007/Thu Dec  3 14:13:31 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 4 Dec 2020 10:35:07 -0800 Cong Wang wrote:
-> On Thu, Dec 3, 2020 at 10:41 AM Davide Caratti <dcaratti@redhat.com> wrote:
-> >
-> > with the following tdc testcase:
-> >
-> >  83be: (qdisc, fq_pie) Create FQ-PIE with invalid number of flows
-> >
-> > as fq_pie_init() fails, fq_pie_destroy() is called to clean up. Since the
-> > timer is not yet initialized, it's possible to observe a splat like this:  
-> ...
-> > fix it moving timer_setup() before any failure, like it was done on 'red'
-> > with former commit 608b4adab178 ("net_sched: initialize timer earlier in
-> > red_init()").
-> >
-> > Fixes: ec97ecf1ebe4 ("net: sched: add Flow Queue PIE packet scheduler")
-> > Signed-off-by: Davide Caratti <dcaratti@redhat.com>  
+On 12/4/20 6:20 PM, Toke Høiland-Jørgensen wrote:
+> Daniel Borkmann <daniel@iogearbox.net> writes:
+[...]
+>> We tried to standardize on a minimum guaranteed amount, but unfortunately not
+>> everyone seems to implement it, but I think it would be very useful to query
+>> this from application side, for example, consider that an app inserts a BPF
+>> prog at XDP doing custom encap shortly before XDP_TX so it would be useful to
+>> know which of the different encaps it implements are realistically possible on
+>> the underlying XDP supported dev.
 > 
-> Reviewed-by: Cong Wang <cong.wang@bytedance.com>
+> How many distinct values are there in reality? Enough to express this in
+> a few flags (XDP_HEADROOM_128, XDP_HEADROOM_192, etc?), or does it need
+> an additional field to get the exact value? If we implement the latter
+> we also run the risk of people actually implementing all sorts of weird
+> values, whereas if we constrain it to a few distinct values it's easier
+> to push back against adding new values (as it'll be obvious from the
+> addition of new flags).
 
-Applied, thanks!
+It's not everywhere straight forward to determine unfortunately, see also [0,1]
+as some data points where Jesper looked into in the past, so in some cases it
+might differ depending on the build/runtime config..
+
+   [0] https://lore.kernel.org/bpf/158945314698.97035.5286827951225578467.stgit@firesoul/
+   [1] https://lore.kernel.org/bpf/158945346494.97035.12809400414566061815.stgit@firesoul/
