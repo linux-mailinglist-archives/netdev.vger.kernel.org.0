@@ -2,77 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 216832CE5B7
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 03:32:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35F9C2CE5BD
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 03:33:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726898AbgLDC3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 21:29:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34532 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726080AbgLDC3u (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Dec 2020 21:29:50 -0500
-Date:   Thu, 3 Dec 2020 18:29:08 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607048950;
-        bh=WcKeB64+Rq8+BRmoS2PnKlzbv/2X8OrvskOM2RQqNnQ=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Kw6j1lyQ2jP30JHzkrkY4nXVKTEsxIo1S0sEMVD+L2z+3Cm+JoB1zi8axEGF24zDv
-         A3vVIB28F24tpnp5aUBqjVHJx06Pz/YiMzAJQTE3dL7eohT749qxfsmhN3PWfT6waV
-         DDHIAX467Uftj7HerbC9vCNMLPFYXbHGA5rDcU0B3CAPGNNH+W9TRs/wRVdrvaBYCM
-         co3Zq7Pr2zA4bHS0ndy838JR/GNLd3A/6gWBKzBH2ehV/HTLU5XlXD/s/BmQ58hDcZ
-         iMgfhmKUSjBQojnigFzJ8vpKDus5sDZNoGESvlY8DuFzT2Q8JO8OIaZxUh1oo2Gr3f
-         PdHbH9pDjLW9g==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeedm@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        "Eran Ben Elisha" <eranbe@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [net-next V2 08/15] net/mlx5e: Add TX PTP port object support
-Message-ID: <20201203182908.1d25ea3f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201203042108.232706-9-saeedm@nvidia.com>
-References: <20201203042108.232706-1-saeedm@nvidia.com>
-        <20201203042108.232706-9-saeedm@nvidia.com>
+        id S1727099AbgLDCcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 21:32:48 -0500
+Received: from m43-15.mailgun.net ([69.72.43.15]:39988 "EHLO
+        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725984AbgLDCcr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 21:32:47 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1607049142; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=UKUWIiLYmiHVJsPhpECnnECxvIOzzUiBoKnbeHMlQxc=; b=EPqoE2mBq8GoYvaSEVPjd+G/5NXqParLqiYf7CjtCEdE/qsfnkFIqFsDqcbpPiXyaxRRth7F
+ vDVxb3/XEKRH2oTPy+Av92JUuR+ZUOr10SlVf9auuXWab7DCvgQ0vxXBc/FG2OoAlTs8X9ek
+ Ee+eJUYqfFa8hYXILTY6JKhjdBc=
+X-Mailgun-Sending-Ip: 69.72.43.15
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
+ 5fc99f989c3ccbec63a92afa (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 04 Dec 2020 02:31:52
+ GMT
+Sender: hemantk=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 52046C43466; Fri,  4 Dec 2020 02:31:51 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        NICE_REPLY_A,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from [10.46.162.249] (i-global254.qualcomm.com [199.106.103.254])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: hemantk)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 088C3C43461;
+        Fri,  4 Dec 2020 02:31:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 088C3C43461
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=hemantk@codeaurora.org
+Subject: Re: [PATCH v15 4/4] bus: mhi: Add userspace client interface driver
+To:     Jeffrey Hugo <jhugo@codeaurora.org>,
+        manivannan.sadhasivam@linaro.org, gregkh@linuxfoundation.org
+Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bbhatt@codeaurora.org, loic.poulain@linaro.org,
+        netdev@vger.kernel.org
+References: <1607035516-3093-1-git-send-email-hemantk@codeaurora.org>
+ <1607035516-3093-5-git-send-email-hemantk@codeaurora.org>
+ <1bcddc1c-e489-c867-77fb-f6893a101900@codeaurora.org>
+From:   Hemant Kumar <hemantk@codeaurora.org>
+Message-ID: <d1af1eac-f9bd-7a8e-586b-5c2a76445145@codeaurora.org>
+Date:   Thu, 3 Dec 2020 18:31:48 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <1bcddc1c-e489-c867-77fb-f6893a101900@codeaurora.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2 Dec 2020 20:21:01 -0800 Saeed Mahameed wrote:
-> Add TX PTP port object support for better TX timestamping accuracy.
-> Currently, driver supports CQE based TX port timestamp. Device
-> also offers TX port timestamp, which has less jitter and better
-> reflects the actual time of a packet's transmit.
 
-How much better is it?
-
-Is the new implementation is standard compliant or just a "better
-guess"?
-
-> Define new driver layout called ptpsq, on which driver will create
-> SQs that will support TX port timestamp for their transmitted packets.
-> Driver to identify PTP TX skbs and steer them to these dedicated SQs
-> as part of the select queue ndo.
+On 12/3/20 3:45 PM, Jeffrey Hugo wrote:
+> On 12/3/2020 3:45 PM, Hemant Kumar wrote:
+>> This MHI client driver allows userspace clients to transfer
+>> raw data between MHI device and host using standard file operations.
+>> Driver instantiates UCI device object which is associated to device
+>> file node. UCI device object instantiates UCI channel object when device
+>> file node is opened. UCI channel object is used to manage MHI channels
+>> by calling MHI core APIs for read and write operations. MHI channels
+>> are started as part of device open(). MHI channels remain in start
+>> state until last release() is called on UCI device file node. Device
+>> file node is created with format
+>>
+>> /dev/<mhi_device_name>
+>>
+>> Currently it supports QMI channel.
+>>
+>> Signed-off-by: Hemant Kumar <hemantk@codeaurora.org>
+>> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+>> Reviewed-by: Jeffrey Hugo <jhugo@codeaurora.org>
 > 
-> Driver to hold ptpsq per TC and report them at
-> netif_set_real_num_tx_queues().
+> You dropped Loic's tested by.  Was that a mistake, or did something 
+> actually change which would invalidate his testing?
 > 
-> Add support for all needed functionality in order to xmit and poll
-> completions received via ptpsq.
-> 
-> Add ptpsq to the TX reporter recover, diagnose and dump methods.
-> 
-> Creation of ptpsqs is disabled by default, and can be enabled via
-> tx_port_ts private flag.
-
-This flag is pretty bad user experience.
-
-> This patch steer all timestamp related packets to a ptpsq, but it
-> does not open the port timestamp support for it. The support will
-> be added in the following patch.
-
-Overall I'm a little shocked by this, let me sleep on it :)
-
-More info on the trade offs and considerations which led to the
-implementation would be useful.
+Thanks for pointing this out, it was my bad. Re-sending the patch.
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
