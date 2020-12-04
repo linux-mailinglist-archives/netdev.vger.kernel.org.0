@@ -2,192 +2,506 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE8802CE585
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 03:08:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6962F2CE59E
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 03:20:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726344AbgLDCG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 21:06:59 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:13362 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726026AbgLDCG7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 21:06:59 -0500
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 0B425w0N006558;
-        Thu, 3 Dec 2020 18:06:02 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=DN/zxUzY85N4IzhrDLkD7VobDaEBHH78HMhLtTum3GA=;
- b=dFFo1AxfqtGfvHlUqzjubJcbz88pvPnDpzmOdGWWrd+vfxtVk1mS8Fd6DgkcU6Z4F/d/
- kJSsrHAvFWeC1rpxraWrelQlZBP8o8A3Ac862OoKZe+ev5+U48HYZ9NRjWlU6hKHnnbV
- 45rG4rVAX2AiHcWHzTRvW35+SRfoKZTB/ck= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0089730.ppops.net with ESMTP id 357682adym-8
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 03 Dec 2020 18:06:02 -0800
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 3 Dec 2020 18:05:59 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lP97A7EhV3FoE+/t7+07YieJBu+SuBXRW+hulN5OHuGFtmxCCS4qGqjlSEvODaWfGAOgUJTtRLp5jdeqEeqCgNQvpLaqad+hvKp2a4AwymO2SFUvlRfmEHnZDMKEmj3Uz2spuVR9A/TB9u3YBBVcmPBp8M/cJkh1cIz5IqAXULzgR3EEo9r7aJRQru0UbT2Ms6LfAuedd+txIUOTIg7eN+N72q0K7w5KVccJOvFQFEl+Sjg5zrOaCOcRpKs6eCIl2/nKEJN6tJosvosY2nDKI8Qa9b+TR8skse26PYc2XtCQt9UefKgxM1Ocu5zkugwyfBt/D81kZP1x+C0PATg/rg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DN/zxUzY85N4IzhrDLkD7VobDaEBHH78HMhLtTum3GA=;
- b=UBvBOM8dZQ2LnvyEqqU9k4Ld0Pks8m7SPOclcZvzwdeCo4cVLzNTJBuqqYqlLCj/6hATHCoKtZqGxvMr6VsyxX6/F5k2obUSydd3+/bb3QuHI9yobHDsOrMZT4rjfxS8zjOjy9OoI9xOaVMJOPIUDTkYDXmXysBioqj+hYnXrQl9utq1ctJs0EjZlCOi1MDGIQXbQK9MLoYGNipJk3Wb4d+LsXa76lp5bsyJXN3oO6RLsadlnpsM7FJ1c0H5+H0ahHMDgC7E+Qrus4Tm/RbWLx9UgZafi44j8gqhKi4bKugMDUSniycxBu4DzkE8YXKV4jOQnwO5AtprNyolnJLuSA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DN/zxUzY85N4IzhrDLkD7VobDaEBHH78HMhLtTum3GA=;
- b=ec71Wvm7IwiMv/zDDEXCwmuCFRdWWGSMnGO1u2WVAnCaVHy7Gm5JitAbmstmneuK+nBkkSZ+Sw2SNKC2gdvtShqKr2uBIonkEv7f5JduxleQ/BylYK1bRUAMLD5cDFCe8UJZapczdSYMvTZSjH/MJ9jIq1tuNBw1PPxsgbWbSUc=
-Authentication-Results: chromium.org; dkim=none (message not signed)
- header.d=none;chromium.org; dmarc=none action=none header.from=fb.com;
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
- by BYAPR15MB2821.namprd15.prod.outlook.com (2603:10b6:a03:15d::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.22; Fri, 4 Dec
- 2020 02:05:58 +0000
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::2831:21bf:8060:a0b]) by BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::2831:21bf:8060:a0b%7]) with mapi id 15.20.3632.020; Fri, 4 Dec 2020
- 02:05:58 +0000
-Date:   Thu, 3 Dec 2020 18:05:51 -0800
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Florent Revest <revest@chromium.org>
-CC:     <bpf@vger.kernel.org>, <viro@zeniv.linux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <yhs@fb.com>, <andrii@kernel.org>,
-        <kpsingh@chromium.org>, <revest@google.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v4 6/6] bpf: Test bpf_sk_storage_get in tcp
- iterators
-Message-ID: <20201204020551.egjexugorxumgarv@kafai-mbp.dhcp.thefacebook.com>
-References: <20201202205527.984965-1-revest@google.com>
- <20201202205527.984965-6-revest@google.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201202205527.984965-6-revest@google.com>
-X-Originating-IP: [2620:10d:c090:400::5:4ddc]
-X-ClientProxiedBy: MWHPR2001CA0003.namprd20.prod.outlook.com
- (2603:10b6:301:15::13) To BY5PR15MB3571.namprd15.prod.outlook.com
- (2603:10b6:a03:1f6::32)
+        id S1726744AbgLDCUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 21:20:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37572 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726112AbgLDCUT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 21:20:19 -0500
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB2CC061A4F;
+        Thu,  3 Dec 2020 18:19:39 -0800 (PST)
+Received: by mail-pf1-x444.google.com with SMTP id f9so2061543pfc.11;
+        Thu, 03 Dec 2020 18:19:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EdPQGYgm+S6jyi1ae/x25ZZfRF2j/997sKqHBbyVNxM=;
+        b=UiHvLlSzDzPhH5wOEntuYgBBA0iZMTHZDQob4TkMViP7ubUY5mXdkZv+Boyww6ofoC
+         EgXTc4K1RXbZj5eeMkA4bMGC0Z4v/9pHk6tztJc3cGlR+pvkQ19YCsJcyHxOJDIjh7Ur
+         8KIgJwaZz7oH/tQXLO+mHvQPpg8v3tW8c0lh6uAy51EpuNTpFahBQ8iR8ZgrRtTMPsAe
+         KdMKH6kNzL2mwWc7wwfc4CzzSkOjD9IrVFGdWEqNlsM5cNiC0NWe9Ne4qhAl/KuDAx+z
+         0R5pktAN9QtQdN8oJjUhNm1znGUAfrEEp5w4N+HzQiML+rdbwVoEFnj/VF1t0eXzOU6I
+         fOlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EdPQGYgm+S6jyi1ae/x25ZZfRF2j/997sKqHBbyVNxM=;
+        b=pHRFG9PguwB34vusjucy0dLGi4uabYOUraBugxuifN3d8burUXTx6tcCVUCVdvxTA8
+         sM6tlWTqKR0GowwUPat58eLOzufnhRFDwH5vbymd7m8Fkq/jJ32UQ9VCo+Gr5V3Cs55t
+         69yTggTIP4+8wo956jOopHZ8cOFB7GDDdgA+nAmg8h9NE+ymxUa/6m0XQSKM1E/FZQiR
+         823nFHp+f8wBWyG/VsAyVKNeCyBoUyUMkwQwH3wHTtMSJ1TZbUTHAAB3+gAYhvjgLkQc
+         dWxFTGiFomPns/Tm0r2LOIOUf4Pxwxygvgi5UewOueKf5/F6xKPaPqH31WVOzxyTqSR4
+         ohbw==
+X-Gm-Message-State: AOAM530omgSOqti3S9TEY4fcQwTcqf8xkh+d213IyPmSrXsBmrjAPxhh
+        bdTNz85TeuRERABdXIAr+/M=
+X-Google-Smtp-Source: ABdhPJyxFlva7NVW6952S9wE7HaiYLZiMKInAbhg70eWWUIExGcKCTYxgfc2tl/a0bQK5OXFunJ+RA==
+X-Received: by 2002:a63:6882:: with SMTP id d124mr5597346pgc.197.1607048378651;
+        Thu, 03 Dec 2020 18:19:38 -0800 (PST)
+Received: from ast-mbp.thefacebook.com ([163.114.132.7])
+        by smtp.gmail.com with ESMTPSA id x10sm2169496pga.70.2020.12.03.18.19.37
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 03 Dec 2020 18:19:37 -0800 (PST)
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     davem@davemloft.net
+Cc:     daniel@iogearbox.net, kuba@kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-team@fb.com
+Subject: pull-request: bpf-next 2020-12-03
+Date:   Thu,  3 Dec 2020 18:19:36 -0800
+Message-Id: <20201204021936.85653-1-alexei.starovoitov@gmail.com>
+X-Mailer: git-send-email 2.13.5
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:4ddc) by MWHPR2001CA0003.namprd20.prod.outlook.com (2603:10b6:301:15::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.17 via Frontend Transport; Fri, 4 Dec 2020 02:05:56 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a103bc10-4649-4977-2d28-08d897f923fc
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2821:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB2821CCE487AF912F2C2BC935D5F10@BYAPR15MB2821.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: BcWQGez4I5jLqw+K4/3rl0OtsDaP2RfsOW93cBTOijrf9hA63Y9beWVPG2EIF56JEPOVxY3QyTr0UCe5dOdXXDWE9Nz++nzzmyHzzstKowNtsD2kRdalCYif4eaBKNkQJ8el0RiWvk32Sh/YBIo3CgsmPAqZOpQY0hf6zoyebgCZJrDGQqYDWHbvGdwGyiOwneqBlNTgTQOgJnksga3yW9mLJS7NverowpwTXdgs/wMQVbvvRShi702fHDekRmLHWPyfOHMsA1O8Qo1peefcPfUXsAisbWFg+Fugh9GdaB2J1MVE0V6Atr3bWPeICLeZZnviicJ/7blcl8yyXtSrsg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(39860400002)(346002)(376002)(396003)(366004)(55016002)(66946007)(3716004)(8676002)(16526019)(8936002)(66556008)(66476007)(316002)(6916009)(186003)(9686003)(7416002)(6506007)(83380400001)(7696005)(52116002)(478600001)(4326008)(86362001)(2906002)(1076003)(6666004)(5660300002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?32lIqBZuAf+/dgl/ShldzVjU/tMWW9ms8uIIO4LQo2mAjabpublZ47Ki7Bra?=
- =?us-ascii?Q?R39ooNtLrtuSM8ovk3qC0Mz4Qb6Gl6BHZoflhjcsCQipS4Hq586QYNik3LFD?=
- =?us-ascii?Q?WCPQI/LGARDenfm26KAKqav66LB7HA8SWSIAFV8pSuhIPGmUKMNzM40bUACh?=
- =?us-ascii?Q?sCbeBnHLRNaM8biKNMZJev5FDbkuAbiv9aP0mCJc+WohVcniZSIwzIkYOcS0?=
- =?us-ascii?Q?7agYsCZ/4R35ZNgVT+r+5ifrUFLuCmUrhYuXLpeaSMlq248Au9hQW1fbSbDV?=
- =?us-ascii?Q?TrCdo0oJO2TSCpxRrUAcuKPnvLsD0rcdqwHZLYR+BMYjvApR3V+QtfUt1TXk?=
- =?us-ascii?Q?GhyPR3sX8znM5DvdKv9QDDvsIq0zSaxWHIkUuEtzVp67mLXE+WAC5VFRg0uA?=
- =?us-ascii?Q?G0a6ZH9V0W1l3OIHX2/KLA/eDpNicDiIZLJ3NiFATyS9SwdevjT0HvVSZVoU?=
- =?us-ascii?Q?yLUpTvw5TPxv327jrG2IwJ/nh1F1IZCjOcY4szHw34I1WF2Z6mWqJD1usPXU?=
- =?us-ascii?Q?whKG3zuqbYPMqv3lnLgAgYDccsWiw9fD3GXTCGIOcKPlmX1s6+MLgmeaItje?=
- =?us-ascii?Q?ItVvRApg92+4aeNiTHIMML6SdaYyv92lGGm/OhMnH1ke47D3+bEIH/jn+CKt?=
- =?us-ascii?Q?XOMlMd/SMZBpj8jzi/ItKPs/8W1defCxT/6P30hhIt3mJ4/Y+q8JO0V+tFg/?=
- =?us-ascii?Q?viQbX+M09uLITswIvLHvgi/dC66ekSvNKFr7raDtHCnAuXJXz/QTkORwB1Sp?=
- =?us-ascii?Q?3ZwwiSZrVswtqFr0UozGZmJ9vqB1WElW5kpZzcRCd5VSHAACCyatA+721wc3?=
- =?us-ascii?Q?uMGqg8rBjqh3qlkdOb46hZbNGJiM+lqiLPyBliskWVW/0uSVARMNyDn49+Jr?=
- =?us-ascii?Q?Ayh7/5L8+7lFdruYUGjlaQtmVxBfOjeMQX2dnVjShuwgkONBZjJuc0ICtIon?=
- =?us-ascii?Q?jl7aEtJRC92zKMv58k38ybyj/2G+93ukalhuu/kK5PnoPSpSk1N5b71J8+uI?=
- =?us-ascii?Q?t2NwA6+SU0HEu906TXBLNfb0AQ=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: a103bc10-4649-4977-2d28-08d897f923fc
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Dec 2020 02:05:58.1593
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xpkvACnzEACG0uj4C5zAwGioDD9yznGKfz1EHEjbd6ou/qdH5dENlHtf56JdUhTC
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2821
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-12-03_15:2020-12-03,2020-12-03 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 spamscore=0
- bulkscore=0 malwarescore=0 priorityscore=1501 clxscore=1015 adultscore=0
- mlxlogscore=999 suspectscore=1 lowpriorityscore=0 phishscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012040010
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 02, 2020 at 09:55:27PM +0100, Florent Revest wrote:
-> This extends the existing bpf_sk_storage_get test where a socket is
-> created and tagged with its creator's pid by a task_file iterator.
-> 
-> A TCP iterator is now also used at the end of the test to negate the
-> values already stored in the local storage. The test therefore expects
-> -getpid() to be stored in the local storage.
-> 
-> Signed-off-by: Florent Revest <revest@google.com>
-> Acked-by: Yonghong Song <yhs@fb.com>
-> ---
->  .../selftests/bpf/prog_tests/bpf_iter.c        | 13 +++++++++++++
->  .../progs/bpf_iter_bpf_sk_storage_helpers.c    | 18 ++++++++++++++++++
->  2 files changed, 31 insertions(+)
-> 
-> diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
-> index 9336d0f18331..b8362147c9e3 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
-> @@ -978,6 +978,8 @@ static void test_bpf_sk_storage_delete(void)
->  /* This creates a socket and its local storage. It then runs a task_iter BPF
->   * program that replaces the existing socket local storage with the tgid of the
->   * only task owning a file descriptor to this socket, this process, prog_tests.
-> + * It then runs a tcp socket iterator that negates the value in the existing
-> + * socket local storage, the test verifies that the resulting value is -pid.
->   */
->  static void test_bpf_sk_storage_get(void)
->  {
-> @@ -994,6 +996,10 @@ static void test_bpf_sk_storage_get(void)
->  	if (CHECK(sock_fd < 0, "socket", "errno: %d\n", errno))
->  		goto out;
->  
-> +	err = listen(sock_fd, 1);
-> +	if (CHECK(err != 0, "listen", "errno: %d\n", errno))
-> +		goto out;
+Hi David, hi Jakub,
 
-		goto close_socket;
+The following pull-request contains BPF updates for your *net-next* tree.
 
-> +
->  	map_fd = bpf_map__fd(skel->maps.sk_stg_map);
->  
->  	err = bpf_map_update_elem(map_fd, &sock_fd, &val, BPF_NOEXIST);
-> @@ -1007,6 +1013,13 @@ static void test_bpf_sk_storage_get(void)
->  	      "map value wasn't set correctly (expected %d, got %d, err=%d)\n",
->  	      getpid(), val, err);
-The failure of this CHECK here should "goto close_socket;" now.
+We've added 118 non-merge commits during the last 20 day(s) which contain
+a total of 196 files changed, 4330 insertions(+), 2569 deletions(-).
 
-Others LGTM.
+The main changes are:
 
-Acked-by: Martin KaFai Lau <kafai@fb.com>
+1) Support BTF in kernel modules, from Andrii.
 
->  
-> +	do_dummy_read(skel->progs.negate_socket_local_storage);
-> +
-> +	err = bpf_map_lookup_elem(map_fd, &sock_fd, &val);
-> +	CHECK(err || val != -getpid(), "bpf_map_lookup_elem",
-> +	      "map value wasn't set correctly (expected %d, got %d, err=%d)\n",
-> +	      -getpid(), val, err);
-> +
->  close_socket:
->  	close(sock_fd);
->  out:
+2) Introduce preferred busy-polling, from Björn.
+
+3) bpf_ima_inode_hash() and bpf_bprm_opts_set() helpers, from KP Singh.
+
+4) Memcg-based memory accounting for bpf objects, from Roman.
+
+5) Allow bpf_{s,g}etsockopt from cgroup bind{4,6} hooks, from Stanislav.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Andrey Ignatov, Andrii Nakryiko, Björn Töpel, Bruce Allan, Daniel 
+Borkmann, Florian Lehner, Ilias Apalodimas, Jakub Kicinski, Jakub 
+Sitnicki, Jesper Dangaard Brouer, Jessica Yu, Jiri Olsa, Johannes 
+Weiner, John Fastabend, Luke Nelson, Magnus Karlsson, Martin KaFai Lau, 
+Michael S. Tsirkin, Michal Hocko, Mimi Zohar, Shakeel Butt, Song Liu, 
+Stephen Rothwell, Tariq Toukan, Yonghong Song
+
+----------------------------------------------------------------
+
+The following changes since commit 2d38c5802f4626e85d280b68481c3f3ca4853ecb:
+
+  Merge branch 'ionic-updates' (2020-11-14 13:23:01 -0800)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
+
+for you to fetch changes up to eceae70bdeaeb6b8ceb662983cf663ff352fbc96:
+
+  selftests/bpf: Fix invalid use of strncat in test_sockmap (2020-12-03 18:07:05 -0800)
+
+----------------------------------------------------------------
+Alan Maguire (1):
+      libbpf: bpf__find_by_name[_kind] should use btf__get_nr_types()
+
+Alexei Starovoitov (6):
+      Merge branch 'bpf: expose bpf_{s,g}etsockopt helpers to bind{4,6} hooks'
+      Merge branch 'switch to memcg-based memory accounting'
+      Merge branch 'bpftool: improve split BTF support'
+      Merge branch 'libbpf: add support for privileged/unprivileged control separation'
+      Merge branch 'Add support to set window_clamp from bpf setsockops'
+      Merge branch 'Support BTF-powered BPF tracing programs for kernel modules'
+
+Andrei Matei (4):
+      selftest/bpf: Fix link in readme
+      selftest/bpf: Fix rst formatting in readme
+      bpf: Fix selftest compilation on clang 11
+      libbpf: Fail early when loading programs with unspecified type
+
+Andrii Nakryiko (24):
+      Merge branch 'RISC-V selftest/bpf fixes'
+      kbuild: Skip module BTF generation for out-of-tree external modules
+      bpf: Sanitize BTF data pointer after module is loaded
+      Merge branch 'bpf: remove bpf_load loader completely'
+      tools/bpftool: Emit name <anon> for anonymous BTFs
+      libbpf: Add base BTF accessor
+      tools/bpftool: Auto-detect split BTFs in common cases
+      Merge branch 'Fixes for ima selftest'
+      bpf: Fix bpf_put_raw_tracepoint()'s use of __module_address()
+      bpf: Keep module's btf_data_size intact after load
+      libbpf: Add internal helper to load BTF data by FD
+      libbpf: Refactor CO-RE relocs to not assume a single BTF object
+      libbpf: Add kernel module BTF support for CO-RE relocations
+      selftests/bpf: Add bpf_testmod kernel module for testing
+      selftests/bpf: Add support for marking sub-tests as skipped
+      selftests/bpf: Add CO-RE relocs selftest relying on kernel module BTF
+      bpf: Remove hard-coded btf_vmlinux assumption from BPF verifier
+      bpf: Allow to specify kernel module BTFs when attaching BPF programs
+      libbpf: Factor out low-level BPF program loading helper
+      libbpf: Support attachment of BPF tracing programs to kernel modules
+      selftests/bpf: Add tp_btf CO-RE reloc test for modules
+      selftests/bpf: Add fentry/fexit/fmod_ret selftest for kernel module
+      libbpf: Use memcpy instead of strncpy to please GCC
+      selftests/bpf: Fix invalid use of strncat in test_sockmap
+
+Björn Töpel (13):
+      selftests/bpf: Fix broken riscv build
+      selftests/bpf: Avoid running unprivileged tests with alignment requirements
+      selftests/bpf: Mark tests that require unaligned memory access
+      net: Introduce preferred busy-polling
+      net: Add SO_BUSY_POLL_BUDGET socket option
+      xsk: Add support for recvmsg()
+      xsk: Check need wakeup flag in sendmsg()
+      xsk: Add busy-poll support for {recv,send}msg()
+      xsk: Propagate napi_id to XDP socket Rx path
+      samples/bpf: Use recvfrom() in xdpsock/rxdrop
+      samples/bpf: Use recvfrom() in xdpsock/l2fwd
+      samples/bpf: Add busy-poll support to xdpsock
+      samples/bpf: Add option to set the busy-poll budget
+
+Brendan Jackman (2):
+      tools/resolve_btfids: Fix some error messages
+      bpf: Fix cold build of test_progs-no_alu32
+
+Colin Ian King (1):
+      samples/bpf: Fix spelling mistake "recieving" -> "receiving"
+
+Daniel Borkmann (3):
+      Merge branch 'af-xdp-tx-batch'
+      Merge branch 'xdp-preferred-busy-polling'
+      net, xdp, xsk: fix __sk_mark_napi_id_once napi_id error
+
+Daniel T. Lee (7):
+      samples: bpf: Refactor hbm program with libbpf
+      samples: bpf: Refactor test_cgrp2_sock2 program with libbpf
+      samples: bpf: Refactor task_fd_query program with libbpf
+      samples: bpf: Refactor ibumad program with libbpf
+      samples: bpf: Refactor test_overhead program with libbpf
+      samples: bpf: Fix lwt_len_hist reusing previous BPF map
+      samples: bpf: Remove bpf_load loader completely
+
+Dmitrii Banshchikov (1):
+      bpf: Add bpf_ktime_get_coarse_ns helper
+
+KP Singh (10):
+      bpf: Add bpf_bprm_opts_set helper
+      bpf: Add tests for bpf_bprm_opts_set helper
+      ima: Implement ima_inode_hash
+      bpf: Add a BPF helper for getting the IMA hash of an inode
+      bpf: Add a selftest for bpf_ima_inode_hash
+      selftests/bpf: Fix flavored variants of test_ima
+      selftests/bpf: Update ima_setup.sh for busybox
+      selftests/bpf: Ensure securityfs mount before writing ima policy
+      selftests/bpf: Add config dependency on BLK_DEV_LOOP
+      selftests/bpf: Indent ima_setup.sh with tabs.
+
+Li RongQing (1):
+      libbpf: Add support for canceling cached_cons advance
+
+Magnus Karlsson (6):
+      samples/bpf: Increment Tx stats at sending
+      i40e: Remove unnecessary sw_ring access from xsk Tx
+      xsk: Introduce padding between more ring pointers
+      xsk: Introduce batched Tx descriptor interfaces
+      i40e: Use batched xsk Tx interfaces to increase performance
+      libbpf: Replace size_t with __u32 in xsk interfaces
+
+Mariusz Dudek (2):
+      libbpf: Separate XDP program load with xsk socket creation
+      samples/bpf: Sample application for eBPF load and socket creation split
+
+Martin KaFai Lau (1):
+      bpf: Fix the irq and nmi check in bpf_sk_storage for tracing usage
+
+Prankur gupta (2):
+      bpf: Adds support for setting window clamp
+      selftests/bpf: Add Userspace tests for TCP_WINDOW_CLAMP
+
+Roman Gushchin (34):
+      mm: memcontrol: Use helpers to read page's memcg data
+      mm: memcontrol/slab: Use helpers to access slab page's memcg_data
+      mm: Introduce page memcg flags
+      mm: Convert page kmemcg type to a page memcg flag
+      bpf: Memcg-based memory accounting for bpf progs
+      bpf: Prepare for memcg-based memory accounting for bpf maps
+      bpf: Memcg-based memory accounting for bpf maps
+      bpf: Refine memcg-based memory accounting for arraymap maps
+      bpf: Refine memcg-based memory accounting for cpumap maps
+      bpf: Memcg-based memory accounting for cgroup storage maps
+      bpf: Refine memcg-based memory accounting for devmap maps
+      bpf: Refine memcg-based memory accounting for hashtab maps
+      bpf: Memcg-based memory accounting for lpm_trie maps
+      bpf: Memcg-based memory accounting for bpf ringbuffer
+      bpf: Memcg-based memory accounting for bpf local storage maps
+      bpf: Refine memcg-based memory accounting for sockmap and sockhash maps
+      bpf: Refine memcg-based memory accounting for xskmap maps
+      bpf: Eliminate rlimit-based memory accounting for arraymap maps
+      bpf: Eliminate rlimit-based memory accounting for bpf_struct_ops maps
+      bpf: Eliminate rlimit-based memory accounting for cpumap maps
+      bpf: Eliminate rlimit-based memory accounting for cgroup storage maps
+      bpf: Eliminate rlimit-based memory accounting for devmap maps
+      bpf: Eliminate rlimit-based memory accounting for hashtab maps
+      bpf: Eliminate rlimit-based memory accounting for lpm_trie maps
+      bpf: Eliminate rlimit-based memory accounting for queue_stack_maps maps
+      bpf: Eliminate rlimit-based memory accounting for reuseport_array maps
+      bpf: Eliminate rlimit-based memory accounting for bpf ringbuffer
+      bpf: Eliminate rlimit-based memory accounting for sockmap and sockhash maps
+      bpf: Eliminate rlimit-based memory accounting for stackmap maps
+      bpf: Eliminate rlimit-based memory accounting for xskmap maps
+      bpf: Eliminate rlimit-based memory accounting for bpf local storage maps
+      bpf: Eliminate rlimit-based memory accounting infra for bpf maps
+      bpf: Eliminate rlimit-based memory accounting for bpf progs
+      bpf: samples: Do not touch RLIMIT_MEMLOCK
+
+Santucci Pierpaolo (1):
+      selftest/bpf: Fix IPV6FR handling in flow dissector
+
+Song Liu (1):
+      bpf: Simplify task_file_seq_get_next()
+
+Stanislav Fomichev (5):
+      selftests/bpf: Rewrite test_sock_addr bind bpf into C
+      bpf: Allow bpf_{s,g}etsockopt from cgroup bind{4,6} hooks
+      selftests/bpf: Extend bind{4,6} programs with a call to bpf_setsockopt
+      selftests/bpf: Copy file using read/write in local storage test
+      libbpf: Cap retries in sys_bpf_prog_load
+
+Toke Høiland-Jørgensen (1):
+      libbpf: Sanitise map names before pinning
+
+Wedson Almeida Filho (1):
+      bpf: Refactor check_cfg to use a structured loop.
+
+Yonghong Song (1):
+      bpftool: Add {i,d}tlb_misses support for bpftool profile
+
+Zhu Yanjun (1):
+      xdp: Remove the functions xsk_map_inc and xsk_map_put
+
+ arch/alpha/include/uapi/asm/socket.h               |   3 +
+ arch/mips/include/uapi/asm/socket.h                |   3 +
+ arch/parisc/include/uapi/asm/socket.h              |   3 +
+ arch/sparc/include/uapi/asm/socket.h               |   3 +
+ drivers/net/ethernet/amazon/ena/ena_netdev.c       |   2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c          |   2 +-
+ drivers/net/ethernet/cavium/thunder/nicvf_queues.c |   2 +-
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c   |   2 +-
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c        |  13 +-
+ drivers/net/ethernet/intel/i40e/i40e_txrx.h        |   1 +
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c         | 123 ++--
+ drivers/net/ethernet/intel/i40e/i40e_xsk.h         |  16 +
+ drivers/net/ethernet/intel/ice/ice_base.c          |   4 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.c          |   2 +-
+ drivers/net/ethernet/intel/igb/igb_main.c          |   2 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c      |   2 +-
+ drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c  |   2 +-
+ drivers/net/ethernet/marvell/mvneta.c              |   2 +-
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c    |   4 +-
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c         |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |   2 +-
+ .../net/ethernet/netronome/nfp/nfp_net_common.c    |   2 +-
+ drivers/net/ethernet/qlogic/qede/qede_main.c       |   2 +-
+ drivers/net/ethernet/sfc/rx_common.c               |   2 +-
+ drivers/net/ethernet/socionext/netsec.c            |   2 +-
+ drivers/net/ethernet/ti/cpsw_priv.c                |   2 +-
+ drivers/net/hyperv/netvsc.c                        |   2 +-
+ drivers/net/tun.c                                  |   2 +-
+ drivers/net/veth.c                                 |  12 +-
+ drivers/net/virtio_net.c                           |   2 +-
+ drivers/net/xen-netfront.c                         |   2 +-
+ fs/buffer.c                                        |   2 +-
+ fs/eventpoll.c                                     |   3 +-
+ fs/iomap/buffered-io.c                             |   2 +-
+ include/linux/bpf-cgroup.h                         |  12 +-
+ include/linux/bpf.h                                |  71 ++-
+ include/linux/bpf_verifier.h                       |  28 +-
+ include/linux/btf.h                                |   6 +-
+ include/linux/ima.h                                |   6 +
+ include/linux/memcontrol.h                         | 215 ++++++-
+ include/linux/mm.h                                 |  22 -
+ include/linux/mm_types.h                           |   5 +-
+ include/linux/netdevice.h                          |  35 +-
+ include/linux/page-flags.h                         |  11 +-
+ include/net/busy_poll.h                            |  27 +-
+ include/net/sock.h                                 |   6 +
+ include/net/tcp.h                                  |   1 +
+ include/net/xdp.h                                  |   3 +-
+ include/net/xdp_sock_drv.h                         |   7 +
+ include/trace/events/writeback.h                   |   2 +-
+ include/uapi/asm-generic/socket.h                  |   3 +
+ include/uapi/linux/bpf.h                           |  45 +-
+ kernel/bpf/arraymap.c                              |  30 +-
+ kernel/bpf/bpf_local_storage.c                     |  20 +-
+ kernel/bpf/bpf_lsm.c                               |  52 ++
+ kernel/bpf/bpf_struct_ops.c                        |  19 +-
+ kernel/bpf/btf.c                                   |  70 ++-
+ kernel/bpf/core.c                                  |  23 +-
+ kernel/bpf/cpumap.c                                |  37 +-
+ kernel/bpf/devmap.c                                |  25 +-
+ kernel/bpf/hashtab.c                               |  43 +-
+ kernel/bpf/helpers.c                               |  13 +
+ kernel/bpf/local_storage.c                         |  44 +-
+ kernel/bpf/lpm_trie.c                              |  19 +-
+ kernel/bpf/queue_stack_maps.c                      |  16 +-
+ kernel/bpf/reuseport_array.c                       |  12 +-
+ kernel/bpf/ringbuf.c                               |  35 +-
+ kernel/bpf/stackmap.c                              |  16 +-
+ kernel/bpf/syscall.c                               | 310 +++++-----
+ kernel/bpf/task_iter.c                             |  54 +-
+ kernel/bpf/verifier.c                              | 256 ++++----
+ kernel/fork.c                                      |   7 +-
+ kernel/module.c                                    |   4 +
+ kernel/trace/bpf_trace.c                           |  10 +-
+ mm/debug.c                                         |   4 +-
+ mm/huge_memory.c                                   |   4 +-
+ mm/memcontrol.c                                    | 139 ++---
+ mm/page_alloc.c                                    |   8 +-
+ mm/page_io.c                                       |   6 +-
+ mm/slab.h                                          |  38 +-
+ mm/workingset.c                                    |   2 +-
+ net/core/bpf_sk_storage.c                          |   4 +-
+ net/core/dev.c                                     |  89 ++-
+ net/core/filter.c                                  |   7 +
+ net/core/sock.c                                    |  19 +
+ net/core/sock_map.c                                |  42 +-
+ net/core/xdp.c                                     |   3 +-
+ net/ipv4/af_inet.c                                 |   2 +-
+ net/ipv4/bpf_tcp_ca.c                              |   3 +-
+ net/ipv4/tcp.c                                     |  25 +-
+ net/ipv6/af_inet6.c                                |   2 +-
+ net/xdp/xsk.c                                      | 114 +++-
+ net/xdp/xsk.h                                      |   2 -
+ net/xdp/xsk_buff_pool.c                            |  13 +-
+ net/xdp/xsk_queue.h                                |  93 ++-
+ net/xdp/xskmap.c                                   |  35 +-
+ samples/bpf/.gitignore                             |   3 +
+ samples/bpf/Makefile                               |  24 +-
+ samples/bpf/bpf_load.c                             | 667 ---------------------
+ samples/bpf/bpf_load.h                             |  57 --
+ samples/bpf/do_hbm_test.sh                         |  32 +-
+ samples/bpf/hbm.c                                  | 111 ++--
+ samples/bpf/hbm_kern.h                             |   2 +-
+ samples/bpf/ibumad_kern.c                          |  26 +-
+ samples/bpf/ibumad_user.c                          |  71 ++-
+ samples/bpf/lwt_len_hist.sh                        |   2 +
+ samples/bpf/map_perf_test_user.c                   |   6 -
+ samples/bpf/offwaketime_user.c                     |   6 -
+ samples/bpf/sockex2_user.c                         |   2 -
+ samples/bpf/sockex3_user.c                         |   2 -
+ samples/bpf/spintest_user.c                        |   6 -
+ samples/bpf/syscall_tp_user.c                      |   2 -
+ samples/bpf/task_fd_query_user.c                   | 103 +++-
+ samples/bpf/test_cgrp2_sock2.c                     |  61 +-
+ samples/bpf/test_cgrp2_sock2.sh                    |  21 +-
+ samples/bpf/test_lru_dist.c                        |   3 -
+ samples/bpf/test_lwt_bpf.sh                        |   0
+ samples/bpf/test_map_in_map_user.c                 |   6 -
+ samples/bpf/test_overhead_user.c                   |  84 ++-
+ samples/bpf/trace_event_user.c                     |   2 -
+ samples/bpf/tracex2_user.c                         |   6 -
+ samples/bpf/tracex3_user.c                         |   6 -
+ samples/bpf/tracex4_user.c                         |   6 -
+ samples/bpf/tracex5_user.c                         |   3 -
+ samples/bpf/tracex6_user.c                         |   3 -
+ samples/bpf/xdp1_user.c                            |   6 -
+ samples/bpf/xdp2skb_meta_kern.c                    |   2 +-
+ samples/bpf/xdp_adjust_tail_user.c                 |   6 -
+ samples/bpf/xdp_monitor_user.c                     |   5 -
+ samples/bpf/xdp_redirect_cpu_user.c                |   6 -
+ samples/bpf/xdp_redirect_map_user.c                |   6 -
+ samples/bpf/xdp_redirect_user.c                    |   6 -
+ samples/bpf/xdp_router_ipv4_user.c                 |   6 -
+ samples/bpf/xdp_rxq_info_user.c                    |   6 -
+ samples/bpf/xdp_sample_pkts_user.c                 |   6 -
+ samples/bpf/xdp_tx_iptunnel_user.c                 |   6 -
+ samples/bpf/xdpsock.h                              |   8 +
+ samples/bpf/xdpsock_ctrl_proc.c                    | 187 ++++++
+ samples/bpf/xdpsock_user.c                         | 230 +++++--
+ scripts/Makefile.modfinal                          |   9 +-
+ scripts/bpf_helpers_doc.py                         |   4 +
+ security/integrity/ima/ima_main.c                  |  78 ++-
+ tools/bpf/bpftool/btf.c                            |  27 +-
+ tools/bpf/bpftool/prog.c                           |  30 +-
+ tools/bpf/resolve_btfids/main.c                    |   6 +-
+ tools/include/uapi/linux/bpf.h                     |  45 +-
+ tools/lib/bpf/bpf.c                                | 104 +++-
+ tools/lib/bpf/btf.c                                |  74 ++-
+ tools/lib/bpf/btf.h                                |   1 +
+ tools/lib/bpf/libbpf.c                             | 527 ++++++++++++----
+ tools/lib/bpf/libbpf.map                           |   3 +
+ tools/lib/bpf/libbpf_internal.h                    |  31 +
+ tools/lib/bpf/xsk.c                                |  92 ++-
+ tools/lib/bpf/xsk.h                                |  22 +-
+ tools/testing/selftests/bpf/.gitignore             |   1 +
+ tools/testing/selftests/bpf/Makefile               |  18 +-
+ tools/testing/selftests/bpf/README.rst             |  33 +-
+ tools/testing/selftests/bpf/bpf_tcp_helpers.h      |   1 +
+ tools/testing/selftests/bpf/bpf_testmod/.gitignore |   6 +
+ tools/testing/selftests/bpf/bpf_testmod/Makefile   |  20 +
+ .../selftests/bpf/bpf_testmod/bpf_testmod-events.h |  36 ++
+ .../selftests/bpf/bpf_testmod/bpf_testmod.c        |  52 ++
+ .../selftests/bpf/bpf_testmod/bpf_testmod.h        |  14 +
+ tools/testing/selftests/bpf/config                 |   5 +
+ tools/testing/selftests/bpf/ima_setup.sh           |  99 +++
+ .../testing/selftests/bpf/prog_tests/core_reloc.c  |  80 ++-
+ .../selftests/bpf/prog_tests/module_attach.c       |  53 ++
+ .../testing/selftests/bpf/prog_tests/tcpbpf_user.c |   4 +
+ .../selftests/bpf/prog_tests/test_bprm_opts.c      | 116 ++++
+ tools/testing/selftests/bpf/prog_tests/test_ima.c  |  74 +++
+ .../selftests/bpf/prog_tests/test_local_storage.c  |  28 +-
+ tools/testing/selftests/bpf/progs/bind4_prog.c     | 102 ++++
+ tools/testing/selftests/bpf/progs/bind6_prog.c     | 119 ++++
+ tools/testing/selftests/bpf/progs/bpf_flow.c       |   2 +
+ .../testing/selftests/bpf/progs/bpf_iter_bpf_map.c |   2 +-
+ tools/testing/selftests/bpf/progs/bprm_opts.c      |  34 ++
+ .../testing/selftests/bpf/progs/core_reloc_types.h |  17 +
+ tools/testing/selftests/bpf/progs/ima.c            |  28 +
+ tools/testing/selftests/bpf/progs/map_ptr_kern.c   |   7 -
+ tools/testing/selftests/bpf/progs/profiler.inc.h   |   2 +
+ .../selftests/bpf/progs/test_core_reloc_module.c   |  96 +++
+ .../selftests/bpf/progs/test_module_attach.c       |  66 ++
+ .../testing/selftests/bpf/progs/test_tcpbpf_kern.c |  33 +
+ tools/testing/selftests/bpf/test_progs.c           |  65 +-
+ tools/testing/selftests/bpf/test_progs.h           |   1 +
+ tools/testing/selftests/bpf/test_sock_addr.c       | 196 +-----
+ tools/testing/selftests/bpf/test_sockmap.c         |  36 +-
+ tools/testing/selftests/bpf/test_tcpbpf.h          |   2 +
+ tools/testing/selftests/bpf/test_verifier.c        |  13 +
+ .../testing/selftests/bpf/verifier/ctx_sk_lookup.c |   7 +
+ .../selftests/bpf/verifier/direct_value_access.c   |   3 +
+ tools/testing/selftests/bpf/verifier/map_ptr.c     |   1 +
+ .../selftests/bpf/verifier/raw_tp_writable.c       |   1 +
+ .../testing/selftests/bpf/verifier/ref_tracking.c  |   4 +
+ tools/testing/selftests/bpf/verifier/regalloc.c    |   8 +
+ tools/testing/selftests/bpf/verifier/wide_access.c |  46 +-
+ 196 files changed, 4330 insertions(+), 2569 deletions(-)
+ delete mode 100644 samples/bpf/bpf_load.c
+ delete mode 100644 samples/bpf/bpf_load.h
+ mode change 100644 => 100755 samples/bpf/lwt_len_hist.sh
+ mode change 100644 => 100755 samples/bpf/test_lwt_bpf.sh
+ create mode 100644 samples/bpf/xdpsock_ctrl_proc.c
+ create mode 100644 tools/testing/selftests/bpf/bpf_testmod/.gitignore
+ create mode 100644 tools/testing/selftests/bpf/bpf_testmod/Makefile
+ create mode 100644 tools/testing/selftests/bpf/bpf_testmod/bpf_testmod-events.h
+ create mode 100644 tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+ create mode 100644 tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.h
+ create mode 100755 tools/testing/selftests/bpf/ima_setup.sh
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/module_attach.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/test_bprm_opts.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/test_ima.c
+ create mode 100644 tools/testing/selftests/bpf/progs/bind4_prog.c
+ create mode 100644 tools/testing/selftests/bpf/progs/bind6_prog.c
+ create mode 100644 tools/testing/selftests/bpf/progs/bprm_opts.c
+ create mode 100644 tools/testing/selftests/bpf/progs/ima.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_module.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_module_attach.c
