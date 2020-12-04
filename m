@@ -2,125 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6666D2CEB75
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 10:54:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 513832CEBF4
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 11:15:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387764AbgLDJwe convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 4 Dec 2020 04:52:34 -0500
-Received: from coyote.holtmann.net ([212.227.132.17]:56713 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387601AbgLDJwe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 04:52:34 -0500
-Received: from mac-pro.holtmann.net (unknown [37.83.193.87])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 9A946CED11;
-        Fri,  4 Dec 2020 10:59:02 +0100 (CET)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.20.0.2.21\))
-Subject: Re: [PATCH v1 1/5] Bluetooth: advmon offload MSFT add rssi support
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <CAJQfnxHDThaJ58iFSpyq4bLopeuATvd+4fOR2AAgbNaabNSMuQ@mail.gmail.com>
-Date:   Fri, 4 Dec 2020 10:51:47 +0100
-Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        Yun-Hao Chung <howardchung@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <25116F72-CE7C-46B6-A83A-5D33E9142BF9@holtmann.org>
-References: <20201203102936.4049556-1-apusaka@google.com>
- <20201203182903.v1.1.I92d2e2a87419730d60136680cbe27636baf94b15@changeid>
- <20B6F2AD-1A60-4E3C-84C2-E3CB7294FABC@holtmann.org>
- <CAJQfnxHDThaJ58iFSpyq4bLopeuATvd+4fOR2AAgbNaabNSMuQ@mail.gmail.com>
-To:     Archie Pusaka <apusaka@google.com>
-X-Mailer: Apple Mail (2.3654.20.0.2.21)
+        id S1729514AbgLDKPK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 05:15:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54586 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726330AbgLDKPK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 05:15:10 -0500
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C31B8C061A4F
+        for <netdev@vger.kernel.org>; Fri,  4 Dec 2020 02:14:29 -0800 (PST)
+Received: by mail-wr1-x441.google.com with SMTP id x6so815794wro.11
+        for <netdev@vger.kernel.org>; Fri, 04 Dec 2020 02:14:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=PWF1lcYpM9/Kvpsq48lYCABUREF33O69VjFoILX8M84=;
+        b=WNtqqXZrGOIdvr0ySYcwp4llb5I7WsiVHo5nx7CRHyk7p2Ptkgq7GCYYUXvLCWpS9R
+         VD3oGxCIQAFseN2QdWZhIrGeG3vBPFUrWC1eu4k8flk9vAszQs+/vwj6Yru5Gfv6lGzI
+         hz0Njo2zpq247ZBilyDAb6V6FLnZZCo0HaDnvpBrExL2uWKd7EPiNP7ve2ymuOcDib0Q
+         DAl1NGj/OqQ4gV2My0c0ic1aIaAlElK1PqjZACI4AziRDcmh+wSRgw6CMgRnkuV+aSsk
+         ZPWtgz4Rp/LGIbIoNqEcSTsOAQk/H+I6lrRCzR/t3QKe5hecOSX5t9blzmrS1xxtOdPP
+         DHMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=PWF1lcYpM9/Kvpsq48lYCABUREF33O69VjFoILX8M84=;
+        b=bsDys7k4o2lUjNzTathVL2uyPhAGf2Bn5wwlfGiO+AA+BCPo8545kB/MphFBcOBIkf
+         t+B+H2SXzi7wZmDKjdHvXi1XC36hTVWOfeCcvAaCUYnYCiyzE/65/jfgNQni1M9ONNFB
+         +ProoB7RIW84TbH97NthvpHw3IlrNuInEFPEZbk20+TEb8+PSIHXyEMboRAKBuYctN/I
+         oyefo8HoS1rlf1sEHIvUywcP817fApWfN7ix4RQ40efa10kQp1WWDYvhUjSx9kgpnQMp
+         NTVf/BJvP4c1XREu2OMF72F+hcvznQprxsg199IS27+B3LtsXQtI0bF0Bju9HxtzJwGR
+         iWng==
+X-Gm-Message-State: AOAM530stJx3fuTB03sWw2g9bImVwXv83V5n7L6vV3htM5RMj8ST+xGz
+        wfXBNko/ohzMOnoESYjOWL4lZuVSNTw=
+X-Google-Smtp-Source: ABdhPJxECNV5fzGmEb3Kwo3wcOtL6k2QSiEmXqTSP/8cs18BB9z2JPp6OnP/IebGiaS5TQMeSzeD0A==
+X-Received: by 2002:adf:e449:: with SMTP id t9mr3962178wrm.257.1607076868247;
+        Fri, 04 Dec 2020 02:14:28 -0800 (PST)
+Received: from [192.168.8.116] ([37.166.39.226])
+        by smtp.gmail.com with ESMTPSA id h204sm2677021wme.17.2020.12.04.02.14.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Dec 2020 02:14:27 -0800 (PST)
+Subject: Re: [PATCH net-next] bcm63xx_enet: convert to build_skb
+To:     Sieng Piaw Liew <liew.s.piaw@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
+References: <20201204054616.26876-1-liew.s.piaw@gmail.com>
+ <20201204054616.26876-4-liew.s.piaw@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <e5e8eee8-b125-f594-2156-ca508cb465eb@gmail.com>
+Date:   Fri, 4 Dec 2020 11:14:26 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
+MIME-Version: 1.0
+In-Reply-To: <20201204054616.26876-4-liew.s.piaw@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Archie,
 
->>> MSFT needs rssi parameter for monitoring advertisement packet,
->>> therefore we should supply them from mgmt.
->>> 
->>> Signed-off-by: Archie Pusaka <apusaka@chromium.org>
->>> Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
->>> Reviewed-by: Yun-Hao Chung <howardchung@google.com>
->> 
->> I don’t need any Reviewed-by if they are not catching an obvious user API breakage.
->> 
->>> ---
->>> 
->>> include/net/bluetooth/hci_core.h | 9 +++++++++
->>> include/net/bluetooth/mgmt.h     | 9 +++++++++
->>> net/bluetooth/mgmt.c             | 8 ++++++++
->>> 3 files changed, 26 insertions(+)
->>> 
->>> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
->>> index 9873e1c8cd16..42d446417817 100644
->>> --- a/include/net/bluetooth/hci_core.h
->>> +++ b/include/net/bluetooth/hci_core.h
->>> @@ -246,8 +246,17 @@ struct adv_pattern {
->>>      __u8 value[HCI_MAX_AD_LENGTH];
->>> };
->>> 
->>> +struct adv_rssi_thresholds {
->>> +     __s8 low_threshold;
->>> +     __s8 high_threshold;
->>> +     __u16 low_threshold_timeout;
->>> +     __u16 high_threshold_timeout;
->>> +     __u8 sampling_period;
->>> +};
->>> +
->>> struct adv_monitor {
->>>      struct list_head patterns;
->>> +     struct adv_rssi_thresholds rssi;
->>>      bool            active;
->>>      __u16           handle;
->>> };
->>> diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
->>> index d8367850e8cd..dc534837be0e 100644
->>> --- a/include/net/bluetooth/mgmt.h
->>> +++ b/include/net/bluetooth/mgmt.h
->>> @@ -763,9 +763,18 @@ struct mgmt_adv_pattern {
->>>      __u8 value[31];
->>> } __packed;
->>> 
->>> +struct mgmt_adv_rssi_thresholds {
->>> +     __s8 high_threshold;
->>> +     __le16 high_threshold_timeout;
->>> +     __s8 low_threshold;
->>> +     __le16 low_threshold_timeout;
->>> +     __u8 sampling_period;
->>> +} __packed;
->>> +
->>> #define MGMT_OP_ADD_ADV_PATTERNS_MONITOR      0x0052
->>> struct mgmt_cp_add_adv_patterns_monitor {
->>>      __u8 pattern_count;
->>> +     struct mgmt_adv_rssi_thresholds rssi;
->>>      struct mgmt_adv_pattern patterns[];
->>> } __packed;
->> 
->> This is something we can not do. It breaks an userspace facing API. Is the mgmt opcode 0x0052 in an already released kernel?
+
+On 12/4/20 6:46 AM, Sieng Piaw Liew wrote:
+> We can increase the efficiency of rx path by using buffers to receive
+> packets then build SKBs around them just before passing into the network
+> stack. In contrast, preallocating SKBs too early reduces CPU cache
+> efficiency.
 > 
-> Yes, the opcode does exist in an already released kernel.
+> Check if we're in NAPI context when refilling RX. Normally we're almost
+> always running in NAPI context. Dispatch to napi_alloc_frag directly
+> instead of relying on netdev_alloc_frag which still runs
+> local_bh_disable/enable.
 > 
-> The DBus method which accesses this API is put behind the experimental
-> flag, therefore we expect they are flexible enough to support changes.
-> Previously, we already had a discussion in an email thread with the
-> title "Offload RSSI tracking to controller", and the outcome supports
-> this change.
+> Tested on BCM6328 320 MHz and iperf3 -M 512 to measure packet/sec
+> performance. Included netif_receive_skb_list and NET_IP_ALIGN
+> optimizations.
 > 
-> Here is an excerpt of the discussion.
+> Before:
+> [ ID] Interval           Transfer     Bandwidth       Retr
+> [  4]   0.00-10.00  sec  49.9 MBytes  41.9 Mbits/sec  197         sender
+> [  4]   0.00-10.00  sec  49.3 MBytes  41.3 Mbits/sec            receiver
+> 
+> After:
+> [ ID] Interval           Transfer     Bandwidth       Retr
+> [  4]   0.00-30.00  sec   171 MBytes  47.8 Mbits/sec  272         sender
+> [  4]   0.00-30.00  sec   170 MBytes  47.6 Mbits/sec            receiver
 
-it doesn’t matter. This is fixed API now and so we can not just change it. The argument above is void. What matters if it is in already released kernel.
+Please test this again after GRO has been added to this driver.
 
-Regards
+Problem with build_skb() is that overall skb truesize after GRO might be increased
+a lot, since we have sizeof(struct skb_shared_info) added overhead per MSS,
+and this can double the truesize depending on device MTU.
 
-Marcel
+This matters on long RTT flows, because an inflation of skb->truesize reduces
+TCP receive window quite a lot.
+
+Ideally if you want best performance, this driver should use napi_gro_frags(),
+so that skb->len/skb->truesize is the smallest one.
+
+In order to test your change you need to set up a testbed with 
+10ms or 50ms delay between the hosts, unless this driver is only used
+by hosts on the same LAN (which I doubt)
+
 
