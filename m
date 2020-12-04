@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BAD72CED57
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 12:43:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EDDD2CED5A
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 12:44:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388120AbgLDLnc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 06:43:32 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38666 "EHLO mail.kernel.org"
+        id S2388170AbgLDLnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 06:43:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38754 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730032AbgLDLnb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Dec 2020 06:43:31 -0500
-Date:   Fri, 4 Dec 2020 12:44:07 +0100
+        id S1728721AbgLDLnt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Dec 2020 06:43:49 -0500
+Date:   Fri, 4 Dec 2020 12:44:24 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1607082170;
-        bh=CQGde8dYRlqueEwvc7knY4CB9w4yHC8OY/IAzf3YxK8=;
+        s=korg; t=1607082188;
+        bh=fq/9ik6SfqapT/k/I6QzVE0S1KeSa8ddttOC6wf8sP8=;
         h=From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tSQHZ4Oy383lMi/uHhG6/0wGOQXxLiB3LUfuHensu29AD+wOBN1igyRMiqJHGya9c
-         XU6K5R+KCB8TR74Yiiw5rFfDPj7Nlbyzp9X7DxcgmK143cGPnHF9aLcndZrdw9YC7k
-         mgVm7a/Z68vtSqNa1f6Z3BNBK1pegmV/pM40/CoE=
+        b=k10zOjlHjxusAPfYissHzBSFO43kto7VEIXNsGmUC0OjchoyvsaKGNdVZshTT0Jxy
+         mK7Yi+BabyG/oLIBm/zVdriuU/I8pg8YFVWokUXqkLmwB4XxiYZWlkkzerUhEjbTSh
+         RDjaWA925XCOiE4CZGO/2+NJzSLp7zlszoucdtoA=
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     Dan Williams <dan.j.williams@intel.com>
 Cc:     broonie@kernel.org, lgirdwood@gmail.com, davem@davemloft.net,
@@ -34,80 +34,164 @@ Cc:     broonie@kernel.org, lgirdwood@gmail.com, davem@davemloft.net,
         Martin Habets <mhabets@solarflare.com>,
         linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/3] driver core: auxiliary bus: make remove function return
- void
-Message-ID: <X8ohB1ks1NK7kPop@kroah.com>
+Subject: [PATCH 3/3] driver core: auxiliary bus: minor coding style tweaks
+Message-ID: <X8ohGE8IBKiafzka@kroah.com>
 References: <160695681289.505290.8978295443574440604.stgit@dwillia2-desk3.amr.corp.intel.com>
  <X8ogtmrm7tOzZo+N@kroah.com>
  <X8og8xi3WkoYXet9@kroah.com>
+ <X8ohB1ks1NK7kPop@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <X8og8xi3WkoYXet9@kroah.com>
+In-Reply-To: <X8ohB1ks1NK7kPop@kroah.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-There's an effort to move the remove() callback in the driver core to
-not return an int, as nothing can be done if this function fails.  To
-make that effort easier, make the aux bus remove function void to start
-with so that no users have to be changed sometime in the future.
+For some reason, the original aux bus patch had some really long lines
+in a few places, probably due to it being a very long-lived patch in
+development by many different people.  Fix that up so that the two files
+all have the same length lines and function formatting styles.
 
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/driver-api/auxiliary_bus.rst | 2 +-
- drivers/base/auxiliary.c                   | 5 ++---
- include/linux/auxiliary_bus.h              | 2 +-
- 3 files changed, 4 insertions(+), 5 deletions(-)
+ drivers/base/Kconfig     |  2 +-
+ drivers/base/auxiliary.c | 58 ++++++++++++++++++++++------------------
+ 2 files changed, 33 insertions(+), 27 deletions(-)
 
-diff --git a/Documentation/driver-api/auxiliary_bus.rst b/Documentation/driver-api/auxiliary_bus.rst
-index 5dd7804631ef..2312506b0674 100644
---- a/Documentation/driver-api/auxiliary_bus.rst
-+++ b/Documentation/driver-api/auxiliary_bus.rst
-@@ -150,7 +150,7 @@ and shutdown notifications using the standard conventions.
- 	struct auxiliary_driver {
- 		int (*probe)(struct auxiliary_device *,
-                              const struct auxiliary_device_id *id);
--		int (*remove)(struct auxiliary_device *);
-+		void (*remove)(struct auxiliary_device *);
- 		void (*shutdown)(struct auxiliary_device *);
- 		int (*suspend)(struct auxiliary_device *, pm_message_t);
- 		int (*resume)(struct auxiliary_device *);
+diff --git a/drivers/base/Kconfig b/drivers/base/Kconfig
+index 040be48ce046..ba52b2c40202 100644
+--- a/drivers/base/Kconfig
++++ b/drivers/base/Kconfig
+@@ -2,7 +2,7 @@
+ menu "Generic Driver Options"
+ 
+ config AUXILIARY_BUS
+-	bool
++	tristate "aux bus!"
+ 
+ config UEVENT_HELPER
+ 	bool "Support for uevent helper"
 diff --git a/drivers/base/auxiliary.c b/drivers/base/auxiliary.c
-index eca36d6284d0..c44e85802b43 100644
+index c44e85802b43..f303daadf843 100644
 --- a/drivers/base/auxiliary.c
 +++ b/drivers/base/auxiliary.c
-@@ -82,13 +82,12 @@ static int auxiliary_bus_remove(struct device *dev)
- {
- 	struct auxiliary_driver *auxdrv = to_auxiliary_drv(dev->driver);
- 	struct auxiliary_device *auxdev = to_auxiliary_dev(dev);
--	int ret = 0;
+@@ -50,8 +50,8 @@ static int auxiliary_uevent(struct device *dev, struct kobj_uevent_env *env)
+ 	name = dev_name(dev);
+ 	p = strrchr(name, '.');
  
- 	if (auxdrv->remove)
--		ret = auxdrv->remove(auxdev);
-+		auxdrv->remove(auxdev);
- 	dev_pm_domain_detach(dev, true);
- 
--	return ret;
-+	return 0;
+-	return add_uevent_var(env, "MODALIAS=%s%.*s", AUXILIARY_MODULE_PREFIX, (int)(p - name),
+-			      name);
++	return add_uevent_var(env, "MODALIAS=%s%.*s", AUXILIARY_MODULE_PREFIX,
++			      (int)(p - name), name);
  }
  
- static void auxiliary_bus_shutdown(struct device *dev)
-diff --git a/include/linux/auxiliary_bus.h b/include/linux/auxiliary_bus.h
-index 3580743d0e8d..d67b17606210 100644
---- a/include/linux/auxiliary_bus.h
-+++ b/include/linux/auxiliary_bus.h
-@@ -19,7 +19,7 @@ struct auxiliary_device {
+ static const struct dev_pm_ops auxiliary_dev_pm_ops = {
+@@ -113,16 +113,18 @@ static struct bus_type auxiliary_bus_type = {
+  * auxiliary_device_init - check auxiliary_device and initialize
+  * @auxdev: auxiliary device struct
+  *
+- * This is the first step in the two-step process to register an auxiliary_device.
++ * This is the first step in the two-step process to register an
++ * auxiliary_device.
+  *
+- * When this function returns an error code, then the device_initialize will *not* have
+- * been performed, and the caller will be responsible to free any memory allocated for the
+- * auxiliary_device in the error path directly.
++ * When this function returns an error code, then the device_initialize will
++ * *not* have been performed, and the caller will be responsible to free any
++ * memory allocated for the auxiliary_device in the error path directly.
+  *
+- * It returns 0 on success.  On success, the device_initialize has been performed.  After this
+- * point any error unwinding will need to include a call to auxiliary_device_uninit().
+- * In this post-initialize error scenario, a call to the device's .release callback will be
+- * triggered, and all memory clean-up is expected to be handled there.
++ * It returns 0 on success.  On success, the device_initialize has been
++ * performed.  After this point any error unwinding will need to include a call
++ * to auxiliary_device_uninit().  In this post-initialize error scenario, a call
++ * to the device's .release callback will be triggered, and all memory clean-up
++ * is expected to be handled there.
+  */
+ int auxiliary_device_init(struct auxiliary_device *auxdev)
+ {
+@@ -149,16 +151,19 @@ EXPORT_SYMBOL_GPL(auxiliary_device_init);
+  * @auxdev: auxiliary bus device to add to the bus
+  * @modname: name of the parent device's driver module
+  *
+- * This is the second step in the two-step process to register an auxiliary_device.
++ * This is the second step in the two-step process to register an
++ * auxiliary_device.
+  *
+- * This function must be called after a successful call to auxiliary_device_init(), which
+- * will perform the device_initialize.  This means that if this returns an error code, then a
+- * call to auxiliary_device_uninit() must be performed so that the .release callback will
+- * be triggered to free the memory associated with the auxiliary_device.
++ * This function must be called after a successful call to
++ * auxiliary_device_init(), which will perform the device_initialize.  This
++ * means that if this returns an error code, then a call to
++ * auxiliary_device_uninit() must be performed so that the .release callback
++ * will be triggered to free the memory associated with the auxiliary_device.
+  *
+- * The expectation is that users will call the "auxiliary_device_add" macro so that the caller's
+- * KBUILD_MODNAME is automatically inserted for the modname parameter.  Only if a user requires
+- * a custom name would this version be called directly.
++ * The expectation is that users will call the "auxiliary_device_add" macro so
++ * that the caller's KBUILD_MODNAME is automatically inserted for the modname
++ * parameter.  Only if a user requires a custom name would this version be
++ * called directly.
+  */
+ int __auxiliary_device_add(struct auxiliary_device *auxdev, const char *modname)
+ {
+@@ -166,13 +171,13 @@ int __auxiliary_device_add(struct auxiliary_device *auxdev, const char *modname)
+ 	int ret;
  
- struct auxiliary_driver {
- 	int (*probe)(struct auxiliary_device *auxdev, const struct auxiliary_device_id *id);
--	int (*remove)(struct auxiliary_device *auxdev);
-+	void (*remove)(struct auxiliary_device *auxdev);
- 	void (*shutdown)(struct auxiliary_device *auxdev);
- 	int (*suspend)(struct auxiliary_device *auxdev, pm_message_t state);
- 	int (*resume)(struct auxiliary_device *auxdev);
+ 	if (!modname) {
+-		pr_err("auxiliary device modname is NULL\n");
++		dev_err(dev, "auxiliary device modname is NULL\n");
+ 		return -EINVAL;
+ 	}
+ 
+ 	ret = dev_set_name(dev, "%s.%s.%d", modname, auxdev->name, auxdev->id);
+ 	if (ret) {
+-		pr_err("auxiliary device dev_set_name failed: %d\n", ret);
++		dev_err(dev, "auxiliary device dev_set_name failed: %d\n", ret);
+ 		return ret;
+ 	}
+ 
+@@ -197,9 +202,9 @@ EXPORT_SYMBOL_GPL(__auxiliary_device_add);
+  * if it does.  If the callback returns non-zero, this function will
+  * return to the caller and not iterate over any more devices.
+  */
+-struct auxiliary_device *
+-auxiliary_find_device(struct device *start, const void *data,
+-		      int (*match)(struct device *dev, const void *data))
++struct auxiliary_device *auxiliary_find_device(struct device *start,
++					       const void *data,
++					       int (*match)(struct device *dev, const void *data))
+ {
+ 	struct device *dev;
+ 
+@@ -217,14 +222,15 @@ EXPORT_SYMBOL_GPL(auxiliary_find_device);
+  * @owner: owning module/driver
+  * @modname: KBUILD_MODNAME for parent driver
+  */
+-int __auxiliary_driver_register(struct auxiliary_driver *auxdrv, struct module *owner,
+-				const char *modname)
++int __auxiliary_driver_register(struct auxiliary_driver *auxdrv,
++				struct module *owner, const char *modname)
+ {
+ 	if (WARN_ON(!auxdrv->probe) || WARN_ON(!auxdrv->id_table))
+ 		return -EINVAL;
+ 
+ 	if (auxdrv->name)
+-		auxdrv->driver.name = kasprintf(GFP_KERNEL, "%s.%s", modname, auxdrv->name);
++		auxdrv->driver.name = kasprintf(GFP_KERNEL, "%s.%s", modname,
++						auxdrv->name);
+ 	else
+ 		auxdrv->driver.name = kasprintf(GFP_KERNEL, "%s", modname);
+ 	if (!auxdrv->driver.name)
 -- 
 2.29.2
 
