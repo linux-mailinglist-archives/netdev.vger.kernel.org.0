@@ -2,171 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CE472CE4A3
+	by mail.lfdr.de (Postfix) with ESMTP id A49CA2CE4A4
 	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 01:58:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727931AbgLDA5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 19:57:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52920 "EHLO
+        id S1729008AbgLDA5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 19:57:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726075AbgLDA5O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 19:57:14 -0500
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BEB9C061A4F
-        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 16:56:28 -0800 (PST)
-Received: by mail-pj1-x1044.google.com with SMTP id l23so2176530pjg.1
-        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 16:56:28 -0800 (PST)
+        with ESMTP id S1727042AbgLDA5g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 19:57:36 -0500
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4193CC061A51
+        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 16:56:56 -0800 (PST)
+Received: by mail-ej1-x642.google.com with SMTP id qw4so6240822ejb.12
+        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 16:56:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=DB7PizKs3qTj51m7Z+CghMsxmHB0NC3bOPAXDwBhCRA=;
-        b=TTsajPDdd1Z3NJZQ6hgcCkUVDSud7Cp0Bv1LsU0zFmzXuEq8CROxE2ua7SGm2IXb9M
-         AERftci/3X8A74fZsj+iBl78MpGofteheEPJX9JEXjCXlgl6peh3Lls4R7AKTvMwyfTO
-         eo2pRNj3Gj4n9UjQBg2B8gg5v1tjv4XgOS2qVUuhGBSclxY7XUeSoHMgtrSBdLDYrSLj
-         OMltNZudmWX5A31dBqaP2MU7Uvx2RfgOv+z40Qbeenrt1vgrstdVFvvvf/VC/DUbFI/S
-         fwIBbKnTwcMPJ+QiEMvVN3OFIjyPjqQ+TGoLuV5onswKKxRtS3dQ85ITkyqP48jZ36B9
-         a+bw==
+         :content-disposition:in-reply-to;
+        bh=M8rdejdL6sQpmXJbypKF099zt9YPWmaMgGDVaUV8+5U=;
+        b=uMUZ+5F7EKaVxt+EaEQQLRCs3IbSck6Uxf08wmCRlKjbmrxvPFnhIs1lVo5jMHdVep
+         IJh0upm1dq/OVqqji8KVVOuWUUDQTP9O5QYWmetH5I28gitU4KBz/OVdTMgAU9YtNmF7
+         mcy0EM4ykbePJ2D8Il2Pu4dBZFxwElDSBP7mnfLYBiyglicoYzNt6tS38zVBXHt8FNiA
+         Imwea6YTO5Y0PSwi5ZO8v70G5OWimy81hMU7Fj8Bv4iYO84sEv+LORaTrJVJ9DxFZdEQ
+         xj8uQdBdyM2kXBQS1S7wORz8nUNgw1tMbMcYuDbT7smLPYdrixDvDesfrI4I297fuC9N
+         8TXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=DB7PizKs3qTj51m7Z+CghMsxmHB0NC3bOPAXDwBhCRA=;
-        b=PLglzk0Uoo/uxrm1Z+qp8ekBtRa9iXXwgrCFBPv5kXVgPtN8ys2yb7w44Z3sbdS83l
-         SDzq10kHMQVmqGkOIHrk8il8r8H2BMvUkCaUpdyoYJuMV4aCFu+0MekraLesh2szcitn
-         5TBwJMgJO8c0Bnfd9RUwuXmrCZYP6Q0LrARRTnHkzAXC6rt3CiieRYK7eYoqi7I+kMZ+
-         sXouv52qNSAg0DOZ8RubI31WAMCyn8wRAcP1YaBDtEiWyWEH4QtQ7F8uoKoURYTAkfcM
-         Rsqc7CACfn7/rid6OPgaPJPC+RCZkb10nclZdbFlHNiaK4PZeaiS96Cjjc38OzS528Pz
-         KsLA==
-X-Gm-Message-State: AOAM531eCmSZuff+7Q5yUQVizCJPaaJLY2KUETRR3vi8O2ftoZWCFlc9
-        +2wyZwL8IxAjTGgTB7sD0+E=
-X-Google-Smtp-Source: ABdhPJxDNBfmEk4pXHgb8dUtW0S/B5W1hvNN8njPmaF34iQQ1hHxLwqxpjVDul3Wp/Cfu9JI7a5TEg==
-X-Received: by 2002:a17:902:bf44:b029:da:d0ee:cef with SMTP id u4-20020a170902bf44b02900dad0ee0cefmr1151131pls.12.1607043387762;
-        Thu, 03 Dec 2020 16:56:27 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id d3sm441451pji.26.2020.12.03.16.56.26
+         :mime-version:content-disposition:in-reply-to;
+        bh=M8rdejdL6sQpmXJbypKF099zt9YPWmaMgGDVaUV8+5U=;
+        b=pk1+GXrWSzzEvkx2K6QcSpNNWZCJn0rrgymXGf02rh9Wmsefx8Nczym3HqW7yK9Kuf
+         bxmn7ptkA/sNv5SKf2SSGf7uHvOeAKeKhcd7lqsj2dIsj4zlfHQlhrwJmO+EBsAm7+uM
+         DKZVJ6GXuVTu/jBNzmQbrfiEBg+1UkCH/8bU8cA/DaQY5ZfUljs+3yXq27N9s1s+c/bX
+         tlr5Gmp9C5M014FWk/lq7MNbELkspQtpS2wEzYZBRwNuBCTVm+SOs19aIN2hnI+ko+ur
+         Rnx5FiE14CAYoDRCHGlOf2L+JwaFKy1Md350z9iXT5UGmOiKOxstWkMWQJBqwue6WR5w
+         tYBQ==
+X-Gm-Message-State: AOAM532kJFAS4pBZedYPaSWzRwdfwc391UNYy0+A0I1p2Xr61Ky4D4Ol
+        m/dXzsDheXHU5hJPOye9OWs=
+X-Google-Smtp-Source: ABdhPJwW2aleXQWtze78B4sxGNL/DouaT/bPjs1ORK1Pl5ILSaUK6XVGk7VZdz9hcSQYuEwszmTUlQ==
+X-Received: by 2002:a17:906:60d2:: with SMTP id f18mr4739644ejk.528.1607043414981;
+        Thu, 03 Dec 2020 16:56:54 -0800 (PST)
+Received: from skbuf ([188.25.2.120])
+        by smtp.gmail.com with ESMTPSA id q5sm1918934ejr.89.2020.12.03.16.56.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Dec 2020 16:56:27 -0800 (PST)
-Date:   Thu, 3 Dec 2020 16:56:24 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH v2 net-next] ptp: Add clock driver for the OpenCompute
- TimeCard.
-Message-ID: <20201204005624.GC18560@hoboy.vegasvil.org>
-References: <20201203182925.4059875-1-jonathan.lemon@gmail.com>
+        Thu, 03 Dec 2020 16:56:54 -0800 (PST)
+Date:   Fri, 4 Dec 2020 02:56:53 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 2/4] net: dsa: Link aggregation support
+Message-ID: <20201204005653.uep7nvtg4ish5xct@skbuf>
+References: <20201202091356.24075-1-tobias@waldekranz.com>
+ <20201202091356.24075-3-tobias@waldekranz.com>
+ <20201203162428.ffdj7gdyudndphmn@skbuf>
+ <87a6uu7gsr.fsf@waldekranz.com>
+ <20201203215725.uuptum4qhcwvhb6l@skbuf>
+ <87360m7acf.fsf@waldekranz.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201203182925.4059875-1-jonathan.lemon@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <87360m7acf.fsf@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 03, 2020 at 10:29:25AM -0800, Jonathan Lemon wrote:
-> The OpenCompute time card is an atomic clock along with
-> a GPS receiver that provides a Grandmaster clock source
-> for a PTP enabled network.
-> 
-> More information is available at http://www.timingcard.com/
-> 
-> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+On Fri, Dec 04, 2020 at 12:12:32AM +0100, Tobias Waldekranz wrote:
+> You make a lot of good points. I think it might be better to force the
+> user to be explicit about their choice though. Imagine something like
+> this:
+>
+> - We add NETIF_F_SWITCHDEV_OFFLOAD, which is set on switchdev ports by
+>   default. This flag is only allowed to be toggled when the port has no
+>   uppers - we do not want to deal with a port in a LAG in a bridge all
+>   of a sudden changing mode.
+>
+> - If it is set, we only allow uppers/tc-rules/etc that we can
+>   offload. If the user tries to configure something outside of that, we
+>   can suggest disabling offloading in the error we emit.
+>
+> - If it is not set, we just sit back and let the kernel do its thing.
+>
+> This would work well both for exotic LAG modes and for advanced
+> netfilter(ebtables)/tc setups I think. Example session:
+>
+> $ ip link add dev bond0 type bond mode balance-rr
+> $ ip link set dev swp0 master bond0
+> Error: swp0: balance-rr not supported when using switchdev offloading
+> $ ethtool -K swp0 switchdev off
+> $ ip link set dev swp0 master bond0
+> $ echo $?
+> 0
 
-What changed in v2?
+And you want the default to be what, on or off? I believe on?
+I'd say the default should be off. The idea being that you could have
+"write once, run everywhere" types of scripts. You can only get that
+behavior with "off", otherwise you'd get random errors on some equipment
+and it wouldn't be portable. And "ethtool -K swp0 switchdev off" is a
+bit of a strange incantation to add to every script just to avoid
+errors.. But if the default switchdev mode is off, then what's the
+point in even having the knob, your poor Linus will still be confused
+and frustrated, and it won't help him any bit if he can flip the switch
+- it's too late, he already knows what the problem is by the time he
+finds the switch.
 
-(please include a change log for future patches)
+> > I would even go out on a limb and say hardcode the TX_TYPE_HASH in DSA
+> > for now. I would be completely surprised to see hardware that can
+> > offload anything else in the near future.
+>
+> If you tilt your head a little, I think active backup is really just a
+> trivial case of a hashed LAG wherein only a single member is ever
+> active. I.e. all buckets are always allocated to one port (effectivly
+> negating the hashing). The active member is controlled by software, so I
+> think we should be able to support that.
 
-> +static int
-> +ptp_ocp_gettimex(struct ptp_clock_info *ptp_info, struct timespec64 *ts,
-> +		 struct ptp_system_timestamp *sts)
-> +{
+Yup, my head is tilted and I see it now. If I understand this mode
+(never used it), then any hardware switch that can offload bridging can
+also offload the active-backup LAG.
 
-The name here is a bit confusing since "timex" has a special meaning
-in the NTP/PTP API.
+> mv88e6xxx could also theoretically be made to support broadcast. You can
+> enable any given bucket on multiple ports, but that seems silly.
 
-Suggest plain old ptp_ocp_gettime();
-
-> +	struct ptp_ocp *bp = container_of(ptp_info, struct ptp_ocp, ptp_info);
-> +	unsigned long flags;
-> +	int err;
-> +
-> +	spin_lock_irqsave(&bp->lock, flags);
-> +	err = __ptp_ocp_gettime_locked(bp, ts, sts);
-> +	spin_unlock_irqrestore(&bp->lock, flags);
-> +
-> +	return err;
-> +}
-> +
-> +static void
-> +__ptp_ocp_settime_locked(struct ptp_ocp *bp, const struct timespec64 *ts)
-> +{
-> +	u32 ctrl, time_sec, time_ns;
-> +	u32 select;
-> +
-> +	time_ns = ts->tv_nsec;
-> +	time_sec = ts->tv_sec;
-> +
-> +	select = ioread32(&bp->reg->select);
-> +	iowrite32(OCP_SELECT_CLK_REG, &bp->reg->select);
-> +
-> +	iowrite32(time_ns, &bp->reg->adjust_ns);
-> +	iowrite32(time_sec, &bp->reg->adjust_sec);
-> +
-> +	ctrl = ioread32(&bp->reg->ctrl);
-> +	ctrl |= OCP_CTRL_ADJUST_TIME;
-> +	iowrite32(ctrl, &bp->reg->ctrl);
-> +
-> +	/* restore clock selection */
-> +	iowrite32(select >> 16, &bp->reg->select);
-> +}
-> +
-> +static int
-> +ptp_ocp_settime(struct ptp_clock_info *ptp_info, const struct timespec64 *ts)
-> +{
-> +	struct ptp_ocp *bp = container_of(ptp_info, struct ptp_ocp, ptp_info);
-> +	unsigned long flags;
-> +
-> +	if (ioread32(&bp->reg->status) & OCP_STATUS_IN_SYNC)
-> +		return 0;
-> +
-> +	dev_info(&bp->pdev->dev, "settime to: %lld.%ld\n",
-> +		 ts->tv_sec, ts->tv_nsec);
-
-No need for this dmesg spam.   Change to _debug if you really want to
-keep it.
-
-> +	spin_lock_irqsave(&bp->lock, flags);
-> +	__ptp_ocp_settime_locked(bp, ts);
-> +	spin_unlock_irqrestore(&bp->lock, flags);
-> +
-> +	return 0;
-> +}
-
-> +static int
-> +ptp_ocp_null_adjfine(struct ptp_clock_info *ptp_info, long scaled_ppm)
-> +{
-> +	struct ptp_ocp *bp = container_of(ptp_info, struct ptp_ocp, ptp_info);
-> +
-> +	if (scaled_ppm == 0)
-> +		return 0;
-> +
-> +	dev_info(&bp->pdev->dev, "adjfine, scaled by: %ld\n", scaled_ppm);
-
-No need for this either.
-
-> +	return -EOPNOTSUPP;
-
-You can set the offset but not the frequency adjustment.  Makes sense
-for an atomic clock.
-
-> +}
-
-This driver looks fine, but I'm curious how you will use it.  Can it
-provide time stamping for network frames or other IO?
-
-If not, then that seems unfortunate.  Still you can regulate the Linux
-system clock in software, but that of course introduces time error.
-
-Thanks,
-Richard
+Yeah, the broadcast bonding mode looks like an oddball. It sounds to me
+almost like HSR/PRP/FRER but without the sequence numbering, which is a
+surefire way to make a mess out of everything. I have no idea how it is
+used (how duplicate elimination is achieved).
