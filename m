@@ -2,35 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A5C62CF79D
-	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 00:39:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DC602CF7A4
+	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 00:45:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727392AbgLDXiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 18:38:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43296 "EHLO mail.kernel.org"
+        id S1726935AbgLDXlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 18:41:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43736 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726061AbgLDXiP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Dec 2020 18:38:15 -0500
-Date:   Fri, 4 Dec 2020 15:37:48 -0800
+        id S1726111AbgLDXlN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Dec 2020 18:41:13 -0500
+Date:   Fri, 4 Dec 2020 15:40:45 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607125069;
-        bh=2zKZF4aBpwhb+MmtpLHvGpRxVERUBzuV++3Ec2ByJz0=;
+        s=k20201202; t=1607125247;
+        bh=xZueu0qpXLhKBBWVHRjSbGglwsp20+CKOkl1Y8XBxtY=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kb22OmZVcuJaafxCVfJjopqrZSRaagiCR2ngoJ+jFkmnqZYUTcYBbndIOrUJNidZI
-         an3QG8OTvFzsUz4vbKz6hmtOlsUag6lM+JDdMOU6CR9f6055cieiS7f3QnLy9PdZjB
-         bp/ay3CO0rf3z6eePzcK+tMn5DT8U0si6Xoz9eFg2zZlvNnmVCuENJL+dBfZ7XUEQ3
-         iiktlXZLoJAjoZ3VWEnpJ8F5MziT9coblJPxbwZ9coK2rsmuBlhTQuQxyjLeUR1Dbe
-         wopoKgkQ/9m8Oldjkey9iWae7n9mtGEGosZFWUOd+/csz72dsMTaCMffJlyv/kE1km
-         7a+VX+PTF1/Fw==
+        b=Wb/HNogbdneGDmIK4YfiQbshWHpysKiITzWmsUoMOXX5NdbH6PPtqtRjhhGRy/1jL
+         5C+Lr/cVb6jWLqxNMg7PXFmThhm8gSvfIE0Lru3dlP1QKCodxd8opzoX1hxzcR7x0l
+         0INsOWVngj/XrN2Xkh2r0dkUDSrhYcEJpvEKEOqfoWfVLHmu76pJAPYJvTnpenZI83
+         325YKPRp6x5DqdCAbBgIXfdFYSVST3KbnJMGEu1al3ybKH8UhLZmwBcS1ps1ZOlTVF
+         2W5t7shoZOZWEqP3HlmT9fPBYzTadOQKfxBgKbAHtJdn96u9pVmAlqeiF8u1KMJZuq
+         GkbefH/8r1sHw==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Stephen Suryaputra <ssuryaextr@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH net] vrf: packets with lladdr src needs dst at input
- with orig_iif when needs strict
-Message-ID: <20201204153748.00715355@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <6199335a-c50f-6f04-48e2-e71129372a35@gmail.com>
-References: <20201204030604.18828-1-ssuryaextr@gmail.com>
-        <6199335a-c50f-6f04-48e2-e71129372a35@gmail.com>
+To:     David Ahern <dsahern@gmail.com>,
+        Zhang Changzhong <zhangchangzhong@huawei.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] ipv4: fix error return code in rtm_to_fib_config()
+Message-ID: <20201204154045.0f93f240@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <d525d028-582d-2cea-5507-db43ee9f9fe3@gmail.com>
+References: <1607071695-33740-1-git-send-email-zhangchangzhong@huawei.com>
+        <d525d028-582d-2cea-5507-db43ee9f9fe3@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -38,28 +41,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 4 Dec 2020 09:32:04 -0700 David Ahern wrote:
-> On 12/3/20 8:06 PM, Stephen Suryaputra wrote:
-> > Depending on the order of the routes to fe80::/64 are installed on the
-> > VRF table, the NS for the source link-local address of the originator
-> > might be sent to the wrong interface.
+On Fri, 4 Dec 2020 09:04:08 -0700 David Ahern wrote:
+> On 12/4/20 1:48 AM, Zhang Changzhong wrote:
+> > Fix to return a negative error code from the error handling
+> > case instead of 0, as done elsewhere in this function.
 > > 
-> > This patch ensures that packets with link-local addr source is doing a
-> > lookup with the orig_iif when the destination addr indicates that it
-> > is strict.
-> > 
-> > Add the reproducer as a use case in self test script fcnal-test.sh.
-> > 
-> > Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
-> > ---
-> >  drivers/net/vrf.c                         | 10 ++-
-> >  tools/testing/selftests/net/fcnal-test.sh | 95 +++++++++++++++++++++++
-> >  2 files changed, 103 insertions(+), 2 deletions(-)
+> > Fixes: d15662682db2 ("ipv4: Allow ipv6 gateway with ipv4 routes")
+> > Reported-by: Hulk Robot <hulkci@huawei.com>
+> > Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
 > 
 > Reviewed-by: David Ahern <dsahern@kernel.org>
 
-Should I put something like:
-
-Fixes: b4869aa2f881 ("net: vrf: ipv6 support for local traffic to local addresses")
-
-on this?
+Applied, thanks!
