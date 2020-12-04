@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A81F72CE5F0
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 03:48:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20C012CE5F1
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 03:48:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726865AbgLDCr5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 21:47:57 -0500
-Received: from mail-eopbgr140081.outbound.protection.outlook.com ([40.107.14.81]:37121
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        id S1726920AbgLDCr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 21:47:59 -0500
+Received: from mail-eopbgr00061.outbound.protection.outlook.com ([40.107.0.61]:4739
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726558AbgLDCr4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Dec 2020 21:47:56 -0500
+        id S1726780AbgLDCr6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Dec 2020 21:47:58 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F0ashuzw67j5K0DdEtt3vWakzuhY5NCIMlp1DVEajR3iFQ6JuN7kL/sxrXQkqwZXxtMqMP9MwPqkGh/1gaVmZdsV1VdPTRaaLxye0pofiA9122ljEPAKr4XEfUImTzOAhM/I/W07ar5ZrriuQi0dapAGgLfVv14aB1Bv2cOhysQRUQgGHJi/WIXgaq4trem+iu0Y83T/JNz/ahO8KZjqBYoq9axY8+MwUFnQtLBpI2zU+xuuV5Y39UELdVknQK4PN2FdvWsjek9cOYC5rB8FrwX9duXuo/BJYSxmxtS3WEApvSqHJ7oVOgmkA18CEaooAB0+DzRx9ENCic12PwpW1Q==
+ b=HTSaFnAgoYO8o7SrPw9BXujISPILC8Wouu7Tfvd4LcscpqRBCDc1yRztoGqOboWfLzx9gtOB10Mfs6leRhaT5xjxV3xDBSnkE4jSs5uy41n/LMlGyzXXQPSbjr2ULNsKD12SIqgs+9wzNtfNrY2mXFwNt6Y+CHMalH5WoaGrrUt5BfUfTvzmZK8qiOY3pNTBP8D9ZQDd4tQHHtgWApSJ5uZVEG1xVzdjfhV+4PqfXcrqAo/SSua6N7qgijavhYFbpVxloG8tirqBTY1GONUvjXTJNfIcSmkRaaJMHkEjvgIbrSIzk7SjXOttoN0eSnd/09kqF6J7kkuujbIB3Yroaw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2alYby+BYm+OeHs39H8hqadqbhg1Dg5kKh5UAw988kw=;
- b=nKaO7EZrjJUdZ8mIu8W+3bJ0ywpwiHbtCcRYHojkQfInIH/1pDrOvYJ6sbLPoz6Kg6Zq4oHq3IMGNa3mBSFta5AfPpdveu8FTaK5g/9Bx4mHnSZAG/IoBVwOjoDcUBdACF9LNAkQawHnwZ5D1zgn2tFciaL1mgyvig5+ctXdu3CIla/wfr0SGQhsVercNxYWitpq4eX+D3pr2FelfwB59S7oya5/6IJT7Laj65xa/74BtJK87JXh0qz/sMKE0GZpajr8hTW6Kh2ra0yIzIXUFu5tTx+dkXj3LNRgZNOPKwi539wNM1QKHnWv4somxgPibsEyg50GqtWjeBUk5708gQ==
+ bh=ch/DjUYcGvIpPGFaxHPMdxxti+2VSWbLnImpNceEVaI=;
+ b=oIKxq/JmwUv4ICLewb1v7o2N0zd8QGqXgAlG3mN02E7KVhuWYme0i6acJn55iPQMruCziLt+FBz+QUj7A4VMlhjDiKbDe8gc/7GUGZhryOa1NUJAwp8MVAvtcJ2DJcjH5BF5+3Zet0gnulf8FvGEv4WLeMwWSYdu73xDvZMBCLIJyAVbKutJnkMk0Os0XySnSOMwUk/8ZDVNVYMKP3iRRg0n8er0Z0tNRnUBSWOCaoI8dXm4Msz4dCOPqzi5zg4uJkYS6qPLAwxAYCU17B06L5UPZZ0I+AH03t3ayfCc5Q3M/bsAlXl1FkHAnVp5sm0olJ7pg8H6p2h1+J1NCP9bnw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2alYby+BYm+OeHs39H8hqadqbhg1Dg5kKh5UAw988kw=;
- b=spE9BjW4wr2nKsEZAU8HacVVuTqWr+5kNSvNux4biNcUlZJg6crq1yakm0AOZBKisQA7/rI9esdemFF5h5ugLgU0IwBt4udApV78p4nB7j0ZnlenG+vmOxinltWn7EJm3VfBmEH2q7H2xa9FYyFhFkVyZD4rgUdCinYJPIfsm0o=
+ bh=ch/DjUYcGvIpPGFaxHPMdxxti+2VSWbLnImpNceEVaI=;
+ b=sB8RTK/I5N4wPpPeQUkOz8uguvWT7o5tRdiNuQkqbuzusNcFk8JIMda/BgF8D7GOttPCub5P/sp7vFxBGA/6D1KqUfm/KUGxp5bMGIJ2zc1NK8hfuazES8xEhU8+KXhT8nTsD9b19cIKF5vvzJLfebEtb9Y9IyaVTusfyIGowpY=
 Authentication-Results: st.com; dkim=none (message not signed)
  header.d=none;st.com; dmarc=none action=none header.from=nxp.com;
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
  by DB3PR0402MB3707.eurprd04.prod.outlook.com (2603:10a6:8:2::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3611.25; Fri, 4 Dec
- 2020 02:46:31 +0000
+ 2020 02:46:34 +0000
 Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::b83c:2edc:17e8:2666]) by DB8PR04MB6795.eurprd04.prod.outlook.com
  ([fe80::b83c:2edc:17e8:2666%4]) with mapi id 15.20.3632.021; Fri, 4 Dec 2020
- 02:46:31 +0000
+ 02:46:34 +0000
 From:   Joakim Zhang <qiangqing.zhang@nxp.com>
 To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
         joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, linux-imx@nxp.com
-Subject: [PATCH V2 3/5] net: stmmac: free tx skb buffer in stmmac_resume()
-Date:   Fri,  4 Dec 2020 10:46:36 +0800
-Message-Id: <20201204024638.31351-4-qiangqing.zhang@nxp.com>
+Subject: [PATCH V2 4/5] net: stmmac: delete the eee_ctrl_timer after napi disabled
+Date:   Fri,  4 Dec 2020 10:46:37 +0800
+Message-Id: <20201204024638.31351-5-qiangqing.zhang@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201204024638.31351-1-qiangqing.zhang@nxp.com>
 References: <20201204024638.31351-1-qiangqing.zhang@nxp.com>
@@ -54,46 +54,46 @@ X-ClientProxiedBy: SG2PR02CA0052.apcprd02.prod.outlook.com
  (2603:10a6:10:fa::15)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by SG2PR02CA0052.apcprd02.prod.outlook.com (2603:1096:4:54::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.17 via Frontend Transport; Fri, 4 Dec 2020 02:46:28 +0000
+Received: from localhost.localdomain (119.31.174.71) by SG2PR02CA0052.apcprd02.prod.outlook.com (2603:1096:4:54::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.17 via Frontend Transport; Fri, 4 Dec 2020 02:46:32 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 834f4403-538d-49b5-5398-08d897fece78
+X-MS-Office365-Filtering-Correlation-Id: 2821e27b-1078-44a7-2d86-08d897fed057
 X-MS-TrafficTypeDiagnostic: DB3PR0402MB3707:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB3PR0402MB3707D2AFBC1A2407B3319D83E6F10@DB3PR0402MB3707.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
+X-Microsoft-Antispam-PRVS: <DB3PR0402MB3707C68FC9CA01FF51D7A5C0E6F10@DB3PR0402MB3707.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3513;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: b9Tvw/v8rmj/kX3Kg0y8dc942ZYnsXwFAw2gQRWt0IdMhGfZu/iRyOYru6ECKdddPaF+2nt5TBegvfmkjEgLCMkvhxwpZbcaBVkknmpNPn/EQwf4E0aFogWWRY0C92uew2LKFf7LCtTN2EEX60zCpRjpo8K8dEbrVqt/siLffB0SD8jhVOSzo0ZOEQdrk0har2VwjToApIpP0WkO7XGylqTN/2los1IA4k4r8oKMSwQ5bt09KBok7MkOMe76dBiBPj1o34ogTZmhgjsilopNpv9sp9ToLXiKKM2d0LtOzQ3x5O22t7Qu0c2OCu94ljIH9q8lMhxJgWeOq0UbhfdAU82iQnzVloIhxbZYvOMX9INUSW5Yz7zQzQIDfbVNWQBh
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(396003)(39860400002)(366004)(346002)(376002)(45080400002)(478600001)(69590400008)(1076003)(6512007)(66946007)(2616005)(4326008)(5660300002)(8676002)(956004)(86362001)(66476007)(66556008)(2906002)(316002)(36756003)(83380400001)(6486002)(26005)(6506007)(52116002)(16526019)(8936002)(6666004)(186003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?S4VlT2cagsfY5VtmmEo9mQvUR5Ir3zDcTh1xX9f7R6qs4ikJaQIMfIPyCr9X?=
- =?us-ascii?Q?TdhIo5QJ+6T8XCh5hIKOwLduvJgbSIlRQF3hHk+ilz0CJawzty/EhZk1UKUn?=
- =?us-ascii?Q?f8qryMehZ3dN2/K3GkRU+0wI7BpFkMZEb9RRbQGAOHoe2Z6wczpwwo3qV9fE?=
- =?us-ascii?Q?Ray28cCUGzWELmPZ+LyIOzQuc/mNZLrIk4NZP9wEU/iBVeaa1Rzkn1HouGG9?=
- =?us-ascii?Q?/Tnu76cFoBusK/gpBj4ku+/nKDkctOb8bZQatzif57GZ3B3EwI1OSP13LdDG?=
- =?us-ascii?Q?NT+OJcNI54L3Rn4DseQLe5XLhDqzE+OeFMIQyDSALBA+Vm7raA132bRmgUxF?=
- =?us-ascii?Q?SVBCKwUP+paRATHQqz3Nzagg01VBFZzpAMZ/MK9PhC6CU9NcDAq++bZ4c6j1?=
- =?us-ascii?Q?7a8rD5sLMRZha1h8M5qhV3x5PzoBnUPLaW8tLzyeXrFI/Ijs7x2wKh37EI7B?=
- =?us-ascii?Q?ojwIfCoF8/tB6WExLJwENNLua42Uf+Md88MLlsV7vlpvwcgoGASSyO+lhHiz?=
- =?us-ascii?Q?uPbBmySN8KUKhMUQmVl9RN/xKNY4pkzzRxZPpYst5pQ2orS/hDl85z8JQIWG?=
- =?us-ascii?Q?hTlbZwdpUpCAwv5GVmY726N9zZwv0LyxFu4mfPVq6FBqCHhQVTqEj4h6UV4a?=
- =?us-ascii?Q?MgtElsWttvTx9C7eWvfg+ysy7t1c1XFef+79chMQSRAyME87zLjY6NvNz3ku?=
- =?us-ascii?Q?4s8wkL0WgRTKZs2mq5M4O6XrXAw5XofFLSWQ8dLx3hgpD+4eFJ+0yOgL2HrM?=
- =?us-ascii?Q?ROZpJau1bVjMIv/gskztwjyu94DRf3MHVeTCbhe8c9vSZ1lQC8roezpMo7Rl?=
- =?us-ascii?Q?hJL7QRSrAtxeQwLE3GSk5lXjSIP7Tahu/PyYAv4agRHnNLnW0KogYvfql2bx?=
- =?us-ascii?Q?hBQBXfWLOImioPb5PQ1MYEeQ/H3+Hn4vsYRgY5j4aKJW2Loa1a7IpSXbLmEl?=
- =?us-ascii?Q?K6DeotlpC27QY7pl2qDFzQ9YlO5sRY+ThkDxzkG2RshC358udLG/yrhmw0+L?=
- =?us-ascii?Q?wW+h?=
+X-Microsoft-Antispam-Message-Info: 0m0PrGNWCLtgdzGAYgLO+8WYXfzPqKeJvYpBoEcDLjNlksiYuI2Z5b9NfkDhegvqu6wVD8sH1Yx306uyKZZkQo/txadDhVctk2eaDWHhN05EkIt5JIBjcQ36rGJprI69HuoGwgo7Sy2Dy9rnEYf9iVFGnL9uiKSgjy53kkBfA/Prddeehnavqd75zWvAiNl9kI2ItYwbZ9ZqOSS4NcDEDcY0Q7C8EeM9CbsvDqs0IjkGwUC50FfgmXokYqF5DrBCZ2X/UVvSFaSKLhRL4p1PSr8F70L/WEDTNkIYtVV+ht/6/HxcbTDrZ4IUTTQKQliLojJv5uCH+eTLI54sJRHQjbNqqvg6hbAkHXWYLj25t7pzEkuux3thqMbOfOl1vsED
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(396003)(39860400002)(366004)(346002)(376002)(478600001)(69590400008)(1076003)(6512007)(66946007)(2616005)(4326008)(5660300002)(8676002)(956004)(86362001)(66476007)(66556008)(2906002)(316002)(36756003)(83380400001)(6486002)(26005)(6506007)(52116002)(16526019)(8936002)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?9WbctopTkhcJ1w3otjsrahQLYA734Hc9PfVxKOPcG6hbWUVMAB3VrERwtD20?=
+ =?us-ascii?Q?VWCUzMhOiaSCF1f5KuSZSqrcpPQwGiywew3lMQhCBc3PXj6ipGk2R9UpfnbR?=
+ =?us-ascii?Q?T67HpL0GPEtJcAP6wGVQmX+oQO8aTLggOK/NhiOdZOHL/WuG06DnIVm0bx/X?=
+ =?us-ascii?Q?omwRc47O1HthY6eIUmOeU4OzZk/OH5SGTU+sdSrjcCE6AIH2jgjJbk5cb/5w?=
+ =?us-ascii?Q?FC6K8+g1xLvHihUTUOZTsU3UO4dt8ZBcjUcqGb2sGW31PM9zXWJqnp4s4Wda?=
+ =?us-ascii?Q?oGSM7RBNxQRTNsHlvOPZY9kVAgY6EjFzzrZooZi7Wl2kmgL4bszH0dzAF0J0?=
+ =?us-ascii?Q?5Hd8JBezLTVt28iATUrsjdwZKS9i67njvQBzhVDOXN2u5gtA+cxCBit+GUpc?=
+ =?us-ascii?Q?jypK7xHihF896NTrbHQH4HwZeKKxn4R4ztuygTxg6eAyQtfG0+Z2KAwd2wak?=
+ =?us-ascii?Q?ybyoxXG8CSWYHgR31b56eazxQu5ZnlTjYzFfY1kMnxHsvukzsibPymSiq23A?=
+ =?us-ascii?Q?e3xo3vl3WqPEkH2MWVnyiZXGz7to7Q1fGn0RTSeVZb70VD/rjwSdXlotC4Yp?=
+ =?us-ascii?Q?M+TSOo8mqb+eawM9v7Ta6li2qjljV2YVYOcsjxyGaDmTIdFM4tOYtDFcT5/F?=
+ =?us-ascii?Q?ishnGx+gm+eRKHZvKVCK2/BJo2tqtMG6/Qcx9p33ThLzm9OR6N9PsG3B0vzp?=
+ =?us-ascii?Q?+ZMtvebS+tDmIlUpuEV6FZBwnw4cbqp0wMJf0sW1QOlV7Hjax1RrgfZ+gv9d?=
+ =?us-ascii?Q?7f/yxfVL1F9z29XIwRK8YIHmfTDNq3EW22xDn5AT7vwWJTSUk3khyTBT0ZNY?=
+ =?us-ascii?Q?AU/uw44jxbg85RptXpgT1bxtyXkJFBp7dUwQxb9FOA7dwE/aDZvAuBcaO/vn?=
+ =?us-ascii?Q?hPcdLmAUW7OcbUhJ7/ySYB4kecbFf8ZN1NWsPieK1ajORHZm9l375RRyKaEA?=
+ =?us-ascii?Q?U7rEvhD/pa1XfpqF7h0HoIxAsd33fhJSAgzXltyMTKvmbdzdUxH+uLfLTed7?=
+ =?us-ascii?Q?BhP8?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 834f4403-538d-49b5-5398-08d897fece78
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2821e27b-1078-44a7-2d86-08d897fed057
 X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Dec 2020 02:46:31.6853
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Dec 2020 02:46:34.7857
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FX/gfAhhJ/rdalXnjgSh0fHQAr95fMHeVloswYfqKYxLG4K9rt34AESy/M3VPKpQwkjBi9KRXZVpLCgnZuhVAA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: GE3df8YIzenQ01xas5PErZUfe+RGlRPgxOx9dZjZiEHo9se+P3iquoGBGmv1bIqrletuM/O8OOD5SS7CH1pp8Q==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB3PR0402MB3707
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -101,108 +101,59 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Fugang Duan <fugang.duan@nxp.com>
 
-When do suspend/resume test, there have WARN_ON() log dump from
-stmmac_xmit() funciton, the code logic:
-	entry = tx_q->cur_tx;
-	first_entry = entry;
-	WARN_ON(tx_q->tx_skbuff[first_entry]);
+There have chance to re-enable the eee_ctrl_timer and fire the timer
+in napi callback after delete the timer in .stmmac_release(), which
+introduces to access eee registers in the timer function after clocks
+are disabled then causes system hang. Found this issue when do
+suspend/resume and reboot stress test.
 
-In normal case, tx_q->tx_skbuff[txq->cur_tx] should be NULL because
-the skb should be handled and freed in stmmac_tx_clean().
+It is safe to delete the timer after napi disabled and disable lpi mode.
 
-But stmmac_resume() reset queue parameters like below, skb buffers
-may not be freed.
-	tx_q->cur_tx = 0;
-	tx_q->dirty_tx = 0;
-
-So free tx skb buffer in stmmac_resume() to avoid warning and
-memory leak.
-
-log:
-[   46.139824] ------------[ cut here ]------------
-[   46.144453] WARNING: CPU: 0 PID: 0 at drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:3235 stmmac_xmit+0x7a0/0x9d0
-[   46.154969] Modules linked in: crct10dif_ce vvcam(O) flexcan can_dev
-[   46.161328] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G           O      5.4.24-2.1.0+g2ad925d15481 #1
-[   46.170369] Hardware name: NXP i.MX8MPlus EVK board (DT)
-[   46.175677] pstate: 80000005 (Nzcv daif -PAN -UAO)
-[   46.180465] pc : stmmac_xmit+0x7a0/0x9d0
-[   46.184387] lr : dev_hard_start_xmit+0x94/0x158
-[   46.188913] sp : ffff800010003cc0
-[   46.192224] x29: ffff800010003cc0 x28: ffff000177e2a100
-[   46.197533] x27: ffff000176ef0840 x26: ffff000176ef0090
-[   46.202842] x25: 0000000000000000 x24: 0000000000000000
-[   46.208151] x23: 0000000000000003 x22: ffff8000119ddd30
-[   46.213460] x21: ffff00017636f000 x20: ffff000176ef0cc0
-[   46.218769] x19: 0000000000000003 x18: 0000000000000000
-[   46.224078] x17: 0000000000000000 x16: 0000000000000000
-[   46.229386] x15: 0000000000000079 x14: 0000000000000000
-[   46.234695] x13: 0000000000000003 x12: 0000000000000003
-[   46.240003] x11: 0000000000000010 x10: 0000000000000010
-[   46.245312] x9 : ffff00017002b140 x8 : 0000000000000000
-[   46.250621] x7 : ffff00017636f000 x6 : 0000000000000010
-[   46.255930] x5 : 0000000000000001 x4 : ffff000176ef0000
-[   46.261238] x3 : 0000000000000003 x2 : 00000000ffffffff
-[   46.266547] x1 : ffff000177e2a000 x0 : 0000000000000000
-[   46.271856] Call trace:
-[   46.274302]  stmmac_xmit+0x7a0/0x9d0
-[   46.277874]  dev_hard_start_xmit+0x94/0x158
-[   46.282056]  sch_direct_xmit+0x11c/0x338
-[   46.285976]  __qdisc_run+0x118/0x5f0
-[   46.289549]  net_tx_action+0x110/0x198
-[   46.293297]  __do_softirq+0x120/0x23c
-[   46.296958]  irq_exit+0xb8/0xd8
-[   46.300098]  __handle_domain_irq+0x64/0xb8
-[   46.304191]  gic_handle_irq+0x5c/0x148
-[   46.307936]  el1_irq+0xb8/0x180
-[   46.311076]  cpuidle_enter_state+0x84/0x360
-[   46.315256]  cpuidle_enter+0x34/0x48
-[   46.318829]  call_cpuidle+0x18/0x38
-[   46.322314]  do_idle+0x1e0/0x280
-[   46.325539]  cpu_startup_entry+0x24/0x40
-[   46.329460]  rest_init+0xd4/0xe0
-[   46.332687]  arch_call_rest_init+0xc/0x14
-[   46.336695]  start_kernel+0x420/0x44c
-[   46.340353] ---[ end trace bc1ee695123cbacd ]---
-
-Fixes: 47dd7a540b8a0 ("net: add support for STMicroelectronics Ethernet controllers.")
+Fixes: d765955d2ae0b ("stmmac: add the Energy Efficient Ethernet support")
 Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
 Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 107761ef456a..53c5d77eba57 100644
+index 53c5d77eba57..03c6995d276a 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1557,6 +1557,19 @@ static void dma_free_tx_skbufs(struct stmmac_priv *priv, u32 queue)
- 		stmmac_free_tx_buffer(priv, queue, i);
- }
+@@ -2938,9 +2938,6 @@ static int stmmac_release(struct net_device *dev)
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+ 	u32 chan;
  
-+/**
-+ * stmmac_free_tx_skbufs - free TX skb buffers
-+ * @priv: private structure
-+ */
-+static void stmmac_free_tx_skbufs(struct stmmac_priv *priv)
-+{
-+	u32 tx_queue_cnt = priv->plat->tx_queues_to_use;
-+	u32 queue;
+-	if (priv->eee_enabled)
+-		del_timer_sync(&priv->eee_ctrl_timer);
+-
+ 	if (device_may_wakeup(priv->device))
+ 		phylink_speed_down(priv->phylink, false);
+ 	/* Stop and disconnect the PHY */
+@@ -2959,6 +2956,11 @@ static int stmmac_release(struct net_device *dev)
+ 	if (priv->lpi_irq > 0)
+ 		free_irq(priv->lpi_irq, dev);
+ 
++	if (priv->eee_enabled) {
++		priv->tx_path_in_lpi_mode = false;
++		del_timer_sync(&priv->eee_ctrl_timer);
++	}
 +
-+	for (queue = 0; queue < tx_queue_cnt; queue++)
-+		dma_free_tx_skbufs(priv, queue);
-+}
+ 	/* Stop TX/RX DMA and clear the descriptors */
+ 	stmmac_stop_all_dma(priv);
+ 
+@@ -5185,6 +5187,11 @@ int stmmac_suspend(struct device *dev)
+ 	for (chan = 0; chan < priv->plat->tx_queues_to_use; chan++)
+ 		hrtimer_cancel(&priv->tx_queue[chan].txtimer);
+ 
++	if (priv->eee_enabled) {
++		priv->tx_path_in_lpi_mode = false;
++		del_timer_sync(&priv->eee_ctrl_timer);
++	}
 +
- /**
-  * free_dma_rx_desc_resources - free RX dma desc resources
-  * @priv: private structure
-@@ -5290,6 +5303,7 @@ int stmmac_resume(struct device *dev)
+ 	/* Stop TX/RX DMA */
+ 	stmmac_stop_all_dma(priv);
  
- 	stmmac_reset_queues_param(priv);
- 
-+	stmmac_free_tx_skbufs(priv);
- 	stmmac_clear_descriptors(priv);
- 
- 	stmmac_hw_setup(ndev, false);
 -- 
 2.17.1
 
