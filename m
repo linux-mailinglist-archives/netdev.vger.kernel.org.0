@@ -2,83 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26D7C2CE63F
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 03:59:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F4182CE643
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 04:07:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727521AbgLDC6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 21:58:39 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:60608 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727434AbgLDC6i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 21:58:38 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 0B42vbW13003556, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexmb05.realtek.com.tw[172.21.6.98])
-        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 0B42vbW13003556
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 4 Dec 2020 10:57:37 +0800
-Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
- RTEXMB05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2044.4; Fri, 4 Dec 2020 10:57:36 +0800
-Received: from RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa]) by
- RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa%3]) with mapi id
- 15.01.2044.006; Fri, 4 Dec 2020 10:57:36 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "colin.king@canonical.com" <colin.king@canonical.com>,
-        DeanKu <ku920601@realtek.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
-Subject: Re: [PATCH][next] rtw88: coex: fix missing unitialization of variable 'interval'
-Thread-Topic: [PATCH][next] rtw88: coex: fix missing unitialization of
- variable 'interval'
-Thread-Index: AQHWyZz6BmIbttp/AEO1y1b2WLtmZKnluRcA
-Date:   Fri, 4 Dec 2020 02:57:36 +0000
-Message-ID: <1607050654.5824.0.camel@realtek.com>
-References: <20201203175142.1071738-1-colin.king@canonical.com>
-In-Reply-To: <20201203175142.1071738-1-colin.king@canonical.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.213]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <824F9D3980CFE44680F4CAE6AF052B8E@realtek.com>
-Content-Transfer-Encoding: base64
+        id S1726844AbgLDDHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 22:07:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45006 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726158AbgLDDHH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 22:07:07 -0500
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B59FC061A4F
+        for <netdev@vger.kernel.org>; Thu,  3 Dec 2020 19:06:27 -0800 (PST)
+Received: by mail-qt1-x843.google.com with SMTP id k4so3041388qtj.10
+        for <netdev@vger.kernel.org>; Thu, 03 Dec 2020 19:06:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CEXSCdKkhduQSvEEfToLCAKnQvvjAj0QIHUrQBw0BUc=;
+        b=LoZvpFCj0DrNYPzr5o/AA4l04RERpgRMihQ9yixBVroXfmvFh/F0SOYpJ5YoAtYFr3
+         T88vdWcwXq5JmFDEBCcQ1khNlz7cyof7L69oF10/tbgDjB2wuX9WrB9As6zE+auo8fRY
+         185b8nC3MLZWrEfutiq7gwvboqjkgxfRXwXyodzVIsWMtR9pdeXQ4Dmkbn7kxxCsYyva
+         SkVWU+jbiMrVlw77G5thX5kNj4ziudnbXEZ5LkKy6P79/4IuTiFAlkNnG+1o4W0DwSfK
+         B3bMutI/uOa9XnG4K5PbweR6DNRIfMkTRpn2ZoKli8AbdCTzT5ot9z2/PvAWPdvNzCyb
+         0AbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CEXSCdKkhduQSvEEfToLCAKnQvvjAj0QIHUrQBw0BUc=;
+        b=LTxCYfyyzjurqKRgeofEoJQqLam5WM7HyrxUK8wzOorplmbqwlkGIGxjz+2TId+Col
+         ln8/hFKthWnzAYGy9YhKiTDvbKFNAKrr9NhpNX5dFc1lgnVHOyzh3uaaSgXK9+EN7DsI
+         p9+xgvxXMvgsrefgRbyysUMqOBaDC08KacPC38GxTAWeBLWIxIb/lTb/AW4u8FzRb3Kr
+         IH5RXGRFoZ24yl2FI0y/rUsHLJvSin99iMk0MlJoc5yReelwnqXWP6xaXUFwcZ8MtvVT
+         bCuDaSqL2SNNaU3pRXwuF3XT6ZDu/Z8dbblh2Qq3jwSZpbg4eTmToXjhjWA4foOr8gRK
+         Ixuw==
+X-Gm-Message-State: AOAM533QeCz/XrUaLGhPjNs9/SSTUibQqVqzDDmrJt8gajscigwnysrT
+        0qYK8j8jgd6Y63JZRYB7+bhpPfnRMcwO
+X-Google-Smtp-Source: ABdhPJwvNqQUXEq1jr+RJRywb8Rab7IyU3LXvSnigLA6VYfPt+VhMlfALddrXShKmPpqcvgMZP0K6Q==
+X-Received: by 2002:ac8:4998:: with SMTP id f24mr6993403qtq.30.1607051185823;
+        Thu, 03 Dec 2020 19:06:25 -0800 (PST)
+Received: from localhost.localdomain ([136.56.89.69])
+        by smtp.gmail.com with ESMTPSA id 76sm3621679qkg.134.2020.12.03.19.06.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Dec 2020 19:06:25 -0800 (PST)
+From:   Stephen Suryaputra <ssuryaextr@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, Stephen Suryaputra <ssuryaextr@gmail.com>
+Subject: [PATCH net] vrf: packets with lladdr src needs dst at input with orig_iif when needs strict
+Date:   Thu,  3 Dec 2020 22:06:04 -0500
+Message-Id: <20201204030604.18828-1-ssuryaextr@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDIwLTEyLTAzIGF0IDE3OjUxICswMDAwLCBDb2xpbiBLaW5nIHdyb3RlOg0KPiBG
-cm9tOiBDb2xpbiBJYW4gS2luZyA8Y29saW4ua2luZ0BjYW5vbmljYWwuY29tPg0KPiANCj4gQ3Vy
-cmVudGx5IHRoZSB2YXJpYWJsZSAnaW50ZXJ2YWwnIGlzIG5vdCBpbml0aWFsaXplZCBhbmQgaXMg
-b25seSBzZXQNCj4gdG8gMSB3aGVuIG9leF9zdGF0LT5idF80MThfaGlkX2V4aXN0aSBpcyB0cnVl
-LsKgwqBGaXggdGhpcyBieSBpbmludGlhbGl6aW5nDQo+IHZhcmlhYmxlIGludGVydmFsIHRvIDAg
-KHdoaWNoIEknbSBhc3N1bWluZyBpcyB0aGUgaW50ZW5kZWQgZGVmYXVsdCkuDQo+IA0KPiBBZGRy
-ZXNzZXMtQ292ZXJpdHk6ICgiVW5pbml0YWxpemVkIHNjYWxhciB2YXJpYWJsZSIpDQo+IEZpeGVz
-OiA1YjJlOWEzNWU0NTYgKCJydHc4ODogY29leDogYWRkIGZlYXR1cmUgdG8gZW5oYW5jZSBISUQg
-Y29leGlzdGVuY2UNCj4gcGVyZm9ybWFuY2UiKQ0KPiBTaWduZWQtb2ZmLWJ5OiBDb2xpbiBJYW4g
-S2luZyA8Y29saW4ua2luZ0BjYW5vbmljYWwuY29tPg0KDQpUaGFua3MgZm9yIHlvdXIgZml4Lg0K
-DQpBY2tlZC1ieTogUGluZy1LZSBTaGloIDxwa3NoaWhAcmVhbHRlay5jb20+DQoNCj4gLS0tDQo+
-IMKgZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9jb2V4LmMgfCAyICstDQo+IMKg
-MSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pDQo+IA0KPiBkaWZm
-IC0tZ2l0IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9jb2V4LmMNCj4gYi9k
-cml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L2NvZXguYw0KPiBpbmRleCBjNzA0YzY4
-ODVhMTguLjI0NTMwY2FmY2JhNyAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9uZXQvd2lyZWxlc3Mv
-cmVhbHRlay9ydHc4OC9jb2V4LmMNCj4gKysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRl
-ay9ydHc4OC9jb2V4LmMNCj4gQEAgLTIwNTEsNyArMjA1MSw3IEBAIHN0YXRpYyB2b2lkIHJ0d19j
-b2V4X2FjdGlvbl9idF9hMmRwX2hpZChzdHJ1Y3QgcnR3X2Rldg0KPiAqcnR3ZGV2KQ0KPiDCoAlz
-dHJ1Y3QgcnR3X2NvZXhfZG0gKmNvZXhfZG0gPSAmY29leC0+ZG07DQo+IMKgCXN0cnVjdCBydHdf
-ZWZ1c2UgKmVmdXNlID0gJnJ0d2Rldi0+ZWZ1c2U7DQo+IMKgCXN0cnVjdCBydHdfY2hpcF9pbmZv
-ICpjaGlwID0gcnR3ZGV2LT5jaGlwOw0KPiAtCXU4IHRhYmxlX2Nhc2UsIHRkbWFfY2FzZSwgaW50
-ZXJ2YWw7DQo+ICsJdTggdGFibGVfY2FzZSwgdGRtYV9jYXNlLCBpbnRlcnZhbCA9IDA7DQo+IMKg
-CXUzMiBzbG90X3R5cGUgPSAwOw0KPiDCoAlib29sIGlzX3RvZ2dsZV90YWJsZSA9IGZhbHNlOw0K
-PiDCoA0KPiAtLcKgDQo+IDIuMjkuMg0KPiANCj4gDQo+IC0tLS0tLVBsZWFzZSBjb25zaWRlciB0
-aGUgZW52aXJvbm1lbnQgYmVmb3JlIHByaW50aW5nIHRoaXMgZS1tYWlsLg0KDQoNCg==
+Depending on the order of the routes to fe80::/64 are installed on the
+VRF table, the NS for the source link-local address of the originator
+might be sent to the wrong interface.
+
+This patch ensures that packets with link-local addr source is doing a
+lookup with the orig_iif when the destination addr indicates that it
+is strict.
+
+Add the reproducer as a use case in self test script fcnal-test.sh.
+
+Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
+---
+ drivers/net/vrf.c                         | 10 ++-
+ tools/testing/selftests/net/fcnal-test.sh | 95 +++++++++++++++++++++++
+ 2 files changed, 103 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
+index f2793ffde191..b9b7e00b72a8 100644
+--- a/drivers/net/vrf.c
++++ b/drivers/net/vrf.c
+@@ -1315,11 +1315,17 @@ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
+ 	int orig_iif = skb->skb_iif;
+ 	bool need_strict = rt6_need_strict(&ipv6_hdr(skb)->daddr);
+ 	bool is_ndisc = ipv6_ndisc_frame(skb);
++	bool is_ll_src;
+ 
+ 	/* loopback, multicast & non-ND link-local traffic; do not push through
+-	 * packet taps again. Reset pkt_type for upper layers to process skb
++	 * packet taps again. Reset pkt_type for upper layers to process skb.
++	 * for packets with lladdr src, however, skip so that the dst can be
++	 * determine at input using original ifindex in the case that daddr
++	 * needs strict
+ 	 */
+-	if (skb->pkt_type == PACKET_LOOPBACK || (need_strict && !is_ndisc)) {
++	is_ll_src = ipv6_addr_type(&ipv6_hdr(skb)->saddr) & IPV6_ADDR_LINKLOCAL;
++	if (skb->pkt_type == PACKET_LOOPBACK ||
++	    (need_strict && !is_ndisc && !is_ll_src)) {
+ 		skb->dev = vrf_dev;
+ 		skb->skb_iif = vrf_dev->ifindex;
+ 		IP6CB(skb)->flags |= IP6SKB_L3SLAVE;
+diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
+index fb5c55dd6df8..02b0b9ead40b 100755
+--- a/tools/testing/selftests/net/fcnal-test.sh
++++ b/tools/testing/selftests/net/fcnal-test.sh
+@@ -256,6 +256,28 @@ setup_cmd_nsb()
+ 	fi
+ }
+ 
++setup_cmd_nsc()
++{
++	local cmd="$*"
++	local rc
++
++	run_cmd_nsc ${cmd}
++	rc=$?
++	if [ $rc -ne 0 ]; then
++		# show user the command if not done so already
++		if [ "$VERBOSE" = "0" ]; then
++			echo "setup command: $cmd"
++		fi
++		echo "failed. stopping tests"
++		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
++			echo
++			echo "hit enter to continue"
++			read a
++		fi
++		exit $rc
++	fi
++}
++
+ # set sysctl values in NS-A
+ set_sysctl()
+ {
+@@ -471,6 +493,36 @@ setup()
+ 	sleep 1
+ }
+ 
++setup_lla_only()
++{
++	# make sure we are starting with a clean slate
++	kill_procs
++	cleanup 2>/dev/null
++
++	log_debug "Configuring network namespaces"
++	set -e
++
++	create_ns ${NSA} "-" "-"
++	create_ns ${NSB} "-" "-"
++	create_ns ${NSC} "-" "-"
++	connect_ns ${NSA} ${NSA_DEV} "-" "-" \
++		   ${NSB} ${NSB_DEV} "-" "-"
++	connect_ns ${NSA} ${NSA_DEV2} "-" "-" \
++		   ${NSC} ${NSC_DEV}  "-" "-"
++
++	NSA_LINKIP6=$(get_linklocal ${NSA} ${NSA_DEV})
++	NSB_LINKIP6=$(get_linklocal ${NSB} ${NSB_DEV})
++	NSC_LINKIP6=$(get_linklocal ${NSC} ${NSC_DEV})
++
++	create_vrf ${NSA} ${VRF} ${VRF_TABLE} "-" "-"
++	ip -netns ${NSA} link set dev ${NSA_DEV} vrf ${VRF}
++	ip -netns ${NSA} link set dev ${NSA_DEV2} vrf ${VRF}
++
++	set +e
++
++	sleep 1
++}
++
+ ################################################################################
+ # IPv4
+ 
+@@ -3787,10 +3839,53 @@ use_case_br()
+ 	setup_cmd_nsb ip li del vlan100 2>/dev/null
+ }
+ 
++# VRF only.
++# ns-A device is connected to both ns-B and ns-C on a single VRF but only has
++# LLA on the interfaces
++use_case_ping_lla_multi()
++{
++	setup_lla_only
++	# only want reply from ns-A
++	setup_cmd_nsb sysctl -qw net.ipv6.icmp.echo_ignore_multicast=1
++	setup_cmd_nsc sysctl -qw net.ipv6.icmp.echo_ignore_multicast=1
++
++	log_start
++	run_cmd_nsb ping -c1 -w1 ${MCAST}%${NSB_DEV}
++	log_test_addr ${MCAST}%${NSB_DEV} $? 0 "Pre cycle, ping out ns-B"
++
++	run_cmd_nsc ping -c1 -w1 ${MCAST}%${NSC_DEV}
++	log_test_addr ${MCAST}%${NSC_DEV} $? 0 "Pre cycle, ping out ns-C"
++
++	# cycle/flap the first ns-A interface
++	setup_cmd ip link set ${NSA_DEV} down
++	setup_cmd ip link set ${NSA_DEV} up
++	sleep 1
++
++	log_start
++	run_cmd_nsb ping -c1 -w1 ${MCAST}%${NSB_DEV}
++	log_test_addr ${MCAST}%${NSB_DEV} $? 0 "Post cycle ${NSA} ${NSA_DEV}, ping out ns-B"
++	run_cmd_nsc ping -c1 -w1 ${MCAST}%${NSC_DEV}
++	log_test_addr ${MCAST}%${NSC_DEV} $? 0 "Post cycle ${NSA} ${NSA_DEV}, ping out ns-C"
++
++	# cycle/flap the second ns-A interface
++	setup_cmd ip link set ${NSA_DEV2} down
++	setup_cmd ip link set ${NSA_DEV2} up
++	sleep 1
++
++	log_start
++	run_cmd_nsb ping -c1 -w1 ${MCAST}%${NSB_DEV}
++	log_test_addr ${MCAST}%${NSB_DEV} $? 0 "Post cycle ${NSA} ${NSA_DEV2}, ping out ns-B"
++	run_cmd_nsc ping -c1 -w1 ${MCAST}%${NSC_DEV}
++	log_test_addr ${MCAST}%${NSC_DEV} $? 0 "Post cycle ${NSA} ${NSA_DEV2}, ping out ns-C"
++}
++
+ use_cases()
+ {
+ 	log_section "Use cases"
++	log_subsection "Device enslaved to bridge"
+ 	use_case_br
++	log_subsection "Ping LLA with multiple interfaces"
++	use_case_ping_lla_multi
+ }
+ 
+ ################################################################################
+-- 
+2.20.1
+
