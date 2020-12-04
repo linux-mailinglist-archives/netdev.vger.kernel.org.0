@@ -2,43 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3599C2CF76D
-	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 00:28:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB7002CF792
+	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 00:34:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727102AbgLDXZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 18:25:38 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37276 "EHLO mail.kernel.org"
+        id S2387657AbgLDXb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 18:31:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42326 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725885AbgLDXZi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Dec 2020 18:25:38 -0500
-Date:   Fri, 4 Dec 2020 15:24:56 -0800
+        id S1730986AbgLDXb5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Dec 2020 18:31:57 -0500
+Date:   Fri, 4 Dec 2020 15:31:30 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607124297;
-        bh=W4DgIKA8fUXuOQ3qFucixeZIaJgsASGHjFYuF59z0f0=;
+        s=k20201202; t=1607124691;
+        bh=ud3u7F/T4HfYK3Xoqy1X2eFUbJ7Wji9BrhWMCheL4l8=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Gj3xCSqe7FEkfA6gw+ltNvvw3vhaGTYDOj2WF4LHgwVxdUlFnJJoZPZo/YWwFcS3s
-         AfV8Ckd5okxcHymBg6TnHbsIS01HAs75SiHa0psxnrFWxtPxJrt5nMs4C8DAau4qCX
-         TzBrYiZndwoqmV9s0OnTGUa4QaM1WMqTSKsd3okZpRiCJeCb50DLOtSH595BOhBG1u
-         hrUk+jKiOKQWJHYhMyTpJP3RObiQQc7sF/ILLtVcGVqd6E4C+RnUKUIWu50GFGsDBy
-         hyzt2yOpDzKCs/3MX8d1AjBCln+R65hab8LYKfujcSRc9IE5FnhZSxztUIx9CPcmpR
-         d1G+M4+1uDIug==
+        b=VQccjtQxmC2qrLRwyM0lr805X3ZiUUKAsLG+gM5UFOwLTfsf+6G6XMxaB023FLKuk
+         LSnawP4q0Yh0SV25wR+hOEt6N/f96HhQ4/eGeXd6xLaaLZ7BUH53wyqjMxWPc/EHcQ
+         0dqJMiEXMvuRyA4A3dbG5+YMrAbO/CXlNX1juq2A88LeR0Q/8Z3cmumFRHF547ewsr
+         ZmIfPpswZeT5L0po8KOBcyCWoMXqEOk59I5HmS4Yy0pw4AF1GMOmYrrOZnHrx+JqwF
+         yy5o8MzI63RIWdHk9raY+Jd6bs79MZlmRn1dC598QJNnyLUFPb6lxLrEXXi4gL7bfp
+         x9LhUFiTqm0tg==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sven Van Asbroeck <thesven73@gmail.com>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        David S Miller <davem@davemloft.net>,
-        Marek Vasut <marex@denx.de>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v1] net: dsa: ksz8795: use correct number of
- physical ports
-Message-ID: <20201204152456.247769b1@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201203214645.31217-1-TheSven73@gmail.com>
-References: <20201203214645.31217-1-TheSven73@gmail.com>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Bongsu Jeon <bongsu.jeon2@gmail.com>, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bongsu Jeon <bongsu.jeon@samsung.com>
+Subject: Re: [PATCH v2 net-next] nfc: s3fwrn5: skip the NFC bootloader mode
+Message-ID: <20201204153130.6e12e6fb@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201204083753.GB5418@kozik-lap>
+References: <20201203225257.2446-1-bongsu.jeon@samsung.com>
+        <20201204083753.GB5418@kozik-lap>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -46,37 +39,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  3 Dec 2020 16:46:45 -0500 Sven Van Asbroeck wrote:
-> From: Sven Van Asbroeck <thesven73@gmail.com>
+On Fri, 4 Dec 2020 10:37:53 +0200 Krzysztof Kozlowski wrote:
+> On Fri, Dec 04, 2020 at 07:52:57AM +0900, Bongsu Jeon wrote:
+> > From: Bongsu Jeon <bongsu.jeon@samsung.com>
+> > 
+> > If there isn't a proper NFC firmware image, Bootloader mode will be
+> > skipped.
+> > 
+> > Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
+> > ---
+> > 
+> >  ChangeLog:
+> >   v2:
+> >    - change the commit message.
+> >    - change the skip handling code.  
 > 
-> The ksz8795 has five physical ports, but the driver assumes
-> it has only four. This prevents the driver from working correctly.
+> Patch is now much cleaner and smaller. Thanks.
 > 
-> Fix by indicating the correct number of physical ports.
-> 
-> Fixes: e66f840c08a23 ("net: dsa: ksz: Add Microchip KSZ8795 DSA driver")
-> Tested-by: Sven Van Asbroeck <thesven73@gmail.com> # ksz8795
-> Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
+> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
 
-All the port counts here are -1 compared to datasheets, so I'm assuming
-the are not supposed to include the host facing port or something?
-
-Can you describe the exact problem you're trying to solve?
-
-DSA devices are not supposed to have a netdev for the host facing port
-on the switch (sorry for stating the obvious).
-
-> diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-> index 1e101ab56cea..367cebe37ae6 100644
-> --- a/drivers/net/dsa/microchip/ksz8795.c
-> +++ b/drivers/net/dsa/microchip/ksz8795.c
-> @@ -1194,7 +1194,7 @@ static const struct ksz_chip_data ksz8795_switch_chips[] = {
->  		.num_alus = 0,
->  		.num_statics = 8,
->  		.cpu_ports = 0x10,	/* can be configured as cpu port */
-> -		.port_cnt = 4,		/* total physical port count */
-> +		.port_cnt = 5,		/* total physical port count */
->  	},
->  	{
->  		.chip_id = 0x8794,
-
+Applied, thanks!
