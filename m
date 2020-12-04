@@ -2,112 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3636E2CF6EF
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 23:39:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1A1F2CF6F7
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 23:39:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387703AbgLDWiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 17:38:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56692 "EHLO
+        id S2388115AbgLDWi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 17:38:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387527AbgLDWiV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 17:38:21 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00D8C0613D1
-        for <netdev@vger.kernel.org>; Fri,  4 Dec 2020 14:37:40 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id v3so3922310plz.13
-        for <netdev@vger.kernel.org>; Fri, 04 Dec 2020 14:37:40 -0800 (PST)
+        with ESMTP id S1726147AbgLDWiz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 17:38:55 -0500
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69FEAC061A51;
+        Fri,  4 Dec 2020 14:38:15 -0800 (PST)
+Received: by mail-il1-x143.google.com with SMTP id g1so6648071ilk.7;
+        Fri, 04 Dec 2020 14:38:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=c6hMk7kVGMlcW1AbN/CVtuIM7fjslmb1EFlV3rI/eb8=;
-        b=hk69Ub0xM750SeXGscbw90RJlwMEb/XPhbuYtYsVy8DQaVyvQMM1WYlD7NR7AInvHn
-         IUIYVr+JAE636J3fp+P8yigD/0yYPiuyMkPf5MA+Lo/BHGexgCjVYx4R4yd5Z6vX2dEF
-         w5jsIfEG7EvlEamVktsmEzbabUPWn62zKJczm4Wsz8xSExBbjw48QDBvbk9Qg67l1a2j
-         Jr8Qs/89FYdtuXAIZS9GQ02VUuO02bRKMl2LYhS6awcSVVXwFWyJG5XldvxojR1AoGW8
-         QazEMxJDOE49UHLDQZzMQSZt/x+EkbdAoA25zisbHw1AtZkuDvo1nWbYVaJ9C0MjOp5O
-         VogQ==
+        bh=zfSI0BVuut11EY/18dl98BRShWbYjMNy9Mytisqq938=;
+        b=HzF35Jud24in6HdLiieS6+ZLB//zqFBLW5Cc8v5F2Ey9a+SzEU/CTBgns9+j6FdTbj
+         BigmhJ+S6UJLEoAv9VbPYcd0vol5XRk8fPTTw9Bbc+V3SM3aLScBymmSQP/IHOqDzPaN
+         bpKmTsQsSjiWY92uCSdXOoqNZMyLIrADEcP6ltW/r7480TknbM90F3bzAGNn51cuEi9M
+         /e65BCwqh1S1YezAOunYu9136HxPrm4iHYP3Z1bLifpJxGjAntC2FE2411z57A6rgncl
+         cVpy5r5orvw4+/X72ViHG4JpiFEA5SwUxJ7vaX44GelzjXthZ2gAPz8Z2GRLPMGGex1N
+         M0CA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=c6hMk7kVGMlcW1AbN/CVtuIM7fjslmb1EFlV3rI/eb8=;
-        b=iwh/MRW5DXTRpH0f/6mm1dX7YEiCe8Oxbvna96d4ESyYO3XKxFypetkAApUa1gBkK8
-         4FiCw+TMkwIqk7HFTNI01GHQlWMhoEKAJR1EXPfnrQ8bJih9Nxr9FU19hNHloIiYL1gh
-         ljL4OwWtaHHQscensh+INnIBDA4XO6Ns6wZk7fvYA+pKrAd8hTnFz6cS7wjWFNqavWWQ
-         Z+fbosQ1qgW+hSEvYbphAWhp9Mjx1JEmWIPCOBIt16TZDfovpAHWO8vl6IclVvv7yqyv
-         9EU0ipB+tsaN5Nn4V/J6TYwE49RriSFnmWO/LBL+lRxrb7NIEz5fHZv4lyy27jyprWFO
-         Hm5w==
-X-Gm-Message-State: AOAM532x/ohuHYstOP+/Nq5pppEM5unX7rruGVd8d/IfdMJuhwkuilho
-        aj3tx6iUKbD+72Md0ScmQ79lj52wcbh4dB5Y4oo4a4npn80=
-X-Google-Smtp-Source: ABdhPJymuHlJRt+Zb7gA0ggjAOCbejE5mJZdEt39RSgcUvMI00VTL9nyRCFWtwa1AMfvmrMCg7DvKKbD1OZNRBBff2M=
-X-Received: by 2002:a17:90a:d494:: with SMTP id s20mr6112136pju.178.1607121460093;
- Fri, 04 Dec 2020 14:37:40 -0800 (PST)
+        bh=zfSI0BVuut11EY/18dl98BRShWbYjMNy9Mytisqq938=;
+        b=iELrtAkDabOOGp4yBxt4Qfy5GhkAxlF3a9q4yc/lib8qs6qOrC0SaCoQm2l6XGw+U9
+         l7FVTAPJXcrIcana+W+QoanEgWPvlaYRZVHHNc9Ef58s9JKSzMM/7b2AYo2+VaRXpPjV
+         aJK2QXEwAhxXTDAdkXqPr3mFYfKgXmif0ttF5K7x0/pw1eXS0btFbE5wLh+Vnl01F8pK
+         /N3nsIguCfL9L2t7EVvLRtrW4rclSAcURGc0avUURnnVjeSk+Jg47tJ4kSNEgACYIQdP
+         V8IJjiVcANxmq23T6/81Qczl07JpnXmwkzcPECABmacX9LLQi9TGB5UpRrfQ3+wM4GTl
+         3RqA==
+X-Gm-Message-State: AOAM5323N8Zl/nwZTV5Wl09Xi8ZSsLB0aWmCKvJxiStIGvaKUBU2rioO
+        aAGcxikmBjmeA3EByYXUib61NXHIAm+7LX91T/k=
+X-Google-Smtp-Source: ABdhPJwq6XTGDVI27yEFKGhO8FLGO5z8uzKtXlTVxip2PtUxYmvG1QV2rHjit/27EVWnmcU+/bTgLUQ2mR3AuU7Tm9c=
+X-Received: by 2002:a92:730d:: with SMTP id o13mr8965445ilc.95.1607121494715;
+ Fri, 04 Dec 2020 14:38:14 -0800 (PST)
 MIME-Version: 1.0
-References: <20201202220945.911116-1-arjunroy.kdev@gmail.com>
- <20201202220945.911116-2-arjunroy.kdev@gmail.com> <20201202161527.51fcdcd7@hermes.local>
- <384c6be35cc044eeb1bbcf5dcc6d819f@AcuMS.aculab.com> <CAOFY-A07C=TEfob3S3-Dqm8tFTavFfEGqQwbisnNd+yKgDEGFA@mail.gmail.com>
- <CAOFY-A2vTwyA_45oUQR-91CMZya5i1y-4yzDboL+CnKceLzXPw@mail.gmail.com> <99eb2611ce8a47289a6c6360f29acdd7@AcuMS.aculab.com>
-In-Reply-To: <99eb2611ce8a47289a6c6360f29acdd7@AcuMS.aculab.com>
-From:   Arjun Roy <arjunroy@google.com>
-Date:   Fri, 4 Dec 2020 14:37:29 -0800
-Message-ID: <CAOFY-A060UoG_aFM1nK_++-mGnUxXQKeyso9L_z0Du4WJVumUg@mail.gmail.com>
-Subject: Re: [net-next v2 1/8] net-zerocopy: Copy straggler unaligned data for
- TCP Rx. zerocopy.
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Arjun Roy <arjunroy.kdev@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "soheil@google.com" <soheil@google.com>
+References: <20201204200920.133780-1-mario.limonciello@dell.com>
+ <CAKgT0Uc=OxcuHbZihY3zxsxzPprJ_8vGHr=reBJFMrf=V9A5kg@mail.gmail.com> <DM6PR19MB2636B200D618A5546E7BBB57FAF10@DM6PR19MB2636.namprd19.prod.outlook.com>
+In-Reply-To: <DM6PR19MB2636B200D618A5546E7BBB57FAF10@DM6PR19MB2636.namprd19.prod.outlook.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Fri, 4 Dec 2020 14:38:03 -0800
+Message-ID: <CAKgT0UfuyrbzpDNySMmnAkqKnw9cYuEM1LhgG0QvmrY=smR-uw@mail.gmail.com>
+Subject: Re: [PATCH v3 0/7] Improve s0ix flows for systems i219LM
+To:     "Limonciello, Mario" <Mario.Limonciello@dell.com>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Netfin <sasha.neftin@intel.com>,
+        Aaron Brown <aaron.f.brown@intel.com>,
+        Stefan Assmann <sassmann@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        David Arcari <darcari@redhat.com>,
+        "Shen, Yijun" <Yijun.Shen@dell.com>,
+        "Yuan, Perry" <Perry.Yuan@dell.com>,
+        "anthony.wong@canonical.com" <anthony.wong@canonical.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 4, 2020 at 1:03 AM David Laight <David.Laight@aculab.com> wrote:
+On Fri, Dec 4, 2020 at 2:28 PM Limonciello, Mario
+<Mario.Limonciello@dell.com> wrote:
 >
-> From: Arjun Roy
-> > Sent: 03 December 2020 23:25
-> ...
-> > > > You also have to allow for old (working) applications being recompiled
-> > > > with the new headers.
-> > > > So you cannot rely on the fields being zero even if you are passed
-> > > > the size of the structure.
-> > > >
-> > >
-> > > I think this should already be taken care of in the current code; the
-> > > full-sized struct with new fields is being zero-initialized, then
-> > > we're getting the user-provided optlen, then copying from userspace
-> > > only that much data. So the newer fields would be zero in that case,
-> > > so this should handle the case of new kernels but old applications.
-> > > Does this address the concern, or am I misunderstanding?
-> > >
+> > -----Original Message-----
+> > From: Alexander Duyck <alexander.duyck@gmail.com>
+> > Sent: Friday, December 4, 2020 15:27
+> > To: Limonciello, Mario
+> > Cc: Jeff Kirsher; Tony Nguyen; intel-wired-lan; LKML; Linux PM; Netdev; Jakub
+> > Kicinski; Sasha Netfin; Aaron Brown; Stefan Assmann; David Miller; David
+> > Arcari; Shen, Yijun; Yuan, Perry; anthony.wong@canonical.com
+> > Subject: Re: [PATCH v3 0/7] Improve s0ix flows for systems i219LM
 > >
-> > Actually, on closer read, perhaps the following is what you have in
-> > mind for the old application?
 > >
-> > struct zerocopy_args args;
-> > args.address = ...;
-> > args.length = ...;
-> > args.recv_skip_hint = ...;
-> > args.inq = ...;
-> > args.err = ...;
-> > getsockopt(fd, IPPROTO_TCP, TCP_ZEROCOPY_RECEIVE, &args, sizeof(args));
-> > // sizeof(args) is now bigger when recompiled with new headers, but we
-> > did not explicitly set the new fields to 0, therefore issues
+> > [EXTERNAL EMAIL]
+> >
+> > On Fri, Dec 4, 2020 at 12:09 PM Mario Limonciello
+> > <mario.limonciello@dell.com> wrote:
+> > >
+> > > commit e086ba2fccda ("e1000e: disable s0ix entry and exit flows for ME
+> > systems")
+> > > disabled s0ix flows for systems that have various incarnations of the
+> > > i219-LM ethernet controller.  This was done because of some regressions
+> > > caused by an earlier
+> > > commit 632fbd5eb5b0e ("e1000e: fix S0ix flows for cable connected case")
+> > > with i219-LM controller.
+> > >
+> > > Performing suspend to idle with these ethernet controllers requires a
+> > properly
+> > > configured system.  To make enabling such systems easier, this patch
+> > > series allows determining if enabled and turning on using ethtool.
+> > >
+> > > The flows have also been confirmed to be configured correctly on Dell's
+> > Latitude
+> > > and Precision CML systems containing the i219-LM controller, when the kernel
+> > also
+> > > contains the fix for s0i3.2 entry previously submitted here and now part of
+> > this
+> > > series.
+> > > https://marc.info/?l=linux-netdev&m=160677194809564&w=2
+> > >
+> > > Patches 4 through 7 will turn the behavior on by default for some of Dell's
+> > > CML and TGL systems.
+> >
+> > The patches look good to me. Just need to address the minor issue that
+> > seems to have been present prior to the introduction of this patch
+> > set.
+> >
+> > Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
 >
-> That's the one...
+> Thanks for your review.  Just some operational questions - since this previously
+> existed do you want me to re-spin the series to a v4 for this, or should it be
+> a follow up after the series?
 >
+> If I respin it, would you prefer that change to occur at the start or end
+> of the series?
 
-I'll defer in this case to Eric's previous response in this thread
-(paraphrased: that there is precedent for this in tcp_mmap.c).
-
--Arjun
-
->         David
->
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
+I don't need a respin, but if you are going to fix it you should
+probably put out the patch as something like a 8/7. If you respin it
+should happen near the start of the series as it is a bug you are
+addressing.
