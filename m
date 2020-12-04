@@ -2,58 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84F4C2CF71B
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 23:53:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDDAE2CF789
+	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 00:34:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726111AbgLDWxW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 17:53:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33356 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725966AbgLDWxW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Dec 2020 17:53:22 -0500
-Date:   Fri, 4 Dec 2020 14:52:40 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607122362;
-        bh=GYk8vs5g7NgPc+Wfs6mhgxzmmpidBd0Gv/brg8xrcCc=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=l0WE1OMOWDGHcb6d1Ce8fVyYo3Opg9eZV9t/XPS3VW6vyc/U0g5YjVGA5CXgJoSq2
-         LGUcfuFa1c1UX5JZ4Jd1rPUhwxtzUo1WWXP6xNWkTlWSKkEWXyv3gBXfqP0HPLSew2
-         TfO3GSwd1m9TJJGhbvd5am9VLKXuo0yP2RV/n6rh63AlB2bAfi7Qj/TU6OrejDQGsn
-         A2TbJ1B0BQbYIG7UmurA88US2mSsr+WEB80G5Ye3TqRkmIMvfSq6SyiiFgxQ7slcmf
-         oCwtzxZFA1daiJl4aIrNocAWB+x+9AIPGgUIm4DxwxnDXc4Liw9yIvyl2pLR6kHwwo
-         gBHYPamYN/IZA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Eran Ben Elisha <eranbe@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Subject: Re: [net-next V2 08/15] net/mlx5e: Add TX PTP port object support
-Message-ID: <20201204145240.7c1a5a1e@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <999c9328747d4edbfc8d2720b886aaa269e16df8.camel@kernel.org>
-References: <20201203042108.232706-1-saeedm@nvidia.com>
-        <20201203042108.232706-9-saeedm@nvidia.com>
-        <20201203182908.1d25ea3f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-        <b761c676af87a4a82e3ea4f6f5aff3d1159c63e7.camel@kernel.org>
-        <20201204122613.542c2362@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-        <999c9328747d4edbfc8d2720b886aaa269e16df8.camel@kernel.org>
+        id S1730875AbgLDXbA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 18:31:00 -0500
+Received: from vsm-gw.hyogo-dai.ac.jp ([202.244.76.12]:57950 "EHLO
+        vsm-gw.hyogo-dai.ac.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726111AbgLDXbA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 18:31:00 -0500
+X-Greylist: delayed 10678 seconds by postgrey-1.27 at vger.kernel.org; Fri, 04 Dec 2020 18:30:59 EST
+Received: from humans-kc.hyogo-dai.ac.jp (humans-kc.hyogo-dai.ac.jp [202.244.77.11])
+        by vsm-gw.hyogo-dai.ac.jp (Postfix) with ESMTP id 4BAD91A53EE;
+        Sat,  5 Dec 2020 04:40:44 +0900 (JST)
+Received: from humans-kc.hyogo-dai.ac.jp (humans-kc.hyogo-dai.ac.jp [127.0.0.1])
+        by postfix.imss71 (Postfix) with ESMTP id 06E2C6821BE;
+        Sat,  5 Dec 2020 04:40:44 +0900 (JST)
+Received: from hyogo-dai.ac.jp (unknown [202.244.77.11])
+        by humans-kc.hyogo-dai.ac.jp (Postfix) with SMTP id D1554838260;
+        Sat,  5 Dec 2020 04:40:43 +0900 (JST)
 MIME-Version: 1.0
+Message-ID: <20201204194043.00001494.0554@hyogo-dai.ac.jp>
+Date:   Sat, 05 Dec 2020 04:40:43 +0900
+From:   "Dr.Raymond" <tabata@hyogo-dai.ac.jp>
+To:     <infocarferr1@aim.com>
+Reply-To: <infocarfer@aim.com>
+Subject: I am Vice Chairman of Hang Seng Bank, Dr. Raymond Chien
+         Kuo Fung I have Important Matter to Discuss with you concerning
+         my late client. Died without a NEXT OF KIN. Send me your private
+         email for full details information. 
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Priority: 3
+X-MAILER: Active! mail
+X-TM-AS-MML: disable
+X-TM-AS-Product-Ver: IMSS-7.1.0.1808-8.2.0.1013-25446.007
+X-TM-AS-Result: No--4.326-5.0-31-10
+X-imss-scan-details: No--4.326-5.0-31-10
+X-TM-AS-User-Approved-Sender: No
+X-TMASE-MatchedRID: +T4Z3mpR0x5ITndh1lLRASsOycAMAhSTkCM77ifYafsBLhz6t76Ce/bj
+        Enpjm61/Gf23dqZJjE4Erxo5p8V1/E1+zyfzlN7y/sToY2qzpx7w5nZ/qYg41XEWw1TkKAjcYff
+        qdBtG2ocgOkCKsW/kbuunGEBqPil++coAzulIP8gMTyJMXCOBhj9BWL7GG0LsKrauXd3MZDUZaR
+        NzIP3XI5u3uLPgwbAMH5RdHnhWfwyq9gpuf+A6coDeeVSgzszVDx5n520Z3eZyT7DDRtYlKaWBy
+        ZE9nSaC/rhfyjvqkZu/pNa4BidtZEMMprcbiest
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 04 Dec 2020 13:57:49 -0800 Saeed Mahameed wrote:
-> > Why not use the PTP classification helpers we already have?  
-> 
-> do you mean ptp_parse_header() or the ebpf prog ?
-> We use skb_flow_dissect() which should be simple enough.
+infocarfer@aim.com
 
-Not sure which exact one TBH, I just know we have helpers for this, 
-so if we don't use them it'd be good to at least justify why.
 
-Maybe someone with more practical knowledge here can chime in with 
-a recommendation for a helper to find PTP frames on TX?
+
