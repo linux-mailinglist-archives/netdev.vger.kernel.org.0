@@ -2,117 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2327D2CF42F
+	by mail.lfdr.de (Postfix) with ESMTP id 8F93D2CF430
 	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 19:38:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729606AbgLDSgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 13:36:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47516 "EHLO
+        id S1729911AbgLDSgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 13:36:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726021AbgLDSgB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 13:36:01 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1593EC061A51
-        for <netdev@vger.kernel.org>; Fri,  4 Dec 2020 10:35:15 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id r5so6808143eda.12
-        for <netdev@vger.kernel.org>; Fri, 04 Dec 2020 10:35:14 -0800 (PST)
+        with ESMTP id S1729674AbgLDSgF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 13:36:05 -0500
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A490C061A53
+        for <netdev@vger.kernel.org>; Fri,  4 Dec 2020 10:35:19 -0800 (PST)
+Received: by mail-pj1-x1044.google.com with SMTP id b12so3674609pjl.0
+        for <netdev@vger.kernel.org>; Fri, 04 Dec 2020 10:35:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=VazwCTbw4qFEcnDS99kE7+UPTpKgFLvwXrTcJ/OGLV8=;
-        b=UoAtycuWbYXPQuHZa93zSkhDkJSIw0b5/ox+c+olIK8DcmAbppcTQ0S5nqiX68rqak
-         O0OcRXvbaYs59/0lhZyyDXuBE89LpLU/4sCiBqYoY+7kZml0b8FecNEzYnsNUW08Ihz5
-         QF7SSKQPyyDDQa2ClfTAFtqizjUB+y8xrZebWbkw7H4Qp0JbSS6Bojpr/Kkqn2+Oksnw
-         wT3LhcfoTMGVZj4tJFFM5mxJMYg2KBifKrCXcs7TzgB+i0DrF+DvPoqZuF/7IlEChaWv
-         6gSm3TUC/frYOd6VZB2UEePpomfz08LS4mRk9rLZ8P3hSyX0ElAYgJiZ6EcXcffOOCH/
-         GBxQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DR6em0xTx/wXQ7IaD8PIXYOj8qv6Du+fO82+FBS5lNw=;
+        b=sf5l4P5L5ozL9cXc18I3/GVwAl7P5spyz6KrvDncFtdVetVqzEsS8WGYPfmLRyj2BR
+         wQRAjkb4WSQpf5GemY1Fsg578oAuEnaHNYp6esPOveocsWSRjV0o78MbTF2WTLuaI7en
+         lxr1cAwkBLOw7IxrPi7cu9+LFCL0BqHMvbsbzkp/z+gazt9tYDEqh03mh+5+169zvQxs
+         ifrpmEBeEs9qwo/WLxMTaFWFMky9vh1pLBqFsCT/ROx+vmq/JnQJXnnR1lmxF5m7f4XI
+         2Imm1Xk6tHM3aRveYoqnr7hvI0x4Uk1JwgJnVwjR5XJ983r7SVp+HUeMABZabVOKhjPD
+         Su4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=VazwCTbw4qFEcnDS99kE7+UPTpKgFLvwXrTcJ/OGLV8=;
-        b=Oy4B4RAizh4u7t2mC/fjwmM0JsZQO1yLidqFPPZAnJRLVgmESlN3dD410k5cUD29IN
-         0V2uKNuhsvUzSV9REpUOWGG58AHMAu6LP11Y51e36Dc6UqZiid8oc5eq6jUTQh5PZJo+
-         Wk0rnNK4Iaf4frFViyJaH2wzVRr/bWSwrNIrTWFxNhqS8xAFXpHLMgXow0WaUUeuECcw
-         GFOw8NTUrlgXY0suS6o0yEH0Ujaz1GVWvMFFbWNyLrAYHiLHX0KzY6Oep90g1m2brETI
-         DENyHmfIG3UEuRhtv8uKYq/4YPbZCoih/yoK2z5LEbEjhmAkPqPZKJOwgk+r0Vfz26if
-         NZCw==
-X-Gm-Message-State: AOAM531POSmAq8eQq12ajnHWVWayu+SL929u8hXg5qs7nlHAF7URUrQx
-        2wRD0hOqB/4WlZvxfhFy4+1W+3m2up1DqlWRW+kP7A==
-X-Google-Smtp-Source: ABdhPJySBMs5wep5prKn4dGE0xz5+ByoMr95Z/1QhLJVmuU6vp5fZu61EN8FWgCSAJCp3cpH5tedG2S4/91FYDuyvnU=
-X-Received: by 2002:aa7:d74d:: with SMTP id a13mr5352244eds.78.1607106913506;
- Fri, 04 Dec 2020 10:35:13 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DR6em0xTx/wXQ7IaD8PIXYOj8qv6Du+fO82+FBS5lNw=;
+        b=M0xCL2JPuZAE30PVTyBp+zZYbg52SwXMDnO73rYGQXCnIFsJU+0sn1hCci3S8Nnbyz
+         rMLU8/1RvSZpeZbQaH1QEF+pQ77kk+UMB/pdBf2jJ6SyXLAfo3R+WVyoNJGC3EHZNATL
+         ZjNA8YjVoTY7Saj0lNDVHP2qoAVq1rV+XxylbCfWaCMRM/mfw2dUSEpt8bI0sBPB77kt
+         G+i4qaxinkKBkDLtbGh9C7sG6PGptH/7MT6DP9kHV1TsopyI/nn5l6qusgL5CIT1p1mF
+         KKuapTAUSgFAHDnXvybjjcYp/X9hyufllq3y+DwXMPtg8J7NrrchTdCtJdwVNvPzPMJK
+         yBpw==
+X-Gm-Message-State: AOAM531M74dYVRqIjR299dyiUBoRChS4OUi2ce5w7zRfdLkICA2G4+aN
+        K4YlDJMbrO18atNvsrj3Ek0+dHzC3RnB51io+YnlyxjhcHMhXA==
+X-Google-Smtp-Source: ABdhPJxuoIALHhFP3jTVABBYFLaeaKLDKmlBL592dFO6ikck7v2IuEDi6Hwu8jJiSiE5SBsllHdT1sGlzozTTPIJxys=
+X-Received: by 2002:a17:90a:ae13:: with SMTP id t19mr5357351pjq.52.1607106918685;
+ Fri, 04 Dec 2020 10:35:18 -0800 (PST)
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Sat, 5 Dec 2020 00:05:02 +0530
-Message-ID: <CA+G9fYvhvZtDYVBo4kj9OkKY_vVFSa6EbWz99iCmRPojExRieA@mail.gmail.com>
-Subject: BUG: KCSAN: data-race in __rpc_do_wake_up_task_on_wq / xprt_request_transmit
-To:     kasan-dev <kasan-dev@googlegroups.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, linux-nfs@vger.kernel.org,
-        lkft-triage@lists.linaro.org, rcu@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, chuck.lever@oracle.com,
-        bfields@fieldses.org, anna.schumaker@netapp.com,
-        trond.myklebust@hammerspace.com,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Marco Elver <elver@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>
+References: <2e78e01c504c633ebdff18d041833cf2e079a3a4.1607020450.git.dcaratti@redhat.com>
+In-Reply-To: <2e78e01c504c633ebdff18d041833cf2e079a3a4.1607020450.git.dcaratti@redhat.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 4 Dec 2020 10:35:07 -0800
+Message-ID: <CAM_iQpWf4CS_fR69JQfa2pEV9Yd26p=neZ+nu_1rOLvbbn=TiA@mail.gmail.com>
+Subject: Re: [PATCH net] net/sched: fq_pie: initialize timer earlier in fq_pie_init()
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Mohit Bhasi <mohitbhasi1998@gmail.com>,
+        Leslie Monis <lesliemonis@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-LKFT started testing KCSAN enabled kernel from the linux next tree.
-Here we have found BUG: KCSAN: data-race in
-__rpc_do_wake_up_task_on_wq / xprt_request_transmit
+On Thu, Dec 3, 2020 at 10:41 AM Davide Caratti <dcaratti@redhat.com> wrote:
+>
+> with the following tdc testcase:
+>
+>  83be: (qdisc, fq_pie) Create FQ-PIE with invalid number of flows
+>
+> as fq_pie_init() fails, fq_pie_destroy() is called to clean up. Since the
+> timer is not yet initialized, it's possible to observe a splat like this:
+...
+> fix it moving timer_setup() before any failure, like it was done on 'red'
+> with former commit 608b4adab178 ("net_sched: initialize timer earlier in
+> red_init()").
+>
+> Fixes: ec97ecf1ebe4 ("net: sched: add Flow Queue PIE packet scheduler")
+> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 
-This report is from an x86_64 machine clang-11 linux next 20201201.
-Since we are running for the first time we do not call this regression.
-
-[   17.316725] BUG: KCSAN: data-race in __rpc_do_wake_up_task_on_wq /
-xprt_request_transmit
-[   17.324821]
-[   17.326322] write to 0xffff90a801de6a9c of 2 bytes by task 142 on cpu 1:
-[   17.333022]  __rpc_do_wake_up_task_on_wq+0x295/0x350
-[   17.337987]  rpc_wake_up_queued_task+0x99/0xc0
-[   17.342432]  xprt_complete_rqst+0xef/0x100
-[   17.346533]  xs_read_stream+0x9c6/0xc40
-[   17.350370]  xs_stream_data_receive+0x60/0x130
-[   17.354819]  xs_stream_data_receive_workfn+0x5c/0x90
-[   17.359784]  process_one_work+0x4a6/0x830
-[   17.363795]  worker_thread+0x5f7/0xaa0
-[   17.367548]  kthread+0x20b/0x220
-[   17.370780]  ret_from_fork+0x22/0x30
-[   17.374359]
-[   17.375858] read to 0xffff90a801de6a9c of 2 bytes by task 249 on cpu 3:
-[   17.382473]  xprt_request_transmit+0x389/0x7a0
-[   17.386919]  xprt_transmit+0xfe/0x250
-[   17.390583]  call_transmit+0x10d/0x120
-[   17.394337]  __rpc_execute+0x12d/0x700
-[   17.398089]  rpc_async_schedule+0x59/0x90
-[   17.402100]  process_one_work+0x4a6/0x830
-[   17.406114]  worker_thread+0x5f7/0xaa0
-[   17.409868]  kthread+0x20b/0x220
-[   17.413099]  ret_from_fork+0x22/0x30
-[   17.416675]
-[   17.418167] Reported by Kernel Concurrency Sanitizer on:
-[   17.423475] CPU: 3 PID: 249 Comm: kworker/u8:1 Not tainted
-5.10.0-rc6-next-20201201 #2
-[   17.431385] Hardware name: Supermicro SYS-5019S-ML/X11SSH-F, BIOS
-2.2 05/23/2018
-[   17.438778] Workqueue: rpciod rpc_async_schedule
-
-metadata:
-    git_repo: https://gitlab.com/aroxell/lkft-linux-next
-    target_arch: x86
-    toolchain: clang-11
-    git_describe: next-20201201
-    download_url: https://builds.tuxbuild.com/1l8eiWgGMi6W4aDobjAAlOleFVl/
-
-Full test log link,
-https://lkft.validation.linaro.org/scheduler/job/2002643#L1005
-
--- 
-Linaro LKFT
-https://lkft.linaro.org
+Reviewed-by: Cong Wang <cong.wang@bytedance.com>
