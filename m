@@ -2,95 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35F9C2CE5BD
-	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 03:33:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F01BB2CE5BF
+	for <lists+netdev@lfdr.de>; Fri,  4 Dec 2020 03:35:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727099AbgLDCcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Dec 2020 21:32:48 -0500
-Received: from m43-15.mailgun.net ([69.72.43.15]:39988 "EHLO
-        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725984AbgLDCcr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 21:32:47 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1607049142; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=UKUWIiLYmiHVJsPhpECnnECxvIOzzUiBoKnbeHMlQxc=; b=EPqoE2mBq8GoYvaSEVPjd+G/5NXqParLqiYf7CjtCEdE/qsfnkFIqFsDqcbpPiXyaxRRth7F
- vDVxb3/XEKRH2oTPy+Av92JUuR+ZUOr10SlVf9auuXWab7DCvgQ0vxXBc/FG2OoAlTs8X9ek
- Ee+eJUYqfFa8hYXILTY6JKhjdBc=
-X-Mailgun-Sending-Ip: 69.72.43.15
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
- 5fc99f989c3ccbec63a92afa (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 04 Dec 2020 02:31:52
- GMT
-Sender: hemantk=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 52046C43466; Fri,  4 Dec 2020 02:31:51 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from [10.46.162.249] (i-global254.qualcomm.com [199.106.103.254])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: hemantk)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 088C3C43461;
-        Fri,  4 Dec 2020 02:31:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 088C3C43461
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=hemantk@codeaurora.org
-Subject: Re: [PATCH v15 4/4] bus: mhi: Add userspace client interface driver
-To:     Jeffrey Hugo <jhugo@codeaurora.org>,
-        manivannan.sadhasivam@linaro.org, gregkh@linuxfoundation.org
-Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bbhatt@codeaurora.org, loic.poulain@linaro.org,
-        netdev@vger.kernel.org
-References: <1607035516-3093-1-git-send-email-hemantk@codeaurora.org>
- <1607035516-3093-5-git-send-email-hemantk@codeaurora.org>
- <1bcddc1c-e489-c867-77fb-f6893a101900@codeaurora.org>
-From:   Hemant Kumar <hemantk@codeaurora.org>
-Message-ID: <d1af1eac-f9bd-7a8e-586b-5c2a76445145@codeaurora.org>
-Date:   Thu, 3 Dec 2020 18:31:48 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727114AbgLDCer (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Dec 2020 21:34:47 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:9590 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725986AbgLDCeq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Dec 2020 21:34:46 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fc9a01e0001>; Thu, 03 Dec 2020 18:34:06 -0800
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 4 Dec
+ 2020 02:34:02 +0000
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.177)
+ by HQMAIL101.nvidia.com (172.20.187.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Fri, 4 Dec 2020 02:34:02 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=neV6i2rTFJzclmRUvqJMdO3c9WRE7DiSo2JSf0ZyExGe73xdxQap1D+vNPlPTY7WLou8mT5ND0kG7tc2fZe/gwRzOH/11sZL7XaSLxYM5/USyUUr5IbrX9a3tzIV9Xq+NFh+dRnaGKgD/Iy/VzR2IAxWL5YOfTZhCijbtovsUPhdzz8z9eUUR/HoDPkOXvMQf8MQ3ODimoeaUpWUAvkx9JfkfdiX3YtFTe52Q839UeHfGb2fNAzB4ejtaZ0l2gOq9LRXEzCYYJ0gLbGqPeEMJfhyc+rB4GjokKeyJDxMSNX6Y3YO8m8uhJ/ea2rYuzRcKxh3ZJ7qSkelQDyQbH7CpA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MDnLOQm/6hPonXigSnC6fjT0LzfVFaR83ws4ovOlwM4=;
+ b=KAn83/RBc8LV7BZJg3Vj4iVANe3HBwgSTwePhD2eLiMoFOXgDqR1Inp0svF7a+i/+NP22sEBxFPELEHSvkAw/fxELHPd3zYZhft/bCNUMiWABzv7ZsEbUuZ60MROuwiHNiH9ZTfNkiRaNVBryUNYbUPTO46ZAhBQ9xT7txGraVdjNbuJD+XmZv2r18D8oEfnQFCdeLPH4tNTjKZVBLtOykNtb2GCrZxorLI2CqIoS/ufLepx73XzqGlJ6sokp3omzPGBujsCwpl+3D6xGlRUx3COSI/hMdTwMfy9TWHKWzue9W9jBEddBC1hDTuSD1ox0t9Hbg2rR5XsLUa2oeQBaQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from BY5PR12MB3827.namprd12.prod.outlook.com (2603:10b6:a03:1ab::16)
+ by BYAPR12MB3254.namprd12.prod.outlook.com (2603:10b6:a03:137::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.19; Fri, 4 Dec
+ 2020 02:34:00 +0000
+Received: from BY5PR12MB3827.namprd12.prod.outlook.com
+ ([fe80::8526:bac7:a712:ef8e]) by BY5PR12MB3827.namprd12.prod.outlook.com
+ ([fe80::8526:bac7:a712:ef8e%7]) with mapi id 15.20.3611.025; Fri, 4 Dec 2020
+ 02:33:59 +0000
+Date:   Thu, 3 Dec 2020 22:33:57 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     Dan Williams <dan.j.williams@intel.com>, <broonie@kernel.org>,
+        <lgirdwood@gmail.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        Kiran Patil <kiran.patil@intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Fred Oh <fred.oh@linux.intel.com>,
+        "Leon Romanovsky" <leonro@nvidia.com>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        Parav Pandit <parav@mellanox.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [resend/standalone PATCH v4] Add auxiliary bus support
+Message-ID: <20201204023357.GA1337723@nvidia.com>
+References: <160695681289.505290.8978295443574440604.stgit@dwillia2-desk3.amr.corp.intel.com>
+ <X8j+8DRrPeXBaTA7@kroah.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <X8j+8DRrPeXBaTA7@kroah.com>
+X-ClientProxiedBy: BL1PR13CA0064.namprd13.prod.outlook.com
+ (2603:10b6:208:2b8::9) To BY5PR12MB3827.namprd12.prod.outlook.com
+ (2603:10b6:a03:1ab::16)
 MIME-Version: 1.0
-In-Reply-To: <1bcddc1c-e489-c867-77fb-f6893a101900@codeaurora.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (206.223.160.26) by BL1PR13CA0064.namprd13.prod.outlook.com (2603:10b6:208:2b8::9) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.7 via Frontend Transport; Fri, 4 Dec 2020 02:33:59 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1kl0uz-005hoX-Cv; Thu, 03 Dec 2020 22:33:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1607049246; bh=MDnLOQm/6hPonXigSnC6fjT0LzfVFaR83ws4ovOlwM4=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType;
+        b=hkf7wHAUvczFBSrN6qGp9csG5K8wHFSseqryz8oNV2GLgBd2AU1mVFVaBHDn6RQxq
+         FOQ6duy3v+i8Wsof9By2qiSW3DuRGkHnO5amFPB32bNbUw1Ujq3YzRUfnTfPbK7O9i
+         bST2WLBOMuAfFp0zi+izUQXL4uqe4WFTRtVSqrr2FfZD4oysG/JYrYEqaE87nDon2x
+         sVNIs246xOfVc3/9+QBrK5lG6qcMzTkEFTHoeSyQnWdaaZcsjXNQolvS5T0E4IfUcf
+         s61AX1CdQUgcDtiBnjOhJizLrFlq8+nZkE/Q3rHidqESQYmNrFBclYztBtBp62gols
+         mRic3tMOwYDFQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Dec 03, 2020 at 04:06:24PM +0100, Greg KH wrote:
 
-On 12/3/20 3:45 PM, Jeffrey Hugo wrote:
-> On 12/3/2020 3:45 PM, Hemant Kumar wrote:
->> This MHI client driver allows userspace clients to transfer
->> raw data between MHI device and host using standard file operations.
->> Driver instantiates UCI device object which is associated to device
->> file node. UCI device object instantiates UCI channel object when device
->> file node is opened. UCI channel object is used to manage MHI channels
->> by calling MHI core APIs for read and write operations. MHI channels
->> are started as part of device open(). MHI channels remain in start
->> state until last release() is called on UCI device file node. Device
->> file node is created with format
->>
->> /dev/<mhi_device_name>
->>
->> Currently it supports QMI channel.
->>
->> Signed-off-by: Hemant Kumar <hemantk@codeaurora.org>
->> Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
->> Reviewed-by: Jeffrey Hugo <jhugo@codeaurora.org>
+> > ...for all the independent drivers to have a common commit baseline. It
+> > is not there yet pending Greg's Ack.
 > 
-> You dropped Loic's tested by.  Was that a mistake, or did something 
-> actually change which would invalidate his testing?
-> 
-Thanks for pointing this out, it was my bad. Re-sending the patch.
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+> I have been trying to carve out some time to review this.  At my initial
+> glance, I still have objections, so please, give me a few more days to
+> get this done...
+
+There are still several more days till the merge window, but I am
+going to ask Leon to get the mlx5 series, and this version of the
+auxbus patch it depends on, into linux-next with the intention to
+forward it to Linus if there are no substantive comments.
+
+Regardless of fault or reason this whole 1.5 year odyssey seems to have
+brought misery to everyone involved and it really is time to move on.
+
+Leon and his team did a good deed 6 weeks ago to quickly turn around
+and build another user example. For their efforts they have been
+rewarded with major merge conflicts and alot of delayed work due to
+the invasive nature of the mlx5 changes. To continue to push this out
+is disrespectful to him and his team's efforts.
+
+A major part of my time as RDMA maintainer has been to bring things
+away from vendor trees and into a common opensource community.  Intel
+shipping a large out of tree RDMA driver and abandoning their intree
+driver is really harmful. This auxbus is a substantial blocker to them
+normalizing their operations, thus I view it as important to
+resolve. Even after this it is going to take a long time and alot of
+effort to review their new RDMA driver.
+
+Regards,
+Jason
