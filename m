@@ -2,75 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18C182CFFD6
-	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 00:52:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AD672CFFD9
+	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 01:00:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727444AbgLEXue (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Dec 2020 18:50:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55438 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725995AbgLEXud (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 5 Dec 2020 18:50:33 -0500
-Date:   Sat, 5 Dec 2020 15:49:51 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607212193;
-        bh=h0vaEYwFre3MPf6MHPuQ2v8JOABc6Vx+THCYEJwqZEg=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CoulufPecNt5be0Hh33etS3OzTQxlnBJ7VBB2umi3YSs3TT6bAL3EyUHBgEj678S1
-         D4e7VYqm5pc2agH2C6uCN5zPOwbkvVwlH+Y2LwcMt4wYPnBdw1fXV95sYKffViOi82
-         y0gL1xUtGL6JHZ55vqfkxTlEJvulAsxDRMKJIl+uZORsFppIruc0DSGKJvS1xuNNnV
-         arPEnpc1N7a7vSPwk9IxxpxwYLSRgD4a85MqeoZCZRlLf4Z+nzhwxkq4qHnj2Dp0Ve
-         nMp1Nrg6/xjUA+Dj7oA/ei8fl0jd7Qlt8cw+URHJlwZLH8KqybD0pcvvwEZagDn2XM
-         VXYVuq9MeuQVQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     "Limonciello, Mario" <Mario.Limonciello@dell.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Sasha Netfin <sasha.neftin@intel.com>,
-        Aaron Brown <aaron.f.brown@intel.com>,
-        Stefan Assmann <sassmann@redhat.com>,
+        id S1725995AbgLEX7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Dec 2020 18:59:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36100 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725270AbgLEX7G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Dec 2020 18:59:06 -0500
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 051A3C0613D1
+        for <netdev@vger.kernel.org>; Sat,  5 Dec 2020 15:58:20 -0800 (PST)
+Received: by mail-wr1-x442.google.com with SMTP id t4so8958938wrr.12
+        for <netdev@vger.kernel.org>; Sat, 05 Dec 2020 15:58:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:message-id:date:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=Hg9A5yWhuSijN8I3Wf2ZFp54kMtCfs6q1jmN7tL2RM8=;
+        b=HwiBuXK/e04xpJ4cCIRUWaP9BKz4pfnVtfa4+SKkTw4dg5rYEE42A74wKvC5ypH4iZ
+         L9dzxcfsYxv9y4wuFOARxzxf6NXzYeu4HnXjDtx7fH/eRS/8Gn+kSKNlkgh6Kz6XVXRZ
+         efL1M1j0lv7zUgZ0DDkjH2u/6BfPB4KzJHtPQ4/wo76+iOWOxwqbRyXJUq8/isFMV5lO
+         1PnCIx2HNtTaVZ1GnnQlaPM/MCCFYFggbe6+C7b5omW22nezpWZsIA/iBILYD2aP1fNl
+         qZ17JCdGJ4txJDFseV+FpRJWao9LpxfMdI3zEWj4B/6rZ2+O+QqTCtBiY9C/vCIzFIYc
+         bzMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=Hg9A5yWhuSijN8I3Wf2ZFp54kMtCfs6q1jmN7tL2RM8=;
+        b=hOQL23V2/5X+Q7BdL/1O5C5nHF93wea+s0hocSkinnrgwV114PBRUAndaHh8AOOCr0
+         abpFZKlmr7GE3e4ue5mMX5mBH/s9R89BxF8k2zR9q43QH3mZRVne9PgmXf42QCQlegv1
+         4f1Q8um4kMi4lpWzfB7iCOUuu8JMnq6BB7a4mDGVkw4pnPlXn21ekdSHOOjrIW9wf12t
+         +HHnaErC5/08tFuSriQx8aVUnMfkak/sX7UcrtPA6gZDGuXqJFS1ikwclTRyZ8s2ZMbj
+         pYtWvo2xhXI1jK0cqMhgXACyasUg3Wpl6PTCxtHuZSTEMyvIpqxUAoWnpmoOUS1f/DqJ
+         GtEA==
+X-Gm-Message-State: AOAM531t6uKxjS8EYApigUq0a/zU6G4RLE3xtufTtfZYLrI4SQ/4U6GW
+        Ws9eoPuK4UxUo8Gh0Nf7fxVXhu4KsyM=
+X-Google-Smtp-Source: ABdhPJz/rD+LhksXHrETnEqJqxG/zKJGQ2JLMdUruj0wn90n2jiSNxQ9LkTP+qPNF/avkwv32etQnA==
+X-Received: by 2002:adf:ee12:: with SMTP id y18mr12045603wrn.231.1607212697836;
+        Sat, 05 Dec 2020 15:58:17 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f2e:e00:6845:f25a:bfd1:6598? (p200300ea8f2e0e006845f25abfd16598.dip0.t-ipconnect.de. [2003:ea:8f2e:e00:6845:f25a:bfd1:6598])
+        by smtp.googlemail.com with ESMTPSA id x17sm2223034wro.40.2020.12.05.15.58.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 05 Dec 2020 15:58:17 -0800 (PST)
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
         David Miller <davem@davemloft.net>,
-        David Arcari <darcari@redhat.com>,
-        "Shen, Yijun" <Yijun.Shen@dell.com>,
-        "Yuan, Perry" <Perry.Yuan@dell.com>,
-        "anthony.wong@canonical.com" <anthony.wong@canonical.com>
-Subject: Re: [PATCH v3 0/7] Improve s0ix flows for systems i219LM
-Message-ID: <20201205154951.4dd92194@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <CAKgT0UfuyrbzpDNySMmnAkqKnw9cYuEM1LhgG0QvmrY=smR-uw@mail.gmail.com>
-References: <20201204200920.133780-1-mario.limonciello@dell.com>
-        <CAKgT0Uc=OxcuHbZihY3zxsxzPprJ_8vGHr=reBJFMrf=V9A5kg@mail.gmail.com>
-        <DM6PR19MB2636B200D618A5546E7BBB57FAF10@DM6PR19MB2636.namprd19.prod.outlook.com>
-        <CAKgT0UfuyrbzpDNySMmnAkqKnw9cYuEM1LhgG0QvmrY=smR-uw@mail.gmail.com>
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: [PATCH net-next 0/2] r8169: improve rtl_rx and NUM_RX_DESC handling
+Message-ID: <bf2db26b-5188-7311-a89a-32fafcd653ac@gmail.com>
+Date:   Sun, 6 Dec 2020 00:58:12 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 4 Dec 2020 14:38:03 -0800 Alexander Duyck wrote:
-> > > The patches look good to me. Just need to address the minor issue that
-> > > seems to have been present prior to the introduction of this patch
-> > > set.
-> > >
-> > > Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>  
-> >
-> > Thanks for your review.  Just some operational questions - since this previously
-> > existed do you want me to re-spin the series to a v4 for this, or should it be
-> > a follow up after the series?
-> >
-> > If I respin it, would you prefer that change to occur at the start or end
-> > of the series?  
-> 
-> I don't need a respin, but if you are going to fix it you should
-> probably put out the patch as something like a 8/7. If you respin it
-> should happen near the start of the series as it is a bug you are
-> addressing.
+This series improves rtl_rx() and the handling of NUM_RX_DESC.
 
-Don't we need that patch to be before this series so it can be
-back ported easily? Or is it not really a bug?
+Heiner Kallweit (2):
+  r8169: improve rtl_rx
+  r8169: make NUM_RX_DESC a signed int
+
+ drivers/net/ethernet/realtek/r8169_main.c | 21 ++++++++-------------
+ 1 file changed, 8 insertions(+), 13 deletions(-)
+
+-- 
+2.29.2
+
