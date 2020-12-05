@@ -2,81 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32F712CF922
-	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 04:12:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A24B2CF928
+	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 04:15:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727514AbgLEDKg convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 4 Dec 2020 22:10:36 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:21514 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727245AbgLEDKg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 22:10:36 -0500
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B534L83002455
-        for <netdev@vger.kernel.org>; Fri, 4 Dec 2020 19:09:55 -0800
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 357tfmt7r0-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 04 Dec 2020 19:09:55 -0800
-Received: from intmgw004.08.frc2.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 4 Dec 2020 19:09:54 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 1BB8E2ECABAC; Fri,  4 Dec 2020 19:09:53 -0800 (PST)
-From:   Andrii Nakryiko <andrii@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii@kernel.org>, <kernel-team@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH bpf-next] bpf: return -EOPNOTSUPP when attaching to non-kernel BTF
-Date:   Fri, 4 Dec 2020 19:09:51 -0800
-Message-ID: <20201205030952.520743-1-andrii@kernel.org>
-X-Mailer: git-send-email 2.24.1
+        id S1726826AbgLEDPE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 22:15:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42576 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725300AbgLEDPE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 22:15:04 -0500
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B97C0613D1;
+        Fri,  4 Dec 2020 19:14:23 -0800 (PST)
+Received: by mail-lj1-x244.google.com with SMTP id j10so8799082lja.5;
+        Fri, 04 Dec 2020 19:14:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bhnaUEstsq49uk/fb5x2ARUhEHo6K3HNgE+BC9eamaA=;
+        b=oZFYYlsQCzEe9E03e1RLzM8JPqad72TY9Rj5HzvwilkHczQP4sLP9MepHecr4U6iD5
+         FjRAj2WasZZAmAGwMfhjgb+vGQu/wp5UWYbCISvk3hTzIxeUduw0OpuSTgUzbzrLaYSN
+         1fDELZFrCZzJ9joUJsZ1VsWzwpkqQHpGcPonhuB33TGmZK1hqtD3iKoQ9HEbhEK2xoei
+         Fm1gL3yNeheSlnIo9zZaipoEaa8Az+TCzyc+2EXe/gLytoyKiQln1YShMkrljl6eUXbu
+         Zuch6sne81LWpxLZi+u/UPcQXXx+IF1D1+ZJXDShDpwWDsADSGGMSWvX+nGPs3jVhaVk
+         g8fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bhnaUEstsq49uk/fb5x2ARUhEHo6K3HNgE+BC9eamaA=;
+        b=g581+HpLL8ZaH33uj2heDYN/GEjujWCMsGGr8WXqawiE9p8IdYH4gjnz9gKeEdO4eD
+         FVJnP05LBPwJTgyMlDkE7FGxY+ViPKfy83gLujb8nrcaeMujrdsSWLES3yfz5/yKdJkZ
+         KDTvG0tGlfP3/L4liZdxd4u59CSm9T8r37hKlIAWE0PBRDpVzu511bP+qFzoIh3wXiNC
+         Xb9GBryI5VStoB4pJU2EcSm5kDC4aZS4DXXbVwXWEfq5U2IbLf32OfI+J1wjVRUwdsUu
+         /Mm9eThRP5LLwRZhbjHWuc0hqYumZvPFpg/XX3dLjUONWsZblBoQPzGiUAVSuunCtOGR
+         ww/Q==
+X-Gm-Message-State: AOAM5311+NU4/8v7iiMoeF5GMYoEq9/KjVk2F3xAeCfkbF1Tbf533oC/
+        IP4i1JJzrmbHPS+8cMj6h6KYtYWRNCHt/2asMI84BsgWy6U=
+X-Google-Smtp-Source: ABdhPJyudMU3m1DeyEwjyVniEdUz6gQ+Cqqdg5l5d7SN7Oay2RvC0I7kTWt5yorQuywHmF/fNpiM2nEc0x8gogQPKNc=
+X-Received: by 2002:a2e:8891:: with SMTP id k17mr4275030lji.290.1607138062460;
+ Fri, 04 Dec 2020 19:14:22 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-12-04_13:2020-12-04,2020-12-04 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- lowpriorityscore=0 impostorscore=0 adultscore=0 suspectscore=8
- malwarescore=0 clxscore=1034 spamscore=0 bulkscore=0 mlxlogscore=988
- priorityscore=1501 mlxscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2009150000 definitions=main-2012050019
-X-FB-Internal: deliver
+References: <20201205030952.520743-1-andrii@kernel.org>
+In-Reply-To: <20201205030952.520743-1-andrii@kernel.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 4 Dec 2020 19:14:11 -0800
+Message-ID: <CAADnVQK25OLC+C7LLCvGY7kgr_F2vh5-s_4rnwCY7CqMEcfisw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: return -EOPNOTSUPP when attaching to
+ non-kernel BTF
+To:     Andrii Nakryiko <andrii@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Return -EOPNOTSUPP if tracing BPF program is attempted to be attached with
-specified attach_btf_obj_fd pointing to non-kernel (neither vmlinux nor
-module) BTF object. This scenario might be supported in the future and isn't
-outright invalid, so -EINVAL isn't the most appropriate error code.
+On Fri, Dec 4, 2020 at 7:11 PM Andrii Nakryiko <andrii@kernel.org> wrote:
+> +                               return -EOPNOTSUPP;
 
-Suggested-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
----
- kernel/bpf/syscall.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 0cd3cc2af9c1..7e2bf671c6db 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -2121,8 +2121,11 @@ static int bpf_prog_load(union bpf_attr *attr, union bpf_attr __user *uattr)
- 			if (IS_ERR(attach_btf))
- 				return -EINVAL;
- 			if (!btf_is_kernel(attach_btf)) {
-+				/* attaching through specifying bpf_prog's BTF
-+				 * objects directly might be supported eventually
-+				 */
- 				btf_put(attach_btf);
--				return -EINVAL;
-+				return -EOPNOTSUPP;
- 			}
- 		}
- 	} else if (attr->attach_btf_id) {
--- 
-2.24.1
-
+$ cd kernel/bpf
+$ git grep ENOTSUPP|wc -l
+46
+$ git grep EOPNOTSUPP|wc -l
+11
