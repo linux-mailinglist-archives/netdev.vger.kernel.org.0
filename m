@@ -2,146 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D6972CFF19
-	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 22:13:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B5B42CFF22
+	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 22:16:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727103AbgLEVMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Dec 2020 16:12:31 -0500
-Received: from mail-db8eur05on2114.outbound.protection.outlook.com ([40.107.20.114]:14778
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726061AbgLEVM3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 5 Dec 2020 16:12:29 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FNOXpM38zN2PyEbYq6C4Z4hXOeYJFVrhy7dOvsXedkQbdrTmMk+1sAGDvF35UvCUzVitw70DYTGxvayGUyV2UBIF0edA2NGkAsTu+b9H/LlmAXkZ0POJ7MeZq4XGj7GedQ06RgTqbrg+MQGoLLdYqyQtVD4qhZrk5jVg5khF0T3o/7fSEM1mMAdYw9Fgz8clD0usHxpVNhX4nCwo/2k72+lf3P6XfayUPovaX0NJzyvt+FtS5ThIqQSVmrxYQBsJiGWP4kJM2WeJpTdhJ2vSdyOipZwFRzDy1wJmjJ+HOJrE71yvMJSr3SjB9RDbyv4XTZeHNAfSaJhiIXaBsWYq+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jibEGfWesRCILJF8ttZUL+1XOIaY/CCWTdwGTQiCJKc=;
- b=ir3eGMaxIPjHXTZUvTNK0cx2yYcxB0Us1Jz5phFvL0Dc3jpTG2ZBJ33BGNPI5IqL0aUd4sQ+jgjShF9vuknMvwspfiVI0aX4H6sv6Ctv0AjoYzynpVwncflefODD3PdxTP716vsO9iCdV54jG2fwXkzECir5DTnNo1BnT/prG39iccOstWTqpNWM3Yosr5k384Sjav0112t7FmdGyJ4rqcvLG96hlUccAEUHxbYkSNjje91l9Wq5kGD929vM6R+5RcTzooQomBo34aFKUQp3tG6i3xSF+VjEmMla0ox+qnYiNZrpjDnVOHGV8fGUOKZtE3oA+ZqHal9xa80IHVLTzw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=prevas.dk; dmarc=pass action=none header.from=prevas.dk;
- dkim=pass header.d=prevas.dk; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.dk;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jibEGfWesRCILJF8ttZUL+1XOIaY/CCWTdwGTQiCJKc=;
- b=JS+l9E48inDpcJXqBZJV25bcqqzFNtwB5PG6ybfHbi9bvkXFCzwqfTR25pDhX8IHiCik35MXEsVXdzIMBjITYAXWIwGQwwrkWTddA8LEBkD9Ig7H9zr+/1U27msuPxd9PQXDVgRg1687ehCqHlj2oqpZwAWSA7URtBJHXIP2Lbg=
-Authentication-Results: nxp.com; dkim=none (message not signed)
- header.d=none;nxp.com; dmarc=none action=none header.from=prevas.dk;
-Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:3f::10)
- by AM8PR10MB4132.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:1ef::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.19; Sat, 5 Dec
- 2020 21:11:41 +0000
-Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::9068:c899:48f:a8e3]) by AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::9068:c899:48f:a8e3%6]) with mapi id 15.20.3632.021; Sat, 5 Dec 2020
- 21:11:41 +0000
-Subject: Re: [PATCH 00/20] ethernet: ucc_geth: assorted fixes and
- simplifications
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Li Yang <leoyang.li@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Qiang Zhao <qiang.zhao@nxp.com>, netdev@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-References: <20201205191744.7847-1-rasmus.villemoes@prevas.dk>
- <20201205125351.41e89579@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Message-ID: <7e78df84-0035-6935-acb0-adbd0c648128@prevas.dk>
-Date:   Sat, 5 Dec 2020 22:11:39 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <20201205125351.41e89579@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [5.186.115.188]
-X-ClientProxiedBy: AM6PR0202CA0043.eurprd02.prod.outlook.com
- (2603:10a6:20b:3a::20) To AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:208:3f::10)
+        id S1727375AbgLEVPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Dec 2020 16:15:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39378 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726298AbgLEVPm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Dec 2020 16:15:42 -0500
+Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [IPv6:2001:67c:2050::465:103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E7DC061A52
+        for <netdev@vger.kernel.org>; Sat,  5 Dec 2020 13:14:43 -0800 (PST)
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4CpMlD2586zQl9C;
+        Sat,  5 Dec 2020 22:14:16 +0100 (CET)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
+        s=MBO0001; t=1607202854;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=/lX/HqKL0be5XlDvicDZmjd6WfUQfGmi2UuDAXU4AD8=;
+        b=qiXpJT5TL8opGZTba4TS46uAe9cO+ERxDw3IDb00tHIHBgnsTNuKpc44PXNQm7l9nU8j5U
+        zVxK6AuaDPMQnMrPDJ/zltyD1TmWhWMofTIHmL1fG01s6qT0YkZGcv2r2agW5Itx6+7y7/
+        DLG8cQOfjYEia7L8g+h1T4syeR3oMRo6Wu5zzvJEAlRyxOTnpGyhsXC9Tq0yw5fLvSkbv6
+        Yutl7WxmPL4yT33xpGM5PePkDp06KOiqnwfihOUj3nAf3MAYTpCmMAlkaTh5pPH/i2CDcs
+        oVuilYIUstdX3a4R3D1LFaBYfPM92E/Ujo5NFWbBtOtQYIfyna/sZXhf8SKjXA==
+Received: from smtp2.mailbox.org ([80.241.60.241])
+        by spamfilter03.heinlein-hosting.de (spamfilter03.heinlein-hosting.de [80.241.56.117]) (amavisd-new, port 10030)
+        with ESMTP id jOGPcXkJF4Ws; Sat,  5 Dec 2020 22:14:11 +0100 (CET)
+From:   Petr Machata <me@pmachata.org>
+To:     netdev@vger.kernel.org, dsahern@gmail.com,
+        stephen@networkplumber.org
+Cc:     Po.Liu@nxp.com, toke@toke.dk, dave.taht@gmail.com,
+        edumazet@google.com, tahiliani@nitk.edu.in, leon@kernel.org,
+        Petr Machata <me@pmachata.org>
+Subject: [PATCH iproute2-next v2 0/7] Move rate and size parsing and output to lib
+Date:   Sat,  5 Dec 2020 22:13:28 +0100
+Message-Id: <cover.1607201857.git.me@pmachata.org>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.149] (5.186.115.188) by AM6PR0202CA0043.eurprd02.prod.outlook.com (2603:10a6:20b:3a::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.17 via Frontend Transport; Sat, 5 Dec 2020 21:11:40 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 19aa5535-7dea-4354-10e1-08d899625c53
-X-MS-TrafficTypeDiagnostic: AM8PR10MB4132:
-X-Microsoft-Antispam-PRVS: <AM8PR10MB41329758AEB66534584EA44E93F00@AM8PR10MB4132.EURPRD10.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Go5JcHXrUkTaIJdRKvu+m7asRYAhuDFXgw/oQbJA8gBCn7+3nChOr5Pe3Pz8/+8bZcu/fYYfeOKFxn/41OnuGEhG1Ismozh2jiiyB0wpFLCSnRVmyGtcDiMuZ88rHSY5vIYqoqkjngZcJjz/XDfPiWaomJxsEyhATKPV16ZskEGCj6bLtxqNBJcnumD9KcG0Kx8/W1ssCXuMlNOdAX+Y/Qwngdvlfu/LHzxdIcUUEAUJ7rQwsJODDuYN1qXcd5Ahz1D9yglPmzr30dp75FZ2fTvEVsO2MdC5Y3gZ1mzrm3ck4aP+3T786WhW0lsfftJNYz8Z0oPcgJy5davav3SWQ92GYnExfXoWFeG8DVpeA0mwcGHIU1ZylMH6+UiKSaa80rVngEMFF2w5GlSx0xSkwQv2y/zIFM91k/zPCPy7zYaqSejocoB4EqyPTHzbgIqr1dG2cxAAKIjiIr6nlO0wL8cRtpMYiPGXFretT1BE8ryEpuEGaDoZuN8ndLtG9NnZ
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(396003)(366004)(376002)(39840400004)(136003)(346002)(8976002)(8676002)(16526019)(2906002)(186003)(31686004)(31696002)(8936002)(6486002)(66946007)(44832011)(66556008)(956004)(36756003)(66476007)(478600001)(16576012)(86362001)(966005)(316002)(2616005)(26005)(83380400001)(4326008)(6916009)(54906003)(52116002)(5660300002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?Windows-1252?Q?2G1pA49A+9DnNo2lz8D1VYPf5TnFOgK7LlfpvYrtHF8/rF5cAc7Btf2q?=
- =?Windows-1252?Q?45w4MwAAzRhArqcBJEq1L5XXQtsItw0n03rIWciIyzn1Q3WvmrG3OZ1H?=
- =?Windows-1252?Q?sz6OobK+L9r6An+blUhGEbcnVyNDpEGAvdJihHQggbZxrh0deZ+0yHXd?=
- =?Windows-1252?Q?troa7y+K/kp75JItgeUlH++IwEH1giZ1P6E8Lyv2Pwu5oHx9HAVF9Zne?=
- =?Windows-1252?Q?ft5arb0+AvUxuR8WmtBX0UnBbTZ3iYqW5fGPkI1t27Jk8U4gTrIgl+pb?=
- =?Windows-1252?Q?6qHbC/n+0vGCK1PxAf1NmM1UNZeV5X2BDhMoqiRwvB1Vyt4zq6vBAN25?=
- =?Windows-1252?Q?ehMt6RwbrhWVcCqIkaKp4SZQ/QU4v+8ZAEHgsxkUxM0Xtepbe8QILtcl?=
- =?Windows-1252?Q?xkIkowAAXK7Jj0ZotWtX5sEFEUPIAqBcyBsQzV4JgD4DfGsAW5cXg8JS?=
- =?Windows-1252?Q?bQ4Q/+OoJ3LGFvFS8+qRJcUd4h2YsgkMBeZqG9G8gNf/3C1KJoG+Ip/w?=
- =?Windows-1252?Q?lXDQ+4ncHHiwHv5F9AwMmsjIr9w8Z0Sdp5Aw/MMJlHebChz4I6MQSPAY?=
- =?Windows-1252?Q?JjW1zyIpKURE00txQpJ1bqJlUXor2MzLVmzshWq6Q08yrI4Nc/CDZsLX?=
- =?Windows-1252?Q?0Yr7FxQ1I21MzlUFNa6vxd/zGC5ddnRlVR1gLxfkN+3Yiz4AETi9InaF?=
- =?Windows-1252?Q?Tg6s7c2CVTC012VBd+ZZ6VoxutDOKw1iN78fCZL4k/JGDRvCIeOD8zWu?=
- =?Windows-1252?Q?9FbztmB9bCOzgVjUdQZJoY4ZH14zoKL+gT0MF6bSklx7mrBL8mBLWjm0?=
- =?Windows-1252?Q?K7AqL45+i94pcl2SdQ96uxkMsVrDgCW6vphKIjuSzH4CskY+NWt/COnk?=
- =?Windows-1252?Q?hwweUBylULVlY4DSafzDFQc9AaDVZ/PisGdhv8wLfRoFpJ5BRHd9TvWa?=
- =?Windows-1252?Q?yws42zyQGY5LUU1BLiwDrlsoAH/duwx+LbZMr++mmxPk81WZa/HsOgOV?=
- =?Windows-1252?Q?sKQy79D/9hw//MHMaJTlcEzh0cPD2CTQNLuWyqkG/XXQO5z9Np//KXP4?=
- =?Windows-1252?Q?FM8wQkQcnIgfLu8/?=
-X-OriginatorOrg: prevas.dk
-X-MS-Exchange-CrossTenant-Network-Message-Id: 19aa5535-7dea-4354-10e1-08d899625c53
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Dec 2020 21:11:41.0456
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d350cf71-778d-4780-88f5-071a4cb1ed61
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vEdadBX9Ofmzj27UYaVES2z3XejIvCyu+GlebpN+VlIDWmHjAyYCh6wQTYexqPx16L3IB0I+760+HsAkr6yJ+0sYbZTfRC9LlziyO6M1nSU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR10MB4132
+Content-Transfer-Encoding: 8bit
+X-MBO-SPAM-Probability: ***
+X-Rspamd-Score: 3.92 / 15.00 / 15.00
+X-Rspamd-Queue-Id: 785561718
+X-Rspamd-UID: fef2aa
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/12/2020 21.53, Jakub Kicinski wrote:
-> On Sat,  5 Dec 2020 20:17:23 +0100 Rasmus Villemoes wrote:
->> While trying to figure out how to allow bumping the MTU with the
->> ucc_geth driver, I fell into a rabbit hole and stumbled on a whole
->> bunch of issues of varying importance - some are outright bug fixes,
->> while most are a matter of simplifying the code to make it more
->> accessible.
->>
->> At the end of digging around the code and data sheet to figure out how
->> it all works, I think the MTU issue might be fixed by a one-liner, but
->> I'm not sure it can be that simple. It does seem to work (ping -s X
->> works for larger values of X, and wireshark confirms that the packets
->> are not fragmented).
->>
->> Re patch 2, someone in NXP should check how the hardware actually
->> works and make an updated reference manual available.
-> 
-> Looks like a nice clean up on a quick look.
-> 
-> Please separate patches 1 and 11 (which are the two bug fixes I see)
+The DCB tool will have commands that deal with buffer sizes and traffic
+rates. TC is another tool that has a number of such commands, and functions
+to support them: get_size(), get_rate/64(), s/print_size() and
+s/print_rate(). In this patchset, these functions are moved from TC to lib/
+for possible reuse and modernized.
 
-I think patch 2 is a bug fix as well, but I'd like someone from NXP to
-comment.
+s/print_rate() has a hidden parameter of a global variable use_iec, which
+made the conversion non-trivial. The parameter was made explicit,
+print_rate() converted to a mostly json_print-like function, and
+sprint_rate() retired in favor of the new print_rate. Patches #1 and #2
+deal with this.
 
-> rebase (retest) and post them against the net tree:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/
+The intention was to treat s/print_size() similarly, but unfortunately two
+use cases of sprint_size() cannot be converted to a json_print-like
+print_size(), and the function sprint_size() had to remain as a discouraged
+backdoor to print_size(). This is done in patch #3.
 
-So I thought this would go through Li Yang's tree. That's where my
-previous QE related patches have gone through, and at least some need
-some input from NXP folks - and what MAINTAINERS suggests. So not
-marking the patches with net or net-next was deliberate. But I'm happy
-to rearrange and send to net/net-next as appropriate if that's what you
-and Li Yang can agree to.
+Patch #4 then improves the code of sprint_size() a little bit.
 
-Thanks,
-Rasmus
+Patch #5 fixes a buglet in formatting small rates in IEC mode.
+
+Patches #6 and #7 handle a routine movement of, respectively,
+get_rate/64() and get_size() from tc to lib.
+
+This patchset does not actually add any new uses of these functions. A
+follow-up patchset will add subtools for management of DCB buffer and DCB
+maxrate objects that will make use of them.
+
+v2:
+- Patch #2:
+    - Adapt q_mqprio.c patch, the file changed since v1.
+- Patch #4:
+    - This patch is new. It addresses a request from Stephen Hemminger to
+      clean up the sprint_size() function.
+
+
+Petr Machata (7):
+  Move the use_iec declaration to the tools
+  lib: Move print_rate() from tc here; modernize
+  lib: Move sprint_size() from tc here, add print_size()
+  lib: sprint_size(): Uncrustify the code a bit
+  lib: print_color_rate(): Fix formatting small rates in IEC mode
+  lib: Move get_rate(), get_rate64() from tc here
+  lib: Move get_size() from tc here
+
+ include/json_print.h |  14 ++++
+ include/utils.h      |   4 +-
+ ip/ip_common.h       |   2 +
+ lib/json_print.c     |  63 +++++++++++++++
+ lib/utils.c          | 114 +++++++++++++++++++++++++++
+ tc/m_gate.c          |   6 +-
+ tc/m_police.c        |  14 ++--
+ tc/q_cake.c          |  44 +++++------
+ tc/q_cbq.c           |  14 +---
+ tc/q_drr.c           |  10 +--
+ tc/q_fifo.c          |  10 +--
+ tc/q_fq.c            |  34 +++-----
+ tc/q_fq_codel.c      |   5 +-
+ tc/q_fq_pie.c        |   9 +--
+ tc/q_gred.c          |  39 ++--------
+ tc/q_hfsc.c          |   4 +-
+ tc/q_hhf.c           |   9 +--
+ tc/q_htb.c           |  23 +++---
+ tc/q_mqprio.c        |   6 +-
+ tc/q_netem.c         |   4 +-
+ tc/q_red.c           |  13 +---
+ tc/q_sfq.c           |  15 +---
+ tc/q_tbf.c           |  32 +++-----
+ tc/tc_common.h       |   1 +
+ tc/tc_util.c         | 180 +++----------------------------------------
+ tc/tc_util.h         |   8 +-
+ 26 files changed, 307 insertions(+), 370 deletions(-)
+
+-- 
+2.25.1
+
