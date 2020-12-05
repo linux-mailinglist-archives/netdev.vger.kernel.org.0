@@ -2,91 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACB362CF8F8
-	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 03:29:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9F922CF916
+	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 03:52:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728558AbgLEC2u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 21:28:50 -0500
-Received: from mail-io1-f72.google.com ([209.85.166.72]:47686 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726826AbgLEC2t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 21:28:49 -0500
-Received: by mail-io1-f72.google.com with SMTP id s11so6924843iod.14
-        for <netdev@vger.kernel.org>; Fri, 04 Dec 2020 18:28:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=w4/9O/+L4JuRl8+48xslFll28CVphFIEJatbgOnAzZI=;
-        b=QeahAupNLicu4r5dB/r7ChTMtAucvyrrtXejg2EC6Rfd0h9d3Kmui6T1HCepx7s+55
-         aOqbKMK1gnZbCq4tAwf6RE/WMi80L7CpbuYt0mBuRa5TUoXADiozAv3MJO/s8x5nZ4vt
-         SdztSuG9Bow8hkMVWH1TjhblvSFRCUarxI3AI0UtnmXY18kjI96Ti2WSUddxdLM2VVix
-         D576+xf/HR6QjuGTpxBOS75hKSY0pEfrdWL6xxJ8h0paRdti9dPe74cH1YHDK5ClTFmb
-         rARil2EZ9uU+XnrcLTW4NCayJ3vGeTBNMxd+co8aBw7sPJv3aU3Q9FNsre4dwybdhGmh
-         GYOg==
-X-Gm-Message-State: AOAM5302/pLYDKNcZgXkfaQlCZMDB0CLHv/T9YtDGNUdK/ToILbF6VPh
-        xmW0PRNWCY2B++/cCr7ANuh1KdtVIPDGCR99UsLw0jOqBYRW
-X-Google-Smtp-Source: ABdhPJzcGLJLoUdiDVeD9UBE3qPB8XHF7kE7pmtvZPMXeIVEBsxOE4/2MZpsIziEw2y5nBceTjNX6ui6XvQOLtlEJT7iWqaZVQwy
+        id S1726667AbgLECwc convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 4 Dec 2020 21:52:32 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:6850 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726151AbgLECwc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 21:52:32 -0500
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B52nAsf014684
+        for <netdev@vger.kernel.org>; Fri, 4 Dec 2020 18:51:52 -0800
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 357rev36e6-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 04 Dec 2020 18:51:52 -0800
+Received: from intmgw001.03.ash8.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 4 Dec 2020 18:51:51 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id CB29B2ECABA4; Fri,  4 Dec 2020 18:51:41 -0800 (PST)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>,
+        Alan Maguire <alan.maguire@oracle.com>
+Subject: [PATCH bpf-next] libbpf: support module BTF for BPF_TYPE_ID_TARGET CO-RE relocation
+Date:   Fri, 4 Dec 2020 18:51:40 -0800
+Message-ID: <20201205025140.443115-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-X-Received: by 2002:a92:b61a:: with SMTP id s26mr9561675ili.239.1607135288665;
- Fri, 04 Dec 2020 18:28:08 -0800 (PST)
-Date:   Fri, 04 Dec 2020 18:28:08 -0800
-In-Reply-To: <0000000000008c848805b123f174@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000fcafca05b5ae5739@google.com>
-Subject: Re: WARNING in ieee80211_ibss_csa_beacon
-From:   syzbot <syzbot+b6c9fe29aefe68e4ad34@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-12-04_13:2020-12-04,2020-12-04 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 phishscore=0
+ suspectscore=8 clxscore=1034 priorityscore=1501 malwarescore=0
+ lowpriorityscore=0 impostorscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012050017
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+When Clang emits ldimm64 instruction for BPF_TYPE_ID_TARGET CO-RE relocation,
+put module BTF FD, containing target type, into upper 32 bits of imm64.
 
-HEAD commit:    e87297fa Merge tag 'drm-fixes-2020-12-04' of git://anongit..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1412f617500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e49433cfed49b7d9
-dashboard link: https://syzkaller.appspot.com/bug?extid=b6c9fe29aefe68e4ad34
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15131837500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14550ecf500000
+Because this FD is internal to libbpf, it's very cumbersome to test this in
+selftests. Manual testing was performed with debug log messages sprinkled
+across selftests and libbpf, confirming expected values are substituted.
+Better testing will be performed as part of the work adding module BTF types
+support to  bpf_snprintf_btf() helpers.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+b6c9fe29aefe68e4ad34@syzkaller.appspotmail.com
+Cc: Alan Maguire <alan.maguire@oracle.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+---
+ tools/lib/bpf/libbpf.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
-wlan1: Created IBSS using preconfigured BSSID 50:50:50:50:50:50
-wlan1: Creating new IBSS network, BSSID 50:50:50:50:50:50
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 21 at net/mac80211/ibss.c:504 ieee80211_ibss_csa_beacon+0x5ec/0x730 net/mac80211/ibss.c:504
-Modules linked in:
-CPU: 0 PID: 21 Comm: kworker/u4:1 Not tainted 5.10.0-rc6-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: phy10 ieee80211_csa_finalize_work
-RIP: 0010:ieee80211_ibss_csa_beacon+0x5ec/0x730 net/mac80211/ibss.c:504
-Code: ff e8 a8 b7 9c 00 31 ff 89 c5 89 c6 e8 9d 2c 27 f9 85 ed 0f 85 84 fa ff ff e8 40 34 27 f9 0f 0b e9 78 fa ff ff e8 34 34 27 f9 <0f> 0b 41 bd ea ff ff ff e9 e1 fd ff ff e8 72 b2 68 f9 e9 8f fa ff
-RSP: 0018:ffffc90000dbfc50 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: ffff88801c070c00 RCX: ffffffff8155a937
-RDX: ffff888010e1b480 RSI: ffffffff8848d04c RDI: 0000000000000000
-RBP: 0000000000000002 R08: 0000000000000001 R09: ffffffff8ebaf727
-R10: fffffbfff1d75ee4 R11: 0000000000000001 R12: 0000000000000000
-R13: ffff88801c0718f0 R14: ffff888022400c80 R15: ffff88801c071248
-FS:  0000000000000000(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fdcb7060000 CR3: 0000000012b2b000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- ieee80211_set_after_csa_beacon net/mac80211/cfg.c:3133 [inline]
- __ieee80211_csa_finalize+0x504/0xbf0 net/mac80211/cfg.c:3189
- ieee80211_csa_finalize net/mac80211/cfg.c:3212 [inline]
- ieee80211_csa_finalize_work+0x131/0x170 net/mac80211/cfg.c:3237
- process_one_work+0x933/0x15a0 kernel/workqueue.c:2272
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2418
- kthread+0x3b1/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 9be88a90a4aa..539956f7920a 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -4795,6 +4795,7 @@ static int load_module_btfs(struct bpf_object *obj)
+ 
+ 		mod_btf = &obj->btf_modules[obj->btf_module_cnt++];
+ 
++		btf__set_fd(btf, fd);
+ 		mod_btf->btf = btf;
+ 		mod_btf->id = id;
+ 		mod_btf->fd = fd;
+@@ -5445,6 +5446,10 @@ struct bpf_core_relo_res
+ 	__u32 orig_type_id;
+ 	__u32 new_sz;
+ 	__u32 new_type_id;
++	/* FD of the module BTF containing the target candidate, or 0 for
++	 * vmlinux BTF
++	 */
++	int btf_obj_fd;
+ };
+ 
+ /* Calculate original and target relocation values, given local and target
+@@ -5469,6 +5474,7 @@ static int bpf_core_calc_relo(const struct bpf_program *prog,
+ 	res->fail_memsz_adjust = false;
+ 	res->orig_sz = res->new_sz = 0;
+ 	res->orig_type_id = res->new_type_id = 0;
++	res->btf_obj_fd = 0;
+ 
+ 	if (core_relo_is_field_based(relo->kind)) {
+ 		err = bpf_core_calc_field_relo(prog, relo, local_spec,
+@@ -5519,6 +5525,9 @@ static int bpf_core_calc_relo(const struct bpf_program *prog,
+ 	} else if (core_relo_is_type_based(relo->kind)) {
+ 		err = bpf_core_calc_type_relo(relo, local_spec, &res->orig_val);
+ 		err = err ?: bpf_core_calc_type_relo(relo, targ_spec, &res->new_val);
++		if (!err && relo->kind == BPF_TYPE_ID_TARGET &&
++		    targ_spec->btf != prog->obj->btf_vmlinux)
++			res->btf_obj_fd = btf__fd(targ_spec->btf);
+ 	} else if (core_relo_is_enumval_based(relo->kind)) {
+ 		err = bpf_core_calc_enumval_relo(relo, local_spec, &res->orig_val);
+ 		err = err ?: bpf_core_calc_enumval_relo(relo, targ_spec, &res->new_val);
+@@ -5725,10 +5734,14 @@ static int bpf_core_patch_insn(struct bpf_program *prog,
+ 		}
+ 
+ 		insn[0].imm = new_val;
+-		insn[1].imm = 0; /* currently only 32-bit values are supported */
+-		pr_debug("prog '%s': relo #%d: patched insn #%d (LDIMM64) imm64 %llu -> %u\n",
++		/* btf_obj_fd is zero for all relos but BPF_TYPE_ID_TARGET
++		 * with target type in the kernel module BTF
++		 */
++		insn[1].imm = res->btf_obj_fd;
++		pr_debug("prog '%s': relo #%d: patched insn #%d (LDIMM64) imm64 %llu -> %llu\n",
+ 			 prog->name, relo_idx, insn_idx,
+-			 (unsigned long long)imm, new_val);
++			 (unsigned long long)imm,
++			 ((unsigned long long)res->btf_obj_fd << 32) | new_val);
+ 		break;
+ 	}
+ 	default:
+-- 
+2.24.1
 
