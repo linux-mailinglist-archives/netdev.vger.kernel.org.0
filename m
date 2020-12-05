@@ -2,84 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE8702CFB2E
-	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 12:48:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E22742CFB2B
+	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 12:42:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729635AbgLELeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Dec 2020 06:34:06 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.52]:27201 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729588AbgLELah (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Dec 2020 06:30:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1607167616;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=BYQqqU+HV7tZnfPNk40gZZLqqvMLAbkZ+V4cJEK+34M=;
-        b=rlUkK7owRraaJSpH7RdsPT0xpqo6si7jCg8C39sJgJCdVBrtvQZUb1IAM91AT+FIcU
-        x+t2eVy5n7mvhO8B1Hq/wM2cSljNYbCJqSAovWq3cKIHJ2QUYFSZ4AB7pbKBMvBLWjVB
-        I0nq9gSZ3VBeZNo6ECLuHi4rTV1O3rTGmrtm7lIehIgv8/4JJKwneG/wfqljDE/6UH63
-        hxZxR+i3K0dmv8Fb0sFCaPvbdSriPQccEG+lPkWbeErtaA/ZwtEJ+gI/03F1CkNDWULs
-        3V0wnUryd1Bs2LVNck7ePSp/hB2Fi85SpUhYwqXVtvbyg9qZtnJcSMJj8I6hxO5Xh7t+
-        bjtA==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMJVch5kErC"
-X-RZG-CLASS-ID: mo00
-Received: from [192.168.50.177]
-        by smtp.strato.de (RZmta 47.3.4 DYNA|AUTH)
-        with ESMTPSA id n07f3bwB5BQnLY6
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Sat, 5 Dec 2020 12:26:49 +0100 (CET)
-Subject: Re: [net 3/3] can: isotp: add SF_BROADCAST support for functional
- addressing
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        linux-can@vger.kernel.org, kernel@pengutronix.de,
-        Thomas Wagner <thwa1@web.de>
-References: <20201204133508.742120-1-mkl@pengutronix.de>
- <20201204133508.742120-4-mkl@pengutronix.de>
- <20201204194435.0d4ab3fd@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <b4acc4eb-aff6-9d20-b8a9-d1c47213cefd@hartkopp.net>
-Date:   Sat, 5 Dec 2020 12:26:44 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
-MIME-Version: 1.0
-In-Reply-To: <20201204194435.0d4ab3fd@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1726498AbgLELlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Dec 2020 06:41:00 -0500
+Received: from stargate.chelsio.com ([12.32.117.8]:37701 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726120AbgLELhv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Dec 2020 06:37:51 -0500
+Received: from localhost.localdomain (vardah.blr.asicdesigners.com [10.193.186.1])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 0B5BaIbP002408;
+        Sat, 5 Dec 2020 03:36:19 -0800
+From:   Vinay Kumar Yadav <vinay.yadav@chelsio.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+Cc:     secdev@chelsio.com, Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>
+Subject: [PATCH net v2] net/tls: Fix kernel panic when socket is in tls toe mode
+Date:   Sat,  5 Dec 2020 17:05:30 +0530
+Message-Id: <20201205113529.14574-1-vinay.yadav@chelsio.com>
+X-Mailer: git-send-email 2.18.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+When socket is in tls-toe (TLS_HW_RECORD) and connections
+are established in kernel stack, on every connection close
+it clears tls context which is created once on socket creation,
+causing kernel panic. fix it by not initializing listen in
+kernel stack incase of tls-toe, allow listen in only adapter.
 
+v1->v2:
+- warning correction.
 
-On 05.12.20 04:44, Jakub Kicinski wrote:
-> On Fri,  4 Dec 2020 14:35:08 +0100 Marc Kleine-Budde wrote:
->> From: Oliver Hartkopp <socketcan@hartkopp.net>
->>
->> When CAN_ISOTP_SF_BROADCAST is set in the CAN_ISOTP_OPTS flags the CAN_ISOTP
->> socket is switched into functional addressing mode, where only single frame
->> (SF) protocol data units can be send on the specified CAN interface and the
->> given tp.tx_id after bind().
->>
->> In opposite to normal and extended addressing this socket does not register a
->> CAN-ID for reception which would be needed for a 1-to-1 ISOTP connection with a
->> segmented bi-directional data transfer.
->>
->> Sending SFs on this socket is therefore a TX-only 'broadcast' operation.
-> 
-> Unclear from this patch what is getting fixed. Looks a little bit like
-> a feature which could be added in a backward compatible way, no?
-> Is it only added for completeness of the ISOTP implementation?
-> 
+Fixes: dd0bed1665d6 ("tls: support for Inline tls record")
+Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
+Signed-off-by: Vinay Kumar Yadav <vinay.yadav@chelsio.com>
+---
+ net/tls/tls_toe.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-Yes, the latter.
+diff --git a/net/tls/tls_toe.c b/net/tls/tls_toe.c
+index 7e1330f19..f38861ce9 100644
+--- a/net/tls/tls_toe.c
++++ b/net/tls/tls_toe.c
+@@ -81,7 +81,6 @@ int tls_toe_bypass(struct sock *sk)
+ 
+ void tls_toe_unhash(struct sock *sk)
+ {
+-	struct tls_context *ctx = tls_get_ctx(sk);
+ 	struct tls_toe_device *dev;
+ 
+ 	spin_lock_bh(&device_spinlock);
+@@ -95,16 +94,13 @@ void tls_toe_unhash(struct sock *sk)
+ 		}
+ 	}
+ 	spin_unlock_bh(&device_spinlock);
+-	ctx->sk_proto->unhash(sk);
+ }
+ 
+ int tls_toe_hash(struct sock *sk)
+ {
+-	struct tls_context *ctx = tls_get_ctx(sk);
+ 	struct tls_toe_device *dev;
+-	int err;
++	int err = 0;
+ 
+-	err = ctx->sk_proto->hash(sk);
+ 	spin_lock_bh(&device_spinlock);
+ 	list_for_each_entry(dev, &device_list, dev_list) {
+ 		if (dev->hash) {
+-- 
+2.18.1
 
-It's a very small and simple tested addition and I hope it can still go 
-into the initial upstream process.
-
-Many thanks,
-Oliver
