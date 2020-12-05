@@ -2,96 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4977F2CFC5D
-	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 19:22:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 953BF2CFC59
+	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 19:05:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727753AbgLERoL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Dec 2020 12:44:11 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:20556 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727496AbgLERmW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Dec 2020 12:42:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607190017;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=i4l8pC0ZVpmyeGoUVE05XOBDw9b0P2zcxvMhFLJB3uQ=;
-        b=PsNbkgzkVCZ9KdQgT9whbAiXpoT5mUbsjyepLDRPSEijitOZKhJmGyScE9Fp5eteA+AJFl
-        WIbb84AhigTPbvLzdG9ODtH5UE49Ic8uGmyM4wTPgxNeQ9aNs0n2reg/xJqsmJ0Z6JhwyU
-        B90BeViuHwZ5ET4RkvnAtI3G9pUYRwc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-220-jRk5ZDi5OsSD9uHoc9ZX7g-1; Sat, 05 Dec 2020 12:40:14 -0500
-X-MC-Unique: jRk5ZDi5OsSD9uHoc9ZX7g-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8FA575189;
-        Sat,  5 Dec 2020 17:40:12 +0000 (UTC)
-Received: from f33vm.wilsonet.com.wilsonet.com (dhcp-17-185.bos.redhat.com [10.18.17.185])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 23AD919C59;
-        Sat,  5 Dec 2020 17:40:08 +0000 (UTC)
-From:   Jarod Wilson <jarod@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jarod Wilson <jarod@redhat.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org
-Subject: [PATCH net-next] bonding: set xfrm feature flags more sanely
-Date:   Sat,  5 Dec 2020 12:40:03 -0500
-Message-Id: <20201205174003.578267-1-jarod@redhat.com>
+        id S1728341AbgLESDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Dec 2020 13:03:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44884 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728178AbgLESAi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 5 Dec 2020 13:00:38 -0500
+Date:   Sat, 5 Dec 2020 09:59:48 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607191189;
+        bh=2XTj98FPwKYrzmdgVAroyFbBlTDM4KyJc/G+XYx1L5s=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=frCgoLvdzjdFmwlMnLFXg2EUZK1aRpWGIxlunb2Yx0PduLElndrQvqORfyMbcZjOY
+         sA9u7JB/BbqjGMmWfSlHvzTfuaHo4ffWPpUsFsoskWCcjmrF/BYSL+n0ZpRnsZ84I1
+         AXu/7TgwP3/kiOWws2ZiPPHQBV7lzPs5PCujv3IBlUOAsF155AKtB+Ny2sy1wPcAQa
+         4vC/DK9p6mCU63qbakVs9iQh6l1Gg/N/ZbcFqczrYkFD330x1sn+sk5M3XOMhFIHBs
+         4R0snzIEAY6bW0JT1EVc55C+R8uX42sZU95qU/1ZyZER29WztsTZwKkNIyXBTKX1QC
+         YIJx3ks2ohP/w==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, m-karicheri2@ti.com, vladimir.oltean@nxp.com,
+        Jose.Abreu@synopsys.com, po.liu@nxp.com,
+        intel-wired-lan@lists.osuosl.org, anthony.l.nguyen@intel.com
+Subject: Re: [PATCH net-next v1 8/9] igc: Add support for exposing frame
+ preemption stats registers
+Message-ID: <20201205095948.5e0eba28@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201202045325.3254757-9-vinicius.gomes@intel.com>
+References: <20201202045325.3254757-1-vinicius.gomes@intel.com>
+        <20201202045325.3254757-9-vinicius.gomes@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We can remove one of the ifdef blocks here, and instead of setting both
-the xfrm hw_features and features flags, then unsetting the the features
-flags if not in AB, wait to set the features flags if we're actually in AB
-mode.
+On Tue,  1 Dec 2020 20:53:24 -0800 Vinicius Costa Gomes wrote:
+> Expose the Frame Preemption counters, so the number of
+> express/preemptible packets can be monitored by userspace.
+> 
+> These registers are cleared when read, so the value shown is the
+> number of events that happened since the last read.
+> 
+> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 
-Cc: Jay Vosburgh <j.vosburgh@gmail.com>
-Cc: Veaceslav Falico <vfalico@gmail.com>
-Cc: Andy Gospodarek <andy@greyhouse.net>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Thomas Davis <tadavis@lbl.gov>
-Cc: netdev@vger.kernel.org
-Signed-off-by: Jarod Wilson <jarod@redhat.com>
----
- drivers/net/bonding/bond_main.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+You mean expose in a register dump? That's not great user experience..
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index e0880a3840d7..5fe5232cc3f3 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -4746,15 +4746,13 @@ void bond_setup(struct net_device *bond_dev)
- 				NETIF_F_HW_VLAN_CTAG_FILTER;
- 
- 	bond_dev->hw_features |= NETIF_F_GSO_ENCAP_ALL;
--#ifdef CONFIG_XFRM_OFFLOAD
--	bond_dev->hw_features |= BOND_XFRM_FEATURES;
--#endif /* CONFIG_XFRM_OFFLOAD */
- 	bond_dev->features |= bond_dev->hw_features;
- 	bond_dev->features |= NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_STAG_TX;
- #ifdef CONFIG_XFRM_OFFLOAD
--	/* Disable XFRM features if this isn't an active-backup config */
--	if (BOND_MODE(bond) != BOND_MODE_ACTIVEBACKUP)
--		bond_dev->features &= ~BOND_XFRM_FEATURES;
-+	bond_dev->hw_features |= BOND_XFRM_FEATURES;
-+	/* Only enable XFRM features if this is an active-backup config */
-+	if (BOND_MODE(bond) == BOND_MODE_ACTIVEBACKUP)
-+		bond_dev->features |= BOND_XFRM_FEATURES;
- #endif /* CONFIG_XFRM_OFFLOAD */
- }
- 
--- 
-2.28.0
+Are there any stats that the standards mandate?
 
+It'd be great if we could come up with some common set and expose them
+via ethtool like the pause frame statistics.
