@@ -2,86 +2,287 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5FAD2CFF1F
+	by mail.lfdr.de (Postfix) with ESMTP id 3B8402CFF1E
 	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 22:16:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727333AbgLEVPM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Dec 2020 16:15:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39284 "EHLO
+        id S1727303AbgLEVPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Dec 2020 16:15:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726120AbgLEVPF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Dec 2020 16:15:05 -0500
-Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050::465:201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50355C061A4F
-        for <netdev@vger.kernel.org>; Sat,  5 Dec 2020 13:14:25 -0800 (PST)
+        with ESMTP id S1726111AbgLEVPH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Dec 2020 16:15:07 -0500
+Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [IPv6:2001:67c:2050::465:103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E495C061A51
+        for <netdev@vger.kernel.org>; Sat,  5 Dec 2020 13:14:27 -0800 (PST)
 Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:105:465:1:2:0])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4CpMlM6RQ2zQlKJ;
-        Sat,  5 Dec 2020 22:14:23 +0100 (CET)
+        by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4CpMlQ0LMYzQlF0;
+        Sat,  5 Dec 2020 22:14:26 +0100 (CET)
 X-Virus-Scanned: amavisd-new at heinlein-support.de
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-        s=MBO0001; t=1607202862;
+        s=MBO0001; t=1607202863;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=MOy+Jg0HfU7nTdZjUwcJ7pAVUCmm2te5eFX8paJ4Shg=;
-        b=B581OOcs0gAGCqGn1fa499QzxAJH8OkK7Ks1Wk2eBS6aU+UGKxLNKN3TOg0bmiULZvFQqo
-        T0QHTfuhSC3jKeJPyZIPmAAzEKF+OlT1x7QmhOyrz0EasW5vEbTLkdjRoJxY2bHPZf07eU
-        /74nUY192XKw/dFXwz/bTegYk3wmvsZe2oMu5BPPKnqNOe2HhlLjwMIs8LxudvhrwuNM9H
-        zOCUBkLGsMCpgNCRwmA5rcsRd+3ZV4PGjoy4SuG1Z8+6J02h7v5tkUoc5s6ZMdSsXp1Usp
-        PDq9Sy0SFBPQj+7d1qs4CEXRnxs+q2qebqHIrDJVq3UqNYcbxSub5gyF9QjKAw==
+        bh=JkQrbItmoOWRkjiKm/3CKnxyik/biurDVy6i24zBA+A=;
+        b=coTuQfIuiu23iibsd8BXrdqtOKgGlacQWvQJQ/vcPDKXtK3uQdNcVvUOgq4ocl0MZV5r1i
+        EEOcqqRnVTSpUNVrA1Ba7puvloifJHqjm6EkvlDpYjPuyJgVQiS8lgAexmHty9fGE6IHe7
+        TQRZb7Aaf8oLJInVddYBQIKjyqGrtOlf2rhq3ky1c4SmyBfY3Y6dlbBW8VxsNPVmt7LhNH
+        47ffeDlYSdOcpQXCliYW1fBv3wmuM8niNXZNlF+rg/D6PqjYNJFchLZCpU7A3uVjSl5a5O
+        A31dSl6RewUTGoJe7YrydSrOVTF2+p4q5BavNtUjh41L0yOUVICPNOZL76Dxxg==
 Received: from smtp2.mailbox.org ([80.241.60.241])
-        by spamfilter05.heinlein-hosting.de (spamfilter05.heinlein-hosting.de [80.241.56.123]) (amavisd-new, port 10030)
-        with ESMTP id jsVS3T50vNwH; Sat,  5 Dec 2020 22:14:20 +0100 (CET)
+        by spamfilter01.heinlein-hosting.de (spamfilter01.heinlein-hosting.de [80.241.56.115]) (amavisd-new, port 10030)
+        with ESMTP id kEnpNOahWFNb; Sat,  5 Dec 2020 22:14:22 +0100 (CET)
 From:   Petr Machata <me@pmachata.org>
 To:     netdev@vger.kernel.org, dsahern@gmail.com,
         stephen@networkplumber.org
 Cc:     Po.Liu@nxp.com, toke@toke.dk, dave.taht@gmail.com,
         edumazet@google.com, tahiliani@nitk.edu.in, leon@kernel.org,
         Petr Machata <me@pmachata.org>
-Subject: [PATCH iproute2-next v2 5/7] lib: print_color_rate(): Fix formatting small rates in IEC mode
-Date:   Sat,  5 Dec 2020 22:13:33 +0100
-Message-Id: <01ae308a04bd16c8671cfef2d14688f00bef4846.1607201857.git.me@pmachata.org>
+Subject: [PATCH iproute2-next v2 6/7] lib: Move get_rate(), get_rate64() from tc here
+Date:   Sat,  5 Dec 2020 22:13:34 +0100
+Message-Id: <08471fe1edf1100b31a50235b751a9c4fa61f147.1607201857.git.me@pmachata.org>
 In-Reply-To: <cover.1607201857.git.me@pmachata.org>
 References: <cover.1607201857.git.me@pmachata.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-MBO-SPAM-Probability: **
-X-Rspamd-Score: 2.11 / 15.00 / 15.00
-X-Rspamd-Queue-Id: D66BA171D
-X-Rspamd-UID: 430b9f
+X-MBO-SPAM-Probability: *
+X-Rspamd-Score: 0.22 / 15.00 / 15.00
+X-Rspamd-Queue-Id: 9CC25171F
+X-Rspamd-UID: 050111
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ISO/IEC units are distinguished from the decadic ones by using a prefixes
-like "Ki", "Mi" instead of "K" and "M". The current code inserts the letter
-"i" after the decadic unit when in IEC mode. However it does so even when
-the prefix is an empty string, formatting 1Kbit in IEC mode as "1000ibit".
-Fix by omitting the letter if there is no prefix.
+The functions get_rate() and get_rate64() are useful for parsing rate-like
+values. The DCB tool will find these useful in the maxrate subtool.
+Move them over to lib so that they can be easily reused.
 
 Signed-off-by: Petr Machata <me@pmachata.org>
 ---
- lib/json_print.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/utils.h |  2 ++
+ lib/utils.c     | 79 +++++++++++++++++++++++++++++++++++++++++++++++++
+ tc/tc_util.c    | 79 -------------------------------------------------
+ tc/tc_util.h    |  2 --
+ 4 files changed, 81 insertions(+), 81 deletions(-)
 
-diff --git a/lib/json_print.c b/lib/json_print.c
-index d28e957c9603..b086123ad1f4 100644
---- a/lib/json_print.c
-+++ b/lib/json_print.c
-@@ -333,7 +333,8 @@ int print_color_rate(bool use_iec, enum output_type type, enum color_attr color,
- 		rate /= kilo;
- 	}
+diff --git a/include/utils.h b/include/utils.h
+index 01454f71cb1a..e2073844f2ef 100644
+--- a/include/utils.h
++++ b/include/utils.h
+@@ -162,6 +162,8 @@ int get_be64(__be64 *val, const char *arg, int base);
+ int get_be32(__be32 *val, const char *arg, int base);
+ int get_be16(__be16 *val, const char *arg, int base);
+ int get_addr64(__u64 *ap, const char *cp);
++int get_rate(unsigned int *rate, const char *str);
++int get_rate64(__u64 *rate, const char *str);
  
--	rc = asprintf(&buf, "%.0f%s%sbit", (double)rate, units[i], str);
-+	rc = asprintf(&buf, "%.0f%s%sbit", (double)rate, units[i],
-+		      i > 0 ? str : "");
- 	if (rc < 0)
- 		return -1;
+ int hex2mem(const char *buf, uint8_t *mem, int count);
+ char *hexstring_n2a(const __u8 *str, int len, char *buf, int blen);
+diff --git a/lib/utils.c b/lib/utils.c
+index a0ba5181160e..1237ae40246c 100644
+--- a/lib/utils.c
++++ b/lib/utils.c
+@@ -513,6 +513,85 @@ int get_addr64(__u64 *ap, const char *cp)
+ 	return 1;
+ }
  
++/* See http://physics.nist.gov/cuu/Units/binary.html */
++static const struct rate_suffix {
++	const char *name;
++	double scale;
++} suffixes[] = {
++	{ "bit",	1. },
++	{ "Kibit",	1024. },
++	{ "kbit",	1000. },
++	{ "mibit",	1024.*1024. },
++	{ "mbit",	1000000. },
++	{ "gibit",	1024.*1024.*1024. },
++	{ "gbit",	1000000000. },
++	{ "tibit",	1024.*1024.*1024.*1024. },
++	{ "tbit",	1000000000000. },
++	{ "Bps",	8. },
++	{ "KiBps",	8.*1024. },
++	{ "KBps",	8000. },
++	{ "MiBps",	8.*1024*1024. },
++	{ "MBps",	8000000. },
++	{ "GiBps",	8.*1024.*1024.*1024. },
++	{ "GBps",	8000000000. },
++	{ "TiBps",	8.*1024.*1024.*1024.*1024. },
++	{ "TBps",	8000000000000. },
++	{ NULL }
++};
++
++int get_rate(unsigned int *rate, const char *str)
++{
++	char *p;
++	double bps = strtod(str, &p);
++	const struct rate_suffix *s;
++
++	if (p == str)
++		return -1;
++
++	for (s = suffixes; s->name; ++s) {
++		if (strcasecmp(s->name, p) == 0) {
++			bps *= s->scale;
++			p += strlen(p);
++			break;
++		}
++	}
++
++	if (*p)
++		return -1; /* unknown suffix */
++
++	bps /= 8; /* -> bytes per second */
++	*rate = bps;
++	/* detect if an overflow happened */
++	if (*rate != floor(bps))
++		return -1;
++	return 0;
++}
++
++int get_rate64(__u64 *rate, const char *str)
++{
++	char *p;
++	double bps = strtod(str, &p);
++	const struct rate_suffix *s;
++
++	if (p == str)
++		return -1;
++
++	for (s = suffixes; s->name; ++s) {
++		if (strcasecmp(s->name, p) == 0) {
++			bps *= s->scale;
++			p += strlen(p);
++			break;
++		}
++	}
++
++	if (*p)
++		return -1; /* unknown suffix */
++
++	bps /= 8; /* -> bytes per second */
++	*rate = bps;
++	return 0;
++}
++
+ static void set_address_type(inet_prefix *addr)
+ {
+ 	switch (addr->family) {
+diff --git a/tc/tc_util.c b/tc/tc_util.c
+index ff979c617b9b..3a133ad84ff9 100644
+--- a/tc/tc_util.c
++++ b/tc/tc_util.c
+@@ -164,32 +164,6 @@ char *sprint_tc_classid(__u32 h, char *buf)
+ 	return buf;
+ }
+ 
+-/* See http://physics.nist.gov/cuu/Units/binary.html */
+-static const struct rate_suffix {
+-	const char *name;
+-	double scale;
+-} suffixes[] = {
+-	{ "bit",	1. },
+-	{ "Kibit",	1024. },
+-	{ "kbit",	1000. },
+-	{ "mibit",	1024.*1024. },
+-	{ "mbit",	1000000. },
+-	{ "gibit",	1024.*1024.*1024. },
+-	{ "gbit",	1000000000. },
+-	{ "tibit",	1024.*1024.*1024.*1024. },
+-	{ "tbit",	1000000000000. },
+-	{ "Bps",	8. },
+-	{ "KiBps",	8.*1024. },
+-	{ "KBps",	8000. },
+-	{ "MiBps",	8.*1024*1024. },
+-	{ "MBps",	8000000. },
+-	{ "GiBps",	8.*1024.*1024.*1024. },
+-	{ "GBps",	8000000000. },
+-	{ "TiBps",	8.*1024.*1024.*1024.*1024. },
+-	{ "TBps",	8000000000000. },
+-	{ NULL }
+-};
+-
+ /* Parse a percent e.g: '30%'
+  * return: 0 = ok, -1 = error, 1 = out of range
+  */
+@@ -273,59 +247,6 @@ int get_percent_rate64(__u64 *rate, const char *str, const char *dev)
+ 	return get_rate64(rate, r_str);
+ }
+ 
+-int get_rate(unsigned int *rate, const char *str)
+-{
+-	char *p;
+-	double bps = strtod(str, &p);
+-	const struct rate_suffix *s;
+-
+-	if (p == str)
+-		return -1;
+-
+-	for (s = suffixes; s->name; ++s) {
+-		if (strcasecmp(s->name, p) == 0) {
+-			bps *= s->scale;
+-			p += strlen(p);
+-			break;
+-		}
+-	}
+-
+-	if (*p)
+-		return -1; /* unknown suffix */
+-
+-	bps /= 8; /* -> bytes per second */
+-	*rate = bps;
+-	/* detect if an overflow happened */
+-	if (*rate != floor(bps))
+-		return -1;
+-	return 0;
+-}
+-
+-int get_rate64(__u64 *rate, const char *str)
+-{
+-	char *p;
+-	double bps = strtod(str, &p);
+-	const struct rate_suffix *s;
+-
+-	if (p == str)
+-		return -1;
+-
+-	for (s = suffixes; s->name; ++s) {
+-		if (strcasecmp(s->name, p) == 0) {
+-			bps *= s->scale;
+-			p += strlen(p);
+-			break;
+-		}
+-	}
+-
+-	if (*p)
+-		return -1; /* unknown suffix */
+-
+-	bps /= 8; /* -> bytes per second */
+-	*rate = bps;
+-	return 0;
+-}
+-
+ void tc_print_rate(enum output_type t, const char *key, const char *fmt,
+ 		   unsigned long long rate)
+ {
+diff --git a/tc/tc_util.h b/tc/tc_util.h
+index d3b38c69155d..675fb34269f6 100644
+--- a/tc/tc_util.h
++++ b/tc/tc_util.h
+@@ -76,9 +76,7 @@ struct qdisc_util *get_qdisc_kind(const char *str);
+ struct filter_util *get_filter_kind(const char *str);
+ 
+ int get_qdisc_handle(__u32 *h, const char *str);
+-int get_rate(unsigned int *rate, const char *str);
+ int get_percent_rate(unsigned int *rate, const char *str, const char *dev);
+-int get_rate64(__u64 *rate, const char *str);
+ int get_percent_rate64(__u64 *rate, const char *str, const char *dev);
+ int get_size(unsigned int *size, const char *str);
+ int get_size_and_cell(unsigned int *size, int *cell_log, char *str);
 -- 
 2.25.1
 
