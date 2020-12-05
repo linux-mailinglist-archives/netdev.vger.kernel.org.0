@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC2612CFE35
-	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 20:21:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B52642CFE37
+	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 20:21:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727653AbgLETVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Dec 2020 14:21:05 -0500
-Received: from mail-am6eur05on2119.outbound.protection.outlook.com ([40.107.22.119]:7011
+        id S1727707AbgLETVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Dec 2020 14:21:19 -0500
+Received: from mail-am6eur05on2131.outbound.protection.outlook.com ([40.107.22.131]:50144
         "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726791AbgLETUl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727445AbgLETUl (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 5 Dec 2020 14:20:41 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ekosH0nbvP2bQzAvj82iyz1Bg5mGtqYQl5D5mpdVcrOOE9aIBKP6hBk+fqN9C91efxclGWjiMMlGJ7+J4maunVMW7CTbt6V8kizGaNF9d7mNLw8s47DI2SiN6lPwgMT1t0Rx/JIoGudwS0MTb1zf/Y8zKH5AmjFdroI487DC7YnOwN+6vLbKlVes9I3KYZrwsYkk7nYVMJK+5PRF8WO/OUFySYmoVm8m5V4JHXsw0CdeJToOc9dIQA9v7XTO0v1rx5NKVIqu+fHqwno0IyVns8Hn/WAIBYpjWXXqmuSRH6l1kiL1xyeXNX05PwktTIVZqUBtAfzbRePGnflDYIxa+Q==
+ b=dT4sLkbCqCotYnAnXT4zw1CaW9BSg7yPQxnJty/hK/oyCEAQjVNycfGQIz1cXUNwj/dXigrN4M5ZUYQs1T9NkO6faxmYj85JdX6I054V32TPX77GEjcBBoDNvFe3mwPNaWT6LQwVdqfxM68odLjpHrpcEYLXR40EzIdMjzwKvSjotJuShYJ+ZWupQloq0SCicZQpXgwekDjLhRHPQhuEDqth1Sr7h8gimGOqPpvyRuRLxkoCc89VFhaT1oH/5vVFlUipn2XWHc90aw7k7RBnaNB0OOKOjVEf51dU2Oke7d1uLkqdsc4PY71xukvlI5x/sF08tzG6THcCffjzF/DsuA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p5cT4lWb1TOoDsBju+zP+BzDu+mFtQHaoAEkftazw2A=;
- b=P+0HBHf/DFl5YbxxeUdKtBKI9ehGypA5EWVAMEw+QEIHKMdlsVyi8oxkWSodu1PaQv8ovgW7RDHHzBOZ2aZy8D76F3MNm6IPztHLviKUVRrzFvSz5G+IwLD5svmWdHDaVYRrvBflmWxkzZQ+IytrpDwy3/VEs8l+/TE8+dblO/tse1htWFs2r6FlPgOi/Yw+lczfduZHYhGAu3WblYQbyXPLLcqmfeY8kVDjnZirMIIJ+AlqDnEMMp+zNOKdghjZzDh+0wOENG+zGgyHWZuc7dWJoNKfnCxi5Hn46D5lXXFofus2l1U3V/HH1StgyyvHZbQaofOSVHHdOmrvPJpmvQ==
+ bh=xZ4sPbbjyo9slA0ImQ87wTmVnC8Pn7/hnGEqYEL7IjY=;
+ b=NsxhfMiEa7hTgMGfD0sk9W6mPPszJQO54Axt/X4t7kIa34DW5eVHXRioNuauuU2Zc7WAHXumg8apjvBauYYIjF3W+NFF4mL9VEPLRtZP/QTkuVk6ge+SSP/YOkUDRXIftdtmHYrrfJK0ZGLZF5GiXRc5GJ+AJbcJyF8g5TFql9VU1KEmX2ucVAMXcWluknteSimQv+D7GQRToV9o+wJrd9AUx85tMGDt92Gtye8PERPlB3t6radEQgvIxjCjZCBAVLzv//s6xloMMv2KcIijfZbi8iICY0BG7Scr2JWCPfiiuracgMX8Tj/b6X9ZnA6aYTzluIy05krZnVXWUBs7AA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=prevas.dk; dmarc=pass action=none header.from=prevas.dk;
  dkim=pass header.d=prevas.dk; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.dk;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p5cT4lWb1TOoDsBju+zP+BzDu+mFtQHaoAEkftazw2A=;
- b=kpnHeiJnC+fkPyqQ8KCdDAOTf/D0Yhsxfw2+K/JVx3u9I07y6jPtmanJOm1DvNRJAQwl/FbIW3N4OKD5VpUIlFpvSJp7tlC/7wpUeEaVwpKTT9xfYOlA6Ga4vMsvpx4vqZqUFOTKBICThk7knqDew9TsCV4qNdMFYRY9UXDgGdA=
+ bh=xZ4sPbbjyo9slA0ImQ87wTmVnC8Pn7/hnGEqYEL7IjY=;
+ b=I+A0wtOdZUTSix1SDtHy+CVPxRH6XWAA4T74D5ZUca4tu3Z53z1fU45ve00UpqhJz3JL+JMsmMVd1BBdDgl6VLdU7bCXSCqjaIDQSNmRt0/JNcIDSe0RUqbQskDjt7GhVA/bb6lXRT5g1v8Xnpod41+aYVA18Gxfo30nMgPF1Cg=
 Authentication-Results: nxp.com; dkim=none (message not signed)
  header.d=none;nxp.com; dmarc=none action=none header.from=prevas.dk;
 Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:3f::10)
@@ -47,9 +47,9 @@ Cc:     Zhao Qiang <qiang.zhao@nxp.com>,
         Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
         netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 16/20] ethernet: ucc_geth: remove bd_mem_part and all associated code
-Date:   Sat,  5 Dec 2020 20:17:39 +0100
-Message-Id: <20201205191744.7847-17-rasmus.villemoes@prevas.dk>
+Subject: [PATCH 17/20] ethernet: ucc_geth: replace kmalloc_array()+for loop by kcalloc()
+Date:   Sat,  5 Dec 2020 20:17:40 +0100
+Message-Id: <20201205191744.7847-18-rasmus.villemoes@prevas.dk>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20201205191744.7847-1-rasmus.villemoes@prevas.dk>
 References: <20201205191744.7847-1-rasmus.villemoes@prevas.dk>
@@ -61,268 +61,101 @@ X-ClientProxiedBy: AM5PR0701CA0063.eurprd07.prod.outlook.com
  (2603:10a6:208:3f::10)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from prevas-ravi.prevas.se (5.186.115.188) by AM5PR0701CA0063.eurprd07.prod.outlook.com (2603:10a6:203:2::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.5 via Frontend Transport; Sat, 5 Dec 2020 19:18:30 +0000
+Received: from prevas-ravi.prevas.se (5.186.115.188) by AM5PR0701CA0063.eurprd07.prod.outlook.com (2603:10a6:203:2::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.5 via Frontend Transport; Sat, 5 Dec 2020 19:18:31 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 50ebd930-5c7e-46ac-7467-08d899528d3b
+X-MS-Office365-Filtering-Correlation-Id: 3ed4a984-a6d8-477f-401c-08d899528dbb
 X-MS-TrafficTypeDiagnostic: AM4PR1001MB1363:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM4PR1001MB13633C60B30D2BA25409C88E93F00@AM4PR1001MB1363.EURPRD10.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-Microsoft-Antispam-PRVS: <AM4PR1001MB1363C75DF7339C6FD3E17A3593F00@AM4PR1001MB1363.EURPRD10.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2958;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fmJecnkWEd67/z8T62dy+01LsbOoGK78+RWZPYjAxPIREJSco6tAhdaywDz+M2X5rogiExNsLeefDAtX0UoJxALWiXg6mmHaai1Bo6l99S3pYMnkqu92wKcN9A1bRzW3pQc7ZdKU7MdR2R4VtcRhs8hSh6K32wQOQNvoH3JO7Df4CICAMG5txIW0YZK3O0cUbpzvkw2J8rI7RPx/QDwkCAQqWRuQTVtW6pxbYnW3vFBuGlj3wluYhFmrUvCPzx2Qrh7GPEpQS/+kgTLN69wjwo8nk7dFJ+CmxS6EhedF/JOxLNO6bHbdnPfJZZobva9wXo6HCmmnqN9H3Gke/IUq2Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(396003)(39840400004)(346002)(136003)(366004)(376002)(2616005)(2906002)(8676002)(8936002)(83380400001)(52116002)(36756003)(66476007)(66946007)(66556008)(4326008)(8976002)(5660300002)(1076003)(6486002)(44832011)(6512007)(186003)(26005)(110136005)(316002)(86362001)(478600001)(16526019)(54906003)(956004)(6506007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?uuZQHVKQpRG8HD50dFELlBhFP0TP6N0Lk7wqcFWFUAefODgB5+Ab8v8tWpL0?=
- =?us-ascii?Q?8X1d/OfAm+yvvN3ywWka/afuxDHqBKYQ4TXbC61SeJedtCw7Twe282ZFZxYq?=
- =?us-ascii?Q?CrCjQxmf/NdUOiH0P6khO7pUK5YzB4Je/OJGDFi/9qim84o7+gkzF63FiXIt?=
- =?us-ascii?Q?PlyJ6ASmCpkfrL21mJc+96YmXWwoBiUX1l7ZlKs/d7WrVhQUoPXHdZka8r2M?=
- =?us-ascii?Q?6f9/uq0nWWPNx1CgvFBrZt/Q9JoQEK05zlUT0l7S+gyURpnAfVUyaXLP3EXc?=
- =?us-ascii?Q?es4Joaa/cRN2pmkYdz9Pilfymr8s033qQi2O+wrv/CgR46s7RM7R/RmPOIrr?=
- =?us-ascii?Q?hXg+qwWqL4Ik4WAu5nEqBk+Ko/x4Qnrpn1KkQSc4a2+D4wfYZCQZnyGT2JRt?=
- =?us-ascii?Q?YO4ksebKV8GJkWxASI3f3bfXVpmjdKOzwnuhelj7jnLh/j5rBbBhHtGaGw2T?=
- =?us-ascii?Q?R/To+p3WrXQvwpRlYWocwCNcaiEHEoutTOP+AFFpeHEqXd8TOthvY0KeLzjF?=
- =?us-ascii?Q?3RiTMA9n4nNrKcYF1NzfC+G7qfg/wRnv7+IE0oQW6uMYWvyBvf5WzdjMIwjI?=
- =?us-ascii?Q?iVGPCJP/WJYsQDClUx1UGP+TqUS4BlklhZtxdMv1KXZsqCCThisbJpEHyBZQ?=
- =?us-ascii?Q?PUlyGzTVULHeXV4rSwSGcF/iMzQt95WcIOBv0vPuwpifjIGWkP1CIsrmKGYc?=
- =?us-ascii?Q?Yp+YFqU6b9eKIb3UmYkR4eFLIoc4EwMTk5RXxqKrdNPN9zrBRGMHqwYB9J0q?=
- =?us-ascii?Q?slWuE0UjlWJV2OdzsNblG5y20JP7Q+3dBvIVWfuP15chGnUbGWV1MdSP7b64?=
- =?us-ascii?Q?cNMal5FqHrbj/IjKPDzxtARb+qImfzARUSf+uYNHPsEC9yz2dADSkd+E9hJe?=
- =?us-ascii?Q?6IdRtHuzI/fHkmQJVtvD+hi9rxmB/KyxOOabwfCnlDazPB9qb+S+omNwB9HH?=
- =?us-ascii?Q?yWDecbimeMNxT7Rou2sC43f4k5p0eIcULLlV8i7wf7+TP75JIZI7O7ZCWNH3?=
- =?us-ascii?Q?cHU+?=
+X-Microsoft-Antispam-Message-Info: i5SX06HBixAY9iOgPO9T0Ukfhl5JE4k57DEiH0fG5KQxKjkWY2flFl1xR7ap7ixdIusL/hvUp0k/ExvLd3KIqiNFJpB/xhKwioWg2Z0W1Ih7EhjlA2s7o8XxX8z5GnLWyrFJlISokO/gkB1mNsIXIvTtUJCP9C4pJD+1zR8rIssO0+T6x5+kUaST9ByA6np9M/V8VmPjVa0JY1i+hPZDQ3fYIEnXQ/+uNWN4RQWQ7mHHLo5OFxXZwf2/TmtxwDRXCrsvXLmuqfSE7I5IAATck/7ofFCAJWHlSrv9VVne9Bir0ofjY39AL7+dpwr13YSN7UbVBNA1+yIE91AqL4bJ0A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(396003)(39840400004)(346002)(136003)(366004)(376002)(2616005)(2906002)(8676002)(8936002)(83380400001)(52116002)(36756003)(66476007)(66946007)(66556008)(4326008)(8976002)(5660300002)(1076003)(6486002)(44832011)(6512007)(186003)(26005)(6666004)(110136005)(316002)(86362001)(478600001)(16526019)(54906003)(956004)(6506007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?xr5enkF2jNltvO/n6qy5wAFaCiGJTTE4WfRIEetifIq2rpWYN7RrT69iby8V?=
+ =?us-ascii?Q?NZERGXeY+61hPtGIeXv1IPmMuBuCC4JUaIqs36s3Kv+0ZVKV+bmq/7wEYGT7?=
+ =?us-ascii?Q?T7u/dE8sjgySkHRlvt1gHbcuO9ORzqi2pzxvBWR0pdx9fGGFHddWwa/2vl6K?=
+ =?us-ascii?Q?PBRJFqaDRA1prlHAIFWTHOi9TFNq5kiHwDsJzG2Krj/uL6KzE6qyTaJjmNgT?=
+ =?us-ascii?Q?agH4rGW9/Y6VVpqeom4Extqcw3+7j6Q330aHaTxIUMuMuLAFRm5VD6wy9xDg?=
+ =?us-ascii?Q?gY/IV1AILUwu5n4uBacuAqetYAyJfrOFRx6TDO/SdJGakNl6dFk6igP/CrHo?=
+ =?us-ascii?Q?mv/3UbUQSG594elh72Fx/j6XMkAZcpCpqLt3+vckMnX8vqzaOO1UV0cy/h6d?=
+ =?us-ascii?Q?QxOfPE6L1endo2gd6xOAmFucJdvQ2jBMYdGytImPD/IwEaI4kmrLKp1iUFSo?=
+ =?us-ascii?Q?P9M90dHdXtAcqVm8bWOcB1PvjOnmSIFkONMs3URDSfeSnWZbhDznmT4+G5Dv?=
+ =?us-ascii?Q?ggvAKRviYoxoj961XeGi6smu1ymLNR63JTheeOZ4/YAvJ0ewCp819ZchWfSw?=
+ =?us-ascii?Q?dNL3s/IPrqWZhDyTA3RHoxaBb75F0DrerHlqW1eNvU0Z/qrQ7ysRxk1uOTnY?=
+ =?us-ascii?Q?sKwc+mfrNm/d96207Q/MhPMcekNbEEcq93mPGZ+h+63dVvyyM0NJMTArmqFn?=
+ =?us-ascii?Q?tyIlZ7KUSfjQt0rVMARBsYk0zMQnG6q9yuUxJZaxFeS8deNcnzdU77t5scq3?=
+ =?us-ascii?Q?/aAUEPF/Is0mZvvicbrztI2/3NTLetFJEP29FfjYyPvYkeprPQ/wIew4bym+?=
+ =?us-ascii?Q?TEdhrvVIC6RAcjEPmH2Cb6YHHLZi8FGNZhHCaR/7N6/KrtdNLe9Jswqk7FRo?=
+ =?us-ascii?Q?pvB+V1BMIrg/yyrU6ZYHIGz3dBM7UVLQkCffjIRE5ULVMTDxCO7LHGsHXnE4?=
+ =?us-ascii?Q?+s2h8CLmfNO7j/fcG23EMqcy43PJpnd4JUeCkP1LzH2tIX306+qu7m/8cCfZ?=
+ =?us-ascii?Q?+VTB?=
 X-OriginatorOrg: prevas.dk
-X-MS-Exchange-CrossTenant-Network-Message-Id: 50ebd930-5c7e-46ac-7467-08d899528d3b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3ed4a984-a6d8-477f-401c-08d899528dbb
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Dec 2020 19:18:31.0496
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Dec 2020 19:18:31.8661
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: d350cf71-778d-4780-88f5-071a4cb1ed61
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lTCez1hgKvnAH3OrDYzfaOT8PDkI/jpWqOAnXGP5uerz3bMvrLzS667SRz4AYHiyyk/WRgnkuUmWOCMVxbs6KYQ9YgsjJfYvxYi12qbsDq8=
+X-MS-Exchange-CrossTenant-UserPrincipalName: OcLdPfrTiX6Fm4b4Yo31GCT72wjApuSBfxzUl8bZ0px3OvaDxhcdaT0O8g/N6xkNYcqZ92XvHCpCbO47EG4CJ8/hiXYTMHyknFCaYJYBoFg=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR1001MB1363
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The bd_mem_part member of ucc_geth_info always has the value
-MEM_PART_SYSTEM, and AFAICT, there has never been any code setting it
-to any other value. Moreover, muram is a somewhat precious resource,
-so there's no point using that when normal memory serves just as well.
-
-Apart from removing a lot of dead code, this is also motivated by
-wanting to clean up the "store result from kmalloc() in a u32" mess.
-
 Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
 ---
- drivers/net/ethernet/freescale/ucc_geth.c | 106 ++++++----------------
- include/soc/fsl/qe/qe.h                   |   6 --
- include/soc/fsl/qe/ucc_fast.h             |   1 -
- 3 files changed, 29 insertions(+), 84 deletions(-)
+ drivers/net/ethernet/freescale/ucc_geth.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/ucc_geth.c b/drivers/net/ethernet/freescale/ucc_geth.c
-index ccde42f547b8..c9f619908561 100644
+index c9f619908561..3aebea191b52 100644
 --- a/drivers/net/ethernet/freescale/ucc_geth.c
 +++ b/drivers/net/ethernet/freescale/ucc_geth.c
-@@ -72,7 +72,6 @@ MODULE_PARM_DESC(debug, "Debug verbosity level (0=none, ..., 0xffff=all)");
- 
- static const struct ucc_geth_info ugeth_primary_info = {
- 	.uf_info = {
--		    .bd_mem_part = MEM_PART_SYSTEM,
- 		    .rtsm = UCC_FAST_SEND_IDLES_BETWEEN_FRAMES,
- 		    .max_rx_buf_length = 1536,
- 		    /* adjusted at startup if max-speed 1000 */
-@@ -1854,12 +1853,7 @@ static void ucc_geth_free_rx(struct ucc_geth_private *ugeth)
- 
- 			kfree(ugeth->rx_skbuff[i]);
- 
--			if (ugeth->ug_info->uf_info.bd_mem_part ==
--			    MEM_PART_SYSTEM)
--				kfree((void *)ugeth->rx_bd_ring_offset[i]);
--			else if (ugeth->ug_info->uf_info.bd_mem_part ==
--				 MEM_PART_MURAM)
--				qe_muram_free(ugeth->rx_bd_ring_offset[i]);
-+			kfree((void *)ugeth->rx_bd_ring_offset[i]);
- 			ugeth->p_rx_bd_ring[i] = NULL;
- 		}
- 	}
-@@ -1897,12 +1891,7 @@ static void ucc_geth_free_tx(struct ucc_geth_private *ugeth)
- 		kfree(ugeth->tx_skbuff[i]);
- 
- 		if (ugeth->p_tx_bd_ring[i]) {
--			if (ugeth->ug_info->uf_info.bd_mem_part ==
--			    MEM_PART_SYSTEM)
--				kfree((void *)ugeth->tx_bd_ring_offset[i]);
--			else if (ugeth->ug_info->uf_info.bd_mem_part ==
--				 MEM_PART_MURAM)
--				qe_muram_free(ugeth->tx_bd_ring_offset[i]);
-+			kfree((void *)ugeth->tx_bd_ring_offset[i]);
- 			ugeth->p_tx_bd_ring[i] = NULL;
- 		}
- 	}
-@@ -2060,13 +2049,6 @@ static int ucc_struct_init(struct ucc_geth_private *ugeth)
- 	ug_info = ugeth->ug_info;
- 	uf_info = &ug_info->uf_info;
- 
--	if (!((uf_info->bd_mem_part == MEM_PART_SYSTEM) ||
--	      (uf_info->bd_mem_part == MEM_PART_MURAM))) {
--		if (netif_msg_probe(ugeth))
--			pr_err("Bad memory partition value\n");
--		return -EINVAL;
--	}
--
- 	/* Rx BD lengths */
- 	for (i = 0; i < ug_info->numQueuesRx; i++) {
- 		if ((ug_info->bdRingLenRx[i] < UCC_GETH_RX_BD_RING_SIZE_MIN) ||
-@@ -2186,6 +2168,8 @@ static int ucc_geth_alloc_tx(struct ucc_geth_private *ugeth)
- 
- 	/* Allocate Tx bds */
+@@ -2203,8 +2203,8 @@ static int ucc_geth_alloc_tx(struct ucc_geth_private *ugeth)
  	for (j = 0; j < ug_info->numQueuesTx; j++) {
-+		u32 align = UCC_GETH_TX_BD_RING_ALIGNMENT;
-+
- 		/* Allocate in multiple of
- 		   UCC_GETH_TX_BD_RING_SIZE_MEMORY_ALIGNMENT,
- 		   according to spec */
-@@ -2195,24 +2179,15 @@ static int ucc_geth_alloc_tx(struct ucc_geth_private *ugeth)
- 		if ((ug_info->bdRingLenTx[j] * sizeof(struct qe_bd)) %
- 		    UCC_GETH_TX_BD_RING_SIZE_MEMORY_ALIGNMENT)
- 			length += UCC_GETH_TX_BD_RING_SIZE_MEMORY_ALIGNMENT;
--		if (uf_info->bd_mem_part == MEM_PART_SYSTEM) {
--			u32 align = UCC_GETH_TX_BD_RING_ALIGNMENT;
--			ugeth->tx_bd_ring_offset[j] =
--				(u32) kmalloc((u32) (length + align), GFP_KERNEL);
--
--			if (ugeth->tx_bd_ring_offset[j] != 0)
--				ugeth->p_tx_bd_ring[j] =
--					(u8 __iomem *)((ugeth->tx_bd_ring_offset[j] +
--					align) & ~(align - 1));
--		} else if (uf_info->bd_mem_part == MEM_PART_MURAM) {
--			ugeth->tx_bd_ring_offset[j] =
--			    qe_muram_alloc(length,
--					   UCC_GETH_TX_BD_RING_ALIGNMENT);
--			if (!IS_ERR_VALUE(ugeth->tx_bd_ring_offset[j]))
--				ugeth->p_tx_bd_ring[j] =
--				    (u8 __iomem *) qe_muram_addr(ugeth->
--							 tx_bd_ring_offset[j]);
--		}
-+
-+		ugeth->tx_bd_ring_offset[j] =
-+			(u32) kmalloc((u32) (length + align), GFP_KERNEL);
-+
-+		if (ugeth->tx_bd_ring_offset[j] != 0)
-+			ugeth->p_tx_bd_ring[j] =
-+				(u8 __iomem *)((ugeth->tx_bd_ring_offset[j] +
-+						align) & ~(align - 1));
-+
- 		if (!ugeth->p_tx_bd_ring[j]) {
- 			if (netif_msg_ifup(ugeth))
- 				pr_err("Can not allocate memory for Tx bd rings\n");
-@@ -2270,24 +2245,16 @@ static int ucc_geth_alloc_rx(struct ucc_geth_private *ugeth)
+ 		/* Setup the skbuff rings */
+ 		ugeth->tx_skbuff[j] =
+-			kmalloc_array(ugeth->ug_info->bdRingLenTx[j],
+-				      sizeof(struct sk_buff *), GFP_KERNEL);
++			kcalloc(ugeth->ug_info->bdRingLenTx[j],
++				sizeof(struct sk_buff *), GFP_KERNEL);
  
- 	/* Allocate Rx bds */
+ 		if (ugeth->tx_skbuff[j] == NULL) {
+ 			if (netif_msg_ifup(ugeth))
+@@ -2212,9 +2212,6 @@ static int ucc_geth_alloc_tx(struct ucc_geth_private *ugeth)
+ 			return -ENOMEM;
+ 		}
+ 
+-		for (i = 0; i < ugeth->ug_info->bdRingLenTx[j]; i++)
+-			ugeth->tx_skbuff[j][i] = NULL;
+-
+ 		ugeth->skb_curtx[j] = ugeth->skb_dirtytx[j] = 0;
+ 		bd = ugeth->confBd[j] = ugeth->txBd[j] = ugeth->p_tx_bd_ring[j];
+ 		for (i = 0; i < ug_info->bdRingLenTx[j]; i++) {
+@@ -2266,8 +2263,8 @@ static int ucc_geth_alloc_rx(struct ucc_geth_private *ugeth)
  	for (j = 0; j < ug_info->numQueuesRx; j++) {
-+		u32 align = UCC_GETH_RX_BD_RING_ALIGNMENT;
-+
- 		length = ug_info->bdRingLenRx[j] * sizeof(struct qe_bd);
--		if (uf_info->bd_mem_part == MEM_PART_SYSTEM) {
--			u32 align = UCC_GETH_RX_BD_RING_ALIGNMENT;
--			ugeth->rx_bd_ring_offset[j] =
--				(u32) kmalloc((u32) (length + align), GFP_KERNEL);
--			if (ugeth->rx_bd_ring_offset[j] != 0)
--				ugeth->p_rx_bd_ring[j] =
--					(u8 __iomem *)((ugeth->rx_bd_ring_offset[j] +
--					align) & ~(align - 1));
--		} else if (uf_info->bd_mem_part == MEM_PART_MURAM) {
--			ugeth->rx_bd_ring_offset[j] =
--			    qe_muram_alloc(length,
--					   UCC_GETH_RX_BD_RING_ALIGNMENT);
--			if (!IS_ERR_VALUE(ugeth->rx_bd_ring_offset[j]))
--				ugeth->p_rx_bd_ring[j] =
--				    (u8 __iomem *) qe_muram_addr(ugeth->
--							 rx_bd_ring_offset[j]);
--		}
-+		ugeth->rx_bd_ring_offset[j] =
-+			(u32) kmalloc((u32) (length + align), GFP_KERNEL);
-+		if (ugeth->rx_bd_ring_offset[j] != 0)
-+			ugeth->p_rx_bd_ring[j] =
-+				(u8 __iomem *)((ugeth->rx_bd_ring_offset[j] +
-+						align) & ~(align - 1));
-+
- 		if (!ugeth->p_rx_bd_ring[j]) {
+ 		/* Setup the skbuff rings */
+ 		ugeth->rx_skbuff[j] =
+-			kmalloc_array(ugeth->ug_info->bdRingLenRx[j],
+-				      sizeof(struct sk_buff *), GFP_KERNEL);
++			kcalloc(ugeth->ug_info->bdRingLenRx[j],
++				sizeof(struct sk_buff *), GFP_KERNEL);
+ 
+ 		if (ugeth->rx_skbuff[j] == NULL) {
  			if (netif_msg_ifup(ugeth))
- 				pr_err("Can not allocate memory for Rx bd rings\n");
-@@ -2552,20 +2519,11 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
- 		endOfRing =
- 		    ugeth->p_tx_bd_ring[i] + (ug_info->bdRingLenTx[i] -
- 					      1) * sizeof(struct qe_bd);
--		if (ugeth->ug_info->uf_info.bd_mem_part == MEM_PART_SYSTEM) {
--			out_be32(&ugeth->p_send_q_mem_reg->sqqd[i].bd_ring_base,
--				 (u32) virt_to_phys(ugeth->p_tx_bd_ring[i]));
--			out_be32(&ugeth->p_send_q_mem_reg->sqqd[i].
--				 last_bd_completed_address,
--				 (u32) virt_to_phys(endOfRing));
--		} else if (ugeth->ug_info->uf_info.bd_mem_part ==
--			   MEM_PART_MURAM) {
--			out_be32(&ugeth->p_send_q_mem_reg->sqqd[i].bd_ring_base,
--				 (u32)qe_muram_dma(ugeth->p_tx_bd_ring[i]));
--			out_be32(&ugeth->p_send_q_mem_reg->sqqd[i].
--				 last_bd_completed_address,
--				 (u32)qe_muram_dma(endOfRing));
--		}
-+		out_be32(&ugeth->p_send_q_mem_reg->sqqd[i].bd_ring_base,
-+			 (u32) virt_to_phys(ugeth->p_tx_bd_ring[i]));
-+		out_be32(&ugeth->p_send_q_mem_reg->sqqd[i].
-+			 last_bd_completed_address,
-+			 (u32) virt_to_phys(endOfRing));
- 	}
+@@ -2275,9 +2272,6 @@ static int ucc_geth_alloc_rx(struct ucc_geth_private *ugeth)
+ 			return -ENOMEM;
+ 		}
  
- 	/* schedulerbasepointer */
-@@ -2784,14 +2742,8 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
- 	/* Setup the table */
- 	/* Assume BD rings are already established */
- 	for (i = 0; i < ug_info->numQueuesRx; i++) {
--		if (ugeth->ug_info->uf_info.bd_mem_part == MEM_PART_SYSTEM) {
--			out_be32(&ugeth->p_rx_bd_qs_tbl[i].externalbdbaseptr,
--				 (u32) virt_to_phys(ugeth->p_rx_bd_ring[i]));
--		} else if (ugeth->ug_info->uf_info.bd_mem_part ==
--			   MEM_PART_MURAM) {
--			out_be32(&ugeth->p_rx_bd_qs_tbl[i].externalbdbaseptr,
--				 (u32)qe_muram_dma(ugeth->p_rx_bd_ring[i]));
--		}
-+		out_be32(&ugeth->p_rx_bd_qs_tbl[i].externalbdbaseptr,
-+			 (u32) virt_to_phys(ugeth->p_rx_bd_ring[i]));
- 		/* rest of fields handled by QE */
- 	}
- 
-diff --git a/include/soc/fsl/qe/qe.h b/include/soc/fsl/qe/qe.h
-index 66f1afc393d1..4925a1b59dc9 100644
---- a/include/soc/fsl/qe/qe.h
-+++ b/include/soc/fsl/qe/qe.h
-@@ -27,12 +27,6 @@
- #define QE_NUM_OF_BRGS	16
- #define QE_NUM_OF_PORTS	1024
- 
--/* Memory partitions
--*/
--#define MEM_PART_SYSTEM		0
--#define MEM_PART_SECONDARY	1
--#define MEM_PART_MURAM		2
+-		for (i = 0; i < ugeth->ug_info->bdRingLenRx[j]; i++)
+-			ugeth->rx_skbuff[j][i] = NULL;
 -
- /* Clocks and BRGs */
- enum qe_clock {
- 	QE_CLK_NONE = 0,
-diff --git a/include/soc/fsl/qe/ucc_fast.h b/include/soc/fsl/qe/ucc_fast.h
-index dc4e79468094..9696a5b9b5d1 100644
---- a/include/soc/fsl/qe/ucc_fast.h
-+++ b/include/soc/fsl/qe/ucc_fast.h
-@@ -146,7 +146,6 @@ struct ucc_fast_info {
- 	resource_size_t regs;
- 	int irq;
- 	u32 uccm_mask;
--	int bd_mem_part;
- 	int brkpt_support;
- 	int grant_support;
- 	int tsa;
+ 		ugeth->skb_currx[j] = 0;
+ 		bd = ugeth->rxBd[j] = ugeth->p_rx_bd_ring[j];
+ 		for (i = 0; i < ug_info->bdRingLenRx[j]; i++) {
 -- 
 2.23.0
 
