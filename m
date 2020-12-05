@@ -2,206 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35BE82CFFD2
-	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 00:52:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F8A92CFFCE
+	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 00:48:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727355AbgLEXtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Dec 2020 18:49:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29641 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727303AbgLEXtw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Dec 2020 18:49:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607212105;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=a1PudfXRCgPMhbqFZGLxWf1rDDLL53Jdzs7mpITq/dY=;
-        b=f2m05gobShKyplQXap4m6ha/VOPEhQpdHy4CfLfQ22vSNCLsIb7WgCoombIYFvQFI5YVph
-        TQ88bdikfgj06v6XXnYg2+Ld1dzH9wJ7L3mg0VuDBDdXgHD5IRHVPtr9x58U/2g/DCTJmU
-        vpHiY1K5j5DPeLZcgkoMcRH8ajTjn+M=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-393-kyyuhHobNEG5Q9Wz7ZQPUA-1; Sat, 05 Dec 2020 18:48:21 -0500
-X-MC-Unique: kyyuhHobNEG5Q9Wz7ZQPUA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C95B45185;
-        Sat,  5 Dec 2020 23:48:19 +0000 (UTC)
-Received: from f33vm.wilsonet.com.wilsonet.com (dhcp-17-185.bos.redhat.com [10.18.17.185])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6FBAD5D6D5;
-        Sat,  5 Dec 2020 23:48:15 +0000 (UTC)
-From:   Jarod Wilson <jarod@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jarod Wilson <jarod@redhat.com>,
-        Mahesh Bandewar <maheshb@google.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org
-Subject: [PATCH net] bonding: reduce rtnl lock contention in mii monitor thread
-Date:   Sat,  5 Dec 2020 18:43:54 -0500
-Message-Id: <20201205234354.1710-1-jarod@redhat.com>
+        id S1726995AbgLEXok (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Dec 2020 18:44:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53768 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726385AbgLEXok (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 5 Dec 2020 18:44:40 -0500
+Date:   Sat, 5 Dec 2020 15:43:58 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607211839;
+        bh=cX6RfE9GirUTLY+Lvd4qBUjK2nEAbYOZHkyB4WHUa4c=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PhtW3YuWYKZlcM/8gqxUv8fDwCzhakJHu9GI1JPmvVKRc18g/mP/rd5FeGWbAccB8
+         5sa6myeXQNxMDeBNj+EuWWzT7bu3zPj7aK9ddC+tw9nESoSEF3kPq5v72ZC53v/DGO
+         AGOGDIxQ+PzCqq3An7QN0YfCl3dmqr6r7xiGHWJ7+CQibqrQpXdHBZC4dQRxxb9p3q
+         RHHlHAhgazv17tld1QRXddyLJksxvICHECIueC/rXUHFFHDfCDdRg/SWZlIUNrkoYp
+         /zVRdh2v+H02R5TSer+7BuWygvKhpTedDsPaiyGsSgqKVNYXOkqgqyO6Jk/fMTnV4e
+         wQGkOiqa1y9Pg==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        "Allan W . Nielsen" <allan.nielsen@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        Eldar Gasanov <eldargasanov2@gmail.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>
+Subject: Re: [PATCH net] net: mscc: ocelot: fix dropping of unknown IPv4
+ multicast on Seville
+Message-ID: <20201205154358.0fdce3dd@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201204181329.GM74177@piout.net>
+References: <20201204175416.1445937-1-vladimir.oltean@nxp.com>
+        <20201204181329.GM74177@piout.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I'm seeing a system get stuck unable to bring a downed interface back up
-when it's got an updelay value set, behavior which ceased when logging
-spew was removed from bond_miimon_inspect(). I'm monitoring logs on this
-system over another network connection, and it seems that the act of
-spewing logs at all there increases rtnl lock contention, because
-instrumented code showed bond_mii_monitor() never able to succeed in it's
-attempts to call rtnl_trylock() to actually commit link state changes,
-leaving the downed link stuck in BOND_LINK_DOWN. The system in question
-appears to be fine with the log spew being moved to
-bond_commit_link_state(), which is called after the successful
-rtnl_trylock(). I'm actually wondering if perhaps we ultimately need/want
-some bond-specific lock here to prevent racing with bond_close() instead
-of using rtnl, but this shift of the output appears to work. I believe
-this started happening when de77ecd4ef02 ("bonding: improve link-status
-update in mii-monitoring") went in, but I'm not 100% on that.
+On Fri, 4 Dec 2020 19:13:29 +0100 Alexandre Belloni wrote:
+> On 04/12/2020 19:54:16+0200, Vladimir Oltean wrote:
+> > The current assumption is that the felix DSA driver has flooding knobs
+> > per traffic class, while ocelot switchdev has a single flooding knob.
+> > This was correct for felix VSC9959 and ocelot VSC7514, but with the
+> > introduction of seville VSC9953, we see a switch driven by felix.c which
+> > has a single flooding knob.
+> > 
+> > So it is clear that we must do what should have been done from the
+> > beginning, which is not to overwrite the configuration done by ocelot.c
+> > in felix, but instead to teach the common ocelot library about the
+> > differences in our switches, and set up the flooding PGIDs centrally.
+> > 
+> > The effect that the bogus iteration through FELIX_NUM_TC has upon
+> > seville is quite dramatic. ANA_FLOODING is located at 0x00b548, and
+> > ANA_FLOODING_IPMC is located at 0x00b54c. So the bogus iteration will
+> > actually overwrite ANA_FLOODING_IPMC when attempting to write
+> > ANA_FLOODING[1]. There is no ANA_FLOODING[1] in sevile, just ANA_FLOODING.
+> > 
+> > And when ANA_FLOODING_IPMC is overwritten with a bogus value, the effect
+> > is that ANA_FLOODING_IPMC gets the value of 0x0003CF7D:
+> > 	MC6_DATA = 61,
+> > 	MC6_CTRL = 61,
+> > 	MC4_DATA = 60,
+> > 	MC4_CTRL = 0.
+> > Because MC4_CTRL is zero, this means that IPv4 multicast control packets
+> > are not flooded, but dropped. An invalid configuration, and this is how
+> > the issue was actually spotted.
+> > 
+> > Reported-by: Eldar Gasanov <eldargasanov2@gmail.com>
+> > Reported-by: Maxim Kochetkov <fido_max@inbox.ru>
+> > Tested-by: Eldar Gasanov <eldargasanov2@gmail.com>
+> > Fixes: 84705fc16552 ("net: dsa: felix: introduce support for Seville VSC9953 switch")
+> > Fixes: 3c7b51bd39b2 ("net: dsa: felix: allow flooding for all traffic classes")
+> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>  
+> Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 
-The addition of a case BOND_LINK_BACK in bond_miimon_inspect() is somewhat
-separate from the fix for the actual hang, but it eliminates a constant
-"invalid new link 3 on slave" message seen related to this issue, and it's
-not actually an invalid state here, so we shouldn't be reporting it as an
-error.
-
-CC: Mahesh Bandewar <maheshb@google.com>
-CC: Jay Vosburgh <j.vosburgh@gmail.com>
-CC: Veaceslav Falico <vfalico@gmail.com>
-CC: Andy Gospodarek <andy@greyhouse.net>
-CC: "David S. Miller" <davem@davemloft.net>
-CC: Jakub Kicinski <kuba@kernel.org>
-CC: Thomas Davis <tadavis@lbl.gov>
-CC: netdev@vger.kernel.org
-Signed-off-by: Jarod Wilson <jarod@redhat.com>
----
- drivers/net/bonding/bond_main.c | 26 ++++++----------------
- include/net/bonding.h           | 38 +++++++++++++++++++++++++++++++++
- 2 files changed, 44 insertions(+), 20 deletions(-)
-
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 47afc5938c26..cdb6c64f16b6 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -2292,23 +2292,13 @@ static int bond_miimon_inspect(struct bonding *bond)
- 			bond_propose_link_state(slave, BOND_LINK_FAIL);
- 			commit++;
- 			slave->delay = bond->params.downdelay;
--			if (slave->delay) {
--				slave_info(bond->dev, slave->dev, "link status down for %sinterface, disabling it in %d ms\n",
--					   (BOND_MODE(bond) ==
--					    BOND_MODE_ACTIVEBACKUP) ?
--					    (bond_is_active_slave(slave) ?
--					     "active " : "backup ") : "",
--					   bond->params.downdelay * bond->params.miimon);
--			}
-+
- 			fallthrough;
- 		case BOND_LINK_FAIL:
- 			if (link_state) {
- 				/* recovered before downdelay expired */
- 				bond_propose_link_state(slave, BOND_LINK_UP);
- 				slave->last_link_up = jiffies;
--				slave_info(bond->dev, slave->dev, "link status up again after %d ms\n",
--					   (bond->params.downdelay - slave->delay) *
--					   bond->params.miimon);
- 				commit++;
- 				continue;
- 			}
-@@ -2330,19 +2320,10 @@ static int bond_miimon_inspect(struct bonding *bond)
- 			commit++;
- 			slave->delay = bond->params.updelay;
- 
--			if (slave->delay) {
--				slave_info(bond->dev, slave->dev, "link status up, enabling it in %d ms\n",
--					   ignore_updelay ? 0 :
--					   bond->params.updelay *
--					   bond->params.miimon);
--			}
- 			fallthrough;
- 		case BOND_LINK_BACK:
- 			if (!link_state) {
- 				bond_propose_link_state(slave, BOND_LINK_DOWN);
--				slave_info(bond->dev, slave->dev, "link status down again after %d ms\n",
--					   (bond->params.updelay - slave->delay) *
--					   bond->params.miimon);
- 				commit++;
- 				continue;
- 			}
-@@ -2456,6 +2437,11 @@ static void bond_miimon_commit(struct bonding *bond)
- 
- 			continue;
- 
-+		case BOND_LINK_BACK:
-+			bond_propose_link_state(slave, BOND_LINK_NOCHANGE);
-+
-+			continue;
-+
- 		default:
- 			slave_err(bond->dev, slave->dev, "invalid new link %d on slave\n",
- 				  slave->link_new_state);
-diff --git a/include/net/bonding.h b/include/net/bonding.h
-index adc3da776970..6a09de9a3f03 100644
---- a/include/net/bonding.h
-+++ b/include/net/bonding.h
-@@ -558,10 +558,48 @@ static inline void bond_propose_link_state(struct slave *slave, int state)
- 
- static inline void bond_commit_link_state(struct slave *slave, bool notify)
- {
-+	struct bonding *bond = slave->bond;
-+
- 	if (slave->link_new_state == BOND_LINK_NOCHANGE)
- 		return;
- 
-+	if (slave->link == slave->link_new_state)
-+		return;
-+
- 	slave->link = slave->link_new_state;
-+
-+	switch(slave->link) {
-+	case BOND_LINK_UP:
-+		slave_info(bond->dev, slave->dev, "link status up again after %d ms\n",
-+			   (bond->params.downdelay - slave->delay) *
-+			   bond->params.miimon);
-+		break;
-+
-+	case BOND_LINK_FAIL:
-+		if (slave->delay) {
-+			slave_info(bond->dev, slave->dev, "link status down for %sinterface, disabling it in %d ms\n",
-+				   (BOND_MODE(bond) ==
-+				    BOND_MODE_ACTIVEBACKUP) ?
-+				    (bond_is_active_slave(slave) ?
-+				     "active " : "backup ") : "",
-+				   bond->params.downdelay * bond->params.miimon);
-+		}
-+		break;
-+
-+	case BOND_LINK_DOWN:
-+		slave_info(bond->dev, slave->dev, "link status down again after %d ms\n",
-+			   (bond->params.updelay - slave->delay) *
-+			   bond->params.miimon);
-+		break;
-+
-+	case BOND_LINK_BACK:
-+		if (slave->delay) {
-+			slave_info(bond->dev, slave->dev, "link status up, enabling it in %d ms\n",
-+				   bond->params.updelay * bond->params.miimon);
-+		}
-+		break;
-+	}
-+
- 	if (notify) {
- 		bond_queue_slave_event(slave);
- 		bond_lower_state_changed(slave);
--- 
-2.28.0
-
+Applied, thanks!
