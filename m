@@ -2,66 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 146822CFF98
-	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 00:01:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3D042CFFA9
+	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 00:12:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726855AbgLEXAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Dec 2020 18:00:47 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40376 "EHLO mail.kernel.org"
+        id S1726948AbgLEXMB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Dec 2020 18:12:01 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42782 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725933AbgLEXAr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 5 Dec 2020 18:00:47 -0500
-Content-Type: text/plain; charset="utf-8"
+        id S1726623AbgLEXMB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 5 Dec 2020 18:12:01 -0500
+Date:   Sat, 5 Dec 2020 15:11:20 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607209206;
-        bh=MKcpS+fMViwj2ZnsgwDgH8ZLurqkru7yof1XDaB8Ex8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=B0INwxU22rHFo9K5FUeErljjHPVV5PpvGM6UMw2op8px+8gXCJpd8fYNBGzSo3M1K
-         Pat7AL4gxjrWYsoPz6xhOW6/XUfoD+2TAjjUrteLirWSMyxozpn266MpfgVjGwq6z7
-         oYw4+JVt+bWwhDS6+EiLJiPq360oeC2wUiecDAjumMyA1t7ab8OO1LmW3tIGt0wekG
-         zN0nIfylQ47Q9t09e5tewTIUXKqEjPimZZyggBt1cnl3+t1N8z3Kba5khORPO6uwFw
-         6O/JsM+3C+glo7O4L6YsjHMlulw7dr4ah63QImYvenMIRr32ljfh2ZJI2EgVAN1QDE
-         TjXKtSSePLUzw==
+        s=k20201202; t=1607209881;
+        bh=Ywby+8XMzP0Av2thUOEP6ZXttQZb//VuVq4y2k1chKg=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fYnalPWsf3DujLmB/JviIIvLqekXPIYxkUiQ0v2V4mgkWPxPe7uGTjHwJ1xUBD5k7
+         u15QImMLiY7zKujwzQIxWWz0rJYiRba3b6D7wuUJndRMjdRIBL/ANwDxsGFC5OQiOw
+         vI9wwHXeb3sgl0+Mkqh+Y7YkS1Bukb0OfahyskHAb0AqrmvWy2XTTKfD0rTdLVKJic
+         36d2AcqOlovGcJ41cnPNl5ISbPjavh/IobDlY0MEUdHC9SdT/3tIB/xwBIaq4cadys
+         BlfA6zPoTZzQeSszzgKYG1DFRb6yEIgVLs1VzrTGZkk3VMJLi5rc3Vw9ZcWix5Auap
+         VpVky8d/r4TFw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Simon Wunderlich <sw@simonwunderlich.de>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        b.a.t.m.a.n@lists.open-mesh.org
+Subject: Re: [PATCH 0/8] pull request for net-next: batman-adv 2020-12-04
+Message-ID: <20201205151120.7e51413f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201204154631.21063-1-sw@simonwunderlich.de>
+References: <20201204154631.21063-1-sw@simonwunderlich.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] [v2] enetc: fix build warning
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160720920660.11906.14795091010527970418.git-patchwork-notify@kernel.org>
-Date:   Sat, 05 Dec 2020 23:00:06 +0000
-References: <20201204192910.2306023-1-arnd@kernel.org>
-In-Reply-To: <20201204192910.2306023-1-arnd@kernel.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     claudiu.manoil@nxp.com, davem@davemloft.net, kuba@kernel.org,
-        linux@armlinux.org.uk, ioana.cionei@nxp.com, arnd@arndb.de,
-        Po.Liu@nxp.com, leon@kernel.org, alexandru.marginean@nxp.com,
-        michael@walle.cc, vladimir.oltean@nxp.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (refs/heads/master):
-
-On Fri,  4 Dec 2020 20:28:59 +0100 you wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+On Fri,  4 Dec 2020 16:46:23 +0100 Simon Wunderlich wrote:
+> This cleanup patchset includes the following patches:
 > 
-> When CONFIG_OF is disabled, there is a harmless warning about
-> an unused variable:
+>  - bump version strings, by Simon Wunderlich
 > 
-> enetc_pf.c: In function 'enetc_phylink_create':
-> enetc_pf.c:981:17: error: unused variable 'dev' [-Werror=unused-variable]
+>  - update include for min/max helpers, by Sven Eckelmann
 > 
-> [...]
+>  - add infrastructure and netlink functions for routing algo selection,
+>    by Sven Eckelmann (2 patches)
+> 
+>  - drop deprecated debugfs and sysfs support and obsoleted
+>    functionality, by Sven Eckelmann (3 patches)
+> 
+>  - drop unused include in fragmentation.c, by Simon Wunderlich
 
-Here is the summary with links:
-  - [v2] enetc: fix build warning
-    https://git.kernel.org/netdev/net-next/c/4560b2a3ecdd
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Pulled, thanks!
