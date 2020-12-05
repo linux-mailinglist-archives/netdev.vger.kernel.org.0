@@ -2,61 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9B0E2CF800
-	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 01:31:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4F7C2CF807
+	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 01:38:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726912AbgLEAar (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 19:30:47 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47942 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726462AbgLEAar (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Dec 2020 19:30:47 -0500
-Date:   Fri, 4 Dec 2020 16:30:05 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607128206;
-        bh=6JWoxLUvapYOVhM7Xi0mh9tPz+BCRJiFSQmkEIwslsA=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=N1bbqvjUXafF0fQewZAQ1P7ywHs9hN1GGNPc7wJewPbCeMHw3FJ0djBwvgpcVmAVo
-         oj8UgyxlgRYcSTQ2XIHjUapRAOeQ5myzFi/8mpBPNbfGSdyBxZsq6MxgWoLbVnPXxg
-         d9A/WQ6cq1D1C7xz0E8+c9eXpIAesq4kQMJAJmbVgRTvs6GwgyWovuLDNrySa/laSY
-         1dM1SiGzPJ5aEgIXXSx5b2akaqovsgvAkjWfuilTADo8vl7JMkvOdjxGtOpiUaNnS0
-         96FPUtGhM0EZYN2LdwBPo6EUXiwm4npxvjLq2putLKoBj0GQLDtARHjO1QM8YpeiPx
-         MyWotQKAx42EQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eelco Chaudron <echaudro@redhat.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, dev@openvswitch.org,
-        pshelar@ovn.org, bindiyakurle@gmail.com, mcroce@linux.microsoft.com
-Subject: Re: [PATCH net] net: openvswitch: fix TTL decrement exception
- action execution
-Message-ID: <20201204163005.10ab9c53@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <160708417520.39389.4157710029285521561.stgit@wsfd-netdev64.ntdv.lab.eng.bos.redhat.com>
-References: <160708417520.39389.4157710029285521561.stgit@wsfd-netdev64.ntdv.lab.eng.bos.redhat.com>
+        id S1726982AbgLEAh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 19:37:59 -0500
+Received: from www62.your-server.de ([213.133.104.62]:40872 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726070AbgLEAh7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Dec 2020 19:37:59 -0500
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1klLZc-0002yZ-00; Sat, 05 Dec 2020 01:37:16 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1klLZb-0009Y1-OG; Sat, 05 Dec 2020 01:37:15 +0100
+Subject: Re: [PATCH bpf-next v9 00/34] bpf: switch to memcg-based memory
+ accounting
+To:     Roman Gushchin <guro@fb.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+References: <20201201215900.3569844-1-guro@fb.com>
+ <CAADnVQJThW0_5jJ=0ejjc3jh+w9_qzctqfZ-GvJrNQcKiaGYEQ@mail.gmail.com>
+ <20201203032645.GB1568874@carbon.DHCP.thefacebook.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <6abdd146-c584-9c66-261d-d7d39ff3f499@iogearbox.net>
+Date:   Sat, 5 Dec 2020 01:37:14 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20201203032645.GB1568874@carbon.DHCP.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26008/Fri Dec  4 23:08:33 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  4 Dec 2020 07:16:23 -0500 Eelco Chaudron wrote:
-> Currently, the exception actions are not processed correctly as the wrong
-> dataset is passed. This change fixes this, including the misleading
-> comment.
+On 12/3/20 4:26 AM, Roman Gushchin wrote:
+> On Wed, Dec 02, 2020 at 06:54:46PM -0800, Alexei Starovoitov wrote:
+>> On Tue, Dec 1, 2020 at 1:59 PM Roman Gushchin <guro@fb.com> wrote:
+>>>
+>>> 5) Cryptic -EPERM is returned on exceeding the limit. Libbpf even had
+>>>     a function to "explain" this case for users.
+>> ...
+>>> v9:
+>>>    - always charge the saved memory cgroup, by Daniel, Toke and Alexei
+>>>    - added bpf_map_kzalloc()
+>>>    - rebase and minor fixes
+>>
+>> This looks great. Applied.
 > 
-> In addition, a check was added to make sure we work on an IPv4 packet,
-> and not just assume if it's not IPv6 it's IPv4.
+> Thanks!
 > 
-> Small cleanup which removes an unsessesaty parameter from the
-> dec_ttl_exception_handler() function.
+>> Please follow up with a change to libbpf's pr_perm_msg().
+>> That helpful warning should stay for old kernels, but it would be
+>> misleading for new kernels.
+>> libbpf probably needs a feature check to make this warning conditional.
+> 
+> I think we've discussed it several months ago and at that time we didn't
+> find a good way to check this feature. I'll think again, but if somebody
+> has any ideas here, I'll appreciate a lot.
 
-No cleanups in fixes, please. Especially when we're at -rc6..
-
-You can clean this up in net-next within a week after trees merge.
-
-> Fixes: 69929d4c49e1 ("net: openvswitch: fix TTL decrement action netlink message format")
-
-:( 
-and please add some info on how these changes are tested.
-
-Thanks!
-
+Hm, bit tricky, agree .. given we only throw the warning in pr_perm_msg() for
+non-root and thus probing options are also limited, otherwise just probing for
+a helper that was added in this same cycle would have been good enough as a
+simple heuristic. I wonder if it would make sense to add some hint inside the
+bpf_{prog,map}_show_fdinfo() to indicate that accounting with memcg is enabled
+for the prog/map one way or another? Not just for the sake of pr_perm_msg(), but
+in general for apps to stop messing with rlimit at this point. Maybe also bpftool
+feature probe could be extended to indicate that as well (e.g. the json output
+can be fed into Go natively).
