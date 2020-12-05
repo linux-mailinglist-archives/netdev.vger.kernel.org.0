@@ -2,36 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DE572CF8BC
-	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 02:44:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44BE62CF8CC
+	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 02:47:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728474AbgLEBnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Dec 2020 20:43:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57368 "EHLO mail.kernel.org"
+        id S1728471AbgLEBqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Dec 2020 20:46:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58172 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725601AbgLEBnl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Dec 2020 20:43:41 -0500
-Date:   Fri, 4 Dec 2020 17:42:59 -0800
+        id S1726210AbgLEBqd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Dec 2020 20:46:33 -0500
+Date:   Fri, 4 Dec 2020 17:45:52 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607132580;
-        bh=gEtq+DZKM9vsy0gJfNbjob9ykjsiaf3M0uoQoWNx1jM=;
+        s=k20201202; t=1607132753;
+        bh=aHlfbSBd752VidVFfhJa96mNfXk+/xnDUgic+t/6awE=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Q2xecgTwFNASPTZy9xlB5hDl+2Sb4tTnG1zvXgfWEvtKmVyFgZE+tkXB8PatdxXW1
-         2vLAmp1xnibYDlDw7jyXJDJ/KjyAz1zL4XHzQ4aiueqtnXe+tuDQ0XOSWX9rjN35a/
-         43ToGXJwCDbhe8CCNeuPPRGGDG2nvNTSMLwMAz+zG0oH/o9BtHfgrtiLouba5KqtXR
-         XWsys0c4NQ5BA8S21GkVFR8yeH+rKPtRgcNnyzgvkvaxm+Bo3rhx7O25ERcUXL+qC7
-         0638woPdSSmCNNVeFAli+ggGVD0Z0HreIDtxQz32/+VsIJpqGybX5/sm5B+lir1wX/
-         d6CptYwiXMKHQ==
+        b=Qz4fleSCf/qdXv4I1HNcvU20L8eTa9tz3kNTGo3YzxSImIonl3nAPQfDH1jrF3I+k
+         Nc4kyjqDmHeGKUOLh53IM54T59IwOzJiAzWllOE6jCYYS+RnEicWxREvFjcX0jXH22
+         USom1S0+nDxWI40ESYfvvJNlWjPBB9JXXFWx1rQm7/J1fxi6o+u6F/Lf3hC0CYhBHL
+         Mu6S4F2cegCRxI8JJ5xssA78sJirrBXylKbBRjjFnYr4EKz5ZlFemHygrU1ZoB1qi/
+         YEuyvjX83K8CCKfQgoPdgpviy3kdH7nyFVLWlvD0nItzg7yJsbxT0gx89Gc0Oda3Qp
+         CfafJSN+ZQnlw==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     trix@redhat.com
-Cc:     rmody@marvell.com, skalluru@marvell.com, davem@davemloft.net,
-        GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: bna: remove trailing semicolon in macro
- definition
-Message-ID: <20201204174259.3a2db7e2@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201202163622.3733506-1-trix@redhat.com>
-References: <20201202163622.3733506-1-trix@redhat.com>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, Shuah Khan <shuah@kernel.org>
+Subject: Re: [PATCH net-next] selftests: forwarding: Add MPLS L2VPN test
+Message-ID: <20201204174552.120ee60f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <625f5c1aafa3a8085f8d3e082d680a82e16ffbaa.1606918980.git.gnault@redhat.com>
+References: <625f5c1aafa3a8085f8d3e082d680a82e16ffbaa.1606918980.git.gnault@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -39,12 +37,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  2 Dec 2020 08:36:22 -0800 trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
+On Wed, 2 Dec 2020 15:35:43 +0100 Guillaume Nault wrote:
+> Connect hosts H1 and H2 using two intermediate encapsulation routers
+> (LER1 and LER2). These routers encapsulate traffic from the hosts,
+> including the original Ethernet header, into MPLS.
 > 
-> The macro use will already have a semicolon.
-> Clean up escaped newlines.
+> Use ping to test reachability between H1 and H2.
 > 
-> Signed-off-by: Tom Rix <trix@redhat.com>
+> Signed-off-by: Guillaume Nault <gnault@redhat.com>
 
 Applied, thanks!
