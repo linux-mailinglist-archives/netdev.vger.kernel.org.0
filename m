@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 842A72CFE18
-	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 20:19:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE4AE2CFE48
+	for <lists+netdev@lfdr.de>; Sat,  5 Dec 2020 20:24:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726208AbgLETTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Dec 2020 14:19:08 -0500
-Received: from mail-db8eur05on2119.outbound.protection.outlook.com ([40.107.20.119]:13921
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        id S1727946AbgLETWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Dec 2020 14:22:22 -0500
+Received: from mail-am6eur05on2101.outbound.protection.outlook.com ([40.107.22.101]:29825
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725902AbgLETTG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 5 Dec 2020 14:19:06 -0500
+        id S1725973AbgLETTI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 5 Dec 2020 14:19:08 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mYwgQNWhKPqIk43/yukeMmTjoN6VHOQIyv23qg89Fu+XTwlK2DzunUhOWPXI7j5KUVESk93ll3Sbju0UCRHea1nbp20DzRYM6ltu96aJ+NhfwQBij19oh6XP4y2QXYTii2y8xtT6fNNTpRqT5QrXy7URJoG+5uQNjPobmp9vrISL6w0TifY1VTwVFxwgBjgMfx5ZGr1YryaO97bye4RIp5qpGueebTzorT2x5CzSTTsZHnbHn76cF4ZSj4++NuPmU0es4DREO1cmrZU9Gf4l40jLzadFgb8/nS6v5klLd8SM/DqI7v5J2PmSyxaTMOdLJ8zoIBDk87mTTI5Z3tqu+g==
+ b=MnE0bVK1Nv0U7j9TTmn7cEQAAwSSmYM2/MT3Z02rk3R1ePtjPTOVygEzh5lRuPDs1jEhfBoqTJolchzN3P9ipd0yO95qnNjxSCu5wIeWh9Bkoui/zqCElEdQ5Ta136BLRUw0wPVrf/X1rfvQplR9JweRmbgzxmT6qYHX8d+KiK9lJChQf8ZNrsvFR6sFLJDgJ6JFpAI6/lc79aiQmAeiu9chSNIf71634Q1V8wHkK62iSdax7zfbuzxGHesOG8EOmbt9Xna54TSGEbBoyezJuwo8jeLCrBR+OGYpDvHk+BNXE3NSFPGJ5/0CcP2ORJ/L08irslSjah56onZWgZfp8w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=J1000bth0R4PjbivgQkuYbV5Wi49n13+XgebzPJUeUY=;
- b=OrSHzgqq6SA25jF8xVyrgBgmWl2aRmSAbVtdtYGjXSsYZRqo8sGs8IRfShMpLm2gaOEpcEj4Jn2QZqvA54LDdc5A5Iie46bPqmWHs5LYTvPNZE9qjhCPXqeH/K52XhbHAjYszyyUq4h+/D3q2LIkB1omh+mzZPdn5N3T2hjUd3pX7Yj/aHfe04Nmymi/lx/9NFlVCmJwyN/hhZbdZ2ZpelsahQ3/StqMdOXFxzcQNZNsIhefBSczJoZXeGCGoHzAw3K+GNQxr/gFUBl1vz7b/KS4aqsy4M26mwV3YzM3CoH0+h9t6S2FLfhvxDRgu4U43UmO6HCDTCL+4CjqitDr1w==
+ bh=rKYTTJjfAYq2SHbpf0pgwGx+PpevNL4ulj/gk7Gdwr4=;
+ b=YybYd/QKcYXzpxsH6WAuoQJ1aP+HeAPF4swfpdpFSP6GBIhgToX29tWfIi2t6bujAAUCoQaK4ZnehrN0e6zBWGI361d9SnuqYFMbY3Fkfz/ZKuCE0rc9ypKhzt6wU99L1wuL39vW3Mi/6M/0cnSonajJU1yOvM4sTDWEpRLVJKIUkoDdIuPyFgm0sH7n7uvxXUCxCJ8NNALjDC9JLpEp/CFp0J5EDUnNh7exd5Bk0/UulAQAIywrjfjTZGYvKa+X7FWl0WSWbDiPIfog4pjjkL1zEjv0BWYMCypFWnAJNbm6sH4aen5naCABGxw0Uj1+7N3+4dJcxobBJhPBmwnxFw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=prevas.dk; dmarc=pass action=none header.from=prevas.dk;
  dkim=pass header.d=prevas.dk; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.dk;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=J1000bth0R4PjbivgQkuYbV5Wi49n13+XgebzPJUeUY=;
- b=LmLuwhDwjj8yODbJ577iw+YgqlkPNIO2+Hs/mhkjASK0+D3xf/kcafYQPww2SkQDXuXd2r58ZBOGz6YXcrJnsabZVrnPuUYc6Fuy38D5gAKpAdvLUGhm8IgIuDC8CrPGXssCJvRIjcNGhcPLr9TaH2spWE4h8S7VwEOazLilIR0=
+ bh=rKYTTJjfAYq2SHbpf0pgwGx+PpevNL4ulj/gk7Gdwr4=;
+ b=BFWn2pGWVhht7Y+aMLeN2dV3aEIdqdPVPkBKppCYlLxvQUIqXhV1TB8ucKVKKnHoZ19NtXJn6JqDrCFyF9QSdbaGIr7cxmXPsVi4M57HNEZpnhoc+rpT/ra76vA4T8yT4RtXhEqAsfnu/jdwkoncdzJ9V/CbXgkMuv9fzmiBALA=
 Authentication-Results: nxp.com; dkim=none (message not signed)
  header.d=none;nxp.com; dmarc=none action=none header.from=prevas.dk;
 Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:3f::10)
- by AM0PR10MB3729.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:185::13) with
+ by AM4PR1001MB1363.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:200:99::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.17; Sat, 5 Dec
- 2020 19:18:17 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.19; Sat, 5 Dec
+ 2020 19:18:18 +0000
 Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::9068:c899:48f:a8e3]) by AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::9068:c899:48f:a8e3%6]) with mapi id 15.20.3632.021; Sat, 5 Dec 2020
@@ -42,15 +42,19 @@ From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
 To:     Li Yang <leoyang.li@nxp.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Qiang Zhao <qiang.zhao@nxp.com>, netdev@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Subject: [PATCH 00/20] ethernet: ucc_geth: assorted fixes and simplifications
-Date:   Sat,  5 Dec 2020 20:17:23 +0100
-Message-Id: <20201205191744.7847-1-rasmus.villemoes@prevas.dk>
+        Murali Krishna Policharla <murali.policharla@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Zhao Qiang <qiang.zhao@nxp.com>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 01/20] ethernet: ucc_geth: set dev->max_mtu to 1518
+Date:   Sat,  5 Dec 2020 20:17:24 +0100
+Message-Id: <20201205191744.7847-2-rasmus.villemoes@prevas.dk>
 X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20201205191744.7847-1-rasmus.villemoes@prevas.dk>
+References: <20201205191744.7847-1-rasmus.villemoes@prevas.dk>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Originating-IP: [5.186.115.188]
@@ -59,97 +63,86 @@ X-ClientProxiedBy: AM5PR0701CA0063.eurprd07.prod.outlook.com
  (2603:10a6:208:3f::10)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from prevas-ravi.prevas.se (5.186.115.188) by AM5PR0701CA0063.eurprd07.prod.outlook.com (2603:10a6:203:2::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.5 via Frontend Transport; Sat, 5 Dec 2020 19:18:16 +0000
+Received: from prevas-ravi.prevas.se (5.186.115.188) by AM5PR0701CA0063.eurprd07.prod.outlook.com (2603:10a6:203:2::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.5 via Frontend Transport; Sat, 5 Dec 2020 19:18:17 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cfe90b0e-7301-43e6-3887-08d8995284e3
-X-MS-TrafficTypeDiagnostic: AM0PR10MB3729:
+X-MS-Office365-Filtering-Correlation-Id: 55ed57e5-51ce-4b10-7060-08d899528567
+X-MS-TrafficTypeDiagnostic: AM4PR1001MB1363:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR10MB37295F16789C80F3073E985C93F00@AM0PR10MB3729.EURPRD10.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-Microsoft-Antispam-PRVS: <AM4PR1001MB13638A572901BAFA70A9EA1193F00@AM4PR1001MB1363.EURPRD10.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lvkQ4HWZCqSdlheXbguYDTbAMTY6hDJgWPnLXq+viTK8syOM21f1AOUXUPqecF6+IkdfH8qnc5g1pRNqwIvx0JRS7ExTjUA1Ej473oHhI8hGA0mOjRCtGyrfy7wBfbi/u4HMIqvP8cPWvLaSHe1Ev5ECql+Mhs0CMl1WwWlqPhM3qVNthkazosyH9mGGUqb6iRv6RulK9oOqQ5hNzr0l7gzUxdGrGv2gVJDDWWA42vHKzHPnnNtS/3G9OH71VwXhILbEj/Ut6nd9CrErXtUqBxmjgVhIMprbr8jnA4zujdB7UT8I8Q1Hi1gV95eZTQ1s
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(376002)(136003)(346002)(366004)(396003)(39840400004)(5660300002)(2616005)(66476007)(66556008)(6506007)(107886003)(8676002)(66946007)(4326008)(8936002)(2906002)(86362001)(956004)(16526019)(83380400001)(44832011)(6512007)(186003)(8976002)(26005)(36756003)(316002)(6486002)(1076003)(52116002)(6666004)(54906003)(478600001)(110136005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?B3OZpnefOXZUwzV9psVEDduen5c1DUQ2goydgoSq5F0uW1aeV8cSRPxIlU7v?=
- =?us-ascii?Q?YNCHZHxnqnR0NmRUQ2dnvKoBMyO7aQXU5V7N8CnwZUwBQ5VfxtgjSU44dWGp?=
- =?us-ascii?Q?EQIA6lv5CddHRw633O5Gd9XB2M7I2I0lJ0nlo+WKiwoxafvX4hgfb4zPy/y2?=
- =?us-ascii?Q?+RtLvg86cSTvLeVHNNxzRFO3rAWj5uhM6i3Ppg1Y36WgRjweeCE/SmTC3YhJ?=
- =?us-ascii?Q?KquqGPRIvd950cvoTjM7ut2FjZQ+UIj2qPMpoSzbKdFGRmUXhOiPkoHYgiPp?=
- =?us-ascii?Q?6eJiH/jxohLZEgyGeapxcwyk2hx6hxjzRtjgm6RkrDWfh7WVwfmiQ85CGST8?=
- =?us-ascii?Q?UD7iFRHERsejeOkMOpNEO+SwwWsl+j7JyoRRgDPN1FSengP2Bjo7IFmYqELN?=
- =?us-ascii?Q?DpwEjXrdL5qZwOO+cjjSvgUFTteOcAamLMyHGjqYZdBuRv1vSOX7scmeXvPp?=
- =?us-ascii?Q?wft+RFGFYEYZx5nH9LGH1QReKO0+F41Q9kMK7tf46VbNU3Ir+kzDoPToW9Qk?=
- =?us-ascii?Q?H+1r0a+Z5alBpfnmExIUZgAjaTAfASjN2H37WaOXsnoOqTKRXzcnKjOPr0Nv?=
- =?us-ascii?Q?VryU9yMVVY7HdstVOeyFqdcr0VjMDrO5iH6EgZryfsW+/ig5xtjdxwk3pRxB?=
- =?us-ascii?Q?dU81Z/p4Y/8zTiknneiNYfetOVqz6b0AJmy0lOUsRjBNjwbz8uUV06phATWS?=
- =?us-ascii?Q?Qpy0FSUB+cAXyMZISLZIZJkR7Bb4I3ViUbaklLDgKX3aP5zajrB39qMuudpq?=
- =?us-ascii?Q?fNMSo0Yw37oNPXNeu/GBwymLQxYnRVYKxsnIUPlILXDqtKtwg3tMH27TXkG4?=
- =?us-ascii?Q?vINd/CxUJof6p+zY8SOZg3sQTWJKOaXTGUDEu7fePINi0SZ9JoK/CndNkOEq?=
- =?us-ascii?Q?GlTsoDqGuNJlhXloxpcay7G/4Cre4CauWv/j1ZYsXZV+p7XEKQGrpND+degR?=
- =?us-ascii?Q?btQQUWpD19E2TRWttS8PlZxsQ/Hnibz7AtuTWMsgX7dSVnHu4PLIgd0610u0?=
- =?us-ascii?Q?HNHv?=
+X-Microsoft-Antispam-Message-Info: uX0ygCh4xAy1OsUAKag9n7X8+icikxLzMJh9bcCUTmCx1QrIIX/PcnRt68TUxa2hKm66K73QquHNDmvMqTlAtkvFVfIKplU01Dk8V4BCv4IVOoS9/GVD7q8cHbLB9I/CZYfVqLkiJW81UNI52bWg1VtzJ8m6k+k0cnQ4zDlPCfk7IBkP/350wzDTbq7ufCORNewwhfULCcY+5uifv8RBZu9G/RNbT7NmCUcgLtqkXlc0JETKitC/cnHk9e+WgOVnFv5Yb9ry+7F4bBvSMcBBVAL5eU2CB1f/uUVPDEV2+EyuFqCxWBfTjIYwhacfC9df43yD5dqcZHN/REcf+/snWw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(396003)(39840400004)(346002)(136003)(366004)(376002)(2616005)(2906002)(8676002)(8936002)(83380400001)(52116002)(36756003)(66476007)(66946007)(66556008)(4326008)(8976002)(5660300002)(1076003)(6486002)(44832011)(6512007)(186003)(26005)(6666004)(7416002)(110136005)(316002)(86362001)(478600001)(16526019)(54906003)(956004)(6506007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?+KnOMDX2SE8w3VxPbTCxSFRExjqaxMD5y4FpExYaT0Ym7+6YFloEi17/1nTX?=
+ =?us-ascii?Q?AwN/bnOEL4ObZuSESci7F1yJMn2+LDpNliha2l2pWrR+vkdrFyNveFCwGJ6I?=
+ =?us-ascii?Q?KV91dZ6aUwq0KvFhLbH1UbKTQpC6KNhckBwUGSicPfRfbdz6ZeaDM6Pdjyql?=
+ =?us-ascii?Q?7w1uzbQLbqnwEspQ/VyZnnbRY/dLkfboYRbpwvV3yF3bV1lbMRemupnyiFBj?=
+ =?us-ascii?Q?e5+71Pk/T0AclStWJO473ADOJsyFTJs+zwdPPiGoXm3bgiloPrd120AUiVak?=
+ =?us-ascii?Q?2JMxOXWpgWmS1Dyj1QWzvYT17ysSFL7bhtNCbyY26/5qo9zleY4nADPfzMZN?=
+ =?us-ascii?Q?kS9MCcj1jSGN0odC7OntmubgbHvlKBZhVz4TBxC8DKxFSZyVGRwRdR32udg6?=
+ =?us-ascii?Q?7UqxIeSS7maOwUOMiuo1lBmivUnuIEPb8CsXLHO/jO4N2RAn2UNNZBSzDUu/?=
+ =?us-ascii?Q?6oNPF9hPYW4YpSSg1cBiNrJ3qQi1E7arihiPFonS/Y1ajPOfeEWy2xXXekZH?=
+ =?us-ascii?Q?Rj11mki7V500aeyqcEJfMIWI/MnL6eRBW0SedZVZS6nbvwB6rstgQggll83G?=
+ =?us-ascii?Q?QRnTL7S8Py4kiScBXRN1aXjpQBdcoRsRjqUYmSsUWmZ4mMsZfVt29PVOC6UO?=
+ =?us-ascii?Q?fdvPZ9F9mltxHsxtzewH6Knauk7WYzFdt/I7VAM175yyxbZp+gwZApQIu3iD?=
+ =?us-ascii?Q?uX8gTz3k2/UtNAV0BvAZlGQWi2zW9YUiMop3iFqeSU8HqWn3VZuVHrQKTAKX?=
+ =?us-ascii?Q?v+lzXpxPNwff1kyuXY2tlnPHvXWY75e3MT0ORLLD/Ohh0niBKau7q1wB+fVi?=
+ =?us-ascii?Q?qRVcBRvddDSVcS/dV5iBsAZMcEU/MUWO5b0lzUtv5Ris9fSprLbJfX4i3I0E?=
+ =?us-ascii?Q?ma8lMS1JL+pVXQNrwb38LpHCgvK4iW/RozWsrghpJFHKRJ6KDnPskmwBYPnF?=
+ =?us-ascii?Q?WMad449kfh6i/U5DfixTLy2iyIEoR5aKVqqO18JVipVGm7zvLcucqqWQaPnt?=
+ =?us-ascii?Q?8xxp?=
 X-OriginatorOrg: prevas.dk
-X-MS-Exchange-CrossTenant-Network-Message-Id: cfe90b0e-7301-43e6-3887-08d8995284e3
+X-MS-Exchange-CrossTenant-Network-Message-Id: 55ed57e5-51ce-4b10-7060-08d899528567
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Dec 2020 19:18:17.0325
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Dec 2020 19:18:17.9070
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: d350cf71-778d-4780-88f5-071a4cb1ed61
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XoTKCl+eHVCa86h9W78Fylq7ei7Gu6y6vbd5Qb9/bLSleoayCR2bFbX43DLAPFNKWiib1Aoh09mSuD56zBJHxDH0m2ME4VhE4CS5HoKsa6g=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB3729
+X-MS-Exchange-CrossTenant-UserPrincipalName: tERVoIkKN6pLidz+awmXi7a14UAzx2Z0V2iAwbFGsfSb69x8pjAFfScf3kpdCCgGJK8aFxrtnQDiVrBB+O/rkA0E+1wOTAGEhbsqg+r7rFs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR1001MB1363
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While trying to figure out how to allow bumping the MTU with the
-ucc_geth driver, I fell into a rabbit hole and stumbled on a whole
-bunch of issues of varying importance - some are outright bug fixes,
-while most are a matter of simplifying the code to make it more
-accessible.
+All the buffers and registers are already set up appropriately for an
+MTU slightly above 1500, so we just need to expose this to the
+networking stack. AFAICT, there's no need to implement .ndo_change_mtu
+when the receive buffers are always set up to support the max_mtu.
 
-At the end of digging around the code and data sheet to figure out how
-it all works, I think the MTU issue might be fixed by a one-liner, but
-I'm not sure it can be that simple. It does seem to work (ping -s X
-works for larger values of X, and wireshark confirms that the packets
-are not fragmented).
+This fixes several warnings during boot on our mpc8309-board with an
+embedded mv88e6250 switch:
 
-Re patch 2, someone in NXP should check how the hardware actually
-works and make an updated reference manual available.
+mv88e6085 mdio@e0102120:10: nonfatal error -34 setting MTU 1500 on port 0
+...
+mv88e6085 mdio@e0102120:10: nonfatal error -34 setting MTU 1500 on port 4
+ucc_geth e0102000.ethernet eth1: error -22 setting MTU to 1504 to include DSA overhead
 
-Rasmus Villemoes (20):
-  ethernet: ucc_geth: set dev->max_mtu to 1518
-  ethernet: ucc_geth: fix definition and size of ucc_geth_tx_global_pram
-  ethernet: ucc_geth: remove unused read of temoder field
-  soc: fsl: qe: make cpm_muram_offset take a const void* argument
-  soc: fsl: qe: store muram_vbase as a void pointer instead of u8
-  soc: fsl: qe: add cpm_muram_free_addr() helper
-  ethernet: ucc_geth: use qe_muram_free_addr()
-  ethernet: ucc_geth: remove unnecessary memset_io() calls
-  ethernet: ucc_geth: replace kmalloc+memset by kzalloc
-  ethernet: ucc_geth: remove {rx,tx}_glbl_pram_offset from struct
-    ucc_geth_private
-  ethernet: ucc_geth: fix use-after-free in ucc_geth_remove()
-  ethernet: ucc_geth: factor out parsing of {rx,tx}-clock{,-name}
-    properties
-  ethernet: ucc_geth: constify ugeth_primary_info
-  ethernet: ucc_geth: don't statically allocate eight ucc_geth_info
-  ethernet: ucc_geth: use UCC_GETH_{RX,TX}_BD_RING_ALIGNMENT macros
-    directly
-  ethernet: ucc_geth: remove bd_mem_part and all associated code
-  ethernet: ucc_geth: replace kmalloc_array()+for loop by kcalloc()
-  ethernet: ucc_geth: add helper to replace repeated switch statements
-  ethernet: ucc_geth: inform the compiler that numQueues is always 1
-  ethernet: ucc_geth: simplify rx/tx allocations
+The last line explains what the DSA stack tries to do: achieving an MTU
+of 1500 on-the-wire requires that the master netdevice connected to
+the CPU port supports an MTU of 1500+the tagging overhead.
 
- drivers/net/ethernet/freescale/ucc_geth.c | 553 ++++++++--------------
- drivers/net/ethernet/freescale/ucc_geth.h |  15 +-
- drivers/soc/fsl/qe/qe_common.c            |  20 +-
- include/soc/fsl/qe/qe.h                   |  15 +-
- include/soc/fsl/qe/ucc_fast.h             |   1 -
- 5 files changed, 219 insertions(+), 385 deletions(-)
+Fixes: bfcb813203e6 ("net: dsa: configure the MTU for switch ports")
+Cc: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+---
+ drivers/net/ethernet/freescale/ucc_geth.c | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/drivers/net/ethernet/freescale/ucc_geth.c b/drivers/net/ethernet/freescale/ucc_geth.c
+index 714b501be7d0..380c1f09adaf 100644
+--- a/drivers/net/ethernet/freescale/ucc_geth.c
++++ b/drivers/net/ethernet/freescale/ucc_geth.c
+@@ -3889,6 +3889,7 @@ static int ucc_geth_probe(struct platform_device* ofdev)
+ 	INIT_WORK(&ugeth->timeout_work, ucc_geth_timeout_work);
+ 	netif_napi_add(dev, &ugeth->napi, ucc_geth_poll, 64);
+ 	dev->mtu = 1500;
++	dev->max_mtu = 1518;
+ 
+ 	ugeth->msg_enable = netif_msg_init(debug.msg_enable, UGETH_MSG_DEFAULT);
+ 	ugeth->phy_interface = phy_interface;
 -- 
 2.23.0
 
