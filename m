@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71F1F2D0877
+	by mail.lfdr.de (Postfix) with ESMTP id DF7482D0878
 	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 01:02:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728826AbgLGAB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Dec 2020 19:01:58 -0500
-Received: from mail-eopbgr80058.outbound.protection.outlook.com ([40.107.8.58]:53705
+        id S1728831AbgLGAB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Dec 2020 19:01:59 -0500
+Received: from mail-eopbgr80049.outbound.protection.outlook.com ([40.107.8.49]:17892
         "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727375AbgLGAB5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 6 Dec 2020 19:01:57 -0500
+        id S1728683AbgLGAB6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 6 Dec 2020 19:01:58 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Mz27L0IMzgopmsozqdfTmoV3bSbJNabwMemtft9Vdhu3Ivy3PIOFULzxAJpMa/dcRBoGaPVniHPIqbzubri3Ud+QHEIVjasjpWR+hIwl98Dm7jLlJEw8g+uHdj2fTkfAUXW5Ehzivn8J9RPTKBg6JHwwobt1o13TwA1q3tG2Ug6/D6V+xdCK7LMhmo62DG0smy2e0DzVjcXt+IzuJeQxQqjat38SlxJUYCmudeMq0G6YsrWyCKFLRu8LYXgGQ09U59UFwdF+konvQX9y1bJzu6O7/3fkAB9WhMGWAeEZqQIFxHUuFsIhs1zosSmtc0hLYmbkYOMuWU9cGR2UpRE60Q==
+ b=Y0XgaJjkReN50lvXF/Hbg0v6+FNQPE8Tpx/NrGj08GiRPDsMsNCWnBPhLxoT8QjRRfgXGnqgtRrG5Y9hDjwox1DN4wVgSfu3sy64DLzb3jsw6/8MpQTE0WxKb2rb0MVHppUsLNsualltVngrzspeDlwfFjEJMFJDbiNUvZcJgtq6f2OQXYQ0UoyImOt8LTe/555GO9J2fmc3feuZJ4k6tK6ePu6qdraNizTphb6h+UdCjtIaplUTwVYhUPaxUkHY8UO0FQsq3OhwMjEM0FlpFodrrZBSpjcQDBV3kDWE8gdNgHu+VQNsLJeeTJJsNauIwZ6UCO9gKmG1GGbziFcZSQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OHmGWui+p+DyYtm0DNC+njXgVzJATjXFcBvLMUSA+fw=;
- b=IkB3URV6AyNMZOAaTbDnaDOFkdmPFKCeZwxWxndyjm1s1uAKp25VhQM9IfzWLmFZShXXYb2F5HeWNbjEYBfhBcxJ2HWco059m5MBU5aoek3ycHtbVY485V+aa0WpL2QSJH499zUVwoWILjfVH6IrV/WyR5ZT6Ely/fMx6IgLWDTj0y/mjnl8UgMueHc0i7daBjMln4CYuOTp1TOgtxVp7AOhw+G/eCp/HLrnX2HCDRm88g9Mjpf4LMaP7y+pwu3LsVwJ9eN1IpKaO3qnB7ZsluLtf9W3nsNC9s7EdIqk1UGNXA4zb4piLJfVamaFoLkI23th5AsNrhZOi44h14Q5DA==
+ bh=Q1aaSplXW7VCc/5O8O2/UDxdFpNfODNYhSZ9QSiG4wY=;
+ b=HHb7bTaGMZHYzmF7hT3PPnl1GKcSAEGvDBTO/oCLcBQl1oIZFnsKiUqX8g/pgOw6THnupQ/XhhMug2I+ONIYEVKYbCI/5/7Dyje9MAOkwgjUIX6pxSB5pO5Wabi2E+B7M4RuUczbvzmEEeGF6ct7WPxREpzXXYC5PiSGGRMkufjmYwpaBys41IDJwQaaxLdOhjIjxQTKjji92elGpIyI/hZB8/QXqaPNjy3kFIPPfUoZFM1kkygApdFzHHIT2Hp0+W10ht5eQJDYXCrO6clM9yKcQcvlPyFFNOTPBSejx41ITHR0EydxEJUnGbhStuaEyIV4+jeXkUkg9+7IQRDMbA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OHmGWui+p+DyYtm0DNC+njXgVzJATjXFcBvLMUSA+fw=;
- b=Gbgeg8lgnEER1Ltc2K0oxW5NRnbaaxYMH4MFVKBG5xz2knBrmOf2oQMp6zCXKdCgYIiLEdataYvNlXlIipWgEXUtVveOLK0U7F8fx7LwfyUZJE8UXdPIwHG/y8uW7N53HNpvNhBcESapiFpL0YbmwE3n601KmpXQ+4LIs32drU4=
+ bh=Q1aaSplXW7VCc/5O8O2/UDxdFpNfODNYhSZ9QSiG4wY=;
+ b=ZmhrAp8Q0T8f87qbquPxcknhB3AFLgfJNQGSfMXMlDiRi7w1mw3NT+vMQb/hcE/6j2Ztg5aXZRqZNcBmvZBxafvR7MLfvZVivk0vsuyY0s6n/1sQha4QDsz6DsqUMvIOivJfGxqV+O2TqoIwd0oUqxVyfYgSs0UmwiPYeTnoIts=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
  by VE1PR04MB6637.eurprd04.prod.outlook.com (2603:10a6:803:126::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.17; Mon, 7 Dec
- 2020 00:00:07 +0000
+ 2020 00:00:08 +0000
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::2dd6:8dc:2da7:ad84]) by VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::2dd6:8dc:2da7:ad84%5]) with mapi id 15.20.3632.021; Mon, 7 Dec 2020
- 00:00:07 +0000
+ 00:00:08 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -50,10 +50,11 @@ Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Stephen Hemminger <stephen@networkplumber.org>,
         Eric Dumazet <edumazet@google.com>,
         George McCollister <george.mccollister@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>
-Subject: [RFC PATCH net-next 10/13] net: procfs: hold the netdev lists lock when retrieving device statistics
-Date:   Mon,  7 Dec 2020 01:59:16 +0200
-Message-Id: <20201206235919.393158-11-vladimir.oltean@nxp.com>
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Christian Brauner <christian.brauner@ubuntu.com>
+Subject: [RFC PATCH net-next 11/13] net: sysfs: don't hold dev_base_lock while retrieving device statistics
+Date:   Mon,  7 Dec 2020 01:59:17 +0200
+Message-Id: <20201206235919.393158-12-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201206235919.393158-1-vladimir.oltean@nxp.com>
 References: <20201206235919.393158-1-vladimir.oltean@nxp.com>
@@ -68,42 +69,42 @@ X-MS-Exchange-MessageSentRepresentingType: 1
 Received: from localhost.localdomain (188.25.2.120) by VI1PR08CA0156.eurprd08.prod.outlook.com (2603:10a6:800:d5::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.21 via Frontend Transport; Mon, 7 Dec 2020 00:00:07 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 21442223-46c4-4839-693e-08d89a430eda
+X-MS-Office365-Filtering-Correlation-Id: 78b2c608-f89f-4387-3117-08d89a430f53
 X-MS-TrafficTypeDiagnostic: VE1PR04MB6637:
-X-Microsoft-Antispam-PRVS: <VE1PR04MB6637BF2683DC060EB82483E9E0CE0@VE1PR04MB6637.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-Microsoft-Antispam-PRVS: <VE1PR04MB6637113821BD29D8308F84DAE0CE0@VE1PR04MB6637.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ohXlfBm2tX/UpbTrGI/U/qHz9S2JSZ7VuNZ3f9MWJPt+2Hsz8ZAeaZvre84WpGAw33DS0dwhadd71dditj28daVZuJRRzoO5P/ata+0KFt7vtMfLXxzRF9iEgmhxB0ByKKsZCPGnvyFjiHGgk66D3cxxLRFpWvmPEQ8xWnWhSxX59SDr3bW8mt+pC7WgmG/NENod+7J5h6sR2BcSt2gq/dSG4aKLC/JYSYZHpW/nW/ntAoRMft7KPWQ2spmpJjM0jiWu0HWLXIs1YjU6MLM0BmnpRZrB17114Rcfv6vXnSucEL6b4JLttioVzXmPlqM4kwcEf1kIJOcSU+qgQIi7uAUbwNFLwIgoKZxi7F/F+2APX42coawZnnGwPhYtcTzV
+X-Microsoft-Antispam-Message-Info: T3CC+M575zOEt3IRbw8DalIxCUqL/YSgCNvfh+E3AxHJpiQClHxy9FXZkSkPksGWFcs1GWxTSrSvQ7xTQqdTu9XDXb9Sez6qnwO1Ky40g1hbVyPb4fTh+IHUZnNXl/j9gT0+BbT4lgkkVl2C1fC8nlwImAEAF5LjWd9yZu75JSoagb7MnITsXJaaGiHfZrYP1sjruSriy4wVIzK3Uj2z3U9M806900zaYxLcbjASfM+CCzjjg8uheue5TMqvEczNQiVU5fHGww+pKwrBYC2i1tV/hVG/uAhpwEbWLRlCrkvG+q3r123rEBD0JjmRZMgfso0pYGdt8J73IRbkwdhtgyin1jqEa8ghtkI9vcDT2seIJJ2X19HR2adtcJrrQ7iq
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(396003)(366004)(136003)(39860400002)(376002)(6506007)(52116002)(5660300002)(66946007)(66556008)(26005)(8676002)(2906002)(8936002)(1076003)(316002)(110136005)(54906003)(478600001)(44832011)(7416002)(6512007)(186003)(6486002)(16526019)(6666004)(36756003)(956004)(4326008)(86362001)(66476007)(69590400008)(2616005)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?28HdsQhNizOSaoDmVlbgh5kQG1UO1WKw4DUkeQv70NR2kgrOL5U+KxlFRad1?=
- =?us-ascii?Q?Ncf+6yFLjnZacb1ISNXyIf1sry9xVdVPOf/EukwbUux2Ck3DZraZFv/nI+Fg?=
- =?us-ascii?Q?UCFQBqEicdSXjgA8BgtXd3ffAospgxLMkZVYtXEE0f5bKsj81WRfV0ACzsON?=
- =?us-ascii?Q?E0zjDB9hD+ghZOyK/0qTcNIS8zZvv955LYUgiqkGwcAlyS7N7xXYgplKD1Q1?=
- =?us-ascii?Q?sqK8aaW9kU8tE+O5jl6jjY5wZe308jltTLgpPjzSWE5G3dE4rDFDppwv8To0?=
- =?us-ascii?Q?AStLDdIAyFEAgcwvrQddzt9QcPWsndLixGhOMpPWJ4QRkqkgDKhjPBW403+Q?=
- =?us-ascii?Q?xlluLSC2WDhXXPWssC0GvnXzj1mnJm2vDZOCi3nDP4pX6TAgm+K0B3/xVH66?=
- =?us-ascii?Q?1e+/hl8SVonibmJ9p2KkMB6CaRc98AW6HEYMHb34bAWHdahI40bMDe3BBrC6?=
- =?us-ascii?Q?slaQOYxsYAJ2XtDkkKFqDkdtlLzZt2hgKwRedPmrBGxIttznUMwT7jL+ZIDb?=
- =?us-ascii?Q?0c2jvQViAfdKdEamFIkNl4EnhTXllaLKtkp0k6bKqjMUlmkhPpEFlMVwWqUC?=
- =?us-ascii?Q?9z/rDiapC2pD1Fzpgx4rkGdxCsYpFE0+MZr1zlGqhuY4srdo8jlvyZY1l+FW?=
- =?us-ascii?Q?/WTu1b6WRDtV2+HtTrASrWt/cKUHPYqz0GYiIl8R8pt3axIWZUP2mnVXY1EJ?=
- =?us-ascii?Q?QwlbzNoMtBazg13Aue0aap7ptAcAtBRbfu6+mCakHESOoNhVGeF4stJzi+5L?=
- =?us-ascii?Q?8PlGMFlrliH4/rrdzCvwJN6Sx2SB1IRFIc6hWPHWnnMK7ea8DbkF/n+/Lb/F?=
- =?us-ascii?Q?qA9lASBhqlct1csw3Q2sc5+cnMAUo1pHTQWUmjQCrnimUZ229C/QJvNupoPa?=
- =?us-ascii?Q?mDYa/VB7Pj2+aV+Gl3b3IrlIrtnmXy40YSmjw8AE/CmhRBKnlcI65xME+VjF?=
- =?us-ascii?Q?iGKcjaNmQozIL8jRMuiQs8ofNJs0Y66zkLVzzyHfMy/go6Y1okDSqEcdA50t?=
- =?us-ascii?Q?9z/z?=
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?pX0eL/Ayi+cDZft4fn2Dg7PrMoz8i6OZ/XwnZG8osI8/Zd30QySGYcnR/kSh?=
+ =?us-ascii?Q?rIiC1H/uAvIqaMa3caEEuK0s+TflByYPPfAilHuCVang13D1jdbuCp6Qinmc?=
+ =?us-ascii?Q?x3WDSlItgb+Hd0QM4jf6SiFX+C78gR8uqx53sAjpOwGvCF0bWf0Bxnkp0TTw?=
+ =?us-ascii?Q?qDQGmwfNF8mTqVTr94wZp/mhTPIBcwKsPMoUiTU2oBg/4VPFcJQ2RMr6EtUn?=
+ =?us-ascii?Q?LUONZEU4e3vT+A2ymRTpK4tLNl28Rb3MfxsRoSAZvJCJMBW5tq2uocQuFt03?=
+ =?us-ascii?Q?xIy2spuMNeLWVBjdBQnsjMulVbzzf79Y05FtxZ53FcJYzER7SzGCeZZJC1FK?=
+ =?us-ascii?Q?Yd6Dx99bn4jMxa/xEpqYBdKGOv+MVB05TESDVAhqu5UJogy2Oql3c1Efhn4h?=
+ =?us-ascii?Q?jZk3EQWqdrEAQ7PU8mxx65rWAWILyuCXAW990ASvX7U4DNaEfF+CwFY/mB6J?=
+ =?us-ascii?Q?WqYAE9AGaJ5LhJ3m7tRNLTWgHRqXuKNsBtj07h8dEJIw4lMFvQ0/167qdqlY?=
+ =?us-ascii?Q?tW76enPqd2eg68EtI66B2ech2Q0uXEhM+/AhpY9ru+4L0pMRwUWncoEtL5LL?=
+ =?us-ascii?Q?rkZaUnG2EvPdWzu3NUhEhrKG7q1W3FY1/7xJoEHSOgARclQ3/VX54XB57EzZ?=
+ =?us-ascii?Q?lMbeUfKA+5ogMn7R/ShhfXLerNlfGh+0S2/TdV+2W/Rxh24Tg3gbgAsZqkHq?=
+ =?us-ascii?Q?6E8L9NDGGXMwR01RgIcIJvQ21f6OgNsNhlDUlwGi/BGmmMTDzNKgLZXXtE/I?=
+ =?us-ascii?Q?chnZYDIwS7bDWK7iooXcwLiKzQ2NG52v11iFGE2PpymBrBAeXjq+n8cqi4Ji?=
+ =?us-ascii?Q?IctTHMNXZ/uNLczE+QuQf91RzG/2WLnJx2IvHkPqFQYAvRok/7qS1xkJ1tmY?=
+ =?us-ascii?Q?k56iuBGd8l0ublcn3UEstYXBytRBo941TMsEFgaDttvZeZAxQCPNT0lON3va?=
+ =?us-ascii?Q?LXiABvXLx9GjP/3n3qOxXN5lss3NG0coEacuSU8k0D3tpvCqYy4Ns8mCnXV3?=
+ =?us-ascii?Q?xB1T?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 21442223-46c4-4839-693e-08d89a430eda
+X-MS-Exchange-CrossTenant-Network-Message-Id: 78b2c608-f89f-4387-3117-08d89a430f53
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Dec 2020 00:00:07.7655
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Dec 2020 00:00:08.5590
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ut/FkbzCcTYYtkDNM2qVn4ezT37tRqst9+Ng5slSkqnfnKdezXeAS5yOnLpYS+Jv9DhklounlNZ6/neFH/Cfvw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1ySFUYTotQGvb7mt0Uohe62aou17atBWu53D8vlPp4KV/T5MC+MEsHs8OYuwTIfkvPv+qoAzERubVsiDPGaowQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6637
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -112,61 +113,46 @@ X-Mailing-List: netdev@vger.kernel.org
 In the effort of making .ndo_get_stats64 be able to sleep, we need to
 ensure the callers of dev_get_stats do not use atomic context.
 
-The /proc/net/dev file uses an RCU read-side critical section to ensure
-the integrity of the list of network interfaces, because it iterates
-through all net devices in the netns to show their statistics.
+I need to preface this by saying that I have no idea why netstat_show
+takes the dev_base_lock rwlock. Two things can be observed:
+(a) it does not appear to be due to dev_isalive requiring it for some
+    reason, because broadcast_show() also calls dev_isalive() and has
+    had no problem existing since the beginning of git.
+(b) the dev_get_stats function definitely does not need dev_base_lock
+    protection either. In fact, holding the dev_base_lock is the entire
+    problem here, because we want to make dev_get_stats sleepable, and
+    holding a rwlock gives us atomic context.
 
-To offer the equivalent protection against an interface registering or
-deregistering, while also remaining in sleepable context, we can use the
-netns mutex for the interface lists.
+So since no protection seems to be necessary, just run unlocked while
+retrieving the /sys/class/net/eth0/statistics/* values.
 
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Christian Brauner <christian.brauner@ubuntu.com>
 Cc: Eric Dumazet <edumazet@google.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/core/net-procfs.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ net/core/net-sysfs.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
-index c714e6a9dad4..83f8a89dfc5a 100644
---- a/net/core/net-procfs.c
-+++ b/net/core/net-procfs.c
-@@ -21,7 +21,7 @@ static inline struct net_device *dev_from_same_bucket(struct seq_file *seq, loff
- 	unsigned int count = 0, offset = get_offset(*pos);
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 999b70c59761..0782a476b424 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -585,14 +585,13 @@ static ssize_t netstat_show(const struct device *d,
+ 	WARN_ON(offset > sizeof(struct rtnl_link_stats64) ||
+ 		offset % sizeof(u64) != 0);
  
- 	h = &net->dev_index_head[get_bucket(*pos)];
--	hlist_for_each_entry_rcu(dev, h, index_hlist) {
-+	hlist_for_each_entry(dev, h, index_hlist) {
- 		if (++count == offset)
- 			return dev;
+-	read_lock(&dev_base_lock);
+ 	if (dev_isalive(dev)) {
+ 		struct rtnl_link_stats64 temp;
+ 		const struct rtnl_link_stats64 *stats = dev_get_stats(dev, &temp);
+ 
+ 		ret = sprintf(buf, fmt_u64, *(u64 *)(((u8 *)stats) + offset));
  	}
-@@ -51,9 +51,11 @@ static inline struct net_device *dev_from_bucket(struct seq_file *seq, loff_t *p
-  *	in detail.
-  */
- static void *dev_seq_start(struct seq_file *seq, loff_t *pos)
--	__acquires(RCU)
- {
--	rcu_read_lock();
-+	struct net *net = seq_file_net(seq);
+-	read_unlock(&dev_base_lock);
 +
-+	mutex_lock(&net->netdev_lists_lock);
-+
- 	if (!*pos)
- 		return SEQ_START_TOKEN;
- 
-@@ -70,9 +72,10 @@ static void *dev_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+ 	return ret;
  }
  
- static void dev_seq_stop(struct seq_file *seq, void *v)
--	__releases(RCU)
- {
--	rcu_read_unlock();
-+	struct net *net = seq_file_net(seq);
-+
-+	mutex_unlock(&net->netdev_lists_lock);
- }
- 
- static void dev_seq_printf_stats(struct seq_file *seq, struct net_device *dev)
 -- 
 2.25.1
 
