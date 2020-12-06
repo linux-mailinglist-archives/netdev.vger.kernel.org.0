@@ -2,216 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDC7D2D07BE
-	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 23:49:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68D482D07CE
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 00:01:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728339AbgLFWs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Dec 2020 17:48:59 -0500
-Received: from mail-dm6nam10on2121.outbound.protection.outlook.com ([40.107.93.121]:55169
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726046AbgLFWs6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 6 Dec 2020 17:48:58 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QrpCLh+A1xWmviN+k8KlkarXZEDPlZswvciDHhVztm+EDYQ/82iCPcDuaxV3i3HY78csLg3n3r9WYSHCd3HOewaYI6y9qMWtZibVz2D+y0TVpeUHuX1eI8BjNncTOgS+5THFk9BAzFF1cGW09ktyIElO+jhMzsedDCCsN/4FJdtZ8QtI3Ub3GoomkhFN0zpmOPhHtlv9KHZ6OBsOQqF/s2gLZ8g7S4joQU/fh4m/Q+CM35Gg2LP41SpF5TsHcwnE4QtARVltnZLU/MqzMivkhRgJgawxAoCFt2rX1ve6XZD6XB5AttARdpgSHTr89aoP5q+UTgszXvMkCJ/CJU13Xg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=72BMP4SIlf5QxvcIulWooxTYhvs6thGUwBNnsq653N4=;
- b=lnWQY4/JDpNySBN73JLiawpohbx5o0EteXw6SyGRX/bR2be0ONXlqR2b4i5lNdoD1N+go2K7dTt7z0NCl1cVskZxKdkcIv/sOKZcLF5G8NCX2N2bQhCHQd3ZOZfAJk9i7hKNkxZfquPNNlLYW1yTsCjyor1DAaei3XENSvkwxfw4YBvPVPdIkeHgCqS3ISZ5I9w6z6di5hOWJ+W4l8lEhU8GHtbXiXYxHV7oq5gdv1Q5iNhdl3OWg1g1kHRs5LqEnj4l9wt7CErYH45UZuUMfUdFcbUxI+AdummxE8OpDCau6AdK2sw+ynlD3U0AiZvl7/5jdDRFcNZv05NQrZ+83w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=72BMP4SIlf5QxvcIulWooxTYhvs6thGUwBNnsq653N4=;
- b=FBVmL2I2nE7b0Lvk3yp9wCWNCLjcqk2gRhsaWFoEy1NVeRBDNkSNiAMuENvCfKlFVaK7rqGDEsnYS7cCO7rVomjOB6lVODapGIrm+AqQkXwP2JUEfLgYiY3VPab4BTXRQgoT6kdfNFiRkXiifBylf0wWBJoSR2/dMB55TrUIPDk=
-Received: from (2603:10b6:302:a::16) by
- MW4PR21MB1905.namprd21.prod.outlook.com (2603:10b6:303:7e::6) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3654.3; Sun, 6 Dec 2020 22:48:10 +0000
-Received: from MW2PR2101MB1052.namprd21.prod.outlook.com
- ([fe80::b8f6:e748:cdf2:1922]) by MW2PR2101MB1052.namprd21.prod.outlook.com
- ([fe80::b8f6:e748:cdf2:1922%8]) with mapi id 15.20.3654.005; Sun, 6 Dec 2020
- 22:48:10 +0000
-From:   Michael Kelley <mikelley@microsoft.com>
-To:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        Andres Beltran <lkmlabelt@gmail.com>,
-        Saruhan Karademir <skarade@microsoft.com>,
-        Juan Vazquez <juvazq@microsoft.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>
-Subject: RE: [PATCH v2] Drivers: hv: vmbus: Copy packets sent by Hyper-V out
- of the ring buffer
-Thread-Topic: [PATCH v2] Drivers: hv: vmbus: Copy packets sent by Hyper-V out
- of the ring buffer
-Thread-Index: AQHWtoAsiafqnDwyfUGUOfgg02x7Nanq1NZQ
-Date:   Sun, 6 Dec 2020 22:48:10 +0000
-Message-ID: <MW2PR2101MB1052B7CBB14283AA066BF125D7CF1@MW2PR2101MB1052.namprd21.prod.outlook.com>
-References: <20201109100727.9207-1-parri.andrea@gmail.com>
-In-Reply-To: <20201109100727.9207-1-parri.andrea@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-12-06T22:48:08Z;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=ac985768-ec28-4e48-9979-e5e314902878;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=microsoft.com;
-x-originating-ip: [24.22.167.197]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 704b5bb0-1b0a-4b6f-1397-08d89a3901b9
-x-ms-traffictypediagnostic: MW4PR21MB1905:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MW4PR21MB190544A6EBC7542A32F89CDCD7CF1@MW4PR21MB1905.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: jkskURfgH6Zm9bNl4151JSyb/+5zy1LVGlML8tYyIREfAo5fthGV+DZnXQfrxdmtFPHbe+VmKYJyI1a8HKIFIBenIHZJucx6kreyUbrBGd6BscN20/zY2C4fr+BjVPRub99g5dHvMnID4iyLFLJs7fsc3wUrg11U64OxGapVoDKoo+ZGoeqhzoe4iizUVQYXwo8Xom/oZ58neSkrjKqtpKiWgQXqCCU27uROejXo7cebJ+FSP9uxrpnf6dLubLpZ4tv2yDL8vlPj1jdxvk7Q61cgRBX/1EuH0E5pe0pe1lpUZAlt1+1EE9cKA5R5wq+CnlabW5+e/wi4zDm3XfaMdQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW2PR2101MB1052.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(366004)(136003)(346002)(376002)(396003)(8990500004)(6506007)(2906002)(83380400001)(66446008)(9686003)(66946007)(66556008)(76116006)(82960400001)(82950400001)(8676002)(5660300002)(64756008)(66476007)(110136005)(54906003)(52536014)(8936002)(86362001)(55016002)(33656002)(7696005)(26005)(71200400001)(316002)(478600001)(4326008)(186003)(10290500003)(7416002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?lTvRizhm9A/BKTyL3uLR7sEkma3EgcObHsu3E+xjUIiUcaWlqw4LXpnct2Nq?=
- =?us-ascii?Q?lI/Zo4nwp2XuL+8dpFnfV7J8WT4hlKzUKqhoO3EXJ45WxTtv06/ANHYGPWJA?=
- =?us-ascii?Q?jY0YdWkHLZ+neNSwIXqnhuO7HgI2Gdq56yjFfQPonOjb1yxq4J1G97uRsJOV?=
- =?us-ascii?Q?eWuyY/371Ki+lapxvJkIYnkRcCEt3IlP+Id4nb5iQuV80Wlt7RG8SA9OKLwQ?=
- =?us-ascii?Q?Fl7nCRaUhlBYF3IWh7FyKe6nZ+c8zajbtProkqhYIC1aa2iXhd5pO0rJIzH8?=
- =?us-ascii?Q?GGvVJnRxkxDNXsPaoHUHghrHKCEOJc3o04rQj4JZ0l5n4GJKBt90MB63njhz?=
- =?us-ascii?Q?lJMvjZiGrV3xF+3lH05ZDj8mJ1d9jvzYIOT6LXu4fx7prl/8NFsr7GLTxQnO?=
- =?us-ascii?Q?5Q2O5YucEkgVCTtG/2JNchupdFu/eVW3o24TR9UdQT6hE4HzX9uHuHapn+HX?=
- =?us-ascii?Q?C0AylWkoTKGm5KpOoMbfdrJqZwaJNtLAox+kPNZPO7HFZ8IKY5Kz29tGGy/n?=
- =?us-ascii?Q?0nEaFcORdPhc9NtLWdIYJ7P5wIUB/P9PKHEUJvklTEZfW+vx1zkbXKXTjnhK?=
- =?us-ascii?Q?jtfU5tlk9cCJTT3yqqV7WViGjlwcNK6KnTZqUlrM6psyAtHdhwHKiiR0XVbF?=
- =?us-ascii?Q?cB2lMaUUOCAzjoVuiiVTCcdQTbU4C6oAdtMEpJrNQGc5YSUhzj2rMv7B/E7r?=
- =?us-ascii?Q?3q13XfpMaG2TMFTloYbXh7SRsTlNDycQe/ZdXPOykXpc1oirBmQOAOHz/qxg?=
- =?us-ascii?Q?SilouGPoBNmcSKfwsBzWiOneAVz80MWXyQQ17UVLQe8vulvwu7zCC0JkvOhj?=
- =?us-ascii?Q?LsVZ8hUsOrpfY1ZnSoIO0D+ChR9QFgtnJb00pRLuzJVnP40LyiHuhv3Yb/Rw?=
- =?us-ascii?Q?qop9PstkizN1a8ExSKCh5cyjQHEWb3MjFk39WW8v4NJ9vsjKybaHFOWyzWAE?=
- =?us-ascii?Q?PE+P6DOHDGjQOjb9ko4J4AjFOonCe6zWyL2AHmNfAf4=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728446AbgLFXAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Dec 2020 18:00:10 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:24677 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727040AbgLFXAJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Dec 2020 18:00:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607295522;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sWrhr1El9eOSsOpZA9zzstTEamBu/vnA/pkLu5UU6kY=;
+        b=fW00XGQCSQ+4xIPrpq4Oqkhnre9C5qlTIgtoE0A9wTV975Egemdv/s4TghpJ0aRK9IJn/O
+        BtBvmASc4JCUywwnbAvvfTtvKP3XJqmWvTEhwG0QjXdbNN/2CmfajQqRxkNcaMiUf44HmT
+        WxV6Nzs0eDkzcr0F0jsg/KpAVXu02Q0=
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
+ [209.85.161.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-229-reAAO_kHPPGWj-zJmMQHjA-1; Sun, 06 Dec 2020 17:58:41 -0500
+X-MC-Unique: reAAO_kHPPGWj-zJmMQHjA-1
+Received: by mail-oo1-f70.google.com with SMTP id 4so4907762ooc.21
+        for <netdev@vger.kernel.org>; Sun, 06 Dec 2020 14:58:40 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sWrhr1El9eOSsOpZA9zzstTEamBu/vnA/pkLu5UU6kY=;
+        b=HWD88J/ldzNUWeDb2huWYAX+lo9pHAHZ2xABN62ajnL0536Uy7lBzHwr1BqNQNqAMb
+         L3BVlCZC2ONdNKBKftiUrE3F8gnpKsClN55IB+hlcm0scycGXNUIsT1koafiImAaAt7U
+         TYORyLkLq4lTFN/8K0Fb9aFlwGbrrO3peeeVUFN1j9i4LhYtvsQhqmVyDwLB5Y9KyNGY
+         XeJs9Ao4+j85Pj7MUXXahpn1OuANmCWPc90ep6h/o16cYqfOkjFK0YbDG3DUD9Ffsbel
+         KFXNCFuDw0IoIZwihLTGMslwlRLXSYdhRbI76pFI7TrkLAYlAQSr5rQnzNVSKBd9im9P
+         mNhw==
+X-Gm-Message-State: AOAM532MDj6ibR8XlFGMCcfIA8aO0b/0EapL4nxhTBd14q7CF0n7oGS/
+        1TXA/XcZ17fsdBlM8RExBpJ/J1bMUgUbEIqRJux9VoUVpa8ja35SPLjZKIBwJygFD9xHir76SnI
+        EB80+qKI8XWdLG14hmmbC7E2J87JEMhjP
+X-Received: by 2002:a9d:6642:: with SMTP id q2mr1529199otm.172.1607295520117;
+        Sun, 06 Dec 2020 14:58:40 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyFjrP7fjG7K6RqFUTklmAxpUj3bDI+O5asZbCjh9AKM+aECc2/3qZ4D3yD/JZ/Pljng4IC3mfTIewL/PlQLLg=
+X-Received: by 2002:a9d:6642:: with SMTP id q2mr1529191otm.172.1607295519852;
+ Sun, 06 Dec 2020 14:58:39 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW2PR2101MB1052.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 704b5bb0-1b0a-4b6f-1397-08d89a3901b9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Dec 2020 22:48:10.4065
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: iFIeQZLRwDH7l6DUenqCpPaZUH9rbVRHF/6UZCOFTB6wdS0z/3o55wTdbLpS4Oz166Pr5O0AueGwrUqwSfCWnfq2S30L4GTRhRYVE0YJajo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR21MB1905
+References: <CACpdL32SRKb8hXzuF_APybip+hyxkXRYoxCW_OMhn0odRSQKuw@mail.gmail.com>
+ <20201123162639.5d692198@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAKfmpSdv5onOGk=VtEO1fWxxhaVvi96Tz-wCFcNE5R9cdXNgkg@mail.gmail.com> <20201206164924.baczz7eyxz6czro2@lion.mk-sys.cz>
+In-Reply-To: <20201206164924.baczz7eyxz6czro2@lion.mk-sys.cz>
+From:   Jarod Wilson <jarod@redhat.com>
+Date:   Sun, 6 Dec 2020 17:58:29 -0500
+Message-ID: <CAKfmpSc1ZQ+FgBtn3XHkC2sTCFMoCq5BenCWswQmuWQs7A3Q=g@mail.gmail.com>
+Subject: Re: LRO: creating vlan subports affects parent port's LRO settings
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     Netdev <netdev@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+        Limin Wang <lwang.nbl@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrea Parri (Microsoft) <parri.andrea@gmail.com> Sent: Monday, Novem=
-ber 9, 2020 2:07 AM
->=20
-> From: Andres Beltran <lkmlabelt@gmail.com>
->=20
-> Pointers to ring-buffer packets sent by Hyper-V are used within the
-> guest VM. Hyper-V can send packets with erroneous values or modify
-> packet fields after they are processed by the guest. To defend
-> against these scenarios, return a copy of the incoming VMBus packet
-> after validating its length and offset fields in hv_pkt_iter_first().
-> In this way, the packet can no longer be modified by the host.
->=20
+On Sun, Dec 6, 2020 at 11:49 AM Michal Kubecek <mkubecek@suse.cz> wrote:
+>
+> On Sat, Dec 05, 2020 at 07:04:06PM -0500, Jarod Wilson wrote:
+> > On Mon, Nov 23, 2020 at 7:27 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > >
+> > > On Thu, 19 Nov 2020 20:37:27 -0500 Limin Wang wrote:
+> > > > Under relatively recent kernels (v4.4+), creating a vlan subport on a
+> > > > LRO supported parent NIC may turn LRO off on the parent port and
+> > > > further render its LRO feature practically unchangeable.
+> > >
+> > > That does sound like an oversight in commit fd867d51f889 ("net/core:
+> > > generic support for disabling netdev features down stack").
+> > >
+> > > Are you able to create a patch to fix this?
+> >
+> > Something like this, perhaps? Completely untested copy-pasta'd
+> > theoretical patch:
+> >
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index 8588ade790cb..a5ce372e02ba 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -9605,8 +9605,10 @@ int __netdev_update_features(struct net_device *dev)
+> >         features = netdev_fix_features(dev, features);
+> >
+> >         /* some features can't be enabled if they're off on an upper device */
+> > -       netdev_for_each_upper_dev_rcu(dev, upper, iter)
+> > -               features = netdev_sync_upper_features(dev, upper, features);
+> > +       netdev_for_each_upper_dev_rcu(dev, upper, iter) {
+> > +               if (netif_is_lag_master(upper) || netif_is_bridge_master(upper))
+> > +                       features = netdev_sync_upper_features(dev,
+> > upper, features);
+> > +       }
+> >
+> >         if (dev->features == features)
+> >                 goto sync_lower;
+> > @@ -9633,8 +9635,10 @@ int __netdev_update_features(struct net_device *dev)
+> >         /* some features must be disabled on lower devices when disabled
+> >          * on an upper device (think: bonding master or bridge)
+> >          */
+> > -       netdev_for_each_lower_dev(dev, lower, iter)
+> > -               netdev_sync_lower_features(dev, lower, features);
+> > +       if (netif_is_lag_master(dev) || netif_is_bridge_master(dev)) {
+> > +               netdev_for_each_lower_dev(dev, lower, iter)
+> > +                       netdev_sync_lower_features(dev, lower, features);
+> > +       }
+> >
+> >         if (!err) {
+> >                 netdev_features_t diff = features ^ dev->features;
+> >
+> > I'm not sure what all other upper devices this excludes besides just
+> > vlan ports though, so perhaps safer add upper device types to not do
+> > feature sync on than to choose which ones to do them on?
+>
+> I'm not sure excluding devices from feature sync is the right way,
+> whether it's an explicit list types or default. The logic still makes
+> sense to me. Couldn't we address the issue by either setting features in
+> NETIF_F_UPPER_DISABLES) by default for a new vlan (and probably macvlan)
+> device? Or perhaps inheriting their values from the lower device.
 
-[snip]
+Yeah, I think you're right, excluding devices entirely from sync is a
+bad idea, it should be only certain features that don't get sync'd for
+devices that say they don't want them (i.e., vlan devs and macvlan
+devs). I'll do a bit more reading of the code and ponder. I'm not
+familiar with the intricacies of NETIF_F_UPPER_DISABLES just yet.
 
-> @@ -419,17 +446,52 @@ static u32 hv_pkt_iter_avail(const struct hv_ring_b=
-uffer_info *rbi)
->  struct vmpacket_descriptor *hv_pkt_iter_first(struct vmbus_channel *chan=
-nel)
->  {
->  	struct hv_ring_buffer_info *rbi =3D &channel->inbound;
-> -	struct vmpacket_descriptor *desc;
-> +	struct vmpacket_descriptor *desc, *desc_copy;
-> +	u32 bytes_avail, pkt_len, pkt_offset;
->=20
-> -	hv_debug_delay_test(channel, MESSAGE_DELAY);
-> -	if (hv_pkt_iter_avail(rbi) < sizeof(struct vmpacket_descriptor))
-> +	desc =3D hv_pkt_iter_first_raw(channel);
-> +	if (!desc)
->  		return NULL;
->=20
-> -	desc =3D hv_get_ring_buffer(rbi) + rbi->priv_read_index;
-> -	if (desc)
-> -		prefetch((char *)desc + (desc->len8 << 3));
-> +	bytes_avail =3D hv_pkt_iter_avail(rbi);
-> +
-> +	/*
-> +	 * Ensure the compiler does not use references to incoming Hyper-V valu=
-es (which
-> +	 * could change at any moment) when reading local variables later in th=
-e code
-> +	 */
-> +	pkt_len =3D READ_ONCE(desc->len8) << 3;
-> +	pkt_offset =3D READ_ONCE(desc->offset8) << 3;
-> +
-> +	/*
-> +	 * If pkt_len is invalid, set it to the smaller of hv_pkt_iter_avail() =
-and
-> +	 * rbi->pkt_buffer_size
-> +	 */
-> +	if (rbi->pkt_buffer_size < bytes_avail)
-> +		bytes_avail =3D rbi->pkt_buffer_size;
+-- 
+Jarod Wilson
+jarod@redhat.com
 
-I think the above could be combined with the earlier call to hv_pkt_iter_av=
-ail(),
-and more logically expressed as:
-
-	bytes_avail =3D min(rbi->pkt_buffer_size, hv_pkt_iter_avail(rbi));
-
-
-This is a minor nit.  Everything else in this patch looks good to me.
-
-Michael
-
-> +
-> +	if (pkt_len < sizeof(struct vmpacket_descriptor) || pkt_len > bytes_ava=
-il)
-> +		pkt_len =3D bytes_avail;
-> +
-> +	/*
-> +	 * If pkt_offset is invalid, arbitrarily set it to
-> +	 * the size of vmpacket_descriptor
-> +	 */
-> +	if (pkt_offset < sizeof(struct vmpacket_descriptor) || pkt_offset > pkt=
-_len)
-> +		pkt_offset =3D sizeof(struct vmpacket_descriptor);
-> +
-> +	/* Copy the Hyper-V packet out of the ring buffer */
-> +	desc_copy =3D (struct vmpacket_descriptor *)rbi->pkt_buffer;
-> +	memcpy(desc_copy, desc, pkt_len);
-> +
-> +	/*
-> +	 * Hyper-V could still change len8 and offset8 after the earlier read.
-> +	 * Ensure that desc_copy has legal values for len8 and offset8 that
-> +	 * are consistent with the copy we just made
-> +	 */
-> +	desc_copy->len8 =3D pkt_len >> 3;
-> +	desc_copy->offset8 =3D pkt_offset >> 3;
->=20
-> -	return desc;
-> +	return desc_copy;
->  }
->  EXPORT_SYMBOL_GPL(hv_pkt_iter_first);
->=20
