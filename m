@@ -2,72 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD2C32D0532
-	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 14:35:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3242D2D0558
+	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 14:54:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728039AbgLFNeK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Dec 2020 08:34:10 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:11350 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727974AbgLFNeJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Dec 2020 08:34:09 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fccdda90001>; Sun, 06 Dec 2020 05:33:29 -0800
-Received: from [172.27.13.141] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sun, 6 Dec
- 2020 13:33:24 +0000
-Subject: Re: [net-next V2 08/15] net/mlx5e: Add TX PTP port object support
-To:     Saeed Mahameed <saeed@kernel.org>, Jakub Kicinski <kuba@kernel.org>
-CC:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        "Tariq Toukan" <tariqt@nvidia.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-References: <20201203042108.232706-1-saeedm@nvidia.com>
- <20201203042108.232706-9-saeedm@nvidia.com>
- <20201203182908.1d25ea3f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <b761c676af87a4a82e3ea4f6f5aff3d1159c63e7.camel@kernel.org>
- <20201204122613.542c2362@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <999c9328747d4edbfc8d2720b886aaa269e16df8.camel@kernel.org>
-From:   Eran Ben Elisha <eranbe@nvidia.com>
-Message-ID: <1dba7733-53e3-7346-5b02-3178033b215f@nvidia.com>
-Date:   Sun, 6 Dec 2020 15:33:22 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
-MIME-Version: 1.0
-In-Reply-To: <999c9328747d4edbfc8d2720b886aaa269e16df8.camel@kernel.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1607261609; bh=QZuXY/7OxKtB/DPMo+Qa5Sr95glbPEduJF7Z7Nb6ch8=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-        b=h95yIN7J+13GsFY4o3IgstxjH8GeP97Jpv3UmQDyq3ciSS/YOmG1SEMBlx689Kxs+
-         +ACd4PjJ631kWH6yhDFl03j2ESg0/jFRiPMmyxf+eE8w+T5489FGUxy5jwmBCWHDEo
-         tDIThtjuR5b0DRqySU00hm+xWhRMhvwUEekOVSr1xXd9s6EBbXdW5FGYMpp0GyYpsI
-         YEVaUIfyD7zsjhuNPG6tBROuSyBzt5+8yn5hMHpi6ud9LhUYa/NxOTbVrON8H+PPm/
-         zcdYP4NK1JgPJHi9V15H1zaclMT8iDlZK+76eglHT3p2psASP+hGqurGoqzruaSRXo
-         ZgpvXZsbXZ72Q==
+        id S1728098AbgLFNxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Dec 2020 08:53:49 -0500
+Received: from mail-m971.mail.163.com ([123.126.97.1]:40282 "EHLO
+        mail-m971.mail.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725767AbgLFNxs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Dec 2020 08:53:48 -0500
+X-Greylist: delayed 986 seconds by postgrey-1.27 at vger.kernel.org; Sun, 06 Dec 2020 08:53:43 EST
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=uDWX3GQBDhMg1X3HJI
+        Olbdz5D5Bs5i6dSzmMCE8ONSg=; b=K+gPg3B3pRR6j6XbXreaMY8IP5w7ZZ1kql
+        S5Rup4WT0ANHJJEQQDnUpmZJWnZ9AryRFNYSPzKvFS7uAt4cJ0GlVtZ8j5qU6Csz
+        GblrE/FJvH5NgL9LMH4wCDvS/ilr+1sZ70m/IACkUMHGOZROUgkSnU9ovV0ubL98
+        6OQbOwW2Q=
+Received: from localhost.localdomain (unknown [202.112.113.212])
+        by smtp1 (Coremail) with SMTP id GdxpCgBXNkEu3sxfE1UBAQ--.322S4;
+        Sun, 06 Dec 2020 21:35:45 +0800 (CST)
+From:   Xiaohui Zhang <ruc_zhangxiaohui@163.com>
+To:     Xiaohui Zhang <ruc_zhangxiaohui@163.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Pensando Drivers <drivers@pensando.io>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/1] ionic: fix array overflow on receiving too many fragments for a packet
+Date:   Sun,  6 Dec 2020 21:35:37 +0800
+Message-Id: <20201206133537.30135-1-ruc_zhangxiaohui@163.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: GdxpCgBXNkEu3sxfE1UBAQ--.322S4
+X-Coremail-Antispam: 1Uf129KBjvJXoW7ZFykuFyfGF48Kw4ftF17Awb_yoW8JF47pF
+        WUGFyUur4kXr4q9a1vyr4kuFW5Aw4rWrWSgr9a934rWw17tFZ7W3Z8tFyfAr95trW8Cr10
+        qrsIywn5X3Z8WwUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UkcTQUUUUU=
+X-Originating-IP: [202.112.113.212]
+X-CM-SenderInfo: puxfs6pkdqw5xldrx3rl6rljoofrz/xtbBRRHyMFPAIsMQXwAAsr
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
 
+If the hardware receives an oversized packet with too many rx fragments,
+skb_shinfo(skb)->frags can overflow and corrupt memory of adjacent pages.
+This becomes especially visible if it corrupts the freelist pointer of
+a slab page.
 
-On 12/4/2020 11:57 PM, Saeed Mahameed wrote:
-> We only forward ptp traffic to the new special queue but we create more
-> than one to avoid internal locking as we will utilize the tx softirq
-> percpu.
-> 
-> After double checking the code it seems Eran and Tariq have decided to
-> forward all UDP traffic, let me double check with them what happened
-> here.
+Signed-off-by: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
+---
+ drivers/net/ethernet/pensando/ionic/ionic_txrx.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-We though about extending the support of these queues to UDP in general, 
-and not just PTP. But we can role this back to PTP time critical events 
-on dport 319 only.
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+index 169ac4f54..a3e274c65 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+@@ -102,8 +102,12 @@ static struct sk_buff *ionic_rx_frags(struct ionic_queue *q,
+ 
+ 		dma_unmap_page(dev, dma_unmap_addr(page_info, dma_addr),
+ 			       PAGE_SIZE, DMA_FROM_DEVICE);
+-		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
++		struct skb_shared_info *shinfo = skb_shinfo(skb);
++
++		if (shinfo->nr_frags < ARRAY_SIZE(shinfo->frags)) {
++			skb_add_rx_frag(skb, shinfo->nr_frags,
+ 				page_info->page, 0, frag_len, PAGE_SIZE);
++		}
+ 		page_info->page = NULL;
+ 		page_info++;
+ 		i--;
+-- 
+2.17.1
+
