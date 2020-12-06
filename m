@@ -2,45 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA0FC2D0038
-	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 02:47:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 478C72D003A
+	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 02:48:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726291AbgLFBqq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Dec 2020 20:46:46 -0500
-Received: from rrcs-67-53-52-108.west.biz.rr.com ([67.53.52.108]:59525 "EHLO
-        thirdlane.local" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725784AbgLFBqq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Dec 2020 20:46:46 -0500
-Received: from 127.0.0.1 (localhost [127.0.0.1])
-        by thirdlane.local (Postfix) with SMTP id E10B3778CA0;
-        Sat,  5 Dec 2020 10:04:35 -1000 (HST)
-Received: from [44.47.70.5] by 127.0.0.1 with ESMTP id A508CF93B9C; Sat, 05 Dec 2020 20:02:11 +0100
-Message-ID: <812z631$01v$1u69-v$4@c9m2nb.n86>
-From:   "United Nations Covid-19 Relief Unit" <sangiorgio@aclipisa.it>
-Reply-To: "United Nations Covid-19 Relief Unit" <sangiorgio@aclipisa.it>
-To:     z.fifl@complex.is
-Subject: !!!!! Ask Details For Relief
-Date:   Sat, 05 Dec 20 20:02:11 GMT
-X-Mailer: Microsoft Outlook Express 5.50.4522.1200
+        id S1726421AbgLFBrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Dec 2020 20:47:36 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:9384 "EHLO
+        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726314AbgLFBrf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Dec 2020 20:47:35 -0500
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CpTnC3slhz70sq;
+        Sun,  6 Dec 2020 09:46:23 +0800 (CST)
+Received: from [127.0.0.1] (10.74.149.191) by DGGEMS412-HUB.china.huawei.com
+ (10.3.19.212) with Microsoft SMTP Server id 14.3.487.0; Sun, 6 Dec 2020
+ 09:46:44 +0800
+Subject: Re: [PATCH net-next 2/3] net: hns3: add priv flags support to switch
+ limit promisc mode
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <salil.mehta@huawei.com>,
+        <yisen.zhuang@huawei.com>, <linuxarm@huawei.com>,
+        <huangdaode@huawei.com>, Jian Shen <shenjian15@huawei.com>
+References: <1606997936-22166-1-git-send-email-tanhuazhong@huawei.com>
+ <1606997936-22166-3-git-send-email-tanhuazhong@huawei.com>
+ <20201204182411.1d2d73f3@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+From:   tanhuazhong <tanhuazhong@huawei.com>
+Message-ID: <0429b9ad-f8c8-b42f-ebcb-643ef06f54ee@huawei.com>
+Date:   Sun, 6 Dec 2020 09:46:43 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.5.2
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-        boundary="E.00D4EFE54"
-X-Priority: 3
-X-MSMail-Priority: Normal
+In-Reply-To: <20201204182411.1d2d73f3@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.149.191]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---E.00D4EFE54
-Content-Type: text/plain;
-Content-Transfer-Encoding: quoted-printable
 
-You has been chosen via E-mail for the United Nations Covid-19 Relief F un=
-d, for more details reply to  sangiorgio@aclipisa.it
+On 2020/12/5 10:24, Jakub Kicinski wrote:
+> On Thu, 3 Dec 2020 20:18:55 +0800 Huazhong Tan wrote:
+>> @@ -224,6 +224,7 @@ static int hclge_map_unmap_ring_to_vf_vector(struct hclge_vport *vport, bool en,
+>>   static int hclge_set_vf_promisc_mode(struct hclge_vport *vport,
+>>   				     struct hclge_mbx_vf_to_pf_cmd *req)
+>>   {
+>> +	struct hnae3_handle *handle = &vport->nic;
+>>   	bool en_bc = req->msg.en_bc ? true : false;
+>>   	bool en_uc = req->msg.en_uc ? true : false;
+>>   	bool en_mc = req->msg.en_mc ? true : false;
+> 
+> Please order variable lines longest to shortest.
 
-Best regards,
-Dr. Susan Marshal
+will fix it, thanks.
 
---E.00D4EFE54--
+> 
+>> @@ -1154,6 +1158,8 @@ static int hclgevf_cmd_set_promisc_mode(struct hclgevf_dev *hdev,
+>>   	send_msg.en_bc = en_bc_pmc ? 1 : 0;
+>>   	send_msg.en_uc = en_uc_pmc ? 1 : 0;
+>>   	send_msg.en_mc = en_mc_pmc ? 1 : 0;
+>> +	send_msg.en_limit_promisc =
+>> +	test_bit(HNAE3_PFLAG_LIMIT_PROMISC_ENABLE, &handle->priv_flags) ? 1 : 0;
+> 
+> The continuation line should be indented more than the first line.
+
+yes, will fix it.
+
+> 
+> I suggest you rename HNAE3_PFLAG_LIMIT_PROMISC_ENABLE to
+> HNAE3_PFLAG_LIMIT_PROMISC, the _ENABLE doesn't add much
+> to the meaning. That way the lines will get shorter.
+> 
+
+ok, thanks.
+
+> .
+> 
 
