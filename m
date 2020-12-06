@@ -2,110 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 012652CFFDE
-	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 01:03:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31B002CFFE2
+	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 01:06:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727108AbgLFABw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Dec 2020 19:01:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36532 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725270AbgLFABv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Dec 2020 19:01:51 -0500
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9081AC0613D4
-        for <netdev@vger.kernel.org>; Sat,  5 Dec 2020 16:01:05 -0800 (PST)
-Received: by mail-wm1-x343.google.com with SMTP id h21so10297985wmb.2
-        for <netdev@vger.kernel.org>; Sat, 05 Dec 2020 16:01:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=XhypvLhjLjgPJLi+sFOljhwXZxv/PXDgkLN+nebBmD0=;
-        b=t0/B0io+oHAvDcsX82vtNSqwUZsUL8rcZ6IXJxPkVOz5eH4zHkaQNm+OBhwq4rcDtx
-         y8cr3zJLSrTBJw/rYbEgX918m1aYotTRBGSdzuxu1otaY5wGIGpk/CwQ7QL7vy3VXFSm
-         QXzIOqV0+gYqYQxc2jsRDuM97meEOlxpcUFHeCFX/LmiiDfNlLW7Po79fF3n4tOVugzM
-         A0ikq6LXLgsdqhca4Eud3nzbuBtr7qKxoWsCpaGHuaDMMCDnh475qC/vt1ciWUdyiX3m
-         FSd6jTi1mlzR+J9Pgr7VVTDSBS+IJxW+XsYz050JqG0Bp6cvw6dBN7uWQjYLPvX1ZY2Z
-         ViMg==
+        id S1726342AbgLFAFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Dec 2020 19:05:47 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:36679 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726024AbgLFAFq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Dec 2020 19:05:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607213060;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1PTMv1jAtpeUWcWGndewRsnjj2i/VAGcX/7/u2jZ/18=;
+        b=ZOfFtJ1mBC9w/1hd0IdwDJ8g9KTDrLw+grHOqLQfQVHhnTUL2xFkp7fGqBANIdCHYsGjrj
+        WlnjYpD3joitAussEasKRtDUaRqIPyfFoSsnXx7P9nEhHrAFePHYRKHYU5tGQrE5vrRFQx
+        G1ndtGUpAdnqi6AjzdlyT65f3u7csr0=
+Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com
+ [209.85.167.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-39-DVH4yBizMgSdZa5Bp2a_lA-1; Sat, 05 Dec 2020 19:04:18 -0500
+X-MC-Unique: DVH4yBizMgSdZa5Bp2a_lA-1
+Received: by mail-oi1-f198.google.com with SMTP id t3so4708192oij.18
+        for <netdev@vger.kernel.org>; Sat, 05 Dec 2020 16:04:18 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=XhypvLhjLjgPJLi+sFOljhwXZxv/PXDgkLN+nebBmD0=;
-        b=sFLXxMe6NkqDpzC2rDZIOoRLw2Dw/kWLa8UX6La6F7hITbAJPCGl4kGUfrRMt7tRGs
-         zqHPxv+Kua1elUiCFzpXF5ESripBVq3UF746ztTEoTCb0HLZAVf4vabMfY4f79OPFfe9
-         XstoD3NF4UAd0SgiXyrcpHW4XoFEYUa4cI93yXaTJ9uATqAHtGNLb9t4dUEQe0ipooz4
-         0gQE4HVGw4htXotNyxjf4po2a3WXNIcm8ZAue51WbEUq8bGBztAYtCQq7b82BsSP8oBE
-         0xGPxPZzdNEpjmYXqhwPbr3yKwg70t92ZIElI0eVVtMY+4mJVhQxbV6p5mTBDsOL1CNY
-         aNwQ==
-X-Gm-Message-State: AOAM532KZRxy+voXpK4Ur78GXXFI4LF/KXld/ex+fnK2XWPKRtVmmmdG
-        zGZPn0OvhMhAbNYbFtECOPg5HRqJ638=
-X-Google-Smtp-Source: ABdhPJxNsIlDmmrawUIUBYBrsX3bwvTOeViSGZdHOctudecwH1cEJwUrVWNmgRWt37GQ9iobfcuRcQ==
-X-Received: by 2002:a1c:9d8b:: with SMTP id g133mr11277572wme.189.1607212864103;
-        Sat, 05 Dec 2020 16:01:04 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f2e:e00:6845:f25a:bfd1:6598? (p200300ea8f2e0e006845f25abfd16598.dip0.t-ipconnect.de. [2003:ea:8f2e:e00:6845:f25a:bfd1:6598])
-        by smtp.googlemail.com with ESMTPSA id z3sm3459348wrn.59.2020.12.05.16.01.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 05 Dec 2020 16:01:03 -0800 (PST)
-Subject: [PATCH net-next 2/2] r8169: make NUM_RX_DESC a signed int
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <bf2db26b-5188-7311-a89a-32fafcd653ac@gmail.com>
-Message-ID: <c7fce55c-ae84-80c3-4f8c-0fe3aefde98a@gmail.com>
-Date:   Sun, 6 Dec 2020 01:00:54 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1PTMv1jAtpeUWcWGndewRsnjj2i/VAGcX/7/u2jZ/18=;
+        b=tLaFA8j7ygZH17aMjZYWzgDvmZOF3HWQVOvKVkXBe9EaglDJBvcXcws9UN4UfR63+6
+         vN4hhYwl8z+rheiqeJ+c+9R3CWFgcOlUiTJr1kUp1LTf0EJwDjjxStUWuFlxtVFzGUc8
+         otteISMtKz66RBlkel+dax4LMEB67bo7Z+Y1bq5KRkm/AxJYPpa8X0Dvvgq32qYR8xDy
+         EMMMz30qxS/bhO/Dfegtn59NWgVMwGsLoJuV4o4i2DEfYPnfxqsxwR76WP9fscjphfjy
+         +LMnRKG5+RlRlwOxjKUepwFaLxVQB/N5AZXjLA7hwrkYOFb3tZr+ycYetrjEfA44H6J9
+         UvJQ==
+X-Gm-Message-State: AOAM530/G+QdzdnVgRcswkI/5+sJymfMzLN4+2KDKoQz6sH+Xo+laLET
+        l1jf74aMK9wSsqXR/9dg8Vo0uax5Fr81SOKw60SicIqb1bVWeT/MUSjW1+VCJZvsBjEGTC7h6kA
+        SSwe6ZpZZdiVtiAHCQI6K/fgXdekaEP9R
+X-Received: by 2002:aca:6255:: with SMTP id w82mr7519549oib.5.1607213057482;
+        Sat, 05 Dec 2020 16:04:17 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzFASe4IQPGbORhy64eXin9gvvpa2Q7MkG9KikJp4t+e2hQKh81wiczxdbjtlzDqM7t0yrTxamAW4wxxBCSdY8=
+X-Received: by 2002:aca:6255:: with SMTP id w82mr7519542oib.5.1607213057241;
+ Sat, 05 Dec 2020 16:04:17 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <bf2db26b-5188-7311-a89a-32fafcd653ac@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+References: <CACpdL32SRKb8hXzuF_APybip+hyxkXRYoxCW_OMhn0odRSQKuw@mail.gmail.com>
+ <20201123162639.5d692198@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201123162639.5d692198@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Jarod Wilson <jarod@redhat.com>
+Date:   Sat, 5 Dec 2020 19:04:06 -0500
+Message-ID: <CAKfmpSdv5onOGk=VtEO1fWxxhaVvi96Tz-wCFcNE5R9cdXNgkg@mail.gmail.com>
+Subject: Re: LRO: creating vlan subports affects parent port's LRO settings
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Limin Wang <lwang.nbl@gmail.com>, Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After recent changes there's no need any longer to define NUM_RX_DESC
-as an unsigned value.
+On Mon, Nov 23, 2020 at 7:27 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Thu, 19 Nov 2020 20:37:27 -0500 Limin Wang wrote:
+> > Under relatively recent kernels (v4.4+), creating a vlan subport on a
+> > LRO supported parent NIC may turn LRO off on the parent port and
+> > further render its LRO feature practically unchangeable.
+>
+> That does sound like an oversight in commit fd867d51f889 ("net/core:
+> generic support for disabling netdev features down stack").
+>
+> Are you able to create a patch to fix this?
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Something like this, perhaps? Completely untested copy-pasta'd
+theoretical patch:
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 3ea27a657..46d8510b2 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -68,7 +68,7 @@
- #define R8169_REGS_SIZE		256
- #define R8169_RX_BUF_SIZE	(SZ_16K - 1)
- #define NUM_TX_DESC	256	/* Number of Tx descriptor registers */
--#define NUM_RX_DESC	256U	/* Number of Rx descriptor registers */
-+#define NUM_RX_DESC	256	/* Number of Rx descriptor registers */
- #define R8169_TX_RING_BYTES	(NUM_TX_DESC * sizeof(struct TxDesc))
- #define R8169_RX_RING_BYTES	(NUM_RX_DESC * sizeof(struct RxDesc))
- 
-@@ -3844,7 +3844,7 @@ static struct page *rtl8169_alloc_rx_data(struct rtl8169_private *tp,
- 
- static void rtl8169_rx_clear(struct rtl8169_private *tp)
- {
--	unsigned int i;
-+	int i;
- 
- 	for (i = 0; i < NUM_RX_DESC && tp->Rx_databuff[i]; i++) {
- 		dma_unmap_page(tp_to_dev(tp),
-@@ -3859,7 +3859,7 @@ static void rtl8169_rx_clear(struct rtl8169_private *tp)
- 
- static int rtl8169_rx_fill(struct rtl8169_private *tp)
- {
--	unsigned int i;
-+	int i;
- 
- 	for (i = 0; i < NUM_RX_DESC; i++) {
- 		struct page *data;
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 8588ade790cb..a5ce372e02ba 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -9605,8 +9605,10 @@ int __netdev_update_features(struct net_device *dev)
+        features = netdev_fix_features(dev, features);
+
+        /* some features can't be enabled if they're off on an upper device */
+-       netdev_for_each_upper_dev_rcu(dev, upper, iter)
+-               features = netdev_sync_upper_features(dev, upper, features);
++       netdev_for_each_upper_dev_rcu(dev, upper, iter) {
++               if (netif_is_lag_master(upper) || netif_is_bridge_master(upper))
++                       features = netdev_sync_upper_features(dev,
+upper, features);
++       }
+
+        if (dev->features == features)
+                goto sync_lower;
+@@ -9633,8 +9635,10 @@ int __netdev_update_features(struct net_device *dev)
+        /* some features must be disabled on lower devices when disabled
+         * on an upper device (think: bonding master or bridge)
+         */
+-       netdev_for_each_lower_dev(dev, lower, iter)
+-               netdev_sync_lower_features(dev, lower, features);
++       if (netif_is_lag_master(dev) || netif_is_bridge_master(dev)) {
++               netdev_for_each_lower_dev(dev, lower, iter)
++                       netdev_sync_lower_features(dev, lower, features);
++       }
+
+        if (!err) {
+                netdev_features_t diff = features ^ dev->features;
+
+I'm not sure what all other upper devices this excludes besides just
+vlan ports though, so perhaps safer add upper device types to not do
+feature sync on than to choose which ones to do them on?
+
 -- 
-2.29.2
-
+Jarod Wilson
+jarod@redhat.com
 
