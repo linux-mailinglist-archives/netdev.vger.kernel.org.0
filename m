@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F04372D086A
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 01:01:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 615B32D086E
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 01:02:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728703AbgLGABC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Dec 2020 19:01:02 -0500
-Received: from mail-eopbgr80049.outbound.protection.outlook.com ([40.107.8.49]:17892
+        id S1728760AbgLGABc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Dec 2020 19:01:32 -0500
+Received: from mail-eopbgr80082.outbound.protection.outlook.com ([40.107.8.82]:2436
         "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728660AbgLGABC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 6 Dec 2020 19:01:02 -0500
+        id S1728715AbgLGABc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 6 Dec 2020 19:01:32 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Vapw5e+2uRkKGIbZOxupO+vjK8V7IoraCq6djLnzoVj+iNT9wLMHBOcUgICx/L2kOnVWPhGcNSHy4Mx1ncPllDv18leh4m0zX56RrfZVQIZBdX5aaTryiJfTdTkkmCXpgn34bA5HP1+1rU1ymIX0PrxJQ4GKQ2Uwv+I3/aCm7k6V5mcj9WN+TUQw1lmE05u7E2/0riKru/vFQB1Zip9DtH0xdZpQobE8UfxSs+Y4VJXpza23N15KA6qJFIOB9LWEyGd4ricBBu1xhILiBzDYZ2uGTSMQkMPiPqdLVnrjn3JBm9fLpYqKtDCoBt1J2klqUUlMiWi5T0qoUW8hMh8XEQ==
+ b=XMrNUKQfWANdMWHHoTW2QQXfsYnfloO2RlDWxr0pagU0x1QXBlc1FXGsXI64FkiApn28ll7KtZdpuNdqJAqK7mTVwTIospxbVSrh3ZtjPIOp3e7J4zpSVmbsmx4jlvbwb0NwB884UEdptbmPb0ITs5S1JtTcyvAYKq+FnR4RD5w472lN+qVHBFJcn3/DdIYdtxpaJI/EXr6NhoKWk6NHrn8Q5kF9XnntKkUHTw+0XzjoM/7LjNl61PZ4uv0uzFGwR2MFPoo+2fpXbzK5JydckDW0DndQAMDG2IYIDwxYcMaT4nwpeSaQjKYNVvrPx7Ws7y99+49eFaWbIDAWWelFoQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=InZDUjB2Yptqic8dtqVlEoAc88AHwGBKZuhguQm1BB0=;
- b=NSzbAw69iuheyVBbZF1EZyoyQtU9tdIGhHyexhoaxw2orrYUmSlHJoHfiXw1Oy4mic3lVlMna18MQ1a7hI2upTyuxDjLXLiO6x+dJC3x4T7iLrpvH66T3TaQcOXAHdmgYrfJ8Mf9DAD0Cf/NU72djOBRh8GlLWJIVMgoDkZmzBdC8QyUckpi+qlJUMNNFSerNEi7EwnGpdB8FtQUPV+NyugUSaRj+sMO5lqLFNN0TL2UxHw8JQSaypw0Fxl47SViTDvQiw7JmgrRvLddxlXWm5v2OSPwT3xYpFE6FtBirAXTzoZHsyYvRFAmJSGYsiE2ALOTolebkLnoWuBbiSmt+A==
+ bh=aY0/IkAWKznNa/gL2l77XEYt95zVr83h8i2p05YcBcw=;
+ b=CODp55VgplN1caT2Tp2r6hfKmSTmm0+QZvXL1+z3M+J7CA7/VvvEYi14hkVnS27fnkN9iaSXXTzrOmMjmcTIzEpADIrzH9XCBX/5T7rxbqoIALvWHWhpirSPZ6uuOkmwo0M2M5k3LExgm16HGwGFw/ZiyMUg/vcpeQNdXxGrrcOdcklwExgg0YBdE3gJeYYfjGe97Vi/jPags7y1BX2rNsRRO1VyUrVU2VjD0zWHaMMylF+h7gO3ZpXT9Ni5IyuL6tjdBXlnvJSz1cEZTkzryA+IVgGpB8fQu+h/xS8udaLiiVYp882ckV9YvPSSA2AXA8ech00rXHOssgBWQc483A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=InZDUjB2Yptqic8dtqVlEoAc88AHwGBKZuhguQm1BB0=;
- b=ieICDkcSNK9jZBFXEN3b5NTOzFieS9/xeqVzUykS5HLFNGaKjh5ExjJ7WV5MO1APNac4VDqioHZe3JkI75REEWEhchj10vBqIRinl0Jn7DmSRu3QbB0h/l1qP5yHE8/cuOtUiouQNj5vvlLblzeNg0a5L8H3tr3gpwoQ2hETL1o=
+ bh=aY0/IkAWKznNa/gL2l77XEYt95zVr83h8i2p05YcBcw=;
+ b=IlgKghUqJnqLYHJeEd9R4K7iiBu/Iy61RVhicAsDaJtEIg2qjZSDmLJrma59tdeCxrlvEBARAqa3DGRzdZnNshoCOdZbmeXeBGcgxMWeWYtMZDuQy1+2IVKhT1nHl5xioSJOduqJ81q66ctLi8MN/EEZXnD7OOVhZTI7fhGeDjg=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
  by VE1PR04MB6637.eurprd04.prod.outlook.com (2603:10a6:803:126::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.17; Mon, 7 Dec
- 2020 00:00:00 +0000
+ 2020 00:00:01 +0000
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::2dd6:8dc:2da7:ad84]) by VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::2dd6:8dc:2da7:ad84%5]) with mapi id 15.20.3632.021; Mon, 7 Dec 2020
- 00:00:00 +0000
+ 00:00:01 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -51,9 +51,9 @@ Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Eric Dumazet <edumazet@google.com>,
         George McCollister <george.mccollister@gmail.com>,
         Oleksij Rempel <o.rempel@pengutronix.de>
-Subject: [RFC PATCH net-next 02/13] net: mark dev_base_lock for deprecation
-Date:   Mon,  7 Dec 2020 01:59:08 +0200
-Message-Id: <20201206235919.393158-3-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH net-next 03/13] net: introduce a mutex for the netns interface lists
+Date:   Mon,  7 Dec 2020 01:59:09 +0200
+Message-Id: <20201206235919.393158-4-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201206235919.393158-1-vladimir.oltean@nxp.com>
 References: <20201206235919.393158-1-vladimir.oltean@nxp.com>
@@ -65,136 +65,220 @@ X-ClientProxiedBy: VI1PR08CA0156.eurprd08.prod.outlook.com
  (2603:10a6:803:e7::13)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.2.120) by VI1PR08CA0156.eurprd08.prod.outlook.com (2603:10a6:800:d5::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.21 via Frontend Transport; Sun, 6 Dec 2020 23:59:59 +0000
+Received: from localhost.localdomain (188.25.2.120) by VI1PR08CA0156.eurprd08.prod.outlook.com (2603:10a6:800:d5::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.21 via Frontend Transport; Mon, 7 Dec 2020 00:00:00 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: e9b70b48-7509-466b-debb-08d89a430a75
+X-MS-Office365-Filtering-Correlation-Id: 786714ef-2c81-498b-1f8c-08d89a430af6
 X-MS-TrafficTypeDiagnostic: VE1PR04MB6637:
-X-Microsoft-Antispam-PRVS: <VE1PR04MB663787939A8A27E70824C6B9E0CE0@VE1PR04MB6637.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Microsoft-Antispam-PRVS: <VE1PR04MB663703074F313EB7A8E1A3FCE0CE0@VE1PR04MB6637.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: j7lonmbxlzIutfPcx8CSR2Yq92WR+OW14JgOsc3JJxXYd3y+428baKnWPVVZ9NzFxGKhxlbpce7IPDyebBqc4ZhGAdipAadbvDgdHR/pzJVrpsNcYeC95TvmqzM8Tjfn22NKPJO30uvXXN0idJ8F5zN7Jw9uV1WDtCPcCmnnuiqNciLv2wPFPOPlR0WBFfQu4KdoA9gDwSHaZ3p0sJcmzJRuF2ftklPu+o0D1OGfERTxdOKW+j9m1uC5604fThXQaV0BvNTn/7+sfbx0ylZK7C4ZOOkevI/KpuAqQILCg1L60OpZJmwAZ6jQ/omkp391JbSXJF1ZuzlNc35Xhuiax8Oo+ROEffMwYDlDIIg0ODFIT0p3I9vIYiYRh2Q/9k27d2u3lnHApHLXIw4kvSCGKOdzCW1IiJ3KPAKMQbqGmu20dWgb6Frg5TmFlbWmrh8/RJ3+7lcOQ24MoSEI4ibwSQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(396003)(366004)(136003)(39860400002)(376002)(6506007)(52116002)(5660300002)(66946007)(66556008)(26005)(8676002)(2906002)(8936002)(1076003)(316002)(110136005)(54906003)(478600001)(966005)(44832011)(7416002)(6512007)(186003)(6486002)(16526019)(6666004)(36756003)(956004)(4326008)(86362001)(66476007)(69590400008)(2616005)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?VP7cE8xEYOBt1czK77S4WhWnr2tNzwjnolmAxyi0ZXWFlKsmW01h1lSKf3gu?=
- =?us-ascii?Q?jDYKBkSJfmEcwSPtDSkH95SdH01meQNm5wV+VzldY+koPYrYR0UjkOUKhovm?=
- =?us-ascii?Q?Ue7zDMlG/II/OBmaxVjEIPSClZhz1Cvj6RHFFXssjsjW20u/QneKQWh1A4R4?=
- =?us-ascii?Q?YiVuzru/fHjELXY/oQZrXu3+7oAuBJ/vhCQ6Cckx6o//lD90//XCihQR468T?=
- =?us-ascii?Q?hxmk0r3K43BC6BkF7fGA5eynuUGNp4THdJovIaRmr4JOQuMrItqstFX0en8+?=
- =?us-ascii?Q?McMAzK9WhodNB0m8/sjVC7Pmycm3kchH1cGqvMsdwbKBnMp/uahbAchYMt4c?=
- =?us-ascii?Q?9+LrnmrL32WL1cXgiK3lbCMjKhbvLE4ZIY0ZKGGkMj0Qi72WcFziu1sBj/QH?=
- =?us-ascii?Q?AlRg/pX82F1R7Yn9bMmzghmd0LprTGeVb9usYNe7szSnc09hxjtFckJZu6eY?=
- =?us-ascii?Q?oOOUvklFnWDr6yo1DhL4IWX1Z4IY8aL888AscymkQ864eX9nW6yGgaTQxQBp?=
- =?us-ascii?Q?OE3lXIi5Dcs75hGz1xusRCu7jZewKtDaZZT02XNXA/E1kZHhn6nHd6Xmd+BK?=
- =?us-ascii?Q?olEo/nweFTaPM0Tbim5b3rIwVbNYfSZNmvMy2ftUJfTu2rMledN4fTR0EbAI?=
- =?us-ascii?Q?UwuvFPo1K6ESI+y64n8jUikAncedA71Dwjbr4V2rNw0gMVp7bwVVlVIq5jTm?=
- =?us-ascii?Q?a/DPEMlynA7091G+jeWedEN7Yf2aOdKHODMJABDXTKnGDR7Z95kAoFZIfT0m?=
- =?us-ascii?Q?0AaOyWFE+0wpFmPdzS6wnD2XYQkmzXstmsv3Gi9eZHrEQ2xSgGABNrEIMdcQ?=
- =?us-ascii?Q?7wA3BwGOLsA9020XH1Mu0EVl3Bs3nFr2V/jJtr4GjTx/fMlqUlgULtvnWz+T?=
- =?us-ascii?Q?M3gVSBxBDUyGc7k8gm1/WDMgxC4XDUSADWErwiuaqgh4VImDPEmau8rED1dd?=
- =?us-ascii?Q?Zlrd+P+R21FPUArmAT3iGxTpzVS97tYqD0R+2FqbQ8k=3D?=
+X-Microsoft-Antispam-Message-Info: Ez+mzGfHkQY6Rr8TUTSyMRknHRPtYAardN75t9iDybg/WHe9yaNZUwcEZ9EpGHAIS9BM7NlggUaGXfxFrcFoZxGl89cngCEf0Q0rDuCVU0zMNPYOa3cfj39IT7kFUwvxviuJvdWNWjplW7H1OsgMoYGIPrEHXDVmuXH1O5nGbENeW4D5nPxDkS4SGeKNNd3g2q1U0G4GimMzodF8snBlAw7HnktDKWlO+m8grP57GAhSV5IEhWSA8pUroBSamCTBI4aggS2Auv2KpVWYEhymMVIlvwnn/lRnMZQFqhER1dHvmTCBrDvSZTpDvq+GWGn0FWMZcV7/zESnLnrakpiIxDc9+kOSDupx+AMinPhPrAhgNCAkuonLm0ojTyPRFLdj
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(396003)(366004)(136003)(39860400002)(376002)(6506007)(52116002)(5660300002)(66946007)(66556008)(26005)(8676002)(2906002)(8936002)(1076003)(316002)(110136005)(54906003)(478600001)(44832011)(7416002)(6512007)(186003)(6486002)(16526019)(36756003)(956004)(4326008)(86362001)(66476007)(69590400008)(2616005)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?tB+CK+We1gyU+Rh3Md+2ho4D9ktaWeSCURxJ7g3P1zDVGsBOnjS99i7axLwA?=
+ =?us-ascii?Q?AmTg6papUEWYtccwKSa7hjZxMB4dCraL9qAsEkskdlNc8J2Feq6noyBsNqHZ?=
+ =?us-ascii?Q?VB2itdjM2FsffKMWCilUHj5AvB00FSMOhrepml3AORnVnCjN9C64X2o15yeR?=
+ =?us-ascii?Q?p9QCirfTjVSDv9eOGRM3tUJDv3Ei+KJ63iQlbUDjD25ZM1LNvjwtYliFx8I9?=
+ =?us-ascii?Q?EUQAS+Tm7aF/OxGo+U/hM9K7H/P/tmDofapaynx9CnIKzxOPfP3YzMJfudck?=
+ =?us-ascii?Q?FdREheGPFLMQM2r37M2LlqcdVrMCSKxtZbunpx9vYTll22qDomcW5uCtpbeO?=
+ =?us-ascii?Q?eU8qLKIHpj3yfrmuEIuYiJNyI/IVf6sNkaNfVq4VreKQk42B6CWu6My06sC5?=
+ =?us-ascii?Q?UNzJp4bvEUeOJw2dRt3OO6KulHltVXnhsO27AogpfGKKALOBE3PmbA8ArN5n?=
+ =?us-ascii?Q?4rwX/yU0q/hrBPQCNuqcvf6u1KJrY5i8pxiJM1MGq9M3cr8PFKSxtIMa4t5Y?=
+ =?us-ascii?Q?PdRRxWJUAOM4W1wFusSeqkxm9DbsnUT9F7SvI5Biv1NZBtPSk/5IOe3pbOfj?=
+ =?us-ascii?Q?I7NayM+VzVuuJ3CtEzLSgVxdHxkReV0fgx42r3RzAzejYDLwOyVqHdArqzk/?=
+ =?us-ascii?Q?t4G/qqbZ79sjx0EskV7s6xuvXDs3HfnYKasNE5Zen6mMZrS/MXR0BG32w1tx?=
+ =?us-ascii?Q?HHUa5ZKwke4bcNELdYyHKLoi3se8107ykB3lBZez+6PQECe+mVOqZGjEucAd?=
+ =?us-ascii?Q?xzsNWwpPIXmYtiqeyhyOxQ053YPXtkMgae6QnOSkiktPyobmjdGdAXiDtMN1?=
+ =?us-ascii?Q?PVfD7kpd2MxtpfdorHx9t6BgpERwJWkZBTK7bnc5FEGYfmWTnqoWZ/3eK3Go?=
+ =?us-ascii?Q?KHQpyHjzvSaoFZmHA7ZhkYrU/6YljS/wtNPMrL0Zlt+nEya+CbUMOfqliALk?=
+ =?us-ascii?Q?/LRhraeD4tFztdeVZ3tBFZm5g9Q3v8449Fwd7zUX4UI=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e9b70b48-7509-466b-debb-08d89a430a75
+X-MS-Exchange-CrossTenant-Network-Message-Id: 786714ef-2c81-498b-1f8c-08d89a430af6
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Dec 2020 00:00:00.3687
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Dec 2020 00:00:01.2852
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KRedQ6wfL1cP/+tblQmRTM9si2wo7Bw2g+vH7qWFblcJHLSbXOagFXTxYezF2qvuxNmbKTID+DFOaEu48T8nMg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: HQecPmU2H+hPxha1j41N4cp302viZf4VfXoyt5eLVICk50BzwhS2sS3uSbvbshcega9s/mbI4HODS0zOsB8ygQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6637
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a movement to eliminate the usage of dev_base_lock, which
-exists since as far as I could track the kernel history down (the
-"7a2deb329241 Import changeset" commit from the bitkeeper branch).
+Currently, any writer that wants to alter the lists of network
+interfaces (either the plain list net->dev_base_head, or the hash tables
+net->dev_index_head and net->dev_name_head) can keep other writers at
+bay using the RTNL mutex.
 
-The dev_base_lock approach has multiple issues:
-- It is global and not per netns.
-- Its meaning has mutated over the years and the vast majority of
-  current users is using it to protect against changes of network device
-  state, as opposed to changes of the interface list.
-- It is overlapping with other protection mechanisms introduced in the
-  meantime, which have higher performance for readers, like RCU
-  introduced in 2009 by Eric Dumazet for kernel 2.6.
+However, the RTNL mutex has become a very contended resource over the
+years, so there is a movement to do finer grained locking.
 
-The old comment that I just deleted made this distinction: writers
-protect only against readers by holding dev_base_lock, whereas they need
-to protect against other writers by holding the RTNL mutex. This is
-slightly confusing/incorrect, since a rwlock_t cannot have more than one
-concurrently running writer, so that explanation does not justify why
-the RTNL mutex would be necessary.
+This patch adds one more way for writers to the network interface lists
+to serialize themselves. We assume that all writers to the network
+interface lists are easily identifiable because the write side of
+dev_base_lock also needs to be held (note that some instances of that
+were deliberately skipped, since they only dealt with protecting the
+operational state of the netdev).
 
-Instead, Stephen Hemminger makes this clarification here:
-https://lore.kernel.org/netdev/20201129211230.4d704931@hermes.local/T/#u
-
-| There are really two different domains being covered by locks here.
-|
-| The first area is change of state of network devices. This has traditionally
-| been covered by RTNL because there are places that depend on coordinating
-| state between multiple devices. RTNL is too big and held too long but getting
-| rid of it is hard because there are corner cases (like state changes from userspace
-| for VPN devices).
-|
-| The other area is code that wants to do read access to look at list of devices.
-| These pure readers can/should be converted to RCU by now. Writers should hold RTNL.
-
-This patch edits the comment for dev_base_lock, minimizing its role in
-the protection of network interface lists, and clarifies that it is has
-other purposes as well.
+Holding the RTNL mutex is now optional for new code that alters the
+lists, since all relevant writers were made to also hold the new lock.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/core/dev.c | 33 ++++++++++++++++-----------------
- 1 file changed, 16 insertions(+), 17 deletions(-)
+ include/net/net_namespace.h |  5 +++++
+ net/core/dev.c              | 44 +++++++++++++++++++++++++------------
+ 2 files changed, 35 insertions(+), 14 deletions(-)
 
+diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
+index 29567875f428..90826982843d 100644
+--- a/include/net/net_namespace.h
++++ b/include/net/net_namespace.h
+@@ -105,6 +105,11 @@ struct net {
+ 	struct hlist_head	*dev_index_head;
+ 	struct raw_notifier_head	netdev_chain;
+ 
++	/* Serializes writers to @dev_base_head, @dev_name_head
++	 * and @dev_index_head
++	 */
++	struct mutex		netdev_lists_lock;
++
+ 	/* Note that @hash_mix can be read millions times per second,
+ 	 * it is critical that it is on a read_mostly cache line.
+ 	 */
 diff --git a/net/core/dev.c b/net/core/dev.c
-index d33099fd7a20..701a326682e8 100644
+index 701a326682e8..18904acb7797 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -169,23 +169,22 @@ static int call_netdevice_notifiers_extack(unsigned long val,
- static struct napi_struct *napi_by_id(unsigned int napi_id);
+@@ -175,13 +175,16 @@ static struct napi_struct *napi_by_id(unsigned int napi_id);
+  *
+  * Pure readers should hold rcu_read_lock() which should protect them against
+  * concurrent changes to the interface lists made by the writers. Pure writers
+- * must serialize by holding the RTNL mutex while they loop through the list
+- * and make changes to it.
++ * must serialize by holding the @net->netdev_lists_lock mutex while they loop
++ * through the list and make changes to it.
++ *
++ * It is possible to hold the RTNL mutex for serializing the writers too, but
++ * this should be avoided in new code due to lock contention.
+  *
+  * It is also possible to hold the global rwlock_t @dev_base_lock for
+  * protection (holding its read side as an alternative to rcu_read_lock, and
+- * its write side as an alternative to the RTNL mutex), however this should not
+- * be done in new code, since it is deprecated and pending removal.
++ * its write side as an alternative to @net->netdev_lists_lock), however this
++ * should not be done in new code, since it is deprecated and pending removal.
+  *
+  * One other role of @dev_base_lock is to protect against changes in the
+  * operational state of a network interface.
+@@ -360,12 +363,14 @@ static void list_netdevice(struct net_device *dev)
+ 
+ 	ASSERT_RTNL();
+ 
++	mutex_lock(&net->netdev_lists_lock);
+ 	write_lock_bh(&dev_base_lock);
+ 	list_add_tail_rcu(&dev->dev_list, &net->dev_base_head);
+ 	netdev_name_node_add(net, dev->name_node);
+ 	hlist_add_head_rcu(&dev->index_hlist,
+ 			   dev_index_hash(net, dev->ifindex));
+ 	write_unlock_bh(&dev_base_lock);
++	mutex_unlock(&net->netdev_lists_lock);
+ 
+ 	dev_base_seq_inc(net);
+ }
+@@ -375,16 +380,20 @@ static void list_netdevice(struct net_device *dev)
+  */
+ static void unlist_netdevice(struct net_device *dev)
+ {
++	struct net *net = dev_net(dev);
++
+ 	ASSERT_RTNL();
+ 
+ 	/* Unlink dev from the device chain */
++	mutex_lock(&net->netdev_lists_lock);
+ 	write_lock_bh(&dev_base_lock);
+ 	list_del_rcu(&dev->dev_list);
+ 	netdev_name_node_del(dev->name_node);
+ 	hlist_del_rcu(&dev->index_hlist);
+ 	write_unlock_bh(&dev_base_lock);
++	mutex_unlock(&net->netdev_lists_lock);
+ 
+-	dev_base_seq_inc(dev_net(dev));
++	dev_base_seq_inc(net);
+ }
  
  /*
-- * The @dev_base_head list is protected by @dev_base_lock and the rtnl
-- * semaphore.
-- *
-- * Pure readers hold dev_base_lock for reading, or rcu_read_lock()
-- *
-- * Writers must hold the rtnl semaphore while they loop through the
-- * dev_base_head list, and hold dev_base_lock for writing when they do the
-- * actual updates.  This allows pure readers to access the list even
-- * while a writer is preparing to update it.
-- *
-- * To put it another way, dev_base_lock is held for writing only to
-- * protect against pure readers; the rtnl semaphore provides the
-- * protection against other writers.
-- *
-- * See, for example usages, register_netdevice() and
-- * unregister_netdevice(), which must be called with the rtnl
-- * semaphore held.
-+ * The network interface list of a netns (@net->dev_base_head) and the hash
-+ * tables per ifindex (@net->dev_index_head) and per name (@net->dev_name_head)
-+ * are protected using the following rules:
-+ *
-+ * Pure readers should hold rcu_read_lock() which should protect them against
-+ * concurrent changes to the interface lists made by the writers. Pure writers
-+ * must serialize by holding the RTNL mutex while they loop through the list
-+ * and make changes to it.
-+ *
-+ * It is also possible to hold the global rwlock_t @dev_base_lock for
-+ * protection (holding its read side as an alternative to rcu_read_lock, and
-+ * its write side as an alternative to the RTNL mutex), however this should not
-+ * be done in new code, since it is deprecated and pending removal.
-+ *
-+ * One other role of @dev_base_lock is to protect against changes in the
-+ * operational state of a network interface.
+@@ -850,11 +859,11 @@ EXPORT_SYMBOL_GPL(dev_fill_metadata_dst);
+  *	@net: the applicable net namespace
+  *	@name: name to find
+  *
+- *	Find an interface by name. Must be called under RTNL semaphore
+- *	or @dev_base_lock. If the name is found a pointer to the device
+- *	is returned. If the name is not found then %NULL is returned. The
+- *	reference counters are not incremented so the caller must be
+- *	careful with locks.
++ *	Find an interface by name. Must be called under RTNL semaphore,
++ *	@net->netdev_lists_lock or @dev_base_lock. If the name is found,
++ *	a pointer to the device is returned. If the name is not found then
++ *	%NULL is returned. The reference counters are not incremented so the
++ *	caller must be careful with locks.
   */
- DEFINE_RWLOCK(dev_base_lock);
- EXPORT_SYMBOL(dev_base_lock);
+ 
+ struct net_device *__dev_get_by_name(struct net *net, const char *name)
+@@ -920,8 +929,8 @@ EXPORT_SYMBOL(dev_get_by_name);
+  *	Search for an interface by index. Returns %NULL if the device
+  *	is not found or a pointer to the device. The device has not
+  *	had its reference counter increased so the caller must be careful
+- *	about locking. The caller must hold either the RTNL semaphore
+- *	or @dev_base_lock.
++ *	about locking. The caller must hold either the RTNL semaphore,
++ *	@net->netdev_lists_lock or @dev_base_lock.
+  */
+ 
+ struct net_device *__dev_get_by_index(struct net *net, int ifindex)
+@@ -1330,15 +1339,19 @@ int dev_change_name(struct net_device *dev, const char *newname)
+ 
+ 	netdev_adjacent_rename_links(dev, oldname);
+ 
++	mutex_lock(&net->netdev_lists_lock);
+ 	write_lock_bh(&dev_base_lock);
+ 	netdev_name_node_del(dev->name_node);
+ 	write_unlock_bh(&dev_base_lock);
++	mutex_unlock(&net->netdev_lists_lock);
+ 
+ 	synchronize_rcu();
+ 
++	mutex_lock(&net->netdev_lists_lock);
+ 	write_lock_bh(&dev_base_lock);
+ 	netdev_name_node_add(net, dev->name_node);
+ 	write_unlock_bh(&dev_base_lock);
++	mutex_unlock(&net->netdev_lists_lock);
+ 
+ 	ret = call_netdevice_notifiers(NETDEV_CHANGENAME, dev);
+ 	ret = notifier_to_errno(ret);
+@@ -9379,8 +9392,9 @@ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
+  *	@net: the applicable net namespace
+  *
+  *	Returns a suitable unique value for a new device interface
+- *	number.  The caller must hold the rtnl semaphore or the
+- *	dev_base_lock to be sure it remains unique.
++ *	number.
++ *	The caller must hold the rtnl semaphore, @net->netdev_lists_lock or the
++ *	@dev_base_lock to be sure it remains unique.
+  */
+ static int dev_new_index(struct net *net)
+ {
+@@ -10958,6 +10972,8 @@ static int __net_init netdev_init(struct net *net)
+ 	if (net->dev_index_head == NULL)
+ 		goto err_idx;
+ 
++	mutex_init(&net->netdev_lists_lock);
++
+ 	RAW_INIT_NOTIFIER_HEAD(&net->netdev_chain);
+ 
+ 	return 0;
 -- 
 2.25.1
 
