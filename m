@@ -2,419 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 533C92D06A4
-	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 19:56:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66B192D06F9
+	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 20:46:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727974AbgLFSzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Dec 2020 13:55:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57300 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727617AbgLFSzV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Dec 2020 13:55:21 -0500
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C336C0613D0;
-        Sun,  6 Dec 2020 10:54:41 -0800 (PST)
-Received: by mail-ej1-x642.google.com with SMTP id b9so5986700ejy.0;
-        Sun, 06 Dec 2020 10:54:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4/ABokGimfgekSq3FuVBoBnGVpPMeIZorXRauyrazvw=;
-        b=G/qrCx4082sN/RkP9/Nz2a7QkYlODeUmIsj1RHY+XU3rvjmY+s+StYpDAKO2u3V3Bl
-         fPL9HzRBWlK062L1VwJDS2Mcur4rROm+eK7HrpqA7vvHc/kIn+c3ISwt3v7rnqqWCi54
-         /wndILCbikvjyKpu7QL08nZsG69qpktymDkpi9IyP765G9i1bSUsu4rlMS2/InDURB1x
-         Y+RGVFMDsV9DzaP99TzsFKfcqOLnm+OfAmQSLenQgfY+uvl/rf+ywSBLSAUBDfmXS8ED
-         EHZVajM2HKWBIjj+xOxUc65EtQ1O7T5xEeZvn1Yw/SGDwuvDnVjjNYwEDVtRiRFGtJQd
-         516Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4/ABokGimfgekSq3FuVBoBnGVpPMeIZorXRauyrazvw=;
-        b=PGT+iUUkiu3Yu6Wf+lkLI4NfZVSuQulDqEbfb5riDkCq9N9weV5AC+gxSEA1DqCxGv
-         5rHBRVqWu+GcWmSiKyTp1ia+DDcggFPaEaZbdMFHOOuQ2Wuls83SiMoBcpM4FvIP41Di
-         8WZzvBTVCqNSMA0IlCkygd3KU12FP2/SdzoGhhMyaBunjLxW2qM+7sSCbg0hm97RLVC6
-         gIKp7jDwmXNJOicgB5dgsynv4YFXO3dbMMJdZvHYkASfENb8sa/6ChdhmMztVqksLTxr
-         3hRPsp8eHKnfadxbQ5xGiQTHRMBIoRqmZJzUICZPkmY+R6OKpBS3wYBurJmoeGsjsn2y
-         sxqQ==
-X-Gm-Message-State: AOAM530yhC59yH5LS8MPP9Z+r7MdeRgPLd8NMhXouf+iJbsGYqnq4Fvr
-        8ape1NJmE/or89o3qv+gXMU=
-X-Google-Smtp-Source: ABdhPJxwqXWesDz6GsUxj0EikLLYOz+86gHiC3NhxUMZMyBxQW5MCFR5YhsTu63qs0usrOtS3+VEhA==
-X-Received: by 2002:a17:906:b20f:: with SMTP id p15mr1953525ejz.542.1607280879905;
-        Sun, 06 Dec 2020 10:54:39 -0800 (PST)
-Received: from skbuf ([188.25.2.120])
-        by smtp.gmail.com with ESMTPSA id b9sm8961757eju.8.2020.12.06.10.54.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Dec 2020 10:54:38 -0800 (PST)
-Date:   Sun, 6 Dec 2020 20:54:37 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Aleksander Jan Bajkowski <olek2@wp.pl>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     hauke@hauke-m.de, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        robh+dt@kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] net: dsa: lantiq: allow to use all GPHYs on
- xRX300 and xRX330
-Message-ID: <20201206185437.xvegdomi2loz3vy7@skbuf>
-References: <20201206132713.13452-1-olek2@wp.pl>
- <20201206132713.13452-2-olek2@wp.pl>
+        id S1727427AbgLFTqI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Dec 2020 14:46:08 -0500
+Received: from mail-vi1eur05on2078.outbound.protection.outlook.com ([40.107.21.78]:20012
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726440AbgLFTqH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 6 Dec 2020 14:46:07 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JncnFSY6PeW+V4XqBNP5FdtgeijQ4Sue3OZZMpYmq8LEOYFbXz+5OnDVOtYUuj1E7pP1MScCTpBsIRLsGWClGbBARc0m2ZvIW7RcHz8EC7XzV2gMZKvssPcEjFGZhj2AssaxD78/T20qRIZyAXgh5kUj7uZRFTni5S8yemCedtfLDu+/7E9HDpOklTroskG3EHnVOx/Hdq3PLFi+fVHVW3Wa3FbmLVBHKc0/T1F7xnPJuHCaAgOhXfRsFPFnYt3+fJLtOPMHqDnqaWT4oD354F3akiy2uWUMusmkrH3mLfSjZOZxnpoMDin4szkBbTnaMii4sDYEvuF1ju6TuxdOgA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=t/uoVPDkrvW507MYw97G79ZkwjeIuQSzHZEgVD8jG2I=;
+ b=VLrx7OAV4QvbkLDQkMGr0cDHuZe8jBjAfxjfNsZkh0KzrAR7TAig9yhBFfsneLkQOQgn3cbICRTlPRVjd79kCJLdA6mdAlciiBPBxwwbQkb3kKMJoA5QneVq4Gj4EmEHOCPmGAVHfue10SzPMPgRwLwcS6we2F2tkLjGPmI9BkakmWrT0a7q121e+PWbbim1VJ2Cw5XcrJqFNEWktty7xxjxb9eU2Nn2479he3uc9KmkYx81EFau0mAqWOgYEt7JtM2U16fZdG7tHbpzlK1bGfmQ2J2izCwaODNaxgikhkvdX05PIBM/S9y1Udi2PrjEd856u/+BmQUxGx4P8m/kPQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=t/uoVPDkrvW507MYw97G79ZkwjeIuQSzHZEgVD8jG2I=;
+ b=ZlPN9Np3gdJGVmJhwcUgFcarmSGGifrC7MTXSOQiFWRuCst3iZ8SJWZTcUUwsZgbPt020h7mFgy2XAvcuDcXZbVHnWhYwrkKGqIMjr8OZ/47bw4eQfVQF/2J2YGmMsOpOlbw3O0ptTyusEpUWqv0DDbY+2tUh3nTpMJgd2K0LWk=
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
+ by VE1PR04MB6640.eurprd04.prod.outlook.com (2603:10a6:803:122::32) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.17; Sun, 6 Dec
+ 2020 19:45:17 +0000
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::2dd6:8dc:2da7:ad84]) by VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::2dd6:8dc:2da7:ad84%5]) with mapi id 15.20.3632.021; Sun, 6 Dec 2020
+ 19:45:17 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+CC:     Network Development <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>
+Subject: Re: vlan_filtering=1 breaks all traffic
+Thread-Topic: vlan_filtering=1 breaks all traffic
+Thread-Index: AQHWy0MhpNKtLM78DUiJl/hLVHZUnKnqeh0A
+Date:   Sun, 6 Dec 2020 19:45:16 +0000
+Message-ID: <20201206194516.adym47b4ppohiqpl@skbuf>
+References: <b4adfc0b-cd48-b21d-c07f-ad35de036492@prevas.dk>
+ <20201130160439.a7kxzaptt5m3jfyn@skbuf>
+ <61a2e853-9d81-8c1a-80f0-200f5d8dc650@prevas.dk>
+ <6424c14e-bd25-2a06-cf0b-f1a07f9a3604@prevas.dk>
+ <20201205190310.wmxemhrwxfom3ado@skbuf>
+ <ecb50a5e-45e5-a6a6-5439-c0b5b60302a9@prevas.dk>
+In-Reply-To: <ecb50a5e-45e5-a6a6-5439-c0b5b60302a9@prevas.dk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: prevas.dk; dkim=none (message not signed)
+ header.d=none;prevas.dk; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.25.2.120]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 27e46592-4800-4845-c76d-08d89a1f755d
+x-ms-traffictypediagnostic: VE1PR04MB6640:
+x-microsoft-antispam-prvs: <VE1PR04MB66400CEC23E84509D9FAB5F1E0CF0@VE1PR04MB6640.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: gDCKaZkmleBC3tU+no62of29/dlFPBh79puszhIMMLR/4N+kSbyfYZ4URLibdlsG3+MAnEDGjiQCfSdBj9xLNI2AQlxBcm7lunq3aWQY6p30QRXzxKwEQjt/u5GdUW9BxxeSRFXQ/soIQb9vyG46u8QUPCS6rcDobWlPnCzkF7lUfU3r9AxW8LtLjrXYZWQfTaIoDyrgGDBqZGBTOAuJO5CNmDrJgwkCMvbIXbmqz+38HAt4qUnTlO1jC1icG1+4OsUjG9hmlEiLhHBFi+GsUxKPHWbSVe5qzwF1HGwQ+yGC6oD7rheZus3Va3j+LRXn1CYS/Z4/mrD49XAfe7M7sbmR1hIZK01oPQ5yIyKIDiA8MuKe5gSQ52AJ3yxXPaLc1pSrZrXag15auH8EGlMywQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(396003)(136003)(376002)(39860400002)(346002)(66946007)(83380400001)(186003)(44832011)(86362001)(1076003)(6916009)(64756008)(66556008)(66476007)(66446008)(26005)(5660300002)(6506007)(316002)(478600001)(33716001)(54906003)(4326008)(76116006)(71200400001)(6486002)(966005)(8936002)(2906002)(9686003)(8676002)(6512007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?8UGLRZseT/cwCWdEETHhYPZYFlFcdaBF8PzQOPh2vRthjsNI0I8tm3aExjD1?=
+ =?us-ascii?Q?zm6aki6VHMu90f9hWL5fzjFsTPETmUIJgkh58qYMIpefQr1VHNZG77AL0XSu?=
+ =?us-ascii?Q?/lbopAyEtKnZxGgv2n7GqlQevAYpmh858b0zf83f+pcF9NkGVzS1nDu3BQT9?=
+ =?us-ascii?Q?qf4Dagj79hYsQtNgB4kgbTuWqT4yTrXbeanJFAGWDFEyWsx7aoPzolTQaVcY?=
+ =?us-ascii?Q?goBSfZsJONGo9wg02cw0JZbJNHrNzq9Pe2EipNEbvt8zwTsjlSeyHeKvhQRJ?=
+ =?us-ascii?Q?TylmlK0EJv+qwe1cmfGyQ08XKkeLz40MaiAqNEwvZ+HgGENAvccTUwTXwNiC?=
+ =?us-ascii?Q?+FeiR0L8IvInafQdC7Z50DEicMZVnll5CfMqVzWJ98G4lsgoQgtiEjaiB8JY?=
+ =?us-ascii?Q?0ceBs4RXdyyDvIzjEdcjme5jLqJZN2UX4951h3JFPnbF2gsIinfK1wMWRlMh?=
+ =?us-ascii?Q?QXno0umCKtx0/6pm62Wl4QSupl95E9xnJ6c28MiAr3HusaT56QNu+J5iHjHk?=
+ =?us-ascii?Q?hzMUw63FkH2iNZRFsly5GgshOzc8VlYC/rRZaL8wTzhUlG1Aqo6670U4dijs?=
+ =?us-ascii?Q?6J4yOou7K1hTRIH5Wg1qMy8V7h2INpWowUUY7wMjlqcEFgfWgn5w23d2kOnG?=
+ =?us-ascii?Q?A55sQwKhb+TfSFC80YlUdwFL6IFpQSIozssWzvwKyU90lAvAUUu6lj/0XHkl?=
+ =?us-ascii?Q?5sD/YD2EfzGIUK58ApLLrES5OdnMDSq1/WN6eytuLIPZfHyenbMBYjgivkg/?=
+ =?us-ascii?Q?dH8OkX/wsarsiZvHjOjE0lKI6yWoj/yqTH3ma/uPK9CbLocalNG0lZBAsYnF?=
+ =?us-ascii?Q?2mQPrk/JPGIFakAgEHWr6qwuoZm6+9D9Rf6gHr4CmOsiiOwGS4JO0pzDelcs?=
+ =?us-ascii?Q?kWTrWqnLGUEyNjlxvPCtvhOMSsO3nUlu93sZr0JQKiXFxXnJRVVXRqBBsih6?=
+ =?us-ascii?Q?xvbmnzAbJBKH9F2S5hJaBBJrNgtMCRZD0WAliLD7RMskbLleGKCBy48w9oJH?=
+ =?us-ascii?Q?XgIF?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <02F8D9128C96FF41807926CEB3F66E9F@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201206132713.13452-2-olek2@wp.pl>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 27e46592-4800-4845-c76d-08d89a1f755d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Dec 2020 19:45:17.5229
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jWpnjJBvjnq9KQe093Y9FeJe+GoX2EH73BwZb6OFfpur9ihgm2/j78fLt3Euj9dhR0UHAvc41Bfk2sK2VuuArg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6640
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 06, 2020 at 02:27:12PM +0100, Aleksander Jan Bajkowski wrote:
-> This patch allows to use all PHYs on GRX300 and GRX330. The ARX300 has 3
-> and the GRX330 has 4 integrated PHYs connected to different ports compared
-> to VRX200.
-> 
-> Port configurations:
-> 
-> xRX200:
-> GMAC0: RGMII/MII/REVMII/RMII port
-> GMAC1: RGMII/MII/REVMII/RMII port
-> GMAC2: GPHY0 (GMII)
-> GMAC3: GPHY0 (MII)
-> GMAC4: GPHY1 (GMII)
-> GMAC5: GPHY1 (MII) or RGMII port
-> 
-> xRX300:
-> GMAC0: RGMII port
-> GMAC1: GPHY2 (GMII)
-> GMAC2: GPHY0 (GMII)
-> GMAC3: GPHY0 (MII)
-> GMAC4: GPHY1 (GMII)
-> GMAC5: GPHY1 (MII) or RGMII port
-> 
-> xRX330:
-> GMAC0: RGMII/GMII/RMII port
-> GMAC1: GPHY2 (GMII)
-> GMAC2: GPHY0 (GMII)
-> GMAC3: GPHY0 (MII) or GPHY3 (GMII)
-> GMAC4: GPHY1 (GMII)
-> GMAC5: GPHY1 (MII) or RGMII/RMII port
+On Sat, Dec 05, 2020 at 09:13:37PM +0100, Rasmus Villemoes wrote:
+> Yup, that corresponds pretty much to what I do. Just for good measure, I
+> tried doing exactly the above (with only a change in IP address), and...
+> it worked. So, first thought was "perhaps it's because you bring up br0
+> before adding the ports". But no, bringing it up after still works.
+> Second thought: "portS - hm, only one port is added here", and indeed,
+> once I add two or more ports to the bridge, it stops working. Removing
+> all but the single port that has a cable plugged in makes it work again.
+> It doesn't seem to matter whether the other ports are up or down.
+>
+> I should probably mention that wireshark says that ARP (ipv4) and
+> neighbor solicitation (ipv6ll) packets do reach my laptop when I attempt
+> the ping. If I start by doing a succesful ping (i.e., no other ports
+> added), then add another port, then do a ping, the ping packets do reach
+> the laptop (and of course get answered). So the problem does not appear
+> to be on egress.
 
-When you say GMII/MII when you are talking to the GPHY ports, what you
-are really talking about is 1000Base-T vs 100Base-TX, right?
+It would be interesting to see what is the ingress drop reason, if that
+could be deduced from the drop counters that are incrementing in ethtool -S=
+.
 
-How about xRX330, does that really expose the full parallel GMAC pinout
-on GMAC0?
+I am not confident that it can be a VTU issue, given the fact that you
+have not said that you see VTU violation warnings, which are fairly loud
+on mv88e6xxx.
 
-> 
-> Tested on D-Link DWR966 with OpenWRT.
-> 
-> Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
-> ---
->  drivers/net/dsa/lantiq_gswip.c | 170 +++++++++++++++++++++++++++------
->  1 file changed, 141 insertions(+), 29 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-> index 09701c17f3f6..4c8f611ed397 100644
-> --- a/drivers/net/dsa/lantiq_gswip.c
-> +++ b/drivers/net/dsa/lantiq_gswip.c
-> @@ -94,6 +94,7 @@
->  /* GSWIP MII Registers */
->  #define GSWIP_MII_CFG0			0x00
->  #define GSWIP_MII_CFG1			0x02
-> +#define GSWIP_MII_CFG3			0xc3
->  #define GSWIP_MII_CFG5			0x04
->  #define  GSWIP_MII_CFG_EN		BIT(14)
->  #define  GSWIP_MII_CFG_LDCLKDIS		BIT(12)
-> @@ -102,6 +103,7 @@
->  #define  GSWIP_MII_CFG_MODE_RMIIP	0x2
->  #define  GSWIP_MII_CFG_MODE_RMIIM	0x3
->  #define  GSWIP_MII_CFG_MODE_RGMII	0x4
-> +#define  GSWIP_MII_CFG_MODE_GMII	0x9
->  #define  GSWIP_MII_CFG_MODE_MASK	0xf
->  #define  GSWIP_MII_CFG_RATE_M2P5	0x00
->  #define  GSWIP_MII_CFG_RATE_M25	0x10
-> @@ -222,6 +224,7 @@
->  struct gswip_hw_info {
->  	int max_ports;
->  	int cpu_port;
-> +	struct dsa_switch_ops *ops;
->  };
->  
->  struct xway_gphy_match_data {
-> @@ -392,12 +395,19 @@ static void gswip_mii_mask(struct gswip_priv *priv, u32 clear, u32 set,
->  static void gswip_mii_mask_cfg(struct gswip_priv *priv, u32 clear, u32 set,
->  			       int port)
->  {
-> +	struct device_node *np = priv->ds->dev->of_node;
-> +
->  	switch (port) {
->  	case 0:
->  		gswip_mii_mask(priv, clear, set, GSWIP_MII_CFG0);
->  		break;
->  	case 1:
-> -		gswip_mii_mask(priv, clear, set, GSWIP_MII_CFG1);
-> +		if (of_device_is_compatible(np, "lantiq,xrx200-gswip"))
-> +			gswip_mii_mask(priv, clear, set, GSWIP_MII_CFG1);
-> +		break;
-> +	case 3:
-> +		if (of_device_is_compatible(np, "lantiq,xrx330-gswip"))
-> +			gswip_mii_mask(priv, clear, set, GSWIP_MII_CFG3);
->  		break;
->  	case 5:
->  		gswip_mii_mask(priv, clear, set, GSWIP_MII_CFG5);
-> @@ -1409,12 +1419,40 @@ static int gswip_port_fdb_dump(struct dsa_switch *ds, int port,
->  	return 0;
->  }
->  
-> -static void gswip_phylink_validate(struct dsa_switch *ds, int port,
-> -				   unsigned long *supported,
-> -				   struct phylink_link_state *state)
-> +static void gswip_phylink_set_capab(unsigned long *supported, struct phylink_link_state *state)
->  {
->  	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
->  
-> +	/* Allow all the expected bits */
-> +	phylink_set(mask, Autoneg);
-> +	phylink_set_port_modes(mask);
-> +	phylink_set(mask, Pause);
-> +	phylink_set(mask, Asym_Pause);
-> +
-> +	/* With the exclusion of MII and Reverse MII, we support Gigabit,
-> +	 * including Half duplex
-> +	 */
-> +	if (state->interface != PHY_INTERFACE_MODE_MII &&
-> +	    state->interface != PHY_INTERFACE_MODE_REVMII) {
-> +		phylink_set(mask, 1000baseT_Full);
-> +		phylink_set(mask, 1000baseT_Half);
-> +	}
-> +
-> +	phylink_set(mask, 10baseT_Half);
-> +	phylink_set(mask, 10baseT_Full);
-> +	phylink_set(mask, 100baseT_Half);
-> +	phylink_set(mask, 100baseT_Full);
-> +
-> +	bitmap_and(supported, supported, mask,
-> +		   __ETHTOOL_LINK_MODE_MASK_NBITS);
-> +	bitmap_and(state->advertising, state->advertising, mask,
-> +		   __ETHTOOL_LINK_MODE_MASK_NBITS);
-> +}
-> +
-> +static void gswip_xrx200_phylink_validate(struct dsa_switch *ds, int port,
-> +					  unsigned long *supported,
-> +					  struct phylink_link_state *state)
-> +{
->  	switch (port) {
->  	case 0:
->  	case 1:
-> @@ -1441,37 +1479,56 @@ static void gswip_phylink_validate(struct dsa_switch *ds, int port,
->  		return;
->  	}
->  
-> -	/* Allow all the expected bits */
-> -	phylink_set(mask, Autoneg);
-> -	phylink_set_port_modes(mask);
-> -	phylink_set(mask, Pause);
-> -	phylink_set(mask, Asym_Pause);
-> +	gswip_phylink_set_capab(supported, state);
->  
-> -	/* With the exclusion of MII and Reverse MII, we support Gigabit,
-> -	 * including Half duplex
-> -	 */
-> -	if (state->interface != PHY_INTERFACE_MODE_MII &&
-> -	    state->interface != PHY_INTERFACE_MODE_REVMII) {
-> -		phylink_set(mask, 1000baseT_Full);
-> -		phylink_set(mask, 1000baseT_Half);
-> +	return;
-> +
-> +unsupported:
-> +	bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
-> +	dev_err(ds->dev, "Unsupported interface '%s' for port %d\n",
-> +		phy_modes(state->interface), port);
-> +}
-> +
-> +static void gswip_xrx300_phylink_validate(struct dsa_switch *ds, int port,
-> +					  unsigned long *supported,
-> +					  struct phylink_link_state *state)
-> +{
-> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
-> +
-> +	switch (port) {
-> +	case 0:
-> +		if (!phy_interface_mode_is_rgmii(state->interface) &&
-> +		    state->interface != PHY_INTERFACE_MODE_GMII &&
-> +		    state->interface != PHY_INTERFACE_MODE_RMII)
-> +			goto unsupported;
-> +		break;
-> +	case 1:
-> +	case 2:
-> +	case 3:
-> +	case 4:
-> +		if (state->interface != PHY_INTERFACE_MODE_INTERNAL)
-> +			goto unsupported;
-> +		break;
-> +	case 5:
-> +		if (!phy_interface_mode_is_rgmii(state->interface) &&
-> +		    state->interface != PHY_INTERFACE_MODE_INTERNAL &&
-> +		    state->interface != PHY_INTERFACE_MODE_RMII)
-> +			goto unsupported;
-> +		break;
-> +	default:
-> +		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
-> +		dev_err(ds->dev, "Unsupported port: %i\n", port);
-> +		return;
->  	}
+The procedure of joining a new port to the bridge does alter the VTU,
+since that second port needs to be a part of the default_pvid of the
+bridge as soon as it goes up (VID 1). However that is not the main thing
+that bridging a new port does - instead, the in-chip Port VLAN map is
+altered.
 
-I think there is a pre-existing issue in gswip_phylink_validate in that
-when state->interface == PHY_INTERFACE_MODE_NA, this triggers the "goto
-unsupported" code path, when it should instead report all supported link
-modes. phylink calls phylink_validate() with PHY_INTERFACE_MODE_NA when
-the MII protocol is not known off-hand but depends on what is attached /
-what that is configured to advertise.
+In theory it _would_ be possible (even if unlikely) for the VTU to get
+overwritten by the second port join, in a way that removes the first
+port from the bridge's VID 1. Remember that this issue only seems to be
+observable on 8250, so it seems logical to search in 8250 specific code
+first (therefore making the VTU a more likely suspect than the in-chip
+Port VLAN map).
 
-In your case I think it is a bit unlikely to have a clause 45 PHY that
-changes MII protocol dynamically, or an SFP module attached directly to
-your GMAC, given that on the port without an internal PHY you only have
-parallel interfaces and not a SERDES (note that there still exist RGMII
-PHYs - see RTL8211FS - that have an optical media side and can therefore
-be connected to an SFP cage, but I don't really know how phylink deals
-with those given the structure of sfp_select_interface). So it is mainly
-a question of API compliance. Do we want to allow drivers to ignore
-something than the API requires, because the driver writers know that
-the code path will not be executed in real life.
+Since you've already made the effort to boot kernel 5.9, you could make
+the extra leap to try out the 5.10 rc's and look at the VTU using
+Andrew's devlink based tool:
+https://github.com/lunn/mv88e6xxx_dump
 
->  
-> -	phylink_set(mask, 10baseT_Half);
-> -	phylink_set(mask, 10baseT_Full);
-> -	phylink_set(mask, 100baseT_Half);
-> -	phylink_set(mask, 100baseT_Full);
-> +	gswip_phylink_set_capab(supported, state);
->  
-> -	bitmap_and(supported, supported, mask,
-> -		   __ETHTOOL_LINK_MODE_MASK_NBITS);
-> -	bitmap_and(state->advertising, state->advertising, mask,
-> -		   __ETHTOOL_LINK_MODE_MASK_NBITS);
->  	return;
->  
->  unsupported:
->  	bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
->  	dev_err(ds->dev, "Unsupported interface '%s' for port %d\n",
->  		phy_modes(state->interface), port);
-> -	return;
->  }
->  
->  static void gswip_phylink_mac_config(struct dsa_switch *ds, int port,
-> @@ -1500,6 +1557,9 @@ static void gswip_phylink_mac_config(struct dsa_switch *ds, int port,
->  	case PHY_INTERFACE_MODE_RGMII_TXID:
->  		miicfg |= GSWIP_MII_CFG_MODE_RGMII;
->  		break;
-> +	case PHY_INTERFACE_MODE_GMII:
-> +		miicfg |= GSWIP_MII_CFG_MODE_GMII;
-> +		break;
->  	default:
->  		dev_err(ds->dev,
->  			"Unsupported interface: %d\n", state->interface);
-> @@ -1614,7 +1674,7 @@ static int gswip_get_sset_count(struct dsa_switch *ds, int port, int sset)
->  	return ARRAY_SIZE(gswip_rmon_cnt);
->  }
->  
-> -static const struct dsa_switch_ops gswip_switch_ops = {
-> +static const struct dsa_switch_ops gswip_xrx200_switch_ops = {
->  	.get_tag_protocol	= gswip_get_tag_protocol,
->  	.setup			= gswip_setup,
->  	.port_enable		= gswip_port_enable,
-> @@ -1630,7 +1690,32 @@ static const struct dsa_switch_ops gswip_switch_ops = {
->  	.port_fdb_add		= gswip_port_fdb_add,
->  	.port_fdb_del		= gswip_port_fdb_del,
->  	.port_fdb_dump		= gswip_port_fdb_dump,
-> -	.phylink_validate	= gswip_phylink_validate,
-> +	.phylink_validate	= gswip_xrx200_phylink_validate,
-> +	.phylink_mac_config	= gswip_phylink_mac_config,
-> +	.phylink_mac_link_down	= gswip_phylink_mac_link_down,
-> +	.phylink_mac_link_up	= gswip_phylink_mac_link_up,
-> +	.get_strings		= gswip_get_strings,
-> +	.get_ethtool_stats	= gswip_get_ethtool_stats,
-> +	.get_sset_count		= gswip_get_sset_count,
-> +};
-> +
-> +static const struct dsa_switch_ops gswip_xrx300_switch_ops = {
-> +	.get_tag_protocol	= gswip_get_tag_protocol,
-> +	.setup			= gswip_setup,
-> +	.port_enable		= gswip_port_enable,
-> +	.port_disable		= gswip_port_disable,
-> +	.port_bridge_join	= gswip_port_bridge_join,
-> +	.port_bridge_leave	= gswip_port_bridge_leave,
-> +	.port_fast_age		= gswip_port_fast_age,
-> +	.port_vlan_filtering	= gswip_port_vlan_filtering,
-> +	.port_vlan_prepare	= gswip_port_vlan_prepare,
-> +	.port_vlan_add		= gswip_port_vlan_add,
-> +	.port_vlan_del		= gswip_port_vlan_del,
-> +	.port_stp_state_set	= gswip_port_stp_state_set,
-> +	.port_fdb_add		= gswip_port_fdb_add,
-> +	.port_fdb_del		= gswip_port_fdb_del,
-> +	.port_fdb_dump		= gswip_port_fdb_dump,
-> +	.phylink_validate	= gswip_xrx300_phylink_validate,
->  	.phylink_mac_config	= gswip_phylink_mac_config,
->  	.phylink_mac_link_down	= gswip_phylink_mac_link_down,
->  	.phylink_mac_link_up	= gswip_phylink_mac_link_up,
-> @@ -1859,7 +1944,7 @@ static int gswip_gphy_fw_list(struct gswip_priv *priv,
->  static int gswip_probe(struct platform_device *pdev)
->  {
->  	struct gswip_priv *priv;
-> -	struct device_node *mdio_np, *gphy_fw_np;
-> +	struct device_node *np, *mdio_np, *gphy_fw_np;
->  	struct device *dev = &pdev->dev;
->  	int err;
->  	int i;
-> @@ -1892,10 +1977,28 @@ static int gswip_probe(struct platform_device *pdev)
->  	priv->ds->dev = dev;
->  	priv->ds->num_ports = priv->hw_info->max_ports;
->  	priv->ds->priv = priv;
-> -	priv->ds->ops = &gswip_switch_ops;
-> +	priv->ds->ops = priv->hw_info->ops;
->  	priv->dev = dev;
->  	version = gswip_switch_r(priv, GSWIP_VERSION);
->  
-> +	np = dev->of_node;
-> +	switch (version) {
-> +	case GSWIP_VERSION_2_0:
-> +	case GSWIP_VERSION_2_1:
-> +		if (!of_device_is_compatible(np, "lantiq,xrx200-gswip"))
-> +			return -EINVAL;
-> +		break;
-> +	case GSWIP_VERSION_2_2:
-> +	case GSWIP_VERSION_2_2_ETC:
-> +		if (!of_device_is_compatible(np, "lantiq,xrx300-gswip") &&
-> +		    !of_device_is_compatible(np, "lantiq,xrx330-gswip"))
-> +			return -EINVAL;
-> +		break;
-> +	default:
-> +		dev_err(dev, "unknown GSWIP version: 0x%x", version);
-> +		return -ENOENT;
-> +	}
-> +
->  	/* bring up the mdio bus */
->  	gphy_fw_np = of_get_compatible_child(dev->of_node, "lantiq,gphy-fw");
->  	if (gphy_fw_np) {
-> @@ -1973,10 +2076,19 @@ static int gswip_remove(struct platform_device *pdev)
->  static const struct gswip_hw_info gswip_xrx200 = {
->  	.max_ports = 7,
->  	.cpu_port = 6,
-> +	.ops = &gswip_xrx200_switch_ops,
-> +};
-> +
-> +static const struct gswip_hw_info gswip_xrx300 = {
-> +	.max_ports = 7,
-> +	.cpu_port = 6,
-> +	.ops = &gswip_xrx300_switch_ops,
->  };
->  
->  static const struct of_device_id gswip_of_match[] = {
->  	{ .compatible = "lantiq,xrx200-gswip", .data = &gswip_xrx200 },
-> +	{ .compatible = "lantiq,xrx300-gswip", .data = &gswip_xrx300 },
-> +	{ .compatible = "lantiq,xrx330-gswip", .data = &gswip_xrx300 },
->  	{},
->  };
->  MODULE_DEVICE_TABLE(of, gswip_of_match);
-> -- 
-> 2.20.1
-> 
+# devlink dev
+mdio_bus/d0032004.mdio-mii:11
+mdio_bus/d0032004.mdio-mii:12
+mdio_bus/d0032004.mdio-mii:10
+# ./mv88e6xxx_dump --device mdio_bus/d0032004.mdio-mii:10 --vtu
+VTU:
+        V - a member, egress not modified
+        U - a member, egress untagged
+        T - a member, egress tagged
+        X - not a member, Ingress frames with VID discarded
+P  VID 0123456789a  FID  SID QPrio FPrio VidPolicy
+# ip link add br0 type bridge vlan_filtering 1
+# ip link set lan4 master br0
+[   74.443547] br0: port 1(lan4) entered blocking state
+[   74.446037] br0: port 1(lan4) entered disabled state
+[   74.461416] device lan4 entered promiscuous mode
+[   74.463564] device eth1 entered promiscuous mode
+
+# ./mv88e6xxx_dump --device mdio_bus/d0032004.mdio-mii:10 --vtu
+VTU:
+        V - a member, egress not modified
+        U - a member, egress untagged
+        T - a member, egress tagged
+        X - not a member, Ingress frames with VID discarded
+P  VID 0123456789a  FID  SID QPrio FPrio VidPolicy
+0    1 XXXXUXXXXVV    1    0     -     -     0
+
+# ip link set lan5 master br0
+[   84.533120] br0: port 2(lan5) entered blocking state
+[   84.535563] br0: port 2(lan5) entered disabled state
+[   84.552022] device lan5 entered promiscuous mode
+#
+# ./mv88e6xxx_dump --device mdio_bus/d0032004.mdio-mii:10 --vtu
+VTU:
+        V - a member, egress not modified
+        U - a member, egress untagged
+        T - a member, egress tagged
+        X - not a member, Ingress frames with VID discarded
+P  VID 0123456789a  FID  SID QPrio FPrio VidPolicy
+0    1 XXXXUUXXXVV    1    0     -     -     0
+
+You would expect to see two U's for your ports, and not something else
+like X.=
