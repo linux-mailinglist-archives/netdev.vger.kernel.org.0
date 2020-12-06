@@ -2,95 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ED592D0619
-	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 17:54:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A33E42D0633
+	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 18:10:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726883AbgLFQuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Dec 2020 11:50:20 -0500
-Received: from mx2.suse.de ([195.135.220.15]:48956 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726186AbgLFQuU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 6 Dec 2020 11:50:20 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 97253ADF8;
-        Sun,  6 Dec 2020 16:49:24 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 56AD360344; Sun,  6 Dec 2020 17:49:24 +0100 (CET)
-Date:   Sun, 6 Dec 2020 17:49:24 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Jarod Wilson <jarod@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-        Limin Wang <lwang.nbl@gmail.com>
-Subject: Re: LRO: creating vlan subports affects parent port's LRO settings
-Message-ID: <20201206164924.baczz7eyxz6czro2@lion.mk-sys.cz>
-References: <CACpdL32SRKb8hXzuF_APybip+hyxkXRYoxCW_OMhn0odRSQKuw@mail.gmail.com>
- <20201123162639.5d692198@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAKfmpSdv5onOGk=VtEO1fWxxhaVvi96Tz-wCFcNE5R9cdXNgkg@mail.gmail.com>
+        id S1727706AbgLFRJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Dec 2020 12:09:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41170 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726186AbgLFRJY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Dec 2020 12:09:24 -0500
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A00FC0613D0
+        for <netdev@vger.kernel.org>; Sun,  6 Dec 2020 09:08:38 -0800 (PST)
+Received: by mail-pg1-x52d.google.com with SMTP id q3so6842728pgr.3
+        for <netdev@vger.kernel.org>; Sun, 06 Dec 2020 09:08:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=2XlscYPRkM2oALq6ey4T2bXvW+IR4L9vsAT9XkOJxGU=;
+        b=GuVTDhuMfgW9frGinKVVClfLxWuH6u8UBGfGDckc0Q7GVR6w7craDnwOjuUp8AxLSg
+         8ESuVhaoLFqMSHdpGGiorFY+NxTcnRYAz25yEts15K/8RVJYVwulaoCQh1ucqYpu/mag
+         5d+CvcFbNXsVSd2WHyZ8SsSmM4gAVnybbqPs9iKmXe66jR8rG68Pj54VasnETAFJMGP+
+         voZI4mytxvgk+JoIjlhKvBP6xFElQ+DQSXfdu2vk80NCErt3MyHf3sJSCqgZdjwQi46Y
+         9/hO+VKk63mHDiLyQk9jWXVVh1B5q5dU+Aik0GCcWQQEFFKImu9vpH6gnz/s00EhjXZO
+         r/cg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=2XlscYPRkM2oALq6ey4T2bXvW+IR4L9vsAT9XkOJxGU=;
+        b=A990MN4VSCWC3CH6s2dxu5DJgG+w+1xxqNxQN3JsE2i5fpkqn+nEFhkV6fIfI8svPO
+         1AZzuwaeCPhAtvTIq9W+VOyuuNIrhnXxZ2cYLUQd0L1rt5UJEuC/6RQRYMqwtTGjq8YL
+         sGKW//ZJt8sef8b9gKvJ1BMZ1awBVk0mGPAyUmNlWlKym+LgMq7xENtyqPPpxfvyTkYr
+         hsorSbo/i5P7kOgZc6S24rCqK983B6bpTNWDSw3V13si28AUrVJPLpXY9yLUYLtRTbWU
+         15FL0rQjLy24heRPqxFChaqQeZoPW6sNiIARkgQUNA2y0LAMg/BnlwQ+u6XVbSZCw6Hu
+         pJzQ==
+X-Gm-Message-State: AOAM530SwKDqvNjHNRAel0HeDdzPDEbs8L/qTx6jVXng8AxlyO8y9EaI
+        bCVmQ3gpWNor20raYxF7CYo=
+X-Google-Smtp-Source: ABdhPJyoT7xsm3Md2kDK+B/pAl2gvhpHdn0jhnRmEh6clfg6RSelrJA+5HmoUVZ7oVqwODVBXHN+OQ==
+X-Received: by 2002:a63:575a:: with SMTP id h26mr15567052pgm.228.1607274517856;
+        Sun, 06 Dec 2020 09:08:37 -0800 (PST)
+Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id a11sm11494997pfc.31.2020.12.06.09.08.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Dec 2020 09:08:37 -0800 (PST)
+Date:   Sun, 6 Dec 2020 09:08:34 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Eran Ben Elisha <eranbe@nvidia.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: Re: [net-next V2 08/15] net/mlx5e: Add TX PTP port object support
+Message-ID: <20201206170834.GA4342@hoboy.vegasvil.org>
+References: <20201203042108.232706-1-saeedm@nvidia.com>
+ <20201203042108.232706-9-saeedm@nvidia.com>
+ <20201203182908.1d25ea3f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+ <b761c676af87a4a82e3ea4f6f5aff3d1159c63e7.camel@kernel.org>
+ <20201204122613.542c2362@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+ <999c9328747d4edbfc8d2720b886aaa269e16df8.camel@kernel.org>
+ <20201204151743.4b55da5c@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+ <a20290fa3448849e84d2d97b2978d4e05033cd80.camel@kernel.org>
+ <20201204162426.650dedfc@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+ <a4a8adc8-4d4c-3b09-6c2f-ce1d12e0b9bc@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAKfmpSdv5onOGk=VtEO1fWxxhaVvi96Tz-wCFcNE5R9cdXNgkg@mail.gmail.com>
+In-Reply-To: <a4a8adc8-4d4c-3b09-6c2f-ce1d12e0b9bc@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 05, 2020 at 07:04:06PM -0500, Jarod Wilson wrote:
-> On Mon, Nov 23, 2020 at 7:27 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Thu, 19 Nov 2020 20:37:27 -0500 Limin Wang wrote:
-> > > Under relatively recent kernels (v4.4+), creating a vlan subport on a
-> > > LRO supported parent NIC may turn LRO off on the parent port and
-> > > further render its LRO feature practically unchangeable.
-> >
-> > That does sound like an oversight in commit fd867d51f889 ("net/core:
-> > generic support for disabling netdev features down stack").
-> >
-> > Are you able to create a patch to fix this?
+On Sun, Dec 06, 2020 at 03:37:47PM +0200, Eran Ben Elisha wrote:
+> Adding new enum to the ioctl means we have add
+> (HWTSTAMP_TX_ON_TIME_CRITICAL_ONLY for example) all the way - drivers,
+> kernel ptp, user space ptp, ethtool.
 > 
-> Something like this, perhaps? Completely untested copy-pasta'd
-> theoretical patch:
-> 
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 8588ade790cb..a5ce372e02ba 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -9605,8 +9605,10 @@ int __netdev_update_features(struct net_device *dev)
->         features = netdev_fix_features(dev, features);
-> 
->         /* some features can't be enabled if they're off on an upper device */
-> -       netdev_for_each_upper_dev_rcu(dev, upper, iter)
-> -               features = netdev_sync_upper_features(dev, upper, features);
-> +       netdev_for_each_upper_dev_rcu(dev, upper, iter) {
-> +               if (netif_is_lag_master(upper) || netif_is_bridge_master(upper))
-> +                       features = netdev_sync_upper_features(dev,
-> upper, features);
-> +       }
-> 
->         if (dev->features == features)
->                 goto sync_lower;
-> @@ -9633,8 +9635,10 @@ int __netdev_update_features(struct net_device *dev)
->         /* some features must be disabled on lower devices when disabled
->          * on an upper device (think: bonding master or bridge)
->          */
-> -       netdev_for_each_lower_dev(dev, lower, iter)
-> -               netdev_sync_lower_features(dev, lower, features);
-> +       if (netif_is_lag_master(dev) || netif_is_bridge_master(dev)) {
-> +               netdev_for_each_lower_dev(dev, lower, iter)
-> +                       netdev_sync_lower_features(dev, lower, features);
-> +       }
-> 
->         if (!err) {
->                 netdev_features_t diff = features ^ dev->features;
-> 
-> I'm not sure what all other upper devices this excludes besides just
-> vlan ports though, so perhaps safer add upper device types to not do
-> feature sync on than to choose which ones to do them on?
+> My concerns are:
+> 1. Timestamp applications (like ptp4l or similar) will have to add support
+> for configuring the driver to use HWTSTAMP_TX_ON_TIME_CRITICAL_ONLY if
+> supported via ioctl prior to packets transmit. From application point of
+> view, the dual-modes (HWTSTAMP_TX_ON_TIME_CRITICAL_ONLY , HWTSTAMP_TX_ON)
+> support is redundant, as it offers nothing new.
 
-I'm not sure excluding devices from feature sync is the right way,
-whether it's an explicit list types or default. The logic still makes
-sense to me. Couldn't we address the issue by either setting features in
-NETIF_F_UPPER_DISABLES) by default for a new vlan (and probably macvlan)
-device? Or perhaps inheriting their values from the lower device.
+Well said.
 
-Michal
+> 2. Other vendors will have to support it as well, when not sure what is the
+> expectation from them if they cannot improve accuracy between them.
+
+If there were multiple different devices out there with this kind of
+implementation (different levels of accuracy with increasing run time
+performance cost), then we could consider such a flag.  However, to my
+knowledge, this feature is unique to your device.
+
+> This feature is just an internal enhancement, and as such it should be added
+> only as a vendor private configuration flag. We are not offering here about
+> any standard for others to follow.
+
++1
+
+Thanks,
+Richard
