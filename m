@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF5402D0089
-	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 05:38:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DE602D008D
+	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 05:39:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726134AbgLFEgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Dec 2020 23:36:50 -0500
-Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:63924 "EHLO
-        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725819AbgLFEgu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Dec 2020 23:36:50 -0500
+        id S1726024AbgLFEjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Dec 2020 23:39:12 -0500
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:6153 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725536AbgLFEjL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Dec 2020 23:39:11 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1607229409; x=1638765409;
+  s=amazon201209; t=1607229551; x=1638765551;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=ux9UQupwRxsmnTCznRymbcgrgIzmrmbRbcAbzuMG1b0=;
-  b=CTTLWwUD7I7t56JF2mtBwVNHfoWgQKEE45OhnIlWDF3Q9M5HS5dq1pbZ
-   JBgkKsGhBgiZgXYVe3wWc1NR08qhbIP05Em/88UEMkkfTi1n8hYe3b/7X
-   kyCRL1Nfmj0EszJTMQjTb98jWZBthjIfUwmP8oj5tSOD7xfI7i+26wKt+
-   A=;
+  bh=U0hzxwsqhi3SS2M94+g8S94NnU3oqs54NmYqE8jqm0E=;
+  b=Ov3KDB6wsCPNkw4SpOYrViZHgq2Kb8kb3yf5/GlRAzppsabke4wChcQD
+   LcR8uY2Cjyq9QH+FROACAnQVBCa5tU/L4h+ELwz+gklMIlxpGoqf68kIe
+   CFvAVnGDiJtNiUGsHRCuBysKiEyuDXQIU2xm/H70oay+nRxQmDaxzqHVA
+   4=;
 X-IronPort-AV: E=Sophos;i="5.78,396,1599523200"; 
-   d="scan'208";a="93749986"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2b-a7fdc47a.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 06 Dec 2020 04:36:08 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2b-a7fdc47a.us-west-2.amazon.com (Postfix) with ESMTPS id 5CC28C06B0;
-        Sun,  6 Dec 2020 04:36:08 +0000 (UTC)
+   d="scan'208";a="100758268"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-90c42d1d.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 06 Dec 2020 04:38:30 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-2a-90c42d1d.us-west-2.amazon.com (Postfix) with ESMTPS id 03E15A2123;
+        Sun,  6 Dec 2020 04:38:29 +0000 (UTC)
 Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Sun, 6 Dec 2020 04:36:07 +0000
-Received: from 38f9d3582de7.ant.amazon.com (10.43.160.229) by
+ id 15.0.1497.2; Sun, 6 Dec 2020 04:38:29 +0000
+Received: from 38f9d3582de7.ant.amazon.com (10.43.160.66) by
  EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Sun, 6 Dec 2020 04:36:05 +0000
+ id 15.0.1497.2; Sun, 6 Dec 2020 04:38:26 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 To:     <kuniyu@amazon.co.jp>
 CC:     <kuni1840@gmail.com>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 bpf-next 09/11] bpf: Support bpf_get_socket_cookie_sock() for BPF_PROG_TYPE_SK_REUSEPORT.
-Date:   Sun, 6 Dec 2020 13:36:01 +0900
-Message-ID: <20201206043601.26634-1-kuniyu@amazon.co.jp>
+Subject: Re: [PATCH v1 bpf-next 01/11] tcp: Keep TCP_CLOSE sockets in the reuseport group.
+Date:   Sun, 6 Dec 2020 13:38:23 +0900
+Message-ID: <20201206043823.27524-1-kuniyu@amazon.co.jp>
 X-Mailer: git-send-email 2.17.2 (Apple Git-113)
-In-Reply-To: <20201204195807.mnckuteadncd4spr@kafai-mbp.dhcp.thefacebook.com>
-References: <20201204195807.mnckuteadncd4spr@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20201205013103.eo5chfx57kf25pz3@kafai-mbp.dhcp.thefacebook.com>
+References: <20201205013103.eo5chfx57kf25pz3@kafai-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.43.160.229]
-X-ClientProxiedBy: EX13D32UWB004.ant.amazon.com (10.43.161.36) To
+X-Originating-IP: [10.43.160.66]
+X-ClientProxiedBy: EX13D40UWC003.ant.amazon.com (10.43.162.246) To
  EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -58,69 +58,160 @@ to LKML, netdev, and bpf yesterday.
 
 
 From:   Martin KaFai Lau <kafai@fb.com>
-Date:   Fri, 4 Dec 2020 11:58:07 -0800
-> On Tue, Dec 01, 2020 at 11:44:16PM +0900, Kuniyuki Iwashima wrote:
-> > We will call sock_reuseport.prog for socket migration in the next commit,
-> > so the eBPF program has to know which listener is closing in order to
-> > select the new listener.
+Date:   Fri, 4 Dec 2020 17:31:03 -0800
+> On Tue, Dec 01, 2020 at 11:44:08PM +0900, Kuniyuki Iwashima wrote:
+> > This patch is a preparation patch to migrate incoming connections in the
+> > later commits and adds a field (num_closed_socks) to the struct
+> > sock_reuseport to keep TCP_CLOSE sockets in the reuseport group.
 > > 
-> > Currently, we can get a unique ID for each listener in the userspace by
-> > calling bpf_map_lookup_elem() for BPF_MAP_TYPE_REUSEPORT_SOCKARRAY map.
+> > When we close a listening socket, to migrate its connections to another
+> > listener in the same reuseport group, we have to handle two kinds of child
+> > sockets. One is that a listening socket has a reference to, and the other
+> > is not.
 > > 
-> > This patch makes the sk pointer available in sk_reuseport_md so that we can
-> > get the ID by BPF_FUNC_get_socket_cookie() in the eBPF program.
+> > The former is the TCP_ESTABLISHED/TCP_SYN_RECV sockets, and they are in the
+> > accept queue of their listening socket. So, we can pop them out and push
+> > them into another listener's queue at close() or shutdown() syscalls. On
+> > the other hand, the latter, the TCP_NEW_SYN_RECV socket is during the
+> > three-way handshake and not in the accept queue. Thus, we cannot access
+> > such sockets at close() or shutdown() syscalls. Accordingly, we have to
+> > migrate immature sockets after their listening socket has been closed.
 > > 
-> > Link: https://lore.kernel.org/netdev/20201119001154.kapwihc2plp4f7zc@kafai-mbp.dhcp.thefacebook.com/
-> > Suggested-by: Martin KaFai Lau <kafai@fb.com>
+> > Currently, if their listening socket has been closed, TCP_NEW_SYN_RECV
+> > sockets are freed at receiving the final ACK or retransmitting SYN+ACKs. At
+> > that time, if we could select a new listener from the same reuseport group,
+> > no connection would be aborted. However, it is impossible because
+> > reuseport_detach_sock() sets NULL to sk_reuseport_cb and forbids access to
+> > the reuseport group from closed sockets.
+> > 
+> > This patch allows TCP_CLOSE sockets to remain in the reuseport group and to
+> > have access to it while any child socket references to them. The point is
+> > that reuseport_detach_sock() is called twice from inet_unhash() and
+> > sk_destruct(). At first, it moves the socket backwards in socks[] and
+> > increments num_closed_socks. Later, when all migrated connections are
+> > accepted, it removes the socket from socks[], decrements num_closed_socks,
+> > and sets NULL to sk_reuseport_cb.
+> > 
+> > By this change, closed sockets can keep sk_reuseport_cb until all child
+> > requests have been freed or accepted. Consequently calling listen() after
+> > shutdown() can cause EADDRINUSE or EBUSY in reuseport_add_sock() or
+> > inet_csk_bind_conflict() which expect that such sockets should not have the
+> > reuseport group. Therefore, this patch also loosens such validation rules
+> > so that the socket can listen again if it has the same reuseport group with
+> > other listening sockets.
+> > 
+> > Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
 > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 > > ---
-> >  include/uapi/linux/bpf.h       |  8 ++++++++
-> >  net/core/filter.c              | 12 +++++++++++-
-> >  tools/include/uapi/linux/bpf.h |  8 ++++++++
-> >  3 files changed, 27 insertions(+), 1 deletion(-)
+> >  include/net/sock_reuseport.h    |  5 ++-
+> >  net/core/sock_reuseport.c       | 79 +++++++++++++++++++++++++++------
+> >  net/ipv4/inet_connection_sock.c |  7 ++-
+> >  3 files changed, 74 insertions(+), 17 deletions(-)
 > > 
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index efe342bf3dbc..3e9b8bd42b4e 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -1650,6 +1650,13 @@ union bpf_attr {
-> >   * 		A 8-byte long non-decreasing number on success, or 0 if the
-> >   * 		socket field is missing inside *skb*.
-> >   *
-> > + * u64 bpf_get_socket_cookie(struct bpf_sock *sk)
-> > + * 	Description
-> > + * 		Equivalent to bpf_get_socket_cookie() helper that accepts
-> > + * 		*skb*, but gets socket from **struct bpf_sock** context.
-> > + * 	Return
-> > + * 		A 8-byte long non-decreasing number.
-> > + *
-> >   * u64 bpf_get_socket_cookie(struct bpf_sock_addr *ctx)
-> >   * 	Description
-> >   * 		Equivalent to bpf_get_socket_cookie() helper that accepts
-> > @@ -4420,6 +4427,7 @@ struct sk_reuseport_md {
-> >  	__u32 bind_inany;	/* Is sock bound to an INANY address? */
-> >  	__u32 hash;		/* A hash of the packet 4 tuples */
-> >  	__u8 migration;		/* Migration type */
-> > +	__bpf_md_ptr(struct bpf_sock *, sk); /* current listening socket */
-> >  };
+> > diff --git a/include/net/sock_reuseport.h b/include/net/sock_reuseport.h
+> > index 505f1e18e9bf..0e558ca7afbf 100644
+> > --- a/include/net/sock_reuseport.h
+> > +++ b/include/net/sock_reuseport.h
+> > @@ -13,8 +13,9 @@ extern spinlock_t reuseport_lock;
+> >  struct sock_reuseport {
+> >  	struct rcu_head		rcu;
 > >  
-> >  #define BPF_TAG_SIZE	8
-> > diff --git a/net/core/filter.c b/net/core/filter.c
-> > index 0a0634787bb4..1059d31847ef 100644
-> > --- a/net/core/filter.c
-> > +++ b/net/core/filter.c
-> > @@ -4628,7 +4628,7 @@ static const struct bpf_func_proto bpf_get_socket_cookie_sock_proto = {
-> >  	.func		= bpf_get_socket_cookie_sock,
-> >  	.gpl_only	= false,
-> >  	.ret_type	= RET_INTEGER,
-> > -	.arg1_type	= ARG_PTR_TO_CTX,
-> > +	.arg1_type	= ARG_PTR_TO_SOCKET,
-> This will break existing bpf prog (BPF_PROG_TYPE_CGROUP_SOCK)
-> using this proto.  A new proto is needed and there is
-> an on-going patch doing this [0].
-> 
-> [0]: https://lore.kernel.org/bpf/20201203213330.1657666-1-revest@google.com/
+> > -	u16			max_socks;	/* length of socks */
+> > -	u16			num_socks;	/* elements in socks */
+> > +	u16			max_socks;		/* length of socks */
+> > +	u16			num_socks;		/* elements in socks */
+> > +	u16			num_closed_socks;	/* closed elements in socks */
+> >  	/* The last synq overflow event timestamp of this
+> >  	 * reuse->socks[] group.
+> >  	 */
+> > diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
+> > index bbdd3c7b6cb5..fd133516ac0e 100644
+> > --- a/net/core/sock_reuseport.c
+> > +++ b/net/core/sock_reuseport.c
+> > @@ -98,16 +98,21 @@ static struct sock_reuseport *reuseport_grow(struct sock_reuseport *reuse)
+> >  		return NULL;
+> >  
+> >  	more_reuse->num_socks = reuse->num_socks;
+> > +	more_reuse->num_closed_socks = reuse->num_closed_socks;
+> >  	more_reuse->prog = reuse->prog;
+> >  	more_reuse->reuseport_id = reuse->reuseport_id;
+> >  	more_reuse->bind_inany = reuse->bind_inany;
+> >  	more_reuse->has_conns = reuse->has_conns;
+> > +	more_reuse->synq_overflow_ts = READ_ONCE(reuse->synq_overflow_ts);
+> >  
+> >  	memcpy(more_reuse->socks, reuse->socks,
+> >  	       reuse->num_socks * sizeof(struct sock *));
+> > -	more_reuse->synq_overflow_ts = READ_ONCE(reuse->synq_overflow_ts);
+> > +	memcpy(more_reuse->socks +
+> > +	       (more_reuse->max_socks - more_reuse->num_closed_socks),
+> > +	       reuse->socks + reuse->num_socks,
+> > +	       reuse->num_closed_socks * sizeof(struct sock *));
+> >  
+> > -	for (i = 0; i < reuse->num_socks; ++i)
+> > +	for (i = 0; i < reuse->max_socks; ++i)
+> >  		rcu_assign_pointer(reuse->socks[i]->sk_reuseport_cb,
+> >  				   more_reuse);
+> >  
+> > @@ -129,6 +134,25 @@ static void reuseport_free_rcu(struct rcu_head *head)
+> >  	kfree(reuse);
+> >  }
+> >  
+> > +static int reuseport_sock_index(struct sock_reuseport *reuse, struct sock *sk,
+> > +				bool closed)
+> > +{
+> > +	int left, right;
+> > +
+> > +	if (!closed) {
+> > +		left = 0;
+> > +		right = reuse->num_socks;
+> > +	} else {
+> > +		left = reuse->max_socks - reuse->num_closed_socks;
+> > +		right = reuse->max_socks;
+> > +	}
+> > +
+> > +	for (; left < right; left++)
+> > +		if (reuse->socks[left] == sk)
+> > +			return left;
+> > +	return -1;
+> > +}
+> > +
+> >  /**
+> >   *  reuseport_add_sock - Add a socket to the reuseport group of another.
+> >   *  @sk:  New socket to add to the group.
+> > @@ -153,12 +177,23 @@ int reuseport_add_sock(struct sock *sk, struct sock *sk2, bool bind_inany)
+> >  					  lockdep_is_held(&reuseport_lock));
+> >  	old_reuse = rcu_dereference_protected(sk->sk_reuseport_cb,
+> >  					     lockdep_is_held(&reuseport_lock));
+> > -	if (old_reuse && old_reuse->num_socks != 1) {
+> > +
+> > +	if (old_reuse == reuse) {
+> > +		int i = reuseport_sock_index(reuse, sk, true);
+> > +
+> > +		if (i == -1) {
+> When will this happen?
 
-Thank you for notifying me of this patch!
-I will define another proto, but may drop the part if the above patch is
-already merged then.
+I understood the original code did nothing if the sk was not found in
+socks[], so I rewrote it this way, but I also think `i` will never be -1.
+
+If I rewrite, it will be like:
+
+---8<---
+for (; left < right; left++)
+    if (reuse->socks[left] == sk)
+        break;
+return left;
+---8<---
+
+
+> I found the new logic in the closed sk shuffling within socks[] quite
+> complicated to read.  I can see why the closed sk wants to keep its
+> sk->sk_reuseport_cb.  However, does it need to stay
+> in socks[]?
+
+Currently, I do not use closed sockets in socks[], so the only thing I need
+to do seems to be to count num_closed_socks to free struct sock_reuseport.
+I will change the code only to keep sk_reuseport_cb and count
+num_closed_socks.
+
+(As a side note, I wrote the code while thinking of stack and heap to share
+the same array, but I also feel a bit difficult to read.)
