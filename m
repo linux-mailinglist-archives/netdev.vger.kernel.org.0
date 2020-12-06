@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D7722D0075
-	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 05:18:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0897D2D007B
+	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 05:18:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727702AbgLFEPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Dec 2020 23:15:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35630 "EHLO
+        id S1727529AbgLFEQE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Dec 2020 23:16:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726939AbgLFEPJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Dec 2020 23:15:09 -0500
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8438CC0613D4;
-        Sat,  5 Dec 2020 20:14:29 -0800 (PST)
-Received: by mail-qt1-x841.google.com with SMTP id a6so4686644qtw.6;
-        Sat, 05 Dec 2020 20:14:29 -0800 (PST)
+        with ESMTP id S1727673AbgLFEPg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Dec 2020 23:15:36 -0500
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CB84C061A4F;
+        Sat,  5 Dec 2020 20:14:42 -0800 (PST)
+Received: by mail-qk1-x742.google.com with SMTP id y18so9519611qki.11;
+        Sat, 05 Dec 2020 20:14:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=ao+xFb0yC7DiD3o1YFIVKpIIu1IkYoSj63p4lHpWOH0=;
-        b=VNs/msRIjF+trubJiGmRCg2tSUbvPM6srfhbduYLLe/3dfmeiRGRMqUGgBtMxgAsAo
-         G1pyrA4UiSy1iAvmciDlr4uwtX1ruKYxlOzHMEQ4h6L3mcIvaZwBq8Z/44Y/u7jZhv/i
-         xGoNNZI12CddIUZ4vYOqIFLst1beD7gBu9MRkPlQabZVWdCtnqaqlu+ONRNnzV/8rZ5i
-         ssOyBW6zxT1piWBqIsGOZuc1VaqL055/Kco9Bjs+xMAIn01+uQSl8z3YklF8KRAuEdlo
-         zcm0cja/R52kSMMEJUuD6vQeNFbFTxQrVkt+M4kWtKaVPhCapmbE4XsEvbo7hd6N70+x
-         Ze3g==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=1fQ8taidIHERFu9rhcc1f+DqlLhV709thCI4SV5pbwM=;
+        b=CLtHLijzL6iHSV2EfWfF0rlAvpyproBVCjJLl1c8jCdXAVnwybHGj9EbWdsXHGTqxS
+         6KaxfUszSWXmse1eSPNOoYNMt3uApwYxTQEBpXlGBJWPPym2ScBDgfLa0xmVei+dHGk3
+         NYDYReXM0Vn5CjZJ2QnozOwGoMn1+DatxvZuKp5VVgmMAkFf6z8yutRZD7NkcL+n30XP
+         ead+w6LDC1zksPJbQrUy2NzrjKzAtPM850COB9RPyO6xMuBH2Rq2msZgL5heORjYcqRQ
+         1ZkpRx0RCs0vzIuTyVf55vysvdIIJPYElT3NckaSsPt2BxjBCzDX4HpoOHtU7V26R7Hr
+         mdwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=ao+xFb0yC7DiD3o1YFIVKpIIu1IkYoSj63p4lHpWOH0=;
-        b=QBa/q88j+wNt1so0PuCs9oGewH5tCFexi9a7ySEeQeT1C1RdUWHurh2Fa2JSwj84u2
-         INwb+aiBcI8tGqRree4ZPlmirAdkhlA3l3FLX/tdhItT9dszaVgFhKOLaVob3GXEML84
-         w7R2Kd4wd6F64cfz3WUPXovr4mktO7cw3oHrhbcygQRugelV5If4lJovBDD9e9vN91tb
-         T1jIZSXaKTR4ecfxmLnza6TXL6q6qGj8SD7ua4xm4RU+9DTIwgeCBXr3WRECoNT8yZV5
-         tBm/SpxGEa+KJCQOSHChnltlhPeTrjk5U5Rvx3hw+KifD4z9JQdfZ2qD37jB1OPKpVu4
-         aqsQ==
-X-Gm-Message-State: AOAM532OLdKCz731/dCEn2PogI0MGDJZv1ot1DWLpvQU8/J6XcrNzZ2Y
-        5st1TJTw7v16zh5T9bR1JV0Ol3sabS3Lig==
-X-Google-Smtp-Source: ABdhPJz95/B80Hu9vhoVPEoqWUGRbtzHme07LbE7QYHt8YF5mOlsibi9QNfQB6wnWaIzGRp3HI6HWA==
-X-Received: by 2002:ae9:f816:: with SMTP id x22mr17217785qkh.291.1607226252096;
-        Sat, 05 Dec 2020 19:44:12 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=1fQ8taidIHERFu9rhcc1f+DqlLhV709thCI4SV5pbwM=;
+        b=oiwGqJIn5rNJkytgSU6jiDqJNvlkGXD/JitSNmWoIilDBY7+9xcdyytXOuP+Sj1uUz
+         ZxLzZLXZX+datvjhiNXNBAOD5AB6gTRdQgallKID54GqKBH2m11RXL9IkX4SCT/3mXUV
+         bnTNJFqRdnsWWUcl72f6vwCzzyIB0pivB++D70oiABZ1DIzptSZj5wy5Qf1QSg6BygRw
+         GFHbvAcLvwKd4w2fdHtweoCDTKX2bcCZIoOSAoJUDGG1gJK5xUOBwdw5ZDaQUXfVKCPM
+         u2RMXJx9cIowaq5JCj4HRf9F7Ih/hpg3HMJZamUJDZ3PJ3viw2e38iRwAWy2uTpsiAj+
+         4ybQ==
+X-Gm-Message-State: AOAM531+4hIQFAlKB3jIHsWeWfvZ7qR2BhDzcnX+hNZmqWdXtxw0cZYm
+        6BfxVViwHOdPUVgrODbP2lF2EjvFfiqBWA==
+X-Google-Smtp-Source: ABdhPJxvrfOk5f5DBj/uaPwz6OOcc0Aa4YonJ+1Jed7MZk/QWC1C9TZ/J7Ths9985VW6LO7gua+5oQ==
+X-Received: by 2002:ac8:a01:: with SMTP id b1mr17705127qti.217.1607226253200;
+        Sat, 05 Dec 2020 19:44:13 -0800 (PST)
 Received: from localhost.localdomain ([198.52.185.246])
-        by smtp.gmail.com with ESMTPSA id z186sm9364566qke.100.2020.12.05.19.44.11
+        by smtp.gmail.com with ESMTPSA id z186sm9364566qke.100.2020.12.05.19.44.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Dec 2020 19:44:11 -0800 (PST)
+        Sat, 05 Dec 2020 19:44:12 -0800 (PST)
 From:   Sven Van Asbroeck <thesven73@gmail.com>
 X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
 To:     Bryan Whitehead <bryan.whitehead@microchip.com>,
@@ -54,32 +55,45 @@ To:     Bryan Whitehead <bryan.whitehead@microchip.com>,
 Cc:     Sven Van Asbroeck <thesven73@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net v1 1/2] lan743x: improve performance: fix rx_napi_poll/interrupt ping-pong
-Date:   Sat,  5 Dec 2020 22:44:07 -0500
-Message-Id: <20201206034408.31492-1-TheSven73@gmail.com>
+Subject: [PATCH net v1 2/2] lan743x: boost performance: limit PCIe bandwidth requirement
+Date:   Sat,  5 Dec 2020 22:44:08 -0500
+Message-Id: <20201206034408.31492-2-TheSven73@gmail.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20201206034408.31492-1-TheSven73@gmail.com>
+References: <20201206034408.31492-1-TheSven73@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Sven Van Asbroeck <thesven73@gmail.com>
 
-Even if the rx ring is completely full, and there is more rx data
-waiting on the chip, the rx napi poll fn will never run more than
-once - it will always immediately bail out and re-enable interrupts.
-Which results in ping-pong between napi and interrupt.
+To support jumbo frames, each rx ring dma buffer is 9K in size.
+But the chip only stores a single frame per dma buffer.
 
-This defeats the purpose of napi, and is bad for performance.
+When the chip is working with the default 1500 byte MTU, a 9K
+dma buffer goes from chip -> cpu per 1500 byte frame. This means
+that to get 1G/s ethernet bandwidth, we need 6G/s PCIe bandwidth !
 
-Fix by addressing two separate issues:
+Fix by limiting the rx ring dma buffer size to the current MTU
+size.
 
-1. Ensure the rx napi poll fn always updates the rx ring tail
-   when returning, even when not re-enabling interrupts.
+Tested with iperf3 on a freescale imx6 + lan7430, both sides
+set to mtu 1500 bytes.
 
-2. Up to half of elements in a full rx ring are extension
-   frames, which do not generate any skbs. Limit the default
-   napi weight to the smallest no. of skbs that can be generated
-   by a full rx ring.
+Before:
+[ ID] Interval           Transfer     Bandwidth       Retr
+[  4]   0.00-20.00  sec   483 MBytes   203 Mbits/sec    0
+After:
+[ ID] Interval           Transfer     Bandwidth       Retr
+[  4]   0.00-20.00  sec  1.15 GBytes   496 Mbits/sec    0
+
+And with both sides set to MTU 9000 bytes:
+Before:
+[ ID] Interval           Transfer     Bandwidth       Retr
+[  4]   0.00-20.00  sec  1.87 GBytes   803 Mbits/sec   27
+After:
+[ ID] Interval           Transfer     Bandwidth       Retr
+[  4]   0.00-20.00  sec  1.98 GBytes   849 Mbits/sec    0
 
 Tested-by: Sven Van Asbroeck <thesven73@gmail.com> # lan7430
 Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
@@ -95,43 +109,67 @@ Cc: Andrew Lunn <andrew@lunn.ch>
 Cc: netdev@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 
- drivers/net/ethernet/microchip/lan743x_main.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/microchip/lan743x_main.c | 21 ++++++++++++-------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index 87b6c59a1e03..ebb5e0bc516b 100644
+index ebb5e0bc516b..2bded1c46784 100644
 --- a/drivers/net/ethernet/microchip/lan743x_main.c
 +++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -2260,10 +2260,11 @@ static int lan743x_rx_napi_poll(struct napi_struct *napi, int weight)
- 				  INT_BIT_DMA_RX_(rx->channel_number));
- 	}
+@@ -1957,11 +1957,11 @@ static int lan743x_rx_next_index(struct lan743x_rx *rx, int index)
  
-+done:
- 	/* update RX_TAIL */
- 	lan743x_csr_write(adapter, RX_TAIL(rx->channel_number),
- 			  rx_tail_flags | rx->last_tail);
--done:
-+
- 	return count;
+ static struct sk_buff *lan743x_rx_allocate_skb(struct lan743x_rx *rx)
+ {
+-	int length = 0;
++	struct net_device *netdev = rx->adapter->netdev;
+ 
+-	length = (LAN743X_MAX_FRAME_SIZE + ETH_HLEN + 4 + RX_HEAD_PADDING);
+-	return __netdev_alloc_skb(rx->adapter->netdev,
+-				  length, GFP_ATOMIC | GFP_DMA);
++	return __netdev_alloc_skb(netdev,
++				  netdev->mtu + ETH_HLEN + 4 + RX_HEAD_PADDING,
++				  GFP_ATOMIC | GFP_DMA);
  }
  
-@@ -2405,9 +2406,15 @@ static int lan743x_rx_open(struct lan743x_rx *rx)
- 	if (ret)
- 		goto return_error;
+ static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index,
+@@ -1969,9 +1969,10 @@ static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index,
+ {
+ 	struct lan743x_rx_buffer_info *buffer_info;
+ 	struct lan743x_rx_descriptor *descriptor;
+-	int length = 0;
++	struct net_device *netdev = rx->adapter->netdev;
++	int length;
  
-+	/* up to half of elements in a full rx ring are
-+	 * extension frames. these do not generate skbs.
-+	 * to prevent napi/interrupt ping-pong, limit default
-+	 * weight to the smallest no. of skbs that can be
-+	 * generated by a full rx ring.
-+	 */
- 	netif_napi_add(adapter->netdev,
- 		       &rx->napi, lan743x_rx_napi_poll,
--		       rx->ring_size - 1);
-+		       (rx->ring_size - 1) / 2);
+-	length = (LAN743X_MAX_FRAME_SIZE + ETH_HLEN + 4 + RX_HEAD_PADDING);
++	length = netdev->mtu + ETH_HLEN + 4 + RX_HEAD_PADDING;
+ 	descriptor = &rx->ring_cpu_ptr[index];
+ 	buffer_info = &rx->buffer_info[index];
+ 	buffer_info->skb = skb;
+@@ -2157,8 +2158,8 @@ static int lan743x_rx_process_packet(struct lan743x_rx *rx)
+ 			int index = first_index;
  
- 	lan743x_csr_write(adapter, DMAC_CMD,
- 			  DMAC_CMD_RX_SWR_(rx->channel_number));
+ 			/* multi buffer packet not supported */
+-			/* this should not happen since
+-			 * buffers are allocated to be at least jumbo size
++			/* this should not happen since buffers are allocated
++			 * to be at least the mtu size configured in the mac.
+ 			 */
+ 
+ 			/* clean up buffers */
+@@ -2632,9 +2633,13 @@ static int lan743x_netdev_change_mtu(struct net_device *netdev, int new_mtu)
+ 	struct lan743x_adapter *adapter = netdev_priv(netdev);
+ 	int ret = 0;
+ 
++	if (netif_running(netdev))
++		return -EBUSY;
++
+ 	ret = lan743x_mac_set_mtu(adapter, new_mtu);
+ 	if (!ret)
+ 		netdev->mtu = new_mtu;
++
+ 	return ret;
+ }
+ 
 -- 
 2.17.1
 
