@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE4432D0866
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 01:01:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F7A42D0868
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 01:01:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728557AbgLGAAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Dec 2020 19:00:48 -0500
-Received: from mail-eopbgr80058.outbound.protection.outlook.com ([40.107.8.58]:53705
+        id S1728641AbgLGAA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Dec 2020 19:00:57 -0500
+Received: from mail-eopbgr80054.outbound.protection.outlook.com ([40.107.8.54]:57805
         "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727661AbgLGAAs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 6 Dec 2020 19:00:48 -0500
+        id S1727661AbgLGAA4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 6 Dec 2020 19:00:56 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=S0GD9odS1BqzHlzfNu7/pfjUBfbcQhvXo1vmvLoGKor9oSrxXoUXcxGE5YzNQKVxx5acfR3uqZVXhrqAjCRCRdAUsFCCDlXuHRuNVpLnDLtRMRoFUYAQS8274jvkGrKAw/Tn1ynjw0M4RJYNJmnXMXJiHzU9cNNa2ddwBtnVI7FlvdTtykcFlAR+dP02Bmj9Pi/U/ZxJ+Rk4fkhnkX9DTjgHN3yF/nU552aOS/9o58x0mk3paqSK9kWj1+STfAuvDdC9p43vd9KXVN+icoDbUaP4QvsHnLvu6yHT69TsZfBfqneJEYfNkE12xzpDvh5drMQvPSUhKN7DxePYNEE0wQ==
+ b=T5kMenTQubz3YtWuXqa/9xqBvgk9EUZguTgfF22nikDfuSM9ltRVvqMBHXgsk/laS9Cfit2dTIfrA6c3ZrcrmbR8Jifh8EQ/ZGO+wCLKp8hhLZkFuP05lHg3/0Gpw3uw3sAJFjpkX54c0huiNLVM1tFgu3CIMzWmR2QrR8hR412EhefrCJytt8q8ib1GOpOXj59ndJ83+DQO9sUbVOlVOVgYMMg+9s1TROCBggY+buSxi08peCAeoW14B5ahNY80+PtcYhQwVoI2ApsAY5dwIPlh95m75tPFD5g8lmjMNkBfirAXv3RzohFzmGGT9mIzoZh9jzLyUlym2M1hmIrpsg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DzSc2uXk+B9rny00uQrPtEptdCy/bXPB1Qa8fZNCU/c=;
- b=dfsKDeemTmqshChoas4AgKCspi2MZUI+1nI6LUHmRzW8MGtVAyjuFgoaZe/og4BeNzThz+t4NaWjgmcS1xRWhT99NIhOoIES427VdhZfADElba/slbtR/EtAdRxfHFOyzDKjkAbq8hVZmL9KdWHgtG7C2N+/LuGm2dKC2ipeM+RmfL4KHvIRBJSj3PAqTFYXRSYLlrGsC8pwTzkokwm/90rJ9fRmnDdoHMoarA6sGi6/uZNTyAh3UH8qRiwC0fesEyWo4Kgalr0QToup/JcHhb4K/Jy31W6EWbeCQFfpuJUlxwWIPKtAEJ1bw+460ky+hynO3FtWkvlKQA4IUKeofg==
+ bh=Xlyqz3yJ9njuGgQBhsUP396C/6uizMYwO6C+RU7vrhw=;
+ b=oOIWH7C/pt794AsK3N2hWxIfxJ8I2VX4Ilo9Nj+wnU1EwTq6e2PgTSHkYemFNNkZv5IznRIsMtIiAz5J5LW6l5a2FMZGJiB5khMnwCwtle8xib3w3qjtKVTuJU0iGrqfzKq8GCnSdSQfotXISsS5MpetPO76E6f2nE946wMzb2dlaZVkQAe75O9bMCNJ26VbBDuv3bwc4ha8/SYYRdna0cIRvugN0tTUEwZPPCUQb/zP8pvBXB/YPbjU1vyPUqUEvcVYpJIq66lYPzFh441FTL5Lmj+TtqaDgqOoMwE0XD59r33RfKGHSK0HDQ13sTGeO0TNX+5V9e4JS8qEDhIZXg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DzSc2uXk+B9rny00uQrPtEptdCy/bXPB1Qa8fZNCU/c=;
- b=kB209zSesDKpe5jBELUp+gBaHcWGUeSW8dbV2YRW7gsolh7zbtSxNWdGdDHbXV7Uf5/uNspZmvYMJaXFaopwexd4jdesMKVGToiLHPylVF8eOGKJdHcgg3f8FvJnpCRGLwevAEClNWZPTa4ehtt01tVswb3nqqnCQjDmekvqEXY=
+ bh=Xlyqz3yJ9njuGgQBhsUP396C/6uizMYwO6C+RU7vrhw=;
+ b=C1EmycvCPuskpujXPq/eDecYd4YnLh66xnt/4kk4qTJ+omeHPNP0fwxoOFP0HzKxE4/kzSv7MOEn/sfXBJMoxk4CVQM+RNBWN4VFpge7Jjo0Wq/3csRKUiluvjbIHrocd3F/QuvGKEw7sSPLNx8mHGBCEv9OyN2C44hpH8Eeg2I=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
  by VE1PR04MB6637.eurprd04.prod.outlook.com (2603:10a6:803:126::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.17; Sun, 6 Dec
- 2020 23:59:58 +0000
+ 2020 23:59:59 +0000
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::2dd6:8dc:2da7:ad84]) by VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::2dd6:8dc:2da7:ad84%5]) with mapi id 15.20.3632.021; Sun, 6 Dec 2020
- 23:59:58 +0000
+ 23:59:59 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -51,20 +51,13 @@ Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Eric Dumazet <edumazet@google.com>,
         George McCollister <george.mccollister@gmail.com>,
         Oleksij Rempel <o.rempel@pengutronix.de>,
-        Leon Romanovsky <leon@kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>, linux-s390@vger.kernel.org,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
-        Christian Brauner <christian.brauner@ubuntu.com>
-Subject: [RFC PATCH net-next 00/13] Make .ndo_get_stats64 sleepable
-Date:   Mon,  7 Dec 2020 01:59:06 +0200
-Message-Id: <20201206235919.393158-1-vladimir.oltean@nxp.com>
+        Leon Romanovsky <leon@kernel.org>
+Subject: [RFC PATCH net-next 01/13] RDMA/mlx4: remove bogus dev_base_lock usage
+Date:   Mon,  7 Dec 2020 01:59:07 +0200
+Message-Id: <20201206235919.393158-2-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20201206235919.393158-1-vladimir.oltean@nxp.com>
+References: <20201206235919.393158-1-vladimir.oltean@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Originating-IP: [188.25.2.120]
@@ -73,116 +66,74 @@ X-ClientProxiedBy: VI1PR08CA0156.eurprd08.prod.outlook.com
  (2603:10a6:803:e7::13)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.2.120) by VI1PR08CA0156.eurprd08.prod.outlook.com (2603:10a6:800:d5::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.21 via Frontend Transport; Sun, 6 Dec 2020 23:59:57 +0000
+Received: from localhost.localdomain (188.25.2.120) by VI1PR08CA0156.eurprd08.prod.outlook.com (2603:10a6:800:d5::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.21 via Frontend Transport; Sun, 6 Dec 2020 23:59:58 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 7e91e613-46eb-46c7-7b1b-08d89a43093c
+X-MS-Office365-Filtering-Correlation-Id: 5cfb7128-4e78-46d4-663a-08d89a4309eb
 X-MS-TrafficTypeDiagnostic: VE1PR04MB6637:
-X-Microsoft-Antispam-PRVS: <VE1PR04MB6637BF6EC62C4966A8E63A42E0CF0@VE1PR04MB6637.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Microsoft-Antispam-PRVS: <VE1PR04MB6637EE50877F4B301F0AA1B5E0CE0@VE1PR04MB6637.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3631;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: seMWeIR1jjklbH6woYYKLWxNRnChfwvvi5pEW1T4eotQHZK3U/d/p33XOgOAOLpSGjRuRotPffPQIqvuTzKAJznBc1lEQy22Mj+VG1OWHMDo5RfCcAuVrUU66OqCtZo43bfHX4EYEvfZm2oRrB0n08cmNT2K9rKftVmkVoTKhuP+6MyL2Eh9903Sm56vMC71CF2hCaNN78pMUe+DL0tquyjVmuwJOlTZ5XDz/5DdMI6zzVnCP1VAkripTpULRn74x3H7kWP4ebuvWy3T4tg1DCkcrMKx5+lkaiV49+YJwedGUlratFZUtG3rINuwsFVtFLJr6kqQhstWaZee0sxXQsCFh9hP/VQQi5fTrvWW1M69HfPcelxx4MLY2n/ZJzExt9+Woi4wjXVmNpd8l0yLn73TFhctn3xMue31r84XhuE=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(396003)(366004)(136003)(39860400002)(376002)(6506007)(52116002)(5660300002)(66946007)(66556008)(26005)(8676002)(2906002)(8936002)(1076003)(316002)(110136005)(54906003)(478600001)(44832011)(7416002)(6512007)(186003)(6486002)(16526019)(6666004)(36756003)(956004)(4326008)(86362001)(66476007)(69590400008)(2616005)(83380400001)(142923001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?GAfUBujZF/Aycxau8T0RDvJL7pijGPPa9eNQe2DakdYCNwDvcIQjkIekpJm2?=
- =?us-ascii?Q?M0mDnZuvva9it7K3vz0YpwlSX4wXVZMfQLF6L9XJjhZpUB0fQzf66UZ2vJz5?=
- =?us-ascii?Q?bboaceCMCblr9MASWBOf0bvGU9HoxBxluc7m+gXCX1Gx7n3ZSdHU66AAM0HU?=
- =?us-ascii?Q?XyX8b8Rx4Soj5frCyxtWL2HHDllaA1HkYM3ay+QgEvprQwTNS/faKplKHB9c?=
- =?us-ascii?Q?79qUpmiU2r49BEDTeebVVery1P0j/1rie0ZjgCTZJZMDkRwfqPB7u7VrvNet?=
- =?us-ascii?Q?TRkCuven2YYu6ULF30cwJNXPHm467Dc9pZLpKQkLknyCtVgcNKoxwsnQ+D1I?=
- =?us-ascii?Q?TjTbObgJICj5AMv0znUzQ5XlTtJXDnopc484NOKZDmBdowA559aOVH4MT9n8?=
- =?us-ascii?Q?j2TmQ8t0x/duIiqa3RFc/XGTYPgqUIuM7E1GUyXaM7CpUY//zFIjhUZXknQN?=
- =?us-ascii?Q?3ArlIkuA7q9W9wisEIrRlLjzwaBCSbHuRy9fPrrnEuzlyt5WL7zIQb/7rTIi?=
- =?us-ascii?Q?q28ygFQAXdXmej/RILDLCpLn1Ut3HFhn1IjdJxCbuQtYutJYOIcmq+jXWXaZ?=
- =?us-ascii?Q?lA4xZrMx8DVR+02sqDaCaKDMqtUw31CoPawHRmLdkdTHK8VQbCy4hjou52Uj?=
- =?us-ascii?Q?neJRjlaCHarHuNhBfH4sm42ybvJxkz4yKbR3XqT5pNx/P98ONhrQg5wsuAyt?=
- =?us-ascii?Q?6bFSB6qfOYtyaLOaujcad8T6HphC4KolqUTpwaOTGbxWdV2VOwtMBKkADRIx?=
- =?us-ascii?Q?XyRhDSv9dqJUlje3PDr19iIBdTIpLl5j85CgpEispJxQxuVJmP6Ue5ZzeYH+?=
- =?us-ascii?Q?0kAer8MO9/7wnH2FmDv7DggK07q48HzdeciU/2ssW1paxY7ETP2oAPNUvO1+?=
- =?us-ascii?Q?OpbQoKofILPaCNOZulP1M/PZWk/ftLEMvg4MwyHyn1c7Rlq8xNQSwSzQMqoE?=
- =?us-ascii?Q?jHer2eU+fcRgO+UKHDmd4BXmQy7gzD67aTEBSaySrSOUTB2CVdFw6a6B7zax?=
- =?us-ascii?Q?S7YC?=
+X-Microsoft-Antispam-Message-Info: A8120M89+dz3pUb6PuMOQ8VegO934esILN2+3kjUb8CecTysNn32g41EjmjohYirkttJoxbYCdoK4ng74xAVE0DrQ7cM+PcEXMIw/C54mHGrt1CmDDoQ4gwVrl8BDFsRrYWslY4TOrVwp41KDGuvLMJpnNfyxh9y4H2bX7KQLiDzmjncIrg8hPstWB+cUXiPgoZP13t1AJUzl8XeEJCkbFwWtI3sFA9Ly6fdcb6nAS1DNN7eKoYZTTLGkXfrByNjzRuG4bc0BwbTx3Qxw31TkhEHKtmsCa4vno+dExmaqnpkICu12S9I4ImKGxaz808yQselNY1JXsfdADBYFy7ybXMReosYfSI1lb6EoLcQQnp1PdY3hNUnzRq4MNVTFbkT
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(396003)(366004)(136003)(39860400002)(376002)(6506007)(52116002)(5660300002)(66946007)(66556008)(26005)(8676002)(2906002)(8936002)(1076003)(316002)(4744005)(110136005)(54906003)(478600001)(44832011)(7416002)(6512007)(186003)(6486002)(16526019)(6666004)(36756003)(956004)(4326008)(86362001)(66476007)(69590400008)(2616005)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?qv0IIiYZQaBmM/S0e65Tu9ZnE9PleUGzGvs1/lZYu3bohZcJE3k2Jyp2qO7O?=
+ =?us-ascii?Q?EHH+tCf6tHAnWpmQUzYoX29DbPhESWzFYan+na8Kx1AdAi6VvQ0+cn7sG03i?=
+ =?us-ascii?Q?Snb4Hchk1i3sMuO4HNI82uvfgn75sB8Sxnijj+XAJrnbawIcUJRPY3rDG7aD?=
+ =?us-ascii?Q?wgGfVI23Jgoa00lyKVDww0qj8U9QSaMuoqivwxIRxgX92rlEFKqfSTaY4F9O?=
+ =?us-ascii?Q?+jf1zLC0MxUxwTPfRol8kgr4hKYeJeh3a6wTQgH/V3qSaeBusFqWx8besG7q?=
+ =?us-ascii?Q?xyq1DtF1gwE2sMdWWoDMp0Ez+CSfQLLeLqMFLjOzi5DOHKMfWLCvVgpYnJKA?=
+ =?us-ascii?Q?MRJSpR/eVlxgxHYwRi3934j7Yywx7PcsSR7xIG3rSwmCzKCB0if5jfOZ/ju8?=
+ =?us-ascii?Q?psYTqjh6hbo47G/ASkG+s6uIuRRX8rDYQRYX9rNYcGBQMFS5xKGRWFVE57yg?=
+ =?us-ascii?Q?ReNJqIuhJtH/xukjdYYtlplh5nX0R5gHSUESMiUoOt7ccPLmBbT/zM551flV?=
+ =?us-ascii?Q?fmWcdkR+E4AGQdSVyvvasY2ERSuXG0fxYimfhu8h7zdrMtAiiiOe/WWNLhHJ?=
+ =?us-ascii?Q?3VtkZRH3bKU/2NbFZB6ZTQ6nHqV6AandIQ8dhq0CbGPO4ENAUgQyNyFLT9bl?=
+ =?us-ascii?Q?hoB9FeGBbUAnhJg/UwG8quMyrukYyEv4LS9j92E6VymiiDddBY1jTf225c1B?=
+ =?us-ascii?Q?Ao2ltVNlKsCEzX77vHWZU2kQkx5DbrUiMJ1Hz1nE05BrS2m4qJIz0EbEQXiM?=
+ =?us-ascii?Q?Jga/racZUQzfpr/YiS+whVZxML9ZmuIjh967lvS+maZxqUYWGxjndpXRlG6S?=
+ =?us-ascii?Q?X4QOXX3zd6Ef7PTmEGsP9piNP4bDS7cXJOXLRX9gKVHgNuleychr3j2DBK+c?=
+ =?us-ascii?Q?JIQ5pIdASpZbQhxs81xIDP27+SXdSK6nkFTuBNYO5l15rUOaTLUljGdy7fCy?=
+ =?us-ascii?Q?TWYJ4W5o7JeMpbUeubgMGeM3P0tfcgj7cq2t2fnSCok9lRFnRlQfv9uffd5f?=
+ =?us-ascii?Q?mnXs?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7e91e613-46eb-46c7-7b1b-08d89a43093c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5cfb7128-4e78-46d4-663a-08d89a4309eb
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Dec 2020 23:59:58.4038
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Dec 2020 23:59:59.6291
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hLlxJ183ZUAf1s7qpnluVZXJenbSX7tztGCvXO3PPY7Klf3/NFWApugEHd4X5bKf/lRGZLIIuuie4TLwrAuvEg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: uE8KA1pMOQRM6XqsNez5FZlKPNXDzq+iJ037BRWBfUmjkb78UeSwT3v/7jUm1RcsWEvfaSEkYQzFBesZqYuh+A==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6637
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series converts all callers of dev_get_stats() to be in sleepable
-context, so that we can do more work in the .ndo_get_stats64 method.
-
-The situation today is that if we have hardware that needs to be
-accessed through a slow bus like SPI, or through a firmware, we cannot
-do that directly in .ndo_get_stats64, so we have to poll counters
-periodically and return a cached (not up to date) copy in the atomic NDO
-callback. This is undesirable on both ends: more work than strictly
-needed is being done, and the end result is also worse (not guaranteed
-to be up to date). So converting the code paths to be compatible with
-sleeping seems to make more sense.
+The dev_base_lock does not protect dev->dev_addr, so it serves no
+purpose here.
 
 Cc: Leon Romanovsky <leon@kernel.org>
-Cc: Heiko Carstens <hca@linux.ibm.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Cc: linux-s390@vger.kernel.org
-Cc: Jay Vosburgh <j.vosburgh@gmail.com>
-Cc: Veaceslav Falico <vfalico@gmail.com>
-Cc: Andy Gospodarek <andy@greyhouse.net>
-Cc: Sridhar Samudrala <sridhar.samudrala@intel.com>
-Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
-Cc: Helge Deller <deller@gmx.de>
-Cc: linux-parisc@vger.kernel.org
-Cc: Christian Brauner <christian.brauner@ubuntu.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/infiniband/hw/mlx4/main.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-Vladimir Oltean (13):
-  RDMA/mlx4: remove bogus dev_base_lock usage
-  net: mark dev_base_lock for deprecation
-  net: introduce a mutex for the netns interface lists
-  s390/appldata_net_sum: hold the netdev lists lock when retrieving
-    device statistics
-  net: bonding: hold the netdev lists lock when retrieving device
-    statistics
-  net_failover: hold the netdev lists lock when retrieving device
-    statistics
-  parisc/led: remove trailing whitespaces
-  parisc/led: reindent the code that gathers device statistics
-  parisc/led: hold the netdev lists lock when retrieving device
-    statistics
-  net: procfs: hold the netdev lists lock when retrieving device
-    statistics
-  net: sysfs: don't hold dev_base_lock while retrieving device
-    statistics
-  net: mark ndo_get_stats64 as being able to sleep
-  net: remove obsolete comments about ndo_get_stats64 context from eth
-    drivers
-
- Documentation/networking/netdevices.rst     |   4 +-
- Documentation/networking/statistics.rst     |   9 +-
- arch/s390/appldata/appldata_net_sum.c       |   8 +-
- drivers/infiniband/hw/mlx4/main.c           |   3 -
- drivers/net/bonding/bond_main.c             |  16 +-
- drivers/net/ethernet/cisco/enic/enic_main.c |   1 -
- drivers/net/ethernet/nvidia/forcedeth.c     |   2 -
- drivers/net/ethernet/sfc/efx_common.c       |   1 -
- drivers/net/ethernet/sfc/falcon/efx.c       |   1 -
- drivers/net/net_failover.c                  |  15 +-
- drivers/parisc/led.c                        | 164 ++++++++++----------
- include/net/bonding.h                       |   1 -
- include/net/net_failover.h                  |   3 -
- include/net/net_namespace.h                 |   5 +
- net/core/dev.c                              |  63 +++++---
- net/core/net-procfs.c                       |  13 +-
- net/core/net-sysfs.c                        |   3 +-
- 17 files changed, 162 insertions(+), 150 deletions(-)
-
+diff --git a/drivers/infiniband/hw/mlx4/main.c b/drivers/infiniband/hw/mlx4/main.c
+index f0864f40ea1a..e3cd402c079a 100644
+--- a/drivers/infiniband/hw/mlx4/main.c
++++ b/drivers/infiniband/hw/mlx4/main.c
+@@ -2265,10 +2265,7 @@ static void mlx4_ib_update_qps(struct mlx4_ib_dev *ibdev,
+ 	u64 release_mac = MLX4_IB_INVALID_MAC;
+ 	struct mlx4_ib_qp *qp;
+ 
+-	read_lock(&dev_base_lock);
+ 	new_smac = mlx4_mac_to_u64(dev->dev_addr);
+-	read_unlock(&dev_base_lock);
+-
+ 	atomic64_set(&ibdev->iboe.mac[port - 1], new_smac);
+ 
+ 	/* no need for update QP1 and mac registration in non-SRIOV */
 -- 
 2.25.1
 
