@@ -2,75 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A37E42D02B7
-	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 11:25:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D43EC2D0526
+	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 14:31:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726873AbgLFKXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Dec 2020 05:23:51 -0500
-Received: from mail-m972.mail.163.com ([123.126.97.2]:51136 "EHLO
-        mail-m972.mail.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726584AbgLFKXv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Dec 2020 05:23:51 -0500
-X-Greylist: delayed 5651 seconds by postgrey-1.27 at vger.kernel.org; Sun, 06 Dec 2020 05:23:50 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=WHTCy5l5+fYdUerrjp
-        3tMcqmoP1IK9GclDAiIt73lIc=; b=gWjDUGTW9iFpikukNRiWvcwOFE5mmhmBlA
-        T3lh4vQlvBb4wNJcDNquytTyh7NNZglggAtzQR62O2/C3MtxyZfrFivx9BWwEvgM
-        AI7If9haV8rNEYqiyrBP3qYHMpRLiJ73bOJQpmQmtgnnBwc16PNnRvmtAnGRUCpN
-        w4mFF3LYo=
-Received: from localhost.localdomain (unknown [202.112.113.212])
-        by smtp2 (Coremail) with SMTP id GtxpCgCHA8nMmsxfJf2DEA--.20874S4;
-        Sun, 06 Dec 2020 16:48:13 +0800 (CST)
-From:   Xiaohui Zhang <ruc_zhangxiaohui@163.com>
-To:     Xiaohui Zhang <ruc_zhangxiaohui@163.com>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>, davem@davemloft.net,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] mwifiex: Fix possible buffer overflows in mwifiex_cmd_802_11_ad_hoc_start
-Date:   Sun,  6 Dec 2020 16:48:01 +0800
-Message-Id: <20201206084801.26479-1-ruc_zhangxiaohui@163.com>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: GtxpCgCHA8nMmsxfJf2DEA--.20874S4
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtF4xZF4rAw4fXF4xJry7ZFb_yoWkZFX_W3
-        4Iva15JrZrtw1IyrsYyw42v3sYkr1rXrWxGa17trWrGFW2vFZrtrnY9rs5Xr12kw1qvr9x
-        Wrs8A3y5ta4FvjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUjU3vUUUUUU==
-X-Originating-IP: [202.112.113.212]
-X-CM-SenderInfo: puxfs6pkdqw5xldrx3rl6rljoofrz/1tbipQ3yMFUMa-PfKwAAsf
+        id S1728143AbgLFN3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Dec 2020 08:29:16 -0500
+Received: from mx4.wp.pl ([212.77.101.12]:58883 "EHLO mx4.wp.pl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728090AbgLFN3Q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 6 Dec 2020 08:29:16 -0500
+Received: (wp-smtpd smtp.wp.pl 18659 invoked from network); 6 Dec 2020 14:28:23 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1607261303; bh=sx2fzwL1jcfITdolBuLJdyJVDYxWzjICd6Jsg4qoxIo=;
+          h=From:To:Cc:Subject;
+          b=xXqM5Jb4uxKfNPH2U9f/cqdKVB10S372YgKHWsdMP4QkrfJDJ/b2TE3UwEfjmE0kp
+           VebM3sYdUBEnRINzUP0G+x3BHsRrIOBn8s3546A19djrxoXSq5U3DyiasDn0L8E4VI
+           55WYDKgUPW21HxWhps6DCxbt4fhVUh1jNrHwAlGE=
+Received: from riviera.nat.student.pw.edu.pl (HELO LAPTOP-OLEK.lan) (olek2@wp.pl@[194.29.137.1])
+          (envelope-sender <olek2@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <hauke@hauke-m.de>; 6 Dec 2020 14:28:23 +0100
+From:   Aleksander Jan Bajkowski <olek2@wp.pl>
+To:     hauke@hauke-m.de, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, robh+dt@kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Aleksander Jan Bajkowski <A.Bajkowski@stud.elka.pw.edu.pl>
+Subject: [PATCH v2 0/2] net: dsa: lantiq: add support for xRX300 and xRX330
+Date:   Sun,  6 Dec 2020 14:27:11 +0100
+Message-Id: <20201206132713.13452-1-olek2@wp.pl>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-WP-MailID: 5f98f602c9ef924e1a994ca9191ecf5f
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 0000001 [IQLy]                               
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
+From: Aleksander Jan Bajkowski <A.Bajkowski@stud.elka.pw.edu.pl>
 
-mwifiex_cmd_802_11_ad_hoc_start() calls memcpy() without checking
-the destination size may trigger a buffer overflower,
-which a local user could use to cause denial of service
-or the execution of arbitrary code.
-Fix it by putting the length check before calling memcpy().
+Changed since v1:
+	* gswip_mii_mask_cfg() can now change port 3 on xRX330
+	* changed alowed modes on port 0 and 5 for xRX300 and xRX330
+	* moved common part of phylink validation into gswip_phylink_set_capab()
+	* verify the compatible string against the hardware
 
-Signed-off-by: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
----
- drivers/net/wireless/marvell/mwifiex/join.c | 2 ++
- 1 file changed, 2 insertions(+)
+Aleksander Jan Bajkowski (2):
+  net: dsa: lantiq: allow to use all GPHYs on xRX300 and xRX330
+  dt-bindings: net: dsa: lantiq, lantiq-gswip: add example for xRX330
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/join.c b/drivers/net/wireless/marvell/mwifiex/join.c
-index 5934f7147..173ccf79c 100644
---- a/drivers/net/wireless/marvell/mwifiex/join.c
-+++ b/drivers/net/wireless/marvell/mwifiex/join.c
-@@ -877,6 +877,8 @@ mwifiex_cmd_802_11_ad_hoc_start(struct mwifiex_private *priv,
- 
- 	memset(adhoc_start->ssid, 0, IEEE80211_MAX_SSID_LEN);
- 
-+	if (req_ssid->ssid_len > IEEE80211_MAX_SSID_LEN)
-+		req_ssid->ssid_len = IEEE80211_MAX_SSID_LEN;
- 	memcpy(adhoc_start->ssid, req_ssid->ssid, req_ssid->ssid_len);
- 
- 	mwifiex_dbg(adapter, INFO, "info: ADHOC_S_CMD: SSID = %s\n",
+ .../bindings/net/dsa/lantiq-gswip.txt         | 110 +++++++++++-
+ drivers/net/dsa/lantiq_gswip.c                | 170 +++++++++++++++---
+ 2 files changed, 250 insertions(+), 30 deletions(-)
+
 -- 
-2.17.1
+2.20.1
 
