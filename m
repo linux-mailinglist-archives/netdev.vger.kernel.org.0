@@ -2,310 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB5FC2D0065
-	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 05:10:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87A052D0086
+	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 05:35:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727080AbgLFEJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Dec 2020 23:09:55 -0500
-Received: from szxga06-in.huawei.com ([45.249.212.32]:8948 "EHLO
-        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726177AbgLFEHt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Dec 2020 23:07:49 -0500
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4CpXt542n0zhmMc;
-        Sun,  6 Dec 2020 12:05:49 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.487.0; Sun, 6 Dec 2020 12:06:05 +0800
-From:   Huazhong Tan <tanhuazhong@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, <kuba@kernel.org>, <huangdaode@huawei.com>,
-        <shenjian15@huawei.com>, "Guojia Liao" <liaoguojia@huawei.com>,
-        Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH V2 net-next 3/3] net: hns3: refine the VLAN tag handle for port based VLAN
-Date:   Sun, 6 Dec 2020 12:06:15 +0800
-Message-ID: <1607227575-56689-4-git-send-email-tanhuazhong@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1607227575-56689-1-git-send-email-tanhuazhong@huawei.com>
-References: <1607227575-56689-1-git-send-email-tanhuazhong@huawei.com>
+        id S1725973AbgLFEdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Dec 2020 23:33:06 -0500
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:27981 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725379AbgLFEdF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Dec 2020 23:33:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1607229185; x=1638765185;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=8PJsmJsl6qhg6dDpLr36EjFSChF7mhWvsDFqM9brQ20=;
+  b=lVf6d6G4x65nOMAu9/TUzWvm4eDKNaNcRn62lYcXWTtWtKfM3YlQRrKf
+   rj5WIRgvS+DJ1rL+N20t+rDkjyDX5+F0QR+l1kml/c7Lcwac2AMH7k7bA
+   Sr9KqkUBiYUrvJN9c6KcxutU6aqLY68byLW6z9sp0DG7jEwTcg7qXrsNF
+   I=;
+X-IronPort-AV: E=Sophos;i="5.78,396,1599523200"; 
+   d="scan'208";a="100758043"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-f14f4a47.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 06 Dec 2020 04:32:25 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-2a-f14f4a47.us-west-2.amazon.com (Postfix) with ESMTPS id 7AF8CA189F;
+        Sun,  6 Dec 2020 04:32:24 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Sun, 6 Dec 2020 04:32:23 +0000
+Received: from 38f9d3582de7.ant.amazon.com (10.43.162.144) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Sun, 6 Dec 2020 04:32:21 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <kuniyu@amazon.co.jp>
+CC:     <kuni1840@gmail.com>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 bpf-next 06/11] bpf: Introduce two attach types for BPF_PROG_TYPE_SK_REUSEPORT.
+Date:   Sun, 6 Dec 2020 13:32:16 +0900
+Message-ID: <20201206043216.23046-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+In-Reply-To: <20201204055226.c6abex2dmperhgx5@kafai-mbp.dhcp.thefacebook.com>
+References: <20201204055226.c6abex2dmperhgx5@kafai-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-CFilter-Loop: Reflected
+X-Originating-IP: [10.43.162.144]
+X-ClientProxiedBy: EX13D14UWB001.ant.amazon.com (10.43.161.158) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guojia Liao <liaoguojia@huawei.com>
+I'm sending this mail just for logging because I failed to send mails only
+to LKML, netdev, and bpf yesterday.
 
-For DEVICE_VERSION_V2, the hardware only supports max two layer
-VLAN tags, including port based tag inserted by hardware, tag in
-tx buffer descriptor(get from skb->tci) and tag in packet.
 
-For transmit packet:
-If port based VLAN disabled, and vf driver gets a VLAN tag from
-skb, the VLAN tag must be filled to the Outer_VLAN_TAG field
-(tag near to DMAC) of tx buffer descriptor, otherwise it may
-be inserted after the tag in packet.
+From:   Martin KaFai Lau <kafai@fb.com>
+Date:   Thu, 3 Dec 2020 21:56:53 -0800
+> On Thu, Dec 03, 2020 at 11:16:08PM +0900, Kuniyuki Iwashima wrote:
+> > From:   Martin KaFai Lau <kafai@fb.com>
+> > Date:   Wed, 2 Dec 2020 20:24:02 -0800
+> > > On Wed, Dec 02, 2020 at 11:19:02AM -0800, Martin KaFai Lau wrote:
+> > > > On Tue, Dec 01, 2020 at 06:04:50PM -0800, Andrii Nakryiko wrote:
+> > > > > On Tue, Dec 1, 2020 at 6:49 AM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
+> > > > > >
+> > > > > > This commit adds new bpf_attach_type for BPF_PROG_TYPE_SK_REUSEPORT to
+> > > > > > check if the attached eBPF program is capable of migrating sockets.
+> > > > > >
+> > > > > > When the eBPF program is attached, the kernel runs it for socket migration
+> > > > > > only if the expected_attach_type is BPF_SK_REUSEPORT_SELECT_OR_MIGRATE.
+> > > > > > The kernel will change the behaviour depending on the returned value:
+> > > > > >
+> > > > > >   - SK_PASS with selected_sk, select it as a new listener
+> > > > > >   - SK_PASS with selected_sk NULL, fall back to the random selection
+> > > > > >   - SK_DROP, cancel the migration
+> > > > > >
+> > > > > > Link: https://lore.kernel.org/netdev/20201123003828.xjpjdtk4ygl6tg6h@kafai-mbp.dhcp.thefacebook.com/
+> > > > > > Suggested-by: Martin KaFai Lau <kafai@fb.com>
+> > > > > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> > > > > > ---
+> > > > > >  include/uapi/linux/bpf.h       | 2 ++
+> > > > > >  kernel/bpf/syscall.c           | 8 ++++++++
+> > > > > >  tools/include/uapi/linux/bpf.h | 2 ++
+> > > > > >  3 files changed, 12 insertions(+)
+> > > > > >
+> > > > > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > > > > > index 85278deff439..cfc207ae7782 100644
+> > > > > > --- a/include/uapi/linux/bpf.h
+> > > > > > +++ b/include/uapi/linux/bpf.h
+> > > > > > @@ -241,6 +241,8 @@ enum bpf_attach_type {
+> > > > > >         BPF_XDP_CPUMAP,
+> > > > > >         BPF_SK_LOOKUP,
+> > > > > >         BPF_XDP,
+> > > > > > +       BPF_SK_REUSEPORT_SELECT,
+> > > > > > +       BPF_SK_REUSEPORT_SELECT_OR_MIGRATE,
+> > > > > >         __MAX_BPF_ATTACH_TYPE
+> > > > > >  };
+> > > > > >
+> > > > > > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> > > > > > index f3fe9f53f93c..a0796a8de5ea 100644
+> > > > > > --- a/kernel/bpf/syscall.c
+> > > > > > +++ b/kernel/bpf/syscall.c
+> > > > > > @@ -2036,6 +2036,14 @@ bpf_prog_load_check_attach(enum bpf_prog_type prog_type,
+> > > > > >                 if (expected_attach_type == BPF_SK_LOOKUP)
+> > > > > >                         return 0;
+> > > > > >                 return -EINVAL;
+> > > > > > +       case BPF_PROG_TYPE_SK_REUSEPORT:
+> > > > > > +               switch (expected_attach_type) {
+> > > > > > +               case BPF_SK_REUSEPORT_SELECT:
+> > > > > > +               case BPF_SK_REUSEPORT_SELECT_OR_MIGRATE:
+> > > > > > +                       return 0;
+> > > > > > +               default:
+> > > > > > +                       return -EINVAL;
+> > > > > > +               }
+> > > > > 
+> > > > > this is a kernel regression, previously expected_attach_type wasn't
+> > > > > enforced, so user-space could have provided any number without an
+> > > > > error.
+> > > > I also think this change alone will break things like when the usual
+> > > > attr->expected_attach_type == 0 case.  At least changes is needed in
+> > > > bpf_prog_load_fixup_attach_type() which is also handling a
+> > > > similar situation for BPF_PROG_TYPE_CGROUP_SOCK.
+> > > > 
+> > > > I now think there is no need to expose new bpf_attach_type to the UAPI.
+> > > > Since the prog->expected_attach_type is not used, it can be cleared at load time
+> > > > and then only set to BPF_SK_REUSEPORT_SELECT_OR_MIGRATE (probably defined
+> > > > internally at filter.[c|h]) in the is_valid_access() when "migration"
+> > > > is accessed.  When "migration" is accessed, the bpf prog can handle
+> > > > migration (and the original not-migration) case.
+> > > Scrap this internal only BPF_SK_REUSEPORT_SELECT_OR_MIGRATE idea.
+> > > I think there will be cases that bpf prog wants to do both
+> > > without accessing any field from sk_reuseport_md.
+> > > 
+> > > Lets go back to the discussion on using a similar
+> > > idea as BPF_PROG_TYPE_CGROUP_SOCK in bpf_prog_load_fixup_attach_type().
+> > > I am not aware there is loader setting a random number
+> > > in expected_attach_type, so the chance of breaking
+> > > is very low.  There was a similar discussion earlier [0].
+> > > 
+> > > [0]: https://lore.kernel.org/netdev/20200126045443.f47dzxdglazzchfm@ast-mbp/
+> > 
+> > Thank you for the idea and reference.
+> > 
+> > I will remove the change in bpf_prog_load_check_attach() and set the
+> > default value (BPF_SK_REUSEPORT_SELECT) in bpf_prog_load_fixup_attach_type()
+> > for backward compatibility if expected_attach_type is 0.
+> check_attach_type() can be kept.  You can refer to
+> commit aac3fc320d94 for a similar situation.
 
-If port based VLAN enabled, and vf driver gets a VLAN tag from
-skb, the VLAN tag must be filled to the VLAN_TAG field (tag
-far to DMAC) of tx buffer descriptor, otherwise it may be
-conflicted with port based VLAN, and raise a hardware error.
-
-For receive packet:
-The hardware will strip the VLAN tags and fill them in the rx
-buffer descriptor, no matter port based VLAN enable or not.
-Because port based VLAN tag is useless for stack, so vf driver
-needs to discard the port based VLAN tag get from rx buffer
-descriptor when port based VLAN enabled.
-
-So vf must know about the port based VLAN state.
-
-For DEVICE_VERSION_V3, the hardware provides some new
-configuration to improve it.
-
-For transmit packet:
-When enable tag shift mode, hardware will handle the VLAN tag
-in outer_VLAN_TAG field as VLAN_TAG, so it won't conflict with
-port based VLAN. And hardware also make sure the tag before
-the tag in packet. So vf driver doesn't need to specify the tag
-position according to the port based VLAN state anymore.
-
-For receive packet:
-When enable discard mode, hardware will strip and discard the
-port based VLAN tag, so vf driver doesn't need to identify it
-from rx buffer descriptor.
-
-So modify the port based VLAN configuration, simplify the process
-for vf handling the VLAN tag.
-
-Signed-off-by: Guojia Liao <liaoguojia@huawei.com>
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  8 +++-
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  3 ++
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 46 +++++++++++++++++-----
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    | 13 +++---
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c | 11 +++++-
- 5 files changed, 64 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 69ae15b..4c2fb86 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -1006,6 +1006,7 @@ static int hns3_handle_vtags(struct hns3_enet_ring *tx_ring,
- 			     struct sk_buff *skb)
- {
- 	struct hnae3_handle *handle = tx_ring->tqp->handle;
-+	struct hnae3_ae_dev *ae_dev;
- 	struct vlan_ethhdr *vhdr;
- 	int rc;
- 
-@@ -1013,10 +1014,13 @@ static int hns3_handle_vtags(struct hns3_enet_ring *tx_ring,
- 	      skb_vlan_tag_present(skb)))
- 		return 0;
- 
--	/* Since HW limitation, if port based insert VLAN enabled, only one VLAN
--	 * header is allowed in skb, otherwise it will cause RAS error.
-+	/* For HW limitation on HNAE3_DEVICE_VERSION_V2, if port based insert
-+	 * VLAN enabled, only one VLAN header is allowed in skb, otherwise it
-+	 * will cause RAS error.
- 	 */
-+	ae_dev = pci_get_drvdata(handle->pdev);
- 	if (unlikely(skb_vlan_tagged_multi(skb) &&
-+		     ae_dev->dev_version <= HNAE3_DEVICE_VERSION_V2 &&
- 		     handle->port_base_vlan_state ==
- 		     HNAE3_PORT_BASE_VLAN_ENABLE))
- 		return -EINVAL;
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-index 7ce8be1..52a6f9b 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-@@ -825,6 +825,7 @@ enum hclge_mac_vlan_cfg_sel {
- #define HCLGE_CFG_NIC_ROCE_SEL_B	4
- #define HCLGE_ACCEPT_TAG2_B		5
- #define HCLGE_ACCEPT_UNTAG2_B		6
-+#define HCLGE_TAG_SHIFT_MODE_EN_B	7
- #define HCLGE_VF_NUM_PER_BYTE		8
- 
- struct hclge_vport_vtag_tx_cfg_cmd {
-@@ -841,6 +842,8 @@ struct hclge_vport_vtag_tx_cfg_cmd {
- #define HCLGE_REM_TAG2_EN_B		1
- #define HCLGE_SHOW_TAG1_EN_B		2
- #define HCLGE_SHOW_TAG2_EN_B		3
-+#define HCLGE_DISCARD_TAG1_EN_B		5
-+#define HCLGE_DISCARD_TAG2_EN_B		6
- struct hclge_vport_vtag_rx_cfg_cmd {
- 	u8 vport_vlan_cfg;
- 	u8 vf_offset;
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index d83fcde..a70f44d 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -8617,6 +8617,8 @@ static int hclge_set_vlan_tx_offload_cfg(struct hclge_vport *vport)
- 		      vcfg->insert_tag1_en ? 1 : 0);
- 	hnae3_set_bit(req->vport_vlan_cfg, HCLGE_PORT_INS_TAG2_EN_B,
- 		      vcfg->insert_tag2_en ? 1 : 0);
-+	hnae3_set_bit(req->vport_vlan_cfg, HCLGE_TAG_SHIFT_MODE_EN_B,
-+		      vcfg->tag_shift_mode_en ? 1 : 0);
- 	hnae3_set_bit(req->vport_vlan_cfg, HCLGE_CFG_NIC_ROCE_SEL_B, 0);
- 
- 	req->vf_offset = vport->vport_id / HCLGE_VF_NUM_PER_CMD;
-@@ -8654,6 +8656,10 @@ static int hclge_set_vlan_rx_offload_cfg(struct hclge_vport *vport)
- 		      vcfg->vlan1_vlan_prionly ? 1 : 0);
- 	hnae3_set_bit(req->vport_vlan_cfg, HCLGE_SHOW_TAG2_EN_B,
- 		      vcfg->vlan2_vlan_prionly ? 1 : 0);
-+	hnae3_set_bit(req->vport_vlan_cfg, HCLGE_DISCARD_TAG1_EN_B,
-+		      vcfg->strip_tag1_discard_en ? 1 : 0);
-+	hnae3_set_bit(req->vport_vlan_cfg, HCLGE_DISCARD_TAG2_EN_B,
-+		      vcfg->strip_tag2_discard_en ? 1 : 0);
- 
- 	req->vf_offset = vport->vport_id / HCLGE_VF_NUM_PER_CMD;
- 	bmap_index = vport->vport_id % HCLGE_VF_NUM_PER_CMD /
-@@ -8681,7 +8687,10 @@ static int hclge_vlan_offload_cfg(struct hclge_vport *vport,
- 		vport->txvlan_cfg.insert_tag1_en = false;
- 		vport->txvlan_cfg.default_tag1 = 0;
- 	} else {
--		vport->txvlan_cfg.accept_tag1 = false;
-+		struct hnae3_ae_dev *ae_dev = pci_get_drvdata(vport->nic.pdev);
-+
-+		vport->txvlan_cfg.accept_tag1 =
-+			ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V3;
- 		vport->txvlan_cfg.insert_tag1_en = true;
- 		vport->txvlan_cfg.default_tag1 = vlan_tag;
- 	}
-@@ -8696,16 +8705,21 @@ static int hclge_vlan_offload_cfg(struct hclge_vport *vport,
- 	vport->txvlan_cfg.accept_untag2 = true;
- 	vport->txvlan_cfg.insert_tag2_en = false;
- 	vport->txvlan_cfg.default_tag2 = 0;
-+	vport->txvlan_cfg.tag_shift_mode_en = true;
- 
- 	if (port_base_vlan_state == HNAE3_PORT_BASE_VLAN_DISABLE) {
- 		vport->rxvlan_cfg.strip_tag1_en = false;
- 		vport->rxvlan_cfg.strip_tag2_en =
- 				vport->rxvlan_cfg.rx_vlan_offload_en;
-+		vport->rxvlan_cfg.strip_tag2_discard_en = false;
- 	} else {
- 		vport->rxvlan_cfg.strip_tag1_en =
- 				vport->rxvlan_cfg.rx_vlan_offload_en;
- 		vport->rxvlan_cfg.strip_tag2_en = true;
-+		vport->rxvlan_cfg.strip_tag2_discard_en = true;
- 	}
-+
-+	vport->rxvlan_cfg.strip_tag1_discard_en = false;
- 	vport->rxvlan_cfg.vlan1_vlan_prionly = false;
- 	vport->rxvlan_cfg.vlan2_vlan_prionly = false;
- 
-@@ -9000,10 +9014,14 @@ int hclge_en_hw_strip_rxvtag(struct hnae3_handle *handle, bool enable)
- 	if (vport->port_base_vlan_cfg.state == HNAE3_PORT_BASE_VLAN_DISABLE) {
- 		vport->rxvlan_cfg.strip_tag1_en = false;
- 		vport->rxvlan_cfg.strip_tag2_en = enable;
-+		vport->rxvlan_cfg.strip_tag2_discard_en = false;
- 	} else {
- 		vport->rxvlan_cfg.strip_tag1_en = enable;
- 		vport->rxvlan_cfg.strip_tag2_en = true;
-+		vport->rxvlan_cfg.strip_tag2_discard_en = true;
- 	}
-+
-+	vport->rxvlan_cfg.strip_tag1_discard_en = false;
- 	vport->rxvlan_cfg.vlan1_vlan_prionly = false;
- 	vport->rxvlan_cfg.vlan2_vlan_prionly = false;
- 	vport->rxvlan_cfg.rx_vlan_offload_en = enable;
-@@ -9115,6 +9133,7 @@ static u16 hclge_get_port_base_vlan_state(struct hclge_vport *vport,
- static int hclge_set_vf_vlan_filter(struct hnae3_handle *handle, int vfid,
- 				    u16 vlan, u8 qos, __be16 proto)
- {
-+	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(handle->pdev);
- 	struct hclge_vport *vport = hclge_get_vport(handle);
- 	struct hclge_dev *hdev = vport->back;
- 	struct hclge_vlan_info vlan_info;
-@@ -9144,16 +9163,25 @@ static int hclge_set_vf_vlan_filter(struct hnae3_handle *handle, int vfid,
- 	vlan_info.qos = qos;
- 	vlan_info.vlan_proto = ntohs(proto);
- 
--	if (!test_bit(HCLGE_VPORT_STATE_ALIVE, &vport->state)) {
--		return hclge_update_port_base_vlan_cfg(vport, state,
--						       &vlan_info);
--	} else {
--		ret = hclge_push_vf_port_base_vlan_info(&hdev->vport[0],
--							vport->vport_id, state,
--							vlan, qos,
--							ntohs(proto));
-+	ret = hclge_update_port_base_vlan_cfg(vport, state, &vlan_info);
-+	if (ret) {
-+		dev_err(&hdev->pdev->dev,
-+			"failed to update port base vlan for vf %d, ret = %d\n",
-+			vfid, ret);
- 		return ret;
- 	}
-+
-+	/* for DEVICE_VERSION_V3, vf doesn't need to know about the port based
-+	 * VLAN state.
-+	 */
-+	if (ae_dev->dev_version < HNAE3_DEVICE_VERSION_V3 &&
-+	    test_bit(HCLGE_VPORT_STATE_ALIVE, &vport->state))
-+		hclge_push_vf_port_base_vlan_info(&hdev->vport[0],
-+						  vport->vport_id, state,
-+						  vlan, qos,
-+						  ntohs(proto));
-+
-+	return 0;
- }
- 
- static void hclge_clear_vf_vlan(struct hclge_dev *hdev)
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-index bd17685..b3c1301 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-@@ -850,15 +850,18 @@ struct hclge_tx_vtag_cfg {
- 	bool insert_tag2_en;	/* Whether insert outer vlan tag */
- 	u16  default_tag1;	/* The default inner vlan tag to insert */
- 	u16  default_tag2;	/* The default outer vlan tag to insert */
-+	bool tag_shift_mode_en;
- };
- 
- /* VPort level vlan tag configuration for RX direction */
- struct hclge_rx_vtag_cfg {
--	u8 rx_vlan_offload_en;	/* Whether enable rx vlan offload */
--	u8 strip_tag1_en;	/* Whether strip inner vlan tag */
--	u8 strip_tag2_en;	/* Whether strip outer vlan tag */
--	u8 vlan1_vlan_prionly;	/* Inner VLAN Tag up to descriptor Enable */
--	u8 vlan2_vlan_prionly;	/* Outer VLAN Tag up to descriptor Enable */
-+	bool rx_vlan_offload_en; /* Whether enable rx vlan offload */
-+	bool strip_tag1_en;	 /* Whether strip inner vlan tag */
-+	bool strip_tag2_en;	 /* Whether strip outer vlan tag */
-+	bool vlan1_vlan_prionly; /* Inner vlan tag up to descriptor enable */
-+	bool vlan2_vlan_prionly; /* Outer vlan tag up to descriptor enable */
-+	bool strip_tag1_discard_en; /* Inner vlan tag discard for BD enable */
-+	bool strip_tag2_discard_en; /* Outer vlan tag discard for BD enable */
- };
- 
- struct hclge_rss_tuple_cfg {
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-index 1166eb3f..0f6626b 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-@@ -378,7 +378,16 @@ static int hclge_set_vf_vlan_cfg(struct hclge_vport *vport,
- 		status = hclge_update_port_base_vlan_cfg(vport, *state,
- 							 vlan_info);
- 	} else if (msg_cmd->subcode == HCLGE_MBX_GET_PORT_BASE_VLAN_STATE) {
--		resp_msg->data[0] = vport->port_base_vlan_cfg.state;
-+		struct hnae3_ae_dev *ae_dev = pci_get_drvdata(vport->nic.pdev);
-+		/* vf does not need to know about the port based VLAN state
-+		 * on device HNAE3_DEVICE_VERSION_V3. So always return disable
-+		 * on device HNAE3_DEVICE_VERSION_V3 if vf queries the port
-+		 * based VLAN state.
-+		 */
-+		resp_msg->data[0] =
-+			ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V3 ?
-+			HNAE3_PORT_BASE_VLAN_DISABLE :
-+			vport->port_base_vlan_cfg.state;
- 		resp_msg->len = sizeof(u8);
- 	}
- 
--- 
-2.7.4
-
+I confirmed bpf_prog_load_fixup_attach_type() is called just before
+bpf_prog_load_check_attach(), so I will add the fixup code to this patch.
+Thank you.
