@@ -2,101 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B17882D00A4
-	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 06:23:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E69E2D019A
+	for <lists+netdev@lfdr.de>; Sun,  6 Dec 2020 09:24:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726024AbgLFFWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Dec 2020 00:22:13 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:1186 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725943AbgLFFWM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Dec 2020 00:22:12 -0500
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B655L1s021720;
-        Sun, 6 Dec 2020 00:21:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=c/wUjwgwnuJEIKETRGamV8nHOVLREFCcmpn2zoHxiHw=;
- b=bBrUxQO7FvQsoBBB19Xz8HB+VdLZk85SmwzVMYm8qHBgX5IRWy1KM2jmk5fsXsH1hhE6
- qFfePcKf+P3NZvuTCZVIvnM7QSIE5qLEjmoq/TI/uOuaCqEuGoJTlVc18scqg6Hr3AnH
- VoKbSEG+WIH9+hzf25ySZ9Via0caweNkpZC4Bk+xf/LuKsyDE+fUcieQI0FIjA9TXUGu
- q527jkpHuzD5wr6bWeBCCH2t6PBcvPLHQfjF98fPUugYBQBAfQoXOjHhP+jUWztxRWsG
- Gir+v8ib+mGbwgeY7bsO/B3CZOzCeGAp10oDlW8NLBNeHuoZbMsASX4ed9LmYnPqL03d tQ== 
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 358rmxgd7u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 06 Dec 2020 00:21:30 -0500
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0B65I8vZ029283;
-        Sun, 6 Dec 2020 05:21:30 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
-        by ppma03dal.us.ibm.com with ESMTP id 3581u8ggh8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 06 Dec 2020 05:21:30 +0000
-Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
-        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0B65LTJr15336054
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 6 Dec 2020 05:21:29 GMT
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2AC16124054;
-        Sun,  6 Dec 2020 05:21:29 +0000 (GMT)
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C9205124052;
-        Sun,  6 Dec 2020 05:21:28 +0000 (GMT)
-Received: from pompom.ibm.com (unknown [9.85.129.222])
-        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
-        Sun,  6 Dec 2020 05:21:28 +0000 (GMT)
-From:   Lijun Pan <ljp@linux.ibm.com>
+        id S1726364AbgLFIYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Dec 2020 03:24:01 -0500
+Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:54627 "EHLO
+        wout3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726318AbgLFIYA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Dec 2020 03:24:00 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id EC6DCC58;
+        Sun,  6 Dec 2020 03:22:51 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Sun, 06 Dec 2020 03:22:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=6tkzuIqLCE0uwghkP
+        Jj9AwLoN2rrRcaG4KitthslakY=; b=PIPDtssRL9uKdtWnmHxXZdyaLMSeyNc43
+        el9N0790SqRwwQPmLmUJsbVAIIF4iKSQcXBmn73RRB9qDCQ64PRYgC6c/namP7hz
+        1CL5IiO/mLiRofShsQ7eN+cOK+8GmH9Eu3O98Tz6P7G0DwvaHOygm93FEpFkZQSB
+        GHziEf/6KsuRsep3lUmI0I2XkL/oSPmeSOx5oxLut89TMRC9pdlwSjx7yFGkfqNP
+        qCubijpwSDL+Tk5brdF1PfwJjWGYL0bjzWiFU4oOVOmf/WxCjNgVgVCWi+Tu8D+T
+        Ymjr4W9QWyrUtfsDH7+h9wrR7vQWCdwq2ojgqrI70GmWuyUcB/MAA==
+X-ME-Sender: <xms:25TMX7_V0a4_u4kE3dOaJQGid3Rai7NPTZ4CwlTsIkVb2ZQMhpBURg>
+    <xme:25TMX3u4a-upZsqXNVkyFQWTOm3-J3NE3NI6DhKwiMAUs3ciFH0UnFZh8QDrZtURg
+    pUjqHUV0j6cd-M>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudejuddguddukecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertd
+    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
+    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuhe
+    ehteffieekgeehveefvdegledvffduhfenucfkphepkeegrddvvdelrdduheegrddvfeeg
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:25TMX5BmYLfpg_WsCtCCUwgoNcER6wNOlxHju0bgof9Q6FLHPdlseQ>
+    <xmx:25TMX3d31GEtOJo6WaWle9H_k3qWERAgzLWnmelNpHh2WmO3GcpgtA>
+    <xmx:25TMXwOMwxrvODhrFGccQaS_Ka3iJ-M2XZSlvO0Gt_X4N3YkqLArDg>
+    <xmx:25TMX1rLzs6VPPOtK830e22k4nBsdsLACuqpIKQAB4ZOAjh4zGRymw>
+Received: from shredder.lan (igld-84-229-154-234.inter.net.il [84.229.154.234])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 1B60A108005B;
+        Sun,  6 Dec 2020 03:22:49 -0500 (EST)
+From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
-Cc:     Lijun Pan <ljp@linux.ibm.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>
-Subject: [RFC PATCH net-next 3/3] use netdev_notify_peers_locked in hyperv
-Date:   Sat,  5 Dec 2020 23:21:27 -0600
-Message-Id: <20201206052127.21450-4-ljp@linux.ibm.com>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20201206052127.21450-1-ljp@linux.ibm.com>
-References: <20201206052127.21450-1-ljp@linux.ibm.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
+        petrm@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net-next 0/7] mlxsw: Misc updates
+Date:   Sun,  6 Dec 2020 10:22:20 +0200
+Message-Id: <20201206082227.1857042-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-12-06_02:2020-12-04,2020-12-06 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=1
- impostorscore=0 bulkscore=0 lowpriorityscore=0 phishscore=0 spamscore=0
- mlxlogscore=999 malwarescore=0 adultscore=0 priorityscore=1501
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012060029
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Start to use the lockless version of netdev_notify_peers.
+From: Ido Schimmel <idosch@nvidia.com>
 
-Cc: Haiyang Zhang <haiyangz@microsoft.com>
-Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
----
- drivers/net/hyperv/netvsc_drv.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+This patch set contains various updates for mlxsw in various areas.
 
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index 261e6e55a907..5483ad697d19 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -2129,10 +2129,10 @@ static void netvsc_link_change(struct work_struct *w)
- 		break;
- 	}
- 
--	rtnl_unlock();
--
- 	if (notify)
--		netdev_notify_peers(net);
-+		netdev_notify_peers_locked(net);
-+
-+	rtnl_unlock();
- 
- 	/* link_watch only sends one notification with current state per
- 	 * second, handle next reconfig event in 2 seconds.
+Patch #1 fixes a corner case in router interface (RIF) configuration.
+Targeted at net-next since this is not a regression. Patch #2 adds a
+test case.
+
+Patch #3 enables tracing of EMAD events via 'devlink:devlink_hwmsg'
+tracepoint, in addition to the existing request / response EMAD
+messages. It enables a more complete logging of all the exchanged
+hardware messages.
+
+Patches #4-#5 suppress "WARNING use flexible-array member instead"
+coccinelle warnings.
+
+Patch #6 bumps the minimum firmware version enforced by the driver.
+
+Patch #7 is a small refactoring in IPinIP code.
+
+Ido Schimmel (5):
+  mlxsw: spectrum: Apply RIF configuration when joining a LAG
+  selftests: mlxsw: Test RIF's reference count when joining a LAG
+  mlxsw: core: Trace EMAD events
+  mlxsw: spectrum_mr: Use flexible-array member instead of zero-length
+    array
+  mlxsw: core_acl: Use an array instead of a struct with a zero-length
+    array
+
+Jiri Pirko (1):
+  mlxsw: spectrum_router: Reduce mlxsw_sp_ipip_fib_entry_op_gre4()
+
+Petr Machata (1):
+  mlxsw: spectrum: Bump minimum FW version to xx.2008.2018
+
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  7 +++
+ .../mellanox/mlxsw/core_acl_flex_keys.c       | 26 +++++-----
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    | 23 +++++++--
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |  4 ++
+ .../ethernet/mellanox/mlxsw/spectrum_ipip.c   | 45 ++---------------
+ .../ethernet/mellanox/mlxsw/spectrum_ipip.h   |  8 +--
+ .../net/ethernet/mellanox/mlxsw/spectrum_mr.c |  2 +-
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 49 +++++++++++++++----
+ .../ethernet/mellanox/mlxsw/spectrum_router.h |  4 --
+ .../selftests/drivers/net/mlxsw/rtnetlink.sh  | 43 ++++++++++++++++
+ 10 files changed, 129 insertions(+), 82 deletions(-)
+
 -- 
-2.23.0
+2.28.0
 
