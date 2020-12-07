@@ -2,90 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 079022D0B61
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 08:56:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BE762D0B89
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 09:14:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726126AbgLGH4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 02:56:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35438 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725832AbgLGH43 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 02:56:29 -0500
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F25EC0613D0
-        for <netdev@vger.kernel.org>; Sun,  6 Dec 2020 23:55:49 -0800 (PST)
-Received: by mail-pj1-x1043.google.com with SMTP id hk16so6961107pjb.4
-        for <netdev@vger.kernel.org>; Sun, 06 Dec 2020 23:55:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=oAioQ6dTxjmVKPdqlT3FIFzHsyhGqpzcvzZAXbUUcmg=;
-        b=P+N7c1NhPH0fwxkiFMKjoa32aJbvanluG4yuYorspL5hy9ji57g+lIDeOUJauQikQ9
-         CdXy+jLU3XRdbdt3ToaNucr1SryCdmeM69AdEE18mYq7piIaR1eDwrWsS7kODzxaDPQz
-         KC1Dnxvymfvuf5uJKMDSEWjE2K1N8uJCvnk8EpV2TKpAFepfVZNXjiV/4eGgaGnM4eyx
-         BPKQ2JP7yhb0shzi/MWrUwPHELHWnCvaQxiU+ONXYNolMHSEWujvWJ9M+b/cN5Z4w0+B
-         HJKA1qNpC92Ufaw7b4RXEcSs+SvBJXWznIgyekKvpmV/YS2h7XUKCT3tGKA5GuddVTY+
-         RbqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=oAioQ6dTxjmVKPdqlT3FIFzHsyhGqpzcvzZAXbUUcmg=;
-        b=uhoO5O+EwqNG9CmYYOLxBb4BLNtbJUkqbU2hAYVCTnn9V+vaW8BgRKPr2fxBM15Dn8
-         yokom/i3VLzCMmLtcJDWouNC/zY5zZMRAeo1hCRDsWL6bYp6vAxf2e9S/8ifCLIhkNNd
-         gI7OqOIoPL8uIn9m8lAWnYdd9WaK7knwb3Vb9ETgiJ45APPUG8mxOmRa7uygaMep5Mb1
-         7g1lS1KaSILelxKnVU93peDZqSSzsl3+FPs6HbndCWgHP21DVtdLvIAK62l7VNeRzWfe
-         zYERzHlaCSWXEXW5YkrlfHs4ZkVND8a2JyBP7VQmNp8HurYVXgTt6Tx0HjQa/WrkzPGM
-         DsyQ==
-X-Gm-Message-State: AOAM530Cd42OJwsZIs/ME6AOUyqhG7vlywjod949cBdqgbqfQCWYB7EX
-        /Bh/EyyQceGey+xlEOKpFhmI3Xdrz6p8mw==
-X-Google-Smtp-Source: ABdhPJxDytA5eOiRPvHsExZRWTRwRoHz2DuvEkSWZa0d5N8P7z3gTdf+e3Yzbk293H/2ehsqzmG+Pw==
-X-Received: by 2002:a17:90a:a108:: with SMTP id s8mr3411584pjp.206.1607327748867;
-        Sun, 06 Dec 2020 23:55:48 -0800 (PST)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id o2sm12303410pgq.63.2020.12.06.23.55.47
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 06 Dec 2020 23:55:48 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, pablo@netfilter.org,
-        Guillaume Nault <gnault@redhat.com>
-Subject: [PATCH net] udp: fix the proto value passed to ip_protocol_deliver_rcu for the segments
-Date:   Mon,  7 Dec 2020 15:55:40 +0800
-Message-Id: <f8ad5904d273443f4c52ce4895f6d08d0f2ed18e.1607327740.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
+        id S1726206AbgLGIOO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 03:14:14 -0500
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:58418 "EHLO
+        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725905AbgLGION (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 03:14:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1607328853; x=1638864853;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=lyvoZglFnJty2Ptrt8qqn4PrsEF1NEv+5hHYWjUDdg8=;
+  b=PilU8jBqg1lgkRxYb0DSbVjuAxnZMs6gFY0zHOncnSu2zVLhG1XwAZpF
+   9rW6jug2HXBDpj2i4x5X90Uh1WyuD9hINq47dXB96wp9ZMnaYv5ZH6AyP
+   4Cc5MrwtpN6Uht4LBU2wjsMjxDQxg8ycu/b0wMIDHfA4tTcbuhZe8a6bQ
+   Yk+Fv4nEdaClVZxgLF+5bhUKofRA1YNDrLla/+h8uGzdSM47iuGs5dZNN
+   XdU3qLpBjRhUE1hhR+AWmZ1gmxrWgzJWUQD43URjSSYfW2LK8xtF2Tsx0
+   +7NXqMdKfprUWkJH75NwuPIDab19stClz5v+FtYwV1LDtg9zrtPfu3N6t
+   w==;
+IronPort-SDR: FkdIyWkTIt8kxn4MoG81U8mbP2jJacm3fl1+zLNU4P4jyzn+X7PVkN2uFTBBSuAKAwLAjfSJlT
+ cJBz2ASTZT5jm9uv6krmCwRr/mo6BLs8a/fbZeEg0Js/c9Dmlfd6ZmNiHQVXz+s1jLxR+m8iZ5
+ p6bsrg1zZLwAx6dJUrJbIc+RA4+5E1+XtNHrsN5x3kjM+Mppv61S0hNMD6w9jYbRiUwHRjxHgQ
+ yrJH6SHFmXyG8TCjBnuA/+SAs6ZKosm581G6PoDNF7Sr7EfNrvqey3i77STkF4bGPyFQni2lOF
+ DIA=
+X-IronPort-AV: E=Sophos;i="5.78,399,1599548400"; 
+   d="scan'208";a="36385437"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Dec 2020 01:13:07 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 7 Dec 2020 01:13:07 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Mon, 7 Dec 2020 01:13:06 -0700
+Date:   Mon, 7 Dec 2020 09:13:05 +0100
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        "Lars Povlsen" <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Subject: Re: [PATCH v8 3/4] phy: Add Sparx5 ethernet serdes PHY driver
+Message-ID: <20201207081305.urojcsaw27eqnag2@mchp-dev-shegelun>
+References: <20201203103015.3735373-1-steen.hegelund@microchip.com>
+ <20201203103015.3735373-4-steen.hegelund@microchip.com>
+ <20201203215253.GL2333853@lunn.ch>
+ <20201204141606.GH74177@piout.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20201204141606.GH74177@piout.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Guillaume noticed that: for segments udp_queue_rcv_one_skb() returns the
-proto, and it should pass "ret" unmodified to ip_protocol_deliver_rcu().
-Otherwize, with a negtive value passed, it will underflow inet_protos.
+On 04.12.2020 15:16, Alexandre Belloni wrote:
+>EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>
+>On 03/12/2020 22:52:53+0100, Andrew Lunn wrote:
+>> > +   if (macro->serdestype == SPX5_SDT_6G) {
+>> > +           value = sdx5_rd(priv, SD6G_LANE_LANE_DF(macro->stpidx));
+>> > +           analog_sd = SD6G_LANE_LANE_DF_PMA2PCS_RXEI_FILTERED_GET(value);
+>> > +   } else if (macro->serdestype == SPX5_SDT_10G) {
+>> > +           value = sdx5_rd(priv, SD10G_LANE_LANE_DF(macro->stpidx));
+>> > +           analog_sd = SD10G_LANE_LANE_DF_PMA2PCS_RXEI_FILTERED_GET(value);
+>> > +   } else {
+>> > +           value = sdx5_rd(priv, SD25G_LANE_LANE_DE(macro->stpidx));
+>> > +           analog_sd = SD25G_LANE_LANE_DE_LN_PMA_RXEI_GET(value);
+>> > +   }
+>> > +   /* Link up is when analog_sd == 0 */
+>> > +   return analog_sd;
+>> > +}
+>>
+>> What i have not yet seen is how this code plugs together with
+>> phylink_pcs_ops?
+>>
+>> Can this hardware also be used for SATA, USB? As far as i understand,
+>> the Marvell Comphy is multi-purpose, it is used for networking, USB,
+>> and SATA, etc. Making it a generic PHY then makes sense, because
+>> different subsystems need to use it.
+>>
+>> But it looks like this is for networking only? So i'm wondering if it
+>> belongs in driver/net/pcs and it should be accessed using
+>> phylink_pcs_ops?
+>>
+>
+>Ocelot had PCie on the phys, doesn't Sparx5 have it?
 
-This can be reproduced with IPIP FOU:
+Yes Ocelot has that, but on Sparx5 the PCIe is separate...
 
-  # ip fou add port 5555 ipproto 4
-  # ethtool -K eth1 rx-gro-list on
+>
+>--
+>Alexandre Belloni, Bootlin
+>Embedded Linux and Kernel engineering
+>https://bootlin.com
 
-Fixes: cf329aa42b66 ("udp: cope with UDP GRO packet misdirection")
-Reported-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/ipv4/udp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+BR
+Steen
 
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 09f0a23..9eeebd4 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -2173,7 +2173,7 @@ static int udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
- 		__skb_pull(skb, skb_transport_offset(skb));
- 		ret = udp_queue_rcv_one_skb(sk, skb);
- 		if (ret > 0)
--			ip_protocol_deliver_rcu(dev_net(skb->dev), skb, -ret);
-+			ip_protocol_deliver_rcu(dev_net(skb->dev), skb, ret);
- 	}
- 	return 0;
- }
--- 
-2.1.0
-
+---------------------------------------
+Steen Hegelund
+steen.hegelund@microchip.com
