@@ -2,129 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47D8D2D1598
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 17:14:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B47942D15B3
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 17:14:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727524AbgLGQJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 11:09:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55676 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726790AbgLGQJB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 11:09:01 -0500
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8263C061285
-        for <netdev@vger.kernel.org>; Mon,  7 Dec 2020 08:08:16 -0800 (PST)
-Received: by mail-io1-xd44.google.com with SMTP id d9so5288863iob.6
-        for <netdev@vger.kernel.org>; Mon, 07 Dec 2020 08:08:16 -0800 (PST)
+        id S1727218AbgLGQKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 11:10:37 -0500
+Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:4001 "EHLO
+        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726016AbgLGQKh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 11:10:37 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GHAU2BinNyNDb7vsAgSD/+Ah65+g0XBO6No6frCdNV8=;
-        b=dIAj00jvl9AyxYBLDJoDIosD2BpLsPQqThlMSYgNfyquOCjddhWaOQOoYxFtaZ2IBM
-         pKhyfgeQLY9PXQaVpB1af8DlmYdCzfgOc2muhBU6rUrEZIBfJhctC0bNCby1u0z8H1zm
-         e1u+lz2qfMIbnUaFX+KYVFqnC8OM/XY0Vl6T4YbGeR846XROY6wPWlrneCuDK7KL5zFN
-         /CKHNvkh1Qyw7zh3dY+vfIFVFGJa7tEcESgeE5k/Ud7sO4gkVhi4sX/IPm97ovJbhx2t
-         xCaTYw0YgW7eFvGsHs+OcB3uFaWXZRyjwfZanndngF/4XPsO8DjsSDXYXDpl+9BcjeZj
-         UBqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GHAU2BinNyNDb7vsAgSD/+Ah65+g0XBO6No6frCdNV8=;
-        b=Vqh+EEmIMqu5pDU5a2cCzi0BTXFfLlhJInWAvGm39fQUXBoJKLPqlC33oyfi4dVDe5
-         B4EzCusY1p8wCIROzput7AJhRfWV3NQL+PplhueVVKUYXJt5fAmHhHFIVOn/27n0LANJ
-         I19ZzJY/TR9lRE2jWFgA9gQfNa/tdAZC7cv3KuabRHT/SNga0/gZd5NF0ZuzQM6oR05R
-         25f2Ale5a5/eMPek+pm6B4crVpnPkQTof+g1jCSUXr0QrkMEo5/5dmcPZboEJmHXd5hz
-         LZrLISvlr68BfwPWVNUK6X1CuNIttlX8oLiqtMcAcqR9AURkTISzWueKwypRacmpbHsR
-         eDug==
-X-Gm-Message-State: AOAM531Yvz72KfTRJkI6zp9vuUNNqZzBepqh7iwMLCPHndtcs7dk/GFD
-        dz6R1wFwBmIgPQi5B4bR93GBAO4ZcYBlU6+IoronGfbT3QPxuOgU
-X-Google-Smtp-Source: ABdhPJw9GKpPdEroCKMl8B5LqRSKcvyuDKpo+WqAn9cMX5p4qKoawJ23gpLXE4rKZCDpi8MK1jAz/3DoxknRACb0OLo=
-X-Received: by 2002:a6b:c8c1:: with SMTP id y184mr20498406iof.99.1607357295960;
- Mon, 07 Dec 2020 08:08:15 -0800 (PST)
-MIME-Version: 1.0
-References: <4ABEB85B-262F-4657-BB69-4F37ABC0AE3D@amazon.com>
- <20201207114049.7634-1-abuehaze@amazon.com> <CANn89iJb6snL7xCK=x=du_nH_4cCVyNz7zgPNm9AgZWW5m1ZJg@mail.gmail.com>
-In-Reply-To: <CANn89iJb6snL7xCK=x=du_nH_4cCVyNz7zgPNm9AgZWW5m1ZJg@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 7 Dec 2020 17:08:04 +0100
-Message-ID: <CANn89iKnOu4t6xL0SZnaks4CZZuQ-a30sMF=o8Wk8OKL3o6Dyg@mail.gmail.com>
-Subject: Re: [PATCH net] tcp: fix receive buffer autotuning to trigger for any
- valid advertised MSS
-To:     Hazem Mohamed Abuelfotoh <abuehaze@amazon.com>
-Cc:     netdev <netdev@vger.kernel.org>, stable@vger.kernel.org,
-        Yuchung Cheng <ycheng@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Wei Wang <weiwan@google.com>,
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1607357436; x=1638893436;
+  h=from:to:cc:date:message-id:references:in-reply-to:
+   content-id:mime-version:content-transfer-encoding:subject;
+  bh=X6Pnz/VS2dUkzkOXEYaW+HQ5ULk5mIZGqzHX1tDx63Q=;
+  b=OtU3zCwhffRMzFbKGuf9yj2b16dFDbqsYxsVAbjeWDlnTUPOWCx431WH
+   Lu727rPNByOWGi8u982cv3xSM5r0hmVxcvO4NU2vzQmqK8u92ykfw2rKR
+   1cju3bYaUg8TegmsNi15aXQxc9qmC6GJ5Emo9+x9mkO1wJT0qhk0NFYlP
+   c=;
+X-IronPort-AV: E=Sophos;i="5.78,400,1599523200"; 
+   d="scan'208";a="102322107"
+Subject: Re: [PATCH net-next] tcp: optimise receiver buffer autotuning initialisation
+ for high latency connections
+Thread-Topic: [PATCH net-next] tcp: optimise receiver buffer autotuning initialisation for
+ high latency connections
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1e-57e1d233.us-east-1.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 07 Dec 2020 16:09:48 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-1e-57e1d233.us-east-1.amazon.com (Postfix) with ESMTPS id E37AD14175A;
+        Mon,  7 Dec 2020 16:09:46 +0000 (UTC)
+Received: from EX13D21UWB001.ant.amazon.com (10.43.161.108) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 7 Dec 2020 16:09:46 +0000
+Received: from EX13D18EUA004.ant.amazon.com (10.43.165.164) by
+ EX13D21UWB001.ant.amazon.com (10.43.161.108) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 7 Dec 2020 16:09:45 +0000
+Received: from EX13D18EUA004.ant.amazon.com ([10.43.165.164]) by
+ EX13D18EUA004.ant.amazon.com ([10.43.165.164]) with mapi id 15.00.1497.006;
+ Mon, 7 Dec 2020 16:09:44 +0000
+From:   "Mohamed Abuelfotoh, Hazem" <abuehaze@amazon.com>
+To:     Eric Dumazet <edumazet@google.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        "ycheng@google.com" <ycheng@google.com>,
+        "ncardwell@google.com" <ncardwell@google.com>,
+        "weiwan@google.com" <weiwan@google.com>,
         "Strohman, Andy" <astroh@amazon.com>,
-        Benjamin Herrenschmidt <benh@amazon.com>
-Content-Type: text/plain; charset="UTF-8"
+        "Herrenschmidt, Benjamin" <benh@amazon.com>
+Thread-Index: AQHWym1GjWRxI1tB2UKaX8lFVs4qcanoaEaAgANdNICAAAxqgA==
+Date:   Mon, 7 Dec 2020 16:09:44 +0000
+Message-ID: <781BA871-5D3D-4C89-9629-81345CC41C5C@amazon.com>
+References: <20201204180622.14285-1-abuehaze@amazon.com>
+ <44E3AA29-F033-4B8E-A1BC-E38824B5B1E3@amazon.com>
+ <CANn89iJgJQfOeNr9aZHb+_Vozgd9v4S87Kf4iV=mKhuPDGLkEg@mail.gmail.com>
+ <3F02FF08-EDA6-4DFD-8D93-479A5B05E25A@amazon.com>
+ <CANn89iL_5QFGQLzxxLyqfNMGiV2wF4CbkY==x5Sh5vqKOTgFtw@mail.gmail.com>
+In-Reply-To: <CANn89iL_5QFGQLzxxLyqfNMGiV2wF4CbkY==x5Sh5vqKOTgFtw@mail.gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-GB
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.165.102]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <1921906471BEC4428650D69C3DA68767@amazon.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 7, 2020 at 4:37 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Mon, Dec 7, 2020 at 12:41 PM Hazem Mohamed Abuelfotoh
-> <abuehaze@amazon.com> wrote:
-> >
-> >     Previously receiver buffer auto-tuning starts after receiving
-> >     one advertised window amount of data.After the initial
-> >     receiver buffer was raised by
-> >     commit a337531b942b ("tcp: up initial rmem to 128KB
-> >     and SYN rwin to around 64KB"),the receiver buffer may
-> >     take too long for TCP autotuning to start raising
-> >     the receiver buffer size.
-> >     commit 041a14d26715 ("tcp: start receiver buffer autotuning sooner")
-> >     tried to decrease the threshold at which TCP auto-tuning starts
-> >     but it's doesn't work well in some environments
-> >     where the receiver has large MTU (9001) especially with high RTT
-> >     connections as in these environments rcvq_space.space will be the same
-> >     as rcv_wnd so TCP autotuning will never start because
-> >     sender can't send more than rcv_wnd size in one round trip.
-> >     To address this issue this patch is decreasing the initial
-> >     rcvq_space.space so TCP autotuning kicks in whenever the sender is
-> >     able to send more than 5360 bytes in one round trip regardless the
-> >     receiver's configured MTU.
-> >
-> >     Fixes: a337531b942b ("tcp: up initial rmem to 128KB and SYN rwin to around 64KB")
-> >     Fixes: 041a14d26715 ("tcp: start receiver buffer autotuning sooner")
-> >
-> > Signed-off-by: Hazem Mohamed Abuelfotoh <abuehaze@amazon.com>
-> > ---
-> >  net/ipv4/tcp_input.c | 3 ++-
-> >  1 file changed, 2 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> > index 389d1b340248..f0ffac9e937b 100644
-> > --- a/net/ipv4/tcp_input.c
-> > +++ b/net/ipv4/tcp_input.c
-> > @@ -504,13 +504,14 @@ static void tcp_grow_window(struct sock *sk, const struct sk_buff *skb)
-> >  static void tcp_init_buffer_space(struct sock *sk)
-> >  {
-> >         int tcp_app_win = sock_net(sk)->ipv4.sysctl_tcp_app_win;
-> > +       struct inet_connection_sock *icsk = inet_csk(sk);
-> >         struct tcp_sock *tp = tcp_sk(sk);
-> >         int maxwin;
-> >
-> >         if (!(sk->sk_userlocks & SOCK_SNDBUF_LOCK))
-> >                 tcp_sndbuf_expand(sk);
-> >
-> > -       tp->rcvq_space.space = min_t(u32, tp->rcv_wnd, TCP_INIT_CWND * tp->advmss);
-> > +       tp->rcvq_space.space = min_t(u32, tp->rcv_wnd, TCP_INIT_CWND * icsk->icsk_ack.rcv_mss);
->
-> I find using icsk->icsk_ack.rcv_mss misleading.
->
-> I would either use TCP_MSS_DEFAULT , or maybe simply 0, since we had
-> no samples yet, there is little point to use a magic value.
+ICAgID5TaW5jZSBJIGNhbiBub3QgcmVwcm9kdWNlIHRoaXMgcHJvYmxlbSB3aXRoIGFub3RoZXIg
+TklDIG9uIHg4NiwgSQ0KICAgID5yZWFsbHkgd29uZGVyIGlmIHRoaXMgaXMgbm90IGFuIGlzc3Vl
+IHdpdGggRU5BIGRyaXZlciBvbiBQb3dlclBDDQogICAgPnBlcmhhcHMgPw0KDQoNCkkgYW0gYWJs
+ZSB0byByZXByb2R1Y2UgaXQgb24geDg2IGJhc2VkIEVDMiBpbnN0YW5jZXMgdXNpbmcgRU5BICBv
+ciAgWGVuIG5ldGZyb250IG9yIEludGVsIGl4Z2JldmYgZHJpdmVyIG9uIHRoZSByZWNlaXZlciBz
+byBpdCdzIG5vdCBzcGVjaWZpYyB0byBFTkEsIHdlIHdlcmUgYWJsZSB0byBlYXNpbHkgcmVwcm9k
+dWNlIGl0IGJldHdlZW4gMiBWTXMgcnVubmluZyBpbiB2aXJ0dWFsIGJveCBvbiB0aGUgc2FtZSBw
+aHlzaWNhbCBob3N0IGNvbnNpZGVyaW5nIHRoZSBlbnZpcm9ubWVudCByZXF1aXJlbWVudHMgSSBt
+ZW50aW9uZWQgaW4gbXkgZmlyc3QgZS1tYWlsLg0KDQpXaGF0J3MgdGhlIFJUVCBiZXR3ZWVuIHRo
+ZSBzZW5kZXIgJiByZWNlaXZlciBpbiB5b3VyIHJlcHJvZHVjdGlvbj8gQXJlIHlvdSB1c2luZyBi
+YnIgb24gdGhlIHNlbmRlciBzaWRlPw0KDQpUaGFuayB5b3UuDQoNCkhhemVtDQoNCu+7v09uIDA3
+LzEyLzIwMjAsIDE1OjI2LCAiRXJpYyBEdW1hemV0IiA8ZWR1bWF6ZXRAZ29vZ2xlLmNvbT4gd3Jv
+dGU6DQoNCiAgICBDQVVUSU9OOiBUaGlzIGVtYWlsIG9yaWdpbmF0ZWQgZnJvbSBvdXRzaWRlIG9m
+IHRoZSBvcmdhbml6YXRpb24uIERvIG5vdCBjbGljayBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRz
+IHVubGVzcyB5b3UgY2FuIGNvbmZpcm0gdGhlIHNlbmRlciBhbmQga25vdyB0aGUgY29udGVudCBp
+cyBzYWZlLg0KDQoNCg0KICAgIE9uIFNhdCwgRGVjIDUsIDIwMjAgYXQgMTowMyBQTSBNb2hhbWVk
+IEFidWVsZm90b2gsIEhhemVtDQogICAgPGFidWVoYXplQGFtYXpvbi5jb20+IHdyb3RlOg0KICAg
+ID4NCiAgICA+IFVuZm9ydHVuYXRlbHkgZmV3IHRoaW5ncyBhcmUgbWlzc2luZyBpbiB0aGlzIHJl
+cG9ydC4NCiAgICA+DQogICAgPiAgICAgV2hhdCBpcyB0aGUgUlRUIGJldHdlZW4gaG9zdHMgaW4g
+eW91ciB0ZXN0ID8NCiAgICA+ICAgICAgPj4+Pj5SVFQgaW4gbXkgdGVzdCBpcyAxNjIgbXNlYywg
+YnV0IEkgYW0gYWJsZSB0byByZXByb2R1Y2UgaXQgd2l0aCBsb3dlciBSVFRzIGZvciBleGFtcGxl
+IEkgY291bGQgc2VlIHRoZSBpc3N1ZSBkb3dubG9hZGluZyBmcm9tIGdvb2dsZSAgIGVuZHBvaW50
+IHdpdGggUlRUIG9mIDE2LjcgbXNlYywgYXMgbWVudGlvbmVkIGluIG15IHByZXZpb3VzIGUtbWFp
+bCB0aGUgaXNzdWUgaXMgcmVwcm9kdWNpYmxlIHdoZW5ldmVyIFJUVCBleGNlZWRlZCAxMm1zZWMg
+Z2l2ZW4gdGhhdCAgICB0aGUgc2VuZGVyIGlzIHVzaW5nIGJici4NCiAgICA+DQogICAgPiAgICAg
+ICAgIFJUVCBiZXR3ZWVuIGhvc3RzIHdoZXJlIEkgcnVuIHRoZSBpcGVyZiB0ZXN0Lg0KICAgID4g
+ICAgICAgICAjIHBpbmcgNTQuMTk5LjE2My4xODcNCiAgICA+ICAgICAgICAgUElORyA1NC4xOTku
+MTYzLjE4NyAoNTQuMTk5LjE2My4xODcpIDU2KDg0KSBieXRlcyBvZiBkYXRhLg0KICAgID4gICAg
+ICAgICA2NCBieXRlcyBmcm9tIDU0LjE5OS4xNjMuMTg3OiBpY21wX3NlcT0xIHR0bD0zMyB0aW1l
+PTE2MiBtcw0KICAgID4gICAgICAgICA2NCBieXRlcyBmcm9tIDU0LjE5OS4xNjMuMTg3OiBpY21w
+X3NlcT0yIHR0bD0zMyB0aW1lPTE2MiBtcw0KICAgID4gICAgICAgICA2NCBieXRlcyBmcm9tIDU0
+LjE5OS4xNjMuMTg3OiBpY21wX3NlcT0zIHR0bD0zMyB0aW1lPTE2MiBtcw0KICAgID4gICAgICAg
+ICA2NCBieXRlcyBmcm9tIDU0LjE5OS4xNjMuMTg3OiBpY21wX3NlcT00IHR0bD0zMyB0aW1lPTE2
+MiBtcw0KICAgID4NCiAgICA+ICAgICAgICAgUlRUIGJldHdlZW4gbXkgRUMyIGluc3RhbmNlcyBh
+bmQgZ29vZ2xlIGVuZHBvaW50Lg0KICAgID4gICAgICAgICAjIHBpbmcgMTcyLjIxNy40LjI0MA0K
+ICAgID4gICAgICAgICBQSU5HIDE3Mi4yMTcuNC4yNDAgKDE3Mi4yMTcuNC4yNDApIDU2KDg0KSBi
+eXRlcyBvZiBkYXRhLg0KICAgID4gICAgICAgICA2NCBieXRlcyBmcm9tIDE3Mi4yMTcuNC4yNDA6
+IGljbXBfc2VxPTEgdHRsPTEwMSB0aW1lPTE2LjcgbXMNCiAgICA+ICAgICAgICAgNjQgYnl0ZXMg
+ZnJvbSAxNzIuMjE3LjQuMjQwOiBpY21wX3NlcT0yIHR0bD0xMDEgdGltZT0xNi43IG1zDQogICAg
+PiAgICAgICAgIDY0IGJ5dGVzIGZyb20gMTcyLjIxNy40LjI0MDogaWNtcF9zZXE9MyB0dGw9MTAx
+IHRpbWU9MTYuNyBtcw0KICAgID4gICAgICAgICA2NCBieXRlcyBmcm9tIDE3Mi4yMTcuNC4yNDA6
+IGljbXBfc2VxPTQgdHRsPTEwMSB0aW1lPTE2LjcgbXMNCiAgICA+DQogICAgPiAgICAgV2hhdCBk
+cml2ZXIgaXMgdXNlZCBhdCB0aGUgcmVjZWl2aW5nIHNpZGUgPw0KICAgID4gICAgICAgPj4+Pj4+
+SSBhbSB1c2luZyBFTkEgZHJpdmVyIHZlcnNpb24gdmVyc2lvbjogMi4yLjEwZyBvbiB0aGUgcmVj
+ZWl2ZXIgd2l0aCBzY2F0dGVyIGdhdGhlcmluZyBlbmFibGVkLg0KICAgID4NCiAgICA+ICAgICAg
+ICAgIyBldGh0b29sIC1rIGV0aDAgfCBncmVwIHNjYXR0ZXItZ2F0aGVyDQogICAgPiAgICAgICAg
+IHNjYXR0ZXItZ2F0aGVyOiBvbg0KICAgID4gICAgICAgICAgICAgICAgIHR4LXNjYXR0ZXItZ2F0
+aGVyOiBvbg0KICAgID4gICAgICAgICAgICAgICAgIHR4LXNjYXR0ZXItZ2F0aGVyLWZyYWdsaXN0
+OiBvZmYgW2ZpeGVkXQ0KDQogICAgVGhpcyBldGh0b29sIG91dHB1dCByZWZlcnMgdG8gVFggc2Nh
+dHRlciBnYXRoZXIsIHdoaWNoIGlzIG5vdCByZWxldmFudA0KICAgIGZvciB0aGlzIGJ1Zy4NCg0K
+ICAgIEkgc2VlIEVOQSBkcml2ZXIgbWlnaHQgdXNlIDE2IEtCIHBlciBpbmNvbWluZyBwYWNrZXQg
+KGlmIEVOQV9QQUdFX1NJWkUgaXMgMTYgS0IpDQoNCiAgICBTaW5jZSBJIGNhbiBub3QgcmVwcm9k
+dWNlIHRoaXMgcHJvYmxlbSB3aXRoIGFub3RoZXIgTklDIG9uIHg4NiwgSQ0KICAgIHJlYWxseSB3
+b25kZXIgaWYgdGhpcyBpcyBub3QgYW4gaXNzdWUgd2l0aCBFTkEgZHJpdmVyIG9uIFBvd2VyUEMN
+CiAgICBwZXJoYXBzID8NCg0KCgoKQW1hem9uIFdlYiBTZXJ2aWNlcyBFTUVBIFNBUkwsIDM4IGF2
+ZW51ZSBKb2huIEYuIEtlbm5lZHksIEwtMTg1NSBMdXhlbWJvdXJnLCBSLkMuUy4gTHV4ZW1ib3Vy
+ZyBCMTg2Mjg0CgpBbWF6b24gV2ViIFNlcnZpY2VzIEVNRUEgU0FSTCwgSXJpc2ggQnJhbmNoLCBP
+bmUgQnVybGluZ3RvbiBQbGF6YSwgQnVybGluZ3RvbiBSb2FkLCBEdWJsaW4gNCwgSXJlbGFuZCwg
+YnJhbmNoIHJlZ2lzdHJhdGlvbiBudW1iZXIgOTA4NzA1CgoK
 
-0 will not work, since we use a do_div(grow, tp->rcvq_space.space)
-
->
-> Note that if a driver uses 16KB of memory to hold a 1500 bytes packet,
-> then a 10 MSS GRO packet is consuming 160 KB of memory,
-> which is bigger than tcp_rmem[1]. TCP could decide to drop these fat packets.
->
-> I wonder if your patch does not work around a more fundamental issue,
-> I am still unable to reproduce the issue.
