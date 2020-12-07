@@ -2,107 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68F8E2D1594
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 17:14:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47D8D2D1598
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 17:14:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727496AbgLGQIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 11:08:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55540 "EHLO
+        id S1727524AbgLGQJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 11:09:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726377AbgLGQIU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 11:08:20 -0500
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52A3CC061749;
-        Mon,  7 Dec 2020 08:07:34 -0800 (PST)
-Received: by mail-ej1-x643.google.com with SMTP id m19so20185807ejj.11;
-        Mon, 07 Dec 2020 08:07:34 -0800 (PST)
+        with ESMTP id S1726790AbgLGQJB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 11:09:01 -0500
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8263C061285
+        for <netdev@vger.kernel.org>; Mon,  7 Dec 2020 08:08:16 -0800 (PST)
+Received: by mail-io1-xd44.google.com with SMTP id d9so5288863iob.6
+        for <netdev@vger.kernel.org>; Mon, 07 Dec 2020 08:08:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=WM/4xKSlXYVQWjEHfbWD8YX/luYlEiJYgCc/oLAT72M=;
-        b=qKgDPJDPA18nffgQ211xSgkPcAycCzVVcqW7ZbuMWzxFCl++LQpCcZ0C8J9T4DBrb6
-         p2DyTpTDyOyGEmGwTleB4Bx0L0GLAX5iez4RwZzXoWT1pdfjAq/co6NNNvtB7OLGfOKI
-         1uX0OOQSymZjTgwxQdxqYq/qFmw5H3489UCNx2Z2BRcY0cSZQVaZhYcWNkZ9TAhWc1K5
-         QuRFZclmSDh7OabGFcl1oAqmMQL9EuZqUQ6WGjkmo192doqD6wBVw4b1H/xZ3ctMDW7n
-         OWOuLFt2ht5DYzcpHSswwkatv6rFQKTbuggtu44/Ptnhuxws2wgN22HqGQOxjgpyOA8u
-         lW1A==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GHAU2BinNyNDb7vsAgSD/+Ah65+g0XBO6No6frCdNV8=;
+        b=dIAj00jvl9AyxYBLDJoDIosD2BpLsPQqThlMSYgNfyquOCjddhWaOQOoYxFtaZ2IBM
+         pKhyfgeQLY9PXQaVpB1af8DlmYdCzfgOc2muhBU6rUrEZIBfJhctC0bNCby1u0z8H1zm
+         e1u+lz2qfMIbnUaFX+KYVFqnC8OM/XY0Vl6T4YbGeR846XROY6wPWlrneCuDK7KL5zFN
+         /CKHNvkh1Qyw7zh3dY+vfIFVFGJa7tEcESgeE5k/Ud7sO4gkVhi4sX/IPm97ovJbhx2t
+         xCaTYw0YgW7eFvGsHs+OcB3uFaWXZRyjwfZanndngF/4XPsO8DjsSDXYXDpl+9BcjeZj
+         UBqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WM/4xKSlXYVQWjEHfbWD8YX/luYlEiJYgCc/oLAT72M=;
-        b=I06gYwwQyMWjGxy5hJ/YCNBs9CYyY6ylhwPCQrHjvrMk5hnaGWkRpjUajfYsVTvdEa
-         ynmU0NhhhvjoxAn4eA2i1TFmxqbCfiG5/Yc6cbw+tgu+dpUVJBcaLACUSPpga778Xc76
-         Yero6HczDsHa4RYSt6DDDgco+JuLWOCvwaw/bM0St0H+mKJkErAEB1g44/zfIhUX/Wfy
-         oOovlVdoiVd8MAV/n/V2G+ads6LAMvHdIRAldhYHKydD35dAw7TwnzvlGqFgjNyhwp0X
-         8MWZF8R+Ts0dvmEhK2WbVFALWJLWBsOGG4pnlbsYhGUyAnpWYxVOlcomqhrBne3dT8CN
-         VaQA==
-X-Gm-Message-State: AOAM530av7WoJnQTM0cOPS9RIrXe9JZC1qUMQWEnsrNoLqBAPoOZGJwB
-        OCHjrnChAvbEuZxabcTzWFQ=
-X-Google-Smtp-Source: ABdhPJzwCMTqsxTqqO4VotBrTjalTBZGvqcXJVYEDpt0nKWW3uuKzpE893tD69cUr19XrpsPZQAWzg==
-X-Received: by 2002:a17:906:c1c6:: with SMTP id bw6mr20020182ejb.199.1607357252890;
-        Mon, 07 Dec 2020 08:07:32 -0800 (PST)
-Received: from localhost ([51.15.41.238])
-        by smtp.gmail.com with ESMTPSA id e21sm13941813edv.96.2020.12.07.08.07.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Dec 2020 08:07:31 -0800 (PST)
-Date:   Mon, 7 Dec 2020 16:07:30 +0000
-From:   Stefan Hajnoczi <stefanha@gmail.com>
-To:     Zhang Changzhong <zhangchangzhong@huawei.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        Maurizio Lombardi <mlombard@redhat.com>,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] vhost scsi: fix error return code in
- vhost_scsi_set_endpoint()
-Message-ID: <20201207160730.GI203660@stefanha-x1.localdomain>
-References: <1607071411-33484-1-git-send-email-zhangchangzhong@huawei.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GHAU2BinNyNDb7vsAgSD/+Ah65+g0XBO6No6frCdNV8=;
+        b=Vqh+EEmIMqu5pDU5a2cCzi0BTXFfLlhJInWAvGm39fQUXBoJKLPqlC33oyfi4dVDe5
+         B4EzCusY1p8wCIROzput7AJhRfWV3NQL+PplhueVVKUYXJt5fAmHhHFIVOn/27n0LANJ
+         I19ZzJY/TR9lRE2jWFgA9gQfNa/tdAZC7cv3KuabRHT/SNga0/gZd5NF0ZuzQM6oR05R
+         25f2Ale5a5/eMPek+pm6B4crVpnPkQTof+g1jCSUXr0QrkMEo5/5dmcPZboEJmHXd5hz
+         LZrLISvlr68BfwPWVNUK6X1CuNIttlX8oLiqtMcAcqR9AURkTISzWueKwypRacmpbHsR
+         eDug==
+X-Gm-Message-State: AOAM531Yvz72KfTRJkI6zp9vuUNNqZzBepqh7iwMLCPHndtcs7dk/GFD
+        dz6R1wFwBmIgPQi5B4bR93GBAO4ZcYBlU6+IoronGfbT3QPxuOgU
+X-Google-Smtp-Source: ABdhPJw9GKpPdEroCKMl8B5LqRSKcvyuDKpo+WqAn9cMX5p4qKoawJ23gpLXE4rKZCDpi8MK1jAz/3DoxknRACb0OLo=
+X-Received: by 2002:a6b:c8c1:: with SMTP id y184mr20498406iof.99.1607357295960;
+ Mon, 07 Dec 2020 08:08:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ev7mvGV+3JQuI2Eo"
-Content-Disposition: inline
-In-Reply-To: <1607071411-33484-1-git-send-email-zhangchangzhong@huawei.com>
+References: <4ABEB85B-262F-4657-BB69-4F37ABC0AE3D@amazon.com>
+ <20201207114049.7634-1-abuehaze@amazon.com> <CANn89iJb6snL7xCK=x=du_nH_4cCVyNz7zgPNm9AgZWW5m1ZJg@mail.gmail.com>
+In-Reply-To: <CANn89iJb6snL7xCK=x=du_nH_4cCVyNz7zgPNm9AgZWW5m1ZJg@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 7 Dec 2020 17:08:04 +0100
+Message-ID: <CANn89iKnOu4t6xL0SZnaks4CZZuQ-a30sMF=o8Wk8OKL3o6Dyg@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: fix receive buffer autotuning to trigger for any
+ valid advertised MSS
+To:     Hazem Mohamed Abuelfotoh <abuehaze@amazon.com>
+Cc:     netdev <netdev@vger.kernel.org>, stable@vger.kernel.org,
+        Yuchung Cheng <ycheng@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Wei Wang <weiwan@google.com>,
+        "Strohman, Andy" <astroh@amazon.com>,
+        Benjamin Herrenschmidt <benh@amazon.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Dec 7, 2020 at 4:37 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Mon, Dec 7, 2020 at 12:41 PM Hazem Mohamed Abuelfotoh
+> <abuehaze@amazon.com> wrote:
+> >
+> >     Previously receiver buffer auto-tuning starts after receiving
+> >     one advertised window amount of data.After the initial
+> >     receiver buffer was raised by
+> >     commit a337531b942b ("tcp: up initial rmem to 128KB
+> >     and SYN rwin to around 64KB"),the receiver buffer may
+> >     take too long for TCP autotuning to start raising
+> >     the receiver buffer size.
+> >     commit 041a14d26715 ("tcp: start receiver buffer autotuning sooner")
+> >     tried to decrease the threshold at which TCP auto-tuning starts
+> >     but it's doesn't work well in some environments
+> >     where the receiver has large MTU (9001) especially with high RTT
+> >     connections as in these environments rcvq_space.space will be the same
+> >     as rcv_wnd so TCP autotuning will never start because
+> >     sender can't send more than rcv_wnd size in one round trip.
+> >     To address this issue this patch is decreasing the initial
+> >     rcvq_space.space so TCP autotuning kicks in whenever the sender is
+> >     able to send more than 5360 bytes in one round trip regardless the
+> >     receiver's configured MTU.
+> >
+> >     Fixes: a337531b942b ("tcp: up initial rmem to 128KB and SYN rwin to around 64KB")
+> >     Fixes: 041a14d26715 ("tcp: start receiver buffer autotuning sooner")
+> >
+> > Signed-off-by: Hazem Mohamed Abuelfotoh <abuehaze@amazon.com>
+> > ---
+> >  net/ipv4/tcp_input.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> > index 389d1b340248..f0ffac9e937b 100644
+> > --- a/net/ipv4/tcp_input.c
+> > +++ b/net/ipv4/tcp_input.c
+> > @@ -504,13 +504,14 @@ static void tcp_grow_window(struct sock *sk, const struct sk_buff *skb)
+> >  static void tcp_init_buffer_space(struct sock *sk)
+> >  {
+> >         int tcp_app_win = sock_net(sk)->ipv4.sysctl_tcp_app_win;
+> > +       struct inet_connection_sock *icsk = inet_csk(sk);
+> >         struct tcp_sock *tp = tcp_sk(sk);
+> >         int maxwin;
+> >
+> >         if (!(sk->sk_userlocks & SOCK_SNDBUF_LOCK))
+> >                 tcp_sndbuf_expand(sk);
+> >
+> > -       tp->rcvq_space.space = min_t(u32, tp->rcv_wnd, TCP_INIT_CWND * tp->advmss);
+> > +       tp->rcvq_space.space = min_t(u32, tp->rcv_wnd, TCP_INIT_CWND * icsk->icsk_ack.rcv_mss);
+>
+> I find using icsk->icsk_ack.rcv_mss misleading.
+>
+> I would either use TCP_MSS_DEFAULT , or maybe simply 0, since we had
+> no samples yet, there is little point to use a magic value.
 
---ev7mvGV+3JQuI2Eo
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+0 will not work, since we use a do_div(grow, tp->rcvq_space.space)
 
-On Fri, Dec 04, 2020 at 04:43:30PM +0800, Zhang Changzhong wrote:
-> Fix to return a negative error code from the error handling
-> case instead of 0, as done elsewhere in this function.
->=20
-> Fixes: 25b98b64e284 ("vhost scsi: alloc cmds per vq instead of session")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-> ---
->  drivers/vhost/scsi.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-
-Acked-by: Stefan Hajnoczi <stefanha@redhat.com>
-
---ev7mvGV+3JQuI2Eo
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl/OU0IACgkQnKSrs4Gr
-c8gAeQf+MEz4NCEr2G4ywg8AHw7rf050IHblQEjkZBazrQQ706YvtfGZssxTae9f
-psRCnNLjHsZ2mFYWbtyPqI91egzIyJTNuu7odm3ILPfrXA7Lv8Uo2vZ9TNMN4+ZG
-L060RA9br9G2+DYTn7yC6M9B1a6mKdDS68rzDQSMAHns29WLSoRLYXIJBsoxd/sv
-Q9hxE1Sns6QVw/zOGCD9bre1pEWU2der61Qa4SfblpZgY9c9hXYNeKztrnznYufl
-TsFTa02ME99jRC71/mG/qoT+Nh1OEtpcJ6ZqkU2lHEaYAng800NpNTIOaqEMmEZV
-DfiQZ9kcrCzp+QXcuRpFFk/5rcaGdg==
-=tZ45
------END PGP SIGNATURE-----
-
---ev7mvGV+3JQuI2Eo--
+>
+> Note that if a driver uses 16KB of memory to hold a 1500 bytes packet,
+> then a 10 MSS GRO packet is consuming 160 KB of memory,
+> which is bigger than tcp_rmem[1]. TCP could decide to drop these fat packets.
+>
+> I wonder if your patch does not work around a more fundamental issue,
+> I am still unable to reproduce the issue.
