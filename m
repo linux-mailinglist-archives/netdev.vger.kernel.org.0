@@ -2,172 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D2632D1246
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 14:39:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1D312D124C
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 14:40:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726743AbgLGNjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 08:39:17 -0500
-Received: from szxga08-in.huawei.com ([45.249.212.255]:2332 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726122AbgLGNjQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 08:39:16 -0500
-Received: from DGGEMM406-HUB.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4CqPWF1NL2z13R8f;
-        Mon,  7 Dec 2020 21:37:29 +0800 (CST)
-Received: from DGGEMM533-MBX.china.huawei.com ([169.254.5.12]) by
- DGGEMM406-HUB.china.huawei.com ([10.3.20.214]) with mapi id 14.03.0487.000;
- Mon, 7 Dec 2020 21:38:15 +0800
-From:   wangyunjian <wangyunjian@huawei.com>
-To:     Jason Wang <jasowang@redhat.com>, "mst@redhat.com" <mst@redhat.com>
-CC:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Lilijun (Jerry)" <jerry.lilijun@huawei.com>,
-        xudingke <xudingke@huawei.com>
-Subject: RE: [PATCH net-next] tun: fix ubuf refcount incorrectly on error
- path
-Thread-Topic: [PATCH net-next] tun: fix ubuf refcount incorrectly on error
- path
-Thread-Index: AQHWyUqLZoQlE8d/xU2MJtVcCf2EEanl77iAgADJFmCAA8e/AIABKRXA
-Date:   Mon, 7 Dec 2020 13:38:14 +0000
-Message-ID: <34EFBCA9F01B0748BEB6B629CE643AE60DB5CD27@DGGEMM533-MBX.china.huawei.com>
-References: <1606982459-41752-1-git-send-email-wangyunjian@huawei.com>
- <094f1828-9a73-033e-b1ca-43b73588d22b@redhat.com>
- <34EFBCA9F01B0748BEB6B629CE643AE60DB4E07B@dggemm513-mbx.china.huawei.com>
- <e972e42b-4344-31dc-eb4c-d963adb08a5c@redhat.com>
-In-Reply-To: <e972e42b-4344-31dc-eb4c-d963adb08a5c@redhat.com>
-Accept-Language: en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.243.127]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726569AbgLGNjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 08:39:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60570 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726320AbgLGNjy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 08:39:54 -0500
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13A1BC0613D0;
+        Mon,  7 Dec 2020 05:39:14 -0800 (PST)
+Received: by mail-lf1-x142.google.com with SMTP id s30so18105175lfc.4;
+        Mon, 07 Dec 2020 05:39:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=haYuw1U4BccfG85AJy6UKy/JEpo0rY/0T3AlACW5eW4=;
+        b=lceDpgpB9ECdPjkXDCjqSD76y2sf7IL7RnMhU+Ifuy7i3KpyVwh2imPRzT0C+BgeYg
+         /iiQm7H6G7jPx9csy3+70wnE1XutohYO7T4sQ08F1D8U0DB7yhYSDTTNKhE0ucw3OafR
+         2Kl0Kr1g7qI6+yNQEIuz/TprMqtZ0S/HhLi9Ezv61z+GSOn2Q2V3IUZR+Hq+1NxZ+qjI
+         VY8JlFUYxk3S0Hmg14AN6rxEleYI2P+KJILLG6iAWF9GYi6bySFK3jNPYu1lTQjc4+0R
+         uFtcwq+GmqHAo4D7Pnk0YS6NqvVFuz+MYbuNbGEaRWc1EkObGXQXAbE0fctyr+/jQoaR
+         iD2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=haYuw1U4BccfG85AJy6UKy/JEpo0rY/0T3AlACW5eW4=;
+        b=AFeUW+4WaF0s4RL1BezdUcJjZPNVqrnJa67vFX0g5eRnugoh0JNtLd0sa0UpRqpRQM
+         WKI8IWFpUCY7sypyc6rdzjvkF9xn9ckFz0sd5H9r4ZqPXaIqHUIQABjCkVtdSIot0BAp
+         tUarrCTsU5K+d7mvRzD2OpjON/jNc2e2LMC4TRQwFKiGd+lOBmbVkUMaupzXsi2yJ5WZ
+         4yMOaJWo7VtGxJGSy1qwuZsHjNUPo1k0gkpdGOWRIQAgw8OtlMNgvbPKSy1brYV8upDa
+         1TMBrqLCf+lPFceWxYvVDPtzESYz4WE/Aaxx9T4PYe7MoIQmycvZVFD8vi0TTMpRK4nW
+         ULAg==
+X-Gm-Message-State: AOAM533t8hf2lXJuC8ExnJIzoZPLRnUsMR0pQrCrQfj7upiw6iScpEKu
+        ohRjeecSEt2us970BsqDiMm8klbCKhRDl35fXZiohfLXdQM=
+X-Google-Smtp-Source: ABdhPJwoN1WM78qhNmeSV1jQdAIJRuuMdGsVjs9ehZ8oLCLbit/50ecVgvmX0kPu1ATZkmyjnG387KSnFyzc3iJpyDA=
+X-Received: by 2002:a19:384d:: with SMTP id d13mr5444839lfj.548.1607348352610;
+ Mon, 07 Dec 2020 05:39:12 -0800 (PST)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+References: <20201207113827.2902-1-bongsu.jeon@samsung.com> <20201207115147.GA26206@kozik-lap>
+In-Reply-To: <20201207115147.GA26206@kozik-lap>
+From:   Bongsu Jeon <bongsu.jeon2@gmail.com>
+Date:   Mon, 7 Dec 2020 22:39:01 +0900
+Message-ID: <CACwDmQDHXwqzmUE_jEmPcJnCcPrzn=7qT=4rp1MF3s30OM7uTQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] nfc: s3fwrn5: Change irqflags
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Bongsu Jeon <bongsu.jeon@samsung.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmFzb24gV2FuZyBbbWFp
-bHRvOmphc293YW5nQHJlZGhhdC5jb21dDQo+IFNlbnQ6IE1vbmRheSwgRGVjZW1iZXIgNywgMjAy
-MCAxMTo1NCBBTQ0KPiBUbzogd2FuZ3l1bmppYW4gPHdhbmd5dW5qaWFuQGh1YXdlaS5jb20+OyBt
-c3RAcmVkaGF0LmNvbQ0KPiBDYzogdmlydHVhbGl6YXRpb25AbGlzdHMubGludXgtZm91bmRhdGlv
-bi5vcmc7IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IExpbGlqdW4NCj4gKEplcnJ5KSA8amVycnku
-bGlsaWp1bkBodWF3ZWkuY29tPjsgeHVkaW5na2UgPHh1ZGluZ2tlQGh1YXdlaS5jb20+DQo+IFN1
-YmplY3Q6IFJlOiBbUEFUQ0ggbmV0LW5leHRdIHR1bjogZml4IHVidWYgcmVmY291bnQgaW5jb3Jy
-ZWN0bHkgb24gZXJyb3IgcGF0aA0KPiANCj4gDQo+IE9uIDIwMjAvMTIvNCDkuIvljYg2OjIyLCB3
-YW5neXVuamlhbiB3cm90ZToNCj4gPj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPj4g
-RnJvbTogSmFzb24gV2FuZyBbbWFpbHRvOmphc293YW5nQHJlZGhhdC5jb21dDQo+ID4+IFNlbnQ6
-IEZyaWRheSwgRGVjZW1iZXIgNCwgMjAyMCAyOjExIFBNDQo+ID4+IFRvOiB3YW5neXVuamlhbiA8
-d2FuZ3l1bmppYW5AaHVhd2VpLmNvbT47IG1zdEByZWRoYXQuY29tDQo+ID4+IENjOiB2aXJ0dWFs
-aXphdGlvbkBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZzsgbmV0ZGV2QHZnZXIua2VybmVsLm9y
-ZzsNCj4gTGlsaWp1bg0KPiA+PiAoSmVycnkpIDxqZXJyeS5saWxpanVuQGh1YXdlaS5jb20+OyB4
-dWRpbmdrZSA8eHVkaW5na2VAaHVhd2VpLmNvbT4NCj4gPj4gU3ViamVjdDogUmU6IFtQQVRDSCBu
-ZXQtbmV4dF0gdHVuOiBmaXggdWJ1ZiByZWZjb3VudCBpbmNvcnJlY3RseSBvbiBlcnJvciBwYXRo
-DQo+ID4+DQo+ID4+DQo+ID4+IE9uIDIwMjAvMTIvMyDkuIvljYg0OjAwLCB3YW5neXVuamlhbiB3
-cm90ZToNCj4gPj4+IEZyb206IFl1bmppYW4gV2FuZyA8d2FuZ3l1bmppYW5AaHVhd2VpLmNvbT4N
-Cj4gPj4+DQo+ID4+PiBBZnRlciBzZXR0aW5nIGNhbGxiYWNrIGZvciB1YnVmX2luZm8gb2Ygc2ti
-LCB0aGUgY2FsbGJhY2sNCj4gPj4+ICh2aG9zdF9uZXRfemVyb2NvcHlfY2FsbGJhY2spIHdpbGwg
-YmUgY2FsbGVkIHRvIGRlY3JlYXNlIHRoZSByZWZjb3VudA0KPiA+Pj4gd2hlbiBmcmVlaW5nIHNr
-Yi4gQnV0IHdoZW4gYW4gZXhjZXB0aW9uIG9jY3VycyBhZnRlcndhcmRzLCB0aGUgZXJyb3INCj4g
-Pj4+IGhhbmRsaW5nIGluIHZob3N0IGhhbmRsZV90eCgpIHdpbGwgdHJ5IHRvIGRlY3JlYXNlIHRo
-ZSBzYW1lIHJlZmNvdW50DQo+ID4+PiBhZ2Fpbi4gVGhpcyBpcyB3cm9uZyBhbmQgZml4IHRoaXMg
-YnkgY2xlYXJpbmcgdWJ1Zl9pbmZvIHdoZW4gbWVldGluZw0KPiA+Pj4gZXJyb3JzLg0KPiA+Pj4N
-Cj4gPj4+IEZpeGVzOiA0NDc3MTM4ZmEwYWUgKCJ0dW46IHByb3Blcmx5IHRlc3QgZm9yIElGRl9V
-UCIpDQo+ID4+PiBGaXhlczogOTBlMzNkNDU5NDA3ICgidHVuOiBlbmFibGUgbmFwaV9ncm9fZnJh
-Z3MoKSBmb3IgVFVOL1RBUA0KPiA+Pj4gZHJpdmVyIikNCj4gPj4+DQo+ID4+PiBTaWduZWQtb2Zm
-LWJ5OiBZdW5qaWFuIFdhbmcgPHdhbmd5dW5qaWFuQGh1YXdlaS5jb20+DQo+ID4+PiAtLS0NCj4g
-Pj4+ICAgIGRyaXZlcnMvbmV0L3R1bi5jIHwgMTEgKysrKysrKysrKysNCj4gPj4+ICAgIDEgZmls
-ZSBjaGFuZ2VkLCAxMSBpbnNlcnRpb25zKCspDQo+ID4+Pg0KPiA+Pj4gZGlmZiAtLWdpdCBhL2Ry
-aXZlcnMvbmV0L3R1bi5jIGIvZHJpdmVycy9uZXQvdHVuLmMgaW5kZXgNCj4gPj4+IDJkYzE5ODhh
-ODk3My4uMzYxNGJiMWI2ZDM1IDEwMDY0NA0KPiA+Pj4gLS0tIGEvZHJpdmVycy9uZXQvdHVuLmMN
-Cj4gPj4+ICsrKyBiL2RyaXZlcnMvbmV0L3R1bi5jDQo+ID4+PiBAQCAtMTg2MSw2ICsxODYxLDEy
-IEBAIHN0YXRpYyBzc2l6ZV90IHR1bl9nZXRfdXNlcihzdHJ1Y3QgdHVuX3N0cnVjdA0KPiA+PiAq
-dHVuLCBzdHJ1Y3QgdHVuX2ZpbGUgKnRmaWxlLA0KPiA+Pj4gICAgCWlmICh1bmxpa2VseSghKHR1
-bi0+ZGV2LT5mbGFncyAmIElGRl9VUCkpKSB7DQo+ID4+PiAgICAJCWVyciA9IC1FSU87DQo+ID4+
-PiAgICAJCXJjdV9yZWFkX3VubG9jaygpOw0KPiA+Pj4gKwkJaWYgKHplcm9jb3B5KSB7DQo+ID4+
-PiArCQkJc2tiX3NoaW5mbyhza2IpLT5kZXN0cnVjdG9yX2FyZyA9IE5VTEw7DQo+ID4+PiArCQkJ
-c2tiX3NoaW5mbyhza2IpLT50eF9mbGFncyAmPSB+U0tCVFhfREVWX1pFUk9DT1BZOw0KPiA+Pj4g
-KwkJCXNrYl9zaGluZm8oc2tiKS0+dHhfZmxhZ3MgJj0gflNLQlRYX1NIQVJFRF9GUkFHOw0KPiA+
-Pj4gKwkJfQ0KPiA+Pj4gKw0KPiA+Pj4gICAgCQlnb3RvIGRyb3A7DQo+ID4+PiAgICAJfQ0KPiA+
-Pj4NCj4gPj4+IEBAIC0xODc0LDYgKzE4ODAsMTEgQEAgc3RhdGljIHNzaXplX3QgdHVuX2dldF91
-c2VyKHN0cnVjdCB0dW5fc3RydWN0DQo+ID4+PiAqdHVuLCBzdHJ1Y3QgdHVuX2ZpbGUgKnRmaWxl
-LA0KPiA+Pj4NCj4gPj4+ICAgIAkJaWYgKHVubGlrZWx5KGhlYWRsZW4gPiBza2JfaGVhZGxlbihz
-a2IpKSkgew0KPiA+Pj4gICAgCQkJYXRvbWljX2xvbmdfaW5jKCZ0dW4tPmRldi0+cnhfZHJvcHBl
-ZCk7DQo+ID4+PiArCQkJaWYgKHplcm9jb3B5KSB7DQo+ID4+PiArCQkJCXNrYl9zaGluZm8oc2ti
-KS0+ZGVzdHJ1Y3Rvcl9hcmcgPSBOVUxMOw0KPiA+Pj4gKwkJCQlza2Jfc2hpbmZvKHNrYiktPnR4
-X2ZsYWdzICY9DQo+IH5TS0JUWF9ERVZfWkVST0NPUFk7DQo+ID4+PiArCQkJCXNrYl9zaGluZm8o
-c2tiKS0+dHhfZmxhZ3MgJj0gflNLQlRYX1NIQVJFRF9GUkFHOw0KPiA+Pj4gKwkJCX0NCj4gPj4+
-ICAgIAkJCW5hcGlfZnJlZV9mcmFncygmdGZpbGUtPm5hcGkpOw0KPiA+Pj4gICAgCQkJcmN1X3Jl
-YWRfdW5sb2NrKCk7DQo+ID4+PiAgICAJCQltdXRleF91bmxvY2soJnRmaWxlLT5uYXBpX211dGV4
-KTsNCj4gPj4NCj4gPj4gSXQgbG9va3MgdG8gbWUgdGhlbiB3ZSBtaXNzIHRoZSBmYWlsdXJlIGZl
-ZWRiYWNrLg0KPiA+Pg0KPiA+PiBUaGUgaXNzdWVzIGNvbWVzIGZyb20gdGhlIGluY29uc2lzdGVu
-dCBlcnJvciBoYW5kbGluZyBpbiB0dW4uDQo+ID4+DQo+ID4+IEkgd29uZGVyIHdoZXRoZXIgd2Ug
-Y2FuIHNpbXBseSBkbyB1YXJnLT5jYWxsYmFjayh1YXJnLCBmYWxzZSkgaWYgbmVjZXNzYXJ5DQo+
-IG9uDQo+ID4+IGV2ZXJ5IGZhaWx0dXJlIHBhdGggb24gdHVuX2dldF91c2VyKCkuDQo+ID4gSG93
-IGFib3V0IHRoaXM/DQo+ID4NCj4gPiAtLS0NCj4gPiAgIGRyaXZlcnMvbmV0L3R1bi5jIHwgMjkg
-KysrKysrKysrKysrKysrKysrLS0tLS0tLS0tLS0NCj4gPiAgIDEgZmlsZSBjaGFuZ2VkLCAxOCBp
-bnNlcnRpb25zKCspLCAxMSBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9kcml2
-ZXJzL25ldC90dW4uYyBiL2RyaXZlcnMvbmV0L3R1bi5jDQo+ID4gaW5kZXggMmRjMTk4OGE4OTcz
-Li4zNmE4ZDhlYWNkN2IgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9uZXQvdHVuLmMNCj4gPiAr
-KysgYi9kcml2ZXJzL25ldC90dW4uYw0KPiA+IEBAIC0xNjM3LDYgKzE2MzcsMTkgQEAgc3RhdGlj
-IHN0cnVjdCBza19idWZmICp0dW5fYnVpbGRfc2tiKHN0cnVjdA0KPiB0dW5fc3RydWN0ICp0dW4s
-DQo+ID4gICAJcmV0dXJuIE5VTEw7DQo+ID4gICB9DQo+ID4NCj4gPiArLyogY29weSB1YnVmX2lu
-Zm8gZm9yIGNhbGxiYWNrIHdoZW4gc2tiIGhhcyBubyBlcnJvciAqLw0KPiA+ICtpbmxpbmUgc3Rh
-dGljIHR1bl9jb3B5X3VidWZfaW5mbyhzdHJ1Y3Qgc2tfYnVmZiAqc2tiLCBib29sIHplcm9jb3B5
-LCB2b2lkDQo+ICptc2dfY29udHJvbCkNCj4gPiArew0KPiA+ICsJaWYgKHplcm9jb3B5KSB7DQo+
-ID4gKwkJc2tiX3NoaW5mbyhza2IpLT5kZXN0cnVjdG9yX2FyZyA9IG1zZ19jb250cm9sOw0KPiA+
-ICsJCXNrYl9zaGluZm8oc2tiKS0+dHhfZmxhZ3MgfD0gU0tCVFhfREVWX1pFUk9DT1BZOw0KPiA+
-ICsJCXNrYl9zaGluZm8oc2tiKS0+dHhfZmxhZ3MgfD0gU0tCVFhfU0hBUkVEX0ZSQUc7DQo+ID4g
-Kwl9IGVsc2UgaWYgKG1zZ19jb250cm9sKSB7DQo+ID4gKwkJc3RydWN0IHVidWZfaW5mbyAqdWFy
-ZyA9IG1zZ19jb250cm9sOw0KPiA+ICsJCXVhcmctPmNhbGxiYWNrKHVhcmcsIGZhbHNlKTsNCj4g
-PiArCX0NCj4gPiArfQ0KPiA+ICsNCj4gPiAgIC8qIEdldCBwYWNrZXQgZnJvbSB1c2VyIHNwYWNl
-IGJ1ZmZlciAqLw0KPiA+ICAgc3RhdGljIHNzaXplX3QgdHVuX2dldF91c2VyKHN0cnVjdCB0dW5f
-c3RydWN0ICp0dW4sIHN0cnVjdCB0dW5fZmlsZSAqdGZpbGUsDQo+ID4gICAJCQkgICAgdm9pZCAq
-bXNnX2NvbnRyb2wsIHN0cnVjdCBpb3ZfaXRlciAqZnJvbSwNCj4gPiBAQCAtMTgxMiwxNiArMTgy
-NSw2IEBAIHN0YXRpYyBzc2l6ZV90IHR1bl9nZXRfdXNlcihzdHJ1Y3QgdHVuX3N0cnVjdA0KPiAq
-dHVuLCBzdHJ1Y3QgdHVuX2ZpbGUgKnRmaWxlLA0KPiA+ICAgCQlicmVhazsNCj4gPiAgIAl9DQo+
-ID4NCj4gPiAtCS8qIGNvcHkgc2tiX3VidWZfaW5mbyBmb3IgY2FsbGJhY2sgd2hlbiBza2IgaGFz
-IG5vIGVycm9yICovDQo+ID4gLQlpZiAoemVyb2NvcHkpIHsNCj4gPiAtCQlza2Jfc2hpbmZvKHNr
-YiktPmRlc3RydWN0b3JfYXJnID0gbXNnX2NvbnRyb2w7DQo+ID4gLQkJc2tiX3NoaW5mbyhza2Ip
-LT50eF9mbGFncyB8PSBTS0JUWF9ERVZfWkVST0NPUFk7DQo+ID4gLQkJc2tiX3NoaW5mbyhza2Ip
-LT50eF9mbGFncyB8PSBTS0JUWF9TSEFSRURfRlJBRzsNCj4gPiAtCX0gZWxzZSBpZiAobXNnX2Nv
-bnRyb2wpIHsNCj4gPiAtCQlzdHJ1Y3QgdWJ1Zl9pbmZvICp1YXJnID0gbXNnX2NvbnRyb2w7DQo+
-ID4gLQkJdWFyZy0+Y2FsbGJhY2sodWFyZywgZmFsc2UpOw0KPiA+IC0JfQ0KPiA+IC0NCj4gPiAg
-IAlza2JfcmVzZXRfbmV0d29ya19oZWFkZXIoc2tiKTsNCj4gPiAgIAlza2JfcHJvYmVfdHJhbnNw
-b3J0X2hlYWRlcihza2IpOw0KPiA+ICAgCXNrYl9yZWNvcmRfcnhfcXVldWUoc2tiLCB0ZmlsZS0+
-cXVldWVfaW5kZXgpOw0KPiA+IEBAIC0xODMwLDYgKzE4MzMsNyBAQCBzdGF0aWMgc3NpemVfdCB0
-dW5fZ2V0X3VzZXIoc3RydWN0IHR1bl9zdHJ1Y3QgKnR1biwNCj4gc3RydWN0IHR1bl9maWxlICp0
-ZmlsZSwNCj4gPiAgIAkJc3RydWN0IGJwZl9wcm9nICp4ZHBfcHJvZzsNCj4gPiAgIAkJaW50IHJl
-dDsNCj4gPg0KPiA+ICsJCXR1bl9jb3B5X3VidWZfaW5mbyhza2IsIHplcm9jb3B5LCBtc2dfY29u
-dHJvbCk7DQo+IA0KPiANCj4gSWYgeW91IHRoaW5rIGRpc2FibGluZyB6ZXJvY29weSBmb3IgWERQ
-ICh3aGljaCBJIHRoaW5rIGl0IG1ha2VzIHNlbnNlKS4NCj4gSXQncyBiZXR0ZXIgdG8gZG8gdGhp
-cyBpbiBhbm90aGVyIHBhdGNoLg0KPiANCj4gDQo+ID4gICAJCWxvY2FsX2JoX2Rpc2FibGUoKTsN
-Cj4gPiAgIAkJcmN1X3JlYWRfbG9jaygpOw0KPiA+ICAgCQl4ZHBfcHJvZyA9IHJjdV9kZXJlZmVy
-ZW5jZSh0dW4tPnhkcF9wcm9nKTsNCj4gPiBAQCAtMTg4MCw3ICsxODg0LDcgQEAgc3RhdGljIHNz
-aXplX3QgdHVuX2dldF91c2VyKHN0cnVjdCB0dW5fc3RydWN0ICp0dW4sDQo+IHN0cnVjdCB0dW5f
-ZmlsZSAqdGZpbGUsDQo+ID4gICAJCQlXQVJOX09OKDEpOw0KPiA+ICAgCQkJcmV0dXJuIC1FTk9N
-RU07DQo+ID4gICAJCX0NCj4gPiAtDQo+ID4gKwkJdHVuX2NvcHlfdWJ1Zl9pbmZvKHNrYiwgemVy
-b2NvcHksIG1zZ19jb250cm9sKTsNCj4gDQo+IA0KPiBBbmQgZm9yIE5BUEkgZnJhZ3MuDQo+IA0K
-PiANCj4gPiAgIAkJbG9jYWxfYmhfZGlzYWJsZSgpOw0KPiA+ICAgCQluYXBpX2dyb19mcmFncygm
-dGZpbGUtPm5hcGkpOw0KPiA+ICAgCQlsb2NhbF9iaF9lbmFibGUoKTsNCj4gPiBAQCAtMTg4OSw2
-ICsxODkzLDcgQEAgc3RhdGljIHNzaXplX3QgdHVuX2dldF91c2VyKHN0cnVjdCB0dW5fc3RydWN0
-ICp0dW4sDQo+IHN0cnVjdCB0dW5fZmlsZSAqdGZpbGUsDQo+ID4gICAJCXN0cnVjdCBza19idWZm
-X2hlYWQgKnF1ZXVlID0gJnRmaWxlLT5zay5za193cml0ZV9xdWV1ZTsNCj4gPiAgIAkJaW50IHF1
-ZXVlX2xlbjsNCj4gPg0KPiA+ICsJCXR1bl9jb3B5X3VidWZfaW5mbyhza2IsIHplcm9jb3B5LCBt
-c2dfY29udHJvbCk7DQo+ID4gICAJCXNwaW5fbG9ja19iaCgmcXVldWUtPmxvY2spOw0KPiA+ICAg
-CQlfX3NrYl9xdWV1ZV90YWlsKHF1ZXVlLCBza2IpOw0KPiA+ICAgCQlxdWV1ZV9sZW4gPSBza2Jf
-cXVldWVfbGVuKHF1ZXVlKTsNCj4gPiBAQCAtMTg5OSw4ICsxOTA0LDEwIEBAIHN0YXRpYyBzc2l6
-ZV90IHR1bl9nZXRfdXNlcihzdHJ1Y3QgdHVuX3N0cnVjdA0KPiAqdHVuLCBzdHJ1Y3QgdHVuX2Zp
-bGUgKnRmaWxlLA0KPiA+DQo+ID4gICAJCWxvY2FsX2JoX2VuYWJsZSgpOw0KPiA+ICAgCX0gZWxz
-ZSBpZiAoIUlTX0VOQUJMRUQoQ09ORklHXzRLU1RBQ0tTKSkgew0KPiA+ICsJCXR1bl9jb3B5X3Vi
-dWZfaW5mbyhza2IsIHplcm9jb3B5LCBtc2dfY29udHJvbCk7DQo+ID4gICAJCXR1bl9yeF9iYXRj
-aGVkKHR1biwgdGZpbGUsIHNrYiwgbW9yZSk7DQo+ID4gICAJfSBlbHNlIHsNCj4gPiArCQl0dW5f
-Y29weV91YnVmX2luZm8oc2tiLCB6ZXJvY29weSwgbXNnX2NvbnRyb2wpOw0KPiA+ICAgCQluZXRp
-Zl9yeF9uaShza2IpOw0KPiA+ICAgCX0NCj4gPiAgIAlyY3VfcmVhZF91bmxvY2soKTsNCj4gDQo+
-IA0KPiBTbyBpdCBsb29rcyB0byBtZSB5b3Ugd2FudCB0byBkaXNhYmxlIHplcm9jb3B5IGluIGFs
-bCBvZiB0aGUgcG9zc2libGUNCj4gZGF0YXBhdGg/DQoNCkkgdGhpbmsgdGhlIG5ld2x5IGFkZGVk
-IGNvZGUgaXMgZWFzeSB0byBtaXNzIHRoaXMgcHJvYmxlbSwgc28gSSB3YW50IHRvDQpjb3B5IHVi
-dWZfaW5mbyB1bnRpbCB3ZSdyZSBzdXJlIHRoZXJlJ3Mgbm8gZXJyb3JzLg0KDQpUaGFua3MsDQpZ
-dW5qaWFuDQo+IA0KPiBUaGFua3MNCg0K
+On Mon, Dec 7, 2020 at 8:51 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+>
+> On Mon, Dec 07, 2020 at 08:38:27PM +0900, Bongsu Jeon wrote:
+> > From: Bongsu Jeon <bongsu.jeon@samsung.com>
+> >
+> > change irqflags from IRQF_TRIGGER_HIGH to IRQF_TRIGGER_RISING for stable
+> > Samsung's nfc interrupt handling.
+>
+> 1. Describe in commit title/subject the change. Just a word "change irqflags" is
+>    not enough.
+>
+Ok. I'll update it.
+
+> 2. Describe in commit message what you are trying to fix. Before was not
+>    stable? The "for stable interrupt handling" is a little bit vauge.
+>
+Usually, Samsung's NFC Firmware sends an i2c frame as below.
+
+1. NFC Firmware sets the gpio(interrupt pin) high when there is an i2c
+frame to send.
+2. If the CPU's I2C master has received the i2c frame, NFC F/W sets
+the gpio low.
+
+NFC driver's i2c interrupt handler would be called in the abnormal case
+as the NFC F/W task of number 2 is delayed because of other high
+priority tasks.
+In that case, NFC driver will try to receive the i2c frame but there
+isn't any i2c frame
+to send in NFC. It would cause an I2C communication problem.
+This case would hardly happen.
+But, I changed the interrupt as a defense code.
+If Driver uses the TRIGGER_RISING not LEVEL trigger, there would be no problem
+even if the NFC F/W task is delayed.
+
+> 3. This is contradictory to the bindings and current DTS. I think the
+>    driver should not force the specific trigger type because I could
+>    imagine some configuration that the actual interrupt to the CPU is
+>    routed differently.
+>
+>    Instead, how about removing the trigger flags here and fixing the DTS
+>    and bindings example?
+>
+
+As I mentioned before,
+I changed this code because of Samsung NFC's I2C Communication way.
+So, I think that it is okay for the nfc driver to force the specific
+trigger type( EDGE_RISING).
+
+What do you think about it?
+
+> Best regards,
+> Krzysztof
+>
+> >
+> > Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
+> > ---
+> >  drivers/nfc/s3fwrn5/i2c.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/nfc/s3fwrn5/i2c.c b/drivers/nfc/s3fwrn5/i2c.c
+> > index e1bdde105f24..016f6b6df849 100644
+> > --- a/drivers/nfc/s3fwrn5/i2c.c
+> > +++ b/drivers/nfc/s3fwrn5/i2c.c
+> > @@ -213,7 +213,7 @@ static int s3fwrn5_i2c_probe(struct i2c_client *client,
+> >               return ret;
+> >
+> >       ret = devm_request_threaded_irq(&client->dev, phy->i2c_dev->irq, NULL,
+> > -             s3fwrn5_i2c_irq_thread_fn, IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
+> > +             s3fwrn5_i2c_irq_thread_fn, IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+> >               S3FWRN5_I2C_DRIVER_NAME, phy);
+> >       if (ret)
+> >               s3fwrn5_remove(phy->common.ndev);
+> > --
+> > 2.17.1
+> >
