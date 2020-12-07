@@ -2,165 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F11B22D194A
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 20:19:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE5772D1959
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 20:22:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726484AbgLGTSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 14:18:05 -0500
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:36836 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726190AbgLGTSF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 14:18:05 -0500
-Received: by mail-ot1-f68.google.com with SMTP id y24so13580133otk.3;
-        Mon, 07 Dec 2020 11:17:43 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fCRZf27KCzHad5WZLnZkBV55sQARhbTu3t54+W99mFA=;
-        b=CLBJhQpKrMvl0SArzBg8++7hU4NC3RZ2KmLz+73bborzHVoBURRIVka3cTOgU8+Wji
-         T8QSsXsQ9I3io+IkVwo26YQMVTm3WUrMDJ0ke8wu7USxgoG1SIYWJcb5SHbnn1eUIuqy
-         dMFArCdOu29OpNHr1wY2Q+MdQSOMuYn+GvGzjilFmNa80BqXpjz1YEj3kE1kgSAp91yp
-         9v0EKFLTdXnA7dVJbp9vRIXaqs+4HWwfxs6f1epYuXcKnQ4LGKhp2VuIS6L5g18OF8+d
-         re/+NE579ZcIrsh10gfWMcnW9InnW7zfsS2+MxYoiAEr2DnVrIjnKWoBKzGJ2sF/RPLG
-         LJvA==
-X-Gm-Message-State: AOAM531OzcW2tAuJjWrQ7ju4yibyfJc320HoCuhvn2pn4JSWqfGIaffY
-        jqzflQNqqxOv9aUi7y0gDg==
-X-Google-Smtp-Source: ABdhPJxOcM2rTcPsyK/KYZTCJtx3mitXqFETRnqOhCLb+UY5aC/5c20oRk/sXbC1WHrbkoN5evIjFg==
-X-Received: by 2002:a9d:10d:: with SMTP id 13mr14224641otu.8.1607368638252;
-        Mon, 07 Dec 2020 11:17:18 -0800 (PST)
-Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id k10sm3019614otb.81.2020.12.07.11.17.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Dec 2020 11:17:17 -0800 (PST)
-Received: (nullmailer pid 650679 invoked by uid 1000);
-        Mon, 07 Dec 2020 19:17:16 -0000
-Date:   Mon, 7 Dec 2020 13:17:16 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, jianxin.pan@amlogic.com,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        khilman@baylibre.com, narmstrong@baylibre.com,
-        jbrunet@baylibre.com, andrew@lunn.ch, f.fainelli@gmail.com
-Subject: Re: [PATCH RFC v2 1/5] dt-bindings: net: dwmac-meson: use
- picoseconds for the RGMII RX delay
-Message-ID: <20201207191716.GA647149@robh.at.kernel.org>
-References: <20201115185210.573739-1-martin.blumenstingl@googlemail.com>
- <20201115185210.573739-2-martin.blumenstingl@googlemail.com>
+        id S1726265AbgLGTUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 14:20:44 -0500
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:45943 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725816AbgLGTUo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 14:20:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1607368843; x=1638904843;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=hxKTfM//5YEvZ6W0CS6LHyswofJMOPaGP5WLOMDbBQk=;
+  b=RxsUW+rzYx+Qd8NF0xHiYLjI+LRYAQTUgpXi3iU2xCJsWrBZsVPUjgbF
+   dpF3QJY7gVACMSytrJWCcra2NiQz12U8PAx8LvMqy4/kNlZAeFE2TwWbJ
+   lDRkj2MAhP8SC+iEEcFMq00DXjpQcLJBYTbWJUvao7itrQ77fmQJcjdn0
+   Y=;
+X-IronPort-AV: E=Sophos;i="5.78,400,1599523200"; 
+   d="scan'208";a="69636348"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2b-c300ac87.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 07 Dec 2020 19:20:06 +0000
+Received: from EX13D16EUB003.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-2b-c300ac87.us-west-2.amazon.com (Postfix) with ESMTPS id 75049A1892;
+        Mon,  7 Dec 2020 19:18:17 +0000 (UTC)
+Received: from 38f9d34ed3b1.ant.amazon.com (10.43.162.146) by
+ EX13D16EUB003.ant.amazon.com (10.43.166.99) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 7 Dec 2020 19:18:11 +0000
+Subject: Re: [PATCH net-next v2 0/4] vsock: Add flags field in the vsock
+ address
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        David Duncan <davdunc@amazon.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Alexander Graf <graf@amazon.de>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>
+References: <20201204170235.84387-1-andraprs@amazon.com>
+ <20201207100525.v4z7rlewnwubjphu@steredhat>
+From:   "Paraschiv, Andra-Irina" <andraprs@amazon.com>
+Message-ID: <eb53647a-dbf4-ace4-3cf8-a55c1fbb0c7a@amazon.com>
+Date:   Mon, 7 Dec 2020 21:18:02 +0200
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:78.0)
+ Gecko/20100101 Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201115185210.573739-2-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20201207100525.v4z7rlewnwubjphu@steredhat>
+Content-Language: en-US
+X-Originating-IP: [10.43.162.146]
+X-ClientProxiedBy: EX13D44UWC002.ant.amazon.com (10.43.162.169) To
+ EX13D16EUB003.ant.amazon.com (10.43.166.99)
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 15, 2020 at 07:52:06PM +0100, Martin Blumenstingl wrote:
-> Amlogic Meson G12A, G12B and SM1 SoCs have a more advanced RGMII RX
-> delay register which allows picoseconds precision. Deprecate the old
-> "amlogic,rx-delay-ns" in favour of a new "amlogic,rgmii-rx-delay-ps"
-> property.
-> 
-> For older SoCs the only known supported values were 0ns and 2ns. The new
-> SoCs have 200ps precision and support RGMII RX delays between 0ps and
-> 3000ps.
-> 
-> While here, also update the description of the RX delay to indicate
-> that:
-> - with "rgmii" or "rgmii-id" the RX delay should be specified
-> - with "rgmii-id" or "rgmii-rxid" the RX delay is added by the PHY so
->   any configuration on the MAC side is ignored
-> - with "rmii" the RX delay is not applicable and any configuration is
->   ignored
-> 
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> ---
->  .../bindings/net/amlogic,meson-dwmac.yaml     | 61 +++++++++++++++++--
->  1 file changed, 56 insertions(+), 5 deletions(-)
+CgpPbiAwNy8xMi8yMDIwIDEyOjA1LCBTdGVmYW5vIEdhcnphcmVsbGEgd3JvdGU6Cj4KPiBIaSBB
+bmRyYSwKPgo+IE9uIEZyaSwgRGVjIDA0LCAyMDIwIGF0IDA3OjAyOjMxUE0gKzAyMDAsIEFuZHJh
+IFBhcmFzY2hpdiB3cm90ZToKPj4gdnNvY2sgZW5hYmxlcyBjb21tdW5pY2F0aW9uIGJldHdlZW4g
+dmlydHVhbCBtYWNoaW5lcyBhbmQgdGhlIGhvc3QgCj4+IHRoZXkgYXJlCj4+IHJ1bm5pbmcgb24u
+IE5lc3RlZCBWTXMgY2FuIGJlIHNldHVwIHRvIHVzZSB2c29jayBjaGFubmVscywgYXMgdGhlIG11
+bHRpCj4+IHRyYW5zcG9ydCBzdXBwb3J0IGhhcyBiZWVuIGF2YWlsYWJsZSBpbiB0aGUgbWFpbmxp
+bmUgc2luY2UgdGhlIHY1LjUgCj4+IExpbnV4IGtlcm5lbAo+PiBoYXMgYmVlbiByZWxlYXNlZC4K
+Pj4KPj4gSW1wbGljaXRseSwgaWYgbm8gaG9zdC0+Z3Vlc3QgdnNvY2sgdHJhbnNwb3J0IGlzIGxv
+YWRlZCwgYWxsIHRoZSAKPj4gdnNvY2sgcGFja2V0cwo+PiBhcmUgZm9yd2FyZGVkIHRvIHRoZSBo
+b3N0LiBUaGlzIGJlaGF2aW9yIGNhbiBiZSB1c2VkIHRvIHNldHVwIAo+PiBjb21tdW5pY2F0aW9u
+Cj4+IGNoYW5uZWxzIGJldHdlZW4gc2libGluZyBWTXMgdGhhdCBhcmUgcnVubmluZyBvbiB0aGUg
+c2FtZSBob3N0LiBPbmUgCj4+IGV4YW1wbGUgY2FuCj4+IGJlIHRoZSB2c29jayBjaGFubmVscyB0
+aGF0IGNhbiBiZSBlc3RhYmxpc2hlZCB3aXRoaW4gQVdTIE5pdHJvIEVuY2xhdmVzCj4+IChzZWUg
+RG9jdW1lbnRhdGlvbi92aXJ0L25lX292ZXJ2aWV3LnJzdCkuCj4+Cj4+IFRvIGJlIGFibGUgdG8g
+ZXhwbGljaXRseSBtYXJrIGEgY29ubmVjdGlvbiBhcyBiZWluZyB1c2VkIGZvciBhIAo+PiBjZXJ0
+YWluIHVzZSBjYXNlLAo+PiBhZGQgYSBmbGFncyBmaWVsZCBpbiB0aGUgdnNvY2sgYWRkcmVzcyBk
+YXRhIHN0cnVjdHVyZS4gVGhlIAo+PiAic3ZtX3Jlc2VydmVkMSIgZmllbGQKPj4gaGFzIGJlZW4g
+cmVwdXJwb3NlZCB0byBiZSB0aGUgZmxhZ3MgZmllbGQuIFRoZSB2YWx1ZSBvZiB0aGUgZmxhZ3Mg
+Cj4+IHdpbGwgdGhlbiBiZQo+PiB0YWtlbiBpbnRvIGNvbnNpZGVyYXRpb24gd2hlbiB0aGUgdnNv
+Y2sgdHJhbnNwb3J0IGlzIGFzc2lnbmVkLiBUaGlzIAo+PiB3YXkgY2FuCj4+IGRpc3Rpbmd1aXNo
+IGJldHdlZW4gZGlmZmVyZW50IHVzZSBjYXNlcywgc3VjaCBhcyBuZXN0ZWQgVk1zIC8gbG9jYWwg
+Cj4+IGNvbW11bmljYXRpb24KPj4gYW5kIHNpYmxpbmcgVk1zLgo+Cj4gdGhlIHNlcmllcyBzZWVt
+cyBpbiBhIGdvb2Qgc2hhcGUsIEkgbGVmdCBzb21lIG1pbm9yIGNvbW1lbnRzLgo+IEkgcnVuIG15
+IHRlc3Qgc3VpdGUgKHZzb2NrX3Rlc3QsIGlwZXJmMywgbmMpIHdpdGggbmVzdGVkIFZNcyAoUUVN
+VS9LVk0pLAo+IGFuZCBldmVyeXRoaW5nIGxvb2tzIGdvb2QuCgpUaGFua3MsIFN0ZWZhbm8sIGZv
+ciByZXZpZXcgYW5kIGNoZWNraW5nIGl0IG91dCBmb3IgdGhlIG5lc3RlZCBjYXNlIGFzIHdlbGwu
+CgpJJ2xsIHNlbmQgb3V0IHYzIGluY2x1ZGluZyB0aGUgYWRkcmVzc2VkIGZlZWRiYWNrIGFuZCB0
+aGUgUmIgdGFncy4KCj4KPiBOb3RlOiBJJ2xsIGJlIG9mZmxpbmUgdG9kYXkgYW5kIHRvbW9ycm93
+LCBzbyBJIG1heSBtaXNzIGZvbGxvd3Vwcy4KCk9rLCBucCwgdGhhbmtzIGZvciB0aGUgaGVhZHMt
+dXAuCgpBbmRyYQoKCgpBbWF6b24gRGV2ZWxvcG1lbnQgQ2VudGVyIChSb21hbmlhKSBTLlIuTC4g
+cmVnaXN0ZXJlZCBvZmZpY2U6IDI3QSBTZi4gTGF6YXIgU3RyZWV0LCBVQkM1LCBmbG9vciAyLCBJ
+YXNpLCBJYXNpIENvdW50eSwgNzAwMDQ1LCBSb21hbmlhLiBSZWdpc3RlcmVkIGluIFJvbWFuaWEu
+IFJlZ2lzdHJhdGlvbiBudW1iZXIgSjIyLzI2MjEvMjAwNS4K
 
-Don't we have common properties for this now?
-
-> 
-> diff --git a/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml b/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
-> index 6b057b117aa0..62a1e92a645c 100644
-> --- a/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
-> +++ b/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
-> @@ -74,17 +74,68 @@ allOf:
->              Any configuration is ignored when the phy-mode is set to "rmii".
->  
->          amlogic,rx-delay-ns:
-> +          deprecated: true
->            enum:
->              - 0
->              - 2
->            default: 0
-> +          description:
-> +            The internal RGMII RX clock delay in nanoseconds. Deprecated, use
-> +            amlogic,rgmii-rx-delay-ps instead.
-> +
-> +        amlogic,rgmii-rx-delay-ps:
-> +          default: 0
->            description:
->              The internal RGMII RX clock delay (provided by this IP block) in
-> -            nanoseconds. When phy-mode is set to "rgmii" then the RX delay
-> -            should be explicitly configured. When the phy-mode is set to
-> -            either "rgmii-id" or "rgmii-rxid" the RX clock delay is already
-> -            provided by the PHY. Any configuration is ignored when the
-> -            phy-mode is set to "rmii".
-> +            picoseconds. When phy-mode is set to "rgmii" or "rgmii-id" then
-> +            the RX delay should be explicitly configured. When the phy-mode
-> +            is set to either "rgmii-id" or "rgmii-rxid" the RX clock delay
-> +            is already provided by the PHY so any configuration here is
-> +            ignored. Also any configuration is ignored when the phy-mode is
-> +            set to "rmii".
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - amlogic,meson8b-dwmac
-> +              - amlogic,meson8m2-dwmac
-> +              - amlogic,meson-gxbb-dwmac
-> +              - amlogic,meson-axg-dwmac
-> +    then:
-> +      properties:
-> +        amlogic,rgmii-rx-delay-ps:
-> +          enum:
-> +            - 0
-> +            - 2000
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - amlogic,meson-g12a-dwmac
-> +    then:
-> +      properties:
-> +        amlogic,rgmii-rx-delay-ps:
-> +          enum:
-> +            - 0
-> +            - 200
-> +            - 400
-> +            - 600
-> +            - 800
-> +            - 1000
-> +            - 1200
-> +            - 1400
-> +            - 1600
-> +            - 1800
-> +            - 2000
-> +            - 2200
-> +            - 2400
-> +            - 2600
-> +            - 2800
-> +            - 3000
->  
->  properties:
->    compatible:
-> -- 
-> 2.29.2
-> 
