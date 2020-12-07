@@ -2,148 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD1A52D1495
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 16:25:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44D072D14A6
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 16:30:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726698AbgLGPXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 10:23:16 -0500
-Received: from mail-vi1eur05on2055.outbound.protection.outlook.com ([40.107.21.55]:33377
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725822AbgLGPXQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Dec 2020 10:23:16 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k6hd9HntQzrwbE8UWW3mejtCzsMtr8mk/DTnLHAlGpBuo1jAr+Sa0FDQzmjxOZv+MlNk5r9R1oDupqrLw9Kna2m5KIiLHACAVbEQaDx3YB72KBbuITvk3LEQLsyh8+Pg7uCY6NAe2Ti9jku7aMo/QiFQ1VQhroRABo026s6JPyDTRN3zZWmDWkzp7SrusrYPXJR7rm+pweNu+Urhd68QQTjOfZszlmA1fFmBApRVRR6sdZWB0oejvuhUvv4tYVkAULkWeHhE9eL3EcqACJqIgkw6lV3e0GlnPhroVKirYVdmAyhxCV6WTBsWmqT3kaCa0EWJVXkojP3Fnztx+drlVg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2PMc2r8z+VGC7lx4Ey9T4izGJWIewCbbWEv26lUdjk8=;
- b=PYebXei2iJ/1kF40jIjPUEXyf4f9hvVcgAFPKaDmiVd5amLwz2YMbFS4ff3WgWeceKgSGKNNCSBXttIrgQUaZYKOUT+QPI3TBkkzA6hQuIRyVkyjcMg55av5uT8+grHrQs18QIlDcDWUcsOkZ2eaUr2UgnE6sh1b9LODuTrAwpOn0EUUNWBtBB6rA0RMEcvhcLnxgoJyl7PfQPIGAlcVgI7DCii6Nj++uAA/kraT4728CSomDS19lA8XisxLJnD9aEeFo7xIZjZQpGccXE11zdjLvQqWDChPMI+tdx+2cw1Tx1/rLLipyFntyLkUmDz7Ynl+4+WAknQNaVzVes5P2w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2PMc2r8z+VGC7lx4Ey9T4izGJWIewCbbWEv26lUdjk8=;
- b=mxvvRooRAoMo31W2TceydnRCOPOS/NOw9f+5hnIQ8jITr3luhPlnZOfADkuScXCR8B5BM3cuPchAADcKlja4ge1BJnFqhgEid+n3k6YwDcnB0OM+IWDyepAzUtTdVhRoyaophOgLHgF7wZ1hZHMsUOXfwIuAbicIKHZGCuvxiGM=
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VI1PR0402MB3616.eurprd04.prod.outlook.com (2603:10a6:803:8::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.23; Mon, 7 Dec
- 2020 15:22:27 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::2dd6:8dc:2da7:ad84]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::2dd6:8dc:2da7:ad84%5]) with mapi id 15.20.3632.021; Mon, 7 Dec 2020
- 15:22:27 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jiri Benc <jbenc@redhat.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Eric Dumazet <edumazet@google.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>
-Subject: Re: [RFC PATCH net-next 05/13] net: bonding: hold the netdev lists
- lock when retrieving device statistics
-Thread-Topic: [RFC PATCH net-next 05/13] net: bonding: hold the netdev lists
- lock when retrieving device statistics
-Thread-Index: AQHWzCvp+5zpZdZumUWV00Rtz8jGw6nq0GsAgADwxYA=
-Date:   Mon, 7 Dec 2020 15:22:26 +0000
-Message-ID: <20201207152225.hcvdq2n7ayo63f6k@skbuf>
-References: <20201206235919.393158-1-vladimir.oltean@nxp.com>
- <20201206235919.393158-6-vladimir.oltean@nxp.com>
- <20201207010040.eriknpcidft3qul6@skbuf>
-In-Reply-To: <20201207010040.eriknpcidft3qul6@skbuf>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.25.2.120]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: ae6659b6-290d-4d41-bd51-08d89ac3e7c1
-x-ms-traffictypediagnostic: VI1PR0402MB3616:
-x-microsoft-antispam-prvs: <VI1PR0402MB3616A98CEF3AE032464156E5E0CE0@VI1PR0402MB3616.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 4+8RSgmWH1pomDuv3FUdgJ4bUgepAfUBgv+6eVQWy9MaBh1Aw39GGCjtsxd+6Sm4S9Rf8AofQnTdCG55PBspkEHWXRZVE1+iREyKWDaOONgxVMFOIGjI1KSZH8VACNuCyRlAdOS8EAfEZw15kKfBJnc9H2xCKOqHeBInIWRqqlakI8kySG7NMyZalfJM9+mNAFPpg7hm2nxWAKyWBAfZnDa9LuaMbXU71T80h+xaGULJYhHEPybhDFUwPKBP/tDUHmVy3gdjfWgrUb4Hb0kKSXYy4NN5eEsJRBqF/sQIhlLFiA7zQuefI9xCJ48CSd/d
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(39860400002)(376002)(136003)(396003)(346002)(366004)(316002)(66556008)(66476007)(110136005)(2906002)(8936002)(4326008)(91956017)(7416002)(66946007)(76116006)(6486002)(83380400001)(9686003)(186003)(26005)(71200400001)(33716001)(86362001)(64756008)(478600001)(8676002)(6506007)(1076003)(6512007)(44832011)(5660300002)(54906003)(66446008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?z2GXl5GedkWqvU15kghr8xubVAEEjFi6esuJjTFaJHGOOjrn+veygX0TZVxF?=
- =?us-ascii?Q?4k44qqiwcGkke1cus8WSFhMN5tGHhIrGQsGo1/b8qlSfCEbkjYW/dX6VMjQ+?=
- =?us-ascii?Q?l+FNCjHlhodrhukZTr1XFGa7mNu70ZjW4KXF1SKupkQS4k2wPJx4iw48hGXh?=
- =?us-ascii?Q?PHAVk0rhi4ag9D2rq+hssJ1wS2yxd7ISTMhbRgz9XcsAWIUnWieIRI0Db8VX?=
- =?us-ascii?Q?sqWK6ncc/60iXbvp4/CJcb2++NjA3yQz/nrCuYJj6yGb8IOq7CWVPa9mkGVo?=
- =?us-ascii?Q?x+Hx1/FEZDJD0iATN1nJnOlLoxJL3d+l6q4LW9DolXy5vJuIMtNLMH+q3TFq?=
- =?us-ascii?Q?8aj38tftkqxclDRwJrDP//Db8hTDr3MhiSohLhCYw+SI6rrKm4Uc1II4xfaj?=
- =?us-ascii?Q?Flw1LGbh3MbyHeiyhntuaaZGPS9N6RPrxl9NOmurOPMXcNAWNtf0eEr+KaZq?=
- =?us-ascii?Q?ttM2p7MhtM4KR+O80zCC4Z2Jc8+kFqs0LFoX2TTQeYkzq3Fiyqcp1hDiQHeE?=
- =?us-ascii?Q?KsWR7IHEZ7/4pdznB2SMso4hxw0qmcf2baeFJIOIKgP8DF20p+0Ceq1Tfz/e?=
- =?us-ascii?Q?Q8QJMTrDJbkZuvS3cpV/4B8maJcvC5Tk83iQaeEJ8zy1QNjShWJk29Eix0ca?=
- =?us-ascii?Q?x6I7D/AOfjvpouyg5gTvnBd7Bnd8jpJkPJ7wrXhDYmRvrVsPltPHBF3/GrrA?=
- =?us-ascii?Q?FOBBXSJFwCR7C77dahvJKaWcVKav8Amlz5xk9ZeDV6p75ZqDB1wcJcdIYktw?=
- =?us-ascii?Q?vrrj2qIOO5sXGEIQtRDkQZTtcGh0TuVQgG8+imTPmmilPImBv+KhUryZ3a2L?=
- =?us-ascii?Q?Xemp4fECXfE/KhyHr9PayEZezDVuYXP9OmAYlTSgTdzm9dxbsF2sio/SS9dm?=
- =?us-ascii?Q?EQcwFye7oqtGHLms7JQbgnk1UcCyR8y6Dg2j88aTrkcbeJBEdvhNCbgSNK2i?=
- =?us-ascii?Q?y8hbER8UZPxYzo/XIEOstlku+ZMTFpT+LH5bQMsIxYEcU+sJwmE8Gpkc0h00?=
- =?us-ascii?Q?Oduc?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <A415556EDAC01643A8DEBF4C78892932@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1726209AbgLGP0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 10:26:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48952 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725917AbgLGP0K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 10:26:10 -0500
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C327C061793
+        for <netdev@vger.kernel.org>; Mon,  7 Dec 2020 07:25:30 -0800 (PST)
+Received: by mail-il1-x144.google.com with SMTP id r17so12469398ilo.11
+        for <netdev@vger.kernel.org>; Mon, 07 Dec 2020 07:25:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Uet7jOSWGSMmrkCLu1M1tIB1UFY2TuovlvGBTfJXDos=;
+        b=bXcPFPj7b/p9PTgaxnfklSaCtv5D3FXr72XlilxCgoH7Te/G8fvRzkps5xq3jTygKs
+         opwQZ2WxxEGGf4k58wF6Wu/xIfv6cZLBpeb6ESpHNstDcNN2atlqhrKjMgj51TsUUgRe
+         emMjGHc/GbQFLJMdsJgDkPjYKoNC033DRHtJEGoCcNioebRlKta55Z6VPTXbCPLfCVvb
+         kdweR6OSjziRs6CF3ezTWYBJCix21XaWPf04SkxxXXdTxOlmX6Qtbykp38423ggEa6Qa
+         I4HrQe85AZ6EjF0x2cVGQN2Z2tniU2F2/9cvcU1Ith70ER8LDyW/L6CCZrYYCXR+zpBQ
+         ZB/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Uet7jOSWGSMmrkCLu1M1tIB1UFY2TuovlvGBTfJXDos=;
+        b=h2Ug+8NPMJTVlI9LtRteeiONfCkFiDKARS94KN71MUqXqEa7wv7cM+4BAlBqL4XYJI
+         GnNi8CzDafD9eU1pw0BSlYwo3eFssR/xUEGRc3056tS1rzHje/VMOs/1xCAQ9wzUQEL3
+         rgQ0tSd1wVfmTA/2ak6T3QOrdNYfgmGoMd3J+SMSryjok9F0AlhsVqLAZLxJ+gbqV7JJ
+         DKF5eKCrxCvcMxygWQj5B7IfE9Q+Gnc9ihw+/Ctm7VlJNNOejTanzQ+yxC6VeFWnJngD
+         xKj5UylEuneWq9XSkNrmIbYO7YDYHn50lhjNhqQfF9a5LKG9UWqupOELh12WHVqmq0jl
+         Ecxw==
+X-Gm-Message-State: AOAM531kIe5guVe4P8/KkMh39T9tUxOlT+C2MRVp3bi6S/RDSVkW3qvL
+        lVbpVn/TNyCNgYsdhhVKw/gZLSWYWQLFGiWtaLS1zg==
+X-Google-Smtp-Source: ABdhPJwUyBnHZ0e8dS+madvprroq9nMIZZ/fa0+cNzOgpCjMXZ64sb7bWyd1XqnAk7TkvsgPDmLX8vLpTqHE2TGSz2I=
+X-Received: by 2002:a92:d0ca:: with SMTP id y10mr13211293ila.68.1607354729664;
+ Mon, 07 Dec 2020 07:25:29 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ae6659b6-290d-4d41-bd51-08d89ac3e7c1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Dec 2020 15:22:26.8980
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: QF0icC1CCykz+17saZkXEbXtT88VSMyQxV55s5CEct7ZjtnQaK4HJgz7fO4lklr036h0KewPD7bxarvIhqUbtQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3616
+References: <20201204180622.14285-1-abuehaze@amazon.com> <44E3AA29-F033-4B8E-A1BC-E38824B5B1E3@amazon.com>
+ <CANn89iJgJQfOeNr9aZHb+_Vozgd9v4S87Kf4iV=mKhuPDGLkEg@mail.gmail.com> <3F02FF08-EDA6-4DFD-8D93-479A5B05E25A@amazon.com>
+In-Reply-To: <3F02FF08-EDA6-4DFD-8D93-479A5B05E25A@amazon.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 7 Dec 2020 16:25:17 +0100
+Message-ID: <CANn89iL_5QFGQLzxxLyqfNMGiV2wF4CbkY==x5Sh5vqKOTgFtw@mail.gmail.com>
+Subject: Re: [PATCH net-next] tcp: optimise receiver buffer autotuning
+ initialisation for high latency connections
+To:     "Mohamed Abuelfotoh, Hazem" <abuehaze@amazon.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        "ycheng@google.com" <ycheng@google.com>,
+        "ncardwell@google.com" <ncardwell@google.com>,
+        "weiwan@google.com" <weiwan@google.com>,
+        "Strohman, Andy" <astroh@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 07, 2020 at 03:00:40AM +0200, Vladimir Oltean wrote:
-> There is a very obvious deadlock here which happens when we have
-> bond-over-bond and the upper calls dev_get_stats from the lower.
+On Sat, Dec 5, 2020 at 1:03 PM Mohamed Abuelfotoh, Hazem
+<abuehaze@amazon.com> wrote:
 >
-> Conceptually, the same can happen even in any number of stacking
-> combinations between bonding, net_failover, [ insert any other driver
-> that takes net->netdev_lists_lock here ].
+> Unfortunately few things are missing in this report.
 >
-> There would be two approaches trying to solve this issue:
-> - using mutex_lock_nested where we aren't sure that we are top level
-> - ensuring through convention that user space always takes
->   net->netdev_lists_lock when calling dev_get_stats, and documenting
->   that, and therefore making it unnecessary to lock in bonding.
+>     What is the RTT between hosts in your test ?
+>      >>>>>RTT in my test is 162 msec, but I am able to reproduce it with =
+lower RTTs for example I could see the issue downloading from google   endp=
+oint with RTT of 16.7 msec, as mentioned in my previous e-mail the issue is=
+ reproducible whenever RTT exceeded 12msec given that    the sender is usin=
+g bbr.
 >
-> I took neither of the two approaches (I don't really like either one too
-> much), hence [ one of ] the reasons for the RFC. Comments?
+>         RTT between hosts where I run the iperf test.
+>         # ping 54.199.163.187
+>         PING 54.199.163.187 (54.199.163.187) 56(84) bytes of data.
+>         64 bytes from 54.199.163.187: icmp_seq=3D1 ttl=3D33 time=3D162 ms
+>         64 bytes from 54.199.163.187: icmp_seq=3D2 ttl=3D33 time=3D162 ms
+>         64 bytes from 54.199.163.187: icmp_seq=3D3 ttl=3D33 time=3D162 ms
+>         64 bytes from 54.199.163.187: icmp_seq=3D4 ttl=3D33 time=3D162 ms
+>
+>         RTT between my EC2 instances and google endpoint.
+>         # ping 172.217.4.240
+>         PING 172.217.4.240 (172.217.4.240) 56(84) bytes of data.
+>         64 bytes from 172.217.4.240: icmp_seq=3D1 ttl=3D101 time=3D16.7 m=
+s
+>         64 bytes from 172.217.4.240: icmp_seq=3D2 ttl=3D101 time=3D16.7 m=
+s
+>         64 bytes from 172.217.4.240: icmp_seq=3D3 ttl=3D101 time=3D16.7 m=
+s
+>         64 bytes from 172.217.4.240: icmp_seq=3D4 ttl=3D101 time=3D16.7 m=
+s
+>
+>     What driver is used at the receiving side ?
+>       >>>>>>I am using ENA driver version version: 2.2.10g on the receive=
+r with scatter gathering enabled.
+>
+>         # ethtool -k eth0 | grep scatter-gather
+>         scatter-gather: on
+>                 tx-scatter-gather: on
+>                 tx-scatter-gather-fraglist: off [fixed]
 
-And there are also issues which are more subtle (or maybe just to me, at
-the time I wrote the patch). Like the fact that the netdev adjacency
-lists are not protected by net->netdev_lists_lock, but still by the RTNL
-mutex and RCU. I think that in order for the iteration through lower
-interfaces to capture a consistent state of the adjancency lists of all
-interfaces, the __netdev_adjacent_dev_link_lists and
-__netdev_adjacent_dev_unlink_lists functions would need to be run under
-the net->netdev_lists_lock, and not just under some lock per-netdev.
-But this is raising the locking domain covered by net->netdev_lists_lock
-to more than I initially intended. I'll try to do this and see how it
-works.=
+This ethtool output refers to TX scatter gather, which is not relevant
+for this bug.
+
+I see ENA driver might use 16 KB per incoming packet (if ENA_PAGE_SIZE is 1=
+6 KB)
+
+Since I can not reproduce this problem with another NIC on x86, I
+really wonder if this is not an issue with ENA driver on PowerPC
+perhaps ?
