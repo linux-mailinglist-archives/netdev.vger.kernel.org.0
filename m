@@ -2,81 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B17B32D1DC0
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 23:52:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 961AF2D1DC2
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 23:52:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727929AbgLGWuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 17:50:18 -0500
-Received: from mga17.intel.com ([192.55.52.151]:13846 "EHLO mga17.intel.com"
+        id S1727971AbgLGWur (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 17:50:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43978 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726120AbgLGWuR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Dec 2020 17:50:17 -0500
-IronPort-SDR: 5knJ8AEKSCNvQXMh9dNmeN7jNZ6aLjXDZ68CHhwLeIuJeoL3HIUwmMfTb0jjYYQFmh3AXGUgHn
- wi0VInFLMV5A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9828"; a="153603944"
-X-IronPort-AV: E=Sophos;i="5.78,400,1599548400"; 
-   d="scan'208";a="153603944"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2020 14:49:37 -0800
-IronPort-SDR: ODaUQAZ3BLah67IoOPHBxkxghvSngj6ZE1icJN47RQSI6jfpBzXINHyN680/1x7+uJG0VY1Um6
- fZyEaFblKuKw==
-X-IronPort-AV: E=Sophos;i="5.78,400,1599548400"; 
-   d="scan'208";a="370135684"
-Received: from seherahx-mobl1.amr.corp.intel.com (HELO ellie) ([10.209.17.196])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2020 14:49:36 -0800
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, m-karicheri2@ti.com, vladimir.oltean@nxp.com,
-        Jose.Abreu@synopsys.com, po.liu@nxp.com,
-        intel-wired-lan@lists.osuosl.org, anthony.l.nguyen@intel.com
-Subject: Re: [PATCH net-next v1 0/9] ethtool: Add support for frame preemption
-In-Reply-To: <20201205095021.36e1a24d@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-References: <20201202045325.3254757-1-vinicius.gomes@intel.com>
- <20201205095021.36e1a24d@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-Date:   Mon, 07 Dec 2020 14:49:35 -0800
-Message-ID: <87o8j5z0xs.fsf@intel.com>
+        id S1726120AbgLGWur (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Dec 2020 17:50:47 -0500
+Content-Type: text/plain; charset="utf-8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607381406;
+        bh=F1SHKlUoaSMySF5lG04zNADGBC4IIxqFTuq0d9GASWk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=kIZiNv34trwZrflswTPlmKsjfOM3rW+WEzSlgPYz4cZwDmwUh/zhczNcyYAw/qZmi
+         EiXB0y47O6BDKXGqF55oGfG5fKibxmz2LmjOzuq1B91iNzzqWhtWxCPOLvKCd4/PAP
+         q0fUETh/MeO9viTeXBLDtWThNux6fhfN5QfE+CorpsYFAvjMrlOo9XysDXccyBJczc
+         7cUgB1UcLMMd344cntwiZa59OHp/FJo6hmFnmfiCz+/yNX4iatKNy23ksZMskEsvXb
+         Pla9KB+7jR+Fp6enlf2lQUj1+RCoFhoj1vHCExnrkt9R1DuByolcwp7DHaLXEVsqw1
+         65soTBGrMeSBA==
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next] bpf: avoid overflows involving hash elem_size
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160738140673.13800.6309279331247475101.git-patchwork-notify@kernel.org>
+Date:   Mon, 07 Dec 2020 22:50:06 +0000
+References: <20201207182821.3940306-1-eric.dumazet@gmail.com>
+In-Reply-To: <20201207182821.3940306-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        netdev@vger.kernel.org, edumazet@google.com, bpf@vger.kernel.org,
+        syzkaller@googlegroups.com, guro@fb.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> writes:
+Hello:
 
-> On Tue,  1 Dec 2020 20:53:16 -0800 Vinicius Costa Gomes wrote:
->> $ tc qdisc replace dev $IFACE parent root handle 100 taprio \
->>       num_tc 3 \
->>       map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
->>       queues 1@0 1@1 2@2 \
->>       base-time $BASE_TIME \
->>       sched-entry S 0f 10000000 \
->>       preempt 1110 \
->>       flags 0x2 
->> 
->> The "preempt" parameter is the only difference, it configures which
->> queues are marked as preemptible, in this example, queue 0 is marked
->> as "not preemptible", so it is express, the rest of the four queues
->> are preemptible.
->
-> Does it make more sense for the individual queues to be preemptible 
-> or not, or is it better controlled at traffic class level?
-> I was looking at patch 2, and 32 queues isn't that many these days..
-> We either need a larger type there or configure this based on classes.
+This patch was applied to bpf/bpf-next.git (refs/heads/master):
 
-I can set more future proof sizes for expressing the queues, sure, but
-the issue, I think, is that frame preemption has dimishing returns with
-link speed: at 2.5G the latency improvements are on the order of single
-digit microseconds. At greater speeds the improvements are even less
-noticeable.
+On Mon,  7 Dec 2020 10:28:21 -0800 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> Use of bpf_map_charge_init() was making sure hash tables would not use more
+> than 4GB of memory.
+> 
+> Since the implicit check disappeared, we have to be more careful
+> about overflows, to support big hash tables.
+> 
+> [...]
 
-The only adapters that I see that support frame preemtion have 8 queues
-or less. 
+Here is the summary with links:
+  - [bpf-next] bpf: avoid overflows involving hash elem_size
+    https://git.kernel.org/bpf/bpf-next/c/e1868b9e36d0
 
-The idea of configuring frame preemption based on classes is
-interesting. I will play with it, and see how it looks.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-Cheers,
--- 
-Vinicius
