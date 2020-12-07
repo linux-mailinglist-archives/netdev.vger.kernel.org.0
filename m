@@ -2,250 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87B692D1633
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 17:37:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 612682D160D
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 17:36:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727742AbgLGQeg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 11:34:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33960 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727128AbgLGQee (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Dec 2020 11:34:34 -0500
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, shayagr@amazon.com, sameehj@amazon.com,
-        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
-        echaudro@redhat.com, lorenzo.bianconi@redhat.com,
-        jasowang@redhat.com
-Subject: [PATCH v5 bpf-next 14/14] bpf: update xdp_adjust_tail selftest to include multi-buffer
-Date:   Mon,  7 Dec 2020 17:32:43 +0100
-Message-Id: <6804eb7af70902fda5180b2f7494b2a671f96486.1607349924.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <cover.1607349924.git.lorenzo@kernel.org>
-References: <cover.1607349924.git.lorenzo@kernel.org>
+        id S1727060AbgLGQdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 11:33:41 -0500
+Received: from so254-31.mailgun.net ([198.61.254.31]:19932 "EHLO
+        so254-31.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726249AbgLGQdl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 11:33:41 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1607358809; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=6WOopDI/unQJHf8aMm74k1dhc1OxvbsE01SWfNkNfBs=;
+ b=vOoA6oyswIGI9lt9kQz5wyD3LJTwYWL22Pr0jUnb6ObvxGOByw+/n5UDrowucyyz3a75l2Kb
+ NjDKGYrnkatcBtNytSzWdd3tGE2CawMyJrdHwEK0PBQK6hvzTNdiNRWgANQA4xHmjEBsuSz2
+ TvFJA2NZsMMT3kPQ3ge7bNlB+8w=
+X-Mailgun-Sending-Ip: 198.61.254.31
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
+ 5fce5933ae7b105766d749a7 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 07 Dec 2020 16:32:51
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 184B6C43463; Mon,  7 Dec 2020 16:32:51 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 46670C433CA;
+        Mon,  7 Dec 2020 16:32:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 46670C433CA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [17/17] rtw88: pci: Add prototypes for .probe,
+ .remove and .shutdown
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20201126133152.3211309-18-lee.jones@linaro.org>
+References: <20201126133152.3211309-18-lee.jones@linaro.org>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     lee.jones@linaro.org, linux-kernel@vger.kernel.org,
+        Yan-Hsuan Chuang <yhchuang@realtek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20201207163251.184B6C43463@smtp.codeaurora.org>
+Date:   Mon,  7 Dec 2020 16:32:51 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eelco Chaudron <echaudro@redhat.com>
+Lee Jones <lee.jones@linaro.org> wrote:
 
-This change adds test cases for the multi-buffer scenarios when shrinking
-and growing.
+> Also strip out other duplicates from driver specific headers.
+> 
+> Ensure 'main.h' is explicitly included in 'pci.h' since the latter
+> uses some defines from the former.  It avoids issues like:
+> 
+>  from drivers/net/wireless/realtek/rtw88/rtw8822be.c:5:
+>  drivers/net/wireless/realtek/rtw88/pci.h:209:28: error: ‘RTK_MAX_TX_QUEUE_NUM’ undeclared here (not in a function); did you mean ‘RTK_MAX_RX_DESC_NUM’?
+>  209 | DECLARE_BITMAP(tx_queued, RTK_MAX_TX_QUEUE_NUM);
+>  | ^~~~~~~~~~~~~~~~~~~~
+> 
+> Fixes the following W=1 kernel build warning(s):
+> 
+>  drivers/net/wireless/realtek/rtw88/pci.c:1488:5: warning: no previous prototype for ‘rtw_pci_probe’ [-Wmissing-prototypes]
+>  1488 | int rtw_pci_probe(struct pci_dev *pdev,
+>  | ^~~~~~~~~~~~~
+>  drivers/net/wireless/realtek/rtw88/pci.c:1568:6: warning: no previous prototype for ‘rtw_pci_remove’ [-Wmissing-prototypes]
+>  1568 | void rtw_pci_remove(struct pci_dev *pdev)
+>  | ^~~~~~~~~~~~~~
+>  drivers/net/wireless/realtek/rtw88/pci.c:1590:6: warning: no previous prototype for ‘rtw_pci_shutdown’ [-Wmissing-prototypes]
+>  1590 | void rtw_pci_shutdown(struct pci_dev *pdev)
+>  | ^~~~~~~~~~~~~~~~
+> 
+> Cc: Yan-Hsuan Chuang <yhchuang@realtek.com>
+> Cc: Kalle Valo <kvalo@codeaurora.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: linux-wireless@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Lee Jones <lee.jones@linaro.org>
 
-Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- .../bpf/prog_tests/xdp_adjust_tail.c          | 105 ++++++++++++++++++
- .../bpf/progs/test_xdp_adjust_tail_grow.c     |  16 +--
- .../bpf/progs/test_xdp_adjust_tail_shrink.c   |  32 +++++-
- 3 files changed, 142 insertions(+), 11 deletions(-)
+Patch applied to wireless-drivers-next.git, thanks.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
-index d5c98f2cb12f..b936beaba797 100644
---- a/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
-@@ -130,6 +130,107 @@ void test_xdp_adjust_tail_grow2(void)
- 	bpf_object__close(obj);
- }
- 
-+void test_xdp_adjust_mb_tail_shrink(void)
-+{
-+	const char *file = "./test_xdp_adjust_tail_shrink.o";
-+	__u32 duration, retval, size, exp_size;
-+	struct bpf_object *obj;
-+	static char buf[9000];
-+	int err, prog_fd;
-+
-+	/* For the individual test cases, the first byte in the packet
-+	 * indicates which test will be run.
-+	 */
-+
-+	err = bpf_prog_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
-+	if (CHECK_FAIL(err))
-+		return;
-+
-+	/* Test case removing 10 bytes from last frag, NOT freeing it */
-+	buf[0] = 0;
-+	exp_size = sizeof(buf) - 10;
-+	err = bpf_prog_test_run(prog_fd, 1, buf, sizeof(buf),
-+				buf, &size, &retval, &duration);
-+
-+	CHECK(err || retval != XDP_TX || size != exp_size,
-+	      "9k-10b", "err %d errno %d retval %d[%d] size %d[%u]\n",
-+	      err, errno, retval, XDP_TX, size, exp_size);
-+
-+	/* Test case removing one of two pages, assuming 4K pages */
-+	buf[0] = 1;
-+	exp_size = sizeof(buf) - 4100;
-+	err = bpf_prog_test_run(prog_fd, 1, buf, sizeof(buf),
-+				buf, &size, &retval, &duration);
-+
-+	CHECK(err || retval != XDP_TX || size != exp_size,
-+	      "9k-1p", "err %d errno %d retval %d[%d] size %d[%u]\n",
-+	      err, errno, retval, XDP_TX, size, exp_size);
-+
-+	/* Test case removing two pages resulting in a non mb xdp_buff */
-+	buf[0] = 2;
-+	exp_size = sizeof(buf) - 8200;
-+	err = bpf_prog_test_run(prog_fd, 1, buf, sizeof(buf),
-+				buf, &size, &retval, &duration);
-+
-+	CHECK(err || retval != XDP_TX || size != exp_size,
-+	      "9k-2p", "err %d errno %d retval %d[%d] size %d[%u]\n",
-+	      err, errno, retval, XDP_TX, size, exp_size);
-+
-+	bpf_object__close(obj);
-+}
-+
-+void test_xdp_adjust_mb_tail_grow(void)
-+{
-+	const char *file = "./test_xdp_adjust_tail_grow.o";
-+	__u32 duration, retval, size, exp_size;
-+	static char buf[16384];
-+	struct bpf_object *obj;
-+	int err, i, prog_fd;
-+
-+	err = bpf_prog_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
-+	if (CHECK_FAIL(err))
-+		return;
-+
-+	/* Test case add 10 bytes to last frag */
-+	memset(buf, 1, sizeof(buf));
-+	size = 9000;
-+	exp_size = size + 10;
-+	err = bpf_prog_test_run(prog_fd, 1, buf, size,
-+				buf, &size, &retval, &duration);
-+
-+	CHECK(err || retval != XDP_TX || size != exp_size,
-+	      "9k+10b", "err %d retval %d[%d] size %d[%u]\n",
-+	      err, retval, XDP_TX, size, exp_size);
-+
-+	for (i = 0; i < 9000; i++)
-+		CHECK(buf[i] != 1, "9k+10b-old",
-+		      "Old data not all ok, offset %i is failing [%u]!\n",
-+		      i, buf[i]);
-+
-+	for (i = 9000; i < 9010; i++)
-+		CHECK(buf[i] != 0, "9k+10b-new",
-+		      "New data not all ok, offset %i is failing [%u]!\n",
-+		      i, buf[i]);
-+
-+	for (i = 9010; i < sizeof(buf); i++)
-+		CHECK(buf[i] != 1, "9k+10b-untouched",
-+		      "Unused data not all ok, offset %i is failing [%u]!\n",
-+		      i, buf[i]);
-+
-+	/* Test a too large grow */
-+	memset(buf, 1, sizeof(buf));
-+	size = 9001;
-+	exp_size = size;
-+	err = bpf_prog_test_run(prog_fd, 1, buf, size,
-+				buf, &size, &retval, &duration);
-+
-+	CHECK(err || retval != XDP_DROP || size != exp_size,
-+	      "9k+10b", "err %d retval %d[%d] size %d[%u]\n",
-+	      err, retval, XDP_TX, size, exp_size);
-+
-+	bpf_object__close(obj);
-+}
-+
- void test_xdp_adjust_tail(void)
- {
- 	if (test__start_subtest("xdp_adjust_tail_shrink"))
-@@ -138,4 +239,8 @@ void test_xdp_adjust_tail(void)
- 		test_xdp_adjust_tail_grow();
- 	if (test__start_subtest("xdp_adjust_tail_grow2"))
- 		test_xdp_adjust_tail_grow2();
-+	if (test__start_subtest("xdp_adjust_mb_tail_shrink"))
-+		test_xdp_adjust_mb_tail_shrink();
-+	if (test__start_subtest("xdp_adjust_mb_tail_grow"))
-+		test_xdp_adjust_mb_tail_grow();
- }
-diff --git a/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_grow.c b/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_grow.c
-index 3d66599eee2e..25ac7108a53f 100644
---- a/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_grow.c
-+++ b/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_grow.c
-@@ -7,20 +7,22 @@ int _xdp_adjust_tail_grow(struct xdp_md *xdp)
- {
- 	void *data_end = (void *)(long)xdp->data_end;
- 	void *data = (void *)(long)xdp->data;
--	unsigned int data_len;
- 	int offset = 0;
- 
- 	/* Data length determine test case */
--	data_len = data_end - data;
- 
--	if (data_len == 54) { /* sizeof(pkt_v4) */
-+	if (xdp->frame_length == 54) { /* sizeof(pkt_v4) */
- 		offset = 4096; /* test too large offset */
--	} else if (data_len == 74) { /* sizeof(pkt_v6) */
-+	} else if (xdp->frame_length == 74) { /* sizeof(pkt_v6) */
- 		offset = 40;
--	} else if (data_len == 64) {
-+	} else if (xdp->frame_length == 64) {
- 		offset = 128;
--	} else if (data_len == 128) {
--		offset = 4096 - 256 - 320 - data_len; /* Max tail grow 3520 */
-+	} else if (xdp->frame_length == 128) {
-+		offset = 4096 - 256 - 320 - xdp->frame_length; /* Max tail grow 3520 */
-+	} else if (xdp->frame_length == 9000) {
-+		offset = 10;
-+	} else if (xdp->frame_length == 9001) {
-+		offset = 4096;
- 	} else {
- 		return XDP_ABORTED; /* No matching test */
- 	}
-diff --git a/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_shrink.c b/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_shrink.c
-index 22065a9cfb25..689450414d29 100644
---- a/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_shrink.c
-+++ b/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_shrink.c
-@@ -14,14 +14,38 @@ int _version SEC("version") = 1;
- SEC("xdp_adjust_tail_shrink")
- int _xdp_adjust_tail_shrink(struct xdp_md *xdp)
- {
--	void *data_end = (void *)(long)xdp->data_end;
--	void *data = (void *)(long)xdp->data;
-+	__u8 *data_end = (void *)(long)xdp->data_end;
-+	__u8 *data = (void *)(long)xdp->data;
- 	int offset = 0;
- 
--	if (data_end - data == 54) /* sizeof(pkt_v4) */
-+	switch (xdp->frame_length) {
-+	case 54:
-+		/* sizeof(pkt_v4) */
- 		offset = 256; /* shrink too much */
--	else
-+		break;
-+	case 9000:
-+		/* Multi-buffer test cases */
-+		if (data + 1 > data_end)
-+			return XDP_DROP;
-+
-+		switch (data[0]) {
-+		case 0:
-+			offset = 10;
-+			break;
-+		case 1:
-+			offset = 4100;
-+			break;
-+		case 2:
-+			offset = 8200;
-+			break;
-+		default:
-+			return XDP_DROP;
-+		}
-+		break;
-+	default:
- 		offset = 20;
-+		break;
-+	}
- 	if (bpf_xdp_adjust_tail(xdp, 0 - offset))
- 		return XDP_DROP;
- 	return XDP_TX;
+2e86ef413ab3 rtw88: pci: Add prototypes for .probe, .remove and .shutdown
+
 -- 
-2.28.0
+https://patchwork.kernel.org/project/linux-wireless/patch/20201126133152.3211309-18-lee.jones@linaro.org/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
