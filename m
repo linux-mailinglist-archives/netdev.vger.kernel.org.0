@@ -2,145 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73D1F2D0A67
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 06:51:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45F052D0A6F
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 06:57:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726069AbgLGFvA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 00:51:00 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46022 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725799AbgLGFvA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Dec 2020 00:51:00 -0500
-Message-ID: <f7dead39f1fb882f752a31daa2bcbbcc2101e422.camel@kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607320219;
-        bh=urPYCW4DcbTsFKodt+mJMdeHSL9XRYfIR+Ew8+LQ1Bk=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=H4SLrsTfKTE/UoKHouJkm4dt5oMU9qx0OmmlDfTvPE8jWTjKWJbZlp/kRB6ik9afL
-         vOga2fnwNr9YPRZs+1hvYvbIzuzdy7IPLOhS2t/31B+N+UIIUGjohvhrvxuxfqWRR0
-         cXFsIXNi6yPkrDzPfB5xkrZwGRtWkodDIRq2/Iff7gKyGrEN0TI2uJdfjPRhwlixnq
-         j6qhzmwslxiHlG7d1FCXNDIBHKXxnc9MJs4lDkCjeSx+AdokJ/6Egla1eZhU58sN8p
-         JPljTHrp4d38SDPDv8ClY/VObJES1eysctodFQdDATYZV29t3C6twwxpDUjGcMCrzR
-         TX8QASTssvKeg==
-Subject: Re: [net-next V2 08/15] net/mlx5e: Add TX PTP port object support
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Eran Ben Elisha <eranbe@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Sun, 06 Dec 2020 21:50:17 -0800
-In-Reply-To: <20201205014927.bna4nib4jelwkxe7@skbuf>
-References: <20201203042108.232706-1-saeedm@nvidia.com>
-         <20201203042108.232706-9-saeedm@nvidia.com>
-         <20201203182908.1d25ea3f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-         <b761c676af87a4a82e3ea4f6f5aff3d1159c63e7.camel@kernel.org>
-         <20201204122613.542c2362@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-         <20201205014927.bna4nib4jelwkxe7@skbuf>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1726081AbgLGFwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 00:52:36 -0500
+Received: from smtp2.cs.stanford.edu ([171.64.64.26]:45060 "EHLO
+        smtp2.cs.Stanford.EDU" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725816AbgLGFwf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 00:52:35 -0500
+Received: from mail-lf1-f53.google.com ([209.85.167.53]:43921)
+        by smtp2.cs.Stanford.EDU with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.92.3)
+        (envelope-from <ouster@cs.stanford.edu>)
+        id 1km9RC-0003Nt-Fa
+        for netdev@vger.kernel.org; Sun, 06 Dec 2020 21:51:55 -0800
+Received: by mail-lf1-f53.google.com with SMTP id 23so3298743lfg.10
+        for <netdev@vger.kernel.org>; Sun, 06 Dec 2020 21:51:54 -0800 (PST)
+X-Gm-Message-State: AOAM5323p4F2M8gMCaaiOsICZCnkC40q7tT6uVxLGn7BY9uRJZ6AiiHd
+        rUWgAkuSYmFo8TLMp+jfW2Ajw+5xahtCS3kBzNQ=
+X-Google-Smtp-Source: ABdhPJz5tzXTnwEBvSyoj64+NEXC80RKh0rHqMRHeFs6LGokOKNMzaMGJF+8VMVPnRBN3c6j+opCkLznA+NLLKNBabk=
+X-Received: by 2002:a05:6512:2008:: with SMTP id a8mr881300lfb.259.1607320313331;
+ Sun, 06 Dec 2020 21:51:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAGXJAmx_xQr56oiak8k8MC+JPBNi+tQBtTvBRqYVsimmKtW4MA@mail.gmail.com>
+ <72f3ea21-b4bd-b5bd-f72f-be415598591f@gmail.com> <CAGXJAmwEEnhX5KBvPZmwOKF_0hhVuGfvbXsoGR=+vB8bGge1sQ@mail.gmail.com>
+ <4d5b237b-3439-8242-4d2c-b27f9fcb49ca@gmail.com>
+In-Reply-To: <4d5b237b-3439-8242-4d2c-b27f9fcb49ca@gmail.com>
+From:   John Ousterhout <ouster@cs.stanford.edu>
+Date:   Sun, 6 Dec 2020 21:51:16 -0800
+X-Gmail-Original-Message-ID: <CAGXJAmyhULC3g+UGobd_Vo3zUvaxLMLJFXZBD9OY8w4nJhNo1g@mail.gmail.com>
+Message-ID: <CAGXJAmyhULC3g+UGobd_Vo3zUvaxLMLJFXZBD9OY8w4nJhNo1g@mail.gmail.com>
+Subject: Re: GRO: can't force packet up stack immediately?
+To:     Edward Cree <ecree.xilinx@gmail.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Score: -1.0
+X-Spam-Level: 
+X-Spam-Checker-Version: SpamAssassin on smtp2.cs.Stanford.EDU
+X-Scan-Signature: 8e086a056c9d4443aaf3b84243aabc30
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2020-12-05 at 03:49 +0200, Vladimir Oltean wrote:
-> On Fri, Dec 04, 2020 at 12:26:13PM -0800, Jakub Kicinski wrote:
-> > On Fri, 04 Dec 2020 11:33:26 -0800 Saeed Mahameed wrote:
-> > > On Thu, 2020-12-03 at 18:29 -0800, Jakub Kicinski wrote:
-> > > > On Wed, 2 Dec 2020 20:21:01 -0800 Saeed Mahameed wrote:
-> > > > > Add TX PTP port object support for better TX timestamping
-> > > > > accuracy.
-> > > > > Currently, driver supports CQE based TX port timestamp.
-> > > > > Device
-> > > > > also offers TX port timestamp, which has less jitter and
-> > > > > better
-> > > > > reflects the actual time of a packet's transmit.
-> > > > 
-> > > > How much better is it?
-> > > > 
-> > > > Is the new implementation is standard compliant or just a
-> > > > "better
-> > > > guess"?
-> > > 
-> > > It is not a guess for sure, the closer to the output port you
-> > > take the
-> > > stamp the more accurate you get, this is why we need the HW
-> > > timestamp
-> > > in first place, i don't have the exact number though, but we
-> > > target to
-> > > be compliant with G.8273.2 class C, (30 nsec), and this code
-> > > allow
-> > > Linux systems to be deployed in the 5G telco edge. Where this
-> > > standard
-> > > is needed.
-> > 
-> > I see. IIRC there was also an IEEE standard which specified the
-> > exact
-> > time stamping point (i.e. SFD crosses layer X). If it's class C
-> > that
-> > answers the question, I think.
-> 
-> The ITU-T G.8273.2 specification just requires a Class C clock to
-> have a
-> maximum absolute time error under steady state of 30 ns. And taking
-> timestamps closer to the wire eliminates some clock domain crossings
-> from what is measured in the path delay, this is probably the reason
-> why
-> timestamping is more accurate, and it helps to achieve the required
-> jitter figure.
-> 
-> The IEEE standard that you're thinking of is clause "7.3.4 Generation
-> of
-> event message timestamps" of IEEE 1588.
-> 
-> -----------------------------[cut here]-----------------------------
-> 7.3.4.1 Event message timestamp point
-> 
-> Unless otherwise specified in a transport-specific annex to this
-> standard, the message timestamp point for an event message shall be
-> the
-> beginning of the first symbol after the Start of Frame (SOF)
-> delimiter.
-> 
-> 7.3.4.2 Event timestamp generation
-> 
-> All PTP event messages are timestamped on egress and ingress. The
-> timestamp shall be the time at which the event message timestamp
-> point
-> passes the reference plane marking the boundary between the PTP node
-> and
-> the network.
-> 
-> NOTE 1— If an implementation generates event message timestamps using
-> a
-> point other than the message timestamp point, then the generated
-> timestamps should be appropriately corrected by the time interval
-> between the actual time of detection and the time the message
-> timestamp
-> point passed the reference plane. Failure to make these corrections
-> results in a time offset between the slave and master clocks.
-> -----------------------------[cut here]-----------------------------
-> 
-> So there you go, it just says "the reference plane marking the
-> boundary
-> between the PTP node and the network". So it depends on how you draw
-> the
-> borders. I cannot seem to find any more precise definition.
-> 
-> Regardless of the layer at which the timestamp is taken, it is the
-> jitter that matters more than the reduced path delay. The latter is
-> just
-> a side effect.
-> 
+On Fri, Dec 4, 2020 at 3:20 AM Edward Cree <ecree.xilinx@gmail.com> wrote:
+>
+> On 03/12/2020 19:52, John Ousterhout wrote:
+> > Homa uses GRO to collect batches of packets for protocol processing,
+> > but there are times when it wants to push a batch of packet up through
+> > the stack immediately (it doesn't want any more packets to be
+> > processed at NAPI level before pushing the batch up). However, I can't
+> > see a way to achieve this goal.
+> It's kinda hacky, but you might be able to call netif_receive_skb_internal()
+>  yourself, and then return ERR_PTR(-EINPROGRESS), so that dev_gro_receive()
+>  returns GRO_CONSUMED.
+> Of course, you'd need to be careful about out-of-order issues in case
+>  any earlier homa packets were still sitting in the rx_list.
 
-SO the closer to the wire you take the stamp the less potential for
-jitter, since this is after ALL HW pipeline variable delays.
+It doesn't appear to me that this approach will work, because the
+packet I want to force up through the stack is not the new one being
+passed into homa_gro_receive, but one of the packets on the list
+passed in as the first argument (gro_head in dev_gro_receive).
+Removing a packet from this list looks tricky, because it also
+requires updating a count in the napi structure, which
+homa_gro_receive doesn't have immediate access to. I might be able to
+figure out a way to get the napi pointer, but this is starting to feel
+pretty hacky (and brittle w.r.t. kernel changes).
 
-> "How much better" is an interesting question though.
+BTW, out-of-order issues don't matter for Homa; this is one of the
+areas where the "protocol independent" parts of the networking code
+build in TCP-specific assumptions, which are either unnecessary or, in
+some cases, problematic for Homa.
 
+Thanks anyway for the suggestion.
 
+-John-
