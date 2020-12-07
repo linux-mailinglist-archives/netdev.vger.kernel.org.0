@@ -2,116 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16CD22D19B3
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 20:37:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 476AC2D19E0
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 20:42:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726853AbgLGTgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 14:36:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59918 "EHLO
+        id S1726499AbgLGTl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 14:41:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726777AbgLGTgs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 14:36:48 -0500
-Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB307C061794
-        for <netdev@vger.kernel.org>; Mon,  7 Dec 2020 11:36:07 -0800 (PST)
-Received: by mail-ot1-x341.google.com with SMTP id j12so13594898ota.7
-        for <netdev@vger.kernel.org>; Mon, 07 Dec 2020 11:36:07 -0800 (PST)
+        with ESMTP id S1725933AbgLGTl5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 14:41:57 -0500
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48C4BC061793
+        for <netdev@vger.kernel.org>; Mon,  7 Dec 2020 11:41:17 -0800 (PST)
+Received: by mail-il1-x143.google.com with SMTP id v3so13346385ilo.5
+        for <netdev@vger.kernel.org>; Mon, 07 Dec 2020 11:41:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=newoldbits-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=5RceGSUFUjLEJW2/scx8HGaoDZct6NVCXjiTK9ixz94=;
-        b=UqQDziRM06nUwkOqk9oocYn+WHozQc9sLlHnMvp+bs9W4+eRhAGuTj0f377FbXtgQ9
-         saT0UGQRIFbZPDSy6ite4iDUkUbydVukCwhEYfzEWOCSgBjrGqvaYlSEbnE7F0DjqqR0
-         q0eWqkt2F9y/LE+l9/PmIghjQstKsX5P9fSyE=
+        bh=zYJcT4hetYL0tKq9XSHGQkMfsmmcPjbj08++qXmaLCM=;
+        b=tlLC68iK8/I/THqmaQXIaoQOQrE/ecLEdQS+XINmXM3dTf2eOjXQLPBIuos5p8vsS+
+         neSdG2DpBL7mxDNw6tzUBtMAja0R9XFS/6uF1NDnAUL5SdaTK+qEsmBaxLdQosZnjKXB
+         EKdvegPEYvpZtvl6TIYbQr+M4SZORKenIW3lzqsRjuXeNLgZxpiw5UNnRgl1n92Ac1RS
+         vlfk3hF2hh25s8tG6EFo+KIJbcEvP9Ou1rr7Uh3v1i8qR1vEgdOs9jeGZDlDKlfS11Qv
+         ht+MJyi+M7ulLv3mRU67gOomblnSmoFcCWu17MVA4qKuMruBpJhsfWUdd0skLnM1/Sso
+         tGrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=5RceGSUFUjLEJW2/scx8HGaoDZct6NVCXjiTK9ixz94=;
-        b=KWxmCYhxClyG1xzkGHmBSwhVasC4Ix4wlufjJelNRKO2ZaMaNeKCSHakcUGRywRUEW
-         FD1fE2wJRvPKSqSVUCzEaRpYxt0rwl+qTyqsNTZDdeAzuZW7y8pK7e9pI2kUAOVWPn3i
-         1w3znXZk7Fu0SW/BPwcIKAEzBH3ssznMj8CPVyl8qvUqP1lO84QOWDHtuWmrldR+oyQE
-         S/QLlJAdZqWhZugSBszeNEeQUuA8FsVWLxoDvGKzr7EhjOlvI3OhqjC63jAbJPDgZ/Dr
-         rkxNm1DOzrt04o7kqacaXq7mvKD1ztrbUWCFIvWUJvsT+62BTHvvC80oOaWFaBpkwZr7
-         J3GQ==
-X-Gm-Message-State: AOAM5336EjE0oWYUv/Ui9cICV/LmZi6BDnBidBAhpalSoKk24Gv5xo9+
-        hpYB+60MQmzwTKE4rZS9OTq8db+5Y3C1Sw==
-X-Google-Smtp-Source: ABdhPJyKs74xggZtLn17kT3MzKsieOal51WrYlYeYPdTMoPvD+sx4zjwCsMFKE+UG8s93/w1bRSZng==
-X-Received: by 2002:a05:6830:1f52:: with SMTP id u18mr12609321oth.200.1607369766358;
-        Mon, 07 Dec 2020 11:36:06 -0800 (PST)
-Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com. [209.85.210.42])
-        by smtp.gmail.com with ESMTPSA id i4sm2805170oos.31.2020.12.07.11.36.05
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Dec 2020 11:36:05 -0800 (PST)
-Received: by mail-ot1-f42.google.com with SMTP id b62so13620205otc.5
-        for <netdev@vger.kernel.org>; Mon, 07 Dec 2020 11:36:05 -0800 (PST)
-X-Received: by 2002:a9d:744a:: with SMTP id p10mr3982059otk.203.1607369764576;
- Mon, 07 Dec 2020 11:36:04 -0800 (PST)
+        bh=zYJcT4hetYL0tKq9XSHGQkMfsmmcPjbj08++qXmaLCM=;
+        b=llBlN7EI9ejfBrw79VJZGld7fgIFaK38KY59sNGEMVEgVnjiKgpShzNRuZaaoKGeca
+         Vu83pSf1SJbPcfnoVIvnUeR28js3hQXoqVTtumzpybJVfeiC26/yLr9uVcUd6AvsL32m
+         ipjLFArgk2FaS30JRHHXTV8S6paP7OcmTX63ApCDcTMDewUzmpPB1IFYlrI+zVXf8DCp
+         rqx/+nOnTnBr1LgV0f65fyugmDCLums78CCsR0iGn1kAMSk6maDY2Wg8cxSqH1OTem8+
+         Xkq/HufGKym389B+lakyLQr5pJtG4g9yx+vYp16R1y/1n0Jn/Xxga1LDuYRuAZan6+je
+         BEgA==
+X-Gm-Message-State: AOAM533S26OSHqQm2chUgThZ+6pMH23at2sbcFL25GHLdZxaUbV1mrLH
+        KWG/wHyrDL906MImJR/jQ/i2AKf590nBVfhig50b4g==
+X-Google-Smtp-Source: ABdhPJw07PSB4YyIs3KMeAufuOw+D5vgUuqY57Hc8lSSbaw3ooS9fotF8itkZSUBuD7KmfK0LaQNPdkro1uTDRNSZZE=
+X-Received: by 2002:a92:130e:: with SMTP id 14mr23031339ilt.281.1607370076640;
+ Mon, 07 Dec 2020 11:41:16 -0800 (PST)
 MIME-Version: 1.0
-References: <20201203185732.9CFA5C433ED@smtp.codeaurora.org>
- <20201204111715.04d5b198@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com> <87tusxgar5.fsf@codeaurora.org>
-In-Reply-To: <87tusxgar5.fsf@codeaurora.org>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Mon, 7 Dec 2020 11:35:53 -0800
-X-Gmail-Original-Message-ID: <CA+ASDXNT+uKLLhTV0Nr-wxGkM16_OkedUyoEwx5FgV3ML9SMsQ@mail.gmail.com>
-Message-ID: <CA+ASDXNT+uKLLhTV0Nr-wxGkM16_OkedUyoEwx5FgV3ML9SMsQ@mail.gmail.com>
-Subject: Re: pull-request: wireless-drivers-next-2020-12-03
-To:     Kalle Valo <kvalo@codeaurora.org>, Jakub Kicinski <kuba@kernel.org>
-Cc:     "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>
+References: <20201201083408.51006-1-jean.pihet@newoldbits.com>
+ <20201201184100.GN2073444@lunn.ch> <CAORVsuXv5Gw18EeHwP36EkzF4nN5PeGerBQQa-6ruWAQRX+GoQ@mail.gmail.com>
+ <20201201194819.ygmrdwcpvywkszat@skbuf>
+In-Reply-To: <20201201194819.ygmrdwcpvywkszat@skbuf>
+From:   Jean Pihet <jean.pihet@newoldbits.com>
+Date:   Mon, 7 Dec 2020 20:41:05 +0100
+Message-ID: <CAORVsuWFiTo0-cX-8vbPh+bYvNyTM6NiFPaM5fij9bO4pWymyA@mail.gmail.com>
+Subject: Re: [PATCH v2] net: dsa: ksz8795: adjust CPU link to host interface
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ryan Barnett <ryan.barnett@rockwellcollins.com>,
+        Conrad Ratschan <conrad.ratschan@rockwellcollins.com>,
+        Hugo Cornelis <hugo.cornelis@essensium.com>,
+        Arnout Vandecappelle <arnout.vandecappelle@essensium.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 7, 2020 at 2:42 AM Kalle Valo <kvalo@codeaurora.org> wrote:
-> Jakub Kicinski <kuba@kernel.org> writes:
-> > On Thu,  3 Dec 2020 18:57:32 +0000 (UTC) Kalle Valo wrote:
-> > There's also a patch which looks like it renames a module parameter.
-> > Module parameters are considered uAPI.
+Hi Vladimir,
+
+On Tue, Dec 1, 2020 at 8:48 PM Vladimir Oltean <olteanv@gmail.com> wrote:
 >
-> Ah, I have been actually wondering that if they are part of user space
-> API or not, good to know that they are. I'll keep an eye of this in the
-> future so that we are not breaking the uAPI with module parameter
-> changes.
+> Hi Jean,
+>
+> On Tue, Dec 01, 2020 at 07:58:01PM +0100, Jean Pihet wrote:
+> > Hi Andrew,
+> >
+> > On Tue, Dec 1, 2020 at 7:41 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> > >
+> > > On Tue, Dec 01, 2020 at 09:34:08AM +0100, Jean Pihet wrote:
+> > > > Add support for RGMII in 100 and 1000 Mbps.
+> > > >
+> > > > Adjust the CPU port settings from the host interface settings: interface
+> > > > MII type, speed, duplex.
+> > >
+> > > Hi Jean
+> > >
+> > > You have still not explained why this is needed. Why? is always the
+> > > important question to answer in the commit message. The What? is
+> > > obvious from reading the patch. Why does you board need this, when no
+> > > over board does?
+> >
+> > I reworked the commit description about the What and thought it was
+> > enough. Do you need a cover letter to describe it more?
+> >
+> > The Why is:
+> > "
+> > Configure the host port of the switch to match the host interface
+> > settings. This is useful when the switch is directly connected to the
+> > host MAC interface.
+> > "
+> > Thank you for reviewing the patch.
+>
+> First of all, I am not clear if you want the patch merged or not. If you
+> do, then I don't understand why you did not use the ./scripts/get_maintainer.pl
+> tool to get the email addresses of the people who can help you with
+> that. No one from Microchip, not the DSA maintainers, not the networking
+> maintainer.
+My bad, I thought that sending to both LKML and netdev was enough.
 
-Is there some reference for this rule (e.g., dictate from on high; or
-some explanation of reasons)? Or limitations on it? Because as-is,
-this sounds like one could never drop a module parameter, or remove
-obsolete features. It also suggests that debug-related knobs (which
-can benefit from some amount of flexibility over time) should go
-exclusively in debugfs (where ABI guarantees are explicitly not made),
-even at the expense of usability (dropping a line into
-/etc/modprobe.d/ is hard to beat).
+>
+> Secondly, don't you get an annoying warning that you should not use
+> .adjust_link and should migrate to .phylink_mac_link_up? Why do you
+> ignore it? Did you even see it?
+No there is no warning using my arm config, both with linux and netdev kernels.
 
-That's not to say I totally disagree with the original claim, but I'm
-just interested in knowing precisely what it means.
+>
+> Thirdly, your patch is opaque and has three changes folded into one. You
+> refactor some code from ksz8795_port_setup into a separate function, you
+> add logic for the speeds of 100 and 10 for RGMII, and you call this
+> function from .adjust_link. You must justify why you need all of this,
+> and cannot just add 3 lines to ksz8795_port_setup. You must explain that
+> the ksz8795_port_setup function does not use information from device
+> tree. Then you must explain why the patch is correct.
+> The code refactored out of ksz8795_port_setup, plus the changes you've
+> added to it, looks now super weird. Half of ksz8795_mii_config treats
+> p->phydev.speed as an output variable, and half of it as an input
+> variable. To the untrained eye this looks like a hack. I'm sure you can
+> clarify. This is what Andrew wants to see.
 
-And to put a precise spin on this: what would this rule say about the following?
+Ok taking notes here, thanks for the valuable input.
 
-http://git.kernel.org/linus/f06021a18fcf8d8a1e79c5e0a8ec4eb2b038e153
-iwlwifi: remove lar_disable module parameter
+>
+> Fourth, seriously now, could you just copy Microchip people to your
+> patches? The phylink conversion was done this summer, I'm sure they can
+> help with some suggestions.
+Ok will do, and check the phylink conversion code.
 
-Should that parameter have never been introduced in the first place,
-never be removed, or something else? I think I've seen this sort of
-pattern before, where features get phased in over time, with module
-parameters as either escape hatches or as opt-in mechanisms.
-Eventually, they stabilize, and there's no need (or sometimes, it's
-actively harmful) to keep the knob around.
+Thank you for reviewing.
 
-Or the one that might (?) be in question here:
-fc3ac64a3a28 rtw88: decide lps deep mode from firmware feature.
-
-The original module parameter was useful for enabling new power-saving
-features, because the driver didn't yet know which chip(s)/firmware(s)
-were stable with which power features. Now, the driver has learned how
-to figure out the optimal power settings, so it's dropping the old
-param and adding an "escape hatch", in case there are problems.
-
-I'd say this one is a bit more subtle than the lar_disable example,
-but I'm still not sure that really qualifies as a "user-visible"
-change.
-
-Brian
+BR,
+Jean
