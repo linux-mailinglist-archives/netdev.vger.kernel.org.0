@@ -2,121 +2,258 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 955BA2D1C42
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 22:46:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E626B2D1C45
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 22:46:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727283AbgLGVoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 16:44:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43344 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725808AbgLGVoS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Dec 2020 16:44:18 -0500
-Date:   Mon, 7 Dec 2020 13:43:35 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607377417;
-        bh=ZdgCiySmxnYeCPG0fk38ET6CeRw/+tGlOaM4V7yjNFY=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=inxD7cCzD2PcOzMiozfvnpJXTywf4sbP7Ixew2J9yxnJPBOqWMOQUTo8wbWX+e0PR
-         rUYP5WNZL1iuvOqZ5Gj+QRms+1oYhusPdEE5k3bdTnKkmBbFmGogDsBslccBySLx64
-         KcW21gRyNPnXJN+qVQcRdNRZHAERUcusgYDE/VFx2fdlf2IBypZAtljx0PIen+ncgh
-         HMdpj9+3UuyQ/090OsjCpowU9lM+HNsxoCyVfX+lwwaBIzPXKU0h244QOiOnuoLTQ3
-         TV5OMRm2luTV+2RkGk++nsqsO9vBjTruiFXCROvjlmmHN8tK90dvDtYgBrLJDBvR11
-         /zOP6Q0LPyxQw==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Aleksander Jan Bajkowski <olek2@wp.pl>
-Cc:     hauke@hauke-m.de, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        robh+dt@kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] net: dsa: lantiq: allow to use all GPHYs on
- xRX300 and xRX330
-Message-ID: <20201207134335.6ef718c9@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201206132713.13452-2-olek2@wp.pl>
-References: <20201206132713.13452-1-olek2@wp.pl>
-        <20201206132713.13452-2-olek2@wp.pl>
+        id S1727483AbgLGVpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 16:45:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51782 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726196AbgLGVpC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 16:45:02 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A07FC061749
+        for <netdev@vger.kernel.org>; Mon,  7 Dec 2020 13:44:22 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mgr@pengutronix.de>)
+        id 1kmOIr-0003ep-Qy; Mon, 07 Dec 2020 22:44:17 +0100
+Received: from mgr by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <mgr@pengutronix.de>)
+        id 1kmOIp-0001Vj-KP; Mon, 07 Dec 2020 22:44:15 +0100
+Date:   Mon, 7 Dec 2020 22:44:15 +0100
+From:   Michael Grzeschik <mgr@pengutronix.de>
+To:     Tristram.Ha@microchip.com
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, davem@davemloft.net,
+        kernel@pengutronix.de, netdev@vger.kernel.org,
+        matthias.schiffer@ew.tq-group.com, Woojung.Huh@microchip.com,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH v5 3/6] net: dsa: microchip: ksz8795: move register
+ offsets and shifts to separate struct
+Message-ID: <20201207214415.GD27410@pengutronix.de>
+References: <20201207125627.30843-1-m.grzeschik@pengutronix.de>
+ <20201207125627.30843-4-m.grzeschik@pengutronix.de>
+ <BYAPR11MB3558976CEC22D7EDB99CB429ECCE0@BYAPR11MB3558.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="/3yNEOqWowh/8j+e"
+Content-Disposition: inline
+In-Reply-To: <BYAPR11MB3558976CEC22D7EDB99CB429ECCE0@BYAPR11MB3558.namprd11.prod.outlook.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 22:21:01 up 5 days,  9:47, 56 users,  load average: 0.18, 0.13, 0.13
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: mgr@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun,  6 Dec 2020 14:27:12 +0100 Aleksander Jan Bajkowski wrote:
-> This patch allows to use all PHYs on GRX300 and GRX330. The ARX300 has 3
-> and the GRX330 has 4 integrated PHYs connected to different ports compared
-> to VRX200.
->=20
-> Port configurations:
->=20
-> xRX200:
-> GMAC0: RGMII/MII/REVMII/RMII port
-> GMAC1: RGMII/MII/REVMII/RMII port
-> GMAC2: GPHY0 (GMII)
-> GMAC3: GPHY0 (MII)
-> GMAC4: GPHY1 (GMII)
-> GMAC5: GPHY1 (MII) or RGMII port
->=20
-> xRX300:
-> GMAC0: RGMII port
-> GMAC1: GPHY2 (GMII)
-> GMAC2: GPHY0 (GMII)
-> GMAC3: GPHY0 (MII)
-> GMAC4: GPHY1 (GMII)
-> GMAC5: GPHY1 (MII) or RGMII port
->=20
-> xRX330:
-> GMAC0: RGMII/GMII/RMII port
-> GMAC1: GPHY2 (GMII)
-> GMAC2: GPHY0 (GMII)
-> GMAC3: GPHY0 (MII) or GPHY3 (GMII)
-> GMAC4: GPHY1 (GMII)
-> GMAC5: GPHY1 (MII) or RGMII/RMII port
->=20
-> Tested on D-Link DWR966 with OpenWRT.
->=20
-> Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
 
-Please make sure you don't add W=3D1 C=3D1 build warnings:
+--/3yNEOqWowh/8j+e
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-In file included from ../include/linux/kasan-checks.h:5,
-                 from ../include/asm-generic/rwonce.h:26,
-                 from ./arch/x86/include/generated/asm/rwonce.h:1,
-                 from ../include/linux/compiler.h:246,
-                 from ../include/linux/err.h:5,
-                 from ../include/linux/clk.h:12,
-                 from ../drivers/net/dsa/lantiq_gswip.c:28:
-drivers/net/dsa/lantiq_gswip.c: In function =E2=80=98gswip_xrx300_phylink_v=
-alidate=E2=80=99:
-drivers/net/dsa/lantiq_gswip.c:1496:35: warning: unused variable =E2=80=98m=
-ask=E2=80=99 [-Wunused-variable]
- 1496 |  __ETHTOOL_DECLARE_LINK_MODE_MASK(mask) =3D { 0, };
-      |                                   ^~~~
-include/linux/types.h:11:16: note: in definition of macro =E2=80=98DECLARE_=
-BITMAP=E2=80=99
-   11 |  unsigned long name[BITS_TO_LONGS(bits)]
-      |                ^~~~
-drivers/net/dsa/lantiq_gswip.c:1496:2: note: in expansion of macro =E2=80=
-=98__ETHTOOL_DECLARE_LINK_MODE_MASK=E2=80=99
- 1496 |  __ETHTOOL_DECLARE_LINK_MODE_MASK(mask) =3D { 0, };
-      |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/dsa/lantiq_gswip.c: At top level:
-drivers/net/dsa/lantiq_gswip.c:2079:9: warning: initialization discards =E2=
-=80=98const=E2=80=99 qualifier from pointer target type [-Wdiscarded-qualif=
-iers]
- 2079 |  .ops =3D &gswip_xrx200_switch_ops,
-      |         ^
-drivers/net/dsa/lantiq_gswip.c:2085:9: warning: initialization discards =E2=
-=80=98const=E2=80=99 qualifier from pointer target type [-Wdiscarded-qualif=
-iers]
- 2085 |  .ops =3D &gswip_xrx300_switch_ops,
-      |         ^
-drivers/net/dsa/lantiq_gswip.c:2079:17: warning: incorrect type in initiali=
-zer (different modifiers)
-drivers/net/dsa/lantiq_gswip.c:2079:17:    expected struct dsa_switch_ops *=
-ops
-drivers/net/dsa/lantiq_gswip.c:2079:17:    got struct dsa_switch_ops const *
-drivers/net/dsa/lantiq_gswip.c:2085:17: warning: incorrect type in initiali=
-zer (different modifiers)
-drivers/net/dsa/lantiq_gswip.c:2085:17:    expected struct dsa_switch_ops *=
-ops
-drivers/net/dsa/lantiq_gswip.c:2085:17:    got struct dsa_switch_ops const *
+On Mon, Dec 07, 2020 at 08:02:57PM +0000, Tristram.Ha@microchip.com wrote:
+>> In order to get this driver used with other switches the functions need
+>> to use different offsets and register shifts. This patch changes the
+>> direct use of the register defines to register description structures,
+>> which can be set depending on the chips register layout.
+>>
+>> Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+>>
+>> ---
+>> v1 -> v4: - extracted this change from bigger previous patch
+>> v4 -> v5: - added missing variables in ksz8_r_vlan_entries
+>>           - moved shifts, masks and registers to arrays indexed by enums
+>>           - using unsigned types where possible
+>> ---
+>>  drivers/net/dsa/microchip/ksz8.h        |  69 +++++++
+>>  drivers/net/dsa/microchip/ksz8795.c     | 261 +++++++++++++++++-------
+>>  drivers/net/dsa/microchip/ksz8795_reg.h |  85 --------
+>>  3 files changed, 253 insertions(+), 162 deletions(-)
+>>  create mode 100644 drivers/net/dsa/microchip/ksz8.h
+>
+>Sorry for not respond to these patches sooner.
+>
+>There are 3 older KSZ switch families: KSZ8863/73, KSZ8895/64, and KSZ8795=
+/94.
+>The newer KSZ8795 is not considered an upgrade for KSZ8895, so some of
+>these switch registers are moved around and some features are dropped.
+>
+>It is best to have one driver to support all 3 switches, but some operatio=
+ns are
+>Incompatible so it may be better to keep the drivers separate for now.
+>
+>For basic operations those issues may not occur so it seems simple to have
+>one driver handling all 3 switches.  I will come up with a list of those
+>incompatibilities.
+
+Look into the next patch. I handled many special cases for the ksz8863
+in the "net: dsa: microchip: ksz8795: add support for ksz88xx chips".
+These cases, including the VLAN, Tagging ... are handled by checking if
+the feautre IS_88X3 is set. This can be extended to other types as well.
+
+My first version of the patches was an RFC series that was mentioning
+that it is based on your RFC series for the ksz8895.
+
+8863 RFC: https://patchwork.ozlabs.org/project/netdev/cover/20190508211330.=
+19328-1-m.grzeschik@pengutronix.de/
+
+8895 RFC: https://patchwork.ozlabs.org/patch/822712/
+
+I remember, that I was reading the datasheets of all three chips,
+8895, 8863 and 8795. After the 8795 series was mainline, the
+obvious next step was to get the 8863 into the 8795 code. The result
+is this series.
+
+So the obvious question is, how far does your 8895 series differ
+=66rom the 8863 switches?
+
+>The tail tag format of KSZ8863 is different from KSZ8895 and KSZ8795, but
+>because of the DSA driver implementation that issue never comes up.
+
+Right. In the first four series I kept an extra tail tag patch. But
+after cleaning up I figured that the Implementation matched the
+one for the KSZ9893. Therefor I reused the tag code.
+
+>> -static void ksz8_from_vlan(u16 vlan, u8 *fid, u8 *member, u8 *valid)
+>> +static void ksz8_from_vlan(struct ksz_device *dev, u32 vlan, u8 *fid,
+>> +                          u8 *member, u8 *valid)
+>>  {
+>> -       *fid =3D vlan & VLAN_TABLE_FID;
+>> -       *member =3D (vlan & VLAN_TABLE_MEMBERSHIP) >>
+>> VLAN_TABLE_MEMBERSHIP_S;
+>> -       *valid =3D !!(vlan & VLAN_TABLE_VALID);
+>> +       struct ksz8 *ksz8 =3D dev->priv;
+>> +       const u32 *masks =3D ksz8->masks;
+>> +       const u8 *shifts =3D ksz8->shifts;
+>> +
+>> +       *fid =3D vlan & masks[VLAN_TABLE_FID];
+>> +       *member =3D (vlan & masks[VLAN_TABLE_MEMBERSHIP]) >>
+>> +                       shifts[VLAN_TABLE_MEMBERSHIP_S];
+>> +       *valid =3D !!(vlan & masks[VLAN_TABLE_VALID]);
+>>  }
+>>
+>> -static void ksz8_to_vlan(u8 fid, u8 member, u8 valid, u16 *vlan)
+>> +static void ksz8_to_vlan(struct ksz_device *dev, u8 fid, u8 member, u8
+>> valid,
+>> +                        u32 *vlan)
+>>  {
+>> +       struct ksz8 *ksz8 =3D dev->priv;
+>> +       const u32 *masks =3D ksz8->masks;
+>> +       const u8 *shifts =3D ksz8->shifts;
+>> +
+>>         *vlan =3D fid;
+>> -       *vlan |=3D (u16)member << VLAN_TABLE_MEMBERSHIP_S;
+>> +       *vlan |=3D (u16)member << shifts[VLAN_TABLE_MEMBERSHIP_S];
+>>         if (valid)
+>> -               *vlan |=3D VLAN_TABLE_VALID;
+>> +               *vlan |=3D masks[VLAN_TABLE_VALID];
+>>  }
+>>
+>>  static void ksz8_r_vlan_entries(struct ksz_device *dev, u16 addr)
+>>  {
+>> +       struct ksz8 *ksz8 =3D dev->priv;
+>> +       const u8 *shifts =3D ksz8->shifts;
+>>         u64 data;
+>>         int i;
+>>
+>> @@ -418,7 +509,7 @@ static void ksz8_r_vlan_entries(struct ksz_device
+>> *dev, u16 addr)
+>>         addr *=3D dev->phy_port_cnt;
+>>         for (i =3D 0; i < dev->phy_port_cnt; i++) {
+>>                 dev->vlan_cache[addr + i].table[0] =3D (u16)data;
+>> -               data >>=3D VLAN_TABLE_S;
+>> +               data >>=3D shifts[VLAN_TABLE];
+>>         }
+>>  }
+>>
+>> @@ -454,6 +545,8 @@ static void ksz8_w_vlan_table(struct ksz_device *dev,
+>> u16 vid, u32 vlan)
+>>
+>
+>The VLAN table operation in KSZ8863 is completely different from KSZ8795.
+>
+>> -/**
+>> - * VLAN_TABLE_FID                      00-007F007F-007F007F
+>> - * VLAN_TABLE_MEMBERSHIP               00-0F800F80-0F800F80
+>> - * VLAN_TABLE_VALID                    00-10001000-10001000
+>> - */
+>> -
+>> -#define VLAN_TABLE_FID                 0x007F
+>> -#define VLAN_TABLE_MEMBERSHIP          0x0F80
+>> -#define VLAN_TABLE_VALID               0x1000
+>> -
+>> -#define VLAN_TABLE_MEMBERSHIP_S                7
+>> -#define VLAN_TABLE_S                   16
+>> -
+>
+>In KSZ8795 you can use all 4096 VLAN id.  Each entry in the table contains
+>4 VID.  The FID is actually used for lookup and there is a limit, so you n=
+eed
+>to convert VID to FID when programming the VLAN table.
+>
+>The only effect of using FID is the same MAC address can be used in
+>different VLANs.
+>
+>In KSZ8863 there are only 16 entries in the VLAN table.  Just like static
+>MAC table each entry is programmed using an index.  The entry contains
+>the VID, which does not have any relationship with the index unlike in
+>KSZ8795.
+>
+>The number of FID is also limited to 16.  So the maximum VLAN used is 16.
+>
+>>  /**
+>>   * MIB_COUNTER_VALUE                   00-00000000-3FFFFFFF
+>>   * MIB_TOTAL_BYTES                     00-0000000F-FFFFFFFF
+>> @@ -956,9 +874,6 @@
+>>   * MIB_COUNTER_OVERFLOW                        00-00000040-00000000
+>>   */
+>>
+>> -#define MIB_COUNTER_OVERFLOW           BIT(6)
+>> -#define MIB_COUNTER_VALID              BIT(5)
+>> -
+>>  #define MIB_COUNTER_VALUE              0x3FFFFFFF
+>
+>The MIB counters are also a little different in KSZ8863 and KSZ8795.
+>KSZ8863 may have smaller total bytes.  In normal operation this issue may
+>not come up.
+
+As mentioned before, these cases are handled differently for both
+types of drivers.
+
+--=20
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+--/3yNEOqWowh/8j+e
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEElXvEUs6VPX6mDPT8C+njFXoeLGQFAl/OoikACgkQC+njFXoe
+LGRV6BAAz7xhjSGy+9mJIyulKlEi6YBqRpqmUCIDXqOJjynololnSi/xL9rtDlFc
+T298k14reqbkk9Ic8RYJf2InwWFQ7/MwKLgsh1AwQdLwx4hf1dh9569+RtRCRJeI
+3PjKVCJv5+JjeUI9skpcaCYUyd5dLu+8gFTXfteXWhpUKrHXSmG75QqYN/HaSNXy
+yFH4U0m4jJD3L/T7ZQJsmpxFkCqyhgX5fx+Vf7iVD1jxR1Xouu8y9TO2W8oKdeUt
+kulhuMi8PMQrbnFkiFYnthop+gFqIlZKBkS96+1qD3mD9wXJLpMuWIH5nwcFOxnb
+ZAMlhoAST+Cmvi+yPbtv6cRRoC9erXkPFDYx7zG3F3f1jleK6m70Zo5OF/vCP65+
+2bMMtFQSkpSk3/r5woHZz/xqnQZsIXHt5C2OrNcktA3ebCfYP/loeWfENwSkcmTL
+4OJJsL6C9T2y+Qa1URODycGo/RBWpxYogvtmRTaKDA2TFj0/XJ19Os1PG21ZgfGT
+c0Zb8pwIp13j2tkHWQhtV9BK3SIuHhRxrjP5KtX0i2OxjYMJmijRrWy0k4LXnLP9
+pds6Lu956r8EENToCiCZhESMiqFfChe5AbWBgZ+LmmLe/shD6zrIUObEIBnfVM0n
+Gj6iRFBbmCH9VDlfz6eCvajeevkFKZoGRAesGAxJNPg1UTNa8l8=
+=iYY8
+-----END PGP SIGNATURE-----
+
+--/3yNEOqWowh/8j+e--
