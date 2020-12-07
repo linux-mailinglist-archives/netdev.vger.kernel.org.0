@@ -2,99 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 802722D106A
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 13:18:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8EAC2D10AC
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 13:38:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727858AbgLGMRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 07:17:51 -0500
-Received: from esa1.microchip.iphmx.com ([68.232.147.91]:39750 "EHLO
-        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727838AbgLGMRu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 07:17:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1607343469; x=1638879469;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=7c4o9HTAPU/FWDNBRxOIP9hZ2d9X8oAOdvZ31rPTtNA=;
-  b=uNVy+iBIMa/xCIZfDOPT5gofwmUOfzhpvFWJg/+aOjj0HajEt3uqmC3E
-   YcKOHf2io9tBDixPO4EmFdCqFxLy/JMANAHUD82TjICxSfAuemvertrHu
-   88Z5InIWbOrWpLKxgGoBSMTygtRf0WgP4ZvLm2mTCyLhuJa/CvkHlQcVf
-   xQiXe3hF8Npmkd9BikdpOul/HuAZo4HVrFWFyRegYl/wai4pxEm7ezX8d
-   SpkVabvkgwpD8zN2BMt6DWXXcDF+YKx0+P+x+T+0EYGCbxeapfIPD1XzV
-   Lfu8qBVx80aiB2OJ84wyQH5OPcmTgQACbxiqFkkHMeQvUI5oLYoCXxBoo
-   Q==;
-IronPort-SDR: JpSfP/AgQp80I2E07mROSc85GO+IM9hwMHoqsZw22CNZUSZa2rNq0wbldfGl20okQ6sKRVGJlH
- L8ic9lS44WkFgjY1jRzRmbTJZcL+MBOwvETWrXcLHviyJJ7Bhg8rO7WSZMvFl0zznu4sqVjDrh
- d4oMlrBUzPgluv4nzd7+GMgIMFSCa13Ly+nMkkbu1KEekqvzDai/YQt/kAE1WN475DXBIJ00in
- tBKdxDoZIeVVPwd+/jpBSz5srUkvomlpVvZjn2eJhsr4nBmxQFp99z8KJ4JePOLrjxENiwujr5
- oAw=
-X-IronPort-AV: E=Sophos;i="5.78,399,1599548400"; 
-   d="scan'208";a="106497590"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Dec 2020 05:16:43 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 7 Dec 2020 05:16:43 -0700
-Received: from m18063-ThinkPad-T460p.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Mon, 7 Dec 2020 05:16:37 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
-        <nicolas.ferre@microchip.com>, <linux@armlinux.org.uk>,
-        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>
-CC:     <yash.shah@sifive.com>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v2 8/8] net: macb: add support for sama7g5 emac interface
-Date:   Mon, 7 Dec 2020 14:15:33 +0200
-Message-ID: <1607343333-26552-9-git-send-email-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1607343333-26552-1-git-send-email-claudiu.beznea@microchip.com>
-References: <1607343333-26552-1-git-send-email-claudiu.beznea@microchip.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S1725915AbgLGMiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 07:38:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50904 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725772AbgLGMiS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 07:38:18 -0500
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E10FAC0613D0;
+        Mon,  7 Dec 2020 04:37:31 -0800 (PST)
+Received: by mail-ej1-x641.google.com with SMTP id bo9so19159856ejb.13;
+        Mon, 07 Dec 2020 04:37:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=aUwTnuqZnXrzXUdRMDyUoF+/uTT+YAcAeAhD7mlLVbQ=;
+        b=Q8uUqcRvNNq6yYwv5RqGt+ClFR3tpVNNPyQNW4ZnhPAOiHmdPfjMHKxd15EphDGh6o
+         gM92fXdFpmMP1M6tndBnP2C4MrGgN+ll6SRYJmQkuZuCsN+fFvyKPgWAy67DfKEewewx
+         Mwo5LbrAL/NSih9hTd1LG0LHNnkd3znXkew80+lXY8BXFAhrIZ3ZN0H6W0uE870kIOv2
+         rd88rX6SRj7Htzw2zyIbITKjtEYACAICish9SInrsVxET3DYoGWlBdanro5DUwIrn/90
+         VzT8tjPsb+ul0JJ6JiFRgY8ctKxOe9ROi+JtxWjzD4bpnILEN2ovhn2WuxseM1UuAYsw
+         H31A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=aUwTnuqZnXrzXUdRMDyUoF+/uTT+YAcAeAhD7mlLVbQ=;
+        b=Uu1i5Lkp3bdl1IDhE9zGTt1/+z3a9BYrvzXXbjBkipk+3xhdzmKU6BIcHnc0+IP6Na
+         yIqNvojU5bF53B70yUZAQVigsY4YmyqlxFrg03TujNTxJHbvQBIxey+tUsZFPmEjhJvg
+         Ty2C0dntmJGDiEJLq1guBtLQMEQQwEEAjB8NM6dlJxPXI+gH68YctZf3fuWVmJA66x8j
+         c/0DCWU6mioJLRcnmcH4DJWFSwKgHA+yRoBkjfnWU2/y4cyjauY1BRldLfKLO7mogkqY
+         s/2WmB7lwjjwUtQr/XdU1Mtnj000BsDj9tAENUrE+qcrp+OnkPjqJv6IKxOEQmfjrEf4
+         cMDQ==
+X-Gm-Message-State: AOAM532zU/z3gRJt//XnM9udbU2BG/BnAOchdH4BGAp1a2akjcN+cILx
+        PMAn/LbShZ5xW+arWArcaQk=
+X-Google-Smtp-Source: ABdhPJzSM/eEU1fO8yP9OhDoxsK91+z17v3cKu2RB7tpgf6FWeYRxqKkYeaQoCrQSzhN31xWp0Mnog==
+X-Received: by 2002:a17:906:2581:: with SMTP id m1mr18311458ejb.28.1607344650673;
+        Mon, 07 Dec 2020 04:37:30 -0800 (PST)
+Received: from felia.fritz.box ([2001:16b8:2d4a:c600:c0f8:50a9:4ab0:a9ab])
+        by smtp.gmail.com with ESMTPSA id u15sm13848265edt.24.2020.12.07.04.37.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Dec 2020 04:37:30 -0800 (PST)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        kernel-janitors@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] bpf: propagate __user annotations properly
+Date:   Mon,  7 Dec 2020 13:37:20 +0100
+Message-Id: <20201207123720.19111-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for SAMA7G5 10/100Mbps interface.
+__htab_map_lookup_and_delete_batch() stores a user pointer in the local
+variable ubatch and uses that in copy_{from,to}_user(), but ubatch misses a
+__user annotation.
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+So, sparse warns in the various assignments and uses of ubatch:
+
+  kernel/bpf/hashtab.c:1415:24: warning: incorrect type in initializer
+    (different address spaces)
+  kernel/bpf/hashtab.c:1415:24:    expected void *ubatch
+  kernel/bpf/hashtab.c:1415:24:    got void [noderef] __user *
+
+  kernel/bpf/hashtab.c:1444:46: warning: incorrect type in argument 2
+    (different address spaces)
+  kernel/bpf/hashtab.c:1444:46:    expected void const [noderef] __user *from
+  kernel/bpf/hashtab.c:1444:46:    got void *ubatch
+
+  kernel/bpf/hashtab.c:1608:16: warning: incorrect type in assignment
+    (different address spaces)
+  kernel/bpf/hashtab.c:1608:16:    expected void *ubatch
+  kernel/bpf/hashtab.c:1608:16:    got void [noderef] __user *
+
+  kernel/bpf/hashtab.c:1609:26: warning: incorrect type in argument 1
+    (different address spaces)
+  kernel/bpf/hashtab.c:1609:26:    expected void [noderef] __user *to
+  kernel/bpf/hashtab.c:1609:26:    got void *ubatch
+
+Add the __user annotation to repair this chain of propagating __user
+annotations in __htab_map_lookup_and_delete_batch().
+
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 ---
- drivers/net/ethernet/cadence/macb_main.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+applies cleanly on current master (v5.10-rc7) and next-20201204
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index ca56476b3a04..bb280c55c4b3 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -4574,6 +4574,14 @@ static const struct macb_config sama7g5_gem_config = {
- 	.usrio = &sama7g5_usrio,
- };
- 
-+static const struct macb_config sama7g5_emac_config = {
-+	.caps = MACB_CAPS_USRIO_DEFAULT_IS_MII_GMII | MACB_CAPS_USRIO_HAS_CLKEN,
-+	.dma_burst_length = 16,
-+	.clk_init = macb_clk_init,
-+	.init = macb_init,
-+	.usrio = &sama7g5_usrio,
-+};
-+
- static const struct of_device_id macb_dt_ids[] = {
- 	{ .compatible = "cdns,at32ap7000-macb" },
- 	{ .compatible = "cdns,at91sam9260-macb", .data = &at91sam9260_config },
-@@ -4592,6 +4600,7 @@ static const struct of_device_id macb_dt_ids[] = {
- 	{ .compatible = "cdns,zynq-gem", .data = &zynq_config },
- 	{ .compatible = "sifive,fu540-c000-gem", .data = &fu540_c000_config },
- 	{ .compatible = "microchip,sama7g5-gem", .data = &sama7g5_gem_config },
-+	{ .compatible = "microchip,sama7g5-emac", .data = &sama7g5_emac_config },
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, macb_dt_ids);
+BPF maintainers, please pick this minor non-urgent clean-up patch.
+
+ kernel/bpf/hashtab.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index fe7a0733a63a..76c791def033 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -1412,7 +1412,7 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
+ 	void *keys = NULL, *values = NULL, *value, *dst_key, *dst_val;
+ 	void __user *uvalues = u64_to_user_ptr(attr->batch.values);
+ 	void __user *ukeys = u64_to_user_ptr(attr->batch.keys);
+-	void *ubatch = u64_to_user_ptr(attr->batch.in_batch);
++	void __user *ubatch = u64_to_user_ptr(attr->batch.in_batch);
+ 	u32 batch, max_count, size, bucket_size;
+ 	struct htab_elem *node_to_free = NULL;
+ 	u64 elem_map_flags, map_flags;
 -- 
-2.7.4
+2.17.1
 
