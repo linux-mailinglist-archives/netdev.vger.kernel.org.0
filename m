@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 450032D160F
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 17:36:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BDEF2D1611
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 17:36:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727195AbgLGQdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 11:33:45 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60656 "EHLO mail.kernel.org"
+        id S1727260AbgLGQdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 11:33:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60684 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726249AbgLGQdo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Dec 2020 11:33:44 -0500
+        id S1726249AbgLGQdr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Dec 2020 11:33:47 -0500
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
 To:     bpf@vger.kernel.org, netdev@vger.kernel.org
@@ -19,9 +19,9 @@ Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
         john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
         echaudro@redhat.com, lorenzo.bianconi@redhat.com,
         jasowang@redhat.com
-Subject: [PATCH v5 bpf-next 02/14] xdp: initialize xdp_buff mb bit to 0 in all XDP drivers
-Date:   Mon,  7 Dec 2020 17:32:31 +0100
-Message-Id: <693d48b46dd5172763952acd94358cc5d02dcda3.1607349924.git.lorenzo@kernel.org>
+Subject: [PATCH v5 bpf-next 03/14] xdp: add xdp_shared_info data structure
+Date:   Mon,  7 Dec 2020 17:32:32 +0100
+Message-Id: <21d27f233e37b66c9ad4073dd09df5c2904112a4.1607349924.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <cover.1607349924.git.lorenzo@kernel.org>
 References: <cover.1607349924.git.lorenzo@kernel.org>
@@ -31,341 +31,296 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Initialize multi-buffer bit (mb) to 0 in all XDP-capable drivers.
-This is a preliminary patch to enable xdp multi-buffer support.
+Introduce xdp_shared_info data structure to contain info about
+"non-linear" xdp frame. xdp_shared_info will alias skb_shared_info
+allowing to keep most of the frags in the same cache-line.
+Introduce some xdp_shared_info helpers aligned to skb_frag* ones
 
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/amazon/ena/ena_netdev.c        | 1 +
- drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c       | 1 +
- drivers/net/ethernet/cavium/thunder/nicvf_main.c    | 1 +
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c    | 1 +
- drivers/net/ethernet/intel/i40e/i40e_txrx.c         | 1 +
- drivers/net/ethernet/intel/ice/ice_txrx.c           | 1 +
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c       | 1 +
- drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c   | 1 +
- drivers/net/ethernet/marvell/mvneta.c               | 1 +
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c     | 1 +
- drivers/net/ethernet/mellanox/mlx4/en_rx.c          | 1 +
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c     | 1 +
- drivers/net/ethernet/netronome/nfp/nfp_net_common.c | 1 +
- drivers/net/ethernet/qlogic/qede/qede_fp.c          | 1 +
- drivers/net/ethernet/sfc/rx.c                       | 1 +
- drivers/net/ethernet/socionext/netsec.c             | 1 +
- drivers/net/ethernet/ti/cpsw.c                      | 1 +
- drivers/net/ethernet/ti/cpsw_new.c                  | 1 +
- drivers/net/hyperv/netvsc_bpf.c                     | 1 +
- drivers/net/tun.c                                   | 2 ++
- drivers/net/veth.c                                  | 1 +
- drivers/net/virtio_net.c                            | 2 ++
- drivers/net/xen-netfront.c                          | 1 +
- net/core/dev.c                                      | 1 +
- 24 files changed, 26 insertions(+)
+ drivers/net/ethernet/marvell/mvneta.c | 62 +++++++++++++++------------
+ include/net/xdp.h                     | 52 ++++++++++++++++++++--
+ 2 files changed, 82 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 0e98f45c2b22..abe826395e2f 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -1569,6 +1569,7 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
- 	res_budget = budget;
- 	xdp.rxq = &rx_ring->xdp_rxq;
- 	xdp.frame_sz = ENA_PAGE_SIZE;
-+	xdp.mb = 0;
- 
- 	do {
- 		xdp_verdict = XDP_PASS;
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-index fcc262064766..344644b6dd4d 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-@@ -139,6 +139,7 @@ bool bnxt_rx_xdp(struct bnxt *bp, struct bnxt_rx_ring_info *rxr, u16 cons,
- 	xdp.data_end = *data_ptr + *len;
- 	xdp.rxq = &rxr->xdp_rxq;
- 	xdp.frame_sz = PAGE_SIZE; /* BNXT_RX_PAGE_MODE(bp) when XDP enabled */
-+	xdp.mb = 0;
- 	orig_data = xdp.data;
- 
- 	rcu_read_lock();
-diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_main.c b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-index f3b7b443f964..4e790a50d14c 100644
---- a/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-+++ b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
-@@ -553,6 +553,7 @@ static inline bool nicvf_xdp_rx(struct nicvf *nic, struct bpf_prog *prog,
- 	xdp.data_end = xdp.data + len;
- 	xdp.rxq = &rq->xdp_rxq;
- 	xdp.frame_sz = RCV_FRAG_LEN + XDP_PACKET_HEADROOM;
-+	xdp.mb = 0;
- 	orig_data = xdp.data;
- 
- 	rcu_read_lock();
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index 91cff93dbdae..fe70be3ca399 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -366,6 +366,7 @@ static u32 dpaa2_eth_run_xdp(struct dpaa2_eth_priv *priv,
- 
- 	xdp.frame_sz = DPAA2_ETH_RX_BUF_RAW_SIZE -
- 		(dpaa2_fd_get_offset(fd) - XDP_PACKET_HEADROOM);
-+	xdp.mb = 0;
- 
- 	xdp_act = bpf_prog_run_xdp(xdp_prog, &xdp);
- 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-index 9f73cd7aee09..1c8acebfde3d 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-@@ -2343,6 +2343,7 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget)
- 	xdp.frame_sz = i40e_rx_frame_truesize(rx_ring, 0);
- #endif
- 	xdp.rxq = &rx_ring->xdp_rxq;
-+	xdp.mb = 0;
- 
- 	while (likely(total_rx_packets < (unsigned int)budget)) {
- 		struct i40e_rx_buffer *rx_buffer;
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
-index 77d5eae6b4c2..0f8a996e298b 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
-@@ -1089,6 +1089,7 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
- #if (PAGE_SIZE < 8192)
- 	xdp.frame_sz = ice_rx_frame_truesize(rx_ring, 0);
- #endif
-+	xdp.mb = 0;
- 
- 	/* start the loop to process Rx packets bounded by 'budget' */
- 	while (likely(total_rx_pkts < (unsigned int)budget)) {
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 50e6b8b6ba7b..2e028b306677 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -2298,6 +2298,7 @@ static int ixgbe_clean_rx_irq(struct ixgbe_q_vector *q_vector,
- #if (PAGE_SIZE < 8192)
- 	xdp.frame_sz = ixgbe_rx_frame_truesize(rx_ring, 0);
- #endif
-+	xdp.mb = 0;
- 
- 	while (likely(total_rx_packets < budget)) {
- 		union ixgbe_adv_rx_desc *rx_desc;
-diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-index 4061cd7db5dd..037bfb2aadac 100644
---- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-+++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
-@@ -1129,6 +1129,7 @@ static int ixgbevf_clean_rx_irq(struct ixgbevf_q_vector *q_vector,
- 	struct xdp_buff xdp;
- 
- 	xdp.rxq = &rx_ring->xdp_rxq;
-+	xdp.mb = 0;
- 
- 	/* Frame size depend on rx_ring setup when PAGE_SIZE=4K */
- #if (PAGE_SIZE < 8192)
 diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 563ceac3060f..1e5b5c69685a 100644
+index 1e5b5c69685a..d635463609ad 100644
 --- a/drivers/net/ethernet/marvell/mvneta.c
 +++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -2366,6 +2366,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
- 	xdp_buf.data_hard_start = NULL;
- 	xdp_buf.frame_sz = PAGE_SIZE;
- 	xdp_buf.rxq = &rxq->xdp_rxq;
-+	xdp_buf.mb = 0;
+@@ -2033,14 +2033,17 @@ int mvneta_rx_refill_queue(struct mvneta_port *pp, struct mvneta_rx_queue *rxq)
  
- 	sinfo.nr_frags = 0;
+ static void
+ mvneta_xdp_put_buff(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+-		    struct xdp_buff *xdp, struct skb_shared_info *sinfo,
++		    struct xdp_buff *xdp, struct xdp_shared_info *xdp_sinfo,
+ 		    int sync_len)
+ {
+ 	int i;
  
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index afdd22827223..32b48de36841 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -3566,6 +3566,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
- 			xdp.data = data + MVPP2_MH_SIZE + MVPP2_SKB_HEADROOM;
- 			xdp.data_end = xdp.data + rx_bytes;
- 			xdp.frame_sz = PAGE_SIZE;
-+			xdp.mb = 0;
+-	for (i = 0; i < sinfo->nr_frags; i++)
++	for (i = 0; i < xdp_sinfo->nr_frags; i++) {
++		skb_frag_t *frag = &xdp_sinfo->frags[i];
++
+ 		page_pool_put_full_page(rxq->page_pool,
+-					skb_frag_page(&sinfo->frags[i]), true);
++					xdp_get_frag_page(frag), true);
++	}
+ 	page_pool_put_page(rxq->page_pool, virt_to_head_page(xdp->data),
+ 			   sync_len, true);
+ }
+@@ -2179,7 +2182,7 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+ 	       struct bpf_prog *prog, struct xdp_buff *xdp,
+ 	       u32 frame_sz, struct mvneta_stats *stats)
+ {
+-	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
++	struct xdp_shared_info *xdp_sinfo = xdp_get_shared_info_from_buff(xdp);
+ 	unsigned int len, data_len, sync;
+ 	u32 ret, act;
  
- 			if (bm_pool->pkt_size == MVPP2_BM_SHORT_PKT_SIZE)
- 				xdp.rxq = &rxq->xdp_rxq_short;
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-index 7954c1daf2b6..547ff84bb71a 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
-@@ -684,6 +684,7 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
- 	xdp_prog = rcu_dereference(ring->xdp_prog);
- 	xdp.rxq = &ring->xdp_rxq;
- 	xdp.frame_sz = priv->frag_info[0].frag_stride;
-+	xdp.mb = 0;
- 	doorbell_pending = false;
+@@ -2200,7 +2203,7 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
  
- 	/* We assume a 1:1 mapping between CQEs and Rx descriptors, so Rx
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 6628a0197b4e..50fd12ba3a0f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -1133,6 +1133,7 @@ static void mlx5e_fill_xdp_buff(struct mlx5e_rq *rq, void *va, u16 headroom,
- 	xdp->data_end = xdp->data + len;
- 	xdp->rxq = &rq->xdp_rxq;
- 	xdp->frame_sz = rq->buff.frame0_sz;
-+	xdp->mb = 0;
+ 		err = xdp_do_redirect(pp->dev, xdp, prog);
+ 		if (unlikely(err)) {
+-			mvneta_xdp_put_buff(pp, rxq, xdp, sinfo, sync);
++			mvneta_xdp_put_buff(pp, rxq, xdp, xdp_sinfo, sync);
+ 			ret = MVNETA_XDP_DROPPED;
+ 		} else {
+ 			ret = MVNETA_XDP_REDIR;
+@@ -2211,7 +2214,7 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+ 	case XDP_TX:
+ 		ret = mvneta_xdp_xmit_back(pp, xdp);
+ 		if (ret != MVNETA_XDP_TX)
+-			mvneta_xdp_put_buff(pp, rxq, xdp, sinfo, sync);
++			mvneta_xdp_put_buff(pp, rxq, xdp, xdp_sinfo, sync);
+ 		break;
+ 	default:
+ 		bpf_warn_invalid_xdp_action(act);
+@@ -2220,7 +2223,7 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+ 		trace_xdp_exception(pp->dev, prog, act);
+ 		fallthrough;
+ 	case XDP_DROP:
+-		mvneta_xdp_put_buff(pp, rxq, xdp, sinfo, sync);
++		mvneta_xdp_put_buff(pp, rxq, xdp, xdp_sinfo, sync);
+ 		ret = MVNETA_XDP_DROPPED;
+ 		stats->xdp_drop++;
+ 		break;
+@@ -2241,9 +2244,9 @@ mvneta_swbm_rx_frame(struct mvneta_port *pp,
+ {
+ 	unsigned char *data = page_address(page);
+ 	int data_len = -MVNETA_MH_SIZE, len;
++	struct xdp_shared_info *xdp_sinfo;
+ 	struct net_device *dev = pp->dev;
+ 	enum dma_data_direction dma_dir;
+-	struct skb_shared_info *sinfo;
+ 
+ 	if (*size > MVNETA_MAX_RX_BUF_SIZE) {
+ 		len = MVNETA_MAX_RX_BUF_SIZE;
+@@ -2269,8 +2272,8 @@ mvneta_swbm_rx_frame(struct mvneta_port *pp,
+ 	xdp->data_end = xdp->data + data_len;
+ 	xdp_set_data_meta_invalid(xdp);
+ 
+-	sinfo = xdp_get_shared_info_from_buff(xdp);
+-	sinfo->nr_frags = 0;
++	xdp_sinfo = xdp_get_shared_info_from_buff(xdp);
++	xdp_sinfo->nr_frags = 0;
  }
  
- static struct sk_buff *
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-index b4acf2f41e84..4e762bbf283c 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-@@ -1824,6 +1824,7 @@ static int nfp_net_rx(struct nfp_net_rx_ring *rx_ring, int budget)
- 	true_bufsz = xdp_prog ? PAGE_SIZE : dp->fl_bufsz;
- 	xdp.frame_sz = PAGE_SIZE - NFP_NET_RX_BUF_HEADROOM;
- 	xdp.rxq = &rx_ring->xdp_rxq;
-+	xdp.mb = 0;
- 	tx_ring = r_vec->xdp_ring;
+ static void
+@@ -2278,7 +2281,7 @@ mvneta_swbm_add_rx_fragment(struct mvneta_port *pp,
+ 			    struct mvneta_rx_desc *rx_desc,
+ 			    struct mvneta_rx_queue *rxq,
+ 			    struct xdp_buff *xdp, int *size,
+-			    struct skb_shared_info *xdp_sinfo,
++			    struct xdp_shared_info *xdp_sinfo,
+ 			    struct page *page)
+ {
+ 	struct net_device *dev = pp->dev;
+@@ -2301,13 +2304,13 @@ mvneta_swbm_add_rx_fragment(struct mvneta_port *pp,
+ 	if (data_len > 0 && xdp_sinfo->nr_frags < MAX_SKB_FRAGS) {
+ 		skb_frag_t *frag = &xdp_sinfo->frags[xdp_sinfo->nr_frags++];
  
- 	while (pkts_polled < budget) {
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_fp.c b/drivers/net/ethernet/qlogic/qede/qede_fp.c
-index a2494bf85007..14a54094ca08 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_fp.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_fp.c
-@@ -1096,6 +1096,7 @@ static bool qede_rx_xdp(struct qede_dev *edev,
- 	xdp.data_end = xdp.data + *len;
- 	xdp.rxq = &rxq->xdp_rxq;
- 	xdp.frame_sz = rxq->rx_buf_seg_size; /* PAGE_SIZE when XDP enabled */
-+	xdp.mb = 0;
+-		skb_frag_off_set(frag, pp->rx_offset_correction);
+-		skb_frag_size_set(frag, data_len);
+-		__skb_frag_set_page(frag, page);
++		xdp_set_frag_offset(frag, pp->rx_offset_correction);
++		xdp_set_frag_size(frag, data_len);
++		xdp_set_frag_page(frag, page);
  
- 	/* Queues always have a full reset currently, so for the time
- 	 * being until there's atomic program replace just mark read
-diff --git a/drivers/net/ethernet/sfc/rx.c b/drivers/net/ethernet/sfc/rx.c
-index aaa112877561..286feb510c21 100644
---- a/drivers/net/ethernet/sfc/rx.c
-+++ b/drivers/net/ethernet/sfc/rx.c
-@@ -301,6 +301,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
- 	xdp.data_end = xdp.data + rx_buf->len;
- 	xdp.rxq = &rx_queue->xdp_rxq_info;
- 	xdp.frame_sz = efx->rx_page_buf_step;
-+	xdp.mb = 0;
+ 		/* last fragment */
+ 		if (len == *size) {
+-			struct skb_shared_info *sinfo;
++			struct xdp_shared_info *sinfo;
  
- 	xdp_act = bpf_prog_run_xdp(xdp_prog, &xdp);
+ 			sinfo = xdp_get_shared_info_from_buff(xdp);
+ 			sinfo->nr_frags = xdp_sinfo->nr_frags;
+@@ -2324,10 +2327,13 @@ static struct sk_buff *
+ mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+ 		      struct xdp_buff *xdp, u32 desc_status)
+ {
+-	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
+-	int i, num_frags = sinfo->nr_frags;
++	struct xdp_shared_info *xdp_sinfo = xdp_get_shared_info_from_buff(xdp);
++	int i, num_frags = xdp_sinfo->nr_frags;
++	skb_frag_t frag_list[MAX_SKB_FRAGS];
+ 	struct sk_buff *skb;
+ 
++	memcpy(frag_list, xdp_sinfo->frags, sizeof(skb_frag_t) * num_frags);
++
+ 	skb = build_skb(xdp->data_hard_start, PAGE_SIZE);
+ 	if (!skb)
+ 		return ERR_PTR(-ENOMEM);
+@@ -2339,12 +2345,12 @@ mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+ 	mvneta_rx_csum(pp, desc_status, skb);
+ 
+ 	for (i = 0; i < num_frags; i++) {
+-		skb_frag_t *frag = &sinfo->frags[i];
++		struct page *page = xdp_get_frag_page(&frag_list[i]);
+ 
+ 		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
+-				skb_frag_page(frag), skb_frag_off(frag),
+-				skb_frag_size(frag), PAGE_SIZE);
+-		page_pool_release_page(rxq->page_pool, skb_frag_page(frag));
++				page, xdp_get_frag_offset(&frag_list[i]),
++				xdp_get_frag_size(&frag_list[i]), PAGE_SIZE);
++		page_pool_release_page(rxq->page_pool, page);
+ 	}
+ 
+ 	return skb;
+@@ -2357,7 +2363,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+ {
+ 	int rx_proc = 0, rx_todo, refill, size = 0;
+ 	struct net_device *dev = pp->dev;
+-	struct skb_shared_info sinfo;
++	struct xdp_shared_info xdp_sinfo;
+ 	struct mvneta_stats ps = {};
+ 	struct bpf_prog *xdp_prog;
+ 	u32 desc_status, frame_sz;
+@@ -2368,7 +2374,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+ 	xdp_buf.rxq = &rxq->xdp_rxq;
+ 	xdp_buf.mb = 0;
+ 
+-	sinfo.nr_frags = 0;
++	xdp_sinfo.nr_frags = 0;
+ 
+ 	/* Get number of received packets */
+ 	rx_todo = mvneta_rxq_busy_desc_num_get(pp, rxq);
+@@ -2412,7 +2418,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+ 			}
+ 
+ 			mvneta_swbm_add_rx_fragment(pp, rx_desc, rxq, &xdp_buf,
+-						    &size, &sinfo, page);
++						    &size, &xdp_sinfo, page);
+ 		} /* Middle or Last descriptor */
+ 
+ 		if (!(rx_status & MVNETA_RXD_LAST_DESC))
+@@ -2420,7 +2426,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+ 			continue;
+ 
+ 		if (size) {
+-			mvneta_xdp_put_buff(pp, rxq, &xdp_buf, &sinfo, -1);
++			mvneta_xdp_put_buff(pp, rxq, &xdp_buf, &xdp_sinfo, -1);
+ 			goto next;
+ 		}
+ 
+@@ -2432,7 +2438,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+ 		if (IS_ERR(skb)) {
+ 			struct mvneta_pcpu_stats *stats = this_cpu_ptr(pp->stats);
+ 
+-			mvneta_xdp_put_buff(pp, rxq, &xdp_buf, &sinfo, -1);
++			mvneta_xdp_put_buff(pp, rxq, &xdp_buf, &xdp_sinfo, -1);
+ 
+ 			u64_stats_update_begin(&stats->syncp);
+ 			stats->es.skb_alloc_error++;
+@@ -2449,12 +2455,12 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
+ 		napi_gro_receive(napi, skb);
+ next:
+ 		xdp_buf.data_hard_start = NULL;
+-		sinfo.nr_frags = 0;
++		xdp_sinfo.nr_frags = 0;
+ 	}
  	rcu_read_unlock();
-diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
-index 19d20a6d0d44..8853db2575f0 100644
---- a/drivers/net/ethernet/socionext/netsec.c
-+++ b/drivers/net/ethernet/socionext/netsec.c
-@@ -958,6 +958,7 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
  
- 	xdp.rxq = &dring->xdp_rxq;
- 	xdp.frame_sz = PAGE_SIZE;
-+	xdp.mb = 0;
+ 	if (xdp_buf.data_hard_start)
+-		mvneta_xdp_put_buff(pp, rxq, &xdp_buf, &sinfo, -1);
++		mvneta_xdp_put_buff(pp, rxq, &xdp_buf, &xdp_sinfo, -1);
  
- 	rcu_read_lock();
- 	xdp_prog = READ_ONCE(priv->xdp_prog);
-diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-index b0f00b4edd94..6e3fa1994bd5 100644
---- a/drivers/net/ethernet/ti/cpsw.c
-+++ b/drivers/net/ethernet/ti/cpsw.c
-@@ -407,6 +407,7 @@ static void cpsw_rx_handler(void *token, int len, int status)
- 		xdp.data_hard_start = pa;
- 		xdp.rxq = &priv->xdp_rxq[ch];
- 		xdp.frame_sz = PAGE_SIZE;
-+		xdp.mb = 0;
+ 	if (ps.xdp_redirect)
+ 		xdp_do_flush_map();
+diff --git a/include/net/xdp.h b/include/net/xdp.h
+index 70559720ff44..614f66d35ee8 100644
+--- a/include/net/xdp.h
++++ b/include/net/xdp.h
+@@ -87,10 +87,54 @@ struct xdp_buff {
+ 	((xdp)->data_hard_start + (xdp)->frame_sz -	\
+ 	 SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
  
- 		port = priv->emac_port + cpsw->data.dual_emac;
- 		ret = cpsw_run_xdp(priv, ch, &xdp, page, port);
-diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
-index 2f5e0ad23ad7..a13535fefbeb 100644
---- a/drivers/net/ethernet/ti/cpsw_new.c
-+++ b/drivers/net/ethernet/ti/cpsw_new.c
-@@ -350,6 +350,7 @@ static void cpsw_rx_handler(void *token, int len, int status)
- 		xdp.data_hard_start = pa;
- 		xdp.rxq = &priv->xdp_rxq[ch];
- 		xdp.frame_sz = PAGE_SIZE;
-+		xdp.mb = 0;
+-static inline struct skb_shared_info *
++struct xdp_shared_info {
++	u16 nr_frags;
++	u16 data_length; /* paged area length */
++	skb_frag_t frags[MAX_SKB_FRAGS];
++};
++
++static inline struct xdp_shared_info *
+ xdp_get_shared_info_from_buff(struct xdp_buff *xdp)
+ {
+-	return (struct skb_shared_info *)xdp_data_hard_end(xdp);
++	BUILD_BUG_ON(sizeof(struct xdp_shared_info) >
++		     sizeof(struct skb_shared_info));
++	return (struct xdp_shared_info *)xdp_data_hard_end(xdp);
++}
++
++static inline struct page *xdp_get_frag_page(const skb_frag_t *frag)
++{
++	return frag->bv_page;
++}
++
++static inline unsigned int xdp_get_frag_offset(const skb_frag_t *frag)
++{
++	return frag->bv_offset;
++}
++
++static inline unsigned int xdp_get_frag_size(const skb_frag_t *frag)
++{
++	return frag->bv_len;
++}
++
++static inline void *xdp_get_frag_address(const skb_frag_t *frag)
++{
++	return page_address(xdp_get_frag_page(frag)) +
++	       xdp_get_frag_offset(frag);
++}
++
++static inline void xdp_set_frag_page(skb_frag_t *frag, struct page *page)
++{
++	frag->bv_page = page;
++}
++
++static inline void xdp_set_frag_offset(skb_frag_t *frag, u32 offset)
++{
++	frag->bv_offset = offset;
++}
++
++static inline void xdp_set_frag_size(skb_frag_t *frag, u32 size)
++{
++	frag->bv_len = size;
+ }
  
- 		ret = cpsw_run_xdp(priv, ch, &xdp, page, priv->emac_port);
- 		if (ret != CPSW_XDP_PASS)
-diff --git a/drivers/net/hyperv/netvsc_bpf.c b/drivers/net/hyperv/netvsc_bpf.c
-index 440486d9c999..a4bafc64997f 100644
---- a/drivers/net/hyperv/netvsc_bpf.c
-+++ b/drivers/net/hyperv/netvsc_bpf.c
-@@ -50,6 +50,7 @@ u32 netvsc_run_xdp(struct net_device *ndev, struct netvsc_channel *nvchan,
- 	xdp->data_end = xdp->data + len;
- 	xdp->rxq = &nvchan->xdp_rxq;
- 	xdp->frame_sz = PAGE_SIZE;
-+	xdp->mb = 0;
+ struct xdp_frame {
+@@ -120,12 +164,12 @@ static __always_inline void xdp_frame_bulk_init(struct xdp_frame_bulk *bq)
+ 	bq->xa = NULL;
+ }
  
- 	memcpy(xdp->data, data, len);
+-static inline struct skb_shared_info *
++static inline struct xdp_shared_info *
+ xdp_get_shared_info_from_frame(struct xdp_frame *frame)
+ {
+ 	void *data_hard_start = frame->data - frame->headroom - sizeof(*frame);
  
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index fbed05ae7b0f..8c100f4b2001 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -1605,6 +1605,7 @@ static struct sk_buff *tun_build_skb(struct tun_struct *tun,
- 		xdp.data_end = xdp.data + len;
- 		xdp.rxq = &tfile->xdp_rxq;
- 		xdp.frame_sz = buflen;
-+		xdp.mb = 0;
+-	return (struct skb_shared_info *)(data_hard_start + frame->frame_sz -
++	return (struct xdp_shared_info *)(data_hard_start + frame->frame_sz -
+ 				SKB_DATA_ALIGN(sizeof(struct skb_shared_info)));
+ }
  
- 		act = bpf_prog_run_xdp(xdp_prog, &xdp);
- 		if (act == XDP_REDIRECT || act == XDP_TX) {
-@@ -2347,6 +2348,7 @@ static int tun_xdp_one(struct tun_struct *tun,
- 		xdp_set_data_meta_invalid(xdp);
- 		xdp->rxq = &tfile->xdp_rxq;
- 		xdp->frame_sz = buflen;
-+		xdp->mb = 0;
- 
- 		act = bpf_prog_run_xdp(xdp_prog, xdp);
- 		err = tun_xdp_act(tun, xdp_prog, xdp, act);
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index 02bfcdf50a7a..52e050228a42 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -719,6 +719,7 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
- 	/* SKB "head" area always have tailroom for skb_shared_info */
- 	xdp.frame_sz = (void *)skb_end_pointer(skb) - xdp.data_hard_start;
- 	xdp.frame_sz += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-+	xdp.mb = 0;
- 
- 	orig_data = xdp.data;
- 	orig_data_end = xdp.data_end;
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 052975ea0af4..4c15e30d7ef1 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -695,6 +695,7 @@ static struct sk_buff *receive_small(struct net_device *dev,
- 		xdp.data_meta = xdp.data;
- 		xdp.rxq = &rq->xdp_rxq;
- 		xdp.frame_sz = buflen;
-+		xdp.mb = 0;
- 		orig_data = xdp.data;
- 		act = bpf_prog_run_xdp(xdp_prog, &xdp);
- 		stats->xdp_packets++;
-@@ -865,6 +866,7 @@ static struct sk_buff *receive_mergeable(struct net_device *dev,
- 		xdp.data_meta = xdp.data;
- 		xdp.rxq = &rq->xdp_rxq;
- 		xdp.frame_sz = frame_sz - vi->hdr_len;
-+		xdp.mb = 0;
- 
- 		act = bpf_prog_run_xdp(xdp_prog, &xdp);
- 		stats->xdp_packets++;
-diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-index b01848ef4649..34a254eab58b 100644
---- a/drivers/net/xen-netfront.c
-+++ b/drivers/net/xen-netfront.c
-@@ -870,6 +870,7 @@ static u32 xennet_run_xdp(struct netfront_queue *queue, struct page *pdata,
- 	xdp->data_end = xdp->data + len;
- 	xdp->rxq = &queue->xdp_rxq;
- 	xdp->frame_sz = XEN_PAGE_SIZE - XDP_PACKET_HEADROOM;
-+	xdp->mb = 0;
- 
- 	act = bpf_prog_run_xdp(prog, xdp);
- 	switch (act) {
-diff --git a/net/core/dev.c b/net/core/dev.c
-index ce8fea2e2788..7f0b2b25860a 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4633,6 +4633,7 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
- 	/* SKB "head" area always have tailroom for skb_shared_info */
- 	xdp->frame_sz  = (void *)skb_end_pointer(skb) - xdp->data_hard_start;
- 	xdp->frame_sz += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-+	xdp->mb = 0;
- 
- 	orig_data_end = xdp->data_end;
- 	orig_data = xdp->data;
 -- 
 2.28.0
 
