@@ -2,95 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F73A2D24BC
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 08:40:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2D6C2D2563
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 09:08:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727187AbgLHHkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 02:40:05 -0500
-Received: from mga11.intel.com ([192.55.52.93]:50127 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726734AbgLHHkF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Dec 2020 02:40:05 -0500
-IronPort-SDR: UzZ2G44LoUWFbwXEjYjw7MTwEPz+vnbTTQSUKq8km2oHKPTad3NrFPrAfHzGICm7viYZakOmIm
- 5ZiNM4sljeUQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9828"; a="170337875"
-X-IronPort-AV: E=Sophos;i="5.78,401,1599548400"; 
-   d="scan'208";a="170337875"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2020 23:39:20 -0800
-IronPort-SDR: MUBL+F5W9P6LV33aAaKRMThtmIRsq2LlA4ii15Djhj1gQftAAjCp7lwt+6d75TOs0a1M3mR53d
- MG3hMjTXz3zg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.78,401,1599548400"; 
-   d="scan'208";a="363530493"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.238.154.69])
-  by orsmga008.jf.intel.com with ESMTP; 07 Dec 2020 23:39:19 -0800
-From:   Zhu Yanjun <yanjun.zhu@intel.com>
-To:     zyjzyj2000@gmail.com, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com
-Cc:     Zhu Yanjun <yanjun.zhu@intel.com>
-Subject: [PATCH v2 1/1] xdp: avoid calling kfree twice
-Date:   Wed,  9 Dec 2020 00:03:15 -0500
-Message-Id: <20201209050315.5864-1-yanjun.zhu@intel.com>
-X-Mailer: git-send-email 2.18.4
+        id S1727896AbgLHIHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 03:07:41 -0500
+Received: from vsm-gw.hyogo-dai.ac.jp ([202.244.76.12]:57800 "EHLO
+        vsm-gw.hyogo-dai.ac.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727755AbgLHIHk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 03:07:40 -0500
+Received: from humans-kc.hyogo-dai.ac.jp (humans-kc.hyogo-dai.ac.jp [202.244.77.11])
+        by vsm-gw.hyogo-dai.ac.jp (Postfix) with ESMTP id AB6121A2F26;
+        Tue,  8 Dec 2020 02:41:27 +0900 (JST)
+Received: from humans-kc.hyogo-dai.ac.jp (humans-kc.hyogo-dai.ac.jp [127.0.0.1])
+        by postfix.imss71 (Postfix) with ESMTP id 7895368217F;
+        Tue,  8 Dec 2020 02:41:27 +0900 (JST)
+Received: from hyogo-dai.ac.jp (unknown [202.244.77.11])
+        by humans-kc.hyogo-dai.ac.jp (Postfix) with SMTP id 495B0838267;
+        Tue,  8 Dec 2020 02:41:27 +0900 (JST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <20201207174127.00006880.0778@hyogo-dai.ac.jp>
+Date:   Tue, 08 Dec 2020 02:41:27 +0900
+From:   "Dr Raymond Chien Hang Seng" <hozumi@hyogo-dai.ac.jp>
+To:     <tabata@hyogo-dai.ac.jp>
+Reply-To: <draymndch@yahoo.co.jp>
+Subject: I am Vice Chairman of Hang Seng Bank, I have Important
+         Matter to Discuss with you concerning my late client. Died without
+         a NEXT OF KIN. Send me your private email for full details information.
+         email me at 
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+ORGANIZATION: hk2
+X-MAILER: Active! mail
+X-TM-AS-MML: disable
+X-TM-AS-Product-Ver: IMSS-7.1.0.1808-8.2.0.1013-25446.007
+X-TM-AS-Result: No-3.295-5.0-31-10
+X-imss-scan-details: No-3.295-5.0-31-10
+X-TM-AS-User-Approved-Sender: No
+X-TMASE-MatchedRID: OpTQZl8ZQaJITndh1lLRAVY9Nq4gO093UdrDk+qP6I3P+sf2RmSoaJ4C
+        IKY/Hg3AtOt1ofVlaoJvbi1SDSqmyHdEsZciRJFfhmVx49xmhHrP/MyuVlT/C2cwPT0pp7UXvpF
+        f9afTaX8LbigRnpKlKXb6cSLExxx2IebjhXMQts/bT6ECXKl/HM5PJDPZOGD33XQECBWJeMs77V
+        WoZG1Oy1+QY/Yk/svTGCdn3dXdwF9pxlstnc5fogw/SK5ip7sj7YkdiPg0a1yUTGVAhB5EbQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the function xdp_umem_pin_pages, if npgs != umem->npgs and
-npgs >= 0, the function xdp_umem_unpin_pages is called. In this
-function, kfree is called to handle umem->pgs, and then in the
-function xdp_umem_pin_pages, kfree is called again to handle
-umem->pgs. Eventually, umem->pgs is freed twice.
+E-Mail: dr29876dr@gmail.com
 
-Acked-by: Björn Töpel <bjorn.topel@intel.com>
-Signed-off-by: Zhu Yanjun <yanjun.zhu@intel.com>
----
- net/xdp/xdp_umem.c | 17 +++++------------
- 1 file changed, 5 insertions(+), 12 deletions(-)
 
-diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
-index 56a28a686988..01b31c56cead 100644
---- a/net/xdp/xdp_umem.c
-+++ b/net/xdp/xdp_umem.c
-@@ -97,7 +97,6 @@ static int xdp_umem_pin_pages(struct xdp_umem *umem, unsigned long address)
- {
- 	unsigned int gup_flags = FOLL_WRITE;
- 	long npgs;
--	int err;
- 
- 	umem->pgs = kcalloc(umem->npgs, sizeof(*umem->pgs),
- 			    GFP_KERNEL | __GFP_NOWARN);
-@@ -112,20 +111,14 @@ static int xdp_umem_pin_pages(struct xdp_umem *umem, unsigned long address)
- 	if (npgs != umem->npgs) {
- 		if (npgs >= 0) {
- 			umem->npgs = npgs;
--			err = -ENOMEM;
--			goto out_pin;
-+			xdp_umem_unpin_pages(umem);
-+			return -ENOMEM;
- 		}
--		err = npgs;
--		goto out_pgs;
-+		kfree(umem->pgs);
-+		umem->pgs = NULL;
-+		return (int)npgs;
- 	}
- 	return 0;
--
--out_pin:
--	xdp_umem_unpin_pages(umem);
--out_pgs:
--	kfree(umem->pgs);
--	umem->pgs = NULL;
--	return err;
- }
- 
- static int xdp_umem_account_pages(struct xdp_umem *umem)
--- 
-2.18.4
 
