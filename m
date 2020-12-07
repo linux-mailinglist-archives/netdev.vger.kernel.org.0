@@ -2,89 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58A4D2D1ABA
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 21:43:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01CE82D1AE4
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 21:47:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726777AbgLGUnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 15:43:15 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49944 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726028AbgLGUnP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Dec 2020 15:43:15 -0500
-Date:   Mon, 7 Dec 2020 12:42:33 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607373754;
-        bh=DRHUS9nc3VeZ6aImldRvU+F7Vbm/BnCYaDCQq4JSfsg=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=cTNLXKuj88DuS3zaWAXdqoEJ4YotHaqUWHrDRaBh6rl5JoTLTT2muhTd0pgcihvuu
-         AvGFWnUMum+CnIg4fL8y5GGOg8vaINPsn4eu2xF+KvOKH5afSGXhL6Ff0ep/L55f/r
-         J4zSMjsP/fBIK0jvML5NQEj2BH/bNCkmTqzfawwpnAyBAN2tU5kvubxiEPB8IybiEY
-         LdvsGTaDjKWNrFOFF07O5laDLbY50U0WgiM/SgSWFqFxa5Tlsfz2aY6ZQwuX+7+m3L
-         P1vLCxekrOO/nkncXcuUoD91qs+rDCoY0GGpg6J4tY8DlBcygNUd/FtpC78QRGi9M7
-         l9A5d7NQgMFRQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Saeed Mahameed <saeed@kernel.org>,
-        Eran Ben Elisha <eranbe@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [net-next V2 08/15] net/mlx5e: Add TX PTP port object support
-Message-ID: <20201207124233.22540545@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201207151906.GA30105@hoboy.vegasvil.org>
-References: <20201203182908.1d25ea3f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-        <b761c676af87a4a82e3ea4f6f5aff3d1159c63e7.camel@kernel.org>
-        <20201204122613.542c2362@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-        <999c9328747d4edbfc8d2720b886aaa269e16df8.camel@kernel.org>
-        <20201204151743.4b55da5c@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-        <a20290fa3448849e84d2d97b2978d4e05033cd80.camel@kernel.org>
-        <20201204162426.650dedfc@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-        <a4a8adc8-4d4c-3b09-6c2f-ce1d12e0b9bc@nvidia.com>
-        <20201206170834.GA4342@hoboy.vegasvil.org>
-        <a03538c728bf232ccae718d78de43883c4fca70d.camel@kernel.org>
-        <20201207151906.GA30105@hoboy.vegasvil.org>
+        id S1726829AbgLGUo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 15:44:56 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:47437 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726247AbgLGUoz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 15:44:55 -0500
+Received: from 1.general.cking.uk.vpn ([10.172.193.212])
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1kmNMg-0004h9-5f; Mon, 07 Dec 2020 20:44:10 +0000
+Subject: Re: [PATCH][next] seg6: fix unintentional integer overflow on left
+ shift
+To:     Andrea Mayer <andrea.mayer@uniroma2.it>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>
+References: <20201207144503.169679-1-colin.king@canonical.com>
+ <20201207205926.6222eca38744c43632248a41@uniroma2.it>
+From:   Colin Ian King <colin.king@canonical.com>
+Message-ID: <b969c10e-d5eb-6056-ddcd-9ae70846eb4a@canonical.com>
+Date:   Mon, 7 Dec 2020 20:44:09 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20201207205926.6222eca38744c43632248a41@uniroma2.it>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 7 Dec 2020 07:19:06 -0800 Richard Cochran wrote:
-> On Mon, Dec 07, 2020 at 12:37:45AM -0800, Saeed Mahameed wrote:
-> > we are not adding any new mechanism.  
+On 07/12/2020 19:59, Andrea Mayer wrote:
+> On Mon,  7 Dec 2020 14:45:03 +0000
+> Colin King <colin.king@canonical.com> wrote:
 > 
-> Sorry, I didn't catch the beginning of this thread.  Are you proposing
-> adding HWTSTAMP_TX_ON_TIME_CRITICAL_ONLY to net_tstamp.h ?
+>> From: Colin Ian King <colin.king@canonical.com>
+>>
+>> Shifting the integer value 1 is evaluated using 32-bit arithmetic
+>> and then used in an expression that expects a unsigned long value
+>> leads to a potential integer overflow. Fix this by using the BIT
+>> macro to perform the shift to avoid the overflow.
+>>
+>> Addresses-Coverity: ("Uninitentional integer overflow")
+>> Fixes: 964adce526a4 ("seg6: improve management of behavior attributes")
+>> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+>> ---
+>>  net/ipv6/seg6_local.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
+>> index b07f7c1c82a4..d68de8cd1207 100644
+>> --- a/net/ipv6/seg6_local.c
+>> +++ b/net/ipv6/seg6_local.c
+>> @@ -1366,7 +1366,7 @@ static void __destroy_attrs(unsigned long parsed_attrs, int max_parsed,
+>>  	 * attribute; otherwise, we call the destroy() callback.
+>>  	 */
+>>  	for (i = 0; i < max_parsed; ++i) {
+>> -		if (!(parsed_attrs & (1 << i)))
+>> +		if (!(parsed_attrs & BIT(i)))
+>>  			continue;
+>>  
+>>  		param = &seg6_action_params[i];
+>> -- 
+>> 2.29.2
+>>
 > 
-> If so, then ...
+> Hi Colin,
+> thanks for the fix. I've just given a look a the whole seg6_local.c code and I
+> found that such issues is present in other parts of the code.
 > 
-> > Our driver feature is and internal enhancement yes, but the suggested
-> > flag is very far from indicating any internal enhancement, is actually
-> > an enhancement to the current API, and is a very simple extension with
-> > wide range of improvements to all layers.  
-> 
-> No, that would be no enhancement but rather a hack for poorly designed
-> hardware.
-> 
-> > Our driver can optimize accuracy when this flag is set, other drivers
-> > might be happy to implement it since they already have a slow hw  
-> 
-> Name three other drivers that would "be happy" to implement this.  Can
-> you name even one other?
+> If we agree, I can make a fix which explicitly eliminates the several (1 << i)
+> in favor of BIT(i).
 
-The behavior is not entirely dissimilar to the time stamps on
-multi-layered devices (e.g. DSA switches). The time stamp can either 
-be generated when the packet enters the device (current mlx5 behavior)
-or when it actually egresses thru the MAC (what this set adds).
+Sounds good to me.
 
-So while we could find other hardware like this if we squint hard enough
-- I'm not sure how much practical use for CPU-side stamps there is in DSA.
+Colin
 
+> 
+> Andrea
+> 
 
-My main concern is the user friendliness. I think there is no question
-that user running ptp4l would want this mlx5 knob to be enabled. Would
-we rather see a patch to ptp4l that turns per driver knob or should we
-shoot for some form of an API that tells the kernel that we're
-expecting ns level time accuracy? 
-
-That's how I would phrase the dilemma here.
