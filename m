@@ -2,90 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6BA32D0E31
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 11:41:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B3A12D0E66
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 11:50:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726327AbgLGKlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 05:41:13 -0500
-Received: from so254-31.mailgun.net ([198.61.254.31]:43549 "EHLO
-        so254-31.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725794AbgLGKlN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 05:41:13 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1607337648; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=SJSbCik9Tek06j7dEaYsZTY3s+Lwk19Ci7mR6nO9gjk=; b=MTmgEmhbaSeZCkjyJg+yMKVFT3MzBgNCGgSV7j23pW2qQlxQ/NfjpF2C5xxyQaIBoEHKL/3p
- wCOCboi6GB/TZnx0Bn7JtTUzTvwOiDda4wJkf/QWR0DFLF17q9mha+PmSkqmff4Pk5hYihMq
- jHq2vVYfe6X44zWJvdMmwIIE7ck=
-X-Mailgun-Sending-Ip: 198.61.254.31
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
- 5fce0692ae7b105766e29498 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 07 Dec 2020 10:40:18
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 24AF6C433C6; Mon,  7 Dec 2020 10:40:18 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id B24E1C433CA;
-        Mon,  7 Dec 2020 10:40:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B24E1C433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-Subject: Re: pull-request: wireless-drivers-next-2020-12-03
-References: <20201203185732.9CFA5C433ED@smtp.codeaurora.org>
-        <20201204111715.04d5b198@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-Date:   Mon, 07 Dec 2020 12:40:14 +0200
-In-Reply-To: <20201204111715.04d5b198@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-        (Jakub Kicinski's message of "Fri, 4 Dec 2020 11:17:15 -0800")
-Message-ID: <87tusxgar5.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1726217AbgLGKtQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 05:49:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33808 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725842AbgLGKtQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 05:49:16 -0500
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D22DAC0613D0
+        for <netdev@vger.kernel.org>; Mon,  7 Dec 2020 02:48:35 -0800 (PST)
+Received: by mail-lf1-x142.google.com with SMTP id u19so17389319lfr.7
+        for <netdev@vger.kernel.org>; Mon, 07 Dec 2020 02:48:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=hHdC4ujfq/sltdEUUsvjJDbRnESRD9gRv1wBr/8BciA=;
+        b=Ae9ZfB8al/FPgLf4JFsxc7tvg1V9qxcJ4n+0hJhJLhan+RU/NZHHZ7RmFV7feXj98U
+         zoC7EivklqYsT5m2Am2djyaTw2zBwww1qKex5P0pGsNVtp+/HjSenSObGg2pnjt+VHM5
+         +NS2ZL6Egssl40XpcvcZ51nv7jrM8ITFEztypRhSA5O5S/MnI0Ryb+q5U/rvjdPsoQK+
+         FFiOeIocO+5h82lr6sLGUMWPffA7OCWR6vtDp9OoN7XC3hzawYA+yFh/1NH/MVxKro4S
+         VDENbA0HwfiD+uN1tQOkoSprGiYFJgy7nhbi/ixcJxDgO0vjAioGKifrwyWC4d4xxmRS
+         RmKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=hHdC4ujfq/sltdEUUsvjJDbRnESRD9gRv1wBr/8BciA=;
+        b=BZUSMKz5J2Myq7R4dTd71a3azdGcuG9TVW1ED7KAgcxbU46i7uzY/W9FEaqqpmOqSR
+         Xw+Lq5VIewxFxkijAYugOVBDySzm/cgSNxmmedlh56JiMWR4fG55VahZ2QXzLQf7F/uN
+         5kMR1ORmXpsYx7XndLvI5a7FyGjfHRai5GE9a4kQnlDgx2HnQr+nLLJQrbN6C0sFf/2A
+         jQMMct+55Z7IFunxqPyZOPmq0mqYUkrRsu6LiI8XEIpnQUY2g6/9+0POARkWibYTyesX
+         r1M3Aa6lSuvZqpstD5Va/IUlBbltml9qwoYeXamstC1PbnnEFMIgvnIixTfqTIK12Ns4
+         XIQg==
+X-Gm-Message-State: AOAM533xVwjiUFewmra/mH2mm0q8Edxe5gsJTuvqkFobBVFE2Eaxnqj2
+        mDSJU/fbE0bY4o4/w6wNNCXTS92UA+f06GyCn9tc4g==
+X-Google-Smtp-Source: ABdhPJx9Yi4fPTOzVqekOVpmfn4yuJQ/ANOi6GRZwBZNXobm0cq1w55+gcDyVGdCkUP5tx2zlrSetJUN0QVXCM80sJw=
+X-Received: by 2002:ac2:5311:: with SMTP id c17mr8180683lfh.22.1607338113921;
+ Mon, 07 Dec 2020 02:48:33 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20201203102936.4049556-1-apusaka@google.com> <20201203182903.v1.1.I92d2e2a87419730d60136680cbe27636baf94b15@changeid>
+ <20B6F2AD-1A60-4E3C-84C2-E3CB7294FABC@holtmann.org> <CAJQfnxHDThaJ58iFSpyq4bLopeuATvd+4fOR2AAgbNaabNSMuQ@mail.gmail.com>
+ <25116F72-CE7C-46B6-A83A-5D33E9142BF9@holtmann.org> <CAJQfnxG_GDsTTJ1v=Ug0MqEGmTSdeYcOhEf3rQ1hDTmvJS0JrQ@mail.gmail.com>
+ <14E449EF-6E91-43BF-9477-61B29B20783A@holtmann.org>
+In-Reply-To: <14E449EF-6E91-43BF-9477-61B29B20783A@holtmann.org>
+From:   Archie Pusaka <apusaka@google.com>
+Date:   Mon, 7 Dec 2020 18:48:22 +0800
+Message-ID: <CAJQfnxGOg_b+DkqVuUh0jqQL4VmY0ijB4kEmfGg92K3D_KbNZQ@mail.gmail.com>
+Subject: Re: [PATCH v1 1/5] Bluetooth: advmon offload MSFT add rssi support
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        Miao-chen Chou <mcchou@chromium.org>,
+        Yun-Hao Chung <howardchung@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> writes:
+Hi Marcel,
 
-> On Thu,  3 Dec 2020 18:57:32 +0000 (UTC) Kalle Valo wrote:
->> wireless-drivers-next patches for v5.11
->> 
->> First set of patches for v5.11. rtw88 getting improvements to work
->> better with Bluetooth and other driver also getting some new features.
->> mhi-ath11k-immutable branch was pulled from mhi tree to avoid
->> conflicts with mhi tree.
+On Mon, 7 Dec 2020 at 17:57, Marcel Holtmann <marcel@holtmann.org> wrote:
 >
-> Pulled, but there are a lot of fixes in here which look like they
-> should have been part of the other PR, if you ask me.
+> Hi Archie,
+>
+> >>>>> MSFT needs rssi parameter for monitoring advertisement packet,
+> >>>>> therefore we should supply them from mgmt.
+> >>>>>
+> >>>>> Signed-off-by: Archie Pusaka <apusaka@chromium.org>
+> >>>>> Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
+> >>>>> Reviewed-by: Yun-Hao Chung <howardchung@google.com>
+> >>>>
+> >>>> I don=E2=80=99t need any Reviewed-by if they are not catching an obv=
+ious user API breakage.
+> >>>>
+> >>>>> ---
+> >>>>>
+> >>>>> include/net/bluetooth/hci_core.h | 9 +++++++++
+> >>>>> include/net/bluetooth/mgmt.h     | 9 +++++++++
+> >>>>> net/bluetooth/mgmt.c             | 8 ++++++++
+> >>>>> 3 files changed, 26 insertions(+)
+> >>>>>
+> >>>>> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetoo=
+th/hci_core.h
+> >>>>> index 9873e1c8cd16..42d446417817 100644
+> >>>>> --- a/include/net/bluetooth/hci_core.h
+> >>>>> +++ b/include/net/bluetooth/hci_core.h
+> >>>>> @@ -246,8 +246,17 @@ struct adv_pattern {
+> >>>>>     __u8 value[HCI_MAX_AD_LENGTH];
+> >>>>> };
+> >>>>>
+> >>>>> +struct adv_rssi_thresholds {
+> >>>>> +     __s8 low_threshold;
+> >>>>> +     __s8 high_threshold;
+> >>>>> +     __u16 low_threshold_timeout;
+> >>>>> +     __u16 high_threshold_timeout;
+> >>>>> +     __u8 sampling_period;
+> >>>>> +};
+> >>>>> +
+> >>>>> struct adv_monitor {
+> >>>>>     struct list_head patterns;
+> >>>>> +     struct adv_rssi_thresholds rssi;
+> >>>>>     bool            active;
+> >>>>>     __u16           handle;
+> >>>>> };
+> >>>>> diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/m=
+gmt.h
+> >>>>> index d8367850e8cd..dc534837be0e 100644
+> >>>>> --- a/include/net/bluetooth/mgmt.h
+> >>>>> +++ b/include/net/bluetooth/mgmt.h
+> >>>>> @@ -763,9 +763,18 @@ struct mgmt_adv_pattern {
+> >>>>>     __u8 value[31];
+> >>>>> } __packed;
+> >>>>>
+> >>>>> +struct mgmt_adv_rssi_thresholds {
+> >>>>> +     __s8 high_threshold;
+> >>>>> +     __le16 high_threshold_timeout;
+> >>>>> +     __s8 low_threshold;
+> >>>>> +     __le16 low_threshold_timeout;
+> >>>>> +     __u8 sampling_period;
+> >>>>> +} __packed;
+> >>>>> +
+> >>>>> #define MGMT_OP_ADD_ADV_PATTERNS_MONITOR      0x0052
+> >>>>> struct mgmt_cp_add_adv_patterns_monitor {
+> >>>>>     __u8 pattern_count;
+> >>>>> +     struct mgmt_adv_rssi_thresholds rssi;
+> >>>>>     struct mgmt_adv_pattern patterns[];
+> >>>>> } __packed;
+> >>>>
+> >>>> This is something we can not do. It breaks an userspace facing API. =
+Is the mgmt opcode 0x0052 in an already released kernel?
+> >>>
+> >>> Yes, the opcode does exist in an already released kernel.
+> >>>
+> >>> The DBus method which accesses this API is put behind the experimenta=
+l
+> >>> flag, therefore we expect they are flexible enough to support changes=
+.
+> >>> Previously, we already had a discussion in an email thread with the
+> >>> title "Offload RSSI tracking to controller", and the outcome supports
+> >>> this change.
+> >>>
+> >>> Here is an excerpt of the discussion.
+> >>
+> >> it doesn=E2=80=99t matter. This is fixed API now and so we can not jus=
+t change it. The argument above is void. What matters if it is in already r=
+eleased kernel.
+> >
+> > If that is the case, do you have a suggestion to allow RSSI to be
+> > considered when monitoring advertisement? Would a new MGMT opcode with
+> > these parameters suffice?
+>
+> its the only way.
 
-Yeah, I'm actually on purpose keeping the bar high for patches going to
-wireless-drivers (ie. the fixes going to -rc releases). This is just to
-keep things simple for me and avoiding the number of conflicts between
-the trees.
+I will make the necessary changes. Thanks for the confirmation.
 
-> There's also a patch which looks like it renames a module parameter.
-> Module parameters are considered uAPI.
+Regards,
+Archie
 
-Ah, I have been actually wondering that if they are part of user space
-API or not, good to know that they are. I'll keep an eye of this in the
-future so that we are not breaking the uAPI with module parameter
-changes.
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+>
+> Regards
+>
+> Marcel
+>
