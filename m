@@ -2,93 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B21D12D156B
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 17:02:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97EB32D158D
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 17:07:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727169AbgLGQBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 11:01:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54540 "EHLO
+        id S1727434AbgLGQG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 11:06:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727128AbgLGQBl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 11:01:41 -0500
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B171C061793;
-        Mon,  7 Dec 2020 08:01:01 -0800 (PST)
-Received: by mail-lj1-x243.google.com with SMTP id f11so3622180ljn.2;
-        Mon, 07 Dec 2020 08:01:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=vYbfOYPjETzFJFJB48KuY9f+Uk2jjLJu+B88mllyQ70=;
-        b=lRfQmiJ5Dq9ktExYA4P7tftcsRNiHk1wAgZyGRgJ9AfMIoOwOpIZZA070LDRxBPOWx
-         YIDh4v1c8/eOBY7kKvrk9oqza8gz/X1LKr0Q6XFTbn2pRXHIWvsFHxwrKropNyynpS57
-         B5ts5Yoka1ZQzIgP/YoISs6FFQCLRG8TFgTFZij5zF8imWVIf/xtGKa/G4nXaTmL25g0
-         iz6Vd9d0RM7d4oLiSRsTA1MLIHemI6XJWQdN3T54qArSUiX2SrPEZN48KoUWrw8Ur6SP
-         zpfN+JeHpu/B/1jff5WIWtp6x02Z/y/5B6W4usq6VCND1ftZ5DS+Ygj0tPChj6Oo1V1e
-         Kn2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=vYbfOYPjETzFJFJB48KuY9f+Uk2jjLJu+B88mllyQ70=;
-        b=ZhqayeDrs66w9rgy0wMUey/b5Q7EgiDlN5m9V0Mi5MifPxTVpOPyxYlOjBWPAe3Qd+
-         HrF2EsfNBGXk/LULcV96uFKP7O6BdPD4Nq4tk0ZEUZ2URlQotrOWqOAo1UxcsA73Gv3o
-         zS3NjxTw8x+pY7A+BwSNa3rmJ6oac669u7Fptveygs78I//sugLmUCGSJSjDJBhtnBHB
-         DI18UTXXuLjyH61WBI7IDBrewa3+gI4tnWIKjZHrD+zUKkN7XidCJxLd//X7tExu+YL5
-         BlDFWPyVws8HY+Wx4btG7OTNVAvLCo1Yq/C4JOHrbbUziKaLhuD5lLIO28glzkc9zjnN
-         BvhA==
-X-Gm-Message-State: AOAM5325HNJw7wRnSpY/HTPaWH+GGfaTUY7aWatKFj+yQmX0BXbe5PzY
-        zsMPIdoU165NY/FuXWI6iz95bLbP/+65rUdd/5o=
-X-Google-Smtp-Source: ABdhPJzaIY65XsJ71A+45wDE3Kbh7bzrzN9+9kAJfUHOTIZMo9zdZHClRgbC6BSumPN+c5V7ZQexiBuXeex3eSSQBdA=
-X-Received: by 2002:a2e:6c14:: with SMTP id h20mr8905600ljc.450.1607356859901;
- Mon, 07 Dec 2020 08:00:59 -0800 (PST)
+        with ESMTP id S1727288AbgLGQG4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 11:06:56 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EAA4C061749
+        for <netdev@vger.kernel.org>; Mon,  7 Dec 2020 08:06:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=PMMb36BoNKo/K4vLZCf7NCEAA+JKXKt1TiebagFvkS8=; b=JxI/fVvrqRzfTHOEkpkZlirmx
+        T0j5RqhW/CAyHKzLAt6qr8I6gBeAWZw3ubsNJiukGgc5GPs4ql1D8xKVyEOPFmppFSNv/sTWzzw9p
+        GHTrMd52vBWhJX7VXd12dKZiylv6Wnpq9we1QGZ6Hkf38YxfJYzO+EAeD2sGste8tkx1GPaJolM9E
+        I3J1I0VvNuwxKZL9jCgeAG7H0LkzL4YUhO+OJyegmj0CZgRjNSsNCgVnnX9qmlD4/Ul1utWvS+sH2
+        eniyLuIKpg5P40JE2bmByHrSY5Ddw3thpRbubzKI2ZPLgd73xwJ3zccnCArnhbFUxWhJm12zcnvOL
+        y5Wprr9aw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:40976)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kmJ1Y-0007sn-OA; Mon, 07 Dec 2020 16:06:04 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kmJ1V-0004iT-Rd; Mon, 07 Dec 2020 16:06:01 +0000
+Date:   Mon, 7 Dec 2020 16:06:01 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Ido Schimmel <idosch@idosch.org>,
+        Michal Kubecek <mkubecek@suse.cz>
+Subject: Re: [PATCH net-next] net: sfp: add debugfs support
+Message-ID: <20201207160601.GP1551@shell.armlinux.org.uk>
+References: <E1khJyS-0003UU-9O@rmk-PC.armlinux.org.uk>
+ <20201124001431.GA2031446@lunn.ch>
+ <20201124084151.GA722671@shredder.lan>
+ <20201124094916.GD1551@shell.armlinux.org.uk>
+ <20201124104640.GA738122@shredder.lan>
+ <20201202130318.GD1551@shell.armlinux.org.uk>
+ <20201202085913.1eda0bba@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+ <20201202090147.48af58fd@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
 MIME-Version: 1.0
-References: <20201205030952.520743-1-andrii@kernel.org> <CAADnVQK25OLC+C7LLCvGY7kgr_F2vh5-s_4rnwCY7CqMEcfisw@mail.gmail.com>
- <87lfe9676n.fsf@toke.dk>
-In-Reply-To: <87lfe9676n.fsf@toke.dk>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 7 Dec 2020 08:00:48 -0800
-Message-ID: <CAADnVQKxePN0wf0mTHfMXPPCBV3QArOyW_6FkHQEXctKnniGmg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: return -EOPNOTSUPP when attaching to
- non-kernel BTF
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201202090147.48af58fd@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 7, 2020 at 6:07 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
-t.com> wrote:
->
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->
-> > On Fri, Dec 4, 2020 at 7:11 PM Andrii Nakryiko <andrii@kernel.org> wrot=
-e:
-> >> +                               return -EOPNOTSUPP;
-> >
-> > $ cd kernel/bpf
-> > $ git grep ENOTSUPP|wc -l
-> > 46
-> > $ git grep EOPNOTSUPP|wc -l
-> > 11
->
-> But also
->
-> $ cd kernel/include/uapi
-> $ git grep ENOTSUPP | wc -l
-> 0
-> $ git grep EOPNOTSUPP | wc -l
-> 8
->
-> (i.e., ENOTSUPP is not defined in userspace headers at all)
+On Wed, Dec 02, 2020 at 09:01:47AM -0800, Jakub Kicinski wrote:
+> On Wed, 2 Dec 2020 08:59:13 -0800 Jakub Kicinski wrote:
+> > On Wed, 2 Dec 2020 13:03:18 +0000 Russell King - ARM Linux admin wrote:
+> > > Jakub,
+> > > 
+> > > What's your opinion on this patch? It seems to have stalled...  
+> > 
+> > Sorry, I think I expected someone to do the obvious questioning..
+> 
+> Ah, no! I know what happened... Check out patchwork:
+> 
+> https://patchwork.kernel.org/project/netdevbpf/patch/E1khJyS-0003UU-9O@rmk-PC.armlinux.org.uk/
+> 
+> It says the patch did not apply cleanly to net-next ;)
+> 
+> Regardless let's hear what people thing about using ext_link (or
+> similar) for the SFP signals.
 
-that's irrelevant. The kernel returns it already. It's a known constant
-regardless of .h
+There seems to have been no replies... I think I'll resend with
+Andrew's r-b tag. If something better comes along in the future, we
+can always change it - debugfs isn't an API.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
