@@ -2,102 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52D642D0BA8
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 09:21:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A3012D0BB5
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 09:26:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726214AbgLGIVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 03:21:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39230 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725905AbgLGIVO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 03:21:14 -0500
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 601FDC0613D0;
-        Mon,  7 Dec 2020 00:20:28 -0800 (PST)
-Received: by mail-pg1-x543.google.com with SMTP id f17so8272357pge.6;
-        Mon, 07 Dec 2020 00:20:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7loJejYCZUiegYYfnZHF1zns7qEuuJti+0V+ypDNatk=;
-        b=qiNx+8BiKnA64HSAl6dDGA0EzBv7cjOSUUdA/SF2qwTDtkBSz276uVUjf4j73FQbxT
-         36zXWEs+JOMebWDAsu6zfsTQ9NyCF5yFngPKk426FnHnm+IRPIJU2zstGsogqDVTfmss
-         79RAJVR9QAGQly1rCsd5SOvgRQezoTG595V0dWVHFqDWIJZaL6Za3gznaNVLTgDbF4/V
-         UDN08SVJByUTsF/PimNRG5V0G0BKB7Z5zjBcCtZ2r/fZn/U4q1kIZ/Kdca5JCdaKBmAi
-         +WZk/lQvra1COO0q+SBwwK3ZAvlYUpfJY5I/ZcTngqFdlJ25qi6qTzaASeVoSVfxnXjt
-         RguQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7loJejYCZUiegYYfnZHF1zns7qEuuJti+0V+ypDNatk=;
-        b=a7dCikJyTBDZa7tDrrID+xF+Fw84eJhJ4N5YmQs43iazNIfp57mcrovAOFmjDwrHLt
-         dCu/NDCB59CTWrWEXunFjvfcx6UgHmWeWmmtVe3klyUeHM7TNpSwvu1QxE/TL3huqZp3
-         uuFhIi787DTGTS7YUODBSlF+Il/fwAsqWfx2Vekxo42Ibo0ytEclGL9oMrEmdDSbz5mn
-         Kgz/z6jpzsFFrDycdOT39QZWl6S24pFy1bA1aJU0PVtuAM+ko8qirEmE24DabgEXUwde
-         c7wUmevB4qHjFFeFclkQoBS2N7z3Lvn+oaU02XbJGNG7UlSbO53mJSQvzXWEd7excgzw
-         tuLA==
-X-Gm-Message-State: AOAM533aMJV0iNGcSQdJF9OpBfZRx7UdPmXv4Loy+GkTGlvh6eadOEdl
-        N464rwfUJoFPxWRz0aQr4frN2cwJcr2AZQ2k
-X-Google-Smtp-Source: ABdhPJz9Ff4GvMEQMz32yUO0DTmI1UWRZUmuGqe+dQBoV1af5faE3ty3mxUENOoQUuxwdFBcHl4VXQ==
-X-Received: by 2002:a63:5712:: with SMTP id l18mr17488343pgb.79.1607329227940;
-        Mon, 07 Dec 2020 00:20:27 -0800 (PST)
-Received: from btopel-mobl.ger.intel.com (fmdmzpr03-ext.fm.intel.com. [192.55.54.38])
-        by smtp.gmail.com with ESMTPSA id j9sm12971560pfa.58.2020.12.07.00.20.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Dec 2020 00:20:26 -0800 (PST)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
-        kernel test robot <oliver.sang@intel.com>
-Subject: [PATCH bpf-next] xsk: Validate socket state in xsk_recvmsg, prior touching socket members
-Date:   Mon,  7 Dec 2020 09:20:08 +0100
-Message-Id: <20201207082008.132263-1-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        id S1726220AbgLGI0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 03:26:09 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46485 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726119AbgLGI0I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 03:26:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607329482;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mufcmj20aUEugUydgQ93FnUX087nyQYX2bLOGbVsYnA=;
+        b=TilQX35Nw+i/cS/EpHmkoKe5/ln/tTgj6Sdq7uDpTUyD3rb2cATbWwif9IlrNKInvOI4YS
+        +ZuRjI+dTF7k0ph3TqbfI5Ph6BF/96U8vzpRBTjBy/Bd7ZO2KdlfLrYMR6jb9dDdhJavzC
+        BqRPbEOkUcqL1odHeNmd4ycZS49xfRs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-269-eaugl82PMAyxNLfoaUbqvw-1; Mon, 07 Dec 2020 03:24:37 -0500
+X-MC-Unique: eaugl82PMAyxNLfoaUbqvw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7551EBBEE3;
+        Mon,  7 Dec 2020 08:24:35 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-116-67.rdu2.redhat.com [10.10.116.67])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E40222B58B;
+        Mon,  7 Dec 2020 08:24:32 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20201204210855.GA3412@gondor.apana.org.au>
+References: <20201204210855.GA3412@gondor.apana.org.au> <20201204154626.GA26255@fieldses.org> <2F96670A-58DC-43A6-A20E-696803F0BFBA@oracle.com> <160518586534.2277919.14475638653680231924.stgit@warthog.procyon.org.uk> <118876.1607093975@warthog.procyon.org.uk> <122997.1607097713@warthog.procyon.org.uk> <20201204160347.GA26933@fieldses.org> <125709.1607100601@warthog.procyon.org.uk> <CAMj1kXEOm_yh478i+dqPiz0eoBxp4eag3j2qHm5eBLe+2kihoQ@mail.gmail.com> <127458.1607102368@warthog.procyon.org.uk> <CAMj1kXFe50HvZLxG6Kh-oYBCf5uu51hhuh7mW5UQ62ZSqmu_xA@mail.gmail.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     dhowells@redhat.com, Ard Biesheuvel <ardb@kernel.org>,
+        Bruce Fields <bfields@fieldses.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, linux-afs@lists.infradead.org
+Subject: Re: Why the auxiliary cipher in gss_krb5_crypto.c?
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <398200.1607329472.1@warthog.procyon.org.uk>
+Date:   Mon, 07 Dec 2020 08:24:32 +0000
+Message-ID: <398201.1607329472@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+Herbert Xu <herbert@gondor.apana.org.au> wrote:
 
-In AF_XDP the socket state needs to be checked, prior touching the
-members of the socket. This was not the case for the recvmsg
-implementation. Fix that by moving the xsk_is_bound() call.
+> > Herbert recently made some changes for MSG_MORE support in the AF_ALG
+> > code, which permits a skcipher encryption to be split into several
+> > invocations of the skcipher layer without the need for this complexity
+> > on the side of the caller. Maybe there is a way to reuse that here.
+> > Herbert?
+> 
+> Yes this was one of the reasons I was persuing the continuation
+> work.  It should allow us to kill the special case for CTS in the
+> krb5 code.
+> 
+> Hopefully I can get some time to restart work on this soon.
 
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Fixes: 45a86681844e ("xsk: Add support for recvmsg()")
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
----
- net/xdp/xsk.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+In the krb5 case, we know in advance how much data we're going to be dealing
+with, if that helps.
 
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 56c46e5f57bc..e28c6825e089 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -554,12 +554,12 @@ static int xsk_recvmsg(struct socket *sock, struct msghdr *m, size_t len, int fl
- 	struct sock *sk = sock->sk;
- 	struct xdp_sock *xs = xdp_sk(sk);
- 
-+	if (unlikely(!xsk_is_bound(xs)))
-+		return -ENXIO;
- 	if (unlikely(!(xs->dev->flags & IFF_UP)))
- 		return -ENETDOWN;
- 	if (unlikely(!xs->rx))
- 		return -ENOBUFS;
--	if (unlikely(!xsk_is_bound(xs)))
--		return -ENXIO;
- 	if (unlikely(need_wait))
- 		return -EOPNOTSUPP;
- 
-
-base-commit: 34da87213d3ddd26643aa83deff7ffc6463da0fc
--- 
-2.27.0
+David
 
