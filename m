@@ -2,114 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5568E2D134D
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 15:14:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 003C02D1357
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 15:16:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726355AbgLGON4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 09:13:56 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:34379 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725770AbgLGONz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 09:13:55 -0500
-Received: by mail-wr1-f67.google.com with SMTP id k14so12924787wrn.1;
-        Mon, 07 Dec 2020 06:13:39 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gG7VgUZtjX4oofV7gBPwji7WUqiGnJQzMVNQgM8p0KI=;
-        b=ezMlb7Ga7t9M6AwPYfev/SUnfIJ/AEYtRJXq83YANQloZMdCxp+MGh2kGCIKh6E0JY
-         mM1ufDMlyE5NipQVqgd2FNbKsA9ZewCZ0iD8g0JavMnE0Lz7hOlcO1ah/GR1Zv4DEg0l
-         i+sHlJmFGgfygdfJyFEJPCvEhkJjg/7NZvfyDFVE0bbVfBsoMF4W7mW6JfVmWl3DrWmb
-         e9CcYiPvT0Ra399/apuhY405v4cRBIx21HYMl7XSvbOtSIJfoMAZyJ8mbWcl0PUtMK8x
-         YFXRh+CuRhC9rWCmNmldyDc6P92Y6vttL+Ej5FMFjiCS5Gs07Q5OOxxGl6FNYmGk08Ec
-         120w==
-X-Gm-Message-State: AOAM532/xDX/JEew6rYFJjl07elYif6K/D9IfNNHPS29JBp/AoRNR20i
-        QhrD16uauq2kv9Q6WpXfvUw=
-X-Google-Smtp-Source: ABdhPJyDGmRg/7pSYaUY4kTpP3/w8YFZ21qsd0KTsX0+bqFdeH6YXibx9gEqHimAS3PtvvVq5sh71w==
-X-Received: by 2002:a5d:4349:: with SMTP id u9mr19326981wrr.319.1607350393759;
-        Mon, 07 Dec 2020 06:13:13 -0800 (PST)
-Received: from kozik-lap (adsl-84-226-167-205.adslplus.ch. [84.226.167.205])
-        by smtp.googlemail.com with ESMTPSA id z11sm15491704wmc.39.2020.12.07.06.13.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Dec 2020 06:13:12 -0800 (PST)
-Date:   Mon, 7 Dec 2020 15:13:11 +0100
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Bongsu Jeon <bongsu.jeon2@gmail.com>
-Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Bongsu Jeon <bongsu.jeon@samsung.com>
-Subject: Re: [PATCH net-next] nfc: s3fwrn5: Change irqflags
-Message-ID: <20201207141311.GB34599@kozik-lap>
-References: <20201207113827.2902-1-bongsu.jeon@samsung.com>
- <20201207115147.GA26206@kozik-lap>
- <CACwDmQDHXwqzmUE_jEmPcJnCcPrzn=7qT=4rp1MF3s30OM7uTQ@mail.gmail.com>
+        id S1726439AbgLGOQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 09:16:35 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:47798 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725816AbgLGOQe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 09:16:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607350508;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=MgTQnfyHDBIlg0aW7LHURku9NdTnw1Wvewb97jbt5cc=;
+        b=RATvz0BnflzuDSE3I3wE9n3PYV3ZazAL+WavexGvQyBCbj0mMK5pdmCF7IFvog18KFMwem
+        W7MFzk9eCle9h0dfoVfOQGN8wG0AwojTb0gaK4rK6bzgHUP61U4MJ6JBob/M1kfRnhUsiL
+        iShb8Omk68rXzStWdq8h7XXzhW3m/i4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-333-YhyV3gt5MI-mqE0CMyDmIA-1; Mon, 07 Dec 2020 09:15:05 -0500
+X-MC-Unique: YhyV3gt5MI-mqE0CMyDmIA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 28400DF8A7;
+        Mon,  7 Dec 2020 14:15:03 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-116-67.rdu2.redhat.com [10.10.116.67])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CE5C719C45;
+        Mon,  7 Dec 2020 14:15:00 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <CAMj1kXH_gEjgZKx=8uQgv=ckBqTVoh3vrHj=O-nY-nm5VMgLaA@mail.gmail.com>
+References: <CAMj1kXH_gEjgZKx=8uQgv=ckBqTVoh3vrHj=O-nY-nm5VMgLaA@mail.gmail.com> <20201204154626.GA26255@fieldses.org> <2F96670A-58DC-43A6-A20E-696803F0BFBA@oracle.com> <160518586534.2277919.14475638653680231924.stgit@warthog.procyon.org.uk> <118876.1607093975@warthog.procyon.org.uk> <122997.1607097713@warthog.procyon.org.uk> <20201204160347.GA26933@fieldses.org> <125709.1607100601@warthog.procyon.org.uk> <CAMj1kXEOm_yh478i+dqPiz0eoBxp4eag3j2qHm5eBLe+2kihoQ@mail.gmail.com> <127458.1607102368@warthog.procyon.org.uk> <CAMj1kXFe50HvZLxG6Kh-oYBCf5uu51hhuh7mW5UQ62ZSqmu_xA@mail.gmail.com> <468625.1607342512@warthog.procyon.org.uk>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     dhowells@redhat.com, Bruce Fields <bfields@fieldses.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, linux-afs@lists.infradead.org
+Subject: Re: Why the auxiliary cipher in gss_krb5_crypto.c?
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CACwDmQDHXwqzmUE_jEmPcJnCcPrzn=7qT=4rp1MF3s30OM7uTQ@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <482242.1607350500.1@warthog.procyon.org.uk>
+Date:   Mon, 07 Dec 2020 14:15:00 +0000
+Message-ID: <482243.1607350500@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 07, 2020 at 10:39:01PM +0900, Bongsu Jeon wrote:
-> On Mon, Dec 7, 2020 at 8:51 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
-> >
-> > On Mon, Dec 07, 2020 at 08:38:27PM +0900, Bongsu Jeon wrote:
-> > > From: Bongsu Jeon <bongsu.jeon@samsung.com>
-> > >
-> > > change irqflags from IRQF_TRIGGER_HIGH to IRQF_TRIGGER_RISING for stable
-> > > Samsung's nfc interrupt handling.
-> >
-> > 1. Describe in commit title/subject the change. Just a word "change irqflags" is
-> >    not enough.
-> >
-> Ok. I'll update it.
-> 
-> > 2. Describe in commit message what you are trying to fix. Before was not
-> >    stable? The "for stable interrupt handling" is a little bit vauge.
-> >
-> Usually, Samsung's NFC Firmware sends an i2c frame as below.
-> 
-> 1. NFC Firmware sets the gpio(interrupt pin) high when there is an i2c
-> frame to send.
-> 2. If the CPU's I2C master has received the i2c frame, NFC F/W sets
-> the gpio low.
-> 
-> NFC driver's i2c interrupt handler would be called in the abnormal case
-> as the NFC F/W task of number 2 is delayed because of other high
-> priority tasks.
-> In that case, NFC driver will try to receive the i2c frame but there
-> isn't any i2c frame
-> to send in NFC. It would cause an I2C communication problem.
-> This case would hardly happen.
-> But, I changed the interrupt as a defense code.
-> If Driver uses the TRIGGER_RISING not LEVEL trigger, there would be no problem
-> even if the NFC F/W task is delayed.
+Ard Biesheuvel <ardb@kernel.org> wrote:
 
-All this should be explained in commit message, not in the email.
-
-> 
-> > 3. This is contradictory to the bindings and current DTS. I think the
-> >    driver should not force the specific trigger type because I could
-> >    imagine some configuration that the actual interrupt to the CPU is
-> >    routed differently.
-> >
-> >    Instead, how about removing the trigger flags here and fixing the DTS
-> >    and bindings example?
+> > I wonder if it would help if the input buffer and output buffer didn't
+> > have to correspond exactly in usage - ie. the output buffer could be used
+> > at a slower rate than the input to allow for buffering inside the crypto
+> > algorithm.
 > >
 > 
-> As I mentioned before,
-> I changed this code because of Samsung NFC's I2C Communication way.
-> So, I think that it is okay for the nfc driver to force the specific
-> trigger type( EDGE_RISING).
-> 
-> What do you think about it?
+> I don't follow - how could one be used at a slower rate?
 
-Some different chip or some different hardware implementation could have
-the signal inverted, e.g. edge falling, not rising. This is rather
-a theoretical scenario but still such change makes the code more
-generic, configurable with DTS. Therefore trigger mode should be
-configured via DTS, not enforced by the driver.
+I mean that the crypto algorithm might need to buffer the last part of the
+input until it has a block's worth before it can write to the output.
 
-Best regards,
-Krzysztof
+> > The hashes corresponding to the kerberos enctypes I'm supporting are:
+> >
+> > HMAC-SHA1 for aes128-cts-hmac-sha1-96 and aes256-cts-hmac-sha1-96.
+> >
+> > HMAC-SHA256 for aes128-cts-hmac-sha256-128
+> >
+> > HMAC-SHA384 for aes256-cts-hmac-sha384-192
+> >
+> > CMAC-CAMELLIA for camellia128-cts-cmac and camellia256-cts-cmac
+> >
+> > I'm not sure you can support all of those with the instructions available.
+>
+> It depends on whether the caller can make use of the authenc()
+> pattern, which is a type of AEAD we support.
+
+Interesting.  I didn't realise AEAD was an API.
+
+> There are numerous implementations of authenc(hmac(shaXXX),cbc(aes)),
+> including h/w accelerated ones, but none that implement ciphertext
+> stealing. So that means that, even if you manage to use the AEAD layer to
+> perform both at the same time, the generic authenc() template will perform
+> the cts(cbc(aes)) and hmac(shaXXX) by calling into skciphers and ahashes,
+> respectively, which won't give you any benefit until accelerated
+> implementations turn up that perform the whole operation in one pass over
+> the input. And even then, I don't think the performance benefit will be
+> worth it.
+
+Also, the rfc8009 variants that use AES with SHA256/384 hash the ciphertext,
+not the plaintext.
+
+For the moment, it's probably not worth worrying about, then.  If I can manage
+to abstract the sunrpc bits out into a krb5 library, we can improve the
+library later.
+
+David
+
