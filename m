@@ -2,91 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C39C12D09F7
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 06:20:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 912422D0A2A
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 06:26:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725905AbgLGFTQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 00:19:16 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:48233 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725799AbgLGFTQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 00:19:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607318269;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4NEmPb1vJdnm+1yHtk70TIfP0G6eCyJYhuhh3SVbKYs=;
-        b=QcHsliStAPyrfP5n+aAYJ9NsgFTopiU8XjWL8kSm1p/t1s0fl3Mby8F7NgUPRvv0mx+yb/
-        2GBMYfZ8y0aYwqTRiXFxDn53w45qpJwwPGLj/ehRJqvyrFWbby7FcJcIxwWblccKKcge7b
-        gGYD7OdEoXhTno8lUSu8a6qQjgqWq1c=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-286-YHvFQFlePI672EkIO4xVIg-1; Mon, 07 Dec 2020 00:17:47 -0500
-X-MC-Unique: YHvFQFlePI672EkIO4xVIg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 43ED7100C602;
-        Mon,  7 Dec 2020 05:17:46 +0000 (UTC)
-Received: from [10.72.13.171] (ovpn-13-171.pek2.redhat.com [10.72.13.171])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B77D810016FA;
-        Mon,  7 Dec 2020 05:17:36 +0000 (UTC)
-Subject: Re: [PATCH] vhost scsi: fix error return code in
- vhost_scsi_set_endpoint()
-To:     Zhang Changzhong <zhangchangzhong@huawei.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        Maurizio Lombardi <mlombard@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1607071411-33484-1-git-send-email-zhangchangzhong@huawei.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <754d3d21-1dfa-6675-5014-2e8fb102c363@redhat.com>
-Date:   Mon, 7 Dec 2020 13:17:35 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726182AbgLGFWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 00:22:01 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36408 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725773AbgLGFWB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Dec 2020 00:22:01 -0500
+From:   saeed@kernel.org
+Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
+To:     bpf@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Andrii Nakryiko <andrii@kernel.org>
+Subject: [PATCH bpf] tools/bpftool: Add/Fix support for modules btf dump
+Date:   Sun,  6 Dec 2020 21:20:57 -0800
+Message-Id: <20201207052057.397223-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <1607071411-33484-1-git-send-email-zhangchangzhong@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-On 2020/12/4 下午4:43, Zhang Changzhong wrote:
-> Fix to return a negative error code from the error handling
-> case instead of 0, as done elsewhere in this function.
->
-> Fixes: 25b98b64e284 ("vhost scsi: alloc cmds per vq instead of session")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
-> ---
->   drivers/vhost/scsi.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/vhost/scsi.c b/drivers/vhost/scsi.c
-> index 6ff8a5096..4ce9f00 100644
-> --- a/drivers/vhost/scsi.c
-> +++ b/drivers/vhost/scsi.c
-> @@ -1643,7 +1643,8 @@ vhost_scsi_set_endpoint(struct vhost_scsi *vs,
->   			if (!vhost_vq_is_setup(vq))
->   				continue;
->   
-> -			if (vhost_scsi_setup_vq_cmds(vq, vq->num))
-> +			ret = vhost_scsi_setup_vq_cmds(vq, vq->num);
-> +			if (ret)
->   				goto destroy_vq_cmds;
->   		}
->   
+While playing with BTF for modules, i noticed that executing the command:
+$ bpftool btf dump id <module's btf id>
 
+Fails due to lack of information in the BTF data.
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+Maybe I am missing a step but actually adding the support for this is
+very simple.
 
+To completely parse modules BTF data, we need the vmlinux BTF as their
+"base btf", which can be easily found by iterating through the btf ids and
+looking for btf.name == "vmlinux".
+
+I am not sure why this hasn't been added by the original patchset
+"Integrate kernel module BTF support", as adding the support for
+this is very trivial. Unless i am missing something, CCing Andrii..
+
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+CC: Andrii Nakryiko <andrii@kernel.org>
+---
+ tools/lib/bpf/btf.c      | 57 ++++++++++++++++++++++++++++++++++++++++
+ tools/lib/bpf/btf.h      |  2 ++
+ tools/lib/bpf/libbpf.map |  1 +
+ 3 files changed, 60 insertions(+)
+
+diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
+index 3c3f2bc6c652..5900cccf82e2 100644
+--- a/tools/lib/bpf/btf.c
++++ b/tools/lib/bpf/btf.c
+@@ -1370,6 +1370,14 @@ struct btf *btf_get_from_fd(int btf_fd, struct btf *base_btf)
+ 		goto exit_free;
+ 	}
+ 
++	/* force base_btf for kernel modules */
++	if (btf_info.kernel_btf && !base_btf) {
++		int id = btf_get_kernel_id();
++
++		/* Double check our btf is not the kernel BTF itself */
++		if (id != btf_info.id)
++			btf__get_from_id(id, &base_btf);
++	}
+ 	btf = btf_new(ptr, btf_info.btf_size, base_btf);
+ 
+ exit_free:
+@@ -4623,3 +4631,52 @@ struct btf *libbpf_find_kernel_btf(void)
+ 	pr_warn("failed to find valid kernel BTF\n");
+ 	return ERR_PTR(-ESRCH);
+ }
++
++#define foreach_btf_id(id, err) \
++	for (err = bpf_btf_get_next_id((id), (&id)); !err; )
++
++/*
++ * Scan all ids for a kernel btf with name == "vmlinux"
++ */
++int btf_get_kernel_id(void)
++{
++	struct bpf_btf_info info;
++	__u32 len = sizeof(info);
++	char name[64];
++	__u32 id = 0;
++	int err, fd;
++
++	foreach_btf_id(id, err) {
++		fd = bpf_btf_get_fd_by_id(id);
++		if (fd < 0) {
++			if (errno == ENOENT)
++				continue; /* expected race: BTF was unloaded */
++			err = -errno;
++			pr_warn("failed to get BTF object #%d FD: %d\n", id, err);
++			return err;
++		}
++
++		memset(&info, 0, sizeof(info));
++		info.name = ptr_to_u64(name);
++		info.name_len = sizeof(name);
++
++		err = bpf_obj_get_info_by_fd(fd, &info, &len);
++		if (err) {
++			err = -errno;
++			pr_warn("failed to get BTF object #%d info: %d\n", id, err);
++			return err;
++		}
++
++		if (info.kernel_btf && strcmp(name, "vmlinux") == 0)
++			return id;
++
++	}
++
++	if (err && errno != ENOENT) {
++		err = -errno;
++		pr_warn("failed to iterate BTF objects: %d\n", err);
++		return err;
++	}
++
++	return -ENOENT;
++}
+\ No newline at end of file
+diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
+index 1237bcd1dd17..44075b086d1c 100644
+--- a/tools/lib/bpf/btf.h
++++ b/tools/lib/bpf/btf.h
+@@ -8,6 +8,7 @@
+ #include <stdbool.h>
+ #include <linux/btf.h>
+ #include <linux/types.h>
++#include <uapi/linux/bpf.h>
+ 
+ #include "libbpf_common.h"
+ 
+@@ -90,6 +91,7 @@ LIBBPF_API __u32 btf_ext__func_info_rec_size(const struct btf_ext *btf_ext);
+ LIBBPF_API __u32 btf_ext__line_info_rec_size(const struct btf_ext *btf_ext);
+ 
+ LIBBPF_API struct btf *libbpf_find_kernel_btf(void);
++LIBBPF_API int btf_get_kernel_id(void);
+ 
+ LIBBPF_API int btf__find_str(struct btf *btf, const char *s);
+ LIBBPF_API int btf__add_str(struct btf *btf, const char *s);
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+index 7c4126542e2b..727daeb57f35 100644
+--- a/tools/lib/bpf/libbpf.map
++++ b/tools/lib/bpf/libbpf.map
+@@ -348,4 +348,5 @@ LIBBPF_0.3.0 {
+ 		btf__new_split;
+ 		xsk_setup_xdp_prog;
+ 		xsk_socket__update_xskmap;
++		btf_get_kernel_id
+ } LIBBPF_0.2.0;
+-- 
+2.26.2
 
