@@ -2,141 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8B592D0983
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 04:44:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 747A72D0997
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 04:58:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728715AbgLGDlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Dec 2020 22:41:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53000 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726489AbgLGDlu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Dec 2020 22:41:50 -0500
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FDFC0613D0
-        for <netdev@vger.kernel.org>; Sun,  6 Dec 2020 19:41:10 -0800 (PST)
-Received: by mail-pj1-x1042.google.com with SMTP id f14so6564239pju.4
-        for <netdev@vger.kernel.org>; Sun, 06 Dec 2020 19:41:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=dxyVgq9wir+Vt+l/aYhT1fh3gohCtzVJwY55PsYwhXQ=;
-        b=cpBMuL8d3aNWORrYrc8Ke1Emtw7kNtKm8C2LV1nJSk1l0qXyaRC6gHj0Z90oGQ8J5l
-         +fRxxdoUNWAyxI9U1OJWteMN6pw7Xm3G5Kh6TNMPCsNs/05TRo1SV+xcTHsRyJs5n5XC
-         3vCIkUJfGGKjuVZm+jonCOLS4Gek9Jx804wgNj6NLsydAej90RDZIvXEMJVXcYQErRGE
-         gEV0/+Q3NgcPy1AOzCOpMS3VF8AI3tmiD3sHXOcHp7UNmC1W8tVbWl6RpfyWuXn48Prr
-         Ecp45VrFX5rIB+5nrhh9K1zP1Pq+Z64QI56tyCgHk0lOJkjteP7xS1d0Avl8gsyonE0y
-         9krg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=dxyVgq9wir+Vt+l/aYhT1fh3gohCtzVJwY55PsYwhXQ=;
-        b=kRtaLbh7Z3C4e6EiMe0p/2gpOX81xrXBzuqjw6hxqdrwaKX85rXjA22uONT2dXHtn+
-         e6dZdG8waCpoxcOU4UqyPQ1PJYZidRPxQIJJmvWld52hWhQbQru4P2aiZyjx+VUk7npK
-         8MDdtjaCHSTkR10yaX1WGuQTz0g3OXuibEaK+donHklk1nupKVtoTzyFY7kwfH9w1QoP
-         X4mBa9Gto38D0gt6IrIb/7CbvdLS67N4BeE68Zz+XIKxhtedOaIARJj4eZ+IyxC03ew+
-         dEzEh9+jRsdHHRiuqjcWaiGEk/D+nbcOqxKBwY3gqHf5r6g6P6gSioA0Wg5868HZkXfc
-         mGRw==
-X-Gm-Message-State: AOAM533Wm0FBiJwlg8klQZ2X+QZYqSfWaB5ODa86Do4rbMGKZX99N2ib
-        DF1OwCfQ53pviQ9oeJg3zy5QgA==
-X-Google-Smtp-Source: ABdhPJx/Oqm+T1Mhytc8big0M5Rh8llLWWixOjXO0eqEYBECBJExJ0y3EQJL9HR+O+2zqWO6n9v39Q==
-X-Received: by 2002:a17:90a:a108:: with SMTP id s8mr2704798pjp.206.1607312470088;
-        Sun, 06 Dec 2020 19:41:10 -0800 (PST)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id m4sm13485068pfd.203.2020.12.06.19.41.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 06 Dec 2020 19:41:09 -0800 (PST)
-Subject: Re: [PATCH 1/1] ionic: fix array overflow on receiving too many
- fragments for a packet
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Xiaohui Zhang <ruc_zhangxiaohui@163.com>
-Cc:     Pensando Drivers <drivers@pensando.io>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20201206133537.30135-1-ruc_zhangxiaohui@163.com>
- <20201206175157.0000170d@intel.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <4ddd5457-3cbb-9a5b-90ef-3557452cd854@pensando.io>
-Date:   Sun, 6 Dec 2020 19:41:07 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.4.1
+        id S1728053AbgLGDzw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Dec 2020 22:55:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:41708 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726482AbgLGDzw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Dec 2020 22:55:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607313265;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=q2mgpR5hlh3Amjrpkze++o1dwsDrV0P0MuQh4sXa0kQ=;
+        b=HyRhj/i1BSGfisIKweSRDGfOpdBY9YONbXeJ/Zaci3G9DhHKce06Pm37mAFJ0RYdMwV4ru
+        zcpXStw+vbj5XLVVaHqc2rkBq7tbWFHQciWSiPpRYrqKhiJ0FauCnA9NSLU19pb9fIqAbM
+        NjxB4V7E1BGzSje+LuUnNjfzSd/DrlU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-163-smFEc9h9OFOYI4RTQfovkg-1; Sun, 06 Dec 2020 22:54:21 -0500
+X-MC-Unique: smFEc9h9OFOYI4RTQfovkg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1423B107ACE4;
+        Mon,  7 Dec 2020 03:54:20 +0000 (UTC)
+Received: from [10.72.13.171] (ovpn-13-171.pek2.redhat.com [10.72.13.171])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 06B0B10016DB;
+        Mon,  7 Dec 2020 03:54:13 +0000 (UTC)
+Subject: Re: [PATCH net-next] tun: fix ubuf refcount incorrectly on error path
+To:     wangyunjian <wangyunjian@huawei.com>,
+        "mst@redhat.com" <mst@redhat.com>
+Cc:     "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Lilijun (Jerry)" <jerry.lilijun@huawei.com>,
+        xudingke <xudingke@huawei.com>
+References: <1606982459-41752-1-git-send-email-wangyunjian@huawei.com>
+ <094f1828-9a73-033e-b1ca-43b73588d22b@redhat.com>
+ <34EFBCA9F01B0748BEB6B629CE643AE60DB4E07B@dggemm513-mbx.china.huawei.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <e972e42b-4344-31dc-eb4c-d963adb08a5c@redhat.com>
+Date:   Mon, 7 Dec 2020 11:54:12 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20201206175157.0000170d@intel.com>
+In-Reply-To: <34EFBCA9F01B0748BEB6B629CE643AE60DB4E07B@dggemm513-mbx.china.huawei.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/6/20 5:51 PM, Jesse Brandeburg wrote:
-> Xiaohui Zhang wrote:
->
->> From: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
+
+On 2020/12/4 下午6:22, wangyunjian wrote:
+>> -----Original Message-----
+>> From: Jason Wang [mailto:jasowang@redhat.com]
+>> Sent: Friday, December 4, 2020 2:11 PM
+>> To: wangyunjian <wangyunjian@huawei.com>; mst@redhat.com
+>> Cc: virtualization@lists.linux-foundation.org; netdev@vger.kernel.org; Lilijun
+>> (Jerry) <jerry.lilijun@huawei.com>; xudingke <xudingke@huawei.com>
+>> Subject: Re: [PATCH net-next] tun: fix ubuf refcount incorrectly on error path
 >>
->> If the hardware receives an oversized packet with too many rx fragments,
->> skb_shinfo(skb)->frags can overflow and corrupt memory of adjacent pages.
->> This becomes especially visible if it corrupts the freelist pointer of
->> a slab page.
 >>
->> Signed-off-by: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
-> Hi, thanks for your patch.
->
-> It appears this is a part of a series of patches (at least this one and
-> one to the ice driver) - please send as one series, with a cover letter
-> explanation.
->
-> Please justify how this is a bug and how this is found / reproduced.
->
-> I'll respond separately to the ice driver patch as I don't know this
-> hardware and it's limits, but I suspect that you've tried to fix a bug
-> where there was none. (It seems like something a code scanner might find
-> and be confused about)
->
->> ---
->>   drivers/net/ethernet/pensando/ionic/ionic_txrx.c | 6 +++++-
->>   1 file changed, 5 insertions(+), 1 deletion(-)
+>> On 2020/12/3 下午4:00, wangyunjian wrote:
+>>> From: Yunjian Wang <wangyunjian@huawei.com>
+>>>
+>>> After setting callback for ubuf_info of skb, the callback
+>>> (vhost_net_zerocopy_callback) will be called to decrease the refcount
+>>> when freeing skb. But when an exception occurs afterwards, the error
+>>> handling in vhost handle_tx() will try to decrease the same refcount
+>>> again. This is wrong and fix this by clearing ubuf_info when meeting
+>>> errors.
+>>>
+>>> Fixes: 4477138fa0ae ("tun: properly test for IFF_UP")
+>>> Fixes: 90e33d459407 ("tun: enable napi_gro_frags() for TUN/TAP
+>>> driver")
+>>>
+>>> Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
+>>> ---
+>>>    drivers/net/tun.c | 11 +++++++++++
+>>>    1 file changed, 11 insertions(+)
+>>>
+>>> diff --git a/drivers/net/tun.c b/drivers/net/tun.c index
+>>> 2dc1988a8973..3614bb1b6d35 100644
+>>> --- a/drivers/net/tun.c
+>>> +++ b/drivers/net/tun.c
+>>> @@ -1861,6 +1861,12 @@ static ssize_t tun_get_user(struct tun_struct
+>> *tun, struct tun_file *tfile,
+>>>    	if (unlikely(!(tun->dev->flags & IFF_UP))) {
+>>>    		err = -EIO;
+>>>    		rcu_read_unlock();
+>>> +		if (zerocopy) {
+>>> +			skb_shinfo(skb)->destructor_arg = NULL;
+>>> +			skb_shinfo(skb)->tx_flags &= ~SKBTX_DEV_ZEROCOPY;
+>>> +			skb_shinfo(skb)->tx_flags &= ~SKBTX_SHARED_FRAG;
+>>> +		}
+>>> +
+>>>    		goto drop;
+>>>    	}
+>>>
+>>> @@ -1874,6 +1880,11 @@ static ssize_t tun_get_user(struct tun_struct
+>>> *tun, struct tun_file *tfile,
+>>>
+>>>    		if (unlikely(headlen > skb_headlen(skb))) {
+>>>    			atomic_long_inc(&tun->dev->rx_dropped);
+>>> +			if (zerocopy) {
+>>> +				skb_shinfo(skb)->destructor_arg = NULL;
+>>> +				skb_shinfo(skb)->tx_flags &= ~SKBTX_DEV_ZEROCOPY;
+>>> +				skb_shinfo(skb)->tx_flags &= ~SKBTX_SHARED_FRAG;
+>>> +			}
+>>>    			napi_free_frags(&tfile->napi);
+>>>    			rcu_read_unlock();
+>>>    			mutex_unlock(&tfile->napi_mutex);
 >>
->> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
->> index 169ac4f54..a3e274c65 100644
->> --- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
->> +++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
->> @@ -102,8 +102,12 @@ static struct sk_buff *ionic_rx_frags(struct ionic_queue *q,
->>   
->>   		dma_unmap_page(dev, dma_unmap_addr(page_info, dma_addr),
->>   			       PAGE_SIZE, DMA_FROM_DEVICE);
->> -		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
->> +		struct skb_shared_info *shinfo = skb_shinfo(skb);
-> you can't declare variables in the middle of a code flow in C, did you
-> compile this?
+>> It looks to me then we miss the failure feedback.
+>>
+>> The issues comes from the inconsistent error handling in tun.
+>>
+>> I wonder whether we can simply do uarg->callback(uarg, false) if necessary on
+>> every failture path on tun_get_user().
+> How about this?
 >
->> +
->> +		if (shinfo->nr_frags < ARRAY_SIZE(shinfo->frags)) {
->> +			skb_add_rx_frag(skb, shinfo->nr_frags,
->>   				page_info->page, 0, frag_len, PAGE_SIZE);
->> +		}
-
-Is this just dropping the remaining frags without dropping the rest of 
-the skb?  Is this going to leave an incorrect length in the skb?
-
-A single statement after the 'if' doesn't need {}'s
-
-This might be better handled by making sure ahead of time in 
-configuration that the HW doesn't do this, rather than add a test into 
-the fast path.  As it is, between the definitions of shinfo->frags[] and 
-the ionic's rx sg list, I don't think this is a possible error.
-
-As Jesse suggests, I'd like to see the test case so i can add it to our 
-internal testing.
-
-Thanks,
-sln
-
->>   		page_info->page = NULL;
->>   		page_info++;
->>   		i--;
+> ---
+>   drivers/net/tun.c | 29 ++++++++++++++++++-----------
+>   1 file changed, 18 insertions(+), 11 deletions(-)
 >
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index 2dc1988a8973..36a8d8eacd7b 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -1637,6 +1637,19 @@ static struct sk_buff *tun_build_skb(struct tun_struct *tun,
+>   	return NULL;
+>   }
+>   
+> +/* copy ubuf_info for callback when skb has no error */
+> +inline static tun_copy_ubuf_info(struct sk_buff *skb, bool zerocopy, void *msg_control)
+> +{
+> +	if (zerocopy) {
+> +		skb_shinfo(skb)->destructor_arg = msg_control;
+> +		skb_shinfo(skb)->tx_flags |= SKBTX_DEV_ZEROCOPY;
+> +		skb_shinfo(skb)->tx_flags |= SKBTX_SHARED_FRAG;
+> +	} else if (msg_control) {
+> +		struct ubuf_info *uarg = msg_control;
+> +		uarg->callback(uarg, false);
+> +	}
+> +}
+> +
+>   /* Get packet from user space buffer */
+>   static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+>   			    void *msg_control, struct iov_iter *from,
+> @@ -1812,16 +1825,6 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+>   		break;
+>   	}
+>   
+> -	/* copy skb_ubuf_info for callback when skb has no error */
+> -	if (zerocopy) {
+> -		skb_shinfo(skb)->destructor_arg = msg_control;
+> -		skb_shinfo(skb)->tx_flags |= SKBTX_DEV_ZEROCOPY;
+> -		skb_shinfo(skb)->tx_flags |= SKBTX_SHARED_FRAG;
+> -	} else if (msg_control) {
+> -		struct ubuf_info *uarg = msg_control;
+> -		uarg->callback(uarg, false);
+> -	}
+> -
+>   	skb_reset_network_header(skb);
+>   	skb_probe_transport_header(skb);
+>   	skb_record_rx_queue(skb, tfile->queue_index);
+> @@ -1830,6 +1833,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+>   		struct bpf_prog *xdp_prog;
+>   		int ret;
+>   
+> +		tun_copy_ubuf_info(skb, zerocopy, msg_control);
+
+
+If you think disabling zerocopy for XDP (which I think it makes sense). 
+It's better to do this in another patch.
+
+
+>   		local_bh_disable();
+>   		rcu_read_lock();
+>   		xdp_prog = rcu_dereference(tun->xdp_prog);
+> @@ -1880,7 +1884,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+>   			WARN_ON(1);
+>   			return -ENOMEM;
+>   		}
+> -
+> +		tun_copy_ubuf_info(skb, zerocopy, msg_control);
+
+
+And for NAPI frags.
+
+
+>   		local_bh_disable();
+>   		napi_gro_frags(&tfile->napi);
+>   		local_bh_enable();
+> @@ -1889,6 +1893,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+>   		struct sk_buff_head *queue = &tfile->sk.sk_write_queue;
+>   		int queue_len;
+>   
+> +		tun_copy_ubuf_info(skb, zerocopy, msg_control);
+>   		spin_lock_bh(&queue->lock);
+>   		__skb_queue_tail(queue, skb);
+>   		queue_len = skb_queue_len(queue);
+> @@ -1899,8 +1904,10 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+>   
+>   		local_bh_enable();
+>   	} else if (!IS_ENABLED(CONFIG_4KSTACKS)) {
+> +		tun_copy_ubuf_info(skb, zerocopy, msg_control);
+>   		tun_rx_batched(tun, tfile, skb, more);
+>   	} else {
+> +		tun_copy_ubuf_info(skb, zerocopy, msg_control);
+>   		netif_rx_ni(skb);
+>   	}
+>   	rcu_read_unlock();
+
+
+So it looks to me you want to disable zerocopy in all of the possible 
+datapath?
+
+Thanks
 
