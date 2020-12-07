@@ -2,107 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 402232D09CC
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 05:47:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A5FC2D09E1
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 05:55:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728695AbgLGErD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Dec 2020 23:47:03 -0500
-Received: from nat-hk.nvidia.com ([203.18.50.4]:8441 "EHLO nat-hk.nvidia.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726484AbgLGErC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 6 Dec 2020 23:47:02 -0500
-Received: from HKMAIL101.nvidia.com (Not Verified[10.18.92.77]) by nat-hk.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fcdb39c0000>; Mon, 07 Dec 2020 12:46:20 +0800
-Received: from HKMAIL101.nvidia.com (10.18.16.10) by HKMAIL101.nvidia.com
- (10.18.16.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 7 Dec
- 2020 04:46:17 +0000
-Received: from NAM04-SN1-obe.outbound.protection.outlook.com (104.47.44.58) by
- HKMAIL101.nvidia.com (10.18.16.10) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Mon, 7 Dec 2020 04:46:17 +0000
+        id S1728765AbgLGEyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Dec 2020 23:54:24 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:10823 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728711AbgLGEyY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Dec 2020 23:54:24 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5fcdb5570000>; Sun, 06 Dec 2020 20:53:43 -0800
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 7 Dec
+ 2020 04:53:43 +0000
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.170)
+ by HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Mon, 7 Dec 2020 04:53:43 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oCS+2ZPxd7wdIKa/Q33GX4RseuMpgQ+IywyOEZBCI10o1v+K7NHLIASDU9AuV7PXyENfJk7EGq6exCHFj0p+jv/Nf+BrHtaQLo4pN6QOkZ23H/z0rgLHsoBNf074B1Qj6P+RUK/rNthidH6s+Pkf2OBE/82HIfQJma/sJJrN58PdOdxFag46coCZfDQhySELfaxL8AFbI5vz3AsUWClBM0hY2VXEJf7cyO7vlhKenRr8dRR8RzAgZs/6tXzy5GI308Ua/DVauXVbLI+cbT1A2xwcDLWzvJxyPsNZ7lzFqAXyiXsNcK7M1G87kReRR1eHbsGA9L3Fv9coUq9WYdcZnQ==
+ b=G+SK2+6JZvPxvCpBY+hgyvgkwOlzic3d81bkwwOj5xg5qMpxkFdEMYOmCHkr0ki1Aq6UNqfNgVNgn2S2AvkgJJoGw1j4wKIjbMWlDh//tXUajpG0I7aiOxzumaOb/hauXr425zRCYjT8Iy90d6ybQwY//J2pQhWZFbXlKVDhcm1Qi8rHHVpoqpk2bdHShYXk9qkou5qqxJbHjwnHcHiDM1+apRyC2g1li+YwiCKBeBX5xtSks/ti54O5XC2J/d0LEDcARdoxf2vJ9SQykXs+xrFzpNHCPc/BPXgZU33JIm7DUYh7oaz5TncJ2eHJ+DR0QoebZ+KIdTcfePTTA5NAGQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N15RPja9ePWIIdQuqX8/BiZl8m9Jc0sazJ9XgxHiPS8=;
- b=grgM+C1vh6DzBDMgrXzeTGoMEJwJp7F10X3Tr6VLu35ofgD3M4oaQbIgrA3QAQO+f/TI0L7r29EVBDyOqKBcMfIKCXTxSxn8TljE7t9oV2ug37U1YRxIovicdekHAbMJ51f5CiBtEEDRxVSSKPzk4mD160SCGS9TsJWh+CFdUct4dnHh01KpBZdFw7fqwJu4ZwXTkKuZFAZ7Ewc+I6kL/Dwm/gMRcVoOVYWx/9StJIP44MxXy+TnDCCvg7uXA80+bYYnoyLJMwOTIr6YVE8fKJB5+16d7BNTlKFbQJZqZlJotTZs/AeDmaMxvrXeoyowKwgzsfaCU5siLNeQ5kf7ww==
+ bh=TUOUCI3xgIo8NUE5FPKIhD9WrQRGqmOyUtz4Pvc0t4A=;
+ b=It/CYZtIGpWM2BOCRa82BOy1pALwF53u6ni/Ru2DKs8BEwRxvuOGQ9y2QP9zS3pGue+1PdBQdcyD79UrmiX6Y9bJ5j4xelRO6lnvqrjKUuZ4Qcw0gc1k/hiu1+/NAslAbNlqVFWqqJeFDncKE2v5egmoaAGNOg562HlLR3YoQQy7EV6yPp7+NY9jquz/JqkZaG1bpuTM7RlUQ/iLB3C0kcbwWgx2VQl33UDD/ES9MpaYZPYX3ErfZUWzofCiIyBU8VXuyqMz0oH9JTMrOZ8Bi61ZA6zEUrjnZ0Q0qr+g0JQqrlkjznPhja9XZiGWUqaoxBACJwgLwnrxKjlwnT64hQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 Received: from BY5PR12MB4322.namprd12.prod.outlook.com (2603:10b6:a03:20a::20)
- by BYAPR12MB2773.namprd12.prod.outlook.com (2603:10b6:a03:72::10) with
+ by BY5PR12MB4904.namprd12.prod.outlook.com (2603:10b6:a03:1d3::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.21; Mon, 7 Dec
- 2020 04:46:14 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.18; Mon, 7 Dec
+ 2020 04:53:40 +0000
 Received: from BY5PR12MB4322.namprd12.prod.outlook.com
  ([fe80::a1d2:bfae:116c:2f24]) by BY5PR12MB4322.namprd12.prod.outlook.com
  ([fe80::a1d2:bfae:116c:2f24%7]) with mapi id 15.20.3632.017; Mon, 7 Dec 2020
- 04:46:14 +0000
+ 04:53:40 +0000
 From:   Parav Pandit <parav@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+To:     David Ahern <dsahern@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC:     Jiri Pirko <jiri@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
         "davem@davemloft.net" <davem@davemloft.net>,
-        "jacob.e.keller@intel.com" <jacob.e.keller@intel.com>,
-        Jiri Pirko <jiri@nvidia.com>
-Subject: RE: [PATCH net-next v4] devlink: Add devlink port documentation
-Thread-Topic: [PATCH net-next v4] devlink: Add devlink port documentation
-Thread-Index: AQHWyZ6W5Pc9bv0Emk6Xe437ZGSmIqno9s+AgAIatfA=
-Date:   Mon, 7 Dec 2020 04:46:14 +0000
-Message-ID: <BY5PR12MB43227128D9DEDC9E41744017DCCE0@BY5PR12MB4322.namprd12.prod.outlook.com>
-References: <20201130164119.571362-1-parav@nvidia.com>
-        <20201203180255.5253-1-parav@nvidia.com>
- <20201205122717.76d193a2@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201205122717.76d193a2@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+        Vu Pham <vuhuong@nvidia.com>
+Subject: RE: [PATCH net-next 07/13] net/mlx5: SF, Add auxiliary device support
+Thread-Topic: [PATCH net-next 07/13] net/mlx5: SF, Add auxiliary device
+ support
+Thread-Index: AQHWuSmQu0bszt9Z8UKZllddFO+mz6nrFJ8AgAAhRqA=
+Date:   Mon, 7 Dec 2020 04:53:40 +0000
+Message-ID: <BY5PR12MB432206A2436F40E4ED4C02DADCCE0@BY5PR12MB4322.namprd12.prod.outlook.com>
+References: <20201112192424.2742-1-parav@nvidia.com>
+ <20201112192424.2742-8-parav@nvidia.com>
+ <b9e84fd1-1af4-d979-184d-cbbeedec1aa0@gmail.com>
+In-Reply-To: <b9e84fd1-1af4-d979-184d-cbbeedec1aa0@gmail.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=nvidia.com;
 x-originating-ip: [49.207.223.255]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d8def60d-c73f-4a89-765b-08d89a6b0761
-x-ms-traffictypediagnostic: BYAPR12MB2773:
+x-ms-office365-filtering-correlation-id: a172908d-97d4-42e2-87ac-08d89a6c10d6
+x-ms-traffictypediagnostic: BY5PR12MB4904:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR12MB27738793DDEAF4AB3B38C403DCCE0@BYAPR12MB2773.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-microsoft-antispam-prvs: <BY5PR12MB490475DA4293FE8E737D5C6FDCCE0@BY5PR12MB4904.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4303;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: QSixjHA5s51ODc2AFZPpvtdaGJnUHzI3eG8Wq5qB2cKc2SgbAHmQN56MSd7LOSrGnGwpu0K8JawonNsdRPmz1VxzbY48SRKIfoCecmq2/6SFolx1c3yYzBGUopSPVZ+BST8NSu6Db9Srd34Khp7n5tW/o1xnLY7zWosbuCUFJGTTB3KHuBt3B3/kfQWfTpTV1mqTUFtP7RkAhJf16TY/ab8pjLCWbPEZk3QZdLV9gCwPs/lL0N0PQP1ltlL1PrOdUYA6Xl52GpDofWw6RG7rOwlKH8NWwyUlFPBNFLnN5D6PNAEKBhpMhJWFoYEUTv0/LxqTprf/pz8ofPBvBEStlg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4322.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(396003)(366004)(136003)(39860400002)(346002)(6916009)(7696005)(186003)(107886003)(66476007)(64756008)(66946007)(54906003)(86362001)(76116006)(8936002)(71200400001)(66446008)(66556008)(9686003)(33656002)(6506007)(2906002)(8676002)(55236004)(5660300002)(55016002)(316002)(26005)(52536014)(478600001)(83380400001)(4326008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?496fFhCbD/eLose3BGS7opGEZaIRU6V4ZBeyFXBGghLjgee3r8pmlSQOJqps?=
- =?us-ascii?Q?GlEYtM9Yqa+eVLOmZSeLMTPXUFmyx9MR9KE06lXjOSS6n0eLOVIDKHL3axeV?=
- =?us-ascii?Q?pPCORsj7SK0CvPm2mDMB7/WSbWEwkPvGERnoPQh3MQLeQfYA3NIIJMfpcRXo?=
- =?us-ascii?Q?326F2In7odq9/IuH9f9IVWXUl1tCUvrveqjJqq2HOBtHi9R2x0z4Omp8A2MO?=
- =?us-ascii?Q?q/Yhk3P7FFecSvInE0P1sKdMfwN4vQpiCtg67jLZzDNU/ixNn0P8lkJHN0lw?=
- =?us-ascii?Q?o54ogoiQqbCUwSOFvD4VTIXnKtybg+Ln0CUjzIBHu6krPqI7bkf4edKbLISg?=
- =?us-ascii?Q?ae3uo2LZPVmA5u1HEtLM3Mk1KpTtbtLFcCSLBZQoFZMCmio2gGuCHepEm2nr?=
- =?us-ascii?Q?lbP2DYXT+EJJnqEcLGsN2KSWlAVjj5FlNMvNWbPRePguf4lVHBOwQUAlPguh?=
- =?us-ascii?Q?vlFNDQ4mG7nDSyAZg8lPHTRSRY3yGnoJCrTYEaxHyPDE4+62pg47OTV1GXYb?=
- =?us-ascii?Q?u8s0BpLGwACfPVh7Zta5D99HIcC9/G4OdZ2VR6f7DXJgWQbKG7KmFDa6vQ7R?=
- =?us-ascii?Q?kUxSxW/sqqixv6NyOjEHgmRG1hx39pCWnEcdb0qMRJBuSQtBpqXihfNKpJAt?=
- =?us-ascii?Q?fSK+88c0pJKPs2C0HS9UI1kbsyb7xLfE1xQfkZSf77uhRHUix69OIHowB2An?=
- =?us-ascii?Q?qFUrgqTx6LO5bhN/sNys5h5Nsqw+Qf6QO0wLeNMG1ffegZDa3sPcKA64Auck?=
- =?us-ascii?Q?+2s4JPPQtEHwcgVq592BKrDtBzWSEPMaiZcmKY0YRLd2IMnIkbVuVu5zq9UE?=
- =?us-ascii?Q?kKjg41/TlLoiSmF86x0f+sCnWJIfnIhFjOeuPc8G8zVGEB+Pf7GCWD8iPNd4?=
- =?us-ascii?Q?DYGtBgi8LWT4pwOmIud/oUzXHSgWMS/GuTjqfukevUADnYOulBmByHQ8GE9o?=
- =?us-ascii?Q?tMFHDXXzNyZhplLh+bK+9iSma4gRU+SyHhG3cikiFAk=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+x-microsoft-antispam-message-info: khnj57/C507MA3TNjmlR95ETnSIRwgf1M5TC1RgyEKiYP+E9PRzcu5Sox9jJpBob6S96MaVDHsJJop4doBMq6Pmy1TwKyiqtwaFLVkjNAg6ydxJp8XcFK0dV6Qyy5uHfu9xcCsl7+3x1l0zMx+PV0v71Mu9Bao6AQMcGYfPOY87bZZ6lXDslWl5qtOoxWfHFJ5cR/AHI4psWKyMoy9DLYqlffsoQDR3/fOXJpAhq9KbLpqzJUPoNJX8AEY8LX+3aDLSPws88OW3+PJp26DYDjuo6lcTca49OojPr7Zr2dBQpHoDXMYBQQYG3qaAkGAHSguBpZVpYAj2Raa5B8hvv7RQfbR/ne0HR+1CInByfEmhJyh1rv+km1GEPhK18zeDTuobORGUDo55+f9HALWLmTg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4322.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(366004)(396003)(376002)(136003)(33656002)(6506007)(55016002)(316002)(66556008)(478600001)(5660300002)(86362001)(26005)(53546011)(4326008)(66446008)(2906002)(64756008)(966005)(9686003)(76116006)(8676002)(8936002)(54906003)(110136005)(71200400001)(107886003)(66476007)(52536014)(66946007)(55236004)(186003)(7696005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?allJUmwvNUNuaHRuSmFXYVdONUZBbVlyQ3FTbkpkRURXRmlmenZ5M3RSZk92?=
+ =?utf-8?B?S1BVaDdMM21ocnRLSUE2czNOcnBUNVJCNUZqRDZvN0hoRTJGSFRrcGwvTkNi?=
+ =?utf-8?B?UnNsUkZFOTEzQ2tHTU0zYVpBSEx4UlNFanY4N1NPWGZxVUlack5BSHRWUURu?=
+ =?utf-8?B?VjhDKzJpZFYxMzI3MHRSL2lwSWZsYUxJV0ZERVlBM1JKOHBidCtZUFR6WHVY?=
+ =?utf-8?B?UGxWQWMrcG1Jako2RjlmczVndmpEOWszS1BtTVc4NmFrS3FHaXVmYW5FNFBx?=
+ =?utf-8?B?Z1UvZUVYcUtoNDZNRzUvYlJTQS8xSnhYN1hRYzdraXNFS0wzWHQvajJhbFRD?=
+ =?utf-8?B?ZjBtWUl3N2h5RllqRFpldkpyWlh6dTc5Z3lEWU94TFM0VmkydkxoSTU0OTN0?=
+ =?utf-8?B?TWFQNjRmT2xmU1N1ZklNNmpOcHBRZUxtV05sL0FOcnFGY1hMTWJDOTNHeVla?=
+ =?utf-8?B?OVpYbFlCUHBCR2MzZUxSY1hJbUFDMWYralBVRXFDdlZmdis3ODY1QXY5YWZR?=
+ =?utf-8?B?clRGM1o1aEc2cU5HclM0OGhZTDJqd1A5dW1mdUZ5SXJWcDBrOGxaMEZ5NU5B?=
+ =?utf-8?B?Wi9JbXNqN0lVUDNBbXpHS1RUd0FyckpkWFMwWThGaXZFVklHeEFNVkV2TDlQ?=
+ =?utf-8?B?SHl2Snp5b0JFbnpmUWdHek8rUEpIUlFOSlI0QnJoYmtLcGJ1Wk1EMERvTTNB?=
+ =?utf-8?B?cis0cFhya3pHZTBuLzRrSnZFWFdHNlpEZnAzMnBPc21IQXpMTnNUSks4bUp5?=
+ =?utf-8?B?ZVNhMUpBOFVwSG90cFhtb3U4THNCR21SS2I3MXo0cVNDTGcxUFpIL2xWOXJp?=
+ =?utf-8?B?V2ZDa1EvcWc3aTlBNy9MRUFBUWc3eThPRTVBeG1tR2tEREFDSXRlU3FRcUxP?=
+ =?utf-8?B?TUxvUzAyaVd0eHdTb1V0ZitQTXFMeFdteE1EbWpndVlCT2J4cFhwWW1vOEpS?=
+ =?utf-8?B?RGFwcWUxcFN0Y0ZHQXZRVVhkOURxcEExZSs0V3ZXWEVXUkJKbGd0SkdNdnR0?=
+ =?utf-8?B?UE9hRHVpOGt6bU9QbHE2WTRPOXRxYmdTeUhLSHFYVFRERzBBa0hNNjFkUGhL?=
+ =?utf-8?B?ZllaZTZrcmVxbUYzcE5Ya0g1TDlGeXplcmNNNisrRDFxUWlYbkNreXlwalNN?=
+ =?utf-8?B?Nm1qOWVKWlBhRVRWNzRrZ0xXbVhnUVFjQ1phNFA1VUlTZFNKNjNMc2kvMmhJ?=
+ =?utf-8?B?UHhscEdPWUxRdWR6YWQxU3FSbG4xVHRjaFNIbHlpM3lmS3F4cDZtMFhKWE44?=
+ =?utf-8?B?RkUwNHhCV1dFbGJodjNpY2QrcE5wMFdSTTBadmpjYnJ4MGl3ZXNORHB0ZWZY?=
+ =?utf-8?Q?JV5T8ETWHqnXk=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4322.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d8def60d-c73f-4a89-765b-08d89a6b0761
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Dec 2020 04:46:14.7099
+X-MS-Exchange-CrossTenant-Network-Message-Id: a172908d-97d4-42e2-87ac-08d89a6c10d6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Dec 2020 04:53:40.0265
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Jg+KQHPsdzaMgpt4Tywrn32mo0hqtWMhFIceZ9Acfmi3tPMxBe9Pi6TQscNUy9kVIp/KZsOr2IlwXd+Hy08Bsg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2773
+X-MS-Exchange-CrossTenant-userprincipalname: 3B/yKwbeT6TQSwm6RfY5rH/U8kUxkiMcw1Jh4+dDyZYq4akpjDYbFzIH6ls4llWi+ocVP3+M91g7MIWl2cIIPA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4904
 X-OriginatorOrg: Nvidia.com
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1607316380; bh=N15RPja9ePWIIdQuqX8/BiZl8m9Jc0sazJ9XgxHiPS8=;
+        t=1607316823; bh=TUOUCI3xgIo8NUE5FPKIhD9WrQRGqmOyUtz4Pvc0t4A=;
         h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:From:To:
          CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
          In-Reply-To:Accept-Language:Content-Language:X-MS-Has-Attach:
@@ -122,170 +135,39 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
          X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
          X-MS-Exchange-CrossTenant-userprincipalname:
          X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
-        b=AqpSobkQftSoIdlXDE+w655PN+Kw9S9hFYhRBuoTctzoEjcreR0Y/KuhxvRY6T5Jt
-         eyc/6ThAKdd8uPxFxYA3G6yp9WOCGT10UChcDuvFOOgmwIsZd2PQWQNXpPCbwWmAoG
-         buehIj6hN5B5B6lxpgtGOaGdJ6htR1kp/trW2XMZDfvq8xU6GfrEk05NLkWVd5HxHP
-         BBXy3NwwBbxOCBVDKIn8I0wLHQWFXNZ/UpjWBOW7Z5vxcO8jjYhMXm9DXISgqVyLj/
-         V6C6igVrRThsski+EWPwdu6OxAUlnPUIlb7z58T+uJg60xF117GE1UZTvssMoG3MCB
-         cxcQvyGvcDzPw==
+        b=gGXuR+2eI0DFpSWMedgM6Nc1ZO5GGMTnP6a5uNpN+MLYIHQznedcDEMfOrHDa8/H0
+         zFMWHgP9ZUAYPkz7ETRTLzpS6mIJR6FB2gjuQY2lI9x9RZVNG5QXb/oNnVG+M6f9sg
+         5E9cltSKIL2BNFaTx+EgZRTma/C5aNaB0XRGJWpYGn8bWOS/n5jWXH2t8kH9uinkJY
+         S2Fmz5PahoL3vDz9OYf42mAzrRehe0zg7quvUd1ZLyhf1FTCr+YfgYl7zWMNApuQAs
+         X+2VN8WBeMheG2eA1srhm/SgMa0aqsWYdwihDqAc54OxuZu+4tuFyDm5xxZmMAMqAB
+         /ARLhNV2x8ykg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Sunday, December 6, 2020 1:57 AM
->=20
-> On Thu, 3 Dec 2020 20:02:55 +0200 Parav Pandit wrote:
-> > Added documentation for devlink port and port function related commands=
-.
-> >
-> > Signed-off-by: Parav Pandit <parav@nvidia.com>
-> > Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-> > Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
->=20
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > +Devlink Port
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > +
-> > +``devlink-port`` is a port that exists on the device.
->=20
-> Can we add something like:
->=20
-> Each port is a logically separate ingress/egress point of the device.
->=20
-> ?
-This may not be true when both physical ports are under bond.
-
->=20
-> > A devlink port can
-> > +be of one among many flavours. A devlink port flavour along with port
-> > +attributes describe what a port represents.
-> > +
-> > +A device driver that intends to publish a devlink port sets the
-> > +devlink port attributes and registers the devlink port.
-> > +
-> > +Devlink port types are described below.
->=20
-> How about:
->=20
-> Physical ports can have different types based on the link layer:
->
-Ok. will add.
-=20
-> > +.. list-table:: List of devlink port types
-> > +   :widths: 23 90
-> > +
-> > +   * - Type
-> > +     - Description
-> > +   * - ``DEVLINK_PORT_TYPE_ETH``
-> > +     - Driver should set this port type when a link layer of the port =
-is Ethernet.
-> > +   * - ``DEVLINK_PORT_TYPE_IB``
-> > +     - Driver should set this port type when a link layer of the port =
-is InfiniBand.
->=20
-> Please wrap at 80 chars.
->=20
-Ack.
-> > +   * - ``DEVLINK_PORT_TYPE_AUTO``
-> > +     - This type is indicated by the user when user prefers to set the=
- port type
-> > +       to be automatically detected by the device driver.
->=20
-> How about:
->=20
-> This type is indicated by the user when driver should detect the port typ=
-e
-> automatically.
->=20
-Will change.
-
-> > +A controller consists of one or more PCI functions.
->=20
-> This need some intro. Like:
->=20
-> PCI controllers
-> ---------------
->=20
-> In most cases PCI devices will have only one controller, with potentially=
- multiple
-> physical and virtual functions. Devices connected to multiple CPUs and
-> SmartNICs, however, may have multiple controllers.
->=20
-> > Such PCI function consists
-> > +of one or more networking ports.
->=20
-> PCI function consists of networking ports? What do you mean by a networki=
-ng
-> port? All devlink ports are networking ports.
->
-I am not sure this document should be a starting point to define such restr=
-iction.
-=20
-> > A networking port of such PCI function is
-> > +represented by the eswitch devlink port.
->=20
-> What's eswitch devlink port? It was never defined.
-Eswitch devlink port is the port which sets eswitch attributes (id and leng=
-th).
-
->=20
-> > A devlink instance holds ports of two
-> > +types of controllers.
->=20
-> For devices with multiple controllers we can distinguish...
->=20
-Yes, will change.
-
-> > +(1) controller discovered on same system where eswitch resides:
-> > +This is the case where PCI PF/VF of a controller and devlink eswitch
-> > +instance both are located on a single system.
->=20
-> How is eswitch located on a system? Eswitch is in the NIC
->
-Yes, I meant eswitch devlink instance and controller devlink instance are s=
-ame.
- Will rephase.
-
-> I think you should say refer to eswitch being controlled by a system.
->=20
-> > +(2) controller located on external host system.
-> > +This is the case where a controller is in one system and its devlink
-> > +eswitch ports are in a different system. Such controller is called
-> > +external controller.
->=20
-> > +An example view of two controller systems::
-> > +
-> > +Port function configuration
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D
-> > +
-> > +When a port flavor is ``DEVLINK_PORT_FLAVOUR_PCI_PF`` or
-> > +``DEVLINK_PORT_FLAVOUR_PCI_VF``, it represents the networking port of
-> > +a PCI function.
->=20
-> Networking port of a PCI function?
->=20
-> > A user can configure the port function attributes
->=20
-> port function attributes?
->=20
-> > before
-> > +enumerating the function.
->=20
-> What does this mean? What does enumerate mean in this context?
->=20
-Enumerate means before creating the device of the function.
-However today due to SR-IOV limitation, it is before probing the function d=
-evice.
-
-> > For example user may set the hardware address of
-> > +the function represented by the devlink port function.
->=20
-> What's a hardware address? You mean MAC address?
-Yes, MAC address.
-Port function attribute is named as hardware address to be generic enough s=
-imilar to other iproute2 tools.
-
+DQoNCj4gRnJvbTogRGF2aWQgQWhlcm4gPGRzYWhlcm5AZ21haWwuY29tPg0KPiBTZW50OiBNb25k
+YXksIERlY2VtYmVyIDcsIDIwMjAgODoxOSBBTQ0KPiANCj4gT24gMTEvMTIvMjAgMTI6MjQgUE0s
+IFBhcmF2IFBhbmRpdCB3cm90ZToNCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJu
+ZXQvbWVsbGFub3gvbWx4NS9jb3JlL0tjb25maWcNCj4gPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0
+L21lbGxhbm94L21seDUvY29yZS9LY29uZmlnDQo+ID4gaW5kZXggNDg1NDc4OTc5YjFhLi4xMGRm
+YWY2NzFjOTAgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gv
+bWx4NS9jb3JlL0tjb25maWcNCj4gPiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5v
+eC9tbHg1L2NvcmUvS2NvbmZpZw0KPiA+IEBAIC0yMDIsMyArMjAyLDEyIEBAIGNvbmZpZyBNTFg1
+X1NXX1NURUVSSU5HDQo+ID4gIAlkZWZhdWx0IHkNCj4gPiAgCWhlbHANCj4gPiAgCUJ1aWxkIHN1
+cHBvcnQgZm9yIHNvZnR3YXJlLW1hbmFnZWQgc3RlZXJpbmcgaW4gdGhlIE5JQy4NCj4gPiArDQo+
+ID4gK2NvbmZpZyBNTFg1X1NGDQo+ID4gKwlib29sICJNZWxsYW5veCBUZWNobm9sb2dpZXMgc3Vi
+ZnVuY3Rpb24gZGV2aWNlIHN1cHBvcnQgdXNpbmcgYXV4aWxpYXJ5DQo+IGRldmljZSINCj4gPiAr
+CWRlcGVuZHMgb24gTUxYNV9DT1JFICYmIE1MWDVfQ09SRV9FTg0KPiA+ICsJZGVmYXVsdCBuDQo+
+ID4gKwloZWxwDQo+ID4gKwlCdWlsZCBzdXBwb3J0IGZvciBzdWJmdWN0aW9uIGRldmljZSBpbiB0
+aGUgTklDLiBBIE1lbGxhbm94IHN1YmZ1bmN0aW9uDQo+ID4gKwlkZXZpY2UgY2FuIHN1cHBvcnQg
+UkRNQSwgbmV0ZGV2aWNlIGFuZCB2ZHBhIGRldmljZS4NCj4gPiArCUl0IGlzIHNpbWlsYXIgdG8g
+YSBTUklPViBWRiBidXQgaXQgZG9lc24ndCByZXF1aXJlIFNSSU9WIHN1cHBvcnQuDQo+IA0KPiBw
+ZXIgRGFuJ3MgY29tbWVudCBhYm91dCBBVVhJTElBUllfQlVTIGJlaW5nIHNlbGVjdCBvbmx5LCBz
+aG91bGQgdGhpcyBjb25maWcNCj4gc2VsZWN0IEFVWElMSUFSWV9CVVM/DQpZZXMuDQpIb3dldmVy
+LCBteSBwYXRjaHNldCBkZXBlbmRzIG9uIHBhdGNoc2V0IFsxXS4NCldpdGggaW50cm9kdWN0aW9u
+IG9mIHBhdGNoc2V0IFsyXSwgTUxYNV9DT1JFIGRlcGVuZHMgb24gQVVYSUxJQVJZX0JVUy4gDQpN
+TFg1X1NGIGRlcGVuZHMgb24gTUxYNV9DT1JFLg0KU28gSSBvbWl0dGVkIGV4cGxpY2l0bHkgc2Vs
+ZWN0aW5nIEFVWEJVUyBieSBNTFg1X1NGLg0KDQpbMV0gaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcv
+bGludXgtcmRtYS8yMDIwMTIwNDE4Mjk1Mi43MjI2My0xLXNhZWVkbUBudmlkaWEuY29tLw0KWzJd
+IGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2Fsc2EtZGV2ZWwvMjAyMDEwMjYxMTE4NDkuMTAzNTc4
+Ni02LWxlb25Aa2VybmVsLm9yZy8NCg0KDQo=
