@@ -2,387 +2,444 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A3E52D1C7B
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 22:57:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E2662D1C7F
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 22:57:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727696AbgLGVza (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 16:55:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53398 "EHLO
+        id S1727773AbgLGV41 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 16:56:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726344AbgLGVz3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 16:55:29 -0500
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1802C06138C;
-        Mon,  7 Dec 2020 13:54:09 -0800 (PST)
-Received: by mail-wr1-x443.google.com with SMTP id x6so10327236wro.11;
-        Mon, 07 Dec 2020 13:54:09 -0800 (PST)
+        with ESMTP id S1726250AbgLGV40 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 16:56:26 -0500
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B03C061749;
+        Mon,  7 Dec 2020 13:55:40 -0800 (PST)
+Received: by mail-yb1-xb41.google.com with SMTP id l14so14314602ybq.3;
+        Mon, 07 Dec 2020 13:55:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=jizt0CaFyqu1UAycgFDJ10B1TuItdGy4xxfOKRie8Ac=;
-        b=NbYCUXnqyYZ+bTM/NSYRS3BQz791NmefcwqFt+czAMXnBbo6SNddtIlpO1NYG7JNNf
-         us86mUixqxrHVusrxErzu+5jUdFuAIBVI6f1mR+k/7S58Ub4PCSBM/rCPSuMtHHi5mdQ
-         ZJ0wz4Y0p8A4pJ6i9QIJHtJQyIAixzWPOEbDmgJRibjcsCc0ZyyPuDWl3uAmQMsMJSHo
-         iIcPExfwizQ3IosydgQhVs2BRlhYz9mhZvPshCaOC0oehHKJ+Sd/qRYP7U088gdj11HI
-         ywQC9Om7U2WTfGqF2Olr2HiaadnrttdNA62tp49eTQCgseVmytRUOIxeRl/S/jCYNWw0
-         2LYQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=S09wxdnZINYcsTcIavXrOLQ3u++eor056wW5Mfdy2l4=;
+        b=ol2uDEhtEUelh18QJ35NJZEb0JofyATfqxTvBCWc40TcBp9OsYgihb1jFReRJYbYJh
+         drL4WNTgKs2pp3z6PEED7V8WLGUP+R6Zsh1DYSTrpKMPdcWHND+s6jo4GKpSr8VkN6Kl
+         94z9F78fcGKswiuarcmYH0Rp+v8RhXXyC8ElYp8Lpd3TH7EQE1TTEfGB/ZGyaapEaRe3
+         jriQVQ3Jc9u7vyrTLGIzTZA/iobQuHwhSRbn7LGDxPxqftwgW0F66olUxMmLVAGA8wt+
+         Qr41iidva0xOLJ7NRig8AoufyMMcbT0w1jSgG8G/ejyoK+2I1AsuG4srOkW2lFBdjbBf
+         wODg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=jizt0CaFyqu1UAycgFDJ10B1TuItdGy4xxfOKRie8Ac=;
-        b=Jb59z0j83tY5qE2TRSEggUx/hHnSVndGWVGD7NENtOU+Jbz42z5mLZ/zoe6u3DE0QS
-         Bg02JoYybIQiH+rwRkrIgsnErZaplF2HzLLlEpKo6NWdbvU8jLNptItsux+6N7rhM3Lg
-         0Bt6OQy6nMqRujFilZO7zR4+EPPeIrfZClD8qWyQq249pHSC/4VWZ4+AhrPnsG7vTUXd
-         5nPlUCKrDnUlQy13bP5g32zyNrIg3TVHJJkLkPczx7SW2gE170RR3db/xcceqqwPgj7t
-         el2s0LSMRbaRjXc1iM54OYazVh/7DpXvUmR6K+XDlIt4LxVrLHULArXK2YTkx3jv/XcY
-         XbVQ==
-X-Gm-Message-State: AOAM53115jmtK8yeTHReqzLr6+vm+Yf/FN1GYebfUUNBo88UCn7UHhbj
-        z2P5JzDT2REJpQmv974wpv+N3ca4DwkmAVtq
-X-Google-Smtp-Source: ABdhPJwpS3LsjZvOqSIWzj206W8ixw1eWiGPXyLIv3H6fM4was6lApQBManvXlsKj6wc5cK5cL2fwg==
-X-Received: by 2002:adf:e30f:: with SMTP id b15mr4616315wrj.148.1607378047945;
-        Mon, 07 Dec 2020 13:54:07 -0800 (PST)
-Received: from kernel-dev.chello.ie ([80.111.136.190])
-        by smtp.gmail.com with ESMTPSA id z15sm1967290wrv.67.2020.12.07.13.54.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Dec 2020 13:54:07 -0800 (PST)
-From:   Weqaar Janjua <weqaar.janjua@gmail.com>
-X-Google-Original-From: Weqaar Janjua <weqaar.a.janjua@intel.com>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
-        ast@kernel.org, yhs@fb.com, magnus.karlsson@gmail.com,
-        bjorn.topel@intel.com
-Cc:     Weqaar Janjua <weqaar.a.janjua@intel.com>, shuah@kernel.org,
-        skhan@linuxfoundation.org, linux-kselftest@vger.kernel.org,
-        anders.roxell@linaro.org, jonathan.lemon@gmail.com
-Subject: [PATCH bpf-next v4 5/5] selftests/bpf: xsk selftests - Bi-directional Sockets - SKB, DRV
-Date:   Mon,  7 Dec 2020 21:53:33 +0000
-Message-Id: <20201207215333.11586-6-weqaar.a.janjua@intel.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201207215333.11586-1-weqaar.a.janjua@intel.com>
-References: <20201207215333.11586-1-weqaar.a.janjua@intel.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=S09wxdnZINYcsTcIavXrOLQ3u++eor056wW5Mfdy2l4=;
+        b=OvJRmfFlQqBLZS5HfKgO2jQzzdk1zIvU8cyD19BzQXzL8cbkJhyVKdcX2AoRenN/V4
+         H3FxZNdOC8qb2HmF/BUm0fuFc4ihJ6xc+bHqATxQ7zs7H0k04rJqnnmtv1mmWiI4ycAx
+         FFsDWoD4ifffAkiQwmmtwfhNH6grhggmkQQhX6uemRE+aTsyB9TPxVm+Q6wtoXd3fI/o
+         ywLgFLs5IwxM2UYZlkODM/ZmIjWRaoz2N4i7L4+TI3IzjMoF5hc3avPgtC09khNHqbOZ
+         xKpPobXH8tsh9SIyPTk0JiZ0XMlHqS82V9i2CU1UkSu5FyztISbCiYWCbh6Mm/Puvwzy
+         8dmg==
+X-Gm-Message-State: AOAM532Aqhq7TecfcF7dX+8LV+zdPss0w9tKlbuHTnfgdbEzKmjAU83k
+        bmFdb2wFBvAU/rSOnBMaLxMC0dyq1p1JNv3+NhoKQIpBmD+zo3tq
+X-Google-Smtp-Source: ABdhPJyEhSF/G71Z+XLVX65pkZGGwPh2F3F0SollSLy5yLecZSmNJeC21D1hR47dyEdRkwpcSy0kZKss2xv3hf9yVmk=
+X-Received: by 2002:a25:ab31:: with SMTP id u46mr17921449ybi.179.1607378139552;
+ Mon, 07 Dec 2020 13:55:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201125183749.13797-1-weqaar.a.janjua@intel.com>
+ <20201125183749.13797-2-weqaar.a.janjua@intel.com> <d8eedbad-7a8e-fd80-5fec-fc53b86e6038@fb.com>
+ <1bcfb208-dfbd-7b49-e505-8ec17697239d@intel.com> <CAPLEeBYnYcWALN_JMBtZWt3uDnpYNtCA_HVLN6Gi7VbVk022xw@mail.gmail.com>
+ <9c73643f-0fdc-d867-6fe0-b3b8031a6cf2@fb.com> <CAPLEeBZh+BEJp_k0bDQ8nmprMPqQ29JSEXCxscm5wAZQH81bAQ@mail.gmail.com>
+ <b153b6af-6f75-d091-7022-999b01f553aa@fb.com>
+In-Reply-To: <b153b6af-6f75-d091-7022-999b01f553aa@fb.com>
+From:   Weqaar Janjua <weqaar.janjua@gmail.com>
+Date:   Mon, 7 Dec 2020 21:55:13 +0000
+Message-ID: <CAPLEeBY_soGW66KE3U66_h2R3s0cFLjsektvYXCFb+5Uvc0YfQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 1/5] selftests/bpf: xsk selftests framework
+To:     Yonghong Song <yhs@fb.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Weqaar Janjua <weqaar.a.janjua@intel.com>, shuah@kernel.org,
+        skhan@linuxfoundation.org, linux-kselftest@vger.kernel.org,
+        Anders Roxell <anders.roxell@linaro.org>,
+        jonathan.lemon@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds following tests:
+On Sat, 28 Nov 2020 at 03:13, Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 11/27/20 9:54 AM, Weqaar Janjua wrote:
+> > On Fri, 27 Nov 2020 at 04:19, Yonghong Song <yhs@fb.com> wrote:
+> >>
+> >>
+> >>
+> >> On 11/26/20 1:22 PM, Weqaar Janjua wrote:
+> >>> On Thu, 26 Nov 2020 at 09:01, Bj=C3=B6rn T=C3=B6pel <bjorn.topel@inte=
+l.com> wrote:
+> >>>>
+> >>>> On 2020-11-26 07:44, Yonghong Song wrote:
+> >>>>>
+> >>>> [...]
+> >>>>>
+> >>>>> What other configures I am missing?
+> >>>>>
+> >>>>> BTW, I cherry-picked the following pick from bpf tree in this exper=
+iment.
+> >>>>>      commit e7f4a5919bf66e530e08ff352d9b78ed89574e6b (HEAD -> xsk)
+> >>>>>      Author: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> >>>>>      Date:   Mon Nov 23 18:56:00 2020 +0100
+> >>>>>
+> >>>>>          net, xsk: Avoid taking multiple skbuff references
+> >>>>>
+> >>>>
+> >>>> Hmm, I'm getting an oops, unless I cherry-pick:
+> >>>>
+> >>>> 36ccdf85829a ("net, xsk: Avoid taking multiple skbuff references")
+> >>>>
+> >>>> *AND*
+> >>>>
+> >>>> 537cf4e3cc2f ("xsk: Fix umem cleanup bug at socket destruct")
+> >>>>
+> >>>> from bpf/master.
+> >>>>
+> >>>
+> >>> Same as Bjorn's findings ^^^, additionally applying the second patch
+> >>> 537cf4e3cc2f [PASS] all tests for me
+> >>>
+> >>> PREREQUISITES: [ PASS ]
+> >>> SKB NOPOLL: [ PASS ]
+> >>> SKB POLL: [ PASS ]
+> >>> DRV NOPOLL: [ PASS ]
+> >>> DRV POLL: [ PASS ]
+> >>> SKB SOCKET TEARDOWN: [ PASS ]
+> >>> DRV SOCKET TEARDOWN: [ PASS ]
+> >>> SKB BIDIRECTIONAL SOCKETS: [ PASS ]
+> >>> DRV BIDIRECTIONAL SOCKETS: [ PASS ]
+> >>>
+> >>> With the first patch alone, as soon as we enter DRV/Native NOPOLL mod=
+e
+> >>> kernel panics, whereas in your case NOPOLL tests were falling with
+> >>> packets being *lost* as per seqnum mismatch.
+> >>>
+> >>> Can you please test this out with both patches and let us know?
+> >>
+> >> I applied both the above patches in bpf-next as well as this patch set=
+,
+> >> I still see failures. I am attaching my config file. Maybe you can tak=
+e
+> >> a look at what is the issue.
+> >>
+> > Thanks for the config, can you please confirm the compiler version,
+> > and resource limits i.e. stack size, memory, etc.?
+>
+> root@arch-fb-vm1:~/net-next/net-next/tools/testing/selftests/bpf ulimit -=
+a
+> core file size          (blocks, -c) unlimited
+> data seg size           (kbytes, -d) unlimited
+> scheduling priority             (-e) 0
+> file size               (blocks, -f) unlimited
+> pending signals                 (-i) 15587
+> max locked memory       (kbytes, -l) unlimited
+> max memory size         (kbytes, -m) unlimited
+> open files                      (-n) 1024
+> pipe size            (512 bytes, -p) 8
+> POSIX message queues     (bytes, -q) 819200
+> real-time priority              (-r) 0
+> stack size              (kbytes, -s) 8192
+> cpu time               (seconds, -t) unlimited
+> max user processes              (-u) 15587
+> virtual memory          (kbytes, -v) unlimited
+> file locks                      (-x) unlimited
+>
+> compiler: gcc 8.2
+>
+> >
+> > Only NOPOLL tests are failing for you as I see it, do the same tests
+> > fail every time?
+>
+> In my case, with above two bpf patches applied as well, I got:
+> $ ./test_xsk.sh
+> setting up ve9127: root: 192.168.222.1/30
+>
+> setting up ve4520: af_xdp4520: 192.168.222.2/30
+>
+> Spec file created: veth.spec
+>
+> PREREQUISITES: [ PASS ]
+>
+> # Interface found: ve9127
+>
+> # Interface found: ve4520
+>
+> # NS switched: af_xdp4520
+>
+> 1..1
+>
+> # Interface [ve4520] vector [Rx]
+>
+> # Interface [ve9127] vector [Tx]
+>
+> # Sending 10000 packets on interface ve9127
+>
+> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [59], payloadseqnum [0]
+>
+> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
+>
+> SKB NOPOLL: [ FAIL ]
+>
+> # Interface found: ve9127
+>
+> # Interface found: ve4520
+>
+> # NS switched: af_xdp4520
+> # NS switched: af_xdp4520
+>
+> 1..1
+> # Interface [ve4520] vector [Rx]
+> # Interface [ve9127] vector [Tx]
+> # Sending 10000 packets on interface ve9127
+> # End-of-tranmission frame received: PASS
+> # Received 10000 packets on interface ve4520
+> ok 1 PASS: SKB POLL
+> # Totals: pass:1 fail:0 xfail:0 xpass:0 skip:0 error:0
+> SKB POLL: [ PASS ]
+> # Interface found: ve9127
+> # Interface found: ve4520
+> # NS switched: af_xdp4520
+> 1..1
+> # Interface [ve4520] vector [Rx]
+> # Interface [ve9127] vector [Tx]
+> # Sending 10000 packets on interface ve9127
+> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [153], payloadseqnum [0]
+> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
+> DRV NOPOLL: [ FAIL ]
+> # Interface found: ve9127
+> # Interface found: ve4520
+> # NS switched: af_xdp4520
+> 1..1
+> # Interface [ve4520] vector [Rx]
+> # Interface [ve9127] vector [Tx]
+> # Sending 10000 packets on interface ve9127
+> # End-of-tranmission frame received: PASS
+> # Received 10000 packets on interface ve4520
+> ok 1 PASS: DRV POLL
+> # Totals: pass:1 fail:0 xfail:0 xpass:0 skip:0 error:0
+> DRV POLL: [ PASS ]
+> # Interface found: ve9127
+> # Interface found: ve4520
+> # NS switched: af_xdp4520
+> 1..1
+> # Creating socket
+> # Interface [ve4520] vector [Rx]
+> # Interface [ve9127] vector [Tx]
+> # Sending 10000 packets on interface ve9127
+> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [54], payloadseqnum [0]
+> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
+> SKB SOCKET TEARDOWN: [ FAIL ]
+> # Interface found: ve9127
+> # Interface found: ve4520
+> # NS switched: af_xdp4520
+> 1..1
+> # Creating socket
+> # Interface [ve4520] vector [Rx]
+> # Interface [ve9127] vector [Tx]
+> # Sending 10000 packets on interface ve9127
+> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [0], payloadseqnum [0]
+> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
+> DRV SOCKET TEARDOWN: [ FAIL ]
+> # Interface found: ve9127
+> # Interface found: ve4520
+> # NS switched: af_xdp4520
+> 1..1
+> # Creating socket
+> # Interface [ve4520] vector [Rx]
+> # Interface [ve9127] vector [Tx]
+> # Sending 10000 packets on interface ve9127
+> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [64], payloadseqnum [0]
+> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
+> SKB BIDIRECTIONAL SOCKETS: [ FAIL ]
+> # Interface found: ve9127
+> # Interface found: ve4520
+> # NS switched: af_xdp4520
+> 1..1
+> # Creating socket
+> # Interface [ve4520] vector [Rx]
+> # Interface [ve9127] vector [Tx]
+> # Sending 10000 packets on interface ve9127
+> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [83], payloadseqnum [0]
+> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
+> DRV BIDIRECTIONAL SOCKETS: [ FAIL ]
+> cleaning up...
+> removing link ve4520
+> removing ns af_xdp4520
+> removing spec file: veth.spec
+>
+> Second runs have one previous success becoming failure.
+>
+> ./test_xsk.sh
+> setting up ve2458: root: 192.168.222.1/30
+>
+> setting up ve4468: af_xdp4468: 192.168.222.2/30
+>
+> [  286.597111] IPv6: ADDRCONF(NETDEV_CHANGE): ve4468: link becomes ready
+>
+> Spec file created: veth.spec
+>
+> PREREQUISITES: [ PASS ]
+>
+> # Interface found: ve2458
+>
+> # Interface found: ve4468
+>
+> # NS switched: af_xdp4468
+>
+> 1..1
+>
+> # Interface [ve4468] vector [Rx]
+>
+> # Interface [ve2458] vector [Tx]
+>
+> # Sending 10000 packets on interface ve2458
+>
+> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [67], payloadseqnum [0]
+>
+> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
+>
+> SKB NOPOLL: [ FAIL ]
+>
+> # Interface found: ve2458
+>
+> # Interface found: ve4468
+>
+> # NS switched: af_xdp4468
+>
+> 1..1
+>
+> # Interface [ve4468] vector [Rx]
+>
+> # Interface [ve2458] vector [Tx]
+>
+> # Sending 10000 packets on interface ve2458
+>
+> # End-of-tranmission frame received: PASS
+> # Received 10000 packets on interface ve4468
+> ok 1 PASS: SKB POLL
+> # Totals: pass:1 fail:0 xfail:0 xpass:0 skip:0 error:0
+> SKB POLL: [ PASS ]
+> # Interface found: ve2458
+> # Interface found: ve4468
+> # NS switched: af_xdp4468
+> 1..1
+> # Interface [ve4468] vector [Rx]
+> # Interface [ve2458] vector [Tx]
+> # Sending 10000 packets on interface ve2458
+> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [191], payloadseqnum [0]
+> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
+> DRV NOPOLL: [ FAIL ]
+> # Interface found: ve2458
+> # Interface found: ve4468
+> # NS switched: af_xdp4468
+> 1..1
+> # Interface [ve4468] vector [Rx]
+> # Interface [ve2458] vector [Tx]
+> # Sending 10000 packets on interface ve2458
+> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [0], payloadseqnum [0]
+> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
+> DRV POLL: [ FAIL ]
+> # Interface found: ve2458
+> # Interface found: ve4468
+> # NS switched: af_xdp4468
+> 1..1
+> # Creating socket
+> # Interface [ve4468] vector [Rx]
+> # Interface [ve2458] vector [Tx]
+> # Sending 10000 packets on interface ve2458
+> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [0], payloadseqnum [0]
+> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
+> SKB SOCKET TEARDOWN: [ FAIL ]
+> # Interface found: ve2458
+> # Interface found: ve4468
+> # NS switched: af_xdp4468
+> 1..1
+> # Creating socket
+> # Interface [ve4468] vector [Rx]
+> # Interface [ve2458] vector [Tx]
+> # Sending 10000 packets on interface ve2458
+> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [171], payloadseqnum [0]
+> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
+> DRV SOCKET TEARDOWN: [ FAIL ]
+> # Interface found: ve2458
+> # Interface found: ve4468
+> # NS switched: af_xdp4468
+> 1..1
+> # Creating socket
+> # Interface [ve4468] vector [Rx]
+> # Interface [ve2458] vector [Tx]
+> # Sending 10000 packets on interface ve2458
+> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [124], payloadseqnum [0]
+> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
+> SKB BIDIRECTIONAL SOCKETS: [ FAIL ]
+> # Interface found: ve2458
+> # Interface found: ve4468
+> # NS switched: af_xdp4468
+> 1..1
+> # Creating socket
+> # Interface [ve4468] vector [Rx]
+> # Interface [ve2458] vector [Tx]
+> # Sending 10000 packets on interface ve2458
+> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [195], payloadseqnum [0]
+> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
+> DRV BIDIRECTIONAL SOCKETS: [ FAIL ]
+> cleaning up...
+> removing link ve4468
+> removing ns af_xdp4468
+> removing spec file: veth.spec
+>
+> >
+> > I will need to spend some time debugging this to have a fix.
+>
+> Thanks.
+>
+> >
+> > Thanks,
+> > /Weqaar
+> >
+> >>>
+> >>>> Can I just run test_xsk.sh at tools/testing/selftests/bpf/ directory=
+?
+> >>>> This will be easier than the above for bpf developers. If it does no=
+t
+> >>>> work, I would like to recommend to make it work.
+> >>>>
+> >>> yes test_xsk.shis self contained, will update the instructions in the=
+re with v4.
+> >>
+> >> That will be great. Thanks!
+> >>
+v4 is out on the list, incorporating most if not all your suggestions
+to the best of my memory.
 
-1. AF_XDP SKB mode
-   d. Bi-directional Sockets
-      Configure sockets as bi-directional tx/rx sockets, sets up fill
-      and completion rings on each socket, tx/rx in both directions.
-      Only nopoll mode is used
+I was able to reproduce the issue you were seeing (from your logs) ->
+veth interfaces were receiving packets from the IPv6 neighboring
+system (thanks @Bj=C3=B6rn T=C3=B6pel for mentioning this).
 
-2. AF_XDP DRV/Native mode
-   d. Bi-directional Sockets
-   * Only copy mode is supported because veth does not currently support
-     zero-copy mode
+The packet validation algo in *xdpxceiver* *assumed* all packets would
+be IPv4 and intended for Rx.
+Rx validates packets on both ip->tos =3D 0x9 (id for xsk tests) and
+ip->version =3D 0x4, ignores the rest.
 
-Signed-off-by: Weqaar Janjua <weqaar.a.janjua@intel.com>
----
- tools/testing/selftests/bpf/test_xsk.sh  |  24 ++++++
- tools/testing/selftests/bpf/xdpxceiver.c | 100 +++++++++++++++++------
- tools/testing/selftests/bpf/xdpxceiver.h |   4 +
- 3 files changed, 104 insertions(+), 24 deletions(-)
+Hoping the tests now work -> PASS in your environment.
 
-diff --git a/tools/testing/selftests/bpf/test_xsk.sh b/tools/testing/selftests/bpf/test_xsk.sh
-index 9be9dff25560..88a7483eaae4 100755
---- a/tools/testing/selftests/bpf/test_xsk.sh
-+++ b/tools/testing/selftests/bpf/test_xsk.sh
-@@ -221,6 +221,30 @@ retval=$?
- test_status $retval "${TEST_NAME}"
- statusList+=($retval)
- 
-+### TEST 8
-+TEST_NAME="SKB BIDIRECTIONAL SOCKETS"
-+
-+vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
-+
-+params=("-S" "-B")
-+execxdpxceiver params
-+
-+retval=$?
-+test_status $retval "${TEST_NAME}"
-+statusList+=($retval)
-+
-+### TEST 9
-+TEST_NAME="DRV BIDIRECTIONAL SOCKETS"
-+
-+vethXDPnative ${VETH0} ${VETH1} ${NS1}
-+
-+params=("-N" "-B")
-+execxdpxceiver params
-+
-+retval=$?
-+test_status $retval "${TEST_NAME}"
-+statusList+=($retval)
-+
- ## END TESTS
- 
- cleanup_exit ${VETH0} ${VETH1} ${NS1}
-diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-index e8907109782d..014dedaa4dd2 100644
---- a/tools/testing/selftests/bpf/xdpxceiver.c
-+++ b/tools/testing/selftests/bpf/xdpxceiver.c
-@@ -29,6 +29,10 @@
-  *    c. Socket Teardown
-  *       Create a Tx and a Rx socket, Tx from one socket, Rx on another. Destroy
-  *       both sockets, then repeat multiple times. Only nopoll mode is used
-+ *    d. Bi-directional sockets
-+ *       Configure sockets as bi-directional tx/rx sockets, sets up fill and
-+ *       completion rings on each socket, tx/rx in both directions. Only nopoll
-+ *       mode is used
-  *
-  * 2. AF_XDP DRV/Native mode
-  *    Works on any netdevice with XDP_REDIRECT support, driver dependent. Processes
-@@ -37,10 +41,11 @@
-  *    a. nopoll
-  *    b. poll
-  *    c. Socket Teardown
-+ *    d. Bi-directional sockets
-  *    - Only copy mode is supported because veth does not currently support
-  *      zero-copy mode
-  *
-- * Total tests: 6
-+ * Total tests: 8
-  *
-  * Flow:
-  * -----
-@@ -101,8 +106,9 @@ static void __exit_with_error(int error, const char *file, const char *func, int
- #define exit_with_error(error) __exit_with_error(error, __FILE__, __func__, __LINE__)
- 
- #define print_ksft_result(void)\
--	(ksft_test_result_pass("PASS: %s %s %s\n", uut ? "DRV" : "SKB", opt_poll ? "POLL" :\
--			       "NOPOLL", opt_teardown ? "Socket Teardown" : ""))
-+	(ksft_test_result_pass("PASS: %s %s %s%s\n", uut ? "DRV" : "SKB", opt_poll ? "POLL" :\
-+			       "NOPOLL", opt_teardown ? "Socket Teardown" : "",\
-+			       opt_bidi ? "Bi-directional Sockets" : ""))
- 
- static void pthread_init_mutex(void)
- {
-@@ -308,8 +314,13 @@ static int xsk_configure_socket(struct ifobject *ifobject)
- 	cfg.xdp_flags = opt_xdp_flags;
- 	cfg.bind_flags = opt_xdp_bind_flags;
- 
--	rxr = (ifobject->fv.vector == rx) ? &ifobject->xsk->rx : NULL;
--	txr = (ifobject->fv.vector == tx) ? &ifobject->xsk->tx : NULL;
-+	if (!opt_bidi) {
-+		rxr = (ifobject->fv.vector == rx) ? &ifobject->xsk->rx : NULL;
-+		txr = (ifobject->fv.vector == tx) ? &ifobject->xsk->tx : NULL;
-+	} else {
-+		rxr = &ifobject->xsk->rx;
-+		txr = &ifobject->xsk->tx;
-+	}
- 
- 	ret = xsk_socket__create(&ifobject->xsk->xsk, ifobject->ifname,
- 				 opt_queue, ifobject->umem->umem, rxr, txr, &cfg);
-@@ -328,6 +339,7 @@ static struct option long_options[] = {
- 	{"xdp-native", no_argument, 0, 'N'},
- 	{"copy", no_argument, 0, 'c'},
- 	{"tear-down", no_argument, 0, 'T'},
-+	{"bidi", optional_argument, 0, 'B'},
- 	{"debug", optional_argument, 0, 'D'},
- 	{"tx-pkt-count", optional_argument, 0, 'C'},
- 	{0, 0, 0, 0}
-@@ -345,6 +357,7 @@ static void usage(const char *prog)
- 	    "  -N, --xdp-native=n   Enforce XDP DRV (native) mode\n"
- 	    "  -c, --copy           Force copy mode\n"
- 	    "  -T, --tear-down      Tear down sockets by repeatedly recreating them\n"
-+	    "  -B, --bidi           Bi-directional sockets test\n"
- 	    "  -D, --debug          Debug mode - dump packets L2 - L5\n"
- 	    "  -C, --tx-pkt-count=n Number of packets to send\n";
- 	ksft_print_msg(str, prog);
-@@ -435,7 +448,7 @@ static void parse_command_line(int argc, char **argv)
- 	opterr = 0;
- 
- 	for (;;) {
--		c = getopt_long(argc, argv, "i:q:pSNcTDC:", long_options, &option_index);
-+		c = getopt_long(argc, argv, "i:q:pSNcTBDC:", long_options, &option_index);
- 
- 		if (c == -1)
- 			break;
-@@ -477,6 +490,9 @@ static void parse_command_line(int argc, char **argv)
- 		case 'T':
- 			opt_teardown = 1;
- 			break;
-+		case 'B':
-+			opt_bidi = 1;
-+			break;
- 		case 'D':
- 			debug_pkt_dump = 1;
- 			break;
-@@ -802,22 +818,25 @@ static void *worker_testapp_validate(void *arg)
- 	struct generic_data *data = (struct generic_data *)malloc(sizeof(struct generic_data));
- 	struct iphdr *ip_hdr = (struct iphdr *)(pkt_data + sizeof(struct ethhdr));
- 	struct ethhdr *eth_hdr = (struct ethhdr *)pkt_data;
--	void *bufs;
-+	void *bufs = NULL;
- 
- 	pthread_attr_setstacksize(&attr, THREAD_STACK);
- 
--	bufs = mmap(NULL, num_frames * XSK_UMEM__DEFAULT_FRAME_SIZE,
--		    PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
--	if (bufs == MAP_FAILED)
--		exit_with_error(errno);
-+	if (!bidi_pass) {
-+		bufs = mmap(NULL, num_frames * XSK_UMEM__DEFAULT_FRAME_SIZE,
-+			    PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-+		if (bufs == MAP_FAILED)
-+			exit_with_error(errno);
- 
--	if (strcmp(((struct ifobject *)arg)->nsname, ""))
--		switch_namespace(((struct ifobject *)arg)->ifdict_index);
-+		if (strcmp(((struct ifobject *)arg)->nsname, ""))
-+			switch_namespace(((struct ifobject *)arg)->ifdict_index);
-+	}
- 
- 	if (((struct ifobject *)arg)->fv.vector == tx) {
- 		int spinningrxctr = 0;
- 
--		thread_common_ops(arg, bufs, &sync_mutex_tx, &spinning_tx);
-+		if (!bidi_pass)
-+			thread_common_ops(arg, bufs, &sync_mutex_tx, &spinning_tx);
- 
- 		while (atomic_load(&spinning_rx) && spinningrxctr < SOCK_RECONF_CTR) {
- 			spinningrxctr++;
-@@ -847,7 +866,8 @@ static void *worker_testapp_validate(void *arg)
- 		struct pollfd fds[MAX_SOCKS] = { };
- 		int ret;
- 
--		thread_common_ops(arg, bufs, &sync_mutex_tx, &spinning_rx);
-+		if (!bidi_pass)
-+			thread_common_ops(arg, bufs, &sync_mutex_tx, &spinning_rx);
- 
- 		ksft_print_msg("Interface [%s] vector [Rx]\n", ((struct ifobject *)arg)->ifname);
- 		xsk_populate_fill_ring(((struct ifobject *)arg)->umem);
-@@ -886,8 +906,10 @@ static void *worker_testapp_validate(void *arg)
- 			ksft_print_msg("Destroying socket\n");
- 	}
- 
--	xsk_socket__delete(((struct ifobject *)arg)->xsk->xsk);
--	(void)xsk_umem__delete(((struct ifobject *)arg)->umem->umem);
-+	if (!opt_bidi || (opt_bidi && bidi_pass)) {
-+		xsk_socket__delete(((struct ifobject *)arg)->xsk->xsk);
-+		(void)xsk_umem__delete(((struct ifobject *)arg)->umem->umem);
-+	}
- 	pthread_exit(NULL);
- }
- 
-@@ -896,11 +918,26 @@ static void testapp_validate(void)
- 	pthread_attr_init(&attr);
- 	pthread_attr_setstacksize(&attr, THREAD_STACK);
- 
-+	if (opt_bidi && bidi_pass) {
-+		pthread_init_mutex();
-+		if (!switching_notify) {
-+			ksft_print_msg("Switching Tx/Rx vectors\n");
-+			switching_notify++;
-+		}
-+	}
-+
- 	pthread_mutex_lock(&sync_mutex);
- 
- 	/*Spawn RX thread */
--	if (pthread_create(&t0, &attr, worker_testapp_validate, (void *)ifdict[1]))
--		exit_with_error(errno);
-+	if (!opt_bidi || (opt_bidi && !bidi_pass)) {
-+		if (pthread_create(&t0, &attr, worker_testapp_validate, (void *)ifdict[1]))
-+			exit_with_error(errno);
-+	} else if (opt_bidi && bidi_pass) {
-+		/*switch Tx/Rx vectors */
-+		ifdict[0]->fv.vector = rx;
-+		if (pthread_create(&t0, &attr, worker_testapp_validate, (void *)ifdict[0]))
-+			exit_with_error(errno);
-+	}
- 
- 	struct timespec max_wait = { 0, 0 };
- 
-@@ -914,8 +951,15 @@ static void testapp_validate(void)
- 	pthread_mutex_unlock(&sync_mutex);
- 
- 	/*Spawn TX thread */
--	if (pthread_create(&t1, &attr, worker_testapp_validate, (void *)ifdict[0]))
--		exit_with_error(errno);
-+	if (!opt_bidi || (opt_bidi && !bidi_pass)) {
-+		if (pthread_create(&t1, &attr, worker_testapp_validate, (void *)ifdict[0]))
-+			exit_with_error(errno);
-+	} else if (opt_bidi && bidi_pass) {
-+		/*switch Tx/Rx vectors */
-+		ifdict[1]->fv.vector = tx;
-+		if (pthread_create(&t1, &attr, worker_testapp_validate, (void *)ifdict[1]))
-+			exit_with_error(errno);
-+	}
- 
- 	pthread_join(t1, NULL);
- 	pthread_join(t0, NULL);
-@@ -929,18 +973,19 @@ static void testapp_validate(void)
- 		free(pkt_buf);
- 	}
- 
--	if (!opt_teardown)
-+	if (!opt_teardown && !opt_bidi)
- 		print_ksft_result();
- }
- 
- static void testapp_sockets(void)
- {
--	for (int i = 0; i < MAX_TEARDOWN_ITER; i++) {
-+	for (int i = 0; i < (opt_teardown ? MAX_TEARDOWN_ITER : MAX_BIDI_ITER); i++) {
- 		pkt_counter = 0;
- 		prev_pkt = -1;
- 		sigvar = 0;
- 		ksft_print_msg("Creating socket\n");
- 		testapp_validate();
-+		opt_bidi ? bidi_pass++ : bidi_pass;
- 	}
- 
- 	print_ksft_result();
-@@ -1009,7 +1054,14 @@ int main(int argc, char **argv)
- 
- 	ksft_set_plan(1);
- 
--	opt_teardown ? testapp_sockets() : testapp_validate();
-+	if (!opt_teardown && !opt_bidi) {
-+		testapp_validate();
-+	} else if (opt_teardown && opt_bidi) {
-+		ksft_test_result_fail("ERROR: parameters -T and -B cannot be used together\n");
-+		ksft_exit_xfail();
-+	} else {
-+		testapp_sockets();
-+	}
- 
- 	for (int i = 0; i < MAX_INTERFACES; i++)
- 		free(ifdict[i]);
-diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
-index 58185b914f99..61f595b6f200 100644
---- a/tools/testing/selftests/bpf/xdpxceiver.h
-+++ b/tools/testing/selftests/bpf/xdpxceiver.h
-@@ -22,6 +22,7 @@
- #define MAX_INTERFACES_NAMESPACE_CHARS 10
- #define MAX_SOCKS 1
- #define MAX_TEARDOWN_ITER 10
-+#define MAX_BIDI_ITER 2
- #define PKT_HDR_SIZE (sizeof(struct ethhdr) + sizeof(struct iphdr) + \
- 			sizeof(struct udphdr))
- #define MIN_PKT_SIZE 64
-@@ -53,12 +54,15 @@ enum TESTS {
- u8 uut;
- u8 debug_pkt_dump;
- u32 num_frames;
-+u8 switching_notify;
-+u8 bidi_pass;
- 
- static u32 opt_xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
- static int opt_queue;
- static int opt_pkt_count;
- static int opt_poll;
- static int opt_teardown;
-+static int opt_bidi;
- static u32 opt_xdp_bind_flags = XDP_USE_NEED_WAKEUP;
- static u8 pkt_data[XSK_UMEM__DEFAULT_FRAME_SIZE];
- static u32 pkt_counter;
--- 
-2.20.1
+Thanks,
+/Weqaar
 
+> >>>
+> >>> Thanks,
+> >>> /Weqaar
+> >>>>
+> >>>> Bj=C3=B6rn
