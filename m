@@ -2,88 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97EB32D158D
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 17:07:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68F8E2D1594
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 17:14:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727434AbgLGQG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 11:06:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55340 "EHLO
+        id S1727496AbgLGQIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 11:08:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727288AbgLGQG4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 11:06:56 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EAA4C061749
-        for <netdev@vger.kernel.org>; Mon,  7 Dec 2020 08:06:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=PMMb36BoNKo/K4vLZCf7NCEAA+JKXKt1TiebagFvkS8=; b=JxI/fVvrqRzfTHOEkpkZlirmx
-        T0j5RqhW/CAyHKzLAt6qr8I6gBeAWZw3ubsNJiukGgc5GPs4ql1D8xKVyEOPFmppFSNv/sTWzzw9p
-        GHTrMd52vBWhJX7VXd12dKZiylv6Wnpq9we1QGZ6Hkf38YxfJYzO+EAeD2sGste8tkx1GPaJolM9E
-        I3J1I0VvNuwxKZL9jCgeAG7H0LkzL4YUhO+OJyegmj0CZgRjNSsNCgVnnX9qmlD4/Ul1utWvS+sH2
-        eniyLuIKpg5P40JE2bmByHrSY5Ddw3thpRbubzKI2ZPLgd73xwJ3zccnCArnhbFUxWhJm12zcnvOL
-        y5Wprr9aw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:40976)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kmJ1Y-0007sn-OA; Mon, 07 Dec 2020 16:06:04 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kmJ1V-0004iT-Rd; Mon, 07 Dec 2020 16:06:01 +0000
-Date:   Mon, 7 Dec 2020 16:06:01 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Ido Schimmel <idosch@idosch.org>,
-        Michal Kubecek <mkubecek@suse.cz>
-Subject: Re: [PATCH net-next] net: sfp: add debugfs support
-Message-ID: <20201207160601.GP1551@shell.armlinux.org.uk>
-References: <E1khJyS-0003UU-9O@rmk-PC.armlinux.org.uk>
- <20201124001431.GA2031446@lunn.ch>
- <20201124084151.GA722671@shredder.lan>
- <20201124094916.GD1551@shell.armlinux.org.uk>
- <20201124104640.GA738122@shredder.lan>
- <20201202130318.GD1551@shell.armlinux.org.uk>
- <20201202085913.1eda0bba@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <20201202090147.48af58fd@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+        with ESMTP id S1726377AbgLGQIU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 11:08:20 -0500
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52A3CC061749;
+        Mon,  7 Dec 2020 08:07:34 -0800 (PST)
+Received: by mail-ej1-x643.google.com with SMTP id m19so20185807ejj.11;
+        Mon, 07 Dec 2020 08:07:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WM/4xKSlXYVQWjEHfbWD8YX/luYlEiJYgCc/oLAT72M=;
+        b=qKgDPJDPA18nffgQ211xSgkPcAycCzVVcqW7ZbuMWzxFCl++LQpCcZ0C8J9T4DBrb6
+         p2DyTpTDyOyGEmGwTleB4Bx0L0GLAX5iez4RwZzXoWT1pdfjAq/co6NNNvtB7OLGfOKI
+         1uX0OOQSymZjTgwxQdxqYq/qFmw5H3489UCNx2Z2BRcY0cSZQVaZhYcWNkZ9TAhWc1K5
+         QuRFZclmSDh7OabGFcl1oAqmMQL9EuZqUQ6WGjkmo192doqD6wBVw4b1H/xZ3ctMDW7n
+         OWOuLFt2ht5DYzcpHSswwkatv6rFQKTbuggtu44/Ptnhuxws2wgN22HqGQOxjgpyOA8u
+         lW1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WM/4xKSlXYVQWjEHfbWD8YX/luYlEiJYgCc/oLAT72M=;
+        b=I06gYwwQyMWjGxy5hJ/YCNBs9CYyY6ylhwPCQrHjvrMk5hnaGWkRpjUajfYsVTvdEa
+         ynmU0NhhhvjoxAn4eA2i1TFmxqbCfiG5/Yc6cbw+tgu+dpUVJBcaLACUSPpga778Xc76
+         Yero6HczDsHa4RYSt6DDDgco+JuLWOCvwaw/bM0St0H+mKJkErAEB1g44/zfIhUX/Wfy
+         oOovlVdoiVd8MAV/n/V2G+ads6LAMvHdIRAldhYHKydD35dAw7TwnzvlGqFgjNyhwp0X
+         8MWZF8R+Ts0dvmEhK2WbVFALWJLWBsOGG4pnlbsYhGUyAnpWYxVOlcomqhrBne3dT8CN
+         VaQA==
+X-Gm-Message-State: AOAM530av7WoJnQTM0cOPS9RIrXe9JZC1qUMQWEnsrNoLqBAPoOZGJwB
+        OCHjrnChAvbEuZxabcTzWFQ=
+X-Google-Smtp-Source: ABdhPJzwCMTqsxTqqO4VotBrTjalTBZGvqcXJVYEDpt0nKWW3uuKzpE893tD69cUr19XrpsPZQAWzg==
+X-Received: by 2002:a17:906:c1c6:: with SMTP id bw6mr20020182ejb.199.1607357252890;
+        Mon, 07 Dec 2020 08:07:32 -0800 (PST)
+Received: from localhost ([51.15.41.238])
+        by smtp.gmail.com with ESMTPSA id e21sm13941813edv.96.2020.12.07.08.07.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Dec 2020 08:07:31 -0800 (PST)
+Date:   Mon, 7 Dec 2020 16:07:30 +0000
+From:   Stefan Hajnoczi <stefanha@gmail.com>
+To:     Zhang Changzhong <zhangchangzhong@huawei.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        Maurizio Lombardi <mlombard@redhat.com>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vhost scsi: fix error return code in
+ vhost_scsi_set_endpoint()
+Message-ID: <20201207160730.GI203660@stefanha-x1.localdomain>
+References: <1607071411-33484-1-git-send-email-zhangchangzhong@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="ev7mvGV+3JQuI2Eo"
 Content-Disposition: inline
-In-Reply-To: <20201202090147.48af58fd@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+In-Reply-To: <1607071411-33484-1-git-send-email-zhangchangzhong@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 02, 2020 at 09:01:47AM -0800, Jakub Kicinski wrote:
-> On Wed, 2 Dec 2020 08:59:13 -0800 Jakub Kicinski wrote:
-> > On Wed, 2 Dec 2020 13:03:18 +0000 Russell King - ARM Linux admin wrote:
-> > > Jakub,
-> > > 
-> > > What's your opinion on this patch? It seems to have stalled...  
-> > 
-> > Sorry, I think I expected someone to do the obvious questioning..
-> 
-> Ah, no! I know what happened... Check out patchwork:
-> 
-> https://patchwork.kernel.org/project/netdevbpf/patch/E1khJyS-0003UU-9O@rmk-PC.armlinux.org.uk/
-> 
-> It says the patch did not apply cleanly to net-next ;)
-> 
-> Regardless let's hear what people thing about using ext_link (or
-> similar) for the SFP signals.
 
-There seems to have been no replies... I think I'll resend with
-Andrew's r-b tag. If something better comes along in the future, we
-can always change it - debugfs isn't an API.
+--ev7mvGV+3JQuI2Eo
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+On Fri, Dec 04, 2020 at 04:43:30PM +0800, Zhang Changzhong wrote:
+> Fix to return a negative error code from the error handling
+> case instead of 0, as done elsewhere in this function.
+>=20
+> Fixes: 25b98b64e284 ("vhost scsi: alloc cmds per vq instead of session")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+> ---
+>  drivers/vhost/scsi.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+
+Acked-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+--ev7mvGV+3JQuI2Eo
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl/OU0IACgkQnKSrs4Gr
+c8gAeQf+MEz4NCEr2G4ywg8AHw7rf050IHblQEjkZBazrQQ706YvtfGZssxTae9f
+psRCnNLjHsZ2mFYWbtyPqI91egzIyJTNuu7odm3ILPfrXA7Lv8Uo2vZ9TNMN4+ZG
+L060RA9br9G2+DYTn7yC6M9B1a6mKdDS68rzDQSMAHns29WLSoRLYXIJBsoxd/sv
+Q9hxE1Sns6QVw/zOGCD9bre1pEWU2der61Qa4SfblpZgY9c9hXYNeKztrnznYufl
+TsFTa02ME99jRC71/mG/qoT+Nh1OEtpcJ6ZqkU2lHEaYAng800NpNTIOaqEMmEZV
+DfiQZ9kcrCzp+QXcuRpFFk/5rcaGdg==
+=tZ45
+-----END PGP SIGNATURE-----
+
+--ev7mvGV+3JQuI2Eo--
