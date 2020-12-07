@@ -2,136 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59A1F2D116E
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 14:10:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 465B62D1194
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 14:15:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726370AbgLGNJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 08:09:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34448 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725774AbgLGNJJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Dec 2020 08:09:09 -0500
-X-Gm-Message-State: AOAM531nlowu/yVlky6u2pitBwj/AM3Qqn/TU52EeOl3dedNaEO5v30A
-        NgnDRalEUWTeQ4IlBNKZHkgvbAJQkrrfrMDJmQA=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607346508;
-        bh=YiXfatZ6lH4pAyul08wZ68jWEXOKruJ8RP71cHFKE7U=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=DfT+77pJBcQ2Tz59v8I4UyfPu2VZ9kJOjlVYBjLELyOR9ps8CfmynkxvwsF8gtzjI
-         wteAvAxYZSjmljyE8mJsS/y/eyV8RzNK2ArSo0a5p1vfwBdAer+shvPD0ESQZT8gro
-         znbojXG6QvGNoEtJk7v86aFHScfXER5QzZqEt7cgHF1IbYfs1aL5sk2k/ct6wriFPD
-         eKKzP9SJConbTzoCSFFbLv872uxj5X/HAq3YbVvbND+yeS/JjEGD8yKjtkA7Svz5m2
-         xqRlO7x656wxKMlHRRp2QmNpL8xsQOnbQXje8XBGY0J1VNFeudfwihFBPO/8jDWhKL
-         me6vEBbvqQ4ig==
-X-Google-Smtp-Source: ABdhPJzOCttNG+HMmWL4e+OBsb98ZTp2Sv3FvcRmuGSUW/GZMTC2iGL0S6fIlzxpxGDYQ2h6OZ4tshGuqZ+cL5EHurQ=
-X-Received: by 2002:a4a:c60c:: with SMTP id l12mr10949035ooq.45.1607346507298;
- Mon, 07 Dec 2020 05:08:27 -0800 (PST)
-MIME-Version: 1.0
-References: <20201204154626.GA26255@fieldses.org> <2F96670A-58DC-43A6-A20E-696803F0BFBA@oracle.com>
- <160518586534.2277919.14475638653680231924.stgit@warthog.procyon.org.uk>
- <118876.1607093975@warthog.procyon.org.uk> <122997.1607097713@warthog.procyon.org.uk>
- <20201204160347.GA26933@fieldses.org> <125709.1607100601@warthog.procyon.org.uk>
- <CAMj1kXEOm_yh478i+dqPiz0eoBxp4eag3j2qHm5eBLe+2kihoQ@mail.gmail.com>
- <127458.1607102368@warthog.procyon.org.uk> <CAMj1kXFe50HvZLxG6Kh-oYBCf5uu51hhuh7mW5UQ62ZSqmu_xA@mail.gmail.com>
- <468625.1607342512@warthog.procyon.org.uk>
-In-Reply-To: <468625.1607342512@warthog.procyon.org.uk>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Mon, 7 Dec 2020 14:08:16 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXH_gEjgZKx=8uQgv=ckBqTVoh3vrHj=O-nY-nm5VMgLaA@mail.gmail.com>
-Message-ID: <CAMj1kXH_gEjgZKx=8uQgv=ckBqTVoh3vrHj=O-nY-nm5VMgLaA@mail.gmail.com>
-Subject: Re: Why the auxiliary cipher in gss_krb5_crypto.c?
-To:     David Howells <dhowells@redhat.com>
-Cc:     Bruce Fields <bfields@fieldses.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
-        <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, linux-afs@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+        id S1726604AbgLGNOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 08:14:40 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:14424 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725770AbgLGNOj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 08:14:39 -0500
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B7D3oxj157929;
+        Mon, 7 Dec 2020 08:13:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id; s=pp1;
+ bh=RaD+/PEnirNLFwXNFDKwBrU8bEXHLBNcAW/9ohh79zQ=;
+ b=HThmSWNPVKhTk1sMrLjlvVj2KvpsOf5vnj0nBqIhTuu7Wn43J3CIVo3+c4KpFX/BxJGQ
+ G83xbIxCX79Jy3FSK9aA23AfLarS7Nsg8u5DumsNZ8EMOGOXn0kuRLApXwdLPw9jHo+Q
+ x//9g3ZXGooiBpaixqZuTD3GrFlcNzSycD0Ub3ARSDSpjlyO/bcxoLGC8TL5vX+4OxBs
+ dYDLaVvuswO+XPMfGT58AagZh2OU7Ch9nZ7bhJCjr9H1DBQrFiDrFEGjllqtlN5LylCo
+ 7C7Iw8v00w3hCxY1DBejFbXLjAr/2dmOzPXdJ1U0tShq+04GyOY4SXxrhRfaJshwdwEG 4w== 
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 359m1ra2v6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Dec 2020 08:13:55 -0500
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0B7DBvGr020554;
+        Mon, 7 Dec 2020 13:13:53 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma03fra.de.ibm.com with ESMTP id 3581u8kq0d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Dec 2020 13:13:53 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0B7DCaQP29163882
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 7 Dec 2020 13:12:36 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E7A2211C04A;
+        Mon,  7 Dec 2020 13:12:35 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A77BC11C04C;
+        Mon,  7 Dec 2020 13:12:35 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon,  7 Dec 2020 13:12:35 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-netdev <netdev@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net-next 0/6] s390/qeth: updates 2020-12-07
+Date:   Mon,  7 Dec 2020 14:12:27 +0100
+Message-Id: <20201207131233.90383-1-jwi@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-07_11:2020-12-04,2020-12-07 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
+ bulkscore=0 clxscore=1015 suspectscore=0 mlxlogscore=759 impostorscore=0
+ adultscore=0 priorityscore=1501 lowpriorityscore=0 spamscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012070080
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 7 Dec 2020 at 13:02, David Howells <dhowells@redhat.com> wrote:
->
-> Ard Biesheuvel <ardb@kernel.org> wrote:
->
-> > > Yeah - the problem with that is that for sunrpc, we might be dealing with 1MB
-> > > plus bits of non-contiguous pages, requiring >8K of scatterlist elements
-> > > (admittedly, we can chain them, but we may have to do one or more large
-> > > allocations).
-> > >
-> > > > However, I would recommend against it:
-> > >
-> > > Sorry, recommend against what?
-> > >
-> >
-> > Recommend against the current approach of manipulating the input like
-> > this and feeding it into the skcipher piecemeal.
->
-> Right.  I understand the problem, but as I mentioned above, the scatterlist
-> itself becomes a performance issue as it may exceed two pages in size.  Double
-> that as there may need to be separate input and output scatterlists.
->
+Hi Jakub,
 
-I wasn't aware that Herbert's work hadn't been merged yet. So that
-means it is entirely reasonable to split the input like this and feed
-the first part into a cbc(aes) skcipher and the last part into a
-cts(cbc(aes)) skcipher, provided that you ensure that the last part
-covers the final two blocks (one full block and one block that is
-either full or partial)
+please apply the following patch series for qeth to netdev's net-next tree.
 
-With Herbert's changes, you will be able to use the same skcipher, and
-pass a flag to all but the final part that more data is coming. But
-for lack of that, the current approach is optimal for cases where
-having to cover the entire input with a single scatterlist is
-undesirable.
+Some sysfs cleanups (with the prep work in ccwgroup acked by Heiko), and
+a few improvements to the code that deals with async TX completion
+notifications for IQD devices.
 
-> > Herbert recently made some changes for MSG_MORE support in the AF_ALG
-> > code, which permits a skcipher encryption to be split into several
-> > invocations of the skcipher layer without the need for this complexity
-> > on the side of the caller. Maybe there is a way to reuse that here.
-> > Herbert?
->
-> I wonder if it would help if the input buffer and output buffer didn't have to
-> correspond exactly in usage - ie. the output buffer could be used at a slower
-> rate than the input to allow for buffering inside the crypto algorithm.
->
+This also brings the missing patch from the previous net-next submission.
 
-I don't follow - how could one be used at a slower rate?
+Thanks,
+Julian
 
-> > > Can you also do SHA at the same time in the same loop?
-> >
-> > SHA-1 or HMAC-SHA1? The latter could probably be modeled as an AEAD.
-> > The former doesn't really fit the current API so we'd have to invent
-> > something for it.
->
-> The hashes corresponding to the kerberos enctypes I'm supporting are:
->
-> HMAC-SHA1 for aes128-cts-hmac-sha1-96 and aes256-cts-hmac-sha1-96.
->
-> HMAC-SHA256 for aes128-cts-hmac-sha256-128
->
-> HMAC-SHA384 for aes256-cts-hmac-sha384-192
->
-> CMAC-CAMELLIA for camellia128-cts-cmac and camellia256-cts-cmac
->
-> I'm not sure you can support all of those with the instructions available.
->
+Julian Wiedmann (6):
+  s390/qeth: don't call INIT_LIST_HEAD() on iob's list entry
+  s390/ccwgroup: use bus->dev_groups for bus-based sysfs attributes
+  s390/qeth: use dev->groups for common sysfs attributes
+  s390/qeth: don't replace a fully completed async TX buffer
+  s390/qeth: remove QETH_QDIO_BUF_HANDLED_DELAYED state
+  s390/qeth: make qeth_qdio_handle_aob() more robust
 
-It depends on whether the caller can make use of the authenc()
-pattern, which is a type of AEAD we support. There are numerous
-implementations of authenc(hmac(shaXXX),cbc(aes)), including h/w
-accelerated ones, but none that implement ciphertext stealing. So that
-means that, even if you manage to use the AEAD layer to perform both
-at the same time, the generic authenc() template will perform the
-cts(cbc(aes)) and hmac(shaXXX) by calling into skciphers and ahashes,
-respectively, which won't give you any benefit until accelerated
-implementations turn up that perform the whole operation in one pass
-over the input. And even then, I don't think the performance benefit
-will be worth it.
+ drivers/s390/cio/ccwgroup.c       |  12 +---
+ drivers/s390/net/qeth_core.h      |  10 +--
+ drivers/s390/net/qeth_core_main.c | 111 +++++++++++++++++-------------
+ drivers/s390/net/qeth_core_sys.c  |  41 +++++------
+ drivers/s390/net/qeth_l2.h        |   2 -
+ drivers/s390/net/qeth_l2_main.c   |   4 +-
+ drivers/s390/net/qeth_l2_sys.c    |  19 -----
+ drivers/s390/net/qeth_l3.h        |   2 -
+ drivers/s390/net/qeth_l3_main.c   |   4 +-
+ drivers/s390/net/qeth_l3_sys.c    |  21 ------
+ 10 files changed, 92 insertions(+), 134 deletions(-)
+
+-- 
+2.17.1
+
