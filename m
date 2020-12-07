@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ACE22D1189
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 14:14:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 620FE2D1192
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 14:15:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726512AbgLGNN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 08:13:26 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:29622 "EHLO
+        id S1726584AbgLGNOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 08:14:39 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:37452 "EHLO
         mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725802AbgLGNNZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 08:13:25 -0500
+        by vger.kernel.org with ESMTP id S1726141AbgLGNOj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 08:14:39 -0500
 Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B7D3HaL011082;
-        Mon, 7 Dec 2020 08:12:42 -0500
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B7D3M0x011512;
+        Mon, 7 Dec 2020 08:13:57 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references; s=pp1;
- bh=3VxlLPjeBf3n94wRl+RiMmTaJtycUURXtyQqHaWyCyE=;
- b=U/0QjOmvPexGjo1a67p+zZ4RavL/49cw7scNBpGlAvabDyxeEJdoXe1u2MQIQZpXrwn2
- zHpCaWwX8YVqLUrrw8Ff68Ulbe+3sKn5r83uowz/lTlGctFs60sFxTL05QJ3chPz3E3c
- jPxt8leox0A1A2bfwqMKUd0c+v9E8HLzMY/sf6DJvwjLg1VcJgH2tbnUgnaqjMugolA/
- nzgVMIMCb/pYACbnBCQup6qLpBo3bf3z3YHLt1X+X0A/hRmInGU71/Ka9Y9M5xsnlNm4
- asWa3JMOu6x0peWOXZm+trYLG4yfMcKosI3XqAy6t3wnqxTYNsN/zgyZhYdqWUi7xXHk QA== 
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 359m359q1b-1
+ bh=UVoX72jbokTVpxmnax07LxSj94O73pEmnMgLG5yTP8c=;
+ b=tGNg4rLIdLfZOiWPXivMe9HN5OX3oG2BFmfW8oMRfrFTCEJB6vd2wx7/72AxR5HTj4hJ
+ KpXI49GgdMGvH8Q+HINE+wiisRnOPnoWskcU4xZw9L01DiAmKbsadQJuAR5uM+EUhbDZ
+ zFK4E+tmh/TQMIdesrAGkPCIgdNuBGjtVbRh+ivL5Rn/oLFAuBYAUsHix2e8piHd4MrS
+ RcMZYByrc0y0lYLNxUwmDyzJ49ADtlNl+l11T0BzrL0zIcrID3k2ygnALZxNsEvJ/uGw
+ MonChXlzg+sNWY13sCLO5oye0Zj0+Ro5JB34PWXbcuYZkujxKFAH/Y2iSH9BKqvTxx9O UA== 
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 359m359r4c-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Dec 2020 08:12:42 -0500
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0B7DCeQE015195;
-        Mon, 7 Dec 2020 13:12:40 GMT
+        Mon, 07 Dec 2020 08:13:57 -0500
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0B7DBZmc020491;
+        Mon, 7 Dec 2020 13:13:54 GMT
 Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma04fra.de.ibm.com with ESMTP id 3581u818t3-1
+        by ppma03fra.de.ibm.com with ESMTP id 3581u8kq0e-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Dec 2020 13:12:39 +0000
+        Mon, 07 Dec 2020 13:13:54 +0000
 Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0B7DCbkJ9699858
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0B7DCbSF51118404
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
         Mon, 7 Dec 2020 13:12:37 GMT
 Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DDA0F11C04C;
-        Mon,  7 Dec 2020 13:12:36 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 34F3911C04C;
+        Mon,  7 Dec 2020 13:12:37 +0000 (GMT)
 Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A343A11C04A;
+        by IMSVA (Postfix) with ESMTP id F36EE11C05C;
         Mon,  7 Dec 2020 13:12:36 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
         by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
@@ -54,9 +54,9 @@ Cc:     linux-netdev <netdev@vger.kernel.org>,
         Heiko Carstens <hca@linux.ibm.com>,
         Karsten Graul <kgraul@linux.ibm.com>,
         Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH net-next 3/6] s390/qeth: use dev->groups for common sysfs attributes
-Date:   Mon,  7 Dec 2020 14:12:30 +0100
-Message-Id: <20201207131233.90383-4-jwi@linux.ibm.com>
+Subject: [PATCH net-next 4/6] s390/qeth: don't replace a fully completed async TX buffer
+Date:   Mon,  7 Dec 2020 14:12:31 +0100
+Message-Id: <20201207131233.90383-5-jwi@linux.ibm.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201207131233.90383-1-jwi@linux.ibm.com>
 References: <20201207131233.90383-1-jwi@linux.ibm.com>
@@ -65,297 +65,182 @@ X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
  definitions=2020-12-07_11:2020-12-04,2020-12-07 signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
  adultscore=0 mlxscore=0 spamscore=0 priorityscore=1501 impostorscore=0
- suspectscore=2 mlxlogscore=930 bulkscore=0 clxscore=1015 phishscore=0
+ suspectscore=2 mlxlogscore=999 bulkscore=0 clxscore=1015 phishscore=0
  malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2009150000 definitions=main-2012070083
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All qeth devices have a minimum set of sysfs attributes, and non-OSN
-devices share a group of additional attributes. Depending on whether
-the device is forced to use a specific discipline, the device_type then
-specifies further attributes.
+For TX buffers that require an additional async notification via QAOB, the
+TX completion code can now manage all the necessary processing if the
+notification has already occurred (or is occurring concurrently).
 
-Shift the common attributes into dev->groups, so that the device_type
-only contains the discipline-specific attributes. This avoids exposing
-the common attributes to the disciplines, and nicely cleans up our
-sysfs code.
+In such cases we can avoid replacing the metadata that is associated
+with the buffer's slot on the ring, and just keep using the current one.
 
-While replacing the qeth_l*_*_device_attributes() helpers, switch from
-sysfs_*_groups() to the more generic device_*_groups().
+As qeth_clear_output_buffer() will also handle any kmem cache-allocated
+memory that was mapped into the TX buffer, qeth_qdio_handle_aob()
+doesn't need to worry about it.
+
+While at it, also remove the unneeded forward declaration for
+qeth_init_qdio_out_buf().
 
 Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
 ---
- drivers/s390/net/qeth_core.h      |  6 ++---
- drivers/s390/net/qeth_core_main.c |  7 ++++--
- drivers/s390/net/qeth_core_sys.c  | 41 ++++++++++++++-----------------
- drivers/s390/net/qeth_l2.h        |  2 --
- drivers/s390/net/qeth_l2_main.c   |  4 +--
- drivers/s390/net/qeth_l2_sys.c    | 19 --------------
- drivers/s390/net/qeth_l3.h        |  2 --
- drivers/s390/net/qeth_l3_main.c   |  4 +--
- drivers/s390/net/qeth_l3_sys.c    | 21 ----------------
- 9 files changed, 30 insertions(+), 76 deletions(-)
+ drivers/s390/net/qeth_core_main.c | 89 ++++++++++++++++++-------------
+ 1 file changed, 51 insertions(+), 38 deletions(-)
 
-diff --git a/drivers/s390/net/qeth_core.h b/drivers/s390/net/qeth_core.h
-index 69b474f8735e..d150da95d073 100644
---- a/drivers/s390/net/qeth_core.h
-+++ b/drivers/s390/net/qeth_core.h
-@@ -1063,10 +1063,8 @@ extern const struct qeth_discipline qeth_l2_discipline;
- extern const struct qeth_discipline qeth_l3_discipline;
- extern const struct ethtool_ops qeth_ethtool_ops;
- extern const struct ethtool_ops qeth_osn_ethtool_ops;
--extern const struct attribute_group *qeth_generic_attr_groups[];
--extern const struct attribute_group *qeth_osn_attr_groups[];
--extern const struct attribute_group qeth_device_attr_group;
--extern const struct attribute_group qeth_device_blkt_group;
-+extern const struct attribute_group *qeth_dev_groups[];
-+extern const struct attribute_group *qeth_osn_dev_groups[];
- extern const struct device_type qeth_generic_devtype;
- 
- const char *qeth_get_cardname_short(struct qeth_card *);
 diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
-index 8171b9d3a70e..05d0b16bd7d6 100644
+index 05d0b16bd7d6..869694217450 100644
 --- a/drivers/s390/net/qeth_core_main.c
 +++ b/drivers/s390/net/qeth_core_main.c
-@@ -6375,13 +6375,11 @@ void qeth_core_free_discipline(struct qeth_card *card)
+@@ -75,7 +75,6 @@ static void qeth_notify_skbs(struct qeth_qdio_out_q *queue,
+ 		enum iucv_tx_notify notification);
+ static void qeth_tx_complete_buf(struct qeth_qdio_out_buffer *buf, bool error,
+ 				 int budget);
+-static int qeth_init_qdio_out_buf(struct qeth_qdio_out_q *, int);
  
- const struct device_type qeth_generic_devtype = {
- 	.name = "qeth_generic",
--	.groups = qeth_generic_attr_groups,
- };
- EXPORT_SYMBOL_GPL(qeth_generic_devtype);
+ static void qeth_close_dev_handler(struct work_struct *work)
+ {
+@@ -517,18 +516,6 @@ static void qeth_qdio_handle_aob(struct qeth_card *card,
+ 	buffer = (struct qeth_qdio_out_buffer *) aob->user1;
+ 	QETH_CARD_TEXT_(card, 5, "%lx", aob->user1);
  
- static const struct device_type qeth_osn_devtype = {
- 	.name = "qeth_osn",
--	.groups = qeth_osn_attr_groups,
- };
+-	/* Free dangling allocations. The attached skbs are handled by
+-	 * qeth_cleanup_handled_pending().
+-	 */
+-	for (i = 0;
+-	     i < aob->sb_count && i < QETH_MAX_BUFFER_ELEMENTS(card);
+-	     i++) {
+-		void *data = phys_to_virt(aob->sba[i]);
+-
+-		if (data && buffer->is_header[i])
+-			kmem_cache_free(qeth_core_header_cache, data);
+-	}
+-
+ 	if (aob->aorc) {
+ 		QETH_CARD_TEXT_(card, 2, "aorc%02X", aob->aorc);
+ 		new_state = QETH_QDIO_BUF_QAOB_ERROR;
+@@ -536,10 +523,9 @@ static void qeth_qdio_handle_aob(struct qeth_card *card,
  
- #define DBF_NAME_LEN	20
-@@ -6561,6 +6559,11 @@ static int qeth_core_probe_device(struct ccwgroup_device *gdev)
- 	if (rc)
- 		goto err_chp_desc;
- 
-+	if (IS_OSN(card))
-+		gdev->dev.groups = qeth_osn_dev_groups;
-+	else
-+		gdev->dev.groups = qeth_dev_groups;
+ 	switch (atomic_xchg(&buffer->state, new_state)) {
+ 	case QETH_QDIO_BUF_PRIMED:
+-		/* Faster than TX completion code. */
+-		notification = qeth_compute_cq_notification(aob->aorc, 0);
+-		qeth_notify_skbs(buffer->q, buffer, notification);
+-		atomic_set(&buffer->state, QETH_QDIO_BUF_HANDLED_DELAYED);
++		/* Faster than TX completion code, let it handle the async
++		 * completion for us.
++		 */
+ 		break;
+ 	case QETH_QDIO_BUF_PENDING:
+ 		/* TX completion code is active and will handle the async
+@@ -550,6 +536,19 @@ static void qeth_qdio_handle_aob(struct qeth_card *card,
+ 		/* TX completion code is already finished. */
+ 		notification = qeth_compute_cq_notification(aob->aorc, 1);
+ 		qeth_notify_skbs(buffer->q, buffer, notification);
 +
- 	enforced_disc = qeth_enforce_discipline(card);
- 	switch (enforced_disc) {
- 	case QETH_DISCIPLINE_UNDETERMINED:
-diff --git a/drivers/s390/net/qeth_core_sys.c b/drivers/s390/net/qeth_core_sys.c
-index 4441b3393eaf..a0f777f76f66 100644
---- a/drivers/s390/net/qeth_core_sys.c
-+++ b/drivers/s390/net/qeth_core_sys.c
-@@ -640,23 +640,17 @@ static struct attribute *qeth_blkt_device_attrs[] = {
- 	&dev_attr_inter_jumbo.attr,
- 	NULL,
- };
--const struct attribute_group qeth_device_blkt_group = {
++		/* Free dangling allocations. The attached skbs are handled by
++		 * qeth_cleanup_handled_pending().
++		 */
++		for (i = 0;
++		     i < aob->sb_count && i < QETH_MAX_BUFFER_ELEMENTS(card);
++		     i++) {
++			void *data = phys_to_virt(aob->sba[i]);
 +
-+static const struct attribute_group qeth_dev_blkt_group = {
- 	.name = "blkt",
- 	.attrs = qeth_blkt_device_attrs,
- };
--EXPORT_SYMBOL_GPL(qeth_device_blkt_group);
- 
--static struct attribute *qeth_device_attrs[] = {
--	&dev_attr_state.attr,
--	&dev_attr_chpid.attr,
--	&dev_attr_if_name.attr,
--	&dev_attr_card_type.attr,
-+static struct attribute *qeth_dev_extended_attrs[] = {
- 	&dev_attr_inbuf_size.attr,
- 	&dev_attr_portno.attr,
- 	&dev_attr_portname.attr,
- 	&dev_attr_priority_queueing.attr,
--	&dev_attr_buffer_count.attr,
--	&dev_attr_recover.attr,
- 	&dev_attr_performance_stats.attr,
- 	&dev_attr_layer2.attr,
- 	&dev_attr_isolation.attr,
-@@ -664,18 +658,12 @@ static struct attribute *qeth_device_attrs[] = {
- 	&dev_attr_switch_attrs.attr,
- 	NULL,
- };
--const struct attribute_group qeth_device_attr_group = {
--	.attrs = qeth_device_attrs,
--};
--EXPORT_SYMBOL_GPL(qeth_device_attr_group);
- 
--const struct attribute_group *qeth_generic_attr_groups[] = {
--	&qeth_device_attr_group,
--	&qeth_device_blkt_group,
--	NULL,
-+static const struct attribute_group qeth_dev_extended_group = {
-+	.attrs = qeth_dev_extended_attrs,
- };
- 
--static struct attribute *qeth_osn_device_attrs[] = {
-+static struct attribute *qeth_dev_attrs[] = {
- 	&dev_attr_state.attr,
- 	&dev_attr_chpid.attr,
- 	&dev_attr_if_name.attr,
-@@ -684,10 +672,19 @@ static struct attribute *qeth_osn_device_attrs[] = {
- 	&dev_attr_recover.attr,
- 	NULL,
- };
--static struct attribute_group qeth_osn_device_attr_group = {
--	.attrs = qeth_osn_device_attrs,
++			if (data && buffer->is_header[i])
++				kmem_cache_free(qeth_core_header_cache, data);
++		}
 +
-+static const struct attribute_group qeth_dev_group = {
-+	.attrs = qeth_dev_attrs,
- };
--const struct attribute_group *qeth_osn_attr_groups[] = {
--	&qeth_osn_device_attr_group,
+ 		atomic_set(&buffer->state, QETH_QDIO_BUF_HANDLED_DELAYED);
+ 		break;
+ 	default:
+@@ -6078,9 +6077,13 @@ static void qeth_iqd_tx_complete(struct qeth_qdio_out_q *queue,
+ 				 QDIO_OUTBUF_STATE_FLAG_PENDING)) {
+ 		WARN_ON_ONCE(card->options.cq != QETH_CQ_ENABLED);
+ 
+-		if (atomic_cmpxchg(&buffer->state, QETH_QDIO_BUF_PRIMED,
+-						   QETH_QDIO_BUF_PENDING) ==
+-		    QETH_QDIO_BUF_PRIMED) {
++		QETH_CARD_TEXT_(card, 5, "pel%u", bidx);
 +
-+const struct attribute_group *qeth_osn_dev_groups[] = {
-+	&qeth_dev_group,
-+	NULL,
-+};
++		switch (atomic_cmpxchg(&buffer->state,
++				       QETH_QDIO_BUF_PRIMED,
++				       QETH_QDIO_BUF_PENDING)) {
++		case QETH_QDIO_BUF_PRIMED:
++			/* We have initial ownership, no QAOB (yet): */
+ 			qeth_notify_skbs(queue, buffer, TX_NOTIFY_PENDING);
+ 
+ 			/* Handle race with qeth_qdio_handle_aob(): */
+@@ -6088,39 +6091,49 @@ static void qeth_iqd_tx_complete(struct qeth_qdio_out_q *queue,
+ 					    QETH_QDIO_BUF_NEED_QAOB)) {
+ 			case QETH_QDIO_BUF_PENDING:
+ 				/* No concurrent QAOB notification. */
+-				break;
 +
-+const struct attribute_group *qeth_dev_groups[] = {
-+	&qeth_dev_group,
-+	&qeth_dev_extended_group,
-+	&qeth_dev_blkt_group,
- 	NULL,
- };
-diff --git a/drivers/s390/net/qeth_l2.h b/drivers/s390/net/qeth_l2.h
-index 296d73d84326..7c646e2fed7e 100644
---- a/drivers/s390/net/qeth_l2.h
-+++ b/drivers/s390/net/qeth_l2.h
-@@ -11,8 +11,6 @@
- 
- extern const struct attribute_group *qeth_l2_attr_groups[];
- 
--int qeth_l2_create_device_attributes(struct device *);
--void qeth_l2_remove_device_attributes(struct device *);
- int qeth_bridgeport_query_ports(struct qeth_card *card,
- 				enum qeth_sbp_roles *role,
- 				enum qeth_sbp_states *state);
-diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
-index 393aef681e44..4ed0fb0705a5 100644
---- a/drivers/s390/net/qeth_l2_main.c
-+++ b/drivers/s390/net/qeth_l2_main.c
-@@ -2189,7 +2189,7 @@ static int qeth_l2_probe_device(struct ccwgroup_device *gdev)
- 	mutex_init(&card->sbp_lock);
- 
- 	if (gdev->dev.type == &qeth_generic_devtype) {
--		rc = qeth_l2_create_device_attributes(&gdev->dev);
-+		rc = device_add_groups(&gdev->dev, qeth_l2_attr_groups);
- 		if (rc)
- 			return rc;
- 	}
-@@ -2203,7 +2203,7 @@ static void qeth_l2_remove_device(struct ccwgroup_device *gdev)
- 	struct qeth_card *card = dev_get_drvdata(&gdev->dev);
- 
- 	if (gdev->dev.type == &qeth_generic_devtype)
--		qeth_l2_remove_device_attributes(&gdev->dev);
-+		device_remove_groups(&gdev->dev, qeth_l2_attr_groups);
- 	qeth_set_allowed_threads(card, 0, 1);
- 	wait_event(card->wait_q, qeth_threads_running(card, 0xffffffff) == 0);
- 
-diff --git a/drivers/s390/net/qeth_l2_sys.c b/drivers/s390/net/qeth_l2_sys.c
-index 4ba3bc57263f..a617351fff57 100644
---- a/drivers/s390/net/qeth_l2_sys.c
-+++ b/drivers/s390/net/qeth_l2_sys.c
-@@ -376,26 +376,7 @@ static struct attribute_group qeth_l2_vnicc_attr_group = {
- 	.name = "vnicc",
- };
- 
--static const struct attribute_group *qeth_l2_only_attr_groups[] = {
--	&qeth_l2_bridgeport_attr_group,
--	&qeth_l2_vnicc_attr_group,
--	NULL,
--};
++				/* Prepare the queue slot for immediate re-use: */
++				qeth_scrub_qdio_buffer(buffer->buffer, queue->max_elements);
++				if (qeth_init_qdio_out_buf(queue, bidx)) {
++					QETH_CARD_TEXT(card, 2, "outofbuf");
++					qeth_schedule_recovery(card);
++				}
++
++				/* Skip clearing the buffer: */
++				return;
+ 			case QETH_QDIO_BUF_QAOB_OK:
+ 				qeth_notify_skbs(queue, buffer,
+ 						 TX_NOTIFY_DELAYED_OK);
+-				atomic_set(&buffer->state,
+-					   QETH_QDIO_BUF_HANDLED_DELAYED);
++				error = false;
+ 				break;
+ 			case QETH_QDIO_BUF_QAOB_ERROR:
+ 				qeth_notify_skbs(queue, buffer,
+ 						 TX_NOTIFY_DELAYED_GENERALERROR);
+-				atomic_set(&buffer->state,
+-					   QETH_QDIO_BUF_HANDLED_DELAYED);
++				error = true;
+ 				break;
+ 			default:
+ 				WARN_ON_ONCE(1);
+ 			}
+-		}
 -
--int qeth_l2_create_device_attributes(struct device *dev)
--{
--	return sysfs_create_groups(&dev->kobj, qeth_l2_only_attr_groups);
--}
--
--void qeth_l2_remove_device_attributes(struct device *dev)
--{
--	sysfs_remove_groups(&dev->kobj, qeth_l2_only_attr_groups);
--}
--
- const struct attribute_group *qeth_l2_attr_groups[] = {
--	&qeth_device_attr_group,
--	&qeth_device_blkt_group,
--	/* l2 specific, see qeth_l2_only_attr_groups: */
- 	&qeth_l2_bridgeport_attr_group,
- 	&qeth_l2_vnicc_attr_group,
- 	NULL,
-diff --git a/drivers/s390/net/qeth_l3.h b/drivers/s390/net/qeth_l3.h
-index acd130cfbab3..30c2b31d99f6 100644
---- a/drivers/s390/net/qeth_l3.h
-+++ b/drivers/s390/net/qeth_l3.h
-@@ -103,8 +103,6 @@ extern const struct attribute_group *qeth_l3_attr_groups[];
+-		QETH_CARD_TEXT_(card, 5, "pel%u", bidx);
  
- int qeth_l3_ipaddr_to_string(enum qeth_prot_versions proto, const u8 *addr,
- 			     char *buf);
--int qeth_l3_create_device_attributes(struct device *);
--void qeth_l3_remove_device_attributes(struct device *);
- int qeth_l3_setrouting_v4(struct qeth_card *);
- int qeth_l3_setrouting_v6(struct qeth_card *);
- int qeth_l3_add_ipato_entry(struct qeth_card *, struct qeth_ipato_entry *);
-diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
-index 264b6c782382..d138ac432d01 100644
---- a/drivers/s390/net/qeth_l3_main.c
-+++ b/drivers/s390/net/qeth_l3_main.c
-@@ -1949,7 +1949,7 @@ static int qeth_l3_probe_device(struct ccwgroup_device *gdev)
- 		return -ENOMEM;
- 
- 	if (gdev->dev.type == &qeth_generic_devtype) {
--		rc = qeth_l3_create_device_attributes(&gdev->dev);
-+		rc = device_add_groups(&gdev->dev, qeth_l3_attr_groups);
- 		if (rc) {
- 			destroy_workqueue(card->cmd_wq);
- 			return rc;
-@@ -1965,7 +1965,7 @@ static void qeth_l3_remove_device(struct ccwgroup_device *cgdev)
- 	struct qeth_card *card = dev_get_drvdata(&cgdev->dev);
- 
- 	if (cgdev->dev.type == &qeth_generic_devtype)
--		qeth_l3_remove_device_attributes(&cgdev->dev);
-+		device_remove_groups(&cgdev->dev, qeth_l3_attr_groups);
- 
- 	qeth_set_allowed_threads(card, 0, 1);
- 	wait_event(card->wait_q, qeth_threads_running(card, 0xffffffff) == 0);
-diff --git a/drivers/s390/net/qeth_l3_sys.c b/drivers/s390/net/qeth_l3_sys.c
-index 997fbb7006a7..1082380b21f8 100644
---- a/drivers/s390/net/qeth_l3_sys.c
-+++ b/drivers/s390/net/qeth_l3_sys.c
-@@ -805,28 +805,7 @@ static const struct attribute_group qeth_device_rxip_group = {
- 	.attrs = qeth_rxip_device_attrs,
- };
- 
--static const struct attribute_group *qeth_l3_only_attr_groups[] = {
--	&qeth_l3_device_attr_group,
--	&qeth_device_ipato_group,
--	&qeth_device_vipa_group,
--	&qeth_device_rxip_group,
--	NULL,
--};
+-		/* prepare the queue slot for re-use: */
+-		qeth_scrub_qdio_buffer(buffer->buffer, queue->max_elements);
+-		if (qeth_init_qdio_out_buf(queue, bidx)) {
+-			QETH_CARD_TEXT(card, 2, "outofbuf");
+-			qeth_schedule_recovery(card);
++			break;
++		case QETH_QDIO_BUF_QAOB_OK:
++			/* qeth_qdio_handle_aob() already received a QAOB: */
++			qeth_notify_skbs(queue, buffer, TX_NOTIFY_OK);
++			error = false;
++			break;
++		case QETH_QDIO_BUF_QAOB_ERROR:
++			/* qeth_qdio_handle_aob() already received a QAOB: */
++			qeth_notify_skbs(queue, buffer, TX_NOTIFY_GENERALERROR);
++			error = true;
++			break;
++		default:
++			WARN_ON_ONCE(1);
+ 		}
 -
--int qeth_l3_create_device_attributes(struct device *dev)
--{
--	return sysfs_create_groups(&dev->kobj, qeth_l3_only_attr_groups);
--}
+-		return;
+-	}
 -
--void qeth_l3_remove_device_attributes(struct device *dev)
--{
--	sysfs_remove_groups(&dev->kobj, qeth_l3_only_attr_groups);
--}
--
- const struct attribute_group *qeth_l3_attr_groups[] = {
--	&qeth_device_attr_group,
--	&qeth_device_blkt_group,
--	/* l3 specific, see qeth_l3_only_attr_groups: */
- 	&qeth_l3_device_attr_group,
- 	&qeth_device_ipato_group,
- 	&qeth_device_vipa_group,
+-	if (card->options.cq == QETH_CQ_ENABLED)
++	} else if (card->options.cq == QETH_CQ_ENABLED) {
+ 		qeth_notify_skbs(queue, buffer,
+ 				 qeth_compute_cq_notification(sflags, 0));
++	}
++
+ 	qeth_clear_output_buffer(queue, buffer, error, budget);
+ }
+ 
 -- 
 2.17.1
 
