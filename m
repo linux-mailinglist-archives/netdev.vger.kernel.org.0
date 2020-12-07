@@ -2,147 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACE9D2D15E3
+	by mail.lfdr.de (Postfix) with ESMTP id 3FF752D15E2
 	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 17:25:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726698AbgLGQYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 11:24:02 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:21218 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725863AbgLGQYC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 11:24:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607358155;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VzvFgcbXqnSf0xffgB1ICdPB4YvhRJaj2zUkRxRlQvw=;
-        b=h7jjfI9VB+DDlTvSqfhubqBpYqjD384CUZd+92u3EYnTVfyQ/WrppOmrsWyquk36d2WWtQ
-        fSqn1AA6aiXcW95LZyzvHM9mY9/kRoiHFx6BLLnqlLI65vLVFwF8yovpfKJskVkDr2p7GC
-        2PxkO3ifEL784sC+iX+235LUtp41uKA=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-343-HlRt9_PoMTqC9Jf78hlYsQ-1; Mon, 07 Dec 2020 11:22:33 -0500
-X-MC-Unique: HlRt9_PoMTqC9Jf78hlYsQ-1
-Received: by mail-wr1-f69.google.com with SMTP id x10so5025944wrs.2
-        for <netdev@vger.kernel.org>; Mon, 07 Dec 2020 08:22:33 -0800 (PST)
+        id S1726016AbgLGQXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 11:23:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57964 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726035AbgLGQXn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 11:23:43 -0500
+Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E597C061793
+        for <netdev@vger.kernel.org>; Mon,  7 Dec 2020 08:23:03 -0800 (PST)
+Received: by mail-il1-x12d.google.com with SMTP id r17so12664231ilo.11
+        for <netdev@vger.kernel.org>; Mon, 07 Dec 2020 08:23:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=RLakMiBjCoOYKyzZFq79kUYyOZCs6r9GTHNMlIsCCEg=;
+        b=sS4ACL4uzNdvOp9dlmMKjWl2w+KiflKWrg8i0tQ+fkvJA0efxe/CirbYfgbokq1ZAm
+         3HU2e8EXGThY1LWMTS/jXMv9CkvAMTrZqeGEsah0akkF9GxvuAhAyxg/qxghaa2GGXQu
+         bqHFTLZOV7vzvEwR/s4fyuG1jjYiTaZDH/85y3HktEXjZfkBl7gHSdkPa11i1SCGCG2p
+         sJ3AVXq0ftiBsXCUfAsJGQQx1eyfYI/hg1/UqgPN0wBZKdLf4ucSWpf/M1DodV1DTeJ9
+         N/BdcHBC9Fem2tZkTdeVp1HEPSZWMg5Jn5ymo4venotSDXnQ8ETgaVzsB3tERfpdvwS3
+         VJMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VzvFgcbXqnSf0xffgB1ICdPB4YvhRJaj2zUkRxRlQvw=;
-        b=t7epqWpoBP0bNMkUALInp2kUgYOBLK/mo3bHcdYqNzZ5KV2DPIBGCY99h25q0/yV7N
-         yCN6dfH7V9jjSXfiYzsxk74u+swuSMIKoFvS1j33Gaf2sKVWyhZ13YsYGVWRbbXZe7Od
-         foI3zd89/+b/E90Y1cR6RYAs6RirFht7v7AOMv2++NMpcEP2pVVT7wCo10Jkx3kAOuqQ
-         Saa373MgMeAD3h/C6ESKKCjpdSep6pFWrg36nkXi/PSrob/BN+VivZbpSrf4fSG85y37
-         4WqHV++vxQyt3wjqXDin0S08QejYkT/BnmiN1fKZdJHo2zFwxo8N6mfDvCBPqQsuZLb/
-         fpcg==
-X-Gm-Message-State: AOAM533TBkxgMxi3pbrVn4O8itxqN3mligkTJcMuC3TwIjz6YGmPRL/M
-        +iH58HW6/gnopJmVESysCla8g9VhN0uMH2byyQhcpCUvbeZXExAVNj1ReccruCUQzdjeKn25wQE
-        qsDQt593rR6+u3qs5
-X-Received: by 2002:a1c:e084:: with SMTP id x126mr19187749wmg.109.1607358151740;
-        Mon, 07 Dec 2020 08:22:31 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJycFcwKR8WO2DZJ7hs2XU1mp00MCtx1NkC6tHNn6rEFnUPjIfHSlQdqiYzHOb4OUQ83UAzwJQ==
-X-Received: by 2002:a1c:e084:: with SMTP id x126mr19187738wmg.109.1607358151562;
-        Mon, 07 Dec 2020 08:22:31 -0800 (PST)
-Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id m8sm15033298wmc.27.2020.12.07.08.22.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Dec 2020 08:22:30 -0800 (PST)
-Date:   Mon, 7 Dec 2020 17:22:28 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Tom Parkin <tparkin@katalix.com>
-Cc:     netdev@vger.kernel.org, jchapman@katalix.com
-Subject: Re: [PATCH v3 net-next 1/2] ppp: add PPPIOCBRIDGECHAN and
- PPPIOCUNBRIDGECHAN ioctls
-Message-ID: <20201207162228.GA28888@linux.home>
-References: <20201204163656.1623-1-tparkin@katalix.com>
- <20201204163656.1623-2-tparkin@katalix.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=RLakMiBjCoOYKyzZFq79kUYyOZCs6r9GTHNMlIsCCEg=;
+        b=mdq8qt98+pKTZy7t3UX8jz/yRmFe9cYHT8PIiCHHJKRzETjKCkavicLiHZHwinFmYA
+         gN5Vmi2GeRTn+jNBy7hJnmnGxVkBhm27i21Vh6jrpkIXKT0APYiGyUM0sU9u6hCuRL74
+         jjqSP67lxaRFdIL2xSLIA4+lPP37kYc04OWW4Htz49eOfeAfc+kbbdRgU/vNJ3UvGpc4
+         KMYtZjlohOQnR+y5VZazfpwv/FAgFDcFpDpdRMAj34P6FV1UFtC8S34V5A2pakFwcFiu
+         fOWvKVOyto54t3Cbk5+aw5HxZXCcslNB7dYralM0pf2wg2Keuy1gIwOBVBg2QQE2Odl+
+         Vyvw==
+X-Gm-Message-State: AOAM530bD4Bj2LKgerXa7Id5TyYao7G+fkYyXcN5Se/gWS/QhIMCGszP
+        Jf5hwZ54dWqDxN1TjesuHW5PZ0anBLNSjWEdvssTbHKh0T+e0g==
+X-Google-Smtp-Source: ABdhPJyhgrWvctUCqw924PbsjT90CPA2wurjKfWFYTlFN7Pz46WnMW5/2nbcfD1gI2WuzRIjrriWHliuIcDA4dpKiS0=
+X-Received: by 2002:a92:9f59:: with SMTP id u86mr22040429ili.205.1607358182183;
+ Mon, 07 Dec 2020 08:23:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201204163656.1623-2-tparkin@katalix.com>
+References: <20201204180622.14285-1-abuehaze@amazon.com> <44E3AA29-F033-4B8E-A1BC-E38824B5B1E3@amazon.com>
+ <CANn89iJgJQfOeNr9aZHb+_Vozgd9v4S87Kf4iV=mKhuPDGLkEg@mail.gmail.com>
+ <3F02FF08-EDA6-4DFD-8D93-479A5B05E25A@amazon.com> <CANn89iL_5QFGQLzxxLyqfNMGiV2wF4CbkY==x5Sh5vqKOTgFtw@mail.gmail.com>
+ <781BA871-5D3D-4C89-9629-81345CC41C5C@amazon.com>
+In-Reply-To: <781BA871-5D3D-4C89-9629-81345CC41C5C@amazon.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 7 Dec 2020 17:22:50 +0100
+Message-ID: <CANn89iK1G-YMWo07uByfUwrrK8QPvQPeFrRG1vJhB_OhJo7v2A@mail.gmail.com>
+Subject: Re: [PATCH net-next] tcp: optimise receiver buffer autotuning
+ initialisation for high latency connections
+To:     "Mohamed Abuelfotoh, Hazem" <abuehaze@amazon.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        "ycheng@google.com" <ycheng@google.com>,
+        "ncardwell@google.com" <ncardwell@google.com>,
+        "weiwan@google.com" <weiwan@google.com>,
+        "Strohman, Andy" <astroh@amazon.com>,
+        "Herrenschmidt, Benjamin" <benh@amazon.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 04, 2020 at 04:36:55PM +0000, Tom Parkin wrote:
-> +static int ppp_unbridge_channels(struct channel *pch)
-> +{
-> +	struct channel *pchb, *pchbb;
-> +
-> +	write_lock_bh(&pch->upl);
-> +	pchb = rcu_dereference_protected(pch->bridge, lockdep_is_held(&pch->upl));
-> +	if (!pchb) {
-> +		write_unlock_bh(&pch->upl);
-> +		return -EINVAL;
-> +	}
-> +	RCU_INIT_POINTER(pch->bridge, NULL);
-> +	write_unlock_bh(&pch->upl);
-> +
-> +	write_lock_bh(&pchb->upl);
-> +	pchbb = rcu_dereference_protected(pchb->bridge, lockdep_is_held(&pchb->upl));
-> +	if (pchbb == pch)
-> +		RCU_INIT_POINTER(pchb->bridge, NULL);
-> +	write_unlock_bh(&pchb->upl);
-> +
-> +	synchronize_rcu();
-> +
-> +	if (pchbb == pch)
-> +		if (refcount_dec_and_test(&pch->file.refcnt))
-> +			ppp_destroy_channel(pch);
+On Mon, Dec 7, 2020 at 5:09 PM Mohamed Abuelfotoh, Hazem
+<abuehaze@amazon.com> wrote:
+>
+>     >Since I can not reproduce this problem with another NIC on x86, I
+>     >really wonder if this is not an issue with ENA driver on PowerPC
+>     >perhaps ?
+>
+>
+> I am able to reproduce it on x86 based EC2 instances using ENA  or  Xen n=
+etfront or Intel ixgbevf driver on the receiver so it's not specific to ENA=
+, we were able to easily reproduce it between 2 VMs running in virtual box =
+on the same physical host considering the environment requirements I mentio=
+ned in my first e-mail.
+>
+> What's the RTT between the sender & receiver in your reproduction? Are yo=
+u using bbr on the sender side?
 
-Since a respin is needed (see below), maybe add a comment explaining
-why we need to verify that pchbb == pch.
 
-> +	if (refcount_dec_and_test(&pchb->file.refcnt))
-> +		ppp_destroy_channel(pchb);
-> +
-> +	return 0;
-> +}
-> +
->  static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
->  {
->  	struct ppp_file *pf;
-> @@ -641,8 +714,9 @@ static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
->  	}
->  
->  	if (pf->kind == CHANNEL) {
-> -		struct channel *pch;
-> +		struct channel *pch, *pchb;
->  		struct ppp_channel *chan;
-> +		struct ppp_net *pn;
->  
->  		pch = PF_TO_CHANNEL(pf);
->  
-> @@ -657,6 +731,29 @@ static long ppp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
->  			err = ppp_disconnect_channel(pch);
->  			break;
->  
-> +		case PPPIOCBRIDGECHAN:
-> +			if (get_user(unit, p))
-> +				break;
-> +			err = -ENXIO;
-> +			pn = ppp_pernet(current->nsproxy->net_ns);
-> +			spin_lock_bh(&pn->all_channels_lock);
-> +			pchb = ppp_find_channel(pn, unit);
-> +			/* Hold a reference to prevent pchb being freed while
-> +			 * we establish the bridge.
-> +			 */
-> +			if (pchb)
-> +				refcount_inc(&pchb->file.refcnt);
+100ms RTT
 
-The !pchb case isn't handled. With this code, if ppp_find_channel()
-returns NULL, ppp_bridge_channels() will crash when trying to lock
-pchb->upl.
+Which exact version of linux kernel are you using ?
 
-> +			spin_unlock_bh(&pn->all_channels_lock);
-> +			err = ppp_bridge_channels(pch, pchb);
-> +			/* Drop earlier refcount now bridge establishment is complete */
-> +			if (refcount_dec_and_test(&pchb->file.refcnt))
-> +				ppp_destroy_channel(pchb);
-> +			break;
-> +
 
-The rest looks good to me.
 
+>
+> Thank you.
+>
+> Hazem
+>
+> =EF=BB=BFOn 07/12/2020, 15:26, "Eric Dumazet" <edumazet@google.com> wrote=
+:
+>
+>     CAUTION: This email originated from outside of the organization. Do n=
+ot click links or open attachments unless you can confirm the sender and kn=
+ow the content is safe.
+>
+>
+>
+>     On Sat, Dec 5, 2020 at 1:03 PM Mohamed Abuelfotoh, Hazem
+>     <abuehaze@amazon.com> wrote:
+>     >
+>     > Unfortunately few things are missing in this report.
+>     >
+>     >     What is the RTT between hosts in your test ?
+>     >      >>>>>RTT in my test is 162 msec, but I am able to reproduce it=
+ with lower RTTs for example I could see the issue downloading from google =
+  endpoint with RTT of 16.7 msec, as mentioned in my previous e-mail the is=
+sue is reproducible whenever RTT exceeded 12msec given that    the sender i=
+s using bbr.
+>     >
+>     >         RTT between hosts where I run the iperf test.
+>     >         # ping 54.199.163.187
+>     >         PING 54.199.163.187 (54.199.163.187) 56(84) bytes of data.
+>     >         64 bytes from 54.199.163.187: icmp_seq=3D1 ttl=3D33 time=3D=
+162 ms
+>     >         64 bytes from 54.199.163.187: icmp_seq=3D2 ttl=3D33 time=3D=
+162 ms
+>     >         64 bytes from 54.199.163.187: icmp_seq=3D3 ttl=3D33 time=3D=
+162 ms
+>     >         64 bytes from 54.199.163.187: icmp_seq=3D4 ttl=3D33 time=3D=
+162 ms
+>     >
+>     >         RTT between my EC2 instances and google endpoint.
+>     >         # ping 172.217.4.240
+>     >         PING 172.217.4.240 (172.217.4.240) 56(84) bytes of data.
+>     >         64 bytes from 172.217.4.240: icmp_seq=3D1 ttl=3D101 time=3D=
+16.7 ms
+>     >         64 bytes from 172.217.4.240: icmp_seq=3D2 ttl=3D101 time=3D=
+16.7 ms
+>     >         64 bytes from 172.217.4.240: icmp_seq=3D3 ttl=3D101 time=3D=
+16.7 ms
+>     >         64 bytes from 172.217.4.240: icmp_seq=3D4 ttl=3D101 time=3D=
+16.7 ms
+>     >
+>     >     What driver is used at the receiving side ?
+>     >       >>>>>>I am using ENA driver version version: 2.2.10g on the r=
+eceiver with scatter gathering enabled.
+>     >
+>     >         # ethtool -k eth0 | grep scatter-gather
+>     >         scatter-gather: on
+>     >                 tx-scatter-gather: on
+>     >                 tx-scatter-gather-fraglist: off [fixed]
+>
+>     This ethtool output refers to TX scatter gather, which is not relevan=
+t
+>     for this bug.
+>
+>     I see ENA driver might use 16 KB per incoming packet (if ENA_PAGE_SIZ=
+E is 16 KB)
+>
+>     Since I can not reproduce this problem with another NIC on x86, I
+>     really wonder if this is not an issue with ENA driver on PowerPC
+>     perhaps ?
+>
+>
+>
+>
+> Amazon Web Services EMEA SARL, 38 avenue John F. Kennedy, L-1855 Luxembou=
+rg, R.C.S. Luxembourg B186284
+>
+> Amazon Web Services EMEA SARL, Irish Branch, One Burlington Plaza, Burlin=
+gton Road, Dublin 4, Ireland, branch registration number 908705
+>
+>
