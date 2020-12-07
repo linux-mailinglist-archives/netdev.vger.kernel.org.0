@@ -2,189 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB4F92D1908
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 20:08:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F61D2D1947
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 20:19:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726081AbgLGTD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 14:03:56 -0500
-Received: from mail-il1-f200.google.com ([209.85.166.200]:53005 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726630AbgLGTD4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 14:03:56 -0500
-Received: by mail-il1-f200.google.com with SMTP id h4so11908752ilq.19
-        for <netdev@vger.kernel.org>; Mon, 07 Dec 2020 11:03:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=BK3A/4RekMn0zj50Csrds0CNs93CU1NoudzU58/J44M=;
-        b=qLXLoLXdP9KMfDaY9Tf37qHLp/VFTZG/EYxzq24KDkj+mdJN8wZ+tYVvqNbBcFQ1IP
-         UnWownbyuGOkHlvalPWRaDklv/PsV3nSR7whOi33+aIqbdUOtjtlfy+nqzf21QbC1bn7
-         VbP2gdqF9/Y4GtQc8DZcgXRbIp3sE0c8NBgYI/DA2mkX8a1ab65ONwY09c1ZAz/qoxNJ
-         hXUmBJ/FJ01mOrMuIIX0UmZfNgc70GCAaKKOX4isPrsFmqJwhVvxbHrqJpdQpFNuzv5e
-         qzDx5OnY/OrJ0snDhLUdQpIrOGw/CS+p+LWfmgYExss8N43irq/hdwu1qK1IRyT4J90U
-         5A6g==
-X-Gm-Message-State: AOAM531qPN0envUBVBkyjYeu4JW3ApZASN5AAydroVN5Bg0j94QzrQdd
-        dDXi4QrBCylaY1y5PNzZtJe2JM23MtUWNwdubjKPEj5z9ky5
-X-Google-Smtp-Source: ABdhPJydnkwEMek2z6foDq2wrDPXziet7vbC+ActUcVowL5wG4GdDPPtaRxZByaZY1DXNSvZGIKijihkJn4os+E+eHrbOnNZ/t0n
+        id S1726396AbgLGTRl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 14:17:41 -0500
+Received: from smtp-fw-9103.amazon.com ([207.171.188.200]:52738 "EHLO
+        smtp-fw-9103.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726190AbgLGTRl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 14:17:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1607368660; x=1638904660;
+  h=references:from:to:cc:subject:in-reply-to:date:
+   message-id:mime-version;
+  bh=Uzq171hkTc0ePbSHLkxyxyxS5W+LggInvZADUWiWT6s=;
+  b=Sc2mWDEJO5vb/5I1vnC2wV7OTK6xmC5hfGqvGcrBp2QeMW486XDOfS9V
+   VUmP5HaNrcO0EZ94/qRo7OFTDFF5MS5xt5//pgFxerBg0tBRIkZj39S74
+   d/xIgwkfoH/OowdU2+fJKm6KKbm0CUTytDUQ1gcPWCj0ctsKRW1H3Nh0t
+   g=;
+X-IronPort-AV: E=Sophos;i="5.78,400,1599523200"; 
+   d="scan'208";a="901215036"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1e-c7c08562.us-east-1.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9103.sea19.amazon.com with ESMTP; 07 Dec 2020 19:16:52 +0000
+Received: from EX13D28EUC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-1e-c7c08562.us-east-1.amazon.com (Postfix) with ESMTPS id A298B2413A5;
+        Mon,  7 Dec 2020 19:16:51 +0000 (UTC)
+Received: from u68c7b5b1d2d758.ant.amazon.com.amazon.com (10.43.160.66) by
+ EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 7 Dec 2020 19:16:42 +0000
+References: <1607083875-32134-1-git-send-email-akiyano@amazon.com>
+ <1607083875-32134-7-git-send-email-akiyano@amazon.com>
+ <20201206201031.GC23696@ranger.igk.intel.com>
+User-agent: mu4e 1.4.12; emacs 27.1
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+CC:     <akiyano@amazon.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <netdev@vger.kernel.org>, <dwmw@amazon.com>, <zorik@amazon.com>,
+        <matua@amazon.com>, <saeedb@amazon.com>, <msw@amazon.com>,
+        <aliguori@amazon.com>, <nafea@amazon.com>, <gtzalik@amazon.com>,
+        <netanel@amazon.com>, <alisaidi@amazon.com>, <benh@amazon.com>,
+        <ndagan@amazon.com>, <sameehj@amazon.com>
+Subject: Re: [PATCH V4 net-next 6/9] net: ena: use xdp_frame in XDP TX flow
+In-Reply-To: <20201206201031.GC23696@ranger.igk.intel.com>
+Date:   Mon, 7 Dec 2020 21:16:17 +0200
+Message-ID: <pj41zl5z5dzata.fsf@u68c7b5b1d2d758.ant.amazon.com>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:700f:: with SMTP id l15mr21473544ioc.22.1607367789173;
- Mon, 07 Dec 2020 11:03:09 -0800 (PST)
-Date:   Mon, 07 Dec 2020 11:03:09 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000018e57f05b5e47aa4@google.com>
-Subject: KASAN: use-after-free Read in ieee80211_ibss_build_presp
-From:   syzbot <syzbot+cd25350b5fe5b8ed143c@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; format=flowed
+X-Originating-IP: [10.43.160.66]
+X-ClientProxiedBy: EX13P01UWB004.ant.amazon.com (10.43.161.213) To
+ EX13D28EUC001.ant.amazon.com (10.43.164.4)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-syzbot found the following issue on:
+Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
 
-HEAD commit:    e87297fa Merge tag 'drm-fixes-2020-12-04' of git://anongit..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=144035d3500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e49433cfed49b7d9
-dashboard link: https://syzkaller.appspot.com/bug?extid=cd25350b5fe5b8ed143c
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=107ebd45500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17ef29bb500000
+> On Fri, Dec 04, 2020 at 02:11:12PM +0200, akiyano@amazon.com 
+> wrote:
+>> From: Arthur Kiyanovski <akiyano@amazon.com>
+>> 
+>> Rename the ena_xdp_xmit_buff() function to ena_xdp_xmit_frame() 
+>> and pass
+>> it an xdp_frame struct instead of xdp_buff.
+>> This change lays the ground for XDP redirect implementation 
+>> which uses
+>> xdp_frames when 'xmit'ing packets.
+>> 
+>> Signed-off-by: Shay Agroskin <shayagr@amazon.com>
+>> Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
+>> ---
+>>  drivers/net/ethernet/amazon/ena/ena_netdev.c | 46 
+>>  ++++++++++----------
+>>  1 file changed, 23 insertions(+), 23 deletions(-)
+>> 
+>> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c 
+>> b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+>> index 222bb576e30e..cbb07548409a 100644
+>> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
+>> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+>> @@ -233,18 +233,18 @@ static int ena_xdp_io_poll(struct 
+>> napi_struct *napi, int budget)
+>>  	return ret;
+>>  }
+>>  
+>>  ...
+>>  	if (verdict == XDP_TX) {
+>> -		ena_xdp_xmit_buff(rx_ring->netdev,
+>> -				  xdp,
+>> -				  rx_ring->qid + 
+>> rx_ring->adapter->num_io_queues,
+>> -				  rx_info);
+>> +		xdpf = xdp_convert_buff_to_frame(xdp);
+>
+> Similar to Jakub's comment on another patch, 
+> xdp_convert_buff_to_frame can
+> return NULL and from what I can tell you never check that in
+> ena_xdp_xmit_frame.
+>
 
-Bisection is inconclusive: the issue happens on the oldest tested release.
+Hi, thanks for reviewing the code (:
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1410d2ef500000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=1610d2ef500000
-console output: https://syzkaller.appspot.com/x/log.txt?x=1210d2ef500000
+Going over xdp_convert_buff_to_frame() it seems (to me) that the 
+function fails either
+- we're using an AF XDP socket
+- the driver failed to leave enough room for xdp_frame and 
+  skb_shared_info structs
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+cd25350b5fe5b8ed143c@syzkaller.appspotmail.com
+the first isn't supported by ENA, and the second doesn't seem to 
+be possible since the driver leaves enough space on the RX page 
+and bpf_xdp_adjust_head()/bpf_xdp_adjust_tail() seem
+to make sure enough space is left on the page for the structs.
 
-wlan0: Created IBSS using preconfigured BSSID 50:50:50:50:50:50
-wlan0: Creating new IBSS network, BSSID 50:50:50:50:50:50
-==================================================================
-BUG: KASAN: use-after-free in memcpy include/linux/string.h:399 [inline]
-BUG: KASAN: use-after-free in ieee80211_ibss_build_presp+0x10be/0x15f0 net/mac80211/ibss.c:171
-Read of size 4 at addr ffff888014132cf8 by task kworker/u4:7/1428
+Nevertheless, the correct approach is to check the return value of 
+the function. I'll add it in the next patchset. Thanks
 
-CPU: 1 PID: 1428 Comm: kworker/u4:7 Not tainted 5.10.0-rc6-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: phy0 ieee80211_iface_work
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0xae/0x4c8 mm/kasan/report.c:385
- __kasan_report mm/kasan/report.c:545 [inline]
- kasan_report.cold+0x1f/0x37 mm/kasan/report.c:562
- check_memory_region_inline mm/kasan/generic.c:186 [inline]
- check_memory_region+0x13d/0x180 mm/kasan/generic.c:192
- memcpy+0x20/0x60 mm/kasan/common.c:105
- memcpy include/linux/string.h:399 [inline]
- ieee80211_ibss_build_presp+0x10be/0x15f0 net/mac80211/ibss.c:171
- __ieee80211_sta_join_ibss+0x685/0x17f0 net/mac80211/ibss.c:317
- ieee80211_sta_create_ibss.cold+0xc9/0x116 net/mac80211/ibss.c:1354
- ieee80211_sta_find_ibss net/mac80211/ibss.c:1484 [inline]
- ieee80211_ibss_work.cold+0x30e/0x60f net/mac80211/ibss.c:1708
- ieee80211_iface_work+0x82e/0x970 net/mac80211/iface.c:1476
- process_one_work+0x933/0x15a0 kernel/workqueue.c:2272
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2418
- kthread+0x3b1/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+>> +		ena_xdp_xmit_frame(rx_ring->netdev, xdpf,
+>> +				   rx_ring->qid + 
+>> rx_ring->adapter->num_io_queues);
+>>  
+>>  		xdp_stat = &rx_ring->rx_stats.xdp_tx;
+>>  	} else if (unlikely(verdict == XDP_ABORTED)) {
+>> @@ -1521,7 +1521,7 @@ static int ena_xdp_handle_buff(struct 
+>> ena_ring *rx_ring, struct xdp_buff *xdp)
+>>  	if (unlikely(rx_ring->ena_bufs[0].len > ENA_XDP_MAX_MTU))
+>>  		return XDP_DROP;
+>>  
+>> -	ret = ena_xdp_execute(rx_ring, xdp, rx_info);
+>> +	ret = ena_xdp_execute(rx_ring, xdp);
+>>  
+>>  	/* The xdp program might expand the headers */
+>> ...
+>>  			 */
+>>  			if (xdp_verdict == XDP_TX)
+>> -- 
+>> 2.23.3
+>> 
 
-Allocated by task 8545:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:48
- kasan_set_track mm/kasan/common.c:56 [inline]
- __kasan_kmalloc.constprop.0+0xc2/0xd0 mm/kasan/common.c:461
- slab_post_alloc_hook mm/slab.h:526 [inline]
- slab_alloc_node mm/slub.c:2891 [inline]
- slab_alloc mm/slub.c:2899 [inline]
- __kmalloc_track_caller+0x1dc/0x3d0 mm/slub.c:4464
- kmemdup+0x23/0x50 mm/util.c:128
- kmemdup include/linux/string.h:472 [inline]
- ieee80211_ibss_join+0x861/0xf30 net/mac80211/ibss.c:1824
- rdev_join_ibss net/wireless/rdev-ops.h:535 [inline]
- __cfg80211_join_ibss+0x78c/0x1170 net/wireless/ibss.c:144
- nl80211_join_ibss+0xcbb/0x12b0 net/wireless/nl80211.c:10151
- genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
- genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
- genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:671
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2353
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2407
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2440
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Freed by task 8549:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:48
- kasan_set_track+0x1c/0x30 mm/kasan/common.c:56
- kasan_set_free_info+0x1b/0x30 mm/kasan/generic.c:355
- __kasan_slab_free+0x102/0x140 mm/kasan/common.c:422
- slab_free_hook mm/slub.c:1544 [inline]
- slab_free_freelist_hook+0x5d/0x150 mm/slub.c:1577
- slab_free mm/slub.c:3142 [inline]
- kfree+0xdb/0x360 mm/slub.c:4124
- ieee80211_ibss_leave+0x83/0xe0 net/mac80211/ibss.c:1876
- rdev_leave_ibss net/wireless/rdev-ops.h:545 [inline]
- __cfg80211_leave_ibss+0x19a/0x4c0 net/wireless/ibss.c:212
- cfg80211_leave_ibss+0x57/0x80 net/wireless/ibss.c:230
- cfg80211_change_iface+0x855/0xef0 net/wireless/util.c:1012
- nl80211_set_interface+0x65c/0x8d0 net/wireless/nl80211.c:3789
- genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
- genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
- genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:671
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2353
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2407
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2440
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-The buggy address belongs to the object at ffff888014132cf8
- which belongs to the cache kmalloc-8 of size 8
-The buggy address is located 0 bytes inside of
- 8-byte region [ffff888014132cf8, ffff888014132d00)
-The buggy address belongs to the page:
-page:0000000078f1b37d refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x14132
-flags: 0xfff00000000200(slab)
-raw: 00fff00000000200 ffffea00004a8280 0000001200000012 ffff888010041c80
-raw: 0000000000000000 0000000080660066 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff888014132b80: fc fc fb fc fc fc fc fb fc fc fc fc fb fc fc fc
- ffff888014132c00: fc 00 fc fc fc fc 00 fc fc fc fc fb fc fc fc fc
->ffff888014132c80: fa fc fc fc fc 00 fc fc fc fc 00 fc fc fc fc fa
-                                                                ^
- ffff888014132d00: fc fc fc fc fa fc fc fc fc 00 fc fc fc fc 00 fc
- ffff888014132d80: fc fc fc fb fc fc fc fc fb fc fc fc fc fb fc fc
-==================================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
