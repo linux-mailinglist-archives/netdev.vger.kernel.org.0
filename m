@@ -2,184 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A54A2D1BB1
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 22:08:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 186372D1BD8
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 22:15:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727700AbgLGVIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 16:08:13 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:45917 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727169AbgLGVHu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 16:07:50 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from borisp@mellanox.com)
-        with SMTP; 7 Dec 2020 23:06:54 +0200
-Received: from gen-l-vrt-133.mtl.labs.mlnx. (gen-l-vrt-133.mtl.labs.mlnx [10.237.11.160])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0B7L6qIN029788;
-        Mon, 7 Dec 2020 23:06:54 +0200
-From:   Boris Pismenny <borisp@mellanox.com>
-To:     kuba@kernel.org, davem@davemloft.net, saeedm@nvidia.com,
-        hch@lst.de, sagi@grimberg.me, axboe@fb.com, kbusch@kernel.org,
-        viro@zeniv.linux.org.uk, edumazet@google.com
-Cc:     boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
-        netdev@vger.kernel.org, benishay@nvidia.com, ogerlitz@nvidia.com,
-        yorayz@nvidia.com, Ben Ben-Ishay <benishay@mellanox.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>
-Subject: [PATCH v1 net-next 15/15] net/mlx5e: NVMEoTCP workaround CRC after resync
-Date:   Mon,  7 Dec 2020 23:06:49 +0200
-Message-Id: <20201207210649.19194-16-borisp@mellanox.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20201207210649.19194-1-borisp@mellanox.com>
-References: <20201207210649.19194-1-borisp@mellanox.com>
+        id S1726632AbgLGVPx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 16:15:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47248 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725931AbgLGVPw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 16:15:52 -0500
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87B5BC061749;
+        Mon,  7 Dec 2020 13:15:12 -0800 (PST)
+Received: by mail-il1-x142.google.com with SMTP id 2so10467903ilg.9;
+        Mon, 07 Dec 2020 13:15:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=L0vLg8UT9gnGKmlAs0+JMUGqnXR1z3vg/JyNzC1FgTo=;
+        b=tNl7PaMyAfUQkU/tCI8Bo4rEsepUZ2TvMXfnTu+E7qoyjwlsN10mTZd6GDv/W7L/2n
+         MmF2H0fP6z+iDnG8mNoPJpnF5S1gHzg+ZoIYra5zGZly5+152ID8WLta4urUg+qBsXaV
+         oGlr2BBbKvw0Bhvh9EVnE1yBIDzoUxIhsppgfB5LrYrlJGYIO3mjnSLLrdrSjbQxYjS+
+         6y+fySm5+djHaSZAAfiX4YyLhtpHVYwujyM/l5oLXPCSE45aatTQHZ0GCDVQmGHiTKp/
+         kSblRmX/g+tnjqlNIQckq+cr3QkcTAX2smEt9PxvG4LaDwWIfNDJcu3LBTUkg1GjvYH1
+         1KvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=L0vLg8UT9gnGKmlAs0+JMUGqnXR1z3vg/JyNzC1FgTo=;
+        b=OcYxPqjvRqtHcoJ+t2Z44A/5U5KZXcPMrhl4x5cNykOQyG+95PdCN8z2fHH4WwTvHm
+         dJei9y71SmGn6/mWXy9L5yu/dy4tp1c/MtdMHrazTqiSvKJHunFrZiw2pOVeDCBWSN4L
+         7HXedJd2us926dmoPuMGBVpxvcJ9kAtmY1X5zlWq8x9BpfzpbsPwWrQdQPIkBwNKGGGe
+         N69dNySWL6Ijb6QgfAW1gFcTMEAaGGJAAQJQ2zrJzjurEI/bmEqPBSYjG7pCbWPoRyrU
+         f2jrefu5zJCL9jnYPFzygtV5Q3drgUtscQG7zLOUIk/idWFWNH1kq8V82127G/XXqOJe
+         zQdg==
+X-Gm-Message-State: AOAM533ojbmSFl3iPpWkEz+tEd/XVk9TwXkgscCb17tnyv2SGws2nL4u
+        nh7xzoE9fmje44c9MgnhSf7e9zW6vr9od4EKud7nPcnk6Xw=
+X-Google-Smtp-Source: ABdhPJycdmkxsf4RQx0yUG5Fs32o2jvvhzl6+nzQPBukOlmbZBPazpla6XWgcrV95/9GidkBmhsRVxjS9BFtfmLUx6U=
+X-Received: by 2002:a92:d8cc:: with SMTP id l12mr21859317ilo.64.1607375711764;
+ Mon, 07 Dec 2020 13:15:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1607349924.git.lorenzo@kernel.org> <693d48b46dd5172763952acd94358cc5d02dcda3.1607349924.git.lorenzo@kernel.org>
+In-Reply-To: <693d48b46dd5172763952acd94358cc5d02dcda3.1607349924.git.lorenzo@kernel.org>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Mon, 7 Dec 2020 13:15:00 -0800
+Message-ID: <CAKgT0UcjtERgpV9tke-HcmP7rWOns_-jmthnGiNPES+aqhScFg@mail.gmail.com>
+Subject: Re: [PATCH v5 bpf-next 02/14] xdp: initialize xdp_buff mb bit to 0 in
+ all XDP drivers
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
+        "Jubran, Samih" <sameehj@amazon.com>,
+        John Fastabend <john.fastabend@gmail.com>, dsahern@kernel.org,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        lorenzo.bianconi@redhat.com, Jason Wang <jasowang@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yoray Zack <yorayz@nvidia.com>
+On Mon, Dec 7, 2020 at 8:36 AM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>
+> Initialize multi-buffer bit (mb) to 0 in all XDP-capable drivers.
+> This is a preliminary patch to enable xdp multi-buffer support.
+>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 
-The nvme-tcp crc computed over the first packet after resync may provide
-the wrong signal when the packet contains multiple PDUs. We workaround
-that by ignoring the cqe->nvmeotcp_crc signal for the first packet after
-resync.
+I'm really not a fan of this design. Having to update every driver in
+order to initialize a field that was fragmented is a pain. At a
+minimum it seems like it might be time to consider introducing some
+sort of initializer function for this so that you can update things in
+one central place the next time you have to add a new field instead of
+having to update every individual driver that supports XDP. Otherwise
+this isn't going to scale going forward.
 
-Signed-off-by: Yoray Zack <yorayz@nvidia.com>
-Signed-off-by: Boris Pismenny <borisp@mellanox.com>
-Signed-off-by: Ben Ben-Ishay <benishay@mellanox.com>
-Signed-off-by: Or Gerlitz <ogerlitz@mellanox.com>
----
- .../mellanox/mlx5/core/en_accel/nvmeotcp.c         |  1 +
- .../mellanox/mlx5/core/en_accel/nvmeotcp.h         |  3 +++
- .../mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.c    | 14 ++++++++++++++
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    | 12 ++++--------
- include/linux/mlx5/device.h                        |  4 ++--
- 5 files changed, 24 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.c
-index 756decf53930..e9f7f8b17c92 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.c
-@@ -844,6 +844,7 @@ mlx5e_nvmeotcp_dev_resync(struct net_device *netdev,
- 	struct mlx5e_nvmeotcp_queue *queue =
- 				(struct mlx5e_nvmeotcp_queue *)tcp_ddp_get_ctx(sk);
- 
-+	queue->after_resync_cqe = 1;
- 	mlx5e_nvmeotcp_rx_post_static_params_wqe(queue, seq);
- }
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.h
-index 5be300d8299e..a309971e11b1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.h
-@@ -50,6 +50,7 @@ struct mlx5e_nvmeotcp_sq {
-  *	@ccoff_inner: Current offset within the @ccsglidx element
-  *	@priv: mlx5e netdev priv
-  *	@inv_done: invalidate callback of the nvme tcp driver
-+ *	@after_resync_cqe: indicate if resync occurred
-  */
- struct mlx5e_nvmeotcp_queue {
- 	struct tcp_ddp_ctx		tcp_ddp_ctx;
-@@ -82,6 +83,8 @@ struct mlx5e_nvmeotcp_queue {
- 
- 	/* for flow_steering flow */
- 	struct completion		done;
-+	/* for MASK HW resync cqe */
-+	bool				after_resync_cqe;
- };
- 
- struct mlx5e_nvmeotcp {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.c
-index 298558ae2dcd..4b813de592be 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.c
-@@ -175,6 +175,20 @@ mlx5e_nvmeotcp_handle_rx_skb(struct net_device *netdev, struct sk_buff *skb,
- 		return skb;
- 	}
- 
-+#ifdef CONFIG_TCP_DDP_CRC
-+	/* If a resync occurred in the previous cqe,
-+	 * the current cqe.crcvalid bit may not be valid,
-+	 * so we will treat it as 0
-+	 */
-+	skb->ddp_crc = queue->after_resync_cqe ? 0 :
-+		cqe_is_nvmeotcp_crcvalid(cqe);
-+	queue->after_resync_cqe = 0;
-+#endif
-+	if (!cqe_is_nvmeotcp_zc(cqe)) {
-+		mlx5e_nvmeotcp_put_queue(queue);
-+		return skb;
-+	}
-+
- 	stats = priv->channels.c[queue->channel_ix]->rq.stats;
- 
- 	/* cc ddp from cqe */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 2688396d21f8..960aee0d5f0c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -1079,10 +1079,6 @@ static inline void mlx5e_build_rx_skb(struct mlx5_cqe64 *cqe,
- 	if (unlikely(mlx5_ipsec_is_rx_flow(cqe)))
- 		mlx5e_ipsec_offload_handle_rx_skb(netdev, skb, cqe);
- 
--#if defined(CONFIG_TCP_DDP_CRC) && defined(CONFIG_MLX5_EN_NVMEOTCP)
--	skb->ddp_crc = cqe_is_nvmeotcp_crcvalid(cqe);
--#endif
--
- 	if (lro_num_seg > 1) {
- 		mlx5e_lro_update_hdr(skb, cqe, cqe_bcnt);
- 		skb_shinfo(skb)->gso_size = DIV_ROUND_UP(cqe_bcnt, lro_num_seg);
-@@ -1197,7 +1193,7 @@ mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe,
- 	page_ref_inc(di->page);
- 
- #if defined(CONFIG_TCP_DDP) && defined(CONFIG_MLX5_EN_NVMEOTCP)
--	if (cqe_is_nvmeotcp_zc_or_resync(cqe))
-+	if (cqe_is_nvmeotcp(cqe))
- 		skb = mlx5e_nvmeotcp_handle_rx_skb(rq->netdev, skb, cqe,
- 						   cqe_bcnt, true);
- #endif
-@@ -1253,7 +1249,7 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe,
- 	skb->len  += headlen;
- 
- #if defined(CONFIG_TCP_DDP) && defined(CONFIG_MLX5_EN_NVMEOTCP)
--	if (cqe_is_nvmeotcp_zc_or_resync(cqe))
-+	if (cqe_is_nvmeotcp(cqe))
- 		skb = mlx5e_nvmeotcp_handle_rx_skb(rq->netdev, skb, cqe,
- 						   cqe_bcnt, false);
- #endif
-@@ -1486,7 +1482,7 @@ mlx5e_skb_from_cqe_mpwrq_nonlinear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *w
- 	skb->len  += headlen;
- 
- #if defined(CONFIG_TCP_DDP) && defined(CONFIG_MLX5_EN_NVMEOTCP)
--	if (cqe_is_nvmeotcp_zc_or_resync(cqe))
-+	if (cqe_is_nvmeotcp(cqe))
- 		skb = mlx5e_nvmeotcp_handle_rx_skb(rq->netdev, skb, cqe,
- 						   cqe_bcnt, false);
- #endif
-@@ -1539,7 +1535,7 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
- 	page_ref_inc(di->page);
- 
- #if defined(CONFIG_TCP_DDP) && defined(CONFIG_MLX5_EN_NVMEOTCP)
--	if (cqe_is_nvmeotcp_zc_or_resync(cqe))
-+	if (cqe_is_nvmeotcp(cqe))
- 		skb = mlx5e_nvmeotcp_handle_rx_skb(rq->netdev, skb, cqe,
- 						   cqe_bcnt, true);
- #endif
-diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
-index ea4d158e8329..ae879576e371 100644
---- a/include/linux/mlx5/device.h
-+++ b/include/linux/mlx5/device.h
-@@ -882,9 +882,9 @@ static inline bool cqe_is_nvmeotcp_zc(struct mlx5_cqe64 *cqe)
- 	return ((cqe->nvmetcp >> 4) & 0x1);
- }
- 
--static inline bool cqe_is_nvmeotcp_zc_or_resync(struct mlx5_cqe64 *cqe)
-+static inline bool cqe_is_nvmeotcp(struct mlx5_cqe64 *cqe)
- {
--	return ((cqe->nvmetcp >> 4) & 0x5);
-+	return ((cqe->nvmetcp >> 4) & 0x7);
- }
- 
- static inline u8 mlx5_get_cqe_format(struct mlx5_cqe64 *cqe)
--- 
-2.24.1
-
+> ---
+>  drivers/net/ethernet/amazon/ena/ena_netdev.c        | 1 +
+>  drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c       | 1 +
+>  drivers/net/ethernet/cavium/thunder/nicvf_main.c    | 1 +
+>  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c    | 1 +
+>  drivers/net/ethernet/intel/i40e/i40e_txrx.c         | 1 +
+>  drivers/net/ethernet/intel/ice/ice_txrx.c           | 1 +
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c       | 1 +
+>  drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c   | 1 +
+>  drivers/net/ethernet/marvell/mvneta.c               | 1 +
+>  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c     | 1 +
+>  drivers/net/ethernet/mellanox/mlx4/en_rx.c          | 1 +
+>  drivers/net/ethernet/mellanox/mlx5/core/en_rx.c     | 1 +
+>  drivers/net/ethernet/netronome/nfp/nfp_net_common.c | 1 +
+>  drivers/net/ethernet/qlogic/qede/qede_fp.c          | 1 +
+>  drivers/net/ethernet/sfc/rx.c                       | 1 +
+>  drivers/net/ethernet/socionext/netsec.c             | 1 +
+>  drivers/net/ethernet/ti/cpsw.c                      | 1 +
+>  drivers/net/ethernet/ti/cpsw_new.c                  | 1 +
+>  drivers/net/hyperv/netvsc_bpf.c                     | 1 +
+>  drivers/net/tun.c                                   | 2 ++
+>  drivers/net/veth.c                                  | 1 +
+>  drivers/net/virtio_net.c                            | 2 ++
+>  drivers/net/xen-netfront.c                          | 1 +
+>  net/core/dev.c                                      | 1 +
+>  24 files changed, 26 insertions(+)
+>
