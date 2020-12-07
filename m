@@ -2,32 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1D352D1BB0
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 22:08:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DA772D1BA4
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 22:08:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727695AbgLGVIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 16:08:11 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:45738 "EHLO
+        id S1727422AbgLGVHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 16:07:51 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:45704 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727016AbgLGVHu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 16:07:50 -0500
+        with ESMTP id S1727007AbgLGVHt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 16:07:49 -0500
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from borisp@mellanox.com)
         with SMTP; 7 Dec 2020 23:06:53 +0200
 Received: from gen-l-vrt-133.mtl.labs.mlnx. (gen-l-vrt-133.mtl.labs.mlnx [10.237.11.160])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0B7L6qIB029788;
-        Mon, 7 Dec 2020 23:06:52 +0200
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0B7L6qIC029788;
+        Mon, 7 Dec 2020 23:06:53 +0200
 From:   Boris Pismenny <borisp@mellanox.com>
 To:     kuba@kernel.org, davem@davemloft.net, saeedm@nvidia.com,
         hch@lst.de, sagi@grimberg.me, axboe@fb.com, kbusch@kernel.org,
         viro@zeniv.linux.org.uk, edumazet@google.com
 Cc:     boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
         netdev@vger.kernel.org, benishay@nvidia.com, ogerlitz@nvidia.com,
-        yorayz@nvidia.com, Ben Ben-Ishay <benishay@mellanox.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Yoray Zack <yorayz@mellanox.com>
-Subject: [PATCH v1 net-next 03/15] net: Introduce crc offload for tcp ddp ulp
-Date:   Mon,  7 Dec 2020 23:06:37 +0200
-Message-Id: <20201207210649.19194-4-borisp@mellanox.com>
+        yorayz@nvidia.com
+Subject: [PATCH v1 net-next 04/15] net/tls: expose get_netdev_for_sock
+Date:   Mon,  7 Dec 2020 23:06:38 +0200
+Message-Id: <20201207210649.19194-5-borisp@mellanox.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20201207210649.19194-1-borisp@mellanox.com>
 References: <20201207210649.19194-1-borisp@mellanox.com>
@@ -37,164 +35,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit introduces support for CRC offload to direct data placement
-ULP on the receive side. Both DDP and CRC share a common API to
-initialize the offload for a TCP socket. But otherwise, both can
-be executed independently.
+get_netdev_for_sock is a utility that is used to obtain
+the net_device structure from a connected socket.
 
-On the receive side, CRC offload requires a new SKB bit that
-indicates that no CRC error was encountered while processing this packet.
-If all packets of a ULP message have this bit set, then the CRC
-verification for the message can be skipped, as hardware already checked
-it.
-
-The following patches will set and use this bit to perform NVME-TCP
-CRC offload.
-
-A subsequent series, will add NVMe-TCP transmit side CRC support.
+Later patches will use this for nvme-tcp DDP and DDP CRC offloads.
 
 Signed-off-by: Boris Pismenny <borisp@mellanox.com>
-Signed-off-by: Ben Ben-Ishay <benishay@mellanox.com>
-Signed-off-by: Or Gerlitz <ogerlitz@mellanox.com>
-Signed-off-by: Yoray Zack <yorayz@mellanox.com>
 Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
 ---
- include/linux/netdev_features.h | 2 ++
- include/linux/skbuff.h          | 5 +++++
- net/Kconfig                     | 8 ++++++++
- net/ethtool/common.c            | 1 +
- net/ipv4/tcp_input.c            | 7 +++++++
- net/ipv4/tcp_ipv4.c             | 3 +++
- net/ipv4/tcp_offload.c          | 3 +++
- 7 files changed, 29 insertions(+)
+ include/net/sock.h   | 17 +++++++++++++++++
+ net/tls/tls_device.c | 20 ++------------------
+ 2 files changed, 19 insertions(+), 18 deletions(-)
 
-diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
-index fb35dcac03d2..dc79709586cd 100644
---- a/include/linux/netdev_features.h
-+++ b/include/linux/netdev_features.h
-@@ -85,6 +85,7 @@ enum {
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 093b51719c69..a8f7393ea433 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -2711,4 +2711,21 @@ void sock_set_sndtimeo(struct sock *sk, s64 secs);
  
- 	NETIF_F_HW_MACSEC_BIT,		/* Offload MACsec operations */
- 	NETIF_F_HW_TCP_DDP_BIT,		/* TCP direct data placement offload */
-+	NETIF_F_HW_TCP_DDP_CRC_RX_BIT,	/* TCP DDP CRC RX offload */
+ int sock_bind_add(struct sock *sk, struct sockaddr *addr, int addr_len);
  
- 	/*
- 	 * Add your fresh new feature above and remember to update
-@@ -159,6 +160,7 @@ enum {
- #define NETIF_F_GSO_FRAGLIST	__NETIF_F(GSO_FRAGLIST)
- #define NETIF_F_HW_MACSEC	__NETIF_F(HW_MACSEC)
- #define NETIF_F_HW_TCP_DDP	__NETIF_F(HW_TCP_DDP)
-+#define NETIF_F_HW_TCP_DDP_CRC_RX	__NETIF_F(HW_TCP_DDP_CRC_RX)
- 
- /* Finds the next feature with the highest number of the range of start till 0.
-  */
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 0a1239819fd2..c7daf93788e8 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -683,6 +683,7 @@ typedef unsigned char *sk_buff_data_t;
-  *		CHECKSUM_UNNECESSARY (max 3)
-  *	@dst_pending_confirm: need to confirm neighbour
-  *	@decrypted: Decrypted SKB
-+ *	@ddp_crc: NIC is responsible for PDU's CRC computation and verification
-  *	@napi_id: id of the NAPI struct this skb came from
-  *	@sender_cpu: (aka @napi_id) source CPU in XPS
-  *	@secmark: security marking
-@@ -858,6 +859,10 @@ struct sk_buff {
- #ifdef CONFIG_TLS_DEVICE
- 	__u8			decrypted:1;
- #endif
-+#ifdef CONFIG_TCP_DDP_CRC
-+	__u8                    ddp_crc:1;
-+#endif
++/* Assume that the socket is already connected */
++static inline struct net_device *get_netdev_for_sock(struct sock *sk, bool hold)
++{
++	struct dst_entry *dst = sk_dst_get(sk);
++	struct net_device *netdev = NULL;
 +
++	if (likely(dst)) {
++		netdev = dst->dev;
++		if (hold)
++			dev_hold(netdev);
++	}
++
++	dst_release(dst);
++
++	return netdev;
++}
++
+ #endif	/* _SOCK_H */
+diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+index a3ab2d3d4e4e..8c3bc8705efb 100644
+--- a/net/tls/tls_device.c
++++ b/net/tls/tls_device.c
+@@ -106,22 +106,6 @@ static void tls_device_queue_ctx_destruction(struct tls_context *ctx)
+ 	spin_unlock_irqrestore(&tls_device_lock, flags);
+ }
  
- #ifdef CONFIG_NET_SCHED
- 	__u16			tc_index;	/* traffic control index */
-diff --git a/net/Kconfig b/net/Kconfig
-index 3876861cdc90..80ed9f038968 100644
---- a/net/Kconfig
-+++ b/net/Kconfig
-@@ -465,6 +465,14 @@ config TCP_DDP
- 	  NVMe-TCP/iSCSI, to request the NIC to place TCP payload data
- 	  of a command response directly into kernel pages.
+-/* We assume that the socket is already connected */
+-static struct net_device *get_netdev_for_sock(struct sock *sk)
+-{
+-	struct dst_entry *dst = sk_dst_get(sk);
+-	struct net_device *netdev = NULL;
+-
+-	if (likely(dst)) {
+-		netdev = dst->dev;
+-		dev_hold(netdev);
+-	}
+-
+-	dst_release(dst);
+-
+-	return netdev;
+-}
+-
+ static void destroy_record(struct tls_record_info *record)
+ {
+ 	int i;
+@@ -1104,7 +1088,7 @@ int tls_set_device_offload(struct sock *sk, struct tls_context *ctx)
+ 	if (skb)
+ 		TCP_SKB_CB(skb)->eor = 1;
  
-+config TCP_DDP_CRC
-+	bool "TCP direct data placement CRC offload"
-+	default n
-+	help
-+	  Direct Data Placement (DDP) CRC32C offload for TCP enables ULP, such as
-+	  NVMe-TCP/iSCSI, to request the NIC to calculate/verify the data digest
-+	  of commands as they go through the NIC. Thus avoiding the costly
-+	  per-byte overhead.
+-	netdev = get_netdev_for_sock(sk);
++	netdev = get_netdev_for_sock(sk, true);
+ 	if (!netdev) {
+ 		pr_err_ratelimited("%s: netdev not found\n", __func__);
+ 		rc = -EINVAL;
+@@ -1180,7 +1164,7 @@ int tls_set_device_offload_rx(struct sock *sk, struct tls_context *ctx)
+ 	if (ctx->crypto_recv.info.version != TLS_1_2_VERSION)
+ 		return -EOPNOTSUPP;
  
- endif   # if NET
- 
-diff --git a/net/ethtool/common.c b/net/ethtool/common.c
-index a2ff7a4a6bbf..cc6858105449 100644
---- a/net/ethtool/common.c
-+++ b/net/ethtool/common.c
-@@ -69,6 +69,7 @@ const char netdev_features_strings[NETDEV_FEATURE_COUNT][ETH_GSTRING_LEN] = {
- 	[NETIF_F_GRO_FRAGLIST_BIT] =	 "rx-gro-list",
- 	[NETIF_F_HW_MACSEC_BIT] =	 "macsec-hw-offload",
- 	[NETIF_F_HW_TCP_DDP_BIT] =	 "tcp-ddp-offload",
-+	[NETIF_F_HW_TCP_DDP_CRC_RX_BIT] =	 "tcp-ddp-crc-rx-offload",
- };
- 
- const char
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index fb3a7750f623..daa0680b2bc1 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -5128,6 +5128,9 @@ tcp_collapse(struct sock *sk, struct sk_buff_head *list, struct rb_root *root,
- 		memcpy(nskb->cb, skb->cb, sizeof(skb->cb));
- #ifdef CONFIG_TLS_DEVICE
- 		nskb->decrypted = skb->decrypted;
-+#endif
-+#ifdef CONFIG_TCP_DDP_CRC
-+		nskb->ddp_crc = skb->ddp_crc;
- #endif
- 		TCP_SKB_CB(nskb)->seq = TCP_SKB_CB(nskb)->end_seq = start;
- 		if (list)
-@@ -5161,6 +5164,10 @@ tcp_collapse(struct sock *sk, struct sk_buff_head *list, struct rb_root *root,
- #ifdef CONFIG_TLS_DEVICE
- 				if (skb->decrypted != nskb->decrypted)
- 					goto end;
-+#endif
-+#ifdef CONFIG_TCP_DDP_CRC
-+				if (skb->ddp_crc != nskb->ddp_crc)
-+					goto end;
- #endif
- 			}
- 		}
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index e4b31e70bd30..a12d016ce6c9 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1807,6 +1807,9 @@ bool tcp_add_backlog(struct sock *sk, struct sk_buff *skb)
- 	      TCP_SKB_CB(skb)->tcp_flags) & (TCPHDR_ECE | TCPHDR_CWR)) ||
- #ifdef CONFIG_TLS_DEVICE
- 	    tail->decrypted != skb->decrypted ||
-+#endif
-+#ifdef CONFIG_TCP_DDP_CRC
-+	    tail->ddp_crc != skb->ddp_crc ||
- #endif
- 	    thtail->doff != th->doff ||
- 	    memcmp(thtail + 1, th + 1, hdrlen - sizeof(*th)))
-diff --git a/net/ipv4/tcp_offload.c b/net/ipv4/tcp_offload.c
-index e09147ac9a99..39f5f0bcf181 100644
---- a/net/ipv4/tcp_offload.c
-+++ b/net/ipv4/tcp_offload.c
-@@ -262,6 +262,9 @@ struct sk_buff *tcp_gro_receive(struct list_head *head, struct sk_buff *skb)
- #ifdef CONFIG_TLS_DEVICE
- 	flush |= p->decrypted ^ skb->decrypted;
- #endif
-+#ifdef CONFIG_TCP_DDP_CRC
-+	flush |= p->ddp_crc ^ skb->ddp_crc;
-+#endif
- 
- 	if (flush || skb_gro_receive(p, skb)) {
- 		mss = 1;
+-	netdev = get_netdev_for_sock(sk);
++	netdev = get_netdev_for_sock(sk, true);
+ 	if (!netdev) {
+ 		pr_err_ratelimited("%s: netdev not found\n", __func__);
+ 		return -EINVAL;
 -- 
 2.24.1
 
