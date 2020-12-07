@@ -2,47 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEB232D1FB1
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 01:59:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1A8B2D1FE7
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 02:22:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726055AbgLHA7Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 19:59:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35946 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725877AbgLHA7Q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Dec 2020 19:59:16 -0500
-Date:   Mon, 7 Dec 2020 16:58:34 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607389115;
-        bh=hnG/QlFw/ncP5cQbP0FgUvI8U08awhB9chKGv4L7p40=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LwRNYkBo4G2HdqPJ4OXzMP2P/ASDHzF8KVgc5FWR+4WTxRCKxnqV0B3PuRTmAynhX
-         AyKKKoEVeYxwfuFRSIieyK39VD4GwpAqZFQprA12jbIToYpV/ZYOKv5TyaUB/o3nRx
-         3ZVEsq+QZnblzfRHYf6tFSTpsSKsArYU9GvO5kXAIXuWBjVAHgtscuRT/WU3Bn205I
-         mPSjf7WcJtaU6FUIpg7/c8a9WGSYNG29SvabQxlOgCNFX5nYe/5MXIPRsANSZxHd8k
-         PZsP0Hn4+6m5popUxXApXsZnvwVmqB9VLQdSvc0W3wOzRLV3ZmGS6FCj/Q21vbDxdw
-         9LKMbMBgYPtrw==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Claudiu Manoil <claudiu.manoil@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net] enetc: Fix reporting of h/w packet counters
-Message-ID: <20201207165834.76619a28@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201204171505.21389-1-claudiu.manoil@nxp.com>
-References: <20201204171505.21389-1-claudiu.manoil@nxp.com>
+        id S1726877AbgLHBVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 20:21:16 -0500
+Received: from vsm-gw.hyogo-dai.ac.jp ([202.244.76.12]:54677 "EHLO
+        vsm-gw.hyogo-dai.ac.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725995AbgLHBVP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 20:21:15 -0500
+Received: from humans-kc.hyogo-dai.ac.jp (humans-kc.hyogo-dai.ac.jp [202.244.77.11])
+        by vsm-gw.hyogo-dai.ac.jp (Postfix) with ESMTP id 0606D1A0A05;
+        Tue,  8 Dec 2020 04:16:43 +0900 (JST)
+Received: from humans-kc.hyogo-dai.ac.jp (humans-kc.hyogo-dai.ac.jp [127.0.0.1])
+        by postfix.imss71 (Postfix) with ESMTP id A9EDB6820B6;
+        Tue,  8 Dec 2020 04:16:42 +0900 (JST)
+Received: from hyogo-dai.ac.jp (unknown [202.244.77.11])
+        by humans-kc.hyogo-dai.ac.jp (Postfix) with SMTP id 795C4682036;
+        Tue,  8 Dec 2020 04:16:42 +0900 (JST)
 MIME-Version: 1.0
+Message-ID: <20201207191642.00007EFE.0561@hyogo-dai.ac.jp>
+Date:   Tue, 08 Dec 2020 04:16:42 +0900
+From:   "Raymond " <hozumi@hyogo-dai.ac.jp>
+To:     <infocarferw1@aim.com>
+Reply-To: <infocarfer@aim.com>
+Subject: I am Vice Chairman of Hang Seng Bank, Dr. Raymond Chien
+         Kuo Fung I have Important Matter to Discuss with you concerning
+         my late client. Died without a NEXT OF KIN. Send me your private
+         email for full details information.
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Priority: 3
+X-MAILER: Active! mail
+X-TM-AS-MML: disable
+X-TM-AS-Product-Ver: IMSS-7.1.0.1808-8.2.0.1013-25446.007
+X-TM-AS-Result: No--2.951-5.0-31-10
+X-imss-scan-details: No--2.951-5.0-31-10
+X-TM-AS-User-Approved-Sender: No
+X-TMASE-MatchedRID: X41QhRrT5f5ITndh1lLRASsOycAMAhSTkCM77ifYafsBLhz6t76Ce6P0
+        clhHAFPyJA6GJqxAEzL554DD9nXlqqPFjJEFr+olfeZdJ1XsoriOub3SYcq1hJf7eAx/Ae/AbQo
+        eraIcZBRw7u01FqNA2K1Ia4IbeAdLm9ukrtqhno/rIUidklntLAP5zT0d393cymsk/wUE4hoZaR
+        NzIP3XI5u3uLPgwbAMH5RdHnhWfwyq9gpuf+A6coDeeVSgzszVDx5n520Z3eZyT7DDRtYlKaWBy
+        ZE9nSaC/rhfyjvqkZu/pNa4BidtZEMMprcbiest
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  4 Dec 2020 19:15:05 +0200 Claudiu Manoil wrote:
-> Noticed some inconsistencies in packet statistics reporting.
-> This patch adds the missing Tx packet counter registers to
-> ethtool reporting and fixes the information strings for a
-> few of them.
-> 
-> Fixes: 16eb4c85c964 ("enetc: Add ethtool statistics")
-> Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+email:kraymond75@aol.com
 
-Applied, thanks!
+
+
