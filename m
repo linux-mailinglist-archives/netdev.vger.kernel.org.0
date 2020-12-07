@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CD122D1053
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 13:18:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A7322D104D
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 13:18:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727695AbgLGMRI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 07:17:08 -0500
-Received: from esa1.microchip.iphmx.com ([68.232.147.91]:39664 "EHLO
-        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727385AbgLGMRH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 07:17:07 -0500
+        id S1727559AbgLGMQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 07:16:50 -0500
+Received: from esa2.microchip.iphmx.com ([68.232.149.84]:18847 "EHLO
+        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727531AbgLGMQt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 07:16:49 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1607343427; x=1638879427;
+  t=1607343409; x=1638879409;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=IKugsm/d3kZD6lpm6POkBOpF9mUABeF8EZuTFUDQaUo=;
-  b=QeKE9DEucJFNlKCUT3K8KO8ia9wn1U1zdFxkw95mMjiFst5epOXCzcNE
-   /rvQtYotlGA1qzeRgO8+l+0BmKdDJJoAFbN6GoW/dCq+0WPCX6CLKkkfU
-   3KPhf6anrUJO+iGeVR89QSjcoHltj4Q7Z0TjcumAgNHDkRka06+jy0SrL
-   EPvAtfQAE5vwJEfEvc7LBSNHpWVIEpvpDu8jG8bDIZUDFdQQkjLloAYLb
-   4LTODAd5oDozq0w53CdHFMvLhHKJb8jBrstkioOHekiQ04rMmNrhuMjTd
-   9svZpC8MUGUBVB/lCKr88LBlZS99a0ZvtRIv5V65lqOQOUnk2nqTQb2nD
+  bh=Gy8Pc0VWAdq3BNbu92BtoqbTlIqU+jDmxbRUZaKX4PE=;
+  b=JRa+4HrrM4mNjiXAnGoiUEq1sELMSWgqc80jEMa+dr817JSqTrwol7yU
+   weDuNmeBUCWOf3DGEIsMGFqw7gadapvpL1LJQ5aQrAbgRVzc94aem/JqC
+   3QG1qWIfj2Lv5/agmdnpye0dwpF8XI0r2Js/fzMsT1DGn3kVaTIjxlNOE
+   GDFxhNaw34lQnD4epY/ES2tPiViuXFQCfqyrWaUAnrQM1GcJrPG50oY+0
+   v2Ya5q+fDv5EiRPv1kI3KEgNMIOQf76RzbW4H6vlL9KVsPlQOk61/KLBO
+   +Eh7HXGj0vACqs20UEd21+en6eKBoPSUlCJNxstP+CmPBrQozO8sAcKwx
    Q==;
-IronPort-SDR: D/hLZsD+sS0lWq+irP4F2zrvqsidTlIiAmkDwnu6uxhtBE80EyS5ilzSM3RzxowME678C2/8HJ
- VRHXtfLshW+IUqiJNhfuFlzZj70EcNanfIScbLCgtRyLy3KniEqpgwlL1gnONQ1N/6RAL+UfKF
- DdXTUapMJcrJD2tMZJ8wYzZ7Nv9rw/10hZpVO/lNsCfnimDTd95gSv8NBsDo65eMCPRGii4mh4
- gVztrwYiP9d7R6gKM/8/SWkulfseA0xGT+waIvpstBUBvZzDFzEnPqutPD1l5O6y1Kvg3+/FMh
- X4o=
+IronPort-SDR: /V9twlE602QPNR69lBGkEvoPJAm3mqAHtSjQZCKSFv3Dc7wV8dY163yPia7wSSteLG8SRMAc33
+ 9aHDRS0p9zENhVOzcaBVIg1BorFFNaXuoIuUP31SJkG0ILM9POagYPY+mBcSARPbAftRHUsSMu
+ iQVMz1PQ62qrychZaNaZ/x9Ofa7JX4tuGXWZ8LZ9q6QlFLi8a0+8AYdr1ioQJqatPtQJnFWouy
+ gblveH1W6wbNFIzkgWm1L/Ah0paywYqrFiCUXec22uuKLg63r45jYDISyZPTTt20nZUcPY84K5
+ K5w=
 X-IronPort-AV: E=Sophos;i="5.78,399,1599548400"; 
-   d="scan'208";a="106497444"
+   d="scan'208";a="98863491"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Dec 2020 05:16:00 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Dec 2020 05:16:08 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 7 Dec 2020 05:16:00 -0700
+ 15.1.1979.3; Mon, 7 Dec 2020 05:16:08 -0700
 Received: from m18063-ThinkPad-T460p.microchip.com (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Mon, 7 Dec 2020 05:15:53 -0700
+ 15.1.1979.3 via Frontend Transport; Mon, 7 Dec 2020 05:16:00 -0700
 From:   Claudiu Beznea <claudiu.beznea@microchip.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
         <nicolas.ferre@microchip.com>, <linux@armlinux.org.uk>,
@@ -48,9 +48,9 @@ CC:     <yash.shah@sifive.com>, <netdev@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-riscv@lists.infradead.org>,
         Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v2 2/8] net: macb: add capability to not set the clock rate
-Date:   Mon, 7 Dec 2020 14:15:27 +0200
-Message-ID: <1607343333-26552-3-git-send-email-claudiu.beznea@microchip.com>
+Subject: [PATCH v2 3/8] net: macb: add function to disable all macb clocks
+Date:   Mon, 7 Dec 2020 14:15:28 +0200
+Message-ID: <1607343333-26552-4-git-send-email-claudiu.beznea@microchip.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1607343333-26552-1-git-send-email-claudiu.beznea@microchip.com>
 References: <1607343333-26552-1-git-send-email-claudiu.beznea@microchip.com>
@@ -60,89 +60,137 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SAMA7G5's ethernet IPs TX clock could be provided by its generic clock or
-by the external clock provided by the PHY. The internal IP logic divides
-properly this clock depending on the link speed. The patch adds a new
-capability so that macb_set_tx_clock() to not be called for IPs having
-this capability (the clock rate, in case of generic clock, is set at the
-boot time via device tree and the driver only enables it).
+Add function to disable all macb clocks.
 
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Suggested-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/ethernet/cadence/macb.h      |  1 +
- drivers/net/ethernet/cadence/macb_main.c | 18 +++++++++---------
- 2 files changed, 10 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/cadence/macb_main.c | 62 ++++++++++++++++----------------
+ 1 file changed, 32 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
-index 7daabffe4318..769694c7f86c 100644
---- a/drivers/net/ethernet/cadence/macb.h
-+++ b/drivers/net/ethernet/cadence/macb.h
-@@ -699,6 +699,7 @@
- #define MACB_CAPS_GEM_HAS_PTP			0x00000040
- #define MACB_CAPS_BD_RD_PREFETCH		0x00000080
- #define MACB_CAPS_NEEDS_RSTONUBR		0x00000100
-+#define MACB_CAPS_CLK_HW_CHG			0x04000000
- #define MACB_CAPS_MACB_IS_EMAC			0x08000000
- #define MACB_CAPS_FIFO_MODE			0x10000000
- #define MACB_CAPS_GIGABIT_MODE_AVAILABLE	0x20000000
 diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 6d46153a7c4b..b23e986ac6dc 100644
+index b23e986ac6dc..6b8e1109dfd3 100644
 --- a/drivers/net/ethernet/cadence/macb_main.c
 +++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -460,15 +460,14 @@ static void macb_init_buffers(struct macb *bp)
- 
- /**
-  * macb_set_tx_clk() - Set a clock to a new frequency
-- * @clk:	Pointer to the clock to change
-+ * @bp:		pointer to struct macb
-  * @speed:	New frequency in Hz
-- * @dev:	Pointer to the struct net_device
-  */
--static void macb_set_tx_clk(struct clk *clk, int speed, struct net_device *dev)
-+static void macb_set_tx_clk(struct macb *bp, int speed)
- {
- 	long ferr, rate, rate_rounded;
- 
--	if (!clk)
-+	if (!bp->tx_clk || !(bp->caps & MACB_CAPS_CLK_HW_CHG))
- 		return;
- 
- 	switch (speed) {
-@@ -485,7 +484,7 @@ static void macb_set_tx_clk(struct clk *clk, int speed, struct net_device *dev)
- 		return;
- 	}
- 
--	rate_rounded = clk_round_rate(clk, rate);
-+	rate_rounded = clk_round_rate(bp->tx_clk, rate);
- 	if (rate_rounded < 0)
- 		return;
- 
-@@ -495,11 +494,12 @@ static void macb_set_tx_clk(struct clk *clk, int speed, struct net_device *dev)
- 	ferr = abs(rate_rounded - rate);
- 	ferr = DIV_ROUND_UP(ferr, rate / 100000);
- 	if (ferr > 5)
--		netdev_warn(dev, "unable to generate target frequency: %ld Hz\n",
-+		netdev_warn(bp->dev,
-+			    "unable to generate target frequency: %ld Hz\n",
- 			    rate);
- 
--	if (clk_set_rate(clk, rate_rounded))
--		netdev_err(dev, "adjusting tx_clk failed.\n");
-+	if (clk_set_rate(bp->tx_clk, rate_rounded))
-+		netdev_err(bp->dev, "adjusting tx_clk failed.\n");
+@@ -3694,6 +3694,16 @@ static void macb_probe_queues(void __iomem *mem,
+ 	*num_queues = hweight32(*queue_mask);
  }
  
- static void macb_validate(struct phylink_config *config,
-@@ -751,7 +751,7 @@ static void macb_mac_link_up(struct phylink_config *config,
- 		if (rx_pause)
- 			ctrl |= MACB_BIT(PAE);
++static void macb_clks_disable(struct clk *pclk, struct clk *hclk, struct clk *tx_clk,
++			      struct clk *rx_clk, struct clk *tsu_clk)
++{
++	clk_disable_unprepare(tx_clk);
++	clk_disable_unprepare(hclk);
++	clk_disable_unprepare(pclk);
++	clk_disable_unprepare(rx_clk);
++	clk_disable_unprepare(tsu_clk);
++}
++
+ static int macb_clk_init(struct platform_device *pdev, struct clk **pclk,
+ 			 struct clk **hclk, struct clk **tx_clk,
+ 			 struct clk **rx_clk, struct clk **tsu_clk)
+@@ -3743,40 +3753,37 @@ static int macb_clk_init(struct platform_device *pdev, struct clk **pclk,
+ 	err = clk_prepare_enable(*hclk);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "failed to enable hclk (%d)\n", err);
+-		goto err_disable_pclk;
++		hclk = NULL;
++		tx_clk = NULL;
++		rx_clk = NULL;
++		goto err_disable_clks;
+ 	}
  
--		macb_set_tx_clk(bp->tx_clk, speed, ndev);
-+		macb_set_tx_clk(bp, speed);
+ 	err = clk_prepare_enable(*tx_clk);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "failed to enable tx_clk (%d)\n", err);
+-		goto err_disable_hclk;
++		tx_clk = NULL;
++		rx_clk = NULL;
++		goto err_disable_clks;
+ 	}
  
- 		/* Initialize rings & buffers as clearing MACB_BIT(TE) in link down
- 		 * cleared the pipeline and control registers.
+ 	err = clk_prepare_enable(*rx_clk);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "failed to enable rx_clk (%d)\n", err);
+-		goto err_disable_txclk;
++		rx_clk = NULL;
++		goto err_disable_clks;
+ 	}
+ 
+ 	err = clk_prepare_enable(*tsu_clk);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "failed to enable tsu_clk (%d)\n", err);
+-		goto err_disable_rxclk;
++		goto err_disable_clks;
+ 	}
+ 
+ 	return 0;
+ 
+-err_disable_rxclk:
+-	clk_disable_unprepare(*rx_clk);
+-
+-err_disable_txclk:
+-	clk_disable_unprepare(*tx_clk);
+-
+-err_disable_hclk:
+-	clk_disable_unprepare(*hclk);
+-
+-err_disable_pclk:
+-	clk_disable_unprepare(*pclk);
++err_disable_clks:
++	macb_clks_disable(*pclk, *hclk, *tx_clk, *rx_clk, NULL);
+ 
+ 	return err;
+ }
+@@ -4755,11 +4762,7 @@ static int macb_probe(struct platform_device *pdev)
+ 	free_netdev(dev);
+ 
+ err_disable_clocks:
+-	clk_disable_unprepare(tx_clk);
+-	clk_disable_unprepare(hclk);
+-	clk_disable_unprepare(pclk);
+-	clk_disable_unprepare(rx_clk);
+-	clk_disable_unprepare(tsu_clk);
++	macb_clks_disable(bp->pclk, bp->hclk, bp->tx_clk, bp->rx_clk, bp->tsu_clk);
+ 	pm_runtime_disable(&pdev->dev);
+ 	pm_runtime_set_suspended(&pdev->dev);
+ 	pm_runtime_dont_use_autosuspend(&pdev->dev);
+@@ -4784,11 +4787,8 @@ static int macb_remove(struct platform_device *pdev)
+ 		pm_runtime_disable(&pdev->dev);
+ 		pm_runtime_dont_use_autosuspend(&pdev->dev);
+ 		if (!pm_runtime_suspended(&pdev->dev)) {
+-			clk_disable_unprepare(bp->tx_clk);
+-			clk_disable_unprepare(bp->hclk);
+-			clk_disable_unprepare(bp->pclk);
+-			clk_disable_unprepare(bp->rx_clk);
+-			clk_disable_unprepare(bp->tsu_clk);
++			macb_clks_disable(bp->pclk, bp->hclk, bp->tx_clk,
++					  bp->rx_clk, bp->tsu_clk);
+ 			pm_runtime_set_suspended(&pdev->dev);
+ 		}
+ 		phylink_destroy(bp->phylink);
+@@ -4966,14 +4966,16 @@ static int __maybe_unused macb_runtime_suspend(struct device *dev)
+ {
+ 	struct net_device *netdev = dev_get_drvdata(dev);
+ 	struct macb *bp = netdev_priv(netdev);
++	struct clk *pclk = NULL, *hclk = NULL, *tx_clk = NULL, *rx_clk = NULL;
+ 
+ 	if (!(device_may_wakeup(dev))) {
+-		clk_disable_unprepare(bp->tx_clk);
+-		clk_disable_unprepare(bp->hclk);
+-		clk_disable_unprepare(bp->pclk);
+-		clk_disable_unprepare(bp->rx_clk);
++		pclk = bp->pclk;
++		hclk = bp->hclk;
++		tx_clk = bp->tx_clk;
++		rx_clk = bp->rx_clk;
+ 	}
+-	clk_disable_unprepare(bp->tsu_clk);
++
++	macb_clks_disable(pclk, hclk, tx_clk, rx_clk, bp->tsu_clk);
+ 
+ 	return 0;
+ }
 -- 
 2.7.4
 
