@@ -2,43 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C29BD2D1050
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 13:18:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F7862D105C
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 13:18:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727660AbgLGMQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 07:16:53 -0500
+        id S1727754AbgLGMRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 07:17:34 -0500
 Received: from esa5.microchip.iphmx.com ([216.71.150.166]:29293 "EHLO
         esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726938AbgLGMQw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 07:16:52 -0500
+        with ESMTP id S1727058AbgLGMRd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 07:17:33 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1607343413; x=1638879413;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=q6qR+M14sEQGT5M/G/pwCC67yLfxNrDN5aaMrQcZb60=;
-  b=voN4BSh/9Vfmj1+y+/Zqz3eat8TJclt24CU87ydtFoLTzue2D1fN22EE
-   csZJfKBJ5dGc53sdV9+LyFhDFfWlPeCpWuGFZZ5NLjBXB3si7GqyQ5/bR
-   6ClQNVGwGGS6f7ukc4SM2+bQ2xD3vPsjug0GAtfVIDNTLXKJBI6XAkABK
-   +QpIxHiQh1s3mIXi5djEf20xTxBxtPluk9embVVuy/VUxSvUJhdnCE/lg
-   snFbsuNnycUr/AwjAeVGIWTPGx9gH9X8D+1YvwxgD0ldle9T3a3SJOyLZ
-   rEAY6bJBAsS3KMuLE3+VMWPLsoZVuGRxynctT5iWVSTVYNFcj545/z4lP
+  t=1607343454; x=1638879454;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=PBMnO1VSHI9r6EHfdysUn/OdEkmam+sImjFCxbEArP0=;
+  b=oe2FPH16itDoHQcosBSIi9GOvIjGgdq7i07Xm6qlweh2ALSzon8Vh//Z
+   FnMi8rhyuH28BYgK7ZkG2+2tTkLDP0PPeeVSZrgW+EVrNrYGbr18YzTzo
+   5Uyu7GQubjeBuIqGTx9+taxfBVUmItLKTjok00+M28TjWQqaDS9im1Jjv
+   ellc8rubmuM9RkzIvKUsMWh7bL0AYWfC2OQI+6YzU44hSsJecJQtZTY7K
+   Cs5uk5nAcFWF/ii56ewqO/o+i40nHS/UwOiAuw9uaCueORTc7PUlO1oVb
+   8lrYmYhGsQONBYmfsru+gPa2U70eMpaKaIWnKx3lXADCdTsT8wkEg8WiA
    w==;
-IronPort-SDR: R+zNuVLp06ABWbW733aDqxBUVgaZ6DsrsjDsEp8uW8mSj0fzQLGiT1QXOz9wkAiAJ5I3IE8ALo
- 6fXIPkG53nWvWzSbJmYxxm3fBRxVsrdSSSqzmXHYuI9ddYsM8t1XUrCr4YJUOGdCOl/cpsQws+
- qk5T+ln4OAyhphXM1ycOdGLDDatvJd5+oPv2WsoFFmDB3iOY0gUzqWOhEUVOlEZqEWi4VOwhNN
- 86BYQWnoSrnZk28DN5VpAu64yuhAhQojrSb/ZmtkqGDGxsSBFagKmnhrchJRpooLjJbtK/Prxv
- NlQ=
+IronPort-SDR: mA1y0Ok4sZxyJrRqrHB31EEeDPdNAOKC4jjbBWUttK+BDm4I+y2CnEH1ZMXUiI/YgECj3O5Tw4
+ SBr423ZKs6Md/CFt4BxdKGXihLDI1O1pnSLtm5Hqhjq9EHmueJWLyR5Na8+0IGXVuewhEVZ80L
+ jDLiSaeFVA3VypsKzWAA0fcVRfvu78WcJUbbTxH5Qw+92N1LF0qk5p1Ac0S3t9siDllj8CMg2s
+ cdtDFb/0vkcpsThde5M7RjTf1yr9eGw/sGI21RaXjOC7zKQ0axntN3pU6Iux0zsVUOPOXVnnmC
+ nd0=
 X-IronPort-AV: E=Sophos;i="5.78,399,1599548400"; 
-   d="scan'208";a="101191972"
+   d="scan'208";a="101192012"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Dec 2020 05:15:47 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Dec 2020 05:15:56 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 7 Dec 2020 05:15:46 -0700
+ 15.1.1979.3; Mon, 7 Dec 2020 05:15:53 -0700
 Received: from m18063-ThinkPad-T460p.microchip.com (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Mon, 7 Dec 2020 05:15:37 -0700
+ 15.1.1979.3 via Frontend Transport; Mon, 7 Dec 2020 05:15:47 -0700
 From:   Claudiu Beznea <claudiu.beznea@microchip.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
         <nicolas.ferre@microchip.com>, <linux@armlinux.org.uk>,
@@ -47,47 +48,195 @@ CC:     <yash.shah@sifive.com>, <netdev@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-riscv@lists.infradead.org>,
         Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v2 0/8] net: macb: add support for sama7g5
-Date:   Mon, 7 Dec 2020 14:15:25 +0200
-Message-ID: <1607343333-26552-1-git-send-email-claudiu.beznea@microchip.com>
+Subject: [PATCH v2 1/8] net: macb: add userio bits as platform configuration
+Date:   Mon, 7 Dec 2020 14:15:26 +0200
+Message-ID: <1607343333-26552-2-git-send-email-claudiu.beznea@microchip.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1607343333-26552-1-git-send-email-claudiu.beznea@microchip.com>
+References: <1607343333-26552-1-git-send-email-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+This is necessary for SAMA7G5 as it uses different values for
+PHY interface and also introduces hdfctlen bit.
 
-This series adds support for SAMA7G5 Ethernet interfaces: one 10/100Mbps
-and one 1Gbps interfaces.
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+---
+ drivers/net/ethernet/cadence/macb.h      | 10 ++++++++++
+ drivers/net/ethernet/cadence/macb_main.c | 28 ++++++++++++++++++++++++----
+ 2 files changed, 34 insertions(+), 4 deletions(-)
 
-Along with it I also included a fix to disable clocks for SiFive FU540-C000
-on failure path of fu540_c000_clk_init().
-
-Thank you,
-Claudiu Beznea
-
-Changes in v2:
-- introduced patch "net: macb: add function to disable all macb clocks" and
-  update patch "net: macb: unprepare clocks in case of failure" accordingly
-- collected tags
-
-Claudiu Beznea (8):
-  net: macb: add userio bits as platform configuration
-  net: macb: add capability to not set the clock rate
-  net: macb: add function to disable all macb clocks
-  net: macb: unprepare clocks in case of failure
-  dt-bindings: add documentation for sama7g5 ethernet interface
-  dt-bindings: add documentation for sama7g5 gigabit ethernet interface
-  net: macb: add support for sama7g5 gem interface
-  net: macb: add support for sama7g5 emac interface
-
- Documentation/devicetree/bindings/net/macb.txt |   2 +
- drivers/net/ethernet/cadence/macb.h            |  11 ++
- drivers/net/ethernet/cadence/macb_main.c       | 158 +++++++++++++++++--------
- 3 files changed, 122 insertions(+), 49 deletions(-)
-
+diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
+index 1f5da4e4f4b2..7daabffe4318 100644
+--- a/drivers/net/ethernet/cadence/macb.h
++++ b/drivers/net/ethernet/cadence/macb.h
+@@ -1147,6 +1147,14 @@ struct macb_pm_data {
+ 	u32 usrio;
+ };
+ 
++struct macb_usrio_config {
++	u32 mii;
++	u32 rmii;
++	u32 rgmii;
++	u32 refclk;
++	u32 hdfctlen;
++};
++
+ struct macb_config {
+ 	u32			caps;
+ 	unsigned int		dma_burst_length;
+@@ -1155,6 +1163,7 @@ struct macb_config {
+ 			    struct clk **rx_clk, struct clk **tsu_clk);
+ 	int	(*init)(struct platform_device *pdev);
+ 	int	jumbo_max_len;
++	const struct macb_usrio_config *usrio;
+ };
+ 
+ struct tsu_incr {
+@@ -1288,6 +1297,7 @@ struct macb {
+ 	u32	rx_intr_mask;
+ 
+ 	struct macb_pm_data pm_data;
++	const struct macb_usrio_config *usrio;
+ };
+ 
+ #ifdef CONFIG_MACB_USE_HWSTAMP
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 7b1d195787dc..6d46153a7c4b 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -3913,15 +3913,15 @@ static int macb_init(struct platform_device *pdev)
+ 	if (!(bp->caps & MACB_CAPS_USRIO_DISABLED)) {
+ 		val = 0;
+ 		if (phy_interface_mode_is_rgmii(bp->phy_interface))
+-			val = GEM_BIT(RGMII);
++			val = bp->usrio->rgmii;
+ 		else if (bp->phy_interface == PHY_INTERFACE_MODE_RMII &&
+ 			 (bp->caps & MACB_CAPS_USRIO_DEFAULT_IS_MII_GMII))
+-			val = MACB_BIT(RMII);
++			val = bp->usrio->rmii;
+ 		else if (!(bp->caps & MACB_CAPS_USRIO_DEFAULT_IS_MII_GMII))
+-			val = MACB_BIT(MII);
++			val = bp->usrio->mii;
+ 
+ 		if (bp->caps & MACB_CAPS_USRIO_HAS_CLKEN)
+-			val |= MACB_BIT(CLKEN);
++			val |= bp->usrio->refclk;
+ 
+ 		macb_or_gem_writel(bp, USRIO, val);
+ 	}
+@@ -4439,6 +4439,13 @@ static int fu540_c000_init(struct platform_device *pdev)
+ 	return macb_init(pdev);
+ }
+ 
++static const struct macb_usrio_config macb_default_usrio = {
++	.mii = MACB_BIT(MII),
++	.rmii = MACB_BIT(RMII),
++	.rgmii = GEM_BIT(RGMII),
++	.refclk = MACB_BIT(CLKEN),
++};
++
+ static const struct macb_config fu540_c000_config = {
+ 	.caps = MACB_CAPS_GIGABIT_MODE_AVAILABLE | MACB_CAPS_JUMBO |
+ 		MACB_CAPS_GEM_HAS_PTP,
+@@ -4446,12 +4453,14 @@ static const struct macb_config fu540_c000_config = {
+ 	.clk_init = fu540_c000_clk_init,
+ 	.init = fu540_c000_init,
+ 	.jumbo_max_len = 10240,
++	.usrio = &macb_default_usrio,
+ };
+ 
+ static const struct macb_config at91sam9260_config = {
+ 	.caps = MACB_CAPS_USRIO_HAS_CLKEN | MACB_CAPS_USRIO_DEFAULT_IS_MII_GMII,
+ 	.clk_init = macb_clk_init,
+ 	.init = macb_init,
++	.usrio = &macb_default_usrio,
+ };
+ 
+ static const struct macb_config sama5d3macb_config = {
+@@ -4459,6 +4468,7 @@ static const struct macb_config sama5d3macb_config = {
+ 	      | MACB_CAPS_USRIO_HAS_CLKEN | MACB_CAPS_USRIO_DEFAULT_IS_MII_GMII,
+ 	.clk_init = macb_clk_init,
+ 	.init = macb_init,
++	.usrio = &macb_default_usrio,
+ };
+ 
+ static const struct macb_config pc302gem_config = {
+@@ -4466,6 +4476,7 @@ static const struct macb_config pc302gem_config = {
+ 	.dma_burst_length = 16,
+ 	.clk_init = macb_clk_init,
+ 	.init = macb_init,
++	.usrio = &macb_default_usrio,
+ };
+ 
+ static const struct macb_config sama5d2_config = {
+@@ -4473,6 +4484,7 @@ static const struct macb_config sama5d2_config = {
+ 	.dma_burst_length = 16,
+ 	.clk_init = macb_clk_init,
+ 	.init = macb_init,
++	.usrio = &macb_default_usrio,
+ };
+ 
+ static const struct macb_config sama5d3_config = {
+@@ -4482,6 +4494,7 @@ static const struct macb_config sama5d3_config = {
+ 	.clk_init = macb_clk_init,
+ 	.init = macb_init,
+ 	.jumbo_max_len = 10240,
++	.usrio = &macb_default_usrio,
+ };
+ 
+ static const struct macb_config sama5d4_config = {
+@@ -4489,18 +4502,21 @@ static const struct macb_config sama5d4_config = {
+ 	.dma_burst_length = 4,
+ 	.clk_init = macb_clk_init,
+ 	.init = macb_init,
++	.usrio = &macb_default_usrio,
+ };
+ 
+ static const struct macb_config emac_config = {
+ 	.caps = MACB_CAPS_NEEDS_RSTONUBR | MACB_CAPS_MACB_IS_EMAC,
+ 	.clk_init = at91ether_clk_init,
+ 	.init = at91ether_init,
++	.usrio = &macb_default_usrio,
+ };
+ 
+ static const struct macb_config np4_config = {
+ 	.caps = MACB_CAPS_USRIO_DISABLED,
+ 	.clk_init = macb_clk_init,
+ 	.init = macb_init,
++	.usrio = &macb_default_usrio,
+ };
+ 
+ static const struct macb_config zynqmp_config = {
+@@ -4511,6 +4527,7 @@ static const struct macb_config zynqmp_config = {
+ 	.clk_init = macb_clk_init,
+ 	.init = macb_init,
+ 	.jumbo_max_len = 10240,
++	.usrio = &macb_default_usrio,
+ };
+ 
+ static const struct macb_config zynq_config = {
+@@ -4519,6 +4536,7 @@ static const struct macb_config zynq_config = {
+ 	.dma_burst_length = 16,
+ 	.clk_init = macb_clk_init,
+ 	.init = macb_init,
++	.usrio = &macb_default_usrio,
+ };
+ 
+ static const struct of_device_id macb_dt_ids[] = {
+@@ -4640,6 +4658,8 @@ static int macb_probe(struct platform_device *pdev)
+ 		bp->wol |= MACB_WOL_HAS_MAGIC_PACKET;
+ 	device_set_wakeup_capable(&pdev->dev, bp->wol & MACB_WOL_HAS_MAGIC_PACKET);
+ 
++	bp->usrio = macb_config->usrio;
++
+ 	spin_lock_init(&bp->lock);
+ 
+ 	/* setup capabilities */
 -- 
 2.7.4
 
