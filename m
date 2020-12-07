@@ -2,179 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B34072D1A48
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 21:11:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 188232D1A4D
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 21:11:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726066AbgLGUKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 15:10:12 -0500
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:28148 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725816AbgLGUKM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 15:10:12 -0500
+        id S1726920AbgLGUKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 15:10:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37026 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725808AbgLGUKm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 15:10:42 -0500
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4ADC061794
+        for <netdev@vger.kernel.org>; Mon,  7 Dec 2020 12:10:01 -0800 (PST)
+Received: by mail-ej1-x641.google.com with SMTP id d17so21305262ejy.9
+        for <netdev@vger.kernel.org>; Mon, 07 Dec 2020 12:10:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1607371810; x=1638907810;
-  h=from:to:cc:date:message-id:references:in-reply-to:
-   content-id:mime-version:content-transfer-encoding:subject;
-  bh=Jvn/yHcQofAauxnUkwoJVCQGeAJ8xR8WhiKGQILTDFA=;
-  b=QHgPQ2RGj9JJO2cp4hsfiO9XZ/uCtWCC4igfYx4E+20oPyd6/jG4NL1v
-   bislWELMV/4muSjWBJJfkWiVZ3qHbY+SSDxsGga2m64aCyVmuLYKlcUNl
-   qYvcpjubrcpAZ2uN7vAMx+sxtO75fD3aQrBh0FRzAuAGig3+6jadTneXe
-   0=;
-X-IronPort-AV: E=Sophos;i="5.78,400,1599523200"; 
-   d="scan'208";a="67774464"
-Subject: Re: [PATCH net-next] tcp: optimise receiver buffer autotuning initialisation
- for high latency connections
-Thread-Topic: [PATCH net-next] tcp: optimise receiver buffer autotuning initialisation for
- high latency connections
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2a-d0be17ee.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 07 Dec 2020 20:09:20 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-2a-d0be17ee.us-west-2.amazon.com (Postfix) with ESMTPS id 04607A011F;
-        Mon,  7 Dec 2020 20:09:18 +0000 (UTC)
-Received: from EX13D35UWB002.ant.amazon.com (10.43.161.154) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 7 Dec 2020 20:09:18 +0000
-Received: from EX13D18EUA004.ant.amazon.com (10.43.165.164) by
- EX13D35UWB002.ant.amazon.com (10.43.161.154) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 7 Dec 2020 20:09:17 +0000
-Received: from EX13D18EUA004.ant.amazon.com ([10.43.165.164]) by
- EX13D18EUA004.ant.amazon.com ([10.43.165.164]) with mapi id 15.00.1497.006;
- Mon, 7 Dec 2020 20:09:16 +0000
-From:   "Mohamed Abuelfotoh, Hazem" <abuehaze@amazon.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        Neal Cardwell <ncardwell@google.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "ycheng@google.com" <ycheng@google.com>,
-        "weiwan@google.com" <weiwan@google.com>,
-        "Strohman, Andy" <astroh@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>
-Thread-Index: AQHWym1GjWRxI1tB2UKaX8lFVs4qcanoaEaAgANdNICAAAxqgIAAA6oAgAADDACAAAmngIAAMpEA
-Date:   Mon, 7 Dec 2020 20:09:16 +0000
-Message-ID: <4235A2E1-A685-43DE-B513-C9163DE434CB@amazon.com>
-References: <20201204180622.14285-1-abuehaze@amazon.com>
- <44E3AA29-F033-4B8E-A1BC-E38824B5B1E3@amazon.com>
- <CANn89iJgJQfOeNr9aZHb+_Vozgd9v4S87Kf4iV=mKhuPDGLkEg@mail.gmail.com>
- <3F02FF08-EDA6-4DFD-8D93-479A5B05E25A@amazon.com>
- <CANn89iL_5QFGQLzxxLyqfNMGiV2wF4CbkY==x5Sh5vqKOTgFtw@mail.gmail.com>
- <781BA871-5D3D-4C89-9629-81345CC41C5C@amazon.com>
- <CANn89iK1G-YMWo07uByfUwrrK8QPvQPeFrRG1vJhB_OhJo7v2A@mail.gmail.com>
- <CADVnQymROUn6jQdPKxNr_Uc3KMqjX4t0M6=HC6rDxmZzZVv0=Q@mail.gmail.com>
- <CANn89iJyw+EYiXLz_mYQQxdqnZn=vhmj9fj=0Qz0doyzZCsMnQ@mail.gmail.com>
-In-Reply-To: <CANn89iJyw+EYiXLz_mYQQxdqnZn=vhmj9fj=0Qz0doyzZCsMnQ@mail.gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-GB
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.165.153]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <20F00409C4E8BA4087927027436C312E@amazon.com>
+        d=chromium.org; s=google;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=VHkQ+nvBXFrXSg5QgxUT/Yn56AfAZWnctyqudGP7iUE=;
+        b=NdkdTrrA5p42HjeOlz0rWUorqj4muvH/RFJi6l0l8OboMEXUxYIhoqM/MZcqMfKzvp
+         1srKSYLbICw0sW1Fd0OTzJEwV+++qWSaXwR/mDhEns1bzJ2gUA4fOtBKsZKQQO1Ici7e
+         yVDYDHeBuxEl6p6QsI6bTUH9jQ464LXMNjy9k=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=VHkQ+nvBXFrXSg5QgxUT/Yn56AfAZWnctyqudGP7iUE=;
+        b=kY8rV+h8QcBXOWgOLw1+SZAXA7i72zb1EVtpI5kgM3DPPQMyTDc2FEcDvPHkRW+o0n
+         qcNWdtVmiH2g5a9CjsLIKiY1nBqKnuYPrrP6CxlsVDvFc60xbAt4qumFlnPYlms7ghgV
+         40rplSZ1dGSdNo7YHuIH4OtBxbxW00L36OTq+iwX4ONtbisn8BNQ9s4snV5KAUFxu1mV
+         jCPNriZEIsOflDZjpjZXB0bYuTp1j9LiXECN3cloLHedqK/5iB+yX+obV+BiHj3guUoi
+         RICF/eIqUbG8jNjQA9FkF4sJMEz29dUWmcherQTqtu85MBnK8gFqWUfTTfaqMFcxz5WQ
+         efOg==
+X-Gm-Message-State: AOAM533Q8lY03iZYmjMMKW7kJdaUprjZsY0VIMVVbyj8ewdxjWz/Hlj2
+        w/Bq2LDi8Idrt5jI7KJyNn+JxQ==
+X-Google-Smtp-Source: ABdhPJx2HCFhhVuarEHcEMJ8qFlJOBz7hbByeE4q9TY68GtLeatN4Gj6Gt/PZIN2M6/ugn08HNdi0w==
+X-Received: by 2002:a17:906:1393:: with SMTP id f19mr20374282ejc.431.1607371800463;
+        Mon, 07 Dec 2020 12:10:00 -0800 (PST)
+Received: from ?IPv6:2a04:ee41:4:1318:ea45:a00:4d43:48fc? ([2a04:ee41:4:1318:ea45:a00:4d43:48fc])
+        by smtp.gmail.com with ESMTPSA id t8sm14048952eju.69.2020.12.07.12.09.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Dec 2020 12:09:59 -0800 (PST)
+Message-ID: <046e725cf72ddae459cc9f5624402a1590307524.camel@chromium.org>
+Subject: Re: linux-next: build failure after merge of the block tree
+From:   Florent Revest <revest@chromium.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Jens Axboe <axboe@kernel.dk>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Florent Revest <revest@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Date:   Mon, 07 Dec 2020 21:09:59 +0100
+In-Reply-To: <20201207140951.4c04f26f@canb.auug.org.au>
+References: <20201207140951.4c04f26f@canb.auug.org.au>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.4-2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ICAgID5JIHdhbnQgdG8gc3RhdGUgYWdhaW4gdGhhdCB1c2luZyA1MzYgYnl0ZXMgYXMgYSBtYWdp
-YyB2YWx1ZSBtYWtlcyBubw0KICAgIHNlbnNlIHRvIG1lLg0KDQogPmF1dG90dW5pbmcgbWlnaHQg
-YmUgZGVsYXllZCBieSBvbmUgUlRULCB0aGlzIGRvZXMgbm90IG1hdGNoIG51bWJlcnMNCiA+Z2l2
-ZW4gYnkgTW9oYW1lZCAoZmxvd3Mgc3R1Y2sgaW4gbG93IHNwZWVkKQ0KDQogID5hdXRvdHVuaW5n
-IGlzIGFuIGhldXJpc3RpYywgYW5kIGJlY2F1c2UgaXQgaGFzIG9uZSBSVFQgbGF0ZW5jeSwgaXQg
-aXMNCiAgID5jcnVjaWFsIHRvIGdldCBwcm9wZXIgaW5pdGlhbCByY3ZtZW0gdmFsdWVzLg0KDQog
-ICA+UGVvcGxlIHVzaW5nIE1UVT05MDAwIHNob3VsZCBrbm93IHRoZXkgaGF2ZSB0byB0dW5lIHRj
-cF9ybWVtWzFdDQogICA+YWNjb3JkaW5nbHksIGVzcGVjaWFsbHkgd2hlbiB1c2luZyBkcml2ZXJz
-IGNvbnN1bWluZyBvbmUgcGFnZSBwZXINCiAgID4raW5jb21pbmcgTVNTLg0KDQoNCg0KVGhlIG1h
-Z2ljIG51bWJlciB3b3VsZCBiZSAxMCpyY3ZfbXNzPTUzNjAgbm90IDUzNiBhbmQgaW4gbXkgb3Bp
-bmlvbiBpdCdzIGEgYmlnIGFtb3VudCBvZiBkYXRhIHRvIGJlIHNlbnQgaW4gc2VjdXJpdHkgYXR0
-YWNrIHNvIGlmIHdlIGFyZSB0YWxraW5nIGFib3V0IEREb3MgYXR0YWNrIHRyaWdnZXJpbmcgQXV0
-b3R1bmluZyBhdCA1MzYwIGJ5dGVzIEknZCBzYXkgaGUgd2lsbCBhbHNvIGJlIGFibGUgdG8gdHJp
-Z2dlciBpdCBzZW5kaW5nIDY0S0IgYnV0IEkgdG90YWxseSBhZ3JlZSB0aGF0IGl0IHdvdWxkIGJl
-IGVhc2llciB3aXRoIGxvd2VyIHJjdnFfc3BhY2Uuc3BhY2UsIGl0J3MgYWx3YXlzIGEgdHJhZGVv
-ZmYgYmV0d2VlbiBzZWN1cml0eSBhbmQgcGVyZm9ybWFuY2UuDQoNCk90aGVyIG9wdGlvbnMgd291
-bGQgYmUgdG8gZWl0aGVyIGNvbnNpZGVyIHRoZSBjb25maWd1cmVkIE1UVSBpbiB0aGUgcmN2X3du
-ZCBjYWxjdWxhdGlvbiBvciBwcm9iYWJseSBjaGVjayB0aGUgTVRVIGJlZm9yZSBjYWxjdWxhdGlu
-ZyB0aGUgaW5pdGlhbCByY3ZzcGFjZS4gV2UgaGF2ZSB0byBtYWtlIHN1cmUgdGhhdCBpbml0aWFs
-IHJlY2VpdmUgc3BhY2UgaXMgbG93ZXIgdGhhbiBpbml0aWFsIHJlY2VpdmUgd2luZG93IHNvIEF1
-dG90dW5pbmcgd291bGQgd29yayByZWdhcmRsZXNzIHRoZSBjb25maWd1cmVkIE1UVSBvbiB0aGUg
-cmVjZWl2ZXIgYW5kIG9ubHkgcGVvcGxlIHVzaW5nIEp1bWJvIGZyYW1lcyB3aWxsIGJlIHBheWlu
-ZyB0aGUgcHJpY2UgaWYgd2UgYWdyZWVkIHRoYXQgaXQncyBleHBlY3RlZCBmb3IgSnVtYm8gZnJh
-bWUgdXNlcnMgdG8gaGF2ZSBtYWNoaW5lcyB3aXRoIG1vcmUgbWVtb3J5LCAgSSdkIHNheSBzb21l
-dGhpbmcgYXMgYmVsb3cgc2hvdWxkIHdvcms6DQoNCnZvaWQgdGNwX2luaXRfYnVmZmVyX3NwYWNl
-KHN0cnVjdCBzb2NrICpzaykNCnsNCglpbnQgdGNwX2FwcF93aW4gPSBzb2NrX25ldChzayktPmlw
-djQuc3lzY3RsX3RjcF9hcHBfd2luOw0KCXN0cnVjdCBpbmV0X2Nvbm5lY3Rpb25fc29jayAqaWNz
-ayA9IGluZXRfY3NrKHNrKTsNCglzdHJ1Y3QgdGNwX3NvY2sgKnRwID0gdGNwX3NrKHNrKTsNCglp
-bnQgbWF4d2luOw0KDQoJaWYgKCEoc2stPnNrX3VzZXJsb2NrcyAmIFNPQ0tfU05EQlVGX0xPQ0sp
-KQ0KCQl0Y3Bfc25kYnVmX2V4cGFuZChzayk7DQoJaWYodHAtPmFkdm1zcyA8IDYwMDApDQoJCXRw
-LT5yY3ZxX3NwYWNlLnNwYWNlID0gbWluX3QodTMyLCB0cC0+cmN2X3duZCwgVENQX0lOSVRfQ1dO
-RCAqIHRwLT5hZHZtc3MpOw0KCWVsc2UNCgkJdHAtPnJjdnFfc3BhY2Uuc3BhY2UgPSBtaW5fdCh1
-MzIsIHRwLT5yY3Zfd25kLCBUQ1BfSU5JVF9DV05EICogaWNzay0+aWNza19hY2sucmN2X21zcyk7
-DQoJdGNwX21zdGFtcF9yZWZyZXNoKHRwKTsNCgl0cC0+cmN2cV9zcGFjZS50aW1lID0gdHAtPnRj
-cF9tc3RhbXA7DQoJdHAtPnJjdnFfc3BhY2Uuc2VxID0gdHAtPmNvcGllZF9zZXE7DQoNCg0KDQpJ
-IGRvbid0IHRoaW5rIHRoYXQgd2Ugc2hvdWxkIHJlbHkgb24gQWRtaW5zIG1hbnVhbGx5IHR1bmlu
-ZyB0aGlzIHRjcF9ybWVtWzFdIHdpdGggSnVtYm8gZnJhbWUgaW4gdXNlIGFsc28gTGludXggdXNl
-cnMgc2hvdWxkbid0IGV4cGVjdCBwZXJmb3JtYW5jZSBkZWdyYWRhdGlvbiBhZnRlciBrZXJuZWwg
-dXBncmFkZS4gYWx0aG91Z2ggWzFdIGlzIHRoZSBvbmx5IHB1YmxpYyByZXBvcnRpbmcgb2YgdGhp
-cyBpc3N1ZSwgSSBhbSBwcmV0dHkgc3VyZSB3ZSB3aWxsIHNlZSBtb3JlIHVzZXJzIHJlcG9ydGlu
-ZyB0aGlzIHdpdGggTGludXggTWFpbiBkaXN0cmlidXRpb25zIG1vdmluZyB0byBrZXJuZWwgNS40
-IGFzIHN0YWJsZSB2ZXJzaW9uLiBJbiBTdW1tYXJ5IHdlIHNob3VsZCBjb21lIHVwIHdpdGggc29t
-ZXRoaW5nIGVpdGhlciB0aGUgcHJvcG9zZWQgcGF0Y2ggb3Igc29tZXRoaW5nIGVsc2UgdG8gYXZv
-aWQgYWRtaW5zIGRvaW5nIHRoZSBtYW51YWwgam9iLg0KDQoNCkxpbmtzDQoNClsxXSBodHRwczov
-L2dpdGh1Yi5jb20va3ViZXJuZXRlcy9rb3BzL2lzc3Vlcy8xMDIwNg0KDQrvu79PbiAwNy8xMi8y
-MDIwLCAxNzowOCwgIkVyaWMgRHVtYXpldCIgPGVkdW1hemV0QGdvb2dsZS5jb20+IHdyb3RlOg0K
-DQogICAgQ0FVVElPTjogVGhpcyBlbWFpbCBvcmlnaW5hdGVkIGZyb20gb3V0c2lkZSBvZiB0aGUg
-b3JnYW5pemF0aW9uLiBEbyBub3QgY2xpY2sgbGlua3Mgb3Igb3BlbiBhdHRhY2htZW50cyB1bmxl
-c3MgeW91IGNhbiBjb25maXJtIHRoZSBzZW5kZXIgYW5kIGtub3cgdGhlIGNvbnRlbnQgaXMgc2Fm
-ZS4NCg0KDQoNCiAgICBPbiBNb24sIERlYyA3LCAyMDIwIGF0IDU6MzQgUE0gTmVhbCBDYXJkd2Vs
-bCA8bmNhcmR3ZWxsQGdvb2dsZS5jb20+IHdyb3RlOg0KICAgID4NCiAgICA+IE9uIE1vbiwgRGVj
-IDcsIDIwMjAgYXQgMTE6MjMgQU0gRXJpYyBEdW1hemV0IDxlZHVtYXpldEBnb29nbGUuY29tPiB3
-cm90ZToNCiAgICA+ID4NCiAgICA+ID4gT24gTW9uLCBEZWMgNywgMjAyMCBhdCA1OjA5IFBNIE1v
-aGFtZWQgQWJ1ZWxmb3RvaCwgSGF6ZW0NCiAgICA+ID4gPGFidWVoYXplQGFtYXpvbi5jb20+IHdy
-b3RlOg0KICAgID4gPiA+DQogICAgPiA+ID4gICAgID5TaW5jZSBJIGNhbiBub3QgcmVwcm9kdWNl
-IHRoaXMgcHJvYmxlbSB3aXRoIGFub3RoZXIgTklDIG9uIHg4NiwgSQ0KICAgID4gPiA+ICAgICA+
-cmVhbGx5IHdvbmRlciBpZiB0aGlzIGlzIG5vdCBhbiBpc3N1ZSB3aXRoIEVOQSBkcml2ZXIgb24g
-UG93ZXJQQw0KICAgID4gPiA+ICAgICA+cGVyaGFwcyA/DQogICAgPiA+ID4NCiAgICA+ID4gPg0K
-ICAgID4gPiA+IEkgYW0gYWJsZSB0byByZXByb2R1Y2UgaXQgb24geDg2IGJhc2VkIEVDMiBpbnN0
-YW5jZXMgdXNpbmcgRU5BICBvciAgWGVuIG5ldGZyb250IG9yIEludGVsIGl4Z2JldmYgZHJpdmVy
-IG9uIHRoZSByZWNlaXZlciBzbyBpdCdzIG5vdCBzcGVjaWZpYyB0byBFTkEsIHdlIHdlcmUgYWJs
-ZSB0byBlYXNpbHkgcmVwcm9kdWNlIGl0IGJldHdlZW4gMiBWTXMgcnVubmluZyBpbiB2aXJ0dWFs
-IGJveCBvbiB0aGUgc2FtZSBwaHlzaWNhbCBob3N0IGNvbnNpZGVyaW5nIHRoZSBlbnZpcm9ubWVu
-dCByZXF1aXJlbWVudHMgSSBtZW50aW9uZWQgaW4gbXkgZmlyc3QgZS1tYWlsLg0KICAgID4gPiA+
-DQogICAgPiA+ID4gV2hhdCdzIHRoZSBSVFQgYmV0d2VlbiB0aGUgc2VuZGVyICYgcmVjZWl2ZXIg
-aW4geW91ciByZXByb2R1Y3Rpb24/IEFyZSB5b3UgdXNpbmcgYmJyIG9uIHRoZSBzZW5kZXIgc2lk
-ZT8NCiAgICA+ID4NCiAgICA+ID4NCiAgICA+ID4gMTAwbXMgUlRUDQogICAgPiA+DQogICAgPiA+
-IFdoaWNoIGV4YWN0IHZlcnNpb24gb2YgbGludXgga2VybmVsIGFyZSB5b3UgdXNpbmcgPw0KICAg
-ID4NCiAgICA+IFRoYW5rcyBmb3IgdGVzdGluZyB0aGlzLCBFcmljLiBXb3VsZCB5b3UgYmUgYWJs
-ZSB0byBzaGFyZSB0aGUgTVRVDQogICAgPiBjb25maWcgY29tbWFuZHMgeW91IHVzZWQsIGFuZCB0
-aGUgdGNwZHVtcCB0cmFjZXMgeW91IGdldD8gSSdtDQogICAgPiBzdXJwcmlzZWQgdGhhdCByZWNl
-aXZlIGJ1ZmZlciBhdXRvdHVuaW5nIHdvdWxkIHdvcmsgZm9yIGFkdm1zcyBvZg0KICAgID4gYXJv
-dW5kIDY1MDAgb3IgaGlnaGVyLg0KDQogICAgYXV0b3R1bmluZyBtaWdodCBiZSBkZWxheWVkIGJ5
-IG9uZSBSVFQsIHRoaXMgZG9lcyBub3QgbWF0Y2ggbnVtYmVycw0KICAgIGdpdmVuIGJ5IE1vaGFt
-ZWQgKGZsb3dzIHN0dWNrIGluIGxvdyBzcGVlZCkNCg0KICAgIGF1dG90dW5pbmcgaXMgYW4gaGV1
-cmlzdGljLCBhbmQgYmVjYXVzZSBpdCBoYXMgb25lIFJUVCBsYXRlbmN5LCBpdCBpcw0KICAgIGNy
-dWNpYWwgdG8gZ2V0IHByb3BlciBpbml0aWFsIHJjdm1lbSB2YWx1ZXMuDQoNCiAgICBQZW9wbGUg
-dXNpbmcgTVRVPTkwMDAgc2hvdWxkIGtub3cgdGhleSBoYXZlIHRvIHR1bmUgdGNwX3JtZW1bMV0N
-CiAgICBhY2NvcmRpbmdseSwgZXNwZWNpYWxseSB3aGVuIHVzaW5nIGRyaXZlcnMgY29uc3VtaW5n
-IG9uZSBwYWdlIHBlcg0KICAgIGluY29taW5nIE1TUy4NCg0KDQogICAgKG1seDQgZHJpdmVyIG9u
-bHkgdXNlcyBvbWUgMjA0OCBieXRlcyBmcmFnbWVudCBmb3IgYSAxNTAwIE1UVSBwYWNrZXQuDQog
-ICAgZXZlbiB3aXRoIE1UVSBzZXQgdG8gOTAwMCkNCg0KICAgIEkgd2FudCB0byBzdGF0ZSBhZ2Fp
-biB0aGF0IHVzaW5nIDUzNiBieXRlcyBhcyBhIG1hZ2ljIHZhbHVlIG1ha2VzIG5vDQogICAgc2Vu
-c2UgdG8gbWUuDQoNCg0KICAgIEZvciB0aGUgcmVjb3JkLCBHb29nbGUgaGFzIGluY3JlYXNlZCB0
-Y3Bfcm1lbVsxXSB3aGVuIHN3aXRjaGluZyB0byBhIGJpZ2dlciBNVFUuDQoNCiAgICBUaGUgcmVh
-c29uIGlzIHNpbXBsZSA6IElmIHdlIGludGVuZCB0byByZWNlaXZlIDEwIE1TUywgd2Ugc2hvdWxk
-IGFsbG93DQogICAgZm9yIDkwMDAwIGJ5dGVzIG9mIHBheWxvYWQsIG9yIHRjcF9ybWVtWzFdIHNl
-dCB0byAxODAsMDAwDQogICAgQmVjYXVzZSBvZiBhdXRvdHVuaW5nIGxhdGVuY3ksIGRvdWJsaW5n
-IHRoZSB2YWx1ZSBpcyBhZHZpc2VkIDogMzYwMDAwDQoNCiAgICBBbm90aGVyIHByb2JsZW0gd2l0
-aCBraWNraW5nIGF1dG90dW5pbmcgdG9vIGZhc3QgaXMgdGhhdCBpdCBtaWdodA0KICAgIGFsbG93
-IGJpZ2dlciBzay0+c2tfcmN2YnVmIHZhbHVlcyBldmVuIGZvciBzbWFsbCBmbG93cywgb3Blbmlu
-ZyBtb3JlDQogICAgc3VyZmFjZSB0byBtYWxpY2lvdXMgYXR0YWNrcy4NCg0KICAgIEkgX3RoaW5r
-XyB0aGF0IGlmIHdlIHdhbnQgdG8gYWxsb3cgYWRtaW5zIHRvIHNldCBoaWdoIE1UVSB3aXRob3V0
-DQogICAgaGF2aW5nIHRvIHR1bmUgdGNwX3JtZW1bXSwgd2UgbmVlZCBzb21ldGhpbmcgZGlmZmVy
-ZW50IHRoYW4gY3VycmVudA0KICAgIHByb3Bvc2FsLg0KDQoKCgpBbWF6b24gV2ViIFNlcnZpY2Vz
-IEVNRUEgU0FSTCwgMzggYXZlbnVlIEpvaG4gRi4gS2VubmVkeSwgTC0xODU1IEx1eGVtYm91cmcs
-IFIuQy5TLiBMdXhlbWJvdXJnIEIxODYyODQKCkFtYXpvbiBXZWIgU2VydmljZXMgRU1FQSBTQVJM
-LCBJcmlzaCBCcmFuY2gsIE9uZSBCdXJsaW5ndG9uIFBsYXphLCBCdXJsaW5ndG9uIFJvYWQsIER1
-YmxpbiA0LCBJcmVsYW5kLCBicmFuY2ggcmVnaXN0cmF0aW9uIG51bWJlciA5MDg3MDUKCgo=
+On Mon, 2020-12-07 at 14:09 +1100, Stephen Rothwell wrote:
+> Hi all,
+> 
+> After merging the block tree, today's linux-next build (powerpc
+> ppc64_defconfig) failed like this:
+> 
+> fs/io_uring.c: In function 'io_shutdown':
+> fs/io_uring.c:3782:9: error: too many arguments to function
+> 'sock_from_file'
+>  3782 |  sock = sock_from_file(req->file, &ret);
+>       |         ^~~~~~~~~~~~~~
+> In file included from fs/io_uring.c:63:
+> include/linux/net.h:243:16: note: declared here
+>   243 | struct socket *sock_from_file(struct file *file);
+>       |                ^~~~~~~~~~~~~~
+> 
+> Caused by commit
+> 
+>   36f4fa6886a8 ("io_uring: add support for shutdown(2)")
+> 
+> interacting with commit
+> 
+>   dba4a9256bb4 ("net: Remove the err argument from sock_from_file")
+> 
+> from the bpf-next tree.
+> 
+> I have applied the following merge fix patch.
+> 
+> From: Stephen Rothwell <sfr@canb.auug.org.au>
+> Date: Mon, 7 Dec 2020 14:04:10 +1100
+> Subject: [PATCH] fixup for "net: Remove the err argument from
+> sock_from_file"
+> 
+> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> ---
+>  fs/io_uring.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/fs/io_uring.c b/fs/io_uring.c
+> index cd997264dbab..91d08408f1fe 100644
+> --- a/fs/io_uring.c
+> +++ b/fs/io_uring.c
+> @@ -3779,9 +3779,9 @@ static int io_shutdown(struct io_kiocb *req,
+> bool force_nonblock)
+>  	if (force_nonblock)
+>  		return -EAGAIN;
+>  
+> -	sock = sock_from_file(req->file, &ret);
+> +	sock = sock_from_file(req->file);
+>  	if (unlikely(!sock))
+> -		return ret;
+> +		return -ENOTSOCK;
+>  
+>  	ret = __sys_shutdown_sock(sock, req->shutdown.how);
+>  	io_req_complete(req, ret);
+> -- 
+> 2.29.2
+
+
+Thanks Stephen, this looks good to me.
 
