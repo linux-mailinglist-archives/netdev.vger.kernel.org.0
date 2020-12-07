@@ -2,103 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30B4D2D1C4A
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 22:48:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 955BA2D1C42
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 22:46:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727555AbgLGVq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 16:46:29 -0500
-Received: from mga06.intel.com ([134.134.136.31]:31813 "EHLO mga06.intel.com"
+        id S1727283AbgLGVoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 16:44:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43344 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726000AbgLGVq2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Dec 2020 16:46:28 -0500
-IronPort-SDR: htbr+mrnBvKFvJNUXlGmiR3ZEPNEkQt+ryHiqS5QnCsK2xSKkgU317205xanVQJq2Wu+CwztG+
- nrJyUwWZOLeA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9828"; a="235382250"
-X-IronPort-AV: E=Sophos;i="5.78,400,1599548400"; 
-   d="scan'208";a="235382250"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2020 13:45:48 -0800
-IronPort-SDR: e9dGbbBbJT562sc2IY8+SuDFX1mnYdrz13joajaDOSiMxT8wdr6qOBeZvJZ7MUNqXHCTbbbsbb
- X7+omVFu6boA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.78,400,1599548400"; 
-   d="scan'208";a="363324947"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga008.jf.intel.com with ESMTP; 07 Dec 2020 13:45:44 -0800
-Date:   Mon, 7 Dec 2020 22:37:11 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
-        "Jubran, Samih" <sameehj@amazon.com>,
-        John Fastabend <john.fastabend@gmail.com>, dsahern@kernel.org,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        lorenzo.bianconi@redhat.com, Jason Wang <jasowang@redhat.com>
-Subject: Re: [PATCH v5 bpf-next 02/14] xdp: initialize xdp_buff mb bit to 0
- in all XDP drivers
-Message-ID: <20201207213711.GA27205@ranger.igk.intel.com>
-References: <cover.1607349924.git.lorenzo@kernel.org>
- <693d48b46dd5172763952acd94358cc5d02dcda3.1607349924.git.lorenzo@kernel.org>
- <CAKgT0UcjtERgpV9tke-HcmP7rWOns_-jmthnGiNPES+aqhScFg@mail.gmail.com>
+        id S1725808AbgLGVoS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Dec 2020 16:44:18 -0500
+Date:   Mon, 7 Dec 2020 13:43:35 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607377417;
+        bh=ZdgCiySmxnYeCPG0fk38ET6CeRw/+tGlOaM4V7yjNFY=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=inxD7cCzD2PcOzMiozfvnpJXTywf4sbP7Ixew2J9yxnJPBOqWMOQUTo8wbWX+e0PR
+         rUYP5WNZL1iuvOqZ5Gj+QRms+1oYhusPdEE5k3bdTnKkmBbFmGogDsBslccBySLx64
+         KcW21gRyNPnXJN+qVQcRdNRZHAERUcusgYDE/VFx2fdlf2IBypZAtljx0PIen+ncgh
+         HMdpj9+3UuyQ/090OsjCpowU9lM+HNsxoCyVfX+lwwaBIzPXKU0h244QOiOnuoLTQ3
+         TV5OMRm2luTV+2RkGk++nsqsO9vBjTruiFXCROvjlmmHN8tK90dvDtYgBrLJDBvR11
+         /zOP6Q0LPyxQw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Aleksander Jan Bajkowski <olek2@wp.pl>
+Cc:     hauke@hauke-m.de, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        robh+dt@kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] net: dsa: lantiq: allow to use all GPHYs on
+ xRX300 and xRX330
+Message-ID: <20201207134335.6ef718c9@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201206132713.13452-2-olek2@wp.pl>
+References: <20201206132713.13452-1-olek2@wp.pl>
+        <20201206132713.13452-2-olek2@wp.pl>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKgT0UcjtERgpV9tke-HcmP7rWOns_-jmthnGiNPES+aqhScFg@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 07, 2020 at 01:15:00PM -0800, Alexander Duyck wrote:
-> On Mon, Dec 7, 2020 at 8:36 AM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
-> >
-> > Initialize multi-buffer bit (mb) to 0 in all XDP-capable drivers.
-> > This is a preliminary patch to enable xdp multi-buffer support.
-> >
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> 
-> I'm really not a fan of this design. Having to update every driver in
-> order to initialize a field that was fragmented is a pain. At a
-> minimum it seems like it might be time to consider introducing some
-> sort of initializer function for this so that you can update things in
-> one central place the next time you have to add a new field instead of
-> having to update every individual driver that supports XDP. Otherwise
-> this isn't going to scale going forward.
+On Sun,  6 Dec 2020 14:27:12 +0100 Aleksander Jan Bajkowski wrote:
+> This patch allows to use all PHYs on GRX300 and GRX330. The ARX300 has 3
+> and the GRX330 has 4 integrated PHYs connected to different ports compared
+> to VRX200.
+>=20
+> Port configurations:
+>=20
+> xRX200:
+> GMAC0: RGMII/MII/REVMII/RMII port
+> GMAC1: RGMII/MII/REVMII/RMII port
+> GMAC2: GPHY0 (GMII)
+> GMAC3: GPHY0 (MII)
+> GMAC4: GPHY1 (GMII)
+> GMAC5: GPHY1 (MII) or RGMII port
+>=20
+> xRX300:
+> GMAC0: RGMII port
+> GMAC1: GPHY2 (GMII)
+> GMAC2: GPHY0 (GMII)
+> GMAC3: GPHY0 (MII)
+> GMAC4: GPHY1 (GMII)
+> GMAC5: GPHY1 (MII) or RGMII port
+>=20
+> xRX330:
+> GMAC0: RGMII/GMII/RMII port
+> GMAC1: GPHY2 (GMII)
+> GMAC2: GPHY0 (GMII)
+> GMAC3: GPHY0 (MII) or GPHY3 (GMII)
+> GMAC4: GPHY1 (GMII)
+> GMAC5: GPHY1 (MII) or RGMII/RMII port
+>=20
+> Tested on D-Link DWR966 with OpenWRT.
+>=20
+> Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
 
-Also, a good example of why this might be bothering for us is a fact that
-in the meantime the dpaa driver got XDP support and this patch hasn't been
-updated to include mb setting in that driver.
+Please make sure you don't add W=3D1 C=3D1 build warnings:
 
-> 
-> > ---
-> >  drivers/net/ethernet/amazon/ena/ena_netdev.c        | 1 +
-> >  drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c       | 1 +
-> >  drivers/net/ethernet/cavium/thunder/nicvf_main.c    | 1 +
-> >  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c    | 1 +
-> >  drivers/net/ethernet/intel/i40e/i40e_txrx.c         | 1 +
-> >  drivers/net/ethernet/intel/ice/ice_txrx.c           | 1 +
-> >  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c       | 1 +
-> >  drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c   | 1 +
-> >  drivers/net/ethernet/marvell/mvneta.c               | 1 +
-> >  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c     | 1 +
-> >  drivers/net/ethernet/mellanox/mlx4/en_rx.c          | 1 +
-> >  drivers/net/ethernet/mellanox/mlx5/core/en_rx.c     | 1 +
-> >  drivers/net/ethernet/netronome/nfp/nfp_net_common.c | 1 +
-> >  drivers/net/ethernet/qlogic/qede/qede_fp.c          | 1 +
-> >  drivers/net/ethernet/sfc/rx.c                       | 1 +
-> >  drivers/net/ethernet/socionext/netsec.c             | 1 +
-> >  drivers/net/ethernet/ti/cpsw.c                      | 1 +
-> >  drivers/net/ethernet/ti/cpsw_new.c                  | 1 +
-> >  drivers/net/hyperv/netvsc_bpf.c                     | 1 +
-> >  drivers/net/tun.c                                   | 2 ++
-> >  drivers/net/veth.c                                  | 1 +
-> >  drivers/net/virtio_net.c                            | 2 ++
-> >  drivers/net/xen-netfront.c                          | 1 +
-> >  net/core/dev.c                                      | 1 +
-> >  24 files changed, 26 insertions(+)
-> >
+In file included from ../include/linux/kasan-checks.h:5,
+                 from ../include/asm-generic/rwonce.h:26,
+                 from ./arch/x86/include/generated/asm/rwonce.h:1,
+                 from ../include/linux/compiler.h:246,
+                 from ../include/linux/err.h:5,
+                 from ../include/linux/clk.h:12,
+                 from ../drivers/net/dsa/lantiq_gswip.c:28:
+drivers/net/dsa/lantiq_gswip.c: In function =E2=80=98gswip_xrx300_phylink_v=
+alidate=E2=80=99:
+drivers/net/dsa/lantiq_gswip.c:1496:35: warning: unused variable =E2=80=98m=
+ask=E2=80=99 [-Wunused-variable]
+ 1496 |  __ETHTOOL_DECLARE_LINK_MODE_MASK(mask) =3D { 0, };
+      |                                   ^~~~
+include/linux/types.h:11:16: note: in definition of macro =E2=80=98DECLARE_=
+BITMAP=E2=80=99
+   11 |  unsigned long name[BITS_TO_LONGS(bits)]
+      |                ^~~~
+drivers/net/dsa/lantiq_gswip.c:1496:2: note: in expansion of macro =E2=80=
+=98__ETHTOOL_DECLARE_LINK_MODE_MASK=E2=80=99
+ 1496 |  __ETHTOOL_DECLARE_LINK_MODE_MASK(mask) =3D { 0, };
+      |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/dsa/lantiq_gswip.c: At top level:
+drivers/net/dsa/lantiq_gswip.c:2079:9: warning: initialization discards =E2=
+=80=98const=E2=80=99 qualifier from pointer target type [-Wdiscarded-qualif=
+iers]
+ 2079 |  .ops =3D &gswip_xrx200_switch_ops,
+      |         ^
+drivers/net/dsa/lantiq_gswip.c:2085:9: warning: initialization discards =E2=
+=80=98const=E2=80=99 qualifier from pointer target type [-Wdiscarded-qualif=
+iers]
+ 2085 |  .ops =3D &gswip_xrx300_switch_ops,
+      |         ^
+drivers/net/dsa/lantiq_gswip.c:2079:17: warning: incorrect type in initiali=
+zer (different modifiers)
+drivers/net/dsa/lantiq_gswip.c:2079:17:    expected struct dsa_switch_ops *=
+ops
+drivers/net/dsa/lantiq_gswip.c:2079:17:    got struct dsa_switch_ops const *
+drivers/net/dsa/lantiq_gswip.c:2085:17: warning: incorrect type in initiali=
+zer (different modifiers)
+drivers/net/dsa/lantiq_gswip.c:2085:17:    expected struct dsa_switch_ops *=
+ops
+drivers/net/dsa/lantiq_gswip.c:2085:17:    got struct dsa_switch_ops const *
