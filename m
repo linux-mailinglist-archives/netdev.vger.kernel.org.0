@@ -2,1677 +2,685 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 220132D1C36
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 22:36:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE7772D1C20
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 22:32:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727162AbgLGVeg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 16:34:36 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:48065 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725924AbgLGVeg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 16:34:36 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from borisp@mellanox.com)
-        with SMTP; 7 Dec 2020 23:06:54 +0200
-Received: from gen-l-vrt-133.mtl.labs.mlnx. (gen-l-vrt-133.mtl.labs.mlnx [10.237.11.160])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0B7L6qIK029788;
-        Mon, 7 Dec 2020 23:06:53 +0200
-From:   Boris Pismenny <borisp@mellanox.com>
-To:     kuba@kernel.org, davem@davemloft.net, saeedm@nvidia.com,
-        hch@lst.de, sagi@grimberg.me, axboe@fb.com, kbusch@kernel.org,
-        viro@zeniv.linux.org.uk, edumazet@google.com
-Cc:     boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
-        netdev@vger.kernel.org, benishay@nvidia.com, ogerlitz@nvidia.com,
-        yorayz@nvidia.com, Ben Ben-Ishay <benishay@mellanox.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Yoray Zack <yorayz@mellanox.com>
-Subject: [PATCH v1 net-next 12/15] net/mlx5e: NVMEoTCP DDP offload control path
-Date:   Mon,  7 Dec 2020 23:06:46 +0200
-Message-Id: <20201207210649.19194-13-borisp@mellanox.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20201207210649.19194-1-borisp@mellanox.com>
-References: <20201207210649.19194-1-borisp@mellanox.com>
+        id S1727148AbgLGV3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 16:29:12 -0500
+Received: from mga03.intel.com ([134.134.136.65]:49459 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726003AbgLGV3M (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Dec 2020 16:29:12 -0500
+IronPort-SDR: 1Bwoz9YmC+U38ln1XfcWazTadNtOJAxF2LgSf3V02sucBKt6exmxVxJQ2BjuG/5Z1VCnYGeA0g
+ aUmOR4BZOXtg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9828"; a="173892709"
+X-IronPort-AV: E=Sophos;i="5.78,400,1599548400"; 
+   d="gz'50?scan'50,208,50";a="173892709"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2020 13:28:29 -0800
+IronPort-SDR: 7Vk7IJoNbFWMoyuHnkxGq/jfg+ZamUHvHofYwAmHApW1cMbu0SJ9LaWf7zfUPnApvY6s5kpE8H
+ wHRmsSjjyu0g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.78,400,1599548400"; 
+   d="gz'50?scan'50,208,50";a="370090809"
+Received: from lkp-server01.sh.intel.com (HELO f1d34cfde454) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 07 Dec 2020 13:28:23 -0800
+Received: from kbuild by f1d34cfde454 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1kmO3S-0000AK-Pp; Mon, 07 Dec 2020 21:28:22 +0000
+Date:   Tue, 8 Dec 2020 05:27:23 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mincheol Son <encrypted.def@gmail.com>, marcel@holtmann.org
+Cc:     kbuild-all@lists.01.org, johan.hedberg@gmail.com,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Mincheol Son <encrypted.def@gmail.com>
+Subject: Re: [PATCH] Bluetooth: smp: Fix biased random passkey generation
+Message-ID: <202012080540.iJ8xG74b-lkp@intel.com>
+References: <20201207174957.408-1-encrypted.def@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/mixed; boundary="9amGYk9869ThD9tj"
+Content-Disposition: inline
+In-Reply-To: <20201207174957.408-1-encrypted.def@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ben Ben-ishay <benishay@nvidia.com>
 
-This commit introduces direct data placement offload to NVME
-TCP. There is a context per queue, which is established after the
-handshake
-using the tcp_ddp_sk_add/del NDOs.
+--9amGYk9869ThD9tj
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Additionally, a resynchronization routine is used to assist
-hardware recovery from TCP OOO, and continue the offload.
-Resynchronization operates as follows:
-1. TCP OOO causes the NIC HW to stop the offload
-2. NIC HW identifies a PDU header at some TCP sequence number,
-and asks NVMe-TCP to confirm it.
-This request is delivered from the NIC driver to NVMe-TCP by first
-finding the socket for the packet that triggered the request, and
-then fiding the nvme_tcp_queue that is used by this routine.
-Finally, the request is recorded in the nvme_tcp_queue.
-3. When NVMe-TCP observes the requested TCP sequence, it will compare
-it with the PDU header TCP sequence, and report the result to the
-NIC driver (tcp_ddp_resync), which will update the HW,
-and resume offload when all is successful.
+Hi Mincheol,
 
-Furthermore, we let the offloading driver advertise what is the max hw
-sectors/segments via tcp_ddp_limits.
+Thank you for the patch! Perhaps something to improve:
 
-A follow-up patch introduces the data-path changes required for this
-offload.
+[auto build test WARNING on bluetooth-next/master]
+[also build test WARNING on net-next/master net/master bluetooth/master sparc-next/master v5.10-rc7 next-20201207]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Signed-off-by: Boris Pismenny <borisp@mellanox.com>
-Signed-off-by: Ben Ben-Ishay <benishay@mellanox.com>
-Signed-off-by: Or Gerlitz <ogerlitz@mellanox.com>
-Signed-off-by: Yoray Zack <yorayz@mellanox.com>
+url:    https://github.com/0day-ci/linux/commits/Mincheol-Son/Bluetooth-smp-Fix-biased-random-passkey-generation/20201208-015207
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git master
+config: parisc-randconfig-r035-20201207 (attached as .config)
+compiler: hppa-linux-gcc (GCC) 9.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/80c9c180f997bc9d9e1df4426fc7957839caee56
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Mincheol-Son/Bluetooth-smp-Fix-biased-random-passkey-generation/20201208-015207
+        git checkout 80c9c180f997bc9d9e1df4426fc7957839caee56
+        # save the attached .config to linux build tree
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=parisc 
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   net/bluetooth/smp.c: In function 'tk_request':
+>> net/bluetooth/smp.c:927:3: warning: this decimal constant is unsigned only in ISO C90
+     927 |   } while (passkey >= (u32)4200000000);
+         |   ^
+
+vim +927 net/bluetooth/smp.c
+
+   849	
+   850	static int tk_request(struct l2cap_conn *conn, u8 remote_oob, u8 auth,
+   851							u8 local_io, u8 remote_io)
+   852	{
+   853		struct hci_conn *hcon = conn->hcon;
+   854		struct l2cap_chan *chan = conn->smp;
+   855		struct smp_chan *smp = chan->data;
+   856		u32 passkey = 0;
+   857		int ret;
+   858	
+   859		/* Initialize key for JUST WORKS */
+   860		memset(smp->tk, 0, sizeof(smp->tk));
+   861		clear_bit(SMP_FLAG_TK_VALID, &smp->flags);
+   862	
+   863		BT_DBG("tk_request: auth:%d lcl:%d rem:%d", auth, local_io, remote_io);
+   864	
+   865		/* If neither side wants MITM, either "just" confirm an incoming
+   866		 * request or use just-works for outgoing ones. The JUST_CFM
+   867		 * will be converted to JUST_WORKS if necessary later in this
+   868		 * function. If either side has MITM look up the method from the
+   869		 * table.
+   870		 */
+   871		if (!(auth & SMP_AUTH_MITM))
+   872			smp->method = JUST_CFM;
+   873		else
+   874			smp->method = get_auth_method(smp, local_io, remote_io);
+   875	
+   876		/* Don't confirm locally initiated pairing attempts */
+   877		if (smp->method == JUST_CFM && test_bit(SMP_FLAG_INITIATOR,
+   878							&smp->flags))
+   879			smp->method = JUST_WORKS;
+   880	
+   881		/* Don't bother user space with no IO capabilities */
+   882		if (smp->method == JUST_CFM &&
+   883		    hcon->io_capability == HCI_IO_NO_INPUT_OUTPUT)
+   884			smp->method = JUST_WORKS;
+   885	
+   886		/* If Just Works, Continue with Zero TK and ask user-space for
+   887		 * confirmation */
+   888		if (smp->method == JUST_WORKS) {
+   889			ret = mgmt_user_confirm_request(hcon->hdev, &hcon->dst,
+   890							hcon->type,
+   891							hcon->dst_type,
+   892							passkey, 1);
+   893			if (ret)
+   894				return ret;
+   895			set_bit(SMP_FLAG_WAIT_USER, &smp->flags);
+   896			return 0;
+   897		}
+   898	
+   899		/* If this function is used for SC -> legacy fallback we
+   900		 * can only recover the just-works case.
+   901		 */
+   902		if (test_bit(SMP_FLAG_SC, &smp->flags))
+   903			return -EINVAL;
+   904	
+   905		/* Not Just Works/Confirm results in MITM Authentication */
+   906		if (smp->method != JUST_CFM) {
+   907			set_bit(SMP_FLAG_MITM_AUTH, &smp->flags);
+   908			if (hcon->pending_sec_level < BT_SECURITY_HIGH)
+   909				hcon->pending_sec_level = BT_SECURITY_HIGH;
+   910		}
+   911	
+   912		/* If both devices have Keyoard-Display I/O, the master
+   913		 * Confirms and the slave Enters the passkey.
+   914		 */
+   915		if (smp->method == OVERLAP) {
+   916			if (hcon->role == HCI_ROLE_MASTER)
+   917				smp->method = CFM_PASSKEY;
+   918			else
+   919				smp->method = REQ_PASSKEY;
+   920		}
+   921	
+   922		/* Generate random passkey. */
+   923		if (smp->method == CFM_PASSKEY) {
+   924			memset(smp->tk, 0, sizeof(smp->tk));
+   925			do {
+   926				get_random_bytes(&passkey, sizeof(passkey));
+ > 927			} while (passkey >= (u32)4200000000);
+   928			passkey %= 1000000;
+   929			put_unaligned_le32(passkey, smp->tk);
+   930			BT_DBG("PassKey: %d", passkey);
+   931			set_bit(SMP_FLAG_TK_VALID, &smp->flags);
+   932		}
+   933	
+   934		if (smp->method == REQ_PASSKEY)
+   935			ret = mgmt_user_passkey_request(hcon->hdev, &hcon->dst,
+   936							hcon->type, hcon->dst_type);
+   937		else if (smp->method == JUST_CFM)
+   938			ret = mgmt_user_confirm_request(hcon->hdev, &hcon->dst,
+   939							hcon->type, hcon->dst_type,
+   940							passkey, 1);
+   941		else
+   942			ret = mgmt_user_passkey_notify(hcon->hdev, &hcon->dst,
+   943							hcon->type, hcon->dst_type,
+   944							passkey, 0);
+   945	
+   946		return ret;
+   947	}
+   948	
+
 ---
- .../net/ethernet/mellanox/mlx5/core/Kconfig   |  11 +
- .../net/ethernet/mellanox/mlx5/core/Makefile  |   2 +
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |  30 +-
- .../ethernet/mellanox/mlx5/core/en/params.h   |   1 +
- .../net/ethernet/mellanox/mlx5/core/en/txrx.h |  13 +
- .../mellanox/mlx5/core/en_accel/en_accel.h    |   9 +-
- .../mellanox/mlx5/core/en_accel/nvmeotcp.c    | 984 ++++++++++++++++++
- .../mellanox/mlx5/core/en_accel/nvmeotcp.h    | 116 +++
- .../mlx5/core/en_accel/nvmeotcp_utils.h       |  80 ++
- .../net/ethernet/mellanox/mlx5/core/en_main.c |  39 +-
- .../net/ethernet/mellanox/mlx5/core/en_rx.c   |  25 +-
- .../net/ethernet/mellanox/mlx5/core/en_txrx.c |  16 +
- drivers/net/ethernet/mellanox/mlx5/core/fw.c  |   6 +
- 13 files changed, 1327 insertions(+), 5 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.h
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_utils.h
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-index 485478979b1a..95c8c1980c96 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-@@ -202,3 +202,14 @@ config MLX5_SW_STEERING
- 	default y
- 	help
- 	Build support for software-managed steering in the NIC.
-+
-+config MLX5_EN_NVMEOTCP
-+	bool "NVMEoTCP accelaration"
-+	depends on MLX5_CORE_EN
-+	depends on TCP_DDP
-+	depends on TCP_DDP_CRC
-+	default y
-+	help
-+	Build support for NVMEoTCP accelaration in the NIC.
-+	Note: Support for hardware with this capability needs to be selected
-+	for this option to become available.
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-index ac7793057658..053655a96db8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-@@ -87,3 +87,5 @@ mlx5_core-$(CONFIG_MLX5_SW_STEERING) += steering/dr_domain.o steering/dr_table.o
- 					steering/dr_ste_v0.o \
- 					steering/dr_cmd.o steering/dr_fw.o \
- 					steering/dr_action.o steering/fs_dr.o
-+
-+mlx5_core-$(CONFIG_MLX5_EN_NVMEOTCP) += en_accel/fs_tcp.o en_accel/nvmeotcp.o
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index 0da6ed47a571..8e257749018a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -152,6 +152,24 @@ struct page_pool;
- #define MLX5E_UMR_WQEBBS \
- 	(DIV_ROUND_UP(MLX5E_UMR_WQE_INLINE_SZ, MLX5_SEND_WQE_BB))
- 
-+#define KLM_ALIGNMENT 4
-+#define MLX5E_KLM_UMR_WQE_SZ(sgl_len)\
-+	(sizeof(struct mlx5e_umr_wqe) +\
-+	(sizeof(struct mlx5_klm) * (sgl_len)))
-+
-+#define MLX5E_KLM_UMR_WQEBBS(sgl_len)\
-+	(DIV_ROUND_UP(MLX5E_KLM_UMR_WQE_SZ(sgl_len), MLX5_SEND_WQE_BB))
-+
-+#define MLX5E_KLM_UMR_DS_CNT(sgl_len)\
-+	DIV_ROUND_UP(MLX5E_KLM_UMR_WQE_SZ(sgl_len), MLX5_SEND_WQE_DS)
-+
-+#define MLX5E_MAX_KLM_ENTRIES_PER_WQE(wqe_size)\
-+	(((wqe_size) - sizeof(struct mlx5e_umr_wqe)) / sizeof(struct mlx5_klm))
-+
-+#define MLX5E_KLM_ENTRIES_PER_WQE(wqe_size)\
-+	(MLX5E_MAX_KLM_ENTRIES_PER_WQE(wqe_size) -\
-+			(MLX5E_MAX_KLM_ENTRIES_PER_WQE(wqe_size) % KLM_ALIGNMENT))
-+
- #define MLX5E_MSG_LEVEL			NETIF_MSG_LINK
- 
- #define mlx5e_dbg(mlevel, priv, format, ...)                    \
-@@ -214,7 +232,10 @@ struct mlx5e_umr_wqe {
- 	struct mlx5_wqe_ctrl_seg       ctrl;
- 	struct mlx5_wqe_umr_ctrl_seg   uctrl;
- 	struct mlx5_mkey_seg           mkc;
--	struct mlx5_mtt                inline_mtts[0];
-+	union {
-+		struct mlx5_mtt        inline_mtts[0];
-+		struct mlx5_klm	       inline_klms[0];
-+	};
- };
- 
- extern const char mlx5e_self_tests[][ETH_GSTRING_LEN];
-@@ -664,6 +685,10 @@ struct mlx5e_channel {
- 	struct mlx5e_xdpsq         rq_xdpsq;
- 	struct mlx5e_txqsq         sq[MLX5E_MAX_NUM_TC];
- 	struct mlx5e_icosq         icosq;   /* internal control operations */
-+#ifdef CONFIG_MLX5_EN_NVMEOTCP
-+	struct list_head	   list_nvmeotcpsq;   /* nvmeotcp umrs  */
-+	spinlock_t                 nvmeotcp_icosq_lock;
-+#endif
- 	bool                       xdp;
- 	struct napi_struct         napi;
- 	struct device             *pdev;
-@@ -856,6 +881,9 @@ struct mlx5e_priv {
- #endif
- #ifdef CONFIG_MLX5_EN_TLS
- 	struct mlx5e_tls          *tls;
-+#endif
-+#ifdef CONFIG_MLX5_EN_NVMEOTCP
-+	struct mlx5e_nvmeotcp      *nvmeotcp;
- #endif
- 	struct devlink_health_reporter *tx_reporter;
- 	struct devlink_health_reporter *rx_reporter;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-index 807147d97a0f..20e9e5e81ae7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-@@ -16,6 +16,7 @@ struct mlx5e_cq_param {
- 	struct mlx5_wq_param       wq;
- 	u16                        eq_ix;
- 	u8                         cq_period_mode;
-+	bool                       force_cqe128;
- };
- 
- struct mlx5e_rq_param {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-index 7943eb30b837..eb929edabd6b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-@@ -34,6 +34,11 @@ enum mlx5e_icosq_wqe_type {
- 	MLX5E_ICOSQ_WQE_SET_PSV_TLS,
- 	MLX5E_ICOSQ_WQE_GET_PSV_TLS,
- #endif
-+#ifdef CONFIG_MLX5_EN_NVMEOTCP
-+	MLX5E_ICOSQ_WQE_UMR_NVME_TCP,
-+	MLX5E_ICOSQ_WQE_UMR_NVME_TCP_INVALIDATE,
-+	MLX5E_ICOSQ_WQE_SET_PSV_NVME_TCP,
-+#endif
- };
- 
- /* General */
-@@ -175,6 +180,14 @@ struct mlx5e_icosq_wqe_info {
- 		struct {
- 			struct mlx5e_ktls_rx_resync_buf *buf;
- 		} tls_get_params;
-+#endif
-+#ifdef CONFIG_MLX5_EN_NVMEOTCP
-+		struct {
-+			struct mlx5e_nvmeotcp_queue *queue;
-+		} nvmeotcp_q;
-+		struct {
-+			struct nvmeotcp_queue_entry *entry;
-+		} nvmeotcp_qe;
- #endif
- 	};
- };
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
-index fb89b24deb2b..98728f7404ec 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
-@@ -39,6 +39,7 @@
- #include "en_accel/ipsec_rxtx.h"
- #include "en_accel/tls.h"
- #include "en_accel/tls_rxtx.h"
-+#include "en_accel/nvmeotcp.h"
- #include "en.h"
- #include "en/txrx.h"
- 
-@@ -196,11 +197,17 @@ static inline void mlx5e_accel_tx_finish(struct mlx5e_txqsq *sq,
- 
- static inline int mlx5e_accel_init_rx(struct mlx5e_priv *priv)
- {
--	return mlx5e_ktls_init_rx(priv);
-+	int tls, nvmeotcp;
-+
-+	tls = mlx5e_ktls_init_rx(priv);
-+	nvmeotcp = mlx5e_nvmeotcp_init_rx(priv);
-+
-+	return tls && nvmeotcp;
- }
- 
- static inline void mlx5e_accel_cleanup_rx(struct mlx5e_priv *priv)
- {
-+	mlx5e_nvmeotcp_cleanup_rx(priv);
- 	mlx5e_ktls_cleanup_rx(priv);
- }
- #endif /* __MLX5E_EN_ACCEL_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.c
-new file mode 100644
-index 000000000000..843e653699e9
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.c
-@@ -0,0 +1,984 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+// Copyright (c) 2020 Mellanox Technologies.
-+
-+#include <linux/netdevice.h>
-+#include <linux/idr.h>
-+#include <linux/nvme-tcp.h>
-+#include "en_accel/nvmeotcp.h"
-+#include "en_accel/nvmeotcp_utils.h"
-+#include "en_accel/fs_tcp.h"
-+#include "en/txrx.h"
-+
-+#define MAX_NVMEOTCP_QUEUES	(512)
-+#define MIN_NVMEOTCP_QUEUES	(1)
-+
-+static const struct rhashtable_params rhash_queues = {
-+	.key_len = sizeof(int),
-+	.key_offset = offsetof(struct mlx5e_nvmeotcp_queue, id),
-+	.head_offset = offsetof(struct mlx5e_nvmeotcp_queue, hash),
-+	.automatic_shrinking = true,
-+	.min_size = 1,
-+	.max_size = MAX_NVMEOTCP_QUEUES,
-+};
-+
-+#define MLX5_NVME_TCP_MAX_SEGMENTS 128
-+
-+static u32 mlx5e_get_max_sgl(struct mlx5_core_dev *mdev)
-+{
-+	return min_t(u32,
-+		     MLX5_NVME_TCP_MAX_SEGMENTS,
-+		     1 << MLX5_CAP_GEN(mdev, log_max_klm_list_size));
-+}
-+
-+static void mlx5e_nvmeotcp_destroy_tir(struct mlx5e_priv *priv, int tirn)
-+{
-+	mlx5_core_destroy_tir(priv->mdev, tirn);
-+}
-+
-+static inline u32
-+mlx5e_get_channel_ix_from_io_cpu(struct mlx5e_priv *priv, u32 io_cpu)
-+{
-+	int num_channels = priv->channels.params.num_channels;
-+	u32 channel_ix = io_cpu;
-+
-+	if (channel_ix >= num_channels)
-+		channel_ix = channel_ix % num_channels;
-+
-+	return channel_ix;
-+}
-+
-+static int mlx5e_nvmeotcp_create_tir(struct mlx5e_priv *priv,
-+				     struct sock *sk,
-+				     struct nvme_tcp_ddp_config *config,
-+				     struct mlx5e_nvmeotcp_queue *queue,
-+				     bool zerocopy, bool crc_rx)
-+{
-+	u32 rqtn = priv->direct_tir[queue->channel_ix].rqt.rqtn;
-+	int err, inlen;
-+	void *tirc;
-+	u32 tirn;
-+	u32 *in;
-+
-+	inlen = MLX5_ST_SZ_BYTES(create_tir_in);
-+	in = kvzalloc(inlen, GFP_KERNEL);
-+	if (!in)
-+		return -ENOMEM;
-+	tirc = MLX5_ADDR_OF(create_tir_in, in, ctx);
-+	MLX5_SET(tirc, tirc, disp_type, MLX5_TIRC_DISP_TYPE_INDIRECT);
-+	MLX5_SET(tirc, tirc, rx_hash_fn, MLX5_RX_HASH_FN_INVERTED_XOR8);
-+	MLX5_SET(tirc, tirc, indirect_table, rqtn);
-+	MLX5_SET(tirc, tirc, transport_domain, priv->mdev->mlx5e_res.td.tdn);
-+	if (zerocopy) {
-+		MLX5_SET(tirc, tirc, nvmeotcp_zero_copy_en, 1);
-+		MLX5_SET(tirc, tirc, nvmeotcp_tag_buffer_table_id,
-+			 queue->tag_buf_table_id);
-+	}
-+
-+	if (crc_rx)
-+		MLX5_SET(tirc, tirc, nvmeotcp_crc_en, 1);
-+
-+	MLX5_SET(tirc, tirc, self_lb_block,
-+		 MLX5_TIRC_SELF_LB_BLOCK_BLOCK_UNICAST |
-+		 MLX5_TIRC_SELF_LB_BLOCK_BLOCK_MULTICAST);
-+	err = mlx5_core_create_tir(priv->mdev, in, &tirn);
-+
-+	if (!err)
-+		queue->tirn = tirn;
-+
-+	kvfree(in);
-+	return err;
-+}
-+
-+static
-+int mlx5e_create_nvmeotcp_tag_buf_table(struct mlx5_core_dev *mdev,
-+					struct mlx5e_nvmeotcp_queue *queue,
-+					u8 log_table_size)
-+{
-+	u32 in[MLX5_ST_SZ_DW(create_nvmeotcp_tag_buf_table_in)] = {};
-+	u32 out[MLX5_ST_SZ_DW(general_obj_out_cmd_hdr)];
-+	u64 general_obj_types;
-+	void *obj;
-+	int err;
-+
-+	obj = MLX5_ADDR_OF(create_nvmeotcp_tag_buf_table_in, in,
-+			   nvmeotcp_tag_buf_table_obj);
-+
-+	general_obj_types = MLX5_CAP_GEN_64(mdev, general_obj_types);
-+	if (!(general_obj_types &
-+	      MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_NVMEOTCP_TAG_BUFFER_TABLE))
-+		return -EINVAL;
-+
-+	MLX5_SET(general_obj_in_cmd_hdr, in, opcode,
-+		 MLX5_CMD_OP_CREATE_GENERAL_OBJECT);
-+	MLX5_SET(general_obj_in_cmd_hdr, in, obj_type,
-+		 MLX5_GENERAL_OBJECT_TYPES_NVMEOTCP_TAG_BUFFER_TABLE);
-+	MLX5_SET(nvmeotcp_tag_buf_table_obj, obj,
-+		 log_tag_buffer_table_size, log_table_size);
-+
-+	err = mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
-+	if (!err)
-+		queue->tag_buf_table_id = MLX5_GET(general_obj_out_cmd_hdr,
-+						   out, obj_id);
-+	return err;
-+}
-+
-+static
-+void mlx5_destroy_nvmeotcp_tag_buf_table(struct mlx5_core_dev *mdev, u32 uid)
-+{
-+	u32 in[MLX5_ST_SZ_DW(general_obj_in_cmd_hdr)] = {};
-+	u32 out[MLX5_ST_SZ_DW(general_obj_out_cmd_hdr)];
-+
-+	MLX5_SET(general_obj_in_cmd_hdr, in, opcode,
-+		 MLX5_CMD_OP_DESTROY_GENERAL_OBJECT);
-+	MLX5_SET(general_obj_in_cmd_hdr, in, obj_type,
-+		 MLX5_GENERAL_OBJECT_TYPES_NVMEOTCP_TAG_BUFFER_TABLE);
-+	MLX5_SET(general_obj_in_cmd_hdr, in, obj_id, uid);
-+
-+	mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
-+}
-+
-+#define MLX5_CTRL_SEGMENT_OPC_MOD_UMR_TIR_PARAMS 0x2
-+#define MLX5_CTRL_SEGMENT_OPC_MOD_UMR_NVMEOTCP_TIR_STATIC_PARAMS 0x2
-+#define MLX5_CTRL_SEGMENT_OPC_MOD_UMR_UMR 0x0
-+
-+#define STATIC_PARAMS_DS_CNT \
-+	DIV_ROUND_UP(MLX5E_NVMEOTCP_STATIC_PARAMS_WQE_SZ, MLX5_SEND_WQE_DS)
-+
-+#define PROGRESS_PARAMS_DS_CNT \
-+	DIV_ROUND_UP(MLX5E_NVMEOTCP_PROGRESS_PARAMS_WQE_SZ, MLX5_SEND_WQE_DS)
-+
-+enum wqe_type {
-+	KLM_UMR = 0,
-+	BSF_KLM_UMR = 1,
-+	SET_PSV_UMR = 2,
-+	BSF_UMR = 3,
-+	KLM_INV_UMR = 4,
-+};
-+
-+static void
-+fill_nvmeotcp_klm_wqe(struct mlx5e_nvmeotcp_queue *queue,
-+		      struct mlx5e_umr_wqe *wqe, u16 ccid, u32 klm_entries,
-+		      u16 klm_offset, enum wqe_type klm_type)
-+{
-+	struct scatterlist *sgl_mkey;
-+	u32 lkey, i;
-+
-+	if (klm_type == BSF_KLM_UMR) {
-+		for (i = 0; i < klm_entries; i++) {
-+			lkey = queue->ccid_table[i + klm_offset].klm_mkey.key;
-+			wqe->inline_klms[i].bcount = cpu_to_be32(1);
-+			wqe->inline_klms[i].key	   = cpu_to_be32(lkey);
-+			wqe->inline_klms[i].va	   = 0;
-+		}
-+	} else {
-+		lkey = queue->priv->mdev->mlx5e_res.mkey.key;
-+		for (i = 0; i < klm_entries; i++) {
-+			sgl_mkey = &queue->ccid_table[ccid].sgl[i + klm_offset];
-+			wqe->inline_klms[i].bcount = cpu_to_be32(sgl_mkey->length);
-+			wqe->inline_klms[i].key	   = cpu_to_be32(lkey);
-+			wqe->inline_klms[i].va	   = cpu_to_be64(sgl_mkey->dma_address);
-+		}
-+	}
-+}
-+
-+static void
-+build_nvmeotcp_klm_umr(struct mlx5e_nvmeotcp_queue *queue,
-+		       struct mlx5e_umr_wqe *wqe, u16 ccid, int klm_entries,
-+		       u32 klm_offset, u32 len, enum wqe_type klm_type)
-+{
-+	u32 id = (klm_type == KLM_UMR) ? queue->ccid_table[ccid].klm_mkey.key :
-+		(queue->tirn << MLX5_WQE_CTRL_TIR_TIS_INDEX_SHIFT);
-+	u8 opc_mod = (klm_type == KLM_UMR) ? MLX5_CTRL_SEGMENT_OPC_MOD_UMR_UMR :
-+		MLX5_CTRL_SEGMENT_OPC_MOD_UMR_NVMEOTCP_TIR_STATIC_PARAMS;
-+	struct mlx5_wqe_umr_ctrl_seg *ucseg = &wqe->uctrl;
-+	struct mlx5_wqe_ctrl_seg      *cseg = &wqe->ctrl;
-+	struct mlx5_mkey_seg	       *mkc = &wqe->mkc;
-+
-+	u32 sqn = queue->sq->icosq.sqn;
-+	u16 pc = queue->sq->icosq.pc;
-+
-+	cseg->opmod_idx_opcode = cpu_to_be32((pc << MLX5_WQE_CTRL_WQE_INDEX_SHIFT) |
-+					     MLX5_OPCODE_UMR | (opc_mod) << 24);
-+	cseg->qpn_ds = cpu_to_be32((sqn << MLX5_WQE_CTRL_QPN_SHIFT) |
-+				   MLX5E_KLM_UMR_DS_CNT(ALIGN(klm_entries, KLM_ALIGNMENT)));
-+	cseg->general_id = cpu_to_be32(id);
-+
-+	if (!klm_entries) { /* this is invalidate */
-+		ucseg->mkey_mask = cpu_to_be64(MLX5_MKEY_MASK_FREE);
-+		ucseg->flags = MLX5_UMR_INLINE;
-+		mkc->status = MLX5_MKEY_STATUS_FREE;
-+		return;
-+	}
-+
-+	if (klm_type == KLM_UMR && !klm_offset) {
-+		ucseg->mkey_mask |= cpu_to_be64(MLX5_MKEY_MASK_XLT_OCT_SIZE);
-+		mkc->xlt_oct_size = cpu_to_be32(ALIGN(len, KLM_ALIGNMENT));
-+	}
-+
-+	ucseg->flags = MLX5_UMR_INLINE | MLX5_UMR_TRANSLATION_OFFSET_EN;
-+	ucseg->xlt_octowords = cpu_to_be16(ALIGN(klm_entries, KLM_ALIGNMENT));
-+	ucseg->xlt_offset = cpu_to_be16(klm_offset);
-+	fill_nvmeotcp_klm_wqe(queue, wqe, ccid, klm_entries, klm_offset, klm_type);
-+}
-+
-+static void
-+fill_nvmeotcp_progress_params(struct mlx5e_nvmeotcp_queue *queue,
-+			      struct mlx5_seg_nvmeotcp_progress_params *params,
-+			      u32 seq)
-+{
-+	void *ctx = params->ctx;
-+
-+	MLX5_SET(nvmeotcp_progress_params, ctx,
-+		 next_pdu_tcp_sn, seq);
-+	MLX5_SET(nvmeotcp_progress_params, ctx, valid, 1);
-+	MLX5_SET(nvmeotcp_progress_params, ctx, pdu_tracker_state,
-+		 MLX5E_NVMEOTCP_PROGRESS_PARAMS_PDU_TRACKER_STATE_START);
-+}
-+
-+void
-+build_nvmeotcp_progress_params(struct mlx5e_nvmeotcp_queue *queue,
-+			       struct mlx5e_set_nvmeotcp_progress_params_wqe *wqe,
-+			       u32 seq)
-+{
-+	struct mlx5_wqe_ctrl_seg *cseg = &wqe->ctrl;
-+	u32 sqn = queue->sq->icosq.sqn;
-+	u16 pc = queue->sq->icosq.pc;
-+	u8 opc_mod;
-+
-+	memset(wqe, 0, MLX5E_NVMEOTCP_PROGRESS_PARAMS_WQE_SZ);
-+	opc_mod = MLX5_CTRL_SEGMENT_OPC_MOD_UMR_NVMEOTCP_TIR_PROGRESS_PARAMS;
-+	cseg->opmod_idx_opcode = cpu_to_be32((pc << MLX5_WQE_CTRL_WQE_INDEX_SHIFT) |
-+					     MLX5_OPCODE_SET_PSV | (opc_mod << 24));
-+	cseg->qpn_ds = cpu_to_be32((sqn << MLX5_WQE_CTRL_QPN_SHIFT) |
-+				   PROGRESS_PARAMS_DS_CNT);
-+	cseg->general_id = cpu_to_be32(queue->tirn <<
-+				       MLX5_WQE_CTRL_TIR_TIS_INDEX_SHIFT);
-+	fill_nvmeotcp_progress_params(queue, &wqe->params, seq);
-+}
-+
-+static void
-+fill_nvmeotcp_static_params(struct mlx5e_nvmeotcp_queue *queue,
-+			    struct mlx5_seg_nvmeotcp_static_params *params,
-+			    u32 resync_seq, bool zero_copy_en,
-+			    bool ddgst_offload_en)
-+{
-+	void *ctx = params->ctx;
-+
-+	MLX5_SET(transport_static_params, ctx, const_1, 1);
-+	MLX5_SET(transport_static_params, ctx, const_2, 2);
-+	MLX5_SET(transport_static_params, ctx, acc_type,
-+		 MLX5_TRANSPORT_STATIC_PARAMS_ACC_TYPE_NVMETCP);
-+	MLX5_SET(transport_static_params, ctx, nvme_resync_tcp_sn, resync_seq);
-+	MLX5_SET(transport_static_params, ctx, pda, queue->pda);
-+	MLX5_SET(transport_static_params, ctx, ddgst_en, queue->dgst);
-+	MLX5_SET(transport_static_params, ctx, ddgst_offload_en, ddgst_offload_en);
-+	MLX5_SET(transport_static_params, ctx, hddgst_en, 0);
-+	MLX5_SET(transport_static_params, ctx, hdgst_offload_en, 0);
-+	MLX5_SET(transport_static_params, ctx, ti,
-+		 MLX5_TRANSPORT_STATIC_PARAMS_TI_INITIATOR);
-+	MLX5_SET(transport_static_params, ctx, zero_copy_en, zero_copy_en);
-+}
-+
-+void
-+build_nvmeotcp_static_params(struct mlx5e_nvmeotcp_queue *queue,
-+			     struct mlx5e_set_nvmeotcp_static_params_wqe *wqe,
-+			     u32 resync_seq, bool zerocopy, bool crc_rx)
-+{
-+	u8 opc_mod = MLX5_CTRL_SEGMENT_OPC_MOD_UMR_NVMEOTCP_TIR_STATIC_PARAMS;
-+	struct mlx5_wqe_umr_ctrl_seg *ucseg = &wqe->uctrl;
-+	struct mlx5_wqe_ctrl_seg      *cseg = &wqe->ctrl;
-+	u32 sqn = queue->sq->icosq.sqn;
-+	u16 pc = queue->sq->icosq.pc;
-+
-+	memset(wqe, 0, MLX5E_NVMEOTCP_STATIC_PARAMS_WQE_SZ);
-+
-+	cseg->opmod_idx_opcode = cpu_to_be32((pc << MLX5_WQE_CTRL_WQE_INDEX_SHIFT) |
-+					     MLX5_OPCODE_UMR | (opc_mod) << 24);
-+	cseg->qpn_ds = cpu_to_be32((sqn << MLX5_WQE_CTRL_QPN_SHIFT) |
-+				   STATIC_PARAMS_DS_CNT);
-+	cseg->imm = cpu_to_be32(queue->tirn << MLX5_WQE_CTRL_TIR_TIS_INDEX_SHIFT);
-+
-+	ucseg->flags = MLX5_UMR_INLINE;
-+	ucseg->bsf_octowords =
-+		cpu_to_be16(MLX5E_NVMEOTCP_STATIC_PARAMS_OCTWORD_SIZE);
-+	fill_nvmeotcp_static_params(queue, &wqe->params, resync_seq, zerocopy, crc_rx);
-+}
-+
-+static void
-+mlx5e_nvmeotcp_fill_wi(struct mlx5e_nvmeotcp_queue *nvmeotcp_queue,
-+		       struct mlx5e_icosq *sq, u32 wqe_bbs,
-+		       u16 pi, u16 ccid, enum wqe_type type)
-+{
-+	struct mlx5e_icosq_wqe_info *wi = &sq->db.wqe_info[pi];
-+
-+	wi->num_wqebbs = wqe_bbs;
-+	switch (type) {
-+	case SET_PSV_UMR:
-+		wi->wqe_type = MLX5E_ICOSQ_WQE_SET_PSV_NVME_TCP;
-+		break;
-+	case KLM_INV_UMR:
-+		wi->wqe_type = MLX5E_ICOSQ_WQE_UMR_NVME_TCP_INVALIDATE;
-+		break;
-+	default:
-+		wi->wqe_type = MLX5E_ICOSQ_WQE_UMR_NVME_TCP;
-+		break;
-+	}
-+
-+	if (type == KLM_INV_UMR)
-+		wi->nvmeotcp_qe.entry = &nvmeotcp_queue->ccid_table[ccid];
-+	else if (type == SET_PSV_UMR)
-+		wi->nvmeotcp_q.queue = nvmeotcp_queue;
-+}
-+
-+static void
-+mlx5e_nvmeotcp_rx_post_static_params_wqe(struct mlx5e_nvmeotcp_queue *queue,
-+					 u32 resync_seq)
-+{
-+	struct mlx5e_set_nvmeotcp_static_params_wqe *wqe;
-+	struct mlx5e_icosq *sq = &queue->sq->icosq;
-+	u16 pi, wqe_bbs;
-+
-+	wqe_bbs = MLX5E_NVMEOTCP_STATIC_PARAMS_WQEBBS;
-+	pi = mlx5e_icosq_get_next_pi(sq, wqe_bbs);
-+	wqe = MLX5E_NVMEOTCP_FETCH_STATIC_PARAMS_WQE(sq, pi);
-+	mlx5e_nvmeotcp_fill_wi(NULL, sq, wqe_bbs, pi, 0, BSF_UMR);
-+	build_nvmeotcp_static_params(queue, wqe, resync_seq, queue->zerocopy, queue->crc_rx);
-+	sq->pc += wqe_bbs;
-+	mlx5e_notify_hw(&sq->wq, sq->pc, sq->uar_map, &wqe->ctrl);
-+}
-+
-+static void
-+mlx5e_nvmeotcp_rx_post_progress_params_wqe(struct mlx5e_nvmeotcp_queue *queue,
-+					   u32 seq)
-+{
-+	struct mlx5e_set_nvmeotcp_progress_params_wqe *wqe;
-+	struct mlx5e_icosq *sq = &queue->sq->icosq;
-+	u16 pi, wqe_bbs;
-+
-+	wqe_bbs = MLX5E_NVMEOTCP_PROGRESS_PARAMS_WQEBBS;
-+	pi = mlx5e_icosq_get_next_pi(sq, wqe_bbs);
-+	wqe = MLX5E_NVMEOTCP_FETCH_PROGRESS_PARAMS_WQE(sq, pi);
-+	mlx5e_nvmeotcp_fill_wi(queue, sq, wqe_bbs, pi, 0, SET_PSV_UMR);
-+	build_nvmeotcp_progress_params(queue, wqe, seq);
-+	sq->pc += wqe_bbs;
-+	mlx5e_notify_hw(&sq->wq, sq->pc, sq->uar_map, &wqe->ctrl);
-+}
-+
-+static void
-+post_klm_wqe(struct mlx5e_nvmeotcp_queue *queue,
-+	     enum wqe_type wqe_type,
-+	     u16 ccid,
-+	     u32 klm_length,
-+	     u32 *klm_offset)
-+{
-+	struct mlx5e_icosq *sq = &queue->sq->icosq;
-+	u32 wqe_bbs, cur_klm_entries;
-+	struct mlx5e_umr_wqe *wqe;
-+	u16 pi, wqe_sz;
-+
-+	cur_klm_entries = min_t(int, queue->max_klms_per_wqe,
-+				klm_length - *klm_offset);
-+	wqe_sz = MLX5E_KLM_UMR_WQE_SZ(ALIGN(cur_klm_entries, KLM_ALIGNMENT));
-+	wqe_bbs = DIV_ROUND_UP(wqe_sz, MLX5_SEND_WQE_BB);
-+	pi = mlx5e_icosq_get_next_pi(sq, wqe_bbs);
-+	wqe = MLX5E_NVMEOTCP_FETCH_KLM_WQE(sq, pi);
-+	mlx5e_nvmeotcp_fill_wi(queue, sq, wqe_bbs, pi, ccid,
-+			       klm_length ? KLM_UMR : KLM_INV_UMR);
-+	build_nvmeotcp_klm_umr(queue, wqe, ccid, cur_klm_entries, *klm_offset,
-+			       klm_length, wqe_type);
-+	*klm_offset += cur_klm_entries;
-+	sq->pc += wqe_bbs;
-+	sq->doorbell_cseg = &wqe->ctrl;
-+}
-+
-+static int
-+mlx5e_nvmeotcp_post_klm_wqe(struct mlx5e_nvmeotcp_queue *queue,
-+			    enum wqe_type wqe_type,
-+			    u16 ccid,
-+			    u32 klm_length)
-+{
-+	u32 klm_offset = 0, wqes, wqe_sz, max_wqe_bbs, i, room;
-+	struct mlx5e_icosq *sq = &queue->sq->icosq;
-+
-+	/* TODO: set stricter wqe_sz; using max for now */
-+	if (klm_length == 0) {
-+		wqes = 1;
-+		wqe_sz = MLX5E_NVMEOTCP_STATIC_PARAMS_WQEBBS;
-+	} else {
-+		wqes = DIV_ROUND_UP(klm_length, queue->max_klms_per_wqe);
-+		wqe_sz = MLX5E_KLM_UMR_WQE_SZ(queue->max_klms_per_wqe);
-+	}
-+
-+	max_wqe_bbs = DIV_ROUND_UP(wqe_sz, MLX5_SEND_WQE_BB);
-+
-+	room = mlx5e_stop_room_for_wqe(max_wqe_bbs) * wqes;
-+	if (unlikely(!mlx5e_wqc_has_room_for(&sq->wq, sq->cc, sq->pc, room)))
-+		return -ENOSPC;
-+
-+	for (i = 0; i < wqes; i++)
-+		post_klm_wqe(queue, wqe_type, ccid, klm_length, &klm_offset);
-+
-+	mlx5e_notify_hw(&sq->wq, sq->pc, sq->uar_map, sq->doorbell_cseg);
-+	return 0;
-+}
-+
-+static int mlx5e_create_nvmeotcp_mkey(struct mlx5_core_dev *mdev,
-+				      u8 access_mode,
-+				      u32 translation_octword_size,
-+				      struct mlx5_core_mkey *mkey)
-+{
-+	int inlen = MLX5_ST_SZ_BYTES(create_mkey_in);
-+	void *mkc;
-+	u32 *in;
-+	int err;
-+
-+	in = kvzalloc(inlen, GFP_KERNEL);
-+	if (!in)
-+		return -ENOMEM;
-+
-+	mkc = MLX5_ADDR_OF(create_mkey_in, in, memory_key_mkey_entry);
-+	MLX5_SET(mkc, mkc, free, 1);
-+	MLX5_SET(mkc, mkc, translations_octword_size, translation_octword_size);
-+	MLX5_SET(mkc, mkc, umr_en, 1);
-+	MLX5_SET(mkc, mkc, lw, 1);
-+	MLX5_SET(mkc, mkc, lr, 1);
-+	MLX5_SET(mkc, mkc, access_mode_1_0, access_mode);
-+
-+	MLX5_SET(mkc, mkc, qpn, 0xffffff);
-+	MLX5_SET(mkc, mkc, pd, mdev->mlx5e_res.pdn);
-+	MLX5_SET(mkc, mkc, length64, 1);
-+
-+	err = mlx5_core_create_mkey(mdev, mkey, in, inlen);
-+
-+	kvfree(in);
-+	return err;
-+}
-+
-+static int
-+mlx5e_nvmeotcp_offload_limits(struct net_device *netdev,
-+			      struct tcp_ddp_limits *limits)
-+{
-+	struct mlx5e_priv *priv = netdev_priv(netdev);
-+	struct mlx5_core_dev *mdev = priv->mdev;
-+
-+	limits->max_ddp_sgl_len = mlx5e_get_max_sgl(mdev);
-+	return 0;
-+}
-+
-+static void
-+mlx5e_nvmeotcp_destroy_sq(struct mlx5e_nvmeotcp_sq *nvmeotcpsq)
-+{
-+	mlx5e_deactivate_icosq(&nvmeotcpsq->icosq);
-+	mlx5e_close_icosq(&nvmeotcpsq->icosq);
-+	mlx5e_close_cq(&nvmeotcpsq->icosq.cq);
-+	list_del(&nvmeotcpsq->list);
-+	kfree(nvmeotcpsq);
-+}
-+
-+static int
-+mlx5e_nvmeotcp_build_icosq(struct mlx5e_nvmeotcp_queue *queue,
-+			   struct mlx5e_priv *priv)
-+{
-+	u16 max_sgl, max_klm_per_wqe, max_umr_per_ccid, sgl_rest, wqebbs_rest;
-+	struct mlx5e_channel *c = priv->channels.c[queue->channel_ix];
-+	struct mlx5e_sq_param icosq_param = {0};
-+	struct dim_cq_moder icocq_moder = {0};
-+	struct mlx5e_nvmeotcp_sq *nvmeotcp_sq;
-+	struct mlx5e_create_cq_param ccp;
-+	struct mlx5e_icosq *icosq;
-+	int err = -ENOMEM;
-+	u16 log_icosq_sz; 
-+	u32 max_wqebbs;
-+
-+	nvmeotcp_sq = kzalloc(sizeof(*nvmeotcp_sq), GFP_KERNEL);
-+	if (!nvmeotcp_sq)
-+		return err;
-+
-+	icosq = &nvmeotcp_sq->icosq;
-+	max_sgl = mlx5e_get_max_sgl(priv->mdev);
-+	max_klm_per_wqe = queue->max_klms_per_wqe;
-+	max_umr_per_ccid = max_sgl / max_klm_per_wqe;
-+	sgl_rest = max_sgl % max_klm_per_wqe;
-+	wqebbs_rest = sgl_rest ? MLX5E_KLM_UMR_WQEBBS(sgl_rest) : 0;
-+	max_wqebbs = (MLX5E_KLM_UMR_WQEBBS(max_klm_per_wqe) *
-+		     max_umr_per_ccid + wqebbs_rest) * queue->size;
-+	log_icosq_sz = order_base_2(max_wqebbs);
-+
-+	mlx5e_build_icosq_param(priv, log_icosq_sz, &icosq_param);
-+	mlx5e_build_create_cq_param(&ccp, c);
-+	err = mlx5e_open_cq(priv, icocq_moder, &icosq_param.cqp, &ccp, &icosq->cq);
-+	if (err)
-+		goto err_nvmeotcp_sq;
-+
-+	err = mlx5e_open_icosq(c, &priv->channels.params, &icosq_param, icosq);
-+	if (err)
-+		goto close_cq;
-+
-+	INIT_LIST_HEAD(&nvmeotcp_sq->list);
-+	spin_lock(&c->nvmeotcp_icosq_lock);
-+	list_add(&nvmeotcp_sq->list, &c->list_nvmeotcpsq);
-+	spin_unlock(&c->nvmeotcp_icosq_lock);
-+	queue->sq = nvmeotcp_sq;
-+	mlx5e_activate_icosq(icosq);
-+	return 0;
-+
-+close_cq:
-+	mlx5e_close_cq(&icosq->cq);
-+err_nvmeotcp_sq:
-+	kfree(nvmeotcp_sq);
-+
-+	return err;
-+}
-+
-+static void
-+mlx5e_nvmeotcp_destroy_rx(struct mlx5e_nvmeotcp_queue *queue,
-+			  struct mlx5_core_dev *mdev, bool zerocopy)
-+{
-+	int i;
-+
-+	mlx5e_accel_fs_del_sk(queue->fh);
-+	for (i = 0; i < queue->size && zerocopy; i++)
-+		mlx5_core_destroy_mkey(mdev, &queue->ccid_table[i].klm_mkey);
-+
-+	mlx5e_nvmeotcp_destroy_tir(queue->priv, queue->tirn);
-+	if (zerocopy) {
-+		kfree(queue->ccid_table);
-+		mlx5_destroy_nvmeotcp_tag_buf_table(mdev, queue->tag_buf_table_id);
-+		static_branch_dec(&skip_copy_enabled);
-+	}
-+
-+	mlx5e_nvmeotcp_destroy_sq(queue->sq);
-+}
-+
-+static int
-+mlx5e_nvmeotcp_queue_rx_init(struct mlx5e_nvmeotcp_queue *queue,
-+			     struct nvme_tcp_ddp_config *config,
-+			     struct net_device *netdev,
-+			     bool zerocopy, bool crc)
-+{
-+	u8 log_queue_size = order_base_2(config->queue_size);
-+	struct mlx5e_priv *priv = netdev_priv(netdev);
-+	struct mlx5_core_dev *mdev = priv->mdev;
-+	struct sock *sk = queue->sk;
-+	int err, max_sgls, i;
-+
-+	if (zerocopy) {
-+		if (config->queue_size >
-+		    BIT(MLX5_CAP_DEV_NVMEOTCP(mdev, log_max_nvmeotcp_tag_buffer_size))) {
-+			return -EINVAL;
-+		}
-+
-+		err = mlx5e_create_nvmeotcp_tag_buf_table(mdev, queue, log_queue_size);
-+		if (err)
-+			return err;
-+	}
-+
-+	err = mlx5e_nvmeotcp_build_icosq(queue, priv);
-+	if (err)
-+		goto destroy_tag_buffer_table;
-+
-+	/* initializes queue->tirn */
-+	err = mlx5e_nvmeotcp_create_tir(priv, sk, config, queue, zerocopy, crc);
-+	if (err)
-+		goto destroy_icosq;
-+
-+	mlx5e_nvmeotcp_rx_post_static_params_wqe(queue, 0);
-+	mlx5e_nvmeotcp_rx_post_progress_params_wqe(queue, tcp_sk(sk)->copied_seq);
-+
-+	if (zerocopy) {
-+		queue->ccid_table = kcalloc(queue->size,
-+					    sizeof(struct nvmeotcp_queue_entry),
-+					    GFP_KERNEL);
-+		if (!queue->ccid_table) {
-+			err = -ENOMEM;
-+			goto destroy_tir;
-+		}
-+
-+		max_sgls = mlx5e_get_max_sgl(mdev);
-+		for (i = 0; i < queue->size; i++) {
-+			err = mlx5e_create_nvmeotcp_mkey(mdev,
-+							 MLX5_MKC_ACCESS_MODE_KLMS,
-+							 max_sgls,
-+							 &queue->ccid_table[i].klm_mkey);
-+			if (err)
-+				goto free_sgl;
-+		}
-+
-+		err = mlx5e_nvmeotcp_post_klm_wqe(queue, BSF_KLM_UMR, 0, queue->size);
-+		if (err)
-+			goto free_sgl;
-+	}
-+
-+	if (!(WARN_ON(!wait_for_completion_timeout(&queue->done, 0))))
-+		queue->fh = mlx5e_accel_fs_add_sk(priv, sk, queue->tirn, queue->id);
-+
-+	if (IS_ERR_OR_NULL(queue->fh)) {
-+		err = -EINVAL;
-+		goto free_sgl;
-+	}
-+
-+	if (zerocopy)
-+		static_branch_inc(&skip_copy_enabled);
-+
-+	return 0;
-+
-+free_sgl:
-+	while ((i--) && zerocopy)
-+		mlx5_core_destroy_mkey(mdev, &queue->ccid_table[i].klm_mkey);
-+
-+	if (zerocopy)
-+		kfree(queue->ccid_table);
-+destroy_tir:
-+	mlx5e_nvmeotcp_destroy_tir(priv, queue->tirn);
-+destroy_icosq:
-+	mlx5e_nvmeotcp_destroy_sq(queue->sq);
-+destroy_tag_buffer_table:
-+	if (zerocopy)
-+		mlx5_destroy_nvmeotcp_tag_buf_table(mdev, queue->tag_buf_table_id);
-+
-+	return err;
-+}
-+
-+#define OCTWORD_SHIFT 4
-+#define MAX_DS_VALUE 63
-+static int
-+mlx5e_nvmeotcp_queue_init(struct net_device *netdev,
-+			  struct sock *sk,
-+			  struct tcp_ddp_config *tconfig)
-+{
-+	struct nvme_tcp_ddp_config *config = (struct nvme_tcp_ddp_config *)tconfig;
-+	struct mlx5e_priv *priv = netdev_priv(netdev);
-+	struct mlx5_core_dev *mdev = priv->mdev;
-+	struct mlx5e_nvmeotcp_queue *queue;
-+	int max_wqe_sz_cap, queue_id, err;
-+
-+	if (tconfig->type != TCP_DDP_NVME) {
-+		err = -EOPNOTSUPP;
-+		goto out;
-+	}
-+
-+	queue = kzalloc(sizeof(*queue), GFP_KERNEL);
-+	if (!queue) {
-+		err = -ENOMEM;
-+		goto out;
-+	}
-+
-+	queue_id = ida_simple_get(&priv->nvmeotcp->queue_ids,
-+				  MIN_NVMEOTCP_QUEUES, MAX_NVMEOTCP_QUEUES,
-+				  GFP_KERNEL);
-+	if (queue_id < 0) {
-+		err = -ENOSPC;
-+		goto free_queue;
-+	}
-+
-+	queue->crc_rx = (config->dgst & NVME_TCP_DATA_DIGEST_ENABLE) &&
-+			(netdev->features & NETIF_F_HW_TCP_DDP_CRC_RX);
-+	queue->zerocopy = (netdev->features & NETIF_F_HW_TCP_DDP);
-+	queue->tcp_ddp_ctx.type = TCP_DDP_NVME;
-+	queue->sk = sk;
-+	queue->id = queue_id;
-+	queue->dgst = config->dgst;
-+	queue->pda = config->cpda;
-+	queue->channel_ix = mlx5e_get_channel_ix_from_io_cpu(priv,
-+							     config->io_cpu);
-+	queue->size = config->queue_size;
-+	max_wqe_sz_cap  = min_t(int, MAX_DS_VALUE * MLX5_SEND_WQE_DS,
-+				MLX5_CAP_GEN(mdev, max_wqe_sz_sq) << OCTWORD_SHIFT);
-+	queue->max_klms_per_wqe = MLX5E_KLM_ENTRIES_PER_WQE(max_wqe_sz_cap);
-+	queue->priv = priv;
-+	init_completion(&queue->done);
-+
-+	if (queue->zerocopy || queue->crc_rx) {
-+		err = mlx5e_nvmeotcp_queue_rx_init(queue, config, netdev,
-+						   queue->zerocopy, queue->crc_rx);
-+			if (err)
-+				goto remove_queue_id;
-+	}
-+
-+	err = rhashtable_insert_fast(&priv->nvmeotcp->queue_hash, &queue->hash,
-+				     rhash_queues);
-+	if (err)
-+		goto destroy_rx;
-+
-+	write_lock_bh(&sk->sk_callback_lock);
-+	rcu_assign_pointer(inet_csk(sk)->icsk_ulp_ddp_data, queue);
-+	write_unlock_bh(&sk->sk_callback_lock);
-+	refcount_set(&queue->ref_count, 1);
-+	return err;
-+
-+destroy_rx:
-+	if (queue->zerocopy || queue->crc_rx)
-+		mlx5e_nvmeotcp_destroy_rx(queue, mdev, queue->zerocopy);
-+remove_queue_id:
-+	ida_simple_remove(&priv->nvmeotcp->queue_ids, queue_id);
-+free_queue:
-+	kfree(queue);
-+out:
-+	return err;
-+}
-+
-+static void
-+mlx5e_nvmeotcp_queue_teardown(struct net_device *netdev,
-+			      struct sock *sk)
-+{
-+	struct mlx5e_priv *priv = netdev_priv(netdev);
-+	struct mlx5_core_dev *mdev = priv->mdev;
-+	struct mlx5e_nvmeotcp_queue *queue;
-+
-+	queue = (struct mlx5e_nvmeotcp_queue *)tcp_ddp_get_ctx(sk);
-+
-+	napi_synchronize(&priv->channels.c[queue->channel_ix]->napi);
-+
-+	WARN_ON(refcount_read(&queue->ref_count) != 1);
-+	if (queue->zerocopy | queue->crc_rx)
-+		mlx5e_nvmeotcp_destroy_rx(queue, mdev, queue->zerocopy);
-+
-+	rhashtable_remove_fast(&priv->nvmeotcp->queue_hash, &queue->hash,
-+			       rhash_queues);
-+
-+	write_lock_bh(&sk->sk_callback_lock);
-+	rcu_assign_pointer(inet_csk(sk)->icsk_ulp_ddp_data, NULL);
-+	write_unlock_bh(&sk->sk_callback_lock);
-+	mlx5e_nvmeotcp_put_queue(queue);
-+}
-+
-+static int
-+mlx5e_nvmeotcp_ddp_setup(struct net_device *netdev,
-+			 struct sock *sk,
-+			 struct tcp_ddp_io *ddp)
-+{
-+	struct mlx5e_priv *priv = netdev_priv(netdev);
-+	struct scatterlist *sg = ddp->sg_table.sgl;
-+	struct mlx5e_nvmeotcp_queue *queue;
-+	struct mlx5_core_dev *mdev;
-+	int count = 0;
-+
-+	queue = (struct mlx5e_nvmeotcp_queue *)tcp_ddp_get_ctx(sk);
-+
-+	mdev = queue->priv->mdev;
-+	count = dma_map_sg(mdev->device, ddp->sg_table.sgl, ddp->nents,
-+			   DMA_FROM_DEVICE);
-+
-+	if (WARN_ON(count > mlx5e_get_max_sgl(mdev)))
-+		return -ENOSPC;
-+
-+	queue->ccid_table[ddp->command_id].ddp = ddp;
-+	queue->ccid_table[ddp->command_id].sgl = sg;
-+	queue->ccid_table[ddp->command_id].ccid_gen++;
-+	queue->ccid_table[ddp->command_id].sgl_length = count;
-+
-+	return 0;
-+}
-+
-+void mlx5e_nvmeotcp_ddp_inv_done(struct mlx5e_icosq_wqe_info *wi)
-+{
-+	struct nvmeotcp_queue_entry *q_entry = wi->nvmeotcp_qe.entry;
-+	struct mlx5e_nvmeotcp_queue *queue = q_entry->queue;
-+	struct mlx5_core_dev *mdev = queue->priv->mdev;
-+	struct tcp_ddp_io *ddp = q_entry->ddp;
-+	const struct tcp_ddp_ulp_ops *ulp_ops;
-+
-+	dma_unmap_sg(mdev->device, ddp->sg_table.sgl,
-+		     q_entry->sgl_length, DMA_FROM_DEVICE);
-+
-+	q_entry->sgl_length = 0;
-+
-+	ulp_ops = inet_csk(queue->sk)->icsk_ulp_ddp_ops;
-+	if (ulp_ops && ulp_ops->ddp_teardown_done)
-+		ulp_ops->ddp_teardown_done(q_entry->ddp_ctx);
-+}
-+
-+void mlx5e_nvmeotcp_ctx_comp(struct mlx5e_icosq_wqe_info *wi)
-+{
-+	struct mlx5e_nvmeotcp_queue *queue = wi->nvmeotcp_q.queue;
-+
-+	if (unlikely(!queue))
-+		return;
-+
-+	complete(&queue->done);
-+}
-+
-+static int
-+mlx5e_nvmeotcp_ddp_teardown(struct net_device *netdev,
-+			    struct sock *sk,
-+			    struct tcp_ddp_io *ddp,
-+			    void *ddp_ctx)
-+{
-+	struct mlx5e_nvmeotcp_queue *queue =
-+		(struct mlx5e_nvmeotcp_queue *)tcp_ddp_get_ctx(sk);
-+	struct mlx5e_priv *priv = netdev_priv(netdev);
-+	struct nvmeotcp_queue_entry *q_entry;
-+
-+	q_entry  = &queue->ccid_table[ddp->command_id];
-+	WARN_ON(q_entry->sgl_length == 0);
-+
-+	q_entry->ddp_ctx = ddp_ctx;
-+	q_entry->queue = queue;
-+
-+	mlx5e_nvmeotcp_post_klm_wqe(queue, KLM_UMR, ddp->command_id, 0);
-+
-+	return 0;
-+}
-+
-+static void
-+mlx5e_nvmeotcp_dev_resync(struct net_device *netdev,
-+			  struct sock *sk, u32 seq)
-+{
-+	struct mlx5e_nvmeotcp_queue *queue =
-+				(struct mlx5e_nvmeotcp_queue *)tcp_ddp_get_ctx(sk);
-+
-+	mlx5e_nvmeotcp_rx_post_static_params_wqe(queue, seq);
-+}
-+
-+static const struct tcp_ddp_dev_ops mlx5e_nvmeotcp_ops = {
-+	.tcp_ddp_limits = mlx5e_nvmeotcp_offload_limits,
-+	.tcp_ddp_sk_add = mlx5e_nvmeotcp_queue_init,
-+	.tcp_ddp_sk_del = mlx5e_nvmeotcp_queue_teardown,
-+	.tcp_ddp_setup = mlx5e_nvmeotcp_ddp_setup,
-+	.tcp_ddp_teardown = mlx5e_nvmeotcp_ddp_teardown,
-+	.tcp_ddp_resync = mlx5e_nvmeotcp_dev_resync,
-+};
-+
-+struct mlx5e_nvmeotcp_queue *
-+mlx5e_nvmeotcp_get_queue(struct mlx5e_nvmeotcp *nvmeotcp, int id)
-+{
-+	struct mlx5e_nvmeotcp_queue *queue;
-+
-+	rcu_read_lock();
-+	queue = rhashtable_lookup_fast(&nvmeotcp->queue_hash,
-+				       &id, rhash_queues);
-+	if (queue && !IS_ERR(queue))
-+		if (!refcount_inc_not_zero(&queue->ref_count))
-+			queue = NULL;
-+	rcu_read_unlock();
-+	return queue;
-+}
-+
-+void mlx5e_nvmeotcp_put_queue(struct mlx5e_nvmeotcp_queue *queue)
-+{
-+	if (refcount_dec_and_test(&queue->ref_count))
-+		kfree(queue);
-+}
-+
-+int set_feature_nvme_tcp(struct net_device *netdev, bool enable)
-+{
-+	struct mlx5e_priv *priv = netdev_priv(netdev);
-+	int err = 0;
-+
-+	mutex_lock(&priv->state_lock);
-+	if (enable)
-+		err = mlx5e_accel_fs_tcp_create(priv);
-+	else
-+		mlx5e_accel_fs_tcp_destroy(priv);
-+	mutex_unlock(&priv->state_lock);
-+	if (err)
-+		return err;
-+
-+	priv->nvmeotcp->enable = enable;
-+	err = mlx5e_safe_reopen_channels(priv);
-+	return err;
-+}
-+
-+int set_feature_nvme_tcp_crc(struct net_device *netdev, bool enable)
-+{
-+	struct mlx5e_priv *priv = netdev_priv(netdev);
-+	int err = 0;
-+
-+	mutex_lock(&priv->state_lock);
-+	if (enable)
-+		err = mlx5e_accel_fs_tcp_create(priv);
-+	else
-+		mlx5e_accel_fs_tcp_destroy(priv);
-+	mutex_unlock(&priv->state_lock);
-+
-+	priv->nvmeotcp->crc_rx_enable = enable;
-+	err = mlx5e_safe_reopen_channels(priv);
-+	if (err)
-+		netdev_err(priv->netdev,
-+			   "%s failed to reopen channels, err(%d).\n",
-+			   __func__, err);
-+
-+	return err;
-+}
-+
-+void mlx5e_nvmeotcp_build_netdev(struct mlx5e_priv *priv)
-+{
-+	struct net_device *netdev = priv->netdev;
-+
-+	if (!MLX5_CAP_GEN(priv->mdev, nvmeotcp))
-+		return;
-+
-+	if (MLX5_CAP_DEV_NVMEOTCP(priv->mdev, zerocopy)) {
-+		netdev->features |= NETIF_F_HW_TCP_DDP;
-+		netdev->hw_features |= NETIF_F_HW_TCP_DDP;
-+	}
-+
-+	if (MLX5_CAP_DEV_NVMEOTCP(priv->mdev, crc_rx)) {
-+		netdev->features |= NETIF_F_HW_TCP_DDP_CRC_RX;
-+		netdev->hw_features |= NETIF_F_HW_TCP_DDP_CRC_RX;
-+	}
-+
-+	netdev->tcp_ddp_ops = &mlx5e_nvmeotcp_ops;
-+	priv->nvmeotcp->enable = true;
-+}
-+
-+int mlx5e_nvmeotcp_init_rx(struct mlx5e_priv *priv)
-+{
-+	int ret = 0;
-+
-+	if (priv->netdev->features & NETIF_F_HW_TCP_DDP) {
-+		ret = mlx5e_accel_fs_tcp_create(priv);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	if (priv->netdev->features & NETIF_F_HW_TCP_DDP_CRC_RX)
-+		ret = mlx5e_accel_fs_tcp_create(priv);
-+
-+	return ret;
-+}
-+
-+void mlx5e_nvmeotcp_cleanup_rx(struct mlx5e_priv *priv)
-+{
-+	if (priv->netdev->features & NETIF_F_HW_TCP_DDP)
-+		mlx5e_accel_fs_tcp_destroy(priv);
-+
-+	if (priv->netdev->features & NETIF_F_HW_TCP_DDP_CRC_RX)
-+		mlx5e_accel_fs_tcp_destroy(priv);
-+}
-+
-+int mlx5e_nvmeotcp_init(struct mlx5e_priv *priv)
-+{
-+	struct mlx5e_nvmeotcp *nvmeotcp = kzalloc(sizeof(*nvmeotcp), GFP_KERNEL);
-+	int ret = 0;
-+
-+	if (!nvmeotcp)
-+		return -ENOMEM;
-+
-+	ida_init(&nvmeotcp->queue_ids);
-+	ret = rhashtable_init(&nvmeotcp->queue_hash, &rhash_queues);
-+	if (ret)
-+		goto err_ida;
-+
-+	priv->nvmeotcp = nvmeotcp;
-+	goto out;
-+
-+err_ida:
-+	ida_destroy(&nvmeotcp->queue_ids);
-+	kfree(nvmeotcp);
-+out:
-+	return ret;
-+}
-+
-+void mlx5e_nvmeotcp_cleanup(struct mlx5e_priv *priv)
-+{
-+	struct mlx5e_nvmeotcp *nvmeotcp = priv->nvmeotcp;
-+
-+	if (!nvmeotcp)
-+		return;
-+
-+	rhashtable_destroy(&nvmeotcp->queue_hash);
-+	ida_destroy(&nvmeotcp->queue_ids);
-+	kfree(nvmeotcp);
-+	priv->nvmeotcp = NULL;
-+}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.h
-new file mode 100644
-index 000000000000..5be300d8299e
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.h
-@@ -0,0 +1,116 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+// Copyright (c) 2020 Mellanox Technologies.
-+#ifndef __MLX5E_NVMEOTCP_H__
-+#define __MLX5E_NVMEOTCP_H__
-+
-+#ifdef CONFIG_MLX5_EN_NVMEOTCP
-+
-+#include "net/tcp_ddp.h"
-+#include "en.h"
-+#include "en/params.h"
-+
-+struct nvmeotcp_queue_entry {
-+	struct mlx5e_nvmeotcp_queue	*queue;
-+	u32				sgl_length;
-+	struct mlx5_core_mkey		klm_mkey;
-+	struct scatterlist		*sgl;
-+	u32				ccid_gen;
-+
-+	/* for the ddp invalidate done callback */
-+	void				*ddp_ctx;
-+	struct tcp_ddp_io		*ddp;
-+};
-+
-+struct mlx5e_nvmeotcp_sq {
-+	struct list_head		list;
-+	struct mlx5e_icosq		icosq;
-+};
-+
-+/**
-+ *	struct mlx5e_nvmeotcp_queue - MLX5 metadata for NVMEoTCP queue
-+ *	@fh: Flow handle representing the 5-tuple steering for this flow
-+ *	@tirn: Destination TIR number created for NVMEoTCP offload
-+ *	@id: Flow tag ID used to identify this queue
-+ *	@size: NVMEoTCP queue depth
-+ *	@sq: Send queue used for sending control messages
-+ *	@ccid_table: Table holding metadata for each CC
-+ *	@tag_buf_table_id: Tag buffer table for CCIDs
-+ *	@hash: Hash table of queues mapped by @id
-+ *	@ref_count: Reference count for this structure
-+ *	@ccoff: Offset within the current CC
-+ *	@pda: Padding alignment
-+ *	@ccid_gen: Generation ID for the CCID, used to avoid conflicts in DDP
-+ *	@max_klms_per_wqe: Number of KLMs per DDP operation
-+ *	@channel_ix: Channel IX for this nvmeotcp_queue
-+ *	@sk: The socket used by the NVMe-TCP queue
-+ *	@zerocopy: if this queue is used for zerocopy offload.
-+ *	@crc_rx: if this queue is used for CRC Rx offload.
-+ *	@ccid: ID of the current CC
-+ *	@ccsglidx: Index within the scatter-gather list (SGL) of the current CC
-+ *	@ccoff_inner: Current offset within the @ccsglidx element
-+ *	@priv: mlx5e netdev priv
-+ *	@inv_done: invalidate callback of the nvme tcp driver
-+ */
-+struct mlx5e_nvmeotcp_queue {
-+	struct tcp_ddp_ctx		tcp_ddp_ctx;
-+	struct mlx5_flow_handle		*fh;
-+	int				tirn;
-+	int				id;
-+	u32				size;
-+	struct mlx5e_nvmeotcp_sq	*sq;
-+	struct nvmeotcp_queue_entry	*ccid_table;
-+	u32				tag_buf_table_id;
-+	struct rhash_head		hash;
-+	refcount_t			ref_count;
-+	bool				dgst;
-+	int				pda;
-+	u32				ccid_gen;
-+	u32				max_klms_per_wqe;
-+	u32				channel_ix;
-+	struct sock			*sk;
-+	bool				zerocopy;
-+	bool				crc_rx;
-+
-+	/* current ccid fields */
-+	off_t				ccoff;
-+	int				ccid;
-+	int				ccsglidx;
-+	int				ccoff_inner;
-+
-+	/* for ddp invalidate flow */
-+	struct mlx5e_priv		*priv;
-+
-+	/* for flow_steering flow */
-+	struct completion		done;
-+};
-+
-+struct mlx5e_nvmeotcp {
-+	struct ida			queue_ids;
-+	struct rhashtable		queue_hash;
-+	bool				enable;
-+	bool				crc_rx_enable;
-+};
-+
-+void mlx5e_nvmeotcp_build_netdev(struct mlx5e_priv *priv);
-+int mlx5e_nvmeotcp_init(struct mlx5e_priv *priv);
-+int set_feature_nvme_tcp(struct net_device *netdev, bool enable);
-+int set_feature_nvme_tcp_crc(struct net_device *netdev, bool enable);
-+void mlx5e_nvmeotcp_cleanup(struct mlx5e_priv *priv);
-+struct mlx5e_nvmeotcp_queue *
-+mlx5e_nvmeotcp_get_queue(struct mlx5e_nvmeotcp *nvmeotcp, int id);
-+void mlx5e_nvmeotcp_put_queue(struct mlx5e_nvmeotcp_queue *queue);
-+void mlx5e_nvmeotcp_ddp_inv_done(struct mlx5e_icosq_wqe_info *wi);
-+void mlx5e_nvmeotcp_ctx_comp(struct mlx5e_icosq_wqe_info *wi);
-+int mlx5e_nvmeotcp_init_rx(struct mlx5e_priv *priv);
-+void mlx5e_nvmeotcp_cleanup_rx(struct mlx5e_priv *priv);
-+#else
-+
-+static inline void mlx5e_nvmeotcp_build_netdev(struct mlx5e_priv *priv) { }
-+static inline int mlx5e_nvmeotcp_init(struct mlx5e_priv *priv) { return 0; }
-+static inline void mlx5e_nvmeotcp_cleanup(struct mlx5e_priv *priv) { }
-+static inline int set_feature_nvme_tcp(struct net_device *netdev, bool enable) { return 0; }
-+static inline int set_feature_nvme_tcp_crc(struct net_device *netdev, bool enable) { return 0; }
-+static inline int mlx5e_nvmeotcp_init_rx(struct mlx5e_priv *priv) { return 0; }
-+static inline void mlx5e_nvmeotcp_cleanup_rx(struct mlx5e_priv *priv) { }
-+#endif
-+#endif /* __MLX5E_NVMEOTCP_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_utils.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_utils.h
-new file mode 100644
-index 000000000000..3848fcec59c3
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_utils.h
-@@ -0,0 +1,80 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+// Copyright (c) 2020 Mellanox Technologies.
-+
-+#ifndef __MLX5E_NVMEOTCP_UTILS_H__
-+#define __MLX5E_NVMEOTCP_UTILS_H__
-+
-+#include "en.h"
-+#include "en_accel/nvmeotcp.h"
-+
-+enum {
-+	MLX5E_NVMEOTCP_PROGRESS_PARAMS_PDU_TRACKER_STATE_START     = 0,
-+	MLX5E_NVMEOTCP_PROGRESS_PARAMS_PDU_TRACKER_STATE_TRACKING  = 1,
-+	MLX5E_NVMEOTCP_PROGRESS_PARAMS_PDU_TRACKER_STATE_SEARCHING = 2,
-+};
-+
-+struct mlx5_seg_nvmeotcp_static_params {
-+	u8     ctx[MLX5_ST_SZ_BYTES(transport_static_params)];
-+};
-+
-+struct mlx5_seg_nvmeotcp_progress_params {
-+	u8     ctx[MLX5_ST_SZ_BYTES(nvmeotcp_progress_params)];
-+};
-+
-+struct mlx5e_set_nvmeotcp_static_params_wqe {
-+	struct mlx5_wqe_ctrl_seg          ctrl;
-+	struct mlx5_wqe_umr_ctrl_seg      uctrl;
-+	struct mlx5_mkey_seg              mkc;
-+	struct mlx5_seg_nvmeotcp_static_params params;
-+};
-+
-+struct mlx5e_set_nvmeotcp_progress_params_wqe {
-+	struct mlx5_wqe_ctrl_seg            ctrl;
-+	struct mlx5_seg_nvmeotcp_progress_params params;
-+};
-+
-+struct mlx5e_get_psv_wqe {
-+	struct mlx5_wqe_ctrl_seg ctrl;
-+	struct mlx5_seg_get_psv  psv;
-+};
-+
-+///////////////////////////////////////////
-+#define MLX5E_NVMEOTCP_STATIC_PARAMS_WQE_SZ \
-+	(sizeof(struct mlx5e_set_nvmeotcp_static_params_wqe))
-+
-+#define MLX5E_NVMEOTCP_PROGRESS_PARAMS_WQE_SZ \
-+	(sizeof(struct mlx5e_set_nvmeotcp_progress_params_wqe))
-+#define MLX5E_NVMEOTCP_STATIC_PARAMS_OCTWORD_SIZE \
-+	(MLX5_ST_SZ_BYTES(transport_static_params) / MLX5_SEND_WQE_DS)
-+
-+#define MLX5E_NVMEOTCP_STATIC_PARAMS_WQEBBS \
-+	(DIV_ROUND_UP(MLX5E_NVMEOTCP_STATIC_PARAMS_WQE_SZ, MLX5_SEND_WQE_BB))
-+#define MLX5E_NVMEOTCP_PROGRESS_PARAMS_WQEBBS \
-+	(DIV_ROUND_UP(MLX5E_NVMEOTCP_PROGRESS_PARAMS_WQE_SZ, MLX5_SEND_WQE_BB))
-+
-+#define MLX5E_NVMEOTCP_FETCH_STATIC_PARAMS_WQE(sq, pi) \
-+	((struct mlx5e_set_nvmeotcp_static_params_wqe *)\
-+	 mlx5e_fetch_wqe(&(sq)->wq, pi, sizeof(struct mlx5e_set_nvmeotcp_static_params_wqe)))
-+
-+#define MLX5E_NVMEOTCP_FETCH_PROGRESS_PARAMS_WQE(sq, pi) \
-+	((struct mlx5e_set_nvmeotcp_progress_params_wqe *)\
-+	 mlx5e_fetch_wqe(&(sq)->wq, pi, sizeof(struct mlx5e_set_nvmeotcp_progress_params_wqe)))
-+
-+#define MLX5E_NVMEOTCP_FETCH_KLM_WQE(sq, pi) \
-+	((struct mlx5e_umr_wqe *)\
-+	 mlx5e_fetch_wqe(&(sq)->wq, pi, sizeof(struct mlx5e_umr_wqe)))
-+
-+#define MLX5_CTRL_SEGMENT_OPC_MOD_UMR_NVMEOTCP_TIR_PROGRESS_PARAMS 0x4
-+
-+void
-+build_nvmeotcp_progress_params(struct mlx5e_nvmeotcp_queue *queue,
-+			       struct mlx5e_set_nvmeotcp_progress_params_wqe *wqe,
-+			       u32 seq);
-+
-+void
-+build_nvmeotcp_static_params(struct mlx5e_nvmeotcp_queue *queue,
-+			     struct mlx5e_set_nvmeotcp_static_params_wqe *wqe,
-+			     u32 resync_seq,
-+			     bool zerocopy, bool crc_rx);
-+
-+#endif /* __MLX5E_NVMEOTCP_UTILS_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 158fc05f0c4c..d58826d93f3c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -47,6 +47,7 @@
- #include "en_accel/ipsec.h"
- #include "en_accel/en_accel.h"
- #include "en_accel/tls.h"
-+#include "en_accel/nvmeotcp.h"
- #include "accel/ipsec.h"
- #include "accel/tls.h"
- #include "lib/vxlan.h"
-@@ -2015,6 +2016,10 @@ static int mlx5e_open_channel(struct mlx5e_priv *priv, int ix,
- 	c->irq_desc = irq_to_desc(irq);
- 	c->lag_port = mlx5e_enumerate_lag_port(priv->mdev, ix);
- 
-+#ifdef CONFIG_MLX5_EN_NVMEOTCP
-+	INIT_LIST_HEAD(&c->list_nvmeotcpsq);
-+	spin_lock_init(&c->nvmeotcp_icosq_lock);
-+#endif
- 	netif_napi_add(netdev, &c->napi, mlx5e_napi_poll, 64);
- 
- 	err = mlx5e_open_queues(c, params, cparam);
-@@ -2247,7 +2252,8 @@ static void mlx5e_build_common_cq_param(struct mlx5e_priv *priv,
- 	void *cqc = param->cqc;
- 
- 	MLX5_SET(cqc, cqc, uar_page, priv->mdev->priv.uar->index);
--	if (MLX5_CAP_GEN(priv->mdev, cqe_128_always) && cache_line_size() >= 128)
-+	if (MLX5_CAP_GEN(priv->mdev, cqe_128_always) &&
-+	    (cache_line_size() >= 128 || param->force_cqe128))
- 		MLX5_SET(cqc, cqc, cqe_sz, CQE_STRIDE_128_PAD);
- }
- 
-@@ -2261,6 +2267,11 @@ void mlx5e_build_rx_cq_param(struct mlx5e_priv *priv,
- 	void *cqc = param->cqc;
- 	u8 log_cq_size;
- 
-+#ifdef CONFIG_MLX5_EN_NVMEOTCP
-+	/* nvme-tcp offload mandates 128 byte cqes */
-+	param->force_cqe128 |= (priv->nvmeotcp->enable || priv->nvmeotcp->crc_rx_enable);
-+#endif
-+
- 	switch (params->rq_wq_type) {
- 	case MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ:
- 		log_cq_size = mlx5e_mpwqe_get_log_rq_size(params, xsk) +
-@@ -3957,6 +3968,10 @@ int mlx5e_set_features(struct net_device *netdev, netdev_features_t features)
- 	err |= MLX5E_HANDLE_FEATURE(NETIF_F_NTUPLE, set_feature_arfs);
- #endif
- 	err |= MLX5E_HANDLE_FEATURE(NETIF_F_HW_TLS_RX, mlx5e_ktls_set_feature_rx);
-+#ifdef CONFIG_MLX5_EN_NVMEOTCP
-+	err |= MLX5E_HANDLE_FEATURE(NETIF_F_HW_TCP_DDP, set_feature_nvme_tcp);
-+	err |= MLX5E_HANDLE_FEATURE(NETIF_F_HW_TCP_DDP_CRC_RX, set_feature_nvme_tcp_crc);
-+#endif
- 
- 	if (err) {
- 		netdev->features = oper_features;
-@@ -3993,6 +4008,23 @@ static netdev_features_t mlx5e_fix_features(struct net_device *netdev,
- 		features &= ~NETIF_F_RXHASH;
- 		if (netdev->features & NETIF_F_RXHASH)
- 			netdev_warn(netdev, "Disabling rxhash, not supported when CQE compress is active\n");
-+
-+		features &= ~NETIF_F_HW_TCP_DDP;
-+		if (netdev->features & NETIF_F_HW_TCP_DDP)
-+			netdev_warn(netdev, "Disabling tcp-ddp offload, not supported when CQE compress is active\n");
-+
-+		features &= ~NETIF_F_HW_TCP_DDP_CRC_RX;
-+		if (netdev->features & NETIF_F_HW_TCP_DDP_CRC_RX)
-+			netdev_warn(netdev, "Disabling tcp-ddp-crc-rx offload, not supported when CQE compression is active\n");
-+	}
-+
-+	if (netdev->features & NETIF_F_LRO) {
-+		features &= ~NETIF_F_HW_TCP_DDP;
-+		if (netdev->features & NETIF_F_HW_TCP_DDP)
-+			netdev_warn(netdev, "Disabling tcp-ddp offload, not supported when LRO is active\n");
-+		features &= ~NETIF_F_HW_TCP_DDP_CRC_RX;
-+		if (netdev->features & NETIF_F_HW_TCP_DDP_CRC_RX)
-+			netdev_warn(netdev, "Disabling tcp-ddp-crc-rx offload, not supported when LRO is active\n");
- 	}
- 
- 	mutex_unlock(&priv->state_lock);
-@@ -5064,6 +5096,7 @@ static void mlx5e_build_nic_netdev(struct net_device *netdev)
- 	mlx5e_set_netdev_dev_addr(netdev);
- 	mlx5e_ipsec_build_netdev(priv);
- 	mlx5e_tls_build_netdev(priv);
-+	mlx5e_nvmeotcp_build_netdev(priv);
- }
- 
- void mlx5e_create_q_counters(struct mlx5e_priv *priv)
-@@ -5128,6 +5161,9 @@ static int mlx5e_nic_init(struct mlx5_core_dev *mdev,
- 	err = mlx5e_tls_init(priv);
- 	if (err)
- 		mlx5_core_err(mdev, "TLS initialization failed, %d\n", err);
-+	err = mlx5e_nvmeotcp_init(priv);
-+	if (err)
-+		mlx5_core_err(mdev, "NVMEoTCP initialization failed, %d\n", err);
- 	mlx5e_build_nic_netdev(netdev);
- 	err = mlx5e_devlink_port_register(priv);
- 	if (err)
-@@ -5141,6 +5177,7 @@ static void mlx5e_nic_cleanup(struct mlx5e_priv *priv)
- {
- 	mlx5e_health_destroy_reporters(priv);
- 	mlx5e_devlink_port_unregister(priv);
-+	mlx5e_nvmeotcp_cleanup(priv);
- 	mlx5e_tls_cleanup(priv);
- 	mlx5e_ipsec_cleanup(priv);
- 	mlx5e_netdev_cleanup(priv->netdev, priv);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 377e547840f3..598d62366af2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -47,6 +47,7 @@
- #include "fpga/ipsec.h"
- #include "en_accel/ipsec_rxtx.h"
- #include "en_accel/tls_rxtx.h"
-+#include "en_accel/nvmeotcp.h"
- #include "lib/clock.h"
- #include "en/xdp.h"
- #include "en/xsk/rx.h"
-@@ -617,16 +618,26 @@ void mlx5e_free_icosq_descs(struct mlx5e_icosq *sq)
- 		ci = mlx5_wq_cyc_ctr2ix(&sq->wq, sqcc);
- 		wi = &sq->db.wqe_info[ci];
- 		sqcc += wi->num_wqebbs;
--#ifdef CONFIG_MLX5_EN_TLS
- 		switch (wi->wqe_type) {
-+#ifdef CONFIG_MLX5_EN_TLS
- 		case MLX5E_ICOSQ_WQE_SET_PSV_TLS:
- 			mlx5e_ktls_handle_ctx_completion(wi);
- 			break;
- 		case MLX5E_ICOSQ_WQE_GET_PSV_TLS:
- 			mlx5e_ktls_handle_get_psv_completion(wi, sq);
- 			break;
--		}
- #endif
-+#ifdef CONFIG_MLX5_EN_NVMEOTCP
-+		case MLX5E_ICOSQ_WQE_UMR_NVME_TCP:
-+			break;
-+		case MLX5E_ICOSQ_WQE_UMR_NVME_TCP_INVALIDATE:
-+			mlx5e_nvmeotcp_ddp_inv_done(wi);
-+			break;
-+		case MLX5E_ICOSQ_WQE_SET_PSV_NVME_TCP:
-+			mlx5e_nvmeotcp_ctx_comp(wi);
-+			break;
-+#endif
-+		}
- 	}
- 	sq->cc = sqcc;
- }
-@@ -695,6 +706,16 @@ int mlx5e_poll_ico_cq(struct mlx5e_cq *cq)
- 			case MLX5E_ICOSQ_WQE_GET_PSV_TLS:
- 				mlx5e_ktls_handle_get_psv_completion(wi, sq);
- 				break;
-+#endif
-+#ifdef CONFIG_MLX5_EN_NVMEOTCP
-+			case MLX5E_ICOSQ_WQE_UMR_NVME_TCP:
-+				break;
-+			case MLX5E_ICOSQ_WQE_UMR_NVME_TCP_INVALIDATE:
-+				mlx5e_nvmeotcp_ddp_inv_done(wi);
-+				break;
-+			case MLX5E_ICOSQ_WQE_SET_PSV_NVME_TCP:
-+				mlx5e_nvmeotcp_ctx_comp(wi);
-+				break;
- #endif
- 			default:
- 				netdev_WARN_ONCE(cq->netdev,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-index 1ec3d62f026d..cd89d4dd2710 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-@@ -36,6 +36,7 @@
- #include "en/xdp.h"
- #include "en/xsk/rx.h"
- #include "en/xsk/tx.h"
-+#include "en_accel/nvmeotcp.h"
- 
- static inline bool mlx5e_channel_no_affinity_change(struct mlx5e_channel *c)
- {
-@@ -158,6 +159,15 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
- 		 * queueing more WQEs and overflowing the async ICOSQ.
- 		 */
- 		clear_bit(MLX5E_SQ_STATE_PENDING_XSK_TX, &c->async_icosq.state);
-+#ifdef CONFIG_MLX5_EN_NVMEOTCP
-+	struct list_head *cur;
-+	struct mlx5e_nvmeotcp_sq *nvmeotcp_sq;
-+
-+	list_for_each(cur, &c->list_nvmeotcpsq) {
-+		nvmeotcp_sq = list_entry(cur, struct mlx5e_nvmeotcp_sq, list);
-+		mlx5e_poll_ico_cq(&nvmeotcp_sq->icosq.cq);
-+	}
-+#endif
- 
- 	busy |= INDIRECT_CALL_2(rq->post_wqes,
- 				mlx5e_post_rx_mpwqes,
-@@ -196,6 +206,12 @@ int mlx5e_napi_poll(struct napi_struct *napi, int budget)
- 	mlx5e_cq_arm(&rq->cq);
- 	mlx5e_cq_arm(&c->icosq.cq);
- 	mlx5e_cq_arm(&c->async_icosq.cq);
-+#ifdef CONFIG_MLX5_EN_NVMEOTCP
-+	list_for_each(cur, &c->list_nvmeotcpsq) {
-+		nvmeotcp_sq = list_entry(cur, struct mlx5e_nvmeotcp_sq, list);
-+		mlx5e_cq_arm(&nvmeotcp_sq->icosq.cq);
-+	}
-+#endif
- 	mlx5e_cq_arm(&c->xdpsq.cq);
- 
- 	if (xsk_open) {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw.c b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-index 02558ac2ace6..5e7544ccae91 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-@@ -256,6 +256,12 @@ int mlx5_query_hca_caps(struct mlx5_core_dev *dev)
- 			return err;
- 	}
- 
-+	if (MLX5_CAP_GEN(dev, nvmeotcp)) {
-+		err = mlx5_core_get_caps(dev, MLX5_CAP_DEV_NVMEOTCP);
-+		if (err)
-+			return err;
-+	}
-+
- 	return 0;
- }
- 
--- 
-2.24.1
+--9amGYk9869ThD9tj
+Content-Type: application/gzip
+Content-Disposition: attachment; filename=".config.gz"
+Content-Transfer-Encoding: base64
 
+H4sICDeUzl8AAy5jb25maWcAjFxbc+Q2rn7fX9E1eUmqdhJfZryZOuUHiqLUTEuiTFLdbb+o
+HE9P4orHnvUlu/n3B6BuJAX1ZqoSWwAIkiAJfARJf/eP71bs7fXp6+3r/d3tw8Nfq98Oj4fn
+29fD59WX+4fD/61StaqUXYlU2h9BuLh/fPvvT99un+9f7lYffzw9+fHk/fPd2WpzeH48PKz4
+0+OX+9/eQMH90+M/vvsHV1Um85bzdiu0kapqrdjby3e/f/t2+/4Bdb3/7e5u9X3O+Q+rTz+e
+/3jyzisjTQuMy78GUj7pufx0cn5yMjCKdKSfnX84cf9GPQWr8pF94qlfM9MyU7a5smqqxGPI
+qpCV8FiqMlY33CptJqrUV+1O6c1ESRpZpFaWorUsKURrlLbABXt8t8qdfR9WL4fXt2+ThWQl
+bSuqbcs0dEeW0l6en4H4WHNZS9BkhbGr+5fV49Mrahj7rzgrhi6+e0eRW9b4vXRNbA0rrCe/
+ZlvRboSuRNHmN7KexH1OApwzmlXclIzm7G+WSqglxgdgjAbwWuX3P+a7th0TwBYe4+9vCPMG
+bZ1r/EAUSUXGmsK6cfUsPJDXytiKleLy3fePT4+HH95Nas2O1YRCc222svYWQ0/An9wWE71W
+Ru7b8qoRjaCpU5Gx0h2zfN06LlE318qYthSl0tcts5bxtV+4MaKQCVGONeA1ouFlGipyDGwF
+K7yWR1S3XGBxrV7efn356+X18HVaLrmohJbcrb1aq8Trqc/ia38SIyVVJZOV33pfPhVJk2cm
+nCCHx8+rpy9RS+LaOKy1jdiKypqh6fb+6+H5hWq9lXzTqkqYtfLMU6l2fYMrvVRBA4FYQx0q
+lZywcVdKpoXwyzgqOc/XMl+3WpgW/ZOmuzpr+VS81kKUtYUKKkHqHwS2qmgqy/Q10eZexpud
+fSGuoMyMLJ09nE153fxkb1/+WL1CE1e30NyX19vXl9Xt3d3T2+Pr/eNvkZWhQMu40yur3DdR
+YlKcOlzA1AYJyq1aZjbGMjekYzkkwkQp2PWsWCizX2TXRpJ2/xu980IC9EwaVTC0j6/OGUrz
+ZmWImQcWbYE3N31HHLXDZyv2MO8ou5hAg9MZkdBwTke/PgjWjNSkgqJbzXjEQMUwLkUxrRaP
+UwkBkU3kPCmksa5TvX1Do0ydlZvuF6KrcrMWLBV+vC8Uhs+sNWuZ2cvTf/l0HJSS7X3+2WRp
+WdkNxNxMxDrOAxfZAMrocANfQ1eca5n7t5DpBt3c/X74/PZweF59Ody+vj0fXhy57z3BHR18
+rlVTe32sWS661Sj0RIUIwPPos93Aj2BdFZteHxVJHKNr+6QoY1K3IWea5plpE1alO5naNbma
+tPXLkiJ9tbVMzXKjdOrAS1wog+l9IzStt4bYZ4/oTMVWckFohZILTqcXSOrMA56DNghPHgJQ
+fDOymPWQF0ILU8O6CTxXY01bUY1FGFGFokZoWhZsGMlWwkaiU2fXgm9qBfMeQw7AZgpddBMZ
+4anriq8awAAMfyrASXFmw8EdRh89sYdrC3TOW4e7tDfF3DcrQZtRjYYheedBLp3OgOXEGeCu
+Lx2jyInj41wnqKLvD5GqG2PpOZsohQFxwS/BLkVBZCzljWgzpREhwI+SVdFsi8QM/EKDywBD
+dt8QALhw4bdzwjO+w3JNxQqZw/6iKNTOGwg3f8eGLMaSEuCwxOnmac+FLTGCzhBiNx9m5GwN
+DqKYod0O4fihDh2wvwfyFpMoMrC29pQkzIDRmqCiBrav0SesCE9LrYL2gmFYkXnz0LXJJzjM
+6BPMunOoAyiW3gySqm10h2MGdrqVRgwm8ToLShKmtfQNu0GR69LMKW1gz5HqTIArzMqtCMZ2
+Pgg4hqWCGJ5qENahNCzgQrHAsaO82wxl9PyH9os0Jde8i5I449sQcfdJiPrw/OXp+evt491h
+Jf48PAKCYhACOWIowLUdkOynxKSERGR/U+PQsG3ZKRtCp2dp3MEz2yZ+nsAULAncXdEkpC1Q
+EEZUQ1Dud5DLYhivEPi0GhaFKqnVHoitmU4BUgQzsMkygB8OBOCyBt+rdLAKrShdyMG8iswk
+Zz1IH1eaymQxAO7elmHmY0IaWhoPHyKCSnD4q1QyT2VZegAQ8BGEPggXO9N4Gzznj8BA3efl
+u9vnu9/7XNVPdy4z9fKTy2/d370/P/v1/rX9fPjSMcYd+gCvEFclWjACeQV+YyCudwJ2VnbO
+gFUiEw3Rq9s0hK4AqtlhaIy61mFe6FvdZY4GW+UdLixgksFaP+tmff38dHd4eXl6Xr3+9a3b
+NgTwbzT0v05OTqiIzv51enJScH8mAu0sFPZZ5yi+wPx5v1DJ6akPL3HQuwmGIan9sEnC6h3f
+oFMWe7QGuQ0p65lKnD5WgRdWuWdq2Ls7u3p2hq13XTRuvkUTKAN3B94TZiAaO9qJny5YBVhn
+H6mOAwPMNddCy156SU2XDnFN8oCddpjz8sOUmtoLb/W4zxbWnvBX3rEZ4qZIdv/89T+3z4dV
++nz/Z+Qisx1g8D70kl3PlcphUmZSlztGIjyRyVYwXVzzaSdvD789366+DBV/dhX725UFgYE9
+a7Irm7y9rJ6+YfL5ZfV9zeU/VzUvuWT/XAlp4P+54f9cwW8/+D0EIun8/76ybh2y9zgFVy/f
+Dnf3X+7v+iYHxuRrZow0bcEBCy5sVuqUD3LUQpq4LZjbd7rA6TaOwdgvtSrIRqOnvH893OGc
+eP/58A0KQ5Qbeu8l8jUz6wgndXOOosHy9RwbbBMybwGqLkh4hVxYn5N/acq6hZAlisBLWvCt
+G3FtnJfAvHicR3Z5QRNTtbA0o6O2AHazCO1OeUvHWCtFbcehkZiFa+0aokYa+ZTzswTWssqy
+Nm6mFjmgryrtYxpsCl1CygeVU/2UKSgugdmchJOtStklIXhZ7/k6p1QZwRGwHGGhkwmSA7Mi
+S4JOFSDFXl0tOCIIL9KrtClgJAAgOlSOfZn1w3QsB3EggFANBSHPc/JCVQIALd/AqknnwKwb
+IYzJIRapFLgvaJ9EWJf5E3hsibEwAexwHqB3e3+eLrK6zRP0EWKNFiWrETVZP1AgBPHxZOAO
+uuXL1fb9r7cvh8+rPzqk+u356cv9Q5AHRaG+BQEcO1Y2xmz/wz+MO1wL+znYE/mry+0hTIl7
+hZOpb/0gU8kIPAnD3B5s4oxMfE+QhJkw3OsbbiTMkKsmcABDFiAxOUkEREalDKzItbRkNqFn
+tfb0ZM6+UQF+dhmwMsWzQ4Ql3d42yI/tEhrAdwoBX7YZZRrXYZGCj2RFrLI7qwTQwvV1TaaE
+69vn13scr5UFFOA5dWijlW6bD7tJzCD43gv8ejVJ+LVGrJY3JauotEgsKIRR+2OaJKeRRizH
+UtJMsVitdkJbHybFEhghpb825T7o8xCyTLZgilLmbGLRjbeAUP+HTMk4LTHwTaoM1TI8zEil
+2QyxYdIIy2kPO4nkmFo8RQATtPufLyjlDahAZBfUMPiotKSKIDnOVuaSNh7sZrVvb6qBzcIc
+3DBdLhjew55kUTw/vfj5aFlvEXvlB2AVLSd/kZZX7VZCGRU6BSD3SebubFNNOXlvOYKUVF1S
+NAUkEV5B8Jib6yT0LAMjya7oE8ygvmn1h7ljZqrTYOw7x2JqWcGXf9wg/nu4e3u9/fXh4O6K
+rFyK5NXrSSKrrLQhDISPECriV5sidBkOxzGyz05del2Ga+mfHPbkMswhgErU6A/XUmNdT8rD
+16fnv1bl7ePtb4evJPLtd4Ve8g8IgA5SF8Bh5XrIpz8pH0/nvEVQFxDdautCu9vJfXL/AjDC
+46nq9slaYDJAVlQ2GNyPjmqCHxZHE9M3ExVnJeyP26QJUvgbQ+WJhvEoEZyAIwF/m+rLDyef
+LgIM06cpxgsCGZNFo4ONc8ihjwoKAaGHwQQmF2J4MgNr3nkXWnQ4xveMAURwYMxcjqd1N7VS
+gae8SRoq13hznqnCC4g3DsqoIFsy0MYEDRisjkZqLox7GGos2b7fC7jMSJlc/jymBNwGw80G
+3Ilsgkxwplkp2q3gQa6uFhpR7HCKPUBCPGACqLAumctHjqtkeSGMGQjhrT6zSTA/Iyq8YTSm
+YavD63+env8AIDlfRjC7N76G7hsiCwsO5zHk0CfrBRXx95n2ViZ+4V6rzzj7VFbkKiKFZw+O
+hHBPZyw8SnEcCKQAJwrJqWsNTqJbikRJ3LEaG0GboG3rqBnC1HHD6n6LFRy+wS6YzI75l4VK
+PrPxPq3dESJ9gCm7gZ6CS90d1XBmaOwKAgN8bLWCXYCmtMIup6ojvUBp0zWnL3b1fDwNow7o
+erZmemYWWZNHeh0rx6AjysYDfR2jtU1V+QhnlPfSiWAL10Xito65BiSs1EaSm5tO2dbKUH+T
+evUGnchUQ5ql500NXhrDblpN5kQSTKwl6XGG+UQ392K7OM680Y6MU426T8NrjEs5sc8YWYkM
+XOtI500i6ZzzKLKDPeBOKcqLjzJr+I2odW0W6NdJwcj2bEXOKJuPAtWWLIenZhgjjneloAbI
+q7tSpPJrwdbHCsoCsJyShuhpymkL8DQnq0oSan0PkCEaxfHao11Y5aMA2vuoBPb9qIDryFEJ
+6NJRvo6qiNiDCS7f/Xp/9y40TZl+NPQ9onp7Ebq97UXvJvFwNFso0p/eY9xoU5aGq+8iCBkd
+JYgZI8mLhsFCdUyIdnzJH1zMHQK2qpT1RVzNopO4mFNRR+cEQ4MYSSEixyJ1RF4ZW4Yxqi76
+m9dmXkOT4H01+hYMlndjMivWu/tI+0LAAvlalqZst/RV5K4hIr9oi13XraXWOCEAaTzqpa6L
+say37ai7JTzBbiS4EhTOdMxNg+k2TJ/Hd3rwSjvmcBEiLkSy2tZ4vd4YmXlJs6Fsvb52+VRA
+PmUdXb4EmS4tTGW56jhjDEEu5a5rDl/i7yvOZfqy9N6gL9Ci0NmYiPAxxcg+J7fKi1VMDeiv
+Bqxv7/7o0q0z9bMtSqg+UuC13XDr59Hhq02TvFXJL7wKQFnHGtyaQx1uuqAfIm9aLYibNTv9
+W3rja7++fFR/1IFj1emUXkqw1qgrz7AR99IVtoQ56F/zHiiYupe8jDgF89MpSClrFYR4pCX6
+7OLnD2SjijMSiBp/yBIt01zE363MSxjcSqk62Ln13FLPNLQ8C+5WbqH17c8nZ6dXZHziEWbv
+KMtovCg8xwIfZ6EZWLEhLbA/+0hbhtX09ZV6DdOG8uwXhdrVLMDPPYm6ih9JVGtOFQQyFCaf
+yfgisF3OS+HfNve5a1Uv6V5wp75IqRJZBAcJPheHIxh/nwk7gTkjBwZss9t1qvuWEQKLJXEN
+bC+Oa02D4xNKAu1FmcSXcRONimVCCJy1H4PLjxO1rYr+F3dNUOK4sIKOnVOhbu/6v6T6dpKJ
+Fj42ygtqww1k59Gv3g5vB/DOP/WJ08jT9/ItT6gFOXDXNplV0a4zE0zfgQ7eZ3HDh/xaSxr/
+DgIOoxxrjg4vWA9kk9GLd+JfHeVbcUXhmJGdZHMj8GR2kxjJAA6OaWJoA6ocwEFq8zewU9On
+uyI6/PQTu6O41lQl5VU8BLGhNknfwLi3a7URlMqr7Nh4cZXG+QgkZ1cjZz4f2YZah1NRYj6u
+ifGppSAr7uizasGraWGW8h5OYdHEOLAf8WOleiRC7SgXJuWEXVJBO5JJwVxoLhJ1eOAAUs1U
+mzEy2gxCfS8u3335d/vt/vCuf8n0cPvyghdyIuiK0ty/yNsT8BxdzjwGMiyXVSrodOkg4zwz
+9U5xEMh2lOrm/OxIGW229bydSL2Yk7PgdvhA5cOV/7iz4e1xXwmJZAaBEt8xBteSXb7LkSla
+l2nHp7ZzVgAdPXqVXNvZ9O95ywbrBUoRvNOYGO5dNMXgrJLp3EKM27gNQOqS00trHwXyrmBP
+zV0ZrRJKVym1XrijNogY2Not5LIGkYo85RjbK4InoqNeGRvfUTcJLc5NU5I9qMm86MBGOD1X
+Rsy9vvKSzC0OAjITc2XdHh1T9JTOnNll44E+V2m0/6ZkjkSkXqJ3EnEjLB/OcI6FC3ByU89S
+7qGZtDJ4fVkV2+iSC8AY5u6TEHpVLaqt2UkbPiP2yBjJiYLb/rhiqn+gzA43RkYBuy289UWa
+sDukH4VpGxSy2gz6B+hYxx4aKW1uVCjjYX0vKQN0WS8mfrrnVJ63Whsd1tXZKBXbkFycg/sz
+mFAMWFfa6vALJ2VEKdcynhoVD1+p9iztPxPUmXs768OTvc/vH6e5XFEAiTxGl0CKPJzGJ5Tm
+ug2f0yRX/gc+QrFasHK6ZOVpwFDR/yGF8Fhy9Xp4CR8Ku+ZtbC6C+x0z8YjhH29OlluzUrOU
+XI3cdzbw0Wq2CwkJL0NCHgn8cvrp/JM/UEiUJjoa6/AF7HnSw5/3d/6lbq/Udtac7X5GMgUP
+d+fc7cypRc2HPXv/5tH4tiQaMw5jEMYSfCEjUjItCDPcT6lYL3vgi/h3O4FQmiwMrUCb7gf4
+FQ/3iGemTB7eDq9PT6+/rz53ffgcGzSx7sy4CGpZc5nYxiQk0b13NI0Bn5dG7RhFYDrQdhgl
+SrtZKqwtjXsHGZMu7CM7gYaRr/X60rw8OznfzzpWs9OTOTXrbBBVsIX/6ApKvQ0NiYQW2xtp
+YXZ9TqWmsYjdjAWG2/xLozjmAjNwO7oOMPZAm2V9CInqFwEhvVDkBmgUi27F6f0muCyetRvf
+CSw4uEzCADfR+cZOalHQ2y+dbaTvSLvvaLH0RFnVTbAme3peH0k8fKJP3DiT1E6ei3rdBndw
+BwqehVl7PcvYj3y8MO2DDiqAZuE2KcOrD7mMMkoet+L+cXxHaHEBxGqiKdtHldvnVXZ/eMDn
+gF+/vj32O7rV91Dih36uBW9AUFOWklcTgFNXH8/Pw+Y4Uhutookhz8i/CwL8cCUNFEpTR6fX
+/MiHiuJyxjpjLTeh2teEfTsiqfA82+nqY6zRC75/y9xDbXW3QQmhQQDUvWO0KZHd0xBjUBt7
+6LW7qebto7SCOVrEqNC90C9NMJXxEpzaLvxBAWHXVqligJ2z2bYU0bsXsTwAcTWXZB0150yn
+M9V59zCy171S482tsWDTvUVYi6JeaD6EflvWZNYeNtpVyvARRtBG3ekcHo91f5dq1rbxsdfD
+0+1n90xsMCZgPIU3RT3fOJDcRbkU/8zGxHSPCcfavD/MNJVyf/qg62MwbJQADGZRxLuLWQE8
+QMe8mB+N4h4NpXassu5NgXeHdYgN+MB+gbdEdXgseo89ojQdxo+OjgioLwJOtoSZSvStLtsr
+ZbzD40l7R+sV1CLijo9i68bDiUOgEXlwjbb77r1ESDOA7Ls7rCF9dzojlaW/8Rh06qu5Th7s
+bEuG55S6m0FZOBmQmYmKd/cwBempFtbT+Exxigy9UtiDxfdye9KRk2RfkxcuFbgvvAhKjF1e
+mbAOSyU1UusZXQUJEZXh9Uy78KfogIs3o/GSha+g3ajkl4CQXleslEEt7oJxt1AmWjBUKhsi
+f0BDfxq8rXYXk0t8kD24RsRQ/Wvqyft0JApCdi97AsDZP/apGgBDSUEteZ5q5YG3G82ir3an
+pRXoMHzNjtNfkR7u9dLQvG8C5jSOCqQ6oQZ17EISvVZCYtBYj9j/Ua7TC4qHV5SDG+HOBLib
+5unWq+T/ObuS5sZxZP1XfJyJmJriIi469IEiKYllQmQRlEX7onC73FOOdtkO2zVT/e9fJkBS
+WBJyxzvUovySQGJPAJkJjTwOKP5bqvRYjeHgMgTHkAPY2LhQKqdA8hgHBCNKsJov83ZXrLzg
+P19enl/fld0/UA3vVUGStj6Zmo+gbw9axClBW2crmNW4Sc0NQp91G9X4WSFCX+S833ZaEC4V
+N9ucYHHkB3T8mMYmi6FJvVKrSLpGYKBPa67i5Y43HQeVnIf1lReoW5giCqLhWLRqbDuFqM/n
+sGCxa32MQ0Uuw4AvPGUuh7kWNlZ7UBBg8TWWjawt+DL1gkzVvipeB0vPC01KoLniT8XoAYsi
+2rN/4llt/SQ5zyIkWXr0VcyW5XEYUdcDBffjVImoybWhOGAgjQH2v2vVgw0dXmCPz7UT3faq
+zXYVpYpvK17BX5fl9VE7kciDVolNWpYtjMKLt3mInPRSgcDwC6hLpBGty02WK5PwSGbZEKdJ
+ZNGXYT7EFrUq+mO63LYlHyysLH3PW6j91ZB4jCzw6/btonp6e3/9+UPEann7DprWt4v319un
+N+S7eHx4gv0/9OyHF/yvGjPwqIeM+38kRo0RvdNnaN6WoUrcavuOMt9SB4dzW887t8lbQx2b
+2lagKlTDSPFD+oA+3t++3UPisId4vhMlEtunzw/f7vHPv1/f3tE16uL7/ePL54enP54vYG8F
+CcjTEmUGABrOxq225Zj9ZQHkgFK2IABtdENUQTmeYz+bU35uqQMcPi3N/ESAxqrJe9L0Ehgw
+MqQMVyBd9aAG7r4/vADX1Nk+//7zP388/FLrZMq0BQUIo3FNX6OT8nTq9GauP8KDmTXKDNpl
+FZa4V93fkEv/dSzUWLuCMu4atRkO6WNhrG2VkGsUSIYG+Qf04z//dfF++3L/r4u8+ASD6592
++bi6sm87SSPcr9WLi5lvQ9D0iyAh8zzjk+aGwJBjMOZs1xuVhKEVN5p5laByPJ/O+PUu1xql
+n0bxm9EgvK2oJoC1lCRX4m8K4RhL2kGvqxX8Q35gNi1SMWiwHvRGQl0753AK9miUzqiigwgh
+pC6OSNc8ACRJRKETsV+MXPdrvs0Lkqj2f71RAQdNb8dnDlfjImNxyPF+UknM5NDc+6EyVQVI
+/GxKSwSX36AAZ6dd45stufeihrWiqCoCo9qKracsATJ21qrBIBddp7rsIQQF1r3PRBItI+55
+np/eX58f0aX34n8P798BffrE1+uLJ5jY/3t/8YARyv64vVMWOZFWts0rsqEEkJdXpCc/Yl+b
+rvqqiwv5zcMKsr4zZbr7+fb+/OOiwKiJtjyYwoopjtFi6SATEmzAMwbc+XtsVfPp+enxL5N1
+wqeN+h+3j4+/3979efH54vH+P7d3f9n3PIzYN6k0JuNYwppTqlYWQEYf6qzTSDjNexbFtyk2
+0yKKNRqxVwGqMD/S7A5Wrn3VvHFk4gSur3Z2QQutm0wO/pQ+i4ms9XE0scsYHkeMFLGBbRz+
+oF2aMRHY07VdxdXtFoYbwID2vMdjw9FzXc0Fg+d2VUsaAgIsomNoyfFd1uqBuIHYb6sdLptX
+FXq2assJJqIf/k4UmJu/alSx27eZyxXXf3eZnph5SlowYYtDHucAhj1CS+Cm7MzKn3sInYQR
+mg4pe94baWBkFvrYl41nwy50XWe0kypgGEFQ76UzUUYXvD52sAhhNJ+j4VtFfAGbJDob294E
+iBiGWTQS7X9QsFPkFzpVI/LLuKnWTxP6HJIxQtcgDaNcqUeTSGt1PQ9JeNysbA4ne5bTYcIs
+rkiUKv64ulsfgL44HsLSF3tXzFpuqqeXn+9OXda6OxQEcc9IiSXA9RrPvupSP5WUGJp/0OYG
+EufiYvRSOzWWCMswqMiICMn3b/evjxj6bl6B3gzBQQuHyjaO/XQEL5T2g1OemY3nXVnujsNv
+vhcszvNc/5bEqc7ypbkmpSivzlVGeSUvTZV2cl0XyQ9gSK6aTI2SPFGOWdFGUZo6kSWF9Jcr
+Mi2kH7ctUtDUVo88oXN1RTWzEQWdub/2vhd5RGYIJDQQ+DEFFKN9VxenEQHXl3Sp8DqcLAgC
+ouOSS9DM1udZvPBjImVA0oVP1b3s1GSuNUvDIDyXIXKIm2X7Y5YNSRgtyUngxOQIynRiaDs/
+8M+JsCsPvRG/Z4LQ+A+nzQ/y4Bnje1JfOLH0zSE7qKvZCdrvZGMSCfespRSjmaH6yuNgIBJt
+YI5ZUM3IgmPf7POttP004cExWvKs9f2Bykhah1ETE1ln81SCzsPUbYVkEJ6sivIjfx+FiVIO
+yotWXSpYtX1JJavwbPq8IVPeZrtDpptFKujlCn6cT7lF73v9rmxEYbWssvp4yPKGUWeVY6mx
+YeQErAh4IqLuhwHLK322UjmyIkmTJSWmytTBAuCbhg4aR8/K+sgGx0MiKuce5pVqyCv67l1l
+Xe0D3/PDv8cXfFQIfEUHgydW+S4NxcREJpZfp3nPMn9BH5LbrBvfp6Lg6ox9z1tTobIZtONV
+G198mMLiXBsV2dIjT+41pmvYSHQNnck2Y7DJqFwylKUaEURDNlmdDS7BJDr2+Q9rvRzykA48
+rHKt91+qnu9dWW6apnDF5lELXBVlSQaxUJiqugqkxSCZBo/5dRJTK4om0H53Uzor6LJfB36Q
+fJBGWetmrjpGncmrHGKuOR5Sz/NdiUgW2kxK5YOV2PdT9eZLQ3MeeZ7nABn3/YUDK+t1xjFs
+g4tB/HBJX7Eh3tfHnn8kfrUrh8oxBNhl4geuHGD1Z3jN/HEfLmDH0EeDR1tjqqzi/x3aAHwg
+tfj/oXKsBH11zFgYRgOW37FYiFnZ2fZFnybDYJu0UbygpPnU/kJlwgUQbYoaXvWOCQVZ5qnD
+gbfZ7ovqTGPiIXNjVX8GLPt9t3L0AqEWjCPWARcsx6r2Hf1cZN9N/dXFUJR4yXZ5Rgi0RAJF
+4YOE8G3I1g1/QYcLR68QVVGfqYcycEz6CN5c912zq86l3eP1/SLSLnRNpjMDUqSR8euzQ1/8
+v4K9E7W30BhFvP7OlRnAgecNZ9ZhyeGYnySY0CDGneE0xKtaC8atY9ytN/DeD8LAhbF179QL
+XTsJjWdIY90ZXitsy+PISz6aBm7KPg6CkJbxxrpB0Gqs2bJR+ftYSYSdTzR8vOLf4PFgdeZs
+RAvRKWlp2rIUekWzMxzkJAwqtr9wpyhVZ9gwWT1Y4itQRh1GHeOJSTh4UA19T0Z/nQ6ShiSJ
+lyGocG2vO+DODOlymYy4Ox0Gu3r1yEKSxWnBClQlLd7NCSpKPAuhsSt8V8REsr4Sdpt9GZgQ
+Rstv0e9IwBY69F+WJlGETmZGPEMJXcMMa5goa3jOfM9Krys3+xpfkzlVp4H3+2N76GSjmKgY
+GIGfahxmnxnaAHpUW9Ief2NChzr2Fp6swTN8e/GPs4htVjNQq5zytvk68uIwPLZsb0sKaBol
+dJCZkePAxr7hFgFYyH4gekjX4AuceJc+diIjA7mxkcPvjByCLbLZLKY4dA1lqdgczwy0rBjq
+cDFY/VmSze2ZBCsGtZ/vnWnC1BXES6tucpaFmh6tkemsiu4qiKFjyX7rPs4WfHE08Zl5SDix
+4Y5V8y51zloQ6V2DgDhbGSmsVZO3iWIuzIIeFKOFksmvPtQzUgKTEnqWmOuQOm4Zocxmj+ie
+P4JahCFxor29ff0mLOarz82FabKhl0/8xL/155Mkua5WLQ9MqvTFVCz6kDjaaQG7w+wPmQBl
+xoNceiJdfiQyzFpKDHl4zLV90l5AlCV3xkq9hBPluONRpB3UzEhtVPtoy0DV7hw3nLrzkcYH
+329fb+/e719tC9FeDX90pcgI//CmFpbzOy7jY6sO3f3EcKJtDwptLhFwngCMA17QF8kYSngJ
+S0Z/rb7hKkwVncTR5jmIZrvmukAjPLzcH+MoSkOF+9eH20fbTmA8hFTePNKBNIg8s7uNZOW1
+SxH8sSFf4VQ/8OMo8rLjVQakna6XqmxrvMqkF0WVbazQD/Jk4jRiRRYMH6lCVzLllSoV7fAp
+ZlbOLKQUIqg0/fifypbxFh/7vTKd9bT6PHyQSNcHaTpYRWnWlh3f7vnpE34CKYl2F3ZzhLXs
+mAJKVVeOCA/iHaeP6lrfLSlEe5CMIK/W2rM/Gtn9VZ7vhpaoQQl8LChs1+OK4ykHKfIMuxF9
+Kzai4wT8pc82YxOfxZ3lc/AdV9dodu9iP5elSAZUfxH53uroKtMq2xciIrjvR8HpdTeC0yX9
+aAHecloiHaamyimvjj6AGuE1r491azqBklzVbl2Xw0es8KschD9btalymDgpNXbkxQnlxg8j
+u4O06gW1QtQKOlnk6fOxmUfed7V1cTuCO2lOWhiukSPT7rjheoQZ9ALqe1prHp9vpHdH26v8
+5JJnSiHeJ9pTM/7o42L1kapl1VG+f9sZVJy+LBMpiaCbwNFtsiOYpGnIKRg+pfIin2qwIgkw
+21hZHjCYUdHQ9jtSKNxrNuu1i2P1dyQClUA+CqapD5IkH9+tGu0ZjxO6yhahdoB/gmTln8vu
+mEPn0m80T9hQtdvSsdGEMoE8LujSwCYlOTtYbp34boSgl1dc1Vz6HP60jJYMALoH40fk+4Mj
+gtO1PIBRzp8UCGaIaleqqo+K7vZXTW+CRGpXIB9exQ7Xdjq8D8ObNli4EX1JgWmyvtZ8RifK
+5N84BSuxlFpldzJWW7fnvbCNli6+tpkU7Nls6yhVHKwGca8PNdXoZPkinUETz/Re6UT5fIF0
+0/r5+P7w8nj/C8TGzPPvDy+kBLAKrOQ2QwRKK3dqnNox0WmOtKjaewkTue7zRejFNtDm2TJa
++C7glzZHTFC1w1mammtGjq7c6CmKZxymD+3MWD3kbV2oLXy2stTvRy9vVPv1hLnufSzqtd40
+q6q3iVDaqZUws3mnha67pxY6dZu/3t7vf1z8jo69ch27+MeP57f3x78u7n/8fv/t2/23i88j
+1ydQSNEt5Z96E+fYqe02LEp8j1y42ZsHDQYM+zLS79tgs03zkaFk5VWgk8w1d6JJE+UxdAqp
+HiDnZcla9QkepDXCWEinQUU7ROouQ6Pj8oppFzdIk4rUb/PrVjAFPIE2AdBnaG9oj9tvty9i
+XrDs6bBeqgajM+/NQV7UO6M2umbV9Ov9zc2xkSulgvVZw2FhNuTvq93kuCdka96/y647CqZ0
+Fi0QeYBuP0YUiGlT7+qKWi1hPzAqDkmjQx6FoFs4uoebXQ9tv+lehwiOE3rdn1kMtUgriCV7
+qJ3g8ZaOhMFB7aAWdVWj2QonmNM8Lc+ioFIJTwJBfnxAN0ElNAf6Km1V2/9WDZEGP+aYQNJd
+oeVTIvYEjtx5Ld4ivRTajJ7QCInDCrUCFMwM4zPnKR5Gv31/frVmpbZvQaLnuz+pvS6+AeBH
+aYpW67kdsKR8Ek+utdvrulqJl6ddzwNcvD9foF8idG0YaN/E03ow+kTGb/9WX4a25ZnrwFwE
+gKCtWcgA/1NOzMaAFBYgOx2VoNhFZDxMgoCg4/XD0qaL03GCn+VtEHIv1ZUDE9XacsRge7Eh
+t+Qzw+BHunHNjPRsTV/oTRzyZuMsS5OXdWMHS+ugG73dvl28PDzdvb8+atPS2H4uFqv0qFpl
+dq3kfJHUfuQAQhegmvfiKNACUI0EEcsX3STG0IGRP0eGbdbGkjp9UnVf0UJOrWjZeZwRs8TS
+Zz2oroK5puvNpOOVb1DH/mtQhUGvd1IO5atuP25fXkB5EGJZS5j4LlkMgxEwRdDlKYUpEDTP
+Tn0nW15YHrJWCy8l1/ke//FIez+1HKRHmmTozOpU0W19KAxB6mZT5Ve5lRBbpTFP6O4vGcrd
+DW0yJtstY1lUBNC3mtXeSp1XDXVhPbV4rm56BPGQF0vt2ktQZ1VEawX06RovuvX3+qiWnRVK
+Qb3/9QKTr93iJ0N/vRwjHTu3qzhZsWvN3ng4apqa0hk9ihqYRRypekAIeSmCe4ZwsAQd6ecE
+FSyJR3yKF7DO5urbKg9S31Prm6hPOcLWxQf13FU3zc4cQqsi8aIgtal+GthtYpuhEjj9NIfE
+QRN1FdbUseUQatMkiiOrjcZp2ahN95Ihe79pF6PD092+uzUAX/p2K453+a7v5MWzOehYulxq
+gSSIBpReQ3xlN+z8FYHqrb7ZwHY1ky9yGrMMaEt7ykBWhLASmfif/vcwKufsFrZ7unJ/8Odw
+vzxYLKkK0FnUECMq4h+02fYEOSbcEwPfVGodEvKq5eCPt1oECUhn3DJsS3XDNtO5PKhTJZMA
+lsajHjjSOVL3x+mxK7PCEblNY/VDQjKRRuwAAscXqRc5vtBv03WIMn/WOUL3x+Ex7yjjAZ0r
+pcWK1FiuKpCkngvwHUUvvYVLyrT0E31a0LvT2G1mlQ5PiTEImO7KqJBH3ZxWXhU2R/c2WfC/
+vXbvonLUfR4so4AGT1+SAkh94AMRJNN8OH7KqCtFbAbWqKFeRm4Sw9hOjIZkhviQc31NU+1H
+1DRUBMWiSlJkklHpF9ISCMee+vLDSDaYRTTCiTZnjdtp9B5HJcUjHQRWWQ8T1PUxPwSeulOY
+6NhZVW9AlZ666NrlgIZQy+rEwFVv70lyjTg5w3P9NZwpgdXXIBkGSk2ZZRCKASF1tvR1Q4MJ
+QT+DxHN46hhM5wonWAJ1fZ1KONm+Ue1W8RYTJjOfeIRZpUdZHU8cqJ0EiZ2zvks7pScqmRKn
+7sM4onrRxCDjOTRCKH8Rq8EXFHGFmSiV/mghera40MgLP6J3JRoPudCrHEFE1AkCidgZU6lG
+Rs4EB7SF6+Nlek4kzlbhgpBo1PcSu9dusv2mlBPrwqcy7frlIqKW/4lhn3Pf8wJSYKlxnytt
+sVwu1UfBul3Ux2h0qk9NRhxA8fN4pUZikKTx6FOeEEgzEhmZhbAaGsPIFclC9eTR6ClFZ+hl
+6AIiF6A9SKtDtC+wxkNqJiqHnyRkzkvQnSigTwbfASzcAFlsAOLAASSupBKqokCVICMGZjxP
+Yt3b2eYZquM6w+fAd33XUHdap9TQjonMpx/acxWdw19Z1R3ztmuo78UtcV8yOl7ozMXjgBrE
+J9yPA59MX1oQZwWlZmpMEfX5Gna6XkRf+as8abAmgzbNLFGYRJzKYcNdRi8jXkd+yulbcIUn
+8DgZrGriAG0is7sPkANSKHn3RWlME8u22sZ+SPTVasUy1YBBobflQND7lBiHX/IFKRlMcp0f
+nO0MIpTRpqS+lpM2+fSsxkEINAKm8bUGk2ufwgErKDEdIBD4xOAWQEBWg4A+KsgiiIn2kQA5
+WFB9iL34XLKCxV/ayQogTl3JLqnzSoUh9JOQnMgwOmdMhm3QOEJapDheEPOsACKibgSwJFpf
+SrikPsnbkFzc+txwoZq/KHfrwF+x3LkrmTm7BAZ2SLQhi0lqQlPJqQ3o59oEYLIxa0aqUwoc
+Oj4721sZNQnUjKpxoNJjgi0pdVyBoyAk1BYBLKiBKQBiYLZ5moQx2V0RWpCH8xPHrs/liVLF
+e9W5YcbzHsYR0ZAIJHRbAgTbQpcXwMjT5ixx+MmdpF+n0ZLWGlpGG/7N3x4YLhm23Hzb+6TU
+AHygoQBH+OtMnoDn9LLPSphQ6C3NxFOy3F94tH+hwhP4H/PEuI0/XxLG80XCzs1jE8uSmLEk
+tgrF3GQn3vc8iT4SgMVnZ3ZQkfwgLVJag+dJGlAAlD2lNa9qlwXeeT0dWciDA4UhDOjk+9zh
+mjYzbFkenZuqetb6HjmTCOTcXCIYiOoAuhYWXKWTawRrI58Y6le9H1A7h0MaJkm4oYHUJzV0
+hJY+7amgcAQFneqSnM4Fcq43AUOdpJEW/VaD4h1djDhI1Jd+daQkoekG5WQditOrI+AIZec7
+JYhBBxrOq5Vm5K66ryMLPtwlQt2SvDOsU8cHR/Szn1XOMiIVJBtMMrRuo6meAuDrOuNU0ESB
+TrmyLD/mbGd9rUjlTEK1/RGGiX/8fLoTTxq5Xptj68IypUJalvcpaN9U4FYBw15W7fQTTdeA
+W1bl8vaX3ASIj7I+SBPPcPUQiPDIRt+AvGGWeALc1nlB78iQB6okWnqOVVQwFMso8dmBCoMn
+MhHuv4ZU0iVYs7BBun2ReaI6vC5F1ZvmJzMxpIhpZOYgyEv67PWEOy4wsHlwPx1S8/qMqqfB
+mOS4TbeqYN6ZG7SY+F5ViUearyr5gqYZOyIFn7hFey+xE7fqOvfD4f8ou7bmxnHl/FdUlaqc
+PZWcWl5EikpqHyCSkrjmbUjq4nlRaT2aXVdsa47tSXbz69MN8IJLQ548THnUX+PeaDRAoNt0
+jSJz1F7oLdUstxnsOlzeWOmwDV1FY4hsRZ8iFTKvc0o/Y166Wzek6d/CkSY8FTgU0RhfTg4t
+YSCEiB3debCgzaeeYbHQjmQIBnL5neAo1OV9PKPWqdHcpEZLZ2FODiB71MI0oks60TKyN6YL
+wdq/CZPbWw4Omz290H1Wo3tt+jkPMqCrAbXN1CeL8Qk/fcI1wvoNZ15CFzg+bdtyOA66ILqB
+30UOdVDNMXEmrda/TWNCJ7fZfBEeyQWjzb3oxtxoi0D1aDUSbSsaZ7i7j0C6lUWFrY6BIxYM
+Wyq8HTIsg/Dj8eH1enm6PLy/Xl8eH95m4vZINrhulVyaTrYTslgDB/4/8lTqpd3ZQpriEQrk
+Qu+ivPaXc/u44neryDawkHde6HLJb9YoBljdhq5DfrQRzmPUezKUQxmlSoIhon1qTQzk+dsI
+i485arKMt5ZcqyRcuWMk5RcZ+SE9Cq3ZEXeEJLp3Y50BFlDv6vuv7pDD/tUqtoMTEXPKHXLX
+W/jklMsLP7ihE7rYD6LljYH6VBxvDFNexduSbRj1koJbQvotNImon7yOlohH7wN5Q4vAtRyL
+DDB55VOA/Vqh04xRB+qcdFvYg8r9rolGNQiRwLkhB+PNMFnZcm9JeCnveKQR9RKfmsYz2tN2
+aLrQxwm9LlzbRHy6Lqq+ZrJtGoa0o+MduTKTNx6bK/+JY50d8aV9lXdMfjE2MeAbyZ149dvu
+itRSEDqzaGt8Hjvw3SwVTKkNzHeqPMMimyDcCEWyTpGgJPBVCZMwsa+5WaFxE0WlN+4dmSza
+9mRCDClSIDe6AR3JDPVtgIaQvTOa/pSI8C3AzdYBi+eSI8IRl0LWrAz8gK4Ox6KIzFHd6Ut+
+pfjmwI7sA5/ML2vzpe+Q1QAo9BYuo/sFNHpILnASCxgEC7JOHCEHid9uIQeWr5hkRY21VILE
+ymJpAoDhgl5WJi7ctQSWxUfhisI5fS6pcVlsfpULNiE/wkW659V45NVGgbS9ko7JOyYNixxy
+8ATm0XnGtQu2lGWWFXUwd8PbbamjKFiSWQNCK8ui/rRYqrEPJRA2WC51cj6xjCaoicRsqfi1
+k6FxP2Vi691njOZHYnuY86EdohUCh5aWJtYH+gv/xNGwtl6lTXNfZ5p/bnx8ebNzjM2YBIEZ
+QNeo6eaRc7vTm67Ye2RbW6+omUNqFIRaWtW2QREtwgVdn2HbdrNGbb4Bg8+xdHILOTghdfyo
+8ETenJRRDi1KOm+wzwM39GlbU2ELPe0wgWSCCUjK5bBVsmKuT8548zqbgZECIm1ZKGzYk5jW
+Vv8skegD04cwzQR2Ls0UGzueyTxNk4yd4jTmF3/p2MmCp8clq1gmY/CbTrURB3yVNHv+4r5N
+8zQ2HxgWly+P58HMxaCF8sm4qB4reHjNsQZaGaxkGPin23/YCHRc06GT4L09t4Yl+Lrlo+5I
+GnsWw6O3D3Ph16HlbMZnYEafDAn3WZJWJ+U5Yd9L4laa4jYm2a+GXSvv6/3jl8t1nj++fP9z
+du0DmP+LmvN+nksTYqKpZ80SHUc4hRFW43kKBpbsrVsRwSG2IUVWcpVdbmQfADz7Ii08vOeu
+tJgj/EsOxiI6xbni9Umgh1JciR87lWq8JIHT+2+za/Qexo619z9My087HFnRJ3KgVugDPqR/
+nN/5w+gLf079xaxCc/nn98vb+4yJp+7psU6brEhLkF75wZK16pwpefz98f38NOv2ZpNQNAoR
+TmkcNKSVKSWunJsdYUBZ3WGo7yl8OEJ97Hcxjq2epXDo0cLkz6rylFdti485LaXs8lR6m9A3
+k2iIrDvGs0PR6t7LxtfHp/cLhvY9v0EheE6I/3+f/W3NgdmznPhv8smjGFD0p22fwFx8V7u1
+p50XTXRiJnE6RoaXPQZIKQqW51WsSLLQEeLDY2vOsH1WUEcfI+gVxqTN0HlsrA+SXAx54Kr2
+tdT955eHx6en8+tf+kCw718er6DFHq74ku7fZ99erw+Xtzf0SICOA54f/9ROfEUFuz3bJZaX
+1j1HwhZznzJtRnwZyZeSe3KKIZoCQ41xumewF23tzx2DHLe+L99lGKiBPw/M8UF67nuUEdUX
+nu99z2FZ7PkrPdNdwlx/bqhjWOu1e00T3aeCv/QDX3uLtqiPenZtVd6fVt36JLBxwH9s+IST
+gKQdGc0BbRkLgygipUpJOa1RN3KDNQUvGd8QD8FBHW1M+Dwy+gHJofquTQHQTLqZZ6RewVWA
+m4lXXSRfER2J8sOUkRiGZiF3raO9cNcYijwKoREh9dltHKSFqx61ywB1INILMB5ELOa+mXJA
+bra929eBOzcGg5MDojoALBznxtw/eBE1iN1hST8/kmCiZ5FOHnkPc+roe4TqYMelx48gJJHG
+SXNW5pRue/GuXhh9ER+9QKgz1ZYhJ87l5Ube8vMqiSx70pCm0MJolyATqgcBf357yvnyuctE
+DtTjVwX4YMot/WhpKE12F0WuKU/bNvIcog/H/pL68PEZdN1/X54vL+8iSrzembs6Ceewk2OG
+xuZAf6VXKcfMc1ojfxYsD1fgAQ2Lx/5ksahIF4G3bQ01bc1BfH9Nmtn79xeweYZsp4+sCT/d
+gp1uQOpnPalY9x/fHi6w5L9crt/fZn9cnr5RWY8dv/AtN0L7yRJ4C/JLpICJfUeL0SfqLOkP
+3QYDxV4rUa3z8+X1DAW8wBpmOrjupafushJ3cLle6DYLAkJBZAV0HuUpXYKXdLKAvkIxMVhu
+bE4Mt7qtOPqWgn3ysZ2Aq70XmpYTUgMiM6ST19slmNAW1T4ISQ8PEmxLZl/Bqn3/SIFItrhl
+L3CGW10ShEuyOguPfGY6wuLA30x2u/GL0FS8mNmcbFsEVsLNti1vl7a09JnrRwF1qaFf99ow
+9IhVtuiWhUMeg0q4b1i0SHapdQCAWnuZaHJ0H5TYuS5V4t6Rj1Ulsk+YcQi45KF6r5Iax3fq
+2Cf6sqyq0nE5eFMLFlVOOwpGuElYXJiGRvNrMC+JfmuDu5DRDmolBvt6DfA8jTfmXiG4C1Zs
+TRRYZKymHyUKhrSL0jt6D0ArZq6zc6CZF2aH9T+IzB5hdwufslCSw3JxQ08jrL7GGumRszjt
+44KsulI/XuP10/ntD+vqkuC3IsMMwkskodES/BA5D+UVTs1bLO11Zi7Aw9qtY9rh467kZ4Vi
+cfz+9n59fvzfC56x8AXfOP7i/Ohos1a9kcso7Lxd7lHfeuI5sEWe/FbJAGUr2CxA/viqocso
+Wlhrl7JAC0B5g4+8oihxFZ3nHI+2shAlv1sYTD7dFsC8MLRirm/pA4yYrV2ZktBj7Dnkc3mV
+SQ1LqWJz7YORUrFjDkkDSo+ZbAvi6LzH4/m8jcjtmsKGhmsY3BZG13JRVWJcx7CCULrdYPLo
+TuGYZRz7Wni2WqZzLYarpYpgLn4oTlHUtCFkZ3ym6auyY0vHschNm3mu7GpCxrJu6fqWGdmA
+EraUB8PsO26ztghq4SYudNzc0qkcXzmOozj2ohSVrMHeLrNkv5qtX68v75BkPIzkt6re3mET
+fn79Mvvp7fwOe4XH98vfZ18l1r4aeCDadisnWkrHMj0xdFXxF+S9s3Sol3cjKn8S7Imh6zp/
+UlRXJeJske8EcVoUJa3v8seuVPseuJvWf5u9X15hQ/iOYRSsLU2a452a+6BlYy9JtApm/YyT
+61JG0Xzh6Z0iyMocFufz+9U/2h8ZgfjozbUjqZHsUbqBl9r5rlGVzzkMmk/byRNOHZ3yNgdb
+VzkfHgbViyJTPBTNOXIul4TMhPRtykmiHGNYIkd+6jqMlePI910GVu3VOpL3aeseyWe/PFE/
+2RP9TsAEijGht/NTudRpociDUdNHZErdkpnQhdo+IQTmRATxJF9I8tJbWPuMJDCN6CDaXJpW
+Ucjc0OgL3ucLl5TtbvbTj8y6tgZLRRcVpB2NlnoLXRIE0dNSo5z6hvDD9E6s45XDjjqiLaKp
+oWTMTv6x8NiZ8g4zMNBqhvPLDzTBTbIV9nyxMircA9TRX48vECfSIZ3ehfQMS/tY922N9GzZ
+eumQ4XIRTGPLcuCT9qMYu8SDNVP/TI/Uuat/vW+63It8hyIaA92T8UzP2gVcf9MWER+oxIUV
+G7/YVgkp3HG/tFjFGjVMpCtL0bWeoY56uq1zheZcDEscw4DlP5XX1/c/Zgy2jI8P55ef766v
+l/PLrJtm3M8xX/uSbq9WUv3MfewwfrG1I6omwCfFN3GX/ASJ6CqGHZ25cuWbpPN9xzabelhb
+XXtqyHQyDKQpeagCHNtCxnZR4BliI6gn6K+byfBjNKFv3NG9adYmP678lp5raIOIWHW4Avac
+1hBGXppqRvzrx1VQpS/GG9W2MeTmy9wfnW4PdxCkvGfXl6e/eiP05zrP1TYqZ8jTCgoNhaVD
+nyATxLfFYm+fxsPVjmHTP/t6fRUGlGHC+cvj/a+GxJWrLfm8bwQ1AxdotT40nKZpdLxDPddF
+lRPNWS7IdpsBzwJsKiDftNEmN6YEENWtN8+nW4FZbDll69VNGAZ/WvHs6AVOsLfifH/l2bZr
+w1pheQ6E8LZqdq1vCRyFydu46jz6qh5Pn+ZpmRpzIb4+P19fpJdvP6Vl4Hie+3f5apBxjDYs
+O46xy6mVDyu2nRUvu7ten94w1gNI6OXp+m32cvkf60ZjVxT3p7VyK8t2h4Rnvnk9f/sDn/YR
+gSqSpjA6ggFtOnqbPpFJZHFI93p+vsx++/71K/RLIiXo816vyNM+MhlPtzo//NfT4+9/vIMS
+yuNED6469gJg4rZaH/ts6ndEzGA36FU1zzbbTk81VnXiuOsSL6Dm0cRSq66hJ8B0RW6wfIqr
+4nTI04SqnelTYsJYgtfYba5JFS7LZxqpAf0V9Js17d/9UPXkjztkz24atKSbkNdRQL7OnFik
+Z7IGRj2nlKrLnyDdzFx/jSzVbB94ziKnHI9PTKsEdl0LqmasiY9xWVryThNyGnwg7EMp26QY
+rz/G15e3KxhlXx7fvj2dh1luzg+hIWI9KKJChr/5rijxDqJDMzTVof0lnE9taruMink6abgP
+qjfwGfpoKL+tdqXsEAZ/nvCioxY+VaGfMDBwzjLZ+Z+SS5mctKBASKpjNcFpe0jSWiW16SdD
+wyC9YYciSzKVCPVJi51y+xzJRXYEmwRAck72NdFxDSWqb9wVlYtkx1PMmqT9xffUooZ75lWe
+nFhNRXniRTYVRshSM92j34A25aAdy8ruTqtofwtVJw2JjFE5HZtdSSWLu/y0Z3mW8OjYWg2E
+731j+HYYi8UkC0m3cONgmClwwEVsUBrTx524BCqiYSX/4HdN5JV1pCnyiE7Cm5TfZYUN5+cU
+56KEi8BnSpl419a49anhO9grulTCmGWMChYy4OE6Ux9uD8A2s0QdRYZVnHjK2caQCv1lhia5
+rhKqDCBvSWdSPd5VpRb0fUB4APCjnmdbxebIZImpSreZUh/4Obkw75q03HRbcmIDI2gJEtph
+QZY0Q8Qfo3Ltt8sD7pUwrWGCYkI279I+Co5MjeMdf7dF9J3AGzkQ2Eg6yT71ObXWvleOxIw+
+JuF4q0enk8EdCrelXqs0v8tKtQqrtKtqo2KrbLNKS4Mcb/HVml7heJvBLzo8MceF32BLpeJq
+t2GNnmfBYpij9jxBYSbZXXpPKXieK/9aY9QUOqfD4OTtygnIqyec6x40hKytkAiCt6nKJmuV
+8ZqoJzWYsJQyLVrRkUpV0px0ySugVHNpJahkUGBEPkNHqLXdpMUqa4xJtlk3lGdhDuVVk1U7
+rdXbKu/SOyUbTrG3dp/BaiKv4jzzLox8Y4yh1sYsUhnuybDLgOxiHnJLz/HAcpBma83SQ1uV
+ZqrNfcMXP0u6DIOPqe3JOmPW/spWDXWTHrHukJVbpk28u7TEsHpKaGKk57Hu/B2JqTGWsNuu
+9jaRwN7pNRdBxR+1ZJWNdFVMkdzsilWe1izx6CFHns1y7hBJD9s0zVu7pBQMRrAAkdM6t4BB
+bPReKdg9f1OlUptUTEBDe2RxU7XVmo44zjkqDOydUo9tObzLu4wLp5512ZFhPDnSZBudHVbP
+lIzMjjqMlejdECaeZFhLREP91mkJ/VV2eiF12rH8vqRPjDkDKGjcDVlxUEbY51lsX1nADAUT
+2Ao3KWSQ2OYrmLcxM+oNq4LWOxpctLuSeozFUVhy5N1LeW/0F/d0DybRnUbuUlYYJJBVsBFS
+TQFCBepc14pNoes3fL7N2kyOuTaQzFoVrOl+re77fCcLSqLbZw0sX5WaH2i8NjX1Q7cF7UK/
+RBcwxhUXBr5NyaKxdapbX896560/pw39CkqoYVi/LJkesqyoOm3KHzMQbJWEBeg9NNC03lHK
+/nyfgK2lKnNVqrir0dN2t7LUkOW1Nt4YGnVwXTvcXyMsxzGIG2nzCqM+0Wa0agj3PLA7Jo8C
+9LynON9KgWN2PKy4bhbLMZnlZOO2SS5Aqle1jTPYX3Rdnp7SEowrSUNLzxFVIshBoapnvktJ
+Qf5AWRIDwDdTeZ2dlJjnIquy1Dyx8J1Zg+sZa0/bOFEQvVBWlqA74/RUpof+/MHcR6r39LG/
+jcepmFeSimDiNexFs1Zr8xryz8qs4ypRUSg8qeWIgXdxt+GG7Q425SJbvdta3m887ky7srz+
+FPvVroJtAiwYeDCQs/tfPBkWYzLJ6/XtHc+ZhtN4wuEdH4FwcXQc7GhLqUcUETEOSkJOT1ab
+mFG22chRwz/Y/KUt0/pFoES0VgTTvlBLztVx57nOtjbkg0eGcsOjCaxhHCCNCVSW9g109A5s
+q8bAYp6j88mTR65rFjiSobKa3DcRfi9aLqj6YAJ0+EtvlHsGra4Gzh/dFtqSPoqM+MIwi5/O
+b2Q4eC6E+sVkCeOHWuTKg+ghMYa5K8ztewkLyX/MeEd1FRiC6ezL5Rt+2pldX2Zt3Gaz376/
+z1b5Hc73U5vMns9/DXfuzk9v19lvl9nL5fLl8uU/ZxgOXM5pe3n6xr9oPl9fL7PHl69XvXkD
+J9U92fP598eX35UPPvL8S+KIvOvBQTRexa5roma1dlwraPtJIin6CVVE+0tEgCUsgXH7i6tU
+DED0Tm0bNUy7s3hUFrDNoQJXH0mpmhIj8bRhyYZ82z+xqG64eT9xSU2amCJXpvrkgFmSyZOg
+a7lGO4/vPSWc30Emnmebp++XWX7+6/I63uHkswLm3PP1y0V5sM/FPatOVZlT2w1e4iE2egZp
+fCm8kYZsJwc+aCfn+dF2iuVg1lIWDc+oWk9X71XMIyrnGTImvqeev/x+ef85+X5++scrfvDA
+jpy9Xv75/fH1ItZiwTJYJ/hh97fRTYU+xXhB6Jiiht0UeSI2co39QFb2lkhzhq5h8R3M2rZN
+cVey1u2WLT4HTBlNBSM7tiBFW1iQrDhaECNEu4J26aZh5iKoRKeUiPSSuQjdvtJKX41p0Lu9
+LlQkpxBRg5fglAdoVLFcBIxDW66YoQtYrldQUKlPbSbT1I1UFkLWb+fAsiZmK31GDGBz57tu
+SGL6Ga1c9a0vh7aRkMMWNtLblHUkip6F8Mw6zVPTQh/yrsHiOdr6TByIngrqcYbElxZ1uiGz
+X3dJhvHqLQXswbyx2QI9S1azT2TWWWPJNAXxumEia1ywsaZrHrme/ChQhbQo8bIIsQZM/I/a
+dLCkzna720nx6LtmJQa9JevW45bs7/LWtqwMHNUqA0mPaWkp4u60s3VLgSdBNFK1i4XnWDHF
+L4qMHXe6MysJLdm+IM/SJZ4693w5+JYEVV0WRkFEYp9itjvSCKgk3NySYFvHdXQMaIytjXVG
+gk41g+0/fVKnqKC0adgha2BOWz6Cy9z3xYqMCSnxdJl18q/S5lctejnFeASVRx77yIrqYJXJ
+qracwcs8RZmVqU0QMIf4oyyOeP5zKmi5PmTtdlWVtNZu253iRFKWhs4wdHpkVyeLaO0sLDf/
+ZC2t2xnjSqceSlg2W2mRhdQlqR7ztNWGJbvOFO19m270huTppurwi4S1Abl18z0sHPH9Ig7/
+j7InWW7cBvZXVHNKqjJvrNXSIQeIi8SYmwlSiy8sja2xVfFILlmuZN7XPzRAkFgact5lPOpu
+AE2sjUYvxvLztjy1jyFg+PJBQGuBHx+OFzP+NfBk6jNxATQdSlkOr5MQcqPSUmTddU2PiLI/
+qwWxBlIiavfcig05iYmEqResonlBtLxw/BOzNSmKyATDdVuHBEvIyc6v4WG0KSvj9sekI7CE
+Ctc6dMvojHENHngfboztelnN4e9g3N9YyrIljTz4z3CMOjqqJCMjLhHvjyi9q9lYcH9V6rzY
+LUlGtadLPpaluamCFl++xajFN/CorsOqgCziwKpiw/4RwHZR5S+/3g+Pu1dxi8MFyXyp8JZm
+uajLC6KV+cE8yepq7niYL8lylQHdFTl3eKPpl6+wqJYUMrT+sY1c3QWqs3GNlZBzRatVQPjM
+AHtmtwkpygh0CzyUr3UdZINttCh1WiX1vApDiCSn2FdVV+T2biz358Pby/7MuqrTYupDGcJk
+NndvqehDrjOLor6i6Wi1b45uyTdE8xIHWLKy73oAG5o6vxRR9XAoK87Vh0YdwIixtOeMUjSm
+X+ep/UYA5OxIHQxuXadHM1CbiK1q45uEaaPUQKpTFx0RbcuM5kxayDMalcanhqA4NEEQl3Fu
+rPXuoqdBAzhXzPKBXWUQ2K1Uc2oup7AuUna0mMAETJ6byWvizIUQ1tXKsyrQbB0FrNGKmuDS
+s9Sh4r+h/YJRdXqSt/Megi6d3vdPYGv/4/D8cd4hrxnwrGbW7zJ44+dJaezEDIB1EoBFJ+tL
+q049l5go5prVf1XK43OG1Kyrw0BrjkoVIsmlqxLEUExdas4xb9ZICQKGJZ4umonq1Pcy4Qbd
+yJX5YChNIWxys3hcPQmrqE7MLVlYNqBAbAglykN2SPtpUcP684XrtWdRr4O5R4zlB4/NbTdo
+u8nn81nWU25zPXwoB7AFlGMzTiCX/pBSPVJeU4rHy1aDMQo4LRlT/clN634FPJa/3vZfPeHq
+/va6/3d//ubvlV89+s/h8viCPdOKWiEObR4N+Tk1NoOPK53x/23I5JBAgNnj7rLvJaBgRa4T
+gh8/r0lcmg9AGCuOGrWxBdN3uo5KVYhL9Exq+boAs98gSfBzt8FTf3o7xQ5eiTc00ay6eh5n
+3h0Ckq+w7QMJJPysK6LFEmfEjXAuFP2J943634DyysOpUtgwugYQ9Zeedt9ugeyAL0NsrgLF
+qtJlGIBVdOmZEH8ZTViP35gtgGkoGO9Vjqc/oPHuGReO9pf03qwyKTHrpiRIKLuLq13eQIwc
+pPufp/Mvejk8/o1NxLZQlXLdCLtLVgma1Y3mRdaOcleeCpj9zK+0+/kYSi6U7lOuBcGaP8x3
+EP5Mb4T97mC1YcamYPhW62WxnjiJE8wLuOulcJderuHilC4C2wkanGKsiwwvT0jZ14IaCWg6
+vBmMZ8RqjtDhBE/uKtCQIntoVDb3kslQT0DVwdFwbRzNk5SZjHHgwKqKR53C0zK0+NkA84Vq
+0Te6JxiHQ1qRMeovzdG6zYmoCbLujWz+GBj1VGuw4xs1VIoEjjcbxE6mxQ4w96sOO0QLoaqg
+Bjs1Mi1KsMsPruujMW7+1xIYuYl0giZRGi1J6bgmczKnt59oZZ0YHagmG9OmnT/QEuaIryyH
+45ndY6VHIBGHm6ky9sYzPHgHxyu5e/SCTS6ga5N//K9dSiYadZUDd8rJzF4gER32w3jYnzk5
+bSgGm1Z46TYNbu7w/fVw/Pu3/u/8gC8W817jafdxfALZwjZ76/3WWRv+bmw7c1AEJRabItGl
+szPjTaE+I3Eg5HIzQCJ9pXPpwF5wreMng9uRUSNdJMP+6EbtmfJ8eH6299PGCsvc4aVxlnQt
+M2ZRg83YPr7MMK2YRsaE8TtnHcuACSnzgHxaS+sy6WDVyysHhrBL0Soqtw606fep894YyOmj
+zHv18HaBB/v33kV0bTe50v1F5EVopPvebzACl92ZCf/mzGp7uiApjQLdJlr/QJ6h5crabuhy
+kka44KmRpUFpmWfi1YE/E26Gqnez46YND7aQTT6KxRh0Su1+f8sEAhLFceBUi7GFuvv74w16
+knuPvr/t948vXSfSPCB3lZZhowGx1Zmyizvx0pJiEoBBlmdxrByPBrby87JwYecpdaH8wCvj
+uyvYYFO6eY9Z2U85B/cAVwM0v8sqJ7bc5IUTKX0gVUthbCRk6Yj9m0ZzkmpWfB2U73yQKB75
+IJNKTJmOM6sWXRmjoDPwDU3gfzlZRLrNPUZPfL9ZewhbhZ8Qdg1THiaK0gOFnw6QInJbPwCX
+XpnRLS4fAJ7hymyJHYyANa5aAEpX4qtFLoiSlZSRKLSrBpBGaRlCA6G7eU4CzrrXKYwdQuWw
+WGm3STDDBq4ssV0Si9SjG/2jeNqq+Xz8ENAhhgmyhxkG30x1G48WY2UTtUh82h+60iMqJLdY
+GFuFYKLH4pOY5TaZjvGMnw0Fk6QmWtA5BWFmj9dQqBCgUJgJGRtMQcfeEGc2onF/gKZL1ynU
+uDQGBmlww+BjrLncC6djNA6VRqEFa9UwQyfGiZgO0f4c9Us00KcksBPLSsT9cHCHtGVlG2/X
+SJOr7toyQtJot6PnQZpER2bQhoayO+bsBk0h2FCETBwcIlOuYOtIj6ClYMZTNNOiUnQwtqsM
+EnYVv0WaWjH4FG2KYdBLa0cwnd4gA0zHCVYf9dn6ntqCRB65NyhwMIHjgHbJxIAesonYGxuy
+XwwHV7+ATcWByAuCfv1g5g0sftu3rk8b7w+maPLTjmCs5bZU4GOkW2Fzm47rkCRRvMVYFgSf
+7aCT6fVZy0huB1MsbJZKMZqiWwmgpp/zcDu6Nio+HYz0J/8WY93dcZKr3PPUz8isLe/6tyVB
+9pZkNC2xHRzgQ2SpAXyMHI8JTSaDEbrjz+9HUzSvTzsd87F3g0wWmKXoRnEtcWY3+614QhbR
+wza9T3JrFZyOX9nF7rpkYdkKSwT4O6d6JKd2RyzZ/26ubsvFrTBlaKM/UBE737EemazocsZi
+qHkV2h5YTND2uFWCIoOvOVR5UBKFO4D4XSfZKqjTrIzCrYWjQRyCbKYnCRQ4dt/O8dxzBpfK
+Pa3aNCZJ2DOY5scWZXXeDElU3OsIHzJMtojukQ3KFBUa4WYVFWpaPgWqtip+g7KpUituwHMI
+kYIqaRqCKM2rEimYJK78eH7uyPrAbcaBD1tRf3g8n95PPy695a+3/fnrqvfMU0+qr2htip3r
+pJL9RRFsNefCBlAHVFv7tHTfhBZZ7IcRReN/EDbBPPXuyn6A+xHrTXHhNgghHE1OVHsPodFq
+Kmnb7KDXNg+FSsq2CJM61WykJtlScDQaaxbnBmrsRPVHLszIiVGDoikYz/eC25uJEzcb4Lx7
+PBhi7eWOPmxyV2Odw7DlOp7cjHCOzPzkKkpVTyvwlYczyeTl/lQPFqlgm/yzCaoeWq6ZpJU2
+L15iQ309Pf7do6eP8yP6rMv9ysAXpM6jcjLCwwiilSh1kCieZ5h2OWJ8V4oTsPDp2R8hFG6P
+I3v57nnPdX+aHZIMX/YJqd4Ov+hzcxBxr9//PF32kAQSFfkC8Di3b+0yzaNdWFT69vP9Ga0v
+T6jc7vAatZLtGQUB1tZRl/GY9fLxaX0475UwjwLBOP2N/nq/7H/2smPPezm8/Q56o8fDD9ZD
+3QOliCv58/X0zMD0pJ+vMr4kghblQBH15CxmY0UwyfNp9/R4+ukqh+KFs+Ym/xae9/v3xx0b
+1vvTObp3VfIZqdAj/0+ycVVg4Tjy/mP3ylhz8o7ilQMh82o9+AcvvDm8Ho7/WnU2hYTVHNsA
+KnSmYIVbxeF/mgVyduU8DXVYBPdyejU/e4sTIzyetOiqAsXOsVVjL1FnqVAAKlKRQpQHBTgt
+k1QN2qcRgIU4ZUcajgb1I82JLlRq5QmlTF6xZcDmI6xX+e57zfhxwab0Ov/24N/L4+ko/ZWt
+agRxHVLCTsEbsxLrkaMBs0NziGeq6wjkgyCCmOoZSTuUQ1vVEJgHjwSXaZOOVIcX5XR2OyQW
+nCbjsfoy2oClGXOHgGTQerSvCD2KtFOP/RA6VLUcAC3/Bg0bUnASwwxfABvd08lADY0KQP7i
+rN9zeeNlktvziEnPPNGUHZeDYeBQ7OoGzy71WgQXlILUhvydMJEVKsVWtdVY21YOrqJzI+6L
+dAbLvBI1EiwCcARgP5oc7trFjOPmhcf4mcMvT6/CIARzwrhe4CH0BEkZIe+zQrWy3LLj+Ps7
+35K6Dmzukbq1vALk+TBrX0NzC+BFopeZe0l9l6U8u/lAR0E1zbW0LrOiMB78VDQ0hE0jhUR4
+T+G1UxKvMrNumJ1Rspkm9w4rfvGZG9a3yMcCMt+QejBNE+424UDBZ+uohOT5MkuDOvGTyUTV
+fgM284I4K2H++AE1WeYhkYWfhoNfhcJkqYm8hHDETR8HfS1ZrT4vWmo4ETyiLKzEm2s/6jjX
+DAALYusAyPHpfDpo3t3skCoyR1QbSa4cMgSTVuWrUEvGAfbjj1BirHuX8+4R4jlYuwdVXU3Y
+D3gcKuH2THX34Q7F2qhxx3yg4c+HTiwTIQsPffS1iVoLgY4/sfpV620JqRcolKJQNjcQaK57
+ELZwZN+XkYbsfpW1hrnuiAWGdwVEbq2bQBjIt0MZMJTzVePspiCTE4KHwMI20lkOBgteVuWx
+amTC6yuChRYWNwtxOAf6oeZ1LmE1CTFv3pAqdtjshwxMVKeZGm8QMCJMlyWNKCgjnBVGQrgj
+Fc5ITY2Ikxw2D8IoxE58bqnIemvTJWlULZAtlSPYNhN/cTsbKLsuAA2Bg0HguqtuLli9igyY
+qXEMaZTpMWnZbzhteTPYaomjRFMFAUDsi15ZxPokL9j/08DTzh0PovE5PCMTK5CKVBjqoqgI
++n8AywC+gaqJOUVc5oCNBhP+Cs0EioHYVVjdXpkcN9BcTxpAvSGlaoQhweA+wIbFi20UDbyq
+0Ex/GGZY60JdA+rqwSXXobPCkV3h6D9UOLpSoWEAwGF3FQTjkordBvPX3B/ov8yyrJFk7hFv
+qazFIojYIDCMzngLZsQeZnnSEvAg4FEaZmid5kipKHW07IaVHkGa/0tyrPxG6/vLUY9G4AqI
+wguXpIzAWlrrnw1vH9ekhnTgwkFIdBMpRcXSHgUJw+ePTcYHiy/thfN7W2KInk4Jm0hbMZOc
+PFlulwLMrrcBGoqiayEIwS9Te5hIo1h0gTItB8ZgcgD0u9EdDaGYU9iuP2j7wK6fG+9F6V+B
+10SFt6oF/yPw7Y4coRYfmNjqHnboKFQwc+1LoFXU9zYBafw4MjVkIzwN1QCOUtXvgsmNYCe8
+NfEqU+wKUGxdgQgYHgZI3XRaELJ7NIh5FbHDks2eaJES8OJWOaXtU1QnsAqQwwKL47g6BWOQ
+mC9b91VWaoIUB4ARI3fR5ueaGWe+u0aA91lTYk2KNEJjsQq8Ne3vw6SsV3iSMoHD3lN5ZV6p
+DD1EMgzpSJujAqZP2wpCcGsLwKsoJiY2z1Q6bcYGKybbGpH+vd3ji5otO6TyUFAmDgfxVeia
+74JiyTbHbFEQPDCepHKrSiRFNoelWUOUSPwZCKgsx20lqzn/JvF9/tciS775K59LIZYQEtFs
+xu6e+gGSxZHu5/gQQeQrlJfKD61tQPKBty00fxn9FpLyW7CBf9PS4E5RxDBK1z6zCvm+iOJ4
+xS5kWiKblxTgrnEmNCXv+4+nU+8H1p9WHhAOuNNdvjkM1DDqUuDAHJzlk4ydRKrLA0d5yyj2
+i0C5ldwFRaqlFWkUc83PMsn1ZcABV+UvQWHIKezqHDbB9bVnTPjTHdNSW2D3jfpGRcXTPth5
+Bgl2zLK9a50VdyqVdpG3xq1DKMpt+FWvhkZJADk+XGBHRg254ZPMgfxIYrtJVuGLkxNBeEqb
+RqUI2f0KPlJQKaq1gm3YPLRdpnwQtGn+NPntfCXkfKjSIvfM3/VCS9UiYNYG7wX5Eu9pL1In
+GfwSO+PAAIKFAYTK5RJnAIFmiLc1aNYBgWdViPCrhWLnyCqHJBH4BhhdEX040jiwO5jJpghu
+4VdJzqNqWVz4/4GTZt92ExRZ5tjJM5/g3UyMI5Bg0ifBGzeLsMOyoOqGksZU+yE9Ov78cng/
+Tafj2df+FxXN2Az41jQa3uoFW8ytG3M7dmCmY816ysBhEoRBMr5SHHtq0UnUwIgGpu/EDNxN
+TnBjLoMIM6E2SJz9NZlcaR3LvaqRzIYTR8WzsasrZkP3B89GnzY5vR2ZxZkoATOsxiystbL9
+gZMrhuqb9RLqRZFzAGSrmEmIih/oLUrwEAePcLA1LSUCs9ZR8bd4fTMc3Hdw1Xew1bf4usui
+aY3toS2yMoskxGPbGR6ST+K9AFyddSYEnN1IKj0cSYsrMlJG16vdFlEcYxUvSIDDi0CNtCzB
+kQfRxnwEkVZRaYP592oh8SWG3fjuItXhGxBVGeqpvGM0IEoaeZoquAHUKTzFx9EDz1rTmi0q
+6sqsXt+rMpemXhQmJvvHj/Ph8su2rjTPOPhdF5DGjZa16yBpAuGz0QN6dm9c6KqZph508ZWQ
+iCLwLQIpposreUNgcFb7S3b3D0T+HjTZX6PNAjNKyp84yyLSlbhXFGcSpR6z3G5vSQo/SAPh
+V+Vl+ZYLM17jh9xWbZGhTzaMeY9TQLCNZRDnWm49DA3ehcs/v3x7/344fvt4358hVvLXl/3r
+2/7cHsvSB7PrAqIsgJgmf34BY6+n0z/HP37tfu7+eD3tnt4Oxz/edz/2jMHD0x/gK/UM0+SP
+728/voiZc7c/H/evvZfd+Wl/hLebbgYpsRV6h+Phcti9Hv6XR2hRrpOgjGUf5d2xaaxGWuQI
+Np1Far7OgVTtT0kDzzkOH1MleS/Kh0S7P6O1vzGXiOR0kxVCxleFL26UrF/iBIxdjrx8a0I3
+qrAlQPm9CSlI5E/YnPWylSKTwmqADVJcgs+/3i6n3iMEqT+de2IKdL0tiFmfLkgemXU04IEN
+D4iPAm1SeufxCNtOhF1kqcW/UIA2aaEq8DoYSthKqBbjTk6Ii/m7PLep79SnJlkDqEFtUnYY
+MCHErreBawJTg3Ko9PSC4BMOUaXN14yGahH2B1ORLVVHpFWMA23Wc/4XYZD/wZ4PZVdU5TJI
+u5hzH99fD49f/97/6j3yOfoM+Wl/WVOzoMTiwbfnR+B5CAwlLHxKEP5pgl0X5MdVxSoYjMf9
+meSffFxe9sfL4XF32T/1giP/CLYN9P45XF565P399HjgKH932Vlf5anh5uToIDBvyQ5UMrjJ
+s3jbH6o569tVt4jAU8leX8F9ZO0K7OuXhG2SK/kVc27OC6fDu83j3O5SL5zbsLLApgP6BtKy
+YVcTF2sLliHN5YIvs72NQ7MqF2ewXRdoehk525fuPoZkRmVljw48b7Rdudy9v7h6MiF2Vy4x
+4Abr9JWgFFrPw/P+/WK3UHjDATJcALYb2aBb7Dwmd8HA7nABt3cTVnnZv/Gj0J7JaP3O/k38
+EQIbI4OcRGz+ciMq3MFa7hmJz5bEZxSOcDYdxWA8+YRiOMA8neQKXJK+vSzZah5PMPC4j5ye
+SzK0gQkCK5nEM8/s07BcFP0Zdp6sc9ag/ZjBo3LaM5joBmQd1LB4tijSah5dXZik8EbX8EyQ
+WjtcaeQ8JEnALnX2MeERuJEYKk0FZ89EgNqD4wf25A/lMWhsM0vygMhGlMSUqAEEje0dO45w
+W5wWW+SaUXM7N+ylVAbYcVeuM7NbxQw4/Xw779/fNaG87Ygw1lX4zdb9kFmw6ciezvGDzR2D
+Le2N64GWvtzyit3x6fSzl378/L4/Cz8QeWewpxuNai8v0IdI+RHFfCGd2hAMui0LDLapcYxX
+2qIcICzgXxEEfQnAUFcV+RURr8bkcImwtdwGXgrV7q9vSTHRWUWytbCy5dmWAr0CtNgg5VJo
+NgczRGTCwHdIMxf1mvJ6+H7esUvZ+fRxORyRkzSO5s1ehMDZToIimgPMdmi1aVCcWKVXiwsS
+HNWKjljaGJTQPXxAh21HAJfnKxOZIW99/xrJtW9xntPdh14RSIGoPeTMz1yukU9jd9kEcoJE
+HtfYQHRR7aIrkXk1jxsaWs11ss34ZlZ7QVFGYeSBRVxrDtdZK9x5dAo2CyvAQy2CBtNWMdJb
+tkdQCqpi07JOYHncfRGcXrEnXIAyJw+ECQm31gF2IsRY3tufL+Cow+4I7zyw2vvh+bi7fLB7
++uPL/vHvw/FZ9WiGd0xVE1Zotis2nv755YvCmMAHm7IgajfhKq0s9Umx/bQ1tmQgdBgt/wMF
+X/A8ZyVnSz7v/4c+EJHWnPuCUIGoqhEJqf+vsmPZbRuJ/UqPu8Bu0RRFt5c9jPWwtZY0ykiK
+01yEbGoEQTdpEDtAP39JzkgiR7TbHgLEJDUazYOPGT5WYG0CN3fs+LYs6sw4IKnXkUe8IW8f
+zf+qANUKA6XZahuDF0DrqpPm85A78pTni2QkqbNu6LuC35Yl1qXCod4VFeW3X4lwbH9mydOX
+TzETSRH7doIuDjYlSBcBuvgoKZbqejIUXT/Ip6TFAD/5CTLb0YSBHZmtPp/StRnJKSWPSIzb
+6avR41dF/Gr1DizxAoDTqQn+itVkLnFa7TppMpVYEEKd2ooNivIU6D6T/9s8lghFN/IYfoMs
+E4ShVK1uPKuPoKBpKS0jVGsZdCuVGjQuHa73D3QxhZzAGv31DYLj38M1z8ERYBQD0ixpC/Px
+wwJoeDGYGdZtYOcsEC1w7WW7q+QfPpcBemIW528bVjcFP8VjmOsbFSw0YgFn3zXuZ341EFAd
+sOo2w9rFGmzYVo0KX1UqOOeVAk3b2qQA5nKVwfA5w/RQLJMMjIXXPfAgKoAmGA7C04ppPJjT
+TXhZ1hmWO/SIMqtFAAnhEAFt0g0Gl/hjwWY64kai3LpQkPlHVCJZJQIp04XoFkJRRV14QggE
+dFyTjevSTxZjkE1fmXY72DynSwuBGZwYs/SSM/PSruQv5aKuLqUj1bRiOlsVCd8jSXkzdIa1
+WLhL1OTYG6umEDn20qISv+FHnrKXW6xkj8eLneMerbbulrW8CfrpOxc4BKI601mZ8TpxLcZ+
+2TKay9oigo4nGSkOaZo1lj8O0kAMK97Y1WsppIKCsdAb5A3VqGUR9Pnl4en4lXJTfXncH+6X
+N5/k77ql5K1CeiMQ3XvEgb4PwRpKuy5BfSin24e/TlJc9ugz+WGarqB+Llr4wO5Nre3GHlAZ
+b42NhYLikT+TAI8XU0xhxIpwgM6cAzpNNPsH4S8UC+LjfnIspyOGh//2fx4fHoOidyDSOw9/
+YSM/7056G5qM6hUwmZtVj+c96LHOVqGD3pN38t8X7z+9Y18Iq6YBZohBfaofoQMLl5o1nHtu
+Moz2bdErrTN8dwW24R3i0U+xMqKYQYyhPlHN32gj7AzsG9/txpIDdht/ToAL7uUrLFmM7PM+
+cT53r+5W+7MTIJJ0hG2T7v99vafi1cXT4fjy+rh/OkqHW7MuyDlVRj/LjrZK50ePv8hTLibC
+Oy6iqzC66kw7eH+sNEQX9F6MrlPG/8Kv2X0Afp+pLiXpFkEfEr1NtajgSYj1q9aE+BEw3Qex
+sAjH++WJu+g2I0KvMJmIWpWL0OhHG73i3OsBBKZtNUZVRylZzi4MOX3ocJwtdk3oDXcPmBpj
+7Be5ISg1Wd2K0ErfBmJH2RwtiAk1MorASTXLH99hd7Ww9+kQwBatrYWRK+EkwCgA6CRFXEfJ
+987Z1HRmoYRGVN6hX19hgfWURg/xDGhyqehbo1Y4bIFtpoEmq9OJi0aNXGluSGEOKRkEeWAs
+psazIlT2Yj8Z1jcMschh2y5Yqo5MEto56OrtR39evmkaDJLY12NeVIvR2US5GvxlG9K/sd+e
+D3+8Kb/dfX199nxyc/t0z/UCzAyObidWaJoCjLGaPTuU80hUJdB3m8slm3foO9I30LUO5lwt
+fOxRwwaD8DvTbvmgea+XCTW95OL9O6k5gIlkKkbYxBnOf0QbPurdSLi7BOkFsi21az7654fR
+u5uBFPrySuVVlhvfL85If/FAGSpJMHIl56/X2pZLDEdom2VNFO8VVq/LsqpZ1qPHL2E877fD
+88MT3qbDRz6+Hvff9/DP/nj39u3b35eKDJpTPVhocfyNXJQhgdcZkh834natHifh0d6SAOYB
+nx/vvBAC528WtNyHFFoHCxSj1k4zsN3Od1M9MZnXfZKfaWrU539hzIUN0TnDrUfSvUAkYOEg
+MEVhIfljneXsbz3jPcEavnrJ9+X2ePsGRd4dnl2KPEo0jkWrqClNHJwl534dzwaF7hVCGyTB
+UA8kP0CDd30zRWOKrXeim7L9xMFA1B1oO3PatKTX9iOfJnZemfQDZpfR4NET82Ea4DCudX5O
+U8SBCMUHKdwTN3t/IV7gotxRCMwulWDkOQmb+Dg5FsDIvCrtxjOFaPJ8VCkoI3gwoXUaO7wB
+tll6CdZlY34eZm8DtE4+dzZO+jjWG/Rf5U5h16ABbnSa0bjLo3WvIIddgdUZs3UsmgO6ohwG
+5GTo0ogEA9BoTpCSjBIePEaPJ7KyGlnqvoyrCgyae7vjBj62RBb+dOowxzvSWzSFxmDWMh6m
+RIBxP48r/Pn25eFwpy5y6j5oBXlp1q1492jkxs/yw4Vufzgii0I5l2CCtdv7PfOh7oWa5DMQ
+zDkLBVjuJg/Lrv3XaDiaEOn+N7IOtOat0+O2bU5zfJpeD7Xz+UgUcmazngkWN0V5Um9FpFeh
+SXlX45lFy5MXdfwK0Dy32eijrrYDNIWdeEv8eI7i6yfevyxz7N9OpfXo5bJp+fQsqPD6sNNv
+8b3WC7puYq/CGo2SJMFuxfskXAK4aeK0uaORnlXxYdnZlbtwi/ZnZ/8Dfu0shbSXAQA=
+
+--9amGYk9869ThD9tj--
