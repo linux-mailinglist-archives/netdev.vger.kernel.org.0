@@ -2,155 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04DE22D08AE
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 02:02:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A086E2D08F1
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 02:54:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728444AbgLGBBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Dec 2020 20:01:30 -0500
-Received: from mail-vi1eur05on2067.outbound.protection.outlook.com ([40.107.21.67]:37729
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726046AbgLGBBa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 6 Dec 2020 20:01:30 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iKiogl7ncTtslc1zh6A56MNLJAlTapNsUDFd9Uh278JJ0OboCZCldIk5VdsC37NOiWcXhQ9gPf1agu0EdTDCy+mogywcIGCPfMYNS9gcDackgWAz9s/YRyOAolXW/QVpCRhMWemUH/yXBqj0yx70oYnnPOiNYF2o/BTOIyNY8pvSZqkdok2tth/7+gJ9TDyWgiIhF5TxdSALXKmZenYKdqvcrEYYSmgKhre+Mk9vGnL0aRKlrTjJjYstX9gF38YGVHvcyw/pjS3DmdXM2MSBhi1mJURiaZjB8RtQsD3WKMDr4eDr1Z2WggdMW+8EVqtJgWq5Qvo7ssZo0n8AkT9wiA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hw2IfYhIHoiRNdzP97yhIXQSfycaerbj35libbQ+Vos=;
- b=cFyYfZ0s+W+j/EihCk/FhBz6w36RtCUobLLuOhYI2kXHxT32eQfmsAUSU4l1SBzBYzqzDlsGwsJsxfIfkNw7M2wVoRbUnbsNwocxeWD0qCd5po3FiaqdExdvb3r4ng/RIuffncZzjy/0cYZzptKJMy9UWh58EELMwyOITu3myOwkbXFFSkAsWNVcivkdTZrey41ZaPw207eoMpLWAYXWL/Nczkda46vmEyCN+VB/kzcVYiiRjK0DcgYEL4FHYJx1xKwXjp9N57883BFX10CAKmH6H+8FXIsw4nakRe8hUwB5fhbhdbHLSXU5jTwhQ8a+32oBjm0BohwHs0xwPOhX0w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hw2IfYhIHoiRNdzP97yhIXQSfycaerbj35libbQ+Vos=;
- b=f9ifdFRwS/dLfUY0aX2dxC2Mxj9aDisaqZvPb8aBB8PyyiT88j0mSPCkaJ55bxGwtBVcl+JKI+r1yh48LrigYqBVHeFkKoHQOVfLgD4dCUWkwBVr6U1PV4FElBYwH/4z2xMh5xoZmFc1m6z7LEjl+V8hxaorFDNa3QUWUcba9BY=
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VE1PR04MB7374.eurprd04.prod.outlook.com (2603:10a6:800:1ac::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.19; Mon, 7 Dec
- 2020 01:00:40 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::2dd6:8dc:2da7:ad84]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::2dd6:8dc:2da7:ad84%5]) with mapi id 15.20.3632.021; Mon, 7 Dec 2020
- 01:00:40 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jiri Benc <jbenc@redhat.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Eric Dumazet <edumazet@google.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>
-Subject: Re: [RFC PATCH net-next 05/13] net: bonding: hold the netdev lists
- lock when retrieving device statistics
-Thread-Topic: [RFC PATCH net-next 05/13] net: bonding: hold the netdev lists
- lock when retrieving device statistics
-Thread-Index: AQHWzCvp+5zpZdZumUWV00Rtz8jGw6nq0GsA
-Date:   Mon, 7 Dec 2020 01:00:40 +0000
-Message-ID: <20201207010040.eriknpcidft3qul6@skbuf>
-References: <20201206235919.393158-1-vladimir.oltean@nxp.com>
- <20201206235919.393158-6-vladimir.oltean@nxp.com>
-In-Reply-To: <20201206235919.393158-6-vladimir.oltean@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.25.2.120]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 21bff840-631d-469c-1f03-08d89a4b8462
-x-ms-traffictypediagnostic: VE1PR04MB7374:
-x-microsoft-antispam-prvs: <VE1PR04MB7374F028BF9D224B8E6B52F5E0CE0@VE1PR04MB7374.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: mwdVg4+pwYmKvlsxOPgVwt/Q8umLSBik3U1Drxpb/h4LXA6Oebpz7tFi15tHn6vVnbfyu2gK9jL9ogNnj4j+O/E7L5zN3b/73si7TrcUTkhkbPokCCXsDe6p91XuqgCa2RWXnZOFvHppyP/iI6NAVRkrjBeQn0yedfCo7d3wgr1LVD+GwrOUIYJAMPlr1vS0dPnKljgIKIP06HSjQKLJsAvADx4Dqn0ZJQNcSOKdwY0H7GBBaXFj79ku5pgCaPA7C9iTISbI99PQq2sgud5hD0KwK70AXaYkfTu0tmicCZGOuV0bHYG4Bt06wXYbCpoW
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(396003)(366004)(376002)(39860400002)(136003)(346002)(66946007)(8676002)(2906002)(110136005)(86362001)(4326008)(66446008)(7416002)(478600001)(5660300002)(26005)(64756008)(83380400001)(6506007)(76116006)(33716001)(6486002)(44832011)(71200400001)(1076003)(8936002)(54906003)(9686003)(6512007)(66476007)(186003)(66556008)(316002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?ltKWqBPeK1nDbkIJrgfxYbMHIthzOCAzoYNs4VAem+NGPg9nl7yE3Jm++LWT?=
- =?us-ascii?Q?Ky+ZckiVThxaRuMBfdiyOO1ACdOTGXg0RBZpKR9ob2uyJSTe/fdPWCvYtxzB?=
- =?us-ascii?Q?QuycXVVVLeEBuAdVGXqoIa4F6M20iOsa0OM0QdBWCom5fJyG6VOtLjtXlfet?=
- =?us-ascii?Q?PqMwYhqHKNT4qf7SNmJcPf4dbw2Tz+x8cdXG7v0TCBXF8yJJAoKaw9fVLe4B?=
- =?us-ascii?Q?V691fKmlX3jWDerr+CpUItGUvtIO9zy++OktwBwWGH9cR3XSNtkOllHNyJ1o?=
- =?us-ascii?Q?SyzHhlYyKDE8EO2JbdxQPWvRaSMN95JyGmQp3C9my2lxGf0QLCvHfbLMBzHo?=
- =?us-ascii?Q?fWqIkStLpy+01N/WTDRab5e1NW7jFqiLCIkmFzR5VKS158nWHTxMtwVDR+Fl?=
- =?us-ascii?Q?NADH7b80KrF8DScDTShSP5vEULeC00Vbkm6nAW2H/sbLz0sYsLXHcUltlnW0?=
- =?us-ascii?Q?dKUZAgodhietd4ljAO/O1r7noQXRWkDFSPIrvNUhzQR+WXM5qd+cqFprhbPC?=
- =?us-ascii?Q?Uvsvr9hioK1ZBkD9SOnicq4HxDGJcUQgDWt0ByNhv7UEDvVo12zBq4rqsTnt?=
- =?us-ascii?Q?YD+VXrN1HDDTKPEbXcJK9O28Gdxc2/D4F/BKeNcskKTUA/yvzonxXalTbPIP?=
- =?us-ascii?Q?Ww8l5lfAurNVmfk7/gAlWMtzVZzja9cPXtnEiZ7pwfLv7jRA6j8qBlVbpAP2?=
- =?us-ascii?Q?v6OCphciBl0eNW7v+T+ArwFeDmdthKq14ibqoOD3fcSshotkv/WHVBuD5jKa?=
- =?us-ascii?Q?rD9L/cxsk6tnupN/xzUreUkajEXNWCyjldJfW9dkHkDaPDDVX8skC9B7arN5?=
- =?us-ascii?Q?V/4dqK4pvgyesC3TvCueL5uJambwfvrAWnvs0VP0S2PhW0z1/mOnuAXkd6Ld?=
- =?us-ascii?Q?mjOOUFIeV2ws9EwvXFMPXdsMrSy7qadQOvzpNPlqKxfdqc4+qWXIDAf/CWPO?=
- =?us-ascii?Q?1239dw411w+fxe4F8WRW/U3ZdkmW/knCU2W3O5xxBjaOfzPwsvC5hZxkRiIL?=
- =?us-ascii?Q?u7Yf?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <BECB9BD18EFDC44788AA9C7F3BB279EB@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1728601AbgLGBwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Dec 2020 20:52:39 -0500
+Received: from mga07.intel.com ([134.134.136.100]:58125 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726400AbgLGBwj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 6 Dec 2020 20:52:39 -0500
+IronPort-SDR: 0vet0LMhVY8pvDX+I3hPbmCMOrHmddmro/ThQcS3ujHnK/w0wOSVoZlrlNYSqiHaz5mYp/vbeF
+ TSsGBMkPojGw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9827"; a="237737234"
+X-IronPort-AV: E=Sophos;i="5.78,398,1599548400"; 
+   d="scan'208";a="237737234"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2020 17:51:58 -0800
+IronPort-SDR: jz/DL1lQ8dyh4nWDBvfo2IKLv0CC3GtIfxAATLJ68hHhediwQ7ZMAs9nqv9qv9b2DNOmq2OX8u
+ 3PCUU2mDOrWQ==
+X-IronPort-AV: E=Sophos;i="5.78,398,1599548400"; 
+   d="scan'208";a="362917991"
+Received: from jbrandeb-mobl4.amr.corp.intel.com (HELO localhost) ([10.209.16.231])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2020 17:51:58 -0800
+Date:   Sun, 6 Dec 2020 17:51:57 -0800
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+To:     Xiaohui Zhang <ruc_zhangxiaohui@163.com>
+Cc:     Shannon Nelson <snelson@pensando.io>,
+        Pensando Drivers <drivers@pensando.io>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/1] ionic: fix array overflow on receiving too many
+ fragments for a packet
+Message-ID: <20201206175157.0000170d@intel.com>
+In-Reply-To: <20201206133537.30135-1-ruc_zhangxiaohui@163.com>
+References: <20201206133537.30135-1-ruc_zhangxiaohui@163.com>
+X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 21bff840-631d-469c-1f03-08d89a4b8462
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Dec 2020 01:00:40.5893
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: oZ6BirfqSuppNhCbSisKLDyFaLrDkHYoGDXbPXQLkAabBCpozH8ubur9mV+p4jLrFzY3SqiR9tNxwtrvE82C7g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7374
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 07, 2020 at 01:59:11AM +0200, Vladimir Oltean wrote:
-> In the effort of making .ndo_get_stats64 be able to sleep, we need to
-> ensure the callers of dev_get_stats do not use atomic context.
->
-> The bonding driver uses an RCU read-side critical section to ensure the
-> integrity of the list of network interfaces, because the driver iterates
-> through all net devices in the netns to find the ones which are its
-> configured slaves. We still need some protection against an interface
-> registering or deregistering, and the writer-side lock, the netns mutex,
-> is fine for that, because it offers sleepable context.
->
-> This mutex now serves double duty. It offers code serialization,
-> something which the stats_lock already did. So now that serves no
-> purpose, let's remove it.
->
-> Cc: Jay Vosburgh <j.vosburgh@gmail.com>
-> Cc: Veaceslav Falico <vfalico@gmail.com>
-> Cc: Andy Gospodarek <andy@greyhouse.net>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Xiaohui Zhang wrote:
+
+> From: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
+> 
+> If the hardware receives an oversized packet with too many rx fragments,
+> skb_shinfo(skb)->frags can overflow and corrupt memory of adjacent pages.
+> This becomes especially visible if it corrupts the freelist pointer of
+> a slab page.
+> 
+> Signed-off-by: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
+
+Hi, thanks for your patch.
+
+It appears this is a part of a series of patches (at least this one and
+one to the ice driver) - please send as one series, with a cover letter
+explanation.
+
+Please justify how this is a bug and how this is found / reproduced.
+
+I'll respond separately to the ice driver patch as I don't know this
+hardware and it's limits, but I suspect that you've tried to fix a bug
+where there was none. (It seems like something a code scanner might find
+and be confused about)
+
 > ---
+>  drivers/net/ethernet/pensando/ionic/ionic_txrx.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+> index 169ac4f54..a3e274c65 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+> @@ -102,8 +102,12 @@ static struct sk_buff *ionic_rx_frags(struct ionic_queue *q,
+>  
+>  		dma_unmap_page(dev, dma_unmap_addr(page_info, dma_addr),
+>  			       PAGE_SIZE, DMA_FROM_DEVICE);
+> -		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
+> +		struct skb_shared_info *shinfo = skb_shinfo(skb);
 
-There is a very obvious deadlock here which happens when we have
-bond-over-bond and the upper calls dev_get_stats from the lower.
+you can't declare variables in the middle of a code flow in C, did you
+compile this?
 
-Conceptually, the same can happen even in any number of stacking
-combinations between bonding, net_failover, [ insert any other driver
-that takes net->netdev_lists_lock here ].
+> +
+> +		if (shinfo->nr_frags < ARRAY_SIZE(shinfo->frags)) {
+> +			skb_add_rx_frag(skb, shinfo->nr_frags,
+>  				page_info->page, 0, frag_len, PAGE_SIZE);
+> +		}
+>  		page_info->page = NULL;
+>  		page_info++;
+>  		i--;
 
-There would be two approaches trying to solve this issue:
-- using mutex_lock_nested where we aren't sure that we are top level
-- ensuring through convention that user space always takes
-  net->netdev_lists_lock when calling dev_get_stats, and documenting
-  that, and therefore making it unnecessary to lock in bonding.
 
-I took neither of the two approaches (I don't really like either one too
-much), hence [ one of ] the reasons for the RFC. Comments?=
