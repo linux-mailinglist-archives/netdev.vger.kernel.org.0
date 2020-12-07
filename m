@@ -2,97 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A99C2D1C86
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 22:59:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 237BA2D1CBB
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 23:07:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726379AbgLGV5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 16:57:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53756 "EHLO
+        id S1727719AbgLGWF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 17:05:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726250AbgLGV5l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 16:57:41 -0500
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A432EC061794
-        for <netdev@vger.kernel.org>; Mon,  7 Dec 2020 13:57:00 -0800 (PST)
-Received: by mail-lf1-x142.google.com with SMTP id m19so425881lfb.1
-        for <netdev@vger.kernel.org>; Mon, 07 Dec 2020 13:57:00 -0800 (PST)
+        with ESMTP id S1726492AbgLGWF0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 17:05:26 -0500
+Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C163C061749;
+        Mon,  7 Dec 2020 14:04:46 -0800 (PST)
+Received: by mail-oi1-x242.google.com with SMTP id o25so17219633oie.5;
+        Mon, 07 Dec 2020 14:04:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=ADV+WX8Zbn/YiDjx1KALA8jEULmsrJcJZBobHISayfI=;
-        b=jfh9ax3qbyL3d7JHAX1Y9/d58W1TxltPTvC4gRK5VA7nYFvvw9riCNRyhCBRrAvrmU
-         qaLAkHO1qrk6KRM4UxccVxMbSqRV5+YOJFEhhJayHDXheipW5AoxSTXcM0NgCskramPN
-         rF5Fz6I5hDfavlhcdV9dh6dhtQzLM9mASkqWm9rygq3iP7LX1CAPs9j6nWAG5CTqPTkj
-         ke0i1BcbvVFbaEGT6/Rdoa8ZVK3ESyAZZqd78Irj1ZrP42E090OfruOoKcNFxeuPeWxh
-         2gmQRAIWR+Un5fUwD0DM94rIbzVzHmb7Xoj9X7FIgdyBL6avQ0S/Om2gt28Qx7U1bmaT
-         oogQ==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=C3N3paf93HavLvwzDFDFeKUOun8/j//DcO2lRDULPik=;
+        b=loy0br6Xjh587Iqzl8Y+AlQP159ArLJt2gBSbEo7SZftOhERDV4Bx6kPlQtKkgQeIS
+         MVFA/7UmzDzEcdpFQxz2+yGOVdEBa1fSDo/M1DoN1p6dQGz5Tw50UFoM79KyRZjvby+q
+         y+bs0A6PqKVPrn6cD1xdHNsvep2SaUKPGvrGgFaakDNNBt5pAQy97WTS7EFbSp2aXb6r
+         fPqlvFlrqSr0xs/T7IYfaZNz6vpmv+27aCM1sdPVlmgHuR2liz3pz4WA6F5kD9xHRyoX
+         denZZSbslylLcRfM/NzNxqgxRLPjRwSilbH3cnOtx66eTxPUTrkeT3UD8XYg4Lmq+lKJ
+         3feA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=ADV+WX8Zbn/YiDjx1KALA8jEULmsrJcJZBobHISayfI=;
-        b=SZF9Chn8aO5TZbqTuQWLU6H5jBkiI1TDBDOcowaawUe0SL8n6kMSOXI5Xu+xnlrd82
-         NQxl+VTF+L6J+TcOfnRmI559BU1mlovs3XAba8Udg2QlSxXwilXasKxB0/lVhzGvJF+P
-         v1cGUi+hr1XlL2c1pQisR3KpOzO4O24yI4606zGmaHBEy3IASh/M+Ttxo2DbE9+h8l0C
-         xDfpd4vO6Rp62BNjU6opp9G6pb03hq4kJEYzCjXBnK/D9tZFz8TED7m56sPcRrSNtEOM
-         hoaCK8zRK/Oul3VsvRPQTv9YafE8c+LeV0udUvfjc00nKRZlBJ4cpQNk0wLYNPHOpGZ7
-         BgxA==
-X-Gm-Message-State: AOAM53081A/4fRBKnW7OzH348Eyq7cudNs5/TaoxaVd0VPmuQTkndoBJ
-        ldDfqjLqJg8KaYA777MvQmGR0dW2uFNOkJWm
-X-Google-Smtp-Source: ABdhPJywPuS0+HudYdgKHml6pPmDrZsNQQhw2p1gjgWS2xT+yhdBXF6yuIZ2XRkCRQyDIv6ltVUoSA==
-X-Received: by 2002:a05:6512:20cd:: with SMTP id u13mr9005833lfr.373.1607378218883;
-        Mon, 07 Dec 2020 13:56:58 -0800 (PST)
-Received: from wkz-x280 (h-236-82.A259.priv.bahnhof.se. [98.128.236.82])
-        by smtp.gmail.com with ESMTPSA id m21sm582570ljb.108.2020.12.07.13.56.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Dec 2020 13:56:58 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=C3N3paf93HavLvwzDFDFeKUOun8/j//DcO2lRDULPik=;
+        b=fkN+a9JU7IVYGhlDuSatF3Onk0h48Q+FzCgfzDnv7v0tCmBrirxBeFE0DaTkBDwyqp
+         yfvXyMzTGTlL97yMVit6HKQadO1+fAcLNfn2pBoVTuKT9C7EBD3bI0g3uTguSbJQPEAq
+         KZz9ydbHl356IMSK1qX4Y9QfSai2s56UygRJKnUPOYaC5CiZIJtnjJRNMwbgz+M8S2e7
+         XppwIR6jfHYtX/eBv5RmD0PJ8FpsQoRVn74yeBx/XdcIu2pD+rdlTSiwa0hCLQOJwr18
+         vb2DMpZ53AnuLd+yS4s4d71KsbzfeVN+XfJKAQt3wtMIJUlE0/y1QN8xeIpXzL6V+9xV
+         s61A==
+X-Gm-Message-State: AOAM533FbKSQK5wkMHHSm+HOLt9EDcbIAvAggctQ7uyF2/Z/Z/HQePWX
+        Nxgly8EOFC/9zacvg68XjTczYCiXZJP0
+X-Google-Smtp-Source: ABdhPJyuxhWTKn2phKXfRbHuKOgy9n9dqPqZywkLDnB8ejQWC2wkJa+x2i3+a21xrBy9+Kx9++mTHA==
+X-Received: by 2002:aca:42d7:: with SMTP id p206mr651378oia.133.1607378685472;
+        Mon, 07 Dec 2020 14:04:45 -0800 (PST)
+Received: from threadripper.novatech-llc.local ([216.21.169.52])
+        by smtp.gmail.com with ESMTPSA id g5sm2940472otq.43.2020.12.07.14.04.44
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 07 Dec 2020 14:04:44 -0800 (PST)
+From:   George McCollister <george.mccollister@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, vivien.didelot@gmail.com,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 2/4] net: dsa: Link aggregation support
-In-Reply-To: <2e674d7b-0593-1293-ad4b-3f4a30efe4a1@gmail.com>
-References: <20201202091356.24075-1-tobias@waldekranz.com> <20201202091356.24075-3-tobias@waldekranz.com> <20201203162428.ffdj7gdyudndphmn@skbuf> <87a6uu7gsr.fsf@waldekranz.com> <20201203215725.uuptum4qhcwvhb6l@skbuf> <20201204013320.GA2414548@lunn.ch> <2e674d7b-0593-1293-ad4b-3f4a30efe4a1@gmail.com>
-Date:   Mon, 07 Dec 2020 22:56:57 +0100
-Message-ID: <87pn3l5lg6.fsf@waldekranz.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Cc:     "David S . Miller " <davem@davemloft.net>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        George McCollister <george.mccollister@gmail.com>
+Subject: [PATCH net-next v3 0/3] Arrow SpeedChips XRS700x DSA Driver
+Date:   Mon,  7 Dec 2020 16:03:52 -0600
+Message-Id: <20201207220355.8707-1-george.mccollister@gmail.com>
+X-Mailer: git-send-email 2.11.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 03, 2020 at 20:18, Florian Fainelli <f.fainelli@gmail.com> wrote:
-> On 12/3/2020 5:33 PM, Andrew Lunn wrote:
->>> Of course, neither is fully correct. There is always more to improve on
->>> the communication side of things.
->> 
->> I wonder if switchdev needs to gain an enumeration API? A way to ask
->> the underlying driver, what can you offload? The user can then get an
->> idea what is likely to be offloaded, and what not. If that API is fine
->> grain enough, it can list the different LAG algorithms supported.
->
-> For stack offloads we can probably easily agree on what constitutes a
-> vendor neutral offload and a name for that enumeration. For other
-> features this is going to become an unmaintainable list of features and
-> then we are no better than we started 6 years ago with submitting
-> OpenWrt's swconfig and each switch driver advertising its features and
-> configuration API via netlink.
->
-> NETIF_F_SWITCHDEV_OFFLOAD would not be fine grained enough, this needs
-> to be a per action selection, just like when offloading the bridge, or
-> tc, you need to be able to hint the driver whether the offload is being
-> requested by the user.
+This series adds a DSA driver for the Arrow SpeedChips XRS 7000 series
+of HSR/PRP gigabit switch chips.
 
-That makes sense. So you are talking about adding something akin to tc's
-skip_hw/skip_sw to `ip link`?
+The chips use Flexibilis IP.
+More information can be found here:
+ https://www.flexibilis.com/products/speedchips-xrs7000/
 
-> For now, I would just go with implicitly falling back to doing the LAG
-> in software if the requested mode is not supported and leveraging extack
-> to indicate that was the case.
+The switches have up to three RGMII ports and one MII port and are
+managed via mdio or i2c. They use a one byte trailing tag to identify
+the switch port when in managed mode so I've added a tag driver which
+implements this.
 
-Ahh, you can use extack for successful operations? I did not know that,
-I think that strikes a good balance.
+This series contains minimal DSA functionality which may be built upon
+in future patches. The ultimate goal is to add HSR and PRP
+(IEC 62439-3 Clause 5 & 4) offloading with integration into net/hsr.
+
+"net: dsa: add Arrow SpeedChips XRS700x driver" depends on:
+"net: dsa: add optional stats64 support" being merged first.
+https://lore.kernel.org/netdev/20201204145624.11713-2-o.rempel@pengutronix.de/
+
+Changes since v1:
+ * Use central TX reallocation in tag driver. (Andrew Lunn)
+ * Code style fixes. (Andrew Lunn, Vladimir Oltean)
+ * Code simplifications. (Andrew Lunn, Vladimir Oltean)
+ * Verify detected switch matches compatible. (Andrew Lunn)
+ * Add inbound policy to allow BPDUs. (Andrew Lunn)
+ * Move files into their own subdir. (Vladimir Oltean)
+ * Automate regmap field allocation. (Vladimir Oltean)
+ * Move setting link speed to .mac_link_up. (Vladimir Oltean)
+ * Use different compatible strings for e/f variants.
+
+Changes since v2:
+ * Export constant xrs700x_info symbols. (Jakub Kicinski)
+ * Report stats via .get_stats64. (Jakub Kicinski, Vladimir Oltean)
+ * Use a 3 second polling rate for counters.
+
+George McCollister (3):
+  dsa: add support for Arrow XRS700x tag trailer
+  net: dsa: add Arrow SpeedChips XRS700x driver
+  dt-bindings: net: dsa: add bindings for xrs700x switches
+
+ .../devicetree/bindings/net/dsa/arrow,xrs700x.yaml |  74 +++
+ drivers/net/dsa/Kconfig                            |   2 +
+ drivers/net/dsa/Makefile                           |   1 +
+ drivers/net/dsa/xrs700x/Kconfig                    |  26 +
+ drivers/net/dsa/xrs700x/Makefile                   |   4 +
+ drivers/net/dsa/xrs700x/xrs700x.c                  | 629 +++++++++++++++++++++
+ drivers/net/dsa/xrs700x/xrs700x.h                  |  42 ++
+ drivers/net/dsa/xrs700x/xrs700x_i2c.c              | 150 +++++
+ drivers/net/dsa/xrs700x/xrs700x_mdio.c             | 162 ++++++
+ drivers/net/dsa/xrs700x/xrs700x_reg.h              | 205 +++++++
+ include/net/dsa.h                                  |   2 +
+ net/dsa/Kconfig                                    |   6 +
+ net/dsa/Makefile                                   |   1 +
+ net/dsa/tag_xrs700x.c                              |  67 +++
+ 14 files changed, 1371 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
+ create mode 100644 drivers/net/dsa/xrs700x/Kconfig
+ create mode 100644 drivers/net/dsa/xrs700x/Makefile
+ create mode 100644 drivers/net/dsa/xrs700x/xrs700x.c
+ create mode 100644 drivers/net/dsa/xrs700x/xrs700x.h
+ create mode 100644 drivers/net/dsa/xrs700x/xrs700x_i2c.c
+ create mode 100644 drivers/net/dsa/xrs700x/xrs700x_mdio.c
+ create mode 100644 drivers/net/dsa/xrs700x/xrs700x_reg.h
+ create mode 100644 net/dsa/tag_xrs700x.c
+
+-- 
+2.11.0
+
