@@ -2,94 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED3F82D1692
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 17:45:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE06F2D16F0
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 17:58:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727552AbgLGQjo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 11:39:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60458 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727385AbgLGQjn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 11:39:43 -0500
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91904C061793
-        for <netdev@vger.kernel.org>; Mon,  7 Dec 2020 08:38:57 -0800 (PST)
-Received: by mail-ej1-x644.google.com with SMTP id m19so20343428ejj.11
-        for <netdev@vger.kernel.org>; Mon, 07 Dec 2020 08:38:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gi/jqrtSXJ/1XPFnDapyzkb7Bcu2viRkU1kz/jwzVVs=;
-        b=rjesOFU4V7gH3+GOQtQ8gcJDLO0m3jo4thjkjvpHM1QHtLp7mQfFtZfIeX3rrlnrSX
-         HQfdcF2/nh6nOC2daltGykSSIZc2No11jMquCmlh7m0pyHv6fXpWp1ojTXNqGNDDSok0
-         wIh/UOjz13KJMQ++7ReXUnuINetJnp35jLeWU/XDss+XQ4/gySLl+Ifim8uSwI/Dm/23
-         T1JJGzWtaUTRgnASOFztr4/RlMtB3u0A9eyFZtYpkyqINXNzqDVbFrN1xtDszvlkCMoO
-         CknHDYjw8t54gGQG4PL6Czg26Qe1IgHpllRD3Z8r4VU+JrfA8eKCMurCaRuTtVp4vrPK
-         sykg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gi/jqrtSXJ/1XPFnDapyzkb7Bcu2viRkU1kz/jwzVVs=;
-        b=N2QEnQ+SOwcC9JWCvSLeg7x5wV7hscIsFK7MBNTpcn39q5e0AsbWUekilLE2ElcCMf
-         pQSq2TmFgVgDX0evPUGHBPeKt4lAzFPV6JgvBdooDAR7OrzQTOgreGah0PjfVUJ1+qct
-         v146tFVY9nd7QyCE47T88ZdF+b678uyVOHx2cnydbkbJtM4cSOhuaSzKUdDGGGkphtuR
-         q9HAxRLvkdoBOx+Y6d37uOyCP6Yu6HWgygn1Tk+DlbeM11j/+VcDzSenzHL/9YayiwRa
-         fnZdKCM3sQYInH+wlLUYzdaHMErWxBXb7Kcgw9HjowAdBga5s3WXOKioRAe/4oc+C+ZD
-         RJjg==
-X-Gm-Message-State: AOAM531z7Fk8DxdY4ZXtB7t6WffEMYBE0rtYtS3n4EYRLUzwUNnC9yGj
-        GS3VG8UyV/fwd6CQtZS6fzHGb01ly03zDTH2XB9CfOPQj/IlTQ==
-X-Google-Smtp-Source: ABdhPJwHnB6BQs1HiERZ8CmnuxUM0CXIft1KH2djHzgcG1wTQhNUKN2kB6B89oxiDEQQ9YdSBPnGX3Aeo5RC3wWWWxo=
-X-Received: by 2002:a17:906:e093:: with SMTP id gh19mr19814991ejb.510.1607359136226;
- Mon, 07 Dec 2020 08:38:56 -0800 (PST)
+        id S1727486AbgLGQ4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 11:56:25 -0500
+Received: from so254-31.mailgun.net ([198.61.254.31]:62007 "EHLO
+        so254-31.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726000AbgLGQ4Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 11:56:25 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1607360165; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=VJAXM+Oeu7491cqbnrZxYWK6ucFYOKCdR/LCWfgCzyU=; b=oauuoSsEbWAMFnxee69016xF1Cr9QmWEo7JumgMm5VwCCO7OlSDPQQ1k+mpa0n2wLf+LVCvV
+ cpzmou6nRxEaSrZ02nQ4tnMy6mu9y2ME9c53MSdvGv45btUr4P0sTg0PC8tHLKNekD6szuo3
+ cD/s31pM7xU9x7eptc6mRrGP74Y=
+X-Mailgun-Sending-Ip: 198.61.254.31
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
+ 5fce5e88f06acf11ab3a40d1 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 07 Dec 2020 16:55:36
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 4A824C43462; Mon,  7 Dec 2020 16:55:36 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 36998C433CA;
+        Mon,  7 Dec 2020 16:55:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 36998C433CA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Amit Pundir <amit.pundir@linaro.org>,
+        Rob Herring <robh@kernel.org>, dt <devicetree@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        Konrad Dybcio <konradybcio@gmail.com>,
+        ath10k <ath10k@lists.infradead.org>,
+        David S Miller <davem@davemloft.net>,
+        John Stultz <john.stultz@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>
+Subject: Re: [PATCH] ath10k: Introduce a devicetree quirk to skip host cap QMI requests
+References: <1601058581-19461-1-git-send-email-amit.pundir@linaro.org>
+        <20200929190817.GA968845@bogus> <20201029134017.GA807@yoga>
+        <CAMi1Hd20UpNhZm6z5t5Kcy8eTABiAj7X_Gm66QnJspZWSio0Ew@mail.gmail.com>
+        <20201124175146.GG185852@builder.lan>
+Date:   Mon, 07 Dec 2020 18:55:29 +0200
+In-Reply-To: <20201124175146.GG185852@builder.lan> (Bjorn Andersson's message
+        of "Tue, 24 Nov 2020 11:51:46 -0600")
+Message-ID: <87sg8heeta.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-References: <1607017240-10582-1-git-send-email-loic.poulain@linaro.org> <3a2ca2c269911de71df6dca2e981f7fe@codeaurora.org>
-In-Reply-To: <3a2ca2c269911de71df6dca2e981f7fe@codeaurora.org>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Mon, 7 Dec 2020 17:45:17 +0100
-Message-ID: <CAMZdPi-Nrus0JrHpjg02QaVwr0TKGU=p96BjXAtd4LALAvk2HQ@mail.gmail.com>
-Subject: Re: [PATCH] net: rmnet: Adjust virtual device MTU on real device capability
-To:     subashab@codeaurora.org
-Cc:     stranche@codeaurora.org,
-        Network Development <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Subash,
+Bjorn Andersson <bjorn.andersson@linaro.org> writes:
 
-On Fri, 4 Dec 2020 at 22:56, <subashab@codeaurora.org> wrote:
+> On Tue 03 Nov 01:48 CST 2020, Amit Pundir wrote:
 >
-> On 2020-12-03 10:40, Loic Poulain wrote:
-> > A submitted qmap/rmnet packet size can not be larger than the linked
-> > interface (real_dev) MTU. This patch ensures that the rmnet virtual
-> > iface MTU is configured according real device capability.
-> >
-> > Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-[...]
-> > @@ -242,6 +247,9 @@ int rmnet_vnd_newlink(u8 id, struct net_device
-> > *rmnet_dev,
-> >
-> >       priv->real_dev = real_dev;
-> >
-> > +     /* Align default MTU with real_dev MTU */
-> > +     rmnet_vnd_change_mtu(rmnet_dev, real_dev->mtu -
-> > RMNET_NEEDED_HEADROOM);
-> > +
-> >       rc = register_netdevice(rmnet_dev);
-> >       if (!rc) {
-> >               ep->egress_dev = rmnet_dev;
+>> Hi Rob, Bjorn, Kalle,
+>> 
+>> On Thu, 29 Oct 2020 at 19:10, Bjorn Andersson
+>> <bjorn.andersson@linaro.org> wrote:
+>> >
+>> > On Tue 29 Sep 14:08 CDT 2020, Rob Herring wrote:
+>> >
+>> > > On Fri, Sep 25, 2020 at 11:59:41PM +0530, Amit Pundir wrote:
+>> > > > There are firmware versions which do not support host capability
+>> > > > QMI request. We suspect either the host cap is not implemented or
+>> > > > there may be firmware specific issues, but apparently there seem
+>> > > > to be a generation of firmware that has this particular behavior.
+>> > > >
+>> > > > For example, firmware build on Xiaomi Poco F1 (sdm845) phone:
+>> > > > "QC_IMAGE_VERSION_STRING=WLAN.HL.2.0.c3-00257-QCAHLSWMTPLZ-1"
+>> > > >
+>> > > > If we do not skip the host cap QMI request on Poco F1, then we
+>> > > > get a QMI_ERR_MALFORMED_MSG_V01 error message in the
+>> > > > ath10k_qmi_host_cap_send_sync(). But this error message is not
+>> > > > fatal to the firmware nor to the ath10k driver and we can still
+>> > > > bring up the WiFi services successfully if we just ignore it.
+>> > > >
+>> > > > Hence introducing this DeviceTree quirk to skip host capability
+>> > > > QMI request for the firmware versions which do not support this
+>> > > > feature.
+>> > >
+>> > > So if you change the WiFi firmware, you may force a DT change too. Those
+>> > > are pretty independent things otherwise.
+>> > >
+>> >
+>> > Yes and that's not good. But I looked at somehow derive this from
+>> > firmware version numbers etc and it's not working out, so I'm out of
+>> > ideas for alternatives.
+>> >
+>> > > Why can't you just always ignore this error? If you can't deal with this
+>> > > entirely in the driver, then it should be part of the WiFi firmware so
+>> > > it's always in sync.
+>> > >
+>> >
+>> > Unfortunately the firmware versions I've hit this problem on has gone
+>> > belly up when receiving this request, that's why I asked Amit to add a
+>> > flag to skip it.
+>> 
+>> So what is next for this DT quirk?
+>> 
 >
-> This would need similar checks in the NETDEV_PRECHANGEMTU
-> netdev notifier.
+> Rob, we still have this problem and we've not come up with any way to
+> determine in runtime that we need to skip this part of the
+> initialization.
 
-What about just returning an error on NETDEV_PRECHANGEMTU notification
-to prevent real device MTU change while virtual rmnet devices are
-linked? Not sure there is a more proper and thread safe way to manager
-that otherwise.
+This is firmware version specific, right? There's also enum
+ath10k_fw_features which is embedded within firmware-N.bin, we could add
+a new flag there. But that means that a correct firmware-N.bin is needed
+for each firmware version, not sure if that would work out. Just
+throwing out ideas here.
 
-Regards,
-Loic
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
