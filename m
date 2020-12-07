@@ -2,192 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D21E2D197C
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 20:32:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16CD22D19B3
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 20:37:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726292AbgLGT3P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 14:29:15 -0500
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:61893 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725814AbgLGT3O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 14:29:14 -0500
+        id S1726853AbgLGTgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 14:36:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59918 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726777AbgLGTgs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 14:36:48 -0500
+Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB307C061794
+        for <netdev@vger.kernel.org>; Mon,  7 Dec 2020 11:36:07 -0800 (PST)
+Received: by mail-ot1-x341.google.com with SMTP id j12so13594898ota.7
+        for <netdev@vger.kernel.org>; Mon, 07 Dec 2020 11:36:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1607369354; x=1638905354;
-  h=references:from:to:cc:subject:in-reply-to:date:
-   message-id:mime-version;
-  bh=0Y1dm1HYkUvVJl3cJ/WHZ+bp4yLLS2dSUm6fd231PVk=;
-  b=tzXd9L4FXGBjokF8WfOTjiZ3Vnhbty6sKArkMUHAJGQqSZInLKnIgQjB
-   Hbriiqfvk+TC0RJwGrZxLel6EQiMdY8nXev44qd1bItQixfj6CovG/x9H
-   72VptXjF0woVdoMsTWOeLeZKXbSAZ3XXWLlZnfGDPsMZl7OEWqaQgM4zU
-   k=;
-X-IronPort-AV: E=Sophos;i="5.78,400,1599523200"; 
-   d="scan'208";a="102381052"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1e-303d0b0e.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 07 Dec 2020 19:28:27 +0000
-Received: from EX13D28EUC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-1e-303d0b0e.us-east-1.amazon.com (Postfix) with ESMTPS id 759D2A18C4;
-        Mon,  7 Dec 2020 19:28:26 +0000 (UTC)
-Received: from u68c7b5b1d2d758.ant.amazon.com.amazon.com (10.43.162.146) by
- EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 7 Dec 2020 19:28:17 +0000
-References: <1607083875-32134-1-git-send-email-akiyano@amazon.com>
- <1607083875-32134-10-git-send-email-akiyano@amazon.com>
- <20201206202230.GD23696@ranger.igk.intel.com>
-User-agent: mu4e 1.4.12; emacs 27.1
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-CC:     <akiyano@amazon.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <netdev@vger.kernel.org>, <dwmw@amazon.com>, <zorik@amazon.com>,
-        <matua@amazon.com>, <saeedb@amazon.com>, <msw@amazon.com>,
-        <aliguori@amazon.com>, <nafea@amazon.com>, <gtzalik@amazon.com>,
-        <netanel@amazon.com>, <alisaidi@amazon.com>, <benh@amazon.com>,
-        <ndagan@amazon.com>, <sameehj@amazon.com>
-Subject: Re: [PATCH V4 net-next 9/9] net: ena: introduce ndo_xdp_xmit()
- function for XDP_REDIRECT
-In-Reply-To: <20201206202230.GD23696@ranger.igk.intel.com>
-Date:   Mon, 7 Dec 2020 21:28:04 +0200
-Message-ID: <pj41zly2i9xvp7.fsf@u68c7b5b1d2d758.ant.amazon.com>
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5RceGSUFUjLEJW2/scx8HGaoDZct6NVCXjiTK9ixz94=;
+        b=UqQDziRM06nUwkOqk9oocYn+WHozQc9sLlHnMvp+bs9W4+eRhAGuTj0f377FbXtgQ9
+         saT0UGQRIFbZPDSy6ite4iDUkUbydVukCwhEYfzEWOCSgBjrGqvaYlSEbnE7F0DjqqR0
+         q0eWqkt2F9y/LE+l9/PmIghjQstKsX5P9fSyE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5RceGSUFUjLEJW2/scx8HGaoDZct6NVCXjiTK9ixz94=;
+        b=KWxmCYhxClyG1xzkGHmBSwhVasC4Ix4wlufjJelNRKO2ZaMaNeKCSHakcUGRywRUEW
+         FD1fE2wJRvPKSqSVUCzEaRpYxt0rwl+qTyqsNTZDdeAzuZW7y8pK7e9pI2kUAOVWPn3i
+         1w3znXZk7Fu0SW/BPwcIKAEzBH3ssznMj8CPVyl8qvUqP1lO84QOWDHtuWmrldR+oyQE
+         S/QLlJAdZqWhZugSBszeNEeQUuA8FsVWLxoDvGKzr7EhjOlvI3OhqjC63jAbJPDgZ/Dr
+         rkxNm1DOzrt04o7kqacaXq7mvKD1ztrbUWCFIvWUJvsT+62BTHvvC80oOaWFaBpkwZr7
+         J3GQ==
+X-Gm-Message-State: AOAM5336EjE0oWYUv/Ui9cICV/LmZi6BDnBidBAhpalSoKk24Gv5xo9+
+        hpYB+60MQmzwTKE4rZS9OTq8db+5Y3C1Sw==
+X-Google-Smtp-Source: ABdhPJyKs74xggZtLn17kT3MzKsieOal51WrYlYeYPdTMoPvD+sx4zjwCsMFKE+UG8s93/w1bRSZng==
+X-Received: by 2002:a05:6830:1f52:: with SMTP id u18mr12609321oth.200.1607369766358;
+        Mon, 07 Dec 2020 11:36:06 -0800 (PST)
+Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com. [209.85.210.42])
+        by smtp.gmail.com with ESMTPSA id i4sm2805170oos.31.2020.12.07.11.36.05
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Dec 2020 11:36:05 -0800 (PST)
+Received: by mail-ot1-f42.google.com with SMTP id b62so13620205otc.5
+        for <netdev@vger.kernel.org>; Mon, 07 Dec 2020 11:36:05 -0800 (PST)
+X-Received: by 2002:a9d:744a:: with SMTP id p10mr3982059otk.203.1607369764576;
+ Mon, 07 Dec 2020 11:36:04 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Originating-IP: [10.43.162.146]
-X-ClientProxiedBy: EX13D02UWC001.ant.amazon.com (10.43.162.243) To
- EX13D28EUC001.ant.amazon.com (10.43.164.4)
+References: <20201203185732.9CFA5C433ED@smtp.codeaurora.org>
+ <20201204111715.04d5b198@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com> <87tusxgar5.fsf@codeaurora.org>
+In-Reply-To: <87tusxgar5.fsf@codeaurora.org>
+From:   Brian Norris <briannorris@chromium.org>
+Date:   Mon, 7 Dec 2020 11:35:53 -0800
+X-Gmail-Original-Message-ID: <CA+ASDXNT+uKLLhTV0Nr-wxGkM16_OkedUyoEwx5FgV3ML9SMsQ@mail.gmail.com>
+Message-ID: <CA+ASDXNT+uKLLhTV0Nr-wxGkM16_OkedUyoEwx5FgV3ML9SMsQ@mail.gmail.com>
+Subject: Re: pull-request: wireless-drivers-next-2020-12-03
+To:     Kalle Valo <kvalo@codeaurora.org>, Jakub Kicinski <kuba@kernel.org>
+Cc:     "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
-
-> On Fri, Dec 04, 2020 at 02:11:15PM +0200, akiyano@amazon.com 
-> wrote:
->> From: Arthur Kiyanovski <akiyano@amazon.com>
->> 
->> This patch implements the ndo_xdp_xmit() net_device function 
->> which is
->> called when a packet is redirected to this driver using an
->> XDP_REDIRECT directive.
->> 
->> The function receives an array of xdp frames that it needs to 
->> xmit.
->> The TX queues that are used to xmit these frames are the XDP
->> queues used by the XDP_TX flow. Therefore a lock is added to 
->> synchronize
->> both flows (XDP_TX and XDP_REDIRECT).
->> 
->> Signed-off-by: Shay Agroskin <shayagr@amazon.com>
->> Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
->> ...
->> +	xdp_ring = &adapter->tx_ring[qid];
->> +
->> +	/* Other CPU ids might try to send thorugh this queue */
->> +	spin_lock(&xdp_ring->xdp_tx_lock);
+On Mon, Dec 7, 2020 at 2:42 AM Kalle Valo <kvalo@codeaurora.org> wrote:
+> Jakub Kicinski <kuba@kernel.org> writes:
+> > On Thu,  3 Dec 2020 18:57:32 +0000 (UTC) Kalle Valo wrote:
+> > There's also a patch which looks like it renames a module parameter.
+> > Module parameters are considered uAPI.
 >
-> I have a feeling that we are not consistent with this locking 
-> approach as
-> some drivers do that and some don't.
->
+> Ah, I have been actually wondering that if they are part of user space
+> API or not, good to know that they are. I'll keep an eye of this in the
+> future so that we are not breaking the uAPI with module parameter
+> changes.
 
-Not sure what you mean here, ENA driver uses a lock for XDP xmit 
-function because XDP_TX and XDP_REDIRECT flows share the same egress queues. This is a design choice that was 
-taken. Some drivers (e.g. mlx5) seem to have separate queues for 
-regular TX, XDP_TX, XDP_REDIRECT and RX flows, and saw are able to 
-avoid locking.
+Is there some reference for this rule (e.g., dictate from on high; or
+some explanation of reasons)? Or limitations on it? Because as-is,
+this sounds like one could never drop a module parameter, or remove
+obsolete features. It also suggests that debug-related knobs (which
+can benefit from some amount of flexibility over time) should go
+exclusively in debugfs (where ABI guarantees are explicitly not made),
+even at the expense of usability (dropping a line into
+/etc/modprobe.d/ is hard to beat).
 
->> +
->> +	for (i = 0; i < n; i++) {
->> +		err = ena_xdp_xmit_frame(xdp_ring, dev, frames[i], 
->> 0);
->> +		/* The descriptor is freed by ena_xdp_xmit_frame 
->> in case
->> +		 * of an error.
->> +		 */
->> +		if (err)
->> +			drops++;
->> +	}
->> +
->> +	/* Ring doorbell to make device aware of the packets */
->> +	if (flags & XDP_XMIT_FLUSH) {
->> + 
->> ena_com_write_sq_doorbell(xdp_ring->ena_com_io_sq);
->> +		ena_increase_stat(&xdp_ring->tx_stats.doorbells, 
->> 1,
->> +				  &xdp_ring->syncp);
->
-> Have you thought of ringing the doorbell once per a batch of 
-> xmitted
-> frames?
->
+That's not to say I totally disagree with the original claim, but I'm
+just interested in knowing precisely what it means.
 
-For XDP_REDIRECT the packets are indeed batched before sending a 
-doorbell. XDP_TX flow would be added the same improvement in 
-future patchset.
-Thanks for this idea (:
+And to put a precise spin on this: what would this rule say about the following?
 
->> +	}
->> +
->> +	spin_unlock(&xdp_ring->xdp_tx_lock);
->> +
->> +	/* Return number of packets sent */
->> +	return n - drops;
->>  }
->> ...
->>  
->> -				   rx_ring->qid + 
->> rx_ring->adapter->num_io_queues);
->> +		/* Find xmit queue */
->> +		qid = rx_ring->qid + 
->> rx_ring->adapter->num_io_queues;
->> +		xdp_ring = &rx_ring->adapter->tx_ring[qid];
->> +
->> +		/* The XDP queues are shared between XDP_TX and 
->> XDP_REDIRECT */
->> +		spin_lock(&xdp_ring->xdp_tx_lock);
->> +
->> +		ena_xdp_xmit_frame(xdp_ring, rx_ring->netdev, 
->> xdpf, XDP_XMIT_FLUSH);
->
-> Once again you don't check retval over here.
->
+http://git.kernel.org/linus/f06021a18fcf8d8a1e79c5e0a8ec4eb2b038e153
+iwlwifi: remove lar_disable module parameter
 
-ena_xdp_xmit_frame() function handles failure internally (reducing 
-the ref-count of the RX page, increasing error stat etc.) 
-therefore there is no need for special handling of its failure.
-For XDP Redirect flow ena_xdp_xmit() function returns the kernel 
-the number of packets that were successfully sent, and so it needs 
-to monitor the return value of this function.
-This is not the case here though.
+Should that parameter have never been introduced in the first place,
+never be removed, or something else? I think I've seen this sort of
+pattern before, where features get phased in over time, with module
+parameters as either escape hatches or as opt-in mechanisms.
+Eventually, they stabilize, and there's no need (or sometimes, it's
+actively harmful) to keep the knob around.
 
->> +
->> +		spin_unlock(&xdp_ring->xdp_tx_lock);
->>  		xdp_stat = &rx_ring->rx_stats.xdp_tx;
->>  		break;
->>  	case XDP_REDIRECT:
->> @@ -644,6 +701,7 @@ static void ena_init_io_rings(struct 
->> ena_adapter *adapter,
->>  		txr->smoothed_interval =
->>  			ena_com_get_nonadaptive_moderation_interval_tx(ena_dev);
->>  		txr->disable_meta_caching = 
->>  adapter->disable_meta_caching;
->> +		spin_lock_init(&txr->xdp_tx_lock);
->>  
->>  		/* Don't init RX queues for xdp queues */
->>  		if (!ENA_IS_XDP_INDEX(adapter, i)) {
->> @@ -3236,6 +3294,7 @@ static const struct net_device_ops 
->> ena_netdev_ops = {
->>  	.ndo_set_mac_address	= NULL,
->>  	.ndo_validate_addr	= eth_validate_addr,
->>  	.ndo_bpf		= ena_xdp,
->> +	.ndo_xdp_xmit		= ena_xdp_xmit,
->>  };
->> ...
->> +	spinlock_t xdp_tx_lock;	/* synchronize XDP TX/Redirect 
->> traffic */
->>  
->>  	u16 next_to_use;
->>  	u16 next_to_clean;
->> -- 
->> 2.23.3
->> 
+Or the one that might (?) be in question here:
+fc3ac64a3a28 rtw88: decide lps deep mode from firmware feature.
 
+The original module parameter was useful for enabling new power-saving
+features, because the driver didn't yet know which chip(s)/firmware(s)
+were stable with which power features. Now, the driver has learned how
+to figure out the optimal power settings, so it's dropping the old
+param and adding an "escape hatch", in case there are problems.
+
+I'd say this one is a bit more subtle than the lar_disable example,
+but I'm still not sure that really qualifies as a "user-visible"
+change.
+
+Brian
