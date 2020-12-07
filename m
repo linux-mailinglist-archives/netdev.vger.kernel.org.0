@@ -2,121 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 629382D111B
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 13:54:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D8282D1125
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 13:56:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726303AbgLGMyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 07:54:03 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:57016 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725881AbgLGMyD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 07:54:03 -0500
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0B7CZJ6b048226;
-        Mon, 7 Dec 2020 07:53:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id; s=pp1;
- bh=dqZxJFNbRagO1UI/B/IDHCKkS8MdVZIpMrSRG/zsbF4=;
- b=DsDkKgTv6fmXl4HWybUDZkV0T5ouSBg9tMMMa4qxEqBgebCvuYnq+91VMYrCDTzU53za
- VDvtlZckLxGKAj/ZnQfS+bqKuyJ65MkDBCIGECHRVF/VES3xBKE70Y4PTqfm5LUDs5LO
- JHjdoBXX6VF3Hoq4xN1Ji9RbKD0XZ5wj1UlxSEEm8qLni8vrxX2bB4iIwLOlXrDyUjxx
- jkkw1hVznHwQvoX1tFYR8l2fiH2psUwJqlLUESlmuXSPPkAR4AsJ4DBv0J+5nbChCOjd
- ptMCPit1VOHFKb1dp5OVl5AWvj09nBL4SmrOGY8DMOFXabbr/BpZD8bRby6oGlmAcnt7 lg== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 359m0psfs0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Dec 2020 07:53:17 -0500
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0B7CmLgO007178;
-        Mon, 7 Dec 2020 12:53:15 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma03ams.nl.ibm.com with ESMTP id 3581u82fq8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Dec 2020 12:53:15 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0B7CrCBX60162448
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 7 Dec 2020 12:53:12 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7183711C04C;
-        Mon,  7 Dec 2020 12:53:12 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 304A411C052;
-        Mon,  7 Dec 2020 12:53:12 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon,  7 Dec 2020 12:53:12 +0000 (GMT)
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-netdev <netdev@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH net-next] net/af_iucv: use DECLARE_SOCKADDR to cast from sockaddr
-Date:   Mon,  7 Dec 2020 13:53:07 +0100
-Message-Id: <20201207125307.68725-1-jwi@linux.ibm.com>
-X-Mailer: git-send-email 2.17.1
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-07_10:2020-12-04,2020-12-07 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxlogscore=963
- suspectscore=0 malwarescore=0 priorityscore=1501 impostorscore=0
- clxscore=1015 adultscore=0 spamscore=0 lowpriorityscore=0 phishscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012070078
+        id S1726119AbgLGM4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 07:56:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:38200 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725834AbgLGM4Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 07:56:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607345690;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Z/UDXawBbiAwmcYELjEA0HOu1lNMEHhASoAQYhol/lw=;
+        b=aFUmM6wNL7gUeBnQGB3H7F0fIiSM1x0nocGDCp05tGenvEjdqKM05N5Sq/b4Y/ogqnhzJH
+        b18SihJ37Ta/roCKr1z4Kh3LL5zMJ/53Lys+ZD9LepuuMkCCh7c5ArreiEex5PD0FefVcE
+        d3c5p4katiraerR745cJ7ZD1qCYtiLE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-227-bTM0Fr_nPyaSkXpTLdjtFw-1; Mon, 07 Dec 2020 07:54:46 -0500
+X-MC-Unique: bTM0Fr_nPyaSkXpTLdjtFw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 241A1100C60A;
+        Mon,  7 Dec 2020 12:54:44 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.55])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9445A5D6AB;
+        Mon,  7 Dec 2020 12:54:36 +0000 (UTC)
+Date:   Mon, 7 Dec 2020 13:54:33 +0100
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Toke =?UTF-8?B?SMO4?= =?UTF-8?B?aWxhbmQtSsO4cmdlbnNlbg==?= 
+        <toke@redhat.com>, alardam@gmail.com, magnus.karlsson@intel.com,
+        bjorn.topel@intel.com, andrii.nakryiko@gmail.com, kuba@kernel.org,
+        ast@kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
+        john.fastabend@gmail.com, hawk@kernel.org,
+        jonathan.lemon@gmail.com, bpf@vger.kernel.org,
+        jeffrey.t.kirsher@intel.com, maciejromanfijalkowski@gmail.com,
+        intel-wired-lan@lists.osuosl.org,
+        Marek Majtyka <marekx.majtyka@intel.com>
+Subject: Re: [PATCH v2 bpf 1/5] net: ethtool: add xdp properties flag set
+Message-ID: <20201207135433.41172202@carbon>
+In-Reply-To: <048bd986-2e05-ee5b-2c03-cd8c473f6636@iogearbox.net>
+References: <20201204102901.109709-1-marekx.majtyka@intel.com>
+        <20201204102901.109709-2-marekx.majtyka@intel.com>
+        <878sad933c.fsf@toke.dk>
+        <20201204124618.GA23696@ranger.igk.intel.com>
+        <048bd986-2e05-ee5b-2c03-cd8c473f6636@iogearbox.net>
+Organization: Red Hat Inc.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This gets us compile-time size checking.
+On Fri, 4 Dec 2020 16:21:08 +0100
+Daniel Borkmann <daniel@iogearbox.net> wrote:
 
-Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
----
- net/iucv/af_iucv.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+> On 12/4/20 1:46 PM, Maciej Fijalkowski wrote:
+> > On Fri, Dec 04, 2020 at 01:18:31PM +0100, Toke H=C3=B8iland-J=C3=B8rgen=
+sen wrote: =20
+> >> alardam@gmail.com writes: =20
+> >>> From: Marek Majtyka <marekx.majtyka@intel.com>
+> >>>
+> >>> Implement support for checking what kind of xdp functionality a netdev
+> >>> supports. Previously, there was no way to do this other than to try
+> >>> to create an AF_XDP socket on the interface or load an XDP program an=
+d see
+> >>> if it worked. This commit changes this by adding a new variable which
+> >>> describes all xdp supported functions on pretty detailed level: =20
+> >>
+> >> I like the direction this is going! :)
 
-diff --git a/net/iucv/af_iucv.c b/net/iucv/af_iucv.c
-index db7d888914fa..882f028992c3 100644
---- a/net/iucv/af_iucv.c
-+++ b/net/iucv/af_iucv.c
-@@ -587,7 +587,7 @@ static void __iucv_auto_name(struct iucv_sock *iucv)
- static int iucv_sock_bind(struct socket *sock, struct sockaddr *addr,
- 			  int addr_len)
- {
--	struct sockaddr_iucv *sa = (struct sockaddr_iucv *) addr;
-+	DECLARE_SOCKADDR(struct sockaddr_iucv *, sa, addr);
- 	char uid[sizeof(sa->siucv_user_id)];
- 	struct sock *sk = sock->sk;
- 	struct iucv_sock *iucv;
-@@ -691,7 +691,7 @@ static int iucv_sock_autobind(struct sock *sk)
- 
- static int afiucv_path_connect(struct socket *sock, struct sockaddr *addr)
- {
--	struct sockaddr_iucv *sa = (struct sockaddr_iucv *) addr;
-+	DECLARE_SOCKADDR(struct sockaddr_iucv *, sa, addr);
- 	struct sock *sk = sock->sk;
- 	struct iucv_sock *iucv = iucv_sk(sk);
- 	unsigned char user_data[16];
-@@ -738,7 +738,7 @@ static int afiucv_path_connect(struct socket *sock, struct sockaddr *addr)
- static int iucv_sock_connect(struct socket *sock, struct sockaddr *addr,
- 			     int alen, int flags)
- {
--	struct sockaddr_iucv *sa = (struct sockaddr_iucv *) addr;
-+	DECLARE_SOCKADDR(struct sockaddr_iucv *, sa, addr);
- 	struct sock *sk = sock->sk;
- 	struct iucv_sock *iucv = iucv_sk(sk);
- 	int err;
-@@ -874,7 +874,7 @@ static int iucv_sock_accept(struct socket *sock, struct socket *newsock,
- static int iucv_sock_getname(struct socket *sock, struct sockaddr *addr,
- 			     int peer)
- {
--	struct sockaddr_iucv *siucv = (struct sockaddr_iucv *) addr;
-+	DECLARE_SOCKADDR(struct sockaddr_iucv *, siucv, addr);
- 	struct sock *sk = sock->sk;
- 	struct iucv_sock *iucv = iucv_sk(sk);
- 
--- 
-2.17.1
+(Me too, don't get discouraged by our nitpicking, keep working on this! :-))
+
+> >> =20
+> >>>   - aborted
+> >>>   - drop
+> >>>   - pass
+> >>>   - tx =20
+>=20
+> I strongly think we should _not_ merge any native XDP driver patchset
+> that does not support/implement the above return codes.=20
+
+I agree, with above statement.
+
+> Could we instead group them together and call this something like
+> XDP_BASE functionality to not give a wrong impression?
+
+I disagree.  I can accept that XDP_BASE include aborted+drop+pass.
+
+I think we need to keep XDP_TX action separate, because I think that
+there are use-cases where the we want to disable XDP_TX due to end-user
+policy or hardware limitations.
+
+Use-case(1): Cloud-provider want to give customers (running VMs) ability
+to load XDP program for DDoS protection (only), but don't want to allow
+customer to use XDP_TX (that can implement LB or cheat their VM
+isolation policy).
+
+Use-case(2): Disable XDP_TX on a driver to save hardware TX-queue
+resources, as the use-case is only DDoS.  Today we have this problem
+with the ixgbe hardware, that cannot load XDP programs on systems with
+more than 192 CPUs.
+
+
+> If this is properly documented that these are basic must-have
+> _requirements_, then users and driver developers both know what the
+> expectations are.
+
+We can still document that XDP_TX is a must-have requirement, when a
+driver implements XDP.
+
+
+> >>>   - redirect =20
+> >>
+
+
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
