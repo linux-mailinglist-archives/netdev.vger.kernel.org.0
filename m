@@ -2,117 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E7562D0FAF
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 12:48:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B659B2D0FBB
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 12:53:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726906AbgLGLrs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 06:47:48 -0500
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:4564 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726874AbgLGLrs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 06:47:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1607341668; x=1638877668;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=DT8dfGvHCH2RcZ5XMyxNuf8g5vxxb2qMyJp3K1JoGJg=;
-  b=o6Ucx1C/WbtLHxBaCKtQfqSPNPQA9CioGsYJZ69uG3mCFVXpPDIOSAPY
-   VsXBuHrfEr8SVJQc+2GI/vrh8NHY3fMD3+Tsy3hu/qfnil13QRTMU3784
-   cykhbpUH4HaQ3JNYu1I0iJjF+/ZlilzQZsiv4l2aOR4u5WgCZbST/owFw
-   I=;
-X-IronPort-AV: E=Sophos;i="5.78,399,1599523200"; 
-   d="scan'208";a="67686016"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1e-42f764a0.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 07 Dec 2020 11:47:00 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-1e-42f764a0.us-east-1.amazon.com (Postfix) with ESMTPS id E815AC1E3E;
-        Mon,  7 Dec 2020 11:46:58 +0000 (UTC)
-Received: from EX13D35UWC003.ant.amazon.com (10.43.162.130) by
- EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 7 Dec 2020 11:46:58 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
- EX13D35UWC003.ant.amazon.com (10.43.162.130) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 7 Dec 2020 11:46:58 +0000
-Received: from dev-dsk-abuehaze-1c-926c8132.eu-west-1.amazon.com
- (10.15.10.116) by mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP
- Server id 15.0.1497.2 via Frontend Transport; Mon, 7 Dec 2020 11:46:57 +0000
-Received: by dev-dsk-abuehaze-1c-926c8132.eu-west-1.amazon.com (Postfix, from userid 5005603)
-        id 67F518846F; Mon,  7 Dec 2020 11:46:57 +0000 (UTC)
-From:   Hazem Mohamed Abuelfotoh <abuehaze@amazon.com>
-To:     <netdev@vger.kernel.org>
-CC:     <stable@vger.kernel.org>, <edumazet@google.com>,
-        <ycheng@google.com>, <ncardwell@google.com>, <weiwan@google.com>,
-        <astroh@amazon.com>, <benh@amazon.com>,
-        Hazem Mohamed Abuelfotoh <abuehaze@amazon.com>
-Subject: [PATCH net] tcp: fix receive buffer autotuning to trigger for any valid advertised MSS
-Date:   Mon, 7 Dec 2020 11:46:25 +0000
-Message-ID: <20201207114625.9079-1-abuehaze@amazon.com>
-X-Mailer: git-send-email 2.16.6
-In-Reply-To: <CADVnQymC1fLFhb=0_rXNSp2NsNncMMRv77aY=5pYxgmicwowgA@mail.gmail.com>
-References: <CADVnQymC1fLFhb=0_rXNSp2NsNncMMRv77aY=5pYxgmicwowgA@mail.gmail.com>
+        id S1726891AbgLGLwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 06:52:38 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:54117 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726617AbgLGLwi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 06:52:38 -0500
+Received: by mail-wm1-f67.google.com with SMTP id k10so11222343wmi.3;
+        Mon, 07 Dec 2020 03:52:16 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Cq2jFqDwIfrHoFOscYqfVgmZg47FDTLhoPP6+XAE2X8=;
+        b=cLnEBmmTvVorb3orFqYas6JyWceC4RR7/ZlQ839ETQcCGPCYl6a3aJ4tePmJHzNbj+
+         uH5PKrfaqKTVwsVqejBAbnrl9iLPzAIxpFdec/vR1cHuugitT1yp3q63RiAik72ojjbG
+         GZW2AZTm+7dgCPEeEB0htb7Nidz1yRBjw9wrk9HGgvj/+5KuxJLlYc+e7BILTpG9Qval
+         ecE1iFgtgQa0oSEm0+Hxw9fx3P4P71j3RVy3vohd/u8todu6fPmAL+HLPbBfxtqteNSq
+         BMTwBnH1gJpQrjG8tu3Z4I1qRubQ0cKPKcnqJpKShryJXQy3UR0/1wtGzhEQj/uQ9j72
+         TY3g==
+X-Gm-Message-State: AOAM532JhRUhBOyPVaHDQe/kp4LelQxBIqBF/ajEYN8JmPybh44WqO8d
+        kBR5bUz3+CLnLyOVBXTVDgs=
+X-Google-Smtp-Source: ABdhPJyggceK9kt1VON7RQM0pfXWP5R4vsXfjlVOjCpVKWVLZL7ubApXA+vTShbTcFEzdCKvK/06GQ==
+X-Received: by 2002:a1c:3c09:: with SMTP id j9mr18047135wma.180.1607341910456;
+        Mon, 07 Dec 2020 03:51:50 -0800 (PST)
+Received: from kozik-lap (adsl-84-226-167-205.adslplus.ch. [84.226.167.205])
+        by smtp.googlemail.com with ESMTPSA id y2sm14522546wrn.31.2020.12.07.03.51.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Dec 2020 03:51:49 -0800 (PST)
+Date:   Mon, 7 Dec 2020 12:51:47 +0100
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Bongsu Jeon <bongsu.jeon2@gmail.com>
+Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Bongsu Jeon <bongsu.jeon@samsung.com>
+Subject: Re: [PATCH net-next] nfc: s3fwrn5: Change irqflags
+Message-ID: <20201207115147.GA26206@kozik-lap>
+References: <20201207113827.2902-1-bongsu.jeon@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20201207113827.2902-1-bongsu.jeon@samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-    Previously receiver buffer auto-tuning starts after receiving
-    one advertised window amount of data.After the initial
-    receiver buffer was raised by
-    commit a337531b942b ("tcp: up initial rmem to 128KB
-    and SYN rwin to around 64KB"),the receiver buffer may
-    take too long for TCP autotuning to start raising
-    the receiver buffer size.
-    commit 041a14d26715 ("tcp: start receiver buffer autotuning sooner")
-    tried to decrease the threshold at which TCP auto-tuning starts
-    but it's doesn't work well in some environments
-    where the receiver has large MTU (9001) especially with high RTT
-    connections as in these environments rcvq_space.space will be the same
-    as rcv_wnd so TCP autotuning will never start because
-    sender can't send more than rcv_wnd size in one round trip.
-    To address this issue this patch is decreasing the initial
-    rcvq_space.space so TCP autotuning kicks in whenever the sender is
-    able to send more than 5360 bytes in one round trip regardless the
-    receiver's configured MTU.
+On Mon, Dec 07, 2020 at 08:38:27PM +0900, Bongsu Jeon wrote:
+> From: Bongsu Jeon <bongsu.jeon@samsung.com>
+> 
+> change irqflags from IRQF_TRIGGER_HIGH to IRQF_TRIGGER_RISING for stable
+> Samsung's nfc interrupt handling.
 
-    Fixes: a337531b942b ("tcp: up initial rmem to 128KB and SYN rwin to around 64KB")
-    Fixes: 041a14d26715 ("tcp: start receiver buffer autotuning sooner")
+1. Describe in commit title/subject the change. Just a word "change irqflags" is
+   not enough.
 
-Signed-off-by: Hazem Mohamed Abuelfotoh <abuehaze@amazon.com>
----
- net/ipv4/tcp_input.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+2. Describe in commit message what you are trying to fix. Before was not
+   stable? The "for stable interrupt handling" is a little bit vauge.
 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 389d1b340248..f0ffac9e937b 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -504,13 +504,14 @@ static void tcp_grow_window(struct sock *sk, const struct sk_buff *skb)
- static void tcp_init_buffer_space(struct sock *sk)
- {
- 	int tcp_app_win = sock_net(sk)->ipv4.sysctl_tcp_app_win;
-+	struct inet_connection_sock *icsk = inet_csk(sk);
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	int maxwin;
- 
- 	if (!(sk->sk_userlocks & SOCK_SNDBUF_LOCK))
- 		tcp_sndbuf_expand(sk);
- 
--	tp->rcvq_space.space = min_t(u32, tp->rcv_wnd, TCP_INIT_CWND * tp->advmss);
-+	tp->rcvq_space.space = min_t(u32, tp->rcv_wnd, TCP_INIT_CWND * icsk->icsk_ack.rcv_mss);
- 	tcp_mstamp_refresh(tp);
- 	tp->rcvq_space.time = tp->tcp_mstamp;
- 	tp->rcvq_space.seq = tp->copied_seq;
--- 
-2.16.6
+3. This is contradictory to the bindings and current DTS. I think the
+   driver should not force the specific trigger type because I could
+   imagine some configuration that the actual interrupt to the CPU is
+   routed differently.
 
+   Instead, how about removing the trigger flags here and fixing the DTS
+   and bindings example?
 
+Best regards,
+Krzysztof
 
-
-Amazon Web Services EMEA SARL, 38 avenue John F. Kennedy, L-1855 Luxembourg, R.C.S. Luxembourg B186284
-
-Amazon Web Services EMEA SARL, Irish Branch, One Burlington Plaza, Burlington Road, Dublin 4, Ireland, branch registration number 908705
-
-
-
+> 
+> Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
+> ---
+>  drivers/nfc/s3fwrn5/i2c.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/nfc/s3fwrn5/i2c.c b/drivers/nfc/s3fwrn5/i2c.c
+> index e1bdde105f24..016f6b6df849 100644
+> --- a/drivers/nfc/s3fwrn5/i2c.c
+> +++ b/drivers/nfc/s3fwrn5/i2c.c
+> @@ -213,7 +213,7 @@ static int s3fwrn5_i2c_probe(struct i2c_client *client,
+>  		return ret;
+>  
+>  	ret = devm_request_threaded_irq(&client->dev, phy->i2c_dev->irq, NULL,
+> -		s3fwrn5_i2c_irq_thread_fn, IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
+> +		s3fwrn5_i2c_irq_thread_fn, IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+>  		S3FWRN5_I2C_DRIVER_NAME, phy);
+>  	if (ret)
+>  		s3fwrn5_remove(phy->common.ndev);
+> -- 
+> 2.17.1
+> 
