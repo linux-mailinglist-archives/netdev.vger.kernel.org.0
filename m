@@ -2,176 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B3A12D0E66
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 11:50:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BDB72D0E6F
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 11:52:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726217AbgLGKtQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 05:49:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33808 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725842AbgLGKtQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 05:49:16 -0500
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D22DAC0613D0
-        for <netdev@vger.kernel.org>; Mon,  7 Dec 2020 02:48:35 -0800 (PST)
-Received: by mail-lf1-x142.google.com with SMTP id u19so17389319lfr.7
-        for <netdev@vger.kernel.org>; Mon, 07 Dec 2020 02:48:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=hHdC4ujfq/sltdEUUsvjJDbRnESRD9gRv1wBr/8BciA=;
-        b=Ae9ZfB8al/FPgLf4JFsxc7tvg1V9qxcJ4n+0hJhJLhan+RU/NZHHZ7RmFV7feXj98U
-         zoC7EivklqYsT5m2Am2djyaTw2zBwww1qKex5P0pGsNVtp+/HjSenSObGg2pnjt+VHM5
-         +NS2ZL6Egssl40XpcvcZ51nv7jrM8ITFEztypRhSA5O5S/MnI0Ryb+q5U/rvjdPsoQK+
-         FFiOeIocO+5h82lr6sLGUMWPffA7OCWR6vtDp9OoN7XC3hzawYA+yFh/1NH/MVxKro4S
-         VDENbA0HwfiD+uN1tQOkoSprGiYFJgy7nhbi/ixcJxDgO0vjAioGKifrwyWC4d4xxmRS
-         RmKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=hHdC4ujfq/sltdEUUsvjJDbRnESRD9gRv1wBr/8BciA=;
-        b=BZUSMKz5J2Myq7R4dTd71a3azdGcuG9TVW1ED7KAgcxbU46i7uzY/W9FEaqqpmOqSR
-         Xw+Lq5VIewxFxkijAYugOVBDySzm/cgSNxmmedlh56JiMWR4fG55VahZ2QXzLQf7F/uN
-         5kMR1ORmXpsYx7XndLvI5a7FyGjfHRai5GE9a4kQnlDgx2HnQr+nLLJQrbN6C0sFf/2A
-         jQMMct+55Z7IFunxqPyZOPmq0mqYUkrRsu6LiI8XEIpnQUY2g6/9+0POARkWibYTyesX
-         r1M3Aa6lSuvZqpstD5Va/IUlBbltml9qwoYeXamstC1PbnnEFMIgvnIixTfqTIK12Ns4
-         XIQg==
-X-Gm-Message-State: AOAM533xVwjiUFewmra/mH2mm0q8Edxe5gsJTuvqkFobBVFE2Eaxnqj2
-        mDSJU/fbE0bY4o4/w6wNNCXTS92UA+f06GyCn9tc4g==
-X-Google-Smtp-Source: ABdhPJx9Yi4fPTOzVqekOVpmfn4yuJQ/ANOi6GRZwBZNXobm0cq1w55+gcDyVGdCkUP5tx2zlrSetJUN0QVXCM80sJw=
-X-Received: by 2002:ac2:5311:: with SMTP id c17mr8180683lfh.22.1607338113921;
- Mon, 07 Dec 2020 02:48:33 -0800 (PST)
+        id S1726359AbgLGKwT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 05:52:19 -0500
+Received: from mail-db8eur05on2057.outbound.protection.outlook.com ([40.107.20.57]:27758
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726110AbgLGKwT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Dec 2020 05:52:19 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CQzhSG7XOVUF2g09HnaaIgxryM0+k7MNbbGj8U7QwXf07JXHakLkms+HvHKt4W+6d9dSwd5Ya3b3+yKjQxmCiYRa29MK3lmrqF2EA01x9oTwtKcEEufW4YDlH7TVo5dzewq/bHR/a9nueiq24ICK4cyjuVfCnHX1FB6qsassLWEaMYCWV/9hdvaqQhJc93huiSZrEVvu1jAqA4JtpBHzL87ANHfEI4jsr+A/mW/VmR9dukG8YIpGJdRl39oGVwWq2wWRGa2BsWMSeZDdLNuLS54d8MNpd+2Tvl0dHGPcfrZjjmZcb5C/H9wWkY6lhlibV6IyBirXquEyN8Eb0hDNGQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=doo9onTCRdhwmmIEJi/JZMBI1U0fOz2FSVIUUVCg3lM=;
+ b=jV3jZ7uUJhugc8+TbKYvL312AUV25j4HplDml7/VVb2f1oI6wn7PgoEJWVFhr8uLL3jOIWDhpEDLiB0bntd+4aKf5iZSkNA6T8+UijJHIpE3R+4D4780Q1Q9d4RcTegUaZzUxyzCMsmVrjUSY4zP96v0Et3Y5uvALUjPIZhJBXKFSXiKnHeFlxGvkZkAxbdx/nVHyvNthK0Xyn5tN1h9sITzGYtWg4UCB6l6QmOMwnDdOxbLxIthgapX8eO6SLeoLadxNx6XMcCZrVd2/UVCdaGFXCuKE7esVTB/BblA9jde3ae6YQoo4Le8ai0c/hPMs1Z9hXW9UaqOsA6F8pxCEw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=doo9onTCRdhwmmIEJi/JZMBI1U0fOz2FSVIUUVCg3lM=;
+ b=KtpLB8KvLPzsXiht7G7ham+beGj5umkh7AfvPhalzeysYqLnMGUfehh+xxCN9zuz0DeCNlR31zQ1T6m8IwqMYBqKyPJT9r90c0eNwysN4MliyiFuGL2SFJIXZ5yAbz6Y90wMq1VgxAUGbOmT70aVx8yO0nX1wEIq79TwJRtJryk=
+Authentication-Results: st.com; dkim=none (message not signed)
+ header.d=none;st.com; dmarc=none action=none header.from=nxp.com;
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DB6PR0401MB2328.eurprd04.prod.outlook.com (2603:10a6:4:46::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.21; Mon, 7 Dec
+ 2020 10:51:27 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::b83c:2edc:17e8:2666]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::b83c:2edc:17e8:2666%4]) with mapi id 15.20.3632.023; Mon, 7 Dec 2020
+ 10:51:27 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-imx@nxp.com
+Subject: [PATCH V3 0/5] patches for stmmac
+Date:   Mon,  7 Dec 2020 18:51:36 +0800
+Message-Id: <20201207105141.12550-1-qiangqing.zhang@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-Originating-IP: [119.31.174.71]
+X-ClientProxiedBy: SG2PR0601CA0018.apcprd06.prod.outlook.com (2603:1096:3::28)
+ To DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
 MIME-Version: 1.0
-References: <20201203102936.4049556-1-apusaka@google.com> <20201203182903.v1.1.I92d2e2a87419730d60136680cbe27636baf94b15@changeid>
- <20B6F2AD-1A60-4E3C-84C2-E3CB7294FABC@holtmann.org> <CAJQfnxHDThaJ58iFSpyq4bLopeuATvd+4fOR2AAgbNaabNSMuQ@mail.gmail.com>
- <25116F72-CE7C-46B6-A83A-5D33E9142BF9@holtmann.org> <CAJQfnxG_GDsTTJ1v=Ug0MqEGmTSdeYcOhEf3rQ1hDTmvJS0JrQ@mail.gmail.com>
- <14E449EF-6E91-43BF-9477-61B29B20783A@holtmann.org>
-In-Reply-To: <14E449EF-6E91-43BF-9477-61B29B20783A@holtmann.org>
-From:   Archie Pusaka <apusaka@google.com>
-Date:   Mon, 7 Dec 2020 18:48:22 +0800
-Message-ID: <CAJQfnxGOg_b+DkqVuUh0jqQL4VmY0ijB4kEmfGg92K3D_KbNZQ@mail.gmail.com>
-Subject: Re: [PATCH v1 1/5] Bluetooth: advmon offload MSFT add rssi support
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        Yun-Hao Chung <howardchung@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (119.31.174.71) by SG2PR0601CA0018.apcprd06.prod.outlook.com (2603:1096:3::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.17 via Frontend Transport; Mon, 7 Dec 2020 10:51:25 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: b1d200de-6815-439a-57a6-08d89a9e0c30
+X-MS-TrafficTypeDiagnostic: DB6PR0401MB2328:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DB6PR0401MB23281A76F0824CA0D08462BAE6CE0@DB6PR0401MB2328.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5/LwxktCNUkEj4yZDWRss+clMxHO/eapNP9nSxAC9xO6wjonqWTM83XMypz7ds8GYbY+SVq0LONJRltrIp0CXHiCs0iKClj1WT22lEaPcsshXIGTC1A0ZFcgksOGeYBkgKY1rSccEPxpjPw7SsuJ6vKvXq+a9UbcuS2Xec5YveU+X7DCMGLe4Ze5bKrtB9vsCHQvO9gJkho5SrAnuONl59AXJM0olXZr/H33upCrFzKU/uKyeQUrmTzmqXBQZznlIpXSfXmpWuMjd3zH4sbjBH5K09gZEfDiViBzf4jbl1wtzbKkiw3zPMQHPhBWvV+Ex/vh6c9jtvx1yQNygMml+KyaqPZyIjONAm15p0WnFTiSeiwu2OunXhLRD7nx3gmY
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(39860400002)(396003)(346002)(136003)(376002)(66556008)(66476007)(6486002)(186003)(956004)(16526019)(6506007)(8936002)(1076003)(86362001)(26005)(4326008)(8676002)(66946007)(316002)(83380400001)(2906002)(52116002)(478600001)(69590400008)(5660300002)(6512007)(4744005)(6666004)(36756003)(2616005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?rvJgBQmTUTRN6MFLifl1jI5PJEUBPd7AQC43VJKNSDHcp98nh3hg9xGHGqze?=
+ =?us-ascii?Q?B/bSOHwtynU3hy+kCiAZNRejwZzxh7tfHLVLvVwmYJRy5OxbOeEDE9nQsT4U?=
+ =?us-ascii?Q?WfO5dflcMk3xRoFKCAVUTnFbMHb6XahXvumK9nIJpaF2KqVHzmDwa7p22FUf?=
+ =?us-ascii?Q?OVqSK5+kpKeGR/+BVrNf80frYaOVcB6UJY4xG7ubP2KzPKpWHSfl69BTjlJj?=
+ =?us-ascii?Q?mq8X4IhLcpnVejD4ej3fQEL63e0w9z43mV0ghz7CSCo/f0li9ShmRVmQeFbB?=
+ =?us-ascii?Q?E05rO2J86OYB8WgakwvCipQ8L7BjomvWVp0h2qOwWhy9BmO4fBi/y789G5kQ?=
+ =?us-ascii?Q?RR8xFzidlXWJbdLNw+xX1IXbJAyUDx00CnSUDXEzIQCpKlwWEwYFKJAM/oDR?=
+ =?us-ascii?Q?gYclheVPj6cw7iy9aagqo+l1PkMruQHpt+R+2tcophjrIrUWMccKZsfNvBpR?=
+ =?us-ascii?Q?z5Xy8OuGFP9eOMpotDqEzk8KzlT7vXBcSaOYfuk77MBmkMmCYghE88Lje8TO?=
+ =?us-ascii?Q?PKHIVjvekrbPYVoJXQ6hnX2ODqiisRPTvo2YiBkv2OuYfBaqcduKMEcw4bic?=
+ =?us-ascii?Q?qCRuspVSQN9gTLP/rLhdHOrR5a+1uXgKR0b/vf2kypZU2bZ6F1Fm/6FKbLlw?=
+ =?us-ascii?Q?ppAiwJeWxxVsY6RcGHzyGK9p7pbuDhDV7rGpTyR5ZtwGeG2vBYFsgU/YK2rr?=
+ =?us-ascii?Q?zMwRC6vnlmCwPukK76f4DVgeR1WcO/RAhnOY7DrKMiasO3rs7IOsueeqpHwW?=
+ =?us-ascii?Q?1xidnVxJ7HECX9w/+N6tee6StTUaxxRTACELPDUjf2wGVaL0FIOHTbQdKdft?=
+ =?us-ascii?Q?XulL836YLPsfYHNiS6Zu5IcI6zrslskIgYvI802A0mOYAMY97nbWx/V6mIMJ?=
+ =?us-ascii?Q?PsHGvxF7Onj5Pl+w3lUATQgB05Vqsy5kanJ95bftxmxy9ZjKDo3i9/K9x1h4?=
+ =?us-ascii?Q?PWP8e6j0uOe5bJeUo0kREgSep17grUYYCn2noGM0Op1V+yHvM3YzDPH9qIgq?=
+ =?us-ascii?Q?xuxO?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b1d200de-6815-439a-57a6-08d89a9e0c30
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Dec 2020 10:51:27.6255
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: u1hHtSZpZY/9BzCchfzgEUVgwNyh7HyzeHGKnlH+xZmrzlT2Y/sNAKIk+0XV1DV7l23LjgW9oIcbnCslpUlynQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0401MB2328
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marcel,
+A patch set for stmmac, fix some driver issues.
 
-On Mon, 7 Dec 2020 at 17:57, Marcel Holtmann <marcel@holtmann.org> wrote:
->
-> Hi Archie,
->
-> >>>>> MSFT needs rssi parameter for monitoring advertisement packet,
-> >>>>> therefore we should supply them from mgmt.
-> >>>>>
-> >>>>> Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-> >>>>> Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
-> >>>>> Reviewed-by: Yun-Hao Chung <howardchung@google.com>
-> >>>>
-> >>>> I don=E2=80=99t need any Reviewed-by if they are not catching an obv=
-ious user API breakage.
-> >>>>
-> >>>>> ---
-> >>>>>
-> >>>>> include/net/bluetooth/hci_core.h | 9 +++++++++
-> >>>>> include/net/bluetooth/mgmt.h     | 9 +++++++++
-> >>>>> net/bluetooth/mgmt.c             | 8 ++++++++
-> >>>>> 3 files changed, 26 insertions(+)
-> >>>>>
-> >>>>> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetoo=
-th/hci_core.h
-> >>>>> index 9873e1c8cd16..42d446417817 100644
-> >>>>> --- a/include/net/bluetooth/hci_core.h
-> >>>>> +++ b/include/net/bluetooth/hci_core.h
-> >>>>> @@ -246,8 +246,17 @@ struct adv_pattern {
-> >>>>>     __u8 value[HCI_MAX_AD_LENGTH];
-> >>>>> };
-> >>>>>
-> >>>>> +struct adv_rssi_thresholds {
-> >>>>> +     __s8 low_threshold;
-> >>>>> +     __s8 high_threshold;
-> >>>>> +     __u16 low_threshold_timeout;
-> >>>>> +     __u16 high_threshold_timeout;
-> >>>>> +     __u8 sampling_period;
-> >>>>> +};
-> >>>>> +
-> >>>>> struct adv_monitor {
-> >>>>>     struct list_head patterns;
-> >>>>> +     struct adv_rssi_thresholds rssi;
-> >>>>>     bool            active;
-> >>>>>     __u16           handle;
-> >>>>> };
-> >>>>> diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/m=
-gmt.h
-> >>>>> index d8367850e8cd..dc534837be0e 100644
-> >>>>> --- a/include/net/bluetooth/mgmt.h
-> >>>>> +++ b/include/net/bluetooth/mgmt.h
-> >>>>> @@ -763,9 +763,18 @@ struct mgmt_adv_pattern {
-> >>>>>     __u8 value[31];
-> >>>>> } __packed;
-> >>>>>
-> >>>>> +struct mgmt_adv_rssi_thresholds {
-> >>>>> +     __s8 high_threshold;
-> >>>>> +     __le16 high_threshold_timeout;
-> >>>>> +     __s8 low_threshold;
-> >>>>> +     __le16 low_threshold_timeout;
-> >>>>> +     __u8 sampling_period;
-> >>>>> +} __packed;
-> >>>>> +
-> >>>>> #define MGMT_OP_ADD_ADV_PATTERNS_MONITOR      0x0052
-> >>>>> struct mgmt_cp_add_adv_patterns_monitor {
-> >>>>>     __u8 pattern_count;
-> >>>>> +     struct mgmt_adv_rssi_thresholds rssi;
-> >>>>>     struct mgmt_adv_pattern patterns[];
-> >>>>> } __packed;
-> >>>>
-> >>>> This is something we can not do. It breaks an userspace facing API. =
-Is the mgmt opcode 0x0052 in an already released kernel?
-> >>>
-> >>> Yes, the opcode does exist in an already released kernel.
-> >>>
-> >>> The DBus method which accesses this API is put behind the experimenta=
-l
-> >>> flag, therefore we expect they are flexible enough to support changes=
-.
-> >>> Previously, we already had a discussion in an email thread with the
-> >>> title "Offload RSSI tracking to controller", and the outcome supports
-> >>> this change.
-> >>>
-> >>> Here is an excerpt of the discussion.
-> >>
-> >> it doesn=E2=80=99t matter. This is fixed API now and so we can not jus=
-t change it. The argument above is void. What matters if it is in already r=
-eleased kernel.
-> >
-> > If that is the case, do you have a suggestion to allow RSSI to be
-> > considered when monitoring advertisement? Would a new MGMT opcode with
-> > these parameters suffice?
->
-> its the only way.
+ChangeLogs:
+V1->V2:
+	* add Fixes tag.
+	* add patch 5/5 into this patch set.
 
-I will make the necessary changes. Thanks for the confirmation.
+V2->V3:
+	* rebase to latest net tree where fixes go.
 
-Regards,
-Archie
+Fugang Duan (5):
+  net: stmmac: increase the timeout for dma reset
+  net: stmmac: start phylink instance before stmmac_hw_setup()
+  net: stmmac: free tx skb buffer in stmmac_resume()
+  net: stmmac: delete the eee_ctrl_timer after napi disabled
+  net: stmmac: overwrite the dma_cap.addr64 according to HW design
 
->
-> Regards
->
-> Marcel
->
+ .../net/ethernet/stmicro/stmmac/dwmac-imx.c   |  9 +---
+ .../net/ethernet/stmicro/stmmac/dwmac4_lib.c  |  2 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 51 +++++++++++++++----
+ include/linux/stmmac.h                        |  1 +
+ 4 files changed, 43 insertions(+), 20 deletions(-)
+
+-- 
+2.17.1
+
