@@ -2,23 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 912422D0A2A
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 06:26:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB8C42D0A3D
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 06:36:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726182AbgLGFWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 00:22:01 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36408 "EHLO mail.kernel.org"
+        id S1725905AbgLGFeh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 00:34:37 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41164 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725773AbgLGFWB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Dec 2020 00:22:01 -0500
+        id S1725681AbgLGFeg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Dec 2020 00:34:36 -0500
 From:   saeed@kernel.org
 Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
-To:     bpf@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Andrii Nakryiko <andrii@kernel.org>
-Subject: [PATCH bpf] tools/bpftool: Add/Fix support for modules btf dump
-Date:   Sun,  6 Dec 2020 21:20:57 -0800
-Message-Id: <20201207052057.397223-1-saeed@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>
+Subject: [pull request][for-next V2] mlx5-next auxbus support
+Date:   Sun,  6 Dec 2020 21:33:49 -0800
+Message-Id: <20201207053349.402772-1-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -26,135 +29,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+Hi Jakub, Jason
 
-While playing with BTF for modules, i noticed that executing the command:
-$ bpftool btf dump id <module's btf id>
+v1->v2: Fix compilation warning when compiling with W=1 in the mlx5
+patches.
 
-Fails due to lack of information in the BTF data.
+This pull request is targeting net-next and rdma-next branches.
 
-Maybe I am missing a step but actually adding the support for this is
-very simple.
+This series provides mlx5 support for auxiliary bus devices.
 
-To completely parse modules BTF data, we need the vmlinux BTF as their
-"base btf", which can be easily found by iterating through the btf ids and
-looking for btf.name == "vmlinux".
+It starts with a merge commit of tag 'auxbus-5.11-rc1' from
+gregkh/driver-core into mlx5-next, then the mlx5 patches that will convert
+mlx5 ulp devices (netdev, rdma, vdpa) to use the proper auxbus
+infrastructure instead of the internal mlx5 device and interface management
+implementation, which Leon is deleting at the end of this patchset.
 
-I am not sure why this hasn't been added by the original patchset
-"Integrate kernel module BTF support", as adding the support for
-this is very trivial. Unless i am missing something, CCing Andrii..
+Link: https://lore.kernel.org/alsa-devel/20201026111849.1035786-1-leon@kernel.org/
 
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-CC: Andrii Nakryiko <andrii@kernel.org>
+Thanks to everyone for the joint effort !
+
+Please pull and let me know if there's any problem.
+
+Thanks,
+Saeed.
+
 ---
- tools/lib/bpf/btf.c      | 57 ++++++++++++++++++++++++++++++++++++++++
- tools/lib/bpf/btf.h      |  2 ++
- tools/lib/bpf/libbpf.map |  1 +
- 3 files changed, 60 insertions(+)
 
-diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-index 3c3f2bc6c652..5900cccf82e2 100644
---- a/tools/lib/bpf/btf.c
-+++ b/tools/lib/bpf/btf.c
-@@ -1370,6 +1370,14 @@ struct btf *btf_get_from_fd(int btf_fd, struct btf *base_btf)
- 		goto exit_free;
- 	}
- 
-+	/* force base_btf for kernel modules */
-+	if (btf_info.kernel_btf && !base_btf) {
-+		int id = btf_get_kernel_id();
-+
-+		/* Double check our btf is not the kernel BTF itself */
-+		if (id != btf_info.id)
-+			btf__get_from_id(id, &base_btf);
-+	}
- 	btf = btf_new(ptr, btf_info.btf_size, base_btf);
- 
- exit_free:
-@@ -4623,3 +4631,52 @@ struct btf *libbpf_find_kernel_btf(void)
- 	pr_warn("failed to find valid kernel BTF\n");
- 	return ERR_PTR(-ESRCH);
- }
-+
-+#define foreach_btf_id(id, err) \
-+	for (err = bpf_btf_get_next_id((id), (&id)); !err; )
-+
-+/*
-+ * Scan all ids for a kernel btf with name == "vmlinux"
-+ */
-+int btf_get_kernel_id(void)
-+{
-+	struct bpf_btf_info info;
-+	__u32 len = sizeof(info);
-+	char name[64];
-+	__u32 id = 0;
-+	int err, fd;
-+
-+	foreach_btf_id(id, err) {
-+		fd = bpf_btf_get_fd_by_id(id);
-+		if (fd < 0) {
-+			if (errno == ENOENT)
-+				continue; /* expected race: BTF was unloaded */
-+			err = -errno;
-+			pr_warn("failed to get BTF object #%d FD: %d\n", id, err);
-+			return err;
-+		}
-+
-+		memset(&info, 0, sizeof(info));
-+		info.name = ptr_to_u64(name);
-+		info.name_len = sizeof(name);
-+
-+		err = bpf_obj_get_info_by_fd(fd, &info, &len);
-+		if (err) {
-+			err = -errno;
-+			pr_warn("failed to get BTF object #%d info: %d\n", id, err);
-+			return err;
-+		}
-+
-+		if (info.kernel_btf && strcmp(name, "vmlinux") == 0)
-+			return id;
-+
-+	}
-+
-+	if (err && errno != ENOENT) {
-+		err = -errno;
-+		pr_warn("failed to iterate BTF objects: %d\n", err);
-+		return err;
-+	}
-+
-+	return -ENOENT;
-+}
-\ No newline at end of file
-diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
-index 1237bcd1dd17..44075b086d1c 100644
---- a/tools/lib/bpf/btf.h
-+++ b/tools/lib/bpf/btf.h
-@@ -8,6 +8,7 @@
- #include <stdbool.h>
- #include <linux/btf.h>
- #include <linux/types.h>
-+#include <uapi/linux/bpf.h>
- 
- #include "libbpf_common.h"
- 
-@@ -90,6 +91,7 @@ LIBBPF_API __u32 btf_ext__func_info_rec_size(const struct btf_ext *btf_ext);
- LIBBPF_API __u32 btf_ext__line_info_rec_size(const struct btf_ext *btf_ext);
- 
- LIBBPF_API struct btf *libbpf_find_kernel_btf(void);
-+LIBBPF_API int btf_get_kernel_id(void);
- 
- LIBBPF_API int btf__find_str(struct btf *btf, const char *s);
- LIBBPF_API int btf__add_str(struct btf *btf, const char *s);
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index 7c4126542e2b..727daeb57f35 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -348,4 +348,5 @@ LIBBPF_0.3.0 {
- 		btf__new_split;
- 		xsk_setup_xdp_prog;
- 		xsk_socket__update_xskmap;
-+		btf_get_kernel_id
- } LIBBPF_0.2.0;
--- 
-2.26.2
+The following changes since commit b65054597872ce3aefbc6a666385eabdf9e288da:
 
+  Linux 5.10-rc6 (2020-11-29 15:50:50 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mellanox/linux.git mlx5-next
+
+for you to fetch changes up to 04b222f9577396a8d19bf2937d2a218dc2a3c7ac:
+
+  RDMA/mlx5: Remove IB representors dead code (2020-12-06 07:43:54 +0200)
+
+----------------------------------------------------------------
+Dave Ertman (1):
+      Add auxiliary bus support
+
+Greg Kroah-Hartman (3):
+      driver core: auxiliary bus: move slab.h from include file
+      driver core: auxiliary bus: make remove function return void
+      driver core: auxiliary bus: minor coding style tweaks
+
+Leon Romanovsky (11):
+      Merge tag 'auxbus-5.11-rc1' of https://git.kernel.org/.../gregkh/driver-core into mlx5-next
+      net/mlx5: Properly convey driver version to firmware
+      net/mlx5_core: Clean driver version and name
+      vdpa/mlx5: Make hardware definitions visible to all mlx5 devices
+      net/mlx5: Register mlx5 devices to auxiliary virtual bus
+      vdpa/mlx5: Connect mlx5_vdpa to auxiliary bus
+      net/mlx5e: Connect ethernet part to auxiliary bus
+      RDMA/mlx5: Convert mlx5_ib to use auxiliary bus
+      net/mlx5: Delete custom device management logic
+      net/mlx5: Simplify eswitch mode check
+      RDMA/mlx5: Remove IB representors dead code
+
+ Documentation/driver-api/auxiliary_bus.rst         | 234 +++++++++
+ Documentation/driver-api/index.rst                 |   1 +
+ drivers/base/Kconfig                               |   3 +
+ drivers/base/Makefile                              |   1 +
+ drivers/base/auxiliary.c                           | 274 ++++++++++
+ drivers/infiniband/hw/mlx5/counters.c              |   7 -
+ drivers/infiniband/hw/mlx5/ib_rep.c                | 112 ++--
+ drivers/infiniband/hw/mlx5/ib_rep.h                |  45 +-
+ drivers/infiniband/hw/mlx5/main.c                  | 153 ++++--
+ drivers/infiniband/hw/mlx5/mlx5_ib.h               |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/Kconfig    |   1 +
+ drivers/net/ethernet/mellanox/mlx5/core/dev.c      | 567 ++++++++++++++-------
+ drivers/net/ethernet/mellanox/mlx5/core/devlink.c  |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 134 ++---
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  41 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |   6 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |   8 +-
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  |  21 +-
+ .../ethernet/mellanox/mlx5/core/ipoib/ethtool.c    |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/lag.c      |  58 +--
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |  49 +-
+ .../net/ethernet/mellanox/mlx5/core/mlx5_core.h    |  33 +-
+ drivers/vdpa/mlx5/Makefile                         |   2 +-
+ drivers/vdpa/mlx5/net/main.c                       |  76 ---
+ drivers/vdpa/mlx5/net/mlx5_vnet.c                  |  53 +-
+ drivers/vdpa/mlx5/net/mlx5_vnet.h                  |  24 -
+ include/linux/auxiliary_bus.h                      |  77 +++
+ include/linux/mlx5/driver.h                        |  34 +-
+ include/linux/mlx5/eswitch.h                       |   8 +-
+ .../linux/mlx5/mlx5_ifc_vdpa.h                     |   8 +-
+ include/linux/mod_devicetable.h                    |   8 +
+ scripts/mod/devicetable-offsets.c                  |   3 +
+ scripts/mod/file2alias.c                           |   8 +
+ 34 files changed, 1413 insertions(+), 650 deletions(-)
+ create mode 100644 Documentation/driver-api/auxiliary_bus.rst
+ create mode 100644 drivers/base/auxiliary.c
+ delete mode 100644 drivers/vdpa/mlx5/net/main.c
+ delete mode 100644 drivers/vdpa/mlx5/net/mlx5_vnet.h
+ create mode 100644 include/linux/auxiliary_bus.h
+ rename drivers/vdpa/mlx5/core/mlx5_vdpa_ifc.h => include/linux/mlx5/mlx5_ifc_vdpa.h (96%)
