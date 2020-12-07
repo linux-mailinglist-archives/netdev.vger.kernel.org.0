@@ -2,112 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA7C92D0AA2
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 07:23:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 715672D0B0F
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 08:22:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725973AbgLGGXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 01:23:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57340 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725881AbgLGGXP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Dec 2020 01:23:15 -0500
-Message-ID: <fd1e65f000f3d1ce929562ca44e7644bdfc2ea76.camel@kernel.org>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607322154;
-        bh=as/7leNXHMxSqGY3OL/iZnpHK+H+oP4E5iUZwN6mWk0=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=NhH2c0pIs7IXBUr2kpDaHeVw9vvbZiS7EYKvpmiY+GeO2JLi+SN9ArDYmrRT0XShq
-         sQFYUoOXIMyueClDb0WyM0t9I9BKX+NzuOV2V7MrTf4sO151jop/VsuEklMrDFeFG2
-         nTNQZVbcE1Zyj1AT6+ejuqAbQnhN0R+No6mvMBos04IBkW4WkJOrPwwfXDn8hA0YfP
-         zyjaH4dbCd49EBG1+hkyk6uvMaLHBT4EHrpImvLBk3GVXtmTE/xjBauuMrT9yYu3Vi
-         OLbeeX+FHpYkqJI5VMgyYCG0QO66cXhZx+dhVQJls31PmNH3jo0/JDgGWl20canSER
-         0VFqOhw7X8/Kg==
-Subject: Re: [net-next V2 08/15] net/mlx5e: Add TX PTP port object support
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Eran Ben Elisha <eranbe@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Sun, 06 Dec 2020 22:22:33 -0800
-In-Reply-To: <20201205005530.lcngtpksxged2ewo@skbuf>
-References: <20201203042108.232706-1-saeedm@nvidia.com>
-         <20201203042108.232706-9-saeedm@nvidia.com>
-         <20201203182908.1d25ea3f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-         <b761c676af87a4a82e3ea4f6f5aff3d1159c63e7.camel@kernel.org>
-         <20201204122613.542c2362@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-         <999c9328747d4edbfc8d2720b886aaa269e16df8.camel@kernel.org>
-         <20201204145240.7c1a5a1e@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-         <20201205005530.lcngtpksxged2ewo@skbuf>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1726074AbgLGHVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 02:21:15 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:9123 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725853AbgLGHVP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 02:21:15 -0500
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CqF7k4s5Dz15YTH;
+        Mon,  7 Dec 2020 15:20:02 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.56) by
+ DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
+ 14.3.487.0; Mon, 7 Dec 2020 15:20:23 +0800
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kuba@kernel.org>, <huangdaode@huawei.com>, <sfr@canb.auug.org.au>,
+        "Huazhong Tan" <tanhuazhong@huawei.com>
+Subject: [PATCH net] net: hns3: remove a misused pragma packed
+Date:   Mon, 7 Dec 2020 15:20:25 +0800
+Message-ID: <1607325625-29945-1-git-send-email-tanhuazhong@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.56]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2020-12-05 at 00:55 +0000, Vladimir Oltean wrote:
-> Hi Jakub,
-> 
-> On Fri, Dec 04, 2020 at 02:52:40PM -0800, Jakub Kicinski wrote:
-> > On Fri, 04 Dec 2020 13:57:49 -0800 Saeed Mahameed wrote:
-> > > > Why not use the PTP classification helpers we already have?
-> > > 
-> > > do you mean ptp_parse_header() or the ebpf prog ?
-> > > We use skb_flow_dissect() which should be simple enough.
-> > 
-> > Not sure which exact one TBH, I just know we have helpers for this,
-> > so if we don't use them it'd be good to at least justify why.
-> > 
-> > Maybe someone with more practical knowledge here can chime in with
-> > a recommendation for a helper to find PTP frames on TX?
-> 
-> ptp_classify_raw is optimized to identify PTP event messages (the
-> only
-> ones that need to be timestamped as far as the protocol is
-> concerned).
-> PTP general messages (Follow-Up, Delay_Resp, Announce etc) will
-> return
-> PTP_CLASS_NONE from ptp_classify_raw.
-> 
+hclge_dbg_reg_info[] is defined as an array of packed structure
+accidentally. However, this array contains pointers, which are
+no longer aligned naturally, and cannot be relocated on PPC64.
+Hence, when compile-testing this driver on PPC64 with
+CONFIG_RELOCATABLE=y (e.g. PowerPC allyesconfig), there will be
+some warnings.
 
-I looked at the implementation, while it is nice to see that it is
-running an ebpf program, but it seems these functions are meant for
-those who care about the content of those PTP messages.
+Since each field in structure hclge_qos_pri_map_cmd and
+hclge_dbg_bitmap_cmd is type u8, the pragma packed is unnecessary
+for these two structures as well, so remove the pragma packed in
+hclge_debugfs.h to fix this issue, and this increases
+hclge_dbg_reg_info[] by 4 bytes per entry.
 
-Select queue has to be consistent for a specific stream so
-I'd rather lookup the well known ptp port via the standard flow
-dissector and select the queue accordingly, using any other mechanism
-might cause inconsistencies and ooo.
+Fixes: a582b78dfc33 ("net: hns3: code optimization for debugfs related to "dump reg"")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+---
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.h | 4 ----
+ 1 file changed, 4 deletions(-)
 
-also the flow dissector handles non linear skbs very nicely, whereas,
-the two ptp classifier methods don't. They actually have different
-purposes than what we are looking for.
-
-so I think we should stick with our simple flow dissector
-implementation.
-
-> But maybe there is an even better way, since this is on the TX path,
-> maybe the .ndo_select_queue operation can simply look at
-> 	skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP
-> when deciding whether to send it to the "good" queue or not. This has
-> the advantage of being less expensive than any sort of frame
-> classification.
-> 
-
-We also considered this, this is bad in our case because this will
-easily break performance for users who do setsockopt(SO_TIMESTAMPING)
-on TCP/UDP sockets that favor performance over precision but still want
-HW timestamping.
-
-> Nonetheless, some tests would need to be run. In theory, practice and
-> theory are the same, whereas in practice they aren't.
-
-In Theory, I don't agree ;-).
-
-
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.h
+index a9066e6..ca2ab6c 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.h
+@@ -35,8 +35,6 @@
+ 
+ #define HCLGE_DBG_DFX_SSU_2_OFFSET 12
+ 
+-#pragma pack(1)
+-
+ struct hclge_qos_pri_map_cmd {
+ 	u8 pri0_tc  : 4,
+ 	   pri1_tc  : 4;
+@@ -85,8 +83,6 @@ struct hclge_dbg_reg_type_info {
+ 	struct hclge_dbg_reg_common_msg reg_msg;
+ };
+ 
+-#pragma pack()
+-
+ static const struct hclge_dbg_dfx_message hclge_dbg_bios_common_reg[] = {
+ 	{false, "Reserved"},
+ 	{true,	"BP_CPU_STATE"},
+-- 
+2.7.4
 
