@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 148332D1BAC
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 22:08:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F9F92D1BAA
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 22:08:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727582AbgLGVIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 16:08:05 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:45747 "EHLO
+        id S1727566AbgLGVID (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 16:08:03 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:45776 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727020AbgLGVHu (ORCPT
+        with ESMTP id S1727044AbgLGVHu (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 16:07:50 -0500
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from borisp@mellanox.com)
         with SMTP; 7 Dec 2020 23:06:53 +0200
 Received: from gen-l-vrt-133.mtl.labs.mlnx. (gen-l-vrt-133.mtl.labs.mlnx [10.237.11.160])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0B7L6qIE029788;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0B7L6qIF029788;
         Mon, 7 Dec 2020 23:06:53 +0200
 From:   Boris Pismenny <borisp@mellanox.com>
 To:     kuba@kernel.org, davem@davemloft.net, saeedm@nvidia.com,
@@ -22,12 +22,12 @@ To:     kuba@kernel.org, davem@davemloft.net, saeedm@nvidia.com,
         viro@zeniv.linux.org.uk, edumazet@google.com
 Cc:     boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
         netdev@vger.kernel.org, benishay@nvidia.com, ogerlitz@nvidia.com,
-        yorayz@nvidia.com, Ben Ben-Ishay <benishay@mellanox.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Yoray Zack <yorayz@mellanox.com>
-Subject: [PATCH v1 net-next 06/15] nvme-tcp: Add DDP data-path
-Date:   Mon,  7 Dec 2020 23:06:40 +0200
-Message-Id: <20201207210649.19194-7-borisp@mellanox.com>
+        yorayz@nvidia.com, Yoray Zack <yorayz@mellanox.com>,
+        Ben Ben-Ishay <benishay@mellanox.com>,
+        Or Gerlitz <ogerlitz@mellanox.com>
+Subject: [PATCH v1 net-next 07/15] nvme-tcp : Recalculate crc in the end of the capsule
+Date:   Mon,  7 Dec 2020 23:06:41 +0200
+Message-Id: <20201207210649.19194-8-borisp@mellanox.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20201207210649.19194-1-borisp@mellanox.com>
 References: <20201207210649.19194-1-borisp@mellanox.com>
@@ -37,220 +37,259 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce the NVMe-TCP DDP data-path offload.
-Using this interface, the NIC hardware will scatter TCP payload directly
-to the BIO pages according to the command_id in the PDU.
-To maintain the correctness of the network stack, the driver is expected
-to construct SKBs that point to the BIO pages.
+From: Yoray Zack <yorayz@mellanox.com>
 
-The data-path interface contains two routines: tcp_ddp_setup/teardown.
-The setup provides the mapping from command_id to the request buffers,
-while the teardown removes this mapping.
+crc offload of the nvme capsule. Check if all the skb bits
+are on, and if not recalculate the crc in SW and check it.
 
-For efficiency, we introduce an asynchronous nvme completion, which is
-split between NVMe-TCP and the NIC driver as follows:
-NVMe-TCP performs the specific completion, while NIC driver performs the
-generic mq_blk completion.
+This patch reworks the receive-side crc calculation to always
+run at the end, so as to keep a single flow for both offload
+and non-offload. This change simplifies the code, but it may degrade
+performance for non-offload crc calculation.
 
 Signed-off-by: Boris Pismenny <borisp@mellanox.com>
 Signed-off-by: Ben Ben-Ishay <benishay@mellanox.com>
 Signed-off-by: Or Gerlitz <ogerlitz@mellanox.com>
 Signed-off-by: Yoray Zack <yorayz@mellanox.com>
 ---
- drivers/nvme/host/tcp.c | 119 ++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 115 insertions(+), 4 deletions(-)
+ drivers/nvme/host/tcp.c | 111 ++++++++++++++++++++++++++++++++--------
+ 1 file changed, 91 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
-index ef96e4a02bbd..534fd5c00f33 100644
+index 534fd5c00f33..3c10c8876036 100644
 --- a/drivers/nvme/host/tcp.c
 +++ b/drivers/nvme/host/tcp.c
-@@ -57,6 +57,11 @@ struct nvme_tcp_request {
- 	size_t			offset;
- 	size_t			data_sent;
- 	enum nvme_tcp_send_state state;
-+
-+	bool			offloaded;
-+	struct tcp_ddp_io	ddp;
-+	__le16			status;
-+	union nvme_result	result;
+@@ -69,6 +69,7 @@ enum nvme_tcp_queue_flags {
+ 	NVME_TCP_Q_LIVE		= 1,
+ 	NVME_TCP_Q_POLLING	= 2,
+ 	NVME_TCP_Q_OFFLOADS     = 3,
++	NVME_TCP_Q_OFF_CRC_RX   = 4,
  };
  
- enum nvme_tcp_queue_flags {
-@@ -231,10 +236,74 @@ static inline size_t nvme_tcp_pdu_last_send(struct nvme_tcp_request *req,
- #ifdef CONFIG_TCP_DDP
+ enum nvme_tcp_recv_state {
+@@ -95,6 +96,7 @@ struct nvme_tcp_queue {
+ 	size_t			data_remaining;
+ 	size_t			ddgst_remaining;
+ 	unsigned int		nr_cqe;
++	bool			ddgst_valid;
  
- bool nvme_tcp_resync_request(struct sock *sk, u32 seq, u32 flags);
-+void nvme_tcp_ddp_teardown_done(void *ddp_ctx);
- const struct tcp_ddp_ulp_ops nvme_tcp_ddp_ulp_ops = {
- 	.resync_request		= nvme_tcp_resync_request,
-+	.ddp_teardown_done	= nvme_tcp_ddp_teardown_done,
- };
+ 	/* send state */
+ 	struct nvme_tcp_request *request;
+@@ -233,6 +235,57 @@ static inline size_t nvme_tcp_pdu_last_send(struct nvme_tcp_request *req,
+ 	return nvme_tcp_pdu_data_left(req) <= len;
+ }
  
-+static
-+int nvme_tcp_teardown_ddp(struct nvme_tcp_queue *queue,
-+			  u16 command_id,
-+			  struct request *rq)
++static inline bool nvme_tcp_ddp_ddgst_ok(struct nvme_tcp_queue *queue)
 +{
-+	struct nvme_tcp_request *req = blk_mq_rq_to_pdu(rq);
-+	struct net_device *netdev = queue->ctrl->offloading_netdev;
-+	int ret;
-+
-+	if (unlikely(!netdev)) {
-+		pr_info_ratelimited("%s: netdev not found\n", __func__);
-+		return -EINVAL;
-+	}
-+
-+	ret = netdev->tcp_ddp_ops->tcp_ddp_teardown(netdev, queue->sock->sk,
-+						    &req->ddp, rq);
-+	sg_free_table_chained(&req->ddp.sg_table, SG_CHUNK_SIZE);
-+	req->offloaded = false;
-+	return ret;
++	return queue->ddgst_valid;
 +}
 +
-+void nvme_tcp_ddp_teardown_done(void *ddp_ctx)
++static inline void nvme_tcp_ddp_ddgst_update(struct nvme_tcp_queue *queue,
++						struct sk_buff *skb)
 +{
-+	struct request *rq = ddp_ctx;
-+	struct nvme_tcp_request *req = blk_mq_rq_to_pdu(rq);
-+
-+	if (!nvme_try_complete_req(rq, cpu_to_le16(req->status << 1), req->result))
-+		nvme_complete_rq(rq);
++	if (queue->ddgst_valid)
++#ifdef CONFIG_TCP_DDP_CRC
++		queue->ddgst_valid = skb->ddp_crc;
++#else
++		queue->ddgst_valid = false;
++#endif
 +}
 +
-+static
-+int nvme_tcp_setup_ddp(struct nvme_tcp_queue *queue,
-+		       u16 command_id,
-+		       struct request *rq)
++
++static int nvme_tcp_req_map_sg(struct nvme_tcp_request *req, struct request *rq)
 +{
-+	struct nvme_tcp_request *req = blk_mq_rq_to_pdu(rq);
-+	struct net_device *netdev = queue->ctrl->offloading_netdev;
 +	int ret;
 +
-+	req->offloaded = false;
-+
-+	if (unlikely(!netdev)) {
-+		pr_info_ratelimited("%s: netdev not found\n", __func__);
-+		return -EINVAL;
-+	}
-+
-+	req->ddp.command_id = command_id;
 +	req->ddp.sg_table.sgl = req->ddp.first_sgl;
 +	ret = sg_alloc_table_chained(&req->ddp.sg_table, blk_rq_nr_phys_segments(rq),
 +				     req->ddp.sg_table.sgl, SG_CHUNK_SIZE);
 +	if (ret)
 +		return -ENOMEM;
 +	req->ddp.nents = blk_rq_map_sg(rq->q, rq, req->ddp.sg_table.sgl);
-+
-+	ret = netdev->tcp_ddp_ops->tcp_ddp_setup(netdev,
-+						 queue->sock->sk,
-+						 &req->ddp);
-+	if (!ret)
-+		req->offloaded = true;
-+	return ret;
++	return 0;
 +}
 +
- static
- int nvme_tcp_offload_socket(struct nvme_tcp_queue *queue)
- {
-@@ -374,6 +443,25 @@ bool nvme_tcp_resync_request(struct sock *sk, u32 seq, u32 flags)
- 
- #else
- 
-+static
-+int nvme_tcp_setup_ddp(struct nvme_tcp_queue *queue,
-+		       u16 command_id,
-+		       struct request *rq)
++static void nvme_tcp_ddp_ddgst_recalc(struct ahash_request *hash,
++				      struct request *rq)
 +{
-+	return -EINVAL;
-+}
-+
-+static
-+int nvme_tcp_teardown_ddp(struct nvme_tcp_queue *queue,
-+			  u16 command_id,
-+			  struct request *rq)
-+{
-+	return -EINVAL;
-+}
-+
-+void nvme_tcp_ddp_teardown_done(void *ddp_ctx)
-+{}
-+
- static
- int nvme_tcp_offload_socket(struct nvme_tcp_queue *queue)
- {
-@@ -651,6 +739,7 @@ static void nvme_tcp_error_recovery(struct nvme_ctrl *ctrl)
- static int nvme_tcp_process_nvme_cqe(struct nvme_tcp_queue *queue,
- 		struct nvme_completion *cqe)
- {
 +	struct nvme_tcp_request *req;
- 	struct request *rq;
++
++	if (!rq)
++		return;
++
++	req = blk_mq_rq_to_pdu(rq);
++
++	if (!req->offloaded && nvme_tcp_req_map_sg(req, rq))
++		return;
++
++	crypto_ahash_init(hash);
++	req->ddp.sg_table.sgl = req->ddp.first_sgl;
++	ahash_request_set_crypt(hash, req->ddp.sg_table.sgl, NULL,
++				le32_to_cpu(req->data_len));
++	crypto_ahash_update(hash);
++}
++
++
+ #ifdef CONFIG_TCP_DDP
  
- 	rq = blk_mq_tag_to_rq(nvme_tcp_tagset(queue), cqe->command_id);
-@@ -662,8 +751,15 @@ static int nvme_tcp_process_nvme_cqe(struct nvme_tcp_queue *queue,
- 		return -EINVAL;
+ bool nvme_tcp_resync_request(struct sock *sk, u32 seq, u32 flags);
+@@ -289,12 +342,9 @@ int nvme_tcp_setup_ddp(struct nvme_tcp_queue *queue,
  	}
  
--	if (!nvme_try_complete_req(rq, cqe->status, cqe->result))
--		nvme_complete_rq(rq);
-+	req = blk_mq_rq_to_pdu(rq);
-+	if (req->offloaded) {
-+		req->status = cqe->status;
-+		req->result = cqe->result;
-+		nvme_tcp_teardown_ddp(queue, cqe->command_id, rq);
-+	} else {
-+		if (!nvme_try_complete_req(rq, cqe->status, cqe->result))
-+			nvme_complete_rq(rq);
-+	}
- 	queue->nr_cqe++;
+ 	req->ddp.command_id = command_id;
+-	req->ddp.sg_table.sgl = req->ddp.first_sgl;
+-	ret = sg_alloc_table_chained(&req->ddp.sg_table, blk_rq_nr_phys_segments(rq),
+-				     req->ddp.sg_table.sgl, SG_CHUNK_SIZE);
++	ret = nvme_tcp_req_map_sg(req, rq);
+ 	if (ret)
+ 		return -ENOMEM;
+-	req->ddp.nents = blk_rq_map_sg(rq->q, rq, req->ddp.sg_table.sgl);
  
- 	return 0;
-@@ -857,9 +953,18 @@ static int nvme_tcp_recv_pdu(struct nvme_tcp_queue *queue, struct sk_buff *skb,
- static inline void nvme_tcp_end_request(struct request *rq, u16 status)
- {
- 	union nvme_result res = {};
-+	struct nvme_tcp_request *req = blk_mq_rq_to_pdu(rq);
-+	struct nvme_tcp_queue *queue = req->queue;
-+	struct nvme_tcp_data_pdu *pdu = (void *)queue->pdu;
+ 	ret = netdev->tcp_ddp_ops->tcp_ddp_setup(netdev,
+ 						 queue->sock->sk,
+@@ -316,7 +366,7 @@ int nvme_tcp_offload_socket(struct nvme_tcp_queue *queue)
+ 		return -ENODEV;
+ 	}
  
--	if (!nvme_try_complete_req(rq, cpu_to_le16(status << 1), res))
--		nvme_complete_rq(rq);
-+	if (req->offloaded) {
-+		req->status = cpu_to_le16(status << 1);
-+		req->result = res;
-+		nvme_tcp_teardown_ddp(queue, pdu->command_id, rq);
-+	} else {
-+		if (!nvme_try_complete_req(rq, cpu_to_le16(status << 1), res))
-+			nvme_complete_rq(rq);
-+	}
+-	if (!(netdev->features & NETIF_F_HW_TCP_DDP)) {
++	if (!(netdev->features & (NETIF_F_HW_TCP_DDP | NETIF_F_HW_TCP_DDP_CRC_RX))) {
+ 		dev_put(netdev);
+ 		return -EOPNOTSUPP;
+ 	}
+@@ -344,6 +394,9 @@ int nvme_tcp_offload_socket(struct nvme_tcp_queue *queue)
+ 	if (netdev->features & NETIF_F_HW_TCP_DDP)
+ 		set_bit(NVME_TCP_Q_OFFLOADS, &queue->flags);
+ 
++	if (netdev->features & NETIF_F_HW_TCP_DDP_CRC_RX)
++		set_bit(NVME_TCP_Q_OFF_CRC_RX, &queue->flags);
++
+ 	return ret;
  }
  
- static int nvme_tcp_recv_data(struct nvme_tcp_queue *queue, struct sk_buff *skb,
-@@ -1135,6 +1240,7 @@ static int nvme_tcp_try_send_cmd_pdu(struct nvme_tcp_request *req)
- 	bool inline_data = nvme_tcp_has_inline_data(req);
- 	u8 hdgst = nvme_tcp_hdgst_len(queue);
- 	int len = sizeof(*pdu) + hdgst - req->offset;
-+	struct request *rq = blk_mq_rq_from_pdu(req);
- 	int flags = MSG_DONTWAIT;
+@@ -375,7 +428,7 @@ int nvme_tcp_offload_limits(struct nvme_tcp_queue *queue)
+ 		return -ENODEV;
+ 	}
+ 
+-	if (netdev->features & NETIF_F_HW_TCP_DDP &&
++	if ((netdev->features & (NETIF_F_HW_TCP_DDP | NETIF_F_HW_TCP_DDP_CRC_RX)) &&
+ 	    netdev->tcp_ddp_ops &&
+ 	    netdev->tcp_ddp_ops->tcp_ddp_limits)
+ 		ret = netdev->tcp_ddp_ops->tcp_ddp_limits(netdev, &limits);
+@@ -725,6 +778,7 @@ static void nvme_tcp_init_recv_ctx(struct nvme_tcp_queue *queue)
+ 	queue->pdu_offset = 0;
+ 	queue->data_remaining = -1;
+ 	queue->ddgst_remaining = 0;
++	queue->ddgst_valid = true;
+ }
+ 
+ static void nvme_tcp_error_recovery(struct nvme_ctrl *ctrl)
+@@ -905,7 +959,7 @@ static int nvme_tcp_recv_pdu(struct nvme_tcp_queue *queue, struct sk_buff *skb,
+ 
+ 	u64 pdu_seq = TCP_SKB_CB(skb)->seq + *offset - queue->pdu_offset;
+ 
+-	if (test_bit(NVME_TCP_Q_OFFLOADS, &queue->flags))
++	if (test_bit(NVME_TCP_Q_OFFLOADS, &queue->flags) || test_bit(NVME_TCP_Q_OFF_CRC_RX, &queue->flags))
+ 		nvme_tcp_resync_response(queue, pdu_seq);
+ 
+ 	ret = skb_copy_bits(skb, *offset,
+@@ -974,6 +1028,8 @@ static int nvme_tcp_recv_data(struct nvme_tcp_queue *queue, struct sk_buff *skb,
+ 	struct nvme_tcp_request *req;
+ 	struct request *rq;
+ 
++	if (queue->data_digest && test_bit(NVME_TCP_Q_OFF_CRC_RX, &queue->flags))
++		nvme_tcp_ddp_ddgst_update(queue, skb);
+ 	rq = blk_mq_tag_to_rq(nvme_tcp_tagset(queue), pdu->command_id);
+ 	if (!rq) {
+ 		dev_err(queue->ctrl->ctrl.device,
+@@ -1011,7 +1067,7 @@ static int nvme_tcp_recv_data(struct nvme_tcp_queue *queue, struct sk_buff *skb,
+ 		recv_len = min_t(size_t, recv_len,
+ 				iov_iter_count(&req->iter));
+ 
+-		if (queue->data_digest)
++		if (queue->data_digest && !test_bit(NVME_TCP_Q_OFF_CRC_RX, &queue->flags))
+ 			ret = skb_copy_and_hash_datagram_iter(skb, *offset,
+ 				&req->iter, recv_len, queue->rcv_hash);
+ 		else
+@@ -1031,7 +1087,6 @@ static int nvme_tcp_recv_data(struct nvme_tcp_queue *queue, struct sk_buff *skb,
+ 
+ 	if (!queue->data_remaining) {
+ 		if (queue->data_digest) {
+-			nvme_tcp_ddgst_final(queue->rcv_hash, &queue->exp_ddgst);
+ 			queue->ddgst_remaining = NVME_TCP_DIGEST_LENGTH;
+ 		} else {
+ 			if (pdu->hdr.flags & NVME_TCP_F_DATA_SUCCESS) {
+@@ -1052,8 +1107,12 @@ static int nvme_tcp_recv_ddgst(struct nvme_tcp_queue *queue,
+ 	char *ddgst = (char *)&queue->recv_ddgst;
+ 	size_t recv_len = min_t(size_t, *len, queue->ddgst_remaining);
+ 	off_t off = NVME_TCP_DIGEST_LENGTH - queue->ddgst_remaining;
++	bool offload_fail, offload_en;
++	struct request *rq = NULL;
  	int ret;
  
-@@ -1143,6 +1249,10 @@ static int nvme_tcp_try_send_cmd_pdu(struct nvme_tcp_request *req)
- 	else
- 		flags |= MSG_EOR;
++	if (test_bit(NVME_TCP_Q_OFF_CRC_RX, &queue->flags))
++		nvme_tcp_ddp_ddgst_update(queue, skb);
+ 	ret = skb_copy_bits(skb, *offset, &ddgst[off], recv_len);
+ 	if (unlikely(ret))
+ 		return ret;
+@@ -1064,17 +1123,29 @@ static int nvme_tcp_recv_ddgst(struct nvme_tcp_queue *queue,
+ 	if (queue->ddgst_remaining)
+ 		return 0;
  
-+	if (test_bit(NVME_TCP_Q_OFFLOADS, &queue->flags) &&
-+	    blk_rq_nr_phys_segments(rq) && rq_data_dir(rq) == READ)
-+		nvme_tcp_setup_ddp(queue, pdu->cmd.common.command_id, rq);
+-	if (queue->recv_ddgst != queue->exp_ddgst) {
+-		dev_err(queue->ctrl->ctrl.device,
+-			"data digest error: recv %#x expected %#x\n",
+-			le32_to_cpu(queue->recv_ddgst),
+-			le32_to_cpu(queue->exp_ddgst));
+-		return -EIO;
++	offload_fail = !nvme_tcp_ddp_ddgst_ok(queue);
++	offload_en = test_bit(NVME_TCP_Q_OFF_CRC_RX, &queue->flags);
++	if (!offload_en || offload_fail) {
++		if (offload_en && offload_fail) { // software-fallback
++			rq = blk_mq_tag_to_rq(nvme_tcp_tagset(queue),
++					      pdu->command_id);
++			nvme_tcp_ddp_ddgst_recalc(queue->rcv_hash, rq);
++		}
 +
- 	if (queue->hdr_digest && !req->offset)
- 		nvme_tcp_hdgst(queue->snd_hash, pdu, sizeof(*pdu));
++		nvme_tcp_ddgst_final(queue->rcv_hash, &queue->exp_ddgst);
++		if (queue->recv_ddgst != queue->exp_ddgst) {
++			dev_err(queue->ctrl->ctrl.device,
++				"data digest error: recv %#x expected %#x\n",
++				le32_to_cpu(queue->recv_ddgst),
++				le32_to_cpu(queue->exp_ddgst));
++			return -EIO;
++		}
+ 	}
  
-@@ -2445,6 +2555,7 @@ static blk_status_t nvme_tcp_setup_cmd_pdu(struct nvme_ns *ns,
- 	req->data_len = blk_rq_nr_phys_segments(rq) ?
- 				blk_rq_payload_bytes(rq) : 0;
- 	req->curr_bio = rq->bio;
-+	req->offloaded = false;
+ 	if (pdu->hdr.flags & NVME_TCP_F_DATA_SUCCESS) {
+-		struct request *rq = blk_mq_tag_to_rq(nvme_tcp_tagset(queue),
+-						pdu->command_id);
++		if (!rq)
++			rq = blk_mq_tag_to_rq(nvme_tcp_tagset(queue),
++					      pdu->command_id);
  
- 	if (rq_data_dir(rq) == WRITE &&
- 	    req->data_len <= nvme_tcp_inline_data_size(queue))
+ 		nvme_tcp_end_request(rq, NVME_SC_SUCCESS);
+ 		queue->nr_cqe++;
+@@ -1813,8 +1884,10 @@ static void __nvme_tcp_stop_queue(struct nvme_tcp_queue *queue)
+ 	nvme_tcp_restore_sock_calls(queue);
+ 	cancel_work_sync(&queue->io_work);
+ 
+-	if (test_bit(NVME_TCP_Q_OFFLOADS, &queue->flags))
++	if (test_bit(NVME_TCP_Q_OFFLOADS, &queue->flags) ||
++	    test_bit(NVME_TCP_Q_OFF_CRC_RX, &queue->flags))
+ 		nvme_tcp_unoffload_socket(queue);
++
+ }
+ 
+ static void nvme_tcp_stop_queue(struct nvme_ctrl *nctrl, int qid)
+@@ -1941,8 +2014,6 @@ static int nvme_tcp_alloc_admin_queue(struct nvme_ctrl *ctrl)
+ {
+ 	int ret;
+ 
+-	to_tcp_ctrl(ctrl)->offloading_netdev = NULL;
+-
+ 	ret = nvme_tcp_alloc_queue(ctrl, 0, NVME_AQ_DEPTH);
+ 	if (ret)
+ 		return ret;
 -- 
 2.24.1
 
