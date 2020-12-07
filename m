@@ -2,133 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 710832D0D93
-	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 10:58:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF2212D0DA8
+	for <lists+netdev@lfdr.de>; Mon,  7 Dec 2020 11:00:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726915AbgLGJ5q convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 7 Dec 2020 04:57:46 -0500
-Received: from coyote.holtmann.net ([212.227.132.17]:41828 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726276AbgLGJ5q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 04:57:46 -0500
-Received: from marcel-macbook.holtmann.net (unknown [37.83.193.87])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 323E2CECDE;
-        Mon,  7 Dec 2020 11:04:11 +0100 (CET)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.20.0.2.21\))
-Subject: Re: [PATCH v1 1/5] Bluetooth: advmon offload MSFT add rssi support
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <CAJQfnxG_GDsTTJ1v=Ug0MqEGmTSdeYcOhEf3rQ1hDTmvJS0JrQ@mail.gmail.com>
-Date:   Mon, 7 Dec 2020 10:56:50 +0100
-Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        Yun-Hao Chung <howardchung@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1726576AbgLGKAj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 05:00:39 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27899 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726491AbgLGKAi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 05:00:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607335152;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wZ6b7tmrNj+Z3UgMZscrtE7hUQNOmYAzTygWMxGHxZE=;
+        b=J39gPqRfjDKxV7Q23VRfwrY+hCeBFPbbk7VvwGfHhqGNPAtNrpDpl/Rk9bHUDQBZawptqJ
+        0R/+6wYH8OPnPwrJGDBdCkyrtB6lS7mVzdFDliPk2BwLAX7BsqhDVU5Om6I+jdLZRv/l6w
+        acgok4PGXdRzL4znMoIBBvESJAfK3jU=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-99-41mSVes6MbmlbX0OHA_ArA-1; Mon, 07 Dec 2020 04:59:10 -0500
+X-MC-Unique: 41mSVes6MbmlbX0OHA_ArA-1
+Received: by mail-wm1-f72.google.com with SMTP id h68so5169002wme.5
+        for <netdev@vger.kernel.org>; Mon, 07 Dec 2020 01:59:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wZ6b7tmrNj+Z3UgMZscrtE7hUQNOmYAzTygWMxGHxZE=;
+        b=ZdOh9K8kMyaKBvtzcRpxkGobIJcMgnYDhGwDmlIfYAAfveAIcBywwUtDJcsBEVtH21
+         OKfnOobk5UjTNtmM6e7S0EdNhQstMsjQqimqsmucgyHn1ZzRHtjJ0ixwJsM+UPd22mGm
+         ppoB8/YT27tOySKuN3jSqLTS+HATZHbDDVAbU0kKA4K+5h43QgFfd7etgz0dGNxHpu1t
+         aN2XJWmOkwXC55wgV75yZeSPhIysKBHv4s3NKoRXYy+O1Aax1HBuBb6uI+U9a5sTxtk0
+         KyNYffI6G/OMRUlxn5/9tX5mYdDs7wfRb3tKYm+HGY1MuTmdleVc5SHmJCMmmd9+td9z
+         djBA==
+X-Gm-Message-State: AOAM532t8IUQvRWGlwG6ZffLZqMtG8ydZE2HAva4DzedzjmeKVJANt8k
+        Bon6UZ8kS0jYdlgj5wtBkqODIIZBXm8tDNRRZbJhwyoaJOEvHv4ThTwTlvqq8pOEBoy8gftzsbc
+        WoO3cCuKAacGFcRHZ
+X-Received: by 2002:a1c:b657:: with SMTP id g84mr17392378wmf.181.1607335149352;
+        Mon, 07 Dec 2020 01:59:09 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxCFQaeUZVyXJgZGAWNTmlrtXNDqvE9bdYCTsRkM15YEqF3CEjIzOf1fKC8mI/ujuq8ZgeFaw==
+X-Received: by 2002:a1c:b657:: with SMTP id g84mr17392365wmf.181.1607335149141;
+        Mon, 07 Dec 2020 01:59:09 -0800 (PST)
+Received: from steredhat (host-79-24-227-66.retail.telecomitalia.it. [79.24.227.66])
+        by smtp.gmail.com with ESMTPSA id h98sm15379928wrh.69.2020.12.07.01.59.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Dec 2020 01:59:08 -0800 (PST)
+Date:   Mon, 7 Dec 2020 10:59:05 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Andra Paraschiv <andraprs@amazon.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        David Duncan <davdunc@amazon.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Alexander Graf <graf@amazon.de>,
+        Jorgen Hansen <jhansen@vmware.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <14E449EF-6E91-43BF-9477-61B29B20783A@holtmann.org>
-References: <20201203102936.4049556-1-apusaka@google.com>
- <20201203182903.v1.1.I92d2e2a87419730d60136680cbe27636baf94b15@changeid>
- <20B6F2AD-1A60-4E3C-84C2-E3CB7294FABC@holtmann.org>
- <CAJQfnxHDThaJ58iFSpyq4bLopeuATvd+4fOR2AAgbNaabNSMuQ@mail.gmail.com>
- <25116F72-CE7C-46B6-A83A-5D33E9142BF9@holtmann.org>
- <CAJQfnxG_GDsTTJ1v=Ug0MqEGmTSdeYcOhEf3rQ1hDTmvJS0JrQ@mail.gmail.com>
-To:     Archie Pusaka <apusaka@google.com>
-X-Mailer: Apple Mail (2.3654.20.0.2.21)
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>
+Subject: Re: [PATCH net-next v2 1/4] vm_sockets: Include flags field in the
+ vsock address data structure
+Message-ID: <20201207095905.q7rczeh54n2zy7fo@steredhat>
+References: <20201204170235.84387-1-andraprs@amazon.com>
+ <20201204170235.84387-2-andraprs@amazon.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20201204170235.84387-2-andraprs@amazon.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Archie,
+On Fri, Dec 04, 2020 at 07:02:32PM +0200, Andra Paraschiv wrote:
+>vsock enables communication between virtual machines and the host they
+>are running on. With the multi transport support (guest->host and
+>host->guest), nested VMs can also use vsock channels for communication.
+>
+>In addition to this, by default, all the vsock packets are forwarded to
+>the host, if no host->guest transport is loaded. This behavior can be
+>implicitly used for enabling vsock communication between sibling VMs.
+>
+>Add a flags field in the vsock address data structure that can be used
+>to explicitly mark the vsock connection as being targeted for a certain
+>type of communication. This way, can distinguish between different use
+>cases such as nested VMs and sibling VMs.
+>
+>Use the already available "svm_reserved1" field and mark it as a flags
+>field instead. This field can be set when initializing the vsock address
+>variable used for the connect() call.
+>
+>Changelog
+>
+>v1 -> v2
+>
+>* Update the field name to "svm_flags".
+>* Split the current patch in 2 patches.
 
->>>>> MSFT needs rssi parameter for monitoring advertisement packet,
->>>>> therefore we should supply them from mgmt.
->>>>> 
->>>>> Signed-off-by: Archie Pusaka <apusaka@chromium.org>
->>>>> Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
->>>>> Reviewed-by: Yun-Hao Chung <howardchung@google.com>
->>>> 
->>>> I don’t need any Reviewed-by if they are not catching an obvious user API breakage.
->>>> 
->>>>> ---
->>>>> 
->>>>> include/net/bluetooth/hci_core.h | 9 +++++++++
->>>>> include/net/bluetooth/mgmt.h     | 9 +++++++++
->>>>> net/bluetooth/mgmt.c             | 8 ++++++++
->>>>> 3 files changed, 26 insertions(+)
->>>>> 
->>>>> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
->>>>> index 9873e1c8cd16..42d446417817 100644
->>>>> --- a/include/net/bluetooth/hci_core.h
->>>>> +++ b/include/net/bluetooth/hci_core.h
->>>>> @@ -246,8 +246,17 @@ struct adv_pattern {
->>>>>     __u8 value[HCI_MAX_AD_LENGTH];
->>>>> };
->>>>> 
->>>>> +struct adv_rssi_thresholds {
->>>>> +     __s8 low_threshold;
->>>>> +     __s8 high_threshold;
->>>>> +     __u16 low_threshold_timeout;
->>>>> +     __u16 high_threshold_timeout;
->>>>> +     __u8 sampling_period;
->>>>> +};
->>>>> +
->>>>> struct adv_monitor {
->>>>>     struct list_head patterns;
->>>>> +     struct adv_rssi_thresholds rssi;
->>>>>     bool            active;
->>>>>     __u16           handle;
->>>>> };
->>>>> diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
->>>>> index d8367850e8cd..dc534837be0e 100644
->>>>> --- a/include/net/bluetooth/mgmt.h
->>>>> +++ b/include/net/bluetooth/mgmt.h
->>>>> @@ -763,9 +763,18 @@ struct mgmt_adv_pattern {
->>>>>     __u8 value[31];
->>>>> } __packed;
->>>>> 
->>>>> +struct mgmt_adv_rssi_thresholds {
->>>>> +     __s8 high_threshold;
->>>>> +     __le16 high_threshold_timeout;
->>>>> +     __s8 low_threshold;
->>>>> +     __le16 low_threshold_timeout;
->>>>> +     __u8 sampling_period;
->>>>> +} __packed;
->>>>> +
->>>>> #define MGMT_OP_ADD_ADV_PATTERNS_MONITOR      0x0052
->>>>> struct mgmt_cp_add_adv_patterns_monitor {
->>>>>     __u8 pattern_count;
->>>>> +     struct mgmt_adv_rssi_thresholds rssi;
->>>>>     struct mgmt_adv_pattern patterns[];
->>>>> } __packed;
->>>> 
->>>> This is something we can not do. It breaks an userspace facing API. Is the mgmt opcode 0x0052 in an already released kernel?
->>> 
->>> Yes, the opcode does exist in an already released kernel.
->>> 
->>> The DBus method which accesses this API is put behind the experimental
->>> flag, therefore we expect they are flexible enough to support changes.
->>> Previously, we already had a discussion in an email thread with the
->>> title "Offload RSSI tracking to controller", and the outcome supports
->>> this change.
->>> 
->>> Here is an excerpt of the discussion.
->> 
->> it doesn’t matter. This is fixed API now and so we can not just change it. The argument above is void. What matters if it is in already released kernel.
-> 
-> If that is the case, do you have a suggestion to allow RSSI to be
-> considered when monitoring advertisement? Would a new MGMT opcode with
-> these parameters suffice?
+Usually the changelog goes after the 3 dashes, but I'm not sure there is 
+a strict rule :-)
 
-its the only way.
+Anyway the patch LGTM:
 
-Regards
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
-Marcel
+>
+>Signed-off-by: Andra Paraschiv <andraprs@amazon.com>
+>---
+> include/uapi/linux/vm_sockets.h | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
+>
+>diff --git a/include/uapi/linux/vm_sockets.h b/include/uapi/linux/vm_sockets.h
+>index fd0ed7221645d..46735376a57a8 100644
+>--- a/include/uapi/linux/vm_sockets.h
+>+++ b/include/uapi/linux/vm_sockets.h
+>@@ -145,7 +145,7 @@
+>
+> struct sockaddr_vm {
+> 	__kernel_sa_family_t svm_family;
+>-	unsigned short svm_reserved1;
+>+	unsigned short svm_flags;
+> 	unsigned int svm_port;
+> 	unsigned int svm_cid;
+> 	unsigned char svm_zero[sizeof(struct sockaddr) -
+>-- 
+>2.20.1 (Apple Git-117)
+>
+>
+>
+>
+>Amazon Development Center (Romania) S.R.L. registered office: 27A Sf. Lazar Street, UBC5, floor 2, Iasi, Iasi County, 700045, Romania. Registered in Romania. Registration number J22/2621/2005.
+>
 
