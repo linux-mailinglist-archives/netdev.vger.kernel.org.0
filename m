@@ -2,78 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E54592D2088
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 03:13:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 110632D20B2
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 03:18:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727757AbgLHCMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 21:12:17 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:43306 "EHLO vps0.lunn.ch"
+        id S1727910AbgLHCRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 21:17:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33246 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726830AbgLHCMR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Dec 2020 21:12:17 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kmSTT-00AjgY-LL; Tue, 08 Dec 2020 03:11:31 +0100
-Date:   Tue, 8 Dec 2020 03:11:31 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jean Pihet <jean.pihet@newoldbits.com>
-Cc:     netdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Ryan Barnett <ryan.barnett@rockwellcollins.com>,
-        Conrad Ratschan <conrad.ratschan@rockwellcollins.com>,
-        Hugo Cornelis <hugo.cornelis@essensium.com>,
-        Arnout Vandecappelle <arnout.vandecappelle@essensium.com>
-Subject: Re: [PATCH v2] net: dsa: ksz8795: adjust CPU link to host interface
-Message-ID: <20201208021131.GE2475764@lunn.ch>
-References: <20201201083408.51006-1-jean.pihet@newoldbits.com>
- <20201201184100.GN2073444@lunn.ch>
- <CAORVsuXv5Gw18EeHwP36EkzF4nN5PeGerBQQa-6ruWAQRX+GoQ@mail.gmail.com>
- <20201201204516.GA2324545@lunn.ch>
- <CAORVsuXtVYKh_nCvCdA7PUWJeJbVJWD43jtkiFwXeg2Qo1mG+A@mail.gmail.com>
+        id S1725877AbgLHCRO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Dec 2020 21:17:14 -0500
+Date:   Mon, 7 Dec 2020 18:16:31 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607393793;
+        bh=aRk0tuN5gCFQ7woh8dahZNtsNwLAvKayoBIKDXzgY4g=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YtzOtiH/3gJA7+9FQu1MilnluzeCMWP+lRrTTCJZF5EafTwr5EAnplsMbSvYlpROa
+         ijBAroc1W5VosSS4wVmb4a8EeZTUEGAHw+kVAgR6Hj4JAtUEzrkP0r06Hnw07rk9XU
+         rCB8qZ9mYdTSNJrAu26whsLUAV1iHMfeZWBc+7UYHZoI2zxMF6G8Yyr2dSOwmH+vAd
+         TDVlSIzuqWrGwupa1dcP8vecmmzXjG6XDNrs8SZih+gLNbtawktx+1GsbgbUbKtkzW
+         QXwSCnolsvd8IhWTZD3oi2sQIs09zCR3C2jhVe7GEVG+glysTMutSpaifVkgJj0fEa
+         01gPFBPdzt0WA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Sven Van Asbroeck <thesven73@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        David S Miller <davem@davemloft.net>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v1 2/2] net: dsa: microchip: improve port count
+ comments
+Message-ID: <20201207181631.6cade981@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201207233116.GB2475764@lunn.ch>
+References: <20201205152814.7867-1-TheSven73@gmail.com>
+        <20201205152814.7867-2-TheSven73@gmail.com>
+        <20201207233116.GB2475764@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAORVsuXtVYKh_nCvCdA7PUWJeJbVJWD43jtkiFwXeg2Qo1mG+A@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 07, 2020 at 08:43:32PM +0100, Jean Pihet wrote:
-> Hi Andrew,
+On Tue, 8 Dec 2020 00:31:16 +0100 Andrew Lunn wrote:
+> On Sat, Dec 05, 2020 at 10:28:14AM -0500, Sven Van Asbroeck wrote:
+> > From: Sven Van Asbroeck <thesven73@gmail.com>
+> > 
+> > Port counts in microchip dsa drivers can be quite confusing:
+> > on the ksz8795, ksz_chip_data->port_cnt excludes the cpu port,
+> > yet on the ksz9477, it includes the cpu port.
+> > 
+> > Add comments to document this situation explicitly.  
 > 
-> On Tue, Dec 1, 2020 at 9:45 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > > Configure the host port of the switch to match the host interface
-> > > settings. This is useful when the switch is directly connected to the
-> > > host MAC interface.
-> >
-> > Why do you need this when no other board does? Why is your board
-> > special?
-> >
-> > As i said before, i'm guessing your board has back to back PHYs
-> > between the SoC and the switch and nobody else does. Is that the
-> > reason why? Without this, nothing is configuring the switch MAC to the
-> > results of the auto-neg between the two PHYs?
-> 
-> Yes that is the case. From here I see this patch is too specific to
-> our setup, and so cannot be considered for merging.
+> Rather than document it, we should make it uniform. Unless there is a
+> valid reason to require them to mean different things.
 
-Hi Jean
+Agreed.
 
-I never said i was too specific to your board. There are other boards
-using different switches like this. This is where the commit message
-is so important. Without understanding Why? it is hard to point you in
-the right direction.
+I wonder if we should make this effort target net-next.
 
-So you setup is:
+My concern is that for the 3 port switch the cpu_ports variable is set
+to 0x10, the same as for the 4 port one. Which makes me worried that 
+if we just allow the "+ 1" - the CPU port will not actually hit the
+register offsets its supposed to on 3 port platforms.
 
-SoC - MAC - PHY - PHY - MAC - Switch.
+Since configuring the CPU port never worked here (AFAICT) we can view
+this as a new feature / config option (even tho an important one).
 
-The SoC MAC driver is looking after the first PHY?
+So let's move to net-next, and we can "do this right".
 
-This patch is about the Switch MAC and PHY. You need the results of
-auto-neg from the PHY to be programmed into the MAC of the switch.
-
-If i remember correctly you just need a phy-handle in the CPU node,
-pointing at the PHY. See for example imx6q-b450v3.dts
-
-	 Andrew
+Does that sound sane?
