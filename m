@@ -2,108 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 569DE2D306C
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 18:01:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 301702D307E
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 18:04:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730568AbgLHRA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 12:00:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32904 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729585AbgLHRA4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 12:00:56 -0500
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90AEFC061749
-        for <netdev@vger.kernel.org>; Tue,  8 Dec 2020 09:00:12 -0800 (PST)
-Received: by mail-ej1-x641.google.com with SMTP id ce23so21792146ejb.8
-        for <netdev@vger.kernel.org>; Tue, 08 Dec 2020 09:00:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HCXU1EZEtOO7iYIk2OjCuIxcl89xOmIC4+0USBu4TuI=;
-        b=Zb7ZG/hqBfgN0QuFE3o+CD/i8q4F2cECvmxQVTjc4DRKpfXkPg9PBEUR7PsQrW64F7
-         5Gi8f9hi6qePuzJL8QN9/vQ+iIqz+PWNMALz+O4QMuFszMrqvQ9m1xeOHvtm1ZcCiRak
-         HsC5fBkJhL+ZHTJbUnEnuKHPSkdx8xMEu4SIaKJrWWxaQK3OYKkyRuHe3gvgxkq1pMfG
-         3I5FxufL0EXtbuBNP/efCUyFgfqyz9GwhBqajb4HCMfgGVnajBBvKFjUUH0vwGRCBIpw
-         GMcGPVgb4O5+mXjsUStmBFLuv/m3/OrqeLDX9n9MyYamI23RqufNMDh3EpHpbHlAfqke
-         lC7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HCXU1EZEtOO7iYIk2OjCuIxcl89xOmIC4+0USBu4TuI=;
-        b=IXGebXI/MExDOlDIraHhf3efJ46gpiQUN4HClne47A00o/+5kqf/uZML65WB4qpHgL
-         MZ5tyhIF8+d5yCuBA/5eViYHM+wYDo/g87HIZCSAQ6WDhsytOu7CDeJaexD/TpTuurGJ
-         9nAs5E1PQWZv6UfN/lC7Jdwto9NUukKLwAZpcSpBBGDJN+OVKF3roE6BH6PHhFklo/EN
-         yQ9PtrUv6Pu9b5EfHmkNIRDpOC3DmEh6PS9eTelz12oNfUVpJwOdA8Xe70wSith/RZO0
-         kj7i7+Zyzkr3QKn84JBcHd0cabYefYTK6T9mFMdbriSFFzhxJazT3cqfmuZGAH2gLTtS
-         eeQg==
-X-Gm-Message-State: AOAM531ND7+kfsPZZO2l5ZO0msp0SoEfw/DUt0w5eBsGKb7zKSDEeHcl
-        ySeDhdjEz5jvrDPw2uBXrbuKUep31LM7Vgkb/GgYgA==
-X-Google-Smtp-Source: ABdhPJx7Lkeu6dtyqRm6AY0hjAqvGI/1iXFouIvsad/63I1MPNfnni1R1luYOXTba1Fb6GsyOU/5D1VfppHMGCQuXSo=
-X-Received: by 2002:a17:906:e94c:: with SMTP id jw12mr24259158ejb.56.1607446810993;
- Tue, 08 Dec 2020 09:00:10 -0800 (PST)
+        id S1730612AbgLHRD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 12:03:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47042 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729585AbgLHRD6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Dec 2020 12:03:58 -0500
+Date:   Tue, 8 Dec 2020 09:03:15 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607446998;
+        bh=hOxuE1yQii1MZ5uR5LWDKoL24MnmLt2SEUCCB265/ow=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Zy2Icuu6Tc/wAPCjg+hlXbwqWtI/np7rvQJKtMOPYjyv4FEfAqW+1AVNsxKCcRl7t
+         TW4Ejn07tpvAdxiHNRWpAZCA8IVmpUG1Pf7MwYnoSL1KKIBqTuzZzPOQnQflPxmNyT
+         cb+fskkE89kZaYau5mk5U/nJCUyr8D/8v2rN9nkxolTXENRB7dTUwVXN6fZxReOjb0
+         yEB5HcrgrNcDF7x5yw4LoxLOEhc2f9KekGiUmWQH3gAwNsf2bDCkK/X9l2WdaZvw9X
+         bcEreRZSpa5G+uVEqztFXnQ0zPN80WapmHRiK7z06NTfWp7bxyCzyAqvFA3Csk8nek
+         ehgqZ3I8dbXfw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Romain Perier <romain.perier@gmail.com>,
+        Allen Pais <apais@linux.microsoft.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
+        Jiri Benc <jbenc@redhat.com>, oss-drivers@netronome.com,
+        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf v2 0/7] selftests/bpf: Restore test_offload.py to
+ working order
+Message-ID: <20201208090315.5106c049@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <87360gidoo.fsf@toke.dk>
+References: <160708272217.192754.14019805999368221369.stgit@toke.dk>
+        <87360gidoo.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20201207224526.95773-1-awogbemila@google.com> <CAKgT0UeRdj4ek=3OZQSHLT8NNH04k+ziK_3LVtBpr4T8k=+U9w@mail.gmail.com>
-In-Reply-To: <CAKgT0UeRdj4ek=3OZQSHLT8NNH04k+ziK_3LVtBpr4T8k=+U9w@mail.gmail.com>
-From:   David Awogbemila <awogbemila@google.com>
-Date:   Tue, 8 Dec 2020 09:00:00 -0800
-Message-ID: <CAL9ddJc0CbXrSz5ymt_Bp5v47oYKwD+QFqTymeLg5ywi8ts9Xw@mail.gmail.com>
-Subject: Re: [PATCH net-next v10 0/4] GVE Raw Addressing
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>, Saeed Mahameed <saeed@kernel.org>,
-        Alexander Duyck <alexanderduyck@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 7, 2020 at 7:17 PM Alexander Duyck
-<alexander.duyck@gmail.com> wrote:
->
-> On Mon, Dec 7, 2020 at 2:45 PM David Awogbemila <awogbemila@google.com> wrote:
+On Tue, 08 Dec 2020 15:18:31 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> writes:
+>=20
+> > This series restores the test_offload.py selftest to working order. It =
+seems a
+> > number of subtle behavioural changes have crept into various subsystems=
+ which
+> > broke test_offload.py in a number of ways. Most of these are fairly ben=
+ign
+> > changes where small adjustments to the test script seems to be the best=
+ fix, but
+> > one is an actual kernel bug that I've observed in the wild caused by a =
+bad
+> > interaction between xdp_attachment_flags_ok() and the rework of XDP pro=
+gram
+> > handling in the core netdev code.
 > >
-> > Patchset description:
-> > This  patchset introduces "raw addressing" mode to the GVE driver.
-> > Previously (in "queue_page_list" or "qpl" mode), the driver would
-> > pre-allocate and dma_map buffers to be used on egress and ingress.
-> > On egress, it would copy data from the skb provided to the
-> > pre-allocated buffers - this was expensive.
-> > In raw addressing mode, the driver can avoid this copy and simply
-> > dma_map the skb's data so that the NIC can use it.
-> > On ingress, the driver passes buffers up to the networking stack and
-> > then frees and reallocates buffers when necessary instead of using
-> > skb_copy_to_linear_data.
-> > Patch 3 separates the page refcount tracking mechanism
-> > into a function gve_rx_can_recycle_buffer which uses get_page - this will
-> > be changed in a future patch to eliminate the use of get_page in tracking
-> > page refcounts.
+> > Patch 1 fixes the bug by removing xdp_attachment_flags_ok(), and the re=
+minder of
+> > the patches are adjustments to test_offload.py, including a new feature=
+ for
+> > netdevsim to force a BPF verification fail. Please see the individual p=
+atches
+> > for details.
 > >
-> > Changes from v9:
-> >   Patch 4: Use u64, not u32 for new tx stat counters.
+> > Changelog:
 > >
-> > Catherine Sullivan (3):
-> >   gve: Add support for raw addressing device option
-> >   gve: Add support for raw addressing to the rx path
-> >   gve: Add support for raw addressing in the tx path
-> >
-> > David Awogbemila (1):
-> >   gve: Rx Buffer Recycling
-> >
-> >
-> >  drivers/net/ethernet/google/gve/gve.h         |  39 +-
-> >  drivers/net/ethernet/google/gve/gve_adminq.c  |  89 ++++-
-> >  drivers/net/ethernet/google/gve/gve_adminq.h  |  15 +-
-> >  drivers/net/ethernet/google/gve/gve_desc.h    |  19 +-
-> >  drivers/net/ethernet/google/gve/gve_ethtool.c |   2 +
-> >  drivers/net/ethernet/google/gve/gve_main.c    |  11 +-
-> >  drivers/net/ethernet/google/gve/gve_rx.c      | 364 +++++++++++++-----
-> >  drivers/net/ethernet/google/gve/gve_tx.c      | 197 ++++++++--
-> >  8 files changed, 574 insertions(+), 162 deletions(-)
-> >
-> > Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
->
-> Normally the reviewed-by should be included on the individual patches
-> instead of here. It can be moved if you end up needing to resubmit.
+> > v2:
+> > - Replace xdp_attachment_flags_ok() with a check in dev_xdp_attach()
+> > - Better packing of struct nsim_dev =20
+>=20
+> Any feedback on v2? Would be great to get it merged before the final
+> 5.10 release :)
 
-Thanks, I'll take note.
+LGTM but if my opinion mattered this could would not have been changed
+in the first place :)
