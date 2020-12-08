@@ -2,123 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0D522D224E
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 05:53:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED5B72D2264
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 05:56:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727096AbgLHEvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 23:51:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33150 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726396AbgLHEvl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 23:51:41 -0500
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81F7DC061749;
-        Mon,  7 Dec 2020 20:51:01 -0800 (PST)
-Received: by mail-ed1-x544.google.com with SMTP id i24so8352583edj.8;
-        Mon, 07 Dec 2020 20:51:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LpBxApSP8rCkKlkJaOOFJxIK7H0arGSthSf/Abqc1f0=;
-        b=VcYmqqFkZcsz7ruK90wqwWcXsd76SC0LUJJ98io9ZKofQcbxNTMBIXLdfU/iaC0MpG
-         /VDzjogKNREO57usDtzHJ5gBV4zXFWKvPbBmfiunp5uKqvt31DFaAN0vY/72GVkNbbG3
-         odiQjoM5lrXpeu7ExSfIl20XVCYp4/NHEqEu83rUF03bAXO7U4Y9RLIQNWMrbVzYINiY
-         kOSvwzl/VpcNjHA0CYD9MlE1gTm4uvu/hxPOw6d6682gqYIS1xNgEeIrCGo5E5Rlkhqt
-         CucT/2rIdbGpjmIxyJoIJPyCIgF9ij8TShnlQJc8TjPXrz/98fvgKpaPRQSwOXPFEo2w
-         rCKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LpBxApSP8rCkKlkJaOOFJxIK7H0arGSthSf/Abqc1f0=;
-        b=EZ35Eh9aRC/0hVRdxRy2FEgylUovJ6FEzGcHS00Sverftg7nZ0Ln25vqJNJiDWNkrL
-         JMDhyrsTJLjjBUgAYhXV92Ebv9WTxpG5gp11KOy/x5DDDnjT9B7S0/QH648w8uaah1lH
-         M8fjqdZmGP8ned2sno7wr6Ze/Hy5NjyAJg/fuC2vkJzmpZefz1A3tgC3a6Px2v21dGCo
-         iM7jUr5pj8G/lg1OzmrzaBmJHkw0qnyLgoiCoY3GfPr7xRhg1o5Kp0vJNsv1BDWPB8q9
-         80zoEsz0MnnZ0q15OI6MlbH1mQMEEu8kv2qUyN29dOIkebgb1+9PviqOvZNqqsFOkDwq
-         HiLg==
-X-Gm-Message-State: AOAM530lF1tb/fOY6bngMZrPrPCKfFJ3R9UP48ahoDLPkmkU6bLl0ziJ
-        oGCKTF0k/jWXc+F958bdCH8=
-X-Google-Smtp-Source: ABdhPJwJWwskX0ehYSyo/1zgQiqkcF4qXSsR/UjOZTLyj1endimvm9CQVWDIrjMNDUJyKgV7JIh+rg==
-X-Received: by 2002:a05:6402:b57:: with SMTP id bx23mr22763851edb.191.1607403060074;
-        Mon, 07 Dec 2020 20:51:00 -0800 (PST)
-Received: from andrea (host-95-239-64-30.retail.telecomitalia.it. [95.239.64.30])
-        by smtp.gmail.com with ESMTPSA id t26sm14439420eji.22.2020.12.07.20.50.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Dec 2020 20:50:59 -0800 (PST)
-Date:   Tue, 8 Dec 2020 05:50:50 +0100
-From:   Andrea Parri <parri.andrea@gmail.com>
-To:     Michael Kelley <mikelley@microsoft.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        Andres Beltran <lkmlabelt@gmail.com>,
-        Saruhan Karademir <skarade@microsoft.com>,
-        Juan Vazquez <juvazq@microsoft.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>
-Subject: Re: [PATCH v2] Drivers: hv: vmbus: Copy packets sent by Hyper-V out
- of the ring buffer
-Message-ID: <20201208045050.GA9609@andrea>
-References: <20201109100727.9207-1-parri.andrea@gmail.com>
- <MW2PR2101MB1052B7CBB14283AA066BF125D7CF1@MW2PR2101MB1052.namprd21.prod.outlook.com>
+        id S1727566AbgLHEyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 23:54:02 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:58180 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727451AbgLHEyB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 23:54:01 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0B84nxYX064111;
+        Tue, 8 Dec 2020 04:52:35 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=corp-2020-01-29;
+ bh=1e3cV7XKyt5cBPHNeWYhYMHu3W87CKppja6U1Jvw5F4=;
+ b=V+G180Fh0lHbcmydQJqS5i+cerb42SoRrRI9QCXlQMjyWKKfj0acXqExTQUiK+7OEtft
+ OuMy/8L57grCegXY4FPi2mfpdUD9NETOrjU6XyLEGnB6yCKU9e30d2WSgQTsYBxq/cMN
+ 5junVfgiRpfFB5rc1EfDtZHP43anCs3FIrUtz16u4yPsKG0NCInMT5yeMTaPCX1MMJeq
+ qZ1GHIcbwNatFRQ/tELhwJDJybfqjlIskC/pDoCLpTPJ2KTrod7PX9rst5aaRTC3xIQA
+ veh/+mbPHLjYXfePq5oiUCHv2+7Gowf8M2KKiHFzojpZKSSSQD2meZy2nTRpI8CVh6TQ Yg== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2120.oracle.com with ESMTP id 35825m0srp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 08 Dec 2020 04:52:35 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0B84ocFe155422;
+        Tue, 8 Dec 2020 04:52:34 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3020.oracle.com with ESMTP id 358kys9m8t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 08 Dec 2020 04:52:34 +0000
+Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 0B84qX4M159553;
+        Tue, 8 Dec 2020 04:52:33 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3020.oracle.com with ESMTP id 358kys9m7s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 08 Dec 2020 04:52:33 +0000
+Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0B84qDZf015901;
+        Tue, 8 Dec 2020 04:52:15 GMT
+Received: from ca-mkp.ca.oracle.com (/10.156.108.201)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 07 Dec 2020 20:52:13 -0800
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+To:     linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
+        coreteam@netfilter.org, selinux@vger.kernel.org,
+        Miguel Ojeda <ojeda@kernel.org>, Joe Perches <joe@perches.com>,
+        linux-hardening@vger.kernel.org, reiserfs-devel@vger.kernel.org,
+        amd-gfx@lists.freedesktop.org, patches@opensource.cirrus.com,
+        linux-fbdev@vger.kernel.org, keyrings@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-geode@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-hams@vger.kernel.org, linux-ext4@vger.kernel.org,
+        wcn36xx@lists.infradead.org, GR-everest-linux-l2@marvell.com,
+        x86@kernel.org, linux-watchdog@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-cifs@vger.kernel.org,
+        linux-nfs@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-usb@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-atm-general@lists.sourceforge.net,
+        linux-wireless@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-decnet-user@lists.sourceforge.net,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        netfilter-devel@vger.kernel.org, target-devel@vger.kernel.org,
+        linux-integrity@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-mediatek@lists.infradead.org,
+        Kees Cook <keescook@chromium.org>,
+        samba-technical@lists.samba.org, ceph-devel@vger.kernel.org,
+        drbd-dev@tron.linbit.com, intel-gfx@lists.freedesktop.org,
+        dm-devel@redhat.com, linux-acpi@vger.kernel.org,
+        linux-ide@vger.kernel.org, xen-devel@lists.xenproject.org,
+        op-tee@lists.trustedfirmware.org, linux-hwmon@vger.kernel.org,
+        linux-sctp@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-mtd@lists.infradead.org, linux-input@vger.kernel.org,
+        linux-can@vger.kernel.org, rds-devel@oss.oracle.com,
+        oss-drivers@netronome.com, tipc-discussion@lists.sourceforge.net,
+        cluster-devel@redhat.com, linux-rdma@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-block@vger.kernel.org,
+        usb-storage@lists.one-eyed-alien.net,
+        linux1394-devel@lists.sourceforge.net, alsa-devel@alsa-project.org,
+        linux-i3c@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-afs@lists.infradead.org, nouveau@lists.freedesktop.org,
+        GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com, linux-mm@kvack.org,
+        intel-wired-lan@lists.osuosl.org, linux-renesas-soc@vger.kernel.org
+Subject: Re: (subset) [PATCH 000/141] Fix fall-through warnings for Clang
+Date:   Mon,  7 Dec 2020 23:52:01 -0500
+Message-Id: <160740299787.710.4201881220590518200.b4-ty@oracle.com>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <cover.1605896059.git.gustavoars@kernel.org>
+References: <cover.1605896059.git.gustavoars@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <MW2PR2101MB1052B7CBB14283AA066BF125D7CF1@MW2PR2101MB1052.namprd21.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9828 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 adultscore=0 bulkscore=0
+ phishscore=0 mlxlogscore=740 clxscore=1015 priorityscore=1501 mlxscore=0
+ spamscore=0 lowpriorityscore=0 malwarescore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2012080029
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > @@ -419,17 +446,52 @@ static u32 hv_pkt_iter_avail(const struct hv_ring_buffer_info *rbi)
-> >  struct vmpacket_descriptor *hv_pkt_iter_first(struct vmbus_channel *channel)
-> >  {
-> >  	struct hv_ring_buffer_info *rbi = &channel->inbound;
-> > -	struct vmpacket_descriptor *desc;
-> > +	struct vmpacket_descriptor *desc, *desc_copy;
-> > +	u32 bytes_avail, pkt_len, pkt_offset;
-> > 
-> > -	hv_debug_delay_test(channel, MESSAGE_DELAY);
-> > -	if (hv_pkt_iter_avail(rbi) < sizeof(struct vmpacket_descriptor))
-> > +	desc = hv_pkt_iter_first_raw(channel);
-> > +	if (!desc)
-> >  		return NULL;
-> > 
-> > -	desc = hv_get_ring_buffer(rbi) + rbi->priv_read_index;
-> > -	if (desc)
-> > -		prefetch((char *)desc + (desc->len8 << 3));
-> > +	bytes_avail = hv_pkt_iter_avail(rbi);
-> > +
-> > +	/*
-> > +	 * Ensure the compiler does not use references to incoming Hyper-V values (which
-> > +	 * could change at any moment) when reading local variables later in the code
-> > +	 */
-> > +	pkt_len = READ_ONCE(desc->len8) << 3;
-> > +	pkt_offset = READ_ONCE(desc->offset8) << 3;
-> > +
-> > +	/*
-> > +	 * If pkt_len is invalid, set it to the smaller of hv_pkt_iter_avail() and
-> > +	 * rbi->pkt_buffer_size
-> > +	 */
-> > +	if (rbi->pkt_buffer_size < bytes_avail)
-> > +		bytes_avail = rbi->pkt_buffer_size;
-> 
-> I think the above could be combined with the earlier call to hv_pkt_iter_avail(),
-> and more logically expressed as:
-> 
-> 	bytes_avail = min(rbi->pkt_buffer_size, hv_pkt_iter_avail(rbi));
-> 
-> 
-> This is a minor nit.  Everything else in this patch looks good to me.
+On Fri, 20 Nov 2020 12:21:39 -0600, Gustavo A. R. Silva wrote:
 
-Thanks for the feedback, Michael; I'll send v3 to address it shortly.
+> This series aims to fix almost all remaining fall-through warnings in
+> order to enable -Wimplicit-fallthrough for Clang.
+> 
+> In preparation to enable -Wimplicit-fallthrough for Clang, explicitly
+> add multiple break/goto/return/fallthrough statements instead of just
+> letting the code fall through to the next case.
+> 
+> [...]
 
-  Andrea
+Applied to 5.11/scsi-queue, thanks!
+
+[054/141] target: Fix fall-through warnings for Clang
+          https://git.kernel.org/mkp/scsi/c/492096ecfa39
+
+-- 
+Martin K. Petersen	Oracle Linux Engineering
