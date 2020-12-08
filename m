@@ -2,72 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76CB42D2C71
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 14:59:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 947392D2CF1
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 15:17:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729744AbgLHN56 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 08:57:58 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:9133 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729386AbgLHN55 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 08:57:57 -0500
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Cr1ty5bwtz15YR2;
-        Tue,  8 Dec 2020 21:56:42 +0800 (CST)
-Received: from ubuntu.network (10.175.138.68) by
- DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
- 14.3.487.0; Tue, 8 Dec 2020 21:57:03 +0800
-From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <jcliburn@gmail.com>, <chris.snook@gmail.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Zheng Yongjun <zhengyongjun3@huawei.com>
-Subject: [PATCH net-next] net: atheros: simplify the return expression of atl2_phy_setup_autoneg_adv()
-Date:   Tue, 8 Dec 2020 21:57:30 +0800
-Message-ID: <20201208135730.11926-1-zhengyongjun3@huawei.com>
-X-Mailer: git-send-email 2.22.0
+        id S1729829AbgLHORd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 09:17:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35648 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729524AbgLHORd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 09:17:33 -0500
+X-Greylist: delayed 994 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Dec 2020 06:16:52 PST
+Received: from orbyte.nwl.cc (orbyte.nwl.cc [IPv6:2001:41d0:e:133a::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A50BCC0613D6
+        for <netdev@vger.kernel.org>; Tue,  8 Dec 2020 06:16:52 -0800 (PST)
+Received: from n0-1 by orbyte.nwl.cc with local (Exim 4.94)
+        (envelope-from <n0-1@orbyte.nwl.cc>)
+        id 1kmdXJ-0006n8-82; Tue, 08 Dec 2020 15:00:13 +0100
+Date:   Tue, 8 Dec 2020 15:00:13 +0100
+From:   Phil Sutter <phil@nwl.cc>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        linux-crypto@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v2] xfrm: interface: Don't hide plain packets from
+ netfilter
+Message-ID: <20201208140013.GX4647@orbyte.nwl.cc>
+Mail-Followup-To: Phil Sutter <phil@nwl.cc>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        linux-crypto@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20201207134309.16762-1-phil@nwl.cc>
+ <9d9cb6dc-32a3-ff1a-5111-7688ce7a2897@6wind.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.138.68]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <9d9cb6dc-32a3-ff1a-5111-7688ce7a2897@6wind.com>
+Sender:  <n0-1@orbyte.nwl.cc>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Simplify the return expression.
+Hi Nicolas,
 
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
----
- drivers/net/ethernet/atheros/atlx/atl2.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+On Tue, Dec 08, 2020 at 10:02:16AM +0100, Nicolas Dichtel wrote:
+> Le 07/12/2020 à 14:43, Phil Sutter a écrit :
+[...]
+> > diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
+> > index aa4cdcf69d471..24af61c95b4d4 100644
+> > --- a/net/xfrm/xfrm_interface.c
+> > +++ b/net/xfrm/xfrm_interface.c
+> > @@ -317,7 +317,8 @@ xfrmi_xmit2(struct sk_buff *skb, struct net_device *dev, struct flowi *fl)
+> >  	skb_dst_set(skb, dst);
+> >  	skb->dev = tdev;
+> >  
+> > -	err = dst_output(xi->net, skb->sk, skb);
+> > +	err = NF_HOOK(skb_dst(skb)->ops->family, NF_INET_LOCAL_OUT, xi->net,
+> skb->protocol must be correctly set, maybe better to use it instead of
+> skb_dst(skb)->ops->family?
 
-diff --git a/drivers/net/ethernet/atheros/atlx/atl2.c b/drivers/net/ethernet/atheros/atlx/atl2.c
-index 7b80d924632a..f016f2e12ee7 100644
---- a/drivers/net/ethernet/atheros/atlx/atl2.c
-+++ b/drivers/net/ethernet/atheros/atlx/atl2.c
-@@ -2549,7 +2549,6 @@ static s32 atl2_write_phy_reg(struct atl2_hw *hw, u32 reg_addr, u16 phy_data)
-  */
- static s32 atl2_phy_setup_autoneg_adv(struct atl2_hw *hw)
- {
--	s32 ret_val;
- 	s16 mii_autoneg_adv_reg;
- 
- 	/* Read the MII Auto-Neg Advertisement Register (Address 4). */
-@@ -2605,12 +2604,7 @@ static s32 atl2_phy_setup_autoneg_adv(struct atl2_hw *hw)
- 
- 	hw->mii_autoneg_adv_reg = mii_autoneg_adv_reg;
- 
--	ret_val = atl2_write_phy_reg(hw, MII_ADVERTISE, mii_autoneg_adv_reg);
--
--	if (ret_val)
--		return ret_val;
--
--	return 0;
-+	return atl2_write_phy_reg(hw, MII_ADVERTISE, mii_autoneg_adv_reg);
- }
- 
- /*
--- 
-2.22.0
+skb->protocol holds ETH_P_* values in network byte order, NF_HOOK()
+expects an NFPROTO_* value, so this would at least not be a simple
+replacement. Actually I copied the code from xfrm_output_resume() in
+xfrm_output.c, where skb_dst(skb)->ops is dereferenced without checking
+as well. Do you think this is risky?
 
+> > +		      skb->sk, skb, NULL, skb_dst(skb)->dev, dst_output);
+> And here, tdev instead of skb_dst(skb)->dev ?
+
+Well yes, tdev was set to dst->dev earlier. Likewise I could use dst
+directly instead of skb_dst(skb) to simplify the call a bit further.
+OTOH I like how in the version above it is clear that skb's dst should
+be used, irrespective of the code above (and any later changes that may
+receive). No strong opinion though, so if your version is regarded the
+preferred one, I'm fine with that.
+
+Thanks, Phil
