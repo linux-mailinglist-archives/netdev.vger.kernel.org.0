@@ -2,80 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 947392D2CF1
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 15:17:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A93062D2C8A
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 15:05:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729829AbgLHORd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 09:17:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35648 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729524AbgLHORd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 09:17:33 -0500
-X-Greylist: delayed 994 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Dec 2020 06:16:52 PST
-Received: from orbyte.nwl.cc (orbyte.nwl.cc [IPv6:2001:41d0:e:133a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A50BCC0613D6
-        for <netdev@vger.kernel.org>; Tue,  8 Dec 2020 06:16:52 -0800 (PST)
-Received: from n0-1 by orbyte.nwl.cc with local (Exim 4.94)
-        (envelope-from <n0-1@orbyte.nwl.cc>)
-        id 1kmdXJ-0006n8-82; Tue, 08 Dec 2020 15:00:13 +0100
-Date:   Tue, 8 Dec 2020 15:00:13 +0100
-From:   Phil Sutter <phil@nwl.cc>
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        linux-crypto@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2] xfrm: interface: Don't hide plain packets from
- netfilter
-Message-ID: <20201208140013.GX4647@orbyte.nwl.cc>
-Mail-Followup-To: Phil Sutter <phil@nwl.cc>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        linux-crypto@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20201207134309.16762-1-phil@nwl.cc>
- <9d9cb6dc-32a3-ff1a-5111-7688ce7a2897@6wind.com>
+        id S1729651AbgLHOEY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 09:04:24 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:56909 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726338AbgLHOEY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 09:04:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607436177;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=X6d4iuw/2zncrstw5QmGL4uRz/t+VxjNUWTz4LWJVQk=;
+        b=jLnL6GiAiDIbs0Q10gN1XWeh2+MfzncRdv57x2pyfUQRCObeziqJ9+f97/Dy9V3qxklTb+
+        AzOnKm8sOSoDshQTNu9fboQ3m3/QJMGKCgzlaSw6bR3df9c1VbQc8rB9K2+cShHwH/qurG
+        3ahYVZIdY4mxJGpVENYRPm7xwQF9XqI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-237-1yQZHnjvMACN12KejRdUFg-1; Tue, 08 Dec 2020 09:02:47 -0500
+X-MC-Unique: 1yQZHnjvMACN12KejRdUFg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E3F2E858186;
+        Tue,  8 Dec 2020 14:02:44 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-116-67.rdu2.redhat.com [10.10.116.67])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A45115D9F8;
+        Tue,  8 Dec 2020 14:02:42 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <955415.1607433903@warthog.procyon.org.uk>
+References: <955415.1607433903@warthog.procyon.org.uk> <118876.1607093975@warthog.procyon.org.uk> <2F96670A-58DC-43A6-A20E-696803F0BFBA@oracle.com> <160518586534.2277919.14475638653680231924.stgit@warthog.procyon.org.uk>
+To:     Chuck Lever <chuck.lever@oracle.com>,
+        Ard Biesheuvel <ardb@kernel.org>
+Cc:     dhowells@redhat.com, Bruce Fields <bfields@fieldses.org>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        linux-crypto@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-afs@lists.infradead.org
+Subject: Re: Why the auxiliary cipher in gss_krb5_crypto.c?
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <9d9cb6dc-32a3-ff1a-5111-7688ce7a2897@6wind.com>
-Sender:  <n0-1@orbyte.nwl.cc>
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <959899.1607436161.1@warthog.procyon.org.uk>
+Date:   Tue, 08 Dec 2020 14:02:41 +0000
+Message-ID: <959900.1607436161@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nicolas,
+David Howells <dhowells@redhat.com> wrote:
 
-On Tue, Dec 08, 2020 at 10:02:16AM +0100, Nicolas Dichtel wrote:
-> Le 07/12/2020 à 14:43, Phil Sutter a écrit :
-[...]
-> > diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
-> > index aa4cdcf69d471..24af61c95b4d4 100644
-> > --- a/net/xfrm/xfrm_interface.c
-> > +++ b/net/xfrm/xfrm_interface.c
-> > @@ -317,7 +317,8 @@ xfrmi_xmit2(struct sk_buff *skb, struct net_device *dev, struct flowi *fl)
-> >  	skb_dst_set(skb, dst);
-> >  	skb->dev = tdev;
-> >  
-> > -	err = dst_output(xi->net, skb->sk, skb);
-> > +	err = NF_HOOK(skb_dst(skb)->ops->family, NF_INET_LOCAL_OUT, xi->net,
-> skb->protocol must be correctly set, maybe better to use it instead of
-> skb_dst(skb)->ops->family?
+> I wonder - would it make sense to reserve two arrays of scatterlist structs
+> and a mutex per CPU sufficient to map up to 1MiB of pages with each array
+> while the krb5 service is in use?
 
-skb->protocol holds ETH_P_* values in network byte order, NF_HOOK()
-expects an NFPROTO_* value, so this would at least not be a simple
-replacement. Actually I copied the code from xfrm_output_resume() in
-xfrm_output.c, where skb_dst(skb)->ops is dereferenced without checking
-as well. Do you think this is risky?
+Actually, simply reserving a set per CPU is probably unnecessary.  We could,
+say, set a minimum and a maximum on the reservations (say 2 -> 2*nr_cpus) and
+then allocate new ones when we run out.  Then let the memory shrinker clean
+them up off an lru list.
 
-> > +		      skb->sk, skb, NULL, skb_dst(skb)->dev, dst_output);
-> And here, tdev instead of skb_dst(skb)->dev ?
+David
 
-Well yes, tdev was set to dst->dev earlier. Likewise I could use dst
-directly instead of skb_dst(skb) to simplify the call a bit further.
-OTOH I like how in the version above it is clear that skb's dst should
-be used, irrespective of the code above (and any later changes that may
-receive). No strong opinion though, so if your version is regarded the
-preferred one, I'm fine with that.
-
-Thanks, Phil
