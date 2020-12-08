@@ -2,62 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D10F2D244E
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 08:26:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA2852D2450
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 08:27:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726441AbgLHHZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 02:25:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56662 "EHLO
+        id S1726840AbgLHH0X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 02:26:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726138AbgLHHZs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 02:25:48 -0500
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3AA8C061793
-        for <netdev@vger.kernel.org>; Mon,  7 Dec 2020 23:25:07 -0800 (PST)
-Received: by mail-qt1-x841.google.com with SMTP id 7so11387237qtp.1
-        for <netdev@vger.kernel.org>; Mon, 07 Dec 2020 23:25:07 -0800 (PST)
+        with ESMTP id S1725208AbgLHH0W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 02:26:22 -0500
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C7FEC061794
+        for <netdev@vger.kernel.org>; Mon,  7 Dec 2020 23:25:42 -0800 (PST)
+Received: by mail-qt1-x842.google.com with SMTP id b9so11376784qtr.2
+        for <netdev@vger.kernel.org>; Mon, 07 Dec 2020 23:25:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Ne5ocnU3Q2GZ4v1HqRwDB0YtsVfKbIKPg6J2lUsAGIw=;
-        b=AM7muwwv/iL6pryqdrnwuYzv+xnd/Q+WnXoK0mLKUUlfCywzJCZBAtaa+YDRK8Hp+X
-         17EPC4MPDArnq0ZHzA6prXkFtyKE8+OSAnG+GAD31JcR4VzbIFQjrQr/RmbUfe/LtYTM
-         NvcP0F1AOfUUV++1z4TASfY6z+QzrcofYdHQcBC1fgrA5cwkWAxUZB0ENPgOJm/oKPfb
-         txl8j9KKTj2gsw1+f07tojKVkDzW3q2Gj2K3D3lSkbz0jnJVy4KwzgIvUzz3Ss6CqXe2
-         ETfUe6vQUIQKDHOQxQBD6uW3Kzy1/I+C9ps7VHd/jUMIpYKhaB84NsEM5Pl5LQWPOVVA
-         yBUw==
+        bh=a48Lc0r9Pex+nfdSjXokaIFSEHhKwRZpwM5apuHQUXw=;
+        b=ZVhbIhkK26XpUkqdyi6SZYbjrNClTqoRwngPEaPyNDsVq5bgkBC2R9ohv7mXlvFeOS
+         fKGR8Gk03lYtRwX8mJuITy2ZztQiHAGIeJIKgIKt158473V0dFzphvn/VBtepEz5b3yC
+         eU/hwOBonpXFdqZJ6/Ke8+tWHDFr+9kok8Q7pImQvsoc6eWG/aF78Zdbvzpu/1AA4lm7
+         Vc+RfofKwGboJt9vbP8iZhaoWqQNOTDH7XdWek6uL/DE3sYkhjmKCFYzmbQYe4czzzLM
+         Dqx9CK/Cv1LIAOJ97bDuwEYSSH5U+ScczEVVg+3roXWu3QOtT9J/cCxlCBrliBqv/+TF
+         ziAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Ne5ocnU3Q2GZ4v1HqRwDB0YtsVfKbIKPg6J2lUsAGIw=;
-        b=fpN34Mt8/e82vtQMgXzzIqhQnwy4D9BVGLJPganyMamNhJUsVP0peUdOZiinmP4/xM
-         ePB0SxuZAEawuNrwb4iMMKFkoj2JwPyQ5gfWQjoHABdEuFtuvwOSyDMdw9u9Wq1sm5sF
-         C/C2Vr0noRZIZ9GlwO1E78Xfr7ohXN2CJ+gUQ7BsuF9g2DCuALT3wo5G+YjOb35PWlrY
-         O+O3xjrUUvthyMgmzd4rL61uxdOvllPPet6Ew5iD0kCXDwkij5YAt69WVTzC6j5ql2Os
-         VC3QtA6TA2BxIYNaOt5Evwaa2aKl14MGxgxukFQ7xZPrvbnw2QmKoHLylPbyXUONfBWU
-         kyxg==
-X-Gm-Message-State: AOAM531h24GVuCMd2uXqy7vZZvQH5zXyZV2nCn3gsjOR7AJjz7KcV5Xy
-        l8Ng9T/mLIj4JNqS45Q6NMxNA+3eN6FRY+qP+pWoWQ==
-X-Google-Smtp-Source: ABdhPJy9P+pdumLjMSsYsKntP6nKT4+GNdeintlseUOpLH3iD/G0AyMRFJriQglZf/x6zg9Bu7L2zpSoEhLUs5sQAzg=
-X-Received: by 2002:ac8:4986:: with SMTP id f6mr632117qtq.43.1607412306524;
- Mon, 07 Dec 2020 23:25:06 -0800 (PST)
+        bh=a48Lc0r9Pex+nfdSjXokaIFSEHhKwRZpwM5apuHQUXw=;
+        b=PSTjlryAOqRu/B3UnFSLOI8kS7Ev1saqMJ9ZloEDEvEcpHyAmyRrvk4fBm6KCchL8n
+         8peHo263FXe2LsV6mmMKJPaPWupC08NxoP7B3p1uuVLd9FK0Nj9iUOOp/0luP21SG+2y
+         kaW19iR3yyzXYOX221THSkfaxpPJlAI7OyXcL/vqPWmbHczIHdwTBpczTkt7enVDdpAv
+         t0QB6X//Ij/CX7OS/tVZt/wEpnHSGY7xhfXPxCwW01fGt3pHa9m9Cc51v5IYz7qdOQVq
+         5/opGyluipiIKLUa0tVKeWCXU6SEamG38cQOP/FOqGfr11ScC+e0xr2dO7czPk6tOkDQ
+         W50g==
+X-Gm-Message-State: AOAM530tl15hoZmGyNRR3vsD15KnohZ8VrMaSBKafWbrxbVRb/NA23Cx
+        VFImxgSNLUfSBJhpdaI3iG3KjpCbFvriHOAMfrbzCQ==
+X-Google-Smtp-Source: ABdhPJyJdpFX+jh8hbZjH/CvWHSVOuvzztK0ZIPUiUSrhvJryT5dOBuqbwRTaLFdbeSLhIMD+pqsbecHyYQjdfGImdM=
+X-Received: by 2002:ac8:4e1c:: with SMTP id c28mr28117287qtw.67.1607412341539;
+ Mon, 07 Dec 2020 23:25:41 -0800 (PST)
 MIME-Version: 1.0
-References: <000000000000caabb705b5e550aa@google.com>
-In-Reply-To: <000000000000caabb705b5e550aa@google.com>
+References: <000000000000a4832105b5de5453@google.com>
+In-Reply-To: <000000000000a4832105b5de5453@google.com>
 From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Tue, 8 Dec 2020 08:24:55 +0100
-Message-ID: <CACT4Y+bXh8=jKY=Fe2ykgk=h79pMpcTtxzOyWigUCws0bv_g6Q@mail.gmail.com>
-Subject: Re: KASAN: vmalloc-out-of-bounds Write in pcpu_freelist_populate
-To:     syzbot <syzbot+942085bfb8f7a276af1c@syzkaller.appspotmail.com>,
+Date:   Tue, 8 Dec 2020 08:25:30 +0100
+Message-ID: <CACT4Y+aEfWE2xUKZ4CDcBQuUN1TO=GVLu5CuPi0WAZ2A1jjE0w@mail.gmail.com>
+Subject: Re: BUG: unable to handle kernel paging request in bpf_lru_populate
+To:     syzbot <syzbot+ec2234240c96fdd26b93@syzkaller.appspotmail.com>,
         guro@fb.com, Eric Dumazet <edumazet@google.com>
-Cc:     andrii@kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        bpf <bpf@vger.kernel.org>,
+Cc:     andrii@kernel.org, Andrii Nakryiko <andriin@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Johannes Berg <johannes@sipsolutions.net>,
         John Fastabend <john.fastabend@gmail.com>,
         Martin KaFai Lau <kafai@fb.com>,
         KP Singh <kpsingh@chromium.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         LKML <linux-kernel@vger.kernel.org>,
         netdev <netdev@vger.kernel.org>,
         Song Liu <songliubraving@fb.com>,
@@ -68,71 +71,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 7, 2020 at 9:03 PM syzbot
-<syzbot+942085bfb8f7a276af1c@syzkaller.appspotmail.com> wrote:
+On Mon, Dec 7, 2020 at 12:43 PM syzbot
+<syzbot+ec2234240c96fdd26b93@syzkaller.appspotmail.com> wrote:
 >
 > Hello,
 >
 > syzbot found the following issue on:
 >
-> HEAD commit:    34da8721 selftests/bpf: Test bpf_sk_storage_get in tcp ite..
-> git tree:       bpf-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=10c3b837500000
+> HEAD commit:    bcd684aa net/nfc/nci: Support NCI 2.x initial sequence
+> git tree:       net-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=12001bd3500000
 > kernel config:  https://syzkaller.appspot.com/x/.config?x=3cb098ab0334059f
-> dashboard link: https://syzkaller.appspot.com/bug?extid=942085bfb8f7a276af1c
+> dashboard link: https://syzkaller.appspot.com/bug?extid=ec2234240c96fdd26b93
 > compiler:       gcc (GCC) 10.1.0-syz 20200507
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11f7f2ef500000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=103833f7500000
 >
-> Unfortunately, I don't have any reproducer for this issue yet.
+> The issue was bisected to:
+>
+> commit b93ef089d35c3386dd197e85afb6399bbd54cfb3
+> Author: Martin KaFai Lau <kafai@fb.com>
+> Date:   Mon Nov 16 20:01:13 2020 +0000
+>
+>     bpf: Fix the irq and nmi check in bpf_sk_storage for tracing usage
+>
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1103b837500000
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=1303b837500000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1503b837500000
 >
 > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+942085bfb8f7a276af1c@syzkaller.appspotmail.com
+> Reported-by: syzbot+ec2234240c96fdd26b93@syzkaller.appspotmail.com
+> Fixes: b93ef089d35c ("bpf: Fix the irq and nmi check in bpf_sk_storage for tracing usage")
 
 I assume this is also
 
 #syz fix: bpf: Avoid overflows involving hash elem_size
 
 
-> ==================================================================
-> BUG: KASAN: vmalloc-out-of-bounds in pcpu_freelist_push_node kernel/bpf/percpu_freelist.c:33 [inline]
-> BUG: KASAN: vmalloc-out-of-bounds in pcpu_freelist_populate+0x1fe/0x260 kernel/bpf/percpu_freelist.c:114
-> Write of size 8 at addr ffffc90119e78020 by task syz-executor.4/27988
->
-> CPU: 1 PID: 27988 Comm: syz-executor.4 Not tainted 5.10.0-rc6-syzkaller #0
+> BUG: unable to handle page fault for address: fffff5200471266c
+> #PF: supervisor read access in kernel mode
+> #PF: error_code(0x0000) - not-present page
+> PGD 23fff2067 P4D 23fff2067 PUD 101a4067 PMD 32e3a067 PTE 0
+> Oops: 0000 [#1] PREEMPT SMP KASAN
+> CPU: 1 PID: 8503 Comm: syz-executor608 Not tainted 5.10.0-rc6-syzkaller #0
 > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> RIP: 0010:bpf_common_lru_populate kernel/bpf/bpf_lru_list.c:569 [inline]
+> RIP: 0010:bpf_lru_populate+0xd8/0x5e0 kernel/bpf/bpf_lru_list.c:614
+> Code: 03 4d 01 e7 48 01 d8 48 89 4c 24 10 4d 89 fe 48 89 44 24 08 e8 99 23 eb ff 49 8d 7e 12 48 89 f8 48 89 fa 48 c1 e8 03 83 e2 07 <0f> b6 04 18 38 d0 7f 08 84 c0 0f 85 80 04 00 00 49 8d 7e 13 41 c6
+> RSP: 0018:ffffc9000126fc20 EFLAGS: 00010202
+> RAX: 1ffff9200471266c RBX: dffffc0000000000 RCX: ffffffff8184e3e2
+> RDX: 0000000000000002 RSI: ffffffff8184e2e7 RDI: ffffc90023893362
+> RBP: 00000000000000bc R08: 000000000000107c R09: 0000000000000000
+> R10: 000000000000107c R11: 0000000000000000 R12: 0000000000000001
+> R13: 000000000000107c R14: ffffc90023893350 R15: ffffc900234832f0
+> FS:  0000000000fe0880(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: fffff5200471266c CR3: 000000001ba62000 CR4: 00000000001506e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 > Call Trace:
->  __dump_stack lib/dump_stack.c:77 [inline]
->  dump_stack+0x107/0x163 lib/dump_stack.c:118
->  print_address_description.constprop.0.cold+0x5/0x4c8 mm/kasan/report.c:385
->  __kasan_report mm/kasan/report.c:545 [inline]
->  kasan_report.cold+0x1f/0x37 mm/kasan/report.c:562
->  pcpu_freelist_push_node kernel/bpf/percpu_freelist.c:33 [inline]
->  pcpu_freelist_populate+0x1fe/0x260 kernel/bpf/percpu_freelist.c:114
->  prealloc_init kernel/bpf/hashtab.c:323 [inline]
->  htab_map_alloc+0x981/0x1230 kernel/bpf/hashtab.c:507
+>  prealloc_init kernel/bpf/hashtab.c:319 [inline]
+>  htab_map_alloc+0xf6e/0x1230 kernel/bpf/hashtab.c:507
 >  find_and_alloc_map kernel/bpf/syscall.c:123 [inline]
 >  map_create kernel/bpf/syscall.c:829 [inline]
 >  __do_sys_bpf+0xa81/0x5170 kernel/bpf/syscall.c:4374
 >  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
 >  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> RIP: 0033:0x45e0f9
-> Code: 0d b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b3 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-> RSP: 002b:00007f679c7a7c68 EFLAGS: 00000246
->  ORIG_RAX: 0000000000000141
-> RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000045e0f9
-> RDX: 0000000000000040 RSI: 0000000020000040 RDI: 0000000000000000
-> RBP: 000000000119c068 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 000000000119c034
-> R13: 00007fffd601c75f R14: 00007f679c7a89c0 R15: 000000000119c034
->
->
-> Memory state around the buggy address:
->  ffffc90119e77f00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
->  ffffc90119e77f80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-> >ffffc90119e78000: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
->                                ^
->  ffffc90119e78080: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
->  ffffc90119e78100: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
-> ==================================================================
+> RIP: 0033:0x4402e9
+> Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+> RSP: 002b:00007ffe77af23b8 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+> RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004402e9
+> RDX: 0000000000000040 RSI: 0000000020000000 RDI: 0d00000000000000
+> RBP: 00000000006ca018 R08: 0000000000000000 R09: 0000000000000000
+> R10: 00000000ffffffff R11: 0000000000000246 R12: 0000000000401af0
+> R13: 0000000000401b80 R14: 0000000000000000 R15: 0000000000000000
+> Modules linked in:
+> CR2: fffff5200471266c
+> ---[ end trace 4f3928bacde7b3ed ]---
+> RIP: 0010:bpf_common_lru_populate kernel/bpf/bpf_lru_list.c:569 [inline]
+> RIP: 0010:bpf_lru_populate+0xd8/0x5e0 kernel/bpf/bpf_lru_list.c:614
+> Code: 03 4d 01 e7 48 01 d8 48 89 4c 24 10 4d 89 fe 48 89 44 24 08 e8 99 23 eb ff 49 8d 7e 12 48 89 f8 48 89 fa 48 c1 e8 03 83 e2 07 <0f> b6 04 18 38 d0 7f 08 84 c0 0f 85 80 04 00 00 49 8d 7e 13 41 c6
+> RSP: 0018:ffffc9000126fc20 EFLAGS: 00010202
+> RAX: 1ffff9200471266c RBX: dffffc0000000000 RCX: ffffffff8184e3e2
+> RDX: 0000000000000002 RSI: ffffffff8184e2e7 RDI: ffffc90023893362
+> RBP: 00000000000000bc R08: 000000000000107c R09: 0000000000000000
+> R10: 000000000000107c R11: 0000000000000000 R12: 0000000000000001
+> R13: 000000000000107c R14: ffffc90023893350 R15: ffffc900234832f0
+> FS:  0000000000fe0880(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: fffff5200471266c CR3: 000000001ba62000 CR4: 00000000001506e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 >
 >
 > ---
@@ -142,8 +171,11 @@ I assume this is also
 >
 > syzbot will keep track of this issue. See:
 > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> syzbot can test patches for this issue, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
 >
 > --
 > You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
 > To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/000000000000caabb705b5e550aa%40google.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/000000000000a4832105b5de5453%40google.com.
