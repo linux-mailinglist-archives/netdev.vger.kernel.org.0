@@ -2,190 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EC982D35AC
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 23:00:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E1E42D35BD
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 23:04:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730254AbgLHVz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 16:55:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52620 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728138AbgLHVz0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 16:55:26 -0500
-Received: from mail-vk1-xa42.google.com (mail-vk1-xa42.google.com [IPv6:2607:f8b0:4864:20::a42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDADC061794;
-        Tue,  8 Dec 2020 13:54:46 -0800 (PST)
-Received: by mail-vk1-xa42.google.com with SMTP id b190so63860vka.0;
-        Tue, 08 Dec 2020 13:54:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HR742pSiozhDUPorvG6dtxyKOv7q/SNwr6kisht7zzA=;
-        b=h4T0raMh3KbTUvZ3AtEZnAJ+RNv/5sWKxDoJ4Us2l1UBl7knAE13nyuHSFrDRzYxQ/
-         +xtBjJn3so3TjyFcZGNNIEFWn76LcRzfksgNbqIpfQizCNbyNTCIeoBpnj46adOhaGpW
-         fJQaJYHP8+2XsjkypZ7Y4riwLL0SQlcBv47pPPxgKl9j/eIbO+IXGLJ4p5OWGzH3DLJ7
-         TDj5YyrimCHlWpA0ZFrdgna3yYERfdnuJkQoyuKEq7drEd69g4n/xJz8/L2lAFDRZ+TF
-         rO/YJI8qbErhwUlCwyBkql+2eDYjrJ2icrHb3F+rkHwOfqtM956YKbbDrT+yoBgYvQel
-         OG2w==
+        id S1730438AbgLHWCB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 17:02:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:37266 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728964AbgLHWCA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 17:02:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607464834;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dVwrtMjFPSWA+stVu1eMikGIn2Zj2pVaabSntdZDQrA=;
+        b=LPvKF7AZaBcSP0vqPHqRk+6k2Mj4wV8mNK87PzIqZjdKuS9KQ0anRsMmelPmJqtVgz5Ecl
+        mCFFl2KSo573slv3F/Mg8VTXJYZ+KAMd+Bbh2DcyDZP0oTtIz+DJox7LAHf24dpNVgPdX7
+        u2BdTanUtxIEdaCZaHY+QNwbmh4/9Mk=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-38-fkVFCkycOSqxhsb0og8wAw-1; Tue, 08 Dec 2020 17:00:32 -0500
+X-MC-Unique: fkVFCkycOSqxhsb0og8wAw-1
+Received: by mail-wr1-f72.google.com with SMTP id b5so6712369wrp.3
+        for <netdev@vger.kernel.org>; Tue, 08 Dec 2020 14:00:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HR742pSiozhDUPorvG6dtxyKOv7q/SNwr6kisht7zzA=;
-        b=r35qZ5hh8AEmnujFwpUmpQ4pLPkTLE4VX3hb82Ow4tG6MOs6gTtD4FG4yrmAvuVQZX
-         ECqiTEjFRr0wJMpN9h85LhesXYJYnga4N/KOORVfZmuZEvc+1HZuT93dzikjiimbbAaO
-         EGWmwvjGqcJTtwjnuaSIQW6xserSfPQxhPXh07xRWp5RcguT6s3/pVcwP7HhjoBdgHBR
-         dteViHIzwTxlWTKP8aQbfR1/oXN91CaPXl/aks++PKszNjb9QFBfSROZZyFxj83q61Mj
-         /aA2RfgFG92Ks7CbanUpzKYovizGwS2slQHnflavzCU1ct+kYOukGPsEcIaEAxU5IoN6
-         cPxQ==
-X-Gm-Message-State: AOAM530msUslFx5SwHMKxkEdY+KVfTAP+PQNQoEf1g04xjmv+5dwGqUF
-        ThlLuM1LLgSJX4xD8V1U9UZNNiAVUZech7Rmrlc=
-X-Google-Smtp-Source: ABdhPJwClku4a+kRFN2kpMmxUeEoRZvBWlSISSn096dijLJ8C2hF/on6fRQtls+JjaMLhT4Dt65tcOirmrHQcIhQwR0=
-X-Received: by 2002:a1f:5587:: with SMTP id j129mr19403233vkb.0.1607464484835;
- Tue, 08 Dec 2020 13:54:44 -0800 (PST)
-MIME-Version: 1.0
-References: <20201206034408.31492-1-TheSven73@gmail.com> <20201206034408.31492-2-TheSven73@gmail.com>
- <20201208114314.743ee6ec@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201208114314.743ee6ec@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-Date:   Tue, 8 Dec 2020 16:54:33 -0500
-Message-ID: <CAGngYiVSHRGC+eOCeF3Kyj_wOVqxJHvoc9fXRk-w+sVRjeSpcw@mail.gmail.com>
-Subject: Re: [PATCH net v1 2/2] lan743x: boost performance: limit PCIe
- bandwidth requirement
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=dVwrtMjFPSWA+stVu1eMikGIn2Zj2pVaabSntdZDQrA=;
+        b=E483rjOqVT+1Tqe3I2sIwbxlQ026VfS7C5zI8U1rs2Vx+Vjp9fuN0Thf5nCiWcLt+y
+         y/EkV3jqxsf2KpAu0eSry3nLtDXimmF4QXJDuWRLG+RIVoHKMsx9s8NKJPQlm1yjDfBv
+         dFIx1pfQqq9079R6oG2BtMQRbGEhix2KFsyS1fCR53O3KZCExv5op5m7eAZ0wOOv67xL
+         JMjYTP9eADXe6cMHilhsdw9mcmOTFdtu8SKSllmYZ8dIPRLu7yYn5xqANyZpe1hc0J5D
+         UtApGBuHqVON+QCc9+a5RoxGCTqZ7tv/pZt4XY208zcfKx3ez8tBGmK5vkGfm9iVbCVp
+         abRg==
+X-Gm-Message-State: AOAM5316LSyAjOamhIISunaE8nQCmpuapHj50KFIUDOT/BQvA7mmQjKI
+        dSkd9fwCKkOwJntic/8wEqrrb5MjBnSVLDdh/Um2GMrCjTDiG7T/+wHrPCSd79TEOAJmb3c5d46
+        oiihgC0ydLqAlNln6
+X-Received: by 2002:adf:e4ca:: with SMTP id v10mr151702wrm.260.1607464828354;
+        Tue, 08 Dec 2020 14:00:28 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzSwb4gu0VPC90w4U16G8hnN/hXWQFO+jMf3AOb+Pqpbep24Nod9ZchBqlSFxLbqmT4jM5D/g==
+X-Received: by 2002:adf:e4ca:: with SMTP id v10mr151688wrm.260.1607464828144;
+        Tue, 08 Dec 2020 14:00:28 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id 35sm315438wro.71.2020.12.08.14.00.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Dec 2020 14:00:27 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 22007180002; Tue,  8 Dec 2020 23:00:27 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        David S Miller <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Romain Perier <romain.perier@gmail.com>,
+        Allen Pais <apais@linux.microsoft.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
+        Jiri Benc <jbenc@redhat.com>, oss-drivers@netronome.com,
+        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf v2 0/7] selftests/bpf: Restore test_offload.py to
+ working order
+In-Reply-To: <20201208090315.5106c049@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+References: <160708272217.192754.14019805999368221369.stgit@toke.dk>
+ <87360gidoo.fsf@toke.dk>
+ <20201208090315.5106c049@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 08 Dec 2020 23:00:27 +0100
+Message-ID: <87r1o0ot50.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub, thank you so much for reviewing this patchset !
+Jakub Kicinski <kuba@kernel.org> writes:
 
-On Tue, Dec 8, 2020 at 2:43 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> On Tue, 08 Dec 2020 15:18:31 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> writes:
+>>=20
+>> > This series restores the test_offload.py selftest to working order. It=
+ seems a
+>> > number of subtle behavioural changes have crept into various subsystem=
+s which
+>> > broke test_offload.py in a number of ways. Most of these are fairly be=
+nign
+>> > changes where small adjustments to the test script seems to be the bes=
+t fix, but
+>> > one is an actual kernel bug that I've observed in the wild caused by a=
+ bad
+>> > interaction between xdp_attachment_flags_ok() and the rework of XDP pr=
+ogram
+>> > handling in the core netdev code.
+>> >
+>> > Patch 1 fixes the bug by removing xdp_attachment_flags_ok(), and the r=
+eminder of
+>> > the patches are adjustments to test_offload.py, including a new featur=
+e for
+>> > netdevsim to force a BPF verification fail. Please see the individual =
+patches
+>> > for details.
+>> >
+>> > Changelog:
+>> >
+>> > v2:
+>> > - Replace xdp_attachment_flags_ok() with a check in dev_xdp_attach()
+>> > - Better packing of struct nsim_dev=20=20
+>>=20
+>> Any feedback on v2? Would be great to get it merged before the final
+>> 5.10 release :)
 >
-> > When the chip is working with the default 1500 byte MTU, a 9K
-> > dma buffer goes from chip -> cpu per 1500 byte frame. This means
-> > that to get 1G/s ethernet bandwidth, we need 6G/s PCIe bandwidth !
-> >
-> > Fix by limiting the rx ring dma buffer size to the current MTU
-> > size.
->
-> I'd guess this is a memory allocate issue, not a bandwidth thing.
-> for 9K frames the driver needs to do order-2 allocations of 16K.
-> For 1500 2K allocations are sufficient (which is < 1 page, hence
-> a lot cheaper).
+> LGTM but if my opinion mattered this could would not have been changed
+> in the first place :)
 
-That's a good question. I used perf to create a flame graph of what
-the cpu was doing when receiving data at high speed. It showed that
-__dma_page_dev_to_cpu took up most of the cpu time. Which is triggered
-by dma_unmap_single(9K, DMA_FROM_DEVICE).
+Heh, right. Well I, for one, value your input, so thanks for taking a
+look :)
 
-So I assumed that it's a PCIe dma bandwidth issue, but I could be wrong -
-I didn't do any PCIe bandwidth measurements.
+-Toke
 
->
-> > Tested with iperf3 on a freescale imx6 + lan7430, both sides
-> > set to mtu 1500 bytes.
-> >
-> > Before:
-> > [ ID] Interval           Transfer     Bandwidth       Retr
-> > [  4]   0.00-20.00  sec   483 MBytes   203 Mbits/sec    0
-> > After:
-> > [ ID] Interval           Transfer     Bandwidth       Retr
-> > [  4]   0.00-20.00  sec  1.15 GBytes   496 Mbits/sec    0
-> >
-> > And with both sides set to MTU 9000 bytes:
-> > Before:
-> > [ ID] Interval           Transfer     Bandwidth       Retr
-> > [  4]   0.00-20.00  sec  1.87 GBytes   803 Mbits/sec   27
-> > After:
-> > [ ID] Interval           Transfer     Bandwidth       Retr
-> > [  4]   0.00-20.00  sec  1.98 GBytes   849 Mbits/sec    0
-> >
-> > Tested-by: Sven Van Asbroeck <thesven73@gmail.com> # lan7430
-> > Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
->
-> This is a performance improvement, not a fix, it really needs to target
-> net-next.
-
-I thought it'd be cool if 'historic' kernels could benefit from this performance
-improvement too, but yeah if it's against policy it should go into net-next.
-
-What about the other patch in the patchset (ping-pong). Should it go into
-net-next as well?
-
->
-> > diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-> > index ebb5e0bc516b..2bded1c46784 100644
-> > --- a/drivers/net/ethernet/microchip/lan743x_main.c
-> > +++ b/drivers/net/ethernet/microchip/lan743x_main.c
-> > @@ -1957,11 +1957,11 @@ static int lan743x_rx_next_index(struct lan743x_rx *rx, int index)
-> >
-> >  static struct sk_buff *lan743x_rx_allocate_skb(struct lan743x_rx *rx)
-> >  {
-> > -     int length = 0;
-> > +     struct net_device *netdev = rx->adapter->netdev;
-> >
-> > -     length = (LAN743X_MAX_FRAME_SIZE + ETH_HLEN + 4 + RX_HEAD_PADDING);
-> > -     return __netdev_alloc_skb(rx->adapter->netdev,
-> > -                               length, GFP_ATOMIC | GFP_DMA);
-> > +     return __netdev_alloc_skb(netdev,
-> > +                               netdev->mtu + ETH_HLEN + 4 + RX_HEAD_PADDING,
-> > +                               GFP_ATOMIC | GFP_DMA);
-> >  }
-> >
-> >  static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index,
-> > @@ -1969,9 +1969,10 @@ static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index,
-> >  {
-> >       struct lan743x_rx_buffer_info *buffer_info;
-> >       struct lan743x_rx_descriptor *descriptor;
-> > -     int length = 0;
-> > +     struct net_device *netdev = rx->adapter->netdev;
-> > +     int length;
-> >
-> > -     length = (LAN743X_MAX_FRAME_SIZE + ETH_HLEN + 4 + RX_HEAD_PADDING);
-> > +     length = netdev->mtu + ETH_HLEN + 4 + RX_HEAD_PADDING;
-> >       descriptor = &rx->ring_cpu_ptr[index];
-> >       buffer_info = &rx->buffer_info[index];
-> >       buffer_info->skb = skb;
-> > @@ -2157,8 +2158,8 @@ static int lan743x_rx_process_packet(struct lan743x_rx *rx)
-> >                       int index = first_index;
-> >
-> >                       /* multi buffer packet not supported */
-> > -                     /* this should not happen since
-> > -                      * buffers are allocated to be at least jumbo size
-> > +                     /* this should not happen since buffers are allocated
-> > +                      * to be at least the mtu size configured in the mac.
-> >                        */
-> >
-> >                       /* clean up buffers */
-> > @@ -2632,9 +2633,13 @@ static int lan743x_netdev_change_mtu(struct net_device *netdev, int new_mtu)
-> >       struct lan743x_adapter *adapter = netdev_priv(netdev);
-> >       int ret = 0;
-> >
-> > +     if (netif_running(netdev))
-> > +             return -EBUSY;
->
-> That may cause a regression to users of the driver who expect to be
-> able to set the MTU when the device is running. You need to disable
-> the NAPI, pause the device, swap the buffers for smaller / bigger ones
-> and restart the device.
-
-That's what I tried first, but I quickly ran into a spot of trouble:
-restarting the device may fail (unlikely but possible). So when the user tries
-to change the mtu and that errors out, they might end up with a stopped device.
-Is that acceptable behaviour? If so, I'll add it to the patch.
-
->
-> >       ret = lan743x_mac_set_mtu(adapter, new_mtu);
-> >       if (!ret)
-> >               netdev->mtu = new_mtu;
-> > +
-> >       return ret;
-> >  }
-> >
->
