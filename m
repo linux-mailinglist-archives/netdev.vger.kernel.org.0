@@ -2,194 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F3D32D26D3
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 10:03:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D46A52D2736
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 10:13:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728636AbgLHJDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 04:03:34 -0500
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:33908 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728594AbgLHJD2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 04:03:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1607418207; x=1638954207;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=Y5xpdhYe8tDwUSn2h3cGPmst8Ze3CvXueiWyz/+4As0=;
-  b=ewnBjUDRX2WVOUECjZQLkpluWrT2APPOQ3YkFcQ55mrAUDfsTBJqPLrW
-   7+EqebnSjoJehxbQbCujpUlFIPIroVdwKqrbeuRQFEajM1zsvcekzeOA3
-   1HnYm7QZUIll479BxkzyqBTbsnpRLsS5B4vimHKjjtvIaDVj+XLNLRr0z
-   g=;
-X-IronPort-AV: E=Sophos;i="5.78,402,1599523200"; 
-   d="scan'208";a="101249711"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2b-55156cd4.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 08 Dec 2020 09:02:47 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2b-55156cd4.us-west-2.amazon.com (Postfix) with ESMTPS id A899DA2230;
-        Tue,  8 Dec 2020 09:02:45 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 8 Dec 2020 09:02:44 +0000
-Received: from 38f9d3582de7.ant.amazon.com (10.43.160.125) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 8 Dec 2020 09:02:40 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <kafai@fb.com>
-CC:     <ast@kernel.org>, <benh@amazon.com>, <bpf@vger.kernel.org>,
-        <daniel@iogearbox.net>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <kuni1840@gmail.com>,
-        <kuniyu@amazon.co.jp>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH v1 bpf-next 03/11] tcp: Migrate TCP_ESTABLISHED/TCP_SYN_RECV sockets in accept queues.
-Date:   Tue, 8 Dec 2020 18:02:36 +0900
-Message-ID: <20201208090236.86926-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.17.2 (Apple Git-113)
-In-Reply-To: <20201208081328.aspzklzmeznw3hob@kafai-mbp.dhcp.thefacebook.com>
-References: <20201208081328.aspzklzmeznw3hob@kafai-mbp.dhcp.thefacebook.com>
+        id S1728717AbgLHJMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 04:12:42 -0500
+Received: from Mailgw01.mediatek.com ([1.203.163.78]:40858 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726418AbgLHJMl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 04:12:41 -0500
+X-UUID: 6e81b3936ebc4270a1cfb3c457e472fb-20201208
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=cULiqlWoL37xRZzHcBhAg0U9sWJYWEdozEvDASKEWxQ=;
+        b=Sr5RcYgXKMnQ/tBY5BfY8Fx93D3oXG4gM7piSonUw1MATqulFal5c6gdpciCzvKk7bw+wwOGg3iC5+E1vqkktO3HxvsptPYf1JAoktgSCWqtcsXwgx3B5WQ52vezbj0i/DRugQd81Ga2x0wmMeQ5mtEQmxi3gvH1syYMZytmCYI=;
+X-UUID: 6e81b3936ebc4270a1cfb3c457e472fb-20201208
+Received: from mtkcas32.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
+        (envelope-from <chunfeng.yun@mediatek.com>)
+        (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1170607905; Tue, 08 Dec 2020 17:11:51 +0800
+Received: from MTKCAS32.mediatek.inc (172.27.4.184) by MTKMBS31N2.mediatek.inc
+ (172.27.4.87) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 8 Dec
+ 2020 17:11:48 +0800
+Received: from [10.17.3.153] (10.17.3.153) by MTKCAS32.mediatek.inc
+ (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 8 Dec 2020 17:11:46 +0800
+Message-ID: <1607418707.23328.13.camel@mhfsdcap03>
+Subject: Re: [PATCH v3 09/11] dt-bindings: usb: convert
+ mediatek,mtk-xhci.txt to YAML schema
+From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        "David Airlie" <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Kishon Vijay Abraham I" <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stanley Chu <stanley.chu@mediatek.com>,
+        "Min Guo" <min.guo@mediatek.com>,
+        <dri-devel@lists.freedesktop.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <linux-usb@vger.kernel.org>
+Date:   Tue, 8 Dec 2020 17:11:47 +0800
+In-Reply-To: <20201207212436.GA844756@robh.at.kernel.org>
+References: <20201118082126.42701-1-chunfeng.yun@mediatek.com>
+         <20201118082126.42701-9-chunfeng.yun@mediatek.com>
+         <20201207212436.GA844756@robh.at.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.125]
-X-ClientProxiedBy: EX13D28UWC001.ant.amazon.com (10.43.162.166) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+X-TM-SNTS-SMTP: 165E650B2B563F9B27267EB1C08846DD6F14A21BD51068867FB00394F43FA29A2000:8
+X-MTK:  N
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Martin KaFai Lau <kafai@fb.com>
-Date:   Tue, 8 Dec 2020 00:13:28 -0800
-> On Tue, Dec 08, 2020 at 03:27:14PM +0900, Kuniyuki Iwashima wrote:
-> > From:   Martin KaFai Lau <kafai@fb.com>
-> > Date:   Mon, 7 Dec 2020 12:14:38 -0800
-> > > On Sun, Dec 06, 2020 at 01:03:07AM +0900, Kuniyuki Iwashima wrote:
-> > > > From:   Martin KaFai Lau <kafai@fb.com>
-> > > > Date:   Fri, 4 Dec 2020 17:42:41 -0800
-> > > > > On Tue, Dec 01, 2020 at 11:44:10PM +0900, Kuniyuki Iwashima wrote:
-> > > > > [ ... ]
-> > > > > > diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
-> > > > > > index fd133516ac0e..60d7c1f28809 100644
-> > > > > > --- a/net/core/sock_reuseport.c
-> > > > > > +++ b/net/core/sock_reuseport.c
-> > > > > > @@ -216,9 +216,11 @@ int reuseport_add_sock(struct sock *sk, struct sock *sk2, bool bind_inany)
-> > > > > >  }
-> > > > > >  EXPORT_SYMBOL(reuseport_add_sock);
-> > > > > >  
-> > > > > > -void reuseport_detach_sock(struct sock *sk)
-> > > > > > +struct sock *reuseport_detach_sock(struct sock *sk)
-> > > > > >  {
-> > > > > >  	struct sock_reuseport *reuse;
-> > > > > > +	struct bpf_prog *prog;
-> > > > > > +	struct sock *nsk = NULL;
-> > > > > >  	int i;
-> > > > > >  
-> > > > > >  	spin_lock_bh(&reuseport_lock);
-> > > > > > @@ -242,8 +244,12 @@ void reuseport_detach_sock(struct sock *sk)
-> > > > > >  
-> > > > > >  		reuse->num_socks--;
-> > > > > >  		reuse->socks[i] = reuse->socks[reuse->num_socks];
-> > > > > > +		prog = rcu_dereference(reuse->prog);
-> > > > > Is it under rcu_read_lock() here?
-> > > > 
-> > > > reuseport_lock is locked in this function, and we do not modify the prog,
-> > > > but is rcu_dereference_protected() preferable?
-> > > > 
-> > > > ---8<---
-> > > > prog = rcu_dereference_protected(reuse->prog,
-> > > > 				 lockdep_is_held(&reuseport_lock));
-> > > > ---8<---
-> > > It is not only reuse->prog.  Other things also require rcu_read_lock(),
-> > > e.g. please take a look at __htab_map_lookup_elem().
-> > > 
-> > > The TCP_LISTEN sk (selected by bpf to be the target of the migration)
-> > > is also protected by rcu.
-> > 
-> > Thank you, I will use rcu_read_lock() and rcu_dereference() in v3 patchset.
-> > 
-> > 
-> > > I am surprised there is no WARNING in the test.
-> > > Do you have the needed DEBUG_LOCK* config enabled?
-> > 
-> > Yes, DEBUG_LOCK* was 'y', but rcu_dereference() without rcu_read_lock()
-> > does not show warnings...
-> I would at least expect the "WARN_ON_ONCE(!rcu_read_lock_held() ...)"
-> from __htab_map_lookup_elem() should fire in your test
-> example in the last patch.
-> 
-> It is better to check the config before sending v3.
+T24gTW9uLCAyMDIwLTEyLTA3IGF0IDE1OjI0IC0wNjAwLCBSb2IgSGVycmluZyB3cm90ZToNCj4g
+T24gV2VkLCBOb3YgMTgsIDIwMjAgYXQgMDQ6MjE6MjRQTSArMDgwMCwgQ2h1bmZlbmcgWXVuIHdy
+b3RlOg0KPiA+IENvbnZlcnQgbWVkaWF0ZWssbXRrLXhoY2kudHh0IHRvIFlBTUwgc2NoZW1hIG1l
+ZGlhdGVrLG10ay14aGNpLnlhbWwNCj4gPiANCj4gPiBTaWduZWQtb2ZmLWJ5OiBDaHVuZmVuZyBZ
+dW4gPGNodW5mZW5nLnl1bkBtZWRpYXRlay5jb20+DQo+ID4gLS0tDQo+ID4gdjM6DQo+ID4gICAx
+LiBmaXggeWFtbGxpbnQgd2FybmluZw0KPiA+ICAgMi4gcmVtb3ZlIHBpbmN0cmwqIHByb3BlcnRp
+ZXMgc3VwcG9ydGVkIGJ5IGRlZmF1bHQgc3VnZ2VzdGVkIGJ5IFJvYg0KPiA+ICAgMy4gZHJvcCB1
+bnVzZWQgbGFiZWxzDQo+ID4gICA0LiBtb2RpZnkgZGVzY3JpcHRpb24gb2YgbWVkaWF0ZWssc3lz
+Y29uLXdha2V1cA0KPiA+ICAgNS4gcmVtb3ZlIHR5cGUgb2YgaW1vZC1pbnRlcnZhbC1ucw0KPiA+
+IA0KPiA+IHYyOiBuZXcgcGF0Y2gNCj4gPiAtLS0NCj4gPiAgLi4uL2JpbmRpbmdzL3VzYi9tZWRp
+YXRlayxtdGsteGhjaS50eHQgICAgICAgIHwgMTIxIC0tLS0tLS0tLS0tLS0NCj4gPiAgLi4uL2Jp
+bmRpbmdzL3VzYi9tZWRpYXRlayxtdGsteGhjaS55YW1sICAgICAgIHwgMTcxICsrKysrKysrKysr
+KysrKysrKw0KPiA+ICAyIGZpbGVzIGNoYW5nZWQsIDE3MSBpbnNlcnRpb25zKCspLCAxMjEgZGVs
+ZXRpb25zKC0pDQo+ID4gIGRlbGV0ZSBtb2RlIDEwMDY0NCBEb2N1bWVudGF0aW9uL2RldmljZXRy
+ZWUvYmluZGluZ3MvdXNiL21lZGlhdGVrLG10ay14aGNpLnR4dA0KPiA+ICBjcmVhdGUgbW9kZSAx
+MDA2NDQgRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3VzYi9tZWRpYXRlayxtdGst
+eGhjaS55YW1sDQpbLi4uXQ0KPiA+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRy
+ZWUvYmluZGluZ3MvdXNiL21lZGlhdGVrLG10ay14aGNpLnlhbWwgYi9Eb2N1bWVudGF0aW9uL2Rl
+dmljZXRyZWUvYmluZGluZ3MvdXNiL21lZGlhdGVrLG10ay14aGNpLnlhbWwNCj4gPiBuZXcgZmls
+ZSBtb2RlIDEwMDY0NA0KPiA+IGluZGV4IDAwMDAwMDAwMDAwMC4uNGEzNmFkNWM0ZDI1DQo+ID4g
+LS0tIC9kZXYvbnVsbA0KPiA+ICsrKyBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5n
+cy91c2IvbWVkaWF0ZWssbXRrLXhoY2kueWFtbA0KPiA+IEBAIC0wLDAgKzEsMTcxIEBADQo+ID4g
+KyMgU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IChHUEwtMi4wLW9ubHkgT1IgQlNELTItQ2xhdXNl
+KQ0KPiA+ICsjIENvcHlyaWdodCAoYykgMjAyMCBNZWRpYVRlaw0KPiA+ICslWUFNTCAxLjINCj4g
+PiArLS0tDQo+ID4gKyRpZDogaHR0cDovL2RldmljZXRyZWUub3JnL3NjaGVtYXMvdXNiL21lZGlh
+dGVrLG10ay14aGNpLnlhbWwjDQo+ID4gKyRzY2hlbWE6IGh0dHA6Ly9kZXZpY2V0cmVlLm9yZy9t
+ZXRhLXNjaGVtYXMvY29yZS55YW1sIw0KPiA+ICsNCj4gPiArdGl0bGU6IE1lZGlhVGVrIFVTQjMg
+eEhDSSBEZXZpY2UgVHJlZSBCaW5kaW5ncw0KPiA+ICsNCj4gPiArbWFpbnRhaW5lcnM6DQo+ID4g
+KyAgLSBDaHVuZmVuZyBZdW4gPGNodW5mZW5nLnl1bkBtZWRpYXRlay5jb20+DQo+ID4gKw0KPiA+
+ICthbGxPZjoNCj4gPiArICAtICRyZWY6ICJ1c2ItaGNkLnlhbWwiDQo+ID4gKw0KPiA+ICtkZXNj
+cmlwdGlvbjogfA0KPiA+ICsgIFRoZXJlIGFyZSB0d28gc2NlbmFyaW9zOg0KPiA+ICsgIGNhc2Ug
+MTogb25seSBzdXBwb3J0cyB4SENJIGRyaXZlcjsNCj4gPiArICBjYXNlIDI6IHN1cHBvcnRzIGR1
+YWwtcm9sZSBtb2RlLCBhbmQgdGhlIGhvc3QgaXMgYmFzZWQgb24geEhDSSBkcml2ZXIuDQo+ID4g
+Kw0KPiA+ICtwcm9wZXJ0aWVzOg0KPiA+ICsgICMgY29tbW9uIHByb3BlcnRpZXMgZm9yIGJvdGgg
+Y2FzZSAxIGFuZCBjYXNlIDINCj4gPiArICBjb21wYXRpYmxlOg0KPiA+ICsgICAgaXRlbXM6DQo+
+ID4gKyAgICAgIC0gZW51bToNCj4gPiArICAgICAgICAgIC0gbWVkaWF0ZWssbXQyNzEyLXhoY2kN
+Cj4gPiArICAgICAgICAgIC0gbWVkaWF0ZWssbXQ3NjIyLXhoY2kNCj4gPiArICAgICAgICAgIC0g
+bWVkaWF0ZWssbXQ3NjI5LXhoY2kNCj4gPiArICAgICAgICAgIC0gbWVkaWF0ZWssbXQ4MTczLXho
+Y2kNCj4gPiArICAgICAgICAgIC0gbWVkaWF0ZWssbXQ4MTgzLXhoY2kNCj4gPiArICAgICAgLSBj
+b25zdDogbWVkaWF0ZWssbXRrLXhoY2kNCj4gPiArDQo+ID4gKyAgcmVnOg0KPiA+ICsgICAgbWlu
+SXRlbXM6IDENCj4gPiArICAgIG1heEl0ZW1zOiAyDQo+ID4gKyAgICBpdGVtczoNCj4gPiArICAg
+ICAgLSBkZXNjcmlwdGlvbjogdGhlIHJlZ2lzdGVycyBvZiB4SENJIE1BQw0KPiA+ICsgICAgICAt
+IGRlc2NyaXB0aW9uOiB0aGUgcmVnaXN0ZXJzIG9mIElQIFBvcnQgQ29udHJvbA0KPiA+ICsNCj4g
+PiArICByZWctbmFtZXM6DQo+ID4gKyAgICBtaW5JdGVtczogMQ0KPiA+ICsgICAgbWF4SXRlbXM6
+IDINCj4gPiArICAgIGl0ZW1zOg0KPiA+ICsgICAgICAtIGNvbnN0OiBtYWMNCj4gPiArICAgICAg
+LSBjb25zdDogaXBwYyAgIyBvcHRpb25hbCwgb25seSBuZWVkZWQgZm9yIGNhc2UgMS4NCj4gPiAr
+DQo+ID4gKyAgaW50ZXJydXB0czoNCj4gPiArICAgIG1heEl0ZW1zOiAxDQo+ID4gKw0KPiA+ICsg
+IHBvd2VyLWRvbWFpbnM6DQo+ID4gKyAgICBkZXNjcmlwdGlvbjogQSBwaGFuZGxlIHRvIFVTQiBw
+b3dlciBkb21haW4gbm9kZSB0byBjb250cm9sIFVTQidzIE1UQ01PUw0KPiA+ICsgICAgbWF4SXRl
+bXM6IDENCj4gPiArDQo+ID4gKyAgY2xvY2tzOg0KPiA+ICsgICAgbWluSXRlbXM6IDENCj4gPiAr
+ICAgIG1heEl0ZW1zOiA1DQo+ID4gKyAgICBpdGVtczoNCj4gPiArICAgICAgLSBkZXNjcmlwdGlv
+bjogQ29udHJvbGxlciBjbG9jayB1c2VkIGJ5IG5vcm1hbCBtb2RlDQo+ID4gKyAgICAgIC0gZGVz
+Y3JpcHRpb246IFJlZmVyZW5jZSBjbG9jayB1c2VkIGJ5IGxvdyBwb3dlciBtb2RlIGV0Yw0KPiA+
+ICsgICAgICAtIGRlc2NyaXB0aW9uOiBNY3UgYnVzIGNsb2NrIGZvciByZWdpc3RlciBhY2Nlc3MN
+Cj4gPiArICAgICAgLSBkZXNjcmlwdGlvbjogRE1BIGJ1cyBjbG9jayBmb3IgZGF0YSB0cmFuc2Zl
+cg0KPiA+ICsgICAgICAtIGRlc2NyaXB0aW9uOiBjb250cm9sbGVyIGNsb2NrDQo+ID4gKw0KPiA+
+ICsgIGNsb2NrLW5hbWVzOg0KPiA+ICsgICAgbWluSXRlbXM6IDENCj4gPiArICAgIG1heEl0ZW1z
+OiA1DQo+ID4gKyAgICBpdGVtczoNCj4gPiArICAgICAgLSBjb25zdDogc3lzX2NrICAjIHJlcXVp
+cmVkLCB0aGUgZm9sbG93aW5nIG9uZXMgYXJlIG9wdGlvbmFsDQo+ID4gKyAgICAgIC0gY29uc3Q6
+IHJlZl9jaw0KPiA+ICsgICAgICAtIGNvbnN0OiBtY3VfY2sNCj4gPiArICAgICAgLSBjb25zdDog
+ZG1hX2NrDQo+ID4gKyAgICAgIC0gY29uc3Q6IHhoY2lfY2sNCj4gPiArDQo+ID4gKyAgcGh5czoN
+Cj4gPiArICAgICRyZWY6IC91c2IvdXNiLWhjZC55YW1sIw0KPiANCj4gVGhhdCdzIG5vdCByaWdo
+dC4NCj4gDQo+IFlvdSBuZWVkICdpdGVtcycgYW5kIGxpc3QgZWFjaCBlbnRyeS4NCldpbGwgYWRk
+IG1pbkl0ZW1zL21heEl0ZW1zIGluc3RlYWQgZHVlIHRvIGl0J3MgdmFyaWFibGUgYW5kIHBoeS1u
+YW1lcyBpcw0Kbm90IHVzZWQNCg0KPiANCj4gPiArICAgIGRlc2NyaXB0aW9uOiBMaXN0IG9mIGFs
+bCB0aGUgVVNCIFBIWXMgb24gdGhpcyBIQ0QNCj4gPiArDQo+ID4gKyAgdnVzYjMzLXN1cHBseToN
+Cj4gPiArICAgIGRlc2NyaXB0aW9uOiBSZWd1bGF0b3Igb2YgVVNCIEFWREQzLjN2DQo+ID4gKw0K
+PiA+ICsgIHZidXMtc3VwcGx5Og0KPiA+ICsgICAgZGVzY3JpcHRpb246IFJlZ3VsYXRvciBvZiBV
+U0IgVkJVUzV2DQo+ID4gKw0KPiA+ICsgIHVzYjMtbHBtLWNhcGFibGU6DQo+ID4gKyAgICBkZXNj
+cmlwdGlvbjogc3VwcG9ydHMgVVNCMy4wIExQTQ0KPiA+ICsgICAgdHlwZTogYm9vbGVhbg0KPiA+
+ICsNCj4gPiArICBpbW9kLWludGVydmFsLW5zOg0KPiA+ICsgICAgZGVzY3JpcHRpb246DQo+ID4g
+KyAgICAgIEludGVycnVwdCBtb2RlcmF0aW9uIGludGVydmFsIHZhbHVlLCBpdCBpcyA4IHRpbWVz
+IGFzIG11Y2ggYXMgdGhhdA0KPiA+ICsgICAgICBkZWZpbmVkIGluIHRoZSB4SENJIHNwZWMgb24g
+TVRLJ3MgY29udHJvbGxlci4NCj4gPiArICAgIGRlZmF1bHQ6IDUwMDANCj4gPiArDQo+ID4gKyAg
+IyB0aGUgZm9sbG93aW5nIHByb3BlcnRpZXMgYXJlIG9ubHkgdXNlZCBmb3IgY2FzZSAxDQo+ID4g
+KyAgd2FrZXVwLXNvdXJjZToNCj4gPiArICAgIGRlc2NyaXB0aW9uOiBlbmFibGUgVVNCIHJlbW90
+ZSB3YWtldXAsIHNlZSBwb3dlci93YWtldXAtc291cmNlLnR4dA0KPiA+ICsgICAgdHlwZTogYm9v
+bGVhbg0KPiA+ICsNCj4gPiArICBtZWRpYXRlayxzeXNjb24td2FrZXVwOg0KPiA+ICsgICAgJHJl
+ZjogL3NjaGVtYXMvdHlwZXMueWFtbCMvZGVmaW5pdGlvbnMvcGhhbmRsZS1hcnJheQ0KPiA+ICsg
+ICAgbWF4SXRlbXM6IDENCj4gPiArICAgIGRlc2NyaXB0aW9uOiB8DQo+ID4gKyAgICAgIEEgcGhh
+bmRsZSB0byBzeXNjb24gdXNlZCB0byBhY2Nlc3MgdGhlIHJlZ2lzdGVyIG9mIHRoZSBVU0Igd2Fr
+ZXVwIGdsdWUNCj4gPiArICAgICAgbGF5ZXIgYmV0d2VlbiB4SENJIGFuZCBTUE0sIHRoZSBmaWVs
+ZCBzaG91bGQgYWx3YXlzIGJlIDMgY2VsbHMgbG9uZy4NCj4gPiArDQo+ID4gKyAgICAgIGl0ZW1z
+Og0KPiANCj4gSW5kZW50YXRpb24gaXMgd3JvbmcgaGVyZS4gU2hvdWxkIGJlIDIgZmV3ZXIgc3Bh
+Y2VzLg0KV2lsbCBmaXggaXQNCj4gDQo+ID4gKyAgICAgICAgLSBkZXNjcmlwdGlvbjoNCj4gPiAr
+ICAgICAgICAgICAgVGhlIGZpcnN0IGNlbGwgcmVwcmVzZW50cyBhIHBoYW5kbGUgdG8gc3lzY29u
+DQo+ID4gKyAgICAgICAgLSBkZXNjcmlwdGlvbjoNCj4gPiArICAgICAgICAgICAgVGhlIHNlY29u
+ZCBjZWxsIHJlcHJlc2VudHMgdGhlIHJlZ2lzdGVyIGJhc2UgYWRkcmVzcyBvZiB0aGUgZ2x1ZQ0K
+PiA+ICsgICAgICAgICAgICBsYXllciBpbiBzeXNjb24NCj4gPiArICAgICAgICAtIGRlc2NyaXB0
+aW9uOg0KPiA+ICsgICAgICAgICAgICBUaGUgdGhpcmQgY2VsbCByZXByZXNlbnRzIHRoZSBoYXJk
+d2FyZSB2ZXJzaW9uIG9mIHRoZSBnbHVlIGxheWVyLA0KPiA+ICsgICAgICAgICAgICAxIGlzIHVz
+ZWQgYnkgbXQ4MTczIGV0YywgMiBpcyB1c2VkIGJ5IG10MjcxMiBldGMNCj4gPiArICAgICAgICAg
+IGVudW06IFsxLCAyXQ0KPiA+ICsNCj4gPiArICBtZWRpYXRlayx1M3AtZGlzLW1zazoNCj4gPiAr
+ICAgICRyZWY6IC9zY2hlbWFzL3R5cGVzLnlhbWwjL2RlZmluaXRpb25zL3VpbnQzMg0KPiA+ICsg
+ICAgZGVzY3JpcHRpb246IFRoZSBtYXNrIHRvIGRpc2FibGUgdTNwb3J0cywgYml0MCBmb3IgdTNw
+b3J0MCwNCj4gPiArICAgICAgYml0MSBmb3IgdTNwb3J0MSwgLi4uIGV0Yw0KPiA+ICsNCj4gPiAr
+ICAiI2FkZHJlc3MtY2VsbHMiOg0KPiA+ICsgICAgY29uc3Q6IDENCj4gPiArDQo+ID4gKyAgIiNz
+aXplLWNlbGxzIjoNCj4gPiArICAgIGNvbnN0OiAwDQo+ID4gKw0KPiA+ICtwYXR0ZXJuUHJvcGVy
+dGllczoNCj4gPiArICAiXlthLWZdK0BbMC05YS1mXSskIjoNCj4gPiArICAgICRyZWY6IC91c2Iv
+dXNiLWhjZC55YW1sIw0KPiANCj4gVGhpcyAkcmVmIGlzbid0IHJpZ2h0LiBZb3UgYWxyZWFkeSBy
+ZWZlcmVuY2VkIGl0IGF0IHRoZSB0b3AuDQpXaWxsIGRyb3AgaXQNCg0KVGhhbmsgeW91DQoNCj4g
+DQo+ID4gKyAgICB0eXBlOiBvYmplY3QNCj4gPiArICAgIGRlc2NyaXB0aW9uOiBUaGUgaGFyZCB3
+aXJlZCBVU0IgZGV2aWNlcy4NCj4gPiArDQo+ID4gK2RlcGVuZGVuY2llczoNCj4gPiArICB3YWtl
+dXAtc291cmNlOiBbICdtZWRpYXRlayxzeXNjb24td2FrZXVwJyBdDQo+ID4gKw0KPiA+ICtyZXF1
+aXJlZDoNCj4gPiArICAtIGNvbXBhdGlibGUNCj4gPiArICAtIHJlZw0KPiA+ICsgIC0gcmVnLW5h
+bWVzDQo+ID4gKyAgLSBpbnRlcnJ1cHRzDQo+ID4gKyAgLSBjbG9ja3MNCj4gPiArICAtIGNsb2Nr
+LW5hbWVzDQo+ID4gKw0KPiA+ICthZGRpdGlvbmFsUHJvcGVydGllczogZmFsc2UNCj4gPiArDQo+
+ID4gK2V4YW1wbGVzOg0KPiA+ICsgIC0gfA0KPiA+ICsgICAgI2luY2x1ZGUgPGR0LWJpbmRpbmdz
+L2Nsb2NrL210ODE3My1jbGsuaD4NCj4gPiArICAgICNpbmNsdWRlIDxkdC1iaW5kaW5ncy9pbnRl
+cnJ1cHQtY29udHJvbGxlci9hcm0tZ2ljLmg+DQo+ID4gKyAgICAjaW5jbHVkZSA8ZHQtYmluZGlu
+Z3MvaW50ZXJydXB0LWNvbnRyb2xsZXIvaXJxLmg+DQo+ID4gKyAgICAjaW5jbHVkZSA8ZHQtYmlu
+ZGluZ3MvcGh5L3BoeS5oPg0KPiA+ICsgICAgI2luY2x1ZGUgPGR0LWJpbmRpbmdzL3Bvd2VyL210
+ODE3My1wb3dlci5oPg0KPiA+ICsNCj4gPiArICAgIHVzYkAxMTI3MDAwMCB7DQo+ID4gKyAgICAg
+ICAgY29tcGF0aWJsZSA9ICJtZWRpYXRlayxtdDgxNzMteGhjaSIsICJtZWRpYXRlayxtdGsteGhj
+aSI7DQo+ID4gKyAgICAgICAgcmVnID0gPDB4MTEyNzAwMDAgMHgxMDAwPiwgPDB4MTEyODA3MDAg
+MHgwMTAwPjsNCj4gPiArICAgICAgICByZWctbmFtZXMgPSAibWFjIiwgImlwcGMiOw0KPiA+ICsg
+ICAgICAgIGludGVycnVwdHMgPSA8R0lDX1NQSSAxMTUgSVJRX1RZUEVfTEVWRUxfTE9XPjsNCj4g
+PiArICAgICAgICBwb3dlci1kb21haW5zID0gPCZzY3BzeXMgTVQ4MTczX1BPV0VSX0RPTUFJTl9V
+U0I+Ow0KPiA+ICsgICAgICAgIGNsb2NrcyA9IDwmdG9wY2tnZW4gQ0xLX1RPUF9VU0IzMF9TRUw+
+LCA8JmNsazI2bT47DQo+ID4gKyAgICAgICAgY2xvY2stbmFtZXMgPSAic3lzX2NrIiwgInJlZl9j
+ayI7DQo+ID4gKyAgICAgICAgcGh5cyA9IDwmdTNwb3J0MCBQSFlfVFlQRV9VU0IzPiwgPCZ1MnBv
+cnQxIFBIWV9UWVBFX1VTQjI+Ow0KPiA+ICsgICAgICAgIHZ1c2IzMy1zdXBwbHkgPSA8Jm10NjM5
+N192dXNiX3JlZz47DQo+ID4gKyAgICAgICAgdmJ1cy1zdXBwbHkgPSA8JnVzYl9wMV92YnVzPjsN
+Cj4gPiArICAgICAgICBpbW9kLWludGVydmFsLW5zID0gPDEwMDAwPjsNCj4gPiArICAgICAgICBt
+ZWRpYXRlayxzeXNjb24td2FrZXVwID0gPCZwZXJpY2ZnIDB4NDAwIDE+Ow0KPiA+ICsgICAgICAg
+IHdha2V1cC1zb3VyY2U7DQo+ID4gKyAgICAgICAgdXNiMy1scG0tY2FwYWJsZTsNCj4gPiArICAg
+IH07DQo+ID4gKy4uLg0KPiA+IC0tIA0KPiA+IDIuMTguMA0KPiA+IA0KDQo=
 
-It seems ok, but I will check it again.
-
----8<---
-[ec2-user@ip-10-0-0-124 bpf-next]$ cat .config | grep DEBUG_LOCK
-CONFIG_DEBUG_LOCK_ALLOC=y
-CONFIG_DEBUG_LOCKDEP=y
-CONFIG_DEBUG_LOCKING_API_SELFTESTS=y
----8<---
-
-
-> > > > > > diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-> > > > > > index 1451aa9712b0..b27241ea96bd 100644
-> > > > > > --- a/net/ipv4/inet_connection_sock.c
-> > > > > > +++ b/net/ipv4/inet_connection_sock.c
-> > > > > > @@ -992,6 +992,36 @@ struct sock *inet_csk_reqsk_queue_add(struct sock *sk,
-> > > > > >  }
-> > > > > >  EXPORT_SYMBOL(inet_csk_reqsk_queue_add);
-> > > > > >  
-> > > > > > +void inet_csk_reqsk_queue_migrate(struct sock *sk, struct sock *nsk)
-> > > > > > +{
-> > > > > > +	struct request_sock_queue *old_accept_queue, *new_accept_queue;
-> > > > > > +
-> > > > > > +	old_accept_queue = &inet_csk(sk)->icsk_accept_queue;
-> > > > > > +	new_accept_queue = &inet_csk(nsk)->icsk_accept_queue;
-> > > > > > +
-> > > > > > +	spin_lock(&old_accept_queue->rskq_lock);
-> > > > > > +	spin_lock(&new_accept_queue->rskq_lock);
-> > > > > I am also not very thrilled on this double spin_lock.
-> > > > > Can this be done in (or like) inet_csk_listen_stop() instead?
-> > > > 
-> > > > It will be possible to migrate sockets in inet_csk_listen_stop(), but I
-> > > > think it is better to do it just after reuseport_detach_sock() becuase we
-> > > > can select a different listener (almost) every time at a lower cost by
-> > > > selecting the moved socket and pass it to inet_csk_reqsk_queue_migrate()
-> > > > easily.
-> > > I don't see the "lower cost" point.  Please elaborate.
-> > 
-> > In reuseport_select_sock(), we pass sk_hash of the request socket to
-> > reciprocal_scale() and generate a random index for socks[] to select
-> > a different listener every time.
-> > On the other hand, we do not have request sockets in unhash path and
-> > sk_hash of the listener is always 0, so we have to generate a random number
-> > in another way. In reuseport_detach_sock(), we can use the index of the
-> > moved socket, but we do not have it in inet_csk_listen_stop(), so we have
-> > to generate a random number in inet_csk_listen_stop().
-> > I think it is at lower cost to use the index of the moved socket.
-> Generate a random number is not a big deal for the migration code path.
-> 
-> Also, I really still failed to see a particular way that the kernel
-> pick will help in the migration case.  The kernel has no clue
-> on how to select the right process to migrate to without
-> a proper policy signal from the user.  They are all as bad as
-> a random pick.  I am not sure this migration feature is
-> even useful if there is no bpf prog attached to define the policy.
-
-I think most applications start new listeners before closing listeners, in
-this case, selecting the moved socket as the new listener works well.
-
-
-> That said, if it is still desired to do a random pick by kernel when
-> there is no bpf prog, it probably makes sense to guard it in a sysctl as
-> suggested in another reply.  To keep it simple, I would also keep this
-> kernel-pick consistent instead of request socket is doing something
-> different from the unhash path.
-
-Then, is this way better to keep kernel-pick consistent?
-
-  1. call reuseport_select_migrated_sock() without sk_hash from any path
-  2. generate a random number in reuseport_select_migrated_sock()
-  3. pass it to __reuseport_select_sock() only for select-by-hash
-  (4. pass 0 as sk_hash to bpf_run_sk_reuseport not to use it)
-  5. do migration per queue in inet_csk_listen_stop() or per request in
-     receive path.
-
-I understand it is beautiful to keep consistensy, but also think
-the kernel-pick with heuristic performs better than random-pick.
