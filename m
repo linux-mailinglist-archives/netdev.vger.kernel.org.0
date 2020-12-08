@@ -2,134 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17B1E2D23E7
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 07:50:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 920752D23E9
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 07:51:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726168AbgLHGtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 01:49:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51128 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725208AbgLHGtm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 01:49:42 -0500
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDCEC061749;
-        Mon,  7 Dec 2020 22:49:02 -0800 (PST)
-Received: by mail-yb1-xb44.google.com with SMTP id x2so15207313ybt.11;
-        Mon, 07 Dec 2020 22:49:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=q5gbwWkOtujJVv2v0BjUJ6Ouy8BGKxoIqvXI37zp8Pw=;
-        b=gH85z02WDx+RfDoz1i5hCKihVidqOLOEXlpAVuCE4lJJNLwoVTuJL4SXKxs6hkBayl
-         cty8t3+PwOjO0V/pSCcRPGblDVVPn7ZBdv77CUN76bG6eHXsXpSsmm2f4LjdgbDO0art
-         Buj2vSefcnibMR8ZZNW1DqYKkrzlXurtO6CnAGCPSAo5+32PnbsYwX3SIZjQE5UDS0bV
-         UwB5XD3w1zz49/MbQDs2YP74qclVJtbFyGL4ZlgsDQ4WXP08GsoydcmNYLI1KBULgOWG
-         qphT8bPqKg3LzVasIlfWsX7yLpNJ9P6OLsaQ+xsC27Z/ZIRai6yd1CY5ul5GyE+sRBUV
-         EdIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=q5gbwWkOtujJVv2v0BjUJ6Ouy8BGKxoIqvXI37zp8Pw=;
-        b=oa3Acx5FcrQ74WjDc4rclaEqn5ArOQYSWhPEpwhCmHnmYZEfJEP2Y9m9OCfvTdrxip
-         uaR2mJs+aOCnMNMV8QGuFayWBbbDGc6u51BLQCTGvLbqD2PZGcQ8r6pWX6WgzsZpuly2
-         Y13RemAdf9F4DRDIwJwIejxghkSc+Y2AfrkI4Vx7PoC5qeZU+Qf7HNZvcJ4V7Kxh8fV2
-         bOqumy709LzeEC4OTpcfBTN/lDNOI/2E/6di13rTGaw4AbaUQy8RNtYsuIuy7rNKwj8c
-         m2B8geMxf4g8/7+7XbItO4Fpm0Ap3JZbZ+uT6HYR8L41HOJwDWBjG1mxm9SxYWJy82Fw
-         ZcKA==
-X-Gm-Message-State: AOAM5312SY6OWmJMEXNk6QBI5qXkYTrrvJnKq6jzVO8NYpxwnQvd8zSg
-        bsNdvXA890jnVbl6iG2SWqCYJq5oqp5loNDP5rwvgAi+CgnaOg==
-X-Google-Smtp-Source: ABdhPJwL0agTDPSK7vFLX8XzeHMr2QoOJ7hDDsr64XcQo0TmjAfJ2TfzmDpeAzhRF24uCh6vDZyTPiRJMzbVY9RSfFM=
-X-Received: by 2002:a25:c7c6:: with SMTP id w189mr28229261ybe.403.1607410141361;
- Mon, 07 Dec 2020 22:49:01 -0800 (PST)
-MIME-Version: 1.0
-References: <20201207052057.397223-1-saeed@kernel.org> <CAEf4BzZe2162nMsamMKkGRpR_9hUnaATWocE=XjgZd+2cJk5Jw@mail.gmail.com>
- <76aa0d16e3d03cf12496184c848f60069bf71872.camel@kernel.org>
- <CAEf4BzYzJuPt8Fct2pOTPjHLiiyGPQw05rFNK4d+MAJTC_itkw@mail.gmail.com> <5a86df89822ba7e4d944867916423c46ad4b7434.camel@kernel.org>
-In-Reply-To: <5a86df89822ba7e4d944867916423c46ad4b7434.camel@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 7 Dec 2020 22:48:50 -0800
-Message-ID: <CAEf4BzZYfaC0v8ewDyQHz9JNL-w8bJazAJmuweuH=zif-RUy3Q@mail.gmail.com>
-Subject: Re: [PATCH bpf] tools/bpftool: Add/Fix support for modules btf dump
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>
+        id S1726445AbgLHGuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 01:50:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59270 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725208AbgLHGuj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Dec 2020 01:50:39 -0500
+Message-ID: <7e086651b1f4a486548016a3a0a889b31b29f2cc.camel@kernel.org>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607410198;
+        bh=N7gDSXSjPYyJZG7733gytzJCcNwhjk3d9UYncHG6TKM=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=taXehZVK4H6Ph4dVA4eJzvnZbzjc+yXq3/OdmWhJ1cCSExMEneKGvAeMZ2kh4B9vm
+         0vODc2AMjrusLD0eFl15VVdOlf3ynLqLDW209ganTRwaq8AdTtEnPpBI9l+RNa+SZJ
+         2V6l0lvt7FCBwX0Y+GUGBZm0jkSstJS8IMzDDaAi6v7DkOG5GyPelGjkn6dKgTd8nu
+         dq3tI4KPA2nI8qPUqoPxHebaJkW4Awm8W+cpZpfsIysqL+ndPubqGdlpr2wABpVdEs
+         25HJPWot4btqnsuEl7HBiD8zcbHOj+4EqZnb7CJqsItco8tNXksFbacQ/vG2JPJZl1
+         QuPI31Av+KDPw==
+Subject: Re: [PATCH v5 bpf-next 01/14] xdp: introduce mb in
+ xdp_buff/xdp_frame
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
+        "Jubran, Samih" <sameehj@amazon.com>,
+        John Fastabend <john.fastabend@gmail.com>, dsahern@kernel.org,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        lorenzo.bianconi@redhat.com, Jason Wang <jasowang@redhat.com>
+Date:   Mon, 07 Dec 2020 22:49:55 -0800
+In-Reply-To: <CAKgT0UeR8ErY4AOAiWxpR-j8QEs7GqCGrx58-7oaU3fnV=sU3Q@mail.gmail.com>
+References: <cover.1607349924.git.lorenzo@kernel.org>
+         <7e7dbe0c739640b053c930d3cd22ab7588d6aa3c.1607349924.git.lorenzo@kernel.org>
+         <CAKgT0UdqajD_fJRnkRVM6HgSu=3EkUfXn7niqtqxceLUQbzt3w@mail.gmail.com>
+         <46fae597d42d28a7246ba08b0652b0114b7f5255.camel@kernel.org>
+         <CAKgT0UeR8ErY4AOAiWxpR-j8QEs7GqCGrx58-7oaU3fnV=sU3Q@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 7, 2020 at 10:45 PM Saeed Mahameed <saeed@kernel.org> wrote:
->
-> On Mon, 2020-12-07 at 22:38 -0800, Andrii Nakryiko wrote:
-> > On Mon, Dec 7, 2020 at 10:26 PM Saeed Mahameed <saeed@kernel.org>
-> > wrote:
-> > > On Mon, 2020-12-07 at 19:14 -0800, Andrii Nakryiko wrote:
-> > > > On Sun, Dec 6, 2020 at 9:21 PM <saeed@kernel.org> wrote:
-> > > > > From: Saeed Mahameed <saeedm@nvidia.com>
-> > > > >
-> [...]
-> > > > >
-> > > > > I am not sure why this hasn't been added by the original
-> > > > > patchset
-> > > >
-> > > > because I never though of dumping module BTF by id, given there
-> > > > is
-> > > > nicely named /sys/kernel/btf/<module> :)
-> > > >
-> > >
-> > > What if i didn't compile my kernel with SYSFS ? a user experience
-> > > is a
-> > > user experience, there is no reason to not support dump a module
-> > > btf by
-> > > id or to have different behavior for different BTF sources.
-> >
-> > Hm... I didn't claim otherwise and didn't oppose the feature, why the
-> > lecture about user experience?
-> >
->
-> Sorry wasn't a lecture, just wanted to emphasize the motivation.
->
-> > Not having sysfs is a valid point. In such cases, if BTF dumping is
-> > from ID and we see that it's a module BTF, finding vmlinux BTF from
-> > ID
-> > makes sense.
-> >
-> > > I can revise this patch to support -B option and lookup vmlinux
-> > > file if
-> > > not provided for module btf dump by ids.
-> >
-> > yep
-> >
-> > > but we  still need to pass base_btf to btf__get_from_id() in order
-> > > to
-> > > support that, as was done for btf__parse_split() ... :/
-> >
-> > btf__get_from_id_split() might be needed, yes.
-> >
-> > > Are you sure you don't like the current patch/libbpf API ? it is
-> > > pretty
-> > > straight forward and correct.
-> >
-> > I definitely don't like adding btf_get_kernel_id() API to libbpf.
-> > There is nothing special about it to warrant adding it as a public
-> > API. Everything we discussed can be done by bpftool.
-> >
->
-> What about the case where sysfs isn't available ?
-> we still need to find vmlinux's btf id..
+On Mon, 2020-12-07 at 19:16 -0800, Alexander Duyck wrote:
+> On Mon, Dec 7, 2020 at 3:03 PM Saeed Mahameed <saeed@kernel.org>
+> wrote:
+> > On Mon, 2020-12-07 at 13:16 -0800, Alexander Duyck wrote:
+> > > On Mon, Dec 7, 2020 at 8:36 AM Lorenzo Bianconi <
+> > > lorenzo@kernel.org>
+> > > wrote:
+> > > > Introduce multi-buffer bit (mb) in xdp_frame/xdp_buffer data
+> > > > structure
+> > > > in order to specify if this is a linear buffer (mb = 0) or a
+> > > > multi-
+> > > > buffer
+> > > > frame (mb = 1). In the latter case the shared_info area at the
+> > > > end
+> > > > of the
+> > > > first buffer is been properly initialized to link together
+> > > > subsequent
+> > > > buffers.
+> > > > 
+> > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > > > ---
+> > > >  include/net/xdp.h | 8 ++++++--
+> > > >  net/core/xdp.c    | 1 +
+> > > >  2 files changed, 7 insertions(+), 2 deletions(-)
+> > > > 
+> > > > diff --git a/include/net/xdp.h b/include/net/xdp.h
+> > > > index 700ad5db7f5d..70559720ff44 100644
+> > > > --- a/include/net/xdp.h
+> > > > +++ b/include/net/xdp.h
+> > > > @@ -73,7 +73,8 @@ struct xdp_buff {
+> > > >         void *data_hard_start;
+> > > >         struct xdp_rxq_info *rxq;
+> > > >         struct xdp_txq_info *txq;
+> > > > -       u32 frame_sz; /* frame size to deduce
+> > > > data_hard_end/reserved tailroom*/
+> > > > +       u32 frame_sz:31; /* frame size to deduce
+> > > > data_hard_end/reserved tailroom*/
+> > > > +       u32 mb:1; /* xdp non-linear buffer */
+> > > >  };
+> > > > 
+> > > 
+> > > If we are really going to do something like this I say we should
+> > > just
+> > > rip a swath of bits out instead of just grabbing one. We are
+> > > already
+> > > cutting the size down then we should just decide on the minimum
+> > > size
+> > > that is acceptable and just jump to that instead of just stealing
+> > > one
+> > > bit at a time. It looks like we already have differences between
+> > > the
+> > > size here and frame_size in xdp_frame.
+> > > 
+> > 
+> > +1
+> > 
+> > > If we have to steal a bit why not look at something like one of
+> > > the
+> > > lower 2/3 bits in rxq? You could then do the same thing using
+> > > dev_rx
+> > > in a similar fashion instead of stealing from a bit that is
+> > > likely to
+> > > be used in multiple spots and modifying like this adds extra
+> > > overhead
+> > > to?
+> > > 
+> > 
+> > What do you mean in rxq ? from the pointer ?
+> 
+> Yeah, the pointers have a few bits that are guaranteed 0 and in my
+> mind reusing the lower bits from a 4 or 8 byte aligned pointer would
+> make more sense then stealing the upper bits from the size of the
+> frame.
 
-Right, but bpftool is perfectly capable of doing that without adding
-APIs to libbpf. That's why I wrote above:
+Ha, i can't imagine how accessing that pointer would look like ..
+is possible to define the pointer as a bit-field and just access it
+normally ? or do we need to fix it up every time we need to access it ?
+will gcc/static checkers complain about wrong pointer type ?
 
-  > > Not having sysfs is a valid point. In such cases, if BTF dumping is
-  > > from ID and we see that it's a module BTF, finding vmlinux BTF from
-  > > ID
-  > > makes sense.
 
->
->
->
