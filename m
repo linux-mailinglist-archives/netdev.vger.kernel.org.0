@@ -2,139 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F4BA2D3589
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 22:49:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 569DD2D359D
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 22:54:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730038AbgLHVrC convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 8 Dec 2020 16:47:02 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:58979 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725874AbgLHVrB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 16:47:01 -0500
-Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1kmkoF-0006sn-Kc; Tue, 08 Dec 2020 21:46:13 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id C5B695FEE7; Tue,  8 Dec 2020 13:46:09 -0800 (PST)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id BE5A99FAB0;
-        Tue,  8 Dec 2020 13:46:09 -0800 (PST)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-cc:     Lars Everbrand <lars.everbrand@protonmail.com>,
-        linux-kernel@vger.kernel.org, Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] bonding: correct rr balancing during link failure
-In-reply-to: <20201205114513.4886d15e@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-References: <X8f/WKR6/j9k+vMz@black-debian> <20201205114513.4886d15e@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-Comments: In-reply-to Jakub Kicinski <kuba@kernel.org>
-   message dated "Sat, 05 Dec 2020 11:45:13 -0800."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S1729790AbgLHVvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 16:51:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52058 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726114AbgLHVvy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 16:51:54 -0500
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74173C061794
+        for <netdev@vger.kernel.org>; Tue,  8 Dec 2020 13:51:14 -0800 (PST)
+Received: by mail-yb1-xb41.google.com with SMTP id t33so152250ybd.0
+        for <netdev@vger.kernel.org>; Tue, 08 Dec 2020 13:51:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IrbuLHfafjz+sRlDO0dkJ2IAH5+0Wj03472Zc1a6OJ4=;
+        b=Tl/4/Zhf27fYFL7rAyDBESVlL4Q3CGlmerSiuHMF4GeZ4qzGE7dj3ywsWH0X/dP/sG
+         Uc9e8WbnArfok3EJ0riaKf7emj3hgHtF5c4hehEVcJ6udOFQEbGwrsEJeZvr6fNlwiaR
+         inCtPkAlF9QSExExS08oGpCmIUTUfnUOn5qd67kd0V5Z618NAXk6Cx65FI6juTwAWW0u
+         wrrTvzmTxwZw73p2vdJpklpwrvg5BqUddEEJKu2dc0HEnX/3oCv7QjbOQ9djeIQB3Y4A
+         HNdxeIczJvG/AptGvia3JgqfxaxiZ1UUa4mHVCMPUD/FQ6j+Uaxzk2mm3s9eultRpJSY
+         W++A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IrbuLHfafjz+sRlDO0dkJ2IAH5+0Wj03472Zc1a6OJ4=;
+        b=M+3skn63LFdhXCmS0elOTvP4/oW+O8Oirr4X9n56EXUN9b6KMZjHyNPuP2kYuwgheI
+         5zNF62jgPc4Hg0teThzuv/X3VfxcYYw63/Y/RcP3BnT2balWjdHvdW0qkAj4OZTxLIrD
+         ILCSzwcDvXXephPRsJINbkYT9pci0c3ZPL9iv/8Cz9A0x0BQ4CwSV6tJHH12CBgTYRkW
+         5LboC1TwiYbhW7MG2cJDnWLU63Y9zX2i8xhwYwWaxMuIv8RxbOp/FzBO1fDZ9ggzLSJW
+         vc93XXQRRFPMC2vvVujpsp12HOlaFcBHBuK5fSh1ae+c2JmJ5pmkAQNjy9phSj78OfR3
+         fzNw==
+X-Gm-Message-State: AOAM531MouOShKqM4QrRUnGyr3UxPRR4zkRSl2Syn51NqhV1RvhX1ssi
+        9SfJkDQGUayE9r6Dx0ijahgN6gVenC3HT2hfVWM49w==
+X-Google-Smtp-Source: ABdhPJytY4O/tksopFX4PtEEcyVxOau41uhnLsk52VZ6aSjrLTV/onzexuvQpge0idCE1mglg3bNmSL4sZRO7ZOCHIs=
+X-Received: by 2002:a25:a4a1:: with SMTP id g30mr34109488ybi.195.1607464273599;
+ Tue, 08 Dec 2020 13:51:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <15307.1607463969.1@famine>
-Content-Transfer-Encoding: 8BIT
-Date:   Tue, 08 Dec 2020 13:46:09 -0800
-Message-ID: <15308.1607463969@famine>
+References: <ca64de092db5a2ac80d22eaa9d662520@codeaurora.org>
+ <56e72b72-685f-925d-db2d-d245c1557987@gmail.com> <CAEA6p_D+diS7jnpoGk6cncWL8qiAGod2EAp=Vcnc-zWNPg04Jg@mail.gmail.com>
+ <307c2de1a2ddbdcd0a346c57da88b394@codeaurora.org>
+In-Reply-To: <307c2de1a2ddbdcd0a346c57da88b394@codeaurora.org>
+From:   Wei Wang <weiwan@google.com>
+Date:   Tue, 8 Dec 2020 13:51:03 -0800
+Message-ID: <CAEA6p_ArQdNp=hQCjrsnAo-Xy22d44b=2KdLp7zO7E7XDA4Fog@mail.gmail.com>
+Subject: Re: Refcount mismatch when unregistering netdevice from kernel
+To:     stranche@codeaurora.org
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        David Ahern <dsahern@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> wrote:
-
->On Wed, 02 Dec 2020 20:55:57 +0000 Lars Everbrand wrote:
->> This patch updates the sending algorithm for roundrobin to avoid
->> over-subscribing interface(s) when one or more interfaces in the bond is
->> not able to send packets. This happened when order was not random and
->> more than 2 interfaces were used.
->> 
->> Previously the algorithm would find the next available interface
->> when an interface failed to send by, this means that most often it is
->> current_interface + 1. The problem is that when the next packet is to be
->> sent and the "normal" algorithm then continues with interface++ which
->> then hits that same interface again.
->> 
->> This patch updates the resending algorithm to update the global counter
->> of the next interface to use.
->> 
->> Example (prior to patch):
->> 
->> Consider 6 x 100 Mbit/s interfaces in a rr bond. The normal order of links
->> being used to send would look like:
->> 1 2 3 4 5 6  1 2 3 4 5 6  1 2 3 4 5 6 ...
->> 
->> If, for instance, interface 2 where unable to send the order would have been:
->> 1 3 3 4 5 6  1 3 3 4 5 6  1 3 3 4 5 6 ...
->> 
->> The resulting speed (for TCP) would then become:
->> 50 + 0 + 100 + 50 + 50 + 50 = 300 Mbit/s
->> instead of the expected 500 Mbit/s.
->> 
->> If interface 3 also would fail the resulting speed would be half of the
->> expected 400 Mbit/s (33 + 0 + 0 + 100 + 33 + 33).
-
-	Are these bandwidth numbers from observation of the actual
-behavior?  I'm not sure the real system would behave this way; my
-suspicion is that it would increase the likelihood of drops on the
-overused slave, not that the overall capacity would be limited.
-
->> Signed-off-by: Lars Everbrand <lars.everbrand@protonmail.com>
+On Tue, Dec 8, 2020 at 11:13 AM <stranche@codeaurora.org> wrote:
 >
->Thanks for the patch!
+> Hi Wei and Eric,
 >
->Looking at the code in question it feels a little like we're breaking
->abstractions if we bump the counter directly in get_slave_by_id.
-
-	Agreed; I think a better way to fix this is to enable the slave
-array for balance-rr mode, and then use the array to find the right
-slave.  This way, we then avoid the problematic "skip unable to tx"
-logic for free.
-
->For one thing when the function is called for IGMP packets the counter
->should not be incremented at all. But also if packets_per_slave is not
->1 we'd still be hitting the same leg multiple times (packets_per_slave
->/ 2). So it seems like we should round the counter up somehow?
+> Thanks for the replies.
 >
->For IGMP maybe we don't have to call bond_get_slave_by_id() at all,
->IMHO, just find first leg that can TX. Then we can restructure
->bond_get_slave_by_id() appropriately for the non-IGMP case.
-
-	For IGMP, the theory is to confine that traffic to a single
-device.  Normally, this will be curr_active_slave, which is updated even
-in balance-rr mode as interfaces are added to or removed from the bond.
-The call to bond_get_slave_by_id should be a fallback in case
-curr_active_slave is empty, and should be the exception, and may not be
-possible at all.
-
-	But either way, the IGMP path shouldn't mess with rr_tx_counter,
-it should be out of band of the normal TX packet counting, so to speak.
-
-	-J
-
->> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
->> index e0880a3840d7..e02d9c6d40ee 100644
->> --- a/drivers/net/bonding/bond_main.c
->> +++ b/drivers/net/bonding/bond_main.c
->> @@ -4107,6 +4107,7 @@ static struct slave *bond_get_slave_by_id(struct bonding *bond,
->>  		if (--i < 0) {
->>  			if (bond_slave_can_tx(slave))
->>  				return slave;
->> +			bond->rr_tx_counter++;
->>  		}
->>  	}
->>  
->> @@ -4117,6 +4118,7 @@ static struct slave *bond_get_slave_by_id(struct bonding *bond,
->>  			break;
->>  		if (bond_slave_can_tx(slave))
->>  			return slave;
->> +		bond->rr_tx_counter++;
->>  	}
->>  	/* no slave that can tx has been found */
->>  	return NULL;
+> This was reported to us on the 5.4.61 kernel during a customer
+> regression suite, so we don't have an exact reproducer unfortunately.
+>  From the trace logs we've added it seems like this is happening during
+> IPv6 transport mode XFRM data transfer and the device is unregistered in
+> the middle of it, but we've been unable to reproduce it ourselves..
+> We're open to trying out and sharing debug patches if needed though.
 >
 
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+I double checked 5.4.61, and I didn't find any missing fixes in this
+area AFAICT.
+
+> > rt6_uncached_list_flush_dev() actually tries to replace the inet6_dev
+> > with loopback_dev, and release the reference to the previous inet6_dev
+> > by calling in6_dev_put(), which is actually doing the same thing as
+> > ip6_dst_ifdown(). I don't understand why you say " a reference to the
+> > inet6_dev is simply dropped".
+>
+> Fair. I was going off the semantics used by the dst_dev_put() function
+> which calls dst_ops->ifdown() explicitly. At least in the case of
+> xfrm6_dst_ifdown() this swap of the loopback device and putting the
+> refcount seems like it could be missing a few things.
+>
+
+Looking more into the xfrm code, I think the major difference between
+xfrm dst and non-xfrm dst is that, xfrm code creates a list of dst
+entries in one dst_entry linked by xfrm_dst_child().
+In xfrm_bundle_create(), which I believe is the main function to
+create xfrm dst bundles, it allocates the main dst entry and its
+children, and it calls xfrm_fill_dst() for each of them. So I think
+each dst in the list (including all the children) are added into the
+uncached_list.
+The difference between the current code in
+rt6_uncached_list_flush_dev() vs dst_ops->ifdown() is that, the
+current code only releases the refcnt to inet6_dev associated with the
+main dst, while xfrm6_dst_ifdown() tries to release inet6_dev
+associated with every dst linked by xfrm_dst_child(). However, since
+xfrm_bundle_create() anyway adds each child dst to the uncached list,
+I don't see how the current code could miss any refcnt.
+BTW, have you tried your previous proposed patch and confirmed it
+would fix the issue?
+
+> > The additional refcount to the DST is also released by doing the
+> > following:
+> >                         if (rt_dev == dev) {
+> >                                 rt->dst.dev = blackhole_netdev;
+> >                                 dev_hold(rt->dst.dev);
+> >                                 dev_put(rt_dev);
+> >                         }
+> > Am I missing something?
+>
+> That dev_put() is on the actual netdevice struct, not the inet6_dev
+> associated with it. We're seeing many calls to icmp6_dst_alloc() and
+> xfrm6_fill_dst() here, both of which seem to associate a reference to
+> the inet6_dev struct with the DST in addition to the standard dev_hold()
+> on the netdevice during the dst_alloc()/dst_init().
+>
+
+Could we further distinguish between dst added to the uncached list by
+icmp6_dst_alloc() and xfrm6_fill_dst(), and confirm which ones are the
+ones leaking reference?
+I suspect it would be the xfrm ones, but I think it is worth verifying.
+
+
+> Thanks,
+> Sean
