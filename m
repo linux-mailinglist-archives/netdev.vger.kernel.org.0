@@ -2,101 +2,293 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1652F2D2E58
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 16:34:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7104B2D2E86
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 16:44:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730026AbgLHPeV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 10:34:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47570 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729943AbgLHPeU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 10:34:20 -0500
-Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8148AC061793;
-        Tue,  8 Dec 2020 07:33:40 -0800 (PST)
-Received: by mail-vs1-xe41.google.com with SMTP id q10so9692026vsr.13;
-        Tue, 08 Dec 2020 07:33:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SJx7BqX/ixE/fzei6WxsOLNMaFjc9YlcOOhXGl/ihUs=;
-        b=JHA2VKifBEKYyWCObgMBJHLB0bchyzTYIPLsLCliJVqROh4kdnI7Jkt84VNfoKIp21
-         DNrpXSQxhe8EMuB46biHFaV480yj+NWjvB4vxXUo399TAaCJl9G99Q+tlg133jaYo1/Q
-         oMIBCYb+R/MJDek4qaJhGI28VZTmDbBU68uj80AIwzYcBIl4Kxwm94wLJoFaywmqPoTd
-         ZI7oK4oEU7GtACbNgPyibjRTS10FKU6RqL0W+Qh0GVGtxV3QNF7gINSoddqSBgz/8Dma
-         /Vyt+hhuovmbIDFVNI1ABB9SaNqcMUfFTWedoMJVwsPwxR/pe5+8pSfMSZ9JPRO2WJkY
-         +8Zw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SJx7BqX/ixE/fzei6WxsOLNMaFjc9YlcOOhXGl/ihUs=;
-        b=uUYc8/3uYqtx8CGI/rECa8MbKfKLzhC/FXdIls6tHAClWa6UNJbugvyL4HjPQHzJQM
-         9nHCO1WX8qqU7X36xfmsvgtRtxSuBYBnJmAJ1yl/gtrt6v+RvK1HdLXnM3J/gaEY1AGw
-         T2eriXdDvjSLsF+3fIephLeu7hu5g4pirumfomYRjtanNVf8cHvjVk6HLBfYhh9td5Lv
-         gPGPnQWbNeXYBJ79L0Nt2oJCYu5GipE6y7Q0p+eQG5OvdToQkvN6QhJdLgARLc0V0enL
-         FgLYySkLcJ1U7U5UOM9DMQfgo9Cz8wYiWsidvVpJ5vZyTDAtt6chQOUXpQ3iHR7KjlI0
-         dy7w==
-X-Gm-Message-State: AOAM5303UFFzI7aCekPk9E/OO1O4R04Sh89K5aauzCzrvyDS23uHnYIu
-        J5+FNNzkwnOpGxFwGfdBb24Rdr0bSqOwcEB8CzI=
-X-Google-Smtp-Source: ABdhPJwm6JaxYxU+kXvZGSDy5QBUoMLJJbDJuUUsoIWBGoXj5yHSW5A/VlIkFXPsmWtaRwMWM9D0QuFgB3G8bV/IDlE=
-X-Received: by 2002:a67:e43:: with SMTP id 64mr16580301vso.40.1607441619668;
- Tue, 08 Dec 2020 07:33:39 -0800 (PST)
+        id S1730184AbgLHPnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 10:43:16 -0500
+Received: from pbmsgap02.intersil.com ([192.157.179.202]:33986 "EHLO
+        pbmsgap02.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729457AbgLHPnQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 10:43:16 -0500
+Received: from pps.filterd (pbmsgap02.intersil.com [127.0.0.1])
+        by pbmsgap02.intersil.com (8.16.0.42/8.16.0.42) with SMTP id 0B8FeYvD016868;
+        Tue, 8 Dec 2020 10:42:30 -0500
+Received: from pbmxdp03.intersil.corp (pbmxdp03.pb.intersil.com [132.158.200.224])
+        by pbmsgap02.intersil.com with ESMTP id 35858khkcq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 08 Dec 2020 10:42:29 -0500
+Received: from pbmxdp01.intersil.corp (132.158.200.222) by
+ pbmxdp03.intersil.corp (132.158.200.224) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.1979.3; Tue, 8 Dec 2020 10:42:28 -0500
+Received: from localhost (132.158.202.109) by pbmxdp01.intersil.corp
+ (132.158.200.222) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Tue, 8 Dec 2020 10:42:27 -0500
+From:   <min.li.xe@renesas.com>
+To:     <richardcochran@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Min Li <min.li.xe@renesas.com>
+Subject: [PATCH net-next 3/4] ptp: clockmatrix: Fix non-zero phase_adj is lost after snap
+Date:   Tue, 8 Dec 2020 10:41:56 -0500
+Message-ID: <1607442117-13661-3-git-send-email-min.li.xe@renesas.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1607442117-13661-1-git-send-email-min.li.xe@renesas.com>
+References: <1607442117-13661-1-git-send-email-min.li.xe@renesas.com>
+X-TM-AS-MML: disable
 MIME-Version: 1.0
-References: <20201205152814.7867-1-TheSven73@gmail.com>
-In-Reply-To: <20201205152814.7867-1-TheSven73@gmail.com>
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-Date:   Tue, 8 Dec 2020 10:33:28 -0500
-Message-ID: <CAGngYiXdJ=oLe+A034wGL_rjtjSnEw7DhSJ3sE7M9PAAjkZMTQ@mail.gmail.com>
-Subject: Re: [PATCH net v1 1/2] net: dsa: microchip: fix devicetree parsing of
- cpu node
-To:     Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        David S Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Helmut Grohne <helmut.grohne@intenta.de>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-08_11:2020-12-08,2020-12-08 signatures=0
+X-Proofpoint-Spam-Details: rule=junk_notspam policy=junk score=0 mlxlogscore=999 suspectscore=4
+ malwarescore=0 spamscore=0 mlxscore=0 bulkscore=0 adultscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012080095
+X-Proofpoint-Spam-Reason: mlx
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew, Jakub,
+From: Min Li <min.li.xe@renesas.com>
 
-On Sat, Dec 5, 2020 at 10:28 AM Sven Van Asbroeck <thesven73@gmail.com> wrote:
->
-> From: Sven Van Asbroeck <thesven73@gmail.com>
->
-> On the ksz8795, if the devicetree contains a cpu node,
-> devicetree parsing fails and the whole driver errors out.
->
-> Fix the devicetree parsing code by making it use the
-> correct number of ports.
->
-> Fixes: 912aae27c6af ("net: dsa: microchip: really look for phy-mode in port nodes")
-> Tested-by: Sven Van Asbroeck <thesven73@gmail.com> # ksz8795
-> Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
-> ---
+Fix non-zero phase_adj is lost after snap. Use ktime_sub
+to do ktime_t subtraction.
 
-Any chance that this patch could still get merged?
-I believe this will work fine on both ksz8795 and ksz9477, even though num_ports
-is defined differently, because:
+Signed-off-by: Min Li <min.li.xe@renesas.com>
+---
+ drivers/ptp/ptp_clockmatrix.c | 109 ++++++++++++++++++++++++++++++++++--------
+ drivers/ptp/ptp_clockmatrix.h |   5 +-
+ 2 files changed, 90 insertions(+), 24 deletions(-)
 
-ksz8795:
-/* set the real number of ports */
-dev->ds->num_ports = dev->port_cnt + 1;
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/dsa/microchip/ksz8795.c?h=v5.10-rc7#n1266
+diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
+index 7a660bc..6382041 100644
+--- a/drivers/ptp/ptp_clockmatrix.c
++++ b/drivers/ptp/ptp_clockmatrix.c
+@@ -673,8 +673,9 @@ static int _idtcm_set_dpll_hw_tod(struct idtcm_channel *channel,
+ 
+ 		if (idtcm->calculate_overhead_flag) {
+ 			/* Assumption: I2C @ 400KHz */
+-			total_overhead_ns =  ktime_to_ns(ktime_get_raw()
+-							 - idtcm->start_time)
++			ktime_t diff = ktime_sub(ktime_get_raw(),
++						 idtcm->start_time);
++			total_overhead_ns =  ktime_to_ns(diff)
+ 					     + idtcm->tod_write_overhead_ns
+ 					     + SETTIME_CORRECTION;
+ 
+@@ -757,6 +758,54 @@ static int _idtcm_set_dpll_scsr_tod(struct idtcm_channel *channel,
+ 	return 0;
+ }
+ 
++static int get_output_base_addr(u8 outn)
++{
++	int base;
++
++	switch (outn) {
++	case 0:
++		base = OUTPUT_0;
++		break;
++	case 1:
++		base = OUTPUT_1;
++		break;
++	case 2:
++		base = OUTPUT_2;
++		break;
++	case 3:
++		base = OUTPUT_3;
++		break;
++	case 4:
++		base = OUTPUT_4;
++		break;
++	case 5:
++		base = OUTPUT_5;
++		break;
++	case 6:
++		base = OUTPUT_6;
++		break;
++	case 7:
++		base = OUTPUT_7;
++		break;
++	case 8:
++		base = OUTPUT_8;
++		break;
++	case 9:
++		base = OUTPUT_9;
++		break;
++	case 10:
++		base = OUTPUT_10;
++		break;
++	case 11:
++		base = OUTPUT_11;
++		break;
++	default:
++		base = -EINVAL;
++	}
++
++	return base;
++}
++
+ static int _idtcm_settime(struct idtcm_channel *channel,
+ 			  struct timespec64 const *ts)
+ {
+@@ -881,6 +930,7 @@ static int set_tod_write_overhead(struct idtcm_channel *channel)
+ 
+ 	ktime_t start;
+ 	ktime_t stop;
++	ktime_t diff;
+ 
+ 	char buf[TOD_BYTE_COUNT] = {0};
+ 
+@@ -900,7 +950,9 @@ static int set_tod_write_overhead(struct idtcm_channel *channel)
+ 
+ 		stop = ktime_get_raw();
+ 
+-		current_ns = ktime_to_ns(stop - start);
++		diff = ktime_sub(stop, start);
++
++		current_ns = ktime_to_ns(diff);
+ 
+ 		if (i == 0) {
+ 			lowest_ns = current_ns;
+@@ -1220,11 +1272,19 @@ static int idtcm_output_enable(struct idtcm_channel *channel,
+ 			       bool enable, unsigned int outn)
+ {
+ 	struct idtcm *idtcm = channel->idtcm;
++	int base;
+ 	int err;
+ 	u8 val;
+ 
+-	err = idtcm_read(idtcm, OUTPUT_MODULE_FROM_INDEX(outn),
+-			 OUT_CTRL_1, &val, sizeof(val));
++	base = get_output_base_addr(outn);
++
++	if (!(base > 0)) {
++		dev_err(&idtcm->client->dev,
++			"%s - Unsupported out%d", __func__, outn);
++		return base;
++	}
++
++	err = idtcm_read(idtcm, (u16)base, OUT_CTRL_1, &val, sizeof(val));
+ 
+ 	if (err)
+ 		return err;
+@@ -1234,8 +1294,7 @@ static int idtcm_output_enable(struct idtcm_channel *channel,
+ 	else
+ 		val &= ~SQUELCH_DISABLE;
+ 
+-	return idtcm_write(idtcm, OUTPUT_MODULE_FROM_INDEX(outn),
+-			   OUT_CTRL_1, &val, sizeof(val));
++	return idtcm_write(idtcm, (u16)base, OUT_CTRL_1, &val, sizeof(val));
+ }
+ 
+ static int idtcm_output_mask_enable(struct idtcm_channel *channel,
+@@ -1278,6 +1337,23 @@ static int idtcm_perout_enable(struct idtcm_channel *channel,
+ 	return idtcm_output_enable(channel, enable, perout->index);
+ }
+ 
++static int idtcm_get_pll_mode(struct idtcm_channel *channel,
++			      enum pll_mode *pll_mode)
++{
++	struct idtcm *idtcm = channel->idtcm;
++	int err;
++	u8 dpll_mode;
++
++	err = idtcm_read(idtcm, channel->dpll_n, DPLL_MODE,
++			 &dpll_mode, sizeof(dpll_mode));
++	if (err)
++		return err;
++
++	*pll_mode = (dpll_mode >> PLL_MODE_SHIFT) & PLL_MODE_MASK;
++
++	return 0;
++}
++
+ static int idtcm_set_pll_mode(struct idtcm_channel *channel,
+ 			      enum pll_mode pll_mode)
+ {
+@@ -1343,7 +1419,7 @@ static int _idtcm_adjphase(struct idtcm_channel *channel, s32 delta_ns)
+ 	else if (offset_ps < -MAX_ABS_WRITE_PHASE_PICOSECONDS)
+ 		offset_ps = -MAX_ABS_WRITE_PHASE_PICOSECONDS;
+ 
+-	phase_50ps = DIV_ROUND_CLOSEST(div64_s64(offset_ps, 50), 1);
++	phase_50ps = div_s64(offset_ps, 50);
+ 
+ 	for (i = 0; i < 4; i++) {
+ 		buf[i] = phase_50ps & 0xff;
+@@ -1360,7 +1436,6 @@ static int _idtcm_adjfine(struct idtcm_channel *channel, long scaled_ppm)
+ {
+ 	struct idtcm *idtcm = channel->idtcm;
+ 	u8 i;
+-	bool neg_adj = 0;
+ 	int err;
+ 	u8 buf[6] = {0};
+ 	s64 fcw;
+@@ -1384,18 +1459,11 @@ static int _idtcm_adjfine(struct idtcm_channel *channel, long scaled_ppm)
+ 	 * FCW = -------------
+ 	 *         111 * 2^4
+ 	 */
+-	if (scaled_ppm < 0) {
+-		neg_adj = 1;
+-		scaled_ppm = -scaled_ppm;
+-	}
+ 
+ 	/* 2 ^ -53 = 1.1102230246251565404236316680908e-16 */
+ 	fcw = scaled_ppm * 244140625ULL;
+ 
+-	fcw = div_u64(fcw, 1776);
+-
+-	if (neg_adj)
+-		fcw = -fcw;
++	fcw = div_s64(fcw, 1776);
+ 
+ 	for (i = 0; i < 6; i++) {
+ 		buf[i] = fcw & 0xff;
+@@ -2062,12 +2130,11 @@ static int idtcm_enable_channel(struct idtcm *idtcm, u32 index)
+ 		}
+ 	}
+ 
+-	err = idtcm_set_pll_mode(channel, PLL_MODE_WRITE_FREQUENCY);
++	/* Sync pll mode with hardware */
++	err = idtcm_get_pll_mode(channel, &channel->pll_mode);
+ 	if (err) {
+ 		dev_err(&idtcm->client->dev,
+-			"Failed at line %d in func %s!\n",
+-			__LINE__,
+-			__func__);
++			"Error: %s - Unable to read pll mode\n", __func__);
+ 		return err;
+ 	}
+ 
+diff --git a/drivers/ptp/ptp_clockmatrix.h b/drivers/ptp/ptp_clockmatrix.h
+index dd3436e..3790dfa 100644
+--- a/drivers/ptp/ptp_clockmatrix.h
++++ b/drivers/ptp/ptp_clockmatrix.h
+@@ -15,6 +15,7 @@
+ #define FW_FILENAME	"idtcm.bin"
+ #define MAX_TOD		(4)
+ #define MAX_PLL		(8)
++#define MAX_OUTPUT	(12)
+ 
+ #define MAX_ABS_WRITE_PHASE_PICOSECONDS (107374182350LL)
+ 
+@@ -49,9 +50,6 @@
+ #define PHASE_PULL_IN_THRESHOLD_NS_V487	(15000)
+ #define TOD_WRITE_OVERHEAD_COUNT_MAX	(2)
+ #define TOD_BYTE_COUNT			(11)
+-#define WR_PHASE_SETUP_MS		(5000)
+-
+-#define OUTPUT_MODULE_FROM_INDEX(index)	(OUTPUT_0 + (index) * 0x10)
+ 
+ #define PEROUT_ENABLE_OUTPUT_MASK	(0xdeadbeef)
+ 
+@@ -125,6 +123,7 @@ struct idtcm_channel {
+ 	enum pll_mode		pll_mode;
+ 	u8			pll;
+ 	u16			output_mask;
++	u8			output_phase_adj[MAX_OUTPUT][4];
+ };
+ 
+ struct idtcm {
+-- 
+2.7.4
 
-ksz9477:
-/* set the real number of ports */
-dev->ds->num_ports = dev->port_cnt;
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/net/dsa/microchip/ksz9477.c?h=v5.10-rc7#n1585
-
-Would it be possible to merge this into net, so users get working cpu nodes?
-I don't think this will prevent you from harmonizing port_cnt in net-next.
