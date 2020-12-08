@@ -2,126 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B9622D2C0A
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 14:32:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 590C82D2C11
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 14:37:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729587AbgLHNa5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 08:30:57 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:55069 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729583AbgLHNay (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 08:30:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607434168;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=B6obt/HCD4yh4ZtzTFMC2ozOa62OxUxGtEPlnjAuR0Q=;
-        b=C1TTPSyMEhowjtU7JaxBBkSMnscqPS3NhWBUfhBs3qO4RTXLb87fAIq7ecjMmwWp9MW4tQ
-        APSScx4y5M6kuWkbUFsT5EUWYsjzB00P42u+0h2wyhkmYuKffKCBbTDeBfiWkIjMKZS4Mg
-        +/G868OLgyGnIAWPqN8OPXfGx7NgSb8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-186-7JQR-ToUMdutyZSg5O17eQ-1; Tue, 08 Dec 2020 08:29:24 -0500
-X-MC-Unique: 7JQR-ToUMdutyZSg5O17eQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5C5E1107ACE8;
-        Tue,  8 Dec 2020 13:29:22 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 93CA460BE2;
-        Tue,  8 Dec 2020 13:29:11 +0000 (UTC)
-Date:   Tue, 8 Dec 2020 14:29:10 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Cc:     Saeed Mahameed <saeed@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        bpf <bpf@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
+        id S1728546AbgLHNgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 08:36:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51104 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726738AbgLHNgO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Dec 2020 08:36:14 -0500
+Date:   Tue, 8 Dec 2020 08:35:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607434533;
+        bh=gABn6FEBCKjs7n8SG8VQNUBAksRDXLCa5fjjGRqY+S4=;
+        h=From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YJeBZrqcx1kM5lLwopoyWg/WmBLINVN9ZjV+AYuPW5uoqufajwnp98Rf+S0P/rucy
+         1jWVc+b9jM8hzpno8Ux0Vjhzb7YW6y64qR4Z7L3LqAU5Z0bK47NQ6d5ViUUTLf3ZfX
+         8vXO07/vGT3Zg/cI+xDnhE+4Nbe+s9twwwDxiZC6sX7b6vBEx2AbpK9ayD7jSItR5x
+         TSkWS22EWcrxQHXEvTeTtwJaEoRJc2fCQ6RlCUFGeknt0rj+XTgOq3uZZ/mgYOf08h
+         jceYEUatQWYo9wF0GDBbqBIB5em45QcxRXTlzhyoa39WBRTHTD026DcE/GUpalm3Zv
+         V+FN5bZrtPxQQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        stable@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, shayagr@amazon.com,
-        "Jubran, Samih" <sameehj@amazon.com>,
-        John Fastabend <john.fastabend@gmail.com>, dsahern@kernel.org,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, brouer@redhat.com
-Subject: Re: [PATCH v5 bpf-next 02/14] xdp: initialize xdp_buff mb bit to 0
- in all XDP drivers
-Message-ID: <20201208142910.34b7c7e5@carbon>
-In-Reply-To: <20201208103103.GB36228@lore-desk>
-References: <cover.1607349924.git.lorenzo@kernel.org>
-        <693d48b46dd5172763952acd94358cc5d02dcda3.1607349924.git.lorenzo@kernel.org>
-        <CAKgT0UcjtERgpV9tke-HcmP7rWOns_-jmthnGiNPES+aqhScFg@mail.gmail.com>
-        <20201207213711.GA27205@ranger.igk.intel.com>
-        <71aa9016c087e4c8d502d835ef2cddad42b56fc1.camel@kernel.org>
-        <20201208103103.GB36228@lore-desk>
+        netdev <netdev@vger.kernel.org>,
+        Gabor Samu <samu_gabor@yahoo.ca>,
+        Jon Nettleton <jon@solid-run.com>,
+        Andrew Elwell <andrew.elwell@gmail.com>
+Subject: Re: [PATCH net-next 2/4] net: mvpp2: add mvpp2_phylink_to_port()
+ helper
+Message-ID: <20201208133532.GH643756@sasha-vm>
+References: <20200620092047.GR1551@shell.armlinux.org.uk>
+ <E1jmZgq-0001UG-1c@rmk-PC.armlinux.org.uk>
+ <CAPv3WKdJKAEwCoj5z6NzP2xRFfT1HG+2o0wigt=Czi4bG7EQcg@mail.gmail.com>
+ <CAPv3WKfEN22cKbM8=+qDANefQE67KQ1zwURrCqAsrbo1+gBCDA@mail.gmail.com>
+ <20201102180326.GA2416734@kroah.com>
+ <CAPv3WKf0fNOOovq9UzoxoAXwGLMe_MHdfCZ6U9sjgKxarUKA+Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAPv3WKf0fNOOovq9UzoxoAXwGLMe_MHdfCZ6U9sjgKxarUKA+Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 8 Dec 2020 11:31:03 +0100
-Lorenzo Bianconi <lorenzo.bianconi@redhat.com> wrote:
+On Tue, Dec 08, 2020 at 01:03:38PM +0100, Marcin Wojtas wrote:
+>Hi Greg,
+>
+>Apologies for delayed response:.
+>
+>
+>pon., 2 lis 2020 o 19:02 Greg Kroah-Hartman
+><gregkh@linuxfoundation.org> napisał(a):
+>>
+>> On Mon, Nov 02, 2020 at 06:38:54PM +0100, Marcin Wojtas wrote:
+>> > Hi Greg and Sasha,
+>> >
+>> > pt., 9 paź 2020 o 05:43 Marcin Wojtas <mw@semihalf.com> napisał(a):
+>> > >
+>> > > Hi,
+>> > >
+>> > > sob., 20 cze 2020 o 11:21 Russell King <rmk+kernel@armlinux.org.uk> napisał(a):
+>> > > >
+>> > > > Add a helper to convert the struct phylink_config pointer passed in
+>> > > > from phylink to the drivers internal struct mvpp2_port.
+>> > > >
+>> > > > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+>> > > > ---
+>> > > >  .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 29 +++++++++----------
+>> > > >  1 file changed, 14 insertions(+), 15 deletions(-)
+>> > > >
+>> > > > diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+>> > > > index 7653277d03b7..313f5a60a605 100644
+>> > > > --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+>> > > > +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+>> > > > @@ -4767,12 +4767,16 @@ static void mvpp2_port_copy_mac_addr(struct net_device *dev, struct mvpp2 *priv,
+>> > > >         eth_hw_addr_random(dev);
+>> > > >  }
+>> > > >
+>> > > > +static struct mvpp2_port *mvpp2_phylink_to_port(struct phylink_config *config)
+>> > > > +{
+>> > > > +       return container_of(config, struct mvpp2_port, phylink_config);
+>> > > > +}
+>> > > > +
+>> > > >  static void mvpp2_phylink_validate(struct phylink_config *config,
+>> > > >                                    unsigned long *supported,
+>> > > >                                    struct phylink_link_state *state)
+>> > > >  {
+>> > > > -       struct mvpp2_port *port = container_of(config, struct mvpp2_port,
+>> > > > -                                              phylink_config);
+>> > > > +       struct mvpp2_port *port = mvpp2_phylink_to_port(config);
+>> > > >         __ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
+>> > > >
+>> > > >         /* Invalid combinations */
+>> > > > @@ -4913,8 +4917,7 @@ static void mvpp2_gmac_pcs_get_state(struct mvpp2_port *port,
+>> > > >  static void mvpp2_phylink_mac_pcs_get_state(struct phylink_config *config,
+>> > > >                                             struct phylink_link_state *state)
+>> > > >  {
+>> > > > -       struct mvpp2_port *port = container_of(config, struct mvpp2_port,
+>> > > > -                                              phylink_config);
+>> > > > +       struct mvpp2_port *port = mvpp2_phylink_to_port(config);
+>> > > >
+>> > > >         if (port->priv->hw_version == MVPP22 && port->gop_id == 0) {
+>> > > >                 u32 mode = readl(port->base + MVPP22_XLG_CTRL3_REG);
+>> > > > @@ -4931,8 +4934,7 @@ static void mvpp2_phylink_mac_pcs_get_state(struct phylink_config *config,
+>> > > >
+>> > > >  static void mvpp2_mac_an_restart(struct phylink_config *config)
+>> > > >  {
+>> > > > -       struct mvpp2_port *port = container_of(config, struct mvpp2_port,
+>> > > > -                                              phylink_config);
+>> > > > +       struct mvpp2_port *port = mvpp2_phylink_to_port(config);
+>> > > >         u32 val = readl(port->base + MVPP2_GMAC_AUTONEG_CONFIG);
+>> > > >
+>> > > >         writel(val | MVPP2_GMAC_IN_BAND_RESTART_AN,
+>> > > > @@ -5105,13 +5107,12 @@ static void mvpp2_gmac_config(struct mvpp2_port *port, unsigned int mode,
+>> > > >  static void mvpp2_mac_config(struct phylink_config *config, unsigned int mode,
+>> > > >                              const struct phylink_link_state *state)
+>> > > >  {
+>> > > > -       struct net_device *dev = to_net_dev(config->dev);
+>> > > > -       struct mvpp2_port *port = netdev_priv(dev);
+>> > > > +       struct mvpp2_port *port = mvpp2_phylink_to_port(config);
+>> > > >         bool change_interface = port->phy_interface != state->interface;
+>> > > >
+>> > > >         /* Check for invalid configuration */
+>> > > >         if (mvpp2_is_xlg(state->interface) && port->gop_id != 0) {
+>> > > > -               netdev_err(dev, "Invalid mode on %s\n", dev->name);
+>> > > > +               netdev_err(port->dev, "Invalid mode on %s\n", port->dev->name);
+>> > > >                 return;
+>> > > >         }
+>> > > >
+>> > > > @@ -5151,8 +5152,7 @@ static void mvpp2_mac_link_up(struct phylink_config *config,
+>> > > >                               int speed, int duplex,
+>> > > >                               bool tx_pause, bool rx_pause)
+>> > > >  {
+>> > > > -       struct net_device *dev = to_net_dev(config->dev);
+>> > > > -       struct mvpp2_port *port = netdev_priv(dev);
+>> > > > +       struct mvpp2_port *port = mvpp2_phylink_to_port(config);
+>> > > >         u32 val;
+>> > > >
+>> > > >         if (mvpp2_is_xlg(interface)) {
+>> > > > @@ -5199,14 +5199,13 @@ static void mvpp2_mac_link_up(struct phylink_config *config,
+>> > > >
+>> > > >         mvpp2_egress_enable(port);
+>> > > >         mvpp2_ingress_enable(port);
+>> > > > -       netif_tx_wake_all_queues(dev);
+>> > > > +       netif_tx_wake_all_queues(port->dev);
+>> > > >  }
+>> > > >
+>> > > >  static void mvpp2_mac_link_down(struct phylink_config *config,
+>> > > >                                 unsigned int mode, phy_interface_t interface)
+>> > > >  {
+>> > > > -       struct net_device *dev = to_net_dev(config->dev);
+>> > > > -       struct mvpp2_port *port = netdev_priv(dev);
+>> > > > +       struct mvpp2_port *port = mvpp2_phylink_to_port(config);
+>> > > >         u32 val;
+>> > > >
+>> > > >         if (!phylink_autoneg_inband(mode)) {
+>> > > > @@ -5223,7 +5222,7 @@ static void mvpp2_mac_link_down(struct phylink_config *config,
+>> > > >                 }
+>> > > >         }
+>> > > >
+>> > > > -       netif_tx_stop_all_queues(dev);
+>> > > > +       netif_tx_stop_all_queues(port->dev);
+>> > > >         mvpp2_egress_disable(port);
+>> > > >         mvpp2_ingress_disable(port);
+>> > > >
+>> > > > --
+>> > > > 2.20.1
+>> > > >
+>> > >
+>> > > This patch fixes a regression that was introduced in v5.3:
+>> > > Commit 44cc27e43fa3 ("net: phylink: Add struct phylink_config to PHYLINK API")
+>> > >
+>> > > Above results in a NULL pointer dereference when booting the
+>> > > Armada7k8k/CN913x with ACPI between 5.3 and 5.8, which will be
+>> > > problematic especially for the distros using LTSv5.4 and above (the
+>> > > issue was reported on Fedora 32).
+>> > >
+>> > > Please help with backporting to the stable v5.3+ branches (it applies
+>> > > smoothly on v5.4/v5.6/v5.8).
+>> > >
+>> >
+>> > Any chances to backport this patch to relevant v5.3+ stable branches?
+>>
+>> What patch?  What git commit id needs to be backported?
+>>
+>
+>The actual patch is:
+>Commit 6c2b49eb9671  ("net: mvpp2: add mvpp2_phylink_to_port() helper").
+>
+>URL for reference:
+>https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/net/ethernet/marvell/mvpp2?h=v5.10-rc7&id=6c2b49eb96716e91f202756bfbd3f5fea3b2b172
+>
+>Do you think it would be possible to get it merged to v5.3+ stable branches?
 
-> > On Mon, 2020-12-07 at 22:37 +0100, Maciej Fijalkowski wrote:  
-> > > On Mon, Dec 07, 2020 at 01:15:00PM -0800, Alexander Duyck wrote:  
-> > > > On Mon, Dec 7, 2020 at 8:36 AM Lorenzo Bianconi <lorenzo@kernel.org  
-> > > > > wrote:
-> > > > > Initialize multi-buffer bit (mb) to 0 in all XDP-capable drivers.
-> > > > > This is a preliminary patch to enable xdp multi-buffer support.
-> > > > > 
-> > > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>  
-> > > > 
-> > > > I'm really not a fan of this design. Having to update every driver in
-> > > > order to initialize a field that was fragmented is a pain. At a
-> > > > minimum it seems like it might be time to consider introducing some
-> > > > sort of initializer function for this so that you can update things in
-> > > > one central place the next time you have to add a new field instead of
-> > > > having to update every individual driver that supports XDP. Otherwise
-> > > > this isn't going to scale going forward.  
-
-+1
-
-> > > Also, a good example of why this might be bothering for us is a fact that
-> > > in the meantime the dpaa driver got XDP support and this patch hasn't been
-> > > updated to include mb setting in that driver.
-> > >   
-> > something like
-> > init_xdp_buff(hard_start, headroom, len, frame_sz, rxq);
-> >
-> > would work for most of the drivers.
-> >   
-> 
-> ack, agree. I will add init_xdp_buff() in v6.
-
-I do like the idea of an initialize helper function.
-Remember this is fast-path code and likely need to be inlined.
-
-Further more, remember that drivers can and do optimize the number of
-writes they do to xdp_buff.   There are a number of fields in xdp_buff
-that only need to be initialized once per NAPI.  E.g. rxq and frame_sz
-(some driver do change frame_sz per packet).  Thus, you likely need two
-inlined helpers for init.
-
-Again, remember that C-compiler will generate an expensive operation
-(rep stos) for clearing a struct if it is initialized like this, where
-all member are not initialized (do NOT do this):
-
- struct xdp_buff xdp = {
-   .rxq = rxq,
-   .frame_sz = PAGE_SIZE,
- };
+Could you explain how that patch fixes anything? It reads like a
+cleanup.
 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+Thanks,
+Sasha
