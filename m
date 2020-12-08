@@ -2,191 +2,324 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B3712D2947
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 11:54:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 730412D2979
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 12:06:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728980AbgLHKxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 05:53:20 -0500
-Received: from mga17.intel.com ([192.55.52.151]:50233 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727845AbgLHKxU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Dec 2020 05:53:20 -0500
-IronPort-SDR: JNt1vHgMfBcYMEfYtrOKHvoOhtDEIEvVMx1ZDFD6od4mDyfzU8ScywMBkkkTiQSj67mj4PirdE
- uNGoW7uOBtOQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9828"; a="153679782"
-X-IronPort-AV: E=Sophos;i="5.78,402,1599548400"; 
-   d="scan'208";a="153679782"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Dec 2020 02:52:38 -0800
-IronPort-SDR: dVhMv/ynHaitGWNEFSfSs5h4JZkwyB/t1IKzJxN2MJRZVyvdf8pReXUA+OtuhcqDXDAjz3YUnz
- QEE1cU8azlTA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.78,402,1599548400"; 
-   d="scan'208";a="332479620"
-Received: from fmsmsx605.amr.corp.intel.com ([10.18.126.85])
-  by orsmga003.jf.intel.com with ESMTP; 08 Dec 2020 02:52:38 -0800
-Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
- fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 8 Dec 2020 02:52:38 -0800
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 8 Dec 2020 02:52:37 -0800
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Tue, 8 Dec 2020 02:52:37 -0800
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.177)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.1713.5; Tue, 8 Dec 2020 02:52:34 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Anl6cYwlOx3wrPsz/N75VuagimHl30cQaXCdxICe8s1CncHhJ6fpWYhgViltxM0QCcbZn7U5BJIJT6BTqUWjlVVTplrfyz0qyFV7a/buO6NfJ/ZORc2Pgsz3oa/phn5jfl3PUiv7FwbFTY5PrkaiqkuGT1mzjm8vRIdMEc8dj1mehWhP1Pm1c5Rf3nAAJKQOVmvc1oYXynK4vCrPvsKMssj5rTXZFxhGnBFQfHen8PGDqysP7n2NhKXMr6W9vPzxeEkquQqTsI7V/Ejw7H+Horf72bxUxl0zZoVw+IuUzmJKMCGlaAPBjCM3NT4iohSIvdDapbvGuD5xyXRbTRBgqg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RwDe2jynUgk3okWr7+wDB/5YjsijmnqOAfFtA45Do/A=;
- b=QuiRjT7KI5y/AHqZ7z4CJN8GRU7MyfsPrPO5dSOgiPLGp+Gu/uG7gu2TFOX4woKVp28KjkGa8ZM6SHlkfZ2lD1iyYxqFka2GGXtVjW4TQC3xlBWpKEz4T9r/Tz5xdaifIdOhoeoEE++o1HuYCR7f69MP8FKzrFe+DB9p+qKDPm6x/lH+MSXSn+Xx+40SpQbS0NH9NPXL2dLG50B13oh9/UUDjS/yNUrpOfYDTAigKY78ifBEjEy9dDCeZX1bdOBsD44sujaO8p3Fww0iFqPa76K2MkGro3IQrCMHEntuXF03Z6c7Zm+pZYhNi04F74nvCUbRQOAQxUEEWYK8rf2udA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RwDe2jynUgk3okWr7+wDB/5YjsijmnqOAfFtA45Do/A=;
- b=fRhNdRgF8Qi3PqueS8XYn6HXIiCiWhwQWwEUm4oSEgMHQY8shZ6xKSaCQeLD0X9yirMPTvHwyev/ZiEhbqINIhTUzpxC3kYFMSIyqFji6KEw9vS/bSVzIAlBEWs4YR39hFszzBljdh+iA4ltfmDwTr1TF5gITZZ6ugzSKD43pc0=
-Received: from MW3PR11MB4554.namprd11.prod.outlook.com (2603:10b6:303:5d::7)
- by MWHPR11MB1439.namprd11.prod.outlook.com (2603:10b6:301:9::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3589.22; Tue, 8 Dec
- 2020 10:52:28 +0000
-Received: from MW3PR11MB4554.namprd11.prod.outlook.com
- ([fe80::7dc3:6311:ac6:7393]) by MW3PR11MB4554.namprd11.prod.outlook.com
- ([fe80::7dc3:6311:ac6:7393%8]) with mapi id 15.20.3654.012; Tue, 8 Dec 2020
- 10:52:28 +0000
-From:   "Penigalapati, Sandeep" <sandeep.penigalapati@intel.com>
-To:     Sven Auhagen <sven.auhagen@voleatech.de>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-CC:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "pmenzel@molgen.mpg.de" <pmenzel@molgen.mpg.de>
-Subject: RE: [PATCH v4 2/6] igb: take vlan double header into account
-Thread-Topic: [PATCH v4 2/6] igb: take vlan double header into account
-Thread-Index: AQHWuEzm1HVTLNMKWkWhDxMz+yb+g6niBYrggAAKPQCABlVwgIAEyRYA
-Date:   Tue, 8 Dec 2020 10:52:28 +0000
-Message-ID: <MW3PR11MB45544E9B9B610CC6553F246B9CCD0@MW3PR11MB4554.namprd11.prod.outlook.com>
-References: <20201111170453.32693-1-sven.auhagen@voleatech.de>
- <20201111170453.32693-3-sven.auhagen@voleatech.de>
- <DM6PR11MB454615FDFC4E7B71D9B82FA29CF40@DM6PR11MB4546.namprd11.prod.outlook.com>
- <20201201095852.2dc1e8f8@carbon>
- <20201205094213.p64bkcmd3lr4iejl@SvensMacBookAir-2.local>
-In-Reply-To: <20201205094213.p64bkcmd3lr4iejl@SvensMacBookAir-2.local>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-authentication-results: voleatech.de; dkim=none (message not signed)
- header.d=none;voleatech.de; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [192.55.79.100]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a7893573-1535-4910-e2f7-08d89b675b36
-x-ms-traffictypediagnostic: MWHPR11MB1439:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR11MB1439AB3692AD3E32DA207C359CCD0@MWHPR11MB1439.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3826;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: VyNGGE0RRxVyY9mQ+89m4lYhD4SX3sju+YOY7+YUfVJ6Ny5k4LTKfK9noe2/BU3v5Yv0nt2MzUM/sBZJPpPWYPWQQE+Jue4fDz3i7ZZvfcJAn8PEI+brRUGBBWAU77nguTnLOI8KzDgVS5KDckEaSeKPj6H00C9OdcjJldEjfIAV0lY0GscxWPod9YWxAz5tYhUbvn18+OofjzvlG3MMngx+lWj7CC8Vj+ZpBk2rPle4++u331VWG1CcPDBh8vtfLpYXxYsQLzaabi4r2GtyreqZdYvEmtrqicOf40kBk1/66ZwPXvap9Hq2qp39CQZefBB81wU5SOAWFTCqpHOUyFzy6CyT1RzkrkFx/3v6BNBUPEpfAUFMeoN0L5hUQf42ofuGDOmC6zJISHOp9bt70g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR11MB4554.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(39860400002)(396003)(346002)(136003)(376002)(5660300002)(55016002)(316002)(66946007)(76116006)(6506007)(54906003)(45080400002)(52536014)(64756008)(478600001)(66476007)(8676002)(110136005)(71200400001)(966005)(86362001)(66446008)(33656002)(66556008)(8936002)(186003)(9686003)(7696005)(26005)(2906002)(4326008);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?S6Gqbwo4Vo+Q2cmlwlw5vCph1JRWqNeeptTQJLSqHBfn3YxNJlRAmUsrOGOc?=
- =?us-ascii?Q?3QbOHYSRCayFOY6sAkfh565zVNlM0v5Az4W62kS1gTRZG0Vx5gzBxJqIVn/F?=
- =?us-ascii?Q?88Gi2lyv/31TAMwkwvexacD9d3V1AOqkLMJXmcbufjE9tMEdEPnMQskdoghQ?=
- =?us-ascii?Q?uKwPwGx+IBE8zQoHm61BccaLHNgUCVvE8mLVbiObK9Lszvui3GE1v151A9Il?=
- =?us-ascii?Q?avmldpHblER2BP/D6wNKXwlfEgGYLx2iAx+x9sTrQucnAnf2nnjNAccK9maX?=
- =?us-ascii?Q?UruYKAqp1LZYW2IF0lt3cYeRukbNIvav+jMiOFnd5tLLZjmexKgr5ZxMneKb?=
- =?us-ascii?Q?IUTmPK6kN+d6lkdnkJpm2gx+B3x1XYeAfaudepTSYR+cxpqMqqnjvy90gnpK?=
- =?us-ascii?Q?hUgPxfPzCIhDClng2LWB4mE7dwBozURP6LJO8rr7Bs8b/Tej/lkLRxCmnxJi?=
- =?us-ascii?Q?PsWyr/WKrf4+lrasoM7dpClWwlHpPwqrjR4jtsc2bJzkERfCaVADRXYLYF5k?=
- =?us-ascii?Q?64a19i843Srz2a36/3jwDaGBG5rNJyy9K7lq6uiRZtxdINMlLkdErLNeKWfp?=
- =?us-ascii?Q?B/pwaCv5o/sy4ez/xbV6W8PhKLMmZfc9ed/DcszDdauHz8Z7iGfsmHcbDbrM?=
- =?us-ascii?Q?brUVHFwRAD7YRNfIqbHM+IGHtilPm2UGgCNVm4tkR/Om5RaJI0ekf/DX/rBb?=
- =?us-ascii?Q?8ODQayndHDB5ilBC9fRT9dHL3tf9eWzeJEjdmImokMUTJwsKqJXi/3EZesEi?=
- =?us-ascii?Q?3qKRAe3h7iBuI1KWzJNXKsxvQgTLaSQ6bwPxTSsLQzOUfT+xhunbWjGid0Za?=
- =?us-ascii?Q?8d8IZqzycjvnyfV3Ej4OcVYFsFw729FDY2s/L46eB31lxTsTxANckp56SQix?=
- =?us-ascii?Q?VxG8anNzxRzCkpB4thhFOCPC3JNulIGMT4iX6FVu60tTlcNfaAgPFUDv8aff?=
- =?us-ascii?Q?hyzNBvJ/bzYXj2C6LIpt+ujB3u9rpQVOuuEcWJvXxL8=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1729092AbgLHLDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 06:03:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:52759 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728679AbgLHLDA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 06:03:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607425293;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=r6tl16/T16Owlv0b8ZYHHxKv6uyIto/4HnR46qZYsk0=;
+        b=Qmh9gb0ZOYlEd8FxZyzh82oY1lZXC5w/I8fmDQTj0DDyFMbI+bw2/6+YgotFCD0S0H3rWy
+        bMJlPG0GTz2W4tVjPbNXHPSvFCu8tygUYCSzmRmvjaLgd7LS1S5wG5YtSDVjqB4sD6rhF7
+        fgWn80QxUzFlVVHvmd/mz2wJPoJtRWY=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-320-OY49W_dfPiGMH3cJ0HLBMA-1; Tue, 08 Dec 2020 06:01:30 -0500
+X-MC-Unique: OY49W_dfPiGMH3cJ0HLBMA-1
+Received: by mail-ed1-f70.google.com with SMTP id u18so7250736edy.5
+        for <netdev@vger.kernel.org>; Tue, 08 Dec 2020 03:01:30 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=r6tl16/T16Owlv0b8ZYHHxKv6uyIto/4HnR46qZYsk0=;
+        b=gRIGrxdqOgeinsJLti1h0KaZFocXLUTTkVt9Exm1ZLdDXHNURyLSH/NARW7Iqwd1LE
+         66/SnUCOE9vvQrNSqvOvXi8dJIF8VEUHB8gY/Yl0DUVCJU7/LPMWsLRXtbtQpIcxJLgI
+         oCj3QWL7QadD7bwWkY8Xul/OSBs/RTZTj0D6NadlA63tNp/nhexnRU4PDn7Nod3MqxYZ
+         EpaHRmAHW9i5pk1mKq7JMTBSiM4mssBYo0aEzUvY6fIfVy+3pD2iPeBaOh6Xqc14Xvnl
+         2eLn45kIlVlRP5tHftbnEeH+MUjDTXKktC1xdD/UO1Z1y67Wgs3HMaTUkrzxrI3ZTyHU
+         JKKw==
+X-Gm-Message-State: AOAM532Gez/sUAjsyMyiH73LCeq17GhOF7Kwi3vpjj5QuMvtHUWIr0eC
+        fIXcNe1op5yUuLgHCukt2uYzok6qXcx4QTq7NNK+W6js0OO60IVbpFQiImSm1N1+tspTtuM+Yjf
+        vwPUJV+nrlZZLGdWD
+X-Received: by 2002:a05:6402:310f:: with SMTP id dc15mr24041781edb.225.1607425289353;
+        Tue, 08 Dec 2020 03:01:29 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwG4xlw7b582cpOp3fjUAZztoSrppVXSJKEEsCz8sh/46t8pLvfLddlMNUSqz1aJ1q4xaEuPQ==
+X-Received: by 2002:a05:6402:310f:: with SMTP id dc15mr24041759edb.225.1607425289001;
+        Tue, 08 Dec 2020 03:01:29 -0800 (PST)
+Received: from localhost ([151.66.8.153])
+        by smtp.gmail.com with ESMTPSA id b14sm16450265edm.68.2020.12.08.03.01.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Dec 2020 03:01:28 -0800 (PST)
+Date:   Tue, 8 Dec 2020 12:01:25 +0100
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        sameehj@amazon.com, john.fastabend@gmail.com, dsahern@kernel.org,
+        brouer@redhat.com, echaudro@redhat.com, jasowang@redhat.com
+Subject: Re: [PATCH v5 bpf-next 03/14] xdp: add xdp_shared_info data structure
+Message-ID: <20201208110125.GC36228@lore-desk>
+References: <cover.1607349924.git.lorenzo@kernel.org>
+ <21d27f233e37b66c9ad4073dd09df5c2904112a4.1607349924.git.lorenzo@kernel.org>
+ <5465830698257f18ae474877648f4a9fe2e1eefe.camel@kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW3PR11MB4554.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a7893573-1535-4910-e2f7-08d89b675b36
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Dec 2020 10:52:28.6309
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ev7XnRUzWeNbPVzc/nyhBLe2MWzOpNeWWm6L2cwt6rBuJQkjpeOd/JlsEamhuLIs9SSGsCsFgqdwgRhE7dp1jPrI2NIKPvDlIzKjU7//Zhc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1439
-X-OriginatorOrg: intel.com
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="eRtJSFbw+EEWtPj3"
+Content-Disposition: inline
+In-Reply-To: <5465830698257f18ae474877648f4a9fe2e1eefe.camel@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 01, 2020 at 09:58:52AM +0100, Jesper Dangaard Brouer wrote:
-> > On Tue, 1 Dec 2020 08:23:23 +0000
-> > "Penigalapati, Sandeep" <sandeep.penigalapati@intel.com> wrote:
-> >
-> > > Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
-> >
-> > Very happy that you are testing this.
-> >
-> > Have you also tested that samples/bpf/ xdp_redirect_cpu program works?
->=20
-> Hi Jesper,
->=20
-> I have tested the xdp routing example but it would be good if someone can
-> double check this.
->=20
-> Best
-> Sven
->=20
-Hi Jesper, Sven
 
-I have tested xdp_redirect_cpu and it is working.
+--eRtJSFbw+EEWtPj3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks,
-Sandeep
-> >
-> > --
-> > Best regards,
-> >   Jesper Dangaard Brouer
-> >   MSc.CS, Principal Kernel Engineer at Red Hat
-> >   LinkedIn:
-> >
-> https://eur03.safelinks.protection.outlook.com/?url=3Dhttp%3A%2F%2Fwww.l
-> >
-> inkedin.com%2Fin%2Fbrouer&amp;data=3D04%7C01%7Csven.auhagen%40vol
-> eatech.
-> >
-> de%7C5a78333f75c945b9bcee08d895d75e5b%7Cb82a99f679814a7295344d3
-> 5298f84
-> >
-> 7b%7C0%7C0%7C637424099531073949%7CUnknown%7CTWFpbGZsb3d8eyJ
-> WIjoiMC4wLj
-> >
-> AwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C1000&amp;
-> sdata=3D
-> > g80690tGbCHAi3lr412ZlKoxwIFSIzn5e8V8nO1aZcw%3D&amp;reserved=3D0
-> >
+> On Mon, 2020-12-07 at 17:32 +0100, Lorenzo Bianconi wrote:
+> > Introduce xdp_shared_info data structure to contain info about
+> > "non-linear" xdp frame. xdp_shared_info will alias skb_shared_info
+> > allowing to keep most of the frags in the same cache-line.
+> > Introduce some xdp_shared_info helpers aligned to skb_frag* ones
+> >=20
+>=20
+> is there or will be a more general purpose use to this xdp_shared_info
+> ? other than hosting frags ?
+
+I do not have other use-cases at the moment other than multi-buff but in
+theory it is possible I guess.
+The reason we introduced it is to have most of the frags in the first
+shared_info cache-line to avoid cache-misses.
+
+>=20
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >  drivers/net/ethernet/marvell/mvneta.c | 62 +++++++++++++++--------
+> > ----
+> >  include/net/xdp.h                     | 52 ++++++++++++++++++++--
+> >  2 files changed, 82 insertions(+), 32 deletions(-)
+> >=20
+> > diff --git a/drivers/net/ethernet/marvell/mvneta.c
+> > b/drivers/net/ethernet/marvell/mvneta.c
+> > index 1e5b5c69685a..d635463609ad 100644
+> > --- a/drivers/net/ethernet/marvell/mvneta.c
+> > +++ b/drivers/net/ethernet/marvell/mvneta.c
+> > @@ -2033,14 +2033,17 @@ int mvneta_rx_refill_queue(struct mvneta_port
+> > *pp, struct mvneta_rx_queue *rxq)
+> > =20
+>=20
+> [...]
+>=20
+> >  static void
+> > @@ -2278,7 +2281,7 @@ mvneta_swbm_add_rx_fragment(struct mvneta_port
+> > *pp,
+> >  			    struct mvneta_rx_desc *rx_desc,
+> >  			    struct mvneta_rx_queue *rxq,
+> >  			    struct xdp_buff *xdp, int *size,
+> > -			    struct skb_shared_info *xdp_sinfo,
+> > +			    struct xdp_shared_info *xdp_sinfo,
+> >  			    struct page *page)
+> >  {
+> >  	struct net_device *dev =3D pp->dev;
+> > @@ -2301,13 +2304,13 @@ mvneta_swbm_add_rx_fragment(struct
+> > mvneta_port *pp,
+> >  	if (data_len > 0 && xdp_sinfo->nr_frags < MAX_SKB_FRAGS) {
+> >  		skb_frag_t *frag =3D &xdp_sinfo->frags[xdp_sinfo-
+> > >nr_frags++];
+> > =20
+> > -		skb_frag_off_set(frag, pp->rx_offset_correction);
+> > -		skb_frag_size_set(frag, data_len);
+> > -		__skb_frag_set_page(frag, page);
+> > +		xdp_set_frag_offset(frag, pp->rx_offset_correction);
+> > +		xdp_set_frag_size(frag, data_len);
+> > +		xdp_set_frag_page(frag, page);
+> > =20
+>=20
+> why three separate setters ? why not just one=20
+> xdp_set_frag(page, offset, size) ?
+
+to be aligned with skb_frags helpers, but I guess we can have a single help=
+er,
+I do not have a strong opinion on it
+
+>=20
+> >  		/* last fragment */
+> >  		if (len =3D=3D *size) {
+> > -			struct skb_shared_info *sinfo;
+> > +			struct xdp_shared_info *sinfo;
+> > =20
+> >  			sinfo =3D xdp_get_shared_info_from_buff(xdp);
+> >  			sinfo->nr_frags =3D xdp_sinfo->nr_frags;
+> > @@ -2324,10 +2327,13 @@ static struct sk_buff *
+> >  mvneta_swbm_build_skb(struct mvneta_port *pp, struct mvneta_rx_queue
+> > *rxq,
+> >  		      struct xdp_buff *xdp, u32 desc_status)
+> >  {
+
+[...]
+
+> > =20
+> > -static inline struct skb_shared_info *
+> > +struct xdp_shared_info {
+>=20
+> xdp_shared_info is a bad name, we need this to have a specific purpose=20
+> xdp_frags should the proper name, so people will think twice before
+> adding weird bits to this so called shared_info.
+
+I named the struct xdp_shared_info to recall skb_shared_info but I guess
+xdp_frags is fine too. Agree?
+
+>=20
+> > +	u16 nr_frags;
+> > +	u16 data_length; /* paged area length */
+> > +	skb_frag_t frags[MAX_SKB_FRAGS];
+>=20
+> why MAX_SKB_FRAGS ? just use a flexible array member=20
+> skb_frag_t frags[];=20
+>=20
+> and enforce size via the n_frags and on the construction of the
+> tailroom preserved buffer, which is already being done.
+>=20
+> this is waste of unnecessary space, at lease by definition of the
+> struct, in your use case you do:
+> memcpy(frag_list, xdp_sinfo->frags, sizeof(skb_frag_t) * num_frags);
+> And the tailroom space was already preserved for a full skb_shinfo.
+> so i don't see why you need this array to be of a fixed MAX_SKB_FRAGS
+> size.
+
+In order to avoid cache-misses, xdp_shared info is built as a variable
+on mvneta_rx_swbm() stack and it is written to "shared_info" area only on t=
+he
+last fragment in mvneta_swbm_add_rx_fragment(). I used MAX_SKB_FRAGS to be
+aligned with skb_shared_info struct but probably we can use even a smaller =
+value.
+Another approach would be to define two different struct, e.g.
+
+stuct xdp_frag_metadata {
+	u16 nr_frags;
+	u16 data_length; /* paged area length */
+};
+
+struct xdp_frags {
+	skb_frag_t frags[MAX_SKB_FRAGS];
+};
+
+and then define xdp_shared_info as
+
+struct xdp_shared_info {
+	stuct xdp_frag_metadata meta;
+	skb_frag_t frags[];
+};
+
+In this way we can probably optimize the space. What do you think?
+
+>=20
+> > +};
+> > +
+> > +static inline struct xdp_shared_info *
+> >  xdp_get_shared_info_from_buff(struct xdp_buff *xdp)
+> >  {
+> > -	return (struct skb_shared_info *)xdp_data_hard_end(xdp);
+> > +	BUILD_BUG_ON(sizeof(struct xdp_shared_info) >
+> > +		     sizeof(struct skb_shared_info));
+> > +	return (struct xdp_shared_info *)xdp_data_hard_end(xdp);
+> > +}
+> > +
+>=20
+> Back to my first comment, do we have plans to use this tail room buffer
+> for other than frag_list use cases ? what will be the buffer format
+> then ? should we push all new fields to the end of the xdp_shared_info
+> struct ? or deal with this tailroom buffer as a stack ?=20
+> my main concern is that for drivers that don't support frag list and
+> still want to utilize the tailroom buffer for other usecases they will
+> have to skip the first sizeof(xdp_shared_info) so they won't break the
+> stack.
+
+for the moment I do not know if this area is used for other purposes.
+Do you think there are other use-cases for it?
+
+>=20
+> > +static inline struct page *xdp_get_frag_page(const skb_frag_t *frag)
+> > +{
+> > +	return frag->bv_page;
+> > +}
+> > +
+> > +static inline unsigned int xdp_get_frag_offset(const skb_frag_t
+> > *frag)
+> > +{
+> > +	return frag->bv_offset;
+> > +}
+> > +
+> > +static inline unsigned int xdp_get_frag_size(const skb_frag_t *frag)
+> > +{
+> > +	return frag->bv_len;
+> > +}
+> > +
+> > +static inline void *xdp_get_frag_address(const skb_frag_t *frag)
+> > +{
+> > +	return page_address(xdp_get_frag_page(frag)) +
+> > +	       xdp_get_frag_offset(frag);
+> > +}
+> > +
+> > +static inline void xdp_set_frag_page(skb_frag_t *frag, struct page
+> > *page)
+> > +{
+> > +	frag->bv_page =3D page;
+> > +}
+> > +
+> > +static inline void xdp_set_frag_offset(skb_frag_t *frag, u32 offset)
+> > +{
+> > +	frag->bv_offset =3D offset;
+> > +}
+> > +
+> > +static inline void xdp_set_frag_size(skb_frag_t *frag, u32 size)
+> > +{
+> > +	frag->bv_len =3D size;
+> >  }
+> > =20
+> >  struct xdp_frame {
+> > @@ -120,12 +164,12 @@ static __always_inline void
+> > xdp_frame_bulk_init(struct xdp_frame_bulk *bq)
+> >  	bq->xa =3D NULL;
+> >  }
+> > =20
+> > -static inline struct skb_shared_info *
+> > +static inline struct xdp_shared_info *
+> >  xdp_get_shared_info_from_frame(struct xdp_frame *frame)
+> >  {
+> >  	void *data_hard_start =3D frame->data - frame->headroom -
+> > sizeof(*frame);
+> > =20
+> > -	return (struct skb_shared_info *)(data_hard_start + frame-
+> > >frame_sz -
+> > +	return (struct xdp_shared_info *)(data_hard_start + frame-
+> > >frame_sz -
+> >  				SKB_DATA_ALIGN(sizeof(struct
+> > skb_shared_info)));
+> >  }
+> > =20
+>=20
+> need a comment here why we preserve the size of skb_shared_info, yet
+> the usable buffer is of type xdp_shared_info.
+
+ack, I will add it in v6.
+
+Regards,
+Lorenzo
+
+>=20
+
+--eRtJSFbw+EEWtPj3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCX89dAgAKCRA6cBh0uS2t
+rIZHAP4zHQAEvQWXmL+hIIzScpOXfI+6MPhSKxwUcyMA1b5EjAEAzsrFZXrHryT+
+Fvp6bBAO5h8fcEXJ5uliMZfg9KD2zgg=
+=ViiS
+-----END PGP SIGNATURE-----
+
+--eRtJSFbw+EEWtPj3--
+
