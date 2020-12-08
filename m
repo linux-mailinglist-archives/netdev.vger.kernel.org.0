@@ -2,175 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 691142D3729
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 00:52:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 114232D3734
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 00:56:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730540AbgLHXvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 18:51:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42498 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729665AbgLHXvD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 18:51:03 -0500
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1FF7C061793
-        for <netdev@vger.kernel.org>; Tue,  8 Dec 2020 15:50:22 -0800 (PST)
-Received: by mail-io1-xd43.google.com with SMTP id z136so333094iof.3
-        for <netdev@vger.kernel.org>; Tue, 08 Dec 2020 15:50:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hdL0m5JgFJe1EpPesWikdrSf9jXdSBdwbL4TxHVvvOk=;
-        b=NzY69DPYhNIzwXHVZei4rEkY+5RtZDtn0aCrOkx/uPRICVZIHrkfQbrlaRl+WQdGWY
-         T3u2EBHoGUDpiUaRXsVSR6EcxAG/qffWWgalhmZ067BzOJYuh1MkEe4gr8uvvZ21NVM1
-         Pgp/sezauXFiu6bpz+LiR/EJ8zmuwZLU9hfKF2t5TVCnztZsYu9+jdmuhe0KJYNHzqQa
-         i7E8SgSWb7JiVQhROomVLR8FKZfVb0hEFC9zflx0fgYMDLGWoGwFiT794TGqcbBC5Vs+
-         q5Bp/+B51GnRNr9aQFsyDbcz0fzywlcqVdfOGV+pTLeywo8FhhokE+ZlTPEs3JGl1F+G
-         /Ftw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hdL0m5JgFJe1EpPesWikdrSf9jXdSBdwbL4TxHVvvOk=;
-        b=lLXrciVFS6lpnKbPBiRwIjHRDQz8tbIWhQBzqUQMVpNyy+ga2nefV9ev2br2d1dpoy
-         UhP6Fgp6WvjAAOJuJ3M4LID++4crehpdHdcxI89e66kMQb/PK51B8PKG+6jTdIKwn1YA
-         /PzX4rRKaGK5HtCFhV830UJdadQ5I4amggJex558CF9Uk6PStPZR+PxT0SA5GmdLCXbr
-         klDFO1oMpnpXuP719Zg2Ag9RTsE5JeGbaq6WIeiKJnjpfQTkjBujsvoJvQtPbooXnGiS
-         C7iYDchzq5CtaYUawJWQAYsJSyr2kmQQiKbIatnrTaLdpgKQkZKMSkyR5zt3JKfGIWbM
-         OKdw==
-X-Gm-Message-State: AOAM532btz+NtkPC7kBkvt4EpT/4ChxlRAWyuARVfi1wJp8paJnGtSDi
-        zYkNKrYHn/QaplNOvDrtUZWpZzsmnY6Ui7iF5hp74Q==
-X-Google-Smtp-Source: ABdhPJy0s478dGQDlOWaOEFsZDMsEl/YWBNiwlPctX36Fwxt4h7/a2eHUrlWaQN7j4J0v/D9VBTLvueMBo7CH2SHf7U=
-X-Received: by 2002:a6b:c8c1:: with SMTP id y184mr264930iof.99.1607471421992;
- Tue, 08 Dec 2020 15:50:21 -0800 (PST)
+        id S1730601AbgLHXy1 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 8 Dec 2020 18:54:27 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:44994 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730398AbgLHXy0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 18:54:26 -0500
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0B8NeKJI018969
+        for <netdev@vger.kernel.org>; Tue, 8 Dec 2020 15:53:45 -0800
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 35a66wxawp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 08 Dec 2020 15:53:45 -0800
+Received: from intmgw002.03.ash8.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 8 Dec 2020 15:53:44 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 34DB62ECAF6B; Tue,  8 Dec 2020 15:53:34 -0800 (PST)
+From:   Andrii Nakryiko <andrii@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii@kernel.org>, <kernel-team@fb.com>,
+        Alan Maguire <alan.maguire@oracle.com>
+Subject: [PATCH v2 bpf-next] libbpf: support module BTF for BPF_TYPE_ID_TARGET CO-RE relocation
+Date:   Tue, 8 Dec 2020 15:53:32 -0800
+Message-ID: <20201208235332.354826-1-andrii@kernel.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-References: <20201206034408.31492-1-TheSven73@gmail.com> <20201208115035.74221c31@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <CAGngYiVpToas=offBuPgQ6t8wru64__NQ7MnNDYb0i0E+m6ebw@mail.gmail.com> <20201208152948.006606b3@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201208152948.006606b3@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 9 Dec 2020 00:50:10 +0100
-Message-ID: <CANn89iKxjQawkMBCg5Mt=eMgqvD_cpYSs4664GoGZFrMTgWJFw@mail.gmail.com>
-Subject: Re: [PATCH net v1 1/2] lan743x: improve performance: fix
- rx_napi_poll/interrupt ping-pong
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Sven Van Asbroeck <thesven73@gmail.com>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        David S Miller <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2020-12-08_17:2020-12-08,2020-12-08 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015 mlxscore=0
+ spamscore=0 phishscore=0 adultscore=0 lowpriorityscore=0 malwarescore=0
+ suspectscore=8 impostorscore=0 bulkscore=0 mlxlogscore=999
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2012080150
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 9, 2020 at 12:29 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Tue, 8 Dec 2020 17:23:08 -0500 Sven Van Asbroeck wrote:
-> > On Tue, Dec 8, 2020 at 2:50 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > >
-> > > >
-> > > > +done:
-> > > >       /* update RX_TAIL */
-> > > >       lan743x_csr_write(adapter, RX_TAIL(rx->channel_number),
-> > > >                         rx_tail_flags | rx->last_tail);
-> > > > -done:
-> > > > +
-> > >
-> > > I assume this rings the doorbell to let the device know that more
-> > > buffers are available? If so it's a little unusual to do this at the
-> > > end of NAPI poll. The more usual place would be to do this every n
-> > > times a new buffer is allocated (in lan743x_rx_init_ring_element()?)
-> > > That's to say for example ring the doorbell every time a buffer is put
-> > > at an index divisible by 16.
-> >
-> > Yes, I believe it tells the device that new buffers have become available.
-> >
-> > I wonder why it's so unusual to do this at the end of a napi poll? Omitting
-> > this could result in sub-optimal use of buffers, right?
-> >
-> > Example:
-> > - tail is at position 0
-> > - core calls napi_poll(weight=64)
-> > - napi poll consumes 15 buffers and pushes 15 skbs, then ring empty
-> > - index not divisible by 16, so tail is not updated
-> > - weight not reached, so napi poll re-enables interrupts and bails out
-> >
-> > Result: now there are 15 buffers which the device could potentially use, but
-> > because the tail wasn't updated, it doesn't know about them.
->
-> Perhaps 16 for a device with 64 descriptors is rather high indeed.
-> Let's say 8. If the device misses 8 packet buffers on the ring,
-> that should be negligible.
->
+When Clang emits ldimm64 instruction for BPF_TYPE_ID_TARGET CO-RE relocation,
+put module BTF FD, containing target type, into upper 32 bits of imm64.
 
-mlx4 uses 8 as the threshold ( mlx4_en_refill_rx_buffers())
+Because this FD is internal to libbpf, it's very cumbersome to test this in
+selftests. Manual testing was performed with debug log messages sprinkled
+across selftests and libbpf, confirming expected values are substituted.
+Better testing will be performed as part of the work adding module BTF types
+support to  bpf_snprintf_btf() helpers.
 
-> Depends on the cost of the CSR write, usually packet processing is
-> putting a lot of pressure on the memory subsystem of the CPU, hence
-> amortizing the write over multiple descriptors helps. The other thing
-> is that you could delay the descriptor writes to write full cache lines,
-> but I don't think that will help on IMX6.
->
-> > It does make sense to update the tail more frequently than only at the end
-> > of the napi poll, though?
-> >
-> > I'm new to napi polling, so I'm quite interested to learn about this.
->
-> There is a tracepoint which records how many packets NAPI has polled:
-> napi:napi_poll, you can see easily what your system is doing.
->
-> What you want to avoid is the situation where the device already used
-> up all the descriptors by the time driver finishes the Rx processing.
-> That'd result in drops. So the driver should push the buffers back to
-> the device reasonably early.
->
-> With a ring of 64 descriptors and NAPI budget of 64 it's not unlikely
-> that the ring will be completely used when processing runs.
->
-> > > > +     /* up to half of elements in a full rx ring are
-> > > > +      * extension frames. these do not generate skbs.
-> > > > +      * to prevent napi/interrupt ping-pong, limit default
-> > > > +      * weight to the smallest no. of skbs that can be
-> > > > +      * generated by a full rx ring.
-> > > > +      */
-> > > >       netif_napi_add(adapter->netdev,
-> > > >                      &rx->napi, lan743x_rx_napi_poll,
-> > > > -                    rx->ring_size - 1);
-> > > > +                    (rx->ring_size - 1) / 2);
-> > >
-> > > This is rather unusual, drivers should generally pass NAPI_POLL_WEIGHT
-> > > here.
-> >
-> > I agree. The problem is that a full ring buffer of 64 buffers will only
-> > contain 32 buffers with network data - the others are timestamps.
-> >
-> > So napi_poll(weight=64) can never reach its full weight. Even with a full
-> > buffer, it always assumes that it has to stop polling, and re-enable
-> > interrupts, which results in a ping-pong.
->
-> Interesting I don't think we ever had this problem before. Let me CC
-> Eric to see if he has any thoughts on the case. AFAIU you should think
-> of the weight as way of arbitrating between devices (if there is more
-> than one).
+v1->v2:
+  - fix crash on failing to resolve target spec (Alan).
 
-Driver could be called with an arbitrary budget (of 64),
-and if its ring buffer has been depleted, return @budget instead of skb counts,
-and not ream the interrupt
+Cc: Alan Maguire <alan.maguire@oracle.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+---
+ tools/lib/bpf/libbpf.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
-if (count < budget && !rx_ring_fully_processed) {
-    if (napi_complete_done(napi, count))
-          ream_irqs();
-   return count;
-}
-return budget;
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 9be88a90a4aa..2fb9824bf9bf 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -4795,6 +4795,7 @@ static int load_module_btfs(struct bpf_object *obj)
+ 
+ 		mod_btf = &obj->btf_modules[obj->btf_module_cnt++];
+ 
++		btf__set_fd(btf, fd);
+ 		mod_btf->btf = btf;
+ 		mod_btf->id = id;
+ 		mod_btf->fd = fd;
+@@ -5445,6 +5446,10 @@ struct bpf_core_relo_res
+ 	__u32 orig_type_id;
+ 	__u32 new_sz;
+ 	__u32 new_type_id;
++	/* FD of the module BTF containing the target candidate, or 0 for
++	 * vmlinux BTF
++	 */
++	int btf_obj_fd;
+ };
+ 
+ /* Calculate original and target relocation values, given local and target
+@@ -5469,6 +5474,7 @@ static int bpf_core_calc_relo(const struct bpf_program *prog,
+ 	res->fail_memsz_adjust = false;
+ 	res->orig_sz = res->new_sz = 0;
+ 	res->orig_type_id = res->new_type_id = 0;
++	res->btf_obj_fd = 0;
+ 
+ 	if (core_relo_is_field_based(relo->kind)) {
+ 		err = bpf_core_calc_field_relo(prog, relo, local_spec,
+@@ -5519,6 +5525,9 @@ static int bpf_core_calc_relo(const struct bpf_program *prog,
+ 	} else if (core_relo_is_type_based(relo->kind)) {
+ 		err = bpf_core_calc_type_relo(relo, local_spec, &res->orig_val);
+ 		err = err ?: bpf_core_calc_type_relo(relo, targ_spec, &res->new_val);
++		if (!err && relo->kind == BPF_TYPE_ID_TARGET &&
++		    targ_spec && targ_spec->btf != prog->obj->btf_vmlinux)
++			res->btf_obj_fd = btf__fd(targ_spec->btf);
+ 	} else if (core_relo_is_enumval_based(relo->kind)) {
+ 		err = bpf_core_calc_enumval_relo(relo, local_spec, &res->orig_val);
+ 		err = err ?: bpf_core_calc_enumval_relo(relo, targ_spec, &res->new_val);
+@@ -5725,10 +5734,14 @@ static int bpf_core_patch_insn(struct bpf_program *prog,
+ 		}
+ 
+ 		insn[0].imm = new_val;
+-		insn[1].imm = 0; /* currently only 32-bit values are supported */
+-		pr_debug("prog '%s': relo #%d: patched insn #%d (LDIMM64) imm64 %llu -> %u\n",
++		/* btf_obj_fd is zero for all relos but BPF_TYPE_ID_TARGET
++		 * with target type in the kernel module BTF
++		 */
++		insn[1].imm = res->btf_obj_fd;
++		pr_debug("prog '%s': relo #%d: patched insn #%d (LDIMM64) imm64 %llu -> %llu\n",
+ 			 prog->name, relo_idx, insn_idx,
+-			 (unsigned long long)imm, new_val);
++			 (unsigned long long)imm,
++			 ((unsigned long long)res->btf_obj_fd << 32) | new_val);
+ 		break;
+ 	}
+ 	default:
+-- 
+2.24.1
 
-
->
-> NAPI does not do any deferral (in wall clock time terms) of processing,
-> so the only difference you may get for lower weight is that softirq
-> kthread will get a chance to kick in earlier.
->
-> > Would it be better to fix the weight counting? Increase the count
-> > for every buffer consumed, instead of for every skb pushed?
->
