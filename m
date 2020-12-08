@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC60E2D2C4C
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 14:56:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB5D62D2C55
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 14:56:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729478AbgLHNzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 08:55:03 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:8726 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726338AbgLHNzD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 08:55:03 -0500
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Cr1qP1Vjzzkn52;
-        Tue,  8 Dec 2020 21:53:37 +0800 (CST)
+        id S1729553AbgLHN4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 08:56:10 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:8967 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726338AbgLHN4K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 08:56:10 -0500
+Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4Cr1s073dhzhnnQ;
+        Tue,  8 Dec 2020 21:55:00 +0800 (CST)
 Received: from ubuntu.network (10.175.138.68) by
- DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
- 14.3.487.0; Tue, 8 Dec 2020 21:54:11 +0800
+ DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
+ 14.3.487.0; Tue, 8 Dec 2020 21:55:15 +0800
 From:   Zheng Yongjun <zhengyongjun3@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
+        <linux-rdma@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     Zheng Yongjun <zhengyongjun3@huawei.com>
-Subject: [PATCH net-next] drivers: net: qlcnic: simplify the return expression of qlcnic_sriov_vf_shutdown()
-Date:   Tue, 8 Dec 2020 21:54:37 +0800
-Message-ID: <20201208135437.11764-1-zhengyongjun3@huawei.com>
+Subject: [PATCH net-next] net/mlx4: simplify the return expression of mlx4_init_cq_table()
+Date:   Tue, 8 Dec 2020 21:55:43 +0800
+Message-ID: <20201208135543.11820-1-zhengyongjun3@huawei.com>
 X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
@@ -38,34 +38,35 @@ Simplify the return expression.
 
 Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
 ---
- drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/net/ethernet/mellanox/mlx4/cq.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c
-index 30e52f969759..dd03be3fc82a 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c
-@@ -2112,7 +2112,6 @@ static int qlcnic_sriov_vf_shutdown(struct pci_dev *pdev)
+diff --git a/drivers/net/ethernet/mellanox/mlx4/cq.c b/drivers/net/ethernet/mellanox/mlx4/cq.c
+index 3b8576b9c2f9..68bd18ee6ee3 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/cq.c
++++ b/drivers/net/ethernet/mellanox/mlx4/cq.c
+@@ -462,19 +462,14 @@ EXPORT_SYMBOL_GPL(mlx4_cq_free);
+ int mlx4_init_cq_table(struct mlx4_dev *dev)
  {
- 	struct qlcnic_adapter *adapter = pci_get_drvdata(pdev);
- 	struct net_device *netdev = adapter->netdev;
--	int retval;
+ 	struct mlx4_cq_table *cq_table = &mlx4_priv(dev)->cq_table;
+-	int err;
  
- 	netif_device_detach(netdev);
- 	qlcnic_cancel_idc_work(adapter);
-@@ -2125,11 +2124,7 @@ static int qlcnic_sriov_vf_shutdown(struct pci_dev *pdev)
- 	qlcnic_83xx_disable_mbx_intr(adapter);
- 	cancel_delayed_work_sync(&adapter->idc_aen_work);
+ 	spin_lock_init(&cq_table->lock);
+ 	INIT_RADIX_TREE(&cq_table->tree, GFP_ATOMIC);
+ 	if (mlx4_is_slave(dev))
+ 		return 0;
  
--	retval = pci_save_state(pdev);
--	if (retval)
--		return retval;
+-	err = mlx4_bitmap_init(&cq_table->bitmap, dev->caps.num_cqs,
+-			       dev->caps.num_cqs - 1, dev->caps.reserved_cqs, 0);
+-	if (err)
+-		return err;
 -
 -	return 0;
-+	return pci_save_state(pdev);
++	return mlx4_bitmap_init(&cq_table->bitmap, dev->caps.num_cqs,
++			        dev->caps.num_cqs - 1, dev->caps.reserved_cqs, 0);
  }
  
- static int qlcnic_sriov_vf_resume(struct qlcnic_adapter *adapter)
+ void mlx4_cleanup_cq_table(struct mlx4_dev *dev)
 -- 
 2.22.0
 
