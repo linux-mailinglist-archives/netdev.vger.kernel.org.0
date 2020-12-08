@@ -2,125 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 912EA2D362E
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 23:25:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89EE62D363F
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 23:30:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731218AbgLHWYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 17:24:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57150 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730393AbgLHWYA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 17:24:00 -0500
-Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52126C061793;
-        Tue,  8 Dec 2020 14:23:20 -0800 (PST)
-Received: by mail-vs1-xe42.google.com with SMTP id w18so10358154vsk.12;
-        Tue, 08 Dec 2020 14:23:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=N7VdFbyyCDi1uq6j0l/SA3U8jgEM1OrggvkOS/Hf/OQ=;
-        b=EJX+HvXFO17F1iSSmiS2Awhj83og4g6aSeHMNIgEz+7nD0GBW/qvdy4S8g9Sk71K4A
-         eEXTVd0+IhSBCao77zjlBUkvyH8fRfFduW9Be9ebt0TxEr7KK+oWXv25c7ccsnvw1q2c
-         l42cPgCKFY0jOcHm6YUhrWDnPux7+/eMmNAEzfC2/3IclhKk3wo5PCBcj9/kDMHuKWS/
-         5FCdNokOSygirtN0CpRhVf7PlsPk6HI94VpOintTBoMG5wWFIErZtj72VPpz+XObceW/
-         DpwCJwmMMDY0nOkIz4py8psHU6jTyNBor+vJdx9MQNMUk89PAAgggmP4lx2oZRraQS/o
-         T9AQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=N7VdFbyyCDi1uq6j0l/SA3U8jgEM1OrggvkOS/Hf/OQ=;
-        b=lIsTugO6ObzCVajItr3QX4XJB3G0qoY/3+OWkSchu1zmsJ83euukdS/30qAPHHZ5F5
-         FDxHHUnO9Ka9QRW0aWT8npxRGazm3WoFH28juCgtllBeQC7sZP2WHstBl27vxDTr7ejd
-         2NIcg7rMmCwlVRswmGGeGKH+KVGb0r2hoprvjcXlRdl8r0kiv9163ExTQPiM5s95IKq8
-         VOXRRK65Aa2nK6uPJlDQVpxW39/50guitCXZn8SjeFRwQKNNi6m0nhwaoArV/mRFNdlS
-         FlVC1ZZjtVFWA71jz+E4GNeh3NZgAiRZcTKsYrOV6mjwbDBfOUVohh9jyDuyTJOcyyfM
-         KlJA==
-X-Gm-Message-State: AOAM530OsykWEjCc2prkeScFQa1NPW2pISKREmTdvwwKkyhWWfDsE+L+
-        XmIE7SUPWTGAYQO83xzbjfwjxct+/rXCOU7712Qb3pA3/FTGjA==
-X-Google-Smtp-Source: ABdhPJySeEl56WZqFuf74fCdEKIEsLeySni5nLTfRQZF34XxVCJVf5UA0HU841DR6dXkvVmLiavxiRHVzi8H3pl1sKY=
-X-Received: by 2002:a67:d319:: with SMTP id a25mr8662985vsj.57.1607466199202;
- Tue, 08 Dec 2020 14:23:19 -0800 (PST)
+        id S1731453AbgLHW0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 17:26:55 -0500
+Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:45671 "EHLO
+        wout3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730297AbgLHW0y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 17:26:54 -0500
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.west.internal (Postfix) with ESMTP id 8EC2A10ED;
+        Tue,  8 Dec 2020 17:26:08 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Tue, 08 Dec 2020 17:26:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nkwarfield.io;
+         h=date:from:to:cc:subject:message-id:mime-version:content-type;
+         s=fm3; bh=93kAimUHuURvl/m8SQ6dsmBkazfQnzIkpniefjGMWU0=; b=qsi7z
+        D62duOvWPi4ET9Smy9P8MKlIoAXC13tu6wsyZyjGUvRmZDOhgMHFiSbdxNg+Vpwy
+        h9Dj3CMJnthvP6X77f+7pSMSbc/aST8SkCsgRFb82yPiNBrHWTuwVXTrS4F0DgEV
+        EPgPanSLqUs31Un4CjGKLkkh94rZ1wVLSFH5kilmKnHcH4Z6F/fjID/nqDYt90hX
+        Db+ZYoNYzVCp2vlg6UK5czw8BgDccaWyUpF3gwbdd908YJe1pYEFYIljESE6V50L
+        V32+dTCDjiLwh1bt+AHIGtnHxFn2hxMYxxuNTQUvJnHCGNFKKXFigYd8aDo9BHJv
+        gC3fvYWVQaDTPDT9g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:message-id
+        :mime-version:subject:to:x-me-proxy:x-me-proxy:x-me-sender
+        :x-me-sender:x-sasl-enc; s=fm1; bh=93kAimUHuURvl/m8SQ6dsmBkazfQn
+        zIkpniefjGMWU0=; b=bvvCNF2PVTLkBG5Z9iTVQ4hqAapTc0vYH4YtYI2OxC6zB
+        UECGV+NitvLPzkSZPKGfeGvaXjIwEQeCRkg+6ggfjYYhQXiBXPL/tb+KyTvzlMW2
+        2d/EpVcx0hi6SJ9D/4DhoQGereliWLOocUB9RrNg8ysUzFagzH/3b6uFmfdeBiMR
+        l0TWqPH6ALtuoVMXVU4OrSH/k73L+66/NTIUfp1EmQ3SPS2c2PU6NyH23fu3ofQR
+        I4h9C7wGJHfj0txk01W54sj1YHjfL9Q0BkRZxLu4FfcDk5iEukh2VFg8/IAoKf2i
+        mxLYAykw9REfD1F4n+KtVXRr28J7i1ecUfEAiTBLQ==
+X-ME-Sender: <xms:f_3PX57uHuVVnysGIRx5pAftp0LRJJU2NS1BkVdZ7asJ5jodiX27rg>
+    <xme:f_3PXxebH8Rv5nMe8LzM8Vyl70tzs-m5UZHxWim0jLy9VecWrx7HFC7RKV-26aRbn
+    MmXiOXdwBjz6uhN0ng>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudejiedgudeifecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkgggtugesthdtredttddtvdenucfhrhhomheppfhitghhohhl
+    rghsucghrghrfhhivghlugcuoehnihgtkhesnhhkfigrrhhfihgvlhgurdhioheqnecugg
+    ftrfgrthhtvghrnhepgfdugfekhefftdekuedukedvheettdehudeugfffgfffjeevgfdu
+    udffgffhjeejnecukfhppedutdegrdefgedrleelrdejieenucevlhhushhtvghrufhiii
+    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehnihgtkhesnhhkfigrrhhfihgvlhgu
+    rdhioh
+X-ME-Proxy: <xmx:f_3PX9DAH6ve09LwgWj3DJWtzTYYIFxPsWi0_M50zKZ4PMcXFR7sLA>
+    <xmx:f_3PX08uwTBb5YV_OZDVVCgV9TTH-YukttFHFp3nLBdlZD4i7MQ04A>
+    <xmx:f_3PX4L_RdOiwlHPronP8CX7SJ1TDAE1yukKOIVf6B76KjM2yPPDcw>
+    <xmx:gP3PX3VmchpQn9vAaziq_l7jP4r43dcFVH72q7xC9wSc_gkUXnhKig>
+Received: from coffee.localdomain (cpe-104-34-99-76.socal.res.rr.com [104.34.99.76])
+        by mail.messagingengine.com (Postfix) with ESMTPA id B490A24005C;
+        Tue,  8 Dec 2020 17:26:06 -0500 (EST)
+Date:   Tue, 8 Dec 2020 14:25:29 -0800
+From:   Nicholas Warfield <nick@nkwarfield.io>
+To:     Manish Chopra <manishc@marvell.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        nick@nkwarfield.io
+Subject: [PATCH] staging: qlge: remove duplicate word in comment
+Message-ID: <X8/9WWP3S1GrVNaa@coffee.localdomain>
 MIME-Version: 1.0
-References: <20201206034408.31492-1-TheSven73@gmail.com> <20201208115035.74221c31@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201208115035.74221c31@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-Date:   Tue, 8 Dec 2020 17:23:08 -0500
-Message-ID: <CAGngYiVpToas=offBuPgQ6t8wru64__NQ7MnNDYb0i0E+m6ebw@mail.gmail.com>
-Subject: Re: [PATCH net v1 1/2] lan743x: improve performance: fix
- rx_napi_poll/interrupt ping-pong
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        David S Miller <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 8, 2020 at 2:50 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> >
-> > +done:
-> >       /* update RX_TAIL */
-> >       lan743x_csr_write(adapter, RX_TAIL(rx->channel_number),
-> >                         rx_tail_flags | rx->last_tail);
-> > -done:
-> > +
->
-> I assume this rings the doorbell to let the device know that more
-> buffers are available? If so it's a little unusual to do this at the
-> end of NAPI poll. The more usual place would be to do this every n
-> times a new buffer is allocated (in lan743x_rx_init_ring_element()?)
-> That's to say for example ring the doorbell every time a buffer is put
-> at an index divisible by 16.
+This patch fixes the checkpatch warning:
 
-Yes, I believe it tells the device that new buffers have become available.
+WARNING: Possible repeated word: 'each'
+1712: FILE: qlge.h:1712.h
++ * that are each each 64-bits in length. There are a total of
 
-I wonder why it's so unusual to do this at the end of a napi poll? Omitting
-this could result in sub-optimal use of buffers, right?
+Signed-off-by: Nicholas Warfield <nick@nkwarfield.io>
+---
+ drivers/staging/qlge/qlge.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Example:
-- tail is at position 0
-- core calls napi_poll(weight=64)
-- napi poll consumes 15 buffers and pushes 15 skbs, then ring empty
-- index not divisible by 16, so tail is not updated
-- weight not reached, so napi poll re-enables interrupts and bails out
+diff --git a/drivers/staging/qlge/qlge.h b/drivers/staging/qlge/qlge.h
+index b295990e361b..0381f3f56bc7 100644
+--- a/drivers/staging/qlge/qlge.h
++++ b/drivers/staging/qlge/qlge.h
+@@ -1709,7 +1709,7 @@ enum {
+ #define ETS_REGS_DUMP_WORD_COUNT		10
+ 
+ /* Each probe mux entry stores the probe type plus 64 entries
+- * that are each each 64-bits in length. There are a total of
++ * that are each 64-bits in length. There are a total of
+  * 34 (PRB_MX_ADDR_VALID_TOTAL) valid probes.
+  */
+ #define PRB_MX_ADDR_PRB_WORD_COUNT		(1 + (PRB_MX_ADDR_MAX_MUX * 2))
+-- 
+2.29.2
 
-Result: now there are 15 buffers which the device could potentially use, but
-because the tail wasn't updated, it doesn't know about them.
-
-It does make sense to update the tail more frequently than only at the end
-of the napi poll, though?
-
-I'm new to napi polling, so I'm quite interested to learn about this.
-
-
-> >
-> > +     /* up to half of elements in a full rx ring are
-> > +      * extension frames. these do not generate skbs.
-> > +      * to prevent napi/interrupt ping-pong, limit default
-> > +      * weight to the smallest no. of skbs that can be
-> > +      * generated by a full rx ring.
-> > +      */
-> >       netif_napi_add(adapter->netdev,
-> >                      &rx->napi, lan743x_rx_napi_poll,
-> > -                    rx->ring_size - 1);
-> > +                    (rx->ring_size - 1) / 2);
->
-> This is rather unusual, drivers should generally pass NAPI_POLL_WEIGHT
-> here.
-
-I agree. The problem is that a full ring buffer of 64 buffers will only
-contain 32 buffers with network data - the others are timestamps.
-
-So napi_poll(weight=64) can never reach its full weight. Even with a full
-buffer, it always assumes that it has to stop polling, and re-enable
-interrupts, which results in a ping-pong.
-
-Would it be better to fix the weight counting? Increase the count
-for every buffer consumed, instead of for every skb pushed?
