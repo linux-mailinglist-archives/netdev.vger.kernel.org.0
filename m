@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23FD62D3374
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 21:27:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AF532D3334
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 21:27:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728521AbgLHUT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 15:19:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35948 "EHLO mail.kernel.org"
+        id S1731298AbgLHUQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 15:16:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33752 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727801AbgLHUT0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Dec 2020 15:19:26 -0500
-Date:   Tue, 8 Dec 2020 11:43:14 -0800
+        id S1731040AbgLHUMu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Dec 2020 15:12:50 -0500
+Date:   Tue, 8 Dec 2020 11:50:35 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607456595;
-        bh=0Z5bpu1nVbF3QnVaGuTjeixaoErw3LQOX5Pc9Y2x7xs=;
+        s=k20201202; t=1607457037;
+        bh=Evmr4NCR73nJG7NR2K0eviLkh4z4YujSYKA4BQDd15o=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=K7YJJADgVoOQA4WFXTX0LzCxujAPmgBwZQVMoMeuXF27q3Qacsr3wPaVgtfytn1OO
-         W5ENlYvhcNqu/ZKyYjBk/Q0ZCUuhUGc5n5hfUhASAniUtxNqo1jUjCYIoU8W4TIAHv
-         hX5wgzNlkUwnRxfm1MnP0swTsLes2IUyt/hknJBirVZ5En18zJeBxEnVx8uzEY0zqT
-         NHk2WVTFGR45S66SAiSUyfkfDAEAxa6SQyrzAA6uwF3U0bhZG6sdrEgx/Y5/FW9ce7
-         daA7EMlZCjbK9u/bxonV9cC1s5tyYA5akyDeip8MRcCK074w5MF5s1Zd9PDCg7tPj2
-         veGywUHWDdphg==
+        b=T8QeED49xiiUzJADy3kbbjWWLJtYVMvMX8Yq3Gon37syE3BWQorrGAbfhvDsQb/+h
+         uuvY72OxmS7HJ5e46Q8ibG4myZ3Ub6OAuH1IjwUmngU62YIx4pWJNg+wqzOee0ERDY
+         U139jynoRlKekLDYgdY/RBhwaloU90xj5jhpfVvUQ4lxO5Yhkme0bhhE0S/6lp/GA5
+         qD3sTDi6VIN9a0G+n38AJJK+ETR1IF8nb+3pXXyiSOEHG/8HOz6bAfzgUAScG96IYp
+         +M6yuVBhQmcylTGKuVm19VGLw+gs2uVCYkzG+LKLedxjJGU9skEcG2GuBFwFbDSAS1
+         VS5DYY2sbtaXw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Sven Van Asbroeck <thesven73@gmail.com>
 Cc:     Bryan Whitehead <bryan.whitehead@microchip.com>,
@@ -29,12 +29,11 @@ Cc:     Bryan Whitehead <bryan.whitehead@microchip.com>,
         David S Miller <davem@davemloft.net>,
         Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v1 2/2] lan743x: boost performance: limit PCIe
- bandwidth requirement
-Message-ID: <20201208114314.743ee6ec@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201206034408.31492-2-TheSven73@gmail.com>
+Subject: Re: [PATCH net v1 1/2] lan743x: improve performance: fix
+ rx_napi_poll/interrupt ping-pong
+Message-ID: <20201208115035.74221c31@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201206034408.31492-1-TheSven73@gmail.com>
 References: <20201206034408.31492-1-TheSven73@gmail.com>
-        <20201206034408.31492-2-TheSven73@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,109 +41,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat,  5 Dec 2020 22:44:08 -0500 Sven Van Asbroeck wrote:
+On Sat,  5 Dec 2020 22:44:07 -0500 Sven Van Asbroeck wrote:
 > From: Sven Van Asbroeck <thesven73@gmail.com>
 > 
-> To support jumbo frames, each rx ring dma buffer is 9K in size.
-> But the chip only stores a single frame per dma buffer.
+> Even if the rx ring is completely full, and there is more rx data
+> waiting on the chip, the rx napi poll fn will never run more than
+> once - it will always immediately bail out and re-enable interrupts.
+> Which results in ping-pong between napi and interrupt.
 > 
-> When the chip is working with the default 1500 byte MTU, a 9K
-> dma buffer goes from chip -> cpu per 1500 byte frame. This means
-> that to get 1G/s ethernet bandwidth, we need 6G/s PCIe bandwidth !
+> This defeats the purpose of napi, and is bad for performance.
 > 
-> Fix by limiting the rx ring dma buffer size to the current MTU
-> size.
-
-I'd guess this is a memory allocate issue, not a bandwidth thing.
-for 9K frames the driver needs to do order-2 allocations of 16K.
-For 1500 2K allocations are sufficient (which is < 1 page, hence 
-a lot cheaper).
-
-> Tested with iperf3 on a freescale imx6 + lan7430, both sides
-> set to mtu 1500 bytes.
+> Fix by addressing two separate issues:
 > 
-> Before:
-> [ ID] Interval           Transfer     Bandwidth       Retr
-> [  4]   0.00-20.00  sec   483 MBytes   203 Mbits/sec    0
-> After:
-> [ ID] Interval           Transfer     Bandwidth       Retr
-> [  4]   0.00-20.00  sec  1.15 GBytes   496 Mbits/sec    0
+> 1. Ensure the rx napi poll fn always updates the rx ring tail
+>    when returning, even when not re-enabling interrupts.
 > 
-> And with both sides set to MTU 9000 bytes:
-> Before:
-> [ ID] Interval           Transfer     Bandwidth       Retr
-> [  4]   0.00-20.00  sec  1.87 GBytes   803 Mbits/sec   27
-> After:
-> [ ID] Interval           Transfer     Bandwidth       Retr
-> [  4]   0.00-20.00  sec  1.98 GBytes   849 Mbits/sec    0
+> 2. Up to half of elements in a full rx ring are extension
+>    frames, which do not generate any skbs. Limit the default
+>    napi weight to the smallest no. of skbs that can be generated
+>    by a full rx ring.
 > 
 > Tested-by: Sven Van Asbroeck <thesven73@gmail.com> # lan7430
 > Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
-
-This is a performance improvement, not a fix, it really needs to target
-net-next.
-
+> ---
+> 
+> Tree: git://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git # 905b2032fa42
+> 
+> To: Bryan Whitehead <bryan.whitehead@microchip.com>
+> To: Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+> To: "David S. Miller" <davem@davemloft.net>
+> To: Jakub Kicinski <kuba@kernel.org>
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: netdev@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> 
+>  drivers/net/ethernet/microchip/lan743x_main.c | 11 +++++++++--
+>  1 file changed, 9 insertions(+), 2 deletions(-)
+> 
 > diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-> index ebb5e0bc516b..2bded1c46784 100644
+> index 87b6c59a1e03..ebb5e0bc516b 100644
 > --- a/drivers/net/ethernet/microchip/lan743x_main.c
 > +++ b/drivers/net/ethernet/microchip/lan743x_main.c
-> @@ -1957,11 +1957,11 @@ static int lan743x_rx_next_index(struct lan743x_rx *rx, int index)
+> @@ -2260,10 +2260,11 @@ static int lan743x_rx_napi_poll(struct napi_struct *napi, int weight)
+>  				  INT_BIT_DMA_RX_(rx->channel_number));
+>  	}
 >  
->  static struct sk_buff *lan743x_rx_allocate_skb(struct lan743x_rx *rx)
->  {
-> -	int length = 0;
-> +	struct net_device *netdev = rx->adapter->netdev;
->  
-> -	length = (LAN743X_MAX_FRAME_SIZE + ETH_HLEN + 4 + RX_HEAD_PADDING);
-> -	return __netdev_alloc_skb(rx->adapter->netdev,
-> -				  length, GFP_ATOMIC | GFP_DMA);
-> +	return __netdev_alloc_skb(netdev,
-> +				  netdev->mtu + ETH_HLEN + 4 + RX_HEAD_PADDING,
-> +				  GFP_ATOMIC | GFP_DMA);
->  }
->  
->  static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index,
-> @@ -1969,9 +1969,10 @@ static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index,
->  {
->  	struct lan743x_rx_buffer_info *buffer_info;
->  	struct lan743x_rx_descriptor *descriptor;
-> -	int length = 0;
-> +	struct net_device *netdev = rx->adapter->netdev;
-> +	int length;
->  
-> -	length = (LAN743X_MAX_FRAME_SIZE + ETH_HLEN + 4 + RX_HEAD_PADDING);
-> +	length = netdev->mtu + ETH_HLEN + 4 + RX_HEAD_PADDING;
->  	descriptor = &rx->ring_cpu_ptr[index];
->  	buffer_info = &rx->buffer_info[index];
->  	buffer_info->skb = skb;
-> @@ -2157,8 +2158,8 @@ static int lan743x_rx_process_packet(struct lan743x_rx *rx)
->  			int index = first_index;
->  
->  			/* multi buffer packet not supported */
-> -			/* this should not happen since
-> -			 * buffers are allocated to be at least jumbo size
-> +			/* this should not happen since buffers are allocated
-> +			 * to be at least the mtu size configured in the mac.
->  			 */
->  
->  			/* clean up buffers */
-> @@ -2632,9 +2633,13 @@ static int lan743x_netdev_change_mtu(struct net_device *netdev, int new_mtu)
->  	struct lan743x_adapter *adapter = netdev_priv(netdev);
->  	int ret = 0;
->  
-> +	if (netif_running(netdev))
-> +		return -EBUSY;
-
-That may cause a regression to users of the driver who expect to be
-able to set the MTU when the device is running. You need to disable 
-the NAPI, pause the device, swap the buffers for smaller / bigger ones
-and restart the device.
-
->  	ret = lan743x_mac_set_mtu(adapter, new_mtu);
->  	if (!ret)
->  		netdev->mtu = new_mtu;
+> +done:
+>  	/* update RX_TAIL */
+>  	lan743x_csr_write(adapter, RX_TAIL(rx->channel_number),
+>  			  rx_tail_flags | rx->last_tail);
+> -done:
 > +
->  	return ret;
+
+I assume this rings the doorbell to let the device know that more
+buffers are available? If so it's a little unusual to do this at the
+end of NAPI poll. The more usual place would be to do this every n
+times a new buffer is allocated (in lan743x_rx_init_ring_element()?)
+That's to say for example ring the doorbell every time a buffer is put
+at an index divisible by 16.
+
+>  	return count;
 >  }
 >  
+> @@ -2405,9 +2406,15 @@ static int lan743x_rx_open(struct lan743x_rx *rx)
+>  	if (ret)
+>  		goto return_error;
+>  
+> +	/* up to half of elements in a full rx ring are
+> +	 * extension frames. these do not generate skbs.
+> +	 * to prevent napi/interrupt ping-pong, limit default
+> +	 * weight to the smallest no. of skbs that can be
+> +	 * generated by a full rx ring.
+> +	 */
+>  	netif_napi_add(adapter->netdev,
+>  		       &rx->napi, lan743x_rx_napi_poll,
+> -		       rx->ring_size - 1);
+> +		       (rx->ring_size - 1) / 2);
 
+This is rather unusual, drivers should generally pass NAPI_POLL_WEIGHT
+here.
