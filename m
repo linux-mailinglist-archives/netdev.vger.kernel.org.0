@@ -2,146 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8200D2D1ED5
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 01:15:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A446C2D1EDA
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 01:17:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728484AbgLHAOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 19:14:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46840 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726000AbgLHAOl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 19:14:41 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C5AC06138C
-        for <netdev@vger.kernel.org>; Mon,  7 Dec 2020 16:13:17 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id i3so8500904pfd.6
-        for <netdev@vger.kernel.org>; Mon, 07 Dec 2020 16:13:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=OZPKJ8iyX4JiTuKS52IveePlvykbl+yKfx0dWwq1kK8=;
-        b=lmsv5Gu9va9hMa7bt7nSxlp+wA8AgcilngVtUiJdSp58LhtJNevUH3Ef6fRHF6qQUD
-         b48sd+v3vN4yKTbINTv4QVGxnf0dDzYTRGTaMOUPzqt6WJLnmAwT5WqnQl394pj+jCRb
-         s9XL0FalTQHLIB/+xsUt2QR50a2TM+xUfX4Dc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=OZPKJ8iyX4JiTuKS52IveePlvykbl+yKfx0dWwq1kK8=;
-        b=Jp0K2DyJPtb9YEFqAjdtp/DgMjCT3zylLG4xQrcAJfsNWMaF8mfoM7NVEjn9W1IrKI
-         ZxfA9rYhNqpCBmUT+iIgSS2ESl357BFdYMzh8q8hEIVvB3lI4jDJXsIqn314bg21EOcC
-         C13fM7nReG+luRUnSQ+RZ69yF8Os+Da+zu0/Tuga3H47FV3CvC5iIWfq6GPlIzcV/F2m
-         dZvjp3uvgpVYjiwdbHvTiIU8Cq6rMh5yx+dXaiQmVYsWq+KwOT/BxCrYdKi/AzRuiUJD
-         9CUxY+MSBTpbC+XZtQVejvO1hHqcNAZ8KVVMaD89fceFnVviSjej3uQGMRZczqcISYoK
-         MTnQ==
-X-Gm-Message-State: AOAM53121683BeticwzGxZfeZHIbJOs24u6Aic/jgNEOZFMQ9tjA/FeT
-        xmnYFyncuiYyYHNU6cQMWthvCA==
-X-Google-Smtp-Source: ABdhPJzKxGhKehwPyGf5t01jU+bp7iiEJId5HG1oskHUVVXBkgWabjQT/SXwRWyy3sVtY8oJ+A8LDQ==
-X-Received: by 2002:a17:90a:6a48:: with SMTP id d8mr1247629pjm.130.1607386396602;
-        Mon, 07 Dec 2020 16:13:16 -0800 (PST)
-Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:7220:84ff:fe09:2b94])
-        by smtp.gmail.com with ESMTPSA id v8sm514214pjk.39.2020.12.07.16.13.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Dec 2020 16:13:16 -0800 (PST)
-From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-To:     marcel@holtmann.org, linux-bluetooth@vger.kernel.org
-Cc:     chromeos-bluetooth-upstreaming@chromium.org,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        Alain Michaud <alainm@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        netdev@vger.kernel.org, Howard Chung <howardchung@google.com>
-Subject: [PATCH 1/1] Bluetooth: Remove hci_req_le_suspend_config
-Date:   Mon,  7 Dec 2020 16:12:54 -0800
-Message-Id: <20201207161221.1.I94feef9a75a69b0d0c7038d975239ef3b1b93ee6@changeid>
-X-Mailer: git-send-email 2.29.2.576.ga3fc446d84-goog
-In-Reply-To: <20201208001254.575890-1-abhishekpandit@chromium.org>
-References: <20201208001254.575890-1-abhishekpandit@chromium.org>
+        id S1728547AbgLHAQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 19:16:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51198 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727330AbgLHAQO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Dec 2020 19:16:14 -0500
+Date:   Mon, 7 Dec 2020 16:15:33 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607386534;
+        bh=iBHjuV31uGtt8jlL1eodDrZ9iRatja0EukFJFpSWcJA=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Va1VG9UqqGxwzGX0+K2WudhywapqDL/tpIozuqjWnDB0iSXrU67t775WQKwW5nvAN
+         LABQa1wcYkfE/34qzHTZ1hg5TRUbLIk+YWfeFgdTzL0k6A25Gov8FJ9cvgFo4Avoqm
+         NEHzLU9fEq1stCVAlaYT3Qb219yeO2AR0BjfLAH2eN21WY5mu0bkU8m0jNC2whN2os
+         7OUX9Y1zQCIkxduxJrRTIKMB/OcSuKG2xSHh1tWCFa8RZykMtxc5gL2AYNLq1HAY78
+         KcUoio2Fry1HldDwuL8/xE80EiXkkcJpYLR/GSoq1hnasDdCuc+clC4pVBlXWyl4wy
+         kG4AaAZSMtcfA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Mickey Rachamim <mickeyr@marvell.com>
+Cc:     "David S . Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>
+Subject: Re: [PATCH v2] MAINTAINERS: Add entry for Marvell Prestera Ethernet
+ Switch driver
+Message-ID: <20201207161533.7f68fd7f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201205164300.28581-1-mickeyr@marvell.com>
+References: <20201205164300.28581-1-mickeyr@marvell.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a missing SUSPEND_SCAN_ENABLE in passive scan, remove the separate
-function for configuring le scan during suspend and update the request
-complete function to clear both enable and disable tasks.
+On Sat, 5 Dec 2020 18:43:00 +0200 Mickey Rachamim wrote:
+> Add maintainers info for new Marvell Prestera Ethernet switch driver.
+> 
+> Signed-off-by: Mickey Rachamim <mickeyr@marvell.com>
+> ---
+> v2:
+>  Update the maintainers list according to community recommendation.
+> 
+>  MAINTAINERS | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 061e64b2423a..c92b44754436 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -10550,6 +10550,14 @@ S:	Supported
+>  F:	Documentation/networking/device_drivers/ethernet/marvell/octeontx2.rst
+>  F:	drivers/net/ethernet/marvell/octeontx2/af/
+>  
+> +MARVELL PRESTERA ETHERNET SWITCH DRIVER
+> +M:	Vadym Kochan <vkochan@marvell.com>
+> +M:	Taras Chornyi <tchornyi@marvell.com>
 
-Fixes: dce0a4be8054 ("Bluetooth: Set missing suspend task bits")
-Reviewed-by: Alain Michaud <alainm@chromium.org>
-Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
----
+Just a heads up, again, we'll start removing maintainers who aren't
+participating, so Taras needs to be active. We haven't seen a single
+email from him so far AFAICT.
 
- net/bluetooth/hci_request.c | 25 ++++++++-----------------
- 1 file changed, 8 insertions(+), 17 deletions(-)
+> +L:	netdev@vger.kernel.org
 
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index 71bffd745472043..5aa7bd5030a218c 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -1087,6 +1087,8 @@ void hci_req_add_le_passive_scan(struct hci_request *req)
- 	if (hdev->suspended) {
- 		window = hdev->le_scan_window_suspend;
- 		interval = hdev->le_scan_int_suspend;
-+
-+		set_bit(SUSPEND_SCAN_ENABLE, hdev->suspend_tasks);
- 	} else if (hci_is_le_conn_scanning(hdev)) {
- 		window = hdev->le_scan_window_connect;
- 		interval = hdev->le_scan_int_connect;
-@@ -1170,19 +1172,6 @@ static void hci_req_set_event_filter(struct hci_request *req)
- 	hci_req_add(req, HCI_OP_WRITE_SCAN_ENABLE, 1, &scan);
- }
- 
--static void hci_req_config_le_suspend_scan(struct hci_request *req)
--{
--	/* Before changing params disable scan if enabled */
--	if (hci_dev_test_flag(req->hdev, HCI_LE_SCAN))
--		hci_req_add_le_scan_disable(req, false);
--
--	/* Configure params and enable scanning */
--	hci_req_add_le_passive_scan(req);
--
--	/* Block suspend notifier on response */
--	set_bit(SUSPEND_SCAN_ENABLE, req->hdev->suspend_tasks);
--}
--
- static void cancel_adv_timeout(struct hci_dev *hdev)
- {
- 	if (hdev->adv_instance_timeout) {
-@@ -1245,8 +1234,10 @@ static void suspend_req_complete(struct hci_dev *hdev, u8 status, u16 opcode)
- {
- 	bt_dev_dbg(hdev, "Request complete opcode=0x%x, status=0x%x", opcode,
- 		   status);
--	if (test_and_clear_bit(SUSPEND_SCAN_ENABLE, hdev->suspend_tasks) ||
--	    test_and_clear_bit(SUSPEND_SCAN_DISABLE, hdev->suspend_tasks)) {
-+	if (test_bit(SUSPEND_SCAN_ENABLE, hdev->suspend_tasks) ||
-+	    test_bit(SUSPEND_SCAN_DISABLE, hdev->suspend_tasks)) {
-+		clear_bit(SUSPEND_SCAN_ENABLE, hdev->suspend_tasks);
-+		clear_bit(SUSPEND_SCAN_DISABLE, hdev->suspend_tasks);
- 		wake_up(&hdev->suspend_wait_q);
- 	}
- }
-@@ -1336,7 +1327,7 @@ void hci_req_prepare_suspend(struct hci_dev *hdev, enum suspended_state next)
- 		/* Enable event filter for paired devices */
- 		hci_req_set_event_filter(&req);
- 		/* Enable passive scan at lower duty cycle */
--		hci_req_config_le_suspend_scan(&req);
-+		__hci_update_background_scan(&req);
- 		/* Pause scan changes again. */
- 		hdev->scanning_paused = true;
- 		hci_req_run(&req, suspend_req_complete);
-@@ -1346,7 +1337,7 @@ void hci_req_prepare_suspend(struct hci_dev *hdev, enum suspended_state next)
- 
- 		hci_req_clear_event_filter(&req);
- 		/* Reset passive/background scanning to normal */
--		hci_req_config_le_suspend_scan(&req);
-+		__hci_update_background_scan(&req);
- 
- 		/* Unpause directed advertising */
- 		hdev->advertising_paused = false;
--- 
-2.29.2.576.ga3fc446d84-goog
+nit: I don't think you need to list netdev, it'll get inherited from
+the general entry for networking drivers (you can test running
+get_maintainer.pl on a patch to the driver and see if it reports it).
+
+> +S:	Supported
+> +W:	http://www.marvell.com
+
+The website entry is for a project-specific website. If you have a link
+to a site with open resources about the chips/driver that'd be great,
+otherwise please drop it. Also https is expected these days ;)
+
+> +F:	drivers/net/ethernet/marvell/prestera/
+> +
+>  MARVELL SOC MMC/SD/SDIO CONTROLLER DRIVER
+>  M:	Nicolas Pitre <nico@fluxnic.net>
+>  S:	Odd Fixes
 
