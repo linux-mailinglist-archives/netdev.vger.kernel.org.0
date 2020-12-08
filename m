@@ -2,182 +2,430 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C81E2D276D
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 10:24:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3E082D278B
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 10:27:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728780AbgLHJXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 04:23:44 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:63696 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727096AbgLHJXn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 04:23:43 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0B8959TM020981;
-        Tue, 8 Dec 2020 01:22:56 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0220;
- bh=d1s5WfUhQJQfNxG66EI5Lb94VEWFpxytOWakeq6+NWQ=;
- b=B7oeDBr3VQBfKsaGyIphKCQ1VI23K3uUkVDIqOaurOfK1watMVRyNOS8U71mIZeXjopQ
- hZh1qhPdW+AtHF+WfGewe2HS/V/+OdD5xyml1f/lDX6Kd3tAWZiP4cQlmkC+WmAaExvv
- n+AYnUvAPjaNSznnM2keSx1seAueT9+KU8rItNyA4CjxST55PALVbCAKKE7lHySZaAMm
- npQ+H/gtyArsFGB33tRWL+4li08ATo45nfYMofiRxq6kOSWRaE38fdnrYHZEXXQOtQXB
- 6LO0x8Ik8a2lr0NATyDbUONMdFTAKgmyhiZlL8CgyvrS624/aNNXT9YA24uUXgqenAGD Dg== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 358akr770v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 08 Dec 2020 01:22:56 -0800
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 8 Dec
- 2020 01:22:55 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.43) by
- SC-EXCH03.marvell.com (10.93.176.83) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Tue, 8 Dec 2020 01:22:54 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZkxKz1ox+ypsCLeOVn/vlgE+t9Qk8ddRiZmvkglnwKog+TO9t5X3TJ4HPBtAmEwOPOAVqaa3WtZbJsIAhyO0vQOZqeSQnx9IQpa3NIK345FvxAhx+h3wTwlstXfg9YG2RpNdYReGTCsQ3pOoW+h9WOdmHw5AJfUAjKNtv0Xrc7LFqmeKoS3EPwFz0uatG93K62z9SxXBTpf6KPlr4c34vqRZiVpFaD7VfB2ItWkTIrXtuJ+YZzq0gVmIRoaMSXfzJDDsD5gT8RtyvGSCiMVuODMeeHMLi+Gw0n3bMitRDTey6iQ/mP1WQG6lxWKzHioE5G4yHLFFhf/byF8pm5ximw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=d1s5WfUhQJQfNxG66EI5Lb94VEWFpxytOWakeq6+NWQ=;
- b=b0LJo6utceB0DwWL5/9OsjPfGWXjugx+30AUTEEytJkBhItLiFyROMdzcp1zU7hg3scShHV6bji1u/t9UXFGjRiW8w6vqvLy+0jrQuQIxpjRDJtv+7eU2BixT1k5CAke2XJ1sGwS+Q3j2y1TrsmBQ6rGT5ym8/WoUuI+GUxoZ/2Od9imvs7DInHKcfP8q9whWS7NkOee36yzDz1Zk4e3VOtq68bzsLuchT49CSuK7vaJjCGGhYRm+K3djkfaoeBNnZdIXvIVJoYIL19CC2tmeo/2ugLDQOJJvAESg0dRYSsXii+gnauzdETGxCzulC89IrWLjfTi/9P+yztNCWvRLg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=d1s5WfUhQJQfNxG66EI5Lb94VEWFpxytOWakeq6+NWQ=;
- b=llivclLgX0zW7aOEaX3Ox5dRrJe8szquQs5LyahZtssfTlKxFr65DnZXW4ho5tKHfeb1S3N6PvCMD/6DW2C3vJl+vO72Me13K80IJqrwWxCDM3KizMIfYDRFZrvLyJjjO1WeVJxKG65ftYjT3/YKeshtxiu3cf8T0hNzB9/j24k=
-Received: from BN6PR18MB1587.namprd18.prod.outlook.com (2603:10b6:404:129::18)
- by BN8PR18MB2435.namprd18.prod.outlook.com (2603:10b6:408:6a::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.21; Tue, 8 Dec
- 2020 09:22:52 +0000
-Received: from BN6PR18MB1587.namprd18.prod.outlook.com
- ([fe80::7d88:7c97:70dc:ddc9]) by BN6PR18MB1587.namprd18.prod.outlook.com
- ([fe80::7d88:7c97:70dc:ddc9%10]) with mapi id 15.20.3632.023; Tue, 8 Dec 2020
- 09:22:52 +0000
-From:   Mickey Rachamim <mickeyr@marvell.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Vadym Kochan [C]" <vkochan@marvell.com>,
-        "Taras Chornyi [C]" <tchornyi@marvell.com>
-Subject: RE: [EXT] Re: [PATCH v2] MAINTAINERS: Add entry for Marvell Prestera
- Ethernet Switch driver
-Thread-Topic: [EXT] Re: [PATCH v2] MAINTAINERS: Add entry for Marvell Prestera
- Ethernet Switch driver
-Thread-Index: AQHWyyYV4P4pQ1rY10yROtXpmQsQsqnsWDCAgACYJDA=
-Date:   Tue, 8 Dec 2020 09:22:52 +0000
-Message-ID: <BN6PR18MB158772742FFF0A17D023F591BACD0@BN6PR18MB1587.namprd18.prod.outlook.com>
-References: <20201205164300.28581-1-mickeyr@marvell.com>
- <20201207161533.7f68fd7f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201207161533.7f68fd7f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=marvell.com;
-x-originating-ip: [109.186.111.41]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c78aafb9-bbbb-4619-757b-08d89b5ad6c6
-x-ms-traffictypediagnostic: BN8PR18MB2435:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN8PR18MB2435CC890E307D1CC5D3FEA8BACD0@BN8PR18MB2435.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: waJWsN+4RKAymlmQVlwl+oZ2Pk3SvBG5EzYFTa3uhaOMDjBzouQ8fijMobn54ISsIJB9GUX39HieSv++Zn57PgntMIODGZx24/jv0xjRsSSpi4Zo00Sva1VXfS0QYWmfntbbQlNIaJkD7CEDU48jPLAqSBDFfDU/9NrKkAOiLKA3bJ6XqglI2q3hwLizRBZa2LjYuMMavgxZSvfEAgyCfhtdSxoTOtQzrgF+ONTH/OfhE+eYXAzWnEZsrvoL2IYMFSu7v1fZNgqkDhR2f1knkRhrfSZVtq9gF+/FiV870fXP0YmYSwVfJk/Xfl5ak7RTkKrT4xgiriJ4qK7XBp07JuWBeTeJjX+a54+B9/gOj4GIloEyaQnYJFSJKRDwXPSvi81DW516OshaMxUD4lqQdg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR18MB1587.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(346002)(136003)(366004)(396003)(376002)(7696005)(4326008)(76116006)(6506007)(52536014)(6916009)(54906003)(55016002)(83380400001)(5660300002)(26005)(9686003)(316002)(8936002)(66556008)(966005)(64756008)(478600001)(33656002)(86362001)(8676002)(71200400001)(66946007)(66446008)(66476007)(107886003)(186003)(2906002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?aGvtBB2J3e8rG6AXWewAuZGgwa3vxFzzfoQalime/RdddpGpB00MQek+hMAZ?=
- =?us-ascii?Q?TlJEG5qAkRbSgb0jBwh5ep3Ua9MfQsilt5+PiFrmlXqnUQyQHTlf78NOfnWW?=
- =?us-ascii?Q?IJChr2dQk8xi0JfPrpQVfHxkxzfHCjf9tF0kI4TaTOfxibZnDNgd5jIvgk2t?=
- =?us-ascii?Q?h4KiIHUuNjgKCAEZkSnP5LSrjzTgVkcngGIDP5rnyhXTy/xKurhWMP7AiaKZ?=
- =?us-ascii?Q?asVndDhygz3ISvP77iJOJc1/sbF4hKPsHHMYgAs7x3Kl1E8Bx8v/uv0Djd/s?=
- =?us-ascii?Q?T8ZYliLtBN95wpKKqQW4VhlB14b/r0JVIlDgIrZZl6Ur9cflmBhE/WfJI6To?=
- =?us-ascii?Q?J3d3DqjHvGVBo4nk+94yIMl8zmYg7nYatdJyLNrt0j4RxALFVbX6uE22SgJS?=
- =?us-ascii?Q?/zjf8OgCmSNk0sg9lTWIQSKs8TuMTFV/9QtOVI69YxebpjEeYlFB31ZBfn03?=
- =?us-ascii?Q?D8LepQeFK3FIcLx0hWgnx67QPo7PAtZ7gmLkV9vql2Oz8iva8mgXbvuBz1Nn?=
- =?us-ascii?Q?JkWht/1ktyJd/w+efFmFe6njawJrdj/07oW5KlymlBAEZqwtlWXBT8189+he?=
- =?us-ascii?Q?+mSt8NCPjjJCF459QkZn93y3d91tN0qQxLrQ618RBXTzCAOolkbvSj/d2eCe?=
- =?us-ascii?Q?D1XptiC0w1XNynGmci/jt8xRXv7mShGSX8YnamG6xaocYJ+BciYz19xiqjyb?=
- =?us-ascii?Q?JzbOmp3odZVE+6OcrfDdUwiFG5q/30HWhuUohiRhCW0DViCtP2aiHC5Gdx5c?=
- =?us-ascii?Q?zywr9NFrKLQlW7yAxskWbbxfXJBEAkiFmzOawCw6UgYIo4XxPjpfZSGW6aO8?=
- =?us-ascii?Q?jUyPCuw48VwSx6s4JjKDhveCVi1utKcvGVzfRlI5d1P4mAQb5Xbb0QhEZHg6?=
- =?us-ascii?Q?rZU6aKia78nsZ8ZuQ+2SVQJ1npn+9s1EGTPFV2v6h5WrrABm8nNqxHxmQ5p6?=
- =?us-ascii?Q?rggVOkYow8h/x09s2WiFx20Rn7mAtEXJuGw2zTWnXyk=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728789AbgLHJ0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 04:26:09 -0500
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:41883 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726218AbgLHJ0G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 04:26:06 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id AD18F5C01F4;
+        Tue,  8 Dec 2020 04:24:09 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Tue, 08 Dec 2020 04:24:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; bh=8M6YRYlCAsdMZyhvLRQzH/MZ/Z/FJMqer2PgkB+wnWA=; b=JzBLTdRP
+        kUaZLpGU0/adGurvUo57KlylXEUcoSu3Q1zkhXYhQk2fv7LkCqbKgMnqpX9BQuqe
+        fyAOUZCoXEJy3k3kXi5wpPXhotcwbPFJ0oJnOWQMCpWjlXV6bXwaM7fpdbmAyoaL
+        XdGNjgi8T48/V7mXsRcXo0v6bFY0sFCbWs74wcBEmODh+mgksUFCdsXm4brxPLO7
+        Drl5FNa0Cenmb83T6xrigS7r5eixeCj0gB5ur1j32r4etzXrH40K57pMU5pDud7e
+        WBAZ1vqGVeo74u9gsJQM0u4BRHTLXkHzOaUT/MIpPDYvpGFkzFgnTd2PWbW0PHoC
+        yVXWbuiv8JPS0A==
+X-ME-Sender: <xms:OUbPX9XkQQhuWBzRCsqHqgoIpGCJkl3CNH1iPfbGFznO7Kq7aLAlcA>
+    <xme:OUbPX9no96nHTKBPssDxn0bmRwsDL5vFdQvWlWJTUwen6OO4-O4z978x2aE4in0Rk
+    LSXDuaM466QZbY>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudejiedgtddvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
+    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
+    ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrjeek
+    necuvehluhhsthgvrhfuihiivgepfeenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:OUbPX5ZyLecZ1-EGnvxWwHnwqT6XxlgCHZ0CPgTJdVmldH666Imwow>
+    <xmx:OUbPXwX6dz4s8y8UZ5e5btC-v5EpNW-GYSMNAVf2xqaLp8wwxnflVw>
+    <xmx:OUbPX3m2lXIt10YZn6GzG5_WRcIHNiSZQS_5Mi0l4Hg0TxMKU0vqbA>
+    <xmx:OUbPXwA-n-UMTHkn-G0A-OfkoeXPnLTPy_gy2wGsVHoyCNcXGIUwMg>
+Received: from shredder.lan (igld-84-229-153-78.inter.net.il [84.229.153.78])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 389501080059;
+        Tue,  8 Dec 2020 04:24:08 -0500 (EST)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
+        petrm@nvidia.com, amcohen@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net-next 12/13] selftests: forwarding: Add Q-in-VNI test
+Date:   Tue,  8 Dec 2020 11:22:52 +0200
+Message-Id: <20201208092253.1996011-13-idosch@idosch.org>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20201208092253.1996011-1-idosch@idosch.org>
+References: <20201208092253.1996011-1-idosch@idosch.org>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN6PR18MB1587.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c78aafb9-bbbb-4619-757b-08d89b5ad6c6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Dec 2020 09:22:52.4827
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: jEPXanFxdPrZY//3O9AaWwKBUEqOl6Yw2vQp1mJVGUViIVBZWaQL4W5807tt15A4lBWKBWKjDRpG8gdjODalUA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR18MB2435
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-08_03:2020-12-08,2020-12-08 signatures=0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub, thanks for the guidelines.
+From: Petr Machata <petrm@nvidia.com>
 
-> On Sat, 5 Dec 2020 18:43:00 +0200 Mickey Rachamim wrote:
-> > Add maintainers info for new Marvell Prestera Ethernet switch driver.
-> >=20
-> > Signed-off-by: Mickey Rachamim <mickeyr@marvell.com>
-> > ---
-> > v2:
-> >  Update the maintainers list according to community recommendation.
-> >=20
-> >  MAINTAINERS | 8 ++++++++
-> >  1 file changed, 8 insertions(+)
-> >=20
-> > diff --git a/MAINTAINERS b/MAINTAINERS index=20
-> > 061e64b2423a..c92b44754436 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -10550,6 +10550,14 @@ S:	Supported
-> >  F:	Documentation/networking/device_drivers/ethernet/marvell/octeontx2.=
-rst
-> >  F:	drivers/net/ethernet/marvell/octeontx2/af/
-> > =20
-> > +MARVELL PRESTERA ETHERNET SWITCH DRIVER
-> > +M:	Vadym Kochan <vkochan@marvell.com>
-> > +M:	Taras Chornyi <tchornyi@marvell.com>
->=20
-> Just a heads up, again, we'll start removing maintainers who aren't parti=
-cipating, so Taras needs to be active. We haven't seen a single email from =
-him so far AFAICT.
->=20
-Fully clear, Taras is an expert on Linux kernel code working on PLVision an=
-d under contract with Marvell.
-He will became active on contributions and reviews very soon.
+Add test to check Q-in-VNI traffic.
 
-> > +L:	netdev@vger.kernel.org
->=20
-> nit: I don't think you need to list netdev, it'll get inherited from the =
-general entry for networking drivers (you can test running get_maintainer.p=
-l on a patch to the driver and see if it reports it).
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+---
+ .../selftests/net/forwarding/q_in_vni.sh      | 347 ++++++++++++++++++
+ 1 file changed, 347 insertions(+)
+ create mode 100755 tools/testing/selftests/net/forwarding/q_in_vni.sh
 
-Right, will remove.
-
-> > +S:	Supported
-> > +W:	http://www.marvell.com
->=20
-> The website entry is for a project-specific website. If you have a link t=
-o a site with open resources about the chips/driver that'd be great, otherw=
-ise please drop it. Also https is expected these days ;)
-
-Can I placed here the Github project link?
-https://github.com/Marvell-switching/switchdev-prestera
-
-
+diff --git a/tools/testing/selftests/net/forwarding/q_in_vni.sh b/tools/testing/selftests/net/forwarding/q_in_vni.sh
+new file mode 100755
+index 000000000000..4c50c0234bce
+--- /dev/null
++++ b/tools/testing/selftests/net/forwarding/q_in_vni.sh
+@@ -0,0 +1,347 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++
++# +-----------------------+                          +------------------------+
++# | H1 (vrf)              |                          | H2 (vrf)               |
++# |  + $h1.10             |                          |  + $h2.10              |
++# |  | 192.0.2.1/28       |                          |  | 192.0.2.2/28        |
++# |  |                    |                          |  |                     |
++# |  | + $h1.20           |                          |  | + $h2.20            |
++# |  \ | 198.51.100.1/24  |                          |  \ | 198.51.100.2/24   |
++# |   \|                  |                          |   \|                   |
++# |    + $h1              |                          |    + $h2               |
++# +----|------------------+                          +----|-------------------+
++#      |                                                  |
++# +----|--------------------------------------------------|-------------------+
++# | SW |                                                  |                   |
++# | +--|--------------------------------------------------|-----------------+ |
++# | |  + $swp1                   BR1 (802.1ad)            + $swp2           | |
++# | |    vid 100 pvid untagged                              vid 100 pvid    | |
++# | |                                                           untagged    | |
++# | |  + vx100 (vxlan)                                                      | |
++# | |    local 192.0.2.17                                                   | |
++# | |    remote 192.0.2.34 192.0.2.50                                       | |
++# | |    id 1000 dstport $VXPORT                                            | |
++# | |    vid 100 pvid untagged                                              | |
++# | +-----------------------------------------------------------------------+ |
++# |                                                                           |
++# |  192.0.2.32/28 via 192.0.2.18                                             |
++# |  192.0.2.48/28 via 192.0.2.18                                             |
++# |                                                                           |
++# |    + $rp1                                                                 |
++# |    | 192.0.2.17/28                                                        |
++# +----|----------------------------------------------------------------------+
++#      |
++# +----|--------------------------------------------------------+
++# |    |                                             VRP2 (vrf) |
++# |    + $rp2                                                   |
++# |      192.0.2.18/28                                          |
++# |                                                             |   (maybe) HW
++# =============================================================================
++# |                                                             |  (likely) SW
++# |    + v1 (veth)                             + v3 (veth)      |
++# |    | 192.0.2.33/28                         | 192.0.2.49/28  |
++# +----|---------------------------------------|----------------+
++#      |                                       |
++# +----|------------------------------+   +----|------------------------------+
++# |    + v2 (veth)        NS1 (netns) |   |    + v4 (veth)        NS2 (netns) |
++# |      192.0.2.34/28                |   |      192.0.2.50/28                |
++# |                                   |   |                                   |
++# |   192.0.2.16/28 via 192.0.2.33    |   |   192.0.2.16/28 via 192.0.2.49    |
++# |   192.0.2.50/32 via 192.0.2.33    |   |   192.0.2.34/32 via 192.0.2.49    |
++# |                                   |   |                                   |
++# | +-------------------------------+ |   | +-------------------------------+ |
++# | |                 BR2 (802.1ad) | |   | |                 BR2 (802.1ad) | |
++# | |  + vx100 (vxlan)              | |   | |  + vx100 (vxlan)              | |
++# | |    local 192.0.2.34           | |   | |    local 192.0.2.50           | |
++# | |    remote 192.0.2.17          | |   | |    remote 192.0.2.17          | |
++# | |    remote 192.0.2.50          | |   | |    remote 192.0.2.34          | |
++# | |    id 1000 dstport $VXPORT    | |   | |    id 1000 dstport $VXPORT    | |
++# | |    vid 100 pvid untagged      | |   | |    vid 100 pvid untagged      | |
++# | |                               | |   | |                               | |
++# | |  + w1 (veth)                  | |   | |  + w1 (veth)                  | |
++# | |  | vid 100 pvid untagged      | |   | |  | vid 100 pvid untagged      | |
++# | +--|----------------------------+ |   | +--|----------------------------+ |
++# |    |                              |   |    |                              |
++# | +--|----------------------------+ |   | +--|----------------------------+ |
++# | |  |                  VW2 (vrf) | |   | |  |                  VW2 (vrf) | |
++# | |  + w2 (veth)                  | |   | |  + w2 (veth)                  | |
++# | |  |\                           | |   | |  |\                           | |
++# | |  | + w2.10                    | |   | |  | + w2.10                    | |
++# | |  |   192.0.2.3/28             | |   | |  |   192.0.2.4/28             | |
++# | |  |                            | |   | |  |                            | |
++# | |  + w2.20                      | |   | |  + w2.20                      | |
++# | |    198.51.100.3/24            | |   | |    198.51.100.4/24            | |
++# | +-------------------------------+ |   | +-------------------------------+ |
++# +-----------------------------------+   +-----------------------------------+
++
++: ${VXPORT:=4789}
++export VXPORT
++
++: ${ALL_TESTS:="
++	ping_ipv4
++    "}
++
++NUM_NETIFS=6
++source lib.sh
++
++h1_create()
++{
++	simple_if_init $h1
++	tc qdisc add dev $h1 clsact
++	vlan_create $h1 10 v$h1 192.0.2.1/28
++	vlan_create $h1 20 v$h1 198.51.100.1/24
++}
++
++h1_destroy()
++{
++	vlan_destroy $h1 20
++	vlan_destroy $h1 10
++	tc qdisc del dev $h1 clsact
++	simple_if_fini $h1
++}
++
++h2_create()
++{
++	simple_if_init $h2
++	tc qdisc add dev $h2 clsact
++	vlan_create $h2 10 v$h2 192.0.2.2/28
++	vlan_create $h2 20 v$h2 198.51.100.2/24
++}
++
++h2_destroy()
++{
++	vlan_destroy $h2 20
++	vlan_destroy $h2 10
++	tc qdisc del dev $h2 clsact
++	simple_if_fini $h2
++}
++
++rp1_set_addr()
++{
++	ip address add dev $rp1 192.0.2.17/28
++
++	ip route add 192.0.2.32/28 nexthop via 192.0.2.18
++	ip route add 192.0.2.48/28 nexthop via 192.0.2.18
++}
++
++rp1_unset_addr()
++{
++	ip route del 192.0.2.48/28 nexthop via 192.0.2.18
++	ip route del 192.0.2.32/28 nexthop via 192.0.2.18
++
++	ip address del dev $rp1 192.0.2.17/28
++}
++
++switch_create()
++{
++	ip link add name br1 type bridge vlan_filtering 1 vlan_protocol 802.1ad \
++		vlan_default_pvid 0 mcast_snooping 0
++	# Make sure the bridge uses the MAC address of the local port and not
++	# that of the VxLAN's device.
++	ip link set dev br1 address $(mac_get $swp1)
++	ip link set dev br1 up
++
++	ip link set dev $rp1 up
++	rp1_set_addr
++
++	ip link add name vx100 type vxlan id 1000		\
++		local 192.0.2.17 dstport "$VXPORT"	\
++		nolearning noudpcsum tos inherit ttl 100
++	ip link set dev vx100 up
++
++	ip link set dev vx100 master br1
++	bridge vlan add vid 100 dev vx100 pvid untagged
++
++	ip link set dev $swp1 master br1
++	ip link set dev $swp1 up
++	bridge vlan add vid 100 dev $swp1 pvid untagged
++
++	ip link set dev $swp2 master br1
++	ip link set dev $swp2 up
++	bridge vlan add vid 100 dev $swp2 pvid untagged
++
++	bridge fdb append dev vx100 00:00:00:00:00:00 dst 192.0.2.34 self
++	bridge fdb append dev vx100 00:00:00:00:00:00 dst 192.0.2.50 self
++}
++
++switch_destroy()
++{
++	bridge fdb del dev vx100 00:00:00:00:00:00 dst 192.0.2.50 self
++	bridge fdb del dev vx100 00:00:00:00:00:00 dst 192.0.2.34 self
++
++	bridge vlan del vid 100 dev $swp2
++	ip link set dev $swp2 down
++	ip link set dev $swp2 nomaster
++
++	bridge vlan del vid 100 dev $swp1
++	ip link set dev $swp1 down
++	ip link set dev $swp1 nomaster
++
++	ip link set dev vx100 nomaster
++	ip link set dev vx100 down
++	ip link del dev vx100
++
++	rp1_unset_addr
++	ip link set dev $rp1 down
++
++	ip link set dev br1 down
++	ip link del dev br1
++}
++
++vrp2_create()
++{
++	simple_if_init $rp2 192.0.2.18/28
++	__simple_if_init v1 v$rp2 192.0.2.33/28
++	__simple_if_init v3 v$rp2 192.0.2.49/28
++	tc qdisc add dev v1 clsact
++}
++
++vrp2_destroy()
++{
++	tc qdisc del dev v1 clsact
++	__simple_if_fini v3 192.0.2.49/28
++	__simple_if_fini v1 192.0.2.33/28
++	simple_if_fini $rp2 192.0.2.18/28
++}
++
++ns_init_common()
++{
++	local in_if=$1; shift
++	local in_addr=$1; shift
++	local other_in_addr=$1; shift
++	local nh_addr=$1; shift
++	local host_addr1=$1; shift
++	local host_addr2=$1; shift
++
++	ip link set dev $in_if up
++	ip address add dev $in_if $in_addr/28
++	tc qdisc add dev $in_if clsact
++
++	ip link add name br2 type bridge vlan_filtering 1 vlan_protocol 802.1ad \
++		vlan_default_pvid 0
++	ip link set dev br2 up
++
++	ip link add name w1 type veth peer name w2
++
++	ip link set dev w1 master br2
++	ip link set dev w1 up
++	bridge vlan add vid 100 dev w1 pvid untagged
++
++	ip link add name vx100 type vxlan id 1000 local $in_addr \
++		dstport "$VXPORT"
++	ip link set dev vx100 up
++	bridge fdb append dev vx100 00:00:00:00:00:00 dst 192.0.2.17 self
++	bridge fdb append dev vx100 00:00:00:00:00:00 dst $other_in_addr self
++
++	ip link set dev vx100 master br2
++	tc qdisc add dev vx100 clsact
++
++	bridge vlan add vid 100 dev vx100 pvid untagged
++
++	simple_if_init w2
++        vlan_create w2 10 vw2 $host_addr1/28
++        vlan_create w2 20 vw2 $host_addr2/24
++
++	ip route add 192.0.2.16/28 nexthop via $nh_addr
++	ip route add $other_in_addr/32 nexthop via $nh_addr
++}
++export -f ns_init_common
++
++ns1_create()
++{
++	ip netns add ns1
++	ip link set dev v2 netns ns1
++	in_ns ns1 \
++	      ns_init_common v2 192.0.2.34 192.0.2.50 192.0.2.33 \
++			     192.0.2.3 198.51.100.3
++}
++
++ns1_destroy()
++{
++	ip netns exec ns1 ip link set dev v2 netns 1
++	ip netns del ns1
++}
++
++ns2_create()
++{
++	ip netns add ns2
++	ip link set dev v4 netns ns2
++	in_ns ns2 \
++	      ns_init_common v4 192.0.2.50 192.0.2.34 192.0.2.49 \
++			     192.0.2.4 198.51.100.4
++}
++
++ns2_destroy()
++{
++	ip netns exec ns2 ip link set dev v4 netns 1
++	ip netns del ns2
++}
++
++setup_prepare()
++{
++	h1=${NETIFS[p1]}
++	swp1=${NETIFS[p2]}
++
++	swp2=${NETIFS[p3]}
++	h2=${NETIFS[p4]}
++
++	rp1=${NETIFS[p5]}
++	rp2=${NETIFS[p6]}
++
++	vrf_prepare
++	forwarding_enable
++
++	h1_create
++	h2_create
++	switch_create
++
++	ip link add name v1 type veth peer name v2
++	ip link add name v3 type veth peer name v4
++	vrp2_create
++	ns1_create
++	ns2_create
++
++	r1_mac=$(in_ns ns1 mac_get w2)
++	r2_mac=$(in_ns ns2 mac_get w2)
++	h2_mac=$(mac_get $h2)
++}
++
++cleanup()
++{
++	pre_cleanup
++
++	ns2_destroy
++	ns1_destroy
++	vrp2_destroy
++	ip link del dev v3
++	ip link del dev v1
++
++	switch_destroy
++	h2_destroy
++	h1_destroy
++
++	forwarding_restore
++	vrf_cleanup
++}
++
++ping_ipv4()
++{
++	ping_test $h1 192.0.2.2 ": local->local"
++	ping_test $h1 192.0.2.3 ": local->remote 1"
++	ping_test $h1 192.0.2.4 ": local->remote 2"
++}
++
++test_all()
++{
++	echo "Running tests with UDP port $VXPORT"
++	tests_run
++}
++
++trap cleanup EXIT
++
++setup_prepare
++setup_wait
++test_all
++
++exit $EXIT_STATUS
+-- 
+2.28.0
 
