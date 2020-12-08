@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 689522D2A59
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 13:11:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB2D12D2A5C
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 13:11:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727524AbgLHMJr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 07:09:47 -0500
-Received: from mail-eopbgr80048.outbound.protection.outlook.com ([40.107.8.48]:13187
+        id S1729330AbgLHMKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 07:10:05 -0500
+Received: from mail-eopbgr80078.outbound.protection.outlook.com ([40.107.8.78]:17934
         "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729343AbgLHMJq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Dec 2020 07:09:46 -0500
+        id S1729311AbgLHMKF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Dec 2020 07:10:05 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jQPN+ThoSzNP/swK+Pu2ePrIEFdjuyMaY9FoR6fJ65HQzXc8iGmDJKjVGyLDV8AjV9MKvupOVfP+znUK6x/NjnE6gnhYjkNd8vn/0v50JqMkfDmWUGaEWHY3GVdO4G4VdkWtrJK8ioUzGGoOsrCLC1qYKo2GarNIvRPGsGuk6r6BPtFzmzaDQ9L66msWMevknc8eMyWk2KVoTBsFzlfgU/4TfJWlJxBof5U+EZHHiSNiRUpbjMzrYJ0WQHlOtRHJeFXQhyDtWbA1GYR9HskSR4ZlgskLen0MMiI8Wuv4PZzvgD5G4FEAdzE4kaezwG+VbwBFe/HtyWLLidvteFTvGQ==
+ b=XUYuuu575Rz2P3x1czDETAIvJu8jkbu0Wg/tdbgfzq+juUzkLX6AagUrbk+VCYVvcVcGoips5DWBQaxS+KGJEyGxkoxuvM8zOOWLcC76p2Ru1BxuVEQ7utj2nFPXxkFYmBW3fBIAiFmQcALQiEFQClELp/X8GB3MY8Bg4H1XKi2RKkFua6VPqrD3q5KI/6TEPNYcvcNUmEtbZY6O/95wFLgHyJ2Tl3QYW4qETz6TKLvRHAFF8UysIBu9SXJ4hLXIwSvGs2gQK26obMrmf97CZqS/17VjRYjylBEyFfSVMclNQV0RGwfpX6TpNkJU5/i2lgn/OP5DG7q9vhWTt8vQ8Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=I8CzEddcZ2lTnGOUJZnBEQa60I3qWsy/+rzWEAgQLZ0=;
- b=CZWjhjbvR97W6NF4WMz21r8iJvHTQlryHJ6JgN7egoAEg3so4tu2GOj28755a8X6ziDczsUYcgeJfplbvB9lkjZXodyRJrUAdO4mlW6kq+ddrr0yb2vL9HArGLaVFz7J4g1v66iUrvSIRCvDhpMtHIfY7EM54mQPFqpDjqUpRBMZQev/iENYp04XEaNdil4JdfLJ9t+M4DCAInpTxBQoul0KN60MJeK9XjTCqbGvGcNMwjC2PxJbovOQMNhS9KYYegO/jO8oPPkW/TUT0uHZTvVYlcE8UuFuo9lH0kGwsZXHDoT1ovlsNjHieMEb+ZVdX60g7u7IUC9zfTg2GckZAQ==
+ bh=kRETVR006LNcUpsPbVaccUpm+GSdPynh4RDE95Gucqc=;
+ b=JXgiMGWwbPlVvVBrWq19nY7X7NuZ8xZJ0LtEri4bgNwJB5uLPL9Ay5vr/t97SnIB4VyG8yYGQKcFGHBIoRRql+dSzYTNAHY9SpnHNAvwEhIGjKMKAu2RCTRing2Pwb/1kn6/X7atKcL/5koVFxXjUCwyH9luUAD4wU9VVpOH/4GiqNndAStAjAEx0Fq/qJzS3sxGT0ms4L5pmb3wIt6JLHi3JC6mM4nZGWgb7YqeM9cSKwW4KyT/T9igvFWU00xnROKfEF3gFliTDdNapHo7R7LncByc8zUucRFlXrbS8FuTzxOS17TbcPVxBMAXUog26fadkk0nXsUia0ehvpCmPg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=I8CzEddcZ2lTnGOUJZnBEQa60I3qWsy/+rzWEAgQLZ0=;
- b=EMTn0HkNTDyRJqOQMEf6KR7tOxhwbv0B9KgBLQQTZSs7+RPvRGZTjUU2fooJtr4SnQI8ju0npXeu+462psEulIlKGMpymoWdV17md8sDeF2EdrauROOsBBKR89iMs0hHaOTtsL91V5qJNucQ9dYkQuXeiarmAaFkUKYpCJ1YQ0I=
+ bh=kRETVR006LNcUpsPbVaccUpm+GSdPynh4RDE95Gucqc=;
+ b=YguYu4F6n365gNUjX4NyIlnuiGRuuDXR66k1l0OCO8XzxuIcaMB9kh0+uvzC9OXarUosWyTdjqOBvjT+MQbGryQ5hFHiZuHU6HI3BNM5oRThzRXozfLThbWJoYNmY9gSMhXHGWt9Wjv/ExpwiFOu6Z0W71n/csN1Ewz0+J30y9Y=
 Authentication-Results: waldekranz.com; dkim=none (message not signed)
  header.d=none;waldekranz.com; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
  by VI1PR04MB5693.eurprd04.prod.outlook.com (2603:10a6:803:e2::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.21; Tue, 8 Dec
- 2020 12:08:28 +0000
+ 2020 12:08:29 +0000
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::2dd6:8dc:2da7:ad84]) by VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::2dd6:8dc:2da7:ad84%5]) with mapi id 15.20.3632.021; Tue, 8 Dec 2020
- 12:08:28 +0000
+ 12:08:29 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     Tobias Waldekranz <tobias@waldekranz.com>
 Cc:     "David S . Miller" <davem@davemloft.net>,
@@ -47,9 +47,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>
-Subject: [RFC PATCH net-next 06/16] net: mscc: ocelot: use ipv6 in the aggregation code
-Date:   Tue,  8 Dec 2020 14:07:52 +0200
-Message-Id: <20201208120802.1268708-7-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH net-next 07/16] net: mscc: ocelot: set up the bonding mask in a way that avoids a net_device
+Date:   Tue,  8 Dec 2020 14:07:53 +0200
+Message-Id: <20201208120802.1268708-8-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201208120802.1268708-1-vladimir.oltean@nxp.com>
 References: <20201208120802.1268708-1-vladimir.oltean@nxp.com>
@@ -61,86 +61,139 @@ X-ClientProxiedBy: AM9P192CA0016.EURP192.PROD.OUTLOOK.COM
  (2603:10a6:803:e7::13)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.25.2.120) by AM9P192CA0016.EURP192.PROD.OUTLOOK.COM (2603:10a6:20b:21d::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.17 via Frontend Transport; Tue, 8 Dec 2020 12:08:26 +0000
+Received: from localhost.localdomain (188.25.2.120) by AM9P192CA0016.EURP192.PROD.OUTLOOK.COM (2603:10a6:20b:21d::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.17 via Frontend Transport; Tue, 8 Dec 2020 12:08:28 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 0ebce3ef-686a-4ce2-d5ed-08d89b71f8a8
+X-MS-Office365-Filtering-Correlation-Id: 4cb8ef8c-356a-4f11-d46f-08d89b71f97a
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5693:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB56934AC497EFFB9886EAF953E0CD0@VI1PR04MB5693.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB5693AE883949B7DF983F88C2E0CD0@VI1PR04MB5693.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Eo0RZKbKnmSF26VhumAIi8IEjLV/P+4O4MR43khbDMmO0FOE4FSheBGTl53+/4e5k8VycdFL5FQdDJJiNudYbxii/AoWa/EFEZX/9pfLRxjLnC/bP/mCgCCrEIFTbhbuOEh1GqfNdONZS9cetW7jQNkl4Pm28ao7OuCz+DjAmpitELZEjnIXybDr+JEqiksHUNJyjPfDRFRAWUYpDd1FR1hsjvF8agRaJiVsRVK7BWbBAvgzLegOj54AHgF7S9W8WHlQoskuOAYSIXHPIvefUthTgqFNSIybhvsxqe9czYVpahplL7OYTv90OYQbrVVj1wtoA9/PfL3rOapSQvh8MGjgegYuZQjpR/CmQaMjkq87tMLtpx6Hu1ovB3N1zHKk
+X-Microsoft-Antispam-Message-Info: ITXkVngC0vikOVXfRHYqi8HtpeTsEsSSCUtIoP4kHYV1ALusz5cRTofjndrdndrH5BjG5lFe1+m+HmQdXzxjoTH5+6tZm4mXwDVtnfJUhdV7Obv5rm7nWXuOgXPDhi8fJsU6eupL/lyQdt38YWFBrAOxROFdW9V1ASv62YcIwYKIDcaBIz9j2+TDK2MqHp3J319b0aX6qLGTNYu0ESlAr+x4rkoGO/xGLj3x7qismPHIBwGYNYeGZc1YCjDKDypUgWfcmLENHc6mmj2QCc6n9J/4eZ+n+cUW0mY9qeKSKq/L0XbSv+RWo1ODKe07kTqw1Fl3q0oeoOyXan1YVLBSsdw+jsQYfjnBK6cJssltPUWYpuzFkLu37vTs72I/nuZ8
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(498600001)(5660300002)(956004)(83380400001)(2616005)(69590400008)(4326008)(54906003)(6506007)(6486002)(44832011)(66556008)(2906002)(36756003)(186003)(6512007)(6666004)(6916009)(66946007)(66476007)(26005)(16526019)(86362001)(52116002)(1076003)(8676002)(8936002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?mytDkpTU2tPds6WKbJqeKJDeeBOrIaLH1nGEpjUMC6GYKO2CkHPfL88y21XZ?=
- =?us-ascii?Q?xKFlIyOtlGKHH7M80MFNhLPEotqVVT30Wkmm2S5Qmx6+jG6nzlx5yH027H5Z?=
- =?us-ascii?Q?kRqBJ3/O6fpN2ULuQVbVmWX+gwnJbv5jX+pyQlxX1l9fnCtvjT556omkZTus?=
- =?us-ascii?Q?oiGqEt4BMdNnGXbOXiJYjJZRGRUWmURFtFhz99p8B3gJtr+n7l8Q3GblpoiZ?=
- =?us-ascii?Q?rq5fstAK61iGCctrdHcc3in0fDsgIQzjVReaaaHOoKIPhHPnziTxFl7iVuVA?=
- =?us-ascii?Q?ZzGHRL91TaT5G44TSz7Rll5hc3VSU9Z/FqMHQdTpGHy+ajqYnKvWkIWgu3bE?=
- =?us-ascii?Q?BHXtL35qw3j2xJnolfBM7rWJTI5uisYMTyQl2/aSVJgCUp7FL/OQlJe2sbbA?=
- =?us-ascii?Q?raRitefmtLnhnM37qUTj461LVtMbmNUTX4Fn683SuDaps1UM6JTJdnCbRmNU?=
- =?us-ascii?Q?xS9taWreqJflWjy/0IW2D1A1/6Itsaxge9h7lLO+6MQQxcKxjJvSmA8Caj4f?=
- =?us-ascii?Q?3CHMx6KlHSEPq6US9Mp/ghGbctp/s9D6bmq/YhU75WGuq5gKz1cPFtYtq7Eg?=
- =?us-ascii?Q?WI5OKYQ3d3zJ8MIBR/OUe6K4wP9r5FqyATiSBFHQlo1ymidxUe4bIlA6KRMh?=
- =?us-ascii?Q?nRCGjOr7yboeJMeBymwHCHRtCLXJ7MbgRLao+V+lxLRxCUfHbIJ0nvoorHF5?=
- =?us-ascii?Q?mypZ5LGrr/sYF7ZtKMetCnM3o5lTVH81ut96wFhEGFvrGmSXfNac1flw7O6N?=
- =?us-ascii?Q?V6IK4O6zMvMzdmzxZ3GEpMLCi0DfLmPNpzKm/AnR68YTXI4UCsVZYYZpCgyi?=
- =?us-ascii?Q?lOKYIb8UtC2ptG3gVQlVQec+HwkX3mhj0OtJSPbHFsE+sEXECyvi6Fw+i57c?=
- =?us-ascii?Q?6+x3aj1rH9AwFDDIWrCFem+IzyumcO2Y0YqmNAApE/nSqg/iosXyv4jEpNIp?=
- =?us-ascii?Q?q68cnYY5LISCYJsUsx5giOgY62zqO5z65f6Dy4zQSI1waWW9OXw8pwV921lt?=
- =?us-ascii?Q?2bhC?=
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?RJnG4w86fDs/UGQqdxj+tsQyHaLoKz7uFWHYdNWq+GDXIOd3kFg4Yin76HKk?=
+ =?us-ascii?Q?x68s9FDQligoafUZKEm48Wsucx2Ls4l04RbeobzwqSjo/QetkHyrSgP4UWvw?=
+ =?us-ascii?Q?/kW0WhHf5ygVyGNXxurLIWrXm/YzZJQeaN7+8sZJcflI63QAj+HU81vL4uTO?=
+ =?us-ascii?Q?/CM75TX3vysDuWw/4m+K2YjVZtK4E+tAJK3VB8f7l1GL6+jNYIh3Acnn8Vd9?=
+ =?us-ascii?Q?PjnCypx1VZp7X2H6XdEytWDQILp5NvVUzUGlMseVS0mxRv4cXjsxEGS+iSTv?=
+ =?us-ascii?Q?ERU09GJssWSQIzmCXmO9cMAfID1OJcJYnG075advvPos5vH+B1HFGWuiO0ZC?=
+ =?us-ascii?Q?VIszymzQNxcx6spuTKGcpbm5M4+VaZz27Lh8vITE94QI5XJSGRKHjIA8wFoH?=
+ =?us-ascii?Q?NTu9cfVSQk0nkmo60YthPMxaTP898ai+M5ZmSIPvJ56A68RnzAhvbLV9QoaN?=
+ =?us-ascii?Q?1ZKFkQHMlJhRpoYC5Sr/D3UDEmI7bCWPqU04Qb52/G+D5qnogOKKGQJdps3p?=
+ =?us-ascii?Q?esbRc3lfMTJyfceLjy0BPBzbroR3WNcZxZ8nj39+P6rSiNdSv+ozJEf9pI8Q?=
+ =?us-ascii?Q?3B1ZyZ55Ud159rWUTsjG3FJeDiAqJhMghM2xW4CKnotTCAjLTesDxNV/hG5c?=
+ =?us-ascii?Q?PKTWvLmk2UEm7TlrBayK2cuoNGnssKUVMeha82neIyYm1DMo2z0znASy8sXl?=
+ =?us-ascii?Q?w1K56OfFS4AoNSwVOJhqpdONpA2PP7U5jPL41Wuy2ZXlJmlpEvLOg1+8z/O3?=
+ =?us-ascii?Q?h/VuM4fUbY5PM9cKmZX/glNt49znqkZ11FQ99uA7MZ1M8pHNAf14aAVn98bV?=
+ =?us-ascii?Q?CMjYJtNvmR3UbcAE1k5+5ec3vm05hAZ/T04m2VSsUWB6Mkk87Enl8VCRJf8L?=
+ =?us-ascii?Q?XewFHPfMDm9T3ME5tPKVpzF4bB/fNLoOY6FRDeDtukcYqGVcjY5T2kpH2bCJ?=
+ =?us-ascii?Q?nOVtWmYJi0i/TaBWxFOLa4ruHkx38kiVlplytGSiPd+iOWmYOtbY4VL/86pS?=
+ =?us-ascii?Q?iatE?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0ebce3ef-686a-4ce2-d5ed-08d89b71f8a8
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4cb8ef8c-356a-4f11-d46f-08d89b71f97a
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2020 12:08:28.0458
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2020 12:08:29.5509
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MaTGTZ8liwrORrqJ6Hz9vP9SjgMMIzIs0kbbUomerbz3Nwu7Md5D2vwlXIzaGnLUio2J8vIySM39k2NLpyMjng==
+X-MS-Exchange-CrossTenant-UserPrincipalName: i7kL7jqa+0XwN0CrIRHUoYygrZEf6sFvuKiLSuu0vflA5WtkprMeU3zck/IwH9Ri7zPoCrhYFdP9ha60ixxE+A==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5693
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IPv6 header information is not currently part of the entropy source for
-the 4-bit aggregation code used for LAG offload, even though it could be.
-The hardware reference manual says about these fields:
+Since this code should be called from pure switchdev as well as from
+DSA, we must find a way to determine the bonding mask not by looking
+directly at the net_device lowers of the bonding interface, since those
+could have different private structures.
 
-ANA::AGGR_CFG.AC_IP6_TCPUDP_PORT_ENA
-Use IPv6 TCP/UDP port when calculating aggregation code. Configure
-identically for all ports. Recommended value is 1.
-
-ANA::AGGR_CFG.AC_IP6_FLOW_LBL_ENA
-Use IPv6 flow label when calculating AC. Configure identically for all
-ports. Recommended value is 1.
-
-Integration with the xmit_hash_policy of the bonding interface is TBD.
+We keep a pointer to the bonding upper interface, if present, in struct
+ocelot_port. Then the bonding mask becomes the bitwise OR of all ports
+that have the same bonding upper interface. This adds a duplication of
+functionality with the current "lags" array, but the duplication will be
+short-lived, since further patches will remove the latter completely.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/mscc/ocelot.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mscc/ocelot.c | 29 ++++++++++++++++++++++-------
+ include/soc/mscc/ocelot.h          |  2 ++
+ 2 files changed, 24 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 7a5c534099d3..13e86dd71e5a 100644
+index 13e86dd71e5a..30dee1f957d1 100644
 --- a/drivers/net/ethernet/mscc/ocelot.c
 +++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1557,7 +1557,10 @@ int ocelot_init(struct ocelot *ocelot)
- 	ocelot_write(ocelot, ANA_AGGR_CFG_AC_SMAC_ENA |
- 			     ANA_AGGR_CFG_AC_DMAC_ENA |
- 			     ANA_AGGR_CFG_AC_IP4_SIPDIP_ENA |
--			     ANA_AGGR_CFG_AC_IP4_TCPUDP_ENA, ANA_AGGR_CFG);
-+			     ANA_AGGR_CFG_AC_IP4_TCPUDP_ENA |
-+			     ANA_AGGR_CFG_AC_IP6_FLOW_LBL_ENA |
-+			     ANA_AGGR_CFG_AC_IP6_TCPUDP_ENA,
-+			     ANA_AGGR_CFG);
+@@ -881,6 +881,24 @@ int ocelot_get_ts_info(struct ocelot *ocelot, int port,
+ }
+ EXPORT_SYMBOL(ocelot_get_ts_info);
  
- 	/* Set MAC age time to default value. The entry is aged after
- 	 * 2*AGE_PERIOD
++static u32 ocelot_get_bond_mask(struct ocelot *ocelot, struct net_device *bond)
++{
++	u32 bond_mask = 0;
++	int port;
++
++	for (port = 0; port < ocelot->num_phys_ports; port++) {
++		struct ocelot_port *ocelot_port = ocelot->ports[port];
++
++		if (!ocelot_port)
++			continue;
++
++		if (ocelot_port->bond == bond)
++			bond_mask |= BIT(port);
++	}
++
++	return bond_mask;
++}
++
+ void ocelot_bridge_stp_state_set(struct ocelot *ocelot, int port, u8 state)
+ {
+ 	struct ocelot_port *ocelot_port = ocelot->ports[port];
+@@ -1272,17 +1290,12 @@ static void ocelot_setup_lag(struct ocelot *ocelot, int lag)
+ int ocelot_port_lag_join(struct ocelot *ocelot, int port,
+ 			 struct net_device *bond)
+ {
+-	struct net_device *ndev;
+ 	u32 bond_mask = 0;
+ 	int lag, lp;
+ 
+-	rcu_read_lock();
+-	for_each_netdev_in_bond_rcu(bond, ndev) {
+-		struct ocelot_port_private *priv = netdev_priv(ndev);
++	ocelot->ports[port]->bond = bond;
+ 
+-		bond_mask |= BIT(priv->chip_port);
+-	}
+-	rcu_read_unlock();
++	bond_mask = ocelot_get_bond_mask(ocelot, bond);
+ 
+ 	lp = __ffs(bond_mask);
+ 
+@@ -1315,6 +1328,8 @@ void ocelot_port_lag_leave(struct ocelot *ocelot, int port,
+ 	u32 port_cfg;
+ 	int i;
+ 
++	ocelot->ports[port]->bond = NULL;
++
+ 	/* Remove port from any lag */
+ 	for (i = 0; i < ocelot->num_phys_ports; i++)
+ 		ocelot->lags[i] &= ~BIT(port);
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index 50514c087231..b812bdff1da1 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -597,6 +597,8 @@ struct ocelot_port {
+ 	phy_interface_t			phy_mode;
+ 
+ 	u8				*xmit_template;
++
++	struct net_device		*bond;
+ };
+ 
+ struct ocelot {
 -- 
 2.25.1
 
