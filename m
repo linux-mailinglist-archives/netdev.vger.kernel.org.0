@@ -2,79 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FDF32D2C92
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 15:05:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FEE22D2CAE
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 15:11:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729744AbgLHOE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 09:04:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34238 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729718AbgLHOE6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Dec 2020 09:04:58 -0500
-X-Gm-Message-State: AOAM533zDXagQPamJcCjm0vSMdgzUH+emfMx+uN/ClQgQharlccWqOTP
-        kZnOvoRe8EndPV8LA2qgHNfXuQDvH6ielxA9QLE=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607436257;
-        bh=lDqq2eswXCj3EY+TJU1U1M4S88oFP1VOECqQvTLwIYk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=huKOiS6vTt7nRhQpExK8DNb4h5Pv0evwMKQbfLx0IhhdrFwE8BE1BuC1muVURobOu
-         ST4nLS/ZHopUWB8YZac9l2BdtdjsyetfR6EV89vOuqQvQK/aenAm3V+nG7zVeW+w5F
-         KP4JOUwhIazs461yxwG2MM1FplLvvpGzli9t9KPMQQvPkwg09Tdk5pzardd4CnJ8uc
-         SbnTCXGOTbfgB64ub9z4gZO3MJeC/Af8FnqXPt2Hg7aTY5wQrz/nqTuKXqtiYmhBqa
-         BM2enEXefINKTlup0fU2LRo9J1BS26Lft0qtSthaRTqQVKtMJN7vapHRh/2jgnPjYv
-         pQq9esu8dZCjA==
-X-Google-Smtp-Source: ABdhPJxta+Y1usMiw3UnOu5t+6U7dNLt48uTZSJhRqrZc/PGcWcb8RD8IzREMTmeZYkQoYTac1yDx8/9+QCPcCzh6FM=
-X-Received: by 2002:a9d:12c:: with SMTP id 41mr16580172otu.77.1607436256848;
- Tue, 08 Dec 2020 06:04:16 -0800 (PST)
-MIME-Version: 1.0
-References: <2F96670A-58DC-43A6-A20E-696803F0BFBA@oracle.com>
- <160518586534.2277919.14475638653680231924.stgit@warthog.procyon.org.uk>
- <118876.1607093975@warthog.procyon.org.uk> <955415.1607433903@warthog.procyon.org.uk>
-In-Reply-To: <955415.1607433903@warthog.procyon.org.uk>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Tue, 8 Dec 2020 15:04:05 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXE+oi2Q7OE8o0xP4XabZt-y61NMG3Q3eyRzSG6cG9i4Kg@mail.gmail.com>
-Message-ID: <CAMj1kXE+oi2Q7OE8o0xP4XabZt-y61NMG3Q3eyRzSG6cG9i4Kg@mail.gmail.com>
-Subject: Re: Why the auxiliary cipher in gss_krb5_crypto.c?
-To:     David Howells <dhowells@redhat.com>
-Cc:     Chuck Lever <chuck.lever@oracle.com>,
-        Bruce Fields <bfields@fieldses.org>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
-        <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, linux-afs@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+        id S1729572AbgLHOLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 09:11:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34626 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729366AbgLHOLB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 09:11:01 -0500
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 449AFC061749;
+        Tue,  8 Dec 2020 06:10:36 -0800 (PST)
+Received: by mail-pf1-x441.google.com with SMTP id b26so14001341pfi.3;
+        Tue, 08 Dec 2020 06:10:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=y+TsitjoIH7JH9XtdYcvo6WGHGk7yTErwwqWOT90yJs=;
+        b=LH/JS4D0m7XlgPj3AwO9UpQ1nBJ/6Y0MA41PnlSZPWYKJ+j1uaoXlRkPA9CA9YHTUn
+         wRe3Bff37TfY2yeNz8U7FtlmjKhLsJYIlbU6o/lTo4aqYAoIVT/pXOQDz5QwtgsJmg9M
+         HxFVv4Elma9ml2rgvM5SSSo0wj8CQ5dZH86Hg7UUKqldAbxXrmDSlHYJltie83X3Bimc
+         MpZ0c3dqqKtsYIm9AV6i68iGtrY1IxT3cwUhMNWFmfpyTVso3Ttto/WoBdEvwBDm6JiA
+         RHIRuoFvQStBC0dlGbzk63MDjUbRc2Lyv6IdC7ljcW/9e732f+LgnXr7grkoFxy2faeo
+         9QIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=y+TsitjoIH7JH9XtdYcvo6WGHGk7yTErwwqWOT90yJs=;
+        b=ZYMkD8WgjXbmoYXY+2XXtym251AGR+sz5TqPfScO+CJzUoTBPP/c7dOnmyoMegKK9Y
+         ggW90vlUJ1N8l89mKH/b07q3u8FhCgMP/bFJH9If+Urz103HDoVTM7elUAIyfSicHp1g
+         SydPutVIei9OfPnMI5I55ZILrHV+Alz/hpkkz+HF4ji/kPj6Dy8j86FxNc9OZlyjSrIQ
+         crazW9dWwHTrqYz6OJ1Y7CDienXbhjVpV1Px/r+U3BBemVLJ/CPutc01PsoaqvI2bizk
+         JasrzJVnxE/7l0r7vgFQ6f8pxC3uyKqEE0AXlpfgC9q5g5szR6twFFoI/mtjVId2tBck
+         QM0g==
+X-Gm-Message-State: AOAM533K4bgV3GCYmJkG7ojTy3rKgUcP4rtZxr9p9eYJvNqI2VzblrYA
+        m2+I6WYNRwHmdm4bm+COaAI=
+X-Google-Smtp-Source: ABdhPJzxMAj44XvY1JnbcrdV2ne9K3OSDAYvDMV0QTQMPNVlGHzRrlDWcsvhB82njiBXQIZKz6NAAg==
+X-Received: by 2002:a65:594b:: with SMTP id g11mr22767467pgu.424.1607436635756;
+        Tue, 08 Dec 2020 06:10:35 -0800 (PST)
+Received: from localhost.localdomain ([182.226.226.37])
+        by smtp.googlemail.com with ESMTPSA id m15sm9071951pfa.72.2020.12.08.06.10.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Dec 2020 06:10:34 -0800 (PST)
+From:   Bongsu Jeon <bongsu.jeon2@gmail.com>
+X-Google-Original-From: Bongsu Jeon
+To:     krzk@kernel.org
+Cc:     linux-nfc@lists.01.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bongsu Jeon <bongsu.jeon@samsung.com>
+Subject: [PATCH v2 net-next 0/2] nfc: s3fwrn5: Change I2C interrupt trigger to EDGE_RISING
+Date:   Tue,  8 Dec 2020 23:10:10 +0900
+Message-Id: <20201208141012.6033-1-bongsu.jeon@samsung.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 8 Dec 2020 at 14:25, David Howells <dhowells@redhat.com> wrote:
->
-> I wonder - would it make sense to reserve two arrays of scatterlist structs
-> and a mutex per CPU sufficient to map up to 1MiB of pages with each array
-> while the krb5 service is in use?
->
-> That way sunrpc could, say, grab the mutex, map the input and output buffers,
-> do the entire crypto op in one go and then release the mutex - at least for
-> big ops, small ops needn't use this service.
->
-> For rxrpc/afs's use case this would probably be overkill - it's doing crypto
-> on each packet, not on whole operations - but I could still make use of it
-> there.
->
-> However, that then limits the maximum size of an op to 1MiB, plus dangly bits
-> on either side (which can be managed with chained scatterlist structs) and
-> also limits the number of large simultaneous krb5 crypto ops we can do.
->
+From: Bongsu Jeon <bongsu.jeon@samsung.com>
 
-Apparently, it is permitted for gss_krb5_cts_crypt() to do a
-kmalloc(GFP_NOFS) in the context from where gss_krb5_aes_encrypt() is
-being invoked, and so I don't see why it wouldn't be possible to
-simply kmalloc() a scatterlist[] of the appropriate size, populate it
-with all the pages, bufs and whatever else gets passed into the
-skcipher, and pass it into the skcipher in one go.
+For stable Samsung's I2C interrupt handling, I changed the interrupt 
+trigger from IRQ_TYPE_LEVEL_HIGH to IRQ_TYPE_EDGE_RISING and removed 
+the hard coded interrupt trigger type in the i2c module for the flexible 
+control.
+
+1/2 is the changed dt binding for the edge rising trigger.
+2/2 is to remove the hard coded interrupt trigger type in the i2c module.
+
+ChangeLog:
+ v2:
+  2/2
+   - remove the hard coded interrupt trigger type.
+
+Bongsu Jeon (2):
+  dt-bindings: net: nfc: s3fwrn5: Change I2C interrupt trigger to
+    EDGE_RISING
+  nfc: s3fwrn5: Remove hard coded interrupt trigger type from the i2c
+    module
+
+ .../devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml      | 2 +-
+ drivers/nfc/s3fwrn5/i2c.c                                 | 8 +++++++-
+ 2 files changed, 8 insertions(+), 2 deletions(-)
+
+-- 
+2.17.1
+
