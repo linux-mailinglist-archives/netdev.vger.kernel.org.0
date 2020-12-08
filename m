@@ -2,116 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B45102D25E1
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 09:28:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 572F72D2629
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 09:33:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728273AbgLHI2p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 03:28:45 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42392 "EHLO mail.kernel.org"
+        id S1728202AbgLHIde (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 03:33:34 -0500
+Received: from first.geanix.com ([116.203.34.67]:58268 "EHLO first.geanix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725208AbgLHI2p (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Dec 2020 03:28:45 -0500
-X-Gm-Message-State: AOAM533CHJvzc9ByQs7T5tU695sXulZc7tnBIgdBZGk1OfHKQnIXvHfN
-        L8Tekjc2Y3ADK+merNjoQ7zdlI1v9FI4NynNj9k=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607416084;
-        bh=jyKkaKXiQzGnuQvTvF+wC0qTSGobbL2G0IC3stRghDU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=p1zog/D2c5Ld+5yRO3wK8h1myUlWQkC27l8KQdRti0iMcEAGkgHB0Az3bG1ASpErD
-         e/KpAUIsOVhgy+ZfyLeLkm3Rhse1yQ6VpfDebd0V7VWCGZrIDDQauRy0hpR+30voPM
-         MBzhI4WXahCXQIAADZC6xgZ4Sfm1DgXgc58vT3kfyx3YNp1aYzLwJfVQV+G27lR+bS
-         niVcC9YO4iC/ZQNXlqgDG1xv1qQSAN3JSQJV2jkEBSdUd4Qufs26xSgmkHl4cPKbzb
-         aMys6HLwNTht5X27ltyNHYeakx6bXhxw0Ks6VGzd/1tl1oD7vR/io4vIA/UkGEn611
-         dR07Z1tB8MlkA==
-X-Google-Smtp-Source: ABdhPJwS0+KqYVwv76AZtzOyLb7K4/Q9YxUc5R358VAL2n1Q3JFjnSXSbPcwLv0jq4LS0xkvO+SkX4Q5VleICXbWnU0=
-X-Received: by 2002:a9d:62c1:: with SMTP id z1mr15552080otk.108.1607416083657;
- Tue, 08 Dec 2020 00:28:03 -0800 (PST)
+        id S1726830AbgLHIdd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Dec 2020 03:33:33 -0500
+X-Greylist: delayed 411 seconds by postgrey-1.27 at vger.kernel.org; Tue, 08 Dec 2020 03:33:32 EST
+Received: from localhost (unknown [185.17.218.86])
+        by first.geanix.com (Postfix) with ESMTPSA id E025B485564;
+        Tue,  8 Dec 2020 08:25:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1607415959; bh=lsqzWpSkidQFbFC/2KHGEOpLIdIj+Y37q9lXRL1y3uA=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To;
+        b=JYMikx4285LYqJCSnR5UbisXb2SFm4OF51KQyFhRCxBp7O4G9xyzPA2Xqm0N56ppL
+         gfkcCMs+ET4QjEQ1hISVMq+o1odD0Vln+7wHJ4NGkU5poId5UrwvHYVunjNq6M+25h
+         f+p4ogHTp9+M4i45EqHj47858PiOtbqgF/f2FaJW87xFJsZcdABrbEd5/u0FIfk4kF
+         X36nUF3GtyXVQQtia5ArRVPbSsSRRngJW+GsJL9LIyz7v/0RHMtEHRBMiH3G9HVQQe
+         6x+hxyN8RtQK/EkQH4l4UIlOL5ziYsdbRIiPpE11Ro8DB6utxz8VUvMmA3gmsqFW3Q
+         g8PMZnutUwJEg==
+From:   Esben Haabendal <esben@geanix.com>
+To:     Zhang Changzhong <zhangchangzhong@huawei.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] net: ll_temac: Fix potential NULL dereference in
+ temac_probe()
+References: <1607392422-20372-1-git-send-email-zhangchangzhong@huawei.com>
+Date:   Tue, 08 Dec 2020 09:25:59 +0100
+In-Reply-To: <1607392422-20372-1-git-send-email-zhangchangzhong@huawei.com>
+        (Zhang Changzhong's message of "Tue, 8 Dec 2020 09:53:42 +0800")
+Message-ID: <874kkw3drc.fsf@geanix.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-References: <20201204154626.GA26255@fieldses.org> <2F96670A-58DC-43A6-A20E-696803F0BFBA@oracle.com>
- <160518586534.2277919.14475638653680231924.stgit@warthog.procyon.org.uk>
- <118876.1607093975@warthog.procyon.org.uk> <122997.1607097713@warthog.procyon.org.uk>
- <20201204160347.GA26933@fieldses.org> <125709.1607100601@warthog.procyon.org.uk>
- <CAMj1kXEOm_yh478i+dqPiz0eoBxp4eag3j2qHm5eBLe+2kihoQ@mail.gmail.com>
- <127458.1607102368@warthog.procyon.org.uk> <CAMj1kXFe50HvZLxG6Kh-oYBCf5uu51hhuh7mW5UQ62ZSqmu_xA@mail.gmail.com>
- <468625.1607342512@warthog.procyon.org.uk> <CAMj1kXH_gEjgZKx=8uQgv=ckBqTVoh3vrHj=O-nY-nm5VMgLaA@mail.gmail.com>
- <482243.1607350500@warthog.procyon.org.uk>
-In-Reply-To: <482243.1607350500@warthog.procyon.org.uk>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Tue, 8 Dec 2020 09:27:52 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXG5_ePTr7KCxE-m6g9xNHr72-xPMoED7Jmx38uNt6bzoQ@mail.gmail.com>
-Message-ID: <CAMj1kXG5_ePTr7KCxE-m6g9xNHr72-xPMoED7Jmx38uNt6bzoQ@mail.gmail.com>
-Subject: Re: Why the auxiliary cipher in gss_krb5_crypto.c?
-To:     David Howells <dhowells@redhat.com>
-Cc:     Bruce Fields <bfields@fieldses.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
-        <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, linux-afs@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Spam-Status: No, score=-3.1 required=4.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,URIBL_BLOCKED
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on ff3d05386fc5
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 7 Dec 2020 at 15:15, David Howells <dhowells@redhat.com> wrote:
->
-> Ard Biesheuvel <ardb@kernel.org> wrote:
->
-> > > I wonder if it would help if the input buffer and output buffer didn't
-> > > have to correspond exactly in usage - ie. the output buffer could be used
-> > > at a slower rate than the input to allow for buffering inside the crypto
-> > > algorithm.
-> > >
-> >
-> > I don't follow - how could one be used at a slower rate?
->
-> I mean that the crypto algorithm might need to buffer the last part of the
-> input until it has a block's worth before it can write to the output.
->
+Zhang Changzhong <zhangchangzhong@huawei.com> writes:
 
-This is what is typically handled transparently by the driver. When
-you populate a scatterlist, it doesn't matter how misaligned the
-individual elements are, the scatterlist walker will always present
-the data in chunks that the crypto algorithm can manage. This is why
-using a single scatterlist for the entire input is preferable in
-general.
+> platform_get_resource() may fail and in this case a NULL dereference
+> will occur.
+>
+> Fix it to use devm_platform_ioremap_resource() instead of calling
+> platform_get_resource() and devm_ioremap().
+>
+> This is detected by Coccinelle semantic patch.
+>
+> @@
+> expression pdev, res, n, t, e, e1, e2;
+> @@
+>
+> res = \(platform_get_resource\|platform_get_resource_byname\)(pdev, t, n);
+> + if (!res)
+> +   return -EINVAL;
+> ... when != res == NULL
+> e = devm_ioremap(e1, res->start, e2);
+>
+> Fixes: 8425c41d1ef7 ("net: ll_temac: Extend support to non-device-tree platforms")
+> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+> ---
+>  drivers/net/ethernet/xilinx/ll_temac_main.c | 9 +++------
+>  1 file changed, 3 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
+> index 60c199f..0301853 100644
+> --- a/drivers/net/ethernet/xilinx/ll_temac_main.c
+> +++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
+> @@ -1351,7 +1351,6 @@ static int temac_probe(struct platform_device *pdev)
+>  	struct device_node *temac_np = dev_of_node(&pdev->dev), *dma_np;
+>  	struct temac_local *lp;
+>  	struct net_device *ndev;
+> -	struct resource *res;
+>  	const void *addr;
+>  	__be32 *p;
+>  	bool little_endian;
+> @@ -1500,13 +1499,11 @@ static int temac_probe(struct platform_device *pdev)
+>  		of_node_put(dma_np);
+>  	} else if (pdata) {
+>  		/* 2nd memory resource specifies DMA registers */
+> -		res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+> -		lp->sdma_regs = devm_ioremap(&pdev->dev, res->start,
+> -						     resource_size(res));
+> -		if (!lp->sdma_regs) {
+> +		lp->sdma_regs = devm_platform_ioremap_resource(pdev, 1);
+> +		if (IS_ERR(lp->sdma_regs)) {
+>  			dev_err(&pdev->dev,
+>  				"could not map DMA registers\n");
+> -			return -ENOMEM;
+> +			return PTR_ERR(lp->sdma_regs);
+>  		}
+>  		if (pdata->dma_little_endian) {
+>  			lp->dma_in = temac_dma_in32_le;
 
-> > > The hashes corresponding to the kerberos enctypes I'm supporting are:
-> > >
-> > > HMAC-SHA1 for aes128-cts-hmac-sha1-96 and aes256-cts-hmac-sha1-96.
-> > >
-> > > HMAC-SHA256 for aes128-cts-hmac-sha256-128
-> > >
-> > > HMAC-SHA384 for aes256-cts-hmac-sha384-192
-> > >
-> > > CMAC-CAMELLIA for camellia128-cts-cmac and camellia256-cts-cmac
-> > >
-> > > I'm not sure you can support all of those with the instructions available.
-> >
-> > It depends on whether the caller can make use of the authenc()
-> > pattern, which is a type of AEAD we support.
->
-> Interesting.  I didn't realise AEAD was an API.
->
-> > There are numerous implementations of authenc(hmac(shaXXX),cbc(aes)),
-> > including h/w accelerated ones, but none that implement ciphertext
-> > stealing. So that means that, even if you manage to use the AEAD layer to
-> > perform both at the same time, the generic authenc() template will perform
-> > the cts(cbc(aes)) and hmac(shaXXX) by calling into skciphers and ahashes,
-> > respectively, which won't give you any benefit until accelerated
-> > implementations turn up that perform the whole operation in one pass over
-> > the input. And even then, I don't think the performance benefit will be
-> > worth it.
->
-> Also, the rfc8009 variants that use AES with SHA256/384 hash the ciphertext,
-> not the plaintext.
->
-> For the moment, it's probably not worth worrying about, then.  If I can manage
-> to abstract the sunrpc bits out into a krb5 library, we can improve the
-> library later.
->
+Acked-by: Esben Haabendal <esben@geanix.com>
