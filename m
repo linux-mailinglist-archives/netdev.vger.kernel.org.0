@@ -2,271 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38DAE2D25BB
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 09:20:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B45102D25E1
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 09:28:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728181AbgLHIUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 03:20:12 -0500
-Received: from m43-15.mailgun.net ([69.72.43.15]:44521 "EHLO
-        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728174AbgLHIUL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 03:20:11 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1607415586; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=Xw4vtPIy3/C8gYiFNPdL60ENnFaxPVuGS5QpO5sVl/A=;
- b=EB72SLemDHR0ZcQS7jHDd3QYEW7B0T2XFTlt0pCBXrdibWY1yzZ+hO0p5Bnh7ZvYwRURuOvP
- n7lAqaZx3fW8J7vmm5JxywFqZ/dlwj76pFjozEoCnTzGiVS55F/qNvW1Ak8qZmn/5LOtcfX/
- 4197pDZ0BXkfK/Z/XnbaY6FIJf8=
-X-Mailgun-Sending-Ip: 69.72.43.15
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
- 5fcf36fedc0fd8a31764d9d6 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 08 Dec 2020 08:19:10
- GMT
-Sender: subashab=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 4AFCCC43462; Tue,  8 Dec 2020 08:19:10 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: subashab)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 4CBF1C433CA;
-        Tue,  8 Dec 2020 08:19:09 +0000 (UTC)
+        id S1728273AbgLHI2p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 03:28:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42392 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725208AbgLHI2p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Dec 2020 03:28:45 -0500
+X-Gm-Message-State: AOAM533CHJvzc9ByQs7T5tU695sXulZc7tnBIgdBZGk1OfHKQnIXvHfN
+        L8Tekjc2Y3ADK+merNjoQ7zdlI1v9FI4NynNj9k=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607416084;
+        bh=jyKkaKXiQzGnuQvTvF+wC0qTSGobbL2G0IC3stRghDU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=p1zog/D2c5Ld+5yRO3wK8h1myUlWQkC27l8KQdRti0iMcEAGkgHB0Az3bG1ASpErD
+         e/KpAUIsOVhgy+ZfyLeLkm3Rhse1yQ6VpfDebd0V7VWCGZrIDDQauRy0hpR+30voPM
+         MBzhI4WXahCXQIAADZC6xgZ4Sfm1DgXgc58vT3kfyx3YNp1aYzLwJfVQV+G27lR+bS
+         niVcC9YO4iC/ZQNXlqgDG1xv1qQSAN3JSQJV2jkEBSdUd4Qufs26xSgmkHl4cPKbzb
+         aMys6HLwNTht5X27ltyNHYeakx6bXhxw0Ks6VGzd/1tl1oD7vR/io4vIA/UkGEn611
+         dR07Z1tB8MlkA==
+X-Google-Smtp-Source: ABdhPJwS0+KqYVwv76AZtzOyLb7K4/Q9YxUc5R358VAL2n1Q3JFjnSXSbPcwLv0jq4LS0xkvO+SkX4Q5VleICXbWnU0=
+X-Received: by 2002:a9d:62c1:: with SMTP id z1mr15552080otk.108.1607416083657;
+ Tue, 08 Dec 2020 00:28:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 08 Dec 2020 01:19:09 -0700
-From:   subashab@codeaurora.org
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Loic Poulain <loic.poulain@linaro.org>
-Cc:     stranche@codeaurora.org,
-        Network Development <netdev@vger.kernel.org>
-Subject: Re: [PATCH] net: rmnet: Adjust virtual device MTU on real device
- capability
-In-Reply-To: <20201207121654.17fac0ef@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-References: <1607017240-10582-1-git-send-email-loic.poulain@linaro.org>
- <3a2ca2c269911de71df6dca2e981f7fe@codeaurora.org>
- <CAMZdPi-Nrus0JrHpjg02QaVwr0TKGU=p96BjXAtd4LALAvk2HQ@mail.gmail.com>
- <20201207121654.17fac0ef@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-Message-ID: <c7be03c227efc3405f4c9cd14e52d061@codeaurora.org>
-X-Sender: subashab@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
+References: <20201204154626.GA26255@fieldses.org> <2F96670A-58DC-43A6-A20E-696803F0BFBA@oracle.com>
+ <160518586534.2277919.14475638653680231924.stgit@warthog.procyon.org.uk>
+ <118876.1607093975@warthog.procyon.org.uk> <122997.1607097713@warthog.procyon.org.uk>
+ <20201204160347.GA26933@fieldses.org> <125709.1607100601@warthog.procyon.org.uk>
+ <CAMj1kXEOm_yh478i+dqPiz0eoBxp4eag3j2qHm5eBLe+2kihoQ@mail.gmail.com>
+ <127458.1607102368@warthog.procyon.org.uk> <CAMj1kXFe50HvZLxG6Kh-oYBCf5uu51hhuh7mW5UQ62ZSqmu_xA@mail.gmail.com>
+ <468625.1607342512@warthog.procyon.org.uk> <CAMj1kXH_gEjgZKx=8uQgv=ckBqTVoh3vrHj=O-nY-nm5VMgLaA@mail.gmail.com>
+ <482243.1607350500@warthog.procyon.org.uk>
+In-Reply-To: <482243.1607350500@warthog.procyon.org.uk>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Tue, 8 Dec 2020 09:27:52 +0100
+X-Gmail-Original-Message-ID: <CAMj1kXG5_ePTr7KCxE-m6g9xNHr72-xPMoED7Jmx38uNt6bzoQ@mail.gmail.com>
+Message-ID: <CAMj1kXG5_ePTr7KCxE-m6g9xNHr72-xPMoED7Jmx38uNt6bzoQ@mail.gmail.com>
+Subject: Re: Why the auxiliary cipher in gss_krb5_crypto.c?
+To:     David Howells <dhowells@redhat.com>
+Cc:     Bruce Fields <bfields@fieldses.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, linux-afs@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->> What about just returning an error on NETDEV_PRECHANGEMTU notification
->> to prevent real device MTU change while virtual rmnet devices are
->> linked? Not sure there is a more proper and thread safe way to manager
->> that otherwise.
-> 
-> Can't you copy what vlan devices do?  That'd seem like a reasonable and
-> well tested precedent, no?
+On Mon, 7 Dec 2020 at 15:15, David Howells <dhowells@redhat.com> wrote:
+>
+> Ard Biesheuvel <ardb@kernel.org> wrote:
+>
+> > > I wonder if it would help if the input buffer and output buffer didn't
+> > > have to correspond exactly in usage - ie. the output buffer could be used
+> > > at a slower rate than the input to allow for buffering inside the crypto
+> > > algorithm.
+> > >
+> >
+> > I don't follow - how could one be used at a slower rate?
+>
+> I mean that the crypto algorithm might need to buffer the last part of the
+> input until it has a block's worth before it can write to the output.
+>
 
-Could you try this patch. I've tried addressing most of the conditions 
-here.
-I haven't seen any issues with updating the MTU when rmnet devices are 
-linked.
+This is what is typically handled transparently by the driver. When
+you populate a scatterlist, it doesn't matter how misaligned the
+individual elements are, the scatterlist walker will always present
+the data in chunks that the crypto algorithm can manage. This is why
+using a single scatterlist for the entire input is preferable in
+general.
 
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c 
-b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-index fcdecdd..8d51b0c 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-@@ -26,7 +26,7 @@ static int rmnet_is_real_dev_registered(const struct 
-net_device *real_dev)
-  }
-
-  /* Needs rtnl lock */
--static struct rmnet_port*
-+struct rmnet_port*
-  rmnet_get_port_rtnl(const struct net_device *real_dev)
-  {
-  	return rtnl_dereference(real_dev->rx_handler_data);
-@@ -253,7 +253,10 @@ static int rmnet_config_notify_cb(struct 
-notifier_block *nb,
-  		netdev_dbg(real_dev, "Kernel unregister\n");
-  		rmnet_force_unassociate_device(real_dev);
-  		break;
--
-+	case NETDEV_CHANGEMTU:
-+		if (rmnet_vnd_validate_real_dev_mtu(real_dev))
-+			return NOTIFY_BAD;
-+		break;
-  	default:
-  		break;
-  	}
-@@ -329,9 +332,17 @@ static int rmnet_changelink(struct net_device *dev, 
-struct nlattr *tb[],
-
-  	if (data[IFLA_RMNET_FLAGS]) {
-  		struct ifla_rmnet_flags *flags;
-+		u32 old_data_format;
-
-+		old_data_format = port->data_format;
-  		flags = nla_data(data[IFLA_RMNET_FLAGS]);
-  		port->data_format = flags->flags & flags->mask;
-+
-+		if (rmnet_vnd_update_dev_mtu(port, real_dev)) {
-+			port->data_format = old_data_format;
-+			NL_SET_ERR_MSG_MOD(extack, "Invalid MTU on real dev");
-+			return -EINVAL;
-+		}
-  	}
-
-  	return 0;
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h 
-b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h
-index be51598..8d8d469 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h
-@@ -73,4 +73,6 @@ int rmnet_add_bridge(struct net_device *rmnet_dev,
-  		     struct netlink_ext_ack *extack);
-  int rmnet_del_bridge(struct net_device *rmnet_dev,
-  		     struct net_device *slave_dev);
-+struct rmnet_port*
-+rmnet_get_port_rtnl(const struct net_device *real_dev);
-  #endif /* _RMNET_CONFIG_H_ */
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c 
-b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-index d58b51d..df87883 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
-@@ -58,9 +58,30 @@ static netdev_tx_t rmnet_vnd_start_xmit(struct 
-sk_buff *skb,
-  	return NETDEV_TX_OK;
-  }
-
-+static int rmnet_vnd_headroom(struct net_device *real_dev)
-+{
-+	struct rmnet_port *port;
-+	u32 headroom;
-+
-+	port = rmnet_get_port_rtnl(real_dev);
-+
-+	headroom = sizeof(struct rmnet_map_header);
-+
-+	if (port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV4)
-+		headroom += sizeof(struct rmnet_map_dl_csum_trailer);
-+
-+	return headroom;
-+}
-+
-  static int rmnet_vnd_change_mtu(struct net_device *rmnet_dev, int 
-new_mtu)
-  {
--	if (new_mtu < 0 || new_mtu > RMNET_MAX_PACKET_SIZE)
-+	struct rmnet_priv *priv = netdev_priv(rmnet_dev);
-+	u32 headroom;
-+
-+	headroom = rmnet_vnd_headroom(priv->real_dev);
-+
-+	if (new_mtu < 0 || new_mtu > RMNET_MAX_PACKET_SIZE ||
-+	    new_mtu > (priv->real_dev->mtu - headroom))
-  		return -EINVAL;
-
-  	rmnet_dev->mtu = new_mtu;
-@@ -229,6 +250,7 @@ int rmnet_vnd_newlink(u8 id, struct net_device 
-*rmnet_dev,
-
-  {
-  	struct rmnet_priv *priv = netdev_priv(rmnet_dev);
-+	u32 headroom;
-  	int rc;
-
-  	if (rmnet_get_endpoint(port, id)) {
-@@ -242,6 +264,13 @@ int rmnet_vnd_newlink(u8 id, struct net_device 
-*rmnet_dev,
-
-  	priv->real_dev = real_dev;
-
-+	headroom = rmnet_vnd_headroom(real_dev);
-+
-+	if (rmnet_vnd_change_mtu(rmnet_dev, real_dev->mtu - headroom)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Invalid MTU on real dev");
-+		return -EINVAL;
-+	}
-+
-  	rc = register_netdevice(rmnet_dev);
-  	if (!rc) {
-  		ep->egress_dev = rmnet_dev;
-@@ -283,3 +312,51 @@ int rmnet_vnd_do_flow_control(struct net_device 
-*rmnet_dev, int enable)
-
-  	return 0;
-  }
-+
-+int rmnet_vnd_validate_real_dev_mtu(struct net_device *real_dev)
-+{
-+	struct hlist_node *tmp_ep;
-+	struct rmnet_endpoint *ep;
-+	struct rmnet_port *port;
-+	unsigned long bkt_ep;
-+	u32 headroom;
-+
-+	port = rmnet_get_port_rtnl(real_dev);
-+
-+	headroom = sizeof(struct rmnet_map_header);
-+
-+	if (port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV4)
-+		headroom += sizeof(struct rmnet_map_dl_csum_trailer);
-+
-+	hash_for_each_safe(port->muxed_ep, bkt_ep, tmp_ep, ep, hlnode) {
-+		if (ep->egress_dev->mtu > (real_dev->mtu - headroom))
-+			return -1;
-+	}
-+
-+	return 0;
-+}
-+
-+int rmnet_vnd_update_dev_mtu(struct rmnet_port *port,
-+			     struct net_device *real_dev)
-+{
-+	struct hlist_node *tmp_ep;
-+	struct rmnet_endpoint *ep;
-+	unsigned long bkt_ep;
-+	u32 headroom;
-+
-+	headroom = sizeof(struct rmnet_map_header);
-+
-+	if (port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV4)
-+		headroom += sizeof(struct rmnet_map_dl_csum_trailer);
-+
-+	hash_for_each_safe(port->muxed_ep, bkt_ep, tmp_ep, ep, hlnode) {
-+		if (ep->egress_dev->mtu <= (real_dev->mtu - headroom))
-+			continue;
-+
-+		if (rmnet_vnd_change_mtu(ep->egress_dev,
-+					 real_dev->mtu - headroom))
-+			return -1;
-+	}
-+
-+	return 0;
-+}
-\ No newline at end of file
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.h 
-b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.h
-index 4967f34..dc3a444 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.h
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.h
-@@ -18,4 +18,7 @@ int rmnet_vnd_dellink(u8 id, struct rmnet_port *port,
-  void rmnet_vnd_rx_fixup(struct sk_buff *skb, struct net_device *dev);
-  void rmnet_vnd_tx_fixup(struct sk_buff *skb, struct net_device *dev);
-  void rmnet_vnd_setup(struct net_device *dev);
-+int rmnet_vnd_validate_real_dev_mtu(struct net_device *real_dev);
-+int rmnet_vnd_update_dev_mtu(struct rmnet_port *port,
-+			     struct net_device *real_dev);
-  #endif /* _RMNET_VND_H_ */
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora 
-Forum,
-a Linux Foundation Collaborative Project
+> > > The hashes corresponding to the kerberos enctypes I'm supporting are:
+> > >
+> > > HMAC-SHA1 for aes128-cts-hmac-sha1-96 and aes256-cts-hmac-sha1-96.
+> > >
+> > > HMAC-SHA256 for aes128-cts-hmac-sha256-128
+> > >
+> > > HMAC-SHA384 for aes256-cts-hmac-sha384-192
+> > >
+> > > CMAC-CAMELLIA for camellia128-cts-cmac and camellia256-cts-cmac
+> > >
+> > > I'm not sure you can support all of those with the instructions available.
+> >
+> > It depends on whether the caller can make use of the authenc()
+> > pattern, which is a type of AEAD we support.
+>
+> Interesting.  I didn't realise AEAD was an API.
+>
+> > There are numerous implementations of authenc(hmac(shaXXX),cbc(aes)),
+> > including h/w accelerated ones, but none that implement ciphertext
+> > stealing. So that means that, even if you manage to use the AEAD layer to
+> > perform both at the same time, the generic authenc() template will perform
+> > the cts(cbc(aes)) and hmac(shaXXX) by calling into skciphers and ahashes,
+> > respectively, which won't give you any benefit until accelerated
+> > implementations turn up that perform the whole operation in one pass over
+> > the input. And even then, I don't think the performance benefit will be
+> > worth it.
+>
+> Also, the rfc8009 variants that use AES with SHA256/384 hash the ciphertext,
+> not the plaintext.
+>
+> For the moment, it's probably not worth worrying about, then.  If I can manage
+> to abstract the sunrpc bits out into a krb5 library, we can improve the
+> library later.
+>
