@@ -2,140 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57FF52D37B9
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 01:30:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 719522D376A
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 01:12:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732006AbgLIA0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 19:26:54 -0500
-Received: from mx0a-00154904.pphosted.com ([148.163.133.20]:28334 "EHLO
-        mx0a-00154904.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731067AbgLIA0x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 19:26:53 -0500
-Received: from pps.filterd (m0170390.ppops.net [127.0.0.1])
-        by mx0a-00154904.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0B8J1vks028414;
-        Tue, 8 Dec 2020 14:01:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding;
- s=smtpout1; bh=jnL+NMBCfbHJnfixupP+eK8YJew68ryjGuo6zSr4mNg=;
- b=FuQ5Ph8B94hWYk4zFfPzoRi0nTWaesbO2sGicGZ2bqPS+7nVvQkxxD1E4SJJvIMLuyii
- 3R9ncFN849D/ieDpcHttIFTfXQ0pIff2uKPymNWVqdiq9+SIaxppXHEkBu15qSwGm7Oy
- Lf+uGtjqRuRGC8fnojx6Ajw/IJ6kR4iyzD93tEFzojZUj9kl2mb250/DvHGpI8vaZjsU
- l+rTbXAJJiYPw5BaMYSPjnvAV9f13/yEQ/RdEV05GCGsP1yE7SGb4MIvLnteLAyAfyUW
- dbQ2tsSgNOmm8spE6+ysAtPQYvLT86Izx42lA90lbV0cPtGW6SpS2FR4LjwqUnh3ycWL qQ== 
-Received: from mx0a-00154901.pphosted.com (mx0a-00154901.pphosted.com [67.231.149.39])
-        by mx0a-00154904.pphosted.com with ESMTP id 3587vyungx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Dec 2020 14:01:57 -0500
-Received: from pps.filterd (m0090351.ppops.net [127.0.0.1])
-        by mx0b-00154901.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0B8IvRVA087147;
-        Tue, 8 Dec 2020 14:01:56 -0500
-Received: from ausc60ps301.us.dell.com (ausc60ps301.us.dell.com [143.166.148.206])
-        by mx0b-00154901.pphosted.com with ESMTP id 35abtj5m6c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 08 Dec 2020 14:01:56 -0500
-X-LoopCount0: from 10.173.37.130
-X-PREM-Routing: D-Outbound
-X-IronPort-AV: E=Sophos;i="5.78,403,1599541200"; 
-   d="scan'208";a="1511744183"
-From:   Mario Limonciello <mario.limonciello@dell.com>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        intel-wired-lan@lists.osuosl.org,
-        David Miller <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Netfin <sasha.neftin@intel.com>,
-        Aaron Brown <aaron.f.brown@intel.com>,
-        Stefan Assmann <sassmann@redhat.com>, darcari@redhat.com,
-        Yijun.Shen@dell.com, Perry.Yuan@dell.com,
-        anthony.wong@canonical.com,
-        Vitaly Lifshits <vitaly.lifshits@intel.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Mario Limonciello <mario.limonciello@dell.com>
-Subject: [PATCH RESEND] e1000e: fix S0ix flow to allow S0i3.2 subset entry
-Date:   Tue,  8 Dec 2020 12:56:32 -0600
-Message-Id: <20201208185632.151052-1-mario.limonciello@dell.com>
-X-Mailer: git-send-email 2.25.1
+        id S1730326AbgLIALc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 19:11:32 -0500
+Received: from m43-15.mailgun.net ([69.72.43.15]:23755 "EHLO
+        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725906AbgLIALc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 19:11:32 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1607472671; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=F7a2bvI/3J/IthbcdUv2Ssr5gCPWZKmwp8RPsMjnRqM=;
+ b=drCGChBwaAPVToLVOgNu1NTeZjP48jJt0Jl2O8vy4JAGSjz8M87+D1teLCi8oGlLU6sJweRP
+ qiHQTZLVaBfxp27I5eTACvDcpitgrohtTSjVJHodpdlh5XOxK0zOnEDASaa5B4XxFua1VdmW
+ /Zp86wp09giepncuhpXhI7J3sb4=
+X-Mailgun-Sending-Ip: 69.72.43.15
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n09.prod.us-west-2.postgun.com with SMTP id
+ 5fcfd035b0e089112d37c384 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 08 Dec 2020 19:12:53
+ GMT
+Sender: stranche=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 6E8A7C43463; Tue,  8 Dec 2020 19:12:53 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: stranche)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id DD755C433CA;
+        Tue,  8 Dec 2020 19:12:52 +0000 (UTC)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-08_14:2020-12-08,2020-12-08 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 suspectscore=0
- bulkscore=0 mlxscore=0 phishscore=0 spamscore=0 mlxlogscore=999
- clxscore=1015 adultscore=0 priorityscore=1501 impostorscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012080115
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 spamscore=0 phishscore=0
- suspectscore=0 mlxscore=0 malwarescore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2012080116
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Tue, 08 Dec 2020 12:12:52 -0700
+From:   stranche@codeaurora.org
+To:     Wei Wang <weiwan@google.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        David Ahern <dsahern@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Subject: Re: Refcount mismatch when unregistering netdevice from kernel
+In-Reply-To: <CAEA6p_D+diS7jnpoGk6cncWL8qiAGod2EAp=Vcnc-zWNPg04Jg@mail.gmail.com>
+References: <ca64de092db5a2ac80d22eaa9d662520@codeaurora.org>
+ <56e72b72-685f-925d-db2d-d245c1557987@gmail.com>
+ <CAEA6p_D+diS7jnpoGk6cncWL8qiAGod2EAp=Vcnc-zWNPg04Jg@mail.gmail.com>
+Message-ID: <307c2de1a2ddbdcd0a346c57da88b394@codeaurora.org>
+X-Sender: stranche@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vitaly Lifshits <vitaly.lifshits@intel.com>
+Hi Wei and Eric,
 
-Changed a configuration in the flows to align with
-architecture requirements to achieve S0i3.2 substate.
+Thanks for the replies.
 
-This helps both i219V and i219LM configurations.
+This was reported to us on the 5.4.61 kernel during a customer 
+regression suite, so we don't have an exact reproducer unfortunately. 
+ From the trace logs we've added it seems like this is happening during 
+IPv6 transport mode XFRM data transfer and the device is unregistered in 
+the middle of it, but we've been unable to reproduce it ourselves.. 
+We're open to trying out and sharing debug patches if needed though.
 
-Also fixed a typo in the previous commit 632fbd5eb5b0
-("e1000e: fix S0ix flows for cable connected case").
+> rt6_uncached_list_flush_dev() actually tries to replace the inet6_dev
+> with loopback_dev, and release the reference to the previous inet6_dev
+> by calling in6_dev_put(), which is actually doing the same thing as
+> ip6_dst_ifdown(). I don't understand why you say " a reference to the
+> inet6_dev is simply dropped".
 
-Fixes: 632fbd5eb5b0 ("e1000e: fix S0ix flows for cable connected case").
-Signed-off-by: Vitaly Lifshits <vitaly.lifshits@intel.com>
-Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
-Signed-off-by: Mario Limonciello <mario.limonciello@dell.com>
----
-This patch was originally part of 
-https://marc.info/?l=linux-netdev&m=160677194809564&w=2
-which requested fixes. It was then resubmitted as part of:
-https://patchwork.ozlabs.org/project/netdev/list/?series=218712
-However there is discussion on the other patches of the series.
-As it fixes existing hardware that is not blocked by ME check (i219V)
-resubmit it separately to at least fix that hardware.
+Fair. I was going off the semantics used by the dst_dev_put() function 
+which calls dst_ops->ifdown() explicitly. At least in the case of 
+xfrm6_dst_ifdown() this swap of the loopback device and putting the 
+refcount seems like it could be missing a few things.
 
- drivers/net/ethernet/intel/e1000e/netdev.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+> The additional refcount to the DST is also released by doing the 
+> following:
+>                         if (rt_dev == dev) {
+>                                 rt->dst.dev = blackhole_netdev;
+>                                 dev_hold(rt->dst.dev);
+>                                 dev_put(rt_dev);
+>                         }
+> Am I missing something?
 
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 3ecd05b28fe6..6588f5d4a2be 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -6475,13 +6475,13 @@ static void e1000e_s0ix_entry_flow(struct e1000_adapter *adapter)
- 
- 	/* Ungate PGCB clock */
- 	mac_data = er32(FEXTNVM9);
--	mac_data |= BIT(28);
-+	mac_data &= ~BIT(28);
- 	ew32(FEXTNVM9, mac_data);
- 
- 	/* Enable K1 off to enable mPHY Power Gating */
- 	mac_data = er32(FEXTNVM6);
- 	mac_data |= BIT(31);
--	ew32(FEXTNVM12, mac_data);
-+	ew32(FEXTNVM6, mac_data);
- 
- 	/* Enable mPHY power gating for any link and speed */
- 	mac_data = er32(FEXTNVM8);
-@@ -6525,11 +6525,11 @@ static void e1000e_s0ix_exit_flow(struct e1000_adapter *adapter)
- 	/* Disable K1 off */
- 	mac_data = er32(FEXTNVM6);
- 	mac_data &= ~BIT(31);
--	ew32(FEXTNVM12, mac_data);
-+	ew32(FEXTNVM6, mac_data);
- 
- 	/* Disable Ungate PGCB clock */
- 	mac_data = er32(FEXTNVM9);
--	mac_data &= ~BIT(28);
-+	mac_data |= BIT(28);
- 	ew32(FEXTNVM9, mac_data);
- 
- 	/* Cancel not waking from dynamic
--- 
-2.25.1
+That dev_put() is on the actual netdevice struct, not the inet6_dev 
+associated with it. We're seeing many calls to icmp6_dst_alloc() and 
+xfrm6_fill_dst() here, both of which seem to associate a reference to 
+the inet6_dev struct with the DST in addition to the standard dev_hold() 
+on the netdevice during the dst_alloc()/dst_init().
 
+Thanks,
+Sean
