@@ -2,58 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 069442D20C2
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 03:23:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30ECC2D20D4
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 03:31:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727810AbgLHCXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 21:23:09 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:43348 "EHLO vps0.lunn.ch"
+        id S1727842AbgLHC3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 21:29:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36982 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727744AbgLHCXI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Dec 2020 21:23:08 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kmSdz-00AjoS-OR; Tue, 08 Dec 2020 03:22:23 +0100
-Date:   Tue, 8 Dec 2020 03:22:23 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        Network Development <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>
-Subject: Re: vlan_filtering=1 breaks all traffic
-Message-ID: <20201208022223.GF2475764@lunn.ch>
-References: <b4adfc0b-cd48-b21d-c07f-ad35de036492@prevas.dk>
- <20201130160439.a7kxzaptt5m3jfyn@skbuf>
- <61a2e853-9d81-8c1a-80f0-200f5d8dc650@prevas.dk>
- <6424c14e-bd25-2a06-cf0b-f1a07f9a3604@prevas.dk>
- <20201205190310.wmxemhrwxfom3ado@skbuf>
- <ecb50a5e-45e5-a6a6-5439-c0b5b60302a9@prevas.dk>
- <20201206194516.adym47b4ppohiqpl@skbuf>
- <f47bd572-7d0a-c763-c3b2-20c89cba9e7c@prevas.dk>
- <20201207201527.nbo4jz5bga26celo@skbuf>
+        id S1725877AbgLHC3O (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Dec 2020 21:29:14 -0500
+Date:   Mon, 7 Dec 2020 18:28:32 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607394513;
+        bh=F9mCW68y+BrRPXQAv0Ku05sHJCYmXoJRWpr9w6GJx2I=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lNMZZP0ggjDdhCxNJ/vr5G2DHfGmMecL3VOFrqEcksIkghEJWOVAiyDdmv8x/U6Ux
+         Xvr0xa3vMR8GkoJuw5h9zNmG+138PFDTleSr2qkjBpC3meyh0JMAVGdq/RbawvNoDm
+         aM6AqJj1x04g7ldSdsARt5Jnrz4tKngziXVKec+uYaHEDT0NRF1U0cpdCXtqRteHqw
+         gSDpai2AaTIF24gOyyJfDpbgBX+P7fRidFgDfPETFmFT6YYOm+m1DY+BlSaIQyyck5
+         nyMU9g6g3iTfsrh0L2I3fZGLIIEhPP82zZSzLao0wxJ0NyskZNlXAvZPrEIRLccQOc
+         IrROKbGyJEqGA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Chris Mi <cmi@nvidia.com>
+Cc:     netdev@vger.kernel.org, roid@nvidia.com
+Subject: Re: [PATCH net] net: flow_offload: Fix memory leak for indirect
+ flow block
+Message-ID: <20201207182832.346e246e@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201207015916.43126-1-cmi@nvidia.com>
+References: <20201207015916.43126-1-cmi@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201207201527.nbo4jz5bga26celo@skbuf>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 07, 2020 at 08:15:28PM +0000, Vladimir Oltean wrote:
-> On Mon, Dec 07, 2020 at 08:43:18PM +0100, Rasmus Villemoes wrote:
-> > # uname -a
-> > Linux (none) 5.10.0-rc7-00035-g66d777e1729d #194 Mon Dec 7 16:00:30 CET
-> > 2020 ppc GNU/Linux
-> > # devlink dev
-> > mdio_bus/mdio@e0102120:10
-> > # mv88e6xxx_dump --device mdio_bus/mdio@e0102120:10 --vtu
-> > VTU:
-> > Error: devlink: The requested region does not exist.
-> > devlink answers: Invalid argument
-> > Unable to snapshot vtu
+On Mon,  7 Dec 2020 09:59:16 +0800 Chris Mi wrote:
+> The offending commit introduces a cleanup callback that is invoked
+> when the driver module is removed to clean up the tunnel device
+> flow block. But it returns on the first iteration of the for loop.
+> The remaining indirect flow blocks will never be freed.
+> 
+> Fixes: 1fac52da5942 ("net: flow_offload: consolidate indirect flow_block infrastructure")
+> Signed-off-by: Chris Mi <cmi@nvidia.com>
+> Reviewed-by: Roi Dayan <roid@nvidia.com>
 
-VTU dumping is new. It is in net-next, but not 5.10-rc7.  atu, global1
-and global2 are part for 5.10-rc7.
+Please repost and CC relevant people.
 
-     Andrew
