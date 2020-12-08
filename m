@@ -2,171 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CE242D23F5
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 07:55:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC0FE2D23FB
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 08:01:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726484AbgLHGz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 01:55:26 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:38690 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725208AbgLHGz0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 01:55:26 -0500
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0B86mAu1007509;
-        Mon, 7 Dec 2020 22:54:27 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=lxOHuvlJohy0YiEC+M4Og9XSdkRLXfBTqY79j0eXfUU=;
- b=i91u2CTDzxGRgObkZ6xkezpSt+9YNo1d0Jm1luigegEQcYSeKH8ILCT/JtIHWuSJG2jC
- cJePlzKVx/oIJudYHuYy/vBNSNh+XVM1y3MLw0+ZREg6LxDELijoBdGlCWKyRG+TifS5
- WeaZmGMYO9lsTDStolsqLU79FJGztUKJikU= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 358u5avd8u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 07 Dec 2020 22:54:27 -0800
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.199) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 7 Dec 2020 22:54:26 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UZspG8eWd475h7j2wtFfPF+5DlyHAcaUk6TSF5ixRKFhRr9cbo4PHkQFn7d1cNzOqsZQS0hpLquTREiGvPrvgPN1mTxOkRwJoyRCA6V9jzmGEqOoZF/8Ee/qKitH5lcB8P7udB6NTLVY1RbL9WSWS0lC52F6g3d3dJUz4bJLUr3I6wC4ujcZLNzS+zzELAiG9LebW/521QD96rPK4ducBOqj+H3LL0DYyiAncIbjI3b2q6upZ++Lliaqzcv5PVhQe42cYrv8tJmKhRXRquU9IzK6Ucey1Pcix4HHAk6Rj6QNc9cczIU8eyOreMAW6AFbl82X6/5iqNQV+H5GUQB3Nw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lxOHuvlJohy0YiEC+M4Og9XSdkRLXfBTqY79j0eXfUU=;
- b=hS3ro6lDUEcxxZhJvKNwW4ehFejjkrD/GiUbhY7uxOAvtLg1ZO2p/5A+np1OqC047DYxk77tWrttdqHYnXo1GLWj65u/hjIiLeQdBpZb+Q5+Q0YeGMOOEpvxzp/ZjpmfXVlNzYksB+fR6c/UUWY2WptNmt9ak4YNZXDWijFrQ3hlO42LHUdHH5atsxmFc9cQj5ieUyq8iBCK+aYo6OzV4o3sMxZ6RsgIOmXk1Zdu8ibh48D8WebdV9r1jvr5oKcTMBIptJFfKUIhVn2ponlK/3xkJU3HXt9HveNMJS2MOHpeIVWvaJ05fua03CsTVD9VCIbtrkDQnL6bBGh0rRPbbw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lxOHuvlJohy0YiEC+M4Og9XSdkRLXfBTqY79j0eXfUU=;
- b=dNyc5jImGWwhEpETId4hXe7jn6Vxq2fyeNz4DsNkVWBPlsefZUQQue4j3mwhmjPtBnG/Y5U/ekrT8nrWxDmS7EnEdAg1onFjBaBNnfLNFNnu89q8G1nlMg8Ahsd3hoxD+Gni3SKL4RGOZ1RNq7L7ncwTKI6PSWRYtCSMmP14N18=
-Authentication-Results: amazon.co.jp; dkim=none (message not signed)
- header.d=none;amazon.co.jp; dmarc=none action=none header.from=fb.com;
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
- by BYAPR15MB2376.namprd15.prod.outlook.com (2603:10b6:a02:8c::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.19; Tue, 8 Dec
- 2020 06:54:25 +0000
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::2831:21bf:8060:a0b]) by BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::2831:21bf:8060:a0b%7]) with mapi id 15.20.3632.023; Tue, 8 Dec 2020
- 06:54:25 +0000
-Date:   Mon, 7 Dec 2020 22:54:18 -0800
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-CC:     "David S . Miller" <davem@davemloft.net>,
+        id S1725874AbgLHHBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 02:01:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52896 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725208AbgLHHBQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 02:01:16 -0500
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8665BC061749
+        for <netdev@vger.kernel.org>; Mon,  7 Dec 2020 23:00:36 -0800 (PST)
+Received: by mail-pf1-x442.google.com with SMTP id f9so12414530pfc.11
+        for <netdev@vger.kernel.org>; Mon, 07 Dec 2020 23:00:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CfWeqWh61B0oRT0px5jYa6HR5aemQ0N4hQFEILa6eSc=;
+        b=sTNj3vmB0ESAzGBue/fZBJ2VjpLAKFV/yTV93WLNRsKS/rxLfvRS6OYoBI4/IJs2b0
+         44MA2Ajg1lxvI3JcsQmENW7BJei0HPXbsrHtDn+pG66J8nIjnVzgDOxCvQRU8QG56U3i
+         09cwZLMKCGb5ps4ZBEu3FRRSQPB7PkakLkRSJ3ZAlsYxU/1739uWPXWxTtyM2X0auLel
+         PLx18tCavjWtQf98KSTOV4YImc+r4ZthAPTMC3oOnhIY8GL1O6j1rODX9cSm/qa/Bqsr
+         9CB3mjz7oIJ6u9MHBHb1IsXBU+lgGtwlpmaUJdxZLZ5ZDu31HaW35BU7R3iRAS+hhoD8
+         Qk2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CfWeqWh61B0oRT0px5jYa6HR5aemQ0N4hQFEILa6eSc=;
+        b=bW6olmOzJ6VoEXWlcOkq1Q73EulM2MjynjsesSrw47vX+lCAUJZxBBZpxhWdMzTfme
+         vytReXaE/HhSZNJ1lioon0hfYcwRreNET70LU4NPNeYUOTbWytyzyAZXhyuLKDPbHPK1
+         gFNcqDKKShjLoZ4X1V2l+9m1lwxxBpP8iSRu8zC1fluKyNWR+C54RB2KjbBhNAFSlxzG
+         9fgNmAga3ddRYIB2bUcEu5+dPxEIVtl24PFWNOzriIuYJYp+zqtFm0nTexXlGZdUZlHO
+         yKAe1nVw5BPZweYCW0DNDqCah7zvIrzP/FWNYg+7YRq27kch0SOasbRsPQbUtZVgh2yg
+         BqZw==
+X-Gm-Message-State: AOAM531/6zy3OMnbvyOjFyyW+DFOIq4+fIjqrhjPiQ57UQJSlz+QGAm0
+        CJ8cIJmX3PdI4+JLDz7+0R02XttkiHzD9oUv
+X-Google-Smtp-Source: ABdhPJy23mkSUGG/pkx2q3rwy0qiTqQt1Pdz0w109V8bYUYR6mvqLkwen7oyQejVBZumcBi3g4haQg==
+X-Received: by 2002:a62:aa06:0:b029:19d:f4d3:335e with SMTP id e6-20020a62aa060000b029019df4d3335emr9957570pff.60.1607410835733;
+        Mon, 07 Dec 2020 23:00:35 -0800 (PST)
+Received: from container-ubuntu.lan ([218.89.163.171])
+        by smtp.gmail.com with ESMTPSA id a22sm13402414pfa.215.2020.12.07.23.00.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Dec 2020 23:00:34 -0800 (PST)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Benjamin Herrenschmidt <benh@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <osa-contribution-log@amazon.com>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 bpf-next 03/11] tcp: Migrate
- TCP_ESTABLISHED/TCP_SYN_RECV sockets in accept queues.
-Message-ID: <20201208065418.ne75jprdbpglrgal@kafai-mbp.dhcp.thefacebook.com>
-References: <20201201144418.35045-1-kuniyu@amazon.co.jp>
- <20201201144418.35045-4-kuniyu@amazon.co.jp>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201201144418.35045-4-kuniyu@amazon.co.jp>
-X-Originating-IP: [2620:10d:c090:400::5:565a]
-X-ClientProxiedBy: MWHPR2201CA0039.namprd22.prod.outlook.com
- (2603:10b6:301:16::13) To BY5PR15MB3571.namprd15.prod.outlook.com
- (2603:10b6:a03:1f6::32)
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Frank Wunderlich <frank-w@public-files.de>
+Subject: [PATCH net-next] net: dsa: mt7530: support setting ageing time
+Date:   Tue,  8 Dec 2020 15:00:28 +0800
+Message-Id: <20201208070028.3177-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:565a) by MWHPR2201CA0039.namprd22.prod.outlook.com (2603:10b6:301:16::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12 via Frontend Transport; Tue, 8 Dec 2020 06:54:24 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6406f7e6-fb96-4425-b208-08d89b4619b8
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2376:
-X-Microsoft-Antispam-PRVS: <BYAPR15MB2376C753669D9DD216F941C0D5CD0@BYAPR15MB2376.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mUmm6ZQMwHpoFQvRFc9reGdHt1dnH805gV4AVUx9szA17vo4y/cr1c6RxuN/uGcj6VsVf7BFQtf+PwZM1gVPumT6bwOkQF/WWnY4/yxXBnoNlOGxZTFyG277xJvdLj2JukB6cVgkE3BBjoG4roou65z80nniR5lgBWyL2AoIMs7SOBZfCNHXR3rU8zuJp+CryaNq6vVYwocnoXJp+h06dwJXzLVj10j9WdYPTU6jA1uQ7/2SlbvsEXQlVmpF//YuVfWGXNMM2HhDkU4muUtTEmtoOcaURz/ZXvq82WYGmdIdmlDqmQmeLuySe3kRks+v
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(366004)(376002)(39860400002)(396003)(136003)(16526019)(7416002)(186003)(2906002)(86362001)(8676002)(66946007)(6666004)(66556008)(6506007)(478600001)(83380400001)(5660300002)(55016002)(9686003)(4326008)(7696005)(6916009)(1076003)(316002)(54906003)(52116002)(8936002)(66476007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?3oppKC/lQd8KNNa2JTgu+0pofBc42PqGwg9O1o5NkLltShFjpbw4R8UCsGHH?=
- =?us-ascii?Q?tcbMd/3ekqx4NeMH6BWUpud54OCjNAPBGjdyS2sh3D49N1NDBWKKNYlMbzWE?=
- =?us-ascii?Q?VoiQlmwRnooUN/pj2lE9/XEYxgimzfobcd8Xoc0+yeOxOXpT2Q+H3GMlSJIY?=
- =?us-ascii?Q?FynP9fCOcvzQLT0KOHwDeH9lsxh+kzexU8aK/p11pM/RZd5U08loHr5bBrVi?=
- =?us-ascii?Q?rSM8+QgjcDoG/uBenQqkRRnZSIG7lHT8H9iF62GfBqnmyzNtIGC0Itnv5lFW?=
- =?us-ascii?Q?HBCo5p5ea9WLJLaCnHZGMirl8hgMskOvdOIfeaai2nMmfOoZAXyZkycqx5i+?=
- =?us-ascii?Q?GU9TIIPZXz0wFrWFq6af4KwfmCYAElkMjOTPMgQi0NHJwQ2rHek26AXKhyiw?=
- =?us-ascii?Q?exwvi60AUVwspqaK6vMIRci7PBMpEils4thM6viriJ6KeOUVFoPO6o7ffaIi?=
- =?us-ascii?Q?uoTwv+46pvNLKZtS49Mcr88ngvHBxPhmyW1PprYmBCTVtb+G8qkCBdKj2Rzr?=
- =?us-ascii?Q?yvpwxazticn36UZfzhYw/25JUme2B3vCCd3u+Pay1u1MxL8Y/hO5MARwul44?=
- =?us-ascii?Q?etT8qP22DAYB2l4k3xihhRgAs6sbQF0o07+vQtd5kmBHSaqOAbvWAD0XjKQY?=
- =?us-ascii?Q?DBfZgLMuyBfqwFggYZsoFMSxFwow61Zt/TRHgRYI7zh/zByrklXeb1j9b2Mf?=
- =?us-ascii?Q?Ebhz/MkzmkTwxU3Nsn71WRNydXCfeoYWR1foaiSMmQyD1Q0+GjiMzGTAlEkv?=
- =?us-ascii?Q?CNm2KblpwukvRcNaPPvO3kiMQB28NhNNsPrRrvUO4kejd2aU7y6upgyMZQkp?=
- =?us-ascii?Q?MA4sGskP/sePEaWSOpLytARS8bQbSRfw3hLv3uKFv3KVjXXzMqf+6yW75+ob?=
- =?us-ascii?Q?hWgSD1zqQBM6148uNC+npLEwYPaeAKcGsKOP36MimjB6jCVPJ6HQ9J9LlXiy?=
- =?us-ascii?Q?vljjnHoTLjgeL0eOhCBpKUnpE/I2G8vbPsTUtKJANYtsMEgdFxY8kuS4s2ym?=
- =?us-ascii?Q?4lx4Z++QdDBCPeimU21CrCmuNw=3D=3D?=
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2020 06:54:25.3506
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6406f7e6-fb96-4425-b208-08d89b4619b8
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Au1FKFtsUuJlt5CMrSUJkVmywEX1oYxH93K9kaZQbTM/EzOFpawFvrYqeF5+wb1x
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2376
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-08_03:2020-12-04,2020-12-08 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=5
- malwarescore=0 adultscore=0 mlxlogscore=528 bulkscore=0 impostorscore=0
- priorityscore=1501 mlxscore=0 lowpriorityscore=0 phishscore=0 spamscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012080040
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 01, 2020 at 11:44:10PM +0900, Kuniyuki Iwashima wrote:
+MT7530 has a global address age control register, so use it to set
+ageing time.
 
-> @@ -242,8 +244,12 @@ void reuseport_detach_sock(struct sock *sk)
->  
->  		reuse->num_socks--;
->  		reuse->socks[i] = reuse->socks[reuse->num_socks];
-> +		prog = rcu_dereference(reuse->prog);
->  
->  		if (sk->sk_protocol == IPPROTO_TCP) {
-> +			if (reuse->num_socks && !prog)
-> +				nsk = i == reuse->num_socks ? reuse->socks[i - 1] : reuse->socks[i];
-I asked in the earlier thread if the primary use case is to only
-use the bpf prog to pick.  That thread did not come to
-a solid answer but did conclude that the sysctl should not
-control the behavior of the BPF_SK_REUSEPORT_SELECT_OR_MIGRATE prog.
+The applied timer is (AGE_CNT + 1) * (AGE_UNIT + 1) seconds
 
-From this change here, it seems it is still desired to only depend
-on the kernel to random pick even when no bpf prog is attached.
-If that is the case, a sysctl to guard here for not changing
-the current behavior makes sense.
-It should still only control the non-bpf-pick behavior:
-when the sysctl is on, the kernel will still do a random pick
-when there is no bpf prog attached to the reuseport group.
-Thoughts?
+Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+---
+ drivers/net/dsa/mt7530.c | 41 ++++++++++++++++++++++++++++++++++++++++
+ drivers/net/dsa/mt7530.h | 13 +++++++++++++
+ 2 files changed, 54 insertions(+)
 
-> +
->  			reuse->num_closed_socks++;
->  			reuse->socks[reuse->max_socks - reuse->num_closed_socks] = sk;
->  		} else {
-> @@ -264,6 +270,8 @@ void reuseport_detach_sock(struct sock *sk)
->  		call_rcu(&reuse->rcu, reuseport_free_rcu);
->  out:
->  	spin_unlock_bh(&reuseport_lock);
-> +
-> +	return nsk;
->  }
->  EXPORT_SYMBOL(reuseport_detach_sock);
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 6408402a44f5..99bf8fed6536 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -870,6 +870,46 @@ mt7530_get_sset_count(struct dsa_switch *ds, int port, int sset)
+ 	return ARRAY_SIZE(mt7530_mib);
+ }
+ 
++static int
++mt7530_set_ageing_time(struct dsa_switch *ds, unsigned int msecs)
++{
++	struct mt7530_priv *priv = ds->priv;
++	unsigned int secs = msecs / 1000;
++	unsigned int tmp_age_count;
++	unsigned int error = -1;
++	unsigned int age_count;
++	unsigned int age_unit;
++
++	/* Applied timer is (AGE_CNT + 1) * (AGE_UNIT + 1) seconds */
++	if (secs < 1 || secs > (AGE_CNT_MAX + 1) * (AGE_UNIT_MAX + 1))
++		return -ERANGE;
++
++	/* iterate through all possible age_count to find the closest pair */
++	for (tmp_age_count = 0; tmp_age_count <= AGE_CNT_MAX; ++tmp_age_count) {
++		unsigned int tmp_age_unit = secs / (tmp_age_count + 1) - 1;
++
++		if (tmp_age_unit <= AGE_UNIT_MAX) {
++			unsigned int tmp_error = secs -
++				(tmp_age_count + 1) * (tmp_age_unit + 1);
++
++			/* found a closer pair */
++			if (error > tmp_error) {
++				error = tmp_error;
++				age_count = tmp_age_count;
++				age_unit = tmp_age_unit;
++			}
++
++			/* found the exact match, so break the loop */
++			if (!error)
++				break;
++		}
++	}
++
++	mt7530_write(priv, MT7530_AAC, AGE_CNT(age_count) | AGE_UNIT(age_unit));
++
++	return 0;
++}
++
+ static void mt7530_setup_port5(struct dsa_switch *ds, phy_interface_t interface)
+ {
+ 	struct mt7530_priv *priv = ds->priv;
+@@ -2564,6 +2604,7 @@ static const struct dsa_switch_ops mt7530_switch_ops = {
+ 	.phy_write		= mt753x_phy_write,
+ 	.get_ethtool_stats	= mt7530_get_ethtool_stats,
+ 	.get_sset_count		= mt7530_get_sset_count,
++	.set_ageing_time	= mt7530_set_ageing_time,
+ 	.port_enable		= mt7530_port_enable,
+ 	.port_disable		= mt7530_port_disable,
+ 	.port_change_mtu	= mt7530_port_change_mtu,
+diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
+index ee3523a7537e..32d8969b3ace 100644
+--- a/drivers/net/dsa/mt7530.h
++++ b/drivers/net/dsa/mt7530.h
+@@ -161,6 +161,19 @@ enum mt7530_vlan_egress_attr {
+ 	MT7530_VLAN_EGRESS_STACK = 3,
+ };
+ 
++/* Register for address age control */
++#define MT7530_AAC			0xa0
++/* Disable ageing */
++#define  AGE_DIS			BIT(20)
++/* Age count */
++#define  AGE_CNT_MASK			GENMASK(19, 12)
++#define  AGE_CNT_MAX			0xff
++#define  AGE_CNT(x)			(AGE_CNT_MASK & ((x) << 12))
++/* Age unit */
++#define  AGE_UNIT_MASK			GENMASK(11, 0)
++#define  AGE_UNIT_MAX			0xfff
++#define  AGE_UNIT(x)			(AGE_UNIT_MASK & (x))
++
+ /* Register for port STP state control */
+ #define MT7530_SSP_P(x)			(0x2000 + ((x) * 0x100))
+ #define  FID_PST(x)			((x) & 0x3)
+-- 
+2.25.1
 
