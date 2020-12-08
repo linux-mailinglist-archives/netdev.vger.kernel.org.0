@@ -2,67 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A3E52D23BD
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 07:44:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 461932D23CA
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 07:46:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725768AbgLHGoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 01:44:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56970 "EHLO mail.kernel.org"
+        id S1726601AbgLHGqQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 01:46:16 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57286 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725927AbgLHGoa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Dec 2020 01:44:30 -0500
-Date:   Tue, 8 Dec 2020 08:43:42 +0200
+        id S1726104AbgLHGqQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Dec 2020 01:46:16 -0500
+Message-ID: <5a86df89822ba7e4d944867916423c46ad4b7434.camel@kernel.org>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607409829;
-        bh=JInkcczCl5fMUHtopA+CGViwiiQqF1W2Uzi5FVY1DXE=;
-        h=From:To:Cc:Subject:References:In-Reply-To:From;
-        b=g3Q4PgbMsAMrTdkCrWNYp8rPedIbJgzy++A/va75wxVW1dFlPaxjdW4REkmN4Qud8
-         VzmyLVPdibo81+UzaGV1WTeSaJaophD3E+iO5shZHhOwJ09k4ONjZQQU9P8Kxo0CsT
-         zOF8FyHmbBDZ3WRMHump/qx1PCLgnyDJp5Tj+lpEc9lJeE2irJzQpUtTAF/1SGFNb1
-         +B57h7/HeHG7iUpM8f50T4CrF57j2UybAPX+VRWgig0pTif8KDG5YNnHfotdfuaBh1
-         9MjPjvO1b7qd2vZcuLhsDwXp+VKF07tCiqrXGqpvsxo/EwJaKIlTW9bwky6ffQBmr1
-         HvUCkZUUkl3ag==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jiri Benc <jbenc@redhat.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Eric Dumazet <edumazet@google.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>
-Subject: Re: [RFC PATCH net-next 01/13] RDMA/mlx4: remove bogus dev_base_lock
- usage
-Message-ID: <20201208064342.GC4430@unreal>
-References: <20201206235919.393158-1-vladimir.oltean@nxp.com>
- <20201206235919.393158-2-vladimir.oltean@nxp.com>
+        s=k20201202; t=1607409935;
+        bh=sfTEMM/Uu5YXCbVKTpCwRm+LHiCCLcV4ZrIT1p40/sM=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=cKK4LgTxZKnzpVGX4nbcaIt6yYHU20YSXSUGqa45tHq6+RgY4rIJ5oA7cNItC/Je+
+         G+unZPihFaE0YIkl8GUM4VzYkNCzlTWrl819cq/hyR5nOAb9kanzjZrmymbfwjbUzD
+         bpkdD0H3mkyVPJ6TKpDO/yalfkKNPvw+dPP/TzHRf5HUf7Ezhjc3MFM29+zUTnIs77
+         xI6Uv1mx5NND49VlXDy8M0S+RYoqA8nvcY3CTHm8d+jVi816q7PU5DtvBTlY/8LzzL
+         HLUkWxEq11rSx7c+D1H6mL7tz2obHBUmR9REsuY4IfgmUkMPFo2Lr4S+dtPU26Mmcx
+         6qaIWDghzx3PA==
+Subject: Re: [PATCH bpf] tools/bpftool: Add/Fix support for modules btf dump
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>
+Date:   Mon, 07 Dec 2020 22:45:34 -0800
+In-Reply-To: <CAEf4BzYzJuPt8Fct2pOTPjHLiiyGPQw05rFNK4d+MAJTC_itkw@mail.gmail.com>
+References: <20201207052057.397223-1-saeed@kernel.org>
+         <CAEf4BzZe2162nMsamMKkGRpR_9hUnaATWocE=XjgZd+2cJk5Jw@mail.gmail.com>
+         <76aa0d16e3d03cf12496184c848f60069bf71872.camel@kernel.org>
+         <CAEf4BzYzJuPt8Fct2pOTPjHLiiyGPQw05rFNK4d+MAJTC_itkw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201206235919.393158-2-vladimir.oltean@nxp.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 07, 2020 at 01:59:07AM +0200, Vladimir Oltean wrote:
-> The dev_base_lock does not protect dev->dev_addr, so it serves no
-> purpose here.
->
-> Cc: Leon Romanovsky <leon@kernel.org>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  drivers/infiniband/hw/mlx4/main.c | 3 ---
->  1 file changed, 3 deletions(-)
+On Mon, 2020-12-07 at 22:38 -0800, Andrii Nakryiko wrote:
+> On Mon, Dec 7, 2020 at 10:26 PM Saeed Mahameed <saeed@kernel.org>
+> wrote:
+> > On Mon, 2020-12-07 at 19:14 -0800, Andrii Nakryiko wrote:
+> > > On Sun, Dec 6, 2020 at 9:21 PM <saeed@kernel.org> wrote:
+> > > > From: Saeed Mahameed <saeedm@nvidia.com>
+> > > > 
+[...]
+> > > > 
+> > > > I am not sure why this hasn't been added by the original
+> > > > patchset
+> > > 
+> > > because I never though of dumping module BTF by id, given there
+> > > is
+> > > nicely named /sys/kernel/btf/<module> :)
+> > > 
+> > 
+> > What if i didn't compile my kernel with SYSFS ? a user experience
+> > is a
+> > user experience, there is no reason to not support dump a module
+> > btf by
+> > id or to have different behavior for different BTF sources.
+> 
+> Hm... I didn't claim otherwise and didn't oppose the feature, why the
+> lecture about user experience?
+> 
 
-Agree with the description, most likely the authors wanted to ensure
-that "dev" doesn't disappear, but it is not correct way to do and not
-needed in that flow.
+Sorry wasn't a lecture, just wanted to emphasize the motivation.
 
-Thanks for the patch,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+> Not having sysfs is a valid point. In such cases, if BTF dumping is
+> from ID and we see that it's a module BTF, finding vmlinux BTF from
+> ID
+> makes sense.
+> 
+> > I can revise this patch to support -B option and lookup vmlinux
+> > file if
+> > not provided for module btf dump by ids.
+> 
+> yep
+> 
+> > but we  still need to pass base_btf to btf__get_from_id() in order
+> > to
+> > support that, as was done for btf__parse_split() ... :/
+> 
+> btf__get_from_id_split() might be needed, yes.
+> 
+> > Are you sure you don't like the current patch/libbpf API ? it is
+> > pretty
+> > straight forward and correct.
+> 
+> I definitely don't like adding btf_get_kernel_id() API to libbpf.
+> There is nothing special about it to warrant adding it as a public
+> API. Everything we discussed can be done by bpftool.
+> 
+
+What about the case where sysfs isn't available ?
+we still need to find vmlinux's btf id..
+
+
+
