@@ -2,121 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AF532D3334
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 21:27:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7872D2D3385
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 21:27:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731298AbgLHUQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 15:16:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33752 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731040AbgLHUMu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Dec 2020 15:12:50 -0500
-Date:   Tue, 8 Dec 2020 11:50:35 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607457037;
-        bh=Evmr4NCR73nJG7NR2K0eviLkh4z4YujSYKA4BQDd15o=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=T8QeED49xiiUzJADy3kbbjWWLJtYVMvMX8Yq3Gon37syE3BWQorrGAbfhvDsQb/+h
-         uuvY72OxmS7HJ5e46Q8ibG4myZ3Ub6OAuH1IjwUmngU62YIx4pWJNg+wqzOee0ERDY
-         U139jynoRlKekLDYgdY/RBhwaloU90xj5jhpfVvUQ4lxO5Yhkme0bhhE0S/6lp/GA5
-         qD3sTDi6VIN9a0G+n38AJJK+ETR1IF8nb+3pXXyiSOEHG/8HOz6bAfzgUAScG96IYp
-         +M6yuVBhQmcylTGKuVm19VGLw+gs2uVCYkzG+LKLedxjJGU9skEcG2GuBFwFbDSAS1
-         VS5DYY2sbtaXw==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sven Van Asbroeck <thesven73@gmail.com>
-Cc:     Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        David S Miller <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v1 1/2] lan743x: improve performance: fix
- rx_napi_poll/interrupt ping-pong
-Message-ID: <20201208115035.74221c31@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201206034408.31492-1-TheSven73@gmail.com>
-References: <20201206034408.31492-1-TheSven73@gmail.com>
+        id S1729050AbgLHUUn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 15:20:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37240 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725910AbgLHURu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 15:17:50 -0500
+Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66305C0613D6;
+        Tue,  8 Dec 2020 12:17:15 -0800 (PST)
+Received: by mail-ot1-x341.google.com with SMTP id w3so16382630otp.13;
+        Tue, 08 Dec 2020 12:17:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=RDpBBRXCwLTGCWL5RwRoMW+K4EoFZfULoP1L0KjbLbQ=;
+        b=irYTzobUKoW2lTGMu/IWGq9PzYpzkIqG/jEAnrHZvn6pVpX2kuaedn1rquvYZ3zMW6
+         94lYdQyny/ZYxLO2vEtHun0VkZ05N0V05vQkq7+/93gidt0MrRCblN0I6BaAIUZAZVuk
+         Jt3U3xCq/QRqFv106yddgu2FhANtxChbXL1JX1LfSUOQCsbWCGu3TeCZ91Vy8o8IDKvL
+         TWpodQEg6hOkt44m4LWIVdFgq9+ZaM5+FCtlCL0NLTJMTu3pOXMe8F39i1O3QUB8NliM
+         QEvxY9NXUPIrOIVCmFcX/UYA30fz5gnmpMVz6gMwCIqefRr9VPzWFyI98zLzoTrpQQFQ
+         Mm7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=RDpBBRXCwLTGCWL5RwRoMW+K4EoFZfULoP1L0KjbLbQ=;
+        b=IX7EdcfsInH8uFUe9ocoBSM+3ggi4qQzT492ztJmoN6TOc2rewKm3sq8OLwXitPOVS
+         fAmNRodx8AvOCOp7S6Ndif2lVBKt34yWqlr9Vmq+XmBXFj4TuBFm3yKBlWvhwqxqx1QD
+         moqGGu/qOtASOV3+TM1XpRkM5OFqbD+H+wgDD3j8dzq0JIV/SsXKavy9n3M1Nz6mR3Db
+         FlRqkGn01ZGh21XVvhr0er72eezplPI7B8fkOB53DxUIhXrlFm07VBF6s6mx4sNGdQiF
+         +AH/tRK9aFctwSw42oZBO6vogBdiEmDNrhu1KGT05XNTaV15qyP6gdSWfqeydq05JnYt
+         4GYw==
+X-Gm-Message-State: AOAM5328BMclyiCbQTvX7BSyWqFFOE9v7tOwvocWua1VqeUENYnwU15r
+        dP4Kv84OBcWZ3qyS2gg2k+829e4BkVM=
+X-Google-Smtp-Source: ABdhPJxTVQtJ6ItkrXTOaZOAp9aFVPMT53csV3Hgbgb4zzflb5HrNL1wyLpoX7m9Gyyvf6EphLsnHw==
+X-Received: by 2002:a9d:2ae3:: with SMTP id e90mr18256256otb.105.1607457118066;
+        Tue, 08 Dec 2020 11:51:58 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.51])
+        by smtp.googlemail.com with ESMTPSA id m18sm1321249ooa.24.2020.12.08.11.51.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Dec 2020 11:51:57 -0800 (PST)
+Subject: Re: [PATCH net-next] vrf: handle CONFIG_IPV6 not set for
+ vrf_add_mac_header_if_unset()
+To:     Andrea Mayer <andrea.mayer@uniroma2.it>,
+        "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shrijeet Mukherjee <shrijeet@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
+        kernel test robot <lkp@intel.com>
+References: <20201208175210.8906-1-andrea.mayer@uniroma2.it>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <30116173-cc7f-f492-f290-faa24db28864@gmail.com>
+Date:   Tue, 8 Dec 2020 12:51:55 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20201208175210.8906-1-andrea.mayer@uniroma2.it>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat,  5 Dec 2020 22:44:07 -0500 Sven Van Asbroeck wrote:
-> From: Sven Van Asbroeck <thesven73@gmail.com>
+On 12/8/20 10:52 AM, Andrea Mayer wrote:
+> The vrf_add_mac_header_if_unset() is defined within a conditional
+> compilation block which depends on the CONFIG_IPV6 macro.
+> However, the vrf_add_mac_header_if_unset() needs to be called also by IPv4
+> related code and when the CONFIG_IPV6 is not set, this function is missing.
+> As a consequence, the build process stops reporting the error:
 > 
-> Even if the rx ring is completely full, and there is more rx data
-> waiting on the chip, the rx napi poll fn will never run more than
-> once - it will always immediately bail out and re-enable interrupts.
-> Which results in ping-pong between napi and interrupt.
+>  ERROR: implicit declaration of function 'vrf_add_mac_header_if_unset'
 > 
-> This defeats the purpose of napi, and is bad for performance.
+> The problem is solved by *only* moving functions
+> vrf_add_mac_header_if_unset() and vrf_prepare_mac_header() out of the
+> conditional block.
 > 
-> Fix by addressing two separate issues:
-> 
-> 1. Ensure the rx napi poll fn always updates the rx ring tail
->    when returning, even when not re-enabling interrupts.
-> 
-> 2. Up to half of elements in a full rx ring are extension
->    frames, which do not generate any skbs. Limit the default
->    napi weight to the smallest no. of skbs that can be generated
->    by a full rx ring.
-> 
-> Tested-by: Sven Van Asbroeck <thesven73@gmail.com> # lan7430
-> Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Fixes: 0489390882202 ("vrf: add mac header for tunneled packets when sniffer is attached")
+> Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
 > ---
+>  drivers/net/vrf.c | 110 +++++++++++++++++++++++-----------------------
+>  1 file changed, 55 insertions(+), 55 deletions(-)
 > 
-> Tree: git://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git # 905b2032fa42
-> 
-> To: Bryan Whitehead <bryan.whitehead@microchip.com>
-> To: Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-> To: "David S. Miller" <davem@davemloft.net>
-> To: Jakub Kicinski <kuba@kernel.org>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: netdev@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> 
->  drivers/net/ethernet/microchip/lan743x_main.c | 11 +++++++++--
->  1 file changed, 9 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-> index 87b6c59a1e03..ebb5e0bc516b 100644
-> --- a/drivers/net/ethernet/microchip/lan743x_main.c
-> +++ b/drivers/net/ethernet/microchip/lan743x_main.c
-> @@ -2260,10 +2260,11 @@ static int lan743x_rx_napi_poll(struct napi_struct *napi, int weight)
->  				  INT_BIT_DMA_RX_(rx->channel_number));
->  	}
->  
-> +done:
->  	/* update RX_TAIL */
->  	lan743x_csr_write(adapter, RX_TAIL(rx->channel_number),
->  			  rx_tail_flags | rx->last_tail);
-> -done:
-> +
 
-I assume this rings the doorbell to let the device know that more
-buffers are available? If so it's a little unusual to do this at the
-end of NAPI poll. The more usual place would be to do this every n
-times a new buffer is allocated (in lan743x_rx_init_ring_element()?)
-That's to say for example ring the doorbell every time a buffer is put
-at an index divisible by 16.
 
->  	return count;
->  }
->  
-> @@ -2405,9 +2406,15 @@ static int lan743x_rx_open(struct lan743x_rx *rx)
->  	if (ret)
->  		goto return_error;
->  
-> +	/* up to half of elements in a full rx ring are
-> +	 * extension frames. these do not generate skbs.
-> +	 * to prevent napi/interrupt ping-pong, limit default
-> +	 * weight to the smallest no. of skbs that can be
-> +	 * generated by a full rx ring.
-> +	 */
->  	netif_napi_add(adapter->netdev,
->  		       &rx->napi, lan743x_rx_napi_poll,
-> -		       rx->ring_size - 1);
-> +		       (rx->ring_size - 1) / 2);
+I should have caught that in my review.
 
-This is rather unusual, drivers should generally pass NAPI_POLL_WEIGHT
-here.
+Reviewed-by: David Ahern <dsahern@kernel.org>
