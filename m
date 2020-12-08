@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9140A2D3359
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 21:27:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD3822D335E
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 21:27:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731391AbgLHUQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 15:16:13 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34192 "EHLO mail.kernel.org"
+        id S1731407AbgLHUQO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 15:16:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34210 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731141AbgLHUPH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Dec 2020 15:15:07 -0500
+        id S1731151AbgLHUPI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Dec 2020 15:15:08 -0500
 From:   saeed@kernel.org
 Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Shay Drory <shayd@nvidia.com>, Parav Pandit <parav@nvidia.com>,
+        YueHaibing <yuehaibing@huawei.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next V3 12/15] net/mlx5: Arm only EQs with EQEs
-Date:   Tue,  8 Dec 2020 11:35:52 -0800
-Message-Id: <20201208193555.674504-13-saeed@kernel.org>
+Subject: [net-next V3 13/15] net/mlx5: Fix passing zero to 'PTR_ERR'
+Date:   Tue,  8 Dec 2020 11:35:53 -0800
+Message-Id: <20201208193555.674504-14-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201208193555.674504-1-saeed@kernel.org>
 References: <20201208193555.674504-1-saeed@kernel.org>
@@ -29,54 +29,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shay Drory <shayd@nvidia.com>
+From: YueHaibing <yuehaibing@huawei.com>
 
-Currently, when more than one EQ is sharing an IRQ, and this IRQ is
-being interrupted, all the EQs sharing the IRQ will be armed. This is
-done regardless of whether an EQ has EQE.
-When multiple EQs are sharing an IRQ, one or more EQs can have valid
-EQEs.
+Fix smatch warnings:
 
-Signed-off-by: Shay Drory <shayd@nvidia.com>
-Reviewed-by: Parav Pandit <parav@nvidia.com>
+drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_lgcy.c:105 esw_acl_egress_lgcy_setup() warn: passing zero to 'PTR_ERR'
+drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_ofld.c:177 esw_acl_egress_ofld_setup() warn: passing zero to 'PTR_ERR'
+drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_lgcy.c:184 esw_acl_ingress_lgcy_setup() warn: passing zero to 'PTR_ERR'
+drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_ofld.c:262 esw_acl_ingress_ofld_setup() warn: passing zero to 'PTR_ERR'
+
+esw_acl_table_create() never returns NULL, so
+NULL test should be removed.
+
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/eq.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_lgcy.c  | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_ofld.c  | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_lgcy.c | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_ofld.c | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-index 4ea5d6ddf56a..fc0afa03d407 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-@@ -136,7 +136,7 @@ static int mlx5_eq_comp_int(struct notifier_block *nb,
- 
- 	eqe = next_eqe_sw(eq);
- 	if (!eqe)
--		goto out;
-+		return 0;
- 
- 	do {
- 		struct mlx5_core_cq *cq;
-@@ -161,8 +161,6 @@ static int mlx5_eq_comp_int(struct notifier_block *nb,
- 		++eq->cons_index;
- 
- 	} while ((++num_eqes < MLX5_EQ_POLLING_BUDGET) && (eqe = next_eqe_sw(eq)));
--
--out:
- 	eq_update_ci(eq, 1);
- 
- 	if (cqn != -1)
-@@ -250,9 +248,9 @@ static int mlx5_eq_async_int(struct notifier_block *nb,
- 		++eq->cons_index;
- 
- 	} while ((++num_eqes < MLX5_EQ_POLLING_BUDGET) && (eqe = next_eqe_sw(eq)));
-+	eq_update_ci(eq, 1);
- 
- out:
--	eq_update_ci(eq, 1);
- 	mlx5_eq_async_int_unlock(eq_async, recovery, &flags);
- 
- 	return unlikely(recovery) ? num_eqes : 0;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_lgcy.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_lgcy.c
+index d46f8b225ebe..2b85d4777303 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_lgcy.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_lgcy.c
+@@ -101,7 +101,7 @@ int esw_acl_egress_lgcy_setup(struct mlx5_eswitch *esw,
+ 	vport->egress.acl = esw_acl_table_create(esw, vport->vport,
+ 						 MLX5_FLOW_NAMESPACE_ESW_EGRESS,
+ 						 table_size);
+-	if (IS_ERR_OR_NULL(vport->egress.acl)) {
++	if (IS_ERR(vport->egress.acl)) {
+ 		err = PTR_ERR(vport->egress.acl);
+ 		vport->egress.acl = NULL;
+ 		goto out;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_ofld.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_ofld.c
+index c3faae67e4d6..4c74e2690d57 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_ofld.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_ofld.c
+@@ -173,7 +173,7 @@ int esw_acl_egress_ofld_setup(struct mlx5_eswitch *esw, struct mlx5_vport *vport
+ 		table_size++;
+ 	vport->egress.acl = esw_acl_table_create(esw, vport->vport,
+ 						 MLX5_FLOW_NAMESPACE_ESW_EGRESS, table_size);
+-	if (IS_ERR_OR_NULL(vport->egress.acl)) {
++	if (IS_ERR(vport->egress.acl)) {
+ 		err = PTR_ERR(vport->egress.acl);
+ 		vport->egress.acl = NULL;
+ 		return err;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_lgcy.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_lgcy.c
+index b68976b378b8..d64fad2823e7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_lgcy.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_lgcy.c
+@@ -180,7 +180,7 @@ int esw_acl_ingress_lgcy_setup(struct mlx5_eswitch *esw,
+ 		vport->ingress.acl = esw_acl_table_create(esw, vport->vport,
+ 							  MLX5_FLOW_NAMESPACE_ESW_INGRESS,
+ 							  table_size);
+-		if (IS_ERR_OR_NULL(vport->ingress.acl)) {
++		if (IS_ERR(vport->ingress.acl)) {
+ 			err = PTR_ERR(vport->ingress.acl);
+ 			vport->ingress.acl = NULL;
+ 			return err;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_ofld.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_ofld.c
+index 4e55d7225a26..548c005ea633 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_ofld.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ingress_ofld.c
+@@ -258,7 +258,7 @@ int esw_acl_ingress_ofld_setup(struct mlx5_eswitch *esw,
+ 	vport->ingress.acl = esw_acl_table_create(esw, vport->vport,
+ 						  MLX5_FLOW_NAMESPACE_ESW_INGRESS,
+ 						  num_ftes);
+-	if (IS_ERR_OR_NULL(vport->ingress.acl)) {
++	if (IS_ERR(vport->ingress.acl)) {
+ 		err = PTR_ERR(vport->ingress.acl);
+ 		vport->ingress.acl = NULL;
+ 		return err;
 -- 
 2.26.2
 
