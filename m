@@ -2,126 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F84F2D24C8
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 08:44:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B41A72D24E6
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 08:47:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727628AbgLHHnW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 02:43:22 -0500
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:45786 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727553AbgLHHnW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 02:43:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1607413401; x=1638949401;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=T8wT7HHeLn/LSS2Bl2+pBce5pFFczv34J3fkqjLaloI=;
-  b=Ood+wUcoEnEXOcMzIkB1oGV38JpRtYr8rizv3DlWdb4+OpT6N12lr449
-   SS1QhFG30sBfZm8Mupxj6F4/CKEqLSHF8PKkWkPojsy8oAEeeBudHvM2I
-   5GqIhvOaWb/TggcgR1idabmsQs1PsKn7ebJbt1mg+c0EtRSnjMtg1y62Y
-   Q=;
-X-IronPort-AV: E=Sophos;i="5.78,401,1599523200"; 
-   d="scan'208";a="101236346"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-119b4f96.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 08 Dec 2020 07:42:41 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2a-119b4f96.us-west-2.amazon.com (Postfix) with ESMTPS id ED8C81A0B6D;
-        Tue,  8 Dec 2020 07:42:39 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 8 Dec 2020 07:42:39 +0000
-Received: from 38f9d3582de7.ant.amazon.com (10.43.162.53) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 8 Dec 2020 07:42:34 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <kafai@fb.com>
-CC:     <ast@kernel.org>, <benh@amazon.com>, <bpf@vger.kernel.org>,
-        <daniel@iogearbox.net>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <kuni1840@gmail.com>,
-        <kuniyu@amazon.co.jp>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <osa-contribution-log@amazon.com>
-Subject: Re: [PATCH v1 bpf-next 03/11] tcp: Migrate TCP_ESTABLISHED/TCP_SYN_RECV sockets in accept queues.
-Date:   Tue, 8 Dec 2020 16:42:30 +0900
-Message-ID: <20201208074230.35109-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.17.2 (Apple Git-113)
-In-Reply-To: <20201208065418.ne75jprdbpglrgal@kafai-mbp.dhcp.thefacebook.com>
-References: <20201208065418.ne75jprdbpglrgal@kafai-mbp.dhcp.thefacebook.com>
+        id S1727745AbgLHHrS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 02:47:18 -0500
+Received: from m43-15.mailgun.net ([69.72.43.15]:38233 "EHLO
+        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727270AbgLHHrR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 02:47:17 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1607413604; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=tLGTWlSh5EK9uyLBOyZfvEKBPHx2Mmfh+i7oEMHMAg4=;
+ b=T/t3Uy4Eq/Sg30jmB8Yte7hUN8erYP70EWTaomp8X2wWr22r/Td6c6HQ3weY19dE9tZi7RuY
+ /QUcspJvf187SAli11bYnHEWGodNYZz9n68IjFTw+0M7NfPCOSR7nriq+werupmKGZxq3m/2
+ lCse525++oAsTHAtPZZw44dGqZ4=
+X-Mailgun-Sending-Ip: 69.72.43.15
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
+ 5fcf2f6396285165cda34c3f (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 08 Dec 2020 07:46:43
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 1D492C43464; Tue,  8 Dec 2020 07:46:43 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id A45B1C433CA;
+        Tue,  8 Dec 2020 07:46:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A45B1C433CA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.53]
-X-ClientProxiedBy: EX13D48UWB002.ant.amazon.com (10.43.163.125) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] net: carl9170: remove trailing semicolon in macro
+ definition
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20201127175531.2754461-1-trix@redhat.com>
+References: <20201127175531.2754461-1-trix@redhat.com>
+To:     trix@redhat.com
+Cc:     chunkeey@googlemail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20201208074643.1D492C43464@smtp.codeaurora.org>
+Date:   Tue,  8 Dec 2020 07:46:43 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Martin KaFai Lau <kafai@fb.com>
-Date:   Mon, 7 Dec 2020 22:54:18 -0800
-> On Tue, Dec 01, 2020 at 11:44:10PM +0900, Kuniyuki Iwashima wrote:
+trix@redhat.com wrote:
+
+> The macro use will already have a semicolon.
 > 
-> > @@ -242,8 +244,12 @@ void reuseport_detach_sock(struct sock *sk)
-> >  
-> >  		reuse->num_socks--;
-> >  		reuse->socks[i] = reuse->socks[reuse->num_socks];
-> > +		prog = rcu_dereference(reuse->prog);
-> >  
-> >  		if (sk->sk_protocol == IPPROTO_TCP) {
-> > +			if (reuse->num_socks && !prog)
-> > +				nsk = i == reuse->num_socks ? reuse->socks[i - 1] : reuse->socks[i];
-> I asked in the earlier thread if the primary use case is to only
-> use the bpf prog to pick.  That thread did not come to
-> a solid answer but did conclude that the sysctl should not
-> control the behavior of the BPF_SK_REUSEPORT_SELECT_OR_MIGRATE prog.
-> 
-> From this change here, it seems it is still desired to only depend
-> on the kernel to random pick even when no bpf prog is attached.
+> Signed-off-by: Tom Rix <trix@redhat.com>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-I wrote this way only to split patches into tcp and bpf parts.
-So, in the 10th patch, eBPF prog is run if the type is
-BPF_SK_REUSEPORT_SELECT_OR_MIGRATE.
-https://lore.kernel.org/netdev/20201201144418.35045-11-kuniyu@amazon.co.jp/
+Patch applied to ath-next branch of ath.git, thanks.
 
-But, it makes a breakage, so I will move
-BPF_SK_REUSEPORT_SELECT_OR_MIGRATE validation into 10th patch so that the
-type is only available after 10th patch.
+e65e8b608f68 carl9170: remove trailing semicolon in macro definition
 
----8<---
-	case BPF_PROG_TYPE_SK_REUSEPORT:
-		switch (expected_attach_type) {
-		case BPF_SK_REUSEPORT_SELECT:
-		case BPF_SK_REUSEPORT_SELECT_OR_MIGRATE: <- move to 10th.
-			return 0;
-		default:
-			return -EINVAL;
-		}
----8<---
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20201127175531.2754461-1-trix@redhat.com/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
-> If that is the case, a sysctl to guard here for not changing
-> the current behavior makes sense.
-> It should still only control the non-bpf-pick behavior:
-> when the sysctl is on, the kernel will still do a random pick
-> when there is no bpf prog attached to the reuseport group.
-> Thoughts?
-
-If different applications listen on the same port without eBPF prog, I
-think sysctl is necessary. But honestly, I am not sure there is really such
-a case and sysctl is necessary.
-
-If patcheset with sysctl is more acceptable, I will add it back in the next
-spin.
-
-
-> > +
-> >  			reuse->num_closed_socks++;
-> >  			reuse->socks[reuse->max_socks - reuse->num_closed_socks] = sk;
-> >  		} else {
-> > @@ -264,6 +270,8 @@ void reuseport_detach_sock(struct sock *sk)
-> >  		call_rcu(&reuse->rcu, reuseport_free_rcu);
-> >  out:
-> >  	spin_unlock_bh(&reuseport_lock);
-> > +
-> > +	return nsk;
-> >  }
-> >  EXPORT_SYMBOL(reuseport_detach_sock);
