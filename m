@@ -2,299 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D9CB2D23A4
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 07:32:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA3382D23B5
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 07:40:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726190AbgLHGcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 01:32:19 -0500
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:50209 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725208AbgLHGcS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 01:32:18 -0500
+        id S1726243AbgLHGjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 01:39:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49582 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725874AbgLHGjg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 01:39:36 -0500
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69BA7C0613D6;
+        Mon,  7 Dec 2020 22:38:56 -0800 (PST)
+Received: by mail-yb1-xb43.google.com with SMTP id a16so10151128ybh.5;
+        Mon, 07 Dec 2020 22:38:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1607409136; x=1638945136;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=7pwyuLLLuZqptOe9MDUKmSBlE5PscyioEMKK+ZnoHRY=;
-  b=eEEqT/PNxAeOTlxt6A0SMOLoF3yOxoV2WT2s3JZXe4dF/cStXh0WHchN
-   nX0/gfUqIyK732FdkmSPodcw1/prSe0u716yBkRl7z86Fd5FPVW26Me2m
-   8eTkK1/U4XwcWJUivYC4YNEfWbVgsVJUWFg8ptpPugE2xt/jEj9H2DBf6
-   E=;
-X-IronPort-AV: E=Sophos;i="5.78,401,1599523200"; 
-   d="scan'208";a="101224758"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2c-397e131e.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 08 Dec 2020 06:31:44 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-2c-397e131e.us-west-2.amazon.com (Postfix) with ESMTPS id ADD62A257E;
-        Tue,  8 Dec 2020 06:31:43 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 8 Dec 2020 06:31:42 +0000
-Received: from 38f9d3582de7.ant.amazon.com (10.43.161.68) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 8 Dec 2020 06:31:37 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <kafai@fb.com>
-CC:     <ast@kernel.org>, <benh@amazon.com>, <bpf@vger.kernel.org>,
-        <daniel@iogearbox.net>, <davem@davemloft.net>,
-        <edumazet@google.com>, <eric.dumazet@gmail.com>, <kuba@kernel.org>,
-        <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH v1 bpf-next 03/11] tcp: Migrate TCP_ESTABLISHED/TCP_SYN_RECV sockets in accept queues.
-Date:   Tue, 8 Dec 2020 15:31:34 +0900
-Message-ID: <20201208063134.97189-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.17.2 (Apple Git-113)
-In-Reply-To: <20201207203227.lcwdihxfwral3uz7@kafai-mbp.dhcp.thefacebook.com>
-References: <20201207203227.lcwdihxfwral3uz7@kafai-mbp.dhcp.thefacebook.com>
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=n+DomqOo2PhT6ykuvOU2eB7Z2/mQ2l0eQHy8iuDLKV4=;
+        b=SJJauJb1pLbD5glsSvQcPwoH6cG5a2cEFvOVhJnMLedik26ozqAJL2ts6WYZMYSZvx
+         p4GvCeEn7T0yHVhKucSezvYCH+qGX7raKZwoUgnHf7YvZ5yeuVCLbvJocL3DUOS5q6Yw
+         YBd/4gu22ExVHzSfPok64amPLKUt0niYVmT9yDTtgqh58e1MJoQggmQv4DAb5jn5vgna
+         D9lhfZOGGuhez6jC3TZaSMhzdnNGHofygvzQc1R71WmIixOki0edKmtTCNBUmHAy+0ri
+         xpKbHb47JmCcindsHk1slH69xnBx+5i9LdK+DvAoTP8rs+InHzAm5XjaXR76Rau8bzUe
+         cg/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=n+DomqOo2PhT6ykuvOU2eB7Z2/mQ2l0eQHy8iuDLKV4=;
+        b=W+5dosFyeNI9GPNuHcEYtBRVcvFLyutAQqGqtzFuRgzCpAB/pFcmU0VKcgnT5GnXJ2
+         dOuX9nrYbx++iZRdkAfDucgQ3wzSTGR6s/OueOpYllOb78RHsLCW5pmMJt4OSqIDGb7t
+         DV1xzFEIeiflyVEEdVaujwwNclfkA965OVR1nD48j1vPWSPLUBLSrIbyP7CrKPLDBE8l
+         /sSYSyi6UPiyklimKU6rX+UkXJsGLQYspoYlUJkz3aAObNqKdblZLBXn6OWg3U7BeoP6
+         UC0OzgTdY9S9PREfCkbZ+XAQmW2vvJpVYBOFM4jRmIHyR8oAi4vSBtjSkcX4KU/7JVgo
+         LxwA==
+X-Gm-Message-State: AOAM5321D7qvzaYc07vYrtSEGwH9t8QYoGNJvE0QZ5zzwxX0P5O35L30
+        +ctHvqccUeUKllVpkI4Y2jD/1y45gcJ9LkgRuDTQ63vR4254Kg==
+X-Google-Smtp-Source: ABdhPJwISyhwAhl/kvoznjUoicbLOLCug5cAjOdzMRgrGTXU2ExaeOi24/UCox4URHYmKEe+m3lvivB2FtluuE8LSyg=
+X-Received: by 2002:a25:d44:: with SMTP id 65mr15958804ybn.260.1607409535674;
+ Mon, 07 Dec 2020 22:38:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.161.68]
-X-ClientProxiedBy: EX13D36UWA002.ant.amazon.com (10.43.160.24) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+References: <20201207052057.397223-1-saeed@kernel.org> <CAEf4BzZe2162nMsamMKkGRpR_9hUnaATWocE=XjgZd+2cJk5Jw@mail.gmail.com>
+ <76aa0d16e3d03cf12496184c848f60069bf71872.camel@kernel.org>
+In-Reply-To: <76aa0d16e3d03cf12496184c848f60069bf71872.camel@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 7 Dec 2020 22:38:44 -0800
+Message-ID: <CAEf4BzYzJuPt8Fct2pOTPjHLiiyGPQw05rFNK4d+MAJTC_itkw@mail.gmail.com>
+Subject: Re: [PATCH bpf] tools/bpftool: Add/Fix support for modules btf dump
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Martin KaFai Lau <kafai@fb.com>
-Date:   Mon, 7 Dec 2020 12:33:15 -0800
-> On Thu, Dec 03, 2020 at 11:14:24PM +0900, Kuniyuki Iwashima wrote:
-> > From:   Eric Dumazet <eric.dumazet@gmail.com>
-> > Date:   Tue, 1 Dec 2020 16:25:51 +0100
-> > > On 12/1/20 3:44 PM, Kuniyuki Iwashima wrote:
-> > > > This patch lets reuseport_detach_sock() return a pointer of struct sock,
-> > > > which is used only by inet_unhash(). If it is not NULL,
-> > > > inet_csk_reqsk_queue_migrate() migrates TCP_ESTABLISHED/TCP_SYN_RECV
-> > > > sockets from the closing listener to the selected one.
-> > > > 
-> > > > Listening sockets hold incoming connections as a linked list of struct
-> > > > request_sock in the accept queue, and each request has reference to a full
-> > > > socket and its listener. In inet_csk_reqsk_queue_migrate(), we only unlink
-> > > > the requests from the closing listener's queue and relink them to the head
-> > > > of the new listener's queue. We do not process each request and its
-> > > > reference to the listener, so the migration completes in O(1) time
-> > > > complexity. However, in the case of TCP_SYN_RECV sockets, we take special
-> > > > care in the next commit.
-> > > > 
-> > > > By default, the kernel selects a new listener randomly. In order to pick
-> > > > out a different socket every time, we select the last element of socks[] as
-> > > > the new listener. This behaviour is based on how the kernel moves sockets
-> > > > in socks[]. (See also [1])
-> > > > 
-> > > > Basically, in order to redistribute sockets evenly, we have to use an eBPF
-> > > > program called in the later commit, but as the side effect of such default
-> > > > selection, the kernel can redistribute old requests evenly to new listeners
-> > > > for a specific case where the application replaces listeners by
-> > > > generations.
-> > > > 
-> > > > For example, we call listen() for four sockets (A, B, C, D), and close the
-> > > > first two by turns. The sockets move in socks[] like below.
-> > > > 
-> > > >   socks[0] : A <-.      socks[0] : D          socks[0] : D
-> > > >   socks[1] : B   |  =>  socks[1] : B <-.  =>  socks[1] : C
-> > > >   socks[2] : C   |      socks[2] : C --'
-> > > >   socks[3] : D --'
-> > > > 
-> > > > Then, if C and D have newer settings than A and B, and each socket has a
-> > > > request (a, b, c, d) in their accept queue, we can redistribute old
-> > > > requests evenly to new listeners.
-> > > > 
-> > > >   socks[0] : A (a) <-.      socks[0] : D (a + d)      socks[0] : D (a + d)
-> > > >   socks[1] : B (b)   |  =>  socks[1] : B (b) <-.  =>  socks[1] : C (b + c)
-> > > >   socks[2] : C (c)   |      socks[2] : C (c) --'
-> > > >   socks[3] : D (d) --'
-> > > > 
-> > > > Here, (A, D) or (B, C) can have different application settings, but they
-> > > > MUST have the same settings at the socket API level; otherwise, unexpected
-> > > > error may happen. For instance, if only the new listeners have
-> > > > TCP_SAVE_SYN, old requests do not have SYN data, so the application will
-> > > > face inconsistency and cause an error.
-> > > > 
-> > > > Therefore, if there are different kinds of sockets, we must attach an eBPF
-> > > > program described in later commits.
-> > > > 
-> > > > Link: https://lore.kernel.org/netdev/CAEfhGiyG8Y_amDZ2C8dQoQqjZJMHjTY76b=KBkTKcBtA=dhdGQ@mail.gmail.com/
-> > > > Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
-> > > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-> > > > ---
-> > > >  include/net/inet_connection_sock.h |  1 +
-> > > >  include/net/sock_reuseport.h       |  2 +-
-> > > >  net/core/sock_reuseport.c          | 10 +++++++++-
-> > > >  net/ipv4/inet_connection_sock.c    | 30 ++++++++++++++++++++++++++++++
-> > > >  net/ipv4/inet_hashtables.c         |  9 +++++++--
-> > > >  5 files changed, 48 insertions(+), 4 deletions(-)
-> > > > 
-> > > > diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
-> > > > index 7338b3865a2a..2ea2d743f8fc 100644
-> > > > --- a/include/net/inet_connection_sock.h
-> > > > +++ b/include/net/inet_connection_sock.h
-> > > > @@ -260,6 +260,7 @@ struct dst_entry *inet_csk_route_child_sock(const struct sock *sk,
-> > > >  struct sock *inet_csk_reqsk_queue_add(struct sock *sk,
-> > > >  				      struct request_sock *req,
-> > > >  				      struct sock *child);
-> > > > +void inet_csk_reqsk_queue_migrate(struct sock *sk, struct sock *nsk);
-> > > >  void inet_csk_reqsk_queue_hash_add(struct sock *sk, struct request_sock *req,
-> > > >  				   unsigned long timeout);
-> > > >  struct sock *inet_csk_complete_hashdance(struct sock *sk, struct sock *child,
-> > > > diff --git a/include/net/sock_reuseport.h b/include/net/sock_reuseport.h
-> > > > index 0e558ca7afbf..09a1b1539d4c 100644
-> > > > --- a/include/net/sock_reuseport.h
-> > > > +++ b/include/net/sock_reuseport.h
-> > > > @@ -31,7 +31,7 @@ struct sock_reuseport {
-> > > >  extern int reuseport_alloc(struct sock *sk, bool bind_inany);
-> > > >  extern int reuseport_add_sock(struct sock *sk, struct sock *sk2,
-> > > >  			      bool bind_inany);
-> > > > -extern void reuseport_detach_sock(struct sock *sk);
-> > > > +extern struct sock *reuseport_detach_sock(struct sock *sk);
-> > > >  extern struct sock *reuseport_select_sock(struct sock *sk,
-> > > >  					  u32 hash,
-> > > >  					  struct sk_buff *skb,
-> > > > diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
-> > > > index fd133516ac0e..60d7c1f28809 100644
-> > > > --- a/net/core/sock_reuseport.c
-> > > > +++ b/net/core/sock_reuseport.c
-> > > > @@ -216,9 +216,11 @@ int reuseport_add_sock(struct sock *sk, struct sock *sk2, bool bind_inany)
-> > > >  }
-> > > >  EXPORT_SYMBOL(reuseport_add_sock);
-> > > >  
-> > > > -void reuseport_detach_sock(struct sock *sk)
-> > > > +struct sock *reuseport_detach_sock(struct sock *sk)
-> > > >  {
-> > > >  	struct sock_reuseport *reuse;
-> > > > +	struct bpf_prog *prog;
-> > > > +	struct sock *nsk = NULL;
-> > > >  	int i;
-> > > >  
-> > > >  	spin_lock_bh(&reuseport_lock);
-> > > > @@ -242,8 +244,12 @@ void reuseport_detach_sock(struct sock *sk)
-> > > >  
-> > > >  		reuse->num_socks--;
-> > > >  		reuse->socks[i] = reuse->socks[reuse->num_socks];
-> > > > +		prog = rcu_dereference(reuse->prog);
-> > > >  
-> > > >  		if (sk->sk_protocol == IPPROTO_TCP) {
-> > > > +			if (reuse->num_socks && !prog)
-> > > > +				nsk = i == reuse->num_socks ? reuse->socks[i - 1] : reuse->socks[i];
-> > > > +
-> > > >  			reuse->num_closed_socks++;
-> > > >  			reuse->socks[reuse->max_socks - reuse->num_closed_socks] = sk;
-> > > >  		} else {
-> > > > @@ -264,6 +270,8 @@ void reuseport_detach_sock(struct sock *sk)
-> > > >  		call_rcu(&reuse->rcu, reuseport_free_rcu);
-> > > >  out:
-> > > >  	spin_unlock_bh(&reuseport_lock);
-> > > > +
-> > > > +	return nsk;
-> > > >  }
-> > > >  EXPORT_SYMBOL(reuseport_detach_sock);
-> > > >  
-> > > > diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-> > > > index 1451aa9712b0..b27241ea96bd 100644
-> > > > --- a/net/ipv4/inet_connection_sock.c
-> > > > +++ b/net/ipv4/inet_connection_sock.c
-> > > > @@ -992,6 +992,36 @@ struct sock *inet_csk_reqsk_queue_add(struct sock *sk,
-> > > >  }
-> > > >  EXPORT_SYMBOL(inet_csk_reqsk_queue_add);
-> > > >  
-> > > > +void inet_csk_reqsk_queue_migrate(struct sock *sk, struct sock *nsk)
-> > > > +{
-> > > > +	struct request_sock_queue *old_accept_queue, *new_accept_queue;
-> > > > +
-> > > > +	old_accept_queue = &inet_csk(sk)->icsk_accept_queue;
-> > > > +	new_accept_queue = &inet_csk(nsk)->icsk_accept_queue;
-> > > > +
-> > > > +	spin_lock(&old_accept_queue->rskq_lock);
-> > > > +	spin_lock(&new_accept_queue->rskq_lock);
-> > > 
-> > > Are you sure lockdep is happy with this ?
-> > > 
-> > > I would guess it should complain, because :
-> > > 
-> > > lock(A);
-> > > lock(B);
-> > > ...
-> > > unlock(B);
-> > > unlock(A);
-> > > 
-> > > will fail when the opposite action happens eventually
-> > > 
-> > > lock(B);
-> > > lock(A);
-> > > ...
-> > > unlock(A);
-> > > unlock(B);
-> > 
-> > I enabled lockdep and did not see warnings of lockdep.
-> > 
-> > Also, the inversion deadlock does not happen in this case.
-> > In reuseport_detach_sock(), sk is moved backward in socks[] and poped out
-> > from the eBPF map, so the old listener will not be selected as the new
-> > listener.
-> > 
-> > 
-> > > > +
-> > > > +	if (old_accept_queue->rskq_accept_head) {
-> > > > +		if (new_accept_queue->rskq_accept_head)
-> > > > +			old_accept_queue->rskq_accept_tail->dl_next =
-> > > > +				new_accept_queue->rskq_accept_head;
-> > > > +		else
-> > > > +			new_accept_queue->rskq_accept_tail = old_accept_queue->rskq_accept_tail;
-> > > > +
-> > > > +		new_accept_queue->rskq_accept_head = old_accept_queue->rskq_accept_head;
-> > > > +		old_accept_queue->rskq_accept_head = NULL;
-> > > > +		old_accept_queue->rskq_accept_tail = NULL;
-> > > > +
-> > > > +		WRITE_ONCE(nsk->sk_ack_backlog, nsk->sk_ack_backlog + sk->sk_ack_backlog);
-> > > > +		WRITE_ONCE(sk->sk_ack_backlog, 0);
-> > > > +	}
-> > > > +
-> > > > +	spin_unlock(&new_accept_queue->rskq_lock);
-> > > > +	spin_unlock(&old_accept_queue->rskq_lock);
-> > > > +}
-> > > > +EXPORT_SYMBOL(inet_csk_reqsk_queue_migrate);
-> > > 
-> > > I fail to understand how the kernel can run fine right after this patch, before following patches are merged.
-> > 
-> > I will squash the two or reorganize them into definition part and migration
-> > part.
-> > 
-> > 
-> > > All request sockets in the socket accept queue MUST have their rsk_listener set to the listener,
-> > > this is how we designed things (each request socket has a reference taken on the listener)
-> > > 
-> > > We might even have some "BUG_ON(sk != req->rsk_listener);" in some places.
-> > > 
-> > > Since you splice list from old listener to the new one, without changing req->rsk_listener, bad things will happen.
-> I also have similar concern on the inconsistency in req->rsk_listener.
-> 
-> The fix-up in req->rsk_listener for the TFO req in patch 4
-> makes it clear that req->rsk_listener should be updated during
-> the migration instead of asking a much later code path
-> to accommodate this inconsistent req->rsk_listener pointer.
+On Mon, Dec 7, 2020 at 10:26 PM Saeed Mahameed <saeed@kernel.org> wrote:
+>
+> On Mon, 2020-12-07 at 19:14 -0800, Andrii Nakryiko wrote:
+> > On Sun, Dec 6, 2020 at 9:21 PM <saeed@kernel.org> wrote:
+> > > From: Saeed Mahameed <saeedm@nvidia.com>
+> > >
+> > > While playing with BTF for modules, i noticed that executing the
+> > > command:
+> > > $ bpftool btf dump id <module's btf id>
+> > >
+> > > Fails due to lack of information in the BTF data.
+> > >
+> > > Maybe I am missing a step but actually adding the support for this
+> > > is
+> > > very simple.
+> >
+> > yes, bpftool takes -B <path> argument for specifying base BTF. So if
+> > you added -B /sys/kernel/btf/vmlinux, it should have worked. I've
+> > added auto-detection logic for the case of `btf dump file
+> > /sys/kernel/btf/<module>` (see [0]), and we can also add it for when
+> > ID corresponds to a module BTF. But I think it's simplest to re-use
+> > the logic and just open /sys/kernel/btf/vmlinux, instead of adding
+> > narrowly-focused libbpf API for that.
+> >
+>
+> When dumping with a file it works even without the -B since you lookup
+> the vmlinux file, but the issue is not dumping from a file source, we
+> need it by id..
+>
+> > > To completely parse modules BTF data, we need the vmlinux BTF as
+> > > their
+> > > "base btf", which can be easily found by iterating through the btf
+> > > ids and
+> > > looking for btf.name == "vmlinux".
+> > >
+> > > I am not sure why this hasn't been added by the original patchset
+> >
+> > because I never though of dumping module BTF by id, given there is
+> > nicely named /sys/kernel/btf/<module> :)
+> >
+>
+> What if i didn't compile my kernel with SYSFS ? a user experience is a
+> user experience, there is no reason to not support dump a module btf by
+> id or to have different behavior for different BTF sources.
 
-When I started this patchset, I read this thread and misunderstood that I
-had to migrate sockets in O(1) for scalability. So, I selected the fix-up
-approach and checked rsk_listener is not used except for TFO.
+Hm... I didn't claim otherwise and didn't oppose the feature, why the
+lecture about user experience?
 
----8<---
-Whole point of BPF was to avoid iterate through all sockets [1],
-and let user space use whatever selection logic it needs.
+Not having sysfs is a valid point. In such cases, if BTF dumping is
+from ID and we see that it's a module BTF, finding vmlinux BTF from ID
+makes sense.
 
-[1] This was okay with up to 16 sockets. But with 128 it does not scale.
----&<---
-https://lore.kernel.org/netdev/1458837191.12033.4.camel@edumazet-glaptop3.roam.corp.google.com/
+>
+> I can revise this patch to support -B option and lookup vmlinux file if
+> not provided for module btf dump by ids.
 
+yep
 
-However, I've read it again, and this was about iterating over listeners
-to select a new listener, not about iterating over requests...
-In this patchset, we can select a listener in O(1) and it is enough.
+>
+> but we  still need to pass base_btf to btf__get_from_id() in order to
+> support that, as was done for btf__parse_split() ... :/
 
+btf__get_from_id_split() might be needed, yes.
 
-> The current inet_csk_listen_stop() is already iterating
-> the icsk_accept_queue and fastopenq.  The extra cost
-> in updating rsk_listener may be just noise?
+>
+> Are you sure you don't like the current patch/libbpf API ? it is pretty
+> straight forward and correct.
 
-Exactly.
-If we end up iterating requests, it is better to migrate than close. I will
-update each rsk_listener in inet_csk_reqsk_queue_migrate() in v3 patchset.
-Thank you!
+I definitely don't like adding btf_get_kernel_id() API to libbpf.
+There is nothing special about it to warrant adding it as a public
+API. Everything we discussed can be done by bpftool.
+
+>
+> > > "Integrate kernel module BTF support", as adding the support for
+> > > this is very trivial. Unless i am missing something, CCing Andrii..
+> > >
+> > > Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+> > > CC: Andrii Nakryiko <andrii@kernel.org>
+> > > ---
+> > >  tools/lib/bpf/btf.c      | 57
+> > > ++++++++++++++++++++++++++++++++++++++++
+> > >  tools/lib/bpf/btf.h      |  2 ++
+> > >  tools/lib/bpf/libbpf.map |  1 +
+> > >  3 files changed, 60 insertions(+)
+> > >
+> >
+> > [...]
+>
