@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CEC42D277A
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 10:25:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 162F62D277B
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 10:25:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728582AbgLHJY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 04:24:59 -0500
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:49059 "EHLO
+        id S1728841AbgLHJZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 04:25:01 -0500
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:57245 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727260AbgLHJY7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 04:24:59 -0500
+        by vger.kernel.org with ESMTP id S1728658AbgLHJZA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 04:25:00 -0500
 Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.nyi.internal (Postfix) with ESMTP id 9558B5C01EF;
-        Tue,  8 Dec 2020 04:23:52 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 4C3A55C01F0;
+        Tue,  8 Dec 2020 04:23:54 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Tue, 08 Dec 2020 04:23:52 -0500
+  by compute2.internal (MEProxy); Tue, 08 Dec 2020 04:23:54 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=WqUJ7bmLa21iZhu0DaF/i7E2uFGRPpNKFWDY3OR1Du8=; b=EIcEgVqB
-        yOL5drZJbBI9rmBZ81EMZm7BOzAqgaz5/+B/OTbhWhtPiobQwsW5cxGsRxtdtERe
-        GPi7evMgLfIYOYu5BnUbTXv3Y/2JQGx4cPYkqa2QeQwJGwX5FW8GuDqcPFDq8Wv3
-        mQD4aqbYZFFru2E16PpmmKhMP/hdw61SLUUCtlsBmMfHWqcfykjyZwLCGEK6SJdS
-        XBfn+mrYlFPPF8R2Fw6GUomLtskp+VfSkzGbsvA0Yo7OlbVj+0mkbUtXEJSTPw69
-        goNpVbG9h3lgEUzW3PTdy1sZ6rY6JgPedjebiqCxSvF1e6gw+Bqca6ca7kd4RqJ7
-        GBlEYQyUzCSYZw==
-X-ME-Sender: <xms:KEbPX-3URlMgAmv9I_6XZbwH6ShrXqtSxHVaLuLlYsKvrOJQ_y4xEw>
-    <xme:KEbPX4cN-vZVkf_NJzZ0SfU_-7MCeN_GOIUHtk7qsjSrIglJdGE0Wy63y-yF-63kk
-    l2FNCzzYu1Y4HQ>
+        fm1; bh=lCx9C0bR9DgECQFIfZT3RvSjgH4ere2Z5TE/zVpgecM=; b=CmMhy7Wv
+        1ViEfXzRIXcDiFIsPDlPNINz04GutOrB3YKbpsHiaRG1wFnqLS9rZx+1qw7Qk/hW
+        5ODs9EnEgQWAxNUsY6YLfab8ddx+wJUNF1Wt5z2cJoYi/qPzL4/PdXQ8LLG7G0/U
+        AgMWfxU03z1YLX3GDILeo0sFEoyWPkLFHS7lV4yxIp7KxVG1jNoN8qvDKiMH+IJp
+        q+C14khGyn1F0S4kmwJCF3yI+94Jylq+il7ER6rzPTnUQIpZnqrDU1E0G/yxARgR
+        i2kijFTtLzoE+o6BrpA3brMy319d79vYIRAY5JGI1bhxaNWhNySZyLEjZ+JE8rqN
+        uvpg6GvS7hoRpw==
+X-ME-Sender: <xms:KkbPX-mb0P_-tj3Ug8tSkozTYfxYCGtXez-Ks_kuQEVJSgPl86V-OQ>
+    <xme:KkbPX70vtPlyUGXm4b18JosZ3S0IZBdzzLyI9FY23u_mbtOfkuNCJ19FhHbn1ejN8
+    tlxIA0GReaxbmc>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudejiedgtddvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrjeek
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    necuvehluhhsthgvrhfuihiivgepvdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:KEbPX8cQ4VnPnPD7GVYJrY7WI71YyNVmc-lBcDP60P-QuwgJ10ULvg>
-    <xmx:KEbPX7zKnm5WYRRrrx-z6JpuN_HRlv4Lho5Kvswglf8XWQ-L9PaUiw>
-    <xmx:KEbPXz-owD-EI7OU1ILvJ8NxRPot49Z0Qde64fDH79wlW3dqogj1_Q>
-    <xmx:KEbPX9M8habJjU0EVg4DUfnihkV94__VDpd18gTfJN_RpgIDEWy6qw>
+X-ME-Proxy: <xmx:KkbPX3eKmLDi4FH9IWza3urEk0ocGE9vMI_ieNnyBRaPKQvnUBbT_w>
+    <xmx:KkbPX1bvf9fEyaTkK70qRQoku7yZHbGbEILNrdRnXJwYQDGddY6z5Q>
+    <xmx:KkbPX8HtQnO-J5MIiqr4p6CKaqsMEncLvxqTg7DuqHdrFtFzDhtAqA>
+    <xmx:KkbPXx0HxJ-wzRXY0f2KxAiSCCamUs--iIFOMx4GBX4J6MpGumc7SQ>
 Received: from shredder.lan (igld-84-229-153-78.inter.net.il [84.229.153.78])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 199281080067;
-        Tue,  8 Dec 2020 04:23:50 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id CAAC91080067;
+        Tue,  8 Dec 2020 04:23:52 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         petrm@nvidia.com, amcohen@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 02/13] mlxsw: reg: Add Switch Port VLAN Stacking Register
-Date:   Tue,  8 Dec 2020 11:22:42 +0200
-Message-Id: <20201208092253.1996011-3-idosch@idosch.org>
+Subject: [PATCH net-next 03/13] mlxsw: reg: Add support for tunnel port in SPVID register
+Date:   Tue,  8 Dec 2020 11:22:43 +0200
+Message-Id: <20201208092253.1996011-4-idosch@idosch.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201208092253.1996011-1-idosch@idosch.org>
 References: <20201208092253.1996011-1-idosch@idosch.org>
@@ -64,142 +64,42 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Amit Cohen <amcohen@nvidia.com>
 
-SPVTR register configures the VLAN mode of the port to enable VLAN
-stacking.
+Add spvid_tport field which indicates if the port is tunnel port.
+When spvid_tport is true, local_port field supposed to be tunnel port
+type.
 
-It will be used to configure VxLAN to push VLAN to the decapsulated packet.
-Without this setting, Spectrum-2 overtakes the VLAN tag of decapsulated
-packet for bridging.
+It will be used to configure which Ethertype will be used when VLAN is
+pushed at ingress for tunnel port.
 
 Signed-off-by: Amit Cohen <amcohen@nvidia.com>
 Reviewed-by: Petr Machata <petrm@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h | 104 ++++++++++++++++++++++
- 1 file changed, 104 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/reg.h | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index 0a3c5f89268c..ad6798c2169d 100644
+index ad6798c2169d..2a89b3261f00 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
 +++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -1693,6 +1693,109 @@ static inline void mlxsw_reg_svfa_pack(char *payload, u8 local_port,
- 	mlxsw_reg_svfa_vid_set(payload, vid);
- }
+@@ -821,8 +821,16 @@ static inline void mlxsw_reg_spms_vid_pack(char *payload, u16 vid,
  
-+/*  SPVTR - Switch Port VLAN Stacking Register
-+ *  ------------------------------------------
-+ *  The Switch Port VLAN Stacking register configures the VLAN mode of the port
-+ *  to enable VLAN stacking.
-+ */
-+#define MLXSW_REG_SPVTR_ID 0x201D
-+#define MLXSW_REG_SPVTR_LEN 0x10
-+
-+MLXSW_REG_DEFINE(spvtr, MLXSW_REG_SPVTR_ID, MLXSW_REG_SPVTR_LEN);
-+
-+/* reg_spvtr_tport
+ MLXSW_REG_DEFINE(spvid, MLXSW_REG_SPVID_ID, MLXSW_REG_SPVID_LEN);
+ 
++/* reg_spvid_tport
 + * Port is tunnel port.
-+ * Access: Index
-+ *
-+ * Note: Reserved when SwitchX/-2 or Spectrum-1.
-+ */
-+MLXSW_ITEM32(reg, spvtr, tport, 0x00, 24, 1);
-+
-+/* reg_spvtr_local_port
-+ * When tport = 0: local port number (Not supported from/to CPU).
-+ * When tport = 1: tunnel port.
++ * Reserved when SwitchX/-2 or Spectrum-1.
 + * Access: Index
 + */
-+MLXSW_ITEM32(reg, spvtr, local_port, 0x00, 16, 8);
++MLXSW_ITEM32(reg, spvid, tport, 0x00, 24, 1);
 +
-+/* reg_spvtr_ippe
-+ * Ingress Port Prio Mode Update Enable.
-+ * When set, the Port Prio Mode is updated with the provided ipprio_mode field.
-+ * Reserved on Get operations.
-+ * Access: OP
-+ */
-+MLXSW_ITEM32(reg, spvtr, ippe, 0x04, 31, 1);
-+
-+/* reg_spvtr_ipve
-+ * Ingress Port VID Mode Update Enable.
-+ * When set, the Ingress Port VID Mode is updated with the provided ipvid_mode
-+ * field.
-+ * Reserved on Get operations.
-+ * Access: OP
-+ */
-+MLXSW_ITEM32(reg, spvtr, ipve, 0x04, 30, 1);
-+
-+/* reg_spvtr_epve
-+ * Egress Port VID Mode Update Enable.
-+ * When set, the Egress Port VID Mode is updated with the provided epvid_mode
-+ * field.
-+ * Access: OP
-+ */
-+MLXSW_ITEM32(reg, spvtr, epve, 0x04, 29, 1);
-+
-+/* reg_spvtr_ipprio_mode
-+ * Ingress Port Priority Mode.
-+ * This controls the PCP and DEI of the new outer VLAN
-+ * Note: for SwitchX/-2 the DEI is not affected.
-+ * 0: use port default PCP and DEI (configured by QPDPC).
-+ * 1: use C-VLAN PCP and DEI.
-+ * Has no effect when ipvid_mode = 0.
-+ * Reserved when tport = 1.
-+ * Access: RW
-+ */
-+MLXSW_ITEM32(reg, spvtr, ipprio_mode, 0x04, 20, 4);
-+
-+enum mlxsw_reg_spvtr_ipvid_mode {
-+	/* IEEE Compliant PVID (default) */
-+	MLXSW_REG_SPVTR_IPVID_MODE_IEEE_COMPLIANT_PVID,
-+	/* Push VLAN (for VLAN stacking, except prio tagged packets) */
-+	MLXSW_REG_SPVTR_IPVID_MODE_PUSH_VLAN_FOR_UNTAGGED_PACKET,
-+	/* Always push VLAN (also for prio tagged packets) */
-+	MLXSW_REG_SPVTR_IPVID_MODE_ALWAYS_PUSH_VLAN,
-+};
-+
-+/* reg_spvtr_ipvid_mode
-+ * Ingress Port VLAN-ID Mode.
-+ * For Spectrum family, this affects the values of SPVM.i
-+ * Access: RW
-+ */
-+MLXSW_ITEM32(reg, spvtr, ipvid_mode, 0x04, 16, 4);
-+
-+enum mlxsw_reg_spvtr_epvid_mode {
-+	/* IEEE Compliant VLAN membership */
-+	MLXSW_REG_SPVTR_EPVID_MODE_IEEE_COMPLIANT_VLAN_MEMBERSHIP,
-+	/* Pop VLAN (for VLAN stacking) */
-+	MLXSW_REG_SPVTR_EPVID_MODE_POP_VLAN,
-+};
-+
-+/* reg_spvtr_epvid_mode
-+ * Egress Port VLAN-ID Mode.
-+ * For Spectrum family, this affects the values of SPVM.e,u,pt.
-+ * Access: WO
-+ */
-+MLXSW_ITEM32(reg, spvtr, epvid_mode, 0x04, 0, 4);
-+
-+static inline void mlxsw_reg_spvtr_pack(char *payload, bool tport,
-+					u8 local_port,
-+					enum mlxsw_reg_spvtr_ipvid_mode ipvid_mode)
-+{
-+	MLXSW_REG_ZERO(spvtr, payload);
-+	mlxsw_reg_spvtr_tport_set(payload, tport);
-+	mlxsw_reg_spvtr_local_port_set(payload, local_port);
-+	mlxsw_reg_spvtr_ipvid_mode_set(payload, ipvid_mode);
-+	mlxsw_reg_spvtr_ipve_set(payload, true);
-+}
-+
- /* SVPE - Switch Virtual-Port Enabling Register
-  * --------------------------------------------
-  * Enables port virtualization.
-@@ -11306,6 +11409,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
- 	MLXSW_REG(slcor),
- 	MLXSW_REG(spmlr),
- 	MLXSW_REG(svfa),
-+	MLXSW_REG(spvtr),
- 	MLXSW_REG(svpe),
- 	MLXSW_REG(sfmr),
- 	MLXSW_REG(spvmlr),
+ /* reg_spvid_local_port
+- * Local port number.
++ * When tport = 0: Local port number. Not supported for CPU port.
++ * When tport = 1: Tunnel port.
+  * Access: Index
+  */
+ MLXSW_ITEM32(reg, spvid, local_port, 0x00, 16, 8);
 -- 
 2.28.0
 
