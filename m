@@ -2,520 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C0D92D2192
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 04:49:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53D5F2D21A4
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 04:57:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726067AbgLHDtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 22:49:15 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:47886 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725853AbgLHDtO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 22:49:14 -0500
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 0B83UL7a001240;
-        Mon, 7 Dec 2020 19:48:09 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=sSRN3jNbGRvcBVusHyjJci1a7fikyajosMpfPFQ8yfQ=;
- b=pugpnCnmmZ0ldYGMg07aHfcdXUsVL/C3r9yJUpIuiDa7GlcdpDg7jbfu23V11ljJAc5S
- 7lwVcm6CmW4SP8RR7rtHvASKuX8Tqdh8TnCQUilZGL4SZ20iWDNzabDMSNQdXdUEq/vC
- BIPW8lRUeoqerjk5qhYpZ5RVPkmbk38uxLg= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0089730.ppops.net with ESMTP id 3588026bcn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 07 Dec 2020 19:48:09 -0800
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.199) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 7 Dec 2020 19:48:07 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OThRA9butO/ZzzDLIayUuRxel75HacuPe5+xvo6mZ9CXkmXenFfEBOo6WsDCqfrfa9+Azyzw+X+TZtbTpfy5S0oCawnJUb37zyCU8sEDXAkG280SVL36TeTtr5oNTJOhDtZ63In8drkex4eFWoTZtj/wxwpIatuscTB1wTQ8tHPtFzw0Z0KkoKSTCwIlVRNMEWSQSPm/Vkq6q1myv4Q95k0EsH9R2gjvn7NuH7M1fzz4q/EZAlz0VlCetZixpEu+QuamKcFN8y2cTMUu82uV8QFH7DKDKd+oa+TfTHk1CbfZL0jXqQ0ONqqcIuhNCFHInz2RoMJqrmwsToLF+tkzsw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sSRN3jNbGRvcBVusHyjJci1a7fikyajosMpfPFQ8yfQ=;
- b=id8jTr4jeFNOP3vZ4nFhcZ0DCl4lFQFjnW78Y4NG8VwoY0T7ybFNXE8FSuxTNj1QvNNIuYiIB9v4HcXN7tQSlevdJKjUZsLX0kwkqVIY/VpIrEyZ30OVUbhr2oT1Kw81VadruQg6gtoFyBla/3yNZ6avWBFaxCwcP1Tf8lA5N6/n8/T7g0/H9fw0kyiuzN88cwdOEoaMuK6tyLOgZczbL3snIRjRihqJdWQ3O+gNQ61Krp0Y7d/YbXNhTx4PhgE7YmVjyvIcKC7QYLSxk0BpGsI+HK1ZPnx7zzmwXgWCHhlO+4poUjFWMc7iTsQ5xjoCy8sfW97Z4fvIqIpKqWrgGw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sSRN3jNbGRvcBVusHyjJci1a7fikyajosMpfPFQ8yfQ=;
- b=WN2Drneb3nQsEiV2k2wIn8cBvesasuagJhdmbKjQaGJnjSvra/oUY17SSlpclnDcnkBBDZpTQP9pcuSgzG0SICndiXeBbsGTWMRdsGJhVz+xIYcz+jxBLZAlI872Rfhnktie9VHZOeDOoRmvyzjE85LYJ9ioRCQWyHkpuUe5ZJg=
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BYAPR15MB2821.namprd15.prod.outlook.com (2603:10b6:a03:15d::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.23; Tue, 8 Dec
- 2020 03:48:06 +0000
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::9ae:1628:daf9:4b03]) by BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::9ae:1628:daf9:4b03%7]) with mapi id 15.20.3632.021; Tue, 8 Dec 2020
- 03:48:06 +0000
-Subject: Re: [PATCH bpf-next v3 1/5] selftests/bpf: xsk selftests framework
-To:     Weqaar Janjua <weqaar.janjua@gmail.com>
-CC:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <ast@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Weqaar Janjua <weqaar.a.janjua@intel.com>, <shuah@kernel.org>,
-        <skhan@linuxfoundation.org>, <linux-kselftest@vger.kernel.org>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        <jonathan.lemon@gmail.com>
-References: <20201125183749.13797-1-weqaar.a.janjua@intel.com>
- <20201125183749.13797-2-weqaar.a.janjua@intel.com>
- <d8eedbad-7a8e-fd80-5fec-fc53b86e6038@fb.com>
- <1bcfb208-dfbd-7b49-e505-8ec17697239d@intel.com>
- <CAPLEeBYnYcWALN_JMBtZWt3uDnpYNtCA_HVLN6Gi7VbVk022xw@mail.gmail.com>
- <9c73643f-0fdc-d867-6fe0-b3b8031a6cf2@fb.com>
- <CAPLEeBZh+BEJp_k0bDQ8nmprMPqQ29JSEXCxscm5wAZQH81bAQ@mail.gmail.com>
- <b153b6af-6f75-d091-7022-999b01f553aa@fb.com>
- <CAPLEeBY_soGW66KE3U66_h2R3s0cFLjsektvYXCFb+5Uvc0YfQ@mail.gmail.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <2e5831b5-f034-fe2e-e263-2c5d4d1bebd3@fb.com>
-Date:   Mon, 7 Dec 2020 19:48:02 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.5.1
-In-Reply-To: <CAPLEeBY_soGW66KE3U66_h2R3s0cFLjsektvYXCFb+5Uvc0YfQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [2620:10d:c090:400::5:4c73]
-X-ClientProxiedBy: MWHPR1401CA0015.namprd14.prod.outlook.com
- (2603:10b6:301:4b::25) To BYAPR15MB4088.namprd15.prod.outlook.com
- (2603:10b6:a02:c3::18)
+        id S1727162AbgLHD4s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 22:56:48 -0500
+Received: from m43-15.mailgun.net ([69.72.43.15]:26140 "EHLO
+        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726556AbgLHD4r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 22:56:47 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1607399782; h=Message-ID: Subject: Cc: To: From: Date:
+ Content-Transfer-Encoding: Content-Type: MIME-Version: Sender;
+ bh=eNPWnHWu3TuWmb9NdNGVKyIhVVzr6ljVp2PxpHRckYI=; b=cVVaoZOBeOyo6JwqtH3P92dynrDxbsZR+q47nTRsNqbA6YjjKLfJ72PTBePPYTodJdA/Ovlw
+ BsevZOM5MTOuh6L1dFzWkDJfK36bIzmJRzhOSACoeS7Q2y4/CrQxnHT0KgWAmJ8dljCLx643
+ +E24KHK6ks9ot5tNez3Mrow9hOs=
+X-Mailgun-Sending-Ip: 69.72.43.15
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
+ 5fcef948eb348d1ba23369a7 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 08 Dec 2020 03:55:52
+ GMT
+Sender: stranche=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 64033C433C6; Tue,  8 Dec 2020 03:55:52 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: stranche)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9963FC433ED;
+        Tue,  8 Dec 2020 03:55:51 +0000 (UTC)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21c8::113f] (2620:10d:c090:400::5:4c73) by MWHPR1401CA0015.namprd14.prod.outlook.com (2603:10b6:301:4b::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.17 via Frontend Transport; Tue, 8 Dec 2020 03:48:04 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a05fe399-8c52-4024-50c1-08d89b2c125d
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2821:
-X-Microsoft-Antispam-PRVS: <BYAPR15MB282114AC88ECA0A83745D7EAD3CD0@BYAPR15MB2821.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tuFrYFq6r6uSvwf7Tc5AeWmXrNPSnKDxmirGI/R5WVgwwbCNZWe8t59XMr2hi5t9eAyyHoZmx0Y9Qbhl1xzx7GNwwycc2Er9QcyoGYdeJDmJh5RCCK9/EDAWkpNZPa90RJnCrqT18cJwxURtJK8JzN+T/bwqyB3BoQfqiojLqG/4u3inXyytZFypG2hnh4bneknxN0dvrGY9dkVIFz7JHiTV2ic0eXQt8gWtyPYSW+2Tlb6myfcHD9Fpzk+eCWZDuQ75K8BA2tfc4Y+WBpqiycRz5BP8Lbuv6qOu5K99CJIUZvNh1um3x+83UvjJ5Kt7h2Zw+2XOLglOoAl0PSohtOQLmfbIBfbERsWiteZf4SAokzPtU+OM6kH4Tz7jTqJh7hahWPgbJYiKtWTdRbPu7tb9rQP5AF1aTTR4a01IUOU=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(376002)(366004)(346002)(136003)(39860400002)(31696002)(186003)(31686004)(478600001)(30864003)(316002)(86362001)(54906003)(6916009)(5660300002)(6486002)(66574015)(36756003)(8936002)(66476007)(2906002)(4001150100001)(8676002)(4326008)(2616005)(83380400001)(16526019)(52116002)(53546011)(7416002)(66946007)(66556008)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?Y0dKclZlazRRYzNaMkRSVVVwQmRrQUlpZUVzeTd0YUptNXlwcE5RS1ZtT2Ez?=
- =?utf-8?B?eUtaeWRVTDIzM3NDalBoYitHSi9pUDVlcUlpbElBM2ZrcmQ4WEtWZXArRWdl?=
- =?utf-8?B?c2xldlBXeVVXcUdtZEFhTFZocVBXVWJyYzA1NFNtTEpCVldadFRXcGhYZzVy?=
- =?utf-8?B?RDdJY2tCZUFnS0pIMDVhZVJiK0hQSnBySmdxajdhdlFXbFNIMFhrUmhWTXFu?=
- =?utf-8?B?N0dJRVFvYnU4Ym1iSm5CWXI1TFFzc0oxa1BRM2R0UXJDcVJzTnVJZy9JWnJv?=
- =?utf-8?B?T0c2M0xCdUtFNmVRejR3eG8weWMvMVJYa0dianZ4TjZPMmdNQ2xjdXVjYTJK?=
- =?utf-8?B?QUhTdGFZWDd2TFN6dTJ3Y0Q5eUExTE40RktncUI2L1dsVmpmMFJxTTZGSGdw?=
- =?utf-8?B?NzdGd0RhQ2tRUk50SUU5VU9uTWVFSnFHNkQ1dVBSR1FPZVp4QlhEUnVvT2k4?=
- =?utf-8?B?RkE5cWpWdms3M0NDeUZTcDRWZkJad0FjRmptd014ZnVud2hIT3dmelp2NEZv?=
- =?utf-8?B?UHpWM0lKQ0ZKRkhHWlhhYkV6cUxtQ0VUdnpOdmVPd2ZGd0o2UUVNVHpiV3Ja?=
- =?utf-8?B?cHErR01iSHIyTURZSC9pOG80M05vV1ppMC93UnZQaW9jdVZJMGJFRVB6TGZP?=
- =?utf-8?B?bEc5eHBBNVNVZUN6OGZDNk9WRFdRNGVZV3QvSzlGdWIwV2IvdzFGM0RYYjVZ?=
- =?utf-8?B?c09uSXhPbHhoVHI5ZjZnTndHMHg0ZGkxWFRTMExGS21DblpHeTBNdUlHaVgy?=
- =?utf-8?B?QUFuY2ZoNnU5ZVZPVFg2Vk1WSmZEdFB2WkYyVHBoQUc0ZnFUUEVMN3JMaGhV?=
- =?utf-8?B?RE9pcnlKaHlYMkxBeXppZForeVJ4VWtlV1lqOGErdXhTQWs4aHZXNDRJamlq?=
- =?utf-8?B?TGxGVE1JU2xsUmx1cVUwUnVGS0VIQUovZHc5OXlhMFNmTnhremdFdDZIZXB2?=
- =?utf-8?B?Nmoxcllucno2dmVYRS8vS0c5Mno1cGtsRktmbzI4Q2gwaHpEWnd0YkRFSzgz?=
- =?utf-8?B?aVZ6OGwvQTlmLzBBbzBNN1o2SGpzR0QyWW5SR1AvbkluRkI0U2dHb3ZUVUVo?=
- =?utf-8?B?eDNXVC9tMXpNenNsQ3FIQm80L0Z2c3cwclgwbjk3SFQzQ1J6U256UThidTFQ?=
- =?utf-8?B?UllkZE1iMXVoQnZQWlBXOGV6VXZvZGVKK1dvTUpXQmNCQVYwNEwwNVJ2dkNu?=
- =?utf-8?B?S2ZhcEZnUm11M05QR2grT2pGNnkwOFpZYlBWcFNSVWtOaU5uMk4wK3lnc2xZ?=
- =?utf-8?B?Qkh2SU80MTNpdDZ3VjJpMENmYlpNSkNCUFJmV29xNzQwK3A5QUFmRmVaQjNT?=
- =?utf-8?B?b2EvNmxWVEgreEJSM3RNNzZwNkZ5ajN5UzVLOW5CVWtKUDBtTDRPcUZMbTdm?=
- =?utf-8?B?T1lVUVlEUEF6SWc9PQ==?=
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2020 03:48:06.0807
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-Network-Message-Id: a05fe399-8c52-4024-50c1-08d89b2c125d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pFQ5Nr/BX1YQ7fSX9Yeps3iXH/o7Djpt+b88NXXn3qDwbLa0T1J1XYSSyFTUeB6Q
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2821
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2020-12-07_19:2020-12-04,2020-12-07 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- malwarescore=0 bulkscore=0 phishscore=0 mlxlogscore=999 suspectscore=0
- adultscore=0 impostorscore=0 spamscore=0 mlxscore=0 clxscore=1015
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2012080020
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 07 Dec 2020 20:55:51 -0700
+From:   stranche@codeaurora.org
+To:     dsahern@gmail.com, weiwan@google.com, kafai@fb.com,
+        maheshb@google.com, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     subashab@codeaurora.org
+Subject: Refcount mismatch when unregistering netdevice from kernel
+Message-ID: <ca64de092db5a2ac80d22eaa9d662520@codeaurora.org>
+X-Sender: stranche@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi everyone,
+
+We've recently been investigating a refcount problem when unregistering 
+a netdevice from the kernel. It seems that the IPv6 module is still 
+holding various references to the inet6_dev associated with the main 
+netdevice struct that are not being released, preventing the 
+unregistration from completing.
+
+After tracing the various locations that take/release refcounts to these 
+two structs, we see that there are mismatches in the refcount for the 
+inet6_dev in the DST path when there are routes flushed with the 
+rt6_uncached_list_flush_dev() function during rt6_disable_ip() when the 
+device is unregistering. It seems that usually these references are 
+freed via ip6_dst_ifdown() in the dst_ops->ifdown callback from 
+dst_dev_put(), but this callback is not executed in the 
+rt6_uncached_list_flush_dev() function. Instead, a reference to the 
+inet6_dev is simply dropped to account for the inet6_dev_get() in 
+ip6_rt_copy_init().
+
+Unfortunately, this does not seem to be sufficient, as these uncached 
+routes have an additional refcount on the inet6_device attached to them 
+from the DST allocation. In the normal case, this reference from the DST 
+allocation will happen in the dst_ops->destroy() callback in the 
+dst_destroy() function when the DST is being freed. However, since 
+rt6_uncached_list_flush_dev() changes the inet6_device stored in the DST 
+to the loopback device, the dst_ops->destroy() callback doesn't 
+decrement the refcount on the correct inet6_dev struct.
+
+We're wondering if it would be appropriate to put() the refcount 
+additionally for the uncached routes when flushing out the list for the 
+unregistering device. Perhaps something like the following?
+
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c index 6602f43..554b07b 
+100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -156,9 +156,11 @@ void rt6_uncached_list_del(struct rt6_info *rt)
+
+   char rt6_uncached_list_flush_dev_log1[1000][512];
+   int rt6_uncached_list_flush_dev_log1_iter = 0; -static void 
+rt6_uncached_list_flush_dev(struct net *net, struct net_device *dev)
++static void rt6_uncached_list_flush_dev(struct net *net, struct 
+net_device *dev,
++                                        unsigned long event)
+   {
+          struct net_device *loopback_dev = net->loopback_dev;
++       bool unreg = event == NETDEV_UNREGISTER;
+          int cpu;
+
+          if (dev == loopback_dev)
+@@ -190,6 +192,10 @@ static void rt6_uncached_list_flush_dev(struct net 
+*net, struct net_device *dev)
+                          }
+
+                          if (rt_idev->dev == dev) {
++                               if (rt->dst.ops->ifdown)
++                                       rt->dst.ops->ifdown(&rt->dst, 
+dev,
++                                                           unreg);
++
+                                  rt->rt6i_idev = 
+in6_dev_get(loopback_dev);
+                                  in6_dev_put(rt_idev);
+                          }
+@@ -4781,7 +4787,7 @@ void rt6_sync_down_dev(struct net_device *dev, 
+unsigned long event)
+   void rt6_disable_ip(struct net_device *dev, unsigned long event)
+   {
+          rt6_sync_down_dev(dev, event);
+-       rt6_uncached_list_flush_dev(dev_net(dev), dev);
++       rt6_uncached_list_flush_dev(dev_net(dev), dev, event);
+          neigh_ifdown(&nd_tbl, dev);
+   }
 
 
-On 12/7/20 1:55 PM, Weqaar Janjua wrote:
-> On Sat, 28 Nov 2020 at 03:13, Yonghong Song <yhs@fb.com> wrote:
->>
->>
->>
->> On 11/27/20 9:54 AM, Weqaar Janjua wrote:
->>> On Fri, 27 Nov 2020 at 04:19, Yonghong Song <yhs@fb.com> wrote:
->>>>
->>>>
->>>>
->>>> On 11/26/20 1:22 PM, Weqaar Janjua wrote:
->>>>> On Thu, 26 Nov 2020 at 09:01, Björn Töpel <bjorn.topel@intel.com> wrote:
->>>>>>
->>>>>> On 2020-11-26 07:44, Yonghong Song wrote:
->>>>>>>
->>>>>> [...]
->>>>>>>
->>>>>>> What other configures I am missing?
->>>>>>>
->>>>>>> BTW, I cherry-picked the following pick from bpf tree in this experiment.
->>>>>>>       commit e7f4a5919bf66e530e08ff352d9b78ed89574e6b (HEAD -> xsk)
->>>>>>>       Author: Björn Töpel <bjorn.topel@intel.com>
->>>>>>>       Date:   Mon Nov 23 18:56:00 2020 +0100
->>>>>>>
->>>>>>>           net, xsk: Avoid taking multiple skbuff references
->>>>>>>
->>>>>>
->>>>>> Hmm, I'm getting an oops, unless I cherry-pick:
->>>>>>
->>>>>> 36ccdf85829a ("net, xsk: Avoid taking multiple skbuff references")
->>>>>>
->>>>>> *AND*
->>>>>>
->>>>>> 537cf4e3cc2f ("xsk: Fix umem cleanup bug at socket destruct")
->>>>>>
->>>>>> from bpf/master.
->>>>>>
->>>>>
->>>>> Same as Bjorn's findings ^^^, additionally applying the second patch
->>>>> 537cf4e3cc2f [PASS] all tests for me
->>>>>
->>>>> PREREQUISITES: [ PASS ]
->>>>> SKB NOPOLL: [ PASS ]
->>>>> SKB POLL: [ PASS ]
->>>>> DRV NOPOLL: [ PASS ]
->>>>> DRV POLL: [ PASS ]
->>>>> SKB SOCKET TEARDOWN: [ PASS ]
->>>>> DRV SOCKET TEARDOWN: [ PASS ]
->>>>> SKB BIDIRECTIONAL SOCKETS: [ PASS ]
->>>>> DRV BIDIRECTIONAL SOCKETS: [ PASS ]
->>>>>
->>>>> With the first patch alone, as soon as we enter DRV/Native NOPOLL mode
->>>>> kernel panics, whereas in your case NOPOLL tests were falling with
->>>>> packets being *lost* as per seqnum mismatch.
->>>>>
->>>>> Can you please test this out with both patches and let us know?
->>>>
->>>> I applied both the above patches in bpf-next as well as this patch set,
->>>> I still see failures. I am attaching my config file. Maybe you can take
->>>> a look at what is the issue.
->>>>
->>> Thanks for the config, can you please confirm the compiler version,
->>> and resource limits i.e. stack size, memory, etc.?
->>
->> root@arch-fb-vm1:~/net-next/net-next/tools/testing/selftests/bpf ulimit -a
->> core file size          (blocks, -c) unlimited
->> data seg size           (kbytes, -d) unlimited
->> scheduling priority             (-e) 0
->> file size               (blocks, -f) unlimited
->> pending signals                 (-i) 15587
->> max locked memory       (kbytes, -l) unlimited
->> max memory size         (kbytes, -m) unlimited
->> open files                      (-n) 1024
->> pipe size            (512 bytes, -p) 8
->> POSIX message queues     (bytes, -q) 819200
->> real-time priority              (-r) 0
->> stack size              (kbytes, -s) 8192
->> cpu time               (seconds, -t) unlimited
->> max user processes              (-u) 15587
->> virtual memory          (kbytes, -v) unlimited
->> file locks                      (-x) unlimited
->>
->> compiler: gcc 8.2
->>
->>>
->>> Only NOPOLL tests are failing for you as I see it, do the same tests
->>> fail every time?
->>
->> In my case, with above two bpf patches applied as well, I got:
->> $ ./test_xsk.sh
->> setting up ve9127: root: 192.168.222.1/30
->>
->> setting up ve4520: af_xdp4520: 192.168.222.2/30
->>
->> Spec file created: veth.spec
->>
->> PREREQUISITES: [ PASS ]
->>
->> # Interface found: ve9127
->>
->> # Interface found: ve4520
->>
->> # NS switched: af_xdp4520
->>
->> 1..1
->>
->> # Interface [ve4520] vector [Rx]
->>
->> # Interface [ve9127] vector [Tx]
->>
->> # Sending 10000 packets on interface ve9127
->>
->> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [59], payloadseqnum [0]
->>
->> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
->>
->> SKB NOPOLL: [ FAIL ]
->>
->> # Interface found: ve9127
->>
->> # Interface found: ve4520
->>
->> # NS switched: af_xdp4520
->> # NS switched: af_xdp4520
->>
->> 1..1
->> # Interface [ve4520] vector [Rx]
->> # Interface [ve9127] vector [Tx]
->> # Sending 10000 packets on interface ve9127
->> # End-of-tranmission frame received: PASS
->> # Received 10000 packets on interface ve4520
->> ok 1 PASS: SKB POLL
->> # Totals: pass:1 fail:0 xfail:0 xpass:0 skip:0 error:0
->> SKB POLL: [ PASS ]
->> # Interface found: ve9127
->> # Interface found: ve4520
->> # NS switched: af_xdp4520
->> 1..1
->> # Interface [ve4520] vector [Rx]
->> # Interface [ve9127] vector [Tx]
->> # Sending 10000 packets on interface ve9127
->> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [153], payloadseqnum [0]
->> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
->> DRV NOPOLL: [ FAIL ]
->> # Interface found: ve9127
->> # Interface found: ve4520
->> # NS switched: af_xdp4520
->> 1..1
->> # Interface [ve4520] vector [Rx]
->> # Interface [ve9127] vector [Tx]
->> # Sending 10000 packets on interface ve9127
->> # End-of-tranmission frame received: PASS
->> # Received 10000 packets on interface ve4520
->> ok 1 PASS: DRV POLL
->> # Totals: pass:1 fail:0 xfail:0 xpass:0 skip:0 error:0
->> DRV POLL: [ PASS ]
->> # Interface found: ve9127
->> # Interface found: ve4520
->> # NS switched: af_xdp4520
->> 1..1
->> # Creating socket
->> # Interface [ve4520] vector [Rx]
->> # Interface [ve9127] vector [Tx]
->> # Sending 10000 packets on interface ve9127
->> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [54], payloadseqnum [0]
->> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
->> SKB SOCKET TEARDOWN: [ FAIL ]
->> # Interface found: ve9127
->> # Interface found: ve4520
->> # NS switched: af_xdp4520
->> 1..1
->> # Creating socket
->> # Interface [ve4520] vector [Rx]
->> # Interface [ve9127] vector [Tx]
->> # Sending 10000 packets on interface ve9127
->> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [0], payloadseqnum [0]
->> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
->> DRV SOCKET TEARDOWN: [ FAIL ]
->> # Interface found: ve9127
->> # Interface found: ve4520
->> # NS switched: af_xdp4520
->> 1..1
->> # Creating socket
->> # Interface [ve4520] vector [Rx]
->> # Interface [ve9127] vector [Tx]
->> # Sending 10000 packets on interface ve9127
->> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [64], payloadseqnum [0]
->> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
->> SKB BIDIRECTIONAL SOCKETS: [ FAIL ]
->> # Interface found: ve9127
->> # Interface found: ve4520
->> # NS switched: af_xdp4520
->> 1..1
->> # Creating socket
->> # Interface [ve4520] vector [Rx]
->> # Interface [ve9127] vector [Tx]
->> # Sending 10000 packets on interface ve9127
->> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [83], payloadseqnum [0]
->> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
->> DRV BIDIRECTIONAL SOCKETS: [ FAIL ]
->> cleaning up...
->> removing link ve4520
->> removing ns af_xdp4520
->> removing spec file: veth.spec
->>
->> Second runs have one previous success becoming failure.
->>
->> ./test_xsk.sh
->> setting up ve2458: root: 192.168.222.1/30
->>
->> setting up ve4468: af_xdp4468: 192.168.222.2/30
->>
->> [  286.597111] IPv6: ADDRCONF(NETDEV_CHANGE): ve4468: link becomes ready
->>
->> Spec file created: veth.spec
->>
->> PREREQUISITES: [ PASS ]
->>
->> # Interface found: ve2458
->>
->> # Interface found: ve4468
->>
->> # NS switched: af_xdp4468
->>
->> 1..1
->>
->> # Interface [ve4468] vector [Rx]
->>
->> # Interface [ve2458] vector [Tx]
->>
->> # Sending 10000 packets on interface ve2458
->>
->> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [67], payloadseqnum [0]
->>
->> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
->>
->> SKB NOPOLL: [ FAIL ]
->>
->> # Interface found: ve2458
->>
->> # Interface found: ve4468
->>
->> # NS switched: af_xdp4468
->>
->> 1..1
->>
->> # Interface [ve4468] vector [Rx]
->>
->> # Interface [ve2458] vector [Tx]
->>
->> # Sending 10000 packets on interface ve2458
->>
->> # End-of-tranmission frame received: PASS
->> # Received 10000 packets on interface ve4468
->> ok 1 PASS: SKB POLL
->> # Totals: pass:1 fail:0 xfail:0 xpass:0 skip:0 error:0
->> SKB POLL: [ PASS ]
->> # Interface found: ve2458
->> # Interface found: ve4468
->> # NS switched: af_xdp4468
->> 1..1
->> # Interface [ve4468] vector [Rx]
->> # Interface [ve2458] vector [Tx]
->> # Sending 10000 packets on interface ve2458
->> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [191], payloadseqnum [0]
->> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
->> DRV NOPOLL: [ FAIL ]
->> # Interface found: ve2458
->> # Interface found: ve4468
->> # NS switched: af_xdp4468
->> 1..1
->> # Interface [ve4468] vector [Rx]
->> # Interface [ve2458] vector [Tx]
->> # Sending 10000 packets on interface ve2458
->> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [0], payloadseqnum [0]
->> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
->> DRV POLL: [ FAIL ]
->> # Interface found: ve2458
->> # Interface found: ve4468
->> # NS switched: af_xdp4468
->> 1..1
->> # Creating socket
->> # Interface [ve4468] vector [Rx]
->> # Interface [ve2458] vector [Tx]
->> # Sending 10000 packets on interface ve2458
->> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [0], payloadseqnum [0]
->> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
->> SKB SOCKET TEARDOWN: [ FAIL ]
->> # Interface found: ve2458
->> # Interface found: ve4468
->> # NS switched: af_xdp4468
->> 1..1
->> # Creating socket
->> # Interface [ve4468] vector [Rx]
->> # Interface [ve2458] vector [Tx]
->> # Sending 10000 packets on interface ve2458
->> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [171], payloadseqnum [0]
->> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
->> DRV SOCKET TEARDOWN: [ FAIL ]
->> # Interface found: ve2458
->> # Interface found: ve4468
->> # NS switched: af_xdp4468
->> 1..1
->> # Creating socket
->> # Interface [ve4468] vector [Rx]
->> # Interface [ve2458] vector [Tx]
->> # Sending 10000 packets on interface ve2458
->> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [124], payloadseqnum [0]
->> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
->> SKB BIDIRECTIONAL SOCKETS: [ FAIL ]
->> # Interface found: ve2458
->> # Interface found: ve4468
->> # NS switched: af_xdp4468
->> 1..1
->> # Creating socket
->> # Interface [ve4468] vector [Rx]
->> # Interface [ve2458] vector [Tx]
->> # Sending 10000 packets on interface ve2458
->> not ok 1 ERROR: [worker_pkt_validate] prev_pkt [195], payloadseqnum [0]
->> # Totals: pass:0 fail:1 xfail:0 xpass:0 skip:0 error:0
->> DRV BIDIRECTIONAL SOCKETS: [ FAIL ]
->> cleaning up...
->> removing link ve4468
->> removing ns af_xdp4468
->> removing spec file: veth.spec
->>
->>>
->>> I will need to spend some time debugging this to have a fix.
->>
->> Thanks.
->>
->>>
->>> Thanks,
->>> /Weqaar
->>>
->>>>>
->>>>>> Can I just run test_xsk.sh at tools/testing/selftests/bpf/ directory?
->>>>>> This will be easier than the above for bpf developers. If it does not
->>>>>> work, I would like to recommend to make it work.
->>>>>>
->>>>> yes test_xsk.shis self contained, will update the instructions in there with v4.
->>>>
->>>> That will be great. Thanks!
->>>>
-> v4 is out on the list, incorporating most if not all your suggestions
-> to the best of my memory.
-> 
-> I was able to reproduce the issue you were seeing (from your logs) ->
-> veth interfaces were receiving packets from the IPv6 neighboring
-> system (thanks @Björn Töpel for mentioning this).
-> 
-> The packet validation algo in *xdpxceiver* *assumed* all packets would
-> be IPv4 and intended for Rx.
-> Rx validates packets on both ip->tos = 0x9 (id for xsk tests) and
-> ip->version = 0x4, ignores the rest.
-> 
-> Hoping the tests now work -> PASS in your environment.
+For reference, here are some samples of the refcounts on the 
+inet6_device. In this log we saw the inet6_device had a final refcount 
+of 4 while unregistering.
+holds                 puts
+ip6_rt_copy_init 17   13 ip6_dst_ifdown
+xfrm6_fill_dst   6     5 xfrm6_dst_destroy
+                        1 rt6_disable_ip
+icmp6_dst_alloc  28   25 ip6_dst_destroy
+                        3 rt6_disable_ip
 
-Yes, no all tests passed in my environment. I will reply the v4
-with Test-by tag. Now I think xsk people can really look at details.
-
-> 
-> Thanks,
-> /Weqaar
-> 
->>>>>
->>>>> Thanks,
->>>>> /Weqaar
->>>>>>
->>>>>> Björn
+Thanks,
+Sean
