@@ -2,186 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A8E62D2152
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 04:13:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61CD92D2157
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 04:15:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726867AbgLHDMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 22:12:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46182 "EHLO
+        id S1726144AbgLHDPe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 22:15:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726002AbgLHDMv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 22:12:51 -0500
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF39C0613D6;
-        Mon,  7 Dec 2020 19:12:10 -0800 (PST)
-Received: by mail-pl1-x644.google.com with SMTP id bj5so6240345plb.4;
-        Mon, 07 Dec 2020 19:12:10 -0800 (PST)
+        with ESMTP id S1725881AbgLHDPe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 22:15:34 -0500
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFAC8C061749;
+        Mon,  7 Dec 2020 19:14:53 -0800 (PST)
+Received: by mail-yb1-xb42.google.com with SMTP id w135so9264625ybg.13;
+        Mon, 07 Dec 2020 19:14:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=KQ9uRpmBuJGJjQzyCNv6aAvsoTL8pzGuqnCLRpSMCuE=;
-        b=Acfz00LgKxRmaEQgc6hVcS/CaUrWpMs9L/FRpmlup1VUbqPqBbTCn5UYRRLrdxoEv7
-         4hXs7iplcJVBOSYAoJgOFxjKN84hhQi733S/zNunoOdUBqu/zcvIexyfy86ZtQKeCKXr
-         FF8CZJ3E2VQ0OtN7JHLl5mU4/EE//9jp56/IiRDilUrTubaB+0mx2mRt9GY19wFB5vdv
-         K9G1N3k3pYbaM98cSv757Fh5WTPyigD8NF+X03KZd6WK51AfFYmaQwwgKMTawV/y9zwc
-         RYFCohbWoqpvLp7lr2XDNzcCnbX7M1pPlVJIikLYRVz+u2QD+UR05BS5wsvslKyAMGEM
-         JHIg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ekn60A31SGelEz2vp8jrpCctkA4cbgDSZHs8+qB+Ka4=;
+        b=ttDw0AeY7mrvYySu2eaccCjpXsFDh0GQdX8E8AdZXTcnATjaj/hLwuX7/hxTLmdhvH
+         0AK93oCIfym5664JIOH+yRh4BIBK9I2Q/9gu+X0ipw9mapfkZa1jXIkUzNMDw5Hp1BPw
+         gdFph64RUPH6u8e/impuTw1SE4C0lbMRDSxAdtx9itkb+KGlMm6nM5uWy2JKXXBvLrY5
+         T/XOQnEbyq9y+jlY+1TlEWKucfQ4Aic2Ol4+ORvvSFl0YUhF3G+7favEegVRqz3kCjiz
+         6osoO0zU4YrX3R929mtPwzdTgx3fV2f4Zyn/9XtNBr3rf/RAcWu4dHPLffAXZZ/FD7KP
+         O2lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KQ9uRpmBuJGJjQzyCNv6aAvsoTL8pzGuqnCLRpSMCuE=;
-        b=pq8TOs1Na/+xExjNJpGzAt7DjU3Ye6yXxAXnBYSCG2LfhKluW41veZzlKynD4LV8H2
-         OzSApC8v1UXe7Ti6AO2YE6GlCDgbiWeWK5i9OhL35Q5wP1VLdjORfk9+2aVJC37+1qph
-         lc2aVreojQVgzay9q1dSCDO+lNQqsmcTnFqvcUtIN2q5XCWbOYPm/2sa6eb6fAXPxVcu
-         PVCraK9I3vNpkqIf0XMItaxYHgTHWXxL4+FUKPz+pk85WY/fbjKM1ULATnkf2wUusMXa
-         YK4Ax/W6A172CrR335Ylpxv7Ah9g8Va6LiajMX8OUz64wgUsRwYs0YgnGOia4JbP3++0
-         5gQQ==
-X-Gm-Message-State: AOAM532qC7UavFb0nGQXJ6CqA/Avx6o9zMW9iJwF1MgBDYDhbMrT4gLR
-        oQba90WIxhSWoVsi5ngj/HOd8dTZiWI=
-X-Google-Smtp-Source: ABdhPJwA6US2Pl81XZE38AJ1RVMqyM4bpDFYjf5ZTP8XIudG+4NI6thbos5Oq7vokil1MB1cw5lBeg==
-X-Received: by 2002:a17:902:b7cb:b029:db:c0d6:96ee with SMTP id v11-20020a170902b7cbb02900dbc0d696eemr864841plz.21.1607397130338;
-        Mon, 07 Dec 2020 19:12:10 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:400::5:7f0])
-        by smtp.gmail.com with ESMTPSA id a124sm16300222pfd.43.2020.12.07.19.12.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Dec 2020 19:12:09 -0800 (PST)
-Date:   Mon, 7 Dec 2020 19:12:06 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Alan Maguire <alan.maguire@oracle.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net,
-        kernel-team@fb.com
-Subject: Re: [PATCH bpf-next] libbpf: support module BTF for
- BPF_TYPE_ID_TARGET CO-RE relocation
-Message-ID: <20201208031206.26mpjdbrvqljj7vl@ast-mbp>
-References: <20201205025140.443115-1-andrii@kernel.org>
- <alpine.LRH.2.23.451.2012071623080.3652@localhost>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ekn60A31SGelEz2vp8jrpCctkA4cbgDSZHs8+qB+Ka4=;
+        b=riKKzydV30heOdngUgmFusEfVvxyN0D9mUQUeZTLqMTw1ELaAJ6chC+9LDojUj9f3Q
+         fcVOaGSo3WeHBUzvUro5qgRhaWhLErdMo1gO1fkiaoMCqjHY1gFTA+4LryMC2VBiOBl0
+         sP9Sg9D5M8AoWaG/xmC+cgFHu8Uq1BIU9ngEpE4XVxipCCKeDn2pUwCVIENiiiS9UAbu
+         WTyfaMdyUqSac5Fg3qbORNOkvXVwCz7Yez553y0lHGRq2cQbIKc6khj+SIiPMM0T+3U1
+         GwtwDUKCL7dn64TYkNFnIfkp0jLMj61SSfnUiPnlH8wr0hoyv18b6eZAhZiVgAhbmA/E
+         FdWQ==
+X-Gm-Message-State: AOAM5321Pxh5oKW6gHzCGRz6P8ZIr1WlDz+MSkeiseKSsTApPGF1W7ky
+        0IQFjBKcYG+ktzCVPMvq9/ul5WEu/G7vpwxBev6zB88noiA=
+X-Google-Smtp-Source: ABdhPJx1zhVX0q7c1lIXOooLR8QPJ79/E+pDwzkRiAc4wMF8U/sEa43odhXLapBSeqjbHAAdFCWoy4dJ8brCsYlEY44=
+X-Received: by 2002:a25:eb0f:: with SMTP id d15mr13395997ybs.425.1607397293136;
+ Mon, 07 Dec 2020 19:14:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.LRH.2.23.451.2012071623080.3652@localhost>
+References: <20201207052057.397223-1-saeed@kernel.org>
+In-Reply-To: <20201207052057.397223-1-saeed@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 7 Dec 2020 19:14:42 -0800
+Message-ID: <CAEf4BzZe2162nMsamMKkGRpR_9hUnaATWocE=XjgZd+2cJk5Jw@mail.gmail.com>
+Subject: Re: [PATCH bpf] tools/bpftool: Add/Fix support for modules btf dump
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Andrii Nakryiko <andrii@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 07, 2020 at 04:38:16PM +0000, Alan Maguire wrote:
-> On Fri, 4 Dec 2020, Andrii Nakryiko wrote:
-> 
-> > When Clang emits ldimm64 instruction for BPF_TYPE_ID_TARGET CO-RE relocation,
-> > put module BTF FD, containing target type, into upper 32 bits of imm64.
-> > 
-> > Because this FD is internal to libbpf, it's very cumbersome to test this in
-> > selftests. Manual testing was performed with debug log messages sprinkled
-> > across selftests and libbpf, confirming expected values are substituted.
-> > Better testing will be performed as part of the work adding module BTF types
-> > support to  bpf_snprintf_btf() helpers.
-> > 
-> > Cc: Alan Maguire <alan.maguire@oracle.com>
-> > Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-> > ---
-> >  tools/lib/bpf/libbpf.c | 19 ++++++++++++++++---
-> >  1 file changed, 16 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > index 9be88a90a4aa..539956f7920a 100644
-> > --- a/tools/lib/bpf/libbpf.c
-> > +++ b/tools/lib/bpf/libbpf.c
-> > @@ -4795,6 +4795,7 @@ static int load_module_btfs(struct bpf_object *obj)
-> >  
-> >  		mod_btf = &obj->btf_modules[obj->btf_module_cnt++];
-> >  
-> > +		btf__set_fd(btf, fd);
-> >  		mod_btf->btf = btf;
-> >  		mod_btf->id = id;
-> >  		mod_btf->fd = fd;
-> > @@ -5445,6 +5446,10 @@ struct bpf_core_relo_res
-> >  	__u32 orig_type_id;
-> >  	__u32 new_sz;
-> >  	__u32 new_type_id;
-> > +	/* FD of the module BTF containing the target candidate, or 0 for
-> > +	 * vmlinux BTF
-> > +	 */
-> > +	int btf_obj_fd;
-> >  };
-> >  
-> >  /* Calculate original and target relocation values, given local and target
-> > @@ -5469,6 +5474,7 @@ static int bpf_core_calc_relo(const struct bpf_program *prog,
-> >  	res->fail_memsz_adjust = false;
-> >  	res->orig_sz = res->new_sz = 0;
-> >  	res->orig_type_id = res->new_type_id = 0;
-> > +	res->btf_obj_fd = 0;
-> >  
-> >  	if (core_relo_is_field_based(relo->kind)) {
-> >  		err = bpf_core_calc_field_relo(prog, relo, local_spec,
-> > @@ -5519,6 +5525,9 @@ static int bpf_core_calc_relo(const struct bpf_program *prog,
-> >  	} else if (core_relo_is_type_based(relo->kind)) {
-> >  		err = bpf_core_calc_type_relo(relo, local_spec, &res->orig_val);
-> >  		err = err ?: bpf_core_calc_type_relo(relo, targ_spec, &res->new_val);
-> > +		if (!err && relo->kind == BPF_TYPE_ID_TARGET &&
-> > +		    targ_spec->btf != prog->obj->btf_vmlinux) 
-> > +			res->btf_obj_fd = btf__fd(targ_spec->btf);
-> 
-> Sorry about this Andrii, but I'm a bit stuck here.
-> 
-> I'm struggling to get tests working where the obj fd is used to designate
-> the module BTF. Unless I'm missing something there are a few problems:
-> 
-> - the fd association is removed by libbpf when the BPF program has loaded; 
-> the module fds are closed and the module BTF is discarded.  However even if 
-> that isn't done (and as you mentioned, we could hold onto BTF that is in 
-> use, and I commented out the code that does that to test) - there's 
-> another problem:
-> - I can't see a way to use the object fd value we set here later in BPF 
-> program context; btf_get_by_fd() returns -EBADF as the fd is associated 
-> with the module BTF in the test's process context, not necessarily in 
-> the context that the BPF program is running.  Would it be possible in this 
-> case to use object id? Or is there another way to handle the fd->module 
-> BTF association that we need to make in BPF program context that I'm 
-> missing?
-> - A more long-term issue; if we use fds to specify module BTFs and write 
-> the object fd into the program, we can pin the BPF program such that it 
-> outlives fds that refer to its associated BTF.  So unless we pinned the 
-> BTF too, any code that assumed the BTF fd-> module mapping was valid would 
-> start to break once the user-space side went away and the pinned program 
-> persisted. 
+On Sun, Dec 6, 2020 at 9:21 PM <saeed@kernel.org> wrote:
+>
+> From: Saeed Mahameed <saeedm@nvidia.com>
+>
+> While playing with BTF for modules, i noticed that executing the command:
+> $ bpftool btf dump id <module's btf id>
+>
+> Fails due to lack of information in the BTF data.
+>
+> Maybe I am missing a step but actually adding the support for this is
+> very simple.
 
-All of the above are not issues. They are features of FD based approach.
-When the program refers to btf via fd the verifier needs to increment btf's refcnt
-so it won't go away while the prog is running. For module's BTF it means
-that the module can be unloaded, but its BTF may stay around if there is a prog
-that needs to access it.
-I think the missing piece in the above is that btf_get_by_fd() should be
-done at load time instead of program run-time.
-Everything FD based needs to behave similar to map_fds where ld_imm64 insn
-contains map_fd that gets converted to map_ptr by the verifier at load time.
-In this case single ld_imm64 with 32-bit FD + 32-bit btf_id is not enough.
-So either libbpf or the verifier need to insert additional instruction.
-I'm not sure yet how to extend 'struct btf_ptr' cleanly, so it looks good
-from C side. 
-In the other patch I saw:
-struct btf_ptr {
-        void *ptr;
-        __u32 type_id;
--       __u32 flags;            /* BTF ptr flags; unused at present. */
-+       __u32 obj_id;           /* BTF object; vmlinux if 0 */
- };
-The removal of flags cannot be done, since it will break progs.
-Probably something like this:
-struct btf_ptr {
-  void *ptr;
-  __u32 type_id;
-  __u32 flags;
-  __u64 btf_obj_fd; /* this is 32-bit FD for libbpf which will become pointer after load */
-};
-would be the most convenient from the bpf prog side. The ld_imm64 init of
-btf_obj_fd will be replaced with absolute btf pointer by the verifier. So when
-bpf_snprintf_btf() is called the prog will pass the kernel internal pointer
-of struct btf to the helper. No extra run-time checks needed.
-bpf_snprintf_btf() would print that type_id within given struct btf object.
-libbpf would need to deal with two relos. One to store btf_id from
-bpf_core_type_id_kernel() into type_id. And another to find module's BTF and
-store its FD into btf_obj_fd with ld_imm64. I'm still thinking to how to frame
-that cleanly from C side.
-Other ideas?
+yes, bpftool takes -B <path> argument for specifying base BTF. So if
+you added -B /sys/kernel/btf/vmlinux, it should have worked. I've
+added auto-detection logic for the case of `btf dump file
+/sys/kernel/btf/<module>` (see [0]), and we can also add it for when
+ID corresponds to a module BTF. But I think it's simplest to re-use
+the logic and just open /sys/kernel/btf/vmlinux, instead of adding
+narrowly-focused libbpf API for that.
+
+>
+> To completely parse modules BTF data, we need the vmlinux BTF as their
+> "base btf", which can be easily found by iterating through the btf ids and
+> looking for btf.name == "vmlinux".
+>
+> I am not sure why this hasn't been added by the original patchset
+
+because I never though of dumping module BTF by id, given there is
+nicely named /sys/kernel/btf/<module> :)
+
+> "Integrate kernel module BTF support", as adding the support for
+> this is very trivial. Unless i am missing something, CCing Andrii..
+>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+> CC: Andrii Nakryiko <andrii@kernel.org>
+> ---
+>  tools/lib/bpf/btf.c      | 57 ++++++++++++++++++++++++++++++++++++++++
+>  tools/lib/bpf/btf.h      |  2 ++
+>  tools/lib/bpf/libbpf.map |  1 +
+>  3 files changed, 60 insertions(+)
+>
+
+[...]
