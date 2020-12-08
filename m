@@ -2,191 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D46A52D2736
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 10:13:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 105D82D275F
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 10:20:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728717AbgLHJMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 04:12:42 -0500
-Received: from Mailgw01.mediatek.com ([1.203.163.78]:40858 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726418AbgLHJMl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 04:12:41 -0500
-X-UUID: 6e81b3936ebc4270a1cfb3c457e472fb-20201208
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=cULiqlWoL37xRZzHcBhAg0U9sWJYWEdozEvDASKEWxQ=;
-        b=Sr5RcYgXKMnQ/tBY5BfY8Fx93D3oXG4gM7piSonUw1MATqulFal5c6gdpciCzvKk7bw+wwOGg3iC5+E1vqkktO3HxvsptPYf1JAoktgSCWqtcsXwgx3B5WQ52vezbj0i/DRugQd81Ga2x0wmMeQ5mtEQmxi3gvH1syYMZytmCYI=;
-X-UUID: 6e81b3936ebc4270a1cfb3c457e472fb-20201208
-Received: from mtkcas32.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
-        (envelope-from <chunfeng.yun@mediatek.com>)
-        (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1170607905; Tue, 08 Dec 2020 17:11:51 +0800
-Received: from MTKCAS32.mediatek.inc (172.27.4.184) by MTKMBS31N2.mediatek.inc
- (172.27.4.87) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 8 Dec
- 2020 17:11:48 +0800
-Received: from [10.17.3.153] (10.17.3.153) by MTKCAS32.mediatek.inc
- (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 8 Dec 2020 17:11:46 +0800
-Message-ID: <1607418707.23328.13.camel@mhfsdcap03>
-Subject: Re: [PATCH v3 09/11] dt-bindings: usb: convert
- mediatek,mtk-xhci.txt to YAML schema
-From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        "David Airlie" <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Kishon Vijay Abraham I" <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stanley Chu <stanley.chu@mediatek.com>,
-        "Min Guo" <min.guo@mediatek.com>,
-        <dri-devel@lists.freedesktop.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>, <linux-usb@vger.kernel.org>
-Date:   Tue, 8 Dec 2020 17:11:47 +0800
-In-Reply-To: <20201207212436.GA844756@robh.at.kernel.org>
-References: <20201118082126.42701-1-chunfeng.yun@mediatek.com>
-         <20201118082126.42701-9-chunfeng.yun@mediatek.com>
-         <20201207212436.GA844756@robh.at.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.10.4-0ubuntu2 
+        id S1728585AbgLHJTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 04:19:41 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:52298 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728527AbgLHJTj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 04:19:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607419093;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Af9UgpwqHoabg6xVM1FDF5VpKj0YXv9xZDctidosARM=;
+        b=WoFZb7Q2VXJrh3hN1fRpB35HFSBLCp7xbNwiiU7Bwvo9GEo7LRyUEtBBByU2zuQs30ncdR
+        qUjhb2AvXLKIQgYnzxbT6T672XksNzuDEaZUEFYQnrbTWNXZ5kwHggN3AxdVK/r8EKvXEP
+        1POysRiMopOixpdwh1VaIGF/ivpblH8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-133-j3_6w5N1NCam5W3BvH8aNA-1; Tue, 08 Dec 2020 04:18:09 -0500
+X-MC-Unique: j3_6w5N1NCam5W3BvH8aNA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 422CE9CDA0;
+        Tue,  8 Dec 2020 09:18:06 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-116-67.rdu2.redhat.com [10.10.116.67])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9719219C78;
+        Tue,  8 Dec 2020 09:18:03 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <CAMj1kXG5_ePTr7KCxE-m6g9xNHr72-xPMoED7Jmx38uNt6bzoQ@mail.gmail.com>
+References: <CAMj1kXG5_ePTr7KCxE-m6g9xNHr72-xPMoED7Jmx38uNt6bzoQ@mail.gmail.com> <20201204154626.GA26255@fieldses.org> <2F96670A-58DC-43A6-A20E-696803F0BFBA@oracle.com> <160518586534.2277919.14475638653680231924.stgit@warthog.procyon.org.uk> <118876.1607093975@warthog.procyon.org.uk> <122997.1607097713@warthog.procyon.org.uk> <20201204160347.GA26933@fieldses.org> <125709.1607100601@warthog.procyon.org.uk> <CAMj1kXEOm_yh478i+dqPiz0eoBxp4eag3j2qHm5eBLe+2kihoQ@mail.gmail.com> <127458.1607102368@warthog.procyon.org.uk> <CAMj1kXFe50HvZLxG6Kh-oYBCf5uu51hhuh7mW5UQ62ZSqmu_xA@mail.gmail.com> <468625.1607342512@warthog.procyon.org.uk> <CAMj1kXH_gEjgZKx=8uQgv=ckBqTVoh3vrHj=O-nY-nm5VMgLaA@mail.gmail.com> <482243.1607350500@warthog.procyon.org.uk>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     dhowells@redhat.com, Bruce Fields <bfields@fieldses.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, linux-afs@lists.infradead.org
+Subject: Re: Why the auxiliary cipher in gss_krb5_crypto.c?
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: 165E650B2B563F9B27267EB1C08846DD6F14A21BD51068867FB00394F43FA29A2000:8
-X-MTK:  N
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <931124.1607419082.1@warthog.procyon.org.uk>
+Date:   Tue, 08 Dec 2020 09:18:02 +0000
+Message-ID: <931125.1607419082@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gTW9uLCAyMDIwLTEyLTA3IGF0IDE1OjI0IC0wNjAwLCBSb2IgSGVycmluZyB3cm90ZToNCj4g
-T24gV2VkLCBOb3YgMTgsIDIwMjAgYXQgMDQ6MjE6MjRQTSArMDgwMCwgQ2h1bmZlbmcgWXVuIHdy
-b3RlOg0KPiA+IENvbnZlcnQgbWVkaWF0ZWssbXRrLXhoY2kudHh0IHRvIFlBTUwgc2NoZW1hIG1l
-ZGlhdGVrLG10ay14aGNpLnlhbWwNCj4gPiANCj4gPiBTaWduZWQtb2ZmLWJ5OiBDaHVuZmVuZyBZ
-dW4gPGNodW5mZW5nLnl1bkBtZWRpYXRlay5jb20+DQo+ID4gLS0tDQo+ID4gdjM6DQo+ID4gICAx
-LiBmaXggeWFtbGxpbnQgd2FybmluZw0KPiA+ICAgMi4gcmVtb3ZlIHBpbmN0cmwqIHByb3BlcnRp
-ZXMgc3VwcG9ydGVkIGJ5IGRlZmF1bHQgc3VnZ2VzdGVkIGJ5IFJvYg0KPiA+ICAgMy4gZHJvcCB1
-bnVzZWQgbGFiZWxzDQo+ID4gICA0LiBtb2RpZnkgZGVzY3JpcHRpb24gb2YgbWVkaWF0ZWssc3lz
-Y29uLXdha2V1cA0KPiA+ICAgNS4gcmVtb3ZlIHR5cGUgb2YgaW1vZC1pbnRlcnZhbC1ucw0KPiA+
-IA0KPiA+IHYyOiBuZXcgcGF0Y2gNCj4gPiAtLS0NCj4gPiAgLi4uL2JpbmRpbmdzL3VzYi9tZWRp
-YXRlayxtdGsteGhjaS50eHQgICAgICAgIHwgMTIxIC0tLS0tLS0tLS0tLS0NCj4gPiAgLi4uL2Jp
-bmRpbmdzL3VzYi9tZWRpYXRlayxtdGsteGhjaS55YW1sICAgICAgIHwgMTcxICsrKysrKysrKysr
-KysrKysrKw0KPiA+ICAyIGZpbGVzIGNoYW5nZWQsIDE3MSBpbnNlcnRpb25zKCspLCAxMjEgZGVs
-ZXRpb25zKC0pDQo+ID4gIGRlbGV0ZSBtb2RlIDEwMDY0NCBEb2N1bWVudGF0aW9uL2RldmljZXRy
-ZWUvYmluZGluZ3MvdXNiL21lZGlhdGVrLG10ay14aGNpLnR4dA0KPiA+ICBjcmVhdGUgbW9kZSAx
-MDA2NDQgRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3VzYi9tZWRpYXRlayxtdGst
-eGhjaS55YW1sDQpbLi4uXQ0KPiA+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRy
-ZWUvYmluZGluZ3MvdXNiL21lZGlhdGVrLG10ay14aGNpLnlhbWwgYi9Eb2N1bWVudGF0aW9uL2Rl
-dmljZXRyZWUvYmluZGluZ3MvdXNiL21lZGlhdGVrLG10ay14aGNpLnlhbWwNCj4gPiBuZXcgZmls
-ZSBtb2RlIDEwMDY0NA0KPiA+IGluZGV4IDAwMDAwMDAwMDAwMC4uNGEzNmFkNWM0ZDI1DQo+ID4g
-LS0tIC9kZXYvbnVsbA0KPiA+ICsrKyBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5n
-cy91c2IvbWVkaWF0ZWssbXRrLXhoY2kueWFtbA0KPiA+IEBAIC0wLDAgKzEsMTcxIEBADQo+ID4g
-KyMgU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IChHUEwtMi4wLW9ubHkgT1IgQlNELTItQ2xhdXNl
-KQ0KPiA+ICsjIENvcHlyaWdodCAoYykgMjAyMCBNZWRpYVRlaw0KPiA+ICslWUFNTCAxLjINCj4g
-PiArLS0tDQo+ID4gKyRpZDogaHR0cDovL2RldmljZXRyZWUub3JnL3NjaGVtYXMvdXNiL21lZGlh
-dGVrLG10ay14aGNpLnlhbWwjDQo+ID4gKyRzY2hlbWE6IGh0dHA6Ly9kZXZpY2V0cmVlLm9yZy9t
-ZXRhLXNjaGVtYXMvY29yZS55YW1sIw0KPiA+ICsNCj4gPiArdGl0bGU6IE1lZGlhVGVrIFVTQjMg
-eEhDSSBEZXZpY2UgVHJlZSBCaW5kaW5ncw0KPiA+ICsNCj4gPiArbWFpbnRhaW5lcnM6DQo+ID4g
-KyAgLSBDaHVuZmVuZyBZdW4gPGNodW5mZW5nLnl1bkBtZWRpYXRlay5jb20+DQo+ID4gKw0KPiA+
-ICthbGxPZjoNCj4gPiArICAtICRyZWY6ICJ1c2ItaGNkLnlhbWwiDQo+ID4gKw0KPiA+ICtkZXNj
-cmlwdGlvbjogfA0KPiA+ICsgIFRoZXJlIGFyZSB0d28gc2NlbmFyaW9zOg0KPiA+ICsgIGNhc2Ug
-MTogb25seSBzdXBwb3J0cyB4SENJIGRyaXZlcjsNCj4gPiArICBjYXNlIDI6IHN1cHBvcnRzIGR1
-YWwtcm9sZSBtb2RlLCBhbmQgdGhlIGhvc3QgaXMgYmFzZWQgb24geEhDSSBkcml2ZXIuDQo+ID4g
-Kw0KPiA+ICtwcm9wZXJ0aWVzOg0KPiA+ICsgICMgY29tbW9uIHByb3BlcnRpZXMgZm9yIGJvdGgg
-Y2FzZSAxIGFuZCBjYXNlIDINCj4gPiArICBjb21wYXRpYmxlOg0KPiA+ICsgICAgaXRlbXM6DQo+
-ID4gKyAgICAgIC0gZW51bToNCj4gPiArICAgICAgICAgIC0gbWVkaWF0ZWssbXQyNzEyLXhoY2kN
-Cj4gPiArICAgICAgICAgIC0gbWVkaWF0ZWssbXQ3NjIyLXhoY2kNCj4gPiArICAgICAgICAgIC0g
-bWVkaWF0ZWssbXQ3NjI5LXhoY2kNCj4gPiArICAgICAgICAgIC0gbWVkaWF0ZWssbXQ4MTczLXho
-Y2kNCj4gPiArICAgICAgICAgIC0gbWVkaWF0ZWssbXQ4MTgzLXhoY2kNCj4gPiArICAgICAgLSBj
-b25zdDogbWVkaWF0ZWssbXRrLXhoY2kNCj4gPiArDQo+ID4gKyAgcmVnOg0KPiA+ICsgICAgbWlu
-SXRlbXM6IDENCj4gPiArICAgIG1heEl0ZW1zOiAyDQo+ID4gKyAgICBpdGVtczoNCj4gPiArICAg
-ICAgLSBkZXNjcmlwdGlvbjogdGhlIHJlZ2lzdGVycyBvZiB4SENJIE1BQw0KPiA+ICsgICAgICAt
-IGRlc2NyaXB0aW9uOiB0aGUgcmVnaXN0ZXJzIG9mIElQIFBvcnQgQ29udHJvbA0KPiA+ICsNCj4g
-PiArICByZWctbmFtZXM6DQo+ID4gKyAgICBtaW5JdGVtczogMQ0KPiA+ICsgICAgbWF4SXRlbXM6
-IDINCj4gPiArICAgIGl0ZW1zOg0KPiA+ICsgICAgICAtIGNvbnN0OiBtYWMNCj4gPiArICAgICAg
-LSBjb25zdDogaXBwYyAgIyBvcHRpb25hbCwgb25seSBuZWVkZWQgZm9yIGNhc2UgMS4NCj4gPiAr
-DQo+ID4gKyAgaW50ZXJydXB0czoNCj4gPiArICAgIG1heEl0ZW1zOiAxDQo+ID4gKw0KPiA+ICsg
-IHBvd2VyLWRvbWFpbnM6DQo+ID4gKyAgICBkZXNjcmlwdGlvbjogQSBwaGFuZGxlIHRvIFVTQiBw
-b3dlciBkb21haW4gbm9kZSB0byBjb250cm9sIFVTQidzIE1UQ01PUw0KPiA+ICsgICAgbWF4SXRl
-bXM6IDENCj4gPiArDQo+ID4gKyAgY2xvY2tzOg0KPiA+ICsgICAgbWluSXRlbXM6IDENCj4gPiAr
-ICAgIG1heEl0ZW1zOiA1DQo+ID4gKyAgICBpdGVtczoNCj4gPiArICAgICAgLSBkZXNjcmlwdGlv
-bjogQ29udHJvbGxlciBjbG9jayB1c2VkIGJ5IG5vcm1hbCBtb2RlDQo+ID4gKyAgICAgIC0gZGVz
-Y3JpcHRpb246IFJlZmVyZW5jZSBjbG9jayB1c2VkIGJ5IGxvdyBwb3dlciBtb2RlIGV0Yw0KPiA+
-ICsgICAgICAtIGRlc2NyaXB0aW9uOiBNY3UgYnVzIGNsb2NrIGZvciByZWdpc3RlciBhY2Nlc3MN
-Cj4gPiArICAgICAgLSBkZXNjcmlwdGlvbjogRE1BIGJ1cyBjbG9jayBmb3IgZGF0YSB0cmFuc2Zl
-cg0KPiA+ICsgICAgICAtIGRlc2NyaXB0aW9uOiBjb250cm9sbGVyIGNsb2NrDQo+ID4gKw0KPiA+
-ICsgIGNsb2NrLW5hbWVzOg0KPiA+ICsgICAgbWluSXRlbXM6IDENCj4gPiArICAgIG1heEl0ZW1z
-OiA1DQo+ID4gKyAgICBpdGVtczoNCj4gPiArICAgICAgLSBjb25zdDogc3lzX2NrICAjIHJlcXVp
-cmVkLCB0aGUgZm9sbG93aW5nIG9uZXMgYXJlIG9wdGlvbmFsDQo+ID4gKyAgICAgIC0gY29uc3Q6
-IHJlZl9jaw0KPiA+ICsgICAgICAtIGNvbnN0OiBtY3VfY2sNCj4gPiArICAgICAgLSBjb25zdDog
-ZG1hX2NrDQo+ID4gKyAgICAgIC0gY29uc3Q6IHhoY2lfY2sNCj4gPiArDQo+ID4gKyAgcGh5czoN
-Cj4gPiArICAgICRyZWY6IC91c2IvdXNiLWhjZC55YW1sIw0KPiANCj4gVGhhdCdzIG5vdCByaWdo
-dC4NCj4gDQo+IFlvdSBuZWVkICdpdGVtcycgYW5kIGxpc3QgZWFjaCBlbnRyeS4NCldpbGwgYWRk
-IG1pbkl0ZW1zL21heEl0ZW1zIGluc3RlYWQgZHVlIHRvIGl0J3MgdmFyaWFibGUgYW5kIHBoeS1u
-YW1lcyBpcw0Kbm90IHVzZWQNCg0KPiANCj4gPiArICAgIGRlc2NyaXB0aW9uOiBMaXN0IG9mIGFs
-bCB0aGUgVVNCIFBIWXMgb24gdGhpcyBIQ0QNCj4gPiArDQo+ID4gKyAgdnVzYjMzLXN1cHBseToN
-Cj4gPiArICAgIGRlc2NyaXB0aW9uOiBSZWd1bGF0b3Igb2YgVVNCIEFWREQzLjN2DQo+ID4gKw0K
-PiA+ICsgIHZidXMtc3VwcGx5Og0KPiA+ICsgICAgZGVzY3JpcHRpb246IFJlZ3VsYXRvciBvZiBV
-U0IgVkJVUzV2DQo+ID4gKw0KPiA+ICsgIHVzYjMtbHBtLWNhcGFibGU6DQo+ID4gKyAgICBkZXNj
-cmlwdGlvbjogc3VwcG9ydHMgVVNCMy4wIExQTQ0KPiA+ICsgICAgdHlwZTogYm9vbGVhbg0KPiA+
-ICsNCj4gPiArICBpbW9kLWludGVydmFsLW5zOg0KPiA+ICsgICAgZGVzY3JpcHRpb246DQo+ID4g
-KyAgICAgIEludGVycnVwdCBtb2RlcmF0aW9uIGludGVydmFsIHZhbHVlLCBpdCBpcyA4IHRpbWVz
-IGFzIG11Y2ggYXMgdGhhdA0KPiA+ICsgICAgICBkZWZpbmVkIGluIHRoZSB4SENJIHNwZWMgb24g
-TVRLJ3MgY29udHJvbGxlci4NCj4gPiArICAgIGRlZmF1bHQ6IDUwMDANCj4gPiArDQo+ID4gKyAg
-IyB0aGUgZm9sbG93aW5nIHByb3BlcnRpZXMgYXJlIG9ubHkgdXNlZCBmb3IgY2FzZSAxDQo+ID4g
-KyAgd2FrZXVwLXNvdXJjZToNCj4gPiArICAgIGRlc2NyaXB0aW9uOiBlbmFibGUgVVNCIHJlbW90
-ZSB3YWtldXAsIHNlZSBwb3dlci93YWtldXAtc291cmNlLnR4dA0KPiA+ICsgICAgdHlwZTogYm9v
-bGVhbg0KPiA+ICsNCj4gPiArICBtZWRpYXRlayxzeXNjb24td2FrZXVwOg0KPiA+ICsgICAgJHJl
-ZjogL3NjaGVtYXMvdHlwZXMueWFtbCMvZGVmaW5pdGlvbnMvcGhhbmRsZS1hcnJheQ0KPiA+ICsg
-ICAgbWF4SXRlbXM6IDENCj4gPiArICAgIGRlc2NyaXB0aW9uOiB8DQo+ID4gKyAgICAgIEEgcGhh
-bmRsZSB0byBzeXNjb24gdXNlZCB0byBhY2Nlc3MgdGhlIHJlZ2lzdGVyIG9mIHRoZSBVU0Igd2Fr
-ZXVwIGdsdWUNCj4gPiArICAgICAgbGF5ZXIgYmV0d2VlbiB4SENJIGFuZCBTUE0sIHRoZSBmaWVs
-ZCBzaG91bGQgYWx3YXlzIGJlIDMgY2VsbHMgbG9uZy4NCj4gPiArDQo+ID4gKyAgICAgIGl0ZW1z
-Og0KPiANCj4gSW5kZW50YXRpb24gaXMgd3JvbmcgaGVyZS4gU2hvdWxkIGJlIDIgZmV3ZXIgc3Bh
-Y2VzLg0KV2lsbCBmaXggaXQNCj4gDQo+ID4gKyAgICAgICAgLSBkZXNjcmlwdGlvbjoNCj4gPiAr
-ICAgICAgICAgICAgVGhlIGZpcnN0IGNlbGwgcmVwcmVzZW50cyBhIHBoYW5kbGUgdG8gc3lzY29u
-DQo+ID4gKyAgICAgICAgLSBkZXNjcmlwdGlvbjoNCj4gPiArICAgICAgICAgICAgVGhlIHNlY29u
-ZCBjZWxsIHJlcHJlc2VudHMgdGhlIHJlZ2lzdGVyIGJhc2UgYWRkcmVzcyBvZiB0aGUgZ2x1ZQ0K
-PiA+ICsgICAgICAgICAgICBsYXllciBpbiBzeXNjb24NCj4gPiArICAgICAgICAtIGRlc2NyaXB0
-aW9uOg0KPiA+ICsgICAgICAgICAgICBUaGUgdGhpcmQgY2VsbCByZXByZXNlbnRzIHRoZSBoYXJk
-d2FyZSB2ZXJzaW9uIG9mIHRoZSBnbHVlIGxheWVyLA0KPiA+ICsgICAgICAgICAgICAxIGlzIHVz
-ZWQgYnkgbXQ4MTczIGV0YywgMiBpcyB1c2VkIGJ5IG10MjcxMiBldGMNCj4gPiArICAgICAgICAg
-IGVudW06IFsxLCAyXQ0KPiA+ICsNCj4gPiArICBtZWRpYXRlayx1M3AtZGlzLW1zazoNCj4gPiAr
-ICAgICRyZWY6IC9zY2hlbWFzL3R5cGVzLnlhbWwjL2RlZmluaXRpb25zL3VpbnQzMg0KPiA+ICsg
-ICAgZGVzY3JpcHRpb246IFRoZSBtYXNrIHRvIGRpc2FibGUgdTNwb3J0cywgYml0MCBmb3IgdTNw
-b3J0MCwNCj4gPiArICAgICAgYml0MSBmb3IgdTNwb3J0MSwgLi4uIGV0Yw0KPiA+ICsNCj4gPiAr
-ICAiI2FkZHJlc3MtY2VsbHMiOg0KPiA+ICsgICAgY29uc3Q6IDENCj4gPiArDQo+ID4gKyAgIiNz
-aXplLWNlbGxzIjoNCj4gPiArICAgIGNvbnN0OiAwDQo+ID4gKw0KPiA+ICtwYXR0ZXJuUHJvcGVy
-dGllczoNCj4gPiArICAiXlthLWZdK0BbMC05YS1mXSskIjoNCj4gPiArICAgICRyZWY6IC91c2Iv
-dXNiLWhjZC55YW1sIw0KPiANCj4gVGhpcyAkcmVmIGlzbid0IHJpZ2h0LiBZb3UgYWxyZWFkeSBy
-ZWZlcmVuY2VkIGl0IGF0IHRoZSB0b3AuDQpXaWxsIGRyb3AgaXQNCg0KVGhhbmsgeW91DQoNCj4g
-DQo+ID4gKyAgICB0eXBlOiBvYmplY3QNCj4gPiArICAgIGRlc2NyaXB0aW9uOiBUaGUgaGFyZCB3
-aXJlZCBVU0IgZGV2aWNlcy4NCj4gPiArDQo+ID4gK2RlcGVuZGVuY2llczoNCj4gPiArICB3YWtl
-dXAtc291cmNlOiBbICdtZWRpYXRlayxzeXNjb24td2FrZXVwJyBdDQo+ID4gKw0KPiA+ICtyZXF1
-aXJlZDoNCj4gPiArICAtIGNvbXBhdGlibGUNCj4gPiArICAtIHJlZw0KPiA+ICsgIC0gcmVnLW5h
-bWVzDQo+ID4gKyAgLSBpbnRlcnJ1cHRzDQo+ID4gKyAgLSBjbG9ja3MNCj4gPiArICAtIGNsb2Nr
-LW5hbWVzDQo+ID4gKw0KPiA+ICthZGRpdGlvbmFsUHJvcGVydGllczogZmFsc2UNCj4gPiArDQo+
-ID4gK2V4YW1wbGVzOg0KPiA+ICsgIC0gfA0KPiA+ICsgICAgI2luY2x1ZGUgPGR0LWJpbmRpbmdz
-L2Nsb2NrL210ODE3My1jbGsuaD4NCj4gPiArICAgICNpbmNsdWRlIDxkdC1iaW5kaW5ncy9pbnRl
-cnJ1cHQtY29udHJvbGxlci9hcm0tZ2ljLmg+DQo+ID4gKyAgICAjaW5jbHVkZSA8ZHQtYmluZGlu
-Z3MvaW50ZXJydXB0LWNvbnRyb2xsZXIvaXJxLmg+DQo+ID4gKyAgICAjaW5jbHVkZSA8ZHQtYmlu
-ZGluZ3MvcGh5L3BoeS5oPg0KPiA+ICsgICAgI2luY2x1ZGUgPGR0LWJpbmRpbmdzL3Bvd2VyL210
-ODE3My1wb3dlci5oPg0KPiA+ICsNCj4gPiArICAgIHVzYkAxMTI3MDAwMCB7DQo+ID4gKyAgICAg
-ICAgY29tcGF0aWJsZSA9ICJtZWRpYXRlayxtdDgxNzMteGhjaSIsICJtZWRpYXRlayxtdGsteGhj
-aSI7DQo+ID4gKyAgICAgICAgcmVnID0gPDB4MTEyNzAwMDAgMHgxMDAwPiwgPDB4MTEyODA3MDAg
-MHgwMTAwPjsNCj4gPiArICAgICAgICByZWctbmFtZXMgPSAibWFjIiwgImlwcGMiOw0KPiA+ICsg
-ICAgICAgIGludGVycnVwdHMgPSA8R0lDX1NQSSAxMTUgSVJRX1RZUEVfTEVWRUxfTE9XPjsNCj4g
-PiArICAgICAgICBwb3dlci1kb21haW5zID0gPCZzY3BzeXMgTVQ4MTczX1BPV0VSX0RPTUFJTl9V
-U0I+Ow0KPiA+ICsgICAgICAgIGNsb2NrcyA9IDwmdG9wY2tnZW4gQ0xLX1RPUF9VU0IzMF9TRUw+
-LCA8JmNsazI2bT47DQo+ID4gKyAgICAgICAgY2xvY2stbmFtZXMgPSAic3lzX2NrIiwgInJlZl9j
-ayI7DQo+ID4gKyAgICAgICAgcGh5cyA9IDwmdTNwb3J0MCBQSFlfVFlQRV9VU0IzPiwgPCZ1MnBv
-cnQxIFBIWV9UWVBFX1VTQjI+Ow0KPiA+ICsgICAgICAgIHZ1c2IzMy1zdXBwbHkgPSA8Jm10NjM5
-N192dXNiX3JlZz47DQo+ID4gKyAgICAgICAgdmJ1cy1zdXBwbHkgPSA8JnVzYl9wMV92YnVzPjsN
-Cj4gPiArICAgICAgICBpbW9kLWludGVydmFsLW5zID0gPDEwMDAwPjsNCj4gPiArICAgICAgICBt
-ZWRpYXRlayxzeXNjb24td2FrZXVwID0gPCZwZXJpY2ZnIDB4NDAwIDE+Ow0KPiA+ICsgICAgICAg
-IHdha2V1cC1zb3VyY2U7DQo+ID4gKyAgICAgICAgdXNiMy1scG0tY2FwYWJsZTsNCj4gPiArICAg
-IH07DQo+ID4gKy4uLg0KPiA+IC0tIA0KPiA+IDIuMTguMA0KPiA+IA0KDQo=
+Ard Biesheuvel <ardb@kernel.org> wrote:
+
+Ard Biesheuvel <ardb@kernel.org> wrote:
+
+> > > > I wonder if it would help if the input buffer and output buffer didn't
+> > > > have to correspond exactly in usage - ie. the output buffer could be
+> > > > used at a slower rate than the input to allow for buffering inside the
+> > > > crypto algorithm.
+> > >
+> > > I don't follow - how could one be used at a slower rate?
+> >
+> > I mean that the crypto algorithm might need to buffer the last part of the
+> > input until it has a block's worth before it can write to the output.
+> 
+> This is what is typically handled transparently by the driver. When
+> you populate a scatterlist, it doesn't matter how misaligned the
+> individual elements are, the scatterlist walker will always present
+> the data in chunks that the crypto algorithm can manage. This is why
+> using a single scatterlist for the entire input is preferable in
+> general.
+
+Yep - but the assumption currently on the part of the callers is that they
+provide the input buffer and corresponding output buffer - and that the
+algorithm will transfer data from one to the other, such that the same amount
+of input and output bufferage will be used.
+
+However, if we start pushing data in progressively, this would no longer hold
+true unless we also require the caller to only present in block-size chunks.
+
+For example, if I gave the encryption function 120 bytes of data and a 120
+byte output buffer, but the algorithm has a 16-byte blocksize, it will,
+presumably, consume 120 bytes of input, but it can only write 112 bytes of
+output at this time.  So the current interface would need to evolve to
+indicate separately how much input has been consumed and how much output has
+been produced - in which case it can't be handled transparently.
+
+For krb5, it's actually worse than that, since we want to be able to
+insert/remove a header and a trailer (and might need to go back and update the
+header after) - but I think in the krb5 case, we need to treat the header and
+trailer specially and update them after the fact in the wrapping case
+(unwrapping is not a problem, since we can just cache the header).
+
+David
 
