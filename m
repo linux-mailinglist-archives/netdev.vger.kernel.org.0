@@ -2,142 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10CB02D35C0
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 23:04:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61C4A2D35C3
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 23:04:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730480AbgLHWCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 17:02:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53766 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726421AbgLHWCm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 17:02:42 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE9A1C0613CF
-        for <netdev@vger.kernel.org>; Tue,  8 Dec 2020 14:02:02 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id w6so15268556pfu.1
-        for <netdev@vger.kernel.org>; Tue, 08 Dec 2020 14:02:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=kqUn9p53w/mT308efepeyIU/G4NDsQXe8tczdIzVTAc=;
-        b=s1wHxV8nwFJnlDdnCXgYZnMRu9OF0Od/iGtX5mBifZyiCkia6v2uRpstwp6EAeaSv7
-         knoj9JimnI/AV7A9kRW9n3Rjwb+PU3n9Nchhr4WHN9dm1ZhyTp4u24HcBRtJRoBJGC/R
-         q2JdVg8pKJ/z6KEjkNfAod0PtTB6sufSHF4wO5taaq+a1WfKz4ASN2BqXiAhtKV97Xtk
-         f4mnuJwg1qKMpBMLHRzW0yANRcL6vcK2UFSqzFO9AhmlBfPPIUgk67c8Wwn++geJ4uks
-         NcX383b27FjmuhKsefRWyaMaj0AkzrAUV3BV1gKpGmQHDoOgNx1PzanmbMdbJy94RMtH
-         kDWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=kqUn9p53w/mT308efepeyIU/G4NDsQXe8tczdIzVTAc=;
-        b=A5hIzmF/xU+XSnOnlY1b87CfW19HbWuXxallfj8prYW8lWc+5kRzG2DcYTo4zSUuJ6
-         xzwMn07YVpXGN7DOcQxVF08laGLxhF0f2mXsnytsIZvqPjrqyPpC9DiT4c9VbO3ntlbK
-         GHPrxRDuQHUN1ex0F5xopVcXOAkRu9rvuMKv9XuEaDFlt2ef2U3aNtuZlf69rreABfwG
-         YPR2YrpI0wz5eLYgdo/lhILGy7AnfH9DVEXhqrZr0fSolCvIveT8IU08k1tJRMsvfXlA
-         HcNIyX3t0u8MQuB6cTN0gx3rmm4D72Ek9a42ROR5mJknShshtMn/s7QcChe6izZwe9Cx
-         4GsA==
-X-Gm-Message-State: AOAM532MZMTrWyMGiDUh4Frq/tuBUzt3zJCSTyfB8knrEa0jaauvutyl
-        mxi8BcQ5vqIcNuFf4f51c+ohwydDqKo=
-X-Google-Smtp-Source: ABdhPJwhrUC1EPo1RfkmLFqs95J1XmZzTGKKNfm60FsPMDeF1XJJPM6vT31gbaBR4YbpM5lXEb4loA==
-X-Received: by 2002:a63:ea06:: with SMTP id c6mr124113pgi.344.1607464922133;
-        Tue, 08 Dec 2020 14:02:02 -0800 (PST)
-Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id fs12sm104336pjb.49.2020.12.08.14.02.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Dec 2020 14:02:01 -0800 (PST)
-Subject: Re: [PATCH net-next] net: dsa: mt7530: support setting ageing time
-To:     DENG Qingfang <dqfext@gmail.com>, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     Frank Wunderlich <frank-w@public-files.de>
-References: <20201208070028.3177-1-dqfext@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <c4bfa29e-9b14-2357-7992-263e4bb02289@gmail.com>
-Date:   Tue, 8 Dec 2020 14:01:59 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1730552AbgLHWDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 17:03:10 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:40794 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726421AbgLHWDJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 17:03:09 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0B8LxKPM053029;
+        Tue, 8 Dec 2020 22:02:13 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : in-reply-to : message-id : references : mime-version :
+ content-type; s=corp-2020-01-29;
+ bh=hvdxjPy5MyGvTiVa5pu3QObb9iVq99nGN0L0ilpatgw=;
+ b=LUeJFtCUZStMcWNePHA6VCGB/nj8xHreDOVC1TD3zKTu/CRo4ztmRdAT5YbJrJ2UsLox
+ GzrNQR+c1C0mspR00Gl1SsxN/wDdAHGeaGnikKBJzejgvM4GEB24fpcBLmbVxRKRT013
+ 3A53BACWbUxXwv1qM9QrA04w6pMRsPOkdjlcMy5hCndoKXd/7G5EBrwZvzoDeTHjEsaX
+ iRroACQIElTr6O1lQGRSbdkwyPDQjXGG04lbNk4YTRWTPcbMcLAcbqD31FQeW1k2Y8cU
+ Gzs7XgkeG3EzF7RaDrrQ0SuCJ6qXFpmy1GULAukh5cpqWNz40ogwN3h9Zhipe/4CjlQv 0w== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by aserp2120.oracle.com with ESMTP id 35825m57vf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 08 Dec 2020 22:02:13 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0B8M1joC057611;
+        Tue, 8 Dec 2020 22:02:13 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by userp3030.oracle.com with ESMTP id 358m4ygrgu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 08 Dec 2020 22:02:12 +0000
+Received: from abhmp0006.oracle.com (abhmp0006.oracle.com [141.146.116.12])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0B8M2ArX030698;
+        Tue, 8 Dec 2020 22:02:10 GMT
+Received: from dhcp-10-175-161-251.vpn.oracle.com (/10.175.161.251)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 08 Dec 2020 14:02:09 -0800
+Date:   Tue, 8 Dec 2020 22:02:01 +0000 (GMT)
+From:   Alan Maguire <alan.maguire@oracle.com>
+X-X-Sender: alan@localhost
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+cc:     Alan Maguire <alan.maguire@oracle.com>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next] libbpf: support module BTF for BPF_TYPE_ID_TARGET
+ CO-RE relocation
+In-Reply-To: <CAEf4BzbB87SDiD+=4u2u5iLhQiXUCc0Bf-7SX6BXZ4tkhjFU=g@mail.gmail.com>
+Message-ID: <alpine.LRH.2.23.451.2012082156300.25628@localhost>
+References: <20201205025140.443115-1-andrii@kernel.org> <alpine.LRH.2.23.451.2012060025520.1505@localhost> <CAEf4BzbB87SDiD+=4u2u5iLhQiXUCc0Bf-7SX6BXZ4tkhjFU=g@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20201208070028.3177-1-dqfext@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9829 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 spamscore=0 suspectscore=10
+ bulkscore=0 malwarescore=0 phishscore=0 adultscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2012080137
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9829 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=10 adultscore=0
+ bulkscore=0 phishscore=0 mlxlogscore=999 clxscore=1015 priorityscore=1501
+ mlxscore=0 spamscore=0 lowpriorityscore=0 malwarescore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2012080137
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/7/20 11:00 PM, DENG Qingfang wrote:
-> MT7530 has a global address age control register, so use it to set
-> ageing time.
-> 
-> The applied timer is (AGE_CNT + 1) * (AGE_UNIT + 1) seconds
-> 
-> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+On Mon, 7 Dec 2020, Andrii Nakryiko wrote:
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+> On Sat, Dec 5, 2020 at 4:38 PM Alan Maguire <alan.maguire@oracle.com> wrote:
+> > Thanks so much for doing this Andrii! When I tested, I ran into a problem;
+> > it turns out when a module struct such as "veth_stats" is used, it's
+> > classified as BTF_KIND_FWD, and as a result when we iterate over
+> > the modules and look in the veth module, "struct veth_stats" does not
+> > match since its module kind (BTF_KIND_STRUCT) does not match the candidate
+> > kind (BTF_KIND_FWD). I'm kind of out of my depth here, but the below
+> > patch (on top of your patch) worked.
+> 
+> I'm not quite clear on the situation. BTF_KIND_FWD is for the local
+> type or the remote type? Maybe a small example would help, before we
+> go straight to assuming FWD can be always resolved into a concrete
+> STRUCT/UNION.
+>
+
+The local type was BTF_KIND_FWD, and the target type was BTF_KIND_STRUCT
+IIRC; I'll try and get some libbpf debug output for you showing the
+relocation info.  If it helps, I think the situation was this; I was
+referencing __builtin_btf_type_id(struct veth_stats), and hadn't
+included a BTF-generated veth header, so I'm guessing libbpf classified
+it as a fwd declaration.  My patch was a bit too general I suspect in
+that it assumed that either target or local could be BTF_KIND_FWD and
+should match BTF_KIND_STRUCT in local/target, wheres I _think_ the
+local only should permit BTF_KIND_FWD.  Does that make sense? 
+> 
+> >  However without it - when we find
+> > 0  candidate matches - as well as not substituting the module object
+> > id/type id - we hit a segfault:
+> 
+> Yep, I missed the null check in:
+> 
+> targ_spec->btf != prog->obj->btf_vmlinux
+> 
+> I'll fix that.
+> 
+
+Thanks! I think the core_reloc selftests trigger the segfault 
+also if you need a test case to verify.
+
+Alan
