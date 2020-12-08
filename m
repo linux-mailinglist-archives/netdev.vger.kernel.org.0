@@ -2,126 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD9B52D3189
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 18:56:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B79E2D31A8
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 19:04:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730849AbgLHRzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 12:55:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41382 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730740AbgLHRzu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 12:55:50 -0500
-Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E7BC0613D6
-        for <netdev@vger.kernel.org>; Tue,  8 Dec 2020 09:55:10 -0800 (PST)
-Received: by mail-qt1-x84a.google.com with SMTP id n95so14503941qte.16
-        for <netdev@vger.kernel.org>; Tue, 08 Dec 2020 09:55:10 -0800 (PST)
+        id S1730813AbgLHSDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 13:03:42 -0500
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:46143 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728633AbgLHSDm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 13:03:42 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:message-id:mime-version:subject:from:to:cc;
-        bh=nYHvevoIASAYOZmQoEPjRemVztiqceIp+R/vgvUkPCE=;
-        b=iSQsH6LmvQo+a13JDo71PFsJ1udYMRBs0oPvETKjvDUSTvDiiDV15AOP5rpHMNQnEV
-         m+U3f3UgIZmhVKp6OOQnC/9YLuOIABOQC1t16FmqVd0273xfIX2cPuuxpjbfcoBMHbXA
-         cCQwuDl4zrnLZL6gys1xG8sEIejUeVyLn0h68u/RUQkuETGpr/aUm07GvPSptJOuw2tH
-         CDSbFOYc60MXo6AQbb5KHkD6VwyaN+27IF/zZtuykOm21RG37YVCkJXr/0qKa6+6yvyX
-         oLxZ/XNU1gp4K14++s9JGAQaQMRHQ1tjuKnQlAsJbHUT9xrSt0r+DOSdlQ/qPE/+yeaT
-         rkOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
-         :to:cc;
-        bh=nYHvevoIASAYOZmQoEPjRemVztiqceIp+R/vgvUkPCE=;
-        b=fbf+KcTPKf4Zaj8QTWtuAeYT3zh4ndD6CwxHfNlUuoxH/XdYLCNI9tBzDfDD9o+4M5
-         MSPBS91jKVLqpiAsY/qaBF2PMQLjB3UiQfEyz3AnXCuHtXLSgyU4bi5924fQDh3Hh7Fc
-         Inrm6UJ4YpBY5+jAWznn2Habz2W8ct5GeGZypbQBlAMIJaw79sH+ATrspQOIEf+hlrwz
-         pGyZh8u1EJpUA4yiFEN4gbn3pvFGVi64k4UIAEnux0TYsECEZh4JrqfO9h5urQQIpvlW
-         Fvn3W8ltaQxxVc7VHYQHT7/b5LVUGGmmUN1Jhn2pBXd+XcgX8N2LSfGbzBwFKNS1oOEh
-         xLyA==
-X-Gm-Message-State: AOAM532nlAWQFtur/FQoLCg4f8XgYb2z6o+OZLPc6pA24hoKffTXwBCt
-        ej+0A0f2n5RimTzhV7bjC5tBoroiJT8=
-X-Google-Smtp-Source: ABdhPJzHHIT4c3NS6XhM2DzD1Tv6De8CoM0tu2vW3GRfasxNu5SksUhg//phtV/MPYK8kjv8TYXk98M8P7U=
-Sender: "weiwan via sendgmr" <weiwan@weiwan.svl.corp.google.com>
-X-Received: from weiwan.svl.corp.google.com ([2620:15c:2c4:201:1ea0:b8ff:fe75:cf08])
- (user=weiwan job=sendgmr) by 2002:a0c:a802:: with SMTP id w2mr29049479qva.9.1607450109637;
- Tue, 08 Dec 2020 09:55:09 -0800 (PST)
-Date:   Tue,  8 Dec 2020 09:55:08 -0800
-Message-Id: <20201208175508.1793520-1-weiwan@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.29.2.576.ga3fc446d84-goog
-Subject: [PATCH net] tcp: Retain ECT bits for tos reflection
-From:   Wei Wang <weiwan@google.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Alexander Duyck <alexanderduyck@fb.com>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1607450622; x=1638986622;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=6+wdS0lXDwjhOcAGVfFnvCexoNX6iZXaPAm6agab0/o=;
+  b=oQxdmjVaZ3vdZdHHmLoDNzmp6p4zsEnhQ6TyFtyOB7N+Wkno8tyQGhwu
+   8SwOJycnKpN/xXEvyUNod2Lwc6OhTetc1dxgO9gYDQcQAkkaF+xjT8G+O
+   mFpOy3JaXs/qCfVV14Sz36C/Fgz9exnFxwwuLHfLV374S1flUf0z1eRPh
+   E=;
+X-IronPort-AV: E=Sophos;i="5.78,403,1599523200"; 
+   d="scan'208";a="71301413"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2b-859fe132.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 08 Dec 2020 18:02:55 +0000
+Received: from EX13D28EUC001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-2b-859fe132.us-west-2.amazon.com (Postfix) with ESMTPS id 1CF682233F7;
+        Tue,  8 Dec 2020 18:02:54 +0000 (UTC)
+Received: from u68c7b5b1d2d758.ant.amazon.com (10.43.162.211) by
+ EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 8 Dec 2020 18:02:45 +0000
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
+CC:     Shay Agroskin <shayagr@amazon.com>,
+        David Woodhouse <dwmw@amazon.com>,
+        Zorik Machulsky <zorik@amazon.com>,
+        Alexander Matushevsky <matua@amazon.com>,
+        Bshara Saeed <saeedb@amazon.com>, Matt Wilson <msw@amazon.com>,
+        Anthony Liguori <aliguori@amazon.com>,
+        Nafea Bshara <nafea@amazon.com>,
+        Guy Tzalik <gtzalik@amazon.com>,
+        Netanel Belgazal <netanel@amazon.com>,
+        Ali Saidi <alisaidi@amazon.com>,
+        Benjamin Herrenschmidt <benh@amazon.com>,
+        Arthur Kiyanovski <akiyano@amazon.com>,
+        Samih Jubran <sameehj@amazon.com>,
+        Noam Dagan <ndagan@amazon.com>
+Subject: [PATCH net-next v5 0/9] XDP Redirect implementation for ENA driver
+Date:   Tue, 8 Dec 2020 20:01:59 +0200
+Message-ID: <20201208180208.26111-1-shayagr@amazon.com>
+X-Mailer: git-send-email 2.28.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.211]
+X-ClientProxiedBy: EX13D12UWC004.ant.amazon.com (10.43.162.182) To
+ EX13D28EUC001.ant.amazon.com (10.43.164.4)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For DCTCP, we have to retain the ECT bits set by the congestion control
-algorithm on the socket when reflecting syn TOS in syn-ack, in order to
-make ECN work properly.
+Hi all,
+ENA is adding XDP Redirect support for its driver and some other
+small tweaks.
 
-Fixes: ac8f1710c12b ("tcp: reflect tos value received in SYN to the socket")
-Reported-by: Alexander Duyck <alexanderduyck@fb.com>
-Signed-off-by: Wei Wang <weiwan@google.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
----
- net/ipv4/tcp_ipv4.c | 7 +++++--
- net/ipv6/tcp_ipv6.c | 7 +++++--
- 2 files changed, 10 insertions(+), 4 deletions(-)
+This series adds the following:
 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 8391aa29e7a4..595dcc3afac5 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -984,7 +984,8 @@ static int tcp_v4_send_synack(const struct sock *sk, struct dst_entry *dst,
- 		__tcp_v4_send_check(skb, ireq->ir_loc_addr, ireq->ir_rmt_addr);
- 
- 		tos = sock_net(sk)->ipv4.sysctl_tcp_reflect_tos ?
--				tcp_rsk(req)->syn_tos & ~INET_ECN_MASK :
-+				(tcp_rsk(req)->syn_tos & ~INET_ECN_MASK) |
-+				(inet_sk(sk)->tos & INET_ECN_MASK) :
- 				inet_sk(sk)->tos;
- 
- 		if (!INET_ECN_is_capable(tos) &&
-@@ -1541,7 +1542,9 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
- 		inet_csk(newsk)->icsk_ext_hdr_len = inet_opt->opt.optlen;
- 	newinet->inet_id = prandom_u32();
- 
--	/* Set ToS of the new socket based upon the value of incoming SYN. */
-+	/* Set ToS of the new socket based upon the value of incoming SYN.
-+	 * ECT bits are set later in tcp_init_transfer().
-+	 */
- 	if (sock_net(sk)->ipv4.sysctl_tcp_reflect_tos)
- 		newinet->tos = tcp_rsk(req)->syn_tos & ~INET_ECN_MASK;
- 
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 992cbf3eb9e3..f676f176eb6b 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -528,7 +528,8 @@ static int tcp_v6_send_synack(const struct sock *sk, struct dst_entry *dst,
- 			fl6->flowlabel = ip6_flowlabel(ipv6_hdr(ireq->pktopts));
- 
- 		tclass = sock_net(sk)->ipv4.sysctl_tcp_reflect_tos ?
--				tcp_rsk(req)->syn_tos & ~INET_ECN_MASK :
-+				(tcp_rsk(req)->syn_tos & ~INET_ECN_MASK) |
-+				(np->tclass & INET_ECN_MASK) :
- 				np->tclass;
- 
- 		if (!INET_ECN_is_capable(tclass) &&
-@@ -1320,7 +1321,9 @@ static struct sock *tcp_v6_syn_recv_sock(const struct sock *sk, struct sk_buff *
- 	if (np->repflow)
- 		newnp->flow_label = ip6_flowlabel(ipv6_hdr(skb));
- 
--	/* Set ToS of the new socket based upon the value of incoming SYN. */
-+	/* Set ToS of the new socket based upon the value of incoming SYN.
-+	 * ECT bits are set later in tcp_init_transfer().
-+	 */
- 	if (sock_net(sk)->ipv4.sysctl_tcp_reflect_tos)
- 		newnp->tclass = tcp_rsk(req)->syn_tos & ~INET_ECN_MASK;
- 
+- Make log messages in the driver have a uniform format using
+  netdev_* function
+- Improve code readability
+- Add support for XDP Redirect
+
+v1->v2: Removed the word "atomic" from the name of
+	ena_increase_stat_atomic() as it is misleading.
+
+v2->v3: Fixed checkpatch errors
+
+v3->v4: Added an explanation to the decision of using netdev_* prints in
+	functions that are also called before netdev is registered.
+
+v4->v5: Added return value check for xdp_do_redirect() and
+	xdp_convert_buff_to_frame(). Also replace the variable casting
+	in patch 3 with something more readable.
+
+Shay Agroskin (9):
+  net: ena: use constant value for net_device allocation
+  net: ena: add device distinct log prefix to files
+  net: ena: store values in their appropriate variables types
+  net: ena: fix coding style nits
+  net: ena: aggregate stats increase into a function
+  net: ena: use xdp_frame in XDP TX flow
+  net: ena: introduce XDP redirect implementation
+  net: ena: use xdp_return_frame() to free xdp frames
+  net: ena: introduce ndo_xdp_xmit() function for XDP_REDIRECT
+
+ drivers/net/ethernet/amazon/ena/ena_com.c     | 391 ++++++++++-------
+ drivers/net/ethernet/amazon/ena/ena_com.h     |  23 +-
+ drivers/net/ethernet/amazon/ena/ena_eth_com.c |  71 +--
+ drivers/net/ethernet/amazon/ena/ena_eth_com.h |  23 +-
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c |   3 +-
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  | 403 ++++++++++--------
+ drivers/net/ethernet/amazon/ena/ena_netdev.h  |  12 +-
+ 7 files changed, 551 insertions(+), 375 deletions(-)
+
 -- 
-2.29.2.576.ga3fc446d84-goog
+2.17.1
 
