@@ -2,149 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB0AD2D2146
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 04:08:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A8E62D2152
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 04:13:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727070AbgLHDHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Dec 2020 22:07:54 -0500
-Received: from mail-eopbgr20085.outbound.protection.outlook.com ([40.107.2.85]:45985
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726607AbgLHDHx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Dec 2020 22:07:53 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RsSHWG050zUnFWXcgMvNzv9AomO4LE0vq21OvIrw3bovlJ7/ubJQhEL2iuQfKIZHBHBP+r4Q6Iga/0XzqEknIAVjTxepiPhkFadoP2DO+IJEm+F90roUtM4JxMQ3KqMvqe8Cfj3BBO+mRgb+YErZ9FLx/X/p642c1susq+M+fE7CFFx4T0gC/d4j+Sf+3VHmyxFokO/kOaydQA9E30rzT8M0/QUBZKlmszLgfdN8NjR0DVHkAduQj9E3Gr8cUS7Y+3NG158IDpXFExhzlou8NU2aNT2hR1blzzBlgiaBvcH+hCNRTUICYI7W8T9DmzWxjgKVxEAQFEDtf7198UGBIA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6to9MY6xqw3zsCTmVuKb4F0vmF4jqxRe1DpgXcbjjw0=;
- b=IhxHx4HlWOJ0gDYkVZpoxQnp7jTOV2EAbImlBVRZ41Zu+98a0pNADZcM72tXvmYakjF1Ls9Ex3Cg1vMpOXNhzg4qbRWEroJsyt2GMEr1U7BUy4qKLay+414pxONaZSTHOs/tbrUYxyGrxX3qO46EIcYt6xMnZ+DhlrTRFQqikW70/N5rpdUVV5gzdb9C7Y9PBrTxxqmSp3e7CgXEu9j1RgHHP/CXvmbUv/hz+8wTMVkJg75Rn04XQgEUjlszoOKlhe9wFmEfanH4h5kFp2ATYXcuqtc9MaRivm2dBQ9KGoiRT0zzR/mKmtvYzHVskPRmFd+TR8PFzDbslvhLkfRZCA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6to9MY6xqw3zsCTmVuKb4F0vmF4jqxRe1DpgXcbjjw0=;
- b=ct68XrkUjMfjPXeo8NZM09awnn5pyNHAuDTlarceQCzeDj2QaPbBW9dbWEYTk1H5iCOi5gGGR4f4Rhj/4hXK26awFuNv5mjvZ0jgjeLawfy+CfZGm1fGqvq30paQbAj9hoa0ICzSE5UyB/QDfjHv3Q7ggSdSm6p/AB3foyj+ENc=
-Received: from VE1PR04MB6768.eurprd04.prod.outlook.com (2603:10a6:803:129::26)
- by VI1PR04MB4541.eurprd04.prod.outlook.com (2603:10a6:803:76::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3632.17; Tue, 8 Dec
- 2020 03:07:02 +0000
-Received: from VE1PR04MB6768.eurprd04.prod.outlook.com
- ([fe80::581:1102:2aee:85a3]) by VE1PR04MB6768.eurprd04.prod.outlook.com
- ([fe80::581:1102:2aee:85a3%5]) with mapi id 15.20.3632.024; Tue, 8 Dec 2020
- 03:07:02 +0000
-From:   Qiang Zhao <qiang.zhao@nxp.com>
-To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Leo Li <leoyang.li@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: RE: [PATCH 00/20] ethernet: ucc_geth: assorted fixes and
- simplifications
-Thread-Topic: [PATCH 00/20] ethernet: ucc_geth: assorted fixes and
- simplifications
-Thread-Index: AQHWyztk1aPl4Ezq8EmmnoJXVMcDbano+wGAgAAE+YCAA4cq0A==
-Date:   Tue, 8 Dec 2020 03:07:02 +0000
-Message-ID: <VE1PR04MB676805F3EEDF86A8BE370F8691CD0@VE1PR04MB6768.eurprd04.prod.outlook.com>
-References: <20201205191744.7847-1-rasmus.villemoes@prevas.dk>
- <20201205125351.41e89579@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <7e78df84-0035-6935-acb0-adbd0c648128@prevas.dk>
-In-Reply-To: <7e78df84-0035-6935-acb0-adbd0c648128@prevas.dk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: prevas.dk; dkim=none (message not signed)
- header.d=none;prevas.dk; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.73]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: d6d587e3-cd09-4cb1-8fe7-08d89b2655dd
-x-ms-traffictypediagnostic: VI1PR04MB4541:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR04MB454113E098A5CD21C3DD34F791CD0@VI1PR04MB4541.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5236;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Yd/v14aGrzEh7ZsW3cMw9ETjpf2OS/ob0go/dPFLViMCk3AAbJSIIL+S4m8TEGFTLqBJosC842+gVabmT65dNa7VtC5Di18aBQuwKGG649zDqtSxQAIZCwlxhqdtx324pToDvlpwOSnV1T8kNekhGZrHUwSd3X8+xgMc3WHEYV750+A0rnGEzVCY3DtaXB8J1OhMDxHh0KYS1yv47S/vMplfXp8oV9OL1YLl/UtxvQ85vSXO8UEyf/gHb/P6v1eYdfRV/zBHzf0hw98VwNPwLzUpeDJwpkc13xH3eM1Clysx8lQRL6jYmAgGSre4qbLPKDh3Eysbrpop4cfu2j52Wg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6768.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(376002)(346002)(366004)(4326008)(186003)(6506007)(86362001)(508600001)(55016002)(71200400001)(33656002)(110136005)(66446008)(7696005)(64756008)(9686003)(53546011)(54906003)(8936002)(5660300002)(76116006)(52536014)(26005)(66946007)(83380400001)(2906002)(44832011)(66556008)(8676002)(66476007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?gb2312?B?NkN4dVdlYWVOWUV0QUtPUzRNMG9hWnAxSmFUK084aEFKb2dJZmxmc0JiYWJy?=
- =?gb2312?B?MkRERnhhYXhCemJXc0ZKWkRKbXlTZ2pYNmhJbUVJWnR4RXpURlIwQWpLN3Nn?=
- =?gb2312?B?NXM1d1U0TFNSeVVhb3l0RkRNZVlRVzVRRTFkRHhIUXNKNXdEK2UzZDA5SzVI?=
- =?gb2312?B?TUFsTzd2Ui9jV0ltc1NtQWJJOTNlTVRqVWE3ckJNOU1WVGx0bmNjVHVHZnpp?=
- =?gb2312?B?M3lRUGJ5cHFqeGhzcTJhUXNmalZia3RUZXNleHovNkI0cUFWQTJQbHpORm82?=
- =?gb2312?B?TDBpdGw5djdlRkU0UElBS21WNmVrZXpiVEdLck11UG1tdzBpNnRsblVGSDR1?=
- =?gb2312?B?TEJjdnd3cFBDWkhZMnZ3eGxRMy8vekdmdEdhMlJBUzdhN25EZU1rMVdKRytu?=
- =?gb2312?B?cFZiaVB4SjdzVCtyWXBoK1RTQU1CR3FEZzhOb0g5Tmt0d2cwS1BBNVZOb0Fp?=
- =?gb2312?B?VC9ZVDcreDg1Q3QzeENEdjdQL0Q5VUtiVWM2Y3RYdWFyVjZCTE9qV0hIR3ZC?=
- =?gb2312?B?d2MrM0N1ZWl3S2pZTVRWNkpubnB6eVJKTkQ4SWZ6NEtaRGFyRDRvc3IwbTFG?=
- =?gb2312?B?SlZPSWJHMmJqR0kzVFNXanhVTGxpWFMrcGFXdWVmQVZiTFhnSjUwY2xUZ0lY?=
- =?gb2312?B?eElycllZQjNlNDlCTUc1S3ROdU4vM1ZEbEhjYWZpYXNIeVJRRDNjNFo3TW9O?=
- =?gb2312?B?V25GWWpCenhEQm84cDhORXBleGRCVFVxUWFOdXYvaTI3amNOSTQyQ3k0MkxW?=
- =?gb2312?B?ODJqQld5R2dSUU8rQUcvZWJWNnlJVTNQMDRiNkZxdVhkYkEyK05SWW5YZXZR?=
- =?gb2312?B?eUdrVlNZQm43RUhBYkJCLzZEY0RwM1ZwS2dPSnR4QytpbDBiS0JKU0xBMFg5?=
- =?gb2312?B?SmMvZ3JHL0VDYU55U3psNFdjUDI0bVlHY2czekxFV3YwbTQ1Q0JROVpOQktJ?=
- =?gb2312?B?NDFPR05WTU0xemxCVDBWYm9xSXdaTThVZ05XQTBpTWlJbVBnMFNYVUlNZ01i?=
- =?gb2312?B?MEw2bUkraGxOM2ZuVFphRnVMTDdQcVJFN3JWbUNKSGJEUFUvNXBkYk1NOEU4?=
- =?gb2312?B?eFdQeXBQTnRXcUc1SWtCUlppK2svOFFERnJBSHhxakpacTFiL0czWWxsMTRS?=
- =?gb2312?B?cDFORmZqZSttcG9kRmRvS3JvM2RjMWZUd2FicEJoeUN5dkVxeXRqZmxyQ291?=
- =?gb2312?B?SG83MGtsYWtlTy9ab3B6Y3pHNWgwR3J3RmV6S09wWjJ3TmRSOEhZcVZoYXly?=
- =?gb2312?B?UEpINFRheHBzYi9WTkp5eWJzcVJCWTcvclZSNmo4YWFGcUxLYytrNWg0bitq?=
- =?gb2312?Q?cT73xw4zAhw3c=3D?=
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        id S1726867AbgLHDMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Dec 2020 22:12:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46182 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726002AbgLHDMv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Dec 2020 22:12:51 -0500
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF39C0613D6;
+        Mon,  7 Dec 2020 19:12:10 -0800 (PST)
+Received: by mail-pl1-x644.google.com with SMTP id bj5so6240345plb.4;
+        Mon, 07 Dec 2020 19:12:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=KQ9uRpmBuJGJjQzyCNv6aAvsoTL8pzGuqnCLRpSMCuE=;
+        b=Acfz00LgKxRmaEQgc6hVcS/CaUrWpMs9L/FRpmlup1VUbqPqBbTCn5UYRRLrdxoEv7
+         4hXs7iplcJVBOSYAoJgOFxjKN84hhQi733S/zNunoOdUBqu/zcvIexyfy86ZtQKeCKXr
+         FF8CZJ3E2VQ0OtN7JHLl5mU4/EE//9jp56/IiRDilUrTubaB+0mx2mRt9GY19wFB5vdv
+         K9G1N3k3pYbaM98cSv757Fh5WTPyigD8NF+X03KZd6WK51AfFYmaQwwgKMTawV/y9zwc
+         RYFCohbWoqpvLp7lr2XDNzcCnbX7M1pPlVJIikLYRVz+u2QD+UR05BS5wsvslKyAMGEM
+         JHIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KQ9uRpmBuJGJjQzyCNv6aAvsoTL8pzGuqnCLRpSMCuE=;
+        b=pq8TOs1Na/+xExjNJpGzAt7DjU3Ye6yXxAXnBYSCG2LfhKluW41veZzlKynD4LV8H2
+         OzSApC8v1UXe7Ti6AO2YE6GlCDgbiWeWK5i9OhL35Q5wP1VLdjORfk9+2aVJC37+1qph
+         lc2aVreojQVgzay9q1dSCDO+lNQqsmcTnFqvcUtIN2q5XCWbOYPm/2sa6eb6fAXPxVcu
+         PVCraK9I3vNpkqIf0XMItaxYHgTHWXxL4+FUKPz+pk85WY/fbjKM1ULATnkf2wUusMXa
+         YK4Ax/W6A172CrR335Ylpxv7Ah9g8Va6LiajMX8OUz64wgUsRwYs0YgnGOia4JbP3++0
+         5gQQ==
+X-Gm-Message-State: AOAM532qC7UavFb0nGQXJ6CqA/Avx6o9zMW9iJwF1MgBDYDhbMrT4gLR
+        oQba90WIxhSWoVsi5ngj/HOd8dTZiWI=
+X-Google-Smtp-Source: ABdhPJwA6US2Pl81XZE38AJ1RVMqyM4bpDFYjf5ZTP8XIudG+4NI6thbos5Oq7vokil1MB1cw5lBeg==
+X-Received: by 2002:a17:902:b7cb:b029:db:c0d6:96ee with SMTP id v11-20020a170902b7cbb02900dbc0d696eemr864841plz.21.1607397130338;
+        Mon, 07 Dec 2020 19:12:10 -0800 (PST)
+Received: from ast-mbp ([2620:10d:c090:400::5:7f0])
+        by smtp.gmail.com with ESMTPSA id a124sm16300222pfd.43.2020.12.07.19.12.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Dec 2020 19:12:09 -0800 (PST)
+Date:   Mon, 7 Dec 2020 19:12:06 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net,
+        kernel-team@fb.com
+Subject: Re: [PATCH bpf-next] libbpf: support module BTF for
+ BPF_TYPE_ID_TARGET CO-RE relocation
+Message-ID: <20201208031206.26mpjdbrvqljj7vl@ast-mbp>
+References: <20201205025140.443115-1-andrii@kernel.org>
+ <alpine.LRH.2.23.451.2012071623080.3652@localhost>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VE1PR04MB6768.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d6d587e3-cd09-4cb1-8fe7-08d89b2655dd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Dec 2020 03:07:02.4061
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ZKfFh6QtVTqoPl/gPFUYuqTz7+pyHyQx2NrwGEfXY/4XLtZVSGxmNGPMRzcXaudnNSqwByQEqP3HK56JNawTBw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4541
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.LRH.2.23.451.2012071623080.3652@localhost>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMDYvMTIvMjAyMCAwNToxMiwgUmFzbXVzIFZpbGxlbW9lcyA8cmFzbXVzLnZpbGxlbW9lc0Bw
-cmV2YXMuZGs+IHdyb3RlOg0KDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJv
-bTogUmFzbXVzIFZpbGxlbW9lcyA8cmFzbXVzLnZpbGxlbW9lc0BwcmV2YXMuZGs+DQo+IFNlbnQ6
-IDIwMjDE6jEy1MI2yNUgNToxMg0KPiBUbzogSmFrdWIgS2ljaW5za2kgPGt1YmFAa2VybmVsLm9y
-Zz4NCj4gQ2M6IExlbyBMaSA8bGVveWFuZy5saUBueHAuY29tPjsgRGF2aWQgUy4gTWlsbGVyIDxk
-YXZlbUBkYXZlbWxvZnQubmV0PjsNCj4gUWlhbmcgWmhhbyA8cWlhbmcuemhhb0BueHAuY29tPjsg
-bmV0ZGV2QHZnZXIua2VybmVsLm9yZzsNCj4gbGludXhwcGMtZGV2QGxpc3RzLm96bGFicy5vcmc7
-IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7DQo+IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMu
-aW5mcmFkZWFkLm9yZzsgVmxhZGltaXIgT2x0ZWFuDQo+IDx2bGFkaW1pci5vbHRlYW5AbnhwLmNv
-bT4NCj4gU3ViamVjdDogUmU6IFtQQVRDSCAwMC8yMF0gZXRoZXJuZXQ6IHVjY19nZXRoOiBhc3Nv
-cnRlZCBmaXhlcyBhbmQNCj4gc2ltcGxpZmljYXRpb25zDQo+IA0KPiBPbiAwNS8xMi8yMDIwIDIx
-LjUzLCBKYWt1YiBLaWNpbnNraSB3cm90ZToNCj4gPiBPbiBTYXQsICA1IERlYyAyMDIwIDIwOjE3
-OjIzICswMTAwIFJhc211cyBWaWxsZW1vZXMgd3JvdGU6DQo+ID4+IFdoaWxlIHRyeWluZyB0byBm
-aWd1cmUgb3V0IGhvdyB0byBhbGxvdyBidW1waW5nIHRoZSBNVFUgd2l0aCB0aGUNCj4gPj4gdWNj
-X2dldGggZHJpdmVyLCBJIGZlbGwgaW50byBhIHJhYmJpdCBob2xlIGFuZCBzdHVtYmxlZCBvbiBh
-IHdob2xlDQo+ID4+IGJ1bmNoIG9mIGlzc3VlcyBvZiB2YXJ5aW5nIGltcG9ydGFuY2UgLSBzb21l
-IGFyZSBvdXRyaWdodCBidWcgZml4ZXMsDQo+ID4+IHdoaWxlIG1vc3QgYXJlIGEgbWF0dGVyIG9m
-IHNpbXBsaWZ5aW5nIHRoZSBjb2RlIHRvIG1ha2UgaXQgbW9yZQ0KPiA+PiBhY2Nlc3NpYmxlLg0K
-PiA+Pg0KPiA+PiBBdCB0aGUgZW5kIG9mIGRpZ2dpbmcgYXJvdW5kIHRoZSBjb2RlIGFuZCBkYXRh
-IHNoZWV0IHRvIGZpZ3VyZSBvdXQNCj4gPj4gaG93IGl0IGFsbCB3b3JrcywgSSB0aGluayB0aGUg
-TVRVIGlzc3VlIG1pZ2h0IGJlIGZpeGVkIGJ5IGENCj4gPj4gb25lLWxpbmVyLCBidXQgSSdtIG5v
-dCBzdXJlIGl0IGNhbiBiZSB0aGF0IHNpbXBsZS4gSXQgZG9lcyBzZWVtIHRvDQo+ID4+IHdvcmsg
-KHBpbmcgLXMgWCB3b3JrcyBmb3IgbGFyZ2VyIHZhbHVlcyBvZiBYLCBhbmQgd2lyZXNoYXJrIGNv
-bmZpcm1zDQo+ID4+IHRoYXQgdGhlIHBhY2tldHMgYXJlIG5vdCBmcmFnbWVudGVkKS4NCj4gPj4N
-Cj4gPj4gUmUgcGF0Y2ggMiwgc29tZW9uZSBpbiBOWFAgc2hvdWxkIGNoZWNrIGhvdyB0aGUgaGFy
-ZHdhcmUgYWN0dWFsbHkNCj4gPj4gd29ya3MgYW5kIG1ha2UgYW4gdXBkYXRlZCByZWZlcmVuY2Ug
-bWFudWFsIGF2YWlsYWJsZS4NCj4gPg0KPiA+IExvb2tzIGxpa2UgYSBuaWNlIGNsZWFuIHVwIG9u
-IGEgcXVpY2sgbG9vay4NCj4gPg0KPiA+IFBsZWFzZSBzZXBhcmF0ZSBwYXRjaGVzIDEgYW5kIDEx
-ICh3aGljaCBhcmUgdGhlIHR3byBidWcgZml4ZXMgSSBzZWUpDQo+IA0KPiBJIHRoaW5rIHBhdGNo
-IDIgaXMgYSBidWcgZml4IGFzIHdlbGwsIGJ1dCBJJ2QgbGlrZSBzb21lb25lIGZyb20gTlhQIHRv
-IGNvbW1lbnQuDQoNCkl0ICdzIG9rIGZvciBtZS4NCg0KDQpCZXN0IFJlZ2FyZHMsDQpRaWFuZyBa
-aGFvDQo=
+On Mon, Dec 07, 2020 at 04:38:16PM +0000, Alan Maguire wrote:
+> On Fri, 4 Dec 2020, Andrii Nakryiko wrote:
+> 
+> > When Clang emits ldimm64 instruction for BPF_TYPE_ID_TARGET CO-RE relocation,
+> > put module BTF FD, containing target type, into upper 32 bits of imm64.
+> > 
+> > Because this FD is internal to libbpf, it's very cumbersome to test this in
+> > selftests. Manual testing was performed with debug log messages sprinkled
+> > across selftests and libbpf, confirming expected values are substituted.
+> > Better testing will be performed as part of the work adding module BTF types
+> > support to  bpf_snprintf_btf() helpers.
+> > 
+> > Cc: Alan Maguire <alan.maguire@oracle.com>
+> > Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+> > ---
+> >  tools/lib/bpf/libbpf.c | 19 ++++++++++++++++---
+> >  1 file changed, 16 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > index 9be88a90a4aa..539956f7920a 100644
+> > --- a/tools/lib/bpf/libbpf.c
+> > +++ b/tools/lib/bpf/libbpf.c
+> > @@ -4795,6 +4795,7 @@ static int load_module_btfs(struct bpf_object *obj)
+> >  
+> >  		mod_btf = &obj->btf_modules[obj->btf_module_cnt++];
+> >  
+> > +		btf__set_fd(btf, fd);
+> >  		mod_btf->btf = btf;
+> >  		mod_btf->id = id;
+> >  		mod_btf->fd = fd;
+> > @@ -5445,6 +5446,10 @@ struct bpf_core_relo_res
+> >  	__u32 orig_type_id;
+> >  	__u32 new_sz;
+> >  	__u32 new_type_id;
+> > +	/* FD of the module BTF containing the target candidate, or 0 for
+> > +	 * vmlinux BTF
+> > +	 */
+> > +	int btf_obj_fd;
+> >  };
+> >  
+> >  /* Calculate original and target relocation values, given local and target
+> > @@ -5469,6 +5474,7 @@ static int bpf_core_calc_relo(const struct bpf_program *prog,
+> >  	res->fail_memsz_adjust = false;
+> >  	res->orig_sz = res->new_sz = 0;
+> >  	res->orig_type_id = res->new_type_id = 0;
+> > +	res->btf_obj_fd = 0;
+> >  
+> >  	if (core_relo_is_field_based(relo->kind)) {
+> >  		err = bpf_core_calc_field_relo(prog, relo, local_spec,
+> > @@ -5519,6 +5525,9 @@ static int bpf_core_calc_relo(const struct bpf_program *prog,
+> >  	} else if (core_relo_is_type_based(relo->kind)) {
+> >  		err = bpf_core_calc_type_relo(relo, local_spec, &res->orig_val);
+> >  		err = err ?: bpf_core_calc_type_relo(relo, targ_spec, &res->new_val);
+> > +		if (!err && relo->kind == BPF_TYPE_ID_TARGET &&
+> > +		    targ_spec->btf != prog->obj->btf_vmlinux) 
+> > +			res->btf_obj_fd = btf__fd(targ_spec->btf);
+> 
+> Sorry about this Andrii, but I'm a bit stuck here.
+> 
+> I'm struggling to get tests working where the obj fd is used to designate
+> the module BTF. Unless I'm missing something there are a few problems:
+> 
+> - the fd association is removed by libbpf when the BPF program has loaded; 
+> the module fds are closed and the module BTF is discarded.  However even if 
+> that isn't done (and as you mentioned, we could hold onto BTF that is in 
+> use, and I commented out the code that does that to test) - there's 
+> another problem:
+> - I can't see a way to use the object fd value we set here later in BPF 
+> program context; btf_get_by_fd() returns -EBADF as the fd is associated 
+> with the module BTF in the test's process context, not necessarily in 
+> the context that the BPF program is running.  Would it be possible in this 
+> case to use object id? Or is there another way to handle the fd->module 
+> BTF association that we need to make in BPF program context that I'm 
+> missing?
+> - A more long-term issue; if we use fds to specify module BTFs and write 
+> the object fd into the program, we can pin the BPF program such that it 
+> outlives fds that refer to its associated BTF.  So unless we pinned the 
+> BTF too, any code that assumed the BTF fd-> module mapping was valid would 
+> start to break once the user-space side went away and the pinned program 
+> persisted. 
+
+All of the above are not issues. They are features of FD based approach.
+When the program refers to btf via fd the verifier needs to increment btf's refcnt
+so it won't go away while the prog is running. For module's BTF it means
+that the module can be unloaded, but its BTF may stay around if there is a prog
+that needs to access it.
+I think the missing piece in the above is that btf_get_by_fd() should be
+done at load time instead of program run-time.
+Everything FD based needs to behave similar to map_fds where ld_imm64 insn
+contains map_fd that gets converted to map_ptr by the verifier at load time.
+In this case single ld_imm64 with 32-bit FD + 32-bit btf_id is not enough.
+So either libbpf or the verifier need to insert additional instruction.
+I'm not sure yet how to extend 'struct btf_ptr' cleanly, so it looks good
+from C side. 
+In the other patch I saw:
+struct btf_ptr {
+        void *ptr;
+        __u32 type_id;
+-       __u32 flags;            /* BTF ptr flags; unused at present. */
++       __u32 obj_id;           /* BTF object; vmlinux if 0 */
+ };
+The removal of flags cannot be done, since it will break progs.
+Probably something like this:
+struct btf_ptr {
+  void *ptr;
+  __u32 type_id;
+  __u32 flags;
+  __u64 btf_obj_fd; /* this is 32-bit FD for libbpf which will become pointer after load */
+};
+would be the most convenient from the bpf prog side. The ld_imm64 init of
+btf_obj_fd will be replaced with absolute btf pointer by the verifier. So when
+bpf_snprintf_btf() is called the prog will pass the kernel internal pointer
+of struct btf to the helper. No extra run-time checks needed.
+bpf_snprintf_btf() would print that type_id within given struct btf object.
+libbpf would need to deal with two relos. One to store btf_id from
+bpf_core_type_id_kernel() into type_id. And another to find module's BTF and
+store its FD into btf_obj_fd with ld_imm64. I'm still thinking to how to frame
+that cleanly from C side.
+Other ideas?
