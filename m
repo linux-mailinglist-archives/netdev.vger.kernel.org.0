@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FDED2D3312
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 21:18:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E2F52D3376
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 21:27:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731411AbgLHUQO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 15:16:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34208 "EHLO mail.kernel.org"
+        id S1727872AbgLHUT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 15:19:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35952 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731149AbgLHUPI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Dec 2020 15:15:08 -0500
-Date:   Tue, 8 Dec 2020 11:18:32 -0800
+        id S1727782AbgLHUT0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Dec 2020 15:19:26 -0500
+Date:   Tue, 8 Dec 2020 11:19:36 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607455113;
-        bh=/Q0LizOTWDdWMFl9Lai3EjKIXaMONeKDuC9xc/e4lOo=;
+        s=k20201202; t=1607455179;
+        bh=7Y33f++WRd6rnyQYLzHMNsPNQkHOrkxPbcYvqD4IR9c=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=egVhILeeWUuHpyaJDjstjQ+WgMSJ4wI4WuJ5S+m6X9oTM4vouxdKFUVmXbbA8z8xz
-         0yyl4b0wui9MyYr5qtV5I3TkWHCp1FN7dRiJY70MkmKQhhgPJyebhTpUEhaWBcJLEL
-         2OnlwQ76Vq0kVpttx6mxDzE85OMBb9vtR6/C8VESgaOI/XGdgPCRgDHF+Cb6IL4YVd
-         Zw5KcLe1k4URJZj9V1Y6S2ic6KrBd+MGQM0D4z1eoBq6FwYw1/3RESu+YSuk3QI5aq
-         smGPGy+6wG8xSi+7OEkai/ndW3rp52FOvZyasO+SzuOb11vHwXm2/8WwCDefdwDMdK
-         7YQTlDMkUSjvg==
+        b=PJFTsKnBXx/+ut3Ywgf/7/rgVYBaAawEFqoVQT0TF4E2AhLT5jnLZVdMNzl+c5u0B
+         HDuP0n9VCCwelIYNQA/fK6rMf85/uyUX/f+tKjXGGzHfBgq5UmV5O2+9vHdBwNpHmv
+         4jYex/7A4niGbi6w6V3aq75a38AH80QTbJCYQiTbK8vLSgqqfWNICYXhUF+y/l5nh4
+         JC7nsv/Bp2RQ7JIf3LSJIzxbnRtAjbtNyAaW/8O+s1Xt+ci9b6YIgyas+KbcLJY1pP
+         pNql7G7g3/FusSHGiAkrg3/vKyNC2Mf8+omqeml201Ikg9eC74ahoJKDJBq3xY+EhG
+         a082BRSrpvyHw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Zheng Yongjun <zhengyongjun3@huawei.com>
 Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-rdma@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] net/mlx4: simplify the return expression of
- mlx4_init_cq_table()
-Message-ID: <20201208111832.28f4a173@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <20201208135543.11820-1-zhengyongjun3@huawei.com>
-References: <20201208135543.11820-1-zhengyongjun3@huawei.com>
+        <linux-rdma@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: Re: [PATCH net-next] net/mlx5: simplify the return expression of
+ mlx5_esw_offloads_pair()
+Message-ID: <20201208111936.56314fee@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201208135625.11872-1-zhengyongjun3@huawei.com>
+References: <20201208135625.11872-1-zhengyongjun3@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -38,36 +39,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 8 Dec 2020 21:55:43 +0800 Zheng Yongjun wrote:
-> diff --git a/drivers/net/ethernet/mellanox/mlx4/cq.c b/drivers/net/ethernet/mellanox/mlx4/cq.c
-> index 3b8576b9c2f9..68bd18ee6ee3 100644
-> --- a/drivers/net/ethernet/mellanox/mlx4/cq.c
-> +++ b/drivers/net/ethernet/mellanox/mlx4/cq.c
-> @@ -462,19 +462,14 @@ EXPORT_SYMBOL_GPL(mlx4_cq_free);
->  int mlx4_init_cq_table(struct mlx4_dev *dev)
->  {
->  	struct mlx4_cq_table *cq_table = &mlx4_priv(dev)->cq_table;
-> -	int err;
->  
->  	spin_lock_init(&cq_table->lock);
->  	INIT_RADIX_TREE(&cq_table->tree, GFP_ATOMIC);
->  	if (mlx4_is_slave(dev))
->  		return 0;
->  
-> -	err = mlx4_bitmap_init(&cq_table->bitmap, dev->caps.num_cqs,
-> -			       dev->caps.num_cqs - 1, dev->caps.reserved_cqs, 0);
-> -	if (err)
-> -		return err;
-> -
-> -	return 0;
-> +	return mlx4_bitmap_init(&cq_table->bitmap, dev->caps.num_cqs,
-> +			        dev->caps.num_cqs - 1, dev->caps.reserved_cqs, 0);
->  }
->  
->  void mlx4_cleanup_cq_table(struct mlx4_dev *dev)
+On Tue, 8 Dec 2020 21:56:25 +0800 Zheng Yongjun wrote:
+> Simplify the return expression.
+> 
+> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-Checkpatch reports the indentation is off here:
-
-ERROR: code indent should use tabs where possible
-#37: FILE: drivers/net/ethernet/mellanox/mlx4/cq.c:472:
-+^I^I^I        dev->caps.num_cqs - 1, dev->caps.reserved_cqs, 0);$
+Please make sure to CC maintainers on your patches
