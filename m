@@ -2,83 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47BDB2D3672
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 23:51:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70B052D367A
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 23:51:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730728AbgLHWr6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 17:47:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60868 "EHLO
+        id S1731288AbgLHWvi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 17:51:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725940AbgLHWr4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 17:47:56 -0500
-Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7DADC061793
-        for <netdev@vger.kernel.org>; Tue,  8 Dec 2020 14:47:16 -0800 (PST)
-Received: by mail-oi1-x242.google.com with SMTP id y74so285473oia.11
-        for <netdev@vger.kernel.org>; Tue, 08 Dec 2020 14:47:16 -0800 (PST)
+        with ESMTP id S1728147AbgLHWvh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 17:51:37 -0500
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1299C0613CF;
+        Tue,  8 Dec 2020 14:50:57 -0800 (PST)
+Received: by mail-pg1-x542.google.com with SMTP id t37so13598616pga.7;
+        Tue, 08 Dec 2020 14:50:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=u5UkKTVdVSQdzgLxe0Sijc9KEJH+Y+fH21l3fscA5vs=;
-        b=g139F4IDeHgHKJHGAegseG7moYs36Ptas3/bhdgZbuWODhpJYEC3bRoSoX4mahPpZF
-         CTgZYCdywqaiwldwn+JhNBIuhHu3JKvCMCNnhKb+w9xguXJc8d9f5ug6LT2wtrErEqg3
-         hUZ6RkorqceD+3Iy5LXW8rV1YEYLsnW7dQfWQxtvDKGIo6Ft4p9y1mPCQ8mYhf2kEpIf
-         TmCveENINZk+ANva2SY5iswWbb/8Wnj9cXVMC3OtOcT9mJT+InGKIXbCoWtZNsa8+/2R
-         Ts/JqcJXs2j+mU/Hn7ZThyzPChd5si0MgALfey+lJ6Y5iWpMnh29pbOWUXcjM3Z4BU6/
-         g+Bw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=czPRgCP4Rbvj8nQm8kV+1nNwcp4eHqLkAIVxs9WjDpk=;
+        b=VXzD6wwNroEMOtTsjKAFrXV3Ykmq11SgT6QT0T+yMgGu3gUnx9joMIFzmJ0oQMo7TD
+         Y5zrQy4AqY3a4iWw4A9W6JapbweHMdHprj+tNKbhbmUVCwwVXDTDKbBJ+IqVFXL34dCv
+         +q5rmn7SjQ77tXvhz0niCCqULV+ynvw+ss4Pvqswb/ABCLgp/VFdbUlfvyO5umzwfebV
+         J0YMrDVHBQI7WG0314/DMIqNeyZ4oGKFvsOAdEE2UMaSxqZtwjTWsRFpmI3INj3VU9ok
+         3KxfDDr/DC5KbpF6lVuHTb1/R6MS3Ow6n6n+iRYSrSPyeO8iRxhr19mR44oDzZdN00yH
+         ncEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=u5UkKTVdVSQdzgLxe0Sijc9KEJH+Y+fH21l3fscA5vs=;
-        b=TclZ1BorrdzrWpwVgKyEVEJMgivSmWwrzc99v9YvHOnxlVh0sA7M5QXBciZzdQ0JIK
-         lLpeNeND9zdYrDi1z4UFanCVdxYJQu8ayS+pTucxnODNbgy66YsKVlXT7tTogckZZGJp
-         QnAk0LSfxVZVZVN9+wUjaq1lTG1XlQJGt4gaqtnZk6d+dssTd8A8UcVWBVLy7/6sqANp
-         htrJ/+Qk6DqUYd4duN7Nkb/0yB6PcLhDbefIL+LxHrpTBdLvnvJj3TzLnxk75aZy6Gs0
-         SgpwCieLf7vI/miPynyEqcrO3+vU5iTg2zdpFp1EmR+vYGbmX9ULjSgJUR5Q6nCW5HZ5
-         Zy8g==
-X-Gm-Message-State: AOAM533YX7I9vIHEtSJvBYfqwWdJlM+bhQMJDIO7l3whjGNaEc2G4v57
-        b1TAScbudVGRjK7OKAhU2MY=
-X-Google-Smtp-Source: ABdhPJwSB4hWMNVXjX4Ea5vURzGXJi/XgHT08yVWomFi+EIMWtOjHX0E2mjpzO3VnHkPUX0tFwkEJQ==
-X-Received: by 2002:a05:6808:9a:: with SMTP id s26mr123604oic.124.1607467636251;
-        Tue, 08 Dec 2020 14:47:16 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.51])
-        by smtp.googlemail.com with ESMTPSA id j11sm82418oos.47.2020.12.08.14.47.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Dec 2020 14:47:15 -0800 (PST)
-Subject: Re: [PATCH 0/7] Introduce vdpa management tool
-To:     Jason Wang <jasowang@redhat.com>, Parav Pandit <parav@nvidia.com>,
-        virtualization@lists.linux-foundation.org,
-        Stephen Hemminger <stephen@networkplumber.org>
-Cc:     mst@redhat.com, elic@nvidia.com, netdev@vger.kernel.org,
-        =?UTF-8?B?6LCi5rC45ZCJ?= <xieyongji@bytedance.com>
-References: <20201112064005.349268-1-parav@nvidia.com>
- <5b2235f6-513b-dbc9-3670-e4c9589b4d1f@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <831884f7-365d-b974-0bc5-f72729add98f@gmail.com>
-Date:   Tue, 8 Dec 2020 15:47:11 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.5.1
+        bh=czPRgCP4Rbvj8nQm8kV+1nNwcp4eHqLkAIVxs9WjDpk=;
+        b=A1jSbT1UUKxVjdz62X5bXXZpomzoByDv3zs9lXxjqAzqKsJ2qoZl7hA/2EdiGNjlhI
+         afsVmh1WEOf7SgOHoHmaV+2f6gWJ9pq0jakyyhaDUgaGVibNBk3Hv0blxG20mrC2z9nb
+         R/EIjoICeWVtN3eH4hBUAflIMsz+vVIbgNh1xCzwcD0RoaduyYuKgOYj0TU0jrpCjDqj
+         4Gz447Vxv1xyMRp9bO3ofUH8RKt3wCpOqO8revQQIizydcY2c3/JmUYvhRTdnEhQhDP8
+         0LYIccRsoaDSUuzHMFyi+7ERiYH96Ljg8ax+M/+gQDQCQ3OWgIWSvtXqBSABZvk+WyO0
+         NDsQ==
+X-Gm-Message-State: AOAM533dbHZD0Sdpse3aYvbwiGSI7wy+B0vNfmnVRvXqhob0eexCDnFj
+        DyH2SVqlVnr1csmsDxXfk6E=
+X-Google-Smtp-Source: ABdhPJzmnlwG1nSzxgXgEJFyCnxe2OHLK9eZDpCtUOcjYeK4XTm8lup1A/VwsyO5pFxGEDNEPMP/oQ==
+X-Received: by 2002:a63:1c53:: with SMTP id c19mr261553pgm.392.1607467857445;
+        Tue, 08 Dec 2020 14:50:57 -0800 (PST)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:55ef:9b8b:7388:ced5])
+        by smtp.gmail.com with ESMTPSA id dw16sm194135pjb.35.2020.12.08.14.50.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Dec 2020 14:50:56 -0800 (PST)
+From:   Xie He <xie.he.0141@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Martin Schiller <ms@dev.tdt.de>
+Cc:     Xie He <xie.he.0141@gmail.com>
+Subject: [PATCH net-next] net: lapbether: Consider it successful if (dis)connecting when already (dis)connected
+Date:   Tue,  8 Dec 2020 14:50:44 -0800
+Message-Id: <20201208225044.5522-1-xie.he.0141@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-In-Reply-To: <5b2235f6-513b-dbc9-3670-e4c9589b4d1f@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/26/20 8:53 PM, Jason Wang wrote:
-> 1. Where does userspace vdpa tool reside which users can use?
-> Ans: vdpa tool can possibly reside in iproute2 [1] as it enables user to
-> create vdpa net devices.
+When the upper layer instruct us to connect (or disconnect), but we have
+already connected (or disconnected), consider this operation successful
+rather than failed.
 
-iproute2 package is fine with us, but there are some expectations:
-syntax, command options and documentation need to be consistent with
-other iproute2 commands (this thread suggests it will be but just being
-clear), and it needs to re-use code as much as possible (e.g., json
-functions). If there is overlap with other tools (devlink, dcb, etc),
-you should refactor into common code used by all. Petr Machata has done
-this quite a bit for dcb and is a good example to follow.
+This can help the upper layer to correct its record about whether we are
+connected or not here in layer 2.
+
+The upper layer may not have the correct information about whether we are
+connected or not. This can happen if this driver has already been running
+for some time when the "x25" module gets loaded.
+
+Another X.25 driver (hdlc_x25) is already doing this, so we make this
+driver do this, too.
+
+Cc: Martin Schiller <ms@dev.tdt.de>
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
+---
+ drivers/net/wan/lapbether.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
+index b6be2454b8bd..605fe555e157 100644
+--- a/drivers/net/wan/lapbether.c
++++ b/drivers/net/wan/lapbether.c
+@@ -55,6 +55,9 @@ struct lapbethdev {
+ 
+ static LIST_HEAD(lapbeth_devices);
+ 
++static void lapbeth_connected(struct net_device *dev, int reason);
++static void lapbeth_disconnected(struct net_device *dev, int reason);
++
+ /* ------------------------------------------------------------------------ */
+ 
+ /*
+@@ -167,11 +170,17 @@ static netdev_tx_t lapbeth_xmit(struct sk_buff *skb,
+ 	case X25_IFACE_DATA:
+ 		break;
+ 	case X25_IFACE_CONNECT:
+-		if ((err = lapb_connect_request(dev)) != LAPB_OK)
++		err = lapb_connect_request(dev);
++		if (err == LAPB_CONNECTED)
++			lapbeth_connected(dev, LAPB_OK);
++		else if (err != LAPB_OK)
+ 			pr_err("lapb_connect_request error: %d\n", err);
+ 		goto drop;
+ 	case X25_IFACE_DISCONNECT:
+-		if ((err = lapb_disconnect_request(dev)) != LAPB_OK)
++		err = lapb_disconnect_request(dev);
++		if (err == LAPB_NOTCONNECTED)
++			lapbeth_disconnected(dev, LAPB_OK);
++		else if (err != LAPB_OK)
+ 			pr_err("lapb_disconnect_request err: %d\n", err);
+ 		fallthrough;
+ 	default:
+-- 
+2.27.0
+
