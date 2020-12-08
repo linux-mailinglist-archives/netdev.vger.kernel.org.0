@@ -2,118 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4BA42D333E
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 21:27:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA5682D334D
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 21:27:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731345AbgLHUQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 15:16:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34116 "EHLO mail.kernel.org"
+        id S1731369AbgLHUQM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 15:16:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34194 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731127AbgLHUO0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Dec 2020 15:14:26 -0500
-From:   saeed@kernel.org
-Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next V3 15/15] net/mlx5e: Fill mlx5e_create_cq_param in a function
-Date:   Tue,  8 Dec 2020 11:35:55 -0800
-Message-Id: <20201208193555.674504-16-saeed@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201208193555.674504-1-saeed@kernel.org>
-References: <20201208193555.674504-1-saeed@kernel.org>
+        id S1731144AbgLHUPH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Dec 2020 15:15:07 -0500
+Date:   Tue, 8 Dec 2020 11:38:20 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607456307;
+        bh=4xIgevDP7/ZGGz5vmkJ8zIO+NIU+cuUQaVaBwbzuc5I=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=puG9BwYSAJ7e6ZPqIbzIEvMJoNdGD/nRqvjr61QKZuIR24H2WQ/1pK7kkTZWTVyVC
+         D8kmlJ/J7d93CeBddN9+EEWdT0Y3L7t5V73jXEqdFRXKY2LtLv2P/P6K6Lr7NeqENU
+         Uwd6Do5ZhKj9PKHpA4LnwicRabU4+KaOiL3DF9yD0IOsY3coqpFmnAo1kTzbqwnK7b
+         kzZdF2sW2PAUfeDcKLJm2KmQCjfTXCfsRSaa2soFiffrtXdMkP+dNMDXcETYfOfARj
+         o3e6m0PsFJYo6u8CaP2lnbReOYw5tiJgxfoG5ddH/wh+qsO7dkAO07xvAC8O0k45Gw
+         lhdFoy7/3V6cw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jarod Wilson <jarod@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Mahesh Bandewar <maheshb@google.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org
+Subject: Re: [PATCH net] bonding: reduce rtnl lock contention in mii monitor
+ thread
+Message-ID: <20201208113820.179ed5ca@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201205234354.1710-1-jarod@redhat.com>
+References: <20201205234354.1710-1-jarod@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@mellanox.com>
+On Sat,  5 Dec 2020 18:43:54 -0500 Jarod Wilson wrote:
+> I'm seeing a system get stuck unable to bring a downed interface back up
+> when it's got an updelay value set, behavior which ceased when logging
+> spew was removed from bond_miimon_inspect(). I'm monitoring logs on this
+> system over another network connection, and it seems that the act of
+> spewing logs at all there increases rtnl lock contention, because
+> instrumented code showed bond_mii_monitor() never able to succeed in it's
+> attempts to call rtnl_trylock() to actually commit link state changes,
+> leaving the downed link stuck in BOND_LINK_DOWN. The system in question
+> appears to be fine with the log spew being moved to
+> bond_commit_link_state(), which is called after the successful
+> rtnl_trylock().
 
-Create a function to fill the fields of struct mlx5e_create_cq_param
-based on a channel. The purpose is code reuse between normal CQs, XSK
-CQs and the upcoming QoS CQs.
+But it's not called under rtnl_lock AFAICT. So something else is also
+spewing messages?
 
-Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- .../net/ethernet/mellanox/mlx5/core/en/params.h |  1 +
- .../ethernet/mellanox/mlx5/core/en/xsk/setup.c  |  7 ++-----
- .../net/ethernet/mellanox/mlx5/core/en_main.c   | 17 ++++++++++++-----
- 3 files changed, 15 insertions(+), 10 deletions(-)
+While bond_commit_link_state() _is_ called under the lock. So you're
+increasing the retry rate, by putting the slow operation under the
+lock, is that right?
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-index 3959254d4181..807147d97a0f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.h
-@@ -111,6 +111,7 @@ u16 mlx5e_get_rq_headroom(struct mlx5_core_dev *mdev,
- 
- /* Build queue parameters */
- 
-+void mlx5e_build_create_cq_param(struct mlx5e_create_cq_param *ccp, struct mlx5e_channel *c);
- void mlx5e_build_rq_param(struct mlx5e_priv *priv,
- 			  struct mlx5e_params *params,
- 			  struct mlx5e_xsk_param *xsk,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-index 7703e6553da6..d87c345878d3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/setup.c
-@@ -48,14 +48,11 @@ int mlx5e_open_xsk(struct mlx5e_priv *priv, struct mlx5e_params *params,
- 		   struct mlx5e_xsk_param *xsk, struct xsk_buff_pool *pool,
- 		   struct mlx5e_channel *c)
- {
--	struct mlx5e_create_cq_param ccp = {};
- 	struct mlx5e_channel_param *cparam;
-+	struct mlx5e_create_cq_param ccp;
- 	int err;
- 
--	ccp.napi = &c->napi;
--	ccp.ch_stats = c->stats;
--	ccp.node = cpu_to_node(c->cpu);
--	ccp.ix = c->ix;
-+	mlx5e_build_create_cq_param(&ccp, c);
- 
- 	if (!mlx5e_validate_xsk_param(params, xsk, priv->mdev))
- 		return -EINVAL;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 2490d68cbd32..03831650f655 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -1806,18 +1806,25 @@ static int mlx5e_set_tx_maxrate(struct net_device *dev, int index, u32 rate)
- 	return err;
- }
- 
-+void mlx5e_build_create_cq_param(struct mlx5e_create_cq_param *ccp, struct mlx5e_channel *c)
-+{
-+	*ccp = (struct mlx5e_create_cq_param) {
-+		.napi = &c->napi,
-+		.ch_stats = c->stats,
-+		.node = cpu_to_node(c->cpu),
-+		.ix = c->ix,
-+	};
-+}
-+
- static int mlx5e_open_queues(struct mlx5e_channel *c,
- 			     struct mlx5e_params *params,
- 			     struct mlx5e_channel_param *cparam)
- {
- 	struct dim_cq_moder icocq_moder = {0, 0};
--	struct mlx5e_create_cq_param ccp = {};
-+	struct mlx5e_create_cq_param ccp;
- 	int err;
- 
--	ccp.napi = &c->napi;
--	ccp.ch_stats = c->stats;
--	ccp.node = cpu_to_node(c->cpu);
--	ccp.ix = c->ix;
-+	mlx5e_build_create_cq_param(&ccp, c);
- 
- 	err = mlx5e_open_cq(c->priv, icocq_moder, &cparam->icosq.cqp, &ccp,
- 			    &c->async_icosq.cq);
--- 
-2.26.2
+Also isn't bond_commit_link_state() called from many more places?
+So we're adding new prints, effectively?
 
+> I'm actually wondering if perhaps we ultimately need/want
+> some bond-specific lock here to prevent racing with bond_close() instead
+> of using rtnl, but this shift of the output appears to work. I believe
+> this started happening when de77ecd4ef02 ("bonding: improve link-status
+> update in mii-monitoring") went in, but I'm not 100% on that.
+> 
+> The addition of a case BOND_LINK_BACK in bond_miimon_inspect() is somewhat
+> separate from the fix for the actual hang, but it eliminates a constant
+> "invalid new link 3 on slave" message seen related to this issue, and it's
+> not actually an invalid state here, so we shouldn't be reporting it as an
+> error.
+
+Let's make it a separate patch, then.
