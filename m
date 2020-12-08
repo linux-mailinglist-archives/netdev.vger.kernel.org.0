@@ -2,175 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A21D72D36FC
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 00:39:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A65552D3700
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 00:41:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731729AbgLHXhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 18:37:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40306 "EHLO
+        id S1731765AbgLHXkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 18:40:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725906AbgLHXhJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 18:37:09 -0500
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C39A4C0613CF;
-        Tue,  8 Dec 2020 15:36:23 -0800 (PST)
-Received: by mail-pg1-x544.google.com with SMTP id w4so13664934pgg.13;
-        Tue, 08 Dec 2020 15:36:23 -0800 (PST)
+        with ESMTP id S1731698AbgLHXkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 18:40:04 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65569C0613CF;
+        Tue,  8 Dec 2020 15:39:24 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id s2so148061plr.9;
+        Tue, 08 Dec 2020 15:39:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ZpMBXCLAG+wbFikSfa0eQOHwe8wF5ux4xsDtNyT9Mqs=;
-        b=p3Cs8Q3v+CigHP7HaWiPbTAtelKFPuc3fgdSDPPhYXAywKxG25O/mxnhLc1XpuS4py
-         KXXKfqBdVhtHMAV5vfeyGYNuZlxOabX5FzTHHSQ+1KJRT5ghTuFWTDTiozMwh3pIeIep
-         J/j23YfY0kCubXh8mfwmKgsz9I2dcGE6WdTY3HwiLQyjxeoabqpBQON4pjML8ETTY6Hj
-         jLyyXZ/fQeEZU5SofAO4YhE6B9CK3lNNtFK5zuWijCU+ZTjfEGwwPLrB0iaeZCyhffyI
-         djVPSkDH5cCFkUbEiOdJBO+FsnoJr+spO8Eufb6YhTPpfBOFq8FV5hbj6X+YPCu0ieCy
-         zMyg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=eADlgZ+VjApM3WW59Y7Aka72cQ/enDZQufZ1bqN1G7Y=;
+        b=PRYy90S2a10HzP8M3XAQCd6kxKLzsPGp5mxNW8EHVFF4pbThTcPjukcmB1kj4phiCr
+         jrUKM+h1rmpcfYc3Yi6vA0D4cGUr94JnDUI2EldL7edxiPc3/HylD0gJgi8GffHK4vY7
+         RaES8auVFkOqjWbprInGYS215fThr9uSo11mxJ0XHlWDpDlXDArxB1BDSvjDEaoxw1mH
+         k0H7t31cy7S84eCe1IKmXZ+55Dt7htvPPOenLOIgC0VCDCOU4MkxZk1+UlGXf/XzWmQv
+         DUUwZAxJcFnx7XXm7c7y+cxZyHhmRnm9ueB5P85nWQHofxSGqP3gDHbgFhIQLgHCEgrX
+         kDtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=ZpMBXCLAG+wbFikSfa0eQOHwe8wF5ux4xsDtNyT9Mqs=;
-        b=Dg2eiYJBPH+ee0Abmf0s/iDycnJGBIB16/Evhiys0h9dEpAzhzvm06rtwgu/lpOKV+
-         MFg2lravf12AK++fSja3GWrZALmLNIFaatnJVFE5fEQzvGw06+39bMOXoSMXZ5/Z1acK
-         3iqhBuoPk8nhQWOsYsMUIM4+xo/6VU4O7b09L0ETCiuy+7fEbfx9CZMO8XZnPfncnD6b
-         vGZt+A64tyBGeOVujuiP5Egh+Jp0CKvq0Un4yRd3FAHdm+xWW/7QBALQC66NUbpzz5VA
-         RSwt5Cbrywf/d6J+fxXZXT4TMFFZYtPZdi8nAjfLBJdpZTLD8pzPdvOLjFflKX9MYabU
-         rG2w==
-X-Gm-Message-State: AOAM530zNaf1Q8mUU6JszGMD3odgGLDibHZXpmAZBd+H+2Qmx/LmPhWA
-        q7BcCH38AIW3vsiyg4Po+9Yv8wCN8Nc=
-X-Google-Smtp-Source: ABdhPJydwA6nFHtasJd90Xwb+9tdAR55isPI/lXU+u41p6o0qmFCuNY038LZYrFixfFZ28lyIB5Rew==
-X-Received: by 2002:a17:90a:5d03:: with SMTP id s3mr127120pji.150.1607470582737;
-        Tue, 08 Dec 2020 15:36:22 -0800 (PST)
-Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id a26sm56818pgd.64.2020.12.08.15.36.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Dec 2020 15:36:22 -0800 (PST)
-Subject: Re: [PATCH net v1 2/2] lan743x: boost performance: limit PCIe
- bandwidth requirement
-To:     Sven Van Asbroeck <thesven73@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        David S Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20201206034408.31492-1-TheSven73@gmail.com>
- <20201206034408.31492-2-TheSven73@gmail.com>
- <20201208114314.743ee6ec@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
- <CAGngYiVSHRGC+eOCeF3Kyj_wOVqxJHvoc9fXRk-w+sVRjeSpcw@mail.gmail.com>
- <20201208225125.GA2602479@lunn.ch>
- <CAGngYiVp2u-A07rrkbeJCbqPW9efjkJUNC+NBxrtCM2JtXGpVA@mail.gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <3aed88da-8e82-3bd0-6822-d30f1bd5ec9e@gmail.com>
-Date:   Tue, 8 Dec 2020 15:36:20 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=eADlgZ+VjApM3WW59Y7Aka72cQ/enDZQufZ1bqN1G7Y=;
+        b=dfU83b9G61sW1JpMgp4Xnb1fC8rhmIBVoW2pTCyeOd4eT7s528FT62yABJRqA4x6GY
+         01DGtq/qNVLBi7KpgjmLrfSQ13o708iR4lx8r5jNqaQT4UYP/UYDwGcrMjPGFdJFcpof
+         oBFJSl/3UGGgNzXLgIIirsPM6vJlRSAS4IBscs3aUECsmRwitNtsUHpYjPV14jbCBj0L
+         PP+4nzJfob6Sveu4DtqC9qs1r1nQ1BTjbvGuJwDwBD/QnRKDGA6rKIWG4EOjPFGuXPrf
+         is3oIQ1Izbh8yROyknYwrht1O55+Cd6tE1pLYoeIkdUaNrA2/vRJEKke0QURk7JEfqlW
+         ae+Q==
+X-Gm-Message-State: AOAM5301ec8yzEIZfmDB8/W2QA4IpblkrrVtv6ulTM5/2ddDFpeywh40
+        js9ZYP/LmcyHKgzuCYIbN5E=
+X-Google-Smtp-Source: ABdhPJyRBhpBWukVk3kYVyTCafGf+5OHPBpsn3w8pRsIHVQVTrhyBCHCPp9DPczSHMfJQzQio7Qd6Q==
+X-Received: by 2002:a17:902:ed11:b029:da:3137:2695 with SMTP id b17-20020a170902ed11b02900da31372695mr309660pld.1.1607470763853;
+        Tue, 08 Dec 2020 15:39:23 -0800 (PST)
+Received: from ast-mbp ([2620:10d:c090:400::5:42ab])
+        by smtp.gmail.com with ESMTPSA id 19sm266933pfn.133.2020.12.08.15.39.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Dec 2020 15:39:23 -0800 (PST)
+Date:   Tue, 8 Dec 2020 15:39:20 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next] libbpf: support module BTF for
+ BPF_TYPE_ID_TARGET CO-RE relocation
+Message-ID: <20201208233920.qgrluwoafckvq476@ast-mbp>
+References: <20201205025140.443115-1-andrii@kernel.org>
+ <alpine.LRH.2.23.451.2012071623080.3652@localhost>
+ <20201208031206.26mpjdbrvqljj7vl@ast-mbp>
+ <CAEf4BzaXvFQzoYXbfutVn7A9ndQc9472SCK8Gj8R_Yj7=+rTcg@mail.gmail.com>
+ <alpine.LRH.2.23.451.2012082202450.25628@localhost>
 MIME-Version: 1.0
-In-Reply-To: <CAGngYiVp2u-A07rrkbeJCbqPW9efjkJUNC+NBxrtCM2JtXGpVA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.LRH.2.23.451.2012082202450.25628@localhost>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/8/20 3:02 PM, Sven Van Asbroeck wrote:
-> Hi Andrew,
+On Tue, Dec 08, 2020 at 10:13:35PM +0000, Alan Maguire wrote:
+> On Mon, 7 Dec 2020, Andrii Nakryiko wrote:
 > 
-> On Tue, Dec 8, 2020 at 5:51 PM Andrew Lunn <andrew@lunn.ch> wrote:
->>
->>>
->>> So I assumed that it's a PCIe dma bandwidth issue, but I could be wrong -
->>> I didn't do any PCIe bandwidth measurements.
->>
->> Sometimes it is actually cache operations which take all the
->> time. This needs to invalidate the cache, so that when the memory is
->> then accessed, it get fetched from RAM. On SMP machines, cache
->> invalidation can be expensive, due to all the cross CPU operations.
->> I've actually got better performance by building a UP kernel on some
->> low core count ARM CPUs.
->>
->> There are some tricks which can be played. Do you actually need all
->> 9K? Does the descriptor tell you actually how much is used? You can
->> get a nice speed up if you just unmap 64 bytes for a TCP ACK, rather
->> than the full 9K.
->>
+> > On Mon, Dec 7, 2020 at 7:12 PM Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > On Mon, Dec 07, 2020 at 04:38:16PM +0000, Alan Maguire wrote:
+> > > > Sorry about this Andrii, but I'm a bit stuck here.
+> > > >
+> > > > I'm struggling to get tests working where the obj fd is used to designate
+> > > > the module BTF. Unless I'm missing something there are a few problems:
+> > > >
+> > > > - the fd association is removed by libbpf when the BPF program has loaded;
+> > > > the module fds are closed and the module BTF is discarded.  However even if
+> > > > that isn't done (and as you mentioned, we could hold onto BTF that is in
+> > > > use, and I commented out the code that does that to test) - there's
+> > > > another problem:
+> > > > - I can't see a way to use the object fd value we set here later in BPF
+> > > > program context; btf_get_by_fd() returns -EBADF as the fd is associated
+> > > > with the module BTF in the test's process context, not necessarily in
+> > > > the context that the BPF program is running.  Would it be possible in this
+> > > > case to use object id? Or is there another way to handle the fd->module
+> > > > BTF association that we need to make in BPF program context that I'm
+> > > > missing?
+> > > > - A more long-term issue; if we use fds to specify module BTFs and write
+> > > > the object fd into the program, we can pin the BPF program such that it
+> > > > outlives fds that refer to its associated BTF.  So unless we pinned the
+> > > > BTF too, any code that assumed the BTF fd-> module mapping was valid would
+> > > > start to break once the user-space side went away and the pinned program
+> > > > persisted.
+> > >
+> > > All of the above are not issues. They are features of FD based approach.
+> > > When the program refers to btf via fd the verifier needs to increment btf's refcnt
+> > > so it won't go away while the prog is running. For module's BTF it means
+> > > that the module can be unloaded, but its BTF may stay around if there is a prog
+> > > that needs to access it.
+> > > I think the missing piece in the above is that btf_get_by_fd() should be
+> > > done at load time instead of program run-time.
+> > > Everything FD based needs to behave similar to map_fds where ld_imm64 insn
+> > > contains map_fd that gets converted to map_ptr by the verifier at load time.
+> > 
+> > Right. I was going to extend verifier to do the same for all used BTF
+> > objects as part of ksym support for module BTFs. So totally agree.
+> > Just didn't need it so far.
+> > 
 > 
-> Thank you for the suggestion! The original driver developer chose 9K because
-> presumably that's the largest frame size supported by the chip.
-> 
-> Yes, I believe the chip will tell us via the descriptor how much it has
-> written, I would have to double-check. I was already looking for a
-> "trick" to transfer only the required number of bytes, but I was led to
-> believe that dma_map_single() and dma_unmap_single() always needed to match.
-> 
-> So:
-> dma_map_single(9K) followed by dma_unmap_single(9K) is correct, and
-> dma_map_single(9K) followed by dma_unmap_single(1500 bytes) means trouble.
-> 
-> How can we get around that?
+> Does this approach prevent more complex run-time specification of BTF 
+> object fd though?  For example, I've been working on a simple tracer 
+> focused on kernel debugging; it uses a BPF map entry for each kernel 
+> function that is traced. User-space populates the map entry with BTF type 
+> ids for the function arguments/return value, and when the BPF program 
+> runs it uses the instruction pointer to look up the map entry for that
+> function, and uses bpf_snprintf_btf() to write the string representations 
+> of the function arguments/return values.  I'll send out an RFC soon, 
+> but longer-term I was hoping to extend it to support module-specific 
+> types.  Would a dynamic case like that - where the BTF module fd is looked 
+> up in a map entry during program execution (rather than derived via 
+> __btf_builtin_type_id()) work too? Thanks!
 
-dma_sync_single_for_{cpu,device} is what you would need in order to make
-a partial cache line invalidation. You would still need to unmap the
-same address+length pair that was used for the initial mapping otherwise
-the DMA-API debugging will rightfully complain.
--- 
-Florian
+fd has to be resolved in the process context. bpf prog can read fd
+number from the map, but that number is meaningless.
+Say we allow using btf_obj_id+btf_id, how user space will know these
+two numbers? Some new libbpf api that searches for it?
+An extension to libbpf_find_vmlinux_btf_id() ? I was hoping that this api
+will stay semi-internal. But say it's extended.
+The user space will store a pair of numbers into a map and
+what program are going to do with it?
+If it's printing struct veth_stats contents it should have attached to
+a corresponding function in the veth module via fentry or something.
+The prog has hard coded logic in C with specific pointer to print.
+The prog has its type right there. Why would the prog take a pointer
+from one place, but it's type_id from the map? That's not realistic.
+Where it would potentially make sense is what I think you're descring
+where single kprobe style prog attached to many places and args of
+those places are stored in a map and the prog selects them with
+map_lookup with key=PT_REGS_IP ?
+And passes pointers into bpf_snprintf_btf() from PT_REGS_PARM1() ?
+I see why that is useful, but it's so racy. By the time the map
+is populated those btf_obj_id+btf_id could be invalid.
+I think instead of doing this in user space the program needs an access
+to vmlinux+mods BTFs. Sort-of like proposed bpf helper to return ksym
+based on IP there could be a helper to figure out btf_id+btf_obj_POINTER
+based on IP. Then there will no need for external map to populate.
+Would that solve your use case?
