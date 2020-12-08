@@ -2,99 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 015062D2D3F
+	by mail.lfdr.de (Postfix) with ESMTP id 79DD72D2D40
 	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 15:32:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729783AbgLHOa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 09:30:29 -0500
-Received: from m43-15.mailgun.net ([69.72.43.15]:39403 "EHLO
-        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729558AbgLHOa3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 09:30:29 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1607437805; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=MxFBHRVAcl5W/18d8im87Z0ffTJ/GFUH2hG5GnOXJME=; b=CM+RKzp6zTB2xV0vW1CP+I25eAB3U2g8lbbRGPhBJobHqMcM09+OCOgd8qwzkRxJMG2sLo22
- 8e4a8EKFPbkIOnZu8XNYHSRVC9UFP1ygNShEVeDC0zDKCskvSas1MUbzhrqz0YgyDXZzskmE
- Vsg+5nxYEJAwfSb3DP4JOpP9XQQ=
-X-Mailgun-Sending-Ip: 69.72.43.15
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-west-2.postgun.com with SMTP id
- 5fcf8dce233278a2135a85ba (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 08 Dec 2020 14:29:34
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 15884C43464; Tue,  8 Dec 2020 14:29:34 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 3B095C433CA;
-        Tue,  8 Dec 2020 14:29:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 3B095C433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Xiaohui Zhang <ruc_zhangxiaohui@163.com>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] mwifiex: Fix possible buffer overflows in mwifiex_config_scan
-References: <20201208124523.8169-1-ruc_zhangxiaohui@163.com>
-Date:   Tue, 08 Dec 2020 16:29:29 +0200
-In-Reply-To: <20201208124523.8169-1-ruc_zhangxiaohui@163.com> (Xiaohui Zhang's
-        message of "Tue, 8 Dec 2020 20:45:23 +0800")
-Message-ID: <877dpse5h2.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1729379AbgLHObn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 09:31:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37834 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726738AbgLHObm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 09:31:42 -0500
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6461AC061749
+        for <netdev@vger.kernel.org>; Tue,  8 Dec 2020 06:31:02 -0800 (PST)
+Received: by mail-ej1-x644.google.com with SMTP id a16so24890311ejj.5
+        for <netdev@vger.kernel.org>; Tue, 08 Dec 2020 06:31:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=oW/0Def7+syZBHy2KEEtk4RcVTNw5OOV1PYvwMkOqxA=;
+        b=QkQK4aZ97qoLladTirg8VOwoThhsx/hiD0TJqyhfoxqq2jmowi5gq2CUC0phSfFzwi
+         jJ89ILZ1nddu9jOmP0AWFa792RcOOoXNUTZKtes7Q7JGnivMsG1f2VBWsh4UP7xes986
+         HdJEcNJuEkwbAys/DryjdvYOTSCodnk0ngUD/w8ZppQtZeUd3KweNJM57/64VM2AedEO
+         EZeF7esrzpxnjrpB89gtpUAJzGSr7DKIKve6RuG+S9/kc11mnL2tgm18SEEP78E9rYmP
+         i82jFL1a5/jD7HSTWfvSZR27cdBICQuCpiPxqFS0atjr2Sz+McmTtopEPzPjOXHGs0YP
+         UC+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=oW/0Def7+syZBHy2KEEtk4RcVTNw5OOV1PYvwMkOqxA=;
+        b=ack2SoU+WHit8E9smDQmtoz20nFsQAsXSDVq6JDrzs6jp3XMQyd+wUgoc27E+WIggM
+         uLPrCOwKtFo1Fugo6LUNpWnYJYyxEIzreOlrHBRZz5/kWifD+ctYxAHwPGAS7JKiLoLT
+         ifnxaNz8APUf5NPP4Pr2T6spSdocn/4PI4DrMLDD9TANppkDvvcaWJP6mYertUh6YKSq
+         PFOYhvLc9mWc1bFQxYnEzx8eLz4SMNNz/YfSdSK5mTz4Bya3s5HtLUOZvbzhdqqMiYmB
+         CZLkhl/ALRWUgwG9Owb21GtS1GyI/pUP0iLnVD1pi6e5jIdvfOyuLeu6n5oB5uCZoSru
+         nvdg==
+X-Gm-Message-State: AOAM5327903EDr8+iOVtYnsqD7gA83/BPidq6jzS9jERClHKi5ovkJLL
+        k97K7WfeWRUuP26WtnKypsg=
+X-Google-Smtp-Source: ABdhPJy/7c06e+YRuNmU/KgnwjADm+SYBPre9cKBVuDYInQdk4C3RUeUEmhTvIcEMDRL3YVPh3sTHw==
+X-Received: by 2002:a17:906:17d0:: with SMTP id u16mr23099000eje.452.1607437861169;
+        Tue, 08 Dec 2020 06:31:01 -0800 (PST)
+Received: from [132.68.43.153] ([132.68.43.153])
+        by smtp.gmail.com with ESMTPSA id d18sm8707633edz.14.2020.12.08.06.30.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Dec 2020 06:31:00 -0800 (PST)
+Subject: Re: [PATCH v1 net-next 01/15] iov_iter: Skip copy in memcpy_to_page
+ if src==dst
+To:     David Ahern <dsahern@gmail.com>,
+        Boris Pismenny <borisp@mellanox.com>, kuba@kernel.org,
+        davem@davemloft.net, saeedm@nvidia.com, hch@lst.de,
+        sagi@grimberg.me, axboe@fb.com, kbusch@kernel.org,
+        viro@zeniv.linux.org.uk, edumazet@google.com
+Cc:     boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
+        netdev@vger.kernel.org, benishay@nvidia.com, ogerlitz@nvidia.com,
+        yorayz@nvidia.com, Ben Ben-Ishay <benishay@mellanox.com>,
+        Or Gerlitz <ogerlitz@mellanox.com>,
+        Yoray Zack <yorayz@mellanox.com>, borisp@nvidia.com
+References: <20201207210649.19194-1-borisp@mellanox.com>
+ <20201207210649.19194-2-borisp@mellanox.com>
+ <f399b37d-872b-c832-be43-c7930b487a16@gmail.com>
+From:   Boris Pismenny <borispismenny@gmail.com>
+Message-ID: <eb974de5-01c7-a4e1-b08d-d2e64bfed4a8@gmail.com>
+Date:   Tue, 8 Dec 2020 16:30:58 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <f399b37d-872b-c832-be43-c7930b487a16@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Xiaohui Zhang <ruc_zhangxiaohui@163.com> writes:
 
-> From: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
+On 08/12/2020 2:39, David Ahern wrote:
+> On 12/7/20 2:06 PM, Boris Pismenny wrote:
+>> When using direct data placement the NIC writes some of the payload
+>> directly to the destination buffer, and constructs the SKB such that it
+>> points to this data. As a result, the skb_copy datagram_iter call will
+>> attempt to copy data when it is not necessary.
+>>
+>> This patch adds a check to avoid this copy, and a static_key to enabled
+>> it when TCP direct data placement is possible.
+>>
+> Why not mark the skb as ZEROCOPY -- an Rx version of the existing
+> SKBTX_DEV_ZEROCOPY and skb_shared_info->tx_flags? Use that as a generic
+> way of indicating to the stack what is happening.
 >
-> mwifiex_config_scan() calls memcpy() without checking
-> the destination size may trigger a buffer overflower,
-> which a local user could use to cause denial of service
-> or the execution of arbitrary code.
-> Fix it by putting the length check before calling memcpy().
 >
-> Signed-off-by: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
-> ---
->  drivers/net/wireless/marvell/mwifiex/scan.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/drivers/net/wireless/marvell/mwifiex/scan.c b/drivers/net/wireless/marvell/mwifiex/scan.c
-> index c2a685f63..b1d90678f 100644
-> --- a/drivers/net/wireless/marvell/mwifiex/scan.c
-> +++ b/drivers/net/wireless/marvell/mwifiex/scan.c
-> @@ -930,6 +930,8 @@ mwifiex_config_scan(struct mwifiex_private *priv,
->  				    "DIRECT-", 7))
->  				wildcard_ssid_tlv->max_ssid_length = 0xfe;
->  
-> +			if (ssid_len > 1)
-> +				ssid_len = 1;
->  			memcpy(wildcard_ssid_tlv->ssid,
->  			       user_scan_in->ssid_list[i].ssid, ssid_len);
 
-min_t()?
+[Re-sending as the previous one didn't hit the mailing list]
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+Interesting idea. But, unlike SKBTX_DEV_ZEROCOPY this SKB can be inspected/modified by the stack without the need to copy things out. Additionally, the SKB may contain both data that is already placed in its final destination buffer (PDU data) and data that isn't (PDU header); it doesn't matter. Therefore, labeling the entire SKB as zerocopy doesn't convey the desired information. Moreover, skipping copies in the stack to receive zerocopy SKBs will require more invasive changes.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Our goal in this approach was to provide the smallest change that enables the desired functionality while preserving the performance of existing flows that do not care for it. An alternative approach, that doesn't affect existing flows at all, which we considered was to make a special version of memcpy_to_page to be used by DDP providers (nvme-tcp). This alternative will require creating corresponding special versions for users of this function such skb_copy_datagram_iter. Thit is more invasive, thus in this patchset we decided to avoid it.
