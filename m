@@ -2,46 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA1E52D3742
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 00:58:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 434DD2D3743
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 00:58:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730366AbgLHX6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 18:58:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43618 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730241AbgLHX6M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 18:58:12 -0500
-X-Greylist: delayed 118774 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Dec 2020 15:57:32 PST
-Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E58BC0613CF;
-        Tue,  8 Dec 2020 15:57:32 -0800 (PST)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id 8E5264D248DBD;
-        Tue,  8 Dec 2020 15:57:31 -0800 (PST)
-Date:   Tue, 08 Dec 2020 15:57:31 -0800 (PST)
-Message-Id: <20201208.155731.1558729549312660543.davem@davemloft.net>
-To:     jwi@linux.ibm.com
-Cc:     kuba@kernel.org, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, hca@linux.ibm.com, kgraul@linux.ibm.com
-Subject: Re: [PATCH net-next] net/af_iucv: use DECLARE_SOCKADDR to cast
- from sockaddr
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20201207125307.68725-1-jwi@linux.ibm.com>
-References: <20201207125307.68725-1-jwi@linux.ibm.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1730555AbgLHX61 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 18:58:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38130 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730241AbgLHX61 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Dec 2020 18:58:27 -0500
+Date:   Tue, 8 Dec 2020 15:57:44 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607471866;
+        bh=zSy5op/jGCv17pkOLX915S+fxbyO1GasgZK/PQVb1x0=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EzHUgq8dwToEd+i/40Cfv1PIk2OCc77ngczpqv7uJScYlEvPr766WeGZLIwdRBYAa
+         l/o8zifIpScWaW3gLS9xucyRtoGTEw0HyCVeyHkpiW8Y5GGssnKiGKmspPt6jH3D03
+         0wvQDPl+ZGDA6Q9NaaperV7z7bC7GhW3m49H3IYp/Z0TcxlxmXJ7ezb0EcOOWHY4iR
+         1JrwRJfu+l5H4W7ialE3IBcIVC+tjxrPEyErn0GHoajY6d5/9hUAlfylLFCwWa5/V8
+         vScpnYcDCjds82+yfoPFhsPr6m4XKcJTKRumne1w0KCc7TjIgXXGgS1iT4BUvn1Xv4
+         czPuNyHbmfYXA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Paul Gortmaker <paul.gortmaker@windriver.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jiri Benc <jbenc@redhat.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Eric Dumazet <edumazet@google.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>
+Subject: Re: [RFC PATCH net-next 05/13] net: bonding: hold the netdev lists
+ lock when retrieving device statistics
+Message-ID: <20201208155744.320d694b@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201207010040.eriknpcidft3qul6@skbuf>
+References: <20201206235919.393158-1-vladimir.oltean@nxp.com>
+        <20201206235919.393158-6-vladimir.oltean@nxp.com>
+        <20201207010040.eriknpcidft3qul6@skbuf>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Tue, 08 Dec 2020 15:57:31 -0800 (PST)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Julian Wiedmann <jwi@linux.ibm.com>
-Date: Mon,  7 Dec 2020 13:53:07 +0100
+On Mon, 7 Dec 2020 01:00:40 +0000 Vladimir Oltean wrote:
+> - ensuring through convention that user space always takes
+>   net->netdev_lists_lock when calling dev_get_stats, and documenting
+>   that, and therefore making it unnecessary to lock in bonding.
 
-> This gets us compile-time size checking.
-> 
-> Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
-
-Applied, thanks.
+This seems like the better option to me. Makes the locking rules pretty
+clear.
