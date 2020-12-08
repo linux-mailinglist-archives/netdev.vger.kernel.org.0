@@ -2,63 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 638692D2C5D
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 14:58:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC60E2D2C4C
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 14:56:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729598AbgLHN40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 08:56:26 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:46069 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729572AbgLHN40 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 08:56:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607435700;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=r4QSOmAtZQRXzBlAkmbOjJY9qdaS64wrTUPOrqsxjNI=;
-        b=culNn5J9cRSKecYEmWbvGd2i3aj8c7cdWAcX2Owu6Nl11JFFT1xLeJBO7xjBVTxozUzUjx
-        w52yI3wcB/tm81r8OTYpZw9dwPAJ9Y51S9RGsJj6WHDzdwQLdSQCQPKHYLAfGq0rU1hVig
-        5ldAg1/O6jpyr3jmR+lAwfNLZfVjTLc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-60-FaFOAWEJMa2G44VElC4VBQ-1; Tue, 08 Dec 2020 08:54:56 -0500
-X-MC-Unique: FaFOAWEJMa2G44VElC4VBQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 181CE107ACF6;
-        Tue,  8 Dec 2020 13:54:51 +0000 (UTC)
-Received: from [10.36.112.92] (ovpn-112-92.ams2.redhat.com [10.36.112.92])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B454060C05;
-        Tue,  8 Dec 2020 13:54:49 +0000 (UTC)
-From:   "Eelco Chaudron" <echaudro@redhat.com>
-To:     "Zheng Yongjun" <zhengyongjun3@huawei.com>
-Cc:     pshelar@ovn.org, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: openvswitch: conntrack: simplify the return
- expression of ovs_ct_limit_get_default_limit()
-Date:   Tue, 08 Dec 2020 14:54:33 +0100
-Message-ID: <41DC90CB-BCB4-4F3B-9487-9ADB6DE9676F@redhat.com>
-In-Reply-To: <20201208121353.9353-1-zhengyongjun3@huawei.com>
-References: <20201208121353.9353-1-zhengyongjun3@huawei.com>
+        id S1729478AbgLHNzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 08:55:03 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:8726 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726338AbgLHNzD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 08:55:03 -0500
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Cr1qP1Vjzzkn52;
+        Tue,  8 Dec 2020 21:53:37 +0800 (CST)
+Received: from ubuntu.network (10.175.138.68) by
+ DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
+ 14.3.487.0; Tue, 8 Dec 2020 21:54:11 +0800
+From:   Zheng Yongjun <zhengyongjun3@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Zheng Yongjun <zhengyongjun3@huawei.com>
+Subject: [PATCH net-next] drivers: net: qlcnic: simplify the return expression of qlcnic_sriov_vf_shutdown()
+Date:   Tue, 8 Dec 2020 21:54:37 +0800
+Message-ID: <20201208135437.11764-1-zhengyongjun3@huawei.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.138.68]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Simplify the return expression.
 
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+---
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-On 8 Dec 2020, at 13:13, Zheng Yongjun wrote:
-
-> Simplify the return expression.
->
-> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
-
-Change looks good to me.
-
-Reviewed-by: Eelco Chaudron <echaudro@redhat.com>
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c
+index 30e52f969759..dd03be3fc82a 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_common.c
+@@ -2112,7 +2112,6 @@ static int qlcnic_sriov_vf_shutdown(struct pci_dev *pdev)
+ {
+ 	struct qlcnic_adapter *adapter = pci_get_drvdata(pdev);
+ 	struct net_device *netdev = adapter->netdev;
+-	int retval;
+ 
+ 	netif_device_detach(netdev);
+ 	qlcnic_cancel_idc_work(adapter);
+@@ -2125,11 +2124,7 @@ static int qlcnic_sriov_vf_shutdown(struct pci_dev *pdev)
+ 	qlcnic_83xx_disable_mbx_intr(adapter);
+ 	cancel_delayed_work_sync(&adapter->idc_aen_work);
+ 
+-	retval = pci_save_state(pdev);
+-	if (retval)
+-		return retval;
+-
+-	return 0;
++	return pci_save_state(pdev);
+ }
+ 
+ static int qlcnic_sriov_vf_resume(struct qlcnic_adapter *adapter)
+-- 
+2.22.0
 
