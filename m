@@ -2,433 +2,271 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFF9F2D25BA
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 09:20:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38DAE2D25BB
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 09:20:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728036AbgLHITw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 03:19:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36780 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726734AbgLHITv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 03:19:51 -0500
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BB58C061749;
-        Tue,  8 Dec 2020 00:19:11 -0800 (PST)
-Received: by mail-pg1-x532.google.com with SMTP id o4so11526409pgj.0;
-        Tue, 08 Dec 2020 00:19:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=e23pcXpl81f9+8bBMnQygIfjx34O4wrGjsXlxS/VveY=;
-        b=t682N+qfb9ajpsOoomOz9THNzaJ9fq9rC9T6b6UbzZ5H+N5xQbGvDtvGzFRQKes6TS
-         Na+W98hiHl2Vy6DJ2x7FTRE7vN7+7uMUy/JOUyBGrBJwaB8/w9oLN8AzgzHjGnVOS0B7
-         0+FdAoTWoS8jHpMn+VKSz8eeOauwfFxi3u93gHTjnhC1hp7p+jtmwAsSe0JGSspRY2AD
-         W3XkfLw4Uf9L7W5L28VrPslnWNaBIRZJyPCQ2wQiBmsckRsFCJZpsXcSrel62gUXDUbl
-         kzuTpWx9SC7kr+8UqNKtSzb08dTFYC9kR4FMv4VIIqbY/ozlIias6IGFk0mvXbAT5AWG
-         qfsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=e23pcXpl81f9+8bBMnQygIfjx34O4wrGjsXlxS/VveY=;
-        b=di1LuzA/umnnzkG4dP59Mklz+T/d3VsPj6o2I9PcnPWqaJH3n+ht+hZSjsciexKRiK
-         pyTS+6rXuCmGhnny5FTEjve78K60JpxpiYl+Q67XexS/vmNkmnAEp2/jMI4pwl6go+Jr
-         LksqabobYmAnLdc/UbwQPK11IQP7L3d9GdnLAu7RXH85ld2TlH80qQ3nhAg7QK13F7nB
-         cdVd8UVdqtjRPrBF/jXS7+XIlaDyREkLFbX5wEYpevSHC9L5RAxUZoiFwYF0fjIYhY4Y
-         cjQAaSMMggNpUZLtMb+xSpTSYhs2MzODlHmcUmcBCJGhh73eA0rmOnPrr5l3G1Bw/pHv
-         rsuQ==
-X-Gm-Message-State: AOAM533hClegNE50mxvUpdeReP9ztcuCAOKTDcxqeKXyAxzfcA8Wg3yk
-        a4/OVP0HekY74CwvQSegkMYrNg+hmcNuMG0F
-X-Google-Smtp-Source: ABdhPJwDjMVgQMLkQVC6Adc34cq56xrca/nmwtv1cPyKOB3yAiSFHF4Hfi9XmpXus5MVsYuDRDbP+Q==
-X-Received: by 2002:a05:6a00:2382:b029:198:15a2:aaf9 with SMTP id f2-20020a056a002382b029019815a2aaf9mr19433912pfc.39.1607415550609;
-        Tue, 08 Dec 2020 00:19:10 -0800 (PST)
-Received: from localhost.localdomain.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id y188sm17020594pfy.98.2020.12.08.00.19.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Dec 2020 00:19:10 -0800 (PST)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Yonghong Song <yhs@fb.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv3 bpf-next] samples/bpf: add xdp program on egress for xdp_redirect_map
-Date:   Tue,  8 Dec 2020 16:18:56 +0800
-Message-Id: <20201208081856.1627657-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201126084325.477470-1-liuhangbin@gmail.com>
-References: <20201126084325.477470-1-liuhangbin@gmail.com>
+        id S1728181AbgLHIUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 03:20:12 -0500
+Received: from m43-15.mailgun.net ([69.72.43.15]:44521 "EHLO
+        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728174AbgLHIUL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 03:20:11 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1607415586; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=Xw4vtPIy3/C8gYiFNPdL60ENnFaxPVuGS5QpO5sVl/A=;
+ b=EB72SLemDHR0ZcQS7jHDd3QYEW7B0T2XFTlt0pCBXrdibWY1yzZ+hO0p5Bnh7ZvYwRURuOvP
+ n7lAqaZx3fW8J7vmm5JxywFqZ/dlwj76pFjozEoCnTzGiVS55F/qNvW1Ak8qZmn/5LOtcfX/
+ 4197pDZ0BXkfK/Z/XnbaY6FIJf8=
+X-Mailgun-Sending-Ip: 69.72.43.15
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
+ 5fcf36fedc0fd8a31764d9d6 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 08 Dec 2020 08:19:10
+ GMT
+Sender: subashab=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 4AFCCC43462; Tue,  8 Dec 2020 08:19:10 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: subashab)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 4CBF1C433CA;
+        Tue,  8 Dec 2020 08:19:09 +0000 (UTC)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Tue, 08 Dec 2020 01:19:09 -0700
+From:   subashab@codeaurora.org
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Loic Poulain <loic.poulain@linaro.org>
+Cc:     stranche@codeaurora.org,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: [PATCH] net: rmnet: Adjust virtual device MTU on real device
+ capability
+In-Reply-To: <20201207121654.17fac0ef@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+References: <1607017240-10582-1-git-send-email-loic.poulain@linaro.org>
+ <3a2ca2c269911de71df6dca2e981f7fe@codeaurora.org>
+ <CAMZdPi-Nrus0JrHpjg02QaVwr0TKGU=p96BjXAtd4LALAvk2HQ@mail.gmail.com>
+ <20201207121654.17fac0ef@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+Message-ID: <c7be03c227efc3405f4c9cd14e52d061@codeaurora.org>
+X-Sender: subashab@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch add a xdp program on egress to show that we can modify
-the packet on egress. In this sample we will set the pkt's src
-mac to egress's mac address. The xdp_prog will be attached when
--X option supplied.
+>> What about just returning an error on NETDEV_PRECHANGEMTU notification
+>> to prevent real device MTU change while virtual rmnet devices are
+>> linked? Not sure there is a more proper and thread safe way to manager
+>> that otherwise.
+> 
+> Can't you copy what vlan devices do?  That'd seem like a reasonable and
+> well tested precedent, no?
 
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
-v3:
-a) modify the src mac address based on egress mac
+Could you try this patch. I've tried addressing most of the conditions 
+here.
+I haven't seen any issues with updating the MTU when rmnet devices are 
+linked.
 
-v2:
-a) use pkt counter instead of IP ttl modification on egress program
-b) make the egress program selectable by option -X
----
- samples/bpf/xdp_redirect_map_kern.c |  60 ++++++++++-
- samples/bpf/xdp_redirect_map_user.c | 153 ++++++++++++++++++++--------
- 2 files changed, 168 insertions(+), 45 deletions(-)
+diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c 
+b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
+index fcdecdd..8d51b0c 100644
+--- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
++++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
+@@ -26,7 +26,7 @@ static int rmnet_is_real_dev_registered(const struct 
+net_device *real_dev)
+  }
 
-diff --git a/samples/bpf/xdp_redirect_map_kern.c b/samples/bpf/xdp_redirect_map_kern.c
-index 6489352ab7a4..6b2164722649 100644
---- a/samples/bpf/xdp_redirect_map_kern.c
-+++ b/samples/bpf/xdp_redirect_map_kern.c
-@@ -19,12 +19,22 @@
- #include <linux/ipv6.h>
- #include <bpf/bpf_helpers.h>
- 
-+/* The 2nd xdp prog on egress does not support skb mode, so we define two
-+ * maps, tx_port_general and tx_port_native.
-+ */
- struct {
- 	__uint(type, BPF_MAP_TYPE_DEVMAP);
- 	__uint(key_size, sizeof(int));
- 	__uint(value_size, sizeof(int));
- 	__uint(max_entries, 100);
--} tx_port SEC(".maps");
-+} tx_port_general SEC(".maps");
+  /* Needs rtnl lock */
+-static struct rmnet_port*
++struct rmnet_port*
+  rmnet_get_port_rtnl(const struct net_device *real_dev)
+  {
+  	return rtnl_dereference(real_dev->rx_handler_data);
+@@ -253,7 +253,10 @@ static int rmnet_config_notify_cb(struct 
+notifier_block *nb,
+  		netdev_dbg(real_dev, "Kernel unregister\n");
+  		rmnet_force_unassociate_device(real_dev);
+  		break;
+-
++	case NETDEV_CHANGEMTU:
++		if (rmnet_vnd_validate_real_dev_mtu(real_dev))
++			return NOTIFY_BAD;
++		break;
+  	default:
+  		break;
+  	}
+@@ -329,9 +332,17 @@ static int rmnet_changelink(struct net_device *dev, 
+struct nlattr *tb[],
+
+  	if (data[IFLA_RMNET_FLAGS]) {
+  		struct ifla_rmnet_flags *flags;
++		u32 old_data_format;
+
++		old_data_format = port->data_format;
+  		flags = nla_data(data[IFLA_RMNET_FLAGS]);
+  		port->data_format = flags->flags & flags->mask;
 +
-+struct {
-+	__uint(type, BPF_MAP_TYPE_DEVMAP);
-+	__uint(key_size, sizeof(int));
-+	__uint(value_size, sizeof(struct bpf_devmap_val));
-+	__uint(max_entries, 100);
-+} tx_port_native SEC(".maps");
- 
- /* Count RX packets, as XDP bpf_prog doesn't get direct TX-success
-  * feedback.  Redirect TX errors can be caught via a tracepoint.
-@@ -36,6 +46,14 @@ struct {
- 	__uint(max_entries, 1);
- } rxcnt SEC(".maps");
- 
-+/* map to stroe egress interface mac address */
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__type(key, u32);
-+	__type(value, __be64);
-+	__uint(max_entries, 1);
-+} tx_mac SEC(".maps");
++		if (rmnet_vnd_update_dev_mtu(port, real_dev)) {
++			port->data_format = old_data_format;
++			NL_SET_ERR_MSG_MOD(extack, "Invalid MTU on real dev");
++			return -EINVAL;
++		}
+  	}
+
+  	return 0;
+diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h 
+b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h
+index be51598..8d8d469 100644
+--- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h
++++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h
+@@ -73,4 +73,6 @@ int rmnet_add_bridge(struct net_device *rmnet_dev,
+  		     struct netlink_ext_ack *extack);
+  int rmnet_del_bridge(struct net_device *rmnet_dev,
+  		     struct net_device *slave_dev);
++struct rmnet_port*
++rmnet_get_port_rtnl(const struct net_device *real_dev);
+  #endif /* _RMNET_CONFIG_H_ */
+diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c 
+b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
+index d58b51d..df87883 100644
+--- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
++++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
+@@ -58,9 +58,30 @@ static netdev_tx_t rmnet_vnd_start_xmit(struct 
+sk_buff *skb,
+  	return NETDEV_TX_OK;
+  }
+
++static int rmnet_vnd_headroom(struct net_device *real_dev)
++{
++	struct rmnet_port *port;
++	u32 headroom;
 +
- static void swap_src_dst_mac(void *data)
- {
- 	unsigned short *p = data;
-@@ -52,17 +70,16 @@ static void swap_src_dst_mac(void *data)
- 	p[5] = dst[2];
- }
- 
--SEC("xdp_redirect_map")
--int xdp_redirect_map_prog(struct xdp_md *ctx)
-+static int xdp_redirect_map(struct xdp_md *ctx, void *redirect_map)
- {
- 	void *data_end = (void *)(long)ctx->data_end;
- 	void *data = (void *)(long)ctx->data;
- 	struct ethhdr *eth = data;
- 	int rc = XDP_DROP;
--	int vport, port = 0, m = 0;
- 	long *value;
- 	u32 key = 0;
- 	u64 nh_off;
-+	int vport;
- 
- 	nh_off = sizeof(*eth);
- 	if (data + nh_off > data_end)
-@@ -79,7 +96,40 @@ int xdp_redirect_map_prog(struct xdp_md *ctx)
- 	swap_src_dst_mac(data);
- 
- 	/* send packet out physical port */
--	return bpf_redirect_map(&tx_port, vport, 0);
-+	return bpf_redirect_map(redirect_map, vport, 0);
++	port = rmnet_get_port_rtnl(real_dev);
++
++	headroom = sizeof(struct rmnet_map_header);
++
++	if (port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV4)
++		headroom += sizeof(struct rmnet_map_dl_csum_trailer);
++
++	return headroom;
 +}
 +
-+SEC("xdp_redirect_general")
-+int xdp_redirect_map_general(struct xdp_md *ctx)
+  static int rmnet_vnd_change_mtu(struct net_device *rmnet_dev, int 
+new_mtu)
+  {
+-	if (new_mtu < 0 || new_mtu > RMNET_MAX_PACKET_SIZE)
++	struct rmnet_priv *priv = netdev_priv(rmnet_dev);
++	u32 headroom;
++
++	headroom = rmnet_vnd_headroom(priv->real_dev);
++
++	if (new_mtu < 0 || new_mtu > RMNET_MAX_PACKET_SIZE ||
++	    new_mtu > (priv->real_dev->mtu - headroom))
+  		return -EINVAL;
+
+  	rmnet_dev->mtu = new_mtu;
+@@ -229,6 +250,7 @@ int rmnet_vnd_newlink(u8 id, struct net_device 
+*rmnet_dev,
+
+  {
+  	struct rmnet_priv *priv = netdev_priv(rmnet_dev);
++	u32 headroom;
+  	int rc;
+
+  	if (rmnet_get_endpoint(port, id)) {
+@@ -242,6 +264,13 @@ int rmnet_vnd_newlink(u8 id, struct net_device 
+*rmnet_dev,
+
+  	priv->real_dev = real_dev;
+
++	headroom = rmnet_vnd_headroom(real_dev);
++
++	if (rmnet_vnd_change_mtu(rmnet_dev, real_dev->mtu - headroom)) {
++		NL_SET_ERR_MSG_MOD(extack, "Invalid MTU on real dev");
++		return -EINVAL;
++	}
++
+  	rc = register_netdevice(rmnet_dev);
+  	if (!rc) {
+  		ep->egress_dev = rmnet_dev;
+@@ -283,3 +312,51 @@ int rmnet_vnd_do_flow_control(struct net_device 
+*rmnet_dev, int enable)
+
+  	return 0;
+  }
++
++int rmnet_vnd_validate_real_dev_mtu(struct net_device *real_dev)
 +{
-+	return xdp_redirect_map(ctx, &tx_port_general);
-+}
++	struct hlist_node *tmp_ep;
++	struct rmnet_endpoint *ep;
++	struct rmnet_port *port;
++	unsigned long bkt_ep;
++	u32 headroom;
 +
-+SEC("xdp_redirect_native")
-+int xdp_redirect_map_native(struct xdp_md *ctx)
-+{
-+	return xdp_redirect_map(ctx, &tx_port_native);
-+}
++	port = rmnet_get_port_rtnl(real_dev);
 +
-+SEC("xdp_devmap/map_prog")
-+int xdp_redirect_map_egress(struct xdp_md *ctx)
-+{
-+	void *data_end = (void *)(long)ctx->data_end;
-+	void *data = (void *)(long)ctx->data;
-+	struct ethhdr *eth = data;
-+	__be64 *mac;
-+	u32 key = 0;
-+	u64 nh_off;
++	headroom = sizeof(struct rmnet_map_header);
 +
-+	nh_off = sizeof(*eth);
-+	if (data + nh_off > data_end)
-+		return XDP_DROP;
++	if (port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV4)
++		headroom += sizeof(struct rmnet_map_dl_csum_trailer);
 +
-+	mac = bpf_map_lookup_elem(&tx_mac, &key);
-+	if (mac)
-+		__builtin_memcpy(eth->h_source, mac, ETH_ALEN);
-+
-+	return XDP_PASS;
- }
- 
- /* Redirect require an XDP bpf_prog loaded on the TX device */
-diff --git a/samples/bpf/xdp_redirect_map_user.c b/samples/bpf/xdp_redirect_map_user.c
-index 31131b6e7782..19636045c8dc 100644
---- a/samples/bpf/xdp_redirect_map_user.c
-+++ b/samples/bpf/xdp_redirect_map_user.c
-@@ -14,6 +14,10 @@
- #include <unistd.h>
- #include <libgen.h>
- #include <sys/resource.h>
-+#include <sys/ioctl.h>
-+#include <sys/types.h>
-+#include <sys/socket.h>
-+#include <netinet/in.h>
- 
- #include "bpf_util.h"
- #include <bpf/bpf.h>
-@@ -21,7 +25,8 @@
- 
- static int ifindex_in;
- static int ifindex_out;
--static bool ifindex_out_xdp_dummy_attached = true;
-+static bool ifindex_out_xdp_dummy_attached = false;
-+static bool xdp_devmap_attached = false;
- static __u32 prog_id;
- static __u32 dummy_prog_id;
- 
-@@ -83,6 +88,29 @@ static void poll_stats(int interval, int ifindex)
- 	}
- }
- 
-+static int get_mac_addr(unsigned int ifindex_out, void *mac_addr)
-+{
-+	struct ifreq ifr;
-+	char ifname[IF_NAMESIZE];
-+	int fd = socket(PF_INET, SOCK_DGRAM, IPPROTO_IP);
-+
-+	if (fd < 0)
-+		return -1;
-+
-+	if (!if_indextoname(ifindex_out, ifname))
-+		return -1;
-+
-+	strcpy(ifr.ifr_name, ifname);
-+
-+	if (ioctl(fd, SIOCGIFHWADDR, &ifr) != 0)
-+		return -1;
-+
-+	memcpy(mac_addr, ifr.ifr_hwaddr.sa_data, 6 * sizeof(char));
-+	close(fd);
++	hash_for_each_safe(port->muxed_ep, bkt_ep, tmp_ep, ep, hlnode) {
++		if (ep->egress_dev->mtu > (real_dev->mtu - headroom))
++			return -1;
++	}
 +
 +	return 0;
 +}
 +
- static void usage(const char *prog)
- {
- 	fprintf(stderr,
-@@ -90,24 +118,26 @@ static void usage(const char *prog)
- 		"OPTS:\n"
- 		"    -S    use skb-mode\n"
- 		"    -N    enforce native mode\n"
--		"    -F    force loading prog\n",
-+		"    -F    force loading prog\n"
-+		"    -X    load xdp program on egress\n",
- 		prog);
- }
- 
- int main(int argc, char **argv)
- {
- 	struct bpf_prog_load_attr prog_load_attr = {
--		.prog_type	= BPF_PROG_TYPE_XDP,
-+		.prog_type	= BPF_PROG_TYPE_UNSPEC,
- 	};
--	struct bpf_program *prog, *dummy_prog;
-+	struct bpf_program *prog, *dummy_prog, *devmap_prog;
-+	int prog_fd, dummy_prog_fd, devmap_prog_fd = -1;
-+	int tx_port_map_fd, tx_mac_map_fd;
-+	struct bpf_devmap_val devmap_val;
- 	struct bpf_prog_info info = {};
- 	__u32 info_len = sizeof(info);
--	int prog_fd, dummy_prog_fd;
--	const char *optstr = "FSN";
-+	const char *optstr = "FSNX";
- 	struct bpf_object *obj;
- 	int ret, opt, key = 0;
- 	char filename[256];
--	int tx_port_map_fd;
- 
- 	while ((opt = getopt(argc, argv, optstr)) != -1) {
- 		switch (opt) {
-@@ -120,6 +150,9 @@ int main(int argc, char **argv)
- 		case 'F':
- 			xdp_flags &= ~XDP_FLAGS_UPDATE_IF_NOEXIST;
- 			break;
-+		case 'X':
-+			xdp_devmap_attached = true;
-+			break;
- 		default:
- 			usage(basename(argv[0]));
- 			return 1;
-@@ -150,67 +183,107 @@ int main(int argc, char **argv)
- 	if (bpf_prog_load_xattr(&prog_load_attr, &obj, &prog_fd))
- 		return 1;
- 
--	prog = bpf_program__next(NULL, obj);
--	dummy_prog = bpf_program__next(prog, obj);
--	if (!prog || !dummy_prog) {
--		printf("finding a prog in obj file failed\n");
--		return 1;
-+	if (xdp_flags & XDP_FLAGS_SKB_MODE) {
-+		prog = bpf_object__find_program_by_title(obj, "xdp_redirect_general");
-+		tx_port_map_fd = bpf_object__find_map_fd_by_name(obj, "tx_port_general");
-+	} else {
-+		prog = bpf_object__find_program_by_title(obj, "xdp_redirect_native");
-+		tx_port_map_fd = bpf_object__find_map_fd_by_name(obj, "tx_port_native");
- 	}
--	/* bpf_prog_load_xattr gives us the pointer to first prog's fd,
--	 * so we're missing only the fd for dummy prog
--	 */
--	dummy_prog_fd = bpf_program__fd(dummy_prog);
--	if (prog_fd < 0 || dummy_prog_fd < 0) {
--		printf("bpf_prog_load_xattr: %s\n", strerror(errno));
--		return 1;
-+	prog_fd = bpf_program__fd(prog);
-+	if (!prog || prog_fd < 0 || tx_port_map_fd < 0) {
-+		printf("finding prog/tx_port_map in obj file failed\n");
-+		goto out;
- 	}
- 
--	tx_port_map_fd = bpf_object__find_map_fd_by_name(obj, "tx_port");
- 	rxcnt_map_fd = bpf_object__find_map_fd_by_name(obj, "rxcnt");
--	if (tx_port_map_fd < 0 || rxcnt_map_fd < 0) {
-+	tx_mac_map_fd = bpf_object__find_map_fd_by_name(obj, "tx_mac");
-+	if (rxcnt_map_fd < 0 || tx_mac_map_fd < 0) {
- 		printf("bpf_object__find_map_fd_by_name failed\n");
--		return 1;
-+		goto out;
- 	}
- 
- 	if (bpf_set_link_xdp_fd(ifindex_in, prog_fd, xdp_flags) < 0) {
- 		printf("ERROR: link set xdp fd failed on %d\n", ifindex_in);
--		return 1;
-+		goto out;
- 	}
- 
- 	ret = bpf_obj_get_info_by_fd(prog_fd, &info, &info_len);
- 	if (ret) {
- 		printf("can't get prog info - %s\n", strerror(errno));
--		return ret;
-+		goto out;
- 	}
- 	prog_id = info.id;
- 
--	/* Loading dummy XDP prog on out-device */
--	if (bpf_set_link_xdp_fd(ifindex_out, dummy_prog_fd,
--			    (xdp_flags | XDP_FLAGS_UPDATE_IF_NOEXIST)) < 0) {
--		printf("WARN: link set xdp fd failed on %d\n", ifindex_out);
--		ifindex_out_xdp_dummy_attached = false;
--	}
-+	/* If -X supplied, load 2nd xdp prog on egress.
-+	 * If not, just load dummy prog on egress.
-+	 */
-+	if (xdp_devmap_attached) {
-+		unsigned char mac_addr[6];
- 
--	memset(&info, 0, sizeof(info));
--	ret = bpf_obj_get_info_by_fd(dummy_prog_fd, &info, &info_len);
--	if (ret) {
--		printf("can't get prog info - %s\n", strerror(errno));
--		return ret;
-+		devmap_prog = bpf_object__find_program_by_title(obj, "xdp_devmap/map_prog");
-+		if (!devmap_prog) {
-+			printf("finding devmap_prog in obj file failed\n");
-+			goto out;
-+		}
-+		devmap_prog_fd = bpf_program__fd(devmap_prog);
-+		if (devmap_prog_fd < 0) {
-+			printf("finding devmap_prog fd failed\n");
-+			goto out;
-+		}
++int rmnet_vnd_update_dev_mtu(struct rmnet_port *port,
++			     struct net_device *real_dev)
++{
++	struct hlist_node *tmp_ep;
++	struct rmnet_endpoint *ep;
++	unsigned long bkt_ep;
++	u32 headroom;
 +
-+		if (get_mac_addr(ifindex_out, mac_addr) < 0) {
-+			printf("get interface %d mac failed\n", ifindex_out);
-+			goto out;
-+		}
++	headroom = sizeof(struct rmnet_map_header);
 +
-+		ret = bpf_map_update_elem(tx_mac_map_fd, &key, mac_addr, 0);
-+		if (ret) {
-+			perror("bpf_update_elem tx_mac_map_fd");
-+			goto out;
-+		}
-+	} else if (ifindex_in != ifindex_out) {
-+		dummy_prog = bpf_object__find_program_by_title(obj, "xdp_redirect_dummy");
-+		if (!dummy_prog) {
-+			printf("finding dummy_prog in obj file failed\n");
-+			goto out;
-+		}
++	if (port->data_format & RMNET_FLAGS_INGRESS_MAP_CKSUMV4)
++		headroom += sizeof(struct rmnet_map_dl_csum_trailer);
 +
-+		dummy_prog_fd = bpf_program__fd(dummy_prog);
-+		if (dummy_prog_fd < 0) {
-+			printf("find dummy_prog fd failed\n");
-+			goto out;
-+		}
++	hash_for_each_safe(port->muxed_ep, bkt_ep, tmp_ep, ep, hlnode) {
++		if (ep->egress_dev->mtu <= (real_dev->mtu - headroom))
++			continue;
 +
-+		if (bpf_set_link_xdp_fd(ifindex_out, dummy_prog_fd,
-+					(xdp_flags | XDP_FLAGS_UPDATE_IF_NOEXIST)) == 0) {
-+			ifindex_out_xdp_dummy_attached = true;
-+		} else {
-+			printf("WARN: link set xdp fd failed on %d\n", ifindex_out);
-+		}
++		if (rmnet_vnd_change_mtu(ep->egress_dev,
++					 real_dev->mtu - headroom))
++			return -1;
++	}
 +
-+		memset(&info, 0, sizeof(info));
-+		ret = bpf_obj_get_info_by_fd(dummy_prog_fd, &info, &info_len);
-+		if (ret) {
-+			printf("can't get prog info - %s\n", strerror(errno));
-+		}
-+		dummy_prog_id = info.id;
- 	}
--	dummy_prog_id = info.id;
- 
- 	signal(SIGINT, int_exit);
- 	signal(SIGTERM, int_exit);
- 
--	/* populate virtual to physical port map */
--	ret = bpf_map_update_elem(tx_port_map_fd, &key, &ifindex_out, 0);
-+	devmap_val.ifindex = ifindex_out;
-+	devmap_val.bpf_prog.fd = devmap_prog_fd;
-+	ret = bpf_map_update_elem(tx_port_map_fd, &key, &devmap_val, 0);
- 	if (ret) {
--		perror("bpf_update_elem");
-+		perror("bpf_update_elem tx_port_map_fd");
- 		goto out;
- 	}
- 
- 	poll_stats(2, ifindex_out);
- 
- out:
--	return 0;
-+	bpf_object__close(obj);
-+	return 1;
- }
++	return 0;
++}
+\ No newline at end of file
+diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.h 
+b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.h
+index 4967f34..dc3a444 100644
+--- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.h
++++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.h
+@@ -18,4 +18,7 @@ int rmnet_vnd_dellink(u8 id, struct rmnet_port *port,
+  void rmnet_vnd_rx_fixup(struct sk_buff *skb, struct net_device *dev);
+  void rmnet_vnd_tx_fixup(struct sk_buff *skb, struct net_device *dev);
+  void rmnet_vnd_setup(struct net_device *dev);
++int rmnet_vnd_validate_real_dev_mtu(struct net_device *real_dev);
++int rmnet_vnd_update_dev_mtu(struct rmnet_port *port,
++			     struct net_device *real_dev);
+  #endif /* _RMNET_VND_H_ */
 -- 
-2.26.2
-
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora 
+Forum,
+a Linux Foundation Collaborative Project
