@@ -2,101 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DEDA2D24F3
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 08:52:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D74FC2D2520
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 08:58:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727452AbgLHHwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 02:52:14 -0500
-Received: from mout.kundenserver.de ([217.72.192.74]:33995 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726829AbgLHHwO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 02:52:14 -0500
-Received: from [192.168.1.155] ([95.117.39.192]) by mrelayeu.kundenserver.de
- (mreue106 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1N3K9E-1k4AHh0uGY-010MJG; Tue, 08 Dec 2020 08:49:07 +0100
-Subject: Re: [PATCH 2/7] net: batman-adv: remove unneeded MODULE_VERSION()
- usage
-To:     Sven Eckelmann <sven@narfation.org>, linux-kernel@vger.kernel.org,
-        "Enrico Weigelt, metux IT consult" <info@metux.net>
-Cc:     davem@davemloft.net, kuba@kernel.org, mareklindner@neomailbox.ch,
-        sw@simonwunderlich.de, a@unstable.cc, marcel@holtmann.org,
-        johan.hedberg@gmail.com, roopa@nvidia.com, nikolay@nvidia.com,
-        edumazet@google.com, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        jmaloy@redhat.com, ying.xue@windriver.com, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@chromium.org, netdev@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net,
-        linux-hyperv@vger.kernel.org, bpf@vger.kernel.org,
-        Matthias Schiffer <mschiffer@universe-factory.net>
-References: <20201202124959.29209-1-info@metux.net>
- <20201202124959.29209-2-info@metux.net> <4581108.GXAFRqVoOG@sven-edge>
-From:   "Enrico Weigelt, metux IT consult" <lkml@metux.net>
-Message-ID: <ca5c17a1-dea5-83eb-f9c5-a027b4135fec@metux.net>
-Date:   Tue, 8 Dec 2020 08:48:56 +0100
-User-Agent: Mozilla/5.0 (X11; Linux i686 on x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1727665AbgLHH6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 02:58:13 -0500
+Received: from m43-15.mailgun.net ([69.72.43.15]:56752 "EHLO
+        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727074AbgLHH6N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 02:58:13 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1607414267; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=2Mn2Pc9dXqsIJzPbjlcSc+dZ+VvEsmsUdo0W18MYg2E=;
+ b=Nl//Y/EafZOMRVd+4U8UNdTbfE+dtlLmkosk+5cNWZWCZTf9JmVxX0JukckPf6VmC3TqHirV
+ Ue9UHWBbDlLswJgWBFq2CjkisfRjMGWvBoq2WwFw3OBUJcDS1rJ/JVQYvqFjozB9iBUjGSNg
+ O4vpjd5zmb7tUcO/JeOJ4jpL6GE=
+X-Mailgun-Sending-Ip: 69.72.43.15
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
+ 5fcf31fab50fb3818a95590c (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 08 Dec 2020 07:57:46
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id D2DA6C43461; Tue,  8 Dec 2020 07:57:45 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id B32C6C433C6;
+        Tue,  8 Dec 2020 07:57:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B32C6C433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <4581108.GXAFRqVoOG@sven-edge>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: tl
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:h8bNmxElVyI3h1+Nyku7bHTBtAaOLvHvVsdC9bGyQSsOED5F3Cj
- Dc5QkiVs/ZBk+NcKthsQ230rBqEUcOorknjtkvuApOrZrlTzCKFWSUnpYoTvRnBQ4n7m5EX
- chK0eoerQcDZwBWU+W3OKlYH/Ri950fzERNDDw6FyrvGorgAuRfxsVw3N3sEWxfmiqmiDwO
- RvekdPs8+NG/Ta/hS2v8w==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:kef8D6LPYu0=:cmiNBIxEZx0KDmv/6+ogX9
- rlkms8HLbna+KOViXb6Yx5vDMQXZye2NsFlbGfczMFgZK4Q+8QhID395GyHrIrVMCr+8r3IxK
- WPdLiaL/wx4J5jLXC7H6Luj2Gp3xbNHwOBMDcfPiQaFrdG07bSg3xoBEFvxVYwJVNMy0seo4H
- f9FydN4pNU1mPzg/UK/ZmGZKNtZI6REeZkESqQTZ2u4eSgyTCZoAkZ4z7uTX5u5hJb1OELyl5
- 1udFyf0bbAfy9jHRP+IjVpL7gyOg3xaS/oz3t4q+ItyJc2fukz2VjQJ4wUviRURaa1kDTy6La
- ulk0bOzva4qTrIn3ZYQCqu1HKgrOdWUfQB+CKg2eakKglOJKRwtKBMyLF2dJDLUrisYb5btjo
- gWtJ6npcQCS4tVy9gmvwiKjIBEDunzK/1UIPOw6FgipIT1X8OHlBuAKH5FTIX
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v3] ath10k: add option for chip-id based BDF selection
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20201207231824.v3.1.Ia6b95087ca566f77423f3802a78b946f7b593ff5@changeid>
+References: <20201207231824.v3.1.Ia6b95087ca566f77423f3802a78b946f7b593ff5@changeid>
+To:     Abhishek Kumar <kuabhs@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, kuabhs@chromium.org,
+        linux-wireless@vger.kernel.org, ath10k@lists.infradead.org,
+        pillair@codeaurora.org, briannorris@chromium.org,
+        dianders@chromium.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20201208075745.D2DA6C43461@smtp.codeaurora.org>
+Date:   Tue,  8 Dec 2020 07:57:45 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05.12.20 08:06, Sven Eckelmann wrote:
+Abhishek Kumar <kuabhs@chromium.org> wrote:
 
-Hi,
+> In some devices difference in chip-id should be enough to pick
+> the right BDF. Add another support for chip-id based BDF selection.
+> With this new option, ath10k supports 2 fallback options.
+> 
+> The board name with chip-id as option looks as follows
+> board name 'bus=snoc,qmi-board-id=ff,qmi-chip-id=320'
+> 
+> Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.3.2.2-00696-QCAHLSWMTPL-1
+> Tested-on: QCA6174 HW3.2 WLAN.RM.4.4.1-00157-QCARMSWPZ-1
+> Signed-off-by: Abhishek Kumar <kuabhs@chromium.org>
+> Reviewed-by: Douglas Anderson <dianders@chromium.org>
+> Reviewed-by: Rakesh Pillai <pillair@codeaurora.org>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-> Is there some explanation besides an opinion? Some kind goal which you want to 
-> achieve with it maybe?
+Two new checkpatch (using ath10k-check) warnings:
 
-Just a cleanup. I've been under the impression that this version is just
-an relic from oot times.
+drivers/net/wireless/ath/ath10k/core.c:1509: line length of 92 exceeds 90 columns
+drivers/net/wireless/ath/ath10k/core.c:1518: line length of 92 exceeds 90 columns
 
-> At least for us it was an easy way to query the release cycle information via 
-> batctl. Which made it easier for us to roughly figure out what an reporter/
-> inquirer was using - independent of whether he is using the in-kernel version 
-> or a backported version.
-
-Is the OOT scenario still valid ?
-
-> Loosing this source of information and breaking parts of batctl and other 
-> tools (respondd, ...) is not the end of the world. But I would at least know 
-> why this is now necessary.
-
-Okay, if this particular information indeed has a practical value, we
-should keep it. Taking it as a NAK.
-
-Perhaps we should add a comment what it's used for and make sure, the
-version number is properly maintained.
-
-The problem I see w/ those version fields is that we have lots of
-changes in the kernel tree, w/o the version number being increased -
-making this information at least doubtful.
-
-
---mtx
+Fixed those in the pending branch.
 
 -- 
----
-Hinweis: unverschlüsselte E-Mails können leicht abgehört und manipuliert
-werden ! Für eine vertrauliche Kommunikation senden Sie bitte ihren
-GPG/PGP-Schlüssel zu.
----
-Enrico Weigelt, metux IT consult
-Free software and Linux embedded engineering
-info@metux.net -- +49-151-27565287
+https://patchwork.kernel.org/project/linux-wireless/patch/20201207231824.v3.1.Ia6b95087ca566f77423f3802a78b946f7b593ff5@changeid/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
