@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 162F62D277B
-	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 10:25:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA0F12D2776
+	for <lists+netdev@lfdr.de>; Tue,  8 Dec 2020 10:25:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728841AbgLHJZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 04:25:01 -0500
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:57245 "EHLO
+        id S1728817AbgLHJYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 04:24:42 -0500
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:37927 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728658AbgLHJZA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 04:25:00 -0500
+        by vger.kernel.org with ESMTP id S1726114AbgLHJYm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 04:24:42 -0500
 Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.nyi.internal (Postfix) with ESMTP id 4C3A55C01F0;
-        Tue,  8 Dec 2020 04:23:54 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 02E115C0135;
+        Tue,  8 Dec 2020 04:23:56 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Tue, 08 Dec 2020 04:23:54 -0500
+  by compute2.internal (MEProxy); Tue, 08 Dec 2020 04:23:56 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=lCx9C0bR9DgECQFIfZT3RvSjgH4ere2Z5TE/zVpgecM=; b=CmMhy7Wv
-        1ViEfXzRIXcDiFIsPDlPNINz04GutOrB3YKbpsHiaRG1wFnqLS9rZx+1qw7Qk/hW
-        5ODs9EnEgQWAxNUsY6YLfab8ddx+wJUNF1Wt5z2cJoYi/qPzL4/PdXQ8LLG7G0/U
-        AgMWfxU03z1YLX3GDILeo0sFEoyWPkLFHS7lV4yxIp7KxVG1jNoN8qvDKiMH+IJp
-        q+C14khGyn1F0S4kmwJCF3yI+94Jylq+il7ER6rzPTnUQIpZnqrDU1E0G/yxARgR
-        i2kijFTtLzoE+o6BrpA3brMy319d79vYIRAY5JGI1bhxaNWhNySZyLEjZ+JE8rqN
-        uvpg6GvS7hoRpw==
-X-ME-Sender: <xms:KkbPX-mb0P_-tj3Ug8tSkozTYfxYCGtXez-Ks_kuQEVJSgPl86V-OQ>
-    <xme:KkbPX70vtPlyUGXm4b18JosZ3S0IZBdzzLyI9FY23u_mbtOfkuNCJ19FhHbn1ejN8
-    tlxIA0GReaxbmc>
+        fm1; bh=+FAmX1kon5nSPRvBvfqE9FZCV5ipbP3rriT8nrDjmFw=; b=EU0zu+PS
+        gYqkPrUeXC2Zcvsryv6U6aGGS97cbOdg10JAwLtsZNQIbitgGaUEGfolBmvvO9hP
+        AtzvZF63F6Cvq8hQ4zCyT7OzLvJ5aYv1VBACp7qiiv6CQENbzMX24CR/WuCIerMB
+        QofcAv9H5gYhM0/ZfRQWRvftMB4Wc/B5Xv5emV/uk5LZy6dgZGMNlOD6bACA4d/X
+        phWEC7iz0gsfa8oDgV5+6uujeRZnv3wJ4BBWQlyhrytLCD72xkxTIYec4TVr8W9i
+        BEsDAWcS0pUgHqM2Vlath30bHPODkywSk0NO8zStjAXvB7CvLvAYBGoW6QJY2OHm
+        UbupzwQz1jpe5A==
+X-ME-Sender: <xms:K0bPX7GkOfbKXm9eU2MT3fu8Rrdp0cOYbcgMTooiPC2W2rgDp0Nopw>
+    <xme:K0bPX_wcgKNKn6AjCK0c8FlDR1JjO15rgM1kt7vi_UjY6hgdXnKhtc19dA80yN8es
+    PKXeqelpioqw-Y>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudejiedgtddvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -38,21 +38,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrudejiedgtddvucetufdoteggod
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrjeek
     necuvehluhhsthgvrhfuihiivgepvdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:KkbPX3eKmLDi4FH9IWza3urEk0ocGE9vMI_ieNnyBRaPKQvnUBbT_w>
-    <xmx:KkbPX1bvf9fEyaTkK70qRQoku7yZHbGbEILNrdRnXJwYQDGddY6z5Q>
-    <xmx:KkbPX8HtQnO-J5MIiqr4p6CKaqsMEncLvxqTg7DuqHdrFtFzDhtAqA>
-    <xmx:KkbPXx0HxJ-wzRXY0f2KxAiSCCamUs--iIFOMx4GBX4J6MpGumc7SQ>
+X-ME-Proxy: <xmx:K0bPX6jHZCwsDsP3ozC4fcnqjmRt0w7biQwkJ4c1rvsC8azm-_V7aA>
+    <xmx:K0bPXyx29BkmvdBxbx5GKm4lGhsdt7sI7E7A2uHytD3yzMS7HXx4uA>
+    <xmx:K0bPX1JUMzJZclUqRVhyQmE8cHepu_hHWeQSmEeuFpfbvZyXXbxmng>
+    <xmx:K0bPX9KViyTY6UiJ7PZZtbbBSZ1RMerK3n_zYRa8rYBZl61J0DP8Ag>
 Received: from shredder.lan (igld-84-229-153-78.inter.net.il [84.229.153.78])
-        by mail.messagingengine.com (Postfix) with ESMTPA id CAAC91080067;
-        Tue,  8 Dec 2020 04:23:52 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 82F481080069;
+        Tue,  8 Dec 2020 04:23:54 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         petrm@nvidia.com, amcohen@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 03/13] mlxsw: reg: Add support for tunnel port in SPVID register
-Date:   Tue,  8 Dec 2020 11:22:43 +0200
-Message-Id: <20201208092253.1996011-4-idosch@idosch.org>
+Subject: [PATCH net-next 04/13] mlxsw: spectrum_switchdev: Create common function for joining VxLAN to VLAN-aware bridge
+Date:   Tue,  8 Dec 2020 11:22:44 +0200
+Message-Id: <20201208092253.1996011-5-idosch@idosch.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201208092253.1996011-1-idosch@idosch.org>
 References: <20201208092253.1996011-1-idosch@idosch.org>
@@ -64,42 +64,53 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Amit Cohen <amcohen@nvidia.com>
 
-Add spvid_tport field which indicates if the port is tunnel port.
-When spvid_tport is true, local_port field supposed to be tunnel port
-type.
+The code in mlxsw_sp_bridge_8021q_vxlan_join() can be used also for
+802.1ad bridge.
 
-It will be used to configure which Ethertype will be used when VLAN is
-pushed at ingress for tunnel port.
+Move the code to function called mlxsw_sp_bridge_vlan_aware_vxlan_join()
+and call it from mlxsw_sp_bridge_8021q_vxlan_join() to enable code
+reuse.
 
 Signed-off-by: Amit Cohen <amcohen@nvidia.com>
 Reviewed-by: Petr Machata <petrm@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ .../ethernet/mellanox/mlxsw/spectrum_switchdev.c  | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index ad6798c2169d..2a89b3261f00 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -821,8 +821,16 @@ static inline void mlxsw_reg_spms_vid_pack(char *payload, u16 vid,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
+index 9c4e17607e6a..c53e0ab9f971 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
+@@ -2053,9 +2053,9 @@ mlxsw_sp_bridge_8021q_port_leave(struct mlxsw_sp_bridge_device *bridge_device,
+ }
  
- MLXSW_REG_DEFINE(spvid, MLXSW_REG_SPVID_ID, MLXSW_REG_SPVID_LEN);
+ static int
+-mlxsw_sp_bridge_8021q_vxlan_join(struct mlxsw_sp_bridge_device *bridge_device,
+-				 const struct net_device *vxlan_dev, u16 vid,
+-				 struct netlink_ext_ack *extack)
++mlxsw_sp_bridge_vlan_aware_vxlan_join(struct mlxsw_sp_bridge_device *bridge_device,
++				      const struct net_device *vxlan_dev,
++				      u16 vid, struct netlink_ext_ack *extack)
+ {
+ 	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_lower_get(bridge_device->dev);
+ 	struct vxlan_dev *vxlan = netdev_priv(vxlan_dev);
+@@ -2101,6 +2101,15 @@ mlxsw_sp_bridge_8021q_vxlan_join(struct mlxsw_sp_bridge_device *bridge_device,
+ 	return err;
+ }
  
-+/* reg_spvid_tport
-+ * Port is tunnel port.
-+ * Reserved when SwitchX/-2 or Spectrum-1.
-+ * Access: Index
-+ */
-+MLXSW_ITEM32(reg, spvid, tport, 0x00, 24, 1);
++static int
++mlxsw_sp_bridge_8021q_vxlan_join(struct mlxsw_sp_bridge_device *bridge_device,
++				 const struct net_device *vxlan_dev, u16 vid,
++				 struct netlink_ext_ack *extack)
++{
++	return mlxsw_sp_bridge_vlan_aware_vxlan_join(bridge_device, vxlan_dev,
++						     vid, extack);
++}
 +
- /* reg_spvid_local_port
-- * Local port number.
-+ * When tport = 0: Local port number. Not supported for CPU port.
-+ * When tport = 1: Tunnel port.
-  * Access: Index
-  */
- MLXSW_ITEM32(reg, spvid, local_port, 0x00, 16, 8);
+ static struct net_device *
+ mlxsw_sp_bridge_8021q_vxlan_dev_find(struct net_device *br_dev, u16 vid)
+ {
 -- 
 2.28.0
 
