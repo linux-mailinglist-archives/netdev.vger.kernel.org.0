@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C1B32D3E7A
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 10:23:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB61A2D3E89
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 10:23:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729017AbgLIJVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 04:21:07 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:8734 "EHLO
+        id S1728488AbgLIJVe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 04:21:34 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:8735 "EHLO
         szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729009AbgLIJU5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 04:20:57 -0500
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CrWhd65M2zkn9v;
-        Wed,  9 Dec 2020 17:19:29 +0800 (CST)
+        with ESMTP id S1727665AbgLIJV3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 04:21:29 -0500
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CrWjL4HtmzknTP;
+        Wed,  9 Dec 2020 17:20:06 +0800 (CST)
 Received: from ubuntu.network (10.175.138.68) by
- DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
- 14.3.487.0; Wed, 9 Dec 2020 17:20:04 +0800
+ DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server id
+ 14.3.487.0; Wed, 9 Dec 2020 17:20:39 +0800
 From:   Zheng Yongjun <zhengyongjun3@huawei.com>
 To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
 CC:     <kuba@kernel.org>, <linux-kernel@vger.kernel.org>,
-        Zheng Yongjun <zhengyongjun3@huawei.com>
-Subject: [PATCH net-next] net: cisco: enic: simplify the return vnic_cq_alloc()
-Date:   Wed, 9 Dec 2020 17:20:31 +0800
-Message-ID: <20201209092031.20255-1-zhengyongjun3@huawei.com>
+        <madalin.bucur@nxp.com>, Zheng Yongjun <zhengyongjun3@huawei.com>
+Subject: [PATCH net-next] net: freescale: dpaa: simplify the return dpaa_eth_refill_bpools()
+Date:   Wed, 9 Dec 2020 17:21:07 +0800
+Message-ID: <20201209092107.20306-1-zhengyongjun3@huawei.com>
 X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
@@ -38,35 +38,32 @@ Simplify the return expression.
 
 Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
 ---
- drivers/net/ethernet/cisco/enic/vnic_cq.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/cisco/enic/vnic_cq.c b/drivers/net/ethernet/cisco/enic/vnic_cq.c
-index 9c682aff3834..519323460f26 100644
---- a/drivers/net/ethernet/cisco/enic/vnic_cq.c
-+++ b/drivers/net/ethernet/cisco/enic/vnic_cq.c
-@@ -36,8 +36,6 @@ void vnic_cq_free(struct vnic_cq *cq)
- int vnic_cq_alloc(struct vnic_dev *vdev, struct vnic_cq *cq, unsigned int index,
- 	unsigned int desc_count, unsigned int desc_size)
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+index cb7c028b1bf5..edc8222d96dc 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+@@ -1599,17 +1599,13 @@ static int dpaa_eth_refill_bpools(struct dpaa_priv *priv)
  {
--	int err;
--
- 	cq->index = index;
- 	cq->vdev = vdev;
+ 	struct dpaa_bp *dpaa_bp;
+ 	int *countptr;
+-	int res;
  
-@@ -47,11 +45,7 @@ int vnic_cq_alloc(struct vnic_dev *vdev, struct vnic_cq *cq, unsigned int index,
+ 	dpaa_bp = priv->dpaa_bp;
+ 	if (!dpaa_bp)
  		return -EINVAL;
- 	}
+ 	countptr = this_cpu_ptr(dpaa_bp->percpu_count);
+-	res  = dpaa_eth_refill_bpool(dpaa_bp, countptr);
+-	if (res)
+-		return res;
  
--	err = vnic_dev_alloc_desc_ring(vdev, &cq->ring, desc_count, desc_size);
--	if (err)
--		return err;
--
 -	return 0;
-+	return vnic_dev_alloc_desc_ring(vdev, &cq->ring, desc_count, desc_size);
++	return dpaa_eth_refill_bpool(dpaa_bp, countptr);
  }
  
- void vnic_cq_init(struct vnic_cq *cq, unsigned int flow_control_enable,
+ /* Cleanup function for outgoing frame descriptors that were built on Tx path,
 -- 
 2.22.0
 
