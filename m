@@ -2,92 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF0402D3F05
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 10:44:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02E932D3F10
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 10:47:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729026AbgLIJmz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 04:42:55 -0500
-Received: from mxout70.expurgate.net ([91.198.224.70]:30637 "EHLO
-        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728509AbgLIJmz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 04:42:55 -0500
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.92)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1kmvy1-000Ksk-Tg; Wed, 09 Dec 2020 10:41:01 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1kmvy1-000XDP-1s; Wed, 09 Dec 2020 10:41:01 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 961A5240041;
-        Wed,  9 Dec 2020 10:41:00 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id 18B8A240040;
-        Wed,  9 Dec 2020 10:41:00 +0100 (CET)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id B4BE020897;
-        Wed,  9 Dec 2020 10:40:59 +0100 (CET)
+        id S1729456AbgLIJqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 04:46:52 -0500
+Received: from so254-31.mailgun.net ([198.61.254.31]:43141 "EHLO
+        so254-31.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728984AbgLIJqw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 04:46:52 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1607507186; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=TT4m8+gnciHFxdRsn31IdGNUoKU41SWMx8jAAS1/Yyg=; b=YXLE42VwWscwQJdhAWT3l+5xX0Y/j0YkkWKQjyfDHR/7h9J2Ust9JOk9dGhMsa8VVdDpbQCQ
+ 6Xxw27bi43BmWeFhGNRzz/+hi5aA5nyFNYJC5U0Dyo7KIn86SE2Csool3P7zXs92J1KBFK0u
+ 0TR3lG9LEGhSpfRuk+o4AnqH5Ms=
+X-Mailgun-Sending-Ip: 198.61.254.31
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
+ 5fd09cd8fab0cd4073d52210 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 09 Dec 2020 09:46:00
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id EC25DC433ED; Wed,  9 Dec 2020 09:45:59 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id EE07FC433C6;
+        Wed,  9 Dec 2020 09:45:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org EE07FC433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Zheng Yongjun <zhengyongjun3@huawei.com>
+Cc:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+Subject: Re: [PATCH wireless] iwlwifi: fw: simplify the iwl_fw_dbg_collect_trig()
+References: <20201209092835.20630-1-zhengyongjun3@huawei.com>
+Date:   Wed, 09 Dec 2020 11:45:54 +0200
+In-Reply-To: <20201209092835.20630-1-zhengyongjun3@huawei.com> (Zheng
+        Yongjun's message of "Wed, 9 Dec 2020 17:28:35 +0800")
+Message-ID: <87im9bb9d9.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Wed, 09 Dec 2020 10:40:59 +0100
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     Andrew Hendry <andrew.hendry@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v7 4/5] net/x25: fix restart request/confirm
- handling
-Organization: TDT AG
-In-Reply-To: <CAJht_ENukJrnh6m8FLrHBwnKKyZpzk6uGWhS4_eUCyDzrCG3eA@mail.gmail.com>
-References: <20201126063557.1283-1-ms@dev.tdt.de>
- <20201126063557.1283-5-ms@dev.tdt.de>
- <CAJht_EMZqcPdE5n3Vp+jJa1sVk9+vbwd-Gbi8Xqy19bEdbNNuA@mail.gmail.com>
- <CAJht_ENukJrnh6m8FLrHBwnKKyZpzk6uGWhS4_eUCyDzrCG3eA@mail.gmail.com>
-Message-ID: <3e314d2786857cbd5aaee8b83a0e6daa@dev.tdt.de>
-X-Sender: ms@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.15
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
-X-purgate-type: clean
-X-purgate: clean
-X-purgate-ID: 151534::1607506861-00001F6B-18FBB75D/0/0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-12-09 10:17, Xie He wrote:
-> On Wed, Dec 9, 2020 at 1:01 AM Xie He <xie.he.0141@gmail.com> wrote:
->> 
->> On Wed, Nov 25, 2020 at 10:36 PM Martin Schiller <ms@dev.tdt.de> 
->> wrote:
->> >
->> >         switch (nb->state) {
->> >         case X25_LINK_STATE_0:
->> > -               nb->state = X25_LINK_STATE_2;
->> > -               break;
->> >         case X25_LINK_STATE_1:
->> >                 x25_transmit_restart_request(nb);
->> >                 nb->state = X25_LINK_STATE_2;
->> 
->> What is the reason for this change? Originally only the connecting
->> side will transmit a Restart Request; the connected side will not and
->> will only wait for the Restart Request to come. Now both sides will
->> transmit Restart Requests at the same time. I think we should better
->> avoid collision situations like this.
-> 
-> Oh. I see. Because in other patches we are giving L2 the ability to
-> connect by itself, both sides can now appear here to be the
-> "connected" side. So we can't make the "connected" side wait as we did
-> before.
+Zheng Yongjun <zhengyongjun3@huawei.com> writes:
 
-Right.
-By the way: A "Restart Collision" is in practice a very common event to
-establish the Layer 3.
+> Simplify the return expression.
+>
+> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+> ---
+>  drivers/net/wireless/intel/iwlwifi/fw/dbg.c | 9 ++-------
+>  1 file changed, 2 insertions(+), 7 deletions(-)
+>
+> diff --git a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+> index ab4a8b942c81..9393fcb62076 100644
+> --- a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+> +++ b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+> @@ -2558,7 +2558,7 @@ int iwl_fw_dbg_collect_trig(struct iwl_fw_runtime *fwrt,
+>  			    struct iwl_fw_dbg_trigger_tlv *trigger,
+>  			    const char *fmt, ...)
+>  {
+> -	int ret, len = 0;
+> +	int len = 0;
+>  	char buf[64];
+>  
+>  	if (iwl_trans_dbg_ini_valid(fwrt->trans))
+> @@ -2580,13 +2580,8 @@ int iwl_fw_dbg_collect_trig(struct iwl_fw_runtime *fwrt,
+>  		len = strlen(buf) + 1;
+>  	}
+>  
+> -	ret = iwl_fw_dbg_collect(fwrt, le32_to_cpu(trigger->id), buf, len,
+> +	return iwl_fw_dbg_collect(fwrt, le32_to_cpu(trigger->id), buf, len,
+>  				 trigger);
+> -
+> -	if (ret)
+> -		return ret;
+> -
+> -	return 0;
+>  }
+>  IWL_EXPORT_SYMBOL(iwl_fw_dbg_collect_trig);
+
+Up to Luca of course, but I prefer the original style.
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
