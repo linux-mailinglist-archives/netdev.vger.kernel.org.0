@@ -2,130 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E143A2D4489
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 15:42:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A8C02D449D
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 15:45:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731477AbgLIOlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 09:41:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38232 "EHLO
+        id S1733054AbgLIOoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 09:44:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730850AbgLIOlP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 09:41:15 -0500
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E483C061793;
-        Wed,  9 Dec 2020 06:40:35 -0800 (PST)
-Received: by mail-il1-x143.google.com with SMTP id t9so1765957ilf.2;
-        Wed, 09 Dec 2020 06:40:35 -0800 (PST)
+        with ESMTP id S1725885AbgLIOoe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 09:44:34 -0500
+Received: from mail-vk1-xa42.google.com (mail-vk1-xa42.google.com [IPv6:2607:f8b0:4864:20::a42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC42C0613CF
+        for <netdev@vger.kernel.org>; Wed,  9 Dec 2020 06:43:53 -0800 (PST)
+Received: by mail-vk1-xa42.google.com with SMTP id v3so387123vkb.1
+        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 06:43:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=lrVKy9ubG/ETOf2frLaztz8leb/O1uo8SpRzH8S0NrM=;
-        b=H+x6Xuq3KblNHKzIOGWYPWs6L1G1DaKK0iCwMzPh83oa67KQOh04X1zP74yAStkQUg
-         x3hqlPaSpisaey+sn/ANVqchR4dY/VIi62DOXCpK46dfyCDZJLnY3LDGcembjAs9Jejc
-         3oi6Kx4S0Ph368r3xKOj0E0h1/ExCPZl7ZIWiHRutAq4jtPNeJ2HNcEKazHjRB20967R
-         25Kn7A3MlhHuLdKSBcXMX0TQZdIqQACBHqFMfTvQEkyVz1p/ie8RZycO2BMKT/S1GDyR
-         kHabgqtW2h+wQJOcFpGStHkZ0ewcD4j0sJ4pZST0cfDS9HKm+DfjNzQ9VlpGzumPH4Pl
-         ME7w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7Q6KcYtQg5u1UB7CZSEvhSXseIPsOcn669yzRvM9CMI=;
+        b=MlNvVPUG7US7xBW3iVErIuZr+AX7nU82hgF0ulmmxukBGxZ+1aH8RSAISrlziE8ohP
+         3rHT2hclrFaH7fVYUBoXUOstwt+bc9QYX3X8ALTg6X5lBTkgBf8WxhMvrd08q9pIuE2E
+         ROIhSWl9U3bbWNiEFECJDGApOqjDZgiCLU6BhfPfQaHVd+/ludibgxNig9Ga2clSkxLL
+         XDF2E73bcHhgNStuIvVz04fkXa+eJsA1t64j3S3SVLso9HivnYtXI7dqrH6syofZZiOK
+         cueIh3qC39Qd2tHI+caBJ6vq9g2IuSR9SalaG0NVyUu4JBRCWQ6SMFlpXefbPZ+E680/
+         e2LQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=lrVKy9ubG/ETOf2frLaztz8leb/O1uo8SpRzH8S0NrM=;
-        b=lRg8ysQBmoka+kPPCpI0S0oYX5L+nhla8MWbyJUx9ZTKeTOzOzsDKNQ7KQ9xsL6Oal
-         bADtqFA3njyhbYT83lDm6Lr58pzCgV07apKf1CNlLcevaW16nfdWdq0PItWOVBfmuUGx
-         gfwxJYep8LSv1wMuMHspvXFrbdp3gDPcpthzzyrdws4GMbgXtTkYCpNfSIZkJ7ZciZ2O
-         DlwZEa9ipdMGNAQGEFVUyLlxawQQYsn9iA41gRVel37jnqoQ83CFJfrJUaK9MdZsh3Uo
-         GPtr6WnIjA4hNhqWP/tvHo9CGPi4DmH+6QZpcaE9WH5kwJJh/72KBLensQ9j+M6i1hk2
-         9fxw==
-X-Gm-Message-State: AOAM530k/C6t4ZnWKZTuxJGwY8OrhaLtNLQekQ1GYjQ0VuY3Ge2aRevV
-        0p13lRcE+Q5+B1DNGvX25ef5Va0mO/zQAmu/zJanBiwlN7uyvXerljQ=
-X-Google-Smtp-Source: ABdhPJy5RiOg7nIVTJtIQNb5lXpcVlKpPeV60+E3GUZJ9hcjHIAulWDk3miEwCBVG6CiZFYd0wC87gLOaYIlmp1c/c8=
-X-Received: by 2002:a92:d09:: with SMTP id 9mr3323278iln.54.1607524834704;
- Wed, 09 Dec 2020 06:40:34 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=7Q6KcYtQg5u1UB7CZSEvhSXseIPsOcn669yzRvM9CMI=;
+        b=o6yd6q4q6eC3O4m/Ia8VD/Xb7hbEspRFM0J3Iu2qsarTZRoOx5281ETjW+sn7pd++o
+         NzL0J3EUNewLVW48r/inJ/9l9bysdzs27pX+kt9waFIPfRQpVq1UEa0Pr2rIaYTC7RPI
+         51xIaJo3kfLXJpxDl5URXMU36fWtjh6P4T06MiijltEbyuj0OBFNK+K01PWRC+o1ncWK
+         uqQLlFxGJg3cGl/kLfgoqRD9O/fUtRwNFJ3AcDxTkQ3Kw3Y2P8DX7JIk+69kKtdqqOr0
+         p+DLzW6JeUHZQf2BxF9g72IZQUm2N1DQaXmRR09+ci9LzT9dW3IR428LLgOI2MrHmE1/
+         ndDQ==
+X-Gm-Message-State: AOAM531pL0yRytYX5SyPt5d/TVwik82XwWIaum3j3PTdo4aAlPrIjr0X
+        jw6CIPImWfY0C/nmSziwtYaPNmkCsqM=
+X-Google-Smtp-Source: ABdhPJyWmUOvmsW4NKorY7bxmi8w0Y8IeBvyIB0PUxF/sEZE/0Y3OtJRM17/GLM1ajdYqYjxicILAA==
+X-Received: by 2002:a1f:4595:: with SMTP id s143mr2155420vka.6.1607525032132;
+        Wed, 09 Dec 2020 06:43:52 -0800 (PST)
+Received: from mail-ua1-f50.google.com (mail-ua1-f50.google.com. [209.85.222.50])
+        by smtp.gmail.com with ESMTPSA id r126sm189061vsr.0.2020.12.09.06.43.50
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Dec 2020 06:43:51 -0800 (PST)
+Received: by mail-ua1-f50.google.com with SMTP id 17so210129uaq.4
+        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 06:43:50 -0800 (PST)
+X-Received: by 2002:a9f:2356:: with SMTP id 80mr1832051uae.92.1607525030374;
+ Wed, 09 Dec 2020 06:43:50 -0800 (PST)
 MIME-Version: 1.0
-References: <20201207134309.16762-1-phil@nwl.cc> <CAHsH6Gupw7o96e5hOmaLBCZtqgoV0LZ4L7h-Y+2oROtXSXvTxw@mail.gmail.com>
- <20201208185139.GZ4647@orbyte.nwl.cc>
-In-Reply-To: <20201208185139.GZ4647@orbyte.nwl.cc>
-From:   Eyal Birger <eyal.birger@gmail.com>
-Date:   Wed, 9 Dec 2020 16:40:23 +0200
-Message-ID: <CAHsH6GvT=Af-BAWK0z_CdrYWPn0qt+C=BRjy10MLRNhLWfH0rQ@mail.gmail.com>
-Subject: Re: [PATCH v2] xfrm: interface: Don't hide plain packets from netfilter
-To:     Phil Sutter <phil@nwl.cc>, Eyal Birger <eyal.birger@gmail.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        linux-crypto@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>
+References: <1606982459-41752-1-git-send-email-wangyunjian@huawei.com> <1607517703-18472-1-git-send-email-wangyunjian@huawei.com>
+In-Reply-To: <1607517703-18472-1-git-send-email-wangyunjian@huawei.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 9 Dec 2020 09:43:13 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSfQoDr0jd76xBXSvchhyihQaL2UQXeCR6frJ7hyXxbmVA@mail.gmail.com>
+Message-ID: <CA+FuTSfQoDr0jd76xBXSvchhyihQaL2UQXeCR6frJ7hyXxbmVA@mail.gmail.com>
+Subject: Re: [PATCH net v2] tun: fix ubuf refcount incorrectly on error path
+To:     wangyunjian <wangyunjian@huawei.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        Network Development <netdev@vger.kernel.org>,
+        jerry.lilijun@huawei.com, chenchanghu@huawei.com,
+        xudingke@huawei.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Phil,
+On Wed, Dec 9, 2020 at 8:03 AM wangyunjian <wangyunjian@huawei.com> wrote:
+>
+> From: Yunjian Wang <wangyunjian@huawei.com>
+>
+> After setting callback for ubuf_info of skb, the callback
+> (vhost_net_zerocopy_callback) will be called to decrease
+> the refcount when freeing skb. But when an exception occurs
 
-On Tue, Dec 8, 2020 at 8:51 PM Phil Sutter <phil@nwl.cc> wrote:
->
-> Hi Eyal,
->
-> On Tue, Dec 08, 2020 at 04:47:02PM +0200, Eyal Birger wrote:
-> > On Mon, Dec 7, 2020 at 4:07 PM Phil Sutter <phil@nwl.cc> wrote:
-> > >
-> > > With an IPsec tunnel without dedicated interface, netfilter sees locally
-> > > generated packets twice as they exit the physical interface: Once as "the
-> > > inner packet" with IPsec context attached and once as the encrypted
-> > > (ESP) packet.
-> > >
-> > > With xfrm_interface, the inner packet did not traverse NF_INET_LOCAL_OUT
-> > > hook anymore, making it impossible to match on both inner header values
-> > > and associated IPsec data from that hook.
-> > >
-> >
-> > Why wouldn't locally generated traffic not traverse the
-> > NF_INET_LOCAL_OUT hook via e.g. __ip_local_out() when xmitted on an xfrmi?
-> > I would expect it to appear in netfilter, but without the IPsec
-> > context, as it's not
-> > there yet.
->
-> Yes, that's right. Having an iptables rule with LOG target in OUTPUT
-> chain, a packet sent from the local host is logged multiple times:
->
-> | IN= OUT=xfrm SRC=192.168.111.1 DST=192.168.111.2 LEN=84 TOS=0x00 PREC=0x00 TTL=64 ID=21840 DF
-> | PROTO=ICMP TYPE=8 CODE=0 ID=56857 SEQ=1
-> | IN= OUT=eth0 SRC=192.168.111.1 DST=192.168.111.2 LEN=84 TOS=0x00 PREC=0x00 TTL=64 ID=21840 DF PROTO=ICMP TYPE=8 CODE=0 ID=56857 SEQ=1
-> | IN= OUT=eth0 SRC=192.168.1.1 DST=192.168.1.2 LEN=140 TOS=0x00 PREC=0x00 TTL=64 ID=0 DF PROTO=ESP SPI=0x1000
->
-> First when being sent to xfrm interface, then two times between xfrm and
-> eth0, the second time as ESP packet. This is with my patch applied.
-> Without it, the second log entry is missing. I'm arguing the above is
-> consistent to IPsec without xfrm interface:
->
-> | IN= OUT=eth1 SRC=192.168.112.1 DST=192.168.112.2 LEN=84 TOS=0x00 PREC=0x00 TTL=64 ID=49341 DF PROTO=ICMP TYPE=8 CODE=0 ID=44114 SEQ=1
-> | IN= OUT=eth1 SRC=192.168.2.1 DST=192.168.2.2 LEN=140 TOS=0x00 PREC=0x00 TTL=64 ID=37109 DF PROTO=ESP SPI=0x1000
->
-> The packet appears twice being sent to eth1, the second time as ESP
-> packet. I understand xfrm interface as a collector of to-be-xfrmed
-> packets, dropping those which do not match a policy.
->
-> > > Fix this by looping packets transmitted from xfrm_interface through
-> > > NF_INET_LOCAL_OUT before passing them on to dst_output(), which makes
-> > > behaviour consistent again from netfilter's point of view.
-> >
-> > When an XFRM interface is used when forwarding, why would it be correct
-> > for NF_INET_LOCAL_OUT to observe the inner packet?
->
-> A valid question, indeed. One could interpret packets being forwarded by
-> those tunneling devices emit the packets one feeds them from the local
-> host. I just checked and ip_vti behaves identical to xfrm_interface
-> prior to my patch, so maybe my patch is crap and the inability to match
-> on ipsec context data when using any of those devices is just by design.
->
+With exception, you mean if tun_get_user returns an error that
+propagates to the sendmsg call in vhost handle_tx, correct?
 
-I would find such interpretation and behavior to be surprising for an IPsec
-forwarder...
-I guess some functionality of policy matching is lost with these
-devices; although they do offer the ability to match ipsec traffic based on
-the destination interface it is possible to have multiple ipsec flows share
-the same device so netfilter doesn't provide the ability to distinguish
-between different flows on the outbound direction in such cases.
+> afterwards, the error handling in vhost handle_tx() will
+> try to decrease the same refcount again. This is wrong and
+> fix this by delay copying ubuf_info until we're sure
+> there's no errors.
 
-Thanks,
-Eyal.
+I think the right approach is to address this in the error paths,
+rather than complicate the normal datapath.
+
+Is it sufficient to suppress the call to vhost_net_ubuf_put in the
+handle_tx sendmsg error path, given that vhost_zerocopy_callback
+will be called on kfree_skb?
+
+Or alternatively clear the destructor in drop:
+
+>
+> Fixes: 4477138fa0ae ("tun: properly test for IFF_UP")
+> Fixes: 90e33d459407 ("tun: enable napi_gro_frags() for TUN/TAP driver")
+>
+> Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
+> ---
+> v2:
+>    Updated code, fix by delay copying ubuf_info
+> ---
+>  drivers/net/tun.c | 29 +++++++++++++++++++----------
+>  1 file changed, 19 insertions(+), 10 deletions(-)
+>
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index 2dc1988a8973..2ea822328e73 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -1637,6 +1637,20 @@ static struct sk_buff *tun_build_skb(struct tun_struct *tun,
+>         return NULL;
+>  }
+>
+> +/* copy ubuf_info for callback when skb has no error */
+> +static inline void tun_copy_ubuf_info(struct sk_buff *skb, bool zerocopy, void *msg_control)
+> +{
+> +       if (zerocopy) {
+> +               skb_shinfo(skb)->destructor_arg = msg_control;
+> +               skb_shinfo(skb)->tx_flags |= SKBTX_DEV_ZEROCOPY;
+> +               skb_shinfo(skb)->tx_flags |= SKBTX_SHARED_FRAG;
+> +       } else if (msg_control) {
+> +               struct ubuf_info *uarg = msg_control;
+> +
+> +               uarg->callback(uarg, false);
+> +       }
+> +}
+> +
+>  /* Get packet from user space buffer */
+>  static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+>                             void *msg_control, struct iov_iter *from,
+> @@ -1812,16 +1826,6 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+>                 break;
+>         }
+>
+> -       /* copy skb_ubuf_info for callback when skb has no error */
+> -       if (zerocopy) {
+> -               skb_shinfo(skb)->destructor_arg = msg_control;
+> -               skb_shinfo(skb)->tx_flags |= SKBTX_DEV_ZEROCOPY;
+> -               skb_shinfo(skb)->tx_flags |= SKBTX_SHARED_FRAG;
+> -       } else if (msg_control) {
+> -               struct ubuf_info *uarg = msg_control;
+> -               uarg->callback(uarg, false);
+> -       }
+> -
+>         skb_reset_network_header(skb);
+>         skb_probe_transport_header(skb);
+>         skb_record_rx_queue(skb, tfile->queue_index);
+> @@ -1830,6 +1834,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+>                 struct bpf_prog *xdp_prog;
+>                 int ret;
+>
+> +               tun_copy_ubuf_info(skb, zerocopy, msg_control);
+>                 local_bh_disable();
+>                 rcu_read_lock();
+>                 xdp_prog = rcu_dereference(tun->xdp_prog);
+> @@ -1881,6 +1886,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+>                         return -ENOMEM;
+>                 }
+>
+> +               tun_copy_ubuf_info(skb, zerocopy, msg_control);
+>                 local_bh_disable();
+>                 napi_gro_frags(&tfile->napi);
+>                 local_bh_enable();
+> @@ -1889,6 +1895,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+>                 struct sk_buff_head *queue = &tfile->sk.sk_write_queue;
+>                 int queue_len;
+>
+> +               tun_copy_ubuf_info(skb, zerocopy, msg_control);
+>                 spin_lock_bh(&queue->lock);
+>                 __skb_queue_tail(queue, skb);
+>                 queue_len = skb_queue_len(queue);
+> @@ -1899,8 +1906,10 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+>
+>                 local_bh_enable();
+>         } else if (!IS_ENABLED(CONFIG_4KSTACKS)) {
+> +               tun_copy_ubuf_info(skb, zerocopy, msg_control);
+>                 tun_rx_batched(tun, tfile, skb, more);
+>         } else {
+> +               tun_copy_ubuf_info(skb, zerocopy, msg_control);
+>                 netif_rx_ni(skb);
+>         }
+>         rcu_read_unlock();
+> --
+> 2.23.0
+>
