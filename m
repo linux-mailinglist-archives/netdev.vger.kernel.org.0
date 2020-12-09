@@ -2,47 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 337572D3784
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 01:23:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F085C2D3787
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 01:23:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731080AbgLIAUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 19:20:40 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:45156 "EHLO
-        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729665AbgLIAUk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 19:20:40 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id 6E7784D248DBE;
-        Tue,  8 Dec 2020 16:19:59 -0800 (PST)
-Date:   Tue, 08 Dec 2020 16:19:58 -0800 (PST)
-Message-Id: <20201208.161958.862390002072491156.davem@davemloft.net>
-To:     dqfext@gmail.com
-Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        sean.wang@mediatek.com, Landen.Chao@mediatek.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        kuba@kernel.org, matthias.bgg@gmail.com, linux@armlinux.org.uk,
-        frank-w@public-files.de
-Subject: Re: [PATCH net-next] net: dsa: mt7530: support setting ageing time
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20201208070028.3177-1-dqfext@gmail.com>
-References: <20201208070028.3177-1-dqfext@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1730656AbgLIAXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 19:23:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48042 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730326AbgLIAXO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Dec 2020 19:23:14 -0500
+Date:   Tue, 8 Dec 2020 16:22:26 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607473353;
+        bh=7aLIiUxTStX+LYo0g8eo7ffWgLa3KFjWTVyCfcZ57Dc=;
+        h=From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KxtEfx890KXGSsLxTVjROYHRwY0kk7yJrKsUG4p6A7hOjPCzvenyFZM2PBPRXiZ/n
+         w60WBokUBoYRzmBjubCtMRfSfvxsxV6HIC7Idw7yNr54SKmRL577K0lj+W9JIC7eP8
+         1wm5oSejwgMbnuUh2GNzAH0JaGYtCdrwxrRDQy3BRn6pyFZdoRjKY20GfFfm6wQc32
+         5YQmntdD4cuajzapgkvHFtIX4iKpcV4b76sChcWwEtlmQXGFlAxKRNQOkFSA4jXLvy
+         GxCWC9kgkqURWoitYmtwQ3nLx3kxH4YsudaIhpIR5Z5AtAVO9SnTorB+Rltmn9d0+i
+         eXhrdp6m98zPw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>, davem@davemloft.net,
+        robh+dt@kernel.org, nicolas.ferre@microchip.com,
+        linux@armlinux.org.uk, paul.walmsley@sifive.com,
+        palmer@dabbelt.com, yash.shah@sifive.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+Subject: Re: [PATCH v2 3/8] net: macb: add function to disable all macb
+ clocks
+Message-ID: <20201208162226.7ca7f49f@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201208184856.GM2475764@lunn.ch>
+References: <1607343333-26552-1-git-send-email-claudiu.beznea@microchip.com>
+        <1607343333-26552-4-git-send-email-claudiu.beznea@microchip.com>
+        <20201208184856.GM2475764@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Tue, 08 Dec 2020 16:19:59 -0800 (PST)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: DENG Qingfang <dqfext@gmail.com>
-Date: Tue,  8 Dec 2020 15:00:28 +0800
-
-> MT7530 has a global address age control register, so use it to set
-> ageing time.
+On Tue, 8 Dec 2020 19:48:56 +0100 Andrew Lunn wrote:
+> > -err_disable_rxclk:
+> > -	clk_disable_unprepare(*rx_clk);
+> > -
+> > -err_disable_txclk:
+> > -	clk_disable_unprepare(*tx_clk);
+> > -
+> > -err_disable_hclk:
+> > -	clk_disable_unprepare(*hclk);
+> > -
+> > -err_disable_pclk:
+> > -	clk_disable_unprepare(*pclk);
+> > +err_disable_clks:
+> > +	macb_clks_disable(*pclk, *hclk, *tx_clk, *rx_clk, NULL);  
 > 
-> The applied timer is (AGE_CNT + 1) * (AGE_UNIT + 1) seconds
-> 
-> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+> Personal taste, but i would of not changed this.
 
-Applied, thanks
++1 FWIW
