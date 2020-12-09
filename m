@@ -2,76 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C33982D40EB
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 12:22:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 807E32D4103
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 12:25:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730655AbgLILVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 06:21:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35546 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729904AbgLILU5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 06:20:57 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A80C0613CF
-        for <netdev@vger.kernel.org>; Wed,  9 Dec 2020 03:20:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=jj6/R+UGJmF449AsREm9R/aHELYa3eNEcswBIxLflfY=; b=koHM+FUzJaB6GI9q5+VWQUEPf
-        sJ4B2Z/3JovvubTp35tp0Pa/XFvJ4IFtKEsGpN8oXxSVK4dZZSG9LesYbTD8YSxuFzScRrBdl1DDX
-        jxlbN5El8fEjFKHjvX0hr8pIm4He3Sbxo2VXkmQAKQ6hl/qLIubSiqf5/3szw8ngYc5t05Fk/4dYf
-        ++k+QrtScw6s2jfBb8FnJBTomu/kVMv/DaxAViPKZq1yPrW2OQsP6awUTqGSJ3KMay3A1TLJ3OFBe
-        RLXLE5sWYvfDNSYpoKKKsUXuFZvrjJSHgi61kfEeXhCdifhmg1fvpYMAXDNBUj26MsKwha3IzzicN
-        Vk0MtROYg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:41730)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kmxW1-0002In-Fo; Wed, 09 Dec 2020 11:20:13 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kmxW1-0006yq-9G; Wed, 09 Dec 2020 11:20:13 +0000
-Date:   Wed, 9 Dec 2020 11:20:13 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 1/2] net: sfp: VSOL V2801F / CarlitoxxPro
- CPGOS03-0490 v2.0 workaround
-Message-ID: <20201209112013.GS1551@shell.armlinux.org.uk>
-References: <20201204143451.GL1551@shell.armlinux.org.uk>
- <E1klCB8-0001sW-Ma@rmk-PC.armlinux.org.uk>
- <20201204153152.GC2400258@lunn.ch>
+        id S1730742AbgLILXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 06:23:11 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:38998 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730747AbgLILWz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 06:22:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1607512889;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=djE+2D2zg9p7K3WnWwO0e5kEP4KLE3RaXpyUdHZT+eQ=;
+        b=PCt4c/QrcNjDb+fu+dgr4xbOk9j1iA+ISIdG/8BhWsnmRWFc/BXEghXGb1lRTKQdTOB/A4
+        RqxFoRYcHkGCdJ0Orx0HOufyh3R8/G4ErzbVtCxJNEfe23gzJbd3tFvI8q+vrEJtmMcX13
+        /HE1FnoHG30cBzgDfUgvan6NFUQeFSA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-290-6w4I4Fz2P9-J5uz_Ob68Lg-1; Wed, 09 Dec 2020 06:21:26 -0500
+X-MC-Unique: 6w4I4Fz2P9-J5uz_Ob68Lg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 96C62800D53;
+        Wed,  9 Dec 2020 11:21:25 +0000 (UTC)
+Received: from gerbillo.redhat.com (ovpn-112-45.ams2.redhat.com [10.36.112.45])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2321C620DE;
+        Wed,  9 Dec 2020 11:21:23 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
+Subject: [PATCH net] selftests: fix poll error in udpgro.sh
+Date:   Wed,  9 Dec 2020 12:21:13 +0100
+Message-Id: <66cc4a0ccb845f1b236a388bae3bc2171398fa41.1607512428.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201204153152.GC2400258@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 04, 2020 at 04:31:52PM +0100, Andrew Lunn wrote:
-> > +/* Some modules (Nokia 3FE46541AA) lock up if byte 0x51 is read as a
-> > + * single read. Switch back to reading 16 byte blocks unless we have
-> > + * a CarlitoxxPro module (rebranded VSOL V2801F). Even more annoyingly,
-> > + * some VSOL V2801F have the vendor name changed to OEM.
-> 
-> Hi Russell
-> 
-> I guess it is more likely, the vendor name has not been changed _from_
-> OEM.
+The test program udpgso_bench_rx always invokes the poll()
+syscall with a timeout of 10ms. If a larger timeout is specified
+via the command line, udpgso_bench_rx is supposed to do multiple
+poll() calls till the timeout is expired or an event is received.
 
-That is very unclear what happened: it seems older dated modules used
-VSOL and later ones use OEM, so I think the way I describe it is
-likely accurate from what we can observe.
+Currently the poll() loop errors out after the first invocation with
+no events, and may causes self-tests failure alike:
 
+failed
+ GRO with custom segment size            ./udpgso_bench_rx: poll: 0x0 expected 0x1
+
+This change addresses the issue allowing the poll() loop to consume
+all the configured timeout.
+
+Fixes: ada641ff6ed3 ("selftests: fixes for UDP GRO")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ tools/testing/selftests/net/udpgso_bench_rx.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/tools/testing/selftests/net/udpgso_bench_rx.c b/tools/testing/selftests/net/udpgso_bench_rx.c
+index db3d4a8b5a4c..76a24052f4b4 100644
+--- a/tools/testing/selftests/net/udpgso_bench_rx.c
++++ b/tools/testing/selftests/net/udpgso_bench_rx.c
+@@ -113,6 +113,9 @@ static void do_poll(int fd, int timeout_ms)
+ 				interrupted = true;
+ 				break;
+ 			}
++
++			/* no events and more time to wait, do poll again */
++			continue;
+ 		}
+ 		if (pfd.revents != POLLIN)
+ 			error(1, errno, "poll: 0x%x expected 0x%x\n",
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.26.2
+
