@@ -2,36 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FEEB2D4AF1
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 20:51:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64CE62D4B36
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 21:05:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387999AbgLITtl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 14:49:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45866 "EHLO mail.kernel.org"
+        id S2388089AbgLIUFY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 15:05:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52110 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732246AbgLITt1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Dec 2020 14:49:27 -0500
-Date:   Wed, 9 Dec 2020 11:48:45 -0800
+        id S2388085AbgLIUFO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Dec 2020 15:05:14 -0500
+Date:   Wed, 9 Dec 2020 12:04:32 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607543327;
-        bh=s6dPnE7S0yfkrHXxthmBtF0PbUYsXpjhSYfYbPAvBn8=;
+        s=k20201202; t=1607544273;
+        bh=AYuF3zfMHlMRG7rqQ/XhTpbeydCAtLhXUZNwC6Y4Dls=;
         h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CSRlYJtPboMHtEadKY3CRQHpZWmmzxX1d/r8ewfUwWvSkZZIkzpQ9dT2JGltDLk2g
-         HjnSo4GpMQEdzsT6N6ZFiP5jPihW4N6gKf85GkKxsfyPQDCJhpPAlnhq3lMJzCQHS8
-         2mgJLugQWlayYFZ5bbcrztFjWtBb3/vT9dueI+MqjFLqUrOIH+s0OUw7hjMezJD2lc
-         GfpgQjRLHXSpGX3REnzO5j30nWsx6Sh1dLXv3WHpAeEYLkHeWU/Si8LvXGGhXVp00L
-         6YxU0Gc3Yig9vDeLkrSD9BMGHuc2dZQhi2ZV2xk19CxUhtHGfEqTyPs8Rn3RwvZR6J
-         NUjUN8FQSwBjw==
+        b=usqqVeA6HplSf1vklVlq65i2RCRYcEymek+ZyFE8GqQw52zjdav6CketDbyUUTe4M
+         5eBC9PJ5om9qquS4biFLlhaMb5m47nlsnHdWAxfrKR1ny7nLqohDltIZUZvP3R/Eci
+         PUXig5zm/A0CP54u0fCsmuU9x/NfHzXYy9iSmH6xqBbV2nU+1/HrAH+69iT45hkreB
+         hNUFSxEyqXseYdpbdV7codIpSzmx6PpsFXvfpX3yC/Zmnvu6VkK9NHBIKkhA8i9zIt
+         Ju2eF+7RkZolrLg1aVllIT9ja4sCQCDNMRm3l7piyCNh8CYTHDCn+DtZl0c6jDoA8/
+         a+0l3cbD67YLg==
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     Geetha sowjanya <gakula@marvell.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sgoutham@marvell.com,
-        davem@davemloft.net, sbhatta@marvell.com
-Subject: Re: [PATCHv3 net-next] octeontx2-pf: Add RSS multi group support
-Message-ID: <20201209114845.61839f46@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <f47444311bc7661c6482de11d570fb815f8e7941.camel@kernel.org>
-References: <20201209170937.19548-1-gakula@marvell.com>
-        <f47444311bc7661c6482de11d570fb815f8e7941.camel@kernel.org>
+To:     David Ahern <dsahern@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Shrijeet Mukherjee <shrijeet@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH net-next] vrf: handle CONFIG_IPV6 not set for
+ vrf_add_mac_header_if_unset()
+Message-ID: <20201209120432.08ad638b@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <30116173-cc7f-f492-f290-faa24db28864@gmail.com>
+References: <20201208175210.8906-1-andrea.mayer@uniroma2.it>
+        <30116173-cc7f-f492-f290-faa24db28864@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -39,51 +46,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 09 Dec 2020 11:08:24 -0800 Saeed Mahameed wrote:
-> > -/* Configure RSS table and hash key */
-> > -static int otx2_set_rxfh(struct net_device *dev, const u32 *indir,
-> > -			 const u8 *hkey, const u8 hfunc)
-> > +static int otx2_get_rxfh_context(struct net_device *dev, u32 *indir,
-> > +				 u8 *hkey, u8 *hfunc, u32 rss_context)
-> >  {
-> >  	struct otx2_nic *pfvf = netdev_priv(dev);
-> > +	struct otx2_rss_ctx *rss_ctx;
-> >  	struct otx2_rss_info *rss;
-> >  	int idx;
-> >  
-> > -	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc !=
-> > ETH_RSS_HASH_TOP)
-> > -		return -EOPNOTSUPP;
-> > -
-> >  	rss = &pfvf->hw.rss_info;
-> >  
-> >  	if (!rss->enable) {
-> > -		netdev_err(dev, "RSS is disabled, cannot change
-> > settings\n");
-> > +		netdev_err(dev, "RSS is disabled\n");
-> >  		return -EIO;
-> >  	}  
+On Tue, 8 Dec 2020 12:51:55 -0700 David Ahern wrote:
+> On 12/8/20 10:52 AM, Andrea Mayer wrote:
+> > The vrf_add_mac_header_if_unset() is defined within a conditional
+> > compilation block which depends on the CONFIG_IPV6 macro.
+> > However, the vrf_add_mac_header_if_unset() needs to be called also by IPv4
+> > related code and when the CONFIG_IPV6 is not set, this function is missing.
+> > As a consequence, the build process stops reporting the error:
+> > 
+> >  ERROR: implicit declaration of function 'vrf_add_mac_header_if_unset'
+> > 
+> > The problem is solved by *only* moving functions
+> > vrf_add_mac_header_if_unset() and vrf_prepare_mac_header() out of the
+> > conditional block.
+> > 
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Fixes: 0489390882202 ("vrf: add mac header for tunneled packets when sniffer is attached")
+> > Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
+>
+> I should have caught that in my review.
 > 
-> I see that you init/enable rss on open, is this is your way to block
-> getting rss info if device is not open ? why do you need to report an
-> error anyway, why not just report whatever default config you will be
-> setting up on next open ? 
-> 
-> to me reporting errors to ethtool queries when device is down is a bad
-> user experience.
-> 
-> > +	if (rss_context >= MAX_RSS_GROUPS)
-> > +		return -EINVAL;
-> > +  
-> 
-> -ENOENT
-> > +	rss_ctx = rss->rss_ctx[rss_context];
-> > +	if (!rss_ctx)
-> > +		return -EINVAL;
-> >   
-> 
-> -ENOENT
+> Reviewed-by: David Ahern <dsahern@kernel.org>
 
-Plus looks like this version introduces a W=1 C=1 warning:
-
-drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c:768:28: warning: Using plain integer as NULL pointer
+Applied, thank you!
