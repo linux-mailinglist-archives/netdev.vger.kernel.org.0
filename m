@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09A942D3A09
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 06:05:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F36A2D3A12
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 06:06:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726065AbgLIFEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 00:04:46 -0500
-Received: from outbound-ip23a.ess.barracuda.com ([209.222.82.205]:35640 "EHLO
-        outbound-ip23a.ess.barracuda.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725968AbgLIFEq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 00:04:46 -0500
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2173.outbound.protection.outlook.com [104.47.58.173]) by mx3.us-east-2a.ess.aws.cudaops.com (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO); Wed, 09 Dec 2020 05:03:31 +0000
+        id S1726227AbgLIFFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 00:05:50 -0500
+Received: from outbound-ip23b.ess.barracuda.com ([209.222.82.220]:59768 "EHLO
+        outbound-ip23b.ess.barracuda.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725765AbgLIFFu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 00:05:50 -0500
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2173.outbound.protection.outlook.com [104.47.55.173]) by mx3.us-east-2b.ess.aws.cudaops.com (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO); Wed, 09 Dec 2020 05:04:46 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BCzax2ZfJMzq9oQnTAC1s0D6erwTFZJlUyhyKg9BJPglpG1ae/UcrYGbljtyeIqAOfUjZfWzqb7Me8+J/ORirJR7abV9QO+8yAiqyMm8xMmWWCXIHFURFvKvXQfqY3808Ef5taJ8oIA8JgH2TT9tYdTRcbJL5w6kYNQ8zFrHJYod7Ak0QRTUwjynQG5Fn4x+I1WyWTnigc3nU985M1lnmSuzGUjLynspV/4JxNDjIVbjEPzBGVBZfmm9NNqNc+OD0w9qLK+zcwqClSvmsN/fZ/VLAVas/v4zkDm82H4oqdP/ZI1bDC3jrhVDlPvRQBd/NWaQomKyLdc975j2IECk+g==
+ b=Sgj6qqnUOBNw0LwrxUdt6EOMrtNKHz+Q9fOndJvEtQHTwMQPlR3FOAt9Gayq38ROOtbYHyBdMGfk5RquMtx3z5TqbXMwyUbaHfouG0/4eesWXvGGwk7n5LwN1tDh6dfczp3lXBrsJ6HDHbdYt4CL8Ds9GR9faIsBJRygJms4qUcc5LZWfhv9VFbDAuBwZ8BhaNXureIyWRCOXBwKoW7BBCtyx/hBhMbXZxUxpna6T4yhFS4bW8ccUgCPx2xdGyoh52btNY3XewbwCSKqov5dS6Y8JrIzgHgW5peo+xcSLbP1XeKd4GcICn8nI+fq/8kFMWO7c5iMm5FMN6A5GqYPtQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vGCEsld9BN8Q0YZQvexI1UNFDDZ6jGwAXNatMyy7p0w=;
- b=VQYIT38O7NvG9UpLSpLx8wec/OjS8rwlzXGXw2c/gwgOowxfhvyCtGkKHgL5YC72c7oW+TtO9/TBJ0fmE8v5CE0xmGaTUJhqElkgLfsWj4nk1yBOdgWB7Ufgq8QWhjxyFmIwsuPLN8pUlXweGnPy4V1+f5n8c2Xw96kuVWJdOsUIvwx/aJBKkKhIsVI0DZxbRGGsabsh9mZNsb5tcnzgsKuoQfVnyvN3/NGb38gNkzWMb2hLeF36Jl81WPSHDVPZrsrVKNdV8peMzLQplLFCzNqWsn4C3rVr4NwiJ63/IEUHnVnmg09122cIwLgwjNfCzibHGN+EDHC8kM7Vcu8u9g==
+ bh=xZyIIcbULkqFuqRRVCOgfB002r4JFCtYt2FmxhjIbMk=;
+ b=nLFbBI+d2LEg4pHhUMJxWxzQFnF6ReNL8SiM4Mb6MgfbjVxVqxW5FU7CiaRPmI0b2klqGEehRCWxxPYpAQxcxAdlmQ62drXvpNNsWxj78EdDtteupSZFN2uWb7Mfi/F16Gd5s3EhB/yNWp4yrKtfBOuTs86RPnmO7tbvPZsushdtrFFsKCGtItKjrI3UOBiBVKGRfFhhYEGTwesq0G/osnt7NZPZmzIGljaa3UXvnG3d+/t4l3SpdllDQB9mZHW7ha/PdAr8kbk4WWt3gk6ed8vzltuMYDXTjQsZ+D1g42LiOWEABWdVATlBj9AVn5RQKgZRz8qHmIk8Na+5zbv4Ww==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=digi.com; dmarc=pass action=none header.from=digi.com;
  dkim=pass header.d=digi.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=digi.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vGCEsld9BN8Q0YZQvexI1UNFDDZ6jGwAXNatMyy7p0w=;
- b=CLxiSqGmkeu7vHFVzL0Y6oAxxtAVyInrBizVTlwBe88+a390QMpMTWNrTB900Cg24WWOgZuXxbHZ+1b39WcZFh8HAhd6+JlsUvVNobF0mD+mfePdrLK7Phl+CX6D29F3Sjp8++zrF0JmOMV5f+lUHLq9BVtCVyDHpPcAPVJzqv4=
+ bh=xZyIIcbULkqFuqRRVCOgfB002r4JFCtYt2FmxhjIbMk=;
+ b=FKeHieG6/plRejRM1GV6kXXfdbiwWRCChkoT4eiBku2NM8Yj+r8idcSb9ilz7zAG8VHjjYCimyu4tORA7wyxEqI0M4Ja2ySf8GN5X65M8P/kJxwSlg51hRuQ/Va3mYRImH52KWOrtukAF64ozWezFCymhWHKtuz6Cjh5NHeGXMw=
 Authentication-Results: lunn.ch; dkim=none (message not signed)
  header.d=none;lunn.ch; dmarc=none action=none header.from=digi.com;
 Received: from MN2PR10MB4174.namprd10.prod.outlook.com (2603:10b6:208:1dd::21)
  by MN2PR10MB4336.namprd10.prod.outlook.com (2603:10b6:208:15f::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12; Wed, 9 Dec
- 2020 05:03:30 +0000
+ 2020 05:04:10 +0000
 Received: from MN2PR10MB4174.namprd10.prod.outlook.com
  ([fe80::c8b6:2021:35a0:2365]) by MN2PR10MB4174.namprd10.prod.outlook.com
  ([fe80::c8b6:2021:35a0:2365%9]) with mapi id 15.20.3654.013; Wed, 9 Dec 2020
- 05:03:30 +0000
+ 05:04:10 +0000
 From:   Pavana Sharma <pavana.sharma@digi.com>
 To:     andrew@lunn.ch
 Cc:     ashkan.boldaji@digi.com, clang-built-linux@googlegroups.com,
@@ -46,65 +46,64 @@ Cc:     ashkan.boldaji@digi.com, clang-built-linux@googlegroups.com,
         linux-kernel@vger.kernel.org, lkp@intel.com, marek.behun@nic.cz,
         netdev@vger.kernel.org, pavana.sharma@digi.com, robh+dt@kernel.org,
         vivien.didelot@gmail.com
-Subject: [PATCH v11 0/4] Add support for mv88e6393x family of Marvell
-Date:   Wed,  9 Dec 2020 15:02:54 +1000
-Message-Id: <cover.1607488953.git.pavana.sharma@digi.com>
+Subject: [PATCH v11 1/4] dt-bindings: net: Add 5GBASER phy interface mode
+Date:   Wed,  9 Dec 2020 15:03:47 +1000
+Message-Id: <0537d23a6178c8507f3fda2ab8e0140b6117ef74.1607488953.git.pavana.sharma@digi.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201120015436.GC1804098@lunn.ch>
-References: <20201120015436.GC1804098@lunn.ch>
+In-Reply-To: <cover.1607488953.git.pavana.sharma@digi.com>
+References: <cover.1607488953.git.pavana.sharma@digi.com>
 Content-Type: text/plain
 X-Originating-IP: [203.111.5.166]
-X-ClientProxiedBy: SY3PR01CA0136.ausprd01.prod.outlook.com
- (2603:10c6:0:1b::21) To MN2PR10MB4174.namprd10.prod.outlook.com
- (2603:10b6:208:1dd::21)
+X-ClientProxiedBy: SYAPR01CA0003.ausprd01.prod.outlook.com (2603:10c6:1::15)
+ To MN2PR10MB4174.namprd10.prod.outlook.com (2603:10b6:208:1dd::21)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (203.111.5.166) by SY3PR01CA0136.ausprd01.prod.outlook.com (2603:10c6:0:1b::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12 via Frontend Transport; Wed, 9 Dec 2020 05:03:25 +0000
+Received: from localhost.localdomain (203.111.5.166) by SYAPR01CA0003.ausprd01.prod.outlook.com (2603:10c6:1::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3654.12 via Frontend Transport; Wed, 9 Dec 2020 05:04:05 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6b39a672-7454-467f-636e-08d89bffc59d
+X-MS-Office365-Filtering-Correlation-Id: 27e1fb9f-2f34-4a90-0fba-08d89bffdd3c
 X-MS-TrafficTypeDiagnostic: MN2PR10MB4336:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MN2PR10MB4336DD67AA4A4EF0B896695E95CC0@MN2PR10MB4336.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
+X-Microsoft-Antispam-PRVS: <MN2PR10MB433626C56F75D758EB50858C95CC0@MN2PR10MB4336.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:296;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WA0gsdCx9/51/ci4kxWCsqbEIXx6ZhxhXCRnJjPakZxlEVCIsI2atIfj9wlvtVUgd/dtjUVBx1ogzvpAVX9VRRhMY2bH8EJ/kGxt/8ch1DexAUZISwUjzTAADl8wRjVulGyh4CvAXW2TH7z1LzcxUxVL/JxSKVDmDu1TNqGInJPV68LxCeNQciXuqTsF/dSP6ycZdUY/e1aURddmHaXfatCCeEA8YsGq2KuHWrRboJ9bSkaLM3hd8e3U3DbHdQOc/YXzeqLsGU3LC43Cg6lbErDj3nGcOHIoNUjioszfuPBGxXPmJgPuBFTUJZ2A6A+tEN7eu+BZMmIw5Ri/i2wsNRSTeWfRYbIFNIG0akP+TDMBHE2zQIsNZJxAzrtAVcLKGpW55xlybfqEZICsOuzfwlzIgWdR0VI1jv3QQsWR1ws=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR10MB4174.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(346002)(136003)(376002)(4744005)(2906002)(34490700003)(66556008)(66946007)(8936002)(83380400001)(8676002)(6666004)(66476007)(5660300002)(508600001)(86362001)(186003)(52116002)(4326008)(36756003)(69590400008)(2616005)(6506007)(26005)(956004)(7416002)(44832011)(16526019)(6916009)(6486002)(6512007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?ei/1G9tpjIeRMP+qMMYNrKMi2JHo1vAedn1MXsC+98BW3K8pvwzruk7KI3F/?=
- =?us-ascii?Q?bfSwMfZ/GD35VEF3h0tWzFqP93pHDgQQ3Y5y9PUjojInpWKU5c2IMyqmNFZq?=
- =?us-ascii?Q?Mroh5NkRXvaOpHdBm6q0DW7zLwgfvbvt2C/66mDWKjNikTRpB9eeahVanMFf?=
- =?us-ascii?Q?z/yelZ47UKDJkLZ95HadnS65WyeC2QYWedULhNhpHqVvSDPAp4dspCR7mLNu?=
- =?us-ascii?Q?AJ2YBT0dNSPkoURcf53DyJ4VFLVtO8v1upx8f4KtE9vz7V7U4XL8KKYTYVwu?=
- =?us-ascii?Q?7CZg1yUS199v17T521O4r4rYj7tzHQpKoFJndF58sAdAi9nJsaddA7hq7ymw?=
- =?us-ascii?Q?sNDI6e92B1M8CyY6XCaMpsCGz588cS0Sj0V+iOgFxQw2gi98tzXlfRXUxj1n?=
- =?us-ascii?Q?R/HVGJsFUrffrTaWKboC2UonP/o7bc6BDvk2tmetztd9jEC/zzJMH5XeeMbS?=
- =?us-ascii?Q?Vgm6mPRaAIGHqyFADgy6/krNAl9kXZy03D2k0PuPURSy1S0hUl1J2Y1xoBtq?=
- =?us-ascii?Q?2KyymzoOn6meQqYdIE8pqXydkyyaK9DWkHrOdb2/D/a51DEYFrWGSRw7B/Gk?=
- =?us-ascii?Q?5ASkAGYA6pvdMRAONieAAMzUqcsj21p6UCOiQ7Y2fWSgGqQ0QtjwKBHXbu3Y?=
- =?us-ascii?Q?XFv7Srjrtdr3VoVFJXJihZx4w9loSPoytH0b1hZDqh0nYyk3MEI6kMiw+vu3?=
- =?us-ascii?Q?QGxktkgd7OKc5v6YxccncoPiOGTxFu62cNW7fkkD6O3XNdp3kW2LJTfqeDZB?=
- =?us-ascii?Q?pKHiYdBUhWWxhtX2lyAHwpAAsmkJG0mUQq2CsM5TzFOAMrepw15tBQFHyyLZ?=
- =?us-ascii?Q?QwL9w9eyqf9EFsweXl+8GHH5Jssby9sGBX8ElcDpv2tMEW15ILAYAX2ztvhg?=
- =?us-ascii?Q?ADVRKVdZDyibo4AhU8+OGKgnagLUhClOzbLgHEZ7qLoEJt3OoHdROijk2Phq?=
- =?us-ascii?Q?pLHL54nHMZiww1Ugi6jMoWwu0gt7VkoR7PNgMRufrMkp+Qg6FSGGXdlJ56ju?=
- =?us-ascii?Q?ae0N?=
+X-Microsoft-Antispam-Message-Info: gn8L3UwsviItd8wY83NP39FacYSWTA7x2x/Fqmip6eoRJ0X5vG8Tixw1vUQ5eiOXOE3PfSZYlkHo5fwuR63OzXIeDZURz439m918o+4HLG3p2ceIdQUqw3yUo9i1NAoNJJRsVR03hANE6vXM+LqhROJUZwWl3ESG8w9zD5xJJZ3ENDDq6BU3RYf7tWqClZuULumGiCu2geqsiGn/WUvodDMd6TRAxvjJtpKf5Hxj/+1i22S4p//bItp8dwdRvVh1Bs1NMjH51eGODtmqt96z/cTmaa3bWCctBqwFXYDL2ROWYMZZhhTmFRUuVI/gkH1yixB55nVnI0imPt0/5OzG/ZKv2wmFRB0bGPPxicseQYCFsDvBth6w3PCuzg3yWT3jK22gof4ygvqcHU5S3iXBB3KHPzxh6pVGGolk4Y85LnU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR10MB4174.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(346002)(136003)(376002)(4744005)(2906002)(34490700003)(66556008)(66946007)(8936002)(8676002)(6666004)(66476007)(5660300002)(508600001)(86362001)(186003)(52116002)(4326008)(36756003)(69590400008)(2616005)(6506007)(26005)(956004)(7416002)(44832011)(16526019)(6916009)(6486002)(6512007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?iGhS71eBHj6qltYCBskAF09ds9fHCUaR9OF/r55z11ZVv4qiqAijWIQfshhj?=
+ =?us-ascii?Q?UOlAMOER5jVbxKj4RS+X0IFzB1rABA5qJeXviVR39BPiH6mhDNe5QNMk+mDi?=
+ =?us-ascii?Q?nD1VkVfAkzJJwEofUPdE+zi0Q8QWc/vWdfIT5Kk0cjYiYuGKV7Aa0miyUQ0h?=
+ =?us-ascii?Q?jU5iX2YYjAvjOgFOhbn2BA3g7Rn230YI9WWnWPF8Ez9q0Q6W479/UstSfuc3?=
+ =?us-ascii?Q?SgyECnSCGsjA4ptOJ9P6Z5dlFi0FpXMqXlDiW6RIBSAVwlgfnC/8HaZnpsoN?=
+ =?us-ascii?Q?Rre6ckPc6nEoaep30rZREcCnms2e3vHT0zD/CCgVHrsQ6LVqG2MAmMuApAjF?=
+ =?us-ascii?Q?DYtiUmg9n3U3cHZ2ave8V4XR4or+9B5x4TO2HdwA03vHcgmj9ZFHP/mjfirC?=
+ =?us-ascii?Q?Pyl8huir1bOQUr0KEg/esxU3Rh26xi7AkfcgPGWLXIALlREIK9BV5kw8SLNo?=
+ =?us-ascii?Q?kihC6ed/2OEkS9n49FESC4RcKoIES72ogZ4y+f78/24+I9H71/zX/lAYg0aZ?=
+ =?us-ascii?Q?YL5RcU17DE2KXL2H/tYGd/UcABM9xDG02UAVAolJ/LJifQH1aYCcjgocZz3O?=
+ =?us-ascii?Q?in9NohX5eSXSF3OmvbonvId/JcDAqZF3lL828x40vr41isH/3/Tpke81WU03?=
+ =?us-ascii?Q?/sNYXgrwtJdkvjZsmBmJZMBy40TiCxFIdTzIvoABYX05HTccyfCx3oP3Bzub?=
+ =?us-ascii?Q?mmdEgL+Lt7xvs0jR2W8wmaKM3Wi1QhWKA6X6jZQN2AE5R4ITdBOOuUGkzDz5?=
+ =?us-ascii?Q?Rkk/eyEp2mBZNEPO0yUk+MS1axwfG9z3f6hgR6S5/TdTLYs3NYQjJZF7IqK1?=
+ =?us-ascii?Q?3NNZjbgkF8jwaX/Lv5GWZCQvztTUQnkE8E3SVdT6NoiEKNF7HJtmXrkWMM6D?=
+ =?us-ascii?Q?KgPJPFXfgFuDlIPvFnBhNeCP+7kPzS2NaATpKw83MeQoNRjUMorL8fraAg3X?=
+ =?us-ascii?Q?xjM4k6bkJsnC4kLaZeUngjLZ2Aof6HsitRNO84o9mmlMTfBdyT0i5w8LcGLH?=
+ =?us-ascii?Q?ZMIA?=
 X-OriginatorOrg: digi.com
 X-MS-Exchange-CrossTenant-AuthSource: MN2PR10MB4174.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Dec 2020 05:03:30.6580
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Dec 2020 05:04:10.3074
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: abb4cdb7-1b7e-483e-a143-7ebfd1184b9e
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6b39a672-7454-467f-636e-08d89bffc59d
+X-MS-Exchange-CrossTenant-Network-Message-Id: 27e1fb9f-2f34-4a90-0fba-08d89bffdd3c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XSx9/UKbnIMD+SgX81mbbMb03Fn4YxNQRTF//8OGqefmFAkMjFp25clEHlWUX7857VODMGUpSKpP7FYLdgbQ1w==
+X-MS-Exchange-CrossTenant-UserPrincipalName: oMi4swPIg6PGW9zKhVntEg/mZCGeUeIB+dFOlWH6lVGJ2CWuJIkKXjp6ORVl02VqenvZJThtPz2jAug5ZLqblQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB4336
-X-BESS-ID: 1607490211-893004-26535-28755-1
+X-BESS-ID: 1607490285-893005-3817-28891-1
 X-BESS-VER: 2019.1_20201208.2330
-X-BESS-Apparent-Source-IP: 104.47.58.173
+X-BESS-Apparent-Source-IP: 104.47.55.173
 X-BESS-Outbound-Spam-Score: 0.00
 X-BESS-Outbound-Spam-Report: Code version 3.2, rules version 3.2.2.228709 [from 
-        cloudscan21-38.us-east-2b.ess.aws.cudaops.com]
+        cloudscan12-219.us-east-2a.ess.aws.cudaops.com]
         Rule breakdown below
          pts rule name              description
         ---- ---------------------- --------------------------------
@@ -116,27 +115,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Updated patchset after incorporating feedback.
+Add 5gbase-r PHY interface mode.
 
-Pavana Sharma (4):
-  dt-bindings: net: Add 5GBASER phy interface mode
-  net: phy: Add 5GBASER interface mode
-  net: dsa: mv88e6xxx: Change serdes lane parameter type  from u8 type
-    to int
-  net: dsa: mv88e6xxx: Add support for mv88e6393x family of Marvell
+Signed-off-by: Pavana Sharma <pavana.sharma@digi.com>
+---
+ Documentation/devicetree/bindings/net/ethernet-controller.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
- .../bindings/net/ethernet-controller.yaml     |   2 +
- drivers/net/dsa/mv88e6xxx/chip.c              | 164 +++++++++-
- drivers/net/dsa/mv88e6xxx/chip.h              |  20 +-
- drivers/net/dsa/mv88e6xxx/global1.h           |   2 +
- drivers/net/dsa/mv88e6xxx/global2.h           |   8 +
- drivers/net/dsa/mv88e6xxx/port.c              | 238 +++++++++++++-
- drivers/net/dsa/mv88e6xxx/port.h              |  43 ++-
- drivers/net/dsa/mv88e6xxx/serdes.c            | 299 +++++++++++++++---
- drivers/net/dsa/mv88e6xxx/serdes.h            |  93 ++++--
- include/linux/phy.h                           |   5 +
- 10 files changed, 783 insertions(+), 91 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+index fdf709817218..aa6ae7851de9 100644
+--- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
++++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+@@ -89,6 +89,8 @@ properties:
+       - trgmii
+       - 1000base-x
+       - 2500base-x
++      # 5GBASE-R
++      - 5gbase-r
+       - rxaui
+       - xaui
+ 
 -- 
 2.17.1
 
