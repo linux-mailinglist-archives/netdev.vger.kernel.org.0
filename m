@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 643742D42C2
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 14:11:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE9842D42AC
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 14:05:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732089AbgLINF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 08:05:58 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:14921 "EHLO
+        id S1732073AbgLINFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 08:05:41 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:33548 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732010AbgLINFl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 08:05:41 -0500
+        with ESMTP id S1732022AbgLINFh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 08:05:37 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1607519140; x=1639055140;
+  t=1607519137; x=1639055137;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=2gtmPImZJqTqAOcYnnKg5lBBYuivMfmwZUbTvhVYNjo=;
-  b=tCfcW0pteTcBYK4Duy7ME1BB0l8ZPRV0Tfa25slHwAwJdbf3EMSEh8wG
-   DMeVSnPrf8hsiEr+Przk2oF4SMbCkv9vG3cgGPb1utGdziMYrJgqz06ze
-   0sRKSQWhsBr+faYus1dSZ1mSChTDMwXQk5kk3DCFMgbcTuOIbqCrZAUpM
-   KPhBW9mp6IrB5yHGoZUfoqWwNyGiqZmPzYu+TS49ZilWcVZHgZ5/JqYq6
-   4GpiONiD+HgnVJ6T48L8syB3E/jArdQRlb3R+aPUNNzL9ritAuU7GwYCp
-   Ue1Eynu3cY/87OeYy3/eNFOk4wZcu/JPJni2l1iyfLHRKgOidZOcSL0bg
-   w==;
-IronPort-SDR: vFiTbQfk6J4iqVIOgnonrgxCYXxmuQVOL8Za41LC9NtBkiTZHXjCPRDE9B8H4SRPXOCreQHHVm
- BQ+0It/ump/RY8XjC028FQkuWbOF8EGKyoCu4pevo7Q3+l+XcV2VMqQBrt0BXmZGzKR+CC1H1B
- tE9syZqKNIQRPKdgz7bHbNK88Y/imOUDnUy+UH8TGuKpDMfg48m5x06nhxe0yjfamwpktEWrck
- z0/0+1guZwFSvyw8TvtDwjMrBU1jTPdXUMj43KXPapSdJKEIDfF6xASy/Cq5ac3gHs+nB+5iNg
- VI8=
+  bh=DUxcKkP9tne2ZEad42EnpND5G9jdrOj1iXVeTt57jG8=;
+  b=mmF/+rNc95drpj6imE+Y2aXXi+fU4GUgdJENa0FG1V6t2M7VlrRz5aPp
+   MurvVfhTfR1duBGg7YAU/WI/58qyXVyMSqH/iZkF9Zkgytfq1HqcqsJqc
+   gMdM8yIC526qSCf3vfQVbhzCTPmJGawwLMOXGgnlNNw7cU2M/9d5vJGz0
+   3KjleGmuM959QEmWEHu2ptLfFl3o1QbB8qw5xNSCvHaJN5sQtmJM5OX3g
+   V0xY4dZtbXHU9jfNUrRmV+86VazDURnuagXnNi967Ocin5GpFg6eQlesh
+   msiZeP9TZ6HQ+rcAlBpWuV0i3TeZSaO+XBdBUpHGnVk7L7CDxwdAtQMMy
+   g==;
+IronPort-SDR: WnhyyC67VAqaMCBDpwz2vNsmDbtjfzkkqnGtk85N3D9h3jDYItoQ7C4Nnupdn/1sNsgHXOc+kL
+ +ZhyWyra5UpPa/Q1iDXyyg0beKqDen8eBpbzgHrIYCQ92sFgThhCzmk6bxR5Wyode6wTY7TsSI
+ AwxWeIEMBCK2AQq9QpTPJ/5SWq8yun4cV7tOWkm78T9TksbTZPRf0k2Ewy37Q5GjEs4TK4zeEA
+ x+mgpY8Hs9oQMUoDITxKmCbfiVzsBvOCEX4PJPeWv5f8It7MbfLzf9POufURyhRXrgd9TNs3XN
+ q+k=
 X-IronPort-AV: E=Sophos;i="5.78,405,1599548400"; 
-   d="scan'208";a="36780711"
+   d="scan'208";a="106862448"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Dec 2020 06:04:10 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Dec 2020 06:04:17 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 9 Dec 2020 06:04:10 -0700
+ 15.1.1979.3; Wed, 9 Dec 2020 06:04:16 -0700
 Received: from m18063-ThinkPad-T460p.microchip.com (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Wed, 9 Dec 2020 06:04:04 -0700
+ 15.1.1979.3 via Frontend Transport; Wed, 9 Dec 2020 06:04:11 -0700
 From:   Claudiu Beznea <claudiu.beznea@microchip.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
         <nicolas.ferre@microchip.com>, <linux@armlinux.org.uk>,
@@ -50,9 +50,9 @@ CC:     <yash.shah@sifive.com>, <netdev@vger.kernel.org>,
         <linux-riscv@lists.infradead.org>,
         <clang-built-linux@googlegroups.com>,
         Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v3 4/8] net: macb: unprepare clocks in case of failure
-Date:   Wed, 9 Dec 2020 15:03:35 +0200
-Message-ID: <1607519019-19103-5-git-send-email-claudiu.beznea@microchip.com>
+Subject: [PATCH v3 5/8] dt-bindings: add documentation for sama7g5 ethernet interface
+Date:   Wed, 9 Dec 2020 15:03:36 +0200
+Message-ID: <1607519019-19103-6-git-send-email-claudiu.beznea@microchip.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1607519019-19103-1-git-send-email-claudiu.beznea@microchip.com>
 References: <1607519019-19103-1-git-send-email-claudiu.beznea@microchip.com>
@@ -62,62 +62,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unprepare clocks in case of any failure in fu540_c000_clk_init().
+Add documentation for SAMA7G5 ethernet interface.
 
-Fixes: c218ad559020 ("macb: Add support for SiFive FU540-C000")
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/ethernet/cadence/macb_main.c | 24 ++++++++++++++++++------
- 1 file changed, 18 insertions(+), 6 deletions(-)
+ Documentation/devicetree/bindings/net/macb.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 81704985a79b..11bf4f8d32e1 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -4420,8 +4420,10 @@ static int fu540_c000_clk_init(struct platform_device *pdev, struct clk **pclk,
- 		return err;
- 
- 	mgmt = devm_kzalloc(&pdev->dev, sizeof(*mgmt), GFP_KERNEL);
--	if (!mgmt)
--		return -ENOMEM;
-+	if (!mgmt) {
-+		err = -ENOMEM;
-+		goto err_disable_clks;
-+	}
- 
- 	init.name = "sifive-gemgxl-mgmt";
- 	init.ops = &fu540_c000_ops;
-@@ -4432,16 +4434,26 @@ static int fu540_c000_clk_init(struct platform_device *pdev, struct clk **pclk,
- 	mgmt->hw.init = &init;
- 
- 	*tx_clk = devm_clk_register(&pdev->dev, &mgmt->hw);
--	if (IS_ERR(*tx_clk))
--		return PTR_ERR(*tx_clk);
-+	if (IS_ERR(*tx_clk)) {
-+		err = PTR_ERR(*tx_clk);
-+		goto err_disable_clks;
-+	}
- 
- 	err = clk_prepare_enable(*tx_clk);
--	if (err)
-+	if (err) {
- 		dev_err(&pdev->dev, "failed to enable tx_clk (%u)\n", err);
--	else
-+		*tx_clk = NULL;
-+		goto err_disable_clks;
-+	} else {
- 		dev_info(&pdev->dev, "Registered clk switch '%s'\n", init.name);
-+	}
- 
- 	return 0;
-+
-+err_disable_clks:
-+	macb_clks_disable(*pclk, *hclk, *tx_clk, *rx_clk, *tsu_clk);
-+
-+	return err;
- }
- 
- static int fu540_c000_init(struct platform_device *pdev)
+diff --git a/Documentation/devicetree/bindings/net/macb.txt b/Documentation/devicetree/bindings/net/macb.txt
+index 0b61a90f1592..26543a4e15d5 100644
+--- a/Documentation/devicetree/bindings/net/macb.txt
++++ b/Documentation/devicetree/bindings/net/macb.txt
+@@ -16,6 +16,7 @@ Required properties:
+   Use "cdns,zynq-gem" Xilinx Zynq-7xxx SoC.
+   Use "cdns,zynqmp-gem" for Zynq Ultrascale+ MPSoC.
+   Use "sifive,fu540-c000-gem" for SiFive FU540-C000 SoC.
++  Use "microchip,sama7g5-emac" for Microchip SAMA7G5 ethernet interface.
+   Or the generic form: "cdns,emac".
+ - reg: Address and length of the register set for the device
+ 	For "sifive,fu540-c000-gem", second range is required to specify the
 -- 
 2.7.4
 
