@@ -2,119 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 951AC2D4C47
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 21:56:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A280C2D4C63
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 22:02:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387436AbgLIUz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 15:55:29 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:14453 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729804AbgLIUz1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 15:55:27 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5fd139970001>; Wed, 09 Dec 2020 12:54:47 -0800
-Received: from reg-r-vrt-018-180.nvidia.com (172.20.13.39) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3; Wed, 9 Dec 2020 20:54:42 +0000
-References: <cki.4066A31294.UNMQ21P718@redhat.com> <CABE0yyi9gS8nao0n1Dts_Og80R71h8PUkizy4rM9E9E3QbJwvA@mail.gmail.com> <CABE0yyj997uCwzHoob8q2Ckd2i5Pv1k+JDRbF3fnn11_R2XN1Q@mail.gmail.com> <20201209092052.19a39676@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com> <CANn89iL8akG+u6sq4r7gxpWKMoDSKuCbgFvDPrrG+J85zC1KNg@mail.gmail.com> <CANn89iKcKATT902n6C1-Hi0ey0Ep20dD88nTTLLH9NNF6Pex5w@mail.gmail.com> <838391ff7ffa5dbfb79f30c6d31292c80415af18.camel@kernel.org> <CANn89iK+fU7LGH--JXx_FLxawr7rs1t-crLGtkbPAXsoiZMi8A@mail.gmail.com>
-User-agent: mu4e 1.4.12; emacs 26.2.90
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     Eric Dumazet <edumazet@google.com>
-CC:     Saeed Mahameed <saeed@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jianlin Shi <jishi@redhat.com>,
-        CKI Project <cki-project@redhat.com>,
-        netdev <netdev@vger.kernel.org>, <skt-results-master@redhat.com>,
-        Yi Zhang <yi.zhang@redhat.com>,
-        Memory Management <mm-qe@redhat.com>,
-        Jan Stancek <jstancek@redhat.com>,
-        Jianwen Ji <jiji@redhat.com>, Hangbin Liu <haliu@redhat.com>,
-        Ondrej Moris <omoris@redhat.com>,
-        Ondrej Mosnacek <omosnace@redhat.com>,
-        Changhui Zhong <czhong@redhat.com>,
-        Xiong Zhou <xzhou@redhat.com>,
-        Rachel Sibley <rasibley@redhat.com>,
-        David Arcari <darcari@redhat.com>
-Subject: Re: =?utf-8?Q?=E2=9D=8C?= FAIL: Test report for kernel 5.10.0-rc6
- (mainline.kernel.org)
-In-Reply-To: <CANn89iK+fU7LGH--JXx_FLxawr7rs1t-crLGtkbPAXsoiZMi8A@mail.gmail.com>
-Date:   Wed, 9 Dec 2020 22:54:40 +0200
-Message-ID: <ygnhsg8ek8dr.fsf@nvidia.com>
+        id S1728070AbgLIVBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 16:01:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40732 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726558AbgLIVBw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 16:01:52 -0500
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 885E2C061793
+        for <netdev@vger.kernel.org>; Wed,  9 Dec 2020 13:01:12 -0800 (PST)
+Received: by mail-qt1-x843.google.com with SMTP id y15so2051161qtv.5
+        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 13:01:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ExCyT+SCyEhlsRTDkdqpqOCI/2LqGwYMywiKe/9st7A=;
+        b=NurNnQGxxSkfZQjGs80r0MdCe57Y8YszlEuoc2elRd+DXWUpnANMlVzzuNTwPH+FN+
+         zrqk3CEFeTymZ/WhIRsmc63GudmjGSnyxwYmWSoC7rKyY2wzMZjlz/CVmZBX/VJJMIz3
+         +V7G4VxJctuBUoEtBaHlhidY8aE2WRrnpXG+GwJRVVqPfdFowfLmuJm1T6YkWhhmQCVx
+         7ZZCzoKpifkSTMUHpgTPNtkx7asho6Ik5kc1O3GeQRJUvA7miROIB2zSIeCZSCS+pDTA
+         hyyaBCcccsB9P998NCm428ljTqSZ0zroaXp50HK7VLiXfGKPXTaFmUK1acRBz1R7/fq3
+         Jw7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ExCyT+SCyEhlsRTDkdqpqOCI/2LqGwYMywiKe/9st7A=;
+        b=q2g5AAdQf54dSURNkBITuWnQhe3dMj4bN06501lsegIzrRiYo//ewNsjczJ8D2VYoJ
+         iXGPoYPdJse9K3VsxCPKfdvp7WD9/T3JWcPsttddNJo3NE4gkmcNh1zEGpRPwM+06NUB
+         PK/OZwLVC4BO/Hn2k6nKK2YP86HCdg4Yw7d049aP59qDAQKfkmuebLaFbfGAdGyoM4Py
+         qiozc1ID55tppiaPNEimLLhIUhVbpi6koDAiNCBqde+tRdVOBXCTVmjdsfK4PEwRLT+Q
+         GBA4fR0QCg3S9q3R6F+0qtGvgzozGQfeLjE7zGHZXL4KuBT4R6u/uvgKCt31ryWRAIVZ
+         +Cqg==
+X-Gm-Message-State: AOAM530Y+fad/VkWat5mKsStVYMcxF8eJHtK/xaD+N3vUZmZj3TVxhiB
+        nYP8eaUS7jVwKSSNyDLaFlbMVw==
+X-Google-Smtp-Source: ABdhPJyXjhK+L8ctOi5c31cd5zlhIMw/LoMHFxPJanVLeUpnUks4dOAQNYla3t3nAPX+6am0z/Nk+g==
+X-Received: by 2002:aed:2ba5:: with SMTP id e34mr5353832qtd.146.1607547671626;
+        Wed, 09 Dec 2020 13:01:11 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-115-133.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.115.133])
+        by smtp.gmail.com with ESMTPSA id y9sm1914394qtm.96.2020.12.09.13.01.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Dec 2020 13:01:10 -0800 (PST)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1kn6aD-008OUf-U6; Wed, 09 Dec 2020 17:01:09 -0400
+Date:   Wed, 9 Dec 2020 17:01:09 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Leon Romanovsky <leon@kernel.org>, Zou Wei <zou_wei@huawei.com>,
+        saeedm@nvidia.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH -next] net/mlx5_core: remove unused including
+ <generated/utsrelease.h>
+Message-ID: <20201209210109.GX5487@ziepe.ca>
+References: <1607343240-39155-1-git-send-email-zou_wei@huawei.com>
+ <20201208112226.1bb31229@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+ <20201209062100.GK4430@unreal>
+ <20201209090446.7daadd13@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.20.13.39]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1607547287; bh=mE9KAPYArifMWST5mxBKcbC+LI/egUE1GlqKJdGdC+4=;
-        h=References:User-agent:From:To:CC:Subject:In-Reply-To:Date:
-         Message-ID:MIME-Version:Content-Type:X-Originating-IP:
-         X-ClientProxiedBy;
-        b=QKzYEujc4Vh7J/AMwpce9x3n0Sid28rJ22SWBL0mGvPrjXkgyWpFVUVqw5GuoaRwc
-         CNkiu0I9IjJ+/NRCHks8nKg8WF/egYv+CpjIa07ht3nH3ucMZjHWOcsjF0PAtuhxtp
-         14bhwtOerIOOIEm8FPEMfyb5U6vdPt5USyufPtQRRe2skpBsTCZtOfidMnwtO8Vflp
-         Q1uX0LLSRB+UvsZ0lQsq1KWoYZFOgDHbGQwrxCX4wcm73RHFXJnGTVLwDcKF1bItys
-         YHD96/z0EpKGoNX1beWQcNgHHNfW+watqe6VTbX3NYvz080CJl9ToGEGMoYDmTnPZe
-         EtBFEVa/9QlbA==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201209090446.7daadd13@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed 09 Dec 2020 at 20:50, Eric Dumazet <edumazet@google.com> wrote:
-> On Wed, Dec 9, 2020 at 7:34 PM Saeed Mahameed <saeed@kernel.org> wrote:
->>
->> On Wed, 2020-12-09 at 19:05 +0100, Eric Dumazet wrote:
->> > On Wed, Dec 9, 2020 at 6:35 PM Eric Dumazet <edumazet@google.com>
->> > wrote:
->> > > Hmm... maybe the ECN stuff has always been buggy then, and nobody
->> > > cared...
->> > >
->> >
->> > Wait a minute, maybe this part was not needed,
->> >
->> > diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
->> > index
->> > 8ae9ce2014a4a3ba7b962a209e28d1f65d4a83bd..896a7eb61d70340f69b9d3be0f7
->> > 95fbaab1458dd
->> > 100644
->> > --- a/drivers/net/geneve.c
->> > +++ b/drivers/net/geneve.c
->> > @@ -270,7 +270,7 @@ static void geneve_rx(struct geneve_dev *geneve,
->> > struct geneve_sock *gs,
->> >                         goto rx_error;
->> >                 break;
->> >         default:
->> > -               goto rx_error;
->> > +               break;
->> >         }
->> >         oiph = skb_network_header(skb);
->> >         skb_reset_network_header(skb);
->> >
->> >
->> > > On Wed, Dec 9, 2020 at 6:20 PM Jakub Kicinski <kuba@kernel.org>
->> > > wrote:
->> > > > Eric, could this possibly be commit 4179b00c04d1 ("geneve: pull
->> > > > IP
->> > > > header before ECN decapsulation")?
->> > > >
->>
->> We've bisected an issue in our CI to this patch, something about geneve
->> TC offload traffic not passing, I don't have all the details, Maybe
->> Vlad can chime in.
->>
->
-> Yes, I think the patch I sent should fix this, ETH_P_ARP should not be
-> dropped ;)
->
-> I am testing this before offical patch submission.
->
-> Thanks !
+On Wed, Dec 09, 2020 at 09:04:46AM -0800, Jakub Kicinski wrote:
+> On Wed, 9 Dec 2020 08:21:00 +0200 Leon Romanovsky wrote:
+> > On Tue, Dec 08, 2020 at 11:22:26AM -0800, Jakub Kicinski wrote:
+> > > On Mon, 7 Dec 2020 20:14:00 +0800 Zou Wei wrote:  
+> > > > Remove including <generated/utsrelease.h> that don't need it.
+> > > >
+> > > > Signed-off-by: Zou Wei <zou_wei@huawei.com>
+> > > >  drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 1 -
+> > > >  1 file changed, 1 deletion(-)
+> > > >
+> > > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+> > > > index 989c70c..82ecc161 100644
+> > > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+> > > > @@ -30,7 +30,6 @@
+> > > >   * SOFTWARE.
+> > > >   */
+> > > >
+> > > > -#include <generated/utsrelease.h>
+> > > >  #include <linux/mlx5/fs.h>
+> > > >  #include <net/switchdev.h>
+> > > >  #include <net/pkt_cls.h>  
+> > 
+> > Jakub,
+> > 
+> > You probably doesn't have latest net-next.
+> > 
+> > In the commit 17a7612b99e6 ("net/mlx5_core: Clean driver version and
+> > name"), I removed "strlcpy(drvinfo->version, UTS_RELEASE,
+> > sizeof(drvinfo->version));" line.
+> > 
+> > The patch is ok, but should have Fixes line.
+> > Fixes: 17a7612b99e6 ("net/mlx5_core: Clean driver version and name")
+> 
+> Hm. Pretty sure our build bot gets a fresh copy before testing. 
+> Must had been some timing issue, perhaps? Looks like the commit
+> came in with the auxbus merge.
 
-Hi Eric,
+mlx5-next is in linux-next independently so people will be sending
+fixes against stuff in linux-next before it hits net-next.
 
-Your patch fixed TC geneve tests for me, but some of more complex OVS
-tests are still failing. I'll try to provide details tomorrow.
-
-Regards,
-Vlad
-
+Jason
