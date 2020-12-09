@@ -2,140 +2,272 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 606442D3D30
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 09:19:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE9052D3D4C
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 09:26:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726855AbgLIIQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 03:16:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35306 "EHLO
+        id S1726621AbgLII0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 03:26:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725765AbgLIIQt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 03:16:49 -0500
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA58CC061793;
-        Wed,  9 Dec 2020 00:16:09 -0800 (PST)
-Received: by mail-pf1-x443.google.com with SMTP id w6so534291pfu.1;
-        Wed, 09 Dec 2020 00:16:09 -0800 (PST)
+        with ESMTP id S1726574AbgLII0J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 03:26:09 -0500
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65423C0613D6
+        for <netdev@vger.kernel.org>; Wed,  9 Dec 2020 00:25:28 -0800 (PST)
+Received: by mail-ej1-x643.google.com with SMTP id lt17so868917ejb.3
+        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 00:25:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fixlBjRW2kL0YWNC9K96DmtICObU9iPBUY8f82+kwnQ=;
-        b=TrReyXGijHi4qX1gffQA287sRLgrEyWVqW6+UeQsOJNt69VPFiKTjwJAOuJHL+XdPF
-         6OxxV/MAPyLN23bwoYNL6A4JVCRlo2oWv4RVfYrT2Ug3EZMslV00XwXeN8xyp1pDcMdM
-         UIyb9GBUSZYgqAGwukI82h7pPhkfr0xRlAaQ1cYUqHR0Ap3+SfAE+1wmbc2b+Fbf3bQv
-         GqhbxUzwTPx1D6zA6vOZcn0U2CqIlQ0ZHIZnWyxa3TGqQVzBydDyAh+vgriWOCMHfmJT
-         qHnDOmaeOkpewzL6bVp7yB53160hOewXhV94eaFBkbDDI+sZACXo825ckKZYKAKhP590
-         Go4Q==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vObXydUW0UVv6YJ6tKDX5OM1cYwJwAuJ0yJUA+AFQUY=;
+        b=HHipdgwlt3DObeEHboinNYqWVJczcegdmRMaVNWSO9ryVbP+v/jt4IsLW/QybAjabS
+         EKcNbcSUo126naO5lErTnNN3V6RzMr30jK+nNXpFr42eh7uFglPp0QA0bsmoI+fEiQnf
+         5GDZnvEFywwAJvaUo32Oy7+c6i6h5TpyAj07b4jk82YG1DNbthDROXBk5liuTgGVL+mo
+         PuPbVe9PphmKGy7e33YBptyFgANaTO3GqkwbOAvLBPbHYwIeHxojbfE8xMTHqI7xVHDE
+         vIVZYHGl6OgF1cdp2o8Mw2+B+5Sy+GQKPXdAH+m9V4MH0YiTV8czP6BwFwTjn6Bovrjz
+         pVIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=fixlBjRW2kL0YWNC9K96DmtICObU9iPBUY8f82+kwnQ=;
-        b=Ah6EyqZp/4BMSJ0oy2hcPEvBSxd98X2BM1IJyD+C4iE2BGaBd1dFZmeSTPiPkXaLe7
-         H1b95cOrTbOpHzyzbkMKvGy0XGzxLYtdFBUNngEehYXjamcGDMQ+/hkn0KMQ0AmaA667
-         wRKpeskYP12EgmJOvTEzcv3N2XLICLvNENi66iZUQpAJop0+P32fpz7PUkkajakQui57
-         Oqx9kfWsvT6us8KekazOQOaEEwiCtSiW77kGGrj0nmakAeKo4IybRVOfpk1DKe1Tk5S7
-         EOHomaRQf3yVbdomZ6g7a1gEfYQdsEaSfJo2g9SCJGGJDkHRY4lxgjnjGvk9wDrQXtZH
-         OiSA==
-X-Gm-Message-State: AOAM531xf4JZWC2qaN0i7SZBneQF3U4oJ/fUnzsy8ZHtb8IWIIRoKotf
-        F0Uk5oDwIdlP2gvUMp2YLLOzxbgAE04=
-X-Google-Smtp-Source: ABdhPJxLaN0OtY1x/XUZLanliKgvcwNVRf4J3ol/EVWF75A/NBasJvrUvm7AGWl5/yvT8U2Ol1TXPQ==
-X-Received: by 2002:a63:e94f:: with SMTP id q15mr951518pgj.401.1607501769313;
-        Wed, 09 Dec 2020 00:16:09 -0800 (PST)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:ac46:48a7:8096:18f5])
-        by smtp.gmail.com with ESMTPSA id f21sm1389206pgk.18.2020.12.09.00.16.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Dec 2020 00:16:08 -0800 (PST)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Martin Schiller <ms@dev.tdt.de>
-Cc:     Xie He <xie.he.0141@gmail.com>
-Subject: [PATCH net-next] net: x25: Fix handling of Restart Request and Restart Confirmation
-Date:   Wed,  9 Dec 2020 00:16:04 -0800
-Message-Id: <20201209081604.464084-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        bh=vObXydUW0UVv6YJ6tKDX5OM1cYwJwAuJ0yJUA+AFQUY=;
+        b=FYL2OZNpLR8zjUuTxyPy3XX5BjlvQypRiEcRdtxylI4RqqlsKtAH2NGk4E1rAFWhJn
+         9gnlEZxclPr+b8++HfzhSlCDnkadZjiJAyECtG+ExHh3mjHhXxOqqiaHPTFJ10LSjjo4
+         4GKHMZVPw27WwFF0AiAZg4YtjDbaDQ3EEB2/mKWW4stT/0Q/OO1/w6rdVcD7jwzbWCXM
+         3mrWVmFtA3+sm16sL+ydciQSNd1NOOV9RmRT1GenFytIvdqwgnyDcg3Y9kwpxCmsDEx7
+         4Jwonqi4JKstXgyXhqOLSfmGfk99oI5aP2QVdjQi5+zUGf2mDbkMvbo7lqwauSaUFSgT
+         AH0Q==
+X-Gm-Message-State: AOAM532Wk7Nvs7pKzOq4FKLMS3ZJqwCRsKIop02KPhCHDbzga0zE8PB2
+        RIia88VaODTjzovKzgvHQbQ=
+X-Google-Smtp-Source: ABdhPJzbzd0VZ1AKGVp3uHTOs/2w4ISoZPe6jhUwtFpSsjdnwWHUv8PvL3iS4yQEwVG8Rx3Y03LwGw==
+X-Received: by 2002:a17:907:9691:: with SMTP id hd17mr1074458ejc.306.1607502327107;
+        Wed, 09 Dec 2020 00:25:27 -0800 (PST)
+Received: from [132.68.43.153] ([132.68.43.153])
+        by smtp.gmail.com with ESMTPSA id da9sm825367edb.84.2020.12.09.00.25.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Dec 2020 00:25:26 -0800 (PST)
+Subject: Re: [PATCH v1 net-next 02/15] net: Introduce direct data placement
+ tcp offload
+To:     David Ahern <dsahern@gmail.com>,
+        Boris Pismenny <borisp@mellanox.com>, kuba@kernel.org,
+        davem@davemloft.net, saeedm@nvidia.com, hch@lst.de,
+        sagi@grimberg.me, axboe@fb.com, kbusch@kernel.org,
+        viro@zeniv.linux.org.uk, edumazet@google.com
+Cc:     boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
+        netdev@vger.kernel.org, benishay@nvidia.com, ogerlitz@nvidia.com,
+        yorayz@nvidia.com, Ben Ben-Ishay <benishay@mellanox.com>,
+        Or Gerlitz <ogerlitz@mellanox.com>,
+        Yoray Zack <yorayz@mellanox.com>
+References: <20201207210649.19194-1-borisp@mellanox.com>
+ <20201207210649.19194-3-borisp@mellanox.com>
+ <824e3bea-60d2-5a4d-e8ce-770d70f0ba37@gmail.com>
+From:   Boris Pismenny <borispismenny@gmail.com>
+Message-ID: <a5de567b-c07e-d21b-318a-5d2a9e38045c@gmail.com>
+Date:   Wed, 9 Dec 2020 10:25:24 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <824e3bea-60d2-5a4d-e8ce-770d70f0ba37@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1. When the x25 module gets loaded, layer 2 may already be running and
-connected. In this case, although we are in X25_LINK_STATE_0, we still
-need to handle the Restart Request received, rather than ignore it.
 
-2. When we are in X25_LINK_STATE_2, we have already sent a Restart Request
-and is waiting for the Restart Confirmation with t20timer. t20timer will
-restart itself repeatedly forever so it will always be there, as long as we
-are in State 2. So we don't need to check x25_t20timer_pending again.
+On 09/12/2020 2:57, David Ahern wrote:
+> On 12/7/20 2:06 PM, Boris Pismenny wrote:
+>> diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
+>> index 934de56644e7..fb35dcac03d2 100644
+>> --- a/include/linux/netdev_features.h
+>> +++ b/include/linux/netdev_features.h
+>> @@ -84,6 +84,7 @@ enum {
+>>  	NETIF_F_GRO_FRAGLIST_BIT,	/* Fraglist GRO */
+>>  
+>>  	NETIF_F_HW_MACSEC_BIT,		/* Offload MACsec operations */
+>> +	NETIF_F_HW_TCP_DDP_BIT,		/* TCP direct data placement offload */
+>>  
+>>  	/*
+>>  	 * Add your fresh new feature above and remember to update
+>> @@ -157,6 +158,7 @@ enum {
+>>  #define NETIF_F_GRO_FRAGLIST	__NETIF_F(GRO_FRAGLIST)
+>>  #define NETIF_F_GSO_FRAGLIST	__NETIF_F(GSO_FRAGLIST)
+>>  #define NETIF_F_HW_MACSEC	__NETIF_F(HW_MACSEC)
+>> +#define NETIF_F_HW_TCP_DDP	__NETIF_F(HW_TCP_DDP)
+> 
+> All of the DDP naming seems wrong to me. I realize the specific use case
+> is targeted payloads of a ULP, but it is still S/W handing H/W specific
+> buffers for a payload of a flow.
+> 
+> 
 
-Fixes: d023b2b9ccc2 ("net/x25: fix restart request/confirm handling")
-Cc: Martin Schiller <ms@dev.tdt.de>
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
----
- net/x25/x25_link.c | 25 +++++++++----------------
- 1 file changed, 9 insertions(+), 16 deletions(-)
+This is intended to be used strictly by ULPs. DDP is how such things were
+called in the past. It is more than zerocopy as explained before, so naming
+it zerocopy will be misleading at best. I can propose another name. How about:
+"Autonomous copy offload (ACO)" and "Autonomous crc offload (ACRC)"?
+This will indicate that it is independent of other offloads, i.e. autonomous,
+while also informing users of the functionality (copy/crc). Other names are
+welcome too.
 
-diff --git a/net/x25/x25_link.c b/net/x25/x25_link.c
-index f92073f3cb11..57a81100c5da 100644
---- a/net/x25/x25_link.c
-+++ b/net/x25/x25_link.c
-@@ -58,11 +58,6 @@ static inline void x25_stop_t20timer(struct x25_neigh *nb)
- 	del_timer(&nb->t20timer);
- }
- 
--static inline int x25_t20timer_pending(struct x25_neigh *nb)
--{
--	return timer_pending(&nb->t20timer);
--}
--
- /*
-  *	This handles all restart and diagnostic frames.
-  */
-@@ -70,17 +65,20 @@ void x25_link_control(struct sk_buff *skb, struct x25_neigh *nb,
- 		      unsigned short frametype)
- {
- 	struct sk_buff *skbn;
--	int confirm;
- 
- 	switch (frametype) {
- 	case X25_RESTART_REQUEST:
- 		switch (nb->state) {
-+		case X25_LINK_STATE_0:
-+			/* This can happen when the x25 module just gets loaded
-+			 * and doesn't know layer 2 has already connected
-+			 */
-+			nb->state = X25_LINK_STATE_3;
-+			x25_transmit_restart_confirmation(nb);
-+			break;
- 		case X25_LINK_STATE_2:
--			confirm = !x25_t20timer_pending(nb);
- 			x25_stop_t20timer(nb);
- 			nb->state = X25_LINK_STATE_3;
--			if (confirm)
--				x25_transmit_restart_confirmation(nb);
- 			break;
- 		case X25_LINK_STATE_3:
- 			/* clear existing virtual calls */
-@@ -94,13 +92,8 @@ void x25_link_control(struct sk_buff *skb, struct x25_neigh *nb,
- 	case X25_RESTART_CONFIRMATION:
- 		switch (nb->state) {
- 		case X25_LINK_STATE_2:
--			if (x25_t20timer_pending(nb)) {
--				x25_stop_t20timer(nb);
--				nb->state = X25_LINK_STATE_3;
--			} else {
--				x25_transmit_restart_request(nb);
--				x25_start_t20timer(nb);
--			}
-+			x25_stop_t20timer(nb);
-+			nb->state = X25_LINK_STATE_3;
- 			break;
- 		case X25_LINK_STATE_3:
- 			/* clear existing virtual calls */
--- 
-2.27.0
 
+>>   * @icsk_listen_portaddr_node	hash to the portaddr listener hashtable
+>>   * @icsk_ca_state:	   Congestion control state
+>>   * @icsk_retransmits:	   Number of unrecovered [RTO] timeouts
+>> @@ -94,6 +96,8 @@ struct inet_connection_sock {
+>>  	const struct tcp_ulp_ops  *icsk_ulp_ops;
+>>  	void __rcu		  *icsk_ulp_data;
+>>  	void (*icsk_clean_acked)(struct sock *sk, u32 acked_seq);
+>> +	const struct tcp_ddp_ulp_ops  *icsk_ulp_ddp_ops;
+>> +	void __rcu		  *icsk_ulp_ddp_data;
+>>  	struct hlist_node         icsk_listen_portaddr_node;
+>>  	unsigned int		  (*icsk_sync_mss)(struct sock *sk, u32 pmtu);
+>>  	__u8			  icsk_ca_state:5,
+>> diff --git a/include/net/tcp_ddp.h b/include/net/tcp_ddp.h
+>> new file mode 100644
+>> index 000000000000..df3264be4600
+>> --- /dev/null
+>> +++ b/include/net/tcp_ddp.h
+>> @@ -0,0 +1,129 @@
+>> +/* SPDX-License-Identifier: GPL-2.0
+>> + *
+>> + * tcp_ddp.h
+>> + *	Author:	Boris Pismenny <borisp@mellanox.com>
+>> + *	Copyright (C) 2020 Mellanox Technologies.
+>> + */
+>> +#ifndef _TCP_DDP_H
+>> +#define _TCP_DDP_H
+>> +
+>> +#include <linux/netdevice.h>
+>> +#include <net/inet_connection_sock.h>
+>> +#include <net/sock.h>
+>> +
+>> +/* limits returned by the offload driver, zero means don't care */
+>> +struct tcp_ddp_limits {
+>> +	int	 max_ddp_sgl_len;
+>> +};
+>> +
+>> +enum tcp_ddp_type {
+>> +	TCP_DDP_NVME = 1,
+>> +};
+>> +
+>> +/**
+>> + * struct tcp_ddp_config - Generic tcp ddp configuration: tcp ddp IO queue
+>> + * config implementations must use this as the first member.
+>> + * Add new instances of tcp_ddp_config below (nvme-tcp, etc.).
+>> + */
+>> +struct tcp_ddp_config {
+>> +	enum tcp_ddp_type    type;
+>> +	unsigned char        buf[];
+> 
+> you have this variable length buf, but it is not used (as far as I can
+> tell). But then ...
+> 
+> 
+
+True. This buf[] is here to indicate that users are expected to extend it with
+the ULP specific data as in nvme_tcp_config. We can remove it and leave a comment
+if you prefer that.
+
+>> +};
+>> +
+>> +/**
+>> + * struct nvme_tcp_ddp_config - nvme tcp ddp configuration for an IO queue
+>> + *
+>> + * @pfv:        pdu version (e.g., NVME_TCP_PFV_1_0)
+>> + * @cpda:       controller pdu data alignmend (dwords, 0's based)
+>> + * @dgst:       digest types enabled.
+>> + *              The netdev will offload crc if ddp_crc is supported.
+>> + * @queue_size: number of nvme-tcp IO queue elements
+>> + * @queue_id:   queue identifier
+>> + * @cpu_io:     cpu core running the IO thread for this queue
+>> + */
+>> +struct nvme_tcp_ddp_config {
+>> +	struct tcp_ddp_config   cfg;
+> 
+> ... how would you use it within another struct like this?
+> 
+
+You don't.
+
+>> +
+>> +	u16			pfv;
+>> +	u8			cpda;
+>> +	u8			dgst;
+>> +	int			queue_size;
+>> +	int			queue_id;
+>> +	int			io_cpu;
+>> +};
+>> +
+>> +/**
+>> + * struct tcp_ddp_io - tcp ddp configuration for an IO request.
+>> + *
+>> + * @command_id:  identifier on the wire associated with these buffers
+>> + * @nents:       number of entries in the sg_table
+>> + * @sg_table:    describing the buffers for this IO request
+>> + * @first_sgl:   first SGL in sg_table
+>> + */
+>> +struct tcp_ddp_io {
+>> +	u32			command_id;
+>> +	int			nents;
+>> +	struct sg_table		sg_table;
+>> +	struct scatterlist	first_sgl[SG_CHUNK_SIZE];
+>> +};
+>> +
+>> +/* struct tcp_ddp_dev_ops - operations used by an upper layer protocol to configure ddp offload
+>> + *
+>> + * @tcp_ddp_limits:    limit the number of scatter gather entries per IO.
+>> + *                     the device driver can use this to limit the resources allocated per queue.
+>> + * @tcp_ddp_sk_add:    add offload for the queue represennted by the socket+config pair.
+>> + *                     this function is used to configure either copy, crc or both offloads.
+>> + * @tcp_ddp_sk_del:    remove offload from the socket, and release any device related resources.
+>> + * @tcp_ddp_setup:     request copy offload for buffers associated with a command_id in tcp_ddp_io.
+>> + * @tcp_ddp_teardown:  release offload resources association between buffers and command_id in
+>> + *                     tcp_ddp_io.
+>> + * @tcp_ddp_resync:    respond to the driver's resync_request. Called only if resync is successful.
+>> + */
+>> +struct tcp_ddp_dev_ops {
+>> +	int (*tcp_ddp_limits)(struct net_device *netdev,
+>> +			      struct tcp_ddp_limits *limits);
+>> +	int (*tcp_ddp_sk_add)(struct net_device *netdev,
+>> +			      struct sock *sk,
+>> +			      struct tcp_ddp_config *config);
+>> +	void (*tcp_ddp_sk_del)(struct net_device *netdev,
+>> +			       struct sock *sk);
+>> +	int (*tcp_ddp_setup)(struct net_device *netdev,
+>> +			     struct sock *sk,
+>> +			     struct tcp_ddp_io *io);
+>> +	int (*tcp_ddp_teardown)(struct net_device *netdev,
+>> +				struct sock *sk,
+>> +				struct tcp_ddp_io *io,
+>> +				void *ddp_ctx);
+>> +	void (*tcp_ddp_resync)(struct net_device *netdev,
+>> +			       struct sock *sk, u32 seq);
+>> +};
+>> +
+>> +#define TCP_DDP_RESYNC_REQ (1 << 0)
+>> +
+>> +/**
+>> + * struct tcp_ddp_ulp_ops - Interface to register uppper layer Direct Data Placement (DDP) TCP offload
+>> + */
+>> +struct tcp_ddp_ulp_ops {
+>> +	/* NIC requests ulp to indicate if @seq is the start of a message */
+>> +	bool (*resync_request)(struct sock *sk, u32 seq, u32 flags);
+>> +	/* NIC driver informs the ulp that ddp teardown is done - used for async completions*/
+>> +	void (*ddp_teardown_done)(void *ddp_ctx);
+>> +};
+>> +
+>> +/**
+>> + * struct tcp_ddp_ctx - Generic tcp ddp context: device driver per queue contexts must
+>> + * use this as the first member.
+>> + */
+>> +struct tcp_ddp_ctx {
+>> +	enum tcp_ddp_type    type;
+>> +	unsigned char        buf[];
+> 
+> similar to my comment above, I did not see any uses of the buf element.
+> 
+
+Same idea, we will remove it an leave a comment.
