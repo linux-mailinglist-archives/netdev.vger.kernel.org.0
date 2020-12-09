@@ -2,73 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66FA82D3FF1
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 11:34:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEC082D4002
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 11:34:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729950AbgLIKbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 05:31:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56190 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729897AbgLIKbi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 05:31:38 -0500
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38397C0613D6;
-        Wed,  9 Dec 2020 02:30:58 -0800 (PST)
-Received: by mail-ed1-x541.google.com with SMTP id p22so958385edu.11;
-        Wed, 09 Dec 2020 02:30:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xZNCN85ThsCwBpsgS1T7+rkYAAc0SbaHgPNn3428lNA=;
-        b=HvZpPoZ1jiv2obIcol4yv9Cz6MvAXoAC2vUgXWUZlNwMqddZAmgJ/cU+3u+t2lFR1K
-         FwE1L6QNH0qshZfloUZ09O2o/EKg4igjVhT4+P3WR6u0bO103kw3XIpSF6/cGz7o0UE7
-         u/XlqZMVLQSGVDZYUBR/ceqhCCjxUMJPCBOV8Mmdna+qTAHCZii0h6jTClWpwmjPbd2g
-         smrnhndru4HjIZqkz1ESEXtKbben9B7logHbPWELtEMKZ1XIc7kFazwA/ZGh58YGY/8Z
-         Lp+2LraTXyIx+IlmLXJXyoXF4GWxv0RFfN0UcC0zeL4N6OSkdeLgfo/6H+yjYQ4ap7im
-         Qogg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xZNCN85ThsCwBpsgS1T7+rkYAAc0SbaHgPNn3428lNA=;
-        b=Fw/YrZMok6Yj8R5pBuIpGEa5ttNTieWFEyFL660YVVYqEJTZtE1CSScxVBT08A7Boo
-         LnsMPVsx/S3u1O41mfRDIsWq3Z56pM4uZ0R6MyCJ8fr1LjuTG2RuY5Wy/sERPDilFuIZ
-         YombSUBDttH8aW1hadY4KPeacdSeio+JUjCXZyNwJ3X3uJdL3VFLC7LuFCPYbUnX5bOC
-         H5ScL+M38fGfFbIAx2PR8XhHkDb1bIz0gckji0PxGskVC6GtCQZiQDncfkucv1ahpZGP
-         ISK3v9OR0BikVZZu4mmV9dbFOfBeKCC4W/+ycgJEPVn2fxrcjlX0CY4/yltEj7vfNM8G
-         gk7Q==
-X-Gm-Message-State: AOAM532wVib9xyO+NCWBAf5vYCC+xAji6nah3YYVIvTYZYGWk4FaUFZ3
-        ls+PL8NTTF6sRNWphPax8QI=
-X-Google-Smtp-Source: ABdhPJyE2qnopyFh2pGD0cv+oOqz2o83g/A6etvBO/k6+ogUGc65ozjueXdh5qNkO5p2SDDGW1vSIg==
-X-Received: by 2002:a50:e8c4:: with SMTP id l4mr1315459edn.337.1607509856904;
-        Wed, 09 Dec 2020 02:30:56 -0800 (PST)
-Received: from skbuf ([188.25.2.120])
-        by smtp.gmail.com with ESMTPSA id e3sm1074087ejq.96.2020.12.09.02.30.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Dec 2020 02:30:56 -0800 (PST)
-Date:   Wed, 9 Dec 2020 12:30:55 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Zheng Yongjun <zhengyongjun3@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com
-Subject: Re: [PATCH net-next] net: dsa: simplify the return
- rtl8366_vlan_prepare()
-Message-ID: <20201209103055.j5lpldjb3qyzvpjb@skbuf>
-References: <20201209092621.20523-1-zhengyongjun3@huawei.com>
+        id S1730106AbgLIKeE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 05:34:04 -0500
+Received: from mxout70.expurgate.net ([194.37.255.70]:60475 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729808AbgLIKdy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 05:33:54 -0500
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1kmwlI-00067x-O4; Wed, 09 Dec 2020 11:31:56 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1kmwlH-0003ys-NA; Wed, 09 Dec 2020 11:31:55 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 57816240041;
+        Wed,  9 Dec 2020 11:31:55 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id D2ACD240040;
+        Wed,  9 Dec 2020 11:31:54 +0100 (CET)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id 681CF20B8F;
+        Wed,  9 Dec 2020 11:31:54 +0100 (CET)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201209092621.20523-1-zhengyongjun3@huawei.com>
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 09 Dec 2020 11:31:54 +0100
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: x25: Fix handling of Restart Request and
+ Restart Confirmation
+Organization: TDT AG
+In-Reply-To: <7aed2f12bd42013e2d975280a3242136@dev.tdt.de>
+References: <20201209081604.464084-1-xie.he.0141@gmail.com>
+ <7aed2f12bd42013e2d975280a3242136@dev.tdt.de>
+Message-ID: <dde53213f7e297690e054d01d815957f@dev.tdt.de>
+X-Sender: ms@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.15
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+X-purgate-ID: 151534::1607509916-000037DC-45CBCAB8/0/0
+X-purgate-type: clean
+X-purgate: clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 09, 2020 at 05:26:21PM +0800, Zheng Yongjun wrote:
-> Simplify the return expression.
+On 2020-12-09 10:52, Martin Schiller wrote:
+> On 2020-12-09 09:16, Xie He wrote:
+>> 1. When the x25 module gets loaded, layer 2 may already be running and
+>> connected. In this case, although we are in X25_LINK_STATE_0, we still
+>> need to handle the Restart Request received, rather than ignore it.
 > 
-> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
-> ---
+> Hmm... I've never loaded the X.25 module after the interface is UP, but
+> in this case we really have to fix it.
+> 
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+This seems to be a regression caused by moving the Layer2 link handling
+into the lapb driver, which wasn't intended in my original patchset.
+
+I also have another patch on my todo list which aims orphan packet
+handling in the x25_receive_data() function. Maybe it is better to catch
+the whole thing there.
+
+>> 
+>> 2. When we are in X25_LINK_STATE_2, we have already sent a Restart 
+>> Request
+>> and is waiting for the Restart Confirmation with t20timer. t20timer 
+>> will
+>> restart itself repeatedly forever so it will always be there, as long 
+>> as we
+>> are in State 2. So we don't need to check x25_t20timer_pending again.
+> 
+> Yeah, you're right, we can actually leave that out.
+> 
+> Acked-by: Martin Schiller <ms@dev.tdt.de>
