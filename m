@@ -2,79 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A06152D4B4F
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 21:11:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 970112D4B67
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 21:17:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388098AbgLIUKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 15:10:34 -0500
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:37023 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730016AbgLIUKd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 15:10:33 -0500
-Received: by mail-ot1-f66.google.com with SMTP id o11so2652505ote.4;
-        Wed, 09 Dec 2020 12:10:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CnQIK7QLR9HIawmYxyGceI161sRy0+j+9gk2A0bDIrk=;
-        b=d4pdTNdXuiR1MTFwORavkR07ScgS+8jGt0Gs07xCdAeqU25kb0e/kg+gG1c+u6lAtY
-         FGuM1PFMP5c8YvtCR8CX5hZnu2UbcyRK7Vmk52SbFkIqbMCiaN+B/fMwb9DnBpipRzBg
-         DwndXPu4zl/zw4Sn56o0BJznTz7gYMEjaZeOzt6ysvzKCowli0fccflUoOtBECVhLYn1
-         lTXDz4UiurDvo1yFHHF1sC6X65z96tQe1DwYxE1Fc2avt8FVh1DhgNwp8gY1S/PSmug1
-         iBorl8GSp9vwNBJsYFcx4Z33lBnDUVZoh2/mbb3ikY5F+s1+ET7jLK8p3UmdJaJQMLLl
-         QHzg==
-X-Gm-Message-State: AOAM531F5qRDO9CusmYvM653F8TLDr0dT47PUFhVx4017mUuZGRQ0eGe
-        WxJLKZPqARBuBJm+ua9rvw==
-X-Google-Smtp-Source: ABdhPJzNnYvkdIKSeo62KHjX3cKdszP5u/d50c6QRfsYBIAge5xj1cbzPbbBYdbNxcg1ltnjrhXpNg==
-X-Received: by 2002:a9d:7490:: with SMTP id t16mr3236135otk.323.1607544592511;
-        Wed, 09 Dec 2020 12:09:52 -0800 (PST)
-Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id b82sm501669oif.49.2020.12.09.12.09.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Dec 2020 12:09:51 -0800 (PST)
-Received: (nullmailer pid 859544 invoked by uid 1000);
-        Wed, 09 Dec 2020 20:09:49 -0000
-Date:   Wed, 9 Dec 2020 14:09:49 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Christian Eggers <ceggers@arri.de>
-Cc:     Paul Barker <pbarker@konsulko.com>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Helmut Grohne <helmut.grohne@intenta.de>,
-        netdev@vger.kernel.org,
-        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        George McCollister <george.mccollister@gmail.com>
-Subject: Re: [PATCH net-next v5 2/9] dt-bindings: net: dsa: microchip,ksz:
- add interrupt property
-Message-ID: <20201209200949.GA859466@robh.at.kernel.org>
-References: <20201203102117.8995-1-ceggers@arri.de>
- <20201203102117.8995-3-ceggers@arri.de>
+        id S2388163AbgLIUPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 15:15:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33488 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388172AbgLIUP3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 15:15:29 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 170ECC061793;
+        Wed,  9 Dec 2020 12:14:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=vT2LeumRVmdZuBQd+zgEqW+31k7g/hZC7ygemlxuDL0=; b=lihKyoV1WlUFcBILw6J+5RQIuy
+        TufE3r2rCPt8d+abi7LhY0S7za+9g0+/YLvCtDRarEefff/JvK+Y1/qDce+IMNoas8VaMguapYHg4
+        ru1x/RryyBNvIRwySuz8MbQZKv4sahCtfI8RltY/Eca6pyjggYl+eTYqHVvwP+RlVeRPiDh7rQMQ4
+        s8DRx3Jn6jeGXWioGBx+JlYlJ8zr2jVGAV5E2X/IINOAe5BLveaTm8S0rbcyS6dAyeT6bWwB+I+nO
+        iu83kqwxe3TumEsAeSv//bIE6a6C/yXT/p9OoKIWYk9p5KxDKqDN4DooV8jNVogDrPAZPDCYyaam7
+        eaD78qGw==;
+Received: from [2601:1c0:6280:3f0::1494]
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kn5rI-0006d0-4l; Wed, 09 Dec 2020 20:14:44 +0000
+Subject: Re: linux-next: Tree for Dec 9 (ethernet/mellanox/mlx5)
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+References: <20201209214447.3bfdeb87@canb.auug.org.au>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <e5519ac6-1d25-632a-9b55-087d8ffaf386@infradead.org>
+Date:   Wed, 9 Dec 2020 12:14:39 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201203102117.8995-3-ceggers@arri.de>
+In-Reply-To: <20201209214447.3bfdeb87@canb.auug.org.au>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 03 Dec 2020 11:21:10 +0100, Christian Eggers wrote:
-> The devices have an optional interrupt line.
+On 12/9/20 2:44 AM, Stephen Rothwell wrote:
+> Hi all,
 > 
-> Signed-off-by: Christian Eggers <ceggers@arri.de>
-> ---
->  .../devicetree/bindings/net/dsa/microchip,ksz.yaml         | 7 +++++++
->  1 file changed, 7 insertions(+)
+> Changes since 20201208:
 > 
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+on i386:
+
+I see this warning:/note: repeated 106 times on i386 build:
+
+                 from ../drivers/net/ethernet/mellanox/mlx5/core/alloc.c:34:
+../include/vdso/bits.h:7:26: warning: left shift count >= width of type [-Wshift-count-overflow]
+ #define BIT(nr)   (UL(1) << (nr))
+                          ^
+../include/linux/mlx5/mlx5_ifc.h:10716:46: note: in expansion of macro ‘BIT’
+  MLX5_HCA_CAP_GENERAL_OBJECT_TYPES_SAMPLER = BIT(0x20),
+                                              ^~~
+
+
+
+-- 
+~Randy
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
