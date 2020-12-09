@@ -2,71 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 281662D4E89
-	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 00:11:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7A602D4E9B
+	for <lists+netdev@lfdr.de>; Thu, 10 Dec 2020 00:16:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731399AbgLIXKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 18:10:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49634 "EHLO mail.kernel.org"
+        id S2388219AbgLIXQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 18:16:11 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:47440 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727028AbgLIXKs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Dec 2020 18:10:48 -0500
-Content-Type: text/plain; charset="utf-8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607555407;
-        bh=K/cHG6023+3WwK66mfoV4u9AkpQC7K0csJlln6G9vmI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=egd2fqRCzEZVoQBIdCi0mI0DgsYIG/F08t6glBL6PSduvMfPU/mnIqh/V0Z6SWMJ4
-         gXmNhqoeSiVYhpP60eMBqIINtLhtU7+fFD4skEfWikJ+Upu0zTt7xSSkcgID77qToF
-         B7VxGZnEG4PW7tbu6lrjo6FHhvKzwN7coaqY4fXBRh9DomdLG8MvYvwsfi5T47wNlI
-         EahW7wShBk4A7+dcgEGWBpB7fnVtQYZo9jQVvpFPVD+AbpnbRpfdtMgU7KGndbkQKb
-         1/+LBAYnQdye/UWTWPxaurAky7izXtD2WwrTUVOiZ3QIr/auzbDS1dvCvS+GFkqd1Z
-         MYYA8G2iTbVWA==
+        id S1728403AbgLIXQK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Dec 2020 18:16:10 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kn8fw-00B8L0-3O; Thu, 10 Dec 2020 00:15:12 +0100
+Date:   Thu, 10 Dec 2020 00:15:12 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Pavana Sharma <pavana.sharma@digi.com>
+Cc:     ashkan.boldaji@digi.com, clang-built-linux@googlegroups.com,
+        davem@davemloft.net, devicetree@vger.kernel.org,
+        f.fainelli@gmail.com, gregkh@linuxfoundation.org,
+        kbuild-all@lists.01.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, lkp@intel.com, marek.behun@nic.cz,
+        netdev@vger.kernel.org, robh+dt@kernel.org,
+        vivien.didelot@gmail.com
+Subject: Re: [PATCH v11 1/4] dt-bindings: net: Add 5GBASER phy interface mode
+Message-ID: <20201209231512.GF2649111@lunn.ch>
+References: <cover.1607488953.git.pavana.sharma@digi.com>
+ <0537d23a6178c8507f3fda2ab8e0140b6117ef74.1607488953.git.pavana.sharma@digi.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 1/4] ptp: clockmatrix: reset device and check
- BOOT_STATUS
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160755540785.17038.1749466093772501878.git-patchwork-notify@kernel.org>
-Date:   Wed, 09 Dec 2020 23:10:07 +0000
-References: <1607442117-13661-1-git-send-email-min.li.xe@renesas.com>
-In-Reply-To: <1607442117-13661-1-git-send-email-min.li.xe@renesas.com>
-To:     <min.li.xe@renesas.com>
-Cc:     richardcochran@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0537d23a6178c8507f3fda2ab8e0140b6117ef74.1607488953.git.pavana.sharma@digi.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Tue, 8 Dec 2020 10:41:54 -0500 you wrote:
-> From: Min Li <min.li.xe@renesas.com>
+On Wed, Dec 09, 2020 at 03:03:47PM +1000, Pavana Sharma wrote:
+> Add 5gbase-r PHY interface mode.
 > 
-> SM_RESET device only when loading full configuration and check
-> for BOOT_STATUS. Also remove polling for write trigger done in
-> _idtcm_settime().
+> Signed-off-by: Pavana Sharma <pavana.sharma@digi.com>
+> ---
+>  Documentation/devicetree/bindings/net/ethernet-controller.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> Changes since v1:
-> -Correct warnings from strict checkpatch
-> 
-> [...]
+> diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> index fdf709817218..aa6ae7851de9 100644
+> --- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> +++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> @@ -89,6 +89,8 @@ properties:
+>        - trgmii
+>        - 1000base-x
+>        - 2500base-x
+> +      # 5GBASE-R
+> +      - 5gbase-r
+>        - rxaui
+>        - xaui
 
-Here is the summary with links:
-  - [net-next,1/4] ptp: clockmatrix: reset device and check BOOT_STATUS
-    https://git.kernel.org/netdev/net-next/c/251f4fe224d6
-  - [net-next,2/4] ptp: clockmatrix: remove 5 second delay before entering write phase mode
-    https://git.kernel.org/netdev/net-next/c/fa439059d828
-  - [net-next,3/4] ptp: clockmatrix: Fix non-zero phase_adj is lost after snap
-    https://git.kernel.org/netdev/net-next/c/7260d1c8fd86
-  - [net-next,4/4] ptp: clockmatrix: deprecate firmware older than 4.8.7
-    https://git.kernel.org/netdev/net-next/c/da9482332d58
+Hi Pavana
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+For v10 i said:
 
+> What value does the comment add?
 
+I don't remember you replying. Why is 5gbase-r special and it needs a
+comment, saying the same thing in CAPS LETTERS? What value is there in
+the CAPS LETTERS string?
+
+Thanks
+	Andrew
