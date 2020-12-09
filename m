@@ -2,113 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 126372D3814
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 02:07:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86E842D3817
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 02:09:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726267AbgLIBGq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 20:06:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54274 "EHLO
+        id S1726310AbgLIBIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 20:08:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726253AbgLIBGp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 20:06:45 -0500
-Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F2AEC0613D6
-        for <netdev@vger.kernel.org>; Tue,  8 Dec 2020 17:06:05 -0800 (PST)
-Received: by mail-oi1-x243.google.com with SMTP id d27so710001oic.0
-        for <netdev@vger.kernel.org>; Tue, 08 Dec 2020 17:06:05 -0800 (PST)
+        with ESMTP id S1725804AbgLIBIn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 20:08:43 -0500
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59732C0613CF;
+        Tue,  8 Dec 2020 17:08:03 -0800 (PST)
+Received: by mail-pf1-x444.google.com with SMTP id t8so356471pfg.8;
+        Tue, 08 Dec 2020 17:08:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=l8AQDCReSWYO7mGJNo1DnhG491pzv61j6dUQU/cFOe8=;
-        b=M64FGG+eRC1O2Tlg+MJPE5Ke58QKCfq5qXZA053nxDrcgrYnUUu62wiSA55dn1ceK/
-         WnrqY/D4aMjsGKjTXEuJRpfpyldvTipgNmSZdGg6BaxNCLcjD2IBPPWeNjuz8e3Zs3fV
-         /CxsLKl5WbDL6QWch2zWoC49ITvxcgWvfGpPsSswP7thCVzduUUHvvACHcBuB9FJJCdb
-         W9Es7VzatAiGBSch/N2LgWjzKsknfEOWBBgMPMj0It+38MXpE+susyLlJLzJmv/nRwLe
-         QwSw2rjoJKCDU85QEGyZ1RAzLzMNGug1rqEFYxWBWBf9sWhfCG6y08JpUhcSe6kUxPUh
-         nrUA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FVaaFvhma/LtEAgKTLdfxnHOJeqm88SA5H4iaroEpmA=;
+        b=pHv4Lz0bvbALDlTuzU3DzO1yRj45wGco2lMyBbQcVGGneEc4ltghcPwzhj4k57Qnsz
+         yUWDsqtAVbeUyWs5zUlsloiCsdz9QTwvCPRURsGGhq1qoelXXARmcEWIrtc4pLMKx+zY
+         g4gqHg6D9173SsOYDA+EPkiuv65RTXZYurNxpMyb+dKdNoqCTyIQXOGbQ9EGwXamY8Sv
+         Oc0jNISmPDN+3dfJbhy5S4Maz/YNNxDVfh1gTxE+hz4p3b+R0GdTpWx82Eupg8oDSeze
+         hRJ+K0JyMCORbYoG0qW/0htHNH7OCowGTCRnizbLWCXirZwUqpi7N6qAJKy0ajWL+0iI
+         YuSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=l8AQDCReSWYO7mGJNo1DnhG491pzv61j6dUQU/cFOe8=;
-        b=QH2FLlvrgZAW1ThzVkX9HgAoxVd+sC7ZsjHOKW/NbHPzEDEW6qquylVshmstqCQ4Er
-         xEYorcSvOMRw8ygMmilvLX465x91tX6tRtpRxmDN3P/iC5z4GQuzIQM4mmV0YzDJMIJN
-         GxadEVbEfJq3K8Cz+DY+NyFLTOOBZCB8wHctZfpht3glVUgixaMz0Oj3NYNQs8VUhWA3
-         h9vmOoQJIlp8/Epv0Qo9v5NKCnAsrBvCrGfyfQKDAc7jU2xpDqT/EbJTRg7h+/ePTPsP
-         CQQ5fEqwPxfqXtlnbIY7r3oodoiCeds5pAz4B2E8wHLjDbrbHuOVxuAp3heTHQbI+mz/
-         ptWQ==
-X-Gm-Message-State: AOAM530vDer1zlLh3LMxvVkxNLH/yLUDsWaIv66MZ8m1CFUG9lN7/Ld/
-        K7SKrJ7Jqa/xKmy59bDGqFE=
-X-Google-Smtp-Source: ABdhPJz1/hcIshzh1zSLKvSeT9W/cjpORYGMBgCrgYLiqTLae6n3p/fmlXuu6/5sxkiCAPOasVrH5g==
-X-Received: by 2002:aca:bc03:: with SMTP id m3mr118783oif.106.1607475965086;
-        Tue, 08 Dec 2020 17:06:05 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:64fc:adeb:84f9:fa62])
-        by smtp.googlemail.com with ESMTPSA id u15sm3693oiv.28.2020.12.08.17.06.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Dec 2020 17:06:04 -0800 (PST)
-Subject: Re: [PATCH v1 net-next 04/15] net/tls: expose get_netdev_for_sock
-To:     Boris Pismenny <borisp@mellanox.com>, kuba@kernel.org,
-        davem@davemloft.net, saeedm@nvidia.com, hch@lst.de,
-        sagi@grimberg.me, axboe@fb.com, kbusch@kernel.org,
-        viro@zeniv.linux.org.uk, edumazet@google.com
-Cc:     boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
-        netdev@vger.kernel.org, benishay@nvidia.com, ogerlitz@nvidia.com,
-        yorayz@nvidia.com
-References: <20201207210649.19194-1-borisp@mellanox.com>
- <20201207210649.19194-5-borisp@mellanox.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <f38e30af-f4c0-9adc-259a-5e54214e16b1@gmail.com>
-Date:   Tue, 8 Dec 2020 18:06:02 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.5.1
+        bh=FVaaFvhma/LtEAgKTLdfxnHOJeqm88SA5H4iaroEpmA=;
+        b=EZisswWcozkpsHYtVl0aS8e47MXZmDtioO5GKGXnAmnnmHeB2vngBtjtfUY2HE/hK1
+         tJtQkCY8ocW3ien3Hx+4a35gAcbABy5QPPZ2gekAGSdf0lk5UrdolH1udQqXxiqN+hpn
+         w4vSwo9PcYda7Mr/eP9WwzhoScP8Lm5JG5DO3oEI2abwipbG209910/KfqE2F2xcN6le
+         1GmSt8yF/FBEmrrmvjVj1hT04kIbI9jGBgqqu0h7uL0Y2TNt6Bs36vliKrj1IM2qBREv
+         ZiAlp0OZmoP3BQ0OjFCZ4BCT+RS1Dd6GC801v7HPKh80mN8vjSid1LADXG9AeZRB/I9R
+         3oSA==
+X-Gm-Message-State: AOAM530bItwcwmS8+7V7lR/tHjNtlyLVSgkBB4ZJSZvPBPWMq0kHJHde
+        TxpbZZUBrDBVwhCbpvJlPlQ=
+X-Google-Smtp-Source: ABdhPJwCQd+avrsd3DtcFKdSpMlr/Nc+tBhs6yqerolExTUh+1sp/IE4LFM4FXI3mibasPl6pVmdoQ==
+X-Received: by 2002:a17:90b:1c0d:: with SMTP id oc13mr209715pjb.113.1607476082915;
+        Tue, 08 Dec 2020 17:08:02 -0800 (PST)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:ac46:48a7:8096:18f5])
+        by smtp.gmail.com with ESMTPSA id az19sm112702pjb.24.2020.12.08.17.08.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Dec 2020 17:08:02 -0800 (PST)
+From:   Xie He <xie.he.0141@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Martin Schiller <ms@dev.tdt.de>
+Cc:     Xie He <xie.he.0141@gmail.com>
+Subject: [PATCH net-next] net: hdlc_x25: Remove unnecessary skb_reset_network_header calls
+Date:   Tue,  8 Dec 2020 17:07:58 -0800
+Message-Id: <20201209010758.3408-1-xie.he.0141@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-In-Reply-To: <20201207210649.19194-5-borisp@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/7/20 2:06 PM, Boris Pismenny wrote:
-> get_netdev_for_sock is a utility that is used to obtain
-> the net_device structure from a connected socket.
-> 
-> Later patches will use this for nvme-tcp DDP and DDP CRC offloads.
-> 
-> Signed-off-by: Boris Pismenny <borisp@mellanox.com>
-> Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
-> ---
->  include/net/sock.h   | 17 +++++++++++++++++
->  net/tls/tls_device.c | 20 ++------------------
->  2 files changed, 19 insertions(+), 18 deletions(-)
-> 
-> diff --git a/include/net/sock.h b/include/net/sock.h
-> index 093b51719c69..a8f7393ea433 100644
-> --- a/include/net/sock.h
-> +++ b/include/net/sock.h
-> @@ -2711,4 +2711,21 @@ void sock_set_sndtimeo(struct sock *sk, s64 secs);
->  
->  int sock_bind_add(struct sock *sk, struct sockaddr *addr, int addr_len);
->  
-> +/* Assume that the socket is already connected */
-> +static inline struct net_device *get_netdev_for_sock(struct sock *sk, bool hold)
-> +{
-> +	struct dst_entry *dst = sk_dst_get(sk);
-> +	struct net_device *netdev = NULL;
-> +
-> +	if (likely(dst)) {
-> +		netdev = dst->dev;
+1. In x25_xmit, skb_reset_network_header is not necessary before we call
+lapb_data_request. The lapb module doesn't need skb->network_header.
+So there is no need to set skb->network_header before calling
+lapb_data_request.
 
-I noticed you grab this once when the offload is configured. The dst
-device could change - e.g., ECMP, routing changes. I'm guessing that
-does not matter much for the use case - you are really wanting to
-configure queues and zc buffers for a flow with the device; the netdev
-is an easy gateway to get to it.
+2. In x25_data_indication (called by the lapb module after it has
+processed the skb), skb_reset_network_header is not necessary before we
+call netif_rx. After we call netif_rx, the code in net/core/dev.c will
+call skb_reset_network_header before handing the skb to upper layers
+(in __netif_receive_skb_core, called by __netif_receive_skb_one_core,
+called by __netif_receive_skb, called by process_backlog). So we don't
+need to call skb_reset_network_header by ourselves.
 
-But, data center deployments tend to have redundant access points --
-either multipath for L3 or bond for L2. For the latter, this offload
-setup won't work - dst->dev will be the bond, the bond does not support
-the offload, so user is out of luck.
+Cc: Martin Schiller <ms@dev.tdt.de>
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
+---
+ drivers/net/wan/hdlc_x25.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/net/wan/hdlc_x25.c b/drivers/net/wan/hdlc_x25.c
+index f52b9fed0593..bb164805804e 100644
+--- a/drivers/net/wan/hdlc_x25.c
++++ b/drivers/net/wan/hdlc_x25.c
+@@ -77,7 +77,6 @@ static int x25_data_indication(struct net_device *dev, struct sk_buff *skb)
+ 	}
+ 
+ 	skb_push(skb, 1);
+-	skb_reset_network_header(skb);
+ 
+ 	ptr  = skb->data;
+ 	*ptr = X25_IFACE_DATA;
+@@ -118,7 +117,6 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	switch (skb->data[0]) {
+ 	case X25_IFACE_DATA:	/* Data to be transmitted */
+ 		skb_pull(skb, 1);
+-		skb_reset_network_header(skb);
+ 		if ((result = lapb_data_request(dev, skb)) != LAPB_OK)
+ 			dev_kfree_skb(skb);
+ 		return NETDEV_TX_OK;
+-- 
+2.27.0
+
