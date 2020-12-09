@@ -2,70 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7061A2D487C
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 19:02:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D15192D4889
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 19:05:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728358AbgLISBo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 13:01:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41028 "EHLO
+        id S1728341AbgLISDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 13:03:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727905AbgLISBo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 13:01:44 -0500
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5590C0613CF
-        for <netdev@vger.kernel.org>; Wed,  9 Dec 2020 10:01:03 -0800 (PST)
-Received: by mail-pj1-x1041.google.com with SMTP id fh13so1306009pjb.0
-        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 10:01:03 -0800 (PST)
+        with ESMTP id S1726894AbgLISDe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 13:03:34 -0500
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1727C0613CF
+        for <netdev@vger.kernel.org>; Wed,  9 Dec 2020 10:02:53 -0800 (PST)
+Received: by mail-pg1-x541.google.com with SMTP id w4so1639145pgg.13
+        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 10:02:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=subject:to:references:from:message-id:date:user-agent:mime-version
          :in-reply-to:content-transfer-encoding:content-language;
-        bh=np6y/90WZ0jov8mQi+nBfEvz1hgvvktXYNQalTN2VOA=;
-        b=z2OaNa0ZCJay85YKUnmgykcwdwgU529ig8NEhpJl4gi8tTJYO22Wv1PX4faCZqxRFm
-         ngS8OCYbEwNHWyaazGl3Vx27plBCYWXFHVCg6tQHYUlFoCXd47gzgmV9bNDhg1Wbsf2t
-         xxWfidLgAibRrDl8Pizvru/KHa93taeyVsmQY2INyTAF02jKertWJnw6EuWVd+Usxzvc
-         5BFbhJfDDmLWTiVH8u7/MNLzujS7euBb2VqD3blTlMPpeZpCGZhAXsnECcA5mTM5rCat
-         AJWsGZJe9LKYBnKdMzkXMSVr2ObpKuSwC+rhYyvDNy6WmmPPbWjSp7e/S2pP339Uaopj
-         73Ww==
+        bh=I5oqeXJGYWCS5I3GZe6iJ/uI1nEaQDlo5ahKfTZrQxU=;
+        b=ms+3ifkmomxZx1fpbh86I6gUljxcDqH4op4xQnVmPOGRdBABYpnJHE71gP4zzXmWpV
+         Fgzn2va8jJ1GzuN0+OdfNGAR8iN/Fh5T9Ed+Ra4UZ+GLfSS0NhtTUbIo8FAKZ4xTw2Xg
+         JRFSg71R6MaQzdtJduz5oOH71cp+80kTBM8f+0sMlV+BUK8wkIiz0yfL1WZZIBX9W1+b
+         ryLb9HasoVdN9Gjit8SHzhx91hlQiE83VAJCyEAa5xHmrfS/L1MjecExmVnBpZdUDJox
+         vqCfPWnMFSqPbrmn4XNglGWfK3oQrGHhfzLEZVrLMvNo43D1C4ZPxp4O9npOiV+lBB6X
+         F2kg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-transfer-encoding
          :content-language;
-        bh=np6y/90WZ0jov8mQi+nBfEvz1hgvvktXYNQalTN2VOA=;
-        b=P5lo9RHL/9hclckXIYbxZYhuxAoPQmrh/AftZ+LfHxGFbsF7rnBAqaxnoyirWRW/8W
-         RAE8vSdufbQhBRw+j+yVP57jpH3r9oW8LIuJAY18Wi9XJPZL3eHoA0Z56FI5qnBtmRyG
-         GPGqds5T+v3WwnNq4p1tFkS/0IpLCIMZ3+3kejbsMkmbMzQqhXG4+cLvHFgkywmsHKgz
-         vdm1HzLGpVVq42yTPzF72i0fs6/tGKjRO0JOg2ljsfupuLNwi7/B6sNdI3XFOmCiMCVL
-         cuDO4NXxqYRvEjiV8uTA8cTkS83w+RcDpi4NtnVOMaZgctW2ZCXjm4rtDvi39hA3Tx53
-         km0w==
-X-Gm-Message-State: AOAM532+QLCgdIHLM7PI2fFdAKT0aeZ8uk6eb9NdFW7satSXLPLJItSV
-        lsD6Kz2EhgMezJ/2qNzttOBaBg==
-X-Google-Smtp-Source: ABdhPJzhG8+Gjb+Rl8ulzdWuzOtn6Rg5AAbTLhU/msat9UkjDbjuN9Ma1kT0DktaZoaLkcOWqxkzGA==
-X-Received: by 2002:a17:902:aa8b:b029:da:ef22:8675 with SMTP id d11-20020a170902aa8bb02900daef228675mr3228705plr.15.1607536863321;
-        Wed, 09 Dec 2020 10:01:03 -0800 (PST)
+        bh=I5oqeXJGYWCS5I3GZe6iJ/uI1nEaQDlo5ahKfTZrQxU=;
+        b=eHWt0teQZSkXpXnhEq+c0O5g53HJCTb2ycrcUU+5MfwjFKLmHcwmZ8vNVapg3dKBIX
+         azZXjWrFzwwd6qxzVY1RGcpfEiILY5VNnJhNwyokq0tazVg2fhsVauDQ1Hxr/UHa1vuZ
+         kNBmhzWH8v6gC1a7Co1xPxHCuMQ703F34mD9s5nVRGZnPQ9oI+0aqHT6MFX8FMA47Y7e
+         JbZacN8Idh0Q1raRrs9+VttclPPZVwBa81LNp4ylwQk3gIhpIepb7oQ4rtvuE/sU3yge
+         PwzxugFkWQ2OcFk+1EMNABG6JwugZTIvBLlRW+Hnt3zbzjBImpDJgHcB3RnDF0GtriFq
+         fr9g==
+X-Gm-Message-State: AOAM533A8GZSxmjrnSmVm1yXgaLYKYwUSBU60N0zanANAY/DC3iQRuYy
+        VW1vTtUGgJ6iG7W7Mlm+Z81itw==
+X-Google-Smtp-Source: ABdhPJyf4Tn1LStsnEmaPHRB0sKLv3Qnx9Fnmj0BviaeIBMIziONtZJpbHF8B7x8Rc2N+LuERQFZpA==
+X-Received: by 2002:a63:4509:: with SMTP id s9mr2950777pga.316.1607536973606;
+        Wed, 09 Dec 2020 10:02:53 -0800 (PST)
 Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id 14sm2806685pjm.21.2020.12.09.10.01.01
+        by smtp.gmail.com with ESMTPSA id g5sm3193868pfr.87.2020.12.09.10.02.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Dec 2020 10:01:02 -0800 (PST)
-Subject: Re: [PATCH 1/1] fix possible array overflow on receiving too many
- fragments for a packet
-To:     Xiaohui Zhang <ruc_zhangxiaohui@163.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Pensando Drivers <drivers@pensando.io>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20201208040638.40627-1-ruc_zhangxiaohui@163.com>
+        Wed, 09 Dec 2020 10:02:52 -0800 (PST)
+Subject: Re: [PATCH net-next] drivers: net: ionic: simplify the return
+ expression of ionic_set_rxfh()
+To:     Zheng Yongjun <zhengyongjun3@huawei.com>, drivers@pensando.io,
+        davem@davemloft.net, kuba@kernel.org, leon@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20201208135353.11708-1-zhengyongjun3@huawei.com>
 From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <fcf79346-5463-b736-c109-44db76eec1c9@pensando.io>
-Date:   Wed, 9 Dec 2020 10:01:00 -0800
+Message-ID: <9275ad90-ee7e-6e23-6a33-bb0f7a2e2eeb@pensando.io>
+Date:   Wed, 9 Dec 2020 10:02:51 -0800
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.4.1
 MIME-Version: 1.0
-In-Reply-To: <20201208040638.40627-1-ruc_zhangxiaohui@163.com>
+In-Reply-To: <20201208135353.11708-1-zhengyongjun3@huawei.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Language: en-US
@@ -73,82 +68,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/7/20 8:06 PM, Xiaohui Zhang wrote:
-> From: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
+On 12/8/20 5:53 AM, Zheng Yongjun wrote:
+> Simplify the return expression.
 >
-> If the hardware receives an oversized packet with too many rx fragments,
-> skb_shinfo(skb)->frags can overflow and corrupt memory of adjacent pages.
-> This becomes especially visible if it corrupts the freelist pointer of
-> a slab page.
-> I found these two code fragments were very similar to the vulnerable code
-> in CVE-2020-12465, so I submitted these two patches.
->
-> Signed-off-by: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
+> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+
+Acked-by: Shannon Nelson <snelson@pensando.io>
+
 > ---
->   drivers/net/ethernet/intel/ice/ice_txrx.c        | 4 +++-
->   drivers/net/ethernet/pensando/ionic/ionic_txrx.c | 4 +++-
->   2 files changed, 6 insertions(+), 2 deletions(-)
+>   drivers/net/ethernet/pensando/ionic/ionic_ethtool.c | 7 +------
+>   1 file changed, 1 insertion(+), 6 deletions(-)
 >
-> diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
-> index eae75260f..f0a252208 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_txrx.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
-> @@ -821,9 +821,11 @@ ice_add_rx_frag(struct ice_ring *rx_ring, struct ice_rx_buf *rx_buf,
->   	unsigned int truesize = ice_rx_pg_size(rx_ring) / 2;
->   #endif
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+> index 35c72d4a78b3..0832bedcb3b4 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+> @@ -738,16 +738,11 @@ static int ionic_set_rxfh(struct net_device *netdev, const u32 *indir,
+>   			  const u8 *key, const u8 hfunc)
+>   {
+>   	struct ionic_lif *lif = netdev_priv(netdev);
+> -	int err;
 >   
-> +	struct skb_shared_info *shinfo = skb_shinfo(skb);
-
-This declaration should be up directly below the #endif and a blank line 
-inserted before the code.
-
->   	if (!size)
->   		return;
-> -	skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags, rx_buf->page,
-> +	if (shinfo->nr_frags < ARRAY_SIZE(shinfo->frags))
-> +		skb_add_rx_frag(skb, shinfo, rx_buf->page,
->   			rx_buf->page_offset, size, truesize);
+>   	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP)
+>   		return -EOPNOTSUPP;
 >   
->   	/* page is being used so we must update the page offset */
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-> index 169ac4f54..d30e83a4b 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-> @@ -74,6 +74,7 @@ static struct sk_buff *ionic_rx_frags(struct ionic_queue *q,
->   	struct device *dev = q->lif->ionic->dev;
->   	struct ionic_page_info *page_info;
->   	struct sk_buff *skb;
-> +	struct skb_shared_info *shinfo = skb_shinfo(skb);
-
-As the kernel test robot has suggested, this is using an uninitialized 
-skb and will likely cause great unhappiness.
-
-Also, this needs to follow the "reverse xmas tree" formatting style for 
-declarations.
-
-
->   	unsigned int i;
->   	u16 frag_len;
->   	u16 len;
-> @@ -102,7 +103,8 @@ static struct sk_buff *ionic_rx_frags(struct ionic_queue *q,
+> -	err = ionic_lif_rss_config(lif, lif->rss_types, key, indir);
+> -	if (err)
+> -		return err;
+> -
+> -	return 0;
+> +	return ionic_lif_rss_config(lif, lif->rss_types, key, indir);
+>   }
 >   
->   		dma_unmap_page(dev, dma_unmap_addr(page_info, dma_addr),
->   			       PAGE_SIZE, DMA_FROM_DEVICE);
-> -		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
-> +		if (shinfo->nr_frags < ARRAY_SIZE(shinfo->frags))
-> +			skb_add_rx_frag(skb, shinfo->nr_frags,
->   				page_info->page, 0, frag_len, PAGE_SIZE);
-
-I'm still not convinced this is necessary here, and I'm still not 
-thrilled with the result of just quietly dropping the fragments.
-
-A better answer here might be to check the ARRAY_SIZE against 
-comp->num_sg_elements before allocating the skb, and if too big, then 
-return NULL - this gets the check done before any allocations are made, 
-and the packet will be properly dropped and the drop statistic incremented.
-
-sln
-
->   		page_info->page = NULL;
->   		page_info++;
+>   static int ionic_set_tunable(struct net_device *dev,
 
