@@ -2,71 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7E972D3836
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 02:22:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3241D2D383F
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 02:23:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726031AbgLIBU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 20:20:26 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:9398 "EHLO
-        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725816AbgLIBU0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 20:20:26 -0500
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CrK2S1PMZz7BZQ;
-        Wed,  9 Dec 2020 09:19:12 +0800 (CST)
-Received: from ubuntu.network (10.175.138.68) by
- DGGEMS412-HUB.china.huawei.com (10.3.19.212) with Microsoft SMTP Server id
- 14.3.487.0; Wed, 9 Dec 2020 09:19:34 +0800
-From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-rdma@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Zheng Yongjun <zhengyongjun3@huawei.com>
-Subject: [PATCH v2 net-next] net/mlx4: simplify the return expression of mlx4_init_cq_table()
-Date:   Wed, 9 Dec 2020 09:20:02 +0800
-Message-ID: <20201209012002.18766-1-zhengyongjun3@huawei.com>
-X-Mailer: git-send-email 2.22.0
+        id S1726119AbgLIBXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 20:23:06 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:45458 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725768AbgLIBXF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Dec 2020 20:23:05 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kmoBO-00Ax9n-B8; Wed, 09 Dec 2020 02:22:18 +0100
+Date:   Wed, 9 Dec 2020 02:22:18 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Sven Van Asbroeck <thesven73@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        David S Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net v1 2/2] lan743x: boost performance: limit PCIe
+ bandwidth requirement
+Message-ID: <20201209012218.GN2475764@lunn.ch>
+References: <20201206034408.31492-1-TheSven73@gmail.com>
+ <20201206034408.31492-2-TheSven73@gmail.com>
+ <20201208114314.743ee6ec@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+ <CAGngYiVSHRGC+eOCeF3Kyj_wOVqxJHvoc9fXRk-w+sVRjeSpcw@mail.gmail.com>
+ <20201208225125.GA2602479@lunn.ch>
+ <CAGngYiVp2u-A07rrkbeJCbqPW9efjkJUNC+NBxrtCM2JtXGpVA@mail.gmail.com>
+ <3aed88da-8e82-3bd0-6822-d30f1bd5ec9e@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.138.68]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3aed88da-8e82-3bd0-6822-d30f1bd5ec9e@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Simplify the return expression.
+> dma_sync_single_for_{cpu,device} is what you would need in order to make
+> a partial cache line invalidation. You would still need to unmap the
+> same address+length pair that was used for the initial mapping otherwise
+> the DMA-API debugging will rightfully complain.
 
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
----
- drivers/net/ethernet/mellanox/mlx4/cq.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+But often you don't unmap it, you call dma_sync_single_for_device and
+put it back into the ring.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/cq.c b/drivers/net/ethernet/mellanox/mlx4/cq.c
-index 3b8576b9c2f9..f7053a74e6a8 100644
---- a/drivers/net/ethernet/mellanox/mlx4/cq.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/cq.c
-@@ -462,19 +462,14 @@ EXPORT_SYMBOL_GPL(mlx4_cq_free);
- int mlx4_init_cq_table(struct mlx4_dev *dev)
- {
- 	struct mlx4_cq_table *cq_table = &mlx4_priv(dev)->cq_table;
--	int err;
- 
- 	spin_lock_init(&cq_table->lock);
- 	INIT_RADIX_TREE(&cq_table->tree, GFP_ATOMIC);
- 	if (mlx4_is_slave(dev))
- 		return 0;
- 
--	err = mlx4_bitmap_init(&cq_table->bitmap, dev->caps.num_cqs,
--			       dev->caps.num_cqs - 1, dev->caps.reserved_cqs, 0);
--	if (err)
--		return err;
--
--	return 0;
-+	return mlx4_bitmap_init(&cq_table->bitmap, dev->caps.num_cqs,
-+				dev->caps.num_cqs - 1, dev->caps.reserved_cqs, 0);
- }
- 
- void mlx4_cleanup_cq_table(struct mlx4_dev *dev)
--- 
-2.22.0
-
+    Andrew
