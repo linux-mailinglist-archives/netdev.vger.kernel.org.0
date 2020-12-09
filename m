@@ -2,86 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98CCF2D3E61
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 10:20:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D31492D3E60
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 10:20:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728723AbgLIJST (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 04:18:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44742 "EHLO
+        id S1728680AbgLIJSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 04:18:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726044AbgLIJSP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 04:18:15 -0500
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33917C0617A6;
-        Wed,  9 Dec 2020 01:17:35 -0800 (PST)
-Received: by mail-pj1-x1043.google.com with SMTP id f14so540804pju.4;
-        Wed, 09 Dec 2020 01:17:35 -0800 (PST)
+        with ESMTP id S1726044AbgLIJSH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 04:18:07 -0500
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D523C06179C
+        for <netdev@vger.kernel.org>; Wed,  9 Dec 2020 01:17:26 -0800 (PST)
+Received: by mail-ed1-x544.google.com with SMTP id u19so760003edx.2
+        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 01:17:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=i2g8fi2sxo+IYXz2d5FDftsnAsDKdKjxlec5gNvekGY=;
-        b=V6/jPHRRgiTymHfuMZyb/AiGMPLMq+CJU0v27LXBnECGFfDkcLWpUWzuJXZptEj92B
-         kLleVEeTmpKMCxuM8yxikC5Eb6kxkos7EbpTdLM/aMHiWnydV1WdV3H9pj2LdkMNY5Ma
-         OhwXxVniM2lO1tXypIYpCRMTpX7L2uan0DOdds81TrHybMVcOePo1PmZ42e3zjiDM2Oq
-         cNjinS5DydvEKhlN03NSvTQ4qFMLilhKTMyuRsjSPY2CvhWqiX5qfOl72dVtMBNpmknx
-         CK19ZEaD7LOaGhSoPouHVLzwmbEBJYCrFXA8VXeNfU7dbWsoxEYxYIA+zEFa5DC5LF+Z
-         HzOQ==
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=O5Au1r0JB92szpdfLXxfIJFgMxDBXlqcxXRXrgoKoak=;
+        b=LHiFjkNf2LX5FmBlqC4A0AEcn1a8wD3Re1RlRv9R1Dcbv7Y4Adrg21CkCZ2nbTVFum
+         wqwiBxHn3mLU19+eHT94sryXWVhvcA4aEQtHfSV2OSzktxf8anqFj+yoK6ZHEhEopS9g
+         WgKbkbG58DojupKZJbozCVTJkmwVYdS8sIX7fiXavf1yF57apzd0SbtYJSk0m4kUNkcH
+         pq/l2lr7CEQip4Pl1JTiIKu/EZ9b1Wyw52l9WDztny44fi7IP8Wdl96ZHU8ln7xkS63O
+         FYPcZ3QPnU2t/EHNc32RSsKrDse2wjP9fT8tqWE2AMBV/IVwgBbmbq3hB5L/S9vffTq1
+         JQVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=i2g8fi2sxo+IYXz2d5FDftsnAsDKdKjxlec5gNvekGY=;
-        b=IyCLI5q779av7zWaEe4IX8obSWm5FHpClYHEfPSixWHLxMGh9s1lR6gTGORgTNMNPp
-         w97eJM0Qwf67HGod8m/LFN3WHGNKtbJTuQ6G5Ekx0QrV1AB7eg+QurazYSEQKP4LwlK8
-         XGEMwt7+GskHPf0czzG/SgaA4g458NuqzlAVKixvCF6gRYdZbjDo8r5IQpnRJA+zYvqN
-         qOz7PeMZtdsBgCSAjX5tOcpiGvLnvFFzZTgKF5ltaeFtwx62atep8Mge3KQmQ1GBdp9/
-         5QwpBh/8o9sSyG/8asDxbYgHb8aPVrqpiz+EZEL/0cBVCXVbso+6kzvGtH2JerdIoDGJ
-         MHtQ==
-X-Gm-Message-State: AOAM5309bp7roXWpNzXhB98iFcsnpu048twjivyvDM55kINC63ZMpyQN
-        QqlhMk8kzIzepReU37Wu+jTCwW+TJJFof+nD6Bk=
-X-Google-Smtp-Source: ABdhPJydnttj2HP+zryV972A1lZBqSE8aPXL4ogf/X4ErYcEWyz7giGIZGF0j9NUg92kj7u4adoUYYJFL22VLxjqDcQ=
-X-Received: by 2002:a17:90a:6ac5:: with SMTP id b5mr1380925pjm.210.1607505454793;
- Wed, 09 Dec 2020 01:17:34 -0800 (PST)
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=O5Au1r0JB92szpdfLXxfIJFgMxDBXlqcxXRXrgoKoak=;
+        b=rXUqrUMlEaepGtI69iXqUhOR3gfbpYthWvtfeYcKoxk5ot5kxEk125xD/NbR9VlZOU
+         k4mr9k4Xf4Ca2SUBjpdWQkLcUBDR/pBl1Ymjxx2xu1mYnmkjKx30zpjUG8q4D/BvCkDq
+         xd6XZF8t+d7WM/LaOKS58w5KxZRj4RTVHGvRdgWj3af3WfNzzb1nLLdM91UwT50kLqUg
+         uMPorCaiXqYsRzH+7t/ef1dX3bkZnzNoAWC6myvFbOibY7A+KBbVGjA2t5cUQsUyH4wN
+         Oe+r6Xt9vDtT62kMJQMNcIn5KhmuePZ3wxYLblY8rZgEtvgqkXkTS7Zr2tMcPFCBT0up
+         AhJg==
+X-Gm-Message-State: AOAM532TFhLjZE05hKTsrcR4W13vbzoshRsz0Fog1jqFlSOeLY0t+qAd
+        KuGsVsTbOBsWk4fmPt7SWoomf61nqcSxGSnEYB0=
+X-Google-Smtp-Source: ABdhPJz5dDiQrJUHv2mwuxG6G4FCNZS5wIHOzFot+T9uFZTNc6YDunkA2D54Dt2p93FGsS6sfUUOVaUiBs0rp96Y7cw=
+X-Received: by 2002:a05:6402:a45:: with SMTP id bt5mr1136398edb.130.1607505445250;
+ Wed, 09 Dec 2020 01:17:25 -0800 (PST)
 MIME-Version: 1.0
-References: <20201126063557.1283-1-ms@dev.tdt.de> <20201126063557.1283-5-ms@dev.tdt.de>
- <CAJht_EMZqcPdE5n3Vp+jJa1sVk9+vbwd-Gbi8Xqy19bEdbNNuA@mail.gmail.com>
-In-Reply-To: <CAJht_EMZqcPdE5n3Vp+jJa1sVk9+vbwd-Gbi8Xqy19bEdbNNuA@mail.gmail.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Wed, 9 Dec 2020 01:17:23 -0800
-Message-ID: <CAJht_ENukJrnh6m8FLrHBwnKKyZpzk6uGWhS4_eUCyDzrCG3eA@mail.gmail.com>
-Subject: Re: [PATCH net-next v7 4/5] net/x25: fix restart request/confirm handling
-To:     Martin Schiller <ms@dev.tdt.de>
-Cc:     Andrew Hendry <andrew.hendry@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+Sender: brianphilippe60@gmail.com
+Received: by 2002:a17:906:bfc3:0:0:0:0 with HTTP; Wed, 9 Dec 2020 01:17:24
+ -0800 (PST)
+From:   Donna Louise <donnamcinneslouise@gmail.com>
+Date:   Tue, 8 Dec 2020 21:17:24 -1200
+X-Google-Sender-Auth: F3j0hjdq5QwcdFbNPQWDFKxJhw8
+Message-ID: <CAG_+5rxUEf6nvr0+nV4dwpd9-mkHV7wtT+Eb=mWqM+qk5JOp8g@mail.gmail.com>
+Subject: Hello,
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 9, 2020 at 1:01 AM Xie He <xie.he.0141@gmail.com> wrote:
->
-> On Wed, Nov 25, 2020 at 10:36 PM Martin Schiller <ms@dev.tdt.de> wrote:
-> >
-> >         switch (nb->state) {
-> >         case X25_LINK_STATE_0:
-> > -               nb->state = X25_LINK_STATE_2;
-> > -               break;
-> >         case X25_LINK_STATE_1:
-> >                 x25_transmit_restart_request(nb);
-> >                 nb->state = X25_LINK_STATE_2;
->
-> What is the reason for this change? Originally only the connecting
-> side will transmit a Restart Request; the connected side will not and
-> will only wait for the Restart Request to come. Now both sides will
-> transmit Restart Requests at the same time. I think we should better
-> avoid collision situations like this.
+Hello My Dear,
 
-Oh. I see. Because in other patches we are giving L2 the ability to
-connect by itself, both sides can now appear here to be the
-"connected" side. So we can't make the "connected" side wait as we did
-before.
+ I am sending the same message to you. My names are Mrs. Donna Louise
+McInnes, a widow diagnosed with brain tumor disease which has gotten
+to a very bad stage, Please I want you to understand the most
+important reason why I am contacting you through this medium is
+because I need your sincerity and ability to carry out this
+transaction and fulfill my final wish in implementing the charitable
+investment project in your country as it requires absolute trust and
+devotion without any failure, which i believe that you will not expose
+this to anyone or betray this trust and confident that I am about to
+entrust on you for the mutual benefit of the orphans and the less
+privileges ones. I have some funds I inherited from my late husband,
+the sum of ($ 11,000,000.00) deposited with the Bank. Having known my
+present health condition, I decided to entrust this fund to you
+believing that you will utilize it the way i am going to instruct
+herein.
+It will be my pleasure to compensate you as my Investment
+Manager/Partner with 35% percent of the total money for your effort in
+handling the transaction, 5% percent for any expenses or processing
+charges fee that will involve during this process while 60% of the
+fund will be Invested into the charity project there in your country.
+Therefore I am waiting for your prompt respond, if only you are
+interested in this humanitarian project for further details of the
+transaction and execution of this charitable project for the glory and
+honor of God the merciful compassionate. Your urgent reply will be
+appreciated.
+
+God bless you.
+Sincerely Sister in Christ Mrs. Donna Louise McInnes.
