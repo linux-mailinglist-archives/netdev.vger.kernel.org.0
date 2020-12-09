@@ -2,22 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE97C2D462F
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 16:59:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3A0A2D45AE
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 16:45:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732372AbgLIP5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 10:57:40 -0500
-Received: from david.siemens.de ([192.35.17.14]:58483 "EHLO david.siemens.de"
+        id S1730557AbgLIPnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 10:43:15 -0500
+Received: from thoth.sbs.de ([192.35.17.2]:55305 "EHLO thoth.sbs.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730402AbgLIP5g (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Dec 2020 10:57:36 -0500
+        id S1726110AbgLIPnO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Dec 2020 10:43:14 -0500
+X-Greylist: delayed 3797 seconds by postgrey-1.27 at vger.kernel.org; Wed, 09 Dec 2020 10:43:13 EST
 Received: from mail1.siemens.de (mail1.siemens.de [139.23.33.14])
-        by david.siemens.de (8.15.2/8.15.2) with ESMTPS id 0B9EbMbS007438
+        by thoth.sbs.de (8.15.2/8.15.2) with ESMTPS id 0B9EbPmO022112
         (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 9 Dec 2020 15:37:22 +0100
+        Wed, 9 Dec 2020 15:37:25 +0100
 Received: from tsnlaptop.atstm41.nbgm.siemens.de ([144.145.220.34])
-        by mail1.siemens.de (8.15.2/8.15.2) with ESMTP id 0B9EbGp0002581;
-        Wed, 9 Dec 2020 15:37:16 +0100
+        by mail1.siemens.de (8.15.2/8.15.2) with ESMTP id 0B9EbGp1002581;
+        Wed, 9 Dec 2020 15:37:22 +0100
 From:   Erez Geva <erez.geva.ext@siemens.com>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arch@vger.kernel.org,
@@ -78,86 +79,113 @@ Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
         Gisela Greinert <gisela.greinert@siemens.com>,
         Erez Geva <erez.geva.ext@siemens.com>,
         Erez Geva <ErezGeva2@gmail.com>
-Subject: [PATCH 0/3] Add sending TX hardware timestamp for TC ETF Qdisc
-Date:   Wed,  9 Dec 2020 15:37:03 +0100
-Message-Id: <20201209143707.13503-1-erez.geva.ext@siemens.com>
+Subject: [PATCH 1/3] Add TX sending hardware timestamp.
+Date:   Wed,  9 Dec 2020 15:37:04 +0100
+Message-Id: <20201209143707.13503-2-erez.geva.ext@siemens.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20201209143707.13503-1-erez.geva.ext@siemens.com>
+References: <20201209143707.13503-1-erez.geva.ext@siemens.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for TX sending hardware timestamp with
- Traffic control Earliest TxTime First (ETF) Qdisc.
+Configure and send TX sending hardware timestamp from
+ user space application to the socket layer,
+ to provide to the TC ETC Qdisc, and pass it to
+ the interface network driver.
 
-Why do we need additional timestamp?
-Current ETF requires to synchronization the system clock
-to the PTP Hardware clock (PHC) we want to send through.
-But there are cases that we can not synchronize the system clock with
-the desired NIC PHC.
-1. We use several NICs with several PTP domains that our device
-   is not allowed to be PTP master of.
-2. We are using another clock source which we need for our system.
-   Yet our device is not allowed to be PTP master.
+ - New flag for the SO_TXTIME socket option.
+ - New access auxiliary data header to pass the
+   TX sending hardware timestamp.
+ - Add the hardware timestamp to the socket cookie.
+ - Copy the TX sending hardware timestamp to the socket cookie.
 
-Regardless of the exact topology, as the Linux tradition is to allow
-the user the freedom to choose,
-we propose a patch that will add a hardware timestamp to the packet.
-The TC-ETF will use the first timestamp and compare it with
-the system clock while send the packet to the network interface driver
-with that hardware timestamp that is correlated with the PHC.
+Signed-off-by: Erez Geva <erez.geva.ext@siemens.com>
+---
+ include/net/sock.h                | 2 ++
+ include/uapi/asm-generic/socket.h | 3 +++
+ include/uapi/linux/net_tstamp.h   | 3 ++-
+ net/core/sock.c                   | 9 +++++++++
+ 4 files changed, 16 insertions(+), 1 deletion(-)
 
-Note 1: we do encourage the users to synchronize the system clock with
-  a PTP clock. Synchronizing the system clock with a PTP clock will
-  reduce the frequency difference of the PHC and the system clock,
-  increase the accurecy and may enable the user to reduce the ETF delta.
-
-Note 2: In our network usage models sending a frame has to be very
-  precise in relation to the PHC. Our user application does have
-  the exact send time as of PHC perspective so it is able
-  to provide the hw timestamp.
-
-Note 3: The user can estimate the clocks conversion error done
-  in the user application and add it to the delta setting of the ETF.
-
-The patches contain:
- 1. A new flag for the SO_TXTIME socket option.
- 2. A new cmsg header, SCM_HW_TXTIME to pass the TX hardware timestamp.
- 3. Add the hardware timestamp to the socket cookie and to the inet cork.
- 4. As ETF Qdisc is irrelevant to TCP, ignore the TCP.
- 5. A new flag to the ETF Qdisc setting that mandate
-    the use of the hardware timestamp in the SKB.
- 6. The ETF sort packets according to hardware timestamp,
-    Yet pass the packet to network interface driver based
-    on the system clock timestamp.
-
-Note 4: The socket buffer hardware timestamp is used by
-      the network interface driver to send the actual sending timestamp
-      back to the application. The timestamp is used by the TC ETF
-      before the socket buffer arrives in the network interface driver.
-
-Erez Geva (3):
-  Add TX sending hardware timestamp.
-  Pass TX sending hardware timestamp to a socket's buffer.
-  The TC ETF Qdisc pass the hardware timestamp to the interface driver.
-
- include/net/inet_sock.h           |  1 +
- include/net/sock.h                |  2 ++
- include/uapi/asm-generic/socket.h |  3 ++
- include/uapi/linux/net_tstamp.h   |  3 +-
- include/uapi/linux/pkt_sched.h    |  1 +
- net/core/sock.c                   |  9 +++++
- net/ipv4/ip_output.c              |  2 ++
- net/ipv4/raw.c                    |  1 +
- net/ipv6/ip6_output.c             |  2 ++
- net/ipv6/raw.c                    |  1 +
- net/packet/af_packet.c            |  3 ++
- net/sched/sch_etf.c               | 59 +++++++++++++++++++++++++------
- 12 files changed, 75 insertions(+), 12 deletions(-)
-
-
-base-commit: b65054597872ce3aefbc6a666385eabdf9e288da
+diff --git a/include/net/sock.h b/include/net/sock.h
+index a5c6ae78df77..dd5bfd42b4e2 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -859,6 +859,7 @@ enum sock_flags {
+ 	SOCK_SELECT_ERR_QUEUE, /* Wake select on error queue */
+ 	SOCK_RCU_FREE, /* wait rcu grace period in sk_destruct() */
+ 	SOCK_TXTIME,
++	SOCK_HW_TXTIME,
+ 	SOCK_XDP, /* XDP is attached */
+ 	SOCK_TSTAMP_NEW, /* Indicates 64 bit timestamps always */
+ };
+@@ -1690,6 +1691,7 @@ void sk_send_sigurg(struct sock *sk);
+ 
+ struct sockcm_cookie {
+ 	u64 transmit_time;
++	u64 transmit_hw_time;
+ 	u32 mark;
+ 	u16 tsflags;
+ };
+diff --git a/include/uapi/asm-generic/socket.h b/include/uapi/asm-generic/socket.h
+index 77f7c1638eb1..16265b00c25a 100644
+--- a/include/uapi/asm-generic/socket.h
++++ b/include/uapi/asm-generic/socket.h
+@@ -119,6 +119,9 @@
+ 
+ #define SO_DETACH_REUSEPORT_BPF 68
+ 
++#define SO_HW_TXTIME		69
++#define SCM_HW_TXTIME		SO_HW_TXTIME
++
+ #if !defined(__KERNEL__)
+ 
+ #if __BITS_PER_LONG == 64 || (defined(__x86_64__) && defined(__ILP32__))
+diff --git a/include/uapi/linux/net_tstamp.h b/include/uapi/linux/net_tstamp.h
+index 7ed0b3d1c00a..dd51c9a99b1f 100644
+--- a/include/uapi/linux/net_tstamp.h
++++ b/include/uapi/linux/net_tstamp.h
+@@ -162,8 +162,9 @@ struct scm_ts_pktinfo {
+ enum txtime_flags {
+ 	SOF_TXTIME_DEADLINE_MODE = (1 << 0),
+ 	SOF_TXTIME_REPORT_ERRORS = (1 << 1),
++	SOF_TXTIME_USE_HW_TIMESTAMP = (1 << 2),
+ 
+-	SOF_TXTIME_FLAGS_LAST = SOF_TXTIME_REPORT_ERRORS,
++	SOF_TXTIME_FLAGS_LAST = SOF_TXTIME_USE_HW_TIMESTAMP,
+ 	SOF_TXTIME_FLAGS_MASK = (SOF_TXTIME_FLAGS_LAST - 1) |
+ 				 SOF_TXTIME_FLAGS_LAST
+ };
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 727ea1cc633c..317dce54321b 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -1227,6 +1227,8 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
+ 			break;
+ 		}
+ 		sock_valbool_flag(sk, SOCK_TXTIME, true);
++		sock_valbool_flag(sk, SOCK_HW_TXTIME,
++				  sk_txtime.flags & SOF_TXTIME_USE_HW_TIMESTAMP);
+ 		sk->sk_clockid = sk_txtime.clockid;
+ 		sk->sk_txtime_deadline_mode =
+ 			!!(sk_txtime.flags & SOF_TXTIME_DEADLINE_MODE);
+@@ -2378,6 +2380,13 @@ int __sock_cmsg_send(struct sock *sk, struct msghdr *msg, struct cmsghdr *cmsg,
+ 			return -EINVAL;
+ 		sockc->transmit_time = get_unaligned((u64 *)CMSG_DATA(cmsg));
+ 		break;
++	case SCM_HW_TXTIME:
++		if (!sock_flag(sk, SOCK_HW_TXTIME))
++			return -EINVAL;
++		if (cmsg->cmsg_len != CMSG_LEN(sizeof(u64)))
++			return -EINVAL;
++		sockc->transmit_hw_time = get_unaligned((u64 *)CMSG_DATA(cmsg));
++		break;
+ 	/* SCM_RIGHTS and SCM_CREDENTIALS are semantically in SOL_UNIX. */
+ 	case SCM_RIGHTS:
+ 	case SCM_CREDENTIALS:
 -- 
 2.20.1
 
