@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C3762D3C48
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 08:32:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 940B92D3C47
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 08:32:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728005AbgLIHb5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 02:31:57 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60638 "EHLO mail.kernel.org"
+        id S1727984AbgLIHb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 02:31:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60640 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727855AbgLIHbm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Dec 2020 02:31:42 -0500
+        id S1727844AbgLIHbn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Dec 2020 02:31:43 -0500
 From:   saeed@kernel.org
 Authentication-Results: mail.kernel.org; dkim=permerror (bad message/signature format)
 To:     "David S. Miller" <davem@davemloft.net>,
@@ -24,9 +24,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>, netdev@vger.kernel.org,
         kiran.patil@intel.com, gregkh@linuxfoundation.org,
         Parav Pandit <parav@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH net-next v2 13/14] devlink: Extend devlink port documentation for subfunctions
-Date:   Tue,  8 Dec 2020 23:29:33 -0800
-Message-Id: <20201209072934.1272819-14-saeed@kernel.org>
+Subject: [PATCH net-next v2 14/14] net/mlx5: Add devlink subfunction port documentation
+Date:   Tue,  8 Dec 2020 23:29:34 -0800
+Message-Id: <20201209072934.1272819-15-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201209072934.1272819-1-saeed@kernel.org>
 References: <20201209072934.1272819-1-saeed@kernel.org>
@@ -38,7 +38,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Parav Pandit <parav@nvidia.com>
 
-Add devlink port documentation for subfunction management.
+Add documentation for subfunction management using devlink
+port.
 
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
@@ -47,136 +48,231 @@ Changelog:
 v1->v2:
  - new patch
 ---
- Documentation/driver-api/auxiliary_bus.rst    |  2 +
- .../networking/devlink/devlink-port.rst       | 89 ++++++++++++++++++-
- 2 files changed, 87 insertions(+), 4 deletions(-)
+ .../device_drivers/ethernet/mellanox/mlx5.rst | 204 ++++++++++++++++++
+ 1 file changed, 204 insertions(+)
 
-diff --git a/Documentation/driver-api/auxiliary_bus.rst b/Documentation/driver-api/auxiliary_bus.rst
-index 2312506b0674..fff96c7ba7a8 100644
---- a/Documentation/driver-api/auxiliary_bus.rst
-+++ b/Documentation/driver-api/auxiliary_bus.rst
-@@ -1,5 +1,7 @@
- .. SPDX-License-Identifier: GPL-2.0-only
+diff --git a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
+index a5eb22793bb9..07e38c044355 100644
+--- a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
++++ b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
+@@ -12,6 +12,8 @@ Contents
+ - `Enabling the driver and kconfig options`_
+ - `Devlink info`_
+ - `Devlink parameters`_
++- `mlx5 subfunction`_
++- `mlx5 port function`_
+ - `Devlink health reporters`_
+ - `mlx5 tracepoints`_
  
-+.. _auxiliary_bus:
-+
- =============
- Auxiliary Bus
- =============
-diff --git a/Documentation/networking/devlink/devlink-port.rst b/Documentation/networking/devlink/devlink-port.rst
-index 4c910dbb01ca..c6924e7a341e 100644
---- a/Documentation/networking/devlink/devlink-port.rst
-+++ b/Documentation/networking/devlink/devlink-port.rst
-@@ -34,6 +34,9 @@ Devlink port flavours are described below.
-    * - ``DEVLINK_PORT_FLAVOUR_PCI_VF``
-      - This indicates an eswitch port representing a port of PCI
-        virtual function (VF).
-+   * - ``DEVLINK_PORT_FLAVOUR_PCI_SF``
-+     - This indicates an eswitch port representing a port of PCI
-+       subfunction (SF).
-    * - ``DEVLINK_PORT_FLAVOUR_VIRTUAL``
-      - This indicates a virtual port for the PCI virtual function.
+@@ -181,6 +183,208 @@ User command examples:
+       values:
+          cmode driverinit value true
  
-@@ -57,9 +60,9 @@ Devlink port can have a different type based on the link layer described below.
- PCI controllers
- ---------------
- In most cases a PCI device has only one controller. A controller consists of
--potentially multiple physical and virtual functions. Such PCI function consists
--of one or more ports. This port of the function is represented by the devlink
--eswitch port.
-+potentially multiple physical functions, virtual functions and subfunctions.
-+Such PCI function consists of one or more ports. This port of the function
-+is represented by the devlink eswitch port.
++mlx5 subfunction
++================
++mlx5 supports subfunctions management using devlink port (see :ref:`Documentation/networking/devlink/devlink-port.rst <devlink_port>`) interface.
++
++A Subfunction has its own function capabilities and its own resources. This
++means a subfunction has its own dedicated queues(txq, rxq, cq, eq). These queues
++are neither shared nor stealed from the parent PCI function.
++
++When subfunction is RDMA capable, it has its own QP1, GID table and rdma
++resources neither shared nor stealed from the parent PCI function.
++
++A subfunction has dedicated window in PCI BAR space that is not shared
++with ther other subfunctions or parent PCI function. This ensures that all
++class devices of the subfunction accesses only assigned PCI BAR space.
++
++A Subfunction supports eswitch representation through which it supports tc
++offloads. User must configure eswitch to send/receive packets from/to
++subfunction port.
++
++Subfunctions share PCI level resources such as PCI MSI-X IRQs with
++ther other subfunctions and/or with its parent PCI function.
++
++Example mlx5 software, system and device view::
++
++       _______
++      | admin |
++      | user  |----------
++      |_______|         |
++          |             |
++      ____|____       __|______            _________________
++     |         |     |         |          |                 |
++     | devlink |     | tc tool |          |    user         |
++     | tool    |     |_________|          | applications    |
++     |_________|         |                |_________________|
++           |             |                   |          |
++           |             |                   |          |         Userspace
++ +---------|-------------|-------------------|----------|--------------------+
++           |             |           +----------+   +----------+   Kernel
++           |             |           |  netdev  |   | rdma dev |
++           |             |           +----------+   +----------+
++   (devlink port add/del |              ^               ^
++    port function set)   |              |               |
++           |             |              +---------------|
++      _____|___          |              |        _______|_______
++     |         |         |              |       | mlx5 class    |
++     | devlink |   +------------+       |       |   drivers     |
++     | kernel  |   | rep netdev |       |       |(mlx5_core,ib) |
++     |_________|   +------------+       |       |_______________|
++           |             |              |               ^
++   (devlink ops)         |              |          (probe/remove)
++  _________|________     |              |           ____|________
++ | subfunction      |    |     +---------------+   | subfunction |
++ | management driver|-----     | subfunction   |---|  driver     |
++ | (mlx5_core)      |          | auxiliary dev |   | (mlx5_core) |
++ |__________________|          +---------------+   |_____________|
++           |                                            ^
++  (sf add/del, vhca events)                             |
++           |                                      (device add/del)
++      _____|____                                    ____|________
++     |          |                                  | subfunction |
++     |  PCI NIC |---- activate/deactive events---->| host driver |
++     |__________|                                  | (mlx5_core) |
++                                                   |_____________|
++
++Subfunction is created using devlink port interface.
++
++- Change device to switchdev mode::
++
++    $ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
++
++- Add a devlink port of subfunction flaovur::
++
++    $ devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88
++
++- Show a devlink port of the subfunction::
++
++    $ devlink port show pci/0000:06:00.0/32768
++    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcisf pfnum 0 sfnum 88
++      function:
++        hw_addr 00:00:00:00:00:00
++
++- Delete a devlink port of subfunction after use::
++
++    $ devlink port del pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88
++
++mlx5 port function
++==================
++mlx5 driver provides mechanism to setup PCI VF/SF port function
++attributes in unified way for smartnic and non-smartnic NICs.
++
++This is supported only when eswitch mode is set to switchdev. Port function
++configuration of the PCI VF/SF is supported through devlink eswitch port.
++
++Port function attributes should be set before PCI VF/SF is enumerated by the
++driver.
++
++MAC address setup
++-----------------
++mlx5 driver provides mechanism to setup the MAC address of the PCI VF/SF.
++
++Configured MAC address of the PCI VF/SF will be used by netdevice and rdma
++device created for the PCI VF/SF.
++
++- Get MAC address of the VF identified by its unique devlink port index::
++
++    $ devlink port show pci/0000:06:00.0/2
++    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
++      function:
++        hw_addr 00:00:00:00:00:00
++
++- Set MAC address of the VF identified by its unique devlink port index::
++
++    $ devlink port function set pci/0000:06:00.0/2 hw_addr 00:11:22:33:44:55
++
++    $ devlink port show pci/0000:06:00.0/2
++    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
++      function:
++        hw_addr 00:11:22:33:44:55
++
++- Get MAC address of the SF identified by its unique devlink port index::
++
++    $ devlink port show pci/0000:06:00.0/32768
++    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcisf pfnum 0 sfnum 88
++      function:
++        hw_addr 00:00:00:00:00:00
++
++- Set MAC address of the VF identified by its unique devlink port index::
++
++    $ devlink port function set pci/0000:06:00.0/32768 hw_addr 00:00:00:00:88:88
++
++    $ devlink port show pci/0000:06:00.0/32768
++    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcivf pfnum 0 sfnum 88
++      function:
++        hw_addr 00:00:00:00:88:88
++
++SF state setup
++--------------
++To use the SF, user must active the SF using SF port function state attribute.
++
++- Get state of the SF identified by its unique devlink port index::
++
++   $ devlink port show ens2f0npf0sf88
++   pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
++     function:
++       hw_addr 00:00:00:00:88:88 state inactive opstate detached
++
++- Activate the function and verify its state is active::
++
++   $ devlink port function set ens2f0npf0sf88 state active
++
++   $ devlink port show ens2f0npf0sf88
++   pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
++     function:
++       hw_addr 00:00:00:00:88:88 state active opstate detached
++
++Upon function activation, PF driver instance gets the event from the device that
++particular SF was activated. It's the cue to put the device on bus, probe it and
++instantiate devlink instance and class specific auxiliary devices for it.
++
++- Show the auxiliary device and port of the subfunction::
++
++    $ devlink dev show
++    devlink dev show auxiliary/mlx5_core.sf.4
++
++    $ devlink port show auxiliary/mlx5_core.sf.4/1
++    auxiliary/mlx5_core.sf.4/1: type eth netdev p0sf88 flavour virtual port 0 splittable false
++
++    $ rdma link show mlx5_0/1
++    link mlx5_0/1 state ACTIVE physical_state LINK_UP netdev p0sf88
++
++    $ rdma dev show
++    8: rocep6s0f1: node_type ca fw 16.29.0550 node_guid 248a:0703:00b3:d113 sys_image_guid 248a:0703:00b3:d112
++    13: mlx5_0: node_type ca fw 16.29.0550 node_guid 0000:00ff:fe00:8888 sys_image_guid 248a:0703:00b3:d112
++
++- Subfunction auxilary device and class device hierarchy::
++
++                 mlx5_core.sf.4
++          (subfunction auxilary device)
++                       /\
++                      /  \
++                     /    \
++                    /      \
++                   /        \
++      mlx5_core.eth.4     mlx5_core.rdma.4
++     (sf eth aux dev)     (sf rdma aux dev)
++         |                      |
++         |                      |
++      p0sf88                  mlx5_0
++     (sf netdev)          (sf rdma device)
++
++Additionally SF port also gets the event when the driver attaches to the
++auxiliary device of the subfunction. This results in changing the operational
++state of the function. This provides visiblity to user to decide when it is
++safe to delete the SF port for graceful termination of the subfunction.
++
++- Show the SF port operational state::
++
++    $ devlink port show ens2f0npf0sf88
++    pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
++      function:
++        hw_addr 00:00:00:00:88:88 state active opstate attached
++
+ Devlink health reporters
+ ========================
  
- A PCI Device connected to multiple CPUs or multiple PCI root complexes or
- SmartNIC, however, may have multiple controllers. For a device with multiple
-@@ -112,7 +115,85 @@ PCI function. Usually it means, user should configure port function attribute
- before a bus specific device for the function is created. However, when
- SRIOV is enabled, virtual function devices are created on the PCI bus.
- Hence, function attribute should be configured before binding virtual
--function device to the driver.
-+function device to the driver. For subfunctions, this means user should
-+configure port function attribute before activating the port function.
- 
- User may set the hardware address of the function represented by the devlink
- port function. For Ethernet port function this means a MAC address.
-+
-+Subfunctions
-+============
-+
-+Subfunctions are lightweight functions that has parent PCI function on which
-+it is deployed. Subfunctions are created and deployed in unit of 1. Unlike
-+SRIOV VFs, they don't require their own PCI virtual function. They communicate
-+with the hardware through the parent PCI function. Subfunctions can possibly
-+scale better.
-+
-+To use a subfunction, 3 steps setup sequence is followed.
-+(1) create - create a subfunction;
-+(2) configure - configure subfunction attributes;
-+(3) deploy - deploy the subfunction;
-+
-+Subfunction management is done using devlink port user interface.
-+User performs setup on the subfunction management device.
-+
-+(1) Create
-+----------
-+A subfunction is created using a devlink port interface. User adds the
-+subfunction by adding a devlink port of subfunction flavour. The devlink
-+kernel code calls down to subfunction management driver (devlink op) and asks
-+it to create a subfunction devlink port. Driver then instantiates the
-+subfunction port and any associated objects such as health reporters and
-+representor netdevice.
-+
-+(2) Configure
-+-------------
-+Subfunction devlink port is created but it is not active yet. That means the
-+entities are created on devlink side, the e-switch port representor is created,
-+but the subfunction device itself it not created. User might use e-switch port
-+representor to do settings, putting it into bridge, adding TC rules, etc. User
-+might as well configure the hardware address (such as MAC address) of the
-+subfunction while subfunction is inactive.
-+
-+(3) Deploy
-+----------
-+Once subfunction is configured, user must activate it to use it. Upon
-+activation, subfunction management driver asks the subfunction management
-+device to instantiate the actual subfunction device on particular PCI function.
-+A subfunction device is created on the :ref:`Documentation/driver-api/auxiliary_bus.rst <auxiliary_bus>`. At this point matching
-+subfunction driver binds to the subfunction's auxiliary device.
-+
-+Terms and Definitions
-+=====================
-+
-+.. list-table:: Terms and Definitions
-+   :widths: 22 90
-+
-+   * - Term
-+     - Definitions
-+   * - ``PCI device``
-+     - A physical PCI device having one or more PCI bus consists of one or
-+       more PCI controllers.
-+   * - ``PCI controller``
-+     -  A controller consists of potentially multiple physical functions,
-+        virtual functions and subfunctions.
-+   * - ``Port function``
-+     -  An object to manage the function of a port.
-+   * - ``Subfunction``
-+     -  A lightweight function that has parent PCI function on which it is
-+        deployed.
-+   * - ``Subfunction device``
-+     -  A bus device of the subfunction, usually on a auxiliary bus.
-+   * - ``Subfunction driver``
-+     -  A device driver for the subfunction auxiliary device.
-+   * - ``Subfunction management device``
-+     -  A PCI physical function that supports subfunction management.
-+   * - ``Subfunction management driver``
-+     -  A device driver for PCI physical function that supports
-+        subfunction management using devlink port interface.
-+   * - ``Subfunction host driver``
-+     -  A device driver for PCI physical function that host subfunction
-+        devices. In most cases it is same as subfunction management driver. When
-+        subfunction is used on external controller, subfunction management and
-+        host drivers are different.
 -- 
 2.26.2
 
