@@ -2,82 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AA702D38F8
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 03:50:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A76DF2D3903
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 03:54:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726931AbgLICrf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 21:47:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41414 "EHLO
+        id S1726974AbgLICxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 21:53:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725283AbgLICr1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 21:47:27 -0500
-Received: from mail-oo1-xc44.google.com (mail-oo1-xc44.google.com [IPv6:2607:f8b0:4864:20::c44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6552C06179C
-        for <netdev@vger.kernel.org>; Tue,  8 Dec 2020 18:46:46 -0800 (PST)
-Received: by mail-oo1-xc44.google.com with SMTP id q20so34349oos.12
-        for <netdev@vger.kernel.org>; Tue, 08 Dec 2020 18:46:46 -0800 (PST)
+        with ESMTP id S1726931AbgLICxr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 21:53:47 -0500
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74947C0613D6
+        for <netdev@vger.kernel.org>; Tue,  8 Dec 2020 18:53:07 -0800 (PST)
+Received: by mail-ot1-x334.google.com with SMTP id a109so13934otc.1
+        for <netdev@vger.kernel.org>; Tue, 08 Dec 2020 18:53:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=RAcX5IS/r69U0yVcwBKACAXybXXN4EAaO9w0ZRKIzBE=;
-        b=uduX7vHHH21OXnQlnmID7bj51+0bDcXZO8J/4jfvq0kCzZl957ewptdz4426ZPGBco
-         S8Rwu40HRZS87prDwTS5X66s7YplN0z5bjOLIwJsemmIqL2tbSM4gui3LHLgal9v7/cv
-         7nLzuPMYNQbFvD3bQpRHH6EDSJ6f6z1WM7gENv143t7IxALMORg5ZjlixcfY2XyLiTks
-         gFdEfsfc9VAUjD2Myp85863EojuU3yD/pyAbeR/VjzPb25UIFbOVh5XhtMLiaR/GbFqQ
-         UXcyHNrVYFk6wk986Iw7vD/el+380Iy5loDkAfaQCYRCLAL7YFz6eXyBY5Tt7DHK4is5
-         0ITw==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SBXsvCTSYTxp6fl+gvrd76q/m92fr/8ES4X4b+soQAI=;
+        b=c6Hwvpjk0M2751JtINkMG0N/mgTHBr0SdACzhustXBnRlGS2I7As3HJzKkbjVBuH7E
+         qSwI+t/vyAgZ0lnshUS3Bn8HMLZvQbCi+FCkvSS4S9FzDi8eEmJm1xfAR/O/Ut0yuw1b
+         xdfXsGbh8BBbMwr/ORxKcb7AFnoFh1PR/KQ2Y=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=RAcX5IS/r69U0yVcwBKACAXybXXN4EAaO9w0ZRKIzBE=;
-        b=dy/5HCeX2uHGOi8cUnfNevO/BsNCNY9u88hiVbd7UukJH+zkAZAHocMgrn1pvefrxs
-         i12fDX8be05upaeESFMAn5VDJnIltlBwccGJHGvwMXoyQmG54oA87a07ZqV8UF/w96za
-         h9fgoAKg2MotQ6INYZvRquqX4Tjx8BgK6yHsPoJaG6FGiYN9QspFYUTeif/6MgIyP1Ri
-         ZOYnk+je4X7P5zhxK2ih2K9SZLAUhsd+LVMH7TLcv67kKOce96/QdPN4fhCOuZY7XkaB
-         vitvNMRjJBsvaquGnDIaOYYA/eIKq5Y1yM4ss4NiQ0dZCZRmIcrINmZteIXUFQCiIE8d
-         OiUQ==
-X-Gm-Message-State: AOAM531cMzvngvcafRH5vgQdWFWvcJRf46SEw4iZl8mCpEfZnaK3Tsrj
-        HjL/4vl9MZgN24tXTb6yU51E1qhL+GwIOg==
-X-Google-Smtp-Source: ABdhPJxQH9oi/kUfMCb29QbcBK2IZC3qOS43M2SmQwXWIpSKhDE3Vqy3GlF9yC1k8RXMZtWXz4Pryw==
-X-Received: by 2002:a05:6820:54c:: with SMTP id n12mr177775ooj.79.1607482006168;
-        Tue, 08 Dec 2020 18:46:46 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.51])
-        by smtp.googlemail.com with ESMTPSA id u130sm55058oib.53.2020.12.08.18.46.44
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SBXsvCTSYTxp6fl+gvrd76q/m92fr/8ES4X4b+soQAI=;
+        b=kiEheX5MQKV8GTyHkOps03D2RZG6n9HhX65f6ct0ZgBNKdHa1d6KRs4ua3Uq5SDxeN
+         5yn+IUyBQdB3rV4uEHXLjN8FLbqQP7ixmH44/2PmlXmbrwxpx+hK9X263xDeU0gqEshm
+         SzTfRKmEORYQBm+6KE7Z7OzBuXPZ24yUzXHQTKvR6vTsWpEVQt7RIAuFgw6DgzJmyorY
+         2+/h9QVQbVNAniIFcxLtO73Jd1jQmDytmtm3MjmxE2wCusEH3RQVA22brcUkdCSqe0/a
+         NoHPqzOwuhKxKo2FQltvNlQ3PhCSuJi3ACTdKGQ+GMiXMlNPdE//UL2IEls6Mtq2OXN2
+         2Z3g==
+X-Gm-Message-State: AOAM530VOpiTzO5VAFQBwIDgpLYyWooyQW2W01sDxHwzWG01F8XSR02b
+        H+dn2rFG7JvcSqdzNmKrxu23oHzo02Rgag==
+X-Google-Smtp-Source: ABdhPJzFam2lEY6ODwr1mDWwmVKm9ggDGv9BibZ3pfCk3ZcjqBmBoRHhUlBgbLh/XABMAE6c//Oxpw==
+X-Received: by 2002:a9d:6b10:: with SMTP id g16mr83962otp.301.1607482385515;
+        Tue, 08 Dec 2020 18:53:05 -0800 (PST)
+Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com. [209.85.167.175])
+        by smtp.gmail.com with ESMTPSA id g3sm64173oif.26.2020.12.08.18.53.04
+        for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Dec 2020 18:46:45 -0800 (PST)
-Subject: Re: [PATCH iproute2-net v2 1/3] devlink: Add devlink reload action
- and limit options
-To:     Moshe Shemesh <moshe@mellanox.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
-        netdev@vger.kernel.org
-References: <1607319322-20970-1-git-send-email-moshe@mellanox.com>
- <1607319322-20970-2-git-send-email-moshe@mellanox.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <7bb89ef8-78bf-1264-6921-1d9f15ec2b12@gmail.com>
-Date:   Tue, 8 Dec 2020 19:46:43 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.5.1
+        Tue, 08 Dec 2020 18:53:04 -0800 (PST)
+Received: by mail-oi1-f175.google.com with SMTP id o25so221256oie.5
+        for <netdev@vger.kernel.org>; Tue, 08 Dec 2020 18:53:04 -0800 (PST)
+X-Received: by 2002:aca:d696:: with SMTP id n144mr330067oig.77.1607482383969;
+ Tue, 08 Dec 2020 18:53:03 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <1607319322-20970-2-git-send-email-moshe@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20201203185732.9CFA5C433ED@smtp.codeaurora.org>
+ <20201204111715.04d5b198@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+ <87tusxgar5.fsf@codeaurora.org> <CA+ASDXNT+uKLLhTV0Nr-wxGkM16_OkedUyoEwx5FgV3ML9SMsQ@mail.gmail.com>
+ <20201207121029.77d48f2c@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+In-Reply-To: <20201207121029.77d48f2c@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
+From:   Brian Norris <briannorris@chromium.org>
+Date:   Tue, 8 Dec 2020 18:52:51 -0800
+X-Gmail-Original-Message-ID: <CA+ASDXNLvxKncpj4YJ2PnD9+wStZ6VjChQp4J=bqeXawMTsrmg@mail.gmail.com>
+Message-ID: <CA+ASDXNLvxKncpj4YJ2PnD9+wStZ6VjChQp4J=bqeXawMTsrmg@mail.gmail.com>
+Subject: Re: pull-request: wireless-drivers-next-2020-12-03
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/6/20 10:35 PM, Moshe Shemesh wrote:
-> +			print_string(PRINT_ANY, NULL, "%s", reload_action_name(action));
+Hi Jakub,
 
-That line should be:
-			print_string(PRINT_ANY, NULL, "%s",
-				     reload_action_name(action));
+On Mon, Dec 7, 2020 at 12:10 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> On Mon, 7 Dec 2020 11:35:53 -0800 Brian Norris wrote:
+> > On Mon, Dec 7, 2020 at 2:42 AM Kalle Valo <kvalo@codeaurora.org> wrote:
+> > > Jakub Kicinski <kuba@kernel.org> writes:
+> > > > On Thu,  3 Dec 2020 18:57:32 +0000 (UTC) Kalle Valo wrote:
+> > > > There's also a patch which looks like it renames a module parameter.
+> > > > Module parameters are considered uAPI.
+> > >
+> > > Ah, I have been actually wondering that if they are part of user space
+> > > API or not, good to know that they are. I'll keep an eye of this in the
+> > > future so that we are not breaking the uAPI with module parameter
+> > > changes.
+> >
+> > Is there some reference for this rule (e.g., dictate from on high; or
+> > some explanation of reasons)? Or limitations on it? Because as-is,
+> > this sounds like one could never drop a module parameter, or remove
+> > obsolete features.
+>
+> TBH its one of those "widely accepted truth" in networking which was
+> probably discussed before I started compiling kernels so I don't know
+> the full background. But it seems pretty self-evident even without
+> knowing the casus that made us institute the rule.
+>
+> Module parameters are certainly userspace ABI, since user space can
+> control them either when loading the module or via sysfs.
 
-to fit preferred column widths. By print strings in my previous comment,
-I meant don't wrap quoted text.
+I'm not sure it's as self-evident as you claim. Similar arguments
+could be made of debugfs (it's even typically mounted under /sys, so
+one could accidentally think it *is* sysfs!), except that somewhere
+along the line it has been decreed to not be a stable interface.
 
-Fixed and applied.
+But anyway, I can acknowledge it's a "widely accepted truth [in some
+circles]" and act accordingly (e.g., closer review on their
+introduction). I'll also maintain my counter-acknowledgment, that this
+approach is not universal. Taking another subystem (fs/) as an
+example, I didn't have to look far for similar approaches, where
+module parameters were removed as features became obsolete, handled
+automatically, etc.:
+
+d3df14535f4a ext4: mballoc: make mb_debug() implementation to use pr_debug()
+1565bdad59e9 fscrypt: remove struct fscrypt_ctx
+73d03931be2f erofs: kill use_vmap module parameter
+
+Although to be fair, I did find at least one along the way where the
+author made a special attempt at a "deprecation notice" while handling
+it gracefully:
+
+791205e3ec60 pstore/ram: Introduce max_reason and convert dump_oops
+
+I wouldn't be surprised if that module parameter disappears eventually
+though, with little fanfare.
+
+> > It also suggests that debug-related knobs (which
+> > can benefit from some amount of flexibility over time) should go
+> > exclusively in debugfs (where ABI guarantees are explicitly not made),
+> > even at the expense of usability (dropping a line into
+> > /etc/modprobe.d/ is hard to beat).
+>
+> Indeed, debugfs seems more appropriate.
+
+I'll highlight (and agree with) Emmanuel's notice that debugfs is not
+a suitable replacement in some cases. I'd still agree debugfs is
+better where possible though, because it's clearer about the
+(in)stability guarantees, and harder for users to "set and forget"
+(per your below notes).
+
+> > Should that parameter have never been introduced in the first place,
+> > never be removed, or something else? I think I've seen this sort of
+> > pattern before, where features get phased in over time, with module
+> > parameters as either escape hatches or as opt-in mechanisms.
+> > Eventually, they stabilize, and there's no need (or sometimes, it's
+> > actively harmful) to keep the knob around.
+...
+> If I'm reading this right the pattern seems to be that module
+> parameters are used as chicken bits. It's an interesting problem,
+> I'm not sure this use case was discussed. My concern would be that
+> there is no guarantee users will in fact report the new feature
+> fails for them, and therefore grow to depend on the chicken bits.
+
+That's a valid concern. I'm not sure what to do about that, beyond
+documentation (which such users probably fail to read) or maybe loud
+WARN() prints (which such users could easily ignore).
+
+> Since updating software is so much easier than re-etching silicon
+> I'd personally not use chicken bits in software, especially with
+> growing adoption of staggered update roll outs.
+
+I'm not sure I understand this sentence; it's perfectly easy to handle
+all manner of changed/dropped module params through staged rollout. If
+a param is deleted, one can keep it in their modprobe.d configs until
+it's fully phased out. If it's renamed with a slightly different
+purpose, encode both purposes in your configs. Et cetera.
+
+Brian
+
+> Otherwise I'd think
+> debugfs is indeed a better place for them.
