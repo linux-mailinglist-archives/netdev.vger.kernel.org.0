@@ -2,71 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F203E2D4D81
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 23:24:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EBC42D4E34
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 23:41:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388380AbgLIWXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Dec 2020 17:23:38 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60760 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388259AbgLIWXi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Dec 2020 17:23:38 -0500
-Date:   Wed, 9 Dec 2020 14:22:56 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1607552577;
-        bh=ViCxzEw/T1ZQS8KrPRfAAn6bHOFrINs6a4Xk6EqMPoE=;
-        h=From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IE0XwkVAkDoKrCEp3/SpVIh+eRnZzfV/mnN75MD83IgWqMiJb5C68vVd8od1Xcx01
-         BDITIlap3GS9Thl1uuhbGwXaSL0pHP4EirO9PPiOuVV/weTbu1bd6K9GvoCwugl8uN
-         0f8K+Jdi4oQo3EyF5zlTZoXxWYDKBPoy6MvjfL9xI4xre0DKqVYxRa5hEnxFXPuZbK
-         n4FgM2NM3CawyTyDreOvEHJ1WExqRwji0LOVHE/gwbqh+kzuXayCEe/F7YWpr4T3km
-         LH0F1EACEHG3WedyFb0qJ/c3PnkV/XVqHhcy89N2nC5ZExzczgiqf6y+bK6XaUFEfc
-         1AMDQlyeVgDAg==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vlad Buslov <vladbu@nvidia.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        Jianlin Shi <jishi@redhat.com>,
-        CKI Project <cki-project@redhat.com>,
-        netdev <netdev@vger.kernel.org>, <skt-results-master@redhat.com>,
-        Yi Zhang <yi.zhang@redhat.com>,
-        Memory Management <mm-qe@redhat.com>,
-        Jan Stancek <jstancek@redhat.com>,
-        Jianwen Ji <jiji@redhat.com>, Hangbin Liu <haliu@redhat.com>,
-        Ondrej Moris <omoris@redhat.com>,
-        Ondrej Mosnacek <omosnace@redhat.com>,
-        Changhui Zhong <czhong@redhat.com>,
-        Xiong Zhou <xzhou@redhat.com>,
-        Rachel Sibley <rasibley@redhat.com>,
-        David Arcari <darcari@redhat.com>
-Subject: Re: =?UTF-8?B?4p2M?= FAIL: Test report for kernel 5.10.0-rc6
- (mainline.kernel.org)
-Message-ID: <20201209142256.3e4a08fb@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-In-Reply-To: <ygnhsg8ek8dr.fsf@nvidia.com>
-References: <cki.4066A31294.UNMQ21P718@redhat.com>
-        <CABE0yyi9gS8nao0n1Dts_Og80R71h8PUkizy4rM9E9E3QbJwvA@mail.gmail.com>
-        <CABE0yyj997uCwzHoob8q2Ckd2i5Pv1k+JDRbF3fnn11_R2XN1Q@mail.gmail.com>
-        <20201209092052.19a39676@kicinski-fedora-pc1c0hjn.DHCP.thefacebook.com>
-        <CANn89iL8akG+u6sq4r7gxpWKMoDSKuCbgFvDPrrG+J85zC1KNg@mail.gmail.com>
-        <CANn89iKcKATT902n6C1-Hi0ey0Ep20dD88nTTLLH9NNF6Pex5w@mail.gmail.com>
-        <838391ff7ffa5dbfb79f30c6d31292c80415af18.camel@kernel.org>
-        <CANn89iK+fU7LGH--JXx_FLxawr7rs1t-crLGtkbPAXsoiZMi8A@mail.gmail.com>
-        <ygnhsg8ek8dr.fsf@nvidia.com>
+        id S2388953AbgLIWlR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Dec 2020 17:41:17 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:40929 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388674AbgLIWYw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Dec 2020 17:24:52 -0500
+Received: from mail-il1-f200.google.com ([209.85.166.200])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <seth.forshee@canonical.com>)
+        id 1kn7rW-0008DJ-RU
+        for netdev@vger.kernel.org; Wed, 09 Dec 2020 22:23:07 +0000
+Received: by mail-il1-f200.google.com with SMTP id f19so2735015ilk.8
+        for <netdev@vger.kernel.org>; Wed, 09 Dec 2020 14:23:06 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=nCPT21aBYHK+VmSNH6RsExkU8pXC3B3JSnVf9A2XUAw=;
+        b=fm6afTUueNlsgcoNwlNlgSbKKqFVjWitXgP4ugNbXE/uZrQhQEL7NAeVDoCLmsavDT
+         wVsJaG+HcbuNVY4dcDerRUxFroXdjQhtQ+5k+xrGa5ycilezCiAaC4nBgy6lKHII3iq8
+         eg7Wf5x8SuCj1nC3RbmwmYsSDUYXjTtshiz3pBcMSCw7o9SMCjo63p9gFqF07dR381L7
+         3MvSvzfeCPIwINilpyCFWhYHgyQqznTJbPxGqsgWihmpGTPndQ1HqrR8EsXYlia/ryvl
+         EZkss641lKHI61w8nG9LlvhqhoJhAnSPY3vubxYajWNKJEuK4ONicRfMrFYdHlzA2wv7
+         Qlyw==
+X-Gm-Message-State: AOAM532kHm7jehnzbqV5p6pkw00QazgdVPDGi0hQe+gDsBOxBhJzn3Us
+        MXw7JOjHVzk/4GnuWnPxzr5iKl+hgvxe9R+HTQqH147aQ8KhWJlFNE70d76RJu87MTa4H/fVUut
+        8DAkLYVWrZRnpBNanX3C0DByGtEUanR7xKw==
+X-Received: by 2002:a5d:9507:: with SMTP id d7mr5636561iom.32.1607552585835;
+        Wed, 09 Dec 2020 14:23:05 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxPHEVz4M/SVZNUt1nS2IcUlOCb7v1fywa1vG7vTZjQwq6m0YhMMXsMPX3MpNt78iFWUndNBA==
+X-Received: by 2002:a5d:9507:: with SMTP id d7mr5636527iom.32.1607552585581;
+        Wed, 09 Dec 2020 14:23:05 -0800 (PST)
+Received: from localhost ([2605:a601:ac0f:820:f6e7:e083:7e01:5905])
+        by smtp.gmail.com with ESMTPSA id e1sm1528753iod.17.2020.12.09.14.23.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Dec 2020 14:23:05 -0800 (PST)
+Date:   Wed, 9 Dec 2020 16:23:04 -0600
+From:   Seth Forshee <seth.forshee@canonical.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: BPF selftests build failure in 5.10-rc
+Message-ID: <X9FOSImMbu0/SV5B@ubuntu-x1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 9 Dec 2020 22:54:40 +0200 Vlad Buslov wrote:
-> > Yes, I think the patch I sent should fix this, ETH_P_ARP should not be
-> > dropped ;)
-> >
-> > I am testing this before offical patch submission.
-> 
-> Your patch fixed TC geneve tests for me, but some of more complex OVS
-> tests are still failing. I'll try to provide details tomorrow.
+Building the BPF selftests with clang 11, I'm getting the following
+error:
 
-Does a revert of Eric's patch fix it? For OvS is could also well be:
-9c2e14b48119 ("ip_tunnels: Set tunnel option flag when tunnel metadata is present")
+   CLNG-LLC [test_maps] profiler1.o
+ In file included from progs/profiler1.c:6:
+ progs/profiler.inc.h:260:17: error: use of unknown builtin '__builtin_preserve_enum_value' [-Wimplicit-function-declaration]
+                 int cgrp_id = bpf_core_enum_value(enum cgroup_subsys_id___local,
+                               ^
+ /home/ubuntu/unstable/tools/testing/selftests/bpf/tools/include/bpf/bpf_core_read.h:179:2: note: expanded from macro 'bpf_core_enum_value'
+         __builtin_preserve_enum_value(*(typeof(enum_type) *)enum_value, BPF_ENUMVAL_VALUE)
+         ^
+ 1 error generated.
+ llc: error: llc: <stdin>:1:1: error: expected top-level entity
+ BPF obj compilation failed
+
+I see that test_core_reloc_enumval.c takes precautions around the use of
+__builtin_preserve_enum_value as it is currently only available in clang
+12 nightlies. Is it possible to do something similar here? Though I see
+that the use of the builtin is not nearly so neatly localized as it is
+in test_core_reloc_enumval.c.
+
+Thanks,
+Seth
