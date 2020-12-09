@@ -2,106 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09BF22D4CA6
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 22:17:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B58862D4C96
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 22:15:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387699AbgLIVOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2387832AbgLIVOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 9 Dec 2020 16:14:37 -0500
-Received: from mga11.intel.com ([192.55.52.93]:24061 "EHLO mga11.intel.com"
+Received: from mga11.intel.com ([192.55.52.93]:24062 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725765AbgLIVOe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Dec 2020 16:14:34 -0500
-IronPort-SDR: o+tDPgE4UR/yVSGd15PMDV6x3CWjUEuCVVFQVrR6ybE13frLIbj/cEiIzyL4cvqpwmyrwijD1y
- r4H+1Vf4JIFg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9830"; a="170641628"
+        id S2387650AbgLIVOg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Dec 2020 16:14:36 -0500
+IronPort-SDR: icRr+Ud+VLiGO8av+IGyErDQGdPpw8aemFSZByB9CiTzHKlS3KVsO96FzDVaHqwfJj5UCwmH6H
+ az/r2Ygk8Dqw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9830"; a="170641629"
 X-IronPort-AV: E=Sophos;i="5.78,405,1599548400"; 
-   d="scan'208";a="170641628"
+   d="scan'208";a="170641629"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
   by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Dec 2020 13:13:53 -0800
-IronPort-SDR: ke1naeWSz/dzeGqLzezkoQlyufTE9E+ry1yMz4c5LU+vFpO4ATURbNm9UPFm4tsl+SV475hddh
- GpdB1AlqlJLQ==
+IronPort-SDR: FJ6HBF78rOkGSuK5e0LAcHKsMpNGoYqtOSZqfy4HMIghOhic9rSoDtuLN3LhYkb29M4tQDUNT8
+ uWJ31LGNy58Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.78,405,1599548400"; 
-   d="scan'208";a="408228639"
+   d="scan'208";a="408228642"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga001.jf.intel.com with ESMTP; 09 Dec 2020 13:13:52 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
-        sassmann@redhat.com
-Subject: [net-next v4 0/9][pull request] 100GbE Intel Wired LAN Driver Updates 2020-12-09
-Date:   Wed,  9 Dec 2020 13:13:03 -0800
-Message-Id: <20201209211312.3850588-1-anthony.l.nguyen@intel.com>
+Cc:     Bruce Allan <bruce.w.allan@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com, anthony.l.nguyen@intel.com,
+        Harikumar Bokkena <harikumarx.bokkena@intel.com>
+Subject: [net-next v4 1/9] ice: cleanup stack hog
+Date:   Wed,  9 Dec 2020 13:13:04 -0800
+Message-Id: <20201209211312.3850588-2-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20201209211312.3850588-1-anthony.l.nguyen@intel.com>
+References: <20201209211312.3850588-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains updates to ice driver only.
+From: Bruce Allan <bruce.w.allan@intel.com>
 
-Bruce changes the allocation of ice_flow_prof_params from stack to heap to
-avoid excessive stack usage. Corrects a misleading comment and silences a
-sparse warning that is not a problem.
+In ice_flow_add_prof_sync(), struct ice_flow_prof_params has recently
+grown in size hogging stack space when allocated there.  Hogging stack
+space should be avoided.  Change allocation to be on the heap when needed.
 
-Paul allows for HW initialization to continue if PHY abilities cannot
-be obtained.
+Signed-off-by: Bruce Allan <bruce.w.allan@intel.com>
+Tested-by: Harikumar Bokkena <harikumarx.bokkena@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_flow.c | 44 +++++++++++++----------
+ 1 file changed, 26 insertions(+), 18 deletions(-)
 
-Jeb removes bypassing FW link override and reading Option ROM and
-netlist information for non-E810 devices as this is now available on
-other devices.
-
-Nick removes vlan_ena field as this information can be gathered by
-checking num_vlan.
-
-Jake combines format strings and debug prints to the same line.
-
-Simon adds a space to fix string concatenation.
-
-v4: Drop ACL patches. Change PHY abilities failure message from debug to
-warning.
-v3: Fix email address for DaveM and fix character in cover letter
-v2: Expand on commit message for patch 3 to show example usage/commands.
-    Reduce number of defensive checks being done.
-
-The following are changes since commit afae3cc2da100ead3cd6ef4bb1fb8bc9d4b817c5:
-  net: atheros: simplify the return expression of atl2_phy_setup_autoneg_adv()
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
-
-Bruce Allan (3):
-  ice: cleanup stack hog
-  ice: cleanup misleading comment
-  ice: silence static analysis warning
-
-Jacob Keller (1):
-  ice: join format strings to same line as ice_debug
-
-Jeb Cramer (2):
-  ice: Enable Support for FW Override (E82X)
-  ice: Remove gate to OROM init
-
-Nick Nunley (1):
-  ice: Remove vlan_ena from vsi structure
-
-Paul M Stillwell Jr (1):
-  ice: don't always return an error for Get PHY Abilities AQ command
-
-Simon Perron Caissy (1):
-  ice: Add space to unknown speed
-
- drivers/net/ethernet/intel/ice/ice.h          |   1 -
- drivers/net/ethernet/intel/ice/ice_common.c   | 109 ++++++------------
- drivers/net/ethernet/intel/ice/ice_controlq.c |  42 +++----
- .../net/ethernet/intel/ice/ice_flex_pipe.c    |  24 ++--
- drivers/net/ethernet/intel/ice/ice_flow.c     |  53 +++++----
- drivers/net/ethernet/intel/ice/ice_main.c     |  13 +--
- drivers/net/ethernet/intel/ice/ice_nvm.c      |  61 +++-------
- drivers/net/ethernet/intel/ice/ice_sched.c    |  21 ++--
- drivers/net/ethernet/intel/ice/ice_switch.c   |  15 +--
- 9 files changed, 117 insertions(+), 222 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/ice/ice_flow.c b/drivers/net/ethernet/intel/ice/ice_flow.c
+index eadc85aee389..2a92071bd7d1 100644
+--- a/drivers/net/ethernet/intel/ice/ice_flow.c
++++ b/drivers/net/ethernet/intel/ice/ice_flow.c
+@@ -708,37 +708,42 @@ ice_flow_add_prof_sync(struct ice_hw *hw, enum ice_block blk,
+ 		       struct ice_flow_seg_info *segs, u8 segs_cnt,
+ 		       struct ice_flow_prof **prof)
+ {
+-	struct ice_flow_prof_params params;
++	struct ice_flow_prof_params *params;
+ 	enum ice_status status;
+ 	u8 i;
+ 
+ 	if (!prof)
+ 		return ICE_ERR_BAD_PTR;
+ 
+-	memset(&params, 0, sizeof(params));
+-	params.prof = devm_kzalloc(ice_hw_to_dev(hw), sizeof(*params.prof),
+-				   GFP_KERNEL);
+-	if (!params.prof)
++	params = kzalloc(sizeof(*params), GFP_KERNEL);
++	if (!params)
+ 		return ICE_ERR_NO_MEMORY;
+ 
++	params->prof = devm_kzalloc(ice_hw_to_dev(hw), sizeof(*params->prof),
++				    GFP_KERNEL);
++	if (!params->prof) {
++		status = ICE_ERR_NO_MEMORY;
++		goto free_params;
++	}
++
+ 	/* initialize extraction sequence to all invalid (0xff) */
+ 	for (i = 0; i < ICE_MAX_FV_WORDS; i++) {
+-		params.es[i].prot_id = ICE_PROT_INVALID;
+-		params.es[i].off = ICE_FV_OFFSET_INVAL;
++		params->es[i].prot_id = ICE_PROT_INVALID;
++		params->es[i].off = ICE_FV_OFFSET_INVAL;
+ 	}
+ 
+-	params.blk = blk;
+-	params.prof->id = prof_id;
+-	params.prof->dir = dir;
+-	params.prof->segs_cnt = segs_cnt;
++	params->blk = blk;
++	params->prof->id = prof_id;
++	params->prof->dir = dir;
++	params->prof->segs_cnt = segs_cnt;
+ 
+ 	/* Make a copy of the segments that need to be persistent in the flow
+ 	 * profile instance
+ 	 */
+ 	for (i = 0; i < segs_cnt; i++)
+-		memcpy(&params.prof->segs[i], &segs[i], sizeof(*segs));
++		memcpy(&params->prof->segs[i], &segs[i], sizeof(*segs));
+ 
+-	status = ice_flow_proc_segs(hw, &params);
++	status = ice_flow_proc_segs(hw, params);
+ 	if (status) {
+ 		ice_debug(hw, ICE_DBG_FLOW,
+ 			  "Error processing a flow's packet segments\n");
+@@ -746,19 +751,22 @@ ice_flow_add_prof_sync(struct ice_hw *hw, enum ice_block blk,
+ 	}
+ 
+ 	/* Add a HW profile for this flow profile */
+-	status = ice_add_prof(hw, blk, prof_id, (u8 *)params.ptypes, params.es);
++	status = ice_add_prof(hw, blk, prof_id, (u8 *)params->ptypes,
++			      params->es);
+ 	if (status) {
+ 		ice_debug(hw, ICE_DBG_FLOW, "Error adding a HW flow profile\n");
+ 		goto out;
+ 	}
+ 
+-	INIT_LIST_HEAD(&params.prof->entries);
+-	mutex_init(&params.prof->entries_lock);
+-	*prof = params.prof;
++	INIT_LIST_HEAD(&params->prof->entries);
++	mutex_init(&params->prof->entries_lock);
++	*prof = params->prof;
+ 
+ out:
+ 	if (status)
+-		devm_kfree(ice_hw_to_dev(hw), params.prof);
++		devm_kfree(ice_hw_to_dev(hw), params->prof);
++free_params:
++	kfree(params);
+ 
+ 	return status;
+ }
 -- 
 2.26.2
 
