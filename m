@@ -2,95 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 936B32D3820
-	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 02:13:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1325F2D3826
+	for <lists+netdev@lfdr.de>; Wed,  9 Dec 2020 02:16:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726739AbgLIBMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Dec 2020 20:12:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55112 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726730AbgLIBML (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Dec 2020 20:12:11 -0500
-Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B00E4C0613D6
-        for <netdev@vger.kernel.org>; Tue,  8 Dec 2020 17:11:31 -0800 (PST)
-Received: by mail-ot1-x343.google.com with SMTP id o11so665632ote.4
-        for <netdev@vger.kernel.org>; Tue, 08 Dec 2020 17:11:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=RJM1hdnxjXSlZDOWiasy+1r+za6X2vmIYFCfgCITCcY=;
-        b=KFKDzFb6UL8vzCHrBPpewb+rC3w3yPSNqdyzUkkp/s5yP41YSU491kKvmkq3Pl0JVG
-         kWFELD9ui0QYcaGsielM7PsSc/TbnpGP8zxZyebZgjE5RbNvxY3ib8OKkyQn9nD1U1qf
-         9zOClrKtPzFOtaH3/JDWELt0pjxeqHC/CHWNIwQjwq/PjsWu21Yt5j0k2Sg4eNp7DAjU
-         lyO5g2Y/cqMzAbxzGMhmdfzIUsrvWz/2LSQBiJawpEktetT/yU4ji38TAD9dPhHStRUB
-         ItUBP0th5dJZwytQmiaa7HHvPkSI+6+pNmMBnmL2hhmfU49nWt3eHxWRISkl37TZW0q4
-         2fFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=RJM1hdnxjXSlZDOWiasy+1r+za6X2vmIYFCfgCITCcY=;
-        b=m+3UJ/iC2YEiHZr2TjUV8XXCxw9Q8ooIRl2iREDqynfQgUE2oWPzj2aw4MpuTwmPM/
-         qgVBYtvozle8t6bNILCbTCL1naY6FX18QQTTrGOUc2rUm6Fd7thxGfgvZu3E2uB406C6
-         ljAezUtiRerd4cWpFOLZL0SXR5s1/VJXMZV6jD7JJOAYHm4lwJeFwJLl9ljQfUnLIZx4
-         73iTX5txeM38nWe5OZGvCO3tTT4wPCbMAzlF3BWgxVh9ayJcWIDdZ8ZdzoSwDuMlZPfR
-         TR/pupzn3bh5r7lXcrrg3qlqLLOIrorBgJ9J3oUcZPiiyNLFDaRMgYv6Vhqb0x6TWA0W
-         tf3w==
-X-Gm-Message-State: AOAM530qFqBIH+DycFk/rwViuj98S6WfJXjA3RvZgBgrlJEDtGhEv1Vz
-        FA9AmR/ZJaNH1yx8/FHLhZRMaBwexlfJ0w==
-X-Google-Smtp-Source: ABdhPJx8+Ccu8F1QT25GeEV+/cGXSTSWiLiDa65Dr23mGkdZFYosmMbyXGLSutWFJM5Uq5QDZWFiwA==
-X-Received: by 2002:a05:6830:314b:: with SMTP id c11mr674204ots.151.1607476291183;
-        Tue, 08 Dec 2020 17:11:31 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:64fc:adeb:84f9:fa62])
-        by smtp.googlemail.com with ESMTPSA id k20sm5889oig.35.2020.12.08.17.11.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Dec 2020 17:11:30 -0800 (PST)
-Subject: Re: [PATCH v1 net-next 02/15] net: Introduce direct data placement
- tcp offload
-From:   David Ahern <dsahern@gmail.com>
-To:     Boris Pismenny <borisp@mellanox.com>, kuba@kernel.org,
-        davem@davemloft.net, saeedm@nvidia.com, hch@lst.de,
-        sagi@grimberg.me, axboe@fb.com, kbusch@kernel.org,
-        viro@zeniv.linux.org.uk, edumazet@google.com
-Cc:     boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
-        netdev@vger.kernel.org, benishay@nvidia.com, ogerlitz@nvidia.com,
-        yorayz@nvidia.com, Ben Ben-Ishay <benishay@mellanox.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Yoray Zack <yorayz@mellanox.com>
-References: <20201207210649.19194-1-borisp@mellanox.com>
- <20201207210649.19194-3-borisp@mellanox.com>
- <824e3bea-60d2-5a4d-e8ce-770d70f0ba37@gmail.com>
-Message-ID: <474d1275-9506-99d3-4f0d-86b482953eee@gmail.com>
-Date:   Tue, 8 Dec 2020 18:11:29 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.5.1
+        id S1726483AbgLIBO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Dec 2020 20:14:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37866 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726307AbgLIBO1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Dec 2020 20:14:27 -0500
+Date:   Wed, 9 Dec 2020 02:13:36 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1607476419;
+        bh=4A8yCWIxhznzmlI1ZPuNu4AS4l63xedVoBbtG2oxRU8=;
+        h=From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kOqJnToMislpKdi65lyRTW3iZmg1MA/IKwdGlZMJI6lYPrenh1pJx13qV+qBo9rGr
+         yU2EoZAr4k6gkLeO2BdE8AxZMpUQUNuSFqbqVL3zSbpHOXwAJi9vIkQnvHtl3DP8KN
+         clxjxKOTIRGRGLupfvpraZQv1W5VA7lX/xSCNQA2+pa4M07nH/Fj8qnFa/jQZ+Yas6
+         rlzSwF0EMkpXp4DNkMovpvELBH0IFaepsu3ROleJZIUj1ZCsVk0ldzBZYlSdY6H70D
+         EbE+Zzz9vxO6zltwmGKaF1vS4ot+o2EtriQ4ggnAX+CpC5d3VW11WMaUb/5BuK7cBt
+         0LA4TxZohzHqA==
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Trent Piepho <tpiepho@gmail.com>
+Cc:     Joseph Hwang <josephsih@google.com>,
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        chromeos-bluetooth-upstreaming 
+        <chromeos-bluetooth-upstreaming@chromium.org>,
+        Alain Michaud <alainm@chromium.org>,
+        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] Bluetooth: btusb: define HCI packet sizes of USB
+ Alts
+Message-ID: <20201209011336.4qdnnehnz3kdlqid@pali>
+References: <20200910060403.144524-1-josephsih@chromium.org>
+ <CAHFy418Ln9ONHGVhg513g0v+GxUZMDtLpe5NFONO3HuAZz=r7g@mail.gmail.com>
+ <20200923102215.hrfzl7c7q2omeiws@pali>
+ <9810329.nUPlyArG6x@zen.local>
 MIME-Version: 1.0
-In-Reply-To: <824e3bea-60d2-5a4d-e8ce-770d70f0ba37@gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <9810329.nUPlyArG6x@zen.local>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/8/20 5:57 PM, David Ahern wrote:
->> diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
->> index 7338b3865a2a..a08b85b53aa8 100644
->> --- a/include/net/inet_connection_sock.h
->> +++ b/include/net/inet_connection_sock.h
->> @@ -66,6 +66,8 @@ struct inet_connection_sock_af_ops {
->>   * @icsk_ulp_ops	   Pluggable ULP control hook
->>   * @icsk_ulp_data	   ULP private data
->>   * @icsk_clean_acked	   Clean acked data hook
->> + * @icsk_ulp_ddp_ops	   Pluggable ULP direct data placement control hook
->> + * @icsk_ulp_ddp_data	   ULP direct data placement private data
+On Tuesday 08 December 2020 15:04:29 Trent Piepho wrote:
+> On Wednesday, September 23, 2020 3:22:15 AM PST Pali Rohár wrote:
+> > On Monday 14 September 2020 20:18:27 Joseph Hwang wrote:
+> > > On Thu, Sep 10, 2020 at 4:18 PM Pali Rohár <pali@kernel.org> wrote:
+> > > > And this part of code which you write is Realtek specific.
+> > > 
+> > > We currently only have Intel and Realtek platforms to test with. If
+> > > making it generic without proper testing platforms is fine, I will
+> > > make it generic. Or do you think it might be better to make it
+> > > customized with particular vendors for now; and make it generic later
+> > > when it works well with sufficient vendors?
+> > 
+> > I understood that those packet size changes are generic to bluetooth
+> > specification and therefore it is not vendor specific code. Those packet
+> > sizes for me really seems to be USB specific.
+> > 
+> > Therefore it should apply for all vendors, not only for Realtek and
+> > Intel.
 > 
-> Neither of these socket layer intrusions are needed. All references but
-> 1 -- the skbuff check -- are in the mlx5 driver. Any skb check that is
-> needed can be handled with a different setting.
+> I have tried to test WBS with some different USB adapters.  So far, all use 
+> these packet sizes.  Tested were:
+> 
+> Broadcom BRCM20702A
+> Realtek RTL8167B
+> Realtek RTL8821C
+> CSR CSR8510 (probably fake)
+> 
+> In all cases, WBS works best with packet size of (USB packet size for alt mode 
+> selected) * 3 packets - 3 bytes HCI header.  None of these devices support alt 
+> 6 mode, where supposedly one packet is better, but I can find no BT adapter on 
+> which to test this.
+> 
+> > +static const int hci_packet_size_usb_alt[] = { 0, 24, 48, 72, 96, 144, 60};
+> 
+> Note that the packet sizes here are based on the max isoc packet length for 
+> the USB alt mode used, e.g. alt 1 is 9 bytes.  That value is only a 
+> "recommended" value from the bluetooth spec.  It seems like it would be more 
+> correct use (btusb_data*)->isoc_tx_ep->wMaxPacketSize to find the MTU.
 
-missed the nvme ops for the driver to callback to the socket owner.
+Yea, wMaxPacketSize looks like a candidate for determining MTU. Can we
+use it or are there any known issues with it?
 
+> > > [Issue 2] The btusb_work() is performed by a worker. There would be a
+> > > timing issue here if we let btusb_work() to do “hdev->sco_mtu =
+> > > hci_packet_size_usb_alt[i]” because there is no guarantee how soon the
+> > > btusb_work() can be finished and get “hdev->sco_mtu” value set
+> > > correctly. In order to avoid the potential race condition, I suggest
+> > > to determine air_mode in btusb_notify() before
+> > > schedule_work(&data->work) is executed so that “hdev->sco_mtu =
+> > > hci_packet_size_usb_alt[i]” is guaranteed to be performed when
+> > > btusb_notify() finished. In this way, hci_sync_conn_complete_evt() can
+> > > set conn->mtu correctly as described in [Issue 1] above.
+> 
+> Does this also give userspace a clear point at which to determine MTU setting, 
+> _before_ data is sent over SCO connection?  It will not work if sco_mtu is not 
+> valid until after userspace sends data to SCO connection with incorrect mtu.
+
+IIRC connection is established after sync connection (SCO) complete
+event. And sending data is possible after connection is established. So
+based on these facts I think that userspace can determinate MTU settings
+prior sending data over SCO socket.
+
+Anyway, to whole MTU issue for SCO there is a nice workaround which
+worked fine with more tested USB adapters and headsets. As SCO socket is
+synchronous and most bluetooth headsets have own clocks, you can
+synchronize sending packets to headsets based on time events when you
+received packets from other side and also send packets of same size as
+you received. I.e. for every received packet send own packet of the same
+size.
